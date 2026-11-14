@@ -25,6 +25,10 @@ from lib.geo import q, flat, rect, smoothstep
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, "data", "cities", "mordor-osm.json")
+# The fine ground (src/core/fine.js): a kilometre grid makes Orodruin a pyramid with no crater and Barad-dur's spur
+# a ramp, so the ground over them is written again finer, beside the coarse grid.
+OUT_FINE = os.path.join(ROOT, "data", "cities", "mordor-fine.json")
+FINE_EDGE = 2000.0       # each patch fades into the coarse ground over its last two kilometres
 R = random.Random(3019)
 
 HX, HZ = 340000.0, 280000.0      # half-extents west and north-south
@@ -174,8 +178,12 @@ def terrain_height(x, z):
         cone = 4900 * (math.exp(-3.6 * t) - math.exp(-3.6)) / (1 - math.exp(-3.6))
         ang = math.atan2(z - DOOM[1], x - DOOM[0])
         cone *= 1 + 0.075 * math.sin(ang * 9 + 0.6) + 0.04 * math.sin(ang * 21 - 1.2)   # the barrancos
-        if dd < 1500:
-            cone -= 760 * (1 - dd / 1500) ** 1.4           # the Sammath Naur, sunk into the summit
+        # the crater: a bowl sunk into the head, its rim the highest ground (the old 760 m sink only flattened the
+        # head, which the kilometre grid could not show and the fine ground over the mountain does)
+        CR = 750.0
+        if dd < CR:
+            rim = 4900 * (math.exp(-3.6 * CR / 16000.0) - math.exp(-3.6)) / (1 - math.exp(-3.6))
+            cone = rim * (1 + 0.075 * math.sin(ang * 9 + 0.6) + 0.04 * math.sin(ang * 21 - 1.2)) - 380 * (1 - (dd / CR) ** 2)
         h += cone
     h += 460 * smoothstep(34000, 14000, dd)                # the apron of spoil heaped round its foot
     # the ash that fell out of it, heaped downwind
@@ -198,6 +206,7 @@ def main():
 
     nx = int(HX + HXE) // STEP + 2
     nz = int(2 * HZ) // STEP + 2
+    GNX, GNZ = nx, nz       # (nx is reused further down)
     hs = []
     for j in range(nz):
         zz = -HZ + j * STEP
@@ -677,6 +686,35 @@ def main():
     out["pois"] = pois
 
     json.dump(out, open(OUT, "w"), separators=(",", ":"))
+
+    # ---------- the fine ground ----------
+    def hat(x, z):
+        """The ground as the engine draws it: bilinear on the grid."""
+        fx, fz = (x + HX) / STEP, (z + HZ) / STEP
+        i, j = max(0, min(GNX - 2, int(fx))), max(0, min(GNZ - 2, int(fz)))
+        tx, tz = min(1.0, max(0.0, fx - i)), min(1.0, max(0.0, fz - j))
+        a, b, c, d = hs[j * GNX + i], hs[j * GNX + i + 1], hs[(j + 1) * GNX + i], hs[(j + 1) * GNX + i + 1]
+        return (a * (1 - tx) + b * tx) * (1 - tz) + (c * (1 - tx) + d * tx) * tz
+
+    def fine_patch(name, xa, za, xb, zb, step):
+        pn, pz = int((xb - xa) // step) + 1, int((zb - za) // step) + 1
+        H = []
+        for j in range(pz):
+            z = za + j * step
+            for i in range(pn):
+                x = xa + i * step
+                c, f = hat(x, z), terrain_height(x, z)
+                e = min(x - xa, xb - x, z - za, zb - z) / FINE_EDGE
+                w = 0.0 if e <= 0 else 1.0 if e >= 1 else e * e * (3 - 2 * e)
+                H.append(int(round((c + (f - c) * w) * 2)))
+        return {"n": name, "x0": round(xa), "z0": round(za), "step": step, "nx": pn, "nz": pz, "h": H}
+
+    patches = [fine_patch("Orodruin", DOOM[0] - 18000, DOOM[1] - 18000, DOOM[0] + 18000, DOOM[1] + 18000, 100.0),
+               # the spur from the Ash Mountains to the tower, and the tower's own ground
+               fine_patch("The spur of Barad-dur", BARAD[0] - 13000, BARAD[1] - 14000, BARAD[0] + 13000, BARAD[1] + 12000, 150.0)]
+    json.dump({"_": "Fine ground for src/core/fine.js: heights in half-metres, metres east and south; made by tools/make-mordor.py",
+               "fine": patches}, open(OUT_FINE, "w"), separators=(",", ":"))
+    print(f"wrote {OUT_FINE}: {os.path.getsize(OUT_FINE)/1e6:.1f} MB; " + ", ".join(f"{p['n']} {p['nx']}x{p['nz']} at {p['step']:.0f} m" for p in patches))
     t = out["terrain"]
     lo = min(t["h"]) / 10
     hi = max(t["h"]) / 10

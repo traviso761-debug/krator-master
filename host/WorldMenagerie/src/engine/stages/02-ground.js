@@ -137,17 +137,20 @@ section('ground',()=>{
       SNOW=typeof C.snow==='number'?C.snow:0,snowC=col(TC.snow||'#eef1f4'),
       // tints: a colour worked into the rock of one place, strongest on the steep faces - Caradhras is the Redhorn
       TINTS=(C.terrainTints||[]).map(t=>{const [x,z]=P(t.at);return {x,z,r:t.r,c:col(t.colour),k:t.strength===undefined?0.7:t.strength};});
+    // the ground's colour at a point of a given height and slope (rise over run), also for a page's own finer ground
+    function terColour(x,y,z,slope,out){out.copy(low).lerp(high,Math.min(1,y/H_AT)).lerp(steepC,Math.min(1,slope*SLOPE_K));
+      // a city with mountains in it can have snow on them (C.snow, the snow-line): white above it, ragged at the
+      // edge, and off the steepest faces, where the rock shows through
+      for(const t of TINTS){const d=Math.hypot(x-t.x,z-t.z);if(d<t.r)out.lerp(t.c,t.k*(1-d/t.r)*(0.35+0.65*Math.min(1,slope*SLOPE_K)));}
+      if(SNOW){const k=Math.max(0,Math.min(1,(y-SNOW+140*Math.sin(x*0.004)*Math.cos(z*0.0035))/260));if(k>0)out.lerp(snowC,k*(1-Math.min(1,slope*(C.snowShed||1.1))*0.7));}
+      return out;}
+    API.terrainColour=terColour;API.terrainStep=TER.step;
     const LODD=Array.isArray(C.terrainLOD)?C.terrainLOD:null,LODS=[];
     for(let cj=0;cj<TER.nz-1;cj+=CH)for(let ci=0;ci<TER.nx-1;ci+=CH){const w=Math.min(CH,TER.nx-1-ci),d=Math.min(CH,TER.nz-1-cj),pos=[],colr=[],idx=[];
       for(let j=0;j<=d;j++)for(let i=0;i<=w;i++){const gi=ci+i,gj=cj+j,x=TER.x0+gi*TER.step,z=TER.z0+gj*TER.step,y=TER.h[gj*TER.nx+gi];
         const gx=(TER.h[gj*TER.nx+Math.min(TER.nx-1,gi+1)]-TER.h[gj*TER.nx+Math.max(0,gi-1)])/(2*TER.step),
               gz=(TER.h[Math.min(TER.nz-1,gj+1)*TER.nx+gi]-TER.h[Math.max(0,gj-1)*TER.nx+gi])/(2*TER.step),slope=Math.hypot(gx,gz);
-        pos.push(x,y,z);cc.copy(low).lerp(high,Math.min(1,y/H_AT)).lerp(steepC,Math.min(1,slope*SLOPE_K));
-        // a city with mountains in it can have snow on them (C.snow, the snow-line): white above it, ragged at the
-        // edge, and off the steepest faces, where the rock shows through
-        for(const t of TINTS){const d=Math.hypot(x-t.x,z-t.z);if(d<t.r)cc.lerp(t.c,t.k*(1-d/t.r)*(0.35+0.65*Math.min(1,slope*SLOPE_K)));}
-        if(SNOW){const k=Math.max(0,Math.min(1,(y-SNOW+140*Math.sin(x*0.004)*Math.cos(z*0.0035))/260));if(k>0)cc.lerp(snowC,k*(1-Math.min(1,slope*(C.snowShed||1.1))*0.7));}
-        colr.push(cc.r,cc.g,cc.b);}
+        pos.push(x,y,z);terColour(x,y,z,slope,cc);colr.push(cc.r,cc.g,cc.b);}
       // A heightfield cannot have a hole in it, so a city that needs one says where: quads whose middle falls
       // inside it are simply not drawn. The Flesh Pit's orifice is the only one - without it the funnel floor
       // is a lid over the shaft, and from the rim you look down at a flat disc rather than into the pit.

@@ -35,7 +35,7 @@ export function landmarks(api){
   return {
   meneltarma(L,x,z){   // the Pillar of Heaven: the spiral road up it, the Hallow on top, and the eagles
     const FOOT=L.foot||14000,HAL=L.hallow||650,MH=L.height||3000,parts=[];
-    // the mountain's ground is the generator's fine patch over it (src/numenor/fine.js, drawn by nature.js), finer
+    // the mountain's ground is the generator's fine patch over it (src/core/fine.js, drawn by nature.js), finer
     // than the kilometre grid; the road and the Hallow sit on that
     const fineH=(px,pz)=>{const f=ctx.fine&&ctx.fine.at(px,pz);return (f==null?gh(px,pz):f)+0.3;};
     ctx.menelH=fineH;

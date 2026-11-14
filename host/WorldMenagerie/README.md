@@ -960,8 +960,14 @@ size and left small.
   see into, which is the point.
 - **The camped hosts**: six more drawn up in squares on the plain under Barad-dûr, thirty-one thousand of
   them, not going anywhere until they are sent.
+- **Fine ground** (`data/cities/mordor-fine.json`, drawn by `src/core/fine.js`, shared with Numenor): Orodruin
+  (36 km square at 100 m) and the spur under Barad-dur (26 km at 150 m) are written again finer than the kilometre
+  grid, in chunks with three levels of detail, and the coarse ground is pressed under them. The page fetches them
+  before the build and sets `ctx.fineAt`, so the engine's `groundH` answers from them and the landmarks and camps
+  stand on them. Orodruin has a real crater now (a bowl 750 m across, its rim the highest ground), and its lava
+  flows are ribbons laid down the ground. `#nofine` leaves the patches out, to compare.
 
-Regenerate with `python3 tools/make-mordor.py`, then `./sitectl build`.
+Regenerate with `python3 tools/make-mordor.py` (it writes both files), then `./sitectl build`.
 
 ### `/numenor`: Númenor
 

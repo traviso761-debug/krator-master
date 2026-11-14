@@ -99,7 +99,9 @@ if(TER&&C.terrainRaise){if(!TER.h0)TER.h0=TER.h.slice();
       if(R.poly){let d=1e9;for(let q=0;q<pts.length;q++)d=Math.min(d,segD(x,z,pts[q],pts[(q+1)%pts.length])[0]);nh=inPoly(x,z,pts)?R.top:R.top-d*sl;}
       else{let best=1e9,bh=0;for(let q=0;q+1<pts.length;q++){const [d,t]=segD(x,z,pts[q],pts[q+1]);if(d<best){best=d;bh=pts[q][2]+(pts[q+1][2]-pts[q][2])*t;}}nh=bh-Math.max(0,best-hw)*sl;}
       if(nh>TER.h[k])TER.h[k]=nh;}}}
-function groundH(x,z){if(!TER)return 0;const fx=(x-TER.x0)/TER.step,fz=(z-TER.z0)/TER.step;
+// A page with finer ground in places (src/core/fine.js: a mountain, a firth) sets ctx.fineAt(x, z), which answers
+// the height there or null; the kilometre grid answers everywhere else.
+function groundH(x,z){if(ctx.fineAt){const f=ctx.fineAt(x,z);if(f!=null)return f;}if(!TER)return 0;const fx=(x-TER.x0)/TER.step,fz=(z-TER.z0)/TER.step;
   let i=Math.floor(fx),j=Math.floor(fz);i=Math.max(0,Math.min(TER.nx-2,i));j=Math.max(0,Math.min(TER.nz-2,j));
   const tx=Math.max(0,Math.min(1,fx-i)),tz=Math.max(0,Math.min(1,fz-j)),h=TER.h,n=TER.nx;
   return (h[j*n+i]*(1-tx)+h[j*n+i+1]*tx)*(1-tz)+(h[(j+1)*n+i]*(1-tx)+h[(j+1)*n+i+1]*tx)*tz;}

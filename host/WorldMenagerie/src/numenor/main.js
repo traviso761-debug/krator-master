@@ -7,7 +7,7 @@ import {build} from '../engine/build.js';
 import {landmarks} from './landmarks.js';
 import {nature} from './nature.js';
 import {life} from './life.js';
-import {makeFine} from './fine.js';
+import {makeFine} from '../core/fine.js';
 import {downfall} from './downfall.js';
 installErrorHandlers();window.LOAD=LOAD;
 const ERA=(()=>{try{return new URLSearchParams(location.hash.slice(1)).get('era')==='downfall'?'downfall':'height';}catch(e){return 'height';}})();
@@ -39,5 +39,5 @@ const ctx=window._iz={defaultCity:'numenor',era:ERA,models:[landmarks],extras:[{
     const ev=(C.eraViews||{})[ERA];if(ev){for(const k in ev)if(k!=='defaultView')C.views[k]=ev[k];if(ev.defaultView)C.defaultView=ev.defaultView;}
     if(ERA==='downfall'){C.weather=Object.assign({},C.weather,{climate:'maritime',weights:{cloud:6,rain:1,storm:0,clear:0,fair:0,fog:0,drizzle:1}});}}};
 boot(()=>fetch('data/cities/numenor-land.json').then(r=>{if(!r.ok)throw new Error('numenor-land.json: HTTP '+r.status);return r.json();})
-  .then(land=>{ctx.nmLand=land;ctx.fine=makeFine(land);},e=>report('land',e))
+  .then(land=>{ctx.nmLand=land;ctx.fine=makeFine(land.fine);},e=>report('land',e))
   .then(()=>build(ctx)));
