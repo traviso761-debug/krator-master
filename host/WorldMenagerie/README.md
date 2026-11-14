@@ -1008,7 +1008,8 @@ kilometres across and the five promontories run out from it, about seven hundred
   A ship is forty metres and the island seven hundred kilometres, so they are grown with distance.
 
 - **Two eras.** The page opens on Númenor at its height. `#era=downfall` (or the button at the foot of the
-  page) is the Downfall, with these changes (`src/numenor/downfall.js`):
+  page) is the Downfall, with these changes (`src/numenor/downfall.js`, on the shared pieces in `src/core/storm.js`: the
+  gloom dome, lightning, cloud figures, plumes and the rising sea, which any page can take):
   - The Hallow is forsaken (no eagles) and Nimloth is a stump inside its rail.
   - The Temple stands in Armenelos: a drum of dark stone 150 m across with a blackened dome, its louver
     always smoking, and the houses where it stands cleared. It is the generator's landmark tagged
