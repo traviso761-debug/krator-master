@@ -440,6 +440,8 @@ def cover_at(x, z, h, slope, d):
     if h <= 0.7 or d > 0:
         return 7
     md = math.hypot(x - MENEL[0], z - MENEL[1])
+    if md < MENEL_R:
+        return 0                               # the mountain's rock is src/numenor/nature.js's, by slope and height
     if slope > 0.55 or h > 2100:
         return 6
     if -d < 900 and h < 30 and slope < 0.12:
@@ -460,8 +462,6 @@ def cover_at(x, z, h, slope, d):
     name, k, s, c = region(x, z)
     if k < 0.18 + 0.5 * fbm(x / 22000, z / 22000, 97):
         name = None
-    if math.hypot(x - MENEL[0], z - MENEL[1]) < MENEL_R:
-        return 0                               # the mountain's own colours are src/numenor/landmarks.js's
     if name == "Forostar":
         if h > 900 and n2 > 0.5:
             return 6
@@ -496,7 +496,7 @@ TOWN_R = {"Armenelos": 2600, "Romenna": 2300, "Andunie": 1900, "Eldalonde": 1500
 
 
 # ---------------------------------------------------------------- coast lines (marching squares at y = 0)
-def coastlines(H, nx, nz, x0, z0):
+def coastlines(H, nx, nz, x0, z0, step=STEP):
     segs = {}
     def P(i, j):
         return H[j * nx + i]
@@ -511,7 +511,7 @@ def coastlines(H, nx, nz, x0, z0):
         else:
             a, b, ax, az, bx, bz = P(i, j), P(i, j + 1), i, j, i, j + 1
         t = a / (a - b) if a != b else 0.5
-        return (round(x0 + (ax + (bx - ax) * t) * STEP, 1), round(z0 + (az + (bz - az) * t) * STEP, 1))
+        return (round(x0 + (ax + (bx - ax) * t) * step, 1), round(z0 + (az + (bz - az) * t) * step, 1))
     out = []
     for j in range(nz - 1):
         for i in range(nx - 1):
@@ -524,7 +524,7 @@ def coastlines(H, nx, nz, x0, z0):
                 out.append((edge(i, j, a), edge(i, j, b)))
     # orient every segment with the land on its left (the sea on its right), as nature.js's surf expects
     def hgt(x, z):
-        i, j = int(round((x - x0) / STEP)), int(round((z - z0) / STEP))
+        i, j = int(round((x - x0) / step)), int(round((z - z0) / step))
         i, j = max(0, min(nx - 1, i)), max(0, min(nz - 1, j))
         return H[j * nx + i]
     oriented = []
@@ -532,8 +532,9 @@ def coastlines(H, nx, nz, x0, z0):
         dx, dz = b[0] - a[0], b[1] - a[1]
         L = math.hypot(dx, dz) or 1
         mx, mz = (a[0] + b[0]) / 2, (a[1] + b[1]) / 2
-        lx, lz = mx - dz / L * 400, mz + dx / L * 400      # the left, in x east / z south
-        if land_sd(lx, lz) > land_sd(mx + dz / L * 400, mz - dx / L * 400):
+        o = min(400.0, step * 0.6)
+        lx, lz = mx - dz / L * o, mz + dx / L * o          # the left, in x east / z south
+        if hgt(lx, lz) < hgt(mx + dz / L * o, mz - dx / L * o):
             a, b = b, a
         oriented.append((a, b))
     nxt = {}
@@ -558,6 +559,51 @@ def coastlines(H, nx, nz, x0, z0):
                 break
         lines.append(line)
     return lines
+
+
+def clip_lines(lines, keep):
+    """Cut coast lines where they cross in or out of a region, keeping the runs whose points keep(x, z) accepts."""
+    out = []
+    for ln in lines:
+        run = []
+        for pt in ln:
+            if keep(*pt):
+                run.append(pt)
+            else:
+                if len(run) > 1:
+                    out.append(run)
+                run = []
+        if len(run) > 1:
+            out.append(run)
+    return out
+
+
+# ---------------------------------------------------------------- fine patches
+# The height grid is a kilometre, which makes a coast a staircase and a mountain a pyramid. Where it matters (the
+# Meneltarma, the firth, each haven) a finer grid of the same ground is written beside it, which src/numenor/ draws
+# over the coarse ground (pressed down under it). Each patch fades into the coarse grid over its last two kilometres,
+# and inside a town it keeps the coarse ground wherever that is dry, so the streets and houses the engine set on the
+# coarse ground stay on it.
+FINE_EDGE = 2000.0
+
+
+def fine_patch(name, xa, za, xb, zb, step, hat, towns):
+    nx, nz = int((xb - xa) // step) + 1, int((zb - za) // step) + 1
+    H = []
+    for j in range(nz):
+        z = za + j * step
+        for i in range(nx):
+            x = xa + i * step
+            c = hat(x, z)
+            f = terrain_height(x, z)
+            e = min(x - xa, xb - x, z - za, zb - z) / FINE_EDGE
+            w = 0.0 if e <= 0 else 1.0 if e >= 1 else e * e * (3 - 2 * e)
+            h = c + (f - c) * w
+            for (tx, tz, tr) in towns:
+                if math.hypot(x - tx, z - tz) < tr * 1.25 and c > 1.5:
+                    h = max(h, c)
+            H.append(h)
+    return {"n": name, "x0": round(xa), "z0": round(za), "step": step, "nx": nx, "nz": nz, "H": H}
 
 
 # ---------------------------------------------------------------- main
@@ -751,8 +797,6 @@ def main():
                             put(x + math.cos(an) * side * d / 2, z + math.sin(an) * side * d / 2, w - 1.2, d, an + math.pi / 2, h,
                                 R.choice(STONE), "g" if R.random() < 0.7 else "h")
                     a += (w + R.uniform(0.5, 3)) / ro
-        areas.append({"k": "residential", "n": name, "o": flat([(cx + math.cos(k / 48 * math.tau) * R_ * 1.05,
-                                                                   cz + math.sin(k / 48 * math.tau) * R_ * 1.05) for k in range(48)]), "i": []})
         pois.append({"n": name, "x": q(cx), "z": q(cz), "k": kind, "ang": 0})
         # the harbour: quays out from the shore toward the water, and moles
         if harbour is not None:
@@ -878,6 +922,23 @@ def main():
 
     json.dump(out, open(OUT, "w", encoding="utf-8"), separators=(",", ":"))
 
+    # ---------- the fine patches
+    towns = [(T[k][0], T[k][1], TOWN_R[k]) for k in TOWN_R if k in T]
+    patches = [fine_patch("Meneltarma", MENEL[0] - 15500, MENEL[1] - 15500, MENEL[0] + 15500, MENEL[1] + 15500, 100.0, hat, [])]
+    fx = [p[0] for p in FIRTH] + [T["Romenna"][0]]
+    fz = [p[1] for p in FIRTH] + [T["Romenna"][1]]
+    patches.append(fine_patch("The Firth", min(fx) - 9000, min(fz) - 9000, max(fx) + 9000, max(fz) + 9000, 200.0, hat, towns))
+    for hv in ("Andunie", "Eldalonde", "Nindamos", "Moriondë", "Hyarastorni", "Ondosto"):
+        x, z = T[hv]
+        patches.append(fine_patch(hv, x - 11000, z - 11000, x + 11000, z + 11000, 150.0, hat, towns))
+    print("  fine patches: " + ", ".join(f"{p['n']} {p['nx']}x{p['nz']}" for p in patches), flush=True)
+
+    def in_patch(x, z, m):
+        for p in patches:
+            if p["x0"] + m < x < p["x0"] + (p["nx"] - 1) * p["step"] - m and p["z0"] + m < z < p["z0"] + (p["nz"] - 1) * p["step"] - m:
+                return True
+        return False
+
     # ---------- the land file: cover, rivers, coast
     cover = []
     for j in range(nz):
@@ -901,16 +962,24 @@ def main():
         rle += [v, n]
         k += n
     rivers = [{"n": rv["n"], "w": rv["w"], "p": flat(simplify(rv["pts"], 60.0))} for rv in RIVERS if len(rv["pts"]) > 1]
-    coast = [flat(simplify(c, 150.0)) for c in coastlines(H, nx, nz, x0, z0) if len(c) > 4]
+    # the coarse coast outside the patches, and each patch's own coast inside it
+    coast = [flat(simplify(c, 150.0)) for c in clip_lines(coastlines(H, nx, nz, x0, z0), lambda x, z: not in_patch(x, z, 1000)) if len(c) > 1]
+    for p in patches:
+        cl = coastlines(p["H"], p["nx"], p["nz"], p["x0"], p["z0"], p["step"])
+        coast += [flat(simplify(c, 30.0)) for c in clip_lines(cl, lambda x, z: in_patch(x, z, 1000)) if len(c) > 1]
     land = {"_": "What the engine does not read and src/numenor/ does: the land cover (" + ", ".join(f"{i} {n}" for i, n in enumerate(COVER_NAMES))
             + "), the rivers with their widths, and the coast with the land on its left.",
             "cover": {"step": STEP, "nx": nx, "nz": nz, "rle": rle},
             "rivers": rivers, "coast": coast,
             "places": {k: [round(v[0]), round(v[1])] for k, v in T.items()},
-            "menel": {"h": MENEL_H, "r": MENEL_R, "hallow": HALLOW_R, "foot": [round(foot[0]), round(foot[1])]},
+            "towns": {k: [round(T[k][0]), round(T[k][1]), TOWN_R[k]] for k in TOWN_R if k in T},
+            "menel": {"at": [MENEL[0], MENEL[1]], "h": MENEL_H, "r": MENEL_R, "hallow": HALLOW_R, "foot": [round(foot[0]), round(foot[1])]},
             "noirinan": [round(NOIRINAN[0]), round(NOIRINAN[1])],
             "tolUinen": [round(TOL_UINEN[0]), round(TOL_UINEN[1]), TOL_UINEN[2]],
-            "firth": [[round(x), round(z)] for x, z in FIRTH]}
+            "firth": [[round(x), round(z)] for x, z in FIRTH],
+            # heights in half-metres, rows north to south
+            "fine": [{"n": p["n"], "x0": p["x0"], "z0": p["z0"], "step": p["step"], "nx": p["nx"], "nz": p["nz"],
+                      "h": [int(round(h * 2)) for h in p["H"]]} for p in patches]}
     json.dump(land, open(LANDF, "w", encoding="utf-8"), separators=(",", ":"))
 
     # ---------- the city file
@@ -956,7 +1025,8 @@ def main():
         "flight": True,
         "riverBoats": {"sail": 0, "motor": 0, "kayak": 0},
         "roofPitch": 0.55,
-        "roofColours": ["#6a8098", "#7890a6", "#5c7088", "#a8735a", "#8e9296", "#b47e62", "#7a8ea0"],
+        "roofColours": ["#a86a50", "#b47858", "#8e8c88", "#9c6c56", "#8a96a0", "#b8886c", "#c09070"],
+        "windows": False,
         "palette": {"brick": STONE + ["#d4ccb8"], "stone": STONE_W},
         "roadColours": {"residential": "#cfc6b0", "unclassified": "#b8ac8e", "tertiary": "#c8bea4", "secondary": "#d4cab0",
                         "primary": "#dcd2b8", "trunk": "#e4dcc4"},

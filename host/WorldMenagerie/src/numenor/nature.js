@@ -16,7 +16,10 @@
 import { hash3, mkRng } from '../core/rng.js';
 
 export function nature(api){
-  const {THREE,ctx,C,scene,camera,renderer,animHooks,inWater,roadsNear,nightF,hour,B,groundH}=api;
+  const {THREE,ctx,C,scene,camera,renderer,animHooks,inWater,roadsNear,nightF,hour,B}=api;
+  // the ground: the fine patches where there are any (src/numenor/fine.js), the engine's kilometre grid elsewhere
+  const FINE=ctx.fine,coarseH=api.groundH,groundH=(x,z)=>{const f=FINE&&FINE.at(x,z);return f==null?coarseH(x,z):f;};
+  ctx.groundH=groundH;
   const land=ctx.nmLand;if(!land){api.report('nature',new Error('no land file'));return;}
   const Y=C.numenor||{};
   const col=h=>new THREE.Color(h);
@@ -38,6 +41,9 @@ export function nature(api){
   const vn=(x,z,s)=>{const i=Math.floor(x),j=Math.floor(z),f=x-i,g=z-j,F=f*f*(3-2*f),G=g*g*(3-2*g),h=(a,b)=>{const t=Math.sin(a*127.1+b*311.7+s*74.7)*43758.5453;return t-Math.floor(t);};
     return (h(i,j)*(1-F)+h(i+1,j)*F)*(1-G)+(h(i,j+1)*(1-F)+h(i+1,j+1)*F)*G;};
   const coverSoft=(x,z)=>coverAt(x+(vn(x/700,z/700,1)-0.5)*ST*1.1,z+(vn(x/700,z/700,2)-0.5)*ST*1.1);
+  // inside a town the ground is gardens and greens, not fields (land.towns: x, z, radius)
+  const TOWNS=Object.values(land.towns||{});
+  const townAt=(x,z)=>{for(const [tx,tz,tr] of TOWNS){const d=Math.hypot(x-tx,z-tz);if(d<tr*1.12)return 1;if(d<tr*1.3)return 1-(d-tr*1.12)/(tr*0.18);}return 0;};
   ctx.coverAt=coverAt;
 
   // ---- the ground's colour ----
@@ -47,28 +53,45 @@ export function nature(api){
     nisi:[col('#2e5a3a'),col('#36643e'),col('#2a5234')],town:col('#b8b0a0')};
   const cc=new THREE.Color(),tmp=new THREE.Color();
   const mix3=(arr,t,u)=>cc.copy(arr[0]).lerp(arr[1],t).lerp(arr[2]||arr[0],u*0.6);
+  // the cover's colour at a point; the ground's colour averages it at four points shaken by half a cell round each
+  // vertex, so a forest's or a field's edge is soft at any height instead of a kilometre staircase
+  function covCol(cov,h1,h2){
+    switch(cov){
+      case 1:return mix3(PAL.farm,h1,h2);
+      case 2:return mix3(PAL.broad,h1,h2);
+      case 3:return mix3(PAL.fir,h1,h2);
+      case 4:return mix3(PAL.heath,h1,h2);
+      case 5:return mix3(PAL.vine,h1,h2);
+      case 6:return mix3(PAL.rock,h1,h2);
+      case 7:return cc.set('#4a6a5a');   // under the sea or the lake
+      case 8:return mix3(PAL.beach,h1,0);
+      case 9:return mix3(PAL.wet,h1,0);
+      case 10:return mix3(PAL.nisi,h1,h2);
+      case 11:return cc.copy(PAL.town).lerp(PAL.pasture[0],0.35*h1);
+      default:return mix3(PAL.pasture,h1,h2);}}
+  const JIT=[[-0.45,-0.2],[0.2,-0.45],[0.45,0.2],[-0.2,0.45]].map(([a,b])=>[a*ST,b*ST]);
+  const covs=(x,z)=>JIT.map(([ox,oz])=>coverAt(x+ox+(vn(x/900,z/900,7)-0.5)*ST*0.5,z+oz+(vn(x/900,z/900,8)-0.5)*ST*0.5));
+  // the Meneltarma: grass to the summit except where it is steep, and bare high up; the Hallow is turf
+  const MEN=land.menel||{},MX=(MEN.at||[0,0])[0],MZ=(MEN.at||[0,0])[1],MR=MEN.r||14000,MHAL=MEN.hallow||650;
+  const menelRock=(x,y,z,slope)=>{const d=Math.hypot(x-MX,z-MZ);if(d>MR||d<MHAL*1.1)return 0;
+    const n=vn(x/160,z/160,9)-0.5;return Math.max(0,Math.min(1,(slope-0.36)*3.2+(y-2500)/700+n*0.8));};
+  const acc=new THREE.Color();
   function colourAt(x,y,z,ny){
     const slope=Math.sqrt(Math.max(0,1-ny*ny))/Math.max(0.05,ny),cov=coverAt(x,z),h1=hash3(Math.round(x/200),Math.round(z/200),3),h2=hash3(Math.round(x/600),Math.round(z/600),5);
-    switch(cov){
-      case 1:mix3(PAL.farm,h1,h2);break;
-      case 2:mix3(PAL.broad,h1,h2);break;
-      case 3:mix3(PAL.fir,h1,h2);break;
-      case 4:mix3(PAL.heath,h1,h2);break;
-      case 5:mix3(PAL.vine,h1,h2);break;
-      case 6:mix3(PAL.rock,h1,h2);break;
-      case 7:cc.set('#4a6a5a');break;   // under the sea or the lake: what shows is the shore the grid could not place
-      case 8:mix3(PAL.beach,h1,0);break;
-      case 9:mix3(PAL.wet,h1,0);break;
-      case 10:mix3(PAL.nisi,h1,h2);break;
-      case 11:cc.copy(PAL.town).lerp(PAL.pasture[0],0.35*h1);break;
-      default:mix3(PAL.pasture,h1,h2);}
+    acc.setRGB(0,0,0);const cs=cov===7?[7]:covs(x,z).map(c=>c===7?cov:c);for(const c of cs){covCol(c,h1,h2);acc.r+=cc.r/cs.length;acc.g+=cc.g/cs.length;acc.b+=cc.b/cs.length;}cc.copy(acc);
+    const tw=cov===7?0:townAt(x,z);if(tw>0)cc.lerp(tmp.copy(PAL.pasture[1]).lerp(PAL.town,0.25+0.2*h1),tw);
     if(cov!==7&&slope>0.7)cc.lerp(tmp.copy(PAL.rock[0]).lerp(PAL.rock[2],h1),Math.min(1,(slope-0.7)*1.5));
+    const mr=menelRock(x,y,z,slope);if(mr>0)cc.lerp(tmp.copy(PAL.rock[1]).lerp(PAL.rock[2],h1),mr);
     if(y<3&&cov!==7&&cov!==8&&slope<0.2)cc.lerp(PAL.beach[0],Math.max(0,(3-y)/3)*0.6);   // the strand
     return cc;}
-  // what each point is, for the shader: A = forest, grass, sand, fields; B = rock, vines, marsh, heath
-  const covW=(x,y,z,ny)=>{const c=coverAt(x,z),slope=Math.sqrt(Math.max(0,1-ny*ny))/Math.max(0.05,ny),A=[0,0,0,0],Bw=[0,0,0,0];
-    if(c===6||slope>0.9)Bw[0]=255;else if(c===2||c===3||c===10)A[0]=255;else if(c===0||c===11)A[1]=255;else if(c===8)A[2]=255;
-    else if(c===1)A[3]=255;else if(c===5)Bw[1]=255;else if(c===9)Bw[2]=255;else if(c===4)Bw[3]=255;else A[1]=255;return [A,Bw];};
+  // what each point is, for the shader: A = forest, grass, sand, fields; B = rock, vines, marsh, heath. Averaged over
+  // the same four points, so the shader's surfaces fade into each other too
+  const slot=c=>c===6?4:c===2||c===3||c===10?0:c===8?2:c===1?3:c===5?5:c===9?6:c===4?7:1;
+  const covW=(x,y,z,ny)=>{const slope=Math.sqrt(Math.max(0,1-ny*ny))/Math.max(0.05,ny),W=new Float32Array(8),c0=coverAt(x,z);
+    const cs=c0===7?[7]:covs(x,z).map(c=>c===7?c0:c);for(const c of cs)W[slot(c)]+=1/cs.length;
+    const tw=c0===7?0:townAt(x,z);if(tw>0){for(let k=0;k<8;k++)W[k]*=1-tw;W[1]+=tw;}
+    const rk=Math.max(slope>0.9?1:0,menelRock(x,y,z,slope));if(rk>0){for(let k=0;k<8;k++)W[k]*=1-rk;W[4]+=rk;}
+    return [[W[0],W[1],W[2],W[3]].map(v=>Math.round(v*255)),[W[4],W[5],W[6],W[7]].map(v=>Math.round(v*255))];};
   const addCover=g=>{const p=g.attributes.position,n=g.attributes.normal,A=new Uint8Array(p.count*4),Bb=new Uint8Array(p.count*4);
     for(let i=0;i<p.count;i++){const [a,b]=covW(p.getX(i),p.getY(i),p.getZ(i),n.getY(i));A.set(a,i*4);Bb.set(b,i*4);}
     g.setAttribute('aCovA',new THREE.BufferAttribute(A,4,true));g.setAttribute('aCovB',new THREE.BufferAttribute(Bb,4,true));};
@@ -76,6 +99,22 @@ export function nature(api){
   for(const t of terr){const g=t.geometry,p=g.attributes.position,n=g.attributes.normal,c=g.attributes.color;
     for(let i=0;i<p.count;i++){colourAt(p.getX(i),p.getY(i),p.getZ(i),n.getY(i));c.setXYZ(i,cc.r,cc.g,cc.b);recoloured++;}
     c.needsUpdate=true;addCover(g);t.castShadow=false;}
+  let fineVerts=0,pressed=0;
+  if(FINE&&FINE.patches.length&&terr.length){
+    // a coarser level of detail has its vertices further apart, and a chord between two of them on the mountain's
+    // concave flanks stands above the fine ground: each is pressed below the lowest fine ground across its own span
+    for(const t of terr){const p=t.geometry.attributes.position,span=ST*(t.userData.lod||1)*1.05;let hit=0;
+      for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i);if(!FINE.inside(x,z,span+100))continue;
+        const m=FINE.minNear(x,z,span);if(m<Infinity&&p.getY(i)>m-8){p.setY(i,m-8);hit++;}}
+      if(hit){p.needsUpdate=true;t.geometry.computeBoundingSphere();pressed+=hit;}}
+    for(const P of FINE.patches){const n=P.nx*P.nz,pos=new Float32Array(n*3),idx=new Uint32Array((P.nx-1)*(P.nz-1)*6);
+      for(let j=0;j<P.nz;j++)for(let i=0;i<P.nx;i++){const k=j*P.nx+i;pos[k*3]=P.x0+i*P.step;pos[k*3+1]=P.H[k];pos[k*3+2]=P.z0+j*P.step;}
+      let q=0;for(let j=0;j<P.nz-1;j++)for(let i=0;i<P.nx-1;i++){const a=j*P.nx+i,b=a+1,c=a+P.nx,d=c+1;idx[q++]=a;idx[q++]=d;idx[q++]=b;idx[q++]=a;idx[q++]=c;idx[q++]=d;}
+      const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setIndex(new THREE.BufferAttribute(idx,1));g.computeVertexNormals();
+      const nr=g.attributes.normal,cl=new Float32Array(n*3);
+      for(let k=0;k<n;k++){colourAt(pos[k*3],pos[k*3+1],pos[k*3+2],nr.getY(k));cl[k*3]=cc.r;cl[k*3+1]=cc.g;cl[k*3+2]=cc.b;}
+      g.setAttribute('color',new THREE.BufferAttribute(cl,3));addCover(g);
+      const m=new THREE.Mesh(g,terr[0].material);m.name='fine:'+P.n;m.receiveShadow=true;m.userData.wireCat='ground';m.userData.info={name:P.n};scene.add(m);fineVerts+=n;}}
 
   // ---- the clouds: fair-weather heaps drifting in off the sea ----
   const CL=(()=>{const W=B.x1-B.x0,Dz=B.z1-B.z0,R=mkRng(1938),N=Y.clouds===undefined?160:Y.clouds,S=512;
@@ -302,5 +341,5 @@ void main(){float s=vUv.x,v=vUv.y;
       if(t.s){t.s.visible=on&&dist<FULL*1.6;t.s.count=Math.max(1,Math.floor(t.s.userData.total*f));}
       if(!on&&now-t.used>60000){for(const im of [...t.near,t.far,t.s])if(im){scene.remove(im);im.dispose();}tiles.delete(key);}}
     ctx.details.forestTiles=tiles.size;});
-  ctx.details=Object.assign(ctx.details||{},{recoloured,forest:'oak and beech, fir, the Nisimaldar, willows and orchards in '+TILE+' m tiles within '+NEAR+' m, whole within '+FULL+' m'});
+  ctx.details=Object.assign(ctx.details||{},{recoloured,fineVerts,pressed,forest:'oak and beech, fir, the Nisimaldar, willows and orchards in '+TILE+' m tiles within '+NEAR+' m, whole within '+FULL+' m'});
 }

@@ -7,6 +7,7 @@ import {build} from '../engine/build.js';
 import {landmarks} from './landmarks.js';
 import {nature} from './nature.js';
 import {life} from './life.js';
+import {makeFine} from './fine.js';
 installErrorHandlers();window.LOAD=LOAD;
 configureLoading({
   lines:[
@@ -27,5 +28,5 @@ configureLoading({
 // fetched before the build so that the extras can use them synchronously like everything else
 const ctx=window._iz={defaultCity:'numenor',models:[landmarks],extras:[{name:'nature',fn:nature},{name:'life',fn:life}]};
 boot(()=>fetch('data/cities/numenor-land.json').then(r=>{if(!r.ok)throw new Error('numenor-land.json: HTTP '+r.status);return r.json();})
-  .then(land=>{ctx.nmLand=land;},e=>report('land',e))
+  .then(land=>{ctx.nmLand=land;ctx.fine=makeFine(land);},e=>report('land',e))
   .then(()=>build(ctx)));

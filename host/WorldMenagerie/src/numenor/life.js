@@ -10,7 +10,7 @@ import { mkRng } from '../core/rng.js';
 export function life(api){
   const {THREE,ctx,C,scene,camera,animHooks,inWater,groundH}=api;
   const land=ctx.nmLand,make=ctx.shipParts;if(!land||!make)return;
-  const Y=C.numenor||{},R=mkRng(3255),wet=(x,z)=>groundH(x,z)<-2;
+  const Y=C.numenor||{},R=mkRng(3255),gH=ctx.groundH||groundH,wet=(x,z)=>gH(x,z)<-2;
   const HAVENS={Romenna:0.34,Andunie:0.22,Eldalonde:0.12,Nindamos:0.1,'Moriondë':0.1,Hyarastorni:0.12};
   const routes={};
   for(const name in HAVENS){const p=land.places[name];if(!p)continue;const [hx,hz]=p;let best=null;

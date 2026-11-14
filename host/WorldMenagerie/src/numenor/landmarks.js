@@ -35,42 +35,19 @@ export function landmarks(api){
   return {
   meneltarma(L,x,z){   // the Pillar of Heaven: the spiral road up it, the Hallow on top, and the eagles
     const FOOT=L.foot||14000,HAL=L.hallow||650,MH=L.height||3000,parts=[];
-    // The ground is a kilometre grid, which makes a mountain a pyramid of facets with a ridge for a summit. The
-    // mountain is drawn again here, finely, from the same formula tools/make-numenor.py raised it with: the
-    // generator's ground is that land plus the mountain at each grid point, so the land under it is the grid less
-    // the mountain as the grid sampled it, and the mountain is added back at full resolution. Where the grid stands
-    // higher (between its points on the convex flanks) the grid is kept, so the coarse ground never shows through.
-    const T=api.OSM.terrain,ST=T.step,TX0=T.x0/10,TZ0=T.z0/10;
-    const mAt=(px,pz)=>{const d=Math.hypot(px-x,pz-z);if(d>=FOOT)return 0;if(d<HAL)return MH;const t=(d-HAL)/(FOOT-HAL),a=Math.atan2(pz-z,px-x);
-      const k=1+0.08*Math.sin(a*7+1.3)*t+0.05*Math.sin(a*13)*t;return MH*(0.82*Math.pow(1-t,1.5)+0.18*Math.pow(1-t,6))*k;};
-    const mGrid=(px,pz)=>{const fi=(px-TX0)/ST,fj=(pz-TZ0)/ST,i=Math.floor(fi),j=Math.floor(fj),f=fi-i,g=fj-j,X=i*ST+TX0,Z=j*ST+TZ0;
-      return (mAt(X,Z)*(1-f)+mAt(X+ST,Z)*f)*(1-g)+(mAt(X,Z+ST)*(1-f)+mAt(X+ST,Z+ST)*f)*g;};
-    const fineH=(px,pz)=>{const c=gh(px,pz);return Math.max(c,c-mGrid(px,pz)+mAt(px,pz))+0.6;};
+    // the mountain's ground is the generator's fine patch over it (src/numenor/fine.js, drawn by nature.js), finer
+    // than the kilometre grid; the road and the Hallow sit on that
+    const fineH=(px,pz)=>{const f=ctx.fine&&ctx.fine.at(px,pz);return (f==null?gh(px,pz):f)+0.3;};
     ctx.menelH=fineH;
-    // the coarse ground is pressed down under the fine mountain, so none of its facets shows through
-    scene.traverse(o=>{if(!o.isMesh||o.name!=='terrain')return;const p=o.geometry.attributes.position;let hit=0;
-      for(let i=0;i<p.count;i++){const px=p.getX(i),pz=p.getZ(i);if(Math.hypot(px-x,pz-z)<FOOT*1.03){p.setY(i,Math.min(p.getY(i),fineH(px,pz)-25));hit++;}}
-      if(hit){p.needsUpdate=true;o.geometry.computeBoundingSphere();}});
-    {const NR=150,NA=240,pos=[],colr=[],idx=[],cc=new THREE.Color(),grass=new THREE.Color('#6e9a48'),grass2=new THREE.Color('#86a656'),rock=new THREE.Color('#8e887c'),rock2=new THREE.Color('#a49e92'),turf=new THREE.Color('#7aa452');
-      const rOf=i=>i===0?0:HAL*0.98*Math.pow(i/12,1)*(i<=12?1:0)+(i>12?HAL*0.98+(FOOT*1.02-HAL*0.98)*Math.pow((i-12)/(NR-12),1.35):0);
-      const hsh=(a,b)=>{const t=Math.sin(a*127.1+b*311.7)*43758.5453;return t-Math.floor(t);};
-      for(let i=0;i<=NR;i++){const r=rOf(i);for(let k=0;k<NA;k++){const a=k/NA*Math.PI*2,px=x+Math.cos(a)*r,pz=z+Math.sin(a)*r,y=fineH(px,pz);pos.push(px,y,pz);
-        // grass on the long lower slopes and the summit, rock where it is steep, the colour broken up
-        const e=4,sl=Math.hypot(fineH(px+e*30,pz)-fineH(px-e*30,pz),fineH(px,pz+e*30)-fineH(px,pz-e*30))/(2*e*30),n=hsh(Math.round(px/90),Math.round(pz/90));
-        if(r<HAL)cc.copy(turf).lerp(grass2,n*0.5);else{const rk=Math.min(1,Math.max(0,(sl-0.42)*3.2+(n-0.5)*0.5));cc.copy(grass).lerp(grass2,n).lerp(n>0.5?rock2:rock,rk);}
-        colr.push(cc.r,cc.g,cc.b);}}
-      for(let i=0;i<NR;i++)for(let k=0;k<NA;k++){const a=i*NA+k,b=i*NA+(k+1)%NA,c=(i+1)*NA+k,d=(i+1)*NA+(k+1)%NA;idx.push(a,c,b,b,c,d);}
-      const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('color',new THREE.Float32BufferAttribute(colr,3));g.setIndex(idx);g.computeVertexNormals();
-      const m=new THREE.Mesh(g,new THREE.MeshLambertMaterial({vertexColors:true}));m.name='meneltarma';m.receiveShadow=true;m.castShadow=false;m.userData.info=L;m.userData.wireCat='ground';scene.add(m);}
     // the road: from the foot, where the Hallow Road comes in, round and round to the summit, three and a half turns
-    {const [fx,fz]=L.roadFrom||[FOOT,0],a0=Math.atan2(fz-z,fx-x),N=1400,TURNS=3.5,Wd=9,pos=[],idx=[];
+    {const [fx,fz]=L.roadFrom||[FOOT,0],a0=Math.atan2(fz-z,fx-x),N=2400,TURNS=3.5,Wd=16,pos=[],idx=[];
       for(let i=0;i<=N;i++){const t=i/N,r=(FOOT*0.98)*(1-t)+HAL*1.05*t,a=a0+t*TURNS*Math.PI*2,px=x+Math.cos(a)*r,pz=z+Math.sin(a)*r;
         // across the road: outward, so its two edges sit on the slope
         const ox=Math.cos(a)*Wd/2,oz=Math.sin(a)*Wd/2;
-        pos.push(px-ox,fineH(px-ox,pz-oz)+1.6,pz-oz,px+ox,fineH(px+ox,pz+oz)+1.6,pz+oz);
+        pos.push(px-ox,fineH(px-ox,pz-oz)+3.5,pz-oz,px+ox,fineH(px+ox,pz+oz)+3.5,pz+oz);
         if(i)idx.push(2*i-2,2*i,2*i-1,2*i-1,2*i,2*i+1);}
       const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setIndex(idx);g.computeVertexNormals();
-      const road=new THREE.Mesh(g,new THREE.MeshLambertMaterial({color:0xd8ceb4,side:THREE.DoubleSide,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-4}));
+      const road=new THREE.Mesh(g,new THREE.MeshLambertMaterial({color:0xe4dcc4,side:THREE.DoubleSide,polygonOffset:true,polygonOffsetFactor:-4,polygonOffsetUnits:-8}));
       road.userData.info=L;road.receiveShadow=true;scene.add(road);}
     // the Hallow: nothing built, nothing raised. A ring of worn turf where the people stood, and the path up into it
     {const ring=new THREE.Mesh(new THREE.RingGeometry(HAL*0.7,HAL*0.78,64).rotateX(-Math.PI/2),new THREE.MeshLambertMaterial({color:0xb8b49a,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-4}));

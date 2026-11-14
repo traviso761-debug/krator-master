@@ -978,30 +978,35 @@ kilometres across and the five promontories run out from it, about seven hundred
   grid at 1 km. Each region keeps its character: Forostar high and stony, Andustar's northern highlands,
   Hyarnustar's mountains on its west, Orrostar's hills, Hyarrostar low. The land eases down to the sea over
   its last two kilometres, since a cliff on a kilometre grid only draws as a long ramp.
+- **Fine patches** (`land.fine`, `src/numenor/fine.js`): the kilometre grid makes a coast a staircase and a
+  mountain a pyramid, so the generator also writes the same ground at 100-200 m over the Meneltarma, the whole
+  Firth of Rómenna and each haven. `nature.js` draws them with the ground's own material and presses the
+  coarse ground (every level of detail, by its own vertex spacing) below them. A patch fades into the coarse
+  grid over its last two kilometres, and inside a town it keeps the coarse ground where that is dry, so the
+  houses and streets the engine set on it stay seated. The surf follows each patch's own coast.
 - **The Meneltarma** rises in the middle of Mittalmar, about three thousand metres, a skirt of grass and
-  then the mountain proper. The ground grid would make it a pyramid, so the mountain is drawn again finely
-  (`src/numenor/landmarks.js`) from the formula the generator raised it with, and the coarse ground is
-  pressed down under it. The road goes round it three and a half times to the Hallow, a ring of turf with
+  then the mountain proper, grass to the summit except where it is steep or high. The road goes round it three and a half times to the Hallow, a ring of turf with
   nothing built on it, and three eagles circle overhead. The Noirinan, the valley of the tombs, is at its foot.
 - **Armenelos** on its hill east of the mountain: a ring wall with towers and four gates, the King's House
   and its tower (lit at night), Nimloth in the court, which glows after dark, and the lords' houses.
-- **The towns** are rings and bending spokes with houses along both sides: Armenelos, Rómenna at the firth's
+- **The towns** are rings and bending spokes with houses along both sides, white and pale stone under tile
+  and slate, on gardens and greens rather than fields: Armenelos, Rómenna at the firth's
   head, Andúnië, Eldalondë by the Nisimaldar, Ondosto, Nindamos, Moriondë and Hyarastorni; 150 villages and
   2,600 farmsteads between them; the King's Road and the others joining them. About 27,800 buildings.
 - **What grows** (`src/numenor/nature.js`, adapted from the Olympic Peninsula's): a land cover grid of
   pasture, grain, broadleaf and fir forest, heath, vines and orchards, rock, marsh and the Nisimaldar, each
   with a ground surface of its own close to (fields in hedged strips, heather, vines in rows) and grown into
-  forest tiles round the camera: oak and beech with the gold laurinquë among them, firs, the evergreen
+  forest tiles round the camera (every edge between two kinds of country averaged over four shaken points, so
+  none shows the kilometre grid): oak and beech with the gold laurinquë among them, firs, the evergreen
   Nisimaldar, willows by the water, hedgerow oaks and orchards. The Siril, the Nunduinë through the lake
   Nísinen, and the streams; surf along every shore; fair-weather clouds and their shadows.
 - **The ships** (`src/numenor/life.js`): thirty-four put out from the havens and come home, Rómenna's down the
   firth and the others along the longest run of open sea from the quay, and fishing boats off four of them.
   A ship is forty metres and the island seven hundred kilometres, so they are grown with distance.
 
-Known gaps: the firth and the smaller inlets have kilometre-square edges; beaches and marsh barely show at
-the grid's resolution.
+Known gaps: away from the patches the coast is still the kilometre grid's; beaches and marsh barely show.
 
-Regenerate with `python3 tools/make-numenor.py` (about four minutes; it writes `data/cities/numenor.json`,
+Regenerate with `python3 tools/make-numenor.py` (about a minute and a half; it writes `data/cities/numenor.json`,
 `numenor-osm.json` and `numenor-land.json`).
 
 ### `/kyrene`: a rotating habitat
