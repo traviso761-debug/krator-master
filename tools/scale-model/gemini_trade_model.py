@@ -437,79 +437,102 @@ def build_settlements(world):
 
 
 # ---------------------------------------------------------------------------
-# 4. Complete 67-Good Catalog & Supply/Demand Synthesis
+# 4. Complete 94-Good Catalog & Supply/Demand Synthesis
 # ---------------------------------------------------------------------------
 GOODS = [
-    # Metals & Salvage
-    {"id": "iron", "label": "iron & steel", "class": "metal", "tier": "bulk", "unit": "t", "note": "mined iron ore & smelted bar; heavy bulk cargo"},
-    {"id": "copper", "label": "copper", "class": "metal", "tier": "medium", "unit": "t", "note": "bronze base, roofing, wire, coin"},
+    # Metals & Salvage (10)
+    {"id": "iron", "label": "iron & steel", "class": "metal", "tier": "bulk", "unit": "t", "note": "mined iron ore & smelted bar; heavy bulk cargo feeding weapons, armor, firearms & tools"},
+    {"id": "copper", "label": "copper", "class": "metal", "tier": "medium", "unit": "t", "note": "bronze base, roofing, wire, coin & distillery pot-stills"},
     {"id": "tin", "label": "tin", "class": "metal", "tier": "compact", "unit": "t", "note": "scarce alloying half of bronze; carries long range"},
-    {"id": "bronze", "label": "bronze", "class": "metal", "tier": "medium", "unit": "t", "note": "cast fittings, bells, naval cannon, Eternian window tracery"},
-    {"id": "zinc", "label": "zinc & brass spelter", "class": "metal", "tier": "medium", "unit": "t", "note": "sphalerite ore & brass spelter for Roketstad optics, naval instruments & fittings"},
-    {"id": "nickel", "label": "nickel & alloy steel", "class": "metal", "tier": "medium", "unit": "t", "note": "armour plate & high-grade alloys"},
+    {"id": "bronze", "label": "bronze", "class": "metal", "tier": "medium", "unit": "t", "note": "cast fittings, bells, naval cannon, armor/weapon mounts & Eternian window tracery"},
+    {"id": "zinc", "label": "zinc & brass spelter", "class": "metal", "tier": "medium", "unit": "t", "note": "sphalerite ore & brass spelter for Roketstad optics, firearm locks, furniture mounts & instruments"},
+    {"id": "nickel", "label": "nickel & alloy steel", "class": "metal", "tier": "medium", "unit": "t", "note": "high-strength alloy steel for cuirass armor plate, firearm barrels & Forgemaster mechs"},
     {"id": "rare-earth", "label": "rare earths", "class": "metal", "tier": "compact", "unit": "t", "note": "extracted only by Yuni, Eternia, Order & Tungangs"},
-    {"id": "gold", "label": "gold", "class": "precious", "tier": "compact", "unit": "kg", "note": "bullion, coin, Xanadu leaf"},
+    {"id": "gold", "label": "gold", "class": "precious", "tier": "compact", "unit": "kg", "note": "Vale of Xanadu bonanza bullion, coin & gilt leaf"},
     {"id": "silver", "label": "silver", "class": "precious", "tier": "compact", "unit": "kg", "note": "trade coinage, Republic Mint bullion, Heirs' rank plate"},
     {"id": "scrap", "label": "Ancient scrap metal", "class": "salvage", "tier": "bulk", "unit": "t", "note": "ruin & ship-graveyard structural steel"},
-    # Fuels, Gunpowder Minerals & Stone
-    {"id": "coal", "label": "coal", "class": "fuel", "tier": "bulk", "unit": "t", "note": "smelting, arsenal & kiln fuel (Gunpowder & Steel Triangle leg 1); overwhelmingly waterborne"},
+    # Fuels, Glass Feedstock, Alkali, Gunpowder Minerals & Stone (15)
+    {"id": "coal", "label": "coal", "class": "fuel", "tier": "bulk", "unit": "t", "note": "smelting, glasshouse, distillery & arsenal fuel (Gunpowder & Steel Triangle leg 1); overwhelmingly waterborne"},
+    {"id": "peat", "label": "bog peat & malting turf", "class": "fuel", "tier": "bulk", "unit": "t", "note": "Footfall / Iron Republic & northern highland blanket-bog peat fuel and essential malting-kiln smoke input for scotch"},
     {"id": "oil", "label": "crude oil & petrol", "class": "fuel", "tier": "bulk", "unit": "t", "note": "extracted by Yuni Geomancers (incl. Locus), Eternia & Order"},
     {"id": "salt", "label": "salt", "class": "mineral", "tier": "bulk", "unit": "t", "note": "dietary & curing staple; Catch/Bowl supply Xanadu"},
-    {"id": "sulfur", "label": "volcanic & fumarole sulfur", "class": "mineral", "tier": "medium", "unit": "t", "note": "Gunpowder & Steel Triangle leg 2: Kautoa, Throne (Dhelv/Andaru/Mira) & Godshearth sulfur shipped to arsenals"},
+    {"id": "sulfur", "label": "volcanic & fumarole sulfur", "class": "mineral", "tier": "medium", "unit": "t", "note": "Gunpowder & Steel Triangle leg 2 + East Abyss rubber vulcanization: Kautoa, Throne & Godshearth sulfur"},
     {"id": "saltpeter", "label": "playa & guano-tube saltpeter", "class": "mineral", "tier": "medium", "unit": "t", "note": "Gunpowder & Steel Triangle leg 3: Bowl/Catch playas, Tallwalls Da-Holwey guano tubes & East Abyss pans"},
-    {"id": "potash", "label": "potash (fertilizer & powder salt)", "class": "mineral", "tier": "bulk", "unit": "t", "note": "Bowl, Catch & dry-basin sylvite/potash for crop fields, black-powder conversion & soft soap"},
-    {"id": "alkali", "label": "Catch alkali salts (soda, borax & lithium)", "class": "mineral", "tier": "medium", "unit": "t", "note": "caustic Catch soda-lake natron, borates & lithium salts for rebuilding Ancient energy-cells & Geomancer wet-cells, paper-pulp delignification, optical borosilicate glass, ceramic glazes & bullion flux"},
+    {"id": "potash", "label": "potash (fertilizer, powder & forest-glass salt)", "class": "mineral", "tier": "bulk", "unit": "t", "note": "Bowl, Catch & dry-basin sylvite/potash for crop fields, black-powder conversion, forest glass & soft soap"},
+    {"id": "alkali", "label": "Catch alkali salts (soda, borax & lithium)", "class": "mineral", "tier": "medium", "unit": "t", "note": "caustic Catch soda-lake natron, borates & lithium for soda-lime/borosilicate glassmaking, energy-cell rebuilding, paper delignification, glazes & bullion flux"},
+    {"id": "silica-sand", "label": "quartz sand, vein-quartz & melt-glass cullet", "class": "mineral", "tier": "bulk", "unit": "t", "note": "Glass Production Chain leg 1: low-iron washed quartz sand, Singing Gjar/Korona vein-quartz & Ancients' Valley melt-glass cullet"},
+    {"id": "glass", "label": "clear crown glass, hollowware & bottles", "class": "craft", "tier": "medium", "unit": "t", "note": "Glass Production Chain leg 2 (silica-sand + alkali/potash + coal/peat): window glass, Geomancer bulbs & bottles for champagne, wine & fine spirits"},
     {"id": "marble", "label": "carved contact-belt marble", "class": "stone", "tier": "bulk", "unit": "t", "note": "NW & SW Bay contact-marble belts shipped to Jimjam & courts"},
-    {"id": "alabaster", "label": "translucent alabaster", "class": "stone", "tier": "medium", "unit": "t", "note": "Jimjam gypsum-alabaster for Eternian bronze-tracery palace windows"},
+    {"id": "alabaster", "label": "translucent alabaster", "class": "stone", "tier": "medium", "unit": "t", "note": "Jimjam gypsum-alabaster barged across Jimjam's Lake to Palewharf for Eternian palace windows"},
     {"id": "brick", "label": "Jimjam silt brick", "class": "bulk", "tier": "bulk", "unit": "unit", "note": "red & yellow flood-silt brick; short-haul & Cut masonry"},
-    {"id": "machine-wax", "label": "Woolly Siphon machine-wax", "class": "mineral", "tier": "medium", "unit": "t", "note": "Yuni SE Siphon Pit high-temp lubricant for lifts, crawlers & mechs"},
+    {"id": "machine-wax", "label": "Woolly Siphon machine-wax", "class": "mineral", "tier": "medium", "unit": "t", "note": "Yuni SE Siphon Pit high-temp lubricant for firearm locks, lifts, crawlers & mechs"},
     {"id": "pitch-tar", "label": "hull pitch, tar-black & prismgum", "class": "mineral", "tier": "medium", "unit": "t", "note": "Naval Stores Chain leg 2: hyperjungle prismgum, Ring Isles tar-black bitumen & Yeti birch-tar"},
-    # Timber, Shipbuilding Chain, Fibres, Textiles & Food
-    {"id": "timber", "label": "structural & fuel timber", "class": "bulk", "tier": "bulk", "unit": "t", "note": "construction & pit-prop timber shipped by water to treeless basins"},
+    # Timber, Shipbuilding Chain, East Abyss Rubber, Fibres, Beasts & Staples (14)
+    {"id": "timber", "label": "structural, cask & joinery timber", "class": "bulk", "tier": "bulk", "unit": "t", "note": "construction, cooperage cask & furniture timber shipped regionally to treeless basins"},
     {"id": "ship-timber", "label": "naval spar & hull timber", "class": "bulk", "tier": "bulk", "unit": "t", "note": "Naval Stores Chain leg 1: tall straight tier-cedar, column-kauri & sky-meranti from Spirladunon, Kautoa, Shell, Nephtos & Mav's Refuge"},
-    {"id": "ship-hulls", "label": "commissioned sea-going hulls", "class": "craft", "tier": "medium", "unit": "unit", "note": "finished hulls & careened ships from Nephtos (1 hull/240h for Tethys), Almua/Shim, Kautoa (incl. Beast Rider fleet), Port Mira & Farport"},
+    {"id": "ship-hulls", "label": "commissioned sea-going hulls", "class": "craft", "tier": "medium", "unit": "unit", "note": "finished hulls & careened ships from Nephtos, Almua/Shim, Kautoa (incl. Beast Rider fleet), Port Mira & Farport"},
     {"id": "cordage", "label": "salt-proof rigging & Golden Cable", "class": "craft", "tier": "medium", "unit": "t", "note": "Naval Stores Chain leg 3: Spider Lake 1.3 GPa Golden Cable, Cliff-Lung Scinropos, Ring Isles rope-banana & ramie"},
-    {"id": "cotton", "label": "cotton, sea-linen flax & ramie", "class": "crop", "tier": "medium", "unit": "t", "note": "woven cloth & salt-proof flax/ramie/cotton sailcloth canvas"},
-    {"id": "silk", "label": "silk, gossamer & beadcone-silk", "class": "luxury", "tier": "compact", "unit": "t", "note": "mulberry/lotus silk, Spider Lake Gossamer & SW Highland beadcone-silk"},
+    {"id": "rubber", "label": "East Abyss rubber scale-tree latex", "class": "crop", "tier": "medium", "unit": "t", "note": "coagulated & sulfur-vulcanized latex tapped from East Abyss Carboniferous rubber scale-trees (Sfenops, Liikofi, Locus, Mungo, Reed) for gaskets, insulation, oilskins & bottle stoppers"},
+    {"id": "cotton", "label": "cotton, sea-linen flax & ramie", "class": "crop", "tier": "medium", "unit": "t", "note": "woven cloth feedstock & salt-proof flax/ramie/cotton sailcloth canvas"},
+    {"id": "silk", "label": "silk, gossamer & beadcone-silk", "class": "luxury", "tier": "compact", "unit": "t", "note": "mulberry/lotus silk, Spider Lake Gossamer & SW Highland beadcone-silk feeding luxury clothes & upholstery"},
     {"id": "qiviut", "label": "Yeti qiviut & Cloud-Fleece", "class": "luxury", "tier": "compact", "unit": "t", "note": "musk-ox qiviut & Spider Lake waterproof thermal felt for high-pass parkas"},
     {"id": "cushion-wool", "label": "Tiguantin cushion-puna wool", "class": "specialty", "tier": "medium", "unit": "t", "note": "Eastern Highlands cushion-bog & woolback puna fleece exported by Tiguantin"},
     {"id": "plaid", "label": "Talovolci checked plaid", "class": "specialty", "tier": "medium", "unit": "unit", "note": "three-dye highland wool brought down Cliff-Lung stairs"},
     {"id": "dye-tropical", "label": "tropical & murex dyes", "class": "crop", "tier": "compact", "unit": "t", "note": "Shim Blitrit purple, Ys murex, Nephtos indigo & annatto"},
     {"id": "dye-temperate", "label": "temperate & lichen dyes", "class": "crop", "tier": "compact", "unit": "t", "note": "Talovolci woad/madder, Korona hoar-table lichens, Red Gills pigment"},
     {"id": "mounts", "label": "mounts, draught beasts & hides", "class": "beast", "tier": "medium", "unit": "head", "note": "camels, pack-lizards, beetles, flyers, Scyvoi salamanders, Coyote ostriches"},
-    {"id": "food", "label": "grain, salt-rice & dried fish", "class": "staple", "tier": "bulk", "unit": "t", "note": "short-haul overland; medium-haul by Cargo Hulk & River Barge"},
-    # Spices, Stimulants, Resins & Botanicals
+    {"id": "food", "label": "grain, paddy rice, salt-rice & dried fish", "class": "staple", "tier": "bulk", "unit": "t", "note": "dietary staple & malting/brewing/distilling grain (beer, whiskey, scotch, sake)"},
+    # Fermented Beverages, Distilled Spirits & High-Tier Luxury Bottlings (10)
+    {"id": "beer", "label": "malted grain beer & hopped ale", "class": "staple", "tier": "medium", "unit": "t", "note": "all grain + fuel + wooden casks -> regional casked beer & strong ale shipped to ports, mines & oases"},
+    {"id": "sake", "label": "paddy-rice & Abyssal salt-rice sake", "class": "specialty", "tier": "medium", "unit": "t", "note": "rice / East Abyss salt-rice + ceramic/glass flasks + fuel -> dry Abyssal salt-rice sake (Sfenops, Liikofi, Locus, Mungo) & Eternian/Vale rice sake"},
+    {"id": "wine", "label": "Eternian & hillside vintage wine", "class": "luxury", "tier": "medium", "unit": "t", "note": "grapes + casks/glass bottles -> Eternal State nwlowlands vintage wine ('famed for their wine') & Dalab/Dilihan/Trigon hillside wines"},
+    {"id": "champagne", "label": "Eternian sparkling champagne", "class": "luxury", "tier": "compact", "unit": "t", "note": "high-tier luxury: Eternian wine grapes + imported cane sugar (first-step tirage dosage) + heavy pressure-proof glass bottles & rubber stoppers"},
+    {"id": "rum", "label": "cane-sugar & molasses rum", "class": "craft", "tier": "medium", "unit": "t", "note": "sugar cane + still fuel + casks/glass bottles -> Ring Isles, Shim, Voth, Kautoa & Spice Isles naval & tavern rum"},
+    {"id": "ranjrum", "label": "Throne spiced Ranj-rum", "class": "luxury", "tier": "compact", "unit": "t", "note": "high-tier luxury: sugar cane + Throne Ranj (isle-spice infused at first step) + glass bottles + fuel -> distilled by Throne powers (Port Mira, Ybera, Zey'danin, Nephtos, Andaru)"},
+    {"id": "whiskey", "label": "distilled grain whiskey", "class": "craft", "tier": "medium", "unit": "t", "note": "grain + still fuel + charred oak casks & glass bottles -> heartland grain whiskey from Dalab, Iziz, Ledge, Jimjam & Tallwalls"},
+    {"id": "scotch", "label": "peat-smoked single-malt scotch", "class": "luxury", "tier": "compact", "unit": "t", "note": "high-tier luxury: malted grain + bog peat (kiln-smoked at first step) + glass bottles -> Iron Republic Footfall peat-bog distilleries (Stahlborn, Roketstad, Cascade) & Ardent"},
+    {"id": "tequila", "label": "cultivated blue-agave tequila", "class": "craft", "tier": "compact", "unit": "t", "note": "cultivated warm-bench agave + oven fuel + glass bottles -> distilled in Dalab chaparral, Shumari, dry Izani benches & Driyan"},
+    {"id": "mezcal", "label": "wild desert-agave mezcal", "class": "luxury", "tier": "compact", "unit": "t", "note": "pit-roasted wild desert agave + fuel + glass/glazed-ceramic flasks -> signature Dasri spirit led by Jabal Shiekdom (Jabal) & Nomad/Catch oases"},
+    # Spices, Stimulants, Cigars, Opium, Resins & Botanicals (18)
     {"id": "spice-tropical", "label": "tropical spice (clove, citron)", "class": "crop", "tier": "compact", "unit": "t", "note": "East & West Ring Isles and Throne plantations"},
-    {"id": "isle-spice", "label": "West Spice Isles & Throne Ranj", "class": "specialty", "tier": "compact", "unit": "unit", "note": "Ranj & isle spice supplied by Port Mira, Ybera, Western Spice Isles, Temora, Zey'danin & Andaru"},
+    {"id": "isle-spice", "label": "West Spice Isles & Throne Ranj", "class": "specialty", "tier": "compact", "unit": "unit", "note": "Ranj & isle spice supplied by Port Mira, Ybera, Western Spice Isles, Temora, Zey'danin & Andaru (also feeds ranjrum)"},
     {"id": "spice-highland", "label": "highland spice (saffron, umbel)", "class": "crop", "tier": "compact", "unit": "t", "note": "high-valley saffron & aromatics"},
     {"id": "cacao", "label": "cacao", "class": "crop", "tier": "compact", "unit": "t", "note": "native Vale of Xanadu cacao (Erehwon, Qiblai, Theodiga, Kirstabal, Strongbow) plus minor transplanted Kautoan groves"},
     {"id": "coffee", "label": "coffee", "class": "crop", "tier": "compact", "unit": "t", "note": "Throne converted estates, Voth & foothill coffee"},
     {"id": "tea", "label": "mist tea & ivan-chai", "class": "crop", "tier": "compact", "unit": "t", "note": "Oidong/cloud-forest mist tea & northern ivan-chai"},
-    {"id": "sugar", "label": "cane sugar & manna syrup", "class": "crop", "tier": "medium", "unit": "t", "note": "Shim & Ring Isles cane sugar, Dasri tamarisk-manna"},
-    {"id": "tobacco", "label": "tobacco", "class": "crop", "tier": "compact", "unit": "t", "note": "Nephtos, Voth & lowland cured leaf"},
+    {"id": "sugar", "label": "cane sugar & manna syrup", "class": "crop", "tier": "medium", "unit": "t", "note": "Ring Isles, Shim & Throne cane sugar + Dasri tamarisk-manna (feeds rum, ranjrum & Eternian champagne)"},
+    {"id": "tobacco", "label": "inner-crater cured tobacco leaf", "class": "crop", "tier": "compact", "unit": "t", "note": "native inner-crater leaf (Voth, Nephtos, League, Kautoa, Port Mira, Marr/Iziz) feeding pipe trade & cigar manufactories"},
+    {"id": "cigars", "label": "hand-rolled inner-crater cigars", "class": "luxury", "tier": "compact", "unit": "t", "note": "cured inner-crater tobacco leaf + cedar/Abyssal-lacquered humidor boxes -> rolled in Voth, Nephtos, Marr, Port Mira, Kautoa & Ys"},
     {"id": "hashish", "label": "Dalab hashish & pressed hemp-resin", "class": "crop", "tier": "compact", "unit": "t", "note": "pressed SW Lowlands hemp-resin native to Realm of Dalab (Dalab, Dapor, Dayshun, Nufelds, Rokwal, Span) and transplanted to the Rift Rim (Ledge & Nulab)"},
+    {"id": "opium", "label": "Vale of Xanadu sky-poppy opium", "class": "luxury", "tier": "compact", "unit": "t", "note": "scored sky-poppy capsule latex refined in the Vale of Xanadu (Erehwon, Qiblai, Kirstabal, Theodiga, Strongbow) plus minor Oidong surgical physic"},
     {"id": "incense", "label": "swamp copal, myrrh & brush-oil incense", "class": "crop", "tier": "compact", "unit": "t", "note": "East Abyss Carboniferous swamp copal (Sfenops & Liikofi), Bowl myrrh, Outlands comb-mast & SW brush-oil"},
-    {"id": "abyss-lac", "label": "East Abyss lac, scale-shellac & swamp-amber", "class": "specialty", "tier": "compact", "unit": "t", "note": "unique East Abyss scale-insect shellac & cordaite swamp-amber from Sfenops & Liikofi for marine varnish, lacquerware & wire insulation"},
+    {"id": "abyss-lac", "label": "East Abyss lac, scale-shellac & swamp-amber", "class": "specialty", "tier": "compact", "unit": "t", "note": "unique East Abyss scale-insect shellac & cordaite swamp-amber from Sfenops & Liikofi for marine varnish, furniture lacquer & wire insulation"},
     {"id": "medicine", "label": "medicines & anti-scurvy stores", "class": "crop", "tier": "compact", "unit": "t", "note": "rimdew, ginseng, Hykkousoi gill-salve, pyre-thistle & ember-plum scurvy powder"},
     {"id": "wormwick", "label": "wormwick parasitic fungus medicine", "class": "specialty", "tier": "compact", "unit": "kg", "note": "high-altitude parasitic caterpillar-fungus medicine worth its weight in silver, exported by Tiguantin (Guari) & Fridon"},
     {"id": "lung-salt", "label": "White Gills lung-salt & goldroot", "class": "specialty", "tier": "compact", "unit": "t", "note": "oxygen-carrying Lag Solt & Yeti goldroot enabling >5 km thin-air passes"},
-    {"id": "reagent", "label": "alchemical reagents & snow-lotus", "class": "crop", "tier": "compact", "unit": "t", "note": "sky-poppy, camphor, tower honey & Korona hoar-table snow-lotus"},
+    {"id": "reagent", "label": "alchemical reagents & snow-lotus", "class": "crop", "tier": "compact", "unit": "t", "note": "camphor, sky-poppy seed/tincture, tower honey & Korona hoar-table snow-lotus"},
     {"id": "fungal", "label": "Zeijani & Andaru fungal goods & distillates", "class": "specialty", "tier": "compact", "unit": "unit", "note": "Dhelv cavern-grown fungal spirits & Andaru Throne ash-tube mycological cultures"},
-    # Gems, Photonic Opals, Kilnware, Knowledge, High Tech & Exterior Luxuries
+    # Finished Apparel, Joinery, Personal Arms & Armor (5)
+    {"id": "clothes", "label": "tailored clothes, silk robes & oilskins", "class": "craft", "tier": "compact", "unit": "t", "note": "woven, dyed & tailored garments (cotton, silk, plaid, cushion-wool, dyes & Abyssal rubber oilskins) from Fulcrum, Iziz, Voth, Ys, Erehwon, Dalab & Kautoa"},
+    {"id": "furniture", "label": "joinery, lacquered & inlaid furniture", "class": "craft", "tier": "medium", "unit": "unit", "note": "cabinetry, kauri/mahogany joinery, Abyssal-lacquered screens & nacre/ivory-inlaid furniture from Eternia, Nephtos/Ys, Xanadu, Dalab & Voth"},
+    {"id": "firearms", "label": "arquebuses, muskets, rifles & pistols", "class": "specialty", "tier": "compact", "unit": "unit", "note": "precision small arms from Iron Republic (Roketstad, Stahlborn, Cascade), Voth, Iziz, Fulcrum & Ledge (dependent on steel, machine-wax & gunpowder)"},
+    {"id": "armor", "label": "alloy plate armor, mail, cuirasses & carapace", "class": "craft", "tier": "medium", "unit": "unit", "note": "nickel-steel cuirasses, highland mail & carapace lamellar from Iziz, Iron Republic, Ledge, Spirladunon, Amaro, Fulcrum & Kimr"},
+    {"id": "weapons", "label": "forged melee weapons (swords, pikes & halberds)", "class": "craft", "tier": "medium", "unit": "unit", "note": "watered-steel sabres, Forgemaster halberds & highland broadswords from Shumari (Amaro), Iziz, Ledge, Ardent, Tallwalls, Stahlborn & Xanadu"},
+    # Gems, Photonic Opals, Kilnware, Paper, Books, High Tech & Exterior Luxuries (22)
     {"id": "pearls", "label": "pearls & worked nacre", "class": "luxury", "tier": "compact", "unit": "kg", "note": "Hykkousoi deep-shelf & Kautoan free-diver pearls"},
     {"id": "ivory", "label": "Kimr mammoth ivory, horn & megafauna pelts", "class": "luxury", "tier": "compact", "unit": "t", "note": "Labyrinth Pleistocene mammoth/pachyderm ivory, glyptodont shell & great aurochs horn traded at Hall of Heroes"},
     {"id": "gems", "label": "Opal Valley black/fire opals, emeralds & quartz", "class": "precious", "tier": "compact", "unit": "kg", "note": "Opal Valley black & fire opals (4-8x northern markup via Strongbow/Xanadu), Coyote emeralds & High Rift quartz"},
     {"id": "photonic-opals", "label": "Opal Valley photonic crystal opals", "class": "precious", "tier": "compact", "unit": "kg", "note": "Opal Valley photonic-bandgap crystal opals exported via Strongbow/Xanadu to Carcosa Yusar, Iron Republic optical labs & Yuni Geomancers"},
     {"id": "goldwork", "label": "Xanadu goldwork & prayer wheels", "class": "specialty", "tier": "compact", "unit": "unit", "note": "Vale of Xanadu Goldsmiths' bullion craft"},
-    {"id": "fine-ceramics", "label": "Jimjam kilnware & glazed ceramics", "class": "specialty", "tier": "compact", "unit": "unit", "note": "Jimjam ('Kiln Country') painted kilnware & glazed tile, plus Yuni/Xanadu glazes"},
+    {"id": "fine-ceramics", "label": "Jimjam kilnware & glazed ceramics", "class": "specialty", "tier": "compact", "unit": "unit", "note": "Jimjam ('Kiln Country') painted kilnware, sake/mezcal flasks & glazed tile"},
     {"id": "porcelain", "label": "Eternian imperial porcelain & celadon", "class": "specialty", "tier": "compact", "unit": "unit", "note": "Eternal State kaolin porcelain & celadon kilnware (plus Yeti raid booty)"},
-    {"id": "paper", "label": "rag, bamboo & marsh-reed paper", "class": "craft", "tier": "medium", "unit": "t", "note": "alkali-pulped bamboo, mulberry, rag & marsh-reed paper from Eternal State mills, Longsong's Order paper mill, Abyssal reed-mills (Sfenops, Liikofi, Reed) & Dalab hemp-rag mills"},
+    {"id": "paper", "label": "rag, bamboo & marsh-reed paper", "class": "craft", "tier": "medium", "unit": "t", "note": "alkali-pulped bamboo, mulberry, rag & marsh-reed paper from Eternal State mills, Longsong's Order paper mill, Abyssal reed-mills & Dalab"},
     {"id": "almanacs", "label": "Jimjam Long Count almanacs", "class": "specialty", "tier": "compact", "unit": "unit", "note": "universal caravan & port contract-dating calendars & eclipse tables"},
     {"id": "books", "label": "books, codices & copied records", "class": "specialty", "tier": "compact", "unit": "unit", "note": "domestic presses in literate states; rare histories exported by Longsong (banned in Voth)"},
-    {"id": "lenses", "label": "telescopes, sextants & lenses", "class": "specialty", "tier": "compact", "unit": "unit", "note": "Roketstad Astronomers' Guild optics ground from Ancient glass, High Rift quartz & photonic opals"},
-    {"id": "rockets", "label": "rockets, muskets & artillery", "class": "specialty", "tier": "medium", "unit": "unit", "note": "Iron Republic Arsenal firearms & rocket racks (dependent on imported coal, sulfur & saltpeter)"},
-    {"id": "arms", "label": "Forgemaster mech parts, cannon & steel arms", "class": "specialty", "tier": "medium", "unit": "unit", "note": "Iziz, Voth, Yuni & Tungang ordnance/mech parts (dependent on the Gunpowder & Steel Triangle)"},
-    {"id": "electrics", "label": "Geomancer generators, lamps & wire", "class": "specialty", "tier": "compact", "unit": "unit", "note": "Yuni & Locus Geomancer dynamos, arc-lamps & insulated wire"},
+    {"id": "lenses", "label": "telescopes, sextants & lenses", "class": "specialty", "tier": "compact", "unit": "unit", "note": "Roketstad Astronomers' Guild optics ground from optical borosilicate glass, High Rift quartz & photonic opals"},
+    {"id": "rockets", "label": "rocket racks & heavy artillery", "class": "specialty", "tier": "medium", "unit": "unit", "note": "Iron Republic Arsenal solid-fuel rocket batteries & siege/naval artillery (dependent on coal, sulfur & saltpeter)"},
+    {"id": "arms", "label": "Forgemaster mech parts & siege ordnance", "class": "specialty", "tier": "medium", "unit": "unit", "note": "Iziz, Voth, Yuni & Tungang war-walker/mech assemblies & heavy ordnance"},
+    {"id": "electrics", "label": "Geomancer generators, lamps & wire", "class": "specialty", "tier": "compact", "unit": "unit", "note": "Yuni & Locus Geomancer dynamos, glass arc-lamps & rubber/lac-insulated wire"},
     {"id": "energy-cells", "label": "Ancient energy cells", "class": "specialty", "tier": "compact", "unit": "unit", "note": "sealed-vault Ancient power cells from Valley of the Ancient (via Yusar) & Stair; strong Eternian demand"},
     {"id": "cybernetics", "label": "Yusar cybernetics & servo-craft", "class": "specialty", "tier": "compact", "unit": "unit", "note": "Carcosa & Henge Yusar implants and photonic-core mech-servos"},
     {"id": "genecraft", "label": "Dalab gene-craft & pressure mods", "class": "specialty", "tier": "compact", "unit": "unit", "note": "Genepriest altitude/pressure/cold adaptations & healers"},
@@ -600,6 +623,19 @@ def populate_supply_demand(world, setts):
                 "relics": 4.5 * sc,
                 "machine-wax": 2.4 * sc,
                 "ship-hulls": 1.6 * sc,
+                # Newly added unique Krator high-tier spirits, narcotics, Abyssal rubber & finished crafts:
+                "champagne": 5.5 * sc,
+                "ranjrum": 4.8 * sc,
+                "scotch": 4.5 * sc,
+                "mezcal": 4.2 * sc,
+                "sake": 5.0 * sc,
+                "wine": 6.5 * sc,
+                "opium": 4.0 * sc,
+                "cigars": 4.5 * sc,
+                "rubber": 6.5 * sc,
+                "glass": 5.0 * sc,
+                "clothes": 4.8 * sc,
+                "furniture": 3.6 * sc,
             })
             continue
 
@@ -793,6 +829,9 @@ def populate_supply_demand(world, setts):
             sup["oversea-luxuries"] = dem.get("oversea-luxuries", 0.0) + (4.5 if nm == "Qoold Lheek" else 1.4)
             sup["relics"] = dem.get("relics", 0.0) + (3.8 if nm == "Qoold Lheek" else 1.2)
             sup["silk"] = dem.get("silk", 0.0) + (2.6 if nm == "Qoold Lheek" else 0.8)
+            sup["champagne"] = (2.8 if nm == "Qoold Lheek" else 0.9)
+            sup["wine"] = (3.5 if nm == "Qoold Lheek" else 1.1)
+            sup["clothes"] = (2.2 if nm == "Qoold Lheek" else 0.7)
             dem["iron"] = 0.0
             dem["salt"] = 0.0
             dem["coal"] = 0.0
@@ -1480,12 +1519,12 @@ def populate_supply_demand(world, setts):
         #   (d) Alkaline turquoise fritware & celadon ceramic glazes (Jimjam, Serai, Yuni, Eternal State)
         #   (e) Goldsmith & Mint borax assaying/soldering flux + armourers' brazing & cloth scouring (Xanadu Qiblai/Strongbow, Iziz, Marr, Voth, Ys)
         ALKALI_PRODUCERS = {
-            "Catch Salt Works": 155.0,  # Terminal Catch soda-lake crust & borate/lithium pans (alkali_max = 226-255!)
-            "Stair": 52.0,              # Stair oasis merchants selling Catch soda/lithium salts alongside sealed cells (catch/PLAN.md:194)
-            "Arfwai Oasis": 38.0,       # South-Central Catch soda playa scrapers
-            "Kolli Oasis": 16.0,        # Mid-Catch natron pans
-            "Kautoa": 22.0,             # Minor maritime competitor: burned sea-kelp wrack soda ash (LORE.md:644; TRADE-SCOPE.md:566)
-            "Valapo": 7.5,
+            "Catch Salt Works": 235.0,  # Terminal Catch soda-lake crust & borate/lithium pans (alkali_max = 226-255!)
+            "Stair": 76.0,              # Stair oasis merchants selling Catch soda/lithium salts alongside sealed cells (catch/PLAN.md:194)
+            "Arfwai Oasis": 56.0,       # South-Central Catch soda playa scrapers
+            "Kolli Oasis": 24.0,        # Mid-Catch natron pans
+            "Kautoa": 32.0,             # Minor maritime competitor: burned sea-kelp wrack soda ash (LORE.md:644; TRADE-SCOPE.md:566)
+            "Valapo": 10.5,
         }
         sup["alkali"] = ALKALI_PRODUCERS.get(nm, 0.0)
         dem["alkali"] = (
@@ -1520,6 +1559,536 @@ def populate_supply_demand(world, setts):
             dem["alkali"] = max(dem["alkali"], ALKALI_INDUSTRIAL_HUBS[nm])
         if nm in ALKALI_PRODUCERS:
             dem["alkali"] = min(dem["alkali"], 1.5)
+
+        # --- EXPANSION TO 94 GOODS: Unbundled Arms, Native Sugar/Tobacco Gates, Glass Chain,
+        #     East Abyss Rubber, Fermented/Distilled Luxury Beverages, Cigars, Opium & Finished Crafts ---
+
+        # 6a. Unbundle legacy `rockets` (rocket batteries & heavy artillery) and `arms` (Forgemaster mechs & siege ordnance)
+        #     so personal `firearms`, `armor`, and melee `weapons` are cleanly modeled as separate goods:
+        sup["rockets"] = sup.get("rockets", 0.0) * 0.58
+        dem["rockets"] = dem.get("rockets", 0.0) * 0.58
+        sup["arms"] = sup.get("arms", 0.0) * 0.45
+        dem["arms"] = dem.get("arms", 0.0) * 0.45
+
+        # 6b. Native Crop Gate on Cane Sugar & Tamarisk-Manna (TRADE-SCOPE.md:162):
+        #     Sugar cane grows in the warm Ring Isles, SW Bay, Throne/Inner Crater coasts, Kirstabal (East Vale), and East Abyss;
+        #     arid Dasri oases (Jabal, Kolli, Arfwai) harvest desert tamarisk-manna syrup.
+        #     Temperate/cool-coastal Eternal State, Iron Republic, Jimjam, Dalab, Yuni uplands & highlands grow 0 cane —
+        #     so Eternal State MUST import `sugar` to ferment `champagne`!
+        SUGAR_PRODUCER_POLS = {
+            "Western Spice Isles", "Kautoa", "Hookfleet", "Shell Province",
+            "League: Ys", "League: Tethys", "League: Trigon", "League: Pontus",
+            "Tabisti: Sfenops", "Tabisti: Liikofi", "Jabal Shiekdom", "Catch Oasis Stations",
+        }
+        SUGAR_EXPLICIT_SUP = {
+            "Shim": 220.0, "Voth": 145.0, "Almua": 85.0, "Temora": 95.0, "Zey'danin": 68.0,
+            "Driyan": 52.0, "Azoth": 38.0,
+            "Marr": 115.0, "Port Tobin": 62.0, "Shell": 135.0, "Port Goto": 55.0,
+            "Port Mira": 110.0,
+            "Ys": 125.0, "Ybera": 95.0, "Kierson": 42.0,
+            "Tethis": 95.0, "Nephtos": 88.0, "Nereus": 36.0,
+            "Trigon": 55.0, "Pontus": 58.0, "Kyra Isle": 28.0, "Skopelos Isle": 24.0,
+            "Kautoa": 175.0, "Valapo": 68.0, "Bipo": 48.0,
+            "Hetanini Spice Port": 195.0, "Vana Clove Atoll": 145.0,
+            "Kirstabal": 155.0, "Erehwon": 18.0,
+            "Locus": 36.0,
+        }
+        if nm in SUGAR_EXPLICIT_SUP:
+            sup["sugar"] = SUGAR_EXPLICIT_SUP[nm]
+        elif pol not in SUGAR_PRODUCER_POLS:
+            sup["sugar"] = 0.0
+        dem["sugar"] = max(dem.get("sugar", 0.0) * 0.52, 1.35 * kpop)
+
+        # 6c. Native Crop Gate on Inner-Crater Tobacco (TRADE-SCOPE.md:169):
+        #     Tobacco is native strictly to the inner crater (Ring Isles, League, Voth, Kautoa, Spice Isles, Throne, Iziz bay, Dilihan, Beast Riders).
+        INNER_TOBACCO_SUP = {
+            "Voth": 68.0, "Shim": 52.0, "Almua": 26.0, "Drum": 22.0, "Torus": 18.0,
+            "Temora": 28.0, "Zey'danin": 20.0, "Sethas": 14.0,
+            "Nephtos": 48.0, "Tethis": 26.0, "Nereus": 12.0,
+            "Ys": 32.0, "Ybera": 24.0, "Kierson": 10.0,
+            "Trigon": 16.0, "Pontus": 15.0, "Kyra Isle": 8.0,
+            "Kautoa": 46.0, "Valapo": 18.0, "Bipo": 12.0,
+            "Hetanini Spice Port": 26.0, "Vana Clove Atoll": 18.0,
+            "Port Mira": 36.0,
+            "Shell": 30.0, "Port Goto": 14.0, "Dilihan": 24.0,
+            "Marr": 42.0, "Port Tobin": 20.0, "Hook": 18.0, "Iziz": 24.0, "Talia": 16.0,
+            "Mav's Refuge": 18.0, "Talon": 9.0, "Pinnacle Rock": 7.0,
+        }
+        sup["tobacco"] = INNER_TOBACCO_SUP.get(nm, 0.0)
+        dem["tobacco"] = (0.34 if is_port else 0.24) * kpop
+
+        # Boost Throne & Spice Isles Ranj (`isle-spice`) slightly so Throne estates supply both raw Ranj trade & Ranj-rum stills:
+        RANJ_BOOST = {
+            "Port Mira": 102.0, "Ybera": 88.0, "Zey'danin": 48.0, "Temora": 38.0,
+            "Hetanini Spice Port": 62.0, "Vana Clove Atoll": 42.0,
+            "Ṣunu-Ašru": 22.0, "Šadū-Qarnu": 14.0,
+        }
+        if nm in RANJ_BOOST:
+            sup["isle-spice"] = RANJ_BOOST[nm]
+
+        # 6d. Bog Peat (`peat` — biomes/nhighlands/PLAN-STATIONS.md:57: Footfall / Iron Republic & N Highland blanket peat bogs):
+        PEAT_BOGS = {
+            "Stahlborn": 185.0, "Cascade": 150.0, "Lipp": 135.0, "Roketstad": 80.0, "Glaive": 68.0,
+            "Ardent": 95.0, "Spirladunon": 65.0,
+            "Gate Tarn Mires": 78.0, "Coyote Lake Village": 32.0,
+            "Hoar-Table Village (K7)": 45.0,
+            "Pylon": 55.0, "Daridel": 38.0,
+            "Reed": 62.0, "Mungo": 38.0,
+        }
+        sup["peat"] = PEAT_BOGS.get(nm, 0.0)
+        if pol in ("Iron Republic", "Free Clans", "Talovolci Chiefs", "Coyote Kingdom", "Korona Tribes"):
+            dem["peat"] = 3.2 * kpop
+        elif pol in ("Order of Historians", "Silkhead (Korona Gateway)", "Free Giants (Vrivolci)", "Jimjam", "Yusar (Cybernetics)", "League: Trigon", "Dam Basin Salvagers") or nm in ("Sheritu", "Bastion", "Palewharf", "Veil", "Tone", "Mirabilis", "Fulcrum", "Locus", "Sfenops", "Liikofi"):
+            dem["peat"] = (0.65 if nm == "Fulcrum" else 2.4) * kpop
+        else:
+            dem["peat"] = 0.0
+
+        # 6e. Glass Production Chain (`silica-sand` + `alkali`/`potash` + `coal`/`peat` ---> `glass`):
+        SILICA_SAND_SUP = {
+            "Singing Gjar Quartz": 155.0,  # High-purity optical vein-quartz scree (Order of Historians)
+            "Silkhead": 55.0,              # Korona crystal-quartz outwash
+            "Serai": 105.0,                # Jimjam dam-basin washed white quartz sand
+            "Jimjam": 45.0,
+            "Carcosa": 78.0,               # Valley of the Ancient fused melt-glass cullet!
+            "Henge": 42.0,
+            "Parabola": 54.0,              # Bowl solar-furnace mirror-scree cullet!
+            "Veil": 36.0,                  # Eternian rim melt-glass & quartz
+            "Farport": 72.0,               # NW quartz foreshore sand
+            "Mirabilis": 42.0,
+            "Kautoa": 88.0,                # Pure Ring Isles quartz beach sand (TRADE-SCOPE.md:566)
+            "Valapo": 32.0,
+            "Shim": 92.0,                  # Shim River estuary quartz bars
+            "Almua": 52.0,
+            "Nereus": 68.0,                # League white-quartz beaches
+            "Limnaia": 55.0,
+            "Cascade": 58.0,               # Republic glacial outwash quartz sand
+            "Lipp": 42.0,
+            "Sista Riba Village": 68.0,    # East Wall quartz scree feeding Yuni/Locus glassworks
+            "Verge": 36.0,
+            "Bowl Salt Works": 48.0,       # Clean aeolian quartz dune sand
+            "Arfwai Oasis": 38.0,
+        }
+        sup["silica-sand"] = SILICA_SAND_SUP.get(nm, 0.0)
+        dem["silica-sand"] = 0.05 * kpop  # foundry casting sand baseline; major demand added from glasshouses below!
+
+        GLASSHOUSES = {
+            "Fulcrum": 76.0,     # Eternian crown window glass & heavy pressure-proof champagne bottles
+            "Lux": 58.0,
+            "Mirabilis": 34.0,
+            "Farport": 24.0,
+            "Roketstad": 48.0,   # Iron Republic low-iron optical borosilicate & scotch bottles
+            "Cascade": 28.0,
+            "Glaive": 14.0,
+            "Kautoa": 38.0,      # Kautoan kelp-soda & quartz-sand island glasshouse (TRADE-SCOPE.md:566)
+            "Valapo": 11.0,
+            "Jimjam": 34.0,      # Kiln Country blown hollowware & spirit flasks
+            "Serai": 10.0,
+            "Ys": 28.0,          # League clear crown glass & decanters
+            "Tethis": 22.0,
+            "Voth": 26.0,        # Vothic royal glassworks
+            "Shim": 18.0,
+            "Yuni": 32.0,        # Geomancer arc-lamp bulbs, vacuum tubes & turquoise glass
+            "Locus": 18.0,
+        }
+        sup["glass"] = GLASSHOUSES.get(nm, 0.0)
+        dem["glass"] = (0.36 if st_type in ("city", "arcology") else (0.20 if st_type == "town" else 0.07)) * kpop
+
+        # 6f. East Abyss Carboniferous `'rubber scale'` tree ---> `rubber` (coagulated & sulfur-vulcanized latex):
+        RUBBER_SCALE_GROVES = {
+            "Sfenops": 66.0,
+            "Liikofi": 60.0,
+            "Locus": 44.0,
+            "Mungo": 25.0,
+            "Reed": 19.0,
+            "Reed upriver fields (to be named)": 12.0,
+            "Furrow": 8.5,
+        }
+        sup["rubber"] = RUBBER_SCALE_GROVES.get(nm, 0.0)
+        if pol in ("Eternal State", "Iron Republic", "Yuni Emirate", "Yusar (Cybernetics)", "Tungang Union"):
+            dem["rubber"] = 0.28 * kpop_lux
+        elif is_port or pol in ("Empire of Iziz", "Vothic Kingdom", "Realm of Dalab", "Jimjam", "Xanadu Sultanate", "Hookfleet"):
+            dem["rubber"] = 0.20 * kpop_lux
+        else:
+            dem["rubber"] = 0.06 * kpop_lux
+        if nm in ("Carcosa", "Henge"):
+            dem["rubber"] = max(dem["rubber"], 6.5 if nm == "Carcosa" else 3.2)
+
+        # 6g. Fermented Beverages, Distilled Spirits & High-Tier Luxury Bottlings (10 goods):
+        # (i) `beer`: all grain ---> regional casked beer & hopped ale (<= 380 eff-km)
+        BEER_BREWERIES = {
+            "Fulcrum": 86.0, "Lux": 64.0, "Tone": 30.0,
+            "Iziz": 94.0, "Talia": 48.0, "Atton": 36.0, "Seto": 28.0, "Hook": 26.0,
+            "Voth": 68.0, "Drum": 40.0, "Torus": 36.0, "Shim": 28.0,
+            "Dalab": 56.0, "Nufelds": 36.0, "Dapor": 24.0,
+            "Jimjam": 62.0, "Serai": 20.0,
+            "Ostrukh-on-Water": 72.0, "Yuni": 26.0,
+            "Cascade": 32.0, "Roketstad": 22.0,
+            "Ardent": 24.0, "Tallwalls": 26.0,
+            "Erehwon": 30.0, "Qiblai": 22.0,
+        }
+        sup["beer"] = BEER_BREWERIES.get(nm, 0.0)
+        dem["beer"] = (1.15 if (is_port or st_type in ("city", "town", "fort")) else 0.65) * kpop
+        if pol in ("Zeijani", "Andaru"):
+            dem["beer"] = 0.15 * kpop  # drink cavern fungal spirits instead
+
+        # (ii) `sake`: rice / East Abyss `salt-rice` ---> sake (TRADE-SCOPE.md:564, 779)
+        SAKE_BREWERIES = {
+            # East Abyss halophytic `salt-rice` brewers:
+            "Sfenops": 36.0, "Liikofi": 32.0, "Locus": 28.0, "Mungo": 16.5, "Reed": 14.5,
+            # Warm lowland paddy-rice brewers:
+            "Lux": 38.0, "Fulcrum": 32.0, "Palewharf": 14.5,
+            "Erehwon": 22.0, "Qiblai": 14.0,
+            "Longsong": 9.5,
+        }
+        sup["sake"] = SAKE_BREWERIES.get(nm, 0.0)
+        dem["sake"] = (
+            0.34 if pol in ("Eternal State", "Xanadu Sultanate", "Yuni Emirate", "Jimjam", "Order of Historians", "Empire of Iziz", "Iron Republic", "Yusar (Cybernetics)")
+            else (0.18 if is_port else 0.08)
+        ) * kpop_lux
+
+        # (iii) `wine`: grapes ----> wine (Eternal State `nwlowlands` famed for wine, plus Dalab/Dilihan/Trigon hillsides)
+        WINE_VINTNERS = {
+            "Lux": 70.0, "Fulcrum": 58.0, "Mirabilis": 44.0, "Tone": 38.0, "Sheritu": 24.0, "Palewharf": 14.0,
+            "Rokwal": 26.0, "Dayshun": 22.0, "Dalab": 18.0,
+            "Dilihan": 22.0, "Trigon": 18.0, "Pontus": 14.0,
+        }
+        if pol != "Yeti Kingdom":
+            sup["wine"] = WINE_VINTNERS.get(nm, 0.0)
+        dem["wine"] = (0.58 if st_type in ("city", "arcology") else (0.32 if st_type == "town" else 0.12)) * kpop_lux
+
+        # (iv) `champagne`: Eternian wine grapes + imported cane `sugar` (first-step tirage) + heavy `glass` bottles + `rubber` stoppers
+        CHAMPAGNE_HOUSES = {
+            "Lux": 29.0, "Fulcrum": 25.0, "Mirabilis": 16.5, "Tone": 12.5,
+        }
+        if pol != "Yeti Kingdom":
+            sup["champagne"] = CHAMPAGNE_HOUSES.get(nm, 0.0)
+        dem["champagne"] = (0.20 * urb_mult) * kpop_lux
+        if nm in ("Iziz", "Voth", "Erehwon", "Dalab", "Ys", "Tethis", "Roketstad", "Jimjam", "Yuni", "Port Mira", "Marr", "Jabal"):
+            dem["champagne"] = max(dem["champagne"], 0.24 * kpop_lux)
+
+        # (v) `rum`: sugar cane + still fuel + casks/bottles ---> naval & tavern rum
+        RUM_DISTILLERIES = {
+            "Shim": 44.0, "Voth": 24.0, "Temora": 18.5, "Almua": 14.0,
+            "Kautoa": 35.0, "Valapo": 12.5,
+            "Hetanini Spice Port": 28.0, "Vana Clove Atoll": 16.0,
+            "Ys": 24.0, "Tethis": 18.0, "Pontus": 12.0,
+            "Port Mira": 22.0,
+            "Shell": 20.0, "Marr": 16.0,
+            "Kirstabal": 22.0,
+        }
+        sup["rum"] = RUM_DISTILLERIES.get(nm, 0.0)
+        dem["rum"] = (0.68 if (is_port or pol in ("Hookfleet", "Ring Sea Pirates", "Iron Republic", "Eternal State", "Free Clans", "Free Giants (Vrivolci)", "Talovolci Chiefs", "Dam Basin Salvagers")) else 0.28) * kpop_lux
+
+        # (vi) `ranjrum`: sugar cane + `isle-spice` (Ranj at first step) + `glass` bottles + fuel ---> Throne spiced Ranj-rum
+        RANJRUM_STILLS = {
+            "Port Mira": 23.0,          # Hookfleet SE Throne flagship Ranj-rum!
+            "Ybera": 19.0,              # League: Ys Throne plantation colony
+            "Ys": 5.5,
+            "Zey'danin": 15.5,          # Vothic Throne outpost stills
+            "Temora": 9.5,
+            "Nephtos": 11.0,            # League: Tethys Throne-strait island (imports raw Ranj & sugar!)
+            "Ṣunu-Ašru": 6.5,           # Andaru volcanic pot-stills (traders come to buy)
+            "Hetanini Spice Port": 8.5, # Western Spice Isles Ranj-cane reserve
+        }
+        sup["ranjrum"] = RANJRUM_STILLS.get(nm, 0.0)
+        dem["ranjrum"] = (0.24 if is_port else 0.15) * urb_mult * kpop_lux
+        if nm in ("Iziz", "Marr", "Fulcrum", "Farport", "Voth", "Dalab", "Roketstad", "Erehwon", "Yuni", "Jimjam", "Hook"):
+            dem["ranjrum"] = max(dem["ranjrum"], 0.22 * kpop_lux)
+
+        # (vii) `whiskey`: unpeated heartland grain + still fuel + charred oak casks & `glass` bottles ---> whiskey
+        WHISKEY_STILLS = {
+            "Dalab": 30.0, "Nufelds": 22.0, "Daranch": 12.0,
+            "Talia": 28.0, "Atton": 20.0, "Iziz": 18.0,
+            "Jimjam": 24.0,
+            "Ledge": 18.5,
+            "Tallwalls": 16.5,
+            "Ostrukh-on-Water": 22.0,
+        }
+        sup["whiskey"] = WHISKEY_STILLS.get(nm, 0.0)
+        dem["whiskey"] = (0.42 if (gs["temp_c"] < 18 or st_type in ("city", "town", "fort")) else 0.22) * kpop_lux
+
+        # (viii) `scotch`: malted grain + bog `peat` (first-step kiln smoke) + `glass` bottles ---> Iron Republic Footfall scotch
+        SCOTCH_DISTILLERIES = {
+            "Stahlborn": 19.5, "Cascade": 18.0, "Roketstad": 16.0, "Lipp": 11.0, "Glaive": 6.5,
+            "Ardent": 9.5, "Spirladunon": 5.5,
+        }
+        sup["scotch"] = SCOTCH_DISTILLERIES.get(nm, 0.0)
+        dem["scotch"] = (0.20 * urb_mult) * kpop_lux
+        if nm in ("Fulcrum", "Lux", "Farport", "Iziz", "Voth", "Dalab", "Erehwon", "Jimjam", "Ys", "Tethis", "Yuni", "Port Mira"):
+            dem["scotch"] = max(dem["scotch"], 0.22 * kpop_lux)
+
+        # (ix) `tequila`: cultivated warm-bench agave + masonry oven fuel + `glass` bottles ---> Dalab, Shumari & dry-bench tequila
+        TEQUILA_STILLS = {
+            "Rokwal": 22.0, "Daranch": 16.5, "Dayshun": 15.0, "Dalab": 12.0,
+            "Amaro": 17.0, "Urundashi": 8.5,
+            "Gioli": 11.0, "Arcbeam": 9.5,
+            "Driyan": 11.5, "Azoth": 7.5,
+        }
+        sup["tequila"] = TEQUILA_STILLS.get(nm, 0.0)
+        dem["tequila"] = (0.26 if st_type in ("city", "town") or is_port else 0.12) * kpop_lux
+
+        # (x) `mezcal`: pit-roasted wild desert agave + imported `glass` & `fine-ceramics` flasks ---> Dasri mezcal (led by Jabal!)
+        MEZCAL_PALENQUES = {
+            "Jabal": 38.0,              # Premier Dasri wild-agave mezcal guild & caravan market!
+            "Bowl Salt Works": 8.0,
+            "Rifar al-Dhahab": 9.5,     # Dasri Nomad Country wild-agave camps
+            "Shade": 7.5,
+            "Cline": 6.5,
+            "Furrow": 4.5,
+            "Arfwai Oasis": 8.5,        # Dasri Catch oases
+            "Kolli Oasis": 6.5,
+            "Bab al-Hawa (Godsgate)": 4.5,
+            "Sista Riba Village": 4.5,
+        }
+        sup["mezcal"] = MEZCAL_PALENQUES.get(nm, 0.0)
+        dem["mezcal"] = (0.22 * urb_mult if pol not in ("Jabal Shiekdom", "Nomad Country", "Catch Oasis Stations") else 0.26) * kpop_lux
+        if nm in ("Iziz", "Arcbeam", "Parabola", "Yuni", "Erehwon", "Strongbow", "Jimjam", "Fulcrum", "Dalab", "Port Mira", "Ys"):
+            dem["mezcal"] = max(dem["mezcal"], 0.24 * kpop_lux)
+
+        # 6h. Cigars (`tobacco` ----> `cigars`) & Vale Opium (`poppy` ---> `opium` in Xanadu):
+        CIGAR_FACTORIES = {
+            "Voth": 22.0, "Shim": 14.0, "Temora": 7.5,
+            "Nephtos": 16.5, "Tethis": 6.5,
+            "Marr": 15.0, "Port Tobin": 6.0,
+            "Port Mira": 13.5,
+            "Kautoa": 12.5,
+            "Ys": 10.5, "Ybera": 5.5,
+            "Shell": 8.5,
+        }
+        sup["cigars"] = CIGAR_FACTORIES.get(nm, 0.0)
+        dem["cigars"] = (0.28 if (is_port or st_type in ("city", "arcology")) else 0.12) * kpop_lux
+
+        OPIUM_REFINERIES = {
+            # Vale of Xanadu sky-poppy heartland (TRADE-SCOPE.md:161, 163; >95% of world export!):
+            "Erehwon": 35.0, "Qiblai": 25.0, "Kirstabal": 22.5, "Theodiga": 16.5, "Strongbow": 11.0,
+            # Minor Oidong surgical sky-poppy tincture (Order of Historians; banned in Voth):
+            "Longsong": 4.5,
+        }
+        sup["opium"] = OPIUM_REFINERIES.get(nm, 0.0)
+        if pol == "Vothic Kingdom":
+            dem["opium"] = 0.06 * kpop_lux  # Ordinator censorate restricts open dens; illicit/surgical only
+        elif pol == "Xanadu Sultanate":
+            dem["opium"] = 0.42 * kpop      # Pleasure-Dome domestic consumption, leaving ~95 t net export!
+        elif is_port or pol in ("Empire of Iziz", "Eternal State", "Realm of Dalab", "Hookfleet", "Ring Sea Pirates", "Yuni Emirate", "Jimjam", "Iron Republic"):
+            dem["opium"] = 0.24 * kpop_lux
+        else:
+            dem["opium"] = 0.09 * kpop_lux
+        if nm in ("Iziz", "Marr", "Port Mira", "Fulcrum", "Farport", "Dalab", "Yuni", "Jimjam", "Ys"):
+            dem["opium"] = max(dem["opium"], 0.28 * kpop_lux)
+
+        # 6i. Finished Craft & Military Goods (`clothes`, `furniture`, `firearms`, `armor`, `weapons`):
+        CLOTHES_CENTERS = {
+            "Fulcrum": 58.0, "Lux": 42.0, "Farport": 18.0,
+            "Iziz": 48.0, "Marr": 18.0, "Daridel": 12.0,
+            "Voth": 42.0, "Shim": 18.0,
+            "Ys": 28.0, "Tethis": 18.0,
+            "Erehwon": 26.0, "Qiblai": 14.0,
+            "Dalab": 28.0, "Dapor": 12.0,
+            "Yuni": 20.0, "Spindle Fan": 11.0,
+            "Guari": 14.0,
+            "Spirladunon": 10.0,
+            "Silkhead": 9.5,
+            "Kautoa": 11.0,
+        }
+        if pol != "Yeti Kingdom":
+            sup["clothes"] = CLOTHES_CENTERS.get(nm, 0.0)
+        dem["clothes"] = (0.72 if st_type in ("city", "arcology") else (0.55 if st_type == "town" else 0.38)) * kpop
+
+        FURNITURE_CENTERS = {
+            "Fulcrum": 54.0, "Mirabilis": 34.0, "Lux": 32.0, "Sheritu": 18.0,
+            "Nephtos": 32.0, "Tethis": 16.0, "Ys": 24.0,
+            "Erehwon": 28.0, "Theodiga": 14.0,
+            "Voth": 30.0, "Shim": 18.0,
+            "Dalab": 26.0, "Span": 12.0,
+            "Kautoa": 20.0,
+            "Shell": 16.0,
+        }
+        sup["furniture"] = FURNITURE_CENTERS.get(nm, 0.0)
+        dem["furniture"] = (0.62 if st_type in ("city", "arcology") else (0.38 if st_type == "town" else 0.16)) * kpop
+
+        FIREARMS_ARSENALS = {
+            "Roketstad": 35.0, "Stahlborn": 33.0, "Cascade": 22.0, "Glaive": 12.0,  # Iron Republic #1 precision gunsmiths!
+            "Voth": 28.0, "Almua": 16.0, "Drum": 10.0,
+            "Iziz": 28.0, "Hook": 12.0,
+            "Fulcrum": 24.0, "Bastion": 10.0,
+            "Ledge": 16.5,
+            "Yuni": 14.0,
+        }
+        sup["firearms"] = FIREARMS_ARSENALS.get(nm, 0.0)
+        if pol in ("Coyote Kingdom", "Dilihan Province", "Frogmen", "Painted Men"):
+            dem["firearms"] = 0.0
+        else:
+            dem["firearms"] = (0.48 if st_type == "fort" or pol in ("Empire of Iziz", "Vothic Kingdom", "Hookfleet", "Shumari", "Realm of Dalab", "Tungang Union", "Jabal Shiekdom", "Nomad Country", "Xanadu Sultanate", "Jimjam") else 0.32) * kpop
+
+        ARMOR_ARMOURIES = {
+            "Stahlborn": 34.0, "Cascade": 20.0, "Roketstad": 14.0,
+            "Iziz": 34.0, "Pylon": 14.0,
+            "Ledge": 20.0,
+            "Amaro": 22.0,
+            "Spirladunon": 14.0, "Ardent": 12.0, "Tallwalls": 14.0,
+            "Voth": 24.0, "Drum": 12.0,
+            "Fulcrum": 24.0, "Bastion": 12.0,
+            "Hall of Heroes": 11.0,  # Kimr mammoth-hide & glyptodont-shell heavy lamellar
+            "Mav's Refuge": 9.5,     # Beast Rider giant-chitin carapace armor (inner-crater trade)
+        }
+        sup["armor"] = ARMOR_ARMOURIES.get(nm, 0.0)
+        dem["armor"] = (0.44 if st_type == "fort" or pol in ("Empire of Iziz", "Vothic Kingdom", "Eternal State", "Realm of Dalab", "Xanadu Sultanate", "Jimjam", "Hookfleet", "Beast Riders", "Yeti Kingdom", "Jabal Shiekdom") else 0.28) * kpop
+
+        WEAPONS_BLADESMITHS = {
+            "Amaro": 36.0, "Urundashi": 11.0,      # Shumari Sword-Caste watered-steel sabres & lances!
+            "Stahlborn": 30.0, "Cascade": 18.0, "Glaive": 11.0,
+            "Ardent": 18.5,                        # Free Clans highland claymores & broadswords
+            "Tallwalls": 20.0,                     # Free Giants Da-Holwey forge-guild halberds & greatswords
+            "Ledge": 18.0,
+            "Iziz": 30.0, "Pylon": 12.0,
+            "Qiblai": 18.0, "Strongbow": 11.0,     # Vale of Xanadu gilt-hilted wootz scimitars
+            "Voth": 22.0, "Drum": 12.0,
+            "Dalab": 18.0, "Blade": 14.5,          # Dalab & frontier sword-town of Blade!
+            "Fulcrum": 22.0, "Bastion": 10.0,
+        }
+        sup["weapons"] = WEAPONS_BLADESMITHS.get(nm, 0.0)
+        dem["weapons"] = (0.48 if st_type == "fort" or pol in ("Empire of Iziz", "Vothic Kingdom", "Eternal State", "Xanadu Sultanate", "Jimjam", "Hookfleet", "Beast Riders", "Yeti Kingdom", "Nomad Country", "Jabal Shiekdom", "Coyote Kingdom") else 0.30) * kpop
+
+    # --- Pass 3: Explicit Multi-Step Input-Output Wiring Across All Production Chains ---
+    # Wire upstream raw/intermediate goods (`silica-sand`, `alkali`, `potash`, `coal`, `peat`, `glass`,
+    # `fine-ceramics`, `sugar`, `isle-spice`, `tobacco`, `sulfur`, `rubber`, `abyss-lac`, `cotton`, `silk`,
+    # `iron`, `nickel`, `bronze`, `zinc`, `machine-wax`, `saltpeter`, `food`, `timber`) directly into the
+    # industrial demand of settlements producing downstream finished goods!
+    for sid, s in setts.items():
+        pol = s["polity"]
+        if pol in ("Ria Valley", "The Crook", "Lizardmen", "Screamer Country", "Ring Sea Pirates"):
+            continue
+        sup, dem = s["supply"], s["demand"]
+
+        # 1. Glasshouses (`silica-sand` + `alkali`/`potash` + `coal`/`peat` -> `glass`):
+        g_out = sup.get("glass", 0.0)
+        if g_out > 0:
+            dem["silica-sand"] = dem.get("silica-sand", 0.0) + 1.22 * g_out
+            dem["alkali"] = dem.get("alkali", 0.0) + 0.22 * g_out
+            dem["potash"] = dem.get("potash", 0.0) + 0.16 * g_out
+            if pol == "Iron Republic":
+                dem["peat"] = dem.get("peat", 0.0) + 0.55 * g_out
+                dem["coal"] = dem.get("coal", 0.0) + 0.35 * g_out
+            else:
+                dem["coal"] = dem.get("coal", 0.0) + 0.75 * g_out
+        # Optical `lenses` & Geomancer `electrics` consume clear `glass` blanks/bulbs:
+        dem["glass"] = dem.get("glass", 0.0) + 0.35 * sup.get("lenses", 0.0) + 0.28 * sup.get("electrics", 0.0)
+
+        # 2. East Abyss Rubber Vulcanization (`sulfur` + swamp `peat`/`coal` -> `rubber`):
+        rub_out = sup.get("rubber", 0.0)
+        if rub_out > 0:
+            dem["sulfur"] = dem.get("sulfur", 0.0) + 0.15 * rub_out
+            dem["peat"] = dem.get("peat", 0.0) + 0.22 * rub_out
+
+        # 3. Luxury & Fermented Beverage Chains (first-step ingredients + containers + kiln/still fuel):
+        if pol != "Yeti Kingdom":  # Yeti wine/champagne is plundered raid booty, not fermented on-site
+            ch_out = sup.get("champagne", 0.0)
+            if ch_out > 0:
+                dem["sugar"] = dem.get("sugar", 0.0) + 0.52 * ch_out    # Eternal State imports cane sugar!
+                dem["glass"] = dem.get("glass", 0.0) + 0.45 * ch_out    # Heavy pressure-proof bottles
+                dem["rubber"] = dem.get("rubber", 0.0) + 0.09 * ch_out  # Airtight Abyssal rubber stoppers!
+            wi_out = sup.get("wine", 0.0)
+            if wi_out > 0:
+                dem["glass"] = dem.get("glass", 0.0) + 0.16 * wi_out
+                dem["timber"] = dem.get("timber", 0.0) + 0.35 * wi_out
+
+        rr_out = sup.get("ranjrum", 0.0)
+        if rr_out > 0:
+            dem["sugar"] = dem.get("sugar", 0.0) + 1.35 * rr_out
+            dem["isle-spice"] = dem.get("isle-spice", 0.0) + 0.45 * rr_out
+            dem["glass"] = dem.get("glass", 0.0) + 0.42 * rr_out
+            dem["coal"] = dem.get("coal", 0.0) + 0.45 * rr_out
+
+        ru_out = sup.get("rum", 0.0)
+        if ru_out > 0:
+            dem["sugar"] = dem.get("sugar", 0.0) + 1.20 * ru_out
+            dem["glass"] = dem.get("glass", 0.0) + 0.14 * ru_out
+            dem["timber"] = dem.get("timber", 0.0) + 0.30 * ru_out
+
+        sc_out = sup.get("scotch", 0.0)
+        if sc_out > 0:
+            dem["peat"] = dem.get("peat", 0.0) + 2.35 * sc_out          # Malted over bog peat smoke at step 1!
+            dem["food"] = dem.get("food", 0.0) + 2.20 * sc_out          # Malting barley
+            dem["glass"] = dem.get("glass", 0.0) + 0.42 * sc_out
+
+        wh_out = sup.get("whiskey", 0.0)
+        if wh_out > 0:
+            dem["food"] = dem.get("food", 0.0) + 1.85 * wh_out
+            dem["glass"] = dem.get("glass", 0.0) + 0.22 * wh_out
+            dem["timber"] = dem.get("timber", 0.0) + 0.35 * wh_out
+
+        tq_out = sup.get("tequila", 0.0)
+        if tq_out > 0:
+            dem["glass"] = dem.get("glass", 0.0) + 0.38 * tq_out
+            dem["coal"] = dem.get("coal", 0.0) + 0.30 * tq_out
+
+        mz_out = sup.get("mezcal", 0.0)
+        if mz_out > 0:
+            dem["glass"] = dem.get("glass", 0.0) + 0.32 * mz_out        # Dasri/Jabal imports glass bottles!
+            dem["fine-ceramics"] = dem.get("fine-ceramics", 0.0) + 0.14 * mz_out  # Glazed ceramic mezcal flasks!
+
+        sk_out = sup.get("sake", 0.0)
+        if sk_out > 0:
+            dem["food"] = dem.get("food", 0.0) + 1.45 * sk_out
+            dem["fine-ceramics"] = dem.get("fine-ceramics", 0.0) + 0.10 * sk_out
+            dem["glass"] = dem.get("glass", 0.0) + 0.14 * sk_out
+
+        br_out = sup.get("beer", 0.0)
+        if br_out > 0:
+            dem["food"] = dem.get("food", 0.0) + 0.95 * br_out
+            dem["timber"] = dem.get("timber", 0.0) + 0.25 * br_out
+
+        # 4. Cigars (`tobacco` + `abyss-lac`/cedar humidors) & Opium (`fine-ceramics`/`glass` phials):
+        cg_out = sup.get("cigars", 0.0)
+        if cg_out > 0:
+            dem["tobacco"] = dem.get("tobacco", 0.0) + 1.15 * cg_out
+            dem["abyss-lac"] = dem.get("abyss-lac", 0.0) + 0.04 * cg_out
+
+        op_out = sup.get("opium", 0.0)
+        if op_out > 0:
+            dem["fine-ceramics"] = dem.get("fine-ceramics", 0.0) + 0.08 * op_out
+            dem["glass"] = dem.get("glass", 0.0) + 0.10 * op_out
+
+        # 5. Tailored `clothes`, Joinery `furniture`, and Personal `firearms`, `armor` & `weapons`:
+        if pol != "Yeti Kingdom":
+            cl_out = sup.get("clothes", 0.0)
+            if cl_out > 0:
+                dem["cotton"] = dem.get("cotton", 0.0) + 0.55 * cl_out
+                dem["silk"] = dem.get("silk", 0.0) + 0.06 * cl_out
+                dem["dye-tropical"] = dem.get("dye-tropical", 0.0) + 0.04 * cl_out
+                dem["dye-temperate"] = dem.get("dye-temperate", 0.0) + 0.04 * cl_out
+                dem["rubber"] = dem.get("rubber", 0.0) + 0.06 * cl_out  # waterproof oilskins & soles
+
+        fu_out = sup.get("furniture", 0.0)
+        if fu_out > 0:
+            dem["timber"] = dem.get("timber", 0.0) + 1.80 * fu_out
+            dem["abyss-lac"] = dem.get("abyss-lac", 0.0) + 0.08 * fu_out
+            dem["bronze"] = dem.get("bronze", 0.0) + 0.04 * fu_out
+            dem["cotton"] = dem.get("cotton", 0.0) + 0.12 * fu_out
+
+        fa_out = sup.get("firearms", 0.0)
+        if fa_out > 0:
+            dem["iron"] = dem.get("iron", 0.0) + 0.45 * fa_out
+            dem["nickel"] = dem.get("nickel", 0.0) + 0.04 * fa_out
+            dem["zinc"] = dem.get("zinc", 0.0) + 0.08 * fa_out
+            dem["machine-wax"] = dem.get("machine-wax", 0.0) + 0.07 * fa_out
+            dem["saltpeter"] = dem.get("saltpeter", 0.0) + 0.18 * fa_out
+            dem["sulfur"] = dem.get("sulfur", 0.0) + 0.12 * fa_out
+            dem["coal"] = dem.get("coal", 0.0) + 0.55 * fa_out
+
+        ar_out = sup.get("armor", 0.0)
+        if ar_out > 0:
+            dem["iron"] = dem.get("iron", 0.0) + 0.65 * ar_out
+            dem["nickel"] = dem.get("nickel", 0.0) + 0.06 * ar_out
+            dem["bronze"] = dem.get("bronze", 0.0) + 0.06 * ar_out
+            dem["coal"] = dem.get("coal", 0.0) + 0.50 * ar_out
+
+        wp_out = sup.get("weapons", 0.0)
+        if wp_out > 0:
+            dem["iron"] = dem.get("iron", 0.0) + 0.55 * wp_out
+            dem["nickel"] = dem.get("nickel", 0.0) + 0.04 * wp_out
+            dem["coal"] = dem.get("coal", 0.0) + 0.45 * wp_out
+            dem["timber"] = dem.get("timber", 0.0) + 0.25 * wp_out
 
 
 # ---------------------------------------------------------------------------
@@ -3410,6 +3979,7 @@ def solve_trade(world, setts, graph):
     pirate_ledger = defaultdict(lambda: {"captured": 0.0, "fenced": 0.0, "victims": defaultdict(float), "buyers": defaultdict(float)})
     rendered_corridors = []  # collected weighted polylines for map visualization
     FLEETLESS_VICTIM_POLS = {"Zeijani", "Andaru", "Tiguantin", "Beast Riders"}
+    MILITARY_GOODS = {"arms", "rockets", "firearms", "armor", "weapons"}
 
     for g in GOODS:
         gid = g["id"]
@@ -3468,8 +4038,8 @@ def solve_trade(world, setts, graph):
                     if {s_pol, b_pol} == {"Order of Historians", "Vothic Kingdom"}:
                         w_row.append(0.0)
                         continue
-                    # 2. Firearms/rockets barred to Coyote Kingdom north of The Sill
-                    if gid == "rockets" and b_pol in ("Coyote Kingdom", "Dilihan Province"):
+                    # 2. Firearms/rockets barred to Coyote Kingdom north of The Sill & Dilihan
+                    if gid in ("rockets", "firearms") and b_pol in ("Coyote Kingdom", "Dilihan Province"):
                         w_row.append(0.0)
                         continue
                     # 3. Yeti Kingdom raids Eternal State & relations are fraught — no direct bilateral trade (LORE.md s6.19)
@@ -3483,7 +4053,7 @@ def solve_trade(world, setts, graph):
                     # 4. Empire of Iziz (+ Shell) <-> Vothic Kingdom State of War:
                     #    Zero war materiel or direct open bulk trade; only covert smuggler / neutral-intermediary cargoes!
                     war_pair = is_iziz_voth_war_pair(s_pol, b_pol)
-                    if war_pair and (gid in ("arms", "rockets") or tier == "bulk"):
+                    if war_pair and (gid in MILITARY_GOODS or tier == "bulk"):
                         w_row.append(0.0)
                         continue
                     # 5. Beast Riders (incl. wide-ranging Millipede Tribe) NEVER leave the inner crater
@@ -3494,23 +4064,23 @@ def solve_trade(world, setts, graph):
                             w_row.append(0.0)
                             continue
                     br_iz_pair = ("Beast Riders" in (s_pol, b_pol)) and (s_pol in IZIZ_IMPERIAL_POLS or b_pol in IZIZ_IMPERIAL_POLS)
-                    if br_iz_pair and gid in ("arms", "rockets"):
+                    if br_iz_pair and gid in MILITARY_GOODS:
                         w_row.append(0.0)
                         continue
                     # 6. Kautoa <-> Iziz cool relations (because Kautoa serves as Beast Riders' navy) &
                     #    Kautoa <-> League: Tethys / Hykkousoi League hostility over Nephtos's claimed island!
                     ka_iz_pair = ("Kautoa" in (s_pol, b_pol)) and (s_pol in IZIZ_IMPERIAL_POLS or b_pol in IZIZ_IMPERIAL_POLS)
-                    if ka_iz_pair and gid in ("arms", "rockets"):
+                    if ka_iz_pair and gid in MILITARY_GOODS:
                         w_row.append(0.0)
                         continue
-                    if {s_pol, b_pol} == {"Kautoa", "League: Tethys"} and gid in ("arms", "rockets", "ship-hulls"):
+                    if {s_pol, b_pol} == {"Kautoa", "League: Tethys"} and (gid in MILITARY_GOODS or gid == "ship-hulls"):
                         w_row.append(0.0)
                         continue
-                    if ("Kautoa" in (s_pol, b_pol)) and (s_pol.startswith("League:") or b_pol.startswith("League:")) and gid in ("arms", "rockets"):
+                    if ("Kautoa" in (s_pol, b_pol)) and (s_pol.startswith("League:") or b_pol.startswith("League:")) and gid in MILITARY_GOODS:
                         w_row.append(0.0)
                         continue
-                    # 7. Colonizing powers on Throne do not sell arms/rockets to Zeijani or Andaru raiders
-                    if s_pol in THRONE_COLONIAL_POLS and b_pol in ("Zeijani", "Andaru") and gid in ("arms", "rockets"):
+                    # 7. Colonizing powers on Throne do not sell military goods to Zeijani or Andaru raiders
+                    if s_pol in THRONE_COLONIAL_POLS and b_pol in ("Zeijani", "Andaru") and gid in MILITARY_GOODS:
                         w_row.append(0.0)
                         continue
                     # 8. Bulk transport is impractical on the hazardous Yeti highland dirt road!
@@ -3521,13 +4091,17 @@ def solve_trade(world, setts, graph):
                     if not np.isfinite(eff_km):
                         w_row.append(0.0)
                         continue
-                    # Staple food & raw construction timber range caps:
-                    # - Food <= 240 effective km (~180 km overland OR ~1,100 km by ship!)
-                    # - Raw construction timber <= 250 effective km (short regional river/coastal log rafts only; naval yards buy ship-timber!)
+                    # Regional range caps on heavy staples, raw construction logs, bog peat & casked beer:
                     if gid == "food" and eff_km > 240.0:
                         w_row.append(0.0)
                         continue
                     if gid == "timber" and eff_km > 250.0:
+                        w_row.append(0.0)
+                        continue
+                    if gid == "peat" and eff_km > 480.0:
+                        w_row.append(0.0)
+                        continue
+                    if gid == "beer" and eff_km > 450.0:
                         w_row.append(0.0)
                         continue
                     if gid == "brick" and eff_km > 210.0:
@@ -4253,6 +4827,7 @@ def write_trade_markdown(payload, out_md):
         "> - **120,000 Metropolitan Economic Scale (`Iziz` & `Fulcrum`) + Exterior Sea Gateways (`The Crook` & `Ria Valley`)**: `Iziz` and `Fulcrum` are modeled at their full **120,000** metropolitan economic demand & supply (rendered smaller in-game for playability). Abstract exterior regions **`The Crook`** (`frost-coral`) and **`Ria Valley`** (`ria-amber`) arrive exclusively by ship into **`Farport`** and draw **`gold`, `silver`, and Krator's unique regional specialties** back out through Farport.",
         "> - **Directed River & Lake Barges (`Jimjam -> Palewharf` Alabaster, `Shim` River Outlet), Surface `Arcbeam–Parabola` Highway, Intra-Xanadu Roads & `Catch/Twins` Stops**: `Layer 2` & calm `inland_lake` `Layer 1` model bulk river and lake barges (`Jimjam -> Palewharf` `alabaster` across Jimjam's Lake, `Shim` `Riv 0`, `Port Tobin` `Riv 12`, `Farport`, `Reed`, `Ostrukh-on-Water`, `Dapor`), **mid-quality Eternal State highways (`0.72x`)** linking `Palewharf`, `Bastion`, `Sheritu`, `Mirabilis`, `Veil`, `Tone`, `Lux`, and `Farport` to `Fulcrum`, pure **surface Ancient highway** between `Arcbeam` and `Parabola` (zero ancient tubes), **intra-Xanadu trade on surface roads** (zero ancient routes), explicit stop-by-stop trade along **`The Catch` & `The Twins`** (`Parabola -> Bab al-Hawa -> Kolli Oasis -> Arfwai Oasis -> Catch Salt Works -> Stair -> The Twins / White Gills -> Strongbow`), and the northern **`Qoold Lheek ↔ Leng ↔ Jimjam` dirt road** exiting exclusively down the eastern highway (zero Eternian transit, zero bulk log transport).",
         "> - **Shipbuilding & Naval Stores Chain + Gunpowder & Steel Triangle + Opal Valley Three Grades**: Shipbuilding splits crooked knees/spars (`ship-timber`) and caulking/rigging (`pitch-tar`, `cordage`, `cotton` canvas) from commissioned hulls (`ship-hulls`, built at `Nephtos` for the League, `Kautoa` for the `Beast Riders`, `Almua`/`Shim`, `Port Mira`, `Farport`, `Shell`). No military power is self-sufficient in gunpowder (`coal` + volcanic `sulfur` + arid playa / *Da-Holwey* guano `saltpeter`). `Opal Valley` exports both court `gems` (`black`/`fire` opals) and `photonic-opals` (`Yusar` cybernetics, `Roketstad` optics, `Yuni` Geomancers).",
+        "> - **Glass Chain, East Abyss Rubber Scale-Tree, Fermented/Distilled Luxury Spirits, Vale Opium & Finished Crafts/Arms**: `silica-sand` + Catch/kelp `alkali` + `coal`/`peat` feed glasshouses (`glass` windows, bulbs & spirit bottles); East Abyss Carboniferous **`rubber scale-trees`** (`Sfenops`, `Liikofi`, `Locus`, `Mungo`, `Reed`) yield sulfur-vulcanized `rubber`; fermented & botanical chains convert grain -> `beer`/`whiskey` (`+ peat` -> Iron Republic `scotch`), rice/`salt-rice` -> `sake`, Eternian grapes -> `wine` (`+ sugar` -> `champagne`), cane -> `rum` (`+ isle-spice` -> Throne `ranjrum`), cultivated agave -> `tequila` vs wild Dasri agave -> `mezcal` (led by `Jabal`), inner-crater `tobacco` -> `cigars`, and Xanadu sky-poppy -> `opium`, alongside finished `clothes`, `furniture`, `firearms`, `armor`, and melee `weapons`.",
         "> - **Ring Sea Smuggling, 50-km `Port Mira` Truce Zone & Fleetless Peoples**: **`Port Mira`** (`Hookfleet`) is both a major **Ranj (`isle-spice`)** supplier (alongside **`Ybera`**, `Western Spice Isles`, `Zey'danin`/`Temora`, and `Andaru`) and a **pirate + smuggler haven** accepting all ships under a strict **50-km no-piracy zone**. **`Nephtos`** (`League: Tethys`) is a **smuggling (never piracy) haven** whose contested island claim makes **`Kautoa`** hostile to `Tethys` (`0.08x`) and the `League` (`0.28x`). **`Marr`** remains friendly to smugglers as their preferred Izani entrepôt. **`Zeijani`**, **`Andaru`**, **`Tiguantin`**, and **`Beast Riders`** have **zero fleets** (`Dhelv` is strictly an inland Throne cavern — maritime traders must come to neighboring anchorages or overland trails to trade with them).",
         "",
         "## 1. Top Maritime Port & Overland Chokepoint Entrepôts",
@@ -4320,11 +4895,13 @@ def write_trade_markdown(payload, out_md):
 
     SECTIONS = [
         ("I. Metals, Bullion & Structural Salvage", ["iron", "copper", "tin", "bronze", "zinc", "nickel", "rare-earth", "gold", "silver", "scrap"]),
-        ("II. Fuels, Gunpowder Minerals, Catch Alkali Salts & Building Stone", ["coal", "oil", "salt", "sulfur", "saltpeter", "potash", "alkali", "marble", "alabaster", "brick", "machine-wax", "pitch-tar"]),
-        ("III. Timber, Shipbuilding, Naval Rigging, Fibres, Textiles, Beasts & Staples", ["timber", "ship-timber", "ship-hulls", "cordage", "cotton", "silk", "qiviut", "cushion-wool", "plaid", "dye-tropical", "dye-temperate", "mounts", "food"]),
-        ("IV. Spices, Vale Cacao, Dalab Hashish, Incense, Abyssal Lac, Wormwick & Fungal Goods", ["spice-tropical", "isle-spice", "spice-highland", "cacao", "coffee", "tea", "sugar", "tobacco", "hashish", "incense", "abyss-lac", "wormwick", "medicine", "lung-salt", "reagent", "fungal"]),
-        ("V. Gems, Photonic Opals, Ivory, Kilnware, Paper, Books, Optics, Arms & Exterior Luxuries", ["pearls", "gems", "photonic-opals", "ivory", "goldwork", "fine-ceramics", "porcelain", "paper", "almanacs", "books", "lenses", "rockets", "arms", "electrics", "energy-cells", "cybernetics", "genecraft", "scrapgoods", "relics", "oversea-luxuries", "frost-coral", "ria-amber"]),
+        ("II. Fuels, Bog Peat, Gunpowder Minerals, Catch Alkali, Glass Chain & Stone", ["coal", "peat", "oil", "salt", "sulfur", "saltpeter", "potash", "alkali", "silica-sand", "glass", "marble", "alabaster", "brick", "machine-wax", "pitch-tar"]),
+        ("III. Timber, Shipbuilding, East Abyss Rubber, Fibres, Tailored Clothes, Furniture & Staples", ["timber", "ship-timber", "ship-hulls", "cordage", "rubber", "cotton", "silk", "qiviut", "cushion-wool", "plaid", "dye-tropical", "dye-temperate", "clothes", "furniture", "mounts", "food"]),
+        ("IV. Fermented Beverages, Distilled Spirits & High-Tier Luxury Bottlings", ["beer", "sake", "wine", "champagne", "rum", "ranjrum", "whiskey", "scotch", "tequila", "mezcal"]),
+        ("V. Spices, Vale Cacao, Tobacco & Cigars, Dalab Hashish, Vale Opium, Resins & Botanicals", ["spice-tropical", "isle-spice", "spice-highland", "cacao", "coffee", "tea", "sugar", "tobacco", "cigars", "hashish", "opium", "incense", "abyss-lac", "wormwick", "medicine", "lung-salt", "reagent", "fungal"]),
+        ("VI. Personal Arms, Ordnance, Gems, Opals, Kilnware, Paper, Books, High Tech & Exterior Luxuries", ["firearms", "armor", "weapons", "rockets", "arms", "pearls", "gems", "photonic-opals", "ivory", "goldwork", "fine-ceramics", "porcelain", "paper", "almanacs", "books", "lenses", "electrics", "energy-cells", "cybernetics", "genecraft", "scrapgoods", "relics", "oversea-luxuries", "frost-coral", "ria-amber"]),
     ]
+    assert sum(len(gids) for _, gids in SECTIONS) == len(GOODS), f"SECTIONS count mismatch vs GOODS ({len(GOODS)})"
 
     lines += ["", "---", "", f"## 4. Complete Good-by-Good Atlas (All {payload['good_count']} Goods)", ""]
     for sec_title, gids in SECTIONS:
