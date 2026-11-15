@@ -545,7 +545,7 @@ check('the model draws fumaroles and springs as steam (30-vents.js)', "v.kind===
 import re as _re   # noqa: E402
 defregs = _json.loads(_re.search(r'const defRegs = (\[.*?\]);\n', open(os.path.join(TOOL, 'model', 'src', '51-region-store.js'),
                                                                         encoding='utf-8').read(), _re.S).group(1))
-cg_t = next(r for r in defregs if r['id'] == 'rmvcopperglacier')
+cg_t = next(r for r in defregs if r['id'] in ('rmvcopperglacier', 'rmwetaguz7zhe'))
 fb_t = next(r for r in defregs if r['id'] == 'rmw8hj62nmugn')
 mcg_t, mfb_t = G.poly(cg_t['points'], 1.0, 1.0, E.shape) > .5, G.poly(fb_t['points'], 1.0, 1.0, E.shape) > .5
 check('Copper Glacier and Firebliss share only their edge (%d cells); the cones and valleys are Firebliss\'s' % int((mcg_t & mfb_t).sum()),
@@ -647,9 +647,11 @@ check('10-panel.html #settPills exposes filter pills for all 10 settlement stage
       all(f'data-type="{k}"' in p10_src for k in EXPECTED_STAGES))
 all_setts = P.settlements()
 by_nm_19 = {s['name']: s for s in all_setts}
-check('reconciled settlement dataset holds 187 unique pins across all 10 stages, with no Tabist town placeholder',
-      len(all_setts) == 187
-      and len({s['id'] for s in all_setts}) == 187
+check('reconciled settlement dataset holds 191 unique pins across all 10 stages, with no Tabist/Hetanini placeholders',
+      len(all_setts) == 191
+      and len({s['id'] for s in all_setts}) == 191
+      and all(nm in by_nm_19 for nm in ('Taikoro', 'Kautono', 'Palewharf', 'Bab al-Hawa (Godsgate)', 'The Twins', 'Xanadu Goldfields'))
+      and not any(nm in by_nm_19 for nm in ('Hetanini Spice Port', 'Vana Clove Atoll'))
       and {s['type'] for s in all_setts} == set(EXPECTED_STAGES)
       and not any('tabist town' in s['name'].lower() or s['id'] == 'seur98e8mv' for s in all_setts))
 check('living ruins classified as inhabited ruin (Carcosa, Henge, Leng, Stair, Noa\'s Regret, Port Visas, Parabola, Hall of Heroes)',
@@ -695,4 +697,8 @@ check('Dhelv and Šurpu-Dhelv (Zeijani caverns) stand on dry inland Throne land,
       by_nm_19['Dhelv']['type'] == 'cavern'
       and not bool(whas[by_nm_19['Dhelv']['py'], by_nm_19['Dhelv']['px']])
       and not bool(whas[by_nm_19['Šurpu-Dhelv']['py'], by_nm_19['Šurpu-Dhelv']['px']]))
+rr_19 = {r['id']: r for r in R}
+check('Ria Valley & Crook 20-region breakdown (149 total) and lore notes on the dome, compass hills, and weeping valley',
+      len(R) == 149
+      and all(rid in rr_19 and rr_19[rid].get('notes') for rid in ('rmweubdnyts8y', 'rmweu4kpowzji', 'rmwetzg8idewz')))
 print('%d checks passed' % ok)
