@@ -136,15 +136,15 @@
    "colour": "#fff0dc",
    "az": 2.6,
    "el": 0.35,
-   "intensity": 1.7,
-   "ambient": 0.42,
-   "lamp": 0.35
+   "intensity": 2.2,
+   "ambient": 0.2,
+   "lamp": 0.14
   },
   "fill": {
    "colour": "#c08050",
    "az": -0.75,
    "el": -0.42,
-   "intensity": 0.4
+   "intensity": 0.6
   },
   "bodies": [],
   "nebulae": [],

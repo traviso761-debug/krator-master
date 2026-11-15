@@ -2571,6 +2571,14 @@ Two missions of the campaign, and a switch between them (**Mission 1** and **Mis
   fireball, a ring of shock, and sparks. Every craft is baked into a mesh per material, so the whole scene is
   about 110 to 180 draw calls and 110,000 to 145,000 triangles (it was up to 721 calls before).
 
+- **Refined** (2026-11-14): the light is harder (a stronger star, half the ambient, the camera's lamp cut from
+  0.35 to 0.14), so the hulls have a shaded side. Kharak is lit as a ball, falling off to the terminator instead of
+  one flat colour, with dune ridges and canyons close to and small polar caps where a white cap was; its limb is
+  thinner. Burning, its fronts burn in lengths, each at its own heat with a dim glow round it, over darker
+  ground, rather than as even lines. The galaxy's dust lane is torn into filaments (it read as a black bar). The
+  hyperspace window is a nearly clear sheet with bright edges (it was a white slab over the Mothership), and the
+  wreck of the Scaffold is truss sections a few bays long and burnt-out plants, not single girders.
+
 Views: three-quarter, the Mothership side on, the prow, the engines, the hangar bay, the Scaffold, the trials,
 the asteroid field, the cryo trays, the wreck of the Scaffold, Kharak below, far off.
 

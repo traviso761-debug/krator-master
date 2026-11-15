@@ -29,23 +29,31 @@ void main(){
  vec3 sand=mix(vec3(0.74,0.50,0.28),vec3(0.92,0.74,0.48),band*0.6+broad*0.4);
  vec3 c=mix(sand,vec3(0.40,0.27,0.18),rock*0.85);
  c=mix(c,vec3(0.94,0.9,0.8),smoothstep(0.7,0.82,fb(p*8.0+vec3(2.0)))*0.55);   // the salt flats of dried seas
- c*=0.88+0.2*fb(p*40.0);
+ // the dune fields close to: long ridges across the wind, sharper than the bands, and the canyons of the rock
+ float ridge=1.0-abs(2.0*fb(vec3(p.x*30.0,p.y*90.0,p.z*30.0)+w*3.0)-1.0);
+ c*=0.86+0.22*fb(p*40.0)+0.12*(pow(ridge,3.0)-0.3)*(1.0-rock);
+ float cany=1.0-abs(2.0*fb(p*16.0+vec3(9.0))-1.0);c*=1.0-0.3*smoothstep(0.88,0.98,cany)*rock;
  // the cooler lands towards the poles: less sand, more rock and scrub, greyer and darker, the last of the green
  float temp=smoothstep(0.42,0.66,abs(p.y)+0.08*(w-0.5));
  vec3 cool=mix(vec3(0.46,0.42,0.33),vec3(0.36,0.38,0.28),smoothstep(0.45,0.7,fb(p*7.0+vec3(5.0))));
  c=mix(c,cool*(0.9+0.2*fb(p*25.0)),temp*0.85);
- c=mix(c,vec3(0.95,0.93,0.9),smoothstep(0.86,0.95,abs(p.y)+0.05*w));         // the poles
- float d=dot(normalize(vN),uL),lit=smoothstep(-0.1,0.35,d);
- vec3 day=c*(0.03+0.97*lit);
+ c=mix(c,vec3(0.9,0.88,0.84),smoothstep(0.93,0.985,abs(p.y)+0.04*w)*0.8);    // the poles: small caps of frost and salt
+ // lit as a ball is: falling off toward the terminator (a ramp that saturated a third of the way in made the disc
+ // one flat colour), with the dusty air softening the edge of the night
+ float d=dot(normalize(vN),uL),lit=pow(max(0.0,d),0.75)*smoothstep(-0.06,0.12,d);
+ vec3 day=c*(0.025+0.975*lit);
  // the fire: thin fronts that crawl across a charred world, embers behind them, smoke over the day side,
  // and a glow that does not need the sun
  float f=fb(p*6.0+vec3(uT*0.02,0.0,uT*0.015));
- float front=smoothstep(0.47,0.5,f)*(1.0-smoothstep(0.5,0.535,f));
+ // a front is the edge of the burnt ground; it burns in lengths, hotter here and guttering there, not as an even line
+ float heat=smoothstep(0.35,0.75,fb(p*9.0+vec3(3.0,uT*0.01,0.0)));
+ float front=smoothstep(0.485,0.5,f)*(1.0-smoothstep(0.5,0.522,f))*heat;
+ float glowF=smoothstep(0.43,0.5,f)*(1.0-smoothstep(0.5,0.58,f))*heat;
  float f2=fb(p*13.0-vec3(uT*0.03));
- float front2=smoothstep(0.49,0.5,f2)*(1.0-smoothstep(0.5,0.515,f2));
+ float front2=smoothstep(0.494,0.5,f2)*(1.0-smoothstep(0.5,0.508,f2))*smoothstep(0.5,0.8,fb(p*17.0+vec3(1.0)));
  float embers=pow(smoothstep(0.6,0.85,fb(p*22.0+vec3(uT*0.04))),2.0)*step(f,0.5);
  vec3 char=mix(vec3(0.07,0.05,0.04),c*0.25,0.35);
- vec3 burnt=char*(0.25+0.75*lit)+vec3(1.0,0.42,0.08)*(front*2.2+front2*1.2)+vec3(0.9,0.22,0.03)*embers*0.8+vec3(0.35,0.06,0.01)*step(f,0.5)*0.35;
+ vec3 burnt=char*(0.25+0.75*lit)+vec3(1.0,0.5,0.12)*front*1.6+vec3(0.95,0.3,0.05)*front2*0.8+vec3(0.6,0.12,0.02)*glowF*0.7+vec3(0.9,0.22,0.03)*embers*0.7+vec3(0.3,0.05,0.01)*step(f,0.5)*0.25*heat;
  float smoke=smoothstep(0.45,0.8,fb(p*3.5+vec3(uT*0.008,uT*0.004,0.0)));
  burnt=mix(burnt,vec3(0.24,0.2,0.18)*(0.15+0.85*lit)+vec3(0.3,0.08,0.02)*front,smoke*0.6);
  vec3 col=mix(day,burnt,uBurn);
@@ -55,7 +63,7 @@ void main(){
  float cities=smoothstep(0.66,0.8,fb(p*38.0))*smoothstep(0.45,0.6,fb(p*9.0+vec3(8.0)));
  col+=vec3(1.0,0.72,0.38)*cities*belt*night*(1.0-uBurn)*1.1;
  vec3 V=normalize(cameraPosition-vW);float rim=pow(1.0-max(0.0,dot(normalize(vN),V)),3.0);
- col+=mix(vec3(0.95,0.66,0.38)*smoothstep(-0.2,0.3,d),vec3(1.0,0.36,0.08),uBurn)*rim*0.6;
+ col+=mix(vec3(0.95,0.66,0.38)*smoothstep(-0.15,0.25,d),vec3(1.0,0.36,0.08),uBurn)*pow(rim,1.6)*0.45;
  gl_FragColor=vec4(col,1.0);}`});
   const planet=new THREE.Mesh(new THREE.SphereGeometry(R,160,110),mat);
   planet.position.set(Math.cos(az)*Math.cos(el)*D,Math.sin(el)*D,Math.sin(az)*Math.cos(el)*D);planet.rotation.z=0.25;
@@ -111,8 +119,9 @@ void main(){vec3 d=normalize(vD);
  vec3 c=uA*band*(0.45+0.8*g)+uB*pow(band,2.5)*(0.3+0.9*smoothstep(0.4,0.8,g2));
  float core=exp(-pow(acos(clamp(dot(d,uCore),-1.0,1.0))/0.35,2.0));
  c+=uB*core*1.4+vec3(1.0,0.95,0.85)*core*0.6;
- float lane=exp(-pow((b+0.01*(g-0.5))/(thick*0.28),2.0));
- c*=1.0-0.75*lane*smoothstep(0.35,0.6,fb(d*8.0+vec3(3.0)));
+ // the lane is torn into filaments and wanders; a solid lane read as a black bar laid over the band
+ float lane=exp(-pow((b+0.025*(g-0.5)+0.012*(fb(d*20.0)-0.5))/(thick*0.22),2.0));
+ c*=1.0-0.55*lane*smoothstep(0.42,0.7,fb(vec3(d.x*14.0,d.y*40.0,d.z*14.0)+vec3(3.0)));
  // and faint clouds of the nearer nebula off the band
  c+=uC*0.35*smoothstep(0.62,0.9,fb(d*2.0+vec3(11.0)))*(1.0-band);
  gl_FragColor=vec4(c*0.6,1.0);}`});
