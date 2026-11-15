@@ -27,12 +27,12 @@ export function shipKit(THREE){
     g.traverse(o=>{if(!o.isMesh||o.isInstancedMesh)return;for(let a=o;a&&a!==g;a=a.parent)if(K.has(a))return;
       let L=by.get(o.material);if(!L){L=[];by.set(o.material,L);}L.push(o);drop.push(o);});
     const m4=new THREE.Matrix4(),nm=new THREE.Matrix3(),v=new THREE.Vector3();
-    for(const [mat,list] of by){const pos=[],nor=[],uv=[];
+    for(const [mat,list] of by){const pos=[],nor=[],uv=[],cl=[],hasC=list.some(o=>o.geometry.attributes.color);
       for(const o of list){m4.multiplyMatrices(inv,o.matrixWorld);nm.getNormalMatrix(m4);const geo=o.geometry.index?o.geometry.toNonIndexed():o.geometry;
-        const p=geo.attributes.position,n=geo.attributes.normal,u=geo.attributes.uv;
+        const p=geo.attributes.position,n=geo.attributes.normal,u=geo.attributes.uv,c=geo.attributes.color;
         for(let i=0;i<p.count;i++){v.fromBufferAttribute(p,i).applyMatrix4(m4);pos.push(v.x,v.y,v.z);
-          if(n){v.fromBufferAttribute(n,i).applyNormalMatrix(nm).normalize();nor.push(v.x,v.y,v.z);}else nor.push(0,1,0);uv.push(u?u.getX(i):0,u?u.getY(i):0);}}
-      const G=new THREE.BufferGeometry();G.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));G.setAttribute('normal',new THREE.Float32BufferAttribute(nor,3));G.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));
+          if(n){v.fromBufferAttribute(n,i).applyNormalMatrix(nm).normalize();nor.push(v.x,v.y,v.z);}else nor.push(0,1,0);uv.push(u?u.getX(i):0,u?u.getY(i):0);if(hasC){if(c)cl.push(c.getX(i),c.getY(i),c.getZ(i));else cl.push(1,1,1);}}}
+      const G=new THREE.BufferGeometry();G.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));G.setAttribute('normal',new THREE.Float32BufferAttribute(nor,3));G.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));if(hasC)G.setAttribute('color',new THREE.Float32BufferAttribute(cl,3));
       G.computeBoundingSphere();g.add(new THREE.Mesh(G,mat));}
     for(const o of drop)o.parent.remove(o);
     return g;}
@@ -166,6 +166,7 @@ export function shipKit(THREE){
     // the hyperspace drive, low down aft, in its armour: a block of heavy plate banded round, with the glow
     // of the core through its slots
     const coreGlow=new THREE.MeshBasicMaterial({color:0xa888ff});
+    const bottleM=new THREE.MeshBasicMaterial({color:0x6aa8ff,transparent:true,opacity:0.22,blending:THREE.AdditiveBlending,depthWrite:false});
     {const t0=0.04,t1=0.2,tc=(t0+t1)/2,x=aftAt(tc);box(g,260*k,(t1-t0)*H,width(tc)*0.92,M.hull3,x+70*k,yAt(tc),0);
       for(let q=0;q<5;q++){const y=yAt(t0)+(q+0.5)*(t1-t0)*H/5;box(g,272*k,18*k,width(tc)*0.95,M.dark,x+70*k,y+(t1-t0)*H/12,0);box(g,6*k,26*k,width(tc)*0.6,coreGlow,x-62*k,y,0);}}
     // the fusion drives up the aft face above it, in their housings: bells, lit throats, plumes, and round
@@ -174,7 +175,10 @@ export function shipKit(THREE){
     for(const [t,r,n] of [[0.25,95,2],[0.33,82,3],[0.41,62,3],[0.62,40,2],[0.7,36,2]]){const x=aftAt(t);
       box(g,95*k,r*2.6*k,width(t)*0.88,M.hull3,x+22*k,yAt(t),0);
       for(let q=0;q<n;q++){const z=(n===1?0:(q/(n-1)-0.5))*width(t)*0.66;eng.push(nozzle(g,r*k,85*k,x-42*k,yAt(t),z,plumes).position.clone());
-        for(const dx of [1.1,2.1]){const ring=new THREE.Mesh(new THREE.TorusGeometry(r*0.78*k,r*0.08*k,6,20),M.metal);ring.rotation.y=Math.PI/2;ring.position.set(x-85*k-dx*r*k,yAt(t),z);g.add(ring);}}}
+        // the bottle's coils: thin hoops round the plume, each with the faint glow of the field (solid fat rings
+        // stacked down the plume read as tubing)
+        for(const dx of [1.0,1.8,2.6]){const rr=r*(0.74+dx*0.06)*k,ring=new THREE.Mesh(new THREE.TorusGeometry(rr,r*0.03*k,5,28),M.metal);ring.rotation.y=Math.PI/2;ring.position.set(x-85*k-dx*r*k,yAt(t),z);g.add(ring);
+          const gl=new THREE.Mesh(new THREE.TorusGeometry(rr,r*0.075*k,5,28),bottleM);gl.rotation.y=Math.PI/2;gl.position.copy(ring.position);g.add(gl);}}}
     // the auxiliary fusion pylons, out from her flanks, glowing at their tips
     const pylonM=new THREE.MeshBasicMaterial({color:0xcfe8ff});
     for(const t of [0.3,0.68,0.84])for(const sd of [-1,1]){const x=bend(t)-0.12*depth(t),z=sd*width(t)/2;
@@ -233,12 +237,25 @@ export function shipKit(THREE){
     for(let i=0;i<=N;i++){const x=-len/2+i*len/N;
       for(let q=0;q<4;q++){const [y0,z0]=[[-h,-h],[-h,h],[h,h],[h,-h]][q],[y1,z1]=[[-h,h],[h,h],[h,-h],[-h,-h]][q];add(new THREE.Vector3(x,y0,z0),new THREE.Vector3(x,y1,z1),10);}
       if(i<N){const x1=x+len/N;add(new THREE.Vector3(x,h,-h),new THREE.Vector3(x1,h,h),6);add(new THREE.Vector3(x,-h,h),new THREE.Vector3(x1,-h,-h),6);add(new THREE.Vector3(x,-h,-h),new THREE.Vector3(x1,h,-h),6);add(new THREE.Vector3(x,h,h),new THREE.Vector3(x1,-h,h),6);}}
-    for(const [a,b,r] of beams){const L=a.distanceTo(b),m=new THREE.Mesh(new THREE.BoxGeometry(r*2,L,r*2),mat);m.position.copy(a).add(b).multiplyScalar(0.5);m.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),b.clone().sub(a).normalize());g.add(m);}
-    for(let i=0;i<=N;i++)for(const [y,z] of C){const j=new THREE.Mesh(new THREE.BoxGeometry(46,46,46),joint);j.position.set(-len/2+i*len/N,y,z);g.add(j);}
+    // sixty years in orbit: the members are not all one grey - each a shade off, some darker with the soot of the
+    // torches - and the heavy ones carry paint bands near the nodes
+    const shades=[P(0x707a84,{shininess:40}),P(0x646d76,{shininess:34}),P(0x7c858c,{shininess:44}),P(0x555b60,{shininess:20})],RS=mkRng(4041);
+    for(const [a,b,r] of beams){const L=a.distanceTo(b),m=new THREE.Mesh(new THREE.BoxGeometry(r*2,L,r*2),r>=6?shades[Math.floor(RS()*4)]:mat);m.position.copy(a).add(b).multiplyScalar(0.5);m.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),b.clone().sub(a).normalize());g.add(m);
+      if(r>=10&&L>200)for(const f of [0.12,0.88]){const bd=new THREE.Mesh(new THREE.BoxGeometry(r*2.3,L*0.03,r*2.3),f<0.5?M.stripe:M.hull);bd.position.copy(a).lerp(b,f);bd.quaternion.copy(m.quaternion);g.add(bd);}}
+    // the nodes: a block with a collar, not a bare cube
+    for(let i=0;i<=N;i++)for(const [y,z] of C){const x=-len/2+i*len/N;box(g,46,46,46,joint,x,y,z);box(g,20,58,58,M.dark,x,y,z);box(g,58,20,58,M.dark,x,y,z);}
+    // walkways and service decks along the two faces that do not face her, with lamps along them
+    const walkM=P(0x4a4e52),lampM=new THREE.MeshBasicMaterial({color:0xffe2a8});
+    for(const sd of [-1,1])for(let i=0;i<N;i++){const x=-len/2+(i+0.5)*len/N,y=sd*h;box(g,len/N-60,4,26,walkM,x,y+sd*18,h*0.55);box(g,len/N-60,4,26,walkM,x,y+sd*18,-h*0.55);
+      for(let q=0;q<5;q++){const lx=x-len/N/2+40+q*(len/N-80)/4;box(g,5,5,5,lampM,lx,y+sd*24,h*0.55);box(g,5,5,5,lampM,lx,y+sd*24,-h*0.55);}}
     // the materials plants, on the two sides that do not face her, their torches burning inward
     const torchM=new THREE.MeshBasicMaterial({color:0xffa050,transparent:true,opacity:0.8,blending:THREE.AdditiveBlending,depthWrite:false});
     for(let i=0;i<N;i++){const x=-len/2+(i+0.5)*len/N;for(const sd of [-1,1]){const z=sd*(h+90);
       box(g,190,150,130,i%2?M.hull2:M.hull,x,h*0.2,z);box(g,192,10,132,M.stripe,x,h*0.2+60,z);for(let q=0;q<6;q++)box(g,20,6,1,M.lit,x-60+q*24,h*0.2+20,z+sd*65.5);
+      // a plant is a works, not a crate: tanks on its back, radiator fins off its ends, a pipe run to the frame
+      for(const dx of [-55,0,55])cyl(g,22,22,120,M.hull3,x+dx,h*0.2+75,z+sd*20,'z',12);
+      for(const ex of [-1,1])for(let q=0;q<4;q++)box(g,4,120,60,M.dark,x+ex*(100+q*12),h*0.2,z);
+      cyl(g,7,7,Math.abs(z)-h,M.metal,x+70,h*0.2-50,sd*(h+(Math.abs(z)-h)/2),'z',8);
       for(const dy of [-50,40]){cyl(g,6,14,50,M.dark,x,h*0.2+dy,z-sd*85,'z',10);const tc=new THREE.Mesh(new THREE.ConeGeometry(12,70,10,1,true),torchM);tc.rotation.x=sd*Math.PI/2;tc.position.set(x,h*0.2+dy,z-sd*140);g.add(tc);}}}
     // the docking arms that held her, on the face towards her when the frame stands upright behind her
     for(let i=1;i<N;i++){const x=-len/2+i*len/N;for(const sd of [-1,1]){box(g,30,170,30,joint,x,-h-85,sd*h*0.55);box(g,70,50,70,joint,x,-h-170,sd*h*0.55);box(g,80,10,10,M.stripe,x,-h-150,sd*h*0.55);}}
@@ -251,7 +268,7 @@ export function shipKit(THREE){
     const rayM=new THREE.MeshBasicMaterial({color:0xffd0a0,transparent:true,opacity:0.8,blending:THREE.AdditiveBlending,depthWrite:false});
     for(let q=0;q<8;q++){const a=q/8*Math.PI*2,y=Math.cos(a)*RR,z=Math.sin(a)*RR;const e=new THREE.Mesh(new THREE.BoxGeometry(40,40,60),M.hull2);e.position.set(0,y*0.92,z*0.92);e.lookAt(new THREE.Vector3(DX,0,0));dis.add(e);
       const L=RR*0.92-170,ray=new THREE.Mesh(new THREE.CylinderGeometry(3,5,L,6).translate(0,L/2,0),rayM);ray.position.set(0,y*0.92,z*0.92);ray.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),new THREE.Vector3(0,-y,-z).normalize());dis.add(ray);rays.push(ray);}
-    const chunk=asteroid(170,909);chunk.material=M.rock2;dis.add(chunk);
+    const chunk=asteroid(170,909);dis.add(chunk);
     const cutM=new THREE.MeshBasicMaterial({color:0xff6a20});for(let q=0;q<5;q++){const c=new THREE.Mesh(new THREE.TorusGeometry(150+q*6,3,4,32,Math.PI*(0.6+q*0.2)),cutM);c.rotation.set(q,q*1.7,q*0.6);chunk.add(c);}
     const lamps=[];for(let i=0;i<=N;i++)for(const [y,z] of C){const l=new THREE.Mesh(new THREE.SphereGeometry(11,6,4),i%2?blinkM.white:blinkM.red);l.position.set(-len/2+i*len/N,y+28*Math.sign(y),z+28*Math.sign(z));g.add(l);lamps.push(l);}
     bake(g,[...lamps,dis]);bake(dis,[...rays,chunk]);
@@ -329,8 +346,24 @@ export function shipKit(THREE){
   function lifter(){const g=new THREE.Group();box(g,34,10,14,M.hull,0,0,0);box(g,10,8,10,M.hull2,20,2,0);box(g,4,2,8,M.glass,24,5,0);
     for(const sd of [-1,1]){box(g,26,4,4,M.stripe,0,5.5,sd*7.2);cyl(g,3,4,6,M.dark,-19,0,sd*5,'x',8);}
     box(g,19,5.4,5.4,M.hull2,0,-9,0);box(g,21,1.2,7,M.metal,0,-6,0);return bake(g);}
-  function asteroid(r,seed){const R=mkRng(seed),geo=new THREE.IcosahedronGeometry(r,2),p=geo.attributes.position;
-    for(let i=0;i<p.count;i++){const v=new THREE.Vector3().fromBufferAttribute(p,i),q=0.75+0.5*Math.abs(Math.sin(v.x*0.13+seed)*Math.cos(v.y*0.11-seed)+0.3*Math.sin(v.z*0.2)+0.15*Math.sin(v.x*0.5+v.z*0.4));v.multiplyScalar(q*(0.92+0.16*R()));p.setXYZ(i,v.x,v.y,v.z);}
-    geo.computeVertexNormals();return new THREE.Mesh(geo,R()<0.5?M.rock:M.rock2);}
+  // A rock is shaped by where each point is, never by a draw per vertex: the sphere's triangles do not share their
+  // corners, and a random scale per corner tore every face away from its neighbours into spikes. Lumps from a few
+  // waves over the direction, a squash, and craters as bowls with a lip; shaded smooth, with the facets of a
+  // finer sphere.
+  const rockM=[0x6e645a,0x5a5048,0x7a6e60].map(c=>new THREE.MeshPhongMaterial({color:c,specular:0x1a1816,shininess:6,vertexColors:true}));
+  function asteroid(r,seed){const R=mkRng(seed),geo=new THREE.IcosahedronGeometry(r,r>40?4:3),p=geo.attributes.position,n=p.count,col=new Float32Array(n*3);
+    const W=[];for(let k=0;k<7;k++){const d=new THREE.Vector3(R()-0.5,R()-0.5,R()-0.5).normalize();W.push([d,1.5+k*1.6,R()*6.28,0.22/(1+k*0.8)]);}
+    const sq=new THREE.Vector3(0.75+R()*0.5,0.6+R()*0.4,0.8+R()*0.4),CR=[];for(let k=0;k<4+Math.floor(R()*5);k++)CR.push([new THREE.Vector3(R()-0.5,R()-0.5,R()-0.5).normalize(),0.18+R()*0.3,0.08+R()*0.1]);
+    const v=new THREE.Vector3(),u=new THREE.Vector3();
+    for(let i=0;i<n;i++){u.fromBufferAttribute(p,i).normalize();let q=1;for(const [d,f,ph,a] of W)q+=a*Math.sin(u.dot(d)*f*3+ph);
+      let shade=0;for(const [d,rad,dep] of CR){const ang=Math.acos(Math.max(-1,Math.min(1,u.dot(d))))/rad;if(ang<1.3){const b=ang<1?-dep*(1-ang*ang):dep*0.35*Math.sin((ang-1)/0.3*Math.PI);q+=b;shade+=ang<1?0.25*(1-ang):0;}}
+      v.copy(u).multiply(sq).multiplyScalar(r*q);p.setXYZ(i,v.x,v.y,v.z);const g=0.85+0.25*Math.sin(u.x*9+seed)*Math.sin(u.z*7-seed)-shade;col.set([g,g*0.97,g*0.93],i*3);}
+    geo.setAttribute('color',new THREE.BufferAttribute(col,3));geo.deleteAttribute('normal');
+    // merge the corners that coincide so the normals are smooth across the faces
+    const mg=mergeCorners(geo);mg.computeVertexNormals();return new THREE.Mesh(mg,rockM[Math.floor(R()*3)]);}
+  function mergeCorners(g){const P=g.attributes.position,C=g.attributes.color,map=new Map(),idx=[],pos=[],cl=[];
+    for(let i=0;i<P.count;i++){const key=Math.round(P.getX(i)*100)+','+Math.round(P.getY(i)*100)+','+Math.round(P.getZ(i)*100);let k=map.get(key);
+      if(k===undefined){k=pos.length/3;map.set(key,k);pos.push(P.getX(i),P.getY(i),P.getZ(i));cl.push(C.getX(i),C.getY(i),C.getZ(i));}idx.push(k);}
+    const o=new THREE.BufferGeometry();o.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));o.setAttribute('color',new THREE.Float32BufferAttribute(cl,3));o.setIndex(idx);return o;}
   return {M,blinkM,mothership,scaffold,scout,interceptor,corvette,salvage,collector,research,drone,cryotray,lifter,asteroid,bake};
 }
