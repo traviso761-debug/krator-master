@@ -447,6 +447,7 @@ GOODS = [
     {"id": "bronze", "label": "bronze", "class": "metal", "tier": "medium", "unit": "t", "note": "cast fittings, bells, naval cannon, armor/weapon mounts & Eternian window tracery"},
     {"id": "zinc", "label": "zinc & brass spelter", "class": "metal", "tier": "medium", "unit": "t", "note": "sphalerite ore & brass spelter for Roketstad optics, firearm locks, furniture mounts & instruments"},
     {"id": "nickel", "label": "nickel & alloy steel", "class": "metal", "tier": "medium", "unit": "t", "note": "high-strength alloy steel for cuirass armor plate, firearm barrels & Forgemaster mechs"},
+    {"id": "magnets", "label": "Compass Hills magnetized lodestone & permanent magnets", "class": "metal", "tier": "compact", "unit": "t", "note": "iron-rich Compass Hills ores magnetized by a central Ancient installation; enters the crater via the Spider Silk / Korona route for maritime compasses, Geomancer dynamos & high-tech servos"},
     {"id": "rare-earth", "label": "rare earths", "class": "metal", "tier": "compact", "unit": "t", "note": "extracted only by Yuni, Eternia, Order & Tungangs"},
     {"id": "gold", "label": "gold", "class": "precious", "tier": "compact", "unit": "kg", "note": "Vale of Xanadu bonanza bullion, coin & gilt leaf"},
     {"id": "silver", "label": "silver", "class": "precious", "tier": "compact", "unit": "kg", "note": "trade coinage, Republic Mint bullion, Heirs' rank plate"},
@@ -591,6 +592,7 @@ def populate_supply_demand(world, setts):
             sc = 1.15 if pol == "Ria Valley" else 0.95
             if pol == "Ria Valley":
                 sup["ria-amber"] = 62.0
+                sup["magnets"] = 2.2  # minor river-borne trickle running past haunted Weeping Valley to Farport
             else:
                 sup["frost-coral"] = 56.0
             dem.update({
@@ -990,6 +992,8 @@ def populate_supply_demand(world, setts):
             sup["cordage"] = 56.0 if "Spider Lake" in nm else 16.0  # Golden Cable rigging
             sup["silk"] = 7.5 if "Spider Lake" in nm else 2.2       # Lake-Sheen Gossamer
             sup["qiviut"] = 3.6 if "Spider Lake" in nm else 1.0     # Cloud-Fleece parkas
+            # Compass Hills Ancient-magnetized iron ores (Ham-Tsek at 1055,219 sits inside Compass Hills; enters crater via Korona / Spider Silk route):
+            sup["magnets"] = 4.5 if "Spider Lake" in nm else 28.0
 
         # --- Frogmen (SW Highlands natives at Krrmt & Jrrmiah; peace treaty with Dalab) ---
         if pol == "Frogmen":
@@ -2065,6 +2069,26 @@ def populate_supply_demand(world, setts):
                 dem["coal"] = dem.get("coal", 0.0) + 0.75 * g_out
         # Optical `lenses` & Geomancer `electrics` consume clear `glass` blanks/bulbs:
         dem["glass"] = dem.get("glass", 0.0) + 0.35 * sup.get("lenses", 0.0) + 0.28 * sup.get("electrics", 0.0)
+
+        # Compass Hills `magnets` supply (Korona/Silkhead gateway relay) & demand (maritime compasses + high-tech dynamos/servos/mechs):
+        if nm == "Hoar-Table Village (K7)":
+            sup["magnets"] = max(sup.get("magnets", 0.0), 4.0)
+        elif nm == "Silkhead":
+            sup["magnets"] = max(sup.get("magnets", 0.0), 6.0)
+        mag_dem = (
+            0.32 * sup.get("ship-hulls", 0.0)       # binnacle compasses for newly built hulls
+            + 0.22 * sup.get("lenses", 0.0)         # Roketstad/Ys surveying & marine compasses
+            + 0.26 * sup.get("electrics", 0.0)      # Yuni/Locus Geomancer dynamo field magnets
+            + 0.28 * sup.get("cybernetics", 0.0)    # Carcosa/Henge Yusar servo-motors
+            + 0.14 * sup.get("arms", 0.0)           # Forgemaster war-walker actuators & gyro-compasses
+            + 0.10 * sup.get("energy-cells", 0.0)   # magnetic containment / regulator coils
+        )
+        if gs["sea_cells"] > 0 and pol in ("Vothic Kingdom", "Eternal State", "Empire of Iziz", "League: Ys", "League: Tethys", "League: Pontus", "League: Trigon", "Hookfleet", "Kautoa", "Shell Province", "West Ring Islanders", "Ring Sea Pirates"):
+            mag_dem += 0.12 + 0.035 * (s["population"] / 1000.0)
+        if nm in ("Fulcrum", "Iziz", "Yuni", "Roketstad", "Carcosa", "Dalab", "Erehwon", "Longsong", "Ledge"):
+            mag_dem = max(mag_dem, 0.45 + 0.025 * min(s["population"] / 1000.0, 40.0))
+        if mag_dem > 0 and pol not in ("Spider Lake Guilds", "Korona Tribes", "Silkhead (Korona Gateway)"):
+            dem["magnets"] = round(dem.get("magnets", 0.0) + mag_dem, 3)
 
         # 2. East Abyss Rubber Vulcanization (`sulfur` + swamp `peat`/`coal` -> `rubber`):
         rub_out = sup.get("rubber", 0.0)
@@ -4995,7 +5019,7 @@ def write_trade_markdown(payload, out_md):
         lines.append(f"| **{pol['polity']}** | {pol['settlement_count']} | {pol['population']:,} | {exp_str} | {imp_str} |")
 
     SECTIONS = [
-        ("I. Metals, Bullion & Structural Salvage", ["iron", "copper", "tin", "bronze", "zinc", "nickel", "rare-earth", "gold", "silver", "scrap"]),
+        ("I. Metals, Compass Magnets, Bullion & Structural Salvage", ["iron", "copper", "tin", "bronze", "zinc", "nickel", "magnets", "rare-earth", "gold", "silver", "scrap"]),
         ("II. Fuels, Bog Peat, Gunpowder Minerals, Catch Alkali, Glass Chain & Stone", ["coal", "peat", "oil", "salt", "sulfur", "saltpeter", "potash", "alkali", "silica-sand", "glass", "marble", "alabaster", "brick", "machine-wax", "pitch-tar"]),
         ("III. Timber, Shipbuilding, East Abyss Rubber, Fibres, Tailored Clothes, Furniture & Staples", ["timber", "ship-timber", "ship-hulls", "cordage", "rubber", "cotton", "silk", "qiviut", "cushion-wool", "plaid", "dye-tropical", "dye-temperate", "clothes", "furniture", "mounts", "food"]),
         ("IV. Fermented Beverages, Distilled Spirits & High-Tier Luxury Bottlings", ["beer", "sake", "wine", "champagne", "rum", "ranjrum", "whiskey", "scotch", "tequila", "mezcal"]),
