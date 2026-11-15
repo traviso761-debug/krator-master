@@ -13,7 +13,11 @@
     "projected_sea_ships": 635,
     "projected_inland_barges": 231,
     "projected_wagon_convoys": 1144,
-    "projected_pack_caravans": 423
+    "projected_pack_caravans": 423,
+    "core_nomadic_mobile_pop": 141205,
+    "all_nomadic_and_roamer_mobile_pop": 176520,
+    "sedentary_rural_hamlet_pop": 5625642,
+    "tier4c_nomadic_circuit_km": 4040
   },
   "polities": [
     {
@@ -39,7 +43,12 @@
       "base_packs": 12,
       "proj_packs": 70,
       "rural_note": "Dense irrigated river-valley hamlets, terrace farmsteads & fishing coves across the Iziz basin & E coast",
-      "proj_land": 297
+      "proj_land": 297,
+      "population_mode": "sedentary",
+      "habitable_area_km2": 143712,
+      "dirt_path_km": 2352,
+      "nomad_circuit_km": 0,
+      "mobile_camps": 0
     },
     {
       "polity": "Vothic Kingdom",
@@ -64,7 +73,12 @@
       "base_packs": 4,
       "proj_packs": 26,
       "rural_note": "Fertile Shim lake-plain manor estates, Voth Bay fishing villages & Chichani rural hamlets",
-      "proj_land": 143
+      "proj_land": 143,
+      "population_mode": "sedentary",
+      "habitable_area_km2": 117392,
+      "dirt_path_km": 1008,
+      "nomad_circuit_km": 0,
+      "mobile_camps": 0
     },
     {
       "polity": "Eternal State",
@@ -89,7 +103,12 @@
       "base_packs": 1,
       "proj_packs": 5,
       "rural_note": "Planned canal-grid agricultural communes, vineyard villages & Sanctum/Farside farmsteads",
-      "proj_land": 112
+      "proj_land": 112,
+      "population_mode": "sedentary",
+      "habitable_area_km2": 147168,
+      "dirt_path_km": 1188,
+      "nomad_circuit_km": 0,
+      "mobile_camps": 0
     },
     {
       "polity": "Realm of Dalab",
@@ -114,7 +133,12 @@
       "base_packs": 21,
       "proj_packs": 135,
       "rural_note": "Western terrace grain/cattle estates, Dayshun plateau villages & lakeshore hamlets",
-      "proj_land": 218
+      "proj_land": 218,
+      "population_mode": "sedentary",
+      "habitable_area_km2": 104352,
+      "dirt_path_km": 1096,
+      "nomad_circuit_km": 0,
+      "mobile_camps": 0
     },
     {
       "polity": "Xanadu Sultanate",
@@ -139,7 +163,12 @@
       "base_packs": 7,
       "proj_packs": 40,
       "rural_note": "Vale of Xanadu irrigated rice/poppy/tea/mulberry villages & Rift-floor plantation hamlets",
-      "proj_land": 119
+      "proj_land": 119,
+      "population_mode": "sedentary",
+      "habitable_area_km2": 73952,
+      "dirt_path_km": 784,
+      "nomad_circuit_km": 0,
+      "mobile_camps": 0
     },
     {
       "polity": "Iron Republic",
@@ -164,7 +193,12 @@
       "base_packs": 3,
       "proj_packs": 20,
       "rural_note": "Peat-bog crofts, colliery hamlets, charcoal camps & ironstone quarry villages",
-      "proj_land": 150
+      "proj_land": 150,
+      "population_mode": "sedentary",
+      "habitable_area_km2": 55104,
+      "dirt_path_km": 404,
+      "nomad_circuit_km": 0,
+      "mobile_camps": 0
     },
     {
       "polity": "Jimjam",
@@ -189,7 +223,12 @@
       "base_packs": 0,
       "proj_packs": 0,
       "rural_note": "Terraced lakeside farm villages, tea/fruit orchards & mountain hamlets around Jimjam's Lake",
-      "proj_land": 33
+      "proj_land": 33,
+      "population_mode": "sedentary",
+      "habitable_area_km2": 25488,
+      "dirt_path_km": 284,
+      "nomad_circuit_km": 0,
+      "mobile_camps": 0
     },
     {
       "polity": "Lizardmen",
@@ -214,7 +253,12 @@
       "base_packs": 0,
       "proj_packs": 0,
       "rural_note": "Dispersed Rift geothermal marsh warrens, warm-spring pools & basking camps",
-      "proj_land": 0
+      "proj_land": 0,
+      "population_mode": "wilds",
+      "habitable_area_km2": 63680,
+      "dirt_path_km": 0,
+      "nomad_circuit_km": 0,
+      "mobile_camps": 0
     },
     {
       "polity": "League: Ys",
@@ -239,7 +283,12 @@
       "base_packs": 0,
       "proj_packs": 0,
       "rural_note": "Ring Sea olive/vineyard island hamlets, amphora kiln villages & fishing coves",
-      "proj_land": 0
+      "proj_land": 0,
+      "population_mode": "sedentary",
+      "habitable_area_km2": 8400,
+      "dirt_path_km": 108,
+      "nomad_circuit_km": 0,
+      "mobile_camps": 0
     },
     {
       "polity": "Yuni Emirate",
@@ -264,7 +313,12 @@
       "base_packs": 1,
       "proj_packs": 5,
       "rural_note": "Hyper-arid SE desert limits rural life to qanat wadis, date-palm fans & camel-herding camps",
-      "proj_land": 93
+      "proj_land": 93,
+      "population_mode": "sedentary",
+      "habitable_area_km2": 66752,
+      "dirt_path_km": 136,
+      "nomad_circuit_km": 0,
+      "mobile_camps": 0
     },
     {
       "polity": "League: Tethys",
@@ -289,7 +343,12 @@
       "base_packs": 0,
       "proj_packs": 0,
       "rural_note": "East Ring Isles spice/pearl/fishing coves & terraced island hamlets",
-      "proj_land": 59
+      "proj_land": 59,
+      "population_mode": "sedentary",
+      "habitable_area_km2": 11456,
+      "dirt_path_km": 124,
+      "nomad_circuit_km": 0,
+      "mobile_camps": 0
     },
     {
       "polity": "Dilihan Province",
@@ -314,7 +373,12 @@
       "base_packs": 1,
       "proj_packs": 7,
       "rural_note": "Fertile Cut valley & coastal terrace farming hamlets",
-      "proj_land": 20
+      "proj_land": 20,
+      "population_mode": "sedentary",
+      "habitable_area_km2": 10976,
+      "dirt_path_km": 168,
+      "nomad_circuit_km": 0,
+      "mobile_camps": 0
     },
     {
       "polity": "Shumari",
@@ -339,7 +403,12 @@
       "base_packs": 0,
       "proj_packs": 0,
       "rural_note": "Densely settled Shumar highland terrace hamlets & pastoral villages",
-      "proj_land": 7
+      "proj_land": 7,
+      "population_mode": "sedentary",
+      "habitable_area_km2": 34128,
+      "dirt_path_km": 420,
+      "nomad_circuit_km": 0,
+      "mobile_camps": 0
     },
     {
       "polity": "Tabisti: Liikofi",
@@ -364,7 +433,12 @@
       "base_packs": 1,
       "proj_packs": 5,
       "rural_note": "Irrigated southern Tabisti floodplain & levee farming hamlets",
-      "proj_land": 10
+      "proj_land": 10,
+      "population_mode": "sedentary",
+      "habitable_area_km2": 2528,
+      "dirt_path_km": 100,
+      "nomad_circuit_km": 0,
+      "mobile_camps": 0
     },
     {
       "polity": "Tabisti: Sfenops",
@@ -389,7 +463,12 @@
       "base_packs": 0,
       "proj_packs": 0,
       "rural_note": "Irrigated northern Tabisti floodplain & reed-delta farming hamlets",
-      "proj_land": 5
+      "proj_land": 5,
+      "population_mode": "sedentary",
+      "habitable_area_km2": 672,
+      "dirt_path_km": 40,
+      "nomad_circuit_km": 0,
+      "mobile_camps": 0
     },
     {
       "polity": "League: Trigon",
@@ -414,7 +493,12 @@
       "base_packs": 1,
       "proj_packs": 5,
       "rural_note": "NW Ring Sea island fishing & terraced coastal hamlets",
-      "proj_land": 15
+      "proj_land": 15,
+      "population_mode": "sedentary",
+      "habitable_area_km2": 6848,
+      "dirt_path_km": 36,
+      "nomad_circuit_km": 0,
+      "mobile_camps": 0
     },
     {
       "polity": "Nomad Country",
@@ -439,7 +523,31 @@
       "base_packs": 1,
       "proj_packs": 7,
       "rural_note": "Vast unpinned Dasri camel, horse & goat-herding tribal dīras across Nomad Country & the Tiers",
-      "proj_land": 53
+      "proj_land": 53,
+      "population_mode": "core_nomadic",
+      "habitable_area_km2": 408096,
+      "dirt_path_km": 24,
+      "nomad_circuit_km": 1180,
+      "mobile_camps": 20,
+      "nomadic_demand_model": {
+        "mode_label": "Eastern Steppe & Wadi Pastoral Nomads",
+        "internal_moot_share": 0.38,
+        "border_fair_share": 0.42,
+        "unattached_roaming_share": 0.2,
+        "staple_import_mult": 0.25,
+        "portable_good_mult": 1.35,
+        "border_fair_gateways": [
+          "Talia",
+          "Fridon",
+          "Verge",
+          "Locus",
+          "Jabal",
+          "Port Goto",
+          "Silkhead"
+        ],
+        "exports_barter": "Livestock, wool, hides, tallow, alkali & placer gold",
+        "imports_barter": "Iron tools, arms/firearms, cloth, tea, salt & grain supplement"
+      }
     },
     {
       "polity": "Shell Province",
@@ -464,7 +572,12 @@
       "base_packs": 3,
       "proj_packs": 14,
       "rural_note": "NE coastal & island agricultural/fishing hamlets around Shell & Port Goto",
-      "proj_land": 14
+      "proj_land": 14,
+      "population_mode": "sedentary",
+      "habitable_area_km2": 20288,
+      "dirt_path_km": 124,
+      "nomad_circuit_km": 0,
+      "mobile_camps": 0
     },
     {
       "polity": "Beast Riders",
@@ -489,7 +602,30 @@
       "base_packs": 1,
       "proj_packs": 4,
       "rural_note": "Dispersed hyperjungle & mesa roost-clans and hunting camps",
-      "proj_land": 8
+      "proj_land": 8,
+      "population_mode": "core_nomadic",
+      "habitable_area_km2": 78016,
+      "dirt_path_km": 60,
+      "nomad_circuit_km": 1040,
+      "mobile_camps": 14,
+      "nomadic_demand_model": {
+        "mode_label": "Hyperjungle & Savannah Mobile Roost-Clans",
+        "internal_moot_share": 0.4,
+        "border_fair_share": 0.35,
+        "unattached_roaming_share": 0.25,
+        "staple_import_mult": 0.2,
+        "portable_good_mult": 1.3,
+        "border_fair_gateways": [
+          "Port Goto",
+          "Shell",
+          "Ybera",
+          "Fridon",
+          "Dilihan",
+          "Verge"
+        ],
+        "exports_barter": "Tamed mounts/beasts, monster hides, ivory, resins & bushmeat",
+        "imports_barter": "Forged blades, harness-iron, salt, medicine & woven cloth"
+      }
     },
     {
       "polity": "Free Clans",
@@ -514,7 +650,12 @@
       "base_packs": 0,
       "proj_packs": 0,
       "rural_note": "Dispersed northern highland clan-steadings, sheepfolds & valley hamlets around Ardent",
-      "proj_land": 5
+      "proj_land": 5,
+      "population_mode": "sedentary",
+      "habitable_area_km2": 14208,
+      "dirt_path_km": 104,
+      "nomad_circuit_km": 0,
+      "mobile_camps": 0
     },
     {
       "polity": "Zeijani",
@@ -539,7 +680,12 @@
       "base_packs": 2,
       "proj_packs": 12,
       "rural_note": "Smaller Throne lava-tube grottos, vent-ash terraces & mushroom caves",
-      "proj_land": 18
+      "proj_land": 18,
+      "population_mode": "sedentary",
+      "habitable_area_km2": 16144,
+      "dirt_path_km": 72,
+      "nomad_circuit_km": 0,
+      "mobile_camps": 0
     },
     {
       "polity": "Jabal Shiekdom",
@@ -564,7 +710,12 @@
       "base_packs": 4,
       "proj_packs": 9,
       "rural_note": "Bowl oasis gardens, wild-agave slope camps & wadi pastoralists",
-      "proj_land": 21
+      "proj_land": 21,
+      "population_mode": "sedentary",
+      "habitable_area_km2": 14688,
+      "dirt_path_km": 4,
+      "nomad_circuit_km": 0,
+      "mobile_camps": 0
     },
     {
       "polity": "Tiguantin",
@@ -589,7 +740,12 @@
       "base_packs": 0,
       "proj_packs": 0,
       "rural_note": "Eastern Highland ayllu terrace hamlets (potato, maize, coca & camelid herds)",
-      "proj_land": 10
+      "proj_land": 10,
+      "population_mode": "sedentary",
+      "habitable_area_km2": 9216,
+      "dirt_path_km": 192,
+      "nomad_circuit_km": 0,
+      "mobile_camps": 0
     },
     {
       "polity": "Yusar (Cybernetics)",
@@ -614,7 +770,12 @@
       "base_packs": 1,
       "proj_packs": 5,
       "rural_note": "Scavenger & technician outposts immediately surrounding Carcosa and Henge",
-      "proj_land": 23
+      "proj_land": 23,
+      "population_mode": "sedentary",
+      "habitable_area_km2": 1920,
+      "dirt_path_km": 0,
+      "nomad_circuit_km": 0,
+      "mobile_camps": 0
     },
     {
       "polity": "Kautoa",
@@ -639,7 +800,12 @@
       "base_packs": 0,
       "proj_packs": 0,
       "rural_note": "Outer reef-atoll stilt hamlets, taro gardens & drua fishing villages",
-      "proj_land": 0
+      "proj_land": 0,
+      "population_mode": "sedentary",
+      "habitable_area_km2": 10752,
+      "dirt_path_km": 0,
+      "nomad_circuit_km": 0,
+      "mobile_camps": 0
     },
     {
       "polity": "Talovolci Chiefs",
@@ -664,7 +830,12 @@
       "base_packs": 0,
       "proj_packs": 0,
       "rural_note": "Southern Highland cloud-forest giant clan steadings & herding clearings",
-      "proj_land": 7
+      "proj_land": 7,
+      "population_mode": "sedentary",
+      "habitable_area_km2": 5584,
+      "dirt_path_km": 60,
+      "nomad_circuit_km": 0,
+      "mobile_camps": 0
     },
     {
       "polity": "Coyote Kingdom",
@@ -689,7 +860,28 @@
       "base_packs": 1,
       "proj_packs": 4,
       "rural_note": "Dispersed Tierhound & Outlands hunter-pastoralist bands across the Outlands basin",
-      "proj_land": 8
+      "proj_land": 8,
+      "population_mode": "frontier_roamer",
+      "habitable_area_km2": 372608,
+      "dirt_path_km": 0,
+      "nomad_circuit_km": 268,
+      "mobile_camps": 7,
+      "nomadic_demand_model": {
+        "mode_label": "Outland Semi-Nomadic Pack & Raiding Bands",
+        "internal_moot_share": 0.35,
+        "border_fair_share": 0.35,
+        "unattached_roaming_share": 0.3,
+        "staple_import_mult": 0.25,
+        "portable_good_mult": 1.25,
+        "border_fair_gateways": [
+          "Silkhead",
+          "Furrow",
+          "Cline",
+          "Spider Lake Weirs"
+        ],
+        "exports_barter": "Pelts, scavenged scrap, dryland herbs & guard-beasts",
+        "imports_barter": "Iron blades, firearms/shot, salt & cloth"
+      }
     },
     {
       "polity": "League: Pontus",
@@ -714,7 +906,12 @@
       "base_packs": 0,
       "proj_packs": 0,
       "rural_note": "Small western island fishing coves & vineyard hamlets",
-      "proj_land": 0
+      "proj_land": 0,
+      "population_mode": "sedentary",
+      "habitable_area_km2": 5696,
+      "dirt_path_km": 0,
+      "nomad_circuit_km": 0,
+      "mobile_camps": 0
     },
     {
       "polity": "Screamer Country",
@@ -739,7 +936,12 @@
       "base_packs": 0,
       "proj_packs": 0,
       "rural_note": "Hostile Screamer range; virtually all human population sheltered inside Hexahedron",
-      "proj_land": 0
+      "proj_land": 0,
+      "population_mode": "wilds",
+      "habitable_area_km2": 336,
+      "dirt_path_km": 0,
+      "nomad_circuit_km": 0,
+      "mobile_camps": 0
     },
     {
       "polity": "Hookfleet",
@@ -764,7 +966,12 @@
       "base_packs": 0,
       "proj_packs": 0,
       "rural_note": "Coastal salvage camps & lighthouse lookouts around Port Mira",
-      "proj_land": 0
+      "proj_land": 0,
+      "population_mode": "sedentary",
+      "habitable_area_km2": 192,
+      "dirt_path_km": 0,
+      "nomad_circuit_km": 0,
+      "mobile_camps": 0
     },
     {
       "polity": "Tungang Union",
@@ -789,7 +996,12 @@
       "base_packs": 2,
       "proj_packs": 9,
       "rural_note": "Rift-rim cliffside terrace hamlets & rope-lift landings",
-      "proj_land": 18
+      "proj_land": 18,
+      "population_mode": "sedentary",
+      "habitable_area_km2": 10128,
+      "dirt_path_km": 20,
+      "nomad_circuit_km": 0,
+      "mobile_camps": 0
     },
     {
       "polity": "Silkhead (Korona Gateway)",
@@ -814,7 +1026,12 @@
       "base_packs": 1,
       "proj_packs": 3,
       "rural_note": "Surrounding pass-terrace farms, muleteer hamlets & porter camps",
-      "proj_land": 3
+      "proj_land": 3,
+      "population_mode": "sedentary",
+      "habitable_area_km2": 608,
+      "dirt_path_km": 20,
+      "nomad_circuit_km": 0,
+      "mobile_camps": 0
     },
     {
       "polity": "Frogmen",
@@ -839,7 +1056,12 @@
       "base_packs": 1,
       "proj_packs": 6,
       "rural_note": "SW Highland cloud-bog & waterfall-pool amphibian kin-villages",
-      "proj_land": 6
+      "proj_land": 6,
+      "population_mode": "sedentary",
+      "habitable_area_km2": 58800,
+      "dirt_path_km": 56,
+      "nomad_circuit_km": 0,
+      "mobile_camps": 0
     },
     {
       "polity": "Scyvoi",
@@ -864,7 +1086,30 @@
       "base_packs": 1,
       "proj_packs": 4,
       "rural_note": "Semi-nomadic Baelu pastoral kraals & horse/cattle camps across western grasslands",
-      "proj_land": 27
+      "proj_land": 27,
+      "population_mode": "core_nomadic",
+      "habitable_area_km2": 39744,
+      "dirt_path_km": 20,
+      "nomad_circuit_km": 640,
+      "mobile_camps": 4,
+      "nomadic_demand_model": {
+        "mode_label": "Western Steppe Horse & Cattle Pastoralists",
+        "internal_moot_share": 0.25,
+        "border_fair_share": 0.55,
+        "unattached_roaming_share": 0.2,
+        "staple_import_mult": 0.25,
+        "portable_good_mult": 1.4,
+        "border_fair_gateways": [
+          "Driyan",
+          "Voth",
+          "Glaive",
+          "Stahlborn",
+          "Dilihan",
+          "Limnaia"
+        ],
+        "exports_barter": "Steppe remount horses, cattle, hides, horn & felt",
+        "imports_barter": "Steel weapons/mail, metalware, cloth, spirits & winter grain"
+      }
     },
     {
       "polity": "Free Giants (Vrivolci)",
@@ -889,7 +1134,12 @@
       "base_packs": 2,
       "proj_packs": 7,
       "rural_note": "Greenstep basalt-terrace steading refuges & runaway-slave farm hamlets",
-      "proj_land": 10
+      "proj_land": 10,
+      "population_mode": "sedentary",
+      "habitable_area_km2": 38976,
+      "dirt_path_km": 4,
+      "nomad_circuit_km": 0,
+      "mobile_camps": 0
     },
     {
       "polity": "Yeti Kingdom",
@@ -914,7 +1164,12 @@
       "base_packs": 0,
       "proj_packs": 0,
       "rural_note": "Dispersed alpine & boreal hunting/herding camps around Cold Lake",
-      "proj_land": 3
+      "proj_land": 3,
+      "population_mode": "sedentary",
+      "habitable_area_km2": 97856,
+      "dirt_path_km": 8,
+      "nomad_circuit_km": 0,
+      "mobile_camps": 0
     },
     {
       "polity": "Korona Tribes",
@@ -939,7 +1194,12 @@
       "base_packs": 2,
       "proj_packs": 7,
       "rural_note": "Dispersed Korona lake/forest villages & spider-silk tending camps",
-      "proj_land": 11
+      "proj_land": 11,
+      "population_mode": "sedentary",
+      "habitable_area_km2": 15408,
+      "dirt_path_km": 0,
+      "nomad_circuit_km": 0,
+      "mobile_camps": 0
     },
     {
       "polity": "Kimr",
@@ -964,7 +1224,27 @@
       "base_packs": 1,
       "proj_packs": 4,
       "rural_note": "Dispersed Labyrinth megafauna-hunting & herding clan camps",
-      "proj_land": 8
+      "proj_land": 8,
+      "population_mode": "frontier_roamer",
+      "habitable_area_km2": 59712,
+      "dirt_path_km": 0,
+      "nomad_circuit_km": 180,
+      "mobile_camps": 3,
+      "nomadic_demand_model": {
+        "mode_label": "Labyrinth Semi-Nomadic Canyon Clans",
+        "internal_moot_share": 0.35,
+        "border_fair_share": 0.35,
+        "unattached_roaming_share": 0.3,
+        "staple_import_mult": 0.3,
+        "portable_good_mult": 1.25,
+        "border_fair_gateways": [
+          "Span",
+          "Nulab",
+          "Tora"
+        ],
+        "exports_barter": "Goat-hides, canyon minerals, herbs & livestock",
+        "imports_barter": "Iron tools, salt, cloth & grain"
+      }
     },
     {
       "polity": "Andaru",
@@ -989,7 +1269,28 @@
       "base_packs": 0,
       "proj_packs": 0,
       "rural_note": "Eastern Throne shoulder terrace hamlets & fumarole-sulfur camps",
-      "proj_land": 3
+      "proj_land": 3,
+      "population_mode": "core_nomadic",
+      "habitable_area_km2": 15392,
+      "dirt_path_km": 0,
+      "nomad_circuit_km": 452,
+      "mobile_camps": 3,
+      "nomadic_demand_model": {
+        "mode_label": "Throne Volcanic-Slope Transhumant Herders",
+        "internal_moot_share": 0.45,
+        "border_fair_share": 0.35,
+        "unattached_roaming_share": 0.2,
+        "staple_import_mult": 0.3,
+        "portable_good_mult": 1.3,
+        "border_fair_gateways": [
+          "Hook",
+          "Port Mira",
+          "Dhelv",
+          "Ybera"
+        ],
+        "exports_barter": "Highland wool, aged cheese, sulfur, obsidian & goat-hides",
+        "imports_barter": "Salt-fish, iron tools, timber, cordage & woven cloth"
+      }
     },
     {
       "polity": "Fellgangs",
@@ -1014,7 +1315,12 @@
       "base_packs": 0,
       "proj_packs": 0,
       "rural_note": "Scattered Rift-wall outlaw bands & cliff-hideouts beyond Wildcat",
-      "proj_land": 0
+      "proj_land": 0,
+      "population_mode": "sedentary",
+      "habitable_area_km2": 31872,
+      "dirt_path_km": 16,
+      "nomad_circuit_km": 0,
+      "mobile_camps": 0
     },
     {
       "polity": "West Ring Islanders",
@@ -1039,7 +1345,12 @@
       "base_packs": 0,
       "proj_packs": 0,
       "rural_note": "Smaller Hikau reef-island fishing & coconut/taro hamlets across western islands",
-      "proj_land": 0
+      "proj_land": 0,
+      "population_mode": "sedentary",
+      "habitable_area_km2": 1536,
+      "dirt_path_km": 12,
+      "nomad_circuit_km": 0,
+      "mobile_camps": 0
     },
     {
       "polity": "Unaligned settlements",
@@ -1064,7 +1375,12 @@
       "base_packs": 0,
       "proj_packs": 0,
       "rural_note": "Isolated Farside coastal crofts & seal-hunting camps around Yith",
-      "proj_land": 0
+      "proj_land": 0,
+      "population_mode": "sedentary",
+      "habitable_area_km2": 256,
+      "dirt_path_km": 8,
+      "nomad_circuit_km": 0,
+      "mobile_camps": 0
     },
     {
       "polity": "Spider Lake Guilds",
@@ -1089,7 +1405,12 @@
       "base_packs": 4,
       "proj_packs": 9,
       "rural_note": "Weir-tender huts, silk-reeling sheds & Compass Hills magnet-panning camps",
-      "proj_land": 9
+      "proj_land": 9,
+      "population_mode": "sedentary",
+      "habitable_area_km2": 29664,
+      "dirt_path_km": 8,
+      "nomad_circuit_km": 0,
+      "mobile_camps": 0
     },
     {
       "polity": "Ring Sea Pirates",
@@ -1114,7 +1435,12 @@
       "base_packs": 0,
       "proj_packs": 0,
       "rural_note": "Hidden careening coves, lookout perches & smuggler shanties",
-      "proj_land": 0
+      "proj_land": 0,
+      "population_mode": "sedentary",
+      "habitable_area_km2": 784,
+      "dirt_path_km": 0,
+      "nomad_circuit_km": 0,
+      "mobile_camps": 0
     },
     {
       "polity": "Painted Men",
@@ -1139,7 +1465,27 @@
       "base_packs": 0,
       "proj_packs": 0,
       "rural_note": "Dispersed danxia canyon cliff-ledge clans & ochre-quarry camps",
-      "proj_land": 0
+      "proj_land": 0,
+      "population_mode": "frontier_roamer",
+      "habitable_area_km2": 31440,
+      "dirt_path_km": 0,
+      "nomad_circuit_km": 280,
+      "mobile_camps": 3,
+      "nomadic_demand_model": {
+        "mode_label": "Painted Highlands Mobile Warbands & Foragers",
+        "internal_moot_share": 0.35,
+        "border_fair_share": 0.3,
+        "unattached_roaming_share": 0.35,
+        "staple_import_mult": 0.25,
+        "portable_good_mult": 1.25,
+        "border_fair_gateways": [
+          "Dilihan",
+          "Pinnacle Rock",
+          "Verge"
+        ],
+        "exports_barter": "Mineral pigments, pelts, feathers & mountain game",
+        "imports_barter": "Iron spearheads/knives, salt & pots"
+      }
     },
     {
       "polity": "Catch Oasis Stations",
@@ -1164,7 +1510,12 @@
       "base_packs": 0,
       "proj_packs": 0,
       "rural_note": "Waystation camel-corrals & well-tender families along the Catch crossing",
-      "proj_land": 10
+      "proj_land": 10,
+      "population_mode": "sedentary",
+      "habitable_area_km2": 624,
+      "dirt_path_km": 0,
+      "nomad_circuit_km": 0,
+      "mobile_camps": 0
     },
     {
       "polity": "Order of Historians",
@@ -1189,7 +1540,12 @@
       "base_packs": 1,
       "proj_packs": 1,
       "rural_note": "Small terraced abbey gardens & scriptorium dependency cells",
-      "proj_land": 6
+      "proj_land": 6,
+      "population_mode": "sedentary",
+      "habitable_area_km2": 2064,
+      "dirt_path_km": 0,
+      "nomad_circuit_km": 0,
+      "mobile_camps": 0
     },
     {
       "polity": "Dam Basin Salvagers",
@@ -1214,7 +1570,12 @@
       "base_packs": 0,
       "proj_packs": 0,
       "rural_note": "Outlying dam-lock salvage camps around Boatmurder",
-      "proj_land": 1
+      "proj_land": 1,
+      "population_mode": "sedentary",
+      "habitable_area_km2": 656,
+      "dirt_path_km": 0,
+      "nomad_circuit_km": 0,
+      "mobile_camps": 0
     },
     {
       "polity": "Twins Pass Wardenry",
@@ -1239,7 +1600,12 @@
       "base_packs": 0,
       "proj_packs": 0,
       "rural_note": "Pass watchtowers & toll-gate mule stations",
-      "proj_land": 2
+      "proj_land": 2,
+      "population_mode": "sedentary",
+      "habitable_area_km2": 160,
+      "dirt_path_km": 0,
+      "nomad_circuit_km": 0,
+      "mobile_camps": 0
     },
     {
       "polity": "Stair Divers (Catch)",
@@ -1264,7 +1630,12 @@
       "base_packs": 0,
       "proj_packs": 0,
       "rural_note": "Transient ruin-diver tents at the Hill arcology oasis",
-      "proj_land": 2
+      "proj_land": 2,
+      "population_mode": "sedentary",
+      "habitable_area_km2": 16,
+      "dirt_path_km": 0,
+      "nomad_circuit_km": 0,
+      "mobile_camps": 0
     },
     {
       "polity": "Ria Valley",
@@ -1289,7 +1660,12 @@
       "base_packs": 0,
       "proj_packs": 0,
       "rural_note": "Exterior continent beyond NW Ocean (Ria River basin towns & valley agriculture outside Krator)",
-      "proj_land": 0
+      "proj_land": 0,
+      "population_mode": "sedentary",
+      "habitable_area_km2": 993472,
+      "dirt_path_km": 0,
+      "nomad_circuit_km": 0,
+      "mobile_camps": 0
     },
     {
       "polity": "The Crook",
@@ -1314,7 +1690,12 @@
       "base_packs": 0,
       "proj_packs": 0,
       "rural_note": "Exterior region beyond NW Ocean (Crook coastal towns & hinterland outside Krator)",
-      "proj_land": 0
+      "proj_land": 0,
+      "population_mode": "sedentary",
+      "habitable_area_km2": 335744,
+      "dirt_path_km": 0,
+      "nomad_circuit_km": 0,
+      "mobile_camps": 0
     }
   ],
   "settlements": [
