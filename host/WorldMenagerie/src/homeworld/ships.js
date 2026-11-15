@@ -63,7 +63,7 @@ export function shipKit(THREE){
     // the grime, in streaks down the plates
     for(let q=0;q<180;q++){const x=R()*S,w=2+R()*14,y0=R()*S,h=40+R()*260;const gr=g.createLinearGradient(0,y0,0,y0+h);gr.addColorStop(0,'rgba(50,44,36,0.12)');gr.addColorStop(1,'rgba(50,44,36,0)');g.fillStyle=gr;g.fillRect(x,y0,w,h);}
     const T=new THREE.CanvasTexture(c),TE=new THREE.CanvasTexture(e);for(const t of [T,TE]){t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(1/520,1/520);t.anisotropy=8;}return {T,TE};})();
-  const plateM=new THREE.MeshPhongMaterial({map:plating.T,emissiveMap:plating.TE,emissive:0xffffff,emissiveIntensity:0.9,specular:0x333333,shininess:22,flatShading:true,side:THREE.DoubleSide});
+  const plateM=new THREE.MeshPhongMaterial({map:plating.T,emissiveMap:plating.TE,emissive:0xffffff,emissiveIntensity:0.9,specular:0x333333,shininess:22,flatShading:true,vertexColors:true,side:THREE.DoubleSide});
   // the hangar's mouth: a painting of the inside of it - the deck going back in lamplit perspective, the
   // gantries overhead, a ship on the cradle - so that from outside there is depth in it
   const bayTex=(()=>{const W=512,H=256,c=document.createElement('canvas');c.width=W;c.height=H;const g=c.getContext('2d'),R=mkRng(77);
@@ -122,7 +122,7 @@ export function shipKit(THREE){
     // the inner hull, its honeycomb showing
     {const Pp=[],UV=[],I=[],M_=SEC.length;
       for(let i=0;i<=N;i++){const t=i/N;let per=0;for(let j=0;j<=M_;j++){const q=at(t,j,0.985);Pp.push(...q);if(j){const r=at(t,j-1,0.985);per+=Math.hypot(q[0]-r[0],q[2]-r[2]);}UV.push(per,q[1]);}}
-      for(let i=0;i<N;i++)for(let j=0;j<M_;j++){const a=i*(M_+1)+j,b=a+M_+1;I.push(a,a+1,b+1,a,b+1,b);}
+      for(let i=0;i<N;i++)for(let j=0;j<M_;j++){if(Math.abs((i+0.5)/N-0.5)<0.055&&[2,3,9,10].includes(j))continue;const a=i*(M_+1)+j,b=a+M_+1;I.push(a,a+1,b+1,a,b+1,b);}
       for(const [i,up] of [[0,false],[N,true]]){const t=i/N,c=Pp.length/3;Pp.push(bend(t),yAt(t),0);UV.push(0,0);for(let j=0;j<M_;j++){const a=i*(M_+1)+j;if(up)I.push(a,a+1,c);else I.push(a+1,a,c);}}
       const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(Pp,3));geo.setAttribute('uv',new THREE.Float32BufferAttribute(UV,2));geo.setIndex(I);geo.computeVertexNormals();
       g.add(new THREE.Mesh(geo,innerM));}
@@ -130,17 +130,19 @@ export function shipKit(THREE){
     // down to the honeycomb, as the last layers went on; and none where the hangar, the engines and the
     // hyperspace drive are
     const HT=0.5;
-    {const R=mkRng(1111),P=[],UV=[],rows=[];for(let t=0.02;t<0.975;){const h=0.026+R()*0.014;rows.push([t,Math.min(0.975,t+h)]);t+=h;}
+    {const R=mkRng(1111),P=[],UV=[],CL=[],rows=[];for(let t=0.02;t<0.975;){const h=0.026+R()*0.014;rows.push([t,Math.min(0.975,t+h)]);t+=h;}
       const lerp3=(a,b,u)=>[a[0]+(b[0]-a[0])*u,a[1]+(b[1]-a[1])*u,a[2]+(b[2]-a[2])*u];
       for(const [t0,t1] of rows)for(let j=0;j<SEC.length;j++){const tc=(t0+t1)/2;
         if(Math.abs(tc-HT)<0.075&&[2,3,9,10].includes(j))continue;            // the hangar mouths
         if(tc<0.5&&j>=4&&j<=8)continue;                                     // the engines and the hyperspace drive, aft
         if(R()<0.12)continue;                                               // an open bay
         const splits=j===3||j===10?3:j===2||j===4||j===9||j===11?2:1;
-        for(let q=0;q<splits;q++){if(R()<0.05)continue;const u0=q/splits+0.02,u1=(q+1)/splits-0.02,g0=t0+0.0025,g1=t1-0.0025,s=1.012+R()*0.006;
+        for(let q=0;q<splits;q++){if(R()<0.05)continue;const u0=q/splits+0.012,u1=(q+1)/splits-0.012,g0=t0+0.0018,g1=t1-0.0018,s=1.012+R()*0.006;
           const c=[lerp3(at(g0,j,s),at(g0,j+1,s),u0),lerp3(at(g0,j,s),at(g0,j+1,s),u1),lerp3(at(g1,j,s),at(g1,j+1,s),u1),lerp3(at(g1,j,s),at(g1,j+1,s),u0)];
-          for(const n of [0,1,2,0,2,3]){P.push(...c[n]);UV.push(c[n][0]+c[n][2],c[n][1]);}}}
-      const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(P,3));geo.setAttribute('uv',new THREE.Float32BufferAttribute(UV,2));geo.computeVertexNormals();
+          // a plate's own shade: newer plate brighter, older weathered, and darker toward its lower edge
+          const sh=0.82+R()*0.22;
+          for(const n of [0,1,2,0,2,3]){P.push(...c[n]);UV.push(c[n][0]+c[n][2],c[n][1]);const e=n===0||n===1?0.9:1;CL.push(sh*e,sh*e,sh*e*0.98);}}}
+      const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(P,3));geo.setAttribute('uv',new THREE.Float32BufferAttribute(UV,2));geo.setAttribute('color',new THREE.Float32BufferAttribute(CL,3));geo.computeVertexNormals();
       g.add(new THREE.Mesh(geo,plateM));}
     // collars of heavier plate between the great sections
     for(const t of [0.14,0.28,0.43,0.57,0.72,0.86]){const sh=new THREE.Shape();SEC.forEach(([a,b],j)=>{const x=a*depth(t)*1.03,z=b*width(t)*1.045;j?sh.lineTo(x,-z):sh.moveTo(x,-z);});
@@ -149,12 +151,31 @@ export function shipKit(THREE){
     for(let i=0;i<28;i++){const t0=0.06+i*0.031,t1=t0+0.032,a=V(frontAt(t0),yAt(t0)),b=V(frontAt(t1),yAt(t1)),L=Math.hypot(b.x-a.x,b.y-a.y),ang=Math.atan2(b.y-a.y,b.x-a.x)-Math.PI/2;
       const m=new THREE.Mesh(new THREE.BoxGeometry(50*k,L+2,16*k),i%7===3?M.stripe:M.hull2);m.position.set((a.x+b.x)/2+20*k,(a.y+b.y)/2,0);m.rotation.z=ang;g.add(m);
       const rib=new THREE.Mesh(new THREE.BoxGeometry(62*k,7*k,22*k),M.dark);rib.position.set(a.x+24*k,a.y,0);rib.rotation.z=ang;g.add(rib);}
+    // the prow blade: a wedge of heavy armour along her leading edge, to its sharp edge well forward of the hull,
+    // swelling amidships and running out to nothing at her ends, so her face cuts rather than bulges
+    {const P=[],n=64;for(let i=0;i<=n;i++){const t=0.04+i/n*0.92,sw=Math.pow(Math.sin(Math.PI*(t-0.04)/0.92),0.7),f=frontAt(t),y=yAt(t);
+        P.push([f+(30+120*sw)*k,y,0],[f-30*k,y,width(t)*0.2*sw+4*k],[f-30*k,y,-width(t)*0.2*sw-4*k]);}
+      const pos=[];for(let i=0;i<n;i++){const a=P[i*3],b=P[(i+1)*3],al=P[i*3+1],bl=P[(i+1)*3+1],ar=P[i*3+2],br=P[(i+1)*3+2];
+        pos.push(...a,...al,...bl,...a,...bl,...b,...a,...b,...br,...a,...br,...ar);}
+      const bg=new THREE.BufferGeometry();bg.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));bg.computeVertexNormals();g.add(new THREE.Mesh(bg,new THREE.MeshPhongMaterial({color:0x6a6660,specular:0x222222,shininess:14,flatShading:true})));
+      // its edge capped in darker plate, and bands across it where the collars run
+      for(let i=0;i<n;i+=2){const t=0.04+(i+0.5)/n*0.92,sw=Math.pow(Math.sin(Math.PI*(t-0.04)/0.92),0.7),a=V(frontAt(t)+(30+120*sw)*k,yAt(t)),t1=0.04+(i+1.5)/n*0.92,sw1=Math.pow(Math.sin(Math.PI*(t1-0.04)/0.92),0.7),b=V(frontAt(t1)+(30+120*sw1)*k,yAt(t1));
+        const L=Math.hypot(b.x-a.x,b.y-a.y),m=new THREE.Mesh(new THREE.BoxGeometry(14*k,L+3,10*k),i%16===8?M.stripe:M.dark);m.position.set((a.x+b.x)/2,(a.y+b.y)/2,0);m.rotation.z=Math.atan2(b.y-a.y,b.x-a.x)-Math.PI/2;g.add(m);}}
     // the hangar, through her middle and open on both flanks: the capital-ship door drawn up into the hull,
     // the lower door down, the inside seen through the mouth, docking sleeves reaching out of it, hazard
     // stripes on the sill, and guide lamps down both sides of the opening
+    const bayLampM=new THREE.MeshBasicMaterial({color:0xfff0d0}),bayWashM=new THREE.MeshBasicMaterial({color:0xffc890,transparent:true,opacity:0.35,blending:THREE.AdditiveBlending,depthWrite:false});
     const hx=bend(HT)+0.02*depth(HT),hw=width(HT)/2,hl=depth(HT)*0.6,hh=330*k,guides=[];
-    for(const sd of [-1,1]){box(g,hl*1.08,hh*1.1,10*k,M.dark,hx,yAt(HT),sd*(hw+2*k));
-      const mouth=new THREE.Mesh(new THREE.PlaneGeometry(hl*0.94,hh*0.86),bayM);mouth.position.set(hx,yAt(HT),sd*(hw+8*k));if(sd<0)mouth.rotation.y=Math.PI;g.add(mouth);
+    for(const sd of [-1,1]){const fz=sd*(hw+2*k),fw=hl*1.08,fh=hh*1.1+H*0.02;
+      for(const dy of [-1,1])box(g,fw,(fh-hh*0.86)/2,30*k,M.dark,hx,yAt(HT)+dy*(fh+hh*0.86)/4,fz);
+      for(const dx of [-1,1])box(g,(fw-hl*0.94)/2,fh,30*k,M.dark,hx+dx*(fw+hl*0.94)/4,yAt(HT),fz);
+      const dp=90*k,mouth=new THREE.Mesh(new THREE.PlaneGeometry(hl*0.94,hh*0.86),bayM);mouth.position.set(hx,yAt(HT),sd*(hw+8*k-dp));if(sd<0)mouth.rotation.y=Math.PI;g.add(mouth);
+      // the reveal: ceiling, floor and ends of the opening, deep enough to throw shadow, lit along the ceiling
+      const zc=sd*(hw+8*k-dp/2);box(g,hl*0.96,8*k,dp,M.dark,hx,yAt(HT)+hh*0.43,zc);box(g,hl*0.96,8*k,dp,M.hull3,hx,yAt(HT)-hh*0.43,zc);
+      for(const ex of [-1,1])box(g,8*k,hh*0.86,dp,M.hull3,hx+ex*hl*0.47,yAt(HT),zc);
+      for(let q=0;q<9;q++)box(g,hl*0.05,3*k,dp*0.8,bayLampM,hx-hl*0.4+q*hl*0.1,yAt(HT)+hh*0.42,zc);
+      // and the floor lit in a wash, as from the bay inside
+      const wash=new THREE.Mesh(new THREE.PlaneGeometry(hl*0.94,dp),bayWashM);wash.rotation.x=-Math.PI/2;wash.position.set(hx,yAt(HT)-hh*0.425,zc);g.add(wash);
       for(const dy of [-1,1]){box(g,hl*1.1,hh*0.36,20*k,M.hull2,hx,yAt(HT)+dy*hh*0.71,sd*(hw+12*k));box(g,hl*1.1,12*k,21*k,M.stripe,hx,yAt(HT)+dy*hh*0.54,sd*(hw+13*k));
         for(let q=0;q<7;q++)box(g,hl*0.1,hh*0.3,5*k,M.hull3,hx-hl*0.46+q*hl*0.153,yAt(HT)+dy*hh*0.71,sd*(hw+23*k));}
       for(let q=0;q<14;q++)box(g,hl/28,14*k,21*k,q%2?M.dark:M.gold,hx-hl/2+hl*(q+0.5)/14,yAt(HT)-hh*0.47,sd*(hw+14*k));
@@ -179,6 +200,13 @@ export function shipKit(THREE){
         // stacked down the plume read as tubing)
         for(const dx of [1.0,1.8,2.6]){const rr=r*(0.74+dx*0.06)*k,ring=new THREE.Mesh(new THREE.TorusGeometry(rr,r*0.03*k,5,28),M.metal);ring.rotation.y=Math.PI/2;ring.position.set(x-85*k-dx*r*k,yAt(t),z);g.add(ring);
           const gl=new THREE.Mesh(new THREE.TorusGeometry(rr,r*0.075*k,5,28),bottleM);gl.rotation.y=Math.PI/2;gl.position.copy(ring.position);g.add(gl);}}}
+    // the main drives sit in one armoured shroud: cheek walls either side from the hyperspace block up past the
+    // third row, radiator fins down their outsides, a hood over the top row, and frames between the rows
+    {const t0=0.2,t1=0.46,tc=(t0+t1)/2,x=aftAt(tc),H2=(t1-t0)*H,W2=width(tc)*0.5;
+      for(const sd of [-1,1]){box(g,190*k,H2,22*k,M.hull2,x-40*k,yAt(tc),sd*W2);box(g,192*k,14*k,24*k,M.stripe,x-40*k,yAt(t1)-30*k,sd*W2);
+        for(let q=0;q<10;q++)box(g,120*k,6*k,40*k,M.dark,x-30*k,yAt(t0)+(q+0.5)*H2/10,sd*(W2+30*k));}
+      box(g,200*k,26*k,W2*2+24*k,M.hull3,x-45*k,yAt(t1)+8*k,0);
+      for(const t of [0.29,0.37])box(g,180*k,12*k,W2*2,M.dark,x-36*k,yAt(t),0);}
     // the auxiliary fusion pylons, out from her flanks, glowing at their tips
     const pylonM=new THREE.MeshBasicMaterial({color:0xcfe8ff});
     for(const t of [0.3,0.68,0.84])for(const sd of [-1,1]){const x=bend(t)-0.12*depth(t),z=sd*width(t)/2;
