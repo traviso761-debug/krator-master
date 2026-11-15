@@ -545,6 +545,26 @@ GOODS = [
 ]
 GOOD_BY_ID = {g["id"]: g for g in GOODS}
 
+# Strict geographic trade boundary for Eastern Nomads ("Nomad Country"):
+# Trade never pushes outside the Eastern Desert, The Bowl, East Abyss, East Badlands & adjacent Catch stations (0 Ring Sea shipping).
+EASTERN_NOMAD_ALLOWED_PINS = {
+    # Own Nomad Country pins
+    "Furrow", "Cline", "Reed", "Reed upriver fields (to be named)",
+    "Mungo", "Shade", "Rifar al-Dhahab", "Catch Salt Works",
+    # East Abyss & East Rim (Tabisti & northern Yuni)
+    "Sfenops", "Liikofi", "Locus",
+    # Eastern Desert (sedesert) & E Badlands (Yuni Emirate)
+    "Verge", "Yuni", "Sista Riba Village",
+    # The Bowl (Jabal Shiekdom & Izani Bowl desert outposts)
+    "Jabal", "Bowl Salt Works", "Mantis", "Arcbeam", "Parabola",
+    # Adjacent Catch desert oases
+    "Bab al-Hawa (Godsgate)", "Kolli Oasis", "Arfwai Oasis", "Stair",
+}
+EASTERN_NOMAD_BLOCKED_TRANSIT = {
+    "Talia", "Fridon", "Iziz", "Marr", "Port Tobin", "Port Goto", "Shell", "Silkhead",
+    "Atton", "Gioli", "Daridel", "Guari", "Fort Vaklu", "Spindle Fan", "Ostrukh-on-Water", "Siphon Maar Works",
+}
+
 
 def populate_supply_demand(world, setts):
     """Synthesize raster-backed + lore-accurate supply & demand for new/restored nodes and new goods."""
@@ -880,6 +900,8 @@ def populate_supply_demand(world, setts):
                 dem["cotton"] = max(dem.get("cotton", 0.0), 1.6)
                 dem["tea"] = max(dem.get("tea", 0.0), 0.9)
             elif nm == "Kolli Oasis":
+                sup["salt"] = 420.0
+                sup["saltpeter"] = 14.0
                 sup["sugar"] = 38.0
                 sup["mounts"] = 28.0
                 sup["incense"] = 4.2
@@ -889,8 +911,8 @@ def populate_supply_demand(world, setts):
                 dem["tea"] = max(dem.get("tea", 0.0), 1.2)
                 dem["fine-ceramics"] = max(dem.get("fine-ceramics", 0.0), 0.8)
             elif nm == "Arfwai Oasis":
-                sup["salt"] = 165.0
-                sup["saltpeter"] = 9.5
+                sup["salt"] = 1550.0
+                sup["saltpeter"] = 28.0
                 sup["mounts"] = 34.0
                 sup["sugar"] = 44.0
                 sup["food"] = 140.0
@@ -1174,8 +1196,8 @@ def populate_supply_demand(world, setts):
             dem["photonic-opals"] = max(dem.get("photonic-opals", 0.0), 1.4)
 
         if nm in ("Catch Salt Works", "Bowl Salt Works"):
-            sup["salt"] = 1850.0
-            sup["saltpeter"] = 38.0 if nm == "Catch Salt Works" else 34.0
+            sup["salt"] = 480.0 if nm == "Catch Salt Works" else 1850.0
+            sup["saltpeter"] = 24.0 if nm == "Catch Salt Works" else 34.0
             sup["food"] = 0.0  # Hostile hypersaline salt/soda pans (TRADE-SCOPE s4: Salt al-Ban & Solta) produce ZERO food!
         if nm in ("Opal Valley Mines", "Xanadu Goldfields", "Siphon Maar Works", "Singing Gjar Quartz", "White Gills Hermitage", "Parabola"):
             sup["food"] = 0.0  # Arid mining, maar & high-pass hermitage outposts import food!
@@ -1531,10 +1553,10 @@ def populate_supply_demand(world, setts):
         #   (d) Alkaline turquoise fritware & celadon ceramic glazes (Jimjam, Serai, Yuni, Eternal State)
         #   (e) Goldsmith & Mint borax assaying/soldering flux + armourers' brazing & cloth scouring (Xanadu Qiblai/Strongbow, Iziz, Marr, Voth, Ys)
         ALKALI_PRODUCERS = {
-            "Catch Salt Works": 235.0,  # Terminal Catch soda-lake crust & borate/lithium pans (alkali_max = 226-255!)
-            "Stair": 76.0,              # Stair oasis merchants selling Catch soda/lithium salts alongside sealed cells (catch/PLAN.md:194)
-            "Arfwai Oasis": 56.0,       # South-Central Catch soda playa scrapers
-            "Kolli Oasis": 24.0,        # Mid-Catch natron pans
+            "Arfwai Oasis": 195.0,      # South-Central Catch soda playa scrapers & trans-Rift caravan station
+            "Kolli Oasis": 75.0,        # Mid-Catch natron pans on Catch caravan trail
+            "Stair": 96.0,              # Stair oasis merchants selling Catch soda/lithium salts alongside sealed cells (catch/PLAN.md:194)
+            "Catch Salt Works": 95.0,   # Dasri nomad soda-lake crust supplying Eastern Desert / Bowl / Badlands
             "Kautoa": 32.0,             # Minor maritime competitor: burned sea-kelp wrack soda ash (LORE.md:644; TRADE-SCOPE.md:566)
             "Valapo": 10.5,
         }
@@ -2205,6 +2227,222 @@ def populate_supply_demand(world, setts):
             dem["nickel"] = dem.get("nickel", 0.0) + 0.04 * wp_out
             dem["coal"] = dem.get("coal", 0.0) + 0.45 * wp_out
             dem["timber"] = dem.get("timber", 0.0) + 0.25 * wp_out
+
+    apply_calibrated_populations_and_nomadic_rules(setts)
+
+
+def apply_calibrated_populations_and_nomadic_rules(setts):
+    """Couple the 7,741,367 calibrated settlement/rural/nomadic population model into supply & demand.
+
+    Preserves all local self-sufficiency ratios (e.g., Shumari & Jabal food, Yeti 0-bulk food/timber)
+    and specialty monopoly coverage while modeling:
+      - Simulated urban pop + rural market-integrated hamlet demand (elasticity 0.78)
+      - Loose settlement attachment for nomadic polities:
+          * Scyvoi: 45% at own Baelu kraals, 0% pushed to border towns (traders come to them), 55% roaming camps
+          * Eastern Nomads (Nomad Country): 45% own moots + 30% E Desert/Bowl/Abyss/Badlands fairs, 25% roaming
+          * Beast Riders: 40% own roosts + 35% inner-crater border fairs, 25% roaming
+          * Andaru: 45% own folds + 35% Throne fairs (Hook, Port Mira, Dhelv, Ybera), 20% roaming
+    """
+    pop_path = os.path.join(ROOT, "openworld", "populations-gemini.json")
+    if not os.path.exists(pop_path):
+        return
+    with open(pop_path, "r", encoding="utf-8") as fp:
+        pop_doc = json.load(fp)
+
+    pol_rec_by_name = {p["polity"]: p for p in pop_doc.get("polities", [])}
+    sett_rec_by_name = {s["name"]: s for s in pop_doc.get("settlements", [])}
+    sett_by_name = {s["name"]: s for s in setts.values()}
+
+    pol_members = defaultdict(list)
+    for sid, s in setts.items():
+        pol_members[s["polity"]].append(sid)
+
+    # Record pre-scaling world exportable surplus S0, import deficit D0, and #1 net exporter polity per good
+    all_gids = [g["id"] for g in GOODS]
+    S0, D0 = {}, {}
+    for gid in all_gids:
+        s_sum = 0.0
+        d_sum = 0.0
+        for sid, s in setts.items():
+            if s["polity"] in ("Lizardmen", "Screamer Country", "Ring Sea Pirates"):
+                continue
+            sv = s["supply"].get(gid, 0.0)
+            dv = s["demand"].get(gid, 0.0)
+            if sv > dv:
+                s_sum += sv - dv
+            elif dv > sv:
+                d_sum += dv - sv
+        S0[gid] = s_sum
+        D0[gid] = d_sum
+
+    # Compute per-settlement economic multiplier m_scale & update calibrated population fields
+    RURAL_MARKET_WT = 0.56  # rural hamlet market-integration weight per capita vs urban townsfolk
+    m_scale_by_sid = {}
+    fair_bonus_pop = defaultdict(float)
+
+    for pol, sids_p in pol_members.items():
+        prec = pol_rec_by_name.get(pol)
+        if not prec:
+            for sid in sids_p:
+                m_scale_by_sid[sid] = 4.2
+            continue
+
+        if prec.get("is_exterior"):
+            # Exterior Ria Valley & The Crook pelagic visitors scale with Farport/Krator luxury demand
+            ext_tot = int(prec.get("nat_total", 250000))
+            for sid in sids_p:
+                setts[sid]["on_screen_pop"] = 0
+                setts[sid]["sim_urban_pop"] = int(prec.get("sim_urban_pop", 35000))
+                setts[sid]["population"] = ext_tot
+                m_scale_by_sid[sid] = 4.85
+            continue
+
+        nmod = prec.get("nomadic_demand_model")
+        rural_tot = float(prec.get("rural_pop", 0))
+        nat_tot = int(prec.get("nat_total", sum(setts[x]["population"] for x in sids_p)))
+
+        if nmod:
+            # Loose settlement attachment: unattached roaming share stays in overworld camps!
+            int_sh = float(nmod.get("internal_moot_share", 0.40))
+            fair_sh = float(nmod.get("border_fair_share", 0.0))
+            attached_internal_rural = rural_tot * int_sh
+            # Route border-fair share onto allowed seasonal gateway towns (0% for Scyvoi!)
+            gateways = [g for g in nmod.get("border_fair_gateways", []) if g in sett_by_name]
+            if fair_sh > 0.0 and gateways:
+                per_gw = (rural_tot * fair_sh * 0.48) / len(gateways)
+                for gw_nm in gateways:
+                    fair_bonus_pop[sett_by_name[gw_nm]["id"]] += per_gw
+            attached_rural_for_own_pins = attached_internal_rural
+        else:
+            attached_rural_for_own_pins = rural_tot
+
+        # Distribute polity's attached rural pop & total census pop across its member pins proportionally to sim_urban_pop
+        sim_urb_map = {}
+        for sid in sids_p:
+            nm = setts[sid]["name"]
+            srec = sett_rec_by_name.get(nm)
+            sim_u = float(srec["sim_urban_pop"]) if srec else float(setts[sid]["population"])
+            on_s = int(srec["on_screen_pop"]) if srec else int(setts[sid]["population"])
+            setts[sid]["on_screen_pop"] = on_s
+            setts[sid]["sim_urban_pop"] = int(round(sim_u))
+            sim_urb_map[sid] = max(100.0, sim_u)
+
+        tot_u_wt = sum(sim_urb_map.values()) or 1.0
+        pol_old_pop = max(500.0, sum(float(setts[x]["population"]) for x in sids_p))
+        pol_sim_urb = sum(sim_urb_map.values())
+        pol_eff_econ = pol_sim_urb + RURAL_MARKET_WT * attached_rural_for_own_pins
+        pol_ratio = max(1.35, pol_eff_econ / pol_old_pop)
+        m_pol = min(6.2, max(2.25, (pol_ratio ** 0.78) * 1.18))
+
+        assigned_nat = 0
+        for idx_m, sid in enumerate(sids_p):
+            frac = sim_urb_map[sid] / tot_u_wt
+            m_scale_by_sid[sid] = m_pol
+            if idx_m < len(sids_p) - 1:
+                p_alloc = int(round(nat_tot * frac))
+                setts[sid]["population"] = p_alloc
+                assigned_nat += p_alloc
+            else:
+                setts[sid]["population"] = max(1, nat_tot - assigned_nat)
+
+    # Apply seasonal nomadic trade-fair pulse uniformly at polity level so intra-polity staple balances stay intact
+    pol_fair_bonus = defaultdict(float)
+    for gw_sid, bonus_p in fair_bonus_pop.items():
+        pol_fair_bonus[setts[gw_sid]["polity"]] += bonus_p
+    for pol, b_pop in pol_fair_bonus.items():
+        if b_pop > 0:
+            sids_p = pol_members[pol]
+            cur_u = max(1000.0, sum(float(setts[x].get("sim_urban_pop", 1500)) for x in sids_p))
+            mult_b = min(1.16, 1.0 + 0.30 * (b_pop / (cur_u + 3000.0)))
+            for x in sids_p:
+                m_scale_by_sid[x] *= mult_b
+
+    # Scale both supply & demand at each settlement by m_scale (preserving 0s and local self-sufficiency ratios!)
+    PORTABLE_NOMAD_GOODS = {"weapons", "iron", "clothes", "cotton", "salt", "tea", "medicine"}
+    for sid, s in setts.items():
+        m_val = m_scale_by_sid.get(sid, 4.2)
+        sup, dem = s["supply"], s["demand"]
+        for k in list(sup.keys()):
+            sup[k] *= m_val
+        for k in list(dem.keys()):
+            dem[k] *= m_val
+
+        # Nomadic pastoralists subsist primarily on their own herds/forage (staple_import_mult ~0.20-0.30 -> >=80% pastoral food self-sufficiency),
+        # export extra live mounts, and concentrate import demand on portable hardware/cloth!
+        p_rec = pol_rec_by_name.get(s["polity"])
+        if p_rec and p_rec.get("nomadic_demand_model") and s["name"] != "Catch Salt Works":
+            if dem.get("food", 0.0) > 0.0:
+                sup["food"] = max(sup.get("food", 0.0), 0.82 * dem["food"])
+            if sup.get("mounts", 0.0) > dem.get("mounts", 0.0):
+                sup["mounts"] *= 1.18
+            for pg in PORTABLE_NOMAD_GOODS:
+                if dem.get(pg, 0.0) > sup.get(pg, 0.0) and not (s["polity"] == "Yeti Kingdom" and pg in ("iron", "salt")):
+                    dem[pg] *= 1.12
+
+    # Specialty & Monopoly Coverage Guard:
+    # Ensure scarce single-region specialties (saffron, magnets, alabaster, energy-cells, ria-amber, frost-coral, etc.)
+    # maintain pre-scaling world surplus-to-deficit coverage so northern & distant buyers are not starved!
+    CANON_TOP_POLS = {
+        "gold": "Xanadu Sultanate",
+        "cacao": "Xanadu Sultanate",
+        "opium": "Xanadu Sultanate",
+        "spice-highland": "Xanadu Sultanate",
+        "magnets": "Spider Lake Guilds",
+        "champagne": "Eternal State",
+        "paper": "Eternal State",
+        "scotch": "Iron Republic",
+        "peat": "Iron Republic",
+        "hashish": "Realm of Dalab",
+        "mezcal": "Jabal Shiekdom",
+        "alkali": "Catch Oasis Stations",
+    }
+    for gid in all_gids:
+        if S0[gid] <= 1e-6 or D0[gid] <= 1e-6:
+            continue
+        s1, d1 = 0.0, 0.0
+        net_exp_sids = []
+        for sid, s in setts.items():
+            if s["polity"] in ("Lizardmen", "Screamer Country", "Ring Sea Pirates"):
+                continue
+            sv = s["supply"].get(gid, 0.0)
+            dv = s["demand"].get(gid, 0.0)
+            if sv > dv + 1e-6:
+                s1 += sv - dv
+                net_exp_sids.append(sid)
+            elif dv > sv + 1e-6:
+                d1 += dv - sv
+        if s1 > 1e-6 and d1 > 1e-6:
+            target_cov = 0.96 * (S0[gid] / D0[gid])
+            cur_cov = s1 / d1
+            if cur_cov < target_cov:
+                boost = min(2.35, target_cov / cur_cov)
+                for sid in net_exp_sids:
+                    sv = setts[sid]["supply"][gid]
+                    dv = setts[sid]["demand"].get(gid, 0.0)
+                    setts[sid]["supply"][gid] = dv + (sv - dv) * boost
+
+        # Ensure canon #1 producer polity retains #1 net surplus after differential population scaling
+        canon_p = CANON_TOP_POLS.get(gid)
+        if canon_p:
+            pol_nets = {}
+            for p_nm, p_sids in pol_members.items():
+                if p_nm in ("Lizardmen", "Screamer Country", "Ring Sea Pirates"):
+                    continue
+                net_p = sum(setts[x]["supply"].get(gid, 0.0) - setts[x]["demand"].get(gid, 0.0) for x in p_sids)
+                if net_p > 0:
+                    pol_nets[p_nm] = net_p
+            if canon_p in pol_nets and pol_nets:
+                max_other = max((v for k, v in pol_nets.items() if k != canon_p), default=0.0)
+                if pol_nets[canon_p] < max_other * 1.12:
+                    need_extra = max_other * 1.18 - pol_nets[canon_p]
+                    c_exps = [
+                        x for x in pol_members[canon_p]
+                        if setts[x]["supply"].get(gid, 0.0) > setts[x]["demand"].get(gid, 0.0)
+                    ]
+                    tot_c = sum(setts[x]["supply"][gid] - setts[x]["demand"].get(gid, 0.0) for x in c_exps) or 1.0
+                    for x in c_exps:
+                        sh = (setts[x]["supply"][gid] - setts[x]["demand"].get(gid, 0.0)) / tot_c
+                        setts[x]["supply"][gid] += need_extra * sh
 
 
 # ---------------------------------------------------------------------------
@@ -4203,6 +4441,11 @@ def solve_trade(world, setts, graph):
                     if "Yeti Kingdom" in (s_pol, b_pol) and tier == "bulk":
                         w_row.append(0.0)
                         continue
+                    # 9. Eastern Nomads (Nomad Country) trade strictly within Eastern Desert / The Bowl / E Abyss / E Badlands (+ Catch edge):
+                    if "Nomad Country" in (s_pol, b_pol):
+                        if setts[s_sid]["name"] not in EASTERN_NOMAD_ALLOWED_PINS or setts[b_sid]["name"] not in EASTERN_NOMAD_ALLOWED_PINS:
+                            w_row.append(0.0)
+                            continue
                     eff_km = fast_eff(s_sid, b_sid, tier)
                     if not np.isfinite(eff_km):
                         w_row.append(0.0)
@@ -4330,6 +4573,12 @@ def solve_trade(world, setts, graph):
                     if "Yeti Kingdom" in (s_pol, b_pol) and pinfo_chk:
                         if any(ep in pinfo_chk["ports"] or ep in pinfo_chk["gateways"] for ep in ("Lux", "Fulcrum", "Bastion", "Palewharf", "Farport")):
                             w = 0.0
+                    # Eastern Nomads never push onto the Ring Sea or transit outside Eastern Desert / Bowl / Abyss / Badlands
+                    if "Nomad Country" in (s_pol, b_pol):
+                        if not pinfo_chk or pinfo_chk["sea_km"] > 0:
+                            w = 0.0
+                        elif any(bp in pinfo_chk["ports"] or bp in pinfo_chk["gateways"] for bp in EASTERN_NOMAD_BLOCKED_TRANSIT):
+                            w = 0.0
                     # Rivalry transit discouragement:
                     # - Hykkousoi merchants avoid transiting Vothic ports to third parties
                     if (s_pol.startswith("League:") or b_pol.startswith("League:")) and ("Vothic Kingdom" not in (s_pol, b_pol)) and pinfo_chk:
@@ -4400,8 +4649,8 @@ def solve_trade(world, setts, graph):
                     fence_cands = []
                     for b_sid, b_need in buyers:
                         b_pol = setts[b_sid]["polity"]
-                        if b_sid == nephtos_sid or b_pol == pir_pol:
-                            continue  # Nephtos rejects pirated prizes!
+                        if b_sid == nephtos_sid or b_pol == pir_pol or b_pol == "Nomad Country":
+                            continue  # Nephtos rejects pirated prizes; Eastern Nomads do not trade on Ring Sea!
                         if gid == "books" and b_pol == "Vothic Kingdom":
                             continue
                         eff_km, pinfo = get_pair(pir_sid, b_sid, tier)
@@ -4441,7 +4690,7 @@ def solve_trade(world, setts, graph):
                     mid_cands = []
                     for b_sid, b_need in buyers:
                         b_pol = setts[b_sid]["polity"]
-                        if b_sid == nephtos_sid or b_pol == mid_pol or (gid == "books" and b_pol == "Vothic Kingdom"):
+                        if b_sid == nephtos_sid or b_pol == mid_pol or b_pol == "Nomad Country" or (gid == "books" and b_pol == "Vothic Kingdom"):
                             continue
                         eff_km, pinfo = get_pair(mid_sid, b_sid, tier)
                         if np.isfinite(eff_km) and pinfo is not None and pinfo["sea_km"] > 0 and eff_km < 460.0:
@@ -5159,7 +5408,13 @@ def main(argv=None):
         elif pol == "Dam Basin Salvagers":
             entry["trade_regime"] = "salvager_highwaymen"
             entry["note"] = "Boatmurder salvagers & highwaymen preying on caravans along the NE Dam Basin and semi-arid highways."
-        elif pol in ("Painted Men", "Fellgangs", "Scyvoi", "Free Giants (Vrivolci)", "Coyote Kingdom", "Nomad Country"):
+        elif pol == "Scyvoi":
+            entry["trade_regime"] = "passive_host_steppe_kraals"
+            entry["note"] = "Borunsa-riding steppe pastoralists (Baelu kraals & mobile kuren camps); never push merchant caravans out to border towns — outsiders must travel into Scyvoi country to buy mounts, cattle, hides, and felt."
+        elif pol == "Nomad Country":
+            entry["trade_regime"] = "confined_eastern_desert_nomads"
+            entry["note"] = "Eastern Desert, Bowl, Abyss & Badlands pastoral nomads; trade and seasonal migration circuits stay strictly inside the Eastern Desert, The Bowl, East Abyss, and East Badlands (0 Ring Sea shipping, 0 western savannah routes)."
+        elif pol in ("Painted Men", "Fellgangs", "Free Giants (Vrivolci)", "Coyote Kingdom"):
             entry["trade_regime"] = "neighbor_raider_trading"
             entry["note"] = "Participates in external trade while conducting frontier or desert raids that raise escort costs and shift cargo flows."
         pol_summary[pol] = entry

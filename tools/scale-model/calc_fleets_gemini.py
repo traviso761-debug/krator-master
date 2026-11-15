@@ -71,6 +71,9 @@ ISLAND_OR_EXTERIOR_NO_CARAVAN_POLS = {
     "League: Ys", "League: Pontus", "Ria Valley", "The Crook",
 }
 
+# Passive-host nomadic kraals: Scyvoi never push merchant caravans out to border towns — outsiders come to them!
+PASSIVE_HOST_NO_CARAVAN_POLS = {"Scyvoi"}
+
 UMBRELLA_GROUPS = {"Nomad Country", "Coyote Kingdom", "Korona Tribes", "Scyvoi", "Catch Oasis Stations"}
 
 UNIT_TONS = {"t": 1.0, "kg": 0.002}
@@ -686,6 +689,9 @@ def extract_flows_from_model():
                         w_row.append(0.0); continue
                     if "Yeti Kingdom" in (s_pol, b_pol) and tier == "bulk":
                         w_row.append(0.0); continue
+                    if "Nomad Country" in (s_pol, b_pol):
+                        if setts[s_sid]["name"] not in gtm.EASTERN_NOMAD_ALLOWED_PINS or setts[b_sid]["name"] not in gtm.EASTERN_NOMAD_ALLOWED_PINS:
+                            w_row.append(0.0); continue
                     eff_km = fast_eff(s_sid, b_sid, tier)
                     if not np.isfinite(eff_km):
                         w_row.append(0.0); continue
@@ -763,6 +769,11 @@ def extract_flows_from_model():
                     if "Yeti Kingdom" in (s_pol, b_pol) and pinfo_chk:
                         if any(ep in pinfo_chk.get("ports", []) or ep in pinfo_chk.get("gateways", []) for ep in ("Lux", "Fulcrum", "Bastion", "Palewharf", "Farport")):
                             w = 0.0
+                    if "Nomad Country" in (s_pol, b_pol):
+                        if not pinfo_chk or pinfo_chk.get("sea_km", 0.0) > 0.0:
+                            w = 0.0
+                        elif any(bp in pinfo_chk.get("ports", []) or bp in pinfo_chk.get("gateways", []) for bp in gtm.EASTERN_NOMAD_BLOCKED_TRANSIT):
+                            w = 0.0
                     if (s_pol.startswith("League:") or b_pol.startswith("League:")) and ("Vothic Kingdom" not in (s_pol, b_pol)) and pinfo_chk:
                         if any(vp in pinfo_chk.get("ports", []) for vp in ("Voth", "Shim", "Almua", "Zey'danin", "Torus")):
                             w *= 0.35
@@ -819,7 +830,7 @@ def extract_flows_from_model():
                     fence_cands = []
                     for b_sid, b_need in buyers:
                         b_pol = setts[b_sid]["polity"]
-                        if b_sid == nephtos_sid or b_pol == pir_pol or (gid == "books" and b_pol == "Vothic Kingdom"):
+                        if b_sid == nephtos_sid or b_pol == pir_pol or b_pol == "Nomad Country" or (gid == "books" and b_pol == "Vothic Kingdom"):
                             continue
                         eff_km, pinfo, f_legs = get_pair_full(pir_sid, b_sid, tier)
                         if np.isfinite(eff_km) and pinfo is not None and pinfo["sea_km"] > 0 and eff_km < 430.0:
@@ -843,7 +854,7 @@ def extract_flows_from_model():
                     mid_cands = []
                     for b_sid, b_need in buyers:
                         b_pol = setts[b_sid]["polity"]
-                        if b_sid == nephtos_sid or b_pol == mid_pol or (gid == "books" and b_pol == "Vothic Kingdom"):
+                        if b_sid == nephtos_sid or b_pol == mid_pol or b_pol == "Nomad Country" or (gid == "books" and b_pol == "Vothic Kingdom"):
                             continue
                         eff_km, pinfo, f_legs = get_pair_full(mid_sid, b_sid, tier)
                         if np.isfinite(eff_km) and pinfo is not None and pinfo["sea_km"] > 0 and eff_km < 460.0:
@@ -1072,18 +1083,24 @@ def build_fleets_json(cache_path=None):
         return {"Eternal State": 1.0}
 
     def assign_land_flags(a, b, lg, s_pol, b_pol, is_dom):
-        if is_dom and s_pol not in ISLAND_OR_EXTERIOR_NO_CARAVAN_POLS:
+        no_carav = ISLAND_OR_EXTERIOR_NO_CARAVAN_POLS | PASSIVE_HOST_NO_CARAVAN_POLS
+        enomad_leg_ok = (a in gtm.EASTERN_NOMAD_ALLOWED_PINS and b in gtm.EASTERN_NOMAD_ALLOWED_PINS)
+        if is_dom and s_pol not in no_carav:
             return {s_pol: 1.0}
         a_pol, b_pol_h = name_to_pol.get(a, ""), name_to_pol.get(b, "")
         scores = defaultdict(float)
         for p, km in lg["pol_cells"].items():
-            if p not in ISLAND_OR_EXTERIOR_NO_CARAVAN_POLS and p not in ("Lizardmen", "Screamer Country"):
+            if p not in no_carav and p not in ("Lizardmen", "Screamer Country"):
+                if p == "Nomad Country" and not enomad_leg_ok:
+                    continue
                 scores[p] += km * 0.75
         for hp in (a_pol, b_pol_h):
-            if hp and hp not in ISLAND_OR_EXTERIOR_NO_CARAVAN_POLS and hp not in ("Lizardmen", "Screamer Country"):
+            if hp and hp not in no_carav and hp not in ("Lizardmen", "Screamer Country"):
+                if hp == "Nomad Country" and not enomad_leg_ok:
+                    continue
                 scores[hp] += 0.35 * lg["km"]
         for ep in (s_pol, b_pol):
-            if ep in scores and ep not in ISLAND_OR_EXTERIOR_NO_CARAVAN_POLS:
+            if ep in scores and ep not in no_carav:
                 scores[ep] *= 1.20
         for carav in ("Yuni Emirate", "Jimjam", "Nomad Country", "Jabal Shiekdom", "Catch Oasis Stations", "Realm of Dalab"):
             if carav in scores:
@@ -1092,7 +1109,7 @@ def build_fleets_json(cache_path=None):
         if tot > 0:
             return {k: v / tot for k, v in scores.items()}
         for cand in (a_pol, b_pol_h, s_pol, b_pol):
-            if cand and cand not in ISLAND_OR_EXTERIOR_NO_CARAVAN_POLS:
+            if cand and cand not in no_carav and not (cand == "Nomad Country" and not enomad_leg_ok):
                 return {cand: 1.0}
         return {"Empire of Iziz": 1.0}
 

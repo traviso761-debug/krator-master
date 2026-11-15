@@ -17,7 +17,7 @@
     "core_nomadic_mobile_pop": 141205,
     "all_nomadic_and_roamer_mobile_pop": 176520,
     "sedentary_rural_hamlet_pop": 5625642,
-    "tier4c_nomadic_circuit_km": 4040
+    "tier4c_nomadic_circuit_km": 4244
   },
   "polities": [
     {
@@ -525,28 +525,29 @@
       "rural_note": "Vast unpinned Dasri camel, horse & goat-herding tribal dīras across Nomad Country & the Tiers",
       "proj_land": 53,
       "population_mode": "core_nomadic",
-      "habitable_area_km2": 408096,
-      "dirt_path_km": 24,
-      "nomad_circuit_km": 1180,
+      "habitable_area_km2": 412720,
+      "dirt_path_km": 28,
+      "nomad_circuit_km": 1352,
       "mobile_camps": 20,
       "nomadic_demand_model": {
-        "mode_label": "Eastern Steppe & Wadi Pastoral Nomads",
-        "internal_moot_share": 0.38,
-        "border_fair_share": 0.42,
-        "unattached_roaming_share": 0.2,
+        "mode_label": "Eastern Desert, Bowl, Abyss & Badlands Pastoral Nomads",
+        "internal_moot_share": 0.45,
+        "border_fair_share": 0.3,
+        "unattached_roaming_share": 0.25,
         "staple_import_mult": 0.25,
         "portable_good_mult": 1.35,
         "border_fair_gateways": [
-          "Talia",
-          "Fridon",
-          "Verge",
-          "Locus",
           "Jabal",
-          "Port Goto",
-          "Silkhead"
+          "Bowl Salt Works",
+          "Mantis",
+          "Locus",
+          "Verge",
+          "Yuni",
+          "Sfenops",
+          "Liikofi"
         ],
-        "exports_barter": "Livestock, wool, hides, tallow, alkali & placer gold",
-        "imports_barter": "Iron tools, arms/firearms, cloth, tea, salt & grain supplement"
+        "exports_barter": "Camels/mounts, wool, hides, tallow, alkali & placer gold",
+        "imports_barter": "Iron tools, blades, cloth, tea, salt & oasis dates/grain"
       }
     },
     {
@@ -862,9 +863,9 @@
       "rural_note": "Dispersed Tierhound & Outlands hunter-pastoralist bands across the Outlands basin",
       "proj_land": 8,
       "population_mode": "frontier_roamer",
-      "habitable_area_km2": 372608,
+      "habitable_area_km2": 373168,
       "dirt_path_km": 0,
-      "nomad_circuit_km": 268,
+      "nomad_circuit_km": 400,
       "mobile_camps": 7,
       "nomadic_demand_model": {
         "mode_label": "Outland Semi-Nomadic Pack & Raiding Bands",
@@ -1090,24 +1091,17 @@
       "population_mode": "core_nomadic",
       "habitable_area_km2": 39744,
       "dirt_path_km": 20,
-      "nomad_circuit_km": 640,
+      "nomad_circuit_km": 540,
       "mobile_camps": 4,
       "nomadic_demand_model": {
-        "mode_label": "Western Steppe Horse & Cattle Pastoralists",
-        "internal_moot_share": 0.25,
-        "border_fair_share": 0.55,
-        "unattached_roaming_share": 0.2,
+        "mode_label": "Western Steppe Borunsa-Riding Pastoralists (Outsiders Come to Kraals)",
+        "internal_moot_share": 0.45,
+        "border_fair_share": 0.0,
+        "unattached_roaming_share": 0.55,
         "staple_import_mult": 0.25,
         "portable_good_mult": 1.4,
-        "border_fair_gateways": [
-          "Driyan",
-          "Voth",
-          "Glaive",
-          "Stahlborn",
-          "Dilihan",
-          "Limnaia"
-        ],
-        "exports_barter": "Steppe remount horses, cattle, hides, horn & felt",
+        "border_fair_gateways": [],
+        "exports_barter": "Borunsa & steppe mounts, cattle, hides, horn & felt (bought at kraals)",
         "imports_barter": "Steel weapons/mail, metalware, cloth, spirits & winter grain"
       }
     },
@@ -1196,7 +1190,7 @@
       "rural_note": "Dispersed Korona lake/forest villages & spider-silk tending camps",
       "proj_land": 11,
       "population_mode": "sedentary",
-      "habitable_area_km2": 15408,
+      "habitable_area_km2": 15424,
       "dirt_path_km": 0,
       "nomad_circuit_km": 0,
       "mobile_camps": 0
@@ -1276,7 +1270,7 @@
       "nomad_circuit_km": 452,
       "mobile_camps": 3,
       "nomadic_demand_model": {
-        "mode_label": "Throne Volcanic-Slope Transhumant Herders",
+        "mode_label": "Throne Volcanic-Slope Transhumant Herders (Fleetless)",
         "internal_moot_share": 0.45,
         "border_fair_share": 0.35,
         "unattached_roaming_share": 0.2,
@@ -1288,7 +1282,7 @@
           "Dhelv",
           "Ybera"
         ],
-        "exports_barter": "Highland wool, aged cheese, sulfur, obsidian & goat-hides",
+        "exports_barter": "Highland wool, aged cheese, sulfur, ranj & goat-hides",
         "imports_barter": "Salt-fish, iron tools, timber, cordage & woven cloth"
       }
     },
