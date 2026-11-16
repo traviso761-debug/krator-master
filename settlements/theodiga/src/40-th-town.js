@@ -29,7 +29,10 @@ var TH_TOWN=(function(){
  /* the people a building holds (its trade's workers live over or beside it; PLAN.md: about 4,100 in the town) */
  const PEOPLE={xa_scrap_court:14,xa_scrap_house:7,xa_scrap_row:15,xa_scrap_tank_house:5,xa_scrap_hull:4,xa_scrap_glint:5,xa_scrap_shacks:12,
   xa_scrap_silos:9,xa_scrap_farm:11,xa_scrap_bazaar:4,xa_scrap_store:2,xa_scrap_granary:0,xa_scrap_bath:3,xa_scrap_guild_hall:3,
-  xa_scrap_guild_salvage:3,xa_scrap_tower:4,xa_scrap_shrine:2,xa_scrap_gate:12,xa_scrap_serai:20,xa_scrap_pavilion:0};
+  xa_scrap_guild_salvage:3,xa_scrap_tower:4,xa_scrap_shrine:2,xa_scrap_gate:12,xa_scrap_serai:20,xa_scrap_pavilion:0,
+  /* the Qiblai kit's (the owner, 2026-11-16: "we can also mix in some qiblai-style buildings"): the faith's buildings and the
+     houses of those who serve it; a hostel's pilgrims are guests, not counted (its keepers are) */
+  qb_court_house:14,qb_row_rich:10,qb_row_mid:7,qb_shop_row:8,qb_hostel:6,qb_wheel_house:1,qb_chorten:0,qb_shrine:0,qb_gate_temple:4};
  const QUARTERS=['square','bazaar','gate','salvage','farmers','poor','farms'];
  const QUARTER_NAME={square:'Gate Square and the hostels',bazaar:'the bazaar',gate:'the East Gate',salvage:'the salvagers',farmers:'the farmers and dairies',poor:'the poor tier',farms:'the upland farms'};
  /* which quarter a point (the dam's frame) stands in */
@@ -41,19 +44,27 @@ var TH_TOWN=(function(){
   cell:2.5,rasterHalf:470,maxSlope:.22,exact:true,
   width:{avenue:9,main:7,side:5,alley:3,highway:10,lane:4},
   lot:{side:1.8,setback:1.6,rear:3,inset:1,step:3},
-  classes:{manor:[['xa_scrap_court',0],['xa_scrap_court',2]],rich:[['xa_scrap_court',0],['xa_scrap_court',1],['xa_scrap_court',2],['xa_scrap_row',2]],
+  /* scrap Xanadu everywhere; Qiblai's courts and rows among the rich (the priests' kin, the Warden's officers) and a Qiblai
+     shop row among the shops. Not Qiblai's middle row house: at 9 m it fits frontage the scrap houses do not, and took a
+     quarter of the town */
+  classes:{manor:[['xa_scrap_court',0],['xa_scrap_court',2],['qb_court_house',0]],rich:[['xa_scrap_court',0],['xa_scrap_court',1],['xa_scrap_court',2],['xa_scrap_row',2],['qb_court_house',1],['qb_row_rich',0]],
    middle:[['xa_scrap_house',0],['xa_scrap_house',1],['xa_scrap_row',0],['xa_scrap_row',1],['xa_scrap_row',2]],
    poor:[['xa_scrap_tank_house',0],['xa_scrap_tank_house',1],['xa_scrap_hull',0],['xa_scrap_hull',1],['xa_scrap_glint',0],['xa_scrap_glint',1],['xa_scrap_shacks',0],['xa_scrap_shacks',1],['xa_scrap_silos',0]],
-   shop:[['xa_scrap_bazaar',0],['xa_scrap_bazaar',1],['xa_scrap_bazaar',2],['xa_scrap_row',1]],tavern:[['xa_scrap_row',2]],
+   shop:[['xa_scrap_bazaar',0],['xa_scrap_bazaar',1],['xa_scrap_bazaar',2],['xa_scrap_row',1],['qb_shop_row',0]],tavern:[['xa_scrap_row',2]],
    industrial:[['xa_scrap_store',0],['xa_scrap_store',1],['xa_scrap_store',2]],farm:[['xa_scrap_farm',0],['xa_scrap_farm',1],['xa_scrap_farm',2]]},
   fallback:{manor:'rich',rich:'middle',middle:'poor',shop:'middle',tavern:'shop',industrial:'poor',poor:null,farm:null},
+  /* the faith's buildings are Qiblai's (the temple estates build them as the holy city does): the pilgrims' hostels and a
+     chorten by Gate Square, wayside shrines along Bazaar Street, a gate temple beside the East Gate, and a wheel house at each
+     corner of the kora where the pilgrims turn; the town's own buildings, its shrine among them, are scrap Xanadu */
   civic:[{key:'xa_scrap_bath',v:0,near:'square'},{key:'xa_scrap_shrine',v:0,near:'square'},{key:'xa_scrap_pavilion',v:0,near:'square'},
-   {key:'xa_scrap_tower',v:0,near:'square'},{key:'xa_scrap_guild_hall',v:0,near:'bazaar'},{key:'xa_scrap_bazaar',v:0,near:'bazaar'},
-   {key:'xa_scrap_bazaar',v:2,near:'bazaar'},{key:'xa_scrap_serai',v:0,near:'gate'},{key:'xa_scrap_gate',v:0,near:'gateway'},
+   {key:'xa_scrap_tower',v:0,near:'square'},{key:'qb_hostel',v:0,near:'square'},{key:'qb_hostel',v:1,near:'hostels'},{key:'qb_chorten',v:0,near:'square'},
+   {key:'xa_scrap_guild_hall',v:0,near:'bazaar'},{key:'xa_scrap_bazaar',v:0,near:'bazaar'},{key:'xa_scrap_bazaar',v:2,near:'bazaar'},
+   {key:'qb_shrine',v:0,near:'bazaar'},{key:'qb_shrine',v:1,near:'bazaar'},
+   {key:'xa_scrap_serai',v:0,near:'gate'},{key:'xa_scrap_gate',v:0,near:'gateway'},{key:'qb_gate_temple',v:0,near:'gateway'},
    {key:'xa_scrap_store',v:0,near:'gate'},{key:'xa_scrap_store',v:1,near:'gate'},{key:'xa_scrap_guild_salvage',v:0,near:'salvage'},
    {key:'xa_scrap_store',v:2,near:'salvage'},{key:'xa_scrap_store',v:0,near:'salvage'},{key:'xa_scrap_granary',v:0,near:'farmers'},
-   {key:'xa_scrap_granary',v:1,near:'fields'},{key:'xa_scrap_shrine',v:1,near:'koraNE'},{key:'xa_scrap_shrine',v:2,near:'koraSE'},
-   {key:'xa_scrap_shrine',v:1,near:'koraSW'},{key:'xa_scrap_shrine',v:2,near:'koraNW'}],
+   {key:'xa_scrap_granary',v:1,near:'fields'},{key:'qb_wheel_house',v:0,near:'koraNE'},{key:'qb_wheel_house',v:1,near:'koraSE'},
+   {key:'qb_wheel_house',v:2,near:'koraSW'},{key:'qb_wheel_house',v:0,near:'koraNW'}],
   civicSpacing:55,civicJitter:20,
   voidMax:42,voidIters:12,voidBatch:8,sideSpacing:46,sideMax:180,alleyFrac:.2,blindMax:80,interiorDepth:9,interiorRounds:2,
   avenueSnap:40,ringGap:8,verge:6,reach:640,centre:[0,0],mapHalf:470,
@@ -123,7 +134,7 @@ var TH_TOWN=(function(){
    choosers:{avenue:farmy(D0.avenue),main:farmy(D0.main),side:farmy(D0.side),alley:farmy(D0.alley)},
    vacant:(p,rs)=>{const w=toW(p[0],p[1]);return rs.chance(V[quarterOf(w[0],w[1])]);},
    near:{
-    square:c=>dW(c,470,BZ+40),bazaar:c=>segN(bzL,c.p)*3+Math.abs(c.p[0]-toL(640,0)[0])*.5,gate:c=>dW(c,GATE[0]-50,BZ+50),
+    square:c=>dW(c,470,BZ+40),hostels:c=>dW(c,480,BZ-55),bazaar:c=>segN(bzL,c.p)*3+Math.abs(c.p[0]-toL(640,0)[0])*.5,gate:c=>dW(c,GATE[0]-50,BZ+50),
     gateway:c=>segN(bzL,c.p)*4+dW(c,GATE[0],BZ),salvage:c=>segN(salL,c.p)*2+dW(c,480,200),farmers:c=>segN(silL,c.p)*2+dW(c,540,-200),
     fields:c=>segN(lineL,c.p)*2+dW(c,1060,60),
     koraNE:c=>dW(c,CORNERS.koraNE[0]-30,CORNERS.koraNE[1]+30),koraSE:c=>dW(c,CORNERS.koraSE[0]-30,CORNERS.koraSE[1]-30),

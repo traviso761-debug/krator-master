@@ -13,7 +13,8 @@ surface city", after approving the blueprint's site sheet (`floors/T0.png`): the
 | core/rand | yes | core/city's `rand: 'krand'`; nothing draws from a stream by position |
 | core/tags | yes (the page) | every lot registered before it is drawn, as the Theodiga page already does for the Dome |
 | core/space | through core/city | its overlap and occupancy |
-| kits/xanadu (scrap set) | yes | every building is a scrap Xanadu def (`xa_scrap_*`); `XAK` bundled for the page. **Not on main yet** (branch `claude/scrap-xanadu`): the layout runs on the set's boxes (`scrap-dims.json`, a copy until it lands) |
+| kits/xanadu (scrap set) | yes | the town's buildings are scrap Xanadu defs (`xa_scrap_*`); `XAK` bundled for the page (`kit_bundle.bundle(scrap=True, qiblai=True)`). The set came onto this branch by cherry-pick (the owner, 2026-11-16) |
+| kits/qiblai | yes | the faith's buildings and some houses and shops are Qiblai's (`qb_*`, the owner, 2026-11-16: "we can also mix in some qiblai-style buildings"); in `XAK` beside the scrap set (`qiblai=True`). Merged from `claude/zealous-allen-0cd44d` |
 | kits/crops | yes | the farms' fields: what the Xanadu vale grows by rain, picked by farm and field (as Strongbow's) |
 | core/world, core/terrain | later | on the kit's page the plateau is the canyon's rock at 440 m; in the open world the ground is core/world's, and the town's frame takes it as `ground` |
 | core/simulation | later | the census below becomes roles and workplaces |
@@ -64,6 +65,16 @@ session's): `core/city` could keep the margin itself.
 | The poor tier | the east, toward the fields | labourers, newcomers | tank houses, hull houses, glint houses, shack rows |
 | The upland farms | beyond the kora | the estates' farms and their fields | farmsteads with crop strips |
 
+## Qiblai's buildings in the town (2026-11-16)
+
+The town is scrap Xanadu: the salvagers' reclaimed panels and glazing on the Xanadu body. The faith's own buildings are
+Qiblai's, the holy city's style, built for the temple estates as the holy city builds them: the two pilgrims' hostels and a
+chorten by Gate Square, two wayside shrines along Bazaar Street, a gate temple beside the East Gate, and a wheel house at
+each corner of the kora where the pilgrims turn. Among the rich (the priests' kin, the Warden's officers) a third of the houses
+are Qiblai courts and rows, and among the shops a Qiblai shop row; the middle and the poor are all scrap. Qiblai's middle row
+house is left out: at 9 m it fits frontage the scrap houses do not, and took a quarter of the town when it was in. The town's
+own shrine by the square stays scrap. Seed 2207: 32 Qiblai houses and shops beside 387 scrap ones, and the ten civic.
+
 ## The census (about 4,100)
 
 Each building holds the people its trade lodges (Strongbow's table: a court 14, a house 7, a row 15, a tank house 5, a
@@ -74,9 +85,9 @@ salvagers 1,250, the farmers and dairies 950, the poor tier 550, the farms 130. 
 working quarters: the salvagers and the farmers are the larger part of the pilgrims' trade's labour too, and the hostels'
 guests (the pilgrims) are not counted. The pilgrims at a festival are extra.
 
-**The first layout (seed 2207):** 3,985 people in 417 buildings (square 487, bazaar 563, gate 239, salvagers 1,185,
-farmers 982, poor tier 405, farms 124), ten farms with fields of grain, pulse and a root crop; five other seeds give 3,877
-to 4,344 with every check passing. The plan sheet is `floors/town-layout.svg`
+**The layout (seed 2207, with Qiblai's buildings):** 4,100 people in 445 buildings (square 452, bazaar 524, gate 248,
+salvagers 1,293, farmers 1,036, poor tier 429, farms 118), nine farms with fields of grain, pulse and a root crop. The scrap
+set alone gave 3,985 in 417, and five other seeds 3,877 to 4,344 with every check passing. The plan sheet is `floors/town-layout.svg`
 (`node settlements/theodiga/test-th-town.js --svg settlements/theodiga/floors/town-layout.svg`).
 
 ## Order of work
@@ -86,8 +97,8 @@ to 4,344 with every check passing. The plan sheet is `floors/town-layout.svg`
    census by quarter, the farms beyond the kora with their fields, the civic buildings, the scrap set's keys, the same
    twice), each check with a negative (`tools/ktest.js`).
 2. **T-town-2, the page**: a `kits/ancients` target `theodiga-today` (the ruined dam, the Dome, the water, and the town),
-   reading `settlements/theodiga/src` in place, with core/city and the scrap set bundled. Needs the scrap set on main
-   (or this branch merged with it): the owner decides.
+   reading `settlements/theodiga/src` in place, with core/city and `XAK` (the scrap set and Qiblai's buildings) bundled.
+   Both are on this branch since 2026-11-16 (the scrap set cherry-picked, the Qiblai branch merged).
 3. **T-town-3**: the Stair of Descent, Gate Square and the Warden's House drawn; the Salvage and Silt roads down the canyon
    walls; the outer kora's wheel shrines.
 4. **Later**: the town's interiors (as Strongbow's), core/simulation's roles, the open world.

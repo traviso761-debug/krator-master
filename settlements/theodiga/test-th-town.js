@@ -1,6 +1,6 @@
-/* node settlements/theodiga/test-th-town.js: Theodiga's town (src/40-th-town.js) on core/city, with the scrap Xanadu set's boxes
-   (the kit's defs, kits/xanadu/src/87u-xs-build.js and 87v-xs-poor.js, when this checkout has them; else scrap-dims.json, a
-   copy of them until the set is on main): no two buildings overlap, none stands on a street, in Gate Square, the Warden's
+/* node settlements/theodiga/test-th-town.js: Theodiga's town (src/40-th-town.js) on core/city, with the boxes of the scrap Xanadu
+   set and the Qiblai kit (their defs: kits/xanadu/src/87u-xs-build.js and 87v-xs-poor.js, kits/qiblai/src/89q*.js, read here
+   as a table): no two buildings overlap, none stands on a street, in Gate Square, the Warden's
    House, a road head or off the rim's plateau; every quarter holds about PLAN.md's people and the town about 4,100; the farms
    stand beyond the kora with their fields; the layout reruns the same. Each check with a negative (tools/ktest.js). */
 'use strict';
@@ -12,11 +12,12 @@ const load=f=>vm.runInThisContext(fs.readFileSync(path.join(ROOT,f),'utf8'),{fil
 ['core/rand/08-core-rand.js','core/space/20-core-space.js'].forEach(load);
 fs.readdirSync(path.join(ROOT,'core','city')).filter(f=>/^\d\d-city-.*\.js$/.test(f)&&!/host/.test(f)).sort().forEach(f=>load('core/city/'+f));
 ['kits/crops/src/10-crop-core.js','kits/crops/src/20-crop-records.js','kits/crops/src/40-crop-query.js','settlements/theodiga/src/40-th-town.js'].forEach(load);
-/* the kit's boxes, from its defs (XA.def({key, ..., w, d, h, ...})), or the copy */
-const DIMS={};let from='the kit';
-for(const f of ['kits/xanadu/src/87u-xs-build.js','kits/xanadu/src/87v-xs-poor.js']){const p=path.join(ROOT,f);if(!fs.existsSync(p))continue;
- for(const m of fs.readFileSync(p,'utf8').matchAll(/XA\.def\(\{key:'(xa_scrap_[a-z_]+)'.*?,w:([\d.]+),d:([\d.]+),h:([\d.]+)/g))DIMS[m[1]]={w:+m[2],d:+m[3],h:+m[4]};}
-if(!Object.keys(DIMS).length){Object.assign(DIMS,JSON.parse(fs.readFileSync(path.join(__dirname,'scrap-dims.json'),'utf8')).dims);from='scrap-dims.json';}
+/* the kits' boxes, from their defs (XA.def({key, ..., w, d, h, ...}), QB.def likewise) */
+const DIMS={};
+const QBF=fs.readdirSync(path.join(ROOT,'kits','qiblai','src')).filter(f=>/^89q.*\.js$/.test(f)).map(f=>'kits/qiblai/src/'+f);
+for(const f of ['kits/xanadu/src/87u-xs-build.js','kits/xanadu/src/87v-xs-poor.js'].concat(QBF))
+ for(const m of fs.readFileSync(path.join(ROOT,f),'utf8').matchAll(/(?:XA|QB)\.def\(\{\s*key:'((?:xa_scrap|qb)_[a-z_]+)'.*?,w:([\d.]+),d:([\d.]+),h:([\d.]+)/g))DIMS[m[1]]={w:+m[2],d:+m[3],h:+m[4]};
+const from=Object.keys(DIMS).filter(k=>/^xa_/.test(k)).length+' scrap and '+Object.keys(DIMS).filter(k=>/^qb_/.test(k)).length+' Qiblai defs';
 const dims=(k,v)=>DIMS[k]?{key:k,v:v||0,w:DIMS[k].w,d:DIMS[k].d,h:DIMS[k].h}:null;
 const make=seed=>TH_TOWN.make({dims,seed});
 const TOWN=make();
@@ -42,9 +43,13 @@ const CHECKS={
    const good=TH_TOWN.QUARTERS.every(q=>Math.abs(by[q]-WANT[q])<=WANT[q]*.35)&&t>3700&&t<4500;return [good,TH_TOWN.QUARTERS.map(q=>q+' '+by[q]).join(', ')+' = '+t];},
  'the farms stand beyond the kora, each with its fields':X=>{const farms=X.lots.filter(L=>L.key==='xa_scrap_farm');const bad=farms.filter(L=>L.x<K.x1).length;
    const fed=new Set(X.fields.map(f=>f.farm));return [farms.length>=8&&bad===0&&fed.size>=farms.length*.6,farms.length+' farms, '+bad+' inside the kora, '+fed.size+' with fields'];},
- 'the town has its civic buildings: the serai, the gate, the salvagers\' guildhall, the bath, two granaries, the kora\'s shrines':X=>{const n=k=>X.lots.filter(L=>L.civic&&L.key===k).length;
-   const good=n('xa_scrap_serai')===1&&n('xa_scrap_gate')===1&&n('xa_scrap_guild_salvage')===1&&n('xa_scrap_bath')===1&&n('xa_scrap_granary')===2&&n('xa_scrap_shrine')>=4;
-   return [good,['serai','gate','guild_salvage','bath','granary','shrine'].map(k=>k+' '+n('xa_scrap_'+k)).join(', ')];},
+ 'the town has its civic buildings: the serai, the gate, the salvagers\' guildhall, the bath, two granaries; the faith\'s in Qiblai\'s style':X=>{const n=k=>X.lots.filter(L=>L.civic&&L.key===k).length;
+   const good=n('xa_scrap_serai')===1&&n('xa_scrap_gate')===1&&n('xa_scrap_guild_salvage')===1&&n('xa_scrap_bath')===1&&n('xa_scrap_granary')===2&&
+    n('qb_hostel')===2&&n('qb_wheel_house')===4&&n('qb_gate_temple')===1&&n('qb_chorten')===1&&n('qb_shrine')===2;
+   return [good,['xa_scrap_serai','xa_scrap_gate','xa_scrap_guild_salvage','xa_scrap_bath','xa_scrap_granary','qb_hostel','qb_wheel_house','qb_gate_temple','qb_chorten','qb_shrine'].map(k=>k.replace(/^xa_scrap_/,'')+' '+n(k)).join(', ')];},
+ /* the owner, 2026-11-16: "we can also mix in some qiblai-style buildings": Qiblai's houses and shops among the town's, never the most */
+ 'Qiblai\'s style is mixed in: some houses and shops, the scrap set the most':X=>{const qb=X.lots.filter(L=>/^qb_/.test(L.key)&&!L.civic).length,xs=X.lots.filter(L=>/^xa_scrap_/.test(L.key)&&!L.civic).length;
+   return [qb>=15&&qb<xs/3,qb+' Qiblai houses and shops, '+xs+' scrap'];},
  'every lot is a key of the scrap set, its id unique':X=>{const ids=new Set(X.lots.map(L=>L.id));return [ids.size===X.lots.length&&X.lots.every(L=>DIMS[L.key]),X.lots.length+' lots'];}};
 const hash=X=>{let h=2166136261;const s=JSON.stringify(X.lots.map(L=>[L.key,L.v,+L.x.toFixed(3),+L.z.toFixed(3),+L.ry.toFixed(4)]));for(let i=0;i<s.length;i++)h=Math.imul(h^s.charCodeAt(i),16777619)>>>0;return h;};
 const clone=()=>JSON.parse(JSON.stringify(TOWN));
@@ -55,7 +60,8 @@ const NEG={
  'none in Gate Square, the Warden\'s House, a road head or off the plateau':X=>{X.lots[2].x=392;X.lots[2].z=-30;},
  'every quarter holds about PLAN.md\'s people, the town about 4,100':X=>{X.lots=X.lots.filter(L=>L.quarter!=='salvage');},
  'the farms stand beyond the kora, each with its fields':X=>{X.lots.find(L=>L.key==='xa_scrap_farm').x=600;},
- 'the town has its civic buildings: the serai, the gate, the salvagers\' guildhall, the bath, two granaries, the kora\'s shrines':X=>{X.lots=X.lots.filter(L=>L.key!=='xa_scrap_serai');},
+ 'the town has its civic buildings: the serai, the gate, the salvagers\' guildhall, the bath, two granaries; the faith\'s in Qiblai\'s style':X=>{X.lots=X.lots.filter(L=>L.key!=='qb_wheel_house');},
+ 'Qiblai\'s style is mixed in: some houses and shops, the scrap set the most':X=>{X.lots=X.lots.filter(L=>!/^qb_/.test(L.key)||L.civic);},
  'every lot is a key of the scrap set, its id unique':X=>{X.lots[1].id=X.lots[0].id;}};
 for(const name of Object.keys(CHECKS)){const [pass,detail]=CHECKS[name](TOWN);T.ok(name+' ('+detail+')',pass,detail);T.neg('negative: '+name,X=>CHECKS[name](X)[0],fault(NEG[name]),clone());}
 T.ok('the plateau\'s landmarks are records (Gate Square, the Warden\'s House, the two road heads)',TOWN.landmarks.length===4&&TOWN.landmarks.every(m=>/^th\.town\./.test(m.id)),TOWN.landmarks.length);

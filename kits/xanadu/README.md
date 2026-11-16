@@ -130,3 +130,6 @@ dressed columns and lintels; cable makes the balustrades; bronze the finials and
 `87u-xs-build.js` (the buildings), `87v-xs-poor.js` (the poor tier and the farm). The package is **opt-in**: `xanadu.py` lists it as `SCRAP`, not in `FILES`, so the
 pages that take the kit do not change. Its sheet is `settlements/xanadu`'s `scrap` target (`dist/xanadu-scrap.html`);
 `kit_bundle.bundle(scrap=True)` seals it into `XAK` for a world (Strongbow's town first) with core/rand.
+`kit_bundle.bundle(qiblai=True)` adds the Qiblai kit's buildings (`kits/qiblai`, `qb_*`, read in place: every family and the
+cut-away rooms' vocabulary, not the walk-in rooms' furnishing nor the mixed street sheet): `XAK.dims()` lists them,
+`XAK.proto` builds them, and `XAK.bind` binds a `qiblai` pack where the page registered one. Theodiga's town takes both.
