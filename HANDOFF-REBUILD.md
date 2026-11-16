@@ -334,7 +334,7 @@ These entries are left as they were:
   - **swhighlands: done (2026-11-09, `claude/swhighlands-rest-f8a7ee`)**: station 7, the ridge karst (`--station caverns`), on site 2;
     stations 2 (the rain wall) and 3 (Span's tableland) built with it; station 5 (the fan coast) owed. The Cube link is site 3's (the rift).
 - **The Hearth hold's hypogene chambers** (survey site 4; the owner, 2026-11-03): `KKARST` gets a proper rising-water (hypogene) mode in core first, so the hearths' warm chambers are not a maze stand-in.
-- **New kits to add to the queue:** Copper Glacier, Siphon Pits, Loom-Chasms, Mid Basin, High Rift, the NE outer wall, Outland Gate.
+- **New kits to add to the queue:** Copper Glacier, Siphon Pits, Loom-Chasms, the Slabfields, High Rift, the NE outer wall, Outland Gate.
 - **The new north and west, except Copper Glacier, the NE outer wall and Outland Gate:** Gemini may do map work there, but no biome kits and no open world there for some time.
 - **The tsunami reaches Farside.** Farport's old city moves to the near-shore plateau; the harbour stays below (the station review).
 - **Added, not started:** `core/charactermodels/HANDOFF-GARMENT-DEFECTS.md`, `settlements/isle-demo/PLAN-ECONOMY.md`.
@@ -346,7 +346,7 @@ opt-in, and no page moves (`core/README.md`, "The unbuilt plans' pieces"). A kit
 
 - **Landform kinds** (`core/terrain/38c-core-landforms.js`, `LANDFORMS.md`):
   - **wouterwall** takes `slump`, `runout`, `gully` and `terraces`;
-  - **Mid Basin** takes `maar`, `relay` and `terraces`;
+  - **The Slabfields** (was Mid Basin) takes `maar`, `relay` and `terraces`, and `scarp` for its slabs;
   - **loom-chasms** takes `terraces` (the Cradle);
   - **siphon-pits** takes `stepcut` (the graben and the pits) and `maar` (the pit floors).
 - **Varied contacts** (`KSTRATA.vary` and `KSTRATA.drape`, `core/terrain/35c-core-strata-vary.js`; Godot twin `kstrata_vary.gd`): **Mid

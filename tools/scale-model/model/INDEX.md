@@ -54,5 +54,6 @@ Each key of `DATA`, in the page's order (`model.json`). Grids (unified in `5.1`)
 | `volc.json` | | the central Volcano (`Throne`) summit caldera coordinates, rim peak, and lava floor |
 | `tubes.json` | | 15 subterranean lava tube & cavern systems (`id`, `name`, `system`, `px`, `portals`, `width_m`, `height_m`) |
 | `basins.json`, `outlets.json`, `vents.json`, `palaeolakes.json`, `dams.json`, `floods.json` | | lakes, lake outlets, vents, the old dam lakes, dams, breach floods |
+| `springs.json` | | springs, one record each (`id`, `name`, `px`, `ground_m`, `kind`, `water`, `region`, `source`, `notes`); from 5.1 edit 3, the Slabfields' eight. Not drawn |
 | `climate.json`, `hydro.json` | | the class table and assumptions; the water books and thresholds |
 | `model.json` | | key order, the scalars (`w`, `hh`, `lo`, `hi`, `fullW`, `fullH`, wind scales, `legacy_shift`, `tsunami_farside`), each key's file |

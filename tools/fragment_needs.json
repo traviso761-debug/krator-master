@@ -14,6 +14,7 @@
   "core/atmos/fx/89-atmos-fx-shimmer.js": {"needs": ["core/atmos/89-atmos-0-core.js"]},
   "core/terrain/46b-core-lava-layers.js": {"needs": ["core/terrain/46-core-lava.js"]},
   "core/terrain/38b-core-relief-lava.js": {"needs": ["core/rand/08-core-rand.js", "core/terrain/38-core-relief.js"]},
+  "core/terrain/38d-core-slab.js": {"needs": ["core/rand/08-core-rand.js", "core/terrain/38-core-relief.js"], "after": ["core/terrain/38c-core-landforms.js"]},
   "core/terrain/39c-core-karst.js": {"needs": ["core/rand/08-core-rand.js"]},
   "core/terrain/39d-core-cavern-floor.js": {"needs": ["core/terrain/39-core-cavern.js"]},
   "core/terrain/host/39e-core-cavern-draw.js": {"needs": ["core/terrain/39-core-cavern.js"]},
