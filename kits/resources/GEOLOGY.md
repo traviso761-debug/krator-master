@@ -150,14 +150,13 @@ Water cells carry no family but water. The metals, coal and oil are zero on evap
 
 ### The mined goods' kinds (2026-11-16): no layer yet
 
-Eleven node kinds came with Gemini's trade model (`src/42s-res-ore-mined.js`). None is a family in `data/geology.json`, so the
+Ten node kinds came with Gemini's trade model (`src/42s-res-ore-mined.js`). None is a family in `data/geology.json`, so the
 node field places none of them: until a bake gives each a layer they are **owner nodes** (`KRES.nodesIn(tile, {owner: [...]})`,
 placed by a settlement or a biome kit, as Opal Valley's diggings already carry `{kind: 'opal', grade}`). The scale model is not
 edited here; a layer is a request to the scale-model session (`tools/scale-model/geology.py`). What each would need:
 
 | Kind | A layer of its own? | Where it would come from |
 |---|---|---|
-| zinc | **yes** | Gemini's rebake (`data/geology-gemini.json`) already has a `zinc` layer (mean 25.5); `geology.py` on this line does not. Sphalerite with galena: carbonate-hosted (limestone, the Mississippi Valley type) and skarn, + volcanic massive sulfide. Port Gemini's rule into `geology.py` |
 | lodestone | no: a rule on two layers | iron on the ultramafic province's crests (the Arch's lightning-struck magnetite) and the Compass Hills' iron (a region weight, as limestone's platforms) |
 | peat | **yes** | cold, wet, flat ground: rain over ~900 mm, low slope, a short warm season (the blanket bogs Gemini lists at Stahlborn, Cascade, Lipp, Gate Tarn Mires); no rock layer gives it |
 | silica | **yes**, derived | the quartzite province, the sand coasts, and the `glass` layer's melt-glass cullet |

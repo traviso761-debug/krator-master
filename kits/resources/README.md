@@ -2,7 +2,7 @@
 
 World content that belongs to no culture (owner, 2026-10-15). So far it holds the **resource nodes** the building kits'
 works draw on.
-- **The kinds:** twenty-seven since 2026-11-16 (the mined goods of Gemini's trade model, below); first twelve: iron, copper, gold, tin, silver, rare earth, coal, sulfur, saltpeter, potash, alkali salts and oil.
+- **The kinds:** twenty-six since 2026-11-16 (the mined goods of Gemini's trade model, below); first twelve: iron, copper, gold, tin, silver, rare earth, coal, sulfur, saltpeter, potash, alkali salts and oil.
   Potash and alkali salts (soda and its kin, borates and lithium folded in: no finer than these two, the owner, 2026-10-23)
   are the Catch's salt field (`biomes/catch/PLAN.md` section 6a); elsewhere on Krator they are traces.
 - **The grades:** each kind comes in a low, a medium and a high grade, visible and placeable.
@@ -37,13 +37,14 @@ python3 ../../tools/textures/pack.py kits/resources       # (from the repo root)
 | oil | `crude_oil` | derrick | a seep: black pools with a sheen in a tar-crusted stain, tar humps, bubbles |
 
 **The mined goods of Gemini's trade model** (2026-11-16, the owner: "build nodes for mineable resources from the Gemini trade
-docs, that do not already have one"): eleven more kinds, in `42s-res-ore-mined.js` (the kinds, [G data]) and three drawing
+docs, that do not already have one"): ten more kinds, in `42s-res-ore-mined.js` (the kinds, [G data]) and three drawing
 fragments, `44s` (metals), `44t` (gems) and `44u` (dug from the ground). Each kind names the Gemini good it feeds (`good`).
-Emeralds and turquoise are the Coyote Men kit's (`kits/coyote`). All are dug by a mine.
+Emeralds and turquoise are the Coyote Men kit's (`kits/coyote`). Zinc already had its node on the rift battery's branch
+(`origin/claude/rift-battery-biome` 79d3a4500, the owner, 2026-11-12: `42r`/`44r`, `node-zinc-*`, with its geology layer), so it is not
+here. All are dug by a mine.
 
 | Kind | Item | Gemini good | Looks like |
 |---|---|---|---|
-| zinc | `zinc_ore` | `zinc` | the dark outcrop banded with resinous black sphalerite, honey-yellow where thin, a galena streak, pale calamine crust on top |
 | lodestone | `lodestone` | `magnets` | a crest of rounded black magnetite boulders, iron filings bristling in tufts, a fulgurite where the lightning struck |
 | peat | `peat` | `peat` | a bog cut: the sphagnum top over a dark bank cut in spade-deep steps, black water below, turves stacked to dry |
 | silica | `silica_sand` | `silica-sand` | a sand pit in a white quartz-sand rise, the washed sand heaped, a washing trough |
@@ -104,7 +105,7 @@ veins, seams, pools and grains are vertex colours until their sets arrive (`core
 then two from the geology's new rocks (2026-11-03, `REBAKE-PLAN.md` R3): **nickel** (`node-nickel-*`, item `nickel_ore`: a dark norite outcrop
 with brassy sulphide, at the crater's melt-sheet margin and on bare mantle) and **marble** (`node-marble-*`, item `marble`, a
 quarry on the library's `rock.marble012`, where a pluton or a volcano cooked the limestone). Sixteen kinds, 48 defs; with the mined goods (2026-11-16, above),
-twenty-seven kinds and 81 defs.
+twenty-six kinds and 78 defs (27 and 81 once the rift battery's zinc merges).
 - **The geology** (`tools/scale-model/geology.py` -> `data/geology.json`): a province per scale-model cell (sedimentary,
   crystalline, volcanic, evaporite, rift; ruin ground as a flag) and one prospectivity byte per family per cell.
 - **The node field** (`45r-res-field.js`, `KRES.nodesIn(tile)`): one candidate per family per placement cell, by KRAND, kept

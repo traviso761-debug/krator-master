@@ -977,8 +977,12 @@
    "sha256": "bf855d052d7a0f64d405e0703d9544ab471ab3823fbf6458722a0f092af59c14"
   },
   "kits/resources/dist/resources.html": {
-   "bytes": 5250600,
-   "sha256": "6ea46649bb724a490bf96d5c0c1726b92327fbff237aa35306dc4defa7f88045"
+   "bytes": 5595368,
+   "sha256": "994dfc1df653147825ff3ebaeb81fdbec83a0e2c50e079059d06667d11b4a848"
+  },
+  "kits/resources/dist/resources.tex.resources.js": {
+   "bytes": 12858392,
+   "sha256": "770aa722e43f711684e28510521da1dc6dab9bc673fa5041bfe2eada5196310e"
   },
   "kits/ringsea/dist/ringsea.html": {
    "bytes": 5033320,

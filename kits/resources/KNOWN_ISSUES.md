@@ -48,13 +48,13 @@
       from `SV_LIB` (`26k-kit.js`), and the engine makes a material only for an `SV_LIB` key, so their nodes drew the fallback
       (vertex colours). Added to `SV_LIB` with the mined goods' sets; the resources page's look of those three changes.
 - [ ] **The mined goods' kinds have no geology layer** (2026-11-16, `42s-res-ore-mined.js`): the node field places none of the
-      eleven; they are owner nodes until a bake gives each a layer. `GEOLOGY.md`, "The mined goods' kinds", says which need a
-      layer of their own (zinc, peat, silica) and which a rule on existing layers; the bake is the scale-model session's.
-- [ ] **Five of the mined goods draw on vertex colours:** zinc (`rock.sphalerite`), lodestone (`rock.magnetite`), opal
+      ten; they are owner nodes until a bake gives each a layer. `GEOLOGY.md`, "The mined goods' kinds", says which need a
+      layer of their own (peat, silica) and which a rule on existing layers; the bake is the scale-model session's.
+- [ ] **Four of the mined goods draw on vertex colours:** lodestone (`rock.magnetite`), opal
       (`rock.opal.matrix`), jade (`rock.serpentinite`, `stone.nephrite`) and amber (`rock.amber.blueearth`); prompts in
-      `core/materials/PROMPTS-NEEDED.md` sections 46, 51, 52 and 53.
+      `core/materials/PROMPTS-NEEDED.md` sections 46, 52 and 53.
 - [ ] **Building kits do not see the mined goods' kinds:** kits/islanders, kits/construction and the isle demo read `42r` and
-      `44r` in place, not `42s` and `44s`-`44u` (kept apart so their pages did not move). A works there that should take zinc or
+      `44r` in place, not `42s` and `44s`-`44u` (kept apart so their pages did not move). A works there that should take lodestone or
       peat needs those four fragments added to its build's list, and a rebuild.
 - [ ] **No trade link yet:** each kind names the Gemini good it feeds (`RES_ORE.kinds[k].good`), but `46r-res-ledger.js` and
       core/simulation do not read it; Gemini's model is on its own branch and docs.

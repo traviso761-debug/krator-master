@@ -596,8 +596,8 @@ Leaf spray cut-out on a fully transparent background, PNG with alpha, square, 20
 ## 53. The mined goods' resource nodes (`kits/resources`, 2026-11-16)
 
 The nodes for the mined goods of Gemini's trade model (`kits/resources/src/44s`-`44u`). Until these come the nodes draw vertex
-colours (`kits/resources/KNOWN_ISSUES.md`). Three sets owed elsewhere are wanted here too, so each serves both when it lands:
-`rock.sphalerite` (section 51: the zinc node's blackjack bands), `rock.opal.matrix` (section 46: the opal node's outcrop) and
+colours (`kits/resources/KNOWN_ISSUES.md`). Two sets owed elsewhere are wanted here too, so each serves both when it lands:
+`rock.opal.matrix` (section 46: the opal node's outcrop) and
 `rock.serpentinite` (section 52: the jade node's host rock). Wire each into `kits/resources/materials.json` as well as its first
 build. Full colour, 1 m a tile: the colour is the point (do not tint them). **3 prompts.**
 
