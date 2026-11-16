@@ -98,3 +98,8 @@
 - [ ] **Fragments 51 and 52 are over 30 KB** (each building is an indexed section: `INDEX.md`).
 - [ ] **`INDEX.md`'s one-line summary** comes from `tools/make_index.py` (`ABOUT['kits/beast-riders']`), outside the kit:
       it still names only the mounts and the ports.
+
+- [x] **The sheet's lamps made a lit material's shader too big to compile** (2026-11-12, the rebuild on the merged catalog of
+  `claude/loj-twenny-059a5e`: 185 PointLights on the sheet, all lit; the first trades row never drew and `verify.py --shots` timed
+  out on both GPU lanes). `src/90-br-sheet.js` keeps at most 24 of the pieces' PointLights on, the nearest the camera, re-picked
+  every half second (as `kits/catalog`'s sheet).
