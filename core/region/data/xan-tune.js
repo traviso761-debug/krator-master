@@ -25,7 +25,7 @@ T.goods={grain:{unit:'kg',crops:['vale-rice','emmer','basin-amaranth']},fish:{un
  salt:{unit:'kg'},tea:{unit:'kg'},cacao:{unit:'kg'},saffron:{unit:'kg'},opium:{unit:'kg',crop:'sky-poppy'},silk:{unit:'kg'},brocade:{unit:'kg'},
  timber:{unit:'kg'},charcoal:{unit:'kg'},copper:{unit:'kg'},goldore:{unit:'kg'},gold:{unit:'kg'},goldwork:{unit:'piece'},wheels:{unit:'wheel'},
  coin:{unit:'dinar'},opal:{unit:'kg'},scrap:{unit:'kg'},iron:{unit:'kg'},tools:{unit:'kg'},arms:{unit:'piece'},pearls:{unit:'kg'},wine:{unit:'kg'},oil:{unit:'kg'},
- sulfur:{unit:'kg'},pottery:{unit:'kg'},mats:{unit:'kg'},wax:{unit:'kg'},rarities:{unit:'piece'},power:{unit:'kWh'}};
+ sulfur:{unit:'kg'},pottery:{unit:'kg'},mats:{unit:'kg'},wax:{unit:'kg'},rarities:{unit:'piece'},hearthseed:{unit:'kg'},power:{unit:'kWh'}};
 /* the lake's and the capital's households also buy the market's wares (X1: what the market boats carry between the towns): the pots of Pāṭari, the mats of Lōṭas, the honey of Hāibh */
 T.diet={city:{grain:150*D,fish:15*D,fruit:12*D,salt:6*D,tea:1.5*D,cacao:.4*D,tools:.4*D,pottery:2*D,mats:1*D,honey:.3*D},
  town:{grain:160*D,fish:8*D,salt:6*D,tea:1*D,tools:.4*D},
@@ -84,9 +84,12 @@ T.rounds=[['round.south-east','s57bkv9741',['boatyard','weaver','saffron','potte
 /* THALABA MOVED (the owner, 2026-11-16: "we can move thalaba to the mouth of godshearth and put a new village on the lake in
    its place"): up from the shore to the bench where Godshearth's spillway gorge opens (biomes/godshearth/PLAN.md: the
    basin "runs south to px 845,1451, the spillway"; the bench at 1,450-1,700 m, about 12 C, px 834-850 by 1462-1470). The
-   town of the vents' sulfur and of the summer road into the basin, still the Yuni caravans' staging town; its terraces
-   on the bench grow half its grain, Phēr sends the rest. Ōlḍ-Thalaba, a fishing village of 600, keeps the shore */
-T.thalaba={id:'xan.thalaba',name:'Thalaba (at the mouth of Godshearth, over the spillway)',px:[840,1463],people:2400,make:{sulfur:60000},terraces:.5};
+   town of the summer road into the basin (no longer a caravan terminus: Yuni's caravans end at Qiblai); its terraces on
+   the bench grow half its grain, Phēr sends the rest. Ōlḍ-Thalaba, a fishing village of 600, keeps the shore.
+   Its own sulfur (the owner, 2026-11-16, settlements/thalaba/PLAN.md): "its own small sulfur node but most of its sulfur
+   would come by expedition", a steady works, then "30 t from the deposit"; the crew halved with the make (`sulfurCrew`, a
+   share of the town), so a digger's year is what it was */
+T.thalaba={id:'xan.thalaba',name:'Thalaba (at the mouth of Godshearth, over the spillway)',px:[840,1463],people:2400,make:{sulfur:30000},sulfurCrew:.075,terraces:.5};
 /* the first stores are last year's harvest: they last to the end of the first harvest the clock reaches and a month over.
    core/clock's day 0 is year day 259 (77-sim-6-season.js's year; the test checks it), so the harvest (year days 150-200)
    ends on clock day 306 */
@@ -116,7 +119,7 @@ T.gateways=[
  {id:'gate.dalab',name:'Dalab (the Annual Great Caravan: south Dalab in summer, Xanadu in winter)',entry:'s57bkv9741',side:'north',round:true,days:52,carriers:1,cap:900000,
   dalab:[['gate.dalab.blakhed','Blakhed (south Dalab: the rim\'s market town)'],['gate.dalab.nulab','Nulab (south Dalab)'],['gate.dalab.shelf','Shelf (south Dalab)']],
   winter:['s57bkv9741','s4zvgepuru','skm4jjo2vl'],
-  out:['cacao','saffron','opium','tea','brocade','silk','sulfur','wax','rarities'],in:['salt','iron','wine','pearls']},
+  out:['cacao','saffron','opium','tea','brocade','silk','sulfur','wax','rarities','hearthseed'],in:['salt','iron','wine','pearls']},
  {id:'gate.geomancers',name:'The Geomancers (their oil caravans from Locus, stopping at Qiblai)',entry:'skm4jjo2vl',side:'oil',days:40,carriers:4,cap:30000,out:['oil','wheels','cacao'],in:['iron','tools']}];
 /* X2: the Geomancers' concession on Qiblai's oil field (about 6 km from the city; the region's oil marker within its reach) */
 T.oil={px:[925,1598],people:300,kgYr:400000,licence:.2,council:.1};
@@ -146,14 +149,27 @@ T.expedition={id:'exp.godshearth',name:'The Rare Devisers\' expedition camp at G
    and they escort Dalab's Annual Great Caravan, a share of what it lands at the capital.
    THE RARE DEVISERS, "whose specialty is running the expeditions to the Godshearth": their house at Thalaba and a factor in
    the capital; the Godshearth camp is theirs (T.expedition), its sulfur, wax and rarities home to their house, which sells
-   them on to Yuni's caravans at Thalaba */
+   them into Thalaba's market, down by Phēr and the lake to the capital and out with Dalab's Great Caravan */
 T.tears={escort:.04,houses:[['tears.strongwall','The Golden Tears: their house in the Gold March','sxan7r1sln',913,1641,80],['tears.erehwon','The Golden Tears\' factor house, Erehwon','s57bkv9741',806,1517,30]],
  camp:{id:'exp.rift-gold',name:'The Golden Tears\' armed prospecting camp in Lizard country (the Rift floor; approximate)',px:[850,1628],km:110,people:120,kgYr:70,years:30}};   /* kgYr: the gold its ore holds (30 kg of ore a kg) */
 /* the owner, 2026-11-16: "the rare devisers will have their main guild house at Theodiga; they are royally licensed in the
    scrap and rare artifact trade". Every kilo of the Salvagers' scrap passes through their house at Theodiga, which sells it
-   on to the smelter; the Sultan's licence fee is `licence` of the rarities the Godshearth camp brings home */
-T.devisers={licence:.1,houses:[['devisers.theodiga','The Rare Devisers: their guild house at Theodiga (the royal licence in scrap and rare artifacts)','s4zvgepuru',909,1535,80],
+   on to the smelter. The Sultan's share of every Godshearth haul is `T.haul` */
+T.devisers={houses:[['devisers.theodiga','The Rare Devisers: their guild house at Theodiga (the royal licence in scrap and rare artifacts)','s4zvgepuru',909,1535,80],
  ['devisers.thalaba','The Rare Devisers\' house at Thalaba (the Godshearth expeditions)','xan.thalaba',841,1463,40],['devisers.erehwon','The Rare Devisers\' factor house, Erehwon','s57bkv9741',807,1516,15]]};
+/* THE SULTAN'S SHARE OF THE GODSHEARTH HAULS (the owner, 2026-11-16, settlements/thalaba/PLAN.md section 4): "the sultan
+   takes his 10% of the overall haul and 20% of the rarities", "20% total not 30", "on dalab party too": a tenth of every
+   good an expedition brings home to Thalaba, a fifth of the rarities, taken where it lands for the Treasury; no toll on
+   the road. [good]: share, `all` for the rest */
+T.haul={all:.1,rarities:.2};
+/* THE DALAB MISSION AT THALABA (the owner, 2026-11-16): "there is a small Dalab mission here of about 30 people", built
+   in Dalab's style; the genepriests (who come over the rim for the hearth trees: biomes/godshearth/PLAN.md section 5)
+   "do their own expedition and hire locals". The party works the Grove (Godshearth station 2) in the expedition season for
+   hearth seed and specimens (`hearthseed`) and a little wax; the Sultan's share is taken of it as of the Devisers'; what
+   the mission keeps goes home to Dalab with the Great Caravan ("yes", the owner). The party's size and make are proposed:
+   ~10 genepriests and their servants, ~30 hired Thalaba men; the road ~180 km (1.2 x the straight line) */
+T.dalab={mission:['dalab.thalaba','The Dalab mission at Thalaba (the genepriests\' house, in Dalab\'s style)','xan.thalaba',840,1462,30],
+ party:{id:'exp.dalab',name:'The Dalab mission\'s party at the Grove (Godshearth station 2; hired Thalaba men)',faction:'dalab',home:'dalab.thalaba',px:[836,1388],km:180,people:40,make:{hearthseed:40,wax:8000}}};
 /* X2: the Brotherhood of the Two Horns: [id, name, the town it stands in (null: off the map), px, py, people] */
 T.horns={tally:.04,margin:.03,houses:[
  ['horns.strongbow','The Brotherhood of the Two Horns: the guild house at the Strongbow gate','sfgtxw10kr',1001,1597,300],
@@ -163,7 +179,7 @@ T.horns={tally:.04,margin:.03,houses:[
  ['horns.pher','The Two Horns\' factor house, Phēr','xan.pher',810,1482,20],['horns.thalaba','The Two Horns\' factor house, Thalaba','xan.thalaba',839,1463,20]]};
 T.toll=.05;   /* the Sultan's toll at the Strongbow lift, on what the Catch caravans land there */
 T.gatePool={salt:1e7,iron:1e6,arms:1e5,pearls:1e4,wine:1e6,oil:1e6,tools:1e5};
-T.gateWant={goldwork:2,cacao:1200,opium:650,saffron:8,tea:400,silk:80,brocade:40,opal:.4,wheels:3,oil:870,sulfur:230,wax:105,rarities:.15};   /* the gateways' take a day, all four together: what the country makes less its own use (Gemini's exports scaled to it) */
+T.gateWant={goldwork:2,cacao:1200,opium:650,saffron:8,tea:400,silk:80,brocade:40,opal:.4,wheels:3,oil:870,sulfur:230,wax:105,rarities:.15,hearthseed:.1};   /* the gateways' take a day, all four together: what the country makes less its own use (Gemini's exports scaled to it) */
 /* THE DUES: a fixed yearly bill each province's seat sends the Treasury after the harvest (the Chancellor's assessment,
    bound by tradition, never answering a bad year); Qiblai's grant of fealty and the Sultan's grants of esteem */
 T.dues={day:T.clockDay(215),bills:{skm4jjo2vl:{grain:120000,cacao:4000,honey:800},s4zvgepuru:{grain:90000,saffron:60,tea:1500,silk:600},
@@ -220,7 +236,7 @@ T.valley=function(P,o){o=o||{};const K=o.scale==null?50:o.scale,yr=365,win=w=>{c
  town('sxan7r1sln','Strongwall (the Master of Mines\' fort)',912,1640,250,'fort',[
   {id:'sw.assay',kind:'assay-house',name:'the assay house',crew:20,batch:T.chain.assay}]);
  town('xan.pher','Phēr (the north shore\'s fair)',810,1483,6000,'lake',[{id:'ph.fishing',kind:'fishing',name:'the dugouts',crew:600,out:['fish'],rate:rate(6000*T.fishKgPerson*.6,600),site:T.fishery(6000*T.fishKgPerson*.6)}]);
- {const Tb=T.thalaba,c=Math.round(Tb.people*.15),tc=Math.round(Tb.people*.3);   /* Thalaba at the mouth of Godshearth: the vents' sulfur, the bench's terraces */
+ {const Tb=T.thalaba,c=Math.round(Tb.people*Tb.sulfurCrew),tc=Math.round(Tb.people*.3);   /* Thalaba at the mouth of Godshearth: the vents' sulfur, the bench's terraces */
   town(Tb.id,Tb.name,Tb.px[0],Tb.px[1],Tb.people,'town',[{id:'tb.sulfur',kind:'sulfur-works',name:'the spillway\'s sulfur diggings',crew:c,out:['sulfur'],rate:rate(Tb.make.sulfur,c)},
    {id:'tb.terraces',kind:'terraces',name:'the terraces on the bench',crew:tc,out:['grain'],rate:rate(eatYr('town',Tb.people)*Tb.terraces,tc,win('harvest')),season:'harvest'}],{parent:'xan.pher',feeder:'xan.pher'});}
  /* the work camps on the March */
@@ -345,7 +361,7 @@ T.valley=function(P,o){o=o||{};const K=o.scale==null?50:o.scale,yr=365,win=w=>{c
     Thalaba's grain up, the northern salt and the sulfur down */
  {const a=seats['xan.pher'],b=seats[TB],km=Math.hypot(a.x-b.x,a.z-b.z)/1000*1.2,tbDay=eatYr('town',T.thalaba.people)*(1-T.thalaba.terraces)/yr;
   R.push({id:'road.pher-thalaba',from:'xan.pher',to:TB,minutes:Math.round(km/25*1440),cap:10000,carriers:6,stagger:Math.round(km/25*1440/6),want:25,
-   goods:{'xan.pher':gList(thTake).concat(['grain','tea','tools']),[TB]:['sulfur','wax','rarities']},expect:{[TB]:Object.assign({grain:tbDay},thTake)}});}
+   goods:{'xan.pher':gList(thTake).concat(['grain','tea','tools']),[TB]:['sulfur','wax','rarities','hearthseed']},expect:{[TB]:Object.assign({grain:tbDay},thTake)}});}
  const addGoods=(id,from,gs)=>{const Rd=R.find(r=>r.id===id);gs.forEach(g=>{if(Rd.goods[from].indexOf(g)<0)Rd.goods[from].push(g);});return Rd;};
  const addExpect=(Rd,at,o)=>{Rd.expect=Rd.expect||{};Rd.expect[at]=Object.assign({},Rd.expect[at]||{});for(const g in o)Rd.expect[at][g]=(Rd.expect[at][g]||0)+o[g];};
  addExpect(addGoods('road.ks-sb','sl758m2396',gList(sbTake)),'sfgtxw10kr',sbTake);
@@ -354,7 +370,14 @@ T.valley=function(P,o){o=o||{};const K=o.scale==null?50:o.scale,yr=365,win=w=>{c
  /* the salt comes in at the staging towns, so it goes inward: Strongbow to Kirstabal to Qiblai, Thalaba to Phēr to the
     capital; the capital and Qiblai no longer send it to each other */
  addGoods('road.ks-sb','sfgtxw10kr',['salt','iron','arms']);addGoods('road.qb-ks','sl758m2396',['salt','iron','arms']);
- addGoods('road.pher-thalaba',TB,[]);addGoods('lake.cross','xan.pher',['sulfur','wax','rarities']);   /* the vents' goods down to the capital for the Great Caravan */
+ addGoods('road.pher-thalaba',TB,[]);addGoods('lake.cross','xan.pher',['sulfur','wax','rarities','hearthseed']);   /* the vents' goods down to the capital for the Great Caravan */
+ /* ... and asked for on the way down (a road moves a good only when its receiver wants it, and nothing below Thalaba uses
+    these): Phēr and the capital each expect Thalaba's year of them a day, its own deposit's and both camps' make home,
+    less the Sultan's share (`T.haul`), so the vents' goods and the Dalab mission's hearth seed reach the Great Caravan */
+ {const H=T.haul,own=g=>H[g]!=null?H[g]:H.all,Xd=T.expedition.make,Dd=T.dalab.party.make,
+   tbDown={sulfur:(T.thalaba.make.sulfur+Xd.sulfur*.95*(1-own('sulfur')))/yr,wax:(Xd.wax+Dd.wax)*.95*(1-own('wax'))/yr,
+    rarities:Xd.rarities*.95*(1-own('rarities'))/yr,hearthseed:Dd.hearthseed*.95*(1-own('hearthseed'))/yr};
+  addExpect(R.find(r=>r.id==='road.pher-thalaba'),'xan.pher',tbDown);addExpect(R.find(r=>r.id==='lake.cross'),'s57bkv9741',tbDown);}
  ['road.ks-sb','road.qb-ks'].forEach(id=>{const Rd=R.find(r=>r.id===id),down=Rd.from;Rd.goods[down]=Rd.goods[down].filter(g=>g!=='salt');});
  {const Rd=R.find(r=>r.id==='road.er-qb');Rd.goods.s57bkv9741=Rd.goods.s57bkv9741.filter(g=>g!=='salt');}
  /* ---- THE LAKE'S MARKET BOATS (X1: multi-stop rounds) */
@@ -405,20 +428,30 @@ T.valley=function(P,o){o=o||{};const K=o.scale==null?50:o.scale,yr=365,win=w=>{c
  /* ---- X2: THE RARE DEVISERS: their guild house at Theodiga holds the royal licence in scrap and rare artifacts (the owner,
     2026-11-16): the Salvagers' scrap passes through it to the smelter. Their expeditions take Thalaba's summer road into
     Godshearth (about 200 km from Thalaba's new place at the spillway's mouth): their camp works the vents in the expedition
-    season, its sulfur, wax and rarities home to their house at Thalaba, which sells them on to Yuni's caravans there; the
-    Sultan's licence fee is a share of the rarities */
- {const Xp=T.expedition,p=at(Xp.px[0],Xp.px[1]),scrapDay=T.mine.scrap/yr;
+    season, its sulfur, wax and rarities home to their house at Thalaba, which sells them into the town's market (down by
+    Phēr and the lake to the capital and out with the Great Caravan); the Sultan's share of the haul (`T.haul`) is taken
+    where it lands. The Dalab mission's party goes the same way to the Grove (`T.dalab`) */
+ {const Xp=T.expedition,scrapDay=T.mine.scrap/yr;
   T.devisers.houses.forEach(h=>house('devisers')(h,h[0]===Xp.home?{sulfur:Xp.make.sulfur/yr,wax:Xp.make.wax/yr,rarities:Xp.make.rarities/yr}:h[0]==='devisers.theodiga'?{scrap:scrapDay}:null));
   R.push({id:'devisers.scrap',from:'s4zvgepuru',to:'devisers.theodiga',minutes:60,cap:20000,carriers:2,share:{s4zvgepuru:{scrap:1}},goods:{'devisers.theodiga':[]}});   /* the licence: every kilo of the floor's scrap to the house */
-  add({id:Xp.id,name:Xp.name,faction:Xp.faction,parent:Xp.home,people:Xp.people,x:p.x,z:p.z,eats:eats('camp'),keepDays:20,
-   start:{grain:Math.round(eatYr('camp',Xp.people)*T.startDays/yr),salt:Xp.people*2,tea:30,tools:60},
-   works:Object.keys(Xp.make).map(g=>({id:Xp.id+'.'+g,kind:g+'-diggings',name:'the vents\' '+g,crew:Math.round(Xp.people*.4),out:[g],rate:rate(Xp.make[g],Math.round(Xp.people*.4),win('expedition')),season:'expedition'}))});
-  bump(TB,eatYr('camp',Xp.people));
-  const sh={};Object.keys(Xp.make).forEach(g=>{sh[g]=.95;});
-  R.push({id:'expedition.godshearth',from:Xp.id,to:Xp.home,minutes:Math.round(Xp.km/25*1440),cap:20000,carriers:3,stagger:Math.round(Xp.km/25*1440/3),want:60,share:{[Xp.id]:sh},goods:{[Xp.home]:['grain','salt','tea','tools']},
-   cut:[{at:Xp.home,to:'xan.citadel',share:T.devisers.licence,goods:['rarities'],why:'the Sultan\'s fee for the royal licence in rare artifacts'}]});
-  R.push({id:'devisers.supply',from:TB,to:Xp.home,minutes:60,cap:20000,carriers:1,want:30,keep:5,goods:{[TB]:['grain','salt','tea','tools'],[Xp.home]:[]},
-   expect:{[Xp.home]:{grain:eatYr('camp',Xp.people)/yr,salt:Xp.people*2/yr,tea:30/yr,tools:60/yr}}});}
+  /* a Godshearth camp: its works in the expedition season, its grain bumped onto Thalaba and sent up from there, 95 % of its
+     make home to its house, the Sultan's share cut where it lands (a cut a share: `T.haul`'s goods, then the rest) */
+  const camp=(Xp,road,supply,kind,why)=>{const p=at(Xp.px[0],Xp.px[1]),gs=Object.keys(Xp.make),crew=Math.round(Xp.people*.4);
+   add({id:Xp.id,name:Xp.name,faction:Xp.faction,parent:Xp.home,people:Xp.people,x:p.x,z:p.z,eats:eats('camp'),keepDays:20,
+    start:{grain:Math.round(eatYr('camp',Xp.people)*T.startDays/yr),salt:Xp.people*2,tea:30,tools:60},
+    works:gs.map(g=>({id:Xp.id+'.'+g,kind:g+'-'+kind,name:'the vents\' '+g,crew,out:[g],rate:rate(Xp.make[g],crew,win('expedition')),season:'expedition'}))});
+   bump(TB,eatYr('camp',Xp.people));
+   const sh={};gs.forEach(g=>{sh[g]=.95;});
+   const own=gs.filter(g=>T.haul[g]!=null),rest=gs.filter(g=>T.haul[g]==null);
+   const cut=own.map(g=>({at:Xp.home,to:'xan.citadel',share:T.haul[g],goods:[g],why})).concat(rest.length?[{at:Xp.home,to:'xan.citadel',share:T.haul.all,goods:rest,why}]:[]);
+   R.push({id:road,from:Xp.id,to:Xp.home,minutes:Math.round(Xp.km/25*1440),cap:20000,carriers:3,stagger:Math.round(Xp.km/25*1440/3),want:60,share:{[Xp.id]:sh},goods:{[Xp.home]:['grain','salt','tea','tools']},cut});
+   R.push({id:supply,from:TB,to:Xp.home,minutes:60,cap:20000,carriers:1,want:30,keep:5,goods:{[TB]:['grain','salt','tea','tools'],[Xp.home]:[]},
+    expect:{[Xp.home]:{grain:eatYr('camp',Xp.people)/yr,salt:Xp.people*2/yr,tea:30/yr,tools:60/yr}}});};
+  camp(Xp,'expedition.godshearth','devisers.supply','diggings','the Sultan\'s share of the Godshearth haul (a tenth, a fifth of the rarities)');
+  /* the Dalab mission beside the town (a house of its faction, selling what it keeps into Thalaba's market), and its party */
+  const Dp=T.dalab.party;house('dalab')(T.dalab.mission,{hearthseed:Dp.make.hearthseed*(1-T.haul.all)/yr,wax:Dp.make.wax*(1-T.haul.all)/yr});
+  bump(TB,eatYr('town',T.dalab.mission[5]));
+  camp(Dp,'expedition.dalab','dalab.supply','gathering','the Sultan\'s share of the Godshearth haul (the Dalab party\'s, a tenth)');}
  /* ---- X2: THE GOLDEN TEARS: their house in the Gold March sends an armed camp into Lizard country in the cool months to
     work the unclaimed lodes it finds (a field of short veins, as the Sultan's mines), the ore home to the house and on to
     the Sultan's assay at the Gold March (where the Fifth is taken of the gold); their factor at the capital escorts Dalab's
@@ -498,9 +531,10 @@ T.valley=function(P,o){o=o||{};const K=o.scale==null?50:o.scale,yr=365,win=w=>{c
   factions:[{id:'xanadu',name:'The Sultanate of Xanadu'},{id:'gate',name:'The gateways (Iziz, Yuni, the Dasri, Dalab, the Geomancers)'},
    {id:'geomancer',name:'The Geomancers (the drilling guild of Locus)'},{id:'horns',name:'The Brotherhood of the Two Horns (the Twins\' guides and merchant houses)'},
    {id:'tears',name:'The Golden Tears (a merchant house: armed prospecting in Lizard country, caravan escorts)'},{id:'devisers',name:'The Rare Devisers (a merchant house: the Godshearth expeditions)'},
-   {id:'yuni',name:'Yuni (its mission at Qiblai\'s oil field)'},{id:'order',name:'The History Monks (the Order of Longsong)'}],
+   {id:'yuni',name:'Yuni (its mission at Qiblai\'s oil field)'},{id:'order',name:'The History Monks (the Order of Longsong)'},
+   {id:'dalab',name:'Dalab (the genepriests\' mission at Thalaba)'}],
   /* the three houses compete: wary of one another, friendly to the Sultanate, the gateways, the Geomancers and Yuni */
-  relations:(()=>{const F=['xanadu','gate','geomancer','yuni','order','horns','tears','devisers'],house=f=>['horns','tears','devisers'].indexOf(f)>=0;
+  relations:(()=>{const F=['xanadu','gate','geomancer','yuni','order','horns','tears','devisers','dalab'],house=f=>['horns','tears','devisers'].indexOf(f)>=0;
    return[].concat(...F.map(a=>F.filter(b=>b!==a).map(b=>({a,b,stance:house(a)&&house(b)?'wary':'friendly'}))));})(),
   settlements:S,roads:R,transfers:tr,_lake:X,_need:need};
  return V;};

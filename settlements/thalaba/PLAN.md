@@ -241,8 +241,8 @@ and the expedition days 120-240.
 
 **Sulfur** (the owner: a small node of its own, most of it by expedition, a steady works).
 - **The town's own deposit makes 30 t a year** (the owner, 2026-11-16), steadily all year: a works, not a field
-  (`XAN_TUNE.field` is not used here). The tune still has 60 t with a crew of 360; step T1 sets `T.thalaba.make.sulfur` to
-  30,000 kg and, *proposed*, the crew to 180 (7.5 % of the town in place of 15 %), so a digger's year stays what it was.
+  (`XAN_TUNE.field` is not used here). **In the tune (T1, done):** `T.thalaba.make.sulfur` is 30,000 kg and the crew
+  180 (`sulfurCrew` .075 of the town, in place of 15 %, *proposed*), so a digger's year stays what it was.
 - The Devisers' camp brings home **90 t of sulfur, 40 t of hearth wax and 60 rarities** a season. The house keeps 95 % of
   the camp's make (`share`).
 - Together Thalaba handles **120 t of sulfur a year, three quarters of it from the expedition**. That is still more than
@@ -254,9 +254,10 @@ and the expedition days 120-240.
 - **10 % of the sulfur and the wax, and 20 % of the rarities in all, not 10 + 20** (the owner). On the Devisers' season that is
   **9 t of sulfur, 4 t of wax and 12 rarities** to the Treasury.
 - It is taken where the haul comes home, at Thalaba, for `xan.citadel`. There is no toll on the road.
-- In the tune today `T.devisers.licence` is 0.1, cut on the rarities only (`expedition.godshearth`'s `cut`). Step T1
-  makes the cut `{sulfur: .1, wax: .1, rarities: .2}`. `PROPOSAL-XANADU.md` section 7 ("the Sultan's licence fee is 10 %
-  of the rarities") follows.
+- **In the tune (T1, done):** `T.haul = {all: .1, rarities: .2}` replaces `T.devisers.licence` (0.1 of the rarities only).
+  Each Godshearth road's `cut` takes it where the haul lands. Over the test's year that is 8.5 t of sulfur, 3.8 t of wax
+  and 11 of 56 rarities from the Devisers' camp, and 0.76 t of wax and 3 of 37 kg of hearth seed from the Dalab party.
+  `PROPOSAL-XANADU.md` section 7 follows.
 - **The same share falls on the Dalab party's haul** (the owner): 10 % of its hearth seed and wax.
 
 **The Dalab mission's expedition** (the owner: its own, hiring locals; the figures are *proposed*):
@@ -265,10 +266,15 @@ and the expedition days 120-240.
 - It goes up the same road in the expedition window, to the Grove (Godshearth station 2, 836,1388), where the vent lines'
   discs merge into hearth forest, for seed, cuttings and specimens. It pitches its own camp, apart from the Devisers'.
 - **Its haul is hearth seed and specimens for Dalab, and it goes home with the Great Caravan** (the owner). Hearth seed
-  is a new good for the tune (*proposed:* a few kg a season), with a share of wax. What the mission keeps after the
+  is a new good for the tune (*proposed:* 40 kg a season), with a share of wax. What the mission keeps after the
   Sultan's 10 % goes down to the capital and leaves with the Great Caravan in spring (Blakhed is its summer stop).
-- In the sim: the mission as a settlement of 30 (faction `dalab`, as `yuni.mission` stands beside the oil field), with a
-  seasonal camp of 40 under it, like `exp.godshearth` under the Devisers' house.
+- **In the tune (T1, done):** the mission `dalab.thalaba` (30, faction `dalab`, a house beside the town, as `yuni.mission`
+  stands beside the oil field) and its party `exp.dalab` (40, make 40 kg of `hearthseed` and 8 t of wax in the expedition
+  window, 180 km by road), on the same camp code as the Devisers' (`camp(...)` in the tune).
+- **The way down.** Phēr and the capital now *ask* for Thalaba's export goods (the roads' `expect`, Thalaba's year less the
+  Sultan's share). Before, nothing below Thalaba wanted them, so its sulfur, wax and rarities never left the town; the Great
+  Caravan's sulfur came from Hoṭ-Bāṭh. Over the test's year, 11.6 t of sulfur, 4.2 t of wax and 5 kg of hearth seed now
+  reach Phēr, and the first of it the capital.
 **Up the road:** grain, salt (the north's salt, landed at the capital by the Great Caravan, by the lake to Phēr and on up),
 tea and tools. All of these are already on `road.pher-thalaba`.
 
@@ -321,7 +327,7 @@ tea and tools. All of these are already on `road.pher-thalaba`.
 | Step | What | Test |
 |---|---|---|
 | **T0** | **The records**, through the scale-model session's queue (pins and model edits are its work): the pin 5.1e12 merged where the region is cut; the small sulfur lode record `lode:thalaba-sulfur` at the cataract's foot, sized for 30 t a year; `shvo49k0y2` added to `xanadu-oidong-highrift`'s `sites` in `openworld/SITES.json` (with the Dalab mission as a `"model": false` row, if it is drawn apart from the town) | the pin's ground is the bench (1,450-1,560 m); the geology bake shows sulfur at the diggings; `cut_site.py --dry` lists Thalaba in the region |
-| **T1** | **The tune's changes:** the town's sulfur to 30 t (crew 180); the Sultan's cut to 10 % of the sulfur and wax and 20 % of the rarities, on the Devisers' camp and the Dalab party alike; the Dalab mission (30) and its seasonal camp (40), and hearth seed if it becomes a good; the stale comments (section 8) | `test-xan-economy.js` and `test-east-rift.js` unchanged unless meant to move; Thalaba and the mission fed, the licence cut |
+| **T1** (**done**, 2026-11-16) | **The tune's changes:** the town's sulfur to 30 t (crew 180); the Sultan's cut to 10 % of the sulfur and wax and 20 % of the rarities, on the Devisers' camp and the Dalab party alike; the Dalab mission (30) and its seasonal camp (40), and hearth seed if it becomes a good; the stale comments (section 8) | `test-xan-economy.js` and `test-east-rift.js` unchanged unless meant to move; Thalaba and the mission fed, the licence cut |
 | **T2** | **The ground:** `cut_site.py xanadu-oidong-highrift` re-run with Thalaba in it; the riser and its terrace flights; the leat; the river, the bridge reach and the falls on `core/water` | the region's verify: no floating water, the leat descending, the terraces walkable |
 | **T3** | **The town on `core/city`** with the Xanadu kit (a target on Xanadu's page, as Qiblai is); the new pieces asked of the Xanadu kit | `core/city`'s tests; the GPU verify; the mixed street |
 | **T4** | **The outworks:** Briḍj, Salphar (the diggers' hamlet and its kilns), the farmsteads on the Bēnch (`core/hamlet`) | the hamlet's tests; the kilns' hazard records |
@@ -356,7 +362,7 @@ the sessions that own them.
 
 ## 8. Found on the way (for the sessions that own them; not changed here)
 
-- **`xan-tune.js`'s comments predate the owner's change on Yuni.** Line 87 (`T.thalaba`: "still the Yuni caravans' staging
+- ~~**`xan-tune.js`'s comments predate the owner's change on Yuni.**~~ **Fixed at T1.** Line 87 (`T.thalaba`: "still the Yuni caravans' staging
   town"), lines 147-149 and 405-409 (the Devisers "sell them on to Yuni's caravans there") still say Thalaba sells to Yuni.
   - The code is right: no gateway enters at Thalaba (`gate.yuni`'s `entry` is Qiblai), so `takeAt(TB)` is empty, and
     `road.pher-thalaba` carries no gateway goods.
