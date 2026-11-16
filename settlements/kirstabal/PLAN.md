@@ -18,6 +18,14 @@ the normal xanadu kit. opium dried at kirstabal. road follows lake and gorge. Ke
 - **The road to Lāiṭwāl follows the lake and the Opal River's gorge.**
 - **The river is Keb Riwā.**
 
+**And later the same day:** *"villages sound fine. The White Monastery (name TBD) runs the latex house. The Red Monastery
+(name also TBD) runs Sekrid. Landing belongs to Scarp province"*.
+- **The lake's nine villages stand** as section 2a gives them.
+- **The White Monastery runs the latex house** at Kirstabal, and **the Red Monastery runs Sekriḍ**. Both names are still
+  to come. This plan reads them as two of Qiblai's eight great monasteries, the white and the crimson
+  (`kits/qiblai/PLAN.md` 2b: each has its colour and its Prismarch on the council). That reading is *proposed*: question 11.
+- **The Landing belongs to the Scarp** (P5), with the rest of the lake.
+
 Sources:
 - `core/region/data/xan-tune.js` (`XAN_TUNE`) and `core/simulation/PROPOSAL-XANADU.md`, sections 2, 3d, 6 and 7: the
   province, the sim and its roads.
@@ -78,12 +86,13 @@ the Oidong–Xanadu scarp, just south of where Keb Riwā falls off the scarp int
 | The barge and lake people: bargemen, the boatyard, fishers and their households | ~550 | the harbour quarter |
 | The warehouses: porters, weighers, storekeepers, the Month Store (the salt), the factors' clerks | ~400 | the harbour quarter and the bazaar |
 | The caravan trade inward from the lift: the serai, grooms, drovers, carters | ~300 | the serai quarter by the Strongbow road |
-| The Scarp's works: the tea factory, the cacao fermentaries, and **the latex house**, where all the Scarp's opium is dried, balled and sealed (the owner, 2026-11-16: "opium dried at kirstabal") | ~500 | the works quarter, at the south edge |
+| The Scarp's works: the tea factory and the cacao fermentaries | ~400 | the works quarter, at the south edge |
+| **The White Monastery's house**: its monks and lay workers, who run **the latex house**, where all the Scarp's opium is dried, balled and sealed (the owner, 2026-11-16) | ~150 | the daughter house on the scarp's toe; the latex house in the works quarter |
 | The bazaar's traders and the crafts (smiths, potters, rope and sail makers, the oil lamps' keepers) | ~600 | the bazaar and the streets off it |
 | The province's seat: the governor of the Scarp, the tax post, the tithe granary's keepers, a garrison of ~80 | ~250 | the seat beside the bazaar |
-| The Decree: a monastery and a gate temple | ~150 | the monastery on the scarp's toe |
+| The Decree's lay temples: a gate temple, the harbour shrine | ~50 | the gate and the quay |
 | **The Brotherhood of the Two Horns**: the factor house (`horns.kirstabal`, 20 in the tune) | 20 | on the bazaar |
-| Others: households, servants, the poor | ~230 | through the town |
+| Others: households, servants, the poor | ~280 | through the town |
 
 Plus the Scarp's **25,000 rural people** (the tune's bulk district). *Proposed*, about **13,000 of them live round the
 lake** (section 2a), about **1,000 in 3-4 ring villages** on the floor south of the town (the proposal's section 3e), and
@@ -106,11 +115,11 @@ coined Xanadui in the style of the capital's lake towns (English in Indic letter
 | Shore | px | Name (gloss) | People | Trade |
 |---|---|---|---|---|
 | Head (east) | 989,1600 | **Kirstabal** | 3,000 | the hub: the barge port, the bazaar, the Scarp's seat (section 3) |
-| North, at the head | 986,1588 | **Sekriḍ** (sacred) | 800 | the shrine village at the sacred wadi's mouth, facing Kirstabal across the bay; the Decree's pilgrims to the cataract |
+| North, at the head | 986,1588 | **Sekriḍ** (sacred) | 800 | **the Red Monastery's village** (the owner, 2026-11-16): the shrine village at the sacred wadi's mouth, its house and estate, and the Decree's pilgrims to the cataract. *Proposed:* the monastery holds the village's land and fishing as Qiblai's temple estates hold theirs |
 | North | 975,1587 | **Phisharī** (fishery) | 1,400 | the lake's fishing village and its fish market; the dugouts' beach |
 | North | 963,1586 | **Kāko-Bāgh** (cacao garden) | 1,200 | cacao groves on the north slope behind it (`Cfa`, 1,035 mm at 8 km back) |
 | North | 948,1589 | **Rīḍ** (reed) | 700 | reeds, lotus root and willow: the mats and baskets |
-| West (the outlet) | 932,1600 | **The Landing** (*Lānḍing*) | 600 | the barges' landing and the portage road's head to Qiblai (the owner, 2026-11-16): ox-carts, porters, the transfer sheds |
+| West (the outlet) | 932,1600 | **The Landing** (*Lānḍing*) | 600 | the barges' landing and the portage road's head to Qiblai (the owner, 2026-11-16): ox-carts, porters, the transfer sheds. **The Scarp's** (P5), not Qiblai's (the owner, 2026-11-16) |
 | South | 938,1606 | **Ṭimbar** (timber) | 700 | the floor's timber floated down the lake to Kirstabal's boatyard |
 | South | 955,1607 | **Ōpal-Māuṭh** (opal mouth) | 1,200 | at the Opal River's mouth: the ferry and the start of the gorge road to Opal Valley and Lāiṭwāl; Opal Valley's goods come down here |
 | South | 967,1606 | **Rāis-Ṭeras** (rice terraces) | 1,000 | rice and grain terraces on the south side's wetter middle (`Cfa`, 1,080-1,130 mm) |
@@ -157,15 +166,18 @@ cataract hangs in sight to the north-east, and Strongbow's tower stands over the
   the stables, a camping ground for overflow (a `core/camp` caravan halt), and **the bridge over Keb Riwā's mouth** (the
   owner, 2026-11-16): 135 m of river, on stone piers with Xanadu's arches (*proposed*).
 - **The works quarter** at the south edge, downwind of the lake breeze: the tea factory's withering lofts and rolling
-  floors, the cacao fermentaries and drying floors, and **the latex house** (the owner: the opium is dried at Kirstabal).
-  There the Scarp's raw latex is dried on racks, balled and sealed for the Treasury and the gateways, behind a wall with
-  the governor's guard at its gate (*proposed*).
+  floors, the cacao fermentaries and drying floors, and **the latex house**, run by **the White Monastery** (the owner,
+  2026-11-16). There the Scarp's raw latex is dried on racks, balled and sealed for the Treasury and the gateways. It is a
+  walled compound with whitewashed drying halls and the monastery's white banner. *Proposed:* the monks seal the balls,
+  and the Sultan's weigher at the gate counts the Treasury's due (2,000 kg a year).
 - **The houses.**
   - The rich courtyard houses are on the lakefront either side of the harbour, where the breeze is.
   - The middle houses fill the grid between the Lamp Way and the works.
   - The poor are at the south and east edges, by the works and toward the scarp.
-- **The monastery of the Decree** on the scarp's first spur east of the town (about 992,1602, -1,350 to -1,530 m), 150-300 m
-  over the roofs. Its terraces look at the cataract.
+- **The White Monastery's daughter house** (*proposed*) on the scarp's first spur east of the town (about 992,1602,
+  -1,350 to -1,530 m), 150-300 m over the roofs. Its terraces look at the cataract, and its stair comes down to the latex
+  house. It is drawn with the Xanadu kit's monastery in white, not with Qiblai's kit (the owner: the normal Xanadu kit
+  only).
 - **The ring villages** (3-4, `core/hamlet`) on the floor south of the town (985-989, 1605-1611, -1,600 to -1,480 m): grain,
   rice and cacao. Up the scarp are the plantation hamlets: tea at 0 to +1,000 m, poppy and saffron near the lip.
 - **The lake** (section 2a): the launches' quay beside the barge quays. Sekriḍ is about 25 km off, up the north side of the lake's
@@ -210,7 +222,8 @@ What the tune does now:
 | **The lower lake's villages** (section 2a) as `T.lowerLake`, read by the same `lakeTown` as `T.lake`: nine villages with their trades, in P5, hub Kirstabal; their people come off P5's bulk district | the owner's smaller Atitlán. The fishing villages get `T.fishery` works; the town and Strongbow eat 56 t of fish a year and catch none |
 | **A market-boat round** on the lower lake (`T.rounds`: `round.lower`, Kirstabal and the villages) | the pots, mats, honey, fruit and fish go round as on the capital's lake |
 | **The Landing** (`xan.landing`, 600, `lake`) and **the split of `road.qb-ks`**: the barge Kirstabal to the Landing (112 km), then the portage road from the Landing to Qiblai (~22 km) | the owner: "barges can stop at a landing with portage road". Gemini's 108 km is the lake alone |
-| **The latex house** (`ks.latex`): the opium's drying as a batch (raw latex in, opium out, at a loss of weight), so the province's opium share lands as latex and leaves as opium | the owner: "opium dried at kirstabal". It needs a raw good (`latex`) beside `opium` in `T.goods`, or the latex house stays a store if the tune keeps one good |
+| **The latex house** (`ks.latex`): the opium's drying as a batch (raw latex in, opium out, at a loss of weight), so the province's opium share lands as latex and leaves as opium. It is **the White Monastery's** work: a house record beside the town, as `T.orderHouse` is beside Qiblai (`['qb.white.kirstabal', ..., 'sl758m2396', 992, 1602, 150]`) | the owner: "opium dried at kirstabal", run by the White Monastery. It needs a raw good (`latex`) beside `opium` in `T.goods`, or the latex house stays a store if the tune keeps one good. Whether the monastery keeps a cut of what it dries (as the Order's house takes its eighth) is question 12 |
+| **Sekriḍ as the Red Monastery's** village: its `lakeTown` record with the monastery as its holder | the owner: the Red Monastery runs Sekriḍ. On the sim it is a lake village like the rest, until the council's houses have records of their own |
 | `ks.boatyard` and `ks.serai`, stores (`out:[]`, as Erehwon's dockyard) | so the barge and caravan people are works the sim can count |
 | The ring villages, 3-4 declared (`KHAMLET` `xanadu` row) | the proposal's section 3e; the rest of the Scarp stays bulk |
 | Retime `road.ks-sb` to the ground (12-16 km, over the bridge) plus the lift's hours | the 25 km is to the lip's pin, but the goods land at the foot |
@@ -249,7 +262,7 @@ Following `README.md`, "CORE MODULES ARE NOT OPTIONAL":
 | **K2** | The town on `core/city` with the Xanadu kit, as a target on Xanadu's page | `core/city`'s tests; no overlap; the GPU verify (`--assert`) |
 | **K3** | The harbour, the lake shore, Keb Riwā's mouth and the bridge, and the cataract as the skyline (`core/water`, `core/coast`) | water checks; the bridge's piers on the bed; nothing floats |
 | **K4** | The lake's nine villages and hamlets, the ring villages and the plantation hamlets (`core/hamlet`, `kits/crops`); the boats drawn on their runs once the lake craft exist | the hamlet tests; every village on its shore cell at 1:1; no trees on the scarp's cliffs |
-| **K5** | Interiors: the serai, the factor house, the governor's house, the tea factory | the interiors' checks |
+| **K5** | Interiors: the serai, the factor house, the governor's house, the tea factory, the latex house | the interiors' checks |
 | **K6** | The site in the open world, with Strongbow's foot and the road between | the region's verify |
 
 ## 7. Questions for the owner
@@ -267,7 +280,12 @@ Following `README.md`, "CORE MODULES ARE NOT OPTIONAL":
 7. ~~**Lāiṭwāl's road.**~~ **Answered 2026-11-16: by the lake and the gorge.**
 8. ~~**The river's name.**~~ **Answered 2026-11-16: Keb Riwā.** The region data (`openworld/oidong-highrift`,
    `openworld/xanadu-oidong-highrift`) and Strongbow's notes still say *Rīfar al-Jadwal*, for their sessions to follow.
-9. **The lake's ring (section 2a).** Nine villages, about 8,300 people, and some 25 hamlets: is that the right size for
-   "smaller"? Do the coined names stand?
-10. **Whose is the lake's west end?** This plan puts all the lake's villages in the Scarp (P5) under Kirstabal, the Landing
-    included. The Landing is 22 km from Qiblai and might belong to Qiblai's province (P3, the Cataracts) instead.
+9. ~~**The lake's ring.**~~ **Answered 2026-11-16: "villages sound fine."** Nine villages, about 8,300 people, and some 25
+   hamlets, with the names of section 2a.
+10. ~~**Whose is the lake's west end?**~~ **Answered 2026-11-16: the Landing belongs to the Scarp province.**
+11. **The two monasteries.** Are the White Monastery and the Red Monastery two of Qiblai's eight great monasteries, the
+    white and the crimson spokes, each with its Prismarch on the council? Or are they houses of the Scarp's own? Their
+    names are still to come (the owner: "name TBD").
+12. **The White Monastery's cut.** Does it keep a share of the opium it dries, or take a fee, or does it run the latex
+    house for the Treasury alone? This sets whether the tune gives it a cut, as the Order's house takes its eighth of the
+    council's income.
