@@ -52,7 +52,11 @@ function ksBioMask(x,z){if(KS_GROUND.h(x,z)<1.2)return 0;
  for(const s of KS_WAYS.query(x,z,1))if(KCITY.lib.segDist([x,z],s.a,s.b)<s.w/2+2)return 0;
  for(const p of KS_SPACE.query(x,z,1)){const D=VERN.defs[p.key];if(Math.hypot(x-p.x,z-p.z)<Math.hypot(D.fw||D.w,D.fd||D.d)/2+(p.kind==='ring'?2:8))return 0;}   /* a clearing round every town building */
  const v=KS_GROUND.v(x,z),u=KS_GROUND.u(x,z);if(u>-760&&u<820&&v<60)return 0;   /* the beach, the quays and the quay street: open */
- if(u>-600&&u<700&&v>20&&v<780)return .05;   /* the town, its works quarter (the latex house, the tea factory, the fermentaries) and the monastery's ground */
+ /* the town's yards and gardens (the owner, 2026-11-16: "add some gardens and foliage"): inside the build zone, wherever the
+    clearings round the houses and the streets leave ground, a third of the country's trees and plants */
+ {const B=KS_TOWN.BAZAAR;if(Math.abs(u-B[0])<36&&v>B[1]-38&&v<B[1]+34)return 0;}   /* the bazaar square: open */
+ {const Z=KS_TOWN.ZONE;if(u>Z[0][0]-30&&u<Z[1][0]+30&&v>20&&v<Z[2][1]+30)return .33;}
+ if(u>-600&&u<700&&v>20&&v<780)return .05;   /* the works quarter (the latex house, the tea factory, the fermentaries), the seat, the barracks and the monastery's ground */
  const f=ksFieldAt(x,z);if(f)return f.kind==='tilled'||f.kind==='crop'?0:.2;   /* the fields: none in the tilled and standing, a few in the fallow and the paddocks */
  return 1;}
 if(typeof BIO!=='undefined'&&BIO.host){Object.assign(BIO.host,{mask:ksBioMask,origin:[[0,0],[-1200,1600],[1600,1400]],center:[200,400],

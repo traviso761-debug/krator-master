@@ -51,6 +51,23 @@ window._instances=KS_INST;
 const ksFr=new THREE.Frustum(),ksPm=new THREE.Matrix4();
 FRAME_HOOKS.push(()=>{camera.updateMatrixWorld();ksPm.multiplyMatrices(camera.projectionMatrix,camera.matrixWorldInverse);ksFr.setFromProjectionMatrix(ksPm);const P=camera.position;let shown=0;
  for(const e of KS_GROUPS){const d=P.distanceTo(e.sphere.center)-e.sphere.radius;const v=d<e.range&&ksFr.intersectsSphere(e.sphere);e.G.visible=v;if(v)shown++;}window._chunksShown=shown;});
+// the avenues' and the main streets' trees (the owner, 2026-11-16: "add some gardens and foliage"): palms down the avenues (the
+// quay street, the Lamp Way, the works road), shade trees along the main streets, one each side every 14 m (avenues) or 20 m,
+// 2.2 m out from the kerb, where no building, other street, the water or the quays stand; the kit's xaPlant (the Vale's garden
+// species, baked with the kit's own plants below)
+const KS_STREET_TREES={n:0,skipped:0};
+if(KS_PLAN&&typeof xaPlant==='function'){reseed(41626);
+ const clear=(x,z)=>{if(KS_GROUND.h(x,z)<1.6)return false;
+  for(const s of KS_WAYS.query(x,z,1))if(KCITY.lib.segDist([x,z],s.a,s.b)<s.w/2+1.2)return false;
+  for(const p of KS_SPACE.query(x,z,1)){const D=VERN.defs[p.key];if(D&&Math.hypot(x-p.x,z-p.z)<Math.hypot(D.fw||D.w,D.fd||D.d)/2+1.5)return false;}
+  const u=KS_GROUND.u(x,z),v=KS_GROUND.v(x,z);return !(v<44&&u>KS_GROUND.HARBOUR.u0-30&&u<KS_GROUND.HARBOUR.u1+30);};   /* not on the harbour's apron */
+ for(const w of KS_PLAN.ways){if(w.cls!=='avenue'&&w.cls!=='main')continue;const av=w.cls==='avenue',step=av?14:20,off=w.w/2+2.2;let carry=step/2;
+  for(let i=1;i<w.pts.length;i++){const a=w.pts[i-1],b=w.pts[i],L=Math.hypot(b[0]-a[0],b[1]-a[1]);if(L<.01)continue;const ux=(b[0]-a[0])/L,uz=(b[1]-a[1])/L;
+   let t=carry;for(;t<L;t+=step)for(const sd of[-1,1]){const x=a[0]+ux*t-uz*off*sd,z=a[1]+uz*t+ux*off*sd;
+     if(!clear(x,z)){KS_STREET_TREES.skipped++;continue;}
+     if(xaPlant(av?'palm':'tree',x,KS_GROUND.h(x,z),z,av?rr(8,11):rr(6,8.5)))KS_STREET_TREES.n++;}
+   carry=t-L;}}}
+window._ksStreetTrees=KS_STREET_TREES;
 // the page's own (vendored) biome: only the plants the kit's builders set in their gardens and courts (xaPlant), baked. The
 // country's flora is the Rift floor's (90m-ks-flora.js: the Rift kit on today's core/biome), not the Vale's (XANADU.build is not run)
 if(typeof BIO!=='undefined'&&BIO.host){BIO.setScene(scene);BIO.setSun([-.5,.76,.52]);

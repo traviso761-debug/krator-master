@@ -46,10 +46,13 @@ function ksPainter(B){const PX=4096/Math.max(B.x1-B.x0,B.z1-B.z0),W=Math.ceil((B
   for(let z=B.z0;z<B.z1;z+=step)for(let x=B.x0;x<B.x1;x+=step){const cx=x+step/2,cz=z+step/2,y=KS_GROUND.h(cx,cz),rv=KS_GROUND.riverAt(cx,cz),
    bank=rv[0]<KS_GROUND.river.width/2+40&&y<rv[1]+6;if((y>-1.5&&y<3.2&&KS_GROUND.v(cx,cz)<90)||bank){P.mb.fillRect(P.gx(x),P.gz(z),step*PX+1,step*PX+1);}}};
  return P;}
+/* the town's beaten ground: wider than the build zone (it was the zone until the town was tightened, 2026-11-16), so the
+   gardens, the seat, the barracks and the edges of the town stand on dust, not on the lakeside's lawn */
+const KS_EARTH=[[-600,20],[700,20],[700,660],[-600,660]].map(([u,v])=>KS_GROUND.at(u,v));
 function ksPaintTown(P){const K=KS_PLAN;if(!K)return;const {ma,mb,t}=P;
  ksPaintClimate(P,10);P.sandBands(4);
  /* the town's made ground (the quarters inside the zone) a little dirt, the yards round every building dirt */
- ma.fillStyle='rgb(0,0,200)';P.poly(ma,K.zone);ma.fill();   /* packed earth: a hot town's ground, not a lawn */t.fillStyle='rgba(140,130,118,.25)';P.poly(t,K.zone);t.fill();
+ ma.fillStyle='rgb(0,0,200)';P.poly(ma,KS_EARTH);ma.fill();   /* packed earth: a hot town's ground, not a lawn */t.fillStyle='rgba(140,130,118,.25)';P.poly(t,KS_EARTH);t.fill();
  ma.fillStyle='rgb(0,0,255)';for(const r of K.lots.concat(K.extra))if(r.kind!=='mole'&&r.kind!=='quay'&&r.kind!=='boat'&&r.kind!=='bridge'){P.rect(ma,r,r.w,r.d,1);ma.fill();}
  /* the latex house's court, beaten earth */
  {const X=K.latex,c=[[X.u0,X.v0],[X.u1,X.v0],[X.u1,X.v1],[X.u0,X.v1]].map(([u,v])=>KS_GROUND.at(u,v));ma.fillStyle='rgb(0,0,255)';P.poly(ma,c);ma.fill();}
@@ -66,7 +69,7 @@ function ksPaintClimate(P,step){const B=P.B;for(let z=B.z0;z<B.z1;z+=step)for(le
  P.t.fillStyle='rgba('+L(196,78)+','+L(164,100)+','+L(84,62)+','+(.8-.3*k).toFixed(3)+')';
  P.t.fillRect(P.gx(x),P.gz(z),step*P.PX+1,step*P.PX+1);}}
 function ksPaintCountry(P){const K=KS_PLAN;ksPaintClimate(P,25);P.sandBands(25);const {ma,mb}=P;
- if(K){ma.fillStyle='rgba(0,0,120,1)';P.poly(ma,K.zone);ma.fill();for(const w of K.roads){ma.strokeStyle='rgb(0,0,255)';P.line(ma,w.pts,w.w);}}
+ if(K){ma.fillStyle='rgba(0,0,120,1)';P.poly(ma,KS_EARTH);ma.fill();for(const w of K.roads){ma.strokeStyle='rgb(0,0,255)';P.line(ma,w.pts,w.w);}}
  /* the ring's fields: strips round each farming village (and the ranch's paddocks), tilled, standing or fallow by their own hash,
     kept off the village's lanes and buildings, the water and the town */
  for(const f of KS_FIELDS){const b=f.box,X=P.gx(b[0]),Z=P.gz(b[1]),W2=(b[2]-b[0])*P.PX,H2=(b[3]-b[1])*P.PX;   /* 89zk's records */
