@@ -818,16 +818,8 @@ dry on the new shore.
   deep. The owner, 2026-11-16, chose to fill them ("Fill pits, river falls"): ten pits raised to the lower of their
   course neighbours, the course then falling all the way (the cut to reach the lake raised to fall on), the beds sampled
   again: the Alph falls from -558 m below the breach to -1,537 m at Qiblai's lake's shore, ~150 m over the water.
-- `edit_517_pher.py` (last; the owner, 2026-11-16, in the Phēr plan's session: "give it a headland and cove; give it a
-  small stream"; settlements/pher/PLAN.md 1.2): Phēr (843,1491, `spher0000001`, key 5.1e12) gets a perennial stream,
-  `r_pher_stream` (2 m3/s, ~250 km2, its name the owner's to give), from springs at the scarp's foot (842.5,1477, +133 m)
-  down the plain's own slope (no channel cut) to the caldera wall's lip (-260 m), falling into the cove at 842,1492; and
-  two landform records under a cell, `lf_pher_headland` (a 1.5 km ridge south-east from the shore's bend at 839.5,1491,
-  80 to 40 m over the lake) and `lf_pher_cove` (its head under the town, 1 km across, 600 m deep, opening south-east,
-  10-30 m deep). core/world's landform stamper (openworld/xanadu-oidong-highrift/src/44-world-landforms.js) stamps
-  islands only so far: the `headland` and `cove` kinds are owed there.
 - Run order from the pre-edit model (055bc43ce): `edit_517.py`, `edit_517_crease.py`, `edit_517_paint.py`,
-  `edit_517_alph.py`, `edit_517_gorge.py`, `edit_517_pher.py`.
+  `edit_517_alph.py`, `edit_517_gorge.py`.
 
 **5.1e12 (2026-11-16, records only)**: the owner, "we can move thalaba to the mouth of godshearth and put a new village
 on the lake in its place": Thalaba (`shvo49k0y2`) moves from 825,1481 to 840,1463, where Godshearth's spillway gorge

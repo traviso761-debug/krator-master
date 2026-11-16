@@ -23,37 +23,6 @@
    "crest_m": -478.0,
    "water_m": -520.0,
    "note": "A basalt stack off the lake's west shore, 42 m over the water. Sub-cell; its cell's bed held as a shoal. edit_517, 2026-11-11."
-  },
-  {
-   "id": "lf_pher_headland",
-   "kind": "headland",
-   "px": 839.5,
-   "py": 1491.0,
-   "to_px": [
-    840.03,
-    1491.53
-   ],
-   "length_m": 1500.0,
-   "width_m": 300.0,
-   "crest_m": -440.0,
-   "toe_m": -480.0,
-   "water_m": -520.0,
-   "note": "Phēr's headland: a ridge 1.5 km long running south-east from the north shore's bend, 80 m over the lake at its root falling to 40 m at its point, sheltering the cove east of it (the owner, 2026-11-16: \"give it a headland and cove\"; settlements/pher/PLAN.md 1.2). edit_517_pher."
-  },
-  {
-   "id": "lf_pher_cove",
-   "kind": "cove",
-   "px": 842.5,
-   "py": 1492.0,
-   "opens_deg": 135.0,
-   "width_m": 1000.0,
-   "depth_into_shore_m": 600.0,
-   "bed_m": [
-    -550.0,
-    -530.0
-   ],
-   "water_m": -520.0,
-   "note": "Phēr's cove: its head under the town (843,1491) on the bench, 1 km across and 600 m deep, opening south-east toward the long isle, 10-30 m deep; the harbour, the stream's mouth at its head (settlements/pher/PLAN.md 1.2). edit_517_pher."
   }
  ]
 }
