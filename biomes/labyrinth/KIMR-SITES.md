@@ -19,6 +19,26 @@ figure marked (est.) is an estimate. Coordinates are scale model 5.1 px (1821 x 
 
 The survey scripts and the map are in the session's scratchpad, not in the repo.
 
+## 0. The owner's answers (2026-11-16)
+
+These settle section 6's questions 1, 3, 5, 6 and 11. Where the sections below differ, this section wins.
+
+- **Spread over the land, with a slight weight to the east** ("Spread over the land, slight favoritism to the east"). The
+  eight seats stand as section 2 places them. The east four (K1, K2, K6, K7: x 292-338) hold 5,800 of the 11,000 and the west
+  four (K3, K4, K5, K8) hold 5,200. That already leans east, so no seat moves.
+- **The Hall is at its station** ("station"): station 1's 376.5,1473.5. Its map pin moves there, through the scale-model
+  session's queue. The 250 of the vigil camp keep their place at the old pin (365,1474), as section 4 has them.
+- **A great house may be bigger than 500** ("let great house be bigger"). `core/hamlet` caps a village at 500
+  (`KHAMLET.POP_MAX`, core/hamlet/30-hamlet-village.js), and the cap is the module's design: it lays villages. So a
+  great house is laid out in full on `core/city`, as the Xanadu lake towns over 500 are (the owner, 2026-11-16: "Lake towns over
+  500 can be laid out in full"). *Proposed:* each great house's seat holds **800-1,200**, the clan blocks round its court on the
+  mesa bench (`KIMR.md` rule 1, the *greidhaws*), with correspondingly fewer hamlets round it. The four lesser pueblos keep a
+  seat of up to 500 on `core/hamlet`.
+- **The built Mesas pueblo is a seasonal hamlet of K8** ("sure"): the summer camp on knob 7, 65 km from water, its people
+  counted in K8's 1,000.
+- **The eight seats become map pins** ("yes"), with the Hall's pin moved to its station, all queued with the scale-model
+  session.
+
 ## 1. Assumptions and the head count
 
 **The owner's numbers:**
