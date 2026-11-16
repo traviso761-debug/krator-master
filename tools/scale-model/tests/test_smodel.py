@@ -674,6 +674,9 @@ for r_id in ('r613', 'r753', 'r492', 'r272'):
     r_t = next(r for r in D['rivers'] if r['id'] == r_id)
     check('%s ends in the lake' % r_id, bool(lk_full[int(round(r_t['px'][-1][1])), int(round(r_t['px'][-1][0]))])
           and r_t['to'].get('lake_m') == -520)
+check('the Beacon\'s knoll (853,1540) is kept out of the rim\'s lowering: %.0f m, its crown %.0f m, the saddle %.0f m' % (
+    float(E[1540, 853]), float(E[1540, 854]), float(E[1538, 854])),
+      840.0 <= float(E[1540, 853]) <= 900.0 and float(E[1540, 854]) >= 860.0 and float(E[1538, 854]) >= 820.0)
 for r_id in ('r488', 'r616'):
     r_t = next(r for r in D['rivers'] if r['id'] == r_id)
     check('%s joins the Alph in the Vale, or the lake at its east tip (%s)' % (r_id, r_t['to']),

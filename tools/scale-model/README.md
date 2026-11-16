@@ -801,6 +801,12 @@ dry on the new shore.
 - The moved lake's north-east shore borders the Vale's lowland (a north river's valley meets it ~30 m over the lake), so
   the check is that the outlet is the lowest way out by 20 m (`RIM_MIN`; blocked, the lake would spill at -491.6 m), not
   a caldera closed 200 m all round; the Vale's floor keeps 6.5 cells off the shore (`VALE_S`), a whole wall between.
+- The Beacon's shoulder (the owner, 2026-11-16): moving the lake east carried the south horst's lowering onto the knoll
+  the Order of the Beacon's head house stands on (853,1540; settlements/beacon/PLAN.md), from 863 m to 324 m. An oval
+  round 854,1540 (6 x 10 px, `BEACON`) is kept out of it, so the knoll (863 m), its crown (885 m at 854,1540), the
+  saddle (849 m at 854,1538) and its spur stand as the plan measured them; the lamp at 22 m clears G1 by 32 m, the House
+  of the Tempest by 25, the Golden Tears' camp by 28, Tuatara by 38 and the south watch fort by 35. Its pin is
+  `sbeacon00001` (SETT_ADDED 5.1e13).
 - `edit_517_crease.py` (after the edit): the straight crease in the heights across the Twins' north-west (985,1419 to
   918,1493, a 150-350 m slope break over a cell) and along the south edge of an old stamp round Qiblai's basin (y
   1639-1640) blended toward a 1.3-px blur within 2.5 px; temperatures lapsed, the paint relit.
