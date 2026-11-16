@@ -146,12 +146,26 @@ function sbNock(X){const P=X.P,F=X.F,D=X.D,N=P.nock,gone=X.RU?new Set(X.RU.nockG
   g(N.y,'deck');g(N.y-N.th,'shade');
   SBG.put(X,'res',gridSurface((u,v)=>{const x=lerp(part.x0,part.x1,u);return[x,lerp(N.y-N.th,N.y-1.2,v),N.front(x)];},24,1,{uS:(part.x1-part.x0)/25.6,vS:N.th/25.6}),bound);
   SBG.put(X,X.dd?'whiteW':'white',gridSurface((u,v)=>{const x=lerp(part.x0,part.x1,u);return[x,lerp(N.y-1.2,N.y+1.4,v),N.front(x)+.2];},24,1,{uS:20,vS:1}),bound);
-  /* where the neighbouring part fell (RU.nockGone), the break: a jagged fracture face across the deck's whole depth and thickness
-     (the deck, its underside and its front are open surfaces: an uncapped end showed the sky through the slab; the owner,
-     2026-11-15: "there is also transparancy issue where the slab broke off the arcology") */
-  if(gone)for(const [nb,xe,sg] of [[N.parts.find(q=>q.x1===part.x0),part.x0,-1],[N.parts.find(q=>q.x0===part.x1),part.x1,1]]){if(!nb||!gone.has(nb.id))continue;
-   const jag=(u,v)=>sg*(STRONGBOW.h(F.seed,812,Math.round(u*10),Math.round(v*14))-.35)*3.2*Math.sin(Math.PI*Math.min(1,Math.max(0,v)))*Math.sin(Math.PI*Math.min(1,Math.max(0,u)));   /* flush with the deck's edges all round */
-   SBG.put(X,'frab',gridSurface((u,v)=>{const z=lerp(bk(xe),N.front(xe),v);return[xe+jag(u,v),lerp(N.y-N.th,N.y,u),z];},10,14,{uS:N.th/12,vS:(N.front(xe)-bk(xe))/12}),bound);}
+  /* the ends: the deck, its underside and its front are open surfaces, so an uncapped end showed the sky through the slab (the
+     owner, 2026-11-15: "there is also transparancy issue where the slab broke off the arcology"). An end with no part beyond it
+     (a wing's outer end) or where the part beyond fell (RU.nockGone) is closed: as built, a plain end wall in the front's glazing;
+     in the ruin, a break with its storeys laid open ("this edge ought to have visible floors rather than intact windows"): each
+     floor slab torn off ragged, a little proud or short of the line, columns standing between them, and a dark wall set back 5 m
+     (the rooms' shadow) so the slab is never seen through */
+  for(const [nb,xe,sg] of [[N.parts.find(q=>q.x1===part.x0),part.x0,-1],[N.parts.find(q=>q.x0===part.x1),part.x1,1]]){
+   if(nb&&!(gone&&gone.has(nb.id)))continue;
+   const z0=bk(xe),z1=N.front(xe),y0=N.y-N.th,both=(fn,nu,nv,o,list)=>{for(const r of [0,1])SBG.put(X,list,gridSurface((u,v)=>fn(r?1-u:u,v),nu,nv,o),bound);};
+   if(!gone){both((u,v)=>[xe,lerp(y0,N.y,v),lerp(z0,z1,u)],8,2,{uS:(z1-z0)/25.6,vS:N.th/25.6},'res');continue;}
+   const ns=Math.max(2,N.storeys|0),sh=N.th/ns,set=xe-sg*5;
+   both((u,v)=>[set,lerp(y0+.3,N.y-.3,v),lerp(z0+.3,z1-.3,u)],4,2,{uS:4,vS:2},'shade');
+   for(let k=1;k<ns;k++){const y=y0+k*sh,jag=u=>sg*(STRONGBOW.h(F.seed,813,k,Math.round(u*16))*3.6-1.8);
+    both((u,v)=>[lerp(set,xe+jag(u),v),y,lerp(z0+.3,z1-.3,u)],16,1,{uS:(z1-z0)/14,vS:1},'deck');
+    both((u,v)=>[lerp(set,xe+jag(u),v),y-.7,lerp(z0+.3,z1-.3,u)],16,1,{uS:(z1-z0)/14,vS:1},'shade');
+    both((u,v)=>[xe+jag(u),lerp(y-.7,y,v),lerp(z0+.3,z1-.3,u)],16,1,{uS:(z1-z0)/14,vS:1},'frab');}
+   /* the slab's own top and underside torn ragged at the edge, and the columns of the bay behind the break */
+   for(const [y,list] of [[N.y,'frab'],[y0,'frab']]){const jag=u=>sg*STRONGBOW.h(F.seed,814,y|0,Math.round(u*16))*2.4;both((u,v)=>[lerp(xe,xe+jag(u),v),y-(y===N.y?.05:-.05),lerp(z0,z1,u)],16,1,{uS:4,vS:1},list);}
+   for(let c=0;c<=Math.floor((z1-z0)/9);c++){const z=lerp(z0+2,z1-2,c/Math.max(1,Math.floor((z1-z0)/9)));if(STRONGBOW.h(F.seed,815,c,sg+2)<.25)continue;
+    kput('acBox',[xe-sg*1.4,y0+N.th/2,z],null,[.9,N.th-.6,.9],new THREE.Color(0xbdb6a8));}}
   /* the Nock stays whole on the rock; the tower leans through its centre */}
  for(const pd of N.pads){if(gone&&gone.has('sb.nock.'+(pd.at[0]<0?'w':'e')))continue;const bound=false;
   SBG.put(X,X.dd?'poolR':'pool',gridSurface((u,v)=>[pd.at[0]+lerp(-pd.size[0]/2,pd.size[0]/2,u),N.y+.25,pd.at[2]+lerp(-pd.size[1]/2,pd.size[1]/2,v)],2,2,{}),bound);}}
