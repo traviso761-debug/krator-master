@@ -92,7 +92,8 @@ def resources_script(region):
     and WRES.markers(), as the page makes them"""
     base = os.path.join(ROOT, 'openworld', region)
     parts = ['"use strict";var window=globalThis;\n']
-    for j in JS[:5]:
+    land = JS[:[k for k, j in enumerate(JS) if j and j[-1] == '41-world-fields.js'][0] + 1]   # up to the land (41), whatever comes before it
+    for j in land:
         if j is None:
             parts.append(WD.fragment(os.path.join(base, 'data'), 'var WORLD_KITS=[];\n', 'the region (core/world/bake_sites.py)',
                                      'openworld/%s/data, decoded by core/world/world_data.py' % region))

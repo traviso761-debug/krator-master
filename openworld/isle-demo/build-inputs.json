@@ -337,7 +337,7 @@
     "core/water/geyser/52-core-water-geyser.js": "804a8b84e108965002396666c0647991ef073416f0206b02aeba81be3be19ac1",
     "core/water/geyser/52b-core-water-geyser-draw.js": "2e403145a06bf9b7a06fe4a5e6831d3ae0724a8eba1fbb21b4039ab2ae6cfd3e",
     "core/world/00-head.html": "f13d6e95835b879b2558b833c915dec3020683afff8a62962d2c7aaa68659c6e",
-    "core/world/41-world-fields.js": "1ef5b7e8181a5cbb6a51660cdb7e0c7dc6de5c929831d6be1303ade051f916c6",
+    "core/world/41-world-fields.js": "de650814f8e84061f8662c2386deb17848a6b8246311e00bb47a944c0f560ddf",
     "core/world/42-world-roads.js": "8b9b8bf77763f7f8c1507f103352c821d1032021ec73218b96aa4a5783451277",
     "core/world/45-world-host.js": "4f67add1a87c01af548999122e1c4562345f8871418ea7a478eebfb8699323bc",
     "core/world/49r-world-resources.js": "c06677b5dcd39f7269b5e15bd790ad7532c87c1a99f17ff70565c77373db7b24",
@@ -352,7 +352,7 @@
     "core/world/88-world-towns.js": "e223a019a784cadc3f0a1c9891c0721e660498610064cde49a0850cae1152f67",
     "core/world/89r-world-resources-map.js": "710c0886b885ee442c5426afc6f0896823a665d5111170ad66a71ebe4ec35563",
     "core/world/90-world-camera.js": "a772ca7598b110af2c126df79b3e76add563a9e0ff7407905548669f71124a65",
-    "core/world/91-world-probe.js": "411c9eea70f970ea4bab20ccaa1e03a1e99d3b7f8d1b3b5a0582256cf0ef4122",
+    "core/world/91-world-probe.js": "8877ad328ebab974bd66ba834c342c95beb16e04b1da7ce6a84dd9fb707e6e30",
     "core/world/93-world-propose.js": "df6242ce0b069c014d9e4250610a7db1479b647974f00d9c1dda0432fe0c6917",
     "core/world/98-world-start.js": "ee26dc2dbbc1ce90133036d91177a23fef7435cc30121289756b86d9648c257b",
     "core/world/99-tail.html": "5c1404e034c7ec0d2b8ac19a6c1a2c4786dbd3037cbb48efdc8cfe4820c14aea",
@@ -761,7 +761,7 @@
     "kits/iziz-vernacular/src/74b-vern-frontier.js": "a488d92600d611e571ca6a7e2b0e0dbcaeb697ce1ff9fa98889101c008f2d86b",
     "kits/iziz-vernacular/src/74z-vern-trades.js": "8ff3ccda50c56e14f469753b70253b570c31666b09510f098ec6c45b686f4c9c",
     "kits/iziz-vernacular/vernacular.py": "dcae438a176751059c9a0a11431f7aa08ac8724894fa6b082a64389ba3534ad0",
-    "kits/resources/data/geology.json": "19058fbb95a026cb5106840a13bd93b341ad9557f65304bc9e68c0b873a11292",
+    "kits/resources/data/geology.json": "60f9684d3c92628f1ea162c7bbe5036949ee8d094e9fed071cdb6a6221f997ca",
     "kits/resources/src/42r-res-ore.js": "795b57d189506369e35b7e2b3de5795d940d8bff91bb51e6dedb7df3f2432a04",
     "kits/resources/src/43r-res-fields.js": "0a9325061c1d4526405b636391f26d9330012c3c6b36aa939e7ad461ec83a60f",
     "kits/resources/src/44r-res-nodes.js": "e52c3cb3eace32606700aef4991b9032cdf0be9a21f56ffad90c657ca89359e3",
@@ -1340,8 +1340,8 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "openworld/isle-demo/dist/isle-demo.artifact.html": "bfb574cd6ac71e61fae887cdc7b3a680db61ac9b203428edf46421379cf7584c",
-    "openworld/isle-demo/dist/isle-demo.html": "5cb82ca775b92f1a25def01c8068261146c0e5b289a10261d06c949c17fcb2eb",
+    "openworld/isle-demo/dist/isle-demo.artifact.html": "14d40600ee1d9a2e260d22819b89bf92ef5479df2931fb4abc9d25cd1e2c6463",
+    "openworld/isle-demo/dist/isle-demo.html": "184e6e45b24166533c513f13a03c6ac6a82e67bd8523fc202d397839a95e8b3d",
     "openworld/isle-demo/dist/isle-demo.tex.brtowns.js": "2eb5c136bd57139376043468141dddd302ea18ddc16a8219ae972c9dbedf4a71",
     "openworld/isle-demo/dist/isle-demo.tex.eastabyss.js": "419fd1d89cff71c282481dfb0e3b7e1ea7c15bc59e46270f8f4f6bd6759438f0",
     "openworld/isle-demo/dist/isle-demo.tex.geyser.js": "e0b88e7b3ecd6d9514b9b9baff00640e267a5e9f08efc3d0f5b52c1eaa7932c0",
@@ -1358,8 +1358,8 @@
     "openworld/isle-demo/dist/isle-demo.tex.ys.js": "e6efa558623b2fcf0bf9703025bc8547cc4d732ef30f81d54f4e3422aaef157c"
    },
    "outputs_raw": {
-    "openworld/isle-demo/dist/isle-demo.artifact.html": "bfb574cd6ac71e61fae887cdc7b3a680db61ac9b203428edf46421379cf7584c",
-    "openworld/isle-demo/dist/isle-demo.html": "5cb82ca775b92f1a25def01c8068261146c0e5b289a10261d06c949c17fcb2eb",
+    "openworld/isle-demo/dist/isle-demo.artifact.html": "14d40600ee1d9a2e260d22819b89bf92ef5479df2931fb4abc9d25cd1e2c6463",
+    "openworld/isle-demo/dist/isle-demo.html": "184e6e45b24166533c513f13a03c6ac6a82e67bd8523fc202d397839a95e8b3d",
     "openworld/isle-demo/dist/isle-demo.tex.brtowns.js": "2eb5c136bd57139376043468141dddd302ea18ddc16a8219ae972c9dbedf4a71",
     "openworld/isle-demo/dist/isle-demo.tex.eastabyss.js": "419fd1d89cff71c282481dfb0e3b7e1ea7c15bc59e46270f8f4f6bd6759438f0",
     "openworld/isle-demo/dist/isle-demo.tex.geyser.js": "e0b88e7b3ecd6d9514b9b9baff00640e267a5e9f08efc3d0f5b52c1eaa7932c0",

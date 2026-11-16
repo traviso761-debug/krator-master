@@ -129,7 +129,7 @@
     "core/water/50-core-water-draw.js": "9b487271223b64c2935b3336667963139dddcc055b852ac4f0a1912b2a9dd7e0",
     "core/water/51-core-water-kinds.js": "e0c2edba19b476b4b46a4e08a63f0af695423d88b1da15b380795b2e4d07ead4",
     "core/world/00-head.html": "f13d6e95835b879b2558b833c915dec3020683afff8a62962d2c7aaa68659c6e",
-    "core/world/41-world-fields.js": "1ef5b7e8181a5cbb6a51660cdb7e0c7dc6de5c929831d6be1303ade051f916c6",
+    "core/world/41-world-fields.js": "de650814f8e84061f8662c2386deb17848a6b8246311e00bb47a944c0f560ddf",
     "core/world/42-world-roads.js": "8b9b8bf77763f7f8c1507f103352c821d1032021ec73218b96aa4a5783451277",
     "core/world/45-world-host.js": "4f67add1a87c01af548999122e1c4562345f8871418ea7a478eebfb8699323bc",
     "core/world/48s-world-sites.js": "809f77293ddeed03d6e707f46019e83a0755aabbc3386c878b1045028ea50744",
@@ -146,7 +146,7 @@
     "core/world/88s-world-sites.js": "b7322b6a70c4e26fe8af57f8a80640345b7c42ed50204bc0d473c2a8d56a251a",
     "core/world/89r-world-resources-map.js": "710c0886b885ee442c5426afc6f0896823a665d5111170ad66a71ebe4ec35563",
     "core/world/90-world-camera.js": "a772ca7598b110af2c126df79b3e76add563a9e0ff7407905548669f71124a65",
-    "core/world/91-world-probe.js": "411c9eea70f970ea4bab20ccaa1e03a1e99d3b7f8d1b3b5a0582256cf0ef4122",
+    "core/world/91-world-probe.js": "8877ad328ebab974bd66ba834c342c95beb16e04b1da7ce6a84dd9fb707e6e30",
     "core/world/93-world-propose.js": "df6242ce0b069c014d9e4250610a7db1479b647974f00d9c1dda0432fe0c6917",
     "core/world/98-world-start.js": "ee26dc2dbbc1ce90133036d91177a23fef7435cc30121289756b86d9648c257b",
     "core/world/99-tail.html": "5c1404e034c7ec0d2b8ac19a6c1a2c4786dbd3037cbb48efdc8cfe4820c14aea",
@@ -164,7 +164,7 @@
     "kits/iziz-vernacular/src/69b-vern-mat.js": "706739ba81271b9c5962492c04c5f7fa3e500b5d0eafb1f0eef5d8d88abfdbba",
     "kits/iziz-vernacular/src/69c-vern-helpers.js": "29c11ba1c973f0ba8590e061d628ef88158a13cc87758501dcf36fd19c00ddd3",
     "kits/iziz-vernacular/src/69e5-iziz-openings.js": "15c99a8088fddbf3253136d79e038f8ff13af19ee603c639b5dbf4449ccf9069",
-    "kits/resources/data/geology.json": "19058fbb95a026cb5106840a13bd93b341ad9557f65304bc9e68c0b873a11292",
+    "kits/resources/data/geology.json": "60f9684d3c92628f1ea162c7bbe5036949ee8d094e9fed071cdb6a6221f997ca",
     "kits/resources/src/42r-res-ore.js": "795b57d189506369e35b7e2b3de5795d940d8bff91bb51e6dedb7df3f2432a04",
     "kits/resources/src/45r-res-field.js": "ca8bf0860266e0eef84783236767da2b4758be920bd26e7aef63c1f8447440ab",
     "kits/xanadu/kit_bundle.py": "8d9bd201e49f0d228018e503e491712bc17762656be0200babcd3e3ca399a4ef",
@@ -206,7 +206,7 @@
     "openworld/xanadu-oidong-highrift/data/scarpw.png": "dcd59af91d0ccf56876593a3ea8e6915eaf37926a18d9d8e8701f11e7ad76694",
     "openworld/xanadu-oidong-highrift/data/temp.png": "5306c98cfa3e975fb83882e16ab74663b3628ced25f8f98a45dd4e563ccc96c1",
     "openworld/xanadu-oidong-highrift/data/wlev.png": "8e67d4b6ea29ac1e0942fbd46dc3a8f305eee715532b75c85e5f59124d141080",
-    "openworld/xanadu-oidong-highrift/plan/sites.json": "e8913aad538c37f8cc3d36259d2e77614734a499852265370584b9ac1c50053c",
+    "openworld/xanadu-oidong-highrift/plan/sites.json": "0e7851aed197dbfd89b03ac5524682e9815714657951437a24938e02dcb5789f",
     "openworld/xanadu-oidong-highrift/src/43-world-xoh.js": "516868f08a23ec2515291f2d565a15d58c97fd034799b8c354f906821f1fe0d4",
     "openworld/xanadu-oidong-highrift/src/46-world-config.js": "4ffbee4eced5186af028ff6db36659d23794049f2f38d77f8f0a712c8768af5e",
     "openworld/xanadu-oidong-highrift/src/47-world-kits.js": "bcc8bcc0c30847c0c9b1d4ef038a8420a8c65623ee6c0e419b7a03100caabf35",
@@ -287,12 +287,12 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.html": "e0cb9f535872d37d2b6554fca7646b426dc4d09c27f0c59326e80cb20f39157f",
+    "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.html": "4b4b5e50462f3505154c2402ddadfdf5f9bb3bcce05aabdbf825919458d453bf",
     "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.tex.oidong.js": "88510acf50c6f8c3830549722810e5183c685781ea2deaa2904e9297452e8086",
     "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.tex.xanadu.js": "7216145e7a4349521c0a4ed9f2f4478f5a709cb771ad7fa4c30270d0df288196"
    },
    "outputs_raw": {
-    "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.html": "e0cb9f535872d37d2b6554fca7646b426dc4d09c27f0c59326e80cb20f39157f",
+    "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.html": "4b4b5e50462f3505154c2402ddadfdf5f9bb3bcce05aabdbf825919458d453bf",
     "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.tex.oidong.js": "88510acf50c6f8c3830549722810e5183c685781ea2deaa2904e9297452e8086",
     "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.tex.xanadu.js": "7216145e7a4349521c0a4ed9f2f4478f5a709cb771ad7fa4c30270d0df288196"
    }

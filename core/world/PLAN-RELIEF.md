@@ -307,6 +307,25 @@ The High Rift's hillshade shows the rings plainly: concentric risers 200 to 250 
 - **Re-baked:**
   - pinnacle: the plan is unchanged (`10e4ebe9`);
   - oidong-highrift (`4cd51975`): 23 hamlets and 937 records, 15 bridges, 123 piers where there were 125.
+- **The ground's own styling (2026-11-15, the owner: "merge in claude/world-biome-styles and make sure the open world takes
+  each biome's ground stylings as well"):**
+  - `41`'s `BIOME_GROUND` gives every one of the model's 80 overlay names a style and that biome kit's own palette. It
+    fails on a missing name instead of falling back to desert.
+  - It replaces P1's style table (`WRELIEF.styleOf` is gone) and applies to every region, relief or not.
+  - Checked over every cut region and both settlements' own cuts: all their overlays are styled. For example:
+
+    | Overlay | Style | Palette |
+    |---|---|---|
+    | the High Rift | `steps` | highrift |
+    | Xanadu | `vale` | xanadu |
+    | the Siphon Pits | `volcanic` | siphon |
+    | Opal Valley | `steps` | opalvalley |
+    | the Twins | `volcanic` | twins |
+
+  - With relief on, the High Rift's `steps` style (terraces 0.9, a 120 m step) lays a few tall benches in its caprock
+    patches, not rings everywhere: ringed tiles 3 % over 20 km.
+  - **Without relief** (`xanadu-oidong-highrift`, whose High Rift, Godstep and Opal Valley are `steps` now), 41's old rule
+    terraces those overlays on the height every 120 m. Turning relief on for that region is the next rollout step.
 - **Left for P2:** the page's old gully noise (`|2*fbm-1|^6` at 240 m) shows as worm-like ridges on the High Rift. The
   erosion filter replaces it.
 

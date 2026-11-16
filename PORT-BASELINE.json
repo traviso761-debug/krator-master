@@ -1009,8 +1009,8 @@
    "sha256": "ddebe9970c7d91ce4d95b5972b3b2351267573071f547ee34e19adffa8be7774"
   },
   "openworld/iziz-cluster/dist/iziz-cluster.html": {
-   "bytes": 5645593,
-   "sha256": "fb48032d88dd4d91db6d4018db518ba97452a09802db09c00882ac718f1ffb43"
+   "bytes": 5657757,
+   "sha256": "451fa061c06d10699de3134989270586b3354737e52962cb4c6391e61c37bc4e"
   },
   "openworld/little-demo/dist/little-demo.artifact.html": {
    "bytes": 5088461,
@@ -1020,13 +1020,17 @@
    "bytes": 5088719,
    "sha256": "43e0dc8e7d2fb8a2fa2a6eeb2c8e7036806cee73e1fc250735abcef1f242b87a"
   },
+  "openworld/oidong-highrift/dist/oidong-highrift.html": {
+   "bytes": 10304903,
+   "sha256": "e5248a6ecf322e1375c78da7bd51cfb77bff573fe06aeb8466b44687d2e61a37"
+  },
   "openworld/pinnacle/dist/pinnacle.html": {
-   "bytes": 5614843,
-   "sha256": "0a3c13e57df90494f0d1c398899c52f84a61e9bd8ad281e672cdd23252a8853c"
+   "bytes": 5643448,
+   "sha256": "b272bd1f641dd97b49235e8e0430be4af05b5558e81d87b0493f066671ad8a4c"
   },
   "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.html": {
-   "bytes": 8232238,
-   "sha256": "58036a8cc0fa0b4ae16adba26fe6c9fa9dccbc0dbabc170f680d01b82917043a"
+   "bytes": 8244753,
+   "sha256": "4b4b5e50462f3505154c2402ddadfdf5f9bb3bcce05aabdbf825919458d453bf"
   },
   "settlements/dalab/dist/dalab-set.html": {
    "bytes": 6603017,
@@ -1061,12 +1065,12 @@
    "sha256": "c4a59a537b6331d763782da7440ac1b08ae3d38a1c2bfb2ece22f983fce8f7dd"
   },
   "settlements/isle-demo/dist/isle-city.html": {
-   "bytes": 6528442,
-   "sha256": "be73f2d0c49a0ee5f2c3457be275bcfed51e9dd9e2bd2cb2ed7f71c935a0a453"
+   "bytes": 6552983,
+   "sha256": "66cdcd27edaf68b1b2e56b9ce1209259967fc626c3f426d61556298f88f434f7"
   },
   "settlements/isle-demo/dist/isle-site.html": {
-   "bytes": 1335923,
-   "sha256": "55b0da624ad6b55a5b201ecd3ac674367aadca5ba1eaafec9d73865fff926cb0"
+   "bytes": 1338674,
+   "sha256": "4a72fa4a7b9ee68d78930b93fa121a366f6318dca9ec44a223408a29149d20bf"
   },
   "settlements/iziz/dist/iziz-ixtest.html": {
    "bytes": 2102347,
@@ -1117,8 +1121,8 @@
    "sha256": "e6c31625003c38418a1cecaf53bdb0d412b7eedde603f6943c1fb0ad09da713d"
   },
   "settlements/longsong/dist/longsong.html": {
-   "bytes": 5318039,
-   "sha256": "292b7831d11cae6a920cc28db8df162abef381a4c4ab31ecfa7f38cf71faa177"
+   "bytes": 8779749,
+   "sha256": "1ed424dad5c15d59e9cab9b51b8ce494309e46a559662bebbfd60dee67a042af"
   },
   "settlements/mavs-refuge/mavs-refuge.html": {
    "bytes": 9075103,
