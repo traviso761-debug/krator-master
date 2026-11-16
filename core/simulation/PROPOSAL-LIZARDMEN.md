@@ -169,14 +169,14 @@ a gift `{id, kind, holder, since, dir}`, a debt `{from, to, kind, coil}`.
 
 ## 6. Questions for the owner
 
-**The owner's answers (2026-11-16)** are recorded below each question. Two are still open: the warrens' number, and the
-ring round the Pile.
+**The owner's answers (2026-11-16)** are recorded below each question. One is still open: the ring round the Pile.
 
 1. **How many?** The lore says "the villages are modest". Gemini's model has 9,400 in the four towns and the Tubes, and
    232,560 in the whole polity (171,360 in warrens).
    - **Answered:** "sauropolis will be about 15k and the regional villages 3k".
    - So the towns hold about 25,000: Sauropolis ~15,000; Tuatara, Komodo and Gila ~3,000 each; the Tubes ~1,000 (question 2).
-   - **Still open:** the warrens' number. *Proposed*: 20,000-40,000 as bulk countrysides, as Xanadu's provinces are.
+   - **Answered:** the warrens hold **20,000-40,000**, as proposed, as bulk countrysides (as Xanadu's provinces are). With
+     the towns that makes the polity about 45,000-65,000.
 2. **The Tubes and the Pile.**
    - **Answered:** "tubes is both a ruin and a lizardman town of about 1000". It is the Rift line's ruined cavern, lived in
      by about 1,000 Lizardmen, the western cluster's second place.
