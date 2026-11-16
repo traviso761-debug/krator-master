@@ -68,6 +68,18 @@ and `qiblai` in core/tags' vocabulary (`TODO.md`, the ride-along) are not prereq
   over-represented"): its colleges and granaries take the colour of the monastery whose spoke their block stands on.
 - **Q7e-Q7g** not started.
 
+- **Walk in, and the rest of the interiors** (the owner, 2026-11-16: "unlock the front doors so I can walk in; work on open
+  issues; and work on giving appropriately fancy interiors to shrines, monasteries, and anything else that doesn't have an
+  interior yet"): the page loads core/walk and hands it to the host's walker (F). Every lot's street door is the one its builder
+  drew; E opens it (unlocked when the lot's interior comes), the room shows through it, and the walker climbs in, up every stair.
+  Every great monastery has its assembly hall in its spoke's colours, each whole one a gate hall (the four guardian kings, prayer
+  wheels), and the monks' quarters in its cell ranges (a chapel, kitchen, dormitories, a reading room), each range with a door to
+  the court; the court is a floor, the gate a flight from the street. The Rainbow Temple's terraces are floors with their
+  flights, so the sanctum is walked to. The 473 wayside shrines are small chapels seen through a glazed window (a hanging in one
+  of the eight colours, the altar, a gilt image, the seven bowls, butter lamps, a hand prayer wheel). The page now names its
+  build (`window.CITY_BUILD`, Xanadu's `99-start.js` and `91t`). Still without an interior: the wheel houses (open), the gate
+  markets, the city gates, the caravanserai.
+
 ## 1. What the city build is
 
 **A settlement build, `settlements/qiblai`,** with its own `build.py` on Verge's pattern (`settlements/verge/build.py`):

@@ -25,17 +25,23 @@
   keeps a metre between fixtures, and furnishes the sanctum as an antechamber (its shrine is the altar). To report to kits/interiors.
 - [ ] **The lots' interiors are guessed from the drawing** (`targets/city/90u-qc-lot-interiors.js`, kits/qiblai `89q5s`): the
   shell is the biggest storey stack (or ground block) a builder raised from the ground, with the stacks raised on it as its upper
-  storeys (at most four); its street door is the middle of that block's front, which is not always the drawn door's place (a
-  Xanadu tenement's shop arches, a corner house); the stair (or, in the smallest houses, a ladder) is the planner's, not the
-  drawing's; the doors stay the kit's locked doors, so a room is reached by flying in. Storeys on terraces set back from the
-  main block (`qnTerraces`) keep no interior.
+  storeys (at most four); the stair (or, in the smallest houses, a ladder) is the planner's, not the drawing's. Storeys on
+  terraces set back from the main block (`qnTerraces`) keep no interior. The street door is the drawn one (2026-11-16) on 993 of
+  1,020 lots; 23 Xanadu courtyard houses (`xa_rich_c`) and a few others draw no door, so their plan keeps the front's middle,
+  with no doorway drawn through and nothing unlocked: their rooms are reached by flying in.
+- [ ] **Walking in is through solid bodies made to look hollow** (2026-11-16): the kit's buildings are solid, so a street doorway
+  shows its room through a depth-only pane (`QB_IX_PORTAL`: the room drawn first, at renderOrder -2, the pane at -1, the body
+  after). Something drawn after the body and behind the pane (a citizen in the doorway, a leaf swung inward) is hidden there;
+  the door leaves are drawn early for that reason. The walker collides only with the interiors' walls, the doors and the
+  monasteries' and the temple's floors: the rest of the city is still walked through, as before.
+- [ ] **A plan whose rooms miss a required piece is planned again** (up to three seeds, 90u): with the street door where the
+  builder drew it, a bedroom can come out too tight for its chest; no type misses one today (41 types, 2026-11-16).
 - [ ] **The rooms' fancy surfaces are owed** (core/materials/PROMPTS-NEEDED.md section 43): the painted murals, the mandala ceiling
   coffers, the temple rug, the beaten gold; today the library's wash, lacquer, wool rug and hammered gold stand in.
 - [ ] **The river is a ribbon.** Nahr ash-Shalalat is a flat water plane in a cut channel; its cataracts as core/water flow, and
   the ground from the open world's cut (`cut_site.py`), are still to do (PLAN.md Q7b). The country is a gentle plane.
 - [ ] **The inner gates sit on the upper terrace** with an ashlar block under them; the avenue's climb through each gate is the
   ground's slope, not a stair (`qb_terrace_stair`, PLAN.md Q7a, is not built yet).
-- [ ] **The page names its build `erewhon`** in core/host and core/tags' registry when `window.CITY` is set (Xanadu's
-  `99-start.js`, `91t-xanadu-tags.js`); the city pre-makes `KTAGS.page` as `qiblai`, but the host's label stays Erewhon's until
-  Xanadu's page takes a name from its target.
+- [ ] **The wheel houses, gate markets, city gates and the caravanserai have no interior yet** (the wheel houses are open on
+  their front, the wheel inside); the shrines' chapels are seen through their window, not walked into (2.2 by 1.8 m).
 - [ ] **Life (Q7e), the open world (Q7f), the Godot export and the gallery (Q7g)** are not started.

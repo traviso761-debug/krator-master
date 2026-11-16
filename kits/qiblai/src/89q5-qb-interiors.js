@@ -150,7 +150,31 @@ function buildQbIxHostel(G,o){reseed(33821+(o.v|0));const X=qnIxDims(o,16,10,3.2
  vB('vStone',0,y,-D/2+.6,1.4,1.0,1.0,0,xC(xPick(QSTONE)));vPst('vPostS',0,y+1.0,-D/2+.6,.18,(X.cut?1.6:X.H-.3)-1.0,xC(0x5a5048));
  qnRoomRec('Hostel dormitory','barracks',.35,[[-W/2,-D/2],[W/2,-D/2],[W/2,D/2],[-W/2,D/2]],y,X.H,[[0,D/2,2]],[{kind:'stove',x:0,z:-D/2+.6,w:1.4,d:1.0,h:1.2,front:.8}]);}
 
+// ---------------------------------------------------------------- a great monastery's gate hall
+// The passage through the gate tower from the street to the court (the owner, 2026-11-16: "fancy interiors to ... monasteries"):
+// the four guardian kings of the quarters painted on its side walls, two a side in gilt frames (white and blue on the right,
+// red and gold on the left), each a dark figure with a gilt crown on his colour; a rail of hand prayer wheels (the Song drums)
+// along each wall under them; butter lamps by the court door; the floor marble, the walls and ceiling in the spoke's colours.
+// The passage between the doors is the doors' own clearance (a fixture down it, door to door, cut the room in two).
+function buildQbIxGateHall(G,o){reseed(33841+(o.v|0));const X=qnIxDims(o,9,7,4.2),W=X.W,D=X.D,P=.6;
+ const SP=QSPOKE[(o.v|0)%8],g=xC(xPick(XPAL.gold)),gl=xC(XPAL.gold[0]),dark=xC(0x2a1e18),tim=xC(xPick(XPAL.dark));
+ vnReg('Gate hall (interior)',0,0,Math.hypot(W,D)/2,(X.cut?P:0)+X.H);
+ const y=qnIxShell(W,D,X.cut,P,X.H,xC(SP.wall),xC(0xf0e8dc),[['s',0,2.6],['n',0,2.6]],xC(SP.band),'qMarbleB');
+ const ph=X.cut?1.2:Math.min(2.5,X.H-1.6),pw=D/2-.6,kings=[0xe8e4dc,0x2a5aa8,0xb02a24,0xd8a830],fix=[];
+ for(let i=0;i<4;i++){const s=i<2?1:-1,z=(i%2?-1:1)*D/4,x=s*(W/2-.08);
+  vB('qGiltB',x,y+.98,z,.04,ph+.16,pw+.16,0,g);vB('vClothB',x-s*.03,y+1.06,z,.03,ph,pw,0,xC(kings[i]));
+  vB('vClothB',x-s*.05,y+1.2,z,.02,ph*.72,pw*.42,0,dark);vBall('qGiltBall',x-s*.07,y+1.2+ph*.72+.08,z,.12,gl);}
+ for(const s of[-1,1]){const x=s*(W/2-.4),n=Math.max(3,Math.floor((D-1.4)/.5));vB('vWood',x,y,0,.36,.3,D-1.2,0,tim);
+  for(let j=0;j<n;j++)kput('qSongDrum',[x,y+.3,-(D-1.6)/2+j*(D-1.6)/(n-1)],null,[.15,.42,.15],null);
+  fix.push({kind:'rail',x,z:0,w:.5,d:D-1.2,h:.8,front:.4});
+  if(!X.cut){qnLampTable(s*(W/2-1.5),y,-D/2+.75,0,1.2);fix.push({kind:'lamps',x:s*(W/2-1.5),z:-D/2+.75,w:1.2,d:.6,h:.9,front:.4});}}
+ qnRoomRec('Gate hall','antechamber',.6,[[-W/2,-D/2],[W/2,-D/2],[W/2,D/2],[-W/2,D/2]],y,X.H,[[0,D/2,2.6],[0,-D/2,2.6]],fix);}
+// the depth-only pane in a street doorway (QB_IX_PORTAL, 89q5s): (x, y, z) the sill's middle on the face, ry the face's outward
+// yaw, w x h. Drawn at renderOrder -1, after the room (-2) and before the body whose solid face it hides
+function qnIxPortal(x,y,z,ry,w,h){const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),QB_IX_PORTAL);m.position.set(x,y+h/2,z);m.rotation.y=ry;
+ m.renderOrder=-1;m.castShadow=m.receiveShadow=false;m.raycast=()=>{};m.userData.probeSkip=true;m.name='portal';return m;}
 QB.def({key:'qb_ix_sanctum',name:'Sanctum of the Rainbow Temple (interior)',family:'Interiors (cut-away)',tags:QTAG('civic',['religious'],{landmark:true,note:'the Station as it was, whole, at the centre; the eight colours round it; cut away'}),w:22,d:22,h:5,nv:1,eyes:[['above',0,13,0,-1,9]],build:buildQbIxSanctum});
 QB.def({key:'qb_ix_assembly',name:'Assembly hall (interior)',family:'Interiors (cut-away)',tags:QTAG('civic',['religious'],{note:'a great monastery\'s assembly hall, cut away'}),w:24,d:18,h:5,nv:1,eyes:[['above',0,13,0,-1,9]],build:buildQbIxAssembly});
 QB.def({key:'qb_ix_hall',name:'Council chamber of the Prismarchy (interior)',family:'Interiors (cut-away)',tags:QTAG('civic',['civic'],{note:'the Hall of the Decree\'s chamber: the eight abbots and the empty seat, cut away'}),w:26,d:20,h:5,nv:1,eyes:[['above',0,14,0,-1,10]],build:buildQbIxHall});
+QB.def({key:'qb_ix_gatehall',name:'Gate hall of a great monastery (interior)',family:'Interiors (cut-away)',tags:QTAG('civic',['religious'],{note:'the passage through the gate tower: the four guardian kings, the prayer wheels, cut away'}),w:10,d:8,h:5,nv:1,eyes:[['above',0,9,0,-1,6]],build:buildQbIxGateHall});
 QB.def({key:'qb_ix_hostel',name:'Hostel dormitory (interior)',family:'Interiors (cut-away)',tags:QTAG('civic',['tavern/inn']),w:18,d:12,h:4,nv:1,eyes:[['above',0,10,0,-1,7]],build:buildQbIxHostel});

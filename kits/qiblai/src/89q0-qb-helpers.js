@@ -103,6 +103,7 @@ function qnWins(x,y,z,w,d,ry,hs,k,o){o=o||{};const P=(o.pitch==null?2.6:o.pitch)
   const opt={noVal:!(o.val==='all'||(o.val&&s===0)),valC:o.valC};
   for(const [cnt,len,fz,fx] of faces){for(let i=0;i<cnt;i++){const u=-len/2+len*(i+.5)/cnt;
    if(fz>0&&((s===0&&(o.skip||[]).some(r=>u>r[0]&&u<r[1]))||(o.skipUp||[]).some(r=>u>r[0]&&u<r[1])))continue;
+   if(fz<0&&s===0&&(o.skipBack||[]).some(r=>u>r[0]&&u<r[1]))continue;   /* o.skipBack: the back face's ground storey (a monastery range's court door) */
    const p=fz?loc(x,z,fz*u,fz*(d*f/2-.04),ry):loc(x,z,fx*(w*f/2-.04),fx*u,ry);
    xnTibWin(p[0],sill,p[1],ry+(fz>0?0:fz<0?Math.PI:fx*Math.PI/2),ww,hh,kind,trim,opt);}}
   yy+=hs[s];}}
@@ -126,8 +127,8 @@ function qnTerraces(x,y,z,ry,T,c,o){o=o||{};let yy=y;const out=[];
 // the Tibetan door: a black trapezoid surround, a painted frame and leaf (vnDoor: a real, locked door), a timber lintel
 // on corbels and a pleated valance; (x,z) on the face, ry outward
 function qnDoor(x,y,z,ry,w,h,o){o=o||{};const fr=o.c||xC(XPAL.red),leaf=o.leaf||xC(xPick(XPAL.dark)),blk=xC(XPAL.black),N=xRot(ry,[0,0,1]);
- vnDoor(x,y,z+0,ry,w,h,'xPaint',fr,leaf,o.step);
- for(const s of[-1,1]){const a=xnOn(x,y,z,ry,s*(w/2+.5),.04),b=xnOn(x,y+h+.2,z,ry,s*(w/2+.26),.04);xnMember('xPaint',a,b,.34,.06,N,blk);}
+ vnDoor(x,y,z+0,ry,w,h,'qLacqB',fr,leaf,o.step);   /* the frame and its splayed black members in lacquered wood (the owner, 2026-11-16: "those columns seem textureless") */
+ for(const s of[-1,1]){const a=xnOn(x,y,z,ry,s*(w/2+.5),.04),b=xnOn(x,y+h+.2,z,ry,s*(w/2+.26),.04);xnMember('qLacqB',a,b,.34,.06,N,blk);}
  const lp=loc(x,z,0,.2,ry);vB('vWood',lp[0],y+h+.26,lp[1],w+1.2,.18,.34,ry,xC(xPick(XPAL.timber)));
  xnCorbels(x,y+h+.26,z,ry,w+.6,Math.max(3,Math.round((w+.6)/.45)),xC(xPick(XPAL.timber)),.55);
  if(o.val!==false){const v=loc(x,z,0,.38,ry);kput('xValance',[v[0],y+h,v[1]],qEuler(0,ry,0),[w+1.1,.6,1],o.valC||xC(xPick([XPAL.white,XPAL.saffron,XPAL.red])));}}

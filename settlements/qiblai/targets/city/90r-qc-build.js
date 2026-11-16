@@ -37,7 +37,7 @@ function qcBakeChunk(key,list){const G=new THREE.Group();G.name='chunk:'+key;sce
  for(const p of list){
   // the made ground's retaining face under a wall, a gate or a tower: ashlar from the lower terrace to the upper
   if(p.retain&&p.retain[0]!=null&&p.retain[1]!=null&&p.retain[1]-p.retain[0]>.2){TSTAT.cur='qc_retain/0';vB('qAshB',p.x,p.retain[0]-.5,p.z,p.retain[3],p.retain[1]-p.retain[0]+.5,p.retain[2],p.ry,xC(xPick(QSTONE)));}
-  TSTAT.cur=p.key+'/'+(p.o.v|0);const r0=REG.length;if(p.kind==='lot'){p.stacks=[];QB_SHELLREC.cur=p.stacks;}   /* a lot's storey stacks: its interior's shell (kits/qiblai 89q5s, 90u) */
+  TSTAT.cur=p.key+'/'+(p.o.v|0);const r0=REG.length;if(p.kind==='lot'||p.kind==='monastery'){p.stacks=[];QB_SHELLREC.cur=p.stacks;}   /* a lot's (and a monastery's: its cell ranges) storey stacks: its interior's shell (kits/qiblai 89q5s, 90u) */
   const g=VERN.place(G,p.key,p.x,p.z,p.ry,p.o);QB_SHELLREC.cur=null;if(g)p.G=g;for(let i=r0;i<REG.length;i++)REG[i].type=p.key;
   x0=Math.min(x0,p.x-60);x1=Math.max(x1,p.x+60);z0=Math.min(z0,p.z-60);z1=Math.max(z1,p.z+60);y0=Math.min(y0,qcD(p.o.y,0));y1=Math.max(y1,(qcD(p.o.y,0))+qcD(p.h,12));}
  TSTAT.cur=null;kbake(G);xaDoorsBind();QC_INST+=qcD(window._instances,0);for(const n in KIT.items)KIT.items[n].length=0;

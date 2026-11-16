@@ -19,6 +19,9 @@ const QB_SHELLREC={cur:null};
  if(typeof xnWall==='function')xnWall=wrapB(xnWall);if(typeof vnFrame==='function')vnFrame=wrapB(vnFrame);})();
 // the kit's pieces that hold no room (an open shrine, a wheel house): never an interior
 const QB_IX_OPEN={qb_shrine:1,qb_wheel_house:1,qb_chorten:1,qb_kora_arcade:1,qb_kora_corner:1};
+// the monks' quarters in a great monastery's cell range (settlements/qiblai 90u; prog for qnIxType): the chapel by the court door,
+// the kitchen, dormitories and a store on the ground storey; dormitories and a reading room above
+const QB_IX_MONKS={name:'monks',wealth:.4,program:(l,a)=>l?(a>=150?['dormitory','study','dormitory','store']:['dormitory','study']):(a>=150?['shrine','kitchen','dormitory','store']:['shrine','dormitory'])};
 // the shell from a building's listed stacks: the biggest footprint standing on the ground (base within 2.6 m), at least 4 x 4 m
 // and a 2.4 m storey; then its upper storeys: a stack raised on its top (within 0.4 m), centred on it (within 1 m), at least
 // 0.8 of its plan, adds its storeys (a Xanadu tenement's three storeys over its ground block), again while one does. hs: every
@@ -59,28 +62,66 @@ function qnIxStair(S,c){const n=Math.max(1,S.risers),rh=S.rise/n,d=S.dir,ry=Math
   for(let i=1;i<n;i++){const u=-S.run/2+S.run*i/n;vB('vWood',S.centre[0]+d[0]*u,S.y0+i*rh-.03,S.centre[1]+d[1]*u,S.w,.05,.08,ry,c);}return;}
  for(let i=0;i<n;i++){const u=-S.run/2+S.run*(i+.5)/n;vB('vWood',S.centre[0]+d[0]*u,S.y0,S.centre[1]+d[1]*u,S.w,(i+1)*rh,S.run/n+.02,ry,c);}}
 // one building type: plan its storeys, draw them and furnish them into a group in the building's frame (y 0 at the plot's
-// ground). shell: qnShellOf's; key: the kit key (its tags pick the programme); seed. Returns {G, plan, F (qnFurnishRooms'
-// result: F.placed the pieces), ms} or null (no programme, no shell, no kits/interiors on the page)
-function qnIxType(shell,key,seed){const P=qnIxProgram(key),IX=typeof KratorInteriors!=='undefined'?KratorInteriors:null;if(!P||!shell||!IX||!IX.planBuilding)return null;
+// ground). shell: qnShellOf's; key: the kit key (its tags pick the programme); seed; door: the street door the builder drew,
+// in the shell's frame (qnIxDoorOf: {n [nu, nv] its face's outward normal, t along the face, w, h}; default the front's
+// middle). Returns {G, plan, F (qnFurnishRooms' result: F.placed the pieces), door, ms} or null (no programme, no shell,
+// no kits/interiors on the page). With a drawn door, the street doorway is drawn through: jambs and a threshold over the wall's depth, and a
+// depth-only pane (QB_IX_PORTAL) on the face, so an open door shows the room, not the body's solid face behind it
+function qnIxType(shell,key,seed,door,prog){const P=prog||qnIxProgram(key),IX=typeof KratorInteriors!=='undefined'?KratorInteriors:null;if(!P||!shell||!IX||!IX.planBuilding)return null;
  const t0=performance.now(),inset=.3,hw=shell.w/2-inset,hd=shell.d/2-inset,c=Math.cos(shell.ry),s=Math.sin(shell.ry);
  const W=(u,v)=>[shell.x+u*c+v*s,shell.z-u*s+v*c];   /* the stack's frame (+v its front) to the building's */
  /* the storeys: each planner level's clear height is its drawn storey less the slab, so level k's floor lies on storey k's base */
- const poly=[W(-hw,-hd),W(hw,-hd),W(hw,hd),W(-hw,hd)],door=W(0,hd),y=shell.y+.06,SL=.2,hs=shell.hs||[shell.h],levels=hs.map(v=>({h:Math.max(2.2,v-SL)}));
- let B=null;try{B=IX.planBuilding({id:'qiblai.type.'+key+'.'+IX.hash(shell.sig),poly,y,levels,doors:[{at:door,w:1.2}],culture:'xanadu',wealth:P.wealth,
+ const Dr=door||{n:[0,1],t:0,w:1.2,h:2.2},side=Dr.n[0]!==0,ext=side?hd:hw,dw=Math.max(.95,Math.min(Dr.w+.1,2*ext-1)),tt=Math.max(-ext+dw/2+.35,Math.min(ext-dw/2-.35,Dr.t));
+ const fp=(off,t)=>side?W(Dr.n[0]*off,t):W(t,Dr.n[1]*off);   /* a point off the shell's centre along the door's normal, t along its face */
+ const poly=[W(-hw,-hd),W(hw,-hd),W(hw,hd),W(-hw,hd)],y=shell.y+.06,SL=.2,hs=shell.hs||[shell.h],levels=hs.map(v=>({h:Math.max(2.2,v-SL)}));
+ let B=null;try{B=IX.planBuilding({id:'qiblai.type.'+key+'.'+IX.hash(shell.sig),poly,y,levels,doors:[{at:fp(side?hw:hd,tt),w:dw}],culture:'xanadu',wealth:P.wealth,
   wall:.2,partition:.12,slab:.2,roof:'flat',windows:false},P.program,{seed:seed|0});}catch(e){return{error:'plan: '+(e&&e.message||e)};}
  const G=new THREE.Group();G.name='interior-type:'+key;
  // the shell drawn with the kit's items into G (kput's frame is the world's: none is set here, so G's frame is the building's)
  const saveK=KXF;KXF=null;const w0=xC(0xece4d6);   /* fixed colours: this runs on demand, after the page's draws */
- const ceilC=xC(P.program==='temple'?0x2a4a7a:0x7a4a32),Lv=B.levels,top=Lv[Lv.length-1];
+ const ceilC=xC(P.program==='temple'?0x2a4a7a:P.name==='monks'?0x6a2a24:0x7a4a32),Lv=B.levels,top=Lv[Lv.length-1];
  vB('qPlankB',shell.x,shell.y,shell.z,shell.w-2*inset,.06,shell.d-2*inset,shell.ry,xC(0xf0e8dc));   /* the ground floor */
  vB('qLacqB',shell.x,top.y+top.h-.12,shell.z,shell.w-2*inset,.1,shell.d-2*inset,shell.ry,ceilC);   /* the top storey's ceiling */
  for(const Wl of B.walls){const n=Wl.kind==='exterior'?[-Wl.out[0],-Wl.out[1]]:[0,0],y1=Wl.y+Wl.h-(Wl.level===Lv.length-1?.12:0);
   qnIxWall(Wl.a,Wl.b,n,Wl.kind==='exterior'?Wl.thick/2:0,Wl.thick,Wl.y,y1,Wl.openings,'xWashB',Wl.kind==='exterior'?w0:w0.clone().multiplyScalar(.94));}
  for(const S of B.stairs||[])if(S.centre)qnIxStair(S,xC(0x7a5a3c));
+ /* the street doorway through the wall's depth (the face to the lining): two jambs, a lintel, a threshold */
+ const fw=side?shell.w/2:shell.d/2,dep=fw-(side?hw:hd)+.02,mid=(fw+(side?hw:hd))/2,bry=shell.ry+(side?Math.PI/2:0),dh=Math.max(2,Math.min(Dr.h,hs[0]-.3));
+ if(door)for(const e of[-1,1]){const q=fp(mid,tt+e*(dw/2+.06));vB('xWashB',q[0],shell.y,q[1],.12,dh+.05,dep,bry,w0);}
+ if(door){const q=fp(mid,tt);vB('xWashB',q[0],shell.y+dh,q[1],dw+.24,.25,dep,bry,w0);vB('qPlankB',q[0],shell.y,q[1],dw,.06,dep,bry,xC(0xf0e8dc));}
  KXF=saveK;kbake(G);for(const k in KIT.items)KIT.items[k].length=0;
  /* the upper floors: a plank slab over a lacquered ceiling, each with its stair's well cut out */
  if(Lv.length>1){const mC=qnIxCeilMat(ceilC.getHex());for(const F of B.floors||[]){if(!F.level)continue;
   G.add(qnIxSlab(F.poly,F.holes,F.y-SL+.04,F.y,MAT.qPlank));G.add(qnIxSlab(F.poly,F.holes,F.y-SL,F.y-SL+.04,mC));}}
  const rooms=B.rooms;
  const F=qnFurnishRooms(rooms,G,{seed:33871+(seed|0),noTags:true,perType:3,passes:2,backtrack:4,name:'furniture:'+key});
- return{G,plan:B,F,program:P.program,ms:Math.round(performance.now()-t0)};}
+ /* drawn before the page (renderOrder -2), then the portal (-1) on the face, then the body, whose face the portal hides */
+ G.traverse(o=>{if(o.isMesh)o.renderOrder=-2;});
+ if(door){const q=fp(fw+.012,tt),m=new THREE.Mesh(new THREE.PlaneGeometry(dw,dh),QB_IX_PORTAL);m.position.set(q[0],shell.y+dh/2,q[1]);
+  m.rotation.y=shell.ry+Math.atan2(Dr.n[0],Dr.n[1]);m.renderOrder=-1;m.castShadow=m.receiveShadow=false;m.raycast=()=>{};m.userData.probeSkip=true;m.name='portal';G.add(m);}
+ return{G,plan:B,F,program:P.name||P.program,door:{at:fp(side?hw:hd,tt),w:dw,h:dh},ms:Math.round(performance.now()-t0)};}
+// the depth-only pane in a street doorway: it writes depth and no colour, so the body's solid face behind it (drawn later)
+// fails the depth test there and the room drawn before it shows (the kit's bodies are solid: the Vernacular's locked doors)
+const QB_IX_PORTAL=new THREE.MeshBasicMaterial({colorWrite:false});
+// the street door a builder drew on a shell: the KDOOR record (core/door) on one of its faces with its sill on the shell's
+// base, the front's first (then the nearest the face's middle). pose {x, z, y, ry}: the building's place. Returns
+// {D, n, t, w, h} in the shell's frame, or null
+function qnIxDoorOf(shell,pose,doors){let best=null,bs=1e9;const c=Math.cos(pose.ry),s=Math.sin(pose.ry),c2=Math.cos(shell.ry),s2=Math.sin(shell.ry);
+ for(const D of doors||[]){const dx=D.at[0]-pose.x,dz=D.at[2]-pose.z,u=dx*c-dz*s-shell.x,v=dx*s+dz*c-shell.z,su=u*c2-v*s2,sv=u*s2+v*c2;
+  if(Math.abs(D.at[1]-pose.y-shell.y)>.35)continue;
+  let n=null,t=0;if(Math.abs(Math.abs(sv)-shell.d/2)<.6&&Math.abs(su)<shell.w/2){n=[0,sv>0?1:-1];t=su;}
+  else if(Math.abs(Math.abs(su)-shell.w/2)<.6&&Math.abs(sv)<shell.d/2){n=[su>0?1:-1,0];t=sv;}
+  if(!n)continue;const sc=(n[1]===1?0:100)+Math.abs(t);if(sc<bs){bs=sc;best={D,n,t:Math.round(t*10)/10,w:Math.round(D.w*10)/10,h:Math.round(D.h*10)/10};}}
+ return best;}
+// a type's plan into a core/walk registry at a building's place (pose {x, z, y, ry}): kits/interiors' IX.walk.register on a
+// view of W that turns the building's frame into the world's (each wall block a square about its centre, as the planner's
+// are). ground: the ground's height outside the street door (world); the entry flight rises from it. Returns its report
+function qnIxWalk(T,pose,W,ground,tag){const IX=KratorInteriors;if(!T||!T.plan||!W||!IX.walk)return null;
+ const c=Math.cos(pose.ry),s=Math.sin(pose.ry),f=(x,z)=>[pose.x+x*c+z*s,pose.z-x*s+z*c],Y=pose.y;
+ const V={floor:o=>{const r=o.rect;return W.poly({pts:[[r[0],r[2]],[r[1],r[2]],[r[1],r[3]],[r[0],r[3]]].map(q=>f(q[0],q[1]).concat(o.y+Y)),name:o.name,tag:o.tag});},
+  strip:o=>{const a=f(o.a[0],o.a[1]),b=f(o.b[0],o.b[1]);return W.strip({a:[a[0],a[1],o.a[2]+Y],b:[b[0],b[1],o.b[2]+Y],w:o.w,name:o.name,tag:o.tag});},
+  poly:o=>W.poly({pts:o.pts.map(q=>f(q[0],q[1]).concat(q[2]+Y)),name:o.name,tag:o.tag}),
+  block:(b,tg)=>{const m=f((b[0]+b[1])/2,(b[2]+b[3])/2),h=Math.max(b[1]-b[0],b[3]-b[2])/2;return W.block([m[0]-h,m[0]+h,m[1]-h,m[1]+h,b[4]+Y,b[5]+Y],tg);},
+  blocked:(x,y,z,r,h)=>{const m=f(x,z);return W.blocked(m[0],y+Y,m[1],r,h);},
+  floorBelow:(x,z,y,st)=>{const m=f(x,z);return W.floorBelow(m[0],m[1],y+Y,st);}};
+ return IX.walk.register({id:tag,rooms:[],buildings:[T.plan],baseY:ground-Y},V,{tag,blockStep:.15});}   /* 0.15 m blocks: a 0.9 m door clears ~0.95 (0.3's left 0.8, tight for a 0.35 m walker) */

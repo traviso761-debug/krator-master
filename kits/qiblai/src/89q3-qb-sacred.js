@@ -31,13 +31,14 @@ function buildQbMonastery(G,o){const V=xV(o)%8;reseed(33501+V);const W=52,D=52,P
  // the four cell ranges; the front one parted by the gate
  const rr4=[[0,-D/2+Dr/2,W,Dr,Math.PI],[W/2-Dr/2,0,D-2*Dr,Dr,Math.PI/2],[-W/2+Dr/2,0,D-2*Dr,Dr,-Math.PI/2]];
  for(const s of[-1,1])rr4.push([s*(W/4+2.5),D/2-Dr/2,W/2-5,Dr,0]);
- for(const [x,z,L,dd,ry] of rr4){const S=qnStack(x,P,z,L,dd,ry,hr,red,'wash',xC(XPAL.white));
-  qnWins(x,P,z,L,dd,ry,hr,S.k,{pitch:2.6,ww:.75,wh:1.0,trim,left:false,right:false,front:true,back:true,val:'all'});
+ for(const [x,z,L,dd,ry] of rr4){const S=qnStack(x,P,z,L,dd,ry,hr,red,'wash',xC(XPAL.white)),du=ry===Math.PI?17:0;   /* the back range's door clear of the assembly hall behind which it stands */
+  qnWins(x,P,z,L,dd,ry,hr,S.k,{pitch:2.6,ww:.75,wh:1.0,trim,left:false,right:false,front:true,back:true,val:'all',skipBack:[[-du-1.4,-du+1.4]]});
   qnRoof(x,S.y,z,S.w,S.d,ry,red,{band,gold:true,parapet:.6,corner:'gold'});
-  if(ry!==0)qnCloister(x,P,z,ry+Math.PI,L-2*2.4,dd,wash,{band});}
+  if(ry!==0)qnCloister(x,P,z,ry+Math.PI,L-2*2.4,dd,wash,{band});
+  const cd=loc(x,z,du,-dd/2,ry);qnDoor(cd[0],P,cd[1],ry+Math.PI,1.1,2.3,{c:trim,step:false,val:false});}   /* the range's door to the court: the monks' quarters (an interior: settlements/qiblai 90u) */
  // the gate tower: a white cube one storey over the ranges, the door, banners on its roof
  const gH=hr.reduce((a,b)=>a+b,0)+3.4,GT=qnStack(0,P,D/2-Dr/2,10,Dr+1,0,[gH],wash,'wash');
- qnDoor(0,P,D/2+.5,0,2.4,3.2,{c:xC(XPAL.red),leaf:xC(xPick(XPAL.dark)),step:false});xnFlight(0,0,D/2+.5+Math.max(2,Math.round(P/.17))*.34,0,4.4,P,'vStone',stone);
+ qnDoor(0,P,D/2+.5,0,2.4,3.2,{c:xC(XPAL.red),leaf:xC(xPick(XPAL.dark)),step:false});qnDoor(0,P,D/2-Dr/2-(Dr+1)/2,Math.PI,2.4,3.2,{c:xC(XPAL.red),leaf:xC(xPick(XPAL.dark)),step:false,val:false});xnFlight(0,0,D/2+.5+Math.max(2,Math.round(P/.17))*.34,0,4.4,P,'vStone',stone);
  for(const u of[-2.6,2.6])xnTibWin(u,P+gH-2.6,D/2+.45,0,1.0,1.3,'lit',trim,{valC:trim});
  const gt=qnRoof(0,GT.y,D/2-Dr/2,GT.w,GT.d,0,wash,{band,gold:true,parapet:.7});qnCrown(0,gt,D/2-Dr/2,GT.w,GT.d,0,{pav:false,deer:true,deerS:.8});
  // the assembly hall at the back of the court
@@ -141,12 +142,27 @@ function buildQbWheelHouse(G,o){reseed(33561+(o.v|0));const V=xV(o),W=10,D=10,P=
  xnFolk(0,0,D/2+1.2,3,2);}
 
 // ---------------------------------------------------------------- the wayside shrine (the Xanadu kit's gap: shrine keepers)
-// a small white cube with a niche of butter lamps behind glass, a mani-stone pile, prayer flags to a pole
-function buildQbShrine(G,o){reseed(33571+(o.v|0));const V=xV(o),wash=xC(xPick(XPAL.wash)),stone=xC(xPick(QSTONE)),g=xC(xPick(XPAL.gold));
+// a small white chapel, a mani-stone pile, prayer flags to a pole. The chapel is hollow (the owner, 2026-11-16: "fancy interiors
+// to shrines"): its front a glazed window in a gilt frame onto the inside, the floor marble, the ceiling lacquered: a hanging in
+// one of the eight colours on the back wall, under it the altar with its saffron cloth, a small gilt image on a lotus with its
+// halo, the seven offering bowls and a row of lit butter lamps; a hand prayer wheel (the Song drum) in the corner
+function buildQbShrine(G,o){reseed(33571+(o.v|0));const V=xV(o),wash=xC(xPick(XPAL.wash)),stone=xC(xPick(QSTONE)),g=xC(xPick(XPAL.gold)),gl=xC(XPAL.gold[0]);
  vnReg('Wayside shrine',0,0,2.6,4.6);
- vB('vStone',0,0,0,2.8,.4,2.4,0,stone);qnCube(0,.4,0,2.2,2.2,1.8,0,wash,'wash');
+ vB('vStone',0,0,0,2.8,.4,2.4,0,stone);
+ const T=.2,Wd=2.2,Dd=1.8,y0=.4,H=2.2,ow=1.1,o0=1.0,o1=2.0,fz=Dd/2-T/2,bz=-Dd/2+T;
+ vB('xWashB',0,y0,-Dd/2+T/2,Wd,H,T,0,wash);for(const s of[-1,1])vB('xWashB',s*(Wd/2-T/2),y0,0,T,H,Dd-2*T,0,wash);
+ vB('xWashB',0,y0,fz,Wd,o0-y0,T,0,wash);vB('xWashB',0,o1,fz,Wd,y0+H-o1,T,0,wash);for(const s of[-1,1])vB('xWashB',s*(ow/2+(Wd-ow)/4),o0,fz,(Wd-ow)/2,o1-o0,T,0,wash);
+ vB('vWinClear',0,o0,Dd/2-.04,ow,o1-o0,.02,0);
+ for(const s of[-1,1]){vB('qGiltB',s*(ow/2+.03),o0,Dd/2+.01,.06,o1-o0,.04,0,g);vB('qGiltB',0,s<0?o0-.06:o1,Dd/2+.01,ow+.12,.06,.04,0,g);}
+ vB('qMarbleB',0,y0,0,Wd-2*T,.04,Dd-2*T,0,xC(0xf0e8dc));vB('qLacqB',0,y0+H-.1,0,Wd-2*T,.1,Dd-2*T,0,xC(xPick(XPAL.maroon)));
+ const SP=QSPOKE[(V*3+(o.v|0))%8];vB('vClothB',0,y0+.72,bz+.02,1.0,1.18,.03,0,xC(SP.wall));vB('qGiltB',0,y0+1.9,bz+.03,1.1,.06,.03,0,g);
+ const az=bz+.3;vB('vWood',0,y0+.04,az,1.4,.62,.5,0,xC(xPick(XPAL.dark)));vB('vClothB',0,y0+.28,az+.26,1.3,.36,.02,0,xC(XPAL.saffron));
+ kput('qGiltBall',[0,y0+.7,az-.08],null,[.2,.06,.2],gl);kput('qGiltBall',[0,y0+.88,az-.08],null,[.16,.2,.13],gl);vBall('qGiltBall',0,y0+1.14,az-.08,.075,gl);
+ kput('qGiltBall',[0,y0+1.12,az-.2],null,[.2,.2,.02],g);
+ for(let i=0;i<7;i++)vB('qGiltB',-.5+i*(1/6),y0+.66,az+.06,.07,.03,.07,0,g);
+ for(let i=0;i<5;i++){const x=-.48+i*.24;vBall('qGiltBall',x,y0+.69,az+.18,.035,gl);vB('vWinLit',x,y0+.71,az+.18,.02,.05,.02,0);}
+ kput('qSongDrum',[Wd/2-T-.22,y0+.04,Dd/2-T-.24],null,[.13,.34,.13],null);vPst('vIron',Wd/2-T-.22,y0+.38,Dd/2-T-.24,.015,.12,xC(0x3a3430));
  const t=qnRoof(0,2.6,0,2.15,1.75,0,wash,{band:xC(xPick(XPAL.maroon)),parapet:.3});
- xnPane(0,1.0,.9,1.0,1.0,.4,0,'lit');for(let i=0;i<5;i++)vBall('xGold',-.4+i*.2,1.1,.75,.05,g);
  if(V===1)qnChorten(0,t,0,.18);else qnWheelDeer(0,t,.3,0,.35,g);
  for(let i=0;i<9;i++)vB('vStone',1.9+rr(-.5,.5),i<5?0:.32,rr(-.6,.6),rr(.4,.7),.32,rr(.3,.5),rr(0,3),xC(xPick([0xd8d0c0,0xc8c0b0,0xa8a090])));
  vPst('vPost',-1.9,0,-.6,.05,3.6,xC(0x5a4632));qnFlags([-1.9,3.5,-.6],[1.2,t,.8]);}
@@ -219,9 +235,10 @@ function buildQbMonasteryHalf(G,o){const V=xV(o)%8;reseed(33611+V);const W=56,D=
  qnPlinth(0,0,W,D,P,0,stone);
  // the cell ranges: the long one at the back, the two short ones at the ends, open to the avenue
  for(const [x,z,L,dd,ry] of[[0,-D/2+Dr/2,W,Dr,Math.PI],[W/2-Dr/2,Dr/2,D-Dr,Dr,Math.PI/2],[-W/2+Dr/2,Dr/2,D-Dr,Dr,-Math.PI/2]]){
-  const S=qnStack(x,P,z,L,dd,ry,hr,red,'wash',xC(XPAL.white));
-  qnWins(x,P,z,L,dd,ry,hr,S.k,{pitch:2.6,ww:.75,wh:1.0,trim,left:false,right:false,val:'all'});
-  qnRoof(x,S.y,z,S.w,S.d,ry,red,{band,gold:true,parapet:.6,corner:'gold'});}
+  const S=qnStack(x,P,z,L,dd,ry,hr,red,'wash',xC(XPAL.white)),du=ry===Math.PI?16:0;   /* the back range's door past the assembly hall's end (its plinth stands 0.1 m off the range) */
+  qnWins(x,P,z,L,dd,ry,hr,S.k,{pitch:2.6,ww:.75,wh:1.0,trim,left:false,right:false,val:'all',skipBack:[[-du-1.4,-du+1.4]]});
+  qnRoof(x,S.y,z,S.w,S.d,ry,red,{band,gold:true,parapet:.6,corner:'gold'});
+  const cd=loc(x,z,du,-dd/2,ry);qnDoor(cd[0],P,cd[1],ry+Math.PI,1.1,2.3,{c:trim,step:false,val:false});}   /* the range's door to the court (90u: the monks' quarters) */
  // the assembly hall in the court, its portico toward the avenue, the gilt crown
  const HW=22,HD=12,hz=-D/2+Dr+HD/2+.6,hh=[4.6,3.8];qnPlinth(0,hz,HW+1,HD+1,P+.5,0,stone);
  const H=qnStack(0,P+.5,hz,HW,HD,0,hh,red,'wash',xC(XPAL.white));

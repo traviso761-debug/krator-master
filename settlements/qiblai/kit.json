@@ -6,6 +6,7 @@
   "kits/qiblai/src"
  ],
  "external": [
+  "core/walk/20-core-walk.js",
   "settlements/qiblai/gen/69q-kcity-bundle.js",
   "settlements/qiblai/gen/69r-flora-bundle.js"
  ],
@@ -16,6 +17,7 @@
  "pack": "qiblai",
  "packFrom": "kits/qiblai",
  "deterministic": [
+  "20-core-walk.js",
   "89q0-qb-helpers.js",
   "89q0x-qb-xanadui.js",
   "89q0y-qb-script.js",
