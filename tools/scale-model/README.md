@@ -830,6 +830,15 @@ dry on the new shore.
   Written in the Phēr plan's session (claude/pher-plan-55d3f2, f7834e394) and re-run here after `edit_517_gorge.py`.
 - Run order from the pre-edit model (055bc43ce): `edit_517.py`, `edit_517_crease.py`, `edit_517_paint.py`,
   `edit_517_alph.py`, `edit_517_gorge.py`, `edit_517_pher.py`.
+- `edit_517_pher.py` (after the re-run, 5f659c054; records only, no raster change; the owner, 2026-11-16, for Phēr at
+  843,1491: "give it a headland and cove; give it a small stream", "coined name"; `settlements/pher/PLAN.md`):
+  - Phēr's headland: two `island` records from the shore's bend west of the town (840.65,1491.2 and its tip 841.05,1491.65).
+  - The cove's east point: an `islet` at 842.75,1492.15.
+  - The stream, **Swīṭ Siṭrīm** (`r_pher_swit`, "sweet stream"): about 2 m³/s, 29 km. It runs from springs at the
+    scarp's foot (842,1477, ~130 m) down the 842 column across the rim plain, then down the wall to the cove (842.25,1491.55).
+  - The pin is `spher0north1` (SETT_ADDED '5.1e13', and in `defSetts` for `cut_site.py`).
+  - `tests/test_smodel.py` section 17 checks them. The open world stamps the landforms with `core/world/41l-world-landforms.js`
+    (`openworld/xanadu-north-shore`).
 
 **5.1e12 (2026-11-16, records only)**: the owner, "we can move thalaba to the mouth of godshearth and put a new village
 on the lake in its place": Thalaba (`shvo49k0y2`) moves from 825,1481 to 840,1463, where Godshearth's spillway gorge

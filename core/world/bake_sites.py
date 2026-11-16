@@ -37,6 +37,8 @@ JS = [('core', 'rand', '08-core-rand.js'), ('core', 'terrain', '38-core-relief.j
       ('core', 'hamlet', '20-hamlet-cultures.js'), ('core', 'hamlet', '21-hamlet-iziz.js'), ('core', 'hamlet', '30-hamlet-village.js'),
       ('core', 'world', '48s-world-sites.js')]
 
+LANDFORMS_JS = '41l-world-landforms.js'   # opt-in: a region whose build.py lists it (script())
+
 
 def node():
     import shutil
@@ -77,6 +79,10 @@ def script(region):
                                      'openworld/%s/data, decoded by core/world/world_data.py' % region))
             continue
         parts.append('\n// ---- %s\n' % '/'.join(j) + open(os.path.join(ROOT, *j), encoding='utf-8').read())
+        # the sub-cell landforms (core/world/41l-world-landforms.js), only for a region whose page takes them (its build.py
+        # lists the fragment): the plan is made on the same land the page stamps
+        if j[-1] == '41-world-fields.js' and LANDFORMS_JS in open(os.path.join(base, 'build.py'), encoding='utf-8').read():
+            parts.append('\n// ---- core/world/%s\n' % LANDFORMS_JS + open(os.path.join(HERE, LANDFORMS_JS), encoding='utf-8').read())
     parts.append(WD.net_fragment(os.path.join(base, 'src', '48-world-site.js')))   # the network routes the region's links follow
     parts.append('\n// ---- openworld/%s/src/48-world-site.js\n' % region + open(os.path.join(base, 'src', '48-world-site.js'), encoding='utf-8').read())
     # the geology the coast's classes read (44c: rock hardness from the provinces), as the page loads it

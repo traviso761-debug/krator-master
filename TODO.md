@@ -73,6 +73,9 @@ terrain splat texture and the placement input; (3) the minimap drawn from export
 **Taken by the second integration pass** (`claude/integration-2`, 2026-11-10 and 11; HANDOFF-REBUILD.md): the `dalab` sockets pack,
 water breakup on by default, the catalog's `tile` detail family, the Highlands great-building room kinds in `30-programs.js`, the fauna
 runtime and bison table, and the `tools/` listing staleness (every build rebuilt): all rebuilt and GPU-verified, items deleted.
+- **The Xanadu kit's opt-in pieces into `src/`** (2026-11-16, `kits/xanadu/README.md` "Opt-in pieces"): `extra/88c-xa-caravanserai.js`,
+  `extra/88d-xa-lakecraft.js` and `extra/88e-xa-stall.js` into `kits/xanadu/src/`, `extra/69dz-ix-xanadu-extra.js`'s item into `kits/interiors/sets/xanadu.js`;
+  the kit's sheet takes rows for them; `settlements/pher/kit.json` drops them from `"external"`. Every page of the kit (and `XAK`) changes.
 - **KSTRATA recipe `obsidian`** (`scoria` has since landed) (2026-11-09, `biomes/twins/PLAN.md` section 0.1): the Twins' plan names them for its coulees and
   spatter cones; `core/terrain/35-core-strata.js` has `tibasalt` as the nearest. Adding a recipe changes every page that inlines the file, so
   it waits here; station 1 draws its faces as `tibasalt` and its obsidian as items and a ground class until then.
