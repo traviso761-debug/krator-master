@@ -123,6 +123,11 @@ runtime and bison table, and the `tools/` listing staleness (every build rebuilt
     read `KDRAWN.h` when the page lists `core/drawn/10-core-drawn.js` and registers its ground; cameras stand on it.
   - Already done before the survey closed (no row needed): `kits/fauna/src/90-sheet.js`'s `_texPending` is a getter (15ca3363);
     hyperjungle's harvest-wood phrases parse (`node core/hamlet/test-hamlet.js` passes).
+- **core/world: fold 41t into 41** (2026-11-11, PLAN-VOTH V2): `core/world/41t-world-town-water.js` wraps WORLD's water calls
+  (`lakeWater`, `riverWater`, `water`, `waterBodies`, `waterBodyAt`, `riverLines`) and `init` from outside, because 41 reaches eight
+  builds. At the next all-builds rebuild, take a town's water into 41 itself: `buildTowns` reads `drawn`, `water`, `river`;
+  `W.water` calls the wrapped `riverWater` (today it calls 41's local one, so 41t replaces `W.water` too); the joined river's cut
+  happens in `buildChannels`. `node core/world/test-town-water.js` must pass unchanged.
 - **core/world: a kit on several biome overlays** (2026-11-11, the Iziz cluster's open-world region): `core/world/41-world-fields.js`
   matches a `WORLD_KITS` entry's `overlay` to one biome name (`k.overlay===name`). Let it take a list (`Array.isArray(k.overlay)?
   k.overlay.indexOf(name)>=0:...`), then drop the shim in `openworld/iziz-cluster/src/47-world-kits.js` (`WORLD_KITS.findIndex`, which
