@@ -29,6 +29,10 @@ the normal xanadu kit. opium dried at kirstabal. road follows lake and gorge. Ke
 - **Each great monastery also takes 1/8 of the Council's income** (the owner, 2026-11-16: "the great monasteries
   additionally each take 1/8 of the Council's income"). So the White and the Crimson draw their eighths at Qiblai, as the
   Order's saffron house already does (`T.orderHouse.share`, 1/8), on top of what the White earns at Kirstabal.
+- **The Council keeps some** (the owner, 2026-11-16, asked whether eight eighths leave it nothing: "No, Council keeps
+  some"). So the eighths are of what the Council shares out, not of its whole income. *Proposed:* the Council keeps **a
+  fifth** for the Temple Mountain, the Hall of the Decree and its offices, and the eight monasteries take an eighth each of
+  the rest (a tenth of the whole each). Question 13 asks for the figure.
 - **The Landing belongs to the Scarp** (P5), with the rest of the lake.
 
 Sources:
@@ -236,10 +240,12 @@ What the tune does now:
 
 **On Qiblai's side, not this step's** (the owner, 2026-11-16: "the great monasteries additionally each take 1/8 of the
 Council's income"): today the tune gives an eighth only to the Order's house (`T.orderHouse`, `qb.order`). The rule makes
-that eighth houses, one per colour, among them the white (whose daughter house is at Kirstabal) and the crimson (which
-holds Sekriḍ). Each takes 1/8 of the Prismarchy's oil cut and of the Sultan's grants of esteem. The change belongs to the
-Xanadu tune's owner session with Qiblai's monasteries, and `test-xan-economy.js` should check that the eight eighths add to
-the whole. Kirstabal's K1 only adds the White Monastery's latex share and fee.
+that eight houses, one per colour, among them the white (whose daughter house is at Kirstabal) and the crimson (which
+holds Sekriḍ). **The Council keeps some first** (the owner): *proposed*, a fifth of the Prismarchy's oil cut and of the
+Sultan's grants of esteem stays with the Council at Qiblai, and each house takes 1/8 of the rest. The Order's house would
+then take a tenth of the whole, not today's eighth. The change belongs to the Xanadu tune's owner session with Qiblai's
+monasteries, and `test-xan-economy.js` should check that the Council's keep and the eight eighths add to the whole, with
+the keep above zero. Kirstabal's K1 only adds the White Monastery's latex share and fee.
 
 *Proposed, for the owner:* Lāiṭwāl's road list also has sugar going up, which the native rule (`TRADE-SCOPE.md:161`) gives
 to the Ring Isles and the SW lowlands. That is for Lāiṭwāl's plan to settle.
@@ -300,3 +306,6 @@ Following `README.md`, "CORE MODULES ARE NOT OPTIONAL":
 12. ~~**The White Monastery's cut.**~~ **Answered 2026-11-16: it takes a share and a small fee.** The proposed figures
     (section 4): a twentieth of the opium that comes in to be dried (about 6 t of the Scarp's 120 t a year) and a fee of
     200 dinars a year from the seat. Are they the right size?
+13. **The Council's keep.** Each great monastery takes 1/8 and the Council keeps some (the owner, 2026-11-16), so the eighths
+    are of what is left after the keep. How much does the Council keep? This plan proposes a fifth, which makes each
+    monastery's eighth a tenth of the whole. That would cut the Order's house from today's 1/8 of the whole to 1/10.
