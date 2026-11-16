@@ -72,7 +72,7 @@ T.lake=[
  .map(([key,name,brg,px,py,people,make,prov])=>({key,name,brg,px,py,people,make,prov,hub:prov==='p7'?'xan.pher':'s57bkv9741'}));
 /* the isles: Grēṭ-Āil is now the long isle in the lake's middle (24 x 8 px, 300 m high; the owner, 2026-11-16: "add one large
    oblong island in the middle of the lake"), the small isles moved with the lake */
-T.islands=[['great-isle','Grēṭ-Āil (the long isle: the head monastery of the Order of the Azure Dream, Qiblai\'s blue monastery)',845,1504,600],   /* the owner, 2026-11-16 */['bay-isle','Bē-Āil (the Sultan\'s fishponds)',844.1,1511.5,300],
+T.islands=[['great-isle','Grēṭ-Āil (the long isle: the head monastery of the Order of the Azure Dream, Qiblai\'s blue monastery)',845,1504,900],   /* the owner, 2026-11-16: 900 on the isle, the monastery 300 and its villages 600 (settlements/azure-dream/PLAN.md, 5e5d46b88) */['bay-isle','Bē-Āil (the Sultan\'s fishponds)',844.1,1511.5,300],
  ['west-isle','Wesṭ-Āil (the fishermen\'s isle)',831,1499,400],['east-isle','Lāiṭ-Hāus (the light and the customs)',864,1503,200]]
  .map(([key,name,px,py,people])=>({key,name,px,py,people}));
 /* PHĒR'S RING (the owner, 2026-11-16, settlements/pher/PLAN.md section 4: "the plain's farms as named villages"): KHAMLET
