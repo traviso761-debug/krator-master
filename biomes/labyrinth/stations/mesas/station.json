@@ -1,4 +1,5 @@
 {
  "name": "The Mesas (station 3): the chaos's outflow floor between two great mesas, its tilted knobs and pyramids, dry steppe",
- "site": [257.5, 1590]
+ "site": [257.5, 1590],
+ "kits": ["kimr"]
 }

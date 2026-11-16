@@ -244,6 +244,14 @@ heights past the square). Each site was surveyed again on the model and moved wh
 python3 build.py --station paddocks | mesas | pits     # dist/labyrinth-<name>.html
 ```
 
+**The Mesas' pueblo (2026-11-12):** a clan's pueblo (`kits/kimr`'s `km-house`, the 14 m yard) on knob 7, a low flat-topped mesa
+8.5 m over the floor at -700,250, its front to the east. The knob is the rock (the kit's `kmSite` takes the world's rock: its edges
+read off the drawn knob, no plinth drawn); the long ladders, the round room under the glyptodont's shell, the bone pen and the dung
+walls stand on the floor in front of it. The kit comes in sealed (`kits/kimr/kit_bundle.py`, `KMK`) because its engine's globals
+clash with the Ancients runtime this page reads; a station asks for it in `station.json` (`"kits": ["kimr"]`), so the Gate never
+takes it. `src/86p-host-pueblo.js` fits, registers and draws it; the host check "the Kimr pueblo stands on its knob" has two
+negatives (the house lifted 3 m, a plant in its yard).
+
 ## 9. For the owner
 
 - **Names:** the arcology, the wild melon, and the Two-Snout's own name in the natives' tongue. The rivers are
