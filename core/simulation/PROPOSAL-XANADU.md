@@ -21,6 +21,25 @@ Status: **X0 built** (2026-11-16): `core/region/data/xan-tune.js` (`XAN_TUNE`) a
 Both wait on X1's staged roads. X0's own finding: core/clock's day 0 is year day 259, so the first stores stand for last
 year's harvest and last to the first harvest's end (clock day 306).
 
+**X1 built** (2026-11-16), 26 checks passing, a year in about 50 s on 472 actors (down from 910). The valley host
+(`core/region/50-region-valley.js`) takes three new fields; Longsong's test passes unchanged:
+- a settlement's own `scale`: the countrysides at 200 people an actor;
+- a work's `site`: the gold lode and the opal diggings run down, the Dome's fall and the fisheries regrow nightly;
+- a road's `stops`: a round of three or more.
+
+The Sultanate's tune then changed in three ways:
+- **The gateways enter at their staging towns.** The caravans start at the gateway, so the first salt lands within its first passage. The Catch's caravans come in at Strongbow, and their salt goes inward by Kirstabal to Qiblai for the south. Yuni's come in at Thalaba, and their salt goes by Phēr to the capital for the north. Dalab's caravan lands at the capital.
+- **The lake's four market-boat rounds** call at every shore town. The lake's households now buy the market's wares (pots, mats, honey), so the boats carry them round as a relay.
+- **Salt** is 8.1% short in the first year (from 38%).
+
+The year's results:
+- **Exports:** cacao 75 t, opium 60 t, tea 41 t, silk 4 t, brocade 1.9 t, goldwork 224, wheels 384.
+- **Imports:** salt 1,160 t, iron 37 t.
+
+**Not in X1:**
+- **The Strongbow toll:** a share of loads passing a stop needs a change to core/simulation's trade, which is inlined into many built pages. It waits for X3's priced gateways.
+- **Legs of their own length:** a round still has one time for every leg, which suits the lake's rounds. The long caravans are two-stop roads from their gateway to their staging town.
+
 This is the sequel to `PROPOSAL-LONGSONG-PINNACLE.md`, which put Longsong and its ring on the valley host
 (`core/region/50-region-valley.js`) with a test (`settlements/longsong/tests/test-ls-economy.js`). Xanadu goes on the
 same host. Its stand-in "Xanadu market" (`settlements/longsong/src/15-ls-tune.js:128`: an off-map pool with 0 people)

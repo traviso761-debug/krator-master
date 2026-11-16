@@ -18,7 +18,8 @@ function run(days,edit){const H=load(),V=XAN_TUNE.valley(PLAN,{});if(edit)edit(V
  const a=SIM.ledgerSnap(),B0=H.valleyBooks(),daily={};let prev={};
  for(let d=0;d<days;d++){H.valleyRun(1440,60);const B=H.valleyBooks();
   for(const s of S.order){if(!/^prov\./.test(s))continue;const m=B.towns[s].made.grain||0,p=prev[s]||0;if(m>p+.5)(daily[s]||(daily[s]=[])).push(Math.floor(SIM.season(S.clock.m-60).yearDay));prev[s]=m;}}
- const b=SIM.ledgerSnap();return{H,V,S,B0,B:H.valleyBooks(),daily,trade:SIM.tradeReport(),xfer:SIM.transfersReport(),ledger:SIM.ledger(a,b,{tol:1}),actors:SIM.all('actor').length};}
+ const b=SIM.ledgerSnap(),sites={};S.order.forEach(s=>(SIM.sitesReport(s)||[]).forEach(x=>{sites[x.id]=Object.assign({settlement:s},x);}));
+ return{H,V,S,B0,B:H.valleyBooks(),daily,trade:SIM.tradeReport(),xfer:SIM.transfersReport(),ledger:SIM.ledger(a,b,{tol:1}),actors:SIM.all('actor').length,sites};}
 const t0=Date.now(),Y=run(365),B=Y.B.towns,secs=(Date.now()-t0)/1000;
 console.log('a year of the Sultanate in '+secs.toFixed(1)+' s: '+Y.S.order.length+' settlements, '+Y.actors+' actors, '+
  Math.round(Y.V.settlements.reduce((n,s)=>n+s.people,0))+' people');
@@ -65,7 +66,7 @@ const lakeCheck=Bk=>{const lk=Object.keys(Bk).filter(s=>/^lk\./.test(s)),hungry=
 // 7. the gateways: salt and iron in, the country's goods out, never grain. The salt runs short until the caravans from the
 // north are built (the owner, 2026-11-16: "we should expect salt to be short before caravans from the north are properly
 // implemented": X1's staged roads and X3's priced gateways); the shortfall is reported, not held
-const gateCheck=Tr=>{const inn={},out={};Object.keys(Tr).filter(k=>/^trade\.gate/.test(k)).forEach(k=>{const L=Tr[k].landed||{};Object.keys(L).forEach(leg=>{const [a]=leg.split('>');const to=a===E?out:inn;Object.keys(L[leg]).forEach(g=>{to[g]=(to[g]||0)+L[leg][g];});});});
+const gateCheck=Tr=>{const inn={},out={};Object.keys(Tr).filter(k=>/^trade\.gate/.test(k)).forEach(k=>{const L=Tr[k].landed||{};Object.keys(L).forEach(leg=>{const [a]=leg.split('>');const to=/^gate\./.test(a)?inn:out;Object.keys(L[leg]).forEach(g=>{to[g]=(to[g]||0)+L[leg][g];});});});
  return{ok:(inn.salt||0)>0&&(inn.iron||0)>0&&['goldwork','cacao','opium','tea','silk'].every(g=>(out[g]||0)>0)&&!out.grain&&!inn.grain,inn,out};};
 {const G=gateCheck(Y.trade),saltEaten=people.reduce((n,s)=>n+(B[s.id].eaten.salt||0),0),saltShort=people.reduce((n,s)=>n+(B[s.id].hungry.salt||0),0);
  T.ok('the gateways: salt and iron in, goldwork, cacao, opium, tea and silk out, never grain (the salt\'s shortfall reported)',G.ok,
@@ -81,6 +82,37 @@ const seasonCheck=Dl=>{const w=XAN_TUNE.calendar.windows.harvest,out=[];Object.k
 // 10. the size: the abstract level keeps a country of ~350,000 to a few thousand actors and a year to minutes
 {const pop=Y.V.settlements.reduce((n,s)=>n+s.people,0);
  T.ok('the size: about 350,000 people on under 3,000 actors, a year in under three minutes',pop>300000&&pop<400000&&Y.actors<3000&&secs<180,Math.round(pop)+' people, '+Y.actors+' actors, '+secs.toFixed(0)+' s');}
+// ---- X1 (core/region's valley host grown: a settlement's scale, a work's site, a road of three or more stops; the
+// gateways at their staging towns)
+// 11. the sites: the gold lode and the opal diggings draw down by what they made; the Dome lets fall only so much scrap a
+// year; every fishing ground holds at its town's fleet
+const siteCheck=Sx=>{const v=Object.values(Sx),lode=v.find(x=>x.kind==='lode'&&x.settlement==='smgxtultfq'),fall=v.find(x=>x.kind==='dome-fall'),fish=v.filter(x=>x.kind==='fishery');
+ const lodeOk=lode&&Math.abs((lode.start-lode.amount)-lode.taken)<1&&lode.taken>XAN_TUNE.mine.goldore*.8&&lode.amount>0;
+ const fallOk=fall&&fall.taken<=fall.start+fall.capacity*0+XAN_TUNE.mine.scrap*1.01;
+ const fishOk=fish.length>=21&&fish.every(x=>x.amount>=x.start*.3);
+ return{ok:!!(lodeOk&&fallOk&&fishOk),lode,fall,fish};};
+{const C=siteCheck(Y.sites);T.ok('the sites: the gold lode drawn down by its ore, the Dome\'s scrap no more than it lets fall, every fishing ground holding',C.ok,
+  C.lode?('lode '+t(C.lode.taken)+' of ore taken, '+t(C.lode.amount)+' left; scrap '+t(C.fall.taken)+'; '+C.fish.length+' fisheries, the lowest at '+Math.round(100*Math.min(...C.fish.map(x=>x.amount/x.start)))+' %'):'no lode');
+ T.neg('a fishing ground fished out is caught',Sx=>siteCheck(Sx).ok,Object.assign({},Y.sites,{'lk.net.fishing.site':Object.assign({},Y.sites['lk.net.fishing.site'],{amount:0})}),Y.sites);}
+// 12. the lake's market boats: each round calls at every town on its shore and lands goods at each
+const roundCheck=Tr=>XAN_TUNE.rounds.every(([id,hub,keys])=>{const R=Tr[id];if(!R)return false;const legs=Object.keys(R.landed||{});return R.stops.length===keys.length+1&&R.voyages>=R.stops.length*10&&legs.length>=R.stops.length-1;});
+{T.ok('the lake\'s market boats: four rounds, each calling at every town on its shore and landing goods at each',roundCheck(Y.trade),
+  XAN_TUNE.rounds.map(([id])=>id+' '+Y.trade[id].voyages+' calls, '+Object.keys(Y.trade[id].landed||{}).length+' legs landed').join('; '));
+ T.neg('a round that never landed at its stops is caught',roundCheck,Object.assign({},Y.trade,{'round.west':Object.assign({},Y.trade['round.west'],{landed:{}})}),Y.trade);}
+// 13. the scale per settlement: the countrysides at 200 a head make what the arithmetic says (within 3 %)
+const scaleCheck=Bk=>XAN_TUNE.provinces.every(Pv=>{const m=(Bk['prov.'+Pv.id].made.grain||0);return Math.abs(m-Pv._made)<=Pv._made*.03;});
+{const S2=Y.V.settlements.filter(s=>s.scale===XAN_TUNE.scaleBulk).length;
+ T.ok('the countrysides at '+XAN_TUNE.scaleBulk+' people an actor make the grain their arithmetic says',S2===8&&scaleCheck(B),
+  XAN_TUNE.provinces.map(Pv=>Pv.id+' '+t(B['prov.'+Pv.id].made.grain||0)+'/'+t(Pv._made)).join(', '));
+ T.neg('a countryside that made half its grain is caught',scaleCheck,Object.assign({},B,{'prov.p2':Object.assign({},B['prov.p2'],{made:{grain:(B['prov.p2'].made.grain||0)/2}})}),B);}
+// 14. the gateways at their staging towns: the Catch's salt lands at Strongbow and goes in by Kirstabal to Qiblai; Yuni's
+// at Thalaba and goes in by Phēr to the capital
+const stageCheck=Bk=>(Bk.sfgtxw10kr.imported.salt||0)>0&&(Bk.sl758m2396.imported.salt||0)>0&&(Bk.skm4jjo2vl.imported.salt||0)>0&&(Bk['lk.thalaba'].imported.salt||0)>0&&(Bk['xan.pher'].imported.salt||0)>0&&(Bk[E].imported.salt||0)>0;
+{const saltEaten=people.reduce((n,s)=>n+(B[s.id].eaten.salt||0),0),saltShort=people.reduce((n,s)=>n+(B[s.id].hungry.salt||0),0);
+ T.ok('the gateways stage at Strongbow and Thalaba: the salt goes inward to Qiblai and the capital',stageCheck(B),
+  'salt into Strongbow '+t(B.sfgtxw10kr.imported.salt||0)+', Qiblai '+t(B.skm4jjo2vl.imported.salt||0)+', Thalaba '+t(B['lk.thalaba'].imported.salt||0)+', the capital '+t(B[E].imported.salt||0)+
+  '; the country '+(100*saltShort/Math.max(1,saltEaten+saltShort)).toFixed(1)+' % short of salt in its first year');
+ T.neg('salt that never got past Strongbow is caught',stageCheck,Object.assign({},B,{skm4jjo2vl:Object.assign({},B.skm4jjo2vl,{imported:Object.assign({},B.skm4jjo2vl.imported,{salt:0})})}),B);}
 // the year's books, for the reader
 const line=(s,k)=>Object.entries(B[s][k]||{}).filter(([g,n])=>n>=1).map(([g,n])=>g+' '+(n>=1000?t(n):Math.round(n))).join(', ');
 ['s57bkv9741','xan.citadel','skm4jjo2vl','s4zvgepuru','sxan7r1sln'].forEach(s=>console.log('\n'+s+': made '+line(s,'made')+'\n  imported '+line(s,'imported')+'\n  exported '+line(s,'exported')));

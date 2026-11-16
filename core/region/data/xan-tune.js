@@ -26,9 +26,10 @@ T.goods={grain:{unit:'kg',crops:['vale-rice','emmer','basin-amaranth']},fish:{un
  timber:{unit:'kg'},charcoal:{unit:'kg'},copper:{unit:'kg'},goldore:{unit:'kg'},gold:{unit:'kg'},goldwork:{unit:'piece'},wheels:{unit:'wheel'},
  coin:{unit:'dinar'},opal:{unit:'kg'},scrap:{unit:'kg'},iron:{unit:'kg'},tools:{unit:'kg'},arms:{unit:'piece'},pearls:{unit:'kg'},wine:{unit:'kg'},oil:{unit:'kg'},
  sulfur:{unit:'kg'},pottery:{unit:'kg'},mats:{unit:'kg'}};
-T.diet={city:{grain:150*D,fish:15*D,fruit:12*D,salt:6*D,tea:1.5*D,cacao:.4*D,tools:.4*D},
+/* the lake's and the capital's households also buy the market's wares (X1: what the market boats carry between the towns): the pots of Pāṭari, the mats of Lōṭas, the honey of Hāibh */
+T.diet={city:{grain:150*D,fish:15*D,fruit:12*D,salt:6*D,tea:1.5*D,cacao:.4*D,tools:.4*D,pottery:2*D,mats:1*D,honey:.3*D},
  town:{grain:160*D,fish:8*D,salt:6*D,tea:1*D,tools:.4*D},
- lake:{grain:125*D,fish:45*D,fruit:8*D,salt:6*D,tea:1*D,tools:.3*D},
+ lake:{grain:125*D,fish:45*D,fruit:8*D,salt:6*D,tea:1*D,tools:.3*D,pottery:2*D,mats:1*D,honey:.3*D},
  rural:{grain:165*D,salt:5*D,tea:.3*D,tools:.3*D},
  court:{grain:140*D,fish:25*D,fruit:25*D,salt:7*D,tea:3*D,cacao:2*D,saffron:.05*D,silk:.4*D,tools:.3*D,arms:.002*D},
  dome:{grain:120*D,fish:30*D,fruit:40*D,salt:7*D,tea:4*D,cacao:6*D,saffron:.3*D,silk:3*D,pearls:.2*D,wine:8*D,oil:6*D,honey:4*D},
@@ -71,6 +72,15 @@ T.islands=[['great-isle','Grēṭ-Āil (the monastery isle)',816.5,1501.5,600],[
  .map(([key,name,px,py,people])=>({key,name,px,py,people}));
 T.fishKgPerson=260;   /* a fishing town's catch a year, a head of its people: about a third of them fish (the dugouts) */
 T.lakeTerraces=.6;    /* the share of a lake town's grain its own terraces grow */
+/* X1: a town's fishing ground, a site: half a year's catch in the water, a day's catch back each night, so fishing at the
+   town's rate holds it and a fleet twice the size empties it */
+T.fishery=catchYr=>({kind:'fishery',amount:Math.round(catchYr/2),regen:Math.round(catchYr/365)});
+/* X1: the lake's market boats: a round each from a hub along its shore, a call at every town (SIM.trade's round: at each
+   town a boat buys what the next one wants), legs of about an hour and a half */
+T.rounds=[['round.south-east','s57bkv9741',['boatyard','weaver','saffron','pottery','tea-terraces','hot-bath','alph-head']],
+ ['round.west','s57bkv9741',['garden','quarry','orchard','lotus','fish-market','stack']],
+ ['round.north-west','xan.pher',['cocoa','net','mulberry','hive']],
+ ['round.north-east','xan.pher',['mouth','thalaba','dyer']]];
 /* the first stores are last year's harvest: they last to the end of the first harvest the clock reaches and a month over.
    core/clock's day 0 is year day 259 (77-sim-6-season.js's year; the test checks it), so the harvest (year days 150-200)
    ends on clock day 306 */
@@ -80,11 +90,14 @@ T.startDays=T.clockDay(T.calendar.windows.harvest[1])+30;
 /* THE GATEWAYS (the owner: the East Rift trades directly with Iziz, Yuni, the Dasri and Dalab only). Off the map, each a
    market with a pool; the road's days are its whole route to the capital's market (X1 makes Strongbow and Thalaba its
    stages). out: what Xanadu sends; in: what comes back */
+/* X1: each gateway enters at its staging town: the Catch caravans (Iziz, the Dasri) at Strongbow's lift, Yuni's over the
+   northern passes at Thalaba, Dalab's great caravan at the capital. The Catch's salt feeds the south (Qiblai's side), the
+   north's comes by Thalaba and Dalab (`side`) */
 T.gateways=[
- {id:'gate.iziz',name:'Iziz (by the Catch, the Twins and Strongbow)',days:64,carriers:8,cap:40000,out:['goldwork','cacao','opium','saffron','tea','silk','brocade','opal','wheels'],in:['salt','iron','arms','pearls','oil']},
- {id:'gate.dasri',name:'The Dasri (by the Catch oases and Stair)',days:22,carriers:6,cap:30000,out:['cacao','tea','silk','opium'],in:['salt']},
- {id:'gate.yuni',name:'Yuni (by the northern passes from Thalaba)',days:48,carriers:4,cap:20000,out:['goldwork','saffron','tea','silk','opal','wheels'],in:['iron','arms','wine','oil']},
- {id:'gate.dalab',name:'Dalab (the Annual Great Caravan, Nulab over the North Rift Bench)',days:182,carriers:1,cap:420000,out:['cacao','saffron','opium','tea'],in:['salt','iron','wine','pearls']}];
+ {id:'gate.iziz',name:'Iziz (by the Catch, the Twins and Strongbow)',entry:'sfgtxw10kr',side:'south',days:64,carriers:8,cap:40000,out:['goldwork','cacao','opium','tea','silk','wheels'],in:['salt','iron','arms','pearls','oil']},
+ {id:'gate.dasri',name:'The Dasri (by the Catch oases and Stair)',entry:'sfgtxw10kr',side:'south',days:22,carriers:6,cap:30000,out:['cacao','tea','silk','opium'],in:['salt']},
+ {id:'gate.yuni',name:'Yuni (by the northern passes from Thalaba)',entry:'lk.thalaba',side:'north',days:48,carriers:10,cap:20000,out:['goldwork','saffron','brocade','opal','silk'],in:['salt','iron','arms','wine','oil']},
+ {id:'gate.dalab',name:'Dalab (the Annual Great Caravan, Nulab over the North Rift Bench)',entry:'s57bkv9741',side:'north',days:182,carriers:1,cap:420000,out:['cacao','saffron','opium','tea','brocade','silk'],in:['salt','iron','wine','pearls']}];
 T.gatePool={salt:1e7,iron:1e6,arms:1e5,pearls:1e4,wine:1e6,oil:1e6};
 T.gateWant={goldwork:2,cacao:1200,opium:650,saffron:8,tea:400,silk:80,brocade:40,opal:.4,wheels:3};   /* the gateways' take a day, all four together: what the country makes less its own use (Gemini's exports scaled to it) */
 /* THE DUES: a fixed yearly bill each province's seat sends the Treasury after the harvest (the Chancellor's assessment,
@@ -101,8 +114,10 @@ T.chain={assay:{in:{goldore:30},out:{gold:1},hours:20},goldsmith:{in:{gold:.1},o
  smelt:{in:{scrap:1,charcoal:1},out:{iron:1},hours:2},smith:{in:{iron:1},out:{tools:1},hours:3}};
 T.mine={goldore:6400,copper:0,scrap:120000,opal:180};   /* a year's make: the gold mines' ore (about 210 kg of gold), the salvagers' scrap, Opal Valley's opal */
 T.fifth=.2;
+T.lodeYears=40;    /* X1: a lode's ore in the ground, in years of its make (the gold field, the opal diggings, the March's copper band) */
+T.scaleBulk=200;   /* X1: people an actor stands for in a province's countryside (the drawn places keep the valley's 50) */
 T.valley=function(P,o){o=o||{};const K=o.scale==null?50:o.scale,yr=365,win=w=>{const W=T.calendar.windows[w];return(W[1]-W[0]+yr)%yr;};
- const rate=(kgYr,crew,days)=>kgYr/(Math.max(1,Math.round(crew/K))*K*(days==null?yr:days)*12);
+ const rate=(kgYr,crew,days,k)=>{k=k==null?K:k;return kgYr/(Math.max(1,Math.round(crew/k))*k*(days==null?yr:days)*12);};
  const eats=k=>Object.assign({},T.diet[k]),at=(px,py)=>T.px(px,py),site=id=>P.sites.find(s=>s.id===id);
  const S=[],R=[],X=[],seats={},need={};   /* need: grain a seat must pass on to the places it feeds, kg a year */
  const add=(s)=>{S.push(s);return s;},eatYr=(k,n)=>n*T.diet[k].grain*yr;
@@ -128,17 +143,17 @@ T.valley=function(P,o){o=o||{};const K=o.scale==null?50:o.scale,yr=365,win=w=>{c
   {id:'qb.goldsmiths',kind:'goldsmiths',name:'the Goldsmiths\' hall of Qiblai',crew:120,batch:T.chain.goldsmith},
   {id:'qb.smithy',kind:'smithy',name:'the smiths',crew:80,batch:T.chain.smith}]);
  town('s4zvgepuru','Theodiga',908,1535,6000,'town',[
-  {id:'th.salvage',kind:'salvage-floor',name:'the Salvagers\' guild: the breakers\' floor (only what the Dome has let fall)',crew:400,out:['scrap'],rate:rate(T.mine.scrap,400)},
+  {id:'th.salvage',kind:'salvage-floor',name:'the Salvagers\' guild: the breakers\' floor (only what the Dome has let fall)',crew:400,out:['scrap'],rate:rate(T.mine.scrap,400),site:{kind:'dome-fall',amount:Math.round(T.mine.scrap/12),regen:Math.round(T.mine.scrap/365)}},   /* X1: only what the Dome lets fall: a month's fall on the floor at most, a day's more each night */
   {id:'th.smelter',kind:'smelter',name:'the Salvagers\' smelter (scrap and charcoal to iron)',crew:60,batch:T.chain.smelt}]);
  town('sfgtxw10kr','Strongbow (the Royal Opal Gate)',1001,1596,4000,'town',[
   {id:'sb.terraces',kind:'tea-terraces',name:'the lift town\'s tea and silk terraces',crew:300,out:['tea','silk'],rate:rate(30000,300)}],{parent:'sl758m2396',feeder:'sl758m2396'});
  town('sl758m2396','Kirstabal',989,1600,3000,'town');
  town('sxan7r1sln','Strongwall (the Master of Mines\' fort)',912,1640,250,'fort',[
   {id:'sw.assay',kind:'assay-house',name:'the assay house',crew:20,batch:T.chain.assay}]);
- town('xan.pher','Phēr (the north shore\'s fair)',810,1483,6000,'lake',[{id:'ph.fishing',kind:'fishing',name:'the dugouts',crew:600,out:['fish'],rate:rate(6000*T.fishKgPerson*.6,600)}]);
+ town('xan.pher','Phēr (the north shore\'s fair)',810,1483,6000,'lake',[{id:'ph.fishing',kind:'fishing',name:'the dugouts',crew:600,out:['fish'],rate:rate(6000*T.fishKgPerson*.6,600),site:T.fishery(6000*T.fishKgPerson*.6)}]);
  /* the work camps on the March */
  const mine=(id,name,px,py,people,parent,out,kgYr)=>{const p=at(px,py);seats[id]=add({id,name,faction:'xanadu',parent,people,x:p.x,z:p.z,eats:eats('camp'),keepDays:10,
-  start:{grain:Math.round(eatYr('camp',people)*T.startDays/yr),salt:people*2,tea:people*.3,tools:people*.4},works:[{id:id+'.works',kind:'adit',name,crew:Math.round(people*.8),out:[out],rate:rate(kgYr,Math.round(people*.8))}]});if(id!=='sjuarjbku0')bump(parent,eatYr('camp',people));};   /* Opal Valley is its province's seat: its own countryside feeds it */
+  start:{grain:Math.round(eatYr('camp',people)*T.startDays/yr),salt:people*2,tea:people*.3,tools:people*.4},works:[{id:id+'.works',kind:'adit',name,crew:Math.round(people*.8),out:[out],rate:rate(kgYr,Math.round(people*.8)),site:{kind:out==='goldore'?'lode':'opal-diggings',grade:'rich',amount:kgYr*T.lodeYears}}]});if(id!=='sjuarjbku0')bump(parent,eatYr('camp',people));};   /* Opal Valley is its province's seat: its own countryside feeds it */
  mine('smgxtultfq','The gold mines on the lode',911,1665,950,'sxan7r1sln','goldore',T.mine.goldore);
  mine('sjuarjbku0','Opal Valley Mines (the Sultan\'s factor)',1038,1662,850,'sxan7r1sln','opal',T.mine.opal);
  /* the forts of the Marches */
@@ -149,7 +164,7 @@ T.valley=function(P,o){o=o||{};const K=o.scale==null?50:o.scale,yr=365,win=w=>{c
  /* ---- THE LAKE TOWNS AND ISLANDS: fish and their trade to the hub by share; grain, salt and tools back by want */
  const lakeTown=(L)=>{const p=at(L.px,L.py),fishing=L.key!=='weaver'&&L.key!=='pottery'&&L.key!=='quarry'&&L.key!=='boatyard',works=[],sh={};
   const crew=crewOf(L.people,400);
-  if(fishing)works.push({id:'lk.'+L.key+'.fishing',kind:'fishing',name:'the dugouts',crew:Math.round(crew*.5),out:['fish'],rate:rate(L.people*T.fishKgPerson*.6,Math.round(crew*.5))});
+  if(fishing)works.push({id:'lk.'+L.key+'.fishing',kind:'fishing',name:'the dugouts',crew:Math.round(crew*.5),out:['fish'],rate:rate(L.people*T.fishKgPerson*.6,Math.round(crew*.5)),site:T.fishery(L.people*T.fishKgPerson*.6)});
   else works.push({id:'lk.'+L.key+'.store',kind:'warehouse',name:'the landing',crew:10,out:[],rate:0});
   Object.keys(L.make).forEach(g=>{if(g==='brocade')return;const c=Math.round(crew*.5);works.push({id:'lk.'+L.key+'.'+g,kind:g+'-works',name:L.name+'\'s '+g,crew:c,out:[g],rate:rate(L.make[g],c,g==='tea'?win('tea-flush'):g==='saffron'?win('saffron'):g==='silk'?win('silk'):g==='cacao'?win('cacao'):null),
    season:g==='tea'?'tea-flush':g==='saffron'?'saffron':g==='silk'?'silk':g==='cacao'?'cacao':undefined});sh[g]=g==='grain'?.5:.85;});
@@ -169,7 +184,7 @@ T.valley=function(P,o){o=o||{};const K=o.scale==null?50:o.scale,yr=365,win=w=>{c
  T.lake.filter(L=>L.key!=='pher').forEach(lakeTown);
  T.islands.forEach(I=>lakeTown({key:I.key,name:I.name,px:I.px,py:I.py,people:I.people,make:{},prov:'p1',hub:'s57bkv9741'}));
  /* the hubs: the cross-lake run, Erehwon to Phēr (34 km) */
- R.push({id:'lake.cross',from:'s57bkv9741',to:'xan.pher',minutes:Math.round(34/12*60)+60,cap:20000,carriers:6,want:12,goods:{s57bkv9741:['grain','salt','tea','tools'],'xan.pher':['fish','silk','cacao','honey','sulfur','fruit']}});
+ R.push({id:'lake.cross',from:'s57bkv9741',to:'xan.pher',minutes:Math.round(34/12*60)+60,cap:20000,carriers:6,want:12,goods:{s57bkv9741:['grain','salt','tea','tools','pottery','mats'],'xan.pher':['fish','silk','cacao','honey','sulfur','fruit']}});
  /* ---- THE RINGS (the open world's plan): Erehwon's and Qiblai's farming villages and ranches, a tithe road each */
  ['s57bkv9741','skm4jjo2vl'].forEach(sid=>{const St=site(sid);if(!St)return;St.hamlets.forEach(V=>{const id=V.id.replace(/\//g,'.'),y=sid==='s57bkv9741'?1.6:1.9;
   const hh=V.census.households,crew=Math.round(V.census.pop*.45);
@@ -206,10 +221,10 @@ T.valley=function(P,o){o=o||{};const K=o.scale==null?50:o.scale,yr=365,win=w=>{c
  named.p1=(named.p1||0)+1345+150*3;named.p3=(named.p3||0)+1345;named.p4=(named.p4||0)+950;named.p6=(named.p6||0)+850;   /* Phēr is in P7's lake towns: its seat, counted once */
  T.provinces.forEach(Pv=>{const people=Math.max(1000,Pv.rural-(named[Pv.id]||0)),hh=people/T.farm.hh,made=hh*T.farm.farmShare*T.netKgHH(Pv.y),own=eatYr('rural',people);
   const id='prov.'+Pv.id,p=at(Pv.px[0],Pv.px[1]),crew=Math.min(2000,Math.round(people*.45));
-  const works=[{id:id+'.fields',kind:'farmstead',name:'the province\'s fields (its villages, in bulk)',crew,out:['grain'],rate:rate(made,crew,win('harvest')),season:'harvest'}],sh={};
+  const works=[{id:id+'.fields',kind:'farmstead',name:'the province\'s fields (its villages, in bulk)',crew,out:['grain'],rate:rate(made,crew,win('harvest'),T.scaleBulk),season:'harvest'}],sh={};
   Object.keys(Pv.extra).forEach(g=>{const c=Math.min(600,Math.round(crew*.3)),w=g==='tea'?'tea-flush':g==='saffron'?'saffron':g==='silk'?'silk':g==='cacao'?'cacao':g==='opium'?'lancing':null;
-   works.push({id:id+'.'+g,kind:g+'-works',name:'the province\'s '+g,crew:c,out:[g],rate:rate(Pv.extra[g],c,w?win(w):null),season:w||undefined});sh[g]=g==='timber'?.3:g==='dairy'?.5:.85;});
-  add({id,name:Pv.name+': its countryside',faction:'xanadu',parent:Pv.seat,people,x:p.x,z:p.z,eats:eats('rural'),keepDays:30,start:{grain:Math.round(own*T.startDays/yr),salt:people*2,tea:people*.2,tools:people*.15},works});
+   works.push(Object.assign({id:id+'.'+g,kind:g+'-works',name:'the province\'s '+g,crew:c,out:[g],rate:rate(Pv.extra[g],c,w?win(w):null,T.scaleBulk),season:w||undefined},g==='copper'?{site:{kind:'lode',grade:'rich',amount:Pv.extra[g]*T.lodeYears}}:{}));sh[g]=g==='timber'?.3:g==='dairy'?.5:.85;});
+  add({id,name:Pv.name+': its countryside',faction:'xanadu',parent:Pv.seat,scale:T.scaleBulk,people,x:p.x,z:p.z,eats:eats('rural'),keepDays:30,start:{grain:Math.round(own*T.startDays/yr),salt:people*2,tea:people*.2,tools:people*.15},works});
   const surplus=made-own;Pv._made=made;Pv._own=own;Pv._people=people;Pv._id=id;Pv._sh=sh;Pv._surplus=surplus;});
  /* the grain tithe: each seat's need (its own table, the lake towns and camps it feeds, the dues it owes) covered with a
     margin, from its province's surplus, never more than four fifths of what the countryside made */
@@ -233,12 +248,40 @@ T.valley=function(P,o){o=o||{};const K=o.scale==null?50:o.scale,yr=365,win=w=>{c
   R.push({id:'tithe.'+Pv._id,from:Pv._id,to:Pv.seat,minutes:Math.round(km/25*1440)+240,cap:200000,carriers:4,share:{[Pv._id]:Pv._sh},goods:{[Pv.seat]:['salt','tea','tools']}});});
  /* the seats send on what the capital's market exports and the court's dues need: Phēr's and Theodiga's goods come by the
     lake and the barge roads above; Kirstabal's by Qiblai */
- /* ---- THE GATEWAYS: off the map, a pool each; the capital's market sends Xanadu's goods for their want */
- T.gateways.forEach(G=>{const share=1/T.gateways.length;add({id:G.id,name:G.name+' (off the map)',faction:'gate',people:0,x:E.x,z:E.z-1e6,eats:{},keepDays:0,start:Object.assign({},T.gatePool),
+ /* ---- THE GATEWAYS: off the map, a pool each, reached from its staging town (X1). The caravans start at the gateway, so
+    the first salt lands within their first passage. Each exported good's take is split among the gateways that carry it */
+ const carriedBy={};T.gateways.forEach(G=>G.out.forEach(g=>{carriedBy[g]=(carriedBy[g]||0)+1;}));
+ T.gateways.forEach(G=>{add({id:G.id,name:G.name+' (off the map)',faction:'gate',people:0,x:E.x,z:E.z-1e6,eats:{},keepDays:0,start:Object.assign({},T.gatePool),
    works:[{id:G.id+'.market',kind:'bazaar',name:'the gateway\'s bazaar',crew:0,out:[],rate:0}]});
-  const exp={};G.out.forEach(g=>{if(T.gateWant[g])exp[g]=T.gateWant[g]*share*(G.id==='gate.dalab'?2:1);});
-  R.push({id:'trade.'+G.id,from:'s57bkv9741',to:G.id,minutes:G.days*1440,carriers:G.carriers,stagger:Math.round(G.days*1440/G.carriers),cap:G.cap,keep:20,want:Math.max(60,G.days*2),
-   goods:{s57bkv9741:G.out,[G.id]:G.in},expect:{[G.id]:exp,s57bkv9741:{salt:6*350000/365/2,iron:30,arms:.5,pearls:.06,wine:3,oil:2}}});});
+  const exp={};G.out.forEach(g=>{if(T.gateWant[g])exp[g]=T.gateWant[g]/carriedBy[g];});G._exp=exp;
+  R.push({id:'trade.'+G.id,from:G.id,to:G.entry,minutes:G.days*1440,carriers:G.carriers,stagger:Math.round(G.days*1440/G.carriers),cap:G.cap,keep:20,want:Math.max(60,G.days*2),
+   goods:{[G.entry]:G.out,[G.id]:G.in},expect:{[G.id]:exp,[G.entry]:{iron:30,arms:.5,pearls:.06,wine:3,oil:2}}});});
+ /* the staging towns gather their gateways' goods from behind them: Strongbow from Kirstabal from Qiblai, Thalaba from Phēr
+    from the capital (a road for goods beside Thalaba's tithe road, which carries nothing for want out of Thalaba) */
+ const takeAt=entry=>{const e={};T.gateways.filter(G=>G.entry===entry).forEach(G=>{for(const g in G._exp)e[g]=(e[g]||0)+G._exp[g];});return e;};
+ const sbTake=takeAt('sfgtxw10kr'),thTake=takeAt('lk.thalaba'),gList=o=>Object.keys(o);
+ R.push({id:'road.pher-thalaba',from:'xan.pher',to:'lk.thalaba',minutes:Math.round(16/12*60)+60,cap:10000,carriers:3,want:20,
+  goods:{'xan.pher':gList(thTake),'lk.thalaba':['salt','iron','arms','wine','oil']},expect:{'lk.thalaba':thTake}});
+ const addGoods=(id,from,gs)=>{const Rd=R.find(r=>r.id===id);gs.forEach(g=>{if(Rd.goods[from].indexOf(g)<0)Rd.goods[from].push(g);});return Rd;};
+ const addExpect=(Rd,at,o)=>{Rd.expect=Rd.expect||{};Rd.expect[at]=Object.assign({},Rd.expect[at]||{});for(const g in o)Rd.expect[at][g]=(Rd.expect[at][g]||0)+o[g];};
+ addExpect(addGoods('road.ks-sb','sl758m2396',gList(sbTake)),'sfgtxw10kr',sbTake);
+ addExpect(addGoods('road.qb-ks','skm4jjo2vl',gList(sbTake)),'sl758m2396',sbTake);
+ addExpect(addGoods('lake.cross','s57bkv9741',gList(thTake)),'xan.pher',thTake);
+ /* the salt comes in at the staging towns, so it goes inward: Strongbow to Kirstabal to Qiblai, Thalaba to Phēr to the
+    capital; the capital and Qiblai no longer send it to each other */
+ addGoods('road.ks-sb','sfgtxw10kr',['salt','iron','arms']);addGoods('road.qb-ks','sl758m2396',['salt','iron','arms']);
+ addGoods('road.pher-thalaba','lk.thalaba',[]);addGoods('lake.cross','xan.pher',['salt','iron','arms','wine','oil']);
+ ['road.ks-sb','road.qb-ks'].forEach(id=>{const Rd=R.find(r=>r.id===id),down=Rd.from;Rd.goods[down]=Rd.goods[down].filter(g=>g!=='salt');});
+ {const Rd=R.find(r=>r.id==='road.er-qb');Rd.goods.s57bkv9741=Rd.goods.s57bkv9741.filter(g=>g!=='salt');}
+ /* ---- THE LAKE'S MARKET BOATS (X1: multi-stop rounds) */
+ T.rounds.forEach(([id,hub,keys])=>{const stops=[hub].concat(keys.map(k=>'lk.'+k)),pts=stops.map(s=>S.find(q=>q.id===s));
+  let km=0;for(let i=0;i<pts.length;i++){const a=pts[i],b=pts[(i+1)%pts.length];km+=Math.hypot(a.x-b.x,a.z-b.z)/1000;}
+  /* SIM.trade's round lands a boat's whole load at the next stop, so the wares go round as a relay: every stop holds the
+     round's use of the market's wares (half of it), not only its own, and keeps few days back (Atitlán's boats: the pots
+     of one town in every town by the week's end) */
+  const wares=['pottery','mats','honey','fruit','fish'],use={};wares.forEach(g=>{use[g]=pts.reduce((n,s)=>n+s.people*((s.eats||{})[g]||0),0);});
+  const expect={};stops.forEach(s=>{expect[s]={};wares.forEach(g=>{if(use[g]>0)expect[s][g]=use[g]*.5;});});
+  R.push({id,stops,minutes:Math.round(km/pts.length/12*60)+30,cap:6000,carriers:3,stagger:120,want:8,keep:3,goods:null,expect});});
  /* ---- THE CHAIN OF SUPPLY: who feeds whom (the capital the root). X0's roads are two-stop, and a town's want is its own
     use: a seat that passes salt, tea and tools on to its villages wants more than it eats, so the road into it expects
     its whole subtree's use a day (X1's multi-stop roads take this over) */
@@ -254,9 +297,24 @@ T.valley=function(P,o){o=o||{};const K=o.scale==null?50:o.scale,yr=365,win=w=>{c
     their own days first) */
  ['road.er-qb','road.er-th','lake.cross'].forEach(id=>{const Rd=R.find(r=>r.id===id),from=Rd.from==='s57bkv9741'?Rd.to:Rd.from,list=Rd.goods[from]||[],e={};
   list.forEach(g=>{if(T.gateWant[g])e[g]=T.gateWant[g];});Rd.expect=Rd.expect||{};Rd.expect.s57bkv9741=Object.assign({},Rd.expect.s57bkv9741||{},e);});
- /* the capital's salt, for the whole country, from the three gateways that carry it */
- const all=subOf('s57bkv9741'),saltRoads=R.filter(r=>/^trade\.gate/.test(r.id)&&(r.goods[r.to]||[]).indexOf('salt')>=0);
- saltRoads.forEach(r=>{r.expect.s57bkv9741.salt=all.salt/saltRoads.length;});
+ /* the salt (X1): the Catch's for the south (Qiblai's subtree), Thalaba's and Dalab's for the north (the rest). Each
+    gateway expects its side's share at its staging town; each road inward expects what lies beyond it */
+ const all=subOf('s57bkv9741').salt,south=subOf('skm4jjo2vl').salt,north=all-south,sb=subOf('sfgtxw10kr').salt,ks=subOf('sl758m2396').salt;
+ const salters=side=>T.gateways.filter(G=>G.side===side&&G.in.indexOf('salt')>=0);
+ salters('south').forEach(G=>{R.find(r=>r.id==='trade.'+G.id).expect[G.entry].salt=south/salters('south').length;});
+ {const nth=salters('north'),w={'gate.yuni':.6,'gate.dalab':.4};nth.forEach(G=>{R.find(r=>r.id==='trade.'+G.id).expect[G.entry].salt=north*(w[G.id]||1/nth.length);});}
+ addExpect(R.find(r=>r.id==='road.ks-sb'),'sl758m2396',{salt:south-sb});
+ addExpect(R.find(r=>r.id==='road.qb-ks'),'skm4jjo2vl',{salt:south-ks});
+ addExpect(R.find(r=>r.id==='road.pher-thalaba'),'xan.pher',{salt:north*.6-subOf('lk.thalaba').salt});
+ addExpect(R.find(r=>r.id==='lake.cross'),'s57bkv9741',{salt:Math.max(0,north*.6-subOf('xan.pher').salt-subOf('lk.thalaba').salt)});
+ {const Rd=R.find(r=>r.id==='lake.cross');Rd.goods.s57bkv9741=Rd.goods.s57bkv9741.filter(g=>g!=='salt');delete Rd.expect['xan.pher'].salt;}
+ /* the iron and arms the gateways bring, inward to the smiths and the forts (a batch that waits on its input shows no want) */
+ addExpect(R.find(r=>r.id==='road.ks-sb'),'sl758m2396',{iron:20,arms:.2});addExpect(R.find(r=>r.id==='road.qb-ks'),'skm4jjo2vl',{iron:20,arms:.2});
+ addExpect(R.find(r=>r.id==='road.pher-thalaba'),'xan.pher',{iron:30,arms:.4});addExpect(R.find(r=>r.id==='lake.cross'),'s57bkv9741',{iron:30,arms:.4});
+ /* the north shore's pots and mats come over from the south (Pāṭari, Lōṭas) by the capital: Phēr holds its towns' use */
+ {const nPeople=S.filter(s=>s.parent==='xan.pher'&&/^lk\./.test(s.id)).reduce((n,s)=>n+s.people,0)+6000;
+  addExpect(R.find(r=>r.id==='lake.cross'),'xan.pher',{pottery:nPeople*T.diet.lake.pottery,mats:nPeople*T.diet.lake.mats});}
+ T._salt={all,south,north};
  /* ---- THE DUES AND THE GRANTS */
  const tr=[];Object.keys(T.dues.bills).forEach(s=>tr.push({id:'dues.'+s,from:s,to:'xan.citadel',goods:T.dues.bills[s],first:T.dues.day,every:365}));
  tr.push({id:'fealty.qiblai',from:T.dues.fealty.from,to:'xan.citadel',goods:T.dues.fealty.goods,first:T.dues.fealty.day,every:365});
