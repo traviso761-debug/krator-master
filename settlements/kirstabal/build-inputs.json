@@ -255,7 +255,8 @@
     "kits/xanadu/src/87-xa-spicer.js": "a33e757eef4182ab5fe0003d6be20792c247da6d1cd74a4cdb511f503c6977c3",
     "kits/xanadu/src/87b-xa-andean.js": "a153512190df7ee8b6f31ad1e1d6661c1c2c861648e0fbc1a426345032581ede",
     "kits/xanadu/src/87c-xa-erewhon.js": "e19ce7c9662d187a11ac62c2edf8a435ac4cf75b9ca9224e68b351b149414cfc",
-    "kits/xanadu/src/87k-xa-lake-trades.js": "6efd463a5825b29d2094b996da98a9212701159f139fdb4df2de64d4e0f751d8",
+    "kits/xanadu/src/87k-xa-lake-trades.js": "0d2fd59a695d4ea584440ee1f5c790dd115b585078dfe457c11d6898a6aea0d7",
+    "kits/xanadu/src/87k1-xa-lake-rooms.js": "a6516d05ad6189614c9b87252a70f6800006e94f531289088272e8780bc6c5a1",
     "kits/xanadu/src/88-xa-dress.js": "92b383aae14ae16df38e04863d52344e1ee1b66aa243a37b8936f7bb7251ae3f",
     "kits/xanadu/src/89-xa-trades.js": "ea68acaefb8da0b319ca98fb43f8aa400763eccf0e734051065c4facca8662af",
     "kits/xanadu/xanadu.py": "70917961388f43ea3d80944de7272efe73f5c263c4c005865be50932e5c4ebd4",
@@ -264,7 +265,7 @@
     "settlements/kirstabal/build.py": "15f1672e7a23d7818127464c0db2c8fd6331105127dd8b8ab8e9c113b35d990d",
     "settlements/kirstabal/gen/69k-kcity-bundle.js": "7c0802982b3ee93b347d84ffb348e966c65ef43c3e34eae5c6788632314269c7",
     "settlements/kirstabal/gen/69k2-ks-flora-bundle.js": "61c015f689771b99ea523f295ad139403da8e09e7446ee63ff7b46fab1d320a0",
-    "settlements/kirstabal/kit.json": "08ffb57c977105ace24539f29a7938a85bb436cd5ae57127a4f3e0a67ee22b5b",
+    "settlements/kirstabal/kit.json": "7b111d6e9953ed3eea54ad4fb8027ae5b8ea1d888175ff0ae27d2921035ad08b",
     "settlements/kirstabal/src/39k-ks-model.js": "0984961f081c7b01c9caa7a53ab9cf6acde942edead496665a23b4d30ffa6dfc",
     "settlements/kirstabal/src/40-ks-ground.js": "539a24617b44c8400221c5a0b896a43ed6192ef5cc465c1b20a4c10097971de9",
     "settlements/kirstabal/src/41-ks-town.js": "d80c9528814d168a7aa699a550cab70220f050055b2e4b930195385e348e1f6a",
@@ -273,7 +274,7 @@
     "settlements/kirstabal/targets/town/89z-rows.js": "603b008f2291bc875053ab79d9a06c11d92b2cc0cdaf3b07f29d67363668f0c1",
     "settlements/kirstabal/targets/town/89zk-ks-site.js": "53fc1a3a3ee2ede672a1cd1ae5f5d3da440b03b0bfd91cafd9a9181c257d8a92",
     "settlements/kirstabal/targets/town/90k-ks-world.js": "0cbb6dfff4dd7b708b7c7f77f7ac416cf76b0eb8d0a4ec714a2784aa4b53a6c3",
-    "settlements/kirstabal/targets/town/90l-ks-build.js": "394fb86b3659b2c70fd856eab626cb9243bcb28e2d36274843c41397475a5a06",
+    "settlements/kirstabal/targets/town/90l-ks-build.js": "1214f579639428dbc22209869b3e4244edd8ec81ee7ace822527252f1770814b",
     "settlements/kirstabal/targets/town/90m-ks-flora.js": "3bb991022189d85d03f9e84502b188d38255a1ef841e49c938898c785ead88c8",
     "settlements/kirstabal/targets/town/91z-views.js": "2bb3ef09139db836a9be2ce3a6c20bf1566d8a0c235a6cdce9aafbfaca222bb6",
     "settlements/kirstabal/tex/ksCobble.albedo.webp": "c58c67abf3b30566cb2122cb9edeba1259e65f17eda8e935a7e6f3ebccf7a90b",
@@ -505,14 +506,14 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "settlements/kirstabal/build-manifest-town.json": "564e43c1232520dbc19c6493b38969d7b4bd9e4464d2aa159358e7b435d7d04e",
-    "settlements/kirstabal/dist/kirstabal.html": "b5d95ca2eedc3a8f11d56fa3a3cfb1a489bd8f3e8fadc184f66b2b1fdec41127",
+    "settlements/kirstabal/build-manifest-town.json": "0f01bb7f773a191f087a3b929cc4baff4e70691aecbe25789cc46d38c5e8d594",
+    "settlements/kirstabal/dist/kirstabal.html": "f6a076537fc453168a012eaddafad3aa29ddd62bd43df073eafaf6faf92054f3",
     "settlements/kirstabal/dist/xanadu.tex.xanadu-2.js": "be1d57f174e08cf71b5511aff65a313eec8edc29e057c48d027e9b60630f3ab5",
     "settlements/kirstabal/dist/xanadu.tex.xanadu.js": "3fe87059ee305d523fa5026dddfd91123354e88d5839097de9df44137500f2a4"
    },
    "outputs_raw": {
-    "settlements/kirstabal/build-manifest-town.json": "96cdc9cac80516939522f44afe01bb46d8ed43f2e1bc415bc148910be397be43",
-    "settlements/kirstabal/dist/kirstabal.html": "b5d95ca2eedc3a8f11d56fa3a3cfb1a489bd8f3e8fadc184f66b2b1fdec41127",
+    "settlements/kirstabal/build-manifest-town.json": "c795e04c938ddad0d915edea339e15a36d54d8c54983a37e9b598b5cd5ea54ed",
+    "settlements/kirstabal/dist/kirstabal.html": "f6a076537fc453168a012eaddafad3aa29ddd62bd43df073eafaf6faf92054f3",
     "settlements/kirstabal/dist/xanadu.tex.xanadu-2.js": "be1d57f174e08cf71b5511aff65a313eec8edc29e057c48d027e9b60630f3ab5",
     "settlements/kirstabal/dist/xanadu.tex.xanadu.js": "3fe87059ee305d523fa5026dddfd91123354e88d5839097de9df44137500f2a4"
    }

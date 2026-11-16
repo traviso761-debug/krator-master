@@ -99,6 +99,10 @@ A fifth, `87k-xa-lake-trades.js` (2026-11-16, for Kirstabal: `settlements/kirsta
 `xa_fish_racks` (a fishing village's racks and smokehouse: core/hamlet's fishing works on the Xanadu row, as Kirstabal's
 `KS_RING.fishingRow` extends it). A world that wants them lists the file; folding it into `FILES` changes every page that
 takes the kit (TODO.md, "Ride along").
+Its interiors are `87k1-xa-lake-rooms.js`, opt-in with it: the interior set `xanadu-lake` (the serai's four ranges, the
+tea factory's ground storey, the latex house's sealing room; the fermentary and the fish racks skipped as open), added with
+`KratorInteriors.sets.add` when the page carries the interiors core, so Xanadu's `?interiors=1` mode hollows and furnishes
+them (Kirstabal, K5). It belongs in `kits/interiors/sets/` and moves there with the next rebuild of the interiors sheet.
 
 **Footprints** (2026-11-10; the owner: "the garden pieces ... stick out way over what their footprint is supposed to be").
 A def's footprint is its `w x d`, its lot: the sheet spaces sites by it, Erewhon's garden grid and blocks set 8 m and 16 m

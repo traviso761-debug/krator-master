@@ -23,7 +23,12 @@ function buildXaSerai(G,o){reseed(34101+(o.v|0));const V=xV(o),W=40,D=40,R=7,H1=
  /* the corner towers */
  for(const sx of[-1,1])for(const sz of[-1,1]){xnStack(sx*(W/2-2.4),.35,sz*(D/2-2.4),5,5,0,[H1,H2,2.6],earth,'earth');xnFlatRoof(sx*(W/2-2.4),.35+H1+H2+2.6,sz*(D/2-2.4),5,5,0,earth,{parapet:.7,corner:'pinnacle'});}
  /* the gate: an iwan in the front range, its doors open; windows on the outer faces */
- xnIwan(0,.35,D/2+.3,0,7,H1+H2+1.8,2.2,wash);vnDoor(0,.35,D/2-R+.4,0,3.2,4.0,'vWood',tim,timD,true);
+ xnIwan(0,.35,D/2+.3,0,7,H1+H2+1.8,2.2,wash);vnDoor(0,.35,D/2-R,Math.PI,3.2,4.0,'vWood',tim,timD,true);
+ /* the ranges' doors onto the court (each faces the court, on its range's court face: the interiors' hollow walls cut them,
+    87k1): the common room and kitchen either side of the gate hall, the stores and shops at the back, the stables' wide doors */
+ for(const x of[-8,8])vnDoor(x,.35,D/2-R,Math.PI,1.2,2.3,'vWood',tim,timD,false);
+ for(const x of[-8,0,8])vnDoor(x,.35,-D/2+R,0,1.6,2.4,'vWood',tim,timD,false);
+ for(const sx of[-1,1])for(const z of[-5,5])vnDoor(sx*(W/2-R),.35,z,-sx*Math.PI/2,2.4,2.6,'vWood',tim,timD,false);
  for(const sx of[-1,1])for(let k=1;k<4;k++){xnTibWin(sx*(4+k*4.2),.35+H1+1.0,D/2+.05,0,.8,1.0,'glass',trim,{noVal:true});xnTibWin(sx*(4+k*4.2),.35+H1+H2*.45,-D/2-.05,Math.PI,.8,1.0,'glass',trim,{noVal:true});}
  /* the court: the well, the stalls' troughs and fodder, beasts and drovers, the caravan's bales */
  xnFountain(0,.35,0,1.6,stone);

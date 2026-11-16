@@ -303,6 +303,15 @@ Following `README.md`, "CORE MODULES ARE NOT OPTIONAL":
   Rift kit (`biomes/rift`) on today's core/biome, not the Vale's `biomes/xanadu`, zoned by one wetness field (jungle along
   the lake and Keb Riwā and toward the scarp's foot, savannah inland) that also tints the grass, under the Rift's air
   (`targets/town/90m-ks-flora.js`, `ksWet` in 89zk). The scarp's cloud forest and tea belt are still to come.
+- **K5.** The interiors, on Xanadu's own mode (`?interiors=1`: hollow walls, real doors, rooms furnished from the catalog's
+  Xanadu pieces, their floors and stairs in core/walk), turned on for the five buildings of this step only: the governor's
+  house and the Two Horns' factor house (the kit's own items), the serai, the tea factory and the latex house's sealing room
+  (new items, `kits/xanadu/src/87k1-xa-lake-rooms.js`, opt-in; the serai's ranges now have doors onto the court). Every open
+  door of the five gets a threshold in core/walk and, where the sill stands over the sloping ground, a flight of steps. The
+  serai, the tea factory and the latex house are reached throughout (`verify.py --interiors`); the two manors keep the kit's
+  own gap (settlements/xanadu KNOWN_ISSUES.md: their items' plan doors are not cut, so the upper house and the konak stay
+  sealed). The factor house has no counting rooms of its own yet (it is the kit's merchant's konak), and the governor's
+  audience hall waits for a seat piece of its own.
 
 ## 7. Questions for the owner
 
