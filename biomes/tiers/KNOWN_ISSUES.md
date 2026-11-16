@@ -106,6 +106,9 @@ biomes/tiers --fix` (a card sheet's cells and stems are its own), `python3 tools
 - [ ] **The pagoda bush and the stack cushion are the kit's own geometry** (60: a stem with drums and a `card.saltbush` cell on each disc's
   top; a lathed mound of four steps on `surface.cushion`), the plan's named stand-ins. Sagebrush and saltbush are not read in place (the
   eastern badlands draw them in their floor, which kin rows cannot read; only trees are kin): the kit's two natives stand for the scrub.
+- [ ] **The dry gorge's floor is dim at 16:30** (SwiftShader): its walls take the low north-west sun and the horizon shade's sky term is
+  eased (`hzSky` .45), but the floor stays in shadow. Judge it on the GPU; the levers are the station's hour and `hzSky`.
+- [ ] **Verified in software GL only** (2026-11-16: `verify.py --assert` passes in SwiftShader); the owner's GPU run is owed.
 - [ ] **The crown's ice on the skyline** is the far field's (KFAR's snow by height), not a drawn glacier.
 
 - [ ] **Not built yet (T4, T5):** the whorl pine (a record and tags in 50, no builder); station 2's town (above); the `tiers` entry in
