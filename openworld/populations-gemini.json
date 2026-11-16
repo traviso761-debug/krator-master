@@ -1,22 +1,15 @@
 {
   "summary": {
-    "domestic_living_settlements": 174,
+    "domestic_pins": 175,
     "domestic_polities": 51,
-    "exterior_polities": 2,
-    "on_screen_pop_cap": 50000,
-    "total_on_screen_pop": 1016386,
-    "total_simulated_urban_pop": 1943240,
-    "total_rural_hamlet_pop": 5809188,
-    "total_domestic_population": 7752428,
-    "urban_share_pct": 25.07,
-    "trade_elasticity": 0.78,
-    "projected_sea_ships": 635,
-    "projected_inland_barges": 231,
-    "projected_wagon_convoys": 1144,
-    "projected_pack_caravans": 423,
+    "on_screen_pop": 1036386,
+    "sim_urban_pop": 1963240,
+    "rural_pop": 5873188,
+    "domestic_total_pop": 7836428,
+    "total_rural_hamlet_pop": 5873188,
     "core_nomadic_mobile_pop": 141205,
     "all_nomadic_and_roamer_mobile_pop": 179370,
-    "sedentary_rural_hamlet_pop": 5629818,
+    "sedentary_rural_hamlet_pop": 5693818,
     "tier4c_nomadic_circuit_km": 4492
   },
   "polities": [
@@ -83,15 +76,15 @@
     {
       "polity": "Eternal State",
       "is_exterior": false,
-      "pin_count": 9,
-      "cur_pop": 139500,
-      "on_screen_pop": 100021,
-      "sim_urban_pop": 252894,
+      "pin_count": 10,
+      "cur_pop": 147500,
+      "on_screen_pop": 120021,
+      "sim_urban_pop": 272894,
       "rural_ratio": 3.2,
-      "rural_pop": 809261,
-      "nat_total": 1062155,
+      "rural_pop": 873261,
+      "nat_total": 1146155,
       "urban_share_pct": 23.81,
-      "pop_mult_vs_cur": 7.614,
+      "pop_mult_vs_cur": 7.771,
       "eff_carrier_mult": 4.871454812367302,
       "maritime_status": "Inland Barge Only (0 Sea Ships)",
       "base_ships": 0,
@@ -105,8 +98,8 @@
       "rural_note": "Planned canal-grid agricultural communes, vineyard villages & Sanctum/Farside farmsteads",
       "proj_land": 112,
       "population_mode": "sedentary",
-      "habitable_area_km2": 147168,
-      "dirt_path_km": 1188,
+      "habitable_area_km2": 163760,
+      "dirt_path_km": 1476,
       "nomad_circuit_km": 0,
       "mobile_camps": 0
     },
@@ -136,7 +129,7 @@
       "proj_land": 218,
       "population_mode": "sedentary",
       "habitable_area_km2": 104352,
-      "dirt_path_km": 1096,
+      "dirt_path_km": 1132,
       "nomad_circuit_km": 0,
       "mobile_camps": 0
     },
@@ -195,7 +188,7 @@
       "rural_note": "Peat-bog crofts, colliery hamlets, charcoal camps & ironstone quarry villages",
       "proj_land": 150,
       "population_mode": "sedentary",
-      "habitable_area_km2": 55104,
+      "habitable_area_km2": 54944,
       "dirt_path_km": 404,
       "nomad_circuit_km": 0,
       "mobile_camps": 0
@@ -436,7 +429,7 @@
       "proj_land": 10,
       "population_mode": "sedentary",
       "habitable_area_km2": 2528,
-      "dirt_path_km": 100,
+      "dirt_path_km": 88,
       "nomad_circuit_km": 0,
       "mobile_camps": 0
     },
@@ -774,7 +767,7 @@
       "proj_land": 23,
       "population_mode": "sedentary",
       "habitable_area_km2": 1920,
-      "dirt_path_km": 0,
+      "dirt_path_km": 24,
       "nomad_circuit_km": 0,
       "mobile_camps": 0
     },
@@ -2267,6 +2260,22 @@
       "note": "Southern Dalab cliff-lake & North Rift Great Caravan terminus town/city"
     },
     {
+      "id": "sdgzodxb0k",
+      "name": "Corpus",
+      "pin_name": "Corpus",
+      "in_scale_model": true,
+      "polity": "Eternal State",
+      "stage": "inhabited ruin",
+      "is_exterior": false,
+      "cur_pop": 8000,
+      "on_screen_pop": 20000,
+      "off_screen_mult": 1.0,
+      "sim_urban_pop": 20000,
+      "pop_known": true,
+      "pop_source": "owner 2026-11-15 (Corpus inhabited ruin, pop 20k)",
+      "note": "Large Eternal State inhabited ruin (pop 20,000) at the 4-way NW Lowlands Ancient highway junction linking Lux, Henge, Roketstad & Footfall"
+    },
+    {
       "id": "skz25tuq0w",
       "name": "Arcbeam",
       "pin_name": "Arcbeam",
@@ -2283,22 +2292,6 @@
       "note": "Izani living arcology; public concourses on-screen x 2.5x sealed residential & workshop decks"
     },
     {
-      "id": "sa5o6dvjdv",
-      "name": "Jabal",
-      "pin_name": "Jabal",
-      "in_scale_model": true,
-      "polity": "Jabal Shiekdom",
-      "stage": "city",
-      "is_exterior": false,
-      "cur_pop": 15000,
-      "on_screen_pop": 15000,
-      "off_screen_mult": 1.2,
-      "sim_urban_pop": 18000,
-      "pop_known": false,
-      "pop_source": "",
-      "note": "Capital of Jabal Shiekdom in the Bowl; terraced canyon/oasis city + surrounding palm-qanat suburbs"
-    },
-    {
       "id": "ssgsv5zbd2",
       "name": "Amaro",
       "pin_name": "Amaro",
@@ -2313,6 +2306,22 @@
       "pop_known": false,
       "pop_source": "",
       "note": "Chief town of the Shumari on the Shumar plateau"
+    },
+    {
+      "id": "sa5o6dvjdv",
+      "name": "Jabal",
+      "pin_name": "Jabal",
+      "in_scale_model": true,
+      "polity": "Jabal Shiekdom",
+      "stage": "city",
+      "is_exterior": false,
+      "cur_pop": 15000,
+      "on_screen_pop": 15000,
+      "off_screen_mult": 1.2,
+      "sim_urban_pop": 18000,
+      "pop_known": false,
+      "pop_source": "",
+      "note": "Capital of Jabal Shiekdom in the Bowl; terraced canyon/oasis city + surrounding palm-qanat suburbs"
     },
     {
       "id": "sgre336q61",
@@ -2664,7 +2673,7 @@
       "sim_urban_pop": 4500,
       "pop_known": false,
       "pop_source": "",
-      "note": "Lakeshore village on N Lake Xanadu (825,1488); mounts summer hunting, gathering & ruin expeditions to Godshearth"
+      "note": "Lakeshore village on North Lake Xanadu (825, 1488) mounting summer hunting & gathering expeditions into Godshearth"
     },
     {
       "id": "szjsurpu01",
@@ -2811,6 +2820,22 @@
       "note": "Chief fortress-town of the Free Giants (Vrivolci) & freed-slave haven on Greenstep"
     },
     {
+      "id": "svvu4ssvzc",
+      "name": "Dapor",
+      "pin_name": "Dapor",
+      "in_scale_model": true,
+      "polity": "Realm of Dalab",
+      "stage": "town",
+      "is_exterior": false,
+      "cur_pop": 1800,
+      "on_screen_pop": 2400,
+      "off_screen_mult": 1.25,
+      "sim_urban_pop": 3000,
+      "pop_known": false,
+      "pop_source": "",
+      "note": "Realm of Dalab coastal/lake port town"
+    },
+    {
       "id": "s4xb8r0vmy",
       "name": "Mungo",
       "pin_name": "Mungo",
@@ -2841,22 +2866,6 @@
       "pop_known": false,
       "pop_source": "",
       "note": "Vothic Kingdom lakeshore market town"
-    },
-    {
-      "id": "svvu4ssvzc",
-      "name": "Dapor",
-      "pin_name": "Dapor",
-      "in_scale_model": true,
-      "polity": "Realm of Dalab",
-      "stage": "town",
-      "is_exterior": false,
-      "cur_pop": 1800,
-      "on_screen_pop": 2400,
-      "off_screen_mult": 1.25,
-      "sim_urban_pop": 3000,
-      "pop_known": false,
-      "pop_source": "",
-      "note": "Realm of Dalab coastal/lake port town"
     },
     {
       "id": "skamx0ylbr",
@@ -3243,6 +3252,22 @@
       "note": "Jimjam royal observatory & pass town"
     },
     {
+      "id": "sc3dsw9tjl",
+      "name": "Darling",
+      "pin_name": "Darling",
+      "in_scale_model": true,
+      "polity": "Yuni Emirate",
+      "stage": "village",
+      "is_exterior": false,
+      "cur_pop": 700,
+      "on_screen_pop": 950,
+      "off_screen_mult": 1.8,
+      "sim_urban_pop": 1710,
+      "pop_known": false,
+      "pop_source": "2026-11-15 user Stalker Gate / Mid-Basin caravan village addition",
+      "note": "Yuni Mid-Basin caravan village (1582,1341) supporting Yuni traffic east of the Stalker Gate"
+    },
+    {
       "id": "sezlil6yjd",
       "name": "Nephtos",
       "pin_name": "Nephtos",
@@ -3257,6 +3282,22 @@
       "pop_known": false,
       "pop_source": "",
       "note": "League of Tethys colony town in East Ring Isles"
+    },
+    {
+      "id": "seed07",
+      "name": "Girder",
+      "pin_name": "Girder",
+      "in_scale_model": true,
+      "polity": "Beast Riders",
+      "stage": "village",
+      "is_exterior": false,
+      "cur_pop": 300,
+      "on_screen_pop": 1000,
+      "off_screen_mult": 1.5,
+      "sim_urban_pop": 1500,
+      "pop_known": false,
+      "pop_source": "estimated by type (village)",
+      "note": "1:1 on-screen village/fort/outpost"
     },
     {
       "id": "szru86us3f",
@@ -3352,22 +3393,6 @@
       "sim_urban_pop": 1500,
       "pop_known": false,
       "pop_source": "",
-      "note": "1:1 on-screen village/fort/outpost"
-    },
-    {
-      "id": "seed07",
-      "name": "Girder",
-      "pin_name": "Girder",
-      "in_scale_model": true,
-      "polity": "Beast Riders",
-      "stage": "village",
-      "is_exterior": false,
-      "cur_pop": 300,
-      "on_screen_pop": 1000,
-      "off_screen_mult": 1.5,
-      "sim_urban_pop": 1500,
-      "pop_known": false,
-      "pop_source": "estimated by type (village)",
       "note": "1:1 on-screen village/fort/outpost"
     },
     {
@@ -3547,6 +3572,22 @@
       "note": "1:1 on-screen village/fort/outpost"
     },
     {
+      "id": "spbzmhdqqd",
+      "name": "Loj Twenny",
+      "pin_name": "Loj Twenny",
+      "in_scale_model": true,
+      "polity": "Tungang Union",
+      "stage": "cavern",
+      "is_exterior": false,
+      "cur_pop": 650,
+      "on_screen_pop": 750,
+      "off_screen_mult": 1.6,
+      "sim_urban_pop": 1200,
+      "pop_known": false,
+      "pop_source": "estimated by type (cavern)",
+      "note": "Tungang Union cavern settlement above the Rift"
+    },
+    {
       "id": "sr4lzat7j3",
       "name": "Seto",
       "pin_name": "Seto",
@@ -3595,22 +3636,6 @@
       "note": "1:1 on-screen village/fort/outpost"
     },
     {
-      "id": "spbzmhdqqd",
-      "name": "Loj Twenny",
-      "pin_name": "Loj Twenny",
-      "in_scale_model": true,
-      "polity": "Tungang Union",
-      "stage": "cavern",
-      "is_exterior": false,
-      "cur_pop": 650,
-      "on_screen_pop": 750,
-      "off_screen_mult": 1.6,
-      "sim_urban_pop": 1200,
-      "pop_known": false,
-      "pop_source": "estimated by type (cavern)",
-      "note": "Tungang Union cavern settlement above the Rift"
-    },
-    {
       "id": "szn5aae96p",
       "name": "Port Visas",
       "pin_name": "Port Visas",
@@ -3627,22 +3652,6 @@
       "note": "Dilihan Province inhabited port ruin (LORE.md:267 = 1,000)"
     },
     {
-      "id": "srbp1bvh1r",
-      "name": "Urundashi",
-      "pin_name": "Urundashi",
-      "in_scale_model": true,
-      "polity": "Shumari",
-      "stage": "village",
-      "is_exterior": false,
-      "cur_pop": 1100,
-      "on_screen_pop": 1100,
-      "off_screen_mult": 1.0,
-      "sim_urban_pop": 1100,
-      "pop_known": false,
-      "pop_source": "",
-      "note": "1:1 on-screen village/fort/outpost"
-    },
-    {
       "id": "slfozs6c7z",
       "name": "Shade",
       "pin_name": "Shade",
@@ -3657,6 +3666,22 @@
       "pop_known": true,
       "pop_source": "LORE.md:379",
       "note": "Census/Lore (LORE.md:379)"
+    },
+    {
+      "id": "srbp1bvh1r",
+      "name": "Urundashi",
+      "pin_name": "Urundashi",
+      "in_scale_model": true,
+      "polity": "Shumari",
+      "stage": "village",
+      "is_exterior": false,
+      "cur_pop": 1100,
+      "on_screen_pop": 1100,
+      "off_screen_mult": 1.0,
+      "sim_urban_pop": 1100,
+      "pop_known": false,
+      "pop_source": "",
+      "note": "1:1 on-screen village/fort/outpost"
     },
     {
       "id": "sloomspindle01",
@@ -3737,6 +3762,22 @@
       "pop_known": false,
       "pop_source": "",
       "note": "1:1 on-screen village/fort/outpost"
+    },
+    {
+      "id": "sz85a8i5js",
+      "name": "Ranger HQ",
+      "pin_name": "Ranger HQ",
+      "in_scale_model": true,
+      "polity": "Yuni Emirate",
+      "stage": "outpost",
+      "is_exterior": false,
+      "cur_pop": 350,
+      "on_screen_pop": 450,
+      "off_screen_mult": 2.0,
+      "sim_urban_pop": 900,
+      "pop_known": false,
+      "pop_source": "2026-11-15 user Stalker Gate caravan escort outpost addition",
+      "note": "Fortified Yuni Ranger garrison (1420,1242) guarding caravans through the Stalker Gate passes"
     },
     {
       "id": "skjtxiqwjk",
@@ -3899,6 +3940,22 @@
       "note": "1:1 on-screen village/fort/outpost"
     },
     {
+      "id": "sl9let4tz0",
+      "name": "Frost-Jaw Camp",
+      "pin_name": "Frost-Jaw Camp",
+      "in_scale_model": true,
+      "polity": "Sasquatch Tribes",
+      "stage": "village",
+      "is_exterior": false,
+      "cur_pop": 450,
+      "on_screen_pop": 500,
+      "off_screen_mult": 1.5,
+      "sim_urban_pop": 750,
+      "pop_known": false,
+      "pop_source": "2026-11-15 Sasquatch Tribes semi-nomadic trough camp",
+      "note": "Semi-nomadic Sasquatch winter camp in Frost-Jaw Vale (+4,280 m sheltered trough)"
+    },
+    {
       "id": "sigv04s59y",
       "name": "Kierson",
       "pin_name": "Kierson",
@@ -3961,6 +4018,22 @@
       "pop_known": false,
       "pop_source": "",
       "note": "Yeti Kingdom high inhabited ruin"
+    },
+    {
+      "id": "sse7u0rvoj",
+      "name": "Hoar-Wind Camp",
+      "pin_name": "Hoar-Wind Camp",
+      "in_scale_model": true,
+      "polity": "Sasquatch Tribes",
+      "stage": "village",
+      "is_exterior": false,
+      "cur_pop": 400,
+      "on_screen_pop": 450,
+      "off_screen_mult": 1.5,
+      "sim_urban_pop": 675,
+      "pop_known": false,
+      "pop_source": "2026-11-15 Sasquatch Tribes semi-nomadic trough camp",
+      "note": "Semi-nomadic Sasquatch camp in Hoar-Wind Glen trading down toward Skywatch & Serai"
     },
     {
       "id": "scatcharfwai01",
@@ -4457,70 +4530,6 @@
       "pop_known": false,
       "pop_source": "",
       "note": "1:1 on-screen village/fort/outpost"
-    },
-    {
-      "id": "sc3dsw9tjl",
-      "name": "Darling",
-      "pin_name": "Darling",
-      "in_scale_model": true,
-      "polity": "Yuni Emirate",
-      "stage": "village",
-      "is_exterior": false,
-      "cur_pop": 700,
-      "on_screen_pop": 950,
-      "off_screen_mult": 1.8,
-      "sim_urban_pop": 1710,
-      "pop_known": false,
-      "pop_source": "2026-11-15 user Stalker Gate / Mid-Basin caravan village addition",
-      "note": "Yuni Mid-Basin caravan village (1582,1341) supporting Yuni traffic east of the Stalker Gate"
-    },
-    {
-      "id": "sz85a8i5js",
-      "name": "Ranger HQ",
-      "pin_name": "Ranger HQ",
-      "in_scale_model": true,
-      "polity": "Yuni Emirate",
-      "stage": "outpost",
-      "is_exterior": false,
-      "cur_pop": 350,
-      "on_screen_pop": 450,
-      "off_screen_mult": 2.0,
-      "sim_urban_pop": 900,
-      "pop_known": false,
-      "pop_source": "2026-11-15 user Stalker Gate caravan escort outpost addition",
-      "note": "Fortified Yuni Ranger garrison (1420,1242) guarding caravans through the Stalker Gate passes"
-    },
-    {
-      "id": "sl9let4tz0",
-      "name": "Frost-Jaw Camp",
-      "pin_name": "Frost-Jaw Camp",
-      "in_scale_model": true,
-      "polity": "Sasquatch Tribes",
-      "stage": "village",
-      "is_exterior": false,
-      "cur_pop": 450,
-      "on_screen_pop": 500,
-      "off_screen_mult": 1.5,
-      "sim_urban_pop": 750,
-      "pop_known": false,
-      "pop_source": "2026-11-15 Sasquatch Tribes semi-nomadic trough camp",
-      "note": "Semi-nomadic Sasquatch winter camp in Frost-Jaw Vale (+4,280 m sheltered trough)"
-    },
-    {
-      "id": "sse7u0rvoj",
-      "name": "Hoar-Wind Camp",
-      "pin_name": "Hoar-Wind Camp",
-      "in_scale_model": true,
-      "polity": "Sasquatch Tribes",
-      "stage": "village",
-      "is_exterior": false,
-      "cur_pop": 400,
-      "on_screen_pop": 450,
-      "off_screen_mult": 1.5,
-      "sim_urban_pop": 675,
-      "pop_known": false,
-      "pop_source": "2026-11-15 Sasquatch Tribes semi-nomadic trough camp",
-      "note": "Semi-nomadic Sasquatch camp in Hoar-Wind Glen trading down toward Skywatch & Serai"
     }
   ]
 }

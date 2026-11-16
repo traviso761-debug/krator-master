@@ -554,6 +554,7 @@ def extract_flows_from_model():
                     hops.append((mid_sid, sid_b))
                 pinfo = compose_two_pinfo(p1, p2, setts[mid_sid]["name"]) if (p1 and p2) else None
                 if pinfo:
+                    pinfo.pop("pts", None)
                     pinfo["war_via"] = setts[mid_sid]["name"]
                 all_legs = []
                 for ha, hb in hops:
@@ -567,6 +568,8 @@ def extract_flows_from_model():
                     pair_cache[key] = (eff, None, [])
                     return pair_cache[key]
                 pinfo = gtm.analyze_pair_path(world, graph, setts, sid_a, sid_b, tkey)
+                if pinfo:
+                    pinfo.pop("pts", None)
                 ns = get_nodes(sid_a, sid_b, tkey)
                 all_legs = decompose_nodes(ns, sid_a, sid_b) if ns else []
                 pair_cache[key] = (eff, pinfo, all_legs)

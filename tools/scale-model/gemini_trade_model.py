@@ -53,15 +53,20 @@ from smodel.page import LEGACY_SHIFT, load as load_page, raster  # noqa: E402
 # 1. Load 5.1 Rasters, Rebaked Geology, Polygons & Base Censuses (Read-Only)
 # ---------------------------------------------------------------------------
 def load_world(model_data_dir=None, regs_js_path=None, geo_json_path=None):
+    import gc as _gc_lw
     D = load_page(model_data_dir) if model_data_dir else load_page()
     OW, OH = D["fullW"], D["fullH"]  # 1821 x 1723 (2 km/px)
     h_img = raster(D, "h")
     lo, hi = D["lo"], D["hi"]
-    E2 = lo + ((h_img[..., 0].astype(np.int32) << 8) | h_img[..., 1]) / 65535.0 * (hi - lo)
+    E2 = (lo + ((h_img[..., 0].astype(np.int32) << 8) | h_img[..., 1]) / 65535.0 * (hi - lo)).astype(np.float32)
     W2 = h_img[..., 2] > 127
+    del h_img
 
     tm_img = raster(D, "tm")[..., 0].astype(np.float32) / 255.0 * 110.0 - 50.0
     rain_img = (raster(D, "p")[..., 0].astype(np.float32) / 255.0) ** 2 * 5000.0
+    D_min = {"rivers": D["rivers"]}
+    del D
+    _gc_lw.collect()
 
     default_geo = os.path.join(ROOT, "kits", "resources", "data", "geology-gemini.json")
     if not os.path.isfile(default_geo):
@@ -76,19 +81,30 @@ def load_world(model_data_dir=None, regs_js_path=None, geo_json_path=None):
     W = W2[np.ix_(ys, xs)]
     TM = tm_img[np.ix_(ys, xs)]
     RAIN = rain_img[np.ix_(ys, xs)]
+    del tm_img, rain_img
 
+    WANTED_LAYERS = {
+        "iron", "copper", "gold", "tin", "silver", "rare-earth", "coal",
+        "sulfur", "saltpeter", "oil", "gypsum", "halite", "potash",
+        "alkali", "nickel", "marble", "zinc", "stone", "clay", "wood",
+    }
     layers = {}
     for k, b64 in G["layers"].items():
+        if k not in WANTED_LAYERS:
+            continue
         b = np.frombuffer(base64.b64decode(b64), dtype=np.uint8)
         layers[k] = np.repeat(b[1::2], b[0::2].astype(np.int32) + 1).reshape(GH, GW)
+    del G
+    _gc_lw.collect()
 
-    rpath = regs_js_path or os.path.join(HERE, "model", "src", "51-region-store.js")
-    reg_txt = open(rpath, encoding="utf-8").read()
-    regs = json.loads(re.search(r"const defRegs = (\[.*?\]);\r?\n", reg_txt, re.S).group(1))
     wpins_path = os.path.join(ROOT, "openworld", "world-pins-gemini.json")
     wpins = json.load(open(wpins_path, encoding="utf-8")) if os.path.exists(wpins_path) else None
     if wpins and wpins.get("polygons"):
         regs = wpins["polygons"]
+    else:
+        rpath = regs_js_path or os.path.join(HERE, "model", "src", "51-region-store.js")
+        reg_txt = open(rpath, encoding="utf-8").read()
+        regs = json.loads(re.search(r"const defRegs = (\[.*?\]);\r?\n", reg_txt, re.S).group(1))
 
     rs = json.load(open(os.path.join(ROOT, "openworld", "resources-settlements.json"), encoding="utf-8"))
     tg = json.load(open(os.path.join(ROOT, "openworld", "trade-goods.json"), encoding="utf-8"))
@@ -98,7 +114,7 @@ def load_world(model_data_dir=None, regs_js_path=None, geo_json_path=None):
     net51 = json.load(open(net51_path, encoding="utf-8")) if os.path.exists(net51_path) else None
 
     return {
-        "D": D, "OW": OW, "OH": OH, "GW": GW, "GH": GH,
+        "D": D_min, "OW": OW, "OH": OH, "GW": GW, "GH": GH,
         "E2": E2, "W2": W2, "E": E, "W": W, "TM": TM, "RAIN": RAIN,
         "layers": layers, "regs": regs, "rs": rs, "tg": tg, "ar": ar, "gr": gr,
         "net51": net51, "wpins": wpins,
@@ -195,6 +211,7 @@ LEAGUE_POLIS_MAP = {
 RUIN_LIVING_OVERRIDES = {
     "Span": {"type": "fort", "population": 1400, "polity": "Realm of Dalab", "reach_km": 15},
     "Blade": {"type": "fort", "population": 500, "polity": "Realm of Dalab", "reach_km": 12},
+    "Corpus": {"type": "inhabited ruin", "population": 8000, "polity": "Eternal State", "reach_km": 18},
     "Carcosa": {"type": "inhabited ruin", "population": 3500, "polity": "Yusar (Cybernetics)", "reach_km": 20},
     "Henge": {"type": "inhabited ruin", "population": 1800, "polity": "Yusar (Cybernetics)", "reach_km": 15},
     "Leng": {"type": "inhabited ruin", "population": 600, "polity": "Yeti Kingdom", "reach_km": 15},
@@ -1208,7 +1225,7 @@ def populate_supply_demand(world, setts):
             sup["spice-tropical"] = 6.5
             sup["cotton"] = 12.0
         elif nm == "Thalaba":
-            # North shoreline of Lake Xanadu (825, 1488); stages summer hunting, gathering & ruin expeditions up the spillway into Godshearth & ruined Nazar!
+            # North shoreline of Lake Xanadu (825, 1488); stages summer hunting & gathering expeditions up the spillway into Godshearth!
             sup["food"] = max(sup.get("food", 0.0), 340.0)        # Lake Xanadu fishery + summer Godshearth waterfowl/venison curing!
             sup["sulfur"] = max(sup.get("sulfur", 0.0), 24.0)     # Godshearth fumarole sulfur
             sup["machine-wax"] = 12.5                             # Hearth-tree tallow & lamp wax (TRADE-SCOPE s7.1)
@@ -1236,7 +1253,7 @@ def populate_supply_demand(world, setts):
         elif nm == "Spindle Fan":
             sup["cordage"] = 28.0    # spinner-cord
         elif nm == "Ranger HQ":
-            # Yuni Stalker Gate pass outpost (1420, 1242): caravan remounts, pass rangers & Hub 01 perimeter scouts
+            # Yuni Stalker Gate pass outpost (1420, 1242): caravan remounts, pass rangers & Stalker-watch perimeter
             sup["mounts"] = max(sup.get("mounts", 0.0), 16.0)
             sup["medicine"] = max(sup.get("medicine", 0.0), 1.8)
             dem["lung-salt"] = max(dem.get("lung-salt", 0.0), 1.4)
@@ -1601,6 +1618,7 @@ def populate_supply_demand(world, setts):
         PAPER_MILLS = {
             "Fulcrum": 96.0,      # Imperial water-powered rag & bamboo paper mills
             "Lux": 54.0,          # Lowland river-canal bamboo & mulberry paper center!
+            "Corpus": 16.0,       # Hong-Ma river bamboo & rag paper mills in 20k inhabited ruin
             "Mirabilis": 24.0,
             "Farport": 18.0,
             "Palewharf": 10.0,    # Ships Eternian paper bales across Jimjam's Lake to Jimjam's almanac presses!
@@ -1803,7 +1821,7 @@ def populate_supply_demand(world, setts):
 
         # (4) `tea` (TRADE-SCOPE.md:161, 163, 165, 193 — native to `xanadu`, `oidong`, and `nwlowlands` Eternian tea + Yeti ivan-chai & Tiguantin; cuts Republic/Dalab/Giants!):
         TEA_SUP = {
-            "Fulcrum": 48.0, "Lux": 38.0, "Mirabilis": 24.0, "Tone": 20.0, "Sheritu": 14.0,  # Native `nwlowlands` Eternian tea
+            "Fulcrum": 48.0, "Lux": 38.0, "Corpus": 16.0, "Mirabilis": 24.0, "Tone": 20.0, "Sheritu": 14.0,  # Native `nwlowlands` Eternian tea
             "Erehwon": 38.0, "Qiblai": 26.0, "Theodiga": 22.0, "Kirstabal": 18.0, "Strongbow": 10.0,  # Vale mist tea
             "Longsong": 18.5,                                                                 # Oidong monastery mist tea
             "Guari": 9.5, "Daridel": 3.5,                                                     # Wet-face montane tea
@@ -1816,7 +1834,7 @@ def populate_supply_demand(world, setts):
         # (5) `silk` (TRADE-SCOPE.md:163, 213, 572 — Vale/Eternian mulberry, Oidong lotus, Spider Lake Gossamer, Korona Silkhead, SW beadcone-silk & Beast Rider spider silk; cuts cold Republic/Giants!):
         SILK_SUP = {
             "Erehwon": 22.0, "Qiblai": 15.0, "Theodiga": 11.0, "Kirstabal": 9.5,   # Vale mulberry & lotus silk
-            "Lux": 24.0, "Fulcrum": 20.0, "Mirabilis": 11.0,                       # Eternian mulberry silk
+            "Lux": 24.0, "Fulcrum": 20.0, "Corpus": 9.0, "Mirabilis": 11.0,        # Eternian mulberry silk
             "Longsong": 8.5,                                                        # Oidong lotus silk
             "Spider Lake Weirs": 9.5, "Ham-Tsek Silk Post": 3.2,                    # Spider Lake Gossamer
             "Silkhead": 8.5,                                                        # Korona Silk River
@@ -1962,7 +1980,7 @@ def populate_supply_demand(world, setts):
             # East Abyss halophytic `salt-rice` brewers:
             "Sfenops": 36.0, "Liikofi": 32.0, "Locus": 28.0, "Mungo": 16.5, "Reed": 14.5,
             # Warm lowland paddy-rice brewers:
-            "Lux": 38.0, "Fulcrum": 32.0, "Palewharf": 14.5,
+            "Lux": 38.0, "Fulcrum": 32.0, "Corpus": 14.0, "Palewharf": 14.5,
             "Erehwon": 22.0, "Qiblai": 14.0,
             "Longsong": 9.5,
         }
@@ -1974,7 +1992,7 @@ def populate_supply_demand(world, setts):
 
         # (iii) `wine`: grapes ----> wine (Eternal State `nwlowlands` famed for wine, plus Dalab/Dilihan/Trigon hillsides)
         WINE_VINTNERS = {
-            "Lux": 70.0, "Fulcrum": 58.0, "Mirabilis": 44.0, "Tone": 38.0, "Sheritu": 24.0, "Palewharf": 14.0,
+            "Lux": 70.0, "Fulcrum": 58.0, "Mirabilis": 44.0, "Tone": 38.0, "Corpus": 28.0, "Sheritu": 24.0, "Palewharf": 14.0,
             "Rokwal": 26.0, "Dayshun": 22.0, "Dalab": 18.0,
             "Dilihan": 22.0, "Trigon": 18.0, "Pontus": 14.0,
         }
@@ -2251,7 +2269,7 @@ def populate_supply_demand(world, setts):
             sup["cushion-wool"] = max(sup.get("cushion-wool", 0.0), 38.0 if nm == "Guari" else 14.0)
 
         CLOTH_MILLS = {
-            "Fulcrum": 98.0, "Lux": 74.0, "Mirabilis": 30.0,
+            "Fulcrum": 98.0, "Lux": 74.0, "Corpus": 26.0, "Mirabilis": 30.0,
             "Iziz": 90.0, "Marr": 34.0, "Talia": 24.0, "Daridel": 18.0,
             "Voth": 74.0, "Shim": 34.0, "Driyan": 20.0,
             "Ys": 46.0, "Tethis": 30.0,
@@ -2357,7 +2375,7 @@ def populate_supply_demand(world, setts):
         dem["dried-fruit"] = (0.44 if (gs["temp_c"] < 13.0 or is_port or st_type == "fort") else 0.25) * kpop
 
         FRUIT_ORCHARDS = {
-            "Lux": 165.0, "Mirabilis": 125.0, "Tone": 118.0, "Fulcrum": 82.0, "Sheritu": 58.0, "Palewharf": 42.0,
+            "Lux": 165.0, "Mirabilis": 125.0, "Tone": 118.0, "Fulcrum": 82.0, "Corpus": 54.0, "Sheritu": 58.0, "Palewharf": 42.0,
             "Erehwon": 128.0, "Qiblai": 72.0, "Kirstabal": 96.0, "Theodiga": 78.0,
             "Thalaba": 54.0,  # Summer Godshearth caldera orchards & berry glades!
             "Strongbow": 34.0,
@@ -2423,10 +2441,10 @@ def populate_supply_demand(world, setts):
             for sr_x in json.load(fp_sim).get("settlements", []):
                 pop_lookup_sim[sr_x["name"]] = float(sr_x.get("sim_urban_pop", sr_x.get("on_screen_pop", 1500)))
 
-    # 1. `electrics`: Yuni/Locus Geomancers + Eternal State (Fulcrum/Lux/Mirabilis) + Yusar (Carcosa/Henge) make their own electrics!
+    # 1. `electrics`: Yuni/Locus Geomancers + Eternal State (Fulcrum/Lux/Corpus/Mirabilis) + Yusar (Carcosa/Henge) make their own electrics!
     ELECTRICS_WORKSHOPS = {
         "Yuni": 48.0, "Locus": 28.0,
-        "Fulcrum": 54.0, "Lux": 32.0, "Mirabilis": 14.0,
+        "Fulcrum": 54.0, "Lux": 32.0, "Corpus": 12.0, "Mirabilis": 14.0,
         "Carcosa": 28.0, "Henge": 14.0,
         "Stair": 2.5,
         "Qoold Lheek": 1.8, "Leng": 0.6,
@@ -2468,6 +2486,7 @@ def populate_supply_demand(world, setts):
         "Parabola":       (130.0, 11.0,  4.2,  4.8, 2.8, 4.0, 2.6, 5.6, 3.0, 0.55),  # 900 pop Bowl solar-furnace arcology!
         # Inhabited Ruins & Terrace-Ruin Foundations:
         "Iziz":           (190.0, 14.0,  0.3,  1.8, 1.0, 1.5, 1.0, 0.6, 0.4, 0.04),  # 150k Imperial capital over picked-over terrace ruins
+        "Corpus":         (285.0, 22.5,  1.4,  5.0, 2.8, 3.8, 2.6, 2.4, 1.2, 0.14),  # 20k Eternal State inhabited ruin (316 km2 ruin field; picked over for relics!)
         "Ledge":          (270.0, 21.0,  3.2,  7.5, 4.2, 5.0, 3.8, 4.5, 2.4, 0.30),
         "Henge":          (250.0, 20.0,  5.5, 10.5, 6.0, 9.0, 5.5, 9.5, 4.8, 0.85),
         "Boatmurder":     (680.0, 26.0,  2.4,  9.5, 4.5, 3.8, 3.5, 3.2, 2.0, 0.25),  # Stranded Dam-Basin freighter hulls
@@ -2493,7 +2512,7 @@ def populate_supply_demand(world, setts):
             sp["servomotors"], sp["circuits"], sp["power-relays"], sp["microchips"],
             sp["ancient-sensors"], sp["archaeotech"],
         ) = vals
-        # Inverse-population relics yield: high-pop arcologies (Fulcrum 150k, Iziz 150k, Tethis 50k) are long picked over!
+        # Inverse-population relics yield: high-pop arcologies & ruins (Fulcrum 150k, Iziz 150k, Tethis 50k, Corpus 20k) are long picked over!
         sim_p = pop_lookup_sim.get(site_nm, float(s_obj["population"]) * 2.0)
         base_rel = 16.5 if s_obj["type"] == "arcology" else 12.0
         sp["relics"] = round(base_rel / (1.0 + (sim_p / 3000.0) ** 1.15), 2)
@@ -2505,53 +2524,47 @@ def populate_supply_demand(world, setts):
 
     # 3. Expeditions to Out-of-the-Way Uninhabited Ruins & Ruined Arcologies:
     #    - Yuni harvests scrap/scrapgoods STRICTLY from ruined arcology Quintagon (1358, 945) via Sista Riba Village & Verge!
-    #    - Thalaba stages summer expeditions up into Godshearth (844, 1394) & ruined Nazar (854, 1409)!
+    #    - Excludes Corpus (inhabited ruin pop 20k), Nazar from Thalaba (Nazar is at 582, 1079 in SW Lowlands),
+    #      Pluton (unknown/untouched harsh player prize), Trickster's House (bad-luck field shunned by Coyotes),
+    #      and Hub 01 (home of the hostile Stalkers)!
     UNINHABITED_EXPEDITIONS = [
         # (target_ruin, target_coords, staging_pin, polity, scrap, scrapgoods, relics, cells, alloys, servos, circuits, relays, chips, sensors, archaeotech)
         ("Quintagon (Ruined Arcology)", [1358, 945], "Sista Riba Village", "Yuni Emirate",
          340.0, 24.0, 14.5, 7.5, 11.0, 6.5, 8.5, 6.0, 9.5, 5.2, 1.15),
         ("Quintagon (Ruined Arcology)", [1358, 945], "Verge", "Yuni Emirate",
          190.0, 14.0,  8.5, 4.5,  6.5, 4.0, 5.0, 3.8, 5.5, 3.0, 0.65),
-        ("Godshearth & Ruined Nazar (Summer Expeditions)", [844, 1394], "Thalaba", "Xanadu Sultanate",
-          95.0,  8.5, 11.5, 4.8,  5.5, 3.2, 4.2, 3.0, 5.0, 3.4, 0.85),
-        ("Babel, Dorado & Necropolis (Ancient's Valley)", [446, 946], "Carcosa", "Yusar (Cybernetics)",
+        ("Babel, Dorado & Necropolis (Ancient's Valley)", [456, 908], "Carcosa", "Yusar (Cybernetics)",
          220.0, 18.0, 18.5, 9.5, 14.0, 8.5, 11.0, 7.5, 14.5, 8.0, 1.85),
-        ("Babel & Dorado Margin Vaults", [446, 946], "Henge", "Yusar (Cybernetics)",
+        ("Babel & Dorado Margin Vaults", [483, 964], "Henge", "Yusar (Cybernetics)",
          120.0, 10.0,  9.5, 5.0,  7.5, 4.5,  6.0, 4.2,  7.5, 4.2, 0.95),
-        ("Ancient's Valley North Rim Vaults", [468, 868], "Veil", "Eternal State",
+        ("Ancient's Valley North Rim Vaults", [456, 908], "Veil", "Eternal State",
           95.0,  8.0,  8.0, 4.2,  5.5, 3.4,  4.5, 3.2,  5.5, 3.0, 0.70),
-        ("Ancient's Valley SW Rim Vaults", [495, 1002], "Blade", "Realm of Dalab",
+        ("Ancient's Valley SW Rim Vaults", [483, 964], "Blade", "Realm of Dalab",
           85.0,  7.0,  7.5, 3.6,  4.8, 2.8,  3.8, 2.6,  4.5, 2.5, 0.60),
-        ("Veladiga & Tilted Tower (Farside Ruins)", [595, 472], "Skywatch", "Jimjam",
+        ("Veladiga (Farside Ruined Arcology)", [685, 479], "Skywatch", "Jimjam",
          110.0,  9.0,  9.5, 4.2,  5.5, 3.2,  4.2, 3.0,  5.2, 3.2, 0.75),
-        ("Veladiga & Tilted Tower (Lake Expeditions)", [595, 472], "Palewharf", "Eternal State",
+        ("Tilted Tower (Lake Expeditions)", [614, 490], "Palewharf", "Eternal State",
           80.0,  6.5,  6.5, 3.0,  4.0, 2.4,  3.2, 2.2,  3.8, 2.2, 0.50),
-        ("Tilted Tower North Scree", [565, 488], "Leng", "Yeti Kingdom",
+        ("Tilted Tower North Scree", [614, 490], "Leng", "Yeti Kingdom",
           45.0,  4.0,  5.5, 2.2,  2.5, 1.5,  2.0, 1.4,  2.4, 1.5, 0.40),
-        ("Chimes (Ruined Rift Arcology)", [468, 1388], "Nulab", "Tungang Union",
+        ("Chimes (Ruined Rift Arcology)", [468, 1392], "Nulab", "Tungang Union",
          140.0, 11.5, 10.5, 5.2,  6.8, 4.0,  5.2, 3.8,  6.2, 3.6, 0.85),
-        ("Cthonos (Labyrinth Ruined Arcology)", [360, 1410], "Wildcat", "Tungang Union",
+        ("Cthonos (Labyrinth Ruined Arcology)", [526, 1503], "Wildcat", "Tungang Union",
          115.0,  9.5,  8.5, 4.0,  5.5, 3.2,  4.2, 3.0,  4.8, 2.8, 0.65),
-        ("Cthonos Outer Galleries", [360, 1410], "Hall of Heroes", "Kimr",
+        ("Cthonos Outer Galleries", [526, 1503], "Hall of Heroes", "Kimr",
           75.0,  6.0,  6.5, 2.8,  3.5, 2.0,  2.6, 1.8,  3.0, 1.8, 0.45),
-        ("Footfall (Northern Ruined Arcology)", [712, 742], "Glaive", "Iron Republic",
+        ("Footfall (Northern Ruin)", [560, 767], "Glaive", "Iron Republic",
          145.0, 11.5,  9.0, 4.4,  6.5, 3.8,  4.8, 3.5,  5.5, 3.2, 0.70),
-        ("Corpus (Submerged/Marsh Ruin)", [465, 655], "Lux", "Eternal State",
-          95.0,  7.5,  5.5, 2.8,  4.2, 2.5,  3.2, 2.4,  3.6, 2.2, 0.45),
-        ("Wing & Agropolis (SW Lowland Ruins)", [642, 1048], "Almua", "Vothic Kingdom",
+        ("Ruins of Nazar (SW Basin Ruin)", [582, 1079], "Shim", "Vothic Kingdom",
+          95.0,  7.5,  6.8, 3.2,  4.6, 2.8,  3.5, 2.6,  4.0, 2.4, 0.50),
+        ("Wing & Agropolis (SW Lowland Ruins)", [699, 1042], "Almua", "Vothic Kingdom",
          110.0,  8.5,  7.0, 3.4,  5.0, 3.0,  3.8, 2.8,  4.2, 2.5, 0.55),
-        ("Stump (Eastern Highland Ruin)", [968, 868], "Fridon", "Empire of Iziz",
+        ("Stump (Eastern Highland Ruin)", [1044, 952], "Fridon", "Empire of Iziz",
           95.0,  7.5,  6.5, 3.0,  4.2, 2.5,  3.2, 2.4,  3.6, 2.2, 0.45),
-        ("Crescent, Flooded Tower & Sleeping City", [1038, 742], "Pinnacle Rock", "Beast Riders",
+        ("Crescent & Sleeping City", [994, 694], "Pinnacle Rock", "Beast Riders",
           95.0,  8.0,  9.0, 4.2,  4.8, 2.8,  3.6, 2.5,  4.5, 2.8, 0.70),
-        ("Flooded Tower Lagoon", [1015, 815], "Mav's Refuge", "Beast Riders",
+        ("Flooded Tower Lagoon", [1028, 840], "Mav's Refuge", "Beast Riders",
           65.0,  5.5,  6.0, 2.8,  3.2, 1.8,  2.4, 1.8,  3.0, 1.8, 0.45),
-        ("Pluton (Da-Holwey Crater Ruin)", [618, 1225], "Tallwalls", "Free Giants (Vrivolci)",
-          85.0,  6.5,  6.0, 2.8,  4.0, 2.2,  2.8, 2.0,  3.2, 2.0, 0.45),
-        ("Trickster's House (Outlands Ruin)", [1565, 520], "Peak Coyote Plume-Camp", "Coyote Kingdom",
-          55.0,  4.5,  6.5, 2.6,  2.8, 1.6,  2.2, 1.5,  2.8, 1.8, 0.50),
-        ("Hub 01 (Stalker Gate Ancient Hub)", [1448, 1268], "Ranger HQ", "Yuni Emirate",
-          40.0,  3.5,  7.5, 4.2,  4.2, 2.6,  3.6, 2.6,  4.5, 2.8, 0.65),
         ("Compass Hills Magnetic Installation", [1072, 246], "Ham-Tsek Silk Post", "Spider Lake Guilds",
           65.0,  5.5,  7.0, 3.8,  5.0, 3.2,  3.8, 3.0,  4.4, 3.2, 0.70),
         ("First Monastery Deep Vaults", [1095, 911], "Guari", "Tiguantin",
@@ -2597,6 +2610,7 @@ def populate_supply_demand(world, setts):
         "Henge":     ( 6.0,  5.0,  7.0,  9.5),
         "Fulcrum":   (14.0, 14.0, 22.0, 16.0),
         "Lux":       ( 7.0,  8.0, 12.0,  7.0),
+        "Corpus":    ( 4.5,  5.0,  8.0,  4.5),
         "Yuni":      (12.0, 15.0, 20.0, 13.0),
         "Locus":     ( 5.0,  8.0, 10.0,  5.0),
         "Iziz":      ( 8.0,  8.0, 11.0,  8.5),
@@ -2627,6 +2641,7 @@ def populate_supply_demand(world, setts):
         "Skywatch": (6.0, 0.45),
         "Longsong": (12.0, 1.05),  # Order of Historians archive vaults
         "Lux":     (10.0, 0.65),
+        "Corpus":  ( 7.5, 0.50),   # 20k Eternal State inhabited ruin (picked over locally -> net relic importer!)
         "Carcosa": ( 8.0, 0.70),
     }
     for s in setts.values():
@@ -3586,9 +3601,9 @@ def build_supplemental_roads(
         # Quintagon Ruined Arcology Salvage Track (Verge -> Sista Riba Village -> Quintagon [1358,945]):
         ("supp.yuni_quintagon_salvage", "Verge <-> Sista Riba Village <-> Quintagon", "Yuni Emirate", "dirt_road", 0.82, False,
          [(1263.0, 946.0), (1311.0, 982.0), (1358.0, 945.0)]),
-        # Thalaba Summer Expedition Trail up the Spillway into Godshearth & Ruined Nazar:
-        ("supp.thalaba_godshearth_summer", "Thalaba <-> Nazar <-> Godshearth", "Xanadu Sultanate", "dirt_road", 0.84, True,
-         [(825.0, 1488.0), (845.0, 1451.0), (854.0, 1409.0), (844.0, 1394.0)]),
+        # Thalaba Summer Expedition Trail up the Spillway into Godshearth (Nazar is far away at 582, 1079 in SW Lowlands!):
+        ("supp.thalaba_godshearth_summer", "Thalaba <-> Godshearth", "Xanadu Sultanate", "dirt_road", 0.84, True,
+         [(825.0, 1488.0), (845.0, 1451.0), (844.0, 1394.0)]),
         # Sasquatch Tribes Northern High-Periglacial Seasonal Moot Trails to Skywatch:
         ("supp.sasquatch_frostjaw_skywatch", "Frost-Jaw Camp <-> Skywatch", "Sasquatch Tribes", "dirt_road", 0.86, False,
          [(624.0, 361.0), (674.0, 412.0), (722.0, 463.0)]),
@@ -4441,17 +4456,6 @@ def build_multimodal_graphs(world, setts):
         v_all = np.concatenate(costs)
         return coo_matrix((v_all, (r_all, c_all)), shape=(3 * N_CELL, 3 * N_CELL)).tocsr()
 
-    G_bulk = make_csr(sea_mult=0.16, road_scale=1.15, trail_mult=1.35, port_fee=26.0, barge_fee=9.0, use_bulk=True, regime="std")
-    G_comp = make_csr(sea_mult=0.28, road_scale=1.00, trail_mult=1.00, port_fee=22.0, barge_fee=11.0, use_bulk=False, regime="std")
-    G_iziz_bulk = make_csr(sea_mult=0.16, road_scale=1.15, trail_mult=1.35, port_fee=26.0, barge_fee=9.0, use_bulk=True, regime="iziz")
-    G_iziz_comp = make_csr(sea_mult=0.28, road_scale=1.00, trail_mult=1.00, port_fee=22.0, barge_fee=11.0, use_bulk=False, regime="iziz")
-    G_izv_bulk = make_csr(sea_mult=0.16, road_scale=1.15, trail_mult=1.35, port_fee=26.0, barge_fee=9.0, use_bulk=True, regime="iziz_visas")
-    G_izv_comp = make_csr(sea_mult=0.28, road_scale=1.00, trail_mult=1.00, port_fee=22.0, barge_fee=11.0, use_bulk=False, regime="iziz_visas")
-    G_voth_bulk = make_csr(sea_mult=0.16, road_scale=1.15, trail_mult=1.35, port_fee=26.0, barge_fee=9.0, use_bulk=True, regime="voth")
-    G_voth_comp = make_csr(sea_mult=0.28, road_scale=1.00, trail_mult=1.00, port_fee=22.0, barge_fee=11.0, use_bulk=False, regime="voth")
-    G_yeti_bulk = make_csr(sea_mult=0.16, road_scale=1.15, trail_mult=1.35, port_fee=26.0, barge_fee=9.0, use_bulk=True, regime="yeti")
-    G_yeti_comp = make_csr(sea_mult=0.28, road_scale=1.00, trail_mult=1.00, port_fee=22.0, barge_fee=11.0, use_bulk=False, regime="yeti")
-
     sids = sorted(setts.keys())
     src_cells = [setts[sid]["cell"] for sid in sids]
     iziz_sids = [sid for sid in sids if setts[sid]["polity"] in ("Empire of Iziz", "Shell Province", "Tiguantin")]
@@ -4461,45 +4465,119 @@ def build_multimodal_graphs(world, setts):
     yeti_sids = [sid for sid in sids if setts[sid]["polity"] == "Yeti Kingdom"]
     yeti_cells = [setts[sid]["cell"] for sid in yeti_sids]
 
-    def _chunked_dijkstra(G_mat, srcs, batch=48):
+    import gc as _gc
+    _unique_dst_cells = sorted(set(src_cells))
+    _dst_col_arr = np.array(_unique_dst_cells, dtype=np.int32)
+    _dst_col_map = {int(c): k for k, c in enumerate(_unique_dst_cells)}
+
+    class _SparseSettlementDist:
+        """Stores distances strictly to settlement cells (~120 KB vs 1.6 GB!)."""
+        __slots__ = ("_vals",)
+        def __init__(self, vals):
+            self._vals = vals
+
+        def __getitem__(self, key):
+            r_i, c_i = key
+            return self._vals[r_i, _dst_col_map[int(c_i)]]
+
+    class _SparseTreeRow:
+        """Stores predecessor edges strictly along shortest paths to settlement cells (~80 KB vs 9.4 MB)."""
+        __slots__ = ("_k", "_v")
+        def __init__(self, k, v):
+            self._k = k
+            self._v = v
+
+        def __getitem__(self, cell):
+            c = int(cell)
+            if len(self._k) == 0:
+                return -9999
+            i = int(np.searchsorted(self._k, c))
+            if i < len(self._k) and int(self._k[i]) == c:
+                return int(self._v[i])
+            return -9999
+
+    def _chunked_dijkstra(G_mat, srcs, batch=4):
         n_s = len(srcs)
-        n_v = G_mat.shape[0]
-        d_out = np.empty((n_s, n_v), dtype=np.float32)
-        p_out = np.empty((n_s, n_v), dtype=np.int32)
+        d_sub = np.empty((n_s, len(_unique_dst_cells)), dtype=np.float32)
+        rows = []
         for i0 in range(0, n_s, batch):
             i1 = min(n_s, i0 + batch)
             db, pb = dijkstra(G_mat, directed=True, indices=srcs[i0:i1], return_predecessors=True)
-            d_out[i0:i1] = db.astype(np.float32)
-            p_out[i0:i1] = pb
+            d_sub[i0:i1] = db[:, _dst_col_arr].astype(np.float32)
+            for bi in range(i1 - i0):
+                root = int(srcs[i0 + bi])
+                pb_row = pb[bi]
+                edges = {}
+                for leaf in _unique_dst_cells:
+                    cur = int(leaf)
+                    steps = 0
+                    while cur != root and cur >= 0 and cur not in edges and steps < 12000:
+                        prv = int(pb_row[cur])
+                        edges[cur] = prv
+                        cur = prv
+                        steps += 1
+                if edges:
+                    ks = np.array(sorted(edges.keys()), dtype=np.int32)
+                    vs = np.array([edges[int(k)] for k in ks], dtype=np.int32)
+                else:
+                    ks = np.empty(0, dtype=np.int32)
+                    vs = np.empty(0, dtype=np.int32)
+                rows.append(_SparseTreeRow(ks, vs))
             del db, pb
-        return d_out, p_out
+            _gc.collect()
+        return _SparseSettlementDist(d_sub), rows
 
     print(
         f"Running directed 3-layer multimodal Dijkstra for {len(sids)} settlements "
         f"(+ {len(iziz_sids)} Iziz, {len(voth_sids)} Voth & {len(yeti_sids)} Yeti regime sources) across {3*N_CELL:,} graph nodes..."
     )
-    dist_bulk, pred_bulk = _chunked_dijkstra(G_bulk, src_cells)
-    dist_comp, pred_comp = _chunked_dijkstra(G_comp, src_cells)
+    _G = make_csr(sea_mult=0.16, road_scale=1.15, trail_mult=1.35, port_fee=26.0, barge_fee=9.0, use_bulk=True, regime="std")
+    dist_bulk, pred_bulk = _chunked_dijkstra(_G, src_cells)
+    del _G; _gc.collect()
 
-    dist_iziz_bulk, pred_iziz_bulk = _chunked_dijkstra(G_iziz_bulk, iziz_cells)
-    dist_iziz_comp, pred_iziz_comp = _chunked_dijkstra(G_iziz_comp, iziz_cells)
-    dist_iziz_bulk_rev, pred_iziz_bulk_rev = _chunked_dijkstra(G_iziz_bulk.T, iziz_cells)
-    dist_iziz_comp_rev, pred_iziz_comp_rev = _chunked_dijkstra(G_iziz_comp.T, iziz_cells)
+    _G = make_csr(sea_mult=0.28, road_scale=1.00, trail_mult=1.00, port_fee=22.0, barge_fee=11.0, use_bulk=False, regime="std")
+    dist_comp, pred_comp = _chunked_dijkstra(_G, src_cells)
+    del _G; _gc.collect()
 
-    dist_izv_bulk, pred_izv_bulk = _chunked_dijkstra(G_izv_bulk, iziz_cells)
-    dist_izv_comp, pred_izv_comp = _chunked_dijkstra(G_izv_comp, iziz_cells)
-    dist_izv_bulk_rev, pred_izv_bulk_rev = _chunked_dijkstra(G_izv_bulk.T, iziz_cells)
-    dist_izv_comp_rev, pred_izv_comp_rev = _chunked_dijkstra(G_izv_comp.T, iziz_cells)
+    _G = make_csr(sea_mult=0.16, road_scale=1.15, trail_mult=1.35, port_fee=26.0, barge_fee=9.0, use_bulk=True, regime="iziz")
+    dist_iziz_bulk, pred_iziz_bulk = _chunked_dijkstra(_G, iziz_cells)
+    dist_iziz_bulk_rev, pred_iziz_bulk_rev = _chunked_dijkstra(_G.T.tocsr(), iziz_cells)
+    del _G; _gc.collect()
 
-    dist_voth_bulk, pred_voth_bulk = _chunked_dijkstra(G_voth_bulk, voth_cells)
-    dist_voth_comp, pred_voth_comp = _chunked_dijkstra(G_voth_comp, voth_cells)
-    dist_voth_bulk_rev, pred_voth_bulk_rev = _chunked_dijkstra(G_voth_bulk.T, voth_cells)
-    dist_voth_comp_rev, pred_voth_comp_rev = _chunked_dijkstra(G_voth_comp.T, voth_cells)
+    _G = make_csr(sea_mult=0.28, road_scale=1.00, trail_mult=1.00, port_fee=22.0, barge_fee=11.0, use_bulk=False, regime="iziz")
+    dist_iziz_comp, pred_iziz_comp = _chunked_dijkstra(_G, iziz_cells)
+    dist_iziz_comp_rev, pred_iziz_comp_rev = _chunked_dijkstra(_G.T.tocsr(), iziz_cells)
+    del _G; _gc.collect()
 
-    dist_yeti_bulk, pred_yeti_bulk = _chunked_dijkstra(G_yeti_bulk, yeti_cells)
-    dist_yeti_comp, pred_yeti_comp = _chunked_dijkstra(G_yeti_comp, yeti_cells)
-    dist_yeti_bulk_rev, pred_yeti_bulk_rev = _chunked_dijkstra(G_yeti_bulk.T, yeti_cells)
-    dist_yeti_comp_rev, pred_yeti_comp_rev = _chunked_dijkstra(G_yeti_comp.T, yeti_cells)
+    _G = make_csr(sea_mult=0.16, road_scale=1.15, trail_mult=1.35, port_fee=26.0, barge_fee=9.0, use_bulk=True, regime="iziz_visas")
+    dist_izv_bulk, pred_izv_bulk = _chunked_dijkstra(_G, iziz_cells)
+    dist_izv_bulk_rev, pred_izv_bulk_rev = _chunked_dijkstra(_G.T.tocsr(), iziz_cells)
+    del _G; _gc.collect()
+
+    _G = make_csr(sea_mult=0.28, road_scale=1.00, trail_mult=1.00, port_fee=22.0, barge_fee=11.0, use_bulk=False, regime="iziz_visas")
+    dist_izv_comp, pred_izv_comp = _chunked_dijkstra(_G, iziz_cells)
+    dist_izv_comp_rev, pred_izv_comp_rev = _chunked_dijkstra(_G.T.tocsr(), iziz_cells)
+    del _G; _gc.collect()
+
+    _G = make_csr(sea_mult=0.16, road_scale=1.15, trail_mult=1.35, port_fee=26.0, barge_fee=9.0, use_bulk=True, regime="voth")
+    dist_voth_bulk, pred_voth_bulk = _chunked_dijkstra(_G, voth_cells)
+    dist_voth_bulk_rev, pred_voth_bulk_rev = _chunked_dijkstra(_G.T.tocsr(), voth_cells)
+    del _G; _gc.collect()
+
+    _G = make_csr(sea_mult=0.28, road_scale=1.00, trail_mult=1.00, port_fee=22.0, barge_fee=11.0, use_bulk=False, regime="voth")
+    dist_voth_comp, pred_voth_comp = _chunked_dijkstra(_G, voth_cells)
+    dist_voth_comp_rev, pred_voth_comp_rev = _chunked_dijkstra(_G.T.tocsr(), voth_cells)
+    del _G; _gc.collect()
+
+    _G = make_csr(sea_mult=0.16, road_scale=1.15, trail_mult=1.35, port_fee=26.0, barge_fee=9.0, use_bulk=True, regime="yeti")
+    dist_yeti_bulk, pred_yeti_bulk = _chunked_dijkstra(_G, yeti_cells)
+    dist_yeti_bulk_rev, pred_yeti_bulk_rev = _chunked_dijkstra(_G.T.tocsr(), yeti_cells)
+    del _G; _gc.collect()
+
+    _G = make_csr(sea_mult=0.28, road_scale=1.00, trail_mult=1.00, port_fee=22.0, barge_fee=11.0, use_bulk=False, regime="yeti")
+    dist_yeti_comp, pred_yeti_comp = _chunked_dijkstra(_G, yeti_cells)
+    dist_yeti_comp_rev, pred_yeti_comp_rev = _chunked_dijkstra(_G.T.tocsr(), yeti_cells)
+    del _G; _gc.collect()
 
     return {
         "N_CELL": N_CELL, "GW": GW, "GH": GH,
@@ -5906,7 +5984,7 @@ def render_trade_map(world, setts, graph, results, out_jpg):
         font = font_b = font_t = ImageFont.load_default()
 
     MAJOR_LABELS = {
-        "Farport", "Palewharf", "Fulcrum", "Mirabilis", "Sheritu", "Carcosa", "Qoold Lheek", "Leng",
+        "Farport", "Palewharf", "Fulcrum", "Lux", "Corpus", "Mirabilis", "Sheritu", "Carcosa", "Qoold Lheek", "Leng",
         "Frost-Jaw Camp", "Hoar-Wind Camp", "Jimjam", "Skywatch", "Boatmurder", "Silkhead",
         "Dilihan", "Port Visas", "Ardent", "Roketstad", "Ys", "Ybera", "Tethis", "Trigon", "Nephtos", "Hook", "Port Mira",
         "Ṣunu-Ašru", "Dhelv", "Port Tobin", "Port Goto", "Shell", "Almua", "Zey'danin", "Voth", "Shim", "Driyan", "Dayshun", "Amaro",
