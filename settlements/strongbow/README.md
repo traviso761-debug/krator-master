@@ -30,6 +30,7 @@ node settlements/strongbow/test-census.js            # the census against the pl
 node settlements/strongbow/test-strongbow-town.js    # the layout's rules, each with a negative; AREAS.md current
 node settlements/strongbow/test-sb-walk.js           # the walk up: town to the lip through 21 doors and 7 lifts, 9 negatives (-v lists the legs)
 node settlements/strongbow/test-sb-town.js           # the town on core/city: no overlap, off the streets and the foot, the rings' people, the farms
+node settlements/strongbow/test-sb-town-rooms.js     # the town's buildings walked into from the street (scrap Xanadu interiors; ~2 min)
 node settlements/strongbow/test-sb-rooms.js          # the interiors: every room the open ways join reached, none of the sealed parts', 4 negatives (-v: per part)
 node settlements/strongbow/export-walk.js            # -> godot/data/strongbow/walk.json, then (PowerShell, from the repo root):
 #   & $GODOT --headless --path godot --script res://tests/strongbow/strongbow_walk_test.gd   # Recast: town -> T1 room, lip -> gatehouse top
@@ -63,8 +64,11 @@ Measured 2026-11-12 in the browser pane, with core/lod on and its proxies built 
 
 ## Not yet
 
-- **The town's buildings inside.** They are solids (`SB_ROOMS.solids`) until the scrap set's interiors are wired: the scrap
-  Xanadu session delivered them on `claude/scrap-xanadu-interiors` (eb6c3c393; the gate's doors are re-indexed there).
+- **The town's interiors on the page.** They are in the walk and the Godot export (`SB_ROOMS.town`), not drawn: the page shows the
+  kit's shells. All 436 with an interior are walked into from the street (test-sb-town-rooms.js); a 0.9 m stair turned near 45
+  degrees can narrow below a walker in core/walk's axis-aligned blocks (the test allows two such buildings).
+- **Streets under the rubble.** Four ring and spoke streets run under the ruin's heaps (the crushed hall's, the fallen drum's);
+  no building or field does (test-sb-town.js).
 - **The outcasts' rope ways** and **L3** (the Salvagers' lift, T3 to T5) are not walked: the outcasts' drums (3.x, 2.x) and T4,
   T5 are reached only by them, so the audit counts them shut.
 - **Furnishing.** The rooms carry kinds (bedroom, workshop, bunkroom, store...), not furniture yet (`AI.furnishPlan`).

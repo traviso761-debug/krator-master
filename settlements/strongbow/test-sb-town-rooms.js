@@ -37,7 +37,8 @@ let n=0,floors=0;const bad=[];const t0=Date.now();
 for(const P2 of RT.placed){if(!P2.steps.length)continue;n++;const r=walkIn(P2);floors+=r.fl.length;if(r.miss.length)bad.push(P2.id+' '+P2.item+' (ry '+(P2.inst.ry*180/Math.PI).toFixed(0)+'): '+r.miss.length+'/'+r.fl.length);}
 ok(bad.length<=KNOWN,'every floor of '+(n-bad.length)+' of '+n+' buildings reached from the street ('+floors+' floors, '+((Date.now()-t0)/1000).toFixed(0)+' s)'+(bad.length?'; short: '+bad.join('; '):''));
 /* a stoop: some building stands over its street; without the stoop its door is out of reach */
-{const S2=RT.placed.filter(q=>W.floors.some(F=>(F.name||'').startsWith(q.id+'.stoop.'))),q=S2[0];
+{const S2=RT.placed.filter(q=>W.floors.some(F=>(F.name||'').startsWith(q.id+'.stoop.'))),drop=q=>q.y-Math.min(...q.steps.map(s=>s[1])),
+  q=S2.filter(p=>p.item==='xa_scrap_house').sort((a,b)=>drop(b)-drop(a))[0];   /* the house standing highest over its street (a house has no entry flight of its own) */
  const stoops=W.floors.filter(F=>(F.name||'').startsWith(q.id+'.stoop.')).length;
  const r=walkIn(q,{skip:F=>(F.name||'').startsWith(q.id+'.stoop.'),steps:q.steps.map(s=>[s[0],ground(s[0],s[2]),s[2]])});
  ok(S2.length>0&&r.miss.length===r.fl.length,'negative: '+S2.length+' buildings stand over their street with stoops; '+q.id+' ('+q.item+') without its '+stoops+' reaches '+(r.fl.length-r.miss.length)+' of '+r.fl.length+' floors');}
