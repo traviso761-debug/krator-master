@@ -3,7 +3,7 @@
 Every texture or pattern sheet the owner still has to source or generate, each with its finished prompt. Paste a block
 as it is, one image per block. **Everything delivered lives in `PROMPTS-archived.md`** (checked against `core/materials/library/`, `patterns/` and each build's `materials.json` on `origin/main`, 2026-10-19); this file holds only what is still owed.
 
-**Count: 34 prompts** (+6 for the Arch, section 52, and +3 for the Rift battery, section 51, at Integration 3, 2026-11-11; +3 for the Tiers, section 50; 19 fenced blocks, counted by their fences, and the Ancient Transit's three table rows at the second integration merge, 2026-11-11: sections 43-49 added since, the Ancient Transit, Firebliss, the NE outer wall and the Great Chasm among them; before that, 2026-11-10, after -22 delivered from sections 37, 40, 41 and 42: `PLAN.md`, "Delivered 2026-11-10"; the hand count before was 36, and two blocks had lost their closing fence; 2026-11-09: +11 for Erewhon's citadel, section 41; +2 for the Tents kit's army and Eternian cloths, section 42; +3 for the southern highlands' upper stations, section 37; +15 for the hyperjungle's lands and the savannah rims, section 40, 2026-11-08; counted 2026-11-04 before them). (+7 for the Qiblai kit, section 43: its gilt sheet and mantra drum, 2026-11-11, and the walk-in rooms' mural, coffer and temple rug, 2026-11-15; merged 2026-11-15)
+**Count: 37 prompts** (+3 for the mined goods' resource nodes, section 53, 2026-11-16; +6 for the Arch, section 52, and +3 for the Rift battery, section 51, at Integration 3, 2026-11-11; +3 for the Tiers, section 50; 19 fenced blocks, counted by their fences, and the Ancient Transit's three table rows at the second integration merge, 2026-11-11: sections 43-49 added since, the Ancient Transit, Firebliss, the NE outer wall and the Great Chasm among them; before that, 2026-11-10, after -22 delivered from sections 37, 40, 41 and 42: `PLAN.md`, "Delivered 2026-11-10"; the hand count before was 36, and two blocks had lost their closing fence; 2026-11-09: +11 for Erewhon's citadel, section 41; +2 for the Tents kit's army and Eternian cloths, section 42; +3 for the southern highlands' upper stations, section 37; +15 for the hyperjungle's lands and the savannah rims, section 40, 2026-11-08; counted 2026-11-04 before them). (+7 for the Qiblai kit, section 43: its gilt sheet and mantra drum, 2026-11-11, and the walk-in rooms' mural, coffer and temple rug, 2026-11-15; merged 2026-11-15)
 
 **Delivered 2026-11-10:** 22 of sections 37, 40, 41 and 42 (Erewhon's citadel but the jali, the Tents kit's two cloths and the cedar, the
 fellfield's two, seven of the hyperjungle's and the savannah rims'), `PLAN.md` "Delivered 2026-11-10": the citadel's, the tents' and the two grasses
@@ -591,6 +591,29 @@ Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfec
 `card.leaf.photonic` (the opal-bark tree's and the kit's own leaf sprays; a card: cut-out on green, as the library's leaf cards):
 ```
 Leaf spray cut-out on a fully transparent background, PNG with alpha, square, 2048x2048: three short sprays of glossy oval leaves, each 4-7 cm, thick and waxy with a faint fine grain of silica, seen from above in soft even light. The leaves are a deep jade green (#2f8a76, #3a9a84) at their bases, and their surface carries a structural, view-dependent sheen: toward the tips and edges it shifts through peacock teal (#2aa8a8) to violet (#7a4ab8) and rose (#c86a8a), like a beetle's wing or a soap film, never a glow and never a flat pigment. No flowers, no stems longer than the leaves, nothing else on the card.
+```
+
+## 53. The mined goods' resource nodes (`kits/resources`, 2026-11-16)
+
+The nodes for the mined goods of Gemini's trade model (`kits/resources/src/44s`-`44u`). Until these come the nodes draw vertex
+colours (`kits/resources/KNOWN_ISSUES.md`). Three sets owed elsewhere are wanted here too, so each serves both when it lands:
+`rock.sphalerite` (section 51: the zinc node's blackjack bands), `rock.opal.matrix` (section 46: the opal node's outcrop) and
+`rock.serpentinite` (section 52: the jade node's host rock). Wire each into `kits/resources/materials.json` as well as its first
+build. Full colour, 1 m a tile: the colour is the point (do not tint them). **3 prompts.**
+
+`rock.magnetite` (the lodestone node's boulders; the Arch's lodestones and the Compass Hills' ore):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a weathered face of massive magnetite iron ore: dense iron-black rock (#1a1a1c, #242426, #2e2c2a) with a dull metallic sub-lustre, granular texture of small octahedral crystal faces 1-4 mm catching the light faintly, a thin brown-red rust bloom (#5a3424, #6e3e26) along a few hairline cracks, and short bristly tufts of black iron filings clinging in two or three small patches. Full colour: not tinted.
+```
+
+`stone.nephrite` (the jade node's boulders and their sawn face; any jade carving or inlay):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a sawn and lightly polished face of nephrite jade: deep spinach-green to leaf-green stone (#2e5a36, #3a6a3e, #4e7e4a) with a waxy, slightly translucent depth, soft cloudy mottling and fine fibrous streaks running one way, a few small black chromite specks (#1a1e1a) and one pale apple-green band (#7aa86a). Full colour: not tinted.
+```
+
+`rock.amber.blueearth` (the amber node's cut bank: amber in its bed):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a freshly cut face of "blue earth", the glauconitic clay sand that amber is dug from: damp blue-grey to green-grey clay (#5e6a6e, #6a7a80, #586468) with fine dark green glauconite grains, a few flakes of black lignite and wood (#2a2420), and rounded nodules of raw amber 1-4 cm embedded in it, their crusts dull ochre (#a8681e) and, where a nodule is broken, clear honey to cognac amber (#d88a1e, #e8a83a, #b8601a). Full colour: not tinted.
 ```
 
 ## Gaps with no prompt yet
