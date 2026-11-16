@@ -58,3 +58,8 @@
       peat needs those four fragments added to its build's list, and a rebuild.
 - [ ] **No trade link yet:** each kind names the Gemini good it feeds (`RES_ORE.kinds[k].good`), but `46r-res-ledger.js` and
       core/simulation do not read it; Gemini's model is on its own branch and docs.
+- [ ] **`lode:thalaba-sulfur` is recorded, not stamped** (2026-11-16, for the Thalaba session; the owner settled Thalaba's own
+      small sulfur node, 30 t a year): it is in `data/lodes.json` but not on `data/geology.json`. Stamping
+      (`python3 tools/scale-model/geology.py --lodes kits/resources/data/geology.json kits/resources/data/lodes.json`) changes the
+      geology every open-world region, Copper Glacier and Firebliss read (13 build commands, 62 pages: `tools/reach.py`), so it
+      rides with the next bake or the next all-builds rebuild. Until then Thalaba places it as an owner node.
