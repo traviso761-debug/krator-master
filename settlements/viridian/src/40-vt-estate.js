@@ -6,10 +6,12 @@
 // The frame is the plan's, in metres from the house's court at px 962,1562 (813 m): x = u (up the hollow, east), z = -v
 // (z south, the region frame's convention). The ground is a function g(x, z) handed in: core/world's at 1:1 on the page.
 //
-//   VTE.terraces()                  -> [KRELIEF.terraces record] for the Low Garden's two flanks and the High Garden
+//   VTE.terraces(bands)             -> [KRELIEF.terraces record] for the Low Garden's two flanks and the High Garden (bands: a
+//                                      garden's heights by id, else the plan's)
 //   VTE.offAt(R, x, z, g)           -> the record's level offset at (x, z) (its wobble), or NaN outside its full weight
-//   VTE.hedges(R, ground, o)        -> [{x, z, level, row}]: the clipped hedges along each tread's rows (o.box [x0,z0,x1,z1]
-//                                      a clip, o.cell the contouring cell, 2 m; o.rows the rows' places on a tread, o.step 0.8 m)
+//   VTE.hedges(R, ground, o)        -> [{x, z, a, level, row}]: the clipped hedges along each tread's rows, a the row's bearing
+//                                      there (o.box [x0,z0,x1,z1] a clip, o.cell the contouring cell, 2 m; o.rows the rows'
+//                                      places on a tread, o.step 0.8 m)
 //   VTE.beds()                      -> [{id, place, ground, i, crop, how, bucket}]: every bed's crop, picked on its ground
 //   VTE.fits(groundId, cropId)      -> how the crop grows on that ground ('rain' needs no water; 'no' it cannot)
 // Seeds (the block 34200-34399): the terraces 34351-34353, the beds 34361.
@@ -46,10 +48,11 @@ var VTE = (function () {
       buckets: ['herb', 'spice', 'reagent', 'medicine'], shade: false }];
   var BED_SEED = 34361;
 
-  function terraces() {
+  // bands: {gardenId: [y0, y1]} to hold a garden to the heights its ground really has (the page reads them off core/world)
+  function terraces(bands) {
     return GARDENS.map(function (G) {
       return KR().terraces({ rise: RISE, riser: G.riser, bund: G.bund, base: 0, wobble: 0.12, fill: 0.5, field: 40, zone: { poly: G.poly },
-        fade: 20, band: G.band, bandFade: 10, seed: G.seed });
+        fade: 20, band: bands && bands[G.id] ? bands[G.id] : G.band, bandFade: 10, seed: G.seed });
     });
   }
   // the wobble at (x, z): read through the record's own public functions. A test ground at 0.4 of a step over the level below
@@ -77,7 +80,8 @@ var VTE = (function () {
     var out = [];
     function put(ax, az, bx2, bz, level, row) {
       var L = Math.hypot(bx2 - ax, bz - az), n = Math.max(1, Math.round(L / step));
-      for (var s = 0; s < n; s++) { var t = (s + 0.5) / n; out.push({ x: ax + (bx2 - ax) * t, z: az + (bz - az) * t, level: level, row: row }); }
+      var a = Math.atan2(bx2 - ax, bz - az);
+      for (var s = 0; s < n; s++) { var t = (s + 0.5) / n; out.push({ x: ax + (bx2 - ax) * t, z: az + (bz - az) * t, a: a, level: level, row: row }); }
     }
     for (var cj = 0; cj < nz; cj++) for (var ci = 0; ci < nx; ci++) {
       var a = F[cj * (nx + 1) + ci], b = F[cj * (nx + 1) + ci + 1], c = F[(cj + 1) * (nx + 1) + ci + 1], d = F[(cj + 1) * (nx + 1) + ci];

@@ -4,9 +4,13 @@ The owner, 2026-11-16: *"can we find a site that's a great tea production site a
 green monastery there, the Order of Viridian Thought?"* Later the same day: *"plan the Viridian Thought head monastery /
 master tea and medicinal herb farm"*.
 
-This is a plan for the owner to approve. The steps the owner's open questions do not block are built: the Order's own
-buildings on a sheet (V3) and the estate's records (V4, the data side). Section 12a says what they are. Nothing else is
-built. `SURVEY.md` holds the site survey and `survey_site.py` re-runs it.
+This is a plan for the owner to approve. Some of it is built (section 12a):
+- the Order's own buildings on a sheet (V3);
+- the estate's records (V4, the data side);
+- a first pass of the page at 1:1 (V6).
+
+The page takes the plan's recommended answer where a question is open, marked *proposed* (section 12b). `SURVEY.md` holds
+the site survey and `survey_site.py` re-runs it.
 Each item is marked by where it comes from:
 - **owner**: the owner's words;
 - *brief*: the Xanadu sim session's brief for this plan;
@@ -498,6 +502,58 @@ are.
   draws its rope with `beam()`, which centres the geometry, but `vRope` (`kits/iziz-vernacular/src/69b-vern-mat.js`) is
   a cylinder based at 0. The fix belongs to the kits' owners (`KNOWN_ISSUES.md`). The small records here stand their
   flags on a pole instead.
+
+**V6, the page, a first pass** (the owner, 2026-11-16, by way of the openworld-sites session: "Have daughter sessions
+continue next step of build"; where a question is open, the plan's recommended answer, section 12b).
+
+`dist/viridian.html` is the second target of the same build (`targets/estate`), on Xanadu's page as the Azure Dream's is.
+
+- **The ground:**
+  - the scale model's cut round px 962,1562 (`region/`: 938-986 x 1538-1586, 500 m cells, `extract_region.py` on this
+    branch's model), through core/world's fields at 1:1. The site's cell is unchanged from the survey;
+  - the near ground is 8 m cells over 4 x 2.8 km; the fine ground is 2.5 m cells round the house and the Low Garden's
+    nearest treads, where every tread and riser reads; the far ground covers the whole cut.
+- **What the 1:1 ground is here:**
+  - a west-facing slope of about 17 %;
+  - the hollow centred about 100 m south of the court (768 m), its flanks rising to about 830 m;
+  - **core/world's own benches**: 25 m scarplets every 300-400 m (its detail style for this relief). The tea terraces ride
+    over them.
+- **The terraces** are the three gardens (`VTE.terraces`), each held to the heights its ground really has:
+  - the Low Garden's north flank 602-978 m and its south flank 643-965 m;
+  - the High Garden 1,009-1,221 m.
+- **The places**: 49 of the plan's buildings on 24 pads, with 411 retaining faces.
+  - The head house's **bench** is one level at 792 m (the ground under it 763-817 m), 208 x 216 m. On it stand the great
+    monastery in the green dress (`qb_monastery` v3, the tea touches in its court), its gate facing west down the hollow,
+    the two colleges, the Master's house and the refectory in the green spoke, the bath, the wheel house and four kora
+    chortens.
+  - Below the bench: the Green Gate and its chortens; the buyers' court (the caravanserai, the tasting room, the hostel,
+    the still-room and dispensary); the tea works south of the way (two withering lofts, the rolling and firing hall, the
+    packing house, three stores); the herb houses north of it; the lay families' two lines.
+  - Above the bench: the physic garden, the shade house and the log yard, the spring house, and the pluckers' shelter in the
+    High Garden.
+- **The tea:**
+  - every row on every tread traced (`VTE.hedges`), 1.46 million dabs painted on the near ground;
+  - drawn whole on the fine ground as 149,461 clipped blocks, each on its tread.
+- **The flora** is the Vale of Xanadu's biome: forest on the open slopes, a shade tree here and there in the tea.
+- **The mist** is the sky's fog, thickened, so the scarp's top goes grey.
+- **Checked:** `verify.py` adds `estate-laid`, `bench-level`, `terraces-cut` and `tea-on-treads`; all four pass in the
+  in-app browser. The GPU run's result is in the commit that carries it.
+
+## 12b. What the page assumed where a question is open (*proposed*)
+
+| Question | Taken |
+|---|---|
+| 1, the site | the house at 962,1562 (recommended); the High Garden on 963,1561-1562 |
+| 3, the water | the spring house is drawn; the spring line and the stream are not water yet (core/water's flow waits on the owner's answer) |
+| 4, the tea | the works as for a pan-fired green tea, with the brick presses (recommended) |
+| 5, the wild medicinal plants | they stay the biome's, not crop records |
+| 6, the dress | white wash on the working buildings, the green on the sacred (recommended; `VT_DRESS`) |
+| 8, the cloud hermitages | **left out**: the plan gives no recommendation (the record exists, on the sheet) |
+| 9, the valley village | **left out**: the plan gives no recommendation |
+| 10, textures | the packs only |
+| 13, building it | the page now, before core/world cuts the region: this build cut its own region from the committed model, and the bench is a pad, not a landform (V1's `lf_viridian_bench` waits on the owner) |
+
+Questions 2, 7, 11 and 12 do not change the page. The dry garden's grange is 6 km off, beyond this page (V7).
 
 ## 13. Questions for the owner
 

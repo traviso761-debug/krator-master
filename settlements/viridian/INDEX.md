@@ -4,7 +4,7 @@
 
 Docs: `KNOWN_ISSUES.md`, `PLAN.md`, `PORT.md`, `README.md`, `SURVEY.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/viridian-sheet.html`
+Built output (never open it; edit `src/` and rebuild): `dist/viridian-sheet.html`, `dist/viridian.html`
 
 Build: `cd settlements/viridian && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
@@ -23,4 +23,5 @@ Each target adds its own fragments to `src/` and builds one output.
 
 | Target | Fragments | KB |
 |---|---|---|
+| `estate` | `89z-rows.js`, `89zva-vt-ground.js`, `89zvb-vt-site.js`, `90va-vt-world.js`, `90vb-vt-build.js`, `91z-views.js` | 32 |
 | `sheet` | `89z-rows.js`, `91z-views.js` | 1 |

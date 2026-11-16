@@ -368,6 +368,21 @@
       ],
       "port": 8883,
       "autoPort": false
+    },
+    {
+      "name": "viridian",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8893",
+        "--bind",
+        "127.0.0.1",
+        "--directory",
+        "settlements/viridian/dist"
+      ],
+      "port": 8893,
+      "autoPort": false
     }
   ]
 }

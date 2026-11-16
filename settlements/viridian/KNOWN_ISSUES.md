@@ -3,8 +3,20 @@
 - **The owner's questions are open** (`PLAN.md` section 13). The site (question 1), the dress (6), the people (7), the
   hermitages (8) and the valley village (9) may change what is built. `VT_DRESS` in `src/89qv-vt-works.js` is the dress's
   one switch.
-- **The page is not built** (steps V6-V8). The sheet shows the records. The estate's records (`src/40-vt-estate.js`) are
-  tested in node on a stand-in ground, not drawn yet.
+- **The estate page is a first pass** (V6). It has no interiors (V5), no people or plucking day (core/sched), no Godot
+  export and no open-world site (V8). The dry garden's grange is 6 km off, beyond the page (V7). The hermitages and the
+  valley village are left out until the owner answers questions 8 and 9.
+- **The bench is a pad, not a landform.** It stands 25-29 m over the ground at its west edge, and a 25 m ashlar face holds
+  it. That reads as a dzong's platform, but the plan's `lf_viridian_bench` (V1, through the scale-model session's queue)
+  would shape the slope itself.
+- **core/world's own benches.** The 1:1 ground here is stepped: 25 m scarplets every 300-400 m, its detail style for this
+  relief. The tea terraces cut over them, so a scarplet becomes a flight of steep treads.
+- **The stream and the rills are not water.** The spring house stands at the hollow's head, but the spring line and its
+  stream (question 3) are not on core/water yet. The rills drawn are the physic garden's and the terrace sample's boxes.
+- **The tea is drawn whole only on the fine ground.** That is 149,461 blocks round the house and the Low Garden's nearest
+  treads. Beyond it the near ground carries the rows painted at about 1 m a pixel, and its 8 m cells lie under the terraces
+  (smooth), so the treads read only on the fine ground. Where the two meet, the near ground's edge sinks 0.8 m under the fine
+  ground's.
 - **The physic garden is thin in `kits/crops`.** On the wet ground only three bed crops fit and are not shade crops:
   bell-pod, camphor and circle lichen. The Vale's wild medicinal plants (ginkgo, cloud pine, whorl olive, frost willow,
   silverscrub, beard tree) are biome tags, not crop records. That is question 5; a crops-kit change if the owner wants it.
