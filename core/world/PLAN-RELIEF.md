@@ -41,8 +41,8 @@ model's pixel steps out. This plan answers two further asks: take the contour li
      - `oidong-highrift` reads 1.03 to 1.08: little of it is tableland.
    - The hillshades show it as the fingerprint whorls in pinnacle's uplands.
 3. **The ground's colour on rock** (`81-world-terrain.js` takes `BIO.strata`):
-   - It draws bedded rock in a 220 m column. The beds dip and warp by design, so this is probably not the complaint.
-   - Phase 0 checks it anyway, because colour bands also read as contour lines.
+   - It draws bedded rock in a 220 m column. The beds dip and warp by design.
+   - The owner confirmed (2026-11-15) that the complaint is the ground's shape, not this.
 4. **The 16-bit heights:**
    - `elev.png` steps by 0.45 m (29.6 km of range over 65,535 levels). That is far below what a 500 m cell shows.
    - This is not a cause; it is noted only so that no one chases it.
@@ -125,10 +125,82 @@ It is one shared copy, read in place, opt-in per region like the smoothing.
 | **R2 Caprock benches, no contour lines** | Terraces only where a caprock mask says the rock is bedded (style, relief band, low-frequency noise), on strata that dip and warp (`h + dip plane + warp`, as the strata shader does). Two to four benches on a mesa's wall, not a tread every 55 m on every hill | page | Replaces `41`'s `h / step`. The cut stops baking its `frac = elev / step` ledges under the flag (R8) |
 | **R3 Erosion filter** | Gullies and spurs down every slope, in three or four octaves from about 1.2 km to 150 m, aligned with the base's gradient (Catmull-Rom has an analytic derivative). Its fade target is a valley-to-ridge index per cell, from the base grid's curvature, worked out once at init | page | After Johansen. KRAND's cell hash for the pivots. Cosine and sine as polynomials, so Godot gets the same bits. Amplitude is rugged x local relief; none on flats, where there is no gradient |
 | **R4 Peaks** | Sharper ridgelines and summits: ridged multifractal, domain-warped, masked by peakness (how far a point stands over its 3 km neighbourhood) and by rugged x high ground. Jaggedness only where the control fields ask for it | page | Minecraft's lesson. The alpine, volcanic and tepui styles take it; the vale and jungle do not |
-| **R5 Landforms as records** | Mesas, buttes, inselbergs, cinder cones, karst towers, drumlins and hummocks. KRAND chooses 0 to n per 2 km cell by style and ground (`KRAND.child(seed, 'landform')`, keyed by the cell, never by draw order). Each is a record `{id, kind, x, z, r, h, rot, cap, talus}`, drawn as an analytic kernel (plateau, cliff band and talus for a mesa), kept off towns, roads, water and site footprints | page; records listed by `WORLD.landforms(box)` | Registered in core/tags, named in the inspector, on the minimap. **A site can ask for one:** Pinnacle Rock's mesa becomes a pinned `mesa` record (`KNOWN_ISSUES.md`) |
-| **R6 Small streams** | At the cut: the flow on the smoothed 500 m grid at a tenth of `CHANNEL_MIN`. Relaxed and splined (`WSMOOTH.line`), clipped where a named river or channel takes them. Written to region.json `streams` as polylines `{pts, a, w 1 to 8 m, wet}`, wet where the rain allows | cut (network) and page (carve) | The page carves them with the existing carve (`carveAt`'s segment hash), shallow and narrow, and fills the wet ones through `riverWater`'s path. R3's gullies follow the same gradient, so first-order rills lead into them |
+| **R5 Landforms as records** | The engine for every landform in section 3b. KRAND chooses 0 to n per 2 km cell by style and ground (`KRAND.child(seed, 'landform')`, keyed by the cell, never by draw order), or a record comes from data the cut already writes (vents, tubes, floods, old lakes, a site's pin). Each record is one of core/terrain's kinds: `KRELIEF.shape(rec, x, z, g)` folds it into the ground, `KRELIEF.at` says which part a point is on. A spatial hash means each call reads only the records near it. Records are kept off towns, roads, water and site footprints | page; records listed by `WORLD.landforms(box)` | Registered in core/tags, named in the inspector, on the minimap. **A site can ask for one** (the owner, 2026-11-15: yes): Pinnacle Rock's mesa becomes a pinned `mesa` record (`KNOWN_ISSUES.md`). **The planners may build on a mesa's top** (`KSITES` reads `WORLD.landforms` and treats a top as flat ground with a rim) |
+| **R6 Small streams** | At the cut: the flow on the smoothed 500 m grid at a tenth of `CHANNEL_MIN`. Relaxed and splined (`WSMOOTH.line`), clipped where a named river or channel takes them. Written to region.json `streams` as polylines `{pts, a, w 1 to 8 m, wet, profile}`. **Wet by rainfall** (the owner, 2026-11-15): a stream carries water where the rain over its catchment passes a threshold set per style, so they run in the humid styles and are dry wadis in the deserts. Each stream's cross-section (`profile`) comes from its style (S5) | cut (network) and page (carve) | The page carves them with the existing carve (`carveAt`'s segment hash), shallow and narrow, and fills the wet ones through `riverWater`'s path. R3's gullies follow the same gradient, so first-order rills lead into them |
 | **R7 Respecting what is built** | All of R2 to R5 fades inside a town's footprint (`townAt`), under a road (`bound` is applied last), in lakes and on a site's footprint. New fields go into `WORLD.FIELDS`: `gully`, `spur`, `landform`, `bench` | page | The flora rules (no trees on cliffs, slope and rock) read them, so gully floors grow, and spurs and benches go bare |
 | **R8 One owner of the detail below 2 km** | Under the flag, `extract_region.py` stops baking its sub-cell landform families (ledges, flutes, arêtes) and keeps only what must be baked: the river trench and the palaeolake shores (or those become records too) | cut | So nothing is drawn twice and nothing bands. The page module is the one place to tune, and Godot ports it once |
+
+## 3b. The submodules: what the biome plans ask for
+
+The owner (2026-11-15) asked for more than mesas, peaks, hills, cones and karst towers: "other biome-related landforms;
+sw highlands' plan likely goes into the most detail, but this module may be helpful for w outer wall's loess terrain,
+k-guilin / nwbay's karst terrain, more detailed volcano / rift terrain, swamps, small lakes/tarns, and more. look at the
+biome plans and suggest useful submodules." Two readers went through all 59 plans in `biomes/*/PLAN*.md`.
+
+**The main finding:** core/terrain already holds most of the shapes, as records that can be evaluated at any single
+point. They are built for a biome's own page and are not yet placed across the open world:
+- **`KRELIEF` kinds:**
+  - `38`: `scarp`, `wadi`, `pit`, `rille`, `tube`, `gap`, `stair`, plus `range`, `volcano`, `talus`, `pavement`,
+    `meander`, `columns`, `joints`, `tableland`;
+  - `38b`: `tumulus`, `tuberille`;
+  - `38c`: `slump`, `runout`, `gully` (yuan, liang, mao), `terraces`, `maar`, `relay`, `stepcut`.
+- **Other modules:**
+  - `KSTACKS` (`37`): mesas, buttes, spires, fins, balanced rocks, arches, tors, mounds, chimneys;
+  - `KRUBBLE`;
+  - `KFROST` (`42`): ice-wedge polygons, sorted circles, alases, pingos, aufeis, solifluction;
+  - `KGLACIER` (`44g`);
+  - `KBASIN` (`40`): old lake shores, lunettes, yardangs; and `KSCOUR` (`41`): megaflood channels. Both have a
+    `fromRegion` entry already;
+  - `KLAVA` (`46`, with a Godot twin `klava.gd`);
+  - `KTHERM` (`47`);
+  - `KKARST`'s dolines (`39c`);
+  - `KSTRATA` and `vary` (`35`, `35c`): the loess drape.
+
+So WRELIEF is mostly an **orchestrator**: per region it places records of these kinds, by style or from the cut's data,
+and folds them into `WORLD.H` through a spatial hash. Only the gaps listed under "Owed" are new shapes.
+
+Each submodule below runs one of three ways:
+- **pointwise:** a field evaluated per vertex, with no records;
+- **records:** placed per cell by KRAND, or from data;
+- **baked:** written at the cut, as polylines or a small grid.
+
+| # | Submodule | Landforms | Biomes that ask for it | How | Reuses | Owed (new) |
+|---|---|---|---|---|---|---|
+| S1 | **Styles** (R1) | the control fields for each overlay. New styles: loess, karst, glacial, tepui, volcanic field, wetland, badland, dune, pan, coast | all; most overlays fall back to `desert` today | data | `41` `STYLES`, the cut's `fam_ids` | the table |
+| S2 | **Caprock and folds** (R2) | benches on a mesa's wall, cuestas and hogbacks (dip), ring folds, pillar rims and tepui edges (joints) | swhighlands (ring folds, pillar rim), paintedhighlands (Danxia hogbacks), korona (tepuis), necanyons, abyssal-savannah (caprock rim) | pointwise | `KSTRATA` `fold`, `KRELIEF.joints/tableland` | dip and fold on the bench rule |
+| S3 | **Erosion filter** (R3) | gullies and spurs on every slope | all rugged styles | pointwise | KRAND | the filter |
+| S4 | **Peaks** (R4) | sharp ridgelines, horns and arêtes, knife ridges between pits | seouterwall, riftrim, copperglacier, siphon-pits, godthrone | pointwise | `KRELIEF.range` serration | the peakness mask |
+| S5 | **Channels** (R6) | small streams. A cross-section by style: a box canyon with an amphitheatre head (loess), a slot gorge, a braided wadi floor, a peat cut. Loess tables (yuan, liang, mao) left between the canyons | wouterwall (box canyons 185 m), midbasin, paintedhighlands, outlands, ebadlands, nhighlands (peat streams), swhighlands (slot canyons), nwlowlands | baked lines; pointwise tables | `38c` `gully` (floor and head), `KRELIEF.wadi` | profile by style |
+| S6 | **Fluvial forms** | alluvial fans and bajadas at stream mouths, fan deltas with distributaries, levees, point bars, oxbows, backswamps | outlands, catch (gravel fans), swlowlands (fan delta), nwlowlands, sedesert (deltas) | records at stream and river mouths | `KRELIEF.wadi/river/meander` | a `delta` kind (from `swlowlands/stations/delta/44z-host-delta.js`), a `fan` kind |
+| S7 | **Stacks and knobs** (R5) | mesas, buttes, spires, fins, hoodoos, inselbergs, kopjes, tors, termite mounds, fairy circles | necanyons, outlands, rift (kopjes), sedesert steppe, crater-drylands, abyssal-savannah, catch, paintedhighlands, midbasin (loess needles), korona | records; small ones pointwise on a lattice | `KSTACKS` (all kinds), `KRUBBLE` | a `dome` kind for inselbergs (outlands asks) |
+| S8 | **Karst** | fenglin towers (40 to 135 m), fengcong bases, cockpits and dolines, poljes with a ponor, tsingy and stone forest, tiankeng, cenotes | k-guilin (its plan: "4 km cells cannot hold the towers"), nwbay, swhighlands, seouterwall (polje), swbay (spring bowls) | towers, poljes and tiankeng as records; dolines and blades pointwise | `KSTACKS` tower profile, `39c` dolines, `KRELIEF.joints` | a polje kind |
+| S9 | **Volcanic fields** | cinder and spatter cones with breached craters, littoral cones, maars and tuff rings, pit-crater chains, hornitos, kipukas. Lava flows with levees and fronts, and tumuli. Tubes, rilles, skylights and collapse chains | throne, godthrone, godstep, greenstep, firebliss, twins, highrift (coulées), midbasin, siphon-pits, loom-chasms, nwbay, xanadu | cones and maars as records from the region's vents; flows baked (`KLAVA.bake` at the cut, an age and dh grid); tubes from `tubes.json` | `KRELIEF.volcano/pit/maar/tube/rille/tuberille/tumulus`, `KLAVA`, `KSTACKS chimney` | a cone kind with a breach (or `volcano` at small scale) |
+| S10 | **Faults and mass wasting** | slump benches with sag ponds and antithetic scarps, sackung, runouts (sturzstrom), relay ramps, fault scarps with mirror faces, fissure swarms (gjár), graben nets, dike fins | wouterwall (three slump benches, five runouts), neouterwall, seouterwall, ehighlands, shighlands, outlandgate, highrift (the gjá and its swarm), labyrinth (graben net), gills, greatchasm, godshearth, loom-chasms (tension slots) | records, along the model's scarps (`41`'s `scarpAt`) or baked at the cut | `38c` `slump/runout/relay/stepcut`, `KRELIEF.scarp`, `KSTACKS.row` | a graben-net generator (labyrinth), a fissure-swarm generator, amphitheatre chasm heads |
+| S11 | **Glacial and periglacial** | cirques with tarns, moraine arcs, rock glaciers, felsenmeer, nunataks; patterned ground, solifluction lobes, alases, pingos, aufeis; valley glaciers | nwouterwall, wouterwall, riftrim, copperglacier, shighlands, seouterwall, opalvalley, siphon-pits, firebliss | cirques and moraines as records; frost ground pointwise | `KFROST`, `KGLACIER` | a cirque kind (headwall, rock basin, threshold) |
+| S12 | **Small water and wetlands** | tarns, kettle and sag ponds, plunge pools; raised bogs (domes with pool-and-ridge rows, string fens, peat hags); dambos, wallows (bais), backswamps; sinter and travertine dam staircases. Each is a record with a water level | nhighlands (bogs), korona (bogs on the tepui tops), opalvalley (10 sinter-dammed tarns), seouterwall (five tarns), riftrim, ebadlands, firebliss, abyssal-savannah, hyperjungle, oidong (pools on its steps) | records, exported as water bodies to core/water | `KRELIEF.waters`, nhighlands' bog records, `WATER.terraces` | a bog kind; core/water taking small bodies from records |
+| S13 | **Dry ground and wind** | dunes (linear, star, transverse), yardangs, nebkhas, desert pavement, playas and pans with crust, strandlines, beach ridges, lunettes, the bathtub ring | catch, sedesert, dambasins, nsemiarid, crater-drylands, godstep, loom-chasms, eastabyss, outlands | pointwise on the wind field; old lakes from the cut's palaeo data | `KBASIN.fromRegion`, `41`'s dunes, `KRELIEF.pavement` | dune kinds beyond today's transverse |
+| S14 | **Flood and coast scour** | coulees, dry falls, kolks, butte-and-basin, giant current ripples, streamlined islands; the tsunami bench and chevron ridges | scablands, outlandgate, highrift (the outburst channel), farside | records from the cut's `palaeo.floods` | `KSCOUR.fromRegion` | a tsunami-bench kind (farside) |
+| S15 | **Geothermal ground** | sinter and travertine aprons and steps, geyser mounds, mud pots, fumarole craterlets | geyser, godshearth, hearths, firebliss, highrift (rimstone stair), opalvalley, spiderlake, midbasin | pointwise kernels round the region's vents and springs | `KTHERM`, `WATER.terraces` | the kernels |
+| S16 | **Masks** | where relief must not go: the Cut's smooth face, the Ancients' glass basins, reef flats, towns, roads, a site's footprint | cut, ancientsvalley, ringisles, farside | data | R7 | the mask table |
+
+**The order of composition** in `WORLD.H`:
+1. base heights;
+2. styles (S1);
+3. folds and benches (S2);
+4. the erosion filter (S3) and peaks (S4);
+5. additive records (S7 to S11, S15): stacks, cones, slumps;
+6. pointwise ground (S13, the frost ground);
+7. carving records and channels (S5, S6, S9's rilles, S14), so a channel cuts through what was raised;
+8. the masks (S16);
+9. `landHook`, towns, roads (as now).
+
+Small water (S12) reads the final ground for its levels.
+
+**Godot:**
+- `KLAVA`, `KSTRATA`, `KFIELD`, `KLAMINA` and `KTHERM` have `.gd` twins.
+- `KFROST`, `KSCOUR` and `KBASIN` use no trigonometry or `exp`, so they port straight.
+- The `KRELIEF` kinds have no twin yet (`core/terrain/LANDFORMS.md`, "Not done").
+- Each submodule that lands names its port, with golden vectors.
 
 **Determinism and Godot:**
 - plain functions on numbers and arrays; KRAND for every random choice;
@@ -179,13 +251,14 @@ Each one changes `WORLD.H`, so each turn:
 
 | Phase | What | Why this order |
 |---|---|---|
-| **P0 Evidence** | Hillshades at 25 m of the page's land at four test spots (the savannah rim's benches, the High Rift, the Oidong floor, the jungle). The band metric. The `H` bench. Show the owner which bands they mean: geometry or the strata colour | Settles question 1 below before any code |
-| **P1 Styles + caprock benches** (R1, R2) | Every overlay styled; terraces only on caprock | The biggest visible win, and small. It ends the contour lines on its own |
-| **P2 Erosion filter** (R3) | Gullies and spurs | Most of the "rugged" look, pointwise, low risk to sites |
-| **P3 Small streams** (R6) | The network at the cut, carved on the page | Joins P2's gullies into drainage; needs a re-cut |
-| **P4 Landforms** (R5) | Mesas, buttes, cones, towers as records; Pinnacle Rock's mesa | Touches site placement, so it comes after the land is settled |
-| **P5 Peaks** (R4) | Jaggedness on the high ground | Matters most in the far view, after the rest is tuned |
-| **P6 The cut hands over** (R8) | The cut's sub-cell families dropped under the flag; re-cut | Last, once the page module covers each family |
+| **P0 Evidence** | Hillshades at 25 m of the page's land at four test spots (the savannah rim's benches, the High Rift, the Oidong floor, the jungle). The band metric. The `H` bench | The baseline every later phase is measured against |
+| **P1 Styles + caprock benches** (S1, S2; R1, R2) | Every overlay styled; terraces only on caprock, with dip and folds | The biggest visible win, and small. It ends the contour lines on its own |
+| **P2 Erosion filter** (S3) | Gullies and spurs | Most of the "rugged" look, pointwise, low risk to sites |
+| **P3 Channels** (S5; R6) | Small streams at the cut, wet by rainfall, carved on the page with a profile by style. The loess tables between the canyons | Joins P2's gullies into drainage; needs a re-cut |
+| **P4 The record engine + stacks** (R5, S7, S16) | The spatial hash of records, `WORLD.landforms`, the masks. Mesas, buttes, inselbergs, tors and kopjes. Pinnacle Rock's mesa pinned. The planners building on a mesa's top | Touches site placement, so it comes after the land is settled. Every later submodule rides on it |
+| **P5 Peaks** (S4) | Jaggedness, horns and arêtes on the high ground | Matters most in the far view, after the rest is tuned |
+| **P6 The cut hands over** (R8) | The cut's sub-cell families dropped under the flag; re-cut | Once P1 to P5 cover each family |
+| **P7 The kinds, by biome** (S6, S8 to S15) | Each one goes onto the record engine, in the order the regions being built need them. Today that is the Oidong and High Rift region first: volcanic (S9) for the High Rift's coulées and vents, faults (S10) for its gjá, small water (S12) for its tarns and sinter dams, geothermal (S15). Then karst (S8, k-guilin and nwbay), glacial (S11), dry and wind (S13), flood scour (S14), fluvial (S6) | Each is small on its own, since the shapes exist. The order follows where the open world goes next |
 
 ## 6. Risks
 
@@ -201,18 +274,21 @@ Each one changes `WORLD.H`, so each turn:
 - **The pages that read `41` with their own data** (`settlements/longsong`, `pinnacle-rock`, `isle-demo`) are unchanged
   unless their data asks for relief.
 
-## 7. Questions for the owner
+## 7. The owner's answers (2026-11-15)
 
-1. **Which contour lines:** the land's terraces (rings in the ground's shape) or the colour bands on rock? This plan
-   takes them to be the terraces, and phase 0 shows both.
-2. **Streams:** wet wherever the rain allows, or mostly dry gullies and wadis outside the humid styles?
-3. **Landforms per biome:** what each should have, for example:
-   - Xanadu: mesas and buttes?
-   - the High Rift: jagged peaks and karst towers?
-   - the savannah rims: inselbergs?
-   - the hyperjungle: hummocks only?
-4. **Landforms for sites:** may a site ask for its own (Pinnacle Rock's mesa first)? And may the planners treat a mesa's
-   top as a place to build?
+1. **Which contour lines:** the ground's shape (the terrace rings), not the colour bands on rock. P1 is aimed at them.
+2. **Streams:** wet by rainfall. They carry water where the rain allows, and are dry gullies and wadis in the arid
+   styles (R6).
+3. **Landforms:** all four kinds offered:
+   - mesas and buttes;
+   - jagged peaks;
+   - inselbergs and hills;
+   - cones and karst towers.
+   Also "other biome-related landforms", from the biome plans: SW Highlands in the most detail, W Outer Wall's loess,
+   the k-guilin and nwbay karst, more detailed volcano and rift terrain, swamps, small lakes and tarns. Section 3b is the
+   answer: sixteen submodules, most of them riding on shapes core/terrain already has.
+4. **Landforms for sites:** yes, both. A site may pin its own landform (Pinnacle Rock's mesa first), and the planners
+   may build on a mesa's top (R5, P4).
 
 ## Sources
 
