@@ -47,30 +47,30 @@ W.FIELDS=['wet','flow','upland','canyon','rim','rock','dune','oasis','slope','ab
 // hills/ridge scale the detail on the relief, terr the terraces (step m), dune the dune seas, gully the badland rills,
 // rough the small relief, rock the bare-rock share, wallK how far a channel's wall leans (m out per m down)
 const STYLES={
- desert:  {hills:1.0, ridge:.7, terr:.75,step:55,dune:1,  gully:.7, rough:1.0,rock:.25,wallK:.45,peak:0},
- badland: {hills:1.1, ridge:1.1,terr:.55,step:30,dune:0,  gully:1.6,rough:1.2,rock:.55,wallK:.6,peak:0.1},
- abyss:   {hills:.6,  ridge:.45,terr:.25,step:40,dune:.15,gully:.4, rough:.7, rock:.15,wallK:1.2,peak:0},
- jungle:  {hills:.85, ridge:.4, terr:0,  step:40,dune:0,  gully:.5, rough:.8, rock:.05,wallK:1.8,peak:0},
- highland:{hills:1.2, ridge:1.0,terr:.3, step:45,dune:0,  gully:.9, rough:1.1,rock:.35,wallK:.8,peak:0.45},
- korona:  {hills:1.1, ridge:.9, terr:.65,step:80,dune:0,  gully:.5, rough:1.0,rock:.45,wallK:.5,peak:0.35},
- volcanic:{hills:.9,  ridge:.8, terr:.1, step:40,dune:0,  gully:.8, rough:1.1,rock:.6, wallK:.8,peak:0.55},
- dryland: {hills:.8,  ridge:.5, terr:.3, step:40,dune:.4, gully:.6, rough:.9, rock:.2, wallK:1.0,peak:0},
- sea:     {hills:.5,  ridge:.3, terr:0,  step:40,dune:0,  gully:0,  rough:.5, rock:.05,wallK:2,peak:0},
+ desert:  {hills:1.0, ridge:.7, terr:.75,step:55,dune:1,  gully:.7, rough:1.0,rock:.25,wallK:.45,peak:0,slot:0,box:0.15,peat:0},
+ badland: {hills:1.1, ridge:1.1,terr:.55,step:30,dune:0,  gully:1.6,rough:1.2,rock:.55,wallK:.6,peak:0.1,slot:0.3,box:0.8,peat:0},
+ abyss:   {hills:.6,  ridge:.45,terr:.25,step:40,dune:.15,gully:.4, rough:.7, rock:.15,wallK:1.2,peak:0,slot:0,box:0,peat:0},
+ jungle:  {hills:.85, ridge:.4, terr:0,  step:40,dune:0,  gully:.5, rough:.8, rock:.05,wallK:1.8,peak:0,slot:0,box:0,peat:0},
+ highland:{hills:1.2, ridge:1.0,terr:.3, step:45,dune:0,  gully:.9, rough:1.1,rock:.35,wallK:.8,peak:0.45,slot:0.15,box:0,peat:0.7},
+ korona:  {hills:1.1, ridge:.9, terr:.65,step:80,dune:0,  gully:.5, rough:1.0,rock:.45,wallK:.5,peak:0.35,slot:0.7,box:0,peat:0.2},
+ volcanic:{hills:.9,  ridge:.8, terr:.1, step:40,dune:0,  gully:.8, rough:1.1,rock:.6, wallK:.8,peak:0.55,slot:0.3,box:0,peat:0},
+ dryland: {hills:.8,  ridge:.5, terr:.3, step:40,dune:.4, gully:.6, rough:.9, rock:.2, wallK:1.0,peak:0,slot:0,box:0.2,peat:0},
+ sea:     {hills:.5,  ridge:.3, terr:0,  step:40,dune:0,  gully:0,  rough:.5, rock:.05,wallK:2,peak:0,slot:0,box:0,peat:0},
  // the Oidong Valley (biomes/oidong; settlements/longsong): a green high vale, its floor swelling gently, no terraces or dunes
- vale:    {hills:.8,  ridge:.8, terr:0,  step:40,dune:0,  gully:.35,rough:.7, rock:.3, wallK:.9,peak:0},
+ vale:    {hills:.8,  ridge:.8, terr:0,  step:40,dune:0,  gully:.35,rough:.7, rock:.3, wallK:.9,peak:0,slot:0,box:0,peat:0.2},
  // the abyssal savannah's rims (biomes/abyssal-savannah; openworld/pinnacle): gold grass parkland, caprock benches, few dunes
- savanna: {hills:.9,  ridge:.6, terr:.45,step:40,dune:0,  gully:.6, rough:.9, rock:.2, wallK:.7,peak:0},
+ savanna: {hills:.9,  ridge:.6, terr:.45,step:40,dune:0,  gully:.6, rough:.9, rock:.2, wallK:.7,peak:0,slot:0,box:0,peat:0},
  // karst towers and dissected carbonate over a flat floor (k-guilin, the NW Bay's tsingy; the Neo-Ozarks): no terraces or dunes, steep walls
- karst:   {hills:.6,  ridge:.4, terr:0,  step:40,dune:0,  gully:.4, rough:.8, rock:.4, wallK:1.4,peak:0},
+ karst:   {hills:.6,  ridge:.4, terr:0,  step:40,dune:0,  gully:.4, rough:.8, rock:.4, wallK:1.4,peak:0,slot:0.4,box:0,peat:0},
  // the outer walls and the rift's rims (nwouterwall, copperglacier, riftrim, ne/se outer wall): high ground, sharp ridges, ice above
- alpine:  {hills:1.3, ridge:1.2,terr:.1, step:40,dune:0,  gully:.7, rough:1.2,rock:.5, wallK:.7,peak:1},
+ alpine:  {hills:1.3, ridge:1.2,terr:.1, step:40,dune:0,  gully:.7, rough:1.2,rock:.5, wallK:.7,peak:1,slot:0.3,box:0,peat:0.4},
  // floodplains and deltas (swlowlands, nwlowlands, the Ancient's Valley): low relief, wide soft channel banks
- lowland: {hills:.6,  ridge:.3, terr:0,  step:40,dune:0,  gully:.4, rough:.6, rock:.05,wallK:1.6,peak:0},
+ lowland: {hills:.6,  ridge:.3, terr:0,  step:40,dune:0,  gully:.4, rough:.6, rock:.05,wallK:1.6,peak:0,slot:0,box:0,peat:0},
  // chasms and trenches between walls (the Great Chasm, the Labyrinth, the Loom chasms, the Outland Gate): mesas, near-sheer walls
- chasm:   {hills:1.0, ridge:.9, terr:.6, step:60,dune:0,  gully:.8, rough:1.0,rock:.5, wallK:.35,peak:0.3},
+ chasm:   {hills:1.0, ridge:.9, terr:.6, step:60,dune:0,  gully:.8, rough:1.0,rock:.5, wallK:.35,peak:0.3,slot:1,box:0,peat:0},
  // stepped lava and fault benches (godstep, greenstep, highrift's graben, Opal Valley's lake beds, the Mid Basin): broad tall terraces
- steps:   {hills:.7,  ridge:.5, terr:.9, step:120,dune:0, gully:.5, rough:.8, rock:.35,wallK:.6,peak:0.15}};
-const SKEYS=['hills','ridge','terr','step','dune','gully','rough','rock','wallK','peak'];   /* peak: relief P5's crests (43 WRELIEF.peaks) */
+ steps:   {hills:.7,  ridge:.5, terr:.9, step:120,dune:0, gully:.5, rough:.8, rock:.35,wallK:.6,peak:0.15,slot:0.6,box:0,peat:0}};
+const SKEYS=['hills','ridge','terr','step','dune','gully','rough','rock','wallK','peak','slot','box','peat'];   /* slot, box, peat: relief P11's stream profiles (stProf) */   /* peak: relief P5's crests (43 WRELIEF.peaks) */
 // the overlay's name (lower case) -> [its style, its palette]. EVERY overlay the scale model can hand a region is here
 // (tools/scale-model/extract_region.py writes them; core/world/test-world-styles.js fails on a name without an entry).
 // There is no default: a name not here is reported, not drawn as desert (W.groundOf, W.unstyled)
@@ -359,7 +359,18 @@ W.carveAt=(x,z)=>{const c=carveAt(x,z,baseH(x,z),.5,{});return c.d<1e9?Object.as
 // the streams' box, not a Map: a Map keyed past the small integers made H twice as slow).
 const STCELL=512,SREACH=90,SDMAX=6;   /* m: the most a stream cuts under its bank to keep its bed falling; past it, it follows the ground */let STSEG=null,STHASH=null,STIDX=null,STLN=[],STPC=null;const STG={x0:0,z0:0,nx:0,nz:0};const STC={k:0,d:1e9,hw:0,wet:0};
 const stW=s=>.75+3.25*s,stD=s=>.6+1.9*s;   /* half-width and depth (m) from the strength */
-const stVW=s=>25+50*s,stVD=s=>1.2+3.3*s;    /* its valley: a swale this half-width and depth (m) under the bank, so a stream lies in a fold of the land, not a slot cut in it */
+const stVW=s=>25+50*s,stVD=s=>1.2+3.3*s;
+/* THE PROFILE BY STYLE (relief P11, S5): a stream's bed shaped by the land's style blend S (its slot, box and peat, 0..1) and
+   whether it runs wet: a SLOT (chasm, steps, korona) narrower, two and a half times deeper, its walls near sheer and little
+   swale; a BOX canyon (the badlands, the loess's style) a flat floor between sheer walls, twice as deep, its head an
+   amphitheatre (wider near the source); a PEAT cut (the highland moors) narrow and shallow with sharp banks; a DRY stream
+   where nothing confines it a braided cobble floor, two and a half times wider and shallow, with bars. Fills PR {wm, dm, wk,
+   vm, bars} (width and depth multipliers, the wall's lean, the swale's share, the bars' height as a share of the depth) */
+const PR={wm:1,dm:1,wk:.5,vm:1,bars:0};
+function stProf(S,s,wet,P){const sl=S.slot||0,bx=S.box||0,pt=S.peat||0,cf=Math.max(sl,bx),dry=(1-wet)*(1-cf);
+ P.wm=(1-.4*sl+.3*bx-.35*pt)*(1+2.5*bx*(1-smooth(0,.15,s)))*(1+1.5*dry);
+ P.dm=(1+1.5*sl+1*bx-.3*pt)*(1-.45*dry);P.wk=lerp(lerp(S.wallK==null?.5:S.wallK,.1,cf),.2,pt*(1-cf));P.vm=1-.7*cf-.4*pt;P.bars=.35*dry;return P;}
+const SDEF={wallK:.5,slot:0,box:0,peat:0};    /* its valley: a swale this half-width and depth (m) under the bank, so a stream lies in a fold of the land, not a slot cut in it */
 function streamCurves(SR,each){const MD=SR.meander?{amp:SR.meander.amp,wave:SR.meander.wave,seed:KRAND.child(SR.meander.seed,'streams'),ox:cx*2000,oz:cy*2000}:null;
  for(const L of SR.lines){const P=WSMOOTH.line(WSTREAMS.decode(L,SR),{step:SR.step==null?60:SR.step,relax:SR.relax==null?2:SR.relax,meander:MD});
   let lo=1e9;for(const p of P){lo=Math.min(lo,p[3]);p[3]=lo;}each(L,P);}}
@@ -387,15 +398,16 @@ function buildStreams(){STSEG=null;STHASH=null;STIDX=null;STLN=[];STPC=null;cons
 // to a side, so a terrain chunk (which asks for detail down to 1.5 x its vertex spacing) has a vertex in it: a bed narrower
 // than the grid fell between its vertices, and the ground drawn between bank and bank stood through the water in
 // triangles and squares (the near chunks keep the bed's own width; a far one draws a wider flat bed the water lies on)
-function streamAt(x,z,h,wallK,C,minWave){C.k=0;C.d=1e9;C.hw=0;C.wet=0;C.bw=0;const hwMin=.7*(minWave||0);
+function streamAt(x,z,h,S,C,minWave){C.k=0;C.d=1e9;C.hw=0;C.wet=0;C.bw=0;const hwMin=.7*(minWave==null?0:minWave);S=S||SDEF;
  const ix=Math.floor(x/STCELL)-STG.x0,iz=Math.floor(z/STCELL)-STG.z0;if(ix<0||iz<0||ix>=STG.nx||iz>=STG.nz)return C;
  const c=iz*STG.nx+ix,e=STHASH[c+1];
  for(let i=STHASH[c];i<e;i++){const o=STIDX[i]*9,ax=STSEG[o],az=STSEG[o+1],dx=STSEG[o+2]-ax,dz=STSEG[o+3]-az,l2=dx*dx+dz*dz;
   let t=l2>0?((x-ax)*dx+(z-az)*dz)/l2:0;t=t<0?0:t>1?1:t;const ex=ax+dx*t-x,ez=az+dz*t-z,d=Math.sqrt(ex*ex+ez*ez);
   if(d>SREACH)continue;
-  const s=lerp(STSEG[o+4],STSEG[o+5],t),hw=Math.max(stW(s),hwMin),depth=stD(s),bed=Math.max(lerp(STSEG[o+6],STSEG[o+7],t),h-depth-SDMAX);
-  const Dc=h-Math.min(h-depth,bed-depth*.5),outer=Math.min(SREACH-5,hw+2+Dc*wallK),vw=stVW(s);
-  const k=(d<outer?Dc*(1-smooth(hw,outer,d)):0)+(d<vw?stVD(s)*(1-smooth(0,vw,d)):0);
+  const s=lerp(STSEG[o+4],STSEG[o+5],t),P=stProf(S,s,STSEG[o+8],PR),hw=Math.max(stW(s)*P.wm,hwMin),depth=stD(s)*P.dm,bed=Math.max(lerp(STSEG[o+6],STSEG[o+7],t),h-depth-SDMAX*P.dm);
+  const Dc=h-Math.min(h-depth,bed-depth*.5),outer=Math.min(SREACH-5,hw+2+Dc*P.wk),vw=stVW(s)*P.vm;
+  let k=(d<outer?Dc*(1-smooth(hw,outer,d)):0)+(d<vw?stVD(s)*P.vm*(1-smooth(0,vw,d)):0);
+  if(P.bars>0&&d<hw)k-=P.bars*depth*(1-smooth(hw*.6,hw,d))*Math.max(0,NS.vn(x/9,z/9)*2-1);   /* a dry floor's bars: cobble ridges a share of the depth high */
   const bw=1-smooth(hw,hw+3,d);if(bw>C.bw)C.bw=bw;
   if(k>C.k||(C.k===0&&d<C.d)){if(k>C.k)C.k=k;C.d=d;C.hw=hw;C.wet=STSEG[o+8];}}
  return C;}
@@ -404,11 +416,12 @@ function streamAt(x,z,h,wallK,C,minWave){C.k=0;C.d=1e9;C.hw=0;C.wet=0;C.bw=0;con
 const STW={k:0,d:1e9,hw:0,wet:0};
 function streamWater(x,z){if(!STHASH)return -1e9;
  const ix=Math.floor(x/STCELL)-STG.x0,iz=Math.floor(z/STCELL)-STG.z0;if(ix<0||iz<0||ix>=STG.nx||iz>=STG.nz)return -1e9;
- const c=iz*STG.nx+ix,e=STHASH[c+1];let bd=1e9,px=0,pz=0,wd=0;
+ const c=iz*STG.nx+ix,e=STHASH[c+1];let bd=1e9,px=0,pz=0,wd=0,Sx=null;
  for(let i=STHASH[c];i<e;i++){const o=STIDX[i]*9;if(!STSEG[o+8])continue;
   const ax=STSEG[o],az=STSEG[o+1],dx=STSEG[o+2]-ax,dz=STSEG[o+3]-az,l2=dx*dx+dz*dz;
   let t=l2>0?((x-ax)*dx+(z-az)*dz)/l2:0;t=t<0?0:t>1?1:t;const qx=ax+dx*t,qz=az+dz*t,d=Math.hypot(qx-x,qz-z);
-  const s=lerp(STSEG[o+4],STSEG[o+5],t),hw=stW(s);
+  if(d>stW(1)*2)continue;if(!Sx)Sx=styleAt(x,z);   /* the bed's width by its profile (P11): no wider than a box canyon's */
+  const s=lerp(STSEG[o+4],STSEG[o+5],t),hw=stW(s)*stProf(Sx,s,1,PR).wm;
   if(d<hw&&d<bd){bd=d;px=qx;pz=qz;wd=.6*stD(s);}}
  return bd<1e9?H(px,pz,0,null,true)+wd:-1e9;}
 W.streamWater=streamWater;
@@ -441,7 +454,7 @@ W.streamPieces=function(){if(STPC)return STPC;STPC=[];
 W.streamWaterLine=function(pc,step){step=step==null?8:step;const pts=[],w=[];
  for(let s=pc.s0;s<pc.s1;s++){const o=s*9,ax=STSEG[o],az=STSEG[o+1],bx=STSEG[o+2],bz=STSEG[o+3],L=Math.hypot(bx-ax,bz-az),m=Math.max(1,Math.ceil(L/step));
   for(let k=0;k<m+(s===pc.s1-1?1:0);k++){const t=k/m,x=ax+(bx-ax)*t,z=az+(bz-az)*t,st=lerp(STSEG[o+4],STSEG[o+5],t);
-   pts.push([x,z,Math.max(H(x,z,90,null,true)+.6*stD(st),H(x,z,13,null,true)+.1)]);w.push(2*stW(st)*.85);}}
+   const P=stProf(styleAt(x,z),st,1,PR);pts.push([x,z,Math.max(H(x,z,90,null,true)+.6*stD(st),H(x,z,13,null,true)+.1)]);w.push(2*stW(st)*P.wm*.85);}}   /* a wet stream's own width (its profile, P11) */
  /* the water lies on the carved bed without the ground's roughness under 90 m (followed, the water met the banks in jagged steps), but never under
     0.1 m over the ground less its 13 m grain (which stands through as stones),, and never climbs downstream past
     a pool of STPOOL m held behind a sill: read off the full ground every 8 m its surface rose and fell with every bump */
@@ -456,7 +469,7 @@ W.streamWaterLine=function(pc,step){step=step==null?8:step;const pts=[],w=[];
 // the decoded streams: [{wet, end, pts: [[x, z, s, bed]...]}] (the curves the page carves; made again at each call, for a
 // probe or a test: the page keeps only its segments)
 W.streams=()=>{const out=[];if(M.streams&&M.streams.lines)streamCurves(M.streams,(L,P)=>out.push({wet:L.w,end:L.e,pts:P}));return out;};
-W.streamAt=(x,z)=>{if(!STHASH)return null;const c=streamAt(x,z,H(x,z,150,null,true,true),.5,STW);return c.d<1e9?Object.assign({},c):null;};
+W.streamAt=(x,z)=>{if(!STHASH)return null;const c=streamAt(x,z,H(x,z,150,null,true,true),styleAt(x,z),STW);return c.d<1e9?Object.assign({},c):null;};
 // the flow surface at (x,z), for the streams' bake (core/world/bake_streams.py): out {h: the land as drawn down to 150 m
 // (its hills, ridges, benches, roughness and gullies, the channels carved; no streams, no finer detail), K: 0 land, 1 a
 // lake or the sea, 2 a channel or river's bed, 3 outside the region, rain: mm}. Traced on the land's large form alone, the
@@ -480,7 +493,7 @@ function buildLandforms(){LANDF=false;if(!RELIEF||typeof WLAND==='undefined'||ty
   styleName:(x,z)=>{const b=W.biomeAt(x,z),g=b&&W.groundOf(b.name);return g?g.style:'';},overlay:(x,z)=>{const b=W.biomeAt(x,z);return b?String(b.name).trim().toLowerCase():'';},
   caprock:(x,z)=>WRELIEF.caprock(x,z,styleAt(x,z),gridBil(REL,x,z)),
   keep:(x,z)=>{if(!W.inside(x,z))return true;const h=formH(x,z);if(W.lakeWater(x,z)>h-1)return true;
-   carveAt(x,z,h,.5,LFK);if(LFK.d<LFK.hw+150)return true;if(pondWater(x,z)>-1e8)return true;if(STHASH){streamAt(x,z,h,.5,LFS,0);if(LFS.d<40)return true;}
+   carveAt(x,z,h,.5,LFK);if(LFK.d<LFK.hw+150)return true;if(pondWater(x,z)>-1e8)return true;if(STHASH){streamAt(x,z,h,SDEF,LFS,0);if(LFS.d<40)return true;}
    for(const t of TW)if(Math.hypot(x-t[0],z-t[1])<t[2])return true;return false;}});
  LANDF=true;}
 // the landform records whose middle lies in the box (placing their cells): KSTACKS bodies with name, kind, x, z, top, R
@@ -615,7 +628,7 @@ function H(x,z,minWave,P,nr,nt){minWave=minWave||0;
     the channels cut (a placed record keeps 150 m off a channel; a pinned one stands over it: the model's drainage line under Pinnacle Rock's
     north rim cut a 250 m gorge through the mesa when it came after), before the small streams (traced round them) */
  if(LANDF)h=WLAND.apply(h,x,z,minWave);   /* at every minWave: the road router reads the land at 4000 m and must see a mesa */
- let sd=1e9,sw=0,sbw=0;if(STHASH&&minWave<150){streamAt(x,z,h,S.wallK,STC,minWave);h-=STC.k;sd=STC.d;sw=STC.hw;sbw=STC.bw;}
+ let sd=1e9,sw=0,sbw=0;if(STHASH&&minWave<150){streamAt(x,z,h,S,STC,minWave);h-=STC.k;sd=STC.d;sw=STC.hw;sbw=STC.bw;}
  if(minWave<13)h+=((N5.vn(x/13,z/13)-.5)*1.1+(N5.vn(x/3.1+50,z/3.1)-.5)*.3)*(1-sbw);   /* not in a stream's bed (STC.bw): it stood through the water there */
  // a world's own shaping of its land (W.landHook: openworld/isle-demo's coast, reef and mangrove flats); none here
  if(W.landHook)h=W.landHook(x,z,h,minWave);

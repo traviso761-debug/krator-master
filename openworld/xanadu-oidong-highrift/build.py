@@ -79,6 +79,7 @@ ORDER = (
        ('core/materials/record', '23-mat-record.js'), ('core/materials/record', '24-tex-def.js'), ('core/materials/record', '25-matlib-host.js'),
        ('core/materials/record', '26-matlib-bind.js'),
        ('biomes/sedesert/src', '35-core-strata.js')]
+    + LDF('40-world-smooth.js', '43-world-relief.js', '44-world-streams.js') + [('core/terrain', '37-core-stacks.js')] + LDF('43b-world-landforms.js')   # relief P8: smoothed, relief, streams, landforms (SITES.json)
     + LDF('41-world-fields.js', '42-world-roads.js') + [('src', '43-world-xoh.js')]
     + LDF('45-world-host.js') + [('src', '46-world-config.js'), ('src', '47-world-kits.js'),
      ('biomes/hyperjungle/src', '41-hyperjungle-globals.js')]
@@ -92,8 +93,8 @@ ORDER = (
        ('core/hamlet', '14-hamlet-farmland.js'), ('core/hamlet', '16-hamlet-names.js'), ('core/hamlet', '18-hamlet-names.js'),
        ('core/hamlet', '20-hamlet-cultures.js'), ('core/hamlet', '30-hamlet-village.js'),
        ('ld', '48s-world-sites.js'), ('src', '48-world-site.js'), ('src', '49-world-xanadu.js')]
-    + LDF('80-world-sky.js', '81-world-terrain.js', '83-world-water.js', '83w-world-seas.js', '84-world-nursery.js',
-          '85-world-flora.js', '86-world-floor.js', '87-world-places.js', '88-world-towns.js', '88s-world-sites.js')
+    + LDF('80-world-sky.js', '81-world-terrain.js', '83-world-water.js', '83w-world-seas.js', '83s-world-streams.js', '84-world-nursery.js',
+          '85-world-flora.js', '86-world-floor.js', '87-world-places.js', '88-world-towns.js', '88s-world-sites.js', '88l-world-landforms.js')
     + [('resgeo', 'geology')] + RES_FRAGS + [('ld', '49r-world-resources.js'), ('ld', '89r-world-resources-map.js')]   # the resources: census, layers, markers
     + LDF('90-world-camera.js', '91-world-probe.js', '93-world-propose.js', '98-world-start.js', '99-tail.html')   # 93: proposing a site
 )

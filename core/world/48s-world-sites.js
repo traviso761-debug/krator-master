@@ -31,8 +31,12 @@ const r2=v=>Math.round(v*100)/100;
 /* the land the planners read: without the roads (WORLD.Hland), so a road laid after the plan does not move it */
 const HL=(x,z)=>WORLD.Hland?WORLD.Hland(x,z):WORLD.H(x,z);
 function slopeAt(x,z){const e=6,h=HL(x,z);return Math.max(Math.abs(HL(x+e,z)-h),Math.abs(HL(x,z+e)-h))/e;}
+/* a landform record (relief P10; the owner, 2026-11-15: the planners may build on a mesa's top): its top is ground like any
+   other, its walls and a fissure are not, nor the RIM band in from a top's edge (a camp on a mesa stands back from its lip) */
+const RIM=12;
+function recordOk(x,z){const L=WORLD.landformAt?WORLD.landformAt(x,z):null;if(!L)return true;if(L.cut!=null||L.wall)return false;return !(L.d>-RIM);}
 function groundOk(x,z){if(!WORLD.inside(x,z))return false;const h=HL(x,z);
- if(WORLD.water(x,z)>h-1.2)return false;if(slopeAt(x,z)>SLOPE)return false;return !WORLD.townW(x,z);}
+ if(WORLD.water(x,z)>h-1.2)return false;if(slopeAt(x,z)>SLOPE)return false;if(!recordOk(x,z))return false;return !WORLD.townW(x,z);}
 function discOk(x,z,R){for(const k of RINGS){const r=k*R,n=r?SPOKES:1;
   for(let i=0;i<n;i++){const a=i/n*Math.PI*2;if(!groundOk(x+Math.cos(a)*r,z+Math.sin(a)*r))return false;}}return true;}
 function siteFor(near,look,R){const n=Math.floor(look/GRID),C=[];

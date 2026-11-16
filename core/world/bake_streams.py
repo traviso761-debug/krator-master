@@ -21,7 +21,8 @@ ROOT = os.path.normpath(os.path.join(HERE, '..', '..'))
 sys.path.insert(0, HERE)
 import world_data as WD   # noqa: E402
 
-CELL = 250.0          # m: the trace's grid (41's hills and ridges reach down to about 400 m)
+CELL = 250.0          # m: the trace's grid (41's hills and ridges reach down to about 400 m); a coarser region's (P8: 1 km cells)
+                      # is 0.4 x its cell, so a sub-continental cut does not trace 15 million cells
 CHANNEL_MIN = 3.0e4   # tools/scale-model/extract_region.py: the flow a channel starts at
 RAIN_FLOOR = 150.0    # mm: as the cut, every cell counts at least this much
 FRAC = 1 / 150.0      # a stream starts at this share of a channel's flow: about 3 km2 of catchment at 1000 mm, 21 km2 in a desert
@@ -115,6 +116,8 @@ def main():
     M = json.load(open(rj, encoding='utf-8'))
     if not M.get('relief'):
         sys.exit('bake_streams: %s has no relief (openworld/SITES.json "relief"): its land keeps no streams' % region)
+    global CELL
+    CELL = max(250.0, 0.4 * M['heights'].get('cell_m', 500.0))
     S = trace(region)
     st = S['stats']
     print('streams %s: %d lines (%d wet), %d vertices, %d heads, %d depression cells, %d tarns; ends %s; %d KB' % (

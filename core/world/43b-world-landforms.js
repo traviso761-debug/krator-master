@@ -140,7 +140,11 @@ L.apply=function(h,x,z,minWave){if(!O)return h;const N=near(x,z);if(!N.length)re
   const t=(T[o]*(1-fu)+T[o+1]*fu)*(1-fv)+(T[o+r.nx]*(1-fu)+T[o+r.nx+1]*fu)*fv;if(t>out)out=t;
   const a=(A[o]*(1-fu)+A[o+1]*fu)*(1-fv)+(A[o+r.nx]*(1-fu)+A[o+r.nx+1]*fu)*fv;if(h+a>out)out=h+a;}
  return out-cut;};
-L.at=function(x,z){if(!O)return null;const N=near(x,z).filter(B=>!B.carve);if(!N.length)return null;const s=KSTACKS.surface(N,x,z);return s?{S:s.S,top:s.top,wall:s.wall}:null;};
+// the record at (x, z): a raised one's surface {S, top, wall, d (into its top from the edge: negative inside, the rim band's
+// test)} or a fissure's cut {S, cut}; null where none (the inspector, KSITES' rim, the probe)
+L.at=function(x,z){if(!O)return null;const N=near(x,z);if(!N.length)return null;const R=N.filter(B=>!B.carve);
+ const s=R.length?KSTACKS.surface(R,x,z):null;if(s)return{S:s.S,top:s.top,wall:s.wall,d:s.d};
+ for(const B of N)if(B.carve){const c=fissureCut(B,x,z);if(c>0)return{S:B,cut:c};}return null;};
 L.list=function(x0,z0,x1,z1){const out=PINS.filter(B=>B.x>=x0&&B.x<=x1&&B.z>=z0&&B.z<=z1);if(!O)return out;
  for(let j=Math.floor((z0+OZ)/CELL);j<=Math.floor((z1+OZ)/CELL);j++)for(let i=Math.floor((x0+OX)/CELL);i<=Math.floor((x1+OX)/CELL);i++)for(const B of cellOf(i,j))if(B.x>=x0&&B.x<=x1&&B.z>=z0&&B.z<=z1)out.push(B);
  return out;};

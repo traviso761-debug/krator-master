@@ -13,6 +13,7 @@ page that reads it came out byte-identical after the move.
 | `43-world-relief.js` | [G data] | `WRELIEF`: the land below the model's 2 km (`PLAN-RELIEF.md`). So far: terraces only on caprock (`bench`, P1), the erosion filter (`erode`, P2) and the peaks (`peaks`, P5: by the style's `peak` and 41's `PEAK` grid); every overlay's style is `41`'s `BIOME_GROUND`. A region with region.json `relief` lists it before `41` |
 | `43b-world-landforms.js` | [G data] | `WLAND`: landform records (`PLAN-RELIEF.md` P4): KSTACKS bodies placed per 2 km cell by the land style (buttes on caprock, kopjes, inselbergs, hoodoos, towers; by overlay, the High Rift's tension fissures, carved) and a region's pins (`WLAND.pin`: Pinnacle's rock), folded into `H` from per-body rasters. A relief region lists `core/terrain/37-core-stacks.js` and it before `41`; its bakes read them through `world_data.py` `LAND_JS`, `PINS` |
 | `44-world-streams.js` | [G data] | `WSTREAMS`: the small streams (`PLAN-RELIEF.md` P3): `trace` (the network on a grid, run by `bake_streams.py` after the cut), `decode`, `rebed`, `check`. A region whose region.json has `streams` lists it before `41`, which carves them (`WORLD.streams`, `streamAt`, `streamWater`) |
+| `golden-relief.json` | data | the relief modules' golden vectors (`PLAN-RELIEF.md` P9: 40, 43, 44, 43b on fixed inputs, to 1e-6), checked by `test-golden-relief.js` (`--write` after a change meant to move the land): the bar a Godot port meets |
 | `41-world-fields.js` | [G data] | `WORLD`: the region's rasters decoded into the land. It holds:<ul><li>`WORLD.H(x, z, minWave)`: the model's heights, synthesized relief, scarps, river channels and `landHook`;</li><li>the water (`water`, `lakeWater`, `riverWater`);</li><li>the fields every kit reads (`at`, `fieldsFrom`);</li><li>`townW`, `clearHook`, the climate's colour.</li></ul> |
 | `42-world-roads.js` | [G data] | `ROADS`: least-cost routing on the land at a held grade; the carriageway shaped into the ground |
 | `45-world-host.js` | [web] | the renderer, scene and frame loop the world draws into |
@@ -21,6 +22,7 @@ page that reads it came out byte-identical after the move.
 | `83-world-water.js` | [G data] | the water levels |
 | `83w-world-seas.js` | [web] | the seas and lakes drawn |
 | `83s-world-streams.js` | [web] | a relief region's wet streams drawn: core/water flow ribbons built a kilometre piece at a time near the camera (`STREAMW`; `PLAN-RELIEF.md` P3). A build with streams lists it after `83w` |
+| `88l-world-landforms.js` | [web] | a relief region's landform records in core/tags (class `feature`) and on the minimap (`PLAN-RELIEF.md` P10). A build with records lists it after `88s` |
 | `84-world-nursery.js` | [web] | each kit's species grown as variants (`KIT.make`, `KIT.grow`) |
 | `85-world-flora.js` | [web] | the flora tile by tile, seeded by cell with `KRAND.hash` (the same tile in any order) |
 | `86-world-floor.js` | [web] | the kits' floor patches under the zones |
@@ -138,7 +140,7 @@ Without the flag the cut is byte-identical to before (checked on pinnacle) and `
 
 | Region | Cells | What it reaches | Notes |
 |---|---|---|---|
-| `xanadu-oidong-highrift` | 1789 x 589 at 1 km (2 a pixel) | its own page (Erehwon's and Qiblai's sites are in it) | Longsong and the valley moved to `oidong-highrift` (on now). Cut this one with the flag when Erehwon or Qiblai is next worked on; expect about 15 s of smoothing in the cut |
+| `xanadu-oidong-highrift` | 1789 x 589 at 1 km (2 a pixel) | its own page (Erehwon's and Qiblai's sites are in it) | On, with relief (2026-11-16, `PLAN-RELIEF.md` P8): re-cut, streams traced at 400 m, Erehwon's farm-1 moved off the smoothed lake shore |
 | `iziz-cluster` | 329 x 609 at 500 m | its own page | Girder, Mav's Refuge and Talia's ground. Re-bake its sites and check the corridors' roads |
 | `isle-demo`, `north-basin` | 4 km cells (half a pixel) | `isle-demo`: its page and `settlements/isle-demo` | **Nothing to do.** Coarser than the model, so no stairs (the flag is ignored). `isle-demo`'s rivers could take `WSMOOTH.river` alone, but it is cut by hand, not by `cut_site.py` |
 

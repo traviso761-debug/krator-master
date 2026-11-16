@@ -261,6 +261,9 @@ Each one changes `WORLD.H`, so each turn:
 | **P7 The kinds, by biome** (S6, S8 to S15) | Each one goes onto the record engine, in the order the regions being built need them. Today that is the Oidong and High Rift region first: volcanic (S9) for the High Rift's coulées and vents, faults (S10) for its gjá, small water (S12) for its tarns and sinter dams, geothermal (S15). Then karst (S8, k-guilin and nwbay), glacial (S11), dry and wind (S13), flood scour (S14), fluvial (S6) | Each is small on its own, since the shapes exist. The order follows where the open world goes next |
 | **P8 Rollout** | Relief and smoothing on for the next region: `xanadu-oidong-highrift` (its High Rift, Godstep and Opal Valley are `steps` overlays, still terraced on the height every 120 m without relief), re-cut and re-baked; then each region as it is built | Each region's sites and roads re-bake on the new land, one region at a time |
 | **P9 Godot's proof** | A golden-vector file for every relief module (WSMOOTH, WRELIEF's benches, erosion and peaks, WSTREAMS' trace and decode, WLAND's placement and rasters), checked by a node test, so a GDScript port can show it gives the same land bit for bit | Last: it fixes the numbers the earlier phases settled |
+| **P10 The records in the world** (R5's rest, R7) | Every landform record registered in core/tags (kind, name, its footprint), named by the inspector, marked on the minimap; the planners building on a mesa's top (`KSITES` reads `WORLD.landforms`: a top is flat ground with a rim band) | The owner, 2026-11-15: "the planners may build on a mesa's top" |
+| **P11 Channel profiles by style** (S5's rest) | The small streams' cross-section from the land style: a box canyon with an amphitheatre head (loess), a slot gorge (highland, chasm, steps), a braided cobble floor (a dry stream, a wadi), a peat cut (the moors) | The streams are carved one way everywhere until then |
+| **P12 The High Rift's master gja** (S10's rest) | The one master gja biomes/highrift/PLAN.md draws through the plateau's middle: about 310 m deep, 300 to 600 m wide at the lip, its walls stepped where blocks dropped; a pinned carving record beside the swarm | The swarm (P7) stands beside it |
 
 ### Done so far
 
@@ -529,6 +532,43 @@ the geothermal ground wait, as the region's vents carry the model's own 2 km vol
 - `WORLD.landforms(box)` is clipped to the region's box (a query over the whole world placed 25 million cells).
 - **Left:** S9 (cinder cones, maars, spatter ramparts by the vents: they need the model's volcanoes told apart from the page's
   own), S15 (sinter and travertine round the springs), S6, S8, S11, S13, S14, the master gja through the High Rift's middle.
+
+**P9, Godot's proof (2026-11-16).** `core/world/golden-relief.json`, checked by `node core/world/test-golden-relief.js`
+(`--write` takes a new snapshot, after a change meant to move the land): what each module gives for fixed inputs, to 1e-6 (a
+port's float order may differ in the last bits), strings and integers exactly:
+- WSMOOTH: a curve through a zigzag with its meander, a relaxed line, the contour smoothing of a staircase grid;
+- WRELIEF: the benches, the caprock, the erosion filter and the peaks at 300 points in a world-absolute frame;
+- WSTREAMS: the trace of a valley with a depression (its lines as region.json keeps them, their heads and cells, its tarn)
+  and a line's decode;
+- WLAND: the records a savanna places over 12 km and the land with them, the High Rift's fissures and their cut.
+A GDScript port runs the same inputs and compares; the negative (a value nudged by 1e-5) is caught. The modules' own `.gd`
+twins are not written yet: this is the bar they meet.
+
+**P8, the rollout: xanadu-oidong-highrift (2026-11-16).**
+- `openworld/SITES.json` turns `smooth` and `relief` on; its build takes 40, 43, 44, KSTACKS, 43b and 83s. Re-cut (1 km
+  cells: the sub-continental region), its streams traced at 400 m (`bake_streams.py`: 0.4 x the region's cell, at least
+  250 m: at 250 m the trace was 15 million cells): 8,388 streams (4,998 wet), 506 tarns.
+- Its site plan re-baked (`5d250775`): Erehwon's farm-1 (70 degrees, 8 km) stood in the caldera lake once the cut smoothed
+  its shore, so it moved along the south shore to 90 degrees, 7 km (`src/48-world-site.js`); 15 hamlets, every check ok.
+- Its page grows from 8.3 to 10.3 MB.
+
+**P10, the records in the world (2026-11-16).**
+- `88l-world-landforms.js` ([web]): the region's landform records registered in core/tags (class `feature`, kind the record's,
+  its name, footprint and height): the pins and the raised records over 20 m across (the kopjes and fissures, by the
+  thousand, are found by `WORLD.landformAt`); the pins and the buttes, inselbergs and towers marked on the minimap
+  (`window.MAP_MARKS`, one legend, no Go to entry each).
+- The inspector (90) names the record under the cursor and how it lies there: its top (so many metres in from the edge),
+  its wall, or a fissure's cut. `WLAND.at` answers a fissure too and gives how far in from a top's edge a point is.
+- **The planners on a top** (the owner, 2026-11-15): KSITES' ground test (48s `recordOk`) takes a record's top as ground like
+  any other, and refuses its walls, a fissure, and the 12 m rim band in from a top's edge.
+
+**P11, the streams' profile by style (2026-11-16; S5).** Three style keys (`slot`, `box`, `peat`, 0..1, blended across
+overlays as every key is) shape a stream's bed (41 `stProf`): a slot (chasm 1, korona .7, steps .6) narrower, two and a half
+times deeper, its walls near sheer, little swale; a box canyon (the badlands .8) a flat floor between sheer walls, twice as
+deep, its head an amphitheatre (wider near the source); a peat cut (the highland moors .7) narrow and shallow with sharp
+banks; a dry stream where nothing confines it a braided cobble floor, two and a half times wider and shallow, with bars.
+A wet stream's water takes its bed's width. Measured across a dry Oidong stream: a flat floor about 10 m wide between
+steep 2 m banks, where it was a V; across a High Rift stream (`steps`): a slot 1.2 m deep, where it was 0.5.
 
 ## 6. Risks
 
