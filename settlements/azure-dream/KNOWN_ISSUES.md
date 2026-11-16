@@ -32,7 +32,9 @@ The page's first pass (2026-11-16, the owner: "build the page next"). What it do
       isle wooded lowland throughout (the owner, 2026-11-16: "a lot more foliage on this island"): `upland` is height over 5 km, so
       the biome's forest never fades out with height, and `wet` follows a slow noise (`AD_WOODN`), giving forest with glades. The
       far ground wears the same noise as a canopy's dark green. The woods cost triangles: the isle's scene is 10.3M of its 16M
-      budget (2.7M before), the summit's 6.7M (0.9M), the floor pass the heaviest. Beyond the near ground the woods are a colour
+      budget (2.7M before), the summit's 6.7M (0.9M), the floor pass the heaviest. Measured 2026-11-16 (`tools/perf_views.py`,
+      the Arc 140T, the Overview, 30 frames): the isle 13.8 ms of GPU a frame (5.4M drawn), the summit 12.4 ms, East End 10.3
+      ms, all inside 60 fps on the integrated GPU; nearer views draw less. Beyond the near ground the woods are a colour
       only, with no trees. The terraced orchards (`qb_ad_orchard`: the Vale apricot and the Frost persimmon, named from
       `kits/crops`) and the bee walls (`qb_ad_hives`) are drawn as the page's own builders, not as crop or biome records.
 - [ ] **The sheets are redrawn from the pages by hand.** `export_records.py` writes `floors/page-isle.json` and
