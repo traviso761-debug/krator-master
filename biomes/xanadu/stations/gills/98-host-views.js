@@ -12,6 +12,8 @@ const VIEWS={};
  // the pipes standing out of the glacier's edge: the highest standing pipe, from below it
  const hi=GILLS_DRAW.pipes.filter(o=>o.p.state==='standing').sort((a,b)=>b.p.y0-a.p.y0)[0];
  if(hi){const cx=hi.p.x-D[0]*120,cz=hi.p.z-D[1]*120;VIEWS['Ice pipes at the glacier\'s edge']=[...at(cx,cz,18),hi.p.x,hi.p.y0+hi.p.H*.6,hi.p.z];}
+ // a lime collar close, on a forked pipe's mouth where there is one (2026-11-15: the collars fitted to the drawn mouths, GILLS.fitMouths)
+ {const C=(GILLS_DRAW.life&&GILLS_DRAW.life.collars)||[],c=C.find(q=>q.col>0)||C[0];if(c)VIEWS['A lime collar']=[c.x+c.r*2.6,c.y-c.r*.5,c.z+c.r*2.2,c.x,c.y+c.r*.1,c.z];}
  // a pipe field: the closed gill's pipes, standing, broken and fallen
  const dead=SG.L.gills.find(g=>!g.alive);if(dead){const a=(dead.a0+dead.a1)/2,x=dead.c[0]+Math.cos(a)*dead.r,z=dead.c[1]+Math.sin(a)*dead.r;
   VIEWS['A pipe field (Phlū-phīlḍ), a closed gill']=[...at(x+Math.cos(a)*90,z+Math.sin(a)*90,35),x,G(x,z)+5,z];}

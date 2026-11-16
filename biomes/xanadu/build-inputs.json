@@ -780,7 +780,7 @@
   },
   "build.py --station gills": {
    "inputs": {
-    "biomes/gills/src/44-gills-life.js": "e0f66ce8979e74b8f22598bf1cc19c2a9fa7160ff99235279fc811c1da2e577e",
+    "biomes/gills/src/44-gills-life.js": "c2df50f4953f5c7fe678d6f9651c4bdca5b65df1f7f4ea367bc3936b7b3cec35",
     "biomes/gills/tex/collar.albedo.webp": "9a199670c5b1cc29749691f0678c8ff082befca780b88c8e293eac476693272d",
     "biomes/gills/tex/fringe.albedo.webp": "1b7426eb36e6da443e3a773805f974d60f784cadf372b423cfaadbcb22918b6a",
     "biomes/gills/tex/pack.json": "3b11c02c00ad4f69cccd09c96abbf446cf04813ee5f5836649a0329ea5e9b1d0",
@@ -809,11 +809,11 @@
     "biomes/xanadu/src/99-host-take.js": "39040a54886630e00fa21106688160b66e2c28a919b9a02cb4ce93428ad73f8d",
     "biomes/xanadu/src/99-tail.html": "65abfb642de580808a65c6ec8bf3bc2c410397558a5ac28e825accdb7c590d3b",
     "biomes/xanadu/stations/gills/45b-host-land.js": "2b10c12566c925f494d6dd1db4089901520176f863c9f8f02ee37ba8563532c2",
-    "biomes/xanadu/stations/gills/87-host-gills.js": "c2880530a1437acb55786f9985d241d82cd6843808c5a26159ad6115be2e62cd",
+    "biomes/xanadu/stations/gills/87-host-gills.js": "29a1a00937aacb02ad9a3950095e19eb21e503039eaa62f534be775c59ca9366",
     "biomes/xanadu/stations/gills/89-host-sky.js": "3d184b1fc54e266de256313629af979b3b031cd68544634075ea538e55e65e60",
     "biomes/xanadu/stations/gills/89w-host-water.js": "ea0f87e9f2a284fe8d4856c681cb3f492781ed044c3960845a28ab1e71617a03",
     "biomes/xanadu/stations/gills/89x-host-fountain.js": "14e47043c2eb31dd386252b9feee721005ebd47c5cde417c09238ec519d6a0ff",
-    "biomes/xanadu/stations/gills/98-host-views.js": "c90507ec7fd586f8d1934c94d95d05e00b8c2129576d4751ebc71c1d9ae6332f",
+    "biomes/xanadu/stations/gills/98-host-views.js": "6a7c2fc3be1902dc704083fbc7d7fc9030236a360817f6615974d0e9a1ebef89",
     "biomes/xanadu/stations/gills/station.json": "450c989c0af5faf2c963c93fba90891b05ef598e5c1715a93894e68813e8c942",
     "biomes/xanadu/tex/anemone.albedo.webp": "fa020018b7ac3947f92ef56fa0068e6c96f9748cdf316f68bff15571872e5941",
     "biomes/xanadu/tex/banana.albedo.webp": "0a3eb9a9ab79762fdb32169b19af33d579bf01d7fa5ef8c0e9d20de87ebadcb3",
@@ -958,7 +958,7 @@
     "core/water/ext/60-core-water-fields.js": "8e877798226558edf744fccd1e6e92edf28bf059af5f087a10d733eaf5ecac2a",
     "core/water/ext/61-core-water-plume.js": "3b1eb79ddcc511cd6c09dc145253e116ed8377252c7d7811d2d9b3fa35faf18f",
     "core/water/geyser/52-core-water-geyser.js": "804a8b84e108965002396666c0647991ef073416f0206b02aeba81be3be19ac1",
-    "core/water/geyser/52b-core-water-geyser-draw.js": "877c86a97336aeafee4db088bf76676e39b7b9a7d1e76b18766a7a034db5edb1",
+    "core/water/geyser/52b-core-water-geyser-draw.js": "2e403145a06bf9b7a06fe4a5e6831d3ae0724a8eba1fbb21b4039ab2ae6cfd3e",
     "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
     "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7",
     "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
@@ -971,10 +971,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/xanadu/dist/xanadu-gills.html": "78adea18b26a4c9b233a58996af2a3f1bcba7a5197df9be87d5b82c05d7f4bcb"
+    "biomes/xanadu/dist/xanadu-gills.html": "e5730a9e91959cf48b8ac0f8f3f9af724c7db082805603b8d85003a306792fe3"
    },
    "outputs_raw": {
-    "biomes/xanadu/dist/xanadu-gills.html": "78adea18b26a4c9b233a58996af2a3f1bcba7a5197df9be87d5b82c05d7f4bcb"
+    "biomes/xanadu/dist/xanadu-gills.html": "e5730a9e91959cf48b8ac0f8f3f9af724c7db082805603b8d85003a306792fe3"
    }
   },
   "build.py --station ranges": {

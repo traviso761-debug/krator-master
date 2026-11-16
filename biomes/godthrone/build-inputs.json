@@ -126,8 +126,8 @@
   },
   "build.py --station blood": {
    "inputs": {
-    "biomes/gills/src/44-gills-life.js": "e0f66ce8979e74b8f22598bf1cc19c2a9fa7160ff99235279fc811c1da2e577e",
-    "biomes/godthrone/KNOWN_ISSUES.md": "b327c2553e03f770ff9f4509a10b5a4b1c5935a79c62a158d82450451b75b39b",
+    "biomes/gills/src/44-gills-life.js": "c2df50f4953f5c7fe678d6f9651c4bdca5b65df1f7f4ea367bc3936b7b3cec35",
+    "biomes/godthrone/KNOWN_ISSUES.md": "30251e52f744d1dbf74521efa0173b05c5e31bb877f97a092ef9b619aae2c9e4",
     "biomes/godthrone/PORT.md": "b74170a91be2a751d6b02376c3d8084886a0bf90228511a175b6473037d9f614",
     "biomes/godthrone/build.py": "fc0c8d7e39f70fd5ab8456877051786b495b194edb4157c97194874f75e87155",
     "biomes/godthrone/src/00-head.html": "aa4d99829a99e6a6fc89eef59cf7d5daaea66e4bd8ab1468acc82e75a7c1fbc2",
@@ -263,15 +263,15 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/godthrone/dist/godthrone-blood.html": "7d3ee746f9d517073a3f2e90e5564d8278eb3e860764e374a8dae3e2cdbff51b"
+    "biomes/godthrone/dist/godthrone-blood.html": "7028b892d30e411d6b32d2d600ac5041754c6768d547fcfb80dcce5459a95d2f"
    },
    "outputs_raw": {
-    "biomes/godthrone/dist/godthrone-blood.html": "7d3ee746f9d517073a3f2e90e5564d8278eb3e860764e374a8dae3e2cdbff51b"
+    "biomes/godthrone/dist/godthrone-blood.html": "7028b892d30e411d6b32d2d600ac5041754c6768d547fcfb80dcce5459a95d2f"
    }
   },
   "build.py --station flank": {
    "inputs": {
-    "biomes/godthrone/KNOWN_ISSUES.md": "b327c2553e03f770ff9f4509a10b5a4b1c5935a79c62a158d82450451b75b39b",
+    "biomes/godthrone/KNOWN_ISSUES.md": "30251e52f744d1dbf74521efa0173b05c5e31bb877f97a092ef9b619aae2c9e4",
     "biomes/godthrone/PORT.md": "b74170a91be2a751d6b02376c3d8084886a0bf90228511a175b6473037d9f614",
     "biomes/godthrone/build.py": "fc0c8d7e39f70fd5ab8456877051786b495b194edb4157c97194874f75e87155",
     "biomes/godthrone/src/00-head.html": "aa4d99829a99e6a6fc89eef59cf7d5daaea66e4bd8ab1468acc82e75a7c1fbc2",
@@ -401,13 +401,13 @@
   },
   "build.py --station gills": {
    "inputs": {
-    "biomes/gills/src/44-gills-life.js": "e0f66ce8979e74b8f22598bf1cc19c2a9fa7160ff99235279fc811c1da2e577e",
+    "biomes/gills/src/44-gills-life.js": "c2df50f4953f5c7fe678d6f9651c4bdca5b65df1f7f4ea367bc3936b7b3cec35",
     "biomes/gills/tex/collar.albedo.webp": "9a199670c5b1cc29749691f0678c8ff082befca780b88c8e293eac476693272d",
     "biomes/gills/tex/fringe.albedo.webp": "1b7426eb36e6da443e3a773805f974d60f784cadf372b423cfaadbcb22918b6a",
     "biomes/gills/tex/pack.json": "3b11c02c00ad4f69cccd09c96abbf446cf04813ee5f5836649a0329ea5e9b1d0",
     "biomes/gills/tex/pipe.lamina.albedo.webp": "2698129feb3bfd47e4d171c16dd5991a893a8e0228612381cec681f730da295e",
     "biomes/gills/tex/turf.albedo.webp": "fc847dca525c98b8217fe2fa3a0d9d35bddb7f80a05e709a924154d382871ad9",
-    "biomes/godthrone/KNOWN_ISSUES.md": "b327c2553e03f770ff9f4509a10b5a4b1c5935a79c62a158d82450451b75b39b",
+    "biomes/godthrone/KNOWN_ISSUES.md": "30251e52f744d1dbf74521efa0173b05c5e31bb877f97a092ef9b619aae2c9e4",
     "biomes/godthrone/PORT.md": "b74170a91be2a751d6b02376c3d8084886a0bf90228511a175b6473037d9f614",
     "biomes/godthrone/build.py": "fc0c8d7e39f70fd5ab8456877051786b495b194edb4157c97194874f75e87155",
     "biomes/godthrone/src/00-head.html": "aa4d99829a99e6a6fc89eef59cf7d5daaea66e4bd8ab1468acc82e75a7c1fbc2",
@@ -434,7 +434,7 @@
     "biomes/godthrone/src/99-tail.html": "65abfb642de580808a65c6ec8bf3bc2c410397558a5ac28e825accdb7c590d3b",
     "biomes/godthrone/stations/gills/44a-host-station.js": "4206e1f98c6e93d4633ac232f431ebf010a7ac1452d21eb29aecfc2761a925c0",
     "biomes/godthrone/stations/gills/45b-host-model.js": "9116c8e02e7e602321c18c1d40613bc0a460c21b8fb0bfd4d92c366a4c373aab",
-    "biomes/godthrone/stations/gills/87-host-gills.js": "824522530782a7a7bb78bf2df16f8c31e259570d9a2774275d0d480c6cafcd6b",
+    "biomes/godthrone/stations/gills/87-host-gills.js": "9520fd15f42f762cbe24113219e8f3769fc232268334f889b1f47c4b1d3a00e3",
     "biomes/godthrone/stations/gills/89y-host-gills-late.js": "043471dc200a5b379186256eeb308568926138410ce611de72441f6bce637ec2",
     "biomes/godthrone/stations/gills/98-host-gills.js": "e8c3c222284abad51faa40c343dbba90c37baae6e0b385536ec2429980f000e3",
     "biomes/godthrone/stations/gills/region.json": "1491d3d84838fe54ba3ebabf2f1ed488fa2bf3f9260ffbd3572959e6504322ac",
@@ -541,21 +541,21 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/godthrone/dist/godthrone-gills.html": "5871f97be5deb82a850182ea5bfefe385f6b1f7e0dab7fe6058e1b5f73952548"
+    "biomes/godthrone/dist/godthrone-gills.html": "4ec313eb584be046b68529b01e8e431024c23eec021dcbd8a41c4dbc93176da3"
    },
    "outputs_raw": {
-    "biomes/godthrone/dist/godthrone-gills.html": "5871f97be5deb82a850182ea5bfefe385f6b1f7e0dab7fe6058e1b5f73952548"
+    "biomes/godthrone/dist/godthrone-gills.html": "4ec313eb584be046b68529b01e8e431024c23eec021dcbd8a41c4dbc93176da3"
    }
   },
   "build.py --station gills-ladder": {
    "inputs": {
-    "biomes/gills/src/44-gills-life.js": "e0f66ce8979e74b8f22598bf1cc19c2a9fa7160ff99235279fc811c1da2e577e",
+    "biomes/gills/src/44-gills-life.js": "c2df50f4953f5c7fe678d6f9651c4bdca5b65df1f7f4ea367bc3936b7b3cec35",
     "biomes/gills/tex/collar.albedo.webp": "9a199670c5b1cc29749691f0678c8ff082befca780b88c8e293eac476693272d",
     "biomes/gills/tex/fringe.albedo.webp": "1b7426eb36e6da443e3a773805f974d60f784cadf372b423cfaadbcb22918b6a",
     "biomes/gills/tex/pack.json": "3b11c02c00ad4f69cccd09c96abbf446cf04813ee5f5836649a0329ea5e9b1d0",
     "biomes/gills/tex/pipe.lamina.albedo.webp": "2698129feb3bfd47e4d171c16dd5991a893a8e0228612381cec681f730da295e",
     "biomes/gills/tex/turf.albedo.webp": "fc847dca525c98b8217fe2fa3a0d9d35bddb7f80a05e709a924154d382871ad9",
-    "biomes/godthrone/KNOWN_ISSUES.md": "b327c2553e03f770ff9f4509a10b5a4b1c5935a79c62a158d82450451b75b39b",
+    "biomes/godthrone/KNOWN_ISSUES.md": "30251e52f744d1dbf74521efa0173b05c5e31bb877f97a092ef9b619aae2c9e4",
     "biomes/godthrone/PORT.md": "b74170a91be2a751d6b02376c3d8084886a0bf90228511a175b6473037d9f614",
     "biomes/godthrone/build.py": "fc0c8d7e39f70fd5ab8456877051786b495b194edb4157c97194874f75e87155",
     "biomes/godthrone/src/00-head.html": "aa4d99829a99e6a6fc89eef59cf7d5daaea66e4bd8ab1468acc82e75a7c1fbc2",
@@ -585,7 +585,7 @@
     "biomes/godthrone/stations/gills-ladder/98-host-ladder.js": "4f7fee9e1f2845d2fb325f043abfbc389b58e18a32e1a7ce7740b841906b3366",
     "biomes/godthrone/stations/gills-ladder/region.json": "cd62d4b60d529f98b547bed8ca61e69a5f084d5c1a09af8481f5ee4e4912813a",
     "biomes/godthrone/stations/gills-ladder/station.json": "a319a98ace9d6bcbf993f825b58f7507b7c0ce3ac1deb35c4de4b92e13c15b5c",
-    "biomes/godthrone/stations/gills/87-host-gills.js": "824522530782a7a7bb78bf2df16f8c31e259570d9a2774275d0d480c6cafcd6b",
+    "biomes/godthrone/stations/gills/87-host-gills.js": "9520fd15f42f762cbe24113219e8f3769fc232268334f889b1f47c4b1d3a00e3",
     "biomes/godthrone/stations/gills/89y-host-gills-late.js": "043471dc200a5b379186256eeb308568926138410ce611de72441f6bce637ec2",
     "biomes/godthrone/tex/beadsBlack.albedo.webp": "ef60465e01f23d4f157eb6af583ab628765525f2151e6aa5a340b7c3cf5d0557",
     "biomes/godthrone/tex/beadsOrange.albedo.webp": "d555774825a07dba6f32cdd6eaf18215f2294c7c5c046b0b33aff0d02be37c76",
@@ -688,15 +688,15 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/godthrone/dist/godthrone-gills-ladder.html": "0472230d7fcb9fc0b334210495a6fd1d0f6595502903ef944acf5d3e5cdc4033"
+    "biomes/godthrone/dist/godthrone-gills-ladder.html": "b0b95824f41e29df8702b57a524abd30b23944518054a32934ceb4243e2da095"
    },
    "outputs_raw": {
-    "biomes/godthrone/dist/godthrone-gills-ladder.html": "0472230d7fcb9fc0b334210495a6fd1d0f6595502903ef944acf5d3e5cdc4033"
+    "biomes/godthrone/dist/godthrone-gills-ladder.html": "b0b95824f41e29df8702b57a524abd30b23944518054a32934ceb4243e2da095"
    }
   },
   "build.py --station orange": {
    "inputs": {
-    "biomes/godthrone/KNOWN_ISSUES.md": "b327c2553e03f770ff9f4509a10b5a4b1c5935a79c62a158d82450451b75b39b",
+    "biomes/godthrone/KNOWN_ISSUES.md": "30251e52f744d1dbf74521efa0173b05c5e31bb877f97a092ef9b619aae2c9e4",
     "biomes/godthrone/PORT.md": "b74170a91be2a751d6b02376c3d8084886a0bf90228511a175b6473037d9f614",
     "biomes/godthrone/build.py": "fc0c8d7e39f70fd5ab8456877051786b495b194edb4157c97194874f75e87155",
     "biomes/godthrone/src/00-head.html": "aa4d99829a99e6a6fc89eef59cf7d5daaea66e4bd8ab1468acc82e75a7c1fbc2",
@@ -829,7 +829,7 @@
   },
   "build.py --station rim": {
    "inputs": {
-    "biomes/godthrone/KNOWN_ISSUES.md": "b327c2553e03f770ff9f4509a10b5a4b1c5935a79c62a158d82450451b75b39b",
+    "biomes/godthrone/KNOWN_ISSUES.md": "30251e52f744d1dbf74521efa0173b05c5e31bb877f97a092ef9b619aae2c9e4",
     "biomes/godthrone/PORT.md": "b74170a91be2a751d6b02376c3d8084886a0bf90228511a175b6473037d9f614",
     "biomes/godthrone/build.py": "fc0c8d7e39f70fd5ab8456877051786b495b194edb4157c97194874f75e87155",
     "biomes/godthrone/src/00-head.html": "aa4d99829a99e6a6fc89eef59cf7d5daaea66e4bd8ab1468acc82e75a7c1fbc2",
@@ -961,7 +961,7 @@
   },
   "build.py --station scarp": {
    "inputs": {
-    "biomes/godthrone/KNOWN_ISSUES.md": "b327c2553e03f770ff9f4509a10b5a4b1c5935a79c62a158d82450451b75b39b",
+    "biomes/godthrone/KNOWN_ISSUES.md": "30251e52f744d1dbf74521efa0173b05c5e31bb877f97a092ef9b619aae2c9e4",
     "biomes/godthrone/PORT.md": "b74170a91be2a751d6b02376c3d8084886a0bf90228511a175b6473037d9f614",
     "biomes/godthrone/build.py": "fc0c8d7e39f70fd5ab8456877051786b495b194edb4157c97194874f75e87155",
     "biomes/godthrone/src/00-head.html": "aa4d99829a99e6a6fc89eef59cf7d5daaea66e4bd8ab1468acc82e75a7c1fbc2",
@@ -1093,7 +1093,7 @@
   },
   "build.py --station tube": {
    "inputs": {
-    "biomes/godthrone/KNOWN_ISSUES.md": "b327c2553e03f770ff9f4509a10b5a4b1c5935a79c62a158d82450451b75b39b",
+    "biomes/godthrone/KNOWN_ISSUES.md": "30251e52f744d1dbf74521efa0173b05c5e31bb877f97a092ef9b619aae2c9e4",
     "biomes/godthrone/PORT.md": "b74170a91be2a751d6b02376c3d8084886a0bf90228511a175b6473037d9f614",
     "biomes/godthrone/build.py": "fc0c8d7e39f70fd5ab8456877051786b495b194edb4157c97194874f75e87155",
     "biomes/godthrone/src/00-head.html": "aa4d99829a99e6a6fc89eef59cf7d5daaea66e4bd8ab1468acc82e75a7c1fbc2",
@@ -1225,7 +1225,7 @@
   },
   "build.py --station wall": {
    "inputs": {
-    "biomes/godthrone/KNOWN_ISSUES.md": "b327c2553e03f770ff9f4509a10b5a4b1c5935a79c62a158d82450451b75b39b",
+    "biomes/godthrone/KNOWN_ISSUES.md": "30251e52f744d1dbf74521efa0173b05c5e31bb877f97a092ef9b619aae2c9e4",
     "biomes/godthrone/PORT.md": "b74170a91be2a751d6b02376c3d8084886a0bf90228511a175b6473037d9f614",
     "biomes/godthrone/build.py": "fc0c8d7e39f70fd5ab8456877051786b495b194edb4157c97194874f75e87155",
     "biomes/godthrone/src/00-head.html": "aa4d99829a99e6a6fc89eef59cf7d5daaea66e4bd8ab1468acc82e75a7c1fbc2",
