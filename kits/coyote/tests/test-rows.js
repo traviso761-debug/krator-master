@@ -7,6 +7,7 @@ const load = f => vm.runInThisContext(fs.readFileSync(path.join(ROOT, f), 'utf8'
 global.window = global;
 load('core/rand/08-core-rand.js'); load('core/space/20-core-space.js'); load('core/city/33-city-strategies.js');
 fs.readdirSync(path.join(ROOT, 'core', 'hamlet')).filter(f => /^\d\d-hamlet-.*\.js$/.test(f) && f < '40').sort().forEach(f => load('core/hamlet/' + f));
+['10-camp-cultures.js', '20-camp-census.js', '30-camp-pitch.js'].forEach(f => load('core/camp/' + f));
 load('kits/coyote/src/34-cy-rows.js');
 /* the boxes 50-cy-valley.js and 52-cy-works.js declare, and 56-cy-village.js's CY_DIMS for the sunk rooms and the ladder */
 const SRC = fs.readdirSync(path.join(ROOT, 'kits', 'coyote', 'src')).filter(f => /\.js$/.test(f)).map(f => fs.readFileSync(path.join(ROOT, 'kits', 'coyote', 'src', f), 'utf8')).join('\n');
@@ -47,4 +48,19 @@ T.ok('the Peak alcove village lays with no error and nothing pending', !A.error 
 T.ok('its round rooms sunk in the ledge, its four mine works below', A.records.filter(r => r.sunk).length === 2 &&
   ['cy_adit', 'cy_ore_bench', 'cy_sorting_shed', 'cy_wash'].every(k => A.records.some(r => r.key === k && r.y === 0)));
 T.neg('an alcove too shallow for thirty is refused', o => !peak(o).error, { alcove: { line: aline, depth: 8, floor: 6, height: 9, foot: 0, side: 1 } }, {});
+/* the herders' camp (58-cy-herders.js): the draft row coyote-herder on core/camp, the program the kit's camps pitch */
+const TIPI = { s: 2.2, m: 3.0, l: 3.8 };
+const campDims = k => { const b = String(k).split('@')[0], m = b.match(/^cy_tipi_([sml])$/); if (m) { const w = 2 * TIPI[m[1]] + 2; return { w, d: w, h: 7 }; }
+  return { cy_feather_rack: { w: 5, d: 2.4, h: 2.4 }, cy_saddle_rack: { w: 5, d: 2.6, h: 1.8 }, cy_ostrich_pen: { w: 16, d: 12, h: 2.6 }, cy_fold: { w: 10, d: 8, h: 1.8 }, cy_egg_cache: { w: 2.6, d: 2.6, h: 1.6 } }[b] || null; };
+const SRC58 = fs.readFileSync(path.join(ROOT, 'kits', 'coyote', 'src', '58-cy-herders.js'), 'utf8');
+const prog = eval('(' + SRC58.match(/const CY_CAMP_PROGRAM=(v=>\(\{[\s\S]*?\}\));/)[1] + ')');   /* the program as the kit writes it */
+const pitch = (o) => { const P0 = prog(0); return KCAMP.pitch(Object.assign({ id: 'sunrise-summer', world: 11, culture: 'coyote-herder', program: P0, site: { x: 0, z: 0 },
+  dims: campDims, ground: { ok: () => true }, way: [0, 1], formation: 'horseshoe' }, o || {})); };
+T.ok('the herders\' row is registered in core/camp', KCAMP.CULTURES['coyote-herder'] === CY_CAMP_HERDER && CY_CAMP_HERDER.kind('cy_tipi_l@chief') === 'chief' && CY_CAMP_HERDER.kind('cy_tipi_m') === 'dwelling');
+const camp = pitch(), chk = KCAMP.check(camp, { ok: () => true }), cen = KCAMP.census({ id: 'sunrise-summer', world: 11, culture: 'coyote-herder', program: prog(0) });
+T.ok('the camp pitches whole: every tent and pen placed, none overlapping', camp.short.length === 0 && chk.overlaps === 0 && camp.records.length === 16, camp.records.length + ' records, ' + chk.overlaps + ' overlaps');
+T.ok('a band of forty to seventy, every household in a dwelling, the racks and pens staffed', cen.pop >= 40 && cen.pop <= 70 && cen.households.every(h => h.tent) && cen.people.filter(p => p.work).length >= 6,
+  cen.pop + ' people, ' + cen.households.length + ' households');
+const chief = camp.records.find(r => /@chief/.test(r.key));
+T.neg('the chief\'s tipi stands opposite the way in', c => { const r = c.records.find(q => /@chief/.test(q.key)); return r && r.z < c.hearth.z; }, { records: [Object.assign({}, chief, { z: chief.z + 99 })], hearth: camp.hearth }, camp);
 T.done();

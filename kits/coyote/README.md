@@ -20,7 +20,7 @@ The page loads its texture pack beside it: serve `dist/` over HTTP, as `verify.p
 
 ## How it is made
 
-- **Core read in place** beside the engine's folders: `core/space`, `core/hamlet` (10 to 34) and `core/city/33-city-strategies.js`
+- **Core read in place** beside the engine's folders: `core/camp` (10, 20, 30: the census and the pitch), `core/space`, `core/hamlet` (10 to 34) and `core/city/33-city-strategies.js`
   (`KCITY.prim`, which core/hamlet reads): `build.py` `CORE_FILES`. Nothing under `core/city` is edited.
 - **The engine** is `core/engine`, read by path (`engine.py`): `defBuilding`, the buckets by material key, doors and glass
   (`36o-open.js`), ladders (`36s-stair.js`), the walk records. `build.py` started from `kits/tents/build.py` with the
@@ -35,7 +35,7 @@ The page loads its texture pack beside it: serve `dist/` over HTTP, as `verify.p
   may overlap), `cyRing`, `cyRoof` (beams, reed mat, the earth slab with its hatch), `cyLadder`, the **ear door**
   (`cyEarHoles`, `cyEarDoor`: a doorway whose head steps up in two notches), the hearth, oven, platforms and bins, and
   `cyCarve` (the contour line raised on a face, one row or a word a row).
-- **`src/34-cy-rows.js`** (`[G data]`): the Valley's and the Peak's rows for `core/hamlet` (`CY_ROW_VALLEY`, `CY_ROW_PEAK`), a DRAFT kept in the kit until C7
+- **`src/34-cy-rows.js`** (`[G data]`): the Valley's and the Peak's rows for `core/hamlet` (`CY_ROW_VALLEY`, `CY_ROW_PEAK`) and the herders' camp row for `core/camp` (`CY_CAMP_HERDER`, registered as `coyote-herder`), a DRAFT kept in the kit until C7
   moves it to `core/hamlet/22-hamlet-coyote.js`: the houses, the works, and the platform fields (the cell, the store, the
   shrine room and council room as kivas sunk in the yard, two storeys). `tests/test-rows.js` lays it.
 - **`src/50-cy-valley.js`**: the Valley's Catalhoyuk rooms on one builder (`cyMainRoom`, `cyHouse`): `cy_room` (entered through
@@ -53,6 +53,11 @@ The page loads its texture pack beside it: serve `dist/` over HTTP, as `verify.p
   roof, bench ring, fire pit and deflector), the stone `cy_fold`; the mine: `cy_adit`, `cy_ore_bench` (emerald schist),
   `cy_sorting_shed`, `cy_tappers_camp` (turquoise), `cy_wash`; and `cy_village_peak`, thirty people on a ledge under an
   overhang, laid by `KHAMLET.platform`'s alcove mode on the draft Peak row, in a stand-in cliff of tuff (`cyMound`).
+- **`src/58-cy-herders.js`**: the herders (Tong-Hau, Si-Hau): the kit's own tipi (`cy_tipi_s`, `_m`, `_l`: the pole cone, the
+  hide cover with the band's colour, its Hum name as a contour line round it and the runner bird at the back, smoke flaps, the
+  dew lining, a hide door flap; roles family, sleep, chief, council, shrine; v 1 the winter tipi on its stone base), the ostrich
+  pen, the feather and saddle racks, the egg cache, the winter base; the summer and winter camps of a Sunrise band of about
+  fifty pitched by `core/camp` (`KCAMP.census`, `KCAMP.pitch`, horseshoe) on the draft row `coyote-herder` (34-cy-rows.js).
 - **`src/60-cy-stones.js`**: the milestone (`cy_milestone`), the boundary stone (`cy_boundary_stone`, a name a face) and the
   runner bird's shrine at a road's foot (`cy_runner_shrine`).
 - **`src/99-host-tz-cy.js`**: the probe's fields for `verify.py` (carvings, doors, the walk-reach audit, the fingerprint).
@@ -63,5 +68,6 @@ The page loads its texture pack beside it: serve `dist/` over HTTP, as `verify.p
 
 **C1** (the scaffold, the toolkit, the contour script, two Valley houses and the milestone) and **C2** (the Valley: four houses,
 the village's cells and sunk rooms, ten works, the shrine and the boundary stone, the village on its tell on `core/hamlet`):
-and **C3** (the Peak: huts, store, the alcove room and round room, the fold, the mine's five works, the alcove village):
-built and verified (`verify.py --assert`). C4 onward: `PLAN.md` section 9.
+**C3** (the Peak: huts, store, the alcove room and round room, the fold, the mine's five works, the alcove village) and
+**C4** (the herders: the tipi, the pens and racks, two camps on `core/camp`): built and verified (`verify.py --assert`). C5 onward:
+`PLAN.md` section 9.

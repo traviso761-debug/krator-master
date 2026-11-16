@@ -3,7 +3,8 @@
 // PLAN.md sections 2 and 3: dry-stone huts and walls of slabby stone laid without mortar; cliff houses in the fog wall's alcoves
 // (Mesa Verde's shape: the owner, 2026-11-16), laid by KHAMLET.platform's alcove mode on the kit's draft Peak row
 // (34-cy-rows.js CY_ROW_PEAK); the mine works (adit, open-cast benches, sorting shed, tappers' shelter, washing troughs).
-// Emerald and turquoise nodes are owed by kits/resources (the Outlands plan's kit addition): the sample passes its node.
+// Emerald and turquoise nodes are kits/resources' (node-emerald-*, node-turquoise-*, 2026-11-16): the sheet's sample stands on no
+// map, so it passes its node; a host on the map lets KHAMLET.resourceFor take the nearest.
 //   cyStoneRoom(IW,ID,H,o)   a dry-stone room entered by a stone ear door in its south face: flat beamed roof, a sleeping
 //                            platform, a hearth, hides; o.porch a lean-to before the door
 //   cy_stone_hut, cy_stone_house, cy_stone_store   the Peak's houses and its corbelled store (the row's houses and stores)
@@ -116,7 +117,7 @@ defBuilding({key:'cy_wash',name:'Emerald washing troughs',seed:9605,cls:'buildin
 function cyAlcoveLine(L,dz){const line=[];for(let i=0;i<=12;i++){const a=(i/12-.5)*1.2;line.push([Math.sin(a)*L*.8,-Math.cos(a)*L*.45+dz]);}return line;}
 defBuilding({key:'cy_village_peak',name:'Peak alcove village (KHAMLET.platform)',seed:9701,cls:'building',kind:'village',frag:'kits/coyote',
  tags:{types:['dwelling-multi'],wealth:'poor',style:'peak',role:'village'},w:106,d:62,h:22,budget:1600000,front:{x:0,z:20,yaw:0},
- note:'a Peak village of thirty in an alcove of the fog wall: dry-stone rooms on the ledge under the overhang, the round rooms sunk in its yard, a ladder up the ledge, the mine\'s works at the foot (its emerald node passed: kits/resources has none yet)',
+ note:'a Peak village of thirty in an alcove of the fog wall: dry-stone rooms on the ledge under the overhang, the round rooms sunk in its yard, a ladder up the ledge, the mine\'s works at the foot (its emerald node passed: the sheet stands on no map)',
  build(o){o=o||{};const floor=6,height=9,depth=20,line=cyAlcoveLine(90,22),world=o.world==null?9:o.world;
   const V=KHAMLET.platform({id:o.id||'peak-1',world,culture:CY_ROW_PEAK,focus:'mine',popMax:o.pop==null?30:o.pop,dims:cyDims,
    ground:{ok:()=>true,h:()=>0},link:{x:0,z:120},resource:{kind:'emerald',x:30,z:62,workers:24},

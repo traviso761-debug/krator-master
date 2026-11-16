@@ -22,12 +22,13 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `00-head.html` | 1 |  |
 | `26k-kit.js` | 4 |  |
 | `32-cy-contour.js` | 5 | kits/coyote 32: the contour script (plain data,  (1) |
-| `34-cy-rows.js` | 3 | kits/coyote 34: the Coyote rows for core/hamlet, (1) |
+| `34-cy-rows.js` | 5 | kits/coyote 34: the Coyote rows for core/hamlet, (1) |
 | `40-cy-kit.js` | 15 | the room's goods and marks (C2) (95); ground made by hand (C3): a tell, a ledge, an ov (122) |
 | `50-cy-valley.js` | 12 |  |
 | `52-cy-works.js` | 10 |  |
 | `54-cy-peak.js` | 15 |  |
 | `56-cy-village.js` | 5 |  |
+| `58-cy-herders.js` | 14 |  |
 | `60-cy-stones.js` | 5 |  |
-| `89-rows.js` | 1 |  |
+| `89-rows.js` | 2 |  |
 | `99-host-tz-cy.js` | 4 |  |

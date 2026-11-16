@@ -21,9 +21,14 @@
 - [ ] **`check_assembly` baselines `MISSING KCITY.stance`** on the page (`tools/check_assembly_baseline.json`, as riftrim's Fowlers
   and Icecut stations do): `core/city/33-city-strategies.js` names `KCITY.stance` (in `core/city/15-city-ground.js`) only on a
   city tune's high-stance path, which `core/hamlet` never takes; the page reads 33 alone for `KCITY.prim`.
-- [ ] **No emerald or turquoise nodes in `kits/resources`** (the Outlands plan's kit addition, owed there): the Peak alcove
-  village passes its node by hand (`resource: {kind: 'emerald', ...}`); a host on the map takes the nearest node once they exist.
+- [x] **Emerald and turquoise nodes** are in `kits/resources` since 2026-11-16 (`node-emerald-*`, `node-turquoise-*`, the field's
+  families from `geology.py --gems`). The sheet's Peak alcove village still passes its node by hand (`resource: {kind: 'emerald',
+  ...}`): it stands on no map; a host on the map lets `KHAMLET.resourceFor` take the nearest node.
 - [ ] **Round walls are not walk blocks**: `cy_round_room`'s ring wall is a `sector()` and the corbelled store a `lathe()`, which
   the engine's box reader does not read; a walker could pass through them. Their floors and roofs are walk floors.
 - [ ] **The Peak village's cliff is a stand-in** (`cyMound` ledge, back rock, overhang, ends, in `rock.tuff`): a host on the
   map draws its own cliff (`KCARVE`) and passes the alcove's line, depth and heights.
+- [ ] **A tipi's cover is not a walk block** (a `lathe()`, which the engine's box reader does not read): a walker can pass through
+  it anywhere, not only at the door. Its floor is a walk floor; the door flap is a real `core/door` leaf.
+- [ ] **The camps' wind is the draft row's** (`[0.7071, 0.7071]`, as the Beast Riders' row has it): a host on the map passes the
+  model's wind at the camp (`KCAMP.pitch` `wind`). The pens stand empty until the birds land in `kits/fauna`.

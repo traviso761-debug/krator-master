@@ -12,5 +12,10 @@ const FAMILIES=[
  {name:'The Valley village (KHAMLET.platform)',keys:['cy_village_valley']},
  {name:'Peak houses and stores (Kam-Hau)',keys:['cy_stone_hut','cy_stone_house','cy_stone_store','cy_cliff_house',{key:'cy_round_room',o:{y:-1.76}},'cy_fold']},
  {name:'The mine (emerald and turquoise)',keys:['cy_adit','cy_ore_bench','cy_sorting_shed','cy_tappers_camp','cy_wash']},
- {name:'The Peak alcove village (KHAMLET.platform)',keys:['cy_village_peak']}
+ {name:'The Peak alcove village (KHAMLET.platform)',keys:['cy_village_peak']},
+ {name:'Herders tipis (Tong-Hau and Si-Hau)',keys:['cy_tipi_s','cy_tipi_m','cy_tipi_l',{key:'cy_tipi_l',o:{role:'chief'}},{key:'cy_tipi_s',o:{role:'shrine'}},
+  {key:'cy_tipi_m',o:{tribe:'sunset'}},{key:'cy_tipi_m',o:{v:1}},'cy_winter_base']},
+ {name:'Herders pens and works',keys:['cy_ostrich_pen','cy_feather_rack','cy_saddle_rack','cy_egg_cache']},
+ {name:'Herders camp in summer (KCAMP)',keys:['cy_camp_summer']},
+ {name:'Herders camp in winter (KCAMP)',keys:['cy_camp_winter']}
 ];

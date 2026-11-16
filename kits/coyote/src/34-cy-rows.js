@@ -22,7 +22,7 @@ const CY_ROW_VALLEY={
 };
 /* The Peak tribe (Kam-Hau, the miners and gem tappers): dry-stone rooms in the fog wall's alcoves (Mesa Verde's shape: the owner,
    2026-11-16), the platform village's alcove mode; its kivas the round room (both in the alcove's yard); the mine works at the foot
-   or on the node a host passes (spec.resource: the emerald and turquoise nodes are owed by kits/resources). Its lone houses
+   or on the nearest emerald or turquoise node (kits/resources, KHAMLET.resourceFor), or the node a host passes. Its lone houses
    (KHAMLET.village, a hamlet on open ground) are the stone hut and the stone house. */
 const CY_ROW_PEAK={
  kit:'coyote', household:5, workShare:.5, slopeMax:.45,
@@ -39,5 +39,22 @@ const CY_ROW_PEAK={
  platform:{room:'cy_cliff_house', store:'cy_cliff_house', kiva:'cy_round_room', greatKiva:'cy_round_room', court:'cy_court', pen:'cy_fold',
   ladder:'cy_ladder', roomsPer:2, storeys:3, kivas:'plaza'}
 };
-/* the rows by tribe (the Tiers' and the herders' camp row come in C4 and C5) */
+/* The herders' camp row for core/camp (Sunrise and Sunset, Tong-Hau and Si-Hau; PLAN.md section 6), in KCAMP.CULTURES' shape
+   (core/camp/10-camp-cultures.js). A program key is a def's key with its role after '@' (cy_tipi_l@chief): kind() reads the role,
+   the def draws it (58-cy-herders.js). DRAFT: registered into KCAMP.CULTURES by this fragment where the page has core/camp, until
+   C7 moves it to core/camp as its own fragment. */
+const CY_CAMP_HERDER={
+ kind:function(k){const q=String(k).split('@'),key=q[0],role=q[1];
+  if(role==='chief')return 'chief';if(role==='council')return 'council';if(role==='shrine')return 'shrine';
+  if(/^cy_tipi_[ml]$/.test(key))return 'dwelling';if(key==='cy_tipi_s')return 'sleep';
+  if(key==='cy_feather_rack'||key==='cy_saddle_rack')return 'trade';
+  if(key==='cy_ostrich_pen'||key==='cy_fold'||key==='cy_egg_cache')return 'pen';return null;},
+ households:{'cy_tipi_l@chief':1,cy_tipi_m:1,cy_tipi_l:2},
+ household:[5,8],chiefHousehold:[6,9],sleepers:[3,4],
+ work:{'cy_tipi_s@shrine':{role:'priest',n:1},cy_feather_rack:{role:'featherworker',n:2},cy_saddle_rack:{role:'saddler',n:1},
+  cy_ostrich_pen:{role:'herder',n:2},cy_fold:{role:'herder',n:1}},
+ elderShare:.4, mountsPer:1, wind:[0.7071,0.7071], formation:'horseshoe'
+};
+if(typeof KCAMP!=='undefined'){KCAMP.CULTURES=KCAMP.CULTURES||{};KCAMP.CULTURES['coyote-herder']=CY_CAMP_HERDER;}
+/* the rows by tribe (the Tiers' row comes in C5) */
 const CY_ROWS={valley:CY_ROW_VALLEY, peak:CY_ROW_PEAK};

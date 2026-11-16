@@ -99,7 +99,9 @@ assert set(kengine.CORE_DIRS) <= {'shader', 'rand', 'materials/record', 'tags', 
 # the platform and the trade post (10-34; 40-hamlet-felling.js is the biome kits' timber pass, not taken), and core/city's shared
 # primitives file that core/hamlet reads (33-city-strategies.js: KCITY.prim), READ IN PLACE: this kit edits nothing under core/city
 _HAMLET = os.path.join(ROOT, 'core', 'hamlet')
-CORE_FILES = [os.path.join(ROOT, 'core', 'space', '20-core-space.js'),
+# core/camp's census and pitch (C4: the herders' camps; 40-50 are the work camps, the Tents kit's mapping and the outlaws: not taken)
+_CAMP = os.path.join(ROOT, 'core', 'camp')
+CORE_FILES = [os.path.join(_CAMP, f) for f in ('10-camp-cultures.js', '20-camp-census.js', '30-camp-pitch.js')] + [os.path.join(ROOT, 'core', 'space', '20-core-space.js'),
               os.path.join(ROOT, 'core', 'city', '33-city-strategies.js')] + \
              [os.path.join(_HAMLET, f) for f in sorted(os.listdir(_HAMLET)) if re.match(r'\d\d-hamlet-.*\.js$', f) and f < '40']
 VENDORED = {}
