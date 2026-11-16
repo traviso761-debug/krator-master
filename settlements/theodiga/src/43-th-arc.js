@@ -20,6 +20,20 @@ var TH_ARC=(function(){
   wheel_house:'shrine',altar:'shrine',ancestors_hall:'shrine',damsel_shrine:'shrine',offering_hall:'hall',lamp_hall:'shrine',stair:'antechamber',
   empty:null,cistern:null,passage:null,void:null};
  const HALL={hall:1,shrine:1,kitchen:1,library:1,workshop:1,antechamber:1};
+ /* THE DOME'S DECK (2026-11-16, the owner: "Yes, the Dome next"): its rooms are PAVILIONS, walled round with a door on the
+    crest's side (downstream: the pilgrims come up from the crest), and the big halls are laid out by kits/ancients-interiors'
+    hall recipes in the Xanadu dress (DRESS below): the Relic Hall and the Lamp Hall and the Choir as galleries (relic cases
+    down the middle, the name wall at the back, cushions between), the Offering Hall as a reception (the honey and milk
+    altars as its counters), the Treasury and the Vestry as store halls. Left open: the Hall of the Song (the old fluted
+    dome is its wall), the Threshold of the Fall (open at the Tear), the Damsel's Shrine (a canopy) */
+ const OPEN={sanctum:1,altar:1,damsel_shrine:1};
+ const RECIPE={ancestors_hall:'gallery',lamp_hall:'gallery',music:'gallery',offering_hall:'reception',treasury:'store-hall',wardrobe:'store-hall'};
+ /* the Xanadu dress for the recipes: the Ancients' (whose pieces the page carries), with Xanadu's own where it has them, and
+    the roles whose pieces are not on the page left out */
+ const DRESS={statue:'xanadu_common_relic_case',banner:'xanadu_court_name_wall',hanging:null,lampStd:'xanadu_common_butter_lamp_rack',
+  lampStem:'xanadu_common_butter_lamp_rack',bench:'xanadu_common_meditation_cushion',counter:'xanadu_court_altar',servery:'xanadu_court_altar',
+  bookcase:'xanadu_common_scroll_rack',books:null,crate:'xanadu_common_relic_crate',drum:'xanadu_court_strongbox',pallet:'xanadu_court_strongbox',
+  sacks:null,rug:null,scarecrow:null,stall:null,marketTable:null};   /* the divans and low tables stay the Ancients' (a reception needs two) */
  const zc=x=>-140*(1-Math.pow(x/320,2));
  const prog=u=>PROG[u.kind]===undefined?'store':PROG[u.kind];
  const rnd=v=>Math.round(v*1000)/1000;
@@ -30,8 +44,14 @@ var TH_ARC=(function(){
   return [[u.x0,u.z0],[u.x1,u.z0],[u.x1,u.z1],[u.x0,u.z1]];};
  /* one storey of a unit: a hall, or a bar along its long axis (a box's longer side, an arc's run) */
  function storey(AI,u,i){const y=rnd(u.y0+i*u.h),h=rnd(u.h),id=u.id+'.s'+i,p=prog(u);
-  if(!p||HALL[p]||u.shape==='circle'){const st=AI.hallPlate({id,level:i,y,h,poly:outline(u),kind:p||'corridor',doorEdge:0,doorW:2,furnish:!!p});
-   if(!p)st.rooms.forEach(R=>{R.furnish=false;R.empty=true;});return st;}
+  if(!p||HALL[p]||u.shape==='circle'||(u.area==='dome'&&RECIPE[u.kind])){
+   /* the door on the downstream side: a box's +z edge (2), a circle's +z point (edge 18 of 24) */
+   const O=outline(u),de=u.area==='dome'?(u.shape==='circle'?18:2):0,rec=u.area==='dome'?RECIPE[u.kind]||null:null;
+   const st=AI.hallPlate({id,level:i,y,h,poly:O,kind:p||'corridor',doorEdge:de,doorW:2,furnish:!!p,recipe:rec});
+   if(!p)st.rooms.forEach(R=>{R.furnish=false;R.empty=true;});
+   /* a pavilion's wall round the room, its door the room's */
+   if(u.area==='dome'&&!OPEN[u.kind]){const R=st.rooms[0];st.walls.push({id:id+'.pav',pts:O.concat([O[0]]),y,h,rooms:[R.id,null],door:R.doors[0]?{at:R.doors[0].at,w:R.doors[0].w}:null,broken:false,pavilion:true});}
+   return st;}
   let path,len,depth;
   /* an arc's band is cut in z (the dam's faces are z offsets of its line), but a bar is cut across its path: so the bar's
      depth is the band's at the steepest of the arc it crosses (cos of that slope), and its run is trimmed at each end by
@@ -53,5 +73,5 @@ var TH_ARC=(function(){
  function entry(AI){return {name:'Theodiga, the inhabited levels',frag:'43-th-arc.js',culture:'xanadu',wealth:.6,
   types:['religious','dwelling-multi','civic'],furnish:true,buildings:()=>buildings(AI)};}
  function levels(){const ys=new Set();for(const u of TH_ARC_PROGRAM)for(let i=0;i<u.n;i++)ys.add(rnd(u.y0+i*u.h));return [...ys].sort((a,b)=>a-b);}
- return {buildings,entry,levels,PROG,HALL,outline};
+ return {buildings,entry,levels,PROG,HALL,OPEN,RECIPE,DRESS,outline};
 })();

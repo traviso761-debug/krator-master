@@ -42,6 +42,16 @@ for(const name of Object.keys(CHECKS)){const [pass,detail]=CHECKS[name](B);T.ok(
 /* every storey passes the plates' own audit (rooms inside the storey's outline, their areas) */
 {let fails=0,first='';for(const b of B)for(const st of b.storeys){const O=st.outline,f=AI.storeyAudit(st,(x,z)=>inPoly([x,z],O)||O.some(p=>Math.hypot(p[0]-x,p[1]-z)<.2));if(f.length){fails++;if(!first)first=b.id+': '+f[0];}}
  T.ok('every storey passes AI.storeyAudit ('+fails+' failing'+(first?'; '+first:'')+')',fails===0,first);}
+/* the Dome's deck (2026-11-16): every room but the open ones is a pavilion, walled round with its door gap on the crest's side
+   (downstream, +z of the room's centre); the big halls carry their recipe */
+{const dome=B.filter(b=>b.area==='dome');let bad=[];
+ for(const b of dome){const st=b.storeys[0],W=st.walls.find(w=>w.pavilion),R=st.rooms[0],open=TH_ARC.OPEN[b.kind];
+  if(open&&W)bad.push(b.id+' walled but open');if(!open&&!W)bad.push(b.id+' not walled');
+  if(W){const n=R.poly.length,cz=R.poly.reduce((s,p)=>s+p[1]/n,0);if(!W.door||W.door.at[1]<cz)bad.push(b.id+' door not downstream');}
+  if(TH_ARC.RECIPE[b.kind]&&R.recipe!==TH_ARC.RECIPE[b.kind])bad.push(b.id+' without its recipe');}
+ T.ok('the Dome\'s rooms are pavilions with their doors downstream, the big halls with their recipes ('+(bad.join('; ')||dome.length+' rooms')+')',bad.length===0,bad.join('; '));
+ const neg=JSON.parse(JSON.stringify(dome[3].storeys[0]));neg.walls=[];
+ T.ok('negative: a pavilion without its wall is caught',!TH_ARC.OPEN[dome[3].kind]&&!neg.walls.find(w=>w.pavilion));}
 const L=TH_ARC.levels();T.ok('the cut-away has '+L.length+' levels, 370 to 420 m',L.length>=20&&Math.abs(L[0]-370)<.01&&Math.abs(L[L.length-1]-420)<.01,L.join(' '));
 T.ok('the plan reruns the same',JSON.stringify(TH_ARC.buildings(AI).map(b=>b.storeys))===JSON.stringify(B.map(b=>b.storeys)));
 T.done();

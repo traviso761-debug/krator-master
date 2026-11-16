@@ -14,6 +14,9 @@
 // Loaded after 8zz-interiors.js (its name sorts after it) and before 90-scene.js runs the rows; nothing without the bundle.
 if(typeof KratorAncientsInteriors!=='undefined'&&typeof TH_ARC!=='undefined'&&typeof interiorBegin==='function'){
  (function(){const AI=KratorAncientsInteriors;AI.KIT.dam=TH_ARC.entry(AI);
+  /* the Xanadu dress the Dome's hall recipes are laid out in (TH_ARC.DRESS over the Ancients'): the dam's plan is the only
+     one furnished in the culture xanadu on this page */
+  if(AI.DRESS&&!AI.DRESS.xanadu)AI.DRESS.xanadu=Object.assign({},AI.DRESS.ancient,TH_ARC.DRESS);
   const kp=AI.kitPlan;AI.kitPlan=function(t,d,o){if(t!=='dam')return kp.call(AI,t,d,o);const P=kp.call(AI,t,5,o);P.furnish=true;P.state='intact';return P;};
   const ib=interiorBegin,ip=interiorPass;
   interiorBegin=function(k,d,gx,gz){const m=ib(k,d,gx,gz);if(m&&k==='dam')m.d=5;return m;};

@@ -335,8 +335,15 @@ records drawn from the scrap Xanadu set and the Qiblai kit (`XAK`, `kit_bundle.b
       interiors target): white partitions with doors on core/door, 14,753 pieces of Xanadu furniture from 117 audited room
       templates, drawn when a part is opened. Ten parts open apart (the select "Interior", `[` `]` a level, `x` closes);
       views 'Inside the crest', 'Inside a fin head', 'Inside the Dome'.
-- [ ] **The Dome's deck rooms are unwalled areas** (hall plates make no walls) with few pieces (177 in 27 rooms): the shrine's
-      halls want the catalog's hall recipes (`AI.recipe`) in a Xanadu dress, and a pavilion or screen round each.
+- [x] ~~The Dome's deck rooms are unwalled areas~~ (2026-11-16, the owner: "Yes, the Dome next"): every room on the deck but
+      the three open ones (the Hall of the Song under the old fluted dome, the Threshold of the Fall, the Damsel's canopy) is a
+      pavilion, walled round with its door on the crest's side (`TH_ARC.OPEN`); the big halls are laid out by
+      kits/ancients-interiors' hall recipes in a Xanadu dress (`TH_ARC.RECIPE`, `TH_ARC.DRESS` over the Ancients' as
+      `AI.DRESS.xanadu`): the Relic Hall, the Lamp Hall and the Choir as galleries, the Offering Hall as a reception, the
+      Treasury and the Vestry as store halls. 417 pieces on the deck (it had 177); the recipe audit passes.
+- [ ] **The Xanadu dress borrows the Ancients' couches and low tables** (a reception's recipe needs two divans and the bundle
+      carries no Xanadu divan); its pallets are strongboxes, its rugs, sacks and hangings left out. A Xanadu divan, rug and
+      hanging in the catalog would finish it.
 - [ ] **The interiors stand inside solid shells**: the crest's blocks and the fins are the kit's solid boxes, so the rooms show
       only through the cut-away; their windows are painted on the shell, not cut through to the rooms. The gallery's rooms sit
       inside the dam's mass with no openings to the faces.
