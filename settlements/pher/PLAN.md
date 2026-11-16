@@ -216,6 +216,10 @@ That makes **about 105 km, about 4 days** at the tune's 25 km a day. The tune's 
 (the straight line × 1.2), so it should be lengthened (section 8). It joins the Thalaba plan's road, which was drawn up
 the same valley from the old shore.
 
+**The mule path** (the owner, 2026-11-16, in the Thalaba session: "Yes, a mule path"; `settlements/thalaba`): pack mules and
+walkers take the straight line up the scarp from Thalaba, reaching Phēr's rim by the fair ground (about 841.25,1488.25) and going
+down the wall into the town. On the town's page it is the way north from the fair ground; the carts keep the Qol road.
+
 **The edges.** P7's ~60 lake hamlets between the towns, and the plain's farming villages, are left to `core/hamlet` (a ring
 like Erehwon's and Qiblai's, `KHAMLET.village`) after the town is built.
 
@@ -290,7 +294,15 @@ tune at step P1 (the tune's session):
 - **P0:** `tools/scale-model/edit_517_pher.py` (the pin `spher0north1`, the headland, the east point, the Swīṭ Siṭrīm); `tests/test_smodel.py` section 17.
 - **P1:** `core/region/data/xan-tune.js` (82dd21e8f, the open-world sites session): the five additions, the Qol road at 105 km, P7's point; `test-xan-economy.js` 50 passed.
 - **P2:** `openworld/xanadu-north-shore` (README.md there): the cut, Phēr's farming ring, the Thalaba road (104.8 km, 7 hans, 6 bridges); its GPU verify passes.
-- **P3:** this folder's town on `core/city` (README.md): two levels, about 1,280 buildings for about 6,700 people; `tests/test-pher-site.js` and `verify.py`.
+- **P3:** this folder's town on `core/city` (README.md): two levels and the wall between, about 1,190 buildings for about 6,300 people; `tests/test-pher-site.js` and `verify.py`.
+
+**Done (2026-11-16, the owner: "work on p4-p5 and open / missing issues"; answers 12-14):**
+- **The heir's seat** (12, "yes and yes"): the palace above the top terrace (the kit's hollow citadel palace, the Grand Vizier's design, walk-in), its garden court and gate, the barracks and watch of the Sultan's own guard, the water-stair on the cove and the heir's barge.
+- **The caravanserai** (13, "build xanadu one"): `xa_caravanserai`, the kit's new piece (opt-in, `kits/xanadu/extra`), on the rim by the Thalaba road, with its mule yard.
+- **The wall** (14, "houses line lower switchbacks"): the avenue's three lower legs lined with houses on their lakeward side.
+- **P4:** the lake craft (`xa_dugout`, `xa_launch`, `xa_lake_barge`, opt-in) and the harbour's traffic from the tune: moored, beached, fishing, and the four runs moving with the page's clock. Their schedule waits for P6.
+- **P5:** the interiors with `?interiors=1` (every house with an item in the kit's set, the factor house, the inns, the barracks, the caravanserai's ranges, the heir's palace).
+- **Open issues:** the ground textured with the biome pack's sets; the beach shelving into the water (it was a 2.7 m step); the flora over the town's mask.
 
 ## 7. Questions for the owner
 
@@ -312,14 +324,16 @@ tune at step P1 (the tune's session):
 11. ~~**The region's name and box.**~~ **Reach east, not the long isle:** `openworld/xanadu-north-shore` reaches along the
     shore to Ḍāiyar (870,1500) by corridors; the long isle is outside every polygon.
 
+**Answered 2026-11-16 (third round):**
+12. ~~**The heir's household.**~~ **Grander, with a guard of the Sultan's own** ("yes and yes").
+13. ~~**The caravanserai.**~~ **A Xanadu one of its own** ("build xanadu one").
+14. ~~**The wall between the levels.**~~ **Houses line the lower switchbacks.**
+
 **Still open:**
-12. **The heir's household.** The plan draws the governor's house as the kit's vizier's house on the wall's bench. Should
-    the heir's seat be grander (a small palace with a garden court and a water-stair to the cove), and does the heir keep
-    a guard of the Sultan's own?
-13. **The caravanserai.** The rim's caravan yard stands in for one. Use Qiblai's caravanserai (`qb_caravanserai`) at Phēr,
-    or a Xanadu one of its own?
-14. **The wall between the levels.** The avenue's switchbacks carry only a stall or teahouse at each turn. Should houses
-    line its lower legs (a ribbon of the town up the wall), or is the wall left to the terraced gardens?
+15. **The heir's own palace.** The seat uses the Grand Vizier's citadel design (walk-in). Should the heir have a palace
+    of its own design (a commission for the citadel's builders), or does this one stand?
+16. **The fair's days (P6).** The tune proposes days 3 and 6 of the lake's week (`T.fairDays`). Keep them? On those days the
+    fair ground fills with stalls and the launches of the north shore come in.
 
 ## 8. Found on the way (for the sessions that own them; not changed here)
 

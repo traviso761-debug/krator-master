@@ -3,7 +3,11 @@
   "town": "pher.html"
  },
  "external": [
-  "settlements/pher/gen/69p-kcity-bundle.js"
+  "settlements/pher/gen/69p-kcity-bundle.js",
+  "kits/xanadu/extra/69dz-ix-xanadu-extra.js",
+  "kits/xanadu/extra/88c-xa-caravanserai.js",
+  "kits/xanadu/extra/88d-xa-lakecraft.js",
+  "kits/xanadu/extra/88e-xa-stall.js"
  ],
  "scoped": [
   "69p-kcity-bundle.js"
@@ -12,6 +16,23 @@
   "69p-kcity-bundle.js",
   "89zp-ph-site.js",
   "90q-ph-world.js",
-  "90r-ph-build.js"
+  "90r-ph-build.js",
+  "90s-ph-boats.js",
+  "69dz-ix-xanadu-extra.js"
+ ],
+ "interiors": [
+  "town"
+ ],
+ "furniture": [
+  "xanadu",
+  "eastabyss",
+  "generic",
+  "generic-goods",
+  "jobs"
+ ],
+ "furnitureTex": true,
+ "interiorSets": [
+  "xanadu",
+  "xanadu-citadel"
  ]
 }

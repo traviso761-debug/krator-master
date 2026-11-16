@@ -15,13 +15,16 @@
 // the headland west of the cove (a ridge 60 m high running 1.5 km into the lake) and the low point east of it. The Swīṭ
 // Siṭrīm comes down to the cove's head: a channel on the plain and the strand, a wooded ravine ~30 m deep down the wall.
 //
-// THE PLAN: two levels (the owner), each a core/city instance in its own frame:
+// THE PLAN: two levels (the owner), each a core/city instance in its own frame, and the wall between:
 //   Lower Phēr (PH_LOW)  the strand round the cove and the wall's foot: the quays, the strand street, terrace streets along
-//                        the wall's contours, cross lanes up it, the stair avenue (the lit avenue's foot); the governor's
-//                        house on its bench; the warehouses, boat sheds, the generator, the pilgrims' house, the bath
-//   Upper Phēr (PH_UP)   on the rim: the fair ground, the temple of the Decree, the caravan yards (the caravanserai is owed:
-//                        Qiblai's kit has it), the province's granaries, the barracks, the houses round them
-//   between them         the lit avenue's switchbacks up the wall (PH_ROAD), a teahouse and a shrine on its turns
+//                        the wall's contours, cross lanes up it, the stair avenue (the lit avenue's foot); the heir's
+//                        palace above the top terrace with its garden court, gate and guard (the owner: grander, the
+//                        Sultan's own guard); the water-stair and the heir's barge; the warehouses, boat sheds, the
+//                        generator, the pilgrims' house, the bath, the factor house; the watch and light on the headland
+//   Upper Phēr (PH_UP)   on the rim: the fair ground, the temple of the Decree, the caravanserai (the kit's new piece, opt-in:
+//                        kits/xanadu/extra), the mule yard, the province's granaries, the barracks, the houses round them
+//   the wall (PH_WALL)   the lit avenue's switchbacks up the wall (PH_ROAD), its lower legs lined with houses on their
+//                        lakeward side (the owner: "houses line lower switchbacks"); a teahouse or a stall row on each turn
 // Blocks are filled by core/city's frontage-courts (KCITY.strategies) with the Xanadu kit's houses; the civic pieces are
 // placed first as hosts (stamped HARD), the streets laid as ways. Every lot is a core/city record; 90r draws the records.
 var PH={SEED:84391,TURN:17*Math.PI/180,UP:[220,-4920],LAKE:0,
@@ -34,7 +37,7 @@ const phShoreZ=x=>-PH.COVE.depth*Math.exp(-Math.pow((x-PH.COVE.x)/PH.COVE.half,2
 // the stream's line: its x at z (from the cove's head inland, drifting a little east up the wall)
 const phStreamX=z=>PH.COVE.x+Math.max(0,-z-PH.COVE.depth)*.03;
 // the land's height at inland distance d (from the waterline)
-function phProfile(d){const W=PH.WALL;if(d<0)return-1.5-.18*(-d)-.0006*d*d;
+function phProfile(d){const W=PH.WALL;if(d<0)return 1.2-2.7*phSm(0,6,-d)-.18*(-d)-.0006*d*d;   /* the beach shelving into the water: the waterline about 2.5 m out of the shore line */
  return 1.2+19*phSm(0,W.strand,d)+W.rise*Math.max(0,Math.min(d,W.top)-W.strand)+W.plain*Math.max(0,d-W.top);}
 function phH(x,z){const d=phShoreZ(x)-z;let y=phProfile(d);
  // the stream: a channel on the strand and the plain, a ravine down the wall
@@ -87,26 +90,35 @@ const PH_CIVIC_LOW=[
  ['xa_temple_ortakoy',470,'strand1',0,'the pilgrims\' house of the Azure Dream, facing Grēṭ-Āil'],
  ['xa_teahouse',260,'strand1',0,'the strand\'s teahouse'],['xa_bath',560,'band2',0,'the bath'],
  ['xa_rich_b',-230,'band3',0,'the Two Horns\' factor house'],
- ['xa_vizier',360,'gov',0,'the governor\'s house: the Sultan\'s heir\'s seat (the owner, 2026-11-16)'],
+ /* the heir's seat (the owner, 2026-11-16: the seat held by the Sultan's heir; "yes and yes": grander, with a guard of the
+    Sultan's own): the palace on the wall above the top terrace, its garden court, its gate, the guard's barracks and watch
+    beside it; the water-stair on the cove's east side, the heir's barge moored at it */
+ ['xa_cit_vizier',380,'d940',0,'the heir\'s palace: the seat of Nōrth-Shor, held by the Sultan\'s heir (the kit\'s hollow citadel palace, the Grand Vizier\'s design: walk-in with ?interiors=1)'],
+ ['xa_rill_garden',318,'d925',0,'the heir\'s garden court'],['xa_palace_gate',380,'d860',0,'the heir\'s gate'],
+ ['xa_barracks',560,'d905',0,'the barracks of the Sultan\'s own guard'],['xa_watch',455,'d860',0,'the guard\'s watch at the heir\'s gate'],
+ ['xa_quay',320,null,0,'the heir\'s water-stair: the court\'s landing',2],['xa_barge',320,'w22',0,'the heir\'s barge, moored at the water-stair'],
  ['xa_watch',-520,'head',.6,'the watch on the headland'],['xa_lighthouse',-370,'tip',.6,'the harbour light at the headland\'s tip']];
 const PH_CIVIC_UP=[
  ['xa_temple',0,-120,0,'the temple of the Decree on the fair ground'],['xa_guild_farm',150,-125,0,'the grain office (Nōrth-Shor\'s tithe)'],
  ['xa_granary',290,-230,0,'a granary'],['xa_granary',315,-230,0,'a granary'],['xa_granary',340,-230,0,'a granary'],['xa_granary',290,-255,0,'a granary'],['xa_granary',315,-255,0,'a granary'],['xa_granary',340,-255,0,'a granary'],
- ['xa_warehouse',-260,-200,0,'the caravan yard\'s store (the caravanserai is owed)'],['xa_warehouse',-210,-200,0,'the caravan yard\'s store'],
- ['xa_corral',-260,-260,0,'the mule yard'],['xa_pens',-225,-260,0,'the mule pens'],['xa_barracks',330,40,Math.PI/2,'the watch\'s barracks'],
+ /* the caravanserai (the owner, 2026-11-16: "build xanadu one": kits/xanadu/extra/88c-xa-caravanserai.js), its gate east
+    toward the Thalaba road, the mule yard and pens beside it */
+ ['xa_caravanserai',-250,-240,Math.PI/2,'the caravanserai: the Thalaba road\'s and the fair\'s inn'],
+ ['xa_corral',-335,-245,0,'the mule yard'],['xa_pens',-335,-205,0,'the mule pens'],['xa_barracks',330,40,Math.PI/2,'the watch\'s barracks'],
  ['xa_bath',-300,60,0,'the rim\'s bath']];
 
 function phPlaceCivic(C,L,spec,where){const K=KCITY.lib,SLx=K.SL,PLAN_=K.plan(),out=[];
- for(const [key,px,pz,ry,why] of spec){const D=phDims(key,0);if(!D){out.push({key,err:'no def'});continue;}
+ for(const [key,px,pz,ry,why,v0] of spec){const v=v0|0,D=phDims(key,v);if(!D){out.push({key,err:'no def'});continue;}
   let x=px,z=pz;
   if(typeof pz!=='number'){const zs=phShoreZ(px);
    z=pz===null?zs-D.d/2+5:pz==='strand1'?zs-60:pz==='strand2'?zs-108:pz==='band2'?zs-400:pz==='band3'?zs-640:pz==='gov'?zs-900:
-    pz==='head'?-40:pz==='tip'?1050:zs-60;
+    pz==='head'?-40:pz==='tip'?1050:pz[0]==='d'?zs-Number(pz.slice(1)):pz[0]==='w'?zs+Number(pz.slice(1)):zs-60;
    if(pz==='head'||pz==='tip'){const R=PH.HEAD,t=pz==='head'?.15:.82;x=R.a[0]+(R.b[0]-R.a[0])*t;z=R.a[1]+(R.b[1]-R.a[1])*t;}}
   const q=L.P(x,z),u=[Math.cos(ry),-Math.sin(ry)],o=K.obb(q,u,D.w/2,D.d/2);
-  const lot={id:PLAN_.lots.length,cls:'landmark',role:why,key,v:0,slot:0,wealth:1,x:q[0],z:q[1],y:0,ry,w:D.w,d:D.d,h:D.h,lot:o,bo:o,way:-1,side:0,s:0,born:1,died:null,civic:true,why};
+  const lot={id:PLAN_.lots.length,cls:'landmark',role:why,key,v,slot:0,wealth:1,x:q[0],z:q[1],y:0,ry,w:D.w,d:D.d,h:D.h,lot:o,bo:o,way:-1,side:0,s:0,born:1,died:null,civic:true,why};
   const st=KCITY.stance(o,(a,b)=>L.h(a,b),{maxDrop:24});lot.y=st?st.y:L.h(q[0],q[1]);if(st)lot.drop=st.drop;
   if(key==='xa_quay'||key==='xa_boatshed')lot.y=1.2;   /* on the waterline: the quay's deck at the strand's foot */
+  if(key==='xa_barge'){lot.y=PH.LAKE;delete lot.drop;}   /* afloat */
   PLAN_.lots.push(lot);SLx.hashLot(lot);SLx.register(lot);SLx.R.stampPoly(K.obbCorners(K.obb(q,u,D.w/2+3,D.d/2+3)),K.OCC.HARD,lot.id);out.push(lot);}
  return out;}
 
@@ -140,7 +152,7 @@ function phLowSteps(){const L=PH_LOW_L,K=()=>KCITY.lib;return[
     const kind=j===0?'strand':j===2?(near?'rich':'middle'):near?'middle':'poor';
     blocks.push({id:'low-'+i+'-'+j,i,j,poly:phBand(L,PH_D[j],PH_D[j+1],x0,x1,j===0?5:4.5),kind,lanes:x1-x0>400});}
    PH_LOW.blocks=blocks;
-   PH_LOW.courts=KCITY.strategies['frontage-courts'].run(blocks,{step:6,seed:PH.SEED,focus:L.P(140,-600),pools:PH_POOLS,small:PH_SMALL,gaps:PH_GAPS,garden:{rich:.3,middle:.18,poor:.1}});}}];}
+   PH_LOW.courts=KCITY.strategies['frontage-courts'].run(blocks,{step:6,seed:PH.SEED,focus:L.P(140,-600),pools:PH_POOLS,small:PH_SMALL,gaps:PH_GAPS,garden:{rich:.3,middle:.18,poor:.1},infill:{step:10,yard:.42}});}}];}
 
 // ---------------------------------------------------------------- Upper Phēr: on the rim, round the fair ground
 const PH_UP_L=phLevel(PH.UP);
@@ -158,8 +170,9 @@ function phUpSteps(){const L=PH_UP_L,K=()=>KCITY.lib,FX=[-420,-140,140,420],FZ=[
    for(const x of FX)S.addWay('side',[[x,-440],[x,440]],3,{tag:'street x'+x});
    /* the lit avenue arrives from the wall at the south edge, on the fair ground's axis */
    S.addWay('avenue',[[0,PH_FAIR.hd+8],[0,450]],3,{tag:'the lit avenue (from the wall)'});
-   /* the Thalaba road leaves north from the fair ground */
-   S.addWay('avenue',[[0,-PH_FAIR.hd-8],[0,-450]],3,{tag:'the Thalaba road'});}},
+   /* north from the fair ground: the mule path straight up the scarp to Thalaba (the owner, 2026-11-16, in the Thalaba
+      session: "Yes, a mule path"; settlements/thalaba). The carts go west along the plain to the Qol valley (105 km) */
+   S.addWay('avenue',[[0,-PH_FAIR.hd-8],[0,-450]],3,{tag:'the mule path to Thalaba'});}},
  {name:'frontage and courts',run(C){const blocks=[],X=FX,Z=FZ;
    for(let j=0;j<Z.length-1;j++)for(let i=0;i<X.length-1;i++){const x0=X[i],x1=X[i+1],z0=Z[j],z1=Z[j+1],cx=(x0+x1)/2,cz=(z0+z1)/2;
     if(Math.abs(cx)<PH_FAIR.hw&&Math.abs(cz)<PH_FAIR.hd)continue;   /* the fair ground */
@@ -170,7 +183,7 @@ function phUpSteps(){const L=PH_UP_L,K=()=>KCITY.lib,FX=[-420,-140,140,420],FZ=[
      blocks.push({id:'up-'+i+'-'+j+'e',i:i*2+1,j,poly:[[6+e,z0+e],[x1-e,z0+e],[x1-e,z1-e],[6+e,z1-e]],kind,lanes:false});continue;}
     blocks.push({id:'up-'+i+'-'+j,i:i*2,j,poly,kind,lanes:(x1-x0)>250&&(z1-z0)>200});}
    PH_UP.blocks=blocks;
-   PH_UP.courts=KCITY.strategies['frontage-courts'].run(blocks,{step:6,seed:PH.SEED+1,focus:[0,0],pools:PH_POOLS,small:PH_SMALL,gaps:PH_GAPS,garden:{middle:.2,poor:.15}});}}];}
+   PH_UP.courts=KCITY.strategies['frontage-courts'].run(blocks,{step:6,seed:PH.SEED+1,focus:[0,0],pools:PH_POOLS,small:PH_SMALL,gaps:{fair:[2,5],middle:[8,15],poor:[9,18]},garden:{middle:.3,poor:.35},infill:{step:13,yard:.5}});}}];}
 
 // ---------------------------------------------------------------- the lit avenue up the wall: switchbacks from the stair avenue's top to the rim
 // legs across the wall at about 6 % (each 900 m along x for ~55 m of rise), from Lower's top (page 140, shore-1180) to
@@ -180,17 +193,45 @@ function phRoad(){const P=[],x0=140,xa=-260,xb=560,top=PH.UP[1]+450,zs=phShoreZ(
  const stops=[];for(let k=1;k<P.length-1;k++){const p=P[k],side=p[0]>200?1:-1;stops.push({key:k%2?'xa_teahouse':'xa_shops',x:p[0]+side*30,z:p[1],ry:side>0?-Math.PI/2:Math.PI/2,why:k%2?'a teahouse on the avenue\'s turn':'a stall row on the avenue\'s turn'});}
  return{pts:P,w:12,stops};}
 
-// ---------------------------------------------------------------- run both levels
-var PH_LOW={},PH_UP={},PH_ROAD=null,PH_PLACE=[],PH_ERR=null;
+
+// ---------------------------------------------------------------- the wall: the lower switchbacks lined with houses (the owner, 2026-11-16)
+// A third core/city instance round the avenue's lower legs (PH_WALL_LEGS of them): the avenue laid as its way, the civic
+// pieces of Lower Phēr that reach into its raster stamped HARD, the stream kept clear, and a strip on each leg's lakeward
+// side (the view over the cove) filled by frontage-courts, its ends left open at the turns (40 m) for the stalls there.
+// The uphill side stays the wall's terraced gardens.
+const PH_WALL_LEGS=3,PH_WALL_L=phLevel([150,-1900]);
+function phWallSteps(){const L=PH_WALL_L,K=()=>KCITY.lib;return[
+ {name:'the ground',run(C){const k=K(),R=k.SL.R=new k.Raster(C.tune.rasterHalf,C.tune.cell);R.occ.fill(k.OCC.OUT);
+   const P=PH_ROAD.pts.slice(0,PH_WALL_LEGS+1),xs=P.map(q=>q[0]),zs=P.map(q=>q[1]),x0=Math.min(...xs)-80,x1=Math.max(...xs)+80,z0=Math.min(...zs)-80,z1=Math.max(...zs)+80;
+   const Z=[L.P(x0,z0),L.P(x1,z0),L.P(x1,z1),L.P(x0,z1)];k.SL.R.land=KCITY.site.zoneRaster(R,Z,{dry:1,h:L.h});k.SL.minSpacing=KCITY.site.minSpacing();k.plan().zone=Z;
+   phStreamClear(R,L,k.OCC);
+   for(const c of PH_LOW.civic||[]){if(!c.bo)continue;const q=L.P(c.x+PH_LOW_L.o[0],c.z+PH_LOW_L.o[1]);R.stampPoly(k.obbCorners(k.obb(q,c.bo.u,c.bo.hw+3,c.bo.hd+3)),k.OCC.HARD,-1);}}},
+ {name:'the avenue',run(C){K().SL.addWay('avenue',PH_ROAD.pts.slice(0,PH_WALL_LEGS+2).map(q=>L.P(q[0],q[1])),3,{tag:'the lit avenue\'s lower switchbacks'});}},
+ {name:'frontage and courts',run(C){const blocks=[];
+   for(let k=1;k<=PH_WALL_LEGS;k++){const a=PH_ROAD.pts[k-1],b=PH_ROAD.pts[k],dx=b[0]-a[0],dz=b[1]-a[1],len=Math.hypot(dx,dz),u=[dx/len,dz/len];let n=[-u[1],u[0]];if(n[1]<0)n=[-n[0],-n[1]];
+    const e=40,i0=7,i1=46,pt=(p,s,o)=>L.P(p[0]+u[0]*s+n[0]*o,p[1]+u[1]*s+n[1]*o);
+    blocks.push({id:'wall-'+k,i:k,j:0,poly:[pt(a,e,i0),pt(a,len-e,i0),pt(a,len-e,i1),pt(a,e,i1)],kind:k===1?'middle':'poor',lanes:false});}
+   PH_WALL.blocks=blocks;
+   PH_WALL.courts=KCITY.strategies['frontage-courts'].run(blocks,{step:6,seed:PH.SEED+2,focus:L.P(140,-1300),pools:PH_POOLS,small:PH_SMALL,gaps:{middle:[6,12],poor:[6,12]},garden:{middle:.3,poor:.3}});}}];}
+
+// ---------------------------------------------------------------- run the levels and the wall
+var PH_LOW={},PH_UP={},PH_WALL={},PH_ROAD=null,PH_PLACE=[],PH_ERR=null;
 function phRun(){
  const mk=(name,half,steps,seed,L)=>KCITY.create({name,tune:phTune(half),seed,ground:{h:L.h},kit:{dims:phDims},rand:'krand',index:{order:'insertion'},steps});
  const A=mk('pher-lower',1300,phLowSteps(),PH.SEED,PH_LOW_L),B=mk('pher-upper',700,phUpSteps(),PH.SEED+1,PH_UP_L);
- PH_LOW.C=A;PH_LOW.plan=A.run();PH_UP.C=B;PH_UP.plan=B.run();PH_ROAD=phRoad();
+ PH_ROAD=phRoad();PH_LOW.C=A;PH_LOW.plan=A.run();PH_UP.C=B;PH_UP.plan=B.run();
+ const W=mk('pher-wall',1100,phWallSteps(),PH.SEED+2,PH_WALL_L);PH_WALL.C=W;PH_WALL.plan=W.run();
  // every standing building in page metres, with its level, its kind and the floor it stands on
  const put=(lev,P,L)=>{for(const T of P.lots){if(T.died!=null||!T.bo)continue;const q=[T.x+L.o[0],T.z+L.o[1]];
    PH_PLACE.push({id:lev+':'+T.id,level:lev,key:T.key,v:T.v|0,x:q[0],z:q[1],ry:T.ry,w:T.w,d:T.d,h:T.h,o:{v:T.v|0,y:T.y==null?phH(q[0],q[1]):T.y},
     kind:T.cls==='landmark'?'civic':'house',why:T.why||T.role||null,court:T.court||null,bo:{c:q,u:T.bo.u,hw:T.bo.hw,hd:T.bo.hd},drop:T.drop||0});}};
- put('lower',PH_LOW.plan,PH_LOW_L);put('upper',PH_UP.plan,PH_UP_L);
+ put('lower',PH_LOW.plan,PH_LOW_L);put('upper',PH_UP.plan,PH_UP_L);put('wall',PH_WALL.plan,PH_WALL_L);
+ // the fair's stalls on the fair ground (opt-in kits/xanadu/extra/88e-xa-stall.js): rows 20 m apart facing their aisles in
+ // pairs, every 9.5 m along, the crossing aisles on the avenue's axis and the Swīṭ Siṭrīm's banks left open; each stall's trade from its own cell
+ {const F=PH_FAIR,U=PH.UP,D=phDims('xa_stall',0);if(D)for(let r=0;r<6;r++){const z=-50+r*20,ry=r%2?Math.PI:0;
+  for(let i=0;i<22;i++){const x=-100+i*9.5;const q=[U[0]+x,U[1]+z];if(Math.abs(x)<10||Math.abs(z)<8||Math.abs(q[0]-phStreamX(q[1]))<16)continue;const v=KRAND.hash(PH.SEED,r,i)%4;
+   PH_PLACE.push({id:'fair:'+r+':'+i,level:'upper',key:'xa_stall',v,x:q[0],z:q[1],ry,w:D.w,d:D.d,h:D.h,o:{v,y:phH(q[0],q[1])+.05},kind:'stall',why:'a stall of the fair',
+    bo:{c:q,u:[Math.cos(ry),-Math.sin(ry)],hw:D.w/2,hd:D.d/2},drop:0});}}}
  for(const s of PH_ROAD.stops){const D=phDims(s.key,0);if(!D)continue;PH_PLACE.push({id:'road:'+s.key+':'+Math.round(s.z),level:'road',key:s.key,v:0,x:s.x,z:s.z,ry:s.ry,w:D.w,d:D.d,h:D.h,
    o:{v:0,y:phH(s.x,s.z)+.1},kind:'roadside',why:s.why,bo:{c:[s.x,s.z],u:[Math.cos(s.ry),-Math.sin(s.ry)],hw:D.w/2,hd:D.d/2},drop:0});}
  // the ways in page metres, for drawing and the checks
@@ -198,10 +239,52 @@ function phRun(){
   PH_UP.plan.ways.map(w=>({cls:w.cls,w:w.w,tag:w.tag,pts:w.pts.map(p=>[p[0]+PH_UP_L.o[0],p[1]+PH_UP_L.o[1]]),closed:w.closed})),
   [{cls:'avenue',w:PH_ROAD.w,tag:'the lit avenue\'s switchbacks',pts:PH_ROAD.pts}]);
  // the people: each house's household by its key (PLAN.md section 2: ~6,000), the civic pieces none
- let people=0;const byLevel={lower:0,upper:0,road:0};for(const p of PH_PLACE){const n=p.kind==='civic'?0:(PH_PEOPLE[p.key]||5);people+=n;byLevel[p.level]+=n;}
+ let people=0;const byLevel={lower:0,upper:0,wall:0,road:0};for(const p of PH_PLACE){const n=p.kind==='civic'||p.kind==='stall'?0:(PH_PEOPLE[p.key]==null?5:PH_PEOPLE[p.key]);people+=n;byLevel[p.level]+=n;}
  PH.people={total:people,byLevel};
  return PH_PLACE;}
-try{phRun();}catch(e){PH_ERR=String(e&&e.stack||e);if(typeof reportErr==='function')reportErr('Phēr plan: '+PH_ERR);}
+
+// ---------------------------------------------------------------- the boats (PLAN.md step P4): moored, beached, out fishing, on the runs
+// From the tune's records (core/region/data/xan-tune.js, which this page does not load; the numbers are copied here and
+// named): lake.cross's six carriers between Phēr and Erehwon (PH.FLEET.cross), the two market rounds (round.north-west,
+// round.north-east), the pilgrims' launch to Grēṭ-Āil (T.loops loop.pher.pilgrims), and the dugouts of ph.fishing (600 crew,
+// two to a dugout: 300; the page draws the ~80 within its ground: beached or out on the near fishing grounds).
+//   PH_BOATS.moored  {id, key, v, x, z, ry}: at the quays (launches furled, cargo barges) and drawn up on the cove's beach
+//   PH_BOATS.out     {id, key, v, x, z, ry, r (the drift's radius), w (its angular speed)}: the fishing dugouts on the water
+//   PH_BOATS.runs    {id, kind, why, pts, boats: [{key, v, phase}], speed (m/s)}: each run a polyline from its quay out to
+//                    the edge of the page's lake, out and back; a boat at phase f is f of the way round the loop at time 0
+// [G data]: plain records; 90s draws them and moves the runs' boats with the page's clock. Every spot and every station of a
+// run is on the water (the checks: tests/test-pher-site.js, verify.py pher-boats).
+PH.FLEET={cross:6,rounds:1,pilgrims:1,dugoutsOut:48,dugoutsBeached:30,speed:12/3.6};
+function phBoats(){const B={moored:[],out:[],runs:[]},S=KRAND.stream(KRAND.child(PH.SEED,'boats'));
+ const zs=phShoreZ,at=(x,front)=>zs(x)+front;
+ // moored: two cargo barges at the cargo quay (-150), three launches at the launches' landing (10), one at the cross-lake quay (190)
+ [[-165,0],[-140,1]].forEach(([x,i])=>B.moored.push({id:'barge:'+i,key:'xa_lake_barge',v:1,x,z:at(x,10)+i*7,ry:Math.PI/2}));
+ [-4,12,28].forEach((x,i)=>B.moored.push({id:'launch:'+i,key:'xa_launch',v:1,x,z:at(x,8),ry:Math.PI/2}));
+ B.moored.push({id:'launch:cross',key:'xa_launch',v:1,x:190,z:at(190,8),ry:Math.PI/2});
+ // drawn up on the beach between the stream's mouth and the cross-lake quay, bows to the lake
+ for(let i=0;i<PH.FLEET.dugoutsBeached;i++){const x=56+i*3.9;B.moored.push({id:'dugout:beach:'+i,key:'xa_dugout',v:2,x,z:zs(x)+.4,ry:(S.next()-.5)*.25});}
+ // out fishing: on the near grounds (0.15-2.5 km out, the caldera bowl falling fast under them), each drifting on a small circle
+ let n=0,tries=0;while(n<PH.FLEET.dugoutsOut&&tries<4000){tries++;const x=-2500+S.next()*5000,z=150+S.next()*2400,h=phH(x,z);
+  if(h>-5)continue;if(B.out.some(o=>Math.hypot(o.x-x,o.z-z)<60))continue;
+  B.out.push({id:'dugout:out:'+n,key:'xa_dugout',v:1,x,z,ry:S.next()*Math.PI*2,r:4+S.next()*14,w:(S.next()<.5?-1:1)*(.004+S.next()*.01)});n++;}
+ // the runs: from a quay's front out of the cove and on to the page's edge; the boats spaced round the loop
+ const run=(id,kind,why,pts,key,count)=>{const boats=[];for(let i=0;i<count;i++)boats.push({key,v:0,phase:(i+.5)/count});B.runs.push({id,kind,why,pts,boats,speed:PH.FLEET.speed});};
+ run('lake.cross','cross','the cross-lake run to Erehwon: lake.cross, six carriers',[[190,at(190,30)],[130,420],[90,1300],[420,9000]],'xa_launch',PH.FLEET.cross);
+ run('round.north-west','round','the north-west market round (Qōqō, Nēṭ, Malbari, Hāibh)',[[-150,at(-150,30)],[-110,520],[-120,1600],[-9000,1800]],'xa_lake_barge',PH.FLEET.rounds);
+ run('round.north-east','round','the north-east market round (Māuṭh, Ōlḍ-Thalaba, Ḍāiyar)',[[-150,at(-150,30)],[-40,620],[700,1000],[9000,1100]],'xa_lake_barge',PH.FLEET.rounds);
+ run('loop.pher.pilgrims','pilgrims','the pilgrims\' launch to Grēṭ-Āil (the Azure Dream)',[[10,at(10,30)],[60,600],[220,1500],[1600,9000]],'xa_launch',PH.FLEET.pilgrims);
+ return B;}
+// a run's loop: out along its points and back on a lane 30 m to the right; returns its stations and their lengths
+function phRunLoop(R){const P=R.pts,out=[];for(let i=0;i<P.length;i++)out.push(P[i]);
+ const back=[];for(let i=P.length-1;i>=0;i--){const a=P[Math.max(0,i-1)],b=P[Math.min(P.length-1,i+1)],dx=b[0]-a[0],dz=b[1]-a[1],L=Math.hypot(dx,dz)||1;
+  back.push([P[i][0]-dz/L*30,P[i][1]+dx/L*30]);}
+ const L=out.concat(back),cum=[0];for(let i=1;i<L.length;i++)cum.push(cum[i-1]+Math.hypot(L[i][0]-L[i-1][0],L[i][1]-L[i-1][1]));
+ return{pts:L,cum,len:cum[cum.length-1]};}
+// where a run's boat is at time t (s): its spot and heading
+function phRunAt(R,loop,b,t){const s=((b.phase*loop.len+t*R.speed)%loop.len+loop.len)%loop.len;let i=1;while(i<loop.cum.length-1&&loop.cum[i]<s)i++;
+ const a=loop.pts[i-1],c=loop.pts[i],f=(s-loop.cum[i-1])/Math.max(1e-6,loop.cum[i]-loop.cum[i-1]);return{x:a[0]+(c[0]-a[0])*f,z:a[1]+(c[1]-a[1])*f,ry:Math.atan2(c[0]-a[0],c[1]-a[1])};}
+var PH_BOATS=null;
+try{phRun();PH_BOATS=phBoats();}catch(e){PH_ERR=String(e&&e.stack||e);if(typeof reportErr==='function')reportErr('Phēr plan: '+PH_ERR);}
 
 // ---------------------------------------------------------------- the flora's mask (the Vale of Xanadu biome Xanadu's page carries)
 // From the plan's records, never from pixels: the Swīṭ Siṭrīm's ravine wooded (1), the headland (.7), the wall's grass
@@ -214,7 +297,7 @@ function phBioMaskMake(){const S=KCITY.lib.KSPACE,B=S.create({cell:40}),W=S.crea
  for(const [lev,L] of[[PH_LOW,PH_LOW_L],[PH_UP,PH_UP_L]])for(const b of lev.blocks||[]){const P=b.poly.map(q=>[q[0]+L.o[0],q[1]+L.o[1]]),xs=P.map(q=>q[0]),zs=P.map(q=>q[1]);
   const cx=(Math.min(...xs)+Math.max(...xs))/2,cz=(Math.min(...zs)+Math.max(...zs))/2;K.insert({P},cx,cz,Math.hypot(Math.max(...xs)-Math.min(...xs),Math.max(...zs)-Math.min(...zs))/2);}
  return function(x,z){if(phH(x,z)<.6)return 0;
-  for(const q of W.query(x,z,1)){const dx=q.b[0]-q.a[0],dz=q.b[1]-q.a[1],L2=dx*dx+dz*dz||1;let t=((x-q.a[0])*dx+(z-q.a[1])*dz)/L2;t=t<0?0:t>1?1:t;if(Math.hypot(q.a[0]+dx*t-x,q.a[1]+dz*t-z)<q.r)return 0;}
+  for(const q of W.query(x,z,1)){const dx=q.b[0]-q.a[0],dz=q.b[1]-q.a[1],L2=Math.max(1e-9,dx*dx+dz*dz);let t=((x-q.a[0])*dx+(z-q.a[1])*dz)/L2;t=t<0?0:t>1?1:t;if(Math.hypot(q.a[0]+dx*t-x,q.a[1]+dz*t-z)<q.r)return 0;}
   for(const p of B.query(x,z,1))if(Math.abs((x-p.x)*p.bo.u[0]+(z-p.z)*p.bo.u[1])<p.bo.hw+1.5&&Math.abs(-(x-p.x)*p.bo.u[1]+(z-p.z)*p.bo.u[0])<p.bo.hd+1.5)return 0;
   if(Math.abs(x-phStreamX(z))<6)return 0;                                                       /* the stream's own channel */
   for(const k of K.query(x,z,1))if(phInPoly([x,z],k.P))return .05;                              /* a yard in a block */

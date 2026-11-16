@@ -21,9 +21,9 @@ CITY.forEach(f => load('core/city/' + f));
 KCITY.lib = { SL, plan: () => PLAN, KSPACE, Raster, OCC, obb, obbCorners };
 // the kit's boxes from its defs
 global.PH_KIT_DIMS = {};
-const XS = path.join(ROOT, 'kits', 'xanadu', 'src');
-for (const f of fs.readdirSync(XS).filter(f => f.endsWith('.js'))) {
-  const s = fs.readFileSync(path.join(XS, f), 'utf8'), re = /XA\.def\(\{/g; let m;
+const XS = [path.join(ROOT, 'kits', 'xanadu', 'src'), path.join(ROOT, 'kits', 'xanadu', 'extra')];   /* extra: the opt-in pieces Phēr takes (kit.json) */
+for (const f of [].concat(...XS.map(d => fs.readdirSync(d).filter(f => f.endsWith('.js')).map(f => path.join(d, f))))) {
+  const s = fs.readFileSync(f, 'utf8'), re = /XA\.def\(\{/g; let m;
   while ((m = re.exec(s))) { const head = s.slice(m.index, m.index + 1500), k = /key:\s*'([^']+)'/.exec(head), b = /\bw:\s*([\d.]+),\s*d:\s*([\d.]+)(?:,\s*h:\s*([\d.]+))?/.exec(head);
     if (k && b) PH_KIT_DIMS[k[1]] = { w: +b[1], d: +b[2], h: b[3] == null ? 8 : +b[3] }; }
 }
@@ -45,7 +45,7 @@ function onStreets(list, ways) { let n = 0, first = null;
     const hit = ways.some(w => { for (let i = 1; i < w.pts.length; i++) for (const q of C) if (segD(q, w.pts[i - 1], w.pts[i]) < w.w / 2 - 0.05) return true; return false; });
     if (hit) { n++; first = first || p.id; } }
   return { n, first }; }
-const WET_OK = { xa_quay: 1, xa_boatshed: 1 };
+const WET_OK = { xa_quay: 1, xa_boatshed: 1, xa_barge: 1 };
 const inWater = list => list.filter(p => !WET_OK[p.key] && corners(p.bo).concat([p.bo.c]).some(q => phH(q[0], q[1]) < 0.2));
 const onStream = list => list.filter(p => { const C = corners(p.bo).concat([p.bo.c]); return C.some(q => { const d = phShoreZ(q[0]) - q[1]; return d > 0 && Math.abs(q[0] - phStreamX(q[1])) < 9; }); });
 
@@ -78,12 +78,29 @@ T.ok('nothing but the quays and the boat sheds stands in the lake; nothing on th
 // ---------------------------------------------------------------- 5. the people and the civic pieces
 const ppl = PH.people.total;
 T.ok('the people about 6,000 (PLAN.md section 2, within 25 %)', ppl > 4500 && ppl < 7500, ppl + ' (' + JSON.stringify(PH.people.byLevel) + ')');
-const want = ['xa_vizier', 'xa_temple_ortakoy', 'xa_quay', 'xa_temple', 'xa_granary', 'xa_generator', 'xa_lighthouse'], have = new Set(P.filter(p => p.kind === 'civic').map(p => p.key));
+const want = ['xa_cit_vizier', 'xa_palace_gate', 'xa_barracks', 'xa_barge', 'xa_caravanserai', 'xa_temple_ortakoy', 'xa_quay', 'xa_temple', 'xa_granary', 'xa_generator', 'xa_lighthouse'], have = new Set(P.filter(p => p.kind === 'civic').map(p => p.key));
 const miss = want.filter(k => !have.has(k));
-T.ok('the governor\'s house, the pilgrims\' house, the quays, the temple, the granaries, the generator and the light placed', !miss.length,
+T.ok('the heir\'s palace, gate, guard and barge, the caravanserai, the pilgrims\' house, the quays, the temple, the granaries, the generator and the light placed', !miss.length,
   miss.length ? 'missing ' + miss.join(', ') : P.filter(p => p.kind === 'civic').length + ' civic pieces');
 const civErr = [].concat(PH_LOW.civic || [], PH_UP.civic || []).filter(c => c.err);
 T.ok('every civic piece has its def', !civErr.length, civErr.map(c => c.key).join(', '));
+
+// ---------------------------------------------------------------- 5b. the boats (PLAN.md step P4): afloat, the runs on open water
+// moored and fishing boats on water deep enough to float (the beached dugouts at the waterline); every station of every
+// run's loop (out and back, every 20 m past its first 40 m off the quay) over at least 1.5 m of water: no run through the
+// headland, the point or the shore
+function boatsBad(B) { const bad = [];
+  for (const m of B.moored) { const h = phH(m.x, m.z); if (m.v === 2 ? (h < -1.2 || h > 1.6) : h > -0.8) bad.push(m.id + ' at ' + h.toFixed(1) + ' m'); }
+  for (const o of B.out) { const h = phH(o.x, o.z); if (h > -5) bad.push(o.id + ' at ' + h.toFixed(1) + ' m'); }
+  for (const R of B.runs) { const L = phRunLoop(R); for (let s = 40; s < L.len - 40; s += 20) { let i = 1; while (i < L.cum.length - 1 && L.cum[i] < s) i++;
+    const a = L.pts[i - 1], c = L.pts[i], f = (s - L.cum[i - 1]) / Math.max(1e-6, L.cum[i] - L.cum[i - 1]), x = a[0] + (c[0] - a[0]) * f, z = a[1] + (c[1] - a[1]) * f, h = phH(x, z);
+    if (h > -1.5) { bad.push(R.id + ' aground at ' + Math.round(x) + ',' + Math.round(z) + ' (' + h.toFixed(1) + ' m)'); break; } } }
+  return bad; }
+{ const B = PH_BOATS, bad = boatsBad(B), n = B.moored.length + B.out.length + B.runs.reduce((a, R) => a + R.boats.length, 0);
+  T.ok('the boats afloat: moored and fishing boats on water, the beached dugouts at the waterline, every run on open water', bad.length === 0 && n >= 80 && B.runs.length === 4,
+    bad.length ? bad.slice(0, 4).join('; ') : n + ' boats, ' + B.runs.length + ' runs');
+  const thru = Object.assign({}, B, { runs: B.runs.concat([{ id: 'through the headland', pts: [[-150, 200], [PH.HEAD.b[0] - 100, PH.HEAD.b[1] - 300], [-2000, 1400]], boats: [], speed: 1 }]) });
+  T.neg('...its negative: a run cut across the headland is caught', X => boatsBad(X).length === 0, thru, B); }
 
 // ---------------------------------------------------------------- 6. the same twice
 const fnv = s => { let h = 2166136261; for (let i = 0; i < s.length; i++) h = Math.imul(h ^ s.charCodeAt(i), 16777619) >>> 0; return h.toString(16); };
