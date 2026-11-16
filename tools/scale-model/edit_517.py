@@ -340,7 +340,7 @@ def springs(En, rep):
         return int(round(float(En[int(round(y)), int(round(x))])))
     S = [
         ('spr_slab_siphon_breach', 'The Siphon-Breach', 1584.0, 1348.0, 'maar', 'warm, CO2', 'the model\'s',
-         'Rises through the flagship maar\'s floor and fills its lake (2,040 m); the lake spills north as Ostrukh Riba. '
+         'Rises through the flagship maar\'s floor and fills its lake (2,040 m); the lake spills south as Ostrukh Riba to Lake Ostrukh (rerouted by edit 4; its old north breach is sealed). '
          'Fed by the confined basalt aquifer the Stalker Range\'s snow recharges (the plan\'s reading, section 3).'),
         ('spr_slab_caldron', 'The Caldron', 1626.0, 1366.0, 'maar', 'hot, CO2', 'the model\'s',
          'Hot pools and a geyser on the Central Chain-Graben maar\'s dry floor; a travertine cone.'),

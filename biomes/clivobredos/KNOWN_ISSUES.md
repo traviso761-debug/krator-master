@@ -5,7 +5,7 @@ Open items are `- [ ]`; build.py counts them.
 ## Stand-ins (say so: CLAUDE.md, "Textures")
 
 - [ ] **The ring's skin is `organic.pleat.skin`**, not the owed `organic.lung.ring` (a helix-ribbed tintable skin); the helix ribs are geometry
-  (the unit tube's ridges), so they read without it. The prompt is in `core/materials/PROMPTS-NEEDED.md` section 44.
+  (the unit tube's ridges), so they read without it. The prompt is in `core/materials/PROMPTS-NEEDED.md` section 54.
 - [ ] **The throat comb is `organic.tendril.banded`** (tinted near black), not the owed `organic.comb.throat`.
 - [ ] **The husk is `organic.lichen.plates`** (grey detail under the faded band), not the owed `organic.husk.dry`. Its geometry is its own since
   2026-11-11 (split along two of its six ribs, the skin beside each split curling out).
