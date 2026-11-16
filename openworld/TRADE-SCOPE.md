@@ -1024,8 +1024,13 @@ is on its western edge under the Iziz highlands.
 **What it reaches:** village pins for the queue, named in Dasrī (the mixed ones in Izani and Dasrī); the camps as `core/camp`
 records; the trade model's Nomad Country and Iziz members.
 
-**Sent** (the owner, 2026-11-15: "Send all eight"): W1-W8 as village pins to the queue. **Delivery unconfirmed:** the queue
-session gave no sign of picking the message up; it may still do so. Re-send if the queue never acknowledges it.
+**Sent** (the owner, 2026-11-15: "Send all eight"): W1-W8 as village pins to the queue. **Queued** (the queue's check, ruins
+included): none collides.
+- **W6 is 54 km from Verge**, not 60 (the queue's Verge pin): the nearest of the eight to any pin, and just under this survey's
+  60 km rule. It is still clear.
+- W7 is 72 km from Arcbeam and W3 87 km from Shade. Every other village is 135 km or more from any pin.
+- The closest pair among the queued sites is W4-W8, at 82 km.
+- The ground heights are read when the edit runs: the queue's machine was short of memory.
 - W1-W3: Nomad Country.
 - W5: Iziz, a Dasri village.
 - W4, W6, W7, W8: Iziz, mixed Izani-Dasri villages.
