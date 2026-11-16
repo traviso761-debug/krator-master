@@ -71,6 +71,10 @@
   08447477d; its ground 1,430 m on the bench, the lake two cells south), and Opal Valley Mines' note names it Lāiṭwāl's works
   village. `openworld/SITES.json` reads it from the model now (`"model": false` gone); the region's site square is the same
   pixel, so the cut and the baked plan stand (`bake_sites.py --check`: fresh).
+- **The carved quarter's rock streams in** (`targets/town/90m-lw-wall.js`): its about 8 s of meshing (KCAVERN.drawRock, 216
+  chunks, about 1 M triangles) runs after the page's first frame, by drawRock's own 64 m tiles, nearest the camera first, about
+  12 ms a frame. `window._hostPending` holds the page's ready for the verify harness until the last tile is drawn (a convention
+  of core/host's README; `tools/harness.py` `READY_JS` waits for it), so every check and view sees the whole rock.
 
 ## Open
 
@@ -81,9 +85,6 @@
       (`KSTRATA` with `OPAL.STRATA`) and `KFAR` past a few km are owed; overhangs it cannot have.
 - [ ] **The ledges' lips are straight in plan**: the screes break the ledges' line, but the lip itself runs straight (the
       band's block and its face meet on one line). A lip that wanders wants the block's top and the face cut on one curve.
-- [ ] **The carved quarter costs about 8 s to mesh** (KCAVERN.drawRock: 216 chunks, about 1 M triangles, of a 30 s load).
-      Meshing it a few chunks a frame, nearest the camera first, needs a pending hook in core/host first: the page is ready
-      after its first frame (core/host 91), so the verify's shots could catch the rock half drawn.
 - [ ] **Interiors near the Stair Foot only**: the bench's houses past 260 m are solid; the wall's fronts past the carved
       quarter are fronts on whole rock (by design: the quarter is what is walked).
 - [ ] No people (`core/charactermodels`).

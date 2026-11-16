@@ -114,8 +114,10 @@ LOAD_MS = 900000
 # they were merged; they still work.
 CHROME_ENV = ("KRATOR_CHROME", "PW_CHROME", "PW_CHROMIUM", "CHROME_PATH", "VERIFY_CHROME", "CHROMIUM")
 # ready: the world is built (`window._ready`; the open world says it as `WORLD.ready`, Voth's city plan and site
-# editor as `_vc.ready` and `_site.ready`), or the error panel has filled
-READY_JS = ("window._ready===true || (window.WORLD&&window.WORLD.ready===true) || (window._vc&&window._vc.ready) || "
+# editor as `_vc.ready` and `_site.ready`), or the error panel has filled. A page that builds on after its first frame
+# (core/host 91: `window._hostPending`, a count it raises while that work is queued and lowers when it is done) is ready
+# when the count is back to 0; a page that never sets it is ready as before
+READY_JS = ("(window._ready===true&&!(window._hostPending>0)) || (window.WORLD&&window.WORLD.ready===true) || (window._vc&&window._vc.ready) || "
             "(window._site&&window._site.ready) || (document.getElementById('errs')&&"
             "document.getElementById('errs').textContent.length>0)")
 STATS_JS = """()=>{const w={};for(const k of Object.keys(window)){if(!k.startsWith('_')||k==='__THREE__')continue;

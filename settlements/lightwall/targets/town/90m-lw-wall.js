@@ -74,8 +74,22 @@ if(typeof KCAVERN!=='undefined'&&KCAVERN.drawRock){
  const P=TG.gz.carve(C,LW_CARVED);const t0=performance.now();C.build();LW_ROCK.buildMs=Math.round(performance.now()-t0);LW_ROCK.prims=P.length;
  const mat=lwRockLayer(new THREE.MeshStandardMaterial({vertexColors:true,roughness:.95,side:THREE.DoubleSide,color:typeof hc==='function'?hc(lwRockCol):lwRockCol}));
  if(KCAVERN.cutLayer){KCAVERN.cutLayer(mat);KCAVERN.cut.above(2.2);KCAVERN.cut.boxes([{x:0,z:LW.WALL-20,hw:LW.CARVE+30,hd:40,ry:0,floor:LW.Y0}]);}
- const R=KCAVERN.drawRock(C,{THREE,material:mat,ground:'drop',attrs:KCAVERN.cutWeight?['aKCut']:[],weight:KCAVERN.cutWeight?KCAVERN.cutWeight(C):null,label:'The Light Wall: the carved quarter\'s rock (KCAVERN, from the Glaziers\' void plans)',name:'lightwall:rock'});
- R.group.children.forEach(m=>{m.receiveShadow=true;m.castShadow=true;m.userData.probeSkip=true;});scene.add(R.group);LW_ROCK.cavern={tris:R.tris,chunks:R.chunks,ms:R.ms};LW_ROCK.tris+=R.tris;LW_ROCK.C=C;}
+ /* meshed after the page is up (KNOWN_ISSUES.md: "the carved quarter costs about 8 s to mesh"): the chunks grouped by
+    drawRock's own 64 m tiles, the tiles nearest the camera first, about 12 ms of them a frame; window._hostPending (core/host
+    91) holds the page's ready for the verify harness until the last tile is drawn. Each tile is drawRock over that tile's
+    chunks alone, so the meshes are the ones one call over every chunk made */
+ const RO={THREE,material:mat,ground:'drop',attrs:KCAVERN.cutWeight?['aKCut']:[],weight:KCAVERN.cutWeight?KCAVERN.cutWeight(C):null,label:'The Light Wall: the carved quarter\'s rock (KCAVERN, from the Glaziers\' void plans)',name:'lightwall:rock'};
+ const LW_RTILE=64,lwTiles=new Map();for(const k of C.chunks){const a=k.split(',').map(Number),tk=Math.floor(a[0]*C.chunk/LW_RTILE)+','+Math.floor(a[2]*C.chunk/LW_RTILE);if(!lwTiles.has(tk))lwTiles.set(tk,[]);lwTiles.get(tk).push(k);}
+ const rockG=new THREE.Group();rockG.name='lightwall:rock';scene.add(rockG);LW_ROCK.C=C;LW_ROCK.cavern={tris:0,chunks:0,ms:0,tiles:lwTiles.size,frames:0,done:false};
+ const lwRQ=[...lwTiles.entries()].map(([tk,keys])=>{const a=tk.split(',').map(Number);return {keys,x:(a[0]+.5)*LW_RTILE,z:(a[1]+.5)*LW_RTILE};});
+ const lwRockTile=T=>{const R=KCAVERN.drawRock(Object.assign(Object.create(C),{chunks:T.keys}),RO);
+  R.group.children.slice().forEach(m=>{m.receiveShadow=true;m.castShadow=true;m.userData.probeSkip=true;rockG.add(m);});
+  LW_ROCK.cavern.tris+=R.tris;LW_ROCK.cavern.chunks+=R.chunks;LW_ROCK.cavern.ms+=R.ms;LW_ROCK.tris+=R.tris;};
+ window._hostPending=(window._hostPending||0)+1;
+ FRAME_HOOKS.push(()=>{if(LW_ROCK.cavern.done)return;const P=camera.position,t0=performance.now();LW_ROCK.cavern.frames++;
+  lwRQ.sort((a,b)=>Math.hypot(a.x-P.x,a.z-P.z)-Math.hypot(b.x-P.x,b.z-P.z));
+  do{try{lwRockTile(lwRQ.shift());}catch(e){reportErr('lightwall rock tile: '+(e&&e.message||e));}}while(lwRQ.length&&performance.now()-t0<12);
+  if(!lwRQ.length){LW_ROCK.cavern.done=true;window._hostPending--;}});}
 else reportErr('lightwall: the wall needs core/terrain (KCAVERN) and its draw');
 /* the cut-away opens the carved rock with the buildings */
 if(typeof cutSet==='function'){const lwCut0=cutSet;cutSet=function(on){if(typeof KCAVERN!=='undefined'&&KCAVERN.cut)KCAVERN.cut.set(on);return lwCut0(on);};}
