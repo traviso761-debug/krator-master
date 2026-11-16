@@ -1028,6 +1028,10 @@
    "bytes": 2235097,
    "sha256": "8d2d1e72829e6a05819fc4e8f1490b4d43c4b61e57093c72c52a4b46c275d677"
   },
+  "kits/coyote/dist/coyote.html": {
+   "bytes": 880743,
+   "sha256": "cd01c54e1c9d2578406bf06fc25b6a3beac5bd3d365595fb8e305d33c48e0205"
+  },
   "kits/crops/dist/crops.html": {
    "bytes": 2574508,
    "sha256": "b575c1a2b9a7616994ad1d9c1ec77fc61c16f253ac2cf58e6b2c927f134ede82"
