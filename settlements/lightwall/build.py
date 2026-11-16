@@ -8,7 +8,8 @@ by "packFrom"), core/terrain's cavern read in place (KCAVERN, its draw and its r
 every build, never edited by hand:
   gen/69l-kcity-bundle.js    core/city and core/space in one closure (as Qiblai's), with the raster's Raster and OCC handed
                              out on KCITY.lib so the bench's own site steps (targets/town/89zl-lw-site.js) can lay its ground
-  gen/69t-tungang-bundle.js  the Tungang kit sealed as TG (kits/tungang/tungang_bundle.py, tex=False, furniture=True): the
+  gen/69t-tungang-bundle.js  the Tungang kit sealed as TG (kits/tungang/tungang_bundle.py, tex='glazier' with its maps beside
+                             the page in dist/lightwall.tex.tungang.js, furniture=True): the
                              Glaziers' gz-* fronts and void plans (TG.gz.draw, TG.gz.carve)
 The page takes core/rand, core/tags (+ core/tags/glazier, opt-in), core/host, core/door, core/lod, core/atmos, core/water and
 core/walk through Xanadu's build; core/city, core/space and the Tungang kit through gen/; core/terrain's cavern by kit.json.
@@ -31,6 +32,8 @@ CITY_JS = ['10-city-core.js', '12-city-index.js', '15-city-ground.js', '20-city-
            '32-city-steps-c.js', '33-city-strategies.js', '40-city-kcity.js']
 SPACE = 'core/space/20-core-space.js'
 GEN = os.path.join(HERE, 'gen')
+DIST = os.path.join(HERE, 'dist')
+SIDE = {}   # the Tungang kit's library pack, written beside the page after Xanadu's build (lightwall.tex.tungang.js)
 
 
 def rd(rel):
@@ -51,7 +54,7 @@ def kcity_bundle():
 def tungang_bundle():
     sys.path.insert(0, os.path.join(ROOT, 'kits', 'tungang'))
     import tungang_bundle as tb
-    js, files = tb.bundle(tex=False, furniture=True, with_files=True)   # vertex colours: the page cap (KNOWN_ISSUES.md)
+    js, files = tb.bundle(tex='glazier', furniture=True, with_files=True, side=SIDE)   # the maps beside the page (the 16 MB cap)
     BSRC.note(*files)
     return js
 
@@ -83,4 +86,14 @@ _rc = subprocess.call([sys.executable, os.path.join(ROOT, 'settlements', 'xanadu
                       cwd=os.path.join(ROOT, 'settlements', 'xanadu'))
 if not _rc:
     BSRC.report()
+    # the Tungang kit's maps beside the page (tools/textures/matlib_pack.py): the closure registers KMAT_SIDE.tungang
+    if SIDE and not BSRC.LISTING:
+        sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures')); import matlib_pack
+        _page = os.path.join(DIST, 'lightwall.html')
+        with io.open(_page, encoding='utf-8') as fh:
+            _html = fh.read()
+        if 'lightwall.tex.tungang.js' not in _html:
+            _html = matlib_pack.write_sidecar(SIDE, _html, DIST, 'lightwall.tex.js', prune=True)
+            with io.open(_page, 'w', encoding='utf-8', newline='') as fh:
+                fh.write(_html)
 sys.exit(_rc)

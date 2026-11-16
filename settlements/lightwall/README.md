@@ -39,5 +39,6 @@ monastery, its ground sets) and core/terrain's cavern (`KCAVERN`, its draw, its 
 | The wall | 321 Glazier sites in four bands (174 carved in the central quarter, 143 fronts on whole rock beyond it, 4 lotus ponds on the shore): cells, household fronts and rich houses, the tea hall and the Register on the main stair, the monks' house, four glass shops, three wheel walks, adits on the Great Potch Line, vein galleries, dark adits; about 2,300 people |
 | The bench | 44 blocks (20 built, 24 the bench terraces' fields with a farmhouse each), about 360 lots from frontage-courts, the bazaar, the assay house, the factor's house and the strongroom, the garrison, the quays and boatsheds, the caravanserai west and the Decree's monastery east on its spur; about 2,400 people |
 | Triangles | about 1 M of fronts, 1.3 M of carved rock, the bench's buildings instanced |
+| Files | `dist/lightwall.html` (15.4 MB), `dist/lightwall.tex.tungang.js` (the Glaziers' textures, 7.7 MB) and Xanadu's `xanadu.tex.*.js`: publish them together |
 
 What is not here yet: `KNOWN_ISSUES.md`.

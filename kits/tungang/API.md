@@ -9,6 +9,8 @@ js = tungang_bundle.bundle(tex='lean')    # eight families (stone, turf, pole, w
 js = tungang_bundle.bundle(tex=False)     # vertex colours only: about 200 KB
 js = tungang_bundle.bundle(furniture=True)   # and the catalog's fellgang, tungang, xanadu, generic and generic-goods pieces sealed in
 js, files = tungang_bundle.bundle(with_files=True)   # and the repo-relative files it read, for --list-sources
+js = tungang_bundle.bundle(tex='glazier', side=side)   # the Glazier set's families; with side={} the maps go into side['tungang']
+                                                         # for a file beside the host page (matlib_pack.write_sidecar: Laitwal)
 ```
 
 The text defines one global, **`TG`**, and needs only a global `THREE` (r128). The engine (`core/engine`), `core/rand`,

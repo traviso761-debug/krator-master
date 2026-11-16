@@ -110,8 +110,10 @@ def furn_text(on):
     return ('/* ---- kits/catalog (furniture_bundle.py: %s) ---- */' % ', '.join(FURN_CULTURES) + NL + furniture_bundle.bundle(FURN_CULTURES) + NL +
             'KratorFurniture.setDetail(.6);' + NL + FURN_HEAD)
 
-def pack(tex=True):
-    """KMAT.pack('tungang', ...) from the committed tex/ (bytes as data URLs: deterministic, no image library)"""
+def pack(tex=True, side=None):
+    """KMAT.pack('tungang', ...) from the committed tex/ (bytes as data URLs: deterministic, no image library). side (a dict):
+    the maps go into side['tungang'] for a file beside the host's page (tools/textures/matlib_pack.py write_sidecar), and the
+    closure registers KMAT_SIDE.tungang (matlib_pack.loader), as a page near the 16 MB cap keeps its packs"""
     pj = os.path.join(TEX, 'pack.json')
     if not tex or not os.path.isfile(pj):
         return "KMAT.pack('tungang', {});\n"
@@ -126,10 +128,15 @@ def pack(tex=True):
         for k, name in sorted(e['files'].items()):
             f[k] = 'data:image/webp;base64,' + base64.b64encode(open(os.path.join(TEX, name), 'rb').read()).decode('ascii')
         out.append(' %s: %s' % (json.dumps(fam), json.dumps(f, sort_keys=True)))
+    if side is not None:
+        sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
+        import matlib_pack
+        side['tungang'] = '{' + NL + (',' + NL).join(out) + NL + '}'
+        return matlib_pack.loader('tungang')
     return "KMAT.pack('tungang', {\n" + ',\n'.join(out) + '\n});\n'
 
 
-def bundle(tex=True, with_files=False, furniture=False):
+def bundle(tex=True, with_files=False, furniture=False, side=None):
     """furniture=True seals the catalog's fellgang, generic and generic-goods pieces in (about 0.4 MB more: README.md, "For
     another world"), so TG.fg.draw furnishes what it draws; off by default"""
     fs = files()
@@ -137,7 +144,7 @@ def bundle(tex=True, with_files=False, furniture=False):
     body = ''
     for n in names:
         if n == '26-matlib-pack.js':
-            body += '/* ---- kits/tungang/tex (generated: the library pack, materials.json) ---- */' + NL + pack(tex) + NL
+            body += '/* ---- kits/tungang/tex (generated: the library pack, materials.json) ---- */' + NL + pack(tex, side) + NL
         else:
             body += '/* ---- %s ---- */%s%s%s;%s' % (rel(fs[n]), NL, rd(fs[n]), NL, NL)
     js = safe('/* TG: the Tungang kit in one closure (kits/tungang/tungang_bundle.py). GENERATED: edit kits/tungang/src or core/. */' + NL +

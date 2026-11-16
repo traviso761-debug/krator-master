@@ -11,7 +11,8 @@
   "core/tags/glazier/52g-tags-glazier.js",
   "core/terrain/39-core-cavern.js",
   "core/terrain/host/39e-core-cavern-draw.js",
-  "core/terrain/host/39h-core-cavern-cut.js"
+  "core/terrain/host/39h-core-cavern-cut.js",
+  "core/terrain/43-core-ground.js"
  ],
  "scoped": [
   "69l-kcity-bundle.js",
@@ -19,7 +20,8 @@
   "52g-tags-glazier.js",
   "39-core-cavern.js",
   "39e-core-cavern-draw.js",
-  "39h-core-cavern-cut.js"
+  "39h-core-cavern-cut.js",
+  "43-core-ground.js"
  ],
  "pack": "qiblai",
  "packFrom": "kits/qiblai",
@@ -38,7 +40,8 @@
   "89zl-lw-site.js",
   "90l-lw-world.js",
   "90m-lw-wall.js",
-  "90r-lw-build.js"
+  "90r-lw-build.js",
+  "43-core-ground.js"
  ],
  "interiors": [
   "town"
