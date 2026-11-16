@@ -36,6 +36,34 @@ Sources:
 
 ## 1. The site
 
+> **The model changed under the site (found 2026-11-16, after the owner's answers).** The owner's lake re-run of edit 7
+> (5f659c054, then ef04e0733) reshaped this stretch of the rim, and the tune moved Erehwon to **841,1517** and the three
+> Marches forts "with Erehwon (+35,+1 px)". `march.e` is now at **881,1541**. Sections 1.1-1.4 survey the model before the
+> re-run. On today's model:
+> - **The east shoulder is gone.** 853,1540 is **323 m** (was 863), `Cfa`. A 22 m lamp there sees only G1, by +7 m.
+> - **The tune's new px sees nothing.** 881,1541 is 650 m, `Csa`, in the hills toward Theodiga. Every target is hidden,
+>   none by less than 94 m.
+> - **What keeps the owner's reasons** (a high brow over the Rift, in thin air, that sees Strongwall's line, the
+>   Tempest, the Tears' camp and Lizard country). A search of x 828-901, y 1522-1565 with a 22 m lamp found:
+>
+> | Candidate | px | Ground | Climate | Sees | Misses |
+> |---|---|---|---|---|---|
+> | **A. The west brow** (*recommended*) | **839,1539** | 716 m on a knoll (782 m at 839,1538), ~1.47 atm | 18 °C, ~925 mm, `Cfb` | G1 +56 (268 km), the Tempest +23 (186), the Tears' camp +29 (179), Tuatara +40 (52), **Komodo +47** (164), the tune's `march.e` px +10 (84) | the south watch fort (now 847,1549: 26 km, -399 m), Erehwon (44 km, -418 m), Sauropolis |
+> | B. The low spur | 856,1563 | 172 m, ~1.57 atm | 19 °C, ~815 mm, `Csa` | all five: G1, the Tempest, the Tears' camp, Tuatara, the south watch fort; Komodo | nothing, but it stands in raid air, 550 m lower |
+> | C. The scarp foot | 851,1545 | -23 m, ~1.6 atm | 23 °C, `Aw` | all five | the house would be in Lizard air |
+>
+> - A's figures are on 500 m steps from the cell's own ground. B and C come from the 1 km search and want the same fine
+>   pass when chosen.
+> - **A's ground:** a knoll with a sheer scarp in front, where the Rift floor is at -2,000 m within 12 km, and a lower
+>   bench behind it to the north (about 600 m at 1536, 455-475 m at 1533-1534).
+>
+>   That is the old shoulder's shape, a knoll with the house's ground behind it, only with a bigger drop to the bench.
+>   The fort stands on the knoll and the precinct on the bench, Gyantse as chosen. The Lamp Stair grows to a long
+>   flight or a ramp.
+> - B and C are spurs with no bench: the precinct would have to be terraced down the spur.
+> - **The site is re-asked of the owner.** The layout's frame and sights (`src/30-bc-layout.js`) and the sheets keep the
+>   east shoulder until the answer.
+
 ### 1.1 The tune's pin: a ravine head
 
 The tune puts `march.e` at **846,1540**. That cell is **-44 m, at the head of a ravine** cut into the Rift's northern
@@ -227,14 +255,15 @@ widening, readable from any bearing) and joins `LH_BEACONS` for its sweep.
 lamp head lies on the plinth's talus, seated by its extents (`core/ruins`). The monastery below is not the fort asset's,
 and keeps its state from its own plan.
 
-## 5. The economy against the tune (proposals only; `core/region/data/xan-tune.js` is not edited here)
+## 5. The economy against the tune (B4, done 2026-11-16 in `core/region/data/xan-tune.js`)
 
-| What | Proposed in the tune | Why |
+| What | In the tune | Why |
 |---|---|---|
-| **The order's house** | a new settlement **`xan.beacon`**, "The Order of the Beacon's head house (the Yellow Monastery, over the Rift)", 300, the Xanadu polity, at the shoulder, beside `march.e`, as `T.tempest` is beside Strongwall: the fort diet less powder (`eats('fort')` without `powder`), its terraces two fifths of its grain | the owner's ~300; the monks take no arms or powder |
-| **Its terraces** | `bc.terraces`, harvest season, about **22 t** of grain a year (0.4 of 300 × 180 kg) | the T0 sheet's 12.7 ha at about 1.8 t/ha |
-| **Its road** | `road.er-beacon` from Erehwon (the same road as `road.march.e`, about 105 km straight): grain, salt, tea and tools; no arms | the capital feeds the Marches (P8) |
-| **`march.e`** | **unchanged**: 150, the fort diet, 10 musketeers, `state:'kept'`. Its px moves from 846,1540 to **853,1540** | the owner's site fork |
+| **The order's house** (**done**) | **`T.beacon`** and the settlement **`xan.beacon`**, "The Order of the Beacon's head house (the Yellow Monastery, below the beacon fort over the Rift)", 300, the Xanadu polity, parent the capital. It stands **at `march.e`'s px, whatever that is** (`T.beacon.fort`), so it follows the fort when the site is settled. The fort diet less arms and powder; keepDays 30 | the owner's ~300; the monks take no arms or powder |
+| **Its terraces** (**done**) | `bc.terraces`, harvest season, two fifths of its grain: about **22 t** a year (0.4 of 300 × 180 kg) | the T0 sheet's 12.7 ha at about 1.8 t/ha |
+| **Its road** (**done**) | `road.er-beacon` from Erehwon, timed like `road.march.e`: grain, salt, tea and tools; no arms | the capital feeds the Marches (P8) |
+| **The test** (**done**) | `test-xan-economy.js` check 31: the house beside the fort, its terraces' grain made, the capital's road landed, no arms or powder eaten, the fort's lamp lit; its negative moves the house 5 km off the fort. 67 passed (and `test-east-rift.js` 13 passed) | |
+| **`march.e`** | 150, the fort diet, 10 musketeers, `state:'kept'`. **Its px is the open question** (section 1): the tune moved it with Erehwon to 881,1541, where a lamp sees nothing. The answer moves it, and `xan.beacon` with it | the owner's site fork, re-asked |
 | **The lamp's oil** | **unchanged**: `T.lit['march.e']` 0.02 stays on the fort. The Sultan's licence pays for the light, and the order's hands keep it | the tune's power check stays as it is; 4,800 kWh covers the lamp (section 4) |
 | **Milk and honey** | not in the tune (no dairy good). The byres and hives are drawn; a `milk` good is for the tune's owner to weigh | the sacraments (`kits/qiblai/PLAN.md` 2a) |
 | **The daughter house** | no change: Qiblai's clergy stay in bulk. *Later:* an offerings transfer from Qiblai's gold house to the head house, as the Fifth is a transfer | |
@@ -277,11 +306,11 @@ and keeps its state from its own plan.
 
 | Step | What | Who | Test |
 |---|---|---|---|
-| **B0** (asked 2026-11-16) | The pin: the beacon fort and the order's house at **853,1540**, through the scale-model session's queue (`local_bf163a02`) | the scale-model session | the pin's ground; the lamp's sights re-run on the edited model |
+| **B0** (asked 2026-11-16; **on hold**) | The pin, through the scale-model session's queue (`local_bf163a02`). It was asked at 853,1540; that knoll is gone on the re-run model (section 1), so the request is held until the owner re-picks the site | the scale-model session | the pin's ground; the lamp's sights re-run on the edited model |
 | **B1** (**done** 2026-11-16) | This plan, the owner's forks answered | | |
 | **B2** (**done** 2026-11-16) | The blueprint: `BLUEPRINT.md`, eight sheets and a section, `FURNITURE.md` (`beacon_blueprint.py` on the shared generator) | | the sheets drawn from the layout; the layout's checks must pass first |
 | **B3** (**done** 2026-11-16) | The layout as data: `src/30-bc-layout.js`, `src/31-bc-rules.js`, `layout_dump.js` | | `node settlements/beacon/test-beacon.js` (35 checks, 17 negatives) |
-| **B4** | The tune: `xan.beacon` (300), its terraces and its road; `march.e`'s px to 853,1540 (section 5) | the tune's owner | `test-xan-economy.js` with a check and a negative for the house |
+| **B4** (**done** 2026-11-16, section 5) | The tune: `T.beacon` and `xan.beacon` (300) at the beacon fort, its terraces and its road from the capital. `march.e`'s px waits on the site | | `test-xan-economy.js` check 31 and its negative |
 | **B5** | The lamp head, `anc_beacon_lamp`, on the lighthouse beam | `kits/ancients`' owner | the Ancients kit's verify |
 | **B6** | The fort asset's `beacon:'ancient'`: the plinth in the keep's place, the gilt chapel on it, the cable channel through the gate; the generator house **outside** the fort, in the order's ward (this plan's change to Strongwall's 5.7) | `kits/xanadu`'s owner (80f, 80g) | `test-fort.js`; the Xanadu verify |
 | **B7** | The house on the open world: the layout's frame on the region's ground at 1:1, the knoll and the saddle fitted, the lamp's sights asserted on the drawn ground | the open-world session | the region's verify; a line-of-sight assert to G1, the Tempest, Tuatara and the south watch fort |
@@ -290,7 +319,8 @@ and keeps its state from its own plan.
 
 ## 8. Questions for the owner
 
-1. ~~**The site.**~~ **Answered 2026-11-16: the east shoulder (853,1540).**
+1. ~~**The site.**~~ **Answered 2026-11-16: the east shoulder (853,1540).** **Re-asked:** the edit 7 re-run took the
+   knoll away (section 1). A, the west brow (839,1539), is recommended; B and C are the low spur and the scarp foot.
 2. ~~**The head house.**~~ **Answered 2026-11-16: about 300, the gold Prismarch here; Qiblai's gold house the
    daughter.**
 3. ~~**The garrison.**~~ **Answered 2026-11-16: the Sultan's fort above, the monastery below (Gyantse).**

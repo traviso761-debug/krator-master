@@ -314,6 +314,21 @@ const lwCheck=(Bk,Tr)=>{const L=Bk['slaitwal0001'],M=Bk.sjuarjbku0,Q=Bk.skm4jjo2
  T.neg('an assay house that took two fifths of the town\'s opal is caught',Tr=>lwCheck(B,Tr).ok,
   Object.assign({},Y.trade,{'fifth.opal.lw':{tithed:Object.fromEntries(Object.entries((Y.trade['fifth.opal.lw']||{}).tithed||{}).map(([k,o])=>[k,{opal:(o.opal||0)*2}]))}}),Y.trade);
  T.neg('a Lāiṭwāl that went hungry is caught',Bk=>lwCheck(Bk,Y.trade).ok,Object.assign({},B,{'slaitwal0001':Object.assign({},B['slaitwal0001'],{hungry:{grain:1e6},eaten:{grain:1}})}),B);}
+// 31. B4 (settlements/beacon/PLAN.md; the owner, 2026-11-16): the Order of the Beacon's head house beside the beacon fort,
+//     its terraces' grain and the capital's road landed, its monks taking no arms and no powder, the fort's lamp still lit
+const bcCheck=(Bk,Tr,Ss)=>{const bad=[],Bc=XAN_TUNE.beacon,h=Bk[Bc.id],f=Ss.find(s=>s.id===Bc.fort),me=Ss.find(s=>s.id===Bc.id);
+ if(!h||!me)return{ok:false,bad:['no head house'],lt:0};
+ const lt=Object.values(((Tr['road.er-beacon']||{}).landed||{})[E+'>'+Bc.id]||{}).reduce((n,v)=>n+v,0);
+ if(!((h.made.grain||0)>0))bad.push('its terraces made no grain');
+ if(!(lt>0))bad.push('nothing landed from the capital');
+ if((h.eaten.powder||0)>0||(h.eaten.arms||0)>0)bad.push('the monks took arms or powder');
+ if(!f||f.x!==me.x||f.z!==me.z)bad.push('the house is not beside the beacon fort');
+ if(!((Bk[Bc.fort].eaten.power||0)>0))bad.push('the beacon fort dark');
+ return{ok:!bad.length,bad,h,lt};};
+{const C=bcCheck(B,Y.trade,Y.V.settlements);
+ T.ok('the Order of the Beacon\'s head house: beside the beacon fort, fed by its terraces and the capital\'s road, no arms or powder, the lamp lit',C.ok,
+  C.bad.join(', ')||('made grain '+t(C.h.made.grain||0)+' of the '+t(C.h.eaten.grain||0)+' it ate; landed from the capital '+t(C.lt)+'; the fort\'s power '+Math.round(B['march.e'].eaten.power||0)+' kWh'));
+ T.neg('a head house drawn off to another place is caught',Ss=>bcCheck(B,Y.trade,Ss).ok,Y.V.settlements.map(s=>s.id===XAN_TUNE.beacon.id?Object.assign({},s,{x:s.x+5000}):s),Y.V.settlements);}
 // the year's books, for the reader
 const line=(s,k)=>Object.entries(B[s][k]||{}).filter(([g,n])=>n>=1).map(([g,n])=>g+' '+(n>=1000?t(n):Math.round(n))).join(', ');
 ['s57bkv9741','xan.citadel','skm4jjo2vl','s4zvgepuru','sxan7r1sln','slaitwal0001','sjuarjbku0','sl758m2396'].forEach(s=>console.log('\n'+s+': made '+line(s,'made')+'\n  imported '+line(s,'imported')+'\n  exported '+line(s,'exported')));
