@@ -21,8 +21,10 @@ function thInst(name,geo,mat,items,gx,gz,shadow){if(!items.length)return null;
 const TH_GEO={figB:new THREE.CylinderGeometry(.24,.2,1.5,6).translate(0,.75,0),figH:new THREE.SphereGeometry(.13,6,5).translate(0,1.62,0),
  post:new THREE.CylinderGeometry(1,1,1,8),box:new THREE.BoxGeometry(1,1,1)};
 const thQ=(x,y,z)=>new THREE.Quaternion().setFromEuler(new THREE.Euler(x,y,z));
-function thLifeDraw(gx,gz,ctx,L){const O={people:0,lamps:0,lights:0};
+function thLifeDraw(gx,gz,ctx,L,opt){const O={people:0,lamps:0,lights:0};
  if(!L)return O;
+ /* with the census walking (T-sim-2, 8ay9-th-walkers.js) the static figures stand down: only the lamps are drawn */
+ if(opt&&opt.noPeople)L=Object.assign({},L,{people:[]});
  const TG=KTAGS.theodiga||(KTAGS.theodiga=KTAGS.create({build:'ancients-theodiga'})),B='town/theodiga';
  const ROBE={pilgrim:[[.08,.75,.45],[.98,.55,.28]],townsfolk:[[.06,.35,.32],[.12,.3,.4]],salvager:[[.08,.06,.34],[.1,.1,.42]],farmer:[[.2,.3,.3],[.18,.25,.38]],
   deviser:[[.6,.5,.28],[.62,.45,.34]],hauler:[[.07,.4,.26],[.08,.35,.32]]};

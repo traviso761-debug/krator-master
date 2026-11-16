@@ -207,6 +207,22 @@ spring, sealed deep inside). Theodiga's end:
    - **The checks.** `test-th-sim.js` runs 11, each case in a fresh sim. Every resident has a home; each quarter's role is the
      census's; the arcology's people are the blueprint's in their areas; every job is of its role's kinds; no hour is short
      of places; the same twice.
-   - **Next.** A walk graph and the life drawn from `SIM.pose`, then the economy (the yards' salvage, the fields' grain and
-     the dairies' honey and milk).
-9. **Later**: the Qiblai buildings' rooms (as Strongbow's), core/simulation's roles, the open world.
+9. **T-sim-2, the census walking** (done 2026-11-16, the owner: "Yes, make them walk").
+   - **The walk graph.** `src/48-th-walk.js` (`TH_WALK`, [G data]) builds core/simulation's pedestrian layer from the drawn
+     geometry:
+     - the streets resampled every 6 m on the town's ground and joined where they meet, and Gate Square a grid;
+     - the three ways down the wall, their heads to the town and their feet to the kora, the yards and the fields;
+     - the yard track and the bore's spur, and the silt fields as a tree from the Silt Road's foot;
+     - the kora, the Pilgrims' Stairs flight by flight, and the deck a grid clear of its pavilions, wells, hall and Tear;
+     - a node at every storey of the arcology's units, their 400 m storey joined to the kora.
+
+     A last pass stitches any part left apart to the main one at their nearest pair. `TH_SIM.declare` puts every place's
+     door on it.
+   - **The walkers.** `src/8ay9-th-walkers.js` steps the sim a world minute at a time on the page's clock (core/clock's
+     72-minute day, from 07:00). It draws `SIM.pose` for every resident out of doors, robed by role. The static figures
+     (T-life-1) stand down; their lamps stay.
+   - **The checks.** `test-th-walk.js` runs 11. The graph is one piece; no edge leaps; the street nodes are on the ground; no
+     deck node is in a pavilion, well, hall or the Tear; a door is joined near itself; the same twice.
+   - **Next.** A walk cycle and activity poses, indoor residents shown in the opened rooms, and the economy (the yards'
+     salvage, the fields' grain, the dairies' honey and milk).
+10. **Later**: the Qiblai buildings' rooms (as Strongbow's), core/simulation's roles, the open world.

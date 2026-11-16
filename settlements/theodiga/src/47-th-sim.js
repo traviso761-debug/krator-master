@@ -29,7 +29,7 @@ var TH_SIM=(function(){
   shop:[[0,'SLEEP'],[7,'EAT'],[8,'WORK'],[13,'EAT'],[14,'WORK'],[19,'EAT'],[20,'SOCIALIZE'],[22,'SLEEP']],
   monk:[[0,'SLEEP'],[4,'PRAY'],[6,'EAT'],[7,'WORK'],[12,'EAT'],[13,'PRAY'],[15,'WORK'],[18,'EAT'],[19,'PRAY'],[21,'SLEEP']],
   priest:[[0,'SLEEP'],[4,'PRAY'],[7,'EAT'],[8,'PRAY'],[12,'EAT'],[13,'WORK'],[17,'PRAY'],[19,'EAT'],[20,'PRAY'],[21,'SLEEP']],
-  pilgrim:[[0,'SLEEP'],[5,'KORA'],[8,'EAT'],[9,'PRAY'],[12,'EAT'],[13,'KORA'],[16,'TRADE'],[18,'EAT'],[19,'PRAY'],[21,'SLEEP']]};
+  pilgrim:[[0,'SLEEP'],[5,'KORA'],[8,'EAT'],[9,'TRADE'],[11,'PRAY'],[13,'EAT'],[14,'KORA'],[17,'SOCIALIZE'],[19,'EAT'],[20,'PRAY'],[21,'SLEEP']]};
  /* the town's quarters: their role, its schedule and where it works (TH_TOWN.QUARTERS) */
  const QROLE={square:{id:'hosteller',name:'the hostel keepers and households of Gate Square',sched:'shop',work:['hostel','bath','store']},
   bazaar:{id:'merchant',name:'the bazaar\'s merchants and craftsmen',sched:'shop',work:['bazaar','store']},
@@ -91,7 +91,10 @@ var TH_SIM=(function(){
   for(const {L,k} of workLots){const acts={WORK:posts(k)};
    if(k==='bazaar'||k==='serai')acts.TRADE=40;if(k==='shrine')acts.PRAY=60;if(k==='bath')acts.SOCIALIZE=40;
    if(k==='hostel'){acts.SLEEP=o.hostelBeds==null?40:o.hostelBeds;acts.EAT=acts.SLEEP;}
-   add('th.work.'+L.id,k,L.x,L.y,L.z,acts,{name:L.name,indoor:k!=='yard'&&k!=='field'});}
+   /* out of doors: the yards, the fields, and the bazaar's arcades (its stalls under the arcade, in sight of the street) */
+   add('th.work.'+L.id,k,L.x,L.y,L.z,acts,{name:L.name,indoor:k!=='yard'&&k!=='field'&&k!=='bazaar',wander:k==='bazaar'?3:undefined,r:k==='bazaar'?12:undefined});}
+  /* Gate Square: the town's open floor, where the pilgrims gather and trade and the town meets of an evening */
+  if(o.square){const Q=o.square,x=(Q.x0+Q.x1)/2,z=(Q.z0+Q.z1)/2;add('th.square','square',x,Q.y==null?440:Q.y,z,{TRADE:600,SOCIALIZE:800},{name:'Gate Square',indoor:false,r:Math.min(Q.x1-Q.x0,Q.z1-Q.z0)/2-3,wander:8});}
   for(const F of o.fields||[]){const c=F.corners,x=(c[0][0]+c[2][0])/2,z=(c[0][1]+c[2][1])/2;add('th.field.'+F.id,'field',x,F.y==null?440:F.y,z,{WORK:posts('field')},{name:'a field',indoor:false,r:10});}
   /* the kora along the crest, and the pilgrims' hostels' share of prayer at the Dome */
   if(o.kora){const K=o.kora,x=(K.x0+K.x1)/2;add('th.kora','kora',x,K.y,K.zc(x)+30,{KORA:4000,SOCIALIZE:400},{name:'the middle kora',indoor:false,r:180,wander:6});}
@@ -116,13 +119,26 @@ var TH_SIM=(function(){
   if(o.pilgrims==null){const n=o.lots.filter(L=>workKind(L)==='hostel').length;o=Object.assign({},o,{pilgrims:n*(o.hostelBeds==null?40:o.hostelBeds)});}
   SIM.init({seed:o.seed==null?2215:o.seed,hour:o.hour||(()=>13),day:o.day||(()=>0),t:o.t||(()=>0),err:m=>problems.push(m)});
   SIM.settlement({id:'theodiga',faction:'xanadu',name:'Theodiga'});
-  const W=world(o);SIM.load(W);
-  const P=places(o,W);for(const r of P)SIM.place(r);
+  /* the walk graph (T-sim-2: src/48-th-walk.js, in the dam frame): the pedestrian layer at the group's offset, every place's door
+     a node of it joined to the nearest node it is reached by (the arcology's by its storeys, the Dome's halls by the deck, a
+     field by itself, the rest by the streets) */
+  const G=o.walk||null,gx=o.gx||0,gz=o.gz||0;
+  const W=world(o);
+  const P=places(o,W);
+  if(G){const TAGS=k=>/^arc:|^arc-|^chapel$/.test(k)?['arc']:k==='dome'?['deck']:k==='kora'?['kora']:k==='field'?['field','upland']:k==='square'?['square']:
+     /^(yard|bore|home:bore)$/.test(k)?['works']:null;
+   for(const r of P){const x=r.door.x-gx,z=r.door.z-gz,id=G.join(r.id,x,r.door.y,z,TAGS(r.kind)||['street','square','works','way'],TAGS(r.kind)?80:60);const n=G.byId[id];
+    r.door={x:n.x+gx,y:n.y,z:n.z+gz,node:id};}
+   SIM.nav.layer('pedestrian',{nodes:G.nodes.map(n=>({id:n.id,x:n.x+gx,y:n.y,z:n.z+gz,tag:n.tag})),edges:G.edges,cost:{stair:1.3,landing:1,floor:1,door:1,field:1.1,bridge:1},yWeight:4});
+   SIM.REF={layer:'pedestrian',x:(o.ref?o.ref[0]:400)+gx,z:(o.ref?o.ref[1]:0)+gz};}
+  SIM.load(W);
+  for(const r of P)SIM.place(r);
   const pop=SIM.populate({settlement:'theodiga',prefix:'th'});
   const check=SIM.check();
   let audit=null;try{audit=typeof SIM.audit==='function'?SIM.audit():null;}catch(e){problems.push('audit: '+e.message);}
   return {places:P.length,actors:pop.actors,byRole:pop.byRole,beds:pop.beds,bedsLeft:pop.bedsLeft,homeless:pop.homeless.length,problems:problems.concat(check||[]),
    capacity:audit&&audit.capacity?audit.capacity.length:null,unknownActivities:audit&&audit.unknownActivities?audit.unknownActivities.length:null,ms:Date.now()-t0,
+   nodes:G?G.nodes.length:0,edges:G?G.edges.length:0,unroutable:audit&&audit.unroutable?audit.unroutable.length:null,unroutableList:audit&&audit.unroutable?audit.unroutable.slice(0,8):null,
    roles:W.roles.map(R=>({id:R.id,count:R.count}))};}
  return {world,places,declare,QROLE,AREA,AROLE,workKind};
 })();

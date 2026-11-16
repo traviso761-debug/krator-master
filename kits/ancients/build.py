@@ -147,7 +147,7 @@ TH_SIM_FILES = ('77-sim-0-core.js', '77-sim-1-world.js', '77-sim-2-places.js', '
 TARGET_READS['theodiga-today'] = (TARGET_READS['theodiga']
                                   + [(THEO_TARGET, f) for f in ('77-dam.js', '77a-theodiga-dome-plan.js', '77b-theodiga-dome-draw.js',
                                                                 '77c-theodiga-water.js', '90w-theodiga-water.js')]
-                                  + [(os.path.join(ROOT, 'settlements', 'theodiga', 'src'), f) for f in ('41-th-descent.js', '42-th-works.js', '43-th-arc-program.js', '43-th-arc.js', '8ay1-th-town.js', '8ay2-th-descent.js', '8ay3-th-works.js', '44-th-dome-today.js', '8ay4-th-dome-today.js', '45-th-life.js', '8ay5-th-life.js', '46-th-town-rooms.js', '47-th-sim.js', '8zz1-th-arc-host.js', '8zz2-th-town-rooms.js')]
+                                  + [(os.path.join(ROOT, 'settlements', 'theodiga', 'src'), f) for f in ('41-th-descent.js', '42-th-works.js', '43-th-arc-program.js', '43-th-arc.js', '8ay1-th-town.js', '8ay2-th-descent.js', '8ay3-th-works.js', '44-th-dome-today.js', '8ay4-th-dome-today.js', '45-th-life.js', '8ay5-th-life.js', '46-th-town-rooms.js', '47-th-sim.js', '48-th-walk.js', '8ay9-th-walkers.js', '8zz1-th-arc-host.js', '8zz2-th-town-rooms.js')]
                                   + [(os.path.join(ROOT, 'core', 'simulation'), f) for f in TH_SIM_FILES]   # the census on core/simulation (T-sim-1)
                                   + [(os.path.join(ROOT, 'core', 'terrain'), '37c-core-rubble.js'),   # the works' salvage heaps (KRUBBLE)
                                      (os.path.join(ROOT, 'settlements', 'isle-demo', 'src'), '58-isle-protos.js')])
@@ -304,6 +304,7 @@ DETERMINISTIC = {
     '45-th-life.js', '8ay5-th-life.js',                # theodiga-today: people and lamps (KRAND by place and slot, no rng())
     '46-th-town-rooms.js', '8zz2-th-town-rooms.js',    # theodiga-today: the town's interiors (the scrap set's plans, no rng())
     '47-th-sim.js',                                    # theodiga-today: the census on core/simulation (SIM's own seeded stream)
+    '48-th-walk.js', '8ay9-th-walkers.js',             # theodiga-today: the walk graph (the geometry's) and the walkers (SIM.pose)
 }
 DETERMINISTIC |= {'06-core-khook.js', '06b-core-kcolor.js'}   # core/shader (no rnd())
 DETERMINISTIC |= set(TH_SIM_FILES)   # core/simulation (its own seeded stream, SIM.rng)

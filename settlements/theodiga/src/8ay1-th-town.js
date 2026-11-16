@@ -147,6 +147,9 @@ function thTownDraw(gx,gz,ctx){const O={buildings:0,people:0,protos:0,meshes:0,t
  /* people and lamps (T-life-1: src/45-th-life.js, 8ay5-th-life.js): on the streets and Gate Square, the ways down, the middle
     kora, the Dome's deck and the works; obstacles every building's box, the Pilgrims' Stairs' shafts and the deck's pavilions */
  let LF=null,LS=null;
+ /* the census walks (T-sim-2) when core/simulation, the walk graph and the walkers' drawing are on the page: the static figures
+    stand down (their lamps stay) */
+ const WALKING=typeof SIM!=='undefined'&&typeof TH_SIM!=='undefined'&&typeof TH_WALK!=='undefined'&&typeof thWalkersDraw==='function';
  if(typeof TH_LIFE!=='undefined'&&typeof thLifeDraw==='function')try{
   const zc=ctx.zc||(x=>-140*(1-Math.pow(x/320,2))),obst=all.map(r=>({x:r.x,z:r.z,w:r.w,d:r.d,ry:r.ry||0}));
   if(typeof TH_DOME_TODAY!=='undefined')for(const s of TH_DOME_TODAY.stairs({zc,H:400,deckY:420})){const w=s.well;obst.push({x:(w.x0+w.x1)/2,z:(w.z0+w.z1)/2,w:w.x1-w.x0,d:w.z1-w.z0,ry:0});}
@@ -159,15 +162,27 @@ function thTownDraw(gx,gz,ctx){const O={buildings:0,people:0,protos:0,meshes:0,t
    deck:DOMEP?{cx:DOMEP.cx,cz:DOMEP.cz,r:DOMEP.drum.r,y:DOMEP.deck.y,hall:DOMEP.hall.r,
     open:(x,z)=>pav(x,z)||THEODOME.deckGone(DOMEP,Math.atan2(z-DOMEP.cz,x-DOMEP.cx),Math.hypot(x-DOMEP.cx,z-DOMEP.cz))}:null,
    works:WK,floor:ctx.floor,bed:ctx.bed,offFloor:ctx.river?(x,z)=>Math.abs(x-ctx.river.x(z))<ctx.river.w(z)+2:null});
-  LS=thLifeDraw(gx,gz,ctx,LF);}catch(e){O.errors.push('the people: '+(e&&e.stack||e));}
+  LS=thLifeDraw(gx,gz,ctx,LF,{noPeople:WALKING});}catch(e){O.errors.push('the people: '+(e&&e.stack||e));}
  /* the census on core/simulation (T-sim-1: src/47-th-sim.js): Theodiga's settlement, places, roles and residents as records,
     dealt once here (the record level: nobody walks yet) */
  let SM=null;
  if(typeof SIM!=='undefined'&&typeof TH_SIM!=='undefined')try{
-  const zc=ctx.zc||(x=>-140*(1-Math.pow(x/320,2)));
-  SM=TH_SIM.declare(SIM,{lots:PLACED,census:T.census,arc:typeof TH_ARC_PROGRAM!=='undefined'?TH_ARC_PROGRAM:[],kora:{x0:-100,x1:280,zc,y:400},gx,gz,
-   fields:T.fields.map(f=>({id:f.id,corners:f.corners,y:GR((f.corners[0][0]+f.corners[2][0])/2,(f.corners[0][1]+f.corners[2][1])/2)}))
-    .concat(WK?WK.fields.map(f=>({id:f.id,corners:f.corners,y:ctx.bed((f.corners[0][0]+f.corners[2][0])/2,(f.corners[0][1]+f.corners[2][1])/2)})):[])});
+  const zc=ctx.zc||(x=>-140*(1-Math.pow(x/320,2))),mid=f=>[(f.corners[0][0]+f.corners[2][0])/2,(f.corners[0][1]+f.corners[2][1])/2];
+  const fields=T.fields.map(f=>({id:f.id,corners:f.corners,y:GR(...mid(f)),upland:true})).concat(WK?WK.fields.map(f=>({id:f.id,corners:f.corners,y:ctx.bed(...mid(f))})):[]);
+  /* the walk graph (src/48-th-walk.js): the streets, the square, the ways, the works, the fields, the kora, the Pilgrims' Stairs, the
+     Dome's deck (clear of its pavilions, the wells and the Tear) and the arcology's storeys */
+  let WG=null;
+  if(WALKING){const DP2=typeof THEODOME!=='undefined'?THEODOME.plan({seed:9270,d:1,dam:{H:400,SPAN:640,BOW:140,CREST:50}}):null;
+   const units=typeof TH_ARC_PROGRAM!=='undefined'?TH_ARC_PROGRAM.filter(u=>u.area==='dome'):[];
+   const pav=(x,z)=>units.some(u=>u.shape==='circle'?Math.hypot(x-u.cx,z-u.cz)<u.r+1.5:x>u.x0-1.5&&x<u.x1+1.5&&z>u.z0-1.5&&z<u.z1+1.5);
+   const ST=typeof TH_DOME_TODAY!=='undefined'?TH_DOME_TODAY.stairs({zc,H:400,deckY:420}):[];
+   const well=(x,z)=>ST.some(s=>x>s.well.x0-1&&x<s.well.x1+1&&z>s.well.z0-1&&z<s.well.z1+1);
+   WG=TH_WALK.graph({ways:T.ways,ground:GR,square:T.landmarks.find(m=>m.id===TT.SQUARE.id),descent:DP,works:WK,floor:ctx.floor,fields,
+    kora:{x0:-100,x1:286,zc,y:400,z:30.5},stairs:ST,arc:typeof TH_ARC_PROGRAM!=='undefined'?TH_ARC_PROGRAM.filter(u=>u.area!=='dome'):[],outline:typeof TH_ARC!=='undefined'?TH_ARC.outline:null,
+    deck:DP2?{cx:DP2.cx,cz:DP2.cz,r:DP2.drum.r,y:DP2.deck.y,hall:DP2.hall.r,open:(x,z)=>pav(x,z)||well(x,z)||THEODOME.deckGone(DP2,Math.atan2(z-DP2.cz,x-DP2.cx),Math.hypot(x-DP2.cx,z-DP2.cz))}:null});}
+  SM=TH_SIM.declare(SIM,{lots:PLACED,census:T.census,square:T.landmarks.find(m=>m.id===TT.SQUARE.id),arc:typeof TH_ARC_PROGRAM!=='undefined'?TH_ARC_PROGRAM:[],kora:{x0:-100,x1:280,zc,y:400},gx,gz,fields,
+   walk:WG,ref:[TT.SQUARE.x0+20,(TT.SQUARE.z0+TT.SQUARE.z1)/2],hour:()=>TH_CLOCK.hour(),day:()=>TH_CLOCK.day(),t:()=>TH_CLOCK.t()});
+  if(WG&&typeof thWalkersDraw==='function')thWalkersDraw(gx,gz);
   if(SM.problems.length)O.errors.push('the sim: '+SM.problems.slice(0,3).join(' | '));}catch(e){O.errors.push('the sim: '+(e&&e.stack||e));}
  if(WS)O.errors.push(...WS.errors);
  if(DS)O.errors.push(...DS.errors);
@@ -175,7 +190,8 @@ function thTownDraw(gx,gz,ctx){const O={buildings:0,people:0,protos:0,meshes:0,t
  window._thTown={descent:DS?{ways:DS.ways,boxes:DS.boxes,tris:Math.round(DS.tris),stair:DS.stair,salvage:DS.salvage,silt:DS.silt}:null,
   works:WK?{bore:WK.bore?{x:WK.bore.x,z:WK.bore.z,lots:WK.bore.lots.length,lamps:WK.bore.lamps.length,drawn:WS?WS.bore:0}:null,yard:WK.lots.length,huts:WK.huts.length,heaps:WK.heaps.length,fields:WK.fields.length,track:Math.round(WK.track.a[0]-WK.track.b[0]),drawn:WS?WS.meshes:0}:null,bound:O.bound||0,buildings:O.buildings,people:O.people,protos:O.protos,meshes:O.meshes,tris:Math.round(O.tris),bigTris:Math.round(O.bigTris||0),
   detailTris:Math.round(O.detailTris||0),cells:O.cells,census:O.census,errors:O.errors.concat(XAK.errors).slice(0,12),
-  sim:SM?{places:SM.places,actors:SM.actors,byRole:SM.byRole,beds:SM.beds,homeless:SM.homeless,capacity:SM.capacity,unknownActivities:SM.unknownActivities,problems:SM.problems.length,ms:SM.ms}:null,
+  sim:SM?{places:SM.places,actors:SM.actors,byRole:SM.byRole,beds:SM.beds,homeless:SM.homeless,capacity:SM.capacity,unknownActivities:SM.unknownActivities,problems:SM.problems.length,ms:SM.ms,
+   nodes:SM.nodes,edges:SM.edges,unroutable:SM.unroutable,unroutableList:SM.unroutableList,walkers:typeof thWalkers!=='undefined'?{on:thWalkers.on,n:thWalkers.n}:null}:null,
   life:LF?{people:LF.people.length,lamps:LF.lamps.length,lights:LS?LS.lights:0,roles:LF.people.reduce((m,p)=>(m[p.role]=(m[p.role]||0)+1,m),{})}:null,
   fields:T.fields.length,ways:T.ways.length,qiblai:all.filter(r=>/^qb_/.test(r.key)).length,level:f=>O.level&&O.level(f)};
  return O;}

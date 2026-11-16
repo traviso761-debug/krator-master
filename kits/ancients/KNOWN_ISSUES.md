@@ -374,12 +374,21 @@ records drawn from the scrap Xanadu set and the Qiblai kit (`XAK`, `kit_bundle.b
       furniture are drawn when a quarter is opened, one quarter at a time.
 - [ ] **The Qiblai buildings, the Cistern Pavilion and the Granary have no rooms.** The scrap set skips the two defs; Qiblai's
       rooms (`kits/qiblai` 89q5) are drawn by its own builders and are not wired here.
-- [ ] **The census is on core/simulation as records only** (T-sim-1, 2026-11-16, `settlements/theodiga/src/47-th-sim.js`).
-      Theodiga is a settlement with its homes, work places, the kora and the arcology's units as places. A role stands for
-      each of the town's quarters (its count the census's), the arcology's six by the blueprint, the Devisers and the
-      pilgrims. Every resident is dealt a home and a post, with no capacity shortfall. Nobody walks: there is no walk graph
-      over the town, the ways and the arcology, the figures (T-life-1) are still poses, and no economy (stocks, recipes,
-      trade) is declared.
+- [x] ~~The census does not walk~~ (T-sim-1 and T-sim-2, 2026-11-16). The census is on core/simulation
+      (`settlements/theodiga/src/47-th-sim.js`): a settlement of 611 places and 5,016 residents dealt to homes and posts.
+      It walks a graph built from the drawn geometry (`48-th-walk.js`), about 11,700 nodes:
+      - the streets, the square and the three ways down the wall;
+      - the yards and the bore's spur, and the fields;
+      - the kora, the Pilgrims' Stairs and the Dome's deck;
+      - every storey of the arcology.
+
+      Every place's door is on the graph, and no place is unreachable. The page steps the sim a world minute at a time on a
+      72-minute day starting at 07:00, and draws `SIM.pose` for everyone out of doors (`8ay9-th-walkers.js`). The static
+      figures stand down.
+- [ ] **The walkers are the kit's cylinder figures**, unanimated, with no walk cycle and no activity poses. An indoor
+      resident is hidden, not drawn in the opened rooms. The arcology's storeys are a node at each unit's middle, not its
+      rooms, and its fin heads reach the kora by a straight "bridge" edge. No economy (stocks, recipes, trade) is declared.
+      Posing 5,016 residents costs about 5 ms a frame.
 - [ ] **The Panel Row's kitchens cannot take a hearth** (`kits/interiors/sets/xanadu-scrap.js`, `xa_scrap_row` houses: a room
       2.2 m wide with the stair in it; no hearth fits at any seed from any culture). The town furnishes them as stores
       (`8zz2-th-town-rooms.js`, `AIK.townRekinded`). The set should widen the kitchen or move the stair.
