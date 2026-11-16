@@ -1,0 +1,6 @@
+{
+ "name": "The hold's active storey, with the underground camera (a demo of core/host's opt-in underground pieces: the follow camera, the band cut, the section, the caps, the fade; core/host/UNDERGROUND.md)",
+ "site": [525, 1400],
+ "base": "hold",
+ "underground": true
+}

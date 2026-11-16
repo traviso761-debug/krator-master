@@ -170,6 +170,7 @@ REGION_TO_TONGUE = {
     'Oidong Valley': ('xanadui', 2),
     'Yuni Valley': ('yuni', 2),
     'Region 99': ('yuni', 2),
+    'Loom Chasms': ('yuni', 2),          # region 99's name since 5.1 edit 3 (2026-11-11)
     'Siphon Pits': ('yuni', 2),
     'Mid Basin': ('yuni', 2),
     'Stalker Gate': ('yuni', 2),
@@ -635,6 +636,24 @@ def _stable_river_seed(rid_str, tng, mod_a, mod_b):
     return seed_a, seed_b
 
 
+def drains_to(to):
+    """the table's "Drains To": a river's name, a sea's, a lake's or basin's level; '—' where the record says only where it ends"""
+    to = to or {}
+    if to.get('name'):
+        return to['name']
+    if to.get('river'):
+        return str(to['river'])
+    if to.get('sea') or to.get('kind') == 'sea':
+        return to.get('sea') or 'sea'
+    if 'lake_m' in to:
+        return 'lake (%s m%s)' % (format(int(to['lake_m']), ','), ', through' if to.get('through') else '')
+    if 'basin_m' in to:
+        return 'basin (%s m)' % format(int(to['basin_m']), ',')
+    if 'below_lake_m' in to:
+        return 'ends below a lake (%s m)' % format(int(to['below_lake_m']), ',')
+    return to.get('kind') or '—'
+
+
 def rename_all_rivers_culturally(rivers_exp, regs_exp, setts_exp, En_exp=None, markdown_out_path=None, old_rivers=None):
     """Assign culturally and linguistically authentic names across all 27 tongues to `rivers_exp`.
 
@@ -908,8 +927,7 @@ def rename_all_rivers_culturally(rivers_exp, regs_exp, setts_exp, En_exp=None, m
         ]
         major.sort(key=lambda r: (-float(r.get('length_km') or 0.0), _rid_num(r['id'])))
         for r in major:
-            to_d = r.get('to') or {}
-            to_str = to_d.get('name') or to_d.get('kind') or 'sea'
+            to_str = drains_to(r.get('to'))
             old_nm = r.get('old_name') or '—'
             lines.append(
                 f"| `{r['id']}` | `{old_nm}` | **{r['name']}** | `{r.get('tongue')}` | {r.get('kind')} "
@@ -926,8 +944,7 @@ def rename_all_rivers_culturally(rivers_exp, regs_exp, setts_exp, En_exp=None, m
         ])
         all_sorted = sorted(rivers_exp, key=lambda r: _rid_num(r['id']))
         for r in all_sorted:
-            to_d = r.get('to') or {}
-            to_str = to_d.get('name') or to_d.get('kind') or 'sea'
+            to_str = drains_to(r.get('to'))
             old_nm = r.get('old_name') or '—'
             lines.append(
                 f"| `{r['id']}` | `{old_nm}` | **{r['name']}** | `{r.get('tongue')}` | {r.get('kind')} "

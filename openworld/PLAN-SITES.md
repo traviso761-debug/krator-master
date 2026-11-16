@@ -65,9 +65,16 @@ islands"; 120 x 65 km, the volcanoes a safe distance away).**
   the town's climb, a 90 m grey cliff, the palace plateau and the mountainside behind.
 - **Its ring** was re-laid for the new shore: along it east and west, and up the slopes south.
 - **Not done:**
-  - the published model and its database;
-  - the landforms' stamp;
-  - the Erewhon page's own terrain, which is drawn separately and may face another way from the new shore.
+  - the published model and its database.
+- **The page fitted, the islands stamped** (the owner, 2026-11-11: "keep the page, move the record"; "a region fragment"):
+  - The Erewhon page already faces as the world does (the lake north). It stands with its centre on the pin, unturned,
+    its lake at -520 m (`ER_WORLD`, `settlements/xanadu/targets/erewhon/84-er-geo.js`). Its shore runs within ~250 m of
+    the world's. The world's 1:1 ground there is a 4 % rise and holds none of the page's cliff or plateau (a town-grid
+    bake would).
+  - `lf_pleasure_dome_isle` moved from 5 km out (806.6,1513.3) to the page's island (805.035,1515.6935, about 220 x 110 m,
+    14 m over the lake). The page's verify checks the two agree.
+  - `openworld/xanadu-oidong-highrift/src/44-world-landforms.js` stamps the records at 1:1 on `WORLD.landHook`. The region's
+    verify checks each island over its lake.
 
 **The second region, Xanadu, Oidong and the High Rift (2026-11-10): `openworld/xanadu-oidong-highrift`.**
 - **The cut:** 1,780 x 582 km at 1 km cells, in about 40 s.

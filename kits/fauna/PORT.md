@@ -6,14 +6,14 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 0 (0%) | 0 (0%) | 0 (0%) | 23 (100%) | 0 (0%) |
+| KB | 0 (0%) | 0 (0%) | 0 (0%) | 24 (100%) | 0 (0%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
 | Fragment | KB | Tag | THREE | canvas | DOM | events | loop | geom | shader | inst | ray | store | net | Note |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `src/00-head.html` | 4.4 | [web] | 0 | 0 | 4 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
-| `src/90-sheet.js` | 10.6 | [web] | 9 | 3 | 11 | 7 | 1 | 4 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/90-sheet.js` | 11.3 | [web] | 9 | 3 | 11 | 7 | 1 | 4 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/92-hover.js` | 3.4 | [web] | 2 | 0 | 8 | 3 | 0 | 0 | 0 | 0 | 2 | 0 | 0 |  |
 | `src/93-polygon.js` | 4.8 | [web] | 6 | 0 | 9 | 9 | 0 | 2 | 0 | 0 | 1 | 0 | 0 |  |
 | `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |

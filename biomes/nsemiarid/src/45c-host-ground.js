@@ -55,6 +55,8 @@ const GL=(function(){if(typeof KMAT==='undefined'||KMAT.mode!=='lib')return null
   // the eighth (2026-10-26): the soda crust's curled plates (ground.soda.crust) on the pan's middle, where the efflorescence
   // fades; the pan lies under the dune field (dune ~.6 there), so on the salt the crust takes most of the sand's share
   ['soda',F=>smooth(.6,.85,F.salt)*(1-.4*dn(F))]];
+ /* a stage's own layers (a station: stations/high), up to eight, each [the pack's ground.<name>, its weight from the cached fields], in place of these */
+ if(STAGE_GROUND.layers)L.splice(0,L.length,...STAGE_GROUND.layers);
  if(L.some(l=>!P(l[0])))return null;
  return L.map(l=>{const e=P(l[0]);return{name:l[0],w:l[1],tex:KMAT.textures(e,{aniso:8}).map,scale:e.scale[0],keep:e.tint,mean:e.mean};});})();
 // the layers' anti-tiling (2026-10-22): a library set repeats every few metres, and over a plain the repeat reads as a

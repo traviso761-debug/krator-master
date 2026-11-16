@@ -32,7 +32,17 @@ From `core/terrain/` (shared; see `core/README.md`): `37-core-stacks.js`, `40-co
 | `89w-host-water.js` | 2 |  |
 | `89x-host-weather.js` | <1 |  |
 | `89y-host-storm.js` | 2 |  |
-| `89zz-host-core.js` | 8 |  |
+| `89zz-host-core.js` | 7 |  |
 | `98z-host-mirror.js` | 1 |  |
 | `99-host-take.js` | 10 | the inspector's words (7); the probe's budgets and the kit's own checks (ve (23); the page, handed to the host (74) |
 | `99-tail.html` | <1 |  |
+
+## stations/
+
+Each station builds one page (`build.py --station <name>`) from its own fragments, with `src/` or its `base` station.
+
+| Station | Fragments | KB |
+|---|---|---|
+| fan | 00-head.html, 45b-host-stage.js | 9 |
+| lake | 00-head.html, 45b-host-stage.js | 13 |
+| oasis | 00-head.html, 45b-host-stage.js | 14 |

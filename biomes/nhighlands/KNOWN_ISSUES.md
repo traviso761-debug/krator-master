@@ -29,6 +29,10 @@
       burns are a field (snags, fireweed), not `KFIRE`. Station 3's oaks, sycamore, manzanita and madrone are swlowlands' own, grown in place: they move with
       swlowlands' sources (`tools/reach.py`). Station 4's bristlecone role is the kit's own foxtail pine. Not built: seasons (the aspens' autumn, the
       snowline's year), the fire mosaic, ice on the tarns (`ext/54`), people (the herders, the Republic's and the Clansmen's camps).
+      **Fixed 2026-11-09 (branch `claude/nsemiarid-scablands-3b022c`):** the stations' own ground families (`ground.needles`, `goldgrass`, `slab`,
+      `chaparral`, `lush`, `fell`, `scree`, `snowbed`) were named in `materials.json` but never packed (that turn had no library images), so their
+      KGROUND layers drew untextured. Re-packed (`pack.py`: every older file the same bytes); montane, foothills and alpine rebuilt and GPU-verified
+      (`--assert --all-views`, `KRATOR_GL=gpu`); station 1 and the bogs name none of them and are unchanged.
 - [ ] **The crater wall's megabreccia (pair 7): the look to judge.** The crag pillars draw KSTRATA's `megabreccia` (swhighlands' `crest`) and the
       ground's steep faces KGROUND's `clast` blocks in the same rocks, where the geology bake puts this flank in the `impact` province
       (`kits/resources/ROCK-PROPOSAL.md`). The pillars use a crag-scale copy of the recipe (8 m blocks, `nhl-crag-breccia`); the steep's blocks take the

@@ -101,6 +101,7 @@ WATER_DIR = os.path.join(ROOT, 'core', 'water')
 SHADER_DIR = os.path.join(ROOT, 'core', 'shader')
 CORE_SHADER = ['06-core-khook.js', '06b-core-kcolor.js']   # core/atmos and core/water call them
 CORE_WATER = ['20-core-water.js', '22-core-water-flow.js', '50-core-water-draw.js', '51-core-water-kinds.js']   # 50's draw calls 51's rain helpers
+CORE_WATER_EXT = ['56-core-water-breakup.js']   # the breakup (core/water ext/56), on by default since 2026-11-09
 # core/door (KDOOR, KGLASS, KDOORHOST: core/door/README.md) and the Ancients kit's drawing of them, read in place from
 # kits/ancients/src (8zo-anc-open.js: the kit's windows as panes before room cards, the dead cells and panes' black glass
 # gone, arched doors as locked records, the E key and tip); src/8zp-port-open.js adds the port's iron doors (pkDoor).
@@ -123,7 +124,7 @@ DETERMINISTIC = {
     '71w-port-sea.js',                    # the sea on core/water
 }
 DETERMINISTIC |= {'89x-port-trades.js'}   # the Voth census table (data only, read by tools/check_trades.py)
-DETERMINISTIC |= set(CORE_SHADER) | set(CORE_ATMOS) | set(CORE_WATER)   # core/atmos and core/water: IIFE-scoped, their own PRNG, nothing placed
+DETERMINISTIC |= set(CORE_SHADER) | set(CORE_ATMOS) | set(CORE_WATER) | set(CORE_WATER_EXT)   # core/atmos and core/water: IIFE-scoped, their own PRNG, nothing placed
 
 SEED_COLLISION_EXCEPTIONS = set()
 
@@ -234,6 +235,7 @@ def build_one(target, do_checks):
     src.update({f: os.path.join(SHADER_DIR, f) for f in CORE_SHADER if f not in src})
     src.update({f: os.path.join(ATMOS_DIR, f) for f in CORE_ATMOS if f not in src})
     src.update({f: os.path.join(WATER_DIR, f) for f in CORE_WATER if f not in src})
+    src.update({f: os.path.join(WATER_DIR, 'ext', f) for f in CORE_WATER_EXT if f not in src})
     src.update({f: os.path.join(ROOT, 'core', 'materials', 'record', f) for f in RECORD_FILES if f not in src})
     src.update({f: p for f, p in DOOR_FILES.items() if f not in src})
     tgt = {f: os.path.join(tdir, f) for f in os.listdir(tdir) if f[0].isdigit()}

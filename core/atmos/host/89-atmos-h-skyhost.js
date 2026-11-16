@@ -24,6 +24,7 @@
    uStar:{value:SKY.stars.map(()=>new T.Vector4())},uStarC:{value:SKY.stars.map(s=>new T.Color(s[3],s[4],s[5]))},
    uGDeep:{value:C3()},uGMid:{value:C3()},uGPale:{value:C3()},uGCloud:{value:C3()},uGPlank:{value:C3()},uGHaze:{value:C3()},uGTeal:{value:C3()},uGRim:{value:C3()},uGNight:{value:C3()},uGRing:{value:C3()},
    uCloud:{value:new T.Vector4()},uCamPos:{value:V3()},uWet:{value:0},uCloudH:{value:new T.Vector4()},uWind:{value:new T.Vector2(1,.3)},uNightK:{value:V3()},
+   uCloudX:{value:new T.Vector4()},uCloudY:{value:new T.Vector4()},uCloudZ:{value:new T.Vector4()},uCloudTint:{value:C3()},uCloudGlow:{value:C3()},uCloudGlowP:{value:new T.Vector4(0,0,1,1)},uCloudGlowQ:{value:new T.Vector4(0,0,1,0)},uCloudBeam:{value:new T.Vector4()},uCloudBeamP:{value:new T.Vector4()},   // the clouds' mood (read only when the chunk has its lines)
    uPN:{value:new T.Vector4()},uRidgeTex:{value:null},uRidgeN:{value:0},uRidge:{value:[0,1,2,3].map(()=>new T.Vector4())},
    uRidgeRock:{value:[0,1,2,3].map(C3)},uRidgeForest:{value:[0,1,2,3].map(C3)},uRidgeSnow:{value:[0,1,2,3].map(C3)},
    uStaDir:{value:V3()},uStaAx:{value:V3()},uStaV:{value:V3()},uStaK:{value:new T.Vector4()},uRealT:{value:0},uMeteor:{value:1},
@@ -32,6 +33,9 @@
   if(!A.skyNoiseTex){const n=64,t=new T.DataTexture3D(A.skyNoiseVolume(n),n,n,n);t.format=T.RGBAFormat;t.type=T.UnsignedByteType;
    t.wrapS=t.wrapT=t.wrapR=T.RepeatWrapping;t.minFilter=t.magFilter=T.LinearFilter;t.generateMipmaps=false;t.unpackAlignment=1;t.needsUpdate=true;A.skyNoiseTex=t;}
   U.uNoise={value:A.skyNoiseTex};
+  // the clouds' mood (sky/89-atmos-g-sky.js): a preset that asks for it (clouds.dark / tint / turbulence / glow, or clouds.mood) gets
+  // the chunk with its lines, written here before the material compiles; every other page's chunk is the text it was
+  if(A.skyMoodWanted(P)&&!A.skyMoodOn){A.skyMoodOn=true;T.ShaderChunk.atmos_sky=A.skyGLSL();}
   const mat=new T.ShaderMaterial({uniforms:U,side:T.BackSide,depthTest:false,depthWrite:false,fog:false,toneMapped:false,
    vertexShader:'varying vec3 vDir;void main(){vDir=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);gl_Position.z=gl_Position.w*0.9999;}',
    fragmentShader:'#include <atmos_sky>\nvarying vec3 vDir;\nfloat atmSkyDither(vec2 p){return fract(52.9829189*fract(dot(p,vec2(0.06711056,0.00583715))));}\n'+
@@ -69,6 +73,10 @@
    U.uSpin.value=st.spin;U.uFogD.value=L.fogD;
    v(U.uRingT,st.ringLine);U.uMoonT.value=st.t*24;st.moons.forEach((m,i)=>{U.uMoonDir.value[i].set(m.dir[0],m.dir[1],m.dir[2]);U.uMoonL.value[i].set(m.light[0],m.light[1],m.light[2]);U.uMoonV.value[i].set(m.lead[0],m.lead[1],m.lead[2]);U.uMoonG.value[i].set(m.toGiant[0],m.toGiant[1],m.toGiant[2]);U.uMoonK.value[i]=m.kind;U.uMoonLump.value[i]=m.lump;U.uMoonF.value[i]=m.front;U.uMoonC.value[i].setRGB(...m.albedo);U.uMoonR.value[i]=m.radiusDeg*D;});
    const C=P.clouds;U.uCloud.value.set(L.cover,C.cumulus,C.cirrus,C.bank);U.uCloudH.value.set(C.height,C.cirrusHeight,C.scale,C.drift);
+   {const tk=C.tint?(C.tintK==null?1:C.tintK):0,gl=C.glowLocus||[0,0,1,1];U.uCloudX.value.set(C.dark==null?0:C.dark,C.turbulence==null?0:C.turbulence,C.glow==null?0:C.glow,tk);
+    const ta=C.turbAt||[cam.position.x,cam.position.z],g2=C.glowLocus2||[0,0,1,0];U.uCloudY.value.set(A.MOOD_TURB[C.turbKind]||0,ta[0],ta[1],C.pace==null?3:C.pace);U.uCloudZ.value.set(C.sheetTint==null?0:C.sheetTint,0,0,0);if(C.tint)U.uCloudTint.value.setRGB(C.tint[0],C.tint[1],C.tint[2]);
+    const gc=C.glowColour||[1,.55,.2];U.uCloudGlow.value.setRGB(gc[0],gc[1],gc[2]);U.uCloudGlowP.value.set(gl[0],gl[1],gl[2],gl[3]);U.uCloudGlowQ.value.set(g2[0],g2[1],g2[2],g2[3]);
+    const ev=C.event;if(ev&&ev.k>0){U.uCloudBeam.value.set(ev.x,ev.z,ev.kind==='pillar'?1:2,ev.k);U.uCloudBeamP.value.set(ev.top,ev.width,ev.h,ev.ground==null?0:ev.ground);}else U.uCloudBeam.value.set(0,0,0,0);}
    U.uNightK.value.set(P.night.stars,P.night.nebula,P.night.galaxy);U.uCamPos.value.copy(cam.position);U.uWet.value=W&&W.wet!=null?W.wet:0;
    U.uTime.value=(A.clock?A.clock.t:clock.t);
    {const q=st.station;v(U.uStaDir,q.dir);v(U.uStaAx,q.axis);v(U.uStaV,q.vel);U.uStaK.value.set(q.radiusDeg*D,q.lit,q.dist,q.up);}
@@ -95,6 +103,39 @@
   A.skyUniforms=U;
   S.setPreset(P);
   return S;};
+ // ATMOS.cloudMood(S, o) -> S: the clouds' mood made to shift (sky/89-atmos-k-cloudmood.js: ATMOS.moodAt's episodes, moodGlow's
+ // breathe or lightning), written into the sky's preset.clouds every frame from the module clock, so the sky's own update draws
+ // it. o: moodAt's options (seed, period, blend, chance, dark, palette, tintAt, glowColour / glowColours ...). Call it right after
+ // ATMOS.sky and before the first render (the chunk takes the mood's lines when the sky and the shaded materials compile): a
+ // preset without clouds.mood is given the lines here. S.mood is the episode now (a readout, a view's check).
+ // the mood's lightning strikes a bolt (fx/89-atmos-fx-lightning.js on the page: its ribbons, its thunder event) at each new flash,
+ // from the cloud plane at the flash's locus to the ground there; its brightness A.boltGlow follows the flash and the night
+ let boltId=null;A.moodBolt=function(S,g,night,t){if(!A.boltFx)return;const f=g.flash;
+  if(f&&night>0&&f.id!==boltId){boltId=f.id;const cam=A.h&&A.h.camera,d=cam?Math.hypot(f.x-cam.position.x,f.z-cam.position.z):1000;A.boltFx({x:f.x,z:f.z,top:S.preset.clouds.height,base:A.ground(f.x,f.z),dist:d,t});}
+  A.boltGlow=f&&night>0?Math.min(1,f.e*1.2)*night:0;};
+ // what the sky did, for a listener (core/audio/24-core-audio-sky.js hears it): ATMOS.onSky(fn(ev)); ATMOS.skyTrack(S, now) is called
+ // each frame by cloudMood (or by a page that sets the clouds itself) with moodGlow's flash, the sky event, the episode and the glow,
+ // diffs it against the last frame (ATMOS.skyDiff) and keeps ATMOS.skyLevel (the orbs' and the breathe's strength) current
+ A.skyListeners=[];A.onSky=fn=>{A.skyListeners.push(fn);return fn;};A.skyLevel={orbs:0,breathe:0};
+ A.skyTrack=function(S,now){const r=A.skyDiff(S.skyPrev,now);S.skyPrev=r.prev;A.skyLevel=A.skyLevels(now);
+  for(const ev of r.events)for(const fn of A.skyListeners){try{fn(ev);}catch(x){A.err('sky: '+x.message);}}return r.events;};
+ // the sky events, placed where the eye stood when each began (the record's dx, dz from moodEvent), the ground under their foot
+ let evId=null,evAt=null;A.moodEventAt=function(t,seed,eye,o){const ev=A.moodEvent(t,seed,o);if(!ev)return null;
+  if(ev.id!==evId){evId=ev.id;evAt=[eye[0]+ev.dx,eye[1]+ev.dz];evAt.push(A.ground(evAt[0],evAt[1]));}
+  ev.x=evAt[0];ev.z=evAt[1];ev.ground=evAt[2];ev.top+=evAt[2];ev.h+=evAt[2];return ev;};
+ A.cloudMood=function(S,o){o=o||{};const T=A.T,cam=A.h&&A.h.camera,seed=o.seed==null?1:o.seed;
+  if(!A.skyMoodOn){A.skyMoodOn=true;T.ShaderChunk.atmos_sky=A.skyGLSL();S.mesh.material.needsUpdate=true;}
+  let ep=null;const step=()=>{if(S.moodPaused)return;const C=S.preset.clouds,t=A.clock?A.clock.t:(S.clock.t||0),eye=   /* S.moodPaused: a page holding the clouds itself for a while (the demo's toggles) */   /* S.preset each frame: a page may set another preset (S.setPreset) */cam?[cam.position.x,cam.position.z]:[0,0],m=A.moodAt(t,Object.assign({eye},o)),g=A.moodGlow(t,m.glowKind,seed,eye);
+   if(m.episode!==ep||!C.turbAt){ep=m.episode;C.turbAt=[eye[0]+m.turbOffset[0],eye[1]+m.turbOffset[1]];}   /* the ripple's epicentre: latched where the eye was when the episode came */
+   C.dark=m.dark;C.tint=m.tintK>0?m.tint:null;C.tintK=m.tintK;C.turbulence=m.turbulence;C.turbKind=m.turbKind;C.sheetTint=m.sheetTint;C.glow=m.glow*g.k;C.glowColour=m.glowColour;C.glowLocus=g.locus;C.glowLocus2=g.locus2;S.mood=m;
+   const night=A.skyUniforms?A.skyUniforms.uNight.value:1;A.moodBolt(S,g,m.glow*night,t);
+   C.event=o.events===false?null:A.moodEventAt(t,seed,eye,o.eventOpts);
+   A.skyTrack(S,{flash:g.flash,event:C.event,episode:m.episode,glowKind:m.glowKind,turbKind:m.turbKind,glow:C.glow,night,t});};
+  step();A.hook(step);S.moodStep=step;
+  const D=A.MOOD_DEFAULTS;A.rec('cloudmood',{seed,period:o.period==null?D.period:o.period,blend:o.blend==null?D.blend:o.blend,chance:Object.assign({},D.chance,o.chance||{}),dark:o.dark||D.dark,
+   palette:o.palette||A.MOOD_PALETTE,turbKinds:o.turbKinds||D.turbKinds,glowKinds:o.glowKinds||D.glowKinds,area:!!o.tintAt,glowColour:o.glowColour||null,
+   note:'clouds.dark / tint / turbulence / glow from ATMOS.moodAt(t) each frame, the glow\'s factor and locus from ATMOS.moodGlow (sky/89-atmos-k-cloudmood.js)'});
+  return S;};
  // ATMOS.cloudShade(material, {porosity}): the sky's clouds shade this ground or plant material (SKY-PLAN.md 11.1), and
  // rain darkens it. Every directional light is shaded along its own direction (the sun, the giantshine); a standard
  // material per pixel, a Lambert one per vertex (as r128 lights it). The uniforms are the sky's own objects, so one
@@ -114,7 +155,7 @@
  // Call it after ATMOS.sky; on a page with no shared sky it does nothing. Any order with wetGround, snowOn, heightFog.
  A.cloudShade=function(mat,o){o=o||{};const U=A.skyUniforms;if(!U||!mat)return mat;const por=o.porosity==null?1:o.porosity;
   const K=A.KH();return A.shaderHook(mat,'atmos-cloudshade-'+por,function(sh){
-   for(const k of['uNoise','uCloud','uCloudH','uWind','uTime','uWet'])sh.uniforms[k]=U[k];sh.uniforms.uPorosity={value:por};
+   for(const k of['uNoise','uCloud','uCloudH','uWind','uTime','uWet'].concat(A.skyMoodOn?['uCloudX','uCloudY','uCloudZ']:[]))sh.uniforms[k]=U[k];sh.uniforms.uPorosity={value:por};   /* the shade's field reads uCloudY (the kind, the ripple's epicentre) */
    const occ=A.rainCoverGLSL&&A.U&&A.U.rainOcc?A.rainCoverGLSL():null;if(occ)A.rainCoverUniforms(sh.uniforms);
    const head=A.cloudShadeGLSL()+'\nuniform float uPorosity;\n',wp='vec4 atmWP=vec4(transformed,1.0);\n#ifdef USE_INSTANCING\natmWP=instanceMatrix*atmWP;\n#endif\natmWP=modelMatrix*atmWP;\n';
    const shade='directLight.color*=atmCloudShade(atmWPos,normalize((vec4(directLight.direction,0.0)*viewMatrix).xyz));';

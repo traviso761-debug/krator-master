@@ -5,12 +5,14 @@
   {
    "id": "lf_pleasure_dome_isle",
    "kind": "island",
-   "px": 806.6,
-   "py": 1513.3,
-   "r_m": 300.0,
-   "crest_m": -498.0,
+   "px": 805.035,
+   "py": 1515.6935,
+   "r_m": 80.0,
+   "rx_m": 110.0,
+   "rz_m": 55.0,
+   "crest_m": -506.0,
    "water_m": -520.0,
-   "note": "The Pleasure Dome of the Bay's island in Erehwon's bay, about 5 km off the town's quays (22 m over the lake; the Erewhon page's island with its lagoon, dome and barge dock). Sub-cell: its cell's bed is held as a shoal (40 m) for the stamp. edit_512, 2026-11-11."
+   "note": "The Pleasure Dome of the Bay's island in Erehwon's bay: the Erewhon page's island (settlements/xanadu, target erewhon, ISLAND_C at 70,-613 m from the page's centre, which stands on Erehwon's pin 805,1516 unturned), about 220 x 110 m and 14 m over the lake, some 150 m off the world's shore. edit_512 put it 5 km out at 806.6,1513.3 (r 300 m, 22 m over the lake, its cell held as a 40 m shoal); moved to the page's island 2026-11-11 (the owner: keep the page, move the record; it stays off the quays, about 0.6 km), and that cell's shoal undone (back to -783.6 m, tools/scale-model/README.md, 5.1 edit 2). Stamped at 1:1 by openworld/xanadu-oidong-highrift/src/44-world-landforms.js."
   },
   {
    "id": "lf_west_stack",

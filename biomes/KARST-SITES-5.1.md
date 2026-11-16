@@ -161,6 +161,9 @@ KKARST.network({box:[-2000,-2000,2000,2000], ground, world, kind:'maze',
 
   Station 2 then takes `KKARST.water(N).spring` as the scarp-foot springs (`WATER.karstSpring`), with its own short
   branch network if it wants a cave behind them.
+- **Built (2026-11-09):** `biomes/rift --station maze` (`stations/maze/`, `dist/rift-maze.html`; `biomes/rift/PLAN-STATIONS.md` section 11): this
+  call on a 1.1 x 1.3 km box at the west scarp, cropped to a 450 x 400 m page; the lowest storey wet on a perched table near the scarp, its
+  springs at the page's scarp step; the Ancients' cut gallery and a walled chamber as sites. Where it differs from the call above: that section.
 
 ## 4. The Hearth hold: hypogene chambers under the vent field
 

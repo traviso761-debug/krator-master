@@ -61,7 +61,7 @@
 //                                       face: its mass block stays). o.locked true clears those too. Returns how many
 //   D.prune(keep)                       drop the doors keep(rec) refuses (a placement that was unwound), in place
 //   D.state() / D.load(state)           the deltas a save keeps: {id: {open, locked}} for every door not shut and unlocked
-//   D.export()                          {format:'krator-doors', version, doors:[...]}: the records for Godot (no draw handles)
+//   D.export()                          {format:'krator-doors', version, doors:[...]}: the records for Godot (no draw handles); each record carries p0 (its leaf's shut centre), so the leaves are rebuilt from it alone (godot/krator/kdoor.gd)
 (function(root){
   var PRESET={single:{},double:{pair:true},saloon:{pair:true,both:true,spring:1.4,walk:false,swing:1.35,style:'louvre'},
     slide:{kind:'slide'},pocket:{kind:'slide'},barn:{kind:'slide',style:'plank'},biparting:{kind:'slide',pair:true},
@@ -168,7 +168,7 @@
     function load(s){for(var id in s){var D=byId.get(id);if(!D)continue;D.locked=!!s[id].locked;D.target=s[id].open>.5?1:0;}}
     function exp(){return{format:'krator-doors',version:1,convention:'y up, metres, x east, z south; yaw outward',
       swing:K.SWING,rate:K.RATE,
-      doors:list.map(function(D){return{id:D.id,at:D.at,hinge:D.hinge,yaw:D.yaw,sign:D.sign,w:D.w,h:D.h,t:D.t,locked:D.locked,key:D.key,open:D.target,pivot:!!D.pivot,
+      doors:list.map(function(D){return{id:D.id,at:D.at,hinge:D.hinge,p0:D.p0,yaw:D.yaw,sign:D.sign,w:D.w,h:D.h,t:D.t,locked:D.locked,key:D.key,open:D.target,pivot:!!D.pivot,
         kind:D.kind,pair:D.pair===true,both:D.both,swing:D.swing,spring:D.spring,walk:D.walk,style:D.style,roll:D.roll,drop:D.drop,rise:D.rise,rate:D.rate};})};}
     K.add=function(r){var D=add(r);D.locked0=D.locked;return D;};
     K.get=get;K.leaves=leaves;K.leafSize=leafSize;K.leafCount=leafCount;K.open=open;K.close=close;K.toggle=toggle;K.lock=lock;K.nearest=nearest;K.step=step;K.angle=angle;K.pose=pose;

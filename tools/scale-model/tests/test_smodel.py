@@ -95,7 +95,7 @@ with tempfile.TemporaryDirectory() as tmp:
         open(os.path.join(tmp, f), 'rb').read() == open(os.path.join(P.DATA_DIR, f), 'rb').read() for f in names))
 
 # ---- 2. a test edit, run through both
-R = P.docs(os.path.join(TOOL, '..', '..', 'openworld', 'little-demo', 'source', 'regions.json'))
+R = P.regions()
 su, sv = P.grid(D)
 pts = next(r for r in R if r['name'] == 'little demo')['points']
 check('region_mask', same(G.region_mask(R, 'little demo', su, sv, E.shape), E422.region_mask(R, 'little demo', su, sv, E.shape)))
@@ -202,11 +202,10 @@ import copy as _copy   # noqa: E402
 from smodel import river_names as RN   # noqa: E402
 r002_entry = next((r for r in D.get('rivers', []) if str(r.get('id')) in ('2', 'r002')), None)
 check('r002 is named Ling-Ma', r002_entry is not None and r002_entry.get('name') == 'L\u012bng-M\u0101')
-regs_path = os.path.join(REPO_ROOT, 'openworld', 'little-demo', 'source', 'regions.json')
-setts_path = os.path.join(REPO_ROOT, 'openworld', 'little-demo', 'source', 'settlements.json')
-if os.path.exists(regs_path) and os.path.exists(setts_path):
-    regs_doc = _json.load(open(regs_path, encoding='utf-8'))
-    setts_doc = _json.load(open(setts_path, encoding='utf-8'))
+# the page's own defaults (openworld/little-demo/source, their old copy, was retired to archive/ in 5be246474)
+regs_doc, setts_doc = P.regions(), P.settlements()
+check('the page holds its regions and settlements (%d, %d)' % (len(regs_doc), len(setts_doc)), len(regs_doc) > 100 and len(setts_doc) > 100)
+if True:
     r_orig = _copy.deepcopy(D['rivers'])
     r_pert = _copy.deepcopy(D['rivers'])
     for r_p in r_pert[::5]:
@@ -359,7 +358,7 @@ for pol_id, pol_nm, pol_npts in [
           pol_reg is not None and pol_reg.get('name') == pol_nm and len(pol_reg.get('points', [])) == pol_npts)
 check('Superseded political region IDs (rmudhwjkmjc1e, rmufwoc7586da, rmuooahhlhlnu, rmukx7n441l62, rmvyl36gozner) are removed',
       not any(r.get('id') in {'rmudhwjkmjc1e', 'rmufwoc7586da', 'rmuooahhlhlnu', 'rmukx7n441l62', 'rmvyl36gozner'} for r in R))
-S = P.docs(os.path.join(TOOL, '..', '..', 'openworld', 'little-demo', 'source', 'settlements.json'))
+S = P.settlements()
 tw_sett = next((s for s in S if s.get('id') == 'stallwalls01' or s.get('name') == 'Tallwalls'), None)
 check('Tallwalls settlement stallwalls01 is present at (650, 1268)', tw_sett is not None and (int(tw_sett['px']), int(tw_sett['py'])) == (650, 1268))
 gv_t1_e = float(E[1212, 638])
@@ -424,10 +423,9 @@ check('Labyrinth has rich microclimate mosaic (%d classes >= 7: %s)' % (len(lab_
       len(lab_c_codes) >= 7 and 'WH' in lab_c_codes and bool(lab_c_codes & {'BWk', 'BSk'}) and bool(lab_c_codes & {'Csb', 'Cfb'}) and bool(lab_c_codes & {'Dsb', 'Dfb', 'Dsc', 'Dfc'}))
 
 # ---- 12. Xanadu one lake-valley (Erewhon's), Theodiga tall cataract, Small Lake, Oidong eastern cataract, low cataracts to Lizardman lake, Rift relief, & climate detail
-# (5.1 edit 2, edit_512.py: the lake is now the caldera lake round 810,1499; Erehwon's bench is 805,1516)
-check('Erewhon Lake (810, 1499) is wet at -520 m and Erehwon\'s bench (805, 1516) is dry at ~ -497 m',
-      bool(whas[1499, 810]) and abs(float(wlev[1499, 810]) - (-520.0)) <= 2.0
-      and not bool(whas[1516, 805]) and -515.0 <= float(E[1516, 805]) <= -450.0)
+check('Erewhon Lake (851, 1498) is wet at -520 m and Erehwon (800, 1503) is dry at ~ -485 m',
+      bool(whas[1498, 851]) and abs(float(wlev[1498, 851]) - (-520.0)) <= 2.0
+      and not bool(whas[1503, 800]) and -515.0 <= float(E[1503, 800]) <= -450.0)
 check('Theodiga (908, 1535) is on dry broken-dam brink at ~ -495 m above Erewhon Lake (-520 m)',
       not bool(whas[1535, 908]) and -515.0 <= float(E[1535, 908]) <= -460.0)
 s_horst_max = float(np.max(E[1538:1564, 795:895]))
@@ -524,51 +522,111 @@ gc_t = next(r for r in R if r.get('id') == 'rmw4vh9t20da4')
 m99_t, mgc_t = G.poly(r99_t['points'], 1.0, 1.0, E.shape), G.poly(gc_t['points'], 1.0, 1.0, E.shape)
 check('the Great Chasm\'s sill (1697,1028) is the Great Chasm\'s, not Region 99\'s; overlap %d edge cells' % int((m99_t & mgc_t).sum()),
       bool(mgc_t[1028, 1697]) and not bool(m99_t[1028, 1697]) and int((m99_t & mgc_t).sum()) <= 80)
-# ---- 15. 5.1 edit 2 (edit_512.py, 2026-11-11): Erewhon's caldera lake, its walls, volcanoes, islands, the Vale and
-#          the Alph's new head
-import edit_512 as E512   # noqa: E402
-yy_c, xx_c = np.mgrid[0:E.shape[0], 0:E.shape[1]].astype(float)
-_, _, r_c = E512.lake_frame(xx_c, yy_c)
-lk_full = r_c <= 1.0
-lk = lk_full & whas & (np.abs(np.nan_to_num(wlev, nan=0.0) + 520.0) <= 1.0)
-isl_c = np.zeros(E.shape, bool)
-for _, i_x, i_y, i_rx, i_ry, _ in E512.ISLANDS:
-    isl_c |= np.hypot((xx_c - i_x) / i_rx, (yy_c - i_y) / i_ry) <= 1.0
-check('Erewhon\'s caldera lake: %d cells wet at -520 m (1,400-1,600), %.0f m deep at most (>= 700 m), dry only on its islands' % (
-    int(lk.sum()), -520.0 - float(E[lk].min())),
-      1400 <= int(lk.sum()) <= 1600 and -520.0 - float(E[lk].min()) >= 700.0
-      and not bool((lk_full & ~whas & ~isl_c).any()))
-s_c = nd.distance_transform_edt(~lk_full)
-wall2 = float(np.median(E[~lk_full & (np.abs(s_c - 2.0) < 0.5) & (yy_c > 1470) & (yy_c < 1545) & (xx_c > 770) & (xx_c < 850)]))
-check('the caldera walls stand %.0f m over the lake two cells off the shore (>= 250 m)' % (wall2 + 520.0), wall2 + 520.0 >= 250.0)
-for v_id, v_x, v_y, v_top, v_rb in E512.VOLCS:
-    v_h = float(E[int(v_y), int(v_x)])
-    check('%s (%d, %d) stands %.0f m over the lake (1.5-2.6 km), %.1f px back from the shore (10-15)' % (
-        v_id, v_x, v_y, v_h + 520.0, s_c[int(v_y), int(v_x)]),
-          1500.0 <= v_h + 520.0 <= 2600.0 and 10.0 <= s_c[int(v_y), int(v_x)] <= 15.0)
-for i_id, i_x, i_y, i_rx, i_ry, i_c in E512.ISLANDS:
-    i_j, i_i = int(round(i_y)), int(round(i_x))
-    check('island %s (%.1f, %.1f) is dry, %.0f m over the lake' % (i_id, i_x, i_y, E[i_j, i_i] + 520.0),
-          not bool(whas[i_j, i_i]) and 20.0 <= float(E[i_j, i_i]) + 520.0 <= 160.0)
-lf = D.get('landforms', {})
-check('DATA.landforms holds the Pleasure Dome\'s island, in the lake on a shoal',
-      lf.get('format') == 'krator-landforms' and any(
-          l_['id'] == 'lf_pleasure_dome_isle' and bool(whas[int(round(l_['py'])), int(round(l_['px']))])
-          and float(E[int(round(l_['py'])), int(round(l_['px']))]) >= -560.5 for l_ in lf.get('landforms', [])))
-alph = next(r for r in D['rivers'] if r['id'] == 'r070')
-a_j, a_i = int(round(alph['px'][0][1])), int(round(alph['px'][0][0]))
-check('the Alph (r070) leaves the lake\'s east tip (%s, bed %.1f m) and reaches its old course at 903.5,1529.5' % (
-    alph['px'][0], alph['bed_m'][0]),
-      bool(nd.binary_dilation(lk, iterations=2)[a_j, a_i]) and -523.0 <= alph['bed_m'][0] <= -520.0
-      and [903.5, 1529.5] in alph['px'])
-vale_t = (xx_c > 846) & (xx_c < 902) & (yy_c > 1488) & (yy_c < 1528) & (np.abs(E + 520.0) < 60.0)
-check('the Vale is dry land between -560 and -460 m (%d cells, median %.0f m)' % (int(vale_t.sum()), float(np.median(E[vale_t]))),
-      int(vale_t.sum()) >= 900 and not bool(whas[vale_t].any()) and -545.0 <= float(np.median(E[vale_t])) <= -480.0)
-for r_id in ('r613', 'r753', 'r492', 'r272'):
-    r_t = next(r for r in D['rivers'] if r['id'] == r_id)
-    check('%s ends in the lake' % r_id, bool(lk_full[int(round(r_t['px'][-1][1])), int(round(r_t['px'][-1][0]))])
-          and r_t['to'].get('lake_m') == -520)
-for r_id in ('r488', 'r616'):
-    r_t = next(r for r in D['rivers'] if r['id'] == r_id)
-    check('%s joins the Alph in the Vale' % r_id, r_t['to'].get('river') == 'r070')
+# ---- 15. 5.1 edit 2 (edit_512.py, 2026-11-09): Godshearth's vent records (biomes/godshearth/PLAN.md section 8, model amendment 1)
+gh_v = [v for v in D['vents'] if v.get('region') == 'rmw4wou2y1hhc']
+check('Godshearth has its six vent records, kinds spring, geyser and fumarole (%d: %s)' % (len(gh_v), sorted({v.get('kind') for v in gh_v})),
+      len(gh_v) == 6 and {v.get('kind') for v in gh_v} == {'spring', 'geyser', 'fumarole'})
+gh_bad = [v['name'] for v in gh_v if not all(gh_m[int(round(p[1])), int(round(p[0]))] for p in (v.get('line') or [v['px']]))]
+check('every Godshearth vent (and every point of its line) inside the caldera\'s polygon%s' % (': ' + ', '.join(gh_bad) if gh_bad else ''), not gh_bad)
+gh_fl = [(v['name'], v['floor'], float(E[int(round(v['px'][1])), int(round(v['px'][0]))])) for v in gh_v]
+check('every Godshearth vent\'s floor is the ground under it, within 60 m (%s)' % ', '.join('%.0f/%.0f' % (f, e) for _, f, e in gh_fl),
+      all(abs(f - e) <= 60 for _, f, e in gh_fl))
+check('every Godshearth vent carries T (60-100 C) and reach_m', all(60 <= v.get('T', 0) <= 100 and v.get('reach_m', 0) > 0 for v in gh_v))
+v_src = open(os.path.join(TOOL, 'model', 'src', '30-vents.js'), encoding='utf-8').read()
+check('the model draws fumaroles and springs as steam (30-vents.js)', "v.kind==='fumarole'" in v_src and "v.kind==='spring'" in v_src)
+# ---- 16. 5.1 edit 3 (edit_513.py, 2026-11-09): Copper Glacier trimmed to the Firebliss Range, the Firebliss rivers
+#          rerouted and carved, th and tl, the Firebliss vent records
+import re as _re   # noqa: E402
+defregs = _json.loads(_re.search(r'const defRegs = (\[.*?\]);\n', open(os.path.join(TOOL, 'model', 'src', '51-region-store.js'),
+                                                                        encoding='utf-8').read(), _re.S).group(1))
+cg_t = next(r for r in defregs if r['id'] == 'rmvcopperglacier')
+fb_t = next(r for r in defregs if r['id'] == 'rmw8hj62nmugn')
+mcg_t, mfb_t = G.poly(cg_t['points'], 1.0, 1.0, E.shape) > .5, G.poly(fb_t['points'], 1.0, 1.0, E.shape) > .5
+check('Copper Glacier and Firebliss share only their edge (%d cells); the cones and valleys are Firebliss\'s' % int((mcg_t & mfb_t).sum()),
+      int((mcg_t & mfb_t).sum()) <= 150 and all(not mcg_t[y, x] and mfb_t[y, x] for x, y in
+                                                ((104, 1304), (148, 1292), (206, 1284), (126, 1344), (184, 1318)))
+      and bool(mcg_t[1148, 148]) and fb_t['notes'] != '')
+lab_t, _ = nd.label(whas, structure=np.ones((3, 3)))
+riv_t = {r['id']: r for r in D['rivers']}
+for rid_t, lake_t in (('r_fb_west', (125, 1343)), ('r_fb_central', (184, 1318)), ('r_fb_east', (284, 1318))):
+    r_t = riv_t[rid_t]
+    lv_t = float(np.nanmedian(wlev[lab_t == lab_t[lake_t[1], lake_t[0]]]))
+    # the record keeps every cell of its course, each a step (8-neighbour) from the last
+    cells_t = [(int(y_), int(x_)) for x_, y_ in r_t['px']]
+    check('%s: every vertex a cell, each a neighbour of the last (or across a lake)' % r_t['name'], all(
+        max(abs(a_[0] - b_[0]), abs(a_[1] - b_[1])) == 1 or (whas[a_] and whas[b_] and lab_t[a_] == lab_t[b_])
+        for a_, b_ in zip(cells_t[:-1], cells_t[1:])))
+    dry_t = [float(E[c]) for c in cells_t if not whas[c]]
+    climb_t = max([0.0] + [b - min(dry_t[:k + 1]) for k, b in enumerate(dry_t)])
+    check('%s leaves its lake (%.0f m) and falls the whole way (climbs %.1f m); region and mouth recorded'
+          % (r_t['name'], lv_t, climb_t),
+          bool(whas[int(r_t['px'][0][1]), int(r_t['px'][0][0])]) and abs(r_t['source_m'] - lv_t) <= 1.0 and climb_t <= 1.0
+          and r_t.get('region') == 'Firebliss Range' and r_t.get('to'))
+for lake_t in ((125, 1343), (184, 1318), (238, 1322), (284, 1318)):
+    lk_t = lab_t == lab_t[lake_t[1], lake_t[0]]
+    rim_t = nd.binary_dilation(lk_t, structure=np.ones((3, 3))) & ~whas
+    lv_t = float(np.nanmedian(wlev[lk_t]))
+    check('the lake at %d,%d (%.0f m) keeps its rim at its level (lowest %.1f m)' % (lake_t + (lv_t, float(E[rim_t].min()))),
+          float(E[rim_t].min()) >= lv_t - 1.0)
+T15 = {k: P.raster(D, k, 'L').astype(int) - 90 for k in ('tm', 'th', 'tl', 'tw', 'tc')}
+codes15 = [c['code'] for c in D['climate']['classes']]
+land15 = ~whas & (P.raster(D, 'c', 'L') != codes15.index('O')) & (T15['tm'] > -89)
+bad15 = land15 & ((T15['th'] <= -89) | (T15['tl'] <= -89) | (T15['th'] < T15['tw']) | (T15['tl'] > T15['tc']))
+check('th and tl on every land cell, the hottest afternoon over its warm month and the coldest night under its cold one '
+      '(%d cells not)' % int(bad15.sum()), int(bad15.sum()) == 0)
+fbv = [v for v in D['vents'] if v.get('region') == 'Firebliss Range']
+check('the five Firebliss vents have a crater floor and radius', len(fbv) == 5 and all(
+    v.get('floor') and v.get('radius') and v['floor'] < v['peak'] for v in fbv))
+# ---- 16. 5.1 edit 4 (edit_514.py, 2026-11-10): Ostrukh Riba into Lake Ostrukh, the north sill, Godstep's dry playa
+ob = next(r for r in D['rivers'] if r['id'] == 'r_mb_siphon_breach')
+ob_end = ob['px'][-1]
+check('Ostrukh Riba leaves the flagship maar south (%s, %.0f m) and ends in Lake Ostrukh at 1,850 m (%s)' % (ob['px'][0], ob['source_m'], ob_end),
+      ob['px'][0][1] > 1350 and ob['source_m'] == 2036.0 and ob['to'].get('lake_m') == 1850.0
+      and bool(whas[int(round(ob_end[1])), int(round(ob_end[0]))]) and abs(float(wlev[int(round(ob_end[1])), int(round(ob_end[0]))]) - 1850.0) <= 2.0)
+check('the flagship maar still holds 40 cells at 2,040 m', int((whas & (np.abs(np.nan_to_num(wlev) - 2040.0) < 1)
+      & (np.hypot(xx_b - 1584, yy_b - 1348) < 8)).sum()) == 40)
+check('the north breach is closed by the 2,050 m sill (ground %.0f m at 1580,1344)' % E[1344, 1580], float(E[1344, 1580]) >= 2049.0)
+gsv = next(r for r in R if r.get('id') == 'rmvkbfspgsmr3')
+gsv_m = G.poly(gsv['points'], 1.0, 1.0, E.shape)
+check('Godstep valley has no highland-lake class on dry ground (%d cells)' % int((gsv_m & ~whas & (c_grid_full == codes_test.index('WH'))).sum()),
+      int((gsv_m & ~whas & (c_grid_full == codes_test.index('WH'))).sum()) == 0)
+# ---- 17. 5.1 edit 5 (edit_515.py, 2026-11-11): Godshearth's vents and outlet, the Loom Chasms, e highlands, the Stalker
+#          Peaks, the Catch's oases, High Rift's gorge, the Xanadui names
+gso = next((r for r in D['rivers'] if r['id'] == 'r_gh_spillway'), None)
+check('the hot lake spills down the spillway to r442 (%s, %.1f m3/s)' % (gso and gso['name'], gso and gso['q_mouth_m3s'] or 0),
+      gso is not None and gso['source_m'] == 3640.0 and gso['to'].get('river') == 'r442' and gso['q_mouth_m3s'] > 10
+      and gso['px'][0][1] > 1394 and gso['to'].get('name') == next(r for r in D['rivers'] if r['id'] == 'r442')['name'])
+rr = {r['id']: r for r in R}
+check('region rmvraoas90co7 is the Loom Chasms', rr['rmvraoas90co7']['name'] == 'Loom Chasms')
+m_lc = G.poly(rr['rmvraoas90co7']['points'], 1.0, 1.0, E.shape)
+for nb_id in ('rmvstalkergate', 'rmvkknh1am4fw'):
+    ov = int((m_lc & G.poly(rr[nb_id]['points'], 1.0, 1.0, E.shape)).sum())
+    check('%s keeps out of the Loom Chasms (%d shared edge cells)' % (rr[nb_id]['name'], ov), ov <= 100)
+check('rmvkaq9fftvpp is e highlands, and no region is named e inner wall',
+      rr['rmvkaq9fftvpp']['name'] == 'e highlands' and not any(r['name'] == 'e inner wall' for r in R))
+sp_m = G.poly(rr['rmwstalkerpks']['points'], 1.0, 1.0, E.shape) if 'rmwstalkerpks' in rr else None
+check('the Stalker Peaks hold their four peaks and Hub 01', sp_m is not None and all(bool(sp_m[y, x]) for x, y in
+      [(1287, 1293), (1321, 1481), (1397, 1505), (1411, 1409), (1344, 1409)]))
+setts_t = {s['id']: s for s in P.settlements()}
+catch_m = G.poly(rr['rmuf346nvpktx']['points'], 1.0, 1.0, E.shape)
+oas = [setts_t.get('scatch%s01' % n) for n in ('kolli', 'arfwai', 'bitta', 'lasso')]
+check('the Catch\'s four new oases stand on its floor at 1,000-1,600 m (%s)' % [o and (o['px'], o['py'], round(E[o['py'], o['px']])) for o in oas],
+      all(o is not None and catch_m[o['py'], o['px']] and 1000 <= E[o['py'], o['px']] <= 1600 for o in oas))
+vb = next(r for r in D['rivers'] if r['id'] == 'r_hr_verdigris')
+g_cells = [(int(round(p[1])), int(round(p[0]))) for p in vb['px'] if 1361 <= p[0] <= 1395]
+g_walls = [min(float(E[j - 2, i]), float(E[j + 2, i])) - float(E[j, i]) for j, i in g_cells]
+check('High Rift\'s gorge: Verdigris Beck runs in a cut over the Caldron (walls %s m over its bed)' % [round(w) for w in g_walls],
+      'gorge' in vb and all(float(E[j, i]) >= 2580.0 + 10 for j, i in g_cells) and np.median(g_walls) >= 30)
+fz_t = _json.load(open(RN.FROZEN_NAMES_PATH, encoding='utf-8'))
+check('r442 carries the owner\'s Xanadui name (%s)' % next(r for r in D['rivers'] if r['id'] == 'r442')['name'],
+      next(r for r in D['rivers'] if r['id'] == 'r442')['name'] != 'Rīfar al-Bihār')
+# ---- 18. 5.1 edit 6 (edit_516.py, 2026-11-11): the walls' forced rain removed; the outlet at the owner's ~129 m3/s
+from edit_511 import gh_weight as _ghw   # noqa: E402
+_w4 = _ghw(E.shape, whas)
+_rain4 = P.raster(D, 'p', 'L').astype(float) / 255 * 4000
+_band4 = (_w4 > 0.02) & ~gh_m & ~whas & (E >= 4000) & (E < 6000)
+check('the Godthrone walls round Godshearth are dry again (4-6 km band %.0f mm)' % _rain4[_band4].mean(), _rain4[_band4].mean() < 400)
+check('Godshearth keeps its own rain inside the caldera (%.0f mm)' % _rain4[gh_floor].mean(), 700 <= _rain4[gh_floor].mean() <= 950)
+gso4 = next(r for r in D['rivers'] if r['id'] == 'r_gh_spillway')
+check('Āirã Siṭrīm carries about 129 m3/s (%.1f), perennial' % gso4['q_mouth_m3s'], 120 <= gso4['q_mouth_m3s'] <= 135 and gso4['perennial'])
 print('%d checks passed' % ok)

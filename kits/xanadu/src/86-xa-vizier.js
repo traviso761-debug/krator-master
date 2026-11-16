@@ -59,7 +59,7 @@ function buildXaVizier(G,o){reseed(32401+(o.v|0));const V=xV(o),D=XVZ[V%3],lit=x
  // fountain basin at its head, hedged walks, a garden wall with a gate at the front
  vB('vStone',0,0,6,5.2,.4,26,0,stone);vB('xTilesB',0,.1,6,4.4,.34,25.2,0,xC(XPAL.turquoise));vB('xWaterB',0,.2,6,4.4,.28,25.2,0,xC(0x2ab0c0));
  for(const s of[-1,1]){xnXMBed(s*4.6,6,2.2,25,0);for(let k=0;k<5;k++){if(k%2)xnXMPalm(s*9.5,-5+k*5.5,rr(5,7));else xnCypress(s*9.5,-5+k*5.5,rr(6,9));}
-  vB('xPaint',s*7.4,0,6,.5,.9,26,0,xC(xPick(XPAL.leaf)).multiplyScalar(.8));xnXMBed(s*13,8,4,20,0);}
+  vB('xHedgeB',s*7.4,0,6,.5,.9,26,0,xC(xPick(XPAL.leaf)).multiplyScalar(.8));xnXMBed(s*13,8,4,20,0);}
  {const fz=Z0+DP/2+8.5;vB('xPaint',0,0,fz,6,.9,6,0,V===0?xC(D.wall):stone);vB('xWaterB',0,.7,fz,5.2,.3,5.2,0,xC(0x2ab0c0));xnFountain(0,.9,fz,1.6,V===0?xC(D.wall):stone);}
  for(const s of[-1,1]){vB('vStone',s*((W+14)/4+2),0,20,(W+14)/2-4,1.4,.5,0,stone);vB('vStone',s*(W/2+7),0,3,.5,1.4,34.5,0,stone);vB('vStone',s*4,0,20,1.1,2.6,1.1,0,stone);kput('xBulbT',[s*4,2.6,20],null,[.9,1.0,.9],xC(xPick(XPAL.tile)));}   // the wall, open 7 m at the gate between two piers
  xnPave(0,20,7,3,0,stone,1.6);for(const s of[-1,1])vPst('vClayPot',s*2.4,0,17.5,.4,.8,xC(0x9a5a38));

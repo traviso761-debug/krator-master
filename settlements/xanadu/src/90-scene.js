@@ -8,7 +8,8 @@ const rowCamDist=w=>Math.max(40,Math.min(w*.55,260));
 const eyeCamDist=D=>Math.max(10,Math.max(D.w,D.h||0)*.9+D.d*.5);   // an eye-level camera stands this far in front of the plot centre
 const XA_ALLV=(typeof XA_VARIANTS!=='undefined')&&XA_VARIANTS;   // a target may show every def at all its variants (o.v = 0 … nv-1)
 const xaVs=k=>{if(!XA_ALLV)return[0];const n=VERN.defs[k].nv||3,out=[];for(let v=0;v<n;v++)out.push(v);return out;};   // every variant, v0 first
-(function xaLayout(){let z=0;const fams=XA.families();
+(function xaLayout(){let z=0;const skip=k=>typeof XA_SKIP!=='undefined'&&XA_SKIP.test(k);   // a target may leave defs out (XA_SKIP, a RegExp on the key)
+ const fams=XA.families().map(F=>({family:F.family,keys:F.keys.filter(k=>!skip(k))})).filter(F=>F.keys.length);
  let prev=null;fams.forEach((F,fi)=>{const ws=F.keys.map(k=>(VERN.defs[k].w+9)*xaVs(k).length);const total=ws.reduce((a,c)=>a+c,0);
   const dmax=Math.max(...F.keys.map(k=>VERN.defs[k].d||VERN.defs[k].w)),hmax=Math.max(...F.keys.map(k=>VERN.defs[k].h||0));
   if(prev)z+=Math.max(0,Math.max(rowCamDist(prev.w),prev.h*1.7)+10-22);   // every row: keep the previous row's camera out of this row's plots

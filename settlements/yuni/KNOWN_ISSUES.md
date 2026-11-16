@@ -461,9 +461,16 @@ Counts (`window._openings`, `verify.py yuni.html --assert --eval "()=>window._op
       panes counted), 1,406 cards, 13 voids. `verify.py --assert` passes on both pages before and after, the same invariants.
 - [ ] Windows are panes on a solid face: the streamed interiors are seen through doorways (the portal), not through windows.
       A window of a live interior shows the card, not the room.
-- [ ] The interiors' own doors (64-interiors.js, streamed with the rooms) keep 76-doors.js's proximity loop and are not KDOOR
-      records: they are built and dropped as you walk, and a record per streamed door would need adding and pruning by id.
-- [ ] Leaves swing Yuni's 1.4 rad (OPEN_ANG), not KDOOR.SWING (1.75): KDOOR.export() reports the registry's swing.
+- [x] (2026-11-09) The interiors' own doors (64-interiors.js, streamed with the rooms) are KDOOR records while their building is
+      live: `buildLive` adds one per leaved interior door (id: the plan's door id, `<building>.wall.<n>.door.<i>`, the same each
+      time the building streams in; a mat a `lift` roll, a leaf a `swing`), posed through `KDOORHOST.posed`, eased by
+      `KDOORHOST.tick`; `dropLive` prunes them by id. 76-doors.js's own easing loop is gone: the walker in the doorway, the Doors
+      control, E or an NPC opens them through KDOOR. They take no walk blocks (`walk:false`): the walker's own doorway test
+      (`intDoorOk`) still lets it through a partition. `verify.py --assert` (`streamed-interior-doors-on-kdoor`) streams one
+      building in, opens and shuts its doors and drops it.
+- [x] (2026-11-09, recorded) Leaves swing Yuni's 1.4 rad (OPEN_ANG), not KDOOR.SWING (1.75), on purpose: a leaf in a thick adobe
+      reveal or beside a partition strikes the wall past about 85 degrees. Every swing record carries it (`R.swing = 1.4`), so
+      `KDOOR.angle`, `KDOOR.leaves` and `KDOOR.export()` (Godot) give the angle the page draws.
 
 The audit: `_doors.reach()` (76-doors.js) writes every planned interior into a KWALK registry of its own, as Yuni's walker sees it
 (the rooms of each level, every wall as blocks gapped at its doorways, each stair rising from its foot to its top, each street door

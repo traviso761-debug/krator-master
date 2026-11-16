@@ -70,7 +70,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `76-65-biome-hyperjungle-dress.js` | 7 |  |
 | `76-70-biome-hyperjungle.js` | <1 |  |
 | `76-campus.js` | 11 |  |
-| `77-dam.js` | 13 |  |
+| `77-dam.js` | 14 |  |
 | `77z-iziz-style.js` | 55 **big** | ANCIENT IZIZ STYLE (1) |
 | `78-factory-silo.js` | 2 |  |
 | `79-government.js` | 8 |  |
@@ -112,7 +112,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `8ae-wing.js` | 46 **big** |  |
 | `8af-drum.js` | 48 **big** | the skins (38) |
 | `8ag-blades.js` | 56 **big** |  |
-| `8ah-engines.js` | 33 **big** | THE HARROW (131); THE STRIDER (230); THE BREECH (314); THE GYRE (382); THE PRESS (435) |
+| `8ah-engines.js` | 34 **big** | THE HARROW (134); THE STRIDER (234); THE BREECH (318); THE GYRE (386); THE PRESS (439) |
 | `8ai-engines2.js` | 19 | THE SLEEPER (32); THE CARAPACE (101); THE RETORTS (148); THE NEEDLE (202); THE RAM (248) |
 | `8aj-alt-a-bole.js` | 15 | THE BOLE (74) |
 | `8aj-alt-b-stack.js` | 9 |  |
@@ -180,7 +180,7 @@ Each target adds its own fragments to `src/` and builds one output.
 | `dalab` | `89z-rows.js`, `91z-views.js` | 4 |
 | `darco` | `89z-rows.js`, `91z-views.js` | 2 |
 | `drum` | `89z-rows.js`, `91z-views.js` | 6 |
-| `engines` | `89z-rows.js`, `91z-views.js` | 4 |
+| `engines` | `89z-rows.js`, `8aj-engines3.js`, `91y-engine-checks.js`, `91z-views.js` | 36 |
 | `forest` | `89z-rows.js`, `91z-views.js` | 5 |
 | `funicular` | `89z-rows.js`, `91z-views.js` | 5 |
 | `hexahedron` | `89z-rows.js`, `91z-views.js` | 8 |
@@ -207,7 +207,7 @@ Each target adds its own fragments to `src/` and builds one output.
 | `spaceport` | `89z-rows.js`, `91z-views.js` | 2 |
 | `span` | `89z-rows.js`, `8as0-span-parts.js`, `91z-views.js` | 30 |
 | `spire` | `89z-rows.js`, `91z-views.js` | 4 |
-| `theodiga` | `89z-rows.js`, `91z-views.js` | 1 |
+| `theodiga` | `77a-theodiga-dome-plan.js`, `77b-theodiga-dome-draw.js`, `89z-rows.js`, `91z-views.js` | 16 |
 | `trigon` | `89z-rows.js`, `91z-views.js` | 5 |
 | `veladiga` | `89z-rows.js`, `91z-views.js` | 1 |
 | `wheel` | `89z-rows.js`, `91z-views.js` | 7 |

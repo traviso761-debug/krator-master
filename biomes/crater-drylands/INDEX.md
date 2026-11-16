@@ -41,3 +41,13 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `89w-host-water.js` | 1 |  |
 | `99-host-take.js` | 21 | the inspector's words (51); the probe's budgets and the kit's own checks (ve (68); the editor's world: fauna mode (core/host 98; se (152); the page, handed to the host (172) |
 | `99-tail.html` | <1 |  |
+
+## stations/
+
+Each station builds one page (`build.py --station <name>`) from its own fragments, with `src/` or its `base` station.
+
+| Station | Fragments | KB |
+|---|---|---|
+| edge | 45-host-stage.js, 48n0-host-nwbay-open.js, 48n9-host-nwbay-close.js, 86-host-edge.js, 99-host-zseason.js | 20 |
+| salt | 45-host-stage.js, 86-host-salt.js, 89x-host-salt.js | 19 |
+| south | 45-host-stage.js, 47a9-host-hj-end.js, 47b9-host-sed-end.js, 48s9-host-savrim-end.js, 85-host-step.js, 86-host-south.js, 99-host-zseason.js | 29 |

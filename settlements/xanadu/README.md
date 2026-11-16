@@ -33,6 +33,14 @@ The city: `python3 build.py --target erewhon` → `dist/erewhon.html`. Its terra
 gardens of the kit page too. The city's budget is 25 M triangles; buildings bake per 480 m chunk and the chunks are
 culled by range and view each frame (the runtime LOD), the biome's own chunk LOD beside them.
 
+**Its place in the open world** (the owner, 2026-11-11, after scale-model edit 5.1-512 moved Erehwon onto its caldera
+lake's south shore): the page faces as the world does, with the lake north. It stands with its centre on the pin 805,1516,
+unturned, and its lake is the world's -520 m (`ER_WORLD`, `targets/erewhon/84-er-geo.js`). Its island (`ISLAND_C`) is
+the scale model's landform `lf_pleasure_dome_isle`, which `openworld/xanadu-oidong-highrift` stamps at 1:1.
+`verify.py --assert` checks that the two stand within 10 m. Its negative turns the page a quarter turn, which puts the
+island 870 m off. The world's own ground there holds none of the page's relief (`openworld/xanadu-oidong-highrift/KNOWN_ISSUES.md`).
+Moving the island or turning the page means moving the record too.
+
 ```
 python3 tools/erewhon-map.py <map.png> [--preview out.png]     # regenerate targets/erewhon/83-er-data.js
 python3 verify.py dist/erewhon.html --assert --views "Overview,The palace precinct" --out shots/er   # ~2 min a shot in SwiftShader

@@ -46,3 +46,14 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `89z-host-build.js` | 7 |  |
 | `99-host-take.js` | 19 | the inspector's words (28); the probe's budgets and the kit's own checks (ve (44); the page, handed to the host (138) |
 | `99-tail.html` | <1 |  |
+
+## stations/
+
+Each station builds one page (`build.py --station <name>`) from its own fragments, with `src/` or its `base` station.
+
+| Station | Fragments | KB |
+|---|---|---|
+| canyons | 44w-host-land.js | 7 |
+| montane | 44w-host-land.js | 7 |
+| tundra | 44w-host-land.js | 8 |
+| waste | 44w-host-land.js | 11 |

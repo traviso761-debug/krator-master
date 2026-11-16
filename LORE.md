@@ -294,6 +294,7 @@ The Ancients were the original civilization that colonized Krator, with roots, h
   - **Salvagers**, formerly Scavengers: "those who strip the Ancient ruins".
   - **Rocketeers**.
 - Capital institutions: the Hall of the Republic, the **Arsenal** (racks of rockets), the Mint and Treasury, the Forgehouse.
+- **The First Citizen** is the Republic's head of state (the owner, 2026-11-09): the Republic's military headquarters and the First Citizen's residence are Roketstad's **Fortress**; the Hall of the Republic is the **Assembly of Citizens**' house, presided over by its own Speaker, where the First Citizen speaks as a citizen (`kits/highlands/hall/BLUEPRINT.md`, `kits/highlands/fortress/BLUEPRINT.md`).
 - A salvage culture: houses in fuel tanks, rocket stages and hull plate. **Shipbreakers** dismantle the ships "that came down short of the port".
 - Murals: Norse and Celtic knots, triskele, tree of life, wolves, Mjölnir, the green gas giant, and **rockets** (Republic only).
 - Landlocked: no ships.

@@ -8,7 +8,9 @@
    Every standing home wears its kind's bill over its life (upkeep), drawn hourly, owed when the warehouses are out.
      ISLE.simBuild()            after the towns' people and economies (40)
      ISLE.buildKind(P)          the kind a building is kept as: a home of one household a `house`, of three a `longhouse`;
-                                any other roofed place of the plan (a workplace, a hall, a temple, a barracks) `works`
+                                any other roofed place of the plan (a workplace, a hall, a temple, a barracks) `works`;
+                                a Hykkousoi piece its kit's own (build.byKit: `hyk-house`, `hyk-great`, `hyk-works`)
+     ISLE.lotKind(key)          an empty lot's kind, by its house's key
      ISLE.lotStage(L)           a plan record's stage for the drawing: null (a building as any), 'cleared', 'piles',
                                 'frame', 'roof' (by its project's share done), 'built'
      ISLE.buildBooks()          a snapshot: the building report, the ledger
@@ -18,9 +20,14 @@
                                 times the days, less what is owed); the books hold; the projects and the upkeep reported */
 ISLE.buildKind = function (P) {
   if (!P || !P.tags || !P.tags.key || P.kind === 'lot') return null;
-  if (P.kind === 'home') { var hh = ISLE.households(P.tags.key); return hh >= 3 ? 'longhouse' : hh ? 'house' : null; }
-  return P.indoor === true && P.settlement != null ? 'works' : null;   /* a workplace, a hall, a temple, a barracks: a roof over it (2026-11-04) */
+  if (P.kind === 'home') { var hh = ISLE.households(P.tags.key); return hh >= 3 ? ISLE.kitKind(P.tags.key, 'longhouse') : hh ? ISLE.kitKind(P.tags.key, 'house') : null; }
+  return P.indoor === true && P.settlement != null ? ISLE.kitKind(P.tags.key, 'works') : null;   /* a workplace, a hall, a temple, a barracks: a roof over it (2026-11-04) */
 };
+/* a piece's kit's own kind for one of the three (build.byKit, 2026-11-10: the Hykkousoi's of shell, nacre and pearl) */
+ISLE.kitOf = function (key) { return /^hyk[_-]/.test(key || '') ? 'hyk' : null; };   /* the Ys pieces (hyk_) and the placeholder's boxes (47k: hyk-) */
+ISLE.kitKind = function (key, kind) { var BK = ISLE.TUNE.sim.build.byKit, k = ISLE.kitOf(key); return k && BK && BK[k] && BK[k][kind] || kind; };
+/* an empty lot's kind: its house's */
+ISLE.lotKind = function (key) { return ISLE.kitKind(key, ISLE.households(key) >= 3 ? 'longhouse' : 'house'); };
 ISLE.simBuild = function () {
   var T = ISLE.TUNE.sim, B = T.build; if (!B || !SIM.build || !SIM.ECONS) return null;
   var Gr = B.growth;
@@ -39,7 +46,7 @@ ISLE.simBuild = function () {
       var L = ISLE.SIM.lotRecs && ISLE.SIM.lotRecs[Lt.id]; if (L) L.built = true;
     } });
   var n = 0;
-  SIM.all('place').forEach(function (P) { if (P.kind === 'lot' && P.tags && P.tags.vacant) { SIM.buildLot({ id: P.id, kind: ISLE.households(P.tags.key) >= 3 ? 'longhouse' : 'house' }); n++; } });
+  SIM.all('place').forEach(function (P) { if (P.kind === 'lot' && P.tags && P.tags.vacant) { SIM.buildLot({ id: P.id, kind: ISLE.lotKind(P.tags.key) }); n++; } });
   return { lots: n, pace: B.pace };
 };
 /* A NEW HOUSEHOLD (growth, 2026-11-04): `per` a household (two grown-ups at home, the rest children) in a finished house,
@@ -79,7 +86,7 @@ ISLE.openSpur = function (s) {
     var P = SIM.place({ id: id, name: 'an empty lot outside the gate', kind: 'lot', x: w.x, y: w.y, z: w.z, ry: L.ry, door: door, activities: {}, indoor: {}, wander: 4, settlement: s,
       tags: { key: L.key, lot: L.id, tag: L.tag, trade: null, cls: L.cls, district: L.district, role: null, vacant: true, hh: hh, spur: Sp.id } });
     P.cls = L.cls; L.closed = false; (S.lotRecs || (S.lotRecs = {}))[id] = L;
-    SIM.buildLot({ id: id, kind: hh >= 3 ? 'longhouse' : 'house' });
+    SIM.buildLot({ id: id, kind: ISLE.kitKind(L.key, hh >= 3 ? 'longhouse' : 'house') });
   });
   if (SIM.placesChanged) SIM.placesChanged();
   SIM.logEvent('street opened', { settlement: s, spur: Sp.id, lots: Sp.lots.length, root: Sp.root });

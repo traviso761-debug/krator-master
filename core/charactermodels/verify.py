@@ -44,6 +44,14 @@ ROUTES = (('**/three.min.js', lambda r: r.fulfill(path=THREE, content_type='text
           ('**/GLTFLoader.js', lambda r: r.fulfill(path=LOADER, content_type='text/javascript')),
           ('**/fonts.g*/**', lambda r: r.abort()))
 
+# every tab's section titles (the h3 of each .slot, without its <small>), by tab id: the UI inventory
+UI_INV = r'''async () => { const out = {};
+  for (const t of document.querySelectorAll('[role=tab]')) { t.click(); await new Promise(r => setTimeout(r, 60));
+    const page = document.getElementById(t.getAttribute('aria-controls')); if (!page) continue;
+    out[t.id] = Array.from(page.querySelectorAll('.slot > h3')).map(h => (h.firstChild && h.firstChild.nodeType === 3 ? h.firstChild.textContent : h.textContent).trim()); }
+  const g = document.getElementById('tab-gear'); if (g) g.click();
+  return out; }'''
+
 CHECKS = r'''async () => {
   const K = window._kchar, D = KCHAR_DATA, out = { pieces: [], rest: { worst: 0, at: '' }, feet: [], morph: [], clips: 0, random: true, ranges: [], hide: [], props: [], fold: {}, nonhuman: [] };
   const hex = c => [1, 3, 5].map(i => parseInt(c.slice(i, i + 2), 16));
@@ -126,7 +134,7 @@ CHECKS = r'''async () => {
       const r0 = JSON.parse(JSON.stringify(window._kchar.record()));
       const r2 = JSON.parse(JSON.stringify(r0)); r2.armour.legs = sk.id;
       await window._kchar.set(r2); await fig.play('walk');
-      let moved = 0, bad = 0, deep = 0;
+      let moved = 0, bad = 0, deep = 0, deepest = 0;
       for (let k = 0; k < 60; k++) {
         fig.update(1 / 30);
         const st = fig.clothState(), c = Object.values(st.items).find(c => c.on);
@@ -138,11 +146,17 @@ CHECKS = r'''async () => {
         if (k > 0) c.chains.forEach(ch => ch.x.forEach((x, i) => i > 0 && thighs.forEach(cp => {     // the top point rides the hips
           const a = fig.bones[cp.a].getWorldPosition(new THREE.Vector3()), b = fig.bones[cp.b].getWorldPosition(new THREE.Vector3());
           const ab = b.clone().sub(a), t = Math.max(0, Math.min(1, x.clone().sub(a).dot(ab) / ab.lengthSq()));
-          if (x.distanceTo(a.clone().addScaledVector(ab, t)) < cp.r - 0.005) deep++;
+          // the limb as the chains and the push see it: its radius per end (colliders ra, rb), not the median r (the
+          // median held the court skirt's points 2 cm off the knee's true radius, and collide() keeps them at ra..rb + 1.5 cm)
+          // (a point within a centimetre of that surface is the chain settling inside the 1.5 cm margin collide() keeps
+          // and the push covers the cloth between chains: the court skirt's deepest is 3 mm, at the stride's two ends)
+          const rt = cp.ra != null ? cp.ra + ((cp.rb != null ? cp.rb : cp.ra) - cp.ra) * t : cp.r, dd = rt - x.distanceTo(a.clone().addScaledVector(ab, t));
+          if (dd > 0.01) deep++;
+          if (dd > deepest) deepest = dd;
         })));
       }
       if (bad || moved < 0.01) out.props.push(body + ' cloth: ' + bad + ' non-finite points, largest swing ' + moved.toFixed(3) + ' m');
-      if (deep) out.props.push(body + ' cloth: ' + deep + ' chain points inside a thigh');
+      if (deep) out.props.push(body + ' cloth: ' + deep + ' chain points inside a thigh (the deepest ' + (deepest * 1000).toFixed(0) + ' mm)');
       await window._kchar.set(r0);
     }
     // the non-human parts (tools/nonhuman.py, a spike): with the Lizardman's tail and head on, the head leaves out the
@@ -353,6 +367,23 @@ async def run(page_path, do_assert, out_dir):
             os.makedirs(out_dir, exist_ok=True)
             await pg.wait_for_timeout(1500)
             await pg.screenshot(path=os.path.join(out_dir, 'cosmetic-lab.png'))
+        if do_assert or '--ui-baseline' in sys.argv:
+            # the lab's sections (every tab's h3 titles) against tests/ui-inventory.json: a section that vanishes
+            # fails the run (the Backpacks row and the Izani tiers went missing from the lab more than once:
+            # REVIEW-GARMENTS-2026-11-06.md). --ui-baseline rewrites the golden from the page as it stands
+            import re
+            inv = await pg.evaluate(UI_INV)
+            inv = {k: sorted(set(re.sub(r'\s*\(\d+\)\s*$', '', t) for t in v)) for k, v in inv.items()}
+            gp = os.path.join(HERE, 'tests', 'ui-inventory.json')
+            if '--ui-baseline' in sys.argv:
+                with open(gp, 'w', encoding='utf-8', newline='\n') as f:
+                    json.dump(inv, f, indent=1)
+                print('ui: baseline written, %d sections over %d tabs' % (sum(len(v) for v in inv.values()), len(inv)))
+            elif os.path.exists(gp):
+                for tab, titles in json.load(open(gp, encoding='utf-8')).items():
+                    lost = [t for t in titles if t not in inv.get(tab, [])]
+                    if lost:
+                        fails.append('ui: %s lost %s' % (tab, '; '.join(lost)))
         if do_assert:
             r = await pg.evaluate(CHECKS)
             print(json.dumps(r))

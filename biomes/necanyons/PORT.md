@@ -28,7 +28,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/89g-host-nightlife.js` | 2.2 | [draw] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the night's life on core/atmos: glow cards at the monkeycups' lures (57's NECANYONS.LURES records), fireflies over the creek banks, seeps and rain pools (centres by KRAND hash). A port draws the same two sprite sets from ATMOS.export's records |
 | `src/89n-host-night.js` | 3.1 | [draw] | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the night: the lights, the fog, the dome and the exposure by the world hour (core/atmos's night curve); Pinnacle Rock reads it in place. A port sets its environment from the same two light sets |
 | `src/89w-host-water.js` | 5.8 | [draw] | 6 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | core/water draws the creek (a flow) and the rain pools (still water: one mesh, WATER.stillMaterial) from 47's records; core/atmos bound on the host's hour |
-| `src/99-host-take.js` | 15.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/99-host-take.js` | 15.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 
 ## Notes

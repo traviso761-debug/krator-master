@@ -33,10 +33,13 @@ async function start(){
  WORLD.init(R);
  msg('laying out the land');for(const f of LATE)f();
  CAM.paintBase(R);
- // the first view: the region's own (WORLD_CONFIG.start: {view: [x, z, height above ground, yaw, pitch], look?: [x, z,
- // height above ground]}), else little-demo's: the sedesert plateau west of Shade, looking east toward the abyss's rim
+ // the first view: the region's own WORLD_CONFIG.start, either {view: [x, z, height above ground, yaw, pitch], look?: [x, z, height above
+ // ground]} or the name of a place (framed as "Go to" frames it; the probe's flora checks run round it: the isle demo), else little-demo's:
+ // the sedesert plateau west of Shade, looking east toward the abyss's rim
  const S0=typeof WORLD_CONFIG!=='undefined'&&WORLD_CONFIG.start;
- if(S0){CAM.setView.apply(CAM,S0.view);if(S0.look)CAM.lookAt(S0.look[0],WORLD.H(S0.look[0],S0.look[1])+S0.look[2],S0.look[1]);}
+ const st=typeof S0==='string'&&typeof PLACES!=='undefined'?PLACES.list.find(p=>p.name===S0):null;
+ if(st){CAM.setView(st.x+900,st.z+1400,320,0,-.18);CAM.lookAt(st.x,WORLD.H(st.x,st.z)+40,st.z);}
+ else if(S0&&S0.view){CAM.setView.apply(CAM,S0.view);if(S0.look)CAM.lookAt(S0.look[0],WORLD.H(S0.look[0],S0.look[1])+S0.look[2],S0.look[1]);}
  else{const sh=PLACES.list.find(p=>p.name==='Shade')||{x:0,z:0};
   CAM.setView(sh.x-6000,sh.z+2500,140,0,-.12);CAM.lookAt(sh.x,WORLD.H(sh.x,sh.z)+60,sh.z);}
  requestAnimationFrame(frame);}

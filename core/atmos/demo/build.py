@@ -25,7 +25,13 @@ FRAGMENTS = [
     os.path.join(ATMOS, 'sky', '89-atmos-e-skymodel.js'),
     os.path.join(ATMOS, 'sky', '89-atmos-f-skypresets.js'),
     os.path.join(ATMOS, 'sky', '89-atmos-g-sky.js'),
+    os.path.join(ATMOS, 'sky', '89-atmos-j-fog.js'),          # the height fog and its mist field (#smog=1)
+    os.path.join(ATMOS, 'sky', '89-atmos-k-cloudmood.js'),    # the clouds' mood: the shifting episodes (#mood=)
     os.path.join(ATMOS, 'host', '89-atmos-h-skyhost.js'),
+    os.path.join(ATMOS, 'host', '89-atmos-j-heightfog.js'),
+    os.path.join(ATMOS, 'fx', '89-atmos-fx-lightning.js'),    # the mood's lightning strikes its bolts through this
+    os.path.join(ATMOS, 'fx', '89-atmos-fx-radiation.js'),    # the radiation glow (two zones, the Radiation switch)
+    os.path.join(ROOT, 'core', 'audio', '24-core-audio-sky.js'),   # the light effects heard (KSKYSOUND: the stand-in synth until the clips are wired)
     os.path.join(HERE, 'src', '10-demo.js'),
 ]
 

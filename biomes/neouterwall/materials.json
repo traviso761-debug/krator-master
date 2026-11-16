@@ -1,0 +1,172 @@
+{
+ "build": "neouterwall",
+ "note": "The neouterwall kit's adapter onto the material library (core/materials/PLAN.md). The host's ground layers (47-host-land.js): ground.grass (ground.grass.lush: the wet meadow, the base, tinted by season), ground.moss (ground.moss001: the grove's and the wooded slopes' floor), ground.gravel (ground.gravel019: the shore, the talus), rock.wall (rock.megabreccia: the cauldron's wall, read from the side on the steep, KSTRATA's megabreccia blocks over it; a STAND-IN for the skarn, owed: core/materials/PROMPTS-NEEDED.md), ground.sinter (the springs' silica crust and the stair), ground.tundra (the rim's slopes over the tree line), ground.mat (ground.mat.thermal: the thermophile mats on the run-off). rock.dike (rock.basalt.polygonal: the dikes' fins). The cauldron's own plants (50-biome-neow-cauldron.js): frond (card.treefern), reed (card.reed), bark.fern (bark.mossy: the tree fern's root mantle). The conifers and the floor are the NW outer wall's, read in place with its own pack (build.py). Run python3 tools/textures/pack.py biomes/neouterwall after any change, then python3 build.py.",
+ "size": 512,
+ "families": {
+  "ground.grass": {
+   "lib": "ground.grass.lush",
+   "scale": [
+    2.2,
+    2.2
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "ground.moss": {
+   "lib": "ground.moss001",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "ground.gravel": {
+   "lib": "ground.gravel019",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "rock.wall": {
+   "lib": "rock.megabreccia",
+   "scale": [
+    4.0,
+    4.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "ground.sinter": {
+   "lib": "ground.sinter",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "ground.tundra": {
+   "lib": "ground.tundra",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "ground.mat": {
+   "lib": "ground.mat.thermal",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "rock.dike": {
+   "lib": "rock.basalt.polygonal",
+   "scale": [
+    4.0,
+    4.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "frond": {
+   "lib": "card.treefern",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.653
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "size": 512,
+   "cell": [
+    0.024,
+    0.112,
+    0.978,
+    0.993
+   ],
+   "base": "bottom"
+  },
+  "reed": {
+   "lib": "card.reed",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.638
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "size": 512,
+   "cell": [
+    0.329,
+    0.329,
+    0.667,
+    0.671
+   ]
+  },
+  "bark.fern": {
+   "lib": "bark.mossy",
+   "scale": [
+    1.2,
+    1.6
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.55
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  }
+ }
+}

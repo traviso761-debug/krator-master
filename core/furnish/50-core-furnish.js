@@ -33,10 +33,13 @@
 //              inspector entries and the like go here
 //   draw(rec, ctx, o, entry): the draw adapter (52-core-furnish-draw.js helps), called while R.on and not dry
 //   idPrefix:  'furn' (ids: furn_00001 in placement order)
+//   scale:     OPT-IN, a number or function(key, entry, o, ctx) -> number: the piece drawn that many times its catalog
+//              size, about its foot (a people larger than human: kits/yeti, 1.15x). o.scale overrides it for one call.
+//              A record whose scale is 1 (every build without it) carries no scale field, so nothing else moves
 //   tags:      a core/tags registry (KTAGS.create): every placed record onRecord keeps is registered there too, as
 //              class furniture, before it is drawn (GODOT-PLAN.md rule 4; core/tags/README.md). The furniture record is not changed }
 //
-// A record: { id, key, variant, seed, lx, ly, lz, lry, x, y, z, ry, building, part?, room, setting, job }.
+// A record: { id, key, variant, seed, lx, ly, lz, lry, x, y, z, ry, building, part?, room, setting, job, scale? }.
 // job is the catalog's (FURN_JOBS, through the entry's job or its trade role); room is ctx.room or o.room or null.
 var KFURN = (function(){
 'use strict';
@@ -59,9 +62,10 @@ var KFURN = (function(){
    if(rec.room) t.room = String(rec.room);
    if(typeof ctx.wealth === 'number') t.wealth = ctx.wealth;
    if(rec.variant) t.variant = rec.variant;
+   const k = rec.scale == null ? 1 : rec.scale;
    return T.add({ id: rec.id, 'class': 'furniture', kind: (A && A.type) || null, key: rec.key, name: (A && A.name) || null,
      parent: rec.building == null ? null : String(rec.building), at: [rec.x, rec.y, rec.z], ry: rec.ry,
-     size: dm ? [dm.w, dm.d, dm.h] : undefined, tags: t, frag: 'core/furnish' });
+     size: dm ? (k === 1 ? [dm.w, dm.d, dm.h] : [dm.w * k, dm.d * k, dm.h * k]) : undefined, tags: t, frag: 'core/furnish' });
  };
  K.create = function(cfg){
    const C = cfg.catalog, R = { on: cfg.on !== false, interiors: !!cfg.interiorsOn, placed: [], missing: {}, buildings: [],
@@ -86,6 +90,8 @@ var KFURN = (function(){
      if(!ctx.dry){ R.placed.push(rec); rec.id = prefix + '_' + pad(R.placed.length); }
      rec.room = ctx.room || o.room || null;
      rec.job = (A && A.job) || null;
+     const sc = o.scale != null ? o.scale : cfg.scale == null ? 1 : typeof cfg.scale === 'function' ? cfg.scale(key, A, o, ctx) : cfg.scale;
+     if(sc != null && sc > 0 && sc !== 1) rec.scale = sc;   /* opt-in (cfg.scale): absent at 1, so no other build's record changes */
      const dm = A ? C.dims(A, v) : null;
      if(cfg.onRecord && cfg.onRecord(rec, ctx, o, A, dm) === false) return rec;   // deferred: not registered, not drawn
      if(cfg.tags && rec.id) K.tag(cfg.tags, rec, A, dm, ctx);

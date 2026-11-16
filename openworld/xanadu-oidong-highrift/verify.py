@@ -13,6 +13,9 @@ The checks, each with a negative:
   - the region: each site where the cut put it (Erehwon px 805,1516 (on its caldera lake's south shore since edit 5.1-512) and Qiblai 922,1595 (at the cataracts since 2026-11-11) in the 'xanadu' overlay, Longsong
     1226,1626 in the 'oidong valley'), on dry land, its kit growing there (the negative reads Erehwon at Longsong's spot,
     in the Oidong Valley, where the Xanadu kit does not grow);
+  - the lake's small islands (src/44-world-landforms.js, the scale model's landform records): each over its lake at its
+    centre with the lake round it, the Pleasure Dome's isle at the Erewhon page's island (the negative reads the land
+    without the stamp);
   - the sites (core/world/88s-world-sites.js _sites.checks): the baked plan is the plan made again in the browser (the
     negative changes the world seed), every village whole, its buildings apart and on good ground, every road at its lane
     end (the negative stacks two buildings), every village cleared of flora, tagged and drawn with the kit's pieces (the
@@ -45,6 +48,20 @@ REGION = r"""(neg)=>{const R=[],M=WORLD_DATA.meta,bad=[],lines=[];
   if(!(A.depth<0))bad.push(S.name+' in water');if(!b||b.name.toLowerCase()!==W.biome)bad.push(S.name+' in '+(b&&b.name));if(!(w>.5))bad.push(S.name+': the '+W.kit+' kit weighs '+w.toFixed(2));
   lines.push(S.name+' px '+S.px+','+S.py+' in '+(b&&b.name)+' ('+W.kit+' '+w.toFixed(2)+')');}
  R.push({name:'the region: each site where the cut put it, on dry land, its kit growing there',ok:!bad.length,detail:bad.length?bad.join('; '):lines.join('; ')});
+ /* the lake's small islands (src/44): each stands over its lake at its centre, the lake goes on round it (1.9 radii out,
+    four ways), and the Pleasure Dome's isle is the Erewhon page's island (its ISLAND_C, 70,-613 m from the page's centre
+    on Erehwon's pin). The negative reads the land without the stamp: every centre under the water */
+ const LF=WORLD.LANDFORMS,bad2=[],l2=[];LF.off=neg==='landforms';WORLD.H(0,0);
+ const E=(M.sites||[]).find(s=>s.id==='s57bkv9741');
+ if(!LF.length)bad2.push('no landforms stamped');
+ for(const I of LF){const h=WORLD.H(I.x,I.z),wl=WORLD.water(I.x,I.z);
+  if(!(h>wl+.5*(I.crest-I.water)))bad2.push(I.id+' at '+h.toFixed(1)+' m under its lake '+wl);
+  for(const [a,b] of [[1,0],[-1,0],[0,1],[0,-1]]){const x=I.x+a*1.9*I.rx*1.25,z=I.z+b*1.9*I.rz*1.25;if(!(WORLD.H(x,z)<WORLD.water(x,z)))bad2.push(I.id+': dry '+Math.round(Math.hypot(x-I.x,z-I.z))+' m off');}
+  l2.push(I.id+' '+(h-wl).toFixed(1)+' m over the lake');}
+ const PD=LF.find(I=>I.id==='lf_pleasure_dome_isle');
+ if(!PD||!E)bad2.push('no Pleasure Dome isle or no Erehwon');else{const d=Math.hypot(PD.x-(E.x+70),PD.z-(E.z-613));if(d>10)bad2.push('the Pleasure Dome isle '+d.toFixed(0)+' m off the page\'s island');else l2.push('the Pleasure Dome isle '+d.toFixed(1)+' m off the page\'s island');}
+ LF.off=false;
+ R.push({name:'the lake\'s small islands stand over the water at their records, the Pleasure Dome\'s at the page\'s island',ok:!bad2.length,detail:bad2.length?bad2.join('; '):l2.join('; ')});
  return R;}"""
 
 
@@ -82,8 +99,11 @@ async def run(a):
                     print('  n/a   ' + r['name'] + ' : this region has no ' + need + ' yet'); continue
                 if say(r): fails.append(r['name'])
             print('--- the region ---')
-            for neg in (None, 'site'):
+            for neg in (None, 'site', 'landforms'):
                 for r in await pg.evaluate(REGION, neg):
+                    # a negative is judged on the check it breaks: the site's on the region, the stamp's on the islands
+                    if neg and (neg == 'landforms') != ('islands' in r['name']):
+                        continue
                     if say(r, neg): fails.append(('negative ' + neg + ' ' if neg else '') + r['name'])
             print('--- the sites (core/world 48s, 88s: the baked plan) ---')
             for r in await pg.evaluate('_sites.checks()'):

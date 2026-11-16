@@ -10,14 +10,10 @@ window._shadow=null;
 const SHADOW=(function(){const Q=new URLSearchParams(location.search);
  if(typeof KSHADOW==='undefined'||!KSHADOW.attach||!sun||!sun.isDirectionalLight){window._shadow='off: no core/shadow';return null;}
  if(Q.get('shadow')==='0'){window._shadow='off: ?shadow=0';return null;}
- const LIBOF={MeshLambertMaterial:'lambert',MeshStandardMaterial:'standard',MeshPhysicalMaterial:'physical',MeshPhongMaterial:'phong'};
  /* a dry run of a material's onBeforeCompile on its ShaderLib text: the samplers its fragment shader declares (the Throne's samplersOf) */
- const samplersOf=m=>{try{const L=THREE.ShaderLib[LIBOF[m.type]],sh=L?{uniforms:{},vertexShader:L.vertexShader,fragmentShader:L.fragmentShader}:{uniforms:{},vertexShader:m.vertexShader||'',fragmentShader:m.fragmentShader||''};
-   const f0=typeof KHOOK!=='undefined'?KHOOK.failures.length:0;
-   try{if(m.onBeforeCompile)m.onBeforeCompile(sh,renderer);}finally{if(typeof KHOOK!=='undefined')KHOOK.failures.length=f0;}let n=(m.map?1:0)+(m.emissiveMap?1:0)+(m.alphaMap?1:0)+(m.normalMap?1:0)+(m.roughnessMap?1:0);
-   sh.fragmentShader.replace(/uniform\s+sampler(?:2D|Cube)\s+([^;]+);/g,(a,b)=>{n+=b.split(',').length;return a;});return n;}catch(e){return 99;}};
+ const samplersOf=m=>KSHADOW.units(m,renderer,scene);   /* core/shadow (2026-11-09): read samplers only, the scene's environment, the 3D forms */
  const GM=[GROUND.mat].concat(typeof FACE_MESH!=='undefined'&&FACE_MESH?[FACE_MESH.mat]:[]);
- const MAXT=renderer.capabilities.maxTextures==null?16:renderer.capabilities.maxTextures,worst=Math.max(...GM.map(samplersOf));
+ const MAXT=KSHADOW.maxUnits(renderer),worst=Math.max(...GM.map(samplersOf));
  if(worst+1>MAXT){window._shadow='skipped: the ground reads '+worst+' of '+MAXT+' texture units';return null;}
  try{const S=KSHADOW.attach({renderer,scene,camera,sun,ground:terrainH});
   scene.children.forEach(c=>{if(c===FAR_GROUND||(c.userData&&c.userData.farField))return;if(c.isMesh&&GM.indexOf(c.material)>=0){S.cast(c,{cast:false});return;}S.cast(c);});

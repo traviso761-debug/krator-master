@@ -9,7 +9,9 @@
 //               front. Its colour is the hour's fog colour, graded toward the sky's zenith colour as the ray climbs (the land
 //               fades into the sky behind it) and toward the sun's colour in a forward lobe (the back-lit ridges at dawn)
 //   THE MIST    a pool in low ground: full density below a level (o.mist.y, metres), thinning above it over o.mist.depth;
-//               its density follows the hour (dawn) and the weather's fog, in patches that drift with the wind and the gusts
+//               its density follows the hour (dawn) and the weather's fog, in patches that drift with the wind and the gusts;
+//               opt-in, a FIELD over the ground (o.mist.field: the smog thick in a city, thin on its terraces) scales it by
+//               place, read from a texture built once (below, "THE MIST FIELD")
 //   THE BAND    a layer of cloud at mid-height (o.band.y [bottom, top]), broken by the same drifting noise (o.band.cover)
 //   THE BELT    (opt-in, ATMOS.fogBelt: the Outlands' C1) cloud lying on the slope between two heights, thicker on faces
 //               turned to the wind, read from a ground field and marched in a few steps (below, "THE BELT"); drawn as band
@@ -18,8 +20,8 @@
 //   ATMOS.fogGLSL()         the chunk: uniforms atmFogH, atmFogMist, atmFogBand, atmFogSunDir, atmFogSunC, atmFogZen,
 //                           atmFogDrift, atmFogShape and vec4 atmFog(ro, rd, L, fogColour, fogDensity) -> (colour, amount)
 //   ATMOS.fogAt(ro, P, F)   the JS twin (tests, a host's own checks): F = {density, colour, falloff, ref, shape, mist:{density,
-//                           y, depth, noise}, band:{density, y0, y1, cover}, belt (ATMOS.fogBeltMake), drift, sunDir, sunC,
-//                           zen, sun, sky, compress}
+//                           y, depth, noise, field (a function (x,z) -> 0..1, or ATMOS.fogMistFieldMake's record), samples},
+//                           band:{density, y0, y1, cover}, belt (ATMOS.fogBeltMake), drift, sunDir, sunC, zen, sun, sky, compress}
 //                           -> {amount, colour}
 //   ATMOS.fogLayer / fogPool / fogSlab   the three optical-depth integrals, pure (test-sky.js holds the GLSL to them)
 // Godot: Environment.fog_height / fog_height_density / fog_sun_scatter / fog_aerial_perspective for the air; the mist and the
@@ -46,7 +48,8 @@
  A.fogAt=(ro,P,F)=>{const dx=P[0]-ro[0],dy=P[1]-ro[1],dz=P[2]-ro[2],L=Math.hypot(dx,dy,dz)||1e-4,rd=[dx/L,dy/L,dz/L],M=F.mist||{},B=F.band||{},dr=F.drift||[0,0];
   const Lc=F.compress?(L<F.compress[0]?L:F.compress[0]+F.compress[1]*(1-Math.exp(-(L-F.compress[0])/F.compress[1]))):L,s=Lc/L;
   const tA=F.density*A.fogPool(F.falloff||0,F.ref==null?-1e9:F.ref,ro[1],rd[1],L)*s,oA=F.shape==='exp'?tA:tA*tA;
-  let tM=0;if(M.density>0){tM=M.density*A.fogPool(1/Math.max(1,M.depth||40),M.y||0,ro[1],rd[1],L);const n=A.fogNoise((P[0]+dr[0])/A.FOG_CELL[0],(P[2]+dr[1])/A.FOG_CELL[0]);tM*=1+(M.noise||0)*(1.6*n-1);}
+  let tM=0;if(M.density>0){const mb=1/Math.max(1,M.depth||40),my=M.y||0;tM=M.density*A.fogPool(mb,my,ro[1],rd[1],L);const n=A.fogNoise((P[0]+dr[0])/A.FOG_CELL[0],(P[2]+dr[1])/A.FOG_CELL[0]);tM*=1+(M.noise||0)*(1.6*n-1);
+   const fld=typeof M.field==='function'?M.field:M.field&&M.field.at?M.field.at:null;if(fld)tM*=A.fogMistField(fld,my,mb,ro,rd,L,M.samples);}
   let tB=0;if(B.density>0){const q=A.fogSlab(B.y0,B.y1,ro[1],rd[1],L);if(q[0]>0){const x=ro[0]+rd[0]*q[1],z=ro[2]+rd[2]*q[1],n=A.fogNoise((x+dr[0])/A.FOG_CELL[1],(z+dr[1])/A.FOG_CELL[1]),c=B.cover==null?.5:B.cover,k=B.noise==null?1:B.noise;tB=B.density*q[0]*ss(1-c-.15,1-c+.15,.5+(n-.5)*k);}}
   if(F.belt)tB+=A.fogBeltDepth(F.belt,ro,rd,L,dr);   /* the belt is cloud: the band's colour */
   const amount=1-Math.exp(-(oA+tM+tB));
@@ -95,6 +98,29 @@
   const st=q[0]/B.steps,lo=q[1]-.5*q[0],dr=drift||[0,0];let s=0;
   for(let i=0;i<B.steps;i++){const t=lo+st*(i+.5);s+=A.fogBeltAt(B,ro[0]+rd[0]*t,ro[1]+rd[1]*t,ro[2]+rd[2]*t);}
   const n=A.fogNoise((ro[0]+rd[0]*q[1]+dr[0])/A.FOG_CELL[0],(ro[2]+rd[2]*q[1]+dr[1])/A.FOG_CELL[0]);return s*st*(1+B.noise*(1.6*n-1));};
+ // ---- THE MIST FIELD (the Ancient's Valley's smog, the owner 2026-11-08: "near cities this becomes universal"; opt-in): the
+ // mist's density has one value for the page; a field f(x,z) in 0..1 scales it by place. Along a view ray the mist's exact pool
+ // integral is multiplied by the field's density-weighted mean over the ray's crossing of the layer (the part of the ray below
+ // level + 3 depth, where the pool holds more than 5% of its density): `samples` midpoints (default 6, at most 8), each weighted
+ // by the pool's density there, so a ray falling into the mist reads the field where the mist is, not where the ray starts.
+ // Exact for a field constant along the crossing; within a few percent for one smooth over it (test-fog.js). The field is a
+ // res x res grid over `extent`, stored at half precision (the GPU's RGBA16F texture, R the field), so the twin reads what
+ // the shader reads. Off unless a page gives mist.field (host/89-atmos-j-heightfog.js): without it the chunk's text is what it was.
+ //   ATMOS.fogMistFieldMake(o) -> M   o = {at (x,z) -> 0..1, extent [x0,z0,x1,z1] or centre [x,z] + radius, res (default 128)}:
+ //                                    the record {n, extent, v (the halves, as floats), half (RGBA16), at(x,z) bilinear}
+ //   ATMOS.fogMistField(at, lvl, b, ro, rd, L, samples)   the mean along a ray: the twin of the chunk's atmFogMistField
+ A.fogMistFieldMake=o=>{o=o||{};const n=Math.max(2,o.res==null?128:o.res),c=o.centre||[0,0],r=o.radius==null?6000:o.radius,e=o.extent||[c[0]-r,c[1]-r,c[0]+r,c[1]+r],at=o.at||(()=>1);
+  const V=new Float32Array(n*n),H=new Uint16Array(n*n*4);
+  for(let iz=0;iz<n;iz++)for(let ix=0;ix<n;ix++){const x=e[0]+(e[2]-e[0])*ix/(n-1),z=e[1]+(e[3]-e[1])*iz/(n-1),i=iz*n+ix,v=Math.min(1,Math.max(0,+at(x,z)||0));
+   H[i*4]=A.toHalf(v);H[i*4+3]=15360;V[i]=A.fromHalf(H[i*4]);}
+  const M={n,extent:e,res:n,v:V,half:H};M.at=(x,z)=>A.fogMistFieldAt(M,x,z);return M;};
+ // the field at (x,z), bilinear between the grid's nodes (the texture's LINEAR filter, its texel centres on the nodes)
+ A.fogMistFieldAt=(M,x,z)=>{const e=M.extent,n=M.n,fx=Math.min(n-1,Math.max(0,(x-e[0])/(e[2]-e[0])*(n-1))),fz=Math.min(n-1,Math.max(0,(z-e[1])/(e[3]-e[1])*(n-1)));
+  const ix=Math.min(n-2,Math.floor(fx)),iz=Math.min(n-2,Math.floor(fz)),u=fx-ix,v=fz-iz,i=iz*n+ix,a=M.v;return(a[i]*(1-u)+a[i+1]*u)*(1-v)+(a[i+n]*(1-u)+a[i+n+1]*u)*v;};
+ A.fogMistField=(at,lvl,b,ro,rd,L,samples)=>{const N=Math.max(1,Math.min(8,samples==null?6:samples)),top=lvl+3/b,q=A.fogSlab(top-1e7,top,ro[1],rd[1],L);
+  if(!(q[0]>0))return at(ro[0]+rd[0]*L,ro[2]+rd[2]*L);
+  const st=q[0]/N,lo=q[1]-.5*q[0];let s=0,sw=0;for(let i=0;i<N;i++){const t=lo+st*(i+.5),y=ro[1]+rd[1]*t,w=y<lvl?1:Math.exp(-(y-lvl)*b);s+=w*at(ro[0]+rd[0]*t,ro[2]+rd[2]*t);sw+=w;}
+  return sw>0?s/sw:1;};
  const f=v=>A.glf(v);
  A.fogGLSL=()=>{const G=['#ifndef ATM_FOG_CHUNK','#define ATM_FOG_CHUNK',
   'uniform vec4 atmFogH;uniform vec4 atmFogMist;uniform vec4 atmFogBand;uniform vec4 atmFogX;uniform vec3 atmFogSunDir;uniform vec3 atmFogSunC;uniform vec3 atmFogZen;uniform vec2 atmFogDrift;',
@@ -129,5 +155,15 @@
    ' float st=q.x/atmFogBeltK.z,lo=q.y-0.5*q.x,s=0.0;for(int i=0;i<16;i++){if(float(i)>=atmFogBeltK.z)break;s+=atmFogBeltAt(ro+rd*(lo+st*(float(i)+0.5)));}',
    ' float n=atmFogNoise((ro.xz+rd.xz*q.y+atmFogDrift)/'+f(A.FOG_CELL[0])+');return atmFogBelt.x*s*st*(1.0+atmFogBeltK.y*(1.6*n-1.0));}');
    G.splice(G.findIndex(l=>l.indexOf(' float amount=1.0-exp(')===0),0,' tB+=atmFogBeltDepth(ro,rd,L);');}
+  // the mist field, only on a page that gave one (ATMOS.heightFog({mist:{field}})): the same rule
+  if(A.fogMistFieldOn){G.splice(G.findIndex(l=>l.indexOf('float atmFogNoise(')===0)+1,0,
+   'uniform vec4 atmFogMistE;uniform vec2 atmFogMistK;uniform sampler2D atmFogMistT;',
+   /* atmFogMistE: x0, z0, 1/(x1-x0), 1/(z1-z0); atmFogMistK: res, samples; atmFogMistT: R the field 0..1 */
+   'float atmFogMistAt(vec2 xz){vec2 uv=(clamp((xz-atmFogMistE.xy)*atmFogMistE.zw,0.0,1.0)*(atmFogMistK.x-1.0)+0.5)/atmFogMistK.x;return textureLod(atmFogMistT,uv,0.0).r;}',
+   /* one return: ANGLE's HLSL warned "potentially uninitialized variable" on an early return out of the loop's function */
+   'float atmFogMistField(vec3 ro,vec3 rd,float L){float top=atmFogMist.y+3.0/atmFogMist.z;vec2 q=atmFogSlab(top-1e7,top,ro.y,rd.y,L);float r=1.0;if(q.x<=0.0)r=atmFogMistAt(ro.xz+rd.xz*L);',
+   ' else{float st=q.x/atmFogMistK.y,lo=q.y-0.5*q.x,s=0.0,sw=0.0;for(int i=0;i<8;i++){if(float(i)>=atmFogMistK.y)break;vec3 p=ro+rd*(lo+st*(float(i)+0.5));float w=p.y<atmFogMist.y?1.0:exp(-(p.y-atmFogMist.y)*atmFogMist.z);s+=w*atmFogMistAt(p.xz);sw+=w;}',
+   '  r=sw>0.0?s/sw:1.0;}return r;}');
+   const i=G.findIndex(l=>l.indexOf(' vec3 P=ro+rd*L;float tM=0.0;')===0);G[i]=G[i].replace('atmFogPool(atmFogMist.z,atmFogMist.y,ro.y,rd.y,L);','atmFogPool(atmFogMist.z,atmFogMist.y,ro.y,rd.y,L);tM*=atmFogMistField(ro,rd,L);');}
   return G.join('\n');};
 })();

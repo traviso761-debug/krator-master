@@ -79,6 +79,7 @@
  "kits/talia: MISSING core/tags": 1,
  "kits/zeijani: OWN noise in src/10-core.js": 2,
  "kits/zeijani: OWN prng in src/10-core.js": 1,
+ "kits/zeijani: OWN rock-cut in src/40-zj-cave.js": 3,
  "openworld/isle-demo: OWN getImageData in src/88a-world-atlas.js": 1,
  "openworld/isle-demo: OWN getImageData in src/88t-world-towns.js": 1,
  "settlements/dalab: OWN getImageData in src/69d-dalab-mat.js": 1,

@@ -37,10 +37,11 @@ VC.ixProgram = function (L) {
 };
 /* the room kinds the lot buildings add to kits/interiors (beside the cantons', 56-vc-interiors-host.js VC.intPrograms):
    a `chamber`, a home's bedroom that takes as many beds and stores as it holds (TUNE.ix.chamber), from the pieces that
-   furnish a bedroom or a dormitory */
+   furnish a bedroom or a dormitory. It replaces the Republic's assembly `chamber` that kits/interiors registers since
+   2026-11-10 (src/30-programs.js), so the guard is on this function's own last kind, not on `chamber` */
 VC.ixPrograms = function () {
   var IX = (VC.intPrograms && VC.intPrograms()) || (typeof KratorInteriors !== "undefined" ? KratorInteriors : null);
-  if (!IX || IX.PROGRAMS.chamber) return IX;
+  if (!IX || IX.PROGRAMS.counting) return IX;
   var C = TUNE.ix.chamber;
   IX.PROGRAMS.chamber = { require: [{ need: 'bed', types: ['bed'], n: 1 }, { need: 'chest', types: ['storage'], roles: IX.ITEM_ROLES, n: 1 }],
     optional: [{ types: ['bed'], max: C.beds - 1 }, { types: ['storage'], roles: IX.ITEM_ROLES, max: C.stores }, { types: ['storage', 'vessel', 'stack'], roles: IX.FOOD_ROLES, max: C.stores },

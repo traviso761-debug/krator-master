@@ -13,7 +13,7 @@
                    (a building, kind 'lot'), its record vacant and `closed` until its street opens */
 ISLE.spurs = function (c) {
   var B = ISLE.TUNE.sim && ISLE.TUNE.sim.build, Z = B && B.spurs; if (!Z || !(Z.max > 0)) return [];
-  var D = c.dims(Z.key, 0); if (!D) return [];
+  var key = Z.keys && Z.keys[c.town] || Z.key, D = c.dims(key, 0); if (!D) return [];   /* a town's own house (`keys`: Nephtos's Hykkousoi) */
   var h = c.h, half = c.half, out = [], pts = [], occ = [], why = {}; ISLE.spursWhy = why;
   c.ways.forEach(function (w) { w.pts.forEach(function (p) { pts.push([p[0], p[1], w.w / 2]); }); });
   c.lots.forEach(function (L) { occ.push([L.x, L.z, Math.hypot(L.w, L.d) / 2]); });
@@ -65,10 +65,10 @@ ISLE.spurs = function (c) {
     if (out.some(function (S0) { return S0.lots.some(function (L) { return C.lots.some(function (q) { return Math.hypot(L.x - q.x, L.z - q.z) < Math.hypot(D.w, D.d); }); }); })) return;
     var i = out.length, id = c.town + '.spur' + i;
     var lots = C.lots.map(function (q, k) {
-      var L = { id: id + '.' + k, lot: 'spur' + i + '.' + k, marker: null, moved: null, town: c.town, kit: D.kit || 'isk', key: Z.key, v: 0, cls: 'poor', role: null, name: null,
+      var L = { id: id + '.' + k, lot: 'spur' + i + '.' + k, marker: null, moved: null, town: c.town, kit: D.kit || (/^hyk_/.test(key) ? 'hyk' : 'isk'), key: key, v: 0, cls: 'poor', role: null, name: null,
         district: 'outside the gate', x: +q.x.toFixed(2), z: +q.z.toFixed(2), y: +q.y.toFixed(2), ry: +q.ry.toFixed(4), w: D.w, d: D.d, h: D.h, yard: null, drop: +q.drop.toFixed(2),
         terrace: null, shore: false, harbour: null, tag: null, wealth: 0, vacant: true, spur: id, closed: true };
-      if (c.tags) { var T = c.tags.add({ 'class': 'building', kind: 'lot', key: Z.key, at: [L.x, L.y, L.z], ry: L.ry, size: [D.w, D.d, D.h], note: 'an empty lot on the street outside ' + C.root + ' (closed until the town needs it)', src: 'isle-demo' }); if (T) L.tag = T.id; }
+      if (c.tags) { var T = c.tags.add({ 'class': 'building', kind: 'lot', key: key, at: [L.x, L.y, L.z], ry: L.ry, size: [D.w, D.d, D.h], note: 'an empty lot on the street outside ' + C.root + ' (closed until the town needs it)', src: 'isle-demo' }); if (T) L.tag = T.id; }
       return L; });
     out.push({ id: id, root: C.root, lane: [[+C.lane[0][0].toFixed(2), +C.lane[0][1].toFixed(2)], [+C.lane[1][0].toFixed(2), +C.lane[1][1].toFixed(2)]], lots: lots, open: false });
   });

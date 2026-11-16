@@ -106,3 +106,18 @@ The kit's own invariants (imported from `kits/port/verify.py`, as Hook does) and
 - **the wrecks on the bed**, **the debris half buried** (every piece in the silt and out of it), **the dust in the wind**
   (none in a calm);
 - each with a broken input that must fail.
+
+## Fauna (proposed 2026-11-11, awaiting the owner)
+
+Drawn by `kits/fauna` and tagged by biome (`biomes/README.md`, "A fauna kit"); placed by `FAUNALANDS` (`kits/fauna/fauna-lands.js`).
+The brief (`kits/fauna/BIOME-FAUNA-PLAN.md`): for an overlay, only the animals that mean nothing without the beds (the host biome, n semiarid or Korona, brings the rest), and **at least one animal
+found nowhere else**. **New** = to be built in the kit; *shared* = an existing key that also gets this biome's tag, because its
+range plausibly runs across the border. Nothing here is built.
+
+| Role | Animal | Status | Where | Why it is here |
+|---|---|---|---|---|
+| scavenger (grazer role) | **rust crab** | **new, unique** | inside and around the grounded hulks; under the rust-vine hulk gardens (D3) | a land crab (`faWdCrab`), shell up to 1 m across, that lives in the holds of the hulks, drinks the dew the metal condenses and grazes the rust vine and the algae of the shaded steel. It moults in the holds, so the dark compartments are full of cast shells. A hulk is a crab colony, as a hulk is a green island |
+| water | **silt skipper** | **new, unique** | the wet silt and strandline pools at today's lake margins (the low tropical beds, Af/Aw) | an amphibious fish (`faWdFish`, a pectoral-crutch walk) the length of an arm, after the mudskipper: it hops over the soft silt between pools and digs its burrow in the newest bed. It lives where the water left last, so it marks today's shore |
+| flyer | *flamingo* | shared (eastabyss) | the salt flats of the east bed and the brine edges | the eastern abyss's salt-lake bird, on the nearest salt to it |
+| grazer | *brine-flat-onager* | shared (eastabyss) | the east bed's salt steppe | |
+| everything else | the host's: `nsemiarid`'s (its Fauna section) on the west bed; Korona's (the hyperjungle's and sedesert's) on the east bed's Korona half | read by the host's tag | | an overlay owns no ground and no general fauna |
