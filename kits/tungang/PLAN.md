@@ -634,11 +634,21 @@ The survey's scripts and outputs (`gorge.py`, `barricade.py`, `west.py`) were sc
 **The place** (the owner, 2026-11-10: the Glaziers move to Opal Valley). The upper Opal Valley, above the Sultanate's writ
 (over ~1,800 m), where `biomes/opalvalley/PLAN.md` already has "independent prospectors, exiled miners, and peaceful
 herbalist-monks descending from neighbouring Oidong Valley ... work the upper tarns alongside furtive Tungang
-tunnel-delvers who know the fault fissures better than any surface surveyor". Their hold is cut into **the fault scarp
+tunnel-delvers who know the fault fissures better than any surface surveyor". Their first hold is cut into **the fault scarp
 between the first and second terraces** (x ~1060, the riser from 1,390 to 2,450 m), along the "potch lines" into the
 basalt-rhyolite contact where the miners find Rift Black Opal; its upper mouths open on the milk-opal tarns (the
 valley's station 2, `upperbed`, 1082,1672), its lower ones look down on the Xanadui factors' assay pavilion (station 3,
 `middlebed`, 1038,1662). Oidong's ridge is just north; Strongbow and the Vale of Xanadu down the valley.
+
+**Their main hold is Lāiṭwāl, the Light Wall** (the owner, 2026-11-16, relayed by the Xanadu sim session; planned in
+`settlements/lightwall/PLAN.md` on `claude/openworld-sites-24defd`, befa12a26 and cb0669e60). A town of **5,000** at **px
+1028,1653**: a lakeshore bench at 1,330-1,460 m on the middle terrace's great lake, under the valley's north boundary fault,
+which rises 4,200 m in 6 km to 5,964 m. Half of it is the Glaziers': **about 2,500** in tiers of carved `gz-*` fronts up the
+wall's foot, the cliff of glowing moonglass panes the town is named for (the owner kept the name). The other half, **about
+2,500 Xanadui**, live on the bench in the Xanadu kit's buildings. The two halves meet at **the Stair Foot**, the bazaar where
+the Glaziers' main stair comes down. Lāiṭwāl is the seat of the province Ōpal-Bhālī. Its lode, *proposed* there, is **the Great
+Potch Line** along the wall's foot. *Proposed, open* (that session's): the riser hold above stays as **their old first hold**,
+a small outpost on the tarns that gathers the crystal opal for the lenses.
 
 **Who they are: the crews who came east.** `LORE.md` §6.13 has it that at the Cataclysm some of the Tungangs' ancestors
 fled east and were absorbed into Xanadu, leaving loanwords (*gāphar*, *mārā*, *bāiṭ*, *lāin*) and big eyes. *Proposed*:
@@ -663,7 +673,7 @@ called each other; the western lojes know them only as a half-legend, "the crews
   scarp is a cliff of glowing panes.
 - **Glass.** They are glaziers because of **potch**, the common opal with no fire that the jewellers throw away: sliced
   thin it is a milky translucent pane, **moonglass**, the softest light a Tungang can bear. They sell the precious opal
-  down the valley (the Sultan's Fifth paid in cut stones) and keep the potch for themselves; they also grind lenses from
+  down the valley (the owner, 2026-11-16: "the glaziers pay the sultan's fifth in opals") and keep the potch for themselves; they also grind lenses from
   the clear crystal opal of the glacial tarns, and the monks' seeing-mirrors.
 - **The work and its cost.** They follow the potch lines into the dark by hand and lamp, as the valley's plan describes;
   they **wet-drill** with tarn water against the "prism-lung" of dry silica dust and wear wax-cloth masks, and the old
@@ -704,26 +714,33 @@ shrine, a crystal cleft on the grand scale, entered rarely in cooling suits pack
 
 Read from `claude/openworld-sites-24defd` when the Glaziers' set was built; nothing here changes those files.
 
-- **Where they live** (`biomes/opalvalley/PLAN.md`): the upper Opal Valley, "above the Middle Riser (>1,800 m), the Sultanate's
+- **Where they live: Lāiṭwāl** (the owner, 2026-11-16; section 1.4, "Their main hold"): about 2,500 Glaziers in the wall of
+  a town of 5,000 at px 1028,1653, the seat of Ōpal-Bhālī, with about 2,500 Xanadui on the bench below them
+  (`settlements/lightwall/PLAN.md` on the sites branch). **The old first hold** (*proposed, open*): the riser described next,
+  now a small outpost gathering crystal opal on the tarns. The valley's plan places them so (`biomes/opalvalley/PLAN.md`): the upper Opal Valley, "above the Middle Riser (>1,800 m), the Sultanate's
   writ thins out", where the valley's plan already has "furtive Tungang tunnel-delvers who know the fault fissures better than
   any surface surveyor". The hold is cut in the riser between Terrace I (the milk-opal tarns, station 2 `upperbed`, 1082,1672,
   +2,450 to 2,680 m) and Terrace II (station 3 `middlebed`, 1038,1662), along the potch lines the valley's miners follow into the
   basalt-rhyolite contact ("Fault-Scarp Hard-Rock Adits ('Potch-Tracing')"). The valley's silica dust hazard ("prism-lung") is
   the reason for their wet drilling and wax-cloth masks.
-- **Below them**: Opal Valley Mines, the Sultan's factor's (pin `sjuarjbku0`, px 1038,1662, about 850 people, the assay
-  pavilion); the Sultan takes a Fifth of the opal (`core/simulation/PROPOSAL-XANADU.md`: the Fifth a road with `share` 0.2 to
+- **Across the lake**: Opal Valley Mines, the Sultan's factor's (pin `sjuarjbku0`, px 1038,1662, about 850 people, the assay
+  pavilion), on the great lake's south side about 27 km from Lāiṭwāl; the Sultan takes a Fifth of the opal, and the Glaziers
+  pay theirs in opals (the owner, 2026-11-16) (`core/simulation/PROPOSAL-XANADU.md`: the Fifth a road with `share` 0.2 to
   the Treasury).
-- **In the sim**: the proposal makes the valley the Sultanate's province **Ōpal-Bhālī** (P6: 4,000 rural, the seat the mines);
+- **In the sim**: the proposal makes the valley the Sultanate's province **Ōpal-Bhālī** (P6: 4,000 rural; the seat was the mines,
+  and is now Lāiṭwāl, the owner's answer of 2026-11-16);
   `core/region/data/xan-tune.js` has the mines as an `adit` works (`mine('sjuarjbku0', ..., 'opal', T.mine.opal)`, 180 kg a
   year) and opal and prayer wheels (`wheels`) and lenses among the goods the gateways take. **The Glaziers are not in it yet.**
   A later step would need:
-  - a **site** for the Glaziers' hold above the mines (not the factor's: outside the writ, "a thousand years apart"), a settlement
-    of a few hundred (*proposed*: 300-500) with its own polity, not a Xanadu town;
-  - **works**: the adits (opal out: the Fifth paid in cut stones, so the opal reaches the factor already counted), the glass shop
+  - **Lāiṭwāl as the site**, at px 1028,1653: a town of 5,000, the province's seat, in two halves. The wall's ~2,500 Glaziers
+    are the loj with its own polity (their stewards, the show of hands). The bench's ~2,500 Xanadui are the Sultan's (the
+    factors, jewellers and cutters, the assay and the garrison, the caravanserai). The old first hold on the upper riser
+    (x ~1060) becomes a small outpost (*proposed, open*: a few dozen, crystal opal for the lenses);
+  - **works**: the adits on the Great Potch Line (opal out, the Fifth paid in opals), the glass shop
     (potch to **moonglass** panes, a new good; crystal opal to **lenses**, a good the tune already has), the dark beds (pale
     fungi, alecap: `kits/crops`' dark crops) and the lotus ponds (lotus root and seed);
-  - **a road** to the mines (`share` 0.2 on opal: the Fifth) carrying opal and moonglass down and grain, tea, sugar and dried
-    fruit up (what they buy with opal, section 1.4);
+  - **the Stair Foot** between the halves: opal and moonglass down, grain, tea, sugar, dried fruit and gilt up (what they buy
+    with opal, section 1.4); the Fifth (`share` 0.2 on opal) a road to the Treasury from the town, not from the mines;
   - **the monks** of Oidong as a second link (over the northern ridge: pigment and the seeing-mirrors out, tea and celadon in);
   - none of this changes the mines' numbers: the Glaziers' opal is their own diggings, not the factor's.
 - **The network** (`openworld/ANCIENT-NETWORK.md`, the Tungang and Fellgang session's item (c)): the Glaziers stay off the
