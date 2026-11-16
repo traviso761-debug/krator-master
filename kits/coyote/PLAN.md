@@ -1,0 +1,304 @@
+# The Coyote kit: the design plan (draft, 2026-11-16)
+
+The settlement and culture kit of **the Coyote Men**: the four tribes of the Outlands (Valley, Peak, Sunrise, Sunset) and
+their most organized polity, **the Kingdom of the Tiers** (the Tierhounds, the "Coyote Kingdom" to outsiders). Catalog and
+`core/tags` culture **`coyote`** (*proposed*, section 12 question 3). The plans that name this kit as "planned, its own plan
+later": `biomes/outlands/PLAN.md` section 6 (the kit line) and its phase O8, `biomes/tiers/PLAN.md` section 6,
+`biomes/outlandgate/PLAN.md` sections 5 and 8, `biomes/greatchasm/PLAN.md` section 5 ("The Coyote half").
+
+**Status: plan only. Nothing is built.** Settled points carry the owner's date and source plan; *proposed* marks this
+plan's own suggestions; section 12 holds the questions. The lore is not in `LORE.md` yet (the Outlands plan's O1); this
+plan writes none of it there.
+
+## 0. What the build is
+
+| | |
+|---|---|
+| Folder | `kits/coyote/` (`src/`, `refs/`, `build.py`, `verify.py`, `materials.json`, `tex/`, `INDEX.md`, `PORT.md`, `KNOWN_ISSUES.md`, `API.md`, `tests/`) |
+| Page | `dist/coyote.html`: the kit sheet, every building in rows by tribe and tier, a **Valley roomblock village** on `KHAMLET.platform`, a **stepped street** of Tierhound ledge houses on a test canyon wall, a **herders' camp** on `KCAMP` with the Tents kit's black tents in Coyote dress, a run of **the Gate's long wall** with its toll gate and water gate over a test river, the shrines and the carved stones, a cut-away row of the interiors, the night |
+| Engine | **`core/engine`, read by path** (`engine.py`), as Yeti, Lizardmen, Islanders and Resources take it: `defBuilding`, merged buckets by material key, the sheet's scene, doors and glass (`36o-open.js`), stairs (`36s-stair.js`), walk floors (`37-wk-rec.js`), the furnish and interiors adapters, the host hand-over. Nothing vendored |
+| Registry | `CY.def` (one def per building, key prefix `cy_`, free in the repo today), tags `culture:'coyote'`, `tribe` (`valley`, `peak`, `sunrise`, `sunset`, `tier`), `tier` (wealth), `role`, `job`; every record registered in `core/tags` before it is drawn |
+| Bundle | **`KratorCoyote`** (`kit_bundle.bundle()`, the Vernacular's `IZV` and the vehicles' `KratorVehicles` pattern): the defs and their `dims(key)` for any world's host, so the Great Chasm, the Outland Gate and the Tiers draw the real buildings where they now draw stand-ins |
+| Out of scope | the towns' layouts on the map (Coyote Canyon's on `core/city`, the Tiers' station 2; the Gate's on the Outland Gate's station 1); the animals' models (`kits/fauna`); the characters' bodies and garments (`core/charactermodels`: this kit writes their dress spec, section 8); the crops (`kits/crops`); `LORE.md` |
+
+A new kit, so it goes in the gallery when it first reaches `main` (`gallery/README.md`), with the owner's allow.
+
+### Which kit it starts from, and why
+
+**`kits/yeti`** for the scaffold and the flow, **`kits/islanders`** for the `core/hamlet` row.
+
+- **Yeti** is the most recent culture kit carried end to end on the engine (Y1 to Y6, 2026-11-09): a non-human people with
+  a body scale constant (`YT.SCALE`), its culture file on the catalog and registered in `core/tags` through the shared
+  rebuild (its section 11), an interiors set, a census-trades table (`YT_TRADES`, `tools/check_trades.py`), a figure
+  generator and a flora row read in place from a biome kit (`93b-bio-*`), a covered street laid by a core module rather
+  than by hand. Every one of those is a step this kit takes in the same order.
+- **Islanders** is the one culture kit with a `core/hamlet` row in use (`islander_east`, the isle demo's villages); the
+  Coyote rows (section 6) copy its shape and its host contract (`dims(key)`, `ground.ok`).
+- Not **Lizardmen** (its look rules are its own and its engine comes from the Islanders' copy), not the **nomad kits**
+  (forks of the Scyvoi kit from before `core/engine`; their tents now live in `kits/tents`, which this kit dresses), not
+  **Yuni** (its engine is a per-world fork, not a core module: `MODULARITY-PLAN.md` step 4b), though Yuni's Sahel mud is the
+  nearest look and its banco sets are reused (section 10).
+
+## 1. The people, as settled
+
+From the plans (owner's dates in brackets):
+
+- **Therians**: coyote-headed, digitigrade, upright, furred (a coyote's brush coat); stone and bronze age; never Izani
+  subjects (Outlands 6, 2026-10-26). The coyote head and coat exist in `core/charactermodels` (`mod_head_coyote`,
+  `coat: 'coyote'`, the `coyote_men` people in `data/peoples.json`); the digitigrade legs do not.
+- **The Hum**: they bark a dialect of the Hum and write it as **contour carvings** on milestones, boundary stones and the
+  risers (Outlands 6; Tiers 6). The lexicon is `tools/scale-model/smodel/river_names.py` (`hum`): Hau coyote-hound,
+  Gèl wadi, Kē stream, Hām river, Lōk step-bench, Chūng middle-tier, Sām deep-notch, Yūt howling-moon...
+- **Four tribes**: **Valley** (sedentary bronze-age farmers, mud-brick river villages), **Peak** (miners and gem tappers,
+  the fog wall and the gem hills), **Sunrise** and **Sunset** (nomadic goat-and-ostrich herders, the N plains).
+- **The Tierhounds are Coyote Men** (Tiers 6, 2026-11-10): the Kingdom of the Tiers, capital **Coyote Canyon** (a stepped
+  town down the walls of a box canyon, the king's house at the canyon head over the spring), **Howl** (the last village
+  before the Gate: road station, the fort's larder, pack-ostrich pens, a runners' post, the trickster's shrine at the road's
+  foot), lake towns, terrace villages, herders' camps that move up and down the stair, and **the Gate**: a toll fort and
+  long wall across the gap's Narrows, a water gate for the river, a shrine (Outland Gate 5, 2026-11-09).
+- **Two gods**: the **trickster**, the runner bird, whose shrines stand at road feet; **Trickster's House** (the ruined
+  arcology) is shunned, and the god lives there. The **phoenix**, the golden bird: killing one or carrying its feathers is
+  taboo, and a known killer is attacked on sight.
+- **Feathers**: the runner bird's are sacred and the dearest; the ostrich's are the common export.
+- **Trade**: out, emeralds, turquoise, ostrich feathers, saffron, lichen purple, wool; in, grain, metal, cloth. The
+  Tierhounds take the toll at the Gate (and, *proposed* in the Outland Gate plan, enforce a seed law there).
+- **Water rights are agreements with an organism** (*proposed*, Outlands 6): a well is a named colony's pleat column or
+  drum; boundary stones stand on the colonies' seams.
+
+## 2. The look (proposed: section 12 question 2)
+
+One material culture, four ways of living. The kit's rule: **mud and stone below, mud above, timber only where it is
+dear**; flat roofs used as floors; every wall that faces a road carries the script.
+
+| Who | Built like (references, for the owner's yes) | The kit's own turn |
+|---|---|---|
+| **Valley** | the stepped roomblocks of Çatalhöyük and Taos: coursed sun-dried brick on a stone socle, flat roofs on juniper beams (vigas) with reed mats and packed earth, roof hatches and pole ladders, few ground doors; granaries raised on stone pads | the roof is the village's street; the doors that do exist are **ear doors** (a doorway whose head steps up in two notches, *proposed* as the culture's mark); limewashed shrine fronts with a painted frieze |
+| **Peak** | dry-stone huts and walls of slabby schist; cliff houses in the fog wall's alcoves (Mesa Verde's shape); adit portals, ore benches, a sorting shed | the stone is laid without mortar and chinked with turquoise-green spoil; lace-crust on the old walls (the copper colonies, read from the Outlands) |
+| **Sunrise, Sunset** | goat-hair black tents (the Bedouin and Yörük tent) pitched in a line along a seam; stone-walled folds; brush windbreaks | the tents from `kits/tents` (`black` form) in a new **`coyote` dress**: dark goat hair with a saffron band and the tribe's contour line woven along the ridge; ostrich pens with high brush walls; feather-drying racks |
+| **Tierhounds** | Masuleh's rule (each row's roofs are the lane of the row above) on a canyon wall, in Yemeni-highland mud and stone; terraced gardens with stone risers and channels | the riser bands carved with the script; the king's house a spring hall over the canyon head's pool, its stores below it; the toll fort after **Hattusa** (stone socle, mud-brick curtain, towers every ~30 m, a gate between flanking towers, a postern) and **Derbent** for the long wall across the floor |
+
+**The contour script** is geometry, not a texture: a generator (`cyContour(text)`, `[G data]`) turns Hum syllables into a
+line that rises and falls by their tones (the macron level, the grave falling, the acute rising, a long up-sweep for the
+howl that ends a sentence), and the drawing cuts or raises that line on a stele, a lintel, a riser band or a boundary
+stone. The same text always gives the same line; a node test holds it. What a stone says comes from its record (a
+milestone its distance and the place it points to; a boundary stone the two names it divides; a shrine its god).
+
+**Scale** (*proposed*, question 1): the Coyote Men stand at human height; doors 2.0 m clear for the ears, risers 0.20 m,
+ladders for the digitigrade foot (rungs 0.30 m). A kit constant `CY.SCALE = 1.0` (Yeti's pattern) so a later answer moves
+one number.
+
+## 3. What the kit holds (about 55 defs, proposed)
+
+| Group | Defs |
+|---|---|
+| **Valley dwellings** | `cy_room` (one roomblock cell, one to three storeys, the platform village's unit), `cy_house_poor` (a single room and its roof terrace), `cy_house_mid` (two rooms and a store, a roof oven), `cy_house_head` (the headman's: a court, a loom room, a painted room) |
+| **Valley works** | `cy_granary` (raised mud bins under a shade roof), `cy_threshing` (the floor and its winnowing screens), `cy_smithy` (a bronze smith: crucible furnace, bellows of goat skin, moulds), `cy_kiln` (the potter's updraught kiln), `cy_dyehouse` (saffron drying racks, lichen-purple vats), `cy_loom_house`, `cy_mill` (a row of grinding bins), `cy_press` (olive and oil) |
+| **Valley civic** | `cy_hall` (the village's council room, sunk, with a roof hatch), `cy_court` (the walled court below a roomblock), `cy_pen` |
+| **Peak** | `cy_stone_hut` (dry-stone, corbelled or beamed), `cy_cliff_house` (an alcove house on the platform's alcove mode), `cy_adit` (the mine portal, timbered), `cy_ore_bench` (the open-cast step and its spoil), `cy_sorting_shed` (the gem sorters' bench under a lean-to), `cy_tappers_camp` (a turquoise tappers' shelter on a ledge), `cy_wash` (the emerald washing troughs) |
+| **Herders** | the tents are `kits/tents` defs in the `coyote` dress; this kit adds `cy_fold` (a dry-stone goat fold), `cy_ostrich_pen` (a high brush-walled pen with a shade), `cy_feather_rack`, `cy_saddle_rack` (the ostrich saddles and pack frames), `cy_egg_cache` (a buried store of ostrich eggs, marked), `cy_winter_base` (the stone base a tent is pitched over in the middle steps' winter) |
+| **Tierhounds** | `cy_ledge_house` (two or three storeys stepped into a wall, its roof the lane above; poor, middling, rich), `cy_stair_lane` (a cut stair between rows), `cy_terrace_wall` (a garden riser with its channel and carved band), `cy_spring_hall` (the king's house over the spring: the pool hall, the stores, the audience room), `cy_treasury` (the toll's stores), `cy_council`, `cy_lake_house` (the lake towns' house on its quay), `cy_fish_weir`, `cy_reed_boat` (a prop) |
+| **Howl and the road** | `cy_stage_house` (the road station: a court of stalls for pack ostriches and goats, rooms over the gate), `cy_runners_post` (the relay runners' hut, its signal pole), `cy_larder` (the fort's supply store) |
+| **The Gate** | `cy_wall_run` (a curtain segment: stone socle, mud-brick body, the walk and its parapet, drawn on a run record), `cy_wall_tower`, `cy_postern`, `cy_toll_gate` (the gate between two towers, the customs court behind it, the weighing floor, the toll-keeper's room), `cy_water_gate` (corbelled culverts over the river with bronze-shod grilles), `cy_citadel` (on the Gate shoulder: barracks, granary, cistern, the commander's house), `cy_fodder_pit` (*proposed*: where caravans burn their fodder under the seed law) |
+| **Shrines** | `cy_runner_shrine` (the trickster's at a road's foot: a low open court, a stele with the runner bird in relief, a feather post), `cy_phoenix_altar` (the golden bird's: an ash altar under a sun pillar, a cliff ledge where the bird is fed, *proposed*), `cy_house_shrine` (the painted room of a rich house) |
+| **Stones and markers** | `cy_milestone`, `cy_boundary_stone`, `cy_cairn`, `cy_shun_stone` (the keep-out ring's turned-away stones round Trickster's House, *proposed* in Outlands 6), `cy_carved_band` (a riser's carving as a piece a host lays along a scarp) |
+
+Every Voth census trade is carried, gapped with the def and phase that will carry it, or `na`, in **`CY_TRADES`**
+(`tools/check_trades.py`), as `YT_TRADES` and `IS_TRADES` are.
+
+## 4. Core adoption (written first, as the working rules ask)
+
+| Module | Taken | For |
+|---|---|---|
+| `core/engine` | yes, by path | the kit's whole drawing (section 0) |
+| `core/rand` (`KRAND`) | yes | every seed by (world, cell, index, salt), `KRAND.child` for derived seeds (memory: nearby seeds correlate through `KRAND.hash`): a wall's courses, a roomblock's steps, a carving's wobble, a tent's wear |
+| `core/tags` (`KTAGS`) | yes | every building, wall run, stone and tent registered before it is drawn; `coyote` added to the vocabulary with the catalog file (section 9, C8) |
+| `core/space` (`KSPACE`) | yes | overlap on the sheet, the stepped street and the camp |
+| `core/mask` (`KMASK`) | yes, if a painted raster places anything | none planned on the sheet; listed so no one reaches for `getImageData` |
+| `core/hamlet` (`KHAMLET`) | yes | the Valley village (`KHAMLET.platform`: stepped roomblocks, ladders, the court below), Howl and the lake and terrace villages (`KHAMLET.village`), the Great Chasm's post (`KHAMLET.tradePost`); the Coyote rows (section 6) |
+| `core/camp` (`KCAMP`) | yes | the herders' camps: a `coyote-herder` row, the pitch, the census (section 6) |
+| `kits/tents` | yes, read in place | the herders' black tents in a new `coyote` dress (`src/41-tn-dress.js`, a data row) |
+| `core/city` | read only, never edited | the long wall as **`KCITY`'s wall records** (the site layer, `25-city-site.js`: line, gates, towers, runs), read in place on the sheet; Coyote Canyon's layout is the Tiers' page's, on `core/city`, later. This kit writes no file under `core/city` (CLAUDE.md: another session owns it) |
+| `core/terrain` | yes | the sheet's test ground: the canyon wall (`KRELIEF.scarp`), the gem shoulder's alcove (`KCARVE`), the river bed under the water gate; sunk rooms and halls as carve patches |
+| `core/water` | yes, on the sheet | the test river under the water gate (`WATER.flow`), the king's spring pool (`WATER.still`, `spring`) |
+| `core/biome` | yes, read through a biome kit | a flora row from `biomes/ebadlands` and `biomes/sedesert` (the Tiers' read-in-place kits), the 93b band as Yeti reads nwouterwall; the Outlands' fungoids in the Valley's gardens once `biomes/outlands` exports them |
+| `core/host`, `core/walk`, `core/door` | yes | camera, inspector, polygon tool, walk, cut-away; every door a real leaf; stairs and ladders on `36s-stair.js` |
+| `core/atmos` | yes | the placeholder sky (`core/atmos/placeholder`) for the sheet; night |
+| `core/materials/record` | yes | `materials.json` on the library and the new sets (section 10) |
+| `kits/catalog`, `core/furnish`, `kits/interiors` | yes | the `coyote` culture file and the interiors set (section 7) |
+| `core/ruins` (`KRUINS`) | yes, for the ruin states | a wall run or a tower in its slumped state (the Gate's older stretches), watched so nothing floats |
+| `core/lod`, `core/export` | yes | the sheet's LOD and the Godot export |
+| `core/simulation` | not here | the Kingdom as a polity with its books is the Tiers' and the isle demo's sim work; the kit gives each building its `job` and stores, which the sim reads |
+| `core/world` | no | the kit draws no map ground; the open-world regions take the bundle |
+
+Write no PRNG, noise, `getImageData`, water shader or sky dome. `tools/check_core_use.py` (a kit must name `rand` and
+`tags`) runs before any phase is called done. Start `build.py` and `verify.py` from `tools/new_build/`
+(`buildlib.through_tools_build`) and list the kit under every check in `tools/checks_optin.json` from its first commit.
+Fragments are tagged in `PORT.md`; the data fragments (`cyContour`, the rows, the wall-run planner, `CY_TRADES`) stay free
+of the browser.
+
+**Core amendments this kit needs** (each with its node test and the baseline unchanged for every page that does not list
+it):
+1. **The Coyote rows in `core/hamlet`**: `22-hamlet-coyote.js`, its own fragment as `21-hamlet-iziz.js` is, so no page that
+   lists 20 moves (section 6).
+2. **A terraced village in `core/hamlet`** (*proposed*, question 8): `36-hamlet-terrace.js`, opt-in: houses in rows along
+   a slope's contours, each row's roofs the lane of the row above (Masuleh's rule), stairs between rows, for the Tiers'
+   terrace villages and the stepped street. `KHAMLET.platform` stacks rooms round a plaza on a bench; this lays them down
+   a slope. If the owner prefers it in `core/city` (Coyote Canyon will want it at a city's size), it is the city session's
+   to write and this kit waits.
+3. **The `coyote-herder` row in `core/camp`**: in `10-camp-cultures.js` or, if that moves a page, its own fragment.
+4. **The `coyote` dress in `kits/tents`**: a data row; the Tents page and its node test move on purpose.
+5. **The long wall**: `KCITY.site.wall(chain, ways, o)` takes a polyline `chain` and resamples it open, so a run from wall
+   foot to wall foot looks supported as it stands (towers every `towerGap`, gates where the ways cross). If the Gate needs
+   more of it (a water gate where a river crosses, a run that steps on a slope), that is a `core/city` question for its
+   session: asked, not written here.
+
+## 5. The pending records it resolves
+
+| Where | Today | What resolves it |
+|---|---|---|
+| **The Great Chasm, the sill** (`biomes/greatchasm/stations/sill/86-host-post.js`; built 2026-11-11) | 84 hand-laid records, every one `pending`; the Coyote half is twelve rooms in three steps, the runner bird's shrine, the ostrich pen, four market stalls and seven contour-carved boundary stones, drawn as boxes in a stand-in `mud` | the `coyote` row's `platform` and `trade` keys (`cy_room`, `cy_runner_shrine`, `cy_ostrich_pen`, `cy_boundary_stone`) through `KHAMLET.tradePost({cultures: ['yuni', 'coyote']})`, which the chasm's plan already names (its section 8, amendment 1); the page then loads `KratorCoyote` and draws the real defs. The Yuni half stays pending until a Yuni row exists. **Rewiring the chasm's page is its own build's change** (question 7) |
+| **The Outland Gate**, station 1 (plan only, nothing built) | will carry the long wall, toll fort, water gate and shrine "as plain records until `kits/coyote`" (its sections 5 and 8) | it takes the bundle and lays the wall on its floor with the kit's run planner from its first build: no stand-ins needed |
+| **The Tiers**, stations 1 and 2 (plan only) | a fishing village (records), Coyote Canyon's seat (records until the kit), the herders' summer camp (`KCAMP`), shrines and milestones (records) | the bundle, the `coyote` rows (lake and terrace villages), the `coyote-herder` camp row, the stones; Coyote Canyon's layout on `core/city` is the Tiers' station 2 |
+| **The Outlands**, stations 2, 4, 7, 8 (station 1 built, carries no settlement) | the Valley villages, a herders' camp, the shun stones, the Mires' trapping camps: "plain records until the culture kit" | the same bundle and rows |
+| **`core/hamlet`** | `KHAMLET.pendingRow('coyote')` (every key `coyote-*`, boxed) | the real row: the trade post's test keeps its negatives, and a new check proves the Coyote keys come back real |
+| **`core/charactermodels`** | the `coyote_men` people: head and coat, no dress, no tribe | the dress spec (section 8) for that module's own session |
+
+## 6. The rows for core/hamlet and core/camp (proposed)
+
+`KHAMLET.CULTURES` gets one row per way of settling, all with `kit: 'coyote'`:
+
+| Row | Focus | Houses | Works | Platform / trade |
+|---|---|---|---|---|
+| `coyote` (the Valley) | farming, ranch (goats), salt | `cy_house_poor`, `cy_house_mid`, `cy_house_head` | farming: `cy_granary`, `cy_threshing`, `cy_mill`; ranch: `cy_fold`, `cy_ostrich_pen` | `platform {room: cy_room, store: cy_room (store), kiva: cy_hall, court: cy_court, pen: cy_pen, ladder}`; `trade {serai: cy_stage_house, stall, market, cistern, store: cy_granary}` |
+| `coyote_peak` | mine, quarry | `cy_stone_hut` (poor and middling), `cy_cliff_house` | mine: `cy_adit`, `cy_ore_bench`, `cy_sorting_shed`, `cy_wash` (nearest node of `kits/resources`: emerald, turquoise, copper) | `platform` in its alcove mode with `cy_cliff_house` rooms |
+| `coyote_tier` | farming, fishing | `cy_ledge_house` (three tiers) | farming: `cy_terrace_wall`, `cy_granary`; fishing: `cy_lake_house`, `cy_fish_weir` | Howl: `trade {serai: cy_stage_house, store: cy_larder}` |
+
+The religious key is `cy_runner_shrine` in every row; the civic `cy_hall` (Valley, Peak) or `cy_council` (Tiers). Household
+sizes, work shares and reaches are proposed from the Islanders' and the Vernacular's rows and checked in the node test.
+
+`KCAMP.CULTURES['coyote-herder']` (Sunrise and Sunset): dwellings the Tents kit's `tn-black-m` and `-l` in the `coyote`
+dress, the chief's a `tn-black-l` with a guest half, a shrine tent; pens `cy_fold`, `cy_ostrich_pen`, `cy_feather_rack`;
+households of 5 to 8, `formation: 'horseshoe'` (core/camp's pitch has `ring` and `horseshoe`; black-tent camps pitch in a
+row along the grazing, as the Tents kit's caravan `line` does, so a `line` formation in `core/camp` is a small amendment
+to ask for at C4, not to write in the kit); the wind from the scale model at the camp, not a constant (the Beast Riders' row hard-codes the crater's).
+The season (summer up the stair, winter down; `cy_winter_base` under the winter tents) is a field on the program.
+
+## 7. Inside (the catalog culture file)
+
+A `kits/catalog/krator-master-furniture-coyote.js` culture file, about 30 pieces (*proposed*):
+- **the room's fixtures**: the banquette (a mud bench along the wall, rugs on it), the corner hearth with its hood, the
+  roof hatch's ladder, wall niches, the mealing bins (three grinding stones in a row, coarse to fine), the storage bins
+  under the floor;
+- **goods**: storage jars and their stands, ostrich-egg water flasks in nets, baskets, the goat-skin churn, feather fans,
+  bronze sickles and axes on pegs, the saddle and pack frame for an ostrich, the drop spindle and the upright loom;
+- **the rich and the royal**: turquoise-inlaid boxes, a bronze brazier, a cedar chest, the painted shrine room's altar,
+  the king's bench with its runner-bird arms;
+- **sleeping**: a raised platform under fleeces (curled, the coyote way: square, not long, *proposed*).
+
+Rugs and blankets in the trade's colours: saffron yellow, lichen purple, pomegranate brown, the undyed grey and brown of
+the goats (`CROPS.canPlaid('tiers')` is checked at C8). Registering `coyote` in `core/tags` (`CULTURE_NAMES`,
+`CATALOG_CULTURES`) rebuilds every page: question 4. The interiors set `kits/interiors/sets/coyote.js` follows
+`khaayken.js`, with the residence rule met.
+
+## 8. Dress (for core/charactermodels)
+
+The kit writes **`kits/coyote/DRESS.md`**: garments by tribe and rank, from the trade's dyes and the herds' wool, for the
+character module's session to make in its own pipeline (garments that fit every body, the fur coat under them, the tail
+through them). *Proposed*:
+- **Valley**: a wool wrap-kilt and a short shoulder cape, undyed with a saffron border; bronze pins; the headman's cape
+  purple-bordered.
+- **Peak**: a leather apron and leggings over the knee (the digitigrade hock left free), a hood against the fog; turquoise
+  beads.
+- **Sunrise, Sunset**: a goat-hair cloak that is also the bedding, a sash in the tribe's colour (*proposed*: Sunrise
+  saffron, Sunset purple), ostrich-plume tassels for the riders.
+- **Tierhounds**: tunics in dyed wool, the officials' purple mantle, bronze scale for the Gate's guards, the king's
+  turquoise collar; no runner-bird feathers but on the priests (they are sacred), and never the golden bird's.
+- A `tribe` field on the `coyote_men` people (or one people per tribe) so `KCHAR.stranger` draws each tribe's dress.
+
+The digitigrade legs are the module's open item ("not built yet", `peoples.json`); the kit's doors and ladders assume them.
+
+## 9. Phases
+
+Each phase ends with `python3 tools/build.py kits/coyote`, `verify.py dist/coyote.html --assert` on the GPU
+(`KRATOR_GL=gpu`, a lane from `tools/harness.py`: arc, rtx or a cloud vast lane), `tools/check_core_use.py` and
+`tools/test_all.py`, and a commit on the branch. Nothing is pushed, merged or published without the owner's word.
+
+| Phase | What | Done when |
+|---|---|---|
+| **C0** | this plan; the owner's answers (section 12); the five prompts pasted (section 10); `refs/` from the owner if any | the owner's yes |
+| **C1** | **the scaffold**: `build.py` and `verify.py` from `tools/new_build/` on `core/engine` by path; the sheet, `INDEX.md`, `PORT.md`; `materials.json` on the library (stand-ins named in `KNOWN_ISSUES.md`); the toolkit (`40-cy-kit.js`: the brick wall on its socle, the flat roof with vigas, the parapet, the roof hatch and ladder, the ear door, the spout); **`cyContour`** (`[G data]`) and `tests/test-contour.js`; `cy_room` and `cy_house_poor` | the two defs build, their doors open, the walk climbs the ladder to the roof; the contour test passes with its negatives |
+| **C2** | **the Valley**: the dwellings and works of section 3; the roomblock village on `KHAMLET.platform` from a **draft** `coyote` row kept in the kit; the shrines and the carved stones | the village reads at eye level; `walk-reach` from each door; no overlaps (`core/space`) |
+| **C3** | **the Peak**: the huts, the cliff house on the platform's alcove mode, the mine works on a `kits/resources` node (emerald and turquoise) | the alcove village and the mine on the sheet |
+| **C4** | **the herders**: the `coyote` dress in `kits/tents` (its page and test moved on purpose), the folds, pens and racks, the `coyote-herder` row, a camp on `KCAMP` in summer and winter | the camp pitches by the row; the Tents kit's `--assert` still passes |
+| **C5** | **the Tierhounds**: the ledge houses, stair lanes, terrace walls, the spring hall, treasury and council, the lake house and weir; the stepped street on the terraced layout (amendment 2, if the owner takes it); Howl's stage house, runners' post and larder | the street reads from below and from the lane; the ledge houses' roofs carry the walk |
+| **C6** | **the Gate**: the wall run and its tower, postern, toll gate with its court, the water gate over a test river, the citadel, the fodder pit; the run laid from `KCITY`'s wall records on a test floor; slumped states on `core/ruins` | the wall closes the test floor from foot to foot; the river passes the water gate; nothing floats |
+| **C7** | **the rows land in core**: `22-hamlet-coyote.js` (the three rows), its node test, the trade post's test extended (the Coyote keys come back real); the camp row; `node core/hamlet/test-*.js`, `node core/camp/test-camp.js`; `port_baseline.py` reads `same` for every page that does not list them | the tests pass; no other page moves |
+| **C8** | **inside**: the culture file on the catalog page (`kits/catalog/verify.py --assert`), `coyote` registered in `core/tags` (with the next all-builds rebuild, question 4), the interiors set, the furnished cut-aways; `CY_TRADES` complete | a house and the spring hall read furnished at eye level |
+| **C9** | **the bundle and the hand-over**: `KratorCoyote` (`kit_bundle.py`); `DRESS.md`; hand-over notes for the Great Chasm (rewire the sill onto `KHAMLET.tradePost` and the bundle), the Outland Gate and the Tiers; `API.md`; the Godot export and its case; the index tools; the gallery with the owner's allow | the sheet exports; the bundle draws the post's Coyote half on a test host |
+
+## 10. Textures
+
+**Reused from the library** (`core/materials/library/`): `earth.adobe`, `earth.adobe.pale`, `earth.banco`,
+`earth.banco.eroded` (render and old walls), `earth.rammed`, `earth.floor.packed`, `plaster.clay_block_wall` (the brick's
+stand-in), `plaster.limewash.red`, `plaster.ochre`, `detail.plaster.grain`, `stone.corbel.slab` (dry stone, tinted),
+`stone.cut`, `stone.sandstone.ashlar` (the Gate's socle), `rock.schist.emerald`, `rock.turquoise.vein` (the Peak's ground
+and gem faces), `wood.silver`, `wood.gnarled`, `bark.juniper` (vigas, ladders, posts), `reed.mat.woven`, `fibre.reedmat`,
+`roof.thatch.reed`, `card.reed`, `cloth.tent.black` (the herders' tents), `cloth.wool`, `cloth.rug.wool`, `cloth.felt`,
+`wool.fleece`, `hide.leather008`, `leather.buckskin`, `metal.bronze`, `metal.bronze.cast`, `metal.bronze.verdigris`,
+`ceramic.terracotta`, `ceramic.terracotta.sooty`, `feather.plumage`, `ash.hearth`, `stone.travertine.tufa` (the spring
+hall's pool).
+
+**New: 5 prompts**, `core/materials/PROMPTS-NEEDED.md` section 53 (paste-ready): `brick.mud.coursed` (the Outlands plan's
+"coursed sun-dried brick (not prompted yet)"), `patterns/coyote/kilim` (the rugs and blankets), `patterns/coyote/frieze`
+(the shrine fronts' painted birds), `patterns/coyote/turquoise-mosaic` (the royal and rich inlay), `card.feather.ostrich`
+(the plumes on fans, tassels and the feather stores). Until they come the kit draws `plaster.clay_block_wall`,
+`cloth.rug.wool` tinted, a plain limewash, `rock.turquoise.vein` and `feather.plumage`, each named in `KNOWN_ISSUES.md`.
+
+Adoption: `kits/coyote/materials.json` and `python3 tools/textures/pack.py kits/coyote` (commit `tex/`).
+
+## 11. Checks the kit adds to `verify.py --assert` (proposed)
+
+`contour-text` (every carved stone's line is `cyContour` of its record's text), `walk-reach` (every door and roof reached),
+`roof-walk` (every roof that is a lane or terrace carries a walk floor and a parapet or edge), `ladders` (every hatch has a
+ladder from a floor it reaches), `wall-closed` (the run reaches both feet; no gap but the gates), `water-gate` (the river's
+bed passes under it), `shrine-at-foot` (every runner shrine within a few metres of a road's foot on the sheet's roads),
+`no-golden-feathers` (no golden-bird feather in any good or dress record), `tags-vocabulary` (fails until `coyote` is
+registered: question 4), `coyote-furniture` (C8), plus the engine's door, z-fight and floating checks and `core/ruins`.
+
+## 12. For the owner
+
+1. **Stature.** Human height (doors 2.0 m clear for the ears, `CY.SCALE = 1.0`), or smaller like a coyote's build (0.9),
+   or larger? *Proposed*: 1.0.
+2. **The look** (section 2): Valley as Çatalhöyük and Taos roomblocks (roof entry, ladders); Peak in dry stone and cliff
+   alcoves; the herders in goat-hair black tents; the Tierhounds' Coyote Canyon on Masuleh's rule in Yemeni mud and stone;
+   the Gate after Hattusa (stone socle, mud-brick curtain) and Derbent (the long wall). And the **ear door** as the
+   culture's mark. Yes, or other references (photos into `refs/`)?
+3. **Names in the data.** One culture key `coyote` with a `tribe` tag (`valley`, `peak`, `sunrise`, `sunset`, `tier`), and
+   "Tierhound" as the Izani's name for the Kingdom's people (the Tiers plan's proposal)? Any Hum names for the tribes, the
+   king's house or the Gate?
+4. **The culture's registration** rebuilds every page (`core/tags` vocabulary). Wait for the next all-builds rebuild and
+   ride along (TODO.md), with `tags-vocabulary` failing on this kit until then, as the Yeti kit did; or make it this kit's
+   own rebuild at C8?
+5. **The birds.** `kits/fauna` has no ostrich, runner bird or golden bird yet (its `sand-strider` is the nearest ratite).
+   The pens, racks and stage houses can stand empty until they come. Who builds them: a phase of this kit's session in
+   `kits/fauna`, or a session of their own?
+6. **Dress and the digitigrade body**: this kit writes `DRESS.md`; the garments and the legs are `core/charactermodels`'
+   work in its own session. Agreed?
+7. **The Great Chasm's sill**: rewire its Coyote half onto `KHAMLET.tradePost` and the bundle in this kit's C9, or leave it
+   to the Great Chasm's next session with a hand-over note?
+8. **The terraced village** (section 4, amendment 2): a new opt-in `core/hamlet` fragment now, or wait for `core/city` to
+   carry it at Coyote Canyon's size?
+9. **The Gate's extras**: the citadel on the Gate shoulder and the long wall (the Outland Gate plan asked: "wanted, or a fort
+   alone?"); the **fodder pit** for the seed law; the slumped older stretches. Which go in?
+10. **The phoenix altar**: an ash altar under a sun pillar on a ledge where the golden bird is fed, or another form? And may a
+    runner-bird feather be shown in a shrine (sacred), or only implied?
+
+## Sources
+
+`biomes/outlands/PLAN.md` sections 4 (the House colony), 6, 7, 8, 11; `biomes/tiers/PLAN.md` sections 4, 6, 8, 11;
+`biomes/outlandgate/PLAN.md` sections 5, 8, 9; `biomes/greatchasm/PLAN.md` sections 5, 7c, 8 and
+`stations/sill/86-host-post.js`; `core/hamlet/README.md`, `32-hamlet-platform.js` (`pendingRow`), `34-hamlet-trade.js`;
+`core/camp/README.md`, `10-camp-cultures.js`; `kits/tents/README.md`; `core/city/README.md` (the wall records);
+`core/charactermodels/README.md` ("Therian heads", "Coats") and `data/peoples.json` (`coyote_men`); `core/engine/README.md`;
+`kits/yeti/PLAN.md`, `README.md`; `core/tags/52-core-tags-vocab.js`; `tools/scale-model/smodel/river_names.py` (`hum`);
+`kits/fauna/krator-fauna-desert.js` (no ostrich yet).
