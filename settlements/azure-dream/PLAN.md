@@ -600,12 +600,20 @@ isle's food bill, and a real demand for its dairy and hives.
 | **AD4** | the 22 catalog pieces in the Xanadu culture file | the catalog's owner | `kits/catalog/verify.py --assert` |
 | **AD5** | the Hall as room data, its cot grid, the side rooms furnished; the reach audit in node first | | `core/walk` reach in node; the page's `--interiors` assert |
 | **AD6** (**first pass done** 2026-11-16, the owner: "build the page next"; README.md, KNOWN_ISSUES.md) | the page, `settlements/azure-dream`: the cove, the wharf, the ward, the stair, the precinct on core/world's ground, the lake on `core/water`, the night on `core/atmos` and `core/sched` (the Lulling, the watches, the shutters, the blue window), people asleep | | `verify.py --assert` on the GPU lane; `check_core_use` |
-| **AD7** | the three villages (`core/hamlet`); the summit kora as a second station, with a far form from the cove | | the page's asserts |
+| **AD7** (the summit **first pass done** 2026-11-16: `dist/azure-dream-summit.html`, a second target on the same build) | the three villages (`core/hamlet`); the summit kora as a second station, with a far form from the cove | | the page's asserts (the summit's: `summit-laid`, `high-kora`, `summit-crest`, `signal-lamp`) |
 | **AD8** | the open world's site; the Godot export; the gallery (a new settlement goes to the gallery when it reaches `main`) | | the export test; the gallery's card |
 
 ## 13. Questions for the owner
 
-Questions 1 to 13 are answered (the table at the top; 10 by the Qiblai kit's session). One is open:
+Questions 1 to 14 are answered (the table at the top; 10 by the Qiblai kit's session). One is open:
 
 14. ~~**Building it.**~~ **Answered 2026-11-16: "build the page next"** (step AD6's first pass). The original question: Is the page the next step after the owner's answers, or does it wait until core/world has cut the
     isle on the new lake?
+
+15. **The Station Watch's signal.** At 1:1 the isle's dome is convex: from the Station Watch's lamp on the summit (+322 m) to
+    the monastery's back gate (+136 m), the ground 1.5-2.5 km above the Hall stands about 69 m over the sight line, so the
+    summit cannot signal the monastery directly. A relay lamp about 14 m up at the Dream Road's first chorten (1 km above the
+    back gate, +223 m) sees both. Is the relay right (a small lamp tower at the first chorten, kept by the Watch), or should
+    the signal be something else (a runner, a drum, a bell)? The same shoulder hides the Summit Chorten from the cove (the
+    scarp half a kilometre up stands over 100 m above that sight line), so "its gilt crown seen from every shore" is not checked
+    yet for any shore; a far form from the cove (AD7) would show nothing there.

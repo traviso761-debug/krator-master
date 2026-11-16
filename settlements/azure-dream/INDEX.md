@@ -4,7 +4,7 @@
 
 Docs: `BLUEPRINT.md`, `FURNITURE.md`, `KNOWN_ISSUES.md`, `PLAN.md`, `PORT.md`, `README.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/azure-dream.html`
+Built output (never open it; edit `src/` and rebuild): `dist/azure-dream-summit.html`, `dist/azure-dream.html`
 
 Build: `cd settlements/azure-dream && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
@@ -15,6 +15,12 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 |---|---|---|
 | `89qa-ad-hall.js` | 16 | the Hall of Dreaming (21); the waking range: the Waking Gallery, the scribe (118); a lotus pond (the Lotus Garden's four) (131); the cup house (144) |
 | `89qb-ad-wharf.js` | 14 | the mole and its wave-wheel shrine (19); a jetty (38); the boathouse (48); the racks: nets (o.v 0) and fish (o.v 1) (66); the smokehouse (81); the ropewalk (91); the fishermonks' house (103); the Order's barge (123) |
+| `89qc-ad-summit.js` | 3 |  |
+| `89zaa-ad-ground.js` | 8 | the cove's headlands (world metres) (22); the pads and terraces (30); the flora's mask and fields (the Vale of Xanadu' (57) |
+| `90ad-world.js` | 11 | the sky and its light (16); the near ground's zone mask and tint (24); the near ground (6 m cells) and the far ground ( (55); the lake: core/atmos and core/water (83) |
+| `90ae-build.js` | 6 | the retaining faces (8); the places, chunk by chunk (21) |
+| `90af-night.js` | 2 |  |
+| `91zz-ad-api.js` | <1 |  |
 
 ## targets/
 
@@ -22,4 +28,5 @@ Each target adds its own fragments to `src/` and builds one output.
 
 | Target | Fragments | KB |
 |---|---|---|
-| `isle` | `89z-rows.js`, `89zad-site.js`, `90ad-world.js`, `90ae-build.js`, `90af-hall-night.js`, `90ag-ad-walk.js`, `91z-views.js` | 43 |
+| `isle` | `89z-rows.js`, `89zad-site.js`, `90ag-ad-walk.js`, `91z-views.js` | 17 |
+| `summit` | `89z-rows.js`, `89zad-site.js`, `91z-views.js` | 6 |

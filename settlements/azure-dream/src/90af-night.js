@@ -3,10 +3,11 @@
 // glass, the clerestory's panes: the blue window Erehwon sees across the water), and the lamps nearest the eye light their
 // surroundings: one pool of point lights, its count fixed so nothing recompiles at dusk (Qiblai's 90v is the model), chosen again
 // twice a second: an azure lamp (blue, 7 m) or the Damsel's gold lamp (warm, 6 m) within 40 m, the wharf's oil lanterns
-// (warm, 18 m) and the clerestory's panes (blue, 14 m) within 220 m. Night is the sky's (99-start.js NIGHT). [web]: three.js.
+// (warm, 18 m) and the clerestory's panes (blue, 14 m) within 220 m, the summit's signal lamp (blue, 30 m) within 600 m. Every
+// target's (the isle's and the summit's). Night is the sky's (99-start.js NIGHT). [web]: three.js.
 reseed(34154);
 const AD_NIGHT=(function(){const LIGHTS=8,pool=[],S={lit:0,glow:0},KIND={azure:{i:1.1,d:7,c:0x4a7ae8,near:40},gold:{i:1.0,d:6,c:0xffc870,near:40},
-  oil:{i:1.6,d:18,c:0xffc890,near:220},pane:{i:.9,d:14,c:0x3a6ad8,near:220}};
+  oil:{i:1.6,d:18,c:0xffc890,near:220},pane:{i:.9,d:14,c:0x3a6ad8,near:220},signal:{i:2.4,d:30,c:0x6a9af8,near:600}};   /* signal: the Station Watch's lamp (89qc), the summit's */
  for(let i=0;i<LIGHTS;i++){const L=new THREE.PointLight(0x4a7ae8,0,10,2);L.castShadow=false;L.name='azure-dream light '+i;scene.add(L);pool.push(L);}
  let lt=0;FRAME_HOOKS.push(dt=>{const night=typeof NIGHT!=='undefined'&&NIGHT;
   MAT.adAzure.emissiveIntensity=night?1.6:.08;S.glow=MAT.adAzure.emissiveIntensity;

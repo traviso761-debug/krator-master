@@ -1,6 +1,7 @@
 {
  "targets": {
-  "isle": "azure-dream.html"
+  "isle": "azure-dream.html",
+  "summit": "azure-dream-summit.html"
  },
  "externalDirs": [
   "kits/qiblai/src"
@@ -19,6 +20,10 @@
   "isle": [
    ["core/atmos", ["89-atmos-0-core.js", "89-atmos-0p-presets.js", "89-atmos-a-waves.js", "89-atmos-b-skylight.js"]],
    ["core/water", ["20-core-water.js", "21-core-water-shore.js", "22-core-water-flow.js", "50-core-water-draw.js", "51-core-water-kinds.js"]]
+  ],
+  "summit": [
+   ["core/atmos", ["89-atmos-0-core.js", "89-atmos-0p-presets.js", "89-atmos-a-waves.js", "89-atmos-b-skylight.js"]],
+   ["core/water", ["20-core-water.js", "21-core-water-shore.js", "22-core-water-flow.js", "50-core-water-draw.js", "51-core-water-kinds.js"]]
   ]
  },
  "pack": "qiblai",
@@ -35,10 +40,12 @@
   "89q0z-qb-matlib.js",
   "89qa-ad-hall.js",
   "89qb-ad-wharf.js",
+  "89zaa-ad-ground.js",
+  "89qc-ad-summit.js",
   "89zad-site.js",
   "90ad-world.js",
   "90ae-build.js",
-  "90af-hall-night.js",
+  "90af-night.js",
   "89q5f-qb-furnish.js",
   "89q5s-qb-shells.js"
  ],

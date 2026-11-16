@@ -6,3 +6,6 @@ const TITLE='Grēṭ-Āil — the Azure Dream';
 XA.families=()=>[];
 const XA_EXTRA=[];
 const SITES=[];
+// the site (src/89zaa-ad-ground.js): the page's origin the cove's head on the 1:1 waterline (tools/scale-model/
+// edit_517_azure.report.json); the near ground x -800..800, z -600 (uphill) .. 600 (the cove and out); the flora's origins
+const AD_SITE={id:'isle',PX:[846.075,1508.493],BOX:[-800,-600,800,600],bio:{origin:[[0,-60],[0,-300],[-420,-120],[420,-120]],center:[0,-200]}};

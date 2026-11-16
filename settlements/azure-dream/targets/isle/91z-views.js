@@ -20,7 +20,3 @@ const VIEWS=(function(){
  V['Toward Erehwon']=[0,T.hall.y+16,-500,adWx(841)-AD.WX,0,adWz(1517)-AD.WZ];
  return V;})();
 BUDGET.showcase={tris:16000000,calls:2400};BUDGET.cls.city=16000000;for(const k in TSTAT.by)BUDGET.type[k.split('/')[0]]='city';
-if(window._api)window._api.setHour=h=>{AD_SKY.hour=h;};   /* the clock, for a night shot */
-if(window._api)window._api.lamps=b=>({format:'krator-lamps',version:1,convention:'metres, +Y up; at is the lamp; color sRGB; size the halo\'s world diameter',
- lamps:AD_LAMPS.filter(l=>!b||(l[0]>=b[0]&&l[0]<=b[2]&&l[2]>=b[1]&&l[2]<=b[3])).map(l=>({at:[+l[0].toFixed(3),+l[1].toFixed(3),+l[2].toFixed(3)],amp:1,
-  radius:{azure:7,gold:6,oil:18,pane:14}[l[3]]||12,cool:l[3]==='azure'||l[3]==='pane',color:{azure:'#4a7ae8',gold:'#ffc870',oil:'#ffc890',pane:'#3a6ad8'}[l[3]]||'#ffc890',size:.5,hours:l[3]==='gold'?[0,24]:[17.2,30.8],kind:l[3]}))});
