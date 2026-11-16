@@ -7,7 +7,7 @@ import sys; sys.path.insert(0, os.path.join(ROOT, 'kits', 'tungang')); import tu
 js = tungang_bundle.bundle()              # tex=True: the library maps (about 11 MB of data URLs)
 js = tungang_bundle.bundle(tex='lean')    # eight families (stone, turf, pole, wood, plate, rust, rope, cord): about 4.4 MB
 js = tungang_bundle.bundle(tex=False)     # vertex colours only: about 200 KB
-js = tungang_bundle.bundle(furniture=True)   # and the catalog's fellgang, generic and generic-goods pieces sealed in (+387 KB)
+js = tungang_bundle.bundle(furniture=True)   # and the catalog's fellgang, tungang, xanadu, generic and generic-goods pieces sealed in
 js, files = tungang_bundle.bundle(with_files=True)   # and the repo-relative files it read, for --list-sources
 ```
 
@@ -101,11 +101,84 @@ for measuring (verify.py checks the worn state this way).
 | `TG.SCALE` | 0.94 (the Tungang and Glazier sets' openings; the Fellgangs are 1.0) |
 | `TG.errors`, `TG.MAT`, `TG.DEFS`, `TG.KIT` | the bundle's errors, materials, defs and identity (bundle only) |
 
+## TG.gz: the Glazier set
+
+The Glaziers of Opal Valley (`PLAN.md` sections 1.4, 3.4; culture id `glazier`, opt-in in `core/tags/glazier/`): their hold is
+CUT into a fault scarp. Each def is **a front plus a void plan** (`kits/zeijani/PLAN.md` 6.3): the front (tiers of battered
+whitewashed wall, cusped arches, moonglass, cholet bands, gilt) is drawn by the builder; the rooms are voids in the rock, and
+**the void plan is the one source**: the world's cavern is carved from it, the builder draws its floors, linings and furniture
+from it, core/walk takes its floors from it.
+
+**The frame.** The origin is the foot of the def's FRONT on the rock face (z 0 is the face); the front stands out toward +z by
+its `out`; the rooms run into the rock at -z. A site `{key, x, y, z, ry}` puts that origin at (x, y, z) with the front turned
+by ry. Openings, bunks and furniture are at the Tungangs' 0.94 (`TG.SCALE`: doorways 1.95 m, rooms 2.45 m to the springing).
+
+### Laying a hold
+
+```js
+const C = KCAVERN.create({ground, cell: .5, chunk: 16, seed, walk: KWALK, minRock: .6});
+/* the world's scarp: its own masses or terrain */
+TG.gz.carve(C, sites);                 /* every site's void plan into the cavern: C.room / C.stair, C.opening (kind 'door') at the face */
+C.build();                             /* the cavern writes the rooms' floors to core/walk */
+sites.forEach(register);               /* core/tags first, as a world does (culture 'glazier', the def's types) */
+const D = TG.gz.draw(sites, {scene, seed: 9410, label: 'The Glaziers\' hold'});
+D.lights;                              /* light records, core/cavelight's shape: a world's KCAVELIGHT can light them */
+```
+
+A world that carves with its own tool reads `TG.gz.voids(sites)` instead: the same primitives in the world frame
+(`{prim: 'room', id, owner, poly, y, h, ceil, rise, r, finish, door?}` or `{prim: 'stair', id, owner, a, b, w, h}`).
+
+### `TG.gz.draw(sites, o)` -> meshes
+
+| | |
+|---|---|
+| `sites` | `[{key, x, y, z, ry, v?, state?, id?}]`; a key the kit lacks is skipped and counted in `.missing` |
+| `o.scene`, `o.label` | the group is added to the scene; the inspector's name |
+| `o.seed` | a site's look (`v`) when it has none: `KRAND.hash(seed, index, salt) % 97` (default 9400) |
+| `o.state` | `'kept'` (default), `'worn'` or `'abandoned'`; a site's own `state` wins |
+
+Returns the meshes (one per material key) with `.group`, `.recs` (`{key, x, y, z, ry, bbox, id, site, fg}`; `fg` the builder's
+counts: `plaques` and `register` (the Register), `wheels`, `benches`, `countLamps`, `countWall`, `timetable`, `plaque` (an
+adit's number), `flights`, `basins`, `beds`), `.missing`, `.tris`, `.smokes` and **`.lights`**: every lamp the builders hung,
+`{id, x, y, z, kind ('lamp-red' | 'lamp-amber' | 'lamp-green' | 'lamp-white' | 'glowcap' | 'wax' | 'moonglass'), colour, range,
+intensity, owner, on}`. A worn draw dims them; an abandoned one lights none. The draw is dry, as `TG.fg.draw`.
+
+### The defs
+
+| Key | Tier | Box w x d x h (out) | What |
+|---|---|---|---|
+| `gz-cell` | poor | 8.4 x 7 x 4.4 (1.3) | one tier and a door; a carved room (hewn or plastered by seed), a store niche |
+| `gz-front` | middle | 9.6 x 12 x 8 (2.6) | two tiers; the hearth room, the sleeping room, the store; a steep stair up to the upper room behind tier two |
+| `gz-house` | rich | 14.6 x 16.6 x 15.6 (4) | three or four tiers (by seed), gilt, the lattice bay, the eight-spoked wheel; reception, kitchen, store, the family rooms, the shrine (and the top room) |
+| `gz-stair` | common | 7.6 x 3.8 x 11.6 (3.4) | two or three switchback flights (6.8 or 10.2 m): masonry, then timber on iron brackets; white hooded lamps at the landings |
+| `gz-wheel-walk` | common | 12.4 x 4.2 x 4.2 (3) | 8 to 12 click wheels in a rock-cut niche row along the ledge, under a carved eave |
+| `gz-tea-hall` | civic | 16.6 x 21 x 13 (4) | the loj's meeting hall (12 x 10.4 m, polished, vaulted); three tiers of front, the guest gallery |
+| `gz-register-room` | civic | 9.4 x 11.6 x 5.4 (1.8) | the Register of the Veins (24 to 47 veins, one plaque each, and the hold's own on the front), the Fifth's strongroom |
+| `gz-glass-shop` | common | 10.4 x 12 x 5.8 (3.4) | the moonglass workshop and its store |
+| `gz-monks-house` | civic | 10.4 x 13.4 x 6.4 (3) | the reading room, the pigment mill, a cell |
+| `gz-adit` | common | 8.6 x 18 x 5 (6) | an adit's mouth and its working to the face (11.7 m in) |
+| `gz-vein-gallery` | common | 8 x 17 x 3.6 (1) | a gallery on a potch line: in, a turn, on, the face |
+| `gz-dark-adit` | poor | 7 x 15 x 3.4 (1) | an old adit and its bed chamber |
+| `gz-lotus-pond` | common | 12.4 x 10.8 x 1.8 (9.6) | three basins stepping down from the face to the tarn; a sluice from the rock |
+
+### Data and checks
+
+| | |
+|---|---|
+| `TG.gz.BOX` | each key's box `{w, d, h, out, tier, what}`: the def's drawn box lies in x within +-w/2, z within [out - d, out], y within [0, h] |
+| `TG.gz.plan(key, o)` | the def's void plan for `o` (`{v}`): `{voids, byId, ...}`, each void `{id, kind: 'room', x, z, w, d, y, h, ceil, rise, finish, use, doors, pass?}` or `{id, kind: 'stair', a, b, w, h}`, in the def's frame |
+| `TG.gz.voids(sites, o)`, `TG.gz.carve(C, sites, o)` | the plans in the world frame; carved into a KCAVERN |
+| `TG.gz.proto(key, o)` | one def alone at the origin (dry); `.lights` as `draw`'s |
+| `TG.gz.dims(key)` | `{w, d, h, out}` |
+| `TG.gz.LAMP` | the lamp code's colours and their KCAVELIGHT kinds, ranges and intensities (the Tungang set's, with `moon`: the moonglass lantern) |
+| `TG.gz.check` | `box(recs, tol, fill)` (fill {w .6, d .45, h .6}), `plans(minRock)` (rooms marked `join`, a working's stretches, are exempt), `lights(draw)`, `carved(C, sites)`: the checks verify.py and `tests/test-bundle.js` run |
+
 ## On the sheet
 
-`dist/tungang.html`: `?state=worn` (the worn state), `?only=fg-hut,fg-pens` (only those rows), `?t=4` (the clock pinned),
+`dist/tungang.html`: `?state=worn` or `?state=abandoned` (the Glaziers' third state; the Fellgangs draw it worn), `?only=fg-hut,fg-pens` (only those rows), `?t=4` (the clock pinned),
 `?mat=proc` (vertex colours only). `window._fgSheet` holds the test grounds (`village`, `villageDraw`, `pad`, `ropes`,
-`ropeDraw`, `wall`, `road`); `_api` is core/host's probe with the engine's fields (`footprints`, `tags`, `furniture`...).
+`ropeDraw`, `wall`, `road`); `window._gzSheet` the Glaziers' rock (`rows`, `scarp`, `draw`, `cavern`, `rock`, `prims`); C (the
+cut-away) opens the Glaziers' rock 2.2 m over every void's own floor (`core/terrain/host/39h`); `_api` is core/host's probe with the engine's fields (`footprints`, `tags`, `furniture`...).
 
 ## The core/hamlet row
 

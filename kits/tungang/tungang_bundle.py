@@ -28,7 +28,7 @@ NL = '\n'
 ENGINE = ['10-core.js', '27-mat.js', '30-geo.js', '36-def.js', '36o-open.js', '36s-stair.js']
 CORE = [('core/rand', '08-core-rand.js'), ('core/materials/record', '23-mat-record.js'), ('core/materials/record', '24-tex-def.js'),
         ('core/materials/record', '25-matlib-host.js')]
-KIT_SKIP = ('00-head.html', '89-rows.js', '91t-fg-sheet.js', '96t-fg-views.js', '99-sheet-fg.js')
+KIT_SKIP = ('00-head.html', '89-rows.js', '91t-fg-sheet.js', '96t-fg-views.js', '99-sheet-fg.js', '91z-gz-sheet.js', '96z-gz-views.js')
 LEAN = ('stone', 'turf', 'pole', 'wood', 'plate', 'rust', 'rope', 'cord')
 
 HEAD = r'''
@@ -66,7 +66,7 @@ function FURNISH(key, lx, ly, lz, lry, o) { if (!KratorFurniture.has(key)) retur
   var r = { key: key, x: p.x, y: p.y, z: p.z, ry: Math.atan2(e[8], e[10]) + (lry || 0), v: (o && o.v) | 0 }; FG_FURN_PENDING.push(r); return r; }
 function FURNISH_HANG(key, lx, topY, lz, lry, o) { var A = KratorFurniture.FURN_BY_KEY[key]; if (!A) return null; return FURNISH(key, lx, topY - KratorFurniture.entryDims(A, (o && o.v) | 0).h, lz, lry, o); }
 '''
-FURN_CULTURES = ['fellgang', 'generic', 'generic-goods']
+FURN_CULTURES = ['fellgang', 'tungang', 'xanadu', 'generic', 'generic-goods']
 
 TAIL = r'''
 reportErr = function (m) { TG_ERRS.push(String(m).slice(0, 600)); if (globalThis.console) globalThis.console.error('TG: ' + m); };

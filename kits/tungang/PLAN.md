@@ -4,7 +4,7 @@ The culture kit of the Rift's tunnel people, **the Tungangs**, their kin on the 
 and a third people this plan proposes, **the Glaziers**, the eastern loj of Opal Valley. **One kit, three sets** on one
 foundation, as `kits/highlands` carries the Republican, Rustic and Tribal sets (the owner, 2026-11-10).
 
-**Status: a proposal.** No code is written. Every fact not already in `LORE.md` or a biome plan is marked *proposed* and
+**Status (2026-11-16):** the Fellgang set (section 3.3.1) and the Glazier set (sections 1.4, 3.4) are built on this branch; the Tungang set is on Loj Twenny's branch. **Originally a proposal.** No code is written. Every fact not already in `LORE.md` or a biome plan is marked *proposed* and
 waits on the owner; `LORE.md` is not edited until the owner confirms. Section 10 holds the numbered questions.
 
 **The owner's brief** (2026-11-10, in brief): start the Tungang and Fellgang kits; propose underground settlements with
@@ -700,6 +700,36 @@ the note goes to the High Rift and Longsong plans with the owner's word.
 **The Cave of Crystals** (the Hearth hold) stays a Tungang loj's (section 5.5): its crystal storey is the Hearth loj's
 shrine, a crystal cleft on the grand scale, entered rarely in cooling suits packed with the Ice-cutters' ice.
 
+#### 1.4.1 The world around the Glaziers: the valley, the Sultan's province, the sim (2026-11-16, read from the sites branch)
+
+Read from `claude/openworld-sites-24defd` when the Glaziers' set was built; nothing here changes those files.
+
+- **Where they live** (`biomes/opalvalley/PLAN.md`): the upper Opal Valley, "above the Middle Riser (>1,800 m), the Sultanate's
+  writ thins out", where the valley's plan already has "furtive Tungang tunnel-delvers who know the fault fissures better than
+  any surface surveyor". The hold is cut in the riser between Terrace I (the milk-opal tarns, station 2 `upperbed`, 1082,1672,
+  +2,450 to 2,680 m) and Terrace II (station 3 `middlebed`, 1038,1662), along the potch lines the valley's miners follow into the
+  basalt-rhyolite contact ("Fault-Scarp Hard-Rock Adits ('Potch-Tracing')"). The valley's silica dust hazard ("prism-lung") is
+  the reason for their wet drilling and wax-cloth masks.
+- **Below them**: Opal Valley Mines, the Sultan's factor's (pin `sjuarjbku0`, px 1038,1662, about 850 people, the assay
+  pavilion); the Sultan takes a Fifth of the opal (`core/simulation/PROPOSAL-XANADU.md`: the Fifth a road with `share` 0.2 to
+  the Treasury).
+- **In the sim**: the proposal makes the valley the Sultanate's province **Ōpal-Bhālī** (P6: 4,000 rural, the seat the mines);
+  `core/region/data/xan-tune.js` has the mines as an `adit` works (`mine('sjuarjbku0', ..., 'opal', T.mine.opal)`, 180 kg a
+  year) and opal and prayer wheels (`wheels`) and lenses among the goods the gateways take. **The Glaziers are not in it yet.**
+  A later step would need:
+  - a **site** for the Glaziers' hold above the mines (not the factor's: outside the writ, "a thousand years apart"), a settlement
+    of a few hundred (*proposed*: 300-500) with its own polity, not a Xanadu town;
+  - **works**: the adits (opal out: the Fifth paid in cut stones, so the opal reaches the factor already counted), the glass shop
+    (potch to **moonglass** panes, a new good; crystal opal to **lenses**, a good the tune already has), the dark beds (pale
+    fungi, alecap: `kits/crops`' dark crops) and the lotus ponds (lotus root and seed);
+  - **a road** to the mines (`share` 0.2 on opal: the Fifth) carrying opal and moonglass down and grain, tea, sugar and dried
+    fruit up (what they buy with opal, section 1.4);
+  - **the monks** of Oidong as a second link (over the northern ridge: pigment and the seeing-mirrors out, tea and celadon in);
+  - none of this changes the mines' numbers: the Glaziers' opal is their own diggings, not the factor's.
+- **The network** (`openworld/ANCIENT-NETWORK.md`, the Tungang and Fellgang session's item (c)): the Glaziers stay off the
+  Ancient network. "A train that never comes" fits a line that ends at Strongbow down the valley; their timetable is read for a
+  station that was never built.
+
 ### 1.5 Dress and bodies (the brief for `core/charactermodels`)
 
 | | Tungang | Fellgang | Glazier |
@@ -913,7 +943,11 @@ on, a slogan somewhere: section 1.3):
 These villages are surface work: they wait on neither the Line nor the cavern setting, so the Fellgang village defs can be
 built ahead of the Tungang set (question 27).
 
-### 3.4 Glazier buildings (*proposed*)
+### 3.4 Glazier buildings (*proposed*; **built 2026-11-16** as `gz-*`, hyphenated like the kit's other keys: `README.md`, "The Glazier set", and `API.md`)
+
+Built as the table says, with the household fronts split poor to rich (`gz-cell`: one tier and a door; `gz-front`: two
+tiers; `gz-house`: three or four tiers, gilt and a lattice bay) and a sample scarp hold on the sheet; the defs below keep their
+plan names with underscores.
 
 | Def | What |
 |---|---|

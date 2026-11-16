@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Headless check for the Tungang kit (so far its Fellgang set).
+"""Headless check for the Tungang kit (its Fellgang and Glazier sets).
 
   python3 verify.py dist/tungang.html [--views "Opening|Sample village"] [--cut] [--night] [--worn] [--cam cx,cy,cz,tx,ty,tz]
                                       [--assert] [--eval "()=>..."] [--out shots] [--size 1280x800] [--only key1,key2] [--all-views]
@@ -19,6 +19,13 @@ passes is a failure too. The checks (kits/tungang/README.md, "Checks"):
   plinth-on-slope       on the sloped pad: the floor at the highest corner, the plinth to the lowest, the byre down-slope
   fixed-line-follows    the ropes on the test wall follow their records (no vertex strays, no point is left short)
   host-api              TG.fg.draw draws every record of the sample village (core/hamlet's fellgang row, fowling)
+  gz-box-within         every Glazier site within its box (TG.gz.BOX: w, d with its out, h) and filling its share, kept, worn, abandoned
+  gz-void-plans         every def's void plan (8 seeds) inside its box, its rooms kept apart by rock
+  gz-rock-carved        the rows' and the scarp's rock carved from the plans (open in each first room, solid behind it)
+  gz-lights-by-state    the lamps as light records: the kept scarp lit, the abandoned rows dark
+  gz-host-api           TG.gz.draw draws every site of the sample scarp
+  gz-loj-rooms          the Register's plaques (one per vein, and the hold's own), the wheel walks' wheels, the tea halls' count wall
+  gz-walk-carved        a walker finds the cavern's floor in a carved room (core/walk from the plan)
   coverage, no-nan, furniture-keys, material-records
 """
 import argparse, asyncio, json, os, sys
@@ -33,8 +40,8 @@ ASSERT_JS = r"""()=>{const A=window._api,R=[],S=window._fgSheet||{},C=TG.fg.chec
  const add=(name,pass,neg,detail)=>R.push({name,ok:!!pass.ok&&!neg.ok,detail:(pass.ok?'':'FAILED ')+(pass.detail||'')+(neg.ok?'  [its negative did not fail: '+(neg.detail||'')+']':'  (negative fails: '+(neg.detail||'')+')')});
  const top=()=>REG.filter(r=>!r.parent);
  /* box: the 14 buildings against their stand-in boxes, the pieces against their declared ones, kept then worn */
- const boxOf=recs=>{const B=C.box(recs.filter(r=>TG.fg.BOX[r.key]));const P=C.box(recs.filter(r=>!TG.fg.BOX[r.key]&&r.key!=='fg-fixed-line'));return {ok:B.ok&&P.ok,detail:B.rows.length+' buildings, '+P.rows.length+' pieces'+(B.bad.concat(P.bad).length?': '+B.bad.concat(P.bad).join(' | '):'')};};
- const kept=boxOf(top());const wr=[];for(const S0 of SITES){const p=TG.fg.proto(S0.key,Object.assign({},S0.o,{state:FG_STATE==='worn'?'kept':'worn'}));wr.push(...p.recs);p.forEach(m=>m.geometry.dispose());}
+ const boxOf=recs=>{const B=C.box(recs.filter(r=>TG.fg.BOX[r.key]));const P=C.box(recs.filter(r=>!TG.fg.BOX[r.key]&&r.key!=='fg-fixed-line'&&/^fg-/.test(r.key)));return {ok:B.ok&&P.ok,detail:B.rows.length+' buildings, '+P.rows.length+' pieces'+(B.bad.concat(P.bad).length?': '+B.bad.concat(P.bad).join(' | '):'')};};
+ const kept=boxOf(top());const wr=[];for(const S0 of SITES.filter(S0=>/^fg-/.test(S0.key))){const p=TG.fg.proto(S0.key,Object.assign({},S0.o,{state:FG_STATE==='worn'?'kept':'worn'}));wr.push(...p.recs);p.forEach(m=>m.geometry.dispose());}
  const worn=boxOf(wr),wornRecs=wr.length;
  const hut=top().find(r=>r.key==='fg-hut');
  add('box-within-contract',{ok:kept.ok&&worn.ok&&wornRecs>0,detail:'kept: '+kept.detail+'; worn: '+worn.detail},
@@ -90,6 +97,32 @@ ASSERT_JS = r"""()=>{const A=window._api,R=[],S=window._fgSheet||{},C=TG.fg.chec
  add('no-nan',{ok:A.nanSweep()===0,detail:'nan meshes: '+A.nanSweep()},(()=>{const g=new THREE.Group(),b=new THREE.BufferGeometry();b.setAttribute('position',new THREE.Float32BufferAttribute([0,NaN,0,1,0,0,0,0,1],3));g.add(new THREE.Mesh(b));let n=0;g.traverse(m=>{if(m.geometry){const a=m.geometry.attributes.position.array;for(let i=0;i<a.length;i++)if(!isFinite(a[i])){n++;break;}}});return {ok:n===0,detail:n+' nan mesh'};})());
  const fu=A.furniture(),fm=Object.keys(fu.missing);
  add('furniture-keys',{ok:!fm.length&&fu.placed>100,detail:fm.length?'missing from the catalog: '+fm.join(', '):fu.placed+' pieces from '+fu.keys+' catalog keys'},{ok:KratorFurniture.has('fellgang_nonesuch'),detail:'fellgang_nonesuch'});
+ /* THE GLAZIERS (gz): their boxes kept, worn and abandoned; the void plans; the rock carved from them; the lamps by state; the
+    host API on the sample scarp; the loj's rooms (the count wall, the Register's plaques, the wheels); a walker on a carved floor */
+ const GZ=TG.gz.check,gzS=window._gzSheet||{},gzTop=top().filter(r=>/^gz-/.test(r.key)),gzWr=[],gzAb=[];let gzLw=0,gzLa=0;
+ for(const S0 of SITES.filter(S0=>/^gz-/.test(S0.key))){for(const st of ['worn','abandoned']){const p=TG.gz.proto(S0.key,Object.assign({},S0.o,{state:st}));(st==='worn'?gzWr:gzAb).push(...p.recs);
+  if(st==='worn')gzLw+=p.lights.length;else gzLa+=p.lights.length;p.forEach(m=>m.geometry.dispose());}}
+ const gzB=GZ.box(gzTop),gzBw=GZ.box(gzWr),gzBa=GZ.box(gzAb),gzHall=gzTop.find(r=>r.key==='gz-tea-hall');
+ add('gz-box-within',{ok:gzB.ok&&gzBw.ok&&gzBa.ok&&gzTop.length===39&&gzWr.length===39&&gzAb.length===39,detail:gzTop.length+' Glazier sites kept, '+gzWr.length+' worn, '+gzAb.length+' abandoned, each within its box and filling its share'+(gzB.bad.concat(gzBw.bad,gzBa.bad).length?': '+gzB.bad.concat(gzBw.bad,gzBa.bad).slice(0,6).join(' | '):'')},
+  (()=>{const q=GZ.box([Object.assign({},gzHall,{key:'gz-cell'})]);return {ok:q.ok,detail:'the tea hall measured against the cell\'s box: '+q.bad.join('')};})());
+ const gzP=GZ.plans(),gzPn=GZ.plans(4);
+ add('gz-void-plans',{ok:gzP.ok,detail:gzP.voids+' voids over 8 seeds of '+Object.keys(TG.gz.PLANS).length+' defs: each inside its box, rooms kept .6 m of rock apart'+(gzP.bad.length?': '+gzP.bad.slice(0,6).join(' | '):'')},{ok:gzPn.ok,detail:'4 m of rock asked between rooms: '+gzPn.bad.length+' too close'});
+ const gzSites=(gzS.rows||[]).reduce((a,r)=>a.concat(r.sites),[]).concat(gzS.scarp?gzS.scarp.sites:[]),gzC=gzS.cavern?GZ.carved(gzS.cavern,gzSites):{ok:false,bad:['no cavern'],n:0},
+  gzCn=gzS.cavern?GZ.carved(gzS.cavern,gzSites.map(q=>Object.assign({},q,{z:q.z+2000}))):{ok:false,bad:[]};
+ add('gz-rock-carved',{ok:gzC.ok&&gzS.prims>100&&gzS.rock&&gzS.rock.tris>1000,detail:gzC.n+' sites: open at the first room\'s centre, rock behind its back wall; '+gzS.prims+' primitives, the rock '+(gzS.rock?gzS.rock.tris+' triangles in '+gzS.rock.chunks+' chunks, built in '+gzS.buildMs+' ms, meshed in '+gzS.rock.ms+' ms':'none')+(gzC.bad.length?': '+gzC.bad.slice(0,5).join(' | '):'')},
+  {ok:gzCn.ok,detail:'every site moved 2 km north, off the rock: '+(gzCn.bad||[]).length+' fail'});
+ const gzK=(gzS.draw&&gzS.draw.lights||[]).length;
+ add('gz-lights-by-state',{ok:gzK>20&&gzLw>0&&gzLa===0,detail:'the scarp (kept) '+gzK+' light records ('+GZ.lights(gzS.draw).kinds.join(', ')+'), the rows worn '+gzLw+', abandoned '+gzLa},{ok:gzK===0,detail:'the kept scarp checked as abandoned (no lamp lit)'});
+ const gzD=gzS.draw||{recs:[],missing:{}},gzNeg=TG.gz.draw([{key:'gz-nonesuch',x:0,z:0}],{});
+ add('gz-host-api',{ok:gzS.scarp&&gzD.recs.length===gzS.scarp.sites.length&&!Object.keys(gzD.missing).length&&gzD.length>3,detail:(gzS.scarp?gzS.scarp.sites.length:0)+' scarp sites, '+gzD.recs.length+' drawn into '+gzD.length+' meshes, '+gzD.tris+' triangles'},
+  {ok:!Object.keys(gzNeg.missing).length,detail:'a site of a key the kit lacks: missing '+JSON.stringify(gzNeg.missing)});
+ const gzRegs=gzTop.filter(r=>r.key==='gz-register-room'),gzWalks=gzTop.filter(r=>r.key==='gz-wheel-walk'),gzHalls=gzTop.filter(r=>r.key==='gz-tea-hall');
+ const gzCiv=k=>gzRegs.every(r=>r.fg&&r.fg.plaques===r.fg.register+1+k)&&gzWalks.every(r=>r.fg&&r.fg.wheels>=8&&r.fg.wheels<=12)&&gzHalls.every(r=>r.fg&&r.fg.countWall===1&&r.fg.timetable===1&&r.fg.benches>=4&&r.fg.countLamps===8);
+ add('gz-loj-rooms',{ok:gzRegs.length===3&&gzWalks.length===3&&gzHalls.length===3&&gzCiv(0),detail:'the Register: '+gzRegs.map(r=>r.fg&&(r.fg.register+' veins, '+r.fg.plaques+' plaques')).join('; ')+'; the wheel walks: '+gzWalks.map(r=>r.fg&&r.fg.wheels).join(', ')+' wheels; the tea halls: '+gzHalls.map(r=>r.fg&&(r.fg.benches+' benches, '+r.fg.countLamps+' count lamps')).join('; ')},
+  {ok:gzCiv(1),detail:'one plaque more asked of every Register'});
+ /* a walker on a carved floor: the scarp's household fronts, the hearth room's centre (the cavern wrote its floor from the plan) */
+ const gzFr=(gzS.scarp?gzS.scarp.sites:[]).filter(q=>q.key==='gz-front'),gzOnF=(q,dz)=>{const H=TG.gz.plan('gz-front',{v:q.v}).H,x=q.x+H.x+(dz?H.w/2-.35:0),z=q.z+H.z+(dz?-H.d/2-.45:0);return KWALK.floorsAt(x,z).some(f=>Math.abs(f[0]-(q.y+H.y))<.15);};
+ add('gz-walk-carved',{ok:gzFr.length===2&&gzFr.every(q=>gzOnF(q,0)),detail:gzFr.length+' household fronts on the scarp: a floor at the hearth room\'s centre, at its height'},{ok:gzFr.length>0&&gzFr.every(q=>gzOnF(q,1)),detail:'a point in the rock behind the hearth room\'s back wall, at its end'});
  const M=A.materials();add('material-records',{ok:!!(M&&M.records&&M.records.length>15&&M.records.filter(r=>r.lib).length>15),detail:M?M.records.length+' records, '+M.records.filter(r=>r.lib).length+' from the library':'none'},{ok:false,detail:'n/a'});
  return R;}"""
 

@@ -476,6 +476,12 @@ Square, 2048x2048. A flat, front-on decorative panel filling the whole frame edg
 Seamless tileable texture, 2048x512 (a horizontal band). Orthographic view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge. Panel: a painted decorative band on whitewashed plaster, in the bright flat colours of Andean cholet facades combined with Tibetan and Persian ornament: a row of stepped lozenges and zigzags, a running band of small eight-spoked wheels, thin gilt lines edging each band, colours rose, teal, saffron and white on the whitewash, the paint slightly worn. Full colour: rose #c8607a, teal #2a8a88, saffron #e0a030, white #f2eee4, gilt #c9a24a.
 ```
 
+`glass.moonglass` (the Glaziers' window panes: potch, the common opal with no fire, sliced thin; `kits/tungang` key `potch` and
+the panes, now `glass.frosted` through KGLASS; seen lit from behind at dusk):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Surface: thin translucent slices of common opal (potch) with no play of colour, laid edge to edge like small panes, each slice 8 to 12 cm across: milky white to pale grey-blue, soft cloudy silica banding and faint growth lines, a few tiny inclusions, the edges of each slice slightly ground and frosted. Colour: milk white #e2e4dc, cloud grey #cfd6d2, a faint blue cast #c4d4dc.
+```
+
 ## Gaps with no prompt yet
 
 Owed, but a prompt waits on something first; listed so they are not lost.

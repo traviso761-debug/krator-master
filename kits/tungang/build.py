@@ -2,7 +2,8 @@
 """Concatenate src/* into dist/tungang.html (the Tungang kit: the Rift's tunnel people and their kin, kits/tungang/PLAN.md).
 Started 2026-11-11 from kits/lizardmen's build: the engine is core/engine, read in place (core/engine/README.md);
 --vendor-check reports a src/ copy as a shadow. One kit, three sets (PLAN.md section 0): so far the Fellgang set (`fg`),
-the villages of section 3.3.1; the Tungang (`tg`) and Glazier (`gz`) sets come later.
+the villages of section 3.3.1, and the Glazier set (`gz`), the eastern loj of Opal Valley (section 1.4, 3.4: 62-67, its host
+84-gz-host.js, its sheet 91z/96z); the Tungang (`tg`) set is on Loj Twenny's branch.
 
 Usage: python3 build.py [--no-checks]
        python3 build.py --vendor-check   (drift from a vendored upstream; a core file shadowed by src/)
@@ -12,6 +13,8 @@ The page is one <script> made of, in filename order:
   core/engine           the engine (engine.py: 10-core ... 99-host-take, 99-tail.html), read in place
   core/rand             08-core-rand.js (KRAND: every seed; core/tags' uid is its hash)
   core/space            20-core-space.js (KSPACE: core/hamlet's overlap index)
+  core/tags/glazier     52g-tags-glazier.js (the culture id `glazier`, opt-in: no other page changes)
+  core/terrain          39-core-cavern.js (KCAVERN), host/39e (drawRock), host/39h (the rock cut): the Glaziers' rock on the sheet
   core/hamlet           10, 20, 30 (KHAMLET: the sheet's sample village) and fellgang/22-hamlet-fellgang.js (the opt-in
                         `fellgang` row with the `fowling` and `ice` focuses), with core/city/33-city-strategies.js (KCITY.prim)
   core/materials/record 23-mat-record.js, 24-tex-def.js, 25-matlib-host.js (KMAT: the material records and the library loader)
@@ -79,7 +82,11 @@ CORE_DIRS = [os.path.join(ROOT, 'core', *d.split('/')) for d in ('shader', 'rand
 # core/hamlet by name (its other fragments are not needed here), its opt-in Fellgang row (a subfolder no other build lists:
 # core/hamlet/fellgang/README.md), and the one core/city fragment the village generator reads (KCITY.prim)
 CORE_FILES = ['core/hamlet/10-hamlet-wood.js', 'core/hamlet/20-hamlet-cultures.js', 'core/hamlet/fellgang/22-hamlet-fellgang.js',
-              'core/hamlet/30-hamlet-village.js', 'core/city/33-city-strategies.js']
+              'core/hamlet/30-hamlet-village.js', 'core/city/33-city-strategies.js',
+              # the Glaziers' set: their culture id, opt-in (core/tags/glazier/README.md); the cavern the sheet carves their rock in
+              # (KCAVERN), its draw and its rock cut (the cut-away opens every void over its own floor)
+              'core/tags/glazier/52g-tags-glazier.js', 'core/terrain/39-core-cavern.js', 'core/terrain/host/39e-core-cavern-draw.js',
+              'core/terrain/host/39h-core-cavern-cut.js']
 # the host shell from core/host (core/host/README.md): the camera, the frame loop and its clock (core/clock), the panel, the probe,
 # and the authoring tools (inspect, polygon, path). core/engine's 99-host-take.js (with 92-world.js) hands it the page.
 sys.path.insert(0, os.path.join(ROOT, 'core', 'host'))
@@ -91,7 +98,7 @@ import engine as kengine   # the building-kit engine, read in place: MODULARITY-
 CORE_HOST = khost.SHELL + ['94-host-polytool.js']
 VENDORED = {}
 # GENERATED fragments, never written to src/
-FURN_CULTURES = ['fellgang', 'generic', 'generic-goods', 'jobs']   # the Fellgangs' pieces, the shared goods, the trades
+FURN_CULTURES = ['fellgang', 'tungang', 'xanadu', 'generic', 'generic-goods', 'jobs']   # the Fellgangs' pieces, the Tungangs' and Xanadu's (the Glaziers' rooms), the shared goods, the trades
 VIRTUAL = {'26-matlib-pack.js', '38-furniture-bundle.js'}
 BUNDLE_GLOBALS = ('KratorFurniture',)
 

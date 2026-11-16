@@ -20,17 +20,24 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 1 |  |
-| `26k-kit.js` | 6 |  |
+| `26k-kit.js` | 7 |  |
 | `37-wk-rec.js` | 3 |  |
 | `40-fg-kit.js` | 18 |  |
 | `42-fg-mass.js` | 21 |  |
 | `50-fg-dwell.js` | 10 |  |
 | `52-fg-civic.js` | 8 |  |
 | `54-fg-stores.js` | 9 |  |
-| `56-fg-works.js` | 13 |  |
-| `60-fg-road.js` | 14 |  |
+| `56-fg-works.js` | 14 |  |
+| `60-fg-road.js` | 16 |  |
+| `62-gz-kit.js` | 26 |  |
+| `63-gz-homes.js` | 18 |  |
+| `65-gz-civic.js` | 16 |  |
+| `67-gz-works.js` | 18 |  |
 | `80-fg-host.js` | 10 |  |
-| `89-rows.js` | 2 |  |
+| `84-gz-host.js` | 8 |  |
+| `89-rows.js` | 4 |  |
 | `91t-fg-sheet.js` | 9 |  |
+| `91z-gz-sheet.js` | 7 |  |
 | `96t-fg-views.js` | <1 |  |
+| `96z-gz-views.js` | 2 |  |
 | `99-sheet-fg.js` | 1 |  |

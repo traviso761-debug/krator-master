@@ -1,5 +1,28 @@
 # kits/tungang: known issues and the running note
 
+## Done (2026-11-16, the Glazier set: `PLAN.md` sections 1.4, 3.4)
+
+- **The owner's choices (2026-11-16):** build the Glaziers on the Fellgang foundation here, not on the Tungang set (which is on
+  Loj Twenny's branch, `claude/loj-twenny-059a5e`, unmerged); the culture id `glazier` opt-in (`core/tags/glazier/`, no other
+  page changes); the Glaziers' own pieces drawn in the kit for now (the catalog culture file owed, below); all of section 3.4
+  and a sample hold.
+- **13 defs** (`src/62-67`, keys `gz-*`, seeds 9401-9426): the homes poor to rich (`gz-cell`, `gz-front`, `gz-house`), the loj's
+  rooms (`gz-tea-hall`, `gz-register-room`, `gz-monks-house`, `gz-wheel-walk`), the works and ways (`gz-glass-shop`, `gz-adit`,
+  `gz-vein-gallery`, `gz-dark-adit`, `gz-lotus-pond`, `gz-stair`). Each a front plus a **void plan** (`TG.gz.plan`), the one
+  source: the rock is carved from it, the builder draws from it, core/walk takes its floors. Three states: kept, worn, abandoned.
+- **The rock on the sheet** (`src/91z-gz-sheet.js`): each Glazier row stands in a block of rock carved from its sites' plans
+  (KCAVERN, `core/terrain/39-core-cavern.js`, drawn by `host/39e`); the cut-away opens it 2.2 m over every void's own floor
+  (`core/terrain/host/39h-core-cavern-cut.js` and its test, **taken byte for byte from Loj Twenny's branch** (87fc4c117), so
+  that merge is clean). A sample scarp hold (17 sites in two steps over a tarn) laid as a world lays one.
+- **The host API** (`src/84-gz-host.js`): `TG.gz.draw`, `voids`, `carve`, `proto`, `dims`, `check`; the lamps as light records
+  in core/cavelight's shape.
+- **The Glaziers' pieces drawn in the kit** (`PLAN.md` section 4's `glazier_*`): the moonglass lantern, the pierced brass lantern,
+  the click wheel, the tea board with celadon, the carpet and bolsters, the mask rack, the steward's seat, the Register's plaque,
+  the tea urn, the glass bench; the timetable, banner, benches, box beds, stoves and Xanadu's tea copper, cushions, scroll rack,
+  strongbox, butter lamps and prayer wheels from the catalog (`FURN_CULTURES` + `tungang`, `xanadu`).
+- **Library families** (`materials.json`, `tex/`): whitewash, the scarp's hewn basalt, gilt, carpet, celadon, enamel, potch,
+  carved timber, silk.
+
 ## Done (2026-11-11, the Fellgang set: `PLAN.md` section 3.3.1)
 
 - The kit scaffold on `core/engine` (from `kits/lizardmen`'s build, verify and head): `build.py`, `verify.py` (on
@@ -57,4 +80,32 @@
 - [ ] **Gallery.** The kit is a new build: it goes into the Krator Worlds gallery when it first reaches `main`.
 - [ ] **Not yet built** from `PLAN.md` 3.3: the bands (`fg-war-camp`, `fg-raid-cache`); Wildcat's scrap pueblo (`fg-wc-*`) is the
       wildcat-pueblo session's (the owner, 2026-11-11: a pueblo builder and ONE Chaco-sized great house for 1-2k people at most, maybe one or two small hamlets), not this branch's;
-      the fells (`fg-shieling`, `fg-cairn`, `fg-stone-sign`); the Tungang (`tg`) and Glazier (`gz`) sets.
+      the fells (`fg-shieling`, `fg-cairn`, `fg-stone-sign`); the Tungang (`tg`) set is on Loj Twenny's branch.
+- [ ] **The Glazier catalog culture file is owed** (`kits/catalog/krator-master-furniture-glazier.js`, `PLAN.md` section 4): the
+      twelve `glazier_*` pieces are drawn in the kit (`gzLantern`, `gzBrass`, `gzClick`, `gzTeaBoard`, `gzCarpet`, `gzMaskRack`,
+      `gzSeat`, `gzPlaque`, `gzUrn`, `gzGlassBench`, the timetable's gilt frame), not placed through core/furnish; a culture file
+      is a catalog change that reaches every furnished build, best ridden with the all-builds rebuild. The catalog's Tungang and
+      Xanadu pieces in the Glaziers' rooms are at 1.0, not the Tungangs' 0.94.
+- [ ] **The culture id `glazier` is opt-in** (`core/tags/glazier/52g-tags-glazier.js`): fold it into
+      `core/tags/52-core-tags-vocab.js` with the next all-builds rebuild (`TODO.md`), then delete the folder and drop it from
+      `build.py`.
+- [ ] **The Glaziers' rock has no texture**: KCAVERN's rock is drawn in vertex colour (its occlusion), one basalt-rose tint; the
+      Zeijani kit's triplanar rock shader (`kits/zeijani/src/40-zj-cave.js`) is a fork, not core. The library's `hewn` family
+      (`rock.basalt.flowbanded`) dresses the builders' floors and plinths only. Owed with a core rock material for carved pages.
+      The rock costs about 315k triangles on the sheet (the 13 rows' blocks and the scarp, cell 0.5 m).
+- [ ] **The cholet band and the moonglass are owed textures** (`core/materials/PROMPTS-NEEDED.md`: `patterns/glazier/cholet-front`,
+      `glass.moonglass`): the bands are geometry (lozenges in vertex colour) and the panes KGLASS's frosted kind until they come.
+- [ ] **The Glaziers in their script and in the sim**: the plaques' numbers are Latin digits (the Register would be in Xanadu's
+      syllabary, the Book in its old letters); `core/region/data/xan-tune.js` (on the sites branch) has no Glazier site yet:
+      `PLAN.md` section 1.4.1 says what a later step needs.
+- [ ] **The Tungang set merges here later**: Loj Twenny's `TG.tg` (its lamp code, `TG.tg.plan`, `KCITY.cavern` wall sites) and
+      `TG.gz` keep the same void-plan shape, but the lamp code is written twice (`TG.tg.LAMP`, `TG.gz.LAMP`): make it one `TG.LAMP`
+      when the branches meet. The Glaziers' scarp is laid by hand on the sheet; a world lays it on core/city's cavern setting
+      (`KCITY.cavern`, on Loj Twenny's branch) once that is merged.
+- [ ] **No opal valley flora on the scarp**: `biomes/opalvalley` (on the sites branch) has only its plan here; the sample hold
+      stands on bare ground by a plain tarn plane.
+- [ ] **The cut-away shows the stairs' rock as pale wedges**: KCAVERN's rock cut opens each void 2.2 m over its OWN floor, and a
+      stair void's floor is its foot, so the rock over a steep stair's upper half stands as a sloped wedge in the dollhouse view
+      (`core/terrain/host/39h`'s rule, seen on the scarp from above). A per-vertex floor along the flight would fix it in core.
+- [ ] **The sheet's rows run past the engine's ground** (z -880 at the last Glazier row; `GROUND_SIZE` 1600): `91z-gz-sheet.js`
+      carries a ground block on under them.

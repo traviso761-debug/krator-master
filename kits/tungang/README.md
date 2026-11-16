@@ -2,8 +2,9 @@
 
 The culture kit of the Rift's tunnel people, the Tungangs, their kin on the rim and the fells, the Fellgangs, and the
 Glaziers of Opal Valley: **one kit, three sets** on one salvage foundation (`PLAN.md`, the design; its owner's answers
-blocks are the decisions). **Built so far: the Fellgang set (`fg`)**, the fell villages of `PLAN.md` section 3.3.1 (the
-owner, 2026-11-11: "build the fellgang villages now"). The Tungang (`tg`) and Glazier (`gz`) sets come later.
+blocks are the decisions). **Built here: the Fellgang set (`fg`)**, the fell villages of `PLAN.md` section 3.3.1 (the
+owner, 2026-11-11: "build the fellgang villages now"), and **the Glazier set (`gz`)**, the eastern loj of Opal Valley (`PLAN.md`
+sections 1.4, 3.4; 2026-11-16). The Tungang (`tg`) set is on Loj Twenny's branch (`claude/loj-twenny-059a5e`).
 
 - **Page:** `dist/tungang.html` (the kit sheet), its library pack beside it (`dist/tungang.tex.tungang.js`).
 - **Build:** `python3 tools/build.py kits/tungang` (runs `build.py`, records `build-inputs.json`).
@@ -84,6 +85,47 @@ East of the rows **a sample village** laid by `KHAMLET.village` on core/hamlet's
 through `TG.fg.draw`, with a stretch of lantern road, a halt and a wagon; west **a sloped pad** (12 % and 5 %) with five
 buildings on its ground; north-west **a test wall** with a ledge, six families' ropes, wall stations, nest gear and burial ledges.
 
+## The Glazier set
+
+The Glaziers are the eastern loj: the crew who went up the Opal River into the fault and were not absorbed, a thousand years
+apart from the Union (`PLAN.md` 1.4, `LORE.md` 6.13). Their hold is **carved into a fault scarp over the milk-opal tarns**, the
+only Tungang hold with a face to the sky: tiered, battered, whitewashed fronts in the cliff, tapering window cuts under cusped
+arches glazed with **moonglass** (potch, the common opal with no fire, sliced thin), the parapets banded in alecap purple,
+cholet bands in rose, teal and saffron, gilt on the rich (bought with opal), the eight-spoked wheel over the door, the **click
+wheels** (Xanadu's prayer wheels hung with opal chips and frost-willow spicules), Oidong's celadon and the Register's enamel in
+the Order's blue. A Tungang loj underneath: the count wall, the banner, the timetable of the train that never comes, the lamp
+code. The Orientalism is kept light. Culture id `glazier` (opt-in: `core/tags/glazier/`); openings at `TG.SCALE` 0.94.
+
+**A carved def is a front plus a void plan** (`kits/zeijani/PLAN.md` 6.3). The front is the builder's; the rooms are voids
+in the rock, and **the void plan is the one source** (`TG.gz.plan`): the sheet carves the rock from it (KCAVERN), the builder
+draws its floors, whitewash linings, furniture and lamps from it, core/walk takes its floors from it. The frame: the origin at
+the front's foot on the rock face, the front out toward +z, the rooms into the rock at -z (`API.md`, `TG.gz`).
+
+| Key | Tier | What |
+|---|---|---|
+| `gz-cell` | poor | one tier and a door (a trefoil arch, a curtain or a carved leaf); a carved room (hewn or plastered) with a bed shelf, the tea board, the mask rack; a store niche |
+| `gz-front` | middle | two tiers; the hearth room (a drum stove, carpet, tea, bolsters), the sleeping room, the store; a steep timber stair up to the upper room behind tier two, which opens on the terrace |
+| `gz-house` | rich | three or four tiers (by seed): five-lobed arches, gilt, a lattice bay (jharokha), the eight-spoked wheel, a gilt finial; the polished reception room with carpets, bolsters, celadon and the tea copper; the kitchen and the store; the family rooms; the shrine room with its click wheel and opal boss; the top room |
+| `gz-stair` | common | two or three switchback flights up the scarp: masonry from the ground, timber on iron brackets above; white hooded lamps at the landings (the edge) |
+| `gz-wheel-walk` | common | 8 to 12 click wheels in a rock-cut niche row under a carved eave, a parapet on the ledge's edge |
+| `gz-tea-hall` | civic | the loj's meeting hall (12 x 10.4 m, polished, vaulted): the benches down the west wall, the count lamps behind them and the ruled count wall opposite, the steward's carved seat on its dais, the gilt-framed timetable and the banner, the brass urn on its carpet, celadon, the guest benches for monks and clerks; three tiers of front, the guest gallery |
+| `gz-register-room` | civic | the Register of the Veins: one enamel plaque per vein (24 to 47), the hold's own on the front; the claim book, the counting table with its trays of cut stones and balance, the seal; the Fifth's strongroom behind an iron door |
+| `gz-glass-shop` | common | the moonglass workshop: wide windows with the wares, the slicing and polishing benches, the lens lathe, racks of panes, plate frames, the wet trough |
+| `gz-monks-house` | civic | the Order's blue bands; the reading room (low desks, the scroll rack, cushions, butter lamps), the pigment mill (an edge-runner grinding opal spoil), a cell |
+| `gz-adit` | common | a plate-framed portal, the Register's plaque, the amber and the white hooded lamps, the potch spoil heap, the wet-drilling flume from the tarn, timber sets to the lit face |
+| `gz-vein-gallery` | common | a narrow gallery in, a turn and on along a potch line (a pale band at the contact), the wet floor, the lit face with its opal |
+| `gz-dark-adit` | poor | the old mouth behind a wax-cloth curtain and a glow-cap lamp; three kerbed beds of pale fungi and alecap, the spawn trays, the water channel |
+| `gz-lotus-pond` | common | three whitewashed basins stepping down from the face to the tarn, the opal water-lotus, a sluice from the rock, a path of flags |
+
+**States.** kept, worn (greyed, the paint flaking, doors ajar, lamps dimmed, rubble) and abandoned (dark: no lamp lit, the panes
+broken out, the curtains rags, the furniture thinned, the gilt dull): `?state=` or the panel's State select.
+
+**The sheet.** Thirteen Glazier rows, three seeds each, each row in a block of the scarp's rock carved from its plans; east of
+them **a sample scarp hold** in two steps over a tarn: on the lower face the stair, two cells, two household fronts, the
+Register, the glass shop and the dark adit, lotus ponds on the shore; on the ledge (6.8 m) and the upper face an adit, a vein
+gallery, a cell, a rich house, the wheel walk and the tea hall, the monks' house. C (the cut-away) opens the rock 2.2 m over
+every void's own floor.
+
 ## Core adoption
 
 What this set takes (trimmed from `PLAN.md` section 8 to what is built; `python3 tools/check_core_use.py` passes):
@@ -101,8 +143,10 @@ What this set takes (trimmed from `PLAN.md` section 8 to what is built; `python3
 | `core/door` | yes | the plate doors are `KDOOR` records: they open with E on the sheet |
 | `core/host` | yes | camera, panel, inspector, polygon tool, probe |
 | `core/atmos` | yes | the placeholder sky and the skylight on the library materials |
-| `core/walk`, `core/walk/box` | yes | every box a building draws is a floor or a block (`src/37-wk-rec.js`); round walls as arcs of blocks; the doors' blocks switch as they open; F walks the sheet |
-| `core/sockets`, `core/lod`, `core/export`, `core/terrain` (`KCAVERN`), `core/camp`, `core/minimap`, `core/shader` x-ray, `core/hazard`, `kits/ancient-transit`, `kits/motor-vehicles` | not yet | the Tungang set's holds and the Line; the Godot export is a `KNOWN_ISSUES.md` item |
+| `core/walk`, `core/walk/box` | yes | the Glaziers' carved floors from their plans (KCAVERN writes them); every box a building draws is a floor or a block (`src/37-wk-rec.js`); round walls as arcs of blocks; the doors' blocks switch as they open; F walks the sheet |
+| `core/terrain` (`KCAVERN`, `host/39e`, `host/39h`) | yes (the Glazier set) | the Glaziers' rock on the sheet, carved from their void plans (`TG.gz.carve`), its floors to core/walk; the cut-away's rock cut |
+| `core/tags/glazier` | yes, opt-in | the culture id `glazier` |
+| `core/sockets`, `core/lod`, `core/export`, `core/camp`, `core/minimap`, `core/shader` x-ray, `core/hazard`, `kits/ancient-transit`, `kits/motor-vehicles` | not yet | the Tungang set's holds and the Line; the Godot export is a `KNOWN_ISSUES.md` item |
 
 ## Checks
 
@@ -120,8 +164,17 @@ What this set takes (trimmed from `PLAN.md` section 8 to what is built; `python3
 | `plinth-on-slope` | on the sloped pad every floor at its footprint's highest corner, every plinth down to its lowest; the longhouse's byre down-slope there and at +x on the flat | the pad's buildings checked against ground 3 m lower |
 | `fixed-line-follows` | the six ropes: every cable and cordage vertex within 0.12 m of its record, every record point within 0.12 m of the line; pegs and rungs drawn | the records moved 3 m east |
 | `host-api` | `TG.fg.draw` draws every record of the sample village | a record of a key the kit lacks is reported missing |
+| `gz-box-within` | every Glazier site within its box (x within +-w/2, z within [out - d, out], y within h, by 0.5 m) and filling 60 % of w and h, 45 % of d: kept on the rows, worn and abandoned through `TG.gz.proto` | the tea hall measured against the cell's box |
+| `gz-void-plans` | every def's void plan at 8 seeds inside its box, its rooms 0.6 m of rock apart (a working's joined stretches exempt) | 4 m of rock asked between rooms |
+| `gz-rock-carved` | the rows' and the scarp's rock (KCAVERN) open at each site's first room and solid behind its back wall | every site moved 2 km north, off the rock |
+| `gz-lights-by-state` | the kept scarp's lamps as light records (seven kinds of the code), the worn rows' dimmed, the abandoned rows' none | the kept scarp checked as abandoned |
+| `gz-host-api` | `TG.gz.draw` draws every site of the sample scarp | a site of a key the kit lacks is reported missing |
+| `gz-loj-rooms` | the Register's plaques (one per vein and the hold's own), the wheel walks' 8-12 wheels, the tea halls' count wall, timetable, benches and eight count lamps | one plaque more asked of every Register |
+| `gz-walk-carved` | a walker finds the cavern's floor at the hearth room's centre of each household front on the scarp (core/walk from the plan) | a point in the rock behind the hearth room's back wall |
 | `coverage`, `no-nan`, `furniture-keys`, `material-records` | every def drawn; no NaN; every catalog key found; the library records | an unknown def, a NaN mesh, an unknown catalog key |
 
 `node tests/test-bundle.js` runs the sealed bundle without a browser: both riftrim villages (their stations' specs) drawn on a
 slope, the plinth, the hall variants by focus, every key at 8 seeds in three characters within the contract, the ice village
-lower than the Fowlers', a rope, the road pieces, the furnished bundle; each with its negative.
+lower than the Fowlers', a rope, the road pieces, the furnished bundle; the Glaziers' plans inside their boxes and their rooms
+apart, every Glazier key at 8 seeds in three states within its box, a small scarp carved from the plans (KCAVERN in node) and drawn
+lit kept and dark abandoned; each with its negative.
