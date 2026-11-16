@@ -28,7 +28,7 @@ year's harvest and last to the first harvest's end (clock day 306).
 - a road's `stops`: a round of three or more.
 
 The Sultanate's tune then changed in three ways:
-- **The gateways enter at their staging towns.** The caravans start at the gateway, so the first salt lands within its first passage. The Catch's caravans come in at Strongbow, and their salt goes inward by Kirstabal to Qiblai for the south. Yuni's come in at Thalaba, and their salt goes by Phēr to the capital for the north. Dalab's caravan lands at the capital.
+- **The gateways enter at their staging towns.** The caravans start at the gateway, so the first salt lands within its first passage. The Catch's caravans come in at Strongbow, and their salt goes inward by Kirstabal to Qiblai for the south. ~~Yuni's come in at Thalaba, and their salt goes by Phēr to the capital for the north.~~ **Changed 2026-11-16 (the owner: "I don't think Thalaba should be a Yuni terminus"):** Yuni's come in at Strongbow with the Catch's, by Stair and the Twins. The north's salt comes with Dalab's Great Caravan, which lands it at the capital at the winter's start; from there it goes out by the lake to Phēr and up to Thalaba.
 - **The lake's four market-boat rounds** call at every shore town. The lake's households now buy the market's wares (pots, mats, honey), so the boats carry them round as a relay.
 - **Salt** is 8.1% short in the first year (from 38%).
 
@@ -385,7 +385,18 @@ Each step ends in a node test on the valley host, with a negative for each check
         - Their house at Thalaba sends the camp out. It works the vents in the expedition season; its sulfur, wax and rarities go home to that house and out by Yuni's caravans.
         - The Sultan's licence fee is 10 % of the rarities.
         - They also keep a factor in the capital.
-    - **Thalaba moved** (the owner: "we can move thalaba to the mouth of godshearth and put a new village on the lake in its place"). It moves from the lake's north shore (825,1488) to the bench where Godshearth's spillway gorge opens (840,1463, about 1,550 m), as a town of 2,400. It makes the vents' sulfur, its terraces grow half its grain, and it stays the Yuni caravans' staging town, 3-4 days up from Phēr. Ōlḍ-Thalaba, a fishing village of 600, takes its place on the shore and in the north-east market round. The map's pins are queued with the scale-model session.
+    - **Thalaba moved** (the owner: "we can move thalaba to the mouth of godshearth and put a new village on the lake in its place"). It moves from the lake's north shore (825,1488) to the bench where Godshearth's spillway gorge opens (840,1463, about 1,550 m), as a town of 2,400. It makes the vents' sulfur, and its terraces grow half its grain. It is 3-4 days up from Phēr and no longer a caravan terminus (see the Great Caravan, below). Ōlḍ-Thalaba, a fishing village of 600, takes its place on the shore and in the north-east market round. The map's pins are queued with the scale-model session.
+    - **The Great Caravan** (the owner: "the great caravan will leave in the spring from Xanadu every year, go to south Dalab for the summer visiting Blakhed, Nulab, and Shelf, then return in the fall, spending the winter in Xanadu visiting Erewhon, Theodiga, and Qiblai").
+      - `caravan.great` is one carrier on a round of seven stops, about 52 days a leg: Shelf, then Erehwon (year day ~311), Theodiga (~3), Qiblai (~55), back to Erehwon in the spring (~107), Blakhed (~159), Nulab (~211) and Shelf again (~263).
+      - The three Dalab towns are off the map. Blakhed takes the exports (now with the vents' sulfur, wax and rarities); Shelf holds Dalab's salt, iron, wine and pearls.
+      - The exports load at the capital in the spring, where the roads gather them. A round buys at each stop only what the next one wants, and a town that eats a good keeps it.
+      - The Golden Tears' escort and the Two Horns' margin are cut where it lands at the capital.
+      - The rarities the Godshearth camp brings home in summer leave with the next spring's caravan.
+    - **The Order's monastery at Qiblai** (the owner, a proposal: "one of the monasteries of Qiblai (and therefore of the Prismatic Council) is a History Monk monastery, and uses the Order's banner and color. as such the order gets 1/8 of the council income").
+      - `qb.order` is one of the eight great monasteries: about 300 of Qiblai's monks, faction `order`, its Prismarch on the council.
+      - *Proposed:* the saffron one, since LORE.md says "their saffron is the Order's colour".
+      - It takes an eighth of the council's income in two parts: of the Prismarchy's oil, a `cut` where it lands; and of the Sultan's grants of esteem, `esteem.qiblai.order`.
+      - The Qiblai kit session has the building side.
     - The houses and the camp places are *proposed*. Beyond the owner's words there is no lore for the Tears or the Devisers yet, and the camps' pixels are approximate.
 - **X3. The gateways.**
   - The three gateway markets as off-map stores priced by PLAN-MONEY's M2 scarcity prices.

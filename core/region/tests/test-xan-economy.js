@@ -26,8 +26,8 @@ console.log('a year of the Sultanate in '+secs.toFixed(1)+' s: '+Y.S.order.lengt
 const people=Y.V.settlements.filter(s=>s.people>0);
 // 1. declared: the towns, the eight countrysides, the lake towns and islands, the rings, the camps, the forts, the gateways
 {const ids=Y.S.order,cnt=re=>ids.filter(s=>re.test(s)).length;
- T.ok('the Sultanate declared: 8 countrysides, 24 lake towns and islands, 12 ring villages, 5 gateways, no problems',
-  cnt(/^prov\./)===8&&cnt(/^lk\./)===24&&cnt(/hamlet|\/|farm-|ranch-/)>=0&&cnt(/^gate\./)===5&&!Y.S.problems.length,
+ T.ok('the Sultanate declared: 8 countrysides, 24 lake towns and islands, 12 ring villages, 4 gateways and the Great Caravan\'s 3 Dalab towns, no problems',
+  cnt(/^prov\./)===8&&cnt(/^lk\./)===24&&cnt(/hamlet|\/|farm-|ranch-/)>=0&&cnt(/^gate\./)===7&&!Y.S.problems.length,
   ids.length+' settlements; problems: '+(Y.S.problems.slice(0,3).join('; ')||'none'));
  T.neg('a road to a settlement that is not declared is a problem the host reports',
   V=>{const H=load();return H.simValley(V).problems.length===0;},
@@ -66,7 +66,8 @@ const lakeCheck=Bk=>{const lk=Object.keys(Bk).filter(s=>/^lk\./.test(s)),hungry=
 // 7. the gateways: salt and iron in, the country's goods out, never grain. The salt runs short until the caravans from the
 // north are built (the owner, 2026-11-16: "we should expect salt to be short before caravans from the north are properly
 // implemented": X1's staged roads and X3's priced gateways); the shortfall is reported, not held
-const gateCheck=Tr=>{const inn={},out={};Object.keys(Tr).filter(k=>/^trade\.gate/.test(k)).forEach(k=>{const L=Tr[k].landed||{};Object.keys(L).forEach(leg=>{const [a]=leg.split('>');const to=/^gate\./.test(a)?inn:out;Object.keys(L[leg]).forEach(g=>{to[g]=(to[g]||0)+L[leg][g];});});});
+const gateCheck=Tr=>{const inn={},out={};Object.keys(Tr).filter(k=>/^trade\.gate|^caravan\.great$/.test(k)).forEach(k=>{const L=Tr[k].landed||{};Object.keys(L).forEach(leg=>{const [a,b]=leg.split('>');if(!/^gate\./.test(a)&&!/^gate\./.test(b))return;   /* the Great Caravan's winter legs are inside Xanadu */
+  const to=/^gate\./.test(a)?inn:out;Object.keys(L[leg]).forEach(g=>{to[g]=(to[g]||0)+L[leg][g];});});});
  return{ok:(inn.salt||0)>0&&(inn.iron||0)>0&&['goldwork','cacao','opium','tea','silk'].every(g=>(out[g]||0)>0)&&!out.grain&&!inn.grain,inn,out};};
 {const G=gateCheck(Y.trade),saltEaten=people.reduce((n,s)=>n+(B[s.id].eaten.salt||0),0),saltShort=people.reduce((n,s)=>n+(B[s.id].hungry.salt||0),0);
  T.ok('the gateways: salt and iron in, goldwork, cacao, opium, tea and silk out, never grain (the salt\'s shortfall reported)',G.ok,
@@ -105,11 +106,11 @@ const scaleCheck=Bk=>XAN_TUNE.provinces.every(Pv=>{const m=(Bk['prov.'+Pv.id].ma
  T.ok('the countrysides at '+XAN_TUNE.scaleBulk+' people an actor make the grain their arithmetic says',S2===8&&scaleCheck(B),
   XAN_TUNE.provinces.map(Pv=>Pv.id+' '+t(B['prov.'+Pv.id].made.grain||0)+'/'+t(Pv._made)).join(', '));
  T.neg('a countryside that made half its grain is caught',scaleCheck,Object.assign({},B,{'prov.p2':Object.assign({},B['prov.p2'],{made:{grain:(B['prov.p2'].made.grain||0)/2}})}),B);}
-// 14. the gateways at their staging towns: the Catch's salt lands at Strongbow and goes in by Kirstabal to Qiblai; Yuni's
-// at Thalaba and goes in by Phēr to the capital
+// 14. the gateways at their staging towns: the Catch's and Yuni's salt lands at Strongbow and goes in by Kirstabal to Qiblai;
+// the Great Caravan's lands at the capital at the winter's start and goes out by the lake to Phēr and up to Thalaba (2026-11-16)
 const stageCheck=Bk=>(Bk.sfgtxw10kr.imported.salt||0)>0&&(Bk.sl758m2396.imported.salt||0)>0&&(Bk.skm4jjo2vl.imported.salt||0)>0&&(Bk['xan.thalaba'].imported.salt||0)>0&&(Bk['xan.pher'].imported.salt||0)>0&&(Bk[E].imported.salt||0)>0;
 {const saltEaten=people.reduce((n,s)=>n+(B[s.id].eaten.salt||0),0),saltShort=people.reduce((n,s)=>n+(B[s.id].hungry.salt||0),0);
- T.ok('the gateways stage at Strongbow and Thalaba: the salt goes inward to Qiblai and the capital',stageCheck(B),
+ T.ok('the gateways stage at Strongbow and the capital: the salt goes in to Qiblai, and out from the capital to Phēr and Thalaba',stageCheck(B),
   'salt into Strongbow '+t(B.sfgtxw10kr.imported.salt||0)+', Qiblai '+t(B.skm4jjo2vl.imported.salt||0)+', Thalaba '+t(B['xan.thalaba'].imported.salt||0)+', the capital '+t(B[E].imported.salt||0)+
   '; the country '+(100*saltShort/Math.max(1,saltEaten+saltShort)).toFixed(1)+' % short of salt in its first year');
  T.neg('salt that never got past Strongbow is caught',stageCheck,Object.assign({},B,{skm4jjo2vl:Object.assign({},B.skm4jjo2vl,{imported:Object.assign({},B.skm4jjo2vl.imported,{salt:0})})}),B);}
@@ -139,12 +140,13 @@ const oilCheck=(Bk,Tr)=>{const made=Bk['geo.oilfield'].made.oil||0,lic=Object.ke
   'made '+t(O.made)+', the licence '+t(O.lic)+', out by the Geomancers\' caravans '+t(O.out));
  T.neg('a licence of two fifths is caught',x=>oilCheck(x.B,x.T).ok,{B,T:Object.assign({},Y.trade,{'oil.licence':{tithed:{'x':{oil:O.made*.4}}}})},{B,T:Y.trade});}
 // 18. the Rare Devisers' Godshearth expedition: the camp's sulfur, wax and rarities made only in the expedition season,
-//     landed at their house at Thalaba, and out by Yuni's caravans
+//     landed at their house at Thalaba; the vents' sulfur out to Dalab with the Great Caravan (2026-11-16: no longer Yuni's from
+//     Thalaba). The camp's rarities come home in the summer, after the caravan has left Qiblai, so they go out the next spring
 const landed=(r,leg)=>((Y.trade[r]||{}).landed||{})[leg]||{};
-const devCheck=(xp,L,O)=>(xp.made.sulfur||0)>50000&&(xp.made.wax||0)>20000&&(xp.made.rarities||0)>30&&(L.sulfur||0)>0&&(L.rarities||0)>0&&(O.rarities||0)>0;
-{const xp=B['exp.godshearth'],L=landed('expedition.godshearth','exp.godshearth>devisers.thalaba'),O=landed('trade.gate.yuni','xan.thalaba>gate.yuni');
- T.ok('the Rare Devisers\' Godshearth expedition: sulfur, wax and rarities from the vents in its season, home to their house at Thalaba, out by Yuni\'s caravans',devCheck(xp,L,O),
-  'made sulfur '+t(xp.made.sulfur||0)+', wax '+t(xp.made.wax||0)+', rarities '+Math.round(xp.made.rarities||0)+'; landed at the house sulfur '+t(L.sulfur||0)+', rarities '+Math.round(L.rarities||0)+'; out to Yuni rarities '+Math.round(O.rarities||0)+', sulfur '+t(O.sulfur||0));
+const devCheck=(xp,L,O)=>(xp.made.sulfur||0)>50000&&(xp.made.wax||0)>20000&&(xp.made.rarities||0)>30&&(L.sulfur||0)>0&&(L.rarities||0)>0&&(O.sulfur||0)>0;
+{const xp=B['exp.godshearth'],L=landed('expedition.godshearth','exp.godshearth>devisers.thalaba'),O=landed('caravan.great','s57bkv9741>gate.dalab.blakhed');
+ T.ok('the Rare Devisers\' Godshearth expedition: sulfur, wax and rarities from the vents in its season, home to their house at Thalaba; the sulfur out with the Great Caravan',devCheck(xp,L,O),
+  'made sulfur '+t(xp.made.sulfur||0)+', wax '+t(xp.made.wax||0)+', rarities '+Math.round(xp.made.rarities||0)+'; landed at the house sulfur '+t(L.sulfur||0)+', rarities '+Math.round(L.rarities||0)+'; out to Dalab sulfur '+t(O.sulfur||0)+', rarities '+Math.round(O.rarities||0));
  T.neg('an expedition that brought nothing home is caught',x=>devCheck(xp,x,O),{},L);}
 // 18b. the Rare Devisers' royal licence (the owner, 2026-11-16: "their main guild house at Theodiga; they are royally licensed
 //      in the scrap and rare artifact trade"): every kilo of the Salvagers' scrap through their guild house, sold on to the
@@ -177,6 +179,28 @@ const elecCheck=(Bk,Tr,made)=>{const towns=['skm4jjo2vl'].concat(Object.keys(XAN
  T.ok('the power: Qiblai lit by the Prismarchy\'s cut of the oil, the large towns\' avenues and richest homes by the Sultan\'s licence, each town\'s power used all year',E.ok,
   E.bad.join(', ')||(E.towns+' towns lit, '+Math.round(E.used/1000)+' MWh used; the council\'s oil '+t(E.council)+', the licence '+t(E.lic)+' of '+t(made)));
  T.neg('a town whose generator went dry is caught',x=>elecCheck(x,Y.trade,made).ok,Object.assign({},B,{sl758m2396:{eaten:{},hungry:{power:1e5}}}),B);}
+// 21. the Great Caravan (the owner, 2026-11-16): leaves Xanadu in the spring, summers in south Dalab (Blakhed, Nulab, Shelf),
+//     returns in the fall and winters in Xanadu (Erehwon, Theodiga, Qiblai). Its arrivals in year days from the clock's
+//     opening (year day 259) and its leg time; the salt landed at the capital and the exports at Blakhed
+const greatCheck=(Rd,Tr)=>{const y0=XAN_TUNE.yearDay0,d=Rd.minutes/1440,arr=Rd.stops.map((s,i)=>[s,Math.round((y0+d*i)%365)]);
+ const inWin=(yd,w)=>w[0]<=w[1]?yd>=w[0]&&yd<=w[1]:yd>=w[0]||yd<=w[1],winter=[300,120],summer=[130,280];
+ const bad=arr.slice(1).concat([[Rd.stops[0],Math.round((y0+d*Rd.stops.length)%365)]]).filter(([s,yd])=>!inWin(yd,/^gate\.dalab/.test(s)?summer:winter)).map(([s,yd])=>s+'@'+yd);
+ const L=(Tr['caravan.great']||{}).landed||{},salt=(L['gate.dalab.shelf>s57bkv9741']||{}).salt||0,ex=L['s57bkv9741>gate.dalab.blakhed']||{};
+ return{ok:!bad.length&&salt>0&&Object.keys(ex).filter(g=>ex[g]>0).length>=3,bad,arr,salt,ex};};
+{const Rd=Y.V.roads.find(r=>r.id==='caravan.great'),G=greatCheck(Rd,Y.trade);
+ T.ok('the Great Caravan: winters in Xanadu (Erehwon, Theodiga, Qiblai), leaves in the spring, summers in south Dalab (Blakhed, Nulab, Shelf), returns in the fall; salt in at the capital, Dalab\'s goods out at Blakhed',G.ok,
+  (G.bad.length?'out of season: '+G.bad.join(', ')+'; ':'')+'arrivals (year day) '+G.arr.slice(1).map(([s,yd])=>s.replace('gate.dalab.','')+' '+yd).join(', ')+'; salt landed at the capital '+t(G.salt)+'; out at Blakhed '+Object.entries(G.ex).map(([g,n])=>g+' '+(n>1000?t(n):Math.round(n))).join(', '));
+ T.neg('a caravan that summers in Xanadu is caught',r=>greatCheck(r,Y.trade).ok,Object.assign({},Rd,{stops:Rd.stops.slice(3).concat(Rd.stops.slice(0,3))}),Rd);}
+// 22. the Order's monastery at Qiblai (the owner, 2026-11-16, a proposal): one of the council's eight great monasteries is
+//     the History Monks', and the Order takes an eighth of the council's income: of the Prismarchy's oil where it lands,
+//     and of the Sultan's grants of esteem
+const orderCheck=(C,X,Tr)=>{const oil=(C['xan.citadel:oil']||0)*0+Object.keys(C).filter(k=>k==='qb.order:oil').reduce((n,k)=>n+C[k],0),
+  landed=((Tr['oil.council']||{}).landed||{})['geo.oilfield>skm4jjo2vl']||{},est=X['esteem.qiblai.order']||{};
+ const k=XAN_TUNE.orderHouse.share;return{ok:oil>0&&Math.abs(oil/Math.max(1,landed.oil||0)-k)<.03&&est.times===1,oil,landed:landed.oil||0,est};};
+{const C=(Y.cuts['oil.council']||{taken:{}}).taken,O=orderCheck(C,Y.xfer,Y.trade);
+ T.ok('the Order\'s monastery at Qiblai: an eighth of the Prismarchy\'s oil and of the Sultan\'s grants of esteem',O.ok,
+  'oil to the Order '+t(O.oil)+' of '+t(O.landed)+' landed for the council; esteem '+(O.est.times||0)+'x: '+Object.entries(O.est.sent||{}).map(([g,n])=>g+' '+Math.round(n)).join(', '));
+ T.neg('an Order that took a quarter is caught',x=>orderCheck(x,Y.xfer,Y.trade).ok,{'qb.order:oil':O.landed/4},C);}
 // the year's books, for the reader
 const line=(s,k)=>Object.entries(B[s][k]||{}).filter(([g,n])=>n>=1).map(([g,n])=>g+' '+(n>=1000?t(n):Math.round(n))).join(', ');
 ['s57bkv9741','xan.citadel','skm4jjo2vl','s4zvgepuru','sxan7r1sln'].forEach(s=>console.log('\n'+s+': made '+line(s,'made')+'\n  imported '+line(s,'imported')+'\n  exported '+line(s,'exported')));
