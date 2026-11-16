@@ -89,7 +89,7 @@ melt-sheet margin, `nickel` 220, runs along the inner foot of every wall)
   `crest` formation) where the province is `impact`: chaotic blocks of every rock in a darker matrix, pseudotachylite
   veins (black glassy seams), shatter cones on fresh faces. The 5.1 model's slump terraces and "fault mirrors" are
   already in the heights, so this is a strata and ground change, not a terrain one.
-- `clifflung` (the S inner wall's face over the hyperjungle) and `swhighlands`' crest: **agree** (megabreccia is
+- `clivobredos` (the S inner wall's face over the hyperjungle) and `swhighlands`' crest: **agree** (megabreccia is
   already the crest recipe). The Cliff Lungs' face should read as megabreccia between the lungs.
 - **Settlements at a wall's foot now sit on the nickel ring**: Voth, Spirladunon, Torus, Pylon (the S inner wall), and
   the e savannah, se savannah and ne rims. No kit changes until there is a nickel node kind; when there is, those

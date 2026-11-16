@@ -72,6 +72,18 @@
    "bytes": 9659137,
    "sha256": "a2912bbf277a15c176a0e81a8de5c7be5e41b875f67d481e6b326a454de1267c"
   },
+  "biomes/clivobredos/dist/clivobredos-bells.html": {
+   "bytes": 8608961,
+   "sha256": "1b6beddf2001bc445fea74631abd3da528f9f7541b924a7b819e1cce30c7b214"
+  },
+  "biomes/clivobredos/dist/clivobredos-stair.html": {
+   "bytes": 7363158,
+   "sha256": "ba06c4adad75cdc7d2a7484ac07856daa7b0c03358f5a8f2a34ce7248d465a20"
+  },
+  "biomes/clivobredos/dist/clivobredos.html": {
+   "bytes": 7357161,
+   "sha256": "d918ae66b28a6dc42526f068838548a3ef8dc296ad57cac8216695b38bd5b3d4"
+  },
   "biomes/copperglacier/dist/copperglacier-icefield.html": {
    "bytes": 5161446,
    "sha256": "cfc9ecad97e09e269591fa79bdb32c15de4ef5be72c2ce2c52fefbc88c6f24e2"

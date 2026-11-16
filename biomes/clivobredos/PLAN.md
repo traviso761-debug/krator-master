@@ -1,4 +1,4 @@
-# clifflung: the plan (proposal, 2026-11-02)
+# clivobredos: the plan (proposal, 2026-11-02)
 
 **The Cliff Lungs of the southern Inner Wall**: living flues, colonies hundreds of rings long, that lie against the
 Wall's north-facing scarp from the hyperjungle's cloud sea at its foot to the paramo at its crest, and breathe the jungle's
@@ -16,7 +16,7 @@ site stands as a band kit; the Talovolci's stairs, wells and omen stand; the lun
 the Wall; the yield stands; **nothing glows** (the mote lamp is struck); the spiral rule reaches native life, so the
 right-handed helix and the mirror lung stand; the scarp goes into the next scale model update; **Spirladunon** is the current
 name of the place the lore called Daridel; the **Talovolci are the Crag Men** of the old polygon. Working names throughout:
-the kit's name (`clifflung`), the species' and the people's words are placeholders for the owner's or the Talovolci's. The sister proposal is the Gills
+the kit's name (`clivobredos` since 2026-11-11, the Talovolci's word; it was `clifflung`), the species' and the people's words are placeholders for the owner's or the Talovolci's. The sister proposal is the Gills
 (`biomes/gills/PLAN.md`, branch `claude/alien-biome-proposal-fb0a42`): this plan takes its form and its trend table, and
 deliberately not its mechanism (the Gills are a tide of gas through rock; the lungs are a convection of wet air through
 a body). Where this plan says "the Gills' digest", it means the two subagent digests of every biome's notes that fed that
@@ -26,8 +26,8 @@ plan's section 2 (2026-11-01), summarised there.
 
 | | |
 |---|---|
-| Folder | `biomes/clifflung/` (`src/`, `stations/`, `build.py`, `verify.py`, `materials.json`, `tex/`, `refs/`, `BIOME-API.md`, `NOTES.md`, `KNOWN_ISSUES.md`, `PORT.md`) |
-| Pages | stations, as the Throne's and Korona's (`build.py --station <name>`): `dist/clifflung.html` (station 1, the Mouths) and `dist/clifflung-<name>.html` (section 11) |
+| Folder | `biomes/clivobredos/` (`src/`, `stations/`, `build.py`, `verify.py`, `materials.json`, `tex/`, `refs/`, `BIOME-API.md`, `NOTES.md`, `KNOWN_ISSUES.md`, `PORT.md`) |
+| Pages | stations, as the Throne's and Korona's (`build.py --station <name>`): `dist/clivobredos.html` (station 1, the Mouths) and `dist/clivobredos-<name>.html` (section 11) |
 | Region on the model | **no new polygon.** The kit is a *band kit* on the `s highlands` polygon's north edge, where it meets `hyperjungle S` and `savage hyperjungle`: the scarp's face from about 300 m to about 3,400 m, px ~745-930 by 1022-1060 on the 5.1 canvas (section 5). The `shighlands` kit keeps the polygon; the lungs are a layer on its face, as `dambasins` is an overlay on the north basin |
 | Object | `LUNG` (`build`, `dress`, `SPECIES`, `PLANTS`, `HARVEST`, `byKey`, `breath`, `flues`) on the `BIOME-API.md` contract (the Throne's and sedesert's shape); `LUNG.breath(t, W)` is the one pure function of the clock and the weather that every shader, hazard, animal and the cloud deck's edge read (section 3) |
 | Core | `biome`, `rand`, `tags`, `space`, `hazard`, `host`, `atmos` (the shared sky, the weather, **the cloud deck**), `water` (springs, wet ground, falls), `terrain` (`KFIELD` with an inset on the face, `KCAVERN` for the bores, `KSTRATA` `megabreccia`/`crest`, `KRELIEF`, `KGROUND`, `KFAR`, `KHORIZON`, `KFROST`), `clock`; section 13 |
@@ -482,7 +482,7 @@ noon, dusk, the winter night). `LUNG.breath(t, W)` in -1..1 (the noon draw 1, da
 drives the mist, the cap clouds, the sphincters, the fringes, the collars' drip, the film's sheen band, the hazards and
 the flue-riders together; the weather's wet and the season set its amplitude.
 
-1. **The Mouths** (`dist/clifflung.html`, px 790,1048: 3,001 m, 1.10 atm, +9 degC (21/-2), 925 mm, Dfb; the paramo's lip).
+1. **The Mouths** (`dist/clivobredos.html`, px 790,1048: 3,001 m, 1.10 atm, +9 degC (21/-2), 925 mm, Dfb; the paramo's lip).
    A 5.2 km map on the crest: the lip running east-west, the face falling north through the cloud deck, four live mouths
    and a husk's top on the lip, their wells and collars, the fall-out lawns running away south-east, dew coils and rime
    caps at the lawns' edges, a Talovolci hamlet's site (published, not built) at the greatest mouth, the paramo's
@@ -716,6 +716,6 @@ talovolci are the same as the 'crag men'". Taken question by question:
 Lore facts applied: **Spirladunon** is the current name of the place the lore called Daridel (the model's marker at 800,1017
 is right); the **Talovolci are the Crag Men** (the old polygon name is theirs).
 
-Still open: the kit's own name (the Talovolci's *Clivobređos* suggests `clivobredos` or `bredos` if the owner wants the
-tongue's word for the folder); whether the next model update's scarp takes the whole southern stretch (px 745-930) or
+Settled since (the owner, 2026-11-11): the folder is `clivobredos`, the Talovolci's word (it was `clifflung`; built under that name on
+branch `claude/clifflung-biome` and renamed). Still open: whether the next model update's scarp takes the whole southern stretch (px 745-930) or
 the stations' middle first.

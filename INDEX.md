@@ -66,6 +66,7 @@ Every build is a folder with `src/` fragments and a `build.py`. Open a build's `
 | [`biomes/abyssal-savannah`](biomes/abyssal-savannah/INDEX.md) | 14 | 101 | 23 | Biome kit: see `biomes/README.md`. |
 | [`biomes/ancientsvalley`](biomes/ancientsvalley/INDEX.md) | 31 | 363 | 55 | Biome kit: see `biomes/README.md`. |
 | [`biomes/catch`](biomes/catch/INDEX.md) | 21 | 102 | 15 | Biome kit: see `biomes/README.md`. |
+| [`biomes/clivobredos`](biomes/clivobredos/INDEX.md) | 16 | 90 | 20 | The Cliff Lungs (biomes/clivobredos/PLAN.md): living flues up the southern Inner Wall from the cloud sea to the paramo; stations the Mouths, the Bells, the Stair. |
 | [`biomes/copperglacier`](biomes/copperglacier/INDEX.md) | 16 | 85 | 17 | Biome kit: see `biomes/README.md`. |
 | [`biomes/crater-drylands`](biomes/crater-drylands/INDEX.md) | 16 | 191 | 46 | Biome kit: see `biomes/README.md`. |
 | [`biomes/cut`](biomes/cut/INDEX.md) | 19 | 125 | 14 | Biome kit: see `biomes/README.md`. |
