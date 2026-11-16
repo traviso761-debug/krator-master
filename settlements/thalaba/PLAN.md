@@ -160,7 +160,15 @@ The town is about **1.5 km by 1 km** on the spring line at the riser's foot, at 
   where it leaves its lower gorge (822.7,1480); 34 km up the valley to its head (826.7,1463.6, 1,198 m), the steep part between
   rows 1470 and 1468 by the second fall; then 27 km east along the bench, over a rise of about 1,515 m (833.5,1463.5), into the
   town by its west gate;
-- the **expedition road**, leaving north up the riser to the mouth.
+- the **expedition road**, leaving north up the riser to the mouth;
+- and, besides the two roads, **the mule path to Phēr** (the owner, 2026-11-16: "Yes, a mule path"): the short way down,
+  straight south from the town's south gate across the bench and down the scarp, for pack mules and walkers, not carts.
+  About 60 km against the Qol road's 105, traced on the re-made lake's heights (5f659c054) at a 7 % ruling grade: across the
+  bench on x 840 to its edge (1,220 m at 840,1469.5), down the scarp along x 840-842.5 (1,140 m to 160 m in about 14 km, in
+  zig-zags where it passes 7 %, at 840,1471 and 841,1472.5), due south across the plain on x 841.5 to the caldera's rim
+  (about −20 m, 841.25,1488.25) and down Phēr's wall into the town (843,1491). Its line in px: 840,1463; 840,1470.5;
+  840.5,1471.5; 841.5,1473; 842.5,1475; 842.5,1477; 841.5,1479; 841.5,1487; 841.25,1488.25; 841.75,1489.75; 843,1491.
+  *Proposed:* two days for a mule train against the road's four; the carts and the sim's road stay on the Qol road.
 
 **The town:**
 - **The market square** stands where the two roads meet: the Devisers' house on its north-east side (toward the gorge), the
@@ -363,15 +371,11 @@ tea and tools. All of these are already on `road.pher-thalaba`.
 1. ~~**The Sultan's share.**~~ **20 % of the rarities in all, not 30 %; it falls on the Dalab party's haul too.**
 2. ~~**The Dalab party's haul.**~~ **Yes: hearth seed and specimens for Dalab, home with the Great Caravan.**
 
-**Still open (2026-11-16):**
-1. **A mule path straight up the scarp?** The Phēr road is the owner's, up the Qol valley (about 105 km, 4 days). A direct
-   line north from Phēr up the scarp under the bench was traced on the re-made lake's heights (5f659c054) at a 7 % ruling
-   grade: about 60 km, from Phēr up its wall to the caldera's rim, due north across the plain on x 841.5 to the scarp's foot,
-   up the scarp along x 840-842.5 (160 m to 1,140 m in about 14 km, winding at 841,1472.5 and 840,1471), onto the bench at
-   840,1469.5 and into the town from the south (its px line: 843,1491; 841.25,1488.25; 841.5,1479; 842.5,1477; 842.5,1475;
-   841.5,1473; 840.5,1471.5; 840,1470.5; 840,1463). Should it exist as a steep mule path (not the carts' road), or not at all?
+**Answered 2026-11-16** (the fourth round):
+1. ~~**A mule path straight up the scarp?**~~ **Yes, a mule path** (section 3): the short way to Phēr for mules and walkers,
+   beside the owner's Qol road for the carts.
 
-Besides that, what is left is the work of section 6, and the found-on-the-way items of section 8 for
+**Still open:** none from this plan. What is left is the work of section 6, and the found-on-the-way items of section 8 for
 the sessions that own them.
 
 ## 8. Found on the way (for the sessions that own them; not changed here)

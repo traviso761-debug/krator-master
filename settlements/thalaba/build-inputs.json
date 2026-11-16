@@ -245,7 +245,7 @@
     "settlements/thalaba/targets/pieces/89z-rows.js": "a8badac9c41881cad575df304671f54b569e04055e02398742f7937518fda138",
     "settlements/thalaba/targets/pieces/91z-views.js": "54ce6ddb65dcbf77a93c54d27936e017631136410a5589cca04a7dad1b4dcecc",
     "settlements/thalaba/targets/town/89z-rows.js": "d58bac824960e4a521cca5109da7d995250e3c1e2cbfc5d69c66a0e7154582dc",
-    "settlements/thalaba/targets/town/89zt-tb-site.js": "ddcab7f72f68fab2f6bba979140ab17493b21848b0f03979e3ea1e75e049c472",
+    "settlements/thalaba/targets/town/89zt-tb-site.js": "800dc73f986ac85ae13c3cfca921d05af677e5e306b09ec6076303a7441b9e14",
     "settlements/thalaba/targets/town/90q-tb-world.js": "1237f536e9e0afc10670c2b8d3ba2f517dec0aadf5ae83f2220c6fb46789a47a",
     "settlements/thalaba/targets/town/90r-tb-build.js": "6827e6c02c6eed1a5ae34989329e0eb1b4163529518e46a0e83f4f1efc0eee11",
     "settlements/thalaba/targets/town/90w-tb-water.js": "4d98e4301a0026a7eb33e9d33aabb5ee025d804f44c8a3cab7dfa0ffa7aad8db",
@@ -479,17 +479,17 @@
    },
    "outputs": {
     "settlements/thalaba/build-manifest-pieces.json": "c7a50f63cc2ee5f26eabb4a44c21638c1cd7607c4c734365d77cd8ff14cf232d",
-    "settlements/thalaba/build-manifest-town.json": "99dd4164d8de4cff4cb363a9719b5596709a7eeee44b537b35011d9c1f6ac68c",
+    "settlements/thalaba/build-manifest-town.json": "a0402ddc42721983fd98ca9eeb82ae7acd22b4a3d147af618126b9cd96dc68d3",
     "settlements/thalaba/dist/thalaba-pieces.html": "1f128fcd977550d302614b15ff72de10cacffec1b1c13cc42d4fea732483d19d",
-    "settlements/thalaba/dist/thalaba.html": "f910a455f782a2aa6f81e97c27ab8965bd0a23c391f911c285b892fc35cf2b1c",
+    "settlements/thalaba/dist/thalaba.html": "dedfb80eb4177af905483ca2a49480fd8cc57d727fd5ec86b22f0ddf0e16d23a",
     "settlements/thalaba/dist/xanadu.tex.xanadu-2.js": "be1d57f174e08cf71b5511aff65a313eec8edc29e057c48d027e9b60630f3ab5",
     "settlements/thalaba/dist/xanadu.tex.xanadu.js": "3fe87059ee305d523fa5026dddfd91123354e88d5839097de9df44137500f2a4"
    },
    "outputs_raw": {
     "settlements/thalaba/build-manifest-pieces.json": "e9ca147a0138e43a8d2bafa3e8c6571e8a83edb1fc532f63434fbd1a37efcc6b",
-    "settlements/thalaba/build-manifest-town.json": "828f8de220585c8a4231205c5a0343c5ae56bf82adf031aaaa8b50ace11c716d",
+    "settlements/thalaba/build-manifest-town.json": "c58868cf387128e10f0ddfda2bf675d2629b4cbdb30d328d007098d9c32c2902",
     "settlements/thalaba/dist/thalaba-pieces.html": "1f128fcd977550d302614b15ff72de10cacffec1b1c13cc42d4fea732483d19d",
-    "settlements/thalaba/dist/thalaba.html": "f910a455f782a2aa6f81e97c27ab8965bd0a23c391f911c285b892fc35cf2b1c",
+    "settlements/thalaba/dist/thalaba.html": "dedfb80eb4177af905483ca2a49480fd8cc57d727fd5ec86b22f0ddf0e16d23a",
     "settlements/thalaba/dist/xanadu.tex.xanadu-2.js": "be1d57f174e08cf71b5511aff65a313eec8edc29e057c48d027e9b60630f3ab5",
     "settlements/thalaba/dist/xanadu.tex.xanadu.js": "3fe87059ee305d523fa5026dddfd91123354e88d5839097de9df44137500f2a4"
    }

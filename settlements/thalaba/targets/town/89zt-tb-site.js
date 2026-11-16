@@ -25,13 +25,13 @@ function tbModel(x,z){const N=TB_GROUND.near,f=tbBil(TB_GROUND.far,TB_FAR,x,z),e
 // ---------------------------------------------------------------- the ways (core/city lays them below; the ground reads them too)
 // the main roads: the Phēr road from the west (up the Qol Siṭrīm's valley to its head, then east onto the bench), the road east
 // to the Bēnch's farms, the expedition road north up the riser to Briḍj and the gorge's mouth; then the contour streets and the
-// cross streets of the town's grid, and a farm track south toward the caldera's rim
+// cross streets of the town's grid, and the mule path south across the bench and down the scarp to Phēr (the owner's)
 const TB_X=[-650,-480,-240,0,240,480,650],TB_Z=[-560,-360,-180,0,170,330];
 const TB_WAYS=[
  {id:'pher',name:'the Phēr road',cls:'main',pts:[[-2380,250],[-1700,190],[-1100,110],[-650,0],[0,0]]},
  {id:'east',name:'the Bēnch road',cls:'main',pts:[[0,0],[650,0],[1200,30],[2380,110]]},
  {id:'exped',name:'the expedition road',cls:'main',pts:[[0,0],[0,-560],[30,-800],[110,-1250],[230,-1800],[300,-2600],[380,-4000],[420,-6000],[380,-8000],[250,-10300]]},
- {id:'south',name:'the farm track south',cls:'lane',pts:[[0,330],[-40,900],[-120,1600],[-150,2380]]}];
+ {id:'mule',name:'the mule path to Phēr',cls:'lane',pts:[[0,330],[0,1000],[0,2380]]}];   /* the owner, 2026-11-16: "Yes, a mule path": the short way down the scarp (PLAN.md section 3), on x 840 to the bench's edge */
 for(const z of[-560,-360,-180,170,330])TB_WAYS.push({id:'street z'+z,name:z===-560?'the spring street':'a contour street',cls:'side',pts:[[-650,z],[650,z]]});
 for(const x of[-650,-480,-240,240,480,650])TB_WAYS.push({id:'street x'+x,name:'a cross street',cls:'side',pts:[[x,-560],[x,330]]});
 const TB_W={main:TB.MAIN,side:TB.STREET,lane:4.5};
