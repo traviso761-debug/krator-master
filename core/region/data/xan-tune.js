@@ -86,8 +86,8 @@ T.lowerLake=[['sekrid','Sekriḍ (the Red Monastery\'s village)',986,1588,800,{}
 T.lowerRounds=[['round.lower-north','sl758m2396',['sekrid','phishari','kako-bagh','rid','landing'],'ll.'],['round.lower-south','sl758m2396',['kattal','rais-teras','opal-mouth','timbar'],'ll.']];
 /* Kirstabal's ring (the proposal's section 3e; settlements/kirstabal/PLAN.md section 3): three farming villages and a ranch on
    the floor south of the town, at core/hamlet's census sizes (a village 240 people in 44 households, a ranch 145) */
-T.ksRing=[['ks.ring.mil','Mil (the mill)',987,1605,'farming',240,44],['ks.ring.kanal','Kanāl (the canal)',985,1607,'farming',240,44],
- ['ks.ring.grenz','Grēnz (the grain)',988,1609,'farming',240,44],['ks.ring.baiyar','Bāiyar (the byre)',984,1610,'ranching',145,26]];
+T.ksRing=[['ks.ring.mil','Mil (the mill)',987.5,1601.8,'farming',240,44],['ks.ring.kanal','Kanāl (the canal)',986.5,1603,'farming',240,44],
+ ['ks.ring.grenz','Grēnz (the grain)',988.8,1602.6,'farming',240,44],['ks.ring.baiyar','Bāiyar (the byre)',985.5,1604.5,'ranching',145,26]];   /* 4-11 km out, as Erehwon's and Qiblai's rings */
 /* the White Monastery's house at Kirstabal (the owner, 2026-11-16: "The White Monastery (name TBD) runs the latex house", "yes the
    white and crimson of qiblai", "takes a share and a small fee"): the Scarp's latex comes to it, is dried to opium, and all but
    its share goes to Kirstabal; the seat pays it a fee a year. The share and the fee's size are proposed */

@@ -187,7 +187,8 @@ cataract hangs in sight to the north-east, and Strongbow's tower stands over the
   -1,350 to -1,530 m), 150-300 m over the roofs. Its terraces look at the cataract, and its stair comes down to the latex
   house. It is drawn with the Xanadu kit's monastery in white, not with Qiblai's kit (the owner: the normal Xanadu kit
   only).
-- **The ring villages** (3-4, `core/hamlet`) on the floor south of the town (985-989, 1605-1611, -1,600 to -1,480 m): grain,
+- **The ring villages** (`core/hamlet`) on the floor south of the town, 4-11 km out as Erehwon's and Qiblai's rings are (built at
+  K4: Mil 987.5,1601.8, Kanāl 986.5,1603, Grēnz 988.8,1602.6 and the ranch Bāiyar 985.5,1604.5; about +30 to +45 m over the lake): grain,
   rice and cacao. Up the scarp are the plantation hamlets: tea at 0 to +1,000 m, poppy and saffron near the lip.
 - **The lake** (section 2a): the launches' quay beside the barge quays. Sekriḍ is about 25 km off, up the north side of the lake's
   head, and the other eight villages lie down the two shores.
@@ -282,6 +283,21 @@ Following `README.md`, "CORE MODULES ARE NOT OPTIONAL":
 | **K4** | The lake's nine villages and hamlets, the ring villages and the plantation hamlets (`core/hamlet`, `kits/crops`); the boats drawn on their runs once the lake craft exist | the hamlet tests; every village on its shore cell at 1:1; no trees on the scarp's cliffs |
 | **K5** | Interiors: the serai, the factor house, the governor's house, the tea factory, the latex house | the interiors' checks |
 | **K6** | The site in the open world, with Strongbow's foot and the road between | the region's verify |
+
+**Built (2026-11-16; the owner: "build k0-4"),** on `claude/kirstabal-plan-3bc37d`:
+- **K0.** The pin stays at 989,1600. The page's frame is centred at px 988.33,1599.4, about 450 m inland of the model's
+  shore. The -1,530 m flats were reported to the scale-model session. No edit was needed.
+- **K1.** `core/region/data/xan-tune.js` and `test-xan-economy.js` checks 23-25 (50 of 50 pass). The ring sits 4-11 km
+  out (moved in from the first draft's 11-23 km). The road to Lāiṭwāl waits for Lāiṭwāl in the tune.
+- **K2.** `settlements/kirstabal`: the town on core/city as a target on Xanadu's page, with only the Xanadu kit
+  (`README.md`). About 440 buildings and 2,850 people. The caravanserai, the latex house and the tea factory are composed
+  of kit pieces (`KNOWN_ISSUES.md`).
+- **K3.** The harbour (quays, mole, lighthouse, boat sheds), the lake (core/water open), Keb Riwā from the lip down the
+  scarp to its mouth (core/water flow) and the bridge on the Strongbow road. `core/coast` is not taken: the lake's shore
+  near the town is designed ground, and the open world (K6) takes core/coast.
+- **K4.** The ring's four villages (drawn) and the lake's nine (records for K6) on core/hamlet. The Xanadu row has no
+  fishing works yet, so the lake's villages are laid as farming villages (`KNOWN_ISSUES.md`). The boats wait for the lake
+  craft.
 
 ## 7. Questions for the owner
 
