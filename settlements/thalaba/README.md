@@ -9,26 +9,31 @@ owner's answers (sections 1-7); this page is its step T3, the town's ring on the
 ## Build and verify
 
 ```
-python3 ../../tools/build.py settlements/thalaba                 # dist/thalaba.html (from the repo root: tools/build.py settlements/thalaba)
-KRATOR_GL=gpu python3 verify.py dist/thalaba.html --assert --views "Overview,The market square,Toward the gorge"
+python3 ../../tools/build.py settlements/thalaba                 # dist/thalaba.html, dist/thalaba-pieces.html (from the repo root: tools/build.py settlements/thalaba)
+KRATOR_GL=gpu python3 verify.py dist/thalaba.html --assert --views "Overview,The market square,The Siteps from above"
+KRATOR_GL=gpu python3 verify.py dist/thalaba-pieces.html --assert --views "Opening,Thalaba"
 ```
 
 `build.py` writes `gen/69t-kcity-bundle.js` (core/city and core/space in one closure, as Qiblai seals them, with the raster's
 class and its occupancy codes on `KCITY.lib` for the town's own steps) and `gen/69u-tb-ground.js` (the scale model's ground
-round the pin: a 4.8 km square at 40 m and an 80 km square at 500 m, bicubic on `h.png`, and the model's rivers within it),
+round the pin: 4.8 km by 12.8 km at 40 m, from 2.4 km south of the pin to the gorge's mouth, and an 80 km square at 500 m,
+bicubic on `h.png`, and the model's rivers within it),
 then runs `settlements/xanadu/build.py --kit settlements/thalaba`: the town is a target on Xanadu's page as Erewhon and Qiblai
 are. Its own ground sets are the Thalaba pack (`materials.json`, `tex/`: `python3 tools/textures/pack.py settlements/thalaba`).
-core/atmos and core/water come in through `kit.json` `files`.
+core/atmos and core/water come in through `kit.json` `files`; the Dalab set's materials, helpers and three of its families
+(`settlements/dalab/src` 69d, 69e, 70, 71, 73) through `external`, read in place.
 
 ## How the town is made
 
 | Fragment | What |
 |---|---|
 | `src/89t0-tb-matlib.js` | the town's ground keys (`tGrass`, `tDirt`, `tCobble`, `tField`) bound onto the Thalaba pack |
+| `src/89t1-tb-pieces.js` | Thalaba's own pieces on the Xanadu kit's contract (`XA.def`): `tb_devisers`, the Rare Devisers' house (the hall over the counting room, the strongroom, the sulfur shed and the wax store round the outfitting yard), and `tb_calcarone`, a sulfur kiln; seeds 34300-34399. They go upstream into `kits/xanadu` once the owner has seen them |
+| `targets/pieces/` | the pieces sheet (`dist/thalaba-pieces.html`): Thalaba's two pieces and the Dalab mission's three, every variant |
 | `targets/town/89z-rows.js` | `window.CITY`, the title, no sheet rows |
-| `targets/town/89zt-tb-site.js` | the plan, as records: the model's ground (`tbModel`) with the town's work cut into it (`tbGround`: the Siṭēps' treads stepped into the riser's toe, the leat's cut, the springs' basins, the tank's steps); the ways (the Phēr road, the Bēnch road, the expedition road, the contour and cross streets); the leat's falling line; the blocks; the core/city instance (its own steps: the raster, the ways clipped to it, then frontage-courts on the house blocks with the Xanadu kit's keys by wealth); the civic buildings round the square; the Dalab mission's boxes; the fields; the flora's mask and climate; the people |
-| `targets/town/90q-tb-world.js` | the Krator sky and its light, the near ground (10 m cells) wearing a canvas painted from the plan's records, the far land out to 40 km (one coarse mesh coloured by height, slope and the rivers; `lodSkip`) |
-| `targets/town/90r-tb-build.js` | every building, chunk by chunk (300 m), each baked into its own group and drawn while in view and range; the Dalab mission's stand-ins; the Vale of Xanadu biome over the plan's mask |
+| `targets/town/89zt-tb-site.js` | the plan, as records: the model's ground (`tbModel`) with the town's work cut into it (`tbGround`: the Siṭēps' treads stepped into the riser's toe, the leat's cut, the springs' basins, the tank's steps); the ways (the Phēr road, the Bēnch road, the expedition road, the contour and cross streets); the leat's falling line; the blocks; the core/city instance (its own steps: the raster, the ways clipped to it, then frontage-courts on the house blocks with the Xanadu kit's keys by wealth); the civic buildings round the square; the Dalab mission (the Dalab set's healers' hall, granaries and family compound); the fields, the Siṭēps on the riser below the leat; the flora's mask and climate; the people |
+| `targets/town/90q-tb-world.js` | the Krator sky and its light, the near ground in two meshes (the town at 10 m, the riser to the gorge's mouth at 20 m), each wearing a canvas painted from the plan's records (the terraces' banks traced as contour lines), the far land out to 40 km (one coarse mesh coloured by height, slope and the rivers; `lodSkip`) |
+| `targets/town/90r-tb-build.js` | every building, chunk by chunk (300 m), each baked into its own group and drawn while in view and range; the Dalab mission's yard wall; the Vale of Xanadu biome over the plan's mask |
 | `targets/town/90w-tb-water.js` | core/water: the leat a flow, the seven springs and the tank still water; the tank's steps and the springs' rims |
 | `targets/town/91z-views.js` | the views; the town as one budget |
 | `verify.py` | Xanadu's verify plus the town's invariants: `thalaba-laid`, `on-the-model`, `people`, `water-on-core` |
@@ -37,7 +42,7 @@ core/atmos and core/water come in through `kit.json` `files`.
 `on-the-model` holds it. The town's grid is laid on it unflattened: the buildings stand on the lowest ground under them
 (core/city's foot), the slope here being 1-2 %.
 
-**The people.** Residents per building are estimates (`TB_PEOPLE`): about 2,700 against the plan's 2,400 (within the
+**The people.** Residents per building are estimates (`TB_PEOPLE`): about 2,500 against the plan's 2,400 (within the
 budget's 15 %), with the Devisers' house (40), the Two Horns' factor (20) and the Dalab mission (30) beside them.
 
 ## On the open world (T2, T4)
@@ -46,9 +51,11 @@ Thalaba is a site of `openworld/xanadu-oidong-highrift` (`openworld/SITES.json`,
 polygon the pin falls in (the owner). Its ring there (`src/48-world-site.js`, baked to `plan/sites.json`) is the plan's outworks
 on core/hamlet's `xanadu` row: **Briḍj**, the bridge ward at the gorge's mouth (a ranch village: the road warden's watch and the
 expeditions' muster corrals), **Salphar**, the diggers' hamlet on the town's small sulfur deposit at the cataract's foot (a
-mine village), and two farm villages on the **Bēnch**.
+village of its own row, `xanadu-sulfur`: adits, calcaroni (pending boxes there) and a sorting shed), and two farm villages on
+the **Bēnch**. The region's roads are bridged where they cross a named river (core/world 42b, in the Xanadu kit's stone):
+Thalaba's road north crosses the Solṭ Siṭrīm by a 120 m arched bridge at the mouth.
 
 ## What is not here yet (`KNOWN_ISSUES.md`)
 
-The Dalab mission's buildings in Dalab's style (stand-ins now), the Xanadu kit's new pieces the plan asks for (the Devisers'
-compound, the bridge, the calcaroni), interiors, the life layer, the Godot export and the gallery.
+Dalab's texture pack on the mission's pieces, the toll house at the bridge, Salphar's resource record, interiors, the life
+layer, the Godot export and the gallery.

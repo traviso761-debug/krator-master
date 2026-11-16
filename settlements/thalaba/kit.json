@@ -1,18 +1,41 @@
 {
  "targets": {
-  "town": "thalaba.html"
+  "town": "thalaba.html",
+  "pieces": "thalaba-pieces.html"
  },
  "external": [
   "settlements/thalaba/gen/69t-kcity-bundle.js",
-  "settlements/thalaba/gen/69u-tb-ground.js"
+  "settlements/thalaba/gen/69u-tb-ground.js",
+  "settlements/dalab/src/69d-dalab-mat.js",
+  "settlements/dalab/src/69e-dalab-helpers.js",
+  "settlements/dalab/src/70-dalab-dwellings.js",
+  "settlements/dalab/src/71-dalab-trade.js",
+  "settlements/dalab/src/73-dalab-sacred.js"
  ],
  "scoped": [
   "69t-kcity-bundle.js"
  ],
  "files": {
   "town": [
-   ["core/atmos", ["89-atmos-0-core.js", "89-atmos-0p-presets.js", "89-atmos-a-waves.js", "89-atmos-b-skylight.js"]],
-   ["core/water", ["20-core-water.js", "21-core-water-shore.js", "22-core-water-flow.js", "50-core-water-draw.js", "51-core-water-kinds.js"]]
+   [
+    "core/atmos",
+    [
+     "89-atmos-0-core.js",
+     "89-atmos-0p-presets.js",
+     "89-atmos-a-waves.js",
+     "89-atmos-b-skylight.js"
+    ]
+   ],
+   [
+    "core/water",
+    [
+     "20-core-water.js",
+     "21-core-water-shore.js",
+     "22-core-water-flow.js",
+     "50-core-water-draw.js",
+     "51-core-water-kinds.js"
+    ]
+   ]
   ]
  },
  "pack": "thalaba",
@@ -32,6 +55,8 @@
   "21-core-water-shore.js",
   "22-core-water-flow.js",
   "50-core-water-draw.js",
-  "51-core-water-kinds.js"
+  "51-core-water-kinds.js",
+  "69d-dalab-mat.js",
+  "69e-dalab-helpers.js"
  ]
 }

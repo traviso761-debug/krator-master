@@ -1,13 +1,13 @@
 // ================================================================= THALABA — the site, the ground and the plan (PLAN.md section 3; step T3)
 // Runs after every kit def is registered and before the scene (90-scene). The ground is the scale model's at 1:1 (gen/
 // 69u-tb-ground.js: bicubic round the pin, as core/world reads the same cells), with the town's own work cut into it: the
-// Siṭēps (the terraces on the riser's toe, north of the spring line), the leat that waters them, the spring line's basins
+// Siṭēps (the terraces on the riser, 1.5-6.6 km north of the spring line), the leat that waters them, the spring line's basins
 // and the stepped tank. The town is a core/city instance: its own steps lay the raster, the two roads that meet at the market
 // square (the Phēr road from the west, the expedition road north up the riser to the gorge's mouth), the contour streets and
 // the cross streets; the frontage-courts strategy fills the house blocks with the Xanadu kit's keys; the civic buildings
 // stand on their own blocks round the square. This fragment makes the plan only (records); 90r draws it.
 // Metres; x east, z south (north is -z); the origin is the pin, px 840,1463 (2 km a pixel). [G data] records, no drawing.
-const TB={SEED:34210,STREET:5.5,MAIN:8,SPRING_Z:-600,TERR:{z0:-2250,z1:-700,x0:-1500,x1:1500,step:1.8}};
+const TB={SEED:34210,STREET:5.5,MAIN:8,SPRING_Z:-600,TERR:{z0:-6600,z1:-1400,x0:-1500,x1:1500,step:1.8}};
 const tbD=(x,d)=>x==null?d:x;   // a numeric default: 0 is a value
 function tbHash(s){let h=2166136261;for(let i=0;i<s.length;i++)h=Math.imul(h^s.charCodeAt(i),16777619)>>>0;return h;}
 function tbSmooth(a,b,x){const t=Math.max(0,Math.min(1,(x-a)/(b-a)));return t*t*(3-2*t);}
@@ -16,11 +16,11 @@ function tbSmooth(a,b,x){const t=Math.max(0,Math.min(1,(x-a)/(b-a)));return t*t*
 function tbDec(o){const s=atob(o.b64),n=s.length>>1,a=new Float32Array(n);
  for(let i=0;i<n;i++){let v=s.charCodeAt(2*i)|(s.charCodeAt(2*i+1)<<8);if(v>32767)v-=65536;a[i]=o.base+v*o.unit;}return a;}
 const TB_NEAR=tbDec(TB_GROUND.near),TB_FAR=tbDec(TB_GROUND.far);
-function tbBil(G,a,x,z){const u=Math.min(G.n-1.0001,Math.max(0,(x+G.half)/G.step)),v=Math.min(G.n-1.0001,Math.max(0,(z+G.half)/G.step));
- const i=Math.floor(u),j=Math.floor(v),fu=u-i,fv=v-j,k=j*G.n+i;return(a[k]*(1-fu)+a[k+1]*fu)*(1-fv)+(a[k+G.n]*(1-fu)+a[k+G.n+1]*fu)*fv;}
-// the near grid inside its square, blended over its last 300 m into the far grid, the far grid beyond
-function tbModel(x,z){const N=TB_GROUND.near,e=Math.max(Math.abs(x),Math.abs(z)),f=tbBil(TB_GROUND.far,TB_FAR,x,z);
- if(e>=N.half)return f;const n=tbBil(N,TB_NEAR,x,z),t=Math.max(0,(e-(N.half-300))/300);return n*(1-t)+f*t;}
+function tbBil(G,a,x,z){const u=Math.min(G.nx-1.0001,Math.max(0,(x-G.x0)/G.step)),v=Math.min(G.nz-1.0001,Math.max(0,(z-G.z0)/G.step));
+ const i=Math.floor(u),j=Math.floor(v),fu=u-i,fv=v-j,k=j*G.nx+i;return(a[k]*(1-fu)+a[k+1]*fu)*(1-fv)+(a[k+G.nx]*(1-fu)+a[k+G.nx+1]*fu)*fv;}
+// the near grid inside its box (the town to the gorge's mouth), blended over its last 300 m into the far grid, the far grid beyond
+function tbModel(x,z){const N=TB_GROUND.near,f=tbBil(TB_GROUND.far,TB_FAR,x,z),e=Math.min(x-N.x0,N.x1-x,z-N.z0,N.z1-z);
+ if(e<=0)return f;const n=tbBil(N,TB_NEAR,x,z),t=Math.max(0,1-e/300);return n*(1-t)+f*t;}
 
 // ---------------------------------------------------------------- the ways (core/city lays them below; the ground reads them too)
 // the main roads: the Phēr road from the west (up the Qol Siṭrīm's valley to its head, then east onto the bench), the road east
@@ -30,7 +30,7 @@ const TB_X=[-650,-480,-240,0,240,480,650],TB_Z=[-560,-360,-180,0,170,330];
 const TB_WAYS=[
  {id:'pher',name:'the Phēr road',cls:'main',pts:[[-2380,250],[-1700,190],[-1100,110],[-650,0],[0,0]]},
  {id:'east',name:'the Bēnch road',cls:'main',pts:[[0,0],[650,0],[1200,30],[2380,110]]},
- {id:'exped',name:'the expedition road',cls:'main',pts:[[0,0],[0,-560],[30,-800],[110,-1250],[230,-1800],[300,-2380]]},
+ {id:'exped',name:'the expedition road',cls:'main',pts:[[0,0],[0,-560],[30,-800],[110,-1250],[230,-1800],[300,-2600],[380,-4000],[420,-6000],[380,-8000],[250,-10300]]},
  {id:'south',name:'the farm track south',cls:'lane',pts:[[0,330],[-40,900],[-120,1600],[-150,2380]]}];
 for(const z of[-560,-360,-180,170,330])TB_WAYS.push({id:'street z'+z,name:z===-560?'the spring street':'a contour street',cls:'side',pts:[[-650,z],[650,z]]});
 for(const x of[-650,-480,-240,240,480,650])TB_WAYS.push({id:'street x'+x,name:'a cross street',cls:'side',pts:[[x,-560],[x,330]]});
@@ -47,10 +47,11 @@ function tbClip(P,h){const inside=p=>Math.abs(p[0])<=h&&Math.abs(p[1])<=h,out=[]
  return out;}
 
 // ---------------------------------------------------------------- the leat (PLAN.md section 3: off the Solṭ Siṭrīm at the mouth, down
-// the riser beside the expedition road, then west along the terraces' top on a falling contour). Its line: down the road's
-// east side to the terraces' top, then west across them, each point a little lower than the last; its water sits in a cut
+// the riser beside the expedition road, then west along the terraces' top on a falling contour). Its line: from the mouth
+// down the road's east side to the terraces' top, then west across them, each point a little lower than the last; its water
+// sits in a cut
 const TB_LEAT=(function(){const P=[],side=16;
- for(let z=-2380;z<=-2150;z+=46){let x=0;for(let i=0;i+1<TB_EXPED.length;i++){const a=TB_EXPED[i],b=TB_EXPED[i+1];if((z-a[1])*(z-b[1])<=0&&a[1]!==b[1]){x=a[0]+(b[0]-a[0])*(z-a[1])/(b[1]-a[1]);break;}}P.push([x+side,z]);}
+ for(let z=-10300;z<=-6500;z+=46){let x=0;for(let i=0;i+1<TB_EXPED.length;i++){const a=TB_EXPED[i],b=TB_EXPED[i+1];if((z-a[1])*(z-b[1])<=0&&a[1]!==b[1]){x=a[0]+(b[0]-a[0])*(z-a[1])/(b[1]-a[1]);break;}}P.push([x+side,z]);}
  // then west along the top of the terraces: each step 40 m, the line moved north or south until the ground is just above the water
  let [x,z]=P[P.length-1],y=tbModel(x,z)-.6;
  for(let k=0;k<70&&x>TB.TERR.x0-150;k++){x-=40;y-=.12;let best=z,bd=1e9;for(let dz=-90;dz<=90;dz+=6){const d=Math.abs(tbModel(x,z+dz)-(y+.6));if(d<bd){bd=d;best=z+dz;}}z=best;P.push([x,z]);}
@@ -66,8 +67,12 @@ const TB_TANK={x:-120,z:-470,half:13,depth:4.2,steps:5};TB_TANK.rim=tbModel(TB_T
 // ---------------------------------------------------------------- the ground every builder and the camera read
 // the model's ground, the Siṭēps' treads stepped into it (not under the expedition road or the leat), the leat's cut, the
 // springs' basins and the tank's steps
-function tbTerraceW(x,z){const T=TB.TERR;
- const w=tbSmooth(T.z0,T.z0+60,z)*(1-tbSmooth(T.z1-60,T.z1,z))*tbSmooth(T.x0,T.x0+60,x)*(1-tbSmooth(T.x1-60,T.x1,x));if(w<=0)return 0;
+// the leat's westward run (after its descent beside the road): the terraces lie below it, so its line is the belt's top
+const TB_LEAT_W=TB_LEAT.filter(p=>p[1]>-6500||p[0]<TB_LEAT[0][0]-40).slice().sort((p,q)=>q[0]-p[0]);
+function tbLeatZ(x){const W=TB_LEAT_W;if(!W.length)return TB.TERR.z0;if(x>=W[0][0])return W[0][1];
+ for(let i=0;i+1<W.length;i++){const a=W[i],b=W[i+1];if(x<=a[0]&&x>=b[0]){const t=(a[0]-x)/Math.max(1e-6,a[0]-b[0]);return a[1]+(b[1]-a[1])*t;}}return W[W.length-1][1];}
+function tbTerraceW(x,z){const T=TB.TERR,top=tbLeatZ(x)+30;
+ const w=tbSmooth(top,top+60,z)*(1-tbSmooth(T.z1-60,T.z1,z))*tbSmooth(T.x0,T.x0+60,x)*(1-tbSmooth(T.x1-60,T.x1,x));if(w<=0)return 0;
  return w*tbSmooth(10,22,tbLineD(x,z,TB_EXPED));}
 function tbGround(x,z){let h=tbModel(x,z);
  const w=tbTerraceW(x,z);if(w>0){const s=TB.TERR.step,q=h/s,f=q-Math.floor(q),st=(Math.floor(q)+tbSmooth(.86,1,f))*s;h+=w*(st-h);}
@@ -121,8 +126,8 @@ try{
    SL.note(3,TB_WAYS.length+' ways');}},
   {name:'the house blocks: frontage and courts',run(){const P=L.plan();
    P.courts=KCITY.strategies['frontage-courts'].run(TB_BLOCKS.filter(b=>b.use==='houses'),
-    {step:6,focus:[0,-200],sides:4,pools:TB_POOLS,small:TB_SMALL,gaps:TB_GAPS,garden:{rich:.45,middle:.36,poor:.3},
-     infill:{step:10,yard:.7,yardR:10,reach:22}});}}];
+    {step:6,focus:[0,-200],sides:4,pools:TB_POOLS,small:TB_SMALL,gaps:TB_GAPS,garden:{rich:.5,middle:.42,poor:.36},
+     infill:{step:10,yard:.75,yardR:10,reach:22}});}}];
  const C=KCITY.create({name:'thalaba',tune:TB_TUNE,seed:TB.SEED,rand:'krand',index:{order:'insertion'},ground:{h:tbGround},kit:{dims:tbDims},steps});
  TB_PLAN=C.run();TB.instance=C;
 }catch(e){TB_ERR=e;reportErr('thalaba: the site did not lay: '+(e&&e.stack||e));}
@@ -144,9 +149,9 @@ function tbCivic(key,kind,i,j,u,v,ry,extra){const b=tbBlock(i,j),D=VERN.defs[key
 const TB_FS=0,TB_FN=Math.PI,TB_FE=Math.PI/2,TB_FW=-Math.PI/2;   // a front toward the south, north, east, west
 // the temple of the Decree and the baths, north-west of the square (their fronts on the square's streets)
 tbCivic('xa_temple','temple',2,2,.62,.62,TB_FS);tbCivic('xa_bath','bath',2,2,.24,.38,TB_FN);
-// the Rare Devisers' house (PLAN.md section 2): the hall, the sulfur and wax sheds behind it, toward the gorge
-tbCivic('xa_guild_spicer','devisers',3,2,.38,.66,TB_FS,{name:'The Rare Devisers\' house at Thalaba'});
-tbCivic('xa_warehouse','devisers',3,2,.80,.32,TB_FW,{name:'The Devisers\' sulfur shed'});tbCivic('xa_warehouse','devisers',3,2,.80,.72,TB_FW,{name:'The Devisers\' wax and rarities store'});
+// the Rare Devisers' house (PLAN.md section 2; Thalaba's own piece, src/89t1-tb-pieces.js): the hall over the counting room, the
+// strongroom, the sulfur shed and the wax store round the yard where the expedition outfits, its gate on the Bēnch road
+tbCivic('tb_devisers','devisers',3,2,.42,.6,TB_FS,{name:'The Rare Devisers\' house at Thalaba'});
 // the Two Horns' factor and the inn, south-west of the square, on the Phēr road
 tbCivic('xa_rich_c','horns',2,3,.70,.30,TB_FN,{name:'The Two Horns\' factor house'});tbCivic('xa_warehouse','horns',2,3,.70,.75,TB_FN);
 tbCivic('xa_teahouse','inn',2,3,.22,.26,TB_FN,{name:'The inn on the square'});tbCivic('xa_teahouse','inn',2,3,.22,.62,TB_FE);
@@ -159,18 +164,20 @@ tbCivic('xa_pens','stables',0,3,.3,.7,0);tbCivic('xa_pens','stables',0,3,.7,.7,0
 tbCivic('xa_rill_hill','tank',2,0,.80,.55,TB_FS,{name:'The spring garden'});tbCivic('xa_garden','garden',3,0,.5,.5,TB_FW,{name:'The garden by the spring street'});
 // the orchards at the town's four corners: the kit's public garden (a chahar-bagh) at each, the rest of the block trees
 for(const[i,j]of[[0,0],[5,0],[0,4],[5,4],[1,4],[4,4]])tbCivic('xa_garden','orchard',i,j,.5,.5,j===0?TB_FS:TB_FN);
-// the Dalab mission (the owner, 2026-11-16: "a small Dalab mission here of about 30 people", built in Dalab's style): the
-// buildings Dalab's style owes (no kit draws them yet: stand-ins at their boxes, KNOWN_ISSUES.md), on the town's east edge
-const TB_DALAB=(function(){const b=tbBlock(5,1),cen=[(b.box[0]+b.box[2])/2,(b.box[1]+b.box[3])/2];
- return[{what:'the genepriests\' house',x:cen[0],z:cen[1]-30,w:30,d:22,h:11},{what:'the seed and specimen house',x:cen[0]-30,z:cen[1]+40,w:18,d:14,h:6},
-  {what:'the lodging for the hired men',x:cen[0]+28,z:cen[1]+42,w:22,d:12,h:6}].map((r,k)=>Object.assign(r,{id:'dalab:'+k,y:tbFoot(r.x,r.z,r.w,r.d,0)}));})();
+// the Dalab mission (the owner, 2026-11-16: "a small Dalab mission here of about 30 people", "dalab style"), on the town's east
+// edge: the Dalab set's own pieces, read in place from settlements/dalab/src (kit.json `external`): the healers' hall for the
+// genepriests' house, the granaries for the seed and specimen stores, a family compound for the hired men's lodging; their
+// fronts to the town (west)
+const TB_DALAB=[tbCivic('dalab_healers','dalab',5,1,.5,.3,TB_FW,{name:'The Dalab mission: the genepriests\' house'}),
+ tbCivic('dalab_granaries','dalab',5,1,.3,.8,TB_FW,{name:'The Dalab mission: the seed and specimen stores'}),
+ tbCivic('dalab_compound','dalab',5,1,.74,.8,TB_FW,{name:'The Dalab mission: the lodging for the hired men'})].filter(Boolean);
 
 // ---------------------------------------------------------------- the fields (PLAN.md section 3): the Siṭēps' terraces north of the
 // spring line, on the treads, each a crop or fallow; the Bēnch's fields east and south of the town, tilled, in crop, fallow or
 // meadow; none on the roads, the leat, the orchards' ground or inside the town
 const TB_FIELDS=[];
 {const P=[150,64];const inTown=(x0,z0,x1,z1)=>x1>TB_X[0]-30&&x0<TB_X[6]+30&&z1>TB_Z[0]-60&&z0<TB_Z[5]+30;
- for(let i=Math.floor(-2300/P[0]);i<=Math.ceil(2300/P[0]);i++)for(let j=Math.floor(-2300/P[1]);j<=Math.ceil(2300/P[1]);j++){
+ for(let i=Math.floor(-2300/P[0]);i<=Math.ceil(2300/P[0]);i++)for(let j=Math.floor(-10300/P[1]);j<=Math.ceil(2300/P[1]);j++){
   const x0=i*P[0]+3,x1=(i+1)*P[0]-3,z0=j*P[1]+2,z1=(j+1)*P[1]-2,cx=(x0+x1)/2,cz=(z0+z1)/2;
   if(inTown(x0,z0,x1,z1))continue;
   if(TB_WAYS.some(w=>tbLineD(cx,cz,w.pts)<Math.max(P[0],P[1])/2+6))continue;   // the roads and the streets
@@ -187,7 +194,7 @@ const TB_THRESH=(function(){const b=tbBlock(3,3);return[0,1,2].map(k=>({x:b.box[
 // (.05), never within a building's footprint (core/space's index of what the plan places) or on a way
 const tbSpace=KCITY.lib.KSPACE.create({cell:40});
 for(const p of TB_PLACE){const D=VERN.defs[p.key];if(D)tbSpace.insert(p,p.x,p.z,Math.hypot(D.fw||D.w,D.fd||D.d)/2+1.5);}
-for(const r of TB_DALAB)tbSpace.insert(r,r.x,r.z,Math.hypot(r.w,r.d)/2+1.5);
+
 const tbInBox=(B,x,z,m)=>x>B[0]-tbD(m,0)&&x<B[2]+tbD(m,0)&&z>B[1]-tbD(m,0)&&z<B[3]+tbD(m,0);
 function tbFieldAt(x,z){for(const f of TB_FIELDS)if(tbInBox(f.box,x,z,2))return f;return null;}
 function tbBlockAt(x,z){for(const b of TB_BLOCKS)if(tbInBox(b.box,x,z,-1))return b;return null;}

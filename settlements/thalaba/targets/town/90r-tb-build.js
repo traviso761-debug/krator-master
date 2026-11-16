@@ -1,8 +1,8 @@
-// ================================================================= THALABA — the build: the plan's buildings, the Dalab mission's stand-ins
+// ================================================================= THALABA — the build: the plan's buildings, the Dalab mission's yard wall
 // Every building of the plan (89zt: the infill's lots, the civic buildings round the square, the orchards' gardens), chunk by
 // chunk, each chunk baked into its own group and drawn while it is in view and in range (Erewhon's and Qiblai's runtime LOD);
-// then the Dalab mission's buildings, which Dalab's style owes (no kit on this page draws them: stand-ins at their boxes,
-// registered as such, KNOWN_ISSUES.md); the flora last, over the plan's mask. [web]: three.js.
+// the Dalab mission's pieces are the Dalab set's (89zt places them with the civic buildings); here only its yard wall round its
+// block, a gate toward the town; the flora last, over the plan's mask. [web]: three.js.
 reseed(TB.SEED+2);const TB_B0=performance.now();
 const TB_CHUNK=300,TB_CHUNKS={};
 for(const p of TB_PLACE){const k=p.kind==='house'?Math.floor(p.x/TB_CHUNK)+','+Math.floor(p.z/TB_CHUNK):'civic';(TB_CHUNKS[k]=TB_CHUNKS[k]||[]).push(p);}
@@ -15,15 +15,9 @@ function tbBakeChunk(key,list,extra){const G=new THREE.Group();G.name='chunk:'+k
  TSTAT.cur=null;kbake(G);xaDoorsBind();TB_INST+=tbD(window._instances,0);for(const n in KIT.items)KIT.items[n].length=0;
  const e={G,key,sphere:new THREE.Sphere(new THREE.Vector3((x0+x1)/2,(y0+y1)/2,(z0+z1)/2),Math.hypot(x1-x0,y1-y0,z1-z0)/2+20),range:key==='civic'?1e9:2600,n:list.length};TB_GROUPS.push(e);return e;}
 for(const k of Object.keys(TB_CHUNKS).sort())tbBakeChunk(k,TB_CHUNKS[k]);
-// the Dalab mission's stand-ins: rendered walls under a flat roof in the town's own wash, a darker band, a gate in the yard
-// wall; each a REG record marked as a stand-in for Dalab's style
-tbBakeChunk('dalab',[],()=>{for(const r of TB_DALAB){
- TSTAT.cur='dalab_standin/0';
- vB('xEarthB',r.x,r.y,r.z,r.w,r.h,r.d,0,xC(0xb8a27c));vB('xWashB',r.x,r.y+r.h,r.z,r.w+.6,.5,r.d+.6,0,xC(0xe6dccb));
- vB('xRubB',r.x,r.y-.4,r.z,r.w+1.2,.8,r.d+1.2,0,xC(0x8e877a));
- REG.push({name:'The Dalab mission: '+r.what+' (a stand-in: Dalab\'s style is owed)',key:'dalab_standin',type:'dalab_standin',cls:'building',x:r.x,y:r.y,z:r.z,r:Math.hypot(r.w,r.d)/2,h:r.h,
-  tags:{culture:'dalab',note:'stand-in at its box: the building Dalab\'s style owes (settlements/thalaba/KNOWN_ISSUES.md)'}});}
- const b=tbBlock(5,1),B=b.box,y=tbFoot((B[0]+B[2])/2,(B[1]+B[3])/2,B[2]-B[0],B[3]-B[1],0);   /* the mission's yard wall round its block, a gate on the cross street */
+// the Dalab mission's yard wall round its block, rammed earth in the Dalab set's ochre, a gate on the cross street toward the town
+tbBakeChunk('dalab wall',[],()=>{TSTAT.cur='dalab_wall/0';
+ const b=tbBlock(5,1),B=b.box;
  for(const[a,q]of[[[B[0]+4,B[1]+4],[B[2]-4,B[1]+4]],[[B[2]-4,B[1]+4],[B[2]-4,B[3]-4]],[[B[2]-4,B[3]-4],[B[0]+4,B[3]-4]],[[B[0]+4,B[3]-4],[B[0]+4,(B[1]+B[3])/2+6]],[[B[0]+4,(B[1]+B[3])/2-6],[B[0]+4,B[1]+4]]]){
   const L=Math.hypot(q[0]-a[0],q[1]-a[1]),mx=(a[0]+q[0])/2,mz=(a[1]+q[1])/2;vB('xEarthB',mx,tbGround(mx,mz)-.3,mz,L,2.4,.6,Math.abs(q[0]-a[0])>Math.abs(q[1]-a[1])?0:Math.PI/2,xC(0xb09a74));}});
 window._instances=TB_INST;
@@ -39,5 +33,5 @@ if(typeof BIO!=='undefined'&&BIO.host){BIO.setScene(scene);BIO.setSun([-.5,.76,.
  if(BIO.lodTick)FRAME_HOOKS.push(()=>BIO.lodTick(camera));}
 LABELS=new THREE.Group();LABELS.userData.probeSkip=true;scene.add(LABELS);
 window._registered=REG.length;window._chunks=TB_GROUPS.length;window._buildMs=Math.round(performance.now()-TB_B0);
-window._thalaba=Object.assign(window._thalabaPlan||{},{placed:TB_PLACE.length,dalab:TB_DALAB.length,chunks:TB_GROUPS.length,
+window._thalaba=Object.assign(window._thalabaPlan||{},{placed:TB_PLACE.length,dalab:TB_DALAB.length,devisers:TB_PLACE.filter(p=>p.key==='tb_devisers').length,chunks:TB_GROUPS.length,
  byKind:TB_PLACE.reduce((a,p)=>{a[p.kind]=tbD(a[p.kind],0)+1;return a;},{})});

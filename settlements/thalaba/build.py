@@ -9,8 +9,9 @@ core/space through the bundle; core/water and core/atmos for the springs, the le
 
 The ground (gen/69u-tb-ground.js): the scale model 5.1's heights (tools/scale-model/model/data/h.png: (R*256+G)/65535*
 29600-2600 m) round the pin, px 840,1463, interpolated bicubically, as core/world's WORLD.H reads the same cells:
-  near  a 4.8 km square at 40 m (the town, its fields, the spring line), decimetres over 1,500 m
-  far   an 80 km square at 500 m (the bench, the riser, the gorge's mouth and walls, the cataract), metres
+  near  4.8 km east-west by 12.8 km, from 2.4 km south of the pin to the gorge's mouth 10.4 km north, at 40 m (the town,
+        its fields, the spring line, the bench, the riser and its terraces, the leat's head), decimetres over 1,500 m
+  far   an 80 km square at 500 m (the walls of the gorge, Gaadz-Phol, the caldera's rim falling to the lake), metres
 x east, z south, metres from the pin (2 km a pixel).
 
     python3 ../../tools/build.py settlements/thalaba      # dist/thalaba.html
@@ -34,8 +35,8 @@ H_PNG = 'tools/scale-model/model/data/h.png'
 RIVERS = 'tools/scale-model/model/data/rivers.json'
 PIN = (840.0, 1463.0)                  # Thalaba's pin on the 5.1 canvas (scale model 5.1e12)
 M_PER_PX = 2000.0
-NEAR = (2400.0, 40.0)                  # half-size, step (m)
-FAR = (40000.0, 500.0)
+NEAR = (-2400.0, 2400.0, -10400.0, 2400.0, 40.0)   # x0, x1, z0, z1, step (m): the town, the bench and the riser up to the gorge's mouth
+FAR = (-40000.0, 40000.0, -40000.0, 40000.0, 500.0)
 
 
 def rd(rel):
@@ -62,17 +63,17 @@ def ground_fragment():
     im = np.array(Image.open(os.path.join(ROOT, *H_PNG.split('/'))).convert('RGB')).astype(np.float64)
     H = (im[..., 0] * 256 + im[..., 1]) / 65535 * 29600 - 2600
 
-    def grid(half, step, unit, base):
-        n = int(round(2 * half / step)) + 1
-        t = -half + step * np.arange(n)
-        zz, xx = np.meshgrid(t, t, indexing='ij')                       # rows z (south), columns x (east)
+    def grid(box, unit, base):
+        x0, x1, z0, z1, step = box
+        nx, nz = int(round((x1 - x0) / step)) + 1, int(round((z1 - z0) / step)) + 1
+        zz, xx = np.meshgrid(z0 + step * np.arange(nz), x0 + step * np.arange(nx), indexing='ij')   # rows z (south), columns x (east)
         rows, cols = PIN[1] + zz / M_PER_PX, PIN[0] + xx / M_PER_PX
-        h = nd.map_coordinates(H, [rows.ravel(), cols.ravel()], order=3, mode='nearest').reshape(n, n)
+        h = nd.map_coordinates(H, [rows.ravel(), cols.ravel()], order=3, mode='nearest').reshape(nz, nx)
         q = np.clip(np.round((h - base) / unit), -32768, 32767).astype('<i2')
-        return n, base64.b64encode(q.tobytes()).decode('ascii'), float(h.min()), float(h.max())
+        return ('{x0:%g,z0:%g,x1:%g,z1:%g,step:%g,nx:%d,nz:%d,unit:%g,base:%g,min:%.1f,max:%.1f,b64:"%s"}'
+                % (x0, z0, x1, z1, step, nx, nz, unit, base, float(h.min()), float(h.max()), base64.b64encode(q.tobytes()).decode('ascii')))
 
-    nn, nb, n0, n1 = grid(NEAR[0], NEAR[1], 0.1, 1500.0)
-    fn, fb, f0, f1 = grid(FAR[0], FAR[1], 1.0, 0.0)
+    near, far = grid(NEAR, 0.1, 1500.0), grid(FAR, 1.0, 0.0)
     # the rivers within the far land (the model's rivers.json): [x, z, bed m] in the page's frame, for the far mesh's colour
     import json
     with io.open(os.path.join(ROOT, *RIVERS.split('/')), encoding='utf-8') as fh:
@@ -80,7 +81,7 @@ def ground_fragment():
     keep = []
     for r in rivers:
         pts = r.get('px') or []
-        if not pts or min(abs(x - PIN[0]) + abs(y - PIN[1]) for x, y in pts) * M_PER_PX > FAR[0] * 1.3:
+        if not pts or min(abs(x - PIN[0]) + abs(y - PIN[1]) for x, y in pts) * M_PER_PX > FAR[1] * 1.3:
             continue
         bed = r.get('bed_m') or []
         P = []
@@ -92,10 +93,9 @@ def ground_fragment():
     return ('/* TB_GROUND: Thalaba\'s ground from the scale model 5.1 (%s), bicubic round the pin px %g,%g (settlements/thalaba/build.py).\n'
             '   GENERATED: edit the model. x east, z south, metres from the pin; a grid row is one z. [G data] */\n'
             'var TB_GROUND={pin:[%g,%g],\n'
-            ' near:{half:%g,step:%g,n:%d,unit:.1,base:1500,min:%.1f,max:%.1f,b64:"%s"},\n'
-            ' far:{half:%g,step:%g,n:%d,unit:1,base:0,min:%.1f,max:%.1f,b64:"%s"},\n'
+            ' near:%s,\n far:%s,\n'
             ' rivers:[%s]};\n'
-            % (H_PNG, PIN[0], PIN[1], PIN[0], PIN[1], NEAR[0], NEAR[1], nn, n0, n1, nb, FAR[0], FAR[1], fn, f0, f1, fb, ',\n  '.join(keep)))
+            % (H_PNG, PIN[0], PIN[1], PIN[0], PIN[1], near, far, ',\n  '.join(keep)))
 
 
 def write_gen():

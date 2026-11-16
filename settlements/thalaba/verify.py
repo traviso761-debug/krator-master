@@ -3,8 +3,8 @@
 invariants and views are Xanadu's, and settlements/xanadu/verify.py runs it (on tools/harness.py), with the town's own:
 
   thalaba-laid       the site laid on core/city with no error: the house blocks filled (over 200 houses), the civic buildings
-                     round the square (the temple, the Rare Devisers' house and its two sheds, the Two Horns' factor, the
-                     granaries, the caravan yard), the Dalab mission's three stand-ins
+                     round the square (the temple, the Rare Devisers' house (tb_devisers), the Two Horns' factor, the
+                     granaries, the caravan yard), the Dalab mission's three pieces from the Dalab set
   on-the-model       the ground is the scale model's: at the pin the drawn ground within 3 m of the model's bicubic height, and
                      that within 25 m of the cell's 1,507 m (settlements/thalaba/PLAN.md section 1)
   people             the town's residents against the plan's 2,400 (the tune's T.thalaba), within 15 % (reported as a budget
@@ -22,9 +22,9 @@ xv = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(xv)   # its argparse block is under __main__: nothing runs on import
 
 TOWN_JS = r"""
-{const Q=window._thalaba||{},K=Q.byKind||{};
+if(typeof TB_PLACE!=="undefined"){const Q=window._thalaba||{},K=Q.byKind||{};   /* the town target only: the pieces sheet has no plan */
  const civic=['temple','devisers','horns','granary','yard'].filter(k=>!(K[k]>0));
- R.push({name:'thalaba-laid',ok:!Q.err&&(K.house||0)>200&&!civic.length&&(K.devisers||0)===3&&Q.dalab===3,
+ R.push({name:'thalaba-laid',ok:!Q.err&&(K.house||0)>200&&!civic.length&&Q.devisers===1&&(K.dalab||0)===3,
   detail:Q.err?('the site did not lay: '+Q.err):(Q.placed+' placed ('+JSON.stringify(K)+'), '+Q.chunks+' chunks'+(civic.length?'; MISSING '+civic.join(', '):''))});
  const P=Q.pin||{};R.push({name:'on-the-model',ok:Math.abs((P.drawn||0)-(P.model||0))<3&&Math.abs((P.model||0)-1507)<25,
   detail:'at the pin the model gives '+P.model+' m, the page draws '+P.drawn+' m (the cell: 1,507 m)'});

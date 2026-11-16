@@ -7,8 +7,8 @@ const VIEWS=(function(){const V={};
  V['Down the Phere road']=tbEye(-900,104,-60,0,0);
  V['Up the expedition road']=tbEye(14,-140,90,-1300,0,12);
  V['The spring line']=tbEye(-200,-520,-120,-470,2,-1);
- V['The Siteps from above']=[-300,terrainH(-300,-760)+230,-760,-200,terrainH(-200,-1500)+2,-1500];
- const dv=TB_PLACE.find(p=>p.key==='xa_guild_spicer');if(dv)V['The Devisers house']=tbEye(dv.x-20,dv.z+60,dv.x,dv.z,0);
+ V['The Siteps from above']=[-500,terrainH(-500,-1900)+260,-1900,-150,terrainH(-150,-4600)+2,-4600];
+ const dv=TB_PLACE.find(p=>p.key==='tb_devisers');if(dv)V['The Devisers house']=tbEye(dv.x-18,dv.z+52,dv.x,dv.z,0);
  const r=TB_PLACE.find(p=>p.kind==='house'&&p.cls==='rich');if(r)V['A street of the rich']=tbEye(r.x+Math.sin(r.ry)*10,r.z+Math.cos(r.ry)*10,r.x+Math.cos(r.ry)*40,r.z-Math.sin(r.ry)*40,0);
  const b=tbBlock(5,1);if(b)V['The Dalab mission']=tbEye(b.box[0]-20,(b.box[1]+b.box[3])/2+30,(b.box[0]+b.box[2])/2,(b.box[1]+b.box[3])/2,2);
  // north from the town's back: the riser, the mouth, Gāḍz-Phōl 20 km off under the gorge's walls

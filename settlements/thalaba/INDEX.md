@@ -4,7 +4,7 @@
 
 Docs: `KNOWN_ISSUES.md`, `PLAN.md`, `PORT.md`, `README.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/thalaba.html`
+Built output (never open it; edit `src/` and rebuild): `dist/thalaba-pieces.html`, `dist/thalaba.html`
 
 Build: `cd settlements/thalaba && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
@@ -14,6 +14,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `89t0-tb-matlib.js` | <1 |  |
+| `89t1-tb-pieces.js` | 6 | the Rare Devisers' house: 52 x 42 m, the front ( (11); a calcarone: 12 x 12 m, the tapping door to the  (43) |
 
 ## targets/
 
@@ -21,4 +22,5 @@ Each target adds its own fragments to `src/` and builds one output.
 
 | Target | Fragments | KB |
 |---|---|---|
-| `town` | `89z-rows.js`, `89zt-tb-site.js`, `90q-tb-world.js`, `90r-tb-build.js`, `90w-tb-water.js`, `91z-views.js` | 42 |
+| `pieces` | `89z-rows.js`, `91z-views.js` | <1 |
+| `town` | `89z-rows.js`, `89zt-tb-site.js`, `90q-tb-world.js`, `90r-tb-build.js`, `90w-tb-water.js`, `91z-views.js` | 43 |
