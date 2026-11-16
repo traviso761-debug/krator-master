@@ -93,12 +93,13 @@ What the numbers are:
 
 - **The hood's crown, fixed in the type (2026-11-15).** The hoods showed a slit of scalp from the brow to the crown
   (the owner's catch; my shots were at eye level and missed it). `types/headgear.py` `hood` now welds its two edges
-  where the face opening is shut. The Tungang hoods are rebuilt and shut (the sheet's last row). **The ten other
-  hoods and cowls built on `hood` are not rebuilt here** (`build_batch2_outfits.py` four, `build_geomancers.py`
-  three, `build_inspired_outfits.py`, `build_pc_outfits.py`, `build_yuni_military.py`, `historians.py`): they take the
-  fix when their cultures are next built, and should be looked at from above then.
-
-- **Not judged by eye by the owner.** The shot sheet is for that.
+  where the face opening is shut. The Tungang hoods are rebuilt and shut (the sheet's last row), and so are the
+  seventeen other head pieces built on `hood` (eleven on the man, six on the woman: the Voth priest and chosen, the
+  Yusar electropriest and electromonk, three Geomancers, the nomad patriarch, the Order's lancer and keeper, the Yuni
+  scout cowl): `handoff-shots/hoods-crown-2026-11-15.jpg`, each from above. Only those head pieces were rewritten;
+  the other 69 pieces their builders make were put back byte for byte, and no kit entry changed. To look at: the Voth
+  priest's helm shows ragged red patches of its cowl through the gold at the crown, and I have no shot from before
+  the fix to say whether they are new.
 - **A fringe covers the bare-headed goggles.** On the woman's `short03` the hair lies over one cup of `goggles_up`
   and `goggles_down` (the sheet's third row, right). The goggles do not hide hair (`covers_hair` would take all of
   it); the people's styles need a pass for the ones that clear the brow, or the goggles a hair mask.
