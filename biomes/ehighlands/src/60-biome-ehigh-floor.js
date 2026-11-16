@@ -169,10 +169,20 @@ EHIGH.buildFloor=function(R,q){
  BIO.grid(14,0,R,(x,z,d)=>{if(BIO.lodD(x,z)>L.mid)return 0;const Z=zones(x,z);return Z.cliff*(BIO.field('gully',x,z)>.2||Z.cold<.4?.5:0)*q;},
   (x,y,z,d)=>{const e=1.5,gx=Y(x+e,z)-Y(x-e,z),gz=Y(x,z+e)-Y(x,z-e),gl=Math.hypot(gx,gz)||1,nx=-gx/gl,nz=-gz/gl;
    // hang it on the face a little up from the foot, set out from the rock by its own depth
-   const m=ri(1,4),S0=rr(.45,.8),hx=x,hz=z,hy=Y(hx,hz)+S0*1.5+.6;
-   const sw=S0*(m+1.2)*.9;BIO.put('boulder',[hx-nx*.4,hy+.35,hz-nz*.4],qFacing([nx,0,nz]),[sw,.55,S0*2.4],rockTint(PAL.basalt));st.boulders++;
-   for(let k=0;k<m;k++){const s=S0*rr(.8,1.1),o=(k-(m-1)/2)*S0*.85;
-    BIO.put('comb',[hx+nz*o+nx*.2,hy,hz-nx*o+nz*.2],qFacing([nx,0,nz]),[s,s*rr(1.1,1.5),s],bright(vary(pick(PAL.comb),.02,.06,.05),1.15));st.combs++;}
+   /* AGAINST THE FACE AS DRAWN (2026-11-15, the owner: floating rocks on station 5, "A fall between the benches"): the overhang was hung
+      2-3 m up a cliff cell by terrainH and set .4 m into it, which holds on a sheer face; on an earth bank, and on the ground mesh's 11 m
+      cells (a gorge wall smeared across one), 370 of station 5's 851 overhangs touched no ground, the worst 9 m up. Now the height is
+      the drawn ground's (EHIGH.groundAt, 84), the slab is set back into the face until the back half of it is buried, the combs under its
+      lip, and where no setback within 3 m buries it the face is not sheer enough to hold one: nothing is hung there. Every draw is
+      taken as before, in the same order, so nothing else moves */
+   const GA=EHIGH.groundAt||Y,m=ri(1,4),S0=rr(.45,.8),hy0=GA(x,z)+S0*1.5+.6,D=S0*2.4,col=rockTint(PAL.basalt),cm=[];
+   for(let k=0;k<m;k++){const s=S0*rr(.8,1.1);cm.push([s,s*rr(1.1,1.5),bright(vary(pick(PAL.comb),.02,.06,.05),1.15)]);}
+   let sb=-1;for(let s=0;s<=3.001&&sb<0;s+=.25){const bx=x-nx*(.4+s+D*.5),bz=z-nz*(.4+s+D*.5),fx=x-nx*(s-.2),fz=z-nz*(s-.2);
+    if(GA(bx,bz)>=hy0+.35&&GA(fx,fz)<=hy0-.25)sb=s;}   /* the back half buried in the face, the combs' spot (under the lip) clear of it */
+   if(sb<0)return;
+   const hx=x-nx*sb,hz=z-nz*sb,hy=hy0,sw=S0*(m+1.2)*.9;BIO.put('boulder',[hx-nx*.4,hy+.35,hz-nz*.4],qFacing([nx,0,nz]),[sw,.55,D],col);st.boulders++;
+   for(let k=0;k<m;k++){const o=(k-(m-1)/2)*S0*.85;
+    BIO.put('comb',[hx+nz*o+nx*.2,hy,hz-nx*o+nz*.2],qFacing([nx,0,nz]),[cm[k][0],cm[k][1],cm[k][0]],cm[k][2]);st.combs++;}
    (EHIGH.COMBS||(EHIGH.COMBS=[])).push([hx,hy,hz]);},{patch:0,pad:1,noMask:true});
  return{under:st};};
 })();
