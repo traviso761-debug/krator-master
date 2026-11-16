@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Cut one region of the Krator Scale Model out as the data an open-world build reads (Option C Super-Resolution).
 
-    python3 tools/scale-model/extract_region.py <page.html> <regions dir> <settlements dir> "<region name>" <out dir> [--add <polygons.json>] [--upsample <N|auto>] [--no-synth] [--legacy-px] [--smooth]
+    python3 tools/scale-model/extract_region.py <page.html> <regions dir> <settlements dir> "<region name>" <out dir> [--add <polygons.json>] [--upsample <N|auto>] [--no-synth] [--legacy-px] [--smooth] [--relief]
 
 <page.html>        the model's data: tools/scale-model/model/data (the build's source), or a saved page (Artifact read,
                    or model/dist/scale-model.html), whose DATA object holds the rasters
@@ -17,6 +17,9 @@
                    1 = 2,000 m/cell, 2 = 1,000 m/cell, 4 = 500 m/cell, 8 = 250 m/cell, or 'auto' (default: 4 for
                    regional/biome/settlement cuts <= 180k map px, 2 for sub-continental cuts > 180k map px).
 --no-synth         (optional) disable Option C sub-cell geomorphological and fluvial synthesis on the upsampled grid.
+--relief           (optional; openworld/SITES.json "relief": 1) core/world's relief (core/world/PLAN-RELIEF.md, P1): the
+                   synthesis leaves out its ledges cut on the absolute height (the contour-line rings); region.json gains
+                   `relief`, and the page lays caprock benches and gives every overlay a land style of its own.
 --smooth           (optional; openworld/SITES.json "smooth": true) take out the model's linear artifacts (core/world/README.md,
                    "Smoothing"): the heights upsampled by the cubic B-spline (no overshoot, so no box clamp and none of
                    its axis streaks) and smoothed along their contours (core/world 40-world-smooth.js WSMOOTH.heights,
@@ -508,11 +511,14 @@ def upsample_heights_and_water(D, x0, y0, x1, y1, U, smooth=False):
 
 
 def synthesize_option_c_relief(D, elev, whas, wflag, bmap, biomes, omap, overlays, palaeo_masks, palaeo_lakes,
-                               x0, y0, cx, cy, i0, j0, su, sv, S):
+                               x0, y0, cx, cy, i0, j0, su, sv, S, relief=False):
     """Option C sub-cell geomorphological synthesis on the super-sampled regional height grid (su >= 2.0).
     Bakes sub-kilometre (250 m - 3,000 m) biome-specific landforms that lie below the 2 km/px Nyquist limit of the
     global scale model, guarded around settlements and shorelines."""
     ny, nx = elev.shape
+    # --relief (core/world/PLAN-RELIEF.md, P1): the ledges cut on the absolute height (frac = elev / step) ring every hill like
+    # a contour map; the page's caprock benches (core/world 43-world-relief.js) take their place, so they are left out here
+    L = 0.0 if relief else 1.0
     gx = (np.arange(nx, dtype=np.float64) + i0) / su
     gy = (np.arange(ny, dtype=np.float64) + j0) / sv
     GY, GX = np.meshgrid(gy, gx, indexing='ij')
@@ -631,7 +637,7 @@ def synthesize_option_c_relief(D, elev, whas, wflag, bmap, biomes, omap, overlay
         step_m = 48.0
         frac = (elev / step_m) - np.floor(elev / step_m)
         ledge = (_smoothstep(0.78, 0.96, frac) - frac) * step_m * 0.32 * _smoothstep(35.0, 160.0, rel_local)
-        dh += w_bad * (gully_incision + ledge + 14.0 * n_fine)
+        dh += w_bad * (gully_incision + L * ledge + 14.0 * n_fine)
 
     # 4. Stepped Tableland, Mesa Caprock & Loess Yuan Synthesis (sedesert, w outer wall, tiers, the cut, crater drylands)
     w_tab = fam_weight(fam_ids['tableland'])
@@ -640,7 +646,7 @@ def synthesize_option_c_relief(D, elev, whas, wflag, bmap, biomes, omap, overlay
         frac = (elev / step_m) - np.floor(elev / step_m)
         ledge = (_smoothstep(0.80, 0.96, frac) - frac) * step_m * 0.35 * _smoothstep(45.0, 220.0, rel_local)
         yuan_gully = -24.0 * np.power(np.clip(1.0 - r_meso, 0.0, 1.0), 3.2) * _smoothstep(25.0, 95.0, slope_m_km)
-        dh += w_tab * (ledge + yuan_gully + 10.0 * n_fine)
+        dh += w_tab * (L * ledge + yuan_gully + 10.0 * n_fine)
 
     # 5. Kalut Megayardang Flutes & Deflated Erg Dunes (the bowl, the catch, e abysss)
     w_yard = fam_weight(fam_ids['yardang'])
@@ -659,7 +665,7 @@ def synthesize_option_c_relief(D, elev, whas, wflag, bmap, biomes, omap, overlay
         step_m = 55.0
         frac = (elev / step_m) - np.floor(elev / step_m)
         chasm_ledge = (_smoothstep(0.82, 0.97, frac) - frac) * step_m * 0.38 * _smoothstep(80.0, 350.0, rel_local)
-        dh += w_maar * (arete_crisp + chasm_ledge)
+        dh += w_maar * (arete_crisp + L * chasm_ledge)
 
     # 7. Volcanic Barranco Chutes & Flood-Basalt Lava Steps (throne/volcano, godthrone, godstep valley)
     w_volc = fam_weight(fam_ids['volcanic'])
@@ -668,7 +674,7 @@ def synthesize_option_c_relief(D, elev, whas, wflag, bmap, biomes, omap, overlay
         step_m = 36.0
         frac = (elev / step_m) - np.floor(elev / step_m)
         lava_step = (_smoothstep(0.76, 0.95, frac) - frac) * step_m * 0.30 * _smoothstep(120.0, 35.0, slope_m_km)
-        dh += w_volc * (barranco + lava_step + 12.0 * n_fine)
+        dh += w_volc * (barranco + L * lava_step + 12.0 * n_fine)
 
     # 8. Alpine Arête, Cirque & Permafrost Alas Synthesis (highlands, outer walls, rift rims, outlands)
     w_alp = fam_weight(fam_ids['alpine'])
@@ -723,7 +729,7 @@ def synthesize_option_c_relief(D, elev, whas, wflag, bmap, biomes, omap, overlay
             fb = (elev / step_b) - np.floor(elev / step_b)
             basalt_ledge = (_smoothstep(0.72, 0.94, fb) - fb) * step_b * 0.42
             kolk_cut = -18.0 * np.power(np.clip(-n_fine, 0.0, 1.0), 2.6)
-            dh += in_coulee * (basalt_ledge + kolk_cut)
+            dh += in_coulee * (L * basalt_ledge + kolk_cut)
 
     # 13. Palaeolake Full-Pool Wave-Cut Shoreline Benches (+900 m, +1,050 m, +834 m)
     if palaeo_masks and palaeo_lakes:
@@ -1111,7 +1117,8 @@ def main():
     do_synth = True
     legacy_px_flag = False
     do_smooth = '--smooth' in argv
-    argv = [a for a in argv if a != '--smooth']
+    do_relief = '--relief' in argv
+    argv = [a for a in argv if a not in ('--smooth', '--relief')]
     while '--add' in argv or '--upsample' in argv or '--no-synth' in argv or '--legacy-px' in argv:
         if '--add' in argv:
             k = argv.index('--add')
@@ -1234,7 +1241,7 @@ def main():
     palaeo, palaeo_masks, palaeo_lakes = palaeo_waters(D, (x0, y0, x1, y1), (i0, j0, nx, ny), su, sv, cx, cy, out)
     if do_synth and su >= 1.5:
         elev = synthesize_option_c_relief(D, elev, whas, wflag, bmap, biomes, omap, overlays,
-                                          palaeo_masks, palaeo_lakes, x0, y0, cx, cy, i0, j0, su, sv, S)
+                                          palaeo_masks, palaeo_lakes, x0, y0, cx, cy, i0, j0, su, sv, S, relief=do_relief)
         if do_smooth:
             elev = carve_smooth_rivers(D, elev, whas, wflag, wlev, i0, j0, su, sv, cx, cy, curves)
         else:
@@ -1488,6 +1495,10 @@ def main():
                           'upsample': 'cubic B-spline', 'river_step': SMOOTH_RIVER_STEP,
                           'note': 'core/world/README.md, "Smoothing": each river record keeps every drawn vertex; the page carves '
                                   'WSMOOTH.river through them unwarped, as the cut carved its trench'}
+    if do_relief:   # the page reads it (41-world-fields.js, 43-world-relief.js): styles for every overlay, caprock benches
+        meta['relief'] = {'version': 1, 'phase': 1, 'by': 'core/world/43-world-relief.js', 'seed': 5391948,
+                          'note': 'core/world/PLAN-RELIEF.md: the cut leaves out its ledges on the absolute height; the page lays '
+                                  'caprock benches instead and gives every overlay a land style of its own'}
     json.dump(meta, open(os.path.join(out, 'region.json'), 'w', encoding='utf-8', newline='\n'), separators=(',', ':'))
     print('region %s: box px %s, %d x %d px, polygon %d km2' % (reg['name'], [x0, y0, x1, y1], W, H, meta['region']['area_km2']))
     print('heights %d x %d cells (%.0f m/cell, su=%.2f, synth=%s); %d channels, %d vertices; %d water cells lowered to their spill height' % (

@@ -260,6 +260,56 @@ Each one changes `WORLD.H`, so each turn:
 | **P6 The cut hands over** (R8) | The cut's sub-cell families dropped under the flag; re-cut | Once P1 to P5 cover each family |
 | **P7 The kinds, by biome** (S6, S8 to S15) | Each one goes onto the record engine, in the order the regions being built need them. Today that is the Oidong and High Rift region first: volcanic (S9) for the High Rift's coulées and vents, faults (S10) for its gjá, small water (S12) for its tarns and sinter dams, geothermal (S15). Then karst (S8, k-guilin and nwbay), glacial (S11), dry and wind (S13), flood scour (S14), fluvial (S6) | Each is small on its own, since the shapes exist. The order follows where the open world goes next |
 
+### Done so far
+
+**P0, the evidence (2026-11-15).** `python3 core/world/landshade.py <region> <out.png> --at <spot> [--core <dir>] [--bench]`
+samples the page's land (`WORLD.Hbare`) at 10 m in node and prints two measures:
+- **ringed tiles:** the share of 500 m tiles where the detail under 30 m lines up with the contours (a tile is ringed over
+  0.65; noise reads about 0.5);
+- **the band contrast.**
+
+Four spots, before:
+
+| Spot | Style | Ringed tiles | `WORLD.H` per call |
+|---|---|---|---|
+| The High Rift | `desert` by the fallback | 19 % | 0.8 to 1.8 µs |
+| Pinnacle's NE rim | savanna | 4 % | 2.6 µs |
+| Pinnacle's jungle | — | none | — |
+| The Oidong floor | — | none | — |
+
+The High Rift's hillshade shows the rings plainly: concentric risers 200 to 250 m apart. In pinnacle's cut grid, the
+60 m band contrast was 2.57 (the cut's tableland ledges).
+
+**P1, styles and caprock benches (2026-11-15).**
+- `43-world-relief.js` (`WRELIEF`):
+  - `styleOf` gives every model overlay a land style by its family. The 30 overlays in the cut regions all have one.
+    Only the shape takes it: the colours stay as they were, so no colour moves (a palette per style is the owner's call).
+  - `bench` lays terraces only on caprock: patches of a formation, about a third of the ground. The beds dip and warp
+    (a structure surface of 0.5 to 2 %) and their thickness is irregular. Only the hard ones (4 in 10) make a tread.
+- `extract_region.py --relief` leaves out the cut's ledges on the absolute height (tableland, badland, maar, volcanic,
+  the scabland coulees).
+- On for `pinnacle` and `oidong-highrift`.
+- `node core/world/test-relief.js`:
+
+  | Measure, in caprock | Old rule | Benches |
+  |---|---|---|
+  | Band contrast | 44.6 | 1.32 (bare ground 1.24) |
+  | Treads | 86 % | 36 % |
+
+  Also checked: the treads stand at irregular heights; the ground is exact where no caprock lies; the land is
+  continuous; two cuts of one place agree. Each check has a negative.
+- **After:**
+  - the High Rift's rings are gone (its hillshade);
+  - its ringed tiles read 12 %, the metric's noise floor;
+  - pinnacle's cut-grid band at 60 m reads 1.25.
+- **Cost:** `WORLD.H` costs about twice as much where benches lie (5.6 µs against 2.8 on the NE rim), within the plan's
+  limit, and the same elsewhere.
+- **Re-baked:**
+  - pinnacle: the plan is unchanged (`10e4ebe9`);
+  - oidong-highrift (`4cd51975`): 23 hamlets and 937 records, 15 bridges, 123 piers where there were 125.
+- **Left for P2:** the page's old gully noise (`|2*fbm-1|^6` at 240 m) shows as worm-like ridges on the High Rift. The
+  erosion filter replaces it.
+
 ## 6. Risks
 
 - **Sites move:**

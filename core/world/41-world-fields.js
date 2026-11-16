@@ -82,6 +82,10 @@ const lin=h=>{const r=(h>>16&255)/255,g=(h>>8&255)/255,b=(h&255)/255,f=c=>c<.040
 // ---------------------------------------------------------------- the rasters
 let M,nx,ny,i0,j0,su,sv,cx,cy,X0,Y0,MW,MH,EL,WLV,WHAS,REL,CL,RN,TP,BI,MK,SL,SU,SW;
 let SID,KIT,STY,PALL,NB,CLCODE,CLGROUP;
+// a region with region.json `relief` (core/world/PLAN-RELIEF.md; 43-world-relief.js): every overlay's land takes a style of its
+// own (WRELIEF.styleOf, where BIOME_STYLE names none; its colours stay BIOME_STYLE's or 'desert'), and terraces lie only on
+// caprock (WRELIEF.bench) instead of on the absolute height
+let RELIEF=false;
 // the kits (47-world-kits.js) are read at init: which overlay each grows on
 let KITNAMES=[];W.KITS=KITNAMES;
 W.init=function(R){M=WORLD_DATA.meta;const Hd=M.heights,F=M.frame;
@@ -96,8 +100,11 @@ W.init=function(R){M=WORLD_DATA.meta;const Hd=M.heights,F=M.frame;
  KITNAMES=WORLD_KITS.map(k=>k.name);W.KITS=KITNAMES;
  NB=M.biomes.length;SID=[];KIT=new Int8Array(NB).fill(-1);STY={};PALL=[];
  SKEYS.forEach(k=>STY[k]=new Float32Array(NB));
- M.biomes.forEach((b,i)=>{const st=BIOME_STYLE[b.name.toLowerCase()]||'desert';SID[i]=st;
-  SKEYS.forEach(k=>STY[k][i]=STYLES[st][k]);KIT[i]=WORLD_KITS.findIndex(k=>k.overlay===b.name.toLowerCase());
+ RELIEF=!!M.relief;
+ if(RELIEF){if(typeof WRELIEF==='undefined')throw new Error('41-world-fields: region.json asks for core/world relief: list 43-world-relief.js before 41');
+  WRELIEF.init({ox:cx*2000,oz:cy*2000,seed:M.relief.seed});}
+ M.biomes.forEach((b,i)=>{const nm=b.name.toLowerCase(),st=BIOME_STYLE[nm]||'desert',sh=RELIEF?(BIOME_STYLE[nm]||WRELIEF.styleOf(nm)||'desert'):st;SID[i]=st;
+  SKEYS.forEach(k=>STY[k][i]=STYLES[sh][k]);KIT[i]=WORLD_KITS.findIndex(k=>k.overlay===b.name.toLowerCase());
   const P=PAL[st],o={};for(const k in P)o[k]=lin(P[k]);PALL[i]=o;});
  CLCODE=M.classes.map(c=>c.code);CLGROUP=M.classes.map(c=>c.group);
  buildChannels();buildRoads();buildTowns();W.ready=true;};
@@ -340,7 +347,8 @@ function H(x,z,minWave,P,nr,nt){minWave=minWave||0;
  let h=b+(N1.fbm(x/6000,z/6000,4)-.5)*2*clamp(rel*.12,12,420)*S.hills*(1-.75*SC.w);   // the cliff's band keeps its plateau and floor level
  if(minWave<1700){const r=1-Math.abs(2*N2.fbm(x/1700,z/1700,3)-1);h+=(r*r-.35)*clamp(rel*.06,6,200)*S.ridge;}
  // terraces where the relief allows mesas: flat treads, risers a fraction of each step
- if(S.terr>.01&&minWave<600){const tm=S.terr*smooth(40,250,rel)*smooth(4200,1800,rel);
+ if(RELIEF)h=WRELIEF.bench(h,x,z,S,rel,minWave);
+ else if(S.terr>.01&&minWave<600){const tm=S.terr*smooth(40,250,rel)*smooth(4200,1800,rel);
   if(tm>.01){const step=S.step*(.75+.5*N6.vn(x/9000,z/9000)),t=h/step,fl=Math.floor(t),f=t-fl,k=.14;
    const g=f<1-k?0:smooth(1-k,1,f);h=lerp(h,(fl+g)*step,tm);}}
  // dune seas: dry, flat and in patches; transverse ridges across the WNW wind, a gentle stoss and a steep lee

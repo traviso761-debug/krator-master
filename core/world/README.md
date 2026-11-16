@@ -10,6 +10,7 @@ page that reads it came out byte-identical after the move.
 |---|---|---|
 | `00-head.html` | [web] | the page shell; a region's `build.py` swaps in its title and caption |
 | `40-world-smooth.js` | [G data] | `WSMOOTH`: the smoothing that takes the scale model's linear artifacts out of the land ("Smoothing" below): `heights` (along the contours, at the cut), `river` and `line` (the curves a smoothed region carves). A smoothed region's build lists it before `41` |
+| `43-world-relief.js` | [G data] | `WRELIEF`: the land below the model's 2 km (`PLAN-RELIEF.md`). So far (P1): a land style for every overlay (`styleOf`) and terraces only on caprock (`bench`). A region with region.json `relief` lists it before `41` |
 | `41-world-fields.js` | [G data] | `WORLD`: the region's rasters decoded into the land. It holds:<ul><li>`WORLD.H(x, z, minWave)`: the model's heights, synthesized relief, scarps, river channels and `landHook`;</li><li>the water (`water`, `lakeWater`, `riverWater`);</li><li>the fields every kit reads (`at`, `fieldsFrom`);</li><li>`townW`, `clearHook`, the climate's colour.</li></ul> |
 | `42-world-roads.js` | [G data] | `ROADS`: least-cost routing on the land at a held grade; the carriageway shaped into the ground |
 | `45-world-host.js` | [web] | the renderer, scene and frame loop the world draws into |

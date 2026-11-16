@@ -11,6 +11,7 @@
    "polygons": [],
    "upsample": "auto",
    "smooth": true,
+   "relief": 1,
    "note": "the first site (the owner, 2026-11-09): the town on its mesa stays settlements/pinnacle-rock's own; the site holds its countryside, bands and roads planned on the world's ground"
   },
   "xanadu-oidong-highrift": {
@@ -37,6 +38,7 @@
    "polygons": ["rmuklrcae6jb5", "rmvhighrift100"],
    "upsample": "auto",
    "smooth": true,
+   "relief": 1,
    "note": "the owner, 2026-11-11 (core/simulation/PROPOSAL-LONGSONG-PINNACLE.md section 6): Longsong moves onto the open world's ground, cut from the Oidong Valley and the High Rift out of the xanadu-oidong-highrift region; the Singing Gjar outpost and its two work camps, and the Order's two accessory houses (the owner: 'one or two other accessory monasteries in places that look strategic or very productive'). The two polygons hold the Mirror Graben and the beck road whole, so the outpost's grain trade stays inside the cut"
   }
  },

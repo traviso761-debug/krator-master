@@ -99,6 +99,8 @@ def cut(region, dry=False):
         cmd += ['--add', os.path.join(src, 'added-areas.json')]
     if G.get('smooth'):   # the region opts into core/world's smoothing (core/world/README.md, "Smoothing")
         cmd += ['--smooth']
+    if G.get('relief'):   # and into its relief (core/world/PLAN-RELIEF.md)
+        cmd += ['--relief']
     for p in P:
         xs = [q[0] for q in p['map_px']]; ys = [q[1] for q in p['map_px']]
         print('  %-56s px %7.1f..%7.1f x %7.1f..%7.1f' % (p['name'][:56], min(xs), max(xs), min(ys), max(ys)))

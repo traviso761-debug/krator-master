@@ -11,6 +11,9 @@ PROPOSAL-LONGSONG-PINNACLE.md` holds the economy it is planned for.
     - the page lists `core/world/40-world-smooth.js`.
     Longsong's pin is still on the Bīruk al-Ghaym's south bank: the river as the page draws it runs 401 m north (502 m
     before), and the pin's ground stands 12 m over the river's water.
+  - **Relief** (`"relief": 1`, 2026-11-15; `core/world/PLAN-RELIEF.md`, P1): the High Rift and Xanadu fell back to the
+    `desert` style, whose terraces ringed every hill like a contour map. They are `highland` now, with terraces only on
+    caprock. The page lists `core/world/43-world-relief.js`. Re-baked: 23 hamlets and 937 records stand, 15 bridges.
   - the Oidong Valley (17,257 px inside the cut);
   - the High Rift (21,261 px);
   - four sites' squares.
