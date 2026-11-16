@@ -135,6 +135,7 @@ XA.def({key:'xa_scrap_serai',name:'Terminus Serai',family:'Scrap: trade',tags:XS
 function buildXaScrapGate(G,o){reseed(33051+(o.v|0));XS_SEED=33051+(o.v|0);const V=xV(o),S=xsS(V),lit=xLit(),TZ=4;
  const wash=xC(xPick(XPAL.wash)),dark=xC(XPAL.dark[0]);let tt=0;
  for(const s of[-1,1]){const x=s*6.5,k=xnWall(x,0,TZ,7,5,7,0,wash,'wash'),tw=7*k-.1;xnBand(x,5,TZ,tw+.1,tw+.1,0,.4);
+  vnDoor(x,0,TZ-3.5+.05,Math.PI,1.1,2.3,'xPaint',xC(S.frame[0]),dark);   /* the tower's door, on the yard behind the gate (its interior: kits/interiors/sets/xanadu-scrap.js) */
   tt=xnXSBlock(x,5.4,TZ,tw,10,tw,0,{S,pat:XS_PATS[V===1?3:0],sh:3.33,win:{rows:[1,2],every:2,faces:[0,1,2,3]},lit});
   xnXSRoof(x,tt,TZ,tw+.6,tw+.6,0,.3,S);
   for(let i=0;i<3;i++)for(let f=0;f<4;f++){const p=loc(x,TZ,(i-1)*1.9,tw/2+.05,XS_YAW[f]);vB('xsShellB',p[0],tt+.3,p[1],1.0,1.1,.45,XS_YAW[f],xC(i===1?S.b:S.a));

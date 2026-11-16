@@ -817,12 +817,12 @@
    "sha256": "506cedc7eae5860bb7a092f7ee751691a612d0759cdbf4ccccc5a3b5ba7ee7a2"
   },
   "kits/interiors/dist/interiors-sets.html": {
-   "bytes": 734495,
-   "sha256": "8db212b3feba89b8ce4783421ea28fda84b4ea837d8d9e6fa856be0dd636bdad"
+   "bytes": 769493,
+   "sha256": "1dec8b0f8d48f003f5bd0a7878975f7a83149d2ea223eaa79b6d74a549bba0d6"
   },
   "kits/interiors/dist/interiors-walk.html": {
-   "bytes": 10304748,
-   "sha256": "9b6b1a5d279f494fbc0c80dfacfd08f903d639151c719a43cc2e952c8831e3b7"
+   "bytes": 10336973,
+   "sha256": "8b02c6406101760187f5d5f713d22da20a952cca23553e0b03b71f99910cefe8"
   },
   "kits/interiors/dist/interiors.html": {
    "bytes": 261765,
@@ -1313,8 +1313,8 @@
    "sha256": "b5b4ca87b0476b22030e1576861f2255520d07b249701b675571726ca266f4e3"
   },
   "settlements/xanadu/dist/xanadu-scrap.html": {
-   "bytes": 6351819,
-   "sha256": "23b91b3a966f7fb291f17488b660cc9bcfc8e2f14dc48c67aa8f96c22c1d997a"
+   "bytes": 6351996,
+   "sha256": "563969ac9ea052753128b1ee5af20a3f2b3a9d0bb981fd591d72ede448d73cfb"
   },
   "settlements/xanadu/dist/xanadu.html": {
    "bytes": 6262060,

@@ -9,7 +9,9 @@ page's nor another kit's:
 
     XAK.proto(key, v)   the def built once at the origin on flat ground into a new group (its kit items baked as
                         InstancedMeshes, per instance colours kept; userData.doors its doors as core/door records, all
-                        locked); null for a key the kit lacks
+                        locked); null for a key the kit lacks. The scrap bundle takes XAK.proto(key, v, {unlocked: true}):
+                        the scrap defs with an interior (kits/interiors/sets/xanadu-scrap.js, SCRAP_OPEN below) hand their
+                        doors back unlocked, for a host that places the interior and opens the leaves through core/door
     XAK.dims()          {key: {w, d, h, fw, fd, name, family, types, wealth, variants}} for every def
     XAK.bind(KMAT)      binds the library maps onto the kit's MAT from the page's KMAT, where the page registered the
                         pack 'xanadu' (tools/textures/matlib_pack.fragment(settlements/xanadu, 'xanadu')): the kit page's
@@ -117,6 +119,19 @@ return { proto: xakProto, dims: xakDims, bind: xakBind, rotors: xakRotors, VERN:
 DOOR_BIND = 'KDOOR = XAK_WIN.KDOOR; KGLASS = XAK_WIN.KGLASS;' + NL
 RAND_BIND = 'KRAND = XAK_WIN.KRAND;' + NL
 
+# Scrap Xanadu's interiors (kits/interiors/sets/xanadu-scrap.js) stand behind these defs' doors: with them placed, a leaf opens.
+# XAK.proto(key, v, {unlocked: true}) hands those defs' door records back unlocked (core/door: a host registers them in its KDOOR
+# and opens them as the walker comes; KDOOR.clearDoorways switches off the interior's door blocks). The scrap bundle only:
+# without scrap=True the tail is byte for byte what it was.
+SCRAP_OPEN = ['xa_scrap_house', 'xa_scrap_row', 'xa_scrap_court', 'xa_scrap_bazaar', 'xa_scrap_serai', 'xa_scrap_gate', 'xa_scrap_tower',
+              'xa_scrap_shrine', 'xa_scrap_bridge', 'xa_scrap_guild_salvage', 'xa_scrap_guild_hall', 'xa_scrap_store', 'xa_scrap_bath',
+              'xa_scrap_tank_house', 'xa_scrap_silos', 'xa_scrap_hull', 'xa_scrap_glint', 'xa_scrap_shacks', 'xa_scrap_farm']
+SCRAP_LOCK_OLD = 'w: R.w, h: R.h, t: R.t, locked: R.locked, idx: R.idx }; });'
+SCRAP_LOCK_NEW = ('w: R.w, h: R.h, t: R.t, locked: o.unlocked && XAK_OPEN.indexOf(key) >= 0 ? false : R.locked, idx: R.idx }; });')
+SCRAP_TAIL_HEAD = ('/* the defs whose doors open onto an interior (kits/interiors/sets/xanadu-scrap.js): XAK.proto(key, v, {unlocked: true}) '
+                   'returns their door records unlocked; every other door stays locked (a solid body) */' + NL +
+                   'var XAK_OPEN = ' + repr(SCRAP_OPEN).replace("'", '"') + ';' + NL)
+
 
 def bundle(key='XAK', scrap=False):
     """scrap=True adds Scrap Xanadu (kits/xanadu/PLAN-SCRAP.md: the xa_scrap_* defs) and core/rand (its KRAND lands on the
@@ -124,10 +139,13 @@ def bundle(key='XAK', scrap=False):
     fs = files(scrap)
     body = ''.join('/* ---- %s ---- */%s%s%s;%s' % (rel(f), NL, rd(f), NL, NL) + (DOOR_BIND if f.endswith('20-core-glass.js') else '')
                    + (RAND_BIND if f.endswith('08-core-rand.js') else '') for f in fs)
+    tail = TAIL
     if scrap:
         body = 'var KRAND;' + NL + body
+        assert SCRAP_LOCK_OLD in tail, 'kit_bundle: the proto door line moved; update SCRAP_LOCK_OLD'
+        tail = SCRAP_TAIL_HEAD + tail.replace(SCRAP_LOCK_OLD, SCRAP_LOCK_NEW)
     js = ('/* %s: the Xanadu building kit and its Ancients core in one closure (kits/xanadu/kit_bundle.py). GENERATED: '
-          'edit kits/xanadu/src, kits/ancients/src, kits/iziz-vernacular/src or core/materials. */' % key + NL + 'var %s = (function(){' % key + NL + HEAD + body + TAIL +
+          'edit kits/xanadu/src, kits/ancients/src, kits/iziz-vernacular/src or core/materials. */' % key + NL + 'var %s = (function(){' % key + NL + HEAD + body + tail +
           '})();' + NL)
     return safe(js), [rel(f) for f in fs]
 
