@@ -9,6 +9,8 @@ Built output (never open it; edit `src/` and rebuild): `dist/coyote.html`
 Build: `cd kits/coyote && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
 
+From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-materials.js`, `68-mat-v5.js`
+
 From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
 
 From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-loop.js`, `92-host-panel.js`, `95-host-probe.js`, `94-host-polytool.js`, `92k-host-keys.js`
@@ -20,8 +22,11 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `00-head.html` | 1 |  |
 | `26k-kit.js` | 4 |  |
 | `32-cy-contour.js` | 5 | kits/coyote 32: the contour script (plain data,  (1) |
-| `40-cy-kit.js` | 9 |  |
-| `50-cy-valley.js` | 5 |  |
-| `60-cy-stones.js` | 1 |  |
-| `89-rows.js` | <1 |  |
+| `34-cy-rows.js` | 2 | kits/coyote 34: the Coyote rows for core/hamlet, (1) |
+| `40-cy-kit.js` | 12 | the room's goods and marks (C2) (93) |
+| `50-cy-valley.js` | 12 |  |
+| `52-cy-works.js` | 10 |  |
+| `56-cy-village.js` | 5 |  |
+| `60-cy-stones.js` | 5 |  |
+| `89-rows.js` | 1 |  |
 | `99-host-tz-cy.js` | 4 |  |

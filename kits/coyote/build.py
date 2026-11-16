@@ -95,6 +95,13 @@ CORE_HOST = khost.SHELL + kengine.HOST   # the polygon tool and the one key map 
 CORE_DIRS = [os.path.join(ROOT, 'core', *d.split('/')) for d in ('shader', 'rand', 'materials/record', 'tags', 'furnish', 'atmos', 'door', 'walk', 'walk/box')]
 assert set(kengine.CORE_DIRS) <= {'shader', 'rand', 'materials/record', 'tags', 'furnish', 'atmos', 'door', 'walk', 'walk/box'}, \
     'core/engine/engine.py CORE_DIRS grew: list the new folder here'
+# single core files the kit takes (C2): core/space (KSPACE, which core/hamlet files its footprints in), core/hamlet's villages up to
+# the platform and the trade post (10-34; 40-hamlet-felling.js is the biome kits' timber pass, not taken), and core/city's shared
+# primitives file that core/hamlet reads (33-city-strategies.js: KCITY.prim), READ IN PLACE: this kit edits nothing under core/city
+_HAMLET = os.path.join(ROOT, 'core', 'hamlet')
+CORE_FILES = [os.path.join(ROOT, 'core', 'space', '20-core-space.js'),
+              os.path.join(ROOT, 'core', 'city', '33-city-strategies.js')] + \
+             [os.path.join(_HAMLET, f) for f in sorted(os.listdir(_HAMLET)) if re.match(r'\d\d-hamlet-.*\.js$', f) and f < '40']
 VENDORED = {}
 # GENERATED fragments, never written to src/
 FURN_CULTURES = ['generic', 'generic-goods', 'jobs']   # the shared goods and the trades until the coyote culture file (C8)
@@ -155,6 +162,7 @@ def sources():
     paths.update({f: khost.path(f) for f in CORE_HOST})
     paths.update(psky.paths(psky.SKY))
     paths.update(kengine.paths())
+    paths.update({os.path.basename(p): p for p in CORE_FILES})
     core = dict(paths)
     paths.update(READ_IN_PLACE)   # not core: the build's checks apply to them
     paths.update({f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()})   # a src/ copy overrides the core one

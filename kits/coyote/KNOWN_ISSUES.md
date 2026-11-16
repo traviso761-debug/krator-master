@@ -12,3 +12,9 @@
   (`KWALKBOX.ladder`) the flood climbs by stepping between neighbouring cells, and against a wall the walker's 0.25 m radius
   leaves too few 0.4 m cells to step between. The ladders lean at rise/run 2.4 (`CY.LEAN`).
 - [ ] **The ear door** is the owner's to judge in practice (PLAN.md section 2).
+- [ ] **The Valley village has a yard in its middle**: `KHAMLET.platform` lays a plaza and rings of rooms round it (the pueblo's
+  pattern), and puts the sunk rooms in it; Catalhoyuk had no central plaza, only middens where houses had fallen. The layout
+  is core/hamlet's; a Catalhoyuk packing (no plaza, open middens, storeys by age not by ring) would be an option there, asked
+  of the owner before it is written.
+- [ ] **On the sheet the sunk rooms stand in the ground** (`89-rows.js` places them 2.6 and 2.8 m down, as in the yard), so
+  their painted interiors are hidden by the sheet's ground plane even in the cut-away; the village's are reached by the walk.

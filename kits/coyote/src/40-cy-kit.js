@@ -48,13 +48,14 @@ function cyWall(x0,z0,x1,z1,y0,h,o){o=o||{};const t=o.t==null?CY.WALL:o.t,soc=o.
    const open=holes.filter(q=>q.a<m&&q.b>m).map(q=>[q.y0,q.y1]).sort((p,q)=>p[0]-q[0]);
    let y=y0;for(const r of open){if(r[0]>y)run(a,b,y,r[0]);y=Math.max(y,r[1]);}
    run(a,b,y,y0+h);}});}
-function cyRoof(x0,z0,x1,z1,y,o){o=o||{};const t=o.t==null?.24:o.t,over=o.over==null?.35:o.over,w=x1-x0,d=z1-z0,acrossX=w<d;
+/* o.flush: the slab exactly the box (x0..x1, z0..z1), the beams inside it: roofs that meet their neighbours' in a village */
+function cyRoof(x0,z0,x1,z1,y,o){o=o||{};const t=o.t==null?.24:o.t,over=o.over==null?(o.flush?-.05:.35):o.over,w=x1-x0,d=z1-z0,acrossX=w<d,gr=o.flush?0:.12;
  svNoWalk(()=>{const n=Math.max(3,Math.round((acrossX?d:w)/.55));
   for(let i=0;i<n;i++){const f=(i+.5)/n,r=.075+rr(-.01,.015);
    if(acrossX){const z=z0+f*d;pole('timber',[x0-over,y-.08,z],[x1+over,y-.08,z],r,P('timber'),7);}
    else{const x=x0+f*w;pole('timber',[x,y-.08,z0-over],[x,y-.08,z1+over],r,P('timber'),7);}}
   box('reed',(x0+x1)/2,y-.005,(z0+z1)/2,w+.02,.03,d+.02,P('reed'));});
- svWell('roof',(x0+x1)/2,y+.02,(z0+z1)/2,w+.12,t-.02,d+.12,o.col==null?P('roof'):o.col,o.hole||null);
+ svWell('roof',(x0+x1)/2,y+.02,(z0+z1)/2,w+gr,t-.02,d+gr,o.col==null?P('roof'):o.col,o.hole||null);
  return y+t;}
 function cyHatchFrame(h,y,open){const k=.16,hh=.18;const sides=[['n',h.x0,h.x1,h.z0-k,h.z0],['s',h.x0,h.x1,h.z1,h.z1+k],['w',h.x0-k,h.x0,h.z0-k,h.z1+k],['e',h.x1,h.x1+k,h.z0-k,h.z1+k]];
  for(const s of sides)if(s[0]!==open)box('render',(s[1]+s[2])/2,y,(s[3]+s[4])/2,s[2]-s[1],hh,s[4]-s[3],P('mudL'));}
@@ -89,3 +90,30 @@ function cyCarve(C,cx,y0,zf,w,h,o){o=o||{};if(!C||!C.length)return 0;const dp=o.
   if(Math.abs(dx)<.05*Math.abs(dy))box(mk,(ax+bx)/2,Math.min(ay,by)-lw/2,z,lw,Math.abs(dy)+lw,dp,col);
   else{const ex=dx/L*lw/2,ey=dy/L*lw/2;beam(mk,[ax-ex,ay-ey,z],[bx+ex,by+ey,z],dp,col,false,0,lw);}n++;}});});
  return n;}
+// ---------------------------------------------------------------- the room's goods and marks (C2)
+//   cyHorns(x,y,z,yaw,o)         a plastered pillar against a wall (+z out of it) set with horns: Catalhoyuk's bucrania, here goat
+//                                horns in pairs up the pillar and a coyote skull at its head (o.n pairs, default 2)
+//   cyBird(x,y,z,s,col)          the runner bird painted on a face (+z out of it): a running ground bird in profile, s its length
+//   cyJar(x,z,o)                 a storage jar on the floor (o.h, o.r, o.y)
+//   cyQuern(x,z,yaw)             a saddle quern: the lower stone on a mud kerb, the hand stone on it
+//   cyLoom(x,z,yaw,o)            an upright warp-weighted loom against a wall: two posts, the beam, the warp, the weights, the cloth
+function cyHorns(x,y,z,yaw,o){o=o||{};const n=o.n==null?2:o.n,h=.55+n*.42;
+ W(x,y,z,yaw,()=>{box('lime',0,0,-.12,.5,h,.24,P('lime'));
+  for(let i=0;i<n;i++){const yy=.45+i*.42;box('lime',0,yy-.04,.02,.34,.16,.12,P('lime'));
+   for(const s of [-1,1]){const a=[s*.12,yy+.04,.08],b=[s*.36,yy+.26,.16];pole('bone',a,b,.035,P('horn'),6);pole('bone',b,[s*.4,yy+.38,.1],.022,P('horn'),5);}}
+  const ty=h+.02;sph('bone',0,ty+.08,.04,.11,P('bone'),.85,8);cone('bone',0,ty+.06,.14,.05,.18,P('bone'),7);
+  for(const s of [-1,1])cone('bone',s*.07,ty+.15,.0,.035,.1,P('bone'),5);});}
+function cyBird(x,y,z,s,col){col=col==null?P('red'):col;const d=.006;
+ W(x,y,z,0,()=>{ellip('plain',0,0,d,s*.28,s*.12,d,col,0,8);
+  beam('plain',[s*.2,s*.04,d],[s*.62,s*.1,d],d,col,false,0,s*.06);
+  beam('plain',[-s*.18,s*.06,d],[-s*.3,s*.3,d],d,col,false,0,s*.05);ellip('plain',-s*.34,s*.33,d,s*.08,s*.055,d,col,0,6);
+  beam('plain',[-s*.4,s*.33,d],[-s*.52,s*.31,d],d,col,false,0,s*.025);
+  for(const k of [-1,1]){beam('plain',[k*s*.04,-s*.08,d],[k*s*.16,-s*.3,d],d,col,false,0,s*.03);beam('plain',[k*s*.16,-s*.3,d],[k*s*.1+s*.04,-s*.46,d],d,col,false,0,s*.025);}});}
+function cyJar(x,z,o){o=o||{};const h=o.h==null?.7:o.h,r=o.r==null?.24:o.r,y=o.y==null?0:o.y;
+ svNoWalk(()=>lathe('render',x,z,[[r*.45,y],[r,y+h*.3],[r*.95,y+h*.7],[r*.5,y+h*.92],[r*.55,y+h]],12,P('ochre')));}
+function cyQuern(x,z,yaw){W(x,0,z,yaw,()=>{box('lime',0,0,0,.8,.28,.5,P('lime'));box('slab',0,.28,0,.62,.08,.36,P('stone'));box('slab',.05,.36,0,.22,.07,.18,P('carve'));});}
+function cyLoom(x,z,yaw,o){o=o||{};const w=o.w==null?1.4:o.w,h=o.h==null?2.0:o.h;
+ W(x,0,z,yaw,()=>{for(const s of [-1,1])pole('timber',[s*w/2,0,-.05],[s*w/2,h,-.12],.04,P('timber'),6);
+  pole('timber',[-w/2-.05,h-.1,-.12],[w/2+.05,h-.1,-.12],.035,P('timber'),6);
+  box('plain',0,h*.55,-.09,w-.15,h*.38,.01,o.col==null?new THREE.Color(.62,.42,.12):o.col);
+  for(let i=0;i<9;i++){const xx=-w/2+.12+i*(w-.24)/8;box('plain',xx,.25,-.07,.006,h*.3,.006,P('bone'));sph('render',xx,.22,-.07,.05,P('mudD'),1,6);}});}
