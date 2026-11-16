@@ -608,12 +608,23 @@ W.clearHook=null;
 // ---------------------------------------------------------------- the height
 // P (optional) receives the parts the fields need: base, relief, the style blend, the channel's distance and cut.
 // nr: leave the roads out (the routing reads the land as it was); nt: leave the towns out
+// THE MASKS (relief P14, S16 and R7): where the relief's own parts (benches, gullies, peaks, fans) must not reshape the land:
+// under the model's water (its wet cells read bilinearly, so the relief fades over one cell's edge toward a shore) and inside
+// a town's footprint (easing back in over its band, as the town's own ground eases out). 1 elsewhere
+let WHASF=null;
+function reliefMask(x,z){if(!WHASF){WHASF=new Float32Array(nx*ny);for(let k=0;k<nx*ny;k++)WHASF[k]=WHAS[k]?1:0;}
+ let m=1-smooth(.15,.85,gridBil(WHASF,x,z));if(m<=0)return 0;
+ for(let i=0;i<TOWNS.length;i++){const t=TOWNS[i],d=Math.hypot(x-t.x,z-t.z);if(d<t.R+t.band)m*=smooth(t.R,t.R+t.band,d);}
+ return m;}
+W.reliefMask=(x,z)=>RELIEF?reliefMask(x,z):1;
+W.wetCell=(x,z)=>{if(!WHASF)reliefMask(0,0);return gridBil(WHASF,x,z);};   /* the model's wet cells, bilinear (the mask's water) */
 function H(x,z,minWave,P,nr,nt){minWave=minWave||0;
  const SC=scarpAt(x,z,SCR),b=SC.w>0?scarpOf(baseH(x,z),SC):baseH(x,z),S=styleAt(x,z),rel=gridBil(REL,x,z);
  let h=b+(N1.fbm(x/6000,z/6000,4)-.5)*2*clamp(rel*.12,12,420)*S.hills*(1-.75*SC.w);   // the cliff's band keeps its plateau and floor level
  if(minWave<1700){const r=1-Math.abs(2*N2.fbm(x/1700,z/1700,3)-1);h+=(r*r-.35)*clamp(rel*.06,6,200)*S.ridge;}
  // terraces where the relief allows mesas: flat treads, risers a fraction of each step
- if(RELIEF)h=WRELIEF.bench(h,x,z,S,rel,minWave);
+ const rm=RELIEF?reliefMask(x,z):1;   /* relief P14: the relief's own parts fade under the model's water and through a town's band */
+ if(RELIEF&&rm>0){const hb=WRELIEF.bench(h,x,z,S,rel,minWave);h+=rm*(hb-h);}
  else if(S.terr>.01&&minWave<600){const tm=S.terr*smooth(40,250,rel)*smooth(4200,1800,rel);
   if(tm>.01){const step=S.step*(.75+.5*N6.vn(x/9000,z/9000)),t=h/step,fl=Math.floor(t),f=t-fl,k=.14;
    const g=f<1-k?0:smooth(1-k,1,f);h=lerp(h,(fl+g)*step,tm);}}
@@ -625,9 +636,9 @@ function H(x,z,minWave,P,nr,nt){minWave=minWave||0;
  /* the gullies. A relief region's (43-world-relief.js, P2): the erosion filter, down the slope of the land's large form (the
     model and its hills, by central differences at 30 m), branching. Any other region's: ridged noise, which has no direction */
  if(RELIEF){if(S.gully>.01&&minWave<450){const e=30,hA=clamp(rel*.12,12,420)*S.hills,Lf=(px,pz)=>baseH(px,pz)+(N1.fbm(px/6000,pz/6000,4)-.5)*2*hA;
-   h=WRELIEF.erode(h,x,z,(Lf(x+e,z)-Lf(x-e,z))/(2*e),(Lf(x,z+e)-Lf(x,z-e))/(2*e),S,rel,minWave);}}
+   if(rm>0){const he=WRELIEF.erode(h,x,z,(Lf(x+e,z)-Lf(x-e,z))/(2*e),(Lf(x,z+e)-Lf(x,z-e))/(2*e),S,rel,minWave);h+=rm*(he-h);}}}
  else if(S.gully>.01&&minWave<240){const g=1-Math.abs(2*N4.fbm(x/240,z/240,2)-1);h-=S.gully*(3+rel*.004)*Math.pow(g,6)*2.2;}
- if(PEAK&&S.peak>.01&&minWave<1300)h=WRELIEF.peaks(h,x,z,S,rel,gridBil(PEAK,x,z),minWave);   /* relief P5: crests and summits on the high ground */
+ if(PEAK&&S.peak>.01&&minWave<1300&&rm>0){const hp=WRELIEF.peaks(h,x,z,S,rel,gridBil(PEAK,x,z),minWave);h+=rm*(hp-h);}   /* relief P5: crests and summits on the high ground */
  if(minWave<90)h+=(N3.vn(x/90+11,z/90-7)-.5)*2*(1.2+rel*.0015)*S.rough;
  // the channels: carve to the bed line (or the local ground less the depth, whichever is lower); the wall leans wallK
  let cd=1e9,cut=0,cw=0,co=0;
@@ -636,7 +647,7 @@ function H(x,z,minWave,P,nr,nt){minWave=minWave||0;
     the channels cut (a placed record keeps 150 m off a channel; a pinned one stands over it: the model's drainage line under Pinnacle Rock's
     north rim cut a 250 m gorge through the mesa when it came after), before the small streams (traced round them) */
  if(LANDF)h=WLAND.apply(h,x,z,minWave);   /* at every minWave: the road router reads the land at 4000 m and must see a mesa */
- let fr=0;if(FANS&&FANS.length&&minWave<600){fr=fanRise(x,z);h+=fr;}   /* relief P13: the alluvial fans, before the streams cut through them (a fanhead trench: fr more) */
+ let fr=0;if(FANS&&FANS.length&&minWave<600&&rm>0){fr=fanRise(x,z)*rm;h+=fr;}   /* relief P13: the alluvial fans, before the streams cut through them (a fanhead trench: fr more) */
  let sd=1e9,sw=0,sbw=0;if(STHASH&&minWave<150){streamAt(x,z,h,S,STC,minWave,fr);h-=STC.k;sd=STC.d;sw=STC.hw;sbw=STC.bw;}
  if(minWave<13)h+=((N5.vn(x/13,z/13)-.5)*1.1+(N5.vn(x/3.1+50,z/3.1)-.5)*.3)*(1-sbw);   /* not in a stream's bed (STC.bw): it stood through the water there */
  // a world's own shaping of its land (W.landHook: openworld/isle-demo's coast, reef and mangrove flats); none here

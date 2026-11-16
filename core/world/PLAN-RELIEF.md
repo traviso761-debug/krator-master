@@ -588,6 +588,15 @@ by the highest fan over a point before the streams cut, and a stream may cut thr
 at 3 % the fan buried its own stream at the apex). pinnacle 3 fans, oidong-highrift 502. `test-streams.js`: one fan at an
 8 %-to-1 % break, none on an even slope; nothing behind the apex; continuous.
 
+**P14, the masks (2026-11-16; S16, R7).** 41's `reliefMask`: 1 on dry land; 0 in the model's wet cells (read bilinearly,
+so the relief fades over one cell's edge toward a shore) and inside a town's footprint, easing back in over its band (as the
+town's own ground eases out). It scales what the benches, the erosion filter, the peaks and the fans change; the records
+already keep off the water, the towns and the sites, and a road's carriageway already lies at its own level. Regions without
+relief are untouched (those parts run only with it). The probe: at every interior wet cell on a 2 km lattice within 40 km
+of the camera the mask is 0 (pinnacle 92 points, oidong-highrift 119); the negative reads the dry points the same way and
+fails. Note: `WORLD.lakeWater` answers a cell past the wet cells (its shore ring), so a point can read as water where the
+mask, which follows the cells, still lets the relief work: under the lake's shallow edge.
+
 ## 6. Risks
 
 - **Sites move:**

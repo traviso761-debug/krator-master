@@ -59,6 +59,16 @@ function streams(rev,off){const L=WORLD.streams?WORLD.streams():[];if(!L.length)
   if(!WORLD.inside(x,z))continue;n++;const c=WORLD.streamAt(x,z);if(c&&c.k>=.3)cut++;else first=first||[Math.round(x),Math.round(z)];}}
  return{ok:prob.length===0&&n>0&&cut>=.97*n,detail:L.length+' streams ('+L.filter(S=>S.wet).length+' wet), '+pick.length+' sampled: '+(prob.length?prob.length+' beds rising (first: '+prob[0]+')':'every bed falls')+
   '; '+cut+' of '+n+' stations carved'+(first?' (first not at '+first+')':'')};}
+// the masks (relief P14): the relief leaves the model's water alone: at every wet point on a 2 km lattice within 40 km of
+// the camera (the model's wet cells, WORLD.wetCell over 0.9: the mask's own water; WORLD.lakeWater answers a cell past them), the
+// relief's mask is 0. neg: the dry
+// points read the same way (the mask is 1 there, so it must fail)
+function masks(neg){if(!WORLD.reliefMask||!WORLD_DATA.meta.relief)return{ok:true,detail:'no relief in this region'};const P=HOST.camera.position;let n=0,bad=0,first=null;
+ const wet=(x,z)=>WORLD.wetCell(x,z)>.9;
+ for(let z=P.z-40000;z<=P.z+40000;z+=2000)for(let x=P.x-40000;x<=P.x+40000;x+=2000){if(!WORLD.inside(x,z))continue;
+  const inner=wet(x,z);if(neg?inner||WORLD.wetCell(x,z)>0:!inner)continue;
+  n++;if(!(WORLD.reliefMask(x,z)<=1e-6)){bad++;first=first||[x,z];}}
+ return{ok:bad===0&&n>0,detail:n+(neg?' dry':' wet')+' points; '+bad+' where the relief still works'+(first?' (first '+first.map(Math.round)+')':'')};}
 // the landform records (a relief region's: 43b-world-landforms.js, PLAN-RELIEF.md P4, P7) within 20 km of the camera: each
 // (a fissure: is cut into it, its middle half its depth under the ground beside it) stands out of the land (the ground at or by its middle at least half its height over its foot), inside the region and out
 // of the water. Hf: the ground as the check reads it (the negative: the land at a detail no record shows at)
@@ -67,7 +77,9 @@ function landforms(Hf){Hf=Hf||((x,z)=>WORLD.H(x,z,0));if(!WORLD.landforms)return
  let low=0,wet=0,out=0,first=null;const k={};
  for(const B of L){k[B.kind]=(k[B.kind]||0)+1;
   if(B.carve){/* a fissure (relief P7): its middle at least half its depth under the ground either side of it */
-   const ux=B.b[0]-B.a[0],uz=B.b[1]-B.a[1],ul=Math.hypot(ux,uz),nx=-uz/ul,nz=ux/ul,o=B.w/2+B.d/20+4,g0=Hf(B.x,B.z),g1=Math.min(Hf(B.x+nx*o,B.z+nz*o),Hf(B.x-nx*o,B.z-nz*o));
+   const ux=B.b[0]-B.a[0],uz=B.b[1]-B.a[1],ul=Math.hypot(ux,uz),nx=-uz/ul,nz=ux/ul,wb=Math.min(B.kind==='gja'?40:12,B.w*1.5),o=B.w/2+B.d/20+wb+4;
+   let g0=1e9;for(let q=-wb-B.w/2;q<=wb+B.w/2;q+=Math.max(.5,B.w/8))g0=Math.min(g0,Hf(B.x+nx*q,B.z+nz*q));   /* its line wanders: the lowest across */
+   const g1=Math.min(Hf(B.x+nx*o,B.z+nz*o),Hf(B.x-nx*o,B.z-nz*o));
    if(!(g0<g1-.5*B.d)){low++;first=first||B;}continue;}
   const q=B.R*.25,g=Math.max(Hf(B.x,B.z),Hf(B.x+q,B.z),Hf(B.x-q,B.z),Hf(B.x,B.z+q),Hf(B.x,B.z-q)),H=(B.top==null?B.R:B.top-B.y0);   /* a kopje's middle may lie between its columns */
   if(!(g>=B.y0+.5*H)){low++;first=first||B;}if(!B.pinned&&!WORLD.inside(B.x,B.z)){out++;first=first||B;}if(!B.pinned&&WORLD.lakeWater(B.x,B.z)>g-1){wet++;first=first||B;}}
@@ -123,6 +135,7 @@ function hostChecks(){const out=[],P=HOST.camera.position,[tx,tz]=tileOf(P.x,P.z
  out.push(Object.assign({name:'the named rivers carry water to their mouths'},rivers()));
  out.push(Object.assign({name:'the small streams fall to their mouths, carved in the land'},streams()));
  out.push(Object.assign({name:'the landform records stand out of the land, inside the region and dry'},landforms()));
+ {const r=masks(false);if(!/^0 wet|no relief/.test(r.detail))out.push(Object.assign({name:'the relief leaves the water alone (and works on dry land: its negative)'},Object.assign(r,{ok:r.ok&&!masks(true).ok})));}
  if(typeof STREAMW!=='undefined'&&STREAMW)out.push(Object.assign({name:'the wet streams near the camera carry their water in their beds'},STREAMW.check()));
  out.push(Object.assign({name:'the highways lie on the land and keep their grade'},highways()));
  out.push(Object.assign({name:'nothing grows on a highway or in a town'},clearOf(allRecs())));
