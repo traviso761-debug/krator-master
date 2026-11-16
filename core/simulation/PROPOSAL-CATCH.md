@@ -97,7 +97,7 @@ terminus, and its relations: the gateway pools stay where each group's home is.
 | **The Geomancers** | Locus (1267,1043), and the Cloisters in Yuni | the oil guild, "mostly Yuni"; lizard riders patrol in sixes (`LORE.md:400-408`) | oil, power cells, electrics south; iron and tools back. On the sim already: `gate.geomancers`, 40 days, 4 carriers, to Qiblai | **Qiblai**, at their oil concession, which is beside Yuni's mission (X2) |
 | **The Yuni Merchants' Guild** | Yuni (1263,1089) | **new**: the lore has only Yuni's "prominent families" who choose the Emir, the caravanserai and the Caravan Gate (`LORE.md:419-435`). *Proposed:* the prominent families' trading arm, chartered by the Emir, who in practice answer to the Geomancers | salt, iron, arms, wine, oil and electrics south; goldwork, saffron, brocade, opal and silk north. On the sim: `gate.yuni`, 48 days, 10 carriers, to Qiblai | **Qiblai** (the owner, 2026-11-16) |
 | **Two rival Iziz merchant noble houses** | Iziz (963,985) | `core/camp/PLAN.md:426-449` has the Empire's five merchant houses; two fit. **Getmastarz**, the Gatemasters: the owner's "treks past the Godsgate, south to Xanadu". **Goldanda**, "gold hand": *proposed* as bankers on the eastern road. *Proposed*: the two rivals are Getmastarz and Goldanda (*question 2*) | iron, arms, pearls, oil and salt south; cacao, opium, tea, silk, goldwork and wheels north. On the sim: `gate.iziz`, split between the two houses | **Strongbow**, up the lift (the Sultan's toll) |
-| **The Train of Jabal** | Jabal (`sa5o6dvjdv`, 1225,1149) | **new**. "Jabal" is so far only Gemini's "Jabal Shiekdom" pin: the owner placed it 2026-11-13 at the town site `TRADE-SCOPE.md` gave the Dasri, "the Dasri's gateway to the Catch". *Proposed:* the Train is the Dasri's great salt caravan company, out of Jabal, and they work Ṣalṭ al-Bān | the Catch's salt, soda, potash and saltpeter, south to Xanadu and north to the Bowl and Jabal. On the sim it takes over `gate.dasri` (22 days, 6 carriers, salt only) | **Strongbow** |
+| **The Train of Jabal** | Jabal (`sa5o6dvjdv`, 1225,1149) | **The Dasri's** (the owner, 2026-11-16). Jabal is the town the owner placed 2026-11-13 at the site `TRADE-SCOPE.md` gave the Dasri, "the Dasri's gateway to the Catch" (Gemini's "Jabal Shiekdom"). The Train is the Dasri's great salt caravan company, out of Jabal, and works Ṣalṭ al-Bān | the Catch's salt, soda, potash and saltpeter, south to Xanadu and north to the Bowl and Jabal. On the sim it takes over `gate.dasri` (22 days, 6 carriers, salt only) | **Strongbow** |
 
 **The rivalries.**
 - **The two Iziz houses** compete for the same south-bound loads and for Stair's pens. In the sim they are wary of each other
@@ -158,9 +158,11 @@ terminus, and its relations: the gateway pools stay where each group's home is.
 
 ## 5. Questions for the owner
 
-1. **The Train of Jabal.** Is it the Dasri's salt caravan company out of Jabal, the Dasri town at the Catch's north-east?
-   Does it work only the Catch's salt works (Ṣalṭ al-Bān), or the Bowl's at Solta too (which `TRADE-SCOPE.md` gave to
-   Mantis's Izani merchant houses)?
+1. **The Train of Jabal.** ~~Is it the Dasri's salt caravan company out of Jabal?~~ **Answered (the owner, 2026-11-16): yes,
+   the Dasri's.** It is the Dasri's salt caravan company, out of Jabal, their town at the Catch's north-east (pin
+   `sa5o6dvjdv`, 1225,1149).
+   - Still open: does it work only the Catch's salt works (Ṣalṭ al-Bān), or the Bowl's at Solta too? `TRADE-SCOPE.md` gave
+     Solta to Mantis's Izani merchant houses.
 2. **The two Iziz noble houses.** Getmastarz (the Gatemasters, already the owner's "south to Xanadu" house) and Goldanda,
    or another pair? `tools/names/izani.py houses()` can coin more.
 3. **The Yuni Merchants' Guild.** The prominent families' trading arm under the Geomancers, as proposed? Its name in Yuni's
