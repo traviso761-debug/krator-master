@@ -10,7 +10,7 @@ What is settled, from the owner and the sim:
 - **Ōlḍ-Thalaba**, a fishing village of about 600, keeps the old shore spot at 825,1488.
 - **The town in the sim** (`core/region/data/xan-tune.js`, `T.thalaba`, `xan.thalaba`):
   - 2,400 people;
-  - the spillway's sulfur, 60 t a year;
+  - the spillway's sulfur, 60 t a year in the tune (**30 t**: the owner's second answer, section 4);
   - the bench's terraces grow half its grain, and Phēr, 86 km down the road, sends the rest;
   - it is not a caravan terminus: Yuni's caravans end at Qiblai.
 - **The Rare Devisers' house** (`devisers.thalaba`). The Devisers are the merchant house with the royal licence in scrap and
@@ -29,6 +29,11 @@ What is settled, from the owner and the sim:
 - **Names:** "I am open to proposals" (the proposals are in section 3a).
 - **No walls.**
 - **A small Dalab mission of about 30 people** lives in the town.
+- **The second round (2026-11-16):**
+  - **The town's own deposit makes 30 t of sulfur a year.**
+  - **The names of section 3a are agreed.**
+  - **The Dalab mission is built in Dalab's style.** It runs **its own expedition** into Godshearth and hires locals.
+  - **The Sultan takes 10 % of the overall haul and 20 % of the rarities** (no toll on the road).
 - **The region:** "cut it into whichever polygon the new pin falls into". At 840,1463 that is the **Xanadu Sultanate**
   (political, `rmufcgvtxatfx`). The open world cuts that polygon as the region `xanadu-oidong-highrift`
   (`openworld/SITES.json`). The pin also falls in the Vale of Xanadu and the Rift (geographic) and in the `xanadu` biome,
@@ -121,14 +126,14 @@ owner) beside them. The shares below are *proposed* except the crews, which are 
 | Who | People | What they do |
 |---|---|---|
 | **The terrace farmers** | **720** at harvest (the tune's crew), with their households | The riser's terraces and the bench's fields; barley, wheat and buckwheat at 1,500 m and 12-13 °C (`kits/crops` to pick: section 5); apricot and walnut on the terrace walls |
-| **The sulfur diggers and kiln men** | **360** (the tune's crew) | The town's own small sulfur node at the cataract's foot, a steady works all year (the owner). They work in shifts from a diggers' hamlet there (section 3) |
+| **The sulfur diggers and kiln men** | **~180** (*proposed*: the tune's crew of 360 halved with the make, section 4) | The town's own small sulfur node at the cataract's foot, a steady works all year (the owner). They work in shifts from a diggers' hamlet there (section 3) |
 | **The road** | ~150 | Muleteers, carters and porters on the road down to Phēr (the tune's six carriers) and up the gorge. Farriers, harness makers, a ropewalk |
 | **The expedition season** | ~150 away each summer (`exp.godshearth`, a separate settlement in the tune) | The Devisers' camp: diggers of sulfur and hearth wax, scavengers of rarities, guards, guides. **The owner: the Devisers' people from Theodiga run it, and many of the hired men are locals.** *Proposed:* about 30 Devisers' people (the master of the expedition, the clerks, the guides and guards, the assayer of rarities) and about 120 hired men, most of them Thalaba's own, a few from the north shore. They muster here each spring |
 | **The market and the trades** | ~300 | Smiths, tanners, potters, bakers, weavers, the inn and the teahouses, the market's sellers |
-| **The Sultan's people** | ~40 | The licence clerk: the Sultan's 10 % of the rarities is cut here (`expedition.godshearth`'s `cut` at the house). The road warden, a small watch at the bridge |
+| **The Sultan's people** | ~40 | The licence clerks: the Sultan's **10 % of the overall haul and 20 % of the rarities** (the owner) is counted out here at the Devisers' house as the expedition comes home (and at the mission's, if it falls on the Dalab party too: open question 1). The road warden, a small watch at the bridge (no toll: the owner) |
 | **The faith** | ~20 | A temple of the Decree with its wheel house, and a shrine at the bridge where the expeditions are blessed going up and counted coming down |
 | **Households** | the rest, about 650 | Elders and children |
-| **The Dalab mission** | **~30** (the owner), beside the 2,400 | The genepriests, who come over the rim for the hearth trees (the Godshearth plan, section 5), with their servants. *Proposed:* a compound on the town's east edge (section 3) |
+| **The Dalab mission** | **~30** (the owner), beside the 2,400 | The genepriests, who come over the rim for the hearth trees (the Godshearth plan, section 5), with their servants. **They run their own expedition into Godshearth and hire locals** (the owner). *Proposed:* a compound on the town's east edge (section 3); the party is section 4's |
 
 **The Rare Devisers' house** (40) is the town's biggest compound. It holds:
 - the yard where the expedition outfits;
@@ -162,9 +167,9 @@ The town is about **1.5 km by 1 km** on the spring line at the riser's foot, at 
 - **The temple of the Decree** stands on a terrace above the square, with its wheel house.
 - **The road's quarter** is at the west end, on the Phēr road: caravan yards, stables, the farriers and the ropewalk.
 - **The threshing floors and the granary** are at the east end, toward the fields.
-- **The Dalab mission** is a compound past the granary on the east edge: the genepriests' house, a seed and specimen
-  house, and lodgings for the parties going up the gorge. It stands apart from the Devisers' house; the two trade in hearth
-  seed and wax.
+- **The Dalab mission** is a compound past the granary on the east edge, **built in Dalab's style** (the owner): the
+  genepriests' house, a seed and specimen house, its own yard and store for its expedition, and lodgings for the hired
+  men. It stands apart from the Devisers' house.
 - **No walls** (the owner). The town is open on every side. The "gates" above are where the roads come in, marked by a
   wheel house or a shrine, not a gatehouse. The only watch is the road warden's at the bridge.
 
@@ -182,7 +187,7 @@ The town is about **1.5 km by 1 km** on the spring line at the riser's foot, at 
 
 **The mouth: Briḍj, the bridge ward** (about 840,1458; the names are coined in section 3a):
 - the bridge over the Solṭ Siṭrīm, 53 m of river, stone piers on the level reach above the second fall;
-- the road warden's toll and watch house;
+- the road warden's watch house (no toll: the Sultan's share is taken in the town, section 4);
 - the expeditions' shrine;
 - the leat's headworks;
 - the Devisers' summer muster ground and corrals. The camp gathers here in spring and is counted here in autumn.
@@ -201,7 +206,7 @@ The town is about **1.5 km by 1 km** on the spring line at the riser's foot, at 
 - the second fall, 12 km west-north-west, where the Solṭ drops off the mouth;
 - southward, nothing until the lake 2 km below.
 
-## 3a. The names (*proposed*: the owner, 2026-11-16, "I am open to proposals")
+## 3a. The names (**agreed by the owner, 2026-11-16**: first "I am open to proposals", then "agree with names")
 
 These are coined on the owner's tongues sheet, by the rules `PROPOSAL-XANADU.md` Q5 uses: English worn to sound Nepali,
 Tibetan or Persian; **t d** > **ṭ ḍ**; **f** > **ph**; **v** > **bh**; an initial **sc-/st-** breaks up, as *stream* >
@@ -235,16 +240,34 @@ and the expedition days 120-240.
   town passes it on by `devisers.supply`.
 
 **Sulfur** (the owner: a small node of its own, most of it by expedition, a steady works).
-- The town's own diggings (`tb.sulfur`, 360) make **60 t a year**, steadily all year: a works, not a field
-  (`XAN_TUNE.field` is not used here).
-- The camp brings home **90 t of sulfur, 40 t of hearth wax and 60 rarities** a season. The house keeps 95 % of the camp's
-  make (`share`); the Sultan's **10 % of the rarities** is cut at the house for `xan.citadel` (`T.devisers.licence`).
-- Together Thalaba handles **150 t of sulfur a year**, 60 % of it from the expedition, so the tune already has "most by
-  expedition". That is more than the rest of the country (Hoṭ-Bāṭh's 40 t on the lake). If "small" means smaller than
-  60 t, step T1 lowers `T.thalaba.make.sulfur` and its crew together.
+- **The town's own deposit makes 30 t a year** (the owner, 2026-11-16), steadily all year: a works, not a field
+  (`XAN_TUNE.field` is not used here). The tune still has 60 t with a crew of 360; step T1 sets `T.thalaba.make.sulfur` to
+  30,000 kg and, *proposed*, the crew to 180 (7.5 % of the town in place of 15 %), so a digger's year stays what it was.
+- The Devisers' camp brings home **90 t of sulfur, 40 t of hearth wax and 60 rarities** a season. The house keeps 95 % of
+  the camp's make (`share`).
+- Together Thalaba handles **120 t of sulfur a year, three quarters of it from the expedition**. That is still more than
+  the rest of the country (Hoṭ-Bāṭh's 40 t on the lake).
 - Down the road it goes, with the wax and the rarities: to Phēr, across the lake (`lake.cross`) to the capital, and out
   with the Great Caravan in spring to Blakhed.
 
+**The Sultan's share** (the owner, 2026-11-16): **10 % of the overall haul and 20 % of the rarities.**
+- Read here as: 10 % of the sulfur and the wax, and 20 % (not 10 + 20) of the rarities. On the Devisers' season that is
+  **9 t of sulfur, 4 t of wax and 12 rarities** to the Treasury.
+- It is taken where the haul comes home, at Thalaba, for `xan.citadel`. There is no toll on the road.
+- In the tune today `T.devisers.licence` is 0.1, cut on the rarities only (`expedition.godshearth`'s `cut`). Step T1
+  makes the cut `{sulfur: .1, wax: .1, rarities: .2}`. `PROPOSAL-XANADU.md` section 7 ("the Sultan's licence fee is 10 %
+  of the rarities") follows.
+- *Proposed:* the same share falls on the Dalab party's haul (open question 1).
+
+**The Dalab mission's expedition** (the owner: its own, hiring locals; the figures are *proposed*):
+- A party of about **40**: 8-10 genepriests and their servants from the mission, and about 30 hired Thalaba men as
+  porters, diggers and guides.
+- It goes up the same road in the expedition window, to the Grove (Godshearth station 2, 836,1388), where the vent lines'
+  discs merge into hearth forest, for seed, cuttings and specimens. It pitches its own camp, apart from the Devisers'.
+- Its haul is not a good the tune has yet. *Proposed:* **hearth seed** (a new good, a few kg a season) and a share of
+  wax. What the mission keeps goes home to Dalab with the Great Caravan from the capital (Blakhed is its summer stop).
+- In the sim: the mission as a settlement of 30 (faction `dalab`, as `yuni.mission` stands beside the oil field), with a
+  seasonal camp of 40 under it, like `exp.godshearth` under the Devisers' house.
 **Up the road:** grain, salt (the north's salt, landed at the capital by the Great Caravan, by the lake to Phēr and on up),
 tea and tools. All of these are already on `road.pher-thalaba`.
 
@@ -252,11 +275,7 @@ tea and tools. All of these are already on `road.pher-thalaba`.
 
 **Proposed for later passes (not in the tune):**
 - **Mules, yaks and sheep** from the bench's pasture, sold to the expeditions and down to the north shore.
-- **The bridge's toll** on the expedition road: a road `share` to the Treasury, like the Strongbow lift's 5 %, if the owner
-  wants the Sultan to tax the road and not only the licence.
-- **The Dalab mission** (about 30, the owner) as its own settlement beside the town, as `yuni.mission` stands beside the
-  oil field: faction `dalab`, fed from Thalaba's market. It buys hearth seed and wax from the Devisers' house.
-- **The hired men's wages:** the expedition's ~120 locals leave the town in the expedition window (days 120-240) and come
+- **The hired men's wages:** the two expeditions' ~150 locals leave the town in the expedition window (days 120-240) and come
   home with pay. The sim does not count that yet; the camp is a separate settlement of 150.
 - **Night-soil and kiln ash** onto the terraces: the reason the terraces can carry half the grain at 1,500 m. It is not a sim
   good.
@@ -276,7 +295,7 @@ tea and tools. All of these are already on `road.pher-thalaba`.
 | the ground at 1:1 | `core/world` (`WORLD.H`, `ROADS`) | the site cut by `tools/scale-model/cut_site.py` into the open-world region `xanadu-oidong-highrift`, which cuts the Xanadu Sultanate polygon the pin falls in (the owner); the Phēr road and the expedition road joined to `ROADS`, not drawn on their own |
 | the riser, the terraces, the cataract step | `core/terrain` (`KRELIEF`, `KSTRATA`) | the terrace flights stepped into the riser; `gully` or `stepcut` for the cataract and the Reḍ Ḍrāi's trough; the Godthrone's tibasalt in the faces |
 | the town | `core/city` (`KCITY`) | streets and lots at the riser's foot, the Xanadu kit's buildings on them, as Qiblai and Erewhon are built; no bespoke street pass |
-| the buildings | `kits/xanadu` (on `VERN.def`, bundled as `XAK` by `kit_bundle.py`) | houses poor to rich, the square, the inn, the temple and wheel house, the granary, the caravan yards, the baoli. **New pieces** (to ask of the Xanadu kit, not to write here): the Devisers' compound with strongroom and sheds, the bridge and its toll house, the leat's headworks, the calcaroni. The Dalab mission's house: in Dalab's own style or the town's (open question 2) |
+| the buildings | `kits/xanadu` (on `VERN.def`, bundled as `XAK` by `kit_bundle.py`) | houses poor to rich, the square, the inn, the temple and wheel house, the granary, the caravan yards, the baoli. **New pieces** (to ask of the Xanadu kit, not to write here): the Devisers' compound with strongroom and sheds, the bridge and its toll house, the leat's headworks, the calcaroni. The Dalab mission's house is in Dalab's own style (the owner): a piece of whichever kit holds Dalab's buildings, or a new one asked of it |
 | a site under construction | `kits/construction` (`KCONS`) | if the town is shown growing; not at first |
 | the farmsteads, the diggers' hamlet, Briḍj | `core/hamlet` (`KHAMLET.village`) | the diggings as a resource (mining) village on the sulfur node; the farmsteads as a farming village on the bench |
 | the expedition camp | `core/camp` | not drawn here (it is at Godshearth); the muster at Briḍj could use a camp's pitch in spring |
@@ -300,8 +319,8 @@ tea and tools. All of these are already on `road.pher-thalaba`.
 
 | Step | What | Test |
 |---|---|---|
-| **T0** | **The records**, through the scale-model session's queue (pins and model edits are its work): the pin 5.1e12 merged where the region is cut; the small sulfur lode record `lode:thalaba-sulfur` at the cataract's foot; `shvo49k0y2` added to `xanadu-oidong-highrift`'s `sites` in `openworld/SITES.json` (with the Dalab mission as a `"model": false` row, if it is drawn apart from the town) | the pin's ground is the bench (1,450-1,560 m); the geology bake shows sulfur at the diggings; `cut_site.py --dry` lists Thalaba in the region |
-| **T1** | **The tune's tidy-up and additions:** the stale comments (section 8); the Dalab mission (~30); the bridge's toll and the pasture, if the owner wants them; the town's own sulfur lowered, if "small" means under 60 t | `test-xan-economy.js` and `test-east-rift.js` unchanged unless meant to move; Thalaba and the mission fed, the licence cut |
+| **T0** | **The records**, through the scale-model session's queue (pins and model edits are its work): the pin 5.1e12 merged where the region is cut; the small sulfur lode record `lode:thalaba-sulfur` at the cataract's foot, sized for 30 t a year; `shvo49k0y2` added to `xanadu-oidong-highrift`'s `sites` in `openworld/SITES.json` (with the Dalab mission as a `"model": false` row, if it is drawn apart from the town) | the pin's ground is the bench (1,450-1,560 m); the geology bake shows sulfur at the diggings; `cut_site.py --dry` lists Thalaba in the region |
+| **T1** | **The tune's changes:** the town's sulfur to 30 t (crew 180); the Sultan's cut to 10 % of the sulfur and wax and 20 % of the rarities; the Dalab mission (30) and its seasonal camp (40), and hearth seed if it becomes a good; the stale comments (section 8) | `test-xan-economy.js` and `test-east-rift.js` unchanged unless meant to move; Thalaba and the mission fed, the licence cut |
 | **T2** | **The ground:** `cut_site.py xanadu-oidong-highrift` re-run with Thalaba in it; the riser and its terrace flights; the leat; the river, the bridge reach and the falls on `core/water` | the region's verify: no floating water, the leat descending, the terraces walkable |
 | **T3** | **The town on `core/city`** with the Xanadu kit (a target on Xanadu's page, as Qiblai is); the new pieces asked of the Xanadu kit | `core/city`'s tests; the GPU verify; the mixed street |
 | **T4** | **The outworks:** Briḍj, Salphar (the diggers' hamlet and its kilns), the farmsteads on the Bēnch (`core/hamlet`) | the hamlet's tests; the kilns' hazard records |
@@ -321,16 +340,17 @@ tea and tools. All of these are already on `road.pher-thalaba`.
 7. ~~**Who else.**~~ **No walls; a small Dalab mission of about 30.**
 8. ~~**The region.**~~ **The polygon the new pin falls in:** the Xanadu Sultanate, cut as `xanadu-oidong-highrift`.
 
+**Answered 2026-11-16** (the second round):
+1. ~~**How small is the node?**~~ **30 t a year from the deposit.**
+2. ~~**The Dalab mission.**~~ **Dalab's style; they run their own expedition and hire locals.**
+3. ~~**The names.**~~ **Agreed** (section 3a).
+4. ~~**The bridge's toll.**~~ **No toll: the Sultan takes 10 % of the overall haul and 20 % of the rarities.**
+
 **Still open:**
-1. **How small is the node?** The tune has the town's own 60 t a year against the expedition's 90 t, so most already
-   comes by expedition. Keep the 60 t, or make the node smaller (say 25-30 t, with its crew halved)?
-2. **The Dalab mission.**
-   - Is its house built in Dalab's own style, or in the town's Xanadu style?
-   - Do the genepriests go up the gorge with the Devisers' expedition, or on their own?
-3. **The names** of section 3a (Gāḍz-Phōl, Solṭ-Phōl, Gōrj-Phuṭ, Briḍj, Siṭēps, Siprīngz, Salphar, Bēnch): keep, or
-   change any? The *sp-* rule is new.
-4. **The bridge's toll.** Should the Sultan tax the expedition road at Briḍj (a road `share`, as at the Strongbow lift),
-   or only take the licence on the rarities?
+1. **The Sultan's share.** Does it read as section 4 has it (10 % of the sulfur and wax, 20 % of the rarities, not 30 %)?
+   And does it fall on the Dalab mission's haul too, or only on the Devisers'?
+2. **The Dalab party's haul.** Is it hearth seed and specimens for Dalab, as proposed, and does it go home with the Great
+   Caravan?
 
 ## 8. Found on the way (for the sessions that own them; not changed here)
 
