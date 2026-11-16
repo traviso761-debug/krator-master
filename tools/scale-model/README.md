@@ -812,10 +812,14 @@ dry on the new shore.
   stopped 7 px short of Qiblai's lake (-1,685 m) in its gorge's slot (-2,025 m), its record's mouth naming a lake of
   -1,706 m on dry ground (both so on main before edit 7). Its course now goes on to the lake's shore (941.3,1591.8; six
   cells cut to the slot's floor, the river drawn) and `to` names the lake at 942,1593. It runs from Erewhon's lake
-  (head 876.9,1511.7 at -520 m) to Qiblai's, falling all the way. Note: the slot's floor (-2,025 m) lies 340 m under
-  the lake it now reaches, as the gorge did before; for the owner whether the lake should flood back up it.
+  (head 876.9,1511.7 at -520 m) to Qiblai's, falling all the way.
+- `edit_517_gorge.py` (last): the "slot" was not a slot. The gorge below Theodiga falls from about -616 m to -1,530 m at
+  the lake; only the cells of r070's recorded points had been cut to its old bed (-2,025 m), single-cell pits 400-1,500 m
+  deep. The owner, 2026-11-16, chose to fill them ("Fill pits, river falls"): ten pits raised to the lower of their
+  course neighbours, the course then falling all the way (the cut to reach the lake raised to fall on), the beds sampled
+  again: the Alph falls from -558 m below the breach to -1,537 m at Qiblai's lake's shore, ~150 m over the water.
 - Run order from the pre-edit model (055bc43ce): `edit_517.py`, `edit_517_crease.py`, `edit_517_paint.py`,
-  `edit_517_alph.py`.
+  `edit_517_alph.py`, `edit_517_gorge.py`.
 
 **5.1e12 (2026-11-16, records only)**: the owner, "we can move thalaba to the mouth of godshearth and put a new village
 on the lake in its place": Thalaba (`shvo49k0y2`) moves from 825,1481 to 840,1463, where Godshearth's spillway gorge
