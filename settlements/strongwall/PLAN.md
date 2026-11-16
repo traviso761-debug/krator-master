@@ -20,7 +20,8 @@ build a Xanadui fort asset as well"*.
 - The beacon's keepers are **the Yellow Monastery, the Order of the Beacon**: Qiblai's gold monastery, which may keep
   other beacon lights as well.
 - **The Violet Monks of Qiblai** will have their central monastery on a strategic site not far from Strongwall: **the
-  Order of the Violet Storm**, a martial order that protects the Vale against Lizardmen incursions (section 3a).
+  Order of the Violet Storm**, a martial order that protects the Vale against Lizardmen incursions (section 3a). Its
+  site is **the West Arm** (886,1619).
 
 This is a plan, not a build: no kit code and no pages. Everything not quoted from the owner, the lore or the sim tune is
 *proposed*. The fort asset (section 5) is a specification. Its code goes to a later step, owned by whoever owns
@@ -212,7 +213,7 @@ Xanadu's last high ground before the Rift, between the two low roads.
 
 **The candidate sites:**
 
-| | **A. The West Arm** (recommended) | **B. The Bench-end knoll** |
+| | **A. The West Arm** (**chosen**: the owner, 2026-11-16) | **B. The Bench-end knoll** |
 |---|---|---|
 | px | **886,1619** | 906,1628 |
 | Ground | 519 m on a flat crest (steepest step 35 m a km): room for a great monastery and its fields | 541 m, a knoll (72-118 m a km) above the bench's west edge, beside the R2 post |
@@ -225,7 +226,7 @@ Xanadu's last high ground before the Rift, between the two low roads.
 | Water | the Kruk Warra's head 16-18 km south; wells and cisterns on the crest | Kruk Gill's floods; wells |
 | Why | it **stands between Komodo's roads**: a raid toward Qiblai or the Vale passes under its north flank, one toward Strongwall under its south. Its riders come down on either road, and its fires reach Strongwall and the watch line. It is the Gold March's shield, with Strongwall the gate behind it | close and safe, but it guards only Strongwall's road. A raid along the trough toward Qiblai or the Vale never comes in sight of it |
 
-**The monastery** (for site A):
+**The monastery, on the West Arm** (site A, chosen by the owner, 2026-11-16; pin `886,1619`, its lookout `879,1618`):
 - **People.** *Proposed:* about **600**: some 400 fighting monks, 150 novices, 50 lay brothers, herdsmen and smiths.
   This is the order's central house. Its spoke in Qiblai would be a daughter house (question 18).
 - **The building is a dzong in the full sense**, monastery and fortress in one. It is the Qiblai kit's great monastery
@@ -467,7 +468,7 @@ The rest is the library already in the Xanadu pack: `stone.cut`, `earth.rammed`,
 | **S2** | The Marches' three watch forts (the beacon fort with the Ancient beacon and its generator) and Kirstabal's and Strongbow's gate works from the same asset, each by its own plan | those plans' sessions | |
 | **S3** | Life: the garrison's rota, the ore trains up and down the gorge, the assay's furnaces at work, the Fifth's escort | | the sim's schedule matches the tune's batches |
 | **S4** | The raids (Lizardmen Z4) set the fort's state | the Lizardmen session | a raid's outcome draws the damaged fort |
-| **V0** | **The Violet Storm's monastery on the map**, once the owner picks its site (question 16): a pin for the monastery and one for its west-brow lookout, through the scale-model session's queue | the scale-model session | the pin's ground; its lines to Strongwall and the posts re-run |
+| **V0** | **The Violet Storm's monastery on the map** (site A, the owner, 2026-11-16; asked 2026-11-16): a pin for the monastery at 886,1619 and one for its west-brow lookout at 879,1618, through the scale-model session's queue | the scale-model session | the pin's ground; its lines to Strongwall and the posts re-run |
 | **V1** | The monastery in `XAN_TUNE`: its people, fields and arms, fed through Strongwall | the tune's owner | `test-xan-economy.js` |
 | **V2** | The building: the fort asset's `size:'monastery'` round the Qiblai kit's violet great monastery | `kits/xanadu`'s owner and `kits/qiblai`'s | the two kits' verifies |
 | **V3** | The monastery on the open world, with the forward lookout and its relay sited at 1:1 | the open-world session | the region's verify; the lookout sees the trough |
@@ -499,9 +500,8 @@ The rest is the library already in the Xanadu pack: `stone.cut`, `earth.rammed`,
 15. ~~**The Yellow Monastery.**~~ **Answered 2026-11-16: it is one of Qiblai's eight, the gold one, and it may keep
     other beacon lights as well** (section 5.7). For `kits/qiblai/PLAN.md` (its question 1, the monasteries' names):
     the gold spoke is the Yellow Monastery, the Order of the Beacon.
-16. **The Violet Storm's site.** A, the West Arm (886,1619: between Komodo's roads, 66 km from Strongwall, in sight
-    of it), as recommended? Or B, the Bench-end knoll (906,1628: 26 km, guarding only Strongwall's road)? Or another
-    place?
+16. ~~**The Violet Storm's site.**~~ **Answered 2026-11-16: A, the West Arm** (886,1619). Its pin and its west-brow
+    lookout's (879,1618) are asked of the scale-model session (V0).
 17. **Its province and size.** Is it in the Gold March (P4) or the Marches (P8)? Are about 600 monks right?
 18. **Its spoke in Qiblai.** Is the violet monastery in Qiblai a daughter house of this central one, or the other way
     round?
