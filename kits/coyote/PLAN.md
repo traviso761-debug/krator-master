@@ -6,7 +6,9 @@ their most organized polity, **the Kingdom of the Tiers** (the Tierhounds, the "
 later": `biomes/outlands/PLAN.md` section 6 (the kit line) and its phase O8, `biomes/tiers/PLAN.md` section 6,
 `biomes/outlandgate/PLAN.md` sections 5 and 8, `biomes/greatchasm/PLAN.md` section 5 ("The Coyote half").
 
-**Status: plan approved (the owner, 2026-11-16; section 12 holds the answers); C1 under way.** Settled points carry the
+**Status: plan approved (the owner, 2026-11-16; section 12 holds the answers); C1 built and verified (2026-11-16): the
+scaffold on `core/engine`, the toolkit, the contour script and its test, `cy_room`, `cy_house_poor`, `cy_milestone`
+(`README.md`).** Settled points carry the
 owner's date and source plan; *proposed* marks this plan's own suggestions. The lore is not in `LORE.md` yet (the Outlands plan's O1); this
 plan writes none of it there.
 
@@ -240,7 +242,7 @@ Each phase ends with `python3 tools/build.py kits/coyote`, `verify.py dist/coyot
 | Phase | What | Done when |
 |---|---|---|
 | **C0** | this plan; the owner's answers (section 12); the five prompts pasted (section 10); `refs/` from the owner if any | the owner's yes |
-| **C1** | **the scaffold**: `build.py` and `verify.py` from `tools/new_build/` on `core/engine` by path; the sheet, `INDEX.md`, `PORT.md`; `materials.json` on the library (stand-ins named in `KNOWN_ISSUES.md`); the toolkit (`40-cy-kit.js`: the brick wall on its socle, the flat roof with vigas, the parapet, the roof hatch and ladder, the ear door, the spout); **`cyContour`** (`[G data]`) and `tests/test-contour.js`; `cy_room` and `cy_house_poor` | the two defs build, their doors open, the walk climbs the ladder to the roof; the contour test passes with its negatives |
+| **C1** | **the scaffold**: `build.py` and `verify.py` from `tools/new_build/` on `core/engine` by path; the sheet, `INDEX.md`, `PORT.md`; `materials.json` on the library (stand-ins named in `KNOWN_ISSUES.md`); the toolkit (`40-cy-kit.js`: the brick wall on its socle, the flat roof with vigas, the parapet, the roof hatch and ladder, the ear door, the spout); **`cyContour`** (`[G data]`) and `tests/test-contour.js`; `cy_room` and `cy_house_poor` | the two defs build, their doors open, the walk climbs the ladder to the roof; the contour test passes with its negatives. **Built 2026-11-16**: `build.py` (from `kits/tents`, the template's top lines), `verify.py` (the engine's checks, `walk-reach`, `contour-text`, `tags-vocabulary` waiting on the registration), `cyContour` and `tests/test-contour.js` (11 checks), the toolkit (`40-cy-kit.js`), `cy_room`, `cy_house_poor` (the ear door on its store), `cy_milestone`; GPU pass on the rtx lane |
 | **C2** | **the Valley**: the dwellings and works of section 3; the roomblock village on `KHAMLET.platform` from a **draft** `coyote` row kept in the kit; the shrines and the carved stones | the village reads at eye level; `walk-reach` from each door; no overlaps (`core/space`) |
 | **C3** | **the Peak**: the huts, the cliff house on the platform's alcove mode, the mine works on a `kits/resources` node (emerald and turquoise) | the alcove village and the mine on the sheet |
 | **C4** | **the herders**: the kit's tipi in three sizes and its roles, the folds, pens and racks, the `coyote-herder` row, a camp on `KCAMP` in summer and winter | the camp pitches by the row; the flaps open; walk inside each tipi |
