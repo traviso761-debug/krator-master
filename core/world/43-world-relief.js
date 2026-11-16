@@ -4,6 +4,7 @@
 //   S2 benches  terraces only where a caprock lies, on beds that dip and warp, of irregular thickness, only the hard ones
 //               standing out as benches: WRELIEF.bench. It replaces 41's terraces on the absolute height (h / step), which
 //               ringed every hill like a contour map
+//   S3 erosion  (P2) gullies and spurs down every slope, branching: WRELIEF.erode, in place of 41's ridged-noise gullies
 // (S1, a land style and palette for every overlay, is 41's BIOME_GROUND: claude/world-biome-styles, for every region.)
 // A region opts in (openworld/SITES.json "relief": 1; region.json `relief`); 41 calls WRELIEF only then, so a region
 // without it keeps its land exactly.
@@ -50,5 +51,46 @@ R.bench=function(h,x,z,S,rel,minWave){
  if(!(KRAND.unit(KRAND.hash(s,k|0,0x48))<HARD))return h;
  const f=(t-b0)/(b1-b0),g=f<1-RISER?0:smooth(1-RISER,1,f),off=(b0+g*(b1-b0)-t)*step;
  return h+cw*off;};
+
+// ---------------------------------------------------------------- S3: the erosion filter (P2)
+// Gullies and spurs down every slope, after Rune Skovbo Johansen's erosion filter (2026; Clay John's eroded noise before it):
+// in each octave, stripes run along the slope (their phase is the distance ACROSS it), each cell of the octave's lattice
+// pivoting its stripes on its own point (KRAND), the 3x3 cells round a point blended as phasors weighted (1 - d^2)^2 over
+// a cell's radius, so no lattice shows and the stripes stay unit-height. A stripe's trough is the gully: the profile is
+// ((1 - t)/2)^2, narrow floors between broad spurs, its mean (.35 over the blended stripes) taken off so the land neither rises nor sinks. Each octave
+// follows the slope the octaves before it left (its stripes' own gradient, analytic), so the finer gullies run down the
+// flanks of the coarser spurs: they branch. Flat ground has no slope to follow, and the filter fades out under 2-12 %.
+// cos and sin of the phase are polynomials (cos2pi, sin2pi below, error ~4e-6), not Math.cos: a port gives the same bits.
+//   WRELIEF.erode(h, x, z, gx, gz, S, rel, minWave)  the ground h with its gullies; (gx, gz) the slope of the land's large
+//                                  form there (m/m: the model and its hills), S the style blend (gully: its strength), rel the
+//                                  model's local relief (m: broken land cuts a little deeper). Each octave's depth is DEPTH x
+//                                  the slope x its wavelength. A far chunk skips the octaves its minWave cannot show
+const OCT=[[900,1],[420,1],[200,1]];   /* wavelength (m), and a share of the depth (the depth already goes with the wavelength) */
+const DEPTH=.18;
+function cosPiW(w){const v=w*w;   /* cos(pi w) for w in [-1, 1], Taylor to w^14 */
+ return 1-v*(4.934802200544679-v*(4.058712126416768-v*(1.335262768854589-v*(.2353306303588932-v*(.02580689139001406-v*(.0019295743094039-v*.0001046381049248))))));}
+function cos2pi(u){const x=u-Math.floor(u)-.5;return -cosPiW(2*x);}
+const sin2pi=u=>cos2pi(u-.25);
+R.cos2pi=cos2pi;R.sin2pi=sin2pi;
+R.erode=function(h,x,z,gx,gz,S,rel,minWave){
+ const g=S.gully==null?.6:S.gully;if(!(g>.01))return h;
+ /* a gully's depth goes with the slope it drains and its spacing: DEPTH x the large form's slope x the wavelength (a 15 %
+    slope cuts ~24 m gullies 900 m apart at full strength), the relief adding a little where the land is broken */
+ const sl0=Math.min(.6,Math.sqrt(gx*gx+gz*gz)),dep=g*DEPTH*sl0*(1+clamp(rel/2000,0,.5));
+ const ax=x+OX,az=z+OZ;let Gx=gx,Gz=gz,out=h;
+ for(let o=0;o<OCT.length;o++){const lam=OCT[o][0];if(minWave!=null&&minWave>=lam*.5)break;
+  const sl=Math.sqrt(Gx*Gx+Gz*Gz),fade=smooth(.02,.1,sl);if(fade<=0)break;
+  const nx=-Gz/sl,nz=Gx/sl;   /* the unit vector across the slope */
+  const ci=Math.floor(ax/lam),cj=Math.floor(az/lam);let vx=0,vy=0,W=0;
+  for(let dj=-1;dj<=1;dj++)for(let di=-1;di<=1;di++){const i=ci+di,j=cj+dj,hh=KRAND.hash(SEED^0x4552,o,i,j);
+   const px=(i+KRAND.unit(hh))*lam,pz=(j+KRAND.unit(KRAND.mix32(hh^0x9E3779B9)))*lam;
+   const dx=(ax-px)/lam,dz=(az-pz)/lam,d2=dx*dx+dz*dz;if(d2>=1)continue;
+   const w=(1-d2)*(1-d2),s=((ax-px)*nx+(az-pz)*nz)/lam;vx+=w*cos2pi(s);vy+=w*sin2pi(s);W+=w;}
+  if(!(W>0))continue;
+  const m=Math.sqrt(vx*vx+vy*vy)+.15*W,t=vx/m,sn=vy/m;   /* + .15 W: where the phasors cancel, the stripes fade, never flip */
+  const gul=(1-t)*.5,a=dep*lam*OCT[o][1]*fade;
+  out-=a*(gul*gul-.35);   /* .35: the profile's mean over the blended stripes (measured; .375 for pure ones) */
+  const k=-a*gul*sn*6.283185307179586/lam;Gx+=k*nx;Gz+=k*nz;}   /* this octave's own slope, for the next to follow */
+ return out;};
 return R;})();
 if(typeof module!=='undefined')module.exports=WRELIEF;

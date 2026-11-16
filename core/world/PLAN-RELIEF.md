@@ -326,7 +326,38 @@ The High Rift's hillshade shows the rings plainly: concentric risers 200 to 250 
     patches, not rings everywhere: ringed tiles 3 % over 20 km.
   - **Without relief** (`xanadu-oidong-highrift`, whose High Rift, Godstep and Opal Valley are `steps` now), 41's old rule
     terraces those overlays on the height every 120 m. Turning relief on for that region is the next rollout step.
-- **Left for P2:** the page's old gully noise (`|2*fbm-1|^6` at 240 m) shows as worm-like ridges on the High Rift. The
+**P2, the erosion filter (2026-11-16).**
+- `WRELIEF.erode` gives relief regions gullies and spurs down every slope, after Johansen:
+  - three octaves (900, 420 and 200 m);
+  - stripes along the slope, pivoting on KRAND points per cell and blended as phasors, so no lattice shows;
+  - each octave following the slope the coarser ones left, which branches the gullies;
+  - depth 0.18 x the slope x the wavelength (a 15 % slope cuts ~24 m gullies 900 m apart);
+  - fading out under 2 to 10 %;
+  - cos and sin as polynomials (within 4e-6 of Math's).
+- In `41` it replaces the ridged-noise gullies (no direction) for relief regions. The slope it follows is the land's
+  large form (the model and its 6 km hills, by central differences at 30 m).
+- `node core/world/test-relief.js`, each check with a negative:
+
+  | Check | Erosion filter | Old gully noise |
+  |---|---|---|
+  | Variation across the slope against along it | 3.8 x | 1.1 x |
+  | Mean change | under 2 m (0.58) | — |
+  | Steepest 1 m step (continuity) | 0.87 m | — |
+
+  Also checked: deeper on steeper slopes; flats untouched; far chunks skip the fine octaves; two cuts agree.
+- **Seen:**
+  - On a synthetic 20 % cone, radial gullies with herringbone branching.
+  - On the Oidong scarp near Longsong, gullies down the fall line where the old noise had round blobs with no
+    direction.
+  - On the High Rift's plateau (mostly under 5 %), the filter fades out; the change is −8 to +11 m.
+- **Cost:** `WORLD.H` 1.3 to 1.8 µs a call at the spots.
+- **Re-baked:**
+  - pinnacle `90ecf7fd`: 9 camps, 147 records, 9 roads. Its good farmland rose from 912 to 1,328 km², because the
+    gentle ground lost the old noise gullies;
+  - oidong-highrift `bdc48164`: 938 records, 15 bridges.
+- **Left for P3:** the gullies are pointwise and do not join into streams. P3 bakes small streams at the cut and carves
+  them, and the gullies already lead toward them (both follow the same slope).
+- **Left from P1:** the page's old gully noise (`|2*fbm-1|^6` at 240 m) shows as worm-like ridges on the High Rift. The
   erosion filter replaces it.
 
 ## 6. Risks

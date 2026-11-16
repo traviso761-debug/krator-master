@@ -304,9 +304,9 @@
    }
   },
   "farm": {
-   "mean": 0.071,
-   "good_km2": 9200,
-   "best_km2": 5232,
+   "mean": 0.076,
+   "good_km2": 9936,
+   "best_km2": 5776,
    "peak": {
     "score": 0.995,
     "x": -158000,
@@ -373,13 +373,23 @@
    "why": "the scale model's geology: saltpeter prospectivity 200 on crystalline ground"
   },
   {
-   "id": "res-farm--498--82",
+   "id": "res-farm--494--86",
    "kind": "farm",
    "family": "farmland",
-   "x": -498000,
-   "z": -82000,
+   "x": -494000,
+   "z": -86000,
    "score": 0.85,
-   "label": "Farmland: the best (85%, 831 mm, 12 °C)",
+   "label": "Farmland: the best (85%, 847 mm, 12 °C)",
+   "why": "warm, watered, flat and deep-soiled (Cfb)"
+  },
+  {
+   "id": "res-farm--582--74",
+   "kind": "farm",
+   "family": "farmland",
+   "x": -582000,
+   "z": -74000,
+   "score": 0.84,
+   "label": "Farmland: the best (84%, 769 mm, 14 °C)",
    "why": "warm, watered, flat and deep-soiled (Cfb)"
   },
   {
@@ -391,16 +401,6 @@
    "score": 0.83,
    "label": "Farmland: the best (83%, 2227 mm, 11 °C)",
    "why": "warm, watered, flat and deep-soiled (BSk)"
-  },
-  {
-   "id": "res-farm--430--62",
-   "kind": "farm",
-   "family": "farmland",
-   "x": -430000,
-   "z": -62000,
-   "score": 0.82,
-   "label": "Farmland: the best (82%, 847 mm, 11 °C)",
-   "why": "warm, watered, flat and deep-soiled (Cfb)"
   },
   {
    "id": "res-farm--338--74",

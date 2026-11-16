@@ -299,13 +299,13 @@
    }
   },
   "farm": {
-   "mean": 0.286,
-   "good_km2": 912,
-   "best_km2": 176,
+   "mean": 0.345,
+   "good_km2": 1328,
+   "best_km2": 224,
    "peak": {
-    "score": 0.789,
-    "x": 28000,
-    "z": -14000
+    "score": 0.773,
+    "x": 4000,
+    "z": 30000
    }
   },
   "placers": {
@@ -348,24 +348,14 @@
    "why": "the scale model's geology: oil prospectivity 128 on sedimentary ground"
   },
   {
-   "id": "res-farm-16--6",
+   "id": "res-farm-16--26",
    "kind": "farm",
    "family": "farmland",
    "x": 16000,
-   "z": -6000,
-   "score": 0.62,
-   "label": "Farmland: good (62%, 1365 mm, 31 °C)",
-   "why": "warm, watered, flat and deep-soiled (Af)"
-  },
-  {
-   "id": "res-farm-8-26",
-   "kind": "farm",
-   "family": "farmland",
-   "x": 8000,
-   "z": 26000,
-   "score": 0.55,
-   "label": "Farmland: good (55%, 1757 mm, 32 °C)",
-   "why": "warm, watered, flat and deep-soiled (XA)"
+   "z": -26000,
+   "score": 0.68,
+   "label": "Farmland: good (68%, 1161 mm, 31 °C)",
+   "why": "warm, watered, flat and deep-soiled (Aw)"
   },
   {
    "id": "res-farm--16--14",
@@ -373,9 +363,29 @@
    "family": "farmland",
    "x": -16000,
    "z": -14000,
-   "score": 0.49,
-   "label": "Farmland: fair (49%, 1459 mm, 32 °C)",
+   "score": 0.58,
+   "label": "Farmland: good (58%, 1459 mm, 32 °C)",
    "why": "warm, watered, flat and deep-soiled (XA)"
+  },
+  {
+   "id": "res-farm-8-26",
+   "kind": "farm",
+   "family": "farmland",
+   "x": 8000,
+   "z": 26000,
+   "score": 0.58,
+   "label": "Farmland: good (58%, 1757 mm, 32 °C)",
+   "why": "warm, watered, flat and deep-soiled (XA)"
+  },
+  {
+   "id": "res-farm-28-2",
+   "kind": "farm",
+   "family": "farmland",
+   "x": 28000,
+   "z": 2000,
+   "score": 0.5,
+   "label": "Farmland: fair (50%, 1286 mm, 31 °C)",
+   "why": "warm, watered, flat and deep-soiled (Aw)"
   }
  ]
 }

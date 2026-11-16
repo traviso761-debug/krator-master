@@ -60,4 +60,32 @@ ok('a far chunk (minWave 600 m and over) skips the benches',WRELIEF.bench(1234,c
 // the frame: the same world point gives the same ground from two cuts' frames
 {const A=WRELIEF.init({ox:2000000,oz:3000000,seed:7}).bench(500,1000,2000,S,REL,0),B=WRELIEF.init({ox:2001000,oz:2998000,seed:7}).bench(500,0,4000,S,REL,0);
  WRELIEF.init({ox:2000000,oz:3000000,seed:7});ok('two cuts of one place agree (the frame is world-absolute)',Math.abs(A-B)<1e-9,false);}
+
+// ---- P2: the erosion filter (WRELIEF.erode)
+{let e=0;for(let k=0;k<20000;k++){const u=(k*.6180339887)%7-3.5;e=Math.max(e,Math.abs(WRELIEF.cos2pi(u)-Math.cos(2*Math.PI*u)),Math.abs(WRELIEF.sin2pi(u)-Math.sin(2*Math.PI*u)));}
+ console.log('      cos2pi and sin2pi against Math: %s worst',e.toExponential(1));ok('the polynomial cosine and sine are within 1e-5 of Math\'s',e<1e-5,false);}
+const SE={gully:1},RE=800,SL=.15,NE=400,DS=5;   /* a plane falling 15 % to the east, 2 km a side at 5 m */
+const plane=(x,z)=>500-SL*x;
+const erodeD=(x,z,gx,gz,s,rel,mw)=>WRELIEF.erode(plane(x,z),x,z,gx,gz,s||SE,rel==null?RE:rel,mw||0)-plane(x,z);
+function aniso(f){let vx=0,vz=0;for(let j=1;j<NE;j++)for(let i=1;i<NE;i++){const x=i*DS,z=j*DS,d=f(x,z);vx+=(d-f(x-DS,z))**2;vz+=(d-f(x,z-DS))**2;}return vz/vx;}
+{const D=(x,z)=>erodeD(x,z,-SL,0);
+ // the old rule's gullies (41's, ridged noise at 240 m): no direction
+ const vn=(x,z,s)=>KRAND.vnoise(x,z,.5,s),fb=(x,z)=>(vn(x,z,1)+.5*vn(2.03*x,2.03*z,2))/1.5,old=(x,z)=>{const g=1-Math.abs(2*fb(x/240,z/240)-1);return -(3+RE*.004)*Math.pow(g,6)*2.2;};
+ const a=aniso(D),ao=aniso(old);console.log('      across-slope / down-slope variation: the filter %s, the old gullies %s',a.toFixed(1),ao.toFixed(1));
+ /* the finer octaves turn to follow the coarser spurs (the branching), so the filter is not purely across-slope: 3 x, where
+    noise with no direction reads about 1 */
+ ok('the gullies run down the slope (variation across it over 3 times that along it)',a>3,ao>3);
+ let s=0,n=0,lo=0,hi=0;for(let j=0;j<NE;j+=2)for(let i=0;i<NE;i+=2){const d=D(i*DS,j*DS);s+=d;n++;lo=Math.min(lo,d);hi=Math.max(hi,d);}
+ console.log('      the gullies cut %s m to %s m, %s m on average',lo.toFixed(1),hi.toFixed(1),(s/n).toFixed(2));
+ ok('the land neither rises nor sinks (mean change under 2 m) and is cut to some depth (over 8 m)',Math.abs(s/n)<2&&hi-lo>8,false);
+ let worst=0;for(let r=0;r<8;r++){const ux=Math.cos(r*.8),uz=Math.sin(r*.8);let p=D(1000,1000);for(let q=1;q<1500;q++){const v=D(1000+q*ux,1000+q*uz);worst=Math.max(worst,Math.abs(v-p));p=v;}}
+ console.log('      the steepest 1 m step in the gullies: %s m',worst.toFixed(2));ok('the gullies are continuous (no 1 m step over 1.5 m)',worst<1.5,false);
+ const deep=(sl)=>{let m=0;for(let k=0;k<400;k++){const x=k*13,z=k*7,d=Math.abs(WRELIEF.erode(500-sl*x,x,z,-sl,0,SE,RE,0)-(500-sl*x));m=Math.max(m,d);}return m;};
+ ok('deeper gullies on a steeper slope (30 % against 8 %)',deep(.3)>2*deep(.08),false);
+ ok('a far chunk (minWave 600 m) skips the finer octaves',erodeD(777,333,-SL,0,SE,RE,600)!==erodeD(777,333,-SL,0,SE,RE,0),false);}
+{let flat=true;for(let k=0;k<500;k++)if(WRELIEF.erode(42,k*17,k*29,0,0,SE,RE,0)!==42){flat=false;break;}
+ let gentle=true;for(let k=0;k<500;k++)if(WRELIEF.erode(42,k*17,k*29,.01,0,SE,RE,0)!==42){gentle=false;break;}
+ ok('flat and near-flat ground (under 2 %) is left as it was',flat&&gentle,WRELIEF.erode(42,17,29,SL,0,SE,RE,0)===42);}
+{const A=WRELIEF.init({ox:2000000,oz:3000000,seed:7}).erode(500,1000,2000,-SL,0,SE,RE,0),B=WRELIEF.init({ox:2001000,oz:2998000,seed:7}).erode(500,0,4000,-SL,0,SE,RE,0);
+ WRELIEF.init({ox:2000000,oz:3000000,seed:7});ok('two cuts of one place get the same gullies',Math.abs(A-B)<1e-9,false);}
 console.log(bad?bad+' FAILED':'all passed');process.exit(bad?1:0);

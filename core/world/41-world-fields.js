@@ -451,7 +451,11 @@ function H(x,z,minWave,P,nr,nt){minWave=minWave||0;
   if(dm>.01){const s=(x*.83+z*.55)/260+2.2*N7.fbm(x/1800,z/1800,2)+.5*N7.vn(x/400,z/400),f=s-Math.floor(s),p=f<.72?f/.72:(1-f)/.28;
    h+=dm*p*p*(3-2*p)*(10+14*N7.vn(x/3000,z/3000));}}
  if(minWave<420)h+=(N3.fbm(x/420,z/420,3)-.5)*2*(5+rel*.006)*S.rough;
- if(S.gully>.01&&minWave<240){const g=1-Math.abs(2*N4.fbm(x/240,z/240,2)-1);h-=S.gully*(3+rel*.004)*Math.pow(g,6)*2.2;}
+ /* the gullies. A relief region's (43-world-relief.js, P2): the erosion filter, down the slope of the land's large form (the
+    model and its hills, by central differences at 30 m), branching. Any other region's: ridged noise, which has no direction */
+ if(RELIEF){if(S.gully>.01&&minWave<450){const e=30,hA=clamp(rel*.12,12,420)*S.hills,Lf=(px,pz)=>baseH(px,pz)+(N1.fbm(px/6000,pz/6000,4)-.5)*2*hA;
+   h=WRELIEF.erode(h,x,z,(Lf(x+e,z)-Lf(x-e,z))/(2*e),(Lf(x,z+e)-Lf(x,z-e))/(2*e),S,rel,minWave);}}
+ else if(S.gully>.01&&minWave<240){const g=1-Math.abs(2*N4.fbm(x/240,z/240,2)-1);h-=S.gully*(3+rel*.004)*Math.pow(g,6)*2.2;}
  if(minWave<90)h+=(N3.vn(x/90+11,z/90-7)-.5)*2*(1.2+rel*.0015)*S.rough;
  // the channels: carve to the bed line (or the local ground less the depth, whichever is lower); the wall leans wallK
  let cd=1e9,cut=0,cw=0,co=0;
