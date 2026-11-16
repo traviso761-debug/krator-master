@@ -562,11 +562,18 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
     The green monastery is the **Order of Viridian Thought**, the tea Order: its house in Qiblai is its seat on the council,
     its head monastery a tea estate on the scarp's mist slopes (scale model px 962,1562; 813 m, ~400 people, ~40 t of tea a
     year in the spring flush, sent to Qiblai by road, about five days) [the owner, 2026-11-16]. The blue monastery is the
-    **Order of the Azure Dream**, whose head monastery is **Grēṭ-Āil**, the monastery isle in the middle of Erewhon's lake
-    (px 816.5,1501.5, ~600 people) [the owner, 2026-11-16]. Each Order keeps its spoke in Qiblai as its town house on the
-    council. The crimson monastery is the **Order of the Flashing Eye**. The white monastery is the **Order of the White
-    Lily**, known for its knowledge of medicine and healing; unlike the other great Orders, its complex in the city is its
-    head house, and doubles as the city's hospital [the owner, 2026-11-16].
+    **Order of the Azure Dream**, whose head monastery is **Grēṭ-Āil**, the long isle in the middle of Erewhon's lake
+    (px 845,1504, 900 people with its fishing villages) [the owner, 2026-11-16]. Each Order keeps its spoke in Qiblai as its
+    town house on the council. The crimson monastery is the **Order of the Flashing Eye**; Sekriḍ, a village on Kirstabal's
+    lake, is its own (`settlements/kirstabal/PLAN.md`). The white monastery is the **Order of the White Lily**, known for its
+    knowledge of medicine and healing; unlike the other great Orders, its complex in the city is its head house, and doubles
+    as the city's hospital [the owner, 2026-11-16]. It also runs **the latex house at Kirstabal**, where the Scarp's poppy
+    latex is dried to opium; it keeps a share and the seat pays it a small fee [the owner, 2026-11-16: "The White Monastery
+    runs the latex house", "takes a share and a small fee"]. The violet monastery is the **Order of the Violet Storm**, a
+    martial order of sword and bow; its central monastery is **the House of the Tempest** on the West Arm in the Gold March,
+    about 600 strong, and its house in Qiblai is the Tempest's daughter [the owner, 2026-11-16; `settlements/strongwall/PLAN.md`].
+    The gold monastery is **the Yellow Monastery, the Order of the Beacon**, whose head house is the refurbished Ancient
+    beacon fort over the Rift [the owner, 2026-11-16; `settlements/beacon/PLAN.md`]. The turquoise monastery is not yet named.
   - **Grēṭ-Āil, the Azure Dream's head monastery**, on the long isle's south shore facing Erehwon across the lake, in a
     cove at scale-model px 846,1508.7 [the owner, 2026-11-16; `settlements/azure-dream/PLAN.md`].
     - **The fishermonks** fish the lake from dugouts, by night with lamps, without qualm.
@@ -579,12 +586,34 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
     - **The isle's people**: 900 in all, 300 in the monastery and 600 in three fishing villages (West End, North Shore,
       East End).
     - *Proposed* (the plan's): the Order holds that the Song was dreamed, broke off, and comes back in dreams.
-  - **Theodiga.** *Proposed:* Theodiga, the arcology the Xanadui come from, is the dome on earth; it is to be redesigned
-    with a dome or domes.
+  - **Theodiga.** *Proposed:* Theodiga, the arcology the Xanadui come from, is the dome on earth. It is redesigned with
+    domes, the Song's dome among them (`settlements/theodiga`, 2026-11-16). The Rare Devisers work the Ancients' dead bore
+    from Theodiga to Stair under the royal licence [the owner, 2026-11-16: "we can leave in the stair to theodiga tunnel"].
   - **Distinct from the History Monks,** who keep the same poem as an English text with its author's name, and say
     nothing.
 - What to say of the fabled city of Erewhon, Pearl of Xanadu, Queen of Cities? Its great wealth and great remoteness make it a byword for exoticism and luxury among the peoples of the northern crater. The Vale of Xanadu is blessed by geography – a lush vale in an eastern rift lake, rising above the abyssal lakes that stretch west; to the north, rough high passes, often blocked by lava flows or earthquakes, are the most direct way to reach the teeming peoples of the Crater. With this ruggedness, only brave adventurers and traders brave the country, its bandits, and the robotic stalkers rumored to haunt it to venture south to Xanadu. But ah, what rewards! For Xanadu has plentiful gold mines and lush fields of cacao and other spices to match. Even the poorest of Erewhon eat like nobles elsewhere – and the Sultan himself? Well, the feasts and orgies of the Pleasure Dome have made Xanadu a byword for decadence as well. With its closest neighbors being the peaceful History Monks of the chilly Oidong Valley, and the lowlands tribes of Lizardmen who occasionally raid, but find the highland air too thin and chilly, the Sultanate has enjoyed splendid isolation for most of its history; even Iziz at its height was not so arrogant as to try to conquer it.
 - Things may be poised to change however. The current Sultan, a tremendously fat man who relies on 4 servants to carry him around in a palanquin, is such a prodigal spender that even the Sultanate’s ledgers are running in the red; and his longsuffering Grand Vizier has been pulling his beard out trying to muster up more money for guard patrols. The Lizardmen, from as much as can be gathered about that famously hostile race, seem to have new leadership, and their raids grow increasingly bold. While rich, the Sultanate is rather deficient in iron ore and scrap, and their best weapons are always obtained from Izizian and Yuni traders. If something were to cut that trade off, trouble may well come to paradise….
+- **The towns and houses** [the owner, 2026-11-15/16; the plans named, and `core/region/data/xan-tune.js`, the Sultanate's
+  economy on the sim]:
+  - **Erewhon's lake** is narrower and in the valley's middle, an Atitlán shore of bays and headlands round a long isle (scale
+    model 5.1 edit 7 re-run). **Erehwon** stands on its south shore.
+  - **Phēr**, the north shore's fair town (6,000), is seated by **the Sultan's heir**. It stands by the Swīṭ Siṭrīm, "sweet stream",
+    with a harbour under the wall and the fair ground on the rim (`settlements/pher/PLAN.md`).
+  - **Thalaba** moved up to the bench at the mouth of Godshearth (2,400), with **Ōlḍ-Thalaba**, a fishing village of 600, on its
+    old shore. Its road to Phēr goes up the Qol valley (about 105 km), with a mule path straight down the scarp. A small **Dalab
+    mission** of about 30 genepriests keeps a house there and sends its own party to the Grove. The Sultan takes **a tenth of every
+    Godshearth haul and a fifth of the rarities** (`settlements/thalaba/PLAN.md`).
+  - **Kirstabal**, the road town under Strongbow, has a smaller Atitlán of its own, the Lower Xanadu Lake and its nine villages,
+    and the White Lily's latex house (`settlements/kirstabal/PLAN.md`).
+  - **Lāiṭwāl**, the Light Wall, is the seat of Opal Valley and the Glaziers' main hold: 5,000, half Glaziers in the wall and half
+    Xanadui on the bench. The Glaziers pay the Sultan's Fifth in opals, and the Sultan's mines across the lake are its works village
+    (`settlements/lightwall/PLAN.md`).
+  - **Strongwall**, the Master of Mines' fort in the Gold March, keeps the Golden Tears' house inside its walls. It holds enough
+    powder for a few cannon, but **its musketeers are hired from the north** (Izani, Yuni and the Crater's free companies), paid by
+    the Treasury (`settlements/strongwall/PLAN.md`).
+  - **The three merchant houses** are the Brotherhood of the Two Horns (the Twins' guides), the Golden Tears (armed prospecting
+    in Lizard country, caravan escorts) and the Rare Devisers (the Godshearth expeditions; the royal licence in scrap and rare
+    artifacts, their main house at Theodiga).
 - Sign: the **eight-spoked wheel**, saffron and maroon. Ships: a swan barge, a dragon boat, a bullion carrack.
 - **Language and script.** Xanadui: the furthest drift of all, with Nepali, Tibetan and Persian sounds (retroflex t/d, breathy stops, q, x, nasal vowels), verb-last, prepositions turned case suffixes (*-bi* by, *-ṭu* to), and evidentials (*-sin* seen, *-se* they say). The Latin letters were lost; the temple grammarians invented a Tocharian-looking syllabary on a sound grid for the prayer wheels. `lore/tongues-of-krator.html` [the owner, Oct 2026]
 
@@ -650,6 +679,11 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
   - Chapterhouses at Dalab, Iziz and Locus.
   - **An outpost at the High Rift's Singing Gjár** (the owner, 2026-11-11): monks keep watch on its singing crystal fissures
     from a small house in Longsong's style (`biomes/highrift/PLAN.md` station 5).
+  - **The White Gills Hermitage** (the owner, 2026-11-02 and 2026-11-16): fifteen monks keep a house in the White Gills' pipe
+    field (scale model px about 1015,1430), on the Twins' Dark-Tube Road. They count the Breath Pipes' day-rings for the date
+    of the Cataclysm, and the house doubles as the crossing's caravan stop, its saltcups the only potable water between Bitta
+    and Lasso. Their other duty is passing the news and rumours of travellers to Longsong: the Order's ear on the Catch
+    crossing (`biomes/gills/PLAN.md`; `openworld/xanadu-oidong-highrift/PLAN-TWINS-CROSSING.md`).
   - They keep the Ear.
   - Main monastery is **Longsong**, in the Oidong Valley east of Xanadu (owner, 2026-10-15; an older note put Oidong far south over the outer wall). The Ear is at Yuni.
   - Rumored to have techniques to speed up and slow down time. Some say they can travel in time; authorially they cannot.
