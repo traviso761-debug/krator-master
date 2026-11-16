@@ -15,7 +15,9 @@ build a Xanadui fort asset as well"*.
 - The garrison and the ore trains ride **horses and donkeys**.
 - "I'm open to new texture proposals": three are proposed (`core/materials/PROMPTS-NEEDED.md` section 53).
 - **The opal goes to Strongbow first**, as it is closer.
-- **The watch posts go on the map.**
+- **The watch posts go on the map**, with English names.
+- The musketeers are **"all of the above"**: Izani, Yuni and free companies of the Crater.
+- The beacon's keepers are **the Yellow Monastery, the Order of the Beacon**.
 
 This is a plan, not a build: no kit code and no pages. Everything not quoted from the owner, the lore or the sim tune is
 *proposed*. The fort asset (section 5) is a specification. Its code goes to a later step, owned by whoever owns
@@ -97,7 +99,7 @@ fort's towers.
 from the pin outward, over cells with a clear line to the post before them and hops of at most 24 km, preferring high
 ground. The clearances are for a 12 m post at both ends:
 
-| Post (*proposed* names) | px | Ground | Hop | Clear by | Sees besides |
+| Post (English names kept: the owner, 2026-11-16) | px | Ground | Hop | Clear by | Sees besides |
 |---|---|---|---|---|---|
 | **G1, the Brow post** | 917,1648 | 3,455 m, 3 °C, `Dfc` | the fort, 19 km | 20 m | **Qiblai** (+36 m), **the beacon fort over the Rift** (+19 m, 258 km) |
 | **G2, the Cold post** | 911,1653 | 4,137 m, -1 °C, `Dfc` | G1, 16 km | **2 m** (marginal) | |
@@ -128,7 +130,7 @@ beside it **80** (`tears.strongwall`). The split below is *proposed*.
 
 | Who | People | Where |
 |---|---|---|
-| **The garrison of the Gold March**: archers, spearmen and mounted men under a commander; **musketeers hired from the north** (the owner, 2026-11-16: "musketeers are mostly hired from the north"), *proposed* about 30, with their own captain and mess; **a few gunners** for the fort's cannon (*proposed*: three guns, below). They keep the gorge wall's watch and escort the ore trains and the Fifth | ~140 | the barracks ranges on the inner and outer wards, the gates; the six watch posts (section 1) by rota, about 4 a post |
+| **The garrison of the Gold March**: archers, spearmen and mounted men under a commander; **musketeers hired from the north** (the owner, 2026-11-16: "musketeers are mostly hired from the north"), *proposed* about 30, with their own captain and mess. **They are a mixed lot: Izani, Yuni and free companies of the Crater** (the owner, 2026-11-16: "all of the above"), each in its own dress, so their range is a mixed barracks; **a few gunners** for the fort's cannon (*proposed*: three guns, below). They keep the gorge wall's watch and escort the ore trains and the Fifth | ~140 | the barracks ranges on the inner and outer wards, the gates; the six watch posts (section 1) by rota, about 4 a post |
 | **The assay house**: the assayers, refiners and furnace men, the Sultan's weigher and his sealers | 20 (the tune's crew) | the assay court in the inner ward |
 | **The Master of Mines' household and office**: the Master himself, who **spends much of the year here** (the owner, 2026-11-16); *proposed:* the rest of the year at the citadel's Mint, with a deputy holding the fort then. His family, the clerks of the ore tally and the Fifth, servants | ~30 | the keep, which is a residence as much as a tower: the Master's hall and rooms |
 | **The fort's trades**: smiths and armourers (the arms bought from Iziz and Yuni are kept and mended here), a farrier, cooks, a baker, a cooper | ~25 | the outer ward |
@@ -342,8 +344,13 @@ beacon that has been moved there by Xanadu and connected to a generator". The re
   steel mount: a fat white-metal drum with a glazed face, the kind a hull's searchlight or a tower's warning lamp would
   be. It is bolted down with Xanadui iron straps, and its cable runs down the plinth in a stone channel.
 - **The generator house** stands against the curtain: an oil generator of the Geomancers' kind (the oil licence,
-  section 4), its fuel tank in a walled pit, and a small workshop where the beacon's keepers mend it. The keepers are
-  probably hired, like the musketeers, or Yuni's mission's men (question 13).
+  section 4), its fuel tank in a walled pit, and a small workshop where the beacon's keepers mend it.
+- **The keepers are monks: the Yellow Monastery, the Order of the Beacon** (the owner, 2026-11-16). *Proposed:*
+  - their brothers keep the lamp, the generator and the signal book at the fort;
+  - their cells are a small cloister inside the fort: a chapel to the Beacon, a yellow-washed lhakhang where the
+    keep's chapel would stand (the gilt chapel of 5.5), with the lamp's plinth beside it;
+  - the yellow wash is their colour, as each of Qiblai's monasteries has one;
+  - where their mother house stands is open (question 15).
 - **The beam** draws with the Ancients kit's lighthouse beam (`kits/ancients/src/89n-lighthouse.js`, `lhBeamGeo` and
   `LH_BEACONS`): crossed quads, widening, readable from any bearing. **The lamp head is a new Ancients piece**, owned by
   `kits/ancients`, with the Xanadu kit's mount and plinth around it. It is lit only while the generator has fuel (the
@@ -420,9 +427,11 @@ The rest is the library already in the Xanadu pack: `stone.cut`, `earth.rammed`,
    `PROMPTS-NEEDED.md` section 53).
 10. ~~**The opal.**~~ **Answered 2026-11-16: to Strongbow first, as it is closer** (W1).
 11. ~~**The watch line.**~~ **Answered 2026-11-16: on the map** (section 1's six posts; W0).
-12. **The hired musketeers.** "The north" is Iziz's country and the Crater beyond. Are they Izani, Yuni, or free
-    companies of the Crater? This decides their dress and their barracks' look.
-13. **The beacon's keepers.** Who keeps the Ancient beacon and its generator running: the Sultan's men trained by the
-    Geomancers, Yuni's mission's men on hire, or someone else?
-14. **The posts' names.** The six watch posts have *proposed* English names (the Brow, Cold, Lode, Fan, Bench-end and
-    Rift posts). Do they want Xanadui ones?
+12. ~~**The hired musketeers.**~~ **Answered 2026-11-16: all of the above** (Izani, Yuni and free companies of the
+    Crater).
+13. ~~**The beacon's keepers.**~~ **Answered 2026-11-16: the Yellow Monastery, the Order of the Beacon** (section 5.7).
+14. ~~**The posts' names.**~~ **Answered 2026-11-16: the English names are fine** (the Brow, Cold, Lode, Fan,
+    Bench-end and Rift posts).
+15. **The Yellow Monastery.** Where is its mother house? Is it one of Qiblai's eight great monasteries (the gold
+    spoke, say), or an order of its own outside the Prismarchy? Does it keep only the beacon fort's lamp, or other
+    Ancient lights in the Sultanate too?
