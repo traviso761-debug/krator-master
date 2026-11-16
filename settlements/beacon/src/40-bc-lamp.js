@@ -36,7 +36,8 @@ const BEACON_LAMP = (function () {
     { id: 'rimpost', name: 'the Rim Post (to the Flashing Eye and the capital)', bearing: 21, call: [[1, 1], [8, 2]] },
     { id: 'g1', name: 'G1, the Brow post (Strongwall\'s line)', bearing: 149, call: [[3, 4], [1, 7]] },
     { id: 'tempest', name: 'the House of the Tempest', bearing: 157, call: [[6, 6], [2, 3]] },
-    { id: 'tears', name: 'the Golden Tears\' camp', bearing: 181, call: [[4, 2], [5, 5]] }];
+    { id: 'tears', name: 'the Golden Tears\' camp', bearing: 181, call: [[4, 2], [5, 5]] },
+    { id: 'march.s', name: 'the south watch fort', bearing: 239, call: [[7, 3], [2, 8]] }];
   const SLOT = 150;
   const slotStarts = K.slots(STATIONS.length, STATIONS.length * SLOT, SLOT);
   const SIGNAL = STATIONS.length * SLOT;

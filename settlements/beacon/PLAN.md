@@ -230,15 +230,12 @@ was written; *provisional* until the restored knoll is merged, step B0):
   - The rim massif north-east of the knoll (1,111 m at 857.9,1537.5) stands in the 63 km line, 95 m too high at 22 m and
     80 m at 40 m.
   - The Eye's plan found the line clear (+40 m) because it ran on the lowered rim.
-- **Two ways to join them:**
-  - **The Rim Post** (*proposed*, in the layout as `lamp.relays`): a watch post of the fort asset (`XFORT.post()`) on the
-    massif at **856,1532** (1,578 m), 17 km from the lamp at 21°. It sees the lamp (+57 m) and the Eye Post (+68 m),
-    carries a mirror and a shuttered lamp, and is kept by two keepers on the Lamp Watch's rota.
-  - **Or a smaller restore**: the knoll, spur and saddle (x 850-854, y 1538-1544) with the massif left lowered. Then
-    the lamp sees the Eye directly (+14 m), but the knoll stands as a mesa 550 m over lowered ground on its north and
-    east.
-
-  This is the scale-model session's restore and the owner's call. The Rim Post works either way.
+- **The Rim Post joins them** (the owner, 2026-11-16: "Rim Post relay"; the knoll is restored in full). It is a watch
+  post of the fort asset (`XFORT.post()`) on the massif at **856,1532** (1,578 m), 17 km from the lamp at 21°, in the
+  layout as `lamp.relays`.
+  - It sees the lamp (+57 m) and the Eye Post (+68 m).
+  - It carries a mirror and a shuttered lamp, and is kept by two keepers on the Lamp Watch's rota.
+  - The other option, set aside: restore only the knoll and saddle and leave the massif lowered.
 - **The moved stations** (the composite):
 
   | Station | Where | km | Clear by | Reached |
@@ -249,16 +246,20 @@ was written; *provisional* until the restored knoll is merged, step B0):
   | Tuatara | 818,1554 | 75 | +38 m | seen |
   | Sauropolis | 765,1596 | 209 | +11 m | seen |
   | **Erehwon** | moved to 841,1517 | 52 | -468 m | hidden; by the Rim Post and the Eye |
-  | **The south watch fort** | moved to 847,1549 | 22 | -288 m | hidden |
+  | **The south watch fort** | **843,1546** | 23 | +26 m | seen |
 
-  - The south watch fort now stands at -1,319 m under the scarp. At **843,1546**, 10 km off, it would see the lamp
-    (+25 m) and Tuatara (+34 m). The fort's place is the open-world session's.
+  - **The south watch fort is on the scarp at 843,1546** (the owner, 2026-11-16: "Move to 843,1546"; the tune had
+    moved it to 847,1549, at -1,319 m under the scarp, where the lamp missed it by 288 m).
+  - The new site is at -213 m, 25 °C, `Cfa`, about 1.64 atm.
+  - From there the fort sees the lamp (+26 m), Tuatara (+35 m), the Rim Post (+17 m), Komodo (+46 m) and the Tears'
+    camp (+27 m).
   - The west watch fort (818,1531) is hidden (-216 m).
 - **The night's schedule** (step B9, `src/40-bc-lamp.js` on `core/sched`, tested by `test-lamp.js`):
   - **Lit** dusk to dawn, dark by day or with the engines down.
   - **The sweep:** the southern arc 100-260°, out and back in two minutes.
   - **On the hour** the beam stops for 150 s on each station in turn: the Rim Post (21°), G1 (149°), the Tempest
-    (157°), the Tears' camp (181°). The shutters beat that hour's message, or the station's call sign.
+    (157°), the Tears' camp (181°), the south watch fort (239°). The shutters beat that hour's message, or the
+    station's call sign.
   - **An alarm** holds the beam on the raid's bearing, the shutters beating fast, over everything.
   - **The Station's pass** raises the beam to it.
   - **The grid code:** a syllable is `row` flashes of 0.6 s, a 1.8 s pause, then `col` flashes; 3.6 s between
@@ -375,7 +376,5 @@ and keeps its state from its own plan.
 7. **The gold banner on the Rainbow Temple.** It turns toward its monastery (LORE 6.13). Does it now turn toward the
    lamp, 176 km away and out of sight, or toward the daughter house on the inner square?
 8. **A Xanadui name** for the house, as the Marches have *Mārchiz*?
-9. **The line to the Flashing Eye** (section 4, "The signal line"). The restored knoll's rim massif blocks it. Two
-   options:
-   - the order's **Rim Post** on the massif (856,1532) as a relay (*recommended*: the restore stays as planned);
-   - a restore of the knoll and saddle alone, leaving the massif lowered.
+9. ~~**The line to the Flashing Eye.**~~ **Answered 2026-11-16: "Rim Post relay"**, the knoll restored in full; and
+   for the south watch fort, **"Move to 843,1546"** (section 4, "The signal line").

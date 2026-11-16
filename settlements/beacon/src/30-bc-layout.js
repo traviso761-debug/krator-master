@@ -140,14 +140,14 @@ const BEACON_LAYOUT = (function () {
       /* the stations that moved with the edit 7 re-run (the tune, 2026-11-16), taken on a composite: today's model with the
          shoulder (850-858 x 1534-1544) from the model before the re-run, as the scale-model session restores it
          (provisional until that edit is merged: step B0) */
-      { id: 'march.s', name: 'the south watch fort (moved to 847,1549, at -1,319 m below the scarp)', px: [847, 1549], km: 22, bearing: 214, clear: -288, must: false, note: 'at 843,1546 (10 km off) it would see the lamp by +25 m and Tuatara by +34: the fort\'s place is the open-world session\'s' },
+      { id: 'march.s', name: 'the south watch fort (on the scarp at 843,1546)', px: [843, 1546], km: 23, bearing: 239, clear: 26, must: true, note: 'the owner, 2026-11-16: "Move to 843,1546" (it had been moved to 847,1549, -1,319 m under the scarp, hidden by 288 m); from there it sees Tuatara +35, the Rim Post +17, Komodo +46, the Tears\' camp +27' },
       { id: 'march.w', name: 'the west watch fort (moved)', px: [818, 1531], km: 72, bearing: 284, clear: -216, must: false },
       { id: 'erehwon', name: 'Erehwon (moved to the new lake\'s south shore)', px: [841, 1517], km: 52, bearing: 332, clear: -468, must: false, via: 'eye' },
       { id: 'eye', name: 'the Eye Post (the Order of the Flashing Eye, the relay to the capital)', px: [881, 1526], km: 63, bearing: 63, clear: -95, must: false, via: 'rimpost', note: 'the restored rim massif north-east of the knoll (1,111 m at 857.9,1537.5) stands in the line; a 40 m lamp still misses by 80 m' }],
     /* relays: posts that carry the lamp's signals to a station it cannot see (the fort asset's watch post, XFORT.post()) */
     relays: [
       { id: 'rimpost', name: 'the Rim Post (the order\'s relay to the Flashing Eye)', px: [856, 1532], h: 12, ground: 1578, km: 17, to: 'eye', seeLamp: 57, seeFar: 68,
-        note: 'on the rim massif 17 km north-north-east of the lamp: a watch post with a mirror and a shuttered lamp, two keepers on the Lamp Watch\'s rota; not needed if the restore leaves the massif lowered (then the lamp sees the Eye by +14 m)' }]
+        note: 'the owner, 2026-11-16: "Rim Post relay" (the knoll restored in full). On the rim massif 17 km north-north-east of the lamp: a watch post with a mirror and a shuttered lamp, two keepers on the Lamp Watch\'s rota' }]
   };
 
   /* the power, from the tune (core/region/data/xan-tune.js: T.oil.kgYr 400,000, licence 0.2, T.lit['march.e'] 0.02,
