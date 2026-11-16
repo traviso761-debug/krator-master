@@ -32,6 +32,11 @@ Sources:
   stands (the Eye that does not close); the house is about **320**; the vent **flashes** (Strombolian bursts, red at night,
   the recommended answer to question 3); the Eye **keeps the council's mirror line by day** and is **the relay between the
   Beacon and the capital**. Questions 4 and 6-13 are still open.
+- **The Beacon reaches the Eye through its Rim Post** (the owner, 2026-11-16: "Rim Post relay"). The Beacon session found that
+  on the restored knoll the rim massif north-east of it (1,111 m at 857.9,1537.5) hides the Eye Post from the lamp (-95 m).
+  The Order of the Beacon's Rim Post at 856,1532 sees both: the lamp (+57 m) and the Eye (+68 m). So the line runs lamp,
+  Rim Post, Eye, Erehwon. Section 3's "+40 m" from the lamp was read on the lowered rim and no longer holds once the knoll is
+  restored. The Beacon's layout carries the Rim Post (`claude/beacon-monastery-d509f5`, 8a4b5ae99).
 
 ## 1. The Order of the Flashing Eye
 
