@@ -208,7 +208,9 @@ On the sim this is three off-map markets, one per gateway, each like today's "Xa
 | **The Catch road** | Same route | **The Dasri** | Same goods | The Catch's salt, alkali, lung salt |
 | **The Yuni road** | By the northern passes, or by Strongbow and the Order's road | **Yuni** | Same goods | Electrics, firearms; the oil licence's people |
 
-Gemini's **Annual Great Caravan** (Nulab to Erehwon, 831 km, 45.9% Dalab-run) breaks the rule: Dalab is not a gateway (Q2).
+| **The Annual Great Caravan** (the owner, Q2: Dalab a fourth gateway) | Erehwon, over the North Rift Bench, 831 km, 90 days, once a year | **Dalab** (Nulab) | Cacao, saffron, opium, tea (Gemini: 414 t out) | 194 t back: Dalab's goods |
+
+The caravan's operators are Dalab (46%), Xanadu (40%) and the Tungang Union (10%).
 
 The fleets: Gemini gives Xanadu 12 inland barges, 69 wagon convoys and 43 pack caravans, with 2,910 beasts. On the valley host these become the roads' `carriers`.
 
@@ -265,6 +267,40 @@ Each step ends in a node test on the valley host, with a negative for each check
 - It does not touch core/simulation's contract. The changes are in core/region's valley host (X1) and the tunes.
 
 ## 9. Open questions for the owner
+
+**Answered 2026-11-15** (the owner):
+- **Q1, the scale:** about 230,000, option (a): lore-sized towns plus Gemini's rural share, as section 1 proposes.
+- **Q2, the Dalab caravan:** **Dalab becomes a fourth gateway.** The Annual Great Caravan stays: once a year, Erehwon to
+  Nulab over the North Rift Bench (831 km, 90 days, run by Dalab, Xanadu and the Tungang Union). The rule now reads: the
+  East Rift trades directly with Iziz, Yuni, the Dasri and Dalab. `TRADE-SCOPE.md`'s rule is to be updated to match.
+- **Q3, opium:** **the sky poppy.** Its crop record takes the Vale (P2) and the Scarp (P5) as homes beside Oidong, and its
+  resin is Xanadu's opium export.
+- **Q4, Strongbow:** **the Sultan's.** It is the royal lift and toll gate at the end of Xanadu's Ancient road; the toll goes to
+  the Treasury (section 5).
+- **Q5, the province names:** **Xanadui names**, with the English working names as glosses. They are coined below on the
+  owner's tongues sheet: English worn to sound Nepali, Tibetan or Persian, as in `biomes/gills/PLAN.md` section 9a. The
+  rules used: **t d** > **ṭ ḍ**; **f** > **ph**; **v** > **bh**; **c/k** > **q** before a back vowel; an initial **sc-/st-**
+  breaks up, as *stream* > *Siṭrīm*; long vowels are marked. All are *proposed*:
+
+  | # | Xanadui | Gloss |
+  |---|---|---|
+  | P1 | **Lēk-Shor** | the Lake Shore |
+  | P2 | **Bhēl** | the Vale (*vale*, with **v** > **bh**); in full, *Bhēl-Zānaḍu* |
+  | P3 | **Qāṭarāq** | the Cataracts (*cataract*), Qiblai's lowlands on Nahr ash-Shalālāt |
+  | P4 | **Gōlḍ-Mārch** | the Gold March |
+  | P5 | **Siqārp** | the Scarp |
+  | P6 | **Ōpal-Bhālī** | Opal Valley |
+  | P7 | **Nōrth-Shor** | the North Shore (the dental **th** kept, as in *Thin Yīr*) |
+  | P8 | **Mārchiz** | the Marches, the Lizardman frontier |
+
+- **Q6, Qiblai's estates:** **each monastery holds its own.** There are eight holders, one per colour monastery, each with its
+  estate villages (hives, dairies, gardens) tithing to it. The Hall of the Decree is fed by the eight, so the Prismarchy's
+  politics has a ledger (X4). The grant of fealty's bill and the esteem's are still to be set.
+- **Q7, lacquer:** **a Vale lacquer tree.** It is a new crop record in `kits/crops`, a tree tapped for its sap like the real
+  lacquer tree, *Lāqar Ṭrī*, at home in the Vale (P2) and the Scarp (P5). The workshop is in Erehwon's industry quarter.
+  Lacquerware then joins the gateway caravans' goods.
+- **Q8, where the tune lives:** **a shared `core/region` data file** (`core/region/data/xan-tune.js`, say). Both open-world
+  regions, Longsong's page and the joint fragment's test read it in place, beside Longsong's `LS_TUNE`.
 
 1. **The scale of the country.**
    - (a) About 230,000: lore-sized towns plus Gemini's rural share (recommended).
