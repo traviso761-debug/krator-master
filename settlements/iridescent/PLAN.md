@@ -36,7 +36,7 @@ liveable cells within 1-5 km of the water were scored on a fall in view, a spur,
 1656    1343  1345  1333  1321  1318  1313  1311  1315     <- the lake's sill, ~1,311-1,315 m
 ```
 
-**The pin: px 1016,1655** (the model's 1,275 m cell): a shelf about 40 m below the lake's sill, the outflow passing it and
+**The pin: px 1016,1655, `siridesc0001`** (model edit 5.1e13, 225be1359 on `claude/gemini-trade-reconcile`, 2026-11-17; type "village", the map having no monastery type; the model's 1,275 m cell): a shelf about 40 m below the lake's sill, the outflow passing it and
 falling north-west to 937 m by px 1012,1651.5 (the lower riser: about 950 m down to Terrace III's 366 m, in steps). Cfb, mean
 15 °C, coldest month 8 °C, no frost to speak of, 941 mm; 1.36 atm. 24 km from Lāiṭwāl's Stair Foot (by boat along the lake and
 a walk to the sill: a day), on the valley's road down to Terrace III and on to Kirstabal and Qiblai (221 km to Qiblai in a
@@ -99,7 +99,7 @@ shelf, the Opal Valley flora sealed as Lightwall's `LW_FLORA`, `kits/interiors` 
 
 | Step | What | Test |
 |---|---|---|
-| **I0** | The pin on the scale model (`defSetts`, through the scale-model edits session's queue) and the Order in `LORE.md` | the pin's ground is the shelf |
+| **I0** | The pin on the scale model (`defSetts`, through the scale-model edits session's queue) and the Order in `LORE.md` (**done 2026-11-17**: `siridesc0001`; the Order in `LORE.md`) | the pin's ground is the shelf |
 | **I1** | The owner's answers to section 8 | |
 | **I2** | The head monastery's records on the Qiblai kit (the Hall of the Bow, the cells, the landing) | the kit's checks |
 | **I3** | Its page: the shelf, the sill, the falls (core/water), the precinct, the flora | the GPU verify |
