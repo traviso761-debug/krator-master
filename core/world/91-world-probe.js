@@ -60,6 +60,10 @@ function highways(eF){const R=(WORLD_DATA.roads&&WORLD_DATA.roads.roads)||[],G=(
 function clearOf(recs){let road=0,town=0,first=null;
  for(const r of recs){if(WORLD.roadD(r.x,r.z)<.5){road++;first=first||r;}if(WORLD.townW(r.x,r.z)>0){town++;first=first||r;}}
  return{ok:road===0&&town===0&&recs.length>0,detail:recs.length+' records; '+road+' on a road, '+town+' in a town'+(first?' (first '+Math.round(first.x)+','+Math.round(first.z)+')':'')};}
+// ground styles: every overlay of the region has its own style and palette (41 BIOME_GROUND), none fallen to the desert's
+function styled(names){const miss=names.filter(n=>!WORLD.groundOf(n));
+ return{ok:names.length>0&&miss.length===0,detail:names.length+' overlays'+(miss.length?'; NO GROUND STYLE for '+miss.join(', '):', each with its style and palette')};}
+const overlayNames=()=>(WORLD_DATA.meta.biomes||[]).map(b=>b.name);
 const allRecs=()=>{const o=[];for(const t of FLORA.tiles.values())for(const r of t.recs)o.push(r);return o;};
 // lines across the region: through each built settlement, and the box's two diagonals' middle 200 km
 function lines(){const L=[];for(const p of PLACES.list.filter(p=>p.build||p.cand))L.push([p.x-3000,p.z-1700,p.x+3000,p.z+1700]);L.push([-100000,-100000,100000,100000],[-90000,80000,90000,-80000]);return L;}
@@ -78,6 +82,9 @@ function hostChecks(){const out=[],P=HOST.camera.position,[tx,tz]=tileOf(P.x,P.z
  out.push(Object.assign({name:'the highways lie on the land and keep their grade'},highways()));
  out.push(Object.assign({name:'nothing grows on a highway or in a town'},clearOf(allRecs())));
  out.push({name:'no NaN in the drawn terrain',ok:nan===0&&TERRAIN.meshes().length>0,detail:TERRAIN.meshes().length+' chunks drawn, '+nan+' with NaN'});
+ /* its negative runs here too (the regions' verify.py read hostChecks only): a name with no entry must be refused */
+ {const r=styled(overlayNames()),n=styled(['no such biome']);
+  out.push({name:'every biome overlay has its own ground style',ok:r.ok&&!n.ok,detail:r.detail+(n.ok?'; NEGATIVE MISSED: a name with no entry passed':'; negative (a name with no entry) refused')});}
  return out;}
 function hostNegatives(){const out=[],P=HOST.camera.position,[tx,tz]=tileOf(P.x,P.z);
  const rnd=(a,b)=>FLORA.buildTile(a,b).map(r=>Object.assign({},r,{x:r.x+Math.random()*1e-3}));
@@ -96,6 +103,7 @@ function hostNegatives(){const out=[],P=HOST.camera.position,[tx,tz]=tileOf(P.x,
   out.push(Object.assign({name:'negative: a tree put on a highway and one in a town'},clearOf(F)));}
  const L0=lines()[0],xs=(L0[0]+L0[2])/2;   // the step crosses the first test line at its middle
  out.push(Object.assign({name:'negative: a 3 m step put in the land'},continuity(lines(),(x,z)=>WORLD.H(x,z)+(x>xs?3:0))));
+ out.push(Object.assign({name:'negative: an overlay with no ground style'},styled(overlayNames().concat(['no such biome']))));
  return out;}
 return{ready:()=>START.ready,hostChecks,hostNegatives,
  stats:()=>({terrain:TERRAIN.stats,flora:FLORA.stats,floor:FLOOR.stats,nursery:Object.assign({},NURSERY.stats,{queued:NURSERY.queued()}),seas:SEAS.stats(),rivers:RIVERS.stats(),
