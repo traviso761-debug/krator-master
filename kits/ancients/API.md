@@ -44,8 +44,11 @@ To add a target: make `targets/<name>/` with those two files and add a line to
 `build.py` refuses if it does.
 
 Theodiga lives in its own target because it is the heaviest single structure in
-the kit and is being taken up as its own piece of work. `buildDam` still ships
-in the kit's `<script>` — only the site is gone.
+the kit and is being taken up as its own piece of work. Since 2026-11-15 its
+builder lives there too (`targets/theodiga/77-dam.js`, with the Dome and the
+water, `77a`-`77c`, `90w`): only Theodiga's page carries `buildDam`, and
+`90-scene.js` adds it to `BUILDERS` when it is present, so editing the dam no
+longer changes the other pages.
 
 ## Loop
 

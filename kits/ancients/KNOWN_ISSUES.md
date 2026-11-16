@@ -292,6 +292,18 @@ exceeded ceiling as `OVER`; `--strict-budget` makes it fail.
       intact reservoir; there is no bed under it to stand them on (they go to y = 0).
 - [ ] **Not in the kit target.** `buildDam` is placed only on its own page; the kit showcase never places the dam, so the
       dome exists only where `targets/theodiga` is on the page. A world that places Theodiga needs both fragments.
+- [x] ~~The river does not pass the ruin~~ (the owner, 2026-11-15: "there should still be a river/cascade passing through the
+      broken dam"). The ruin's lake now stands at the Notch's sill (273 m) and spills through it down the face, a sheet of white
+      water widening to the canyon floor, with spray at its foot; the river runs down the canyon in a channel cut into the mud,
+      and the silt keeps a way open to the Notch. The light tunnels under the cascade are not drawn (the face stays whole).
+- [x] ~~The cascade does not move.~~ Theodiga's water is on core/water (2026-11-15, `targets/theodiga/77c`, `90w`): the lake
+      and the plunge pool still water, the overflow and the river flows, the cascade a fall that follows the battered face
+      (`WATER.fall`'s `face`), the intact outlets falls; all moving on core/atmos's clock. The kit's own water meshes in
+      `buildDam` are drawn only on a page without those fragments.
+- [ ] **No spray cloud at the cascade's foot.** `drawFall`'s spray comes from core/atmos's particles, which this page does not
+      take (only the four core/atmos files the water needs). The river is a flow at 1 m over the scene's ground plane at 0.
+- [ ] **The kit's own camera, probe and inspector, not core/host.** Every Ancients page shares them (`90-scene`, `91-probe`,
+      `92-camera`); moving the kit onto core/host is a kit-wide port, not Theodiga's.
 
 ## Veladiga (`--target veladiga`)
 
@@ -487,7 +499,7 @@ Open on the new build (see `targets/spire/NOTES.md`):
       gullies and a talus of fallen blocks; the fin cells cluster into patches
       and bands instead of scattering by coin-flip; and the light tunnels are
       punched clean through the downstream face with collars, open shafts and a
-      recessed glow. `buildDam` is shared source in `src/77-dam.js`, so this
+      recessed glow. `buildDam` was shared source in `src/77-dam.js` (since 2026-11-15 `targets/theodiga/77-dam.js`), so this
       lands in any future kit that places the dam again.
 - [x] ~~Vegetation is lollipop trees.~~ `VEG.tree(x,y,z,species,h)` is the hand-off
       point, with a cheap default; `trees()` and every planting call go through

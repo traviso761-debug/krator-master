@@ -1,4 +1,6 @@
 // ================================================================= DAM ARCOLOGY — "Theodiga" (after Soleri)
+// In targets/theodiga since 2026-11-15 (the owner: it was in src/, so every edit re-hashed all 49 Ancients pages, though
+// only Theodiga's places the dam). 90-scene.js takes buildDam into BUILDERS when a page carries it.
 function buildDam(scene,gx,gz,d){reseed(9260+d);KOFF=[gx,0,gz];const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);const skin=SHELL(d);
  const H=400,SPAN=640,CH=440;REGISTER({name:'Dam arcology — Theodiga ('+STATE(d)+')',x:0,z:0,r:520,h:H+40});
  // canyon walls: two rock masses, rough, running upstream (−z) and downstream (+z)
@@ -42,12 +44,13 @@ function buildDam(scene,gx,gz,d){reseed(9260+d);KOFF=[gx,0,gz];const G=new THREE
  const NX=-221,NB=H-128;   // its top edge stops short of the -138 fin (x -153)
  const notchW=y=>14+46*clamp((y-NB)/(H-NB),0,1)+6*(fbm(y*.05,.3,2360,2)*2-1);
  const notch=(x,y)=>d>0&&y>NB+4*(fbm(x*.07,.2,2361,2)*2-1)&&Math.abs(x-NX)<notchW(y);
- const TUNS=[];
+ const TUNS=[],SPILL=[];
  for(let k=-5;k<=5;k++){const tx=k*52;
   for(let j=0;j<3;j++){
    if(rng()<.18)continue;                                  // not a perfect grid
    const ty=96+j*82+rr(-9,9),tR=rr(7.5,10.5),blk=d>0&&rng()<.30;
    if(notch(tx,ty)||notch(tx-tR,ty)||notch(tx+tR,ty))continue;
+   if(d>0&&Math.abs(tx-NX)<36&&ty<NB)continue;              /* under the cascade (below): the face stays whole */
    TUNS.push({x:tx,y:ty,R:tR,blocked:blk});}}
  const tunHole=(x,y)=>{for(const t of TUNS){const dx=x-t.x,dy=y-t.y;
   if(dx*dx+dy*dy<t.R*t.R*.86)return true;}return false;};
@@ -71,10 +74,12 @@ function buildDam(scene,gx,gz,d){reseed(9260+d);KOFF=[gx,0,gz];const G=new THREE
    const L=rr(3,11),zm=(nzA(x)+nzB(x,y))*.5,dep=th_(y);
    kput(BOXC(d),[x-sg*(L*.5-1),y,zm],qEuler(0,0,sg*rr(-.12,.05)),[L,1.2,dep*rr(.55,.9)],null);}
   // what came out of it, down the face and at the toe
+  // (drawn below, once the canyon floor's height is known: each seated on its lowest points, core/ruins' rule; the draws
+  // are made here, in their old order, so nothing after them moves)
   for(let i=0;i<46;i++){const t=Math.pow(rng(),1.4);
    const x=NX+rr(-50,50)*(.4+t),sc=rr(6,22)*(1-t*.3);
-   kput(BOXC(d),[x,sc*.3,zc(x)+th_(0)+4+rr(0,90)*t],
-    qEuler(rng()*3,rng()*3,rng()*3),[sc*rr(.8,1.8),sc*rr(.4,.8),sc*rr(.7,1.5)],null);}}
+   const p=[x,sc*.3,zc(x)+th_(0)+4+rr(0,90)*t];
+   SPILL.push({p:p,q:qEuler(rng()*3,rng()*3,rng()*3),s:[sc*rr(.8,1.8),sc*rr(.4,.8),sc*rr(.7,1.5)]});}}
  meshMerged(FACE,CONC(d),G);
  if(d>0)mesh(gridSurface((u,v)=>{const x=(u-.5)*SPAN,y=v*H;return[x,y,zc(x)+th_(y)-6];},48,20,
   {hole:(u,v)=>notch((u-.5)*SPAN,v*H)}),MAT.guts,G);
@@ -130,7 +135,7 @@ function buildDam(scene,gx,gz,d){reseed(9260+d);KOFF=[gx,0,gz];const G=new THREE
    // visible looking straight down the bore, and nothing views this face square-on
    kput('dot',[tx,ty,tz-9],qFacing([0,0,1]),[R0*1.14,R0*2.29,1],
     lit?CYAN.clone().multiplyScalar(rr(.55,1)):DEAD);}
-  kput('boxD',[tx,H+18.4,zc(tx)+8],null,[7.5,.6,26],null);});   // its slot on the crest
+  if(!(notch(tx,H-1)||notch(tx-5,H-1)||notch(tx+5,H-1)))kput('boxD',[tx,H+18.4,zc(tx)+8],null,[7.5,.6,26],null);});   // its slot on the crest (none where the crest fell: it hung in the air over the Notch)
  meshMerged(TUN,d>0?MAT.guts:MAT.dark,G);
  // learning-centre beam (horizontal), and the spine
  const by=228;kput(BOXC(d),[0,by,zf(by)+18],null,[340,26,44],null);kput('boxD',[0,by,zf(by)+18],null,[338,24,42],null);
@@ -142,17 +147,50 @@ function buildDam(scene,gx,gz,d){reseed(9260+d);KOFF=[gx,0,gz];const G=new THREE
  // base: production/utilities blocks, outlets with waterfalls, the park in the canyon floor
  for(let k=-4;k<=4;k++){const x=k*48;if(Math.abs(k)<2)continue;kput(BOXC(d),[x,14,zf(14)+22],null,[38,28,48],null);kput('boxD',[x,14,zf(14)+22],null,[36,26,46],null);for(let j=0;j<3;j++)kput('archOpen',[x-12+j*12,6,zf(14)+46.5],qFacing([0,0,1]),[1,.9,1.5],null);
   kput(d>0?'pipeR':'pipe',[x,30,zf(30)+30],null,[1.2,40,1.2],null);}
+ // WTR: Theodiga's page draws all its water on core/water (targets/theodiga/90w, the owner, 2026-11-15: "make sure this
+ // build is on core/water"): the lake, the outlets' falls, the cascade and the river are records handed to it below, and
+ // none of the kit's own water meshes is drawn. A page without that fragment keeps them.
+ const WTR=typeof THEOWATER!=='undefined';
  for(const s of [-1,1]){const x=s*40;kput('tube',[x,26,zf(26)+2],null,[9,12,9],null);
-  if(d===0)mesh(gridSurface((u,v)=>{const y=lerp(26,2,v);return[x+(u-.5)*14*(1+v*.8),y,zf(26)+6+v*20+v*v*20];},8,12,{}),MAT.spray,G);}
- mesh(gridSurface((u,v)=>{const x=(u-.5)*(SPAN-40),z=zf(0)+60+v*500;return[x,1.5+3*fbm(u*6,v*6,2400,2)+(z>zf(0)+120?0:-1.5),z];},40,30,{}),d>0?MAT.mud:MAT.lawn,G);
- mesh(gridSurface((u,v)=>{const x=(u-.5)*(SPAN-60),z=zf(0)+56+v*520;return[x,-1+0*u,z];},4,4,{}),MAT.water,G).position.y=0;
+  if(d===0&&!WTR)mesh(gridSurface((u,v)=>{const y=lerp(26,2,v);return[x+(u-.5)*14*(1+v*.8),y,zf(26)+6+v*20+v*v*20];},8,12,{}),MAT.spray,G);}
+ // THE RIVER (the owner, 2026-11-15: "there should still be a river/cascade passing through the broken dam"). In the
+ // ruin the lake stands at the Notch's sill and pours over it down the face (below); on the canyon floor the river runs
+ // from the plunge pool to the page's edge in a channel cut into the mud. The scene's ground plane is at 0, so the river
+ // is its own ribbon at 1 m, its edges tucked under the channel's banks. The intact dam keeps its outlets' spray.
+ const RIVX=z=>NX+(z-zf(0)-70)/500*90+22*Math.sin((z-zf(0)-70)/115);
+ const RIVW=z=>15+6*clamp((z-zf(0)-60)/200,0,1);
+ const chan=(x,z)=>d>0?clamp(1-Math.pow((x-RIVX(z))/(RIVW(z)+5),2),0,1):0;
+ const floorY=(x,z)=>{const u=x/(SPAN-40)+.5,v=(z-zf(0)-60)/500,c=chan(x,z);
+  return(1.5+3*fbm(u*6,v*6,2400,2)+(z>zf(0)+120?0:-1.5))*(1-c)-1.5*c;};
+ mesh(gridSurface((u,v)=>{const x=(u-.5)*(SPAN-40),z=zf(0)+60+v*500;return[x,floorY(x,z),z];},d>0?120:40,d>0?100:30,{}),d>0?MAT.mud:MAT.lawn,G);
+ // the Notch's spill, seated: the centre at the ground (the floor's mud, never under the scene's plane at 0) plus the
+ // piece's half-height as turned (|R10| sx/2 + |R11| sy/2 + |R12| sz/2), sunk 0.3 m
+ {const M=new THREE.Matrix4(),z0=zf(0)+60;
+  for(const b of SPILL){const x=b.p[0],z=b.p[2],e=M.makeRotationFromQuaternion(b.q).elements;
+   const g=z>=z0&&z<=z0+500&&Math.abs(x)<(SPAN-40)/2?Math.max(floorY(x,z),0):0;
+   b.p[1]=g+(Math.abs(e[1])*b.s[0]+Math.abs(e[5])*b.s[1]+Math.abs(e[9])*b.s[2])/2-.3;
+   kput(BOXC(d),b.p,b.q,b.s,null);}}
+ if(!WTR)mesh(gridSurface((u,v)=>{const x=(u-.5)*(SPAN-60),z=zf(0)+56+v*520;return[x,-1+0*u,z];},4,4,{}),MAT.water,G).position.y=0;
+ if(d>0&&!WTR){mesh(gridSurface((u,v)=>{const z=zf(0)+62+v*510;return[RIVX(z)+(u-.5)*2*RIVW(z),1,z];},4,60,{uS:4,vS:40}),MAT.water,G);
+  mesh(gridSurface((u,v)=>{const a=u*TAU,r=v*30;return[NX+r*Math.cos(a),1.05,zc(NX)+th_(0)+14+r*.7*Math.sin(a)];},24,4,{}),MAT.water,G);}
  // the park's trees go through the shared VEG.tree (leaf cards) -- they were a
  // trunk box with a 'moss' blob on top, which from every preset read as 60
- // green lollipops standing on the lawn
- for(let i=0;i<60;i++){const x=rr(-280,280),z=zf(0)+rr(90,540);VEG.tree(x,1,z,i%3,rr(6,14));}
- // reservoir behind (full when intact; drawn down and silted when ruined)
- const WL=d>0?250:378;mesh(gridSurface((u,v)=>{const x=(u-.5)*(SPAN+80),z=-700+v*(700+zc(x)-6);return[x,WL,z];},32,16,{}),MAT.water,G);
- if(d>0)mesh(gridSurface((u,v)=>{const x=(u-.5)*(SPAN+40),z=-700+v*(700+zc(x)-2);return[x,WL-6+30*fbm(u*5,v*5,2500,2)*v*v,z];},32,16,{uS:20,vS:20}),MAT.mud,G);
+ // green lollipops standing on the lawn. In the ruin a tree that would stand in the river moves to its bank: the
+ // draws are the same, so nothing after them moves.
+ for(let i=0;i<60;i++){let x=rr(-280,280);const z=zf(0)+rr(90,540);if(chan(x,z)>0)x=RIVX(z)+(x<RIVX(z)?-1:1)*(RIVW(z)+8);VEG.tree(x,1,z,i%3,rr(6,14));}
+ // reservoir behind (full when intact; silted when ruined, held at the Notch's sill and spilling through it)
+ const WL=d>0?NB+1:378;if(!WTR)mesh(gridSurface((u,v)=>{const x=(u-.5)*(SPAN+80),z=-700+v*(700+zc(x)-6);return[x,WL,z];},32,16,{}),MAT.water,G);
+ // the silt banks up against the dam, but the river keeps its way open to the Notch
+ const bedY=(x,z)=>{const u=x/(SPAN+40)+.5,v=clamp((z+700)/(700+zc(x)-2),0,1);
+  return WL-6+(30*fbm(u*5,v*5,2500,2)-18*Math.exp(-Math.pow((x-NX)/45,2)))*v*v;};
+ if(d>0)mesh(gridSurface((u,v)=>{const x=(u-.5)*(SPAN+40),z=-700+v*(700+zc(x)-2);return[x,bedY(x,z),z];},48,24,{uS:20,vS:20}),MAT.mud,G);
+ // THE CASCADE: the lake over the Notch's sill, through the Notch and down the battered face to the canyon floor, a sheet
+ // of white water that widens as it falls and stands off the face where it leaves the lip; its spray at the foot.
+ if(d>0&&!WTR){const wN=notchW(NB)-1.5;
+  mesh(gridSurface((u,v)=>{const x=NX+(u-.5)*2*wN;return[x,WL,lerp(zc(x)-2,zc(x)+th_(NB),v)];},6,8,{}),MAT.water,G);
+  mesh(gridSurface((u,v)=>{const y=lerp(WL,0,v),w=wN+10*v,x=NX+(u-.5)*2*w;
+   return[x,y,zc(x)+th_(y)+1.5+6*Math.sin(Math.PI*clamp(v*10,0,1))+2.5*fbm(u*6,v*24,2420,2)];},12,72,{uS:4,vS:30}),MAT.spray,G);
+  mesh(lathe({rFn:y=>30*Math.sqrt(clamp(1-Math.pow(y/24,2),0,1))*(1+.15*fbm(y*.2,0,2421,2)),H:24,nu:28,nv:8}),MAT.spray,G,NX,0,zc(NX)+th_(0)+12);}
  // ruin: cracks, moss on the face, rubble at the toe
  // decay read off the structure rather than sprayed in rings
  if(d>0){mossOnSurface(FACE,0,0,0,140,2.6);vinesFromLedge(FACE,0,0,0,60,26);stainsFromLedge(FACE,0,0,0,70,22);
@@ -161,5 +199,7 @@ function buildDam(scene,gx,gz,d){reseed(9260+d);KOFF=[gx,0,gz];const G=new THREE
  figures(0,zf(0)+200,10,60);
  // last, so its records draw nothing from rng() ahead of the dam's own decay and figures
  if(DOME)THEODOME.draw(G,d,{gx:gx,gz:gz,H:H,SPAN:SPAN,BOW:140,CREST:50,zc:zc,WL:WL});
+ if(WTR)THEOWATER.dam(d,{gx:gx,gz:gz,H:H,SPAN:SPAN,WL:WL,NX:NX,NB:NB,wN:notchW(NB)-1.5,zc:zc,th:th_,zf:zf,
+  RIVX:RIVX,RIVW:RIVW,floorY:floorY,bedY:bedY,outlets:[-40,40]});
  KOFF=[0,0,0];return G;}
 

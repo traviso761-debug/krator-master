@@ -1198,3 +1198,48 @@ the ruin's rubble), audit clean.
 Found on the way: the canyon's plateau (the rock's top surface) ran from 150 m inside the cliff face and hung over the
 reservoir as a lid at the rim's height, unseen from downstream, a ceiling over the dome from upstream. It now starts at
 the face's top edge, column for column. New views: Dome on the water, Dome ruin, Dome ruin piers.
+
+## Theodiga: the river passes the ruin (2026-11-15)
+
+The owner, reviewing the floorplan of Theodiga today (`settlements/theodiga/BLUEPRINT.md`): "there should still be a
+river/cascade passing through the broken dam". In the ruin (`buildDam`, every d > 0):
+- the lake stands at the Notch's sill (`NB + 1`, 273 m; it was 250, below the sill, so nothing could pass), and the silt
+  keeps a way open to the Notch;
+- the cascade: water through the Notch over its floor, then a sheet of `MAT.spray` down the battered face, standing off the
+  lip and widening to the canyon floor, with a spray dome at its foot;
+- the river: a ribbon of water at 1 m in a channel cut into the canyon floor's mud (the mud's grid is finer in the ruin), from
+  the plunge pool to the page's edge. A park tree that would stand in it moves to the bank; its draws are unchanged;
+- the light tunnels under the cascade are skipped after their draws, so nothing else moves.
+The Dome's plan follows (`THEODOME.DIM.WL.ruin` 273: the broken piers stand over the water). A new view, 'Cascade'. The
+intact dam is unchanged.
+
+## Theodiga on core/water, core/atmos and core/ruins (2026-11-15)
+
+The owner: "make sure this build is on core/water and all other relevant core modules".
+- **core/water.** `targets/theodiga/77c-theodiga-water.js` ([G data]) makes each site's water as core/water's records in world
+  coordinates (`THEOWATER.dam`, called at the end of `buildDam` with the dam's numbers): intact, the lake at 378 m (still) and
+  the two outlets' falls; ruined, the lake at the Notch's sill (still), the overflow across the sill (a flow), the cascade
+  (a fall that follows the battered face to its foot: `WATER.fall`'s `face`), its plunge pool (still) and the river (a flow
+  along the channel). `buildDam` draws none of its own water on this page (`WTR`); other pages are unchanged.
+- **core/atmos**, the four files the water needs (core, presets, waves, skylight), bound in `90w-theodiga-water.js` as the
+  Ancient Port kit binds them: the frame loop is the kit's `TICKS`, and the skylight (the page's dome and giant) is given to
+  the water only. The kit's sky and lights are unchanged.
+- **core/ruins** watches the ruined site (`KRUINS.watch`, ground from `THEOWATER.ground`: the lake bed, the canyon floor's
+  mud, else 0; the rock, mud and water skipped). It found the Notch's spill buried in the new river banks (lowest point 8.5 m
+  under the ground): the spill is now seated on its lowest points on the floor, its draws unchanged. The crest slots of light
+  tunnels that hung over the Notch (the owner's "floating brown rectangles") are gone. It now passes: 0 floating, 0 lying wrong.
+- The Dome's fallen sector: flat slabs on the lake read as floating boards, so what fell into the lake is long ribs standing
+  tilted out of the water; slabs and panels lie only on the deck.
+- Read in place through `TARGET_READS['theodiga']`; listed in `DETERMINISTIC`.
+
+## buildDam moves into Theodiga's target (2026-11-15)
+
+The owner asked why every Theodiga change rebuilt every Ancients page. Every `src/` fragment goes into every target's page,
+so `src/77-dam.js` shipped in all 49 though only `theodiga.html` places the dam, and each edit re-hashed the other 48. It is
+now `targets/theodiga/77-dam.js` (same name, same place in the order), and `90-scene.js` adds `dam: buildDam` to `BUILDERS`
+only when the page carries it (`typeof buildDam`). This round rebuilt every page once more (the scene's builder table
+changed); from here a dam edit changes only `theodiga.html`: a full rebuild leaves the other 48 pages byte-identical (no
+baseline entries, no new LFS objects). `reach.py` still lists every page, because it works per build command and the one
+`build.py` run writes them all; only the per-target retry runs of this round were dropped from `build-inputs.json`.
+Veladiga's builder moved the same way in the same round (`targets/veladiga/65-veladiga.js`): only its own target placed it
+(through `EXTRA_BUILDERS`), so nothing else changed. Screamers keeps its own vendored copy.
