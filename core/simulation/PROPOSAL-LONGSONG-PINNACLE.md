@@ -151,7 +151,7 @@ The Order's house in the High Rift, ~690 km east of Longsong by the beck and the
 - the fissures' walls are lined with chalcedony, opal, bladed quartz and amethyst, and they **sing in the wind**;
 - the bake puts copper, gold, silver and sulfur here: an epithermal field.
 
-**Why the Order is there** (*proposed*, the owner to settle):
+**Why the Order is there** (the owner, 2026-11-11: "keep as proposed"):
 - a **listening house**: the singing heard and recorded, as the History Monks record everything;
 - the **crystal works** that feed Longsong's lens house: optical quartz and chalcedony are what a lens house needs, and
   the gjár is where they grow;
@@ -281,6 +281,41 @@ cluster's links between Mav's Refuge, Girder and Talia already exist.
 
 Longsong can be on the sim after S0-S3. Pinnacle Rock needs S0-S7.
 
+**Done (2026-11-11; the owner: "make sure S0-S3 are implemented").**
+- **S0:** `core/region`, the isle host lifted whole (`KREGION.part`, the page's `KREGION.use(ISLE)`), and the culture's
+  literals moved into `H.TUNE.sim.culture` (`core/region/README.md`).
+- **S1:** `core/simulation/77-sim-6-season.js`: `SIM.calendar`, a recipe's or herd's `season` and `seasonRate`, and
+  `SIM.onSeason`. Tested in `test-season.js`.
+- **S2:** Longsong's culture table, `settlements/longsong/src/15-ls-tune.js` (`LS_TUNE`): goods, diets, the farming year,
+  the herds, the Order's crafts (light upkeep and relic work, no heavy industry), the calendar, the caravan and the
+  fealty.
+- **S3:**
+  - core/simulation: `SIM.trade`'s `share` (the tithe) and `77-sim-6-transfer.js` (the fealty and esteem, fixed);
+  - `core/region/50-region-valley.js`: a valley declared from a plain spec at the abstract level;
+  - the year test, `settlements/longsong/tests/test-ls-economy.js`. On the region's plan (`openworld/oidong-highrift`),
+    the ring of 15 tithes 251 t, and the house ends the year fuller than it began. The ring of three leaves the house
+    24 t short.
+
+  The page's people are not yet declared through the host. Longsong's page declares its walkers on core/simulation
+  itself (`40d-ls-sim.js`); its economy is the valley test's.
+- **The long run (2026-11-12; the owner: "what happens to needs, stocks, happiness and resources over time").** A
+  three-year run showed the first year's balance did not hold: the caravan brought a quarter of the valley's salt and
+  little tea or iron, Longsong's grain piled up while the Order's houses in the rift went short from the second year,
+  the dairy herds fell short of the house's diet. Fixed in `settlements/longsong/src/15-ls-tune.js`:
+  - the long roads take a `want` (the days of use a load fills the far end to; the host's default, twice its 3 import
+    days, starved a far end between carriers three weeks apart), passed through by `core/region/50-region-valley.js`;
+  - the caravan buys to the valley's use (salt 130 kg a day, tea 34, iron 9) with a 4.5 t load; the smithy has 16 hands;
+  - Longsong's grain goes up the beck road to the Caldron House and on to the Mirror Grange (a new road), the relay
+    houses asking for their dependants too (`expect`); grain runs both ways between the grange and the gjar;
+  - the herds are sized to the diets (380 head a ring village, 400 yaks at the Beck Fields), the Beck Fields' tithe is
+    its surplus as the ring's is.
+
+  The food the valley eats goes short by 0.56, 0.85 and 0.89 % in its first three years (2.45 to 4.78 % before); the
+  test checks the third year (`test-ls-economy.js` check 10). **Not modelled at the valley level yet:** people's needs,
+  happiness and unrest (core/simulation has them; the valley host books eating and shortfalls only), and finite
+  resources (no work draws on a site with an amount, so mines and fields never run down). Longsong's grain store still
+  grows ~7 t a year, and its books and paper pile up (the library).
+
 ## 5. Things to fix on the way
 
 **Longsong:**
@@ -353,7 +388,7 @@ capital before it moved to Fulcrum), so Ancient salvage is a second source of ir
   - They should also have **at least one other village in a hospitable spot farther north**, not yet on the model. Place
     it with the open world's propose tool or on the scale model, then `tools/scale-model/propose_site.py`. It would be
     the Pinnacle bands' nearer Dasri market.
-- The Singing Gjár outpost's purpose. The listening house and the crystal works are this proposal's reading; no lore text
-  was found.
+- ~~The Singing Gjár outpost's purpose~~: settled (the owner, 2026-11-11: "keep as proposed"), with the two accessory
+  houses `openworld/oidong-highrift/PLAN.md` adds (the Mirror Grange, the Caldron House).
 - The new region's exact cut (`openworld/SITES.json`). It could keep the Mirror Graben and the beck road whole, so the
   outpost's grain trade stays inside it.

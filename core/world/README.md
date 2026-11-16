@@ -24,6 +24,7 @@ page that reads it came out byte-identical after the move.
 | `86-world-floor.js` | [web] | the kits' floor patches under the zones |
 | `87-world-places.js`, `88-world-towns.js` | [web] | the "Go to" list and the scale model's settlement markers |
 | `48s-world-sites.js`, `88s-world-sites.js` | [G data], [web] | `KSITES`: a region's sites planned (camps, hamlets, roads, links and their stops); drawn |
+| `42b-world-bridges.js`, `88b-world-bridges.js` | [G data], [draw] | `BRIDGES`: where a laid road crosses a named river, a span of deck the ground is not shaped under, so the river runs on (a BRIDGE record: slab, arch, a row of arches or a viaduct, by its length and height; its piers; its builders' culture); drawn in stone, tagged, checked (`_bridges.checks`) |
 | `49r-world-resources.js` | [G data] | `WRES`: the region's resources. The scale model's geology (`kits/resources/data/geology.json`, cropped to the region by `world_data.geology_crop`, read through `KRES`) and farmland from the world's fields: `census`, `markers` (the richest mining, farmland and unique spots), `layers`, `assess(x, z, reach)` |
 | `89r-world-resources-map.js` | [web] | the "resources" panel: the census table, a map of any layer with the markers, the markers' list and beacons; the markers join `MAP_MARKS` ("Go to", the minimap) and the layers `MAP_LAYERS` (the minimap's overlays) |
 | `90-world-camera.js` | [web] | the camera, the minimap (its overlays: Köppen, biome regions, a page's `MAP_LAYERS`), "Go to", the inspector, the polygon tool, `pick` |
@@ -79,6 +80,22 @@ draws only the towns that have one (2026-11-12).
 
 41t and 41l are new fragments so that 41's reach (eight builds) is untouched; folding them into 41 waits for the next
 all-builds rebuild (`TODO.md`).
+
+**Bridges** (2026-11-11; `42b` plans, `88b` draws; `tools/tests/test_bridges.py`). A region opts in with
+`SITE_SPEC.bridges` (`true` or the planner's options: `{culture, clear, approach, ...}`). Every road and link it lays is
+then bridged where it crosses a named river:
+- The stretch over the water and an approach each side become a SPAN. 41 keeps its distance (the flora keeps off) but
+  neither shapes nor paints the ground under it. The approach is long enough that the bank off the last laid segment
+  cannot reach down into the channel.
+- The road's height over the span is a deck that clears the water by 4 m. The grade is re-held up its approaches.
+- A bridged region's links may cross a river's band. The router's own price on water (40 times its length) makes them
+  cross square.
+- A via point whose two hops double back on each other is dropped.
+- A link can follow a line rather than the straight one: `guide` (5.1 px, the spec's own) or `net` (a route of the
+  Ancient network, `openworld/network-proposal/net51.json`, fed in by `world_data.net_fragment`).
+
+The plan gains `bridges` and each bridged road its `spans`. The probe judges a deck's grade, not its height over the
+ground. A region that does not ask plans exactly as before.
 
 **Known debt, moved with it** (from `tools/core_use_baseline.json` and `check_source_baseline.json`, where these were
 the isle demo's):

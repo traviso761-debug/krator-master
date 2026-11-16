@@ -68,14 +68,44 @@ KHAMLET.CULTURES.xanadu = {
   works: {
     farming: [{key: 'xa_farmhouse', jobs: 10, share: 0.75}, {key: 'xa_granary', jobs: 5, share: 0.15}, {key: 'xa_windmill', jobs: 6, share: 0.1}],
     ranch: [{key: 'xa_farmhouse', jobs: 8, share: 0.45}, {key: 'xa_pens', jobs: 3, share: 0.2}, {key: 'xa_corral', jobs: 4, share: 0.2},
-            {key: 'xa_dairy', jobs: 4, share: 0.15}]
+            {key: 'xa_dairy', jobs: 4, share: 0.15}],
+    /* 2026-11-11 (openworld/oidong-highrift): the Order's work camp in the Singing Gjar's dead fissures (optical quartz,
+       chalcedony, sulfur, copper salts): adits and the sorting shed, a smithy for the picks */
+    mine: [{key: 'xa_adit', jobs: 8, share: 0.55}, {key: 'xa_workshop', jobs: 8, share: 0.3}, {key: 'xa_smithy', jobs: 6, share: 0.15}],
+    /* the silk and paper village (Longsong's ring): mulberry farmsteads, the reeling house, the paper mill on the water */
+    silk: [{key: 'xa_farmhouse', jobs: 8, share: 0.4}, {key: 'xa_workshop', jobs: 8, share: 0.35}, {key: 'xa_watermill', jobs: 6, share: 0.25}]
   },
-  focusJobs: {farming: 90, ranch: 50},
-  reach: {farming: 420, ranch: 520},
+  focusJobs: {farming: 90, ranch: 50, mine: 40, silk: 52},
+  reach: {farming: 420, ranch: 520, mine: 400, silk: 380},
   pending: {
     'xa_pens': {w: 14, d: 14, h: 1.5, what: 'a stone pen'},
     'xa_corral': {w: 20, d: 20, h: 1.4, what: 'a corral for the dzo'},
-    'xa_dairy': {w: 10, d: 7, h: 4.6, what: 'a dairy (butter, cheese)'}
+    'xa_dairy': {w: 10, d: 7, h: 4.6, what: 'a dairy (butter, cheese)'},
+    'xa_adit': {w: 8, d: 6, h: 4, what: 'a mine adit (a timbered mouth and its spoil)'}
   }
+};
+/* The History Monks' houses (openworld/oidong-highrift, 2026-11-11): the Order's own row, in the Xanadu building kit's
+   pieces. A house is a village whose people are nearly all at work (monks, novices, lay brothers): the chapter house is
+   its civic heart, the chapel its religious one, the refectory its food, dormitories its houses (four households of
+   monks each) and the abbot's lodging its head. Its works are the Order's: the scriptorium and listening hall, the lens
+   house and the relic works, the smithy for its own upkeep. No mill, furnace or foundry: the Order keeps light crafts
+   for maintenance and its relic crafting, and no heavy industry (the owner, 2026-11-11). */
+KHAMLET.CULTURES.order = {
+  kit: 'xanadu', household: 6, workShare: 0.85, slopeMax: 0.22,
+  religious: 'xa_temple', civic: 'xa_monastery', general: 'xa_shops', food: 'xa_teahouse', warehouse: 'xa_granary',
+  services: {religious: 6, civic: 8, general: 3, food: 8, warehouse: 3},
+  houses: {
+    poor: [['xa_mid_c', 4, 3], ['xa_mid_b', 2, 1]],
+    middling: [['xa_mid_a', 2, 1]],
+    head: [['xa_rich_a', 1, 1]],
+    middlingShare: 0.15
+  },
+  works: {
+    /* the scriptorium and listening hall, the lens house, the relic works (gilt reliquaries, crystal), the smithy */
+    monastery: [{key: 'xa_guild_gold', jobs: 30, share: 0.45}, {key: 'xa_workshop', jobs: 10, share: 0.25},
+                {key: 'xa_guild_alch', jobs: 16, share: 0.2}, {key: 'xa_smithy', jobs: 6, share: 0.1}]
+  },
+  focusJobs: {monastery: 260},
+  reach: {monastery: 300}
 };
 KHAMLET.FOCI = ['salt', 'mine', 'quarry', 'clay', 'lumber', 'ranch', 'fishing', 'farming'];

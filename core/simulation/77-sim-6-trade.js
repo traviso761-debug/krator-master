@@ -16,13 +16,16 @@
 //               every good both economies know), keep? (days of its own want a sender keeps: its economy's
 //               exports.minDays), want? (days of want a load fills the receiver to: twice its imports.days),
 //               most? (units of one good in a load: cap), expect?: {settlement: {good: a day}} (a floor on the receiver's
-//               want: its planned use of a good, an imported food's ration, before its people have bought any) })
+//               want: its planned use of a good, an imported food's ration, before its people have bought any),
+//               share?: {settlement: {good: fraction}} (a TITHE: leaving that settlement, a carrier takes the fraction of
+//               what it made of each good since its last sailing, owed and carried over when the stock is short, and
+//               nothing for want: the village keeps the rest; PROPOSAL-LONGSONG-PINNACLE.md section 2, phase S3) })
 //   SIM.trades(a, b) -> true when settlement a sells to b: one faction, or each faction's relation to the other does
 //               not shut trade (`trade` false, 'none' or 'closed'; with no `trade`, a stance of wary or better)
 //   SIM.tradeStep(minute, t)                     SIM.step's, after the economies' step
 //   SIM.tradeInbound(g, s?) / SIM.tradeOutbound(g, s?)   units of g at sea toward / from settlement s (SIM.ECON's)
 //   SIM.tradeReport(id?) -> {id: {stops, carriers:[{k, phase, at, to, cargo, eta}], shipped:{'a>b': {good: n}},
-//               landed:{'a>b': {good: n}}, voyages, refused, empty}}
+//               landed:{'a>b': {good: n}}, tithed:{'a>b': {good: n}}, owed:{'a:good': n}, voyages, refused, empty}}
 // THE WANT. A town's want of a good, a day, is its use plus its unmet draws (the economy's `short`, by the day), over
 // the economy's `window` and today so far: a town that has none of a good shows its want by what it could not get.
 // A load is each good the receiver wants, fewest days of it first (its warehouses, its sites and what is already at
@@ -44,6 +47,7 @@
     var R={ id:o.id, stops:o.stops.map(function(s){ return { settlement:s.settlement, place:s.place }; }), cap:o.cap, carriers:[],
             minutes:o.minutes, mins:o.mins==null ? 120 : o.mins, stagger:o.stagger==null ? 0 : o.stagger, line:o.line==null ? null : o.line,
             goods:o.goods||null, keep:o.keep, want:o.want, most:o.most==null ? o.cap : o.most, expect:o.expect||null, shipped:{}, landed:{}, voyages:0, refused:0, empty:0 };
+    if(o.share){ R.share=o.share; R.tithed={}; R.owed={}; R.mark={}; }   /* a tithe road (S3): see the header */
     for(var k=0;k<(o.carriers==null ? 1 : o.carriers);k++) R.carriers.push({ k:k, phase:null, at:null, to:null, cargo:[], departs:null, eta:null, dock:undefined });
     T.routes[R.id]=R; T.order.push(R.id); return R;
   };
@@ -89,7 +93,12 @@
     var j=(i+1)%R.stops.length, a=R.stops[i].settlement, b=R.stops[j].settlement, key=a+'>'+b;
     C.from=i; C.to=j; C.at=null; C.phase='sail'; C.cargo=[]; R.voyages++;
     if(!SIM.ECONS || !SIM.ECONS[a] || !SIM.ECONS[b] || !SIM.trades(a, b)){ R.refused++; SIM.logEvent('trade refused', { route:R.id, carrier:C.k, from:a, to:b }); return; }
-    var want=loadFor(R, a, b);
+    /* a tithe: the share of what the sender made since it last sailed, owed when short; then no load for want */
+    var tithe=R.share && R.share[a], want=tithe ? [] : loadFor(R, a, b);
+    if(tithe) SIM.withEcon(a, function(){ var E=SIM.ECON, mk=R.mark[a]||(R.mark[a]={}), left=R.cap;
+      Object.keys(tithe).sort().forEach(function(g){ var made=E.made[g]||0, k=a+':'+g, due=(R.owed[k]||0)+(made-(mk[g]||0))*tithe[g]; mk[g]=made;
+        var n=Math.min(Math.floor(due), left); n=n>0 ? SIM.economyTake(g, n) : 0; R.owed[k]=due-n; if(n<=0) return; left-=n;
+        SIM.economyBook('exported', g, n); C.cargo.push({ good:g, n:n, tithe:true }); stat(R.shipped[key]||(R.shipped[key]={}), g, n); stat(R.tithed[key]||(R.tithed[key]={}), g, n); }); });
     SIM.withEcon(a, function(){ want.forEach(function(w){ var n=SIM.economyTake(w.good, w.n); if(n<=0) return;
       SIM.economyBook('exported', w.good, n); C.cargo.push({ good:w.good, n:n }); stat(R.shipped[key]||(R.shipped[key]={}), w.good, n); }); });
     if(!C.cargo.length) R.empty++;
@@ -134,7 +143,8 @@
       out[k]={ stops:R.stops.map(function(s){ return s.settlement; }), voyages:R.voyages, refused:R.refused, empty:R.empty,
         shipped:JSON.parse(JSON.stringify(R.shipped)), landed:JSON.parse(JSON.stringify(R.landed)),
         carriers:R.carriers.map(function(C){ return { k:C.k, phase:C.phase, at:C.at!=null ? R.stops[C.at].settlement : null, to:C.to!=null ? R.stops[C.to].settlement : null,
-          cargo:C.cargo.map(function(c){ return { good:c.good, n:c.n }; }), eta:C.eta }; }) }; });
+          cargo:C.cargo.map(function(c){ return { good:c.good, n:c.n }; }), eta:C.eta }; }) };
+      if(R.share){ out[k].tithed=JSON.parse(JSON.stringify(R.tithed)); out[k].owed=JSON.parse(JSON.stringify(R.owed)); } });   /* a tithe road's (only: the others' reports unchanged) */
     return id!=null ? out[id] || null : out;
   };
 })(typeof window!=='undefined'?window:globalThis);
