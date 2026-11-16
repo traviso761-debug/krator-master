@@ -89,5 +89,18 @@ CROPS.BIOMES = {
   cut:         {atm: 2, zones: {lake: {warmth: [5, 5], arid: [4, 4], wet: true}, floor: {warmth: [5, 5], arid: [1, 2], salt: true}, walls: {warmth: [3, 4], arid: [2, 3], atm: 1}, lip: {warmth: [1, 2], arid: [1, 2], atm: 1}}},
   /* the abyssal savannah (biomes/abyssal-savannah/PLAN.md): the eastern abyss's rim slope (Aw, BSh, 1.6-1.75 atm) and its floor's savanna belt
      (XV, 2 atm, ~1,050 mm, +34 C); the parkland, the bench's steppe, the gullies' gallery and the bench's pan */
-  'abyssal-savannah': {atm: 2, zones: {parkland: {warmth: [4, 4], arid: [1, 2]}, steppe: {warmth: [4, 4], arid: [0, 1]}, gallery: {warmth: [4, 4], arid: [2, 3], wet: true}, pan: {warmth: [4, 4], arid: [0, 1], salt: true}}}
+  'abyssal-savannah': {atm: 2, zones: {parkland: {warmth: [4, 4], arid: [1, 2]}, steppe: {warmth: [4, 4], arid: [0, 1]}, gallery: {warmth: [4, 4], arid: [2, 3], wet: true}, pan: {warmth: [4, 4], arid: [0, 1], salt: true}}},
+  /* Region 98 (biomes/siphon-pits, PLAN.md section 0): the Ostrukh Terraces (Cwb, +15 degC, 1.22 atm, 439 mm: the loess terraces, the braids'
+     irrigated banks) and the Siphon Pits' maar floors (Cfa, +18 degC, 1.20 atm under the deck, the vents' heated ground) */
+  'siphon-pits': {atm: 1, zones: {terraces: {warmth: [2, 2], arid: [1, 2]}, braids: {warmth: [2, 2], arid: [2, 3], wet: true}, pitfloor: {warmth: [2, 3], arid: [2, 3], heated: true}}},
+  /* the Mid Basin (biomes/midbasin/PLAN.md, its climate table; a plan, 2026-11-12): the maar floors (Cwb, 19-26 degC, 439 mm, 1.20-1.28 atm, the
+     vents' warm ground), the Loess Corridor (BSk, 16-20 degC, 220-267 mm), the middle benches (Dsc, 6-14 degC, ~150 mm, ~1.07 atm) and the chasm
+     floors (BSk/BWk, 19 degC, 125 mm, 1.49 atm) */
+  midbasin: {atm: 1, zones: {maar: {warmth: [3, 3], arid: [2, 3], heated: true}, corridor: {warmth: [2, 2], arid: [1, 1]}, benches: {warmth: [1, 2], arid: [0, 1]},
+    chasmfloor: {warmth: [2, 3], arid: [0, 1], atm: 2}}},
+  /* the Loom-Chasms (biomes/loom-chasms/PLAN.md, its stations; a plan, 2026-11-12): the Weavers' Cradle (Cwb, 11 degC, 439 mm, 1.22 atm: the Yuni
+     terraces on the loess fans), the Weave-Step (BSk, 15 degC, 125 mm, 1.33 atm), the chasm floor (BWk, 19 degC, 78 mm, 1.46 atm) and the White
+     Loom's playa (24 degC, 47 mm, 1.55 atm, salt) */
+  'loom-chasms': {atm: 1, zones: {cradle: {warmth: [1, 2], arid: [1, 2]}, weavestep: {warmth: [2, 2], arid: [0, 1], atm: 2}, floor: {warmth: [2, 3], arid: [0, 0], atm: 2},
+    playa: {warmth: [3, 3], arid: [0, 0], atm: 2, salt: true}}}
 };

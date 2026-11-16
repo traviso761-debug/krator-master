@@ -31,11 +31,12 @@ To create a physically coherent split between a **warmer, cold-but-arable NW** a
 ```
 
 ### Adjustment A: The Ostrukh Piedmont Depression (NW Graben / Basin)
+* *All three adjustments are out of the kit's scope (2026-11-11): a to-do for the next scale model update, and the model already holds most of A and C (`PLAN.md` section 0).*
 * **Coordinates:** $X \in [1456, 1557]$, $Y \in [1387, 1485]$ ($\sim 200\text{ km} \times 195\text{ km}$, $\sim 39,000\text{ km}^2$).
 * **Elevation Edit:** Carve a down-dropped tectonic half-graben stepping down from the $+4,200\text{ m}$ rim datum to **$+1,950\text{ to }+2,300\text{ m}$**.
 * **Atmospheric Consequence:**
-  * Pressure increases from $0.94\text{ atm}$ to **$1.28\text{--}1.35\text{ atm}$**.
-  * Lapse rate warming ($\Delta h \approx -2,000\text{ m} \times 5.5^\circ\text{C}/1,000\text{ m} \approx +11^\circ\text{C}$) lifts the mean annual temperature from $-14^\circ\text{C}$ to **$+3.5^\circ\text{C}$ to $+5.0^\circ\text{C}$** (Summer $+16^\circ\text{C}$, Winter $-7^\circ\text{C}$).
+  * Pressure increases from $0.94\text{ atm}$ to **$1.20\text{--}1.25\text{ atm}$** (corrected: the model's air law).
+  * Lapse rate warming (the model's $6.5^\circ\text{C}/\text{km}$; the dry adiabat is $7.4$) plus the foehn: the model already gives **$+15^\circ\text{C}$** at Station 1 and a median $+12^\circ\text{C}$ over the NW sector (corrected: the old $+3.5$ to $+5.0$ contradicted the station's own record).
   * Changes climate classification from Arctic Tundra (ET) to **Dfb / Cfb (cool-temperate arable highland)**.
 * **Drainage & Hydrology:**
   * Author a glacial braided meltwater river network flowing east from the Stalker Peaks' canyons ($X \approx 1456, Y \approx 1418$) across the alluvial floor.
@@ -58,12 +59,12 @@ To create a physically coherent split between a **warmer, cold-but-arable NW** a
 
 | Station | Name & Role | Model Px | Elev | P (atm) | Mean T (warm/cold) | Climate | Key Feature |
 |---|---|---|---|---|---|---|---|
-| **1** | **Ostrukh Terraces** (NW Arable) | `1519, 1453` | $+2,156\text{ m}$ | $1.31$ | $+15.0^\circ\text{C}$ ($+20.0 / +9.0$) | Cwb | Meltwater streams, loess terraces, crops, farmsteads |
-| **2** | **Scarp Pass** (Central Divide) | `1559, 1457` | $+3,289\text{ m}$ | $1.13$ | $+4.0^\circ\text{C}$ ($+11.0 / -3.0$) | Dsc | Stepped columnar wall, switchback road, tollhouse |
-| **3** | **Siphon Maar Floor** (SE Sink) | `1687, 1555` | $+2,277\text{ m}$ | $1.29^*$ | $+18.0^\circ\text{C}$ ($+25.0 / +11.0$) | Cfa-thermal | Deep maar sink, woolly siphon grove, steam vents |
-| **4** | **The Arête Way** (SE Rim) | `1678, 1542` | $+4,269\text{ m}$ | $0.99$ | $-5.0^\circ\text{C}$ ($+2.0 / -12.0$) | ET | $6\text{ m}$ knife-edge bridge, blizzard gales, flenser ambush |
+| **1** | **Ostrukh Terraces** (NW Arable) | `1519, 1453` | $+2,157\text{ m}$ | $1.22$ | $+15^\circ\text{C}$ ($+28 / +2$) | Cwb | Meltwater streams, loess terraces, crops, farmsteads |
+| **2** | **Scarp Pass** (Central Divide) | `1559, 1457` | $+3,289\text{ m}$ | $1.06$ | $+4^\circ\text{C}$ ($+17 / -9$) | Dsc | Stepped columnar wall, switchback road, tollhouse |
+| **3** | **Siphon Maar Floor** (SE Sink) | `1687, 1555` | $+2,277\text{ m}$ | $1.20$ | $+18^\circ\text{C}$ ($+32 / +6$) | Cfa | Deep maar sink, woolly siphon grove, steam vents |
+| **4** | **The Arête Way** (SE Rim) | `1678, 1542` | $+4,269\text{ m}$ | $0.94$ | $-5^\circ\text{C}$ ($+8 / -18$) | ET | $6\text{ m}$ knife-edge bridge, blizzard gales, flenser ambush |
 
-*\* Station 3 pressure is boosted by dense geothermal $\text{CO}_2$/vapor pooling below the $-320\text{ m}$ inversion deck.*
+*Corrected 2026-11-11 from scale model 5.1 (`PLAN.md` section 0): pressure is the model's air law, $1.6\,e^{-h/8000}$ atm; the temperatures are the model's `tm` / `tw` / `tc`. The old Station 3 note (pressure "boosted by CO$_2$ pooling") is dropped: a pure CO$_2$ layer 303 m deep would add 0.017 atm and kill everything in it. `verify.py --assert` reads this table.*
 
 ---
 
@@ -96,7 +97,7 @@ To create a physically coherent split between a **warmer, cold-but-arable NW** a
   * Iron beacon baskets, windbreak palisades, freight exchange crane.
 
 ### Station 3: Siphon Maar Floor (The Sunken Geothermal Sink — SE)
-* **Site & Context:** The flat floor of a $420\text{ m}$ deep collapsed volcanic explosion crater, permanently insulated beneath an amber inversion fog lid.
+* **Site & Context:** The flat floor of a $420\text{ m}$ deep collapsed volcanic explosion crater (floor $+2,277$, rim $+2,697$ m), sunk in the floor of the sink the model holds 2 km under the plateau, permanently insulated beneath an amber inversion fog lid at $+2,580$ m.
 * **Terrain & Geology:**
   * Completely enclosed by vertical $400\text{ m}$ columnar basalt ring walls.
   * Flat floor of diatomaceous silt, sulfurous mud pools, and steaming diatreme vents.
@@ -125,16 +126,16 @@ To create a physically coherent split between a **warmer, cold-but-arable NW** a
 ## 4. Rebuild & Pipeline Integration
 
 1. **Materials & Textures:**
-   * Reuses: `ground.turf.alpine`, `ground.soil.volcanic`, `stone.basalt.columnar`, `card.clubmoss`, `core/crops`.
+   * Reuses (real names, `PLAN.md` section 6): `ground.turf.native`, `ground.terrace.field`, `rock.loess`, `rock.basalt.polygonal`, `rock.basalt.vesicular`, `card.clubmoss`, `kits/crops`.
    * New slots required: `woolly_siphon` (flared chimney trunk + fleece normal/roughness), `siphon_felt` (fibrous turf groundcover), `machine_wax` (translucent amber ingot material).
 2. **Terrain Engine (`core/terrain`):**
    * Graben carve: Negative step brush in `30-core-field.js` across $X \in [1456, 1557], Y \in [1387, 1485]$.
-   * Pit stamps: `KBASIN` negative stamp array with vertical scarp clamp across SE sector.
+   * Pit stamps: `KRELIEF.stepcut` (`38c-core-landforms.js`; `KBASIN` is old lake beds, not a stamp).
    * Frost pass: `42-core-frost.js` applied to Station 2 & 4 plateau surfaces.
-3. **Atmospheric Shaders (`core/atmos` & `core/sky`):**
+3. **Atmospheric Shaders (`core/atmos`; its shared sky is `core/atmos/sky`, there is no `core/sky`):**
    * Station 1: Bright, clear, sub-alpine sun with thin mountain haze.
    * Station 2 & 4: Frigid polar blizzard, blowing snow particle emitter, low sun angle.
-   * Station 3: Height-bounded volumetric amber fog plane ($Y \in [Y_{\text{floor}}, Y_{\text{floor}} + 150\text{ m}]$), $100\%$ visibility cutoff at $25\text{ m}$.
+   * Station 3: the amber deck as the height fog's mist pooled under $+2,580$ m ($Y_{\text{floor}} + 303$ m), visibility $\sim 200$ m on the floor (corrected from +150 m and 25 m).
 4. **Performance Targets (`GRAPHIC-LOAD.md`):**
    * Geometry welding (`BIO.INDEX_ITEMS = true`) on all siphon chimneys and fleece meshes.
    * Tight MultiMesh culling: Station 3 floor capped at 250 active trees per chunk; zero tree instances on Station 2 and 4.

@@ -94,6 +94,11 @@ ok('nwouterwall: a thin-air polar point grows the Thule crops, not the lowland o
 ok('nwouterwall: the High Country makes a plaid (larch red-brown, silverthorn yellow, birch-tar black)',
   C.canPlaid('nwouterwall') && ['brown', 'yellow', 'black'].every(k => C.palette('nwouterwall').colours.includes(k)) && C.palette('nwouterwall').sources.brown.includes('larch-bark:wild'),
   !C.palette('nwouterwall').colours.includes('purple'));
+// the hinge's own (the owner, 2026-11-12): the maar yam and fumewort grow in the Siphon Pits, the Mid Basin and the Loom-Chasms and nowhere else
+const HINGE = ['siphon-pits', 'midbasin', 'loom-chasms'], grownIn = id => bio.filter(b => how(C.forBiome(b), id) !== 'no');
+for (const id of ['maar-yam', 'fumewort'])
+  ok(id + ': grows in the three hinge biomes only, and is traded beyond', grownIn(id).join() === HINGE.join() && HINGE.every(b => how(C.forBiome(b), id) === 'wild'),
+    how(C.forBiome('swlowlands'), id) === 'no' && how(C.forBiome('swlowlands', { trade: [id] }), id) === 'trade' && how(C.at({ warmth: 'temperate', atm: 'standard', arid: 'subhumid' }), id) === 'no', grownIn(id).join());
 
 // the painted highlands (biomes/paintedhighlands/PLAN.md sections 4 and 9, 2026-11-11): the Painted Men's three colours from the beds (red with an iron
 // node, the teal clay, the lignite black: wild there, its own beds), so the plateau makes a plaid; its neighbour the cushion plateau has no teal
