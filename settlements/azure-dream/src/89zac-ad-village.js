@@ -45,11 +45,20 @@ function adVillage(V){const B=AD.BOX,sh=adShore(0,0);if(!sh)return{error:'no wat
  for(let k=0;k<8;k++){const side=k%2?1:-1,o=8+(k>>1)*3.8,x=sh.x-sh.dx*5+px*side*o,z=sh.z-sh.dz*5+pz*side*o;if(adBase(x,z)<.2)continue;
   adAt('qb_ad_dugout',x,z,ry,{v:k%3},'boat',V.id+':dugout:beach:'+k);}
 for(let k=0;k<3;k++){const t=L-8-k*7,x=jx+sh.dx*(t-L/2)+px*3.4,z=jz+sh.dz*(t-L/2)+pz*3.4;adAt('qb_ad_dugout',x,z,ry,{v:k,y:-.18},'boat',V.id+':dugout:water:'+k);}
+ /* the Order's herds (PLAN.md section 8: East End's meadows; V.herds): inland of the village, on a meadow kept open (AD_CLEAR), a
+    corral and a pen either side of it, where the ground is dry and gentle 72 x 52 m and clear of the village */
+ let herds=null;if(V.herds){const ix=-sh.dx,iz=-sh.dz;
+  for(let d=140;d<=440&&!herds;d+=20)for(const t of[0,-.35,.35,-.7,.7]){const c=Math.cos(t),sn=Math.sin(t),x=v.site.x+(ix*c-iz*sn)*d,z=v.site.z+(iz*c+ix*sn)*d;let good=true;
+   for(let a=-36;a<=36&&good;a+=12)for(let b=-26;b<=26&&good;b+=13)good=ok(x+a,z+b)&&!AD_PLACE.some(p=>Math.hypot(p.x-x-a,p.z-z-b)<Math.max(p.w,p.d)/2+6);
+   if(good){herds={x,z};break;}}
+  if(herds){const hry=Math.atan2(sh.dx,sh.dz);adAt('xa_corral',herds.x,herds.z,hry,{v:0},'herds',V.id+':corral',true);
+   for(const e of[-1,1])adAt('xa_pens',herds.x+px*e*24,herds.z+pz*e*24,hry,{v:0},'herds',V.id+':pen:'+(e>0?'east':'west'),true);
+   AD_CLEAR.push({x:herds.x,z:herds.z,hw:62,hd:62});}}
  /* the ways: the lanes (dirt), and the footpath on from the main lane's end along the coast to the near ground's edge */
  const ways=v.lanes.map(l=>['lane',l.w,l.pts]),main=v.lanes.find(l=>l.main);
  if(main){const e=main.pts[1],dx=link.x-v.site.x,dz=link.z-v.site.z,dl=Math.hypot(dx,dz),f=[e[0]+dx/dl*900,e[1]+dz/dl*900];ways.push(['lane',2.5,[e,f]]);}
  ways.push(['lane',3,[[v.site.x,v.site.z],[sh.x,sh.z]]]);   /* down to the landing */
- return{v,shore:sh,link,ways,jetty:{x:jx,z:jz,ry,len:L}};}
+ return{v,shore:sh,link,ways,herds,jetty:{x:jx,z:jz,ry,len:L}};}
 // the views of a village page
 function adVillageViews(AV){const V={},v=AV.v,s=v&&v.site?v.site:{x:0,z:0},sh=AV.shore,j=AV.jetty,eye=(x,z,tx,tz,dy)=>[x,terrainH(x,z)+1.7+(dy==null?0:dy),z,tx,terrainH(tx,tz)+4,tz];
  const gy=terrainH(s.x,s.z);

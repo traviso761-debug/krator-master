@@ -17,7 +17,7 @@ reseed(34151);
 const AD_ROAD=(function(){const gx=adWx(846.075)-AD.WX,gz=adWz(1508.493-484/2000)-AD.WZ,L=Math.hypot(gx,gz),dx=gx/L,dz=gz/L,B=AD.BOX;
  const end=Math.min((B[2]-20)/Math.abs(dx),(B[3]-20)/Math.abs(dz));return{dx,dz,L,end,ang:Math.atan2(dx,dz),at:s=>[dx*s,dz*s]};})();
 // ---------------------------------------------------------------- the summit
-adAt('qb_chorten',0,0,0,{v:2},'sacred','summit-chorten',true);
+adAt('qb_chorten',0,0,0,{v:2,scale:2},'sacred','summit-chorten',true);   /* the kit's large chorten at twice its size: about 40 m to the crown, over the great wheel's house (28 m) */
 adAt('qb_great_wheel',0,-64,0,{v:0},'sacred','great-wheel',true);
 adAt('qb_ad_station_watch',-84,6,0,{},'sacred','station-watch',true);
 adAt('qb_hostel',84,-34,-Math.PI/2,{v:1},'pilgrims','pilgrims-shelter',true);

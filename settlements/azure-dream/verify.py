@@ -70,6 +70,9 @@ if(/^azure-dream-village-/.test(window.CITY_BUILD||'')){const S=window._adSite||
  for(let i=0;i<VB.length;i++)for(let j=i+1;j<VB.length;j++)if(KHAMLET.overlap(rect(VB[i]),rect(VB[j]),0))hits.push(VB[i].id+' / '+VB[j].id);
  R.push({name:'village-clear',ok:hits.length===0,detail:hits.length+' footprints overlapping'+(hits.length?': '+hits.slice(0,4).join('; '):'')});
  const J=AD_V.jetty,sh=AD_V.shore,head=J?adBase(J.x+sh.dx*J.len/2,J.z+sh.dz*J.len/2):99,root=sh?adBase(sh.x,sh.z):-99,dug=P.filter(p=>p.key==='qb_ad_dugout').length;
+ if(T.herds){const Hd=P.filter(p=>p.kind==='herds'),hh=AD_V.herds;
+  R.push({name:'herds',ok:!!hh&&Hd.filter(p=>p.key==='xa_corral').length===1&&Hd.filter(p=>p.key==='xa_pens').length===2&&Hd.every(p=>p.o.y>=1),
+   detail:hh?'the Order\'s meadow '+Math.hypot(hh.x-AD_V.v.site.x,hh.z-AD_V.v.site.z).toFixed(0)+' m inland of the green: '+Hd.map(p=>p.id+' +'+p.o.y).join(', '):'no dry gentle meadow found inland'});}
  R.push({name:'landing',ok:!!J&&head<-1&&root>-.6&&dug>=6,detail:'the jetty\'s head over '+(-head).toFixed(1)+' m of water, its root on ground at '+root.toFixed(1)+' m, '+dug+' dugouts'});}
 else"""
 PAGE_JS = r"""
@@ -92,6 +95,26 @@ PAGE_JS = r"""
  R.push({name:'lotus-ponds',ok:PW.length===4&&PW.every(S=>S.level>0),detail:PW.length+' still ponds on core/water at '+PW.map(S=>S.level.toFixed(2)).join(', ')+' m'});
  {const S=LA.filter(l=>l[3]==='signal'),s=S[0],r=adPx(AD_SIGNAL.relay),y=adRelayY(),off=s?Math.hypot(s[0]-r[0],s[2]-r[1],s[1]-y):99,me=[AD_SIGNAL.relay[0],AD_SIGNAL.relay[1],y],toW=adSight(me,AD_SIGNAL.watch),toH=adSight(me,AD_SIGNAL.hall),hy=AD_TERR.hall.y+13;
   R.push({name:'signal-relay',ok:S.length===1&&off<1&&Math.abs(hy-AD_SIGNAL.hall[2])<1&&toW>0&&toH>0,detail:S.length+' relay lamp(s) at +'+(s?s[1].toFixed(1):'-')+' m, '+off.toFixed(2)+' m off AD_SIGNAL.relay; it sees the Station Watch\'s lamp with '+toW.toFixed(1)+' m to spare and the Hall\'s lantern roof (+'+hy.toFixed(1)+') with '+toH.toFixed(1)});}
+ {const N=window._adNightly,ok=[],bad=[],t=(h,f,what)=>{const s=N.at(h);(f(s)?ok:bad).push(what+' at '+h+' h');};
+  if(N){t(12,s=>!s.doorShut&&s.brake===0&&!s.censers&&s.watch===0&&!s.azure,'the day');t(19.25,s=>s.brake>0&&s.brake<1&&/Lulling/.test(s.phase)&&s.azure&&s.censers,'the Lulling');
+   t(21,s=>s.doorShut&&s.brake===1&&s.censers&&s.watch===1,'the first watch');t(.5,s=>s.doorShut&&!s.censers&&s.watch===2,'the second watch');
+   t(3,s=>s.doorShut&&s.watch===3&&s.azure,'the third watch');t(6.5,s=>!s.doorShut&&s.brake===0&&s.watch===0&&!s.azure,'after dawn');
+   /* applied: at 21 h the Hall's doors shut (core/door) and the keeper's lamp is on the walk; back at the day's hour they open */
+   const h0=AD_SKY.hour,L=(window._adWalk||{}).leaves||[],shut=()=>L.length&&L.every(D=>Math.abs(KDOOR.angle(D))<.05);
+   AD_SKY.hour=21;N.tick(30);for(let i=0;i<40;i++)KDOOR.step(.1);const sh=shut(),lp=N.lamp?Math.hypot(N.lamp[0]-AD_PLACE.find(p=>p.id==='hall-of-dreaming').x,N.lamp[2]-AD_PLACE.find(p=>p.id==='hall-of-dreaming').z):99;
+   AD_SKY.hour=h0;N.tick(0);for(let i=0;i<40;i++)KDOOR.step(.1);const op=!shut();(sh?ok:bad).push('the doors shut at 21 h');(op?ok:bad).push('open again by day');(lp<30?ok:bad).push('the keeper\'s lamp on the walk ('+lp.toFixed(1)+' m from the centre)');}
+  R.push({name:'night-schedule',ok:!!N&&bad.length===0,detail:!N?'window._adNightly missing (targets/isle/90ah)':(bad.length?'WRONG: '+bad.join('; ')+'; ':'')+ok.length+' right: '+ok.join(', ')+(N&&N.station?'; a Station\'s night':'')});}
+ {const O=P.filter(p=>p.key==='qb_ad_orchard'),Hv=P.filter(p=>p.key==='qb_ad_hives'),by=c=>O.filter(p=>p.o.crop===c),
+   step=['west','east'].every(s=>{const a=O.find(p=>p.id==='orchard:'+s+':apricot'),b=O.find(p=>p.id==='orchard:'+s+':persimmon');return a&&b&&b.o.y>a.o.y;}),
+   named=typeof CROPS!=='undefined'&&CROPS.BY_ID&&CROPS.BY_ID.apricot&&CROPS.BY_ID.persimmon;
+  R.push({name:'orchards',ok:O.length===4&&by('apricot').length===2&&by('persimmon').length===2&&step&&Hv.length===6&&!!named,
+   detail:O.length+' orchards ('+O.map(p=>p.id+' +'+p.o.y).join(', ')+'), '+Hv.length+' bee walls, the upper terraces '+(step?'above':'NOT above')+' the lower'+(named?', named from kits/crops ('+CROPS.BY_ID.apricot.name+', '+CROPS.BY_ID.persimmon.name+')':', kits/crops MISSING')});}
+ {const J0=window._adIx,J=J0&&J0.buildTypes?J0.buildTypes(8):J0,share=J?J.lots/Math.max(1,J.lots+J.noShell+J.noProgram):0;
+  R.push({name:'interiors',ok:!!(J&&!J0.error&&J.lots>=20&&share>=.85&&J.built>=6&&!J.fails.length&&J.tex.meshes&&J.tex.mapped===J.tex.meshes),
+   detail:!J?'window._adIx missing (targets/isle/90ai-ad-interiors.js)':J0.error?J0.error:J.lots+' buildings with an interior ('+(share*100).toFixed(0)+' %; '+J.noShell+' without a shell, '+J.noProgram+' without a programme, '+J.skipped+' with their own, '+J.noStorey+' with no storey), '+J.ranges+' monks\' ranges, '+J.types+' types; the 8 commonest built in '+J.ms+' ms ('+JSON.stringify(J.byProgram)+'), textured '+J.tex.mapped+'/'+J.tex.meshes+(J.fails.length?'; FAILS '+J.fails.join(' | '):'')});
+  const WI=J0&&J0.walkIn?J0.walkIn(6):null,wb=WI&&WI.length?WI.filter(w=>!w.ok):[];
+  R.push({name:'walk-in-rooms',ok:!!(WI&&WI.length>=4&&!wb.length),detail:!WI?'window._adIx.walkIn missing':WI.error?WI.error:WI.length+' buildings walked into ('+WI.map(w=>w.key+' '+w.floors+' floors').join(', ')+')'+
+   (wb.length?'; FAIL '+wb.map(w=>w.key+(w.shut?'':' door not blocking shut')+(w.open?'':' doorway blocked open')+(w.unreached.length?' unreached '+w.unreached.join(','):'')).join(' | '):'')});}
  R.push({name:'lamps',ok:n('azure')===32&&n('gold')===1&&n('oil')>=4,detail:LA.length+' lamps: azure '+n('azure')+', gold '+n('gold')+', oil '+n('oil')+', clerestory panes '+n('pane')});}
 return R;}"""
 xv.ASSERT_JS = xv.ASSERT_JS.rstrip()[:-len('return R;}')] + SUMMIT_JS + VILLAGE_JS + PAGE_JS

@@ -45,6 +45,7 @@ function adPadBox(w,d,ry){const ca=Math.abs(Math.cos(ry)),sa=Math.abs(Math.sin(r
 // options; pad: its own pad (its footprint turned, plus 3 m, at the mean under it) unless it stands on a terrace or the water
 function adPut(key,u,v,ry,o,kind,id,pad){const c=AD_P(u,v),D=VERN.defs[key];if(!D)throw new Error('azure-dream: no def '+key);
  const q={key,x:c[0],z:c[1],ry,o:Object.assign({v:0},o||{}),kind,id:id||kind+':'+key+':'+u+','+v,h:D.h==null?10:D.h,w:o&&o.w!=null?o.w:D.fw==null?D.w:D.fw,d:o&&o.d!=null?o.d:D.fd==null?D.d:D.fd};   /* a size the caller gives (the racks) wins */
+ {const sc=o&&o.scale!=null?o.scale:1;if(sc!==1){q.w*=sc;q.d*=sc;q.h*=sc;}}   /* VERN.place scales the whole building by o.scale (the Summit Chorten) */
  if(pad&&q.o.y==null){const b=adPadBox(q.w,q.d,ry);q.pad=adPad('pad:'+q.id,q.x-b[0],q.z-b[1],q.x+b[0],q.z+b[1],null,6);q.o.y=q.pad.y;}
  AD_PLACE.push(q);return q;}
 const adAt=(key,x,z,ry,o,kind,id,pad)=>adPut(key,-z,x,ry,o,kind,id,pad);   /* by page x, z (x = v, z = -u) */

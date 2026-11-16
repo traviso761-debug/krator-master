@@ -13,15 +13,15 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
-| `89qa-ad-hall.js` | 16 | the Hall of Dreaming (21); the waking range: the Waking Gallery, the scribe (118); a lotus pond (the Lotus Garden's four) (131); the cup house (144) |
-| `89qb-ad-wharf.js` | 14 | the mole and its wave-wheel shrine (19); a jetty (38); the boathouse (48); the racks: nets (o.v 0) and fish (o.v 1) (66); the smokehouse (82); the ropewalk (92); the fishermonks' house (104); the Order's barge (124) |
+| `89qa-ad-hall.js` | 17 | the Hall of Dreaming (21); the waking range: the Waking Gallery, the scribe (122); a lotus pond (the Lotus Garden's four) (135); the cup house (148) |
+| `89qb-ad-wharf.js` | 16 | the mole and its wave-wheel shrine (19); a jetty (38); the boathouse (48); the racks: nets (o.v 0) and fish (o.v 1) (66); the orchards and the hives (PLAN.md section 4c) (82); the smokehouse (103); the ropewalk (113); the fishermonks' house (125); the Order's barge (145) |
 | `89qc-ad-summit.js` | 6 | the relay lamp (37) |
-| `89zaa-ad-ground.js` | 11 | the cove's headlands (world metres) (22); the pads and terraces (30); the Station's signal line (PLAN.md Q15) (62); the flora's mask and fields (the Vale of Xanadu' (80) |
-| `89zac-ad-village.js` | 6 |  |
+| `89zaa-ad-ground.js` | 11 | the cove's headlands (world metres) (22); the pads and terraces (30); the Station's signal line (PLAN.md Q15) (63); the flora's mask and fields (the Vale of Xanadu' (81) |
+| `89zac-ad-village.js` | 7 |  |
 | `90ad-world.js` | 11 | the sky and its light (16); the near ground's zone mask and tint (24); the near ground (6 m cells) and the far ground ( (55); the lake: core/atmos and core/water (86) |
 | `90ae-build.js` | 6 | the retaining faces (8); the places, chunk by chunk (21) |
-| `90af-night.js` | 2 |  |
-| `91zz-ad-api.js` | <1 |  |
+| `90af-night.js` | 3 |  |
+| `91zz-ad-api.js` | 1 |  |
 
 ## targets/
 
@@ -30,7 +30,7 @@ Each target adds its own fragments to `src/` and builds one output.
 | Target | Fragments | KB |
 |---|---|---|
 | `east-end` | `89z-rows.js`, `89zad-site.js`, `91z-views.js` | 2 |
-| `isle` | `89z-rows.js`, `89zad-site.js`, `90ag-ad-walk.js`, `91z-views.js` | 19 |
+| `isle` | `89z-rows.js`, `89zad-site.js`, `90ag-ad-walk.js`, `90ah-ad-night.js`, `90ai-ad-interiors.js`, `91z-views.js` | 34 |
 | `north-shore` | `89z-rows.js`, `89zad-site.js`, `91z-views.js` | 2 |
 | `summit` | `89z-rows.js`, `89zad-site.js`, `91z-views.js` | 6 |
 | `west-end` | `89z-rows.js`, `89zad-site.js`, `91z-views.js` | 2 |

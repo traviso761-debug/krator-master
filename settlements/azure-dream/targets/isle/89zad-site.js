@@ -52,6 +52,14 @@ const AD_STAIR=(function(){
 // the terraces' own stairs: a zigzag down each terrace's face into the terrace below it, clear of the buildings on the axis
 const AD_TSTAIRS=[['court-monastery',AD_TERR.monastery,AD_TERR.court,-62],['monastery-lotus',AD_TERR.lotus,AD_TERR.monastery,62],['lotus-hall',AD_TERR.hall,AD_TERR.lotus,72]]
  .map(([id,up,lo,vc])=>{const n=Math.max(1,Math.ceil((up.y-lo.y)/7.5)),uTop=-up.z1-10;return adZigzag(id,uTop,vc,up.y,lo.y,n,7.2);});
+// the terraced orchards either side of the stair (PLAN.md section 4c), on the scarp below the court terrace: two terraces a side,
+// each its own level (pads 'orchard:', kept grass by 90ad), apricots on the lower and persimmons on the upper (kits/crops); the
+// bee walls on the lower terrace against the upper one's face (3 m thick, 90ae), their hives' niches to the lake
+const AD_ORCHARDS=[];
+for(const s of[-1,1])for(const [i,u0,u1,crop] of[[0,122,135,'apricot'],[1,137,150,'persimmon']]){const a=AD_P(u0,s*30),b=AD_P(u1,s*140),T=adPad('orchard:'+(s<0?'west':'east')+':'+i,a[0],a[1],b[0],b[1],null,2);
+ const d=i===0?(u1-3)-u0-2:u1-u0-2,uc=u0+1+d/2;
+ AD_ORCHARDS.push(adPut('qb_ad_orchard',uc,s*85,0,{y:T.y,w:106,d,crop,v:i},'garden','orchard:'+(s<0?'west':'east')+':'+crop));
+ if(i===0)for(const v of[50,80,110])adPut('qb_ad_hives',u1+2-3-.6,s*v,0,{y:T.y,w:10,v:v%2},'garden','bee-wall:'+(s<0?'west':'east')+':'+v);}
 adPut('qb_gate_temple',AD_STAIR.footU-16,0,0,{v:0},'way','lower-gate',true);
 for(const s of[-1,1])adPut('qb_chorten',AD_STAIR.footU-6,s*(AD_STAIR.len/2+9),0,{v:0},'way','stair-chorten:'+s,true);
 // the upper precinct (the plan's u less 120: the slope above the scarp)

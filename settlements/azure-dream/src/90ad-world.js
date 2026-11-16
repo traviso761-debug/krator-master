@@ -32,7 +32,7 @@ const adCv=adCanvas(),adMask=adCanvas();
  const line=(c,P,w)=>{c.lineWidth=w*ADG_PX;c.lineCap='round';c.beginPath();P.forEach((p,i)=>i?c.lineTo(agx(p[0]),agz(p[1])):c.moveTo(agx(p[0]),agz(p[1])));c.stroke();};
  // made ground: every building's pad (dirt) and every stair landing (flagstones); the terraces keep their grass (their courts and
  // walks are paved below)
- for(const p of AD_PADS){if(p.id.startsWith('terrace:'))continue;const L=p.id.startsWith('landing:');g.fillStyle=L?'#8c8984':'#86827a';rect(g,p.x0,p.z0,p.x1,p.z1);m.fillStyle=L?FLAG:DIRT;rect(m,p.x0,p.z0,p.x1,p.z1);}
+ for(const p of AD_PADS){if(p.id.startsWith('terrace:')||p.id.startsWith('orchard:'))continue;   /* the terraces and the orchards keep their grass */const L=p.id.startsWith('landing:');g.fillStyle=L?'#8c8984':'#86827a';rect(g,p.x0,p.z0,p.x1,p.z1);m.fillStyle=L?FLAG:DIRT;rect(m,p.x0,p.z0,p.x1,p.z1);}
  // the paved courts (flagstones), the ways (the Lower Way flagged: the pilgrims'; the wharf's and the paths cobbled)
  for(const b of AD_PAVED){g.fillStyle='#8c8984';rect(g,b[0][0],b[0][1],b[1][0],b[1][1]);m.fillStyle=FLAG;rect(m,b[0][0],b[0][1],b[1][0],b[1][1]);}
  for(const [k,w,P] of AD_WAYS){g.strokeStyle=k==='way'?'#8c8984':'#88847c';m.strokeStyle=k==='way'?FLAG:COB;line(g,P,w);line(m,P,w);}})();

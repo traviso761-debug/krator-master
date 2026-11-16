@@ -20,6 +20,9 @@ const AD_WALK=(function(){const KW=typeof KWALK!=='undefined'?KWALK:null,S={floo
  rect(0,HX-T,-(HZ-T),HZ-T,yF,'east');rect(-(HX-T),0,-(HZ-T),HZ-T,yF,'west');   /* the women's side and the men's, meeting on the lattice's line */
  KW.strip({a:[X,Z+HZ+.5,y0+P],b:[X,Z+HZ-T-.4,yF],w:2.2,name:'hall door',tag:tagP+'door'});
  KW.strip({a:[X-HX-.5,Z+26,y0+P],b:[X-HX+T+.4,Z+26,yF],w:1.3,name:'waking door',tag:tagP+'waking-door'});S.floors+=2;
+ /* the Foot Gallery at +4.22 over the foot (its hatch at the east end left open), and its stair along the foot wall (89qa) */
+ const yG=y0+P+4.22;rect(-(HX-T),9.6,24.05,HZ-T,yG,'gallery');rect(9.6,HX-T,24.05,26.5,yG,'gallery');
+ KW.strip({a:[X+6.6,Z+27,yF],b:[X+13.8,Z+27,yG],w:1.1,name:'gallery stair',tag:tagP+'gallery-stair'});S.floors++;
  // the walls, gapped at the doors (the foot's x -1.4..1.4; the Waking Door's z 25.1..26.9 in the west wall)
  const W0=yF-.06,W1=yF+A.H1+1;
  for(const [a,b] of[[-HX,-1.4],[1.4,HX]])blk(a,b,HZ-T,HZ,W0,W1,'wall.foot');blk(-HX,HX,-HZ,-HZ+T,W0,W1,'wall.head');
@@ -30,6 +33,7 @@ const AD_WALK=(function(){const KW=typeof KWALK!=='undefined'?KWALK:null,S={floo
  for(const s of[-1,1])for(let k=0;k<=4;k++){const z=24-12*k;blk(s>0?4.2:-15,s>0?15:-4.2,z-.05,z+.05,yF,yF+1.2,'screen');}
  for(const c of A.cots)blk(c[0]-.98,c[0]+.98,c[2]-.4,c[2]+.4,yF,yF+.5,'cot');
  blk(-1.8,1.8,-HZ+T,-HZ+T+1.3,yF,yF+3.8,'shrine');
+ blk(9.6,13.8,26.4,27.6,yF,yF+1.3,'gallery-stair.under');   /* under the stair's upper half: no walking through it from the floor */
  // the kora's posts and its great wheel
  for(const s of[-1,1])for(let z=-32.6+1.6;z<=32.6-1.6;z+=3.2)blk(s*20.6-.15,s*20.6+.15,z-.15,z+.15,y0+P,y0+P+3.4,'kora.post');
  for(const s of[-1,1])for(let x=-20.6;x<=20.6;x+=3.2){if(s>0&&Math.abs(x)<2.5)continue;blk(x-.15,x+.15,s*32.6-.15,s*32.6+.15,y0+P,y0+P+3.4,'kora.post');}
@@ -47,7 +51,7 @@ const AD_WALK=(function(){const KW=typeof KWALK!=='undefined'?KWALK:null,S={floo
   const R0=KW.reach(start,{ground:terrainH,box}),shutIn=['east','west'].filter(t=>got(R0,t));
   for(const D of S.leaves)KDOOR.open(D,{by:'player'});step();
   const R1=KW.reach(start,{ground:terrainH,box});
-  out.push({from:'the terrace before the steps',miss:['kora','east','west'].filter(t=>!got(R1,t))});
+  out.push({from:'the terrace before the steps',miss:['kora','east','west','gallery'].filter(t=>!got(R1,t))});
   const R2=KW.reach([[X,yF,Z-HZ+T+2.2]],{ground:terrainH,box});
   out.push({from:'the shrine',miss:['kora','east','west'].filter(t=>!got(R2,t))});
   for(const D of S.leaves)KDOOR.close(D);step();

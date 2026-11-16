@@ -18,6 +18,8 @@ const VIEWS=(function(){
  V['The precinct from above']=[160,T.hall.y+190,-140,0,T.monastery.y,-350];
  /* Erehwon at scale-model px 841,1517: 20 km south-south-west, across the water */
  V['Toward Erehwon']=[0,T.hall.y+16,-500,adWx(841)-AD.WX,0,adWz(1517)-AD.WZ];
+ /* the terraced orchards either side of the stair, from over the east ones looking west across it */
+ {const O=AD_ORCHARDS,e=O.find(p=>p.id==='orchard:east:persimmon'),w=O.find(p=>p.id==='orchard:west:apricot');if(e&&w)V['The orchards by the stair']=[e.x+40,e.o.y+26,e.z+40,w.x,w.o.y,w.z];}
  /* the Dream Road out of the back gate, and the relay lamp 1 km up it */
  {const a=AD_DREAM.a,r=AD_DREAM.relay,d=AD_SIGNAL.dir;V['Up the Dream Road']=adEye(a[0]+d[0]*30+6,a[1]+d[1]*30,r.x,r.z,0);
   V['The relay lamp']=[r.x+d[0]*-46+20,r.o.y+16,r.z+d[1]*-46,r.x,r.o.y+12,r.z];V['From the relay to the Hall']=[r.x+4,r.o.y+21,r.z+6,0,AD_TERR.hall.y+8,-430];}
