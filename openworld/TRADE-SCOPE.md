@@ -1024,7 +1024,8 @@ is on its western edge under the Iziz highlands.
 **What it reaches:** village pins for the queue, named in Dasrī (the mixed ones in Izani and Dasrī); the camps as `core/camp`
 records; the trade model's Nomad Country and Iziz members.
 
-**Sent** (the owner, 2026-11-15: "Send all eight"): W1-W8 as village pins to the queue.
+**Sent** (the owner, 2026-11-15: "Send all eight"): W1-W8 as village pins to the queue. **Delivery unconfirmed:** the queue
+session gave no sign of picking the message up; it may still do so. Re-send if the queue never acknowledges it.
 - W1-W3: Nomad Country.
 - W5: Iziz, a Dasri village.
 - W4, W6, W7, W8: Iziz, mixed Izani-Dasri villages.
