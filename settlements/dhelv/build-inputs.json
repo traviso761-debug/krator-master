@@ -196,10 +196,10 @@
     "core/simulation/77-sim-6-needs.js": "14520bb1ccf451419b3661f5985fdd0bbc73092f6fc3bfb55c28ac52db412e01",
     "core/simulation/77-sim-6-population.js": "2f0146a3328350874fcb36fbb7d5eb759296d2be1898d3039c7f59cbb0917a0f",
     "core/simulation/77-sim-6-season.js": "344a5416aedab4782d68769779c12183058f8a673f58ca1cc0015cf3ff051fac",
-    "core/simulation/77-sim-6-trade.js": "09c8944ad7afb93d862bebfb7e03eb71ee34a92e6e5e35fcd8487ff7604b867b",
+    "core/simulation/77-sim-6-trade.js": "4643db21fc8852df4d8c56440601f97d9620d6e4a7574434d40d5311b695c1ca",
     "core/simulation/77-sim-6-transfer.js": "254fa32d81e0e9439978bc779ff550e744ce1b42d14ac0629e1a1f17432dcde1",
     "core/simulation/77-sim-6-unrest.js": "5186f7f23c04ecafbf2042968b5b1b048ed5392b5bcc2ad6c85fd37b65dd5809",
-    "core/simulation/77-sim-7-ledger.js": "d1c50086205d8c33d76636edd86a58e07fa93428e38a2c5bf5ce273107e34bc7",
+    "core/simulation/77-sim-7-ledger.js": "d8e541b35ee624073ffc386ed82ccf010b16a5d5763da65daa692aa4aa81197b",
     "core/simulation/77-sim-7-lod.js": "72b3f9c94ceaba426d70bdcd370a7c63fdfea3462f05cecdda3df1695c5dd2f7",
     "core/simulation/77-sim-7-stocks.js": "3ab7ea6dd2094b2df6883d241c40e7bd9fe8c9d8cdf7bb711e167a8146606cde",
     "core/simulation/77-sim-8-export.js": "a8d9da5e4624472ad638978581b2d64be72c82ab3ddda49385a3041ae99d4dea",
@@ -473,16 +473,16 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "settlements/dhelv/build-manifest.json": "5c23088669a35c2135e11c57dfc118f3704371e2e1bdea892793dedb6a4bfe92",
-    "settlements/dhelv/dist/dhelv.html": "d88988e5dfb151371486562712c3f38032f3c14016da3aabd86d6ed65b289998",
+    "settlements/dhelv/build-manifest.json": "5ada32ebfea4e95d6f4dfd198d9c938bb2e0c8528786ab763e1ac8024330eb21",
+    "settlements/dhelv/dist/dhelv.html": "19c10aeaa206a65fae87111580b08bc3dd2e56e2ea78c53f19cab8f3143cb0b7",
     "settlements/dhelv/dist/dhelv.tex.hyperjungle.js": "0b0424463a0708c5ca02f328e370aaa38a4fdcb31bb628fda216360b99b57703",
     "settlements/dhelv/dist/dhelv.tex.throne.js": "970b447cd7abc1b7042267ad5bfc8b45666e5290a8045bd9ea39912d2c626989",
     "settlements/dhelv/dist/dhelv.tex.zeijani-2.js": "01dea3f0d86fd8f1faf9109f1d8a88d731095bfb2bd0db75050b870b662afd2b",
     "settlements/dhelv/dist/dhelv.tex.zeijani.js": "f511e1f9ca3e719c26073d42af1044407b4d428e07cc50eb65dbf1ecc809eee0"
    },
    "outputs_raw": {
-    "settlements/dhelv/build-manifest.json": "5c23088669a35c2135e11c57dfc118f3704371e2e1bdea892793dedb6a4bfe92",
-    "settlements/dhelv/dist/dhelv.html": "d88988e5dfb151371486562712c3f38032f3c14016da3aabd86d6ed65b289998",
+    "settlements/dhelv/build-manifest.json": "5ada32ebfea4e95d6f4dfd198d9c938bb2e0c8528786ab763e1ac8024330eb21",
+    "settlements/dhelv/dist/dhelv.html": "19c10aeaa206a65fae87111580b08bc3dd2e56e2ea78c53f19cab8f3143cb0b7",
     "settlements/dhelv/dist/dhelv.tex.hyperjungle.js": "0b0424463a0708c5ca02f328e370aaa38a4fdcb31bb628fda216360b99b57703",
     "settlements/dhelv/dist/dhelv.tex.throne.js": "970b447cd7abc1b7042267ad5bfc8b45666e5290a8045bd9ea39912d2c626989",
     "settlements/dhelv/dist/dhelv.tex.zeijani-2.js": "01dea3f0d86fd8f1faf9109f1d8a88d731095bfb2bd0db75050b870b662afd2b",

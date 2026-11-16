@@ -90,10 +90,10 @@
     "core/simulation/77-sim-6-needs.js": "14520bb1ccf451419b3661f5985fdd0bbc73092f6fc3bfb55c28ac52db412e01",
     "core/simulation/77-sim-6-population.js": "2f0146a3328350874fcb36fbb7d5eb759296d2be1898d3039c7f59cbb0917a0f",
     "core/simulation/77-sim-6-season.js": "344a5416aedab4782d68769779c12183058f8a673f58ca1cc0015cf3ff051fac",
-    "core/simulation/77-sim-6-trade.js": "09c8944ad7afb93d862bebfb7e03eb71ee34a92e6e5e35fcd8487ff7604b867b",
+    "core/simulation/77-sim-6-trade.js": "4643db21fc8852df4d8c56440601f97d9620d6e4a7574434d40d5311b695c1ca",
     "core/simulation/77-sim-6-transfer.js": "254fa32d81e0e9439978bc779ff550e744ce1b42d14ac0629e1a1f17432dcde1",
     "core/simulation/77-sim-6-unrest.js": "5186f7f23c04ecafbf2042968b5b1b048ed5392b5bcc2ad6c85fd37b65dd5809",
-    "core/simulation/77-sim-7-ledger.js": "d1c50086205d8c33d76636edd86a58e07fa93428e38a2c5bf5ce273107e34bc7",
+    "core/simulation/77-sim-7-ledger.js": "d8e541b35ee624073ffc386ed82ccf010b16a5d5763da65daa692aa4aa81197b",
     "core/simulation/77-sim-7-lod.js": "72b3f9c94ceaba426d70bdcd370a7c63fdfea3462f05cecdda3df1695c5dd2f7",
     "core/simulation/77-sim-7-stocks.js": "3ab7ea6dd2094b2df6883d241c40e7bd9fe8c9d8cdf7bb711e167a8146606cde",
     "core/simulation/77-sim-8-export.js": "a8d9da5e4624472ad638978581b2d64be72c82ab3ddda49385a3041ae99d4dea",
@@ -972,8 +972,8 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "settlements/isle-demo/dist/isle-city.html": "b76b2a7ddd5c15f0698402e1143249b5b6eadfab9f2af34ee9b7af2a77a28d02",
-    "settlements/isle-demo/dist/isle-city.plan.js": "99718dad5421101075bf5023552df80569c10786e8edc2da621945fd8131e2d1",
+    "settlements/isle-demo/dist/isle-city.html": "96407f9e6caaaf96d7f4ca54516d0ae5fa49a37ac460153901f1f7197e05c3ac",
+    "settlements/isle-demo/dist/isle-city.plan.js": "d3f1cb24b2232568d3b8dc60d2a3b07081cb9a5976a2cd881a0089d341d97e91",
     "settlements/isle-demo/dist/isle-city.tex.brtowns.js": "7e593dd1b45394583a5fb854cf7186f70472a71c929c365a495d3ef0748d6c5d",
     "settlements/isle-demo/dist/isle-city.tex.islanders-2.js": "a869e63f728e5f1ad426a9ab6bbbb2e84ef86800b51c1c78cbe72b0b1ec606d8",
     "settlements/isle-demo/dist/isle-city.tex.islanders.js": "5386bac4f108b5a05c35cb85da341c4b042296a3f5cfb51b9989a216db6834ed",
@@ -984,8 +984,8 @@
     "settlements/isle-demo/dist/isle-site.html": "de6f3dbeec368a48a9b0a4fe006231d5ffdac552e0e4404bf6788bfebb7a2197"
    },
    "outputs_raw": {
-    "settlements/isle-demo/dist/isle-city.html": "b76b2a7ddd5c15f0698402e1143249b5b6eadfab9f2af34ee9b7af2a77a28d02",
-    "settlements/isle-demo/dist/isle-city.plan.js": "99718dad5421101075bf5023552df80569c10786e8edc2da621945fd8131e2d1",
+    "settlements/isle-demo/dist/isle-city.html": "96407f9e6caaaf96d7f4ca54516d0ae5fa49a37ac460153901f1f7197e05c3ac",
+    "settlements/isle-demo/dist/isle-city.plan.js": "d3f1cb24b2232568d3b8dc60d2a3b07081cb9a5976a2cd881a0089d341d97e91",
     "settlements/isle-demo/dist/isle-city.tex.brtowns.js": "7e593dd1b45394583a5fb854cf7186f70472a71c929c365a495d3ef0748d6c5d",
     "settlements/isle-demo/dist/isle-city.tex.islanders-2.js": "a869e63f728e5f1ad426a9ab6bbbb2e84ef86800b51c1c78cbe72b0b1ec606d8",
     "settlements/isle-demo/dist/isle-city.tex.islanders.js": "5386bac4f108b5a05c35cb85da341c4b042296a3f5cfb51b9989a216db6834ed",

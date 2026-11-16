@@ -457,7 +457,7 @@
  ],
  "77-sim-6-trade.js": [
   "core/simulation",
-  "2e4f66b27015"
+  "0cf5ac635e59"
  ],
  "77-sim-6-transfer.js": [
   "core/simulation",
@@ -469,7 +469,7 @@
  ],
  "77-sim-7-ledger.js": [
   "core/simulation",
-  "190d994378b8"
+  "c55ac56340b3"
  ],
  "77-sim-7-lod.js": [
   "core/simulation",
