@@ -364,3 +364,6 @@ Valley's mutant variants also want, `biomes/ancientsvalley/PLAN.md`): where `s` 
 size steps** (0.7, 1.0, 1.4: a herd all of one size), where `s` > 0.5 **resting animals face along the axis** (a herd lying down reads as a
 compass rose), and a share of young **stay young** (the stuck fruit's animal twin: adult behaviour at juvenile size). Every rule is a
 transform on `FAUNALANDS.plan`'s records, plain arithmetic on `CUT.field`, no per-frame cost.
+
+## Scale-Model 5.1 Dilihan Contact-Marble Binding (`2026-11-13`)
+- **Inner-Wall Contact Belt at Dilihan (`5.1 px 744, 663`):** Where the northwestern Inner Rim ring-fault and the Cut's deep-seated mafic dikes intersect intracrater limestone benches around **Dilihan** (`744, 663`, between `Tethis` `733, 775` and `Roketstad`), wall scarps and quarry benches expose `KSTRATA` **`contact-marble`** (`core/terrain/35-core-strata.js` — `4–8 m` massive white-to-blue-veined calcite/dolomite marble with dark epidote-garnet-magnetite skarn selvages and crisp `sheen` fracture faces), providing Iron Republic / Dilihan stone-works with high-grade dressed marble and magnetite skarn iron alongside the upper rim's `megabreccia`.

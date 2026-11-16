@@ -197,3 +197,6 @@ records (core/rand), registered and drawn as one mesh.
 
 **Left**: the town's own build (core/city; its look: Yuni's under the Izani merchants'); textures for the houses (vertex colours now);
 the forest's fauna; a fig card (the library's `card.broadleaf` is a monstera bunch: the figs use the kit's procedural small-leaf map).
+
+## 12. Scale-Model 5.1 Strandline Strata Binding (`2026-11-13`)
+- **The Bowl Paleolake Benches (`evaporite-strand`):** Where Section 10's kaluts and raised western paleolake benches step down toward the hypersaline `WX` terminal floor around **Mantis** (`838, 830`), the recession rims and wave-cut salt terraces bind to `KSTRATA` **`evaporite-strand`** (`core/terrain/35-core-strata.js` — `0.4–1.5 m` crisp horizontal aragonite/tufa strandline steps, glittering selenite `gypsum` crusts, and high-albedo halite/borate salt-pan laminations), complementing `canyon` redbeds on the surrounding basin walls.
