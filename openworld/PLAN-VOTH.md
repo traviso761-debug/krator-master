@@ -123,7 +123,7 @@ taking its ground from the world (the isle-demo route, `openworld/PLAN-SITES.md`
 | Step | What | Waits on |
 |---|---|---|
 | V0 | The owner's answers (section 6) | — |
-| V1 | edit_513: the bay, the shelf, the river, the records; the model page rebuilt; tests | V0 |
+| V1 | edit_513: the bay, the shelf, the river, the records; the model page rebuilt; tests. **Done 2026-11-11** (`tools/scale-model/README.md`, "5.1 edit 3"): the Vindos joins the re-routed Turm, which cannot reach the bay without crossing it | V0 |
 | V2 | core/world: the towns bake, water and river inside a town, the landform stamp (a region fragment first if 41's reach, 8 builds, should wait for the all-builds rebuild) | V0 |
 | V3 | `openworld/voth`: cut, kits, sites, the resources census | V1 |
 | V4 | Voth's ground in the region; the checks; GPU verify; the side-by-side view | V2, V3 |

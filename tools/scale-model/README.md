@@ -796,6 +796,58 @@ river's `walls_unforced` field is its marker).
   - a recut of `openworld/xanadu-oidong-highrift`.
   All are on 98d15b9b9 and its parents.
 
+## 5.1 edit 3, Voth: `edit_513_voth.py` (2026-11-11): the Bay of Voth shrunk to Voth's page
+
+*Renamed from edit_513.py on 2026-11-15, when this branch met the rerun line, whose edit_513.py is the Firebliss Range; it is re-run on the merged model. Its helpers come from edit_512_caldera.py (Erewhon), which was edit_512.py on this branch.*
+
+`python tools/scale-model/edit_513_voth.py` edits `model/data` in place and writes `edit_513_voth.report.json`; `--dry` computes
+and prints the report without writing; `--terrain <out.npz>` gives the heights only; it refuses to run twice (the
+`lf_voth_` landforms are its marker). Step V1 of `openworld/PLAN-VOTH.md`, on the owner's answers of 2026-11-11 (its
+section 6). Everything moves inside the box x 718-800, y 995-1040 (heights and water 3 cells inside it); every raster
+is checked unchanged outside it.
+
+- **The water**: Voth's page water (`settlements/voth/src/10-core.js:87-117`, read, never edited) laid on the model with
+  Voth's pin (742,1018) as the page's origin, its north (-z) as north, 2,000 m a px, sampled every 250 m. A cell is wet
+  where the page's water covers half of it: 5 cells (741-743 x 1016-1018) for the bay, the narrows and the lake, 21 km2
+  of water on the page; their beds are the page's depth profile averaged over the cell (-1,506 to -1,534 m). The strait
+  is carried on its page bearing (~12 degrees east of north) to the open Ring Sea at the old bay's neck: 15 wet cells
+  from 742,1015 to 745,1004, 25.7 km from the lake. The pin stays where it was, in the water (-1,515 m).
+- **The old bay** (308 cells, 1,232 km2, bed about -1,537 m, south of its neck at y 1005) is land but for that water:
+  289 cells, a field of the page's shore profile by distance to the water (2 m at the shore, 22 m at 700 m, 60 m by
+  1.7 km) rising to hills of ~250 m 8 km off, with the page's own seventeen ridges in its frame, averaged over each cell:
+  58-272 m over the sea (p10-p90), median 226 m.
+- **The rim, all round**: eased from that field back to the old ground over 6 px (12 km), the rivers the edit does not
+  move kept on their ground. The cells ringing the old bay stood 353 m over the sea at the median and 659 m at p90
+  (cliffs within a cell of the water); now 250 m and 286 m. Voth's shore: 66 m over the water at the median of its
+  cells. The southern scarp (to 1.7 km and more) stays behind as the backdrop, its foot eased.
+- **The Turm** (`r029`) re-routed. It cannot reach the bay without crossing the Vindos (`r023`), which runs north into
+  the eastern inlet's head between the Turm and the peninsula, so **the Vindos joins it**: the inlet's head (20 cells,
+  y >= 1016, x 772-777) is filled to a small delta under the inlet's east cliffs, behind barrier hills 110 m high on
+  the inlet's new head (the brayt and the Silvr Brük still reach the inlet). The Turm leaves its old course at 780.7,1019
+  (the Silvr's confluence; every tributary kept), falls onto the delta, takes in the Vindos at 774.6,1019.2, and runs
+  west through a valley cut in the peninsula and across the old bay's floor to the page's river and its mouth
+  (742.44,1018.58: page 880,1160 m). Its bed is -1,475 m at the confluence, falling 0.4 m a km to sea level at the
+  page's frame; the page's last 5.3 km at sea level. 117 km long (was 46), 289.4 m3/s (131.9 + the Vindos's 157.5),
+  16,958 km2, 77 m wide, order 4, Voth on it.
+- **Records**: `DATA.landforms` (kinds `water`, `shelf` and `island`; `px`/`py` and heights absolute as edit_512 wrote
+  them): `lf_voth_water` (the page's ten circles and capsules in px with their radii, the 210 m smooth minimum: the
+  shore core/world can rebuild at 1:1), `lf_voth_narrows` (1,120 m), `lf_voth_strait` (680 m, 25.7 km, its cells),
+  `lf_voth_shelf` (70 m wide, 1.2-4.8 m deep, off every shore), `lf_voth_river` (the page's river, mouth first, 80-170 m
+  on a floodplain of 260-1,160 m) and the seven islets `lf_voth_isle_1`-`7` (12-20 m over the water). `DATA.basins`
+  gains Voth's lake (a through lake at -1,500 m, 21 km2, 52 m deep); `DATA.outlets` its strait.
+- **Checks**: the lake's bed filled to its way out spills through the strait (-1,508 m) and, with the strait blocked,
+  not under 77 m over the sea; no new pit in the box (51 cells filled, at most 36 m, 15 of them old pits the edit
+  reached); every pin in the box but Voth's unchanged (Torus); no river that ends in the sea ends on new land.
+- **Climate**: temperatures lapsed, the new land taking its land twins' (31 C mean); rain, class and zone by
+  `climate.reclimate`. The new land is **XA** (hypertropic jungle, over 1.85 atm), as the model gives all land under
+  about -1,170 m; Af, Am and Aw stay on the old rim. The paint relit and retinted, the old bay's water paint softened
+  (its surf lines would show the old bay) and repainted for its climate, the Turm drawn.
+- `tests/test_smodel.py` section 16 checks the water, the strait to the sea, the old bay as low land, the low shore, the
+  Turm's mouth, flow and confluence, the delta, the records and Torus. Sections 2 and 7 now read the little demo's
+  sources from `archive/little-demo` (retired there from `openworld/`).
+- **Left for later**: Voth's ground handed to core/world (V2), the region `openworld/voth` (V3), core/world's stamp of
+  the landforms; the live map database (on the old canvas).
+
 ## Cutting a region out for the open world
 
 `extract_region.py <page.html> <regions> <settlements> "<region name>" <out dir>` reads the same page (no edit) and

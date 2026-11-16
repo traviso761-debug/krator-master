@@ -629,4 +629,96 @@ check('the Godthrone walls round Godshearth are dry again (4-6 km band %.0f mm)'
 check('Godshearth keeps its own rain inside the caldera (%.0f mm)' % _rain4[gh_floor].mean(), 700 <= _rain4[gh_floor].mean() <= 950)
 gso4 = next(r for r in D['rivers'] if r['id'] == 'r_gh_spillway')
 check('Āirã Siṭrīm carries about 129 m3/s (%.1f), perennial' % gso4['q_mouth_m3s'], 120 <= gso4['q_mouth_m3s'] <= 135 and gso4['perennial'])
+# ---- 15. 5.1 edit 2 (edit_512.py, 2026-11-11): Erewhon's caldera lake, its walls, volcanoes, islands, the Vale and
+#          the Alph's new head
+import edit_512 as E512   # noqa: E402
+yy_c, xx_c = np.mgrid[0:E.shape[0], 0:E.shape[1]].astype(float)
+_, _, r_c = E512.lake_frame(xx_c, yy_c)
+lk_full = r_c <= 1.0
+lk = lk_full & whas & (np.abs(np.nan_to_num(wlev, nan=0.0) + 520.0) <= 1.0)
+isl_c = np.zeros(E.shape, bool)
+for _, i_x, i_y, i_rx, i_ry, _ in E512.ISLANDS:
+    isl_c |= np.hypot((xx_c - i_x) / i_rx, (yy_c - i_y) / i_ry) <= 1.0
+check('Erewhon\'s caldera lake: %d cells wet at -520 m (1,400-1,600), %.0f m deep at most (>= 700 m), dry only on its islands' % (
+    int(lk.sum()), -520.0 - float(E[lk].min())),
+      1400 <= int(lk.sum()) <= 1600 and -520.0 - float(E[lk].min()) >= 700.0
+      and not bool((lk_full & ~whas & ~isl_c).any()))
+s_c = nd.distance_transform_edt(~lk_full)
+wall2 = float(np.median(E[~lk_full & (np.abs(s_c - 2.0) < 0.5) & (yy_c > 1470) & (yy_c < 1545) & (xx_c > 770) & (xx_c < 850)]))
+check('the caldera walls stand %.0f m over the lake two cells off the shore (>= 250 m)' % (wall2 + 520.0), wall2 + 520.0 >= 250.0)
+for v_id, v_x, v_y, v_top, v_rb in E512.VOLCS:
+    v_h = float(E[int(v_y), int(v_x)])
+    check('%s (%d, %d) stands %.0f m over the lake (1.5-2.6 km), %.1f px back from the shore (10-15)' % (
+        v_id, v_x, v_y, v_h + 520.0, s_c[int(v_y), int(v_x)]),
+          1500.0 <= v_h + 520.0 <= 2600.0 and 10.0 <= s_c[int(v_y), int(v_x)] <= 15.0)
+for i_id, i_x, i_y, i_rx, i_ry, i_c in E512.ISLANDS:
+    i_j, i_i = int(round(i_y)), int(round(i_x))
+    check('island %s (%.1f, %.1f) is dry, %.0f m over the lake' % (i_id, i_x, i_y, E[i_j, i_i] + 520.0),
+          not bool(whas[i_j, i_i]) and 20.0 <= float(E[i_j, i_i]) + 520.0 <= 160.0)
+lf = D.get('landforms', {})
+check('DATA.landforms holds the Pleasure Dome\'s island, in the lake on a shoal',
+      lf.get('format') == 'krator-landforms' and any(
+          l_['id'] == 'lf_pleasure_dome_isle' and bool(whas[int(round(l_['py'])), int(round(l_['px']))])
+          and float(E[int(round(l_['py'])), int(round(l_['px']))]) >= -560.5 for l_ in lf.get('landforms', [])))
+alph = next(r for r in D['rivers'] if r['id'] == 'r070')
+a_j, a_i = int(round(alph['px'][0][1])), int(round(alph['px'][0][0]))
+check('the Alph (r070) leaves the lake\'s east tip (%s, bed %.1f m) and reaches its old course at 903.5,1529.5' % (
+    alph['px'][0], alph['bed_m'][0]),
+      bool(nd.binary_dilation(lk, iterations=2)[a_j, a_i]) and -523.0 <= alph['bed_m'][0] <= -520.0
+      and [903.5, 1529.5] in alph['px'])
+vale_t = (xx_c > 846) & (xx_c < 902) & (yy_c > 1488) & (yy_c < 1528) & (np.abs(E + 520.0) < 60.0)
+check('the Vale is dry land between -560 and -460 m (%d cells, median %.0f m)' % (int(vale_t.sum()), float(np.median(E[vale_t]))),
+      int(vale_t.sum()) >= 900 and not bool(whas[vale_t].any()) and -545.0 <= float(np.median(E[vale_t])) <= -480.0)
+for r_id in ('r613', 'r753', 'r492', 'r272'):
+    r_t = next(r for r in D['rivers'] if r['id'] == r_id)
+    check('%s ends in the lake' % r_id, bool(lk_full[int(round(r_t['px'][-1][1])), int(round(r_t['px'][-1][0]))])
+          and r_t['to'].get('lake_m') == -520)
+for r_id in ('r488', 'r616'):
+    r_t = next(r for r in D['rivers'] if r['id'] == r_id)
+    check('%s joins the Alph in the Vale' % r_id, r_t['to'].get('river') == 'r070')
+# ---- 16. 5.1 edit 3, Voth (edit_513_voth.py, 2026-11-11; re-run on the merged model 2026-11-15): the Bay of Voth shrunk to Voth's page, its rim softened, the Turm
+#          re-routed into the bay's south-east corner
+import edit_513_voth as E513   # noqa: E402
+sea_v = whas & (np.abs(np.nan_to_num(wlev, nan=0.0) - E513.SEA) <= 1.0)
+vp_x, vp_y = E513.PIN
+page_v = [(741, 1017), (742, 1016), (742, 1017), (742, 1018), (743, 1017)]
+check("Voth's page water: its pin and %d cells wet at sea level (-1,500 m), 5-55 m deep" % len(page_v),
+      bool(sea_v[vp_y, vp_x]) and all(bool(sea_v[j_, i_]) for i_, j_ in page_v)
+      and all(-1555.0 <= float(E[j_, i_]) <= -1505.0 for i_, j_ in page_v))
+lab_v, _ = nd.label(sea_v)
+check("Voth's lake reaches the Ring Sea by its strait (one water body with 745,1004)",
+      lab_v[vp_y, vp_x] == lab_v[1004, 745] and bool(sea_v[1010, 743]) and bool(sea_v[1006, 744]))
+ob_v = np.zeros(E.shape, bool)
+ob_v[1005:1029, 732:752] = True
+check("the old Bay of Voth is land but for the page's water and the strait (%d of %d cells wet)" % (
+    int((whas & ob_v).sum()), int(ob_v.sum())), int((whas & ob_v).sum()) <= 25)
+nl_v = np.zeros(E.shape, bool)
+nl_v[1006:1027, 734:751] = True                # the old bay's inside (its rectangle's edges are the old rim)
+nl_v &= ~whas
+check('the old bay\'s floor is low land, %.0f-%.0f m over the sea' % (float(E[nl_v].min()) + 1500.0, float(E[nl_v].max()) + 1500.0),
+      float(E[nl_v].min()) > -1500.0 and float(E[nl_v].max()) < -1100.0)
+rim_v = nd.binary_dilation(sea_v & ob_v, structure=np.ones((3, 3))) & ~whas
+check("Voth's shore is low: %.0f m over the water at the median (<= 120 m)" % (float(np.median(E[rim_v])) + 1500.0),
+      float(np.median(E[rim_v])) + 1500.0 <= 120.0 and float(E[rim_v].min()) > -1500.0)
+turm = next(r for r in D['rivers'] if r['id'] == 'r029')
+check("the Turm (r029) ends at the page's river mouth (%s) in the bay, %.1f m3/s, its last ~5 km at sea level" % (
+    turm['px'][-1], turm['q_mouth_m3s']),
+      abs(turm['px'][-1][0] - 742.44) < 0.05 and abs(turm['px'][-1][1] - 1018.58) < 0.05
+      and turm['to'].get('sea') == 'Ring Sea' and 280.0 <= turm['q_mouth_m3s'] <= 300.0
+      and all(-1500.5 <= b_ <= -1497.0 for b_ in turm['bed_m'][-3:]) and 'Voth' in turm['settlements'])
+check('the Turm passes the Vindos\'s confluence (774.6, 1019.2) and the Vindos (r023) joins it',
+      any(abs(p_[0] - 774.6) < 1.1 and abs(p_[1] - 1019.2) < 0.6 for p_ in turm['px'])
+      and next(r for r in D['rivers'] if r['id'] == 'r023')['to'].get('river') == 'r029')
+check('the eastern inlet\'s head is a dry delta (774-777 x 1018-1019) and the brayt still reaches the inlet',
+      not bool(whas[1018:1020, 774:778].any()) and bool(sea_v[1015, 775]))
+lf_v = {l_['id']: l_ for l_ in D['landforms']['landforms'] if l_['id'].startswith('lf_voth_')}
+check('DATA.landforms holds Voth\'s water, narrows (1,120 m), strait (680 m), shelf, river and seven islets',
+      {'lf_voth_water', 'lf_voth_narrows', 'lf_voth_strait', 'lf_voth_shelf', 'lf_voth_river'} <= set(lf_v)
+      and sum(k_.startswith('lf_voth_isle_') for k_ in lf_v) == 7 and lf_v['lf_voth_strait']['width_m'] == 680
+      and lf_v['lf_voth_narrows']['width_m'] == 1120 and len(lf_v['lf_voth_water']['parts']) == 10)
+check("DATA.basins holds Voth's lake at -1,500 m and DATA.outlets its strait",
+      any(b_.get('name') == "Voth's lake" and b_['level_m'] == -1500 for b_ in D['basins'])
+      and any(o_.get('name') == "Voth's strait" for o_ in D['outlets']))
+check('Torus (774,1007) unchanged: dry at %.0f m' % float(E[1007, 774]),
+      not bool(whas[1007, 774]) and abs(float(E[1007, 774]) + 789.0) <= 2.0)
 print('%d checks passed' % ok)
