@@ -85,6 +85,34 @@
     "sourceMean": 0.5352
    }
   },
+  "vsCont": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "vsCont.albedo.webp"
+   },
+   "lib": "metal.container",
+   "metal": 0.5,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    2.4,
+    2.4
+   ],
+   "size": 256,
+   "source": {
+    "albedo": "bd7cb5c0f2a4f6c08b5f6f300c8fa941dd722934",
+    "normal": "72e9e492f133d5488dd1f55cb01aab9322e401f9",
+    "roughness": "7f1213cbe227b832b04144f392ec8df335debd60"
+   },
+   "specular": 0.2,
+   "tint": {
+    "contrast": 1.25,
+    "keep": 0.0,
+    "mean": 0.55,
+    "sourceMean": 0.6028
+   }
+  },
   "vsMud": {
    "breakup": null,
    "card": false,
@@ -139,6 +167,34 @@
     "keep": 0.0,
     "mean": 0.55,
     "sourceMean": 0.829
+   }
+  },
+  "vsSand": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "vsSand.albedo.webp"
+   },
+   "lib": "ground.park_sand",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "size": 256,
+   "source": {
+    "albedo": "fdcd3c7bcd0e8fa34b31afa00ae1af7b3a83f207",
+    "normal": "4d4e299cabaa3ba523c52a35cf1e0dfdc6fdba29",
+    "roughness": "b6352b1e620e9b758a6a78a727c9a2fc64343d13"
+   },
+   "specular": 0.2,
+   "tint": {
+    "contrast": 1.3,
+    "keep": 0.0,
+    "mean": 0.55,
+    "sourceMean": 0.4441
    }
   },
   "vsSteel": {

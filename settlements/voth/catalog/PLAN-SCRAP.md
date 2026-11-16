@@ -47,8 +47,7 @@ the girders blackened, the bronze dull. Only the civic gold and purple are brigh
 2. **Culture id.** *Default:* the catalog culture stays `voth`; keys are `voth_scrap_*` and the source `voth-scrap` marks
    them. The other choice is a culture of its own (`voth-scrap`) in `FURN_CULTURES`, which would touch core/catalog.
 3. **Building types.** *Default built:* poor, middle and rich houses, a shop, a tavern, a warehouse, a tomb (Hook's
-   necropolis), a shrine of the Sun, a watchtower and a canton gate. Asked: a slave market in the container compounds
-   (Hook), an Ordinator citadel, a temple pyramid.
+   necropolis), a shrine of the Sun, a watchtower and a canton gate. The owner added the slave market and an arena (2026-11-12). Still asked: an Ordinator citadel, a temple pyramid.
 
 ## 4. The set (built)
 
@@ -63,6 +62,8 @@ the girders blackened, the bronze dull. Only the civic gold and purple are brigh
 | `voth_scrap_tomb` | fuel-tank family tomb; panel-faced pylon tomb |
 | `voth_scrap_shrine` | stepped Sun shrine with a reclaimed dish for the sun; wayside pylon shrine |
 | `voth_scrap_watch` | Ordinator watchtower; canton gate |
+| `voth_scrap_market` | the slave market in the container compounds (Hook): containers ranged round a square, pens barred inward, the auction block under a purple canopy, a gate under the gold diamond; a lane of container pens to a block under a hull-plate shell |
+| `voth_scrap_arena` | a round arena: sand floor, a podium wall faced in panels with barred pit gates, stone tiers, a basalt drum with a porphyry band, girder masts carrying shade sails on cable, a royal box under a tank-head dome; a fighting pit ringed by container stands under a girder gantry and its cage |
 
 ## 5. Core adoption
 

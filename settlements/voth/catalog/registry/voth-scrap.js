@@ -32,6 +32,7 @@
      core/catalog/krator-furniture-detail.js) gives each its grain; without them they draw as before, in plain colour */
   const FS = 'vsStone/stone', FB = 'vsBasalt/stone', FM = 'vsMud/stone', FP = 'vsPanel/plastic', FV = 'vsVerd/plastic';
   const FT = 'vsSteel/metal', FZ = 'vsBronze/bronze', FW = 'vsWood/wood', FC = 'vsCloth/cloth';
+  const FK = 'vsCont/metal', FD = 'vsSand/stone';   /* the containers' corrugated steel, the arena's sand */
 
   /* the walk records (catalog/README.md, "Walk records"): every stair or ladder a person climbs */
   function walkRec(F, kind, ax, ay, az, bx, by, bz, w) {
@@ -567,6 +568,165 @@
     }
   }
 
+  /* ================================================================ market (the owner, 2026-11-12: "slave market yes") */
+  /* an Ancient shipping container as found, set square: its body (the library's corrugated steel), dark corner posts and
+     rails, lock bars on its door end; o.pen: the inner long face opened and barred (a dark interior behind steel bars) */
+  function container(F, K, x, z, y, ry, col, o) {
+    o = o || {}; const L = 6.1, W = 2.44, H = 2.6, c = Math.cos(ry), s = Math.sin(ry);
+    const P = function (u, v) { return [x + u * c + v * s, z - u * s + v * c]; };
+    F.box(x, y, z, L, H, W, ry, col, FK);
+    [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(function (q) { const p = P(q[0] * (L / 2 - 0.06), q[1] * (W / 2 - 0.06)); F.box(p[0], y, p[1], 0.16, H + 0.02, 0.16, ry, STEEL, FT); });
+    [-1, 1].forEach(function (k) { const p = P(0, k * (W / 2 - 0.06)); F.box(p[0], y + H - 0.1, p[1], L, 0.12, 0.14, ry, STEEL, FT); });
+    const d = P(L / 2 + 0.03, 0); [-0.5, -0.2, 0.2, 0.5].forEach(function (v) { const p = P(L / 2 + 0.04, v); F.box(p[0], y + 0.2, p[1], 0.04, H - 0.4, 0.04, ry, STEEL, FT); });
+    F.box(d[0], y + 0.1, d[1], 0.03, H - 0.2, W - 0.1, ry, shade(col, -0.08), FK);
+    if (o.pen) {
+      const sd = o.pen, q = P(0, sd * (W / 2 + 0.02));
+      F.box(q[0], y + 0.15, q[1], L - 0.9, H - 0.45, 0.06, ry, DOOR, FT);
+      for (let u = -L / 2 + 0.6; u <= L / 2 - 0.6; u += 0.26) { const b = P(u, sd * (W / 2 + 0.1)); F.rod(b[0], y + 0.1, b[1], b[0], y + H - 0.25, b[1], 0.025, STEEL, FT); }
+      [0.25, H - 0.3].forEach(function (h) { const a = P(-L / 2 + 0.5, sd * (W / 2 + 0.1)), b = P(L / 2 - 0.5, sd * (W / 2 + 0.1)); F.beam(a[0], y + h, a[1], b[0], y + h, b[1], 0.08, 0.08, STEEL, FT); });
+    }
+    return y + H;
+  }
+  const CONT = [0x6b5446, 0x55605a, 0x6a5a40, 0x4c5662, 0x5e4a4a];
+  function market(F, K) {
+    const c = F.pick(STONE), bas = F.pick(BASALT), porph = F.pick(PORPH), bc = shade(c, -0.12);
+    if (F.variant === 0) {
+      /* -------- the compound (Hook's container compounds): containers ranged round a square two high at the back and the
+         sides, their pens barred inward; a Vothic gate in the front row; the auction block in the middle under a purple
+         canopy; the overseers' walk on the back stack behind a cable rail, a stair up to it */
+      const S = 12.2;
+      F.box(0, 0, 0, 2 * S + 2.4, 0.08, 2 * S + 2.4, 0, shade(bas, 0.15), FB);
+      for (let i = 0; i < 4; i++) { const u = -S + 3.05 + i * 6.1;
+        [0, 2.6].forEach(function (y, l) {
+          container(F, K, u, -S, y, 0, CONT[(i + l) % CONT.length], { pen: l === 0 ? 1 : 0 });
+          container(F, K, -S, u, y, Math.PI / 2, CONT[(i + l + 2) % CONT.length], { pen: l === 0 ? -1 : 0 });
+          container(F, K, S, u, y, Math.PI / 2, CONT[(i + l + 3) % CONT.length], { pen: l === 0 ? 1 : 0 }); });
+        if (i !== 1 && i !== 2) container(F, K, u, S, 0, 0, CONT[(i + 1) % CONT.length], { pen: -1 }); }
+      /* the gate: two capped pylons, a girder lintel, the gold diamond, purple hangings */
+      [-1, 1].forEach(function (k) { K.pylon(k * 3.4, S, 0, 0.55, 4.6, shade(c, -0.06)); F.box(k * 3.4, 1.4, S + 0.62, 0.9, 2.6, 0.05, 0, porph, FC); });
+      F.beam(-3.9, 4.4, S, 3.9, 4.4, S, 0.5, 0.4, STEEL, FT);
+      K.dia({ x: 0, z: S, w: 6, d: 0.4 }, 0, 0, 5.3, 0.7, 0.02, GOLD, 'paint', 0.1);
+      F.box(0, 4.65, S, 1.8, 0.3, 0.3, 0, STEEL, FT);
+      /* the block: two basalt steps and a stone top, four girder posts, a purple canopy, the auctioneer's desk and his diamond */
+      F.box(0, 0, 0, 6.4, 0.45, 6.4, 0, bas, FB); F.box(0, 0.45, 0, 4.8, 0.45, 4.8, 0, bc, FS); F.box(0, 0.9, 0, 3.6, 0.15, 3.6, 0, c, FS);
+      K.flight(0, 4.8, 0, 3.2, 0, 0.9, 1.6, shade(c, -0.1));
+      [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(function (p) { F.box(p[0] * 1.6, 1.05, p[1] * 1.6, 0.2, 2.6, 0.2, 0, STEEL, FT); F.cone(p[0] * 1.6, 3.65, p[1] * 1.6, 0.16, 0.35, 0, BRONZE, FZ); });
+      F.box(0, 3.65, 0, 3.8, 0.08, 3.8, 0, porph, FC);
+      F.box(0, 1.05, -1.2, 1.4, 1.0, 0.6, 0, TIMBER, FW); F.box(0, 2.05, -1.2, 1.5, 0.06, 0.7, 0, shade(TIMBER, 0.1), FW);
+      K.dia({ x: 0, z: -1.6, w: 0.3, d: 0.1 }, 0, 0, 3.0, 0.4, 0, BRONZE, FZ);
+      /* the overseers' walk on the back stack, its rail, the stair up */
+      K.rail(-S + 0.4, -S + 1.4, S - 0.4, -S + 1.4, 5.2);
+      K.flight(S - 3.0, -S + 6.6, S - 3.0, -S + 1.6, 0, 5.2, 1.2, shade(c, -0.08));
+      [-6, 6].forEach(function (x) { F.cyl(x, 0, 4, 0.12, 2.6, 0, TIMBER, FW); F.cyl(x, 2.55, 4, 0.18, 0.3, 0, GLOW, 'glow'); });
+    } else {
+      /* -------- the market lane: two rows of container pens two high facing a basalt-paved lane, the walks on top behind cable
+         rails; at the head the block under a carapace of hull plates on girder posts; a Vothic arch at the lane's mouth */
+      const LZ = 13.4;
+      F.box(0, 0, 0, 7.6, 0.08, 2 * LZ + 4, 0, shade(bas, 0.1), FB);
+      for (let i = 0; i < 3; i++) { const z = -LZ + 6.1 + i * 6.1 + 2.0;
+        [0, 2.6].forEach(function (y, l) {
+          container(F, K, -5.0, z, y, Math.PI / 2, CONT[(i + l) % CONT.length], { pen: l === 0 ? 1 : 0 });
+          container(F, K, 5.0, z, y, Math.PI / 2, CONT[(i + l + 2) % CONT.length], { pen: l === 0 ? -1 : 0 }); }); }
+      [-1, 1].forEach(function (k) { K.rail(k * 3.9, -LZ + 3.1, k * 3.9, LZ - 0.4, 5.2); });
+      K.flight(-7.6, LZ - 1.0, -7.6, LZ - 6.2, 0, 5.2, 1.1, shade(c, -0.08));
+      /* the block and its shell canopy */
+      const bz = -LZ + 0.8;
+      F.box(0, 0, bz, 5.6, 0.5, 4.4, 0, bas, FB); F.box(0, 0.5, bz, 4.2, 0.4, 3.2, 0, c, FS);
+      K.flight(0, bz + 4.2, 0, bz + 2.2, 0, 0.9, 1.8, shade(c, -0.1));
+      [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(function (p) { F.box(p[0] * 2.3, 0.5, bz + p[1] * 1.7, 0.24, 3.4, 0.24, 0, STEEL, FT); });
+      F.box(0, 3.9, bz, 5.0, 0.35, 3.8, 0, bc, FS);
+      K.carapace(0, bz, 4.25, 4.8, 3.6, 1.6, { n: 2, col: F.pick(VERD) });
+      [-1.6, 1.6].forEach(function (x) { F.box(x, 1.6, bz + 1.95, 0.9, 2.2, 0.05, 0, porph, FC); });
+      /* the arch at the lane's mouth */
+      [-1, 1].forEach(function (k) { K.pylon(k * 3.0, LZ + 1.2, 0, 0.5, 4.4, shade(c, -0.06)); });
+      F.beam(-3.5, 4.2, LZ + 1.2, 3.5, 4.2, LZ + 1.2, 0.5, 0.4, STEEL, FT);
+      F.box(0, 4.4, LZ + 1.2, 6.4, 1.2, 0.4, 0, c, FS);
+      K.dia({ x: 0, z: LZ + 1.2, w: 6.4, d: 0.4 }, 0, 0, 5.0, 0.55, 0.02, GOLD, 'paint', 0.1);
+      [-2, 2].forEach(function (x) { F.cyl(x, 0, LZ - 2, 0.12, 2.5, 0, TIMBER, FW); F.cyl(x, 2.45, LZ - 2, 0.18, 0.3, 0, GLOW, 'glow'); });
+    }
+  }
+
+  /* ================================================================ arena (the owner, 2026-11-12: "build an arena") */
+  function arena(F, K) {
+    const c = F.pick(STONE), bas = F.pick(BASALT), porph = F.pick(PORPH), pan = F.pick(PANEL), bc = shade(c, -0.12), sail = F.pick(SAIL);
+    if (F.variant === 0) {
+      /* -------- the round arena: a sand floor inside a podium wall faced in Ancient panels with barred pit gates; tiers of
+         stone seats; a battered basalt drum round them with a porphyry band; twelve girder masts with bronze caps carrying
+         shade sails on cable to an inner ring; two Vothic gates; the royal box under a tank-head dome */
+      const R0 = 9.0, NT = 6, TD = 1.0, TH = 0.55, R1 = R0 + 0.6 + NT * TD, RO = R1 + 0.8, N = 36, HW = 6.6;
+      F.cyl(0, 0, 0, R0, 0.12, 0, shade(0xb8a27a, -0.05), FD);
+      const seg = function (r, y, h, dep, col, fam, skip) { for (let i = 0; i < N; i++) { if (skip && skip(i)) continue; const a = (i + 0.5) / N * TAU, w = 2 * r * Math.tan(Math.PI / N) + 0.06;
+        F.box(Math.sin(a) * r, y, Math.cos(a) * r, w, h, dep, a, col, fam); } };
+      const gate = function (i) { return i === 0 || i === N / 2; };
+      /* the podium wall: stone, faced with panel courses (two rows), the pit gates barred */
+      seg(R0 + 0.3, 0, 1.6, 0.6, bc, FS);
+      for (let i = 0; i < N; i++) { const a = (i + 0.5) / N * TAU, w = 2 * (R0 - 0.02) * Math.tan(Math.PI / N);
+        const pit = i % 9 === 4;
+        [0.1, 0.85].forEach(function (y) { if (pit) return; F.box(Math.sin(a) * (R0 - 0.02), y, Math.cos(a) * (R0 - 0.02), w - 0.06, 0.7, 0.06, a, shade(pan, (i % 2 ? -0.04 : 0)), FP); });
+        if (pit) { F.box(Math.sin(a) * (R0 + 0.05), 0.1, Math.cos(a) * (R0 + 0.05), w - 0.2, 1.4, 0.08, a, DOOR, FT);
+          for (let k = -3; k <= 3; k++) { const b = a + k * 0.022; F.rod(Math.sin(b) * (R0 - 0.06), 0.1, Math.cos(b) * (R0 - 0.06), Math.sin(b) * (R0 - 0.06), 1.5, Math.cos(b) * (R0 - 0.06), 0.03, STEEL, FT); } } }
+      seg(R0 + 0.3, 1.6, 0.14, 0.8, BRONZE, FZ);
+      /* the tiers */
+      for (let k = 0; k < NT; k++) seg(R0 + 0.6 + (k + 0.5) * TD, 0, 1.6 + (k + 1) * TH, TD + 0.02, k % 2 ? c : shade(c, 0.04), FS, gate);
+      /* the drum: battered basalt, a porphyry band of panels, slits; the gates */
+      seg(RO, 0, HW, 1.4, bas, FB, gate);
+      seg(RO + 0.72, HW - 1.4, 0.9, 0.06, porph, FP, gate);
+      seg(RO, HW, 0.25, 1.6, bc, FS, gate);
+      for (let i = 2; i < N; i += 4) { if (gate(i)) continue; const a = (i + 0.5) / N * TAU; F.box(Math.sin(a) * (RO + 0.7), 2.0, Math.cos(a) * (RO + 0.7), 0.42, 1.6, 0.05, a, GLASSC, 'glass'); }
+      [0, Math.PI].forEach(function (a) { const s = Math.sin(a), co = Math.cos(a), px = function (u, r) { return [s * r + co * u, co * r - s * u]; };
+        [-1, 1].forEach(function (k) { const p = px(k * 2.2, RO + 0.6); K.pylon(p[0], p[1], 0, 0.6, HW + 0.8, shade(c, -0.06)); });
+        const a0 = px(-2.6, RO + 0.6), a1 = px(2.6, RO + 0.6); F.beam(a0[0], 4.6, a0[1], a1[0], 4.6, a1[1], 0.55, 0.45, STEEL, FT);
+        const m = px(0, RO + 0.9); F.beam(m[0] - co * 0.42, 5.3 - 0.42, m[1] + s * 0.42, m[0] + co * 0.42, 5.3 + 0.42, m[1] - s * 0.42, 0.84, 0.08, GOLD, 'paint');
+        const f = px(0, R0 + 0.6); F.box(f[0], 0, f[1], 3.4, 0.1, 2 * (RO - R0), a, shade(0xb8a27a, -0.1), FD); });
+      /* the masts, the inner ring, the sails (sloped strips: F.beam is rotation-safe) */
+      const RM = RO + 0.2, YM = 11.5, RI = R0 - 0.5, YI = 8.8, M = 12;
+      for (let i = 0; i < M; i++) { const a = (i + 0.25) / M * TAU, x = Math.sin(a) * RM, z = Math.cos(a) * RM;
+        F.box(x, HW + 0.25, z, 0.3, YM - HW - 0.25, 0.3, a, STEEL, FT); F.cone(x, YM, z, 0.24, 0.6, 0, BRONZE, FZ);
+        const xi = Math.sin(a) * RI, zi = Math.cos(a) * RI;
+        F.rod(x, YM - 0.2, z, xi, YI, zi, 0.025, CABLE, FT);
+        if (i % 2 === 0) { const b = (i + 0.75) / M * TAU; F.beam(Math.sin(b) * (RM - 0.4), YM - 0.6, Math.cos(b) * (RM - 0.4), Math.sin(b) * (RI + 0.4), YI + 0.15, Math.cos(b) * (RI + 0.4), 0.04, 4.6, i % 4 ? sail : porph, FC); } }
+      for (let i = 0; i < 24; i++) { const a0 = i / 24 * TAU, a1 = (i + 1) / 24 * TAU; F.rod(Math.sin(a0) * RI, YI, Math.cos(a0) * RI, Math.sin(a1) * RI, YI, Math.cos(a1) * RI, 0.06, BRONZE, FZ); }
+      /* the royal box: on the east, over the top tier, four girder posts, a drum and a tank-head dome, purple hangings */
+      const bx = R1 - 1.2, by = 1.6 + NT * TH;
+      F.box(bx, by, 0, 3.0, 0.3, 4.2, 0, bc, FS);
+      [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(function (p) { F.box(bx + p[0] * 1.3, by + 0.3, p[1] * 1.9, 0.2, 2.6, 0.2, 0, STEEL, FT); });
+      F.box(bx, by + 2.9, 0, 3.2, 0.3, 4.4, 0, bc, FS);
+      K.tankDome(bx, 0, by + 3.2, 1.6, 1.3, pan, { ribs: 8, gold: true, fin: 0.6 });
+      [-1.2, 1.2].forEach(function (z) { F.box(bx - 1.32, by + 1.0, z, 0.05, 1.9, 0.9, 0, porph, FC); });
+    } else {
+      /* -------- the fighting pit: a sunken square floor of sand walled in Ancient panels with barred gates, stands of
+         containers stacked in steps on four sides with timber benches and cable rails, a girder gantry over the pit with a
+         hanging cage, the master's canopy with the gold diamond */
+      const P = 5.5, WH = 2.5;   /* the pit's floor at the ground, its wall standing round it, the stands rising behind */
+      F.box(0, 0, 0, 2 * P, 0.1, 2 * P, 0, shade(0xb8a27a, -0.05), FD);
+      [0, 1, 2, 3].forEach(function (s) { const B = { x: 0, z: 0, w: 2 * P, d: 2 * P }; const W = 2 * P;
+        K.fb(B, s, 0, 0, W + 0.4, WH, 0.4, 0.2, bc, FS);
+        K.plates({ x: 0, z: 0, w: W, d: W }, [1, 0, 3, 2][s], 0.1, WH - 0.15, { pw: 1.1, ph: 0.78, skip: function (u, y) { return Math.abs(u) < 0.8 && y < 2.0; } });
+        const g = K.at(B, [1, 0, 3, 2][s], 0, -0.02); for (let k = -3; k <= 3; k++) F.rod(g[0] + (s < 2 ? k * 0.2 : 0), 0.1, g[1] + (s < 2 ? 0 : k * 0.2), g[0] + (s < 2 ? k * 0.2 : 0), 2.0, g[1] + (s < 2 ? 0 : k * 0.2), 0.03, STEEL, FT); });
+      /* the stands: two steps of containers on each side, benches on each, cable rails at the front */
+      [[0, 1, 0], [0, -1, 0], [1, 0, Math.PI / 2], [-1, 0, Math.PI / 2]].forEach(function (q, si) {
+        [0, 1].forEach(function (k) { const r = P + 1.6 + k * 2.5, y = k * 2.6;
+          [-1, 0, 1].forEach(function (j) { const along = j * 6.1; const x = q[0] ? q[0] * r : along, z = q[1] ? q[1] * r : along;
+            if (Math.abs(along) > 6 && k === 0 && si > 1) return;
+            container(F, K, x, z, 0, q[2], CONT[(si + j + k + 3) % CONT.length]); if (k === 1) container(F, K, x, z, 2.6, q[2], CONT[(si + j + 2) % CONT.length]);
+            const yb = (k + 1) * 2.6; const bxp = q[0] ? q[0] * (r - 0.6) : along, bzp = q[1] ? q[1] * (r - 0.6) : along;
+            F.box(bxp, yb, bzp, q[0] ? 0.5 : 5.6, 0.45, q[0] ? 5.6 : 0.5, 0, TIMBER, FW); }); });
+        const r0 = P + 0.35; K.rail(q[0] ? q[0] * r0 : -P, q[1] ? q[1] * r0 : -P, q[0] ? q[0] * r0 : P, q[1] ? q[1] * r0 : P, WH); });
+      /* the gantry and its cage */
+      [-1, 1].forEach(function (k) { F.box(k * (P + 0.6), WH, 0, 0.3, 5.4, 0.3, 0, STEEL, FT); F.cone(k * (P + 0.6), 7.9, 0, 0.24, 0.5, 0, BRONZE, FZ); });
+      F.beam(-P - 0.8, 7.6, 0, P + 0.8, 7.6, 0, 0.45, 0.35, STEEL, FT);
+      F.rod(1.4, 7.4, 0, 1.4, 4.8, 0, 0.02, CABLE, FT);
+      F.cyl(1.4, 2.6, 0, 0.75, 0.12, 0, STEEL, FT); F.cyl(1.4, 4.66, 0, 0.75, 0.12, 0, STEEL, FT);
+      for (let i = 0; i < 12; i++) { const a = i / 12 * TAU; F.rod(1.4 + Math.sin(a) * 0.72, 2.7, Math.cos(a) * 0.72, 1.4 + Math.sin(a) * 0.72, 4.7, Math.cos(a) * 0.72, 0.025, STEEL, FT); }
+      /* the master's canopy on the north stand */
+      const mz = -(P + 1.6 + 2.5), my = 5.2;   /* on the top row of the north stand */
+      [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(function (p) { F.box(p[0] * 2.0, my, mz + p[1] * 0.9, 0.18, 2.6, 0.18, 0, STEEL, FT); });
+      F.box(0, my + 2.6, mz, 4.6, 0.12, 2.4, 0, porph, FC);
+      K.dia({ x: 0, z: mz, w: 4.6, d: 2.4 }, 0, 0, my + 3.3, 0.5, 0, GOLD, 'paint', 0.08);
+      F.box(0, my + 2.72, mz - 1.2, 0.2, 1.4, 0.2, 0, STEEL, FT);
+    }
+  }
+
   /* ================================================================ the entries */
   const E = [
     ['voth_scrap_house_poor', 'Scrap Poor House', 'housing', ['poor', 'warren', 'shore'], [0, 0.3], 3, poor,
@@ -586,10 +746,14 @@
     ['voth_scrap_shrine', 'Scrap Sun Shrine', 'religious', ['temple', 'common'], [0.3, 0.9], 2, shrine,
       'A stepped Sun shrine faced in panel courses, a reclaimed Ancient dish set up as the sun\'s disc in gold; a wayside girder pylon shrine.'],
     ['voth_scrap_watch', 'Scrap Watch and Gate', 'military', ['wall', 'gate', 'harbour', 'fortress'], [0.3, 0.8], 2, watch,
-      'An Ordinator watchtower faced in panel courses above the stone, girder buttresses, a lantern room of Ancient glass; a canton gate with the gold diamond over leaves of Ancient panel.']
+      'An Ordinator watchtower faced in panel courses above the stone, girder buttresses, a lantern room of Ancient glass; a canton gate with the gold diamond over leaves of Ancient panel.'],
+    ['voth_scrap_market', 'Scrap Slave Market', 'civic', ['market', 'harbour'], [0.2, 0.8], 2, market,
+      'The slave market in the container compounds (Hook): Ancient containers ranged round a square, their pens barred inward, the auction block under a purple canopy, a gate under the gold diamond; or a lane of container pens to a block under a hull-plate shell.'],
+    ['voth_scrap_arena', 'Scrap Arena', 'civic', ['canton', 'common'], [0.3, 1], 2, arena,
+      'A round arena: a sand floor in a podium wall faced in Ancient panels with barred pit gates, stone tiers, a basalt drum with a porphyry band, girder masts carrying shade sails on cable, a royal box under a tank-head dome; or a fighting pit ringed by container stands under a girder gantry and its cage.']
   ];
   /* measured sizes per variant (shoot.py --audit), including stairs, canopies, yards and props */
-  const DIMS = {"voth_scrap_house_poor":[{w:8.1,d:5.7,h:5.4},{w:6.6,d:5.4,h:4.2},{w:11.0,d:5.3,h:5.9}],"voth_scrap_house":[{w:11.6,d:10.7,h:15.6},{w:10.2,d:12.2,h:10.0},{w:9.7,d:7.3,h:10.2}],"voth_scrap_manor":[{w:15.4,d:16.4,h:13.0},{w:15.7,d:14.6,h:15.2}],"voth_scrap_shop":[{w:7.8,d:9.6,h:6.5},{w:6.6,d:12.1,h:8.7}],"voth_scrap_tavern":[{w:10.5,d:12.3,h:9.9}],"voth_scrap_warehouse":[{w:20.8,d:10.6,h:9.5}],"voth_scrap_tomb":[{w:5.4,d:9.7,h:7.0},{w:6.0,d:6.0,h:7.1}],"voth_scrap_shrine":[{w:9.2,d:10.9,h:8.6},{w:3.0,d:3.0,h:5.8}],"voth_scrap_watch":[{w:11.7,d:7.0,h:17.3},{w:11.5,d:4.0,h:10.5}]};
+  const DIMS = {voth_scrap_market:[{w:27.1,d:26.9,h:6.3},{w:14.4,d:30.8,h:6.3}],voth_scrap_arena:[{w:34.5,d:35.2,h:13},{w:21.7,d:21.7,h:9.3}],"voth_scrap_house_poor":[{w:8.1,d:5.7,h:5.4},{w:6.6,d:5.4,h:4.2},{w:11.0,d:5.3,h:5.9}],"voth_scrap_house":[{w:11.6,d:10.7,h:15.6},{w:10.2,d:12.2,h:10.0},{w:9.7,d:7.3,h:10.2}],"voth_scrap_manor":[{w:15.4,d:16.4,h:13.0},{w:15.7,d:14.6,h:15.2}],"voth_scrap_shop":[{w:7.8,d:9.6,h:6.5},{w:6.6,d:12.1,h:8.7}],"voth_scrap_tavern":[{w:10.5,d:12.3,h:9.9}],"voth_scrap_warehouse":[{w:20.8,d:10.6,h:9.5}],"voth_scrap_tomb":[{w:5.4,d:9.7,h:7.0},{w:6.0,d:6.0,h:7.1}],"voth_scrap_shrine":[{w:9.2,d:10.9,h:8.6},{w:3.0,d:3.0,h:5.8}],"voth_scrap_watch":[{w:11.7,d:7.0,h:17.3},{w:11.5,d:4.0,h:10.5}]};
   E.forEach(function (e) {
     const V = DIMS[e[0]], mx = function (k) { return Math.max.apply(null, V.map(function (q) { return q[k]; })); };
     ASSET({

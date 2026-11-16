@@ -11,6 +11,8 @@
   "vsSteel": {"lib": "metal.iron.pitted", "scale": [1.0, 1.0], "tint": {"keep": 0.0, "mean": 0.55, "contrast": 1.2}, "roughLift": 0.3, "specular": 0.2, "mapOnly": true},
   "vsBronze": {"lib": "metal.bronze.cast", "scale": [0.8, 0.8], "tint": {"keep": 0.0, "mean": 0.55, "contrast": 1.2}, "roughLift": 0.3, "specular": 0.2, "mapOnly": true},
   "vsWood": {"lib": "wood.weathered_brown_planks", "scale": [1.6, 1.6], "tint": {"keep": 0.0, "mean": 0.55, "contrast": 1.2}, "roughLift": 0.3, "specular": 0.2, "mapOnly": true},
-  "vsCloth": {"lib": "cloth.canvas", "scale": [1.5, 1.5], "tint": {"keep": 0.0, "mean": 0.55, "contrast": 1.2}, "roughLift": 0.3, "specular": 0.2, "mapOnly": true}
+  "vsCloth": {"lib": "cloth.canvas", "scale": [1.5, 1.5], "tint": {"keep": 0.0, "mean": 0.55, "contrast": 1.2}, "roughLift": 0.3, "specular": 0.2, "mapOnly": true},
+  "vsCont": {"lib": "metal.container", "scale": [2.4, 2.4], "tint": {"keep": 0.0, "mean": 0.55, "contrast": 1.25}, "roughLift": 0.3, "specular": 0.2, "mapOnly": true},
+  "vsSand": {"lib": "ground.park_sand", "scale": [3.0, 3.0], "tint": {"keep": 0.0, "mean": 0.55, "contrast": 1.3}, "roughLift": 0.3, "specular": 0.2, "mapOnly": true}
  }
 }
