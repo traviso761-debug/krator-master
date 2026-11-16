@@ -72,6 +72,11 @@ const QC_IX=(function(){const S={rooms:[],built:0,pieces:0,fails:[],byRoom:[],mi
   /* the caravanserai's court (44 m on its 0.6 m plinth) and the flight to its gate; each gate market's court (on 0.5 m) */
   for(const c of QC_EXTRA.filter(p=>p.kind==='caravanserai')){const cy=qcD(c.o.y,0),N=Math.max(2,Math.round(.6/.17)),a=loc(c.x,c.z,0,22.5+N*.34,c.ry),b=loc(c.x,c.z,0,22.2,c.ry);
    rect(c.x,c.z,c.ry,44,44,cy+.6,'caravanserai.court');flight([a[0],a[1],terrainH(a[0],a[1])],[b[0],b[1],cy+.6],5,'caravanserai.gate');}
+  /* the terrace stairs before each gate's lower side (90r, kits/qiblai qb_terrace_stair): each landing a floor, each flight a
+     strip, in the stair's own layout (qnStairPlan) */
+  for(const st of QC_EXTRA.filter(p=>p.kind==='stair')){const sy=qcD(st.o.y,0),w=st.o.w,P=(z)=>loc(st.x,st.z,0,z,st.ry);
+   for(const s of qnStairPlan(st.o.rise).segs){if(s.k==='land'){const z0=s.z0?s.z0:-.8;rect(...P((z0+s.z1)/2),st.ry,w,s.z1-z0+.02,sy+s.y,st.id+'.land');continue;}   /* the top landing reaches 0.8 m back into the arch, over the passage floor's inset */
+    const a=P(s.z0),b=P(s.z1);flight([a[0],a[1],sy+s.y0],[b[0],b[1],sy+s.y1],w,st.id+'.flight');}}
   for(const m of QC_PLACE.filter(p=>p.kind==='market'))rect(m.x,m.z,m.ry,44,m.key==='qb_gate_market_half'?32:44,qcD(m.o.y,0)+.5,'market:'+m.id+'.court');
   /* the great wheel house (20 m square on 1.4 m, open on its four sides, a flight up the middle of each): its floor, the flights,
      the wheel and the four corner piers as blocks; each lot's wheel house (10 x 10 m on 0.8 m, open at the front): its floor and
@@ -126,6 +131,11 @@ const QC_IX=(function(){const S={rooms:[],built:0,pieces:0,fails:[],byRoom:[],mi
    const Rr=KW.reach([[s[0],terrainH(s[0],s[1]),s[1]]],{ground:terrainH,box:[m.x-r,m.x+r,m.z-r,m.z+r]}),rooms=S.rooms.filter(R=>R.host===m);
    const miss=rooms.filter(R=>!mine(Rr,fl(R))).map(R=>R.name);if(!mine(Rr,'monastery:'+m.id+'.court'))miss.unshift('the court');
    out.push({at:m.id,what:'the street to '+(rooms.map(R=>R.name).join(', ')||'the court'),ok:!miss.length,miss});}
+  /* a city gate both ways (2026-11-16): its passage reached from the city side and from the foot of its terrace stair */
+  for(const R of S.rooms.filter(R=>R.key==='qb_ix_passage'&&R.host&&R.host.kind==='gate')){const g=R.host,st=QC_EXTRA.find(p=>p.kind==='stair'&&p.gate===g),D=g.o.v===1?8:14,miss=[];
+   for(const [side,z] of[['the city side',-(D/2+2.4)],['the foot of its stair',st?D/2+.3+qnStairPlan(st.o.rise).len+2:D/2+2.4]]){const s=loc(g.x,g.z,0,z,g.ry),r=Math.abs(z)+12;
+    const Rr=KW.reach([[s[0],terrainH(s[0],s[1]),s[1]]],{ground:terrainH,box:[g.x-r,g.x+r,g.z-r,g.z+r]});if(!mine(Rr,fl(R)))miss.push('from '+side);}
+   out.push({at:R.name+' both ways',what:'from the city side and from the foot of its stair',ok:!miss.length,miss});}
   for(const R of S.rooms.filter(R=>!R.host||R.host.kind!=='monastery')){const gd=e=>{const ox=e.at[0]+e.n[0]*2.4,oz=e.at[1]+e.n[1]*2.4,fb=KW.floorBelow(ox,oz,e.y+.2,.6);return Math.abs(Math.max(terrainH(ox,oz),fb?fb[0]:-1e9)-e.y);};
    /* from the side whose ground is nearest the floor: a terrace gate's lower side has no stair yet (qb_terrace_stair) */
    const E=(R.entries.length?R.entries:R.via?R.via.entries:[]).slice().sort((a,b)=>gd(a)-gd(b))[0];if(!E){out.push({at:R.name,what:'no drawn door found',ok:false,miss:[R.name]});continue;}

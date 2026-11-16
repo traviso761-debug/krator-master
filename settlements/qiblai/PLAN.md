@@ -85,6 +85,9 @@ and `qiblai` in core/tags' vocabulary (`TODO.md`, the ride-along) are not prereq
   to each; the treasury's strong room (the eight gilt images, the coin chests, the scripture boxes); the wheel houses' insides
   (a hanging, two murals, a rug, butter lamps) and the great wheel's floor; the manors and merchants' houses entered too. 109
   great rooms and 1,073 lot interiors (52 types), every one walked into by the verify.
+- **The terrace stairs** (the owner, 2026-11-16: "make gates go both ways"; Q7a's `qb_terrace_stair`): before every city gate's
+  lower side a stair down to the ground outside (flights of 3 m, 3 m landings, ashlar side walls, banner posts at the foot);
+  the verify walks each gate from the city side and from its stair's foot.
 
 ## 1. What the city build is
 

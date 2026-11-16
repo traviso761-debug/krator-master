@@ -14,6 +14,13 @@ for(const W of QC_S.walls){const outer=W.kind==='outer',v=outer?0:1;
   QC_EXTRA.push({key:'qb_wall',x:mx,z:mz,ry:Math.atan2(nx,nz),o:{v,len:L,y:W.yIn==null?qcLevelAt(mx,mz):W.yIn},kind:'wall',retain:[W.yOut,W.yIn,W.thick+1.2,L],id:W.id+':'+mx.toFixed(0)+','+mz.toFixed(0),h:10});}
  for(const g of W.gates)QC_EXTRA.push({key:'qb_wall_gate',x:g.x,z:g.z,ry:g.ry,o:{v,y:g.yIn==null?qcLevelAt(g.x,g.z):g.yIn},kind:'gate',retain:[g.yOut,g.yIn,outer?16:9,outer?26:16],id:g.id,h:26});
  for(const t of W.towers){if(t.kind==='gate')continue;QC_EXTRA.push({key:'qb_wall_corner',x:t.x,z:t.z,ry:0,o:{v,y:W.yIn==null?qcLevelAt(t.x,t.z):W.yIn},kind:'tower',retain:[W.yOut,W.yIn,t.size+1,t.size+1],id:t.id,h:16});}}
+// ---------------------------------------------------------------- the terrace stairs (the owner, 2026-11-16: "make gates go both ways")
+// each gate's lower side: a qb_terrace_stair from its sill down to the ground outside (an inner ring's terrace below, the
+// country under the outer wall), out from the gate block's face along the avenue; its rise read where its foot lands
+for(const g of QC_EXTRA.filter(p=>p.kind==='gate')){const inner=g.o.v===1,D=inner?8:14,w=inner?6:8,gy=qcD(g.o.y,0),f0=D/2+.3;let rise=2;
+ for(let k=0;k<3;k++){const L=qnStairPlan(rise).len,e=loc(g.x,g.z,0,f0+L+1,g.ry);rise=Math.max(.2,gy-terrainH(e[0],e[1]));}
+ if(rise<.3)continue;const s=loc(g.x,g.z,0,f0,g.ry);
+ QC_EXTRA.push({key:'qb_terrace_stair',x:s[0],z:s[1],ry:g.ry,o:{v:0,rise,w,y:gy},kind:'stair',gate:g,id:g.id+':stair',h:4});}
 // ---------------------------------------------------------------- the kora: arcades along its inner side, a chorten at every crossing
 const QC_KORA=QC_S.ways.find(w=>w.kind==='kora');
 if(QC_KORA){const P=QC_KORA.pts,n=P.length,y=QC_KORA.level==null?qcLevelAt(P[0][0],P[0][1]):QC_KORA.level;

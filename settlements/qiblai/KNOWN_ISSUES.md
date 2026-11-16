@@ -40,11 +40,10 @@
   coffers, the temple rug, the beaten gold; today the library's wash, lacquer, wool rug and hammered gold stand in.
 - [ ] **The river is a ribbon.** Nahr ash-Shalalat is a flat water plane in a cut channel; its cataracts as core/water flow, and
   the ground from the open world's cut (`cut_site.py`), are still to do (PLAN.md Q7b). The country is a gentle plane.
-- [ ] **The inner gates sit on the upper terrace** with an ashlar block under them; the avenue's climb through each gate is the
-  ground's slope, not a stair (`qb_terrace_stair`, PLAN.md Q7a, is not built yet).
 - [ ] **Every building has its interior now (2026-11-16), with these limits:** the shrines' chapels are seen through their window,
-  not walked into (2.2 by 1.8 m); the chortens and the kora's arcades are solid or open, with nothing inside. Twelve city gates
-  (the inner rings' 6 m and 4 m terraces, the outer wall's drop to the country) have no stair down on their lower side
-  (`qb_terrace_stair`, above): their passages and guard rooms are walked into from the city side only. The wheel houses, the
+  not walked into (2.2 by 1.8 m); the chortens and the kora's arcades are solid or open, with nothing inside. Every city gate goes both ways
+  (2026-11-16, the owner: "make gates go both ways"): a terrace stair (`qb_terrace_stair`) runs down its lower side, 2 m to 6 m
+  at the inner rings and 7 to 35 m from the outer wall to the country (the outer stairs are long: the 35 m one runs about 107 m, landings every
+  3 m of rise), out along the avenue; they stand on solid ashlar, not fitted to anything already there. The wheel houses, the
   great wheel and the monasteries' and markets' courts are floors to the walker; the rest of the open ground is the terrain.
 - [ ] **Life (Q7e), the open world (Q7f), the Godot export and the gallery (Q7g)** are not started.

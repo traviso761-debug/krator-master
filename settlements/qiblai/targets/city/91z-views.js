@@ -47,6 +47,9 @@ const VIEWS=(function(){const V={},S=QC_B.z1,E=QC_B.x1,L=QC_LM,L0=QC_LM;
    const R=Tr.plan.rooms.filter(r=>r.level===0).sort((a,b)=>b.area-a.area)[0],P=Lr.pose,cx=R.poly.reduce((a,q)=>a+q[0],0)/R.poly.length,cz=R.poly.reduce((a,q)=>a+q[1],0)/R.poly.length;
    const far=R.poly.slice().sort((a,b)=>Math.hypot(b[0]-cx,b[1]-cz)-Math.hypot(a[0]-cx,a[1]-cz))[0],e=loc(P.x,P.z,cx-(far[0]-cx)*.4,cz-(far[1]-cz)*.4,P.ry),g=loc(P.x,P.z,far[0],far[1],P.ry),yy=P.y+R.y+1.6;
    V[nm]=[e[0],yy,e[1],g[0],yy-.4,g[1]];}}
+ // the outer wall's highest gate stair, from the country below its foot, up to the gate
+ const stg=QC_EXTRA.filter(p=>p.kind==='stair').sort((a,b)=>b.o.rise-a.o.rise)[0];
+ if(stg){const L=qnStairPlan(stg.o.rise).len,e=loc(stg.x,stg.z,9,L+22,stg.ry),g=loc(stg.x,stg.z,0,0,stg.ry);V['The outer gate stair']=[e[0],terrainH(e[0],e[1])+3,e[1],g[0],qcD(stg.o.y,0)+4,g[1]];}
  // a wheel house nearest the Temple Mountain, from its open front: the wheel, the hangings, the lamps
  const wh=QC_PLACE.filter(p=>p.key==='qb_wheel_house').sort((a,b)=>Math.hypot(a.x-L0.x,a.z-L0.z)-Math.hypot(b.x-L0.x,b.z-L0.z))[0];
  if(wh){const y=qcD(wh.o.y,0),e=loc(wh.x,wh.z,2.2,5.2,wh.ry),g=loc(wh.x,wh.z,-1.5,-4.8,wh.ry);V['Inside a wheel house']=[e[0],y+.8+1.6,e[1],g[0],y+.8+1.8,g[1]];}

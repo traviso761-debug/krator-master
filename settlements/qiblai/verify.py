@@ -15,7 +15,7 @@ invariants and views are Xanadu's, and settlements/xanadu/verify.py runs it (on 
                         (IX.audit) and textured
   walk-in-rooms         a walker from the street (core/walk's reach, the rooms' doors opened) gets through each monastery's gate
                         to its court, gate hall and assembly hall, up the Rainbow Temple's terraces to its sanctum, and into
-                        each other great room
+                        each other great room; every city gate both ways (from the city side and from the foot of its stair)
   walk-in               the front doors (the owner, 2026-11-16: "unlock the front doors so I can walk in"): for a house of each of
                         the 6 commonest built types, its drawn door shut blocks the doorway, open clears it, and a walker from the
                         street reaches every floor and stair of it (core/walk's reach over 90u's walk records)
