@@ -6,7 +6,8 @@
 // Erewhon's hour stays its own (ERSKY, the hour slider in 93-er-ui.js). TICKS is handed over (ticks:TICKS): its one entry, 69-mat-salvage.js's fire flicker, reads NIGHT, defined just below.
 var NIGHT=false;   /* what the salvage fire flicker (69-mat-salvage.js) reads: the city page's KratorSky night (dayF<0.05, 81-sky.js); the kit pages have no night */
 const XANADU_HOST=KHOST.take({
- build:window.CITY?'erewhon':'xanadu',title:TITLE,
+ build:window.CITY?(window.CITY_BUILD||'erewhon'):'xanadu',title:TITLE,   /* CITY_BUILD: a city target's own name (settlements/qiblai: 'qiblai') */
+ walk:typeof KWALK!=='undefined'?KWALK:null,   /* a page that loads core/walk (settlements/qiblai): the walker stands on its floors, its walls stop it */
  hint:'I hovers the inspector, a click inspects, P marks, M the map, F walks at eye height',
  ticks:TICKS,scene,camera,renderer,ground:terrainH,clear:1.2,minR:2,maxR:3000,views:VIEWS,
  inspect:(hit,hits,rec)=>{if(rec)return null;const o=hit.object,p=hit.point;

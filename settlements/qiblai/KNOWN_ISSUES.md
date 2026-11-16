@@ -23,13 +23,49 @@
   another closed the gap on one side of a symmetric room; a required piece with no fit re-furnishes the room up to 51 times (minutes
   in a 1,000 m2 hall). The city therefore takes the default grid, caps the candidates (`perType` 3) and the passes (2, 4 backtracks),
   keeps a metre between fixtures, and furnishes the sanctum as an antechamber (its shrine is the altar). To report to kits/interiors.
+- [ ] **The lots' interiors are guessed from the drawing** (`targets/city/90u-qc-lot-interiors.js`, kits/qiblai `89q5s`): the
+  shell is the biggest storey stack (or ground block) a builder raised from the ground, with the stacks raised on it as its upper
+  storeys (at most four); the stair (or, in the smallest houses, a ladder) is the planner's, not the drawing's. Storeys on
+  terraces set back from the main block (`qnTerraces`) keep no interior. The street door is the drawn one (2026-11-16) on every
+  lot: a door record up to 1.3 m in front of the wall (the manor's iwan) or, for the Xanadu merchant's konak, which draws its
+  way in as an arch with two plain timber leaves ajar (no door record), the arch's place (`QB_IX_ARCH`).
+- [ ] **Walking in is through solid bodies made to look hollow** (2026-11-16): the kit's buildings are solid, so a street doorway
+  shows its room through a depth-only pane (`QB_IX_PORTAL`: the room drawn first, at renderOrder -2, the pane at -1, the body
+  after). Something drawn after the body and behind the pane (a citizen in the doorway, a leaf swung inward) is hidden there;
+  the door leaves are drawn early for that reason. The walker collides only with the interiors' walls, the doors and the
+  monasteries' and the temple's floors: the rest of the city is still walked through, as before.
+- [ ] **A plan whose rooms miss a required piece is planned again** (up to three seeds, 90u): with the street door where the
+  builder drew it, a bedroom can come out too tight for its chest; no type misses one today (41 types, 2026-11-16).
 - [ ] **The rooms' fancy surfaces are owed** (core/materials/PROMPTS-NEEDED.md section 43): the painted murals, the mandala ceiling
   coffers, the temple rug, the beaten gold; today the library's wash, lacquer, wool rug and hammered gold stand in.
 - [ ] **The river is a ribbon.** Nahr ash-Shalalat is a flat water plane in a cut channel; its cataracts as core/water flow, and
   the ground from the open world's cut (`cut_site.py`), are still to do (PLAN.md Q7b). The country is a gentle plane.
-- [ ] **The inner gates sit on the upper terrace** with an ashlar block under them; the avenue's climb through each gate is the
-  ground's slope, not a stair (`qb_terrace_stair`, PLAN.md Q7a, is not built yet).
-- [ ] **The page names its build `erewhon`** in core/host and core/tags' registry when `window.CITY` is set (Xanadu's
-  `99-start.js`, `91t-xanadu-tags.js`); the city pre-makes `KTAGS.page` as `qiblai`, but the host's label stays Erewhon's until
-  Xanadu's page takes a name from its target.
+- [ ] **Every building has its interior now (2026-11-16), with these limits:** the shrines' chapels are seen through their window,
+  not walked into (2.2 by 1.8 m); the chortens and the kora's arcades are solid or open, with nothing inside. Every city gate goes both ways
+  (2026-11-16, the owner: "make gates go both ways"): a terrace stair (`qb_terrace_stair`) runs down its lower side, 2 m to 6 m
+  at the inner rings and 7 to 35 m from the outer wall to the country (the outer stairs are long: the 35 m one runs about 107 m, landings every
+  3 m of rise), out along the avenue; they stand on solid ashlar, not fitted to anything already there. The wheel houses, the
+  great wheel and the monasteries' and markets' courts are floors to the walker; the rest of the open ground is the terrain.
+- [ ] **The oilfield and the mission are drawn by Verge's YKIT bundle** (gen/69y-ykit-bundle.js, made by Verge's own build
+  function; 2026-11-16): the Locus builders' small catalog props (lanterns, jars, the pieces Verge's furniture glue places
+  through core/furnish, in the yuni, abyss and post-apocalyptic cultures the page's catalog bundle does not carry) are left
+  out (`furnishAt`, `FURNISH` answer null in the bundle). Their interiors (2026-11-16) are the interiors kit's own sets
+  (sets/locus.js, sets/yuni-town.js) for 30 buildings, plus a room each for the mission's school and bathhouse (no set item);
+  the bell tower, the gatehouse, the tanks, racks and pumpjacks hold none; a few middle stilt houses' kitchens find no hearth
+  that fits (the verify allows 8 rooms short). The night glow (YKIT.glow) is not baked. The pumpjacks nod (Locus's 76-locus-anim.js, in the bundle as YKIT.anim, since the second
+  pass). The page's size: the Qiblai pack is written beside the page (kit.json `packSide`, `xanadu.tex.qiblai.js`, 5.2 MB),
+  so the page is 10.3 MB of its 16 MB cap; the artifact takes that file too.
+- [ ] **The town's electric light** (90v; the owner, relayed 2026-11-16: "Qiblai will be electrified along all major avenues and
+  in buildings except in poor areas ... just enough to use the cut of oil they get from Yuni"): the Prismarchy's generator
+  house by the south road feeds a pole line up the south gate's stair and along the four major avenues (a lamp on every pole,
+  one hung across the street at every other, the wire strung through each gate's arch), and along the kora's outer side; the
+  lots' rooms with a wealth of 0.5 or more and every great room have ceiling bulbs (the poor's houses and the monks' quarters
+  none). One pool of eight point lights follows the eye (the count fixed, so nothing recompiles): the room bulbs within 30 m,
+  day and night (a room's own counts nearest: the indoor glow, warm over 9 m), and by night the street lamps (warm, 24 m;
+  `?hour=21` opens the city by night); the rest stay bright bulbs. The lights pass through walls (no shadows). How the wire reaches each avenue from the feed is not drawn (each
+  avenue's run starts at its outer end). In Godot (godot/tests/qiblai/lamps_test.gd; the spike's qiblai case) the street
+  lamps and the room bulbs of the eleven lit houses the export places come through as krator-lamps, lit at run time by the
+  same pool (krator/lamp_pool.gd, KratorLampPool: eight lights to the nearest lit, by the Atmos clock's hours); the wires (a
+  line set) do not come through, a white sky piece of the page's lands near the region's camera, and a room's inner walls
+  were not seen in a render from inside (export gaps).
 - [ ] **Life (Q7e), the open world (Q7f), the Godot export and the gallery (Q7g)** are not started.

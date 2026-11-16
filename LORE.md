@@ -511,7 +511,28 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
   - **Qiblai** (Kubla's city) is its holy city, under the **Prismarchy**, the council of the eight abbots of its great
     monasteries. Each abbot is a **Prismarch**, and each monastery has its own colour (crimson, saffron, gold, green,
     turquoise, blue, violet, white). The great temple flies a banner of each colour turned toward its monastery, so it is
-    also called the **Rainbow Temple** [the owner, 2026-11-11].
+    also called the **Rainbow Temple** [the owner, 2026-11-11]. The saffron monastery is the **History Monks'**, the Order
+    of Longsong's, flying the Order's banner, and the Order takes an eighth of the council's income [the owner, 2026-11-16].
+    The green monastery is the **Order of Viridian Thought**, the tea Order: its house in Qiblai is its seat on the council,
+    its head monastery a tea estate on the scarp's mist slopes (scale model px 962,1562; 813 m, ~400 people, ~40 t of tea a
+    year in the spring flush, sent to Qiblai by road, about five days) [the owner, 2026-11-16]. The blue monastery is the
+    **Order of the Azure Dream**, whose head monastery is **Grēṭ-Āil**, the monastery isle in the middle of Erewhon's lake
+    (px 816.5,1501.5, ~600 people) [the owner, 2026-11-16]. Each Order keeps its spoke in Qiblai as its town house on the
+    council. The crimson monastery is the **Order of the Flashing Eye**. The white monastery is the **Order of the White
+    Lily**, known for its knowledge of medicine and healing; unlike the other great Orders, its complex in the city is its
+    head house, and doubles as the city's hospital [the owner, 2026-11-16].
+  - **Grēṭ-Āil, the Azure Dream's head monastery**, on the long isle's south shore facing Erehwon across the lake, in a
+    cove at scale-model px 846,1508.7 [the owner, 2026-11-16; `settlements/azure-dream/PLAN.md`].
+    - **The fishermonks** fish the lake from dugouts, by night with lamps, without qualm.
+    - **The Hall of Dreaming** holds 256 cots in eight turnings. Anyone who has fasted and bathed may sleep there, the
+      women on one side and the men on the other.
+    - **The rite.** The sleepers drink honey, milk and blue lotus. The Hall's prayer wheels stop at night: the Order's
+      heresy, argued on the council.
+    - **The Order of the White Lily** sends the sick who are not mending to sleep there seven nights.
+    - **The Station's passes** open the Hall's shutters.
+    - **The isle's people**: 900 in all, 300 in the monastery and 600 in three fishing villages (West End, North Shore,
+      East End).
+    - *Proposed* (the plan's): the Order holds that the Song was dreamed, broke off, and comes back in dreams.
   - **Theodiga.** *Proposed:* Theodiga, the arcology the Xanadui come from, is the dome on earth; it is to be redesigned
     with a dome or domes.
   - **Distinct from the History Monks,** who keep the same poem as an English text with its author's name, and say
