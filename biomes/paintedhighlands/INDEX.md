@@ -34,7 +34,7 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `50-biome-painted-species.js` | 7 | palettes (sRGB hex; the colour maths is the core (15); the species (20); textures and materials (the procedural map is th (35); the items (53) |
 | `60-biome-painted-place.js` | 6 |  |
 | `70-biome-painted.js` | 5 |  |
-| `84-host-ground.js` | 12 |  |
+| `84-host-ground.js` | 13 |  |
 | `85-host-far.js` | 5 |  |
 | `86-host-stacks.js` | 3 |  |
 | `88-host-place.js` | 2 |  |

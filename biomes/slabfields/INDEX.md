@@ -9,7 +9,7 @@ Built output (never open it; edit `src/` and rebuild): `dist/slabfields.html`
 Build: `cd biomes/slabfields && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
 
-From `core/terrain/` (shared; see `core/README.md`): `35-core-strata.js`, `37-core-stacks.js`, `38-core-relief.js`, `43-core-ground.js`, `44-core-farfield.js`, `45-core-horizon.js`
+From `core/terrain/` (shared; see `core/README.md`): `35-core-strata.js`, `37-core-stacks.js`, `38-core-relief.js`, `38d-core-slab.js`, `43-core-ground.js`, `44-core-farfield.js`, `45-core-horizon.js`
 
 From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
 
@@ -28,13 +28,13 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `00-head.html` | 1 |  |
 | `40-biome-slab-sites.js` | 2 |  |
 | `41-biome-slab-strata.js` | 1 |  |
-| `45-host-stage.js` | 14 | the land (34); the climate fields (the field contract's units:  (109); the host binding (141) |
-| `50-biome-slab-species.js` | 5 | palettes (sRGB hex; the colour maths is the core (16); the species (20); textures and materials (a card's procedural map  (36); the items (52) |
+| `45-host-stage.js` | 16 | the land (34); the climate fields (the field contract's units:  (122); the host binding (154) |
+| `50-biome-slab-species.js` | 6 | palettes (sRGB hex; the colour maths is the core (16); the species (20); textures and materials (a card's procedural map  (36); the items (52) |
 | `60-biome-slab-place.js` | 4 |  |
 | `70-biome-slab.js` | <1 |  |
-| `84-host-ground.js` | 8 |  |
+| `84-host-ground.js` | 9 |  |
 | `85-host-far.js` | 5 |  |
-| `86-host-blocks.js` | 4 |  |
+| `86-host-blocks.js` | 5 |  |
 | `88-host-place.js` | 1 |  |
 | `89-host-sky.js` | 2 |  |
 | `89a-host-atmos.js` | 3 |  |
