@@ -47,6 +47,27 @@ terrain splat texture and the placement input; (3) the minimap drawn from export
 
 - ~~**Reroute the Ostrukh Riba south into Lake Ostrukh.**~~ **Done in scale model 5.1 edit 4** (`tools/scale-model/edit_514.py`, 2026-11-10, re-run on the merged model 2026-11-11): a travertine sill at 2,050 m closes the flagship maar's north breach, and the river runs 262 km south into Lake Ostrukh (1,850 m), 0.9 m³/s of the model's runoff. Reed, Nazar and Mungo's plans were corrected with 5.1 edit 3 (`biomes/loom-chasms`, `biomes/godshearth`).
 
+## With the native-crop rule *(the owner, 2026-11-12; `openworld/TRADE-SCOPE.md` section 2.5)*
+
+- **Rework the isle demo's crops.** Under the native-crop rule cacao is the Vale's, so the Ring Isles can no longer grow
+  it (indigo, annatto and tobacco stay: the isles are in their homes). Change all of it to a crop native to the isles
+  (clove, coffee, kava, sugar cane) or to cacao bought in:
+  - Nephtos's cacao plantings (`settlements/isle-demo/src/15-isle-tune.js:663`);
+  - **Kautoa's own cacao plantation and export** (`settlements/isle-demo/PLAN.md:515`, `:990`; `README.md:174`) and the
+    advantage table;
+  - the cacao in the traders' buy lists (`15-isle-tune.js:335`, `:346`). The stocks proof and `test-sim.js` move on
+  purpose and are re-baselined. Do it when the rule lands in `kits/crops`, not before.
+
+## Lacquerware for Xanadu and the Eternians *(the owner, 2026-11-12; `openworld/TRADE-SCOPE.md` section 7.6)*
+
+- **Both make lacquerware; nothing builds it yet.** It needs:
+  - a lacquer source in `kits/crops`: a lacquer tree native to the Vale and to the NW lowlands, or one each; the abyss's
+    `abyss-lac` is an insect lac and stays the abyss's;
+  - the lacquer workshop in `kits/xanadu` and in the Eternian kit;
+  - the goods row and the recipe (sap to lacquer to lacquerware) in the sim's culture tables (`core/simulation`).
+
+  `biomes/twins/PLAN.md:90` already has Xanadui lacquerware as caravan cargo.
+
 ## Ride along with the next all-builds rebuild
 
 **Taken by the second integration pass** (`claude/integration-2`, 2026-11-10 and 11; HANDOFF-REBUILD.md): the `dalab` sockets pack,
