@@ -327,8 +327,13 @@ commit 12cb1eb1a):
 - they are drawn on the kit's page as a target or a `--kit` folder;
 - **the dress** is `QSPOKE[3]`'s wall, trim and band.
 
-**Seeds 34200-34399** (*proposed*): the block after the Azure Dream's 34000-34199. Qiblai owns 33000-33999. This plan tells
-the Qiblai kit's session.
+**Seeds 34200-34399 and the prefix `qb_vt_`: settled with the Qiblai kit's session (2026-11-16).** It is the block after the
+Azure Dream's 34000-34199. Qiblai owns 33000-33999, and no source reseeds anywhere in 34200-34399.
+- **The base branch.** Every reused def exists on the kit's branch, `claude/zealous-allen-0cd44d` (f5a10f8a4, unpushed).
+  `qb_terrace_stair` is only there, so V3 builds from that branch, or after it merges.
+- **The echo in the city.** The green monastery in Qiblai already has tea beds in its court: `qnTeaTouches`
+  (`kits/qiblai/src/89q3-qb-sacred.js` on that branch, drawn under `SP.tea`). The head house's cloister court takes the
+  same touches, so the city house and the estate read as one Order.
 
 **Tags.** Every record has `culture:'qiblai'`, which is parked in `TODO.md`'s ride-along. Religious: the hall, the gate, the
 chortens, the wheel houses, the hermitages. Industry: the factory, the drying, curing and still houses, the grange.
@@ -432,7 +437,7 @@ where rice can be paddy) could feed part of it.
 | **V0** | this plan and `SURVEY.md`; the owner's answers to section 13 | this session, the owner | |
 | **V1** | the map: the bench landform `lf_viridian_bench` (the house's bench, about 350 x 400 m at ~800-845 m, centre px 962,1562); pins for the dry garden's grange, the hermitages and the valley village if wanted; the road's line up the hollow | the scale-model session's queue | the pins' ground; core/world's stamp at 1:1 |
 | **V2** | the sim (section 11): herbs, the herb work, the White Lily's house, the people | the Xanadu sim session | its economy test and the new check |
-| **V3** | the new `qb_vt_*` records in `settlements/viridian/src/` on the Qiblai kit's helpers and `QSPOKE[3]`'s dress, seeds 34200-34399, on a sheet beside the green monastery | this settlement | the footprint test; the sheet's `verify.py --assert` |
+| **V3** | the new `qb_vt_*` records in `settlements/viridian/src/` on the Qiblai kit's helpers and `QSPOKE[3]`'s dress, seeds 34200-34399, on a sheet beside the green monastery, the cloister court with `qnTeaTouches`; built from `claude/zealous-allen-0cd44d` or after it merges | this settlement | the footprint test; the sheet's `verify.py --assert` |
 | **V4** | the terraces (`KRELIEF.terraces` per garden), the tea hedges and the herb beds placed from `kits/crops` by `KRAND`; a node test that every hedge stands on a tread, every bed's crop fits its ground (`CROPS.at`), and the same seeds give the same beds | this settlement | `node settlements/viridian/tests/test-estate.js` (`tools/ktest.js`, each check with its negative) |
 | **V5** | the interiors: the factory, the still-room, the dispensary, the assembly hall; the new catalog pieces | this settlement; the catalog's owner | `core/walk` reach in node; the page's `--interiors` assert; `kits/catalog/verify.py --assert` |
 | **V6** | the page, `settlements/viridian`, started from Longsong: the hollow on core/world's ground, the bench, the terraces, the stream and rills on `core/water`, the mist on `core/atmos`, the plucking day on `core/sched`, people | this settlement | `verify.py --assert` on a GPU lane; `check_core_use` |
