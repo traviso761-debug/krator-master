@@ -25,7 +25,8 @@ T.goods={grain:{unit:'kg',crops:['vale-rice','emmer','basin-amaranth']},fish:{un
  salt:{unit:'kg'},tea:{unit:'kg'},cacao:{unit:'kg'},saffron:{unit:'kg'},opium:{unit:'kg',crop:'sky-poppy'},silk:{unit:'kg'},brocade:{unit:'kg'},
  timber:{unit:'kg'},charcoal:{unit:'kg'},copper:{unit:'kg'},goldore:{unit:'kg'},gold:{unit:'kg'},goldwork:{unit:'piece'},wheels:{unit:'wheel'},
  coin:{unit:'dinar'},opal:{unit:'kg'},scrap:{unit:'kg'},iron:{unit:'kg'},tools:{unit:'kg'},arms:{unit:'piece'},pearls:{unit:'kg'},wine:{unit:'kg'},oil:{unit:'kg'},
- sulfur:{unit:'kg'},pottery:{unit:'kg'},mats:{unit:'kg'},wax:{unit:'kg'},rarities:{unit:'piece'},power:{unit:'kWh'}};
+ sulfur:{unit:'kg'},pottery:{unit:'kg'},mats:{unit:'kg'},wax:{unit:'kg'},rarities:{unit:'piece'},power:{unit:'kWh'},
+ latex:{unit:'kg',crop:'sky-poppy'}};   /* latex: the poppy's raw latex, dried to opium at Kirstabal's latex house (K1) */
 /* the lake's and the capital's households also buy the market's wares (X1: what the market boats carry between the towns): the pots of Pāṭari, the mats of Lōṭas, the honey of Hāibh */
 T.diet={city:{grain:150*D,fish:15*D,fruit:12*D,salt:6*D,tea:1.5*D,cacao:.4*D,tools:.4*D,pottery:2*D,mats:1*D,honey:.3*D},
  town:{grain:160*D,fish:8*D,salt:6*D,tea:1*D,tools:.4*D},
@@ -34,6 +35,7 @@ T.diet={city:{grain:150*D,fish:15*D,fruit:12*D,salt:6*D,tea:1.5*D,cacao:.4*D,too
  court:{grain:140*D,fish:25*D,fruit:25*D,salt:7*D,tea:3*D,cacao:2*D,saffron:.05*D,silk:.4*D,tools:.3*D,arms:.002*D},
  dome:{grain:120*D,fish:30*D,fruit:40*D,salt:7*D,tea:4*D,cacao:6*D,saffron:.3*D,silk:3*D,pearls:.2*D,wine:8*D,oil:6*D,honey:4*D},
  camp:{grain:190*D,salt:7*D,tea:1*D,tools:1.2*D},
+ shore:{grain:125*D,fish:45*D,fruit:8*D,salt:6*D,tea:1*D,tools:.3*D,mats:1*D},   /* the Lower Xanadu Lake's villages: the lake's table without the capital's pots and honey (no Pāṭari or Hāibh on that lake) */
  fort:{grain:180*D,salt:7*D,tea:1*D,tools:.8*D,arms:.05*D}};
 /* the year (core/clock's 365 days; windows [from, to] in year days, 77-sim-6-season.js). The Vale is Cfa at about +25 °C:
    one long grain and rice harvest, tea flushed through spring, the poppy lanced at the end of the dry season, cacao
@@ -48,7 +50,7 @@ T.provinces=[
  {id:'p2',name:'Bhēl (the Vale)',seat:'s4zvgepuru',rural:75000,y:2.2,px:[870,1530],extra:{cacao:180000,saffron:2200,tea:60000,opium:150000,silk:30000,fruit:600000}},
  {id:'p3',name:'Qāṭarāq (the Cataracts)',seat:'skm4jjo2vl',rural:80000,y:1.9,px:[930,1585],extra:{cacao:260000,timber:4000000,charcoal:600000,honey:30000,dairy:400000,fruit:800000}},
  {id:'p4',name:'Gōlḍ-Mārch (the Gold March)',seat:'sxan7r1sln',rural:10000,y:1.1,px:[912,1652],extra:{copper:240000}},
- {id:'p5',name:'Siqārp (the Scarp)',seat:'sl758m2396',rural:25000,y:1.3,px:[992,1606],extra:{tea:200000,cacao:90000,opium:120000,saffron:600}},
+ {id:'p5',name:'Siqārp (the Scarp)',seat:'sl758m2396',rural:25000,y:1.3,px:[992,1606],extra:{tea:200000,cacao:90000,latex:150000,saffron:600}},   /* K1: the poppy's latex (150 t, 120 t of opium dried), to the White Monastery's latex house at Kirstabal (the owner, 2026-11-16) */
  {id:'p6',name:'Ōpal-Bhālī (Opal Valley)',seat:'sjuarjbku0',rural:4000,y:.9,px:[1036,1668],extra:{}},
  {id:'p7',name:'Nōrth-Shor (the North Shore)',seat:'xan.pher',rural:25000,y:1.5,px:[812,1478],extra:{silk:14000,cacao:60000,honey:12000,fruit:300000}},
  {id:'p8',name:'Mārchiz (the Marches)',seat:'s57bkv9741',rural:5000,y:1.2,px:[790,1540],extra:{}}];
@@ -70,6 +72,28 @@ T.lake=[
 T.islands=[['great-isle','Grēṭ-Āil (the monastery isle)',816.5,1501.5,600],['bay-isle','Bē-Āil (the Sultan\'s fishponds)',808.5,1509,300],
  ['west-isle','Wesṭ-Āil (the fishermen\'s isle)',797,1494,400],['east-isle','Lāiṭ-Hāus (the light and the customs)',828,1497,200]]
  .map(([key,name,px,py,people])=>({key,name,px,py,people}));
+/* KIRSTABAL'S LAKE (settlements/kirstabal/PLAN.md section 2a; the owner, 2026-11-16: "it has its own, smaller atitlan-like
+   hinterland", "villages sound fine", "Landing belongs to Scarp province"): the Lower Xanadu Lake's nine villages round its
+   230 km shore, every one in the Scarp (P5) with Kirstabal its hub; ids 'll.' (the capital's lake keeps 'lk.'). The Landing at
+   the outflow is the barges' stop and the portage road's head to Qiblai; Sekriḍ is the Red Monastery's (Qiblai's crimson).
+   Names coined (proposed); people and trades proposed, the survey's shore cells */
+T.lowerLake=[['sekrid','Sekriḍ (the Red Monastery\'s village)',986,1588,800,{}],['phishari','Phisharī (the fishery)',975,1587,1400,{}],
+ ['kako-bagh','Kāko-Bāgh (the cacao garden)',963,1586,1200,{cacao:30000,fruit:120000}],['rid','Rīḍ (the reeds)',948,1589,700,{mats:30000}],
+ ['landing','The Landing (the barges\' stop and the portage road\'s head)',932,1600,600,{}],['timbar','Ṭimbar (timber)',938,1606,700,{timber:600000}],
+ ['opal-mouth','Ōpal-Māuṭh (the Opal River\'s mouth)',955,1607,1200,{}],['rais-teras','Rāis-Ṭeras (the rice terraces)',967,1606,1000,{grain:300000}],
+ ['kattal','Kaṭal (cattle)',979,1605,700,{dairy:60000}]]
+ .map(([key,name,px,py,people,make])=>({key,name,px,py,people,make,prov:'p5',hub:'sl758m2396',diet:'shore',pre:'ll.'}));
+T.lowerRounds=[['round.lower-north','sl758m2396',['sekrid','phishari','kako-bagh','rid','landing'],'ll.'],['round.lower-south','sl758m2396',['kattal','rais-teras','opal-mouth','timbar'],'ll.']];
+/* Kirstabal's ring (the proposal's section 3e; settlements/kirstabal/PLAN.md section 3): three farming villages and a ranch on
+   the floor south of the town, at core/hamlet's census sizes (a village 240 people in 44 households, a ranch 145) */
+T.ksRing=[['ks.ring.mil','Mil (the mill)',987,1605,'farming',240,44],['ks.ring.kanal','Kanāl (the canal)',985,1607,'farming',240,44],
+ ['ks.ring.grenz','Grēnz (the grain)',988,1609,'farming',240,44],['ks.ring.baiyar','Bāiyar (the byre)',984,1610,'ranching',145,26]];
+/* the White Monastery's house at Kirstabal (the owner, 2026-11-16: "The White Monastery (name TBD) runs the latex house", "yes the
+   white and crimson of qiblai", "takes a share and a small fee"): the Scarp's latex comes to it, is dried to opium, and all but
+   its share goes to Kirstabal; the seat pays it a fee a year. The share and the fee's size are proposed */
+T.whiteHouse={share:1/20,fee:{coin:200},crew:100,house:['qb.white.kirstabal','The White Monastery\'s house at Kirstabal (Qiblai\'s white; it runs the latex house)','sl758m2396',992,1602,150]};
+T.portage={km:22,lake:112};   /* the barge road to Qiblai: the lake to the Landing, then the portage road past the cataracts */
+T.lift=240;                   /* the Strongbow lift's minutes, foot to lip */
 T.fishKgPerson=260;   /* a fishing town's catch a year, a head of its people: about a third of them fish (the dugouts) */
 T.lakeTerraces=.6;    /* the share of a lake town's grain its own terraces grow */
 /* X1: a town's fishing ground, a site: half a year's catch in the water, a day's catch back each night, so fishing at the
@@ -176,7 +200,8 @@ T.dues={day:T.clockDay(215),bills:{skm4jjo2vl:{grain:120000,cacao:4000,honey:800
 T.chain={assay:{in:{goldore:30},out:{gold:1},hours:20},goldsmith:{in:{gold:.1},out:{goldwork:1},hours:600},mint:{in:{gold:1},out:{coin:250},hours:12},
  wheel:{in:{copper:4,gold:.02},out:{wheels:1},hours:580},weave:{in:{silk:1.2},out:{brocade:1},hours:110},
  smelt:{in:{scrap:1,charcoal:1},out:{iron:1},hours:2},smith:{in:{iron:1},out:{tools:1},hours:3},
- dynamo:{in:{oil:1},out:{power:3}}};   /* a kg of oil to 3 kWh (a generator's hours set by what it burns, in valley()) */
+ dynamo:{in:{oil:1},out:{power:3}},
+ latex:{in:{latex:1.25},out:{opium:1},hours:2}};   /* K1: the latex house: raw latex dried on racks, balled and sealed (a fifth of its weight lost) */   /* a kg of oil to 3 kWh (a generator's hours set by what it burns, in valley()) */
 T.mine={goldore:6400,copper:0,scrap:120000,opal:180};   /* a year's make: the gold mines' ore (about 210 kg of gold), the salvagers' scrap, Opal Valley's opal */
 T.fifth=.2;
 T.lodeYears=40;    /* X1: the March's copper band's ore in the ground, in years of its make */
@@ -216,7 +241,12 @@ T.valley=function(P,o){o=o||{};const K=o.scale==null?50:o.scale,yr=365,win=w=>{c
   {id:'th.smelter',kind:'smelter',name:'the Salvagers\' smelter (scrap and charcoal to iron)',crew:60,batch:T.chain.smelt}]);
  town('sfgtxw10kr','Strongbow (the Royal Opal Gate)',1001,1596,4000,'town',[
   {id:'sb.terraces',kind:'tea-terraces',name:'the lift town\'s tea and silk terraces',crew:300,out:['tea','silk'],rate:rate(30000,300)}],{parent:'sl758m2396',feeder:'sl758m2396'});
- town('sl758m2396','Kirstabal',989,1600,3000,'town');
+ /* Kirstabal (settlements/kirstabal/PLAN.md, K1): the barge port at the lake's head, the Scarp's seat; its dugouts feed it and
+    Strongbow, its boatyard and serai are stores the sim counts; the seat's chest pays the White Monastery's fee */
+ town('sl758m2396','Kirstabal',989,1600,3000,'town',[
+  {id:'ks.fishing',kind:'fishing',name:'the dugouts at the head of the lake',crew:150,out:['fish'],rate:rate(60000,150),site:T.fishery(60000)},
+  {id:'ks.boatyard',kind:'dockyard',name:'the boatyard and the barge quays',crew:60,out:[],rate:0},
+  {id:'ks.serai',kind:'serai',name:'the caravanserai by the Strongbow road',crew:40,out:[],rate:0}]).start.coin=400;
  town('sxan7r1sln','Strongwall (the Master of Mines\' fort)',912,1640,250,'fort',[
   {id:'sw.assay',kind:'assay-house',name:'the assay house',crew:20,batch:T.chain.assay}]);
  town('xan.pher','Phēr (the north shore\'s fair)',810,1483,6000,'lake',[{id:'ph.fishing',kind:'fishing',name:'the dugouts',crew:600,out:['fish'],rate:rate(6000*T.fishKgPerson*.6,600),site:T.fishery(6000*T.fishKgPerson*.6)}]);
@@ -234,27 +264,28 @@ T.valley=function(P,o){o=o||{};const K=o.scale==null?50:o.scale,yr=365,win=w=>{c
    works:[{id:id+'.store',kind:'fort',name:'the fort\'s store',crew:10,out:[],rate:0}]});bump('s57bkv9741',eatYr('fort',150));
   R.push({id:'road.'+id,from:'s57bkv9741',to:id,minutes:Math.round(Math.hypot(p.x-E.x,p.z-E.z)/1000/25*1440),cap:20000,want:40,goods:{s57bkv9741:['grain','salt','tea','tools','arms']}});});
  /* ---- THE LAKE TOWNS AND ISLANDS: fish and their trade to the hub by share; grain, salt and tools back by want */
- const lakeTown=(L)=>{const p=at(L.px,L.py),fishing=L.key!=='weaver'&&L.key!=='pottery'&&L.key!=='quarry'&&L.key!=='boatyard',works=[],sh={};
+ const lakeTown=(L)=>{const pf=L.pre||'lk.',dk=L.diet||'lake',p=at(L.px,L.py),fishing=L.key!=='weaver'&&L.key!=='pottery'&&L.key!=='quarry'&&L.key!=='boatyard'&&L.key!=='landing',works=[],sh={};
   const crew=crewOf(L.people,400);
-  if(fishing)works.push({id:'lk.'+L.key+'.fishing',kind:'fishing',name:'the dugouts',crew:Math.round(crew*.5),out:['fish'],rate:rate(L.people*T.fishKgPerson*.6,Math.round(crew*.5)),site:T.fishery(L.people*T.fishKgPerson*.6)});
-  else works.push({id:'lk.'+L.key+'.store',kind:'warehouse',name:'the landing',crew:10,out:[],rate:0});
-  Object.keys(L.make).forEach(g=>{if(g==='brocade')return;const c=Math.round(crew*.5);works.push({id:'lk.'+L.key+'.'+g,kind:g+'-works',name:L.name+'\'s '+g,crew:c,out:[g],rate:rate(L.make[g],c,g==='tea'?win('tea-flush'):g==='saffron'?win('saffron'):g==='silk'?win('silk'):g==='cacao'?win('cacao'):null),
+  if(fishing)works.push({id:pf+L.key+'.fishing',kind:'fishing',name:'the dugouts',crew:Math.round(crew*.5),out:['fish'],rate:rate(L.people*T.fishKgPerson*.6,Math.round(crew*.5)),site:T.fishery(L.people*T.fishKgPerson*.6)});
+  else works.push({id:pf+L.key+'.store',kind:'warehouse',name:'the landing',crew:10,out:[],rate:0});
+  Object.keys(L.make).forEach(g=>{if(g==='brocade')return;const c=Math.round(crew*.5);works.push({id:pf+L.key+'.'+g,kind:g+'-works',name:L.name+'\'s '+g,crew:c,out:[g],rate:rate(L.make[g],c,g==='tea'?win('tea-flush'):g==='saffron'?win('saffron'):g==='silk'?win('silk'):g==='cacao'?win('cacao'):null),
    season:g==='tea'?'tea-flush':g==='saffron'?'saffron':g==='silk'?'silk':g==='cacao'?'cacao':undefined});sh[g]=g==='grain'?.5:.85;});
   if(L.key==='weaver')works.unshift({id:'lk.weaver.looms',kind:'weavers',name:'Wībhar\'s looms',crew:300,batch:T.chain.weave});
   if(fishing)sh.fish=.55;
   if(L.key==='alph-head')sh.grain=.6;
-  const id='lk.'+L.key;add({id,name:L.name,faction:'xanadu',parent:L.hub,people:L.people,x:p.x,z:p.z,eats:eats('lake'),keepDays:15,
-   start:{grain:Math.round(eatYr('lake',L.people)*T.startDays/yr),salt:L.people*2.5,tea:L.people*.3,tools:L.people*.2,fish:L.people*5},works});
+  const id=pf+L.key;add({id,name:L.name,faction:'xanadu',parent:L.hub,people:L.people,x:p.x,z:p.z,eats:eats(dk),keepDays:15,
+   start:{grain:Math.round(eatYr(dk,L.people)*T.startDays/yr),salt:L.people*2.5,tea:L.people*.3,tools:L.people*.2,fish:L.people*5},works});
   /* the terraces above every lake town: about three fifths of its own grain (Atitlán's milpa on the slopes); the hub sends the rest */
-  const terr=eatYr('lake',L.people)*T.lakeTerraces,tc=Math.round(crew*.4);
-  works.push({id:'lk.'+L.key+'.terraces',kind:'terraces',name:'the terraces above the shore',crew:tc,out:['grain'],rate:rate(terr,tc,win('harvest')),season:'harvest'});
-  const own=terr+(L.make.grain?L.make.grain*(1-.6):0);bump(L.hub,Math.max(0,eatYr('lake',L.people)-own));
+  const terr=eatYr(dk,L.people)*T.lakeTerraces,tc=Math.round(crew*.4);
+  works.push({id:pf+L.key+'.terraces',kind:'terraces',name:'the terraces above the shore',crew:tc,out:['grain'],rate:rate(terr,tc,win('harvest')),season:'harvest'});
+  const own=terr+(L.make.grain?L.make.grain*(1-.6):0);bump(L.hub,Math.max(0,eatYr(dk,L.people)-own));
   const km=Math.max(3,Math.hypot(p.x-seats[L.hub].x,p.z-seats[L.hub].z)/1000);
-  R.push({id:'lake.'+L.key,from:id,to:L.hub,minutes:Math.round(km/12*60)+60,cap:8000,carriers:Math.max(1,Math.round(L.people/800)),share:{[id]:sh},want:10,
+  R.push({id:(pf==='lk.'?'lake.':'lowerlake.')+L.key,from:id,to:L.hub,minutes:Math.round(km/12*60)+60,cap:8000,carriers:Math.max(1,Math.round(L.people/800)),share:{[id]:sh},want:10,
    goods:{[L.hub]:['grain','salt','tea','tools','fruit'].concat(L.key==='weaver'?['silk']:[])},expect:L.key==='weaver'?{[id]:{silk:6}}:undefined});
   X.push({id,hub:L.hub,km,fishing});};
  T.lake.filter(L=>L.key!=='pher').forEach(lakeTown);
  T.islands.forEach(I=>lakeTown({key:I.key,name:I.name,px:I.px,py:I.py,people:I.people,make:{},prov:'p1',hub:'s57bkv9741'}));
+ T.lowerLake.forEach(lakeTown);   /* K1: Kirstabal's lake, hub Kirstabal (its ids 'll.', its roads 'lowerlake.') */
  /* the hubs: the cross-lake run, Erehwon to Phēr (34 km) */
  R.push({id:'lake.cross',from:'s57bkv9741',to:'xan.pher',minutes:Math.round(34/12*60)+60,cap:20000,carriers:6,want:12,goods:{s57bkv9741:['grain','salt','tea','tools','pottery','mats'],'xan.pher':['fish','silk','cacao','honey','sulfur','fruit']}});
  /* ---- THE RINGS (the open world's plan): Erehwon's and Qiblai's farming villages and ranches, a tithe road each */
@@ -268,14 +299,28 @@ T.valley=function(P,o){o=o||{};const K=o.scale==null?50:o.scale,yr=365,win=w=>{c
     start:{grain:Math.round(eatYr('rural',V.census.pop)*.5),dairy:500,salt:200,tea:30,tools:30},
     works:[{id:id+'.byre',kind:'byre',name:'the byres',crew,herd:{out:['dairy'],rate:.4/24,animals:300},pasture:{id:id+'.pasture',window:'summer-pasture'}}]});
    R.push({id:'tithe.'+id,from:id,to:sid,minutes:240,cap:20000,share:{[id]:{dairy:.6}},goods:{[sid]:['grain','salt','tea','tools']}});}});});
+ /* K1: Kirstabal's ring (T.ksRing): its farming villages and its ranch on the floor south of the town, a tithe road each, as the rings above */
+ T.ksRing.forEach(([id,name,px,py,focus,pop,hh])=>{const sid='sl758m2396',p=at(px,py),crew=Math.round(pop*.45),y=1.3;
+  if(focus==='farming'){const made=hh*T.netKgHH(y),own=eatYr('rural',pop),share=Math.max(0,Math.min(.9,(made-own)*.8/made));
+   add({id,name:name+' (Kirstabal\'s ring)',faction:'xanadu',parent:sid,people:pop,x:p.x,z:p.z,eats:eats('rural'),
+    start:{grain:Math.round(own*T.startDays/yr),salt:200,tea:30,tools:30},works:[{id:id+'.fields',kind:'farmstead',name:'the fields',crew,out:['grain'],rate:rate(made,crew,win('harvest')),season:'harvest'}]});
+   R.push({id:'tithe.'+id,from:id,to:sid,minutes:240,cap:40000,share:{[id]:{grain:share}},goods:{[sid]:['salt','tea','tools']}});bump(sid,-(made-own)*.8);}
+  else{add({id,name:name+' (Kirstabal\'s ring)',faction:'xanadu',parent:sid,people:pop,x:p.x,z:p.z,eats:eats('rural'),
+    start:{grain:Math.round(eatYr('rural',pop)*.5),dairy:300,salt:120,tea:20,tools:20},
+    works:[{id:id+'.byre',kind:'byre',name:'the byres',crew,herd:{out:['dairy'],rate:.4/24,animals:200},pasture:{id:id+'.pasture',window:'summer-pasture'}}]});
+   R.push({id:'tithe.'+id,from:id,to:sid,minutes:240,cap:20000,share:{[id]:{dairy:.6}},goods:{[sid]:['grain','salt','tea','tools']}});}});
  /* ---- THE INTERNAL ROADS (net51's xanadu class and Gemini's barge links; minutes at 25 km a day by road, 60 by barge) */
  const road=(id,a,b,km,mode,goods,o3)=>R.push(Object.assign({id,from:a,to:b,minutes:Math.round(km/(mode==='barge'?60:25)*1440),cap:mode==='barge'?60000:30000,carriers:o3&&o3.carriers!=null?o3.carriers:3,stagger:Math.round(km/25*1440/3),want:o3&&o3.want!=null?o3.want:30,goods},o3&&o3.expect?{expect:o3.expect}:{}));
  road('road.er-qb','s57bkv9741','skm4jjo2vl',321,'road',{s57bkv9741:['salt','iron','tools','arms','wine','pearls','gold'],skm4jjo2vl:['grain','cacao','goldwork','wheels','honey','dairy','timber','charcoal','tea','opium','saffron','silk']},{carriers:6});
  road('road.er-th','s57bkv9741','s4zvgepuru',228,'barge',{s57bkv9741:['salt','tools','arms','charcoal'],s4zvgepuru:['grain','cacao','saffron','tea','opium','silk','iron','fruit']},{carriers:4,expect:{s4zvgepuru:{charcoal:330}}});
  road('road.qb-th','skm4jjo2vl','s4zvgepuru',155,'barge',{skm4jjo2vl:['charcoal','grain','salt'],s4zvgepuru:['iron','tools']},{carriers:3,expect:{s4zvgepuru:{charcoal:330},skm4jjo2vl:{iron:40}}});
  road('road.qb-sw','skm4jjo2vl','sxan7r1sln',83,'road',{skm4jjo2vl:['grain','salt','tea','tools','dairy'],sxan7r1sln:['gold','copper','opal']},{carriers:3,expect:{skm4jjo2vl:{gold:.12,copper:20}}});
- road('road.qb-ks','skm4jjo2vl','sl758m2396',108,'barge',{skm4jjo2vl:['grain','salt','tools'],sl758m2396:['tea','cacao','opium','saffron','silk']},{carriers:3});
- road('road.ks-sb','sl758m2396','sfgtxw10kr',25,'road',{sl758m2396:['grain','salt','tools'],sfgtxw10kr:['tea','silk']},{carriers:2});
+ /* K1: the barges down the lake to the Landing (T.portage.lake km), then the portage road past the cataracts to Qiblai
+    (T.portage.km); the road to Strongbow's foot over the bridge (15 km), then the lift to the lip (T.lift minutes) */
+ road('road.qb-ks','skm4jjo2vl','sl758m2396',T.portage.lake,'barge',{skm4jjo2vl:['grain','salt','tools'],sl758m2396:['tea','cacao','opium','saffron','silk','dairy']},{carriers:3});
+ R[R.length-1].minutes+=Math.round(T.portage.km/25*1440);   /* through the Landing (ll.landing): one road, timed by both legs */
+ road('road.ks-sb','sl758m2396','sfgtxw10kr',15,'road',{sl758m2396:['grain','salt','tools','fish'],sfgtxw10kr:['tea','silk']},{carriers:2});
+ R[R.length-1].minutes+=T.lift;
  road('road.sw-gold','sxan7r1sln','smgxtultfq',50,'road',{sxan7r1sln:['grain','salt','tea','tools']},{carriers:2});
  road('road.sw-opal','sxan7r1sln','sjuarjbku0',260,'road',{sxan7r1sln:['grain','salt','tea','tools']},{carriers:2});
  R.push({id:'mine.gold',from:'smgxtultfq',to:'sxan7r1sln',minutes:Math.round(50/25*1440),cap:20000,carriers:2,share:{smgxtultfq:{goldore:1}},goods:{sxan7r1sln:['grain','salt','tea','tools']}});
@@ -290,11 +335,12 @@ T.valley=function(P,o){o=o||{};const K=o.scale==null?50:o.scale,yr=365,win=w=>{c
  road('road.er-dome','s57bkv9741','xan.dome',1,'road',{s57bkv9741:['grain','fish','fruit','salt','tea','cacao','saffron','silk','pearls','wine','oil','honey']},{carriers:2,want:20});
  /* ---- THE PROVINCES' COUNTRYSIDES: the bulk district of each, tithing grain and its land's goods to its seat */
  const named={};T.lake.forEach(L=>{named[L.prov]=(named[L.prov]||0)+L.people;});T.islands.forEach(I=>{named.p1=(named.p1||0)+I.people;});
+ T.lowerLake.forEach(L=>{named.p5=(named.p5||0)+L.people;});T.ksRing.forEach(r=>{named.p5=(named.p5||0)+r[5];});   /* K1 */
  named.p1=(named.p1||0)+1345+150*3;named.p3=(named.p3||0)+1345;named.p4=(named.p4||0)+950;named.p6=(named.p6||0)+850;named.p7=(named.p7||0)+T.thalaba.people;   /* Phēr is in P7's lake towns: its seat, counted once */
  T.provinces.forEach(Pv=>{const people=Math.max(1000,Pv.rural-(named[Pv.id]||0)),hh=people/T.farm.hh,made=hh*T.farm.farmShare*T.netKgHH(Pv.y),own=eatYr('rural',people);
   const id='prov.'+Pv.id,p=at(Pv.px[0],Pv.px[1]),crew=Math.min(2000,Math.round(people*.45));
   const works=[{id:id+'.fields',kind:'farmstead',name:'the province\'s fields (its villages, in bulk)',crew,out:['grain'],rate:rate(made,crew,win('harvest'),T.scaleBulk),season:'harvest'}],sh={};
-  Object.keys(Pv.extra).forEach(g=>{const c=Math.min(600,Math.round(crew*.3)),w=g==='tea'?'tea-flush':g==='saffron'?'saffron':g==='silk'?'silk':g==='cacao'?'cacao':g==='opium'?'lancing':null;
+  Object.keys(Pv.extra).forEach(g=>{const c=Math.min(600,Math.round(crew*.3)),w=g==='tea'?'tea-flush':g==='saffron'?'saffron':g==='silk'?'silk':g==='cacao'?'cacao':g==='opium'||g==='latex'?'lancing':null;
    works.push(Object.assign({id:id+'.'+g,kind:g+'-works',name:'the province\'s '+g,crew:c,out:[g],rate:rate(Pv.extra[g],c,w?win(w):null,T.scaleBulk),season:w||undefined},g==='copper'?{site:{kind:'lode',grade:'rich',amount:Pv.extra[g]*T.lodeYears}}:{}));sh[g]=g==='timber'?.3:g==='dairy'?.5:.85;});
   add({id,name:Pv.name+': its countryside',faction:'xanadu',parent:Pv.seat,scale:T.scaleBulk,people,x:p.x,z:p.z,eats:eats('rural'),keepDays:30,start:{grain:Math.round(own*T.startDays/yr),salt:people*2,tea:people*.2,tools:people*.15},works});
   const surplus=made-own;Pv._made=made;Pv._own=own;Pv._people=people;Pv._id=id;Pv._sh=sh;Pv._surplus=surplus;});
@@ -358,7 +404,7 @@ T.valley=function(P,o){o=o||{};const K=o.scale==null?50:o.scale,yr=365,win=w=>{c
  ['road.ks-sb','road.qb-ks'].forEach(id=>{const Rd=R.find(r=>r.id===id),down=Rd.from;Rd.goods[down]=Rd.goods[down].filter(g=>g!=='salt');});
  {const Rd=R.find(r=>r.id==='road.er-qb');Rd.goods.s57bkv9741=Rd.goods.s57bkv9741.filter(g=>g!=='salt');}
  /* ---- THE LAKE'S MARKET BOATS (X1: multi-stop rounds) */
- T.rounds.forEach(([id,hub,keys])=>{const stops=[hub].concat(keys.map(k=>'lk.'+k)),pts=stops.map(s=>S.find(q=>q.id===s));
+ T.rounds.concat(T.lowerRounds).forEach(([id,hub,keys,pre])=>{const stops=[hub].concat(keys.map(k=>(pre||'lk.')+k)),pts=stops.map(s=>S.find(q=>q.id===s));
   let km=0;for(let i=0;i<pts.length;i++){const a=pts[i],b=pts[(i+1)%pts.length];km+=Math.hypot(a.x-b.x,a.z-b.z)/1000;}
   /* SIM.trade's round lands a boat's whole load at the next stop, so the wares go round as a relay: every stop holds the
      round's use of the market's wares (half of it), not only its own, and keeps few days back (Atitlán's boats: the pots
@@ -401,6 +447,14 @@ T.valley=function(P,o){o=o||{};const K=o.scale==null?50:o.scale,yr=365,win=w=>{c
  house('yuni')(T.mission);
  /* the Order's monastery, one of the council's eight: an eighth of the Prismarchy's oil where it lands at Qiblai */
  house('order')(T.orderHouse.house);
+ /* K1: the White Monastery's house at Kirstabal runs the latex house (T.whiteHouse; the owner, 2026-11-16): the Scarp's latex
+    comes to it on a road of its own beside the province's tithe, is dried to opium there, and all but the house's share goes to
+    Kirstabal; the house sells its share back into the town by want, as a merchant house does. The fee is a transfer (below) */
+ {const W=T.whiteHouse,hid=W.house[0],Rt=R.find(r=>r.id==='tithe.prov.p5'),sh=Rt&&Rt.share['prov.p5'];
+  house('xanadu')(W.house);S.find(q=>q.id===hid).works.push({id:'ks.latex',kind:'latex-house',name:'the latex house (the White Monastery\'s, in Kirstabal\'s works quarter)',crew:W.crew,batch:T.chain.latex});
+  if(sh&&sh.latex){const k=sh.latex;delete sh.latex;
+   R.push({id:'tithe.prov.p5.latex',from:'prov.p5',to:hid,minutes:Rt.minutes,cap:50000,carriers:2,share:{'prov.p5':{latex:k}},goods:{[hid]:[]}});}
+  R.push({id:'white.opium',from:hid,to:'sl758m2396',minutes:60,cap:20000,carriers:2,share:{[hid]:{opium:1-W.share}},goods:{sl758m2396:[]}});}
  R.find(r=>r.id==='oil.council').cut=[{at:'skm4jjo2vl',to:T.orderHouse.house[0],share:T.orderHouse.share,why:'the Order\'s eighth of the council\'s income'}];
  /* ---- X2: THE RARE DEVISERS: their guild house at Theodiga holds the royal licence in scrap and rare artifacts (the owner,
     2026-11-16): the Salvagers' scrap passes through it to the smelter. Their expeditions take Thalaba's summer road into
@@ -494,6 +548,7 @@ T.valley=function(P,o){o=o||{};const K=o.scale==null?50:o.scale,yr=365,win=w=>{c
  {const g=T.dues.esteem.goods,k=T.orderHouse.share,part=f=>Object.fromEntries(Object.entries(g).map(([n,v])=>[n,v*f]));   /* the Sultan's grants of esteem to the council: the Order's eighth to its monastery */
   tr.push({id:'esteem.qiblai',from:'xan.citadel',to:T.dues.esteem.to,goods:part(1-k),first:T.dues.esteem.day,every:365});
   tr.push({id:'esteem.qiblai.order',from:'xan.citadel',to:T.orderHouse.house[0],goods:part(k),first:T.dues.esteem.day,every:365});}
+ tr.push({id:'fee.white.kirstabal',from:'sl758m2396',to:T.whiteHouse.house[0],goods:T.whiteHouse.fee,first:T.dues.day,every:365});   /* K1: the seat's small fee to the White Monastery for the latex house */
  const V={seed:20261116,scale:K,start:0,calendar:T.calendar,goods:T.goods,
   factions:[{id:'xanadu',name:'The Sultanate of Xanadu'},{id:'gate',name:'The gateways (Iziz, Yuni, the Dasri, Dalab, the Geomancers)'},
    {id:'geomancer',name:'The Geomancers (the drilling guild of Locus)'},{id:'horns',name:'The Brotherhood of the Two Horns (the Twins\' guides and merchant houses)'},

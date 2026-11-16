@@ -202,6 +202,38 @@ const orderCheck=(C,X,Tr)=>{const oil=(C['xan.citadel:oil']||0)*0+Object.keys(C)
  T.ok('the Order\'s monastery at Qiblai: an eighth of the Prismarchy\'s oil and of the Sultan\'s grants of esteem',O.ok,
   'oil to the Order '+t(O.oil)+' of '+t(O.landed)+' landed for the council; esteem '+(O.est.times||0)+'x: '+Object.entries(O.est.sent||{}).map(([g,n])=>g+' '+Math.round(n)).join(', '));
  T.neg('an Order that took a quarter is caught',x=>orderCheck(x,Y.xfer,Y.trade).ok,{'qb.order:oil':O.landed/4},C);}
+// ---- K1 (settlements/kirstabal/PLAN.md; the owner, 2026-11-16): Kirstabal's lake, its ring, the latex house, its roads
+// 23. Kirstabal's lake, a smaller Atitlán: its nine villages fed, their fish and goods landed at Kirstabal, both market-boat
+//     rounds calling at every stop; Kirstabal's ring fed, its farms' grain tithed to the town
+const KS='sl758m2396';
+const lowerCheck=(Bk,Tr)=>{const ll=Object.keys(Bk).filter(s=>/^ll\./.test(s)),ring=Object.keys(Bk).filter(s=>/^ks\.ring\./.test(s));
+ const hungry=ll.concat(ring).filter(s=>(Bk[s].hungry.grain||0)>(Bk[s].eaten.grain||1)*.01),fishers=ll.filter(s=>(Bk[s].exported.fish||0)>0).length;
+ const rounds=XAN_TUNE.lowerRounds.every(([id,hub,keys])=>{const R=Tr[id];return !!R&&R.stops.length===keys.length+1&&Object.keys(R.landed||{}).length>=R.stops.length-1;});
+ const farms=ring.filter(s=>/mil|kanal|grenz/.test(s)).every(s=>(Bk[s].exported.grain||0)>0);
+ return{ok:ll.length===9&&ring.length===4&&!hungry.length&&(Bk[KS].imported.fish||0)>0&&fishers>=7&&rounds&&farms,ll,ring,hungry,fish:Bk[KS].imported.fish||0,fishers,rounds,farms};};
+{const L=lowerCheck(B,Y.trade);
+ T.ok('Kirstabal\'s lake: its nine villages and its ring fed, the villages\' fish landed at Kirstabal, both market-boat rounds calling at every stop, the ring\'s grain tithed to the town',L.ok,
+  L.ll.length+' villages, '+L.ring.length+' in the ring; fish into Kirstabal '+t(L.fish)+' from '+L.fishers+' fishing villages; rounds '+
+  XAN_TUNE.lowerRounds.map(([id])=>id+' '+((Y.trade[id]||{}).voyages||0)+' calls').join(', ')+(L.hungry.length?'; hungry: '+L.hungry.join(', '):''));
+ T.neg('a village on Kirstabal\'s lake that went hungry is caught',Bk=>lowerCheck(Bk,Y.trade).ok,Object.assign({},B,{'ll.rid':Object.assign({},B['ll.rid'],{hungry:{grain:1e6},eaten:{grain:1}})}),B);}
+// 24. the latex house (the owner, 2026-11-16: "opium dried at kirstabal", run by the White Monastery, Qiblai's white, which
+//     "takes a share and a small fee"): the Scarp's latex to the house, never to the town; dried to opium at four fifths of its
+//     weight; all but the house's share to Kirstabal; the fee once a year
+const latexCheck=(Bk,Tr,X)=>{const h=Bk[XAN_TUNE.whiteHouse.house[0]],lat=h.imported.latex||0,op=h.made.opium||0;
+ const sent=Object.values((Tr['white.opium']||{}).tithed||{}).reduce((n,o)=>n+(o.opium||0),0),kept=op>0?1-sent/op:1,fee=X['fee.white.kirstabal']||{};
+ return{ok:lat>50000&&op>lat*.6&&op<=lat/1.25+1&&!(Bk[KS].imported.latex>0)&&Math.abs(kept-XAN_TUNE.whiteHouse.share)<.02&&fee.times===1,lat,op,sent,kept,fee};};
+{const L=latexCheck(B,Y.trade,Y.xfer);
+ T.ok('the latex house: the Scarp\'s latex to the White Monastery\'s house, dried to opium, all but its twentieth to Kirstabal; the seat\'s fee once a year',L.ok,
+  'latex in '+t(L.lat)+', opium dried '+t(L.op)+', to Kirstabal '+t(L.sent)+', the house kept '+(100*L.kept).toFixed(1)+' %; the fee '+(L.fee.times||0)+'x: '+
+  Object.entries(L.fee.sent||{}).map(([g,n])=>g+' '+Math.round(n)+' sent').concat(Object.entries(L.fee.owed||{}).filter(([g,n])=>n>0).map(([g,n])=>g+' '+Math.round(n)+' owed')).join(', '));
+ T.neg('a house that kept a tenth is caught',Tr=>latexCheck(B,Tr,Y.xfer).ok,Object.assign({},Y.trade,{'white.opium':{tithed:{x:{opium:L.op*.9}}}}),Y.trade);}
+// 25. Kirstabal's roads on the ground: the barges to the Landing and the portage road on to Qiblai, the road over the bridge
+//     to Strongbow's foot and the lift to the lip
+const ksRoads=Rs=>{const q=Rs.find(r=>r.id==='road.qb-ks'),s=Rs.find(r=>r.id==='road.ks-sb'),P=XAN_TUNE.portage;
+ return !!q&&!!s&&q.minutes===Math.round(P.lake/60*1440)+Math.round(P.km/25*1440)&&s.minutes===Math.round(15/25*1440)+XAN_TUNE.lift;};
+{T.ok('Kirstabal\'s roads: the barges down the lake to the Landing and the portage road past the cataracts to Qiblai; the bridge road to Strongbow\'s foot and the lift',ksRoads(Y.V.roads),
+  Y.V.roads.filter(r=>r.id==='road.qb-ks'||r.id==='road.ks-sb').map(r=>r.id+' '+(r.minutes/1440).toFixed(2)+' days').join(', '));
+ T.neg('a barge road timed by the lake alone is caught',ksRoads,Y.V.roads.map(r=>r.id==='road.qb-ks'?Object.assign({},r,{minutes:Math.round(XAN_TUNE.portage.lake/60*1440)}):r),Y.V.roads);}
 // the year's books, for the reader
 const line=(s,k)=>Object.entries(B[s][k]||{}).filter(([g,n])=>n>=1).map(([g,n])=>g+' '+(n>=1000?t(n):Math.round(n))).join(', ');
 ['s57bkv9741','xan.citadel','skm4jjo2vl','s4zvgepuru','sxan7r1sln'].forEach(s=>console.log('\n'+s+': made '+line(s,'made')+'\n  imported '+line(s,'imported')+'\n  exported '+line(s,'exported')));
