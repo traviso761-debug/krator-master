@@ -795,7 +795,7 @@ def manifest_for(room):
     items = program(kind if kind != 'library' or 'Map' not in room['name'] else 'library', a, w, d, D)
     if 'Map' in room['name'] and kind == 'library': items.append(('voth_court_map_table', 2))
     if 'Cold' in room['name'] and kind == 'larder': items.append(('voth_common_ice_box', 2))
-    if kind not in ('void', 'gallery_void', 'stair', 'passage', 'cistern', 'pit', 'lantern', 'garden', 'court', 'drill', 'boathouse'):
+    if kind not in ('void', 'gallery_void', 'stair', 'passage', 'cistern', 'pit', 'lantern', 'garden', 'court', 'drill', 'boathouse') and kind not in OPEN_KINDS:
         items += dressing(a, per, D)
     # merge duplicates; a tier 0 zone is drawn as one room where the planner will cut rooms round corridors and
     # courts, so a quarter of its floor is furnished (the census sets the real numbers: 150 household, the garrison)
@@ -809,6 +809,7 @@ def manifest_for(room):
 
 KEYMAP = {}
 EXTRA_PROGRAMS = {}   # another culture's room kinds: kind -> function(a, w, d, D) -> [(key, n)]
+OPEN_KINDS = set()    # opt-in (the House of the Tempest, 2026-11-16): a blueprint's own open-air kinds (a muster court, fields), never dressed
 
 # ------------------------------------------------------------------------------------------------ drawing
 DECOR_FILL = {0: (226, 226, 222), 1: (236, 232, 218), 2: (224, 236, 214), 3: (212, 226, 176), 4: (238, 220, 150)}
