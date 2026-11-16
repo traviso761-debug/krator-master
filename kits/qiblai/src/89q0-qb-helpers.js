@@ -34,15 +34,21 @@ const QRING={
 // Hall of the Decree, is the Prismarchy; each Prismarch's throne wears his monastery's colour. The great temple flies a banner
 // of each colour toward its monastery, so it is also called the Rainbow Temple (qnSpokeBanner). Spoke i stands on the bearing
 // i x 45 degrees, clockwise from north (qnSpokeDir: local -z is north). Earth-pigment tints over the textured wash.
+// The saffron monastery is the History Monks', the Order of Longsong's (the owner, 2026-11-16: "one of the monasteries of
+// Qiblai (and therefore of the Prismatic Council) is a History Monk monastery, and uses the Order's banner and color. as such
+// the order gets 1/8 of the council income"; saffron, the Order's colour, LORE.md): its trim and band in the Order's blue
+// (settlements/longsong 62-ls-arch.js LSP.blue), its buildings with Longsong's touches (qnOrderTouches, 89q3), its banner
+// on the Rainbow Temple with the Order's device (qnSpokeBanner). `order` marks it.
+const QN_ORDER_BLUE=0x2e5a9c,QN_ORDER_BLUE2=0x1f3f78;
 const QSPOKE=[
- {name:'Crimson',wall:0xa8302a,trim:XPAL.saffron,band:0x5a1c1c},
- {name:'Saffron',wall:0xd8862a,trim:XPAL.white,band:0x7a3a1a},
+ {name:'Crimson',wall:0xa8302a,trim:XPAL.saffron,band:0x5a1c1c,house:'the Order of the Flashing Eye'},   /* the owner, 2026-11-16 */
+ {name:'Saffron',wall:0xd8862a,trim:QN_ORDER_BLUE,band:QN_ORDER_BLUE2,order:'the History Monks (the Order of Longsong)'},
  {name:'Gold',wall:0xd4b040,trim:XPAL.red,band:0x6e4a1a},
- {name:'Green',wall:0x3f7a44,trim:XPAL.saffron,band:0x1f3f24},
+ {name:'Green',wall:0x3f7a44,trim:XPAL.saffron,band:0x1f3f24,house:'the Order of Viridian Thought (the tea Order; its head monastery the tea estate on the scarp, px 962,1562)',tea:true},   /* the owner, 2026-11-16: its court grows tea (qnTeaTouches, 89q3) */
  {name:'Turquoise',wall:0x2a9a94,trim:XPAL.white,band:0x1a4a48},
- {name:'Blue',wall:0x2a4a9a,trim:XPAL.gold[0],band:0x1a2a5a},
+ {name:'Blue',wall:0x2a4a9a,trim:XPAL.gold[0],band:0x1a2a5a,house:'the Order of the Azure Dream (its head monastery Gret-Ail, the monastery isle in the lake of Erewhon)'},   /* the owner, 2026-11-16 */
  {name:'Violet',wall:0x6a3a8a,trim:XPAL.saffron,band:0x3a1a4a},
- {name:'White',wall:0xeee8dc,trim:XPAL.red,band:0x6e2a2a},
+ {name:'White',wall:0xeee8dc,trim:XPAL.red,band:0x6e2a2a,house:'the Order of the White Lily (medicine and healing; its house in the city is its head house, and a hospital)',hospital:true},   /* the owner, 2026-11-16: qnLilyTouches (89q3), its ranges the hospital's wards (QB_IX_HOSPITAL, 89q5s) */
 ];
 // spoke i's direction on the ground plan, [dx, dz] (north is -z, east +x), and its yaw (a face's +z toward it)
 const qnSpokeDir=i=>{const b=i*Math.PI/4;return[Math.sin(b),-Math.cos(b)];};
@@ -54,7 +60,9 @@ function qnSpokeBanner(x,y,z,i,h,cw){cw=cw==null?3.2:cw;const ry=qnSpokeYaw(i),g
  vB('vWood',x,y+h-.45,z,cw+.3,.16,.16,ry,xC(xPick(XPAL.dark)));
  const L=h*.58,p=loc(x,z,0,.14,ry);vB('vClothB',p[0],y+h-.55-L,p[1],cw,L,.06,ry,col);
  vB('vClothB',p[0],y+h-.55-L-.4,p[1],cw,.4,.07,ry,xC(QSPOKE[i].band));   /* a dark hem along the foot */
- for(let k=0;k<3;k++){const t=loc(x,z,(k-1)*cw/3,.14,ry);vB('vClothB',t[0],y+h-.55-L-1.6,t[1],cw/3-.15,1.2,.06,ry,col);}}   /* three tails */
+ for(let k=0;k<3;k++){const t=loc(x,z,(k-1)*cw/3,.14,ry);vB('vClothB',t[0],y+h-.55-L-1.6,t[1],cw/3-.15,1.2,.06,ry,col);}   /* three tails */
+ if(QSPOKE[i].order){const q=loc(x,z,0,.19,ry),s=cw*.5;vB('vClothB',q[0],y+h-.55-L*.62,q[1],s+.16,s+.16,.04,ry,xC(XPAL.white));   /* the Order's device: a blue field in a white border */
+  const q2=loc(x,z,0,.22,ry);vB('vClothB',q2[0],y+h-.55-L*.62+.08,q2[1],s,s,.04,ry,xC(QN_ORDER_BLUE));vBall('xGold',q2[0],y+h-.55-L*.62+.08+s/2,q2[1],s*.16,xC(XPAL.gold[0]));}}
 // o.sp a spoke (0-7): a clergy building in the inner ring takes the colour of the monastery whose sector it stands in (the
 // owner, 2026-11-15: "clearly defined areas of each color, and red is not over-represented"; settlements/qiblai sets o.sp by block)
 function qnRingC(ring,o){if(o&&o.sp!=null){const S=QSPOKE[o.sp%8];return{wall:xC(S.wall).multiplyScalar(rr(.95,1.02)),trim:xC(S.trim),band:xC(S.band)};}const R=QRING[ring]||QRING.lay;return{wall:xC(xPick(R.wall)),trim:xC(xPick(R.trim)),band:R.band?xC(xPick(R.band)):null};}
@@ -103,6 +111,7 @@ function qnWins(x,y,z,w,d,ry,hs,k,o){o=o||{};const P=(o.pitch==null?2.6:o.pitch)
   const opt={noVal:!(o.val==='all'||(o.val&&s===0)),valC:o.valC};
   for(const [cnt,len,fz,fx] of faces){for(let i=0;i<cnt;i++){const u=-len/2+len*(i+.5)/cnt;
    if(fz>0&&((s===0&&(o.skip||[]).some(r=>u>r[0]&&u<r[1]))||(o.skipUp||[]).some(r=>u>r[0]&&u<r[1])))continue;
+   if(fz<0&&s===0&&(o.skipBack||[]).some(r=>u>r[0]&&u<r[1]))continue;   /* o.skipBack: the back face's ground storey (a monastery range's court door) */
    const p=fz?loc(x,z,fz*u,fz*(d*f/2-.04),ry):loc(x,z,fx*(w*f/2-.04),fx*u,ry);
    xnTibWin(p[0],sill,p[1],ry+(fz>0?0:fz<0?Math.PI:fx*Math.PI/2),ww,hh,kind,trim,opt);}}
   yy+=hs[s];}}
@@ -126,8 +135,8 @@ function qnTerraces(x,y,z,ry,T,c,o){o=o||{};let yy=y;const out=[];
 // the Tibetan door: a black trapezoid surround, a painted frame and leaf (vnDoor: a real, locked door), a timber lintel
 // on corbels and a pleated valance; (x,z) on the face, ry outward
 function qnDoor(x,y,z,ry,w,h,o){o=o||{};const fr=o.c||xC(XPAL.red),leaf=o.leaf||xC(xPick(XPAL.dark)),blk=xC(XPAL.black),N=xRot(ry,[0,0,1]);
- vnDoor(x,y,z+0,ry,w,h,'xPaint',fr,leaf,o.step);
- for(const s of[-1,1]){const a=xnOn(x,y,z,ry,s*(w/2+.5),.04),b=xnOn(x,y+h+.2,z,ry,s*(w/2+.26),.04);xnMember('xPaint',a,b,.34,.06,N,blk);}
+ vnDoor(x,y,z+0,ry,w,h,'qLacqB',fr,leaf,o.step);   /* the frame and its splayed black members in lacquered wood (the owner, 2026-11-16: "those columns seem textureless") */
+ for(const s of[-1,1]){const a=xnOn(x,y,z,ry,s*(w/2+.5),.04),b=xnOn(x,y+h+.2,z,ry,s*(w/2+.26),.04);xnMember('qLacqB',a,b,.34,.06,N,blk);}
  const lp=loc(x,z,0,.2,ry);vB('vWood',lp[0],y+h+.26,lp[1],w+1.2,.18,.34,ry,xC(xPick(XPAL.timber)));
  xnCorbels(x,y+h+.26,z,ry,w+.6,Math.max(3,Math.round((w+.6)/.45)),xC(xPick(XPAL.timber)),.55);
  if(o.val!==false){const v=loc(x,z,0,.38,ry);kput('xValance',[v[0],y+h,v[1]],qEuler(0,ry,0),[w+1.1,.6,1],o.valC||xC(xPick([XPAL.white,XPAL.saffron,XPAL.red])));}}

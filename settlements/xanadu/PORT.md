@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 296 (45%) | 19 (3%) | 10 (1%) | 66 (10%) | 270 (41%) |
+| KB | 297 (45%) | 19 (3%) | 10 (1%) | 66 (10%) | 270 (41%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -57,6 +57,8 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `targets/erewhon/90b-er-build.js` | 32.9 | [web] | 7 | 0 | 0 | 0 | 2 | 3 | 0 | 0 | 0 | 0 | 0 |  |
 | `targets/erewhon/91z-views.js` | 5.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/erewhon/93-er-ui.js` | 3.0 | [web] | 2 | 2 | 2 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
+| `targets/scrap/89z-rows.js` | 0.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `targets/scrap/91z-views.js` | 0.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/xanadu/89z-rows.js` | 0.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/xanadu/90-xa-still.js` | 2.5 | [draw] | 4 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | the kit's still water: WATER.still records (core/water, data) for every flat xWaterB box and xDiscWater disc, their InstancedMeshes on WATER.stillMaterial |
 | `targets/xanadu/91z-views.js` | 0.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |

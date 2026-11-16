@@ -423,9 +423,10 @@ check('Labyrinth has rich microclimate mosaic (%d classes >= 7: %s)' % (len(lab_
       len(lab_c_codes) >= 7 and 'WH' in lab_c_codes and bool(lab_c_codes & {'BWk', 'BSk'}) and bool(lab_c_codes & {'Csb', 'Cfb'}) and bool(lab_c_codes & {'Dsb', 'Dfb', 'Dsc', 'Dfc'}))
 
 # ---- 12. Xanadu one lake-valley (Erewhon's), Theodiga tall cataract, Small Lake, Oidong eastern cataract, low cataracts to Lizardman lake, Rift relief, & climate detail
-check('Erewhon Lake (851, 1498) is wet at -520 m and Erehwon (800, 1503) is dry at ~ -485 m',
-      bool(whas[1498, 851]) and abs(float(wlev[1498, 851]) - (-520.0)) <= 2.0
-      and not bool(whas[1503, 800]) and -515.0 <= float(E[1503, 800]) <= -450.0)
+# (5.1 edit 7, edit_517.py: the caldera lake round 845,1504, an island in its middle; Erehwon's bench is 841,1517)
+check('Erewhon Lake (841, 1516) is wet at -520 m and Erehwon\'s bench (841, 1517) is dry at ~ -497 m',
+      bool(whas[1516, 841]) and abs(float(wlev[1516, 841]) - (-520.0)) <= 2.0
+      and not bool(whas[1517, 841]) and -515.0 <= float(E[1517, 841]) <= -450.0)
 check('Theodiga (908, 1535) is on dry broken-dam brink at ~ -495 m above Erewhon Lake (-520 m)',
       not bool(whas[1535, 908]) and -515.0 <= float(E[1535, 908]) <= -460.0)
 s_horst_max = float(np.max(E[1538:1564, 795:895]))
@@ -629,8 +630,8 @@ check('the Godthrone walls round Godshearth are dry again (4-6 km band %.0f mm)'
 check('Godshearth keeps its own rain inside the caldera (%.0f mm)' % _rain4[gh_floor].mean(), 700 <= _rain4[gh_floor].mean() <= 950)
 gso4 = next(r for r in D['rivers'] if r['id'] == 'r_gh_spillway')
 check('Āirã Siṭrīm carries about 129 m3/s (%.1f), perennial' % gso4['q_mouth_m3s'], 120 <= gso4['q_mouth_m3s'] <= 135 and gso4['perennial'])
-# ---- 19. 5.1 edit 7 (edit_517.py, 2026-11-11): Erewhon's caldera lake, its walls, volcanoes, islands, the Vale and
-#          the Alph's new head
+# ---- 19. 5.1 edit 7 (edit_517.py, 2026-11-11, re-run 2026-11-16: narrower, in the valley's middle, a long isle in it):
+#          Erewhon's caldera lake, its walls, volcanoes, islands, the Vale and the Alph's new head
 import edit_517 as E517   # noqa: E402
 yy_c, xx_c = np.mgrid[0:E.shape[0], 0:E.shape[1]].astype(float)
 _, _, r_c = E517.lake_frame(xx_c, yy_c)
@@ -638,13 +639,13 @@ lk_full = r_c <= 1.0
 lk = lk_full & whas & (np.abs(np.nan_to_num(wlev, nan=0.0) + 520.0) <= 1.0)
 isl_c = np.zeros(E.shape, bool)
 for _, i_x, i_y, i_rx, i_ry, _ in E517.ISLANDS:
-    isl_c |= np.hypot((xx_c - i_x) / i_rx, (yy_c - i_y) / i_ry) <= 1.0
-check('Erewhon\'s caldera lake: %d cells wet at -520 m (1,400-1,600), %.0f m deep at most (>= 700 m), dry only on its islands' % (
+    isl_c |= E517.isle_r(xx_c, yy_c, i_x, i_y, i_rx, i_ry) <= 1.0
+check('Erewhon\'s caldera lake: %d cells wet at -520 m (1,100-1,300), %.0f m deep at most (>= 700 m), dry only on its islands' % (
     int(lk.sum()), -520.0 - float(E[lk].min())),
-      1400 <= int(lk.sum()) <= 1600 and -520.0 - float(E[lk].min()) >= 700.0
+      1100 <= int(lk.sum()) <= 1300 and -520.0 - float(E[lk].min()) >= 700.0
       and not bool((lk_full & ~whas & ~isl_c).any()))
 s_c = nd.distance_transform_edt(~lk_full)
-wall2 = float(np.median(E[~lk_full & (np.abs(s_c - 2.0) < 0.5) & (yy_c > 1470) & (yy_c < 1545) & (xx_c > 770) & (xx_c < 850)]))
+wall2 = float(np.median(E[~lk_full & (np.abs(s_c - 2.0) < 0.5) & (yy_c > 1475) & (yy_c < 1545) & (xx_c > 805) & (xx_c < 880)]))
 check('the caldera walls stand %.0f m over the lake two cells off the shore (>= 250 m)' % (wall2 + 520.0), wall2 + 520.0 >= 250.0)
 for v_id, v_x, v_y, v_top, v_rb in E517.VOLCS:
     v_h = float(E[int(v_y), int(v_x)])
@@ -654,28 +655,29 @@ for v_id, v_x, v_y, v_top, v_rb in E517.VOLCS:
 for i_id, i_x, i_y, i_rx, i_ry, i_c in E517.ISLANDS:
     i_j, i_i = int(round(i_y)), int(round(i_x))
     check('island %s (%.1f, %.1f) is dry, %.0f m over the lake' % (i_id, i_x, i_y, E[i_j, i_i] + 520.0),
-          not bool(whas[i_j, i_i]) and 20.0 <= float(E[i_j, i_i]) + 520.0 <= 160.0)
+          not bool(whas[i_j, i_i]) and 20.0 <= float(E[i_j, i_i]) + 520.0 <= 320.0)
 lf = D.get('landforms', {})
-check('DATA.landforms holds the Pleasure Dome\'s island, in the lake on a shoal',
+check('DATA.landforms holds the Pleasure Dome\'s island, off Erehwon\'s quays (its cell the shore bench, no shoal)',
       lf.get('format') == 'krator-landforms' and any(
-          l_['id'] == 'lf_pleasure_dome_isle' and bool(whas[int(round(l_['py'])), int(round(l_['px']))])
-          and float(E[int(round(l_['py'])), int(round(l_['px']))]) >= -560.5 for l_ in lf.get('landforms', [])))
+          l_['id'] == 'lf_pleasure_dome_isle' and abs(l_['px'] - 841) <= 1.5 and abs(l_['py'] - 1517) <= 1.5
+          for l_ in lf.get('landforms', [])))
 alph = next(r for r in D['rivers'] if r['id'] == 'r070')
 a_j, a_i = int(round(alph['px'][0][1])), int(round(alph['px'][0][0]))
 check('the Alph (r070) leaves the lake\'s east tip (%s, bed %.1f m) and reaches its old course at 903.5,1529.5' % (
     alph['px'][0], alph['bed_m'][0]),
       bool(nd.binary_dilation(lk, iterations=2)[a_j, a_i]) and -523.0 <= alph['bed_m'][0] <= -520.0
       and [903.5, 1529.5] in alph['px'])
-vale_t = (xx_c > 846) & (xx_c < 902) & (yy_c > 1488) & (yy_c < 1528) & (np.abs(E + 520.0) < 60.0)
+vale_t = (xx_c > 882) & (xx_c < 906) & (yy_c > 1496) & (yy_c < 1534) & (np.abs(E + 520.0) < 60.0)
 check('the Vale is dry land between -560 and -460 m (%d cells, median %.0f m)' % (int(vale_t.sum()), float(np.median(E[vale_t]))),
-      int(vale_t.sum()) >= 900 and not bool(whas[vale_t].any()) and -545.0 <= float(np.median(E[vale_t])) <= -480.0)
+      int(vale_t.sum()) >= 450 and not bool(whas[vale_t].any()) and -545.0 <= float(np.median(E[vale_t])) <= -480.0)
 for r_id in ('r613', 'r753', 'r492', 'r272'):
     r_t = next(r for r in D['rivers'] if r['id'] == r_id)
     check('%s ends in the lake' % r_id, bool(lk_full[int(round(r_t['px'][-1][1])), int(round(r_t['px'][-1][0]))])
           and r_t['to'].get('lake_m') == -520)
 for r_id in ('r488', 'r616'):
     r_t = next(r for r in D['rivers'] if r['id'] == r_id)
-    check('%s joins the Alph in the Vale' % r_id, r_t['to'].get('river') == 'r070')
+    check('%s joins the Alph in the Vale, or the lake at its east tip (%s)' % (r_id, r_t['to']),
+          r_t['to'].get('river') == 'r070' or r_t['to'].get('lake_m') == -520)
 # ---- 16. 5.1 edit 3, Voth (edit_513_voth.py, 2026-11-11; re-run on the merged model 2026-11-15): the Bay of Voth shrunk to Voth's page, its rim softened, the Turm
 #          re-routed into the bay's south-east corner
 import edit_513_voth as E513   # noqa: E402
@@ -721,4 +723,21 @@ check("DATA.basins holds Voth's lake at -1,500 m and DATA.outlets its strait",
       and any(o_.get('name') == "Voth's strait" for o_ in D['outlets']))
 check('Torus (774,1007) unchanged: dry at %.0f m' % float(E[1007, 774]),
       not bool(whas[1007, 774]) and abs(float(E[1007, 774]) + 789.0) <= 2.0)
+# ---- 17. Phēr (edit_517_pher.py, 2026-11-16; settlements/pher/PLAN.md): the pin on the wall's foot, its headland, east point
+#          and stream as records (finer than the cells)
+setts_p = {s_['id']: s_ for s_ in P.settlements()}
+ph = setts_p.get('spher0north1')
+check('Phēr (843,1491) is pinned, dry on the wall\'s foot (%.0f m), the lake two cells south' % float(E[1491, 843]),
+      ph is not None and (ph['px'], ph['py']) == (843, 1491) and not bool(whas[1491, 843]) and bool(whas[1493, 843])
+      and -470.0 <= float(E[1491, 843]) <= -420.0)
+lf_p = {l_['id']: l_ for l_ in D['landforms']['landforms'] if l_['id'].startswith('lf_pher_')}
+check('DATA.landforms holds Phēr\'s headland (two island records) and the cove\'s east point, all over the lake (-520 m)',
+      set(lf_p) == {'lf_pher_headland', 'lf_pher_headland_tip', 'lf_pher_east_point'}
+      and all(l_['water_m'] == -520.0 and l_['crest_m'] > -520.0 for l_ in lf_p.values()))
+sw = next((r_ for r_ in D['rivers'] if r_['id'] == 'r_pher_swit'), None)
+check('the Swīṭ Siṭrīm runs downhill from the scarp\'s foot to the lake at Phēr\'s cove (%s)' % (sw and sw['px'][-1]),
+      sw is not None and sw['perennial'] and sw['to'].get('lake_m') == -520
+      and all(sw['bed_m'][i_ + 1] < sw['bed_m'][i_] for i_ in range(len(sw['bed_m']) - 1))
+      and abs(sw['px'][-1][0] - 843) < 1.5 and abs(sw['px'][-1][1] - 1491.5) < 1.0
+      and not any(bool(whas[int(y_), int(x_)]) for x_, y_ in sw['px'][:-1]))
 print('%d checks passed' % ok)

@@ -85,9 +85,50 @@ def flora_bundle():
             'return { BIO: BIO, reseed: reseed, kits: { rift: RIFT, riftrim: RRIM, oidong: OIDONG, xanadu: XANADU, opalvalley: OPAL } };\n})(Object.create(window));\n')
 
 
+# the Geomancers' oilfield and Yuni's mission by the town (the owner, 2026-11-16: "we need to also build the yuni
+# mission/oilfield near town"; both, the owner's answer): YKIT, the Yuni engine with the Yuni kit's civic buildings and the
+# Locus kit (the pumpjacks, tanks, refinery, generator house, the Geomancers' chapterhouse, the stilt houses), sealed in one
+# closure exactly as Verge seals it: Verge's own build function makes it (one source), loaded as a module with its checks off.
+def _verge_build():
+    import importlib.util
+    argv = sys.argv[:]
+    sys.argv = [argv[0], '--no-checks']
+    try:
+        spec = importlib.util.spec_from_file_location('verge_build', os.path.join(ROOT, 'settlements', 'verge', 'build.py'))
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+    finally:
+        sys.argv = argv
+    return mod
+
+
+VERGE = _verge_build()
+
+
+def ykit_bundle():
+    text, _srcs = VERGE.ykit_bundle()
+    head = 'var YKIT = (function(){\n'
+    assert text.count(head) == 1, 'the YKIT bundle no longer opens with ' + head
+    # what Verge's page gives the kit from its own stage (settlements/verge/src/45-verge-stage.js): FAST (shadows and
+    # anisotropy off under a headless run), inside the closure here, so Qiblai's page gains no global
+    text = text.replace(head, head + 'var FAST = !!navigator.webdriver || /[?&]fast/.test(location.search);   /* Verge\'s stage gives it (45-verge-stage.js) */\n'
+                        "var ERR = typeof reportErr === 'function' ? reportErr : function (m) { console.error(m); };   /* the kit reports through ERR */\n"
+                        "/* Verge's furniture glue (71-verge-furnish.js) places the catalog pieces a Locus builder asks for (a lantern, a jar): here\n"
+                        "   they are left out (KNOWN_ISSUES.md), the builders' own geometry kept */\n"
+                        'function furnishAt() { return null; }\nfunction FURNISH() { return null; }\n', 1)
+    # the pumpjacks' motion (2026-11-16, "work on the limits"): Locus's 76-locus-anim.js, which Verge leaves out, run on demand
+    # once the wells are built (it reads LOCUS_ANIM, which their builders fill, and ticks on the page's TICKS)
+    ret = '\nreturn { PAL: PAL,'
+    assert text.count(ret) == 1, 'the YKIT bundle no longer returns its object as ' + ret
+    anim = io.open(os.path.join(ROOT, 'settlements', 'locus', 'src', '76-locus-anim.js'), encoding='utf-8').read()
+    text = text.replace(ret, '\n/* ---- settlements/locus/src/76-locus-anim.js, run on demand (after the pumpjacks are built) ---- */\n'
+                        'function YK_ANIM(){\n' + anim + '\nreturn window._locusAnim || null;\n}' + ret + ' anim: YK_ANIM,', 1)
+    return text.replace('(settlements/verge/build.py)', '(settlements/verge/build.py, for settlements/qiblai: the oilfield and the mission)', 1)
+
+
 def write_gen():
     os.makedirs(GEN, exist_ok=True)
-    for name, make in (('69q-kcity-bundle.js', kcity_bundle), ('69r-flora-bundle.js', flora_bundle)):
+    for name, make in (('69q-kcity-bundle.js', kcity_bundle), ('69r-flora-bundle.js', flora_bundle), ('69y-ykit-bundle.js', ykit_bundle)):
         out = os.path.join(GEN, name)
         new = make()
         old = io.open(out, encoding='utf-8').read() if os.path.exists(out) else None
@@ -98,6 +139,8 @@ def write_gen():
 
 BSRC.note(*([SPACE] + ['core/city/' + f for f in CITY_JS] + ['core/biome/' + f for f in FLORA_CORE] +
             ['biomes/%s/src/%s' % (k, f) for k, g, fs in FLORA_KITS for f in fs]))
+BSRC.note(*(VERGE.ykit_files() + [os.path.join(ROOT, 'settlements', 'locus', 'src', f) for f in ('81-glow.js', '76-locus-anim.js')] +
+            [os.path.join(ROOT, 'settlements', 'verge', 'build.py')]))
 # the Xanadui script the kit lifts from the chart (kits/qiblai/xanadui_script.py), current before the kit's fragments are read
 sys.path.insert(0, os.path.join(ROOT, 'kits', 'qiblai')); import xanadui_script
 BSRC.note(xanadui_script.CHART, os.path.join(ROOT, 'kits', 'qiblai', 'xanadui_script.py'))

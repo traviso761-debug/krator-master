@@ -33,6 +33,17 @@ door is LOCKED, with an id from its def, its placement and its number. A door ke
 purpose, as they are not openings: wells, the mine shaft, ovens and kilns behind their embers (`vDarkB`). `kit_bundle.py` carries
 core/door's 10 and 20 and 69e5 into `XAK` (the kit's own KDOOR; no walk: a proto's doors are in `userData.doors`, locked).
 
+**Opt-in pieces** (2026-11-16, `extra/`). New pieces that only one page takes so far wait in `extra/`, not `src/`, so no
+other page of the kit changes until the next all-builds rebuild moves them into `src/` (TODO.md, "Ride along with the next
+all-builds rebuild"). A page takes one through its kit.json `"external"` (`settlements/pher` takes them all):
+
+| File | What |
+|---|---|
+| `extra/88c-xa-caravanserai.js` | `xa_caravanserai` (the owner, 2026-11-16: "build xanadu one"): a 48 m court of two-storey battered ranges, the stables' arcade, a gate block with an open iwan, four corner towers, the fountain court; v0 wash and gold, v1 earth and plainer |
+| `extra/88d-xa-lakecraft.js` | the lake craft owed by `core/simulation/PROPOSAL-XANADU.md` 2a: `xa_dugout` (the cayuco; empty, with its fisher, beached), `xa_launch` (the lancha; under sail, furled), `xa_lake_barge` (the cargo barge; sail set, brailed) |
+| `extra/88e-xa-stall.js` | `xa_stall`: a trestle stall under a cloth awning, four trades (cloth, cacao and fruit, pots and baskets, fish and salt) |
+| `extra/69dz-ix-xanadu-extra.js` | the interior set `xanadu-extra`: the caravanserai's five ranges (the common room, its kitchen and the stores below, the travellers' rooms above). It joins `kits/interiors/sets/xanadu.js` with the pieces |
+
 **Hollow walls and interiors** (2026-11-09). The kit's interior set is `kits/interiors/sets/xanadu.js` (one item per def:
 the dwellings, trades, farms, sacred buildings, guilds, military, baths, the Turkish and Andean houses; the open pieces
 skipped with their reasons). Its pages (`settlements/xanadu`: the sheet and Erewhon) take it with `?interiors=1`
@@ -133,3 +144,15 @@ take `MAT.xWater`). Xanadu's `xanadu` target stays Xanadu's sheet; `kit_bundle.p
 **Interiors:** the sheet builds the bodies solid, every door locked. A `?interiors=1` mode goes in `targets/sheet/` once the kit's
 interiors and hollow walls land (`kits/interiors/sets/xanadu.js`; another session's work): it already has core/walk, core/door's
 host and `KDOOR.clearDoorways`. The `doors` assert expects every door locked and must be relaxed for that mode.
+
+**Scrap Xanadu** (the owner, 2026-11-11; `PLAN-SCRAP.md`). The Xanadu body built with the Ancients' reclaimed materials,
+well ordered and never ramshackle (the contrast is `kits/post-apoc`). Whole shell panels are laid in courses as checker,
+band and stripe facings; glazing becomes jali grilles, lantern clerestories and glass domes on bronze ribs; girders are
+dressed columns and lintels; cable makes the balustrades; bronze the finials and the eight-spoked Wheel; the poor live in tanks, silos and hull vaults nearly as found. Twenty-one defs,
+`xa_scrap_*` (culture `xanadu-scrap`), in `src/87s-xs-mat.js` (items), `87t-xs-helpers.js` (the `xnXS*` vocabulary) and
+`87u-xs-build.js` (the buildings), `87v-xs-poor.js` (the poor tier and the farm). The package is **opt-in**: `xanadu.py` lists it as `SCRAP`, not in `FILES`, so the
+pages that take the kit do not change. Its sheet is `settlements/xanadu`'s `scrap` target (`dist/xanadu-scrap.html`);
+`kit_bundle.bundle(scrap=True)` seals it into `XAK` for a world (Strongbow's town first) with core/rand.
+`kit_bundle.bundle(qiblai=True)` adds the Qiblai kit's buildings (`kits/qiblai`, `qb_*`, read in place: every family and the
+cut-away rooms' vocabulary, not the walk-in rooms' furnishing nor the mixed street sheet): `XAK.dims()` lists them,
+`XAK.proto` builds them, and `XAK.bind` binds a `qiblai` pack where the page registered one. Theodiga's town takes both.

@@ -82,7 +82,7 @@ const seasonCheck=Dl=>{const w=XAN_TUNE.calendar.windows.harvest,out=[];Object.k
  T.neg('a harvest out of its window is caught',Dl=>seasonCheck(Dl).ok,Object.assign({},Y.daily,{'prov.p1':(Y.daily['prov.p1']||[]).concat([10])}),Y.daily);}
 // 10. the size: the abstract level keeps a country of ~350,000 to a few thousand actors and a year to minutes
 {const pop=Y.V.settlements.reduce((n,s)=>n+s.people,0);
- T.ok('the size: about 350,000 people on under 3,000 actors, a year in under three minutes',pop>300000&&pop<400000&&Y.actors<3000&&secs<180,Math.round(pop)+' people, '+Y.actors+' actors, '+secs.toFixed(0)+' s');}
+ T.ok('the size: about 350,000 people on under 3,000 actors, a year in under four minutes',pop>300000&&pop<400000&&Y.actors<3000&&secs<240,   /* four, as test-east-rift's: the year grew with X2's places, and other sessions load the machine */Math.round(pop)+' people, '+Y.actors+' actors, '+secs.toFixed(0)+' s');}
 // ---- X1 (core/region's valley host grown: a settlement's scale, a work's site, a road of three or more stops; the
 // gateways at their staging towns)
 // 11. the sites: the gold lode and the opal diggings draw down by what they made; the Dome lets fall only so much scrap a
@@ -151,13 +151,36 @@ const devCheck=(xp,L,O)=>(xp.made.sulfur||0)>50000&&(xp.made.wax||0)>20000&&(xp.
  T.neg('an expedition that brought nothing home is caught',x=>devCheck(xp,x,O),{},L);}
 // 18b. the Rare Devisers' royal licence (the owner, 2026-11-16: "their main guild house at Theodiga; they are royally licensed
 //      in the scrap and rare artifact trade"): every kilo of the Salvagers' scrap through their guild house, sold on to the
-//      smelter, which still makes Theodiga's iron; the Sultan's fee a tenth of the rarities
-const licCheck=(sc,sold,iron,fee,rar)=>sc>0&&sold>sc*.6&&iron>0&&Math.abs(fee/Math.max(1,rar)-XAN_TUNE.devisers.licence)<.04;
+//      smelter, which still makes Theodiga's iron
+const licCheck=(sc,sold,iron)=>sc>0&&sold>sc*.6&&iron>0;
 {const sc=Object.values((Y.trade['devisers.scrap']||{}).tithed||{}).reduce((n,o)=>n+(o.scrap||0),0),sold=(landed('devisers.sell.theodiga','devisers.theodiga>s4zvgepuru').scrap||0),
-  iron=(B.s4zvgepuru.made.iron||0),C=(Y.cuts['expedition.godshearth']||{taken:{}}).taken,fee=C['xan.citadel:rarities']||0,rar=landed('expedition.godshearth','exp.godshearth>devisers.thalaba').rarities||0;
- T.ok('the Rare Devisers\' royal licence: the Salvagers\' scrap through their guild house at Theodiga to the smelter; the Sultan\'s tenth of the rarities',licCheck(sc,sold,iron,fee,rar),
-  'scrap to the house '+t(sc)+', sold to the smelter '+t(sold)+', Theodiga\'s iron '+t(iron)+'; the fee '+fee.toFixed(1)+' of '+rar.toFixed(1)+' rarities');
- T.neg('a house that kept the scrap is caught',x=>licCheck(sc,x,iron,fee,rar),0,sold);}
+  iron=(B.s4zvgepuru.made.iron||0);
+ T.ok('the Rare Devisers\' royal licence: the Salvagers\' scrap through their guild house at Theodiga to the smelter',licCheck(sc,sold,iron),
+  'scrap to the house '+t(sc)+', sold to the smelter '+t(sold)+', Theodiga\'s iron '+t(iron));
+ T.neg('a house that kept the scrap is caught',x=>licCheck(sc,x,iron),0,sold);}
+// 18c. the Sultan's share of the Godshearth hauls (the owner, 2026-11-16, settlements/thalaba/PLAN.md section 4: "10% of the
+//      overall haul and 20% of the rarities", "20% total not 30", "on dalab party too"): of what each expedition lands at
+//      its house in Thalaba, a tenth of every good and a fifth of the rarities to the Treasury
+const haulOf=g=>XAN_TUNE.haul[g]!=null?XAN_TUNE.haul[g]:XAN_TUNE.haul.all;
+const haulCheck=X=>{const bad=[];X.forEach(([road,leg,C])=>{const L=landed(road,leg);Object.keys(L).forEach(g=>{if(!(L[g]>=10))return;const f=(C[g]||0)/L[g];
+  if(Math.abs(f-haulOf(g))>.03)bad.push(road+' '+g+' '+(100*f).toFixed(1)+'%');});if(!Object.keys(L).length)bad.push(road+': nothing landed');});return{ok:!bad.length,bad};};
+{const tk=road=>{const C=(Y.cuts[road]||{taken:{}}).taken,o={};Object.keys(C).forEach(k=>{const [to,g]=k.split(':');if(to==='xan.citadel')o[g]=C[k];});return o;};
+ const X=[['expedition.godshearth','exp.godshearth>devisers.thalaba',tk('expedition.godshearth')],['expedition.dalab','exp.dalab>dalab.thalaba',tk('expedition.dalab')]],H=haulCheck(X);
+ const fmt=([road,leg,C])=>{const L=landed(road,leg);return road+': '+Object.keys(L).filter(g=>L[g]>=10).map(g=>g+' '+Math.round(C[g]||0)+' of '+Math.round(L[g])).join(', ');};
+ T.ok('the Sultan\'s share of the Godshearth hauls: a tenth of the sulfur, wax and hearth seed and a fifth of the rarities, the Devisers\' and the Dalab party\'s alike',H.ok,
+  H.bad.join('; ')||X.map(fmt).join('; '));
+ const X2=X.map(([r,l,C])=>[r,l,Object.assign({},C,{rarities:(C.rarities||0)*1.5})]);
+ T.neg('a share of 30 % of the rarities (10 + 20) is caught',x=>haulCheck(x).ok,X2,X);}
+// 18d. Thalaba (the owner, 2026-11-16): its own small deposit, 30 t of sulfur a year, a steady works; most of its sulfur by
+//      expedition; the Dalab mission (~30) fed beside it, its party's hearth seed gathered at the Grove in the expedition
+//      season and home to the mission, which sells what it keeps into Thalaba's market for the Great Caravan
+const tbCheck=(Bk,L,down)=>{const own=Bk['xan.thalaba'].made.sulfur||0,xp=Bk['exp.godshearth'].made.sulfur||0,ms=Bk['dalab.thalaba'],pt=Bk['exp.dalab'];
+ return{ok:Math.abs(own/XAN_TUNE.thalaba.make.sulfur-1)<.15&&xp>own&&!!ms&&!(ms.hungry.grain>0)&&(pt.made.hearthseed||0)>XAN_TUNE.dalab.party.make.hearthseed*.5&&(L.hearthseed||0)>0&&(down.sulfur||0)>0,own,xp,seed:pt.made.hearthseed||0};};
+{const L=landed('expedition.dalab','exp.dalab>dalab.thalaba'),sold=landed('dalab.sell.thalaba','dalab.thalaba>xan.thalaba'),down=landed('road.pher-thalaba','xan.thalaba>xan.pher'),Q=tbCheck(B,L,down);
+ T.ok('Thalaba: its own deposit\'s 30 t of sulfur, most of its sulfur by expedition; the Dalab mission fed, its party\'s hearth seed home from the Grove',Q.ok,
+  'Thalaba\'s own sulfur '+t(Q.own)+', the Devisers\' camp\'s '+t(Q.xp)+'; the party gathered '+Q.seed.toFixed(1)+' kg of hearth seed, landed at the mission '+(L.hearthseed||0).toFixed(1)+
+  ' kg, sold into the town '+(sold.hearthseed||0).toFixed(1)+' kg, down to Phēr '+(down.hearthseed||0).toFixed(1)+' kg');
+ T.neg('a town that dug the old 60 t is caught',x=>tbCheck(x,L,down).ok,Object.assign({},B,{'xan.thalaba':Object.assign({},B['xan.thalaba'],{made:Object.assign({},B['xan.thalaba'].made,{sulfur:60000})})}),B);}
 // 19. the Golden Tears: their armed camp's ore from the Rift floor's lodes in the cool months only, home to their house and sold
 //     on to the Sultan's assay; their escort's share of Dalab's Great Caravan at the capital
 const tearsCheck=(c,L,A,esc)=>(c.made.goldore||0)>T_ORE*.5&&(L.goldore||0)>0&&A>0&&esc>0;
@@ -202,8 +225,29 @@ const orderCheck=(C,X,Tr)=>{const oil=(C['xan.citadel:oil']||0)*0+Object.keys(C)
  T.ok('the Order\'s monastery at Qiblai: an eighth of the Prismarchy\'s oil and of the Sultan\'s grants of esteem',O.ok,
   'oil to the Order '+t(O.oil)+' of '+t(O.landed)+' landed for the council; esteem '+(O.est.times||0)+'x: '+Object.entries(O.est.sent||{}).map(([g,n])=>g+' '+Math.round(n)).join(', '));
  T.neg('an Order that took a quarter is caught',x=>orderCheck(x,Y.xfer,Y.trade).ok,{'qb.order:oil':O.landed/4},C);}
+// 23. the Theodiga bore (the owner, 2026-11-16): the Rare Devisers salvage the Ancients' dead tunnel to Stair under their
+//     licence: scrap and rarities from a finite site, sold into Theodiga
+const boreCheck=(d,sold)=>(d.made.scrap||0)>XAN_TUNE.bore.scrap*.5&&(d.made.rarities||0)>XAN_TUNE.bore.rarities*.5&&(sold.rarities||0)>0;
+{const d=B['devisers.theodiga'],sold=landed('devisers.sell.theodiga','devisers.theodiga>s4zvgepuru');
+ T.ok('the Theodiga bore: the Rare Devisers\' salvage of the dead tunnel to Stair, scrap and rarities, sold into Theodiga',boreCheck(d,sold),
+  'made scrap '+t(d.made.scrap||0)+', rarities '+Math.round(d.made.rarities||0)+'; sold into Theodiga rarities '+Math.round(sold.rarities||0)+', scrap '+t(sold.scrap||0));
+ T.neg('a bore that yielded nothing is caught',x=>boreCheck(x,sold),{made:{}},d);}
+// 24. the Order of Viridian Thought (the owner, 2026-11-16): Qiblai's green monastery's head house and tea estate on the
+//     scarp, its tea made in the flush and carried to Qiblai
+const virCheck=(v,L)=>(v.made.tea||0)>XAN_TUNE.viridian.tea*.6&&(L.tea||0)>0&&!(v.hungry.grain>(v.eaten.grain||0)*.01);
+{const v=B['qb.viridian'],L=landed('road.viridian','qb.viridian>skm4jjo2vl');
+ T.ok('the Order of Viridian Thought: its tea estate on the scarp makes its tea in the flush and sends it to Qiblai, and is fed',virCheck(v,L),
+  'tea made '+t(v.made.tea||0)+', landed at Qiblai '+t(L.tea||0)+'; grain short '+t(v.hungry.grain||0));
+ T.neg('an estate whose tea never reached Qiblai is caught',x=>virCheck(v,x),{},L);}
+// 25. Phēr (the owner's answers, 2026-11-16): the cacao house presses the north shore's beans into cakes that cross the lake
+//     to the capital for the Great Caravan, and the rim plain's farming villages tithe their grain to Phēr
+const pherCheck=(p,L,R)=>(p.made.cacaocake||0)>10000&&(L.cacaocake||0)>0&&R.length===XAN_TUNE.pherRing.length&&R.every(x=>(x.grain||0)>0);
+{const p=B['xan.pher'],L=landed('lake.cross','xan.pher>s57bkv9741'),R=XAN_TUNE.pherRing.map(V=>{const id=V.id.replace(/\//g,'.');return landed('tithe.'+id,id+'>xan.pher');});
+ T.ok('Phēr: its cacao house presses cakes that cross the lake to the capital, and its six rim villages tithe grain to it',pherCheck(p,L,R),
+  'cakes made '+t(p.made.cacaocake||0)+', landed at Erehwon '+t(L.cacaocake||0)+'; tithes '+R.map(x=>t(x.grain||0)).join(', '));
+ T.neg('a ring village that sent no grain is caught',x=>pherCheck(p,L,x),R.map((x,i)=>i?x:{}),R);}
 // ---- K1 (settlements/kirstabal/PLAN.md; the owner, 2026-11-16): Kirstabal's lake, its ring, the latex house, its roads
-// 23. Kirstabal's lake, a smaller Atitlán: its nine villages fed, their fish and goods landed at Kirstabal, both market-boat
+// 26. Kirstabal's lake, a smaller Atitlán: its nine villages fed, their fish and goods landed at Kirstabal, both market-boat
 //     rounds calling at every stop; Kirstabal's ring fed, its farms' grain tithed to the town
 const KS='sl758m2396';
 const lowerCheck=(Bk,Tr)=>{const ll=Object.keys(Bk).filter(s=>/^ll\./.test(s)),ring=Object.keys(Bk).filter(s=>/^ks\.ring\./.test(s));
@@ -216,7 +260,7 @@ const lowerCheck=(Bk,Tr)=>{const ll=Object.keys(Bk).filter(s=>/^ll\./.test(s)),r
   L.ll.length+' villages, '+L.ring.length+' in the ring; fish into Kirstabal '+t(L.fish)+' from '+L.fishers+' fishing villages; rounds '+
   XAN_TUNE.lowerRounds.map(([id])=>id+' '+((Y.trade[id]||{}).voyages||0)+' calls').join(', ')+(L.hungry.length?'; hungry: '+L.hungry.join(', '):''));
  T.neg('a village on Kirstabal\'s lake that went hungry is caught',Bk=>lowerCheck(Bk,Y.trade).ok,Object.assign({},B,{'ll.rid':Object.assign({},B['ll.rid'],{hungry:{grain:1e6},eaten:{grain:1}})}),B);}
-// 24. the latex house (the owner, 2026-11-16: "opium dried at kirstabal", run by the White Monastery, Qiblai's white, which
+// 27. the latex house (the owner, 2026-11-16: "opium dried at kirstabal", run by the White Monastery, Qiblai's white, which
 //     "takes a share and a small fee"): the Scarp's latex to the house, never to the town; dried to opium at four fifths of its
 //     weight; all but the house's share to Kirstabal; the fee once a year
 const latexCheck=(Bk,Tr,X)=>{const h=Bk[XAN_TUNE.whiteHouse.house[0]],lat=h.imported.latex||0,op=h.made.opium||0;
@@ -227,14 +271,65 @@ const latexCheck=(Bk,Tr,X)=>{const h=Bk[XAN_TUNE.whiteHouse.house[0]],lat=h.impo
   'latex in '+t(L.lat)+', opium dried '+t(L.op)+', to Kirstabal '+t(L.sent)+', the house kept '+(100*L.kept).toFixed(1)+' %; the fee '+(L.fee.times||0)+'x: '+
   Object.entries(L.fee.sent||{}).map(([g,n])=>g+' '+Math.round(n)+' sent').concat(Object.entries(L.fee.owed||{}).filter(([g,n])=>n>0).map(([g,n])=>g+' '+Math.round(n)+' owed')).join(', '));
  T.neg('a house that kept a tenth is caught',Tr=>latexCheck(B,Tr,Y.xfer).ok,Object.assign({},Y.trade,{'white.opium':{tithed:{x:{opium:L.op*.9}}}}),Y.trade);}
-// 25. Kirstabal's roads on the ground: the barges to the Landing and the portage road on to Qiblai, the road over the bridge
+// 28. Kirstabal's roads on the ground: the barges to the Landing and the portage road on to Qiblai, the road over the bridge
 //     to Strongbow's foot and the lift to the lip
 const ksRoads=Rs=>{const q=Rs.find(r=>r.id==='road.qb-ks'),s=Rs.find(r=>r.id==='road.ks-sb'),P=XAN_TUNE.portage;
  return !!q&&!!s&&q.minutes===Math.round(P.lake/60*1440)+Math.round(P.km/25*1440)&&s.minutes===Math.round(15/25*1440)+XAN_TUNE.lift;};
 {T.ok('Kirstabal\'s roads: the barges down the lake to the Landing and the portage road past the cataracts to Qiblai; the bridge road to Strongbow\'s foot and the lift',ksRoads(Y.V.roads),
   Y.V.roads.filter(r=>r.id==='road.qb-ks'||r.id==='road.ks-sb').map(r=>r.id+' '+(r.minutes/1440).toFixed(2)+' days').join(', '));
  T.neg('a barge road timed by the lake alone is caught',ksRoads,Y.V.roads.map(r=>r.id==='road.qb-ks'?Object.assign({},r,{minutes:Math.round(XAN_TUNE.portage.lake/60*1440)}):r),Y.V.roads);}
+// 29. Strongwall's W1 (settlements/strongwall/PLAN.md; the owner's answers, 2026-11-16): the opal no longer by Strongwall but
+//     by Lāiṭwāl's ferry (the owner, 2026-11-16: "Ferry to laitwal") and on inward; powder in by the gateways to the fort; the hired musketeers paid by the Treasury; the beacon fort's
+//     generator; the House of the Tempest fed through Strongwall and its terraces; the Golden Tears' house inside the fort
+const swCheck=(Bk,Tr,X)=>{const bad=[],op=(((Tr['mine.opal']||{}).landed||{})['sjuarjbku0>slaitwal0001']||{}).opal||0,
+  inward=(Bk.skm4jjo2vl.imported.opal||0)+(Bk[E].imported.opal||0),tp=Bk['xan.tempest']||{made:{},imported:{},eaten:{}},pay=X['pay.muskets.sxan7r1sln']||{sent:{},owed:{}},th=XAN_TUNE.tears.houses[0];
+ if(!(op>0))bad.push('no opal ferried to Lāiṭwāl');if(Bk.sxan7r1sln.imported.opal)bad.push('opal still at Strongwall');if(!(inward>0))bad.push('no opal at Qiblai or the capital');
+ if(!((Bk.sxan7r1sln.eaten.powder||0)>0))bad.push('no powder at Strongwall');
+ if(!(((pay.sent||{}).coin||0)+((pay.owed||{}).coin||0)>0))bad.push('the musketeers unpaid and not owed');
+ if(!((Bk['march.e'].eaten.power||0)>0))bad.push('the beacon fort dark');
+ const tpIn=Object.values(((Tr['road.sw-tempest']||{}).landed||{})['sxan7r1sln>xan.tempest']||{}).reduce((n,v)=>n+v,0);   /* its first year's grain is in its stores: the road lands its salt, tea and tools */
+ if(!((tp.made.grain||0)>0&&tpIn>0))bad.push('the Tempest\'s terraces or its road from Strongwall');
+ if(th[2]!=='sxan7r1sln'||th[3]!==912||th[4]!==1640)bad.push('the Tears\' house outside the fort');
+ return{ok:!bad.length,bad,op,inward,tp,pay};};
+{const C=swCheck(B,Y.trade,Y.xfer);
+ T.ok('Strongwall\'s W1: the mines\' opal by Lāiṭwāl\'s ferry and inward, never by Strongwall; powder at the fort, the musketeers paid, the beacon fort lit, the House of the Tempest fed, the Tears inside the fort',C.ok,
+  C.bad.join(', ')||('the mines\' opal ferried to Lāiṭwāl '+Math.round(C.op*1000)/1000+' kg, at Qiblai and the capital '+Math.round(C.inward*1000)/1000+' kg; Strongbow imported opal '+Math.round((B.sfgtxw10kr.imported.opal||0)*1000)/1000+
+  ', Kirstabal '+Math.round((B.sl758m2396.imported.opal||0)*1000)/1000+'; powder eaten at Strongwall '+Math.round(B.sxan7r1sln.eaten.powder||0)+' kg; pay sent '+((C.pay.sent||{}).coin||0)+', owed '+((C.pay.owed||{}).coin||0)+
+  '; the Tempest made grain '+t(C.tp.made.grain||0)+' of the '+t(C.tp.eaten.grain||0)+' it ate'));
+ T.neg('opal that never reached Qiblai or the capital is caught',x=>swCheck(x,Y.trade,Y.xfer).ok,Object.assign({},B,{skm4jjo2vl:Object.assign({},B.skm4jjo2vl,{imported:Object.assign({},B.skm4jjo2vl.imported,{opal:0})}),[E]:Object.assign({},B[E],{imported:Object.assign({},B[E].imported,{opal:0})})}),B);}
+// 30. L1 (settlements/lightwall/PLAN.md 4; the owner, 2026-11-16): Lāiṭwāl, the seat of Ōpal-Bhālī, fed all year; the Great
+//     Potch Line's opal and the glass shops' moonglass made; the Glaziers' Fifth in opals a fifth, to the Treasury; the
+//     Sultan's mines across the lake fed by its ferry; the opal and moonglass down the valley by Kirstabal to Qiblai; the
+//     Line a field of veins
+const lwFed=x=>{const e=x.eaten.grain||0,h=x.hungry.grain||0;return h<=(e+h)*.01;};
+const lwCheck=(Bk,Tr)=>{const L=Bk['slaitwal0001'],M=Bk.sjuarjbku0,Q=Bk.skm4jjo2vl,W=XAN_TUNE.laitwal;if(!L||!M||!Q)return{ok:false};
+ const op=L.made.opal||0,mg=L.made.moonglass||0,ft=Tr['fifth.opal.lw']||{},tith=Object.values(ft.tithed||{}).reduce((n,o)=>n+(o.opal||0),0),r=fifthOf(op,tith);
+ const F=XAN_TUNE.field('opal-diggings',W.make.opal,XAN_TUNE.fieldYears);F.make=W.make.opal;
+ const qo=Q.imported.opal||0,qm=Q.imported.moonglass||0,mf=M.imported.grain||0;
+ return{ok:lwFed(L)&&lwFed(M)&&op>W.make.opal*.8&&mg>W.make.moonglass*.8&&Math.abs(r-XAN_TUNE.fifth)<.03&&mf>0&&qo>50&&qm>1000&&fieldCheck(F),
+  op,mg,tith,r,qo,qm,mf,fedL:lwFed(L),fedM:lwFed(M),veins:F.veins.length};};
+{const C=lwCheck(B,Y.trade);
+ T.ok('Lāiṭwāl: the seat of Ōpal-Bhālī fed, the Great Potch Line\'s opal and the moonglass made, the Glaziers\' Fifth to the Treasury, the mines fed over the lake, the opal and moonglass on to Qiblai',C.ok,
+  'opal '+Math.round(C.op)+' kg, moonglass '+t(C.mg)+', the Fifth '+(C.tith||0).toFixed(1)+' kg ('+(100*(C.r||0)).toFixed(1)+' %); fed: the town '+C.fedL+', the mines '+C.fedM+' (grain over the lake '+t(C.mf||0)+'); into Qiblai: opal '+Math.round(C.qo||0)+' kg, moonglass '+t(C.qm||0)+'; the Line '+C.veins+' veins');
+ T.neg('an assay house that took two fifths of the town\'s opal is caught',Tr=>lwCheck(B,Tr).ok,
+  Object.assign({},Y.trade,{'fifth.opal.lw':{tithed:Object.fromEntries(Object.entries((Y.trade['fifth.opal.lw']||{}).tithed||{}).map(([k,o])=>[k,{opal:(o.opal||0)*2}]))}}),Y.trade);
+ T.neg('a Lāiṭwāl that went hungry is caught',Bk=>lwCheck(Bk,Y.trade).ok,Object.assign({},B,{'slaitwal0001':Object.assign({},B['slaitwal0001'],{hungry:{grain:1e6},eaten:{grain:1}})}),B);}
+// 31. B4 (settlements/beacon/PLAN.md; the owner, 2026-11-16): the Order of the Beacon's head house beside the beacon fort,
+//     its terraces' grain and the capital's road landed, its monks taking no arms and no powder, the fort's lamp still lit
+const bcCheck=(Bk,Tr,Ss)=>{const bad=[],Bc=XAN_TUNE.beacon,h=Bk[Bc.id],f=Ss.find(s=>s.id===Bc.fort),me=Ss.find(s=>s.id===Bc.id);
+ if(!h||!me)return{ok:false,bad:['no head house'],lt:0};
+ const lt=Object.values(((Tr['road.er-beacon']||{}).landed||{})[E+'>'+Bc.id]||{}).reduce((n,v)=>n+v,0);
+ if(!((h.made.grain||0)>0))bad.push('its terraces made no grain');
+ if(!(lt>0))bad.push('nothing landed from the capital');
+ if((h.eaten.powder||0)>0||(h.eaten.arms||0)>0)bad.push('the monks took arms or powder');
+ if(!f||f.x!==me.x||f.z!==me.z)bad.push('the house is not beside the beacon fort');
+ if(!((Bk[Bc.fort].eaten.power||0)>0))bad.push('the beacon fort dark');
+ return{ok:!bad.length,bad,h,lt};};
+{const C=bcCheck(B,Y.trade,Y.V.settlements);
+ T.ok('the Order of the Beacon\'s head house: beside the beacon fort, fed by its terraces and the capital\'s road, no arms or powder, the lamp lit',C.ok,
+  C.bad.join(', ')||('made grain '+t(C.h.made.grain||0)+' of the '+t(C.h.eaten.grain||0)+' it ate; landed from the capital '+t(C.lt)+'; the fort\'s power '+Math.round(B['march.e'].eaten.power||0)+' kWh'));
+ T.neg('a head house drawn off to another place is caught',Ss=>bcCheck(B,Y.trade,Ss).ok,Y.V.settlements.map(s=>s.id===XAN_TUNE.beacon.id?Object.assign({},s,{x:s.x+5000}):s),Y.V.settlements);}
 // the year's books, for the reader
 const line=(s,k)=>Object.entries(B[s][k]||{}).filter(([g,n])=>n>=1).map(([g,n])=>g+' '+(n>=1000?t(n):Math.round(n))).join(', ');
-['s57bkv9741','xan.citadel','skm4jjo2vl','s4zvgepuru','sxan7r1sln'].forEach(s=>console.log('\n'+s+': made '+line(s,'made')+'\n  imported '+line(s,'imported')+'\n  exported '+line(s,'exported')));
+['s57bkv9741','xan.citadel','skm4jjo2vl','s4zvgepuru','sxan7r1sln','slaitwal0001','sjuarjbku0','sl758m2396'].forEach(s=>console.log('\n'+s+': made '+line(s,'made')+'\n  imported '+line(s,'imported')+'\n  exported '+line(s,'exported')));
 T.done();
