@@ -16,6 +16,8 @@
   "core/terrain/38b-core-relief-lava.js": {"needs": ["core/rand/08-core-rand.js", "core/terrain/38-core-relief.js"]},
   "core/terrain/39c-core-karst.js": {"needs": ["core/rand/08-core-rand.js"]},
   "core/terrain/39d-core-cavern-floor.js": {"needs": ["core/terrain/39-core-cavern.js"]},
+  "core/world/42k-world-caverns.js": {"needs": ["core/rand/08-core-rand.js", "core/terrain/39-core-cavern.js"]},
+  "core/world/88k-world-caverns.js": {"needs": ["core/world/42k-world-caverns.js", "core/terrain/host/39e-core-cavern-draw.js", "core/world/41-world-fields.js", "core/world/45-world-host.js", "core/world/81-world-terrain.js"], "after": ["core/world/88s-world-sites.js"]},
   "core/terrain/host/39e-core-cavern-draw.js": {"needs": ["core/terrain/39-core-cavern.js"]},
   "core/terrain/39f-core-geode.js": {"needs": ["core/terrain/39-core-cavern.js"]},
   "core/terrain/host/39g-core-geode-draw.js": {"needs": ["core/terrain/39f-core-geode.js"]},

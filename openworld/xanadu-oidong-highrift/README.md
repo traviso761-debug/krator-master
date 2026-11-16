@@ -44,6 +44,13 @@ The second region of sites cut off the scale model into the open world (`openwor
   - Verify plans again in the browser and compares the hash.
 - **The flora:** the Xanadu kit on its overlay (its pass table as data: `src/49-world-xanadu.js`), and the Oidong kit on
   the valley (its own `OIDONG.PASSES`). The other overlays grow nothing yet.
+- **The lava tubes** (2026-11-16, step W3 of `PLAN-TWINS-CROSSING.md`; core/world `42k`, `88k`, its README "Caverns"): Route A
+  of the Twins crossing, the Dark-Tube Road, under the ground: A1 from the Vale's portal at the Alph's chasm (938,1496) to the
+  First Skylight Break, A2, A3 with the Hall of the Tally-Marks and its roof crack, A4 to the 18 m arch, and the south feeder
+  (`tube_xanadu_se_10`'s lower galleries, the Strongbow branch, 1010,1517 > 1028,1506): 244 km at the plan's pixels, 10 portals,
+  17 skylights, 14 chokes of 3.5 m. All of it lies inside the present box; only A1's first ~15 km are inside the cut's polygons.
+  The spec is `src/48k-world-tubes.js`; the floors lie at a depth under the ground, so they follow the Twins' sculpt when it lands.
+  "Go to" has each portal from outside, a walk inside each tube and the Hall.
 - **Built output:** `dist/xanadu-oidong-highrift.html` (about 7.6 MB, the rasters as PNGs), with its texture sidecars.
 
 ```
@@ -64,6 +71,7 @@ On the GPU: `KRATOR_GL=gpu` and `python3 ../../tools/harness.py lock --lane auto
 | `src/46-world-config.js` | [G data] | the sites' markers, "Go to" (the region, each site, each village, each island), the first view over Erehwon's villages |
 | `src/47-world-kits.js` | [G data] | the kits that grow here: Xanadu on its overlay, Oidong on the valley |
 | `src/48-world-site.js` | [G data] | the sites' spec (`SITE_SPEC`): each site's villages (focus, spot, population), its roads, the links between the towns |
+| `src/48k-world-tubes.js` | [G data] | the lava tubes' spec (`SITE_SPEC.tubes`): Route A's four tubes and the south feeder, their widths, depths, portals, the Hall, chokes and skylights by cell (core/world 42k plans them, 88k draws them) |
 | `src/49-world-xanadu.js` | [G data] | the Xanadu kit's pass table as data (`XANADU_WORLD`) |
 
 ## Checks (`verify.py --assert`)
@@ -79,3 +87,14 @@ Each check has a negative:
   - the baked plan is the plan made again in the browser;
   - every village is whole, its buildings apart and on good ground, with every road at its lane end;
   - every village is cleared of flora, tagged, and drawn with the kit's pieces.
+- **The caverns** (`verify.py --tubes` runs them alone; `node core/world/test-tubes.js` is the data's test):
+  - the plan's checks on the drawn ground: every tube meets the surface, each opening where the spec puts it, the floor and the
+    roof under the ground (4 m of rock) everywhere but at the openings, the grade (negatives: a tube with no opening, a floor
+    raised over the ground mid-tube);
+  - the ground opens at each portal and only there (a ray down at each portal's ramp meets the tube; over each tube between the
+    openings it meets the ground; every terrain chunk opened is on a hole; each probe's negative is the other kind of place);
+  - the walker (G) enters the south feeder at its portal, walks its 42 km on the floor and comes out at the other portal, the
+    drawn floor under its feet and the rock over its head every 3 km; steered into the wall it is stopped (the negative: along
+    the tube it goes);
+  - underground the pick meets the rock and the inspector names the tube (the negative: on the ground by the portal);
+  - shots of the feeder's portals, inside it and the Hall, with the frame time at each.
