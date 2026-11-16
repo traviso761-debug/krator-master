@@ -450,7 +450,7 @@ The East Rift's spec (`50-region-valley.js`): `{id, name, faction, people, x, z,
    - Is there a loj at station 5, and is it **Loj Faiv** (the station's number, after Loj Fower)?
 3. **The basin's split.** Should 4,000 of the 50,000 live on the north shore under Ledge and pay their tithe there, with the
    other 46,000 Nulab's?
-4. **Salt** (the scope's Q5; *the map's answer, 2026-11-16, in the scope's 4.4 item 1: no salt within 120 km; the nearest
+4. **Salt** (the scope's Q5; **settled, the owner 2026-11-16: the drovers are a major salt source**; *the map's answer, 2026-11-16, in the scope's 4.4 item 1: no salt within 120 km; the nearest
    and the safest from the Lizardmen are the western fells' high salt basins, 327-355 x 1335-1359, 197 km from Nulab*). Which source: a salt maze in the rift fill worked by the Union, the rock salt at 354,1347 at
    5.9 km, Tallwalls through the Travellers, or Dalab's own salt by the Line?
 5. **Rare earths** (the scope's Q7). Does the Union work Nulab's (the best on the map) along the Nulab-Chimes bore under

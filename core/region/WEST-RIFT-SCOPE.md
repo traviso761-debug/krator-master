@@ -169,7 +169,7 @@ The census types are: city 8,000, arcology 10,000, town 2,500, village 300, outp
 | **Blakhed** | 441,1400 (the Blak Riba head; site settled) | Fellgang (Fowler and Ice-cutter kin), pays Dalab a toll | LORE l.270; tungang plan 1.3.3: "1,000-2,000", 150-300 households | **5,000** (the owner, 2026-11-16: "upscale a bit to 5k"; its plan: `settlements/blakhed/PLAN.md`) | the rim's market and meeting town: ice houses (for the basin and Nulab), the egg and honey store, the rope walk (the gorge stair), beast pens; the Travellers' Fair ground; **a Great Caravan stop** (XAN_TUNE) | grain, salt, metal |
 | The Fowlers | 571,1397 | Fellgang village (riftrim station 8) | riftrim 6; "a tenth of Blakhed" | **150 (est.)** | eggs and young of the cliff flyers, wall honey, herbs; to the Hearth hold (~80 km) | grain |
 | The Ice-cutters | 470,1521 | Fellgang village (station 9) | riftrim 6 | **150 (est.)** | lake ice cut in an eight-week winter, carried down the south wall to "the hot floor (Cthonos' country)"; ice to Blakhed and the hot holds | grain, cloth, metal |
-| The drovers | 393,1338 | western Fellgangs | tungang plan 1.3.4 | **300 (est.)**, plus summer shielings | felt, hides, meat, wool, driven to Blakhed (157 km) and Dalab's basin; Ledge 89 km | grain, salt |
+| The drovers | 393,1338 | western Fellgangs | tungang plan 1.3.4 | **300 (est.)**, plus summer shielings and the salt camps | **salt** (the owner, 2026-11-16: "We'll have the drovers be a major salt source"), felt, hides, meat, wool, driven to Blakhed (157 km) and Dalab's basin; Ledge 89 km | grain |
 | The pass-keepers | 352,1262 | western Fellgangs | 1.3.4 | **150 (est.)** | guides and porters over Copper Glacier's pass west (to Firebliss); carry the coppersmiths' copper | food |
 | The coppersmiths | ~320,1248 (site unsurveyed) | western Fellgangs | 1.3.4 | **200 (est.)** | the glacier's copper as wire, sheet and fittings for the Tungangs' windings (through the Fixers) | food, fuel |
 | The Travellers (incl. the **Kradz**) | mobile: halting places, winter at Blakhed | Fellgang road families | LORE l.277-284 | **750 (est.)** | hauling, beast dealing, salvage-smithing, guiding, portering at the Line's near-surface gaps; the Kradz service the shafts | they are the carriers |
@@ -310,7 +310,8 @@ the one surplus that has to feed both cities and Blakhed.
      West from them, and every road from them runs west and north, away from it. Nulab and Blakhed are themselves 250-270 km
      from the polygon. The West's strongest halite (205-254) lies **inside** the Lizardmen's country (641-715 x 1483-1525,
      the salt lakes at -1,700 m), 430-470 km from the towns; Tallwalls' salt (~500 t) is the Free Giants'.
-   - **Who works it** (*proposed*): the western Fellgangs, the drovers and their kin, in the summer shielings; salt down by
+   - **Who works it: the drovers** (the owner, 2026-11-16: "We'll have the drovers be a major salt source"). *Proposed:* the
+     drovers and their kin cut it in summer camps on the basins, 98 km above their own shielings; salt down by
      drove to Blakhed's market and to Ledge's head for grain and metal, as the Changthang's salt went for barley. At 5.9 km
      (~0.77 atm) only the cold-hardy can work it: the Fellgangs, or Dalab's cold-modded.
    - **What it must cover** (est.): about 7.5 kg a person a year (Nulab's plan) across ~112,500 people is **~850 t a year**,
@@ -356,7 +357,8 @@ the one surplus that has to feed both cities and Blakhed.
    and the loj?
 4. **Loj Twenny.** The pin move to 445,1266 (station 3) is on its branch, not the map; its size is 165 drawn against 500 by type.
 5. **Salt.** Where does the West Rift's salt come from? Tallwalls (hostile), a new works on the unclaimed rock salt at 354,1347
-   (a Fellgang works, beside the drovers and pass-keepers?), or Dalab's own? *The map's answer (4.4, item 1): the western
+   (a Fellgang works, beside the drovers and pass-keepers?), or Dalab's own? **Settled (the owner, 2026-11-16): the drovers are a
+   major salt source**, from the western fells' high salt basins. *The map's answer (4.4, item 1): the western
    fells' high salt basins, 327-355 x 1335-1359, the nearest salt and the farthest from the Lizardmen; the owner to confirm.* And how does Shelf ship salt to Xanadu with the
    Great Caravan if south Dalab is short?
 6. **The Great Caravan's path across the Rift.** riftrim's 2026-11-13 note (Gemini, "for the owner to review") runs it by the S-rim

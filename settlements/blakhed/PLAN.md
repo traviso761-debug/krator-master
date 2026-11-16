@@ -426,7 +426,7 @@ Its roads and others' records:
 6. **The Fair.** In autumn, after the shielings come down (proposed)? And on Blakhed's own Fairfell, or on "a fell everyone
    knows" nearby?
 7. **The herd beasts.** The rim's big animals are still unnamed (tungang plan 1.3). What are the town's herds?
-8. **Salt.** (*The map's answer, 2026-11-16, in the scope's 4.4 item 1: the western fells' high salt basins, 219 km west,
+8. **Salt.** (**Settled, the owner 2026-11-16: "We'll have the drovers be a major salt source"**; Blakhed is their market. *The map's answer, 2026-11-16, in the scope's 4.4 item 1: the western fells' high salt basins, 219 km west,
    the farthest salt from the Lizardmen, worked by the western Fellgangs and droved to Blakhed's market.*) Where does Blakhed's salt come from? No salt lies within 169 km (scope Q5). The fells' rock salt at 354,1347
    (204 km straight), carried by the drovers?
 9. **The Great Caravan at Blakhed.** Is Blakhed a **transit market** where Dalab's factors buy Xanadu's goods (proposed),
