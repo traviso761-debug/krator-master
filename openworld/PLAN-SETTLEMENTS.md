@@ -775,6 +775,29 @@ Surveyed on the model; the owner chose among the options where a choice was need
 - **Republishing** the model.
 - **Cutting** east-rim, north-shore and southwest.
 
+### The second batch (`SETT_MOVED` / `SETT_ADDED['5.1e8']`, 2026-11-12)
+
+From the resource census (`openworld/RESOURCES-SETTLEMENTS.md`, the Krator Resource Atlas artifact). The owner applied
+the recommended set.
+
+| What | Change |
+|---|---|
+| **Ardent** | 851,572 to **830,553**: from 3,796 m and dry ground to wet, forested Cfa farmland, with tin and copper within 13 km (the lore's bronze) |
+| **Strongwall** | 914,1634 (a pit on the model) to **912,1640**: flat ground 6 km from the rich copper band |
+| **Tabist town** | 1270,666 to **1285,655**: up the Rīfar al-Sarāb, still low, far more farmland |
+| **Iziz iron mine** (new, `sz5upw419z`) | 936,1013, a rich iron field 78 km SW, with an 80 km road to Iziz; Talia's iron tribute as a second source |
+| **Voth iron mine** (new, `sowif50v6z`) | 732,1014, rich iron 22 km W (Voth already has decent iron within reach) |
+| **Reed upriver fields** (new, `s7f7ct6r5p`) | 1297,683. Reed stays on its salt lake; its fields are 35 km up the Rīfar al-Qaṣr |
+| **Pylon tin outpost** (new, `s1b3vyhdck`) | 875,1015, 29 km SSE. Pylon stays round its Monolith |
+| **The Eternian capital** | stands round **Fulcrum** (409,621, on rich iron), LORE.md §6.19. Lux stays a city |
+
+`5.1e7` is Longsong's, on `claude/cool-tereshkova-d594e8`.
+
+**Owed:**
+- Strongwall's old pin sits in a pit on the model: a model fix.
+- LORE §6.19's distances to re-measure from Fulcrum.
+- **Scrap to iron** (`core/simulation/PROPOSAL-LONGSONG-PINNACLE.md` section 7).
+
 The questions as asked:
 
 1. **Handing over vs rebuilding (all B grades).** PLAN-VOTH's question 4, for every B page: hand each page's own ground

@@ -2,6 +2,21 @@
     "version": "0.0.1",
     "configurations": [
         {
+            "name": "census-atlas",
+            "runtimeExecutable": "python",
+            "runtimeArgs": [
+                "-m",
+                "http.server",
+                "8881",
+                "--bind",
+                "127.0.0.1",
+                "--directory",
+                "C:/Users/travi/AppData/Local/Temp/claude/fb90a45e00650bd0/3c8541e4-a2b4-461b-b662-31b858516b6a/scratchpad/census_art"
+            ],
+            "port": 8881,
+            "autoPort": false
+        },
+        {
             "name": "edit-queue",
             "runtimeExecutable": "python",
             "runtimeArgs": [

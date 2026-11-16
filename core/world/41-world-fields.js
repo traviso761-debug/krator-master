@@ -55,12 +55,50 @@ const STYLES={
  // the Oidong Valley (biomes/oidong; settlements/longsong): a green high vale, its floor swelling gently, no terraces or dunes
  vale:    {hills:.8,  ridge:.8, terr:0,  step:40,dune:0,  gully:.35,rough:.7, rock:.3, wallK:.9},
  // the abyssal savannah's rims (biomes/abyssal-savannah; openworld/pinnacle): gold grass parkland, caprock benches, few dunes
- savanna: {hills:.9,  ridge:.6, terr:.45,step:40,dune:0,  gully:.6, rough:.9, rock:.2, wallK:.7}};
+ savanna: {hills:.9,  ridge:.6, terr:.45,step:40,dune:0,  gully:.6, rough:.9, rock:.2, wallK:.7},
+ // karst towers and dissected carbonate over a flat floor (k-guilin, the NW Bay's tsingy; the Neo-Ozarks): no terraces or dunes, steep walls
+ karst:   {hills:.6,  ridge:.4, terr:0,  step:40,dune:0,  gully:.4, rough:.8, rock:.4, wallK:1.4},
+ // the outer walls and the rift's rims (nwouterwall, copperglacier, riftrim, ne/se outer wall): high ground, sharp ridges, ice above
+ alpine:  {hills:1.3, ridge:1.2,terr:.1, step:40,dune:0,  gully:.7, rough:1.2,rock:.5, wallK:.7},
+ // floodplains and deltas (swlowlands, nwlowlands, the Ancient's Valley): low relief, wide soft channel banks
+ lowland: {hills:.6,  ridge:.3, terr:0,  step:40,dune:0,  gully:.4, rough:.6, rock:.05,wallK:1.6},
+ // chasms and trenches between walls (the Great Chasm, the Labyrinth, the Loom chasms, the Outland Gate): mesas, near-sheer walls
+ chasm:   {hills:1.0, ridge:.9, terr:.6, step:60,dune:0,  gully:.8, rough:1.0,rock:.5, wallK:.35},
+ // stepped lava and fault benches (godstep, greenstep, highrift's graben, Opal Valley's lake beds, the Mid Basin): broad tall terraces
+ steps:   {hills:.7,  ridge:.5, terr:.9, step:120,dune:0, gully:.5, rough:.8, rock:.35,wallK:.6}};
 const SKEYS=['hills','ridge','terr','step','dune','gully','rough','rock','wallK'];
-// the overlay's name (lower case) -> its style; an overlay not listed takes 'desert'
-const BIOME_STYLE={'sedesert':'desert','e badlands':'badland','e abysss':'abyss','hyperjungle':'jungle','savage hyperjungle':'jungle','hyperjungle n':'jungle','hyperjungle s':'jungle','e highlands':'highland',
- 'n highlands':'highland','korona / ne':'korona','throne/volcano':'volcanic','crater drylands':'dryland','ring sea':'sea',
- 'oidong valley':'vale','ne rim':'savanna','e savannah rim':'savanna','se savannah rim':'savanna'};
+// the overlay's name (lower case) -> [its style, its palette]. EVERY overlay the scale model can hand a region is here
+// (tools/scale-model/extract_region.py writes them; core/world/test-world-styles.js fails on a name without an entry).
+// There is no default: a name not here is reported, not drawn as desert (W.groundOf, W.unstyled)
+const BIOME_GROUND={'sedesert':['desert','desert'],'e badlands':['badland','badland'],'e abysss':['abyss','abyss'],'hyperjungle':['jungle','jungle'],'savage hyperjungle':['jungle','jungle'],
+ 'hyperjungle n':['jungle','jungle'],'hyperjungle s':['jungle','jungle'],'e highlands':['highland','highland'],'korona / ne':['korona','korona'],
+ 'throne/volcano':['volcanic','volcanic'],'crater drylands':['dryland','dryland'],'ring sea':['sea','sea'],'oidong valley':['vale','vale'],
+ 'ne rim':['savanna','savanna'],'e savannah rim':['savanna','savanna'],'se savannah rim':['savanna','savanna'],
+ // 2026-11-15: every other name the model's biome layer holds, each on its kit's ground (a plan-only kit: the scale model's own paint,
+ // tools/scale-model/build_425_master.py, or its PLAN.md's sets where there is no paint)
+ 'the bowl':['desert','desert'],'e abyss':['abyss','abyss'],'e inner wall':['highland','highland'],'arachnoid canyons':['korona','korona'],
+ 'crater drylands n':['dryland','dryland'],'crater drylands s':['dryland','dryland'],
+ 'n highlands':['highland','nhighlands'],'s highlands':['highland','shighlands'],'sw highlands':['highland','swhighlands'],'w outer wall':['highland','wouterwall'],
+ 'godthrone':['volcanic','godthrone'],'godstep valley':['steps','godstep'],'steaming seamounts':['volcanic','geyser'],
+ 'firebliss range':['volcanic','firebliss'],'godshearth':['volcanic','godshearth'],'twins':['volcanic','twins'],'siphon pits':['volcanic','siphon'],
+ 'sw bay':['savanna','swbay'],'nw bay':['karst','nwbay'],'k-guilin':['karst','guilin'],
+ 'sw lowlands':['lowland','swlowlands'],"ancient's valley":['lowland','ancientsvalley'],'nw lowlands':['lowland','nwlowlands'],'double delta':['lowland','nwlowlands'],
+ 'n semiarid':['dryland','nsemiarid'],'ria valley':['dryland','nsemiarid'],'the cut':['dryland','cut'],
+ 'farside':['savanna','farside'],'the arch':['savanna','farside'],'the crook':['savanna','farside'],
+ 'copper glacier':['alpine','copperglacier'],'nw outer wall':['alpine','nwouterwall'],'nw boreal':['alpine','nwouterwall'],'tharn uplands':['alpine','nwouterwall'],
+ 'ne outer wall':['alpine','neouterwall'],'se outer wall':['alpine','seouterwall'],
+ 'rift rim n':['alpine','rimN'],'rift rim s':['alpine','rimS'],'w rift highland':['alpine','rimW'],
+ 'painted highlands':['badland','painted'],'yuni valley':['korona','necanyons'],'rift':['savanna','rift'],'high rift':['steps','highrift'],
+ 'xanadu':['vale','xanadu'],'the catch':['desert','catch'],'region 99':['chasm','loom'],
+ 'n outlands':['dryland','outlands'],'s outlands':['dryland','outlands'],'tiers':['dryland','outlands'],'stalker gate':['dryland','outlands'],
+ 'stalker range':['highland','outlands'],'mid basin':['steps','midbasin'],'outland gate':['chasm','outlandgate'],
+ 'great chasm':['chasm','greatchasm'],'labyrinth':['chasm','labyrinth'],'greenstep':['steps','greenstep'],'opal valley':['steps','opalvalley'],
+ // no kit yet, the closest style: the Crook's shore (farside's coast, as its parent the Crook); the Neo-Ozarks, a dissected dolomite
+ // tableland with porphyry knobs (karst; the model's dolomite and porphyry), and Spider Lake on its shore (spiderlake is a plan with no
+ // colours); the Silent Vales, fog-cool montane valleys (vale; the model's greens)
+ 'crookshore':['savanna','farside'],'neo-ozarks':['karst','ozarks'],'spider lake':['karst','ozarks'],'silent vale':['vale','silentvale'],
+ // the water overlays: the Ring Sea's beds and shores
+ 'nwern ocean':['sea','sea'],'bay of voth':['sea','sea'],'lake of shim':['sea','sea']};
 // the ground palettes (sRGB), from the kits' own ground painters where a kit exists (sedesert, eastabyss: 45-host-stage)
 const PAL={
  desert:  {a:0xa85a42,b:0x884834,pale:0xc99a72,scrub:0x9e6a4c,sand:0xdca070,sand2:0xeab888,gravel:0xc7b08e,silt:0x9a8a68,damp:0x5a5040,mtn:0x7a6a5e,rock:0x8f4f3a},
@@ -75,16 +113,69 @@ const PAL={
  // the Oidong Valley's (biomes/oidong/src/84-host-ground.js: meadow, moss, the pale flats, granite)
  vale:    {a:0x9cb070,b:0x76964a,pale:0xb4c08a,scrub:0x56722e,sand:0xeeeadf,sand2:0xe2dccd,gravel:0xb0aca4,silt:0x8a8a6a,damp:0x5a7a4a,mtn:0x98a882,rock:0xb0aca4},
  // the abyssal savannah's (biomes/abyssal-savannah/src/45-host-stage.js GROUND: the gold grass, the benches, the foot's loam)
- savanna: {a:0xb39552,b:0x9c8048,pale:0xb8a06a,scrub:0x6e7a3a,sand:0xb8a06a,sand2:0xa48e5c,gravel:0x8c8478,silt:0x4e4a2a,damp:0x4a3424,mtn:0x8a7a62,rock:0x7a6a54}};
+ savanna: {a:0xb39552,b:0x9c8048,pale:0xb8a06a,scrub:0x6e7a3a,sand:0xb8a06a,sand2:0xa48e5c,gravel:0x8c8478,silt:0x4e4a2a,damp:0x4a3424,mtn:0x8a7a62,rock:0x7a6a54},
+ // 2026-11-15, each from its kit's ground painter (biomes/<kit>/src: 84-host-ground, 45-host-stage, 47-host-land, 46-host-ground)
+ nhighlands:   {a:0x52603a,b:0x3e5a24,pale:0x8a9274,scrub:0x6e8e3c,sand:0x8a887c,sand2:0x9a988c,gravel:0x8a887c,silt:0x6d6a66,damp:0x3a3428,mtn:0x7a7b74,rock:0x63655f},
+ shighlands:   {a:0x8a8a4a,b:0x7a9a34,pale:0xc8ac62,scrub:0x4e6a2a,sand:0xb89a78,sand2:0xc4a888,gravel:0x9a948a,silt:0x7a7458,damp:0x3a4a34,mtn:0x9a948e,rock:0x6e6a68},
+ swhighlands:  {a:0x5e7a48,b:0x3e5630,pale:0xae9e52,scrub:0x789a48,sand:0x86826f,sand2:0x969280,gravel:0x8a7e6e,silt:0x6a5236,damp:0x26382a,mtn:0x74868a,rock:0x8a7e6e},
+ godthrone:    {a:0x2a2826,b:0x232124,pale:0x5c544b,scrub:0x6e2c1c,sand:0x24222a,sand2:0xc8641e,gravel:0x6d6a66,silt:0x3a2620,damp:0x121216,mtn:0x6d6a66,rock:0x24222a},
+ swbay:        {a:0x9a8450,b:0x7a7048,pale:0xd8ccb0,scrub:0x5e6e3a,sand:0xd8ccb0,sand2:0xe4dac0,gravel:0x8a7a66,silt:0x9a8c74,damp:0x574836,mtn:0x5a5452,rock:0x4e4a48},
+ nwbay:        {a:0x9a8450,b:0x7a7048,pale:0xe4dcc4,scrub:0x5e6e3a,sand:0xe4dcc4,sand2:0xe6dcc4,gravel:0xa8a090,silt:0x9a8c74,damp:0x574836,mtn:0xc4bfb5,rock:0xbab5aa},
+ guilin:       {a:0x58703a,b:0x6a7a44,pale:0xa89c88,scrub:0x6a7a48,sand:0xa89c88,sand2:0xb8ac98,gravel:0xa6a298,silt:0x5a4a38,damp:0x4a4030,mtn:0xc4bfb5,rock:0xa6a298},
+ swlowlands:   {a:0x56643a,b:0x4c4630,pale:0xb49656,scrub:0x3c4424,sand:0xd6c6a0,sand2:0xe0d2b0,gravel:0x9a8a62,silt:0x7a6a50,damp:0x352c20,mtn:0x96704a,rock:0x8a4a32},
+ ancientsvalley:{a:0x4d5438,b:0x3e4430,pale:0x706b61,scrub:0x263d1f,sand:0xb0a488,sand2:0xbcb094,gravel:0x706b61,silt:0x383329,damp:0x2a2620,mtn:0x5a5a48,rock:0x504c48},
+ nwlowlands:   {a:0x3e5a2e,b:0x5a7a36,pale:0xa89a64,scrub:0x344a2c,sand:0xd6c6a0,sand2:0xe0d2b0,gravel:0x9a8a62,silt:0x7a6a50,damp:0x2c3428,mtn:0x8e8a5a,rock:0x8ba2ac},
+ nsemiarid:    {a:0xb4a07a,b:0xa89a74,pale:0xcdbfa2,scrub:0x9aa284,sand:0xdcc49a,sand2:0xe8d4ac,gravel:0xc2b294,silt:0xa8987a,damp:0x4a4430,mtn:0x8a8a5a,rock:0x5e5650},
+ cut:          {a:0x6b664d,b:0x575c3d,pale:0xccc7b8,scrub:0x4d5738,sand:0xccc7b8,sand2:0xd8d4c8,gravel:0x756b57,silt:0x756b57,damp:0x3e4430,mtn:0x8a8470,rock:0x6a665e},
+ farside:      {a:0x5a6a34,b:0x4e4630,pale:0xb8a888,scrub:0x8a8c50,sand:0xb8a888,sand2:0xc8b898,gravel:0x9a9a78,silt:0x4a4220,damp:0x3e4a2c,mtn:0x6a6c6a,rock:0x34363a},
+ copperglacier:{a:0x8e887e,b:0x7e786e,pale:0xeef2f6,scrub:0x3e7e5e,sand:0xb4c8d6,sand2:0x9ab4c8,gravel:0x6a6660,silt:0x6e6a66,damp:0x4e4a40,mtn:0xd8e0e8,rock:0x5a5754},
+ nwouterwall:  {a:0xa8b078,b:0x8e9466,pale:0xdcdcd0,scrub:0x8a9a52,sand:0xb4aca0,sand2:0xc4bcb0,gravel:0xb4aca0,silt:0x9a8466,damp:0x5a5444,mtn:0xb4ae9c,rock:0xb4aea4},
+ // the riftrim kit's three rims (45-host-stage: low, forest, alpine, rock)
+ rimN:         {a:0x5a6a3a,b:0x3e4a32,pale:0x7e8460,scrub:0x6a7a44,sand:0x8a8670,sand2:0x9a9680,gravel:0x6e6c6a,silt:0x5e5c4a,damp:0x34402c,mtn:0x6e7650,rock:0x5e5c5a},
+ rimS:         {a:0x7a7458,b:0x564e3c,pale:0x8a8062,scrub:0x4a4636,sand:0x8a8270,sand2:0x9a9280,gravel:0x5e5048,silt:0x5e5444,damp:0x3e3a30,mtn:0x5e5048,rock:0x3e3a3c},
+ rimW:         {a:0x5a7a34,b:0x4e5a30,pale:0x7a7052,scrub:0x6e8a3e,sand:0x8a8268,sand2:0x9a9278,gravel:0x6a625a,silt:0x5a5a40,damp:0x3a4a2a,mtn:0x6a6a48,rock:0x5a524a},
+ necanyons:    {a:0x5a4a2c,b:0x3a3020,pale:0xa87a5a,scrub:0x4a5a2a,sand:0xa87a5a,sand2:0xc98468,gravel:0x9a6a4a,silt:0x6b3a26,damp:0x2e2618,mtn:0xc9906e,rock:0xa8503a},
+ rift:         {a:0xc0a458,b:0xa08c48,pale:0xe6e0b8,scrub:0x7c8a40,sand:0xb0a088,sand2:0xc0b098,gravel:0xb0a088,silt:0x8a8a60,damp:0x5e5a3c,mtn:0xa89c80,rock:0x8a7c68},
+ highrift:     {a:0x8a8a66,b:0x8e867a,pale:0xe2ded2,scrub:0x6a8a3e,sand:0xa8987e,sand2:0xb8a88e,gravel:0x8a8478,silt:0x7a8a5a,damp:0x5e5248,mtn:0x9a8e7a,rock:0x7a7068},
+ xanadu:       {a:0x6e8c3c,b:0x86984a,pale:0xb0a058,scrub:0x4e7a36,sand:0xc8bc98,sand2:0xcfc4a6,gravel:0xbab2a2,silt:0x8a8a6a,damp:0x4a3c28,mtn:0xa89880,rock:0x8a8078},
+ catch:        {a:0xc89860,b:0x7a6450,pale:0xcfc1a0,scrub:0x7a6450,sand:0xd4a872,sand2:0xc89860,gravel:0x5e4c3e,silt:0xb8a888,damp:0x5e4c3e,mtn:0x7a6450,rock:0x5e4c3e},
+ geyser:       {a:0x5e5a36,b:0x5a6034,pale:0xdcd8cc,scrub:0x4a6a2a,sand:0x302e2c,sand2:0x3c3a32,gravel:0x6a6252,silt:0x6a6052,damp:0x2e2a1e,mtn:0x5e5a52,rock:0x5e5a52},
+ // plan-only kits: the scale model's paint (build_425_master.py) for that land
+ godstep:      {a:0x2c2a2a,b:0x3a3432,pale:0xc49a7e,scrub:0x4a4a30,sand:0x24222a,sand2:0x3a3836,gravel:0x5a504a,silt:0xd8d2c4,damp:0x2a2622,mtn:0x46403c,rock:0x2c2a2a},
+ wouterwall:   {a:0xa8a088,b:0x6e6a3e,pale:0xc0b8a0,scrub:0x6a6844,sand:0xa8a088,sand2:0xb8b098,gravel:0x8a8478,silt:0x8a5a3a,damp:0x5a5444,mtn:0x8a8478,rock:0x6e6860},
+ neouterwall:  {a:0x5c8652,b:0x366e3a,pale:0xd8d4cc,scrub:0x366e3a,sand:0x8a8478,sand2:0x9a9488,gravel:0x766a5e,silt:0x5a5a48,damp:0x2a3a28,mtn:0x9e443c,rock:0x38363e},
+ seouterwall:  {a:0x766a5e,b:0x406c3a,pale:0xb08a58,scrub:0x406c3a,sand:0x8a8070,sand2:0x9a9080,gravel:0x766a5e,silt:0x5e5650,damp:0x2e3a2a,mtn:0xb8b8b4,rock:0x44424a},
+ firebliss:    {a:0x4c763a,b:0x2a6a32,pale:0x76764c,scrub:0x2a6a32,sand:0x3e383c,sand2:0x4a4448,gravel:0x5a5254,silt:0xcaa66c,damp:0x2a2628,mtn:0x76764c,rock:0x342e30},
+ godshearth:   {a:0x426236,b:0x606c44,pale:0xbc9460,scrub:0x426236,sand:0xbc9460,sand2:0xc8a070,gravel:0x847c66,silt:0x8a7a5a,damp:0x2e3a28,mtn:0x847c66,rock:0x2e2c30},
+ greatchasm:   {a:0x74523e,b:0x4c3a34,pale:0x9c7250,scrub:0x5a5a3a,sand:0x9c7250,sand2:0xa88060,gravel:0x342c2a,silt:0x9a6634,damp:0x2a2422,mtn:0x9c7250,rock:0x342c2a},
+ greenstep:    {a:0x4e8038,b:0x347230,pale:0x74964a,scrub:0x26602a,sand:0x8a8a68,sand2:0x9a9a78,gravel:0x30343a,silt:0x4a5a3a,damp:0x223c26,mtn:0x62723e,rock:0x30343a},
+ labyrinth:    {a:0xa68660,b:0x8e7a58,pale:0x7c7454,scrub:0x567240,sand:0xb89a70,sand2:0xc4a880,gravel:0x9a684a,silt:0x7a6a50,damp:0x3a3428,mtn:0x9a8e80,rock:0x403636},
+ opalvalley:   {a:0x2e7260,b:0x6a5872,pale:0xc49876,scrub:0x2e7260,sand:0xb28668,sand2:0xc49876,gravel:0x8a7a70,silt:0x7a6a6a,damp:0x2a3a34,mtn:0xb28668,rock:0x6a5a5a},
+ twins:        {a:0x426a38,b:0x3e383e,pale:0xb68e5c,scrub:0x426a38,sand:0x3e383e,sand2:0x4a4448,gravel:0x302a2c,silt:0x6a5a4a,damp:0x2a2628,mtn:0xb68e5c,rock:0x3e383e},
+ outlandgate:  {a:0x667c44,b:0x447038,pale:0x887652,scrub:0x3a6030,sand:0xa89a7a,sand2:0xb8aa8a,gravel:0x8a8070,silt:0x6a6a50,damp:0x2e4028,mtn:0x887652,rock:0x6a6058},
+ // plan-only kits with no paint: chosen from their PLAN.md's sets and words (say so if a kit's ground disagrees once it is built)
+ painted:      {a:0xb06a4a,b:0xc89060,pale:0xe2d2b4,scrub:0x8a8a68,sand:0xc49a7e,sand2:0xd8b8a0,gravel:0xb0a090,silt:0x9a8070,damp:0x4a4238,mtn:0x8a7a8a,rock:0x8a4a44},
+ loom:         {a:0xb8a07a,b:0x9a8868,pale:0xe8e4da,scrub:0x7a7a50,sand:0xc8b48c,sand2:0xd4c4a0,gravel:0x6a6460,silt:0xd8d0c0,damp:0x4a4440,mtn:0x3e3c3e,rock:0x34322f},
+ siphon:       {a:0x6a6a48,b:0x5a5444,pale:0x8a8678,scrub:0x5a6a3a,sand:0x5a5450,sand2:0x6a6460,gravel:0x5a5654,silt:0x4a4644,damp:0x2e2c2a,mtn:0x4a4846,rock:0x34323a},
+ outlands:     {a:0x8a6c4e,b:0xa47256,pale:0xc8b8a0,scrub:0x7a7a50,sand:0xc49a7e,sand2:0xd0aa8a,gravel:0xa8987a,silt:0x9a8a6a,damp:0x4a4032,mtn:0x8a7a68,rock:0x803a28},
+ midbasin:     {a:0xb8a07a,b:0xa89880,pale:0xd8d0c0,scrub:0x7a7a50,sand:0xc8b48c,sand2:0xd4c4a0,gravel:0x8a8478,silt:0xe0dcd0,damp:0x4a4440,mtn:0x4a4644,rock:0x3a3836},
+ // no kit: the scale model's paint (the Neo-Ozarks' dolomite and porphyry, the Silent Vales' greens)
+ ozarks:       {a:0x7a8048,b:0x5e6a3a,pale:0xccc0a6,scrub:0x4e6a34,sand:0xb8ae96,sand2:0xccc0a6,gravel:0xb0a690,silt:0x8a8068,damp:0x3a3a2a,mtn:0xccc0a6,rock:0x9c4e4a},
+ silentvale:   {a:0x567640,b:0x326634,pale:0x8a9a70,scrub:0x2e5a30,sand:0xa8a088,sand2:0xb8b098,gravel:0x8a887c,silt:0x6a7058,damp:0x2a3a28,mtn:0x7a8068,rock:0x6a6a64}};
+// an overlay with no entry in BIOME_GROUND (an error, reported: W.unstyled) is drawn in this, never in another biome's colours
+const MISSING={a:0xff00ff,b:0xd000d0,pale:0xff60ff,scrub:0xc000c0,sand:0xff80ff,sand2:0xffa0ff,gravel:0xe040e0,silt:0xb000b0,damp:0x800080,mtn:0xd020d0,rock:0xa000a0};
+// the overlay's ground: {style, pal, S: the style's numbers, P: the palette}, or null when the name has no entry (or names a
+// style or palette that does not exist). core/world/test-world-styles.js reads every name the scale model can produce
+W.groundOf=n=>{const g=BIOME_GROUND[String(n).trim().toLowerCase()];return g&&STYLES[g[0]]&&PAL[g[1]]?{style:g[0],pal:g[1],S:STYLES[g[0]],P:PAL[g[1]]}:null;};
+W.GROUND={TABLE:BIOME_GROUND,STYLES,PAL,SKEYS};
 const SNOW=0xeef1f4,ICE=0xd8e4ee,SALT=0xf1ede6;
 const lin=h=>{const r=(h>>16&255)/255,g=(h>>8&255)/255,b=(h&255)/255,f=c=>c<.04045?c/12.92:Math.pow((c+.055)/1.055,2.4);return[f(r),f(g),f(b)];};
 
 // ---------------------------------------------------------------- the rasters
 let M,nx,ny,i0,j0,su,sv,cx,cy,X0,Y0,MW,MH,EL,WLV,WHAS,REL,CL,RN,TP,BI,MK,SL,SU,SW;
 let SID,KIT,STY,PALL,NB,CLCODE,CLGROUP;
-// a region with region.json `relief` (core/world/PLAN-RELIEF.md; 43-world-relief.js): every overlay's land takes a style of its
-// own (WRELIEF.styleOf, where BIOME_STYLE names none; its colours stay BIOME_STYLE's or 'desert'), and terraces lie only on
-// caprock (WRELIEF.bench) instead of on the absolute height
+// a region with region.json `relief` (core/world/PLAN-RELIEF.md; 43-world-relief.js): terraces lie only on caprock
+// (WRELIEF.bench) instead of on the absolute height. Every overlay's style and palette are BIOME_GROUND's, relief or not
 let RELIEF=false;
 // the kits (47-world-kits.js) are read at init: which overlay each grows on
 let KITNAMES=[];W.KITS=KITNAMES;
@@ -103,9 +194,13 @@ W.init=function(R){M=WORLD_DATA.meta;const Hd=M.heights,F=M.frame;
  RELIEF=!!M.relief;
  if(RELIEF){if(typeof WRELIEF==='undefined')throw new Error('41-world-fields: region.json asks for core/world relief: list 43-world-relief.js before 41');
   WRELIEF.init({ox:cx*2000,oz:cy*2000,seed:M.relief.seed});}
- M.biomes.forEach((b,i)=>{const nm=b.name.toLowerCase(),st=BIOME_STYLE[nm]||'desert',sh=RELIEF?(BIOME_STYLE[nm]||WRELIEF.styleOf(nm)||'desert'):st;SID[i]=st;
-  SKEYS.forEach(k=>STY[k][i]=STYLES[sh][k]);KIT[i]=WORLD_KITS.findIndex(k=>k.overlay===b.name.toLowerCase());
-  const P=PAL[st],o={};for(const k in P)o[k]=lin(P[k]);PALL[i]=o;});
+ /* an overlay with no entry is an error, not desert: listed in W.unstyled, reported on the page, failed by the probe
+    (91: 'every biome overlay has its own ground style'); it is drawn on the desert's shape in MISSING's magenta, so it shows */
+ W.unstyled=[];
+ M.biomes.forEach((b,i)=>{const g=W.groundOf(b.name);if(!g)W.unstyled.push(b.name);const st=g?g.style:'desert';SID[i]=st;
+  SKEYS.forEach(k=>STY[k][i]=STYLES[st][k]);KIT[i]=WORLD_KITS.findIndex(k=>k.overlay===b.name.toLowerCase());
+  const P=g?g.P:MISSING,o={};for(const k in P)o[k]=lin(P[k]);PALL[i]=o;});
+ if(W.unstyled.length&&typeof reportErr==='function')reportErr('core/world: no ground style for the overlay(s) '+W.unstyled.join(', ')+' (add each to BIOME_GROUND in 41-world-fields.js)');
  CLCODE=M.classes.map(c=>c.code);CLGROUP=M.classes.map(c=>c.group);
  buildChannels();buildRoads();buildTowns();W.ready=true;};
 W.px=x=>cx+x/2000;W.py=z=>cy+z/2000;W.fromPx=(px,py)=>[(px-cx)*2000,(py-cy)*2000];

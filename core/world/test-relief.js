@@ -60,10 +60,4 @@ ok('a far chunk (minWave 600 m and over) skips the benches',WRELIEF.bench(1234,c
 // the frame: the same world point gives the same ground from two cuts' frames
 {const A=WRELIEF.init({ox:2000000,oz:3000000,seed:7}).bench(500,1000,2000,S,REL,0),B=WRELIEF.init({ox:2001000,oz:2998000,seed:7}).bench(500,0,4000,S,REL,0);
  WRELIEF.init({ox:2000000,oz:3000000,seed:7});ok('two cuts of one place agree (the frame is world-absolute)',Math.abs(A-B)<1e-9,false);}
-// S1: every overlay in the cut regions has a style of its own
-{const names=new Set();const ow=path.join(__dirname,'..','..','openworld');
- for(const r of fs.readdirSync(ow)){const p=path.join(ow,r,'data','region.json');if(!fs.existsSync(p))continue;
-  for(const b of JSON.parse(fs.readFileSync(p,'utf8')).biomes||[])names.add(b.name.toLowerCase());}
- const missing=[...names].filter(n=>WRELIEF.styleOf(n)===null);console.log('      %d overlays in the cut regions; without a style: %s',names.size,missing.join(', ')||'none');
- ok('every overlay in the cut regions has a style (none falls back to desert)',names.size>0&&missing.length===0,WRELIEF.styleOf('not an overlay')!==null);}
 console.log(bad?bad+' FAILED':'all passed');process.exit(bad?1:0);

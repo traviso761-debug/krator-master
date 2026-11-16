@@ -10,7 +10,7 @@
     "kits/crops/src/00-head.html": "4ca8c0ff8a3db59c594067ef2b9dfc6bb993d73868dc3ca1cb3c342dd63203de",
     "kits/crops/src/10-crop-core.js": "4f32df5c0260ed8412029ced94fe1c495b0c828c3bea1d69b6d7093a8fcdcb56",
     "kits/crops/src/20-crop-records.js": "53a2b4c275eb4f3b05082083dc61f3c16ac81504417654962cdc49ac27d8755f",
-    "kits/crops/src/22-crop-material.js": "9f79ca919d26d19aa4377c5ed9d22cb75384291187374431b4a91af9133fa3f8",
+    "kits/crops/src/22-crop-material.js": "6214cba3326e3c76fb12dc2dacb9d3cb6a66d54e0865bfedb15168f71fdce948",
     "kits/crops/src/40-crop-query.js": "c4e1179691702ff13200d5b713c23e0f315ee99c61842a8735d671e63bfca439",
     "kits/crops/src/89-sheet.js": "c61d8a99942e93f8e93a2666d7ca1d4a8af3ef5f6d3135514a428ff69541ae7f",
     "kits/crops/src/99-tail.html": "893cb35f3016a3523c33b676c4dfbe5686c4b99a1e7128d78e2e3fa271cd4829",
@@ -74,12 +74,12 @@
     "tools": "2d2fdaca850a104a2a2c553313ccb3ad18dc6bc48cb554c8c714fc1ca39607bf"
    },
    "outputs": {
-    "kits/crops/build-manifest.json": "8029f175d66fbf7075910635aa83798a705c13d2c3a51820331088a52bc39c52",
-    "kits/crops/dist/crops.html": "000315cee56acfc01b762d8654abfd8e2e484bd9d0f2e6556e986b57b09c69db"
+    "kits/crops/build-manifest.json": "e760a94b9b896cb140bc0570a9858783ca56c4b10b16a86f5cea446721c3b69d",
+    "kits/crops/dist/crops.html": "93ecf1802f3a76f12c186ff2d09a7348120b70b82a53dafa3188d0032b2bd944"
    },
    "outputs_raw": {
-    "kits/crops/build-manifest.json": "8029f175d66fbf7075910635aa83798a705c13d2c3a51820331088a52bc39c52",
-    "kits/crops/dist/crops.html": "000315cee56acfc01b762d8654abfd8e2e484bd9d0f2e6556e986b57b09c69db"
+    "kits/crops/build-manifest.json": "e760a94b9b896cb140bc0570a9858783ca56c4b10b16a86f5cea446721c3b69d",
+    "kits/crops/dist/crops.html": "93ecf1802f3a76f12c186ff2d09a7348120b70b82a53dafa3188d0032b2bd944"
    }
   }
  }

@@ -1,16 +1,13 @@
 // ================================================================= OPEN WORLD — relief: the land below the model's 2 km
 // [G data] Plain maths of (x, z): no THREE, no DOM, no Math.random, no Math.sin, cos or exp (only + - * / floor sqrt); the
 // draws from core/rand (KRAND), so a Godot port gives the same land. core/world/PLAN-RELIEF.md is the plan; this is its P1:
-//   S1 styles   every overlay of the model gets a land style of its own (41's BIOME_STYLE named a few; the rest fell back
-//               to 'desert', whose terraces were the strongest): WRELIEF.styleOf(name)
 //   S2 benches  terraces only where a caprock lies, on beds that dip and warp, of irregular thickness, only the hard ones
 //               standing out as benches: WRELIEF.bench. It replaces 41's terraces on the absolute height (h / step), which
 //               ringed every hill like a contour map
+// (S1, a land style and palette for every overlay, is 41's BIOME_GROUND: claude/world-biome-styles, for every region.)
 // A region opts in (openworld/SITES.json "relief": 1; region.json `relief`); 41 calls WRELIEF only then, so a region
 // without it keeps its land exactly.
 //
-//   WRELIEF.styleOf(name)          the style key (41's STYLES) for an overlay's name, or null for one this table does not
-//                                  know (41 keeps its own BIOME_STYLE first)
 //   WRELIEF.init({ox, oz, seed})   the region's frame (metres of its origin from the model's: noise and dips are read at the
 //                                  world-absolute point, so two cuts of one place agree) and the world's seed
 //   WRELIEF.bench(h, x, z, S, rel, minWave)  the ground h with its caprock benches; S the style blend (terr, step), rel the
@@ -20,36 +17,6 @@ var WRELIEF=(function(){'use strict';
 const R={version:1};
 const clamp=(v,a,b)=>v<a?a:v>b?b:v;
 const smooth=(a,b,x)=>{let t=(x-a)/(b-a);t=t<0?0:t>1?1:t;return t*t*(3-2*t);};
-
-// ---------------------------------------------------------------- S1: every overlay's style
-// Keyed by the model's overlay names (lower case), as tools/scale-model/extract_region.py groups them into its families;
-// the styles are 41's (STYLES). Only the land's SHAPE takes this style: its colours stay 41's (BIOME_STYLE or 'desert'),
-// so turning relief on moves no colour (a palette per new style is the owner's call, PLAN-RELIEF.md)
-const FAMILY={
- karst:['k-guilin','nw bay'],
- scabland:['n semiarid','ria valley','floodzone','scablands'],
- maar:['siphon pits','region 99'],
- ringfold:['sw highlands'],
- badland:['e badlands','painted highlands','yuni valley'],
- tableland:['sedesert','w outer wall','tiers','the cut','crater drylands','crater drylands n','crater drylands s'],
- savanna:['e savannah rim','se savannah rim','ne rim'],
- yardang:['the bowl','the catch','e abysss','e abyss'],
- volcanic:['throne/volcano','godthrone','godstep valley','steaming seamounts','godshearth','twins','firebliss','geyser'],
- alpine:['n highlands','s highlands','e inner wall','e highlands','nw outer wall','ne outer wall','se outer wall','copper glacier',
-  'tharn uplands','rift rim n','rift rim s','w rift highland','stalker range','stalker gate','mid basin','n outlands','s outlands',
-  'outlands','outland gate','high rift','xanadu','opal valley','rift','loom chasms','labyrinth','great chasm'],
- tepui:['korona / ne','arachnoid canyons'],
- humid:['hyperjungle','hyperjungle n','hyperjungle s','savage hyperjungle','sw lowlands','nw lowlands','double delta','farside',
-  'arch','crook','sw bay','spider lake','green step','nw boreal'],
- vale:['oidong valley'],
- sea:['ring sea','deeps']};
-// a family's style in 41's STYLES. Tableland keeps 'desert' (it is the caprock country: its benches are real); alpine is
-// 'highland' (S4's peaks come later); karst and loess get styles of their own with their submodules (S8, S5)
-const FAMILY_STYLE={karst:'highland',scabland:'dryland',maar:'volcanic',ringfold:'highland',badland:'badland',tableland:'desert',
- savanna:'savanna',yardang:'abyss',volcanic:'volcanic',alpine:'highland',tepui:'korona',humid:'jungle',vale:'vale',sea:'sea'};
-const STYLE_OF={};for(const f in FAMILY)for(const n of FAMILY[f])STYLE_OF[n]=FAMILY_STYLE[f];
-R.FAMILY=FAMILY;R.STYLE_OF=STYLE_OF;
-R.styleOf=name=>{const s=STYLE_OF[String(name||'').toLowerCase()];return s===undefined?null:s;};
 
 // ---------------------------------------------------------------- the frame and the noise
 let OX=0,OZ=0,SEED=0x52454C;
