@@ -415,7 +415,9 @@ Each step ends in a node test on the valley host, with a negative for each check
       - **The ring**: six farming villages of 240 on the rim plain (`T.pherRing`), tithing to Phēr. Their people come out of Nōrth-Shor's bulk district.
       - **The fair's two days and the pilgrims' launches to Grēṭ-Āil** are `transport` records (`T.loops`). They are declared for the page that draws Phēr at 1:1 (its step P6); the valley runs its towns abstract, with no water layer, so it does not run them.
       - **The Thalaba road goes up the Qol valley** ("up into the qol valley"): about 105 km traced on the re-run model (`T.thalaba.roadKm`).
-      - **Phēr's seat is held by a member of the Sultan's family.** That is recorded in the Phēr plan; the tune needs nothing for it.
+      - **Phēr's seat is held by the Sultan's heir** (the owner's later answer, narrowing "a family member of the sultan holds the seat"). That is recorded in the Phēr plan; the tune needs nothing for it.
+      - **Phēr's small stream is named the Swīṭ Siṭrīm** ("sweet stream"). It rises in springs at the scarp's foot; the Phēr session's map edit draws it.
+      - **The north-shore region** (`openworld/xanadu-north-shore`, Phēr and Thalaba, reaching east to Ḍāiyar, the long isle left out) is the Phēr session's. `T.pherRing` stands in until its core/hamlet ring is baked.
     - **The White Lily and the Flashing Eye** (the owner, by way of the Qiblai kit's session, f5a10f8a4).
       - Qiblai's **white monastery is the Order of the White Lily**, a medicine and healing Order. Its complex in Qiblai is its head house (it has none elsewhere) and the city's hospital.
       - The **crimson monastery is the Order of the Flashing Eye**; no head house is given for it yet.
