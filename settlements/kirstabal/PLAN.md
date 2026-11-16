@@ -290,14 +290,15 @@ Following `README.md`, "CORE MODULES ARE NOT OPTIONAL":
 - **K1.** `core/region/data/xan-tune.js` and `test-xan-economy.js` checks 23-25 (50 of 50 pass). The ring sits 4-11 km
   out (moved in from the first draft's 11-23 km). The road to Lāiṭwāl waits for Lāiṭwāl in the tune.
 - **K2.** `settlements/kirstabal`: the town on core/city as a target on Xanadu's page, with only the Xanadu kit
-  (`README.md`). About 440 buildings and 2,850 people. The caravanserai, the latex house and the tea factory are composed
-  of kit pieces (`KNOWN_ISSUES.md`).
+  (`README.md`). About 440 buildings and 2,850 people. The caravanserai, the latex house, the tea factory and the fermentaries
+  are new Xanadu kit pieces (`kits/xanadu/src/87k-xa-lake-trades.js`, opt-in, 2026-11-16).
 - **K3.** The harbour (quays, mole, lighthouse, boat sheds), the lake (core/water open), Keb Riwā from the lip down the
   scarp to its mouth (core/water flow) and the bridge on the Strongbow road. `core/coast` is not taken: the lake's shore
   near the town is designed ground, and the open world (K6) takes core/coast.
-- **K4.** The ring's four villages (drawn) and the lake's nine (records for K6) on core/hamlet. The Xanadu row has no
-  fishing works yet, so the lake's villages are laid as farming villages (`KNOWN_ISSUES.md`). The boats wait for the lake
-  craft.
+- **K4.** The ring's four villages (drawn) and the lake's nine (records for K6) on core/hamlet. The lake's villages fish
+  (the owner, 2026-11-16: "work on fishing villages"): boat sheds, fish racks and a quay at the shore, on the Xanadu row
+  extended with fishing works (`KS_RING.fishingRow`). One lake hamlet, Jāl, is drawn on the town's own shore 3 km south-west.
+  The boats wait for the lake craft.
 
 ## 7. Questions for the owner
 

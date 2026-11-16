@@ -4,7 +4,8 @@
 // own records beside it: the harbour (its quays, the mole, the lighthouse, the boat sheds), the latex house's compound (the
 // White Monastery's), the serai, the White Monastery's daughter house, the north gate, and the Strongbow road over the bridge
 // across Keb Riwa's mouth (K3). Every piece is a normal Xanadu kit piece; what the kit lacks is composed of its pieces and
-// named so (KNOWN_ISSUES.md: the caravanserai, the latex house, the tea factory are owed to the kit).
+// named so. The caravanserai, the latex house, the tea factory and the fermentary are the kit's (kits/xanadu/src/87k-xa-lake-trades.js,
+// opt-in: read in place through kit.json).
 //
 // THE FRAME   the shore frame of 40-ks-ground.js: u along the shore (north-east positive), v inland (south-east). The town
 //             is the comb of PLAN.md section 3: the quay street along the shore (v 48), the Lamp Way inland from the harbour
@@ -24,7 +25,7 @@ var KS_TOWN=(function(){
     daughter house); summed in census and held to PLAN.md's 3,000 by the test */
  const PEOPLE={xa_poor_a:6,xa_poor_b:12,xa_poor_c:4,xa_andean_poor:6,xa_mid_a:7,xa_mid_b:9,xa_mid_c:16,xa_house_turk_a:8,xa_rich_a:12,xa_rich_b:16,xa_rich_c:11,
   xa_house_turk_b:10,xa_shops:6,xa_shop_turk_a:8,xa_shop_turk_b:6,xa_teahouse:4,xa_workshop:5,xa_smithy:4,xa_warehouse:2,xa_bath:4,xa_temple:6,xa_granary:0,
-  xa_barracks:80,xa_generator:4,xa_monastery:150,xa_boatshed:3,xa_quay:0,xa_lighthouse:2,xa_gate:12,xa_watch:4,xa_garden:0,xa_pens:0,xa_wall:0,xa_bridge:0,xa_barge:0};
+  xa_barracks:80,xa_generator:4,xa_monastery:150,xa_serai:20,xa_latex_house:0,xa_tea_factory:4,xa_fermentary:2,xa_fish_racks:0,xa_boatshed:3,xa_quay:0,xa_lighthouse:2,xa_gate:12,xa_watch:4,xa_garden:0,xa_pens:0,xa_wall:0,xa_bridge:0,xa_barge:0};
  const tune=()=>({cell:2.5,rasterHalf:900,maxSlope:.22,exact:true,
   width:{avenue:10,main:7,side:5,alley:3,highway:9,lane:4},
   lot:{side:1.6,setback:1.4,rear:3,inset:1,step:3},
@@ -47,14 +48,13 @@ var KS_TOWN=(function(){
   ['barracks','xa_barracks',0,175,560,'bazaar'],   /* the garrison of about 80 */
   ['generator','xa_generator',0,30,350,'lamp'],    /* the Sultan's licence lights the Lamp Way (T.lit) */
   ['horns','xa_rich_c',0,-170,365,'bazaar'],       /* the Brotherhood of the Two Horns' factor house (horns.kirstabal), on the bazaar */
-  ['serai.a','xa_mid_b',0,548,330,'gate'],['serai.b','xa_mid_b',0,574,330,'gate'],['serai.store','xa_warehouse',0,608,372,'gate'],
-  ['serai.pen.a','xa_pens',0,534,368,'gate'],['serai.pen.b','xa_pens',1,552,368,'gate'],   /* the caravanserai (composed: KNOWN_ISSUES.md) */
-  ['tea.store','xa_warehouse',0,-300,700,'lake'],['tea.rolling','xa_workshop',0,-262,722,'lake'],   /* the tea factory (composed) */
-  ['ferment.a','xa_workshop',0,-540,500,'lake'],['ferment.b','xa_workshop',0,-540,532,'lake'],     /* the cacao fermentaries */
+  ['serai','xa_serai',0,566,352,'gate'],         /* the caravanserai by the north gate (kits/xanadu 87k, opt-in) */
+  ['tea','xa_tea_factory',0,-282,712,'lake'],      /* the tea factory: the withering lofts and the rolling shed */
+  ['ferment.a','xa_fermentary',0,-538,500,'lake'],['ferment.b','xa_fermentary',1,-538,526,'lake'],   /* the cacao fermentaries */
   ['temple','xa_temple',0,590,440,'gate']];   /* the gate temple of the Decree, inside the north gate */
- /* the latex house's compound (the White Monastery's; the owner, 2026-11-16): its drying halls and sealing room in a walled
-    court, the gate toward the works road */
- const LATEX={u0:-505,u1:-385,v0:585,v1:700,halls:[['latex.hall.a','xa_warehouse',0,-470,612],['latex.hall.b','xa_warehouse',0,-420,612],['latex.seal','xa_workshop',0,-445,666]],gate:'u0'};
+ /* the latex house (the White Monastery's; the owner, 2026-11-16): one kit piece (kits/xanadu 87k xa_latex_house: its walled
+    court, the drying halls, the sealing room), its gate toward the works road; the box its court's ground is painted in */
+ const LATEX={u0:-466,u1:-424,v0:621,v1:663,at:[-445,642]};
  const MONASTERY=[330,840];   /* the White Monastery's daughter house, on the rising ground inland (toward the scarp) */
  /* core/city's steps the town leaves out: the side streets' lots and the alleys (a town of 3,000 keeps yards and gardens behind
     its houses, as Strongbow's town does) */
@@ -79,9 +79,8 @@ var KS_TOWN=(function(){
      const Lt={id:P.lots.length,cls:'landmark',role,key,v,slot:0,wealth:1,x:c[0],z:c[1],y:CG.pad(o),ry,w:D.w,d:D.d,h:D.h,lot:o,bo:o,way:-1,side:0,s:0,born:1,died:null,civic:true,ksId:id};
      P.lots.push(Lt);SL.hashLot(Lt);SL.register(Lt);P.landmarks.push(Lt);SL.R.stampPoly(obbCorners(box(c,ry,D.w,D.d,3)),OCC.HARD,Lt.id);};
     for(const [id,key,v,uu,vv,tw] of LANDMARKS)fixed(id,key,v,[uu,vv],toward([uu,vv],tw),id.split('.')[0]);
-    for(const [id,key,v,uu,vv] of LATEX.halls)fixed(id,key,v,[uu,vv],face(NVX),'latex');
-    /* the latex compound's court and the bazaar square: kept open */
-    SL.R.stampPoly([[LATEX.u0-10,LATEX.v0-10],[LATEX.u1+10,LATEX.v0-10],[LATEX.u1+10,LATEX.v1+10],[LATEX.u0-10,LATEX.v1+10]].map(xz),OCC.HARD,-1);
+    fixed('latex','xa_latex_house',0,LATEX.at,face(NUX),'latex');
+    /* the bazaar square: kept open */
     {const D=dims('xa_gate',0);if(D)SL.R.stampPoly(obbCorners(box(xz(NORTH_GATE),face(UX),D.w,D.d,4)),OCC.HARD,-1);}   /* the north gate (drawn with the town's own pieces) */
     SL.R.stampPoly([[BAZAAR[0]-32,BAZAAR[1]-34],[BAZAAR[0]+32,BAZAAR[1]-34],[BAZAAR[0]+32,BAZAAR[1]+30],[BAZAAR[0]-32,BAZAAR[1]+30]].map(xz),OCC.HARD,-1);
     SL.note(1,P.landmarks.length+' landmarks: the seat, the barracks, the generator, the Two Horns, the serai, the tea factory, the fermentaries, the latex house');}},
@@ -131,10 +130,6 @@ var KS_TOWN=(function(){
   put('lighthouse','xa_lighthouse',0,[MOLE.c[0],MOLE.c[1]],face(NVX),{y:QY,kind:'lighthouse'});
   for(let i=0;i<3;i++)put('boatshed.'+i,'xa_boatshed',0,[H.u0-46-i*20,-6],face(NVX),{y:Math.max(QY-.4,G.h(...xz([H.u0-46-i*20,4]))),kind:'boatshed'});
   put('barge','xa_barge',0,[H.u0+120,-70],face(UX),{y:0,kind:'boat'});   /* the Sultan's barge at its mooring (the kit's pleasure barge) */
-  /* the latex compound's wall: xa_wall runs round the court, a gap for its gate on the works road's side */
-  {const X=LATEX,Wd=dims('xa_wall',0),seg=Wd?(Wd.fw||Wd.w):24,sides=[[[X.u0,X.v0],[X.u1,X.v0]],[[X.u1,X.v0],[X.u1,X.v1]],[[X.u1,X.v1],[X.u0,X.v1]],[[X.u0,X.v1],[X.u0,X.v0]]];
-   sides.forEach(([a,b],k)=>{const L2=dd(a,b),n=Math.max(1,Math.round(L2/seg)),A=xz(a),B=xz(b),ry=face([B[1]-A[1],-(B[0]-A[0])]);
-    for(let i=0;i<n;i++){if(k===3&&i===Math.floor(n/2))continue;const t=(i+.5)/n;put('latex.wall.'+k+'.'+i,'xa_wall',0,[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t],ry,{kind:'wall',len:L2/n});}});}
   put('monastery','xa_monastery',0,MONASTERY,toward(MONASTERY,'bazaar'),{kind:'monastery'});
   put('gate.north','xa_gate',0,NORTH_GATE,face(UX),{kind:'gate'});
   /* ---- the Strongbow road along the shore and the bridge over Keb Riwa's mouth (the owner, 2026-11-16: "bridge crosses it") */

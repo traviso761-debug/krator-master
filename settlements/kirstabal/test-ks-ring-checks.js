@@ -13,7 +13,14 @@ module.exports=function(T,{dims,KS_RING,ROOT}){
  T.neg('a ring village moved off the tune\'s place is caught',sameLists,Object.assign({},KS_RING,{ring:KS_RING.ring.map((r,i)=>i?r:[r[0],r[1],r[2]+1,r[3],r[4],r[5]])}),KS_RING);
  const V=KS_RING.make({dims});
  const laid=Vs=>{const bad=[];for(const v of Vs){if(v.error||!v.records||v.records.length<20){bad.push(v.id+': '+(v.error||(v.records||[]).length+' records'));continue;}
-  const h=v.ground==='page'?KS_GROUND.h:KS_GROUND.model;for(const r of v.records)if(h(r.x,r.z)<2){bad.push(v.id+': '+r.id+' wet');break;}}return bad;};
+  const h=v.ground==='page'?KS_GROUND.h:KS_GROUND.model;for(const r of v.records)if(r.key!=='xa_quay'&&h(r.x,r.z)<2){bad.push(v.id+': '+r.id+' wet');break;}}return bad;};   /* the landing's quay stands at the water by design */
+ /* the lake's villages fish: boat sheds and fish racks, a quay at the shore (its landing) on the water's side */
+ const fishing=Vs=>Vs.filter(v=>v.focus==='fishing').every(v=>{const k={};for(const r of v.records||[])k[r.key]=(k[r.key]||0)+1;
+  const h=v.ground==='model'?KS_GROUND.model:KS_GROUND.h,q=(v.records||[]).find(r=>r.key==='xa_quay');
+  return k.xa_boatshed>0&&k.xa_fish_racks>0&&!!q&&!!v.shore&&h(q.x+v.shore.ux*40,q.z+v.shore.uz*40)<1;});
+ {const F=V.filter(v=>v.focus==='fishing');T.ok('the lake\'s villages and the shore hamlet fish: boat sheds, fish racks and a quay at the water',F.length===9&&fishing(V),
+   F.length+' fishing villages; '+F.map(v=>v.id.replace(/^ll\.(hamlet\.)?/,'')+' '+(v.records||[]).filter(r=>r.key==='xa_boatshed').length+'/'+(v.records||[]).filter(r=>r.key==='xa_fish_racks').length).join(', '));
+  T.neg('a fishing village without its boat sheds is caught',fishing,V.map(v=>v.focus==='fishing'?Object.assign({},v,{records:v.records.filter(r=>r.key!=='xa_boatshed')}):v),V);}
  {const b=laid(V);T.ok('every village lays out on core/hamlet: the ring on the page\'s ground, the lake\'s on the model\'s, every building dry',!b.length,
    V.map(v=>v.id.replace(/^ks\.ring\.|^ll\./,'')+' '+(v.records||[]).length).join(', ')+(b.length?'; '+b.join('; '):''));
   T.neg('a village whose house stands in the lake is caught',Vs=>!laid(Vs).length,V.map((v,i)=>i?v:Object.assign({},v,{records:v.records.map((r,j)=>j?r:Object.assign({},r,{x:-1500,z:0}))})),V);}

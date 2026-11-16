@@ -22,7 +22,7 @@ if(KS_PLAN){
  const WET=new Set(['quay','mole','lighthouse','boat','bridge']);   /* on the water or over the river: their own level */
  for(const r of KS_PLAN.extra){const st=WET.has(r.kind)?{y:r.y,drop:r.kind==='boat'?0:Math.max(0,r.y-KS_GROUND.h(r.x,r.z))+.3}:ksStance(r);
   KS_PLACE.push({key:r.key,x:r.x,z:r.z,ry:r.ry,o:{v:r.v,y:st.y,drop:r.kind==='boat'||r.kind==='bridge'?0:st.drop},kind:r.kind,id:r.id,h:ksD(r.h,10),people:r.people});}}
-for(const V of KS_RINGV)for(const r of (V.records||[])){const D=ksDims(r.key,0)||{w:r.w,d:r.d,fw:r.w,fd:r.d};const q=Object.assign({},r,{fw:D.fw,fd:D.fd}),st=ksStance(q);
+for(const V of KS_RINGV)for(const r of (V.records||[])){const D=ksDims(r.key,0)||{w:r.w,d:r.d,fw:r.w,fd:r.d};const q=Object.assign({},r,{fw:D.fw,fd:D.fd}),st=r.key==='xa_quay'?{y:1.7,drop:Math.max(0,1.7-KS_GROUND.h(r.x,r.z))+.3}:ksStance(q);   /* a landing's quay at the quays' level, over the water */
  KS_PLACE.push({key:r.key,x:r.x,z:r.z,ry:r.ry,o:{v:0,y:st.y,drop:st.drop},kind:'ring',village:V.id,id:'ring:'+r.id,h:ksD(r.h,8),pending:!!r.pending,w:r.w,d:r.d});}
 window._kirstabalPlan={err:KS_ERR?String(KS_ERR):null,place:KS_PLACE.length,lots:KS_PLAN?KS_PLAN.lots.length:0,extra:KS_PLAN?KS_PLAN.extra.length:0,
  people:KS_PLAN?KS_PLAN.census.people:0,ways:KS_PLAN?KS_PLAN.ways.length:0,ring:KS_RINGV.map(V=>({id:V.id,error:V.error||null,records:(V.records||[]).length,pop:V.census&&V.census.pop}))};
@@ -30,13 +30,14 @@ window._kirstabalPlan={err:KS_ERR?String(KS_ERR):null,place:KS_PLACE.length,lots
    KNOWN_ISSUES.md), from the records, never from pixels: the country wild (1) but the water, the ways, the zone's made ground
    (the odd tree, .05) and every building's footprint */
 const KS_SPACE=KCITY.lib.KSPACE.create({cell:40});
-for(const p of KS_PLACE){const D=VERN.defs[p.key];if(D)KS_SPACE.insert(p,p.x,p.z,Math.hypot(D.fw||D.w,D.fd||D.d)/2+2);}
+for(const p of KS_PLACE){const D=VERN.defs[p.key];if(D)KS_SPACE.insert(p,p.x,p.z,Math.hypot(D.fw||D.w,D.fd||D.d)/2+(p.kind==='ring'?2:8));}
 const KS_WAYS=KCITY.lib.KSPACE.create({cell:40});
 if(KS_PLAN)for(const w of KS_PLAN.ways.concat(KS_PLAN.roads))for(let i=1;i<w.pts.length;i++){const a=w.pts[i-1],b=w.pts[i];KS_WAYS.insert({a,b,w:w.w},(a[0]+b[0])/2,(a[1]+b[1])/2,Math.hypot(b[0]-a[0],b[1]-a[1])/2+w.w);}
 function ksBioMask(x,z){if(KS_GROUND.h(x,z)<1.2)return 0;
  for(const s of KS_WAYS.query(x,z,1))if(KCITY.lib.segDist([x,z],s.a,s.b)<s.w/2+2)return 0;
- for(const p of KS_SPACE.query(x,z,1)){const D=VERN.defs[p.key];if(Math.hypot(x-p.x,z-p.z)<Math.hypot(D.fw||D.w,D.fd||D.d)/2+2)return 0;}
+ for(const p of KS_SPACE.query(x,z,1)){const D=VERN.defs[p.key];if(Math.hypot(x-p.x,z-p.z)<Math.hypot(D.fw||D.w,D.fd||D.d)/2+(p.kind==='ring'?2:8))return 0;}   /* a clearing round every town building */
  const v=KS_GROUND.v(x,z),u=KS_GROUND.u(x,z);if(u>-760&&u<820&&v<60)return 0;   /* the beach, the quays and the quay street: open */
- if(u>-580&&u<680&&v>20&&v<660)return .05;return 1;}
+ if(u>-600&&u<700&&v>20&&v<780)return .05;   /* the town, its works quarter (the latex house, the tea factory, the fermentaries) and the monastery's ground */
+ return 1;}
 if(typeof BIO!=='undefined'&&BIO.host){Object.assign(BIO.host,{mask:ksBioMask,origin:[[0,0],[-1200,1600],[1600,1400]],center:[200,400],
  fields:{wet:(x,z)=>Math.min(1,.7+Math.max(0,1-Math.abs(KS_GROUND.v(x,z))/250)*.25),salt:()=>0,upland:()=>0,flow:()=>0,mist:()=>0}});}

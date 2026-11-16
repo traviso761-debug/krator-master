@@ -63,7 +63,7 @@ function ksPaintCountry(P){const K=KS_PLAN;P.sandBands(25);const {ma,mb}=P;
  if(K){ma.fillStyle='rgba(0,0,120,1)';P.poly(ma,K.zone);ma.fill();for(const w of K.roads){ma.strokeStyle='rgb(0,0,255)';P.line(ma,w.pts,w.w);}}
  /* the ring's fields: strips round each farming village (and the ranch's paddocks), tilled, standing or fallow by their own hash,
     kept off the village's lanes and buildings, the water and the town */
- for(const V of KS_RINGV){if(!V.site)continue;const farm=V.focus==='farming',c=[V.site.x,V.site.z],R0=farm?160:200,R1=farm?900:1100,P0=[70,160];
+ for(const V of KS_RINGV){if(!V.site||V.focus==='fishing')continue;const farm=V.focus==='farming',c=[V.site.x,V.site.z],R0=farm?160:200,R1=farm?900:1100,P0=[70,160];
   for(let i=Math.floor((c[0]-R1)/P0[0]);i<=Math.ceil((c[0]+R1)/P0[0]);i++)for(let j=Math.floor((c[1]-R1)/P0[1]);j<=Math.ceil((c[1]+R1)/P0[1]);j++){
    const x0=i*P0[0]+3,z0=j*P0[1]+3,cx=x0+P0[0]/2-3,cz=z0+P0[1]/2-3,r=Math.hypot(cx-c[0],cz-c[1]);if(r<R0||r>R1)continue;
    if(KS_GROUND.h(cx,cz)<3||KS_GROUND.riverAt(cx,cz)[0]<130)continue;const u=KRAND.unit(KRAND.hash(41625,i,j));if(u<.18)continue;

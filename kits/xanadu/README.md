@@ -91,6 +91,14 @@ Pleasure Dome's North Door to the palace's gate iwan and postern (`XGW`, `xgwPla
 and the Dome's North Door moved to its north face for it (`XPDOME` patched where the citadel's files load; the vest's barrel cut
 back while the Dome builds; `o.gw` drops the north garden wall's east run). Erewhon places it (`xgwSite`); the sheet draws it
 alone at Erewhon's height: `settlements/xanadu/citadel/PLEASURE-DOME.md`, "The Golden Way".
+A fifth, `87k-xa-lake-trades.js` (2026-11-16, for Kirstabal: `settlements/kirstabal/PLAN.md`), is opt-in the same way: not in
+`xanadu.py`, read in place by name (`settlements/kirstabal/kit.json` "external"), so no other page changes. The lake's trades:
+`xa_serai` (the caravanserai: a walled court of two-storey ranges round a well, an iwan gate, corner towers), `xa_latex_house`
+(the White Monastery's: open drying halls of racks round a whitewashed court, the sealing room, the white banner), `xa_tea_factory`
+(the louvred withering lofts, the rolling shed, the trays), `xa_fermentary` (cacao sweat boxes and drying floors) and
+`xa_fish_racks` (a fishing village's racks and smokehouse: core/hamlet's fishing works on the Xanadu row, as Kirstabal's
+`KS_RING.fishingRow` extends it). A world that wants them lists the file; folding it into `FILES` changes every page that
+takes the kit (TODO.md, "Ride along").
 
 **Footprints** (2026-11-10; the owner: "the garden pieces ... stick out way over what their footprint is supposed to be").
 A def's footprint is its `w x d`, its lot: the sheet spaces sites by it, Erewhon's garden grid and blocks set 8 m and 16 m

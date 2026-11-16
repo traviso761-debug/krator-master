@@ -2,24 +2,21 @@
 
 Steps K0-K4 of `PLAN.md` (2026-11-16). What is owed, by whom.
 
-## Owed to the Xanadu kit (the owner: "it will use just the normal xanadu kit")
+## The Xanadu kit (the owner: "it will use just the normal xanadu kit")
 
-The town is drawn only with the kit's own pieces. Three of its buildings the kit does not have are composed of its pieces,
-and should become pieces of the kit (`kits/xanadu`, rebuilding every page that takes it):
-- **the caravanserai** (`ks.serai.*`): two courtyard houses (`xa_mid_b`), a warehouse and two stone pens;
-- **the latex house** (`ks.latex.*`): two warehouses and a workshop in a court of city-wall runs (`xa_wall`);
-- **the tea factory** (`ks.tea.*`) and **the fermentaries** (`ks.ferment.*`): a warehouse and workshops.
-Also owed: wind-catchers (the plan's heat), a barge-port slip, a mole piece (the mole is a rubble bank under quay pieces),
+The caravanserai, the latex house, the tea factory, the fermentaries and the fishing villages' racks are the kit's own pieces
+(2026-11-16: `kits/xanadu/src/87k-xa-lake-trades.js`, opt-in: read in place through `kit.json`, so no other page changed;
+`TODO.md` "Ride along" folds it into the kit's FILES). Still owed: wind-catchers (the plan's heat), a barge-port slip, a mole piece (the mole is a rubble bank under quay pieces),
 a long bridge (Keb Riwa's 135 m crossing is a run of the kit's 20 m street bridges), a work barge and lake craft (the
 moored boat is the Sultan's pleasure barge; the capital's lake owes the same craft), and the White Monastery's white dress of
 `xa_monastery` (drawn in the kit's own colours).
 
-## Owed to core/hamlet
+## core/hamlet
 
-- **No fishing works on the Xanadu row.** `KHAMLET.CULTURES.xanadu` has no `fishing` focus jobs, boat sheds or landing, so
-  the Lower Xanadu Lake's nine villages are laid as farming villages (the terraces above the shore every lake village
-  works). A `fishing` entry in the row changes core/hamlet's shared row (Longsong's villages, the region plans): for the
-  core/hamlet session.
+- **The fishing villages** (the owner, 2026-11-16: "work on fishing villages") are laid on the Xanadu row extended in this
+  build (`KS_RING.fishingRow`: boat sheds, fish racks, the fishers' jobs and reach, a quay as the landing), passed to
+  `KHAMLET.village` as a row object, because the row's own file reaches ten builds. Moving it into the row rides along with
+  the next all-builds rebuild (`TODO.md`).
 - **The ceiling of 500** (`KHAMLET.POP_MAX`): Phisharī (1,400), Kāko-Bāgh (1,200), Ōpal-Māuṭh (1,200), Rāis-Ṭeras (1,000)
   and Sekriḍ (800) are laid as their first 240-500 by the census; the rest are their hamlets (the tune holds all of them).
 

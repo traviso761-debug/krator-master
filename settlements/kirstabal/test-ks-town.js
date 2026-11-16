@@ -52,7 +52,7 @@ const inLake=X=>X.lots.concat(X.extra).filter(L=>!WATERY.has(L.kind)&&KS_GROUND.
 const popOk=X=>Math.abs(X.census.people-3000)<=450;
 T.ok('the town holds about 3,000 (PLAN.md section 2; within 15 %)',popOk(K),K.census.people+' people in '+K.census.buildings+' buildings');
 T.neg('a town of 4,000 is caught',popOk,{census:{people:4000}},K);
-const marks=X=>['ks.seat','ks.barracks','ks.generator','ks.horns','ks.serai.a','ks.latex.hall.a','ks.latex.seal','ks.tea.store','ks.extra.monastery','ks.extra.lighthouse','ks.extra.gate.north']
+const marks=X=>['ks.seat','ks.barracks','ks.generator','ks.horns','ks.serai','ks.latex','ks.tea','ks.ferment.a','ks.extra.monastery','ks.extra.lighthouse','ks.extra.gate.north']
  .every(id=>X.lots.some(l=>l.id===id)||X.extra.some(l=>l.id===id))&&X.extra.filter(e=>e.kind==='quay').length>=8&&X.extra.filter(e=>e.kind==='mole').length>=10;
 T.ok('the landmarks stand: the seat, the barracks, the generator, the Two Horns, the serai, the latex house, the tea factory, the White Monastery\'s house, the lighthouse, the north gate; the quays and the mole',marks(K),
  K.extra.filter(e=>e.kind==='quay').length+' quays, '+K.extra.filter(e=>e.kind==='mole').length+' mole pieces');

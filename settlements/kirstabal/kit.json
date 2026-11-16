@@ -3,7 +3,8 @@
   "town": "kirstabal.html"
  },
  "external": [
-  "settlements/kirstabal/gen/69k-kcity-bundle.js"
+  "settlements/kirstabal/gen/69k-kcity-bundle.js",
+  "kits/xanadu/src/87k-xa-lake-trades.js"
  ],
  "scoped": [
   "69k-kcity-bundle.js"

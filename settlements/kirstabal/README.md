@@ -17,7 +17,8 @@ node ../../core/region/tests/test-xan-economy.js   # K1: the town in the Sultana
 The town is a target on Xanadu's page, as Qiblai's city is: `build.py` writes `gen/69k-kcity-bundle.js` (core/space,
 core/city and core/hamlet sealed in one closure, with `KCITY.lib` handing the town's site steps what core/city's own steps
 use) and runs `settlements/xanadu/build.py --kit settlements/kirstabal`. Only the normal Xanadu kit draws it (the owner:
-"it will use just the normal xanadu kit"). core/atmos, core/water and core/drawn come in through `kit.json` "files"; the
+"it will use just the normal xanadu kit"), with the kit's opt-in lake trades (`kits/xanadu/src/87k-xa-lake-trades.js`: the
+caravanserai, the latex house, the tea factory, the fermentary, the fish racks) read in place through `kit.json`. core/atmos, core/water and core/drawn come in through `kit.json` "files"; the
 ground's six library sets are this folder's own pack (`materials.json`, `tex/`, bound by `src/89k0-ks-matlib.js`).
 
 ## How the town is made
@@ -27,7 +28,7 @@ ground's six library sets are this folder's own pack (`materials.json`, `tex/`, 
 | `src/39k-ks-model.js` | [G data] | GENERATED (`--bake-model`): the scale model's heights above the lake (-1,685 m) and its water, px 925..1009 x 1580..1619 |
 | `src/40-ks-ground.js` | [G data] | `KS_GROUND`: the page's frame (origin px 988.33,1599.4; y above the lake), the shore frame (u along the shore, v inland), the town's ground as designed (beach, apron, harbour basin) blended into the model north (the river's arm) and east (the scarp), Keb Riwa's line and channel, the cataract |
 | `src/41-ks-town.js` | [G data] | `KS_TOWN.make`: one core/city instance (the quay street, the Lamp Way, the works road, the monastery road; landmarks; steps 6-10), then the town's own records: the harbour's quays, mole and lighthouse, the boat sheds and the barge, the latex house's walled compound, the White Monastery's house, the north gate, the Strongbow road and the bridge over Keb Riwa |
-| `src/42-ks-ring.js` | [G data] | `KS_RING.make`: Kirstabal's ring (three farming villages and a ranch) and the lake's nine villages on core/hamlet (`KHAMLET.village`, the Xanadu row); the ring drawn, the lake's villages records for the open world (K6) |
+| `src/42-ks-ring.js` | [G data] | `KS_RING.make`: Kirstabal's ring (three farming villages and a ranch), the fishing hamlet Jāl on the town's shore and the lake's nine villages on core/hamlet (`KHAMLET.village`); the lake's fish, on the Xanadu row extended with fishing works (`fishingRow`: boat sheds, fish racks, a quay at the shore); the ring and Jāl drawn, the lake's villages records for the open world (K6) |
 | `targets/town/89zk-ks-site.js` | [G data] | the site on the page: `terrainH`, the town and the ring with the kit's boxes (VERN.defs), each record seated (Erewhon's stance: base at the highest corner, a footing to the lowest), the flora's mask from the records |
 | `targets/town/90k-ks-world.js` | [web] | the Krator sky, the camera's reach (the cataract is 24 km off), four ground meshes registered with core/drawn (the town 6 m, Keb Riwa's last 4 km and the bridge 10 m, the country 50 m, the far field 500 m; each coarser one sunk under the finer), painted from the records, the lake (WATER.open) and Keb Riwa from the lip to its mouth (WATER.flow) |
 | `targets/town/90l-ks-build.js` | [web] | the mole's rubble bank, every record by VERN.place in 400 m chunks with Qiblai's runtime LOD, the vendored Vale biome over the mask |
