@@ -26,6 +26,9 @@ the normal xanadu kit. opium dried at kirstabal. road follows lake and gorge. Ke
   white and crimson of qiblai"; `kits/qiblai/PLAN.md` 2b: each has its colour and its Prismarch on the council).
 - **The White Monastery takes a share of the opium it dries and a small fee** (the owner, 2026-11-16). Section 4 has the
   numbers, all *proposed*.
+- **Each great monastery also takes 1/8 of the Council's income** (the owner, 2026-11-16: "the great monasteries
+  additionally each take 1/8 of the Council's income"). So the White and the Crimson draw their eighths at Qiblai, as the
+  Order's saffron house already does (`T.orderHouse.share`, 1/8), on top of what the White earns at Kirstabal.
 - **The Landing belongs to the Scarp** (P5), with the rest of the lake.
 
 Sources:
@@ -224,12 +227,19 @@ What the tune does now:
 | **The lower lake's villages** (section 2a) as `T.lowerLake`, read by the same `lakeTown` as `T.lake`: nine villages with their trades, in P5, hub Kirstabal; their people come off P5's bulk district | the owner's smaller Atitlán. The fishing villages get `T.fishery` works; the town and Strongbow eat 56 t of fish a year and catch none |
 | **A market-boat round** on the lower lake (`T.rounds`: `round.lower`, Kirstabal and the villages) | the pots, mats, honey, fruit and fish go round as on the capital's lake |
 | **The Landing** (`xan.landing`, 600, `lake`) and **the split of `road.qb-ks`**: the barge Kirstabal to the Landing (112 km), then the portage road from the Landing to Qiblai (~22 km) | the owner: "barges can stop at a landing with portage road". Gemini's 108 km is the lake alone |
-| **The latex house** (`ks.latex`): the opium's drying as a batch (raw latex in, opium out, at a loss of weight), so the province's opium share lands as latex and leaves as opium. It is **the White Monastery's** work: a house record beside the town, as `T.orderHouse` is beside Qiblai (`['qb.white.kirstabal', ..., 'sl758m2396', 992, 1602, 150]`) | the owner: "opium dried at kirstabal", run by the White Monastery. It needs a raw good (`latex`) beside `opium` in `T.goods`, or the latex house stays a store if the tune keeps one good. **The share and the fee** (the owner, 2026-11-16: "takes a share and a small fee"; the figures *proposed*): a **cut of 1/20** on the opium that lands at Kirstabal on the Scarp's tithe road (`tithe.p5`), to the house, as the Order's house takes its cut of the oil. That is about 6 t of the province's 120 t a year. **The fee is a fixed yearly transfer of 200 dinars** from the seat to the house (`77-sim-6-transfer.js`), against the Sultan's grant of 500 to the whole council. The house sells its opium on by want, as the Two Horns' factors do, and Qiblai's council counts it among the White Monastery's income |
+| **The latex house** (`ks.latex`): the opium's drying as a batch (raw latex in, opium out, at a loss of weight), so the province's opium share lands as latex and leaves as opium. It is **the White Monastery's** work: a house record beside the town, as `T.orderHouse` is beside Qiblai (`['qb.white.kirstabal', ..., 'sl758m2396', 992, 1602, 150]`) | the owner: "opium dried at kirstabal", run by the White Monastery. It needs a raw good (`latex`) beside `opium` in `T.goods`, or the latex house stays a store if the tune keeps one good. **The share and the fee** (the owner, 2026-11-16: "takes a share and a small fee"; the figures *proposed*): a **cut of 1/20** on the opium that lands at Kirstabal on the Scarp's tithe road (`tithe.p5`), to the house, as the Order's house takes its cut of the oil. That is about 6 t of the province's 120 t a year. **The fee is a fixed yearly transfer of 200 dinars** from the seat to the house (`77-sim-6-transfer.js`), against the Sultan's grant of 500 to the whole council. The house sells its opium on by want, as the Two Horns' factors do. **Beside this the White Monastery takes its eighth of the Council's income at Qiblai** (the owner, 2026-11-16: each great monastery takes 1/8). That eighth is not Kirstabal's: in the tune it generalises `T.orderHouse` to eight houses, a change on Qiblai's side (below) |
 | **Sekriḍ as the Red Monastery's** village: its `lakeTown` record with the crimson monastery of Qiblai as its holder | the owner: the Red Monastery, Qiblai's crimson, runs Sekriḍ. On the sim it is a lake village like the rest, until the council's houses have records of their own |
 | `ks.boatyard` and `ks.serai`, stores (`out:[]`, as Erehwon's dockyard) | so the barge and caravan people are works the sim can count |
 | The ring villages, 3-4 declared (`KHAMLET` `xanadu` row) | the proposal's section 3e; the rest of the Scarp stays bulk |
 | Retime `road.ks-sb` to the ground (12-16 km, over the bridge) plus the lift's hours | the 25 km is to the lip's pin, but the goods land at the foot |
 | **`road.ks-lw`, to Lāiṭwāl**, by the lake and the gorge (the owner): Kirstabal to Ōpal-Māuṭh by barge (35 km), then up the gorge and the valley (~155 km) | Lāiṭwāl's plan sends opal, moonglass, lenses and pearls down through Kirstabal and Strongbow, and takes grain, tea, dried fruit and iron up. Its step L1 adds the town to the tune |
+
+**On Qiblai's side, not this step's** (the owner, 2026-11-16: "the great monasteries additionally each take 1/8 of the
+Council's income"): today the tune gives an eighth only to the Order's house (`T.orderHouse`, `qb.order`). The rule makes
+that eighth houses, one per colour, among them the white (whose daughter house is at Kirstabal) and the crimson (which
+holds Sekriḍ). Each takes 1/8 of the Prismarchy's oil cut and of the Sultan's grants of esteem. The change belongs to the
+Xanadu tune's owner session with Qiblai's monasteries, and `test-xan-economy.js` should check that the eight eighths add to
+the whole. Kirstabal's K1 only adds the White Monastery's latex share and fee.
 
 *Proposed, for the owner:* Lāiṭwāl's road list also has sugar going up, which the native rule (`TRADE-SCOPE.md:161`) gives
 to the Ring Isles and the SW lowlands. That is for Lāiṭwāl's plan to settle.
