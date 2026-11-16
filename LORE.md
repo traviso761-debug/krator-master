@@ -98,8 +98,11 @@ See https://claude.ai/artifact/N76KxfMXL5C7hfRGHKJK5q for scale map; some region
   ruin is **the Hill arcology** (`kits/ancients/targets/hill`), in the springs' hollow through the basin's interior hills
   (moved there on the model 2026-10-23, px 834,1112, `biomes/catch/PLAN.md` section 6b). *Proposed*: the divers' prospect is **the Hill
   arcology itself**, its lower levels drifted full of sand and sealed by salt, which the dunes uncover and bury again.
-  If the Rift line ever reached Stair by its bore from Strongbow under the Catch's walls (a possibility the owner left
-  open, 2026-11-11), the bore's mouth is the divers' other prospect. *Proposed* (section 6a): in
+  **The Theodiga tunnel stays** [the owner, 2026-11-16: "we can leave in the stair to theodiga tunnel"]: the Ancients'
+  dead bore from Theodiga to Stair under the Twins and the Catch's southern wall (438 km, 385 km of it bored;
+  `openworld/ANCIENT-NETWORK.md`, `rift.bowl.theodiga-stair`). The trains do not run in it; it is a third way across, but
+  a hard one, dark, with little food or water. Its Stair mouth by the spring is the divers' other prospect. Only the
+  northern tunnel, from Arcbeam under the north walls, is dropped. *Proposed* (section 6a): in
   the dry air **Ancient alloys and energy cells keep** as nowhere else, and that is what the divers bring out, for the
   Yusar, the Geomancers and the engine-keepers.
 - **Korona.** A planned region in the NE, under the giant. It is formed of a type of volcanic structure or ‘corona’ that does not exist on Earth, but does exist elsewhere in the Solar System, forming a crazy quilt of small plateau, depressions, and microclimates. Known to be home to bandits and ghouls. A kaleidoscope of microclimates, tepuis and carnivorous plants, home to many isolated tribes of humans and therian mutants (§6.18). [the owner, Oct 2026]

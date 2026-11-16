@@ -8,9 +8,11 @@ unless marked.
 
 > **Updated 2026-11-16 (the owner, by way of `core/simulation/PROPOSAL-CATCH.md`).** Stair is a caravan town of **about
 > 750**, not "a couple of hundred". The other oases are lived in, **~100 or less** each: Kolli, Arfwai, Bitta and Lasso, each
-> kept by a caravan group's hands. **The Stair tunnel is dropped** (`LORE.md`, 2026-11-11): the Ancients reached Stair over
-> the surface by the Godsgate highway, so the "sealed tunnel" passages below are history. Station 2 still draws the tunnel's
-> southern portal, which is owed a fix. The Catch floor closes in the spring storms. On 5.1 the oases stand where scale-model
+> kept by a caravan group's hands. **The northern tunnel is dropped** (`LORE.md`, 2026-11-11): the Ancients reached Stair from
+> the north over the surface by the Godsgate highway, so the "sealed tunnel ... Yuni stripped the northern half" passages
+> below are history. **The Theodiga tunnel stays** (the owner, 2026-11-16): the Ancients' dead bore from Theodiga to Stair
+> under the Twins (`openworld/ANCIENT-NETWORK.md`, `rift.bowl.theodiga-stair`), where no trains run. Station 2's portal by
+> Stair's spring is its Stair mouth, sealed inside as settled 2026-10-26, and the divers' camp stays at it. The Catch floor closes in the spring storms. On 5.1 the oases stand where scale-model
 > edit 5 put them (two north of Stair, two south), not at the 100-150 km spacing below. Section 7 and the passages below are
 > otherwise as settled on their dates.
 
@@ -161,7 +163,8 @@ species fit has not been checked yet.
   bitterly cold, and the floor between them is a furnace. The hazards: **the Stalkers** above all (section 6c), the black
   storms and their caustic dust, an oasis found dry, the beasts' water running out between stages.
 - ~~**The Ancients' road** to Stair ran through a tunnel~~ **Dropped (the owner, 2026-11-11):** no Ancient tunnel crosses
-  the walls; the road came over the surface by the Godsgate highway (`LORE.md`, `openworld/ANCIENT-NETWORK.md` section 8).
+  the north walls; the road came over the surface by the Godsgate highway (`LORE.md`, `openworld/ANCIENT-NETWORK.md` section 8).
+  **The southern bore from Theodiga stays** (the owner, 2026-11-16): its Stair mouth is station 2's portal.
   The passage as first settled: the Ancients' road to Stair (`openworld/ANCIENT-ROADS.md`: Arcbeam to Stair) ran through a tunnel under the walls,
   **closed by seismic activity since about the time of the Cataclysm** [the owner, 2026-10-23]. It is **sealed halfway
   through**: both halves are open from their own ends, and both offer salvage. **Yuni stripped the northern half bare a
@@ -313,8 +316,8 @@ takes them all, with `rock.yardang.silt`, `card.tamarisk`, `card.reed`, `card.sa
 
    Caravaneers say whichever their master's tongue is; Stair's merchants answer to all four. The records carry every form
    (`CATCH.OASES`, `src/50-biome-catch-species.js`).
-2. **The sealed tunnel** [the owner, 2026-10-26]: **it stays sealed**. *Superseded 2026-11-11: the tunnel is dropped; the
-   portal below is owed removal from station 2.* The kit shows the southern portal by Stair's
+2. **The sealed tunnel** [the owner, 2026-10-26]: **it stays sealed**. *2026-11-11 dropped the northern tunnel; 2026-11-16
+   (the owner) kept the Theodiga bore, so the portal below is that bore's Stair mouth, sealed deep inside.* The kit shows the southern portal by Stair's
    spring, open, with the divers' camp at its mouth (fire rings, a few spoil heaps); the seal is a rubble plug deep inside,
    not drawn. Whether it ever opens is left to the story.
 3. **The kit** [settled 2026-10-26]: `biomes/catch`, the four stations of section 5 on the shared biome core; the potash

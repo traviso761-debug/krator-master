@@ -27,8 +27,10 @@ The owner's numbers change three records. Each is to be brought in line when thi
 | Gemini's model (`gemini_trade_model.py`) | Kolli 550, Arfwai 650, Stair 250 | superseded by the owner's numbers |
 
 Stale records the build must not trust, fixed with it or before it:
-- **The Stair tunnel is dropped** (`LORE.md:82-83`, 2026-11-11). `biomes/catch/PLAN.md` (155-158, 305-307) and its README
-  still describe it.
+- **The northern Stair tunnel is dropped** (`LORE.md:82-83`, 2026-11-11). **The Theodiga tunnel stays** (the owner,
+  2026-11-16: "we can leave in the stair to theodiga tunnel"): the Ancients' dead bore from Theodiga to Stair under the
+  Twins (`rift.bowl.theodiga-stair`, 438 km, no trains). It is a third, hard way across for the sim's caravans: dark,
+  with little food or water. Station 2's portal at Stair is its mouth. The plans now say so.
 - **The Twins plan's distances are about half** what its own 5.1 points measure. Route A is "~93 km" in the plan but 228 km
   on its waypoints.
 - **Strongbow** stands at 1001,1596. The Twins plan and `kits/resources/data/ledger.json` still use 1026,1594.
@@ -195,6 +197,6 @@ terminus, and its relations: the gateway pools stay where each group's home is.
    the scale-model session's queue.
 7. **The records.** **Answered (the owner, 2026-11-16): yes; done the same day.** `LORE.md` (the Catch), `biomes/catch/PLAN.md`
    and its README, and `biomes/twins/PLAN.md` now carry Stair's 750, the peopled oases, the caravaneers, the seasons, the
-   dropped tunnel (station 2's portal is owed removal), Strongbow's 5.1 point and the Twins' measured distances.
+   dropped northern tunnel, the kept Theodiga tunnel (station 2's portal is its Stair mouth), Strongbow's 5.1 point and the Twins' measured distances.
    The question was: bring `LORE.md` and the Catch and Twins plans in line with Stair's 750, the peopled oases and 5.1's
    distances, once you agree?
