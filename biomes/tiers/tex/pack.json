@@ -113,6 +113,36 @@
     "sourceMean": 0.5699
    }
   },
+  "cushion": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "cushion.albedo.webp",
+    "normalMap": "cushion.normal.webp",
+    "roughnessMap": "cushion.rough.webp"
+   },
+   "lib": "surface.cushion",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.0,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "2b145d2682f909a2ace81365dbddc6f89ae52d3f",
+    "normal": "df5c68203e104994c2e09081f4106eb878a5ae78",
+    "roughness": "d97841e0e44064145eb60d64d6651199de4537a9"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.5,
+    "sourceMean": 0.508
+   }
+  },
   "ground.gravel": {
    "breakup": null,
    "card": false,
@@ -223,6 +253,34 @@
     "keep": 0.55,
     "mean": 0.5195917888716155,
     "sourceMean": 0.5196
+   }
+  },
+  "ground.pave": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "ground.pave.albedo.webp"
+   },
+   "lib": "ground.pavement.desert",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.1,
+   "scale": [
+    2,
+    2
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "3e1704c0dcabbd98b8ed0f36507de27cd72507f9",
+    "normal": "db75707cbae29dd4409164e197a77ba8fedf7816",
+    "roughness": "91c7d2cc973d768a4b9b5d31e44db855edbed750"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.7,
+    "mean": 0.41741334875069414,
+    "sourceMean": 0.4174
    }
   },
   "ground.reed": {
@@ -516,6 +574,40 @@
     "keep": 0.0,
     "mean": 0.55,
     "sourceMean": 0.6074
+   }
+  },
+  "pagoda": {
+   "anchor": "none",
+   "breakup": null,
+   "card": true,
+   "cell": [
+    0.343,
+    0.368,
+    0.659,
+    0.64
+   ],
+   "files": {
+    "map": "pagoda.albedo.webp"
+   },
+   "lib": "card.saltbush",
+   "metal": 0,
+   "normalScale": 1.0,
+   "plants": 9,
+   "roughLift": 0.0,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "7b99f48c4325b6f35ea7f22db6021a9903f239be"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.6,
+    "sourceMean": 0.5135
    }
   },
   "palmfan": {

@@ -27,7 +27,8 @@ const PAL=TIERS.PAL={
  heath:[0x5e6a3a,0x6a7442,0x56603a],heathBloom:[0xd8b840,0xe0c24a],
  grass:[0xb4a06a,0xa8945e,0xc0ac76,0x9a8a58],grassGreen:[0x7a8e4a,0x6a8244,0x88964e,0x5e7a3e],pad:[0x4a6a34,0x52763a,0x426030],lilyBloom:[0xf0e6d0,0xe8d8b8],
  moss:[0x6a8a3a,0x5e7e34,0x76964a],tufa:[0xd8d2c0,0xcac4b0],lichen:[0xd88a2a,0xe0a030,0x9aa87a,0x2a2826,0xc8b440],
- rock:[0x2e2c2a,0x3a3633,0x46423e,0x34302c],rockRed:[0x5a3c30,0x664436,0x4e362c],far:[0x46602e,0x3e5a2a,0x506a36]};
+ rock:[0x2e2c2a,0x3a3633,0x46423e,0x34302c],rockGrey:[0x8a867e,0x7a766e,0x96918a,0x6e6a64],   /* the Grey Steps' tuffs and limestones (station 4) */
+ pagoda:[0x8a9284,0x7e8878,0x96a090,0x76806e],pagodaStem:[0x5a5248,0x4e463e],cushion:[0x6e7a4a,0x7a8452,0x627044,0x8a8a5a],rockRed:[0x5a3c30,0x664436,0x4e362c],far:[0x46602e,0x3e5a2a,0x506a36]};
 
 // ---------------------------------------------------------------- the plants and their tags
 const HV=(wood,edible,med,note,gather)=>({wood:wood||'none',edible:edible||[],medicinal:!!med,fruit:null,note:note||'',gather:gather||null});
@@ -52,9 +53,9 @@ TIERS.PLANTS={
   HV('none',[],false,'Crusts in level bands along the beds, orange, grey-green and black: the coloured cliffs\' last colour. An orchil purple (proposed): the Kingdom\'s trade dye.','dye'),{station:1}),
  stairlily:PK('Stair lily',K('temperate','subhumid','yes',['Csa','Cfa']),['pad','lilybloom'],
   HV('none',['rhizome (proposed)'],false,'Floating pads that grow in overlapping steps out from the shore of the sheltered bays, the oldest highest.','tuber'),{station:1}),
- /* T4's (stations 2 and 4): records and tags, no builder yet */
- pagodabush:PK('Pagoda bush',K('cool','arid','no',['BWk','BSk','Dsc']),[],HV('none',[],false,'A grey shrub of stacked flat discs, each a season\'s flush. Fodder. 0.5-1.2 m (station 4).','pasture'),{station:4}),
- stackcushion:PK('Stack cushion',K('cold','arid','no',['Dsc','ET','BWk']),[],HV('fuel (dried)',[],false,'A cushion that grows in terraced mounds, a step a decade. Winter fodder. 0.2-1 m (station 4).','pasture'),{station:4}),
+ /* T4's (stations 2 and 4): the pagoda bush and the stack cushion drawn by the floor (60: station 4's tread); the whorl pine a record, no builder yet */
+ pagodabush:PK('Pagoda bush',K('cool','arid','no',['BWk','BSk','Dsc']),['pagoda','pdisc'],HV('none',[],false,'A grey shrub of stacked flat discs, each a season\'s flush. Fodder. 0.5-1.2 m (station 4).','pasture'),{station:4}),
+ stackcushion:PK('Stack cushion',K('cold','arid','no',['Dsc','ET','BWk']),['cushion'],HV('fuel (dried)',[],false,'A cushion that grows in terraced mounds, a step a decade. Winter fodder. 0.2-1 m (station 4).','pasture'),{station:4}),
  whorlpine:PK('Whorl pine',K('cool','semiarid','no',['Dsb','Csb','Dfc']),[],HV('timber, resin',['pine nut'],false,'A conifer with widely spaced level whorls and bare trunk between: the tiers\' silhouette on the skyline. 10-25 m (station 2).','nut'),{station:2}),
 };
 TIERS.plantOfItem=item=>{for(const k in TIERS.PLANTS)if(TIERS.PLANTS[k].items.indexOf(item)>=0)return TIERS.PLANTS[k];return null;};
@@ -111,6 +112,11 @@ G.whorl=function(){const pos=[],uv=[],nor=[],n=8;for(let k=0;k<n;k++){const a=k/
   for(let s=0;s<2;s++){const a0=P[s],a1=P[s+1],q=[[a0,-1,U[s]],[a0,1,U[s]],[a1,1,U[s+1]],[a1,-1,U[s+1]]].map(([p,sd,u])=>[p[0]+px*w*sd*(1-.6*u),p[1],p[2]+pz*w*sd*(1-.6*u),u,.5+.5*sd]);
    [0,1,2,0,2,3].forEach(i=>{pos.push(q[i][0],q[i][1],q[i][2]);uv.push(q[i][3],q[i][4]);nor.push(0,1,0);});}}
   return BIO.geo._make(pos,nor,uv);};
+/* THE STACK CUSHION: a terraced mound, a step a decade: four stepped rings lathed round y, a unit across (radius .5), its top at y .62 */
+G.cushion=function(){const P=[[.001,0],[.5,0],[.5,.14],[.4,.18],[.38,.32],[.28,.36],[.26,.48],[.15,.52],[.13,.6],[.001,.62]].map(([r,y])=>new T3.Vector2(r,y));
+  return new T3.LatheGeometry(P,12);};   /* the axis points a millimetre off it: no zero-area faces at the poles */
+/* THE PAGODA BUSH'S DISC: a squat drum (the season's flush, seen edge-on), a unit across, 0.1 thick; its top a flat card (G.flat, the item 'pagoda') */
+G.pdisc=function(){return new T3.CylinderGeometry(.5,.42,.1,10,1,false);};
 G.column=function(){return new T3.CylinderGeometry(.5,.5,1,6,1,false).translate(0,.5,0);};
 TIERS.G=G;
 
@@ -127,6 +133,8 @@ const M=TIERS.MAT={
  pad:lf(TX.pad,'pad',{swayW:'0.0',swayA:0,alphaTest:.35}),
  moss:lf(TX.blob,'moss',{swayW:'0.0',swayA:0,alphaTest:.3}),
  lichen:lf(TX.blob,'lichen',{swayW:'0.0',swayA:0,alphaTest:.3}),
+ pagoda:lf(TX.blob,'pagoda',{swayW:'0.0',swayA:0,alphaTest:.35}),   /* the disc's leaf top (card.saltbush: the plan's stand-in) */
+ cushion:BIO.solidMat(null,0xffffff),   /* the cushion's packed rosettes (surface.cushion) */
  solid:BIO.solidMat(null,0xffffff),
  rock:BIO.solidMat(null)};
 TIERS.LIB=BIO.libSwap('tiers',M);   /* every slot materials.json names takes its library map; no pack, no change */
@@ -156,4 +164,7 @@ BIO.def('cbloom',new T3.IcosahedronGeometry(1,0),M.solid,{label:'Tier candelabra
 BIO.def('boulder',new T3.IcosahedronGeometry(1,1),M.rock,{label:'Boulders (basalt, off the Black Step)'});
 BIO.def('stone',new T3.IcosahedronGeometry(1,0),M.rock,{label:'Stones (basalt cobbles)'});
 BIO.def('column',G.column(),M.rock,{label:'Fallen basalt columns'});
+BIO.def('pagoda',G.flat(),M.pagoda,{label:'Pagoda bush discs (the leaf tops; card.saltbush)'});
+BIO.def('pdisc',G.pdisc(),M.rock,{label:'Pagoda bush discs (the drums) and stems'});
+BIO.def('cushion',G.cushion(),M.cushion,{label:'Stack cushions (terraced mounds, a step a decade; surface.cushion)'});
 })();

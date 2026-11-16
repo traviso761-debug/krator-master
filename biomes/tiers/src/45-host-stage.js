@@ -121,7 +121,8 @@ const GLW=(function(){
   ['lichen',F=>F.rock*smooth(.2,.6,F.strata)*(1-F.flow)*lichenBand(F)],                               /* the band lichen in level bands along the riser's beds (stand-in: rock.lichen.circles) */
   ['tufa',F=>smooth(.35,.8,F.seep)*(1-F.flow)],                                                        /* the step moss's tufa round the seep's pools */
   ['gravel',F=>F.talus*(1-F.flow)],                                                                    /* the talus's gravel */
-  ['litter',F=>hotK(F)*open(F)*(1-F.flow)]];})();                                                     /* the hot floor's leaf litter under the rainforest (station 3's floor: Korona's country) */
+  ['litter',F=>hotK(F)*open(F)*(1-F.flow)],                                                     /* the hot floor's leaf litter under the rainforest (station 3's floor: Korona's country) */
+  ['pave',F=>smooth(.25,.6,F.pave)*open(F)*(1-F.flow)]];})();                                         /* the cold tread's desert pavement (station 4: ground.pavement.desert) */
 
 /* A FRAGMENT SHADER HAS 16 TEXTURE UNITS (WebGL's floor), AND ANGLE ON THE ARC LINKS 15 AT MOST (riftrim's and ebadlands' measure): the ground's paint
    and grain (2), the strata (5), the horizon (2), the rain's cover map (1) and KGROUND's noise (1) leave 5, so a land names the FOUR it shows

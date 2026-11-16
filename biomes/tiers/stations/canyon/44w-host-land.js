@@ -96,9 +96,10 @@ const LAND={name:'Coyote Canyon (tiers station 2)',title:'Krator biome — the T
  region:{name:'Coyote Canyon (station 2)',x:0,z:0,r:TERR.R},sky:{px:SITE.sky[0],py:SITE.sky[1]},atm:atmAt(SITE.h),cloud:.15,
  fog:{falloff:1/900,sun:.3,sky:.3},climate:{},wet:false,groundN:780,
  /* THE HOUR THE PAGE OPENS: 11:00, when the sun (59 degrees, azimuth 30: core/atmos's sky at the site) runs nearly down the canyon's axis and lights
-    its floor; at the shared 14:00 it crosses the north-west wall and the whole floor is in its shade (84-host-horizon.js). The opening day's
+    its floor; at the shared 14:00 it crosses the north-west wall and the whole floor is in its shade (src/84-host-horizon.js, hzSky below). The opening day's
     eclipse at this longitude is 09:00-10:00 */
  hour:11,
+ hzSky:.45,   /* the head's bowl in its own shade: the horizon shade's sky term eased (src/84-host-horizon.js) */
  groundLayers:['meadow','steppe','terrace','lichen'],
  plants:['tiergrass','heath','moss','lichen','boulder'],
  modelTol:45,

@@ -68,7 +68,22 @@ fragment it needs: station 1's `86-host-village.js`) and its `station.json` name
 - **The fall** is ~40 m across; its curtain follows the face's highest point across that width (`face` in `FALLS`), 2 m off the rock, so the
   buttresses do not stand through it.
 
+## Station 4, the Great Tread (started 2026-11-16)
+
+- **The site**: 5.1 px 1310,490 (4,637 m on the model, Dsc, 31 mm, +2 degC), by the dry Chung-Gel (16 km south, the far field's).
+- **The land** (`stations/tread/44w-host-land.js`): the model flattened to a quarter of its rise about 4,637 m (the tread), a `KRELIEF.scarp`
+  up to the next step across the north-east (170 m) and a `drop` scarp down to the great tread across the south-west (190 m), both rims
+  striking south-east; the dry gorge a `KRELIEF.stepcut` graben (70 m, four steps) from a sapped head on the tread to the lower rim, where it
+  hangs; four buttes (`KSTACKS` butte) off the faces. Strata: the Grey Steps (44r, tiers-grey).
+- **The camp** (`stations/tread/86-host-camp.js`): `KCAMP.pitch` and `KCAMP.census` on the station's culture row (`tierhound-herd`), a
+  horseshoe toward the gorge's head; every record registered pending, drawn as stand-ins; three flocks of goats and sheep and one of
+  ostriches on `BIO.walker` loops round it (`LAND.build`, after the kit's plants). Checks: the pitch whole (no overlap, on good ground, none
+  short), every record registered pending, the flocks off the camp; each with a negative (`LAND.negatives`, 99's hook).
+- **The flora**: the kit's natives refuse the cold stair (55: `high`, over ~4.2 km; `temperate` is now `mild`, warm and below it); the
+  tread's own pass (60: `floor-stair`) draws the tiergrass sparse on its lips, the pagoda bush, the stack cushion and pale cobbles; the
+  talus is the Grey Steps' pale blocks (no basalt columns over 3.9 km); kin: the eastern badlands' Utah juniper and bristlecone pine on the
+  talus and ledges. Ground: the steppe's withered grass, the desert pavement (`ground.pave`), the band lichen, the talus's gravel.
+
 ## Not built yet
 
-Station 2's town (its layout), station 4 (the Great Tread); the pagoda bush, the stack cushion and the whorl pine; terracettes in the
-ground; the `tiers` crops entry; `outposts.json`. KNOWN_ISSUES.md lists them with the texture swaps.
+Station 2's town (its layout); the whorl pine; terracettes in the ground; the `tiers` crops entry; `outposts.json`. KNOWN_ISSUES.md lists them with the texture swaps.

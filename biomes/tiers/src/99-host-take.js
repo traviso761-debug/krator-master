@@ -82,7 +82,8 @@ const HCHK={
  // every kin row the station lists grew somewhere (a row whose kit is missing grows nothing and says so)
  // THE RULE (PLAN.md section 4): every native tree drawn near carries its tiers: the oak's whorls, the palm's collars, the candelabra's arm
  // rings, the reed's noded whorls (each species' least, SPECIES.tiers[0]; the reed's at least one: a short cane in deep water has few nodes)
- tiers(T){const bad=[],n={};for(const t of T){if(t.lv!==2||t.borrow)continue;const S=TIERS.SPECIES[t.sp],min=S.key==='ladderreed'?1:S.tiers[0];n[S.key]=(n[S.key]||0)+1;
+ tiers(T,S){const bad=[],n={};for(const s of S||[]){n[s.key]=(n[s.key]||0)+1;if(!(s.discs>=3))bad.push(s.key+' at '+[s.x|0,s.z|0]+' ('+s.discs+' discs < 3)');}   /* a shrub's tiers: the pagoda bush's discs */
+  for(const t of T){if(t.lv!==2||t.borrow)continue;const S=TIERS.SPECIES[t.sp],min=S.key==='ladderreed'?1:S.tiers[0];n[S.key]=(n[S.key]||0)+1;
    if(!t.tierYs||t.tierYs.length<min)bad.push(S.key+' at '+[t.x|0,t.z|0]+' ('+(t.tierYs?t.tierYs.length:0)+' < '+min+')');}
   return{ok:!bad.length&&Object.keys(n).length>0,detail:bad.length?bad.length+' near trees short of their tiers: '+bad.slice(0,3).join(', '):Object.keys(n).map(k=>k+' '+n[k]).join(', ')+' near trees, every one in its tiers'};},
  // THE LAKE: drawn on its mask over the bay and the far lake, and off the floor west of the sill (a dry model cell under the level)
@@ -115,7 +116,7 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P
  add('the dangers are registered (KHAZ)',HCHK.hazards(window._hazards,LAND.hazardMin==null?1:LAND.hazardMin));
  add('every kin row grew',HCHK.kin(window._kin,LAND.kin||[]));
  add('preset cameras over what is drawn',HCHK.camerasOut(Object.keys(VIEWS).map(k=>({view:k,x:VIEWS[k][0],y:VIEWS[k][1],z:VIEWS[k][2]}))));
- add('the natives grow in tiers (the rule)',HCHK.tiers(TIERS.TREES));
+ add('the natives grow in tiers (the rule)',HCHK.tiers(TIERS.TREES,TIERS.SHRUBS));
  if(OPEN_LAKES.length)add('the lake is drawn over its bay and off the floor past the sill',HCHK.lake(OPEN_LAKES[0],LAKE_MID,LAKE_DRY));
  if(STATION.TER)add('the step moss pools are dug into the ground',HCHK.pools(POOLS_AT()));
  if(typeof VILLAGE!=='undefined')add('the village is records first, registered and pending',HCHK.village(VILLAGE.records,REG));
@@ -134,9 +135,11 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  add('no hazard records',HCHK.hazards({ambient:['pressure','temperature'],records:0},1));
  if((LAND.kin||[]).length)add('a kin row that grew nothing',HCHK.kin({},LAND.kin));
  add('a shelf oak with no tiers',HCHK.tiers([{lv:2,sp:TIERS.byKey.shelfoak.i,x:0,z:0,tierYs:[]}]));
+ if(TIERS.SHRUBS&&TIERS.SHRUBS.length)add('a pagoda bush of one disc',HCHK.tiers([],TIERS.SHRUBS.concat([{key:'pagodabush',x:0,z:0,discs:1}])));
  if(OPEN_LAKES.length&&LAKE_DRY)add('the lake over the floor past the sill',HCHK.lake({contains:()=>true},LAKE_MID,LAKE_DRY));
  if(STATION.TER){const P=POOLS_AT();add('a pool hanging 5 m over its floor',HCHK.pools(P.map((p,i)=>i?p:Object.assign({},p,{level:p.level+5}))));}
  if(typeof VILLAGE!=='undefined')add('a village record never registered',HCHK.village(VILLAGE.records.concat([{id:'test:unregistered',pending:true}]),REG));
+ if(LAND.negatives)LAND.negatives(add);   /* a station's own checks' faults (LAND.checks) */
  return R;}
 // ---------------------------------------------------------------- the page, handed to the host
 KHOST.on(SKY.view,'view');   /* the shared sky, its lights and fog at the hour (89-host-sky.js) */

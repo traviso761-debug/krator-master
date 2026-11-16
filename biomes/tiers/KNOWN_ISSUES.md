@@ -61,7 +61,7 @@ biomes/tiers --fix` (a card sheet's cells and stems are its own), `python3 tools
   up-canyon": the page holds the canyon's lower 3.2 km, its head bowl ~600-850 m deep; the great tread's rim is the far field's.
 - [ ] **The head's bowl is dim, not black** (was near black at 14:00 in SwiftShader). At this latitude the sun stands in the north
   (63 degrees at noon), so at 14:00 it was behind the bowl's west wall. The station's hour is now 11:00 (the sun at az ~30, running up the
-  canyon's north-east axis) and `84-host-horizon.js` sets the horizon shade's sky term to .45 (`KHORIZON.uniforms`; `?hzsky=0..1` on the
+  canyon's north-east axis) and `LAND.hzSky` sets the horizon shade's sky term to .45 (`src/84-host-horizon.js`, shared with station 4's gorge) (`KHORIZON.uniforms`; `?hzsky=0..1` on the
   URL tries others), so the spring hall's walls read in a dim brown light. Judge the level on the GPU; the head's view now looks down from the
   bowl's rim.
 - [ ] **The flash flood is a plain record** (`drown` on each tread's floor): the gorge flood on a cycle is the shared hazard amendment
@@ -86,6 +86,27 @@ biomes/tiers --fix` (a card sheet's cells and stems are its own), `python3 tools
   over the 900 m drop beyond the plunge's spray.
 - [ ] **The kit's natives now refuse the hot floor** (55: zones times `temperate`, 1 under ~25 degC mean): stations 1 and 2 never reach it.
 
-- [ ] **Not built yet (T4, T5):** the pagoda bush, the stack cushion and the whorl pine (records and tags in 50, no builder); station 2's
-  town (above), station 4 (the Great Tread, `core/camp`); the `tiers` entry in
-  `kits/crops`; `outposts.json`; the gorge flood (the shared hazard amendment).
+## Station 4, the Great Tread (started 2026-11-16)
+
+- [ ] **The stair is the station's own landform.** The model's 2 km cells smear the high steps into a slope rising ~26 m a km north-east;
+  the page flattens it to a quarter of that about the site's height (4,637 m) and draws the risers as cliffs: one up to the next step
+  (170 m) across the north-east, one down to the great tread (190 m) across the south-west. Out of the model check (`LAND.sculpt`: everything
+  more than 30 m off the model). The plan's "the great tread below" is ~4,440 m here; the model's own great tread lies 10-15 km south-west. Over the page's last ~550 m the stair eases back onto the model (no
+  wall where the far field meets it), so the great tread and the next step's tread ramp toward the edge.
+- [ ] **The dry gorge is 70 m deep, not the plan's 300-480 m.** The Chung-Gel's gorge is 16 km south of the pin, off the page (the far field
+  draws its trough); the page's gorge is a tributary cut into the tread (`KRELIEF.stepcut`, four stepped walls), its head a sapped bowl, its
+  mouth hanging over the lower riser in a dry fall. No cobble bars on its floor (`KRELIEF.wadi` is not laid in it): the floor is gravel paint.
+- [ ] **The camp is stand-ins** (`stations/tread/86-host-camp.js`): core/camp's pitch and census on a culture row this station writes
+  (`KCAMP.CULTURES['tierhound-herd']`: black goat-hair tents, a dairy, a store, stone folds, an ostrich pen, a dry-stone wall) until
+  `kits/coyote` has camp pieces (its plan names none yet) and core/camp takes the row. Every record `pending`. No herders drawn (the
+  characters are `core/charactermodels`'). The camp is not on `core/simulation`, and it does not move with the seasons yet (core/camp's
+  world tick, its PLAN.md section 7).
+- [ ] **The flocks are box-and-sphere beasts** (goats, fat-tailed sheep, ostriches; `BIO.walker` loops, a pose from the clock): no
+  fauna kit draws a goat or an ostrich yet.
+- [ ] **The pagoda bush and the stack cushion are the kit's own geometry** (60: a stem with drums and a `card.saltbush` cell on each disc's
+  top; a lathed mound of four steps on `surface.cushion`), the plan's named stand-ins. Sagebrush and saltbush are not read in place (the
+  eastern badlands draw them in their floor, which kin rows cannot read; only trees are kin): the kit's two natives stand for the scrub.
+- [ ] **The crown's ice on the skyline** is the far field's (KFAR's snow by height), not a drawn glacier.
+
+- [ ] **Not built yet (T4, T5):** the whorl pine (a record and tags in 50, no builder); station 2's town (above); the `tiers` entry in
+  `kits/crops`; `outposts.json`; the gorge flood (the shared hazard amendment); the terracettes in the ground (amendment 3).

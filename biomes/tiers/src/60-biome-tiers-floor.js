@@ -8,7 +8,9 @@
 //   the stair lilies  colonies in the sheltered bays (0.3-2.6 m of water): pads in overlapping steps out from the shore, the oldest highest
 //   the step moss     mats on the tufa dams of the seep's pools and along its wet line
 //   the band lichen   crusts on the talus's boulders (the faces carry it as a ground layer: 45, ground.lichen)
-//   the talus         basalt boulders and fallen columns under the Black Step and the stacks
+//   the talus         basalt boulders and fallen columns under the Black Step and the stacks (the Grey Steps' pale blocks up high, no columns)
+//   the cold stair    (station 4's tread, over ~4.2 km) the tiergrass sparse on its terracettes, the pagoda bush (grey discs stacked on a stem, a
+//                     season's flush each) and the stack cushion (a terraced mound, a step a decade) on the stony pavement, pale cobbles between
 // Every pass is the core's cell lattice (BIO.grid's cell form), in three LOD bands along the spine (near 6 m, mid 12 m, far 24 m cells); a cell's own
 // stream (reseed) draws its shapes and colours.
 (function(){const {TAU,clamp,lerp,mix,smooth,reseed,rng,rr,ri,pick,fbm,qEuler,qFacing,qUp}=BIO.fn;
@@ -35,17 +37,29 @@ function plantDry(x,z,Z,lv,st){const t=rng(),lip=lipK(x,z,Z.slope);
 const greenK=(x,z)=>clamp(Math.max(smooth(.5,.68,BIO.field('wet',x,z)),smooth(.52,.68,fbm(x*.0028,z*.0028,7.1,3))*.85),0,1);
 function grassCol(x,z){const g=greenK(x,z);return g>.05&&rng()<g?tone(PAL.grassGreen,1):tone(PAL.grass,1.05);}
 function plantGrass(x,z,Z,lv,st){around(x,z,lv===2?ri(2,4):1,.2,.9,(px,pz)=>tuft('tiergrass',px,pz,rr(.3,.65),rr(.4,.7),grassCol(px,pz)));st.tiergrass++;}
+/* the cold stair (station 4): a pagoda bush, a stack cushion, a sparse tuft row or a cobble */
+function pagoda(x,z,st,lv){const y=Y(x,z),H=rr(.5,1.2),n=ri(3,6),R0=rr(.32,.55);BIO.put('pdisc',[x,y,z],null,[.07,H*10,.07],tone(PAL.pagodaStem));   /* the stem (the drum's unit is 0.1 tall) */
+ for(let k=0;k<n;k++){const u=(k+1)/n,yy=y+H*(.25+.75*u),r=R0*(1.05-.55*u)*rr(.9,1.1),a=rr(0,TAU),ox=rr(-.04,.04),oz=rr(-.04,.04);
+  BIO.put('pdisc',[x+ox,yy-.05,z+oz],qEuler(rr(-.04,.04),a,rr(-.04,.04)),[r*2,.8,r*2],tone(PAL.pagoda,.62));BIO.put('pagoda',[x+ox,yy+.002,z+oz],qEuler(0,a,0),[r*2.1,1,r*2.1],tone(PAL.pagoda));}st.pagoda++;
+ if(lv===2)(TIERS.SHRUBS=TIERS.SHRUBS||[]).push({key:'pagodabush',x,z,discs:n});}   /* the near ones, for the tiers rule (99) */
+function cushion(x,z,st){const y=Y(x,z),s=rr(.4,1.6);BIO.put('cushion',[x,y-.04,z],qEuler(0,rr(0,TAU),0),[s,s*rr(.45,.85),s*rr(.8,1.2)],tone(PAL.cushion,rr(.9,1.1)));st.cushion++;}
+function plantStair(x,z,Z,lv,st){const t=rng(),pv=BIO.field('pave',x,z),lip=lipK(x,z,Z.slope);
+ if(t<.42*(1-pv*.6)+.3*lip){around(x,z,lv===2?ri(1,3):1,.2,.7,(px,pz)=>tuft('tiergrass',px,pz,rr(.2,.42),rr(.3,.45),tone(PAL.grass,.95)));st.tiergrass++;}
+ else if(t<.6)pagoda(x,z,st,lv);else if(t<.74)cushion(x,z,st);else{stone(x,z,PAL.rockGrey,false);st.stone++;}}
 function plantShore(x,z,Z,lv,st){around(x,z,lv===2?ri(2,5):2,.3,1.2,(px,pz)=>tuft('reed',px,pz,rr(.8,1.6),rr(.6,1),tone(PAL.reedTuft)));st.reed++;}
 
 // ---------------------------------------------------------------- the pass
 TIERS.buildFloor=function(R,q){q=q==null?1:q;R=R||2500;
- const st={tiergrass:0,heath:0,reed:0,pad:0,lilybloom:0,moss:0,lichen:0,stone:0,boulder:0,column:0};
+ const st={tiergrass:0,heath:0,reed:0,pad:0,lilybloom:0,moss:0,lichen:0,stone:0,boulder:0,column:0,pagoda:0,cushion:0};
  const L=BIO.LOD(),bands=[[6,L.floor[0],0,'near'],[12,L.floor[1],L.floor[0],'mid'],[24,1e9,L.floor[1],'far']],box=[-R,-R,R,R];
  bands.forEach((b,bi)=>{const lv=2-bi,band=(x,z)=>{const ld=BIO.lodD(x,z);return ld<b[1]&&ld>=b[2];};
   // the dry slopes, the tread and the wood's floor: tiergrass in its rows (the terracettes' lips), heath on the rocky ground, cobbles
   BIO.grid('floor-dry-'+b[3],b[0],(x,z)=>{if(!band(x,z))return 0;const Z=zones(x,z);if(Z.land<=0)return 0;
     const lip=lipK(x,z,Z.slope),d=Z.dry*(.4+.5*lip)+Z.wood*.3+Z.temperate*Z.land*Z.live*.38*(1-Z.farm)*(1-Z.shore*.6)*(1-Z.rock);   /* the lake tread's grass: the tawny Csa meadow between the woods */return q*(lv===0?.5:1)*clamp(d,0,1);},
    (x,y,z)=>{const Z=zones(x,z);if(Z.dry>.2)plantDry(x,z,Z,lv,st);else plantGrass(x,z,Z,lv,st);},{box,patch:.6,patchScale:.012,pad:.5});
+  // the cold stair's tread (station 4): sparse, the pavement's stones between
+  BIO.grid('floor-stair-'+b[3],b[0]*1.6,(x,z)=>{if(!band(x,z))return 0;const Z=zones(x,z);if(Z.stair<=0)return 0;return q*(lv===0?.5:1)*clamp(Z.stair*(1-Z.rock)*(1-Z.talus*.7)*.62,0,1);},
+   (x,y,z)=>plantStair(x,z,zones(x,z),lv,st),{box,patch:.55,patchScale:.01,pad:.6});
   // the shore's reed band (the wet edge of the land)
   BIO.grid('floor-shore-'+b[3],b[0],(x,z)=>{if(!band(x,z))return 0;const Z=zones(x,z);return q*clamp(Z.temperate*Z.land*smooth(10,1,Z.shoreD)*(1-Z.farm)*(1-Z.road)*.8,0,1);},
    (x,y,z)=>plantShore(x,z,zones(x,z),lv,st),{box,patch:.5,patchScale:.02,pad:.4});});
@@ -71,8 +85,8 @@ TIERS.buildFloor=function(R,q){q=q==null?1:q;R=R||2500;
   (x,y,z)=>{flatOn('moss',x,z,rr(.4,1.1),tone(PAL.moss,rr(.95,1.1)),.01);st.moss++;},{box,patch:.2,patchScale:.05,pad:.2,noMask:true});
  // THE TALUS: basalt boulders and fallen columns under the Black Step and round the stacks, band lichen on a share of them
  BIO.grid('talus',10,(x,z)=>{if(BIO.lodD(x,z)>L.mid)return 0;const Z=zones(x,z);return q*clamp(Z.talus*.7+Z.rock*.08*smooth(.15,.5,Z.slope),0,1)*Z.land*(1-Z.road);},
-  (x,y,z)=>{if(rng()<.25){column(x,z);st.column++;return;}
-   const r=stone(x,z,rng()<.8?PAL.rock:PAL.rockRed,true),gy=Y(x,z);st.boulder++;
+  (x,y,z)=>{const grey=Y(x,z)>3900;if(rng()<.25&&!grey){column(x,z);st.column++;return;}   /* columns are the basalt's: the Grey Steps break in blocks */
+   const r=stone(x,z,grey?PAL.rockGrey:rng()<.8?PAL.rock:PAL.rockRed,true),gy=Y(x,z);st.boulder++;
    if(rng()<.5)for(let k=0,m=ri(1,3);k<m;k++){const a=rr(0,TAU),n=[Math.cos(a)*.5,1,Math.sin(a)*.5];
     BIO.put('lichen',[x+Math.cos(a)*r*.3,gy+r*.5,z+Math.sin(a)*r*.3],qUp(n),[r*rr(.5,.9),1,r*rr(.5,.9)],tone(PAL.lichen,1.1));st.lichen++;}},
   {box,patch:.5,patchScale:.015,pad:1.2});

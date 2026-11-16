@@ -337,6 +337,48 @@
    "roughLift": 0.35,
    "specular": 0.2,
    "mapOnly": true
+  },
+  "ground.pave": {
+   "lib": "ground.pavement.desert",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 0.7,
+    "mean": null
+   },
+   "roughLift": 0.1,
+   "mapOnly": true
+  },
+  "pagoda": {
+   "lib": "card.saltbush",
+   "tint": {
+    "keep": 0,
+    "mean": 0.6
+   },
+   "size": 512,
+   "scale": [
+    1,
+    1
+   ],
+   "cell": [
+    0.343,
+    0.368,
+    0.659,
+    0.64
+   ]
+  },
+  "cushion": {
+   "lib": "surface.cushion",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.5
+   }
   }
  }
 }

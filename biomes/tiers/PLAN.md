@@ -541,6 +541,12 @@ the map edit: the sill as this kit's far field draws it (section 8a's numbers), 
 lake tread's natives above and the north-western lowlands' tropical trees below (read in place). When the edit lands, the far field is rebaked and
 the kit's own sill dropped (KNOWN_ISSUES.md).
 
+**Station 4 started (2026-11-16, software GL only; the owner: "do s4 next"):** the Great Tread (`dist/tiers-tread.html`) at 1310,490: the
+high steps' first tread flattened from the model between two risers drawn as cliffs (170 m up to the next step, 190 m down to the great
+tread), a dry gorge cut 70 m into the tread (a `KRELIEF.stepcut`; the Chung-Gel's own 300-480 m gorge is 16 km south, the far field's), four
+buttes, the herders' summer camp on `core/camp` (a culture row of this station's until `kits/coyote` has camp pieces) with its goats, sheep
+and ostriches, the pagoda bush and the stack cushion drawn (60), the eastern badlands' junipers and bristlecones read in place.
+
 ## Sources
 
 - The model's data on `main` (`tools/scale-model/model/data`: `h`, `wl`, `c`, `p`, `tm`, `tw`, `tc`, `th`, `tl`;
