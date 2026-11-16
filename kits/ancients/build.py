@@ -376,6 +376,190 @@ def check(order, bodies):
     return errs
 
 
+# PRUNE (the owner, 2026-11-15: "split off all these ancient assets apart from each other as much as possible"). Every src/
+# fragment used to go into every target's page, so a change to one builder re-hashed all of them. Now a page carries the
+# kit's core (everything that is not prunable, below) and, of the prunable fragments, only those its own rows' builders and
+# its own target fragments reach: by a top-level name (a function, const, let or var at column 0), by a kit piece's name
+# in a string (kdef('name') in one, 'name' in the other) or by a material or texture key (MAT.x = / TEX.x =). Reaching
+# is over-generous by design (a comment-free scan of every word and every string): carrying a fragment it does not need
+# costs bytes, missing one breaks the page. 90-scene.js names its builders as strings (ANC_BUILDER_NAMES) and takes
+# those the page has. A fragment's parts (CONTINUES) and the biome cores' closures go as one group.
+PRUNE_LIBS = {'40-factory-extras.js', '66-office-c.js', '77z-iziz-style.js', '78-factory-silo.js', '80-aa-battery.js',
+              '8al-alt-00-lib.js', '8ap-funicular.js', '8ap-host-0-lib.js'}
+# a prunable fragment only some targets carry, whatever reaches it (the interiors' fragments do nothing without the bundle;
+# 90-scene asks for them with typeof)
+ONLY_FOR = {'8zz-interiors.js': INTERIOR_TARGETS, '92z-interior-ui.js': INTERIOR_TARGETS}
+RE_STR = re.compile(r"'(?:[^'\\\n]|\\.)*'|\"(?:[^\"\\\n]|\\.)*\"|`(?:[^`\\]|\\.)*`", re.S)
+RE_WORD = re.compile(r'[A-Za-z_$][\w$]*')
+RE_MIDDECL = re.compile(r'^\S[^\n]*?;\s*(?:const|let|var|function)\s+([A-Za-z_$][\w$]*)', re.M)
+RE_KDEF = re.compile(r"\bkdef\(\s*'([^']+)'")
+RE_MATDEF = re.compile(r'\b((?:MAT|TEX)\.[A-Za-z_$][\w$]*)\s*=(?!=)')
+RE_MATUSE = re.compile(r'\b((?:MAT|TEX)\.[A-Za-z_$][\w$]*)')
+
+
+def top_level_names(text):
+    """The names a fragment declares at its top level (brace and paren depth 0): function, class, const, let and var, with
+    each name of a comma list; strings, template literals, comments and regex literals skipped. The column-0 rules of the
+    checks above are not enough here: the biome closures and many builders' bodies start at column 0."""
+    names, n, i, depth, par = [], len(text), 0, 0, 0
+    prev = ';'                               # the last significant character, to tell a regex from a division
+    word = re.compile(r'[A-Za-z_$][\w$]*')
+    nextword = re.compile(r'\s*([A-Za-z_$][\w$]*)')
+    pending = False                          # inside a const/let/var statement at depth 0: take each `, name =`
+    while i < n:
+        c = text[i]
+        if c in ' \t\r\n':
+            i += 1
+            continue
+        if text.startswith('//', i):
+            j = text.find('\n', i)
+            i = n if j < 0 else j
+            continue
+        if text.startswith('/*', i):
+            j = text.find('*/', i + 2)
+            i = n if j < 0 else j + 2
+            continue
+        if c in '\'"`':
+            j = i + 1
+            while j < n and text[j] != c:
+                j += 2 if text[j] == '\\' else 1
+            i = j + 1
+            prev = 'a'
+            continue
+        if c == '/' and prev in '(,=:[!&|?{};+-*%<>~^':
+            j, cls = i + 1, False
+            while j < n and text[j] != '\n':
+                if text[j] == '\\':
+                    j += 2
+                    continue
+                if text[j] == '[':
+                    cls = True
+                elif text[j] == ']':
+                    cls = False
+                elif text[j] == '/' and not cls:
+                    break
+                j += 1
+            i = j + 1
+            while i < n and text[i].isalpha():
+                i += 1
+            prev = 'a'
+            continue
+        m = word.match(text, i)
+        if m:
+            w = m.group(0)
+            i = m.end()
+            if depth == 0 and par == 0:
+                if w in ('function', 'class', 'const', 'let', 'var'):
+                    m2 = nextword.match(text, i)
+                    if m2:
+                        names.append(m2.group(1))
+                    pending = w in ('const', 'let', 'var')
+            prev = 'a' if w not in ('return', 'typeof', 'case', 'in', 'of', 'new', 'delete', 'void', 'throw') else '('
+            continue
+        if c == '{':
+            depth += 1
+        elif c == '}':
+            depth = max(0, depth - 1)
+        elif c in '([':
+            par += 1
+        elif c in ')]':
+            par = max(0, par - 1)
+        elif c == ';' and depth == 0 and par == 0:
+            pending = False
+        elif c == ',' and pending and depth == 0 and par == 0:
+            m3 = nextword.match(text, i + 1)
+            if m3:
+                names.append(m3.group(1))
+        prev = c
+        i += 1
+    return names
+
+
+def prune_group(f):
+    if f in CONTINUES:
+        return CONTINUES[f]
+    if f.startswith('75-biome-'):
+        return '75-biome'
+    if f.startswith('76-') and 'biome-hyperjungle' in f:
+        return '76-biome-hyperjungle'
+    return f
+
+
+def prune(target, order, bodies, paths):
+    """The fragments this target's page needs (see PRUNE above), in the build's order."""
+    srcdir = os.path.normcase(os.path.abspath(SRC))
+    def prunable(f):
+        if os.path.normcase(os.path.dirname(os.path.abspath(paths[f]))) != srcdir or not f.endswith('.js'):
+            return False
+        return (bool(RE_BUILDER.search(bodies[f])) or f in PRUNE_LIBS or f in CONTINUES or f in ONLY_FOR
+                or prune_group(f) != f)
+    groups = {}
+    for f in order:
+        if prunable(f):
+            groups.setdefault(prune_group(f), []).append(f)
+    for g in list(groups):
+        if g in bodies and g not in groups[g]:
+            groups[g].append(g)               # the parent of a part is in its group
+    owner = {f: g for g, fs in groups.items() for f in fs}
+    by_name, by_kdef, by_mat = {}, {}, {}
+    for g, fs in groups.items():
+        fs.sort(key=lambda f: order.index(f))
+        # a part opens inside its parent's builder: the names are read from the group joined, in the build's order
+        if g not in ONLY_FOR:
+            for nm in top_level_names(''.join(bodies[f] for f in fs)):
+                by_name.setdefault(nm, g)
+        for f in fs:
+            body = RE_JS_COMMENT.sub('', bodies[f])
+            for m in RE_KDEF.finditer(body):
+                by_kdef.setdefault(m.group(1), g)
+            for m in RE_MATDEF.finditer(body):
+                by_mat.setdefault(m.group(1), g)
+    # the roots: the kit's core and the target's own fragments, and the builders of the target's rows
+    rows = bodies.get('89z-rows.js', '')
+    names = dict(re.findall(r"(\w+):'(build\w+)'", bodies.get('90-scene.js', '')))
+    # every word of the rows fragment that is a builder's key (the ROWS keys among them; a stray match only adds a builder)
+    rows_code = RE_JS_COMMENT.sub('', rows)
+    keys = {w for w in RE_WORD.findall(RE_STR.sub("''", rows_code)) if w in names}
+    keys |= {s[1:-1] for s in RE_STR.findall(rows_code) if s[1:-1] in names}    # row types listed as strings (interiors)
+    keep = {f for f in order if f not in owner}
+    todo = list(keep)
+    taken = set()
+    def take(g):
+        if g in groups and g not in taken:
+            taken.add(g)
+            todo.extend(groups[g])
+    for k in keys:
+        if names.get(k) in by_name:
+            take(by_name[names[k]])
+    for g, targets in ONLY_FOR.items():
+        if target in targets:
+            take(g)
+    tfiles = {f for f in order if os.path.normcase(os.path.dirname(os.path.abspath(paths[f]))) != srcdir}
+    while todo:
+        f = todo.pop()
+        body = RE_JS_COMMENT.sub('', bodies[f])
+        if f == '90-scene.js':      # its table of every builder's name is not a use of them
+            body = re.sub(r'const ANC_BUILDER_NAMES=\{[^}]*\};', '', body)
+        for s in RE_STR.findall(body):
+            if s[1:-1] in by_kdef:
+                take(by_kdef[s[1:-1]])
+            elif f in tfiles and s[1:-1] in by_name:   # a target's own builders named as strings (the alt targets' window[fn])
+                take(by_name[s[1:-1]])
+        words = set(RE_WORD.findall(RE_STR.sub("''", body)))
+        for w in words:
+            if w in by_name:
+                take(by_name[w])
+        for mm in RE_MATUSE.findall(body):
+            if mm in by_mat:
+                take(by_mat[mm])
+    kept = [f for f in order if f not in owner or owner[f] in taken]
+    missing = sorted(k for k in keys if names.get(k) and names[k] not in by_name and not any(
+        re.search(r'^function\s+%s\b' % names[k], bodies[f], re.M) for f in kept))
+    if missing:
+        sys.exit('target %s: no fragment declares the builder of row(s) %s' % (target, ', '.join(missing)))
+    return kept
+
+
 def build_one(target, do_checks, assert_origin):
     tdir = os.path.join(TARGETS, target)
     if not os.path.isdir(tdir):
@@ -399,6 +583,9 @@ def build_one(target, do_checks, assert_origin):
     for f in order:
         with open(paths[f], encoding='utf-8', newline='') as fh:
             bodies[f] = fh.read()
+    if '--no-prune' not in sys.argv:          # PRUNE: only the fragments this target's page reaches
+        order = prune(target, order, bodies, paths)
+        bodies = {f: bodies[f] for f in order}
     sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
     import matlib_pack
     # the pack's maps go in ONE file beside the pages, dist/ancients.tex.ancients.js, that every target loads by <script src>

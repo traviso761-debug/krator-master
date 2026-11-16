@@ -1243,3 +1243,25 @@ baseline entries, no new LFS objects). `reach.py` still lists every page, becaus
 `build.py` run writes them all; only the per-target retry runs of this round were dropped from `build-inputs.json`.
 Veladiga's builder moved the same way in the same round (`targets/veladiga/65-veladiga.js`): only its own target placed it
 (through `EXTRA_BUILDERS`), so nothing else changed. Screamers keeps its own vendored copy.
+
+## Each page carries only its own builders (2026-11-15)
+
+The owner: "it would be great if we could split off all these ancient assets apart from each other as much as possible".
+Every `src/` fragment used to go into every target's page, so a change to any builder re-hashed all 49. `build.py` now
+prunes each target's list (PRUNE, `prune()`):
+- **Prunable** are the builder fragments (a top-level `function build*`), their parts (`CONTINUES`), the pure libraries
+  (`PRUNE_LIBS`: the factory and office extras, the Iziz style, the alt and host libraries, the funicular), the biome cores'
+  closures (`75-biome-*`, `76-*-biome-hyperjungle*`, one group each) and the interiors' fragments (`ONLY_FOR`: only the
+  interiors target). Everything else is the kit's core and goes in every page.
+- **Reached** from the core, the target's own fragments and the builders of its rows (every word of `89z-rows.js` that is
+  a key of `ANC_BUILDER_NAMES`): by a top-level name (`top_level_names`, a scanner of brace and paren depth 0 that skips
+  strings, templates, comments and regex literals; a part is read joined to its parent, since it opens inside the parent's
+  builder), by a kit piece's name in a string (`kdef('x')` in one, `'x'` in the other), by a `MAT.`/`TEX.` key, and, in a
+  target's own fragments, by a builder named as a string (the alt targets' `window[fn]`). Generous by design.
+- `90-scene.js` names its builders as strings (`ANC_BUILDER_NAMES`) and takes the ones the page has; its table is not
+  counted as a use of them.
+- The core now: head, core, stats, kit, surfaces, kitdefs, decor, helpers, registry, concrete, salvage, worn, matlib,
+  openings, scene, probe, camera, tail, plus the builder files whose helpers the core calls (`42-offices` for `civ*`,
+  `52-sky-abc` for `toppledUpper`, `62-robotics`, `66-office-c`). A per-site page (Theodiga, Veladiga, the Podium, the
+  Sanctum, Span) is the core and its own target: 22 shared fragments of 140; the showcase keeps 87.
+- `--no-prune` builds the old all-in pages. A row whose builder is not on its page is a build error.
