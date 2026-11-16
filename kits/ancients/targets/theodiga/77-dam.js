@@ -95,8 +95,9 @@ function buildDam(scene,gx,gz,d){reseed(9260+d);KOFF=[gx,0,gz];const G=new THREE
  meshMerged(FACE,CONC(d),G);
  if(d>0)mesh(gridSurface((u,v)=>{const x=(u-.5)*SPAN,y=v*H;return[x,y,zc(x)+th_(y)-6];},48,20,
   {hole:(u,v)=>notch((u-.5)*SPAN,v*H)}),MAT.guts,G);
- // crest: light wells (arc of slots), residential arc, public centre dome, cultural domes
- for(let k=-13;k<=13;k++){const x=k*22;const z=zc(x);const gone=d>0&&rng()<.15;if(notch(x,H-1)||notch(x+9,H-1)||notch(x-9,H-1))continue;kput(BOXC(d),[x,H+9,z+8],null,[15,18,28],null);kput('boxD',[x,H+18.2,z+8],null,[9,.4,20],null);kput(BOXC(d),[x,H+8,z+50],null,[18,16,22],null);for(let r=0;r<2;r++)for(let c=-1;c<=1;c++)kput(d>0?'winSmD':'winSmI',[x+c*5,H+5+r*6,z+61.2],qFacing([0,0,1]),[2,2.4,1],null);
+ // crest: light wells (arc of slots), residential arc, public centre dome, cultural domes. With the town (theodiga-today) the
+ // crest is the clergy's inhabited levels (T-arc-1): its face-side windows are glazed and kept, not the ruin's dead ones
+ for(let k=-13;k<=13;k++){const x=k*22;const z=zc(x);const gone=d>0&&rng()<.15;if(notch(x,H-1)||notch(x+9,H-1)||notch(x-9,H-1))continue;kput(BOXC(d),[x,H+9,z+8],null,[15,18,28],null);kput('boxD',[x,H+18.2,z+8],null,[9,.4,20],null);kput(BOXC(d),[x,H+8,z+50],null,[18,16,22],null);for(let r=0;r<2;r++)for(let c=-1;c<=1;c++)kput(d>0&&!BORE?'winSmD':'winSmI',[x+c*5,H+5+r*6,z+61.2],qFacing([0,0,1]),[2,2.4,1],null);
   if(!gone){const lit=d>0?rng()<.12:true;kput('strip',[x,H+12.6,z+10],qEuler(0,Math.PI/2,0),[16,1,1],lit?CYAN:DEAD);}}
  // THE DOME ON THE WATER (the owner, 2026-11-11): with targets/theodiga's fragments on the page, the great dome
  // (THEODOME, drawn at the end of this builder) takes the public dome inside it as its hall. Without them the

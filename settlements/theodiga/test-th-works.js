@@ -42,7 +42,18 @@ const CHECKS={
    for(const l of L){const P=B.spur.pts,c=[l.x,l.z];if(Math.min(segD(c,P[0],P[1]),segD(c,P[1],P[2]))<B.spur.w/2+Math.min(l.w,l.d)/2)n++;}
    for(const l of L)for(const p of box(l)){const P=B.spur.pts;if(Math.min(segD(p,P[0],P[1]),segD(p,P[1],P[2]))<B.spur.w/2||Math.hypot(p[0]-B.x,p[1]-B.z)>140)n++;}
    return [L.length===3&&n===0,L.length+' buildings, '+n+' corners on the spur or far off'];},
- 'the lamps hang before the licence gate':X=>{const B=X.bore;if(!B)return [false,'no bore'];return [B.lamps.length>=6&&B.lamps.every(l=>l.at>0&&l.at<B.gate.at)&&B.gate.at<B.depth,B.lamps.length+' lamps, gate at '+B.gate.at];}};
+ 'the lamps hang before the licence gate':X=>{const B=X.bore;if(!B)return [false,'no bore'];return [B.lamps.length>=6&&B.lamps.every(l=>l.at>0&&l.at<B.gate.at)&&B.gate.at<B.depth,B.lamps.length+' lamps, gate at '+B.gate.at];},
+ /* the yards' gear and the fields' water (T-works-2) */
+ 'the derricks stand on the floor clear of the buildings and the track, their jibs over their heaps':X=>{let bad=[];
+   for(const c of X.cranes){if(X.lots.some(L=>box(L).length&&Math.abs(L.x-c.x)<L.w/2+1&&Math.abs(L.z-c.z)<L.d/2+1))bad.push(c.id+' in a building');
+    if(Math.abs(c.z-X.track.a[1])<X.track.w/2)bad.push(c.id+' on the track');const H=X.heaps.find(h=>h.id===c.heap),tip=c.z+(c.ry===0?1:-1)*c.reach;
+    if(!H||Math.abs(tip-H.z)>H.rz||Math.abs(c.x-H.x)>H.rx)bad.push(c.id+' jib off its heap');}
+   return [X.cranes.length===2&&bad.length===0,bad.join('; ')||X.cranes.length+' derricks'];},
+ 'the handcarts stand on the track':X=>{const T2=X.track;return [X.carts.length>=4&&X.carts.every(c=>Math.abs(c.z-T2.a[1])<T2.w/2&&c.x<=T2.a[0]&&c.x>=T2.b[0]),X.carts.length+' carts'];},
+ 'the channels run between the strips, through no field and no hut':X=>{let n=0;
+   for(const c of X.channels){const x=c.pts[0][0],hw=c.w/2;for(const F of X.fields){const K=F.corners;if(x+hw>K[0][0]&&x-hw<K[1][0])n++;}
+    for(const L of X.huts)if(Math.abs(L.x-x)<L.w/2+hw&&c.pts[0][1]<L.z+L.d/2&&c.pts[1][1]>L.z-L.d/2)n++;}
+   return [X.channels.length>=3&&n===0,X.channels.length+' channels, '+n+' crossings'];}};
 const NEG={
  'the yards stand on the floor and off the river':X=>{X.lots[0].x=G.river.x(X.lots[0].z);},
  'nothing in the yards in another\'s way (the track, a building, a heap)':X=>{X.heaps[0].x=X.lots[0].x;X.heaps[0].z=X.lots[0].z;},
@@ -52,7 +63,10 @@ const NEG={
  'enough of each: 6 yard buildings, 6 heaps, 8 fields, a hut':X=>{X.fields=X.fields.slice(0,3);},
  'the spur runs from the road\'s foot into the bore, short of its gate':X=>{X.bore.spur.pts[2][0]=X.bore.x+X.bore.gate.at+5;},
  'the Devisers\' lodge, stores and haulers\' row stand by the mouth, off the spur':X=>{const l=X.lots.find(l=>l.work==='the bore');l.x=X.bore.spur.pts[1][0];l.z=X.bore.spur.pts[1][1];},
- 'the lamps hang before the licence gate':X=>{X.bore.lamps[0].at=X.bore.gate.at+3;}};
+ 'the lamps hang before the licence gate':X=>{X.bore.lamps[0].at=X.bore.gate.at+3;},
+ 'the derricks stand on the floor clear of the buildings and the track, their jibs over their heaps':X=>{X.cranes[0].reach+=30;},
+ 'the handcarts stand on the track':X=>{X.carts[1].z+=8;},
+ 'the channels run between the strips, through no field and no hut':X=>{X.channels[0].pts[0][0]-=12;X.channels[0].pts[1][0]-=12;}};
 for(const name of Object.keys(CHECKS)){const [pass,detail]=CHECKS[name](W);T.ok(name+' ('+detail+')',pass,detail);T.neg('negative: '+name,X=>CHECKS[name](X)[0],fault(NEG[name]),clone());}
 T.ok('the works rerun the same',JSON.stringify(TH_WORKS.make(G))===JSON.stringify(W));
 T.ok('every heap is a KRUBBLE heap with its pieces',W.heaps.every(H=>H.kind==='heap'&&H.blocks&&H.blocks.length>0),W.heaps.length);

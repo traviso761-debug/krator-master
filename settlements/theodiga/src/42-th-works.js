@@ -8,7 +8,7 @@
    Every draw is KRAND-hashed by the works' seed and the slot's index (never by how many draws came before it). Workplaces: their
    people live in the town above (src/40-th-town.js counts them).
 
-   TH_WORKS.make(o) -> {track, lots, heaps, fields, huts, bore}
+   TH_WORKS.make(o) -> {track, lots, heaps, fields, huts, bore, cranes, carts, channels}
      o.bore           {x, z, back}: the bore to Stair's headwall front, axis and back (optional; bore is null without it)
      o.floor(x, z)    the canyon floor's height; o.floorZone {x1, z0, z1}: where the floor is drawn (|x| < x1, z0..z1)
      o.river          {x(z), w(z)}: the river's line and half-width on the floor
@@ -86,6 +86,23 @@ var TH_WORKS=(function(){
    if(C.every(p=>dry(p)&&upstream(p)&&clearDome(p))&&flat(C,o.bed,2)&&!fields.some(F2=>Math.abs(F2.corners[0][0]+11-x)<11+D.w/2+2&&Math.abs(F2.corners[0][1]+6-z)<6+D.d/2+2)){
     huts.push({id:'th.works.hut.'+(u++),key,v:k%3,x,z,ry:0,w:D.w,d:D.d,ground:'bed',work:'silt fields'});}}
   /* the fields' strips, the huts and the dam's face kept apart (a hut is never on a strip: the check above, by the strip's box) */
-  return {track,lots,heaps,fields,huts,bore};}
+  /* THE YARDS' GEAR (T-works-2): a derrick at each of the two biggest heaps, its foot 4 m off the heap toward the track and its jib
+     over the heap; handcarts on the track, every 40 m or so, each on the track's half nearer the yard it serves */
+  const cranes=[],carts=[];
+  heaps.map((H,i)=>({H,i,s:H.rx*H.rz})).sort((a,b)=>b.s-a.s||a.i-b.i).slice(0,2).forEach(({H},k)=>{const side=Math.sign(H.z-tz)||1,x=H.x,z=H.z-side*(H.rz+4);
+   if(!lots.some(L=>Math.abs(L.x-x)<L.w/2+2&&Math.abs(L.z-z)<L.d/2+2)&&Math.abs(z-tz)>track.w/2+1)cranes.push({id:'th.works.crane.'+k,x,z,h:14,ry:side>0?0:Math.PI,reach:H.rz+4,heap:H.id});});
+  for(let x=F.x-30,k=0;x>tx1+10;x-=40,k++){const j=(U(seed,k,41)-.5)*20,side=U(seed,k,42)<.5?-1:1;carts.push({id:'th.works.cart.'+k,x:x+j,z:tz+side*1.4,ry:U(seed,k,43)<.5?0:Math.PI});}
+  /* THE FIELDS' WATER (T-works-2): a channel between every two columns of strips, from the lake's edge above the top strip to below
+     the bottom one, and a headrace along the top of each column's run; the fields stand 22 m wide on a 24 m grid, so a channel
+     has the 2 m between them */
+  const channels=[];
+  {const cols=new Map();for(const f of fields){const x=f.corners[0][0]+11;if(!cols.has(x))cols.set(x,[]);cols.get(x).push(f);}
+   const xs=[...cols.keys()].sort((a,b)=>a-b);
+   for(let i=0;i+1<xs.length;i++){if(xs[i+1]-xs[i]!==24)continue;const a=cols.get(xs[i]),b=cols.get(xs[i+1]),x=xs[i]+12;
+    let z0=Math.min(...a.concat(b).map(f=>f.corners[0][1]))-4,z1=Math.max(...a.concat(b).map(f=>f.corners[2][1]))+2;
+    /* short of a field hut in its way (a hut stands at the Silt Road's foot, below the strips or beside them) */
+    for(const H of huts)if(Math.abs(H.x-x)<H.w/2+1.6&&z0<H.z+H.d/2+1&&z1>H.z-H.d/2-1){if(H.z>(z0+z1)/2)z1=Math.min(z1,H.z-H.d/2-1);else z0=Math.max(z0,H.z+H.d/2+1);}
+    if(z1-z0>12)channels.push({id:'th.works.channel.'+i,pts:[[x,z0],[x,z1]],w:1.2});}}
+  return {track,lots,heaps,fields,huts,bore,cranes,carts,channels};}
  return {make,YARD};
 })();

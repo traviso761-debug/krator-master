@@ -69,6 +69,26 @@ function thWorksDraw(gx,gz,ctx,W){const O={meshes:0,tris:0,errors:[]};
   {const box=new THREE.BoxGeometry(.5,.7,.5),P=Bo.lamps.map(l=>[X0+l.at,C+2.5,Z0+l.side*(Math.sqrt(R0*R0-6.25)-.4)]).concat([[X0-.4,C+5,Z0-R0-3.5],[X0-.4,C+5,Z0+R0+3.5]]);
    const M=new THREE.InstancedMesh(box,LAMP,P.length),m4=new THREE.Matrix4();P.forEach((p,i)=>{m4.makeTranslation(p[0]+gx,p[1],p[2]+gz);M.setMatrixAt(i,m4);});
    M.name='theodiga:town works: the bore to Stair, the Devisers\' lamps';M.userData.probeSkip=true;scene.add(M);O.meshes++;O.bore++;O.tris+=12*P.length;}}
+ // ---- THE YARDS' GEAR (T-works-2): the derricks over the two biggest heaps and the handcarts on the track, in rusted iron, as the
+ // town's own instances (thInst, src/8ay5-th-life.js: core/ruins skips the town by name), each registered and tagged first ------
+ if(typeof thInst==='function'){const posts=[],boxes=[],weights=[];
+  for(const c of W.cranes||[]){const y=ctx.floor(c.x,c.z),dz=c.ry===0?1:-1;
+   REGISTER({name:'Theodiga — the salvage yards: a derrick over a heap',x:c.x,z:c.z+dz*c.reach/2,y,r:c.reach/2+2,h:c.h+1});
+   TG.child(B,{'class':'feature',kind:'derrick',key:c.id,name:'a derrick over the heap',at:[c.x+gx,y,c.z+gz],tags:{culture:'xanadu-scrap',work:'salvage',heap:c.heap}});
+   posts.push({p:[c.x,y+c.h/2,c.z],s:[.3,c.h,.3]});                                                                    /* the mast */
+   for(const s of [-1,1])posts.push({p:[c.x+s*1.6,y+c.h*.3,c.z-dz*1.2],q:thQ(dz*.35,0,-s*.2),s:[.16,c.h*.62,.16]});        /* its legs */
+   boxes.push({p:[c.x,y+c.h-.6,c.z+dz*c.reach/2],s:[.45,.45,c.reach+2]});                                              /* the jib */
+   weights.push({p:[c.x,y+c.h-.9,c.z-dz*2.2],s:[1.4,1.2,1.4]});                                                        /* the counterweight */
+   posts.push({p:[c.x,y+c.h/2+.6,c.z+dz*c.reach],s:[.04,c.h-2.4,.04]});                                                /* the cable */
+   boxes.push({p:[c.x,y+2.6,c.z+dz*c.reach],s:[1.2,.6,1.2]});}                                                         /* the grab */
+  for(const c of W.carts||[]){const y=ctx.floor(c.x,c.z);
+   TG.child(B,{'class':'prop',kind:'handcart',key:c.id,at:[c.x+gx,y,c.z+gz],tags:{work:'salvage'}});
+   boxes.push({p:[c.x,y+.85,c.z],q:thQ(0,c.ry,0),s:[2.2,.55,1.2]});
+   for(const s of [-1,1])posts.push({p:[c.x,y+.45,c.z+s*.68],q:thQ(Math.PI/2,0,0),s:[.45,.12,.45]});
+   posts.push({p:[c.x+(c.ry===0?1.6:-1.6),y+.95,c.z],q:thQ(0,0,Math.PI/2.4),s:[.05,1.2,.05]});}
+  const RUST=MAT.rust||MAT.dark;
+  for(const [n,g,m,L] of [['works: the derricks\' and carts\' iron',TH_GEO.post,RUST,posts],['works: the jibs, grabs and carts',TH_GEO.box,RUST,boxes],['works: the counterweights',TH_GEO.box,MAT.dark,weights]]){
+   const M=thInst(n,g,m,L,gx,gz,true);if(M){O.meshes++;O.tris+=L.length*(g.index?g.index.count:g.attributes.position.count)/3;}}}
  // ---- THE TRACK AND THE FIELDS, laid on their grounds ------------------------------------------------------------------------------
  {const pos=[],col=[],C3=new THREE.Color(),quad=(a,b,c,d,hex,G,lift)=>{C3.setHex(hex).convertSRGBToLinear();
    for(const p of [a,b,c,a,c,d]){pos.push(p[0]+gx,G(p[0],p[1])+(lift||.08),p[1]+gz);col.push(C3.r,C3.g,C3.b);}};
@@ -80,6 +100,12 @@ function thWorksDraw(gx,gz,ctx,W){const O={meshes:0,tris:0,errors:[]};
    for(let s=0;s<P.length-1;s++){const a=P[s],b=P[s+1],L=Math.hypot(b[0]-a[0],b[1]-a[1]),nx=-(b[1]-a[1])/L*sh,nz=(b[0]-a[0])/L*sh;
     for(let t=0;t<L-.01;t+=6){const t1=Math.min(L,t+6),p=[a[0]+(b[0]-a[0])*t/L,a[1]+(b[1]-a[1])*t/L],q=[a[0]+(b[0]-a[0])*t1/L,a[1]+(b[1]-a[1])*t1/L];
      quad([p[0]-nx,p[1]-nz],[q[0]-nx,q[1]-nz],[q[0]+nx,q[1]+nz],[p[0]+nx,p[1]+nz],0x8c7d66,G,.1);}}}
+  /* the fields' channels (T-works-2): the water a hand under the strips' top, its banks either side */
+  for(const c of W.channels||[]){const [a,b]=c.pts,hw2=c.w/2;
+   TG.child(B,{'class':'feature',kind:'channel',key:c.id,at:[a[0]+gx,ctx.bed(a[0],(a[1]+b[1])/2),(a[1]+b[1])/2+gz],tags:{work:'silt fields'}});
+   for(let z=a[1];z<b[1]-.01;z+=6){const z1=Math.min(b[1],z+6);
+    quad([a[0]-hw2,z],[a[0]+hw2,z],[a[0]+hw2,z1],[a[0]-hw2,z1],0x4d7a80,ctx.bed,.09);
+    for(const s of [-1,1])quad([a[0]+s*hw2,z],[a[0]+s*(hw2+.35),z],[a[0]+s*(hw2+.35),z1],[a[0]+s*hw2,z1],0x6b5a44,ctx.bed,.2);}}
   const CROP={grain:0xc8b46a,pulse:0x7f9a4c,tuber:0x5f7a3c,fodder:0x8a9a52,fallow:0x8a7454};
   for(const f of W.fields){const K=f.corners,c=CROP[f.bucket||f.crop]||0x8a9a52;
    TG.child(B,{'class':'feature',kind:'field',key:f.id,at:[(K[0][0]+K[2][0])/2+gx,ctx.bed((K[0][0]+K[2][0])/2,(K[0][1]+K[2][1])/2),(K[0][1]+K[2][1])/2+gz],tags:{work:'silt fields',crop:f.crop}});

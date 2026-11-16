@@ -326,8 +326,15 @@ records drawn from the scrap Xanadu set and the Qiblai kit (`XAK`, `kit_bundle.b
       (Qiblai's pack, world-scale uvs); the salvage yards (13 scrap buildings, 11 KRUBBLE heaps of the Dome's white panels, a
       456 m track) stand on the canyon floor at the Salvage Road's foot, 39 field strips and 3 huts on the silt at the Silt
       Road's (`settlements/theodiga/src/42-th-works.js`, `8ay3-th-works.js`).
-- [ ] **Nobody on the ways or in the works**; the yards have no crane or carts; the fields are flat strips laid on the silt (no
-      dykes or channels from the lake). The Warden's House is a scrap court, not its own building.
+- [x] ~~Nobody on the ways or in the works; no crane or carts; no channels~~ (T-life-1 and T-works-2, 2026-11-16). The
+      people out are townsfolk on the streets (about one for every 25 of the census), pilgrims on Gate Square, the ways, the
+      middle kora and the Dome's deck, salvagers, farmers, and the Devisers and their haulers at the bore
+      (`settlements/theodiga/src/45-th-life.js`, `8ay5-th-life.js`). Lamps line the streets, the square, the kora and the
+      bore, glowing at night, with six lights and the town's windows lit after dark. The yards have two derricks over the
+      biggest heaps and handcarts on the track. The silt fields have channels between their columns of strips. All of it is
+      the town's own instances (core/ruins skips the town by name).
+- [ ] **The figures are the kit's cylinder people** (body and head), posed but not animated; the census is not on
+      core/simulation. The Warden's House is a scrap court, not its own building.
 - [x] ~~Black walls and windowless houses at a distance~~ (the owner, 2026-11-16): the town's drawer took Strongbow's three layers,
       so a scrap house's wall panels and a Qiblai house's window surrounds dropped out past 300 m and the glazing past 200 m,
       showing dark bodies and black holes. Now two layers: every big piece and every plain box of 0.7 m or more at all
@@ -350,7 +357,8 @@ records drawn from the scrap Xanadu set and the Qiblai kit (`XAK`, `kit_bundle.b
       hanging in the catalog would finish it.
 - [ ] **The interiors stand inside solid shells**: the crest's blocks and the fins are the kit's solid boxes, so the rooms show
       only through the cut-away; their windows are painted on the shell, not cut through to the rooms. The gallery's rooms sit
-      inside the dam's mass with no openings to the faces.
+      inside the dam's mass with no openings to the faces. On `theodiga-today` the crest's face-side windows are the kept
+      (glazed) ones, not the ruin's dead ones.
 - [ ] **The bore to Stair is drawn 90 m deep** (T-town-6, 2026-11-16; `settlements/theodiga` PLAN.md "The bore to Stair"). Its
       mouth is a hole of two grid cells by two in the east wall, which only the headwall hides; a view from inside the rock
       would see the void behind the face. The bore past its drawn depth, the licence gate's booth, and the people (Devisers,
@@ -358,8 +366,8 @@ records drawn from the scrap Xanadu set and the Qiblai kit (`XAK`, `kit_bundle.b
 - [ ] **The dam's interiors ride on two wrappers** (`settlements/theodiga/src/8zz1-th-arc-host.js`): `AI.kitPlan` takes the dam's
       plan whole and furnished though its row is the ruin, and the one site is split into ten parts after the pass. Both would
       be cleaner as options of kits/ancients-interiors (a per-type ruin fraction) and of the pass (a plan's own sites).
-- [ ] **The town has no interiors, no people, no lamps at night.** The scrap set's interiors (`kits/interiors` `xanadu-scrap`)
-      and Qiblai's walk-in rooms are not wired here; the census is numbers only (core/simulation is later).
+- [ ] **The town has no interiors.** The scrap set's interiors (`kits/interiors` `xanadu-scrap`) and Qiblai's walk-in rooms
+      are not wired here. The census is numbers only (core/simulation is later). People and lamps: T-life-1, above.
 - [ ] **The east plateau is the town's ground only on this page.** With the town on the page (`THCITY`) the ruin's east plateau
       is drawn on `THCITY.town.ground` out to x 1260; on `--target theodiga` it is as it was (rough, to x 770).
 

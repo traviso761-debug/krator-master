@@ -165,4 +165,18 @@ spring, sealed deep inside). Theodiga's end:
      - the lamps.
    - **The checks.** `test-th-works.js` (20 checks): the spur from the foot into the bore short of the gate, the Devisers'
      buildings by the mouth off the spur, the lamps before the gate. View 'The bore to Stair'.
-6. **Later**: the town's interiors (as Strongbow's), core/simulation's roles, the open world.
+6. **T-life-1 and T-works-2, people, lamps and the works' gear** (done 2026-11-16).
+   - **The people.** `src/45-th-life.js` (`TH_LIFE`, [G data], KRAND by place and slot) puts people out:
+     - townsfolk along the streets, about one figure for every 25 of the census;
+     - pilgrims on Gate Square, on the Stair of Descent and the roads, on the middle kora and on the Dome's deck (off its
+       pavilions and the Tear);
+     - salvagers in the yards, farmers in the fields, the Rare Devisers and their haulers at the bore.
+     None stands inside a building.
+   - **The lamps.** A post every 30 m on a street's sides, at Gate Square's corners, along the kora and at the bore.
+   - **The drawing.** `src/8ay5-th-life.js` draws the kit's figures robed by role, and the lamps with a glow at night, six
+     night lights and the scrap set's windows lit after dark. These are the town's own instances (`thInst`), so core/ruins
+     does not take them for the dam's wreckage.
+   - **The works' gear.** `TH_WORKS` adds the derricks over the two biggest heaps, handcarts on the track, and the fields'
+     channels between their columns of strips (short of the huts). `test-th-life.js` runs 12 checks; `test-th-works.js` 26.
+     The views are 'Pilgrims on Gate Square' and 'The town at night'.
+7. **Later**: the town's interiors (as Strongbow's), core/simulation's roles, the open world.

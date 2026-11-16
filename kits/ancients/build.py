@@ -143,7 +143,7 @@ THEO_TARGET = os.path.join(HERE, 'targets', 'theodiga')
 TARGET_READS['theodiga-today'] = (TARGET_READS['theodiga']
                                   + [(THEO_TARGET, f) for f in ('77-dam.js', '77a-theodiga-dome-plan.js', '77b-theodiga-dome-draw.js',
                                                                 '77c-theodiga-water.js', '90w-theodiga-water.js')]
-                                  + [(os.path.join(ROOT, 'settlements', 'theodiga', 'src'), f) for f in ('41-th-descent.js', '42-th-works.js', '43-th-arc-program.js', '43-th-arc.js', '8ay1-th-town.js', '8ay2-th-descent.js', '8ay3-th-works.js', '44-th-dome-today.js', '8ay4-th-dome-today.js', '8zz1-th-arc-host.js')]
+                                  + [(os.path.join(ROOT, 'settlements', 'theodiga', 'src'), f) for f in ('41-th-descent.js', '42-th-works.js', '43-th-arc-program.js', '43-th-arc.js', '8ay1-th-town.js', '8ay2-th-descent.js', '8ay3-th-works.js', '44-th-dome-today.js', '8ay4-th-dome-today.js', '45-th-life.js', '8ay5-th-life.js', '8zz1-th-arc-host.js')]
                                   + [(os.path.join(ROOT, 'core', 'terrain'), '37c-core-rubble.js'),   # the works' salvage heaps (KRUBBLE)
                                      (os.path.join(ROOT, 'settlements', 'isle-demo', 'src'), '58-isle-protos.js')])
 TH_CITY, TH_XAK, TH_XPACK, TH_QPACK = '8ay8-th-city.js', '8ay9-th-xak.js', '8ay7-th-xanadu-pack.js', '8ay6-th-qiblai-pack.js'
@@ -295,6 +295,7 @@ DETERMINISTIC = {
     '42-th-works.js', '8ay3-th-works.js', '37c-core-rubble.js',   # theodiga-today: the works below (KRAND by index) and their drawing; core/terrain's heaps
     '43-th-arc-program.js', '43-th-arc.js', '8zz1-th-arc-host.js',   # theodiga-today: the arcology's levels as plates (hashed by AI, no rng()) and their host
     '44-th-dome-today.js', '8ay4-th-dome-today.js',    # theodiga-today: the Dome as the faith keeps it (stairs, glazing: KRAND by cell, no rng())
+    '45-th-life.js', '8ay5-th-life.js',                # theodiga-today: people and lamps (KRAND by place and slot, no rng())
 }
 DETERMINISTIC |= {'06-core-khook.js', '06b-core-kcolor.js'}   # core/shader (no rnd())
 

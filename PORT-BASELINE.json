@@ -1005,12 +1005,12 @@
    "sha256": "2640e7a1f50a00cc7bc0e3f4313421905e97832f8e0071c43cbde9b5d63692ff"
   },
   "kits/ancients/dist/theodiga-today.html": {
-   "bytes": 2831518,
-   "sha256": "5ee7954305ce928445cff8e06c7bc1e2b479ac5941bb9fa1bfc10e3ec9c37c06"
+   "bytes": 2852196,
+   "sha256": "559f4f1633e4b132aad683b5b31a6db266adedb510b18905c151a37a16ce8f67"
   },
   "kits/ancients/dist/theodiga.html": {
-   "bytes": 562817,
-   "sha256": "5e0e20d68ec93a6bcb8e1efe62e761875c3ed23261c76b22cce624888dc1fdff"
+   "bytes": 562982,
+   "sha256": "b3db2c1adfea2901aa5e091721df06cb5f09c5e46c07218d50f1161a3c006adb"
   },
   "kits/ancients/dist/trigon.html": {
    "bytes": 558981,
