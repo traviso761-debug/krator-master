@@ -73,12 +73,14 @@ function thTownDraw(gx,gz,ctx){const O={buildings:0,people:0,protos:0,meshes:0,t
  const corners=(r,w,d)=>{const c=Math.cos(r.ry),s=Math.sin(r.ry);return [[-1,-1],[1,-1],[1,1],[-1,1],[0,0]].map(([u,v])=>[r.x+u*w/2*c+v*d/2*s,r.z-u*w/2*s+v*d/2*c]);};
  const CELL=120,HYST=25,cells=new Map(),cellOf=(x,z)=>{const k=Math.floor(x/CELL)+','+Math.floor(z/CELL);
   let C=cells.get(k);if(!C){C={i:cells.size,k,x:(Math.floor(x/CELL)+.5)*CELL+gx,z:(Math.floor(z/CELL)+.5)*CELL+gz,y:440,items:[],on:{}};cells.set(k,C);}return C;};
- const Y=new THREE.Vector3(0,1,0),steps=[];
+ const Y=new THREE.Vector3(0,1,0),steps=[],PLACED=thTownDraw.placed=[];
  for(const r of all){const K=KD[r.key],G0=r.gr||GR,hs=corners(r,K.fw,K.fd).map(([x,z])=>G0(x,z)),top=Math.max.apply(null,hs),low=Math.min.apply(null,hs);
   const drop=Math.min(6,Math.ceil(top-low+.4)),v=Math.max(0,Math.min((K.variants|0)-1,r.v|0)),L=proto(r.key,v,drop);
   REGISTER({name:'Theodiga — '+(r.name||K.name)+' ('+(TT.QUARTER_NAME[r.quarter]||'below the rim')+')',x:r.x,z:r.z,y:low-.5,r:Math.max(r.w,r.d)/2+.8,h:r.h+(top-low)+1});
   O.buildings++;O.people+=r.people|0;
   if(!L)continue;
+  /* where it stands, for the town's interiors (T-town-7: src/8zz2-th-town-rooms.js plans its rooms in the same frame) */
+  PLACED.push({id:r.id,key:r.key,v,x:r.x,z:r.z,ry:r.ry,y:top,quarter:r.quarter||'works',name:r.name||K.name,types:K.types||null});
   const m=new THREE.Matrix4().compose(new THREE.Vector3(r.x+gx,top,r.z+gz),new THREE.Quaternion().setFromAxisAngle(Y,r.ry),new THREE.Vector3(1,1,1));
   cellOf(r.x,r.z).items.push({L,m});
   const c=Math.cos(r.ry),s=Math.sin(r.ry);steps.push([r.x+gx+s*(K.fd/2+.35),top-.16,r.z+gz+c*(K.fd/2+.35),r.ry]);}

@@ -366,8 +366,18 @@ records drawn from the scrap Xanadu set and the Qiblai kit (`XAK`, `kit_bundle.b
 - [ ] **The dam's interiors ride on two wrappers** (`settlements/theodiga/src/8zz1-th-arc-host.js`): `AI.kitPlan` takes the dam's
       plan whole and furnished though its row is the ruin, and the one site is split into ten parts after the pass. Both would
       be cleaner as options of kits/ancients-interiors (a per-type ruin fraction) and of the pass (a plan's own sites).
-- [ ] **The town has no interiors.** The scrap set's interiors (`kits/interiors` `xanadu-scrap`) and Qiblai's walk-in rooms
-      are not wired here. The census is numbers only (core/simulation is later). People and lamps: T-life-1, above.
+- [x] ~~The town has no interiors~~ (T-town-7, 2026-11-16, the owner: "Town interiors"). Every scrap building the town
+      places takes its rooms from the Scrap Xanadu set (`kits/interiors/sets/xanadu-scrap.js`, now in this page's bundle:
+      build.py `INTERIOR_SETS_TARGET`). Each kind is planned and furnished once and turned onto every plot
+      (`settlements/theodiga/src/46-th-town-rooms.js`). Each quarter is a site of the kit's cut-away beside the arcology's
+      parts (`8zz2-th-town-rooms.js`). The furniture is records at load. The rooms' partitions, wall linings, floors and
+      furniture are drawn when a quarter is opened, one quarter at a time.
+- [ ] **The Qiblai buildings, the Cistern Pavilion and the Granary have no rooms.** The scrap set skips the two defs; Qiblai's
+      rooms (`kits/qiblai` 89q5) are drawn by its own builders and are not wired here. The census is numbers only
+      (core/simulation is later).
+- [ ] **The Panel Row's kitchens cannot take a hearth** (`kits/interiors/sets/xanadu-scrap.js`, `xa_scrap_row` houses: a room
+      2.2 m wide with the stair in it; no hearth fits at any seed from any culture). The town furnishes them as stores
+      (`8zz2-th-town-rooms.js`, `AIK.townRekinded`). The set should widen the kitchen or move the stair.
 - [ ] **The east plateau is the town's ground only on this page.** With the town on the page (`THCITY`) the ruin's east plateau
       is drawn on `THCITY.town.ground` out to x 1260; on `--target theodiga` it is as it was (rough, to x 770).
 

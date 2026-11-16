@@ -30,6 +30,9 @@ const VIEWS={
  'The Pilgrims\' Stair':[ROWS.dam.s+104,405,ROWS.dam.z-95,ROWS.dam.s+62,402,ROWS.dam.z-105],
  'The stair head on the deck':[ROWS.dam.s+36,428,ROWS.dam.z-96,ROWS.dam.s+60,419,ROWS.dam.z-108],
  'The re-glazed Dome':[ROWS.dam.s+430,530,ROWS.dam.z+150,ROWS.dam.s,480,ROWS.dam.z-205],
+ // the town's interiors (T-town-7): the bazaar's rooms, the cut at its ground storey
+ 'Inside the bazaar':[ROWS.dam.s+560,520,ROWS.dam.z+80,ROWS.dam.s+600,441,ROWS.dam.z-20,0,{site:'town/bazaar',storey:0}],
+ 'Inside the poor tier':[ROWS.dam.s+1010,490,ROWS.dam.z+70,ROWS.dam.s+936,441,ROWS.dam.z-30,0,{site:'town/poor',storey:0}],
  'Inside the Dome':[ROWS.dam.s+70,470,ROWS.dam.z-110,ROWS.dam.s,421,ROWS.dam.z-205,0,{site:'dam/dome',storey:0}],
  // the ruin, as the theodiga target shows it
  'Theodiga ruin':[ROWS.dam.s+60,260,ROWS.dam.z+1000,ROWS.dam.s,200,ROWS.dam.z],

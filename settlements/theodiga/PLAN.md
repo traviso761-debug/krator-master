@@ -179,4 +179,16 @@ spring, sealed deep inside). Theodiga's end:
    - **The works' gear.** `TH_WORKS` adds the derricks over the two biggest heaps, handcarts on the track, and the fields'
      channels between their columns of strips (short of the huts). `test-th-life.js` runs 12 checks; `test-th-works.js` 26.
      The views are 'Pilgrims on Gate Square' and 'The town at night'.
-7. **Later**: the town's interiors (as Strongbow's), core/simulation's roles, the open world.
+7. **T-town-7, the town's interiors** (done 2026-11-16, the owner: "Town interiors").
+   - **The plans.** `src/46-th-town-rooms.js` (`TH_TOWN_ROOMS`, [G data]) gives every scrap building the town placed its rooms
+     from the Scrap Xanadu set (`kits/interiors/sets/xanadu-scrap.js`, `IX.sets.instantiate`). Each kind is planned once
+     unturned at the origin, furnished once, then turned and raised onto every plot. The buildings are gathered into one site
+     a quarter, in kits/ancients-interiors' plan shape.
+   - **The host.** `src/8zz2-th-town-rooms.js` makes each quarter a site of the kit's cut-away (the select "Interior",
+     `[` `]`, `x`). The furniture is records at load, tagged in core/tags with every building and room. Partitions, linings
+     and floors are drawn with the furniture when a quarter is opened, one quarter at a time.
+   - **The Panel Row's kitchens** are too narrow for a hearth and are furnished as stores (KNOWN_ISSUES).
+   - **The checks.** `test-th-town-rooms.js` runs 13. Every room lies inside its building as placed; every storey stands at
+     its plot's base; a building's street door is its own turned onto the plot; a piece lands in its room; one plan a kind;
+     the quarters' boxes hold their buildings. The views are 'Inside the bazaar' and 'Inside the poor tier'.
+8. **Later**: the Qiblai buildings' rooms (as Strongbow's), core/simulation's roles, the open world.
