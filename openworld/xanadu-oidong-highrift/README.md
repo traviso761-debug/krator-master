@@ -30,6 +30,13 @@ The second region of sites cut off the scale model into the open world (`openwor
     by a river, near rock salt and ore; the owner's word), with no page yet: the same ring, re-planned on the new ground.
   - **Longsong** (`sq80bzd7ep`, px 1226,1626): the History Monks' monastery (`settlements/longsong`). Its three villages
     stand where its page lays them: Shar and Nub (farming) and Dzo-ling (the herders), 585 people in 110 buildings.
+    Recut 2026-11-16 at its 2026-11-11 pin (1228.88,1621.23), so its three villages now stand round the moved monastery.
+  - **Thalaba** (`shvo49k0y2`, px 840,1463 since 2026-11-16, scale model 5.1e12: the bench at the mouth of Godshearth's
+    spillway gorge; the owner: "cut it into whichever polygon the new pin falls into", the Xanadu Sultanate), reach 22 km;
+    the town is its own page (`settlements/thalaba`). Its ring is the site plan's outworks (`settlements/thalaba/PLAN.md`):
+    Briḍj, the bridge ward at the gorge's mouth (ranch: the road warden's watch, the expeditions' muster corrals), 10 km
+    north; Salphar, the diggers' hamlet on the town's small sulfur deposit at the cataract's foot (mine), 20 km north; the
+    near and far Bēnch farms, 11 and 22 km east.
 - **The roads:**
   - **Village roads:** each village's lane end has a road to its town (`core/world` `ROADS`, the grade held to 8 %).
     They join the roads already laid where those are nearer than the town, so they share a trunk.

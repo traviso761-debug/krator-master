@@ -26,5 +26,15 @@ var SITE_SPEC={region:'xanadu-oidong-highrift',world:1191569,
   sq80bzd7ep:{culture:'xanadu',road:{r:400,hw:2,join:true},hamlets:[
    {id:'east',name:'Shar, the east village',focus:'farming',near:[760,60],look:1200,pop:220},
    {id:'west',name:'Nub, the west village',focus:'farming',near:[-880,60],look:1200,pop:220},
-   {id:'herders',name:"Dzo-ling, the herders' village",focus:'ranch',near:[480,650],look:1200,pop:160}]}},
+   {id:'herders',name:"Dzo-ling, the herders' village",focus:'ranch',near:[480,650],look:1200,pop:160}]},
+  /* Thalaba (the owner, 2026-11-16; settlements/thalaba/PLAN.md, the names agreed): the town on the spring line at the
+     riser's foot is its own page's; its ring here is the plan's outworks. Briḍj, the bridge ward at the gorge's mouth
+     (the road warden's watch, the expeditions' muster corrals: a ranch village), 10 km north where the expedition road
+     crosses the Solṭ Siṭrīm; Salphar, the diggers' hamlet on the town's small sulfur deposit at the cataract's foot
+     (Gāḍz-Phōl), 20 km north; two farm villages on the Bēnch east of the town */
+  shvo49k0y2:{culture:'xanadu',road:{r:900,hw:2.5,join:true},hamlets:[
+   {id:'bridj',name:'Briḍj, the bridge ward',focus:'ranch',bearing:0,km:10,look:2500,pop:120},
+   {id:'salphar',name:'Salphar, the diggers\' hamlet',focus:'mine',bearing:4,km:20,look:2500,pop:200},
+   {id:'bench-1',name:'the near Bēnch farms',focus:'farming',bearing:95,km:11,pop:220},
+   {id:'bench-2',name:'the far Bēnch farms',focus:'farming',bearing:100,km:22,pop:220}]}},
  links:[['s57bkv9741','skm4jjo2vl',{hw:4,r:2000}],['skm4jjo2vl','sq80bzd7ep',{hw:4,r:1500}]]};
