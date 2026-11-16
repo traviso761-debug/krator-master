@@ -19,6 +19,7 @@ page that reads it came out byte-identical after the move.
 | `81-world-terrain.js` | [web] | the terrain tiles (the land drawn, coloured by `WORLD.ground`) |
 | `83-world-water.js` | [G data] | the water levels |
 | `83w-world-seas.js` | [web] | the seas and lakes drawn |
+| `83s-world-streams.js` | [web] | a relief region's wet streams drawn: core/water flow ribbons built a kilometre piece at a time near the camera (`STREAMW`; `PLAN-RELIEF.md` P3). A build with streams lists it after `83w` |
 | `84-world-nursery.js` | [web] | each kit's species grown as variants (`KIT.make`, `KIT.grow`) |
 | `85-world-flora.js` | [web] | the flora tile by tile, seeded by cell with `KRAND.hash` (the same tile in any order) |
 | `86-world-floor.js` | [web] | the kits' floor patches under the zones |

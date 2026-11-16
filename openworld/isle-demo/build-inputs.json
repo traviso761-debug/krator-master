@@ -337,7 +337,7 @@
     "core/water/geyser/52-core-water-geyser.js": "804a8b84e108965002396666c0647991ef073416f0206b02aeba81be3be19ac1",
     "core/water/geyser/52b-core-water-geyser-draw.js": "2e403145a06bf9b7a06fe4a5e6831d3ae0724a8eba1fbb21b4039ab2ae6cfd3e",
     "core/world/00-head.html": "f13d6e95835b879b2558b833c915dec3020683afff8a62962d2c7aaa68659c6e",
-    "core/world/41-world-fields.js": "5e31c28dd13570e95a32d85f1d54fafb81c5de6e70a9e50b2c51689960b6fbbc",
+    "core/world/41-world-fields.js": "b2227503d426c57fbc40eb1bf38ec37adad91b42aec5f5790a5a0188f4d493ae",
     "core/world/42-world-roads.js": "8b9b8bf77763f7f8c1507f103352c821d1032021ec73218b96aa4a5783451277",
     "core/world/45-world-host.js": "4f67add1a87c01af548999122e1c4562345f8871418ea7a478eebfb8699323bc",
     "core/world/49r-world-resources.js": "c06677b5dcd39f7269b5e15bd790ad7532c87c1a99f17ff70565c77373db7b24",
@@ -352,9 +352,9 @@
     "core/world/88-world-towns.js": "e223a019a784cadc3f0a1c9891c0721e660498610064cde49a0850cae1152f67",
     "core/world/89r-world-resources-map.js": "710c0886b885ee442c5426afc6f0896823a665d5111170ad66a71ebe4ec35563",
     "core/world/90-world-camera.js": "a772ca7598b110af2c126df79b3e76add563a9e0ff7407905548669f71124a65",
-    "core/world/91-world-probe.js": "208c328c20ec84b08589e9eebe9639e0d11dc5729828a8e368f70f8614143ab0",
+    "core/world/91-world-probe.js": "edf3254b4021f0327955ae5e5d6ff9f836acacd552a43bffbff7a5c6f541f5a0",
     "core/world/93-world-propose.js": "df6242ce0b069c014d9e4250610a7db1479b647974f00d9c1dda0432fe0c6917",
-    "core/world/98-world-start.js": "ee26dc2dbbc1ce90133036d91177a23fef7435cc30121289756b86d9648c257b",
+    "core/world/98-world-start.js": "59237b5ce7ef4b79bdda9ee22ce90dd89629606639f920b70cf92e552f24fbf2",
     "core/world/99-tail.html": "5c1404e034c7ec0d2b8ac19a6c1a2c4786dbd3037cbb48efdc8cfe4820c14aea",
     "core/world/world_data.py": "7e09c945fef33bf318a24497fc19a0aa6e5dc2a45a9de48248861dacb3f68250",
     "kits/ancients/src/10-core.js": "7c31cf7eb63a1666c0f1c8cd97fd810c1531d10e8d014c105f807a2ad521138b",
@@ -1340,8 +1340,8 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "openworld/isle-demo/dist/isle-demo.artifact.html": "35252823c3d680fbe682153ef11c3e5587e5aa291c0550fe319580404c63f3e2",
-    "openworld/isle-demo/dist/isle-demo.html": "fd495461f234a24b3fec62493a69f276578b645f6e9269d2dcbecb4e0f1b5f5e",
+    "openworld/isle-demo/dist/isle-demo.artifact.html": "45d421e916b7db9f1c0c1279890609038fd0f80d38b8748f6db43c6f987c05fb",
+    "openworld/isle-demo/dist/isle-demo.html": "6c6c56041428a3c764c63454f11e5670b4c4213168889aff3a74cd0545d23ad5",
     "openworld/isle-demo/dist/isle-demo.tex.brtowns.js": "2eb5c136bd57139376043468141dddd302ea18ddc16a8219ae972c9dbedf4a71",
     "openworld/isle-demo/dist/isle-demo.tex.eastabyss.js": "419fd1d89cff71c282481dfb0e3b7e1ea7c15bc59e46270f8f4f6bd6759438f0",
     "openworld/isle-demo/dist/isle-demo.tex.geyser.js": "e0b88e7b3ecd6d9514b9b9baff00640e267a5e9f08efc3d0f5b52c1eaa7932c0",
@@ -1358,8 +1358,8 @@
     "openworld/isle-demo/dist/isle-demo.tex.ys.js": "e6efa558623b2fcf0bf9703025bc8547cc4d732ef30f81d54f4e3422aaef157c"
    },
    "outputs_raw": {
-    "openworld/isle-demo/dist/isle-demo.artifact.html": "35252823c3d680fbe682153ef11c3e5587e5aa291c0550fe319580404c63f3e2",
-    "openworld/isle-demo/dist/isle-demo.html": "fd495461f234a24b3fec62493a69f276578b645f6e9269d2dcbecb4e0f1b5f5e",
+    "openworld/isle-demo/dist/isle-demo.artifact.html": "45d421e916b7db9f1c0c1279890609038fd0f80d38b8748f6db43c6f987c05fb",
+    "openworld/isle-demo/dist/isle-demo.html": "6c6c56041428a3c764c63454f11e5670b4c4213168889aff3a74cd0545d23ad5",
     "openworld/isle-demo/dist/isle-demo.tex.brtowns.js": "2eb5c136bd57139376043468141dddd302ea18ddc16a8219ae972c9dbedf4a71",
     "openworld/isle-demo/dist/isle-demo.tex.eastabyss.js": "419fd1d89cff71c282481dfb0e3b7e1ea7c15bc59e46270f8f4f6bd6759438f0",
     "openworld/isle-demo/dist/isle-demo.tex.geyser.js": "e0b88e7b3ecd6d9514b9b9baff00640e267a5e9f08efc3d0f5b52c1eaa7932c0",

@@ -414,9 +414,17 @@ The High Rift's hillshade shows the rings plainly: concentric risers 200 to 250 
 - **Re-baked:**
   - pinnacle: the plan is unchanged (`90ecf7fd`); good farmland 1,328 to 1,264 km²;
   - oidong-highrift `296753e8`: 937 records, 15 bridges.
+- **The water (2026-11-16, the owner: "Draw the water").** `83s-world-streams.js` (`STREAMW`) draws the wet streams as
+  core/water flow ribbons, a piece of about a kilometre at a time (`WORLD.streamPieces`): built when the camera comes within
+  1.8 km, dropped past 2.4 km, so a walk holds a few dozen (Oidong's 1,116 wet streams make 8,600 pieces; drawn at load
+  they would be thousands of meshes). The water is `WORLD.streamWaterLine`'s: the carved centre plus 60 % of the depth,
+  85 % of the bed's width, a point every 8 m. White water only from a 6 % fall (core/water's river band, from 1.5 %,
+  whitened nearly every stream). A streamed ribbon is taken back out of `WATER.surfaces`, which has no remove and would
+  grow as the camera walks; `WORLD.water` already answers for it. `START.pump` drives it; `settle` waits for it.
+  - The probe: every piece within 1.8 km drawn, and its water in its bed (over the ground at the centre, under 3 m above
+    it). Negative: the water read 2 m lower. On the GPU: 8 to 21 ribbons drawn at each of five spots, every point in its
+    bed; the negative fails every point.
 - **Left for later:**
-  - **the water's surface:** a wet stream holds water (`WORLD.water`) but no ribbon is drawn. Thousands of streams as
-    `WATER.flow` meshes are too many at load: it wants ribbons built near the camera as the terrain streams;
   - **the profile by style** (S5: the loess's box canyons, slot gorges, braided wadi floors, peat cuts) and the loess tables
     between them;
   - two regions over one ground (oidong-highrift and xanadu-oidong-highrift) trace their streams apart, so they can differ

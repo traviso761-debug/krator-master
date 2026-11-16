@@ -273,6 +273,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `world/81-world-terrain.js` | 11.8 | [web] | 10 | 1 | 0 | 0 | 3 | 2 | 5 | 0 | 0 | 0 | 0 | split: data inside host code |
 | `world/83-world-water.js` | 2.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `world/83w-world-seas.js` | 3.9 | [web] | 2 | 0 | 0 | 0 | 3 | 0 | 1 | 0 | 0 | 0 | 0 |  |
+| `world/83s-world-streams.js` | 5.1 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the small streams' water, streamed near the camera |
 | `world/84-world-nursery.js` | 13.0 | [web] | 8 | 0 | 0 | 0 | 6 | 1 | 10 | 0 | 0 | 0 | 0 |  |
 | `world/85-world-flora.js` | 13.5 | [web] | 4 | 0 | 0 | 0 | 5 | 2 | 0 | 4 | 0 | 0 | 0 |  |
 | `world/86-world-floor.js` | 6.0 | [web] | 5 | 0 | 0 | 0 | 5 | 1 | 0 | 0 | 0 | 0 | 0 |  |

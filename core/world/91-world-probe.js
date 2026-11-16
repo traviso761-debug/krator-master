@@ -6,7 +6,8 @@
 //  - nothing roots in the water unless its pass stands in the shallows, and nothing grows outside the polygon;
 //  - no NaN in any record or in the drawn terrain;
 //  - every named river (region.json rivers) has water in its channel at each station down to its mouth;
-//  - every small stream (a relief region's) falls to its mouth and is carved in the land.
+//  - every small stream (a relief region's) falls to its mouth and is carved in the land, and the wet ones near the camera
+//    are drawn with their water in their beds.
 // Each check has a NEGATIVE: a broken input it must reject (a tile seeded by Math.random, a tree put in the sea, a step
 // put in the land, a tree put outside the polygon).
 window._api=(function(){
@@ -102,6 +103,7 @@ function hostChecks(){const out=[],P=HOST.camera.position,[tx,tz]=tileOf(P.x,P.z
  let nan=0;for(const m of TERRAIN.meshes()){const a=m.geometry.attributes.position.array;for(let i=0;i<a.length;i++)if(!isFinite(a[i])){nan++;break;}}
  out.push(Object.assign({name:'the named rivers carry water to their mouths'},rivers()));
  out.push(Object.assign({name:'the small streams fall to their mouths, carved in the land'},streams()));
+ if(typeof STREAMW!=='undefined'&&STREAMW)out.push(Object.assign({name:'the wet streams near the camera carry their water in their beds'},STREAMW.check()));
  out.push(Object.assign({name:'the highways lie on the land and keep their grade'},highways()));
  out.push(Object.assign({name:'nothing grows on a highway or in a town'},clearOf(allRecs())));
  out.push({name:'no NaN in the drawn terrain',ok:nan===0&&TERRAIN.meshes().length>0,detail:TERRAIN.meshes().length+' chunks drawn, '+nan+' with NaN'});
@@ -122,6 +124,7 @@ function hostNegatives(){const out=[],P=HOST.camera.position,[tx,tz]=tileOf(P.x,
  out.push(Object.assign({name:'negative: a river with its water taken away'},rivers((x,z)=>-1e9)));
  if(WORLD.streams&&WORLD.streams().length){out.push(Object.assign({name:'negative: the streams read backwards'},streams(true,0)));
   out.push(Object.assign({name:'negative: each stream station moved 150 m aside'},streams(false,150)));}
+ if(typeof STREAMW!=='undefined'&&STREAMW&&STREAMW.stats().pieces)out.push(Object.assign({name:'negative: the stream water read 2 m lower'},STREAMW.check(true)));
  out.push(Object.assign({name:'negative: a highway read 2 m high, rising 1 m a step'},highways(p=>p[2]+2+(Math.round(p[0])%2?1:0))));
  {const r=((WORLD_DATA.roads&&WORLD_DATA.roads.roads)||[])[0],T=WORLD.towns&&WORLD.towns[0],F=allRecs().slice(0,20),o=F[0]||{k:0,sp:0,x:0,y:0,z:0,Ht:5};
   if(r)F.push(Object.assign({},o,{x:r.pts[0][0],z:r.pts[0][1]}));if(T)F.push(Object.assign({},o,{x:T.x,z:T.z}));
@@ -143,5 +146,5 @@ return{ready:()=>START.ready,hostChecks,hostNegatives,
   HOST.renderer.render(HOST.scene,HOST.camera);return{calls:HOST.renderer.info.render.calls,triangles:HOST.renderer.info.render.triangles};},
  // stream until the view is complete (headless screenshots): every queue drained or ms spent
  settle:(ms)=>{const t0=performance.now();ms=ms||60000;let k=0;
-  while(performance.now()-t0<ms){START.pump(true);FLORA.draw();k++;if(TERRAIN.pending()===0&&NURSERY.queued()===0&&FLOOR.stats.waiting===0&&FLORA.stats.queue===0&&SEAS.pending()===0&&k>3)break;}
+  while(performance.now()-t0<ms){START.pump(true);FLORA.draw();k++;if(TERRAIN.pending()===0&&NURSERY.queued()===0&&FLOOR.stats.waiting===0&&FLORA.stats.queue===0&&SEAS.pending()===0&&(typeof STREAMW==='undefined'||!STREAMW||STREAMW.pending()===0)&&k>3)break;}
   FLORA.draw();return{rounds:k,ms:Math.round(performance.now()-t0),terrainPending:TERRAIN.pending(),nurseryQueued:NURSERY.queued(),floorWaiting:FLOOR.stats.waiting,floraQueue:FLORA.stats.queue,seas:SEAS.stats()};}};})();

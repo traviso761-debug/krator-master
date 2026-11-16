@@ -351,18 +351,18 @@ W.carveAt=(x,z)=>{const c=carveAt(x,z,baseH(x,z),.5,{});return c.d<1e9?Object.as
 // threshold: the owner, 2026-11-15) holds water in its bed (streamWater), a dry one is a wadi. The hash's cells are 512 m
 // and a segment sits in every cell its reach (SREACH) touches, so a point reads a handful of segments (a flat grid over
 // the streams' box, not a Map: a Map keyed past the small integers made H twice as slow).
-const STCELL=512,SREACH=90,SDMAX=6;   /* m: the most a stream cuts under its bank to keep its bed falling; past it, it follows the ground */let STSEG=null,STHASH=null,STIDX=null;const STG={x0:0,z0:0,nx:0,nz:0};const STC={k:0,d:1e9,hw:0,wet:0};
+const STCELL=512,SREACH=90,SDMAX=6;   /* m: the most a stream cuts under its bank to keep its bed falling; past it, it follows the ground */let STSEG=null,STHASH=null,STIDX=null,STLN=[],STPC=null;const STG={x0:0,z0:0,nx:0,nz:0};const STC={k:0,d:1e9,hw:0,wet:0};
 const stW=s=>.75+3.25*s,stD=s=>.6+1.9*s;   /* half-width and depth (m) from the strength */
 const stVW=s=>25+50*s,stVD=s=>1.2+3.3*s;    /* its valley: a swale this half-width and depth (m) under the bank, so a stream lies in a fold of the land, not a slot cut in it */
 function streamCurves(SR,each){const MD=SR.meander?{amp:SR.meander.amp,wave:SR.meander.wave,seed:KRAND.child(SR.meander.seed,'streams'),ox:cx*2000,oz:cy*2000}:null;
  for(const L of SR.lines){const P=WSMOOTH.line(WSTREAMS.decode(L,SR),{step:SR.step==null?60:SR.step,relax:SR.relax==null?2:SR.relax,meander:MD});
   let lo=1e9;for(const p of P){lo=Math.min(lo,p[3]);p[3]=lo;}each(L,P);}}
-function buildStreams(){STSEG=null;STHASH=null;STIDX=null;const SR=M.streams;W.streamCount=0;W.streamSegments=0;if(!SR||!SR.lines||!SR.lines.length)return;
+function buildStreams(){STSEG=null;STHASH=null;STIDX=null;STLN=[];STPC=null;const SR=M.streams;W.streamCount=0;W.streamSegments=0;if(!SR||!SR.lines||!SR.lines.length)return;
  if(typeof WSTREAMS==='undefined'||typeof WSMOOTH==='undefined')throw new Error('41-world-fields: region.json has streams: list 40-world-smooth.js and 44-world-streams.js before 41');
  const parts=[];let n=0;
  streamCurves(SR,(L,P)=>{const A=new Float32Array((P.length-1)*9);
   for(let i=0;i<P.length-1;i++){const a=P[i],b=P[i+1],o=i*9;A[o]=a[0];A[o+1]=a[1];A[o+2]=b[0];A[o+3]=b[1];A[o+4]=a[2];A[o+5]=b[2];A[o+6]=a[3];A[o+7]=b[3];A[o+8]=L.w;}
-  parts.push(A);n+=P.length-1;});
+  parts.push(A);STLN.push({s0:n,n:P.length-1,wet:L.w});n+=P.length-1;});
  STSEG=new Float32Array(n*9);let off=0;for(const A of parts){STSEG.set(A,off);off+=A.length;}
  // the hash: a flat grid of STCELL cells over the segments' reach, each cell's segments a run of STIDX (STHASH[c] to STHASH[c + 1])
  let gx0=1e9,gz0=1e9,gx1=-1e9,gz1=-1e9;
@@ -401,6 +401,25 @@ function streamWater(x,z){if(!STHASH)return -1e9;
   if(d<hw&&d<bd){bd=d;px=qx;pz=qz;wd=.6*stD(s);}}
  return bd<1e9?H(px,pz,0,null,true)+wd:-1e9;}
 W.streamWater=streamWater;
+// the wet streams in pieces for drawing their water (83s-world-streams.js: built near the camera, dropped behind it):
+// [{line, s0, s1, x, z, r}], a piece a run of about PIECE m of one line's segments (s0 to s1, the last shared with the next
+// piece so the ribbons meet), its centre and the radius that holds it. Made once
+const PIECE=1000;
+W.streamPieces=function(){if(STPC)return STPC;STPC=[];
+ STLN.forEach((Ln,li)=>{if(!Ln.wet)return;let a=Ln.s0;const e=Ln.s0+Ln.n;
+  while(a<e){let b=a,len=0;while(b<e&&len<PIECE){const o=b*9;len+=Math.hypot(STSEG[o+2]-STSEG[o],STSEG[o+3]-STSEG[o+1]);b++;}
+   let x0=1e18,z0=1e18,x1=-1e18,z1=-1e18;for(let s=a;s<b;s++){const o=s*9;x0=Math.min(x0,STSEG[o],STSEG[o+2]);x1=Math.max(x1,STSEG[o],STSEG[o+2]);z0=Math.min(z0,STSEG[o+1],STSEG[o+3]);z1=Math.max(z1,STSEG[o+1],STSEG[o+3]);}
+   STPC.push({line:li,s0:a,s1:b,x:(x0+x1)/2,z:(z0+z1)/2,r:Math.hypot(x1-x0,z1-z0)/2});a=b;}});
+ return STPC;};
+// a piece's water as a flow line: pts [[x, z, y]...] every `step` m down its segments (the water: the carved ground at the
+// centre plus 60 % of the stream's depth, as streamWater), w its width there (m: 85 % of the bed's), v the current (1 m/s on
+// the flat, faster as the water falls, at most 3)
+W.streamWaterLine=function(pc,step){step=step==null?8:step;const pts=[],w=[];
+ for(let s=pc.s0;s<pc.s1;s++){const o=s*9,ax=STSEG[o],az=STSEG[o+1],bx=STSEG[o+2],bz=STSEG[o+3],L=Math.hypot(bx-ax,bz-az),m=Math.max(1,Math.ceil(L/step));
+  for(let k=0;k<m+(s===pc.s1-1?1:0);k++){const t=k/m,x=ax+(bx-ax)*t,z=az+(bz-az)*t,st=lerp(STSEG[o+4],STSEG[o+5],t);
+   pts.push([x,z,H(x,z,0,null,true)+.6*stD(st)]);w.push(2*stW(st)*.85);}}
+ const v=pts.map((p,i)=>{const q=pts[Math.min(i+1,pts.length-1)],L=Math.max(1e-6,Math.hypot(q[0]-p[0],q[1]-p[1]));return Math.min(3,1+40*Math.max(0,(p[2]-q[2])/L));});
+ return{pts,w,v};};
 // the decoded streams: [{wet, end, pts: [[x, z, s, bed]...]}] (the curves the page carves; made again at each call, for a
 // probe or a test: the page keeps only its segments)
 W.streams=()=>{const out=[];if(M.streams&&M.streams.lines)streamCurves(M.streams,(L,P)=>out.push({wet:L.w,end:L.e,pts:P}));return out;};
