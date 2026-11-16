@@ -329,6 +329,20 @@ records drawn from the scrap Xanadu set and the Qiblai kit (`XAK`, `kit_bundle.b
       showing dark bodies and black holes. Now two layers: every big piece and every plain box of 0.7 m or more at all
       distances (3.6M triangles, simplified far off by core/lod), the small detail within 300 m (2.5M). The view from Gate
       Square draws 5.0M triangles (it drew 3.2M). The crest's cultural dome over the Notch (x -170) is gone in the ruin.
+- [x] ~~The arcology has no insides~~ (T-arc-1, 2026-11-16, the owner: "bring in theodiga arcology interiors"): its inhabited
+      levels (the Dome's deck, the crest's blocks, the gallery in the dam, the six standing fin heads; 70 units from the
+      blueprint's sheets, 283 storeys, 2,721 rooms) are on the kit's interiors pass and cut-away (`theodiga-today` is an
+      interiors target): white partitions with doors on core/door, 14,753 pieces of Xanadu furniture from 117 audited room
+      templates, drawn when a part is opened. Ten parts open apart (the select "Interior", `[` `]` a level, `x` closes);
+      views 'Inside the crest', 'Inside a fin head', 'Inside the Dome'.
+- [ ] **The Dome's deck rooms are unwalled areas** (hall plates make no walls) with few pieces (177 in 27 rooms): the shrine's
+      halls want the catalog's hall recipes (`AI.recipe`) in a Xanadu dress, and a pavilion or screen round each.
+- [ ] **The interiors stand inside solid shells**: the crest's blocks and the fins are the kit's solid boxes, so the rooms show
+      only through the cut-away; their windows are painted on the shell, not cut through to the rooms. The gallery's rooms sit
+      inside the dam's mass with no openings to the faces.
+- [ ] **The dam's interiors ride on two wrappers** (`settlements/theodiga/src/8zz1-th-arc-host.js`): `AI.kitPlan` takes the dam's
+      plan whole and furnished though its row is the ruin, and the one site is split into ten parts after the pass. Both would
+      be cleaner as options of kits/ancients-interiors (a per-type ruin fraction) and of the pass (a plan's own sites).
 - [ ] **The town has no interiors, no people, no lamps at night.** The scrap set's interiors (`kits/interiors` `xanadu-scrap`)
       and Qiblai's walk-in rooms are not wired here; the census is numbers only (core/simulation is later).
 - [ ] **The east plateau is the town's ground only on this page.** With the town on the page (`THCITY`) the ruin's east plateau

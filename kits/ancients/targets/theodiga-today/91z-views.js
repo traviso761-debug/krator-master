@@ -16,6 +16,12 @@ const VIEWS={
  'The salvage yards':[ROWS.dam.s+330,70,ROWS.dam.z+520,ROWS.dam.s+180,8,ROWS.dam.z+395],
  'The silt fields':[ROWS.dam.s+150,345,ROWS.dam.z-330,ROWS.dam.s+240,281,ROWS.dam.z-110],
  'The town from the Dome':[ROWS.dam.s-100,520,ROWS.dam.z-280,ROWS.dam.s+700,442,ROWS.dam.z],
+ // the arcology's inhabited levels, opened (T-arc-1; 92z-interior-ui.js: a view's eighth element opens a part at one of its
+ // levels: src/8zz1-th-arc-host.js splits the dam into parts). The crest at x 100 runs at z -132 to -65 (zc(100) = -126); the
+ // fins stand at z -74 to -30; the Dome's centre is z -205
+ 'Inside the crest':[ROWS.dam.s+150,460,ROWS.dam.z-20,ROWS.dam.s+100,405,ROWS.dam.z-105,0,{site:'dam/crest-e',storey:1}],
+ 'Inside a fin head':[ROWS.dam.s+85,425,ROWS.dam.z+10,ROWS.dam.s+46,388,ROWS.dam.z-52,0,{site:'dam/fin+46',storey:5}],
+ 'Inside the Dome':[ROWS.dam.s+70,470,ROWS.dam.z-110,ROWS.dam.s,421,ROWS.dam.z-205,0,{site:'dam/dome',storey:0}],
  // the ruin, as the theodiga target shows it
  'Theodiga ruin':[ROWS.dam.s+60,260,ROWS.dam.z+1000,ROWS.dam.s,200,ROWS.dam.z],
  'Dome ruin':[ROWS.dam.s-420,520,ROWS.dam.z-650,ROWS.dam.s,450,ROWS.dam.z-205],

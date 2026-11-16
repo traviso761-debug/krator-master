@@ -134,8 +134,18 @@ The page is `kits/ancients --target theodiga` (`dist/theodiga.html`).
   Strongbow's town).
 - The manifest (`FURNITURE.md`) counts one storey per room and takes Xanadu keys through Longsong's key map.
 
+## On the page (2026-11-16)
+
+`kits/ancients --target theodiga-today`. **The inhabited levels' interiors (T-arc-1):** `python3 theodiga_blueprint.py --export`
+writes the sheets' programs as `src/43-th-arc-program.js` (70 units in the dam's frame); `src/43-th-arc.js` (`TH_ARC`) makes
+each unit's storeys with kits/ancients-interiors' plates (a hall, or a bar of rooms off a corridor with a stair core), maps the
+sheets' programs onto kits/interiors' (cell, dormitory, bedroom, hall, shrine, study, library, kitchen, store...), and the
+Ancients kit's interiors pass draws and furnishes them in the Xanadu culture (`src/8zz1-th-arc-host.js`). `test-th-arc.js` (13
+checks). The town, the ways down and the works below are `PLAN.md`.
+
 ## Next
 
 - The page: the re-glazed frame, the pilgrims' and clergy stairs, the cascade's motion (the lake, the cascade and the river are drawn).
+- The Dome's deck rooms as walled pavilions with the hall recipes; windows cut through the crest's and fins' shells.
 - The town on core/city (like Strongbow's), and the census as `core/simulation` roles.
 - LORE 6.13 (on the branch that holds the faith): Theodiga as the Decree's shrine, the Order's delegation, the cascade.
