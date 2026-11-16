@@ -13,7 +13,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
-| `89qa-ad-hall.js` | 15 | the Hall of Dreaming (21); the waking range: the Waking Gallery, the scribe (118); the cup house (131) |
+| `89qa-ad-hall.js` | 16 | the Hall of Dreaming (21); the waking range: the Waking Gallery, the scribe (118); a lotus pond (the Lotus Garden's four) (131); the cup house (144) |
 | `89qb-ad-wharf.js` | 14 | the mole and its wave-wheel shrine (19); a jetty (38); the boathouse (48); the racks: nets (o.v 0) and fish (o.v 1) (66); the smokehouse (81); the ropewalk (91); the fishermonks' house (103); the Order's barge (123) |
 
 ## targets/
@@ -22,4 +22,4 @@ Each target adds its own fragments to `src/` and builds one output.
 
 | Target | Fragments | KB |
 |---|---|---|
-| `isle` | `89z-rows.js`, `89zad-site.js`, `90ad-world.js`, `90ae-build.js`, `90af-hall-night.js`, `91z-views.js` | 37 |
+| `isle` | `89z-rows.js`, `89zad-site.js`, `90ad-world.js`, `90ae-build.js`, `90af-hall-night.js`, `90ag-ad-walk.js`, `91z-views.js` | 43 |

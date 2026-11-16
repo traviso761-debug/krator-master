@@ -128,6 +128,19 @@ function buildAdWaking(G,o){reseed(34011);const W=30,D=58,P=.8,stone=xC(xPick(QS
  xnFolk(0,0,D/2+3,2,3);}
 QB.def({key:'qb_ad_waking',name:'The Waking Gallery and the Register',family:'The Azure Dream',tags:QTAG('civic',['religious','civic'],{job:'scribing',note:'the dream told to a scribe before any other word; the archive of dreams'}),w:30,d:60,h:10,fw:30,fd:58,nv:1,build:buildAdWaking});
 
+// ---------------------------------------------------------------- a lotus pond (the Lotus Garden's four)
+// a raised still pool in a dressed kerb, 14 x 10, its water 0.38 m over the ground (core/water's still water: the page draws
+// the surface, WATER.still and drawStill, from AD_POND's interior), blue lotus on it: pads and flowers (the Order's flower,
+// the dream cup's lotus; the biome's own lotus floats on the lake). AD_POND gives the page the water's box
+const AD_POND={W:14,D:10,K:.6,H:.5,level:.38};
+function buildAdLotusPond(G,o){reseed(34031+(o.v|0));const A=AD_POND,stone=xC(xPick(QSTONE)),pad=[0x3f6a34,0x4e7a3c,0x35602e],fl=[0x5a6ad8,0x6a5ad0,0x4a7ae0];
+ vnReg('Lotus pond',0,0,9,1);
+ for(const s of[-1,1]){vB('qAshB',0,0,s*(A.D/2-A.K/2),A.W,A.H,A.K,0,stone);vB('qAshB',s*(A.W/2-A.K/2),0,0,A.K,A.H,A.D-2*A.K,0,stone);}
+ vB('vStone',0,-.05,0,A.W-2*A.K,.08,A.D-2*A.K,0,xC(0x3a3a34));   /* the basin's dark floor under the water */
+ for(let i=0;i<18;i++){const x=rr(-A.W/2+1.2,A.W/2-1.2),z=rr(-A.D/2+1.2,A.D/2-1.2),r=rr(.28,.5);kput('xDisc',[x,A.level+.02,z],qEuler(0,rng()*TAU,0),[r,.02,r],xC(xPick(pad)));
+  if(rng()<.45){kput('xPaintBall',[x+r*.3,A.level+.12,z],null,[.13,.1,.13],xC(xPick(fl)));kput('xPaintBall',[x+r*.3,A.level+.2,z],null,[.07,.08,.07],xC(0xf0e8a0));}}}
+QB.def({key:'qb_ad_lotus_pond',name:'Lotus pond',family:'The Azure Dream',tags:QTAG('civic',['religious'],{note:'the Lotus Garden\'s four still ponds of blue lotus'}),w:14,d:10,h:1,fw:14,fd:10,nv:4,build:buildAdLotusPond});
+
 // ---------------------------------------------------------------- the cup house
 // where the dream cup is poured at dusk (honey, milk and steeped blue lotus: the owner, 2026-11-16), and the robing room
 // beside it: a small two-storey cube, prayer flags to a pole

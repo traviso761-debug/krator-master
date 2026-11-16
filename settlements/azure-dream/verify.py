@@ -12,6 +12,9 @@ page's own:
   terraces-climb    the precinct's four terraces climb the slope in order (the gate court, the monastery, the Lotus Garden, the
                     Hall), all over the lake
   stair-climbs      the Stair of Lowered Eyes zigzags up the scarp in six runs, 20-70 m of rise, its foot on the ground
+  hall-walk-in      the Hall of Dreaming walked into (core/walk, 90ag): its two doors unlocked and opened, a walker from the
+                    terrace before its steps reaches the kora and both sides of the hall, and one from the shrine the kora
+  lotus-ponds       the Lotus Garden's four ponds, their water on core/water (WATER.still)
   lamps             the lamps placed: the Hall's 32 azure lamps and the Damsel's gold one, the wharf's lanterns
 
     KRATOR_GL=gpu python3 verify.py dist/azure-dream.html --assert --views "Overview,From the barge"
@@ -38,6 +41,10 @@ PAGE_JS = r"""
  const S=Z.stair||{},runs=P.filter(p=>p.key==='qb_terrace_stair'&&/^stair:/.test(p.id)).length,foot=typeof AD_STAIR!=='undefined'?Math.abs(AD_STAIR.fy-terrainH(0,-AD_STAIR.footU)):99;
  R.push({name:'stair-climbs',ok:runs===6&&S.rise>=20&&S.rise<=70&&foot<4,detail:runs+' runs, '+S.rise+' m of rise, its foot '+foot.toFixed(1)+' m off the ground'});
  const LA=typeof AD_LAMPS!=='undefined'?AD_LAMPS:[],n=k=>LA.filter(l=>l[3]===k).length;
+ const AW=window._adWalk,WI=AW&&AW.walkIn?AW.walkIn():null;
+ R.push({name:'hall-walk-in',ok:!!(WI&&WI.ok),detail:!WI?'window._adWalk missing (targets/isle/90ag-ad-walk.js)':WI.doors+' doors unlocked, '+AW.floors+' floors, '+AW.blocks+' blocks; shut, the walker '+(WI.shutIn.length?'GOT IN to '+WI.shutIn.join(', '):'stayed out')+'; '+WI.routes.map(r=>'from '+r.from+(r.miss.length?' MISSED '+r.miss.join(', '):' reached the kora and both sides')).join('; ')});
+ const PW=typeof AD_POND_WATER!=='undefined'?AD_POND_WATER:[];
+ R.push({name:'lotus-ponds',ok:PW.length===4&&PW.every(S=>S.level>0),detail:PW.length+' still ponds on core/water at '+PW.map(S=>S.level.toFixed(2)).join(', ')+' m'});
  R.push({name:'lamps',ok:n('azure')===32&&n('gold')===1&&n('oil')>=4,detail:LA.length+' lamps: azure '+n('azure')+', gold '+n('gold')+', oil '+n('oil')+', clerestory panes '+n('pane')});}
 return R;}"""
 xv.ASSERT_JS = xv.ASSERT_JS.rstrip()[:-len('return R;}')] + PAGE_JS

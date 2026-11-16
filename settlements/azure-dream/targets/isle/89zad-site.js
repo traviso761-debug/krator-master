@@ -93,7 +93,8 @@ function adZigzag(id,uTop,vc,yTop,yFoot,n,S){const r=(yTop-yFoot)/n,L=qnStairPla
  const h=AD_P(uTop+11,runs[0].v0-3.6),g=AD_P(uTop-1.5,runs[0].v0+3.6);adPad('landing:'+id+':head',h[0],h[1],g[0],g[1],yTop,1.5);   /* the head: from the edge above, over its face, to the first run */
  return{yTop,yFoot,rise:yTop-yFoot,r,len:L,n,runs,footU:uTop-S*n};}
 // the terrace above's edge at uEdge: the first run 10 m out, clear of its 7 m retaining face (90ae)
-const AD_STAIR=(function(){const n=6,S=7.2,u0=150,fu=u0-S*n,fy=Math.round(adBase(0,-fu)*2)/2,Z=adZigzag('stair',u0,0,AD_COURT.y,fy,n,S);Z.fy=fy;Z.gy=AD_COURT.y;return Z;})();
+const AD_STAIR=(function(){
+ const n=6,SP=7.2,u0=150,fu=u0-SP*n,fy=Math.round(adBase(0,-fu)*2)/2,Z=adZigzag('stair',u0,0,AD_COURT.y,fy,n,SP);Z.fy=fy;Z.gy=AD_COURT.y;return Z;})();
 // the terraces' own stairs: a zigzag down each terrace's face into the terrace below it, clear of the buildings on the axis
 const AD_TSTAIRS=[['court-monastery',AD_TERR.monastery,AD_TERR.court,-62],['monastery-lotus',AD_TERR.lotus,AD_TERR.monastery,62],['lotus-hall',AD_TERR.hall,AD_TERR.lotus,72]]
  .map(([id,up,lo,vc])=>{const n=Math.max(1,Math.ceil((up.y-lo.y)/7.5)),uTop=-up.z1-10;return adZigzag(id,uTop,vc,up.y,lo.y,n,7.2);});
@@ -109,7 +110,11 @@ adPut('qb_college',252,80,-Math.PI/2,{v:0,y:AD_TERR.monastery.y},'sacred','novic
 adPut('qb_hostel',305,92,-Math.PI/2,{v:2,y:AD_TERR.lotus.y},'sacred','refectory');
 for(const s of[-1,1])for(let i=0;i<16;i++){const u=178+i*9.4,t=u<222?'court':u<284?'monastery':'lotus';
  adPut('qb_row_mid',u,s*150,s<0?Math.PI/2:-Math.PI/2,{v:i%3,sp:5,ends:i===0?(s<0?'r':'l'):i===15?(s<0?'l':'r'):'',y:AD_TERR[t].y},'cells','cells:'+(s<0?'west':'east')+':'+i);}
-for(const s of[-1,1])adPut('xa_garden',316,s*30,0,{v:s<0?0:2,y:AD_TERR.lotus.y},'garden','lotus-garden:'+(s<0?'west':'east'));   /* the Lotus Garden's two halves either side of the axis (its four still ponds: KNOWN_ISSUES.md) */
+for(const s of[-1,1])adPut('xa_garden',316,s*30,0,{v:s<0?0:2,y:AD_TERR.lotus.y},'garden','lotus-garden:'+(s<0?'west':'east'));   /* the Lotus Garden's two halves either side of the axis */
+// its four still ponds of blue lotus, beyond the gardens either side (clear of the prior's houses, the refectory and the
+// lotus-hall stair); 90ag draws their water on core/water
+const AD_PONDS=[];
+for(const [u,v] of[[296,-72],[312,-72],[296,72],[312,72]])AD_PONDS.push(adPut('qb_ad_lotus_pond',u,v,0,{v:AD_PONDS.length,y:AD_TERR.lotus.y},'garden','lotus-pond:'+u+','+v));
 adPut('qb_ad_dream_hall',416,0,0,{y:AD_TERR.hall.y},'sacred','hall-of-dreaming');
 adPut('qb_bath',385,48,-Math.PI/2,{v:0,y:AD_TERR.hall.y},'sacred','lustral-bath');
 adPut('qb_ad_cup_house',408,48,-Math.PI/2,{y:AD_TERR.hall.y},'sacred','cup-house');
