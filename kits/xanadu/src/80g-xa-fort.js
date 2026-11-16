@@ -150,7 +150,7 @@ function xfGun(x,y,z,ry,C){vB('vStone',x,y,z,3,.25,3,ry,C.stone);vB('vWood',x,y+
 // ---------------------------------------------------------------- the whole fort, from its plan, in its state
 function xfDraw(size,G,o){const P=XF_PLANS[size],V=xV(o),st=o.state||XF_STATES[V]||'kept',seed=o.seed==null?XF_SEED[size]+V:o.seed;reseed(seed);
  const C=xfCols(size==='watch'?'march':'royal'),Dm=XFORT.damage(P,st,seed),gated={};P.gates.forEach(g=>{gated[g.curtain]=(gated[g.curtain]||[]).concat([g]);});
- const nm=VERN.defs[o._key].name;vnReg(nm,0,0,Math.max(P.w,P.d)/2,size==='march'?34:20,{part:'enclosure'});
+ const nm=VERN.defs[o._key].name;   /* no volume over the whole fort: its wards are open ground (a camera or walker in them stands in no building); its curtains, towers, gates and buildings register their own */
  /* the curtains: whole, breached, or in stubs; a standing fort's walks and stairs on core/walk (a ruined one has none) */
  const tag='fort:'+o._key+'/'+V,feet=[];let walks=0;
  P.curtains.forEach(c=>{const L=Math.hypot(c.b[0]-c.a[0],c.b[1]-c.a[1]),mid=[(c.a[0]+c.b[0])/2,(c.a[1]+c.b[1])/2];vnReg(nm+' — curtain',mid[0],mid[1],L/2,c.h+1.3,{part:'wall'});
