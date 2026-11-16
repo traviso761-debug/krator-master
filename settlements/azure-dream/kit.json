@@ -1,13 +1,22 @@
 {
  "targets": {
   "isle": "azure-dream.html",
-  "summit": "azure-dream-summit.html"
+  "summit": "azure-dream-summit.html",
+  "west-end": "azure-dream-west-end.html",
+  "north-shore": "azure-dream-north-shore.html",
+  "east-end": "azure-dream-east-end.html"
  },
  "externalDirs": [
   "kits/qiblai/src"
  ],
  "external": [
   "core/walk/20-core-walk.js",
+  "core/space/20-core-space.js",
+  "core/city/33-city-strategies.js",
+  "core/hamlet/10-hamlet-wood.js",
+  "core/hamlet/12-hamlet-gather.js",
+  "core/hamlet/20-hamlet-cultures.js",
+  "core/hamlet/30-hamlet-village.js",
   "core/terrain/38-core-relief.js",
   "openworld/isle-demo/src/world/41-world-fields.js",
   "settlements/azure-dream/gen/39ad-world-data.js"
@@ -24,6 +33,18 @@
   "summit": [
    ["core/atmos", ["89-atmos-0-core.js", "89-atmos-0p-presets.js", "89-atmos-a-waves.js", "89-atmos-b-skylight.js"]],
    ["core/water", ["20-core-water.js", "21-core-water-shore.js", "22-core-water-flow.js", "50-core-water-draw.js", "51-core-water-kinds.js"]]
+  ],
+  "west-end": [
+   ["core/atmos", ["89-atmos-0-core.js", "89-atmos-0p-presets.js", "89-atmos-a-waves.js", "89-atmos-b-skylight.js"]],
+   ["core/water", ["20-core-water.js", "21-core-water-shore.js", "22-core-water-flow.js", "50-core-water-draw.js", "51-core-water-kinds.js"]]
+  ],
+  "north-shore": [
+   ["core/atmos", ["89-atmos-0-core.js", "89-atmos-0p-presets.js", "89-atmos-a-waves.js", "89-atmos-b-skylight.js"]],
+   ["core/water", ["20-core-water.js", "21-core-water-shore.js", "22-core-water-flow.js", "50-core-water-draw.js", "51-core-water-kinds.js"]]
+  ],
+  "east-end": [
+   ["core/atmos", ["89-atmos-0-core.js", "89-atmos-0p-presets.js", "89-atmos-a-waves.js", "89-atmos-b-skylight.js"]],
+   ["core/water", ["20-core-water.js", "21-core-water-shore.js", "22-core-water-flow.js", "50-core-water-draw.js", "51-core-water-kinds.js"]]
   ]
  },
  "pack": "qiblai",
@@ -31,6 +52,13 @@
  "packFrom": "kits/qiblai",
  "deterministic": [
   "20-core-walk.js",
+  "20-core-space.js",
+  "33-city-strategies.js",
+  "10-hamlet-wood.js",
+  "12-hamlet-gather.js",
+  "20-hamlet-cultures.js",
+  "30-hamlet-village.js",
+  "89zac-ad-village.js",
   "38-core-relief.js",
   "39ad-world-data.js",
   "41-world-fields.js",

@@ -38,11 +38,14 @@ terrainH=function(x,z){if(x===_adT.x&&z===_adT.z)return _adT.h;let h=adBase(x,z)
  _adT.x=x;_adT.z=z;_adT.h=h;return h;};
 
 const AD_PLACE=[];
+const AD_CLEAR=[];   /* boxes the flora keeps off, unpainted ({x, z, hw, hd}): a village's green (89zac) */
+// a building's pad: the box round its footprint turned by ry, plus 3 m all round; half sizes [x, z]
+function adPadBox(w,d,ry){const ca=Math.abs(Math.cos(ry)),sa=Math.abs(Math.sin(ry));return[(ca*w+sa*d)/2+3,(sa*w+ca*d)/2+3];}
 // a building at the plan's (u, v), its front turned by ry (0: toward the lake, south; PI/2: east; -PI/2: west; PI: uphill), o its
 // options; pad: its own pad (its footprint turned, plus 3 m, at the mean under it) unless it stands on a terrace or the water
 function adPut(key,u,v,ry,o,kind,id,pad){const c=AD_P(u,v),D=VERN.defs[key];if(!D)throw new Error('azure-dream: no def '+key);
- const q={key,x:c[0],z:c[1],ry,o:Object.assign({v:0},o||{}),kind,id:id||kind+':'+key+':'+u+','+v,h:D.h==null?10:D.h,w:D.fw==null?D.w:D.fw,d:D.fd==null?D.d:D.fd};
- if(pad&&q.o.y==null){const side=Math.abs(Math.sin(ry))>.5,hw=(side?q.d:q.w)/2+3,hd=(side?q.w:q.d)/2+3;q.pad=adPad('pad:'+q.id,q.x-hw,q.z-hd,q.x+hw,q.z+hd,null,6);q.o.y=q.pad.y;}
+ const q={key,x:c[0],z:c[1],ry,o:Object.assign({v:0},o||{}),kind,id:id||kind+':'+key+':'+u+','+v,h:D.h==null?10:D.h,w:o&&o.w!=null?o.w:D.fw==null?D.w:D.fw,d:o&&o.d!=null?o.d:D.fd==null?D.d:D.fd};   /* a size the caller gives (the racks) wins */
+ if(pad&&q.o.y==null){const b=adPadBox(q.w,q.d,ry);q.pad=adPad('pad:'+q.id,q.x-b[0],q.z-b[1],q.x+b[0],q.z+b[1],null,6);q.o.y=q.pad.y;}
  AD_PLACE.push(q);return q;}
 const adAt=(key,x,z,ry,o,kind,id,pad)=>adPut(key,-z,x,ry,o,kind,id,pad);   /* by page x, z (x = v, z = -u) */
 const adPx=P=>[adWx(P[0])-AD.WX,adWz(P[1])-AD.WZ];   /* scale-model px to page metres */
@@ -68,8 +71,8 @@ const AD_SIGNAL=(function(){const S=[845.05,1504.35],G=[846.075,1508.493-484/200
   watch:[845.05-76.2/2000,1504.35+13.8/2000,322.4],   /* the Station Watch's lamp: its tower's roof (89qc), the summit page's (-76.2, 13.8) */
   hall:[846.075,1508.493-440.4/2000,133.5]};})();   /* the Hall of Dreaming's lantern roof (89qa: its head, 24.4 m behind its centre; the terrace +13) */
 // the relay lamp's height over the lake: its pad's level (adPut's rule: its footprint turned to the road, plus 3 m) and the lamp
-function adRelayY(){const x=adWx(AD_SIGNAL.relay[0])-AD.WX,z=adWz(AD_SIGNAL.relay[1])-AD.WZ,D=VERN.defs.qb_ad_relay_lamp,side=Math.abs(Math.sin(AD_SIGNAL.ry))>.5,
- hw=(side?D.fd:D.fw)/2+3,hd=(side?D.fw:D.fd)/2+3;return adLevel(x-hw,z-hd,x+hw,z+hd)+AD_RELAY_LAMP_H;}
+function adRelayY(){const x=adWx(AD_SIGNAL.relay[0])-AD.WX,z=adWz(AD_SIGNAL.relay[1])-AD.WZ,D=VERN.defs.qb_ad_relay_lamp,b=adPadBox(D.fw,D.fd,AD_SIGNAL.ry);
+ return adLevel(x-b[0],z-b[1],x+b[0],z+b[1])+AD_RELAY_LAMP_H;}
 // the least clearance of a sight line over the 1:1 ground (adBase: no page's pads), a and b [px, py, y]
 function adSight(a,b){const ax=adWx(a[0])-AD.WX,az=adWz(a[1])-AD.WZ,bx=adWx(b[0])-AD.WX,bz=adWz(b[1])-AD.WZ;let w=1e9;
  for(let i=1;i<400;i++){const t=i/400;w=Math.min(w,a[2]+(b[2]-a[2])*t-adBase(ax+(bx-ax)*t,az+(bz-az)*t));}return w;}
@@ -82,7 +85,8 @@ function adSight(a,b){const ax=adWx(a[0])-AD.WX,az=adWz(a[1])-AD.WZ,bx=adWx(b[0]
 const adSegD=(x,z,a,b)=>{const dx=b[0]-a[0],dz=b[1]-a[1],l=dx*dx+dz*dz;let t=l?((x-a[0])*dx+(z-a[1])*dz)/l:0;t=t<0?0:t>1?1:t;return Math.hypot(a[0]+dx*t-x,a[1]+dz*t-z);};
 function adBioMask(x,z){const B=AD.BOX;if(x<B[0]+20||x>B[2]-20||z<B[1]+20||z>B[3]-20)return 0;const h=terrainH(x,z);if(h<1.4)return 0;
  for(const p of AD_PLACE){if(p.kind==='wall'){if(adSegD(x,z,loc(p.x,p.z,-p.o.len/2,0,p.ry),loc(p.x,p.z,p.o.len/2,0,p.ry))<6)return 0;continue;}
-  const r=Math.hypot(p.w==null?10:p.w,p.d==null?10:p.d)/2+2;if(Math.abs(x-p.x)<r&&Math.abs(z-p.z)<r&&Math.hypot(x-p.x,z-p.z)<r)return 0;}
+  const r=Math.hypot(p.w==null?10:p.w,p.d==null?10:p.d)/2+(/^village:/.test(p.kind)?10:2);   /* a village's yards: 10 m cleared round each building */if(Math.abs(x-p.x)<r&&Math.abs(z-p.z)<r&&Math.hypot(x-p.x,z-p.z)<r)return 0;}
+ for(const c of AD_CLEAR)if(Math.abs(x-c.x)<c.hw&&Math.abs(z-c.z)<c.hd)return 0;   /* kept open: a village's green */
  for(const b of AD_PAVED)if(x>=Math.min(b[0][0],b[1][0])-2&&x<=Math.max(b[0][0],b[1][0])+2&&z>=Math.min(b[0][1],b[1][1])-2&&z<=Math.max(b[0][1],b[1][1])+2)return 0;
  const pd=adPadAt(x,z);if(pd)return pd.id.startsWith('terrace:')?.22:0;   /* the terraces' grass: trees here and there between the buildings */
  for(const [k,w,P] of AD_WAYS)for(let i=0;i+1<P.length;i++)if(adSegD(x,z,P[i],P[i+1])<w/2+2)return 0;

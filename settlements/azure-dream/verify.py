@@ -59,6 +59,19 @@ if(window.CITY_BUILD==='azure-dream-summit'){const Z=window._azure||{},K=Z.byKin
  const s=S[0],off=s?Math.hypot(s[0]-w[0],s[2]-w[1],s[1]-Wt[2]):99,rel=[AD_SIGNAL.relay[0],AD_SIGNAL.relay[1],adRelayY()],sight=adSight(Wt,rel);
  R.push({name:'signal-lamp',ok:S.length===1&&s[1]>=Math.max(...LA.map(l=>l[1]))-.01&&off<1&&sight>0,
   detail:S.length+' signal lamp(s) at +'+(s?s[1].toFixed(1):'-')+' m, the highest of '+LA.length+', '+off.toFixed(2)+' m off AD_SIGNAL.watch; it sees the relay lamp (+'+rel[2].toFixed(1)+' m, '+(AD_SIGNAL.len/1000).toFixed(1)+' km road from the gate) with '+sight.toFixed(1)+' m to spare'});}else"""
+VILLAGE_JS = r"""
+if(/^azure-dream-village-/.test(window.CITY_BUILD||'')){const S=window._adSite||{},T=S.village||{},P=typeof AD_PLACE!=='undefined'?AD_PLACE:[],
+  VB=P.filter(p=>/^village:/.test(p.kind)),C=S.census||{},keys=new Set(VB.map(p=>p.key));
+ R.push({name:'village-laid',ok:!S.error&&VB.length===S.records&&C.pop>=T.pop*.85&&C.pop<=T.pop&&['qb_shrine','xa_boatshed','qb_ad_smokehouse','qb_ad_racks','xa_warehouse'].every(k=>keys.has(k)),
+  detail:(T.name||'?')+': '+(S.error?'ERROR '+S.error+'; ':'')+VB.length+' buildings of '+S.records+' records, '+C.pop+' people of '+T.pop+' ('+C.households+' households, '+C.workers+' workers); '+[...keys].sort().join(', ')});
+ const wet=VB.filter(p=>!(p.o.y>=1)||adBase(p.x,p.z)<.5);
+ R.push({name:'village-dry',ok:VB.length>0&&wet.length===0,detail:wet.length+' of '+VB.length+' buildings under 1 m over the lake'+(wet.length?': '+wet.slice(0,4).map(p=>p.id+' +'+p.o.y).join(', '):'')});
+ const rect=p=>KHAMLET.rect(p.x,p.z,Math.cos(p.ry),-Math.sin(p.ry),p.w,p.d);let hits=[];
+ for(let i=0;i<VB.length;i++)for(let j=i+1;j<VB.length;j++)if(KHAMLET.overlap(rect(VB[i]),rect(VB[j]),0))hits.push(VB[i].id+' / '+VB[j].id);
+ R.push({name:'village-clear',ok:hits.length===0,detail:hits.length+' footprints overlapping'+(hits.length?': '+hits.slice(0,4).join('; '):'')});
+ const J=AD_V.jetty,sh=AD_V.shore,head=J?adBase(J.x+sh.dx*J.len/2,J.z+sh.dz*J.len/2):99,root=sh?adBase(sh.x,sh.z):-99,dug=P.filter(p=>p.key==='qb_ad_dugout').length;
+ R.push({name:'landing',ok:!!J&&head<-1&&root>-.6&&dug>=6,detail:'the jetty\'s head over '+(-head).toFixed(1)+' m of water, its root on ground at '+root.toFixed(1)+' m, '+dug+' dugouts'});}
+else"""
 PAGE_JS = r"""
 {const Z=window._azure||{},K=Z.byKind||{},P=typeof AD_PLACE!=='undefined'?AD_PLACE:[],has=id=>P.some(p=>p.id===id);
  R.push({name:'azure-laid',ok:Z.placed>=120&&['hall-of-dreaming','great-monastery','mole','boathouse','jetty:0','jetty:1','jetty:2'].every(has),
@@ -81,7 +94,7 @@ PAGE_JS = r"""
   R.push({name:'signal-relay',ok:S.length===1&&off<1&&Math.abs(hy-AD_SIGNAL.hall[2])<1&&toW>0&&toH>0,detail:S.length+' relay lamp(s) at +'+(s?s[1].toFixed(1):'-')+' m, '+off.toFixed(2)+' m off AD_SIGNAL.relay; it sees the Station Watch\'s lamp with '+toW.toFixed(1)+' m to spare and the Hall\'s lantern roof (+'+hy.toFixed(1)+') with '+toH.toFixed(1)});}
  R.push({name:'lamps',ok:n('azure')===32&&n('gold')===1&&n('oil')>=4,detail:LA.length+' lamps: azure '+n('azure')+', gold '+n('gold')+', oil '+n('oil')+', clerestory panes '+n('pane')});}
 return R;}"""
-xv.ASSERT_JS = xv.ASSERT_JS.rstrip()[:-len('return R;}')] + SUMMIT_JS + PAGE_JS
+xv.ASSERT_JS = xv.ASSERT_JS.rstrip()[:-len('return R;}')] + SUMMIT_JS + VILLAGE_JS + PAGE_JS
 assert xv.ASSERT_JS.endswith('return R;}'), 'settlements/xanadu/verify.py ASSERT_JS no longer ends with return R;}'
 xv._voth_trades = lambda: {'name': 'voth-trades', 'ok': True, 'detail': 'the Xanadu kit\'s table (kits/xanadu): checked on its own sheet'}
 

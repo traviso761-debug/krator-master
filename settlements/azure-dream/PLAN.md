@@ -502,7 +502,8 @@ on every new record before it goes on a sheet.
 ## 8. The fishing villages
 
 West End, North Shore and East End are **`core/hamlet` fishing villages** (`KHAMLET.village`), placed with what they
-work:
+work (built 2026-11-16 as three pages: `src/89zac-ad-village.js`; at 1:1 they stand at px 834.5, 1503.5, 849.7, 1501.3 and
+851.5, 1508.8, the gentle shores nearest the first pins):
 - the shore and its shallows;
 - the dawn-redwood woods for the boats;
 - East End's meadows for the Order's herds.
@@ -602,7 +603,7 @@ isle's food bill, and a real demand for its dairy and hives.
 | **AD4** | the 22 catalog pieces in the Xanadu culture file | the catalog's owner | `kits/catalog/verify.py --assert` |
 | **AD5** | the Hall as room data, its cot grid, the side rooms furnished; the reach audit in node first | | `core/walk` reach in node; the page's `--interiors` assert |
 | **AD6** (**first pass done** 2026-11-16, the owner: "build the page next"; README.md, KNOWN_ISSUES.md) | the page, `settlements/azure-dream`: the cove, the wharf, the ward, the stair, the precinct on core/world's ground, the lake on `core/water`, the night on `core/atmos` and `core/sched` (the Lulling, the watches, the shutters, the blue window), people asleep | | `verify.py --assert` on the GPU lane; `check_core_use` |
-| **AD7** (the summit **first pass done** 2026-11-16: `dist/azure-dream-summit.html`, a second target on the same build) | the three villages (`core/hamlet`); the summit kora as a second station, with a far form from the cove | | the page's asserts (the summit's: `summit-laid`, `high-kora`, `summit-crest`, `signal-lamp`) |
+| **AD7** (the summit **first pass done** 2026-11-16: `dist/azure-dream-summit.html`, a second target on the same build; the three villages **first pass done** 2026-11-16, three more targets on core/hamlet, on the probed 1:1 shore: KNOWN_ISSUES.md) | the three villages (`core/hamlet`); the summit kora as a second station, with a far form from the cove | | the page's asserts (the summit's: `summit-laid`, `high-kora`, `summit-crest`, `signal-lamp`) |
 | **AD8** | the open world's site; the Godot export; the gallery (a new settlement goes to the gallery when it reaches `main`) | | the export test; the gallery's card |
 
 ## 13. Questions for the owner

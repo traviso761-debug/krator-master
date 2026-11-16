@@ -73,6 +73,7 @@ function buildAdRacks(G,o){reseed(34081+(o.v|0));const V=xV(o)%2,W=o.w==null?64:
    for(let x=-W/2+2.5;x<=W/2-2.5;x+=3)if(rng()<.8)vB('vClothB',x,.9,z,2.7,1.4,.04,0,xC(xPick(net)));}
   for(let i=0;i<5;i++)vB('vClothB',rr(-W/2+3,W/2-3),0,rr(-D/2+2,D/2-2),rr(1.4,2.4),.35,rr(1,1.8),rr(0,3),xC(xPick(net)));}   /* nets heaped to mend */
  else{const fish=[0xb8bcc0,0xa8a49a,0xc8c4b8];
+  for(let z=-D/2+2;z<=D/2-2;z+=4)for(const s of[-1,1])vPst('vPost',s*(W/2-.6),0,z,.07,2.1,dark);   /* each row's end posts, for the guy lines */
   for(let z=-D/2+2;z<=D/2-2;z+=4)for(let x=-W/2+4;x<=W/2-4;x+=8){
    for(const s of[-1,1]){const fx=x+s*3.6;kput('vWood',[fx,1.0,z],qEuler(0,0,.35),[.08,2.2,.08],dark);kput('vWood',[fx,1.0,z],qEuler(0,0,-.35),[.08,2.2,.08],dark);}
    for(const e of[-1,1]){vB('vWood',x,1.9,z+e*.25,7.6,.05,.05,0,tim);for(let k=0;k<18;k++)vB('vClothB',x-3.4+k*.4,1.45,z+e*.25,.05,.42,.12,0,xC(xPick(fish)));}}}}
