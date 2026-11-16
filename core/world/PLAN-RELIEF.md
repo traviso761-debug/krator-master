@@ -597,6 +597,17 @@ of the camera the mask is 0 (pinnacle 92 points, oidong-highrift 119); the negat
 fails. Note: `WORLD.lakeWater` answers a cell past the wet cells (its shore ring), so a point can read as water where the
 mask, which follows the cells, still lets the relief work: under the lake's shallow edge.
 
+**P15, the GDScript twin (2026-11-16).** `core/world/wrelief.gd`: `WRELIEF`'s caprock, benches, erosion filter and peaks in
+GDScript, on core/rand's `krand.gd` (JS's 32-bit XORs on the seeds kept as masked u32 bits, the polynomial cos and sin
+as in JS). `core/world/wrelief_test.gd`, with the golden, is copied to `godot/tests/relief/` (as core/rand's are to
+`godot/tests/rand/`) and run headless in Godot 4.7.2:
+
+    godot --headless --path godot --script res://tests/relief/wrelief_test.gd
+
+All 1,200 values (benches, erosion, peaks, caprock at 300 points) match the golden; the largest difference is 4.9e-7,
+the golden's own rounding to 1e-6. The negative (a value nudged by 1e-5) is caught. Still owed in GDScript: 40
+(WSMOOTH), 44 (WSTREAMS' decode and fans) and 43b (WLAND), against the same golden.
+
 ## 6. Risks
 
 - **Sites move:**
