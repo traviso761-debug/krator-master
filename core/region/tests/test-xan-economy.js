@@ -26,8 +26,8 @@ console.log('a year of the Sultanate in '+secs.toFixed(1)+' s: '+Y.S.order.lengt
 const people=Y.V.settlements.filter(s=>s.people>0);
 // 1. declared: the towns, the eight countrysides, the lake towns and islands, the rings, the camps, the forts, the gateways
 {const ids=Y.S.order,cnt=re=>ids.filter(s=>re.test(s)).length;
- T.ok('the Sultanate declared: 8 countrysides, 24 lake towns and islands, 12 ring villages, 4 gateways and the Great Caravan\'s 3 Dalab towns, no problems',
-  cnt(/^prov\./)===8&&cnt(/^lk\./)===24&&cnt(/hamlet|\/|farm-|ranch-/)>=0&&cnt(/^gate\./)===7&&!Y.S.problems.length,
+ T.ok('the Sultanate declared: 8 countrysides, 27 lake towns and islands, 19 ring villages, 4 gateways and the Great Caravan\'s 3 Dalab towns, no problems',
+  cnt(/^prov\./)===8&&cnt(/^lk\./)===27&&cnt(/hamlet|\/|farm-|ranch-/)>=0&&cnt(/^gate\./)===7&&!Y.S.problems.length,
   ids.length+' settlements; problems: '+(Y.S.problems.slice(0,3).join('; ')||'none'));
  T.neg('a road to a settlement that is not declared is a problem the host reports',
   V=>{const H=load();return H.simValley(V).problems.length===0;},
@@ -329,6 +329,30 @@ const bcCheck=(Bk,Tr,Ss)=>{const bad=[],Bc=XAN_TUNE.beacon,h=Bk[Bc.id],f=Ss.find
  T.ok('the Order of the Beacon\'s head house: beside the beacon fort, fed by its terraces and the capital\'s road, no arms or powder, the lamp lit',C.ok,
   C.bad.join(', ')||('made grain '+t(C.h.made.grain||0)+' of the '+t(C.h.eaten.grain||0)+' it ate; landed from the capital '+t(C.lt)+'; the fort\'s power '+Math.round(B['march.e'].eaten.power||0)+' kWh'));
  T.neg('a head house drawn off to another place is caught',Ss=>bcCheck(B,Y.trade,Ss).ok,Y.V.settlements.map(s=>s.id===XAN_TUNE.beacon.id?Object.assign({},s,{x:s.x+5000}):s),Y.V.settlements);}
+// 32. the records the tune lacked (the owner, 2026-11-16: "give economy Sim records"): the Order of the Flashing Eye's head
+//     house on the east volcano's south flank, fed by its terraces and the capital's road, its tea from Ṭī-Ṭeras, no arms or
+//     powder; Thalaba's and Lāiṭwāl's ring hamlets tithing to their towns; Grēṭ-Āil's three villages declared and fed
+const recCheck=(Bk,Tr,Tn)=>{const bad=[],Fe=Tn.flashingeye,h=Bk[Fe.id],land=(r,k)=>Object.values(((Tr[r]||{}).landed||{})[k]||{}).reduce((n,v)=>n+v,0);
+ if(!h)return{ok:false,bad:['no Flashing Eye'],rings:{}};
+ if(!(Math.hypot(Fe.px[0]-881,Fe.px[1]-1526)<=1.5&&Fe.px[1]>1526))bad.push('the house is not on the cone\'s south flank');
+ if(!((h.made.grain||0)>0))bad.push('its terraces made no grain');
+ const lc=land('road.er-eye',E+'>'+Fe.id),lt=land('road.eye-tea','lk.tea-terraces>'+Fe.id);
+ if(!(lc>0))bad.push('nothing landed from the capital');
+ if(!(lt>0))bad.push('no tea landed from Ṭī-Ṭeras');
+ const starved=s=>(Bk[s].hungry.grain||0)>(Bk[s].eaten.grain||1)*.01;   /* the lake check's rule: short of a hundredth of its grain */
+ if(starved(Fe.id))bad.push('the house went hungry');
+ if((h.eaten.powder||0)>0||(h.eaten.arms||0)>0)bad.push('the monks took arms or powder');
+ const rings={};Object.keys(Tn.ringSites).forEach(sid=>{const ids=Object.keys(Bk).filter(s=>s.indexOf(Tn.ringSites[sid].site+'.hamlet.')===0);
+  rings[sid]=ids.length;if(!ids.length)bad.push(sid+' has no ring');
+  ids.forEach(id=>{if(!(land('tithe.'+id,id+'>'+sid)>0))bad.push(id+' tithed nothing');});});
+ ['lk.great-isle-west','lk.great-isle-north','lk.great-isle-east'].forEach(id=>{if(!Bk[id])bad.push(id+' not declared');
+  else if(starved(id))bad.push(id+' went hungry');});
+ return{ok:!bad.length,bad,h,lc,lt,rings};};
+{const C=recCheck(B,Y.trade,XAN_TUNE);
+ T.ok('the records the tune lacked: the Flashing Eye fed on its south flank with its tea, Thalaba\'s and Lāiṭwāl\'s rings tithing, Grēṭ-Āil\'s villages fed',C.ok,
+  C.bad.join(', ')||('the Eye made grain '+t(C.h.made.grain||0)+', landed from the capital '+t(C.lc)+', tea '+t(C.lt)+'; rings '+JSON.stringify(C.rings)));
+ T.neg('a tea road that landed nothing is caught',Tr=>recCheck(B,Tr,XAN_TUNE).ok,Object.assign({},Y.trade,{'road.eye-tea':{landed:{}}}),Y.trade);
+ T.neg('a house moved to the cone\'s north flank is caught',Tn=>recCheck(B,Y.trade,Tn).ok,Object.assign({},XAN_TUNE,{flashingeye:Object.assign({},XAN_TUNE.flashingeye,{px:[881,1525]})}),XAN_TUNE);}
 // the year's books, for the reader
 const line=(s,k)=>Object.entries(B[s][k]||{}).filter(([g,n])=>n>=1).map(([g,n])=>g+' '+(n>=1000?t(n):Math.round(n))).join(', ');
 ['s57bkv9741','xan.citadel','skm4jjo2vl','s4zvgepuru','sxan7r1sln','slaitwal0001','sjuarjbku0','sl758m2396'].forEach(s=>console.log('\n'+s+': made '+line(s,'made')+'\n  imported '+line(s,'imported')+'\n  exported '+line(s,'exported')));

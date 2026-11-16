@@ -291,6 +291,16 @@ asked yet. A session that finds a gap names it there with its prompt, and does n
 
 ## 5. Questions for the owner
 
+**The owner's answers (2026-11-16):** "Lake towns over 500 can be laid out in full. One region per province. Can go ahead and
+cut region and give economy Sim records."
+- **Question 1:** every lake town over 500 is laid out in full, a `core/city` town.
+- **Questions 2 and 3:** one open-world region per province (`XAN_TUNE.provinces`, p1-p8). The North Shore (p7) has
+  `openworld/xanadu-north-shore` already; the Lake Shore (p1, Lēk-Shor: Erehwon, its ring, the thirteen shore towns from
+  Ālph-Hēḍ round to Siṭāq and the two small isles) is cut now as `openworld/xanadu-lake-shore`. The other provinces follow,
+  one region each.
+- **Question 5:** the tune gets the records it lacked: Thalaba's 4 and Lāiṭwāl's 4 ring hamlets, Grēṭ-Āil's villages, and the
+  Flashing Eye.
+
 1. **The lake towns over 500 people.** Each a small `core/city` town from one shared lake-town target (*proposed*), or
    core/hamlet laying the first 500 as Kirstabal's lake villages are? Where is the line (1,500 is *proposed*)?
 2. **Pages.** One shared lake page (`?town=<id>`) for the 20 towns, a page each, or only the open world draws them? And

@@ -186,7 +186,7 @@ The census types are: city 8,000, arcology 10,000, town 2,500, village 300, outp
 |---|---|---|
 | **The great lake basin** (Nulab's and Ledge's countryside: shore farms, fishing hamlets, Dalab's gene farms) | **50,000 (est.)** | The owner, 2026-11-16: "account for rural pop too", then "a slightly higher rural ratio" than 2x. Rural at **2.5x** the two cities' 20,000: the breadbasket (1,654 km²-eq of farmland) must feed the cities, Blakhed and the Union's grain. Range 20,000 (1x) to 72,000 (Gemini's 3.6x for Dalab); Xanadu runs 5x |
 | **The Union's other lojes** (Loj Fower at Ledge's lifts 1,500; about thirty more on the Line's stations, the rift fill's caverns and the vents' holds, ~450 each, 14,000) | **15,500 (est.)** | The owner, 2026-11-16: the Tungangs are **~20,000** across all the lojes. Close to Gemini's 18,760; the census 500 and the tungang plan's 25,000-40,000 are retired |
-| **The Kimr** (the Labyrinth's pueblos and great houses, and the Hall of Heroes' keepers) | **6,000 (est.)** | The owner, 2026-11-16: "We'll also account for the Kimr". Nothing gives a figure; three great houses of ~500 (*greidhaws*: "several hundred", KIMR.md) and ~25 knob villages of ~150, and ~750 round the Hall. Range 3,000 to Gemini's 11,600 (10,000 pueblos, 1,600 Hall). Wildcat's Kimr half stays in Wildcat's 400 |
+| **The Kimr** (the Labyrinth's pueblos and their hamlets, and the Hall of Heroes) | **12,000** | The owner, 2026-11-16: "assuming 1-2k per Pueblo + hamlet, 1k at the hall of heroes, and 12k total Kimr pop": 1,000 at the Hall, ~11,000 in pueblos of 1,000-2,000 with their hamlets; the sites are scoped in `biomes/labyrinth/KIMR-SITES.md`. Wildcat's Kimr half stays in Wildcat's 400 |
 | **The Fellgang fells** (shielings, hunters, small bands; and Blakhed's hamlet network) | **5,000 (est.)** | Gemini 9,000 (its rural ratio 5x on 300); a third of it, 3,000, plus Blakhed's hamlets, ~2,000 (the owner, 2026-11-16: "a healthy hamlet network around it"; about a dozen of ~150, *proposed*) |
 | **Greenstep's terraces** (Tallwalls' farms and towers) | **3,000 (est.)** | Gemini 8,750 rural; with the owner's "poorer, smaller" Tallwalls, about a third |
 
@@ -203,12 +203,12 @@ across all the lojes, the Kimr in the count.
 | Tungang Union, all the lojes (Loj Twenny 2,000, the Hearth hold 2,000, the saltpeter works 150, G2 350; Loj Fower 1,500 and ~30 more lojes 14,000) | 4,500 | 15,500 | **20,000** |
 | Fellgangs (Wildcat, the gold camp, Blakhed, the Fowlers, the Ice-cutters, the drovers, pass-keepers and coppersmiths, the Travellers; the fells and Blakhed's hamlets) | 7,250 | 5,000 | **12,250** |
 | Free Giants (Tallwalls, Tallhouse; Greenstep's terraces) | 2,650 | 3,000 | **5,650** |
-| Kimr (the great houses, the knob villages, the Hall of Heroes) | - | 6,000 | **6,000** |
-| **The West Rift** | **~34,900** | **~79,500** | **~114,500 (est.)** |
+| Kimr (the pueblos and their hamlets, the Hall of Heroes) | - | 12,000 | **12,000** |
+| **The West Rift** | **~34,900** | **~85,500** | **~120,500 (est.)** |
 | *Outside the count:* Loj Nahn ~1,000 (sealed in the Pile, Lizardmen country); Dalab's heartland (Dalab 20,000, Shelf 10,000 by type) as the north gateway; the Shumari (Gemini 7,600 town) | | | |
 
-That is **about a third of the Sultanate's ~350,000** (32 %). The basin's rural ratio moves it most: 1x gives ~84,500,
-2x ~104,500, Gemini's 3.6x ~136,500. **What the owner's figures change in section 4:** the Union is large (20,000, about twice the
+That is **about a third of the Sultanate's ~350,000** (34 %). The basin's rural ratio moves it most: 1x gives ~90,500,
+2x ~110,500, Gemini's 3.6x ~142,500. **What the owner's figures change in section 4:** the Union is large (20,000, about twice the
 old working figure), so its grain by the Line is the Line's biggest southbound cargo: if a third of its bread is Dalab's grain,
 ~3 t a day (~1,200 t a year), which the basin's surplus must cover alongside the two cities and Blakhed. That makes the Union's
 grain the Realm's lever over it, as the lifts and tunnels are the Union's lever over the Realm. Ledge at 10,000 makes
