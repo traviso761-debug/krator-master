@@ -49,7 +49,7 @@ Stale records the build must not trust, fixed with it or before it:
 | **Arfwai**, "halfway" | `scatcharfwai01` | 1090,1387 | 1,074 m, 18 °C, BWk | ~60 | a lined well in a hollow of the reg, a trough, three poplars |
 | **Bitta**, "bitter water" | `scatchbitta01` | 1088,1455 | 1,576 m, 14 °C | ~40 | brackish water: good for the beasts, and for people only when boiled with ash |
 | **Lasso**, "the last water" | `scatchlasso01` | 1083,1474 | 1,509 m, 14 °C | ~100 | the last stop before the Twins, 4 km from the perennial Rīfar al-Layl (12.5 m³/s): the best water on the crossing |
-| **The Godsgate caravanserai** (Bab al-Hawa) | `gem_godsgate` (Gemini's) | 1028,1246 | 3,661 m, 4 °C, Dsc | ~60 | the north gate's stop under the 6 km pass. *Question 6* |
+| ~~The Godsgate caravanserai~~ (Bab al-Hawa) | `gem_godsgate` (Gemini's) | 1028,1246 | 3,661 m, 4 °C, Dsc | - | **Dropped (the owner, 2026-11-16).** Gemini's pin, with no lore; the north road's first stop is Kolli |
 | **Ṣalṭ al-Bān, the Catch salt works** | `svhmyhf33w` (held) | 1080,1428 | 458 m, 19 °C | ~100-150, seasonal | **the Train of Jabal's** (the owner). The map's richest unclaimed evaporites lie within 20 km: halite 239, gypsum 194, potash, soda, saltpeter. The Catch holds most of the planet's alkali (soda) |
 
 The oases do not farm: the owner's 2026-10-23 ruling "no oasis waters fields" stands. They sell water, fodder (reed,
@@ -73,7 +73,7 @@ The range between the Catch and Xanadu, with its two volcanoes, has two routes (
 | **The Hall of the Tally-Marks** | 1014,1464 | 4,114 m | ~15 | Route A's overnight cistern in tube A3, and its mid-col pay point |
 | **The Brotherhood's guild houses** | Strongbow 1001,1597; Stair 1106,1442 | | 300 / ~60 | the guides' two homes (the Stair house becomes real, inside Stair's 750) |
 | **The White Gills Hermitage** | `sttkxo9ndy`, 1035,1535 | 3,438 m | ~15 monks | the Order's hermitage, which "doubles as a caravan stop", passing travellers' news to Longsong |
-| *The Twins fort* (Gemini's "Twins Pass Wardenry") | `gem_twins_pass`, 1042,1525 | 4,449 m | ? | Gemini's pin, with no lore. *Question 6* |
+| *The Twins fort* (Gemini's "Twins Pass Wardenry") | `gem_twins_pass`, 1042,1525 | 4,449 m | - | **Dropped (the owner, 2026-11-16).** Gemini's pin, with no lore; the Brotherhood's oases hold the pass |
 
 The Twins' oases are kept by the Brotherhood: these are its waystations, not towns.
 
@@ -152,7 +152,7 @@ terminus, and its relations: the gateway pools stay where each group's home is.
 
 | Step | What | Test |
 |---|---|---|
-| **C0** | `CATCH_TUNE` data: Stair, the five oases (four, and the Godsgate if kept), the salt works, the Twins' stations, the Brotherhood's Stair house, the White Gills; the five groups as factions; goods (water, fodder, the salts, soda, saltpeter, salvaged alloys and cells) | the places declared, fed and in balance on their own make and a stocked start |
+| **C0** | `CATCH_TUNE` data: Stair, the four oases, the salt works, the Twins' stations, the Brotherhood's Stair house, the White Gills; the five groups as factions; goods (water, fodder, the salts, soda, saltpeter, salvaged alloys and cells) | the places declared, fed and in balance on their own make and a stocked start |
 | **C1** | **Legs of their own length** in a `SIM.trade` round (a change to `core/simulation`'s trade: a leg time per stop pair), with `test-sim.js`, the isle demo and every tune unchanged where it is not used | the Great Caravan and the lake rounds give the same books as before |
 | **C2** | **Provisioning**: a carrier draws water and fodder for its beasts at each stop, by the beasts' number and the leg's days. A caravan that cannot water loses beasts | the oases' water and fodder are bought; a dry oasis costs a caravan |
 | **C3** | Each group's caravan as a round through the crossing, replacing `gate.iziz`, `gate.dasri`, `gate.yuni` and `gate.geomancers`; the two Iziz houses splitting Iziz's trade; the Train working the salt works | salt, iron and arms reach Strongbow and Qiblai; Xanadu's exports reach the homes; Stair lives on the trade |
@@ -190,7 +190,8 @@ terminus, and its relations: the gateway pools stay where each group's home is.
    - The Twins' col closes in winter. *Proposed:* Route B's open dash shuts, and only Route A's tubes stay passable, for
      packs, not wagons.
    - The sim's calendar windows, and the caravans' timetables round them, follow from this (step C5).
-6. **Gemini's two pins.** Keep the Godsgate caravanserai (Bab al-Hawa) and the Twins fort (the Twins Pass Wardenry), or
-   drop them? Neither has lore.
+6. **Gemini's two pins.** **Answered (the owner, 2026-11-16): drop both**, the Godsgate caravanserai (Bab al-Hawa,
+   `gem_godsgate`) and the Twins fort (the Twins Pass Wardenry, `gem_twins_pass`). Their removal from the map goes through
+   the scale-model session's queue.
 7. **The records.** Bring `LORE.md` and the Catch and Twins plans in line with Stair's 750, the peopled oases and 5.1's
    distances, once you agree?
