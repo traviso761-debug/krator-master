@@ -12,6 +12,7 @@ owner's answers (sections 1-7); this page is its step T3, the town's ring on the
 python3 ../../tools/build.py settlements/thalaba                 # dist/thalaba.html, dist/thalaba-pieces.html (from the repo root: tools/build.py settlements/thalaba)
 KRATOR_GL=gpu python3 verify.py dist/thalaba.html --assert --views "Overview,The market square,The Siteps from above"
 KRATOR_GL=gpu python3 verify.py dist/thalaba-pieces.html --assert --views "Opening,Thalaba"
+KRATOR_GL=gpu python3 verify.py dist/thalaba.html --assert --interiors --views "Overview"   # the walk-in houses (?interiors=1) and the hollow-wall audit
 ```
 
 `build.py` writes `gen/69t-kcity-bundle.js` (core/city and core/space in one closure, as Qiblai seals them, with the raster's
@@ -21,7 +22,8 @@ bicubic on `h.png`, and the model's rivers within it),
 then runs `settlements/xanadu/build.py --kit settlements/thalaba`: the town is a target on Xanadu's page as Erewhon and Qiblai
 are. Its own ground sets are the Thalaba pack (`materials.json`, `tex/`: `python3 tools/textures/pack.py settlements/thalaba`).
 core/atmos and core/water come in through `kit.json` `files`; the Dalab set's materials, helpers and three of its families
-(`settlements/dalab/src` 69d, 69e, 70, 71, 73) through `external`, read in place.
+(`settlements/dalab/src` 69d, 69e, 70, 71, 73) through `external`, read in place, with Dalab's pack trimmed to the six families
+they need (`gen/69v-dalab-pack.js`, build.py `DALAB_FAMILIES`).
 
 ## How the town is made
 
@@ -57,5 +59,5 @@ Thalaba's road north crosses the Solṭ Siṭrīm by a 120 m arched bridge at th
 
 ## What is not here yet (`KNOWN_ISSUES.md`)
 
-Dalab's texture pack on the mission's pieces, the toll house at the bridge, the stamp of Salphar's resource record, interiors, the life
-layer, the Godot export and the gallery.
+The road warden's watch house at Briḍj, the stamp of Salphar's resource record, rooms for the Devisers' house and the mission, the
+life layer, the Godot export and the gallery.

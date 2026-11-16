@@ -21,6 +21,9 @@ tbBakeChunk('dalab wall',[],()=>{TSTAT.cur='dalab_wall/0';
  for(const[a,q]of[[[B[0]+4,B[1]+4],[B[2]-4,B[1]+4]],[[B[2]-4,B[1]+4],[B[2]-4,B[3]-4]],[[B[2]-4,B[3]-4],[B[0]+4,B[3]-4]],[[B[0]+4,B[3]-4],[B[0]+4,(B[1]+B[3])/2+6]],[[B[0]+4,(B[1]+B[3])/2-6],[B[0]+4,B[1]+4]]]){
   const L=Math.hypot(q[0]-a[0],q[1]-a[1]),mx=(a[0]+q[0])/2,mz=(a[1]+q[1])/2;vB('xEarthB',mx,tbGround(mx,mz)-.3,mz,L,2.4,.6,Math.abs(q[0]-a[0])>Math.abs(q[1]-a[1])?0:Math.PI/2,xC(0xb09a74));}});
 window._instances=TB_INST;
+/* the walk-in houses (step T5; ?interiors=1, as Erewhon's page: the Xanadu kit's buildings hollow, their rooms planned and
+   furnished, 89y-xa-interiors.js): every door's walk blocks into KWALK once every chunk is built */
+if(typeof xaIxWalk==='function')xaIxWalk();
 // the runtime LOD: a chunk is drawn while it is in the view and within its range
 const tbFr=new THREE.Frustum(),tbPm=new THREE.Matrix4();
 FRAME_HOOKS.push(()=>{camera.updateMatrixWorld();tbPm.multiplyMatrices(camera.projectionMatrix,camera.matrixWorldInverse);tbFr.setFromProjectionMatrix(tbPm);const P=camera.position;let shown=0;

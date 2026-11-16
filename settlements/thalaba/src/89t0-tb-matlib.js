@@ -5,3 +5,6 @@
 // maps in world metres (targets/town/90q-tb-world.js). ?mat=proc binds nothing.
 for(const k of['tGrass','tDirt','tCobble','tField']){MAT[k]=new THREE.MeshStandardMaterial({map:MAT.stone.map,color:0xffffff,roughness:.95,metalness:0,side:DS});vWorldUV(MAT[k],1/3);}
 const TB_MATLIB=(typeof KMAT!=='undefined'&&KMAT.bindMat)?KMAT.bindMat('thalaba',MAT):{};
+// the Dalab mission's own surfaces (gen/69v-dalab-pack.js: the rammed earth, the reliefs, three murals), bound in place on Dalab's
+// keys as Dalab's 88y binds them (its ANCIENT_TILES); only the packed families bind, so Xanadu's shared keys keep the Xanadu pack
+const TB_DALAB_MATLIB=(typeof KMAT!=='undefined'&&KMAT.bindMat&&KMAT.packed&&KMAT.packed('dalab','dRammed'))?KMAT.bindMat('dalab',MAT,{tile:KMAT.ANCIENT_TILES}):{};

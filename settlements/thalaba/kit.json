@@ -6,6 +6,7 @@
  "external": [
   "settlements/thalaba/gen/69t-kcity-bundle.js",
   "settlements/thalaba/gen/69u-tb-ground.js",
+  "settlements/thalaba/gen/69v-dalab-pack.js",
   "settlements/dalab/src/69d-dalab-mat.js",
   "settlements/dalab/src/69e-dalab-helpers.js",
   "settlements/dalab/src/70-dalab-dwellings.js",
@@ -57,6 +58,7 @@
   "50-core-water-draw.js",
   "51-core-water-kinds.js",
   "69d-dalab-mat.js",
-  "69e-dalab-helpers.js"
+  "69e-dalab-helpers.js",
+  "69v-dalab-pack.js"
  ]
 }

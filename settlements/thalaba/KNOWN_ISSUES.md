@@ -1,14 +1,15 @@
 # settlements/thalaba: known issues
 
-- [ ] **The Dalab mission's pieces run on procedural maps.** They are the Dalab set's own (the healers' hall, the granaries, a
-  family compound: `settlements/dalab/src` 69d, 69e, 70, 71, 73 read in place, kit.json `external`), but Dalab's library pack
-  (146 files) is not taken: the page is 11 MB and the pack would push it toward the cap. To do, if the owner wants the
-  textures: a pack of only the families those three pieces use (`matlib_pack.fragment(..., exclude=...)`).
+- [x] ~~**The Dalab mission's pieces run on procedural maps.**~~ Done 2026-11-16: Dalab's pack trimmed to the six families
+  only the mission's pieces need (`build.py` `DALAB_FAMILIES`: the rammed earth, the two reliefs, three murals; measured on the
+  pieces sheet), `gen/69v-dalab-pack.js`, about 2.9 MB inline; its shared keys (wood, stone, plaster...) keep the Xanadu pack.
+  The pages are about 13.9 MB.
 - [ ] **Thalaba's own pieces are local.** `tb_devisers` and `tb_calcarone` (`src/89t1-tb-pieces.js`, on the Xanadu kit's
   contract, shown on `dist/thalaba-pieces.html`) start here, as Qiblai's started in its kit; they go upstream into
   `kits/xanadu` once the owner has seen them. Until then the open world's Salphar draws its calcaroni as the hamlet row's
   pending boxes (`openworld/xanadu-oidong-highrift/src/48-world-site.js`, row `xanadu-sulfur`). Still owed of PLAN.md's list:
-  the bridge's toll house (the region's bridge itself is core/world's, in the Xanadu kit's stone).
+  the road warden's watch house at Briḍj (the owner ruled no toll, so no toll house: the Sultan's share is taken in the
+  town; the region's bridge itself is core/world's, in the Xanadu kit's stone).
 - [ ] **Salphar's sulfur deposit is recorded but not stamped.** `lode:thalaba-sulfur` (px 841,1452, r 3 km) is in
   `kits/resources/data/lodes.json` on the resource-nodes branch (claude/resource-nodes-7ec053, f568d34e9, 2026-11-16), not yet
   stamped on `geology.json`: stamping changes the geology 13 build commands read (62 pages), so it rides with the next bake or
@@ -33,4 +34,8 @@
   lines (marching squares on the same heights). No retaining walls as pieces yet.
 - [ ] **The flora is the Vale of Xanadu's**, bound as its open vale (parkland, orchards) for the bench's Cfb at 1,500 m; the
   page's own sprinkling of figures is Xanadu's. Godshearth's Hearths are up in the caldera, not here.
-- [ ] **Not yet:** interiors, the life layer on core/simulation, the Godot export, the gallery.
+- [ ] **The walk-in houses are opt-in.** `?interiors=1` (as on Erewhon's page) hollows the Xanadu kit's buildings and plans and
+  furnishes their rooms (311 buildings, 1,784 rooms, about 14,000 pieces; 82 doorways into core/walk); the page then takes
+  about 18 s to build against 4 s. Thalaba's own pieces (`tb_devisers`) and the Dalab set's have no interior items yet: the
+  Devisers' counting room and strongroom, the genepriests' rooms want room kinds in `kits/interiors`.
+- [ ] **Not yet:** the life layer on core/simulation, the Godot export, the gallery.

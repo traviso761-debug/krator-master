@@ -98,9 +98,24 @@ def ground_fragment():
             % (H_PNG, PIN[0], PIN[1], PIN[0], PIN[1], near, far, ',\n  '.join(keep)))
 
 
+# the Dalab mission's pieces (the Dalab set's, read in place: kit.json `external`) draw in Xanadu's shared keys (wood, stone,
+# plaster: the Xanadu pack textures them) and in Dalab's own: only those Dalab's pack must bring (the rammed earth, the
+# reliefs, the three murals the healers' hall shows), measured on the pieces sheet; the rest of its 49 families stay out
+DALAB_FAMILIES = ('dRammed', 'dRelief', 'dReliefCh', 'dMural3', 'dMural4', 'dMural6')
+
+
+def dalab_pack():
+    sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
+    import json, matlib_pack
+    d = os.path.join(ROOT, 'settlements', 'dalab')
+    fams = json.load(io.open(os.path.join(d, 'tex', 'pack.json'), encoding='utf-8'))['families']
+    return ('/* the Dalab pack, trimmed to the mission\'s own families (settlements/thalaba/build.py DALAB_FAMILIES). GENERATED. */\n'
+            + matlib_pack.fragment(d, 'dalab', exclude=tuple(k for k in fams if k not in DALAB_FAMILIES)))
+
+
 def write_gen():
     os.makedirs(GEN, exist_ok=True)
-    for name, make in (('69t-kcity-bundle.js', kcity_bundle), ('69u-tb-ground.js', ground_fragment)):
+    for name, make in (('69t-kcity-bundle.js', kcity_bundle), ('69u-tb-ground.js', ground_fragment), ('69v-dalab-pack.js', dalab_pack)):
         out = os.path.join(GEN, name)
         new = make()
         old = io.open(out, encoding='utf-8').read() if os.path.exists(out) else None
@@ -109,7 +124,7 @@ def write_gen():
                 fh.write(new)
 
 
-BSRC.note(*([SPACE, H_PNG, RIVERS] + ['core/city/' + f for f in CITY_JS]))
+BSRC.note(*(['settlements/dalab/tex/pack.json'] + ['settlements/dalab/tex/%s.%s.webp' % (f, m) for f in DALAB_FAMILIES for m in ('albedo', 'normal', 'rough')] + [SPACE, H_PNG, RIVERS] + ['core/city/' + f for f in CITY_JS]))
 if not BSRC.LISTING:
     write_gen()
 
