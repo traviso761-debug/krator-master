@@ -32,6 +32,10 @@
        a road's `cut`: [{at, to, share, goods?}]: of what the road lands at `at`, `share` goes on to `to` (a merchant
          house's margin, a lift's toll), taken from `at`'s warehouses and landed in `to`'s first work (booked exported
          and imported, so the books balance); S.cuts[road] = {taken: {good: n}}
+     C1-C2 (core/simulation/PROPOSAL-CATCH.md, 2026-11-16), passed to SIM.trade as they are:
+       a road's `legs`: [minutes, ...], a passage per leg of a round (a caravan's stages differ);
+       a road's `provision`: {beasts, eat: {good: a beast a day}, loss?, home?}: a caravan's beasts draw water and fodder at
+         each stop for the leg ahead, a shortfall kills some, a train short of beasts carries less until it remounts at home
      H.valleyRun(minutes, step)   the clock stepped `step` minutes at a time (60: the abstract level's hour)
      H.valleyBooks()         a snapshot: each settlement's people, stock, made, imported, exported, used and short by good,
                              what it ate and went without (`eaten`, `hungry`), and SIM.ledgerSnap()
@@ -99,7 +103,8 @@ H.simValley = function (V) {
     var ids = Rd.stops || [Rd.from, Rd.to], miss = ids.filter(function (k) { return !S.towns[k]; });
     if (miss.length) { S.problems.push('road ' + Rd.id + ': no settlement ' + miss[0]); return; }
     SIM.trade({ id: Rd.id, stops: ids.map(function (k) { return { settlement: k, place: S.towns[k].spec.works[0].id }; }), cap: Rd.cap, carriers: Rd.carriers,
-      minutes: Rd.minutes, stagger: Rd.stagger, mins: Rd.mins == null ? 60 : Rd.mins, goods: Rd.goods, expect: Rd.expect, share: Rd.share, keep: Rd.keep, want: Rd.want, most: Rd.most });
+      minutes: Rd.minutes, stagger: Rd.stagger, mins: Rd.mins == null ? 60 : Rd.mins, goods: Rd.goods, expect: Rd.expect, share: Rd.share, keep: Rd.keep, want: Rd.want, most: Rd.most,
+      legs: Rd.legs, provision: Rd.provision });
   });
   (V.transfers || []).forEach(function (Tr) { SIM.transfer(Tr); });
   /* X2: the cuts: what a road landed at a stop since the last hour, a share of it moved on */

@@ -19,7 +19,16 @@
 //               want: its planned use of a good, an imported food's ration, before its people have bought any),
 //               share?: {settlement: {good: fraction}} (a TITHE: leaving that settlement, a carrier takes the fraction of
 //               what it made of each good since its last sailing, owed and carried over when the stock is short, and
-//               nothing for want: the village keeps the rest; PROPOSAL-LONGSONG-PINNACLE.md section 2, phase S3) })
+//               nothing for want: the village keeps the rest; PROPOSAL-LONGSONG-PINNACLE.md section 2, phase S3),
+//               legs?: [minutes, ...] (a passage per leg, legs[i] from stop i to the next, in place of `minutes`: a
+//               caravan's road whose stages differ; PROPOSAL-CATCH.md step C1),
+//               provision?: {beasts (a carrier's pack animals), eat: {good: a beast a day}, loss? (the share of the
+//               beasts a shortfall kills: .5), home? (the stop that remounts the train: 0)} (a caravan's beasts: leaving a
+//               stop, a carrier draws from that settlement what its beasts eat over the leg ahead, SIM.supply's draw,
+//               booked used there and short where the stop has too little; a shortfall kills `loss` of the beasts it
+//               leaves unfed, and a carrier's cap is cap x its beasts / `beasts` until it remounts at `home`;
+//               PROPOSAL-CATCH.md step C2) })
+//             Each is inert where it is absent: a route without them runs, books and reports as before.
 //   SIM.trades(a, b) -> true when settlement a sells to b: one faction, or each faction's relation to the other does
 //               not shut trade (`trade` false, 'none' or 'closed'; with no `trade`, a stance of wary or better)
 //   SIM.tradeStep(minute, t)                     SIM.step's, after the economies' step
@@ -41,14 +50,20 @@
   SIM.trade = function(o){
     if(!o.stops || o.stops.length<2) throw new Error('SIM.trade '+o.id+': at least two stops');
     if(!(o.cap>0)) throw new Error('SIM.trade '+o.id+': a cap');
-    if(o.line==null && !(o.minutes>0)) throw new Error('SIM.trade '+o.id+': minutes (a passage) or a line');
+    if(o.legs!=null && (o.legs.length!==o.stops.length || !o.legs.every(function(m){ return m>0; }))) throw new Error('SIM.trade '+o.id+': legs, a passage for each stop');
+    if(o.line==null && o.legs==null && !(o.minutes>0)) throw new Error('SIM.trade '+o.id+': minutes (a passage) or a line');
+    if(o.provision!=null && (o.line!=null || !(o.provision.beasts>0) || !o.provision.eat)) throw new Error('SIM.trade '+o.id+': provision, beasts and what they eat, on the timer');
     var T=SIM.TRADE||(SIM.TRADE={ routes:{}, order:[] });
     if(T.routes[o.id]) throw new Error('SIM.trade '+o.id+': made already');
     var R={ id:o.id, stops:o.stops.map(function(s){ return { settlement:s.settlement, place:s.place }; }), cap:o.cap, carriers:[],
             minutes:o.minutes, mins:o.mins==null ? 120 : o.mins, stagger:o.stagger==null ? 0 : o.stagger, line:o.line==null ? null : o.line,
             goods:o.goods||null, keep:o.keep, want:o.want, most:o.most==null ? o.cap : o.most, expect:o.expect||null, shipped:{}, landed:{}, voyages:0, refused:0, empty:0 };
     if(o.share){ R.share=o.share; R.tithed={}; R.owed={}; R.mark={}; }   /* a tithe road (S3): see the header */
+    if(o.legs!=null) R.legs=o.legs.slice();   /* C1: a passage per leg */
+    if(o.provision!=null){ var Pv=o.provision; R.provision={ beasts:Pv.beasts, eat:Pv.eat, loss:Pv.loss==null ? .5 : Pv.loss, home:Pv.home==null ? 0 : Pv.home };
+      R.provisioned={}; R.dry={}; R.died=0; R.remounted=0; }   /* C2: the beasts' draw at each stop */
     for(var k=0;k<(o.carriers==null ? 1 : o.carriers);k++) R.carriers.push({ k:k, phase:null, at:null, to:null, cargo:[], departs:null, eta:null, dock:undefined });
+    if(R.provision) R.carriers.forEach(function(C){ C.beasts=R.provision.beasts; });
     T.routes[R.id]=R; T.order.push(R.id); return R;
   };
   function sett(id){ return SIM.R.settlement && SIM.R.settlement[id]; }
@@ -75,7 +90,20 @@
   SIM.tradeOutbound = function(g, s){ if(!SIM.TRADE) return 0; var k=s!=null ? s : SIM.ECON && SIM.ECON.settlement; return k==null ? 0 : atSea(g, k, 'from'); };
 
   /* ---------------------------------------------------------------- a load, leaving; landing, arriving */
-  function loadFor(R, a, b){
+  function passage(R, i){ return R.legs ? R.legs[i] : R.minutes; }
+  /* C2: leaving stop i, the carrier's beasts draw what they eat over the leg ahead; a shortfall kills `loss` of the unfed */
+  function provision(R, C, i){
+    var Pv=R.provision, a=R.stops[i].settlement, days=passage(R, i)/1440;
+    if(i===Pv.home && C.beasts<Pv.beasts){ R.remounted+=Pv.beasts-C.beasts; C.beasts=Pv.beasts; }   /* remounted at home */
+    if(!SIM.ECONS || !SIM.ECONS[a] || C.beasts<=0) return;
+    var fed=1;
+    SIM.withEcon(a, function(){ Object.keys(Pv.eat).sort().forEach(function(g){ var n=Math.ceil(C.beasts*Pv.eat[g]*days); if(n<=0) return;
+      var got=SIM.supply(g, n, false); if(got>0) stat(R.provisioned[a]||(R.provisioned[a]={}), g, got);
+      if(got<n){ fed=Math.min(fed, got/n); stat(R.dry[a]||(R.dry[a]={}), g, n-got); } }); });
+    if(fed<1){ var dead=Math.round(C.beasts*(1-fed)*Pv.loss); if(dead>0){ C.beasts-=dead; R.died+=dead;
+      SIM.logEvent('trade beasts lost', { route:R.id, carrier:C.k, at:a, dead:dead, left:C.beasts }); } }
+  }
+  function loadFor(R, a, b, capC){
     var EA=SIM.ECONS[a], EB=SIM.ECONS[b], keep=R.keep!=null ? R.keep : EA.exports.minDays, want=R.want!=null ? R.want : 2*EB.imports.days;
     var list=(R.goods && R.goods[a]) || Object.keys(EA.goods), rows=[];
     list.forEach(function(g){ if(!EA.goods[g] || !EB.goods[g] || EA.goods[g].export===false) return;
@@ -85,17 +113,19 @@
       var spare=Math.floor(stockIn(EA, g)-keep*rate(EA, g)-(((EA.policy||{})[g]||{}).reserve||0)); if(spare<=0) return;   /* a policy's `reserve` stays */
       rows.push({ good:g, days:have/wb, n:Math.min(need, spare, R.most) }); });
     rows.sort(function(p, q){ return p.days-q.days || (p.good<q.good?-1:1); });
-    var left=R.cap, out=[];
+    var left=capC==null ? R.cap : capC, out=[];
     rows.forEach(function(r){ if(left<=0) return; var n=Math.min(r.n, left); if(n>0){ out.push({ good:r.good, n:n }); left-=n; } });
     return out;
   }
   function depart(R, C, i, minute){
     var j=(i+1)%R.stops.length, a=R.stops[i].settlement, b=R.stops[j].settlement, key=a+'>'+b;
     C.from=i; C.to=j; C.at=null; C.phase='sail'; C.cargo=[]; R.voyages++;
+    if(R.provision) provision(R, C, i);   /* C2: the beasts water and feed whether or not the stop trades */
     if(!SIM.ECONS || !SIM.ECONS[a] || !SIM.ECONS[b] || !SIM.trades(a, b)){ R.refused++; SIM.logEvent('trade refused', { route:R.id, carrier:C.k, from:a, to:b }); return; }
     /* a tithe: the share of what the sender made since it last sailed, owed when short; then no load for want */
-    var tithe=R.share && R.share[a], want=tithe ? [] : loadFor(R, a, b);
-    if(tithe) SIM.withEcon(a, function(){ var E=SIM.ECON, mk=R.mark[a]||(R.mark[a]={}), left=R.cap;
+    var capC=R.provision ? Math.floor(R.cap*C.beasts/R.provision.beasts) : R.cap;   /* C2: a train short of beasts carries less */
+    var tithe=R.share && R.share[a], want=tithe ? [] : loadFor(R, a, b, capC);
+    if(tithe) SIM.withEcon(a, function(){ var E=SIM.ECON, mk=R.mark[a]||(R.mark[a]={}), left=capC;
       Object.keys(tithe).sort().forEach(function(g){ var made=E.made[g]||0, k=a+':'+g, due=(R.owed[k]||0)+(made-(mk[g]||0))*tithe[g]; mk[g]=made;
         var n=Math.min(Math.floor(due), left); n=n>0 ? SIM.economyTake(g, n) : 0; R.owed[k]=due-n; if(n<=0) return; left-=n;
         SIM.economyBook('exported', g, n); C.cargo.push({ good:g, n:n, tithe:true }); stat(R.shipped[key]||(R.shipped[key]={}), g, n); stat(R.tithed[key]||(R.tithed[key]={}), g, n); }); });
@@ -117,7 +147,7 @@
   function stepTimer(R, C, minute){
     if(C.phase==null){ C.at=C.k % R.stops.length; C.phase='docked'; C.departs=minute+R.mins+C.k*R.stagger; }
     for(var guard=0; guard<64; guard++){   /* a jump: voyage after voyage, each at its own minute */
-      if(C.phase==='docked' && minute>=C.departs){ var i=C.at; depart(R, C, i, C.departs); C.eta=C.departs+R.minutes; continue; }
+      if(C.phase==='docked' && minute>=C.departs){ var i=C.at; depart(R, C, i, C.departs); C.eta=C.departs+passage(R, i); continue; }
       if(C.phase==='sail' && minute>=C.eta){ arrive(R, C, C.to, C.eta); C.departs=C.eta+R.mins; C.eta=null; continue; }
       break; }
   }
@@ -144,7 +174,9 @@
         shipped:JSON.parse(JSON.stringify(R.shipped)), landed:JSON.parse(JSON.stringify(R.landed)),
         carriers:R.carriers.map(function(C){ return { k:C.k, phase:C.phase, at:C.at!=null ? R.stops[C.at].settlement : null, to:C.to!=null ? R.stops[C.to].settlement : null,
           cargo:C.cargo.map(function(c){ return { good:c.good, n:c.n }; }), eta:C.eta }; }) };
-      if(R.share){ out[k].tithed=JSON.parse(JSON.stringify(R.tithed)); out[k].owed=JSON.parse(JSON.stringify(R.owed)); } });   /* a tithe road's (only: the others' reports unchanged) */
+      if(R.share){ out[k].tithed=JSON.parse(JSON.stringify(R.tithed)); out[k].owed=JSON.parse(JSON.stringify(R.owed)); }   /* a tithe road's (only: the others' reports unchanged) */
+      if(R.provision){ out[k].provisioned=JSON.parse(JSON.stringify(R.provisioned)); out[k].dry=JSON.parse(JSON.stringify(R.dry)); out[k].died=R.died; out[k].remounted=R.remounted;
+        out[k].carriers.forEach(function(c, n){ c.beasts=R.carriers[n].beasts; }); } });   /* C2: a caravan's (only) */
     return id!=null ? out[id] || null : out;
   };
 })(typeof window!=='undefined'?window:globalThis);
