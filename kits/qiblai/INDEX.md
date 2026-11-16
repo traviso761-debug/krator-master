@@ -15,16 +15,17 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
-| `89q0-qb-helpers.js` | 17 | the ring colours (PLAN.md section 4) (23); kit items: the crisp cube (61); the cube, the stack (66); windows in a grid (86); roofs: the parapet, the terraces (108); the doorway (123); the faith's signs (133) |
+| `89q0-qb-helpers.js` | 17 | the ring colours (PLAN.md section 4) (23); kit items: the crisp cube (63); the cube, the stack (68); windows in a grid (88); roofs: the parapet, the terraces (110); the doorway (125); the faith's signs (135) |
 | `89q0x-qb-xanadui.js` | 7 |  |
 | `89q0y-qb-script.js` | 6 | the textures (44) |
-| `89q0z-qb-matlib.js` | 1 |  |
+| `89q0z-qb-matlib.js` | 3 |  |
 | `89q1-qb-houses.js` | 11 | POOR (10); MIDDLE (26); RICH (44); the corner house (64); the courtyard house (rich) (84) |
 | `89q2-qb-trades.js` | 20 | a shop front on a ground storey: a dark bay, a t (8); the shop row (middle) (17); the workshop yard (poor): the shop, the yard wal (29); the bakery: the bake house, the domed oven in th (43); the butcher's: the shop with its hanging rail (57); the weaver's and dyer's: the loom hall, dyed clo (69); the brewhouse: the malting floor, the vats, the  (83); the tannery: the drying loft over the pits (96); the guild halls (the kora square) (109); the gate market (civic): an arcaded square (145) |
-| `89q3-qb-sacred.js` | 24 | shared: a cloister walk on the court face of a r (10); the great monastery (one a spoke; eight dresses) (20); the grammarians' college (64); the gate temple (one at each ring gate on the av (84); the chorten (three sizes: o.v 0 small, 1 crossin (99); the kora's prayer-wheel arcade (straight and cor (106); the wheel house: a great prayer wheel in a cube  (123); the wayside shrine (the Xanadu kit's gap: shrine (142); the pilgrims' hostel (on the kora) (153); the caravanserai (on the Erewhon road; the Xanad (165) |
+| `89q3-qb-sacred.js` | 25 | shared: a cloister walk on the court face of a r (10); the great monastery (one a spoke; eight dresses) (20); the grammarians' college (64); the gate temple (one at each ring gate on the av (85); the chorten (three sizes: o.v 0 small, 1 crossin (100); the kora's prayer-wheel arcade (straight and cor (107); the wheel house: a great prayer wheel in a cube  (124); the wayside shrine (the Xanadu kit's gap: shrine (143); the pilgrims' hostel (on the kora) (154); the caravanserai (on the Erewhon road; the Xanad (166) |
 | `89q3m-qb-meditation.js` | 10 |  |
 | `89q4-qb-temple.js` | 16 | the great temple (9); the Hall of the Decree (42); the treasury: the faith's gold behind blank wall (62); the great wheel house (the Temple Mountain's) (76); the walls (each ring walled; a full wall on the  (99); the Temple Mountain, whole (Q7a): ring 0's one l (136) |
-| `89q5-qb-interiors.js` | 8 | the assembly hall (a great monastery's dukhang) (27); the council chamber of the Hall of the Decree (43); the pilgrims' hostel dormitory (63) |
+| `89q5-qb-interiors.js` | 17 | the sanctum of the Rainbow Temple (57); the assembly hall (a great monastery's dukhang) (97); the council chamber of the Hall of the Decree (120); the pilgrims' hostel dormitory (144) |
+| `89q5f-qb-furnish.js` | 5 |  |
 | `89q9-qb-street.js` | 6 |  |
 
 ## targets/
@@ -33,4 +34,4 @@ Each target adds its own fragments to `src/` and builds one output.
 
 | Target | Fragments | KB |
 |---|---|---|
-| `kit` | `89z-rows.js`, `90q-qb-furnish.js`, `91z-views.js` | 5 |
+| `kit` | `89z-rows.js`, `90q-qb-furnish.js`, `91z-views.js` | 2 |

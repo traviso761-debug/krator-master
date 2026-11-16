@@ -11,6 +11,10 @@ const VIEWS=(function(){const V={},S=QC_B.z1,E=QC_B.x1,L=QC_LM;
  const h=QC_PLACE.find(p=>p.kind==='lot'&&p.cls==='poor');if(h)V['A lay street']=qcEye(h.x+Math.sin(h.ry)*9,h.z+Math.cos(h.ry)*9,h.x+Math.cos(h.ry)*40,h.z-Math.sin(h.ry)*40,0);
  V['The ghats']=qcEye(QC_RIVER.x+20,30,QC_RIVER.x-40,0,1.5);
  V['From above the Temple Mountain']=[L.x+240,340,L.z+300,L.x,10,L.z];
+ // inside the four walk-in rooms (90t-qc-interiors.js, built when the camera comes): from just inside the front door, eye
+ // height on the room's floor, toward the room's head
+ for(const R of(QC_IX&&QC_IX.rooms)||[]){const y=R.o.y+1.7,f=loc(R.x,R.z,0,R.o.D/2-2.2,R.ry),t=loc(R.x,R.z,0,-R.o.D/2+1,R.ry);
+  V['Inside: '+R.name]=[f[0],y,f[1],t[0],R.o.y+1.4,t[1]];}
  // the four meditation gardens in the corners, each from above its two gates (from inside the city, looking to the corner)
  for(const p of QC_PLACE)if(p.kind==='meditation'){const sx=Math.sign(p.x-L.x),sz=Math.sign(p.z-L.z),cx=p.x-sx*52,cz=p.z-sz*52;
   V['Meditation garden: '+QMED[p.o.v].name]=[cx,terrainH(cx,cz)+34,cz,p.x,terrainH(p.x,p.z)+1,p.z];}

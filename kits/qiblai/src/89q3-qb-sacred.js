@@ -65,7 +65,8 @@ function buildQbMonastery(G,o){const V=xV(o)%8;reseed(33501+V);const W=52,D=52,P
 // a smaller cloistered court of two-storey ranges, the library hall at the back: its walls carry the sound-grid
 // syllabary (holy writing): the first line of the Song in the real Xanadui script, a band under the parapet (qnSongBand)
 function buildQbCollege(G,o){reseed(33511+(o.v|0));const V=xV(o),W=34,D=32,P=1.0,Dr=6,hr=[3.4,3.0];
- const red=xC(xPick(XPAL.redwall)),wash=xC(xPick(XPAL.wash)),stone=xC(xPick(QSTONE)),band=xC(xPick(XPAL.maroon)),trim=xC(XPAL.saffron);
+ const S=o.sp==null?null:QSPOKE[o.sp%8];   /* o.sp: the sector's monastery colour (settlements/qiblai), else the clergy's red */
+ const red=S?xC(S.wall):xC(xPick(XPAL.redwall)),wash=xC(xPick(XPAL.wash)),stone=xC(xPick(QSTONE)),band=S?xC(S.band):xC(xPick(XPAL.maroon)),trim=S?xC(S.trim):xC(XPAL.saffron);
  vnReg("Grammarians' college",0,0,20,P+12+4);
  qnPlinth(0,0,W,D,P,0,stone);
  for(const [x,z,L,dd,ry] of[[W/2-Dr/2,2,D-Dr-4,Dr,Math.PI/2],[-W/2+Dr/2,2,D-Dr-4,Dr,-Math.PI/2],[0,D/2-Dr/2+1,W,Dr-2,0]]){const S=qnStack(x,P,z,L,dd,ry,ry===0?[4.0]:hr,ry===0?wash:red,'wash',xC(XPAL.white));

@@ -9,6 +9,9 @@ invariants and views are Xanadu's, and settlements/xanadu/verify.py runs it (on 
   people-by-ring        the residents by ring against kits/qiblai/PLAN.md section 3's table (clergy ~2,400, kora ~3,000, lay
                         ~6,000), within 15 % (reported as a budget until the owner calibrates it: settlements/qiblai/PLAN.md Q7d)
   xanadu-share          a third of the lay houses the Xanadu kit's (the owner, 2026-11-11), within 28-38 % (reported)
+  interiors-on-demand   the four walk-in rooms (targets/city/90t-qc-interiors.js: the Rainbow Temple's sanctum, the Hall of the
+                        Decree's council chamber, a monastery's assembly hall, a hostel dormitory), built and furnished on
+                        demand: buildAll() builds every one, each furnished with every programme met (IX.audit) and textured
 
     KRATOR_GL=gpu python3 verify.py dist/qiblai.html --assert --views "Overview,From the south gate"
 """
@@ -31,7 +34,10 @@ CITY_JS = r"""
  R.push({name:'monastery-bearings',ok:!off.length,detail:off.length?'off their spokes: '+off.join(', '):'all eight on their spokes (within 10 deg), the Rainbow Temple\'s banners facing them'});
  const P=Q.people||{},T={clergy:2400,kora:3000,lay:6000},bad=Object.keys(T).filter(k=>Math.abs((P[k]||0)-T[k])>.15*T[k]);
  R.push({name:'people-by-ring',ok:!bad.length,budget:true,detail:Object.keys(T).map(k=>k+' '+(P[k]||0)+' / '+T[k]).join(', ')+'; total '+(P.total||0)+' / ~12,000'});
- const sh=Q.xanaduShare||0;R.push({name:'xanadu-share',ok:sh>=.28&&sh<=.38,budget:true,detail:(sh*100).toFixed(1)+' % of the lay houses the Xanadu kit\'s (the owner: 33 %)'});}
+ const sh=Q.xanaduShare||0;R.push({name:'xanadu-share',ok:sh>=.28&&sh<=.38,budget:true,detail:(sh*100).toFixed(1)+' % of the lay houses the Xanadu kit\'s (the owner: 33 %)'});
+ const I0=window._qiblaiIx,pre=I0?I0.built:0,I=I0&&I0.buildAll?I0.buildAll():I0,X=I&&I.tex;
+ R.push({name:'interiors-on-demand',ok:!!(I&&I.rooms.length===4&&I.built===4&&I.byRoom.length===4&&I.byRoom.every(r=>r.ok&&r.pieces>0)&&!I.fails.length&&X&&X.meshes&&X.mapped===X.meshes),
+  detail:I?(I.rooms.length+' rooms ('+pre+' built before the check), '+I.pieces+' pieces, '+I.ms+' ms; '+I.byRoom.map(r=>r.room+' '+r.pieces).join(', ')+(I.fails.length?'; FAILS '+I.fails.join(' | '):'')+(X?'; textured '+X.mapped+'/'+X.meshes+(X.bare.length?' bare: '+X.bare.join(','):''):'')):'window._qiblaiIx missing (targets/city/90t-qc-interiors.js)'});}
 return R;}"""
 xv.ASSERT_JS = xv.ASSERT_JS.rstrip()[:-len('return R;}')] + CITY_JS
 assert xv.ASSERT_JS.endswith('return R;}'), 'settlements/xanadu/verify.py ASSERT_JS no longer ends with return R;}'

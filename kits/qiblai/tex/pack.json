@@ -121,6 +121,36 @@
     "sourceMean": 0.4292
    }
   },
+  "qGilt": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "qGilt.albedo.webp",
+    "normalMap": "qGilt.normal.webp",
+    "roughnessMap": "qGilt.rough.webp"
+   },
+   "lib": "metal.gold",
+   "metal": 0.0,
+   "normalScale": 1.0,
+   "roughLift": 0.1,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "d3a5017f533685d869831a27b56771d350f233be",
+    "normal": "660d78bd0baaf87903d7317c9da582e2b2785719",
+    "roughness": "8d1da247889f8a0cc55f0297881452c84be67e4a"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.78,
+    "sourceMean": 0.5704
+   }
+  },
   "qGrass": {
    "breakup": null,
    "card": false,
@@ -149,6 +179,126 @@
     "keep": 1.0,
     "mean": 0.5,
     "sourceMean": 0.44
+   }
+  },
+  "qLacq": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "qLacq.albedo.webp",
+    "normalMap": "qLacq.normal.webp",
+    "roughnessMap": "qLacq.rough.webp"
+   },
+   "lib": "wood.lacquer",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.1,
+   "scale": [
+    2,
+    2
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "b5c868796764a6a24445a16494491c301cddfd28",
+    "normal": "5a1922bb239dbcfe2585e7024c48ab9f8b0f8856",
+    "roughness": "adb42238109d5c177218eea38c4b6128541fc7c8"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.62,
+    "sourceMean": 0.2257
+   }
+  },
+  "qMarble": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "qMarble.albedo.webp",
+    "normalMap": "qMarble.normal.webp",
+    "roughnessMap": "qMarble.rough.webp"
+   },
+   "lib": "paving.marble_mosaic_tiles",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.1,
+   "scale": [
+    3,
+    3
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "3b58aad7d3ca03b1fa0f9f73bf32d840a7fd7b7d",
+    "normal": "ace60af1fea8400ae72dbf0fbbf7159e6750fb7e",
+    "roughness": "f3c3f8f8c67d7f8423ec49df5f0402a33c6e110a"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.5,
+    "sourceMean": 0.439
+   }
+  },
+  "qPlank": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "qPlank.albedo.webp",
+    "normalMap": "qPlank.normal.webp",
+    "roughnessMap": "qPlank.rough.webp"
+   },
+   "lib": "wood.old_wooden_floor_02",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.1,
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "fb504d5a2b871fca7f1d0fe60cf37a91bfc199d7",
+    "normal": "b97828a832750c29bfc7850dfe93fd27f4395d83",
+    "roughness": "8c60e94b15a4ee9348e69efee44e17291e2f3bad"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.5,
+    "sourceMean": 0.207
+   }
+  },
+  "qRug": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "qRug.albedo.webp",
+    "normalMap": "qRug.normal.webp",
+    "roughnessMap": "qRug.rough.webp"
+   },
+   "lib": "cloth.rug.wool",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.1,
+   "scale": [
+    2,
+    2
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "540e2a1ff3b534fffd6cb797748157a63cf9531f",
+    "normal": "17661af9035678b7c26ac6d9671b499acce825a9",
+    "roughness": "9b680d8253af3d250b11a88fd57fad3195db4a8f"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.6,
+    "sourceMean": 0.5342
    }
   }
  },

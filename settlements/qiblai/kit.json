@@ -25,6 +25,12 @@
   "90q-qc-world.js",
   "90r-qc-build.js",
   "69r-flora-bundle.js",
-  "90s-qc-flora.js"
- ]
+  "90p-qc-flora.js",
+  "89q5f-qb-furnish.js",
+  "90t-qc-interiors.js"
+ ],
+ "interiors": ["city"],
+ "furniture": ["xanadu", "eastabyss", "generic", "generic-goods", "jobs"],
+ "furnitureTex": true,
+ "interiorSets": []
 }

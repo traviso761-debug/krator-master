@@ -86,7 +86,10 @@ if(QC_PLAN&&QC_PLAN.courts){
   b.court=[c[0]-s,c[1]-s,c[0]+s,c[1]+s];
   for(const L of byBlock[b.id]||[])if(qcHit(qcFoot(L),b.court,2))inCourt[L.id]=true;}
  const lots=QC_PLAN.courts.lots.filter(L=>VERN.defs[L.key]&&!inCourt[L.id]);
- for(const L of lots)QC_PLACE.push({key:L.key,x:L.x,z:L.z,ry:L.ry,o:{v:qcV(L.key,L.id),y:L.y},kind:'lot',cls:L.cls,id:'lot:'+L.id,w:VERN.defs[L.key].w,h:qcD(VERN.defs[L.key].h,10)});
+ // the clergy ring in eight sectors (the owner, 2026-11-15: "clearly defined areas of each color, and red is not over-represented"):
+ // a college or granary takes the colour of the monastery whose spoke its block stands on (core/city's block.spoke, 45 degrees each)
+ const qcSp=L=>{const b=QC_S.blocks.find(x=>x.id===L.court);return b&&b.kind==='clergy'?b.spoke:null;};
+ for(const L of lots)QC_PLACE.push({key:L.key,x:L.x,z:L.z,ry:L.ry,o:Object.assign({v:qcV(L.key,L.id),y:L.y},qcSp(L)==null?null:{sp:qcSp(L)}),kind:'lot',cls:L.cls,id:'lot:'+L.id,w:VERN.defs[L.key].w,h:qcD(VERN.defs[L.key].h,10)});
  // row houses on party walls: a neighbour of the same row kind, the same yaw, touching on a side, closes that side (o.ends)
  const rows=QC_PLACE.filter(p=>/^qb_row_/.test(p.key)),grid={},cell=40,gk=(x,z)=>Math.floor(x/cell)+','+Math.floor(z/cell);
  for(const p of rows){(grid[gk(p.x,p.z)]=grid[gk(p.x,p.z)]||[]).push(p);}

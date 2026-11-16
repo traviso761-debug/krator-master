@@ -55,7 +55,9 @@ function qnSpokeBanner(x,y,z,i,h,cw){cw=cw==null?3.2:cw;const ry=qnSpokeYaw(i),g
  const L=h*.58,p=loc(x,z,0,.14,ry);vB('vClothB',p[0],y+h-.55-L,p[1],cw,L,.06,ry,col);
  vB('vClothB',p[0],y+h-.55-L-.4,p[1],cw,.4,.07,ry,xC(QSPOKE[i].band));   /* a dark hem along the foot */
  for(let k=0;k<3;k++){const t=loc(x,z,(k-1)*cw/3,.14,ry);vB('vClothB',t[0],y+h-.55-L-1.6,t[1],cw/3-.15,1.2,.06,ry,col);}}   /* three tails */
-function qnRingC(ring){const R=QRING[ring]||QRING.lay;return{wall:xC(xPick(R.wall)),trim:xC(xPick(R.trim)),band:R.band?xC(xPick(R.band)):null};}
+// o.sp a spoke (0-7): a clergy building in the inner ring takes the colour of the monastery whose sector it stands in (the
+// owner, 2026-11-15: "clearly defined areas of each color, and red is not over-represented"; settlements/qiblai sets o.sp by block)
+function qnRingC(ring,o){if(o&&o.sp!=null){const S=QSPOKE[o.sp%8];return{wall:xC(S.wall).multiplyScalar(rr(.95,1.02)),trim:xC(S.trim),band:xC(S.band)};}const R=QRING[ring]||QRING.lay;return{wall:xC(xPick(R.wall)),trim:xC(xPick(R.trim)),band:R.band?xC(xPick(R.band)):null};}
 const QSTONE=[0xc8c0b0,0xbcb4a4,0xd0c8b8];   // the dressed plinth and terrace stone: a shade lighter than XPAL.stone
 
 // ---------------------------------------------------------------- kit items: the crisp cube
@@ -133,11 +135,13 @@ function qnDoor(x,y,z,ry,w,h,o){o=o||{};const fr=o.c||xC(XPAL.red),leaf=o.leaf||
 // ---------------------------------------------------------------- the faith's signs
 // the eight-spoked wheel (PLAN.md section 2a: the Station as it was, whole), upright and facing ry, centre at (x,y,z),
 // radius r: a rim of sixteen gilt staves, eight spokes with knobs, a hub
-function qnWheel(x,y,z,ry,r,c){c=c||xC(xPick(XPAL.gold));const q0=qEuler(0,ry,0),seg=2*Math.PI*r/16*1.08;
- for(let i=0;i<16;i++){const a=(i+.5)*Math.PI/8,p=loc(x,z,Math.cos(a)*r,0,ry);kput('xGoldB',[p[0],y+Math.sin(a)*r,p[1]],q0.clone().multiply(qEuler(0,0,a+Math.PI/2)),[seg,r*.14,r*.12],c);}
- for(let i=0;i<8;i++){const a=i*Math.PI/4,p=loc(x,z,Math.cos(a)*r*.5,0,ry);kput('xGoldB',[p[0],y+Math.sin(a)*r*.5,p[1]],q0.clone().multiply(qEuler(0,0,a)),[r*.9,r*.07,r*.07],c);
-  const e=loc(x,z,Math.cos(a)*r*1.12,0,ry);vBall('xGold',e[0],y+Math.sin(a)*r*1.12,e[1],r*.08,c);}
- const h=loc(x,z,0,.02,ry);kput('xDiscG',[h[0],y,h[1]],q0.clone().multiply(qEuler(Math.PI/2,0,0)),[r*.24,r*.16,r*.24],c);}
+// the gilt's items: the Xanadu kit's (plain gold) outside; the rooms (89q5) pass Qiblai's textured gilt (QN_GILT_TEX)
+const QN_GILT={box:'xGoldB',ball:'xGold',disc:'xDiscG'},QN_GILT_TEX={box:'qGiltB',ball:'qGiltBall',disc:'qGiltDisc'};
+function qnWheel(x,y,z,ry,r,c,it){it=it||QN_GILT;c=c||xC(xPick(XPAL.gold));const q0=qEuler(0,ry,0),seg=2*Math.PI*r/16*1.08;
+ for(let i=0;i<16;i++){const a=(i+.5)*Math.PI/8,p=loc(x,z,Math.cos(a)*r,0,ry);kput(it.box,[p[0],y+Math.sin(a)*r,p[1]],q0.clone().multiply(qEuler(0,0,a+Math.PI/2)),[seg,r*.14,r*.12],c);}
+ for(let i=0;i<8;i++){const a=i*Math.PI/4,p=loc(x,z,Math.cos(a)*r*.5,0,ry);kput(it.box,[p[0],y+Math.sin(a)*r*.5,p[1]],q0.clone().multiply(qEuler(0,0,a)),[r*.9,r*.07,r*.07],c);
+  const e=loc(x,z,Math.cos(a)*r*1.12,0,ry);vBall(it.ball,e[0],y+Math.sin(a)*r*1.12,e[1],r*.08,c);}
+ const h=loc(x,z,0,.02,ry);kput(it.disc,[h[0],y,h[1]],q0.clone().multiply(qEuler(Math.PI/2,0,0)),[r*.24,r*.16,r*.24],c);}
 // a kneeling deer, gilt, its head toward its local +z (yaw ry), base at y, s its height
 function qnDeer(x,y,z,ry,s,c){c=c||xC(xPick(XPAL.gold));const P=(u,v)=>loc(x,z,u*s,v*s,ry),q=qEuler(0,ry,0);
  let p=P(0,0);vB('xGoldB',p[0],y,p[1],.42*s,.3*s,.7*s,ry,c);p=P(0,.3);kput('xGoldB',[p[0],y+.42*s,p[1]],q.clone().multiply(qEuler(-.5,0,0)),[.16*s,.34*s,.16*s],c);

@@ -188,7 +188,7 @@ function buildQbBath(G,o){reseed(33451+(o.v|0));const V=xV(o),W=24,D=16,P=.6,hs=
 // ---------------------------------------------------------------- the temple estates' granary (civic)
 // a tall blank cube on a high plinth, vent slits in a strict grid, the loading door and its ramp, the keeper's room on top
 function buildQbGranary(G,o){reseed(33461+(o.v|0));const V=xV(o),W=14,D=11,P=1.4,hs=[4,3.6,3.4];
- const R=qnRingC('clergy'),wall=R.wall,stone=xC(xPick(QSTONE)),dark=xC(xPick(XPAL.dark));
+ const R=qnRingC('clergy',o),wall=R.wall,stone=xC(xPick(QSTONE)),dark=xC(xPick(XPAL.dark));   /* o.sp: the sector's colour */
  vnReg('Temple granary',0,-1,9,P+11+3);
  qnPlinth(0,-1,W,D,P,0,stone);const S=qnStack(0,P,-1,W,D,0,hs,wall,'wash');
  // the vents: dark slits, no glazing (a store breathes), every storey, every face

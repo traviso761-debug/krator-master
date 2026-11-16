@@ -52,6 +52,13 @@ and `qiblai` in core/tags' vocabulary (`TODO.md`, the ride-along) are not prereq
   Xanadu and Opal Valley (its fire-opal breaker crown for the crimson trees, its prism fern and opal pads), sealed with
   today's core/biome in `gen/69r-flora-bundle.js` (Xanadu's page runs an older biome core those kits cannot load on),
   and the gold from the page's own Vale (the ginkgo): 182 plants, no gaps (2026-11-12; notes in `KNOWN_ISSUES.md`).
+- **The walk-in rooms, on demand** (the owner, 2026-11-15): the sanctum of the Rainbow Temple (new: the Station as it was, whole,
+  a gilt shrine on its dais, the eight pillars in the eight colours), the council chamber of the Prismarchy, a great monastery's
+  assembly hall and a hostel's dormitory, each inside its own building at its storey's size, built and furnished when the camera
+  comes (`targets/city/90t-qc-interiors.js`); floors, ceilings, walls, columns, gilt and furniture all textured from the library
+  (`qMarble`, `qPlank`, `qLacq`, `qGilt`, `qRug`; the furniture's detail maps). The fancier surfaces are owed (PROMPTS-NEEDED 43).
+- **The clergy ring in eight sectors** (the owner, 2026-11-15: "clearly defined areas of each color, and red is not
+  over-represented"): its colleges and granaries take the colour of the monastery whose spoke their block stands on.
 - **Q7e-Q7g** not started.
 
 ## 1. What the city build is
