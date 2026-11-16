@@ -142,6 +142,8 @@ function tbFoot(x,z,w,d,ry){const c=Math.cos(ry),s=Math.sin(ry);let y=tbGround(x
 if(TB_PLAN&&TB_PLAN.courts){
  for(const Lt of TB_PLAN.courts.lots)if(VERN.defs[Lt.key])TB_PLACE.push({key:Lt.key,x:Lt.x,z:Lt.z,ry:Lt.ry,o:{v:tbV(Lt.key,Lt.id),y:Lt.y},kind:'house',cls:Lt.cls,id:'lot:'+Lt.id,w:VERN.defs[Lt.key].w,h:tbD(VERN.defs[Lt.key].h,10)});}
 const tbBlock=(i,j)=>TB_BLOCKS.find(b=>b.i===i&&b.j===j);
+// the x of a north-south polyline at z (the expedition road's, the leat's): the first segment spanning z
+function tbLineX(P,z){for(let i=0;i+1<P.length;i++){const a=P[i],q=P[i+1];if((z-a[1])*(z-q[1])<=0&&a[1]!==q[1])return a[0]+(q[0]-a[0])*(z-a[1])/(q[1]-a[1]);}return P[0][0];}
 // a civic piece at (u, v) of its block's box (0..1 each), facing f (radians: 0 faces +z, south)
 function tbCivic(key,kind,i,j,u,v,ry,extra){const b=tbBlock(i,j),D=VERN.defs[key];if(!b||!D)return null;
  const x=b.box[0]+(b.box[2]-b.box[0])*u,z=b.box[1]+(b.box[3]-b.box[1])*v,p=Object.assign({key,x,z,ry,o:{v:0,y:tbFoot(x,z,D.w,D.d,ry)},kind,id:kind+':'+key+':'+i+','+j+':'+u+','+v,w:D.w,h:tbD(D.h,10)},extra||{});
@@ -171,6 +173,10 @@ for(const[i,j]of[[0,0],[5,0],[0,4],[5,4],[1,4],[4,4]])tbCivic('xa_garden','orcha
 const TB_DALAB=[tbCivic('dalab_healers','dalab',5,1,.5,.3,TB_FW,{name:'The Dalab mission: the genepriests\' house'}),
  tbCivic('dalab_granaries','dalab',5,1,.3,.8,TB_FW,{name:'The Dalab mission: the seed and specimen stores'}),
  tbCivic('dalab_compound','dalab',5,1,.74,.8,TB_FW,{name:'The Dalab mission: the lodging for the hired men'})].filter(Boolean);
+// the road warden's watch house at Briḍj (PLAN.md section 3; Thalaba's own piece, src/89t1-tb-pieces.js; no toll: the owner), on
+// the expedition road at the gorge's mouth 10 km north, west of the road (the leat runs 16 m east of it), its door on the road
+{const z=-10150,D=VERN.defs.tb_watchhouse,x=tbLineX(TB_EXPED,z)-20;
+ if(D)TB_PLACE.push({key:'tb_watchhouse',x,z,ry:TB_FE,o:{v:0,y:tbFoot(x,z,D.w,D.d,TB_FE)},kind:'warden',id:'warden:bridj',w:D.w,h:tbD(D.h,10),name:'The road warden\'s watch house at Briḍj'});}
 
 // ---------------------------------------------------------------- the fields (PLAN.md section 3): the Siṭēps' terraces north of the
 // spring line, on the treads, each a crop or fallow; the Bēnch's fields east and south of the town, tilled, in crop, fallow or

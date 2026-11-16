@@ -36,6 +36,18 @@
      "50-core-water-draw.js",
      "51-core-water-kinds.js"
     ]
+   ],
+   [
+    "core/simulation",
+    [
+     "77-sim-0-core.js",
+     "77-sim-1-world.js",
+     "77-sim-2-places.js",
+     "77-sim-3-actors.js",
+     "77-sim-4-nav.js",
+     "77-sim-5-motion.js",
+     "77-sim-5r-routes.js"
+    ]
    ]
   ]
  },
@@ -44,6 +56,7 @@
   "69t-kcity-bundle.js",
   "69u-tb-ground.js",
   "89t0-tb-matlib.js",
+  "89t2-tb-interiors.js",
   "89zt-tb-site.js",
   "90q-tb-world.js",
   "90r-tb-build.js",
@@ -59,6 +72,15 @@
   "51-core-water-kinds.js",
   "69d-dalab-mat.js",
   "69e-dalab-helpers.js",
-  "69v-dalab-pack.js"
+  "69v-dalab-pack.js",
+  "77-sim-0-core.js",
+  "77-sim-1-world.js",
+  "77-sim-2-places.js",
+  "77-sim-3-actors.js",
+  "77-sim-4-nav.js",
+  "77-sim-5-motion.js",
+  "77-sim-5r-routes.js",
+  "89zu-tb-people.js",
+  "90t-tb-life.js"
  ]
 }

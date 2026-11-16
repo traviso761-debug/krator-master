@@ -7,9 +7,10 @@
 - [ ] **Thalaba's own pieces are local.** `tb_devisers` and `tb_calcarone` (`src/89t1-tb-pieces.js`, on the Xanadu kit's
   contract, shown on `dist/thalaba-pieces.html`) start here, as Qiblai's started in its kit; they go upstream into
   `kits/xanadu` once the owner has seen them. Until then the open world's Salphar draws its calcaroni as the hamlet row's
-  pending boxes (`openworld/xanadu-oidong-highrift/src/48-world-site.js`, row `xanadu-sulfur`). Still owed of PLAN.md's list:
-  the road warden's watch house at Briḍj (the owner ruled no toll, so no toll house: the Sultan's share is taken in the
-  town; the region's bridge itself is core/world's, in the Xanadu kit's stone).
+  pending boxes (`openworld/xanadu-oidong-highrift/src/48-world-site.js`, row `xanadu-sulfur`). The road warden's watch house
+  (`tb_watchhouse`, 2026-11-16) stands on the town page by the expedition road at the gorge's mouth (z -10,150, 20 m west of the
+  road); no toll house (the owner). The bridge and the ranch village of Briḍj are the region's (core/world's bridge, the
+  hamlet row), not drawn on the town page, so the watch house stands alone there.
 - [ ] **Salphar's sulfur deposit is recorded but not stamped.** `lode:thalaba-sulfur` (px 841,1452, r 3 km) is in
   `kits/resources/data/lodes.json` on the resource-nodes branch (claude/resource-nodes-7ec053, f568d34e9, 2026-11-16), not yet
   stamped on `geology.json`: stamping changes the geology 13 build commands read (62 pages), so it rides with the next bake or
@@ -36,6 +37,22 @@
   page's own sprinkling of figures is Xanadu's. Godshearth's Hearths are up in the caldera, not here.
 - [ ] **The walk-in houses are opt-in.** `?interiors=1` (as on Erewhon's page) hollows the Xanadu kit's buildings and plans and
   furnishes their rooms (311 buildings, 1,784 rooms, about 14,000 pieces; 82 doorways into core/walk); the page then takes
-  about 18 s to build against 4 s. Thalaba's own pieces (`tb_devisers`) and the Dalab set's have no interior items yet: the
-  Devisers' counting room and strongroom, the genepriests' rooms want room kinds in `kits/interiors`.
-- [ ] **Not yet:** the life layer on core/simulation, the Godot export, the gallery.
+  about 18 s to build against 4 s. Thalaba's own pieces and the mission's healers' hall have their rooms (2026-11-16,
+  `src/89t2-tb-interiors.js`, a `kits/interiors` set registered on the page): the Devisers' hall (counting room, clerks',
+  library, two bedrooms; 8 rooms with the strongroom), the watch house (guard room, store, two bedrooms), the healers' hall (the
+  sick room, the genepriests' study, the store). They use kits/interiors' existing kinds (the counting room a shop, the
+  strongroom a store): a counting room, a strongroom or an infirmary of their own would be new kinds there. The mission's hall
+  is furnished from the generic catalog (the page's bundle, Xanadu's 69d, has no Dalab culture file). The mission's granaries and
+  compound are round huts drawn by the Dalab helpers (`dnGranary`, `dnRoundHouse`), which the hollow wrap does not reach: they
+  stay solid (skipped in the set, with the reason). The set goes into `kits/interiors/sets/` with the pieces.
+- [ ] **The people are a first cut** (T5, 2026-11-16: `targets/town/89zu-tb-people.js`, `90t-tb-life.js`). Every resident
+  (2,591: the town's households, the Devisers' 40, the Two Horns' 20, the mission's 30, the warden's 6) is a core/simulation
+  actor on lazy routes over the plan's ways; they farm the terraces and the Bēnch, keep the market, the yard, the counting room,
+  the temple, the springs; the diggers walk out to Salphar and the road's men down to Phēr, half at a time. Still owed: the
+  **expedition season** (about 150 away each summer, the muster at Briḍj in spring, the Sultan's count at their return: SIM
+  has no season here yet); the **bodies** (placeholder robes and heads, not core/charactermodels' people); the **court
+  houses' doors** join their nearest street in a straight line (the courts have no lanes), so a walker may cross a yard or a
+  roof; jobs are drawn over the whole town, not by household (a farmer's house may hold no farmer); the fields more than 600 m
+  from a way are left to the ring's farmsteads. No needs, money or economy on the page: the town's books are the region's
+  (`core/region`, `XAN_TUNE`).
+- [ ] **Not yet:** the Godot export, the gallery.
