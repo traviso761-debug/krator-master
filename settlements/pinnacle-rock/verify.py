@@ -234,7 +234,7 @@ async def run(a):
             await V.shot(fn); print("shot:", fn)
         for ev in (a.eval or []):
             try:
-                print("eval:", json.dumps(await pg.evaluate(ev))[:3000])
+                print("eval:", json.dumps(await pg.evaluate(ev))[:8000])
             except Exception as e:
                 print("eval failed:", str(e)[:400])
 
