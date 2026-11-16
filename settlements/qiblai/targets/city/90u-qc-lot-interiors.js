@@ -35,7 +35,7 @@ const QC_LIX=(function(){const S={lots:[],types:{},nTypes:0,built:0,clones:0,noS
   for(const s of p.stacks){const dd=Math.min(s.w,s.d);if(dd<5.5||dd>7.5||Math.max(s.w,s.d)<14||s.hs[0]>4.4)continue;const L=Math.max(s.w,s.d);
    /* a gate market's front and back ranges have its passage through their middle: two shells, one each side of it */
    const parts=p.kind==='market'&&Math.abs(s.x)<.5&&L>30?[-1,1].map(e=>{const c=loc(s.x,s.z,e*(L/4+1.15),0,s.ry);return Object.assign({},s,{x:c[0],z:c[1],w:L/2-2.3});}):[s];
-   for(const q of parts){const sh=qnShellOf([q]);if(sh){addLot(p,p.id+'.range'+(i++),sh,RPROG[p.kind]);S.ranges++;}}}
+   for(const q of parts){const sh=qnShellOf([q]);if(sh){addLot(p,p.id+'.range'+(i++),sh,p.kind==='monastery'&&QSPOKE[p.o.v%8].hospital?QB_IX_HOSPITAL:RPROG[p.kind]);S.ranges++;}}}   /* the White Lily's ranges: its hospital's wards */
   p.stacks=null;}
  for(const p of QC_PLACE){if(p.kind!=='lot')continue;if(QB_IX_OPEN[p.key]||hosts.has(p)){p.stacks=null;S.open++;continue;}const sh=qnShellOf(p.stacks);p.stacks=null;
   if(!sh){S.noShell++;continue;}if(!qnIxProgram(p.key)){S.noProgram++;continue;}

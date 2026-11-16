@@ -85,6 +85,22 @@ and `qiblai` in core/tags' vocabulary (`TODO.md`, the ride-along) are not prereq
   to each; the treasury's strong room (the eight gilt images, the coin chests, the scripture boxes); the wheel houses' insides
   (a hanging, two murals, a rug, butter lamps) and the great wheel's floor; the manors and merchants' houses entered too. 109
   great rooms and 1,073 lot interiors (52 types), every one walked into by the verify.
+- **The Order of Viridian Thought** (the owner, 2026-11-16, relayed by the Xanadu sim session: "find a site that's a great
+  tea production site and place the head monastery of Qiblai's green monastery there, the Order of Viridian Thought"): the
+  green spoke's monastery is the tea Order's house on the council; its head monastery is a tea estate on the scarp's mist
+  slopes (scale model px 962,1562, 104 km off; the sim's `qb.viridian`: ~400 people, ~40 t a year), a page of its own not
+  yet planned. In the city its court grows clipped tea, with a withering rack and the estate's chests by the gate.
+- **The Order of the White Lily and the Order of the Flashing Eye** (the owner, 2026-11-16: "the white monastery, the
+  Order of the White Lily, is known for their knowledge of medicine and healing. unlike the other great orders, their
+  complex in the city is their actual HQ and doubles as a hospital. the crimson monastery is called the Order of the
+  Flashing Eye"): the white monastery's cell ranges are the hospital's wards (QB_IX_HOSPITAL: a porters' hall, wards, a
+  bath, the kitchen, the apothecary's store; wards and the physicians' study above); its court the physic garden (herb beds
+  edged with white lilies, a washing pool, drying herbs, litters), the Order's banners at the gate (white, a gold lily on
+  green). The crimson monastery is named; its dress is unchanged.
+- **The Order of the Azure Dream** (the owner, 2026-11-16, relayed: "Grēṭ-Āil will be the head monastery for qiblai's blue
+  monastery, the Order of the Azure Dream"): the blue spoke's monastery is its town house on the council; its head monastery
+  is Grēṭ-Āil, the monastery isle in the middle of Erewhon's lake (px 816.5,1501.5, ~600 people; PROPOSAL-XANADU section
+  2a), a page of its own not yet planned.
 - **The History Monks' monastery** (the owner, 2026-11-16: "one of the monasteries of Qiblai (and therefore of the
   Prismatic Council) is a History Monk monastery, and uses the Order's banner and color. as such the order gets 1/8 of the
   council income"; which: "Yes, saffron"): the saffron spoke's monastery (spoke 1, bearing 45 degrees) is the Order of

@@ -25,6 +25,9 @@ const QB_IX_OPEN={qb_shrine:1,qb_wheel_house:1,qb_chorten:1,qb_kora_arcade:1,qb_
 // (a common room, its kitchen, a store and a stable below; the merchants' rooms above)
 const QB_IX_MARKET={name:'market',wealth:.5,program:(l,a)=>l?(a>=120?['bedroom','store','bedroom']:['bedroom','store']):(a>=120?['shop','store','shop','store']:['shop','store'])};
 const QB_IX_INN={name:'inn',wealth:.45,program:(l,a)=>l?(a>=120?['bedroom','bedroom','bedroom','store']:['bedroom','bedroom']):(a>=120?['tavern','kitchen','store','stable']:['tavern','store'])};
+// the Order of the White Lily's ranges, its hospital (the owner, 2026-11-16): the porters' hall by the court door, the wards
+// (dormitories of beds), a bath, the kitchen, the apothecary's store; above, more wards and the physicians' study
+const QB_IX_HOSPITAL={name:'hospital',wealth:.55,program:(l,a)=>l?(a>=150?['dormitory','dormitory','study','store']:['dormitory','study']):(a>=150?['hall','dormitory','bath','kitchen','store']:['hall','dormitory'])};
 const QB_IX_MONKS={name:'monks',wealth:.4,program:(l,a)=>l?(a>=150?['dormitory','study','dormitory','store']:['dormitory','study']):(a>=150?['shrine','kitchen','dormitory','store']:['shrine','dormitory'])};
 // the shell from a building's listed stacks: the biggest footprint standing on the ground (base within 2.6 m), at least 4 x 4 m
 // and a 2.4 m storey; then its upper storeys: a stack raised on its top (within 0.4 m), centred on it (within 1 m), at least

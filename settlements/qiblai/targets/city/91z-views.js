@@ -57,6 +57,10 @@ const VIEWS=(function(){const V={},S=QC_B.z1,E=QC_B.x1,L=QC_LM,L0=QC_LM;
   V['The lit south avenue']=[-3,terrainH(-3,QC_B.z1-30)+1.7,QC_B.z1-30,4,terrainH(4,QC_B.z1-220)+4,QC_B.z1-220];}
  // the History Monks' monastery (the saffron spoke, the Order of Longsong's), from outside its parabolic gate
  const om=QC_PLACE.find(p=>p.kind==='monastery'&&QSPOKE[p.o.v%8].order);if(om){const e=loc(om.x,om.z,9,58,om.ry),g=loc(om.x,om.z,0,14,om.ry),y=qcD(om.o.y,0);V['The History Monks monastery']=[e[0],y+5,e[1],g[0],y+6,g[1]];}
+ // the Order of Viridian Thought's house (the green spoke): its court of tea, from above
+ const gm=QC_PLACE.find(p=>p.kind==='monastery'&&QSPOKE[p.o.v%8].tea);if(gm){const e=loc(gm.x,gm.z,-6,4,gm.ry),g=loc(gm.x,gm.z,13.5,10,gm.ry),y=qcD(gm.o.y,0);V['The Viridian monastery court']=[e[0],y+20,e[1],g[0],y+1.2,g[1]];   /* from above the court, down at the east bed of tea */}
+ // the Order of the White Lily's house, its hospital: its physic garden from above
+ const wm=QC_PLACE.find(p=>p.kind==='monastery'&&QSPOKE[p.o.v%8].hospital);if(wm){const e=loc(wm.x,wm.z,-6,4,wm.ry),g=loc(wm.x,wm.z,13.5,10,wm.ry),y=qcD(wm.o.y,0);V['The White Lily hospital court']=[e[0],y+20,e[1],g[0],y+1.2,g[1]];}
  // a wheel house nearest the Temple Mountain, from its open front: the wheel, the hangings, the lamps
  const wh=QC_PLACE.filter(p=>p.key==='qb_wheel_house').sort((a,b)=>Math.hypot(a.x-L0.x,a.z-L0.z)-Math.hypot(b.x-L0.x,b.z-L0.z))[0];
  if(wh){const y=qcD(wh.o.y,0),e=loc(wh.x,wh.z,2.2,5.2,wh.ry),g=loc(wh.x,wh.z,-1.5,-4.8,wh.ry);V['Inside a wheel house']=[e[0],y+.8+1.6,e[1],g[0],y+.8+1.8,g[1]];}

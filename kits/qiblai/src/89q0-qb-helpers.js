@@ -41,14 +41,14 @@ const QRING={
 // on the Rainbow Temple with the Order's device (qnSpokeBanner). `order` marks it.
 const QN_ORDER_BLUE=0x2e5a9c,QN_ORDER_BLUE2=0x1f3f78;
 const QSPOKE=[
- {name:'Crimson',wall:0xa8302a,trim:XPAL.saffron,band:0x5a1c1c},
+ {name:'Crimson',wall:0xa8302a,trim:XPAL.saffron,band:0x5a1c1c,house:'the Order of the Flashing Eye'},   /* the owner, 2026-11-16 */
  {name:'Saffron',wall:0xd8862a,trim:QN_ORDER_BLUE,band:QN_ORDER_BLUE2,order:'the History Monks (the Order of Longsong)'},
  {name:'Gold',wall:0xd4b040,trim:XPAL.red,band:0x6e4a1a},
- {name:'Green',wall:0x3f7a44,trim:XPAL.saffron,band:0x1f3f24},
+ {name:'Green',wall:0x3f7a44,trim:XPAL.saffron,band:0x1f3f24,house:'the Order of Viridian Thought (the tea Order; its head monastery the tea estate on the scarp, px 962,1562)',tea:true},   /* the owner, 2026-11-16: its court grows tea (qnTeaTouches, 89q3) */
  {name:'Turquoise',wall:0x2a9a94,trim:XPAL.white,band:0x1a4a48},
- {name:'Blue',wall:0x2a4a9a,trim:XPAL.gold[0],band:0x1a2a5a},
+ {name:'Blue',wall:0x2a4a9a,trim:XPAL.gold[0],band:0x1a2a5a,house:'the Order of the Azure Dream (its head monastery Gret-Ail, the monastery isle in the lake of Erewhon)'},   /* the owner, 2026-11-16 */
  {name:'Violet',wall:0x6a3a8a,trim:XPAL.saffron,band:0x3a1a4a},
- {name:'White',wall:0xeee8dc,trim:XPAL.red,band:0x6e2a2a},
+ {name:'White',wall:0xeee8dc,trim:XPAL.red,band:0x6e2a2a,house:'the Order of the White Lily (medicine and healing; its house in the city is its head house, and a hospital)',hospital:true},   /* the owner, 2026-11-16: qnLilyTouches (89q3), its ranges the hospital's wards (QB_IX_HOSPITAL, 89q5s) */
 ];
 // spoke i's direction on the ground plan, [dx, dz] (north is -z, east +x), and its yaw (a face's +z toward it)
 const qnSpokeDir=i=>{const b=i*Math.PI/4;return[Math.sin(b),-Math.cos(b)];};

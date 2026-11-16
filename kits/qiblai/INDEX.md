@@ -21,12 +21,12 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `89q0z-qb-matlib.js` | 3 |  |
 | `89q1-qb-houses.js` | 11 | POOR (10); MIDDLE (26); RICH (44); the corner house (64); the courtyard house (rich) (84) |
 | `89q2-qb-trades.js` | 20 | a shop front on a ground storey: a dark bay, a t (8); the shop row (middle) (17); the workshop yard (poor): the shop, the yard wal (29); the bakery: the bake house, the domed oven in th (43); the butcher's: the shop with its hanging rail (57); the weaver's and dyer's: the loom hall, dyed clo (69); the brewhouse: the malting floor, the vats, the  (83); the tannery: the drying loft over the pits (96); the guild halls (the kora square) (109); the gate market (civic): an arcaded square (145) |
-| `89q3-qb-sacred.js` | 31 **big** | shared: a cloister walk on the court face of a r (10); the great monastery (one a spoke; eight dresses) (20); the History Monks' monastery: Longsong's touches (65); the grammarians' college (90); the gate temple (one at each ring gate on the av (111); the chorten (three sizes: o.v 0 small, 1 crossin (126); the kora's prayer-wheel arcade (straight and cor (133); the wheel house: a great prayer wheel in a cube  (150); the wayside shrine (the Xanadu kit's gap: shrine (176); the pilgrims' hostel (on the kora) (202) |
+| `89q3-qb-sacred.js` | 35 **big** | shared: a cloister walk on the court face of a r (10); the great monastery (one a spoke; eight dresses) (20); the Order of the White Lily's monastery: the hos (67); the Order of Viridian Thought's monastery: the t (83); the History Monks' monastery: Longsong's touches (93); the grammarians' college (118); the gate temple (one at each ring gate on the av (139); the chorten (three sizes: o.v 0 small, 1 crossin (154); the kora's prayer-wheel arcade (straight and cor (161); the wheel house: a great prayer wheel in a cube  (178) |
 | `89q3m-qb-meditation.js` | 10 |  |
 | `89q4-qb-temple.js` | 18 | the great temple (9); the Hall of the Decree (42); the treasury: the faith's gold behind blank wall (62); the great wheel house (the Temple Mountain's) (76); the walls (each ring walled; a full wall on the  (99); the terrace stair (PLAN.md Q7a; the owner, 2026- (136); the Temple Mountain, whole (Q7a): ring 0's one l (154) |
 | `89q5-qb-interiors.js` | 26 | the sanctum of the Rainbow Temple (57); the assembly hall (a great monastery's dukhang) (97); the council chamber of the Hall of the Decree (120); the pilgrims' hostel dormitory (144); a great monastery's gate hall (153); a gate's passage (a city gate, the caravanserai' (176); a gate's guard room (194); the treasury's strong room (207) |
 | `89q5f-qb-furnish.js` | 5 |  |
-| `89q5s-qb-shells.js` | 17 |  |
+| `89q5s-qb-shells.js` | 18 |  |
 | `89q9-qb-street.js` | 6 |  |
 
 ## targets/
