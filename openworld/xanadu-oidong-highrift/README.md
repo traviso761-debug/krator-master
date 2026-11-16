@@ -36,7 +36,11 @@ The second region of sites cut off the scale model into the open world (`openwor
     the town is its own page (`settlements/thalaba`). Its ring is the site plan's outworks (`settlements/thalaba/PLAN.md`):
     Briḍj, the bridge ward at the gorge's mouth (ranch: the road warden's watch, the expeditions' muster corrals), 10 km
     north; Salphar, the diggers' hamlet on the town's small sulfur deposit at the cataract's foot (mine), 20 km north; the
-    near and far Bēnch farms, 11 and 22 km east.
+    near and far Bēnch farms, 11 and 22 km east. Salphar is a village of its own row (`xanadu-sulfur`, in
+    `src/48-world-site.js`): adits, calcaroni (the kit has none yet: pending boxes) and a sorting shed.
+- **Bridges** (core/world 42b and 88b, since 2026-11-16): every road and link the region lays is bridged where it crosses a
+  named river, in the Xanadu kit's stone (`SITE_SPEC.bridges`): Thalaba's north road over the Solṭ Siṭrīm, a Qiblai village
+  road and the Qiblai-Longsong link.
 - **The roads:**
   - **Village roads:** each village's lane end has a road to its town (`core/world` `ROADS`, the grade held to 8 %).
     They join the roads already laid where those are nearer than the town, so they share a trunk.

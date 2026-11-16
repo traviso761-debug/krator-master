@@ -11,7 +11,22 @@
 //   links     the roads between the towns: [site a, site b, {hw, r (where the town's own streets take over)}]
 // Longsong's three villages stand where its page lays them (settlements/longsong/src/40h-ls-hamlets.js: east and west
 // farmers and the herders, in its frame round the monastery).
-var SITE_SPEC={region:'xanadu-oidong-highrift',world:1191569,
+/* Salphar's row (settlements/thalaba/PLAN.md section 4, the owner 2026-11-16: "its own small sulfur node", 30 t a year, a steady
+   works): the diggers' hamlet on the town's deposit at the cataract's foot, the Xanadu row with a `sulfur` focus of its own:
+   the adits into the beds, the calcaroni (sulfur kilns: the ore banked under earth and burnt so the sulfur melts out and runs
+   to the foot) and the sorting shed. Its people are mostly the shift crews (the town's diggers), so 80 % at work. The kit has
+   no calcarone (Thalaba's own pieces are in settlements/thalaba/src): a pending box here, drawn as a stand-in. The row lives
+   here, as Oidong's vein camp's does, so core/hamlet (56 pages) is not touched */
+KHAMLET.CULTURES['xanadu-sulfur']=Object.assign({},KHAMLET.CULTURES.xanadu,{workShare:0.8,household:4.5,
+ services:{religious:0,civic:1,general:1,food:2,warehouse:1},
+ houses:{poor:[['xa_poor_b',3,2],['xa_poor_a',2,2]],middling:[['xa_mid_c',4,1]],head:[['xa_rich_c',1,1]],middlingShare:0.15},
+ works:Object.assign({},KHAMLET.CULTURES.xanadu.works,{sulfur:[{key:'xa_adit',jobs:8,share:0.45},{key:'tb_calcarone',jobs:6,share:0.4},{key:'xa_workshop',jobs:8,share:0.15}]}),
+ focusJobs:Object.assign({},KHAMLET.CULTURES.xanadu.focusJobs,{sulfur:70}),reach:Object.assign({},KHAMLET.CULTURES.xanadu.reach,{sulfur:380}),
+ pending:Object.assign({},KHAMLET.CULTURES.xanadu.pending,{tb_calcarone:{w:12,d:12,h:4,what:'a calcarone: a sulfur kiln, the ore banked under earth and burnt so the sulfur melts out to its foot'}})});
+if(typeof KTAGS!=='undefined')KTAGS.VOCAB.cultureAlias['xanadu-sulfur']={culture:'xanadu'};
+// bridges (core/world/42b-world-bridges.js; 2026-11-16, for Thalaba's Briḍj): every road and link this region lays is bridged
+// where it crosses a named river, in the Xanadu kit's stone, so the roads are laid over the rivers and the rivers run on under them
+var SITE_SPEC={region:'xanadu-oidong-highrift',world:1191569,bridges:{culture:'xanadu'},
  sites:{
   s57bkv9741:{culture:'xanadu',road:{r:1500,hw:3,join:true},hamlets:[
    /* the caldera lake is north of the town (edit 5.1-512): the farms along the south shore east and west and up the
@@ -34,7 +49,7 @@ var SITE_SPEC={region:'xanadu-oidong-highrift',world:1191569,
      (Gāḍz-Phōl), 20 km north; two farm villages on the Bēnch east of the town */
   shvo49k0y2:{culture:'xanadu',road:{r:900,hw:2.5,join:true},hamlets:[
    {id:'bridj',name:'Briḍj, the bridge ward',focus:'ranch',bearing:0,km:10,look:2500,pop:120},
-   {id:'salphar',name:'Salphar, the diggers\' hamlet',focus:'mine',bearing:4,km:20,look:2500,pop:200},
+   {id:'salphar',name:'Salphar, the diggers\' hamlet',culture:'xanadu-sulfur',focus:'sulfur',bearing:4,km:20,look:2500,pop:160},
    {id:'bench-1',name:'the near Bēnch farms',focus:'farming',bearing:95,km:11,pop:220},
    {id:'bench-2',name:'the far Bēnch farms',focus:'farming',bearing:100,km:22,pop:220}]}},
  links:[['s57bkv9741','skm4jjo2vl',{hw:4,r:2000}],['skm4jjo2vl','sq80bzd7ep',{hw:4,r:1500}]]};
