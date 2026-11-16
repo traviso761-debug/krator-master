@@ -326,6 +326,18 @@
       ],
       "port": 8881,
       "autoPort": false
+    },
+    {
+      "name": "lightwall",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8823",
+        "--directory",
+        "settlements/lightwall/dist"
+      ],
+      "port": 8823
     }
   ]
 }

@@ -809,8 +809,8 @@
    "sha256": "caeca149d7a9a2a567164e45cede8b1fa77957e97a552bea4b89c0f59fbf27bf"
   },
   "kits/catalog/dist/catalog.html": {
-   "bytes": 2210863,
-   "sha256": "43d112c1308747841b1f9afc6f294cd8a3f9ba6821259d0837b8f7e52feaf8df"
+   "bytes": 2219415,
+   "sha256": "2239cd4df39d703780df11ebce8489c5863bb53f1748074ffe81492a31bd13f4"
   },
   "kits/crops/dist/crops.html": {
    "bytes": 2570483,
@@ -829,12 +829,12 @@
    "sha256": "506cedc7eae5860bb7a092f7ee751691a612d0759cdbf4ccccc5a3b5ba7ee7a2"
   },
   "kits/interiors/dist/interiors-sets.html": {
-   "bytes": 734495,
-   "sha256": "8db212b3feba89b8ce4783421ea28fda84b4ea837d8d9e6fa856be0dd636bdad"
+   "bytes": 737268,
+   "sha256": "ea1f7b3440cb9501241a42a07c76f3341975aa3b877d69f45ba1889f2ff270d0"
   },
   "kits/interiors/dist/interiors-walk.html": {
-   "bytes": 10304748,
-   "sha256": "9b6b1a5d279f494fbc0c80dfacfd08f903d639151c719a43cc2e952c8831e3b7"
+   "bytes": 10313300,
+   "sha256": "5bc534eb083cdcfdab488dcc40efdb90d6bd884f36b7161e0e0557cbc95d4e1f"
   },
   "kits/interiors/dist/interiors.html": {
    "bytes": 261765,
@@ -1016,6 +1016,10 @@
    "bytes": 2528638,
    "sha256": "d3add636535274fd3f722369655b0025e5bf244eec089cc2e0b8e4f3ea9abd78"
   },
+  "kits/tungang/dist/tungang.html": {
+   "bytes": 1304413,
+   "sha256": "240d9be5420afc2ec8a76005b4129852ddd2f422411bc6ec3acfe734a0d83087"
+  },
   "kits/yeti/dist/yeti.html": {
    "bytes": 1065402,
    "sha256": "c59a54aa67de7995f7412b7917e0af952f18a3f274103fe762859f17b10b47eb"
@@ -1053,8 +1057,8 @@
    "sha256": "68305db36d77ff5169a3c3e256335184571e55e610c717727f7bc90189de62d0"
   },
   "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.html": {
-   "bytes": 8291477,
-   "sha256": "d27b58ca141b7888c09d064349f173b941ed5db468dd7fb83f9be0e6cff608e0"
+   "bytes": 8573414,
+   "sha256": "420a65f8aaf5b75d0db50e9d9ae001570d65df774878eb7abaf6f8d6b301e723"
   },
   "settlements/dalab/dist/dalab-set.html": {
    "bytes": 6603017,
@@ -1127,6 +1131,10 @@
   "settlements/jimjam/dist/jimjam-kit.html": {
    "bytes": 8995903,
    "sha256": "c55c2c62f88cd016aeecfc2b6b027e466f63afd1de992e1ad956f1e9b6599cf9"
+  },
+  "settlements/lightwall/dist/lightwall.html": {
+   "bytes": 5875087,
+   "sha256": "22c0be317869f5232ecc850b21bab945b01809f7aab4db03e2a95d54522eb27e"
   },
   "settlements/locus/abyss-kit.html": {
    "bytes": 9091876,

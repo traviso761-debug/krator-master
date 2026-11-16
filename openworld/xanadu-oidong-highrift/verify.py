@@ -48,6 +48,14 @@ REGION = r"""(neg)=>{const R=[],M=WORLD_DATA.meta,bad=[],lines=[];
   if(!(A.depth<0))bad.push(S.name+' in water');if(!b||b.name.toLowerCase()!==W.biome)bad.push(S.name+' in '+(b&&b.name));if(!(w>.5))bad.push(S.name+': the '+W.kit+' kit weighs '+w.toFixed(2));
   lines.push(S.name+' px '+S.px+','+S.py+' in '+(b&&b.name)+' ('+W.kit+' '+w.toFixed(2)+')');}
  R.push({name:'the region: each site where the cut put it, on dry land, its kit growing there',ok:!bad.length,detail:bad.length?bad.join('; '):lines.join('; ')});
+ /* Lāiṭwāl (settlements/lightwall/PLAN.md, steps L0 and L5): on the bench, the great lake at its feet to the south, the north
+    boundary fault's wall rising behind it (Opal Valley grows no kit here yet: KNOWN_ISSUES.md). The negative reads it 40 km out
+    in the lake's middle */
+ {const S=(M.sites||[]).find(s=>s.id==='slaitwal0001');if(!S)R.push({name:'Lāiṭwāl on its bench under the wall, the lake at its feet',ok:false,detail:'no site slaitwal0001'});
+  else{const x=S.x,z=S.z+(neg==='site'?14000:0),dry=WORLD.at(x,z).depth<0,h=WORLD.H(x,z);   /* WORLD.at's record is shared: read it at once */let lake=null;for(let d=500;d<=8000&&lake==null;d+=250){const B=WORLD.at(x,z+d);if(B.depth>0)lake=d;}
+   const wall=Math.max(...[3000,6000,9000].map(d=>WORLD.H(x,z-d)))-h;
+   R.push({name:'Lāiṭwāl on its bench under the wall, the lake at its feet',ok:S.px===1028&&S.py===1653&&dry&&lake!=null&&wall>1500,
+    detail:'px '+S.px+','+S.py+', ground '+Math.round(h)+' m'+(dry?' (dry)':' (in water)')+', the lake '+(lake==null?'not within 8 km south':(lake/1000).toFixed(2)+' km south')+', the wall '+Math.round(wall)+' m higher within 9 km north'});}}
  /* the lake's small islands (src/44): each stands over its lake at its centre, the lake goes on round it (1.9 radii out,
     four ways), and the Pleasure Dome's isle is the Erewhon page's island (its ISLAND_C, 70,-613 m from the page's centre
     on Erehwon's pin). The negative reads each island 3 km out toward the lake's middle (px 810,1499.5), in open water: every

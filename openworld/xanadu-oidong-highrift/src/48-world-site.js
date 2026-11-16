@@ -38,6 +38,12 @@ var SITE_SPEC={region:'xanadu-oidong-highrift',world:1191569,bridges:{culture:'x
    {id:'farm-1',focus:'farming',bearing:0,km:7,pop:300},{id:'farm-2',focus:'farming',bearing:75,km:8,pop:300},
    {id:'farm-3',focus:'farming',bearing:145,km:6.5,pop:300},{id:'farm-4',focus:'farming',bearing:215,km:7.5,pop:300},
    {id:'farm-5',focus:'farming',bearing:290,km:8.5,pop:300},{id:'ranch-1',focus:'ranch',bearing:110,km:12,pop:200}]},
+  /* Lāiṭwāl, the Light Wall (settlements/lightwall/PLAN.md, step L5; its own page is the town, the wall and the bench): the
+     north boundary fault's wall straight behind it, the great lake at its feet, so its villages stand east and west along
+     the shore's bench terraces, the herders on the bench's western end */
+  slaitwal0001:{culture:'xanadu',road:{r:900,hw:3,join:true},hamlets:[
+   {id:'farm-1',focus:'farming',bearing:85,km:6,look:2500,pop:260},{id:'farm-2',focus:'farming',bearing:275,km:6,look:2500,pop:260},
+   {id:'farm-3',focus:'farming',bearing:110,km:11,look:2500,pop:220},{id:'ranch-1',focus:'ranch',bearing:255,km:12,look:3000,pop:180}]},
   sq80bzd7ep:{culture:'xanadu',road:{r:400,hw:2,join:true},hamlets:[
    {id:'east',name:'Shar, the east village',focus:'farming',near:[760,60],look:1200,pop:220},
    {id:'west',name:'Nub, the west village',focus:'farming',near:[-880,60],look:1200,pop:220},
