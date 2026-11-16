@@ -38,7 +38,7 @@
                    edge, walks to the serai, unloads, stays its hours, and leaving buys the good the town has most days of
                    (scrap or iron: its surplus, never its food) as much as it carries. Without the port (a page or test with no
                    walk graph) the lot comes by the route's timer and nothing goes out
-   What is not here yet: money (waits on the owner: the Sultanate's own currency, its name and its value in Talents, LORE 6.2).
+   The money is src/49m-th-money.js (the qud, T-money-1), on these makers, shops and purchases.
    TH_ECON.declare(SIM, o) -> {goods, warehouses, makers:{kind: n}, carts, shops, messes, stores, rates, tools, robes, keepers,
      lampDay, factor, snap}
      o.fields [{id, crop|bucket}]; o.rates (the tune below); o.carts (16); o.port {x, y, z, node}: the East Gate road's end
@@ -51,8 +51,9 @@ var TH_ECON=(function(){
  /* the tune: the diet's shares (servings eaten; the tea brought), the surplus the makers are sized to, a worker's hours a day; the
     yards' and the bore's rates (a worker-hour's lots); `field` the rate of a kind no one was dealt to; the tools' life (worked
     hours); the road's lots and minutes */
- /* (`surplus` 1.25: on the page the people walk to their work and lose part of the hours the abstract level counts) */
- const TUNE={diet:{grain:.24,pulse:.14,tuber:.14,milk:.19,honey:.09,bread:.14,tea:.06},surplus:1.25,hours:9,field:3,yard:1.5,bore:.08,
+ /* (`surplus` 1.5: on the page the people walk to their work and lose part of the hours the abstract level counts; at 1.25
+    a week on the page ran the grain down to 0.6 days, at 1.5 the warehouses hold over nine days) */
+ const TUNE={diet:{grain:.24,pulse:.14,tuber:.14,milk:.19,honey:.09,bread:.14,tea:.06},surplus:1.5,hours:9,field:3,yard:1.5,bore:.08,
   bake:{in:{grain:3},out:{bread:8},hours:2},smelt:{in:{scrap:4,charcoal:1},out:{iron:1},hours:3},toolLife:800,ironSurplus:1.6,
   churn:{in:{milk:6},out:{butter:1},hours:1},lamp:{hours:4,pats:4},robeLife:240,garmentDays:30,factor:{hour:7,keep:0},
   cap:{field:600,farmstead:400,yard:2000,bore:200,'arc-kitchen':400,smelter:400,churn:300},startDays:3,storeDays:[2,4],carts:16,dome:60000,stockpile:{scrap:400,iron:20},

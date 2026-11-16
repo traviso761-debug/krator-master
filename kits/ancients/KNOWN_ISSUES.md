@@ -388,18 +388,24 @@ records drawn from the scrap Xanadu set and the Qiblai kit (`XAK`, `kit_bundle.b
 - [ ] **The walkers are the kit's cylinder figures**, unanimated, with no walk cycle and no activity poses. An indoor
       resident is hidden, not drawn in the opened rooms. The arcology's storeys are a node at each unit's middle, not its
       rooms, and its fin heads reach the kora by a straight "bridge" edge. Posing 5,016 residents costs about 5 ms a frame.
-- [ ] **The economy has no money yet** (T-econ-1 to T-econ-3, 2026-11-16, `settlements/theodiga/src/49-th-econ.js`). Core's
-      money waits on the owner: the Sultanate's currency (its name, unit and value in Talents) is not in the lore.
-      What runs:
+- [ ] **Theodiga's economy and money** (T-econ-1 to T-econ-3, T-money-1, 2026-11-16, `settlements/theodiga/src/49-th-econ.js`,
+      `49m-th-money.js`). What runs:
       - The makers make, the carters haul, the households and messes eat, and the books balance.
       - The iron tools, the Lamp Hall's butter and the robes wear and are bought again.
       - The caravans by the East Gate road bring tea, charcoal and garments and take the scrap and iron over; the
         Devisers' rarities leave with them.
+      - Wages and prices are paid in quds.
 
       What is off:
-      - The yields are sized to the census (TH_ECON's diet and surplus), not to the fields' areas.
-      - On the page over two days milk and honey fall about a quarter. The households fill their deeper stores, and walking
-        costs hours the sizing does not see. A week on the page is untested; the abstract week holds.
+      - **The salvagers' commute.** The yards are a walk of about 2.3 world hours from their homes in town, so a few big
+        salvagers' houses never reach the bazaar in their free hours. About 600 meals of nothing a day from day 3 on the
+        page, while the warehouses hold.
+      - The qud's coin and rate, the treasury's 120 quds a person and the 54-qud day are proposed, awaiting the owner.
+      - The kitchens, churns and smelter are staffed by the census, not by their output, so their goods carry idle hours
+        in their price: bread 15 quds against grain's 5, iron 1,088.
+      - The caravans pay nothing yet, and the rarities' sale earns nothing (M3).
+      - The yields are sized to the census (TH_ECON's diet and a surplus of 1.5, raised from 1.25 when a week on the
+        page ran grain down), not to the fields' areas.
       - The robes wear and are bought, but are not drawn by their wear.
       - The Devisers' mules (no port) are not drawn.
       - The turn of an hour still costs a step up to about 0.2 s, from errand routes the warm-up does not cover.

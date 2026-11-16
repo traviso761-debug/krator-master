@@ -281,7 +281,37 @@ spring, sealed deep inside). Theodiga's end:
       - no meal went without, and the books balance.
 
       `test-th-econ.js` runs 20 checks: the butter, the robes and the consignments, each with a negative.
-    - **Not done: money.** Core's money (`77-sim-6-money.js`, M0 and M1 as the isle demo uses them) waits on the owner.
-      The lore gives each nation its own currency (LORE 6.2) and names the Talent and the Kautoan shells, not the
-      Sultanate's. Needed: its name, its unit, and its value in Talents.
-13. **Later**: the Qiblai buildings' rooms (as Strongbow's), core/simulation's roles, the open world.
+    - **Money** waited on the owner's currency: T-money-1 below.
+13. **T-money-1, the qud** (done 2026-11-16; the owner, relayed by the open-world session: "Sultanate currency is the
+    qud"). The open-world line was merged first (LORE is a shared file). `src/49m-th-money.js` runs core's money (M0
+    and M1) for one town, as the isle demo does.
+    - **The currency.** The qud is the Sultanate's coin, with the Izani Talent beside it. *Proposed*, for the owner to
+      confirm (LORE 6.13): a thin struck gold coin of about a gram, twenty to the Talent (0.05), a day's wage about 54
+      quds. The treasury opens with 120 quds a person.
+    - **The accounts.** The town's treasury owns every workplace. Every household opens with an endowment by its home:
+      the square's and the bazaar's merchants are middle class, the Devisers' lodge rich, the rest poor.
+      The messes keep no purse. The Dome's clergy and lay servants and the Devisers are kept by the Dome and the licence,
+      fed from the warehouses, and draw no wage. Paid as the isles' barracks are, their wages sat unspent and drained the
+      treasury: 35,000 quds in two days of the test town. The pilgrims are guests.
+    - **M1.** Wages are paid at midnight. Prices are the labour cost at the wage times a markup, calibrated over days 2
+      to 5. The road's goods cost their fallback. The treasury covers what a household cannot pay.
+    - **The makers' surplus went from 1.25 to 1.5.** The first week-long run of the page found the warehouses running
+      down: grain 0.6 days, milk 0.8. At 1.5 they hold for nine days.
+    - **On the page** (nine days fast-forwarded, everyone walking): the market opens at day 5. Over four paid days every
+      money check passes:
+      - 964,560 quds of wages, the dole 7% of what was bought;
+      - the circular flow balances, and the treasury is down 145,484;
+      - the ledger balances.
+
+      Prices: grain 5 quds a serving, milk 9, bread 15, tea 10, a meal out 20, a robe's garments 310, iron 1,088.
+    - **Found, not fixed: the salvagers' commute.** The yards are at the foot of the face, a walk of about 2.3 world
+      hours each way from the salvagers' homes in town. Their meals at home eat their free hours, so a few big
+      salvagers' houses never reach the bazaar. About 600 meals of nothing a day from day 3, all in salvagers' houses,
+      while the warehouses hold. The fix is in the census: homes by the works, a cookhouse at the yards, or a salvage
+      schedule.
+    - `test-th-econ.js` runs 35 checks, adding eight for money. The data checks (accounts, nobody below zero, the ledger,
+      prices, the flow, the treasury) each get a fault. A real run with an empty treasury and no endowments shows the
+      wage bill cannot be paid.
+    - **Not here yet:** what the caravans pay in Talents for the scrap and the iron, the Devisers' rarities (M3), the
+      stations, moving prices (M2).
+14. **Later**: the Qiblai buildings' rooms (as Strongbow's), core/simulation's roles, the open world.

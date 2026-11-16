@@ -165,7 +165,7 @@ function thTownDraw(gx,gz,ctx){const O={buildings:0,people:0,protos:0,meshes:0,t
   LS=thLifeDraw(gx,gz,ctx,LF,{noPeople:WALKING});}catch(e){O.errors.push('the people: '+(e&&e.stack||e));}
  /* the census on core/simulation (T-sim-1: src/47-th-sim.js): Theodiga's settlement, places, roles and residents as records,
     dealt once here (the record level: nobody walks yet) */
- let SM=null,EC=null;
+ let SM=null,EC=null,MN=null;
  if(typeof SIM!=='undefined'&&typeof TH_SIM!=='undefined')try{
   const zc=ctx.zc||(x=>-140*(1-Math.pow(x/320,2))),mid=f=>[(f.corners[0][0]+f.corners[2][0])/2,(f.corners[0][1]+f.corners[2][1])/2];
   const fields=T.fields.map(f=>({id:f.id,corners:f.corners,y:GR(...mid(f)),upland:true,bucket:f.bucket||f.crop})).concat(WK?WK.fields.map(f=>({id:f.id,corners:f.corners,y:ctx.bed(...mid(f)),bucket:f.bucket||f.crop})):[]);
@@ -187,6 +187,8 @@ function thTownDraw(gx,gz,ctx){const O={buildings:0,people:0,protos:0,meshes:0,t
   /* the East Gate road's port (T-econ-2): the town's east-most street node, where the caravans come in and go out */
   let port=null;if(WG){const east=WG.nodes.filter(n=>n.tag==='street').sort((a,b)=>b.x-a.x||(a.id<b.id?-1:1))[0];if(east)port={x:east.x+gx,y:east.y,z:east.z+gz,node:east.id};}
   if(typeof TH_ECON!=='undefined'&&SIM.economy){try{EC=TH_ECON.declare(SIM,{fields,port});}catch(e){O.errors.push('the economy: '+(e&&e.stack||e));}}
+  /* the money (T-money-1: src/49m-th-money.js): the qud's accounts, wages and prices on the economy; the books' opening snapshot again, with the money in it */
+  if(EC&&typeof TH_MONEY!=='undefined'&&SIM.money){try{MN=TH_MONEY.declare(SIM);if(MN&&SIM.ledgerSnap)EC.snap=SIM.ledgerSnap();}catch(e){O.errors.push('the money: '+(e&&e.stack||e));}}
   if(WG&&typeof thWalkersDraw==='function')thWalkersDraw(gx,gz);
   if(SM.problems.length)O.errors.push('the sim: '+SM.problems.slice(0,3).join(' | '));}catch(e){O.errors.push('the sim: '+(e&&e.stack||e));}
  if(WS)O.errors.push(...WS.errors);
@@ -198,7 +200,9 @@ function thTownDraw(gx,gz,ctx){const O={buildings:0,people:0,protos:0,meshes:0,t
   sim:SM?{places:SM.places,actors:SM.actors,byRole:SM.byRole,beds:SM.beds,homeless:SM.homeless,capacity:SM.capacity,unknownActivities:SM.unknownActivities,problems:SM.problems.length,ms:SM.ms,
    nodes:SM.nodes,edges:SM.edges,unroutable:SM.unroutable,unroutableList:SM.unroutableList,walkers:typeof thWalkers!=='undefined'?{on:thWalkers.on,n:thWalkers.n}:null}:null,
   econ:EC?{warehouses:EC.warehouses,makers:EC.makers,carts:EC.carts,shops:EC.shops,messes:EC.messes,stores:EC.stores,rates:EC.rates,
-   report:()=>typeof TH_ECON!=='undefined'?TH_ECON.report(SIM,EC):null}:null,
+   report:()=>typeof TH_ECON!=='undefined'?TH_ECON.report(SIM,EC):null,
+   money:MN?{accounts:MN.accounts,households:MN.households.length,workplaces:MN.workplaces.length,books:()=>TH_MONEY.books(SIM),
+    checks:(a,b)=>TH_MONEY.checks(a,b,SIM.ledger(a.ledger,b.ledger,{tol:.5}))}:null}:null,
   life:LF?{people:LF.people.length,lamps:LF.lamps.length,lights:LS?LS.lights:0,roles:LF.people.reduce((m,p)=>(m[p.role]=(m[p.role]||0)+1,m),{})}:null,
   fields:T.fields.length,ways:T.ways.length,qiblai:all.filter(r=>/^qb_/.test(r.key)).length,level:f=>O.level&&O.level(f)};
  return O;}
