@@ -304,9 +304,21 @@
    "bytes": 1523367,
    "sha256": "ec622309bf951dd3093bccdf6df80fb2deb63284eaad7d62a191178d545a1cb0"
   },
+  "biomes/labyrinth/dist/labyrinth-mesas.html": {
+   "bytes": 1794657,
+   "sha256": "aa4cbbf8d5dfafdf048d57ca8a081488963f19a096b2c7c392f49e7b28c4b70f"
+  },
+  "biomes/labyrinth/dist/labyrinth-paddocks.html": {
+   "bytes": 1793970,
+   "sha256": "4c4d42c12c6e4ae8b3c7bd2a4f9ed73f67dc670bf87774589facd7fe8e505626"
+  },
+  "biomes/labyrinth/dist/labyrinth-pits.html": {
+   "bytes": 1794016,
+   "sha256": "08061bd5829a1ec9bf45656ca2451cdcf637262917df6a89869e81618784b146"
+  },
   "biomes/labyrinth/dist/labyrinth.html": {
-   "bytes": 1722979,
-   "sha256": "53f8c1fb3629ea90df602fb5493c57856a1ac2aed3ca735e4d2870cbc925d46d"
+   "bytes": 1794572,
+   "sha256": "3f4987065ee879134292ed5c25ae091fa5697f79b38ff423642ad04eace8a502"
   },
   "biomes/necanyons/dist/necanyons-benches.html": {
    "bytes": 1597720,

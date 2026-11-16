@@ -7,7 +7,7 @@
   44m-host-model    GENERATED: the scale model's heights round the site (2 km cells), for the land past the square
   44z-host-site     the station's site (scale model 5.1): a station replaces it
   45-host-stage     HOST binding (renderer, the land, the fields, BIO.init) -- must run before the flora
-  50..70            the FLORA: biomes/nwlowlands read in place (station 1's first cut: KNOWN_ISSUES.md)
+  50..70            the FLORA: the kit's own mammoth steppe (PLAN.md section 3: species 50, trees 55, floor 60, growth on structures 65, build 70)
   84..89            HOST (ground, far field, the knobs, sky, atmos, the Hall 89e-89g, water, build)
   99-tail.html      closes <script>
 
@@ -85,11 +85,6 @@ PATH.setdefault('20-core-hazard.js',J('core','hazard','20-core-hazard.js'))
 PATH.setdefault('37-core-traps.js',J('core','biome','37-core-traps.js'))
 PATH.setdefault('10-core-shadow.js',J('core','shadow','10-core-shadow.js'))
 PATH.setdefault('12-core-shadow-host.js',J('core','shadow','host','12-core-shadow-host.js'))
-# OTHER KITS read in place (biomes/WORLD.md): the flora is the NW lowlands' (station 1's first cut: PLAN-GATE.md section 6)
-NW=J('biomes','nwlowlands')
-KITS={'50-nwlow-species.js':'src/50-biome-nwlowlands-species.js','52-nwlow-library.js':'src/52-biome-nwlowlands-library.js','55-nwlow-trees.js':'src/55-biome-nwlowlands-trees.js',
-      '60-nwlow-floor.js':'src/60-biome-nwlowlands-floor.js','65-nwlow-dress.js':'src/65-biome-nwlowlands-dress.js','70-nwlow-build.js':'src/70-biome-nwlowlands.js'}
-for slot,p in KITS.items(): PATH[slot]=os.path.join(NW,p)
 # THE ANCIENTS KIT, read in place for THE HALL OF HEROES (kits/ancients targets/gatearc), as biomes/ancientsvalley/build.py reads it for its engines:
 # its runtime, the Arcube's skins (89d: MAT.ac*, the Hall's walls), its materials (a copy in the kit's src/ wins, else core/materials), and its
 # names renamed where this page has them (the registry to ANC_REG / ANC_REGISTER, the error panel, the ground, the ticks); the files on disk are
@@ -135,12 +130,10 @@ CORE_MAT=['23-mat-record.js','25-matlib-host.js','26-matlib-bind.js']
 for f in CORE_MAT: PATH.setdefault(f,J('core','materials','record',f))
 sys.path.insert(0,J('tools','textures'))
 import matlib_pack as _mp
-# the packs as SIDECARS beside the page (dist/labyrinth.tex.<pack>.js): this kit's own (the ground and the knobs' rock), the NW lowlands' (its bark
-# and cards, without its ground and tower families) and the Ancients kit's (the Hall's skins). --inline-packs puts them in the page.
+# the packs as SIDECARS beside the page (dist/labyrinth.tex.<pack>.js): this kit's own (the ground, the knobs' rock, the flora's bark and cards)
+# and the Ancients kit's (the Hall's skins). --inline-packs puts them in the page.
 SIDE=None if '--inline-packs' in sys.argv else {}
-_nwpj=os.path.join(NW,'tex','pack.json')
-_nwex=[f for f in sorted(json.load(open(_nwpj,encoding='utf-8')).get('families',{})) if f.startswith('ground') or f.startswith('tower')] if os.path.isfile(_nwpj) else []
-VIRTUAL={'44-host-matlib-pack.js':_mp.fragment(HERE,'labyrinth',side=SIDE),'44b-host-matlib-pack-nwlowlands.js':_mp.fragment(NW,'nwlowlands',exclude=_nwex,side=SIDE),
+VIRTUAL={'44-host-matlib-pack.js':_mp.fragment(HERE,'labyrinth',side=SIDE),
          '88x-matlib-pack-ancients.js':_mp.fragment(ANC,'ancients',side=SIDE),khost.EDITS_JS:khost.edits_js(HERE,'labyrinth')}
 # THE SCALE MODEL'S HEIGHTS round the site (tools/scale-model/model/data via smodel.page, build time): 26 x 26 cells of 2 km, the page's middle at
 # the site's px; the land past the square follows them (45: modelH), so the north wall's toe and the neck stand where the model has them

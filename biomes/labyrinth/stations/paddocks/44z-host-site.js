@@ -10,6 +10,7 @@
 //   THE BECK     a beck down a ravine of the wall into the lake
 const SITE={key:'paddocks',exportAt:[800,-500],blurb:"the graben lake under the bastion's face, the tall steppe and the gallery woods along the beck",name:'The Paddocks',region:'The Paddocks: a graben lake in the heart of the maze (the Labyrinth, region rmw8bqrn3dnx4)',px:245.5,py:1479.5,
  old:{px:-26.5,py:1149.5},atm:1.27,koppen:['Cfb','Dfc'],rain:894,mean:9,
+ flora:'tallsteppe',   /* the flora kit's profile (src/55, LABY.PROFILES): the graben's tall steppe and the gallery woods along the lake */
  floor:1826,level:1820,tilt:[.004,-.003],flatR:[0,1],
  lakes:[{name:'The graben lake (1,820 m)',cx:-2400,cz:3200,a:12000,b:4000,ry:.64,level:1820,bed:14,bank:40,shallow:0x5a7a72,deep:0x24443e}],
  rivers:[{name:'The Paddocks Beck (out of the bastion\'s ravine)',hw:3.5,depth:1,pts:[[2300,-2000],[1700,-1300],[1100,-700],[600,-150],[180,250],[-300,600]],end:1820}],

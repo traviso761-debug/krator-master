@@ -8,6 +8,7 @@
 //   THE PITS       the beaded pit-crater chain west of the tarn (KRELIEF.stepcut: sheer stepped pits, one holding its own small tarn)
 const SITE={key:'pits',exportAt:[-1450,-1050],blurb:"the pit tarn under the dome's wall, the beaded pits west of it, one holding its own small tarn",name:'The Pit Chain',region:'The Pit Chain: the cold west (the Labyrinth, region rmw8bqrn3dnx4)',px:148,py:1466,
  old:{px:-124,py:1136},atm:1.11,koppen:['Dfc','ET'],rain:830,mean:1,
+ flora:'cold',   /* the flora kit's profile (src/55, LABY.PROFILES): Dfc: open larch, dwarf scrub, cushions and lichens, the tarns' iridescent natives */
  floor:2928,level:2920,tilt:[0,.002],flatR:[0,1],
  lakes:[{name:'The north-west pit tarn (2,920 m)',cx:0,cz:2400,a:6000,b:2900,ry:0,level:2920,bed:22,bank:30,shallow:0x4a7a80,deep:0x1a3a46},
   {name:'A pit\'s tarn',cx:-1700,cz:-1050,a:150,b:150,ry:0,level:2858,bed:12,bank:6,shallow:0x4a6a70,deep:0x1a2a36}],

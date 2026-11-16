@@ -36,7 +36,7 @@ function describe(hit){const p=hit.point,o=hit.object;
  let best=null;for(const r of REG){if(r.r>1500)continue;if(regHas(r,p.x,p.y,p.z)&&(!best||r.r<best.r))best=r;}
  const lab=o.userData.inspectLabel||o.name||'mesh',isItem=o.isInstancedMesh&&o.userData.biome;
  const name=best?best.name+'  ·  '+lab:lab;
- return name+'\n'+(isItem?'flora (the nwlowlands kit, read in place) · '+SITE.name:o.userData.host?'structure · '+SITE.name:'terrain / water')+
+ return name+'\n'+(isItem?'flora (the mammoth steppe, the kit\'s own) · '+SITE.name:o.userData.host?'structure · '+SITE.name:'terrain / water')+
   '\nwet '+(FIELD.wet(p.x,p.z)*100|0)+'% · rock '+(FIELD.rock(p.x,p.z)*100|0)+'% · meadow '+(FIELD.meadow(p.x,p.z)*100|0)+'%'+
   hazardWords(p)+'\n'+p.x.toFixed(0)+', '+p.y.toFixed(0)+', '+p.z.toFixed(0)+'  range '+camera.position.distanceTo(p).toFixed(0)+' m';}
 const BUDGET={showcase:{tris:16000000,calls:220},cls:{pass:15000000,host:4000000},type:{['labyrinth/'+SITE.key]:'pass','host':'host'}};
@@ -48,7 +48,7 @@ const HCHK={
   return{ok,detail:g?('the Hall '+g.tris+' triangles; '+(ga&&ga.ruin?ga.ruin.tombs+' tombs, '+ga.ruin.poles+' skull poles':'no ruin')):'no Hall'};},
  // nothing roots in the pond, the river or on the rock
  dry(P){const bad=P.filter(p=>{const w=waterH(p[0],p[2]);return w>-1e8&&p[1]<w-.6;});return{ok:!bad.length,detail:bad.length?bad.length+' plants under the water (first '+bad[0].slice(0,3).map(v=>v|0)+')':P.length+' plants, none drowned'};},
- /* rooted at the ground (within 2 m of it: the growth on the rock and the ruin, 89z's NWLOW.dress, stands on its ledges on purpose) and more
+ /* rooted at the ground (within 2 m of it: the growth on the rock and the ruin, 89z's LABY.dress, stands on its ledges on purpose) and more
     than 12 m inside a body's outline (KSTACKS draws a wall up to 12 m inside it, so the moss on a foot ledge is on the drawn rock, not in it) */
  offRock(P){const bad=P.filter(p=>rockFoot(p[0],p[2])<-12&&p[1]<terrainH(p[0],p[2])+2);return{ok:!bad.length,detail:bad.length?bad.length+' plants inside a stack or knob (first '+bad[0].slice(0,3).map(v=>v|0)+')':'none on the rock'};},
  // the river never climbs (the owner's rule)

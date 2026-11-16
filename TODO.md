@@ -28,12 +28,16 @@ terrain splat texture and the placement input; (3) the minimap drawn from export
 
 ## Ride along with the next all-builds rebuild
 
+- **core/tags: the culture `qiblai`** (2026-11-11, `kits/qiblai`): the Qiblai kit tags its buildings `culture:'qiblai'` (the owner's
+  brief), which `core/tags/52-core-tags-vocab.js` does not list yet, so the kit's page counts it as an unknown value in `T.audit()`
+  (counted, never thrown). Add `'qiblai': 'Qiblai'` to `CULTURE_NAMES` and `'qiblai'` to `NO_CATALOG` (it has no catalog culture file:
+  its interiors take the Xanadu pieces), as Pylon and Talia were added on 2026-11-03. It moves every page that takes core/tags.
 - **`BIO.attachAudit` measures a thin instanced item at points, not to its segment** (2026-11-11, found on the Labyrinth's station 1):
   `core/biome/20-core-kit.js:646-650` samples an instanced structure (a rod, a beam) at points CELL/4 (2 m) apart along its axis, less its
   radius, not point-to-segment as `core/biome/README.md` ("What held means") says. A card beside the middle of a long thin rod reads as
   floating. The case: the NW lowlands grass trees' flower-spike blooms (`biomes/nwlowlands/src/55-biome-nwlowlands-trees.js`,
-  `B.grasstree`), 0.1 m off a 2.5-4.5 m rod, read 0.85-0.89 m off against a 0.57 m tolerance. That puts `biomes/labyrinth` at 1.30%
-  (90 of 930 blooms) and fails its attach assert (`biomes/labyrinth/KNOWN_ISSUES.md`). The fix: for each near sample, the distance to
+  `B.grasstree`), 0.1 m off a 2.5-4.5 m rod, read 0.85-0.89 m off against a 0.57 m tolerance. It put `biomes/labyrinth` at 1.30%
+  (90 of 930 blooms) while that read the NW lowlands in place (no longer: its own flora, 2026-11-12, draws no grass trees). The fix: for each near sample, the distance to
   the segment A-B less r (query KSPACE round the segment's box), and a case in `core/biome/test-attach.js` (a card beside a rod's
   middle holds; lifted off it, floats). It moves every biome page (the owner's call). Do not split the rods in a kit to pass the audit.
 - **core/tags: the culture `kimr`** (2026-11-11, `kits/kimr`): add `'kimr'` to `CULTURES` and `'kimr': 'Kimr'` to `CULTURE_NAMES` in

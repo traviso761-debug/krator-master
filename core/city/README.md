@@ -22,6 +22,7 @@ next reworked; see "Porting a settlement" below.
 | `32-city-steps-c.js` | [G data] | steps 10-12 (the `alleys` strategy: side streets, side-street lots and alley entrances, alleys and the infill of the blocks), the infill's reach (`SL.interiorOk`), the step names and the count |
 | `33-city-strategies.js` | [G data] | the strategies behind one interface (`KCITY.strategies`: `alleys`, `frontage-courts`) and their shared primitives (`KCITY.prim`: `frontageRun`, `faceNearestStreet`, `huntNear`, `gridCands`, `packPolygon`, `clearSpot`). Stands alone: Ys takes this fragment |
 | `34-city-radial.js` | [G data] | the optional radial strategy (`KCITY.radial`): the retired toy's civic placement, rings and spokes, wealth and choosers, for a walled radial city |
+| `35-city-squares.js` | [G data] | the nested-squares site (`KCITY.squares`, 2026-11-11, for Qiblai): concentric walled squares round a central landmark on a strict true-north grid, as plain records (rings, blocks, avenues, ring and cross streets, walls with gates and towers, terraces, the landmark lot), its steps 0-5 on the instance and its blocks filled by `frontage-courts`; self-contained, listed by no build yet; `test-squares.js`, `golden-squares.json` |
 | `36-city-covered.js` | [G data] | covered ways (`KCITY.covered`): the half-buried, roofed tunnels between doors (`cls: 'covered'`, section `full` / `slab` / `open`), their junctions and warming domes, greedy and deterministic; self-contained, so a build may take it alone (kits/yeti); `test-covered.js` |
 | `40-city-kcity.js` | [G data] | the instance: `KCITY.create`, `KCITY.bind`, steps as data, `run`, the export (`KCITY.exportPlan`, `SL.exportPlan`); every instance in `KCITY.instances` (named by `o.name`), and core/export's `city` section for all of them that ran (`KCITY.registerExport`: registered when core/export is already on the page, else the page calls it) |
 | `50-city-host-streets.js` | [web] | drawing: streets as ribbons draped on the ground by class, the ground overlay (parks, plazas, districts, lot tints), labels, the step slider's visibility (`HOST`). `HOST.setupStage` / `HOST.buildGround` draw a plain world of their own; a world with its own ground skips them. Reads the bound plan |
@@ -164,6 +165,67 @@ Voth's house of healing), `gridCands`, `packPolygon`, `clearSpot`.
 * **Its rules**, optional: `wealth`, `choosers` by street class, `vacant(p, rs)` (Voth's sparse suburb), `interiorOk`,
   `groundOk`, `roleAt`, `near`.
 * **Steps 0-5**: its site, on the site layer, from its data (the site editor's JSON for Voth).
+
+## The nested-squares site (`35-city-squares.js`)
+
+A site generator (steps 0-5) for a mandala: concentric walled squares round a central landmark, on a strict grid
+facing true north. Asked for Qiblai's city (the owner, 2026-11-11; `kits/qiblai/PLAN.md` sections 2b, 3 and 7,
+phase Q7). Its defaults are Qiblai's numbers:
+
+- **The grid.** A block is 96 m (twelve 8 m modules), a street 12 m, a pitch 108 m.
+- **The rings.** The outer square is 15 x 15 blocks (1,608 m a side). Ring 0 is the central 3 x 3: no blocks, one
+  landmark lot (the Temple Mountain). Then ring 1, the clergy (16 blocks); ring 2, the kora (24); and three lay rings,
+  the outermost two blocks deep (`KCITY.squares.RINGS`; a world passes its own `rings`).
+- **The avenues.** Four cardinal avenues (24 m) run from the perimeter road through every ring's gate to the
+  landmark. They halve the axial blocks.
+- **The streets.** Each ring has a ring street just inside it, round the wall of the ring within. Ring 2's is the
+  kora, with a chorten record at every crossing. Each ring's cross streets run from its ring street to its own wall.
+- **The walls.** Every ring is walled on its outer face, with gates only on the four avenues. Inner walls are low,
+  with gate towers. The outer wall is a full one, with corner and curtain towers (`KCITY.squares.WALLS`). A block
+  is cut back from the wall and its towers by a clearance.
+- **The terraces.** Each ring is a level platform, one to three 2 m steps above the ring outside it (6, 4, 2, 2, 2,
+  2 m by default). The platforms are built up, never cut: given the ground (`o.h`), the base is its highest point
+  under the outer square. `KCITY.squares.ground(S, h)` gives the terraced ground, and `KCITY.squares.fill(G, S)`
+  puts it onto a ground-delta grid, fill only.
+- **The uses.** The eight great monasteries go on ring 1's spoke blocks, one a spoke, each with its own colour
+  index (an axial monastery takes both halves of its block). The four gate markets go on ring 2's axial blocks. A
+  world may change any block's `use` before laying.
+
+```js
+var S = KCITY.squares.plan({ id: 'qb', h: groundH });                    /* plain records, no instance needed */
+var C = KCITY.create({ tune, seed, rand: 'krand', index: { order: 'insertion' }, kit,
+  ground: { h: KCITY.squares.ground(S, groundH) },
+  steps: KCITY.squares.steps(S).concat([{ name: 'the blocks', run: function () {
+    PLAN.courts = KCITY.squares.infill(S, { pools, small, gaps }); } }]) });
+C.run();
+```
+
+**The records.** Every record has a stable id under `S.id`: `rings`, `blocks` (each with its ring, `quarter`/`spoke`,
+`use`, `walls` (the sides that back onto its wall), its own KRAND `cell` and `poly`), `ways` (`kind` avenue | ring |
+kora | perimeter | cross, laid as core/city's `avenue` and `main`), `crossings`, `walls` (gates with their rise,
+towers, runs, core/city's `segs` and `nodes`), `terraces`, `landmark`, `monasteries`, `markets`. A record's `ry`
+faces out (`[sin ry, cos ry]`), and north is -z.
+
+**Laying it on the instance.** `steps(S)` makes ground for lots only inside the blocks, so the walls' clearances
+and the landmark's ring stay out. It sets `TUNE.width.avenue` and `.main` to the plan's, and widens
+`TUNE.rasterHalf` to hold the plan. It stamps every wall and tower. The outer wall becomes `PLAN.wallRec`, so the
+export carries it; all the walls are `PLAN.walls`, and the plan is `PLAN.squares`.
+
+**The infill.** `infill(S, ctx)` runs `frontage-courts` on the `quarter` blocks. A block backing onto its wall is
+fronted on its street sides only: it takes a focus far off its wall. The default order, nearest the centre, is not
+enough, because a block the wall has shortened can have a street side farther from the centre than its wall side.
+
+**The test.** `node core/city/test-squares.js` checks, each with a negative:
+- Qiblai's numbers, and a strict grid with plain records and unique ids.
+- No block on a street, a wall or a tower; no street through a wall but the avenues at their gates.
+- The terraces built up, never cut.
+- The kora's chortens, the monasteries and the markets.
+- The plan's golden hash (`golden-squares.json`).
+- The site laid and filled: about 5,000 houses in 2 s, with no overlap, none on a street, wall or tower, each in its
+  block at its ring's level, and none fronting its wall.
+
+**Drawing the city on the Qiblai kit (`qb_*`) is Q7's next step, not this module's.** No build lists the file yet,
+so Voth's and Verge's pages do not change.
 
 ## Tests
 

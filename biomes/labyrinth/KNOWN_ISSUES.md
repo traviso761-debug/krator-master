@@ -1,20 +1,22 @@
 # The Labyrinth: known issues
 
-- [ ] **The flora is a stand-in.** Station 1 reads the NW lowlands' kit in place (PLAN-GATE.md section 6). On this page's fields it
-  grows grass trees, banksias, needle cypress and she-oak on the floor, with a few birches, poplars and glow-willows: an
-  Australian-looking parkland, not the mammoth steppe of PLAN.md section 3. The Labyrinth's own flora (steppe grasses and
-  forbs, larch, birch, poplar, willow, dwarf scrub, the wild melon) is a kit still to make.
-- [ ] **The GPU verify fails one assert: the core attach audit** (2026-11-11, RTX lane): 97 of 7,302 cards above the ground float,
-  1.33% against a 1% limit (biome:bloom 92/916, biome:drape 5/1,084; worst about 0.85 m off with 0.57 m tolerance). Every other
-  assert and every negative control passes. After the NW lowlands floor fix (ground bloom clusters on the ground, rhodo blooms held
-  in the shrub's cards; branch `claude/infallible-pike-2c68d9`, merged here 2026-11-11) the floaters are the grass trees' flower-spike
-  blooms (`biomes/nwlowlands/src/55-biome-nwlowlands-trees.js`, `B.grasstree`), 0.1 m off the spike's rod: a false positive of
-  `BIO.attachAudit` (`core/biome/20-core-kit.js` 646-650), which measures an instanced item at points 2 m apart along its axis, not to
-  the segment as `core/biome/README.md` says. The audit fix rebuilds every biome page, so it is parked in `TODO.md` ("Ride along with
-  the next all-builds rebuild"). The rock's growth adds a little: the NW lowlands' growth pass puts some blooms up to 7 m off any card
-  on the ledges (`65-biome-nwlowlands-dress.js`); its flowered curtains (ledge edges, soffits) are off here because they floated worse.
-  It stays until the core fix lands, or until the Labyrinth's own flora replaces the stand-in.
+- [x] **The flora is the Labyrinth's own** (2026-11-12, `src/50`-`70`, `LABY`; README.md, "The flora"). The NW lowlands stand-in
+  (grass trees, banksias, she-oak) is gone: the mammoth steppe of PLAN.md section 3 on `core/biome`, one profile a station
+  (`SITE.flora`). **Still open:**
+  - the silver birch wears the summer row of `card.birch.dwarf` (round dwarf-birch leaves) and the wild melon's fruit is plain
+    colour, until `card.birch.silver` and `surface.melon.rind` are delivered (`core/materials/PROMPTS-NEEDED.md` section 44);
+  - the wild melon still has no name (PLAN.md section 3: TBD); the kit calls it "the sweet fall";
+  - the birch and poplar crowns read thin from close by (a near crown is 30-60 cards); a fuller crown wants more twig spots, not
+    bigger cards, to stay held;
+  - the PLAN's other ground the animals make (trails, wallows, bone yards, rubbing rocks) waits for `kits/fauna`; dung is drawn.
+- [x] **The core attach audit** (closed 2026-11-12): its floaters were the stand-in's grass-tree spike blooms (a false positive of
+  `BIO.attachAudit` on long rods, still parked in `TODO.md`) and the stand-in's growth pass's blooms. The Labyrinth's own flora draws
+  neither: its crowns are held by their limbs inside `BIO.tree` scopes, with measured `stems` on the crown cards, and the audit
+  reads 0.00% floating on every station.
 - [ ] **No animals yet.** The megafauna wait for `kits/fauna` (PLAN.md section 4); no herd, trail or wallow is drawn.
+- [x] **The root mask let plants root under a beck** (2026-11-12, `src/45-host-stage.js`): on rocky ground (rock .35-.6) it returned
+  its thinning before the water tests, so a steep bank's plants stood 1.1-1.4 m under the Paddocks' beck. The rock now only scales
+  the result.
 - [x] **Hazards** (2026-11-11, `src/89h-host-hazards.js`, core/hazard). 178 records:
   - **fall:** every stack's and knob's rim (a 6 m band of boxes along the top outline, so a top's middle is safe), the torn bridge ends, the Hall's broken upper slab and its sheared column;
   - **slip:** the Kimr's rope bridge;
@@ -29,18 +31,17 @@
 - [x] **The far walls are bedded** (2026-11-11, `src/85-host-far.js`). From 1,700 m up their colour takes KSTRATA's beds (the Rift's
   recipe with its red taken out, dipping east). **Still open:** the walls are the model's 2 km cells with noise spurs and gullies,
   so their shape is soft; their real relief waits for the open world's cut of this region.
-- [x] **The knobs, the stacks and the Hall's decks are overgrown** (2026-11-11, `src/89z-host-build.js`): the stand-in flora kit's
-  growth on structures (`NWLOW.dress`: moss and plants on the ledges, hanging moss under the soffits, roots and curtains down the
-  walls), about 30,000 instances and 360,000 triangles, `?dress=0` to leave them out. Its species change with the flora (above).
+- [x] **The knobs, the stacks and the Hall's decks are overgrown** (2026-11-11; the kit's own growth since 2026-11-12, `src/65`,
+  `LABY.dress`): lichen plates on the walls, moss, grass, wormwood, cushions, juniper and dwarf birch on the ledges, a few young
+  birches in the joints (not on the dry Mesas), `?dress=0` to leave them out. No hanging curtains: the steppe has none.
 - [x] **The Hall read as a black block in the hero view** (2026-11-11). Two causes:
   - **The light:** at 11:00 the sun stands north-north-east here, so the old hero view from the south-west saw only shadowed faces.
     The hero now looks from the east-north-east; the old view is kept as "The Hall from the south bank".
   - **The palette:** the Ancients kit's ruin palette is toned for the kit sheet's brighter lights, so its colours are lifted 1.7x
     on this page (`?lift=`), except the stacks' rock.
-- [ ] **Stations 2-4 (2026-11-11) share station 1's stand-ins:** the NW lowlands' flora (on the Mesas' dry floor its grass trees
-  are thick, so the attach audit's false positive is larger there), no animals, no Kimr. **The Pit Chain is cold (Dfc, 2,920 m)** and
-  its flora is still the temperate stand-in, thinned (`floraQ`); its cushions and lichens want the Labyrinth's own kit (or Copper
-  Glacier's cold lineage read in place). **The walls are KRELIEF scarps** whose rim and height step are read off the model's 2 km
+- [ ] **Stations 2-4 (2026-11-11) share station 1's stand-ins:** no animals, no Kimr (the flora is the kit's own since
+  2026-11-12: the Paddocks' tall steppe and gallery woods, the Mesas' dry steppe, the Pit Chain's cold profile with its cushions,
+  lichens and the tarns' natives). **The walls are KRELIEF scarps** whose rim and height step are read off the model's 2 km
   cells by hand (`stations/<name>/44z-host-site.js`); the Paddocks' bastion faces south-west, so at 11:00 it stands in shadow.
 - [ ] **The Kimr's pueblo** is on no station yet (station 3's plan wants one on a bench). `kits/kimr` has the example house on
   `core/pueblo`, but it draws through `core/engine`, whose globals clash with the Ancients runtime this page carries: it needs a sealed

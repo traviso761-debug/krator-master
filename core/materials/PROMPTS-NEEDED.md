@@ -3,7 +3,7 @@
 Every texture or pattern sheet the owner still has to source or generate, each with its finished prompt. Paste a block
 as it is, one image per block. **Everything delivered lives in `PROMPTS-archived.md`** (checked against `core/materials/library/`, `patterns/` and each build's `materials.json` on `origin/main`, 2026-10-19); this file holds only what is still owed.
 
-**Count: 28 prompt blocks** (2026-11-11: +9 for the Kimr, section 41; 2026-11-11: +1, `metal.scorched` for the Motor Vehicles kit's burnt ruins, section 36; 2026-11-10: -5, the owner's delivery of that day; 2026-11-09: +3 for the southern highlands' upper stations, section 37; +15 for the hyperjungle's lands and the savannah rims, section 40, 2026-11-08; counted 2026-11-04 before them).
+**Count: 32 prompt blocks** (2026-11-12: +2 for the Labyrinth's flora, section 44; 2026-11-11: +9 for the Kimr, section 41; +2 for the Qiblai kit, section 43; 2026-11-11: +1, `metal.scorched` for the Motor Vehicles kit's burnt ruins, section 36; 2026-11-10: -5, the owner's delivery of that day; 2026-11-09: +3 for the southern highlands' upper stations, section 37; +15 for the hyperjungle's lands and the savannah rims, section 40, 2026-11-08; counted 2026-11-04 before them).
 
 **Delivered 2026-11-03:** section 31's five (the Gills: `rock.lamina.pipe`, `mineral.crust.ferromanganese`, `mineral.crust.brucite`,
 `card.breathfringe`, `card.turf.limed`) and ten owed on unmerged branches (High Rift, nwbay, nhighlands, ringisles, the rift rim, Copper Glacier),
@@ -442,6 +442,18 @@ rails and every ruined metal. **3 prompts.** Each takes the base template, then:
 | `ground.ballast.rail` | Railway track ballast: angular grey granite stones 3 to 6 cm (#7e7a74, #8a8680, #6a6660), packed, dusty with rust-brown fines between them (#6a4a36), two faint darker bands across the tile where sleepers lay. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. |
 | `metal.rail.rusted` | The head and web of a steel rail a thousand years idle: flaking orange-brown rust (#8a4a2c, #a65a36) over pitted dark steel (#4a4644), the running surface a dull grey band along the tile's middle with rust creeping over it, scale lifting at the edges. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. |
 
+## 43. The Qiblai kit (`kits/qiblai`, 2026-11-11)
+
+The holy city of the Decree (`kits/qiblai/PLAN.md` section 9, item 2; the owner, 2026-11-11: "sure new textures"). Its dressed
+stone reuses `stone.sandstone.ashlar` (wired: `kits/qiblai/materials.json`, `qAshlar`). Two are owed. They land as families in
+`kits/qiblai/materials.json` (`qGoldSheet` for the gilt roofs, crowns and finials, now the plain `xGold`; `qMantra` for the prayer
+wheels' drums, under the Song in the real Xanadui script that the kit draws over it, `src/89q0y-qb-script.js`), then `python3 tools/textures/pack.py kits/qiblai` and a rebuild. **2 prompts**, both full colour.
+
+| id | Prompt |
+|---|---|
+| `metal.gold.sheet.beaten` | Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a Tibetan temple's gilt roof sheet: hand-beaten copper sheets fire-gilded with gold, laid in overlapping rectangular panels about 60 by 40 cm with narrow raised seams between them, every panel covered in small overlapping hammer facets, the gold rich and warm (#d8a838, #c8902a, #e8c060) and worn thin on the facets' edges so the coppery red beneath shows through (#a8583a), a little dark grime in the seams (#5a4024). Full colour: keep the gold and copper as they are, do not tint. |
+| `metal.copper.mantra` | Seamless tileable texture, square, 2048x2048. Orthographic view of a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no letters, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: the hammered copper skin of a great prayer wheel's drum: six plain horizontal bands of smooth beaten copper, each between two raised beaded ridges, the copper reddish-brown (#a8603a, #8a4a2c) with fine hammer facets, the beads rubbed bright by hands (#d89058), green-blue verdigris (#4a8a78) and dark tarnish (#3a2a20) gathered along the ridges. The bands stay blank: the script is drawn over them in the game. Full colour: keep the copper and verdigris as they are, do not tint. |
+
 ## 41. The Kimr (`biomes/labyrinth/KIMR.md`, planned 2026-11-11)
 
 The Labyrinth's people (`LORE.md` section 6.24): their pueblos, masks, armour and the Hall of Heroes' funerary dressing. No Kimr kit is
@@ -492,6 +504,25 @@ Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat
 `patterns/kimr/labyrinth` (full colour; one centred figure: the emblem on banners, hatches and rock art):
 ```
 Square, 2048x2048. Orthographic front view of a flat, front-on decorative panel, flat even shadowless lighting, as if scanned: no highlights, no vignette, no perspective, no text, no border, no watermark. A single centred figure with a clear margin of plain ground all round: the classical seven-circuit labyrinth, its paths drawn as thick red ochre (#9c3b23) lines on a flat kaolin white (#ece5d3) ground, square-cornered as in Hopi rock art, with its one entrance at the bottom; above it, touching its top, a frontal bull's head in charcoal black (#221c18) with great horns curving up into a lyre. Painted with mineral pigment, edges slightly uneven, the white ground with a faint plaster grain.
+```
+
+## 44. The Labyrinth's flora (`biomes/labyrinth` src/50-70, 2026-11-12)
+
+The mammoth steppe's own kit (`biomes/labyrinth/README.md`, "The flora"). Everything else it draws is already in the library. Two are
+owed. **`card.birch.silver`** replaces the stand-in on the silver birch's crowns (the slot `birchleaf` draws the summer row of
+`card.birch.dwarf` today: dwarf birch's round leaves on a tree birch); it lands in `biomes/labyrinth/materials.json` `birchleaf` (run
+`python3 tools/textures/check_cells.py biomes/labyrinth` for its stems). **`surface.melon.rind`** is the wild melon's skin (the slot
+`melon`, today plain colour on `M.solid`): add a `melon` family and give the item a `BIO.solidMat` of its own in `src/50`. Then
+`python3 tools/textures/pack.py biomes/labyrinth` and a rebuild of the four stations. **2 prompts**, both near-colourless.
+
+`card.birch.silver` (near-colourless; the silver birch's leaf sprays, Betula pendula):
+```
+Square, 2048x2048. Orthographic view looking straight down on nine separate sprigs in a 3x3 grid, each centred in its third of the frame with magenta all round it, on a solid flat bright magenta (#ff00ff) background that fills everything outside the objects, with no shadow cast on the background. Flat, even, shadowless lighting: no highlights, no vignette. No perspective, no text, no border, no watermark. Objects: hanging twig sprays of silver birch (Betula pendula), each a thin dark brown twig with a fine fork, carrying eight to twelve small triangular-ovate leaves with doubly serrated edges and pointed tips on slender stalks, the leaves alternate along the twig and drooping slightly, two sprays with a small green catkin; all nine the same size, the twig's base at the top of its cell and the spray hanging down from it. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.
+```
+
+`surface.melon.rind` (near-colourless; the wild melon's skin: a giant gourd to a metre across):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: the rind of a giant wild gourd, smooth and slightly waxy, with broad irregular lengthwise stripes of lighter and darker skin running top to bottom across the tile, a fine net of pale corky lines over part of the surface like a cantaloupe's, a few small scars and sun-bleached blotches, faint shallow grooves between the stripes. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.
 ```
 
 ## Gaps with no prompt yet
