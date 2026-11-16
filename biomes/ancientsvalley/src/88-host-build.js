@@ -43,7 +43,8 @@ const AV_AFTER=()=>{const el=document.getElementById('av-after');if(!el){avLoadN
     for each planted look and kept for the boot (AVC.hero) */
  const ROOF={};const roofOf=t=>{const k=t.key;if(ROOF[k]!=null)return ROOF[k];let y=null;try{const H=AVC.hero[k]||(AVC.hero[k]=heroOf(k));H.updateMatrixWorld(true);const F=MP.FAMILY[t.family]||MP.DESIGNS[t.family],fp=F&&F.footprint||{},fw=fp.r!=null?fp.r*2:Math.max(fp.w==null?40:fp.w,fp.d==null?40:fp.d);let best=-1e9;
    H.traverse(m=>{if(!m.isMesh||m.isInstancedMesh||/debris|rubble/.test(m.name||''))return;const g=m.geometry;if(!g.boundingBox)g.computeBoundingBox();const b=g.boundingBox.clone().applyMatrix4(m.matrixWorld);const ext=Math.max(b.max.x-b.min.x,b.max.z-b.min.z);if(ext>=fw*.5&&b.max.y>best)best=b.max.y;});if(best>-1e8)y=best;}catch(e){}ROOF[k]=y;return y;};
- const TOPS=[];STAGE.plan.towers.forEach(t=>{if(!(t.state==='stump'||t.state==='broken'||t.state==='crown')||(t.lean||0)>2.5||STAGE.F.wild(t.x,t.z)<.5)return;const F=MP.FAMILY[t.family]||MP.DESIGNS[t.family];if(!F)return;
+ const TOPS=[];STAGE.plan.towers.forEach(t=>{if(!(t.state==='stump'||t.state==='broken'||t.state==='crown')||(t.lean||0)>2.5||STAGE.F.wild(t.x,t.z)<.5)return;
+  const F=MP.FAMILY[t.family]||MP.DESIGNS[t.family];if(!F)return;
   let cut;try{cut=MP.ruin(F,t.state).top;}catch(e){return;}if(!(cut>6))return;   /* the record's top: the hero is cut there (70, avClipHero) */
   const roof=roofOf(t);if(roof!=null&&roof>6&&roof<cut+1)cut=roof;
   /* the top's extent is the drawn ruin's, not the footprint's (70, avProfile; the owner, 2026-11-09: trees 40 m off a spindle's 15 m break): the band
@@ -65,7 +66,9 @@ const AV_AFTER=()=>{const el=document.getElementById('av-after');if(!el){avLoadN
     let yr=P.cut;if(P.sf){yr=P.sf.footing(lx,lz,P.cut+3,P.cut-6);if(yr==null){AV.FERAL.perchMiss=(AV.FERAL.perchMiss||0)+1;continue;}}
     const W=new THREE.Vector3(lx,yr+.1,lz).applyQuaternion(P.q);   /* the roof in the tower's frame, turned by its yaw and lean */
     (P.feet||(P.feet=[])).push([lx,yr,lz]);
-    if(!P.got)REGISTER({name:"trees on a ruin's top",kind:'rooftree',x:P.t.x,z:P.t.z,y:P.t.y+P.cut,r:P.r+3,h:28,tags:{kind:'rooftree',family:P.t.family,state:P.t.state}});   /* one volume a top: the probe samples instanced cards sparsely, so a tree's own would read empty */
+    /* the volume from 8 m under the cut: a tree's footing is found by a ray up to 6 m under it (avSurface.footing), and its probe point, 2 m over the
+       foot, fell under a volume that began at the cut (the Stilled Ground's empty volume, 2026-11-15) */
+    if(!P.got)REGISTER({name:"trees on a ruin's top",kind:'rooftree',x:P.t.x,z:P.t.z,y:P.t.y+P.cut-8,r:P.r+3,h:36,tags:{kind:'rooftree',family:P.t.family,state:P.t.state}});   /* one volume a top: the probe samples instanced cards sparsely, so a tree's own would read empty */
     AV_ROOF_PTS.userData.probePoints.push(P.t.x+W.x,P.t.y+W.y+2,P.t.z+W.z);   /* the probe's point for the top's volume (it samples instanced cards sparsely: a top with one copy read empty on the Yards) */
     out.push({x:P.t.x+W.x,y:P.t.y+W.y,z:P.t.z+W.z,yaw:KRAND.unit(KRAND.hash(h1,2,0,0))*TAU,k:Math.min(.35+.2*KRAND.unit(KRAND.hash(h1,3,0,0)),h>0?25/h:1)});P.got++;}   /* a roof tree a third to a half of its source, under 25 m */
    if(out.length>=2)break;}return out;}:null;

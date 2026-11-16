@@ -24,17 +24,21 @@
    "bytes": 11219660,
    "sha256": "49c818644ec9540ef514583d36b58660005e4347c8bf873c2cc40ec9b0ba1218"
   },
+  "biomes/ancientsvalley/dist/ancientsvalley-stilled.html": {
+   "bytes": 5046654,
+   "sha256": "e05415eca47ee9e282f6294e0ac7d55eaba65e9e86f6957b68853a1174308b0a"
+  },
   "biomes/ancientsvalley/dist/ancientsvalley-terraces.html": {
-   "bytes": 5165327,
-   "sha256": "b714de4e8134fc355888d0053dbee6e12f8eae2e16618d00c179675d8bb32954"
+   "bytes": 5165970,
+   "sha256": "9b600ef54a1786acfd14f4c48af1b95ca70de1448b0027e25dbbe93ca2c6295e"
   },
   "biomes/ancientsvalley/dist/ancientsvalley-yards.html": {
-   "bytes": 5290891,
-   "sha256": "517beb598264dabcec2aebf61ca9616b5835891de5b5f21f97559ac179a01fcd"
+   "bytes": 5291534,
+   "sha256": "f093b5dddf6e44c5a6712701c79489316f852c57d3dba0cd30ffb86fcc1de721"
   },
   "biomes/ancientsvalley/dist/ancientsvalley.html": {
-   "bytes": 5057964,
-   "sha256": "2abdfbaf317533966661083498fd77c9a1c8446bce909cf88d100fc2731f53b0"
+   "bytes": 5058607,
+   "sha256": "0c257aaca1bffa16a06ae2e1b37ef6f20daf22d304f58ebf155da0a4d2bb46d8"
   },
   "biomes/catch/dist/catch-fan.html": {
    "bytes": 9655961,

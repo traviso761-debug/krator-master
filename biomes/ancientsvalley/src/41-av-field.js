@@ -141,7 +141,11 @@ AV.plan=function(o){var P=[],pitch=o.pitch==null?150:o.pitch,th=o.theta==null?0:
      over .5 a pick turns to o.tall with a chance rising to .7 at the shore, under .4 to o.short with a chance rising to .4 inland; the near keys stand */
   if(!near&&o.lakeK&&(o.tall||o.short)){var lk=o.lakeK(x,z),r8=u(i,j,8);if(o.tall&&o.tall.length&&lk>.5&&r8<(lk-.5)*1.4)fam=o.tall[Math.floor(u(i,j,9)*o.tall.length)];
    else if(o.short&&o.short.length&&lk<.4&&r8<(.4-lk))fam=o.short[Math.floor(u(i,j,9)*o.short.length)];}
-  var g=u(i,j,4),si=0;while(si<AV.RUIN_CUTS.length-1&&g>=AV.RUIN_CUTS[si])si++;var st=AV.RUINS[si];
+  var g=u(i,j,4),si=0;while(si<AV.RUIN_CUTS.length-1&&g>=AV.RUIN_CUTS[si])si++;
+  /* o.age(x, z), 0..1 (the Stilled Ground, PLAN.md 17: the share of the war's age that has passed here): the tower's draw scaled toward intact, so a
+     tower that would be fallen at full age is gutted or whole where little time has run; the same draw, so the rings change no tower's family */
+  if(o.age){var ag=Math.max(0,Math.min(1,o.age(x,z)));si=Math.floor(si*ag+1e-9);}
+  var st=AV.RUINS[si];
   if(o.hero&&o.hero.indexOf(fam)>=0&&(st==='skeleton'||st==='fallen'))st='broken';   /* a family named in o.hero keeps a shape its ruin pass draws */
   var q=Math.floor(u(i,j,5)*4),yaw=th+(fam==='ledger'?(u(i,j,6)<.5?Math.PI/2:0):q*Math.PI/2);
   P.push({id:'av.t.'+i+'.'+j,key:fam+'.'+st,family:fam,state:st,x:x,z:z,y:y,yaw:yaw,i:i,j:j,kind:kind,lean:AV.lean(seed,i,j,st),leanDir:u(i,j,7)*Math.PI*2});}

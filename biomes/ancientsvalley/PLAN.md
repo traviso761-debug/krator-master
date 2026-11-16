@@ -399,6 +399,8 @@ records until the streets want lots), `core/mask` (every field is a function), `
 3. `core/anomaly`, then **the Stilled Ground and the Press** (cheap, as `PLAN-ANOMALIES.md` 11 has it), each as a district with its basin.
    *Planned 2026-11-15* (section 17): the Stilled Ground first, its core a frozen moment inside rings of decay, the page on the basin's inner
    slope looking in; `core/anomaly` and the effects are on origin/main since 2026-11-10 (`PLAN-ANOMALIES.md` 14).
+   *S0-S1 built 2026-11-15* (README, "Station 1"): main merged in, the site and region, the stage, the hold and the rings of decay; verified (58
+   asserts). Waiting on the owner's eye.
 4. **The House at Babel**, with the subway.
 5. The Lake That Falls, the Fast Water, the Bend; radiation and portals as they come.
 6. The Broken Country.
@@ -592,8 +594,9 @@ graded, legible); the walk slows with it, never to a stop (`KANOM.walk`'s floor)
 
 The basin at **px 398,966** (Necropolis about 47 km; Csa, 1,051 mm, mean 21 C): a dry glass floor at -26 m out to half its 5.5 km radius, a
 slope to the rim at 104-123 m, the land beyond climbing to 300-670 m within 11 km. It is twice a page across, so the page stands on the
-north slope: **its centre 2.4 km north of the basin's** (about px 398,964.8; `region/site.py`'s row `stilled`), the page from 400 m past the core
-out to 5.2 km, just inside the rim. The rim's crest and the land beyond are the far ground. The view looks south, the sun (in the north at this
+north slope: **its centre 2 km north of the basin's** (px 398,965, a whole pixel, as the model's climate lookup wants; `region/site.py`'s row `stilled`),
+the page from 800 m past the core out to 4.8 km, just inside the rim. The centre is still on the glass floor (-26 m), and the valley lake's level
+(17.4 m) stands 43 m over it: the stage sets the lake far under the page, or the dry basin would flood. The rim's crest and the land beyond are the far ground. The view looks south, the sun (in the north at this
 latitude) behind the eye, so the held things are lit from the front.
 
 ### What is built
@@ -601,9 +604,12 @@ latitude) behind the eye, so the held things are lit from the front.
 1. **The stage** (`stations/stilled/`, from the Overlook's, on the ground lattices): the basin's ground from the model; the floor as glass (the
    scar field, the Overlook's melt sheet), the old centre's foundations under it; the slope and the rim as the city's residential and core rings
    (`AV.plan`), its towers and streets (`kits/metropolis`, `kits/ancient-transit`) by the usual passes.
-2. **The time field.** One `KANOM` `time` record at the basin's centre: a held core of about 300 m (rate 0), its rim ramp out to about 1.8 km,
+2. **The time field.** One `KANOM` `time` record at the basin's centre: a held core of about 300 m (rate 0), its rim ramp out to 3.6 km (built
+   2026-11-15: r 3.6 km, ramped over 3.3 km; the anomalies' rule of a zone under 2 km gives way here, since the rings are the station),
    registered in `core/tags` before anything is drawn, with its `time` hazard (`core/hazard`). One function of it, **elapsed(x, z)**, the share
-   of the war's age that has passed there (1 outside, 0 at the core), drives everything below; it is a record's function, not a page's choice.
+   of the war's age that has passed there (1 outside, 0 at the core), is one minus the record's strength (its smooth ramp; the rate itself falls
+   on a log scale and would crowd the rings into the field's edge), and drives everything below; it is a record's function, not a page's choice.
+   The basin was a centre of the city, so its old centre stands as a settlement of its own (Necropolis is 44 km off, out of the city's reach).
 3. **The rings of decay, by elapsed.** Each tower's ruin state from elapsed (`MP.RUINS` in order of age: fallen and stump outside, broken and
    crown, gutted, then intact and clean), weathering and stain from it (the metropolis kit's stain, the overgrowth's sockets); the feral wrap's
    depth and the forest's density from it, so the wild wood thins inward to saplings, then to the Ancients' gardens as they were planted (the
@@ -634,8 +640,8 @@ records (`[G data]`), so Godot takes the same rings and the same moment. `tools/
 
 ### Checks (`verify.py`)
 
-The time record in `core/tags` before anything is drawn; strength and the effects zero outside its shape; elapsed monotone outward along rays
-(every tower's ruin state no older than one further out); the held things never move (pixels across a second, as the effects demo measured);
+The time record in `core/tags` before anything is drawn; strength and the effects zero outside its shape; elapsed monotone outward along rays,
+and the towers' mean ruin severity rising band by band outward (each tower keeps its own draw, so the rings are monotone by band, not tower by tower); the held things never move (pixels across a second, as the effects demo measured);
 a walker can always leave (the walk's floor); the jump on leaving moves the clock by the owed time and no more than a day; the usual budgets on
 every view, the worst on the Arc 140T named.
 

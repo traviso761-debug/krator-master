@@ -4,7 +4,7 @@
 
 Docs: `HANDOFF.md`, `KNOWN_ISSUES.md`, `LOD-WRITEUP.md`, `PLAN-ANOMALIES.md`, `PLAN.md`, `PORT.md`, `README.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/ancientsvalley-terraces.html`, `dist/ancientsvalley-yards.html`, `dist/ancientsvalley.html`
+Built output (never open it; edit `src/` and rebuild): `dist/ancientsvalley-stilled.html`, `dist/ancientsvalley-terraces.html`, `dist/ancientsvalley-yards.html`, `dist/ancientsvalley.html`
 
 Build: `cd biomes/ancientsvalley && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
@@ -60,5 +60,6 @@ Each station builds one page (`build.py --station <name>`) from its own fragment
 
 | Station | Fragments | KB |
 |---|---|---|
+| stilled | 46z-host-stage.js, 53z-host-hold.js, 75-host-extraplanar.js, 75-host-house.js, 89x-host-oilrain.js, 89y-host-anomaly.js, 98s-host-stilled-checks.js | 46 |
 | terraces | 41d-av-farm.js, 46z-host-stage.js, 70t-host-farm.js, 72-host-keepers.js, 73-host-wrecks.js, 75-host-extraplanar.js, 75-host-house.js, 87t-host-thicket.js, 89y-host-anomaly.js | 83 |
 | yards | 46z-host-stage.js, 70y-host-yards.js, 75-host-extraplanar.js, 75-host-house.js, 89y-host-anomaly.js, 98y-host-yards-checks.js | 58 |

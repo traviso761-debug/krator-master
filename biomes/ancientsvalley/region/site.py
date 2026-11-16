@@ -43,6 +43,11 @@ SITES = {
     # band, 300-600 m), the land falling ~370 to 190 m across the page, the shelf and the drowned inlet below, city1 and the Overlook's ridge
     # 16-18 km due south; the House's basin 11.7 km to the west-north-west, outside its 1.5 r
     'terraces': {'px': 455, 'py': 899, 'title': 'The Terraces: the Soleri farm belt'},
+    # The Stilled Ground (PLAN.md section 17; the owner, 2026-11-15: first of the anomaly stations, on the basin's inner slope looking in): the
+    # basin at px 398,966 (5.5 km, a dry glass floor at -26 m to half its radius, the rim at 104-123 m, Csa). The page's centre a pixel (2 km)
+    # north of the basin's, so the page runs from 800 m past the core out to 4.8 km, the rim's crest just past its edge; the view looks south,
+    # the sun behind the eye. The basin's centre is at page (0, 2000).
+    'stilled': {'px': 398, 'py': 965, 'title': 'The Stilled Ground: time slows to a stop'},
 }
 EYE = 30.0
 R_PLANET = 84.0 * 360 / (2 * math.pi) * 1000      # m: the sky model's frame (kmPerDeg 84)

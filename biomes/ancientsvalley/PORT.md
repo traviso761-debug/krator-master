@@ -13,7 +13,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | Fragment | KB | Tag | THREE | canvas | DOM | events | loop | geom | shader | inst | ray | store | net | Note |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `src/00-head.html` | 1.2 | [web] | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
-| `src/41-av-field.js` | 24.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/41-av-field.js` | 24.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/41b-av-wrecks.js` | 9.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/41c-av-house.js` | 5.9 | [draw] | 0 | 0 | 0 | 0 | 0 | 8 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/41c-av-lobbies.js` | 32.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
@@ -30,7 +30,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/75-host-extraplanar.js` | 14.8 | [web] | 1 | 0 | 0 | 0 | 2 | 7 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/75-host-house.js` | 10.9 | [web] | 7 | 0 | 2 | 0 | 0 | 3 | 3 | 0 | 0 | 3 | 0 |  |
 | `src/76-host-lobbies.js` | 23.9 | [web] | 6 | 0 | 0 | 0 | 1 | 2 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/88-host-build.js` | 11.7 | [web] | 2 | 0 | 4 | 0 | 4 | 2 | 0 | 1 | 0 | 0 | 0 | split: data inside host code |
+| `src/88-host-build.js` | 12.0 | [web] | 2 | 0 | 4 | 0 | 4 | 2 | 0 | 1 | 0 | 0 | 0 | split: data inside host code |
 | `src/89a-host-atmos.js` | 0.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/89s-host-sky.js` | 2.8 | [G native] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/89t-host-weather.js` | 0.6 | [G native] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
