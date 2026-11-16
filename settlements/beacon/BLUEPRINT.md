@@ -27,7 +27,8 @@ the lamp and the economy are in `PLAN.md`.
 |---|---|
 | `src/30-bc-layout.js` | **the layout** (`[G data]`): the frame, the ground, the fort asset's watch plan (a snapshot), the zones, the walls, the gates, the parts with their footprints and beds, the ways, the cable, the lamp's sights, the power and the census |
 | `src/31-bc-rules.js` | the rules, as plain functions (`BEACON.checks`, `reach`, `area`, `toPx`) |
-| `test-beacon.js` | `node settlements/beacon/test-beacon.js`: every rule passes on the layout and fails on a copy broken in its one way (35 checks) |
+| `test-beacon.js` | `node settlements/beacon/test-beacon.js`: every rule passes on the layout and fails on a copy broken in its one way (38 checks; the relay rule added with the Rim Post) |
+| `src/40-bc-lamp.js`, `test-lamp.js` | the lamp's night on `core/sched` (B9): the sweep, the signal hour, the alarm, the Station, the grid code, the Lamp Watch's rota; `node settlements/beacon/test-lamp.js` (18 checks) |
 | `layout_dump.js` | the layout, its area and its checks as JSON (what the sheets draw) |
 | `beacon_blueprint.py` | the sheets and the manifest; it stops if the layout fails a rule |
 | `floors/T0.png` | the shoulder round the house (800 x 800 m): the road and the fort road, the terraces, byres, hives, tea, the carters' yard, the tank, the scarp's brow, the lamp's sights on their bearings |

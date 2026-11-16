@@ -55,12 +55,15 @@ FLOORS = []
 def bearing_line(b, length, label, col, w=3):
     a = math.radians(b); return ([(0, 0), (-math.cos(a) * length, math.sin(a) * length)], col, w, label)
 SIGHTS = []
-lens = {'g1': 390, 'tempest': 300, 'tears': 390, 'sauropolis': 300, 'tuatara': 390, 'march.s': 300, 'pin': 390, 'komodo': 220, 'erehwon': 390}
+lens = {'g1': 390, 'tempest': 300, 'tears': 390, 'sauropolis': 300, 'tuatara': 390, 'march.s': 230, 'pin': 390, 'komodo': 220, 'erehwon': 390, 'eye': 260}
 for s in L['lamp']['sights']:
     if s['id'] not in lens: continue
     seen = s['clear'] > 0
-    lab = '%s, %d km, %d deg: %s' % (s['name'], s['km'], s['bearing'], ('seen, +%d m' % s['clear']) if seen else ('hidden, %d m' % s['clear']))
+    lab = '%s, %d km, %d deg: %s' % (s['name'].split(' (')[0], s['km'], s['bearing'], ('seen, +%d m' % s['clear']) if seen else ('hidden, %d m' % s['clear']) + (' (by %s)' % s['via'] if s.get('via') else ''))
     SIGHTS.append(bearing_line(s['bearing'], lens[s['id']], lab, (200, 150, 20) if seen else (160, 160, 160), 3 if seen else 2))
+for r in L['lamp'].get('relays', []):
+    b = (math.degrees(math.atan2(r['px'][0] - L['frame']['px'][0], -(r['px'][1] - L['frame']['px'][1]))) + 360) % 360
+    SIGHTS.append(bearing_line(b, 390, '%s, %d km, %d deg (seen +%d m; it sees the Eye +%d m)' % (r['name'].split(' (')[0], r['km'], b, r['seeLamp'], r['seeFar']), (150, 60, 160), 3))
 T0_ROOMS = [from_part(p) for p in L['parts'] if 'T0' in p['sheets']]
 FLOORS.append(dict(R=999, rect=(-560, 240, -400, 400), id='T0', tier=0,
   title='Sheet T0: the east shoulder round the house (800 x 800 m)',

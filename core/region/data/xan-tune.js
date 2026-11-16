@@ -75,7 +75,16 @@ T.lake=[
  .map(([key,name,brg,px,py,people,make,prov])=>({key,name,brg,px,py,people,make,prov,hub:prov==='p7'?'xan.pher':'s57bkv9741'}));
 /* the isles: Grēṭ-Āil is now the long isle in the lake's middle (24 x 8 px, 300 m high; the owner, 2026-11-16: "add one large
    oblong island in the middle of the lake"), the small isles moved with the lake */
-T.islands=[['great-isle','Grēṭ-Āil (the long isle: the head monastery of the Order of the Azure Dream, Qiblai\'s blue monastery)',845,1504,900],   /* the owner, 2026-11-16: 900 on the isle, the monastery 300 and its villages 600 (settlements/azure-dream/PLAN.md, 5e5d46b88) */['bay-isle','Bē-Āil (the Sultan\'s fishponds)',844.1,1511.5,300],
+/* the long isle's 900 (the owner, 2026-11-16; settlements/azure-dream/PLAN.md, 5e5d46b88): the monastery with its Station Watch
+   (304, at the isle's middle), and its three villages as records of their own (the owner, 2026-11-16: "give economy Sim
+   records"), where the Azure Dream session laid them on core/hamlet: the best of the 15 spots on the isle that are dry and
+   gentle 120 m round with the water within 450 m at 1:1 (most of its coast is steep). West End (250) on the west coast,
+   North Shore (200) on the north-east coast, East End (150) on the south shore 5.4 km east of the cove */
+T.islands=[['great-isle','Grēṭ-Āil (the long isle: the head monastery of the Order of the Azure Dream, Qiblai\'s blue monastery)',846.075,1508.493,304],   /* at the cove's head; the Station Watch on the summit (845.05,1504.35) */
+ ['great-isle-west','Wesṭ-Ēn (West End: the long isle\'s fishing village, on the west coast below the tip)',834.5,1503.5,250],
+ ['great-isle-north','Nōṛ-Shōr (the long isle\'s north shore village, on the north-east coast facing Phēr)',849.7,1501.3,200],
+ ['great-isle-east','Īsṭ-Ēn (East End: the long isle\'s fishing and herding village, on the south shore east of the cove)',851.5,1508.8,150],
+ ['bay-isle','Bē-Āil (the Sultan\'s fishponds)',844.1,1511.5,300],
  ['west-isle','Wesṭ-Āil (the fishermen\'s isle)',831,1499,400],['east-isle','Lāiṭ-Hāus (the light and the customs)',864,1503,200]]
  .map(([key,name,px,py,people])=>({key,name,px,py,people}));
 /* PHĒR'S RING (the owner, 2026-11-16, settlements/pher/PLAN.md section 4: "the plain's farms as named villages"): KHAMLET
@@ -220,6 +229,23 @@ T.expedition={id:'exp.godshearth',name:'The Rare Devisers\' expedition camp at G
    March, its terraces two fifths of its grain and the rest from Strongwall */
 T.muskets={wage:12,men:{sxan7r1sln:30,'march.w':10,'march.s':10,'march.e':10},day:240};   /* wage: dinars a man a year (a dinar is 4 g of the Mint's gold) */
 T.tempest={id:'xan.tempest',name:'The House of the Tempest (the Order of the Violet Storm\'s central monastery, on the West Arm)',px:[886,1619],people:600,terraces:.4,km:80};
+/* settlements/beacon/PLAN.md, B4 (the owner, 2026-11-16: the beacon fort "will become the head monastery of the Order of the
+   Beacon"; ~300, the gold Prismarch there, Qiblai's gold house the daughter; the Sultan's watch fort above and the monastery
+   below): the Yellow Monastery's head house stands beside the beacon fort (`fort`, wherever its px is), fed from the capital,
+   its terraces two fifths of its grain. Its monks bear no arms and burn no powder; the lamp's oil stays the fort's
+   (T.lit['march.e']): the Sultan's licence pays for the light, the order's hands keep it */
+T.beacon={id:'xan.beacon',name:'The Order of the Beacon\'s head house (the Yellow Monastery, below the beacon fort over the Rift)',fort:'march.e',people:300,terraces:.4};
+/* settlements/flashing-eye/PLAN.md section 4 (the owner, 2026-11-16: the east volcano, facing the Rift; "Agreed" to its ~320):
+   the Order of the Flashing Eye's head house (the Red Monastery) on the south flank's bench below the crater. The fort diet
+   less arms and powder; its terraces three tenths of its grain; the rest from the capital by launch to Ṭī-Ṭeras and up the
+   west road; tea from Ṭī-Ṭeras by want. The plan's sulfur for the rites and its daughter house in Qiblai (qb.crimson) wait:
+   no diet eats sulfur yet, and the council's other houses are an open question (the plan's question 11) */
+T.flashingeye={id:'xan.flashingeye',name:'The Order of the Flashing Eye\'s head house (the Red Monastery, on the east volcano\'s south flank)',
+ px:[881,1527],people:320,terraces:.3,lakeKm:62,roadKm:45};
+/* the rings of Thalaba and Lāiṭwāl (the owner, 2026-11-16: "give economy Sim records"): their hamlets in the region's plan
+   (openworld/xanadu-oidong-highrift/plan/sites.json, sites shvo49k0y2 and slaitwal0001), tithing to their towns as Erehwon's
+   and Qiblai's rings do. Salphar, Thalaba's diggers' hamlet, is left out: its sulfur is the town's own diggings (tb.sulfur) */
+T.ringSites={'xan.thalaba':{site:'shvo49k0y2',prov:'p7',y:1.5},slaitwal0001:{site:'slaitwal0001',prov:'p6',y:.9}};
 T.tears={escort:.04,houses:[['tears.strongwall','The Golden Tears: their house in the Gold March (the Tears\' court, inside Strongwall)','sxan7r1sln',912,1640,80],['tears.erehwon','The Golden Tears\' factor house, Erehwon','s57bkv9741',841,1518,30]],
  camp:{id:'exp.rift-gold',name:'The Golden Tears\' armed prospecting camp in Lizard country (the Rift floor; approximate)',px:[850,1628],km:110,people:120,kgYr:70,years:30}};   /* kgYr: the gold its ore holds (30 kg of ore a kg) */
 /* THE BORE (the owner, 2026-11-16: "we can leave in the stair to theodiga tunnel", then Theodiga's end "as written",
@@ -338,9 +364,9 @@ T.valley=function(P,o){o=o||{};const K=o.scale==null?50:o.scale,yr=365,win=w=>{c
  const mine=(id,name,px,py,people,parent,out,kgYr)=>{const p=at(px,py);seats[id]=add({id,name,faction:'xanadu',parent,people,x:p.x,z:p.z,eats:eats('camp'),keepDays:10,
   start:{grain:Math.round(eatYr('camp',people)*T.startDays/yr),salt:people*2,tea:people*.3,tools:people*.4},works:[{id:id+'.works',kind:'adit',name,crew:Math.round(people*.8),out:[out],rate:rate(kgYr,Math.round(people*.8)),site:T.field(out==='goldore'?'lode':'opal-diggings',kgYr,T.fieldYears)}]});bump(parent,eatYr('camp',people));};   /* the camps' grain counts on their parent's (L1: the opal mines on Lāiṭwāl's) */
  mine('smgxtultfq','The gold mines on the lode',911,1665,950,'sxan7r1sln','goldore',T.mine.goldore);
- mine('sjuarjbku0','Opal Valley Mines (the Sultan\'s factor)',1038,1662,850,'slaitwal0001','opal',T.mine.opal);   /* Lāiṭwāl's works village across the lake (L1), its opal to Strongbow first (W1; the owner, 2026-11-16: "opal goes to Strongbow first as it's closer" (about 160 km against Strongwall's 260) */
+ mine('sjuarjbku0','Opal Valley Mines (the Sultan\'s factor)',1038,1662,850,'slaitwal0001','opal',T.mine.opal);   /* Lāiṭwāl's works village across the lake (L1); its opal ferried to Lāiṭwāl (the owner, 2026-11-16: "Ferry to laitwal", over W1's "opal goes to Strongbow first") */
  /* the forts of the Marches */
- [['march.w','The west watch fort',818,1531],['march.s','The south watch fort',847,1549],['march.e','The beacon fort over the Rift (the refurbished Ancient beacon, kept by the Yellow Monastery)',881,1541]]   /* moved with Erehwon (+35,+1 px), each on dry ground */.forEach(([id,name,px,py])=>{const p=at(px,py);
+ [['march.w','The west watch fort',818,1531],['march.s','The south watch fort',843,1546],['march.e','The beacon fort over the Rift (the refurbished Ancient beacon, kept by the Yellow Monastery)',853,1540]]   /* march.w moved with Erehwon (+35,+1 px), on dry ground; march.s on the scarp at 843,1546, where it sees the beacon's lamp and Tuatara (the owner, 2026-11-16: "Move to 843,1546"; it had been moved to 847,1549, at -1,319 m under the scarp, which sees neither); march.e on the east shoulder's knoll, the Order of the Beacon's head house below it (the owner, 2026-11-16: the site, then "Restore the knoll" when edit 7's re-run lowered it; settlements/beacon/PLAN.md) */.forEach(([id,name,px,py])=>{const p=at(px,py);
   add({id,name,faction:'xanadu',parent:'s57bkv9741',people:150,state:'kept',x:p.x,z:p.z,eats:eats('fort'),keepDays:30,start:{grain:Math.round(eatYr('fort',150)*.4),salt:300,tea:60,tools:40,arms:20,powder:100},
    works:[{id:id+'.store',kind:'fort',name:'the fort\'s store',crew:10,out:[],rate:0}]});bump('s57bkv9741',eatYr('fort',150));
   R.push({id:'road.'+id,from:'s57bkv9741',to:id,minutes:Math.round(Math.hypot(p.x-E.x,p.z-E.z)/1000/25*1440),cap:20000,want:40,goods:{s57bkv9741:['grain','salt','tea','tools','arms']}});});
@@ -350,6 +376,15 @@ T.valley=function(P,o){o=o||{};const K=o.scale==null?50:o.scale,yr=365,win=w=>{c
   const s=town(Tm.id,Tm.name,Tm.px[0],Tm.px[1],Tm.people,'fort',[{id:'tp.terraces',kind:'terraces',name:'the monks\' terraces on the West Arm',crew:tc,out:['grain'],rate:rate(terr,tc,win('harvest')),season:'harvest'}],
    {parent:'sxan7r1sln',feeder:'sxan7r1sln',keepDays:30,state:'kept'});
   delete s.eats.powder;s.start.arms=30;bump('sxan7r1sln',-terr);}   /* a year of arms in its armoury */
+ /* B4: the Order of the Beacon's head house beside the beacon fort (settlements/beacon/PLAN.md section 5): the fort diet
+    less arms and powder, its terraces two fifths of its grain, the rest from the capital on the fort's road */
+ {const Bc=T.beacon,F=S.find(q=>q.id===Bc.fort),tc=Math.round(Bc.people*.3),terr=eatYr('fort',Bc.people)*Bc.terraces;
+  const s=add({id:Bc.id,name:Bc.name,faction:'xanadu',parent:'s57bkv9741',people:Bc.people,x:F.x,z:F.z,eats:eats('fort'),keepDays:30,state:'kept',
+   start:{grain:Math.round(eatYr('fort',Bc.people)*T.startDays/yr),salt:Math.round(Bc.people*6*.4),tea:Bc.people,tools:Bc.people*.3},
+   works:[{id:Bc.id+'.market',kind:'market',name:'the granary and its stores',crew:10,out:[],rate:0},
+    {id:'bc.terraces',kind:'terraces',name:'the monks\' terraces on the saddle',crew:tc,out:['grain'],rate:rate(terr,tc,win('harvest')),season:'harvest'}]});
+  seats[Bc.id]=s;delete s.eats.powder;delete s.eats.arms;bump('s57bkv9741',eatYr('fort',Bc.people)-terr);
+  R.push({id:'road.er-beacon',from:'s57bkv9741',to:Bc.id,minutes:Math.round(Math.hypot(F.x-E.x,F.z-E.z)/1000/25*1440),cap:20000,want:40,goods:{s57bkv9741:['grain','salt','tea','tools']}});}
  /* ---- THE LAKE TOWNS AND ISLANDS: fish and their trade to the hub by share; grain, salt and tools back by want */
  const lakeTown=(L)=>{const pf=L.pre||'lk.',dk=L.diet||'lake',p=at(L.px,L.py),fishing=L.key!=='weaver'&&L.key!=='pottery'&&L.key!=='quarry'&&L.key!=='boatyard'&&L.key!=='landing',works=[],sh={};
   const crew=crewOf(L.people,400);
@@ -373,6 +408,17 @@ T.valley=function(P,o){o=o||{};const K=o.scale==null?50:o.scale,yr=365,win=w=>{c
  T.lake.filter(L=>L.key!=='pher').forEach(lakeTown);
  T.islands.forEach(I=>lakeTown({key:I.key,name:I.name,px:I.px,py:I.py,people:I.people,make:{},prov:'p1',hub:'s57bkv9741'}));
  T.lowerLake.forEach(lakeTown);   /* K1: Kirstabal's lake, hub Kirstabal (its ids 'll.', its roads 'lowerlake.') */
+ /* the Order of the Flashing Eye's head house on the east volcano (settlements/flashing-eye/PLAN.md section 4), after the lake
+    towns: its tea road starts at Ṭī-Ṭeras. Grain, salt and tools from the capital: the lake leg by launch, then the west road */
+ {const Fe=T.flashingeye,p=at(Fe.px[0],Fe.px[1]),tc=Math.round(Fe.people*.3),terr=eatYr('fort',Fe.people)*Fe.terraces;
+  const s=add({id:Fe.id,name:Fe.name,faction:'xanadu',parent:'s57bkv9741',people:Fe.people,x:p.x,z:p.z,eats:eats('fort'),keepDays:30,state:'kept',
+   start:{grain:Math.round(eatYr('fort',Fe.people)*T.startDays/yr),salt:Math.round(Fe.people*6*.4),tea:Fe.people,tools:Fe.people*.3},
+   works:[{id:Fe.id+'.market',kind:'market',name:'the Foot House\'s stores',crew:10,out:[],rate:0},
+    {id:'fe.terraces',kind:'terraces',name:'the monks\' terraces on the cone',crew:tc,out:['grain'],rate:rate(terr,tc,win('harvest')),season:'harvest'}]});
+  seats[Fe.id]=s;delete s.eats.powder;delete s.eats.arms;bump('s57bkv9741',eatYr('fort',Fe.people)-terr);
+  const up=Math.round(Fe.roadKm/25*1440);
+  R.push({id:'road.er-eye',from:'s57bkv9741',to:Fe.id,minutes:Math.round(Fe.lakeKm/12*60)+up,cap:20000,want:40,goods:{s57bkv9741:['grain','salt','tools']}});
+  R.push({id:'road.eye-tea',from:'lk.tea-terraces',to:Fe.id,minutes:up,cap:4000,want:40,goods:{'lk.tea-terraces':['tea']}});}
  /* the hubs: the cross-lake run, Erehwon to Phēr, measured from the two (52 km straight over; a tenth more round the long isle) */
  const crossKm=Math.hypot(E.x-seats['xan.pher'].x,E.z-seats['xan.pher'].z)/1000*1.1;
  R.push({id:'lake.cross',from:'s57bkv9741',to:'xan.pher',minutes:Math.round(crossKm/12*60)+60,cap:20000,carriers:6,want:12,goods:{s57bkv9741:['grain','salt','tea','tools','pottery','mats'],'xan.pher':['fish','silk','cacao','cacaocake','honey','sulfur','fruit']}});
@@ -380,8 +426,11 @@ T.valley=function(P,o){o=o||{};const K=o.scale==null?50:o.scale,yr=365,win=w=>{c
  /* the ring follows its town: the region plan still has Erehwon on the first lake's shore (805,1516) until the region is recut
     on the re-run model, so each hamlet keeps its place relative to the town (farm-1 would fall in the new lake: a cell inland) */
  const ringFix={'s57bkv9741/hamlet/farm-1':[843,1520]};
- const ringY={s57bkv9741:1.6,skm4jjo2vl:1.9,'xan.pher':1.5};
- ['s57bkv9741','skm4jjo2vl','xan.pher'].forEach(sid=>{let St=sid==='xan.pher'?{x:seats[sid].x,z:seats[sid].z,hamlets:T.pherRing.map(V=>Object.assign({},V,{site:at(V.px,V.py)}))}:site(sid);if(!St)return;const dx=seats[sid].x-St.x,dz=seats[sid].z-St.z;
+ const ringY={s57bkv9741:1.6,skm4jjo2vl:1.9,'xan.pher':1.5},ringPop={};
+ Object.keys(T.ringSites).forEach(sid=>{ringY[sid]=T.ringSites[sid].y;});
+ ['s57bkv9741','skm4jjo2vl','xan.pher'].concat(Object.keys(T.ringSites)).forEach(sid=>{const RS=T.ringSites[sid];
+  let St=sid==='xan.pher'?{x:seats[sid].x,z:seats[sid].z,hamlets:T.pherRing.map(V=>Object.assign({},V,{site:at(V.px,V.py)}))}:site(RS?RS.site:sid);if(!St||!seats[sid])return;const dx=seats[sid].x-St.x,dz=seats[sid].z-St.z;
+  if(RS){St=Object.assign({},St,{hamlets:(St.hamlets||[]).filter(V=>V.focus==='farming'||V.focus==='ranch')});St.hamlets.forEach(V=>{ringPop[RS.prov]=(ringPop[RS.prov]||0)+V.census.pop;});}
   St=Object.assign({},St,{hamlets:St.hamlets.map(V=>{const f=ringFix[V.id],p=f?at(f[0],f[1]):{x:V.site.x+dx,z:V.site.z+dz};return Object.assign({},V,{site:Object.assign({},V.site,{x:p.x,z:p.z})});})});
   St.hamlets.forEach(V=>{const id=V.id.replace(/\//g,'.'),y=ringY[sid];
   const hh=V.census.households,crew=Math.round(V.census.pop*.45);
@@ -416,13 +465,12 @@ T.valley=function(P,o){o=o||{};const K=o.scale==null?50:o.scale,yr=365,win=w=>{c
  road('road.ks-sb','sl758m2396','sfgtxw10kr',15,'road',{sl758m2396:['grain','salt','tools','fish'],sfgtxw10kr:['tea','silk']},{carriers:2});
  R[R.length-1].minutes+=T.lift;
  road('road.sw-gold','sxan7r1sln','smgxtultfq',50,'road',{sxan7r1sln:['grain','salt','tea','tools']},{carriers:2});
- road('road.sb-opal','sfgtxw10kr','sjuarjbku0',160,'road',{sfgtxw10kr:['grain','salt','tea','tools']},{carriers:2});   /* W1: the opal mines on Strongbow's road (the owner, 2026-11-16), not Strongwall's 260 km */
  road('road.sw-tempest','sxan7r1sln',T.tempest.id,T.tempest.km,'road',{sxan7r1sln:['grain','salt','tea','tools','arms']},{carriers:2});
  R.push({id:'mine.gold',from:'smgxtultfq',to:'sxan7r1sln',minutes:Math.round(50/25*1440),cap:20000,carriers:2,share:{smgxtultfq:{goldore:1}},goods:{sxan7r1sln:['grain','salt','tea','tools']}});
- R.push({id:'mine.opal',from:'sjuarjbku0',to:'sfgtxw10kr',minutes:Math.round(160/25*1440),cap:5000,carriers:2,share:{sjuarjbku0:{opal:1-T.fifth}},goods:{sfgtxw10kr:['grain','salt','tea','tools']}});   /* the Fifth goes straight to the Treasury (below) */
- /* L1: Lāiṭwāl's ferry over the lake to the mines, its works village (27 km): their bread; the mines' opal goes to Strongbow
-    first (W1, mine.opal) */
- R.push({id:'ferry.lw-mines',from:'slaitwal0001',to:'sjuarjbku0',minutes:Math.round(T.laitwal.ferryKm/60*1440),cap:20000,carriers:2,want:30,goods:{'slaitwal0001':['grain','salt','tea','tools'],sjuarjbku0:[]},expect:{sjuarjbku0:{grain:eatYr('camp',850)/yr,salt:850*2/yr,tea:60/yr,tools:120/yr}}});
+ /* L1 (the owner, 2026-11-16: "Ferry to laitwal"): the mines' opal over the lake to Lāiṭwāl by its ferry (27 km), the mines'
+    bread back; from Lāiṭwāl it goes down the valley with the town's own (road.lw-ks). The Fifth goes straight to the Treasury */
+ R.push({id:'mine.opal',from:'sjuarjbku0',to:'slaitwal0001',minutes:Math.round(T.laitwal.ferryKm/60*1440),cap:20000,carriers:2,want:30,share:{sjuarjbku0:{opal:1-T.fifth}},
+  goods:{'slaitwal0001':['grain','salt','tea','tools']},expect:{sjuarjbku0:{grain:eatYr('camp',850)/yr,salt:850*2/yr,tea:60/yr,tools:120/yr}}});
  /* L1: the Glaziers' Fifth in opals from the assay house on the bench; Lāiṭwāl's opal and moonglass down the valley by
     Kirstabal (its grain up the same road) and the barges to Qiblai, where Yuni's caravans take them */
  R.push({id:'fifth.opal.lw',from:'slaitwal0001',to:'xan.citadel',minutes:Math.round(560/25*1440),cap:1000,carriers:1,share:{'slaitwal0001':{opal:T.fifth}},goods:{'xan.citadel':[]}});
@@ -440,7 +488,7 @@ T.valley=function(P,o){o=o||{};const K=o.scale==null?50:o.scale,yr=365,win=w=>{c
  /* ---- THE PROVINCES' COUNTRYSIDES: the bulk district of each, tithing grain and its land's goods to its seat */
  const named={};T.lake.forEach(L=>{named[L.prov]=(named[L.prov]||0)+L.people;});T.islands.forEach(I=>{named.p1=(named.p1||0)+I.people;});
  T.lowerLake.forEach(L=>{named.p5=(named.p5||0)+L.people;});T.ksRing.forEach(r=>{named.p5=(named.p5||0)+r[5];});   /* K1 */
- named.p1=(named.p1||0)+1345+150*3;named.p3=(named.p3||0)+1345;named.p4=(named.p4||0)+950+T.tempest.people;named.p6=(named.p6||0)+850+T.laitwal.people;named.p7=(named.p7||0)+T.thalaba.people+T.pherRing.reduce((n,V)=>n+V.census.pop,0);   /* Phēr is in P7's lake towns: its seat, counted once */
+ named.p1=(named.p1||0)+1345+150*3;named.p3=(named.p3||0)+1345;named.p4=(named.p4||0)+950+T.tempest.people;named.p6=(named.p6||0)+850+T.laitwal.people+(ringPop.p6||0);named.p7=(named.p7||0)+(ringPop.p7||0);named.p7=(named.p7||0)+T.thalaba.people+T.pherRing.reduce((n,V)=>n+V.census.pop,0);   /* Phēr is in P7's lake towns: its seat, counted once */
  T.provinces.forEach(Pv=>{const people=Math.max(1000,Pv.rural-(named[Pv.id]||0)),hh=people/T.farm.hh,made=hh*T.farm.farmShare*T.netKgHH(Pv.y),own=eatYr('rural',people);
   const id='prov.'+Pv.id,p=at(Pv.px[0],Pv.px[1]),crew=Math.min(2000,Math.round(people*.45));
   const works=[{id:id+'.fields',kind:'farmstead',name:'the province\'s fields (its villages, in bulk)',crew,out:['grain'],rate:rate(made,crew,win('harvest'),T.scaleBulk),season:'harvest'}],sh={};
