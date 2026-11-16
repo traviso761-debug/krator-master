@@ -104,6 +104,17 @@ set alone gave 3,985 in 417, and five other seeds 3,877 to 4,344 with every chec
    (the page's ground, a little more relief than the test's), every one registered and found, core/ruins clean. Views: the
    overview, Gate Square, Bazaar Street, the East Gate, a kora corner, the farms, the town from the Dome, and the ruin's.
    `kits/ancients/KNOWN_ISSUES.md` lists what it lacks.
-3. **T-town-3**: the Stair of Descent, Gate Square and the Warden's House drawn; the Salvage and Silt roads down the canyon
-   walls; the outer kora's wheel shrines.
+3. **T-town-3** (done 2026-11-16): Gate Square paved and the Warden's House (a scrap court) and the kora's wheel houses came with
+   T-town-2; the ways down are `src/41-th-descent.js` (`TH_DESCENT`, [G data]: a cliff path of switchback legs in two lanes,
+   landings across both at the turns, every run set off the wall as drawn, the turn's wall held near a turn so two legs never
+   meet) and `src/8ay2-th-descent.js` (drawn as masonry: the bed, a body back to the rock, parapets, corbels, landings):
+   - **the Stair of Descent**: a stair-block on the crest's east end (x 300, z 3 to 29) running into the cliff, its top the
+     rim's height joining Gate Square; five flights on its west face, 210 steps of 0.19 m on 0.4 m, 440 m to the crest at 400;
+   - **the Salvage Road**: from its head (x 430, z 326) to the rim, then nine legs between z 210 (clear of the dam's toe) and
+     570, 2.9 km at 15 %, down to the canyon floor at z 390;
+   - **the Silt Road**: from its head (x 470, z -326), four legs between z -130 and -580, 1.6 km at 10 %, to the silt flats at
+     z -160 (276 m on the page; a landing at the water instead where the silt is under it).
+   `test-th-descent.js` (13 checks with negatives, on a cliff of the page's kind): grades, ends, no leg in another's way,
+   every run on its wall, within its bounds, the block into the cliff. The page's views: 'The Stair of Descent', 'The Salvage
+   Road', 'The Silt Road'. Owed: the salvage yards at the road's foot, the fields on the silt, the ways' textures.
 4. **Later**: the town's interiors (as Strongbow's), core/simulation's roles, the open world.

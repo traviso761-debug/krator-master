@@ -314,8 +314,13 @@ records drawn from the scrap Xanadu set and the Qiblai kit (`XAK`, `kit_bundle.b
       `settlements/strongbow/src/8ax1-sb-town.js` on `claude/keen-swanson-68a311`): protos from `XAK`, `isleFlatten`, the three
       layers by distance, the cells. Both should draw through one core/city host module (an `XAK` town drawer), written when
       Strongbow's branch lands; the bundles (`th_city`, `th_xak`) likewise duplicate `sb_city`, `sb_xak`.
-- [ ] **No Stair of Descent, no road heads drawn.** Gate Square is paving at the rim with no way down to the crest; the Silt and
-      Salvage roads end at their heads (`PLAN.md`, T-town-3). The Warden's House is a scrap court, not its own building.
+- [x] ~~No Stair of Descent, no roads down~~ (T-town-3, 2026-11-16): the Stair of Descent (a stair-block on the crest's east end,
+      five flights in two lanes, 40 m), the Salvage Road (nine legs, 2.9 km at 15 %, to the canyon floor) and the Silt Road (four
+      legs, 1.6 km at 10 %, to the silt flats) hang on the east wall as drawn (`settlements/theodiga/src/41-th-descent.js`,
+      `8ay2-th-descent.js`; `buildDam` hands over the wall on its grid).
+- [ ] **The ways are plain masonry in vertex colours**, no library texture (the stair-block reads as a flat beige box from afar);
+      no salvage yards at the Salvage Road's foot and no fields on the silt flats; nobody on them. The Warden's House is a
+      scrap court, not its own building.
 - [ ] **The town has no interiors, no people, no lamps at night.** The scrap set's interiors (`kits/interiors` `xanadu-scrap`)
       and Qiblai's walk-in rooms are not wired here; the census is numbers only (core/simulation is later).
 - [ ] **The east plateau is the town's ground only on this page.** With the town on the page (`THCITY`) the ruin's east plateau

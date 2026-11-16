@@ -205,7 +205,7 @@ Each target adds its own fragments to `src/` and builds one output.
 | `spaceport` | `89z-rows.js`, `91z-views.js` | 2 |
 | `span` | `89z-rows.js`, `8as0-span-parts.js`, `91z-views.js` | 30 |
 | `spire` | `89z-rows.js`, `91z-views.js` | 4 |
-| `theodiga` | `77-dam.js`, `77a-theodiga-dome-plan.js`, `77b-theodiga-dome-draw.js`, `77c-theodiga-water.js`, `89z-rows.js`, `90w-theodiga-water.js`, `91z-views.js` | 41 |
+| `theodiga` | `77-dam.js`, `77a-theodiga-dome-plan.js`, `77b-theodiga-dome-draw.js`, `77c-theodiga-water.js`, `89z-rows.js`, `90w-theodiga-water.js`, `91z-views.js` | 42 |
 | `theodiga-today` | `89z-rows.js`, `91z-views.js` | 2 |
 | `trigon` | `89z-rows.js`, `91z-views.js` | 5 |
 | `veladiga` | `65-veladiga.js`, `89z-rows.js`, `91z-views.js` | 17 |

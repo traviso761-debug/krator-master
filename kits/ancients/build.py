@@ -143,7 +143,8 @@ THEO_TARGET = os.path.join(HERE, 'targets', 'theodiga')
 TARGET_READS['theodiga-today'] = (TARGET_READS['theodiga']
                                   + [(THEO_TARGET, f) for f in ('77-dam.js', '77a-theodiga-dome-plan.js', '77b-theodiga-dome-draw.js',
                                                                 '77c-theodiga-water.js', '90w-theodiga-water.js')]
-                                  + [(os.path.join(ROOT, 'settlements', 'theodiga', 'src'), '8ay1-th-town.js'),
+                                  + [(os.path.join(ROOT, 'settlements', 'theodiga', 'src'), f) for f in ('41-th-descent.js', '8ay1-th-town.js', '8ay2-th-descent.js')]
+                                  + [
                                      (os.path.join(ROOT, 'settlements', 'isle-demo', 'src'), '58-isle-protos.js')])
 TH_CITY, TH_XAK, TH_XPACK, TH_QPACK = '8ay8-th-city.js', '8ay9-th-xak.js', '8ay7-th-xanadu-pack.js', '8ay6-th-qiblai-pack.js'
 SEALED = {TH_CITY, TH_XAK}   # generated closures: the build rules' scans do not reach inside them
@@ -288,6 +289,7 @@ DETERMINISTIC = {
     '89-atmos-0-core.js', '89-atmos-0p-presets.js', '89-atmos-a-waves.js', '89-atmos-b-skylight.js',   # core/atmos (IIFE, no rnd())
     '20-core-water.js', '22-core-water-flow.js', '50-core-water-draw.js', '51-core-water-kinds.js',      # core/water (IIFE, no rnd())
     '8ay1-th-town.js', '58-isle-protos.js', '8ay7-th-xanadu-pack.js', '8ay6-th-qiblai-pack.js',   # theodiga-today: the town drawn from core/city's records (KRAND), the flattener, the packs
+    '41-th-descent.js', '8ay2-th-descent.js',          # theodiga-today: the ways down from the rim, records on the drawn wall and their drawing (no rng())
 }
 DETERMINISTIC |= {'06-core-khook.js', '06b-core-kcolor.js'}   # core/shader (no rnd())
 

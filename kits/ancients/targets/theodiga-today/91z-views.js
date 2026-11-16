@@ -8,6 +8,10 @@ const VIEWS={
  'The East Gate':[ROWS.dam.s+960,474,ROWS.dam.z+60,ROWS.dam.s+870,446,ROWS.dam.z-30],
  'The kora corner':[ROWS.dam.s+900,478,ROWS.dam.z-220,ROWS.dam.s+975,446,ROWS.dam.z-305],
  'The farms':[ROWS.dam.s+1320,520,ROWS.dam.z+220,ROWS.dam.s+1100,441,ROWS.dam.z-30],
+ // the ways down from the rim (T-town-3): the Stair of Descent from the crest, the two roads down the east wall
+ 'The Stair of Descent':[ROWS.dam.s+215,420,ROWS.dam.z+70,ROWS.dam.s+305,420,ROWS.dam.z+14],
+ 'The Salvage Road':[ROWS.dam.s+60,140,ROWS.dam.z+650,ROWS.dam.s+340,200,ROWS.dam.z+390],
+ 'The Silt Road':[ROWS.dam.s+80,330,ROWS.dam.z-620,ROWS.dam.s+340,350,ROWS.dam.z-330],
  'The town from the Dome':[ROWS.dam.s-100,520,ROWS.dam.z-280,ROWS.dam.s+700,442,ROWS.dam.z],
  // the ruin, as the theodiga target shows it
  'Theodiga ruin':[ROWS.dam.s+60,260,ROWS.dam.z+1000,ROWS.dam.s,200,ROWS.dam.z],

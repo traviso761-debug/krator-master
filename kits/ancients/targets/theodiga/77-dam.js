@@ -8,7 +8,7 @@ function buildDam(scene,gx,gz,d){reseed(9260+d);KOFF=[gx,0,gz];const G=new THREE
  // now carries bedding planes, vertical gullies and a coarser base noise, at a
  // grid fine enough to show them, plus a talus of fallen blocks at the foot.
  // All six wall meshes merge into one: they always shared a material.
- const ROCK=[];
+ const ROCK=[];let EAST=null;
  for(const s of [-1,1]){const CX=s*(SPAN/2+150);
   const face=(u,v)=>{
    const strata=9*Math.sin(v*34+fbm(u*4,0,2205,2)*7);                        // bedding planes
@@ -16,6 +16,7 @@ function buildDam(scene,gx,gz,d){reseed(9260+d);KOFF=[gx,0,gz];const G=new THREE
    const inner=-s*(150-32*fbm(u*13,v*7,2200+s,4)-strata-gully-18*(1-v)*(1-v));
    const wob=1+.12*fbm(u*6,v*2,2210,2);return CX+inner*wob;};
   ROCK.push(gridSurface((u,v)=>[face(u,v),v*CH,-700+u*1300],118,38,{uS:40,vS:14}));
+  if(s>0)EAST=face;   /* the east wall, for the town's ways down it (thTownDraw below): read as drawn, on its grid */
   // THE PLATEAU starts at the cliff's top edge (2026-11-11). It ran from CX-300, 150 m inside the face, and hung
   // over the reservoir as a lid at the rim's height: invisible from downstream, a ceiling over the Dome on the Water
   // from upstream. Its inner edge is the face's top edge, column for column, so the two meet with no crack.
@@ -206,6 +207,12 @@ function buildDam(scene,gx,gz,d){reseed(9260+d);KOFF=[gx,0,gz];const G=new THREE
  if(WTR)THEOWATER.dam(d,{gx:gx,gz:gz,H:H,SPAN:SPAN,WL:WL,NX:NX,NB:NB,wN:notchW(NB)-1.5,zc:zc,th:th_,zf:zf,
   RIVX:RIVX,RIVW:RIVW,floorY:floorY,bedY:bedY,outlets:[-40,40]});
  // THE TOWN on the east rim (theodiga-today: settlements/theodiga/src/8ay1-th-town.js, read in place), beside the ruin only
- if(d>0&&typeof thTownDraw==='function')thTownDraw(gx,gz);
+ // the ways down from it (T-town-3) hang on the east wall as DRAWN: its face at the grid's nodes (118 along the canyon, 38 up
+ // it), bilinear between them; the canyon floor downstream (the mud, the scene's plane beyond it) and the silt upstream
+ if(d>0&&typeof thTownDraw==='function'){const NU=118,NV=38,FC=new Map(),node=(i,j)=>{const k=i*64+j;let f=FC.get(k);if(f==null){f=EAST(i/NU,j/NV);FC.set(k,f);}return f;};
+  const wall=(z,y)=>{const u=clamp((z+700)/1300,0,1)*NU,v=clamp(y/CH,0,1)*NV,i=Math.min(NU-1,Math.floor(u)),j=Math.min(NV-1,Math.floor(v)),a=u-i,b=v-j;
+   return (node(i,j)*(1-a)+node(i+1,j)*a)*(1-b)+(node(i,j+1)*(1-a)+node(i+1,j+1)*a)*b;};
+  const z0=zf(0)+60,floor=(x,z)=>z>=z0&&z<=z0+500&&Math.abs(x)<(SPAN-40)/2?Math.max(floorY(x,z),0):0;
+  thTownDraw(gx,gz,{wall,floor,bed:(x,z)=>Math.abs(x)<=(SPAN+40)/2?bedY(x,z):WL-6,WL,crest:{x:300,z0:4,z1:28,y:H},zc});}
  KOFF=[0,0,0];return G;}
 

@@ -12,7 +12,7 @@
 // drawn on) over a footing as deep as the ground falls. The streets are packed earth on the ground, the kora's flagstone a
 // paler shade, the fields strips in their crop's colour. Everything is registered in core/tags first.
 function thTownKit(){return typeof XAK!=='undefined'&&typeof THCITY!=='undefined'&&typeof isleFlatten!=='undefined';}
-function thTownDraw(gx,gz){const O={buildings:0,people:0,protos:0,meshes:0,tris:0,errors:[],census:null};
+function thTownDraw(gx,gz,ctx){const O={buildings:0,people:0,protos:0,meshes:0,tris:0,errors:[],census:null};
  if(!thTownKit()){window._thTown=O;return O;}
  const KD=XAK.dims(),dims=(k,v)=>KD[k]?{key:k,v:v|0,w:KD[k].w,d:KD[k].d,h:KD[k].h}:null,TT=THCITY.town,GR=TT.ground;
  /* the kits' library maps from the packs the page carries (kits/ancients/build.py TH_XPACK, TH_QPACK) */
@@ -122,8 +122,11 @@ function thTownDraw(gx,gz){const O={buildings:0,people:0,protos:0,meshes:0,tris:
   const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));g.computeVertexNormals();
   const m=new THREE.Mesh(g,new THREE.MeshStandardMaterial({vertexColors:true,roughness:.97,side:THREE.DoubleSide,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2}));
   m.name='theodiga:town streets, square and fields';m.receiveShadow=true;m.userData.probeSkip=true;m.userData.lodSkip=true;scene.add(m);}
+ /* the ways down from the rim (T-town-3: src/8ay2-th-descent.js), on the wall buildDam hands over */
+ let DS=null;if(typeof thDescentDraw==='function'){try{DS=thDescentDraw(gx,gz,ctx,{ground:GR,heads:TT.HEADS});}catch(e){O.errors.push('the ways: '+(e&&e.stack||e));}}
+ if(DS)O.errors.push(...DS.errors);
  O.kitErrors=XAK.errors.slice(0,8);
- window._thTown={bound:O.bound||0,buildings:O.buildings,people:O.people,protos:O.protos,meshes:O.meshes,tris:Math.round(O.tris),bigTris:Math.round(O.bigTris||0),
+ window._thTown={descent:DS?{ways:DS.ways,boxes:DS.boxes,tris:Math.round(DS.tris),stair:DS.stair,salvage:DS.salvage,silt:DS.silt}:null,bound:O.bound||0,buildings:O.buildings,people:O.people,protos:O.protos,meshes:O.meshes,tris:Math.round(O.tris),bigTris:Math.round(O.bigTris||0),
   skinTris:Math.round(O.skinTris||0),detailTris:Math.round(O.detailTris||0),cells:O.cells,census:O.census,errors:O.errors.concat(XAK.errors).slice(0,12),
   fields:T.fields.length,ways:T.ways.length,qiblai:all.filter(r=>/^qb_/.test(r.key)).length,level:f=>O.level&&O.level(f)};
  return O;}
