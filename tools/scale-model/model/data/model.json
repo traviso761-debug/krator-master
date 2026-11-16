@@ -175,6 +175,10 @@
   {
    "key": "springs",
    "file": "springs.json"
+  },
+  {
+   "key": "domes",
+   "file": "domes.json"
   }
  ]
 }
