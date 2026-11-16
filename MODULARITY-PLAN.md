@@ -368,6 +368,10 @@ Pylon and Talia -> Iziz, and Beast Riders -> Girder and Mav's Refuge (below).
   move to the kit or to core. Open.
 - **Pylon and Talia -> Iziz** stay: they build inside Iziz's page by design (`settlements/iziz/VASSAL-KITS.md`), the open
   question below.
+- **Qiblai -> Xanadu** (2026-11-11) stays for the same reason: the Qiblai kit is a vassal kit of the Xanadu kit and builds inside
+  Xanadu's page (`settlements/xanadu/build.py --kit`; `kits/qiblai/PLAN.md` section 7). It goes when Xanadu's page shell does.
+- **The city of Qiblai -> Xanadu** (2026-11-11), the same: the city is a target on Xanadu's page, as Erewhon is
+  (`settlements/qiblai/build.py`, `settlements/xanadu/build.py --kit`). It goes with the Qiblai kit's edge, when Xanadu's page shell becomes a core host.
 - On the biome rebuild only (not on this branch): `core/atmos/demo/build.py` looks for three.js in Ancients and Ring Sea;
   it takes `harness.local_three` when that branch lands, as the materials demo does now.
 
