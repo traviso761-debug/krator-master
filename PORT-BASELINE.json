@@ -1105,12 +1105,12 @@
    "sha256": "8e24dd7d7f258c04ecad98689eb858130e5c9d2353c1c687e81fe21f68a68dad"
   },
   "kits/interiors/dist/interiors-sets.html": {
-   "bytes": 889750,
-   "sha256": "d0a7ea74884e03ff5b67fd1c460198f8757e162996448345dae1cf42ef920db8"
+   "bytes": 950419,
+   "sha256": "19e38c9673b2fb02267eb002c87b7262f7536b430fea45028c3e66ff0e27eba4"
   },
   "kits/interiors/dist/interiors-walk.html": {
-   "bytes": 10601097,
-   "sha256": "cf5afbe6ea1b910b3bb64a56a03a73d661f4afc6d9b51674fcb8b65039219b13"
+   "bytes": 10602167,
+   "sha256": "8e033dc652090c3bb8511bdf35878057742f19674b344890e3361ae4fbe8510a"
   },
   "kits/interiors/dist/interiors.html": {
    "bytes": 269503,

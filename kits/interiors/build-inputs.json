@@ -65,7 +65,7 @@
     "kits/interiors/sets/highlands.js": "3d9b90f6f8ff961dd5a834115fb9d590f1e9019cb9403f94aedeea545199e15e",
     "kits/interiors/sets/iziz-ancient.js": "f2c0bedec99fa3db7b590381a6c1311b7c98878bbd82fa05d49fa491b31fe790",
     "kits/interiors/sets/iziz.js": "7d938ebe351335a66555704a71c5a371c30832bf0eb2f07809c837787c947101",
-    "kits/interiors/sets/khaayken.js": "b71bb4f24b81d203eacdceb358a20649b69514b31c7e345b3989bbada9978424",
+    "kits/interiors/sets/khaayken.js": "4615f586dd4639a59987408b70976da2ab3d527609a97a33af2c7b16ea001990",
     "kits/interiors/sets/locus.js": "5169f8c2b10d0c819634ecfafbb67e65ea46cce94ec79860df22032ddd09d613",
     "kits/interiors/sets/noahs-regret.js": "8a03f4ee8cc7705cde0b04aa330fd21ebe5d64992dd3efea3e2477953ae68b62",
     "kits/interiors/sets/post-apoc.js": "b6af1717bddc4321cf0a8c93e80d1d96faa1ffa9800b240ac7c45e3d3c1f72ff",
@@ -128,17 +128,17 @@
     "tools": "5d8cb54bfd5566913f21e3e094a6a85418e1354e6e39cf6138ec20bda1add512"
    },
    "outputs": {
-    "kits/interiors/build-manifest.json": "6282700d377a00e752a2bb4819eeef62204236b00592d6a2367587c3976151fd",
+    "kits/interiors/build-manifest.json": "6fe0881b3b2172caef353b2b3ab887bf3e40ba300d451db74e2f9b5cf61d117c",
     "kits/interiors/dist/interiors-core.js": "bdcfa990b63bb7fa2d301476a27cafb3e207c43a1be60911bc1a8b86134572d7",
-    "kits/interiors/dist/interiors-sets.html": "5d13f1065056a5b15997481d2c5228a32b40c675dbdeee63ea3cd4ad72dac8bc",
-    "kits/interiors/dist/interiors-walk.html": "cf5afbe6ea1b910b3bb64a56a03a73d661f4afc6d9b51674fcb8b65039219b13",
+    "kits/interiors/dist/interiors-sets.html": "19e38c9673b2fb02267eb002c87b7262f7536b430fea45028c3e66ff0e27eba4",
+    "kits/interiors/dist/interiors-walk.html": "8e033dc652090c3bb8511bdf35878057742f19674b344890e3361ae4fbe8510a",
     "kits/interiors/dist/interiors.html": "e09cf4e5b991e77e13512df991639dd9368c830b7195c4749960e62b6f008160"
    },
    "outputs_raw": {
-    "kits/interiors/build-manifest.json": "2ea64eae3ed3ab6a28de1b8b7c8e6bcbb73d0e8f7049718aff8a834375a5ed76",
+    "kits/interiors/build-manifest.json": "77f074189de714c04b99c9e802942550df5b2b39450f2a8d372fd3230aafa127",
     "kits/interiors/dist/interiors-core.js": "bdcfa990b63bb7fa2d301476a27cafb3e207c43a1be60911bc1a8b86134572d7",
-    "kits/interiors/dist/interiors-sets.html": "5d13f1065056a5b15997481d2c5228a32b40c675dbdeee63ea3cd4ad72dac8bc",
-    "kits/interiors/dist/interiors-walk.html": "cf5afbe6ea1b910b3bb64a56a03a73d661f4afc6d9b51674fcb8b65039219b13",
+    "kits/interiors/dist/interiors-sets.html": "19e38c9673b2fb02267eb002c87b7262f7536b430fea45028c3e66ff0e27eba4",
+    "kits/interiors/dist/interiors-walk.html": "8e033dc652090c3bb8511bdf35878057742f19674b344890e3361ae4fbe8510a",
     "kits/interiors/dist/interiors.html": "e09cf4e5b991e77e13512df991639dd9368c830b7195c4749960e62b6f008160"
    }
   }
