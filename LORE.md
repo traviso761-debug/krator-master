@@ -533,8 +533,7 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
 - Look: Tibetan massing with Indian, Turkish and Persian detail; Andean "cholet" paint. **No minarets, great prayer wheels instead.**
 - Rulers: the Sultan's Palace, the **Pleasure Dome**, the **Grand Vizier**.
 - **Money: the qud** (the owner, 2026-11-16: "Sultanate currency is the qud"), the coin the economy's Mint strikes from the
-  Treasury's gold; traders take the Izani Talent too (§6.2). *Proposed* (Theodiga's money, 2026-11-16, for the owner to
-  confirm or change): a thin struck gold coin of about a gram, twenty to the Talent (0.05 Talents, the Kautoan shell's
+  Treasury's gold; traders take the Izani Talent too (§6.2). Settled (the owner, 2026-11-16, agreeing Theodiga's money's proposal): a thin struck gold coin of about a gram, twenty to the Talent (0.05 Talents, the Kautoan shell's
   worth, so a day's wage reads alike across the nations); a working day's wage about 54 quds (6 an hour, as the isles').
   The sim keeps it in `settlements/theodiga/src/49m-th-money.js` (`TH_MONEY.TUNE`).
 - Guilds: Farmers, Miners, Goldsmiths ("the richest house in the valley"), Alchemists, Masons, Spicers.

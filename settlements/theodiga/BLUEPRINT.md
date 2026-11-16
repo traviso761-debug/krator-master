@@ -156,8 +156,8 @@ town, the ways down and the works below are `PLAN.md`.
 ## Next
 
 - Windows cut through the crest's and fins' shells; a Xanadu divan, rug and hanging for the deck's dress.
-- The salvagers' commute (homes by the works, or a cookhouse at the yards). A walk cycle for the walkers, and indoor
+- The Dome's fall's size against the yards' rate (it lasts about a month on the page). A walk cycle for the walkers, and indoor
   residents shown in the opened rooms. The census is on `core/simulation`. It walks, feeds itself, trades by the East
   Gate road, and is paid in quds. It burns the Lamp Hall's butter, wears its robes out, and sends the Devisers' rarities
-  away (T-sim-1 to T-money-1, `PLAN.md`).
+  away (T-sim-1 to T-town-8, `PLAN.md`).
 - LORE 6.13 (on the branch that holds the faith): Theodiga as the Decree's shrine, the Order's delegation, the cascade.

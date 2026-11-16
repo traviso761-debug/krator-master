@@ -27,6 +27,11 @@ var TH_SIM=(function(){
   work:[[0,'SLEEP'],[6,'EAT'],[7,'WORK'],[12,'EAT'],[13,'WORK'],[18,'EAT'],[19,'SOCIALIZE'],[21,'SLEEP']],
   farm:[[0,'SLEEP'],[5,'EAT'],[6,'WORK'],[11,'EAT'],[12,'WORK'],[17,'EAT'],[18,'PRAY'],[19,'SOCIALIZE'],[21,'SLEEP']],
   shop:[[0,'SLEEP'],[7,'EAT'],[8,'WORK'],[13,'EAT'],[14,'WORK'],[19,'EAT'],[20,'SOCIALIZE'],[22,'SLEEP']],
+  /* the salvagers' (T-town-8): the yards are at the foot of the face, about 2.3 world hours' walk below their homes, so
+     they go down at five, eat at the yards' cookhouse at dawn and noon (their EAT pinned to work), and come up at
+     five in the afternoon, home by about half past seven with free hours to shop. On the town's day they walked home
+     to eat at noon and at six, worked a few hours, and their shoppers never reached the bazaar */
+  salvage:[[0,'SLEEP'],[5,'EAT'],[6,'WORK'],[12,'EAT'],[13,'WORK'],[17,'SOCIALIZE'],[21,'SLEEP']],
   monk:[[0,'SLEEP'],[4,'PRAY'],[6,'EAT'],[7,'WORK'],[12,'EAT'],[13,'PRAY'],[15,'WORK'],[18,'EAT'],[19,'PRAY'],[21,'SLEEP']],
   priest:[[0,'SLEEP'],[4,'PRAY'],[7,'EAT'],[8,'PRAY'],[12,'EAT'],[13,'WORK'],[17,'PRAY'],[19,'EAT'],[20,'PRAY'],[21,'SLEEP']],
   pilgrim:[[0,'SLEEP'],[5,'KORA'],[8,'EAT'],[9,'TRADE'],[11,'PRAY'],[13,'EAT'],[14,'KORA'],[17,'SOCIALIZE'],[19,'EAT'],[20,'PRAY'],[21,'SLEEP']]};
@@ -34,7 +39,7 @@ var TH_SIM=(function(){
  const QROLE={square:{id:'hosteller',name:'the hostel keepers and households of Gate Square',sched:'shop',work:['hostel','bath','store']},
   bazaar:{id:'merchant',name:'the bazaar\'s merchants and craftsmen',sched:'shop',work:['bazaar','store']},
   gate:{id:'caravaner',name:'the caravaners and carters of the East Gate',sched:'work',work:['serai','gate','store']},
-  salvage:{id:'salvager',name:'the Salvagers\' guild',sched:'work',work:['yard'],org:'salvagers'},
+  salvage:{id:'salvager',name:'the Salvagers\' guild',sched:'salvage',work:['yard'],org:'salvagers',eat:'work'},
   farmers:{id:'farmer',name:'the temple estates\' farmers and dairymen',sched:'farm',work:['field','granary','farmstead']},
   poor:{id:'labourer',name:'the poor tier\'s labourers',sched:'work',work:['yard','field','store']},
   farms:{id:'upland-farmer',name:'the upland farmers',sched:'farm',work:['field','farmstead']}};
@@ -64,7 +69,7 @@ var TH_SIM=(function(){
   const later=S=>{const L=S.map(([h,a])=>[(h+1)%24,a]).sort((p,q)=>p[0]-q[0]);if(L[0][0]!==0)L.unshift([0,L[L.length-1][1]]);return L;};
   for(const q in QROLE){const n=census.byQuarter[q]|0;if(!n)continue;const R=QROLE[q];
    roles.push({id:R.id,org:R.org||'town',name:R.name,sched:SCHED[R.sched],variants:[SCHED[R.sched],later(SCHED[R.sched])],count:n,homes:['home:'+q],work:{kinds:R.work,act:'WORK',near:true},settlement:'theodiga',
-    prefers:{SLEEP:{pin:'home'},EAT:{pin:'home'}}});}
+    prefers:{SLEEP:{pin:'home'},EAT:{pin:R.eat||'home'}}});}
   for(const R of AROLE)roles.push({id:R.id,org:R.org||'clergy',name:R.name,sched:SCHED[R.sched],count:R.homes.reduce((s,h)=>s+(AREA[h.slice(4)]|0),0),homes:R.homes,
    work:{kinds:R.work,act:'WORK',near:true},settlement:'theodiga',prefers:{SLEEP:{pin:'home'},EAT:{pin:'home'}}});
   roles.push({id:'deviser',org:'devisers',name:'the Rare Devisers and their haulers at the bore',sched:SCHED.work,count:o.devisers==null?12:o.devisers,homes:['home:bore'],
@@ -93,6 +98,8 @@ var TH_SIM=(function(){
   /* the town's work places */
   for(const {L,k} of workLots){const acts={WORK:posts(k)};
    if(k==='bazaar'||k==='serai')acts.TRADE=40;if(k==='shrine')acts.PRAY=60;if(k==='bath')acts.SOCIALIZE=40;
+   /* the yards' cookhouse: the salvagers eat where they work (T-town-8) */
+   if(k==='yard')acts.EAT=acts.WORK;
    if(k==='hostel'){acts.SLEEP=o.hostelBeds==null?40:o.hostelBeds;acts.EAT=acts.SLEEP;}
    /* out of doors: the yards, the fields, and the bazaar's arcades (its stalls under the arcade, in sight of the street) */
    add('th.work.'+L.id,k,L.x,L.y,L.z,acts,{name:L.name,indoor:k!=='yard'&&k!=='field'&&k!=='bazaar',wander:k==='bazaar'?3:undefined,r:k==='bazaar'?12:undefined});}

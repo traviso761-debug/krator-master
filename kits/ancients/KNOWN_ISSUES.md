@@ -397,10 +397,12 @@ records drawn from the scrap Xanadu set and the Qiblai kit (`XAK`, `kit_bundle.b
       - Wages and prices are paid in quds.
 
       What is off:
-      - **The salvagers' commute.** The yards are a walk of about 2.3 world hours from their homes in town, so a few big
-        salvagers' houses never reach the bazaar in their free hours. About 600 meals of nothing a day from day 3 on the
-        page, while the warehouses hold.
-      - The qud's coin and rate, the treasury's 120 quds a person and the 54-qud day are proposed, awaiting the owner.
+      - **The Dome's fall runs out in about a month on the page.** Since the salvagers eat at the yards (T-town-8) they
+        work their full days and take about 2,400 lots a day of its 60,000. The fall's size and the yards' rate are this
+        page's guesses, not the lore's.
+      - The yards' cookhouse serves the foods the warehouses hold most of (core's `economyMeal`), not the diet, so it
+        leans on the grain: about 1.4 days on the page, steady over nine days.
+      - The poor tier's labourers who work the yards still walk home to eat.
       - The kitchens, churns and smelter are staffed by the census, not by their output, so their goods carry idle hours
         in their price: bread 15 quds against grain's 5, iron 1,088.
       - The caravans pay nothing yet, and the rarities' sale earns nothing (M3).

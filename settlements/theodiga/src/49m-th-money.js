@@ -3,7 +3,7 @@
    core/simulation's money (77-sim-6-money.js, PLAN-MONEY.md M0 and M1) on Theodiga's economy (src/49-th-econ.js), as the
    isle demo keeps it (settlements/isle-demo/src/47m-isle-money.js, core/region 47m-region-money.js), for one town:
      THE CURRENCY  the qud, the Sultanate's coin; the Izani Talent beside it (the caravans' and the changers'). The qud's
-                   coin and its rate are PROPOSED (the owner named only the coin): a thin struck gold coin of about a gram,
+                   coin and its rate are the owner's (2026-11-16: named the coin, then agreed this proposal): a thin struck gold coin of about a gram,
                    twenty to the Talent (0.05, the Kautoan shell's worth, so a day's wage reads alike across the nations)
      THE ACCOUNTS  the town's TREASURY (`treasury:theodiga`), `treasury` quds a person, owning every workplace to start; a
                    WORKPLACE account for every place with a recipe or wares; a HOUSEHOLD account for every home with
@@ -19,7 +19,7 @@
                    make (the road's tea, charcoal and garments) costs its `fallback`. The treasury pays each household a
                    day's keep for each member with no work (core's ration: none here yet, every townsperson in the census
                    works), and covers what a household cannot pay (the dole). The treasury opens with `treasury` quds a
-                   person (120, PROPOSED: twice the isles', so it holds a day's wages over its reserve)
+                   person (120, agreed with the coin: twice the isles', so it holds a day's wages over its reserve)
    Not here yet: what the caravans pay for the scrap and the iron, and the Devisers' rarities (M3, the Talent's trade);
    the stations (a worker buying a shop) and moving prices (M2).
    TH_MONEY.declare(SIM, o) after TH_ECON.declare -> {currencies, accounts, households, messes, workplaces, treasury}

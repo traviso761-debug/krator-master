@@ -285,8 +285,8 @@ spring, sealed deep inside). Theodiga's end:
 13. **T-money-1, the qud** (done 2026-11-16; the owner, relayed by the open-world session: "Sultanate currency is the
     qud"). The open-world line was merged first (LORE is a shared file). `src/49m-th-money.js` runs core's money (M0
     and M1) for one town, as the isle demo does.
-    - **The currency.** The qud is the Sultanate's coin, with the Izani Talent beside it. *Proposed*, for the owner to
-      confirm (LORE 6.13): a thin struck gold coin of about a gram, twenty to the Talent (0.05), a day's wage about 54
+    - **The currency.** The qud is the Sultanate's coin, with the Izani Talent beside it. Proposed, then agreed by
+      the owner (2026-11-16; LORE 6.13): a thin struck gold coin of about a gram, twenty to the Talent (0.05), a day's wage about 54
       quds. The treasury opens with 120 quds a person.
     - **The accounts.** The town's treasury owns every workplace. Every household opens with an endowment by its home:
       the square's and the bazaar's merchants are middle class, the Devisers' lodge rich, the rest poor.
@@ -314,4 +314,20 @@ spring, sealed deep inside). Theodiga's end:
       wage bill cannot be paid.
     - **Not here yet:** what the caravans pay in Talents for the scrap and the iron, the Devisers' rarities (M3), the
       stations, moving prices (M2).
-14. **Later**: the Qiblai buildings' rooms (as Strongbow's), core/simulation's roles, the open world.
+14. **T-town-8, the salvagers' day** (done 2026-11-16; the owner: "do next build step", after agreeing the qud).
+    - **The fault.** The yards are at the foot of the face, about 2.3 world hours' walk below the salvagers' homes on the
+      rim. On the town's day they walked home to eat at noon and at six, so they worked a few hours of their ten. A few big
+      salvagers' houses never reached the bazaar in their free hours: about 600 meals of nothing a day from day 3.
+    - **The fix** (`src/47-th-sim.js`). The salvagers keep their own day. They go down at five and eat at the yards'
+      cookhouse at dawn and noon: their EAT is pinned to work, and the yards offer EAT. They come up at five in the
+      afternoon, home by about half past seven with free hours to shop. A meal at the cookhouse is bought there (20
+      quds) and drawn from the warehouses.
+    - **On the page** (nine days):
+      - no meal went without, against 2,673 before;
+      - about 2,600 cookhouse meals a day;
+      - every money check passes;
+      - grain about 1.4 days and steady.
+    - **What it shows next:** the salvagers now work their full days, so the Dome's fall (60,000 lots) runs out in about
+      a month. Its size and the yards' rate are the page's guesses (KNOWN_ISSUES).
+    - `test-th-sim.js`: the salvagers eat at the yards' cookhouse (178 of 178 at noon), with a negative.
+15. **Later**: the Qiblai buildings' rooms (as Strongbow's), core/simulation's roles, the open world.
