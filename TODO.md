@@ -51,6 +51,13 @@ terrain splat texture and the placement input; (3) the minimap drawn from export
     twigs, written into `tools/check_cells_baseline.json` as known: ehighlands `laurel`, `epi`; nhighlands `birch`, `larch`, `maple`,
     `needle`, `pinnate`, `small`; rift `broadcloud`, `croton`, `leaflet`, `lobeleaf`, `needle`, `spray`. Each wants its sprigs' stems
     measured (by hand in `card-bases.json` where the automatic pick is wrong, as card.spruce's was) and `check_cells.py --fix`.
+  - *Two more gaps, proposed, not written* (2026-11-15, the geyser/Godthrone looks session, `claude/geyser-godthrone-looks-793e2e`, which
+    fixed both in its kits with station checks): (1) **albedo under soot**: the geyser Stills' sails (`biomes/hearths` 57, `ssail*`) were
+    tinted sRGB 0x161618 (0.8% linear albedo) on an unmapped Lambert and drew as solid black cut-outs; fail a lit baked item with no map
+    and no emissive whose instance colour x vertex colour is under ~0.02-0.03 linear luminance (negative: 0x161618). (2) **a packed
+    texture nothing samples**: Godthrone station 9 packs `rockColumns` (station.json "tex") but the vault's lamp ShaderMaterial had only
+    a flat uniform; fail a family the page's pack adds that no live material's map or uniform takes. Both belong beside
+    `BIO.insideOut` in `BIO.guardChecks`, each with its negative.
 
 - **core/tags: the culture `qiblai`** (2026-11-11, `kits/qiblai`): the Qiblai kit tags its buildings `culture:'qiblai'` (the owner's
   brief), which `core/tags/52-core-tags-vocab.js` does not list yet, so the kit's page counts it as an unknown value in `T.audit()`

@@ -1,5 +1,19 @@
 # Eastern highlands — known issues
 
+- [ ] **The beech's card is not a beech** (2026-11-15). `card.broadleaf` is a jungle rosette of big monstera-like leaves; the combed beech
+      (small toothed Nothofagus leaves) draws it whole since 2026-11-15 (it was cut into ninths). `card.beech.southern` is owed
+      (`core/materials/PROMPTS-NEEDED.md` section 44): a sheet of nine sprays to hold by their stems, as the fir's needles are.
+- [ ] **The laurel's and the epiphyte gardens' crowns are cut into cells and centred on their twigs** (2026-11-15). The fir's defect
+      (its sprigs 0.25 m median off the rod, fixed with `stems`) is theirs too: `tools/textures/check_cells.py` reports `NO STEM laurel`
+      and `NO STEM epi` (in its baseline as known). Measure their sprigs' stems into `card-bases.json`, `check_cells.py --fix`, re-pack.
+- [ ] **What stands on steep ground is placed by terrainH, the ground is drawn on an 11 m grid** (2026-11-15, the owner's floating rocks on
+      station 5). On a gorge wall the two differ by metres. The tower honey's overhangs now hang from the drawn face (`EHIGH.groundAt`,
+      84); the trees, boulders and floor plants on steep cells still read terrainH. A finer ground near the eye, or placement on
+      `EHIGH.groundAt`, would close it for all.
+- [x] **The vent cones drew as flat black crescents** (2026-11-15, the owner: "a transparency problem" at station 3's fumarole): the lathe's
+      profile wound every face toward the ground. Reversed; the core's `BIO.insideOut` probe now fails a page with such a mesh.
+- [x] **The wet stations had no understory** (2026-11-15, the owner): saplings, shrubs, young tree ferns and tall ferns under the crowns
+      of stations 2 and 4-6 (`60-biome-ehigh-floor.js`, "THE UNDERSTORY"). The fir's needle cap is 800k and the beech's 300k for it.
 - [x] **Not placed on the scale model.** The region has no polygon yet (`biomes/WORLD.md`: "to be placed"); its
       neighbours and its pressure (~0.6 atm assumed) wait for it. The Koppen weights (`EHIGH.KOPPEN`) are an estimate.
       2026-11-09: placed. The polygon is `e inner wall` (PLAN-STATIONS.md); the three stations are sited on 5.1 and `EHIGH.KOPPEN` is the

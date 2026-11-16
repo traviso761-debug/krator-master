@@ -489,7 +489,7 @@ BIO.def('fruit',new T3.IcosahedronGeometry(1,0),M.solid,{label:'Fruit and flower
  /* the clump's tripod; with the library sheet its slot's "stems" (materials.json, measured by hand in card-bases.json) turn it into three
     sprigs each held by its stem at the clump's origin, which the fir sets on its branch (2026-11-15, the owner: the needles did not attach;
     cut into cells, each sprig sat centred on the point, its stem 0.3-0.5 of the clump's size off the twig) */
- BIO.def('needle',BIO.geo.clump(),M.needle,{attrs:['aN'],label:'Fir needles',cap:760000,capWhy:'the fir forest of the montane belt (station 6): 699,018 needle clumps at 2026-11-08, the whorls of every fir; nhighlands holds its conifers at 700,000'});}
+ BIO.def('needle',BIO.geo.clump(),M.needle,{attrs:['aN'],label:'Fir needles',cap:800000,capWhy:'the fir forest of the montane belt (station 6): 699,018 needle clumps at 2026-11-08, the whorls of every fir (nhighlands holds its conifers at 700,000); 766,206 at 2026-11-15 with the understory\'s young firs and low fir shrubs near the eye'});}
 
 // ---------------------------------------------------------------- stations 5 and 6 (2026-11-09): the beech's leaves and bark
 {const RS=KRAND.stream(53073),r=()=>RS.next(),rq=(a,b)=>a+(b-a)*r();
@@ -507,5 +507,5 @@ BIO.def('fruit',new T3.IcosahedronGeometry(1,0),M.solid,{label:'Fruit and flower
  BIO.bucket('bark6',M.bark[6],{label:'Beech bark (lichened)',uvScale:[1.6,2]});
  /* the whole spray on every card (2026-11-15, the owner: the beech leaves badly cut out): card.broadleaf is ONE spray (plants 1), and
     BIO.geo.cells cut it into nine, each card a ninth of it with straight edges. The core's card guard now refuses that */
- BIO.def('beech',BIO.geo.clump(),M.beech,{attrs:['aN'],label:'Combed beech leaves'});}
+ BIO.def('beech',BIO.geo.clump(),M.beech,{attrs:['aN'],label:'Combed beech leaves',cap:300000,capWhy:'the mixed belt (station 5): the beeches\' tiers and, since 2026-11-15, the understory\'s beech saplings and shrubs near the eye: 275,184 clumps'});}
 })();

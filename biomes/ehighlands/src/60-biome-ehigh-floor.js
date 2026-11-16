@@ -175,7 +175,9 @@ EHIGH.buildFloor=function(R,q){
       the drawn ground's (EHIGH.groundAt, 84), the slab is set back into the face until the back half of it is buried, the combs under its
       lip, and where no setback within 3 m buries it the face is not sheer enough to hold one: nothing is hung there. Every draw is
       taken as before, in the same order, so nothing else moves */
-   const GA=EHIGH.groundAt||Y,m=ri(1,4),S0=rr(.45,.8),hy0=GA(x,z)+S0*1.5+.6,D=S0*2.4,col=rockTint(PAL.basalt),cm=[];
+   /* over a stream the drawn ground sags under the water in its narrow channel: hung from the higher of the two (station 2's verify, 2026-11-15:
+      27 combs under the water) */
+   const GA=EHIGH.groundAt||Y,m=ri(1,4),S0=rr(.45,.8),hy0=Math.max(GA(x,z),BIO.waterH(x,z)+.3)+S0*1.5+.6,D=S0*2.4,col=rockTint(PAL.basalt),cm=[];
    for(let k=0;k<m;k++){const s=S0*rr(.8,1.1);cm.push([s,s*rr(1.1,1.5),bright(vary(pick(PAL.comb),.02,.06,.05),1.15)]);}
    let sb=-1;for(let s=0;s<=3.001&&sb<0;s+=.25){const bx=x-nx*(.4+s+D*.5),bz=z-nz*(.4+s+D*.5),fx=x-nx*(s-.2),fz=z-nz*(s-.2);
     if(GA(bx,bz)>=hy0+.35&&GA(fx,fz)<=hy0-.25)sb=s;}   /* the back half buried in the face, the combs' spot (under the lip) clear of it */
@@ -184,5 +186,43 @@ EHIGH.buildFloor=function(R,q){
    for(let k=0;k<m;k++){const o=(k-(m-1)/2)*S0*.85;
     BIO.put('comb',[hx+nz*o+nx*.2,hy,hz-nx*o+nz*.2],qFacing([nx,0,nz]),[cm[k][0],cm[k][1],cm[k][0]],cm[k][2]);st.combs++;}
    (EHIGH.COMBS||(EHIGH.COMBS=[])).push([hx,hy,hz]);},{patch:0,pad:1,noMask:true});
+ /* THE UNDERSTORY (2026-11-15, the owner: "the wetter stations need more understory"): the wet face's floors (the cloud forest, the mixed
+    belt, the taiga) had ferns, moss and stones under the crowns and nothing between. A shrub layer now: saplings of each belt's own trees
+    (laurel in the cloud, beech in the mixed belt, fir under the crest) on a thin stem with their leaves held on it (the fir's sprigs by their
+    stems on its axis), young tree ferns crowned at the ground, and tall stands of fern. Near only for the saplings (their stems are rods,
+    and the montane belt's firs hold most of the rod cap), out to the floor's far band for the ferns. Last in the pass, on its own seed:
+    nothing placed before it moves, and the dry side (no wet zone) draws none */
+ reseed(600043);st.under=0;st.saplings=0;
+ const SPK=k=>EHIGH.SPECIES.find(s=>s.key===k),LIB=EHIGH.LIB||{};
+ function sapling(kind,x,y,z){const S=SPK(kind);if(!S)return;const h=rr(1.2,3.2)*(kind==='fir'?1.1:1),lx=rr(-.12,.12)*h,lz=rr(-.12,.12)*h,b=[x,y-.1,z],t=[x+lx,y+h,z+lz];
+  BIO.beam('rod',b,t,.03+h*.008,.012,shade(C(pick(S.bark)),-.25));st.saplings++;
+  const lib=kind==='fir'?LIB.needle:LIB[kind],item=kind==='fir'?'needle':kind,n=kind==='fir'?ri(4,5):ri(4,6);
+  for(let i=0;i<n;i++){const u=mix(kind==='fir'?.2:.28,1,n>1?i/(n-1):1),p=[b[0]+(t[0]-b[0])*u,b[1]+(t[1]-b[1])*u,b[2]+(t[2]-b[2])*u];
+   const s=kind==='fir'?(.4+(1-u)*h*.42)*rr(.85,1.15):rr(.75,1.2)*(.65+.35*h/3.2),fl=kind==='fir'?.42:kind==='beech'?.45:.6;
+   /* a centred crown sits a little out from the stem, within a fifth of its size; the fir's sprigs start on the stem's axis */
+   const o=kind==='fir'?0:s*.18,a=rr(0,TAU),c=lib?(kind==='fir'?C(pick(S.leaf)):bright(C(pick(S.leaf)),1.08)):C(pick(S.leaf));
+   if(BIO.waterH(p[0]+Math.cos(a)*o,p[2]+Math.sin(a)*o)>p[1]-.3)continue;   /* a leaning sapling over a stream: no clump in the water (its draws taken) */
+   BIO.put(item,[p[0]+Math.cos(a)*o,p[1],p[2]+Math.sin(a)*o],qEuler(rr(-.2,.2),rr(0,TAU),rr(-.2,.2)),[s,s*fl,s],c,{n:[Math.cos(a)*.3,1,Math.sin(a)*.3]});}}
+ function youngFern(x,y,z,lv){const S=SPK('treefern');if(!S)return;const nF=ri(5,7),a0=rr(0,TAU),hc=LIB.bigfrond?bright(C(pick(S.leaf)),1.05):C(pick(S.leaf)),k=rr(.9,1.7);
+  for(let i=0;i<nF;i++){const a=a0+i/nF*TAU+rr(-.2,.2),L=k*rr(.85,1.1);BIO.put('bigfrond',[x,y+.05,z],qEuler(rr(-.1,.1),-a,rr(.45,.9)),[L,L*rr(.85,1.05),L*rr(1.1,1.3)],bright(hc,rr(.9,1.1)));}}
+ /* a SHRUB: a mound of the belt's own leaf clumps on the ground, each low enough to reach it (a fir's: its sprigs spread from the ground, a
+    young tree crushed flat by the snow) */
+ function shrub(kind,x,y,z,lv){const S=SPK(kind);if(!S)return;const lib=kind==='fir'?LIB.needle:LIB[kind],item=kind==='fir'?'needle':kind,n=ri(3,4),R=rr(.7,1.5);
+  for(let i=0;i<n;i++){const a=rr(0,TAU),d=R*Math.sqrt(rng())*.7,px=x+Math.cos(a)*d,pz=z+Math.sin(a)*d,s=rr(.8,1.3)*R*(lv===2?1:1.4),hy=kind==='fir'?.05:s*rr(.18,.32);
+   const c=lib?(kind==='fir'?C(pick(S.leaf)):bright(C(pick(S.leaf)),1.05)):C(pick(S.leaf));
+   if(BIO.waterH(px,pz)>Y(px,pz)-.2)continue;   /* each clump off the stream, not only the shrub's centre (its draws taken) */
+   BIO.put(item,[px,Y(px,pz)+hy,pz],qEuler(rr(-.25,.25),rr(0,TAU),rr(-.25,.25)),[s,s*(kind==='fir'?.5:.6),s],c,{n:[Math.cos(a)*.4,1,Math.sin(a)*.4]});}}
+ /* the leafy layer (shrubs and saplings: the card-heavy part, against the needle and beech caps) near only; the floor's far band takes the
+    ferns. Under the crest's firs the layer is thinner (taiga .4): a dense fir stand's floor is dark */
+ BIO.grid(3.4,0,R,(x,z,d)=>{const ld=BIO.lodD(x,z);if(ld>=L.floor[1])return 0;const Z=zones(x,z),W=(Z.cloud||0)+(Z.mixed||0)+.4*(Z.taiga||0);return W*q*(ld<L.floor[0]?.6:.22);},
+  (x,y,z,d)=>{if(blocked(x,z,.8))return;const Z=zones(x,z);if(Z.cliff>.5||Z.snow>.6||BIO.waterH(x,z)>y-.2)return;
+   const lv=BIO.lodD(x,z)<L.floor[0]?2:1,c=Z.cloud||0,m=Z.mixed||0,tg=Z.taiga||0,t=rng(),near=lv===2;
+   if(!near)fern(x,y,z,lv,rr(1.3,2));
+   /* the cloud forest's own tree ferns and laurels already hold most of their items' caps (station 2): its layer is mostly tall fern */
+   else if(c>=m&&c>=tg){if(t<.42)fern(x,y,z,lv,rr(1.5,2.2));else if(t<.5)youngFern(x,y,z,lv);else if(t<.6)shrub('laurel',x,y,z,lv);else if(t<.72)sapling('laurel',x,y,z);else{fern(x,y,z,lv,rr(1.1,1.5));moss(x,y,z,lv);}}
+   else if(m>=tg){if(t<.24)fern(x,y,z,lv,rr(1.4,2));else if(t<.36)youngFern(x,y,z,lv);else if(t<.64)shrub('beech',x,y,z,lv);else if(t<.88)sapling('beech',x,y,z);else sapling('fir',x,y,z);}
+   else{if(t<.4)sapling('fir',x,y,z);else if(t<.6)shrub('fir',x,y,z,lv);else if(t<.9)fern(x,y,z,lv,rr(1.2,1.6));else shrub('beech',x,y,z,lv);}
+   st.under++;},
+  {patch:.45,patchScale:.025,pad:.6,box:BIO.originBox(L.floor[1])});
  return{under:st};};
 })();
