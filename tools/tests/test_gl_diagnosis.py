@@ -25,16 +25,30 @@ NAMED = 'programs that do not link now (1): ShaderMaterial (key'
 CASES = {
     'clean': (set(), 0, [], []),
     'lost': (set(), 1, [], []),
-    'broken': ({'shader-errors'}, 0, [NAMED, 'NaN_is_not_glsl', 'material ShaderMaterial "bad glsl"', "on 'broken sign'", 'log: ', 'as they failed: '], [FOLLOWS, VALID]),
+    'broken': ({'shader-errors', 'shader-programs'}, 0, [NAMED, 'NaN_is_not_glsl', 'material ShaderMaterial "bad glsl"', "on 'broken sign'", 'log: ', 'as they failed: '], [FOLLOWS, VALID]),
     'transient': ({'shader-errors'}, 0, [VALID, 'no context loss explains them: a transient driver failure', 'as they failed: 1 link (ShaderMaterial)'],
                   [FOLLOWS, 'do not link now']),
     'lost-links': ({'shader-errors'}, 1, ['the WebGL context was lost 1 time during the run: ' + FOLLOWS, VALID, 'built again after the context came back',
                                           'as they failed: 1 link (ShaderMaterial)'], ['do not link now']),
+    # T1 (BUGS-2026-11-15.md): a loss the page did not ask for shows on gl-context, since SHADER_IGNORE keeps its console line
+    # out of shader-errors; 'lost' above (asked for) is the negative control: no WARN
+    'dropped': (set(), 0, [], []),
+    'dead': ({'gl-context'}, 0, [], []),
+    # T2: the real KHOOK on the page and no layer on any material; 'khook-clean' is the negative control
+    'khook-clean': (set(), 0, [], []),
+    'khook-broken': ({'shader-errors', 'shader-programs'}, 0, [NAMED], []),
 }
+# what the gl-context line must start with (PASS: neither prefix), and whether every loss is restored by the end
+CONTEXT = {'dropped': ('WARN: a context loss the page did not ask for', True), 'dead': ('a context loss the page did not ask for, and a renderer still lost', False)}
+# what the shader-programs line must say, when the case has one to check
+PROGRAMS = {'broken': '1 program drawn now did not link: ShaderMaterial on broken sign',
+            'khook-clean': 'every program linked, no anchor missed (KHOOK.checkPrograms on 1 renderer and the scene)',
+            'khook-broken': 'program ShaderMaterial: ', 'clean': 'every program drawn now linked'}
 
 
 async def one(case):
-    async with harness.verify_page(FIXTURE, here=os.path.dirname(FIXTURE), size='640x400', query='?case=' + case, settle_ms=500) as V:
+    # served from the repo root, so the khook cases can load core/shader/06-core-khook.js by its path
+    async with harness.verify_page(FIXTURE, here=os.path.dirname(FIXTURE), root=harness.ROOT, size='640x400', query='?case=' + case, settle_ms=500) as V:
         pass
     return V
 
@@ -79,6 +93,17 @@ def pure():
     # no shader failure: only the line
     ctx, pre, post = D(dict(base, ev=[ev('lost', 100), ev('restored', 1100)]), [])
     out.append(('no failure: only the line', 'lost 1 time and restored 1 time' in ctx and not pre and not post))
+    # T1: gl_context_verdict, the gl-context line's pass, warn or fail
+    V = harness.gl_context_verdict
+    out.append(('a loss the page asked for passes with no warning', V(dict(base, ev=[ev('lost', 9000, asked=True), ev('restored', 9500)])) == (True, '')))
+    out.append(("software GL's start-up loss (early, back within 2 s) passes with no warning", V(dict(base, ev=[ev('lost', 300), ev('restored', 1300)])) == (True, '')))
+    ok_, pre_ = V(dict(base, ev=[ev('lost', 300)], lostNow=1))
+    out.append(('negative control: an early loss never restored is not the start-up loss: it fails', not ok_ and 'still lost' in pre_))
+    ok_, pre_ = V(dict(base, ev=[ev('lost', 9000), ev('restored', 9600)]))
+    out.append(('a loss the page did not ask for, restored, warns', ok_ and pre_.startswith('WARN: a context loss the page did not ask for')))
+    ok_, pre_ = V(dict(base, ev=[ev('lost', 9000), ev('lost', 20000, canvas=2)], lostNow=1))
+    out.append(('two unasked losses and a renderer still lost at the end fail', not ok_ and pre_.startswith('2 context losses')))
+    out.append(('no record: nothing claimed', V(None) == (True, '')))
     return out
 
 
@@ -96,13 +121,23 @@ async def main():
         line = ('the WebGL context was lost %s and restored %s' % (harness._times(len(lost)), harness._times(len(back)))) if lost else 'no WebGL context lost'
         miss = [s for s in [line] + ((['%d asked for by the page' % asks]) if asks else []) if s not in ctx[1]]
         miss += [s for s in sh_has if s not in sh] + ['NOT ' + s for s in sh_not if s in sh]
-        ok = failed == want and ctx[0] and not miss and asked == asks and len(back) == len(lost)
+        start, restored = CONTEXT.get(case, ('', True))
+        if start and not ctx[1].startswith(start):
+            miss.append('gl-context starting ' + start)
+        if not start and ctx[1].startswith('WARN'):
+            miss.append('NOT a WARN on gl-context')
+        sp = U.get('shader-programs', (None, '(no shader-programs line)'))[1]
+        if case in PROGRAMS and PROGRAMS[case] not in sp:
+            miss.append('shader-programs: ' + PROGRAMS[case])
+        ok = failed == want and not miss and asked == asks and (len(back) == len(lost)) == restored and bool(lost) >= bool(start)
         bad += not ok
         print('%s  %-11s fails %s%s' % ('ok  ' if ok else 'FAIL', case, sorted(failed) or 'nothing',
                                         '' if ok else '   (expected %s; %d losses asked for, expected %d; missing %s)' % (sorted(want) or 'nothing', asked, asks, miss)), flush=True)
         print('        gl-context : ' + ctx[1])
         if sh_has or not ok:
             print('        shader-errors : ' + sh)
+        if case in PROGRAMS or not ok:
+            print('        shader-programs : ' + sp)
     checks = pure()
     for name, ok in checks:
         bad += not ok

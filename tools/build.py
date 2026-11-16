@@ -71,6 +71,8 @@ def run(build, args, script='build.py', quiet=False):
     buildlib.write_manifest(build, cmd, {
         'inputs': {p: buildlib.file_hash(os.path.join(ROOT, p)) for p in inputs},
         'listings': listings,
+        # the listings are the build's own (the audit hook skips the importer's since 2026-11-15); check_stale trusts them
+        'listed_by': 'code',
         'outputs': {p: buildlib.file_hash(os.path.join(ROOT, p)) for p in outputs},
         'outputs_raw': {p: buildlib.raw_hash(os.path.join(ROOT, p)) for p in outputs},
     })

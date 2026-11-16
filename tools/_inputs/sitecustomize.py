@@ -75,6 +75,13 @@ if _DIR and _ROOT:
                 p = '.'
             if isinstance(p, int):
                 return
+            # Python's importer lists every folder on sys.path (FileFinder._fill_cache): that is not the build reading the
+            # folder, and recording it made one new file in core/host stale 87 builds (BUGS-2026-11-15.md T7)
+            try:
+                if sys._getframe(1).f_code.co_filename.startswith('<frozen importlib'):
+                    return
+            except Exception:
+                pass
             _busy.on = True
             try:
                 r = _rel(os.path.join(os.fsdecode(p), 'x'))
