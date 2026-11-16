@@ -323,6 +323,20 @@
    },
    "roughLift": 0.15,
    "mapOnly": true
+  },
+  "ground.litter": {
+   "lib": "leaf.forest_leaves_02",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 0.85,
+    "mean": 0.3
+   },
+   "roughLift": 0.35,
+   "specular": 0.2,
+   "mapOnly": true
   }
  }
 }

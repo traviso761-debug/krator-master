@@ -533,7 +533,13 @@ canyon's cells filled and recut as nine `KRELIEF.stepcut` treads (its floor desc
 stream down the stair on `WATER.terraces`, irrigated terraces on the treads, the natives and ebadlands' kin, the seat's landmarks as records under the
 Coyote kit's `cy_*` keys (`kits/coyote/PLAN.md`, draft 2026-11-16; its bundle `KratorCoyote` replaces the stand-ins at its C9). **Open:** the town's
 rows on the walls (Masuleh's rule) wait on a layout: `core/city` has no terraced mode, and the Coyote kit's plan leaves that rule at a city's size to
-the city session (KNOWN_ISSUES.md).
+the city session (KNOWN_ISSUES.md). **Waiting on the city session** (the owner, 2026-11-16).
+
+**Station 3 started (2026-11-16, software GL only; the owner: "do station 3"):** the Lip (`dist/tiers-lip.html`) on the notch's cell, 1246,531, before
+the map edit: the sill as this kit's far field draws it (section 8a's numbers), the lip's plateau, the Black Step's face (~870 m) as a
+`KRELIEF.scarp` profile between the lip and the model's floor, the notch's channel, the fall (911 m) into its pool, the river down the floor, the
+lake tread's natives above and the north-western lowlands' tropical trees below (read in place). When the edit lands, the far field is rebaked and
+the kit's own sill dropped (KNOWN_ISSUES.md).
 
 ## Sources
 

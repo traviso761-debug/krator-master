@@ -4,7 +4,7 @@
 
 Docs: `BIOME-API.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `PLAN.md`, `PORT.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/tiers-canyon.html`, `dist/tiers.html`
+Built output (never open it; edit `src/` and rebuild): `dist/tiers-canyon.html`, `dist/tiers-lip.html`, `dist/tiers.html`
 
 Build: `cd biomes/tiers && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
@@ -18,9 +18,9 @@ From `core/terrain/` (shared; see `core/README.md`): `35-core-strata.js`, `37-co
 | `00-head.html` | 1 |  |
 | `44r-biome-tiers-strata.js` | 5 |  |
 | `44v-host-landlib.js` | 8 |  |
-| `45-host-stage.js` | 26 | the climate fields, cached (the land's fieldsAt: (32); the host binding (50); the ground (61); the rock bodies (KSTACKS, 44w: the Black Step's  (195); the water (219) |
+| `45-host-stage.js` | 26 | the climate fields, cached (the land's fieldsAt: (32); the host binding (50); the ground (61); the rock bodies (KSTACKS, 44w: the Black Step's  (198); the water (222) |
 | `50-biome-tiers-species.js` | 16 | palettes (sRGB; a library card with keep 0 takes (21); the plants and their tags (32); the tree-scale species (55 builds them) (63); procedural textures (the fallback when the page  (74); geometries (95); materials (the slots are materials.json's famili (117); instanced items (142) |
-| `55-biome-tiers-trees.js` | 16 | zones from the fields (the host's: biomes/WORLD. (18); colour (39); polyline helpers (44); the builders: (T, st, lv) with lv 2 near, 1 mid (57); the far level: the tiers in silhouette (a flatte (111); keep-clear between trees (core/space) (124); one tree: the shape every kit's make/grow has (a (130); the passes (data: species, cell, acceptance from (135) |
+| `55-biome-tiers-trees.js` | 16 | zones from the fields (the host's: biomes/WORLD. (18); colour (41); polyline helpers (46); the builders: (T, st, lv) with lv 2 near, 1 mid (59); the far level: the tiers in silhouette (a flatte (113); keep-clear between trees (core/space) (126); one tree: the shape every kit's make/grow has (a (132); the passes (data: species, cell, acceptance from (137) |
 | `60-biome-tiers-floor.js` | 9 | the planters, by zone: (x,z,Z,lv,st) (29); the pass (40) |
 | `70-biome-tiers.js` | <1 |  |
 | `83-host-far.js` | 4 |  |
@@ -39,5 +39,7 @@ Each station builds one page (`build.py --station <name>`) from its own fragment
 
 | Station | Fragments | KB |
 |---|---|---|
-| canyon | 44f-host-far-data.js, 44w-host-land.js, 86-host-seat.js | 140 |
+| canyon | 44f-host-far-data.js, 44w-host-land.js, 84-host-horizon.js, 86-host-seat.js | 141 |
 | lake | 44f-host-far-data.js, 44w-host-land.js, 86-host-village.js | 136 |
+| lip | 44f-host-far-data.js, 44w-host-land.js, 89w2-host-outfall.js | 134 |
+| tread | 44f-host-far-data.js, 44w-host-land.js, 86-host-camp.js | 134 |

@@ -69,7 +69,7 @@ def find_node():
     return None
 
 
-STATIONS = ['lake', 'canyon']   # station 1 first (the owner, 2026-11-10), then Coyote Canyon (T4); tread (T4) and lip (T5, after the map edit's sill) to come
+STATIONS = ['lake', 'canyon', 'lip']   # station 1 first (the owner, 2026-11-10), Coyote Canyon (T4), the Lip (T5: the sill drawn by this kit until the map edit); the tread (T4) to come
 BSRC.variants([['--station', _s] for _s in STATIONS[1:]])   # every station's page (--list-sources)
 if '--stations' in sys.argv:
     _rc = 0

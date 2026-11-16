@@ -29,10 +29,12 @@ function zones(x,z){const F=n=>BIO.field(n,x,z);
  const slope=F('slope'),rock=F('rock'),wet=F('wet'),seep=F('seep'),ledge=F('ledge'),farm=F('farm'),road=F('road'),tread=F('tread'),cold=F('cold'),talus=F('talus');
  let sd=F('shoreD');if(sd!==sd||sd==null)sd=40;const depth=sd<0?Math.max(0,F('depth')):0;
  const cliff=smooth(.75,.92,slope)*smooth(.3,.6,rock),live=(1-cliff)*(1-smooth(.4,.8,road)),gentle=smooth(.55,.25,slope),land=sd>.5?1:0;
- const shore=land*smooth(46,6,sd)*gentle*(1-farm),shallows=(sd<0?1:0)*smooth(.06,.2,depth)*smooth(1.7,1.1,depth),bay=(sd<0?1:0)*smooth(.25,.45,depth)*smooth(2.8,2.0,depth);
- const wood=land*live*gentle*(1-farm)*smooth(20,60,sd)*smooth(700,250,sd)*(1-tread*.7)*smooth(.38,.5,wet)*(1-rock*.8);   /* the shore's woods: within ~half a kilometre of the water */
- const dry=land*live*(1-farm)*smooth(25,80,sd)*Math.max(smooth(.18,.45,slope)*(1-rock*.6),tread)*(1-seep);
- return{slope,rock,wet,seep,ledge,farm,road,tread,cold,talus,shoreD:sd,depth,cliff,live,gentle,land,shore,shallows,bay,wood,dry,
+ /* the natives are the lake tread's and the treads': none on the hot floor under the stair (over ~25 degC mean: Korona's country, PLAN.md section 2) */
+ const temperate=1-smooth(.35,.65,F('hot'));
+ const shore=temperate*land*smooth(46,6,sd)*gentle*(1-farm),shallows=temperate*(sd<0?1:0)*smooth(.06,.2,depth)*smooth(1.7,1.1,depth),bay=temperate*(sd<0?1:0)*smooth(.25,.45,depth)*smooth(2.8,2.0,depth);
+ const wood=temperate*land*live*gentle*(1-farm)*smooth(20,60,sd)*smooth(700,250,sd)*(1-tread*.7)*smooth(.38,.5,wet)*(1-rock*.8);   /* the shore's woods: within ~half a kilometre of the water */
+ const dry=temperate*land*live*(1-farm)*smooth(25,80,sd)*Math.max(smooth(.18,.45,slope)*(1-rock*.6),tread)*(1-seep);
+ return{slope,rock,wet,seep,ledge,farm,road,tread,cold,talus,shoreD:sd,depth,cliff,live,gentle,land,temperate,shore,shallows,bay,wood,dry,
   wetShore:shore,face:smooth(.5,.8,slope)*smooth(.3,.6,F('strata'))};}
 TIERS.zones=zones;
 
@@ -137,7 +139,7 @@ TIERS.grow=function(T,lv){const st=newStats();T.lv=lv;BIO.owner=[T.x,T.z];
 // woods behind, the candelabras on the dry slopes and the tread. k: a size by the zone
 TIERS.PASSES=[
  {key:'ladderreed',cell:6,accept:Z=>Z.shallows*.85,water:true,opt:{pad:.8,patch:.55,patchScale:.02}},
- {key:'steppalm',cell:14,accept:Z=>Z.shore*.42+Z.seep*.25,opt:{pad:2,patch:.5,patchScale:.012}},
+ {key:'steppalm',cell:14,accept:Z=>Z.shore*.42+Z.seep*.25*Z.temperate,opt:{pad:2,patch:.5,patchScale:.012}},
  {key:'shelfoak',cell:26,accept:Z=>Z.wood*.42,opt:{pad:3,patch:.55,patchScale:.005},k:Z=>.85+.3*smooth(.45,.7,Z.wet)},
  {key:'candelabra',cell:24,accept:Z=>Z.dry*.16+Z.ledge*.1,opt:{pad:1.6,patch:.6,patchScale:.01}}];
 TIERS.buildTrees=function(R,q){reseed(551201);q=q==null?1:q;R=R||2500;

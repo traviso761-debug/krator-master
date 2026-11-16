@@ -59,13 +59,33 @@ biomes/tiers --fix` (a card sheet's cells and stems are its own), `python3 tools
   of the site and recuts it as nine `KRELIEF.stepcut` treads (the floor climbing 11% in ~39 m dry falls, the last ending in the head's bowl).
   Out of the model check (`LAND.sculpt`). The plan's "box canyon in the great riser ... the great tread's rim 1.8-2.3 km overhead, 20 km
   up-canyon": the page holds the canyon's lower 3.2 km, its head bowl ~600-850 m deep; the great tread's rim is the far field's.
-- [ ] **The head's bowl renders near black at 14:00** (SwiftShader; the canyon's shaded walls nearly as dark): the bowl is ~600 m deep under a sun
-  from the north-west, and the horizon shade (KHORIZON) dims the sky's light there too, so the spring hall stands in the dark. Judge it on the GPU;
-  the levers: a station hour when the sun runs up the canyon's axis (it trends north-east), or a floor on the horizon shade's sky term.
+- [ ] **The head's bowl is dim, not black** (was near black at 14:00 in SwiftShader). At this latitude the sun stands in the north
+  (63 degrees at noon), so at 14:00 it was behind the bowl's west wall. The station's hour is now 11:00 (the sun at az ~30, running up the
+  canyon's north-east axis) and `84-host-horizon.js` sets the horizon shade's sky term to .45 (`KHORIZON.uniforms`; `?hzsky=0..1` on the
+  URL tries others), so the spring hall's walls read in a dim brown light. Judge the level on the GPU; the head's view now looks down from the
+  bowl's rim.
 - [ ] **The flash flood is a plain record** (`drown` on each tread's floor): the gorge flood on a cycle is the shared hazard amendment
   (PLAN.md section 10, item 4).
 - [ ] **No contour carvings drawn**: the milestones and façades are boxes; the carving is the Coyote kit's `cyContour` (its C1).
 
+## Station 3, the Lip (started 2026-11-16)
+
+- [ ] **Built before the map edit's sill** (the owner, 2026-11-16: "do station 3"; PLAN.md section 9 says it waits on it). The sill is this kit's
+  far field's (`44v` `SILL`: 1,180 m on the rim cells, the notch at the level) and the lip's top is the page's (`TOP`: a plateau at ~1,180 m
+  wherever the model's lake cells are not). When the map edit lands: rebake `44f`, compare the lip's top with the model's new cells (the plan
+  raises them to 1,160-1,200 m), and drop `SILL` from 44v.
+- [ ] **The page's origin is the notch's cell, 1246,531**, not the plan's pin (1247,530 is a lake cell): the fall then stands near the page's middle.
+- [ ] **The floor's rainforest is the north-western lowlands' trees**, read in place as Korona's fertile basin reads them, not Korona's own kit (its
+  trees build on the necanyons kit's geometry, a heavier read); the plan says "Korona's, read in place". A Korona kin row is the swap.
+- [ ] **The hot floor's ground is leaf litter** (45: `GLW` 'litter', `ground.litter` on **`leaf.forest_leaves_02`**, Korona's set, its mean darkened to .3 for a damp floor): the
+  layer's weight is the `hot` field (over ~25 degC mean), and the treads' grasses give way to it. Only the Lip takes it (`groundLayers`); judged
+  in SwiftShader only.
+- [ ] **The floor's forest reads open from the Lip** (SwiftShader, 'Over the Lip'): the kin rows' cells (the north-western lowlands' trees)
+  leave the litter showing between crowns; a rainforest wants a closed canopy (denser cells, or Korona's own trees: the row above).
+- [ ] **The fall is ~40 m across** (the lake's whole outflow down the notch): a curtain drawn by `WATER.drawFall`, no mist volume of its own
+  over the 900 m drop beyond the plunge's spray.
+- [ ] **The kit's natives now refuse the hot floor** (55: zones times `temperate`, 1 under ~25 degC mean): stations 1 and 2 never reach it.
+
 - [ ] **Not built yet (T4, T5):** the pagoda bush, the stack cushion and the whorl pine (records and tags in 50, no builder); station 2's
-  town (above), stations 3 (the Lip: waits on the map edit's sill) and 4 (the Great Tread, `core/camp`); the `tiers` entry in
+  town (above), station 4 (the Great Tread, `core/camp`); the `tiers` entry in
   `kits/crops`; `outposts.json`; the gorge flood (the shared hazard amendment).

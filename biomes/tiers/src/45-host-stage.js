@@ -111,14 +111,17 @@ const GLW=(function(){
  /* THE BAND LICHEN'S BANDS (PLAN.md section 4: crusts in level bands along the beds): every 7.5 m of height a band, its edge wandering a little, the
     basalt bare between them */
  const lichenBand=F=>{const f=F.y/7.5+.35*(fbm(F.x*.01,F.z*.01,3.7,2)-.5),u=f-Math.floor(f);return .15+.85*smooth(.5,.62,u)*smooth(.95,.83,u);};
+ /* the hot floor under the stair (over ~25 degC mean: Korona's country): leaf litter, not the treads' grass; 0 on stations 1 and 2 */
+ const hotK=F=>smooth(.3,.6,F.hot);
  const meadowK=F=>clamp(Math.max(smooth(.5,.68,F.wet),F.seep,F.flow*.9,smooth(.52,.68,fbm(F.x*.0028,F.z*.0028,7.1,3))*.85),0,1);
  return[['reed',F=>Math.max(F.flow*.85,smooth(.6,.85,F.wet)*flatK(F))*(1-F.farm)*(1-F.rock*.8)],    /* the shore's reed bed and the lake's shallows */
-  ['meadow',F=>meadowK(F)*open(F)*(1-F.farm)],                                                         /* green grass in the swales, by the water and the seep (ground.leafy_grass) */
-  ['steppe',F=>(1-meadowK(F))*open(F)*(1-F.farm)*(1-F.flow)],                                          /* the lake tread's summer-dry grass (ground.withered_grass) */
+  ['meadow',F=>meadowK(F)*open(F)*(1-F.farm)*(1-hotK(F))],                                                         /* green grass in the swales, by the water and the seep (ground.leafy_grass) */
+  ['steppe',F=>(1-meadowK(F))*open(F)*(1-F.farm)*(1-F.flow)*(1-hotK(F))],                                          /* the lake tread's summer-dry grass (ground.withered_grass) */
   ['terrace',F=>smooth(.15,.6,F.farm)*(1-F.flow)],                                                     /* the terraced fields */
   ['lichen',F=>F.rock*smooth(.2,.6,F.strata)*(1-F.flow)*lichenBand(F)],                               /* the band lichen in level bands along the riser's beds (stand-in: rock.lichen.circles) */
   ['tufa',F=>smooth(.35,.8,F.seep)*(1-F.flow)],                                                        /* the step moss's tufa round the seep's pools */
-  ['gravel',F=>F.talus*(1-F.flow)]];})();                                                              /* the talus's gravel */
+  ['gravel',F=>F.talus*(1-F.flow)],                                                                    /* the talus's gravel */
+  ['litter',F=>hotK(F)*open(F)*(1-F.flow)]];})();                                                     /* the hot floor's leaf litter under the rainforest (station 3's floor: Korona's country) */
 
 /* A FRAGMENT SHADER HAS 16 TEXTURE UNITS (WebGL's floor), AND ANGLE ON THE ARC LINKS 15 AT MOST (riftrim's and ebadlands' measure): the ground's paint
    and grain (2), the strata (5), the horizon (2), the rain's cover map (1) and KGROUND's noise (1) leave 5, so a land names the FOUR it shows

@@ -44,10 +44,10 @@ TIERS.buildFloor=function(R,q){q=q==null?1:q;R=R||2500;
  bands.forEach((b,bi)=>{const lv=2-bi,band=(x,z)=>{const ld=BIO.lodD(x,z);return ld<b[1]&&ld>=b[2];};
   // the dry slopes, the tread and the wood's floor: tiergrass in its rows (the terracettes' lips), heath on the rocky ground, cobbles
   BIO.grid('floor-dry-'+b[3],b[0],(x,z)=>{if(!band(x,z))return 0;const Z=zones(x,z);if(Z.land<=0)return 0;
-    const lip=lipK(x,z,Z.slope),d=Z.dry*(.4+.5*lip)+Z.wood*.3+Z.land*Z.live*.38*(1-Z.farm)*(1-Z.shore*.6)*(1-Z.rock);   /* the lake tread's grass: the tawny Csa meadow between the woods */return q*(lv===0?.5:1)*clamp(d,0,1);},
+    const lip=lipK(x,z,Z.slope),d=Z.dry*(.4+.5*lip)+Z.wood*.3+Z.temperate*Z.land*Z.live*.38*(1-Z.farm)*(1-Z.shore*.6)*(1-Z.rock);   /* the lake tread's grass: the tawny Csa meadow between the woods */return q*(lv===0?.5:1)*clamp(d,0,1);},
    (x,y,z)=>{const Z=zones(x,z);if(Z.dry>.2)plantDry(x,z,Z,lv,st);else plantGrass(x,z,Z,lv,st);},{box,patch:.6,patchScale:.012,pad:.5});
   // the shore's reed band (the wet edge of the land)
-  BIO.grid('floor-shore-'+b[3],b[0],(x,z)=>{if(!band(x,z))return 0;const Z=zones(x,z);return q*clamp(Z.land*smooth(10,1,Z.shoreD)*(1-Z.farm)*(1-Z.road)*.8,0,1);},
+  BIO.grid('floor-shore-'+b[3],b[0],(x,z)=>{if(!band(x,z))return 0;const Z=zones(x,z);return q*clamp(Z.temperate*Z.land*smooth(10,1,Z.shoreD)*(1-Z.farm)*(1-Z.road)*.8,0,1);},
    (x,y,z)=>plantShore(x,z,zones(x,z),lv,st),{box,patch:.5,patchScale:.02,pad:.4});});
  // THE LEDGE HEATH: rows along the riser's ledges (each candidate on the ledge's bench), the riser's level lines of green; on the faces the band
  // lichen's crusts in the beds (the cliff gate off: these grow on faces, BIO.def(..., {cliff:true}))

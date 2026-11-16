@@ -95,6 +95,10 @@ const LAND={name:'Coyote Canyon (tiers station 2)',title:'Krator biome — the T
  hint:'Station 2 of the Tiers: Coyote Canyon, the capital of the Coyote Kingdom (scale model 5.1 px 1265,500; 1,560-2,900 m, 1.31 atm, BSh): a box canyon cut back into the riser as a stair of nine treads, the king\'s spring at its head, the step moss\'s pools down the stair, irrigated terraces on its floor, the ledge heath striping its walls (the seat\'s buildings as records until kits/coyote and the layout)',
  region:{name:'Coyote Canyon (station 2)',x:0,z:0,r:TERR.R},sky:{px:SITE.sky[0],py:SITE.sky[1]},atm:atmAt(SITE.h),cloud:.15,
  fog:{falloff:1/900,sun:.3,sky:.3},climate:{},wet:false,groundN:780,
+ /* THE HOUR THE PAGE OPENS: 11:00, when the sun (59 degrees, azimuth 30: core/atmos's sky at the site) runs nearly down the canyon's axis and lights
+    its floor; at the shared 14:00 it crosses the north-west wall and the whole floor is in its shade (84-host-horizon.js). The opening day's
+    eclipse at this longitude is 09:00-10:00 */
+ hour:11,
  groundLayers:['meadow','steppe','terrace','lichen'],
  plants:['tiergrass','heath','moss','lichen','boulder'],
  modelTol:45,
@@ -122,7 +126,7 @@ const LAND={name:'Coyote Canyon (tiers station 2)',title:'Krator biome — the T
   const V={
   'Up the canyon from its mouth':look(-700,700,4,A(S.LEN*.55)[0],A(S.LEN*.55)[1],60),
   'The stair of the floor':look(A(S.LEN*.3)[0]+30,A(S.LEN*.3)[1]+30,3,A(S.LEN*.5)[0],A(S.LEN*.5)[1],8),
-  'The head and the king spring':look(A(S.LEN-280)[0]+25,A(S.LEN-280)[1]+25,14,Hd[0],Hd[1],10),
+  'The head and the king spring':look(A(S.LEN-300)[0]+25,A(S.LEN-300)[1]+25,8,Hd[0],Hd[1],70),
   'Down from the north rim':look(A(S.LEN*.6)[0]-330,A(S.LEN*.6)[1]-330,3,A(S.LEN*.35)[0],A(S.LEN*.35)[1],-40),
   'The walls and their ledges':look(A(S.LEN*.7)[0]+60,A(S.LEN*.7)[1]+60,2,A(S.LEN*.7)[0]-260,A(S.LEN*.7)[1]-160,120),
   'From afar':look(-2900,2900,900,1000,-1000,0)};

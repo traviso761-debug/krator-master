@@ -52,7 +52,23 @@ fragment it needs: station 1's `86-host-village.js`) and its `station.json` name
 - **The seat** (`stations/canyon/86-host-seat.js`): the landmarks as records under the Coyote kit's `cy_*` keys (its plan, draft 2026-11-16),
   pending stand-ins, `KratorCoyote.dims` taking over when the bundle is on the page. The town's rows wait on the layout (KNOWN_ISSUES.md).
 
+## Station 3, the Lip (started 2026-11-16)
+
+- **The site**: the notch's own cell, 5.1 px 1246,531 (285 m on the model, Am): the upper lake east, the floor west.
+- **The land** (`stations/lip/44w-host-land.js`): two surfaces and the face between them. `FLOOR` is the model without the sill (the cells'
+  own heights); `TOP` the lip's basalt plateau at ~1,180 m, blending into the model's lake bed only inside the lake's own cells (`lakeK`, so the
+  water never stands over the low ground south of the lake). The face is a unit `KRELIEF.scarp` (h 1: its profile, benches, ravines, buttresses
+  and talus as a share) laid between them: ground = FLOOR + share x (TOP - FLOOR).
+- **The outfall**: the notch's channel across the lip (bed 1,147-1,149 m), `WATER.flow` along it; the fall (`FALLS`, 911 m, following the face to
+  its foot); the pool (a still at 238 m); the river (`KRELIEF.river` down the floor) drawn by `stations/lip/89w2-host-outfall.js`.
+- **The flora**: the natives on the lip (the kit's zones, which now refuse ground over ~25 degC), the north-western lowlands' mist palms, tree
+  ferns, pandans, paperbarks and meranti below (kin rows weighted by the fall's spray, `sprayK`).
+- **The ground**: the floor takes a leaf-litter layer (45: `GLW` 'litter', weighted by the `hot` field; `ground.litter` on
+  `leaf.forest_leaves_02`, darkened to a damp mean of .3) in place of the treads' grasses, which give way where it is hot.
+- **The fall** is ~40 m across; its curtain follows the face's highest point across that width (`face` in `FALLS`), 2 m off the rock, so the
+  buttresses do not stand through it.
+
 ## Not built yet
 
-Station 2's town (its layout), stations 3 (the Lip) and 4 (the Great Tread); the pagoda bush, the stack cushion and the whorl pine; terracettes in the
+Station 2's town (its layout), station 4 (the Great Tread); the pagoda bush, the stack cushion and the whorl pine; terracettes in the
 ground; the `tiers` crops entry; `outposts.json`. KNOWN_ISSUES.md lists them with the texture swaps.
