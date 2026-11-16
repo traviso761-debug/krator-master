@@ -4,8 +4,7 @@ Read-only survey of the worktree `claude/openworld-sites-24defd`. Paths are repo
 pixel; the legacy 4.2x canvas is 5.1 minus 272,330: `tools/scale-model/model/data/model.json` key `legacy_shift`).
 Ground figures are sampled by me from `tools/scale-model/model/data` (h.png, tm.png, p.png, c.png, rivers.json,
 basins.json) at the pin's pixel; resources from `kits/resources/data/geology.json` (4 km cells, bytes 0-255).
-Distances are straight-line unless a route file is named. Scripts: scratchpad `pins.py`, `ground.py`, `poly.py`,
-`routes.py`, `prof.py`, `crops.js` (C:\Users\travi\AppData\Local\Temp\claude\fb90a45e00650bd0\3c8541e4-a2b4-461b-b662-31b858516b6a\scratchpad\).
+Distances are straight-line unless a route file is named. (The survey's scripts were throwaway and are not kept.)
 
 The owner's brief (2026-11-16, relayed): northern caravaneers = the Geomancers, the Yuni Merchants' Guild, two rival Iziz
 merchant noble houses, the Train of Jabal (operates the Catch salt works); Stair pop 750; other oases ~100 or less; and
