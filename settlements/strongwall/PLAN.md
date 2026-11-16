@@ -250,6 +250,12 @@ Xanadu's last high ground before the Rift, between the two low roads.
 - **In the sim** (W1, done): `xan.tempest`, 600 of the Xanadu polity in P4, fed through Strongwall (`road.sw-tempest`,
   80 km). Its terraces make two fifths of its grain (43 t in the test year), and it draws arms but no powder. In the
   Lizardmen's Z4, the order's riders are what meets a raid on the trough road and the Kruk Warra.
+- **The blueprint** (the owner, 2026-11-16: "we can use the large building planning skill for this one"):
+  `tempest/BLUEPRINT.md`, sheets and manifest. The owner's forks: **concentric** wards (the violet monastery in the
+  inner ward, the martial ranges against the outer curtain); **the Prismarch lives in the utse** between the wards;
+  **the novices in their own court**; **the horses inside, three gates** (the Main Gate east, sally gates north and
+  south). So `size:'monastery'` (section 5.4) is two curtains with the utse astride the inner one (BLUEPRINT, "For the
+  fort asset").
 
 ## 4. The economy (tied to `XAN_TUNE`)
 
