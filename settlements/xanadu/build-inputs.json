@@ -216,7 +216,7 @@
     "kits/xanadu/src/85-xa-water.js": "77705cdd79600992c5dbb862b84f068c0ecf5f6d78419d33fb25d453205695b6",
     "kits/xanadu/src/85b-xa-garden.js": "6891cc3c25d3f87c9c4515a5b5d32b9034374046695ac5ab5b4f16a138f6d5c6",
     "kits/xanadu/src/86-xa-vizier.js": "81d804bd18ec7429f2c73576d8c0f905a25a503e0fbc7d6acb72f1ba0ec59398",
-    "kits/xanadu/src/86b-xa-plants.js": "9a0d930405ad5084b1a59d418042d5475699d63b2ab965d1da78ca6492ab01b4",
+    "kits/xanadu/src/86b-xa-plants.js": "febf5e39c81a9410e1b783bd872669d8c03502e39bcb5819a3339952f4151f73",
     "kits/xanadu/src/87-xa-spicer.js": "a33e757eef4182ab5fe0003d6be20792c247da6d1cd74a4cdb511f503c6977c3",
     "kits/xanadu/src/87b-xa-andean.js": "a153512190df7ee8b6f31ad1e1d6661c1c2c861648e0fbc1a426345032581ede",
     "kits/xanadu/src/87c-xa-erewhon.js": "e19ce7c9662d187a11ac62c2edf8a435ac4cf75b9ca9224e68b351b149414cfc",
@@ -437,19 +437,19 @@
    },
    "outputs": {
     "settlements/xanadu/VENDOR.json": "ed46582fb92d0f1c1c13a0cb7b6fcf37196d84c1499934f72636be1ce164f158",
-    "settlements/xanadu/build-manifest-erewhon.json": "489a4bd703c2c54a6da028cfb57174f9b6a0b3139734521a80f42e2d8fa2dc37",
-    "settlements/xanadu/build-manifest-xanadu.json": "ce159862bd4f9c2d45a4943c1543d5c56f81b8370677a9828d32bce431f5ad3d",
-    "settlements/xanadu/dist/erewhon.html": "10a58ed35bb3f915c5580be399e8195b491e8a32453a1eb2142b97fef11f0cb9",
-    "settlements/xanadu/dist/xanadu.html": "7b91225de2399aad989a2cdf6f8060ebbe0ab013dae01e5b0803dec6b10cc473",
+    "settlements/xanadu/build-manifest-erewhon.json": "b84e41615068e01257118c0d23ad2e40883f6becd7d15d1c169f7825ed898b54",
+    "settlements/xanadu/build-manifest-xanadu.json": "4249dda5dafd7592270b1ca446b8f32bb873449db50e9e952c6518918e7cd030",
+    "settlements/xanadu/dist/erewhon.html": "9b1f9017b367f3e598651845e8889c8f61d6b73e9c3a5cad6e078fceadebac9b",
+    "settlements/xanadu/dist/xanadu.html": "e5a61292395fc15790d8cb50b203170eb2ceec22a59314534bb4a9251eec0003",
     "settlements/xanadu/dist/xanadu.tex.xanadu-2.js": "be1d57f174e08cf71b5511aff65a313eec8edc29e057c48d027e9b60630f3ab5",
     "settlements/xanadu/dist/xanadu.tex.xanadu.js": "3fe87059ee305d523fa5026dddfd91123354e88d5839097de9df44137500f2a4"
    },
    "outputs_raw": {
     "settlements/xanadu/VENDOR.json": "b1fad8bfd5cb2f141d50db7274657b16776136800f5366c81529c4243e605402",
-    "settlements/xanadu/build-manifest-erewhon.json": "1749f71ff7a1b6c0778562b8dfbfa2a2ac9569ba19d7797a8d46305fbe7bec67",
-    "settlements/xanadu/build-manifest-xanadu.json": "70f8972d031b7b0757c608053de915f8b7db399bacfe197506149e8c4f2a2dd8",
-    "settlements/xanadu/dist/erewhon.html": "10a58ed35bb3f915c5580be399e8195b491e8a32453a1eb2142b97fef11f0cb9",
-    "settlements/xanadu/dist/xanadu.html": "7b91225de2399aad989a2cdf6f8060ebbe0ab013dae01e5b0803dec6b10cc473",
+    "settlements/xanadu/build-manifest-erewhon.json": "a80a8c513743e0de90e9d7ee62a752c2902c762a8e745269644e24e0abfbefc8",
+    "settlements/xanadu/build-manifest-xanadu.json": "551f19dd98c021f306c64dcfe10e911c33753cd07d7d4cf635a1a38868823306",
+    "settlements/xanadu/dist/erewhon.html": "9b1f9017b367f3e598651845e8889c8f61d6b73e9c3a5cad6e078fceadebac9b",
+    "settlements/xanadu/dist/xanadu.html": "e5a61292395fc15790d8cb50b203170eb2ceec22a59314534bb4a9251eec0003",
     "settlements/xanadu/dist/xanadu.tex.xanadu-2.js": "be1d57f174e08cf71b5511aff65a313eec8edc29e057c48d027e9b60630f3ab5",
     "settlements/xanadu/dist/xanadu.tex.xanadu.js": "3fe87059ee305d523fa5026dddfd91123354e88d5839097de9df44137500f2a4"
    }
@@ -659,7 +659,7 @@
     "kits/xanadu/src/85-xa-water.js": "77705cdd79600992c5dbb862b84f068c0ecf5f6d78419d33fb25d453205695b6",
     "kits/xanadu/src/85b-xa-garden.js": "6891cc3c25d3f87c9c4515a5b5d32b9034374046695ac5ab5b4f16a138f6d5c6",
     "kits/xanadu/src/86-xa-vizier.js": "81d804bd18ec7429f2c73576d8c0f905a25a503e0fbc7d6acb72f1ba0ec59398",
-    "kits/xanadu/src/86b-xa-plants.js": "9a0d930405ad5084b1a59d418042d5475699d63b2ab965d1da78ca6492ab01b4",
+    "kits/xanadu/src/86b-xa-plants.js": "febf5e39c81a9410e1b783bd872669d8c03502e39bcb5819a3339952f4151f73",
     "kits/xanadu/src/87-xa-spicer.js": "a33e757eef4182ab5fe0003d6be20792c247da6d1cd74a4cdb511f503c6977c3",
     "kits/xanadu/src/87b-xa-andean.js": "a153512190df7ee8b6f31ad1e1d6661c1c2c861648e0fbc1a426345032581ede",
     "kits/xanadu/src/87c-xa-erewhon.js": "e19ce7c9662d187a11ac62c2edf8a435ac4cf75b9ca9224e68b351b149414cfc",
@@ -879,15 +879,15 @@
    },
    "outputs": {
     "settlements/xanadu/VENDOR.json": "ed46582fb92d0f1c1c13a0cb7b6fcf37196d84c1499934f72636be1ce164f158",
-    "settlements/xanadu/build-manifest-erewhon.json": "489a4bd703c2c54a6da028cfb57174f9b6a0b3139734521a80f42e2d8fa2dc37",
-    "settlements/xanadu/dist/erewhon.html": "10a58ed35bb3f915c5580be399e8195b491e8a32453a1eb2142b97fef11f0cb9",
+    "settlements/xanadu/build-manifest-erewhon.json": "b84e41615068e01257118c0d23ad2e40883f6becd7d15d1c169f7825ed898b54",
+    "settlements/xanadu/dist/erewhon.html": "9b1f9017b367f3e598651845e8889c8f61d6b73e9c3a5cad6e078fceadebac9b",
     "settlements/xanadu/dist/xanadu.tex.xanadu-2.js": "be1d57f174e08cf71b5511aff65a313eec8edc29e057c48d027e9b60630f3ab5",
     "settlements/xanadu/dist/xanadu.tex.xanadu.js": "3fe87059ee305d523fa5026dddfd91123354e88d5839097de9df44137500f2a4"
    },
    "outputs_raw": {
     "settlements/xanadu/VENDOR.json": "b1fad8bfd5cb2f141d50db7274657b16776136800f5366c81529c4243e605402",
-    "settlements/xanadu/build-manifest-erewhon.json": "1749f71ff7a1b6c0778562b8dfbfa2a2ac9569ba19d7797a8d46305fbe7bec67",
-    "settlements/xanadu/dist/erewhon.html": "10a58ed35bb3f915c5580be399e8195b491e8a32453a1eb2142b97fef11f0cb9",
+    "settlements/xanadu/build-manifest-erewhon.json": "a80a8c513743e0de90e9d7ee62a752c2902c762a8e745269644e24e0abfbefc8",
+    "settlements/xanadu/dist/erewhon.html": "9b1f9017b367f3e598651845e8889c8f61d6b73e9c3a5cad6e078fceadebac9b",
     "settlements/xanadu/dist/xanadu.tex.xanadu-2.js": "be1d57f174e08cf71b5511aff65a313eec8edc29e057c48d027e9b60630f3ab5",
     "settlements/xanadu/dist/xanadu.tex.xanadu.js": "3fe87059ee305d523fa5026dddfd91123354e88d5839097de9df44137500f2a4"
    }

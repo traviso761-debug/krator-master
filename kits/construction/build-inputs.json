@@ -211,7 +211,7 @@
     "kits/xanadu/src/85-xa-water.js": "77705cdd79600992c5dbb862b84f068c0ecf5f6d78419d33fb25d453205695b6",
     "kits/xanadu/src/85b-xa-garden.js": "6891cc3c25d3f87c9c4515a5b5d32b9034374046695ac5ab5b4f16a138f6d5c6",
     "kits/xanadu/src/86-xa-vizier.js": "81d804bd18ec7429f2c73576d8c0f905a25a503e0fbc7d6acb72f1ba0ec59398",
-    "kits/xanadu/src/86b-xa-plants.js": "9a0d930405ad5084b1a59d418042d5475699d63b2ab965d1da78ca6492ab01b4",
+    "kits/xanadu/src/86b-xa-plants.js": "febf5e39c81a9410e1b783bd872669d8c03502e39bcb5819a3339952f4151f73",
     "kits/xanadu/src/87-xa-spicer.js": "a33e757eef4182ab5fe0003d6be20792c247da6d1cd74a4cdb511f503c6977c3",
     "kits/xanadu/src/87b-xa-andean.js": "a153512190df7ee8b6f31ad1e1d6661c1c2c861648e0fbc1a426345032581ede",
     "kits/xanadu/src/87c-xa-erewhon.js": "e19ce7c9662d187a11ac62c2edf8a435ac4cf75b9ca9224e68b351b149414cfc",
@@ -301,14 +301,14 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "kits/construction/dist/construction.html": "196596e147298ae25863ebacac00d77db278b15d0666abb316110d08aa0dab81",
+    "kits/construction/dist/construction.html": "578f8ae3311f3b1469fcaab00dfa2e70c983f26f6e43a2ce545a9bc1c06689b0",
     "kits/construction/dist/construction.tex.construction.js": "7da0eac14adf0e12ec622c676cbf74f6d1bcd49552fec5d00f480f664143bdcf",
     "kits/construction/dist/construction.tex.islanders.js": "3c957f12243b7dd0790f5e970c307e017f5bddeaa7a6363fb387834e1881cd6b",
     "kits/construction/dist/construction.tex.iziz.js": "f0e484bf7e32aad2acca7621c41eb8c8eb4c3306c32b85ecc376ecff375710e3",
     "kits/construction/dist/construction.tex.xanadu.js": "f9f88f3553a52593ab87a0fa1f23e9eedbeb5dfb5ffbc66cfe17ddbad583f6b7"
    },
    "outputs_raw": {
-    "kits/construction/dist/construction.html": "196596e147298ae25863ebacac00d77db278b15d0666abb316110d08aa0dab81",
+    "kits/construction/dist/construction.html": "578f8ae3311f3b1469fcaab00dfa2e70c983f26f6e43a2ce545a9bc1c06689b0",
     "kits/construction/dist/construction.tex.construction.js": "7da0eac14adf0e12ec622c676cbf74f6d1bcd49552fec5d00f480f664143bdcf",
     "kits/construction/dist/construction.tex.islanders.js": "3c957f12243b7dd0790f5e970c307e017f5bddeaa7a6363fb387834e1881cd6b",
     "kits/construction/dist/construction.tex.iziz.js": "f0e484bf7e32aad2acca7621c41eb8c8eb4c3306c32b85ecc376ecff375710e3",

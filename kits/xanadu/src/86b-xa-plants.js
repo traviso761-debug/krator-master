@@ -29,7 +29,7 @@ function xaPlant(kind,x,y,z,h,opt){if(typeof XANADU==='undefined'||!XANADU.treeA
  /* and the biome's own trees, set by its zone pass before the kit's gardens (2026-11-12: a flame cypress row through a
     twisted ginkgo and a haze blossom by the Grand Baths) */
  if(XANADU.TREES)for(const q of XANADU.TREES){const dx=q.x-v.x;if(dx>14||dx<-14)continue;const dz=q.z-v.z;if(dz>14||dz<-14)continue;
-  if(Math.abs((q.y0||v.y)-v.y)<5&&Math.hypot(dx,dz)<((q.crownR||2)+cr0)*.7){XA_PLANT_STATS.crowded++;return 'crowded';}}
+  if(Math.abs((q.y0==null?v.y:q.y0)-v.y)<5&&Math.hypot(dx,dz)<((q.crownR==null?2:q.crownR)+cr0)*.7){XA_PLANT_STATS.crowded++;return 'crowded';}}
  const T=XANADU.treeAt(v.x,v.y,v.z,sp,{H,lv:2,scale});if(!T)return false;
  {const k=gk(ci,cj);(G.get(k)||G.set(k,[]).get(k)).push({x:v.x,y:v.y,z:v.z,r:T.crownR||cr0});}
  /* an obstacle to the biome's zone pass, which runs after the kit's gardens on Erewhon's page */

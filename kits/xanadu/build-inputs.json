@@ -99,7 +99,7 @@
     "kits/xanadu/src/85-xa-water.js": "77705cdd79600992c5dbb862b84f068c0ecf5f6d78419d33fb25d453205695b6",
     "kits/xanadu/src/85b-xa-garden.js": "6891cc3c25d3f87c9c4515a5b5d32b9034374046695ac5ab5b4f16a138f6d5c6",
     "kits/xanadu/src/86-xa-vizier.js": "81d804bd18ec7429f2c73576d8c0f905a25a503e0fbc7d6acb72f1ba0ec59398",
-    "kits/xanadu/src/86b-xa-plants.js": "9a0d930405ad5084b1a59d418042d5475699d63b2ab965d1da78ca6492ab01b4",
+    "kits/xanadu/src/86b-xa-plants.js": "febf5e39c81a9410e1b783bd872669d8c03502e39bcb5819a3339952f4151f73",
     "kits/xanadu/src/87-xa-spicer.js": "a33e757eef4182ab5fe0003d6be20792c247da6d1cd74a4cdb511f503c6977c3",
     "kits/xanadu/src/87b-xa-andean.js": "a153512190df7ee8b6f31ad1e1d6661c1c2c861648e0fbc1a426345032581ede",
     "kits/xanadu/src/87c-xa-erewhon.js": "e19ce7c9662d187a11ac62c2edf8a435ac4cf75b9ca9224e68b351b149414cfc",
@@ -263,14 +263,14 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "kits/xanadu/build-manifest.json": "0ea015571279cc4b437ba71f1576518a0086dfece18cced5ea3608e50c3746ea",
-    "kits/xanadu/dist/xanadu.html": "c3b0e98a1dc1f7eba014e31dcaf6760c3e819e57cfa33a1cfacedda2c58e07d1",
+    "kits/xanadu/build-manifest.json": "db3f3698127995c510e4e4be7d48c35c35985ed352ea92ea1eeb257d1acb4099",
+    "kits/xanadu/dist/xanadu.html": "9c300339234e13ca2354feae41ea5e6f4aefd0ce11c30e65410e7ff809b7cad8",
     "kits/xanadu/dist/xanadu.tex.xanadu-2.js": "be1d57f174e08cf71b5511aff65a313eec8edc29e057c48d027e9b60630f3ab5",
     "kits/xanadu/dist/xanadu.tex.xanadu.js": "3fe87059ee305d523fa5026dddfd91123354e88d5839097de9df44137500f2a4"
    },
    "outputs_raw": {
-    "kits/xanadu/build-manifest.json": "0ea015571279cc4b437ba71f1576518a0086dfece18cced5ea3608e50c3746ea",
-    "kits/xanadu/dist/xanadu.html": "c3b0e98a1dc1f7eba014e31dcaf6760c3e819e57cfa33a1cfacedda2c58e07d1",
+    "kits/xanadu/build-manifest.json": "db3f3698127995c510e4e4be7d48c35c35985ed352ea92ea1eeb257d1acb4099",
+    "kits/xanadu/dist/xanadu.html": "9c300339234e13ca2354feae41ea5e6f4aefd0ce11c30e65410e7ff809b7cad8",
     "kits/xanadu/dist/xanadu.tex.xanadu-2.js": "be1d57f174e08cf71b5511aff65a313eec8edc29e057c48d027e9b60630f3ab5",
     "kits/xanadu/dist/xanadu.tex.xanadu.js": "3fe87059ee305d523fa5026dddfd91123354e88d5839097de9df44137500f2a4"
    }
