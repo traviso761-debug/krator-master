@@ -79,7 +79,8 @@ LANDFORMS = [
              "edit_517, 2026-11-11."},
 ]
 SHOAL_M = 40.0
-THALABA_ID, THALABA_NEW = 'shvo49k0y2', (825, 1488)   # the owner's Thalaba moves off the new lake (Gemini's spot)
+THALABA_ID, THALABA_NEW = 'soldthalaba1', (825, 1488)  # Old Thalaba, the fishing village on Thalaba's old shore (the owner,
+                                                        # 2026-11-16; Thalaba itself moved to 840,1463, outside the box)
 EREHWON = (805, 1516)                     # the new pin: the bench on the south shore (reported; the record moves apart)
 # s (cells off the shore) -> m: the quays' bench, the town's climb, the cliff (90 m), the palace plateau, the mountainside
 EREHWON_PROFILE = {1: -497.0, 2: -415.0, 3: -325.0, 4: -305.0, 5: -210.0, 6: -20.0, 7: 180.0, 8: 360.0}
@@ -436,10 +437,10 @@ def main(dry=False):
             if st['id'] not in ('s57bkv9741', THALABA_ID):
                 assert abs(En[st['py'], st['px']] - Eo[st['py'], st['px']]) < 0.5 and not whas2[st['py'], st['px']], st['name']
     rep['pins'] = pins
-    # Thalaba (the owner's live pin, 825,1481) stands where the lake now is: moved 7 px south as on Gemini's trade map
-    pins['Thalaba (moved)'] = {'px': list(THALABA_NEW), 'after_m': round(float(En[THALABA_NEW[1], THALABA_NEW[0]])),
+    # Old Thalaba (825,1488) is new with this edit's shore: it must stand dry on it
+    pins['Old Thalaba'] = {'px': list(THALABA_NEW), 'after_m': round(float(En[THALABA_NEW[1], THALABA_NEW[0]])),
                                'wet_after': bool(whas2[THALABA_NEW[1], THALABA_NEW[0]])}
-    assert not whas2[THALABA_NEW[1], THALABA_NEW[0]], "Thalaba's new spot is dry"
+    assert not whas2[THALABA_NEW[1], THALABA_NEW[0]], "Old Thalaba's spot is dry"
 
     moved = (np.abs(En - Eo) > 0.5) | (whas2 != whas0)
     assert not (moved & ~inbox).any(), 'heights moved outside the box'

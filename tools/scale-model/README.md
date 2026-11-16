@@ -784,8 +784,15 @@ First run as "5.1 edit 2" (`edit_512.py`) on the openworld-sites line (5e31f0ceb
 Main's own edit 2 is Godshearth's vents, and the rasters cannot be merged, so the edit was re-run on main's model (edits
 1-6 in) as edit 7 on 2026-11-15, when `gemini-trade` was merged. Two changes from the first run: the Pleasure Dome's
 landform stands at the Erewhon page's island with no shoal (the owner, 2026-11-11, d1555243e on
-claude/clever-mirzakhani-030fd5), and Thalaba, one of the owner's live pins (825,1481), now under the lake, moves to
-825,1488 (where Gemini's trade map has it; checked dry).
+claude/clever-mirzakhani-030fd5), and Old Thalaba, the fishing village on Thalaba's old shore (825,1488, key 5.1e12),
+is checked dry on the new shore.
+
+**5.1e12 (2026-11-16, records only)**: the owner, "we can move thalaba to the mouth of godshearth and put a new village
+on the lake in its place": Thalaba (`shvo49k0y2`) moves from 825,1481 to 840,1463, where Godshearth's spillway gorge
+opens, and becomes a town of ~2,400 (SETT_MOVED); Ōlḍ-Thalaba (`soldthalaba1`, village, ~600) takes the old shore at
+825,1488; and Lāiṭwāl (`slaitwal0001`, the Light Wall, town, 1028,1653, ~5,000), the Opal Valley town and seat of the
+Ōpal-Bhālī province (settlements/lightwall/PLAN.md, step L0), is added (SETT_ADDED). Nearest pins: Erehwon 127 km from
+Thalaba and 69 km from Ōlḍ-Thalaba; Gemini's Opal Valley Mines 27 km from Lāiṭwāl.
 
 `python tools/scale-model/edit_517.py` edits `model/data` in place and writes `edit_517.report.json`; `--dry` computes
 and prints the report without writing; it refuses to run twice (`DATA.landforms` is its marker). The owner's decision of
