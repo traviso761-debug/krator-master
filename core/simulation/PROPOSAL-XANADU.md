@@ -4,7 +4,22 @@ The owner, 2026-11-15: "using these maps and trade info, let's scope Erehwon (an
 economy for the sim layer. let's plan out the minor villages, hamlets, and other special districts of the country in
 preparation to put it in a larger sim fragment with Oidong/High Rift."
 
-Status: **proposed**. Section 9 lists the open questions. Nothing here is built.
+Status: **X0 built** (2026-11-16): `core/region/data/xan-tune.js` (`XAN_TUNE`) and `core/region/tests/test-xan-economy.js`,
+18 checks passing. A year runs in about 50 s on 910 actors:
+- **Food:** 348,710 people in 62 settlements, all of them fed their grain (55,000 t eaten, none short).
+- **Gold:** the gold field's ore is assayed at Strongwall, the Sultan's Fifth reaches the Treasury, the goldsmiths make goldwork and the Mint makes coin.
+- **Dues:** every province's dues and Qiblai's grants fall once a year, none owed.
+- **The lake:** every lake town is fed and their fish land at Erehwon and Phēr.
+- **Iron:** Theodiga smelts 107 t of iron from scrap and the Cataracts' charcoal.
+- **Gateways:** salt and iron come in; goldwork, cacao, opium, tea and silk go out.
+
+**Owed to X1:**
+- **Salt:** 38% short, as the owner expects until the northern caravans are built (2026-11-16). The capital's market ends
+  the year holding 419 t of salt its provinces cannot reach on two-stop roads.
+- **Exports:** well under the gateways' take (cacao 53 t of about 440). The goods pile up at the seats and the capital.
+
+Both wait on X1's staged roads. X0's own finding: core/clock's day 0 is year day 259, so the first stores stand for last
+year's harvest and last to the first harvest's end (clock day 306).
 
 This is the sequel to `PROPOSAL-LONGSONG-PINNACLE.md`, which put Longsong and its ring on the valley host
 (`core/region/50-region-valley.js`) with a test (`settlements/longsong/tests/test-ls-economy.js`). Xanadu goes on the

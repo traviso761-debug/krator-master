@@ -49,7 +49,8 @@ when it is absent (S0 step B):
 | `47b`, `47c`, `47f`, `47h`, `47m`, `47n`, `47r`, `47u` | building and upkeep, crime, founding, the hamlets, money, herders, refugees, unrest |
 | `48-region-week.js` | the week's books and checks |
 | `49-region-govern.js` | the governor's and spoilage rules |
-| `50-region-valley.js` | **a valley at the abstract level** (S3): settlements declared from a plain spec, not a city plan; works as their own stores; the people eating by the hour; tithe roads; a road's `want` and `most` passed to SIM.trade (a long road needs a want that covers the gap between its carriers); the transfers. Longsong's valley runs on it |
+| `50-region-valley.js` | **a valley at the abstract level** (S3): settlements declared from a plain spec, not a city plan; works as their own stores; the people eating by the hour; tithe roads; a road's `want` and `most` passed to SIM.trade (a long road needs a want that covers the gap between its carriers); the transfers. Longsong's valley and the Xanadu Sultanate run on it |
+| `data/xan-tune.js` | `XAN_TUNE` (`[G data]`): **the Xanadu Sultanate's tune** (`core/simulation/PROPOSAL-XANADU.md`, step X0): about 350,000 people in 62 settlements: the towns and their works, the eight provinces' countrysides in bulk, the 21 lake towns and 4 islands, Erehwon's and Qiblai's rings (from `openworld/xanadu-oidong-highrift/plan/sites.json`), the work camps and forts, the four gateways, the dues and grants. `XAN_TUNE.valley(plan)` is the valley spec. Read in place; Longsong's `LS_TUNE` joins it at X2 |
 
 ## Still the isle's
 
@@ -67,3 +68,8 @@ Lift them into the tune when a culture needs them otherwise.
 - **The isle demo:** `node settlements/isle-demo/tests/test-isle-*.js` (they run its `dist/isle-city.plan.js`), and
   `settlements/isle-demo/tools/export-sim.js` for the golden books.
 - **Longsong's valley:** `node settlements/longsong/tests/test-ls-economy.js`. It runs a year by the hour, about 6 s.
+- **The Xanadu Sultanate:** `node core/region/tests/test-xan-economy.js` (on `tools/ktest.js`). It runs a year by the hour
+  on 910 actors, about 50 s, and holds it to PROPOSAL-XANADU's X0: everyone fed, the books balanced, the gold chain and
+  the Fifth, the dues and grants, the lake's fish, the gateways, the iron, the seasons, the size. The salt runs short
+  (about 38 % in the first year) until the caravans from the north are built: the owner expects it (2026-11-16); the
+  capital's market holds salt its provinces cannot reach on two-stop roads, which X1's staged roads fix.
