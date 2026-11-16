@@ -28,8 +28,9 @@ function adBakeChunk(key,list){const G=new THREE.Group();G.name='chunk:'+key;sce
   if(p.kind!=='wall'&&p.kind!=='boat'){p.stacks=[];QB_SHELLREC.cur=p.stacks;}
   const g=VERN.place(G,p.key,p.x,p.z,p.ry,p.o);AD_LAMPREC.cur=null;QB_SHELLREC.cur=null;if(g)p.G=g;
   for(let i=r0;i<REG.length;i++){REG[i].type=p.key;REG[i].id=REG[i].id||p.id;
-   /* a terrace stair registers itself 1.2 m tall at its head (kits/qiblai 89q4); its volume here spans its whole fall */
-   if(p.key==='qb_terrace_stair'&&p.o.rise){REG[i].y=p.o.y-p.o.rise-1.5;REG[i].h=p.o.rise+2.7;}}
+   /* a terrace stair registered 1.2 m tall at its head (kits/qiblai 89q4 before 4f1f45adf, which registers its whole fall):
+      where the kit's record is still the short one, set (not add) its volume to span the fall; a no-op once the kit's fix is here */
+   if(p.key==='qb_terrace_stair'&&p.o.rise&&REG[i].h<p.o.rise){REG[i].y=p.o.y-p.o.rise-1.5;REG[i].h=p.o.rise+2.7;}}
   for(const L of p.lamps){const w=loc(p.x,p.z,L[0],L[2],p.ry);AD_LAMPS.push([w[0],qcDflt(p.o.y,0)+L[1],w[1],L[3],p.id]);}
   const r=Math.max(qcDflt(p.w,10),qcDflt(p.d,10))/2+10;x0=Math.min(x0,p.x-r);x1=Math.max(x1,p.x+r);z0=Math.min(z0,p.z-r);z1=Math.max(z1,p.z+r);y0=Math.min(y0,qcDflt(p.o.y,0)-8);y1=Math.max(y1,qcDflt(p.o.y,0)+qcDflt(p.h,12));}
  TSTAT.cur=null;kbake(G);xaDoorsBind();AD_INST+=qcDflt(window._instances,0);for(const n in KIT.items)KIT.items[n].length=0;
