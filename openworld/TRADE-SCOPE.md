@@ -955,7 +955,9 @@ lower tables:
   Csa), a near twin of N4.
 - **The high north-east** (east of px 1150, north of py 420) has nothing livable: a summer range for bands at most.
 
-**Sent** (the owner, 2026-11-12: "Send all nine"): N1-N5 as village pins, no polity, to the queue.
+**Sent** (the owner, 2026-11-12: "Send all nine"): N1-N5 as village pins, no polity, to the queue. **Queued**, with E1-E4:
+collision-checked, ruins included, and none collides. The nearest pin is Coyote Canyon, 221 km from N5. The closest pairs among the
+queued sites are N3-K7 at 63 km and N1-N4 at 78 km, all over 50 km.
 
 ## 13. The desert west of the east abyss: Dasri villages and camps (a proposal, 2026-11-12)
 
@@ -990,7 +992,10 @@ is on its western edge under the Iziz highlands.
   abyss's west rim between the Tabist country and Mungo.
 - **In Iziz land:** W4-W7 are oasis villages on the desert's rivers and spring lines. Dasri villages there would be tolerated by
   the Empire, as the owner allowed (section 9).
-- **W8 is not desert ground:** Cfa, wet, the best farmland here. It reads as an Izani farming village, not a Dasri one.
+- **W8 is not desert ground:** Cfa, wet, the best farmland here.
+- **The owner's call** (2026-11-15: "w8, w4, w7, w6 will be mixed iziz/dasri villages"): W4, W6, W7 and W8 are **mixed Izani and
+  Dasri villages** in the Empire's land. W5 stays a Dasri oasis village in Iziz land, and W1-W3 the Dasri's own in Nomad Country.
+  For the trade model a mixed village counts in the Empire of Iziz, with Dasri herders; its culture tables draw on both.
 
 **The camps** (14): seasonal sites by water with good pasture (186-252 km²-eq within 10 km), for the bands between the villages
 (`core/camp`, not pins). They pair with the eastern valleys' summer camps (section 9): the Dasri winter here in the low desert.
