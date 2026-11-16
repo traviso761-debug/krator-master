@@ -1,0 +1,24 @@
+{
+ "edit": "5.1 edit 7 Phēr",
+ "date": "2026-11-16",
+ "stream": {
+  "id": "r_pher_stream",
+  "name": "Phēr stream (to be named)",
+  "length_km": 27.0,
+  "source_m": 133.0,
+  "mouth_m": -259.9,
+  "q_mouth_m3s": 2.0,
+  "to": {
+   "lake_m": -520,
+   "at_px": [
+    842.0,
+    1492.0
+   ]
+  }
+ },
+ "stream_max_climb_m": 0.0,
+ "landforms": [
+  "lf_pher_headland",
+  "lf_pher_cove"
+ ]
+}
