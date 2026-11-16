@@ -6,11 +6,15 @@ cataracts of Nahr ash-Shalālāt).
 
 ## Done (2026-11-16)
 
-- **The ring is the temple estates.** `openworld/xanadu-oidong-highrift/src/48-world-site.js` (`QIBLAI_ESTATES`, the
-  `qiblai-estate` row of core/hamlet's Xanadu row) plans 24 villages, three along each monastery's spoke (bearing i x 45,
-  the city's `QSPOKE` order): the rice farms at 7 km (290 people each), the buffalo dairies at 12 km (162) and the
-  apiaries at 17.5 km (104), each named for its Order. 4,448 people in all. `farm-1` keeps the old first village's spot
-  (north, 7 km), where the region's world checks stand. The apiary is a pending box (the Xanadu kit has no hives).
+- **The ring is the temple estates** (the owner, 2026-11-16: "Grow the estates"). `openworld/xanadu-oidong-highrift/src/
+  48-world-site.js` (`QIBLAI_ESTATES`, the `qiblai-estate` row of core/hamlet's Xanadu row) plans 128 villages. Each Order
+  holds the 45-degree sector round its spoke (bearing i x 45, the city's `QSPOKE` order), in seven rings from 7 to
+  27.5 km: one village near the city to four at the edge, sixteen a sector.
+  - The rice farms (80, 290 people each) are inside.
+  - The buffalo dairies (24, 162 each) and the apiaries (24, 104 each) lie toward the forest's edge.
+  - 29,584 people in all, the ~30,000 that `kits/qiblai/PLAN.md` section 8 says must work the land for the city.
+  - `farm-1` keeps the old first village's spot (north, 7 km), where the region's world checks stand.
+  - The apiary is a pending box: the Xanadu kit has no hives.
 - **`SITES.json`** names the page (`settlements/qiblai`).
 
 ## The city on the world's ground (waits on `openworld/PLAN-SITES.md` step 3)
@@ -52,11 +56,11 @@ they are, Qiblai goes on with the same plan as its page. There should be one sou
   `XAK.dims` lists the `qb_*` defs) and the `qiblai` texture pack. The page's own sealed bundles are KCITY, QC_FLORA and
   YKIT (`gen/`).
 
-## Open, for the owner
+## Open
 
-- **The estates feed a sixth of the city at most.** By `kits/qiblai/PLAN.md` section 8's estimate, about 30,000 people in
-  more than 100 villages must work the land, or Qiblai buys grain from the Ālph's valley. The 24 estates hold 4,448.
-  Should the ring grow, with more villages that owe the Orders, out to the site's 30 km? Or does Qiblai import grain? The
-  answer sets the next re-plan.
+- **The estates stand at given bearings.** Each village stands at its ring and bearing, searched out to 3 km (5 km in the
+  outer two rings), not by the land's fitness (`openworld/xanadu-oidong-highrift/KNOWN_ISSUES.md`: the hinterland survey
+  is still to be lifted into core).
+- **The apiaries are boxes:** the Xanadu kit needs a hive stand (rows of log and clay hives under a lean-to).
 - **The roads stop 1.5 km out.** Once the town stands on the ground, `road.r` should drop to the gate stairs' feet
   (about 850 m).

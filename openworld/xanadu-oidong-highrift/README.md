@@ -29,8 +29,9 @@ The second region of sites cut off the scale model into the open world (`openwor
   - **Qiblai** (`skm4jjo2vl`, px 922,1595 since 2026-11-11, moved from 963,1566 to the cataracts of Nahr ash-Shalālāt:
     by a river, near rock salt and ore; the owner's word). Its page is `settlements/qiblai` (the town stays the page's
     until `PLAN-SITES.md` step 3; the hand-over is `settlements/qiblai/WORLD.md`). Its ring is the great Orders' temple
-    estates (2026-11-16, `QIBLAI_ESTATES` in `src/48-world-site.js`): 24 villages, three along each monastery's spoke, the
-    rice farms at 7 km, the buffalo dairies at 12 km and the apiaries at 17.5 km, 4,448 people.
+    estates (2026-11-16, `QIBLAI_ESTATES` in `src/48-world-site.js`; the owner: "Grow the estates"): 128 villages, sixteen in
+    each Order's sector round its spoke, in seven rings from 7 to 27.5 km: 80 rice farms, 24 buffalo dairies and 24 apiaries,
+    29,584 people (the ~30,000 the city's food needs).
   - **Longsong** (`sq80bzd7ep`, px 1226,1626): the History Monks' monastery (`settlements/longsong`). Its three villages
     stand where its page lays them: Shar and Nub (farming) and Dzo-ling (the herders), 585 people in 110 buildings.
     Recut 2026-11-16 at its 2026-11-11 pin (1228.88,1621.23), so its three villages now stand round the moved monastery.

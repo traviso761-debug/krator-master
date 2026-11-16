@@ -574,6 +574,9 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
     about 600 strong, and its house in Qiblai is the Tempest's daughter [the owner, 2026-11-16; `settlements/strongwall/PLAN.md`].
     The gold monastery is **the Yellow Monastery, the Order of the Beacon**, whose head house is the refurbished Ancient
     beacon fort over the Rift [the owner, 2026-11-16; `settlements/beacon/PLAN.md`]. The turquoise monastery is not yet named.
+    The city is fed by the Orders' **temple estates**: about 128 villages and 30,000 people out to 30 km, each Order
+    holding the sector round its monastery's spoke, rice farms near the city, buffalo dairies and hives toward the
+    forest (milk and honey are the sacraments) [the owner, 2026-11-16: "Grow the estates"; `settlements/qiblai/WORLD.md`].
   - **Grēṭ-Āil, the Azure Dream's head monastery**, on the long isle's south shore facing Erehwon across the lake, in a
     cove at scale-model px 846,1508.7 [the owner, 2026-11-16; `settlements/azure-dream/PLAN.md`].
     - **The fishermonks** fish the lake from dugouts, by night with lamps, without qualm.

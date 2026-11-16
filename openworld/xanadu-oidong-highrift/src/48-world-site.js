@@ -38,10 +38,22 @@ KHAMLET.CULTURES['qiblai-estate']=Object.assign({},KHAMLET.CULTURES.xanadu,{work
  reach:Object.assign({},KHAMLET.CULTURES.xanadu.reach,{dairy:480,apiary:520}),
  pending:Object.assign({},KHAMLET.CULTURES.xanadu.pending,{xa_apiary:{w:12,d:8,h:1.6,what:'an apiary: rows of log and clay hives on stands under a lean-to'}})});
 if(typeof KTAGS!=='undefined')KTAGS.VOCAB.cultureAlias['qiblai-estate']={culture:'xanadu'};
-var QIBLAI_ESTATES=(function(){const ORD=['the Flashing Eye','the History Monks','the Beacon','Viridian Thought','the Turquoise monastery','the Azure Dream','the Violet Storm','the White Lily'],
- COL=['Crimson','Saffron','Gold','Green','Turquoise','Blue','Violet','White'],RUN=[['farming',7,300],['dairy',12,240],['apiary',17.5,180]],out=[];
- for(let i=0;i<8;i++)RUN.forEach((r,k)=>{const id=i===0&&k===0?'farm-1':COL[i].toLowerCase()+'-'+r[0];
-  out.push({id,focus:r[0],bearing:i*45+(k===1?9:k===2?-9:0),km:r[1],pop:r[2],name:'the '+COL[i]+' estate, '+(r[0]==='farming'?'the rice farms':r[0]==='dairy'?'the dairy':'the hives')+' ('+ORD[i]+')'});});
+var QIBLAI_ESTATES=(function(){
+ /* the owner, 2026-11-16 ("Grow the estates"): the ring out to the site's 30 km, about 30,000 people, so the estates feed the
+    city (kits/qiblai/PLAN.md section 8). Each Order holds the 45-degree sector round its spoke: seven rings of villages, one
+    near the city to four at the edge, sixteen a sector, 128 in all; the rice farms inside, the buffalo dairies and the hives
+    toward the forest's edge. farm-1 keeps the old first village's spot (north, 7 km), where the world's checks stand */
+ const ORD=['the Flashing Eye','the History Monks','the Beacon','Viridian Thought','the Turquoise monastery','the Azure Dream','the Violet Storm','the White Lily'],
+  COL=['Crimson','Saffron','Gold','Green','Turquoise','Blue','Violet','White'],
+  RINGS=[[7,['farming']],[10.5,['farming']],[14,['farming','farming']],[17.5,['farming','farming']],[21,['farming','dairy','farming']],
+   [24.5,['dairy','farming','apiary']],[27.5,['apiary','farming','apiary','dairy']]],
+  /* a village moved off its ring where its road would not lie on the land (the highways check: white-farming-9's lane
+     stood 0.8 m off the ground at 24.5 km, 2026-11-16) */
+  NUDGE={'white-farming-9':{km:23.5}},
+  POP={farming:300,dairy:240,apiary:180},WHAT={farming:'rice farm',dairy:'dairy',apiary:'hives'},out=[];
+ for(let i=0;i<8;i++){const n={};RINGS.forEach((R,k)=>{const c=R[1].length;R[1].forEach((f,j)=>{n[f]=(n[f]||0)+1;
+  const off=c===1?(k%2?10:0):((j+.5)/c-.5)*38,id=i===0&&k===0?'farm-1':COL[i].toLowerCase()+'-'+f+'-'+n[f];
+  out.push(Object.assign({id,focus:f,bearing:i*45+off,km:R[0],look:k>=5?5000:3000,pop:POP[f],name:'the '+COL[i]+' estates, '+WHAT[f]+' '+n[f]+' ('+ORD[i]+')'},NUDGE[id]));});});}
  return out;})();
 var SITE_SPEC={region:'xanadu-oidong-highrift',world:1191569,bridges:{culture:'xanadu'},
  sites:{

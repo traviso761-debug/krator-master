@@ -77,7 +77,6 @@
   the walkers are drawn but not on core/simulation (no needs, no homes); the kit's old static figures (`xnFolk`: a cylinder and a
   ball) still stand at some doors and look poor beside the rigs; a walker can brush a monastery's gate flight where it juts into
   the street.
-- [ ] **The open world (Q7f) is half done** (`WORLD.md`): the temple estates are planned in the region (24 villages, 4,448
-  people, a sixth of what the city eats); the city on the world's ground waits on `openworld/PLAN-SITES.md` step 3; the
-  estates' scale is the owner's question.
+- [ ] **The open world (Q7f) is half done** (`WORLD.md`): the temple estates are planned in the region (128 villages, 29,584
+  people; the apiaries pending boxes); the city on the world's ground waits on `openworld/PLAN-SITES.md` step 3.
 - [ ] **The Godot export and the gallery (Q7g)** are not started.
