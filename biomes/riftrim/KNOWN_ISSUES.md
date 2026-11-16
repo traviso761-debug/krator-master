@@ -65,11 +65,14 @@ Seen and left for the owner (each a look decision or a larger piece of work):
 
 ## Stations 8 and 9, the Fellgang villages (2026-11-11; `PLAN.md`, "Stations 8 and 9, the Fellgang villages")
 
-- [ ] **No building kit has the Fellgangs.** The villages are core/hamlet's records drawn as stand-ins (`stations/fowlers/84f-host-fellgang.js`):
-  drystone boxes under gabled turf roofs, round stores, open sheds, pens, and barrows for the ice houses, with no texture (vertex colours only).
-  A Fellgang building kit owes their real forms and the library's drystone and turf.
-- [ ] **core/hamlet has no fowling or ice-cutting focus**: the Fowlers take the `ranch` slot and the Ice-cutters the `quarry` slot, each naming its
-  own works in the Fellgang row. A `fowling` and an `ice` focus in `KHAMLET.FOCI` would be a core change, owed if more such villages come.
+- [x] **The buildings are the Fellgang kit's** (the owner, 2026-11-11: swap the stand-ins). `kits/tungang`'s bundle (`tungang_bundle.py`, `tex:'lean'`:
+  its eight most-seen library families) draws both villages (`TG.fg.draw`), the Fowlers' ropes (`TG.fg.ropes`: cable low, cordage above, pegs, ladders)
+  and the Ice-cutters' lantern posts (`TG.fg.pieces`, `fg-lantern-post`); the villages run on core/hamlet's opt-in Fellgang row with its `fowling`
+  and `ice` focuses (`core/hamlet/fellgang/22`). Both came from `claude/tungang-fellgang-kits-a56ece` (only `kits/tungang/` and
+  `core/hamlet/fellgang/`, with core/hamlet's test, taken: the branch carries other sessions' work). The villages are the same records as the stand-ins'
+  (27 buildings and 104 people; 23 and 96). Pages ~11.7 MB (the full texture set would pass the 16 MB cap). Without the bundle, 84f's stand-ins draw
+  the same village.
+- [ ] **The kit's furniture is not placed** (the bundle's `FURNISH` is a stub: `kits/tungang/KNOWN_ISSUES.md`), and its doors are drawn shut.
 - [ ] **The Fowlers' wall faces south**, away from the sun at this latitude (~40 degrees S): it stands in its own shadow most of the day, so the
   face reads dark under the `rift` beds' red and black. That is true to the site (scale model 5.1 puts the wall north of the lake); a summer
   dawn or evening, with the sun rising or setting south of east or west, lights it obliquely.
