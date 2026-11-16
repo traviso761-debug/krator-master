@@ -736,6 +736,10 @@
    "bytes": 1240372,
    "sha256": "21d8a1af02556e92590f26058da0d8d0dd362a04b121ba33657c35440ebc4cce"
   },
+  "biomes/tiers/dist/tiers.html": {
+   "bytes": 8377619,
+   "sha256": "c47355173f12285fc5bfc65cae2df248a626082c3b2b5d2c91b641a93cbbd0a4"
+  },
   "biomes/twins/dist/twins-brazier.html": {
    "bytes": 2877421,
    "sha256": "2edefccdf0e666316a5e23e2da106f461520f07ea2c74a781f68c22a9c581c2d"
