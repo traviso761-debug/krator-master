@@ -107,6 +107,10 @@ if(COASTED)W.coastKeeps=()=>{const out=[];if(typeof SITE_INIT==='undefined'||!SI
  /* Nephtos, the Hykkousoi colony (48p): surveyed round the owner's pick on the forest island west's coast, its villages
     and their quays round it: the coast there is kept as the colony was planned on */
  if(typeof ISLE_COLONY!=='undefined'&&ISLE_COLONY.SPEC&&ISLE_COLONY.SPEC.near){const S=ISLE_COLONY.SPEC;out.push({x:S.near[0],z:S.near[1],r:S.look});}
+ /* an overseas village (48's `overseas`: Valapo's clove plantation on the forest island west, the owner 2026-11-09) is
+    surveyed round its island's point for a coastal cell with a sea route: that coast is kept as it was planned on (core/coast's
+    second pass moved it a kilometre out, and no fit cell kept the sea within reach) */
+ if(typeof ISLE_HAMLETS!=='undefined'&&ISLE_HAMLETS.SPECS)for(const S of ISLE_HAMLETS.SPECS)if(S.overseas&&S.island)out.push({x:S.island[0],z:S.island[1],r:S.look==null?6000:S.look});
  return out;};
 /* the sea's and the lakes' level only (WORLD.lakeWater reads the raster): WORLD.water's river part samples the height, which calls this */
 W.landHook=(x,z,h)=>{const wl=W.lakeWater(x,z);if(wl<-1e8)return h;const d=wl-h;
