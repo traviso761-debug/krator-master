@@ -5,6 +5,19 @@ The owner, 2026-11-16: *"spin off agents to make site plans for Pher, Thalaba, K
 This is a site plan, not a build: no kit code and no pages. Everything not from the owner, the lore or the sim's tune is
 *proposed*. Kirstabal is the map's name (Gemini's pin, `sl758m2396`); `LORE.md` does not mention it.
 
+**The owner's answers (2026-11-16), section 7:** *"lake port. it has its own, smaller atitlan-like hinterland. barges can
+stop at a landing with portage road. 3k is fine. bridge crosses it. make it a target on xanadu's page, it will use just
+the normal xanadu kit. opium dried at kirstabal. road follows lake and gorge. Keb Riwa."*
+- **Kirstabal is a lake port** on the apron at the head of the Lower Xanadu Lake, with **3,000 people**.
+- **The lake is its hinterland**, after Lake Atitlán as the capital's lake is (`PROPOSAL-XANADU.md` 2a), but smaller:
+  section 2a here.
+- **The barges to Qiblai stop at a landing** at the lake's outlet, and a **portage road** runs past the cataracts.
+- **A bridge crosses Keb Riwā's mouth.**
+- **It is a target on Xanadu's page** and uses **only the normal Xanadu kit**: not the scrap set, not Qiblai's.
+- **The opium is dried at Kirstabal**, in the latex house.
+- **The road to Lāiṭwāl follows the lake and the Opal River's gorge.**
+- **The river is Keb Riwā.**
+
 Sources:
 - `core/region/data/xan-tune.js` (`XAN_TUNE`) and `core/simulation/PROPOSAL-XANADU.md`, sections 2, 3d, 6 and 7: the
   province, the sim and its roads.
@@ -27,7 +40,7 @@ the Oidong–Xanadu scarp, just south of where Keb Riwā falls off the scarp int
 | Ground | the shore apron: **-1,665 to -1,620 m**, flat (5-30 m a km), cells 987-991 by 1598-1607, about 10 km along the shore and 4-8 km deep. The pin's cell is -1,661 m |
 | The lake | **the Lower Xanadu Lake** (the model's gloss for Nahr ash-Shalālāt's source, `smodel/river_names.py`): water at **-1,685 m**, **3,552 km²**, px 934-991 by 1587-1607, **114 km long and up to 40 km wide**, its bed to -1,838 m. Kirstabal is at its eastern tip. It has an outflow, so it is fresh |
 | Its outflow | **Nahr ash-Shalālāt** (`r_xanadu_low_cataracts`, **1,180 m³/s**) leaves the west end at px 932,1598. It falls by low cataracts past **Qiblai** (922,1595, -1,860 m: 175 m down in about 22 km) and runs on to the Lizardman Rift Sea |
-| The river | **Keb Riwā** (`r107`, 780 m³/s, 135 m wide, 4.6 m deep), the Oidong Valley's trunk river, called *Rīfar al-Jadwal* in the region data and in Strongbow's notes. The model's edit 5.1.5 restored *Keb Riwā*, "cave river". It crosses the lip at px 1000.5,1598 (bed 1,326 m), drops to 249 m by 996.5,1596.5 (the cataract, about **1,080 m in 4 km**), runs down the scarp's foot (-1,240 m at 993,1598) and enters the lake at **989.5,1597.5** (-1,655 m), **5 km north of the pin**. Two wadis, Jeḍ Ḍrāi (jade wadi, `r786`) and Sekriḍ Ḍrāi (sacred wadi, `r585`), come down to the same head |
+| The river | **Keb Riwā** (`r107`, 780 m³/s, 135 m wide, 4.6 m deep; the owner, 2026-11-16: the town calls it Keb Riwā), the Oidong Valley's trunk river. The model's edit 5.1.5 restored the name, "cave river"; the region data and Strongbow's notes still say *Rīfar al-Jadwal*. It crosses the lip at px 1000.5,1598 (bed 1,326 m), drops to 249 m by 996.5,1596.5 (the cataract, about **1,080 m in 4 km**), runs down the scarp's foot (-1,240 m at 993,1598) and enters the lake at **989.5,1597.5** (-1,655 m), **5 km north of the pin**. Two wadis, Jeḍ Ḍrāi (jade wadi, `r786`) and Sekriḍ Ḍrāi (sacred wadi, `r585`), come down to the same head |
 | The scarp | straight behind the town to the east: from -1,530 m at x 991 to -267 m at 995 and **+1,295 m at 999**, about **2,900 m in 16 km**. That averages 180 m a km, with 300-330 m a km (17-18°) at x 994-996. Strongbow's lip is at 1001,1596 (**1,400 m**) |
 | Climate | apron **31-33 °C** mean, **800-1,250 mm**, `Af`; lake surface 30-36 °C on the model. The scarp cools upward: 29 °C, 1,180 mm, `Af` at -1,100 m; 25 °C, 1,300 mm, `Cfa` at -270 m; 19 °C, 1,180 mm, `Cfb` at +770 m; 14-15 °C, 700-925 mm, `Cfb` on the lip. There is a `Csb` cell at 997,1608 |
 | Air | about **1.98 atm** on the apron (the opal valley plan's 1.59 at 60 m and 1.35 at 1,340 m, carried down); 1.34 at Strongbow's lip |
@@ -39,18 +52,25 @@ the Oidong–Xanadu scarp, just south of where Keb Riwā falls off the scarp int
 3,600 m rise in 6 km (to 2,089 m at 979,1622 and 2,623 m at 979,1624). There, flat cells at exactly -1,530 m (970-975,
 1626-1628; 980-983, 1620) look like a carve's floor and not ground: **for the scale-model session to check.**
 
-**The roads on the ground** (surveyed; the lines are *proposed*):
+**The lake's shores.** The whole shore is low, hot and gentle: 230 km of it, -1,670 to -1,520 m, 31-32 °C, 800-1,110 mm,
+`Af`, with slopes of 12-97 m a km. There are no islands. Both sides rise 300-1,300 m within 20 km: on the north to
+-350 to -840 m, and on the south to -740 to -1,210 m. The south side's middle (955-970) is `Cfa`, with
+1,080-1,130 mm. Waters entering the lake:
+- Keb Riwā and Jeḍ Ḍrāi at the head (989.5,1597.5);
+- Sekriḍ Ḍrāi on the north shore (984.9,1587.5);
+- **the Opal River** (Sitār Ḍrāi, `r682`, 115 m³/s) on the south shore at 955,1606.
+
+**The roads on the ground** (surveyed; the lines are the owner's choice of 2026-11-16, their details *proposed*):
 
 | Road | By the ground | The tune |
 |---|---|---|
-| To **Qiblai** | the lake, 112 km from the head to the outlet at 933,1598. The south shore is 1-6 km of apron and fans all the way (-1,665 to -1,480 m) and could carry a towpath or road. From the outlet the cataracts need a **portage road of about 22 km** to Qiblai's ghats | `road.qb-ks`: 108 km, barge |
-| To **Strongbow** | north 5 km over the apron to Keb Riwā's mouth, across the river, then up the toe to the foot, about 12-16 km in all. The lift goes on up 3,100 m to the lip | `road.ks-sb`: 25 km, road (the distance to the lip's pin) |
-| To **Lāiṭwāl** | west 35 km along the south shore (or by barge) to the Opal River's mouth, up its gorge (-1,685 m to the mouth bench at +60 m, about 40 km), then up the valley about 120 km: **about 190 km**. The straight line, 132 km, crosses the divide at 4,800 m (`EF` at 1010,1628) | none yet |
+| To **Qiblai** | by barge down the lake, 112 km from the head to **the Landing** at the outlet (~932,1600, -1,660 m on the south bank; the owner: "barges can stop at a landing with portage road"). From there the **portage road** runs about 22 km beside the cataracts of Nahr ash-Shalālāt (-1,686 m to -1,860 m) to Qiblai's ghats. The south shore's apron and fans (-1,665 to -1,480 m) could also carry a towpath | `road.qb-ks`: 108 km, barge |
+| To **Strongbow** | north 5 km over the apron to Keb Riwā's mouth, over **the bridge** (the owner, 2026-11-16), then up the toe to the foot, about 12-16 km in all. The lift goes on up 3,100 m to the lip | `road.ks-sb`: 25 km, road (the distance to the lip's pin) |
+| To **Lāiṭwāl** | **by the lake and the gorge** (the owner, 2026-11-16): 35 km along the south shore or by barge to the Opal River's mouth (Ōpal-Māuṭh, section 2a), up the gorge (-1,685 m to the mouth bench at +60 m, about 40 km) past the Sultan's toll-quay at the valley's mouth (`biomes/opalvalley` station 5), then up the valley about 120 km: **about 190 km** | none yet |
 
 ## 2. Who lives there: 3,000
 
-The tune's figure is **3,000** (`town('sl758m2396', ..., 3000)`); the proposal's section 3d says 2,200, and Gemini said
-3,750. Kirstabal is **the seat of the Scarp** (P5, *Siqārp*: 25,000 rural people, the plantations on the scarp's slopes),
+**3,000** (the tune's figure, `town('sl758m2396', ..., 3000)`; the owner, 2026-11-16: "3k is fine"). Kirstabal is **the seat of the Scarp** (P5, *Siqārp*: 25,000 rural people, the plantations on the scarp's slopes),
 **the staging town between Qiblai and Strongbow**, and **the barge port** at the lake's head. *Proposed*, by trade:
 
 | Who | People | Where |
@@ -58,16 +78,60 @@ The tune's figure is **3,000** (`town('sl758m2396', ..., 3000)`); the proposal's
 | The barge and lake people: bargemen, the boatyard, fishers and their households | ~550 | the harbour quarter |
 | The warehouses: porters, weighers, storekeepers, the Month Store (the salt), the factors' clerks | ~400 | the harbour quarter and the bazaar |
 | The caravan trade inward from the lift: the serai, grooms, drovers, carters | ~300 | the serai quarter by the Strongbow road |
-| The Scarp's works: the tea factory, the cacao fermentaries, the latex house (the poppy's opium dried and sealed) | ~500 | the works quarter, at the south edge |
+| The Scarp's works: the tea factory, the cacao fermentaries, and **the latex house**, where all the Scarp's opium is dried, balled and sealed (the owner, 2026-11-16: "opium dried at kirstabal") | ~500 | the works quarter, at the south edge |
 | The bazaar's traders and the crafts (smiths, potters, rope and sail makers, the oil lamps' keepers) | ~600 | the bazaar and the streets off it |
 | The province's seat: the governor of the Scarp, the tax post, the tithe granary's keepers, a garrison of ~80 | ~250 | the seat beside the bazaar |
 | The Decree: a monastery and a gate temple | ~150 | the monastery on the scarp's toe |
 | **The Brotherhood of the Two Horns**: the factor house (`horns.kirstabal`, 20 in the tune) | 20 | on the bazaar |
 | Others: households, servants, the poor | ~230 | through the town |
 
-Plus the Scarp's **25,000 rural people** (the tune's bulk district): grain and cacao villages on the floor south of the
-lake, tea on the scarp's middle slopes, the sky poppy and saffron on the cool lip. The proposal's section 3e asks for
-**3-4 ring villages** declared one by one round the town.
+Plus the Scarp's **25,000 rural people** (the tune's bulk district). *Proposed*, about **13,000 of them live round the
+lake** (section 2a), about **1,000 in 3-4 ring villages** on the floor south of the town (the proposal's section 3e), and
+about **11,000 on the scarp**: tea on its middle slopes, the sky poppy and saffron on the cool lip.
+
+## 2a. The lake: a smaller Atitlán (the owner, 2026-11-16)
+
+The owner: *"it has its own, smaller atitlan-like hinterland"*. The capital's lake is Atitlán at 46 times the area, with
+about twenty lake towns, some two hundred hamlets and five hundred boats (`PROPOSAL-XANADU.md` 2a). The Lower Xanadu Lake is
+**3,552 km²** (60% of the capital's lake), but long and thin (114 by 40 km), with no islands and no volcanoes, and its
+shores hold about an eighth as many people (~16,000 with Kirstabal, against ~120,000). Its ring is a village ring, not a
+town ring.
+
+*Proposed:* **nine lake villages** about 25 km apart round the 230 km shore, **about 25 lake hamlets** of 150-240 between
+them, and Kirstabal as the one hub.
+
+**The villages.** The places are surveyed shore cells, to be snapped to the 1:1 shore by `core/hamlet`. The names are
+coined Xanadui in the style of the capital's lake towns (English in Indic letters), all *proposed*.
+
+| Shore | px | Name (gloss) | People | Trade |
+|---|---|---|---|---|
+| Head (east) | 989,1600 | **Kirstabal** | 3,000 | the hub: the barge port, the bazaar, the Scarp's seat (section 3) |
+| North, at the head | 986,1588 | **Sekriḍ** (sacred) | 800 | the shrine village at the sacred wadi's mouth, facing Kirstabal across the bay; the Decree's pilgrims to the cataract |
+| North | 975,1587 | **Phisharī** (fishery) | 1,400 | the lake's fishing village and its fish market; the dugouts' beach |
+| North | 963,1586 | **Kāko-Bāgh** (cacao garden) | 1,200 | cacao groves on the north slope behind it (`Cfa`, 1,035 mm at 8 km back) |
+| North | 948,1589 | **Rīḍ** (reed) | 700 | reeds, lotus root and willow: the mats and baskets |
+| West (the outlet) | 932,1600 | **The Landing** (*Lānḍing*) | 600 | the barges' landing and the portage road's head to Qiblai (the owner, 2026-11-16): ox-carts, porters, the transfer sheds |
+| South | 938,1606 | **Ṭimbar** (timber) | 700 | the floor's timber floated down the lake to Kirstabal's boatyard |
+| South | 955,1607 | **Ōpal-Māuṭh** (opal mouth) | 1,200 | at the Opal River's mouth: the ferry and the start of the gorge road to Opal Valley and Lāiṭwāl; Opal Valley's goods come down here |
+| South | 967,1606 | **Rāis-Ṭeras** (rice terraces) | 1,000 | rice and grain terraces on the south side's wetter middle (`Cfa`, 1,080-1,130 mm) |
+| South, at the head | 979,1605 | **Kaṭal** (cattle) | 700 | herds on the floor south of the lake; hides and dairy |
+| | | **Nine villages** | **8,300** | plus ~25 hamlets (~5,000) |
+
+**The boats**, scaled from the capital's lake to about 16,000 lake people (*proposed*):
+- ~50 fishing dugouts;
+- ~20 cargo boats and lake barges (the barge road to the Landing among them);
+- ~8 passenger launches.
+
+**The traffic** (*proposed*):
+- Launches run hub-and-spoke from Kirstabal to every village and back.
+- **The long run** to the Landing (112 km) goes once a day each way, about 9 hours at 12 km/h.
+- **The market week:**
+  - Kirstabal's market takes two days.
+  - The Landing and Ōpal-Māuṭh take one each.
+  - Phisharī's fish market takes one.
+  - The rest go to market at the nearest of these.
+
+The boats are the same Xanadu lake craft the capital's lake owes (a launch, a dugout, a cargo barge).
 
 ## 3. The layout (*proposed*)
 
@@ -90,11 +154,12 @@ cataract hangs in sight to the north-east, and Strongbow's tower stands over the
   - the **tithe granary** (the province's grain, which feeds Strongbow too);
   - **the Two Horns' factor house** on the bazaar square, facing the serai road, the way the caravans' goods come in.
 - **The serai quarter** at the north gate, toward Keb Riwā. It has the caravanserai for the loads coming in from the lift,
-  the stables, a camping ground for overflow (a `core/camp` caravan halt), and the **bridge over Keb Riwā's mouth**: 135 m
-  wide, on piers (or a ferry first, owner's question 4).
+  the stables, a camping ground for overflow (a `core/camp` caravan halt), and **the bridge over Keb Riwā's mouth** (the
+  owner, 2026-11-16): 135 m of river, on stone piers with Xanadu's arches (*proposed*).
 - **The works quarter** at the south edge, downwind of the lake breeze: the tea factory's withering lofts and rolling
-  floors, the cacao fermentaries and drying floors, and the **latex house**, where the Scarp's opium is dried, balled and
-  sealed.
+  floors, the cacao fermentaries and drying floors, and **the latex house** (the owner: the opium is dried at Kirstabal).
+  There the Scarp's raw latex is dried on racks, balled and sealed for the Treasury and the gateways, behind a wall with
+  the governor's guard at its gate (*proposed*).
 - **The houses.**
   - The rich courtyard houses are on the lakefront either side of the harbour, where the breeze is.
   - The middle houses fill the grid between the Lamp Way and the works.
@@ -103,6 +168,8 @@ cataract hangs in sight to the north-east, and Strongbow's tower stands over the
   over the roofs. Its terraces look at the cataract.
 - **The ring villages** (3-4, `core/hamlet`) on the floor south of the town (985-989, 1605-1611, -1,600 to -1,480 m): grain,
   rice and cacao. Up the scarp are the plantation hamlets: tea at 0 to +1,000 m, poppy and saffron near the lip.
+- **The lake** (section 2a): the launches' quay beside the barge quays. Sekriḍ is about 25 km off, up the north side of the lake's
+  head, and the other eight villages lie down the two shores.
 
 The streets are a comb on `core/city`: the quay street along the shore, the Lamp Way across it, and side streets and alleys
 between. Qiblai's mandala and Strongbow's rings are not for a working port.
@@ -140,12 +207,14 @@ What the tune does now:
 
 | Addition | Why |
 |---|---|
-| `ks.fishing`, the lake's dugouts on the Lower Xanadu Lake (`T.fishery`, crew ~150) | the town and Strongbow eat 56 t of fish a year and catch none; the lake is 3,552 km² of fresh water |
+| **The lower lake's villages** (section 2a) as `T.lowerLake`, read by the same `lakeTown` as `T.lake`: nine villages with their trades, in P5, hub Kirstabal; their people come off P5's bulk district | the owner's smaller Atitlán. The fishing villages get `T.fishery` works; the town and Strongbow eat 56 t of fish a year and catch none |
+| **A market-boat round** on the lower lake (`T.rounds`: `round.lower`, Kirstabal and the villages) | the pots, mats, honey, fruit and fish go round as on the capital's lake |
+| **The Landing** (`xan.landing`, 600, `lake`) and **the split of `road.qb-ks`**: the barge Kirstabal to the Landing (112 km), then the portage road from the Landing to Qiblai (~22 km) | the owner: "barges can stop at a landing with portage road". Gemini's 108 km is the lake alone |
+| **The latex house** (`ks.latex`): the opium's drying as a batch (raw latex in, opium out, at a loss of weight), so the province's opium share lands as latex and leaves as opium | the owner: "opium dried at kirstabal". It needs a raw good (`latex`) beside `opium` in `T.goods`, or the latex house stays a store if the tune keeps one good |
 | `ks.boatyard` and `ks.serai`, stores (`out:[]`, as Erehwon's dockyard) | so the barge and caravan people are works the sim can count |
 | The ring villages, 3-4 declared (`KHAMLET` `xanadu` row) | the proposal's section 3e; the rest of the Scarp stays bulk |
-| Retime `road.ks-sb` to the ground (12-16 km) plus the lift's hours | the 25 km is to the lip's pin, but the goods land at the foot |
-| Split `road.qb-ks` into the lake (112 km) and a **portage road** past the cataracts (~22 km), with a landing at the outlet (933,1598) | barges cannot run the cataracts. Gemini's 108 km is the lake alone |
-| **`road.ks-lw`, to Lāiṭwāl** (~190 km by the shore or barge, the Opal River's gorge and the valley) | Lāiṭwāl's plan sends opal, moonglass, lenses and pearls down through Kirstabal and Strongbow, and takes grain, tea, dried fruit and iron up. Its step L1 adds the town to the tune |
+| Retime `road.ks-sb` to the ground (12-16 km, over the bridge) plus the lift's hours | the 25 km is to the lip's pin, but the goods land at the foot |
+| **`road.ks-lw`, to Lāiṭwāl**, by the lake and the gorge (the owner): Kirstabal to Ōpal-Māuṭh by barge (35 km), then up the gorge and the valley (~155 km) | Lāiṭwāl's plan sends opal, moonglass, lenses and pearls down through Kirstabal and Strongbow, and takes grain, tea, dried fruit and iron up. Its step L1 adds the town to the tune |
 
 *Proposed, for the owner:* Lāiṭwāl's road list also has sugar going up, which the native rule (`TRADE-SCOPE.md:161`) gives
 to the Ring Isles and the SW lowlands. That is for Lāiṭwāl's plan to settle.
@@ -157,7 +226,8 @@ Following `README.md`, "CORE MODULES ARE NOT OPTIONAL":
 | Need | Take |
 |---|---|
 | The town's streets, lots and infill | **`core/city`** (`KCITY`): the comb of section 3 as its main streets, side streets and alleys; lots by quarter; infill by the trades table of section 2 |
-| The buildings | **`kits/xanadu`** (`XAK`, by `kit_bundle.py`), as Qiblai and Erehwon use it: houses poor to rich, the bazaar, the serai, the granary, the gate, the monastery. Kirstabal is a target on Xanadu's page (`settlements/xanadu/build.py --target kirstabal`, as Qiblai is), or its own build if the owner prefers (question 5). Pieces the kit lacks go into the kit: wind-catchers, a harbour mole and quays, a barge slip, withering lofts, a fermentary, the latex house, the generator house |
+| The buildings | **`kits/xanadu`** only (the owner, 2026-11-16: "make it a target on xanadu's page, it will use just the normal xanadu kit"): no scrap set, no Qiblai kit. The kit gives houses poor to rich, the bazaar, the serai, the granary, the gate and the monastery. Pieces it lacks go into the kit itself, as Xanadu pieces any town could use: wind-catchers, a harbour mole and quays, a barge slip, the bridge, withering lofts, a fermentary, the latex house, the generator house |
+| The page | **a target on Xanadu's page**, built as Qiblai's city is: `settlements/kirstabal/build.py` runs `settlements/xanadu/build.py` with this folder's `targets/town` and `core/city` sealed in one closure (Qiblai's `gen/69q-kcity-bundle.js` pattern), with no kit of its own in `kit.json`. Start `build.py` and `verify.py` from `tools/new_build/` and list the build under every check in `tools/checks_optin.json` |
 | The ground | **`core/world`** (`WORLD.H`, `ROADS`): the site cut by `tools/scale-model/cut_site.py`. The place is inside both the `xanadu-oidong-highrift` box (origin px 1191,1569) and the recut `oidong-highrift` box (from px 976 since 2026-11-11). Which one draws it is the open-world session's call. **`core/terrain`** for the scarp's face |
 | The lake, the river, the cataract, the harbour water | **`core/water`** (open for the lake with the shared wave field, flow for Keb Riwā, fall for the cataract); **`core/coast`** (`KCOAST`) for the lake's natural shore outside the harbour |
 | Sky, heat, haze | **`core/atmos`** (`ATMOS.bindHost`), the standard skybox with the scarp and Strongbow as the local skyline |
@@ -175,29 +245,29 @@ Following `README.md`, "CORE MODULES ARE NOT OPTIONAL":
 | Step | What | Test |
 |---|---|---|
 | **K0** | The pin: keep 989,1600 or move it to 989,1601. A scale-model edit through the scale-model session's queue (`local_bf163a02-2efb-40a4-bfa4-9aa28273c65f`), with the -1,530 m flats south of the lake reported to it | the pin's cell is apron land, not water or scarp |
-| **K1** | The tune: the works and roads of section 4 (fishery, boatyard, serai, the ring villages, the retimed roads, the portage, the road to Lāiṭwāl after its L1) | `test-xan-economy.js`: fed (with Strongbow), the staging checks (14), the salt kept a month, the generator (the light), the dues |
+| **K1** | The tune: the works and roads of section 4 (the lower lake's villages and their round, the Landing and the portage, the latex house, fishery, boatyard, serai, the ring villages, the retimed road over the bridge, the road to Lāiṭwāl after its L1) | `test-xan-economy.js`: fed (with Strongbow), the staging checks (14) through the Landing, the salt kept a month, the generator (the light), the dues; the lower lake's round reaches every village |
 | **K2** | The town on `core/city` with the Xanadu kit, as a target on Xanadu's page | `core/city`'s tests; no overlap; the GPU verify (`--assert`) |
 | **K3** | The harbour, the lake shore, Keb Riwā's mouth and the bridge, and the cataract as the skyline (`core/water`, `core/coast`) | water checks; the bridge's piers on the bed; nothing floats |
-| **K4** | The ring villages and the plantation hamlets (`core/hamlet`, `kits/crops`) | the hamlet tests; no trees on the scarp's cliffs |
+| **K4** | The lake's nine villages and hamlets, the ring villages and the plantation hamlets (`core/hamlet`, `kits/crops`); the boats drawn on their runs once the lake craft exist | the hamlet tests; every village on its shore cell at 1:1; no trees on the scarp's cliffs |
 | **K5** | Interiors: the serai, the factor house, the governor's house, the tea factory | the interiors' checks |
 | **K6** | The site in the open world, with Strongbow's foot and the road between | the region's verify |
 
 ## 7. Questions for the owner
 
-1. **The site.** The ground puts Kirstabal on the apron at the lake's head, 5 km south of Keb Riwā's mouth and 12-16 km
-   from Strongbow's foot. It is a lake port under the scarp, not a town on the scarp. Is that the Kirstabal you meant? The
-   other choice is the cooler scarp, as a tea town at about +500 to +1,000 m: 19-23 °C, but slopes of 200-330 m a km.
-2. **The barge to Qiblai.** The model's lake ends 22 km short of Qiblai, above the cataracts of Nahr ash-Shalālāt. Should
-   there be a landing and portage at the outlet, which in the tune would be a small settlement, or is Qiblai's ghat way
-   enough, with the barges stopping at the lake's end?
-3. **How many people?** The tune says 3,000, the proposal 2,200 and Gemini 3,750. This plan uses the tune's 3,000.
-4. **Keb Riwā's mouth.** Is it crossed by a bridge (135 m on piers: Xanadu building, or Ancient work reused?) or by a
-   ferry? This decides whether the town and Strongbow's foot grow toward each other.
-5. **Its page.** A target on Xanadu's page, as Qiblai is, or a build of its own?
-6. **The Scarp's crops.** The plan puts tea on the middle slopes, cacao and grain on the hot floor, and the sky poppy and
-   saffron on the cool lip, by the model's climate. Is the latex house (the opium sealed for the Treasury and the gateways)
-   in the town, or at Strongbow under the Sultan's eye?
-7. **Lāiṭwāl's road.** By the lake and the Opal River's gorge (~190 km, and part of it by barge), or by a pass over the
-   divide (132 km, with the crossing at ~4,800 m on ice)?
-8. **The river's name.** The model has *Keb Riwā* since edit 5.1.5; the region data and Strongbow's notes have *Rīfar
-   al-Jadwal*. Which should the town call it?
+1. ~~**The site.**~~ **Answered 2026-11-16: a lake port**, on the apron at the lake's head, "with its own, smaller
+   atitlan-like hinterland" (section 2a).
+2. ~~**The barge to Qiblai.**~~ **Answered 2026-11-16: the barges stop at a landing with a portage road** past the
+   cataracts (the Landing, section 2a).
+3. ~~**How many people?**~~ **Answered 2026-11-16: 3,000.**
+4. ~~**Keb Riwā's mouth.**~~ **Answered 2026-11-16: a bridge crosses it.** Still open, *proposed*: Xanadu's own stone piers
+   and arches. The other choice is Ancient work reused, with the Rift line's end so near.
+5. ~~**Its page.**~~ **Answered 2026-11-16: a target on Xanadu's page, with only the normal Xanadu kit.**
+6. ~~**The latex house.**~~ **Answered 2026-11-16: the opium is dried at Kirstabal.** The crops' belts (tea on the middle
+   slopes, cacao and grain on the floor, the poppy and saffron on the lip) stand as *proposed*.
+7. ~~**Lāiṭwāl's road.**~~ **Answered 2026-11-16: by the lake and the gorge.**
+8. ~~**The river's name.**~~ **Answered 2026-11-16: Keb Riwā.** The region data (`openworld/oidong-highrift`,
+   `openworld/xanadu-oidong-highrift`) and Strongbow's notes still say *Rīfar al-Jadwal*, for their sessions to follow.
+9. **The lake's ring (section 2a).** Nine villages, about 8,300 people, and some 25 hamlets: is that the right size for
+   "smaller"? Do the coined names stand?
+10. **Whose is the lake's west end?** This plan puts all the lake's villages in the Scarp (P5) under Kirstabal, the Landing
+    included. The Landing is 22 km from Qiblai and might belong to Qiblai's province (P3, the Cataracts) instead.
