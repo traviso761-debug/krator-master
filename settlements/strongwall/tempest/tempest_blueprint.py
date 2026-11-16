@@ -55,7 +55,7 @@ FLOORS.append(dict(R=510, rect=(-500, 500, -400, 400), id='T0', tier=0,
     R(1, 'The House of the Tempest (sheets T1, T2)', 'void', -130, 130, -95, 95, 4, 'the outer curtain 260 x 190 m, the inner ward on the crest\'s crown'),
     R(2, 'Barbican', 'lists', -162, -138, -26, 26, 1, 'the road enters on its south side and turns west to the Main Gate'),
     R(3, 'The Maydan', 'maydan', -100, 250, 130, 230, 1, 'the riders\' ground before the North Sally Gate: the companies form, wheel and charge here; the horse-archery track along its north edge (the Mamluk maydan, the yabusame)'),
-    R(4, 'Remounts\' Paddock', 'horse_park', -420, -200, -360, -140, 0, 'a walled night paddock for some 300 remounts; by day they graze the commons under the herdsmen'),
+    R(4, 'Remounts\' Paddock', 'horse_park', -420, -200, -360, -140, 0, 'a walled night paddock for some 300 remounts and the off-duty companies\' war horses (the duty rota, proposed); by day they graze the commons under the herdsmen'),
     R(5, 'Byres and the Herdsmen\'s Huts', 'byres', -200, -130, -360, -300, 1, 'the milking herd (milk is a sacrament of the Decree), the herdsmen\'s huts'),
     R(6, 'The Great Tank', 'cistern', -300, -220, -110, -40, 0, 'rain off the crest for the herds and the remounts; the House drinks from its own cisterns'),
     R(7, 'Barley Terraces (west)', 'field', 190, 500, -400, 120, 1, 'low banked terraces on the crest\'s west flank; open ground under the Storm Tower\'s eye'),
@@ -65,7 +65,7 @@ FLOORS.append(dict(R=510, rect=(-500, 500, -400, 400), id='T0', tier=0,
     R(11, 'Tea Garden', 'field', 260, 480, 180, 380, 2),
     R(12, 'Hives', 'field', 260, 320, 125, 170, 1, 'the honey of the sacrament'),
     R(13, 'Commons of the Crest', 'field', -500, -160, 130, 400, 0, 'the near corner of the commons: the herds and remounts graze on over the West Arm beyond the sheet, the hay meadows with them'),
-    R(14, 'Hay Barns and Ricks', 'hay', -190, -140, -250, -160, 0, 'the year\'s hay from the crest\'s meadows (about 1,000 t for the stabled horses), carted in weekly to the hay sheds in the lists'),
+    R(14, 'Hay Barns and Ricks', 'hay', -190, -140, -250, -160, 0, 'the year\'s hay from the crest\'s meadows (about 530 t for the stabled half under the duty rota, proposed), carted in weekly to the hay sheds in the lists'),
     R(15, 'Midden (south)', 'midden', -60, -25, -150, -115, 0, 'the south stables\' muck, out by the South Sally Gate, to the terraces'),
     R(16, 'Midden (north)', 'midden', -70, -35, 106, 126, 0, 'the north stables\' muck, carted round to the west terraces'),
     R(17, 'Caravan Halt', 'caravan_halt', -240, -170, 20, 80, 1, 'the donkey trains from Strongwall (grain, arms, salt and tea) unload here before the barbican'),
@@ -86,11 +86,14 @@ def octo(u, v, r):
     return [(u + r * math.cos(math.pi / 8 + k * math.pi / 4), v + r * math.sin(math.pi / 8 + k * math.pi / 4)) for k in range(8)]
 def sq(u, v, h):
     return [(u - h, v - h), (u + h, v - h), (u + h, v + h), (u - h, v + h)]
-TOWER_FILLS = ([(octo(u, v, 7), TWR) for (u, v) in [(-130, 95), (130, 95), (-130, -95), (130, -95)]]
-  + [(sq(u, s * 98, 3), TWR) for u in (-98, -46, 8, 60, 84, 108) for s in (1, -1)]
-  + [(sq(-133, v, 3), TWR) for v in (-70, -40, 40, 70)] + [(sq(133, v, 3), TWR) for v in (-62, -30, 30, 62)]
-  + [(octo(u, v, 5), TWR) for (u, v) in [(-55, 48), (55, 48), (-55, -48), (55, -48)]])
-N_TOWERS = 4 + 12 + 8 + 4
+# the towers as records (the export reads these too): at, kind, form, r (a drum's radius, a square's half side)
+TOWERS = ([dict(at=(u, v), kind='corner', form='drum', r=7) for (u, v) in [(-130, 95), (130, 95), (-130, -95), (130, -95)]]
+  + [dict(at=(u, s * 98), kind='interval', form='square', r=3) for u in (-98, -46, 8, 60, 84, 108) for s in (1, -1)]
+  + [dict(at=(-133, v), kind='interval', form='square', r=3) for v in (-70, -40, 40, 70)]
+  + [dict(at=(133, v), kind='interval', form='square', r=3) for v in (-62, -30, 30, 62)]
+  + [dict(at=(u, v), kind='inner', form='drum', r=5) for (u, v) in [(-55, 48), (55, 48), (-55, -48), (55, -48)]])
+TOWER_FILLS = [((octo if t['form'] == 'drum' else sq)(t['at'][0], t['at'][1], t['r']), TWR) for t in TOWERS]
+N_TOWERS = len(TOWERS)
 
 FLOORS.append(dict(ENCL, id='T1', tier=0,
   title='Sheet T1: the House, ground floor (outer curtain 260 x 190 m; concentric)',
