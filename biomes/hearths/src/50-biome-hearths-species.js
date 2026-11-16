@@ -74,9 +74,13 @@ function parts(dress){if(DONE)return;DONE=true;const D=DRESS[dress||'cold'],T=BI
 // (key 'stills:<geyser key>', one a geyser's ring, 'stills' for the springs' rings, which never fold), and the breath's turn (core/biome 35b, key
 // 'stills:turn') yaws every sail about the stalk, aP1.y each tree's own heading across the wind. keys: the ring keys a page folds
 const SAIL_FOLD=2.5;
+/* each fan of a sail is cupped across its width (x += CUP z^2, the hollow toward -x, so the wind's side, +x, is convex) and its normal follows the cup:
+   a flat blade with one normal shades as one tone and reads as a paper cut-out (the owner, 2026-11-15); the cup is the sails' alone, fanGeo is unchanged */
+const SAIL_CUP=.6;
 function sailGeo(ribs){const T=BIO.host.THREE,one=fanGeo(ribs),P=one.attributes.position.array,N=one.attributes.normal.array,Cc=one.attributes.color.array,U=one.attributes.uv.array,I=one.index.array,
   pos=[],nor=[],col=[],uv=[],idx=[];[-.86,0,.86].forEach((dz,k)=>{const o=pos.length/3,h=k===1?1:.82;
-  for(let i=0;i<P.length;i+=3){pos.push(P[i],P[i+1]*h,P[i+2]+dz);nor.push(N[i],N[i+1],N[i+2]);col.push(Cc[i],Cc[i+1],Cc[i+2]);}for(let i=0;i<U.length;i++)uv.push(U[i]);for(let i=0;i<I.length;i++)idx.push(I[i]+o);});
+  for(let i=0;i<P.length;i+=3){const z=P[i+2],nx=N[i],nz=N[i+2]+2*SAIL_CUP*z*N[i],nl=Math.hypot(nx,N[i+1],nz)||1;
+   pos.push(P[i]-SAIL_CUP*z*z,P[i+1]*h,z+dz);nor.push(nx/nl,N[i+1]/nl,nz/nl);col.push(Cc[i],Cc[i+1],Cc[i+2]);}for(let i=0;i<U.length;i++)uv.push(U[i]);for(let i=0;i<I.length;i++)idx.push(I[i]+o);});
  const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(pos,3));g.setAttribute('normal',new T.Float32BufferAttribute(nor,3));
  g.setAttribute('color',new T.Float32BufferAttribute(col,3));g.setAttribute('uv',new T.Float32BufferAttribute(uv,2));g.setIndex(idx);return g;}
 const STILL_KEYS=[];

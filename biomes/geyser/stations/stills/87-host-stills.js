@@ -37,11 +37,18 @@ const STATION_TAKE={build:'geyser-stills',types:{'hearths/stills':'pass'},title:
   add('the Stills placed: still trees, sails, glass stills, spray mats, sail cups',SCHK.field(F.counts));
   add('still trees only at boiling water (a spring at .75 or over, a geyser\'s spray line)',SCHK.rings(F.trees));
   add('a geyser\'s ring folds through its warning and column, open at rest (HEARTH.sailFold)',SCHK.fold());
-  add('the sails across the wind at night, turned toward edge-on to the sun by day (HEARTH.sailTurn)',SCHK.turn());},
+  add('the sails across the wind at night, turned toward edge-on to the sun by day (HEARTH.sailTurn)',SCHK.turn());
+  add('the sails a natural black, never under soot\'s 3 % (their ribs and cup must show)',SCHK.black(SCHK.sailColours()));},
  negatives:(add,P)=>{add('no glass stills',SCHK.field(Object.assign({},(window._field||{}).counts,{glass:0})));
   add('a still tree at a cool spring',SCHK.rings([{ring:1+LAYOUT.springs.findIndex(s=>s.temp<.75)}]));
-  add('a ring open in the column',SCHK.fold(()=>0));add('sails that never turn',SCHK.turn(()=>0));}};
-const SCHK={field:c=>{const need=['still','sails','glass','spraymat','sailcup'],zero=need.filter(k=>!(c&&c[k]>0));return{ok:!zero.length,detail:zero.length?'none: '+zero.join(', '):need.map(k=>k+' '+c[k]).join(', ')};},
+  add('a ring open in the column',SCHK.fold(()=>0));add('sails that never turn',SCHK.turn(()=>0));
+  add('the sails as first drawn (sRGB 0x161618: 0.8 %)',SCHK.black([new THREE.Color(0x161618).convertSRGBToLinear()]));}};
+const SCHK={
+ /* 2026-11-15: the sails were tinted 0.8 % (linear), under soot, and drew as flat black cut-outs; a black that shows its form is 3-6 % */
+ sailColours:()=>{const o=[];BIO.baked.forEach(m=>{if(!m.isInstancedMesh||!/^biome:ssail/.test(m.name)||!m.instanceColor)return;const a=m.instanceColor.array;for(let i=0;i<a.length;i+=3)o.push({r:a[i],g:a[i+1],b:a[i+2]});});return o;},
+ black:C=>{const L=C.map(c=>.2126*c.r+.7152*c.g+.0722*c.b),lo=L.length?Math.min(...L):0,hi=L.length?Math.max(...L):0;
+  return{ok:L.length>0&&lo>=.03&&hi<=.12,detail:L.length+' sails, albedo '+(lo*100).toFixed(1)+' to '+(hi*100).toFixed(1)+' % (linear)'};},
+ field:c=>{const need=['still','sails','glass','spraymat','sailcup'],zero=need.filter(k=>!(c&&c[k]>0));return{ok:!zero.length,detail:zero.length?'none: '+zero.join(', '):need.map(k=>k+' '+c[k]).join(', ')};},
  rings:T=>{const bad=T.filter(t=>t.ring<100&&!((LAYOUT.springs[t.ring-1]||{temp:0}).temp>=.75));return{ok:T.length>0&&!bad.length,detail:bad.length?bad.length+' still trees off the boiling water':T.length+' still trees, all at boiling springs or spray lines'};},
  fold:f=>{const w=f||HEARTH.sailFold,pre=w({phase:'pre'}),col=w({phase:'column'}),rest=w({phase:'rest'}),tail=w({phase:'steam',steam:.1});
   return{ok:pre>.95&&col>.95&&rest<.05&&tail<.05,detail:'warning '+pre.toFixed(2)+', column '+col.toFixed(2)+', rest '+rest.toFixed(2)+', the steam\'s end '+tail.toFixed(2)};},

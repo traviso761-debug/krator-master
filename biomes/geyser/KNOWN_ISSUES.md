@@ -91,6 +91,19 @@ EXPORT_PROFILE in verify.py leaves out: atmos (the page has no core/atmos export
       (13:00 and 22:00: the old SW sun is out of reach at the equinox here). Draw calls at the default camera (verify.py
       --assert, GPU): 105 before, 103 after.
 
+- [ ] **The Stills' page fails the shader asserts (found 2026-11-15, not caused by that day's fixes).** `verify.py
+      dist/geyser-stills.html --assert` on the GPU logs 283 program-link errors with EMPTY info logs (`0` and `1282 35715 false`,
+      then `useProgram: program not valid`) and a red error panel, while `KHOOK.checkPrograms` reports every program linked. The
+      committed page (b446e8593) fails identically, on two runs; the base page and the other stations were not checked for it. Empty
+      link logs mean the driver refused the program without a compile error (a resource limit: samplers, uniforms or varyings over
+      the GPU's cap on some material), so count each failing program's samplers and uniforms against the limits before suspecting a
+      shader's text.
+- [x] **The still trees' sails drew solid black (the owner, 2026-11-15).** Not a texture, a pointer, an unlit material or back
+      faces: the sails' tint was sRGB 0x161618, 0.8 % albedo (under soot's 3 %) on an untextured Lambert, so no light showed on them,
+      and each blade was flat with one normal (a paper cut-out). They are not a card (procedural blades, `HEARTH.stillParts`). Now
+      0x423f44 (5 %) and each blade cupped across its width (biomes/hearths 50 `sailGeo`, 57); the station checks the sails'
+      albedo (`SCHK.black`, its negative the old tint).
+
 
 ## The final rebuild (pair 7, 2026-11-03; PLAN-STATIONS.md, "Core adoption")
 

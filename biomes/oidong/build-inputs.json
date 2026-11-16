@@ -147,9 +147,9 @@
   },
   "build.py --station hearths": {
    "inputs": {
-    "biomes/hearths/src/50-biome-hearths-species.js": "e5d86542ef60897ac552bc34b63a67efa440eb57aa964181bd3cb72de0828df1",
+    "biomes/hearths/src/50-biome-hearths-species.js": "80c467ccd829b3f98bb474d3551a1409e7450d47103efe0f34bfb47f0910c3d7",
     "biomes/hearths/src/55-biome-hearths-place.js": "c3f9fe77156a33211b51ffc6b5a03644ccd84360a7f4001c55baf34702e0e74e",
-    "biomes/hearths/tex/pack.json": "dfe2d46d7c0f7c7341c4c81b95950de89589bf8e09255415d0280bbe43108f20",
+    "biomes/hearths/tex/pack.json": "4db485284f1bab6a0ffe8df38eeb660b293e70acf79263fc773d3605169368c1",
     "biomes/oidong/KNOWN_ISSUES.md": "403d6715cd85398b7153b1c684c604684cd7b13b3c179791ee810bb441480ddb",
     "biomes/oidong/PORT.md": "b064be911ed3f3b893b5ce80314afff9af5e3cea1e7726d8b05b215bf603744c",
     "biomes/oidong/build.py": "1e9b48d88cd5066d77033821884d3d9b28233c569a161759ff25386bc8de545f",
@@ -288,6 +288,7 @@
     "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
+    "biomes/oidong": "d00e1171a0e1b06383c0aef4a90f16e925658f5d68a2cb251b299f76e7fb32f5",
     "biomes/oidong/src": "191fc485457e2ece2f6c57daeffde3a8d9b9d3f92be81ac7a87323519cc448ac",
     "biomes/oidong/stations/hearths": "1252f2b18a27eeff888bf1276fa272e459995ebd0f7cfbb3e85b0012772df750",
     "biomes/oidong/stations/passes": "03f125849e20d76ff54c10f553e2b407f25107aa40771aba2400f95bb1d6f1c3",
@@ -296,10 +297,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/oidong/dist/oidong-hearths.html": "20d5876748b5b26f0c2108ee4745f16d984d48957d51785c96f40e059444e197"
+    "biomes/oidong/dist/oidong-hearths.html": "d671f544a02374fb34beca35366ea3b6675cec7d7d6937d6b60e2661f6e89114"
    },
    "outputs_raw": {
-    "biomes/oidong/dist/oidong-hearths.html": "20d5876748b5b26f0c2108ee4745f16d984d48957d51785c96f40e059444e197"
+    "biomes/oidong/dist/oidong-hearths.html": "d671f544a02374fb34beca35366ea3b6675cec7d7d6937d6b60e2661f6e89114"
    }
   },
   "build.py --station passes": {

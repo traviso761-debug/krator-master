@@ -27,6 +27,13 @@ function stationBuild(){const SG=STATION_GILLS,D=GILLS.dress('red'),T3=THREE,t0=
    flare:{from:.8,k:1.35,p:1.5},mouths:1,fork:.62,spread:.38,lean:p.lean,toward:p.toward,state:p.state,ice:p.ice?{from:0,thick:.45}:undefined,fan:p.state==='standing'?false:undefined});}catch(e){return;}
   BIO.record({name:(p.state==='standing'?GILLS.NAMES.pipe:GILLS.NAMES.dead)+' '+p.id,kind:'chimney',x:p.x,z:p.z,y:p.y0,r:B.R,h:B.top-p.y0});recs.push({p,B});});
  GILLS_DRAW.pipes=recs;
+ // ---- RED: THE MOUTH'S LIFE FITTED TO THE RED PIPE (the owner, 2026-11-15: "gill ring almost but doesn't quite touch so it looks like it floats").
+ // GILLS.life puts the collars, fringes and steam at the White pipe's top, the collar sized to its radius; the Red form above is 1.7 times as tall
+ // and .72 as wide, so every collar hung part way up the shaft, centred on the pipe's foot (the pipe leans off it, up to .65 m at the lip) and wider
+ // than the pipe there (0.5 to 1.5 m clear of it). Each is now fitted to its own pipe's lip by KSTACKS.ring (the drawn mesh follows it within 0.1 m):
+ // the collar's top .3 m under the lip, centred on the ring at its foot, its inner rim (1.0 of its r: the lathe's profile below) at .98 of the
+ // ring's least radius there, so it bears on the pipe all round (the flare above only grips it tighter); the fringes on the lip, the steam over it
+ GILLS_DRAW.collars0=L.collars.map(c=>Object.assign({},c));GILLS_DRAW.fit=gillsFitMouths(L,recs);   /* collars0: the life's own, the check's negative */
  // ---- their meshes, merged by chunk (the record's own mesh: what the eye sees is what at() and surface() answer)
  const lin=c=>{const q=new T3.Color(c[0],c[1],c[2]);return q.convertSRGBToLinear();},cW=lin(D.pipe),cB=lin(D.band),cI=lin([.82,.9,.96]);
  /* THE LAMINAE (core/terrain 35b, KSTRATA.lamina; LAMINA.md "Adopting it"): four columns, one per variant (a pipe keeps its variant), the White
@@ -130,6 +137,18 @@ function stationBuild(){const SG=STATION_GILLS,D=GILLS.dress('red'),T3=THREE,t0=
  GILLS_DRAW.counts=Object.assign({pipes:recs.length,standing:recs.filter(o=>o.p.state==='standing').length,ice:recs.filter(o=>o.p.ice).length,live:recs.filter(o=>o.p.live).length,steam:L.steam.length,pipeTris:tris,ms:Math.round(performance.now()-t0)},n);
  return GILLS_DRAW.counts;}
 const gillsSteamOn=b=>b>.08;
+/* the pipe's outline at height y: its centre and its least and mean radius (KSTACKS.ring, 32 points), or null over the top */
+const gillsRingAt=(B,y)=>{const R=KSTACKS.ring(B,y,32);if(!R||!R.length)return null;let cx=0,cz=0;R.forEach(q=>{cx+=q[0];cz+=q[1];});cx/=R.length;cz/=R.length;
+ let lo=1e9,mean=0;R.forEach(q=>{const d=Math.hypot(q[0]-cx,q[1]-cz);lo=Math.min(lo,d);mean+=d/R.length;});return{cx,cz,lo,mean};};
+/* the collar's lathe (stationBuild's collarG) in units of its r, y scaled by .8: its inner rim 1.0 at y -.15, its top .32 */
+const GCOLLAR={rim:1.0,foot:-.15*.8,top:.32*.8};
+function gillsFitMouths(L,recs){const byId={};recs.forEach(o=>byId[o.p.id]=o);const out={collars:0,fringes:0,steam:0,dropped:0};
+ L.collars=L.collars.filter(c=>{const o=byId[c.pipe];if(!o){out.dropped++;return false;}const B=o.B;let r=c.r,y=B.top,q=null;
+  for(let k=0;k<4;k++){y=B.top-.3-GCOLLAR.top*r;q=gillsRingAt(B,y+GCOLLAR.foot*r);if(!q)break;r=q.lo*.98/GCOLLAR.rim;}
+  if(!q){out.dropped++;return false;}c.x=q.cx;c.z=q.cz;c.y=y;c.r=r;out.collars++;return true;});
+ L.fringes.forEach(f=>{const o=byId[f.pipe];if(!o)return;const q=gillsRingAt(o.B,o.B.top-.2);if(!q)return;f.x=q.cx+Math.cos(f.yaw)*q.mean*.7;f.z=q.cz+Math.sin(f.yaw)*q.mean*.7;f.y=o.B.top-.2;out.fringes++;});
+ L.steam.forEach(s=>{const o=byId[s.pipe];if(!o)return;const q=gillsRingAt(o.B,o.B.top-.1);if(!q)return;s.x=q.cx;s.z=q.cz;s.y=o.B.top+1;out.steam++;});
+ return out;}
 // ---- the checks (biomes/gills/PLAN.md section 16, G6, as far as this page goes), each with a negative; 99-host-take.js reads STATION_CHECKS
 const GCHK={
  tall(R){const bad=R.filter(o=>o.B.top-o.p.y0>=90);return{ok:R.length>20&&!bad.length,detail:R.length+' pipes, the tallest '+Math.max(...R.map(o=>o.B.top-o.p.y0)).toFixed(1)+' m'};},
@@ -138,6 +157,14 @@ const GCHK={
  steam(fn,day){day=typeof GDAY==='function'?GDAY():day;const tp=day+GILLS.peakHour(day)/24,out=gillsSteamOn(fn(tp)),inn=gillsSteamOn(fn(tp+.5)),n=GILLS_DRAW.life?GILLS_DRAW.life.steam.length:0;
   return{ok:n>0&&out&&!inn,detail:n+' steaming mouths; at the Bhlo ('+GILLS.peakHour(day).toFixed(2)+' h) '+(out?'on':'OFF')+', twelve hours on '+(inn?'ON':'off')};},
  gill(g,drop){const ok=Math.abs(g.w-60)<1&&Math.abs(g.d-300)<1&&Math.abs(g.r*(g.a1-g.a0)-1600)<5&&drop>200;return{ok,detail:'the great gill: '+(g.r*(g.a1-g.a0)).toFixed(0)+' m long, '+g.w+' m across, '+g.d+' m deep on its record; the drawn floor '+drop.toFixed(0)+' m under its lips'};},
+ /* every collar bears on its pipe: round the drawn outline at its foot (KSTACKS.ring), its inner rim nowhere more than 5 cm clear of the pipe and not
+    sunk a quarter of its r into it all round; its top within 2 m under the lip. The gap is measured from the collar's own centre, so a collar
+    centred on a leaning pipe's foot fails too */
+ collars(C){const by={};GILLS_DRAW.pipes.forEach(o=>by[o.p.id]=o);let n=0,gap=0,deep=0,off=0,worst=-1e9;
+  C.forEach(c=>{const o=by[c.pipe];if(!o){off++;return;}n++;const R=KSTACKS.ring(o.B,c.y+GCOLLAR.foot*c.r,32);if(!R||!R.length){off++;return;}
+   let g=-1e9;R.forEach(q=>{g=Math.max(g,c.r*GCOLLAR.rim-Math.hypot(q[0]-c.x,q[1]-c.z));});worst=Math.max(worst,g);if(g>.05)gap++;if(g<-.25*c.r)deep++;
+   const lip=o.B.top-(c.y+GCOLLAR.top*c.r);if(lip<0||lip>2)off++;});
+  return{ok:C.length>0&&n===C.length&&!gap&&!deep&&!off,detail:n+' collars: '+gap+' clear of their pipe by over 5 cm (the worst '+worst.toFixed(2)+' m), '+deep+' sunk in it, '+off+' not under their lip'};},
  live(R,ice){const bad=R.filter(o=>(o.p.live&&(o.p.ice||!SG.L.gills.find(g=>g.id===o.p.gill).alive))||(o.p.ice&&o.p.y0<=ice));return{ok:!bad.length,detail:bad.length+' pipes alive where they cannot be (on ice, on a closed gill), or iced under '+ice+' m'};}};
 const gillDrop=()=>{let lip=0,fl=1e9;for(let z=-500;z<=500;z+=100){lip=Math.max(lip,terrainH(70,z),terrainH(-70,z));fl=Math.min(fl,terrainH(0,z));}return lip-fl;};
 function STATION_CHECKS(){const R=[],add=(n,r)=>R.push(Object.assign({name:n},r));
@@ -145,7 +172,8 @@ function STATION_CHECKS(){const R=[],add=(n,r)=>R.push(Object.assign({name:n},r)
  add('the breath pipes stand under 90 m (KSTACKS chimney records)',GCHK.tall(GILLS_DRAW.pipes));
  add('the Red form: tall, one mouth',GCHK.red(GILLS_DRAW.pipes));
  if(GILLS_DRAW.life&&GILLS_DRAW.life.steam.length)add('steam at the live mouths on the out-breath (Bhlo), none on the in-breath (Suq)',GCHK.steam(GILLS.breath,0));
- add('no live pipe on ice or on a closed gill',GCHK.live(GILLS_DRAW.pipes,LAND.snowH));}
+ add('no live pipe on ice or on a closed gill',GCHK.live(GILLS_DRAW.pipes,LAND.snowH));
+ if(GILLS_DRAW.collars0&&GILLS_DRAW.collars0.length)add('the rust collars bear on their pipes all round, under the lip',GCHK.collars(GILLS_DRAW.life.collars));}
  if(STN.key==='gills')add('the great gill: 1.6 km, 60 m, 300 m (its record) and drawn deep',GCHK.gill(SG.big,gillDrop()));
  if(typeof SOUTH_CHECKS==='function')SOUTH_CHECKS().forEach(c=>R.push(c));
  return R;}
@@ -154,7 +182,8 @@ function STATION_NEGATIVES(){const R=[],add=(n,r)=>R.push({name:n,failed:!r.ok,d
  add('a pipe of 120 m',GCHK.tall(GILLS_DRAW.pipes.concat([{p:{y0:0},B:{top:120}}])));
  add('the White form (three mouths)',GCHK.red(GILLS_DRAW.pipes.map(o=>({p:Object.assign({},o.p,{mouths:3}),B:o.B}))));
  if(GILLS_DRAW.life&&GILLS_DRAW.life.steam.length)add('the breath a half day out (steam on the in-breath)',GCHK.steam(t=>GILLS.breath(t+.5),0));
- add('a live pipe on a closed gill',GCHK.live(GILLS_DRAW.pipes.concat([{p:{live:true,ice:false,gill:(SG.L.gills.find(g=>!g.alive)||{}).id,y0:0}}]),LAND.snowH));}
+ add('a live pipe on a closed gill',GCHK.live(GILLS_DRAW.pipes.concat([{p:{live:true,ice:false,gill:(SG.L.gills.find(g=>!g.alive)||{}).id,y0:0}}]),LAND.snowH));
+ if(GILLS_DRAW.collars0&&GILLS_DRAW.collars0.length)add('the collars where the White life put them (part way up, at the White radius)',GCHK.collars(GILLS_DRAW.collars0));}
  if(STN.key==='gills')add('a gill of 40 m',GCHK.gill(Object.assign({},SG.big,{d:40}),gillDrop()));
  if(typeof SOUTH_NEGATIVES==='function')SOUTH_NEGATIVES().forEach(c=>R.push(c));
  return R;}

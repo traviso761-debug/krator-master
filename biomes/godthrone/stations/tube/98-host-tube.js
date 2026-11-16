@@ -17,15 +17,21 @@ const TCHK={
  // the columns stand on the vault's floor (rock under each foot, the void over it) and inside the vault
  cols(P,C){let bad=0;P.forEach(p=>{if(!(C.sdf(p[0],p[1]-.8,p[2])<0&&C.sdf(p[0],p[1]+1,p[2])>0))bad++;});return{ok:P.length>200&&bad<=P.length*.02,detail:P.length+' columns, '+bad+' not on the floor'};},
  // the conduit leaves toward Godstep (north-east, falling) and joins the vault (a void all along the line from inside the vault out)
+ // the vault's rock and its columns sample the station's own texture (rockColumns, station.json "tex") when the page has the library: a lamp
+ // ShaderMaterial takes no map by itself (the columns drew flat grey, 2026-11-15)
+ tex(M){const lib=typeof KMAT!=='undefined'&&KMAT.mode==='lib';const bad=M.filter(m=>lib&&!(m.material&&m.material.defines&&'USE_TEXC' in m.material.defines&&m.material.uniforms.uTex&&m.material.uniforms.uTex.value&&m.material.uniforms.uTex.value.image));
+  return{ok:M.length>0&&!bad.length,detail:M.length+' vault meshes, '+(lib?bad.length+' without the rockColumns map':'no library on the page (?tex=0): flat colours')};},
  conduit(C){let gap=0;for(let s=0;s<=600;s+=10){const x=TB.conduit[0]*s,z=TB.conduit[1]*s,y=VAULT.floor+10-.06*Math.max(0,s)+4;if(C.sdf(x,y,z)<=0)gap++;}
   const b=Math.atan2(TB.conduit[0],-TB.conduit[1])*180/Math.PI;return{ok:gap===0&&b>30&&b<70,detail:'bearing '+b.toFixed(0)+' deg (Godstep\'s pit: ~52), '+gap+' of 61 points along it in rock'};}};
 function STATION_CHECKS(){const R=[],add=(n,r)=>R.push(Object.assign({name:n},r)),C=TUBE_DRAW.C;if(!C){add('the vault built',{ok:false,detail:'no cavern'});return R;}
  add('the vault: a void under 40 m+ of rock, sealed',TCHK.vault(C));
  add('the ilmenite columns stand on the vault\'s floor',TCHK.cols(TUBE_DRAW.cols.map(p=>[p.x,p.y+.3,p.z,p.r]),C));
  add('the cross-conduit leaves toward Godstep, open',TCHK.conduit(C));
+ add('the vault\'s rock and the columns textured (rockColumns)',TCHK.tex(TUBE_DRAW.meshes));
  return R;}
 function STATION_NEGATIVES(){const R=[],add=(n,r)=>R.push({name:n,failed:!r.ok,detail:r.detail}),C=TUBE_DRAW.C;if(!C)return R;
  add('the vault filled in',TCHK.vault({sdf:()=>-1,ceilingAt:null}));
  add('the columns lifted 5 m',TCHK.cols(TUBE_DRAW.cols.map(p=>[p.x,p.y+5.3,p.z,p.r]),C));
  add('a conduit cut off by rock',TCHK.conduit({sdf:(x,y,z)=>Math.hypot(x,z)>300?-1:1}));
+ if(typeof KMAT!=='undefined'&&KMAT.mode==='lib')add('the columns with the flat lamp shader (no map)',TCHK.tex(TUBE_DRAW.meshes.concat([{material:new THREE.ShaderMaterial({uniforms:{}})}])));
  return R;}

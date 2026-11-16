@@ -177,52 +177,52 @@
    "sha256": "baaf9ae60695af910915801a0fec30fb3e40a47523ef24ec5be29ea12801cbb4"
   },
   "biomes/geyser/dist/geyser-stills.html": {
-   "bytes": 1466631,
-   "sha256": "7c333c0400b63176858f145e2562a31df5e0d01c1b3d667b10344ccb3f108448"
+   "bytes": 1468227,
+   "sha256": "b85c90775c615435b7625c3a15e3a509e834634857d4e84e974c2549dcac02ab"
   },
   "biomes/geyser/dist/geyser.html": {
    "bytes": 1435970,
    "sha256": "bde19b15dd720c9580493f15f8b4c3b8b6f0606f74ee388a7b8457d1b5a1dfb4"
   },
   "biomes/godthrone/dist/godthrone-blood.html": {
-   "bytes": 3408108,
-   "sha256": "70a53552fa3cf168a363714a507e8a3108fa6831c25608ecaf6037828177c99b"
+   "bytes": 3410591,
+   "sha256": "7d3ee746f9d517073a3f2e90e5564d8278eb3e860764e374a8dae3e2cdbff51b"
   },
   "biomes/godthrone/dist/godthrone-flank.html": {
-   "bytes": 3023140,
-   "sha256": "4a6c8b6bd356e35d538a6de783d4a29ce5d7caaedd9915a9160bff8ad07dcc31"
+   "bytes": 3025623,
+   "sha256": "34611189eab8e79d04db5c27ddea7991cb8fa13dbcbe8e2303f0cdc22fe2c87a"
   },
   "biomes/godthrone/dist/godthrone-gills-ladder.html": {
-   "bytes": 3720371,
-   "sha256": "224edd5b21fd76e25df784bfcef5f3231616c2e44244b42c1c3ea8ed7336a9d0"
+   "bytes": 3726689,
+   "sha256": "0472230d7fcb9fc0b334210495a6fd1d0f6595502903ef944acf5d3e5cdc4033"
   },
   "biomes/godthrone/dist/godthrone-gills.html": {
-   "bytes": 3842437,
-   "sha256": "bc67a47e5dd7aaeedb67d5f800227862892eb9e3705cf2f90c3d1e2c993d5385"
+   "bytes": 3849160,
+   "sha256": "5871f97be5deb82a850182ea5bfefe385f6b1f7e0dab7fe6058e1b5f73952548"
   },
   "biomes/godthrone/dist/godthrone-orange.html": {
-   "bytes": 3300017,
-   "sha256": "c16a5d3677b404ac9dd617d63fa5c6a09418693c5f828d5ddbef148ca502a22b"
+   "bytes": 3304561,
+   "sha256": "77449a37c84535b836b2366614a664c8bb2a58cb049e54f1eb03cedde4727f66"
   },
   "biomes/godthrone/dist/godthrone-rim.html": {
-   "bytes": 3124921,
-   "sha256": "3e6b9763163676098ad2a69ecae385f9895198ff4dcbd93837671816fbb2fd1f"
+   "bytes": 3127404,
+   "sha256": "ce974af79cf779f84afd74ef9527e9b8dc5248b2b9fb168a28df7e688b1b6f4e"
   },
   "biomes/godthrone/dist/godthrone-scarp.html": {
-   "bytes": 3120375,
-   "sha256": "63c9818ebe95f9246712aadb7e2e4afe75769e4f9635fed8be7ea51ee7907953"
+   "bytes": 3122858,
+   "sha256": "83ef806998eecb386334e4c3b2076c1f6c0a1bb1138361a584d0b12abe0dcca3"
   },
   "biomes/godthrone/dist/godthrone-tube.html": {
-   "bytes": 2841024,
-   "sha256": "dd5d6321fdd64f5b30f0077073e9ce22aac47872a161a87fe1e5ca6ff20208c4"
+   "bytes": 2846785,
+   "sha256": "34c4d50b7449b8f9de628706138fba74844e9b8ac5082c810485b2d7a4dce7b6"
   },
   "biomes/godthrone/dist/godthrone-wall.html": {
-   "bytes": 2656623,
-   "sha256": "c0f57c7527efb326b46ef93a2398297473d289142cd79169b4036f00fbde96e3"
+   "bytes": 2659106,
+   "sha256": "319cca12af99c1427af3bfe4673a554ae67043a1bf99d6bb3685f5894bb6fcf7"
   },
   "biomes/godthrone/dist/godthrone.html": {
-   "bytes": 2656607,
-   "sha256": "b27afd37c8867067bf071f80cf3ccc420b0b1bcf9b040fe40d6b81cd9c43d1f0"
+   "bytes": 2659090,
+   "sha256": "ff235260201b792305a285445bb250fd8f25c36f3b3e6f9a5f3474ee99b32d1d"
   },
   "biomes/guilin/dist/guilin.html": {
    "bytes": 675886,
@@ -237,24 +237,24 @@
    "sha256": "14f50a38c604518513c5b62264113895b049aa6a1cc44b32efb6da7e539468f5"
   },
   "biomes/highrift/dist/highrift-coulee.html": {
-   "bytes": 5129823,
-   "sha256": "f992a99a5945221a0df178ea99c5141bd44f47ffaea6bfdc6993bb93973e3bbe"
+   "bytes": 5130249,
+   "sha256": "7d5e807c9397dcc1fe90e5d05efea9ffa6b1dc547276f381f25dfc8e15a78148"
   },
   "biomes/highrift/dist/highrift-gjar.html": {
-   "bytes": 5129817,
-   "sha256": "bb8ea97aa7e294222a6ef99744838c9ac917973cdb90f0340562a65c8d3e3c8a"
+   "bytes": 5130243,
+   "sha256": "adcc0a8884fdfbdd2372448bf28b40fb2d2a7fefb6251535e8db3fd32bde7b8a"
   },
   "biomes/highrift/dist/highrift-mirror.html": {
-   "bytes": 6188096,
-   "sha256": "ae52161ffb8b4c7d1480bf2cf664cd87c1e2a1597ce5d4de2af1fdef2408c1c8"
+   "bytes": 6188522,
+   "sha256": "8c174fba06af316f95772a4ebf23746c3814581d02940aedfe73014bd5933d8e"
   },
   "biomes/highrift/dist/highrift-wedge.html": {
-   "bytes": 5129820,
-   "sha256": "704df0438a26d85494fd2c735391665a50e28be0be1a16cde317a942c9fbe52a"
+   "bytes": 5130246,
+   "sha256": "adf23e625e8dfe0ed81bf0400979411a9bda698a9065a81ed3531ce6eb81fb77"
   },
   "biomes/highrift/dist/highrift.html": {
-   "bytes": 5129572,
-   "sha256": "81f986cc41193db8897e71bdd32fc83863438191731319e9d1efbbc0dab7ae7c"
+   "bytes": 5129998,
+   "sha256": "f3e729a8fa4bb10f4658dee07edb28eb850e52fcdbaeccb10fd4252790f797e2"
   },
   "biomes/hyperjungle/dist/hyperjungle-lake.html": {
    "bytes": 5953906,
@@ -369,8 +369,8 @@
    "sha256": "35bf6ee32ef90346a1537da021acf5f67b98b033cfc1b1f4e1ef9df4378406a7"
   },
   "biomes/oidong/dist/oidong-hearths.html": {
-   "bytes": 3666792,
-   "sha256": "20d5876748b5b26f0c2108ee4745f16d984d48957d51785c96f40e059444e197"
+   "bytes": 3667218,
+   "sha256": "d671f544a02374fb34beca35366ea3b6675cec7d7d6937d6b60e2661f6e89114"
   },
   "biomes/oidong/dist/oidong-passes.html": {
    "bytes": 3620187,
