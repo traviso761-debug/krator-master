@@ -40,7 +40,12 @@ function gzSheetRock(W){const out={rows:[],scarp:null,draw:null,prims:0};
  const P=TG.gz.carve(C,sites);out.prims+=P.length;
  const t0=performance.now();C.build();out.buildMs=Math.round(performance.now()-t0);
  /* the rock: one material, the cut layer on it */
- const mat=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.95,side:THREE.DoubleSide,color:hc(0x8a7c78)});
+ /* the rock: the library's scanned rock face (the kit's 'rockface' family) through core/terrain's ground shader
+    (KCAVERN.rockMaterial, host/39i: triplanar on the steep, the tile's repeat broken at a distance), the occlusion multiplying it;
+    without the library (?mat=proc) the plain basalt-rose rock as before */
+ const rfE=KIT_HAS('rockface')?KMAT.packed(KIT.pack,'rockface'):null,rfT=rfE&&KMAT.textures?KMAT.textures(rfE,{aniso:8}).map:null;
+ const mat=KCAVERN.rockMaterial?KCAVERN.rockMaterial({THREE,map:rfT,tile:rfE&&rfE.scale?rfE.scale[0]:3,color:hc(rfT?0xb0a49c:0x8a7c78),name:'the scarp of the Glaziers: rock face',key:'gz-rock'})
+  :new THREE.MeshStandardMaterial({vertexColors:true,roughness:.95,side:THREE.DoubleSide,color:hc(0x8a7c78)});
  if(KCAVERN.cutLayer){KCAVERN.cutLayer(mat);KCAVERN.cut.above(2.2);KCAVERN.cut.boxes([{x:(Math.min(x0,ox+G.x0)+Math.max(x1,ox+G.x1))/2,z:(z0+Math.max(z1,oz+30))/2,hw:(Math.max(x1,ox+G.x1)-Math.min(x0,ox+G.x0))/2+4,hd:(Math.max(z1,oz+30)-z0)/2+4,ry:0,floor:0}]);}
  const R=KCAVERN.drawRock(C,{THREE,material:mat,ground:'drop',attrs:KCAVERN.cutWeight?['aKCut']:[],weight:KCAVERN.cutWeight?KCAVERN.cutWeight(C):null,label:'The scarp\'s rock (KCAVERN, carved from the Glaziers\' void plans)',name:'gz:rock'});
  R.group.children.forEach(m=>{m.receiveShadow=true;m.castShadow=true;m.userData.probeSkip=true;});W.add(R.group);out.rock={tris:R.tris,chunks:R.chunks,ms:R.ms};out.cavern=C;

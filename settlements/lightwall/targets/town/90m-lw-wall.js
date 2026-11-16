@@ -72,7 +72,11 @@ if(typeof KCAVERN!=='undefined'&&KCAVERN.drawRock){
   const dm=Math.max(B.d-B.out+1.5,s.band===LW.BANDS-1?16.5:0);
   C.mass({id:s.id+':rock',poly:[[s.x-W,s.z-dm],[s.x+W,s.z-dm],[s.x+W,s.z],[s.x-W,s.z]],y0:s.y-3,y1:s.y+Math.max(LW.BAND_H,top+1.2)});}
  const P=TG.gz.carve(C,LW_CARVED);const t0=performance.now();C.build();LW_ROCK.buildMs=Math.round(performance.now()-t0);LW_ROCK.prims=P.length;
- const mat=lwRockLayer(new THREE.MeshStandardMaterial({vertexColors:true,roughness:.95,side:THREE.DoubleSide,color:typeof hc==='function'?hc(lwRockCol):lwRockCol}));
+ /* the carved rock's material: core/terrain's KCAVERN.rockMaterial (host/39i, lifted from this page's lwRockLayer) with Xanadu's
+    library rock face at the tile lwRockLayer gives the bands */
+ const xrL=KMAT.packed&&KMAT.packed('xanadu','xRock'),mat=KCAVERN.rockMaterial?KCAVERN.rockMaterial({THREE,map:MAT.xRock&&MAT.xRock.map,tile:xrL&&xrL.scale?xrL.scale[0]:4,
+  color:typeof hc==='function'?hc(lwRockCol):lwRockCol,name:'the scarp: rock face',key:'lightwall-rock'})
+  :lwRockLayer(new THREE.MeshStandardMaterial({vertexColors:true,roughness:.95,side:THREE.DoubleSide,color:typeof hc==='function'?hc(lwRockCol):lwRockCol}));
  if(KCAVERN.cutLayer){KCAVERN.cutLayer(mat);KCAVERN.cut.above(2.2);KCAVERN.cut.boxes([{x:0,z:LW.WALL-20,hw:LW.CARVE+30,hd:40,ry:0,floor:LW.Y0}]);}
  /* meshed after the page is up (KNOWN_ISSUES.md: "the carved quarter costs about 8 s to mesh"): the chunks grouped by
     drawRock's own 64 m tiles, the tiles nearest the camera first, about 12 ms of them a frame; window._hostPending (core/host

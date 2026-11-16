@@ -56,6 +56,15 @@
   (`triangle-budget`). The sheet's Fowlers' village draws about 109k (was 160k), the riftrim Fowlers' spec 112k.
 
 
+## Done (2026-11-17)
+
+- **The Glaziers' rock is textured** on the sheet: core/terrain's new `KCAVERN.rockMaterial` (`host/39i-core-cavern-rock.js`,
+  lifted from Lightwall's page) dresses the KCAVERN rock in the library's scanned rock face (the kit's new `rockface` family,
+  `rock.rock_face`) through `KGROUND.hook` (triplanar on the steep, the far levels that break the tile's repeat), the occlusion
+  multiplying it. It guards against three r128's environment-map macros, which break `43-core-ground.js`'s hex tiling under a
+  skylight (the lasting fix is in `TODO.md`, the next all-builds rebuild). `rockface` stays out of the bundle's `glazier` pack:
+  Lightwall takes the same set from Xanadu's.
+
 ## Open
 
 - [ ] **The daub sheet is owed** (`patterns/fellgang/daub`, `core/materials/PROMPTS-NEEDED.md` section 43): the slogans are
@@ -89,10 +98,7 @@
 - [ ] **The culture id `glazier` is opt-in** (`core/tags/glazier/52g-tags-glazier.js`): fold it into
       `core/tags/52-core-tags-vocab.js` with the next all-builds rebuild (`TODO.md`), then delete the folder and drop it from
       `build.py`.
-- [ ] **The Glaziers' rock has no texture**: KCAVERN's rock is drawn in vertex colour (its occlusion), one basalt-rose tint; the
-      Zeijani kit's triplanar rock shader (`kits/zeijani/src/40-zj-cave.js`) is a fork, not core. The library's `hewn` family
-      (`rock.basalt.flowbanded`) dresses the builders' floors and plinths only. Owed with a core rock material for carved pages.
-      The rock costs about 315k triangles on the sheet (the 13 rows' blocks and the scarp, cell 0.5 m).
+- [ ] **The rock costs about 315k triangles on the sheet** (the 13 rows' blocks and the scarp, KCAVERN at 0.5 m).
 - [ ] **The cholet band and the moonglass are owed textures** (`core/materials/PROMPTS-NEEDED.md`: `patterns/glazier/cholet-front`,
       `glass.moonglass`): the bands are geometry (lozenges in vertex colour) and the panes KGLASS's frosted kind until they come.
 - [ ] **The Glaziers in their script and in the sim**: the plaques' numbers are Latin digits (the Register would be in Xanadu's
