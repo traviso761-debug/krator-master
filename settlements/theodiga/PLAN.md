@@ -90,12 +90,12 @@ salvagers 1,293, farmers 1,036, poor tier 429, farms 118), nine farms with field
 set alone gave 3,985 in 417, and five other seeds 3,877 to 4,344 with every check passing. The plan sheet is `floors/town-layout.svg`
 (`node settlements/theodiga/test-th-town.js --svg settlements/theodiga/floors/town-layout.svg`).
 
-## The bore to Stair (proposal, 2026-11-16; awaiting the owner)
+## The bore to Stair (settled by the owner, 2026-11-16: "Yes, as written")
 
 The owner keeps the Ancients' dead bore from Theodiga to Stair (`openworld/ANCIENT-NETWORK.md`, route
 `rift.bowl.theodiga-stair`, 438 km, about 385 km bored, under the Twins and the Catch's southern wall to Stair, 1106,1442):
 no trains, "a third way across, but a hard one". Its Stair end is drawn (the Catch, `catch-oasis.html`: the portal by the
-spring, sealed deep inside). Proposed for Theodiga's end:
+spring, sealed deep inside). Theodiga's end:
 - **Where it opens: in the east canyon wall at the canyon floor, at the foot of the Salvage Road beside the salvage yards**
   (`42-th-works`), heading east-north-east toward Stair. The Ancients' lines run at the canyon floor (the Rift line comes up it
   from the Pile and on to Strongbow), so the bore is a branch off that line, not a door in the arcology. The yards' track runs
@@ -106,7 +106,7 @@ spring, sealed deep inside). Proposed for Theodiga's end:
   theirs. The Salvagers' rule is that they take only what the Dome lets fall, and the bore is not the Dome's, so they may not
   work it. Salvagers still hire on as haulers and lamp-men, which keeps the two guilds in friction. The Devisers' guild house
   stands at the portal: a lodge with its stores and assay hall, beside the yards. Their town house goes in the bazaar.
-- On the page (T-town-6, once settled): the portal in the drawn wall (a core/terrain carve), the gatehouse, the lodge and the
+- On the page (T-town-6, next): the portal in the drawn wall (a core/terrain carve), the gatehouse, the lodge and the
   track's run in, as `42-th-works` records. A view 'The bore to Stair'.
 
 ## Order of work
