@@ -17,7 +17,7 @@
 //                 Decree's monastery
 //   LW_PLACE      what 90r places on the bench: {key, x, z, ry, o: {v, y}, kind, cls, id, drop}
 // [G data] records, no drawing.
-const LW={SEED:9450,LAKE:-30,SHORE:430,FOOT:-270,WALL:-280,Y0:90,BAND_H:10.2,BAND_SET:9,BANDS:4,HALF:[700,600,480,340],CARVE:300};
+const LW={SEED:9450,LAKE:-30,SHORE:430,FOOT:-270,WALL:-280,Y0:90,BAND_H:10.2,BAND_SET:9,BANDS:4,HALF:[700,600,480,340],CARVE:230};
 const lwD=(x,d)=>x==null?d:x;   /* a numeric default: 0 is a value */
 const lwU=(a,b,c)=>KRAND.unit(KRAND.hash(LW.SEED,a|0,b|0,c|0));
 const lwSm=t=>{t=Math.max(0,Math.min(1,t));return t*t*(3-2*t);};
@@ -30,7 +30,13 @@ terrainH=function(x,z){
  if(z>LW.SHORE)return Math.max(-46,lwBench(x,LW.SHORE)-(z-LW.SHORE)*.09);
  if(z>=LW.WALL)return lwBench(x,Math.max(z,LW.FOOT));
  /* behind the wall's line: a ramp under the bands (their blocks stand on it), then the north wall to the far field */
- const d=LW.WALL-z;if(d<40)return LW.Y0+(LW_TOP+6-LW.Y0)*lwSm(d/40);
+ const d=LW.WALL-z;
+ /* across the carved quarter the ramp stays a metre under the floor of every band whose rooms run over it (19 m back from its
+    face: the rooms' 13 m and a 6 m ground cell), so the bench's mesh never shows inside a carved room; the step it makes at the
+    quarter's ends is inside the bands' rock */
+ if(Math.abs(x)<LW.CARVE+12&&d<LW.BANDS*LW.BAND_SET+19){let lo=1e9;for(let k=0;k<LW.BANDS;k++){const dk=d-k*LW.BAND_SET;if(dk>-1&&dk<19)lo=Math.min(lo,LW.Y0+k*LW.BAND_H-1);}
+  if(lo<1e9)return Math.min(lo,d<40?LW.Y0+(LW_TOP+6-LW.Y0)*lwSm(d/40):1e9);}
+ if(d<40)return LW.Y0+(LW_TOP+6-LW.Y0)*lwSm(d/40);
  const e=d-40;return LW_TOP+6+1.1*e-.00006*e*e+40*Math.sin(x/310+e/520)*Math.min(1,e/200);};
 // ---------------------------------------------------------------- the wall: four bands of fronts
 const LW_BANDS=[...Array(LW.BANDS).keys()].map(k=>({k,z:LW.WALL-k*LW.BAND_SET,y:LW.Y0+k*LW.BAND_H,half:LW.HALF[k]}));
@@ -93,8 +99,11 @@ const LW_MARKS=[
  ['xa_shops',-30,-246,Math.PI/2,'bazaar'],['xa_shops',30,-246,-Math.PI/2,'bazaar'],['xa_shop_turk_a',-30,-222,Math.PI/2,'bazaar'],['xa_shop_turk_b',30,-222,-Math.PI/2,'bazaar'],
  ['xa_teahouse',-58,-182,Math.PI/2,'bazaar'],['xa_barracks',150,-166,Math.PI,'garrison'],['xa_watch',-370,-150,Math.PI,'garrison'],['xa_watch',370,-150,Math.PI,'garrison'],
  ['xa_quay',-48,452,0,'quay'],['xa_quay',48,452,0,'quay'],['xa_boatshed',-118,442,0,'quay'],['xa_boatshed',118,442,0,'quay'],['xa_warehouse',-64,416,0,'quay'],['xa_warehouse',64,416,0,'quay'],
- ['qb_caravanserai',-940,330,Math.PI/2,'caravanserai'],['xa_corral',-940,250,Math.PI/2,'caravanserai'],['qb_monastery',930,150,-Math.PI/2,'monastery']]
- .filter(m=>VERN.defs[m[0]]).map(([key,x,z,ry,kind],i)=>{const D=VERN.defs[key];return {key,x,z,ry,kind,id:'mark.'+i,w:D.w,d:D.d,h:lwD(D.h,10)};});
+ ['qb_caravanserai',-940,330,Math.PI/2,'caravanserai'],['xa_corral',-940,250,Math.PI/2,'caravanserai'],
+ /* the Iridescent Order's house (the owner, 2026-11-16): a daughter of Qiblai's Teal great monastery, the Qiblai kit's spoke 4
+    (QSPOKE 'Turquoise', its teal walls), on the east spur */
+ ['qb_monastery',930,150,-Math.PI/2,'monastery',4]]
+ .filter(m=>VERN.defs[m[0]]).map(([key,x,z,ry,kind,v],i)=>{const D=VERN.defs[key];return {key,x,z,ry,kind,v:lwD(v,0),id:'mark.'+i,w:D.w,d:D.d,h:lwD(D.h,10),name:kind==='monastery'?'The Iridescent Order (a house of the Teal great monastery of Qiblai)':null};});
 // ---------------------------------------------------------------- the bench on core/city: its site steps, then frontage-courts
 const LW_POOLS={
  rich:[['xa_rich_a',2],['xa_rich_c',2],['xa_house_turk_a',2],['xa_house_turk_b',1],['xa_andean_rich',1]],
@@ -138,7 +147,7 @@ if(LW_PLAN&&LW_PLAN.courts)for(const Lt of LW_PLAN.courts.lots){if(!VERN.defs[Lt
  const people=/^xa_(warehouse|workshop|shops$)/.test(Lt.key)?0:lwD(LW_KEY_PEOPLE[Lt.key],lwD(LW_HOUSE_PEOPLE[Lt.cls],5));LW.people.bench+=people;
  LW_PLACE.push({key:Lt.key,x:Lt.x,z:Lt.z,ry:Lt.ry,o:{v:lwV(Lt.key,Lt.id),y:Lt.y},kind:'lot',cls:Lt.cls,id:'lot:'+Lt.id,drop:Lt.drop,h:lwD(VERN.defs[Lt.key].h,10),people});}
 for(const m of LW_MARKS){const y=Math.max(...lwRect(m.x,m.z,m.w,m.d,m.ry).map(p=>terrainH(p[0],p[1])))+.05,lo=Math.min(...lwRect(m.x,m.z,m.w,m.d,m.ry).map(p=>terrainH(p[0],p[1])));
- LW_PLACE.push({key:m.key,x:m.x,z:m.z,ry:m.ry,o:{v:0,y:m.kind==='quay'?Math.max(y,LW.LAKE+1.2):y},kind:m.kind,id:m.id,drop:{lo:lo-.6},h:m.h,people:m.kind==='factor'?12:m.kind==='garrison'?(m.key==='xa_barracks'?60:0):m.kind==='monastery'?40:0});
+ LW_PLACE.push({key:m.key,x:m.x,z:m.z,ry:m.ry,name:m.name,o:{v:m.v,y:m.kind==='quay'?Math.max(y,LW.LAKE+1.2):y},kind:m.kind,id:m.id,drop:{lo:lo-.6},h:m.h,people:m.kind==='factor'?12:m.kind==='garrison'?(m.key==='xa_barracks'?60:0):m.kind==='monastery'?40:0});
  LW.people.bench+=LW_PLACE[LW_PLACE.length-1].people;}
 /* a farmhouse in each field block, at its middle, if its ground takes it */
 for(const b of LW_BLOCKS)if(b.kind==='field'&&VERN.defs.xa_farmhouse){const xs=b.poly.map(p=>p[0]),zs=b.poly.map(p=>p[1]),x=(Math.min(...xs)+Math.max(...xs))/2,z=(Math.min(...zs)+Math.max(...zs))/2;
@@ -157,11 +166,23 @@ for(const p of LW_PLACE){const D=VERN.defs[p.key];if(D)lwSpace.insert(p,p.x,p.z,
 for(const s of LW_WALL){const B=TG.gz.BOX[s.key];lwSpace.insert(s,s.x,s.z+B.out/2,Math.hypot(B.w,B.out+2)/2+2);}
 function lwInPoly(P,x,z){const xs=P.map(p=>p[0]),zs=P.map(p=>p[1]);return x>Math.min(...xs)&&x<Math.max(...xs)&&z>Math.min(...zs)&&z<Math.max(...zs);}
 function lwSegD(x,z,a,b){const dx=b[0]-a[0],dz=b[1]-a[1],L0=dx*dx+dz*dz,L=L0>0?L0:1;let t=((x-a[0])*dx+(z-a[1])*dz)/L;t=Math.max(0,Math.min(1,t));return Math.hypot(x-a[0]-dx*t,z-a[1]-dz*t);}
+/* THE BLOCKS' OPEN GROUND (the owner, 2026-11-16: "a lot of empty space between the buildings ... more plants or fields"): every
+   built block's ground not under a building or a street, in 12 m plots, each a kitchen garden (beds in rows), an orchard (trees
+   on grass) or a yard (grass, the odd tree) by a hash of its cell (core/rand); the plot nearest a house is its dooryard (made
+   ground). From the records only: 90l paints them, the flora mask plants the orchards and yards */
+const LW_PLOT=12;
+function lwBlockAt(x,z){for(const b of LW_BLOCKS)if(lwInPoly(b.poly,x,z))return b;return null;}
+function lwNearBuilding(x,z,m){for(const p of lwSpace.query(x,z,1)){const D=VERN.defs[p.key]||TG.gz.BOX[p.key];if(!D)continue;const r=Math.hypot(D.fw||D.w,D.fd||D.d||D.out)/2;if(Math.hypot(x-p.x,z-p.z)<r+m)return true;}return false;}
+function lwPlot(x,z){const b=lwBlockAt(x,z);if(!b||b.kind==='field')return null;
+ for(const w of LW_STREETS)if(lwSegD(x,z,w.pts[0],w.pts[1])<LW_W[w.cls]/2+1)return null;
+ if(lwNearBuilding(x,z,1.5))return null;if(lwNearBuilding(x,z,5))return 'dooryard';
+ const i=Math.floor(x/LW_PLOT),j=Math.floor(z/LW_PLOT),u=KRAND.unit(KRAND.hash(LW.SEED,i,j,0x91)),rich=b.kind==='rich';
+ return u<(rich?.25:.45)?'garden':u<(rich?.7:.72)?'orchard':'yard';}
 function lwBioMask(x,z){if(z>LW.SHORE+12||z<LW.WALL+4)return 0;
  if(x>LW_PLAZA.x0-6&&x<LW_PLAZA.x1+6&&z>LW_PLAZA.z0-16&&z<LW_PLAZA.z1+6)return 0;
  for(const w of LW_STREETS)if(lwSegD(x,z,w.pts[0],w.pts[1])<LW_W[w.cls]/2+1.5)return 0;
  for(const p of lwSpace.query(x,z,1)){const D=VERN.defs[p.key]||TG.gz.BOX[p.key],r=Math.hypot(D.fw||D.w,D.fd||D.d||D.out)/2+1.5;if(Math.hypot(x-p.x,z-p.z)<r)return 0;}
- for(const b of LW_BLOCKS)if(lwInPoly(b.poly,x,z))return b.kind==='field'?0:.05;
+ const b=lwBlockAt(x,z);if(b){if(b.kind==='field')return 0;const pl=lwPlot(x,z);return pl==='orchard'?.75:pl==='yard'?.3:pl==='dooryard'?.04:0;}
  return .5;}
 if(typeof BIO!=='undefined'&&BIO.host){Object.assign(BIO.host,{mask:lwBioMask,origin:[[0,0],[-700,200],[700,200]],center:[0,100],
  fields:{wet:(x,z)=>Math.min(1,.6+Math.max(0,1-(LW.SHORE+20-z)/200)*.3),salt:()=>0,upland:()=>0,flow:()=>0,mist:()=>0}});}

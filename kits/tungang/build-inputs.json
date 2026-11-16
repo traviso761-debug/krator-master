@@ -90,7 +90,7 @@
     "kits/tungang/build.py": "ebc21e7a617ed296242c8ed71211bb9fdce613cfdb93713a53ae43632aaabbad",
     "kits/tungang/src/00-head.html": "fba12988e841f1850990769e31c4ee6ca7a12a59ecf113ebd50bc39c76b8bc9b",
     "kits/tungang/src/26k-kit.js": "3ef74a7697796746fdfaacd4326bac762cc366cde82930b3164de5efe005c23f",
-    "kits/tungang/src/37-wk-rec.js": "05b5e7cedc5b107b3ec783ce9dbbeff6e3bd141da0cd5a8978f84132b8d3de42",
+    "kits/tungang/src/37-wk-rec.js": "5865af0f2547579f57c8b4ba96e775b8a24da73101dd8699710027a56a6d9ec6",
     "kits/tungang/src/40-fg-kit.js": "4be516aab9b0ed3a62057ac25ccca3007541ef688ed131197811166030b4a782",
     "kits/tungang/src/42-fg-mass.js": "9f8afab43289c36515b62ff8922d26f98ff612fc5737d506de96b1bf9b6fd59b",
     "kits/tungang/src/50-fg-dwell.js": "f1c450d279138cb3e7cb024a590a3a4d20ad82e45c858ab5dee4c37f560c03ef",
@@ -98,12 +98,12 @@
     "kits/tungang/src/54-fg-stores.js": "1e7dd9f1339e158f12b8180dcef8e968b83fe6a8148f2cf366c2180c1c6be6bc",
     "kits/tungang/src/56-fg-works.js": "8e63b3da7f9347112fd521c859db0261caea503e30c0aa8b6bb42d790f880274",
     "kits/tungang/src/60-fg-road.js": "7f134411e8821ee65c91e2ab156b4be4eca292db7546a4d1f649e48ceafe97ac",
-    "kits/tungang/src/62-gz-kit.js": "21c7525b0b6d2b12baf6593c15f54354a5791cbf121030ae2df9437af8464630",
+    "kits/tungang/src/62-gz-kit.js": "1abf8a9e4a76cadc01051bcee9d9563e86952276d6d239d7402210e278ce03cf",
     "kits/tungang/src/63-gz-homes.js": "b5c7844acee1700d14742b53e930ffef8f99d5e82971710f68725d133beb4f47",
     "kits/tungang/src/65-gz-civic.js": "9a6967fe761753893dde00e9948a5bda196aee88594c006380c6b1ba0c897e6b",
     "kits/tungang/src/67-gz-works.js": "d49bcf849dc0b078d1fb865bd58446c423064db99226f52a5ae73b1dcb796938",
     "kits/tungang/src/80-fg-host.js": "dec187a9e4df1ddf39ccbbec3eed009dafd38be45fe19430813aebf6c83ccd44",
-    "kits/tungang/src/84-gz-host.js": "7c54ae8eaff31d868cad9eadbdf5e982ec3b53bd9a3830065ae430e310df32f3",
+    "kits/tungang/src/84-gz-host.js": "c26dc6115188aa764dded2d96121614b90b67a9b4a52e5c2da939b5b47e7cf0a",
     "kits/tungang/src/89-rows.js": "ab725ded367e1a3c59f90fc4c5459fd4ef8f5bfc7b26f07b056653d608d1cbe3",
     "kits/tungang/src/91t-fg-sheet.js": "4b0f950ff4e6876616233943e5830644913b2e853672a77eaaa478e49f43af13",
     "kits/tungang/src/91z-gz-sheet.js": "8de129d3765ec99cfdc0cb3da5ddee2a957619aad45fa9e4f5190ebe9dc0e49e",
@@ -251,14 +251,14 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "kits/tungang/build-manifest.json": "e9308a297d1459ff3f215a66982d171d3d7689862a8104d76dfc951f1b718826",
-    "kits/tungang/dist/tungang.html": "af2ec68a94e644a0907b6691b787a3cfb3d27796d6819938db089af4d4cb30e9",
+    "kits/tungang/build-manifest.json": "24f77bfc8282e90a982af07e320a4e0ffb0f845064fad68573f4b4d52d4bca96",
+    "kits/tungang/dist/tungang.html": "240d9be5420afc2ec8a76005b4129852ddd2f422411bc6ec3acfe734a0d83087",
     "kits/tungang/dist/tungang.tex.tungang-2.js": "addcd022d9d1ea8218f5c3727306acec0cda168ea76cb72957a1afbc79b07f10",
     "kits/tungang/dist/tungang.tex.tungang.js": "50b5b211ad4cee5eb48753cf36ca3ea465ec353902bbda93ec55914a98b41309"
    },
    "outputs_raw": {
-    "kits/tungang/build-manifest.json": "e9308a297d1459ff3f215a66982d171d3d7689862a8104d76dfc951f1b718826",
-    "kits/tungang/dist/tungang.html": "af2ec68a94e644a0907b6691b787a3cfb3d27796d6819938db089af4d4cb30e9",
+    "kits/tungang/build-manifest.json": "24f77bfc8282e90a982af07e320a4e0ffb0f845064fad68573f4b4d52d4bca96",
+    "kits/tungang/dist/tungang.html": "240d9be5420afc2ec8a76005b4129852ddd2f422411bc6ec3acfe734a0d83087",
     "kits/tungang/dist/tungang.tex.tungang-2.js": "addcd022d9d1ea8218f5c3727306acec0cda168ea76cb72957a1afbc79b07f10",
     "kits/tungang/dist/tungang.tex.tungang.js": "50b5b211ad4cee5eb48753cf36ca3ea465ec353902bbda93ec55914a98b41309"
    }

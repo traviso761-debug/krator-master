@@ -12,7 +12,8 @@
   "core/terrain/39-core-cavern.js",
   "core/terrain/host/39e-core-cavern-draw.js",
   "core/terrain/host/39h-core-cavern-cut.js",
-  "core/terrain/43-core-ground.js"
+  "core/terrain/43-core-ground.js",
+  "core/walk/box/24-core-walk-box.js"
  ],
  "scoped": [
   "69l-kcity-bundle.js",
@@ -21,7 +22,8 @@
   "39-core-cavern.js",
   "39e-core-cavern-draw.js",
   "39h-core-cavern-cut.js",
-  "43-core-ground.js"
+  "43-core-ground.js",
+  "24-core-walk-box.js"
  ],
  "pack": "qiblai",
  "packFrom": "kits/qiblai",
@@ -41,7 +43,8 @@
   "90l-lw-world.js",
   "90m-lw-wall.js",
   "90r-lw-build.js",
-  "43-core-ground.js"
+  "43-core-ground.js",
+  "24-core-walk-box.js"
  ],
  "interiors": [
   "town"
@@ -54,5 +57,7 @@
   "jobs"
  ],
  "furnitureTex": false,
- "interiorSets": []
+ "interiorSets": [
+  "xanadu"
+ ]
 }

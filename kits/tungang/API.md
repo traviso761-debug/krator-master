@@ -138,6 +138,8 @@ A world that carves with its own tool reads `TG.gz.voids(sites)` instead: the sa
 | `o.scene`, `o.label` | the group is added to the scene; the inspector's name |
 | `o.seed` | a site's look (`v`) when it has none: `KRAND.hash(seed, index, salt) % 97` (default 9400) |
 | `o.state` | `'kept'` (default), `'worn'` or `'abandoned'`; a site's own `state` wins |
+| `o.walk` | true: the fronts' floors, steps and doorways go to core/walk (`KWALK`) as the draw makes them (the page's walker reaches a carved home's rooms from its front: Lightwall's `ix-glazier`); the curtains, lamps and leaves never block. Default false (a dry draw) |
+| site `facade` | true: the front alone, on whole rock: nothing behind the face (z < -0.35) is drawn, no room lights, no furniture (Lightwall's outer wall) |
 
 Returns the meshes (one per material key) with `.group`, `.recs` (`{key, x, y, z, ry, bbox, id, site, fg}`; `fg` the builder's
 counts: `plaques` and `register` (the Register), `wheels`, `benches`, `countLamps`, `countWall`, `timetable`, `plaque` (an

@@ -4,6 +4,12 @@
 // (core/city's stance 'high') on a footing of dressed stone down to its lowest; chunk by chunk (400 m), each chunk baked into its
 // own group and drawn while in view and range. [web]: three.js.
 reseed(LW.SEED+2);const LW_B0=performance.now();
+/* L4 (PLAN.md 6): the houses within LW_IX_R of the Stair Foot are built with the Xanadu kit's interiors (settlements/xanadu
+   89y-xa-interiors.js: hollow walls, unlocked doors into planned rooms, furnished from the catalog, their floors in core/walk);
+   the rest as before, their roofs on solid bodies. ?interiors=0 turns them off. XAF.interiors stays on after the build, so the
+   page's start (99-start.js) gives the walk and the cut-away (X) of the furnished buildings */
+const LW_IX_R=260,LW_IX_ON=typeof XAF!=='undefined'&&!/[?&]interiors=0\b/.test(location.search);
+const lwIxNear=p=>LW_IX_ON&&p.kind!=='farm'&&Math.hypot(p.x,p.z-(LW_PLAZA.z0+LW_PLAZA.z1)/2)<LW_IX_R;
 const LW_CHUNK=400,LW_CHUNKS={};
 for(const p of LW_PLACE){const k=Math.floor(p.x/LW_CHUNK)+','+Math.floor(p.z/LW_CHUNK);(LW_CHUNKS[k]=LW_CHUNKS[k]||[]).push(p);}
 const LW_GROUPS=[];let LW_INST=0;
@@ -12,11 +18,15 @@ function lwBakeChunk(key,list){const G=new THREE.Group();G.name='chunk:'+key;sce
   /* the footing: dressed stone from the building's floor down to the lowest corner of its footprint */
   const lo=p.drop&&p.drop.lo!=null?p.drop.lo:null,y=lwD(p.o.y,0);
   if(D&&lo!=null&&y-lo>.25){TSTAT.cur='lw_footing/0';vB('qAshB',p.x,lo-.4,p.z,D.w+.3,y-lo+.4,D.d+.3,p.ry,xC(xPick(QSTONE)));}
-  TSTAT.cur=p.key+'/'+(p.o.v|0);const r0=REG.length;const g=VERN.place(G,p.key,p.x,p.z,p.ry,p.o);if(g)p.G=g;for(let i=r0;i<REG.length;i++)REG[i].type=p.key;
+  TSTAT.cur=p.key+'/'+(p.o.v|0);const r0=REG.length,ix=lwIxNear(p);if(LW_IX_ON){XAF.interiors=ix;VERN.interiors=ix;}
+  const g=VERN.place(G,p.key,p.x,p.z,p.ry,p.o);if(g){p.G=g;p.ix=!!(ix&&g.userData.interior);}for(let i=r0;i<REG.length;i++)REG[i].type=p.key;
   x0=Math.min(x0,p.x-60);x1=Math.max(x1,p.x+60);z0=Math.min(z0,p.z-60);z1=Math.max(z1,p.z+60);y0=Math.min(y0,y-10);y1=Math.max(y1,y+lwD(p.h,12));}
  TSTAT.cur=null;kbake(G);xaDoorsBind();LW_INST+=lwD(window._instances,0);for(const n in KIT.items)KIT.items[n].length=0;
  const e={G,key,sphere:new THREE.Sphere(new THREE.Vector3((x0+x1)/2,(y0+y1)/2,(z0+z1)/2),Math.hypot(x1-x0,y1-y0,z1-z0)/2+20),range:2600,n:list.length};LW_GROUPS.push(e);return e;}
 for(const k of Object.keys(LW_CHUNKS).sort())lwBakeChunk(k,LW_CHUNKS[k]);
+if(LW_IX_ON){XAF.interiors=true;VERN.interiors=true;if(typeof xaIxWalk==='function')xaIxWalk();}
+const LW_IX={on:LW_IX_ON,radius:LW_IX_R,houses:LW_PLACE.filter(p=>p.ix).length,rooms:LW_PLACE.reduce((a,p)=>a+(p.ix?p.G.userData.interior.rooms:0),0),
+ pieces:LW_PLACE.reduce((a,p)=>a+(p.ix?p.G.userData.interior.pieces:0),0),near:LW_PLACE.filter(lwIxNear).length};
 window._instances=LW_INST;
 /* the runtime LOD: a chunk is drawn while it is in the view and within its range */
 const lwFr=new THREE.Frustum(),lwPm=new THREE.Matrix4();

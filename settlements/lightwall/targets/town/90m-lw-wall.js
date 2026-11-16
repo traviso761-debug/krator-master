@@ -35,14 +35,29 @@ function lwRockFace(x0,x1,z,y0,y1,flat,seed){const nx=Math.max(2,Math.ceil((x1-x
  for(let j=0;j<ny;j++)for(let i=0;i<nx;i++){const a=j*(nx+1)+i,b=a+1,c=a+nx+1,d=c+1;idx.push(a,b,c,b,d,c);}
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('normal',new THREE.Float32BufferAttribute(nrm,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));
  g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));g.setIndex(idx);g.computeVertexNormals();return g;}
+/* a band's end as a buttress of rock sloping from the band's top down to its foot over L m (dir +1 east, -1 west): not a
+   square-cut block. Its front a triangle on the face, its top a slope, its back hidden in the rock behind */
+function lwRockWedge(x,dir,z,y0,y1,depth,L){const xe=x+dir*L,P=[[x,y0,z],[xe,y0,z],[x,y1,z-.9],[x,y0,z-depth],[xe,y0,z-depth],[x,y1,z-depth]];
+ const T=dir>0?[[0,1,2],[2,1,4],[2,4,5],[3,5,4]]:[[0,2,1],[2,4,1],[2,5,4],[3,4,5]],pos=[],uv=[];
+ for(const t of T)for(const i of t){pos.push(P[i][0],P[i][1],P[i][2]);uv.push(P[i][0]/2.2,P[i][1]/2.2);}
+ const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));
+ g.setIndex([...Array(pos.length/3).keys()]);g.computeVertexNormals();return g;}
 // ---------------------------------------------------------------- the bands' plain rock: each face between the carved sites
 const LW_ROCK={bands:0,cavern:null,tris:0};
 {const geos=[];
  for(const B of LW_BANDS){const gaps=LW_WALL.filter(s=>s.band===B.k&&s.carve).map(s=>{const W=TG.gz.BOX[s.key].w/2+.6;return [s.x-W,s.x+W];}).sort((a,b)=>a[0]-b[0]);
   /* behind the run, a block whose top is the ledge; before it, the face as rock, flat behind every front that stands against it */
   const flat=LW_WALL.filter(s=>s.band===B.k&&!s.carve).map(s=>{const W=TG.gz.BOX[s.key].w/2+.3;return [s.x-W,s.x+W];});
-  let x=-B.half;const run=(a,b)=>{if(b-a>.2){geos.push(lwRockBox(a,b,B.z-.9,13.1,B.y-3,B.y+LW.BAND_H));geos.push(lwRockFace(a,b,B.z,B.y-3,B.y+LW.BAND_H,flat,LW.SEED+40+B.k));}};
+  /* the top band's block runs 16.5 m back (the carved quarter's ground is held under its floor that far, 89zl terrainH), and a lid
+     of rock behind its carved sites to the scarp, so the ground held down shows no trench above it */
+  const top=B.k===LW.BANDS-1,dep=top?16.5:13.1;if(top)geos.push(lwRockBox(-(LW.CARVE+30),LW.CARVE+30,B.z-16.5,9,B.y-3,B.y+LW.BAND_H));
+  let x=-B.half;const run=(a,b)=>{if(b-a>.2){geos.push(lwRockBox(a,b,B.z-.9,dep,B.y-3,B.y+LW.BAND_H));geos.push(lwRockFace(a,b,B.z,B.y-3,B.y+LW.BAND_H,flat,LW.SEED+40+B.k));}};
   for(const g of gaps){run(x,g[0]);x=Math.max(x,g[1]);}run(x,B.half);LW_ROCK.bands++;
+  /* the band's two ends as buttresses sloping down to its foot, the length by the band's height and a hash of the end */
+  for(const dir of [-1,1]){const L=LW.BAND_H*(1.4+.8*lwU(B.k,dir,51));geos.push(lwRockWedge(dir*B.half,dir,B.z,B.y-3,B.y+LW.BAND_H,13.1,L));}
+  /* the ledge on this band's top: a floor from its lip back to the next band's face (L4: a walker goes along the wall) */
+  if(typeof KWALK!=='undefined'){const zb=B.k+1<LW.BANDS?B.z-LW.BAND_SET:B.z-12,y=B.y+LW.BAND_H;
+   KWALK.poly({pts:[[-B.half,zb,y],[B.half,zb,y],[B.half,B.z-.9,y],[-B.half,B.z-.9,y]],name:'ledge '+(B.k+1),tag:'lightwall:ledge'});}
   /* a facade house taller than its band: a knob of rock behind its upper tiers */
   for(const s of LW_WALL)if(s.band===B.k&&s.facade){const H=TG.gz.BOX[s.key].h;if(H>LW.BAND_H+1){const W=TG.gz.BOX[s.key].w/2-.4;geos.push(lwRockBox(s.x-W,s.x+W,s.z,7,B.y+LW.BAND_H-.2,B.y+H-1.2));}}}
  if(geos.length){const g=lwMerge(geos);
@@ -54,7 +69,8 @@ if(typeof KCAVERN!=='undefined'&&KCAVERN.drawRock){
  const C=KCAVERN.create({ground:()=>-200,cell:.5,chunk:16,seed:LW.SEED,walk:typeof KWALK!=='undefined'?KWALK:null,minRock:.6});
  LW_CARVED=LW_WALL.filter(s=>s.carve);
  for(const s of LW_CARVED){const B=TG.gz.BOX[s.key],PL=TG.gz.plan(s.key,{v:s.v}),top=Math.max(...PL.voids.map(V=>V.kind==='stair'?Math.max(V.a[1],V.b[1])+V.h:V.y+V.h+(V.rise||0))),W=B.w/2+.6;
-  C.mass({id:s.id+':rock',poly:[[s.x-W,s.z-(B.d-B.out)-1.5],[s.x+W,s.z-(B.d-B.out)-1.5],[s.x+W,s.z],[s.x-W,s.z]],y0:s.y-3,y1:s.y+Math.max(LW.BAND_H,top+1.2)});}
+  const dm=Math.max(B.d-B.out+1.5,s.band===LW.BANDS-1?16.5:0);
+  C.mass({id:s.id+':rock',poly:[[s.x-W,s.z-dm],[s.x+W,s.z-dm],[s.x+W,s.z],[s.x-W,s.z]],y0:s.y-3,y1:s.y+Math.max(LW.BAND_H,top+1.2)});}
  const P=TG.gz.carve(C,LW_CARVED);const t0=performance.now();C.build();LW_ROCK.buildMs=Math.round(performance.now()-t0);LW_ROCK.prims=P.length;
  const mat=lwRockLayer(new THREE.MeshStandardMaterial({vertexColors:true,roughness:.95,side:THREE.DoubleSide,color:typeof hc==='function'?hc(lwRockCol):lwRockCol}));
  if(KCAVERN.cutLayer){KCAVERN.cutLayer(mat);KCAVERN.cut.above(2.2);KCAVERN.cut.boxes([{x:0,z:LW.WALL-20,hw:LW.CARVE+30,hd:40,ry:0,floor:LW.Y0}]);}
@@ -66,7 +82,7 @@ if(typeof cutSet==='function'){const lwCut0=cutSet;cutSet=function(on){if(typeof
 // ---------------------------------------------------------------- the fronts: band by band, through the host API
 const LW_DRAW=[];
 for(const k of [-1,0,1,2,3]){const sites=LW_WALL.filter(s=>s.band===k);if(!sites.length)continue;
- const D=TG.gz.draw(sites,{scene,seed:LW.SEED+10+k,label:k<0?'Laitwal: the lotus ponds':'Laitwal: the Glaziers\' wall, band '+(k+1)});
+ const D=TG.gz.draw(sites,{scene,walk:typeof KWALK!=='undefined',seed:LW.SEED+10+k,label:k<0?'Laitwal: the lotus ponds':'Laitwal: the Glaziers\' wall, band '+(k+1)});
  D.group.traverse(m=>{if(m.isMesh){m.castShadow=true;m.receiveShadow=true;}});LW_DRAW.push(D);}
 const LW_LIGHTS=[].concat(...LW_DRAW.map(D=>D.lights));
 window._lightwallWall={sites:LW_WALL.length,carved:LW_CARVED.length,facade:LW_WALL.filter(s=>s.facade).length,drawn:LW_DRAW.reduce((a,D)=>a+D.recs.length,0),

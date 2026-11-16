@@ -11,7 +11,11 @@ const VIEWS=(function(){const V={};const Wz=LW.WALL,Y=LW.Y0;
  V['The quays']=[140,LW.LAKE+8,LW.SHORE+60,0,LW.LAKE+2,LW.SHORE+20];
  V['A terrace street']=lwEye(-120,LW_ROWS[2]+3,-300,LW_ROWS[2]+3,0);
  V['The caravanserai']=lwEye(-860,360,-940,330,2);
- V['The monastery on its spur']=lwEye(850,90,930,150,4);
+ V['The Iridescent Order on its spur']=lwEye(842,100,930,150,6);
  V['The carved quarter (cut-away)']=[0,Y+70,Wz+60,0,Y+12,Wz-12];
+ V['The gardens of the bench']=[-160,70,-20,-120,10,-110];
+ /* inside a Glazier hearth room: the carved household front on the second band nearest the main stair, from its doorway */
+ const hf=LW_CARVED.filter(s=>s.key==='gz-front'&&s.band===1).sort((a,b)=>Math.abs(a.x)-Math.abs(b.x))[0];
+ if(hf){const H=TG.gz.plan('gz-front',{v:hf.v}).H;V['Inside a Glazier hearth room']=[hf.x+H.x,hf.y+1.5,hf.z-1.2,hf.x+H.x,hf.y+1.1,hf.z+H.z-H.d/2];}
  return V;})();
 BUDGET.showcase={tris:30000000,calls:3000};BUDGET.cls.city=30000000;for(const k in TSTAT.by)BUDGET.type[k.split('/')[0]]='city';

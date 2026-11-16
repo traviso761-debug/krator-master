@@ -28,7 +28,7 @@ function lwStrata(x,y,out){const w=y+6*KRAND.vnoise(x*.012,y*.02,0,LW.SEED+31)+2
    (lwStrata, the vertex colours) multiplies it */
 function lwRockLayer(mat){const T=MAT.xRock&&MAT.xRock.map;if(!T||typeof KGROUND==='undefined')return mat;T.wrapS=T.wrapT=THREE.RepeatWrapping;
  const L=KMAT.packed&&KMAT.packed('xanadu','xRock'),sc=L&&L.scale?L.scale[0]:4;
- return KGROUND.hook(mat,{layers:[{map:T,k:1/(sc*2.2),w:'1.0',lin:true,name:'the scarp: rock face'}],tri:{from:.3,to:.65,far:900},key:'lightwall-rock'});}
+ return KGROUND.hook(mat,{layers:[{map:T,k:1/(sc*2.2),w:'1.0',lin:true,name:'the scarp: rock face'}],tri:{from:.3,to:.65,far:900},far:{d:90,levels:6},key:'lightwall-rock'});}
 // ---------------------------------------------------------------- the bench's canvas: the zone mask and the tint
 const LWG={x0:-1300,x1:1300,z0:-300,z1:620};LWG.W=LWG.x1-LWG.x0;LWG.H=LWG.z1-LWG.z0;
 const LWG_PX=4096/Math.max(LWG.W,LWG.H),lgx=x=>(x-LWG.x0)*LWG_PX,lgz=z=>(z-LWG.z0)*LWG_PX;
@@ -47,7 +47,15 @@ const lwCv=lwCanvas(),lwMask=lwCanvas();
  for(const b of LW_BLOCKS){if(b.kind==='field'){const xs=b.poly.map(p=>p[0]),zs=b.poly.map(p=>p[1]),X0=Math.min(...xs),X1=Math.max(...xs),Z0=Math.min(...zs),Z1=Math.max(...zs);
    for(let z=Z0,k=0;z<Z1;z+=14,k++){const h=lwHash(b.id+':'+k)%100,v=(h%13)-6,c=h<35?[112+v,98+v,84+v]:h<75?[150+v,142+v,90]:[122+v,126+v,106+v];
     g.fillStyle='rgb('+c.join(',')+')';g.fillRect(lgx(X0),lgz(z),(X1-X0)*LWG_PX,Math.min(13,Z1-z)*LWG_PX);if(h<35){m.fillStyle=DIRT;m.fillRect(lgx(X0),lgz(z),(X1-X0)*LWG_PX,Math.min(13,Z1-z)*LWG_PX);}}}
-  else{g.fillStyle={rich:'#8e8a84',middle:'#888580',poor:'#84817c',shore:'#83807a'}[b.kind]||'#878480';poly(g,b.poly);g.fill();m.fillStyle=DIRT;poly(m,b.poly);m.fill();}}
+  else{/* a built block: its plots (89zl lwPlot), sampled every 3 m: kitchen gardens in beds, orchards and yards in grass, the
+      dooryards made ground */
+   const xs=b.poly.map(p=>p[0]),zs=b.poly.map(p=>p[1]),X0=Math.min(...xs),X1=Math.max(...xs),Z0=Math.min(...zs),Z1=Math.max(...zs),st=3;
+   for(let x=X0;x<X1;x+=st)for(let z=Z0;z<Z1;z+=st){const pl=lwPlot(x+st/2,z+st/2),X=lgx(x),Z=lgz(z),Wd=st*LWG_PX+.5;
+    if(pl==='garden'){const row=Math.floor(z/1.5)%2,h=lwHash('g'+Math.floor(x/LW_PLOT)+','+Math.floor(z/LW_PLOT))%3;
+     g.fillStyle=row?(['#6f7a4a','#7f8a4e','#5f6e44'][h]):'#7a6a56';g.fillRect(X,Z,Wd,Wd);if(!row){m.fillStyle=DIRT;m.fillRect(X,Z,Wd,Wd);}}
+    else if(pl==='orchard'){g.fillStyle='#5e6a4e';g.fillRect(X,Z,Wd,Wd);}
+    else if(pl==='yard'){g.fillStyle='#6a6e58';g.fillRect(X,Z,Wd,Wd);}
+    else{g.fillStyle='#8a8680';g.fillRect(X,Z,Wd,Wd);m.fillStyle=DIRT;m.fillRect(X,Z,Wd,Wd);}}}}
  /* the Stair Foot (flagstones) and the streets at their widths */
  for(const c of [g,m]){c.lineCap='square';c.lineJoin='miter';}
  g.fillStyle='#93897c';m.fillStyle=FLAG;for(const c of [g,m]){c.fillRect(lgx(LW_PLAZA.x0),lgz(LW_PLAZA.z0-14),(LW_PLAZA.x1-LW_PLAZA.x0)*LWG_PX,(LW_PLAZA.z1-LW_PLAZA.z0+14)*LWG_PX);}

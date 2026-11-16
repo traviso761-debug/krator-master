@@ -4,7 +4,8 @@
 // fittings (TG.gz.draw: DRY into buckets of its own, as TG.fg.draw; the lamps come back as light records). The same code runs on
 // the kit's sheet (the rows' rock and the sample scarp, 91z-gz-sheet.js) and in the sealed bundle (tungang_bundle.py: TG).
 //   TG.gz.draw(sites, o)    sites [{key, x, y, z, ry, v?, state?, id?, facade?}] (facade: the front alone, nothing behind the face: a far wall) (the FRONT's foot on the face, the front toward +z
-//                           turned by ry); o {scene, seed, state, label}: each site's def drawn there; returns the meshes with
+//                           turned by ry); o {scene, seed, state, label, walk (true: its floors, walls and stairs into the
+//                           page's core/walk, KWALK and KWALKBOX, as the kit's sheet records them)}: each site's def drawn there; returns the meshes with
 //                           .group, .recs, .missing (keys the kit lacks), .tris, .lights (TG.gz.LIGHTS: core/cavelight's shape),
 //                           .smokes, .furniture (in a bundle with furniture=True)
 //   TG.gz.voids(sites, o)   every site's void plan in the world frame, as KCAVERN primitives ({prim 'room' | 'stair', id, owner,
@@ -15,14 +16,14 @@
 //   TG.gz.dims(key)         a key's box {w, d, h, out}; TG.gz.BOX the boxes; TG.gz.plan(key, o) a def's void plan (the one source)
 //   TG.gz.check             the checks verify.py runs, for a world's --assert too: box(recs), plans(), lights(draw), carved(C, sites)
 TG.gz.dims=k=>TG.gz.BOX[k]?{w:TG.gz.BOX[k].w,d:TG.gz.BOX[k].d,h:TG.gz.BOX[k].h,out:TG.gz.BOX[k].out}:null;
-TG.gz.draw=function(sites,o){o=o||{};const missing={};TG.gz.LIGHTS=[];GZ_COLLECT=1;let out;
+TG.gz.draw=function(sites,o){o=o||{};const missing={};TG.gz.LIGHTS=[];GZ_COLLECT=1;WK_HOST=o.walk?1:0;let out;
  try{out=fgDrawInto(Object.assign({name:'glazier',label:o.label||'A Glazier hold'},o,{scene:null}),()=>(sites||[]).map((r,i)=>{
   if(!DEFS[r.key]||!TG.gz.BOX[r.key]){missing[r.key]=(missing[r.key]==null?0:missing[r.key])+1;return null;}
   /* a site's look varies by a hash of the world seed and its index (core/rand), never by what was drawn before it */
   const v=r.v!=null?r.v|0:KRAND.hash(o.seed==null?9400:o.seed,i,0x6a1)%97;
   GZ_FACADE=r.facade?1:0;
   const rec=place(r.key,r.x,r.z,r.ry==null?0:r.ry,{y:r.y==null?0:r.y,v,state:r.state||o.state});GZ_FACADE=0;if(rec){rec.id=r.id;rec.site=r;rec.facade=!!r.facade;}return rec;}));}
- finally{GZ_COLLECT=0;GZ_FACADE=0;}
+ finally{GZ_COLLECT=0;GZ_FACADE=0;WK_HOST=0;}
  out.lights=TG.gz.LIGHTS.slice();out.missing=missing;if(o.scene)o.scene.add(out.group);return out;};
 TG.gz.voids=function(sites,o){o=o||{};const out=[];(sites||[]).forEach((s,i)=>{const v=s.v!=null?s.v|0:KRAND.hash(o.seed==null?9400:o.seed,i,0x6a1)%97,PL=TG.gz.plan(s.key,{v,state:s.state});if(!PL)return;
  const site=Object.assign({},s,{id:s.id||(s.key+'@'+i)}),W=gzWorldVoids(PL,site);

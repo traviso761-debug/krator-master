@@ -154,7 +154,8 @@ function gzDoor(x,top,w,zf,th,Yb,beta,C,o){o=o||{};const zo=gzFaceZ(zf,Yb+top*.5
  for(const s of [-1,1])box('carved',x+s*(w/2+.07),Yb,zo-.05,.14,top+.12,.2,tc);
  gzArch(x,ys,zo-.15,w,rise,rise+.14,.2,(o.lobes==null?3:o.lobes),'carved',tc,{edge:o.gilt&&!C.aband?'gilt':null});
  box('carved',x,Yb+top+.12,zo-.15,w+.44,.14,.24,tc);
- if(o.curtain){if(!C.aband||gzU(C.key,C.v,77)<.5)W(x,Yb,zo-th*.5,0,()=>{const cc=gzCol(o.curtain,C);for(let k=0;k<5;k++)box('silk',-w/2+w*(k+.5)/5,C.aband?.5:0,0,w/5+.01,top-(C.aband?.5:0)-.05,.03,cc.clone().multiplyScalar(k%2?.9:1));});}
+ /* a curtain is no wall to a walker: its strips are not recorded in core/walk (WKOFF, 37-wk-rec.js) */
+ if(o.curtain){if(!C.aband||gzU(C.key,C.v,77)<.5){WKOFF++;try{W(x,Yb,zo-th*.5,0,()=>{const cc=gzCol(o.curtain,C);for(let k=0;k<5;k++)box('silk',-w/2+w*(k+.5)/5,C.aband?.5:0,0,w/5+.01,top-(C.aband?.5:0)-.05,.03,cc.clone().multiplyScalar(k%2?.9:1));});}finally{WKOFF--;}}}
  else svLeaf(x,Yb,zo-th*.5,0,w,top-.02,{mk:'carved',col:C.aband?0xa09080:0xffffff,t:.06,ajar:C.worn?.8:0,name:o.name||'a carved door'});
  door(x,Yb,zo,0,w,top);
  if(o.lamp)gzLamp(o.lamp,x+(w/2+.38)*((o.lampSide==null?1:o.lampSide)),Yb+top-.15,zo+.12,C,{wall:true});}
@@ -210,7 +211,9 @@ function gzFurn(key,x,y,z,ry,o,C){if(GZ_FACADE)return null;if(C&&C.aband&&!gzKee
 function gzRoom(id,x,z,w,d,y,o){o=o||{};return Object.assign({id,kind:'room',x,z,w,d,y:(y==null?0:y),h:o.h==null?2.45:o.h,ceil:o.ceil||'vault',rise:o.rise==null?.45:o.rise,
  finish:o.finish||'hewn',use:o.use||'room',doors:o.doors||[]},o.noFloor?{noFloor:true}:{},o.dado?{dado:o.dado}:{},o.join?{join:true}:{},o.extra||{});}
 /* a doorway void: a short passage of w x dh from (x, z0) to (x, z1) (along z) or along x (o.ax 'x'), floor y */
-function gzPass(id,x,z0,z1,w,y,o){o=o||{};const ax=o.ax||'z',L=Math.abs(z1-z0),m=(z0+z1)/2;
+/* a passage runs .35 m on into the rooms at both its ends: the cavern insets every floor .3 m (core/terrain 39), so without the
+   overlap a walker meets a gap at each doorway */
+function gzPass(id,x,z0,z1,w,y,o){o=o||{};const ax=o.ax||'z',L=Math.abs(z1-z0)+.7,m=(z0+z1)/2;
  return {id,kind:'room',x:ax==='z'?x:m,z:ax==='z'?m:x,w:ax==='z'?w:L,d:ax==='z'?L:w,y:(y==null?0:y),h:o.h==null?1.95:o.h,ceil:'flat',rise:0,finish:o.finish||'hewn',use:'door',doors:[],pass:true};}
 /* a stair void from a to b ([x, y, z] the floor at each end), w wide, h clear over the flight */
 function gzStairV(id,a,b,w,o){return {id,kind:'stair',a,b,w:(w==null?1:w),h:o&&o.h!=null?o.h:2.2};}
