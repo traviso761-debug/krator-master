@@ -115,7 +115,7 @@ is the Glaziers'; the bench is the Sultan's.
 | **L2** | The bench town on `core/city` with the Xanadu kit (a target on Xanadu's page, as Qiblai is) | its city tests; the GPU verify |
 | **L3** | The wall: the `gz-*` fronts and the hold's plan cut into a scarp on the page | the set's checks: walkable, no clipping, the voids inside the rock |
 | **L4** | Interiors for both halves (**done 2026-11-16**: the bench's houses round the Stair Foot with the Xanadu kit's interiors, the carved homes walked from their fronts) | the interiors' checks: `ix-bench`, `ix-glazier` |
-| **L5** | The site in the open world | the region's verify |
+| **L5** | The site in the open world (**done 2026-11-16**: `slaitwal01` in `openworld/SITES.json` (`model: false` until the pin), a site of `openworld/xanadu-oidong-highrift`: its square in the cut, three farming villages and a ranch on the shore's bench, the plan baked; the town's own page stays this one) | the region's verify: its new check, Lāiṭwāl on its bench under the wall, the lake at its feet |
 
 ## 7. Questions for the owner
 
@@ -178,7 +178,8 @@ galleries, the dark adits in the oldest workings, lotus ponds stepped to the sho
 | `core/rand` (`KRAND`) | yes | every seed: the bench's blocks (frontage-courts' cell streams), the wall's sites (a hash of the band, the slot and a salt) |
 | `core/tags` (`KTAGS`) | yes | every site registered before it is drawn: the Xanadui houses through the page's registry, the Glazier sites with `culture: 'glazier'` |
 | `core/water` | yes (Xanadu's page) | the lake |
-| `core/world`, `core/region`, `core/charactermodels` | not yet | the open-world site (L5), the town in `XAN_TUNE` (L1), its people |
+| `core/world`, `core/region` | yes (L1, L5) | the open-world site in `openworld/xanadu-oidong-highrift` (its countryside on `KSITES`), the town in `XAN_TUNE` |
+| `core/charactermodels` | not yet | its people |
 | `kits/interiors` | yes, through the Xanadu kit's interiors (`89y-xa-interiors.js`, the `xanadu` set) | L4: the bench's houses within 260 m of the Stair Foot planned and furnished; the carved rooms furnished from the catalog by the Tungang kit's builders |
 
 **Not taken, and why.** No new PRNG, noise, sky or camera: Xanadu's page and the modules above. The ground is the page's own

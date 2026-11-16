@@ -52,8 +52,8 @@
 - [ ] **The flora is the Vale of Xanadu's**, the page's own biome, as Qiblai's: Opal Valley's (`biomes/opalvalley`, on
       the sites branch) is owed, sealed as Qiblai seals the biome kits it wants.
 - [ ] **The ground is the site's numbers, not the open world's**: the bench's profile, the wall's line and the north wall
-      are functions of the scale model's numbers for the site (PLAN.md 1), not `core/world`'s heightfield. L5 puts the town on
-      the open world.
+      are functions of the scale model's numbers for the site (PLAN.md 1), not `core/world`'s heightfield (the site is on the
+      open world since L5, its countryside planned there; the town's page is not yet).
 - [ ] **The north wall is one mesh in beds** (the strata tint and the rock face, snow over 2,300 m): ridges, buttresses and
       gullies, and Opal Valley's own strata (`KSTRATA` with its recipes, `KFAR` past a few km) are owed. From far off the rock
       face's tile still shows as horizontal banding.
@@ -64,5 +64,13 @@
       camera would cut it further.
 - [ ] **Interiors near the Stair Foot only**: the bench's houses past 260 m are solid; the wall's fronts past the carved
       quarter are fronts on whole rock (by design: the quarter is what is walked).
-- [ ] No people (`core/charactermodels`), not in `XAN_TUNE` (L1), not on the open world (L5).
+- [ ] No people (`core/charactermodels`).
+- [ ] **L0 is with two other sessions** (2026-11-16): the town's pin on the scale model is queued with the scale-model edits
+      session (until it lands, the site is `slaitwal01` with `model: false` in `openworld/SITES.json`, and the economy's id is
+      `xan.laitwal`; both give way to the model's id); the `opal` resource family and the Great Potch Line's lode record
+      (`kits/resources/data/lodes.json`) are asked of the resource-nodes session, which is working in `kits/resources`.
+- [ ] **The town's page and its open-world site are two grounds**: the page shapes its ground from the site's numbers; the
+      region's ground is the scale model's at 1 km cells. The page placed on `core/world` (as Longsong's) is owed.
+- [ ] **In the economy the town's first year eats its stores** (as every town's does: the clock opens after the harvest);
+      from the second year its grain comes up from Kirstabal (the road expects it; the test runs one year).
 - [ ] **The Register's numbers are Latin digits** (the kit's: `kits/tungang/KNOWN_ISSUES.md`).

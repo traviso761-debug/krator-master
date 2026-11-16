@@ -30,6 +30,12 @@ The second region of sites cut off the scale model into the open world (`openwor
     by a river, near rock salt and ore; the owner's word), with no page yet: the same ring, re-planned on the new ground.
   - **Longsong** (`sq80bzd7ep`, px 1226,1626): the History Monks' monastery (`settlements/longsong`). Its three villages
     stand where its page lays them: Shar and Nub (farming) and Dzo-ling (the herders), 585 people in 110 buildings.
+  - **Lāiṭwāl** (`slaitwal01`, px 1028,1653, added 2026-11-16: `settlements/lightwall`, its step L5): the Light Wall on the
+    north shore of Opal Valley's great lake, under the north boundary fault. Its id is `model: false` in `SITES.json` until
+    the scale model lists it (the pin is queued with the scale-model edits). Three farming villages on the shore's bench,
+    east and west, and a ranch at its western end. Opal Valley grows no kit yet, so they stand on bare ground. Its square was
+    added to the cut by hand from a re-cut (the site's row, its polygon, its added area, its mask square); the re-cut's other
+    changes (the model's drift since this region's cut: Longsong's move, the rivers) were left for the region's own re-cut.
 - **The roads:**
   - **Village roads:** each village's lane end has a road to its town (`core/world` `ROADS`, the grade held to 8 %).
     They join the roads already laid where those are nearer than the town, so they share a trunk.
@@ -76,6 +82,8 @@ Each check has a negative:
 - **The islands:** each landform over its lake at its centre, with the lake round it, and the Pleasure Dome's isle on the
   Erewhon page's island (the negative reads the land without the stamp).
 - **The sites:**
+  - Lāiṭwāl on its bench (dry, the lake within 8 km south, the wall over 1,500 m higher within 9 km north); a negative
+    reads it 14 km out in the lake;
   - the baked plan is the plan made again in the browser;
   - every village is whole, its buildings apart and on good ground, with every road at its lane end;
   - every village is cleared of flora, tagged, and drawn with the kit's pieces.

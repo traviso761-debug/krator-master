@@ -42393,6 +42393,18 @@
    "z": 52000.0,
    "reach_km": 30,
    "page": null
+  },
+  {
+   "id": "slaitwal01",
+   "name": "Lāiṭwāl",
+   "type": "town",
+   "culture": "xanadu",
+   "px": 1028,
+   "py": 1653,
+   "x": -326000.0,
+   "z": 168000.0,
+   "reach_km": 20,
+   "page": "settlements/lightwall"
   }
  ],
  "cut": {
@@ -42430,6 +42442,11 @@
     "name": "region High Rift (rmvhighrift100)",
     "kind": "region",
     "ref": "rmvhighrift100"
+   },
+   {
+    "name": "site Lāiṭwāl (slaitwal01)",
+    "kind": "site",
+    "ref": "slaitwal01"
    }
   ]
  }
