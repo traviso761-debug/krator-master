@@ -304,6 +304,18 @@ tune at step P1 (the tune's session):
 - **P5:** the interiors with `?interiors=1` (every house with an item in the kit's set, the factor house, the inns, the barracks, the caravanserai's ranges, the heir's palace).
 - **Open issues:** the ground textured with the biome pack's sets; the beach shelving into the water (it was a 2.7 m step); the flora over the town's mask.
 
+**Done (2026-11-16, the open-world sites session: "proceed with the next steps of your builds"):**
+- **P6:** the fair's days as the tune proposes them (question 16 still open: `PH.FAIR`, days 3 and 6 of a 7-day week, the
+  page's `?day=` picks one): the daily stall rows always, the fair's rows only on a fair day; the launches' two fair runs
+  (west and east along the shore) only then, six runs in all. Entry flights (`core/walk` strips) up to the raised doors
+  took the interiors' unreached floors from 3,527 to 1,053 (30,812 of 31,865 reached).
+- **P7:** Phēr's ground in `openworld/xanadu-north-shore` (`SITES.json` `"towns": ["pher"]`): `core/world/bake_towns.py`'s
+  new `closed` kind samples the page's `phH` through its world frame (`phWorldFrame`: turned by the shore's bearing, the
+  lake at -520 m) into `openworld/towns/pher`; the region takes it with `41t`. The Swīṭ Siṭrīm runs at its own height
+  down its ravine (`41t`'s new `over` rivers: wet in its channel, drawn as its own line), not yet joined to the model's
+  line (question 17).
+
+
 ## 7. Questions for the owner
 
 **Answered 2026-11-16:**
@@ -334,6 +346,13 @@ tune at step P1 (the tune's session):
     of its own design (a commission for the citadel's builders), or does this one stand?
 16. **The fair's days (P6).** The tune proposes days 3 and 6 of the lake's week (`T.fairDays`). Keep them? On those days the
     fair ground fills with stalls and the launches of the north shore come in.
+17. **The Swīṭ Siṭrīm at the rim.** The model's stream (`r_pher_swit`) reaches Phēr's band at about -38 m, some 45 m
+    under the page's rim plain where the town's stream rises (the upper town stands on that plain): water cannot run up
+    into it, so the model's line now ends at the band and the town's stream rises at a spring above the upper town.
+    Which should give way? (a) a scale-model edit raising the land behind the rim (the plateau stands higher than the
+    caldera's lip, the stream crossing it in a shallow channel, as the page has it); (b) the page cuts a gorge through
+    the rim, which runs through the upper town and its fair ground; (c) leave it: the Swīṭ rises on the rim, and the
+    model's stream is another, ending in the hills behind (*proposed: (a)*).
 
 ## 8. Found on the way (for the sessions that own them; not changed here)
 

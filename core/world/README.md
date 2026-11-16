@@ -69,8 +69,20 @@ layout is keyed to its page's ground (its shore, its river) hands that ground to
   `openworld/towns/<town>/`: the ground every 10 m (16-bit PNG), the water mask (the page's water polygon, the river's
   channel, the edited ground joined to them), `town.json` (frame, R, band, river, shore trace, stats). `--check` says
   whether the files are behind the page's sources;
+- a **closed** town (`'kind': 'closed'`, 2026-11-16: Phēr, `settlements/pher`) has its ground as a closed-form function of
+  its page: the bake runs only the page's own fragment and reads its `ground` (height, the water at 0), `frameFn` (the turn
+  `rot`, the page point on the pin `centre`, the lift `y0`), `shoreFn` and `streamFn`; the grid stands round the centre, the
+  shore trace is where the ground crosses the level, the stream is the town's river. Its record carries `rot` and `y0`
+  (41 buildTowns takes a fixed lift: the page's heights over its water at 0);
+- a town's river marked **`over`** (2026-11-16: Phēr's Swīṭ Siṭrīm, down its wall) runs above the town's water at its own
+  height: 41t sets its water 0.6 m over the world's ground at each point (never climbing downstream), serves it in its
+  channel (`riverWater`, its half-widths) and draws it as its own line (`riverLines`, or on down the link when joined).
+  A join needs the model river's water at the cut over the stream's head: where it is not, `WTOWN.check` counts the link
+  a climb and fails (Phēr's stands unjoined: `settlements/pher/PLAN.md` question 17);
 - a region's build puts `bake_towns.record(town, region_meta)` in `WORLD_DATA.towns` and lists `41t` (and `41l`) after
-  `41`; 41 already takes the ground (`buildTowns`, `townAt`), 41t the water, river and body;
+  `41`; 41 already takes the ground (`buildTowns`, `townAt`), 41t the water, river and body. A region that names its towns
+  in `openworld/SITES.json` (its row's `"towns"`) has them in `core/world/bake_sites.py`'s plan too (`towns_data`), so the
+  villages and roads are planned on the town's ground as the page draws it (opt-in, as `41l` is: a build that lists it);
 - `node core/world/test-town-water.js` tests 41t and 41l on a made-up region (with negatives);
 - `python3 core/world/town_view.py voth [--shots] [--reach-km 30] [--model <another checkout's model/data>]` cuts a scratch region round the pin, runs `WTOWN.check()` and
   `WLAND.check()` on the real town in node, builds a viewing page, and with `--shots` takes the same views on the town's

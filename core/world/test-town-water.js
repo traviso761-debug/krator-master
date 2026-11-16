@@ -50,7 +50,7 @@ function town(opt) {
   const half = 1000, step = 10, n = 201, h = new Int16Array(n * n), w = new Uint8Array(n * n), s = .01, h0 = 0;
   for (let j = 0; j < n; j++) for (let i = 0; i < n; i++) {
     const x = -half + i * step, z = -half + j * step, r = Math.hypot(x, z);
-    let g = r < 450 ? -.8 - 7.2 * sm(450, 300, r) : 1.5 + 8 * sm(450, 800, r);   // a step at the shore, as Voth's terrainH has
+    let g = r < 450 ? -.8 - 7.2 * sm(450, 300, r) : 1.5 + 8 * sm(450, 800, r) + (opt.hill || 0) * sm(450, 800, r);   // a step at the shore, as Voth's terrainH has
     const inRiv = z > 380 && Math.abs(x) < 30, bank = Math.abs(x) < 50 && z > 380;
     if (bank) g = Math.min(g, inRiv ? -4 : -4 + (Math.abs(x) - 30) * .4);
     h[j * n + i] = Math.round((g - h0) / s);
@@ -63,7 +63,8 @@ function town(opt) {
   return { name: opt.name || 'Testtown', x: opt.x || 0, z: opt.z || 0, rot: 0, centre: [0, 0], R: 800, band: 400, onWater: true, drawn: false, level: 0,
     grid: { n, step, x0: -half, z0: -half, h0, s, h: Buffer.from(h.buffer).toString('base64') },
     water: opt.noWater ? undefined : { n, step, x0: -half, z0: -half, rle: rleEncode(w) },
-    river: { name: 'Test river', join: opt.join == null ? 'r029' : opt.join, pts: [[0, 440, 30], [0, 700, 30], [0, 1000, 30]] }, shore, shoreSkip: skip };
+    river: opt.over != null ? { name: 'Test brook', join: opt.join == null ? 'r029' : opt.join, over: opt.over, pts: [[452, 0, 6], [600, 0, 6], [700, 0, 6], [790, 0, 6]] }
+      : { name: 'Test river', join: opt.join == null ? 'r029' : opt.join, pts: [[0, 440, 30], [0, 700, 30], [0, 1000, 30]] }, shore, shoreSkip: skip };
 }
 
 // ---------------------------------------------------------------- the world with these
@@ -144,6 +145,24 @@ ok('the river form is left to 41\'s named river (not stamped, not skipped); the 
 { world({ towns: [town({ join: 'r999' })] });
   ok('a town whose river joins a river the region does not hold stands alone (no link, its river still served)', true,
     vm.runInThisContext('WTOWN').list[0].link === null && vm.runInThisContext('WORLD').riverWater(0, 600) === LEVEL); }
+
+// ---- 5. a stream over the town's water ('over': Phēr's Swīṭ down its wall), its course east up the land from the lake
+{ const W5 = world({ towns: [town({ over: true, join: '' })] }), WT5 = vm.runInThisContext('WTOWN'), rv = WT5.rivers()[0], l5 = WT5.list[0].level;
+  const w600 = W5.riverWater(600, 0), h600 = W5.H(600, 0);
+  ok('an over-level stream: its water over its own ground in its channel (not at the town level), none beside it', Math.abs(w600 - h600 - .6) < .05 && w600 > l5 + 3
+    && W5.riverWater(600, 40) < -1e8, true, 'water ' + w600.toFixed(2) + ' over ' + h600.toFixed(2));
+  const c5 = WT5.check({ step: 40 })[0], ln = W5.riverLines(40).find(r => r.name === 'Test brook');
+  ok('...never climbing downstream, drawn as its own line head to mouth, and WTOWN.check passes it', rv.over && rv.pts.every((p, i) => i === 0 || p[3] >= rv.pts[i - 1][3])
+    && !!ln && ln.town === 'Testtown' && ln.pts.every((p, i) => i === 0 || p[2] <= ln.pts[i - 1][2] + 1e-9) && c5.ok, true,
+    (ln ? ln.pts.length + ' points, ' : '') + JSON.stringify(c5.river.inTown));
+  const W6 = world({ towns: [town({ over: false, join: '' })] }), c6 = vm.runInThisContext('WTOWN').check({ step: 40 })[0];
+  ok('negative: the same stream not marked over is dry on its land (what over fixes)', true, !c6.ok && c6.river.inTown.dry > 0, c6.river.inTown.dry + ' dry'); void W6; }
+{ const W7 = world({ towns: [town({ over: true })] }), L7 = vm.runInThisContext('WTOWN').list[0].link, c7 = vm.runInThisContext('WTOWN').check({ step: 40 })[0];
+  const J7 = W7.riverLines(40).find(r => r.name === 'Turm Rivrh');
+  ok('joined, it falls from the Turm at the cut down the link to its head, then down its own course to the lake', !!L7 && L7.pts.every((p, i) => i === 0 || p[2] <= L7.pts[i - 1][2] + 1e-9)
+    && !!J7 && J7.pts[J7.pts.length - 1][2] < L7.pts[L7.pts.length - 1][2] - 3 && c7.ok, true, L7 ? 'from ' + L7.ya.toFixed(1) + ' to ' + L7.pts[L7.pts.length - 1][2].toFixed(1) + '; ' + JSON.stringify(c7.river) : 'no link');
+  world({ towns: [town({ over: true, hill: 200 })] }); const c8 = vm.runInThisContext('WTOWN').check({ step: 40 })[0];
+  ok('negative: a stream whose head stands over the Turm water at the cut cannot join it (the link would climb)', true, !c8.ok && c8.river.line.climbs > 0, JSON.stringify(c8.river.line)); }
 
 console.log(bad ? bad + ' FAILED' : 'all passed');
 process.exit(bad ? 1 : 0);

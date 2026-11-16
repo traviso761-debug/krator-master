@@ -42,6 +42,7 @@
    "order": 5,
    "sites": ["spher0north1", "shvo49k0y2", "soldthalaba1", "sxanmouth01", "sxandyer01", "sxanqolford01", "sxanqolhead01"],
    "polygons": [],
+   "towns": ["pher"],
    "corridors": [{"from": "spher0north1", "to": "sxanqolford01", "width_km": 12}, {"from": "sxanqolford01", "to": "sxanqolhead01", "width_km": 12}, {"from": "sxanqolhead01", "to": "shvo49k0y2", "width_km": 10}, {"from": "spher0north1", "to": "sxanmouth01", "width_km": 10}, {"from": "sxanmouth01", "to": "soldthalaba1", "width_km": 10}, {"from": "soldthalaba1", "to": "sxandyer01", "width_km": 10}],
    "upsample": "auto",
    "note": "the owner, 2026-11-16 (settlements/pher/PLAN.md section 7): a new region north of Erewhon's that also holds Thalaba, reaching east along the shore to Ḍāiyar but not taking the long isle (Grēṭ-Āil). Phēr's square stops a row short of the isle; the shore towns east of it are small squares joined by corridors along the shore; the Qol road to Thalaba (the owner: \"up into the qol valley\") has its two halts as sites, so its corridors follow the valley"

@@ -60,14 +60,28 @@ REGION = r"""(neg)=>{const R=[],M=WORLD_DATA.meta,bad=[],lines=[],O=M.frame.orig
   if(neg==='landforms'){const top=WORLD.Hbare(L.x,L.z+6000);c={id:L.id,ok:top>L.water,top};}
   if(!c||!c.ok)bad2.push(L.id+' '+JSON.stringify(c));else l2.push(L.id+' top '+c.top+' m (crest '+L.crest+')');}
  R.push({name:'the landforms: Phēr\'s headland and the cove\'s east point stand over the lake at their records',ok:!bad2.length,detail:bad2.length?bad2.join('; '):l2.join('; ')});
- /* the Swīṭ Siṭrīm: every point of its course on the land, its heights falling to the lake beside Phēr */
- const bad3=[],Rv=(M.rivers||[]).find(r=>r.id==='r_pher_swit');
- if(!Rv)bad3.push('no r_pher_swit in the region');else{let pts=Rv.line.map(p=>[p[0],p[1]]);if(neg==='stream')pts=pts.slice().reverse();
-  const hs=pts.map(p=>WORLD.Hbare(p[0],p[1]));
-  for(let i=1;i<hs.length;i++)if(!(hs[i]<hs[i-1]+2))bad3.push('rises '+(hs[i]-hs[i-1]).toFixed(1)+' m at point '+i);
-  const e=pts[pts.length-1],P=(M.sites||[]).find(s=>s.id==='spher0north1');if(Math.hypot(e[0]-P.x,e[1]-P.z)>3000)bad3.push('its mouth '+Math.round(Math.hypot(e[0]-P.x,e[1]-P.z))+' m from Phēr');
-  if(!bad3.length)l2.length=0,l2.push('from '+hs[0].toFixed(0)+' m to '+hs[hs.length-1].toFixed(0)+' m in '+hs.length+' points');}
- R.push({name:'the Swīṭ Siṭrīm runs downhill to the lake at Phēr',ok:!bad3.length,detail:bad3.length?bad3.slice(0,4).join('; '):l2.join('; ')});
+ /* the Swīṭ Siṭrīm: its course falling to the lake beside Phēr. Inside Phēr's footprint (P7: the town's own ground,
+    core/world 41t) the stream is the town's (WTOWN.rivers(), mouth first), the model's line cut outside the band and led in
+    to it; so the course judged is the model's line down to its cut (its water), then the town's from its head
+    down to its mouth on the town's ground (WORLD.H: inside R the page's, which replaced the model's), with its water
+    (41t 'over': [x, z, half-width, water]) never climbing */
+ const bad3=[],l3=[],Rv=(M.rivers||[]).find(r=>r.id==='r_pher_swit'),TR=typeof WTOWN!=='undefined'?WTOWN.rivers().find(r=>r.town==='Phēr'||r.name==='Swīṭ Siṭrīm'):null;
+ if(!Rv&&!TR)bad3.push('no r_pher_swit in the region');else{
+  /* the model's line by its own water where it carries it (the cut's point falls between the model's 2 km nodes, on the land's noise) */
+  const courses=[];if(Rv&&Rv.line.length>1){const wl=Rv.line.every(p=>typeof p[2]==='number');
+   courses.push(['the model\'s line',Rv.line.map(p=>[p[0],p[1],wl?p[2]:null]),wl?((x,z,p)=>p[2]):((x,z)=>WORLD.Hbare(x,z))]);}
+  if(TR)courses.push(['the town\'s',TR.pts.map(p=>[p[0],p[1],p[3]]).reverse(),(x,z)=>WORLD.H(x,z)]);
+  for(const [nm,P0,G] of courses){const pts=neg==='stream'?P0.slice().reverse():P0,hs=pts.map(p=>G(p[0],p[1],p));
+   for(let i=1;i<hs.length;i++)if(!(hs[i]<hs[i-1]+2))bad3.push(nm+' rises '+(hs[i]-hs[i-1]).toFixed(1)+' m at point '+i);
+   for(let i=1;i<pts.length;i++)if(pts[i][2]!=null&&pts[i][2]>pts[i-1][2]+1e-6){bad3.push(nm+' water climbs at point '+i);break;}
+   l3.push(nm+' from '+hs[0].toFixed(0)+' m to '+hs[hs.length-1].toFixed(0)+' m in '+hs.length+' points');}
+  const e=courses[courses.length-1][1],m=neg==='stream'?e[0]:e[e.length-1],P=(M.sites||[]).find(s=>s.id==='spher0north1');
+  if(Math.hypot(m[0]-P.x,m[1]-P.z)>3000)bad3.push('its mouth '+Math.round(Math.hypot(m[0]-P.x,m[1]-P.z))+' m from Phēr');}
+ R.push({name:'the Swīṭ Siṭrīm runs downhill to the lake at Phēr',ok:!bad3.length,detail:bad3.length?bad3.slice(0,4).join('; '):l3.join('; ')});
+ /* Phēr's own ground in the world (P7: core/world 41t WTOWN.check: the page's shore where the world's water meets its
+    ground, the stream continuous into the model's, one lake). Its negatives are core/world/test-town-water.js's */
+ if(typeof WTOWN!=='undefined'){const C=WTOWN.check()||[],c=C.find(q=>q.town==='Phēr');const ok=!!c&&c.ok,det=c?JSON.stringify({shore:c.shore,river:c.river&&{ok:c.river.ok},body:c.body&&{one:c.body.one}}).slice(0,400):'no town Phēr';
+  R.push({name:'Phēr stands in the world: its shore, its stream and its lake (WTOWN.check)',ok,detail:det});}
  /* the Thalaba road: the link up the Qol valley, about 105 km (the plan's trace), its hans on the way */
  const L=(WORLD_DATA.sites.links||[]).find(l=>l.id==='spher0north1/link/shvo49k0y2'),len=L?L.length_m*(neg==='road'?.65:1):0;
  R.push({name:'the Thalaba road goes up the Qol valley, about 105 km with its hans',ok:!!L&&len>95000&&len<115000&&(L.stops||[]).length>=4,
