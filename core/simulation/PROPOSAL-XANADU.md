@@ -162,7 +162,7 @@ The islands:
 
 | Island | px | Name (gloss) | People | What it is |
 |---|---|---|---|---|
-| The great isle (113 m) | 816.5,1501.5 | **Grēṭ-Āil** | 600 | A monastery of the Decree, mid-lake |
+| The great isle (113 m) | 816.5,1501.5 | **Grēṭ-Āil** | 600 | A monastery of the Decree, mid-lake: **the head monastery of the Order of the Azure Dream, Qiblai's blue monastery** (the owner, 2026-11-16) |
 | The bay isle (64 m) | 808.5,1509 | **Bē-Āil** | 300 | The Sultan's fishponds and gardens, 15.7 km off Erehwon |
 | The west isle (100 m) | 797,1494 | **Wesṭ-Āil** | 400 | Fishermen |
 | The east isle (45 m) | 828,1497 | **Lāiṭ-Hāus** (lighthouse) | 200 | The light and the customs post on the run to the Ālph |
@@ -397,6 +397,16 @@ Each step ends in a node test on the valley host, with a negative for each check
       - **The saffron one, settled by the owner ("Yes, saffron")**: spoke 1, north-east of the Temple Mountain, ~300 m from the centre; built on the Qiblai page with the Order's blue, a parabolic gate, a toron spire, drum halls and the Order's banners.
       - It takes an eighth of the council's income in two parts: of the Prismarchy's oil, a `cut` where it lands; and of the Sultan's grants of esteem, `esteem.qiblai.order`.
       - The Qiblai kit session has the building side.
+    - **The Order of Viridian Thought** (the owner: "find a site that's a great tea production site and place the head monastery of Qiblai's green monastery there"). Qiblai's green monastery is this Order.
+      - Its head monastery and tea estate, `qb.viridian`, stand at px 962,1562, found by a scan of the scale model for mist tea: 813 m, Cfb, 18 °C, ~2,300 mm of rain, a 20 % west-facing slope under the scarp. It is 104 km from Qiblai, 93 km from Kirstabal.
+      - *Proposed:* 400 people and about 40 t of tea a year in the spring flush, sent to Qiblai, which feeds the estate.
+      - The pin is queued with the scale-model session; the Qiblai kit session has the building side.
+    - **The Order of the Azure Dream** (the owner: "Grēṭ-Āil will be the head monastery for qiblai's blue monastery, the Order of the Azure Dream"). Qiblai's blue monastery is this Order, and its head monastery is Grēṭ-Āil, the monastery isle in Erehwon's lake (`lk.great-isle`, 816.5,1501.5, 600 people, under Erehwon's hub). So two of the eight spokes now have head houses away from Qiblai: green on the scarp's tea, blue on the lake.
+    - **The White Lily and the Flashing Eye** (the owner, by way of the Qiblai kit's session, f5a10f8a4).
+      - Qiblai's **white monastery is the Order of the White Lily**, a medicine and healing Order. Its complex in Qiblai is its head house (it has none elsewhere) and the city's hospital.
+      - The **crimson monastery is the Order of the Flashing Eye**; no head house is given for it yet.
+      - The council's eight so far: saffron (the History Monks), green (Viridian Thought, the scarp's tea estate), blue (the Azure Dream, Grēṭ-Āil), white (the White Lily, Qiblai's hospital), crimson (the Flashing Eye), and gold (the Yellow Monastery, the beacon-keepers in the Strongwall plan). Turquoise and violet are still unnamed here; the Strongwall plan also has an Order of the Violet Storm, with a monastery whose site waits on the owner.
+      - *Sim, proposed:* the White Lily's hospital could take medicine and herbs and give back the sick's working days; not built.
     - The houses and the camp places are *proposed*. Beyond the owner's words there is no lore for the Tears or the Devisers yet, and the camps' pixels are approximate.
 - **X3. The gateways.**
   - The three gateway markets as off-map stores priced by PLAN-MONEY's M2 scarcity prices.

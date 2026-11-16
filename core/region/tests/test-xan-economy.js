@@ -209,6 +209,13 @@ const boreCheck=(d,sold)=>(d.made.scrap||0)>XAN_TUNE.bore.scrap*.5&&(d.made.rari
  T.ok('the Theodiga bore: the Rare Devisers\' salvage of the dead tunnel to Stair, scrap and rarities, sold into Theodiga',boreCheck(d,sold),
   'made scrap '+t(d.made.scrap||0)+', rarities '+Math.round(d.made.rarities||0)+'; sold into Theodiga rarities '+Math.round(sold.rarities||0)+', scrap '+t(sold.scrap||0));
  T.neg('a bore that yielded nothing is caught',x=>boreCheck(x,sold),{made:{}},d);}
+// 24. the Order of Viridian Thought (the owner, 2026-11-16): Qiblai's green monastery's head house and tea estate on the
+//     scarp, its tea made in the flush and carried to Qiblai
+const virCheck=(v,L)=>(v.made.tea||0)>XAN_TUNE.viridian.tea*.6&&(L.tea||0)>0&&!(v.hungry.grain>(v.eaten.grain||0)*.01);
+{const v=B['qb.viridian'],L=landed('road.viridian','qb.viridian>skm4jjo2vl');
+ T.ok('the Order of Viridian Thought: its tea estate on the scarp makes its tea in the flush and sends it to Qiblai, and is fed',virCheck(v,L),
+  'tea made '+t(v.made.tea||0)+', landed at Qiblai '+t(L.tea||0)+'; grain short '+t(v.hungry.grain||0));
+ T.neg('an estate whose tea never reached Qiblai is caught',x=>virCheck(v,x),{},L);}
 // the year's books, for the reader
 const line=(s,k)=>Object.entries(B[s][k]||{}).filter(([g,n])=>n>=1).map(([g,n])=>g+' '+(n>=1000?t(n):Math.round(n))).join(', ');
 ['s57bkv9741','xan.citadel','skm4jjo2vl','s4zvgepuru','sxan7r1sln'].forEach(s=>console.log('\n'+s+': made '+line(s,'made')+'\n  imported '+line(s,'imported')+'\n  exported '+line(s,'exported')));

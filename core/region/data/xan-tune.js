@@ -67,7 +67,7 @@ T.lake=[
  ['mouth','Māuṭh',300,818,1485,1500,{},'p7'],['old-thalaba','Ōlḍ-Thalaba (the fishing village left on Thalaba\'s shore)',330,825,1488,600,{},'p7'],
  ['dyer','Ḍāiyar',345,834,1493,1400,{},'p7']]
  .map(([key,name,brg,px,py,people,make,prov])=>({key,name,brg,px,py,people,make,prov,hub:prov==='p7'?'xan.pher':'s57bkv9741'}));
-T.islands=[['great-isle','Grēṭ-Āil (the monastery isle)',816.5,1501.5,600],['bay-isle','Bē-Āil (the Sultan\'s fishponds)',808.5,1509,300],
+T.islands=[['great-isle','Grēṭ-Āil (the monastery isle: the head monastery of the Order of the Azure Dream, Qiblai\'s blue monastery)',816.5,1501.5,600],   /* the owner, 2026-11-16 */['bay-isle','Bē-Āil (the Sultan\'s fishponds)',808.5,1509,300],
  ['west-isle','Wesṭ-Āil (the fishermen\'s isle)',797,1494,400],['east-isle','Lāiṭ-Hāus (the light and the customs)',828,1497,200]]
  .map(([key,name,px,py,people])=>({key,name,px,py,people}));
 T.fishKgPerson=260;   /* a fishing town's catch a year, a head of its people: about a third of them fish (the dugouts) */
@@ -127,6 +127,13 @@ T.oil={px:[925,1598],people:300,kgYr:400000,licence:.2,council:.1};
    council receives: the Prismarchy's cut of the oil (a road `cut` where it lands) and the Sultan's grants of esteem (a
    transfer of its own) */
 T.orderHouse={share:1/8,house:['qb.order','The Order\'s monastery at Qiblai (the History Monks: one of the eight great monasteries, under the Order\'s saffron banner)','skm4jjo2vl',922.107,1594.893,300]};   /* the saffron spoke (spoke 1, NE of the Temple Mountain), settled by the owner: "Yes, saffron"; the Qiblai page's monastery at x 213.8, z -213.8 m from the centre (922,1595) */
+/* THE ORDER OF VIRIDIAN THOUGHT (the owner, 2026-11-16: "find a site that's a great tea production site and place the head
+   monastery of Qiblai's green monastery there, the Order of Viridian Thought"). Its head monastery and tea estate on the
+   scarp's mist slopes, chosen by a scan of the scale model: px 962,1562, 813 m, Cfb, mean 18 C (coldest month 11 C),
+   ~2,300 mm of rain, a 20 % west-facing slope under the scarp. 104 km from Qiblai, 93 km from Kirstabal (the Scarp's tea
+   province). Its tea goes to the Order's monastery in Qiblai, the council's green spoke; Qiblai sends it grain, salt and
+   tools. Each monastery holds its own estates (PROPOSAL-XANADU Q6). *Proposed:* 400 people, 40 t of tea a year */
+T.viridian={id:'qb.viridian',name:'The Order of Viridian Thought: its head monastery and tea estate on the scarp (Qiblai\'s green monastery)',px:[962,1562],people:400,tea:40000};
 T.mission=['yuni.mission','Yuni\'s mission at the oil field (its cloister and lodging beside the Geomancers\' wells)','skm4jjo2vl',926,1597,40];   /* the owner: the field is both */
 /* THE POWER (the owner, 2026-11-16): "if the geomancers have a presence at qiblai it will likely be partly electrified. the
    council will take its cut"; "Qiblai will be electrified along all major avenues and in buildings except in poor areas;
@@ -405,6 +412,15 @@ T.valley=function(P,o){o=o||{};const K=o.scale==null?50:o.scale,yr=365,win=w=>{c
     Yuni's mission and the Geomancers' concession side by side): the mission's cloister and lodging beside the wells,
     supplied from Qiblai's market as a house is */
  house('yuni')(T.mission);
+ /* the Order of Viridian Thought's head monastery and its tea estate on the scarp: the estate's tea to Qiblai by share, the
+    town's grain, salt and tools back by want */
+ {const V2=T.viridian,p=at(V2.px[0],V2.px[1]),q=seats.skm4jjo2vl,crew=Math.round(V2.people*.6),km=Math.hypot(p.x-q.x,p.z-q.z)/1000*1.3;
+  add({id:V2.id,name:V2.name,faction:'xanadu',parent:'skm4jjo2vl',people:V2.people,x:p.x,z:p.z,eats:eats('rural'),keepDays:30,
+   start:{grain:Math.round(eatYr('rural',V2.people)*T.startDays/yr),salt:V2.people*3,tea:200,tools:V2.people*.3},
+   works:[{id:V2.id+'.tea',kind:'tea-terraces',name:'the monks\' tea terraces on the scarp',crew,out:['tea'],rate:rate(V2.tea,crew,win('tea-flush')),season:'tea-flush'}]});
+  bump('skm4jjo2vl',eatYr('rural',V2.people));
+  R.push({id:'road.viridian',from:V2.id,to:'skm4jjo2vl',minutes:Math.round(km/25*1440),cap:20000,carriers:3,stagger:Math.round(km/25*1440/3),want:40,share:{[V2.id]:{tea:.85}},goods:{skm4jjo2vl:['grain','salt','tools']},   /* a 5-day road: its want covers the gap between carriers (Longsong's lesson) */
+   expect:{[V2.id]:{grain:eatYr('rural',V2.people)/yr,salt:V2.people*5/yr,tools:V2.people*.3/yr}}});}
  /* the Order's monastery, one of the council's eight: an eighth of the Prismarchy's oil where it lands at Qiblai */
  house('order')(T.orderHouse.house);
  R.find(r=>r.id==='oil.council').cut=[{at:'skm4jjo2vl',to:T.orderHouse.house[0],share:T.orderHouse.share,why:'the Order\'s eighth of the council\'s income'}];
