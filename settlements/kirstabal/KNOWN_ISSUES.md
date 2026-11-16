@@ -49,5 +49,5 @@ moored boat is the Sultan's pleasure barge; the capital's lake owes the same cra
 
 ## Not done (later steps)
 
-Interiors (K5), the open world (K6), life and the sim's people on the page, the Laitwal road in the tune (the town is not
+Life and the sim's people on the page, the town drawn in the open world (the region plans its countryside only), the Laitwal road in the tune (the town is not
 in this branch's tune), the Council's fifth and the eight monasteries' eighths (Qiblai's side of the tune).

@@ -312,6 +312,13 @@ Following `README.md`, "CORE MODULES ARE NOT OPTIONAL":
   own gap (settlements/xanadu KNOWN_ISSUES.md: their items' plan doors are not cut, so the upper house and the konak stay
   sealed). The factor house has no counting rooms of its own yet (it is the kit's merchant's konak), and the governor's
   audience hall waits for a seat piece of its own.
+- **K6.** The site in the open world: `openworld/xanadu-oidong-highrift` (Kirstabal `sl758m2396` in `openworld/SITES.json` and the
+  region's cut, by hand, inside the Xanadu polygon). The ring (Mil, Kanāl, Grēnz, Bāiyar) at the tune's places and the lake's
+  nine on the shore round the lake, eight of them on a fishers' row in the region's site spec, planned on the world's ground
+  (`core/world/bake_sites.py`); their roads to the town; the link to **Strongbow's foot** (5.3 km over Keb Riwā's mouth) and
+  the lake road to Qiblai (143 km). Strongbow's foot is a *proposed* point (`sstrongbowft`, px 991.14,1596.84, where this
+  page ends its Strongbow road) until Strongbow's session places its foot town. The town itself stays this page's; the
+  region does not draw it, and its ground is the model's at 1 km (KNOWN_ISSUES.md).
 
 ## 7. Questions for the owner
 

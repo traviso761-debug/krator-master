@@ -24,6 +24,16 @@ KHAMLET.CULTURES['xanadu-sulfur']=Object.assign({},KHAMLET.CULTURES.xanadu,{work
  focusJobs:Object.assign({},KHAMLET.CULTURES.xanadu.focusJobs,{sulfur:70}),reach:Object.assign({},KHAMLET.CULTURES.xanadu.reach,{sulfur:380}),
  pending:Object.assign({},KHAMLET.CULTURES.xanadu.pending,{tb_calcarone:{w:12,d:12,h:4,what:'a calcarone: a sulfur kiln, the ore banked under earth and burnt so the sulfur melts out to its foot'}})});
 if(typeof KTAGS!=='undefined')KTAGS.VOCAB.cultureAlias['xanadu-sulfur']={culture:'xanadu'};
+/* the lake's fishers' row (settlements/kirstabal/PLAN.md K4 and K6; its page's KS_RING.fishingRow): the Xanadu row with the fishing
+   works it lacks, the dugouts' boat sheds and the fish racks with their smokehouse: a pending box under a key no kit defines
+   (xh_fish_racks), drawn as a stand-in. Not kits/xanadu 87k's xa_fish_racks: that piece is opt-in and not in XAK, while
+   core/world/bake_sites.py reads every kits/xanadu/src file, so the bake gave it a size the page did not and the baked plan
+   and the page's differed. Here, as Salphar's row is, so core/hamlet is not touched */
+KHAMLET.CULTURES['xanadu-fishing']=Object.assign({},KHAMLET.CULTURES.xanadu,{
+ works:Object.assign({},KHAMLET.CULTURES.xanadu.works,{fishing:[{key:'xa_boatshed',jobs:8,share:0.55},{key:'xh_fish_racks',jobs:4,share:0.45}]}),
+ focusJobs:Object.assign({},KHAMLET.CULTURES.xanadu.focusJobs,{fishing:90}),reach:Object.assign({},KHAMLET.CULTURES.xanadu.reach,{fishing:260}),
+ pending:Object.assign({},KHAMLET.CULTURES.xanadu.pending,{xh_fish_racks:{w:16,d:11,h:3.6,what:'fish racks and a smokehouse'}})});
+if(typeof KTAGS!=='undefined')KTAGS.VOCAB.cultureAlias['xanadu-fishing']={culture:'xanadu'};
 // bridges (core/world/42b-world-bridges.js; 2026-11-16, for Thalaba's Briḍj): every road and link this region lays is bridged
 // where it crosses a named river, in the Xanadu kit's stone, so the roads are laid over the rivers and the rivers run on under them
 var SITE_SPEC={region:'xanadu-oidong-highrift',world:1191569,bridges:{culture:'xanadu'},
@@ -57,5 +67,34 @@ var SITE_SPEC={region:'xanadu-oidong-highrift',world:1191569,bridges:{culture:'x
    {id:'bridj',name:'Briḍj, the bridge ward',focus:'ranch',bearing:0,km:10,look:2500,pop:120},
    {id:'salphar',name:'Salphar, the diggers\' hamlet',culture:'xanadu-sulfur',focus:'sulfur',bearing:4,km:20,look:2500,pop:160},
    {id:'bench-1',name:'the near Bēnch farms',focus:'farming',bearing:95,km:11,pop:220},
-   {id:'bench-2',name:'the far Bēnch farms',focus:'farming',bearing:100,km:22,pop:220}]}},
- links:[['s57bkv9741','skm4jjo2vl',{hw:4,r:2000}],['skm4jjo2vl','sq80bzd7ep',{hw:4,r:1500}]]};
+   {id:'bench-2',name:'the far Bēnch farms',focus:'farming',bearing:100,km:22,pop:220}]},
+  /* Kirstabal (settlements/kirstabal/PLAN.md, step K6; the owner, 2026-11-16): the barge port at the head of the Lower Xanadu Lake
+     is its own page's (a target on Xanadu's page). Its ring stands at the tune's places (core/region/data/xan-tune.js T.ksRing,
+     offsets from the pin in metres): Mil, Kanāl and Grēnz, the farming villages on the apron south of the town, and Bāiyar, the
+     ranch beyond them; the lake's nine (T.lowerLake): eight fishing villages round the shore on the fishers' row and the Landing at
+     the portage, the barges' stop at the lake's west end. A lake village's spot is the model's lake cell nearest the tune's
+     place (2 km cells: the tune's places stand 2 to 3 km back from the water), so the search finds the shore. Each lake
+     village is laid at the row's own size (about 240: its census fills the focus's jobs), under its ceiling of 500
+     (KHAMLET.POP_MAX); the tune keeps their whole numbers (Phisharī 1,400 ... the Landing 600) */
+  sl758m2396:{culture:'xanadu',road:{r:1500,hw:3,join:true},hamlets:[
+   {id:'mil',name:'Mil (the mill)',focus:'farming',near:[-3000,3600],look:2000,pop:240},
+   {id:'kanal',name:'Kanāl (the canal)',focus:'farming',near:[-5000,6000],look:2000,pop:240},
+   {id:'grenz',name:'Grēnz (the grain)',focus:'farming',near:[-400,5200],look:2000,pop:240},
+   {id:'baiyar',name:'Bāiyar (the byre)',focus:'ranch',near:[-7000,9000],look:2500,pop:145},
+   {id:'sekrid',name:'Sekriḍ',culture:'xanadu-fishing',focus:'fishing',near:[-8000,-22000],look:4000,pop:500},
+   {id:'phishari',name:'Phisharī',culture:'xanadu-fishing',focus:'fishing',near:[-30000,-24000],look:4000,pop:500},
+   {id:'kako-bagh',name:'Kāko-Bāgh',culture:'xanadu-fishing',focus:'fishing',near:[-54000,-26000],look:4000,pop:500},
+   {id:'rid',name:'Rīḍ',culture:'xanadu-fishing',focus:'fishing',near:[-80000,-20000],look:4000,pop:500},
+   {id:'landing',name:'The Landing',focus:'farming',near:[-110000,0],look:4000,pop:500},
+   {id:'timbar',name:'Ṭimbar',culture:'xanadu-fishing',focus:'fishing',near:[-100000,10000],look:4000,pop:500},
+   {id:'opal-mouth',name:'Ōpal-Māuṭh',culture:'xanadu-fishing',focus:'fishing',near:[-68000,14000],look:4000,pop:500},
+   {id:'rais-teras',name:'Rāis-Ṭeras',culture:'xanadu-fishing',focus:'fishing',near:[-44000,10000],look:4000,pop:500},
+   {id:'kattal',name:'Kaṭal',culture:'xanadu-fishing',focus:'fishing',near:[-20000,8000],look:4000,pop:500}]},
+  /* Strongbow's foot (PROPOSED by settlements/kirstabal K6, openworld/SITES.json sstrongbowft): the bottom of the lift on the Xanadu
+     floor, where Kirstabal's page ends its Strongbow road. Strongbow's own session places its foot town; nothing is planned here
+     but the road's end */
+  sstrongbowft:{culture:'xanadu'}},
+ /* the links: Erehwon-Qiblai, Qiblai-Longsong; Kirstabal to Strongbow's foot (over Keb Riwā's mouth, PLAN.md: 12-16 km), and
+    Kirstabal along the lake to Qiblai (the owner, 2026-11-16: "road follows lake and gorge"; the barges carry the bulk) */
+ links:[['s57bkv9741','skm4jjo2vl',{hw:4,r:2000}],['skm4jjo2vl','sq80bzd7ep',{hw:4,r:1500}],
+  ['sl758m2396','sstrongbowft',{hw:3.5,r:1200}],['sl758m2396','skm4jjo2vl',{hw:3,r:1500}]]};

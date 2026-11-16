@@ -39,4 +39,5 @@ ground's six library sets are this folder's own pack (`materials.json`, `tex/`, 
 
 ## Not here yet
 
-`KNOWN_ISSUES.md`. The open world (K6) and life are later steps.
+`KNOWN_ISSUES.md`. Life is a later step. The site in the open world (K6) is `openworld/xanadu-oidong-highrift`'s: the ring, the
+lake's nine villages and the roads to Strongbow's foot and Qiblai, planned on the world's ground; the town is this page's.
