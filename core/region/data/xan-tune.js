@@ -25,7 +25,7 @@ T.goods={grain:{unit:'kg',crops:['vale-rice','emmer','basin-amaranth']},fish:{un
  salt:{unit:'kg'},tea:{unit:'kg'},cacao:{unit:'kg'},cacaocake:{unit:'kg'},saffron:{unit:'kg'},opium:{unit:'kg',crop:'sky-poppy'},silk:{unit:'kg'},brocade:{unit:'kg'},
  timber:{unit:'kg'},charcoal:{unit:'kg'},copper:{unit:'kg'},goldore:{unit:'kg'},gold:{unit:'kg'},goldwork:{unit:'piece'},wheels:{unit:'wheel'},
  coin:{unit:'dinar'},opal:{unit:'kg'},scrap:{unit:'kg'},iron:{unit:'kg'},tools:{unit:'kg'},arms:{unit:'piece'},pearls:{unit:'kg'},wine:{unit:'kg'},oil:{unit:'kg'},
- sulfur:{unit:'kg'},pottery:{unit:'kg'},mats:{unit:'kg'},wax:{unit:'kg'},rarities:{unit:'piece'},hearthseed:{unit:'kg'},power:{unit:'kWh'},
+ sulfur:{unit:'kg'},pottery:{unit:'kg'},mats:{unit:'kg'},wax:{unit:'kg'},rarities:{unit:'piece'},hearthseed:{unit:'kg'},power:{unit:'kWh'},powder:{unit:'kg'},
  latex:{unit:'kg',crop:'sky-poppy'}};   /* latex: the poppy's raw latex, dried to opium at Kirstabal's latex house (K1) */
 
 /* the lake's and the capital's households also buy the market's wares (X1: what the market boats carry between the towns): the pots of Pāṭari, the mats of Lōṭas, the honey of Hāibh */
@@ -37,7 +37,7 @@ T.diet={city:{grain:150*D,fish:15*D,fruit:12*D,salt:6*D,tea:1.5*D,cacao:.4*D,too
  dome:{grain:120*D,fish:30*D,fruit:40*D,salt:7*D,tea:4*D,cacao:6*D,saffron:.3*D,silk:3*D,pearls:.2*D,wine:8*D,oil:6*D,honey:4*D},
  camp:{grain:190*D,salt:7*D,tea:1*D,tools:1.2*D},
  shore:{grain:125*D,fish:45*D,fruit:8*D,salt:6*D,tea:1*D,tools:.3*D,mats:1*D},   /* the Lower Xanadu Lake's villages: the lake's table without the capital's pots and honey (no Pāṭari or Hāibh on that lake) */
- fort:{grain:180*D,salt:7*D,tea:1*D,tools:.8*D,arms:.05*D}};
+ fort:{grain:180*D,salt:7*D,tea:1*D,tools:.8*D,arms:.05*D,powder:2*D}};   /* powder (the owner, 2026-11-16: "enough gunpowder for a few cannon but musketeers are mostly hired from the north"): drill and the guns' proof, 2 kg a head a year (settlements/strongwall/PLAN.md, W1) */
 /* the year (core/clock's 365 days; windows [from, to] in year days, 77-sim-6-season.js). The Vale is Cfa at about +25 °C:
    one long grain and rice harvest, tea flushed through spring, the poppy lanced at the end of the dry season, cacao
    picked through the wet, silk's spring rearing, saffron's autumn bloom */
@@ -160,9 +160,9 @@ T.startDays=T.clockDay(T.calendar.windows.harvest[1])+30;
    exports, Shelf holds the goods Dalab sends. (A round buys at each stop only what the next one wants, and a town that
    eats a good keeps it, so the exports load at the capital, where the roads gather them, as the old gateway did) */
 T.gateways=[
- {id:'gate.iziz',name:'Iziz (by the Catch, the Twins and Strongbow)',entry:'sfgtxw10kr',side:'south',days:64,carriers:8,cap:40000,out:['goldwork','cacao','opium','tea','silk','wheels'],in:['salt','iron','arms','pearls','oil']},
+ {id:'gate.iziz',name:'Iziz (by the Catch, the Twins and Strongbow)',entry:'sfgtxw10kr',side:'south',days:64,carriers:8,cap:40000,out:['goldwork','cacao','opium','tea','silk','wheels'],in:['salt','iron','arms','pearls','oil','powder']},
  {id:'gate.dasri',name:'The Dasri (by the Catch oases and Stair)',entry:'sfgtxw10kr',side:'south',days:22,carriers:6,cap:30000,out:['cacao','tea','silk','opium'],in:['salt']},
- {id:'gate.yuni',name:'Yuni (from the north-east by the Geomancers\' road, to Qiblai)',entry:'skm4jjo2vl',side:'south',days:48,carriers:10,cap:20000,out:['goldwork','saffron','brocade','opal','silk'],in:['salt','iron','arms','wine','oil']},
+ {id:'gate.yuni',name:'Yuni (from the north-east by the Geomancers\' road, to Qiblai)',entry:'skm4jjo2vl',side:'south',days:48,carriers:10,cap:20000,out:['goldwork','saffron','brocade','opal','silk'],in:['salt','iron','arms','wine','oil','powder']},
  {id:'gate.dalab',name:'Dalab (the Annual Great Caravan: south Dalab in summer, Xanadu in winter)',entry:'s57bkv9741',side:'north',round:true,days:52,carriers:1,cap:900000,
   dalab:[['gate.dalab.blakhed','Blakhed (south Dalab: the rim\'s market town)'],['gate.dalab.nulab','Nulab (south Dalab)'],['gate.dalab.shelf','Shelf (south Dalab)']],
   winter:['s57bkv9741','s4zvgepuru','skm4jjo2vl'],
@@ -192,7 +192,7 @@ T.mission=['yuni.mission','Yuni\'s mission at the oil field (its cloister and lo
    the oil the Sultanate keeps is its two cuts: the Prismarchy's (`council`), burned in Qiblai's generator, and the Sultan's
    licence (`licence`), sent to the generators of the large towns in the shares of `T.lit` (their avenues' lamps and the
    richest homes). Each generator burns its cut at `T.chain.dynamo`'s kWh a kg, and its town uses the power all year */
-T.lit={s57bkv9741:.45,s4zvgepuru:.15,sl758m2396:.1,sfgtxw10kr:.15,'xan.pher':.15};   /* the licence's split: the capital (the citadel and the avenues), Theodiga, Kirstabal, Strongbow (the gate), Phēr */
+T.lit={s57bkv9741:.43,s4zvgepuru:.15,sl758m2396:.1,sfgtxw10kr:.15,'xan.pher':.15,'march.e':.02};   /* the licence's split: the capital (the citadel and the avenues), Theodiga, Kirstabal, Strongbow (the gate), Phēr; the beacon fort over the Rift (the owner, 2026-11-16: "a refurbished Ancient high-intensity beacon ... connected to a generator", kept by the Yellow Monastery, the Order of the Beacon), its fiftieth from the capital's share */
 /* X2: the summer expedition from Thalaba to Godshearth's vents (Gemini's 218 km summer road; the camp's place is approximate,
    north over the rim toward the Godthrone) */
 T.expedition={id:'exp.godshearth',name:'The Rare Devisers\' expedition camp at Godshearth (Thalaba\'s summer road)',faction:'devisers',home:'devisers.thalaba',px:[828,1380],km:200,people:150,make:{sulfur:90000,wax:40000,rarities:60}};
@@ -204,7 +204,15 @@ T.expedition={id:'exp.godshearth',name:'The Rare Devisers\' expedition camp at G
    THE RARE DEVISERS, "whose specialty is running the expeditions to the Godshearth": their house at Thalaba and a factor in
    the capital; the Godshearth camp is theirs (T.expedition), its sulfur, wax and rarities home to their house, which sells
    them on to Yuni's caravans at Thalaba */
-T.tears={escort:.04,houses:[['tears.strongwall','The Golden Tears: their house in the Gold March','sxan7r1sln',913,1641,80],['tears.erehwon','The Golden Tears\' factor house, Erehwon','s57bkv9741',841,1518,30]],
+/* settlements/strongwall/PLAN.md, W1 (the owner's answers, 2026-11-16): the Golden Tears' house stands inside the fort
+   ("move them into the fort"); the forts hire their musketeers from the north (Izani, Yuni and free companies of the
+   Crater), paid by the Treasury once a year after the dues (`pay.muskets.*`: owed when the Treasury is short, the
+   Grand Vizier's guard patrols, LORE 6.13); the House of the Tempest, the Order of the Violet Storm's central monastery
+   (Qiblai's violet house is its daughter), a martial order of sword and bow on the West Arm, 600 strong, in the Gold
+   March, its terraces two fifths of its grain and the rest from Strongwall */
+T.muskets={wage:12,men:{sxan7r1sln:30,'march.w':10,'march.s':10,'march.e':10},day:240};   /* wage: dinars a man a year (a dinar is 4 g of the Mint's gold) */
+T.tempest={id:'xan.tempest',name:'The House of the Tempest (the Order of the Violet Storm\'s central monastery, on the West Arm)',px:[886,1619],people:600,terraces:.4,km:80};
+T.tears={escort:.04,houses:[['tears.strongwall','The Golden Tears: their house in the Gold March (the Tears\' court, inside Strongwall)','sxan7r1sln',912,1640,80],['tears.erehwon','The Golden Tears\' factor house, Erehwon','s57bkv9741',841,1518,30]],
  camp:{id:'exp.rift-gold',name:'The Golden Tears\' armed prospecting camp in Lizard country (the Rift floor; approximate)',px:[850,1628],km:110,people:120,kgYr:70,years:30}};   /* kgYr: the gold its ore holds (30 kg of ore a kg) */
 /* THE BORE (the owner, 2026-11-16: "we can leave in the stair to theodiga tunnel", then Theodiga's end "as written",
    settlements/theodiga/PLAN.md "The bore to Stair"): the Ancients' dead bore from Theodiga to Stair, its portal in the east
@@ -238,7 +246,7 @@ T.horns={tally:.04,margin:.03,houses:[
  ['horns.theodiga','The Two Horns\' factor house, Theodiga','s4zvgepuru',908,1534,20],['horns.kirstabal','The Two Horns\' factor house, Kirstabal','sl758m2396',989,1599,20],
  ['horns.pher','The Two Horns\' factor house, Phēr','xan.pher',843,1490,20],['horns.thalaba','The Two Horns\' factor house, Thalaba','xan.thalaba',839,1463,20]]};
 T.toll=.05;   /* the Sultan's toll at the Strongbow lift, on what the Catch caravans land there */
-T.gatePool={salt:1e7,iron:1e6,arms:1e5,pearls:1e4,wine:1e6,oil:1e6,tools:1e5};
+T.gatePool={salt:1e7,iron:1e6,arms:1e5,pearls:1e4,wine:1e6,oil:1e6,tools:1e5,powder:1e5};
 T.gateWant={goldwork:2,cacao:1200,cacaocake:55,opium:650,saffron:8,tea:400,silk:80,brocade:40,opal:.4,wheels:3,oil:870,sulfur:230,wax:105,rarities:.15,hearthseed:.1};   /* the gateways' take a day, all four together: what the country makes less its own use (Gemini's exports scaled to it) */
 /* THE DUES: a fixed yearly bill each province's seat sends the Treasury after the harvest (the Chancellor's assessment,
    bound by tradition, never answering a bad year); Qiblai's grant of fealty and the Sultan's grants of esteem */
@@ -301,7 +309,7 @@ T.valley=function(P,o){o=o||{};const K=o.scale==null?50:o.scale,yr=365,win=w=>{c
   {id:'ks.boatyard',kind:'dockyard',name:'the boatyard and the barge quays',crew:60,out:[],rate:0},
   {id:'ks.serai',kind:'serai',name:'the caravanserai by the Strongbow road',crew:40,out:[],rate:0}]).start.coin=400;
  town('sxan7r1sln','Strongwall (the Master of Mines\' fort)',912,1640,250,'fort',[
-  {id:'sw.assay',kind:'assay-house',name:'the assay house',crew:20,batch:T.chain.assay}]);
+  {id:'sw.assay',kind:'assay-house',name:'the assay house',crew:20,batch:T.chain.assay}],{state:'kept'});   /* state: the fort asset's kept, damaged or ruined (settlements/strongwall/PLAN.md 5.6), which a raid's outcome sets */
  /* Phēr (settlements/pher/PLAN.md, the owner's answers 2026-11-16: "i likE all these"): the cacao house pressing the north
     shore's beans into cakes for the Great Caravan, and the boat slip where the hub's launches and cargo boats are repaired */
  town('xan.pher','Phēr (the north shore\'s fair)',843,1491,6000,'lake',[{id:'ph.fishing',kind:'fishing',name:'the dugouts',crew:600,out:['fish'],rate:rate(6000*T.fishKgPerson*.6,600),site:T.fishery(6000*T.fishKgPerson*.6)},
@@ -314,12 +322,18 @@ T.valley=function(P,o){o=o||{};const K=o.scale==null?50:o.scale,yr=365,win=w=>{c
  const mine=(id,name,px,py,people,parent,out,kgYr)=>{const p=at(px,py);seats[id]=add({id,name,faction:'xanadu',parent,people,x:p.x,z:p.z,eats:eats('camp'),keepDays:10,
   start:{grain:Math.round(eatYr('camp',people)*T.startDays/yr),salt:people*2,tea:people*.3,tools:people*.4},works:[{id:id+'.works',kind:'adit',name,crew:Math.round(people*.8),out:[out],rate:rate(kgYr,Math.round(people*.8)),site:T.field(out==='goldore'?'lode':'opal-diggings',kgYr,T.fieldYears)}]});if(id!=='sjuarjbku0')bump(parent,eatYr('camp',people));};   /* Opal Valley is its province's seat: its own countryside feeds it */
  mine('smgxtultfq','The gold mines on the lode',911,1665,950,'sxan7r1sln','goldore',T.mine.goldore);
- mine('sjuarjbku0','Opal Valley Mines (the Sultan\'s factor)',1038,1662,850,'sxan7r1sln','opal',T.mine.opal);
+ mine('sjuarjbku0','Opal Valley Mines (the Sultan\'s factor)',1038,1662,850,'sfgtxw10kr','opal',T.mine.opal);   /* the owner, 2026-11-16: "opal goes to Strongbow first as it's closer" (about 160 km against Strongwall's 260) */
  /* the forts of the Marches */
- [['march.w','The west watch fort',818,1531],['march.s','The south watch fort',847,1549],['march.e','The beacon fort over the Rift',881,1541]]   /* moved with Erehwon (+35,+1 px), each on dry ground */.forEach(([id,name,px,py])=>{const p=at(px,py);
-  add({id,name,faction:'xanadu',parent:'s57bkv9741',people:150,x:p.x,z:p.z,eats:eats('fort'),keepDays:30,start:{grain:Math.round(eatYr('fort',150)*.4),salt:300,tea:60,tools:40,arms:20},
+ [['march.w','The west watch fort',818,1531],['march.s','The south watch fort',847,1549],['march.e','The beacon fort over the Rift (the refurbished Ancient beacon, kept by the Yellow Monastery)',881,1541]]   /* moved with Erehwon (+35,+1 px), each on dry ground */.forEach(([id,name,px,py])=>{const p=at(px,py);
+  add({id,name,faction:'xanadu',parent:'s57bkv9741',people:150,state:'kept',x:p.x,z:p.z,eats:eats('fort'),keepDays:30,start:{grain:Math.round(eatYr('fort',150)*.4),salt:300,tea:60,tools:40,arms:20,powder:100},
    works:[{id:id+'.store',kind:'fort',name:'the fort\'s store',crew:10,out:[],rate:0}]});bump('s57bkv9741',eatYr('fort',150));
   R.push({id:'road.'+id,from:'s57bkv9741',to:id,minutes:Math.round(Math.hypot(p.x-E.x,p.z-E.z)/1000/25*1440),cap:20000,want:40,goods:{s57bkv9741:['grain','salt','tea','tools','arms']}});});
+ /* the House of the Tempest: the Order of the Violet Storm's monks of sword and bow (no powder), fed through Strongwall
+    less what its terraces on the West Arm make */
+ {const Tm=T.tempest,tc=Math.round(Tm.people*.3),terr=eatYr('fort',Tm.people)*Tm.terraces;
+  const s=town(Tm.id,Tm.name,Tm.px[0],Tm.px[1],Tm.people,'fort',[{id:'tp.terraces',kind:'terraces',name:'the monks\' terraces on the West Arm',crew:tc,out:['grain'],rate:rate(terr,tc,win('harvest')),season:'harvest'}],
+   {parent:'sxan7r1sln',feeder:'sxan7r1sln',keepDays:30,state:'kept'});
+  delete s.eats.powder;s.start.arms=30;bump('sxan7r1sln',-terr);}   /* a year of arms in its armoury */
  /* ---- THE LAKE TOWNS AND ISLANDS: fish and their trade to the hub by share; grain, salt and tools back by want */
  const lakeTown=(L)=>{const pf=L.pre||'lk.',dk=L.diet||'lake',p=at(L.px,L.py),fishing=L.key!=='weaver'&&L.key!=='pottery'&&L.key!=='quarry'&&L.key!=='boatyard'&&L.key!=='landing',works=[],sh={};
   const crew=crewOf(L.people,400);
@@ -375,10 +389,10 @@ T.valley=function(P,o){o=o||{};const K=o.scale==null?50:o.scale,yr=365,win=w=>{c
    R.push({id:'tithe.'+id,from:id,to:sid,minutes:240,cap:20000,share:{[id]:{dairy:.6}},goods:{[sid]:['grain','salt','tea','tools']}});}});
  /* ---- THE INTERNAL ROADS (net51's xanadu class and Gemini's barge links; minutes at 25 km a day by road, 60 by barge) */
  const road=(id,a,b,km,mode,goods,o3)=>R.push(Object.assign({id,from:a,to:b,minutes:Math.round(km/(mode==='barge'?60:25)*1440),cap:mode==='barge'?60000:30000,carriers:o3&&o3.carriers!=null?o3.carriers:3,stagger:Math.round(km/25*1440/3),want:o3&&o3.want!=null?o3.want:30,goods},o3&&o3.expect?{expect:o3.expect}:{}));
- road('road.er-qb','s57bkv9741','skm4jjo2vl',321,'road',{s57bkv9741:['salt','iron','tools','arms','wine','pearls','gold'],skm4jjo2vl:['grain','cacao','goldwork','wheels','honey','dairy','timber','charcoal','tea','opium','saffron','silk']},{carriers:6});
+ road('road.er-qb','s57bkv9741','skm4jjo2vl',321,'road',{s57bkv9741:['salt','iron','tools','arms','wine','pearls','gold'],skm4jjo2vl:['grain','cacao','goldwork','wheels','honey','dairy','timber','charcoal','tea','opium','saffron','silk','opal']},{carriers:6});   /* opal: in from Strongbow by Kirstabal (W1) */
  road('road.er-th','s57bkv9741','s4zvgepuru',228,'barge',{s57bkv9741:['salt','tools','arms','charcoal'],s4zvgepuru:['grain','cacao','saffron','tea','opium','silk','iron','fruit','rarities']},{carriers:4,expect:{s4zvgepuru:{charcoal:330}}});   /* rarities: the bore's, for the Great Caravan */
  road('road.qb-th','skm4jjo2vl','s4zvgepuru',155,'barge',{skm4jjo2vl:['charcoal','grain','salt'],s4zvgepuru:['iron','tools']},{carriers:3,expect:{s4zvgepuru:{charcoal:330},skm4jjo2vl:{iron:40}}});
- road('road.qb-sw','skm4jjo2vl','sxan7r1sln',83,'road',{skm4jjo2vl:['grain','salt','tea','tools','dairy'],sxan7r1sln:['gold','copper','opal']},{carriers:3,expect:{skm4jjo2vl:{gold:.12,copper:20}}});
+ road('road.qb-sw','skm4jjo2vl','sxan7r1sln',83,'road',{skm4jjo2vl:['grain','salt','tea','tools','dairy','arms','powder'],sxan7r1sln:['gold','copper']},{carriers:3,expect:{skm4jjo2vl:{gold:.12,copper:20}}});
  /* K1: the barges down the lake to the Landing (T.portage.lake km), then the portage road past the cataracts to Qiblai
     (T.portage.km); the road to Strongbow's foot over the bridge (15 km), then the lift to the lip (T.lift minutes) */
  road('road.qb-ks','skm4jjo2vl','sl758m2396',T.portage.lake,'barge',{skm4jjo2vl:['grain','salt','tools'],sl758m2396:['tea','cacao','opium','saffron','silk','dairy']},{carriers:3});
@@ -386,21 +400,22 @@ T.valley=function(P,o){o=o||{};const K=o.scale==null?50:o.scale,yr=365,win=w=>{c
  road('road.ks-sb','sl758m2396','sfgtxw10kr',15,'road',{sl758m2396:['grain','salt','tools','fish'],sfgtxw10kr:['tea','silk']},{carriers:2});
  R[R.length-1].minutes+=T.lift;
  road('road.sw-gold','sxan7r1sln','smgxtultfq',50,'road',{sxan7r1sln:['grain','salt','tea','tools']},{carriers:2});
- road('road.sw-opal','sxan7r1sln','sjuarjbku0',260,'road',{sxan7r1sln:['grain','salt','tea','tools']},{carriers:2});
+ road('road.sb-opal','sfgtxw10kr','sjuarjbku0',160,'road',{sfgtxw10kr:['grain','salt','tea','tools']},{carriers:2});   /* W1: the opal mines on Strongbow's road (the owner, 2026-11-16), not Strongwall's 260 km */
+ road('road.sw-tempest','sxan7r1sln',T.tempest.id,T.tempest.km,'road',{sxan7r1sln:['grain','salt','tea','tools','arms']},{carriers:2});
  R.push({id:'mine.gold',from:'smgxtultfq',to:'sxan7r1sln',minutes:Math.round(50/25*1440),cap:20000,carriers:2,share:{smgxtultfq:{goldore:1}},goods:{sxan7r1sln:['grain','salt','tea','tools']}});
- R.push({id:'mine.opal',from:'sjuarjbku0',to:'sxan7r1sln',minutes:Math.round(260/25*1440),cap:5000,carriers:2,share:{sjuarjbku0:{opal:1-T.fifth}},goods:{sxan7r1sln:['grain','salt','tea','tools']}});   /* the Fifth goes straight to the Treasury (below) */
+ R.push({id:'mine.opal',from:'sjuarjbku0',to:'sfgtxw10kr',minutes:Math.round(160/25*1440),cap:5000,carriers:2,share:{sjuarjbku0:{opal:1-T.fifth}},goods:{sfgtxw10kr:['grain','salt','tea','tools']}});   /* the Fifth goes straight to the Treasury (below) */
  /* the Sultan's Fifth: a fifth of the gold the assay makes and of the opal, to the Treasury */
  R.push({id:'fifth',from:'sxan7r1sln',to:'xan.citadel',minutes:Math.round(404/25*1440),cap:5000,carriers:2,share:{sxan7r1sln:{gold:T.fifth}},goods:{'xan.citadel':[]}});
  R.push({id:'fifth.opal',from:'sjuarjbku0',to:'xan.citadel',minutes:Math.round(560/25*1440),cap:1000,carriers:1,share:{sjuarjbku0:{opal:T.fifth}},goods:{'xan.citadel':[]}});
  /* the rest of the gold and opal down to the capital's goldsmiths and market */
- road('road.sw-er','sxan7r1sln','s57bkv9741',404,'road',{sxan7r1sln:['gold','opal','copper'],s57bkv9741:['salt','tools','arms']},{carriers:3,expect:{s57bkv9741:{gold:.3,opal:.4,copper:10}}});
+ road('road.sw-er','sxan7r1sln','s57bkv9741',404,'road',{sxan7r1sln:['gold','copper'],s57bkv9741:['salt','tools','arms']},{carriers:3,expect:{s57bkv9741:{gold:.3,copper:10}}});   /* the opal reaches the capital by Strongbow, Kirstabal and Qiblai now (W1) */
  /* the capital feeds its court and its Dome; the court sends the mint's coin back to the market */
  road('road.er-cit','s57bkv9741','xan.citadel',1,'road',{s57bkv9741:['grain','fish','fruit','salt','tea','cacao','saffron','silk','tools','arms','gold'],'xan.citadel':['coin']},{carriers:4,want:20,expect:{'xan.citadel':{gold:.1}}});
  road('road.er-dome','s57bkv9741','xan.dome',1,'road',{s57bkv9741:['grain','fish','fruit','salt','tea','cacao','saffron','silk','pearls','wine','oil','honey']},{carriers:2,want:20});
  /* ---- THE PROVINCES' COUNTRYSIDES: the bulk district of each, tithing grain and its land's goods to its seat */
  const named={};T.lake.forEach(L=>{named[L.prov]=(named[L.prov]||0)+L.people;});T.islands.forEach(I=>{named.p1=(named.p1||0)+I.people;});
  T.lowerLake.forEach(L=>{named.p5=(named.p5||0)+L.people;});T.ksRing.forEach(r=>{named.p5=(named.p5||0)+r[5];});   /* K1 */
- named.p1=(named.p1||0)+1345+150*3;named.p3=(named.p3||0)+1345;named.p4=(named.p4||0)+950;named.p6=(named.p6||0)+850;named.p7=(named.p7||0)+T.thalaba.people+T.pherRing.reduce((n,V)=>n+V.census.pop,0);   /* Phēr is in P7's lake towns: its seat, counted once */
+ named.p1=(named.p1||0)+1345+150*3;named.p3=(named.p3||0)+1345;named.p4=(named.p4||0)+950+T.tempest.people;named.p6=(named.p6||0)+850;named.p7=(named.p7||0)+T.thalaba.people+T.pherRing.reduce((n,V)=>n+V.census.pop,0);   /* Phēr is in P7's lake towns: its seat, counted once */
  T.provinces.forEach(Pv=>{const people=Math.max(1000,Pv.rural-(named[Pv.id]||0)),hh=people/T.farm.hh,made=hh*T.farm.farmShare*T.netKgHH(Pv.y),own=eatYr('rural',people);
   const id='prov.'+Pv.id,p=at(Pv.px[0],Pv.px[1]),crew=Math.min(2000,Math.round(people*.45));
   const works=[{id:id+'.fields',kind:'farmstead',name:'the province\'s fields (its villages, in bulk)',crew,out:['grain'],rate:rate(made,crew,win('harvest'),T.scaleBulk),season:'harvest'}],sh={};
@@ -446,7 +461,7 @@ T.valley=function(P,o){o=o||{};const K=o.scale==null?50:o.scale,yr=365,win=w=>{c
    R.push({id:'caravan.great',stops,minutes:G.days*1440,carriers:G.carriers,cap:G.cap,keep:20,want:365,goods,expect});G._stops=stops;return;}
   offMap(G.id,G.name,pool(G));
   R.push({id:'trade.'+G.id,from:G.id,to:G.entry,minutes:G.days*1440,carriers:G.carriers,stagger:Math.round(G.days*1440/G.carriers),cap:G.cap,keep:20,want:Math.max(60,G.days*2),
-   goods:{[G.entry]:G.out,[G.id]:G.in},expect:{[G.id]:exp,[G.entry]:{iron:30,arms:.5,pearls:.06,wine:3,oil:2}}});});
+   goods:{[G.entry]:G.out,[G.id]:G.in},expect:{[G.id]:exp,[G.entry]:{iron:30,arms:.5,pearls:.06,wine:3,oil:2,powder:.5}}});});
  /* the staging towns gather their gateways' goods from behind them: Strongbow from Kirstabal from Qiblai, Thalaba from Phēr
     from the capital (a road for goods beside Thalaba's tithe road, which carries nothing for want out of Thalaba) */
  const takeAt=entry=>{const e={};T.gateways.filter(G=>G.entry===entry).forEach(G=>{for(const g in G._exp)e[g]=(e[g]||0)+G._exp[g];});return e;};
@@ -465,7 +480,8 @@ T.valley=function(P,o){o=o||{};const K=o.scale==null?50:o.scale,yr=365,win=w=>{c
  addExpect(addGoods('lake.cross','s57bkv9741',gList(thTake)),'xan.pher',thTake);
  /* the salt comes in at the staging towns, so it goes inward: Strongbow to Kirstabal to Qiblai, Thalaba to Phēr to the
     capital; the capital and Qiblai no longer send it to each other */
- addGoods('road.ks-sb','sfgtxw10kr',['salt','iron','arms']);addGoods('road.qb-ks','sl758m2396',['salt','iron','arms']);
+ addGoods('road.ks-sb','sfgtxw10kr',['salt','iron','arms','opal']);addGoods('road.qb-ks','sl758m2396',['salt','iron','arms','opal']);   /* opal inward from Strongbow (W1) */
+ addExpect(R.find(r=>r.id==='road.ks-sb'),'sl758m2396',{opal:T.gateWant.opal});addExpect(R.find(r=>r.id==='road.qb-ks'),'skm4jjo2vl',{opal:T.gateWant.opal});   /* nothing inward eats opal: Kirstabal and Qiblai draw a day's make on, for Yuni's caravans and the capital's market */
  addGoods('road.pher-thalaba',TB,[]);addGoods('lake.cross','xan.pher',['sulfur','wax','rarities','hearthseed']);   /* the vents' goods down to the capital for the Great Caravan */
  /* ... and asked for on the way down (a road moves a good only when its receiver wants it, and nothing below Thalaba uses
     these): Phēr and the capital each expect Thalaba's year of them a day, its own deposit's and both camps' make home,
@@ -606,7 +622,7 @@ T.valley=function(P,o){o=o||{};const K=o.scale==null?50:o.scale,yr=365,win=w=>{c
     use: a seat that passes salt, tea and tools on to its villages wants more than it eats, so the road into it expects
     its whole subtree's use a day (X1's multi-stop roads take this over) */
  const up={'xan.citadel':'s57bkv9741','xan.dome':'s57bkv9741','xan.pher':'s57bkv9741','s4zvgepuru':'s57bkv9741','skm4jjo2vl':'s57bkv9741',
-  'sl758m2396':'skm4jjo2vl','sfgtxw10kr':'sl758m2396','sxan7r1sln':'skm4jjo2vl','smgxtultfq':'sxan7r1sln','sjuarjbku0':'sxan7r1sln'};
+  'sl758m2396':'skm4jjo2vl','sfgtxw10kr':'sl758m2396','sxan7r1sln':'skm4jjo2vl','smgxtultfq':'sxan7r1sln','sjuarjbku0':'sfgtxw10kr'};
  S.forEach(s=>{if(up[s.id]||s.id==='s57bkv9741'||s.faction==='gate')return;up[s.id]=s.parent;});
  const day={};S.forEach(s=>{if(s.faction==='gate')return;const d={};['salt','tea','tools'].forEach(g=>{d[g]=s.people*((s.eats||{})[g]||0);});day[s.id]=d;});
  const sub={};const subOf=id=>{if(sub[id])return sub[id];const t=Object.assign({},day[id]);S.forEach(c=>{if(up[c.id]===id){const k=subOf(c.id);for(const g in k)t[g]=(t[g]||0)+k[g];}});return sub[id]=t;};
@@ -637,6 +653,8 @@ T.valley=function(P,o){o=o||{};const K=o.scale==null?50:o.scale,yr=365,win=w=>{c
  {const nPeople=S.filter(s=>s.parent==='xan.pher'&&/^lk\./.test(s.id)).reduce((n,s)=>n+s.people,0)+6000;
   addExpect(R.find(r=>r.id==='lake.cross'),'xan.pher',{pottery:nPeople*T.diet.lake.pottery,mats:nPeople*T.diet.lake.mats});}
  T._salt={all,south,north};
+ /* W1: the powder the gateways bring travels with the arms, on every road that carries them (settlements/strongwall/PLAN.md) */
+ R.forEach(r=>{if(!r.goods)return;for(const k in r.goods){const L=r.goods[k];if(L&&L.indexOf('arms')>=0&&L.indexOf('powder')<0)L.push('powder');}});
  /* ---- THE DUES AND THE GRANTS */
  const tr=[];Object.keys(T.dues.bills).forEach(s=>tr.push({id:'dues.'+s,from:s,to:'xan.citadel',goods:T.dues.bills[s],first:T.dues.day,every:365}));
  tr.push({id:'fealty.qiblai',from:T.dues.fealty.from,to:'xan.citadel',goods:T.dues.fealty.goods,first:T.dues.fealty.day,every:365});
@@ -644,6 +662,8 @@ T.valley=function(P,o){o=o||{};const K=o.scale==null?50:o.scale,yr=365,win=w=>{c
   tr.push({id:'esteem.qiblai',from:'xan.citadel',to:T.dues.esteem.to,goods:part(1-k),first:T.dues.esteem.day,every:365});
   tr.push({id:'esteem.qiblai.order',from:'xan.citadel',to:T.orderHouse.house[0],goods:part(k),first:T.dues.esteem.day,every:365});}
  tr.push({id:'fee.white.kirstabal',from:'sl758m2396',to:T.whiteHouse.house[0],goods:T.whiteHouse.fee,first:T.dues.day,every:365});   /* K1: the seat's small fee to the White Monastery for the latex house */
+ /* W1: the hired musketeers' pay, from the Treasury to each fort once a year (owed when the Treasury is short) */
+ Object.keys(T.muskets.men).forEach(s=>tr.push({id:'pay.muskets.'+s,from:'xan.citadel',to:s,goods:{coin:T.muskets.men[s]*T.muskets.wage},first:T.clockDay(T.muskets.day),every:365}));
  const V={seed:20261116,scale:K,start:0,calendar:T.calendar,goods:T.goods,
   factions:[{id:'xanadu',name:'The Sultanate of Xanadu'},{id:'gate',name:'The gateways (Iziz, Yuni, the Dasri, Dalab, the Geomancers)'},
    {id:'geomancer',name:'The Geomancers (the drilling guild of Locus)'},{id:'horns',name:'The Brotherhood of the Two Horns (the Twins\' guides and merchant houses)'},

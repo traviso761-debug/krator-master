@@ -3,7 +3,7 @@
 Every texture or pattern sheet the owner still has to source or generate, each with its finished prompt. Paste a block
 as it is, one image per block. **Everything delivered lives in `PROMPTS-archived.md`** (checked against `core/materials/library/`, `patterns/` and each build's `materials.json` on `origin/main`, 2026-10-19); this file holds only what is still owed.
 
-**Count: 37 prompts** (+3 for the mined goods' resource nodes, section 53, 2026-11-16; +6 for the Arch, section 52, and +3 for the Rift battery, section 51, at Integration 3, 2026-11-11; +3 for the Tiers, section 50; 19 fenced blocks, counted by their fences, and the Ancient Transit's three table rows at the second integration merge, 2026-11-11: sections 43-49 added since, the Ancient Transit, Firebliss, the NE outer wall and the Great Chasm among them; before that, 2026-11-10, after -22 delivered from sections 37, 40, 41 and 42: `PLAN.md`, "Delivered 2026-11-10"; the hand count before was 36, and two blocks had lost their closing fence; 2026-11-09: +11 for Erewhon's citadel, section 41; +2 for the Tents kit's army and Eternian cloths, section 42; +3 for the southern highlands' upper stations, section 37; +15 for the hyperjungle's lands and the savannah rims, section 40, 2026-11-08; counted 2026-11-04 before them). (+7 for the Qiblai kit, section 43: its gilt sheet and mantra drum, 2026-11-11, and the walk-in rooms' mural, coffer and temple rug, 2026-11-15; merged 2026-11-15)
+**Count: 40 prompts** (+3 for the Xanadui fort, section 54, 2026-11-16; +3 for the mined goods' resource nodes, section 53, 2026-11-16; +6 for the Arch, section 52, and +3 for the Rift battery, section 51, at Integration 3, 2026-11-11; +3 for the Tiers, section 50; 19 fenced blocks, counted by their fences, and the Ancient Transit's three table rows at the second integration merge, 2026-11-11: sections 43-49 added since, the Ancient Transit, Firebliss, the NE outer wall and the Great Chasm among them; before that, 2026-11-10, after -22 delivered from sections 37, 40, 41 and 42: `PLAN.md`, "Delivered 2026-11-10"; the hand count before was 36, and two blocks had lost their closing fence; 2026-11-09: +11 for Erewhon's citadel, section 41; +2 for the Tents kit's army and Eternian cloths, section 42; +3 for the southern highlands' upper stations, section 37; +15 for the hyperjungle's lands and the savannah rims, section 40, 2026-11-08; counted 2026-11-04 before them). (+7 for the Qiblai kit, section 43: its gilt sheet and mantra drum, 2026-11-11, and the walk-in rooms' mural, coffer and temple rug, 2026-11-15; merged 2026-11-15)
 
 **Delivered 2026-11-10:** 22 of sections 37, 40, 41 and 42 (Erewhon's citadel but the jali, the Tents kit's two cloths and the cedar, the
 fellfield's two, seven of the hyperjungle's and the savannah rims'), `PLAN.md` "Delivered 2026-11-10": the citadel's, the tents' and the two grasses
@@ -614,6 +614,31 @@ Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfec
 `rock.amber.blueearth` (the amber node's cut bank: amber in its bed):
 ```
 Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a freshly cut face of "blue earth", the glauconitic clay sand that amber is dug from: damp blue-grey to green-grey clay (#5e6a6e, #6a7a80, #586468) with fine dark green glauconite grains, a few flakes of black lignite and wood (#2a2420), and rounded nodules of raw amber 1-4 cm embedded in it, their crusts dull ochre (#a8681e) and, where a nodule is broken, clear honey to cognac amber (#d88a1e, #e8a83a, #b8601a). Full colour: not tinted.
+
+## 54. The Xanadui fort (`kits/xanadu`, the fort asset of `settlements/strongwall/PLAN.md` section 5, 2026-11-16)
+
+The owner, 2026-11-16: "I'm open to new texture proposals". These are for the fort asset that Strongwall, the Marches' watch
+forts and the gate works will share. Until each set arrives, the fort draws the stand-in named in its row. Each set lands as a
+family in `kits/xanadu/materials.json`, wired when the fort is built (the plan's step F2), followed by `python3 tools/textures/pack.py kits/xanadu`.
+**3 prompts.**
+
+`wall.rubble.limewash` (the curtains, towers and keep of every dress but `earth` and `scrap`; family `xFortWall`, 3 m a tile;
+today `rock.old_stone_wall` bare, or `plaster.white_stucco_02` smooth, neither of them a dzong's wall). Near-colourless, so the
+kit's wash palette tints it:
+```
+Seamless tileable texture, square, 2048x2048. Orthographic view of a flat, front-on wall filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a Himalayan fortress wall of rough rubble masonry, irregular split field stones 15 to 50 cm across laid in mud mortar with small flat chinking stones packed in the gaps, the whole face under many coats of thick lime wash that has been poured from above, so the wash runs down in soft vertical drips and ridges and gathers thicker in the hollows between stones, the stones' lumps still reading through it; in scattered patches the wash has flaked away to show grey stone and brown mud mortar beneath, with fine rain streaks and a faint grey grime. Near-colourless: white, pale grey and grey-beige only, so it can be tinted.
+```
+
+`wood.gate.studded` (the gate leaves of every fort; family `xGate`, one leaf 2.4 m wide a tile; today `wood.wooden_gate` with no
+iron). Full colour:
+```
+Seamless tileable texture, square, 2048x2048. Orthographic view of a flat, front-on surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: the face of a heavy fortress gate leaf in the Indian manner: vertical planks of dark weathered hardwood 25 to 30 cm wide, sun-checked and split along the grain (#5a4632, #6e5a44, #3e3024), crossed every 60 cm by broad hand-forged iron straps fixed with rows of large domed nail heads, and between the straps a regular grid of pointed iron spikes about 10 cm long, seen point-on as round iron studs; the iron black-brown (#2e2a26, #3a3430) with rust bleeding down the wood below each stud and strap (#6a3a20, #8a4a26). Full colour: keep the wood and iron as they are, do not tint.
+```
+
+`wall.limewash.scorched` (the `damaged` and `ruined` states: the burnt gate's towers, the barracks after a fire; family
+`xScorch`, 3 m a tile; today the wash darkened by the material's colour, which reads as grey paint, not soot). Near-colourless:
+```
+Seamless tileable texture, square, 2048x2048. Orthographic view of a flat, front-on wall filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a lime-washed plaster wall over rubble after a fire: broad soft blotches of black soot and smoke-staining scattered over the white wash, densest in irregular patches across the tile and fading through greys to clean white between them; in the worst places the lime is calcined to a crumbly grey and has spalled off in flakes, showing heat-cracked stone and burnt mud mortar; soot washed down by rain in thin vertical streaks. Near-colourless: white, greys and black only, so it can be tinted.
 ```
 
 ## Gaps with no prompt yet
