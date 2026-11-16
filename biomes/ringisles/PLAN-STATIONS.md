@@ -162,3 +162,21 @@ designed. **Not verified**: no `--assert` run, no screenshot, no look; the flora
 the great valley's floor) and the universal asserts are the coordinator's GPU run's.
 **For the owner**: every look on it; the valleys' walls (steep: ~400 m over ~150 m, on a 10 m ground grid); the elfin trees' density in the belt; the fog
 belt's density (.0016); whether the lee wants the island's vent and salt pan back (left out).
+
+---
+
+## Scale-Model 5.1 Geological Reconciliation & Showcase Station #5 (`2026-11-13`)
+
+### 1. Flexural-Moat Subsidence, `carbonate-shelf` Makatea Benches & Inner-Wall `contact-marble`
+- **Why Low Atolls & Raised Reef Benches Form (Zero Tower Karst):** As load from the growing **Throne** shield (`+25 km`) flexurally depresses the surrounding Ring Sea moat (`-1,500 m` sea datum, **`1.93 atm`**), warm (`28–34 °C`), carbonate-saturated shallow banks (`XA` / `XV` / `Aw`) keep pace by building **low bioclastic/oolitic coralgal and rudist carbonate platforms** (`0–35 m` relief above sea level). Flexural forebulge oscillations lift outer rims into `4–25 m` solution-notched *makatea* benches (Tuamotu / Aldabra / Henderson Island analogue) with `24 h` gas-giant libration-tide visors — **never** `150 m` continental Guilin fenglin towers (`GEOLOGY-SANITY-CHECK.md` §4; `KARST-SITES-5.1.md`).
+- **`KSTRATA` Recipe Split across the Ring Sea:**
+  - **Low Atolls, Barrier Banks & Raised *Makatea* Headlands:** Bind **`carbonate-shelf`** (`core/terrain/35-core-strata.js` — `2–5 m` warm cream/buff bioclastic limestone & pale marl tabular beds with solution-notched `marl` tidal undercuts and `cap` calcarenite visors).
+  - **High Volcanic Shield Isles (`--station high`):** Retain `rift-volcanic` / `tibasalt` on steep eroded shield valley walls (`-1,000 to 0 m`), fringed at sea level by a `carbonate-shelf` fringing-reef apron.
+  - **Inner-Wall Contact-Metamorphic Harbours (`Tethis` `733, 775` & `Ys` `789, 738`):** Where Ring Sea carbonate shelves abut the northwestern Inner Rim ring-fault and Throne-moat intrusive dikes, contact metamorphism recrystallizes the limestone into massive white-to-blue-veined **`contact-marble`** with dark epidote-garnet-magnetite skarn selvages (`4–8 m` quarry-grade blocks framing the harbours of **Tethis** and **Ys**).
+
+### 2. Showcase Station #5 — `Kautoa Low Carbonate Coral-Bench Atoll`
+- **Canonical `5.1` Coordinates:** **`(964, 725)`** (**Kautoa** city island shelf on the northern Ring Sea archipelago) paired with **`(1002, 779)`** (great `520 km²` barrier-lagoon bank) and **`(928, 967)`** (sharp oceanic atoll `13 km` off Port Tobin).
+- **Elevation & Atmosphere:** **`-1,499 m` to `-1,465 m`** (`+1 to +35 m` above the `-1,500 m` Ring Sea datum; **`1.93 atm`**, `+31–33 °C` mean, `XA` / `Aw` / `XV` trade-wind island mosaic).
+- **`KSTRATA` Binding:** **`carbonate-shelf`** (`2–5 m` cream/buff bioclastic platform limestone, oolitic grainstone shoals, and recessed `marl` solution notches cut by the `24 h` gas-giant libration tide into `2–4 m` mushroom-visor sea cliffs and *makatea* steps).
+- **Camera Framing (`7.6 × 6.8 km` lagoon-and-bench cut):** Oblique `55 m` masthead/cliff-brow view looking ENE across a `12 m` deep turquoise reef pass where open Ring Sea swell breaks white over the `carbonate-shelf` rim: undercut cream *makatea* limestone visors (`4–14 m` high) with anchialine blue-hole cenotes and beachrock tide pools in the foreground, Kautoan outrigger proas (`kits/ringsea`) riding the tidal race through the pass, coconut/breadfruit/taro garden plots on the leeward motu sand apron, and the distant hypertree wall / Throne plume on the horizon.
+- **Hydrology & Trade Tie-In:** Fresh Ghyben-Herzberg rainwater lenses perched inside the porous `carbonate-shelf` grainstone feed brackish anchialine taro pits and village wells; Kautoan navigators quarry reef-lime blocks (`kits/crops` coral lime), harvest pearl beds in the `2–25 m` lagoon, and control Ring Sea spice, clove, and salt-fish shipping lanes between **Port Goto** (`918, 698`), **Valapo** (`942, 782`), **Talon** (`1026, 760`), and **Ys** (`789, 738`).

@@ -784,8 +784,68 @@ First run as "5.1 edit 2" (`edit_512.py`) on the openworld-sites line (5e31f0ceb
 Main's own edit 2 is Godshearth's vents, and the rasters cannot be merged, so the edit was re-run on main's model (edits
 1-6 in) as edit 7 on 2026-11-15, when `gemini-trade` was merged. Two changes from the first run: the Pleasure Dome's
 landform stands at the Erewhon page's island with no shoal (the owner, 2026-11-11, d1555243e on
-claude/clever-mirzakhani-030fd5), and Thalaba, one of the owner's live pins (825,1481), now under the lake, moves to
-825,1488 (where Gemini's trade map has it; checked dry).
+claude/clever-mirzakhani-030fd5), and Old Thalaba, the fishing village on the lake's north shore (key 5.1e12), is checked
+dry on the new shore.
+
+**The 2026-11-16 re-run** (the owner's map polish; it supersedes the first run's numbers below where they differ):
+- "make a lake that's central, with a more irregular, atitlan-like shoreline but of similar size", then "can we make the
+  lake a little narrower and move it more toward the center of the valley? settlements can move with it" and "add one
+  large oblong island in the middle of the lake". The lake is 66 x 25 px round **845,1504**, the old lake's middle (it was
+  60 x 32 round 810,1499.5), its shore Atitlan-like (four harmonics of the ellipse, their phases chosen so Erehwon's
+  bench, the Alph's head, every isle and Old Thalaba's shore hold): 1,175 wet cells (4,700 km2), 937 m deep at most.
+  Every point drawn against the first lake moves with it, keeping its place against the shore (`move()`): Erehwon to
+  **841,1517**, Old Thalaba to **860,1496**, the volcanoes to 829,1526 / 856,1532 / 881,1526 (11-13 px back), the
+  Pleasure Dome's landform to 840.9,1516.8, the west stack to 816.8,1495.6, the small isles to whole cells (bay
+  844.1,1511.5, west 831,1499, east 864,1503). The great isle gives way to **the long isle**: 24 x 8 px (48 x 16 km)
+  on the lake's axis at its middle, 300 m over the water (145 cells); every isle's shallows reach ~2 px.
+- The moved lake's north-east shore borders the Vale's lowland (a north river's valley meets it ~30 m over the lake), so
+  the check is that the outlet is the lowest way out by 20 m (`RIM_MIN`; blocked, the lake would spill at -491.6 m), not
+  a caldera closed 200 m all round; the Vale's floor keeps 6.5 cells off the shore (`VALE_S`), a whole wall between.
+- `edit_517_crease.py` (after the edit): the straight crease in the heights across the Twins' north-west (985,1419 to
+  918,1493, a 150-350 m slope break over a cell) and along the south edge of an old stamp round Qiblai's basin (y
+  1639-1640) blended toward a 1.3-px blur within 2.5 px; temperatures lapsed, the paint relit.
+- `edit_517_paint.py` (last): the old lake's bed, dry now, painted again from the land round it, its relief put back
+  (it kept its water colours: "you can still see the outline of the old lake"); and the straight edges of edit 7's box
+  and of the old stamp round Qiblai's basin blurred across themselves only (2.5 px, fading within ~6 px), the texture
+  along them kept ("a rectangular outline").
+- `edit_517_alph.py` (last; the owner: "make sure the river alph still connects the two lakes"): the Alph's course
+  stopped 7 px short of Qiblai's lake (-1,685 m) in its gorge's slot (-2,025 m), its record's mouth naming a lake of
+  -1,706 m on dry ground (both so on main before edit 7). Its course now goes on to the lake's shore (941.3,1591.8; six
+  cells cut to the slot's floor, the river drawn) and `to` names the lake at 942,1593. It runs from Erewhon's lake
+  (head 876.9,1511.7 at -520 m) to Qiblai's, falling all the way.
+- `edit_517_gorge.py` (last): the "slot" was not a slot. The gorge below Theodiga falls from about -616 m to -1,530 m at
+  the lake; only the cells of r070's recorded points had been cut to its old bed (-2,025 m), single-cell pits 400-1,500 m
+  deep. The owner, 2026-11-16, chose to fill them ("Fill pits, river falls"): ten pits raised to the lower of their
+  course neighbours, the course then falling all the way (the cut to reach the lake raised to fall on), the beds sampled
+  again: the Alph falls from -558 m below the breach to -1,537 m at Qiblai's lake's shore, ~150 m over the water.
+- `edit_517_pher.py` (after the re-run, 5f659c054; records only, no raster change; the owner, 2026-11-16, for Phēr at
+  843,1491: "give it a headland and cove; give it a small stream", "coined name"; `settlements/pher/PLAN.md`):
+  - Phēr's headland: two `island` records from the shore's bend west of the town (840.65,1491.2 and its tip 841.05,1491.65).
+  - The cove's east point: an `islet` at 842.75,1492.15.
+  - The stream, **Swīṭ Siṭrīm** (`r_pher_swit`, "sweet stream"): about 2 m³/s, 29 km. It runs from springs at the
+    scarp's foot (842,1477, ~130 m) down the 842 column across the rim plain, then down the wall to the cove (842.25,1491.55).
+  - The pin is `spher0north1` (SETT_ADDED '5.1e13', and in `defSetts` for `cut_site.py`).
+  - `tests/test_smodel.py` section 17 checks them. The open world stamps the landforms with `core/world/41l-world-landforms.js`
+    (`openworld/xanadu-north-shore`).
+  Written in the Phēr plan's session (claude/pher-plan-55d3f2, f7834e394) and re-run here after `edit_517_gorge.py`.
+- Run order from the pre-edit model (055bc43ce): `edit_517.py`, `edit_517_crease.py`, `edit_517_paint.py`,
+  `edit_517_alph.py`, `edit_517_gorge.py`, `edit_517_pher.py`.
+- `edit_517_pher.py` (after the re-run, 5f659c054; records only, no raster change; the owner, 2026-11-16, for Phēr at
+  843,1491: "give it a headland and cove; give it a small stream", "coined name"; `settlements/pher/PLAN.md`):
+  - Phēr's headland: two `island` records from the shore's bend west of the town (840.65,1491.2 and its tip 841.05,1491.65).
+  - The cove's east point: an `islet` at 842.75,1492.15.
+  - The stream, **Swīṭ Siṭrīm** (`r_pher_swit`, "sweet stream"): about 2 m³/s, 29 km. It runs from springs at the
+    scarp's foot (842,1477, ~130 m) down the 842 column across the rim plain, then down the wall to the cove (842.25,1491.55).
+  - The pin is `spher0north1` (SETT_ADDED '5.1e13', and in `defSetts` for `cut_site.py`).
+  - `tests/test_smodel.py` section 17 checks them. The open world stamps the landforms with `core/world/41l-world-landforms.js`
+    (`openworld/xanadu-north-shore`).
+
+**5.1e12 (2026-11-16, records only)**: the owner, "we can move thalaba to the mouth of godshearth and put a new village
+on the lake in its place": Thalaba (`shvo49k0y2`) moves from 825,1481 to 840,1463, where Godshearth's spillway gorge
+opens, and becomes a town of ~2,400 (SETT_MOVED); Ōlḍ-Thalaba (`soldthalaba1`, village, ~600) takes the old shore at
+825,1488; and Lāiṭwāl (`slaitwal0001`, the Light Wall, town, 1028,1653, ~5,000), the Opal Valley town and seat of the
+Ōpal-Bhālī province (settlements/lightwall/PLAN.md, step L0), is added (SETT_ADDED). Nearest pins: Erehwon 127 km from
+Thalaba and 69 km from Ōlḍ-Thalaba; Gemini's Opal Valley Mines 27 km from Lāiṭwāl.
 
 `python tools/scale-model/edit_517.py` edits `model/data` in place and writes `edit_517.report.json`; `--dry` computes
 and prints the report without writing; it refuses to run twice (`DATA.landforms` is its marker). The owner's decision of
@@ -832,7 +892,8 @@ and every raster (heights, water, the five temperatures, rain, class, zone) is c
   DATA.basins gains the lake (a through lake).
 - `tests/test_smodel.py`: section 12's lake and Erehwon check moved to the new lake; section 19 checks the lake, its
   walls, the volcanoes, the islands, the Pleasure Dome's landform, the Alph's head, the vale and the rivers' mouths.
-- The Erehwon record moved to 805,1516 with the openworld-sites line's pin batch (SETT_MOVED 5.1e6).
+- The Erehwon record moved to 805,1516 with the openworld-sites line's pin batch (SETT_MOVED 5.1e6), and to 841,1517
+  with the lake (SETT_MOVED 5.1e12, which runs after 5.1e6).
 - **Left for later**: re-cutting `openworld/xanadu-oidong-highrift` on this model, the Erewhon page's world coordinates,
   and the stale basin record at 922.8,1527.7 (-759 m, outside the box).
 

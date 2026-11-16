@@ -1,0 +1,2280 @@
+{
+ "format": "krator-openworld-region",
+ "version": 1,
+ "source": "Krator Scale Model ?",
+ "region": {
+  "name": "xanadu-lake-shore cut",
+  "doc": "cut-xanadu-lake-shore",
+  "points_px": [
+   [
+    826.0,
+    1502.0
+   ],
+   [
+    856.0,
+    1502.0
+   ],
+   [
+    856.0,
+    1532.0
+   ],
+   [
+    826.0,
+    1532.0
+   ]
+  ],
+  "points_m": [
+   [
+    -36000.0,
+    -20000.0
+   ],
+   [
+    24000.0,
+    -20000.0
+   ],
+   [
+    24000.0,
+    40000.0
+   ],
+   [
+    -36000.0,
+    40000.0
+   ]
+  ],
+  "area_km2": 3600,
+  "union_km2": 5584,
+  "added": [
+   {
+    "name": "site Ālph-Hēḍ (sxanlkalph01)",
+    "points_px": [
+     [
+      873.0,
+      1500.0
+     ],
+     [
+      879.0,
+      1500.0
+     ],
+     [
+      879.0,
+      1506.0
+     ],
+     [
+      873.0,
+      1506.0
+     ]
+    ],
+    "area_km2": 144
+   },
+   {
+    "name": "site Hoṭ-Bāṭh (sxanlkhotbath01)",
+    "points_px": [
+     [
+      873.0,
+      1510.0
+     ],
+     [
+      879.0,
+      1510.0
+     ],
+     [
+      879.0,
+      1516.0
+     ],
+     [
+      873.0,
+      1516.0
+     ]
+    ],
+    "area_km2": 144
+   },
+   {
+    "name": "site Ṭī-Ṭeras (sxanlktea01)",
+    "points_px": [
+     [
+      869.0,
+      1514.0
+     ],
+     [
+      875.0,
+      1514.0
+     ],
+     [
+      875.0,
+      1520.0
+     ],
+     [
+      869.0,
+      1520.0
+     ]
+    ],
+    "area_km2": 144
+   },
+   {
+    "name": "site Pāṭari (sxanlkpottery01)",
+    "points_px": [
+     [
+      862.0,
+      1515.0
+     ],
+     [
+      868.0,
+      1515.0
+     ],
+     [
+      868.0,
+      1521.0
+     ],
+     [
+      862.0,
+      1521.0
+     ]
+    ],
+    "area_km2": 144
+   },
+   {
+    "name": "site Saphran (sxanlksaffron01)",
+    "points_px": [
+     [
+      854.0,
+      1516.0
+     ],
+     [
+      860.0,
+      1516.0
+     ],
+     [
+      860.0,
+      1522.0
+     ],
+     [
+      854.0,
+      1522.0
+     ]
+    ],
+    "area_km2": 144
+   },
+   {
+    "name": "site Wībhar (sxanlkweaver01)",
+    "points_px": [
+     [
+      849.0,
+      1516.0
+     ],
+     [
+      855.0,
+      1516.0
+     ],
+     [
+      855.0,
+      1522.0
+     ],
+     [
+      849.0,
+      1522.0
+     ]
+    ],
+    "area_km2": 144
+   },
+   {
+    "name": "site Boṭ-Yārḍ (sxanlkboatyard01)",
+    "points_px": [
+     [
+      843.0,
+      1516.0
+     ],
+     [
+      849.0,
+      1516.0
+     ],
+     [
+      849.0,
+      1522.0
+     ],
+     [
+      843.0,
+      1522.0
+     ]
+    ],
+    "area_km2": 144
+   },
+   {
+    "name": "site Gārḍan (sxanlkgarden01)",
+    "points_px": [
+     [
+      833.0,
+      1514.0
+     ],
+     [
+      839.0,
+      1514.0
+     ],
+     [
+      839.0,
+      1520.0
+     ],
+     [
+      833.0,
+      1520.0
+     ]
+    ],
+    "area_km2": 144
+   },
+   {
+    "name": "site Qorī (sxanlkquarry01)",
+    "points_px": [
+     [
+      829.0,
+      1513.0
+     ],
+     [
+      835.0,
+      1513.0
+     ],
+     [
+      835.0,
+      1519.0
+     ],
+     [
+      829.0,
+      1519.0
+     ]
+    ],
+    "area_km2": 144
+   },
+   {
+    "name": "site Ōrcharḍ (sxanlkorchard01)",
+    "points_px": [
+     [
+      824.0,
+      1509.0
+     ],
+     [
+      830.0,
+      1509.0
+     ],
+     [
+      830.0,
+      1515.0
+     ],
+     [
+      824.0,
+      1515.0
+     ]
+    ],
+    "area_km2": 144
+   },
+   {
+    "name": "site Lōṭas (sxanlklotus01)",
+    "points_px": [
+     [
+      819.0,
+      1504.0
+     ],
+     [
+      825.0,
+      1504.0
+     ],
+     [
+      825.0,
+      1510.0
+     ],
+     [
+      819.0,
+      1510.0
+     ]
+    ],
+    "area_km2": 144
+   },
+   {
+    "name": "site Phish-Mārkiṭ (sxanlkfish01)",
+    "points_px": [
+     [
+      812.0,
+      1498.0
+     ],
+     [
+      818.0,
+      1498.0
+     ],
+     [
+      818.0,
+      1504.0
+     ],
+     [
+      812.0,
+      1504.0
+     ]
+    ],
+    "area_km2": 144
+   },
+   {
+    "name": "site Siṭāq (sxanlkstack01)",
+    "points_px": [
+     [
+      809.0,
+      1492.0
+     ],
+     [
+      815.0,
+      1492.0
+     ],
+     [
+      815.0,
+      1498.0
+     ],
+     [
+      809.0,
+      1498.0
+     ]
+    ],
+    "area_km2": 144
+   },
+   {
+    "name": "site Wesṭ-Āil (sxanlkwestisle01)",
+    "points_px": [
+     [
+      829.5,
+      1497.5
+     ],
+     [
+      832.5,
+      1497.5
+     ],
+     [
+      832.5,
+      1500.5
+     ],
+     [
+      829.5,
+      1500.5
+     ]
+    ],
+    "area_km2": 36
+   },
+   {
+    "name": "site Lāiṭ-Hāus (sxanlkeastisle01)",
+    "points_px": [
+     [
+      862.5,
+      1501.5
+     ],
+     [
+      865.5,
+      1501.5
+     ],
+     [
+      865.5,
+      1504.5
+     ],
+     [
+      862.5,
+      1504.5
+     ]
+    ],
+    "area_km2": 36
+   },
+   {
+    "name": "site Bē-Āil (sxanlkbayisle01)",
+    "points_px": [
+     [
+      842.6,
+      1510.0
+     ],
+     [
+      845.6,
+      1510.0
+     ],
+     [
+      845.6,
+      1513.0
+     ],
+     [
+      842.6,
+      1513.0
+     ]
+    ],
+    "area_km2": 36
+   },
+   {
+    "name": "corridor Ālph-Hēḍ - Hoṭ-Bāṭh",
+    "points_px": [
+     [
+      873.5,
+      1503.0
+     ],
+     [
+      873.5,
+      1513.0
+     ],
+     [
+      878.5,
+      1513.0
+     ],
+     [
+      878.5,
+      1503.0
+     ]
+    ],
+    "area_km2": 200
+   },
+   {
+    "name": "corridor Hoṭ-Bāṭh - Ṭī-Ṭeras",
+    "points_px": [
+     [
+      874.2322330470337,
+      1511.2322330470336
+     ],
+     [
+      870.2322330470337,
+      1515.2322330470336
+     ],
+     [
+      873.7677669529663,
+      1518.7677669529664
+     ],
+     [
+      877.7677669529663,
+      1514.7677669529664
+     ]
+    ],
+    "area_km2": 113
+   },
+   {
+    "name": "corridor Ṭī-Ṭeras - Pāṭari",
+    "points_px": [
+     [
+      871.6464466094068,
+      1514.5251262658471
+     ],
+     [
+      864.6464466094068,
+      1515.5251262658471
+     ],
+     [
+      865.3535533905932,
+      1520.4748737341529
+     ],
+     [
+      872.3535533905932,
+      1519.4748737341529
+     ]
+    ],
+    "area_km2": 141
+   },
+   {
+    "name": "corridor Pāṭari - Saphran",
+    "points_px": [
+     [
+      864.689913163527,
+      1515.5193053082157
+     ],
+     [
+      856.689913163527,
+      1516.5193053082157
+     ],
+     [
+      857.310086836473,
+      1521.4806946917843
+     ],
+     [
+      865.310086836473,
+      1520.4806946917843
+     ]
+    ],
+    "area_km2": 161
+   },
+   {
+    "name": "corridor Saphran - Wībhar",
+    "points_px": [
+     [
+      857.0,
+      1516.5
+     ],
+     [
+      852.0,
+      1516.5
+     ],
+     [
+      852.0,
+      1521.5
+     ],
+     [
+      857.0,
+      1521.5
+     ]
+    ],
+    "area_km2": 100
+   },
+   {
+    "name": "corridor Wībhar - Boṭ-Yārḍ",
+    "points_px": [
+     [
+      852.0,
+      1516.5
+     ],
+     [
+      846.0,
+      1516.5
+     ],
+     [
+      846.0,
+      1521.5
+     ],
+     [
+      852.0,
+      1521.5
+     ]
+    ],
+    "area_km2": 120
+   },
+   {
+    "name": "corridor Boṭ-Yārḍ - Gārḍan",
+    "points_px": [
+     [
+      846.4902903378454,
+      1516.5485483107727
+     ],
+     [
+      836.4902903378454,
+      1514.5485483107727
+     ],
+     [
+      835.5097096621546,
+      1519.4514516892273
+     ],
+     [
+      845.5097096621546,
+      1521.4514516892273
+     ]
+    ],
+    "area_km2": 204
+   },
+   {
+    "name": "corridor Gārḍan - Qorī",
+    "points_px": [
+     [
+      836.6063390625908,
+      1514.5746437496366
+     ],
+     [
+      832.6063390625908,
+      1513.5746437496366
+     ],
+     [
+      831.3936609374092,
+      1518.4253562503634
+     ],
+     [
+      835.3936609374092,
+      1519.4253562503634
+     ]
+    ],
+    "area_km2": 82
+   },
+   {
+    "name": "corridor Qorī - Ōrcharḍ",
+    "points_px": [
+     [
+      833.561737618886,
+      1514.0478279763925
+     ],
+     [
+      828.561737618886,
+      1510.0478279763925
+     ],
+     [
+      825.438262381114,
+      1513.9521720236075
+     ],
+     [
+      830.438262381114,
+      1517.9521720236075
+     ]
+    ],
+    "area_km2": 128
+   },
+   {
+    "name": "corridor Ōrcharḍ - Lōṭas",
+    "points_px": [
+     [
+      828.7677669529663,
+      1510.2322330470336
+     ],
+     [
+      823.7677669529663,
+      1505.2322330470336
+     ],
+     [
+      820.2322330470337,
+      1508.7677669529664
+     ],
+     [
+      825.2322330470337,
+      1513.7677669529664
+     ]
+    ],
+    "area_km2": 141
+   },
+   {
+    "name": "corridor Lōṭas - Phish-Mārkiṭ",
+    "points_px": [
+     [
+      823.6269784336399,
+      1505.1018584940869
+     ],
+     [
+      816.6269784336399,
+      1499.1018584940869
+     ],
+     [
+      813.3730215663601,
+      1502.8981415059131
+     ],
+     [
+      820.3730215663601,
+      1508.8981415059131
+     ]
+    ],
+    "area_km2": 184
+   },
+   {
+    "name": "corridor Phish-Mārkiṭ - Siṭāq",
+    "points_px": [
+     [
+      817.2360679774998,
+      1499.8819660112501
+     ],
+     [
+      814.2360679774998,
+      1493.8819660112501
+     ],
+     [
+      809.7639320225002,
+      1496.1180339887499
+     ],
+     [
+      812.7639320225002,
+      1502.1180339887499
+     ]
+    ],
+    "area_km2": 134
+   },
+   {
+    "name": "corridor Erehwon - Gārḍan",
+    "points_px": [
+     [
+      841.0,
+      1514.5
+     ],
+     [
+      836.0,
+      1514.5
+     ],
+     [
+      836.0,
+      1519.5
+     ],
+     [
+      841.0,
+      1519.5
+     ]
+    ],
+    "area_km2": 100
+   },
+   {
+    "name": "corridor Erehwon - Boṭ-Yārḍ",
+    "points_px": [
+     [
+      840.0715233091147,
+      1519.321191727213
+     ],
+     [
+      845.0715233091147,
+      1521.321191727213
+     ],
+     [
+      846.9284766908853,
+      1516.678808272787
+     ],
+     [
+      841.9284766908853,
+      1514.678808272787
+     ]
+    ],
+    "area_km2": 108
+   }
+  ]
+ },
+ "frame": {
+  "units": "m",
+  "x": "east",
+  "z": "south",
+  "m_per_px": 2000.0,
+  "origin_px": [
+   844,
+   1512
+  ],
+  "box_px": [
+   798,
+   1482,
+   890,
+   1542
+  ],
+  "size_px": [
+   93,
+   61
+  ]
+ },
+ "heights": {
+  "grid": [
+   385,
+   257
+  ],
+  "origin_cell": [
+   3184,
+   5920
+  ],
+  "su": 4.0,
+  "sv": 4.0,
+  "lo": -2600.0,
+  "hi": 27000.0,
+  "cell_m": 500.0,
+  "upsample": 4.0,
+  "option_c_synth": true,
+  "note": "cell (i,j) sits at full px ((i+i0)/su, (j+j0)/sv); elev.png and wlev.png are this grid"
+ },
+ "rain": {
+  "scale_mm": 15.686274509803921
+ },
+ "temp": {
+  "offset": -90
+ },
+ "pressure": {
+  "atm0": 1.6,
+  "scale_m": 8000
+ },
+ "classes": [
+  {
+   "code": "Af",
+   "name": "tropical rainforest",
+   "color": "#0000ff",
+   "group": "A"
+  },
+  {
+   "code": "Am",
+   "name": "tropical monsoon",
+   "color": "#0078ff",
+   "group": "A"
+  },
+  {
+   "code": "Aw",
+   "name": "tropical savanna",
+   "color": "#46aafa",
+   "group": "A"
+  },
+  {
+   "code": "BWh",
+   "name": "hot desert",
+   "color": "#ff0000",
+   "group": "B"
+  },
+  {
+   "code": "BWk",
+   "name": "cold desert",
+   "color": "#ff9696",
+   "group": "B"
+  },
+  {
+   "code": "BSh",
+   "name": "hot steppe",
+   "color": "#f5a500",
+   "group": "B"
+  },
+  {
+   "code": "BSk",
+   "name": "cold steppe",
+   "color": "#ffdc64",
+   "group": "B"
+  },
+  {
+   "code": "Csa",
+   "name": "hot-summer Mediterranean",
+   "color": "#ffff00",
+   "group": "C"
+  },
+  {
+   "code": "Csb",
+   "name": "warm-summer Mediterranean",
+   "color": "#c8c800",
+   "group": "C"
+  },
+  {
+   "code": "Csc",
+   "name": "cold-summer Mediterranean",
+   "color": "#969600",
+   "group": "C"
+  },
+  {
+   "code": "Cwa",
+   "name": "monsoon subtropical",
+   "color": "#96ff96",
+   "group": "C"
+  },
+  {
+   "code": "Cwb",
+   "name": "subtropical highland",
+   "color": "#64c864",
+   "group": "C"
+  },
+  {
+   "code": "Cwc",
+   "name": "cold subtropical highland",
+   "color": "#329632",
+   "group": "C"
+  },
+  {
+   "code": "Cfa",
+   "name": "humid subtropical",
+   "color": "#c8ff50",
+   "group": "C"
+  },
+  {
+   "code": "Cfb",
+   "name": "oceanic",
+   "color": "#64ff50",
+   "group": "C"
+  },
+  {
+   "code": "Cfc",
+   "name": "subpolar oceanic",
+   "color": "#32c800",
+   "group": "C"
+  },
+  {
+   "code": "Dsa",
+   "name": "dry-summer hot continental",
+   "color": "#ff00ff",
+   "group": "D"
+  },
+  {
+   "code": "Dsb",
+   "name": "dry-summer warm continental",
+   "color": "#c800c8",
+   "group": "D"
+  },
+  {
+   "code": "Dsc",
+   "name": "dry-summer subarctic",
+   "color": "#963296",
+   "group": "D"
+  },
+  {
+   "code": "Dwa",
+   "name": "dry-winter hot continental",
+   "color": "#aaafff",
+   "group": "D"
+  },
+  {
+   "code": "Dwb",
+   "name": "dry-winter warm continental",
+   "color": "#5a78dc",
+   "group": "D"
+  },
+  {
+   "code": "Dwc",
+   "name": "dry-winter subarctic",
+   "color": "#4b50b4",
+   "group": "D"
+  },
+  {
+   "code": "Dfa",
+   "name": "hot-summer continental",
+   "color": "#00ffff",
+   "group": "D"
+  },
+  {
+   "code": "Dfb",
+   "name": "warm-summer continental",
+   "color": "#37c8ff",
+   "group": "D"
+  },
+  {
+   "code": "Dfc",
+   "name": "subarctic (boreal)",
+   "color": "#007d7d",
+   "group": "D"
+  },
+  {
+   "code": "Dfd",
+   "name": "extreme subarctic",
+   "color": "#00465f",
+   "group": "D"
+  },
+  {
+   "code": "ET",
+   "name": "tundra",
+   "color": "#b2b2b2",
+   "group": "E"
+  },
+  {
+   "code": "EF",
+   "name": "ice cap",
+   "color": "#666666",
+   "group": "E"
+  },
+  {
+   "code": "XA",
+   "name": "hypertropic jungle (abyssal, >1.85 atm)",
+   "color": "#3d0070",
+   "group": "X"
+  },
+  {
+   "code": "XV",
+   "name": "abyssal savanna",
+   "color": "#8a3ca8",
+   "group": "X"
+  },
+  {
+   "code": "XS",
+   "name": "abyssal salt steppe",
+   "color": "#b8542a",
+   "group": "X"
+  },
+  {
+   "code": "XW",
+   "name": "abyssal desert",
+   "color": "#5c0000",
+   "group": "X"
+  },
+  {
+   "code": "HT",
+   "name": "hyperalpine tundra (<0.6 atm)",
+   "color": "#d8dbe8",
+   "group": "H"
+  },
+  {
+   "code": "HF",
+   "name": "hyperalpine ice",
+   "color": "#eef0f7",
+   "group": "H"
+  },
+  {
+   "code": "O",
+   "name": "airless rim",
+   "color": "#f6f3ec",
+   "group": "O"
+  },
+  {
+   "code": "WS",
+   "name": "sea / lake",
+   "color": "#3b6fb0",
+   "group": "W"
+  },
+  {
+   "code": "WX",
+   "name": "abyssal salt lake",
+   "color": "#8c6a3a",
+   "group": "W"
+  },
+  {
+   "code": "WH",
+   "name": "highland lake",
+   "color": "#5c9ea8",
+   "group": "W"
+  }
+ ],
+ "biomes": [
+  {
+   "id": 0,
+   "name": "rift",
+   "doc": "rmvkaekmwq9es",
+   "kind": "biome",
+   "colour": "#6fb5a8",
+   "kit": "rift",
+   "water": false,
+   "drawn_px": 357,
+   "notes": "",
+   "px": 416,
+   "px_in_region": 0,
+   "dist_band": 0
+  },
+  {
+   "id": 1,
+   "name": "xanadu",
+   "doc": "rmvkkmitffbjk",
+   "kind": "biome",
+   "colour": "#5da05c",
+   "kit": "xanadu",
+   "water": false,
+   "drawn_px": 5199,
+   "notes": "",
+   "px": 5257,
+   "px_in_region": 1396,
+   "dist_band": 1
+  }
+ ],
+ "biome_fill_px": 117,
+ "dist": {
+  "file": "dist.png",
+  "bands": 2,
+  "band_px": [
+   93,
+   61
+  ],
+  "encoding": "R<<16 | G<<8 | B",
+  "value": "squared distance in map pixels to the biome's drawn polygon (pixel centres; 0 inside)",
+  "pad_px": 128,
+  "note": "exact up to pad_px; metres = sqrt(value) * m_per_px (core/mask KMASK.distance)"
+ },
+ "drainage": {
+  "min_accum": 30000.0,
+  "lines": [
+   [
+    [
+     52000.0,
+     20000.0,
+     30063.0,
+     116.7
+    ],
+    [
+     52000.0,
+     18000.0,
+     30882.0,
+     59.2
+    ],
+    [
+     52000.0,
+     16000.0,
+     31706.0,
+     -6.6
+    ],
+    [
+     52000.0,
+     14000.0,
+     32780.0,
+     -24.7
+    ],
+    [
+     52000.0,
+     12000.0,
+     33012.0,
+     -144.4
+    ],
+    [
+     52000.0,
+     10000.0,
+     33247.0,
+     -440.1
+    ],
+    [
+     52000.0,
+     8000.0,
+     33247.0,
+     -610.9
+    ]
+   ],
+   [
+    [
+     8000.0,
+     58000.0,
+     31165.0,
+     -173.0
+    ],
+    [
+     6000.0,
+     60000.0,
+     33569.0,
+     -272.5
+    ],
+    [
+     6000.0,
+     62000.0,
+     34545.0,
+     -283.9
+    ],
+    [
+     4000.0,
+     64000.0,
+     57831.0,
+     -276.2
+    ]
+   ],
+   [
+    [
+     -42000.0,
+     44000.0,
+     43753.0,
+     -214.1
+    ],
+    [
+     -42000.0,
+     46000.0,
+     46427.0,
+     -129.4
+    ],
+    [
+     -44000.0,
+     48000.0,
+     46890.0,
+     -158.4
+    ],
+    [
+     -46000.0,
+     50000.0,
+     47780.0,
+     -313.3
+    ],
+    [
+     -46000.0,
+     52000.0,
+     48424.0,
+     -563.1
+    ],
+    [
+     -46000.0,
+     54000.0,
+     49259.0,
+     -830.1
+    ],
+    [
+     -46000.0,
+     56000.0,
+     50067.0,
+     -1069.9
+    ],
+    [
+     -48000.0,
+     58000.0,
+     50239.0,
+     -1300.8
+    ],
+    [
+     -50000.0,
+     60000.0,
+     50420.0,
+     -1457.5
+    ],
+    [
+     -52000.0,
+     62000.0,
+     50604.0,
+     -1588.5
+    ],
+    [
+     -54000.0,
+     64000.0,
+     50788.0,
+     -1717.6
+    ]
+   ],
+   [
+    [
+     -68000.0,
+     -40000.0,
+     53357.0,
+     -506.1
+    ],
+    [
+     -66000.0,
+     -40000.0,
+     53357.0,
+     -591.9
+    ]
+   ],
+   [
+    [
+     74000.0,
+     -34000.0,
+     33110.0,
+     -518.4
+    ],
+    [
+     74000.0,
+     -32000.0,
+     33792.0,
+     -517.7
+    ],
+    [
+     74000.0,
+     -30000.0,
+     38737.0,
+     -517.2
+    ],
+    [
+     74000.0,
+     -28000.0,
+     39525.0,
+     -519.9
+    ],
+    [
+     74000.0,
+     -26000.0,
+     40298.0,
+     -523.6
+    ],
+    [
+     74000.0,
+     -24000.0,
+     41086.0,
+     -521.7
+    ],
+    [
+     74000.0,
+     -22000.0,
+     42094.0,
+     -524.4
+    ],
+    [
+     74000.0,
+     -20000.0,
+     42922.0,
+     -522.9
+    ],
+    [
+     74000.0,
+     -18000.0,
+     43988.0,
+     -523.7
+    ],
+    [
+     74000.0,
+     -16000.0,
+     44835.0,
+     -523.2
+    ],
+    [
+     72000.0,
+     -14000.0,
+     44835.0,
+     -593.2
+    ]
+   ],
+   [
+    [
+     88000.0,
+     2000.0,
+     43576.0,
+     -532.7
+    ],
+    [
+     90000.0,
+     4000.0,
+     46424.0,
+     -546.5
+    ],
+    [
+     92000.0,
+     6000.0,
+     48051.0,
+     -559.6
+    ],
+    [
+     94000.0,
+     8000.0,
+     50039.0,
+     -561.1
+    ],
+    [
+     96000.0,
+     10000.0,
+     54227.0,
+     -561.2
+    ]
+   ]
+  ]
+ },
+ "rivers": [
+  {
+   "name": "Ālph",
+   "id": "r070",
+   "to": {
+    "lake_m": -1685,
+    "at_px": [
+     942.0,
+     1593.0
+    ],
+    "name": "Qiblai's lake (the Lower Xanadu Small Lake)"
+   },
+   "line": [
+    [
+     65760.0,
+     -660.0,
+     -525.4,
+     380.0
+    ],
+    [
+     69720.0,
+     -1300.0,
+     -549.5,
+     380.0
+    ],
+    [
+     73680.0,
+     -1880.0,
+     -547.8,
+     380.0
+    ],
+    [
+     77700.0,
+     -1800.0,
+     -551.1,
+     380.0
+    ],
+    [
+     81600.0,
+     -920.0,
+     -552.8,
+     380.0
+    ],
+    [
+     85160.0,
+     880.0,
+     -555.6,
+     380.0
+    ],
+    [
+     88360.0,
+     3320.0,
+     -555.5,
+     380.0
+    ],
+    [
+     91440.0,
+     5880.0,
+     -558.7,
+     380.0
+    ],
+    [
+     94440.0,
+     8540.0,
+     -559.6,
+     380.0
+    ]
+   ],
+   "width_m": 35,
+   "depth_m": 1.7,
+   "q_mouth_m3s": 520.0,
+   "order": 3,
+   "catchment_km2": 15354
+  },
+  {
+   "name": "Qol Siṭrīm",
+   "id": "r272",
+   "to": {
+    "lake_m": -520,
+    "at_px": [
+     824.0,
+     1489.0
+    ]
+   },
+   "line": [
+    [
+     -42600.0,
+     -60600.0,
+     -134.5,
+     139.6
+    ],
+    [
+     -42600.0,
+     -56600.0,
+     -315.7,
+     139.7
+    ],
+    [
+     -41740.0,
+     -53060.0,
+     -332.2,
+     139.7
+    ],
+    [
+     -40860.0,
+     -49540.0,
+     -479.8,
+     139.7
+    ],
+    [
+     -40000.0,
+     -46000.0,
+     -579.2,
+     139.7
+    ]
+   ],
+   "width_m": 53,
+   "depth_m": 2.3,
+   "q_mouth_m3s": 139.7,
+   "order": 1,
+   "catchment_km2": 15819
+  },
+  {
+   "name": "Swīṭ Siṭrīm",
+   "id": "r_pher_swit",
+   "to": {
+    "lake_m": -520.0,
+    "at_px": [
+     842.25,
+     1491.55
+    ]
+   },
+   "line": [
+    [
+     -4000.0,
+     -64000.0,
+     88.5,
+     0.72
+    ],
+    [
+     -4000.0,
+     -62000.0,
+     71.8,
+     0.83
+    ],
+    [
+     -4000.0,
+     -60000.0,
+     61.2,
+     0.93
+    ],
+    [
+     -4000.0,
+     -58000.0,
+     44.0,
+     1.04
+    ],
+    [
+     -4000.0,
+     -56000.0,
+     31.4,
+     1.15
+    ],
+    [
+     -4000.0,
+     -54000.0,
+     16.5,
+     1.25
+    ],
+    [
+     -4000.0,
+     -52000.0,
+     7.2,
+     1.36
+    ],
+    [
+     -4000.0,
+     -50000.0,
+     -10.0,
+     1.47
+    ],
+    [
+     -4000.0,
+     -48000.0,
+     -19.0,
+     1.57
+    ],
+    [
+     -4000.0,
+     -46000.0,
+     -50.0,
+     1.68
+    ],
+    [
+     -3800.0,
+     -44000.0,
+     -275.5,
+     1.79
+    ],
+    [
+     -3600.0,
+     -42000.0,
+     -508.3,
+     1.89
+    ],
+    [
+     -3500.0,
+     -40900.0,
+     -556.0,
+     2.0
+    ]
+   ],
+   "width_m": 8,
+   "depth_m": 0.6,
+   "q_mouth_m3s": 2.0,
+   "order": 0,
+   "catchment_km2": 250
+  }
+ ],
+ "valleys": [
+  {
+   "name": "Sakāi Ḍrāi",
+   "id": "r488",
+   "to": {
+    "lake_m": -520,
+    "at_px": [
+     881.0,
+     1506.0
+    ]
+   },
+   "line": [
+    [
+     77440.0,
+     -60680.0,
+     584.6,
+     2.6
+    ],
+    [
+     75200.0,
+     -56840.0,
+     370.0,
+     3.5
+    ],
+    [
+     78520.0,
+     -52500.0,
+     121.5,
+     3.5
+    ],
+    [
+     77600.0,
+     -48600.0,
+     -140.4,
+     5.3
+    ],
+    [
+     76700.0,
+     -44620.0,
+     -347.6,
+     5.3
+    ],
+    [
+     73860.0,
+     -40660.0,
+     -475.1,
+     5.8
+    ],
+    [
+     73600.0,
+     -36600.0,
+     -512.4,
+     5.8
+    ],
+    [
+     73600.0,
+     -32600.0,
+     -524.0,
+     5.8
+    ],
+    [
+     73600.0,
+     -28760.0,
+     -529.5,
+     5.8
+    ],
+    [
+     73600.0,
+     -24920.0,
+     -530.4,
+     5.8
+    ],
+    [
+     73600.0,
+     -21080.0,
+     -530.7,
+     5.8
+    ],
+    [
+     73600.0,
+     -17240.0,
+     -530.9,
+     5.8
+    ],
+    [
+     73620.0,
+     -13400.0,
+     -551.2,
+     5.8
+    ],
+    [
+     74000.0,
+     -12000.0,
+     -578.8,
+     5.8
+    ]
+   ],
+   "width_m": 70,
+   "depth_m": 0.0,
+   "q_mouth_m3s": 5.8,
+   "order": 0,
+   "catchment_km2": 8230
+  },
+  {
+   "name": "Bhon Ḍrāi",
+   "id": "r492",
+   "to": {
+    "lake_m": -520,
+    "at_px": [
+     813.0,
+     1491.0
+    ]
+   },
+   "line": [
+    [
+     -62600.0,
+     -60600.0,
+     -487.5,
+     4.1
+    ],
+    [
+     -62600.0,
+     -56600.0,
+     -527.1,
+     4.1
+    ],
+    [
+     -62440.0,
+     -52940.0,
+     -528.5,
+     4.1
+    ],
+    [
+     -62300.0,
+     -49300.0,
+     -526.5,
+     4.1
+    ],
+    [
+     -62160.0,
+     -45660.0,
+     -526.7,
+     4.1
+    ],
+    [
+     -62000.0,
+     -42000.0,
+     -585.1,
+     4.1
+    ]
+   ],
+   "width_m": 70,
+   "depth_m": 0.0,
+   "q_mouth_m3s": 4.1,
+   "order": 0,
+   "catchment_km2": 7974
+  },
+  {
+   "name": "Girīn Ḍrāi",
+   "id": "r613",
+   "to": {
+    "lake_m": -520,
+    "at_px": [
+     811.0,
+     1492.0
+    ]
+   },
+   "line": [
+    [
+     -95940.0,
+     -53580.0,
+     106.9,
+     7.2
+    ],
+    [
+     -92620.0,
+     -52080.0,
+     78.1,
+     7.2
+    ],
+    [
+     -89300.0,
+     -50560.0,
+     78.2,
+     7.2
+    ],
+    [
+     -85960.0,
+     -49060.0,
+     77.8,
+     7.2
+    ],
+    [
+     -82640.0,
+     -47540.0,
+     53.5,
+     7.2
+    ],
+    [
+     -79300.0,
+     -46040.0,
+     25.7,
+     7.2
+    ],
+    [
+     -75980.0,
+     -44520.0,
+     -0.7,
+     7.2
+    ],
+    [
+     -72660.0,
+     -43020.0,
+     -321.9,
+     7.2
+    ],
+    [
+     -69320.0,
+     -41500.0,
+     -449.7,
+     7.2
+    ],
+    [
+     -66000.0,
+     -40000.0,
+     -591.9,
+     7.2
+    ]
+   ],
+   "width_m": 57,
+   "depth_m": 0.0,
+   "q_mouth_m3s": 7.2,
+   "order": 0,
+   "catchment_km2": 4444
+  },
+  {
+   "name": "Barāiṭ Ḍrāi",
+   "id": "r753",
+   "to": {
+    "lake_m": -520,
+    "at_px": [
+     811.0,
+     1492.0
+    ]
+   },
+   "line": [
+    [
+     -95340.0,
+     -54940.0,
+     90.9,
+     4.9
+    ],
+    [
+     -92080.0,
+     -53280.0,
+     80.4,
+     4.9
+    ],
+    [
+     -88820.0,
+     -51620.0,
+     80.9,
+     4.9
+    ],
+    [
+     -85560.0,
+     -49960.0,
+     80.2,
+     4.9
+    ],
+    [
+     -82300.0,
+     -48300.0,
+     56.2,
+     4.9
+    ],
+    [
+     -79040.0,
+     -46640.0,
+     29.6,
+     4.9
+    ],
+    [
+     -75780.0,
+     -44980.0,
+     -1.1,
+     4.9
+    ],
+    [
+     -72520.0,
+     -43320.0,
+     -319.7,
+     4.9
+    ],
+    [
+     -69260.0,
+     -41660.0,
+     -448.5,
+     4.9
+    ],
+    [
+     -66000.0,
+     -40000.0,
+     -591.9,
+     4.9
+    ]
+   ],
+   "width_m": 49,
+   "depth_m": 0.0,
+   "q_mouth_m3s": 4.9,
+   "order": 0,
+   "catchment_km2": 2968
+  }
+ ],
+ "water": {
+  "spilled_cells": 0,
+  "note": "lake levels above their lowest shore cell were lowered to it"
+ },
+ "settlements": [
+  {
+   "name": "Erehwon",
+   "type": "city",
+   "doc": "s57bkv9741",
+   "px": 841,
+   "py": 1517,
+   "x": -6000.0,
+   "z": 10000.0,
+   "biome": "xanadu",
+   "notes": "Pearl of Xanadu, 20,000 on its mountain lake (LORE.md 6.13; settlements/xanadu, target erewhon). Moved 2026-11-11 with edit 5.1-512, which remade its lake as an Atitlan-like caldera (121 x 66 km at -520 m, three volcanoes set back from the south shore, four islands; the Pleasure Dome of the Bay on its own small isle, landforms.json). The old pin 800,1503 is under the new lake. 805,1516 is a south-shore bench (-497 m): the town climbs to -415 m, a 90 m grey cliff to the palace plateau at -305 m, the mountainside behind, between the west and middle volcanoes 14 and 20 px back. Moved 2026-11-16 with its lake (the owner: \"can we make the lake a little narrower and move it more toward the center of the valley? settlements can move with it\") from 805,1516 to the same bench on the new south shore, 841,1517 (scale model 5.1 edit 7)."
+  }
+ ],
+ "canyon_candidates": {},
+ "volcano": {
+  "px": [
+   846.98,
+   834.22
+  ],
+  "peak": 10916.0,
+  "floor": 10260.0
+ },
+ "vents": [],
+ "landforms": [
+  {
+   "id": "lf_pleasure_dome_isle",
+   "kind": "island",
+   "px": 840.886,
+   "py": 1516.799,
+   "r_m": 80.0,
+   "rx_m": 110.0,
+   "rz_m": 55.0,
+   "crest_m": -506.0,
+   "water_m": -520.0,
+   "note": "The Pleasure Dome of the Bay's island in Erehwon's bay: the Erewhon page's island (settlements/xanadu, target erewhon, ISLAND_C at 70,-613 m from the page's centre, which stands on Erehwon's pin 805,1516 unturned), about 220 x 110 m and 14 m over the lake, some 150 m off the world's shore (the owner, 2026-11-11: keep the page, move the record; it stays off the quays, about 0.6 km). No shoal: its rounded cell is the shore bench. Stamped at 1:1 by openworld/xanadu-oidong-highrift/src/44-world-landforms.js. edit_517 (first run as edit_512 on claude/openworld-sites, 2026-11-11).",
+   "x": -6228.0,
+   "z": 9598.0
+  },
+  {
+   "id": "lf_west_stack",
+   "kind": "island",
+   "px": 816.757,
+   "py": 1495.619,
+   "r_m": 160.0,
+   "crest_m": -478.0,
+   "water_m": -520.0,
+   "note": "A basalt stack off the lake's west shore, 42 m over the water. Sub-cell; its cell's bed held as a shoal. edit_517, 2026-11-11.",
+   "x": -54486.0,
+   "z": -32762.0
+  },
+  {
+   "id": "lf_pher_headland",
+   "kind": "island",
+   "px": 840.65,
+   "py": 1491.2,
+   "r_m": 520.0,
+   "crest_m": -440.0,
+   "water_m": -520.0,
+   "note": "Phēr's headland (the owner, 2026-11-16: \"give it a headland and cove\"): the arm from the shore's bend west of the town, its rise joining the bench; the cove lies east of it. settlements/pher/PLAN.md section 1.2, edit_517_pher.py.",
+   "x": -6700.0,
+   "z": -41600.0
+  },
+  {
+   "id": "lf_pher_headland_tip",
+   "kind": "island",
+   "px": 841.05,
+   "py": 1491.65,
+   "r_m": 320.0,
+   "crest_m": -470.0,
+   "water_m": -520.0,
+   "note": "Phēr's headland (the owner, 2026-11-16: \"give it a headland and cove\"): the arm from the shore's bend west of the town, its rise joining the bench; the cove lies east of it. settlements/pher/PLAN.md section 1.2, edit_517_pher.py.",
+   "x": -5900.0,
+   "z": -40700.0
+  },
+  {
+   "id": "lf_pher_east_point",
+   "kind": "islet",
+   "px": 842.75,
+   "py": 1492.15,
+   "r_m": 240.0,
+   "crest_m": -495.0,
+   "water_m": -520.0,
+   "note": "The low point east of Phēr's cove, closing it to about 1 km across. settlements/pher/PLAN.md section 1.2, edit_517_pher.py.",
+   "x": -2500.0,
+   "z": -39700.0
+  }
+ ],
+ "sites": [
+  {
+   "id": "s57bkv9741",
+   "name": "Erehwon",
+   "type": "city",
+   "culture": "xanadu",
+   "px": 841,
+   "py": 1517,
+   "x": -6000.0,
+   "z": 10000.0,
+   "reach_km": 30,
+   "page": "settlements/xanadu"
+  },
+  {
+   "id": "sxanlkalph01",
+   "name": "Ālph-Hēḍ",
+   "type": "town",
+   "culture": "xanadu",
+   "px": 876,
+   "py": 1503,
+   "x": 64000.0,
+   "z": -18000.0,
+   "reach_km": 6,
+   "page": null
+  },
+  {
+   "id": "sxanlkhotbath01",
+   "name": "Hoṭ-Bāṭh",
+   "type": "town",
+   "culture": "xanadu",
+   "px": 876,
+   "py": 1513,
+   "x": 64000.0,
+   "z": 2000.0,
+   "reach_km": 6,
+   "page": null
+  },
+  {
+   "id": "sxanlktea01",
+   "name": "Ṭī-Ṭeras",
+   "type": "town",
+   "culture": "xanadu",
+   "px": 872,
+   "py": 1517,
+   "x": 56000.0,
+   "z": 10000.0,
+   "reach_km": 6,
+   "page": null
+  },
+  {
+   "id": "sxanlkpottery01",
+   "name": "Pāṭari",
+   "type": "town",
+   "culture": "xanadu",
+   "px": 865,
+   "py": 1518,
+   "x": 42000.0,
+   "z": 12000.0,
+   "reach_km": 6,
+   "page": null
+  },
+  {
+   "id": "sxanlksaffron01",
+   "name": "Saphran",
+   "type": "town",
+   "culture": "xanadu",
+   "px": 857,
+   "py": 1519,
+   "x": 26000.0,
+   "z": 14000.0,
+   "reach_km": 6,
+   "page": null
+  },
+  {
+   "id": "sxanlkweaver01",
+   "name": "Wībhar",
+   "type": "town",
+   "culture": "xanadu",
+   "px": 852,
+   "py": 1519,
+   "x": 16000.0,
+   "z": 14000.0,
+   "reach_km": 6,
+   "page": null
+  },
+  {
+   "id": "sxanlkboatyard01",
+   "name": "Boṭ-Yārḍ",
+   "type": "town",
+   "culture": "xanadu",
+   "px": 846,
+   "py": 1519,
+   "x": 4000.0,
+   "z": 14000.0,
+   "reach_km": 6,
+   "page": null
+  },
+  {
+   "id": "sxanlkgarden01",
+   "name": "Gārḍan",
+   "type": "town",
+   "culture": "xanadu",
+   "px": 836,
+   "py": 1517,
+   "x": -16000.0,
+   "z": 10000.0,
+   "reach_km": 6,
+   "page": null
+  },
+  {
+   "id": "sxanlkquarry01",
+   "name": "Qorī",
+   "type": "town",
+   "culture": "xanadu",
+   "px": 832,
+   "py": 1516,
+   "x": -24000.0,
+   "z": 8000.0,
+   "reach_km": 6,
+   "page": null
+  },
+  {
+   "id": "sxanlkorchard01",
+   "name": "Ōrcharḍ",
+   "type": "town",
+   "culture": "xanadu",
+   "px": 827,
+   "py": 1512,
+   "x": -34000.0,
+   "z": 0.0,
+   "reach_km": 6,
+   "page": null
+  },
+  {
+   "id": "sxanlklotus01",
+   "name": "Lōṭas",
+   "type": "town",
+   "culture": "xanadu",
+   "px": 822,
+   "py": 1507,
+   "x": -44000.0,
+   "z": -10000.0,
+   "reach_km": 6,
+   "page": null
+  },
+  {
+   "id": "sxanlkfish01",
+   "name": "Phish-Mārkiṭ",
+   "type": "town",
+   "culture": "xanadu",
+   "px": 815,
+   "py": 1501,
+   "x": -58000.0,
+   "z": -22000.0,
+   "reach_km": 6,
+   "page": null
+  },
+  {
+   "id": "sxanlkstack01",
+   "name": "Siṭāq",
+   "type": "town",
+   "culture": "xanadu",
+   "px": 812,
+   "py": 1495,
+   "x": -64000.0,
+   "z": -34000.0,
+   "reach_km": 6,
+   "page": null
+  },
+  {
+   "id": "sxanlkwestisle01",
+   "name": "Wesṭ-Āil",
+   "type": "village",
+   "culture": "xanadu",
+   "px": 831,
+   "py": 1499,
+   "x": -26000.0,
+   "z": -26000.0,
+   "reach_km": 3,
+   "page": null
+  },
+  {
+   "id": "sxanlkeastisle01",
+   "name": "Lāiṭ-Hāus",
+   "type": "village",
+   "culture": "xanadu",
+   "px": 864,
+   "py": 1503,
+   "x": 40000.0,
+   "z": -18000.0,
+   "reach_km": 3,
+   "page": null
+  },
+  {
+   "id": "sxanlkbayisle01",
+   "name": "Bē-Āil",
+   "type": "village",
+   "culture": "xanadu",
+   "px": 844.1,
+   "py": 1511.5,
+   "x": 200.00000000004547,
+   "z": -1000.0,
+   "reach_km": 3,
+   "page": null
+  }
+ ],
+ "cut": {
+  "by": "tools/scale-model/cut_site.py",
+  "sites_json": "openworld/SITES.json",
+  "region": "xanadu-lake-shore",
+  "map": "5.1",
+  "polygons": [
+   {
+    "name": "site Erehwon (s57bkv9741)",
+    "kind": "site",
+    "ref": "s57bkv9741"
+   },
+   {
+    "name": "site Ālph-Hēḍ (sxanlkalph01)",
+    "kind": "site",
+    "ref": "sxanlkalph01"
+   },
+   {
+    "name": "site Hoṭ-Bāṭh (sxanlkhotbath01)",
+    "kind": "site",
+    "ref": "sxanlkhotbath01"
+   },
+   {
+    "name": "site Ṭī-Ṭeras (sxanlktea01)",
+    "kind": "site",
+    "ref": "sxanlktea01"
+   },
+   {
+    "name": "site Pāṭari (sxanlkpottery01)",
+    "kind": "site",
+    "ref": "sxanlkpottery01"
+   },
+   {
+    "name": "site Saphran (sxanlksaffron01)",
+    "kind": "site",
+    "ref": "sxanlksaffron01"
+   },
+   {
+    "name": "site Wībhar (sxanlkweaver01)",
+    "kind": "site",
+    "ref": "sxanlkweaver01"
+   },
+   {
+    "name": "site Boṭ-Yārḍ (sxanlkboatyard01)",
+    "kind": "site",
+    "ref": "sxanlkboatyard01"
+   },
+   {
+    "name": "site Gārḍan (sxanlkgarden01)",
+    "kind": "site",
+    "ref": "sxanlkgarden01"
+   },
+   {
+    "name": "site Qorī (sxanlkquarry01)",
+    "kind": "site",
+    "ref": "sxanlkquarry01"
+   },
+   {
+    "name": "site Ōrcharḍ (sxanlkorchard01)",
+    "kind": "site",
+    "ref": "sxanlkorchard01"
+   },
+   {
+    "name": "site Lōṭas (sxanlklotus01)",
+    "kind": "site",
+    "ref": "sxanlklotus01"
+   },
+   {
+    "name": "site Phish-Mārkiṭ (sxanlkfish01)",
+    "kind": "site",
+    "ref": "sxanlkfish01"
+   },
+   {
+    "name": "site Siṭāq (sxanlkstack01)",
+    "kind": "site",
+    "ref": "sxanlkstack01"
+   },
+   {
+    "name": "site Wesṭ-Āil (sxanlkwestisle01)",
+    "kind": "site",
+    "ref": "sxanlkwestisle01"
+   },
+   {
+    "name": "site Lāiṭ-Hāus (sxanlkeastisle01)",
+    "kind": "site",
+    "ref": "sxanlkeastisle01"
+   },
+   {
+    "name": "site Bē-Āil (sxanlkbayisle01)",
+    "kind": "site",
+    "ref": "sxanlkbayisle01"
+   },
+   {
+    "name": "corridor Ālph-Hēḍ - Hoṭ-Bāṭh",
+    "kind": "corridor",
+    "ref": "sxanlkalph01-sxanlkhotbath01"
+   },
+   {
+    "name": "corridor Hoṭ-Bāṭh - Ṭī-Ṭeras",
+    "kind": "corridor",
+    "ref": "sxanlkhotbath01-sxanlktea01"
+   },
+   {
+    "name": "corridor Ṭī-Ṭeras - Pāṭari",
+    "kind": "corridor",
+    "ref": "sxanlktea01-sxanlkpottery01"
+   },
+   {
+    "name": "corridor Pāṭari - Saphran",
+    "kind": "corridor",
+    "ref": "sxanlkpottery01-sxanlksaffron01"
+   },
+   {
+    "name": "corridor Saphran - Wībhar",
+    "kind": "corridor",
+    "ref": "sxanlksaffron01-sxanlkweaver01"
+   },
+   {
+    "name": "corridor Wībhar - Boṭ-Yārḍ",
+    "kind": "corridor",
+    "ref": "sxanlkweaver01-sxanlkboatyard01"
+   },
+   {
+    "name": "corridor Boṭ-Yārḍ - Gārḍan",
+    "kind": "corridor",
+    "ref": "sxanlkboatyard01-sxanlkgarden01"
+   },
+   {
+    "name": "corridor Gārḍan - Qorī",
+    "kind": "corridor",
+    "ref": "sxanlkgarden01-sxanlkquarry01"
+   },
+   {
+    "name": "corridor Qorī - Ōrcharḍ",
+    "kind": "corridor",
+    "ref": "sxanlkquarry01-sxanlkorchard01"
+   },
+   {
+    "name": "corridor Ōrcharḍ - Lōṭas",
+    "kind": "corridor",
+    "ref": "sxanlkorchard01-sxanlklotus01"
+   },
+   {
+    "name": "corridor Lōṭas - Phish-Mārkiṭ",
+    "kind": "corridor",
+    "ref": "sxanlklotus01-sxanlkfish01"
+   },
+   {
+    "name": "corridor Phish-Mārkiṭ - Siṭāq",
+    "kind": "corridor",
+    "ref": "sxanlkfish01-sxanlkstack01"
+   },
+   {
+    "name": "corridor Erehwon - Gārḍan",
+    "kind": "corridor",
+    "ref": "s57bkv9741-sxanlkgarden01"
+   },
+   {
+    "name": "corridor Erehwon - Boṭ-Yārḍ",
+    "kind": "corridor",
+    "ref": "s57bkv9741-sxanlkboatyard01"
+   }
+  ]
+ }
+}

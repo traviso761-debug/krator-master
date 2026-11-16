@@ -26,18 +26,19 @@ function qnCloister(x,y,z,ry,L,dd,c,o){o=o||{};const wk=2.2,n=Math.max(2,Math.ro
 function buildQbMonastery(G,o){const V=xV(o)%8;reseed(33501+V);const W=52,D=52,P=1.2,Dr=7;
  const SP=QSPOKE[V],red=xC(SP.wall).multiplyScalar(rr(.96,1.02)),wash=xC(xPick(XPAL.wash)),stone=xC(xPick(QSTONE)),band=xC(SP.band);   /* red: the spoke's colour (QSPOKE) */
  const trim=xC(SP.trim),hr=V%2?[3.4,3.0,2.8]:[3.4,3.0];
- vnReg('Great monastery (spoke '+(V+1)+', '+SP.name+')',0,0,30,P+16+5,{colour:SP.name.toLowerCase()});
+ vnReg('Great monastery (spoke '+(V+1)+', '+SP.name+(SP.house?', '+SP.house:SP.order?', '+SP.order:'')+')',0,0,30,P+16+5,{colour:SP.name.toLowerCase()});
  qnPlinth(0,0,W,D,P,0,stone);
  // the four cell ranges; the front one parted by the gate
  const rr4=[[0,-D/2+Dr/2,W,Dr,Math.PI],[W/2-Dr/2,0,D-2*Dr,Dr,Math.PI/2],[-W/2+Dr/2,0,D-2*Dr,Dr,-Math.PI/2]];
  for(const s of[-1,1])rr4.push([s*(W/4+2.5),D/2-Dr/2,W/2-5,Dr,0]);
- for(const [x,z,L,dd,ry] of rr4){const S=qnStack(x,P,z,L,dd,ry,hr,red,'wash',xC(XPAL.white));
-  qnWins(x,P,z,L,dd,ry,hr,S.k,{pitch:2.6,ww:.75,wh:1.0,trim,left:false,right:false,front:true,back:true,val:'all'});
+ for(const [x,z,L,dd,ry] of rr4){const S=qnStack(x,P,z,L,dd,ry,hr,red,'wash',xC(XPAL.white)),du=ry===Math.PI?17:0;   /* the back range's door clear of the assembly hall behind which it stands */
+  qnWins(x,P,z,L,dd,ry,hr,S.k,{pitch:2.6,ww:.75,wh:1.0,trim,left:false,right:false,front:true,back:true,val:'all',skipBack:[[-du-1.4,-du+1.4]]});
   qnRoof(x,S.y,z,S.w,S.d,ry,red,{band,gold:true,parapet:.6,corner:'gold'});
-  if(ry!==0)qnCloister(x,P,z,ry+Math.PI,L-2*2.4,dd,wash,{band});}
+  if(ry!==0)qnCloister(x,P,z,ry+Math.PI,L-2*2.4,dd,wash,{band});
+  const cd=loc(x,z,du,-dd/2,ry);qnDoor(cd[0],P,cd[1],ry+Math.PI,1.1,2.3,{c:trim,step:false,val:false});}   /* the range's door to the court: the monks' quarters (an interior: settlements/qiblai 90u) */
  // the gate tower: a white cube one storey over the ranges, the door, banners on its roof
  const gH=hr.reduce((a,b)=>a+b,0)+3.4,GT=qnStack(0,P,D/2-Dr/2,10,Dr+1,0,[gH],wash,'wash');
- qnDoor(0,P,D/2+.5,0,2.4,3.2,{c:xC(XPAL.red),leaf:xC(xPick(XPAL.dark)),step:false});xnFlight(0,0,D/2+.5+Math.max(2,Math.round(P/.17))*.34,0,4.4,P,'vStone',stone);
+ qnDoor(0,P,D/2+.5,0,2.4,3.2,{c:xC(XPAL.red),leaf:xC(xPick(XPAL.dark)),step:false});qnDoor(0,P,D/2-Dr/2-(Dr+1)/2,Math.PI,2.4,3.2,{c:xC(XPAL.red),leaf:xC(xPick(XPAL.dark)),step:false,val:false});xnFlight(0,0,D/2+.5+Math.max(2,Math.round(P/.17))*.34,0,4.4,P,'vStone',stone);
  for(const u of[-2.6,2.6])xnTibWin(u,P+gH-2.6,D/2+.45,0,1.0,1.3,'lit',trim,{valC:trim});
  const gt=qnRoof(0,GT.y,D/2-Dr/2,GT.w,GT.d,0,wash,{band,gold:true,parapet:.7});qnCrown(0,gt,D/2-Dr/2,GT.w,GT.d,0,{pav:false,deer:true,deerS:.8});
  // the assembly hall at the back of the court
@@ -59,7 +60,60 @@ function buildQbMonastery(G,o){const V=xV(o)%8;reseed(33501+V);const W=52,D=52,P
  else if(piece===1){vPst('vPostB',0,P,cz,.22,14,xC(0x5a4632));vBall('xGold',0,P+14.2,cz,.3,xC(XPAL.gold[0]));for(let i=0;i<8;i++){const a=i*Math.PI/4;qnFlags([0,P+13.6,cz],[Math.cos(a)*14,P+3.6,cz+Math.sin(a)*8],18);}}
  else if(piece===2){kput('xDrumT',[0,P,cz],null,[2.0,.5,2.0],stone);kput('qSongDrum',[0,P+.5,cz],null,[1.6,3.4,1.6],null);for(const t of[.5,2.1,3.9])kput('xDrumS',[0,P+t,cz],null,[1.68,.2,1.68],xC(XPAL.gold[0]));qnRoof(0,P+4.2,cz,4,4,0,wash,{parapet:.3});for(const sx of[-1,1])for(const sz of[-1,1])vPst('xColS',sx*1.8,P,cz+sz*1.8,.2,4.2,stone);}
  else{xnTree(0,cz,9,null,P);vB('vStone',0,P,cz,4,.6,4,0,stone);}
- for(const s of[-1,1])vnLamp(s*3.4,P+3.4,D/2+.5,0);xnFolk(0,P,cz+4,5,6);}
+ for(const s of[-1,1])vnLamp(s*3.4,P+3.4,D/2+.5,0);xnFolk(0,P,cz+4,5,6);
+ if(SP.order)qnOrderTouches(W,D,P,SP);   /* the History Monks' monastery: Longsong's touches */
+ if(SP.tea)qnTeaTouches(W,D,P,SP);   /* the Order of Viridian Thought's: the tea Order */
+ if(SP.hospital)qnLilyTouches(W,D,P,SP);}   /* the Order of the White Lily's: its head house, a hospital */
+// ---------------------------------------------------------------- the Order of the White Lily's monastery: the hospital
+// The white monastery is the Order of the White Lily's head house (unlike the other great orders, whose heads are away from
+// the city), known for medicine and healing; it doubles as the city's hospital (its ranges are the wards: QB_IX_HOSPITAL,
+// settlements/qiblai 90u). Here: the physic garden, herb beds in the court's two sides (green herbs in rows, a border of
+// white lilies), a washing pool with its kerb by the hall, a rack of drying herbs under a lean-to, two litters by the gate,
+// and the Order's banners either side of the gate: white, a lily in gold on a green ground
+function qnLilyTouches(W,D,P,SP){const herb=xC(0x4e7a3c),herb2=xC(0x6a8e4a),stem=xC(0x3a6a2a),lily=xC(0xf6f2ea),gold=xC(XPAL.gold[0]),tim=xC(0x7a5a3c),stone=xC(xPick(QSTONE)),green=xC(0x2e5a34);
+ for(const s of[-1,1]){const bx=s*(W/2-7-5.5),z0=4.2,z1=15;vB('vStone',bx,P,(z0+z1)/2,6.4,.25,z1-z0+.6,0,stone);   /* clear of the hall (to z 3.4) and the side cloisters (from x 16.8) */
+  for(let r=0;r<3;r++)for(let z=z0+.8;z<z1-.4;z+=.9){const x=bx-1.8+r*1.8;kput('qGiltBall',[x,P+.25,z],null,[.42,.32,.36],(r+Math.round(z))%2?herb:herb2);}
+  for(let z=z0+.5;z<z1;z+=.7)for(const e of[-1,1]){const x=bx+e*2.9;vB('vWood',x,P+.25,z,.03,.6,.03,0,stem);kput('qGiltBall',[x,P+.88,z],null,[.11,.14,.11],lily);}}   /* the white lilies along each bed's sides */
+ vB('vStone',0,P,7.5,4.6,.45,4.6,0,stone);vB('xWaterB',0,P+.42,7.5,3.9,.05,3.9,0,xC(XPAL.water));   /* the washing pool in its kerb */
+ const rx=W/2-7-6,rz=17.2;vB('vWood',rx,P+2.6,rz,6,.12,2.2,0,tim);for(const sx of[-1,1])for(const sz of[-1,1])vPst('vPost',rx+sx*2.8,P,rz+sz*1,.06,2.6,tim);
+ for(let k=0;k<6;k++)kput('qGiltBall',[rx-2.4+k*.95,P+1.9,rz],null,[.25,.45,.25],k%2?herb:herb2);   /* bunches of herbs drying under the roof */
+ for(const s of[-1,1]){const lx=s*6.8,lz=D/2-7-1.4;vB('vWood',lx,P+.45,lz,.7,.08,2.1,0,tim);vB('vClothB',lx,P+.53,lz,.62,.04,1.9,0,lily);for(const e of[-1,1])vB('vWood',lx+e*.3,P,lz,.06,.45,2.1,0,tim);}   /* litters */
+ for(const s of[-1,1]){const bx=s*7.6,bz=D/2+3.2;vPst('vPostB',bx,0,bz,.12,7,xC(0x5a4632));vB('vWood',bx,6.6,bz,2.2,.12,.12,0,tim);
+  vB('vClothB',bx,3.2,bz+.1,2,3.3,.05,0,lily);vB('vClothB',bx,4.1,bz+.14,1.2,1.4,.04,0,green);kput('qGiltBall',[bx,4.8,bz+.17],null,[.28,.42,.04],gold);kput('qGiltBall',[bx,4.45,bz+.17],null,[.45,.16,.04],gold);vBall('xGold',bx,7.1,bz,.16,gold);}}
+// ---------------------------------------------------------------- the Order of Viridian Thought's monastery: the tea Order
+// The green monastery's house in the city (its head monastery is a tea estate on the scarp's mist slopes, LORE.md): the
+// court's two side beds planted in clipped tea in hedged rows, a withering rack of trays under a lean-to roof, and the
+// estate's chests stacked by the gate, painted in the Order's green with a saffron leaf
+function qnTeaTouches(W,D,P,SP){const leaf=xC(0x3a6a34),leaf2=xC(0x4e8040),tim=xC(0x7a5a3c),chest=xC(SP.wall),mark=xC(XPAL.saffron),stone=xC(xPick(QSTONE));
+ for(const s of[-1,1]){const bx=s*(W/2-7-5.5),z0=4.2,z1=15;vB('vStone',bx,P,(z0+z1)/2,6.4,.25,z1-z0+.6,0,stone);   /* clear of the hall (to z 3.4) and the side cloisters (from x 16.8) */
+  for(let r=0;r<4;r++)for(let z=z0+.8;z<z1-.4;z+=1.1){const x=bx-2.7+r*1.8,c=(r+Math.round(z))%2?leaf:leaf2;kput('qGiltBall',[x,P+.25,z],null,[.62,.5,.5],c);}}
+ const rx=-(W/2-7-6),rz=17.2;vB('vWood',rx,P+2.6,rz,6,.12,2.2,0,tim);for(const sx of[-1,1])for(const sz of[-1,1])vPst('vPost',rx+sx*2.8,P,rz+sz*1,.06,2.6,tim);
+ for(let k=0;k<4;k++)vB('vWood',rx,P+.6+k*.45,rz,5.6,.05,1.8,0,xC(0xb89a60));
+ for(let i=0;i<9;i++){const x=6.5+(i%3)*.75,y=P+Math.floor(i/3)*.62,z=D/2-7-1.4;vB('vWood',x,y,z,.7,.6,.7,0,chest);vB('vClothB',x,y+.2,z+.36,.3,.22,.02,0,mark);}}
+// ---------------------------------------------------------------- the History Monks' monastery: Longsong's touches
+// The saffron monastery is the Order of Longsong's (QSPOKE[1].order): the Great Gate's parabolic arch between two pylons
+// banded in the Order's blue, on the gate tower's face; the Eastern Watch's toron spire (banco tiers stuck with timber
+// torons, a blue band to each, a gilt finial) in the court's front corner; two drum halls under tile cones with electric
+// lanterns (Longsong has electric light) either side of the court; the Order's banners either side of the gate.
+// (settlements/longsong/BLUEPRINT.md: the drum halls, the parabolic gate, the toron spire, the Order's blue)
+function qnOrderTouches(W,D,P,SP){const blue=xC(QN_ORDER_BLUE),blue2=xC(QN_ORDER_BLUE2),stone=xC(0xb6b0a6),banco=xC(0xb07a4c),tim=xC(0x5a3a24),g=xC(XPAL.gold[0]);
+ // the parabolic gate on the gate tower's face (its door at z D/2+0.5)
+ const zf=D/2+.85,S=6.4,H=7.6,N=16,arc=u=>[u*S/2,P+H*(1-u*u),zf],nrm=[0,0,1];
+ for(let i=0;i<N;i++){const a=arc(-1+2*i/N),b=arc(-1+2*(i+1)/N);xnMember('qAshB',a,b,.8,.6,nrm,stone);}
+ for(const s of[-1,1]){const px=s*(S/2+1.9);vB('qAshB',px,0,zf-.1,2.6,P+H+2.2,1.7,0,stone);
+  for(const k of[2.6,5.4,H+.6])vB('xBandB',px,P+k,zf-.1,2.72,.45,1.82,0,blue);vBall('qGiltBall',px,P+H+2.5,zf-.1,.35,g);
+  qnBanner(s*(S/2+4.6),0,zf+1.8,4.4,xC(SP.wall),blue);}
+ // the toron spire in the court's front right corner
+ let y=P;const sx=W/2-7-4.2,sz=D/2-7-4.2;
+ for(const [w,h] of[[3.6,3.2],[3.0,3.0],[2.4,2.8],[1.8,2.6],[1.1,2.2]]){vB('xWashB',sx,y,sz,w,h,w,0,banco);vB('xBandB',sx,y+h-.32,sz,w+.06,.3,w+.06,0,blue);
+  for(const [nx,nz] of[[1,0],[-1,0],[0,1],[0,-1]])for(const u of[-w/3,0,w/3]){const q=[sx+nx*(w/2+.35)+(nz?u:0),sz+nz*(w/2+.35)+(nx?u:0)];vB('vWood',q[0],y+h*.45,q[1],nx?.7:.12,.12,nz?.7:.12,0,tim);}
+  y+=h;}
+ kput('xConeG',[sx,y,sz],null,[.45,1.2,.45],g);vBall('qGiltBall',sx,y+1.3,sz,.3,g);
+ // the two drum halls, either side of the court, their doors to its middle
+ for(const s of[-1,1]){const x=s*(W/2-7-5.5),z=2,R=3.4,h=4.8;kput('xDrumW',[x,P,z],null,[R,h,R],xC(XPAL.white));
+  kput('xDrumS',[x,P+h-.55,z],null,[R+.06,.4,R+.06],blue);kput('xDomeT',[x,P+h,z],null,[R+.4,1.8,R+.4],xC(0x8a847a));vBall('qGiltBall',x,P+h+1.9,z,.25,g);
+  const d=[x-s*R,z];vB('vDarkB',d[0]-s*.05,P,d[1],.12,2.3,1.3,0);vB('xBandB',d[0]-s*.1,P+2.3,d[1],.14,.3,1.6,0,blue);
+  kput('vBulb',[d[0]-s*.45,P+2.75,d[1]],null,[.16,.2,.16],null);vB('vIron',d[0]-s*.2,P+2.95,d[1],.5,.06,.06,0,xC(0x2e2a26));}}
 
 // ---------------------------------------------------------------- the grammarians' college
 // a smaller cloistered court of two-storey ranges, the library hall at the back: its walls carry the sound-grid
@@ -130,7 +184,7 @@ function buildQbWheelHouse(G,o){reseed(33561+(o.v|0));const V=xV(o),W=10,D=10,P=
  qnPlinth(0,-.5,W+1,D,P,0,stone);
  // three walls, the front open on two red columns; the inside the room's dim back
  for(const [x,z,w,d] of[[0,-D/2+.3,W,.6],[-W/2+.3,0,.6,D-.6],[W/2-.3,0,.6,D-.6]])qnCube(x,P,z-.5,w,H,d,0,wash,'wash');
- xnRoom(0,P,-.6-D/2+.65,W-1.4,H-.2,.1,0);
+ xnRoom(0,P,-.6-D/2+.65,W-1.4,H-.2,.1,0);qnWheelInside(W,D,P,H,-.8,V);
  for(const s of[-1,1])xnCol(s*2.6,P,D/2-1.2,H-.4,.25,0,red,xC(XPAL.saffron));
  const t=qnRoof(0,P+H,-.5,W,D,0,wash,{band,gold:true,parapet:.6});qnCrown(0,t,-.5,W,D,0,{pav:[5,4.4],deerS:.85});
  // the wheel: a tall drum in the mosaic (the Song in the sound-grid script), gilt bands, a red cap, on its axle
@@ -140,13 +194,35 @@ function buildQbWheelHouse(G,o){reseed(33561+(o.v|0));const V=xV(o),W=10,D=10,P=
  if(V===2){vB('xWaterB',0,.05,0,2.2,.15,D+2,0,xC(XPAL.water));vB('vStone',-1.4,0,0,.5,.6,D+2,0,stone);vB('vStone',1.4,0,0,.5,.6,D+2,0,stone);}
  xnFolk(0,0,D/2+1.2,3,2);}
 
+// the wheel house's inside (the owner, 2026-11-16: "finish all interiors"): a hanging in the house's colour across the back, a
+// mural on each side wall in gilt frames, a rug round the wheel's base, butter lamps on tables in the back corners
+function qnWheelInside(W,D,P,H,cz,V){const g=xC(xPick(XPAL.gold)),c=xC(QSPOKE[(V*5+3)%8].wall),c2=xC(QSPOKE[(V*5+6)%8].wall),bz=-D/2-.5+.62;
+ vB('qRugB',0,P,cz,6.4,.02,6.4,0,xC(xPick(XPAL.maroon)));
+ vB('qGiltB',0,P+2.0,bz,5.2,3.4,.03,0,g);vB('vClothB',0,P+2.08,bz+.02,5.0,3.24,.02,0,c);
+ for(const s of[-1,1]){const x=s*(W/2-.62);vB('qGiltB',x,P+1.5,-1.6,.03,3.0,4.6,0,g);vB('vClothB',x-s*.02,P+1.58,-1.6,.02,2.84,4.44,0,s<0?c2:c);
+  qnLampTable(s*(W/2-1.6),P,bz+.5,0,1.4);}}
 // ---------------------------------------------------------------- the wayside shrine (the Xanadu kit's gap: shrine keepers)
-// a small white cube with a niche of butter lamps behind glass, a mani-stone pile, prayer flags to a pole
-function buildQbShrine(G,o){reseed(33571+(o.v|0));const V=xV(o),wash=xC(xPick(XPAL.wash)),stone=xC(xPick(QSTONE)),g=xC(xPick(XPAL.gold));
+// a small white chapel, a mani-stone pile, prayer flags to a pole. The chapel is hollow (the owner, 2026-11-16: "fancy interiors
+// to shrines"): its front a glazed window in a gilt frame onto the inside, the floor marble, the ceiling lacquered: a hanging in
+// one of the eight colours on the back wall, under it the altar with its saffron cloth, a small gilt image on a lotus with its
+// halo, the seven offering bowls and a row of lit butter lamps; a hand prayer wheel (the Song drum) in the corner
+function buildQbShrine(G,o){reseed(33571+(o.v|0));const V=xV(o),wash=xC(xPick(XPAL.wash)),stone=xC(xPick(QSTONE)),g=xC(xPick(XPAL.gold)),gl=xC(XPAL.gold[0]);
  vnReg('Wayside shrine',0,0,2.6,4.6);
- vB('vStone',0,0,0,2.8,.4,2.4,0,stone);qnCube(0,.4,0,2.2,2.2,1.8,0,wash,'wash');
+ vB('vStone',0,0,0,2.8,.4,2.4,0,stone);
+ const T=.2,Wd=2.2,Dd=1.8,y0=.4,H=2.2,ow=1.1,o0=1.0,o1=2.0,fz=Dd/2-T/2,bz=-Dd/2+T;
+ vB('xWashB',0,y0,-Dd/2+T/2,Wd,H,T,0,wash);for(const s of[-1,1])vB('xWashB',s*(Wd/2-T/2),y0,0,T,H,Dd-2*T,0,wash);
+ vB('xWashB',0,y0,fz,Wd,o0-y0,T,0,wash);vB('xWashB',0,o1,fz,Wd,y0+H-o1,T,0,wash);for(const s of[-1,1])vB('xWashB',s*(ow/2+(Wd-ow)/4),o0,fz,(Wd-ow)/2,o1-o0,T,0,wash);
+ vB('vWinClear',0,o0,Dd/2-.04,ow,o1-o0,.02,0);
+ for(const s of[-1,1]){vB('qGiltB',s*(ow/2+.03),o0,Dd/2+.01,.06,o1-o0,.04,0,g);vB('qGiltB',0,s<0?o0-.06:o1,Dd/2+.01,ow+.12,.06,.04,0,g);}
+ vB('qMarbleB',0,y0,0,Wd-2*T,.04,Dd-2*T,0,xC(0xf0e8dc));vB('qLacqB',0,y0+H-.1,0,Wd-2*T,.1,Dd-2*T,0,xC(xPick(XPAL.maroon)));
+ const SP=QSPOKE[(V*3+(o.v|0))%8];vB('vClothB',0,y0+.72,bz+.02,1.0,1.18,.03,0,xC(SP.wall));vB('qGiltB',0,y0+1.9,bz+.03,1.1,.06,.03,0,g);
+ const az=bz+.3;vB('vWood',0,y0+.04,az,1.4,.62,.5,0,xC(xPick(XPAL.dark)));vB('vClothB',0,y0+.28,az+.26,1.3,.36,.02,0,xC(XPAL.saffron));
+ kput('qGiltBall',[0,y0+.7,az-.08],null,[.2,.06,.2],gl);kput('qGiltBall',[0,y0+.88,az-.08],null,[.16,.2,.13],gl);vBall('qGiltBall',0,y0+1.14,az-.08,.075,gl);
+ kput('qGiltBall',[0,y0+1.12,az-.2],null,[.2,.2,.02],g);
+ for(let i=0;i<7;i++)vB('qGiltB',-.5+i*(1/6),y0+.66,az+.06,.07,.03,.07,0,g);
+ for(let i=0;i<5;i++){const x=-.48+i*.24;vBall('qGiltBall',x,y0+.69,az+.18,.035,gl);vB('vWinLit',x,y0+.71,az+.18,.02,.05,.02,0);}
+ kput('qSongDrum',[Wd/2-T-.22,y0+.04,Dd/2-T-.24],null,[.13,.34,.13],null);vPst('vIron',Wd/2-T-.22,y0+.38,Dd/2-T-.24,.015,.12,xC(0x3a3430));
  const t=qnRoof(0,2.6,0,2.15,1.75,0,wash,{band:xC(xPick(XPAL.maroon)),parapet:.3});
- xnPane(0,1.0,.9,1.0,1.0,.4,0,'lit');for(let i=0;i<5;i++)vBall('xGold',-.4+i*.2,1.1,.75,.05,g);
  if(V===1)qnChorten(0,t,0,.18);else qnWheelDeer(0,t,.3,0,.35,g);
  for(let i=0;i<9;i++)vB('vStone',1.9+rr(-.5,.5),i<5?0:.32,rr(-.6,.6),rr(.4,.7),.32,rr(.3,.5),rr(0,3),xC(xPick([0xd8d0c0,0xc8c0b0,0xa8a090])));
  vPst('vPost',-1.9,0,-.6,.05,3.6,xC(0x5a4632));qnFlags([-1.9,3.5,-.6],[1.2,t,.8]);}
@@ -175,7 +251,8 @@ function buildQbCaravanserai(G,o){reseed(33591+(o.v|0));const V=xV(o),W=44,D=44,
   qnRoof(x,S.y,z,S.w,S.d,ry,wash,{parapet:.7});
   // the stables' lean-to along the court face, on posts
   const lp=loc(x,z,0,-dd/2-1.6,ry);kput('vWood',[lp[0],P+2.6,lp[1]],vQ(ry,.12,0),[L-4,.12,3.4],aged);
-  const n=Math.max(2,Math.round((L-4)/3.4));for(let i=0;i<=n;i++){const p=loc(x,z,-(L-4)/2+(L-4)*i/n,-dd/2-3.1,ry);vPst('vPost',p[0],P,p[1],.08,2.3,aged);}}
+  const n=Math.max(2,Math.round((L-4)/3.4));for(let i=0;i<=n;i++){const p=loc(x,z,-(L-4)/2+(L-4)*i/n,-dd/2-3.1,ry);vPst('vPost',p[0],P,p[1],.08,2.3,aged);}
+  const cd=loc(x,z,ry===0?-Math.sign(x)*1.7:1.7,-dd/2,ry);qnDoor(cd[0],P,cd[1],ry+Math.PI,1.2,2.4,{c:R.trim,step:false,val:false});}   /* the range's door to the court, between two posts (a front range's toward the gate: its far end is the side range's),  (settlements/qiblai 90u: the merchants' rooms) */
  // the gate block: a tall cube with the arch through it, rooms over it, flags
  const GB=qnStack(0,P,D/2-Dr/2,12,Dr+1,0,[hr[0]+hr[1]+3],wash,'wash');vB('vDarkB',0,P,D/2-Dr/2,4,4.2,Dr+1.1,0);
  xnArch('xArchS',0,P,D/2+.52,0,5.4,5.4,.4,stone);qnWins(0,P,D/2-Dr/2,12,Dr+1,0,[hr[0]+hr[1]+3],GB.k,{pitch:2.8,ww:.85,wh:1.1,trim:R.trim,left:false,right:false,from:0,skip:[[-3,3]],sill:5.4});
@@ -215,13 +292,14 @@ function buildQbGhats(G,o){reseed(33601+(o.v|0));const V=xV(o),W=48,D=30,H=4.8,s
 // monastery's. Its front (+z) faces the avenue; o.v the spoke.
 function buildQbMonasteryHalf(G,o){const V=xV(o)%8;reseed(33611+V);const W=56,D=32,P=1.2,Dr=6;
  const SP=QSPOKE[V],red=xC(SP.wall).multiplyScalar(rr(.96,1.02)),wash=xC(xPick(XPAL.wash)),stone=xC(xPick(QSTONE)),band=xC(SP.band),trim=xC(SP.trim),hr=[3.4,3.0];
- vnReg('Great monastery (spoke '+(V+1)+', '+SP.name+', astride its avenue)',0,0,29,P+15+5,{colour:SP.name.toLowerCase()});
+ vnReg('Great monastery (spoke '+(V+1)+', '+SP.name+(SP.house?', '+SP.house:'')+', astride its avenue)',0,0,29,P+15+5,{colour:SP.name.toLowerCase()});
  qnPlinth(0,0,W,D,P,0,stone);
  // the cell ranges: the long one at the back, the two short ones at the ends, open to the avenue
  for(const [x,z,L,dd,ry] of[[0,-D/2+Dr/2,W,Dr,Math.PI],[W/2-Dr/2,Dr/2,D-Dr,Dr,Math.PI/2],[-W/2+Dr/2,Dr/2,D-Dr,Dr,-Math.PI/2]]){
-  const S=qnStack(x,P,z,L,dd,ry,hr,red,'wash',xC(XPAL.white));
-  qnWins(x,P,z,L,dd,ry,hr,S.k,{pitch:2.6,ww:.75,wh:1.0,trim,left:false,right:false,val:'all'});
-  qnRoof(x,S.y,z,S.w,S.d,ry,red,{band,gold:true,parapet:.6,corner:'gold'});}
+  const S=qnStack(x,P,z,L,dd,ry,hr,red,'wash',xC(XPAL.white)),du=ry===Math.PI?16:0;   /* the back range's door past the assembly hall's end (its plinth stands 0.1 m off the range) */
+  qnWins(x,P,z,L,dd,ry,hr,S.k,{pitch:2.6,ww:.75,wh:1.0,trim,left:false,right:false,val:'all',skipBack:[[-du-1.4,-du+1.4]]});
+  qnRoof(x,S.y,z,S.w,S.d,ry,red,{band,gold:true,parapet:.6,corner:'gold'});
+  const cd=loc(x,z,du,-dd/2,ry);qnDoor(cd[0],P,cd[1],ry+Math.PI,1.1,2.3,{c:trim,step:false,val:false});}   /* the range's door to the court (90u: the monks' quarters) */
  // the assembly hall in the court, its portico toward the avenue, the gilt crown
  const HW=22,HD=12,hz=-D/2+Dr+HD/2+.6,hh=[4.6,3.8];qnPlinth(0,hz,HW+1,HD+1,P+.5,0,stone);
  const H=qnStack(0,P+.5,hz,HW,HD,0,hh,red,'wash',xC(XPAL.white));

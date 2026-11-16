@@ -73,9 +73,17 @@ terrain splat texture and the placement input; (3) the minimap drawn from export
 **Taken by the second integration pass** (`claude/integration-2`, 2026-11-10 and 11; HANDOFF-REBUILD.md): the `dalab` sockets pack,
 water breakup on by default, the catalog's `tile` detail family, the Highlands great-building room kinds in `30-programs.js`, the fauna
 runtime and bison table, and the `tools/` listing staleness (every build rebuilt): all rebuilt and GPU-verified, items deleted.
+- **The Xanadu kit's opt-in pieces into `src/`** (2026-11-16, `kits/xanadu/README.md` "Opt-in pieces"): `extra/88c-xa-caravanserai.js`,
+  `extra/88d-xa-lakecraft.js` and `extra/88e-xa-stall.js` into `kits/xanadu/src/`, `extra/69dz-ix-xanadu-extra.js`'s item into `kits/interiors/sets/xanadu.js`;
+  the kit's sheet takes rows for them; `settlements/pher/kit.json` drops them from `"external"`. Every page of the kit (and `XAK`) changes.
 - **KSTRATA recipe `obsidian`** (`scoria` has since landed) (2026-11-09, `biomes/twins/PLAN.md` section 0.1): the Twins' plan names them for its coulees and
   spatter cones; `core/terrain/35-core-strata.js` has `tibasalt` as the nearest. Adding a recipe changes every page that inlines the file, so
   it waits here; station 1 draws its faces as `tibasalt` and its obsidian as items and a ground class until then.
+- **core/hamlet's Xanadu row: its fishing works** (2026-11-16, `settlements/kirstabal`): `KS_RING.fishingRow` (`src/42-ks-ring.js`) passes
+  `KHAMLET.CULTURES.xanadu` with `works.fishing` (`xa_boatshed`, `xa_fish_racks`), `focusJobs.fishing` 90, `reach.fishing` 260, `landing`
+  (`xa_quay`) and the racks' pending box; move them into the row itself (`core/hamlet/20-hamlet-cultures.js` reaches ten builds) and
+  `kits/xanadu/src/87k-xa-lake-trades.js` into `xanadu.py` FILES (if every Xanadu page should have the lake's trades), then let
+  Kirstabal pass the row by name.
 - **Any new file in `tools/` stales eight builds** (kits/catalog, crops, interiors, mechs, motor-vehicles, port; settlements/isle-demo,
   longsong record `tools/` as a listing input, likely Python's importer reading it): a rebuild clears it; worth a fix in `build_sources`.
 - **Switch on checks 22-31 everywhere** (the survey of 2026-11-11, CORE-IMPROVEMENTS.md items 22-31; landed opt-in on
@@ -165,6 +173,11 @@ runtime and bison table, and the `tools/` listing staleness (every build rebuilt
 - **Opal Valley's strata recipes into `KSTRATA`'s own table** (2026-11-11, `biomes/opalvalley`): `opal-rhyolite` and `opal-firetuff` are
   data in `biomes/opalvalley/src/40-biome-opal-sites.js` (`OPAL_STRATA`), handed to `KSTRATA.add` by its ground; written into
   `core/terrain/35-core-strata.js`'s `RECIPES` they change every page that loads it, so they ride along. Then drop the kit's `KSTRATA.add`.
+- **The culture id `glazier` into the core vocabulary** (2026-11-16, the Glaziers' set in `kits/tungang`): it is added opt-in by
+  `core/tags/glazier/52g-tags-glazier.js`, which only the Tungang kit loads. Move `'glazier': 'Glaziers'` into `CULTURE_NAMES` in
+  `core/tags/52-core-tags-vocab.js` (and `NO_CATALOG` until a Glazier catalog culture file exists), delete `core/tags/glazier/`,
+  and drop it from `kits/tungang/build.py`. It moves every page that takes core/tags.
+
 - **`KSHADOW.units` counts what the GPU links** (2026-11-09, found by the Throne's fix): `core/shadow/host/12-core-shadow-host.js` counts
   declared samplers (some are never read and the GPU drops them), misses `scene.environment` on standard materials, and judges against the
   renderer's own limit (32 in SwiftShader, so shadows turn on where the GPU cannot link them). The Throne's `samplersOf`

@@ -33,6 +33,7 @@ godot --headless --path godot --script res://tests/mask/kmask_test.gd   # core/m
 godot --headless --path godot --script res://tests/terrain/kfield_test.gd        # core/terrain's field: KField against the page's golden samples
 godot --headless --path godot --script res://tests/terrain/field_import_test.gd  # a krator-field to a mesh and HeightMapShape3D collision (rays)
 godot --headless --path godot --script res://tests/atmos/atmos_test.gd  # the Atmos autoload against core/atmos (night, hours, weather, waves)
+godot --headless --path godot --script res://tests/qiblai/lamps_test.gd   # Qiblai's street lamps and room bulbs (krator-lamps): the importer, the run-time pool (krator/lamp_pool.gd), the Atmos clock's hours
 godot --headless --path godot --script res://tests/verge/verge_sim_test.gd   # Verge's sim replayed against its golden trace
 godot --headless --path godot --script res://tests/dhelv/dhelv_sim_test.gd   # Dhelv's ramblers: KSim.pose (core/simulation's twin) against the page's trace
 godot --headless --path godot --script res://tests/dhelv/dhelv_nav_test.gd   # Dhelv's walk floors baked to a navmesh: gate to temple, through the braid

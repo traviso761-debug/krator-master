@@ -19,7 +19,7 @@ _spec.loader.exec_module(xv)   # its argparse block is under __main__: nothing r
 xv.ASSERT_JS = xv.ASSERT_JS.rstrip()[:-len('return R;}')] + \
     "if(typeof QB_streetAudit==='function')for(const r of QB_streetAudit())R.push(r);\n" + \
     "else R.push({name:'mixed-street',ok:false,detail:'QB_streetAudit missing (src/89q9-qb-street.js)'});\n" + \
-    "{const I=window._interiors;R.push({name:'interiors-furnished',ok:!!(I&&I.on&&I.rooms===4&&!I.fails.length),\n" + \
+    "{const I=window._interiors;R.push({name:'interiors-furnished',ok:!!(I&&I.on&&I.rooms===7&&!I.fails.length),\n" + \
     " detail:I?(I.rooms+' rooms, '+I.pieces+' pieces'+(I.fails.length?'; '+I.fails.join(' | '):'; every programme met (IX.audit)')):'window._interiors missing (targets/kit/90q-qb-furnish.js)'});\n" + \
     " const X=I&&I.tex;R.push({name:'interiors-textured',ok:!!(X&&X.meshes&&X.mapped===X.meshes),\n" + \
     "  detail:X?(X.mapped+' of '+X.meshes+' furniture meshes carry a library detail map ('+X.families+' families)'+(X.bare.length?'; bare: '+X.bare.join(', '):'')):'no texture report'});}\nreturn R;}"
@@ -42,4 +42,5 @@ if __name__ == '__main__':
     ap.add_argument("--eval", action="append")
     ap.add_argument("--size", default="1280x800")
     ap.add_argument("--no-cache", action="store_true")
+    ap.add_argument("--interiors", action="store_true")   # Xanadu's run() reads it (?interiors=1 and its reachability audit)
     sys.exit(asyncio.run(xv.run(ap.parse_args(sys.argv[1:]))))

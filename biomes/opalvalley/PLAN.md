@@ -249,7 +249,7 @@ highrift's does not). Every module the stations take, and for each one it does n
 | iridescence | `core/biome` 30: **`BIO.iridBarkMat`** (the one `irid` bark kind, with this kit's own tints: the opal-phytolith boles and the sinter chalices) and **the leaf hook's `irid` option** (per-instance `c2`: the photonic cuticles) | no second iridescent material kind; the ground's opal sheen is the kit's ground shader (as High Rift's fault mirror), on its own channel |
 | tags, records | `core/tags` (50, 52, 53) | every plant, the lakes, the diggings and spoil, the hazards |
 | host | `core/host` (`FULL` + polytool) | the page shell, camera, inspector, probe, polygon tool |
-| textures | `core/materials` (`record`, the pack: `materials.json`, `tools/textures/pack.py biomes/opalvalley`) | the library sets of section 11; the owed ones in `PROMPTS-NEEDED.md` section 46 |
+| textures | `core/materials` (`record`, the pack: `materials.json`, `tools/textures/pack.py biomes/opalvalley`) | the library sets of section 11; the owed ones in `PROMPTS-NEEDED.md` section 54 |
 | shadows | `core/shadow` (`KSHADOW`, attached, off at load: `?shadow=1`) | as every kit since 2026-11-03 |
 | export | `core/export` (07, 09) | the krator-world container |
 
@@ -333,3 +333,11 @@ Each is the conservative choice; each is "default taken 2026-11-11, owner to con
 | the rock lichen | `rock.lichen.iris` | the "opaline lichen" of section 3.2, on the rock layer |
 | the warm mats | `ground.mat.thermal` | the seeps' run-off |
 | the cards | `card.irisfern` (prism fern), `card.lily.iridescent` (swirl lily), `card.giantpad` (opal lotus pads), `card.ichu` (tussock) | **owed: `card.leaf.photonic`** (a photonic-cuticle leaf spray: the opal-bark tree's own leaves); the Xanadu kin keep Xanadu's cards |
+
+## 12. Scale-Model 5.1 Bimodal Opal Genesis & Showcase Station #9 Pairing (`2026-11-13`)
+
+### 1. Bimodal `outland-tuff` over Impermeable `tibasalt` Aquitard (`KSTRATA.glaze`)
+- **Why Precious Black Opal Forms Here (`GEOLOGY-SANITY-CHECK.md` §5; Lightning Ridge / Virgin Valley + Ethiopian Wollo Analogue):** Opal Valley (`rmw52q8d7prwz`) occupies a WNW-stepping rift-transfer relay graben where porous, silica-rich **`outland-tuff`** rhyolitic ignimbrite and weathered volcanic ash beds (`2–6 m` pale vitric sheets) overlie dense, impermeable **`tibasalt`** flood-basalt colonnades. Seasonal glacial meltwater (`r682` *Nahr al-Yāqūt*) leaches amorphous `SiO₂` spheres downward through the tuff until perched on the `tibasalt` aquitard and fault-step gouge, precipitating play-of-color **black and crystal opal** seams (`KSTRATA.glaze`) exposed in every fault-step cataract wall.
+- **Paired Showcase Station #9 (`Rift-Rim Footwall Scarp & Opal Valley Cuts`, `5.1 px 1038, 1662`):**
+  - **Site:** **Middle Terrace II (`middlebed`, `1038, 1662`, `+1,340 m`, `1.36 atm`, `Csb`)** on the dry shore beside the `+1,340 m` sinter-dammed rift lake (`1035, 1662`), paired structurally with the S-Rim planar footwall scarp at **`(624, 1618)`** (`biomes/riftrim/PLAN.md`).
+  - **Camera & Strata Framing:** Low canyon-bench camera looking ESE up the `110 m` Terrace I→II fault-step cataract where `r682` splits over copper-rose opaline sinter lips: dark `tibasalt` basal colonnades (`columns: 0.72`) topped by cream-and-rose `outland-tuff` cliff beds split by an iridescent `KSTRATA.glaze` opal-vein horizon, Xanadu gallery adits notched along the contact, shimmering teal-violet silica-armoured trees and **opal tahr** on the ledges, and **opal mussel** shell middens by the miners' sorting sluices.

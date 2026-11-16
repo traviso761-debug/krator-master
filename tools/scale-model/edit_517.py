@@ -49,7 +49,27 @@ SRC = os.path.join(HERE, 'model', 'src')
 
 # ---- the specs
 LEVEL = -520.0
-LAKE = dict(cx=810.0, cy=1499.5, a=30.0, b=16.0, deg=15.0)       # 60 x 32 px, the old lake's axis (14.6 deg)
+LAKE0 = dict(cx=810.0, cy=1499.5, a=30.0, b=16.0, deg=15.0)      # the first run's lake (60 x 32 px), the frame the specs
+#   below were drawn in; the owner, 2026-11-16: "can we make the lake a little narrower and move it more toward the center
+#   of the valley? settlements can move with it": the lake is 66 x 25 px round 845,1504, the old lake's middle, and every
+#   point drawn against the first lake moves with it, keeping its place against the shore (move())
+LAKE = dict(cx=845.0, cy=1504.0, a=33.0, b=12.5, deg=15.0)
+def move(x, y):
+    """a point drawn against LAKE0 to the same place against LAKE: inside the lake scaled with it, outside it the same
+    offset from the shore point at its angle"""
+    th = math.radians(LAKE0['deg'])
+    dx, dy = x - LAKE0['cx'], y - LAKE0['cy']
+    u0, v0 = dx * math.cos(th) + dy * math.sin(th), -dx * math.sin(th) + dy * math.cos(th)
+    phi = math.atan2(v0 / LAKE0['b'], u0 / LAKE0['a'])
+    if math.hypot(u0 / LAKE0['a'], v0 / LAKE0['b']) <= 1:
+        u, v = u0 * LAKE['a'] / LAKE0['a'], v0 * LAKE['b'] / LAKE0['b']
+    else:
+        u = LAKE['a'] * math.cos(phi) + u0 - LAKE0['a'] * math.cos(phi)
+        v = LAKE['b'] * math.sin(phi) + v0 - LAKE0['b'] * math.sin(phi)
+    return (round(LAKE['cx'] + u * math.cos(th) - v * math.sin(th), 3),
+            round(LAKE['cy'] + u * math.sin(th) + v * math.cos(th), 3))
+
+
 BED_SHORE, BED_DROP = 60.0, 860.0                                 # 60 m deep at the shore, ~920 m in the middle
 WALL_RISE, BENCH_SLOPE, BENCH_REACH = 480.0, 15.0, 16.0          # +480 m over cells 1-3; then 15 m a px, to 16 px
 HORST_C = 700.0                                                   # rim height over the lake: C ln(1 + h / C)
@@ -79,7 +99,8 @@ LANDFORMS = [
              "edit_517, 2026-11-11."},
 ]
 SHOAL_M = 40.0
-THALABA_ID, THALABA_NEW = 'shvo49k0y2', (825, 1488)   # the owner's Thalaba moves off the new lake (Gemini's spot)
+THALABA_ID, THALABA_NEW = 'soldthalaba1', (825, 1488)  # Old Thalaba, the fishing village on Thalaba's old shore (the owner,
+                                                        # 2026-11-16; Thalaba itself moved to 840,1463, outside the box)
 EREHWON = (805, 1516)                     # the new pin: the bench on the south shore (reported; the record moves apart)
 # s (cells off the shore) -> m: the quays' bench, the town's climb, the cliff (90 m), the palace plateau, the mountainside
 EREHWON_PROFILE = {1: -497.0, 2: -415.0, 3: -325.0, 4: -305.0, 5: -210.0, 6: -20.0, 7: 180.0, 8: 360.0}
@@ -96,6 +117,32 @@ VALE_U = 27.0                             # the vale: the old basin east of the 
 BOX = (1464, 1556, 758, 918)              # y0, y1, x0, x1: the old lake's box (774..906 x 1482..1534) and margins
 INFLOWS_LAKE = ['r613', 'r753', 'r492', 'r272']
 INFLOWS_VALE = ['r488', 'r616']
+LAKE_ENDED = set()                        # vale wadis the moved lake now takes (step 8)
+
+# ---- the specs moved with the lake (2026-11-16)
+VOLCS = [(i, *move(x, y), h, r) for i, x, y, h, r in VOLCS]
+ISLANDS = [(i, *((round(v) for v in move(x, y)) if rx < 1 else move(x, y)), rx, ry, c)   # a sub-cell isle on a whole
+           for i, x, y, rx, ry, c in ISLANDS if i != 'isle_erewhon_great']                   # cell, or it holds none
+# the owner, 2026-11-16: "and add one large oblong island in the middle of the lake": in the great isle's stead, on
+# the lake's axis at its middle, 24 x 8 px (48 x 16 km), 300 m over the water
+ISLANDS = [('isle_erewhon_long', LAKE['cx'], LAKE['cy'], 12.0, 4.0, 300.0)] + ISLANDS
+for _lf in LANDFORMS:
+    _lf['px'], _lf['py'] = move(_lf['px'], _lf['py'])
+THALABA_NEW = tuple(int(round(c)) for c in move(*THALABA_NEW))
+EREHWON = tuple(int(round(c)) for c in move(*EREHWON))
+_tip = (LAKE['cx'] + (LAKE['a'] - 2) * math.cos(math.radians(LAKE['deg'])),
+        LAKE['cy'] + (LAKE['a'] - 2) * math.sin(math.radians(LAKE['deg'])))
+ALPH_CTRL = [(round(_tip[0], 1), round(_tip[1], 1))] + [p for p in ALPH_CTRL if p[0] > _tip[0] + 3]
+VALE_U = LAKE['a'] - 3.0
+RIM_MIN = 20.0                            # m: the lowest way out but the outlet stands this far over the lake
+VALE_S = 6.5                              # the vale's floor stays this many cells off the shore (a whole wall between)
+
+
+def isle_r(xx, yy, ix, iy, rx, ry):
+    """an island's elliptic radius, its rx along the lake's axis"""
+    th = math.radians(LAKE['deg'])
+    dx, dy = xx - ix, yy - iy
+    return np.hypot((dx * math.cos(th) + dy * math.sin(th)) / rx, (-dx * math.sin(th) + dy * math.cos(th)) / ry)
 
 
 def lake_frame(xx, yy):
@@ -104,7 +151,10 @@ def lake_frame(xx, yy):
     u = dx * math.cos(th) + dy * math.sin(th)
     v = -dx * math.sin(th) + dy * math.cos(th)
     phi = np.arctan2(v / LAKE['b'], u / LAKE['a'])
-    r = np.hypot(u / LAKE['a'], v / LAKE['b']) * (1 + 0.03 * np.sin(3 * phi + 0.7) + 0.02 * np.sin(5 * phi + 2.1))
+    # an Atitlan-like shore of bays and headlands (the owner, 2026-11-16: "a more irregular, atitlan-like shoreline but of
+    # similar size"); phases chosen so Erehwon's bench, the Alph's head, the islands and Old Thalaba's shore hold
+    r = np.hypot(u / LAKE['a'], v / LAKE['b']) * (1 + 0.10 * np.sin(3 * phi) + 0.05 * np.sin(5 * phi + 2.1)
+                                                  + 0.04 * np.sin(8 * phi + 2.09) + 0.025 * np.sin(13 * phi + 5.24))
     return u, v, r
 
 
@@ -185,7 +235,7 @@ def main(dry=False):
     isl = np.zeros(sh, bool)
     isl_r = np.full(sh, np.inf)
     for iid, ix, iy, rx, ry, crest in ISLANDS:
-        ri = np.hypot((xx - ix) / rx, (yy - iy) / ry)
+        ri = isle_r(xx, yy, ix, iy, rx, ry)
         isl |= (ri <= 1.0) & lake_full
         isl_r = np.minimum(isl_r, ri)
     lake = lake_full & ~isl
@@ -206,7 +256,7 @@ def main(dry=False):
     En[lake_full] = bed[lake_full]
 
     # ---- 3. the walls (inner, all round) and the bench behind them (not over the vale)
-    vale_core = oldlake & ~lake_full & (u > VALE_U) & (s > 3.5)
+    vale_core = oldlake & ~lake_full & (u > VALE_U) & (s > VALE_S)
     vale_collar = nd.binary_dilation(vale_core, iterations=2) & ~oldlake & ~lake_full & (u > VALE_U - 2)
     vale = vale_core | vale_collar
     W = LEVEL + 20 + WALL_RISE * G.sstep(1.0, 3.0, s)
@@ -297,11 +347,12 @@ def main(dry=False):
 
     # ---- 7. the islands, their shoals, and the sub-cell islands' shoals
     for iid, ix, iy, rx, ry, crest_ in ISLANDS:
-        ri = np.hypot((xx - ix) / rx, (yy - iy) / ry)
+        ri = isle_r(xx, yy, ix, iy, rx, ry)
         m = (ri <= 1.0) & lake_full
         En[m] = LEVEL + 8 + (crest_ - 8) * (1 - 0.45 * ri[m] ** 2)
-        sm = lake & (ri > 1.0) & (ri <= 3.2)
-        En[sm] = np.maximum(En[sm], LEVEL - 12 - 95 * (ri[sm] - 1))
+        dpx = (ri - 1) * max(min(rx, ry), 1.0)        # px off the isle's shore (the small isles as before)
+        sm = lake & (ri > 1.0) & (dpx <= 2.2)        # its shallows, ~2 px wide (the long isle's not the whole lake)
+        En[sm] = np.maximum(En[sm], LEVEL - 12 - 95 * dpx[sm])
     for lf in LANDFORMS:
         if lf.get('shoal') is False:
             continue
@@ -335,6 +386,13 @@ def main(dry=False):
             n = max(1, int(math.ceil(math.hypot(end[0] - tail[0], end[1] - tail[1]) / 2.0)))
             pts += [[round(tail[0] + (end[0] - tail[0]) * k_ / n, 2), round(tail[1] + (end[1] - tail[1]) * k_ / n, 2)]
                     for k_ in range(1, n + 1)]
+            # 2026-11-16: a wadi whose way to the Alph now meets the moved lake ends in the lake there
+            k_in = next((k_ for k_ in range(1, len(pts)) if any(lake_full[c_] for c_ in cells_along(pts[k_ - 1:k_ + 1]))),
+                        None)
+            if k_in is not None:                          # (the cells between its points, not the points alone)
+                c_ = next(c_ for c_ in cells_along(pts[k_in - 1:k_in + 1]) if lake_full[c_])
+                pts = pts[:k_in] + [[float(c_[1]), float(c_[0])]]
+                LAKE_ENDED.add(rid)
         path = cells_along(pts)
         prev = None
         for c in path:
@@ -383,20 +441,36 @@ def main(dry=False):
                    'filled_max_m': round(float((En - En_prefill)[filled].max()), 1) if filled.any() else 0.0,
                    'filled_at': [[int(i), int(j)] for j, i in zip(*np.nonzero(filled))][:20]}
     assert not (pit1 & ~old_land_pit & ~whas2).any(), 'a new pit'
+    # 2026-11-16: the pits filled may sit on a river's cut channel; each moved river's cells fall again, all the way
+    # (a channel falling to the lake or the Alph makes no pit)
+    recut = 0
+    for rid, pts_r in river_out.items():
+        prev = None
+        for c in cells_along(pts_r):
+            if lake_full[c] or whas2[c]:
+                break
+            if prev is not None and En[c] > prev - 0.3 and inbox[c]:
+                En[c] = prev - 0.3
+                recut += 1
+            prev = En[c]
+    rep['pits']['river_cells_recut'] = recut
     # the spill: the lake's bed filled to its way out, with the outlet open and with the outlet's gorge blocked
     Fb = priority_fill(En, FBOX)
-    spill = float(Fb[int(LAKE['cy']) - FBOX[0], int(LAKE['cx']) - FBOX[2]])
+    spill = float(Fb[EREHWON[1] - 1 - FBOX[0], EREHWON[0] - FBOX[2]])
     Eb = En.copy()
     Eb[gz & (s < 9.5)] += 3000.0
     for c in apath[:12]:
         Eb[c] = Eb[c] + 3000.0
     Fbb = priority_fill(Eb, FBOX)
-    spill_b = float(Fbb[int(LAKE['cy']) - FBOX[0], int(LAKE['cx']) - FBOX[2]])
+    spill_b = float(Fbb[EREHWON[1] - 1 - FBOX[0], EREHWON[0] - FBOX[2]])
     lake_surface_pit = pit1 & lake
     rep['spill'] = {'level_m': LEVEL, 'spill_m': round(spill, 2), 'through_outlet': bool(spill <= LEVEL),
-                    'spill_with_outlet_blocked_m': round(spill_b, 1), 'closed_otherwise': bool(spill_b >= LEVEL + 200),
+                    'spill_with_outlet_blocked_m': round(spill_b, 1), 'closed_otherwise': bool(spill_b >= LEVEL + RIM_MIN),
                     'lake_surface_cells_in_a_pit': int(lake_surface_pit.sum())}
-    assert spill <= LEVEL and spill_b >= LEVEL + 200, rep['spill']
+    # 2026-11-16: the lake moved east into the valley's middle; its north-east shore now borders the Vale's lowland
+    # (~30 m over the lake, a north river's valley reaching it), so the outlet must be the lowest way out by RIM_MIN, not
+    # the first run's caldera closed 200 m all round
+    assert spill <= LEVEL and spill_b >= LEVEL + RIM_MIN, rep['spill']
 
     # ---- the lake's numbers
     ys_, xs_ = np.nonzero(lake)
@@ -417,7 +491,7 @@ def main(dry=False):
         np.savez_compressed(sys.argv[sys.argv.index('--terrain') + 1], En=En, Eo=Eo, whas2=whas2, lake=lake)
         print(json.dumps(rep, indent=1, ensure_ascii=False))
         return D, En
-    rep['islands'] = [{'id': iid, 'px': [ix, iy], 'cells': int(((np.hypot((xx - ix) / rx, (yy - iy) / ry) <= 1) & lake_full).sum()),
+    rep['islands'] = [{'id': iid, 'px': [ix, iy], 'cells': int(((isle_r(xx, yy, ix, iy, rx, ry) <= 1) & lake_full).sum()),
                        'crest_m': round(float(En[int(round(iy)), int(round(ix))])), 'over_lake_m': round(float(En[int(round(iy)), int(round(ix))] - LEVEL)),
                        'from_erehwon_km': round(math.hypot(ix - ex, iy - ey) * 2, 1)} for iid, ix, iy, rx, ry, crest_ in ISLANDS]
     rep['erehwon'] = {'px': [ex, ey], 'ground_m': round(float(En[ey, ex])),
@@ -436,10 +510,10 @@ def main(dry=False):
             if st['id'] not in ('s57bkv9741', THALABA_ID):
                 assert abs(En[st['py'], st['px']] - Eo[st['py'], st['px']]) < 0.5 and not whas2[st['py'], st['px']], st['name']
     rep['pins'] = pins
-    # Thalaba (the owner's live pin, 825,1481) stands where the lake now is: moved 7 px south as on Gemini's trade map
-    pins['Thalaba (moved)'] = {'px': list(THALABA_NEW), 'after_m': round(float(En[THALABA_NEW[1], THALABA_NEW[0]])),
+    # Old Thalaba (825,1488) is new with this edit's shore: it must stand dry on it
+    pins['Old Thalaba'] = {'px': list(THALABA_NEW), 'after_m': round(float(En[THALABA_NEW[1], THALABA_NEW[0]])),
                                'wet_after': bool(whas2[THALABA_NEW[1], THALABA_NEW[0]])}
-    assert not whas2[THALABA_NEW[1], THALABA_NEW[0]], "Thalaba's new spot is dry"
+    assert not whas2[THALABA_NEW[1], THALABA_NEW[0]], "Old Thalaba's spot is dry"
 
     moved = (np.abs(En - Eo) > 0.5) | (whas2 != whas0)
     assert not (moved & ~inbox).any(), 'heights moved outside the box'
@@ -531,7 +605,9 @@ def main(dry=False):
                          'to': "the Alph across the Vale, through Theodiga's breach to the Small Lake",
                          'px': [[float(c[1]), float(c[0])] for c in apath + BREACH],
                          'bed_m': [int(round(b)) for b in abeds], 'lake_level_m': int(LEVEL)})
-    basin = {'at_px': [LAKE['cx'], LAKE['cy']], 'level_m': int(LEVEL), 'km2': int(lake.sum()) * 4,
+    _lj, _li = np.nonzero(lake)
+    _k = int(np.argmin(np.hypot(_li - LAKE['cx'], _lj - LAKE['cy'])))
+    basin = {'at_px': [float(_li[_k]), float(_lj[_k])],             # the water nearest the lake's middle (the isle's there) 'level_m': int(LEVEL), 'km2': int(lake.sum()) * 4,
              'depth_m': round(LEVEL - float(En[lake].min())), 'kind': 'through lake',
              'climate': codes[int(np.bincount(cnow[shore & ~whas2]).argmax())], 'spill_m': round(spill),
              'name': "Erewhon's lake", 'notes': 'A caldera lake (edit_517, 2026-11-11): its outlet the Alph (r070).'}
@@ -586,7 +662,7 @@ def rivers(D, R, En, lake_full, river_out, alph_px, apath, abeds):
         rec['bed_m'] = beds(pts)
         rec['length_km'] = length(pts)
         rec['mouth_m'] = rec['bed_m'][-1]
-        if rid in INFLOWS_LAKE:
+        if rid in INFLOWS_LAKE or rid in LAKE_ENDED:
             rec['to'] = {'lake_m': int(LEVEL), 'at_px': pts[-1]}
         else:
             rec['to'] = {'river': 'r070', 'name': R['r070']['name'], 'at_px': pts[-1]}

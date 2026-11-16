@@ -1243,3 +1243,43 @@ baseline entries, no new LFS objects). `reach.py` still lists every page, becaus
 `build.py` run writes them all; only the per-target retry runs of this round were dropped from `build-inputs.json`.
 Veladiga's builder moved the same way in the same round (`targets/veladiga/65-veladiga.js`): only its own target placed it
 (through `EXTRA_BUILDERS`), so nothing else changed. Screamers keeps its own vendored copy.
+
+## Each page carries only its own builders (2026-11-15)
+
+The owner: "it would be great if we could split off all these ancient assets apart from each other as much as possible".
+Every `src/` fragment used to go into every target's page, so a change to any builder re-hashed all 49. `build.py` now
+prunes each target's list (PRUNE, `prune()`):
+- **Prunable** are the builder fragments (a top-level `function build*`), their parts (`CONTINUES`), the pure libraries
+  (`PRUNE_LIBS`: the factory and office extras, the Iziz style, the alt and host libraries, the funicular), the biome cores'
+  closures (`75-biome-*`, `76-*-biome-hyperjungle*`, one group each) and the interiors' fragments (`ONLY_FOR`: only the
+  interiors target). Everything else is the kit's core and goes in every page.
+- **Reached** from the core, the target's own fragments and the builders of its rows (every word of `89z-rows.js` that is
+  a key of `ANC_BUILDER_NAMES`): by a top-level name (`top_level_names`, a scanner of brace and paren depth 0 that skips
+  strings, templates, comments and regex literals; a part is read joined to its parent, since it opens inside the parent's
+  builder), by a kit piece's name in a string (`kdef('x')` in one, `'x'` in the other), by a `MAT.`/`TEX.` key, and, in a
+  target's own fragments, by a builder named as a string (the alt targets' `window[fn]`). Generous by design.
+- `90-scene.js` names its builders as strings (`ANC_BUILDER_NAMES`) and takes the ones the page has; its table is not
+  counted as a use of them.
+- The core now: head, core, stats, kit, surfaces, kitdefs, decor, helpers, registry, concrete, salvage, worn, matlib,
+  openings, scene, probe, camera, tail, plus the builder files whose helpers the core calls (`42-offices` for `civ*`,
+  `52-sky-abc` for `toppledUpper`, `62-robotics`, `66-office-c`). A per-site page (Theodiga, Veladiga, the Podium, the
+  Sanctum, Span) is the core and its own target: 22 shared fragments of 140; the showcase keeps 87.
+- `--no-prune` builds the old all-in pages. A row whose builder is not on its page is a build error.
+- What a target reads in place from outside `core/` (`TARGET_READS`: another target's fragments, a settlement's, another
+  kit's) is read before the prune since 2026-11-16, so it is a root like the target's own fragments; it used to be added
+  after, and a kit name only it used was pruned away. The core modules it reads (core/tags, core/ruins, core/atmos, core/water)
+  are still added after: they never use a kit's names, and the generous scan took core/ruins' self-test box 'wreck' for the
+  Iziz style's `function wreck` (56 KB more on the engines page for nothing).
+
+## Theodiga today (`--target theodiga-today`, 2026-11-16)
+
+The town of `settlements/theodiga` beside the ruin (the owner: "start working on the surface city", with the scrap Xanadu set
+and "some qiblai-style buildings"). The target is two files (rows: the ruin only, `DECAYS [1]`; views); everything else is
+read: the theodiga target's dam, Dome and water fragments (`targets/theodiga`), the town's drawer (`settlements/theodiga/src/
+8ay1-th-town.js`) and the isle demo's flattener (`58-isle-protos.js`), through `TARGET_READS['theodiga-today']`. Generated:
+`THCITY` (core/space, core/city, kits/crops and the town's plan `40-th-town.js`, sealed) and `XAK` (the Xanadu kit with the
+scrap set and the Qiblai kit's buildings, sealed), both kept out of the build rules' scans (`SEALED`), and the Xanadu and
+Qiblai packs as sidecars (`dist/ancients.tex.xanadu*.js`, `ancients.tex.qiblai.js`). `buildDam` calls `thTownDraw` for the
+ruin when the page has it, and draws the ruin's east plateau on the town's ground (`THCITY.town.ground`) out to x 1260;
+core/ruins skips the town's meshes (`theodiga:town ...`). On `--target theodiga` none of it is present and nothing changes but
+the text of those two fragments.

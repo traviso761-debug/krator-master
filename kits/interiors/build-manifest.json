@@ -1,8 +1,8 @@
 {
  "adapters/catalog-adapter.js": "e5e61806292b",
  "dist/interiors-core.js": "03e539debf0a",
- "dist/interiors-sets.html": "c458455323b4",
- "dist/interiors-walk.html": "2346d182af05",
+ "dist/interiors-sets.html": "96f84ff4768d",
+ "dist/interiors-walk.html": "9da101c4499b",
  "dist/interiors.html": "8eca692ef08c",
  "sets/abyss.js": "d473b9b52924",
  "sets/beast-rider-rock.js": "701bda3f1719",
@@ -20,6 +20,7 @@
  "sets/talia.js": "62808cb6f3a9",
  "sets/tents.js": "079f82f59bcb",
  "sets/xanadu-citadel.js": "4146bd350f19",
+ "sets/xanadu-scrap.js": "d0ed2f3716dc",
  "sets/xanadu.js": "8ef1c792a4a9",
  "sets/yuni-town.js": "5f16b1d4c93d",
  "sets/yuni.js": "b6ad4dbcb816",

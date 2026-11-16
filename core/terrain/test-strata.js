@@ -223,6 +223,48 @@ ok('bake: slot 0 marks the bead beds, slot 1 the flows, never both',(()=>{let a=
 ok('bake: more than four alterations throws',throws(()=>K.bake(K.create({recipe:'tibasalt',range:[0,100],alter:[1,2,3,4,5].map(i=>({kinds:'*',to:'laterite',below:i}))}))),
   throws(()=>K.bake(K.create({recipe:'tibasalt',range:[0,100],alter:[1,2].map(i=>({kinds:'*',to:'laterite',below:i}))}))));
 
+// ---- the six additive 5.1 geological recipes (STRATA-PLAN section 11)
+{
+  const R6=['carbonate-shelf','contact-marble','evaporite-strand','secondary-ejecta','arch-rift-basalt','obsidian-pancake'];
+  ok('5.1 recipes: all six exist in KSTRATA.RECIPES and create/export/load/bake cleanly',R6.every(r=>{
+    if(!K.RECIPES[r])return false;
+    const S=K.create({seed:91,recipe:r,range:[-60,180]}),L=K.load(S.export()),B=K.bake(S,{res:.5});
+    const a=S.at(15,42,-28),b=L.at(15,42,-28);
+    return S.beds.length>0&&B.NA===480&&B.col.length===B.W*B.H*4&&JSON.stringify(a)===JSON.stringify(b);
+  }),Boolean(K.RECIPES['no-such-recipe']));
+  ok('carbonate-shelf: warm cream/buff high albedo, 2-5 m tabular limestone beds and recessed marl/visor ledges',(()=>{
+    const S=K.create({seed:44,recipe:'carbonate-shelf',range:[0,300],warp:[0,0],dip:[0,0,0]});
+    const tabs=S.beds.slice(0,-1).filter(b=>b.kind==='bioclastic'||b.kind==='oolite');
+    const lum=tabs.reduce((s,b)=>s+(b.colour[0]+b.colour[1]+b.colour[2])/3,0)/tabs.length;
+    let moved=0;for(let h=1;h<280;h+=2.3)if(Math.abs(S.ledge(0,0,h,.85)-h)>1e-4)moved++;
+    return tabs.length>20&&tabs.every(b=>b.th>=2&&b.th<=5)&&lum>.75&&moved>10;
+  })(),false);
+  ok('contact-marble and evaporite-strand: noRepeat holds and between selvages/partings never stack back-to-back',(()=>{
+    return ['contact-marble','evaporite-strand'].every(r=>{
+      const rec=K.recipe(r),S=K.create({seed:73,recipe:r,range:[0,260]}),B=S.beds;
+      for(let i=1;i<B.length;i++){
+        if(B[i].kind===B[i-1].kind)return false;
+        if(rec.kinds[B[i].kind].between&&rec.kinds[B[i-1].kind].between)return false;
+      }
+      return B.length>15;
+    });
+  })(),false);
+  ok('evaporite-strand: thin 0.4-1.5 m strandline steps on primary aragonite/tufa/gypsum/halite beds',(()=>{
+    const S=K.create({seed:52,recipe:'evaporite-strand',range:[0,120]}),prim=S.beds.slice(0,-1).filter(b=>!K.recipe('evaporite-strand').kinds[b.kind].between);
+    return prim.length>40&&prim.every(b=>b.th>=.4&&b.th<=1.5);
+  })(),false);
+  ok('secondary-ejecta, arch-rift-basalt, obsidian-pancake: bed thicknesses and shader fx flags match spec',(()=>{
+    const se=K.create({seed:61,recipe:'secondary-ejecta',range:[0,400]}),ar=K.create({seed:62,recipe:'arch-rift-basalt',range:[0,400]}),ob=K.create({seed:63,recipe:'obsidian-pancake',range:[0,300]});
+    const seMain=se.beds.slice(0,-1).filter(b=>b.kind!=='fallback');
+    const arCols=ar.beds.slice(0,-1).filter(b=>b.kind==='colonnade'||b.kind==='entablature');
+    const obLedge=ob.beds.slice(0,-1).filter(b=>b.kind==='obsidian'||b.kind==='rhyodacite'||b.kind==='perlite');
+    const bAr=K.bake(ar,{res:.5}),bOb=K.bake(ob,{res:.5});
+    let iridCount=0;for(let i=0;i<bOb.NA;i++)if(bOb.bed[i*4+3]===128)iridCount++;
+    return seMain.every(b=>b.th>=3&&b.th<=9)&&arCols.every(b=>b.th>=3&&b.th<=7)&&obLedge.every(b=>b.th>=2&&b.th<=6)&&
+      bAr.fx.columns===1&&bAr.fx.sheen===1&&bOb.fx.sheen===1&&iridCount>0;
+  })(),false);
+}
+
 // ---- golden vectors (kstrata.gd is held to these)
 const crypto=require('crypto'),sha=a=>crypto.createHash('sha256').update(Buffer.from(a.buffer,a.byteOffset,a.byteLength)).digest('hex');
 const cases=[

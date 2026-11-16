@@ -9,8 +9,10 @@
 // (kits/interiors' re-furnishing when a required piece finds no fit: 3 orders and 48 backtracks by default, each a whole
 // pass; the city bounds them, so a piece that cannot fit costs a pass or two, not minutes)}. Returns {on, rooms, pieces, missing, fails, byRoom, tex, group}:
 // on false when the page carries no furniture bundle. The sheet runs it once at load (targets/kit/90q-qb-furnish.js), the
-// city once per room when the camera comes to its building (settlements/qiblai targets/city/90t-qc-interiors.js).
-function qnFurnishRooms(rooms,parent,o){o=o||{};const S={on:false,rooms:0,pieces:0,missing:{},fails:[],byRoom:[],tex:null,group:null};
+// city once per room when the camera comes to its building (settlements/qiblai targets/city/90t-qc-interiors.js), and once
+// per building type for every lot (89q5s qnIxType: rooms from kits/interiors' planBuilding, already normalised; o.noTags: the
+// pieces are listed in S.placed, in the type's own frame, for the caller to register on each lot it stands on).
+function qnFurnishRooms(rooms,parent,o){o=o||{};const S={on:false,rooms:0,pieces:0,missing:{},fails:[],byRoom:[],tex:null,group:null,placed:[]};
  if(typeof KratorFurniture==='undefined'||typeof KratorInteriors==='undefined'||!rooms.length)return S;
  S.on=true;const IX=KratorInteriors,T=KTAGS.page||(KTAGS.page=KTAGS.create({build:'xanadu'})),seed=o.seed==null?33851:o.seed;
  const batch=KratorFurniture.batch({indexed:true}),adapter=IX.runtimeAdapter(KratorFurniture,batch),build0=adapter.build;
@@ -22,13 +24,14 @@ function qnFurnishRooms(rooms,parent,o){o=o||{};const S={on:false,rooms:0,pieces
    .map(d=>(d.variants==null?1:d.variants)>2?Object.assign({},d,{variants:2}):d);return cache;};}
  let cur=null;
  adapter.build=function(p,room){const E=KratorFurniture.FURN_BY_KEY[p.key]||{},t={setting:'room'};if(E.culture)t.culture=E.culture;if(E.tier)t.tier=E.tier;
+  if(o.noTags){S.placed.push({key:p.key,x:p.x,y:(p.y==null?0:p.y),z:p.z,ry:(p.ry==null?0:p.ry),kind:E.type||null,name:E.name||null,size:E.w?[E.w,E.d,E.h]:undefined,tags:Object.assign(t,{room:cur})});return build0.call(this,p,room);}   /* a building type's pieces, in its own frame: registered per lot by the caller */
   T.add({prefix:'ixf','class':'furniture',kind:E.type||null,key:p.key,name:E.name||null,at:[p.x,(p.y==null?0:p.y),p.z],ry:(p.ry==null?0:p.ry),size:E.w?[E.w,E.d,E.h]:undefined,
    tags:Object.assign(t,{room:cur}),frag:o.frag||'89q5f-qb-furnish.js'});return build0.call(this,p,room);};
  rooms.forEach((Q,i)=>{const id='qiblai.'+Q.key+'.'+(Q.id==null?i:Q.id);cur=id;
-  try{const R=IX.normRoom({building:Q.key,id,kind:Q.kind,poly:Q.poly,y:Q.y,h:Q.h,doors:Q.doors,culture:Q.culture,wealth:Q.wealth,fixtures:Q.fixtures,seed:seed+i});
+  try{const R=Q.walls?Q:IX.normRoom({building:Q.key,id,kind:Q.kind,poly:Q.poly,y:Q.y,h:Q.h,doors:Q.doors,culture:Q.culture,wealth:Q.wealth,fixtures:Q.fixtures,seed:seed+i});
    const fo={seed:0};if(o.cell!=null)fo.cell=o.cell;if(o.passes!=null)fo.passes=o.passes;if(o.backtrack!=null)fo.backtrack=o.backtrack;
    const plan=IX.furnishRoom(R,adapter,fo);IX.buildRoom(plan,adapter,R);const A=IX.audit(R,plan,adapter);
-   S.rooms++;S.pieces+=plan.placements.length;S.byRoom.push({room:Q.name,kind:Q.kind,pieces:plan.placements.length,ok:A.ok});
+   S.rooms++;S.pieces+=plan.placements.length;S.byRoom.push({room:Q.name||Q.kind,kind:Q.kind,pieces:plan.placements.length,ok:A.ok});
    (plan.missing||[]).forEach(m=>{const k=Q.name+': '+(m.need||m);S.missing[k]=((S.missing[k]==null?0:S.missing[k]))+1;});if(!A.ok)S.fails.push(Q.name+': '+JSON.stringify(A.fails.slice(0,3)).slice(0,300));}
   catch(e){reportErr('interior '+Q.name+': '+(e&&e.message||e));}});
  const g=new THREE.Group();g.name=o.name||'qiblai-interiors';g.userData.inspectLabel='Furniture (interiors)';parent.add(g);batch.flush(g);S.group=g;

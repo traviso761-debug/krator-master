@@ -241,15 +241,15 @@
    "code": "Cfa",
    "name": "humid subtropical",
    "color": "#c8ff50",
-   "pct": 9.68,
-   "km2": 1215216
+   "pct": 9.66,
+   "km2": 1212400
   },
   {
    "code": "ET",
    "name": "tundra",
    "color": "#b2b2b2",
    "pct": 9.56,
-   "km2": 1200020
+   "km2": 1200044
   },
   {
    "code": "WS",
@@ -276,43 +276,43 @@
    "code": "Csa",
    "name": "hot-summer Mediterranean",
    "color": "#ffff00",
-   "pct": 5.57,
-   "km2": 699628
+   "pct": 5.6,
+   "km2": 702960
   },
   {
    "code": "BSk",
    "name": "cold steppe",
    "color": "#ffdc64",
    "pct": 3.54,
-   "km2": 444020
+   "km2": 444052
   },
   {
    "code": "Dsc",
    "name": "dry-summer subarctic",
    "color": "#963296",
    "pct": 3.36,
-   "km2": 422016
+   "km2": 422028
   },
   {
    "code": "Dfc",
    "name": "subarctic (boreal)",
    "color": "#007d7d",
    "pct": 3.25,
-   "km2": 407420
+   "km2": 407528
   },
   {
    "code": "BSh",
    "name": "hot steppe",
    "color": "#f5a500",
    "pct": 3.04,
-   "km2": 381492
+   "km2": 381652
   },
   {
    "code": "Dsb",
    "name": "dry-summer warm continental",
    "color": "#c800c8",
    "pct": 2.81,
-   "km2": 353092
+   "km2": 353136
   },
   {
    "code": "BWk",
@@ -326,14 +326,14 @@
    "name": "tropical monsoon",
    "color": "#0078ff",
    "pct": 2.3,
-   "km2": 288828
+   "km2": 288844
   },
   {
    "code": "Dfb",
    "name": "warm-summer continental",
    "color": "#37c8ff",
    "pct": 2.21,
-   "km2": 277072
+   "km2": 277220
   },
   {
    "code": "HT",
@@ -347,7 +347,7 @@
    "name": "tropical savanna",
    "color": "#46aafa",
    "pct": 1.62,
-   "km2": 203688
+   "km2": 203536
   },
   {
    "code": "XA",
@@ -367,36 +367,36 @@
    "code": "Cfb",
    "name": "oceanic",
    "color": "#64ff50",
-   "pct": 1.37,
-   "km2": 172320
+   "pct": 1.38,
+   "km2": 172872
   },
   {
    "code": "Af",
    "name": "tropical rainforest",
    "color": "#0000ff",
    "pct": 0.86,
-   "km2": 107936
+   "km2": 107940
   },
   {
    "code": "Csb",
    "name": "warm-summer Mediterranean",
    "color": "#c8c800",
    "pct": 0.73,
-   "km2": 91928
+   "km2": 91748
   },
   {
    "code": "XV",
    "name": "abyssal savanna",
    "color": "#8a3ca8",
    "pct": 0.73,
-   "km2": 92180
+   "km2": 92176
   },
   {
    "code": "WH",
    "name": "highland lake",
    "color": "#5c9ea8",
-   "pct": 0.48,
-   "km2": 59688
+   "pct": 0.47,
+   "km2": 58408
   },
   {
    "code": "WX",

@@ -429,7 +429,7 @@
  ],
  "77-sim-6-economy.js": [
   "core/simulation",
-  "9b66808e76aa"
+  "1ef038eaafea"
  ],
  "77-sim-6-govern.js": [
   "core/simulation",
@@ -451,9 +451,17 @@
   "core/simulation",
   "d93273d8e954"
  ],
+ "77-sim-6-season.js": [
+  "core/simulation",
+  "1bed5a0ddc6e"
+ ],
  "77-sim-6-trade.js": [
   "core/simulation",
-  "6270845dd155"
+  "0cf5ac635e59"
+ ],
+ "77-sim-6-transfer.js": [
+  "core/simulation",
+  "cfe430fbacfb"
  ],
  "77-sim-6-unrest.js": [
   "core/simulation",
@@ -461,7 +469,7 @@
  ],
  "77-sim-7-ledger.js": [
   "core/simulation",
-  "190d994378b8"
+  "c55ac56340b3"
  ],
  "77-sim-7-lod.js": [
   "core/simulation",
