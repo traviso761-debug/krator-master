@@ -66,7 +66,7 @@ u from the cove's waterline (left) uphill to the brow (right); v along the isle,
 
 ## Sheet W: the fishermonks' wharf
 
-The cove faces Erehwon across 19 km of water, the bay isle (a lamp chorten, the Threshold Light) 7 km out on the line. The barge berth and the Lustral Steps on the west; three jetties, the dugout beach, the boathouse, the racks, the smokehouses, the ropewalk and the fishermonks' own house on the east. The fishermonks fish the lake the Atitlán way, from dugouts with nets and lines, and by night with lamps: from the Hall of Dreaming's terrace the night fleet is a second, lower sky.
+The cove faces Erehwon across 20 km of water, the bay isle (a lamp chorten, the Threshold Light) 6 km out on the line. The barge berth and the Lustral Steps on the west; three jetties, the dugout beach, the boathouse, the racks, the smokehouses, the ropewalk and the fishermonks' own house on the east. The fishermonks fish the lake the Atitlán way, from dugouts with nets and lines, and by night with lamps: from the Hall of Dreaming's terrace the night fleet is a second, lower sky.
 
 | # | Room | Kind | Decor | m2 | Pieces |
 |---|---|---|---|---|---|

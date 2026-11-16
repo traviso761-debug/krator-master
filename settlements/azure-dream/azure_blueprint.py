@@ -33,7 +33,7 @@ FLOORS.append(dict(id='G', tier=0, R=368, rect=(-80, 640, -330, 330),
   title='Sheet G: Grēṭ-Āil, the grounds (the cove facing Erehwon to the Hall of Dreaming)',
   sub='u from the cove\'s waterline (left) uphill to the brow (right); v along the isle, its east tip up. The wharf on the cove: the pilgrims\' landing and the mole on the west, the fishermonks\' jetties, beach, boathouse and racks on the east. The lower ward on the first terraces (pilgrims below, the Order\'s farm and workshops beside them); the Stair of Lowered Eyes up the slope; the walled upper precinct on the brow: the Blue Gate, the great monastery in the blue dress, the cells and the Prismarch\'s house, the Lotus Garden, and the Hall of Dreaming wrapped in its kora at the head of the axis. The Dream Road leaves the back gate for the summit kora, 8 km up the isle (sheet S).',
   axisnote='u -> uphill from the cove (bearing NNE); v up = along the isle toward its east tip (ESE); the lake at the left',
-  fills=[(SHORE, WATER, 'the lake (-520 m); Erehwon 19 km off, south-south-west')],
+  fills=[(SHORE, WATER, 'the lake (-520 m); Erehwon 20 km off, south-south-west')],
   outlines=[(280, 600, -170, 170, 'the upper precinct\'s wall'), (476, 550, -25, 25, '')],
   lines=[([(600, 0), (640, 0)], (120, 80, 30), 5)],
   rooms=[
@@ -100,7 +100,7 @@ FLOORS.append(dict(id='G', tier=0, R=368, rect=(-80, 640, -330, 330),
 # ---- W the wharf, closer (the cove's east half and the mole)
 FLOORS.append(dict(id='W', tier=0, R=128, rect=(-70, 150, -90, 220),
   title='Sheet W: the fishermonks\' wharf',
-  sub='The cove faces Erehwon across 19 km of water, the bay isle (a lamp chorten, the Threshold Light) 7 km out on the line. The barge berth and the Lustral Steps on the west; three jetties, the dugout beach, the boathouse, the racks, the smokehouses, the ropewalk and the fishermonks\' own house on the east. The fishermonks fish the lake the Atitlán way, from dugouts with nets and lines, and by night with lamps: from the Hall of Dreaming\'s terrace the night fleet is a second, lower sky.',
+  sub='The cove faces Erehwon across 20 km of water, the bay isle (a lamp chorten, the Threshold Light) 6 km out on the line. The barge berth and the Lustral Steps on the west; three jetties, the dugout beach, the boathouse, the racks, the smokehouses, the ropewalk and the fishermonks\' own house on the east. The fishermonks fish the lake the Atitlán way, from dugouts with nets and lines, and by night with lamps: from the Hall of Dreaming\'s terrace the night fleet is a second, lower sky.',
   axisnote='u -> uphill from the waterline; v up = toward the isle\'s east tip; the lake at the left',
   fills=[([(-70, -90), (-24, -90), (-2, -76), (0, -20), (2, 0), (2, 60), (-2, 120), (-14, 180), (-26, 220), (-70, 220)], WATER, 'the cove')],
   rooms=[

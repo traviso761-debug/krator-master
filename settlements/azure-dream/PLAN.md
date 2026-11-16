@@ -30,38 +30,52 @@ This is a plan for the owner to approve. Nothing is built. The blueprint sheets 
    The summit kora is 8 km up the isle by the Dream Road.
 2. A doctrine for the Order: the Song was dreamed and is unfinished, and its lost turnings come back in dreams.
 3. The Hall of Dreaming: 256 cots in eight turnings, its rites, its keepers, its quiet and its light.
-4. The buildings as kit records, mostly the Qiblai kit's own in the blue dress, plus new ones (section 6).
+4. The buildings as records: mostly the Qiblai kit's own in the blue dress, plus new ones in this settlement's `src/`
+   (section 6).
 5. The isle's 600 people: the Order about 236 and three fishing villages about 364.
 
 ## 1. The site
 
 **The isle as the model draws it.** `edit_517.py` raises each isle cell to `LEVEL + 8 + (crest - 8)(1 - 0.45 r^2)`,
-with `r` the elliptic radius. For the long isle:
-- The middle stands 300 m over the lake (-220 m). The edge cells stand about 168 m over it (-352 m).
-- So at the cell scale the isle is a broad, low dome, a whaleback, with a steep shore: about 170 m of rise inside the last
-  cell. Atitlán's shores are like this.
-- Its shallows reach about 2 px out.
+with `r` the elliptic radius. The scale-model session confirmed the figures from the committed model (2026-11-16). For
+the long isle:
+- **Its land cells** run in rows 1500-1508, x 834-856. The middle (845,1504) stands 300 m over the lake (-220 m); the
+  edge cells stand 170-190 m over it.
+- **Heights over the lake by row** (the scale-model session):
+
+  | Row | West | Middle | East |
+  |---|---|---|---|
+  | 1504 | 186 at x 836 | 300 at x 845 | 186 at x 854 |
+  | 1506 | 175 at x 839 | 279 at x 848 | 180 at x 856 |
+  | 1507 | 185 at x 842 | 252 at x 849 | 181 at x 856 |
+  | 1508 (the south shore) | 177 at x 845 | 212-214 at x 849-851 | 182 at x 855 |
+
+- So at the cell scale the isle is a broad, low dome, a whaleback, with a steep shore: one cell-wide step of about 180 m
+  into shallows 24-100 m deep within 2 px, then the caldera bowl, up to about 937 m deep. Atitlán's shores are like this.
 - The summit is the dome's middle. It lies 8 km from the south shore and 24 km from either tip.
 
-What the isle looks like at 1:1 (coves, spurs, the shore's real steepness) is core/world's to draw, and it has not been
-cut on this lake yet. The scale model session was asked (2026-11-16) whether the long isle gets finer relief and whether
-a cove can be stamped. **Every height in this plan is an assumption until then.** They are listed in the sheets'
-headers and in the section.
+**At 1:1**, core/world's `WORLD.H` reads the model's heights by Catmull-Rom and adds per-biome detail scaled to each
+cell's relief. The one-cell step becomes **a steep slope about 2 km wide: no cliff and no cove.** A cove, a wharf bench or
+a spur has to come from a landform record (below), as `lf_pleasure_dome_isle` does, stamped by the region's
+`44-world-landforms.js`. The isle has not been cut on this lake yet. **Every height in the sheets is an assumption until
+then**; they are listed in the sheets' headers and in the section.
 
 **Where on the isle** (question 1). The owner asked for the wharf "on the shore that faces Erehwon". Erehwon at 841,1517
-lies almost exactly across the isle's axis from its middle (u -0.5, v +13.6 px in the isle's frame). So the shore facing
-Erehwon is the middle of the south shore, near **px 844,1508**. Three placements were weighed:
+lies almost exactly across the isle's axis from its middle (u -0.5, v +13.6 px in the isle's frame). The shore facing it
+is **row 1508's cells, x 845-848**, about 20 km NNE of the city. The cove goes at **px 846,1509** (water) under the shore
+cell 846,1508 (about 190 m), with a spur up through 848,1506 (279 m) to the crest at 845,1504 (the scale-model session's
+reading). Three placements were weighed:
 
 | | Where | For | Against |
 |---|---|---|---|
-| **A (recommended)** | **The south-shore cove, near 844,1508.** The monastery climbs from the wharf to the brow, about 60-80 m up. The summit kora stands apart, 8 km up the Dream Road | wharf, pilgrims' landing, hostel and Hall in one walk; the Hall faces Erehwon and the Pleasure Dome across 19 km of water; the Valaam and Athos pattern (a great house by the landing, sketes and a summit chapel inland) | the summit kora is a day's outing, not a daily circuit (section 4e) |
+| **A (recommended)** | **The south-shore cove at 846,1509.** The monastery climbs from the wharf to the brow, about 60-80 m up. The summit kora stands apart, 8 km up the Dream Road | wharf, pilgrims' landing, hostel and Hall in one walk; the Hall faces Erehwon and the Pleasure Dome across 20 km of water; the Valaam and Athos pattern (a great house by the landing, sketes and a summit chapel inland) | the summit kora is a day's outing, not a daily circuit (section 4e) |
 | B | The summit, the dome's middle. The wharf is an outstation 8 km away | the kora round the summit is the monastery's own; seen from every shore | every pilgrim and every fish walks 8 km uphill; the wharf and the Hall are two sites |
 | C | The west tip, facing the west stack and Erehwon's bay obliquely | the tip's narrower neck | Erehwon is not in front of it; 24 km from the summit |
 
 **The view from the cove** (A), toward the south-south-west:
-- Erehwon on its bench 19 km off, with the Pleasure Dome on its islet in the bay.
+- Erehwon on its bench 20 km off, with the Pleasure Dome on its islet in the bay.
 - The western and middle volcanoes (829,1526 and 856,1532) behind the city, 11-13 px back.
-- The bay isle 7 km out on the line. It carries the **Threshold Light**, a lamp chorten that guides the night barge.
+- The bay isle 6 km out on the line. It carries the **Threshold Light**, a lamp chorten that guides the night barge.
 
 The quarrel between the Sultan and the council (`kits/qiblai/PLAN.md` 2a: a pleasure dome "built for feasts, not by the
 Song") is then a view: from the Hall's terrace the Order looks across the water at the Sultan's dome.
@@ -81,9 +95,14 @@ Assumed heights over the lake:
 | the upper precinct | +60 m (the Blue Gate) to +76 m (the Hall of Dreaming's terrace) |
 | the summit, 8 km on | about +300 m |
 
-**A landform record to ask for** (step AD1, through the scale-model session's queue):
-- `lf_azure_cove`: a sheltered cove about 500 m across at 844,1508, with its headlands.
-- A spur from the cove up to a brow terrace at +60 to +80 m.
+These heights fit the 1:1 slope: about 190 m over about 2 km, so the precinct's +60 to +76 m stands 600-700 m in from
+the water. The precinct is cut and filled into terraces on the slope; the gentler crest beyond carries the Dream Road.
+
+**A landform record to ask for** (step AD1, through the scale-model session's queue). The session asks for the cove's
+centre and radius and the brow's height:
+- `lf_azure_cove`: a sheltered cove centred at **px 846,1509**, **radius about 250 m**, with its two headlands.
+- **A brow terrace at +70 m** over the lake (the upper precinct, about 320 x 340 m), reached by a spur from the cove up
+  the line of 848,1506.
 - Like `lf_pleasure_dome_isle`, a sub-cell landform that core/world stamps at 1:1.
 - Requested only after the owner approves the site.
 
@@ -332,7 +351,7 @@ leaves by the clerestory's vents.
 - The Damsel's gold lamp burns at the head.
 - On the Station's nights its light comes down through the opened shutters.
 - **Outside**, the hall's windows are shuttered, and the clerestory glows a faint blue. **The blue window is what Erehwon
-  sees of Grēṭ-Āil at night**, 19 km across the water: the Order's sign.
+  sees of Grēṭ-Āil at night**, 20 km across the water: the Order's sign.
 - For the page: lamps on Qiblai's run-time lamp pool (commit 95db7d169) on `core/atmos`'s night, scheduled by
   `core/sched` (the Lulling, the watches, the shutters).
 
@@ -385,19 +404,23 @@ with the blue on the upper blocks of the sacred buildings only, as Longsong keep
 | `qb_ad_station_watch` | the Station Watch: a cube with a roof platform and a signal lamp | new | 28 x 28 | 30k |
 | boats | the dugout; the Order's barge | new: the dugout from the Vernacular's `vldDugout` form; the barge in the line of Xanadu's `xnXQBoat` and the pleasure barge | 4-7 m; 22 m | 2k; 20k |
 
-**Where the new records live** (question 10). Recommended: a fragment in the Qiblai kit, `kits/qiblai/src/89q6-qb-azure.js`
-(and `89q6i` for the hall's interior):
-- Qiblai's blue spoke can then show the hall in miniature.
-- The other Orders' head houses (Viridian Thought's tea estate, the Tempest) can follow the same pattern.
-- The Qiblai session owns the kit, so this waits for its agreement.
+**Where the new records live** (settled with the Qiblai kit's session, 2026-11-16). The Orders' head houses do not go
+into `kits/qiblai`:
+- The new records live in **this settlement's own `src/`** (`settlements/azure-dream/src/`). They are written on the
+  Qiblai kit's helpers (`qn*`) and drawn on the kit's page, as a target or a `--kit` folder like Qiblai's own city.
+- **The dress** is `QSPOKE[5]`'s `wall`, `trim` and `band`. Not `QN_ORDER_BLUE` / `QN_ORDER_BLUE2`: those are the
+  History Monks' blue.
+- The `qb_ad_*` keys are agreed.
 
-**Seeds** 34000-34199. The kit's own block, 33000-33999, is full; nothing in `kits/`, `settlements/` or `biomes/`
-reseeds in the 34000s. The prefix is `qb_ad_`, with `culture:'qiblai'`. The tags: religious for the hall, the gate, the
+**Seeds** 34000-34199, given to the Azure Dream by the Qiblai kit's session. Qiblai owns all of 33000-33999 (33700-33899
+are its temple, walls, gates and terrace stair); nothing in `kits/`, `settlements/` or `biomes/` reseeds in the 34000s.
+Later head houses take the blocks after it, 200 seeds each (34200-34399 next). The prefix is `qb_ad_`, with
+`culture:'qiblai'`. The tags: religious for the hall, the gate, the
 chortens and the wheel houses; infrastructure for the mole and jetty; industry for the racks, smokehouse and ropewalk;
 multi-family dwelling for the cells.
 
-The kit's footprint test (`node kits/xanadu/tests/test-footprints.js`, copied for the kit) runs on every new record before
-it goes on a sheet.
+The Xanadu kit's footprint test (`node kits/xanadu/tests/test-footprints.js`, copied for this settlement's records) runs
+on every new record before it goes on a sheet.
 
 ## 7. Interiors and furniture
 
@@ -508,9 +531,9 @@ isle's food bill, and a real demand for its dairy and hives.
 | Step | What | Who | Proved by |
 |---|---|---|---|
 | **AD0** | this plan and its sheets; the owner's answers to section 13 | this session, the owner | |
-| **AD1** | the map: the cove (`lf_azure_cove`) and its spur; a pin for the monastery at the cove, one for the Station Watch at the summit, the Dream Road; the three villages' pins | the scale-model session's queue | the pins' ground; core/world's stamp at 1:1 |
+| **AD1** | the map: the cove (`lf_azure_cove`, centre px 846,1509, radius about 250 m, the brow terrace at +70 m) and its spur; a pin for the monastery at the cove, one for the Station Watch at the summit, the Dream Road; the three villages' pins | the scale-model session's queue | the pins' ground; core/world's stamp at 1:1 |
 | **AD2** | the sim: `lk.great-isle` split into the monastery and three villages; pilgrims as a flow; the isle's goods | the sim session | its economy test |
-| **AD3** | the kit records (section 6) in `kits/qiblai` (`89q6-qb-azure.js`), on the kit's sheet beside the blue monastery; the reused records' blue dress | the Qiblai kit's owner, or this session with its agreement | the footprint test; `kits/qiblai/verify.py --assert` |
+| **AD3** | the new records (section 6) in `settlements/azure-dream/src/` on the Qiblai kit's helpers and `QSPOKE[5]`'s dress, seeds 34000-34199, on a sheet beside the blue monastery; the reused records' blue dress | this settlement | the footprint test; the sheet's `verify.py --assert` |
 | **AD4** | the 22 catalog pieces in the Xanadu culture file | the catalog's owner | `kits/catalog/verify.py --assert` |
 | **AD5** | the Hall as room data, its cot grid, the side rooms furnished; the reach audit in node first | | `core/walk` reach in node; the page's `--interiors` assert |
 | **AD6** | the page, `settlements/azure-dream`: the cove, the wharf, the ward, the stair, the precinct on core/world's ground, the lake on `core/water`, the night on `core/atmos` and `core/sched` (the Lulling, the watches, the shutters, the blue window), people asleep | | `verify.py --assert` on the GPU lane; `check_core_use` |
@@ -519,7 +542,7 @@ isle's food bill, and a real demand for its dairy and hives.
 
 ## 13. Questions for the owner
 
-1. **The site.** **A (recommended):** the south-shore cove facing Erehwon (near px 844,1508), the monastery climbing from
+1. **The site.** **A (recommended):** the south-shore cove facing Erehwon (px 846,1509, under shore cell 846,1508), the monastery climbing from
    the wharf to the brow, the summit kora 8 km up the Dream Road. **B:** the whole monastery on the summit, with the
    wharf an outstation 8 km off. **C:** the west tip.
 2. **The Hall's size.** 256 cots (eight turnings of 32) in a 54 x 30 m pillared hall. Keep it, double it (a second hall
@@ -540,7 +563,8 @@ isle's food bill, and a real demand for its dairy and hives.
 9. **The names.** The eight turnings are named here from the poem's sections: the Decree, the Garden, the Chasm, the
    Fountain, the Dome and the Caves, the Damsel, the Song Revived, the Circle Thrice. Has the faith's division of the
    Song been fixed elsewhere? And are the villages West End, North Shore and East End (*Wesṭ-Ēn*, *Nōṛ-Shōr*, *Īsṭ-Ēn*)?
-10. **Where the new records live.** In the Qiblai kit (a new fragment, recommended), or in the settlement's own `src/`?
+10. ~~**Where the new records live.**~~ **Settled with the Qiblai kit's session (2026-11-16):** in the settlement's own
+    `src/`, on the kit's helpers, seeds 34000-34199. The Orders' head houses stay out of `kits/qiblai`.
 11. **The dress.** White wash with the Order's blue on the sacred buildings' upper blocks (recommended), or the blue spoke's
     blue walls throughout, as in Qiblai's clergy ring?
 12. **The textures.** Ask for the painted night ceiling, felt and reed matting (section 9), or stay on the packs and draw
