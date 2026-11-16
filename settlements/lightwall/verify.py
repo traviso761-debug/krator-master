@@ -17,6 +17,9 @@ invariants and views are Xanadu's, and settlements/xanadu/verify.py runs it (on 
   ix-glazier          L4: from each carved home's front room a walker reaches its first carved room (core/walk: the front's
                       floor from the walked draw, the doorway, the cavern's floor); the carved rooms furnished
   bench-ground        the blocks' open ground is kitchen gardens, orchards and yards, not bare (the owner, 2026-11-16)
+  bench-stairs        every building on the bench whose floor stands over the street has a podium and a flight of steps
+                      up to it, and a walker climbs from the flight's foot onto the podium's front and, in a furnished
+                      house, through the door onto its floor (core/walk; the owner, 2026-11-16: "podiums / stairs / walk test")
 
     KRATOR_GL=gpu python3 verify.py dist/lightwall.html --assert --views "Overview,From the lake,The Stair Foot"
 """
@@ -51,7 +54,27 @@ TOWN_JS = r"""
  R.push({name:'ix-glazier',ok:homes.length>40&&got.length===homes.length&&!neg.length&&furn>200,detail:got.length+' of '+homes.length+' carved homes walked from the front room into the first carved room; '+furn+' catalog pieces in the carved rooms; from 40 m up: '+neg.length+' (none)'+(got.length<homes.length?'; not reached: '+homes.filter(s=>!got.includes(s)).slice(0,6).map(s=>s.id+' '+s.key).join(', '):'')});
  let n=0,bare=0,kinds={};for(const b of (typeof LW_BLOCKS!=='undefined'?LW_BLOCKS:[]))if(b.kind!=='field'){const xs=b.poly.map(p=>p[0]),zs=b.poly.map(p=>p[1]);
   for(let x=Math.min(...xs)+2;x<Math.max(...xs);x+=9)for(let z=Math.min(...zs)+2;z<Math.max(...zs);z+=9){const pl=lwPlot(x,z);if(pl==null)continue;n++;kinds[pl]=(kinds[pl]||0)+1;if(pl==='dooryard')bare++;}}
- R.push({name:'bench-ground',ok:n>500&&bare<n*.35&&(kinds.garden||0)>n*.15&&(kinds.orchard||0)>n*.15,detail:n+' samples of the blocks\' open ground: '+JSON.stringify(kinds)});}
+ R.push({name:'bench-ground',ok:n>500&&bare<n*.35&&(kinds.garden||0)>n*.15&&(kinds.orchard||0)>n*.15,detail:n+' samples of the blocks\' open ground: '+JSON.stringify(kinds)});
+ const bsSP=(typeof LW_PLACE!=='undefined'?LW_PLACE:[]).filter(p=>p.kind!=='quay'&&VERN.defs[p.key]),bsFlights=bsSP.filter(p=>p.stair);
+ const bsDoorH=p=>{const D=VERN.defs[p.key],n=D.d/2+.15+.7;return p.o.y-terrainH(p.x+Math.sin(p.ry)*n,p.z+Math.cos(p.ry)*n);};
+ const bsOwed=bsSP.filter(p=>!p.stair&&bsDoorH(p)>=.3),bsNoPod=bsSP.filter(p=>p.o.y-lwPodiumLo(p,VERN.defs[p.key])>.25&&!p.podium);
+ const bsClimb=(p,dy)=>{const S=p.stair,D=VERN.defs[p.key],t=.15/Math.max(S.L,.15),x=S.x0+(S.x1-S.x0)*t,z=S.z0+(S.z1-S.z0)*t,y=S.y0+(S.y1-S.y0)*t+.05+dy;
+  const R=Math.max(D.w,D.d)/2+S.L+4,r=KWALK.reach([[x,y,z]],{box:[p.x-R,p.x+R,p.z-R,p.z+R],cell:.25});
+  const apron=r.reached.some(F=>F.tag==='lightwall:podium:'+p.id),fw=lwD(D.fw,D.w)/2,fd=lwD(D.fd,D.d)/2,co=Math.cos(p.ry),si=Math.sin(p.ry);
+  /* inside: a floor of the built house (not its doorway's entry strip), its middle within the house's footprint */
+  const inside=r.reached.some(F=>{if(!/^built:/.test(F.tag||'')||F.kind==='strip')return false;const bb=F.bbox||F.rect;if(!bb)return false;const cx=(bb[0]+bb[1])/2-p.x,cz=(bb[2]+bb[3])/2-p.z,a=cx*co-cz*si,c=cx*si+cz*co;return Math.abs(a)<fw+.5&&Math.abs(c)<fd+.5;});
+  return {apron,inside};};
+ /* a walker opens an unlocked door (the Xanadu kit locks most of its houses' doors: those stay shut); the doors' blocks off for
+    the climb, back on after */
+ const bsOpen=(typeof KDOOR!=='undefined'?KDOOR.list:[]).filter(d=>!d.locked&&d.blocks&&d.blocks.length);bsOpen.forEach(d=>KWALK.setBlock(d.blocks,false));
+ const bsDoorOf=p=>{const D=VERN.defs[p.key],fw=lwD(D.fw,D.w)/2+1,fd=lwD(D.fd,D.d)/2+1,co=Math.cos(p.ry),si=Math.sin(p.ry);
+  return (typeof KDOOR!=='undefined'?KDOOR.list:[]).filter(d=>{const dx=d.at[0]-p.x,dz=d.at[2]-p.z;return Math.abs(dx*co-dz*si)<fw&&Math.abs(dx*si+dz*co)<fd;});};
+ const bsW=bsFlights.map(p=>({p,c:bsClimb(p,0)})),bsOnApron=bsW.filter(w=>w.c.apron),bsIx=bsW.filter(w=>w.p.ix&&bsDoorOf(w.p).some(d=>!d.locked)),bsLocked=bsW.filter(w=>w.p.ix&&!bsIx.includes(w)),bsInDoor=bsIx.filter(w=>w.c.inside),bsUp=bsFlights.slice(0,10).filter(p=>bsClimb(p,40).apron);
+ bsOpen.forEach(d=>KWALK.setBlock(d.blocks,true));
+ const bsPast=bsFlights.filter(p=>p.stair.past).length,bsSteps=bsFlights.reduce((a,p)=>a+p.stair.n,0);
+ R.push({name:'bench-stairs',ok:bsFlights.length>100&&!bsOwed.length&&!bsNoPod.length&&bsOnApron.length===bsFlights.length&&bsInDoor.length>=bsIx.length*.9&&!bsUp.length,
+  detail:bsFlights.length+' flights ('+bsSteps+' steps; '+bsPast+' run past the sides of their podiums) on '+bsSP.length+' buildings; '+bsOnApron.length+' climbed to the podium; '+bsInDoor.length+' of '+bsIx.length+' furnished houses with an unlocked door entered through it ('+bsLocked.length+' with only locked doors); doors over the street with no flight: '+bsOwed.length+'; podiums owed: '+bsNoPod.length+'; from 40 m up: '+bsUp.length+' (none)'
+   +(bsOnApron.length<bsFlights.length?'; not bsClimbed: '+bsW.filter(w=>!w.c.apron).slice(0,5).map(w=>w.p.id).join(', '):'')+(bsInDoor.length<bsIx.length?'; not entered: '+bsIx.filter(w=>!w.c.inside).slice(0,5).map(w=>w.p.id+' '+w.p.key).join(', '):'')});}
 return R;}"""
 xv.ASSERT_JS = xv.ASSERT_JS.rstrip()[:-len('return R;}')] + TOWN_JS
 assert xv.ASSERT_JS.endswith('return R;}'), 'settlements/xanadu/verify.py ASSERT_JS no longer ends with return R;}'

@@ -36,6 +36,13 @@
 - **The bench's ground no longer runs through the carved rooms**: behind the wall line, across the carved quarter, the ramp
   under the bands is held a metre under the floor of every band whose rooms run over it; the top band's block is deeper and
   lidded behind its carved sites so no trench opens above it.
+- **Podiums and steps on the slopes** (the owner: "buildings on slopes need podiums / stairs / walk test"): the frontage houses'
+  footings were never drawn (core/city hands a lot its footing's depth as a number; the page read only the landmarks' `{lo}`),
+  so they stood on their own plinths in the air. Every building now stands on a podium of dressed stone, its whole plot, down
+  to its lowest ground, with a coping; where the street is lower than the floor, a flight of steps runs along the podium's
+  front to the door's axis (274 flights, 3,265 steps). Both are in core/walk: `bench-stairs` climbs every flight onto its
+  podium and, opening the unlocked doors as a walker would, into every furnished house that has one (18; 24 have only the
+  kit's locked doors).
 
 ## Open
 

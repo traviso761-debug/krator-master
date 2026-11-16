@@ -345,7 +345,7 @@
     "kits/xanadu/src/89-xa-trades.js": "ea68acaefb8da0b319ca98fb43f8aa400763eccf0e734051065c4facca8662af",
     "kits/xanadu/xanadu.py": "70917961388f43ea3d80944de7272efe73f5c263c4c005865be50932e5c4ebd4",
     "lore/tongues-of-krator.html": "c956a2aaddf9a74d5fed771a26953bb693219b92c6489f029a5298281cb25cd5",
-    "settlements/lightwall/KNOWN_ISSUES.md": "e3b2d2b835915cfdfa83735e33c198054a7793adee95a212ab8a89223228c416",
+    "settlements/lightwall/KNOWN_ISSUES.md": "2b6f4f80cff9de311dfe159720fb9941af67f32f9e7ea1a4e5b9b5e61e8a6b92",
     "settlements/lightwall/PORT.md": "ce22c18ba74545c17d67c599f13718c571084117bd9d50a91a64bcdac5b733e8",
     "settlements/lightwall/build.py": "3e0bb3cbd92e65ed79222e5b3add06bd70fae76e9d649ccd68616ab64b7524a3",
     "settlements/lightwall/gen/69l-kcity-bundle.js": "dee358526ba945c91dc606c08106d7d5ea51a6b65138b1d7a026b67dbe57fd68",
@@ -355,8 +355,8 @@
     "settlements/lightwall/targets/town/89zl-lw-site.js": "caeaafa59559f7b3db984e8a4a1be6bfb1c4be621710b0cf82c3ff5d8c40dc56",
     "settlements/lightwall/targets/town/90l-lw-world.js": "c0f3365e87dbe6436dae8f82a5bec38c348ccbfa87c035f122fcdb4cc2a6d55b",
     "settlements/lightwall/targets/town/90m-lw-wall.js": "9eac1aaf6a9f93e363b765c05a43315e0f13dc368e1d4fd22babe22abed28246",
-    "settlements/lightwall/targets/town/90r-lw-build.js": "fb9faa5c490d2b025242454ce683a56dc456474ab82d99fb86cb5ff48e90605e",
-    "settlements/lightwall/targets/town/91z-views.js": "2c09e3ea3a1c340cf9b1e086ff54d060591757b34f098da141ae4fa065545cf0",
+    "settlements/lightwall/targets/town/90r-lw-build.js": "dd5ec43419b4721ed51bb6ba0de0c46cdbdf842227a5312ab9f807a2ce325494",
+    "settlements/lightwall/targets/town/91z-views.js": "c40391be0a6137f14e3fff4f0883071e0700e01088ab4995fa5ee6c6a2fc6410",
     "settlements/xanadu/PORT.md": "7e440bcd209e1256c258af0c4f6ec2a2cc22b6c0c1be33ffbf0f5b376f52f57f",
     "settlements/xanadu/build.py": "af87fa26a6234df97f4e94b3b97dbd4fe0bfd2d019007467b7aea2477f670f62",
     "settlements/xanadu/src/00-head.html": "d84d1b9dcb330ed808adb6f76edc7630736d3b91250ee188af2d532a3429434f",
@@ -571,15 +571,15 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "settlements/lightwall/build-manifest-town.json": "2bc5050674d94a4c4fea9d75b18140cda1c45ebc6df33c95ffa215e19689372f",
-    "settlements/lightwall/dist/lightwall.html": "ffce2359dad75a8757b0161afb00e67ded12fe11dd0f17bcdba8319bb6e6d261",
+    "settlements/lightwall/build-manifest-town.json": "6cf3d884836320bcc195350a6535951ff6498fa4bb4567a43a32b31e6039d194",
+    "settlements/lightwall/dist/lightwall.html": "48a0f564672213c0b52e920cf014550ce6273036d8a4bd19af2e79475b648553",
     "settlements/lightwall/dist/lightwall.tex.tungang.js": "84f142c4d0b19ef095a3857f14e2e1daa0e96ca579255c1ed7f5979db231adcb",
     "settlements/lightwall/dist/xanadu.tex.xanadu-2.js": "be1d57f174e08cf71b5511aff65a313eec8edc29e057c48d027e9b60630f3ab5",
     "settlements/lightwall/dist/xanadu.tex.xanadu.js": "3fe87059ee305d523fa5026dddfd91123354e88d5839097de9df44137500f2a4"
    },
    "outputs_raw": {
-    "settlements/lightwall/build-manifest-town.json": "bc631d54d9ce6c218463c358ed0646e41f4f47d45b24c08eac1939abd1ec9d6e",
-    "settlements/lightwall/dist/lightwall.html": "ffce2359dad75a8757b0161afb00e67ded12fe11dd0f17bcdba8319bb6e6d261",
+    "settlements/lightwall/build-manifest-town.json": "13f9cfc1fe1379eb4f3ea4d5902b688a7dea14b5d5d2053042af1805b5d13f66",
+    "settlements/lightwall/dist/lightwall.html": "48a0f564672213c0b52e920cf014550ce6273036d8a4bd19af2e79475b648553",
     "settlements/lightwall/dist/lightwall.tex.tungang.js": "84f142c4d0b19ef095a3857f14e2e1daa0e96ca579255c1ed7f5979db231adcb",
     "settlements/lightwall/dist/xanadu.tex.xanadu-2.js": "be1d57f174e08cf71b5511aff65a313eec8edc29e057c48d027e9b60630f3ab5",
     "settlements/lightwall/dist/xanadu.tex.xanadu.js": "3fe87059ee305d523fa5026dddfd91123354e88d5839097de9df44137500f2a4"

@@ -30,7 +30,7 @@ monastery, its ground sets) and core/terrain's cavern (`KCAVERN`, its draw, its 
 | `targets/town/90m-lw-wall.js` | every Glazier site registered in core/tags (culture `glazier`); the bands' plain rock between the carved sites; the carved quarter's rock carved from the sites' void plans (`TG.gz.carve`, KCAVERN; the floors to core/walk; the rock cut for the cut-away); the fronts drawn through `TG.gz.draw`, the outer wall as fronts on whole rock (`facade`) |
 | `targets/town/90r-lw-build.js` | the bench's buildings, chunk by chunk (each on a footing of dressed stone down a slope), those within 260 m of the Stair Foot with the Xanadu kit's interiors (L4); the flora (the Vale of Xanadu biome over the mask, and the kits' own plants) |
 | `targets/town/91z-views.js` | the views and the town's budget |
-| `verify.py` | Xanadu's verify plus the town's: `town-laid`, `wall-drawn`, `wall-carved`, `wall-tags`, `half-and-half` (a budget), `lights-of-the-wall`, `ix-bench` and `ix-glazier` (L4: the furnished houses, every carved home walked into), `bench-ground` (the blocks' plots) |
+| `verify.py` | Xanadu's verify plus the town's: `town-laid`, `wall-drawn`, `wall-carved`, `wall-tags`, `half-and-half` (a budget), `lights-of-the-wall`, `ix-bench` and `ix-glazier` (L4: the furnished houses, every carved home walked into), `bench-ground` (the blocks' plots), `bench-stairs` (the podiums and their steps, climbed from the street into the houses) |
 
 ## The town by the numbers (2026-11-16, with L4)
 

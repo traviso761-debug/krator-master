@@ -13,6 +13,7 @@ const VIEWS=(function(){const V={};const Wz=LW.WALL,Y=LW.Y0;
  V['The caravanserai']=lwEye(-860,360,-940,330,2);
  V['The Iridescent Order on its spur']=lwEye(842,100,930,150,6);
  V['The carved quarter (cut-away)']=[0,Y+70,Wz+60,0,Y+12,Wz-12];
+ V['Podiums and steps on the slope']=lwEye(-1,-98,-1,-200,0);
  V['The gardens of the bench']=[-160,70,-20,-120,10,-110];
  /* inside a Glazier hearth room: the carved household front on the second band nearest the main stair, from its doorway */
  const hf=LW_CARVED.filter(s=>s.key==='gz-front'&&s.band===1).sort((a,b)=>Math.abs(a.x)-Math.abs(b.x))[0];
