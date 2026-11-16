@@ -4,6 +4,11 @@ Roadmap stage 6's example: two Islander towns, Kautoa (a city) and Valapo (a vil
 isles. `PLAN.md` holds the assay and the plan (P0-P8). This folder is P4, **the site planner**, where the owner lays
 out the two towns (P5). Both are drawn (2026-10-18, `site/isle-site.json`); `PLAN.md` section 8 is their programme.
 
+**The region host is core/region** (2026-11-11, core/simulation/PROPOSAL-LONGSONG-PINNACLE.md phase S0). The fragments
+this page had as `src/40-49` (`40-isle-sim.js` ... `49-isle-govern.js`; `47`, `47k`, `47x`, `47y` stay here) are now
+`core/region/40-region-sim.js` ... `49-region-govern.js`. They are unchanged but for `ISLE.` read as `RH.`, and run on
+`ISLE` through `src/39-isle-region.js`. The docs here still name them by their old names. See `core/region/README.md`.
+
 ```
 python3 build.py                       # writes dist/isle-site.html
 python3 serve.py                       # http://127.0.0.1:8817/dist/isle-site.html  (?town=Valapo for Valapo)
@@ -20,7 +25,7 @@ python3 verify.py dist/isle-site.html --assert [--shots DIR]
 
 **On the open world's ground.** The page carries:
 - the region (`openworld/isle-demo/data`);
-- the world's own height and colour fragments: `openworld/isle-demo/src/world/41-world-fields.js` and `42-world-roads.js`, and
+- the world's own height and colour fragments: `core/world/41-world-fields.js` and `42-world-roads.js`, and
   `openworld/isle-demo/src/43-world-isles.js` (the coast as terrain, the climate classes' colours).
 
 So the planner's ground is the world's, to the centimetre (a verify check). What the owner draws here will stand where
@@ -54,7 +59,7 @@ it, then run `build.py --accept`, or vendor the file and track its drift.
 
 - **The buttons and keys are Voth's** (the hint line explains each tool). 1-6 draw districts, 7 places a marker, 8 an
   avenue, 9 a causeway or jetty, R/L/M edit the ground, B places a canoe landing, N a land stop, K makes a line.
-- **Kautoa / Valapo** switch towns. The page reloads on the other town; unsaved changes stay as that town's draft.
+- **Kautoa / Valapo / Nephtos** switch towns (Nephtos: the Hykkousoi colony, PLAN.md section 15a; its markers and district names). The page reloads on the other town; unsaved changes stay as that town's draft.
 - **save** writes this town into `site/isle-site.json` (serve.py must be running), else downloads it.
   **export JSON** / **copy JSON** give this town's site with its frame. **import** takes a town's site or the whole file.
 

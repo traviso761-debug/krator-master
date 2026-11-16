@@ -280,6 +280,125 @@ exceeded ceiling as `OVER`; `--strict-budget` makes it fail.
 - [ ] Only the domes exist. Mounds, settlements, streets, embassies, the Halls
       of Reformation and the life layer are all still to do.
 
+## Theodiga (`--target theodiga`): the Dome on the Water (2026-11-11)
+
+- [ ] **No way up to the deck on `--target theodiga`.** The deck stands on the crest blocks' roofs (H+20); the hall on it has
+      no doors, and the crest's light-well and tunnel slots under the dome's chord are covered by the deck. On
+      `theodiga-today` (T-dome-1, 2026-11-16) the pilgrims come up from the middle kora by the two Pilgrims' Stairs. Each is
+      a shaft in the faith's ashlar under the deck's chord, with five flights in two lanes up through a well cut in the deck
+      into the sheet's stair heads (`settlements/theodiga/src/44-th-dome-today.js`, `8ay4-th-dome-today.js`). On that page
+      the frame is also re-glazed with salvaged panes, a tint a pane, except at the Tear; the Hall of the Song likewise.
+      The ruin page is unchanged. The clergy's stair is the Priests' House's interior.
+- [ ] **The tear faces west and upstream.** In the ruin the empty frames show the kit's dark void (as the old public
+      dome's did) and the torn sector is open through it; from the east and from downstream the dome looks whole (the
+      'Dome ruin' view looks from the west). The fallen ribs are the kit's rusted posts (`postR`), not curved rib pieces.
+- [ ] **Piers show through the water.** `MAT.water` is translucent, so the piers' submerged length reads under the
+      intact reservoir; there is no bed under it to stand them on (they go to y = 0).
+- [ ] **Not in the kit target.** `buildDam` is placed only on its own page; the kit showcase never places the dam, so the
+      dome exists only where `targets/theodiga` is on the page. A world that places Theodiga needs both fragments.
+- [x] ~~The river does not pass the ruin~~ (the owner, 2026-11-15: "there should still be a river/cascade passing through the
+      broken dam"). The ruin's lake now stands at the Notch's sill (273 m) and spills through it down the face, a sheet of white
+      water widening to the canyon floor, with spray at its foot; the river runs down the canyon in a channel cut into the mud,
+      and the silt keeps a way open to the Notch. The light tunnels under the cascade are not drawn (the face stays whole).
+- [x] ~~The cascade does not move.~~ Theodiga's water is on core/water (2026-11-15, `targets/theodiga/77c`, `90w`): the lake
+      and the plunge pool still water, the overflow and the river flows, the cascade a fall that follows the battered face
+      (`WATER.fall`'s `face`), the intact outlets falls; all moving on core/atmos's clock. The kit's own water meshes in
+      `buildDam` are drawn only on a page without those fragments.
+- [ ] **No spray cloud at the cascade's foot.** `drawFall`'s spray comes from core/atmos's particles, which this page does not
+      take (only the four core/atmos files the water needs). The river is a flow at 1 m over the scene's ground plane at 0.
+- [ ] **The kit's own camera, probe and inspector, not core/host.** Every Ancients page shares them (`90-scene`, `91-probe`,
+      `92-camera`); moving the kit onto core/host is a kit-wide port, not Theodiga's.
+
+## Theodiga today (`--target theodiga-today`): the town on the east rim (2026-11-16)
+
+The ruin of `--target theodiga` (its fragments read in place) with the town of `settlements/theodiga` (`PLAN.md`): core/city's
+records drawn from the scrap Xanadu set and the Qiblai kit (`XAK`, `kit_bundle.bundle(scrap=True, qiblai=True)`).
+
+- [ ] **The town's drawer is a second copy of Strongbow's** (`settlements/theodiga/src/8ay1-th-town.js`, after
+      `settlements/strongbow/src/8ax1-sb-town.js` on `claude/keen-swanson-68a311`): protos from `XAK`, `isleFlatten`, the three
+      layers by distance, the cells. Both should draw through one core/city host module (an `XAK` town drawer), written when
+      Strongbow's branch lands; the bundles (`th_city`, `th_xak`) likewise duplicate `sb_city`, `sb_xak`.
+- [x] ~~No Stair of Descent, no roads down~~ (T-town-3, 2026-11-16): the Stair of Descent (a stair-block on the crest's east end,
+      five flights in two lanes, 40 m), the Salvage Road (nine legs, 2.9 km at 15 %, to the canyon floor) and the Silt Road (four
+      legs, 1.6 km at 10 %, to the silt flats) hang on the east wall as drawn (`settlements/theodiga/src/41-th-descent.js`,
+      `8ay2-th-descent.js`; `buildDam` hands over the wall on its grid).
+- [x] ~~The ways are plain masonry; nothing at the roads' feet~~ (T-town-4, 2026-11-16): the ways are the library's dressed ashlar
+      (Qiblai's pack, world-scale uvs); the salvage yards (13 scrap buildings, 11 KRUBBLE heaps of the Dome's white panels, a
+      456 m track) stand on the canyon floor at the Salvage Road's foot, 39 field strips and 3 huts on the silt at the Silt
+      Road's (`settlements/theodiga/src/42-th-works.js`, `8ay3-th-works.js`).
+- [x] ~~Nobody on the ways or in the works; no crane or carts; no channels~~ (T-life-1 and T-works-2, 2026-11-16). The
+      people out are townsfolk on the streets (about one for every 25 of the census), pilgrims on Gate Square, the ways, the
+      middle kora and the Dome's deck, salvagers, farmers, and the Devisers and their haulers at the bore
+      (`settlements/theodiga/src/45-th-life.js`, `8ay5-th-life.js`). Lamps line the streets, the square, the kora and the
+      bore, glowing at night, with six lights and the town's windows lit after dark. The yards have two derricks over the
+      biggest heaps and handcarts on the track. The silt fields have channels between their columns of strips. All of it is
+      the town's own instances (core/ruins skips the town by name).
+- [ ] **The figures are the kit's cylinder people** (body and head), posed but not animated; the census is not on
+      core/simulation. The Warden's House is a scrap court, not its own building.
+- [x] ~~Black walls and windowless houses at a distance~~ (the owner, 2026-11-16): the town's drawer took Strongbow's three layers,
+      so a scrap house's wall panels and a Qiblai house's window surrounds dropped out past 300 m and the glazing past 200 m,
+      showing dark bodies and black holes. Now two layers: every big piece and every plain box of 0.7 m or more at all
+      distances (3.6M triangles, simplified far off by core/lod), the small detail within 300 m (2.5M). The view from Gate
+      Square draws 5.0M triangles (it drew 3.2M). The crest's cultural dome over the Notch (x -170) is gone in the ruin.
+- [x] ~~The arcology has no insides~~ (T-arc-1, 2026-11-16, the owner: "bring in theodiga arcology interiors"): its inhabited
+      levels (the Dome's deck, the crest's blocks, the gallery in the dam, the six standing fin heads; 70 units from the
+      blueprint's sheets, 283 storeys, 2,721 rooms) are on the kit's interiors pass and cut-away (`theodiga-today` is an
+      interiors target): white partitions with doors on core/door, 14,753 pieces of Xanadu furniture from 117 audited room
+      templates, drawn when a part is opened. Ten parts open apart (the select "Interior", `[` `]` a level, `x` closes);
+      views 'Inside the crest', 'Inside a fin head', 'Inside the Dome'.
+- [x] ~~The Dome's deck rooms are unwalled areas~~ (2026-11-16, the owner: "Yes, the Dome next"): every room on the deck but
+      the three open ones (the Hall of the Song under the old fluted dome, the Threshold of the Fall, the Damsel's canopy) is a
+      pavilion, walled round with its door on the crest's side (`TH_ARC.OPEN`); the big halls are laid out by
+      kits/ancients-interiors' hall recipes in a Xanadu dress (`TH_ARC.RECIPE`, `TH_ARC.DRESS` over the Ancients' as
+      `AI.DRESS.xanadu`): the Relic Hall, the Lamp Hall and the Choir as galleries, the Offering Hall as a reception, the
+      Treasury and the Vestry as store halls. 417 pieces on the deck (it had 177); the recipe audit passes.
+- [ ] **The Xanadu dress borrows the Ancients' couches and low tables** (a reception's recipe needs two divans and the bundle
+      carries no Xanadu divan); its pallets are strongboxes, its rugs, sacks and hangings left out. A Xanadu divan, rug and
+      hanging in the catalog would finish it.
+- [ ] **The interiors stand inside solid shells**: the crest's blocks and the fins are the kit's solid boxes, so the rooms show
+      only through the cut-away; their windows are painted on the shell, not cut through to the rooms. The gallery's rooms sit
+      inside the dam's mass with no openings to the faces. On `theodiga-today` the crest's face-side windows are the kept
+      (glazed) ones, not the ruin's dead ones.
+- [ ] **The bore to Stair is drawn 90 m deep** (T-town-6, 2026-11-16; `settlements/theodiga` PLAN.md "The bore to Stair"). Its
+      mouth is a hole of two grid cells by two in the east wall, which only the headwall hides; a view from inside the rock
+      would see the void behind the face. The bore past its drawn depth, the licence gate's booth, and the people (Devisers,
+      haulers) are owed. The gate stands at the drawn stretch's end (72 m), not a few hundred metres in.
+- [ ] **The dam's interiors ride on two wrappers** (`settlements/theodiga/src/8zz1-th-arc-host.js`): `AI.kitPlan` takes the dam's
+      plan whole and furnished though its row is the ruin, and the one site is split into ten parts after the pass. Both would
+      be cleaner as options of kits/ancients-interiors (a per-type ruin fraction) and of the pass (a plan's own sites).
+- [x] ~~The town has no interiors~~ (T-town-7, 2026-11-16, the owner: "Town interiors"). Every scrap building the town
+      places takes its rooms from the Scrap Xanadu set (`kits/interiors/sets/xanadu-scrap.js`, now in this page's bundle:
+      build.py `INTERIOR_SETS_TARGET`). Each kind is planned and furnished once and turned onto every plot
+      (`settlements/theodiga/src/46-th-town-rooms.js`). Each quarter is a site of the kit's cut-away beside the arcology's
+      parts (`8zz2-th-town-rooms.js`). The furniture is records at load. The rooms' partitions, wall linings, floors and
+      furniture are drawn when a quarter is opened, one quarter at a time.
+- [ ] **The Qiblai buildings, the Cistern Pavilion and the Granary have no rooms.** The scrap set skips the two defs; Qiblai's
+      rooms (`kits/qiblai` 89q5) are drawn by its own builders and are not wired here.
+- [x] ~~The census does not walk~~ (T-sim-1 and T-sim-2, 2026-11-16). The census is on core/simulation
+      (`settlements/theodiga/src/47-th-sim.js`): a settlement of 611 places and 5,016 residents dealt to homes and posts.
+      It walks a graph built from the drawn geometry (`48-th-walk.js`), about 11,700 nodes:
+      - the streets, the square and the three ways down the wall;
+      - the yards and the bore's spur, and the fields;
+      - the kora, the Pilgrims' Stairs and the Dome's deck;
+      - every storey of the arcology.
+
+      Every place's door is on the graph, and no place is unreachable. The page steps the sim a world minute at a time on a
+      72-minute day starting at 07:00, and draws `SIM.pose` for everyone out of doors (`8ay9-th-walkers.js`). The static
+      figures stand down.
+- [ ] **The walkers are the kit's cylinder figures**, unanimated, with no walk cycle and no activity poses. An indoor
+      resident is hidden, not drawn in the opened rooms. The arcology's storeys are a node at each unit's middle, not its
+      rooms, and its fin heads reach the kora by a straight "bridge" edge. Posing 5,016 residents costs about 5 ms a frame.
+- [ ] **The economy feeds the town but trades nothing** (T-econ-1, 2026-11-16, `settlements/theodiga/src/49-th-econ.js`).
+      The fields, dairies, hives, kitchens, yards and bore make; the warehouses store; the carters haul; the households and
+      messes eat; the books balance. But the salvage and the artifacts pile up in the warehouses: no caravan takes them out
+      by the East Gate. There is no money, the tools and clothes do not wear, and the Lamp Hall burns no butter. The yields
+      are sized to the census (TH_ECON's diet and surplus), not to the fields' areas.
+- [ ] **The Panel Row's kitchens cannot take a hearth** (`kits/interiors/sets/xanadu-scrap.js`, `xa_scrap_row` houses: a room
+      2.2 m wide with the stair in it; no hearth fits at any seed from any culture). The town furnishes them as stores
+      (`8zz2-th-town-rooms.js`, `AIK.townRekinded`). The set should widen the kitchen or move the stair.
+- [ ] **The east plateau is the town's ground only on this page.** With the town on the page (`THCITY`) the ruin's east plateau
+      is drawn on `THCITY.town.ground` out to x 1260; on `--target theodiga` it is as it was (rough, to x 770).
+
 ## Veladiga (`--target veladiga`)
 
 - [x] ~~Piers read flatter than the sheets.~~ They are now swept from a five-point
@@ -474,7 +593,7 @@ Open on the new build (see `targets/spire/NOTES.md`):
       gullies and a talus of fallen blocks; the fin cells cluster into patches
       and bands instead of scattering by coin-flip; and the light tunnels are
       punched clean through the downstream face with collars, open shafts and a
-      recessed glow. `buildDam` is shared source in `src/77-dam.js`, so this
+      recessed glow. `buildDam` was shared source in `src/77-dam.js` (since 2026-11-15 `targets/theodiga/77-dam.js`), so this
       lands in any future kit that places the dam again.
 - [x] ~~Vegetation is lollipop trees.~~ `VEG.tree(x,y,z,species,h)` is the hand-off
       point, with a cheap default; `trees()` and every planting call go through
@@ -1062,3 +1181,32 @@ volumes; the beam's `rotation.y` advances frame to frame. Details in
 - [ ] The portal's hood is broken by hash in a ruin; a toppled mouth is a rubble mound, with no collapsed lining slabs.
 - [ ] Dalab's own additions (the Line, salvage parapets, gates in the portal) are not here: they are the Dalab set's, in
       settlements/span (SP4). The rehabilitated state is the kit's generic `repairPass`.
+
+## The industrial set of Engines (`--target engines`, `targets/engines/8aj-engines3.js`; the owner, 2026-11-10)
+
+Ten more machines after the owner's two reference sheets (the Coil, the Procession, the Mortar, the Vigil, the Receiver, the Loom, the
+Iris, the Hive, the Star, the Abacus), north of the first ten on the engines sheet. They live in the target's folder, so they reach
+`engines.html` and the Ancient's Valley's Yards (which reads the fragment by path), no other target.
+- [x] **The quality pass (the owner, 2026-11-10: "focus on disconnected geometry and make sure detached pieces lie on the ground properly").**
+  core/ruins (`KRUINS`) measured each engine on the sheet: the Coil's snapped pipe stubs hung 40 m over the pipes they broke from, its deck lights
+  and the Procession's stood off their rims, the Procession's machinery off its rings' inner faces and three plates in its broken ring's gap; 8ah's
+  `enDebris` stood its plates at 0.12 of their size whatever the tilt (some sunk 5 m, some lifted), and the fallen tubes, cylinders, beads, sails
+  and boxes sat at fixed heights. Now every wreck is seated on its lowest points (`enSeatY`; `en3Debris`, 8ah's scatter seated), the stubs
+  rise from their own tops, the lights sit on the rims, the Vigil's broken capsule leans from the podium to the ground, and `91y` watches the ten
+  with `KRUINS.watch`: the shared harness asserts each (no floater, every wreck within 0.3 m above to 1 m below the ground) with the module's
+  self-test as its negative.
+- [x] **The first ten engines (8ah, 8ai) watched too** (the owner, 2026-11-10: "fix the first ten"). `enDebris` seats every plate on its
+  lowest points (`enSeatY` moved into 8ah; tilts within 0.18 rad, the same draws, so nothing else moved) and so does the Harrow's thrown
+  track; track shoes are 5 m on their 5.2 m pitch (at 4.5 m the check read the chain as broken, and the Harrow's hull as hung in the air);
+  the Harrow's counterweight arms are bolted to deck 2 by a bracket each, its boom cables hang from the bottom chords; the Strider's shin
+  sits in its pad and the toes on the pad's rim (the lifted foot was three loose pieces); the Sleeper's cables hang from the socket's rim;
+  the Carapace's two fallen shins are seated. `91y` watches all twenty (the Harrow over 470 m, past its fallen wheel).
+- [ ] **A first pass, decay 1 only checked.** Each builder takes d like the others (whole at 0), but only the ruined state has been
+  looked at. The masses are plain meshes (a hundred to an engine, the Star and the Abacus the most): a host merges them by material
+  (the Yards does, `stations/yards/70y-host-yards.js`); the sheet draws them as they are (about 400 calls in the industrial view).
+- [ ] **`MAT.dark` is a pale plaster in this kit** (the "no dark voids" round above), so the set brings its own dark iron (`EN_IRON`,
+  a plain MeshStandardMaterial, not a library set): the Iris, the Hive's core, the Mortar's sphere and barrels, the Star's caps.
+- [ ] **The kit's `qEuler` turns about the world's axes (XYZ)**, so a plate on a sphere or a leaning sail is placed with `enQn` (a turn
+  from the face's normal); the earlier engines' plates are untouched.
+- The Coil's sails are plates, not the reference's triangles; the Vigil's eyes are lit squares behind a round port; the Procession's
+  inner machinery is boxes. Detail passes to come with the owner's eye.

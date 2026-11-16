@@ -62,7 +62,9 @@
   return S;};
  // THE MASK: a raster's nodes on the texels' centres
  A.snowBare=M=>{if(!A.T)throw new Error('ATMOS.snowBare: run ATMOS.init first (it needs the page\'s THREE)');if(!M||!M.data||M.data.length!==M.nx*M.nz)throw new Error('ATMOS.snowBare: M.data must hold nx*nz bytes');
-  const t=new A.T.DataTexture(M.data,M.nx,M.nz,A.T.RedFormat,A.T.UnsignedByteType);t.magFilter=t.minFilter=A.T.LinearFilter;t.wrapS=t.wrapT=A.T.ClampToEdgeWrapping;t.needsUpdate=true;
+  const t=new A.T.DataTexture(M.data,M.nx,M.nz,A.T.RedFormat,A.T.UnsignedByteType);t.magFilter=t.minFilter=A.T.LinearFilter;t.wrapS=t.wrapT=A.T.ClampToEdgeWrapping;
+  t.unpackAlignment=1;   /* rows of nx bytes, packed: three's default 4-byte row alignment shears a mask whose nx is not a multiple of 4 (riftrim's Hearth field, 701) */
+  t.needsUpdate=true;
   A.U.snowBare={value:t};A.U.snowBareBox={value:new A.T.Vector4(M.x0-M.cell/2,M.z0-M.cell/2,M.nx*M.cell,M.nz*M.cell)};
   if(A.rec)A.rec('snowbare',{x0:M.x0,z0:M.z0,cell:M.cell,nx:M.nx,nz:M.nz,note:'snow times this mask: 255 lies, 0 bare'});return t;};
  // THE LOOK on a material

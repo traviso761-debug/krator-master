@@ -20,10 +20,10 @@ Wall (`biomes/riftrim/PLAN.md`, `LORE.md` §4).
 
 **Nodes** (settled 2026-10-23): **every arcology, lived in or ruined, and every ruin** on the model (the `settlements`
 collection: 12 arcologies such as Pylon, Hexahedron, Arcbeam, Fulcrum, Ledge, Cascade; 14 ruined arcologies such as
-Arccube, Babel, Blade, Henge, Hub 01, Leng; 8 ruins; 2 caverns), and the cities **founded on Ancient settlements: Hook,
+the Pile (formerly Arccube), Babel, Blade, Henge, Hub 01, Leng; 8 ruins; 2 caverns), and the cities **founded on Ancient settlements: Hook,
 Iziz, Yuni, Ys and Dalab** (round the Ancient genetic laboratory, `LORE.md` §6.1), **Roketstad** (its Ancient spaceport)
 and **Verge** (its Ancient funicular); others to come. Most ruins are **highly tentative** in name and place, except **Nazar** and
-**Carcosa**; in the Rift, except **Arccube**.
+**Carcosa**; in the Rift, except **the Pile** (formerly Arccube; renamed 2026-11-11).
 
 **Edges**: a planned network, not a mesh: **trunks** between the clusters (the crater floor, the Valley of the Ancients,
 the north-western lowlands, the north basin, the east, the Rift by its line) and **branches** to each site off the
@@ -58,7 +58,7 @@ kilometre (several times the surface's); the airless rim crossable only in tunne
   close it.
 - **Pluton's tunnels** (the owner, 2026-10-23): Pluton (px 471,998, 9.7 km, on the Godthrone's airless flank) is the key
   to the tunnels the Ancients drove up inside **the Godthrone** to its summit (px 574,909 on 4.22, moved to ~575,937 on 4.23; 17.1 km on 4.22, a caldera rim at ~25 km after, so the climb is ~8 km longer over the same ~270 km; ~270 km away), for
-  their own purposes. **Not part of the public network**, and **uninhabitable now**. The draft's Cube-Pluton route stands
+  their own purposes. **Not part of the public network**, and **uninhabitable now**. The draft's Cube-Pluton (the Pile to Pluton) route stands
   for the way to Pluton from the Rift.
 - **At least one route under the Inner Wall.** Straight-line checks between Ancient sites on either side (2026-10-23;
   the router will find shorter):
@@ -121,8 +121,10 @@ its length, partly kept 7%, lapsed since the Empire 24%, badly decayed 38%). Wha
 - **Roketstad** joins by Corpus and Trigon; **Verge** by Yuni; **Strongbow** ends Xanadu's short line at Theodiga.
 - **Over the Outer Wall**: Dalab to Ledge (the Rift line, 535 km, only 33 km in tunnel in the draft: it is to run
   ~340-420 km underground, section 3); Arcbeam to Stair in the Catch (its tunnel **closed by seismic activity since about the Cataclysm**, sealed halfway: the northern half
-  stripped by Yuni long ago, the southern half open from Stair; the owner, 2026-10-23: `biomes/catch/PLAN.md`);
-  Hub 01 to Yuni (44 km in tunnel; no human has reached Hub 01 since the Cataclysm and come back, `LORE.md` §4); Cube to Pluton (the key to the Ancients' own tunnels up the Godthrone, section 3).
+  stripped by Yuni long ago, the southern half open from Stair; the owner, 2026-10-23: `biomes/catch/PLAN.md`. **Dropped
+  by the owner, 2026-11-11**: there is no Ancient tunnel to Stair; the Godsgate highway reaches it over the surface,
+  `ANCIENT-NETWORK.md` section 8);
+  Hub 01 to Yuni (44 km in tunnel; no human has reached Hub 01 since the Cataclysm and come back, `LORE.md` §4); the Pile (the draft's Cube) to Pluton (the key to the Ancients' own tunnels up the Godthrone, section 3).
 - **The Inner Wall to the Valley**: the draft finds **surface passes** (Drum to Cascade, and Wing by Nazar and Span),
   not the tunnel the owner wants: at the draft's tunnel cost a pass is cheaper. The Ancient tunnel goes **under the
   Drum-Cascade pass**, with **Cascade** (the Republic's arcology) as its surface access, as the owner described; the

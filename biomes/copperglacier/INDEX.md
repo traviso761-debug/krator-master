@@ -48,3 +48,12 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | `89z-host-build.js` | 5 |  |
 | `99-host-take.js` | 13 |  |
 | `99-tail.html` | <1 |  |
+
+## stations/
+
+Each station builds one page (`build.py --station <name>`) from its own fragments, with `src/` or its `base` station.
+
+| Station | Fragments | KB |
+|---|---|---|
+| icefield | 44z-host-site.js | 2 |
+| pass | 44z-host-site.js | 3 |

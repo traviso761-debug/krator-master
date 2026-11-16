@@ -2,7 +2,8 @@
 
 **Status (2026-10-26):** the census and the pitch are built (part of C1: `README.md`, `node core/camp/test-camp.js`),
 with their first consumer, a Raptor band's camp in the isle demo (section 10, "The first build"). **2026-11-02:** the first work camp
-(section 6.5): the isle demo's lumber crew migrating through its forest (`40-camp-work.js`, `node core/camp/test-work.js`). The rest is a plan.
+(section 6.5): the isle demo's lumber crew migrating through its forest (`40-camp-work.js`, `node core/camp/test-work.js`). **2026-11-09:** tents by role and culture for any people, and the caravan's night
+halt (laager or line), on the Tents kit (`50-camp-tents.js`, `kits/tents`; section 4's `laager` and `line`, 6.2's night camp). The rest is a plan.
 It is written against `origin/main`'s `core/simulation` (settlements, trade
 between settlements, the three levels: `77-sim-6-economy.js` `SIM.settlement`, `77-sim-6-trade.js`,
 `77-sim-7-lod.js`).
@@ -45,6 +46,9 @@ A core module for **groups that live on the move, and the camps they pitch**:
 - **Caravans** carry a trading faction's goods between settlements. They stop at caravanserais or pitch a night camp in
   the wild.
 - **Expeditions:** a nation sends a party to a distant ruin, node or crop for relics, rare ore or reagents.
+  The isle demo's first expeditions are WORK CAMPS BY BOAT (settlements/isle-demo/PLAN.md section 12, planned
+  2026-11-09): a town's crew carried to a forest island's shore, pitched with the Islanders kit's camp shelters, its stands
+  the jungle's mahogany, prismgum and kapok, a sea leg home; 40's work camp with a quay for its yard.
 - **Later, armies:** an army camp is a raid camp at a larger scale, laid out in rows.
 
 The player meets every one of these on the world map. Each can be traded with or, if hostile, fought.

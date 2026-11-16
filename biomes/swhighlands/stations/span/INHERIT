@@ -1,0 +1,3 @@
+# Span's tableland (station 3) stands on the pillar rim's ground (station 4: stations/pillars): one map holds the table, its slots,
+# Span's canyon and reservoir, the rim and the towers. build.py lays that station's fragments first; this folder's win.
+pillars

@@ -9,12 +9,8 @@
    (+ the planner's window-pane mesh).                                      */
 reseed(550001);
 (function(){
-/* the doors and glass are 54-openings.js's (core/door). kits/beast-riders seals this fragment in a closure without them
-   (kits/beast-riders/towns.py), so there a leaf is drawn shut into the plank bucket, a locked record is nothing, and a wall
-   with windows is drawn whole */
-var mvLeaf = typeof goLeaf === 'function' ? goLeaf : function(at,n,w,h,o){ o=o||{}; if(o.draw===false) return null;
-  BOX(at[0],at[1],at[2],w-0.04,h-0.02,o.t==null?0.07:o.t,Math.atan2(n[0],n[1]),o.col==null?PLANKC[3]:o.col,'plank'); return null; };
-var mvSectorWins = typeof goSectorWins === 'function' ? goSectorWins : function(fam,P,r0,r1,a0,a1,yb,yt,col,opt){ SECTOR(fam,P,r0,r1,a0,a1,yb,yt,col,opt); return 0; };
+/* the doors and glass are 54-openings.js's (core/door); kits/beast-riders seals it with this fragment (its towns.py) */
+var mvLeaf = goLeaf, mvSectorWins = goSectorWins;
 var ARCH = { buildings:0, stalls:0, huts:0, windows:0, lamps:0, farms:0, beds:0, wayposts:0, furniture:0,
              shrines:0, canopyPanels:0, canopyGaps:0, byKind:{} };
 

@@ -20,7 +20,7 @@ const vac = plans.map(p => p.R.town + ' ' + p.R.lots.filter(L => L.vacant).lengt
 const S = ISLE.simDeclare(plans);
 ok('the empty lots handed to the sim (' + vac + '; ' + JSON.stringify(S.build) + ')', S.build && S.build.lots > 0, JSON.stringify(S.build));
 const nb = SIM.all('actor').filter(a => /\.builder$/.test(a.role)).length;
-const crew = ISLE.TUNE.sim.build.crew, want = Object.keys(crew).reduce((n, k) => n + crew[k], 0);
+const crew = ISLE.TUNE.sim.build.crew, want = Object.keys(crew).filter(k => plans.some(p => ISLE.TUNE.sim.towns[p.R.town].id === k)).reduce((n, k) => n + crew[k], 0);   /* the towns planned (Nephtos only when drawn) */
 ok('each town\'s builders\' crew (' + nb + ' builders for ' + JSON.stringify(crew) + ')', nb === want, nb + ' for ' + want);
 ISLE.simWatch('Kautoa');
 const a = ISLE.buildBooks(); ISLE.simRun(days * 1440 + 1); const b = ISLE.buildBooks();

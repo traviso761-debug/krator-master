@@ -12,7 +12,11 @@ const FAR=(function(){
  const C={waste:L([176,136,110]),steppe:L([142,140,112]),pine:L([78,82,58]),spruce:L([52,60,44]),tundra:L([112,108,86]),snow:L([226,230,236]),far:L([150,150,158]),rock:L([128,104,92])};
  // the far colour by height, the land's own bands carried on (LAND.farBands: [y of the steppe, the pines, the spruce, the tundra, the snow])
  const B=LAND.farBands||[300,700,1000,1350,1650];
- const colr=(x,z,y,q)=>{const n1=nz(x,z,.002,414,2)+.5;let c=mixC(C.waste,C.rock,n1*.5);c=mixC(c,C.steppe,smooth(B[0]-80,B[0]+80,y));c=mixC(c,C.pine,smooth(B[1]-80,B[1]+80,y));
+ /* LAND.farWater {level, colour [r, g, b] sRGB}: a lake that runs on past the map (Ledge's great lake: the far function returns exactly its level there,
+    so a gorge falling below it past the map stays ground) is water
+    there, not the lowest band's waste colour (the quality pass, 2026-11-09: the great lake ended at the map's edge in a pink plain) */
+ const FW=LAND.farWater?{y:LAND.farWater.level,c:L(LAND.farWater.colour)}:null;
+ const colr=(x,z,y,q)=>{if(FW&&Math.abs(y-FW.y)<.05)return mixC(FW.c,C.far,.45*smooth(4500,13000,q.r));const n1=nz(x,z,.002,414,2)+.5;let c=mixC(C.waste,C.rock,n1*.5);c=mixC(c,C.steppe,smooth(B[0]-80,B[0]+80,y));c=mixC(c,C.pine,smooth(B[1]-80,B[1]+80,y));
   c=mixC(c,C.spruce,smooth(B[2]-60,B[2]+60,y));c=mixC(c,C.tundra,smooth(B[3]-60,B[3]+60,y));c=mixC(c,C.snow,smooth(B[4]-60,B[4]+60,y)*(.6+.4*n1));
   return mixC(c,C.far,.5*smooth(4500,13000,q.r));};
  const G=KFAR.grid({lines:KFAR.lines({cell:60,inner:S0+20,out:ROUT,grow:1.03}),dense:true,

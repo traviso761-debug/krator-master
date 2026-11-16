@@ -228,6 +228,11 @@ page; one mesh, swung in its vertex shader). Not yet: the people on core/simulat
 
 ### Q7f. The open world
 
+**Started 2026-11-16** (`WORLD.md`, the hand-over): the ring re-planned as the temple estates in the region (24 villages,
+three along each monastery's spoke, 4,448 people; `QIBLAI_ESTATES` in `openworld/xanadu-oidong-highrift/src/48-world-site.js`),
+`SITES.json` naming the page. The city itself on the world's ground waits on `openworld/PLAN-SITES.md` step 3; `WORLD.md`
+gives the plan, frame, size, gates and people it will need, and the owner's question on the estates' scale.
+
 - **The site in the open world** (`openworld/xanadu-oidong-highrift`): Qiblai's entry in `SITES.json`, cut and baked
   (KSITES) by the open-world tools, the city's records placed by the same plan (one source: the settlement page and the
   region read the same `KCITY.squares` plan and the same seed).

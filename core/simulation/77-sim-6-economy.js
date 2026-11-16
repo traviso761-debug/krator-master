@@ -7,12 +7,13 @@
 //                 window (days the turnover is averaged over), meal:{per, foods}, carriers, exports:{minDays, made},
 //                 useShort? (the unmet draws count as use: a good nobody could get is wanted) })
 //   SIM.store(place, {kind:'site'|'warehouse', cap})      a place's store: place.stock {good: n}
-//   SIM.recipe(place, {out:[goods], rate, cap, herd?:{out, rate, tended, share}})   a producer: `rate` units a worker-hour (times the
+//   SIM.recipe(place, {out:[goods], rate, cap, herd?:{out, rate, tended, share, season?, seasonRate?}, season?, seasonRate?})   a producer: `rate` units a worker-hour (times the
 //                                                           workers' efficiency), each unit of the good in `out` most needed;
 //                                                           a herd's `rate` an animal-hour (actors with `herd` = the place, at
 //                                                           home and grown (`grownAt` past), times their condition: SIM.mood; `tended`: only while
 //                                                           its workers are there; `share`: each of `out` in its share, not
-//                                                           the one most needed)
+//                                                           the one most needed; `season`, `seasonRate`: 77-sim-6-season.js, made
+//                                                           only in season and at its factor)
 //   SIM.site({id, kind, goods?, grade?, yield?, amount?, regen?, capacity?, settlement?})   a resource site, keyed to its world
 //                                                           record's stable id: `yield` multiplies its recipes' rate (the grade's); `amount`
 //                                                           null is endless (the default: a node, a pasture, a stand that regrows),
@@ -81,6 +82,9 @@
   SIM.recipe = function(id, o){ var E=SIM.ECON, P=SIM.R.place[id]; if(!E || !P) return null; if(!E.stores[id]) SIM.store(id, { kind:'site', cap:o.cap });
     var outs=(o.out||[]).concat(o.herd ? o.herd.out : []); outs.forEach(function(g){ if(!E.goods[g]) throw new Error('SIM.recipe '+id+': unknown good '+g); });
     E.recipes[id]={ out:(o.out||[]).slice(), rate:o.rate||0, herd:o.herd ? { out:o.herd.out.slice(), rate:o.herd.rate, tended:!!o.herd.tended, share:o.herd.share||null } : null };
+    /* the seasons (77-sim-6-season.js, S1): a recipe's or its herd's `season` (made only then) and `seasonRate` (a factor by quarter or window) */
+    if(o.season!=null || o.seasonRate) { E.recipes[id].season=o.season; E.recipes[id].seasonRate=o.seasonRate||null; }
+    if(o.herd && (o.herd.season!=null || o.herd.seasonRate)) { E.recipes[id].herd.season=o.herd.season; E.recipes[id].herd.seasonRate=o.herd.seasonRate||null; }
     if(o.batch){ var B=o.batch, Rb=E.recipes[id]; if(!(B.hours>0)) throw new Error('SIM.recipe '+id+': a batch needs its hours');
       var bo=Object.keys(B.out||{}).concat(Object.keys(B.by||{})); bo.forEach(function(g){ if(!E.goods[g]) throw new Error('SIM.recipe '+id+': unknown good '+g); });
       Rb.batch={ 'in':Object.assign({}, B['in']||{}), out:Object.assign({}, B.out||{}), by:Object.assign({}, B.by||{}), hours:B.hours }; Rb.out=Object.keys(B.out||{}); Rb.rate=1/B.hours;
@@ -207,13 +211,16 @@
       if(a.activity!=='WORK' || !a.place || !E.recipes[a.place] || !a.task || t<a.task.arrive) return;
       var m=SIM.mood ? SIM.mood(a) : null; W[a.place]=(W[a.place]||0)+(m ? m.eff : 1); });
     Object.keys(H).forEach(function(id){ var R=E.recipes[id], Hd=R.herd; if(Hd.tended && !W[id]) return;
-      if(Hd.share) Hd.out.forEach(function(g, i){ make(SIM.R.place[id], [g], H[id]*Hd.rate*Hd.share[i]*hrs, 'carryH'+i); });   /* co-products in their shares (a duck's eggs and its meat) */
-      else make(SIM.R.place[id], Hd.out, H[id]*Hd.rate*hrs, 'carryH'); });   /* tended: only while its keepers are at work (the milking) */   /* the animals first: the milk the dairy then turns */
+      var hk=(Hd.season!=null || Hd.seasonRate) && SIM.seasonK ? SIM.seasonK(Hd, minute) : 1; if(!(hk>0)) return;   /* out of season (the herd dry) */
+      if(Hd.share) Hd.out.forEach(function(g, i){ make(SIM.R.place[id], [g], H[id]*Hd.rate*Hd.share[i]*hrs*hk, 'carryH'+i); });   /* co-products in their shares (a duck's eggs and its meat) */
+      else make(SIM.R.place[id], Hd.out, H[id]*Hd.rate*hrs*hk, 'carryH'); });   /* tended: only while its keepers are at work (the milking) */   /* the animals first: the milk the dairy then turns */
     Object.keys(W).forEach(function(id){ var R=E.recipes[id], St=R.site!=null ? E.resSites[R.site] : null;
       if(R.build){ if(R.hold && !(R.hold.until!=null && minute>=R.hold.until)) return; if(SIM.BUILD) SIM.buildWork(id, W[id]*hrs, minute); return; }   /* a lot's builders at work (77-sim-6-build.js) */
       if(!R.out.length || !R.rate) return;
       if(R.hold){ if(R.hold.until!=null && minute>=R.hold.until) delete R.hold; else { (E.why||(E.why={}))[id]={ reason:R.hold.reason }; return; } }   /* held (SIM.recipeHold): its hours lost */
-      var u=W[id]*R.rate*(St ? St.yield : 1)*hrs;
+      var sk=(R.season!=null || R.seasonRate) && SIM.seasonK ? SIM.seasonK(R, minute) : 1;
+      if(!(sk>0)){ (E.why||(E.why={}))[id]={ reason:'out of season' }; return; }   /* its hours lost: no crop to tend, no herd to milk */
+      var u=W[id]*R.rate*(St ? St.yield : 1)*hrs*sk;
       if(R.batch) batchWork(E, SIM.R.place[id], R, u, St); else make(SIM.R.place[id], R.out, u, 'carry', St); });
     Object.keys(E.recipes).forEach(function(id){ var R=E.recipes[id]; if(R.hold && !W[id]){ if(R.hold.until!=null && minute>=R.hold.until) delete R.hold; else (E.why||(E.why={}))[id]={ reason:R.hold.reason }; }
       if(R.batch && !W[id] && R.rate>0 && !(E.why||(E.why={}))[id]) E.why[id]={ reason:'no workers' }; });

@@ -26,7 +26,7 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `00-head.html` | 1 |  |
 | `44z-host-shell.js` | 2 |  |
 | `45-host-stage.js` | 14 | the coast (u inland, v along it) (24); the station's say: STAGE (47 reads it) (80) |
-| `47-host-land.js` | 17 | the height and the water's levels (7); the fields (BIOME-API.md): the kit's own and the (17); the masks (swapped per kit by the build, 88) (28); the library layers (or procedural without the pa (44); the ground (one mesh: seven layers by vertex wei (63); the far country (108); the tsunami's reach (a coast station on map 5.1; (142) |
+| `47-host-land.js` | 18 | the height and the water's levels (7); the fields (BIOME-API.md): the kit's own and the (17); the masks (swapped per kit by the build, 88) (28); the library layers (or procedural without the pa (44); the ground (one mesh: eight layers by vertex wei (65); the far country (112); the tsunami's reach (a coast station on map 5.1; (146) |
 | `50-biome-farside-species.js` | 25 | palettes (sRGB; a library card carries its own c (20); harvest (kits/crops: the crop each yield is file (33); the species (35); procedural fallbacks (the cards and maps the lib (91); geometries (99); materials (the library swaps their maps: BIO.lib (186); the buckets and the instanced items (203) |
 | `55-biome-farside-trees.js` | 13 | zones from the fields (16); the grid on core/rand (23); colour (33); the LAND KELP: a stand from one tangle of holdfa (45); THE DEAD at the front: drowned kauri and meranti (85); the passes (99) |
 | `60-biome-farside-floor.js` | 10 |  |
@@ -41,3 +41,13 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `89x-host-weather.js` | <1 |  |
 | `99-host-take.js` | 13 | the inspector's words: a plant names its species (24); the probe's budgets and the kit's own checks (ve (36); the page, handed to the host (93) |
 | `99-tail.html` | <1 |  |
+
+## stations/
+
+Each station builds one page (`build.py --station <name>`) from its own fragments, with `src/` or its `base` station.
+
+| Station | Fragments | KB |
+|---|---|---|
+| cloud | 45-host-stage.js | 4 |
+| front | 45-host-stage.js | 4 |
+| strand | 45-host-stage.js | 5 |

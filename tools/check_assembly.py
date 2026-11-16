@@ -45,6 +45,12 @@ Rules (key: '<page>: <RULE> <name>'; the detail lines name the fragments, '--lis
            at all. Unlike ORDER this sees a fragment whose functions all run later (the water ext modules: 'Nothing
            runs at load time', and a page that lists 55b without 51 draws nothing). tools/build.py runs this rule on the
            pages it writes, so a build missing one fails at build time, with no baseline.
+  MINSET   (item 26; only for a build listed under "minset" in tools/checks_optin.json) a page that holds
+           core/biome/10-core-head.js holds every fragment of tools/buildlib.py CORE_BIOME_MIN (10, 20, 30, 31b, 34, 40):
+           the set a page on the biome core takes, flora or not. A build extends that list rather than listing core/biome by hand.
+
+A MISSING finding names the fragment to add when a core fragment defines the call ('X.y =' at its top level): the
+detail reads 'add core/biome/31b-core-leafset.js (it defines BIO.leafOn)' (item 26: four sessions hit BIO.leafOn).
 
 Scope is approximated: names a function or block declares (params included) shadow top-level names inside it, a
 var in a block belongs to its function, and 'for (let i ...)' scopes i to the loop. Nothing is evaluated, so a read
@@ -490,6 +496,54 @@ def page_scripts(path, text):
 
 _needs = None
 _headers = {}
+_defs = None
+DEF_RE = re.compile(r'(?m)^\s*(?:window\.)?([A-Z][A-Z0-9_]+)\.([A-Za-z_$][\w$]*)\s*=(?!=)')
+
+
+def core_defs():
+    """{'X.y': [core fragments defining it as 'X.y =' at a line's start]} over core/**/*.js (no tests, no dist)."""
+    global _defs
+    if _defs is None:
+        _defs = {}
+        import glob as _g
+        for f in sorted(_g.glob(os.path.join(ROOT, 'core', '**', '*.js'), recursive=True)):
+            r = os.path.relpath(f, ROOT).replace(os.sep, '/')
+            b = os.path.basename(r)
+            if '/dist/' in r or b.startswith(('test-', '.')) or b.endswith('.min.js') or '/tests/' in r:
+                continue
+            with open(f, encoding='utf-8', errors='replace') as fh:
+                for x, y in DEF_RE.findall(fh.read()):
+                    lst = _defs.setdefault(x + '.' + y, [])
+                    if r not in lst:
+                        lst.append(r)
+    return _defs
+
+
+def fix_for(call):
+    """'add <fragment> (it defines X.y)' for a MISSING call, or None."""
+    fr = core_defs().get(call)
+    if not fr:
+        return None
+    return 'add %s (it defines %s)%s' % (fr[0], call, (' or one of ' + ', '.join(fr[1:3])) if len(fr) > 1 else '')
+
+
+def build_of(page):
+    """The build folder a page path belongs to ('biomes/rift/dist/rift.html' -> 'biomes/rift')."""
+    parts = page.replace(os.sep, '/').split('/')
+    return '/'.join(parts[:2]) if len(parts) > 2 else None
+
+
+def check_minset(text, build):
+    """[(key, lines)]: rule MINSET for an opted-in build's page."""
+    import buildlib
+    if not build or not buildlib.opted_in('minset', build):
+        return []
+    has = lambda f: (header_of(f) + '\n') in text   # the whole line: '— kit' is not '— kitchen'
+    if not has(buildlib.CORE_BIOME_MIN[0]):
+        return []
+    return [('MINSET %s' % f, ['the page holds core/biome/10-core-head.js but not %s: list buildlib.CORE_BIOME_MIN in the build '
+                               '(CORE_BIOME = buildlib.CORE_BIOME_MIN + [...])' % f])
+            for f in buildlib.CORE_BIOME_MIN[1:] if not has(f)]
 
 
 def header_of(frag):
@@ -619,10 +673,14 @@ def check_page(path):
                 miss.setdefault('%s.%s' % (x, y), []).append(frag(si, pos)[1])
     for k_, fr in miss.items():
         uniq = sorted(set(fr))
-        add('MISSING %s' % k_, ['%s calls %s (%d call sites)' % (f_, k_, fr.count(f_)) for f_ in uniq], len(fr))
+        fix = fix_for(k_)
+        add('MISSING %s' % k_, ['%s calls %s (%d call sites)' % (f_, k_, fr.count(f_)) for f_ in uniq] + ([fix] if fix else []), len(fr))
 
     # NEEDS
     for key, lines in check_needs(text):
+        add(key, lines)
+    # MINSET (opt-in, item 26)
+    for key, lines in check_minset(text, build_of(path)):
         add(key, lines)
     return path, findings, detail, None
 

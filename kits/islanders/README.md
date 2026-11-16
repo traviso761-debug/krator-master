@@ -41,6 +41,7 @@ python3 ../../tools/textures/pack.py kits/islanders        # (from the repo root
 | Defence | palisade, palisade gate, watch tower, barracks | coral wall, town gate, watch tower, barracks |
 | Palace | | the palace of Kautoa: a walled compound of seven courts (gate court, ceremonial court, the great audience hall under a 44 m ribbed spire, the inner court with the king's, queen's and heir's houses, the kitchens and granaries, the ancestors' shrine, the treasury and garden) |
 | Harbours (on the shore) | fishing dock, dockyard (two slipway sheds, hulls on the slips, ring piers), harbour warehouse, quay and cargo shed, war-canoe shed, ferry landing | fishing dock, dockyard (a double canoe half built, ring piers), quay and cargo shed, drua shed, ferry landing |
+| Camp shelters (core/camp; the isle demo's farming camps) | | lean-to, round hut, A-frame (two households), long shelter (four), camp kitchen (earth oven), camp store: poles, palm mats and grass thatch |
 | Mines and ore | mine (adit, windlass shaft, sorting shed) | mine |
 | Resource nodes | from kits/resources (read in place): iron, copper, gold, tin, silver, rare earth, coal, sulfur, saltpeter and oil in three grades; a mine works the nearest it can (never oil: a derrick's) within 400 m, the grade setting its yield | |
 | Gardens and stock | placeholder flora: coconut, banana, taro, breadfruit, rice paddy; the fauna kit's pig, hen, duck, water buffalo | |

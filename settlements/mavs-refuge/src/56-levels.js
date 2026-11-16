@@ -8,12 +8,8 @@
    are ~2000 rooms; instances are kept for ropes, lanterns and swaying cloth. */
 reseed(560001);
 (function(){
-/* the doors and glass are 54-openings.js's (core/door). kits/beast-riders seals this fragment in a closure without them
-   (kits/beast-riders/towns.py), so there a leaf is drawn shut into the plank bucket, a locked record is nothing, and a wall
-   with windows is drawn whole */
-var mvLeaf = typeof goLeaf === 'function' ? goLeaf : function(at,n,w,h,o){ o=o||{}; if(o.draw===false) return null;
-  BOX(at[0],at[1],at[2],w-0.04,h-0.02,o.t==null?0.07:o.t,Math.atan2(n[0],n[1]),o.col==null?PLANKC[3]:o.col,'plank'); return null; };
-var mvSectorWins = typeof goSectorWins === 'function' ? goSectorWins : function(fam,P,r0,r1,a0,a1,yb,yt,col,opt){ SECTOR(fam,P,r0,r1,a0,a1,yb,yt,col,opt); return 0; };
+/* the doors and glass are 54-openings.js's (core/door); kits/beast-riders seals it with this fragment (its towns.py) */
+var mvLeaf = goLeaf, mvSectorWins = goSectorWins;
 
 var LVL = { facades:[], rooms:{}, windows:0, lamps:0, webs:0, sacs:0, washing:0, hoists:0, forges:0, perches:0,
             trades:{}, facadeKinds:{}, tri:{}, inst:{} };
@@ -759,7 +755,7 @@ function gtFacade(S,T,F,a,y,kind,W,H,K,yCap){
   }else{
     /* open arch: a portal on a solid trunk, so the room it opens on is a card in the room's colour (core/door KGLASS 'room';
        it was a near-black panel, a dark void), lit at night by the lamp in the arch */
-    SECTOR('wall',F,rP+0.005,rP+0.02,ad-da,ad+da,y+0.05,y+dh,typeof KGLASS!=='undefined'?KGLASS.SPEC.room.color:0x6e5a46,{faces:'o',step:30}); if(typeof GOPEN!=='undefined') GOPEN.cards=(GOPEN.cards||0)+1;
+    SECTOR('wall',F,rP+0.005,rP+0.02,ad-da,ad+da,y+0.05,y+dh,KGLASS.SPEC.room.color,{faces:'o',step:30}); GOPEN.cards=(GOPEN.cards||0)+1;
     var pp=gtP(T,rP+0.3,ad,y+dh-0.55); lvlLamp(pp[0],pp[1],pp[2],0.7,10,cool,0.35);
   }
 

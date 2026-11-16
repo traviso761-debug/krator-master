@@ -131,6 +131,7 @@ PATH['22b-core-water-kinds-ext.js']=os.path.normpath(os.path.join(HERE,'..','..'
 PATH['51b-core-water-kinds-ext-draw.js']=os.path.normpath(os.path.join(HERE,'..','..','core','water','ext','54b-core-water-kinds-ext-draw.js'))
 for f in CORE_WATER:
     if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','water',f))
+PATH.setdefault('56-core-water-breakup.js',os.path.normpath(os.path.join(HERE,'..','..','core','water','ext','56-core-water-breakup.js')))   # the breakup (core/water ext/56), on by default since 2026-11-09
 # the falls in two draw calls in all (WATER.drawFalls: ext/53 + 53b; 2026-10-25), explicit paths as biomes/nwbay does
 for f in ['53-core-water-terraces.js','53b-core-water-terraces-draw.js']:
     PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','water','ext',f))
@@ -164,7 +165,7 @@ for f in frags:
 if bad: print('BIOME FRAGMENT DEPENDS ON A HOST ENGINE:\n  '+'\n  '.join(bad)); sys.exit(1)
 BSRC.report(PATH)   # --list-sources: what the page is made of, then exit
 os.makedirs(DIST,exist_ok=True)
-html=''.join(out); open(os.path.join(DIST,OUT),'w',encoding='utf8').write(html)
+html=''.join(out); open(os.path.join(DIST,OUT),'w',encoding='utf8', newline='\n').write(html)
 # syntax check on the script body
 m=re.search(r'<script>\n(?!document)(.*)</script>\s*</body>',html,re.S)
 js=m.group(1) if m else ''

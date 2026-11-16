@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 17 (12%) | 0 (0%) | 0 (0%) | 1 (1%) | 122 (87%) |
+| KB | 17 (12%) | 0 (0%) | 0 (0%) | 1 (1%) | 120 (87%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -15,7 +15,6 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/00-head.html` | 1.2 | [web] | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 | `src/26k-kit.js` | 6.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/31-alt-takes.js` | 0.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the tables core/engine 30-geo.js emit reads (MAT_VAR, GABLE_ALT_K): plain data |
-| `src/37-wk-rec.js` | 2.0 | [draw] | 1 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/40-lz-kit.js` | 30.7 | [draw] | 0 | 0 | 0 | 0 | 0 | 24 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/42-lz-dress.js` | 3.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/50-lz-dwell.js` | 9.7 | [draw] | 0 | 0 | 0 | 0 | 0 | 7 | 0 | 0 | 0 | 0 | 0 |  |

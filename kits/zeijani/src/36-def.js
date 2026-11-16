@@ -1,5 +1,5 @@
 // ================================================================= REGISTRY and PLACEMENT
-// A def: {key, name, seed, cls, kind?, tags, w, d, h, budget?, cut?, front?, build(o)}.
+// A def: {key, name, seed, cls, kind?, tags, w, d, h, budget?, cut?, front?, originFront?, sunk?, note?, build(o)}.
 //   cls   the core/tags class: 'building' (every dwelling, shop, civic and sacred def), 'landmark' (the temple, the portal),
 //         'infrastructure' (a vent head, a stone door, the palisade), 'life' (a beetle, the cattle), 'feature' (the test block)
 //   tags  core/tags vocabulary: culture 'zeijani' (filled in), types (BUILDING_TYPES), wealth, style ('carved' 'constructed'
@@ -7,7 +7,11 @@
 //   w,d,h the declared box in the local frame (overhangs of ~1 m allowed: guy ropes reach further and are counted in w,d)
 //   cut   the def opens on the camera's side in the cut-away (27-mat.js): constructed and wooden defs; a carved def's
 //         rock block opens instead (40-zj-cave.js)
-//   carve a CARVED def's void plan: carve(C, x, z, ry) adds its rooms, passages and fixtures to a KCAVERN (40-zj-cave.js)
+//   originFront  a carved def's origin is the foot of its front, its rock running back from there (the sheet and Dhelv
+//         place it so; its cut-away box is centred d/2 behind the origin). A carved def's void plan is data, not a def
+//         field: its item in kits/interiors/sets/zeijani.js, carved by 40-zj-cave.js from the same item
+//   sunk  the def is cut down into the ground (the kiva, the council in its pit): its cut-away box is centred on the origin
+//   note  a line for the inspector and the record (REG's note)
 //   front {x,z,yaw}: the main door in the local frame; else the widest door() the builder declared facing +z
 // The builder draws in its local frame (origin = plot centre on the ground, +z the front) and never reads the culture:
 // the whole kit is one culture. place(key,x,z,ry,o) builds a def into the current frame; nested calls make compounds

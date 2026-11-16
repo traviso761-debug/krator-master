@@ -9,6 +9,9 @@
     python3 tools/test_all.py --no-build   # skip the rebuild and the baseline (lints and tests only, on the committed pages)
     python3 tools/test_all.py --nightly --no-cache   # run every verify, even one that passed on the same page before
     python3 tools/test_all.py --list       # print the steps and exit
+    python3 tools/test_all.py --help       # this text
+
+A node test that requires a dist/ bundle still a Git LFS pointer is skipped, naming the pull (tools/lfs_needs.py --test).
 
 Exit code 1 if any step fails. Each step prints PASS, FAIL or SKIP with its time; failures print the tail of their
 output. Nothing here edits a tracked file except the rebuild, which writes the pages every build.py writes and each
@@ -49,7 +52,7 @@ GODOT_TESTS = ['res://tests/rand/krand_test.gd', 'res://tests/clock/kseason_test
                'res://tests/dhelv/dhelv_nav_test.gd', 'res://tests/terrain/kfield_test.gd', 'res://tests/terrain/kstrata_test.gd', 'res://tests/terrain/kstrata_vary_test.gd', 'res://tests/terrain/klava_test.gd', 'res://tests/resources/kres_field_test.gd',
                'res://tests/terrain/field_import_test.gd', 'res://tests/tags/records_test.gd',
                'res://tests/export/world_test.gd', 'res://tests/export/iziz_test.gd', 'res://tests/export/yuni_test.gd', 'res://tests/export/yuni_interiors_test.gd', 'res://tests/export/longsong_test.gd', 'res://tests/water/water_test.gd',
-               'res://tests/water/falls_case_test.gd', 'res://tests/water/gaps_test.gd',
+               'res://tests/water/falls_case_test.gd', 'res://tests/water/gaps_test.gd', 'res://tests/door/door_test.gd',
                'res://tests/shaders/library_test.gd', 'res://tests/anim/anim_test.gd', 'res://tests/motion/motion_test.gd',
                # a test and its arguments (after Godot's --): Pylon's sheet on Iziz's page, through the city test (core/export/README.md)
                ('res://tests/export/iziz_test.gd', '--case=world-pylon', '--sheet'),
@@ -90,21 +93,33 @@ def builds():
 
 
 def extra_builds():
-    """Pages a build writes only when asked: the Throne's stations (build.py --station <name>) and Girder's hero
-    page (build_hero.py). The baseline hashes them, so they are rebuilt too."""
+    """Pages a build writes only when asked: every station kit's stations (build.py --station <name>; the plain build.py
+    writes station 1 only, or none). The baseline hashes them, so they are rebuilt too. A station is a folder under
+    stations/ with a station.json or its own fragments; one marked "baseOnly" is a shared stage, never built alone; a kit with stations but no build.py is a plan (2026-11-10: the
+    second integration pass found --all had skipped about a hundred station pages; Girder's hero page is retired to
+    archive/girder-hero)."""
+    import json
     out = []
-    for st in sorted(glob.glob(os.path.join(ROOT, 'biomes', 'throne', 'stations', '*', 'station.json'))):
-        name = os.path.basename(os.path.dirname(st))
-        out.append(('build biomes/throne --station ' + name, [PY, 'build.py', '--station', name], 'biomes/throne'))
-    # the Hearths' stations past its default one (build.py writes the crystals' page; the hold is --station hold)
-    for st in sorted(glob.glob(os.path.join(ROOT, 'biomes', 'hearths', 'stations', '*', 'station.json'))):
-        name = os.path.basename(os.path.dirname(st))
-        if name != 'crystals':
-            out.append(('build biomes/hearths --station ' + name, [PY, 'build.py', '--station', name], 'biomes/hearths'))
-    if os.path.isfile(os.path.join(ROOT, 'settlements', 'girder', 'build_hero.py')):
-        out.append(('build settlements/girder hero', [PY, 'build_hero.py'], 'settlements/girder'))
+    for sd in sorted(glob.glob(os.path.join(ROOT, 'biomes', '*', 'stations', '*', ''))):
+        sd = sd.rstrip('/' + os.sep)
+        kit = os.path.dirname(os.path.dirname(sd))
+        b = os.path.relpath(kit, ROOT).replace(os.sep, '/')
+        name = os.path.basename(sd)
+        sj = os.path.join(sd, 'station.json')
+        # a station is a folder with a station.json or its own fragments (several kits keep no station.json); a plan with
+        # no build.py yet, the shared fragments of a kit's stations (`common`) and a "baseOnly" stage are not
+        if not os.path.isfile(os.path.join(kit, 'build.py')) or name == 'common':
+            continue
+        if not os.path.isfile(sj) and not glob.glob(os.path.join(sd, '[0-9]*.js')):
+            continue
+        try:
+            with open(sj, encoding='utf-8') as fh:
+                if json.load(fh).get('baseOnly'):
+                    continue
+        except (OSError, ValueError):
+            pass
+        out.append(('build %s --station %s' % (b, name), [PY, 'build.py', '--station', name], b))
     return out
-
 
 def node():
     return shutil.which('node') or next(iter(sorted(glob.glob('/opt/node*/bin/node'), reverse=True)), None)
@@ -114,12 +129,24 @@ def node_tests():
     tests = sorted(glob.glob(os.path.join(ROOT, 'core', '**', 'test-*.js'), recursive=True))
     tests += sorted(glob.glob(os.path.join(ROOT, 'settlements', '*', 'tests', 'test-*.js')))
     tests += sorted(glob.glob(os.path.join(ROOT, 'kits', '*', 'tests', 'test-*.js')))
+    tests += sorted(glob.glob(os.path.join(ROOT, 'openworld', '*', 'tests', 'test-*.js')))   # the outpost registry (openworld/outposts/PLAN.md)
     tests += [os.path.join(ROOT, 'tools', 'walk_audit', 'test_audit.js')]   # the geometry walk audit (tools/walk_audit/README.md)
     return [os.path.relpath(t, ROOT) for t in tests]
 
 
+def node_pointers(test):
+    """The dist/ bundles a node test requires that are still LFS pointers (tools/lfs_needs.py; item 23)."""
+    sys.path.insert(0, os.path.join(ROOT, 'tools'))
+    import lfs_needs
+    try:
+        return lfs_needs.pointers(lfs_needs.test_reads(test.replace(os.sep, '/')))
+    except OSError:
+        return []
+
+
 def steps(nightly, build):
     s = [('port lint (every build and core)', [PY, 'tools/check_port.py']),
+         ('port lint (openworld/outposts: shared data, not a build)', [PY, 'tools/check_port.py', 'openworld/outposts']),
          ('insulation (core never names host/)', [PY, 'tools/check_insulation.py']),
          ('dependencies run one way (MODULARITY-PLAN.md)', [PY, 'tools/dep_graph.py']),
          ('build.py open() names its encoding', [PY, 'tools/check_encoding.py']),
@@ -199,6 +226,9 @@ def steps(nightly, build):
 
 
 def main(argv):
+    if '--help' in argv or '-h' in argv:   # the survey: `--help` used to run the whole suite
+        print(__doc__)
+        return 0
     nightly, build = '--nightly' in argv, '--no-build' not in argv
     plan = steps(nightly, build)
     if '--list' in argv:
@@ -212,6 +242,11 @@ def main(argv):
         if cmd is None:
             print('SKIP  %s (tool missing)' % name, flush=True)
             continue
+        if name.startswith('node '):   # item 23: a bundle the test requires is still an LFS pointer: say the pull, do not run it
+            ptr = node_pointers(name[5:])
+            if ptr:
+                print('SKIP  %s (needs %s, an LFS pointer: python3 tools/lfs_needs.py --test %s --pull)' % (name, ', '.join(ptr), name[5:]), flush=True)
+                continue
         t = time.time()
         r = subprocess.run(cmd, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True,
                            encoding='utf-8', errors='replace', timeout=1800)

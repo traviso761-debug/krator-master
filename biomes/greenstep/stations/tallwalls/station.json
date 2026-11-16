@@ -1,0 +1,23 @@
+{
+ "note": "Station 3, the Citadel Step (PLAN.md section 6; 5.1 px 650,1268, 1,985 m, Dfb/Cfa, 1,522 mm): Terrace III between the Great Veil (riser 2) and the Upper Citadel Scarp (riser 3), the Clodosriba and the Western Rille meeting at the brink round Tallwalls' promontory (site only: the settlement build's). kin: the SW lowlands' broadleaves on the lower benches and the S highlands' right-handed spiral flora from the Citadel Step up, read in place and grown by their own kits' builders (BIO.kin; 87-host-kin.js grows the rows LAND.kin lists): [fragments, the kit's API, the pack families their builders draw with ('*': the whole pack), the registry name when it is not the folder's]",
+ "kin": {
+  "swlowlands": [
+   [
+    "src/50-biome-swlowlands-species.js",
+    "src/52-biome-swlowlands-library.js",
+    "src/55-biome-swlowlands-trees.js"
+   ],
+   "SWLOW",
+   "*"
+  ],
+  "shighlands": [
+   [
+    "src/50-biome-shigh-species.js",
+    "src/55-biome-shigh-trees.js"
+   ],
+   "SHIGH",
+   "*",
+   "shigh"
+  ]
+ }
+}

@@ -1,0 +1,9 @@
+{
+ "base": "main",
+ "out": "abyssal-savannah-belt.html",
+ "note": "Station 2, the floor's belt (PLAN.md section 8): the XV clump at px 1031,515 on map 5.1 (-1,880 m, 2.0 atm), the parkland at its tallest between the lake jungle's edge and the salt lake's rim. Station 1's src/ with this folder's stage, ground, water, build and take (build.py build_main)",
+ "core": ["31b-core-leafset.js"],
+ "terrain": ["37-core-stacks.js"],
+ "pack": ["termite"],
+ "neigh": []
+}

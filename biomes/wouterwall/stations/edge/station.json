@@ -1,0 +1,8 @@
+{
+ "name": "edge",
+ "out": "wouterwall-edge.html",
+ "note": "Station 4 (PLAN.md section 7): the edge at px 360,1010.75 on scale model 5.1 (region/station-edge.json; the plan's 360,1010 is half way up the Waywater Ironblack valley's south wall, the page stands on the plateau's rim above it). Its 44s-host-site.js replaces src/'s: a KRELIEF.gully box canyon from an amphitheatre head on the loess plateau down through the wall to the valley floor, a spring-fed fall (WATER.fall) at the loess's foot on the head wall, its brook down the floor (WATER.flow); loess walls over the patchwork rock; dust towers on the plateau.",
+ "lowlands": [
+  "swlowlands"
+ ]
+}

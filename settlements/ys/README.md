@@ -18,7 +18,7 @@ for other cities; Ys keeps its own blocks, boxes, clash rule and kit audit.
 
 ```
 python3 build.py                                    # every target under targets/ -> dist/<name>.html (city -> dist/ys.html)
-python3 build.py --vendor-check                     # vendored fragments still identical upstream? (adapted ones listed)
+python3 build.py --vendor-check                     # what is read in place (every vendored fragment but the adapted), the adapted copies' drift
 python3 verify.py dist/ys.html --assert --views "Opening — the bay from the head of the shore,Overview" --out /tmp/ys-shots
 python3 verify.py dist/ys.html --hour 22 --cam=1000,60,500,200,8,-200 --out /tmp/ys-shots     # a night shot from anywhere
 python3 verify.py dist/ys.html --marks /tmp/ys-marks.json --eval "()=>window._api.totals"

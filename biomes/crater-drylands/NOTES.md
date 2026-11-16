@@ -121,3 +121,7 @@ click the ground; or the view "A wildfire running", which lights one four minute
 
 - **No trees on cliff faces** (Oct 2026): `zones()` multiplies every zone by `1 - cliff` (steep granite); the probe
   checks it with a negative control.
+
+## Scale-Model 5.1 Basement & Coastal Bench Reconciliation (`2026-11-13`)
+- **Impact-Melt Granophyre & `tibasalt` Kopje Basement (`0%` Tin-Granite):** On Krator's central impact floor, the "granite kopjes" (e.g. Scyvoi Rock) are **differentiated impact-melt-sheet granophyre / quartz-monzonite tors** and **`tibasalt`** sill outcrops protruding through red iron-rich regolith — **zero continental S-type tin-granite** (`GEOLOGY-SANITY-CHECK.md` §1; `kits/resources` `tin = 0` inside the central crater floor).
+- **Lower Ring Sea Shelf Benches (`Talon` `1026, 760` / `1026, 772` & SW Bay Transition):** Where the drylands step down to the `-1,500 m` Ring Sea lee shore and lagoon shelf, lower coastal benches and dry wadi mouths cut `2–5 m` tabular cream coquina and pale marl ledges bound to `KSTRATA` **`carbonate-shelf`** (`core/terrain/35-core-strata.js`), capped upslope by **`tibasalt`** lava steps (`--station south`).

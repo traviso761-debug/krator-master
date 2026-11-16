@@ -1,0 +1,9 @@
+{
+ "note": "Station 8, the Fowlers (PLAN.md section 6, 'Two more Fellgang villages', chosen by the owner 2026-11-11): a Fellgang village under the N rim's wall, 5.1 px 571,1397. core: core/hamlet (KHAMLET.village: the village on the Fellgang row, 84f) and the city primitives it reads (core/city 33, KCITY.prim). No kin: the N rim's own frost frills and bell firs",
+ "core": {
+  "10-hamlet-wood.js": "core/hamlet/10-hamlet-wood.js",
+  "20-hamlet-cultures.js": "core/hamlet/20-hamlet-cultures.js",
+  "30-hamlet-village.js": "core/hamlet/30-hamlet-village.js",
+  "33-city-strategies.js": "core/city/33-city-strategies.js"
+ }
+}

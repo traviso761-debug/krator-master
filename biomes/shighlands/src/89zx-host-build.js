@@ -46,12 +46,8 @@ window._shadow=null;
   REGISTER({name:'The southern highlands (ideal type)',x:0,z:0,y:Math.floor(y0),r:TERR.R,h:Math.ceil(y1-y0)});}
  /* the sun's shadows, attached off (the guard first: a dry run of the ground's shader counts its texture units) */
  if(typeof KSHADOW==='undefined'||!KSHADOW.attach){window._shadow='off: no core/shadow';return;}
- const LIBOF={MeshLambertMaterial:'lambert',MeshStandardMaterial:'standard',MeshPhysicalMaterial:'physical',MeshPhongMaterial:'phong'};
- const samplersOf=m=>{try{const L=THREE.ShaderLib[LIBOF[m.type]],sh=L?{uniforms:{},vertexShader:L.vertexShader,fragmentShader:L.fragmentShader}:{uniforms:{},vertexShader:'',fragmentShader:''};
-   const f0=typeof KHOOK!=='undefined'?KHOOK.failures.length:0;
-   try{if(m.onBeforeCompile)m.onBeforeCompile(sh,renderer);}finally{if(typeof KHOOK!=='undefined')KHOOK.failures.length=f0;}let n=(m.map?1:0)+(m.normalMap?1:0)+(m.roughnessMap?1:0);
-   sh.fragmentShader.replace(/uniform\s+sampler(?:2D|Cube)\s+([^;]+);/g,(a,c)=>{n+=c.split(',').length;return a;});return n;}catch(e){return 99;}};
- const MAXT=renderer.capabilities.maxTextures==null?16:renderer.capabilities.maxTextures,worst=samplersOf(MAT_GROUND);
+ const samplersOf=m=>KSHADOW.units(m,renderer,scene);   /* core/shadow (2026-11-09): read samplers only, the scene's environment, the 3D forms */
+ const MAXT=KSHADOW.maxUnits(renderer),worst=samplersOf(MAT_GROUND);
  if(worst+1>MAXT){window._shadow='skipped: the ground reads '+worst+' of '+MAXT+' texture units';return;}
  try{const S=KSHADOW.attach({renderer,scene,camera,sun,ground:terrainH});   /* off until switched on (?shadow=1 or the panel's button) */
   scene.children.forEach(c=>{if(c.userData&&c.userData.farField)return;if(c.isMesh&&c.material===MAT_GROUND){S.cast(c,{cast:false});return;}S.cast(c);});

@@ -71,7 +71,7 @@ sys.path.insert(0, os.path.join(ROOT, 'tools')); import build_sources as BSRC   
 KIT_ID = 'ash-nomads'
 OUT = os.path.join(DIST, KIT_ID + '.html')
 TEX_DIR = os.path.join(HERE, 'tex')
-CORE_DIRS = [os.path.join(ROOT, 'core', *d.split('/')) for d in ('shader', 'rand', 'materials/record', 'tags', 'furnish', 'atmos', 'door')]
+CORE_DIRS = [os.path.join(ROOT, 'core', *d.split('/')) for d in ('shader', 'rand', 'materials/record', 'tags', 'furnish', 'atmos', 'door', 'walk', 'walk/box')]   # core/walk: the walker on the buildings (core/engine/37-wk-rec.js)
 # the host shell from core/host (core/host/README.md): the camera, the frame loop and its clock (core/clock), the panel, the probe,
 # and the authoring tools (inspect, polygon, path). core/engine's 99-host-take.js (with 92-world.js) hands it the
 # page; it replaced the engine's own 92-camera.js and 91-probe.js (2026-10-18, kits/scyvoi/KNOWN_ISSUES.md "Host port").
@@ -81,7 +81,7 @@ sys.path.insert(0, os.path.join(ROOT, 'core', 'atmos', 'placeholder'))
 import placeholder as psky   # the placeholder sky (KratorSky), read in place: MODULARITY-PLAN.md step 1
 sys.path.insert(0, os.path.join(ROOT, 'core', 'engine'))
 import engine as kengine   # the building-kit engine, read in place: MODULARITY-PLAN.md step 2
-CORE_HOST = khost.SHELL + ['94-host-polytool.js']
+CORE_HOST = khost.SHELL + kengine.HOST   # the polygon tool and the one key map (core/host/92k-host-keys.js)
 VENDORED = {}
 # the nomads' tents, a Scyvoi culture file the kit shares (not engine: the engine is core/engine)
 VENDORED.update({f: os.path.join(ROOT, 'kits', 'scyvoi', 'src', f) for f in ('40-tk-tentkit.js',)})

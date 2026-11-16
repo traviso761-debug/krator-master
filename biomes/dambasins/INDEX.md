@@ -21,7 +21,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `52-db-flotsam.js` | 11 |  |
 | `71-port-terrain.js` | 21 | the natural coast (12); stamps (29); materials (107); the terrain grid (203) |
 | `80-db-bed.js` | 6 |  |
-| `81-db-hulks.js` | 3 |  |
+| `81-db-hulks.js` | 4 |  |
 | `89c-db-ground.js` | <1 |  |
 | `91a-db-wrecks.js` | 3 |  |
 | `91b-db-flotsam.js` | 2 |  |

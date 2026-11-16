@@ -79,15 +79,30 @@ See https://claude.ai/artifact/N76KxfMXL5C7hfRGHKJK5q for scale map; some region
   **wind-carved lake beds** (the owner, 2026-10-23, in place of the tuff once proposed). The model's rain there is about
   ten times too generous (a 4.22 item). The owner (2026-10-23): **the Catch is the biggest barrier to trade between
   Xanadu and everywhere else**. It has **oases, but only just enough for the crossing to be doable, not comfortable or
-  safe**. The Ancients' tunnel to **Stair** has been **closed by seismic activity since about the Cataclysm**, and Stair,
-  the nearest thing to a settlement, is **a glorified campground** of **a couple of hundred people**: a handful of
-  merchants, the caravans passing through, and occasional bands of daring or desperate arcology divers. There are **five
-  oases** on the crossing, unnamed, and **none is lived in but Stair's**. The residents, the traders and the oases' names
-  are **Yuni, Izani, Dasrī or Xanadui**, with very occasional bold ventures from further off. The Catch is Krator's one great salt field, an alkaline soda lake whose
+  safe**. **No Ancient tunnel crosses the Catch's walls to Stair** [the owner, 2026-11-11, dropping the sealed tunnel
+  that stood here]. The Ancients reached Stair over the surface by the **Godsgate highway**, whose broken way the
+  caravans still follow in places (`openworld/ANCIENT-NETWORK.md` section 8). Stair, the nearest thing to a settlement, is a caravan town of **about 750** [the owner, 2026-11-16, in place of "a couple
+  of hundred"]: its merchants, who sell water, fodder, repairs and news; the caravan groups' factors and pens; the
+  Brotherhood of the Two Horns' guild house; and the arcology divers. There are **five oases** on the crossing: Stair's
+  and four more, **Kolli, Arfwai, Bitta and Lasso** (`biomes/catch/PLAN.md`), each **~100 people or less** [the owner,
+  2026-11-16, in place of "none is lived in but Stair's"]. Each is kept by one caravan group's hands at its well (the Train
+  of Jabal at Arfwai, Iziz's two houses at Kolli, Yuni's Merchants' Guild and the Geomancers at Lasso; Bitta's brackish well
+  is kept by Stair's merchants), who sell water and fodder to all. The residents, the traders and the oases' names are
+  **Yuni, Izani, Dasrī or Xanadui**, with very occasional bold ventures from further off.
+  **The northern caravaneers** [the owner, 2026-11-16]: the Geomancers; the Yuni Merchants' Guild, independent of the
+  Geomancers; two rival Izani merchant noble houses, Getmastarz (the Gatemasters) and Goldanda; and **the Train of Jabal**,
+  the Dasri's salt caravan company out of Jabal, which works both the Catch's salt works (Ṣalṭ al-Bān) and the Bowl's
+  (Solta). **The seasons** [the owner, 2026-11-16]: the Catch floor closes in the spring's black dust storms, and the
+  Twins' col in winter (`core/simulation/PROPOSAL-CATCH.md`). The Catch is Krator's one great salt field, an alkaline soda lake whose
   resources are **potash and alkali salts** [the owner, 2026-10-23]; its alkali dust is caustic in the storms. Stair's
   ruin is **the Hill arcology** (`kits/ancients/targets/hill`), in the springs' hollow through the basin's interior hills
-  (moved there on the model 2026-10-23, px 834,1112, `biomes/catch/PLAN.md` section 6b). The tunnel is **sealed halfway**: **Yuni stripped its northern half
-  bare long ago**, and the **southern half**, entered from Stair, is the divers' prospect. *Proposed* (section 6a): in
+  (moved there on the model 2026-10-23, px 834,1112, `biomes/catch/PLAN.md` section 6b). *Proposed*: the divers' prospect is **the Hill
+  arcology itself**, its lower levels drifted full of sand and sealed by salt, which the dunes uncover and bury again.
+  **The Theodiga tunnel stays** [the owner, 2026-11-16: "we can leave in the stair to theodiga tunnel"]: the Ancients'
+  dead bore from Theodiga to Stair under the Twins and the Catch's southern wall (438 km, 385 km of it bored;
+  `openworld/ANCIENT-NETWORK.md`, `rift.bowl.theodiga-stair`). The trains do not run in it; it is a third way across, but
+  a hard one, dark, with little food or water. Its Stair mouth by the spring is the divers' other prospect. Only the
+  northern tunnel, from Arcbeam under the north walls, is dropped. *Proposed* (section 6a): in
   the dry air **Ancient alloys and energy cells keep** as nowhere else, and that is what the divers bring out, for the
   Yusar, the Geomancers and the engine-keepers.
 - **Korona.** A planned region in the NE, under the giant. It is formed of a type of volcanic structure or ‘corona’ that does not exist on Earth, but does exist elsewhere in the Solar System, forming a crazy quilt of small plateau, depressions, and microclimates. Known to be home to bandits and ghouls. A kaleidoscope of microclimates, tepuis and carnivorous plants, home to many isolated tribes of humans and therian mutants (§6.18). [the owner, Oct 2026]
@@ -150,7 +165,7 @@ The Ancients were the original civilization that colonized Krator, with roots, h
 - **Hub 01:** a ruined arcology high in the chill, thin-aired mountains east of the Catch, the **Stalker Peaks** [the owner, 2026-10-23], named for the crossing's other great danger: **the Stalkers**, quiet robotic killers that stalk the sands, hunt down straggling caravaneers or lie in wait under the sand, and work in pairs or triads (`biomes/catch/PLAN.md` section 6c). The merchants who pass from the crater to Xanadu through the Bowl and the Catch know only that they come out of the peaks and go back into them. **No human has reached Hub 01 since the Cataclysm and lived to tell the tale.**
   - **About human size, in two variants** [the owner, 2026-10-23]: one with a **pneumatic harpoon gun**, one with **blade-arms** for close quarters (*proposed*: a pair is one of each; the harpoon pins, the blades finish). The harpooner is a white hull on two sleeved legs with a gun on each side; the blade a hunched walker with great shoulders and hooked blades on its long arms (`kits/mechs`: `st_harpooner`, `st_blade`). **A wise caravan carries explosives or more exotic Ancient weapons** to fight them; **one that does not, flees** [the owner, 2026-10-23].
   - **The author's secret** [the owner, 2026-10-23]: the Stalkers' source is **Hub 01, run by a mad AI**. No one in the world knows it; the game shows it, never says it. It was **driven mad during the Cataclysm**, and **no one is sure how**: the Ancients' contamination (§6.19), some kind of virus, or deliberate reprogramming.
-- **The Rift line** [the owner, 2026-10-23]: the Ancients built **tunnels under the Outer Wall** for transport to **their settlements in the Rift**, which were less extensive than those up north but still substantial. **Ledge**, on the cliff over the great lake at the Rift's western head, is where the line comes out of the Wall (§6.1). **Cube (Arccube)** is **the hub of Ancient activity in the Rift** [the owner, 2026-10-23: the most settled of these], deep in the Lizardmen's country (px 448,1237 on the model), **the reward for a player who braves the Lizardmen**. The Rift's other ruins' names and positions are **very tentative** [the owner]: *proposed*, **Chimes** at the foot of the great lake's gorge, **Cthonos**, **The Tubes** (a cavern: a station or a tunnel mouth). **Pluton** [the owner, 2026-10-23], on the Godthrone's airless flank (px 471,998, 9.7 km), **is the key to the tunnels the Ancients drove up inside the Godthrone to its summit** (17.1 km, ~270 km from Pluton) and used **for their own purposes**: not part of the public line, and **uninhabitable now**. The line was worked by an **Ancient worker caste** that went feral when the Ancients fell: the **Tungangs** (§6.1; *proposed* name, from the *tunnel gangs*). **Most of the Dalab-Ledge line runs underground** [the owner, 2026-10-23]: from portals in the Outer Wall's northern foothills (~3.5 km) to the cliff over Ledge, ~340-420 km of tunnel with its stations, sidings and side galleries, joined to the natural caves: enough underground to hold a people. *Proposed*: the rim and the Rift's walls hold **natural caverns**, wide rather than deep (lava tubes, gypsum and salt mazes, hydrothermal chambers: `biomes/riftrim/PLAN.md` section 4), which the tunnels joined where they could and the Tungangs hold.
+- **The Rift line** [the owner, 2026-10-23]: the Ancients built **tunnels under the Outer Wall** for transport to **their settlements in the Rift**, which were less extensive than those up north but still substantial. **Ledge**, on the cliff over the great lake at the Rift's western head, is where the line comes out of the Wall (§6.1). **The Pile** (once called Cube or Arccube; renamed by the owner, 2026-11-11) is **the hub of Ancient activity in the Rift** [the owner, 2026-10-23: the most settled of these], deep in the Lizardmen's country (px 448,1237 on the model), **the reward for a player who braves the Lizardmen**. The Rift's other ruins' names and positions are **very tentative** [the owner]: *proposed*, **Chimes** at the foot of the great lake's gorge, **Cthonos**, **The Tubes** (a cavern: a station or a tunnel mouth). **Pluton** [the owner, 2026-10-23], on the Godthrone's airless flank (px 471,998, 9.7 km), **is the key to the tunnels the Ancients drove up inside the Godthrone to its summit** (17.1 km, ~270 km from Pluton) and used **for their own purposes**: not part of the public line, and **uninhabitable now**. The line was worked by an **Ancient worker caste** that went feral when the Ancients fell: the **Tungangs** (§6.1; *proposed* name, from the *tunnel gangs*). **Most of the Dalab-Ledge line runs underground** [the owner, 2026-10-23]: from portals in the Outer Wall's northern foothills (~3.5 km) to the cliff over Ledge, ~340-420 km of tunnel with its stations, sidings and side galleries, joined to the natural caves: enough underground to hold a people. *Proposed*: the rim and the Rift's walls hold **natural caverns**, wide rather than deep (lava tubes, gypsum and salt mazes, hydrothermal chambers: `biomes/riftrim/PLAN.md` section 4), which the tunnels joined where they could and the Tungangs hold.
 - **The Ancients' transport network** [the owner, 2026-10-23]: mostly **above ground**: **highways connecting the arcologies and the ruins** across the crater and beyond, with passages **under the mountains** where they had to (the Rift line under the Outer Wall, and **a route under the Inner Wall** to the Valley of the Ancients): **one broad way with a guideway down its middle**, to Roketstad's Ancient spaceport and Verge's funicular among the rest. After more than a thousand years **most of it is in very bad condition** (flood-scoured in the north basin, buried in the jungle, broken where the viaducts fell), except where someone kept it up: **the Empire of Iziz and the Eternal State maintained theirs** for centuries, and **Yuni** to a degree (it has less logistical strength to bring to it). Since the Empire broke, **Voth, the Iron Republic and Dilihan** try to keep up what it built in their lands; elsewhere in the former Empire (Jimjam, the Hykkousoi, the Scyvoi, the Beast Riders, Dalab, the southern, south-western and eastern highlands) the Izani roads are overgrowing and decaying. **One route is still well kept: the Izani highway through the Cut toward the Eternal State**, except in the no man's land between Jimjam and the State. **Xanadu** keeps up part of its line, which was never extensive: **Strongbow** was the end of it. Outside these spheres the roads are badly decayed. The network joined **every arcology and every ruin**, and the cities founded on Ancient settlements (**Hook, Iziz, Yuni, Ys, Dalab**, and others to come). **The route under the Inner Wall runs west from the crater to the Valley of the Ancients**, in very bad condition now, reachable from surface settlements by shafts and side galleries, among them an arcology the Iron Republic owns. The plan for drawing it in the open world: `openworld/ANCIENT-ROADS.md`.
 
 ## 5. Themes that run through every culture
@@ -218,9 +233,55 @@ The Ancients were the original civilization that colonized Krator, with roots, h
     Beside the arena a **mission**: a temple where Dalab's priests try to proselytize the highlanders and where the Dalabits at
     Span worship. Downstream, on a pillar of the pillar rim, Dalab's **watch post** keeps the Valley in sight and signals the
     Cross, reached by a stair cut round the pillar's faces.
-- **Ledge** (the owner, 2026-10-23): the **Ancient arcology** that gives the settlement its name, on the cliff over the great lake at the Rift's western head, across the Outer Wall: where the Ancients' Rift line came out of the Wall (§4; Arccube was the Rift's hub), and **a bridge between two levels**, the highland where the road arrives and the basin and lake ~1.3 km below, so holding it means working both. Dalab has occupied the abandoned arcology to **study the rim's flora and fauna (as strange as the Rift's, but temperate) for useful genes**. Dalab is the only real power on the rift rim (too high for the Lizardmen to venture comfortably, too far and too many Lizardmen in the way for Xanadu), because its genepriests can **mod for cold and altitude**: Dalab's people cross the Outer Wall by a road built partly through **Ancient tunnels** under its airless crest (`biomes/riftrim/PLAN.md`). **The hold is tenuous**: the distance and the crossing make every supply train an expedition. **The rim's natives are an Ancient worker caste gone feral: the Tungangs** (the owner, 2026-10-23: a name evolved from the *tunnel gangs*, *proposed*; `biomes/riftrim/PLAN.md` section 6), in **two branches, perhaps divergent**: the **underground** branch in the tunnels and caverns, and **wilder highland-dwelling** branches on the rim's fells (*proposed*: the **Fellgangs**): the crews the Ancients engineered to run the Rift line, **Morlock-like and born to the dark** (the Zeijani merely adopted the night): pale, huge-eyed and dazzled by day, echolocating by tongue-clicks, with **holds within the caverns**, which they know better than anyone. They still keep stretches of the tunnels and Ledge's lifts, the old timetable and signal codes kept as rite. **The crews were unionised, and it runs deep in them still** (the owner, 2026-10-23), though a thousand years in the dark have kept **the forms without their meanings**: syndicalist communes, each hold a **loj** under a steward elected by show of hands at an open meeting, bound by the old agreement with the Ancients (the Book), in practice often run by a charismatic steward or a big man; over them the union **President** (*Tpresden*), an honour most of the time, granted exceptional powers when the lojes agree there is a crisis; out of crisis the Tpresden judges disputes between lojes and oversees the **Fixers**, the cadre who keep up the Line far from the holds and the whole network maintained. The lojes are **numbered** after the Line's original stations north to south (Ledge's lifts are Loj Fower), an order broken by lojes lost to disaster and new ones founded as they spread into new caverns. **Tungangs once lived throughout the Rift**: those east of Chimes were wiped out in tunnel wars after the Lizardmen came, and many Fellgangs descend from those who fled; a lost loj in the east is rumoured, unheard from officially in over five hundred years. **The truth of Loj Nahn** [the owner, 2026-10-23; known to no one outside it]: the lost loj is **Loj Nahn**, the number no Tungang says. In the tunnel wars it retreated into **the upper levels of Arccube** and sealed them off. About **a thousand people** have held out there ever since, farming the arcology's **upper terraces**, surrounded by Lizardmen, and lowering **stealthy gathering parties at night** for wood and the few other things the arcology cannot give them. The Lizardmen attack any they meet, but seem to lack the means or the will to press the loj further. Five centuries on open terraces have changed them, as the fells changed the Fellgangs, and the hold is **the human heart of the reward** that waits for whoever braves the Lizardmen (both the owner's, 2026-10-23). **The Tungangs' tales of the Cataclysm** [the owner, 2026-10-23]: there was a great war, because **the Gaffers got too greedy**; the crews called **the Great Strike**, went underground, and rode out the catastrophes that followed. What happened when the Lizardmen came they are not sure of: the sagas tell of **much wailing and screaming in Arccube, and then the Lizardmen were there; and there were no Ancient bodies.** Tungang and Fellgang agree that the only thing worse than a Labber is a Lizard. With no one to negotiate with until Dalab came, the Book gathered a Midrash of **readings**, argued by the Bookmen, who **still read English** for its sake (many lojes go by an oral tradition of the laws); *skab* is the general curse (traitor, bastard). **Their tongue is Northern English worn past understanding** (*us'll nobbut gan t'wark while t'stoord sez* > *usl nobga twak wilstood sez*). Dalab's road and Ledge's lifts depend on an uneasy bargain with them, and **Dalab's cold and altitude mods were learned from their genes**, which they remember.
+- **Ledge** (the owner, 2026-10-23): the **Ancient arcology** that gives the settlement its name, on the cliff over the great lake at the Rift's western head, across the Outer Wall: where the Ancients' Rift line came out of the Wall (§4; the Pile was the Rift's hub), and **a bridge between two levels**, the highland where the road arrives and the basin and lake ~1.3 km below, so holding it means working both. Dalab has occupied the abandoned arcology to **study the rim's flora and fauna (as strange as the Rift's, but temperate) for useful genes**. Dalab is the only real power on the rift rim (too high for the Lizardmen to venture comfortably, too far and too many Lizardmen in the way for Xanadu), because its genepriests can **mod for cold and altitude**: Dalab's people cross the Outer Wall by a road built partly through **Ancient tunnels** under its airless crest (`biomes/riftrim/PLAN.md`). **The hold is tenuous**: the distance and the crossing make every supply train an expedition. **The rim's natives are an Ancient worker caste gone feral: the Tungangs** (the owner, 2026-10-23: a name evolved from the *tunnel gangs*, *proposed*; `biomes/riftrim/PLAN.md` section 6), in **two branches, perhaps divergent**: the **underground** branch in the tunnels and caverns, and **wilder highland-dwelling** branches on the rim's fells (*proposed*: the **Fellgangs**): the crews the Ancients engineered to run the Rift line, **Morlock-like and born to the dark** (the Zeijani merely adopted the night): pale, huge-eyed and dazzled by day, echolocating by tongue-clicks, with **holds within the caverns**, which they know better than anyone. They still keep stretches of the tunnels and Ledge's lifts, the old timetable and signal codes kept as rite. **The crews were unionised, and it runs deep in them still** (the owner, 2026-10-23), though a thousand years in the dark have kept **the forms without their meanings**: syndicalist communes, each hold a **loj** under a steward elected by show of hands at an open meeting, bound by the old agreement with the Ancients (the Book), in practice often run by a charismatic steward or a big man; over them the union **President** (*Tpresden*), an honour most of the time, granted exceptional powers when the lojes agree there is a crisis; out of crisis the Tpresden judges disputes between lojes and oversees the **Fixers**, the cadre who keep up the Line far from the holds and the whole network maintained. The lojes are **numbered** after the Line's original stations north to south (Ledge's lifts are Loj Fower), an order broken by lojes lost to disaster and new ones founded as they spread into new caverns. **Tungangs once lived throughout the Rift**: those east of Chimes were wiped out in tunnel wars after the Lizardmen came, and many Fellgangs descend from those who fled; a lost loj in the east is rumoured, unheard from officially in over five hundred years. **The truth of Loj Nahn** [the owner, 2026-10-23; known to no one outside it]: the lost loj is **Loj Nahn**, the number no Tungang says. In the tunnel wars it retreated into **the upper levels of the Pile** and sealed them off. About **a thousand people** have held out there ever since, farming the arcology's **upper terraces**, surrounded by Lizardmen, and lowering **stealthy gathering parties at night** for wood and the few other things the arcology cannot give them. The Lizardmen attack any they meet, but seem to lack the means or the will to press the loj further. Five centuries on open terraces have changed them, as the fells changed the Fellgangs, and the hold is **the human heart of the reward** that waits for whoever braves the Lizardmen (both the owner's, 2026-10-23). **The Tungangs' tales of the Cataclysm** [the owner, 2026-10-23]: there was a great war, because **the Gaffers got too greedy**; the crews called **the Great Strike**, went underground, and rode out the catastrophes that followed. What happened when the Lizardmen came they are not sure of: the sagas tell of **much wailing and screaming in the Pile, and then the Lizardmen were there; and there were no Ancient bodies.** Tungang and Fellgang agree that the only thing worse than a Labber is a Lizard. With no one to negotiate with until Dalab came, the Book gathered a Midrash of **readings**, argued by the Bookmen, who **still read English** for its sake (many lojes go by an oral tradition of the laws); *skab* is the general curse (traitor, bastard). **Their tongue is Northern English worn past understanding** (*us'll nobbut gan t'wark while t'stoord sez* > *usl nobga twak wilstood sez*). Dalab's road and Ledge's lifts depend on an uneasy bargain with them, and **Dalab's cold and altitude mods were learned from their genes**, which they remember.
   - **Perhaps a fluid society** (the owner, 2026-11-03): the Tungangs, the tunnel people of the Rift and the southern
     Outer Wall, might, like the Iron Republic and Yuni, let a person rise two stations in a life (core/simulation/PLAN-MONEY.md).
+  - **Friendly Morlocks** (the owner, 2026-11-10/11; `kits/tungang/PLAN.md`): pale, light-shy, nocturnal tunnel folk who are
+    decent people, not monsters, and not dwarves: the night shift that never ended. **The Line is at least four tracks wide**
+    (a gallery 37 m across with a two-lane service road along its west wall; where it runs above ground an Ancient highway
+    runs beside it, on elevated decks over bog and water: the owner, 2026-11-11, `biomes/line/PLAN.md`), broken in places
+    but mostly running: where the whole width has fallen it is cut into segments, each segment's trains
+    trapped in it since the collapses, shuttling between its gaps, and **travellers walk the caverns between intact
+    segments**; holds grow at the gaps. Their light is rationed and coded, **the lamp code** on every gallery and door (red a
+    home, green the Line, amber work, glow-cap the passages, white the surface and danger, hooded at once), with rooms lit
+    by wax. At a meeting the hands are counted **by their shadows** on a white **count wall**; every junction is cut with
+    **click-ribs** that give it its own echo; the rich live in **carriage houses**, derelict cars drawn into a siding; once a
+    year at **the Big Meeting** every loj walks its banner down the Line to the Tpresden; rank is **shine**, ground-glass bead
+    strips on a faded copy of the crews' orange. They stand about 0.94 of a human. Much of what they own is fitted salvage of
+    the Line.
+  - **The stations' numbers** (the owner, 2026-11-11: "cube is loj nahn so renumber accordingly"), north to south: 1 Dalab,
+    2 Shelf, 3 the Twenny junction, 4 Ledge's lifts (Loj Fower), 5 Nulab, 6 Chimes, 7 Cthonos, 8 The Tubes, **9 Cube: Loj
+    Nahn, the number no one says**; the other stops are lettered halts. Loj Twenny (20) is a later founding by the Twenny
+    junction. Whether the Line ran on past Cube to Theodiga, Strongbow, Stair and an arcology in the Bowl (10-13) is open.
+  - **What the Line gives them** (the owner, 2026-11-11): more to trade than copper. The bores cut **veins of metal** and the
+    Tungangs work them, for they need metal to keep the trains running; *maybe* something more exotic keeps the power
+    running (agreed 2026-11-11: rare earths from the rift fill's carbonatites for the magnets of a power plant that runs on
+    the deep middle's heat by the hot doors, and a few recharged Ancient power cells, the rarest thing they sell); they take **ice and other
+    things from the mountains**; and **at least a few ventilation shafts** reach the surface, whose heads are their second
+    way out (`kits/tungang/PLAN.md` §1.2.1). **The shaft heads are kept well hidden from outsiders**, and a striking Union
+    might use them to take **direct action against Dalab's caravans**: up by night, a caravan's road blocked or its cargo
+    taken down, and no door for Dalab to find (the owner, 2026-11-11).
+  - **The Fellgangs' villages and Wildcat** (the owner, 2026-11-10/11): the Fowlers (a rope is a vote) and the Ice-cutters
+    ("the Cold is owed") are built (`biomes/riftrim` stations 8 and 9). **Wildcat** is about half **Kimr** by descent
+    (`biomes/labyrinth/PLAN.md` §5), and the Kimr's bravado shapes its raiding: capital-H heroism in a **scrap pueblo**, stepped
+    room blocks faced in salvage, ladders pulled up at night. A raid is proposed by **a Boast** from the round room's roof and
+    joined by **show of hands**; the minute book became **the Deeds**, every boast and whether it was made good; the
+    Aurochs-horn helmet is earned, never inherited; its walls carry heroes and trophies, no spirits. A **market town** of
+    1,000-2,000, **Blakhed** (the owner, 2026-11-11), stands at **the Blak Riba head** (5.1 px 441,1400),
+    where the south road tops out of the Chimes gorge, the one land crossing between the rims. Kin to both villages and
+    raiding no one, it stores the Ice-cutters' ice and the Fowlers' eggs and keeps the gorge stair's ropes; it **pays
+    Dalab a toll**, whose realm holds the ground, and keeps its market peace under Dalab's claim
+    (`kits/tungang/PLAN.md` 1.3.3). West of Nulab live three more Fellgang peoples (the owner, 2026-11-11): **the
+    drovers** of the west highland, **the pass-keepers** at the foot of Copper Glacier's pass, and **the coppersmiths**,
+    who work the glacier's copper. The richer skarn west of Nulab is a Dalab mining hamlet (`kits/tungang/PLAN.md`
+    1.3.4). **The Travellers** (the
+    owner, 2026-11-11) are the Fellgang families who live on the road, with some cultural similarities to the Irish
+    Travellers: hauling, dealing in beasts and goods, mending salvage, guiding, portering on the Line's branches near the
+    surface but never deeper in, save for **one clan that ventures into the dark unexplored caverns** and services and
+    porters for the underground and the ventilation shafts (the owner, 2026-11-11: **the Kradz**, *dark* said backwards in the cant; they marry into the lojes more than any other
+    family, and their way-marks and enamel-plate maps are the best of the Line's unknown parts);
+    barrel-top sledge-wagons and halting places along the lantern roads; a yearly Fair
+    on a fell everyone knows, and a cant of their own (`lore/tongues-of-krator.html`, "The Travellers' cant").
 - **Language.** Two tongues. The priests' **high tongue** is our English, held in place because the God only answers to it; that is the root of priestly rule. The peasants' **low tongue** drifted like a creole: *the* fused on as *da-* (*Dalab* = the lab, *Daranch* = the ranch), plural *-dem*, tense particles *di/go/a*. Latin letters; the God's fixed-width letters are holy. The oldest prayers are the staff's prompts; the formula that let the God forget is lost. The lab had a rival at Ys (§6.16). `lore/tongues-of-krator.html` [the owner, Oct 2026]
 
 ### 6.2 The Empire of Iziz: the Izani (hyperjungle)
@@ -294,6 +355,7 @@ The Ancients were the original civilization that colonized Krator, with roots, h
   - **Salvagers**, formerly Scavengers: "those who strip the Ancient ruins".
   - **Rocketeers**.
 - Capital institutions: the Hall of the Republic, the **Arsenal** (racks of rockets), the Mint and Treasury, the Forgehouse.
+- **The First Citizen** is the Republic's head of state (the owner, 2026-11-09): the Republic's military headquarters and the First Citizen's residence are Roketstad's **Fortress**; the Hall of the Republic is the **Assembly of Citizens**' house, presided over by its own Speaker, where the First Citizen speaks as a citizen (`kits/highlands/hall/BLUEPRINT.md`, `kits/highlands/fortress/BLUEPRINT.md`).
 - A salvage culture: houses in fuel tanks, rocket stages and hull plate. **Shipbreakers** dismantle the ships "that came down short of the port".
 - Murals: Norse and Celtic knots, triskele, tree of life, wolves, Mjölnir, the green gas giant, and **rockets** (Republic only).
 - Landlocked: no ships.
@@ -500,17 +562,58 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
     The green monastery is the **Order of Viridian Thought**, the tea Order: its house in Qiblai is its seat on the council,
     its head monastery a tea estate on the scarp's mist slopes (scale model px 962,1562; 813 m, ~400 people, ~40 t of tea a
     year in the spring flush, sent to Qiblai by road, about five days) [the owner, 2026-11-16]. The blue monastery is the
-    **Order of the Azure Dream**, whose head monastery is **Grēṭ-Āil**, the monastery isle in the middle of Erewhon's lake
-    (px 816.5,1501.5, ~600 people) [the owner, 2026-11-16]. Each Order keeps its spoke in Qiblai as its town house on the
-    council. The crimson monastery is the **Order of the Flashing Eye**. The white monastery is the **Order of the White
-    Lily**, known for its knowledge of medicine and healing; unlike the other great Orders, its complex in the city is its
-    head house, and doubles as the city's hospital [the owner, 2026-11-16].
-  - **Theodiga.** *Proposed:* Theodiga, the arcology the Xanadui come from, is the dome on earth; it is to be redesigned
-    with a dome or domes.
+    **Order of the Azure Dream**, whose head monastery is **Grēṭ-Āil**, the long isle in the middle of Erewhon's lake
+    (px 845,1504, 900 people with its fishing villages) [the owner, 2026-11-16]. Each Order keeps its spoke in Qiblai as its
+    town house on the council. The crimson monastery is the **Order of the Flashing Eye**; Sekriḍ, a village on Kirstabal's
+    lake, is its own (`settlements/kirstabal/PLAN.md`). The white monastery is the **Order of the White Lily**, known for its
+    knowledge of medicine and healing; unlike the other great Orders, its complex in the city is its head house, and doubles
+    as the city's hospital [the owner, 2026-11-16]. It also runs **the latex house at Kirstabal**, where the Scarp's poppy
+    latex is dried to opium; it keeps a share and the seat pays it a small fee [the owner, 2026-11-16: "The White Monastery
+    runs the latex house", "takes a share and a small fee"]. The violet monastery is the **Order of the Violet Storm**, a
+    martial order of sword and bow; its central monastery is **the House of the Tempest** on the West Arm in the Gold March,
+    about 600 strong, and its house in Qiblai is the Tempest's daughter [the owner, 2026-11-16; `settlements/strongwall/PLAN.md`].
+    The gold monastery is **the Yellow Monastery, the Order of the Beacon**, whose head house is the refurbished Ancient
+    beacon fort over the Rift [the owner, 2026-11-16; `settlements/beacon/PLAN.md`]. The turquoise monastery is not yet named.
+  - **Grēṭ-Āil, the Azure Dream's head monastery**, on the long isle's south shore facing Erehwon across the lake, in a
+    cove at scale-model px 846,1508.7 [the owner, 2026-11-16; `settlements/azure-dream/PLAN.md`].
+    - **The fishermonks** fish the lake from dugouts, by night with lamps, without qualm.
+    - **The Hall of Dreaming** holds 256 cots in eight turnings. Anyone who has fasted and bathed may sleep there, the
+      women on one side and the men on the other.
+    - **The rite.** The sleepers drink honey, milk and blue lotus. The Hall's prayer wheels stop at night: the Order's
+      heresy, argued on the council.
+    - **The Order of the White Lily** sends the sick who are not mending to sleep there seven nights.
+    - **The Station's passes** open the Hall's shutters.
+    - **The isle's people**: 900 in all, 300 in the monastery and 600 in three fishing villages (West End, North Shore,
+      East End).
+    - *Proposed* (the plan's): the Order holds that the Song was dreamed, broke off, and comes back in dreams.
+  - **Theodiga.** *Proposed:* Theodiga, the arcology the Xanadui come from, is the dome on earth. It is redesigned with
+    domes, the Song's dome among them (`settlements/theodiga`, 2026-11-16). The Rare Devisers work the Ancients' dead bore
+    from Theodiga to Stair under the royal licence [the owner, 2026-11-16: "we can leave in the stair to theodiga tunnel"].
   - **Distinct from the History Monks,** who keep the same poem as an English text with its author's name, and say
     nothing.
 - What to say of the fabled city of Erewhon, Pearl of Xanadu, Queen of Cities? Its great wealth and great remoteness make it a byword for exoticism and luxury among the peoples of the northern crater. The Vale of Xanadu is blessed by geography – a lush vale in an eastern rift lake, rising above the abyssal lakes that stretch west; to the north, rough high passes, often blocked by lava flows or earthquakes, are the most direct way to reach the teeming peoples of the Crater. With this ruggedness, only brave adventurers and traders brave the country, its bandits, and the robotic stalkers rumored to haunt it to venture south to Xanadu. But ah, what rewards! For Xanadu has plentiful gold mines and lush fields of cacao and other spices to match. Even the poorest of Erewhon eat like nobles elsewhere – and the Sultan himself? Well, the feasts and orgies of the Pleasure Dome have made Xanadu a byword for decadence as well. With its closest neighbors being the peaceful History Monks of the chilly Oidong Valley, and the lowlands tribes of Lizardmen who occasionally raid, but find the highland air too thin and chilly, the Sultanate has enjoyed splendid isolation for most of its history; even Iziz at its height was not so arrogant as to try to conquer it.
 - Things may be poised to change however. The current Sultan, a tremendously fat man who relies on 4 servants to carry him around in a palanquin, is such a prodigal spender that even the Sultanate’s ledgers are running in the red; and his longsuffering Grand Vizier has been pulling his beard out trying to muster up more money for guard patrols. The Lizardmen, from as much as can be gathered about that famously hostile race, seem to have new leadership, and their raids grow increasingly bold. While rich, the Sultanate is rather deficient in iron ore and scrap, and their best weapons are always obtained from Izizian and Yuni traders. If something were to cut that trade off, trouble may well come to paradise….
+- **The towns and houses** [the owner, 2026-11-15/16; the plans named, and `core/region/data/xan-tune.js`, the Sultanate's
+  economy on the sim]:
+  - **Erewhon's lake** is narrower and in the valley's middle, an Atitlán shore of bays and headlands round a long isle (scale
+    model 5.1 edit 7 re-run). **Erehwon** stands on its south shore.
+  - **Phēr**, the north shore's fair town (6,000), is seated by **the Sultan's heir**. It stands by the Swīṭ Siṭrīm, "sweet stream",
+    with a harbour under the wall and the fair ground on the rim (`settlements/pher/PLAN.md`).
+  - **Thalaba** moved up to the bench at the mouth of Godshearth (2,400), with **Ōlḍ-Thalaba**, a fishing village of 600, on its
+    old shore. Its road to Phēr goes up the Qol valley (about 105 km), with a mule path straight down the scarp. A small **Dalab
+    mission** of about 30 genepriests keeps a house there and sends its own party to the Grove. The Sultan takes **a tenth of every
+    Godshearth haul and a fifth of the rarities** (`settlements/thalaba/PLAN.md`).
+  - **Kirstabal**, the road town under Strongbow, has a smaller Atitlán of its own, the Lower Xanadu Lake and its nine villages,
+    and the White Lily's latex house (`settlements/kirstabal/PLAN.md`).
+  - **Lāiṭwāl**, the Light Wall, is the seat of Opal Valley and the Glaziers' main hold: 5,000, half Glaziers in the wall and half
+    Xanadui on the bench. The Glaziers pay the Sultan's Fifth in opals, and the Sultan's mines across the lake are its works village
+    (`settlements/lightwall/PLAN.md`).
+  - **Strongwall**, the Master of Mines' fort in the Gold March, keeps the Golden Tears' house inside its walls. It holds enough
+    powder for a few cannon, but **its musketeers are hired from the north** (Izani, Yuni and the Crater's free companies), paid by
+    the Treasury (`settlements/strongwall/PLAN.md`).
+  - **The three merchant houses** are the Brotherhood of the Two Horns (the Twins' guides), the Golden Tears (armed prospecting
+    in Lizard country, caravan escorts) and the Rare Devisers (the Godshearth expeditions; the royal licence in scrap and rare
+    artifacts, their main house at Theodiga).
 - Sign: the **eight-spoked wheel**, saffron and maroon. Ships: a swan barge, a dragon boat, a bullion carrack.
 - **Language and script.** Xanadui: the furthest drift of all, with Nepali, Tibetan and Persian sounds (retroflex t/d, breathy stops, q, x, nasal vowels), verb-last, prepositions turned case suffixes (*-bi* by, *-ṭu* to), and evidentials (*-sin* seen, *-se* they say). The Latin letters were lost; the temple grammarians invented a Tocharian-looking syllabary on a sound grid for the prayer wheels. `lore/tongues-of-krator.html` [the owner, Oct 2026]
 
@@ -519,6 +622,15 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
   few loanwords** and **a greater proclivity for large eyes among the Xanadui**. The loans (settled 2026-10-23), Northern English by
   way of the crews: *gāphar* (an overseer, from *gaffer*), *mārā* (a comrade, from *marra*), *bāiṭ* (a traveller's packed
   food, from *bait*), *lāin* (a caravan route, from *line*).
+- **The Glaziers, the crews who were not absorbed** (the owner, 2026-11-10/11; `kits/tungang/PLAN.md` §1.4). One crew went on up
+  into **Opal Valley** and kept a loj in the fault scarp over its milk-opal tarns, above the Sultanate's writ, a thousand years
+  apart from the Union: no Line, no trains, and still they read **the timetable of a train that never comes** at every turn.
+  The Xanadui call them **the Mārā**, "the comrades"; the Tungangs call them *glaizaz*. They sell precious opal down the valley
+  (the Sultan's Fifth paid in cut stones) and cut **potch**, the common opal jewellers throw away, into lamp panes
+  (*moonglass*). From Oidong's herbalist-monks they took the register (every adit and vein numbered like a station) and the
+  long watch; from Xanadu gilt, click wheels and painted fronts tiered on the scarp. Their tongue is now **half Xanadui**:
+  Tungang words in Xanadui grammar and sounds (`lore/tongues-of-krator.html`, "Glazier speech"). They wear **turbans like the
+  Xanadui**, with slight touches of the Orient in their dress and halls.
 
 ### 6.14 Jimjam
 
@@ -565,6 +677,13 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
   - Saffron-robed monks and academics; only they and the geomancers may enter the **Vault**.
   - Their saffron is the Order's colour.
   - Chapterhouses at Dalab, Iziz and Locus.
+  - **An outpost at the High Rift's Singing Gjár** (the owner, 2026-11-11): monks keep watch on its singing crystal fissures
+    from a small house in Longsong's style (`biomes/highrift/PLAN.md` station 5).
+  - **The White Gills Hermitage** (the owner, 2026-11-02 and 2026-11-16): fifteen monks keep a house in the White Gills' pipe
+    field (scale model px about 1015,1430), on the Twins' Dark-Tube Road. They count the Breath Pipes' day-rings for the date
+    of the Cataclysm, and the house doubles as the crossing's caravan stop, its saltcups the only potable water between Bitta
+    and Lasso. Their other duty is passing the news and rumours of travellers to Longsong: the Order's ear on the Catch
+    crossing (`biomes/gills/PLAN.md`; `openworld/xanadu-oidong-highrift/PLAN-TWINS-CROSSING.md`).
   - They keep the Ear.
   - Main monastery is **Longsong**, in the Oidong Valley east of Xanadu (owner, 2026-10-15; an older note put Oidong far south over the outer wall). The Ear is at Yuni.
   - Rumored to have techniques to speed up and slow down time. Some say they can travel in time; authorially they cannot.
@@ -625,8 +744,14 @@ marked *proposed* is this session's and waits on the owner. Its placeholder entr
   **Yeti Valley** (px 53-225 by 75-261) on the Outer Wall's flank above it. The Iron Republic holds the highlands to the east
   (§6.3; its polygon's western edge lies at px 226, beside the capital's candidate site: the border wants checking on the
   model). Jimjam, a separate people, shares the lowlands (§6.14).
-- **The capital** stands round an arcology [the owner, 2026-10-19], near the placeholder **Centrum** (px 223,315); the owner
-  may swap its name with **Fulcrum** (px 339,266, on Jimjam's lake). From Centrum: Farport 407 km north-west, Roketstad 241
+- **The capital stands round the arcology Fulcrum** [the owner, 2026-11-12], at scale model 5.1 px 409,621. The arcology
+  stands on rich iron (812 km² rich within reach) beside the Līng-Mā (1,277 m³/s), on Cfa farmland
+  (`openworld/RESOURCES-SETTLEMENTS.md`). Lux (5.1 px 495,645) stays a city of the State.
+  - The older placeholders were legacy 4.x pixels: **Centrum** (px 223,315) is 5.1's Lux, and the old **Fulcrum** px
+    339,266 is open floodzone water on 5.1.
+  - The distances below were measured from Centrum and want re-measuring from Fulcrum.
+  - Earlier: the capital stands round an arcology [the owner, 2026-10-19], near the placeholder Centrum; the owner may
+    swap its name with Fulcrum. From Centrum: Farport 407 km north-west, Roketstad 241
   km east, Jimjam 537 km east-north-east, Dilihan 500 km east, Leng (ruined arcology, px 218,224) 182 km north, Henge
   (arcology, px 185,405) 195 km south, Carcosa (ruin, px 123,482) 389 km south-west. The arcology is its own [the owner,
   2026-10-20, in place of the proposed Plymouth; its form redrawn 2026-10-22]: **the Sanctum**, the owner's name
@@ -823,7 +948,7 @@ marked *proposed* is this session's and waits on the owner. Its placeholder entr
 - **Where.** The Rift floor east of the great lake's basin: the "Lizardmen" region on the scale model (px ~293-610 by
   1087-1345), round the Rift's terminal seas. On the model: **Sauropolis** (city, px 493,1266, at the trough's deepest,
   -2,600 m), the villages **Komodo** (593,1287), **Gila** (381,1155) and **Tuatara** (546,1224). Too high for them to go
-  comfortably: the rift rim, which is why the Tungangs and Dalab hold out there (§6.1). **Arccube**, the Ancients' hub in the
+  comfortably: the rift rim, which is why the Tungangs and Dalab hold out there (§6.1). **The Pile**, the Ancients' hub in the
   Rift and the reward for whoever braves the Lizardmen (§4), lies deep in their country.
 - **The reliquaries.** They build great **cyclopean reliquaries** (the Xanadui call them temples), store strange
   constructions in them, and otherwise leave them alone. The Monks' sages sense **recursive distortions of spacetime**
@@ -838,15 +963,15 @@ marked *proposed* is this session's and waits on the owner. Its placeholder entr
   far as the Vale, for livestock, tools and valuables (§6.13).
 - **The tunnel wars** [the owner, 2026-10-23]. The Ancients' Rift line once ran the length of the Rift, worked by the
   crews who became the Tungangs (§6.1). When the Lizardmen came, the Tungangs east of Chimes were wiped out in **vicious
-  tunnel wars**; the survivors fled west and up onto the fells, and many Fellgangs descend from them. One loj did hold out: **Loj Nahn**,
-  sealed into the upper levels of **Arccube**, about a thousand people farming its terraces among the Lizardmen, who
+  tunnel wars**; the survivors fled west and up onto the fells, and many Fellgangs descend from them. One loj did hold out: **Loj Nahn**
+  (Cube was the Line's ninth station: the owner, 2026-11-11), sealed into the upper levels of **the Pile**, about a thousand people farming its terraces among the Lizardmen, who
   attack its night parties but have never pressed it further (§6.1). Tungang and Fellgang agree that the only thing worse than a Labber is a Lizard.
 - **What everyone can see** [the owner, 2026-10-23]: the Lizardmen **try to use Ancient relics**, fumblingly, in bizarre
   and esoteric ways no human would think of: the strange constructions in the reliquaries are made of them. And they
   **hate being confined in linear time**: to them it is, in a word, **disgusting**. That disgust shows as nothing but
   their **hostility** to everything that lives in it (the owner: there is no better way to express it).
 - **The exchange: the author's secret** [the owner, 2026-10-23]. **Never spelled out to the player; told only by
-  implication.** The Tungang sagas remember wailing and screaming in Arccube, then the Lizardmen, and no Ancient bodies
+  implication.** The Tungang sagas remember wailing and screaming in the Pile, then the Lizardmen, and no Ancient bodies
   (§6.1). A Historian who learned that might wonder whether the Ancients were somehow transmogrified into the Lizardmen.
   **They were not, in any way: the Lizardmen are alien.** What happened, as near as the lore goes: **at the moment the
   Lizardmen were shifted into our space-time, the Ancient inhabitants were shifted onto the Coil.** An exchange. And in
@@ -854,9 +979,9 @@ marked *proposed* is this session's and waits on the owner. Its placeholder entr
   **semi-intuitive knowledge of the world**. That is why they reach for the Ancients' relics at all, and why they handle
   them like someone half-remembering a dream. **What they took is the very thing they call the Lie** (the owner, 2026-10-23), the contamination that came with the
   fracture.
-  - *Proposed* ways to let it show, never to say it: Arccube's sealed rooms empty of bodies but not of belongings, meals
+  - *Proposed* ways to let it show, never to say it: the Pile's sealed rooms empty of bodies but not of belongings, meals
     left half-eaten; the relics in the reliquaries set to uses that almost make sense; the Interpreters who know humanity's
-    future as their past; the turned stelae whose meaning "changed retroactively"; their hostility to all that lives in linear time; and their unwillingness to press Loj Nahn in Arccube's upper levels, where the exchange happened. A
+    future as their past; the turned stelae whose meaning "changed retroactively"; their hostility to all that lives in linear time; and their unwillingness to press Loj Nahn in the Pile's upper levels, where the exchange happened. A
     Historian's speculation, voiced in game, is as far as any text goes, and it is wrong.
 - **What they are, behind the tales** (the design's own lore; out of universe, the Ophidians of *Secret Histories*, smaller
   and less powerful):
@@ -1104,13 +1229,13 @@ Rule: a building never names a culture. Its sockets (awning, banner, flag, emble
 - **Shell Province** (§6.2): the Izani names of Shell and Port Goto.
 - What does the abyssal people's ruler call themselves (the Headman placeholder)?
 - What exactly do the Screamers do with their captives in the Hexahedron?
-- **The rift rim** (§6.1, §6.20, `biomes/riftrim/PLAN.md` section 12): the Fellgangs (proposed name) and how far they have diverged; the Rift's ruins other than Arccube and Pluton (Chimes, Cthonos, The Tubes: names and places very tentative; Chimes may become The Span, which clashes with Dalab's Span); the model's Rift settlements want a rework; Ledge's own settlement plan.
+- **The rift rim** (§6.1, §6.20, `biomes/riftrim/PLAN.md` section 12): the Fellgangs (proposed name) and how far they have diverged; the Rift's ruins other than the Pile and Pluton (Chimes, Cthonos, The Tubes: names and places very tentative; Chimes may become The Span, which clashes with Dalab's Span); the model's Rift settlements want a rework; Ledge's own settlement plan.
 - **The Ancients' highways** (§4, `openworld/ANCIENT-ROADS.md` section 7): the Republic's arcology over the Inner Wall tunnel (Cascade or a new site), other cities on Ancient ground, and the tentative ruins, before the network is routed for good.
 - **The Talovolci** (§6.21): the Empire's loans *Emparos* and *comandaros* are proposed; their clans, chiefs and the ceremonial rites at Daridel are open.
 - Who lives in the NW bay and the badlands? (The southern highlands are the Talovolci's, §6.21.) Which tribes, human and therian, live in Korona, and what are their home tongues?
-- The Eternal State (§6.19): where exactly the capital stands (near Centrum, px 223,315, or its name swapped with Fulcrum, 339,266: the owner's call), what the Eternians call it and its arcology (the owner calls the arcology the Sanctum); the Eternian tongue's proposals (the signs from icons, the Valley march dialect, the Paper speech's levels, the Yusar's words, Matok's words; settled 2026-10-23: the Heirs' English and the forbidden letters, the five dialects, Hayrant on the Outer Wall like Ainu, Farside's clicks from over the sea, the Yusar's avoidance speech, the dam basins' traders' argot); the kingdom's population; who the visitors at Farport are, what they want and what tongue gave Farside its clicks; the Yusar's (the cybernetics tribe's, at Carcosa and Henge) own customs beyond their speech; the Yeti Kingdom (*Khaay Qantïr*) beyond `biomes/nwouterwall/PLAN.md`: its clans, its High Chief's line, its war with the State; whether the Republic's polygon really reaches px 226; and what the Heirs' Clock says against Jimjam's Long Count.
+- The Eternal State (§6.19): the capital's name and its arcology's (it stands round Fulcrum, 5.1 px 409,621: the owner, 2026-11-12), what the Eternians call it and its arcology (the owner calls the arcology the Sanctum); the Eternian tongue's proposals (the signs from icons, the Valley march dialect, the Paper speech's levels, the Yusar's words, Matok's words; settled 2026-10-23: the Heirs' English and the forbidden letters, the five dialects, Hayrant on the Outer Wall like Ainu, Farside's clicks from over the sea, the Yusar's avoidance speech, the dam basins' traders' argot); the kingdom's population; who the visitors at Farport are, what they want and what tongue gave Farside its clicks; the Yusar's (the cybernetics tribe's, at Carcosa and Henge) own customs beyond their speech; the Yeti Kingdom (*Khaay Qantïr*) beyond `biomes/nwouterwall/PLAN.md`: its clans, its High Chief's line, its war with the State; whether the Republic's polygon really reaches px 226; and what the Heirs' Clock says against Jimjam's Long Count.
 - **Farside** (`biomes/farside/PLAN.md` section 8): the species and the animals; the lung octopus's build; the people's relation to the coast and the State's view of the traders' invasion.
-- **The Catch** (`biomes/catch/PLAN.md` section 8): what drove Hub 01 mad (contamination, a virus or reprogramming: left open); the five oases' names (in Yuni, Izani, Dasrī or Xanadui); the preserved salvage (proposed); whether the sealed tunnel ever opens fully.
+- **The Catch** (`biomes/catch/PLAN.md` section 8): what drove Hub 01 mad (contamination, a virus or reprogramming: left open); the five oases' names (in Yuni, Izani, Dasrī or Xanadui); the preserved salvage (proposed); whether the Rift line's bore from Strongbow reached Stair (`openworld/ANCIENT-NETWORK.md` section 8; the sealed Stair tunnel was dropped, 2026-11-11).
 - When did the scablands' lake fill and break (the Ancients' time, a wetter age)? Did the Godthrone ever erupt explosively? (Not needed for the Catch any more: its soft rock is old lake beds.)
-- What are the religions of Iziz, Yuni, the Beast Riders and the Hykkousoi? On record so far: The God at Dalab, the Republic's Pantheon, Voth's Temple and ancestor cult, Xanadu's prayer-wheel faith, the Altar of the Abyss, the Deep Aquifer, Jimjam's calendar, and the Beast Riders' nature shrines.
+- What are the religions of Iziz, Yuni, the Beast Riders and the Hykkousoi? On record so far: The God at Dalab, the Republic's Pantheon, Voth's Temple and ancestor cult, Xanadu's Decree and the Broken Wheel (§6.13), the Altar of the Abyss, the Deep Aquifer, Jimjam's calendar, and the Beast Riders' nature shrines.
 - Is there a common calendar (Jimjam's reckoning is the nearest, §6.14), a common language, or writing (post-apoc signs are pictographs)? *Coinage is settled* (the owner, 2026-11-03): each nation has its own currency (the Republic has a Mint), and the Izani Talent is the trade money everyone takes (§6.2). The other nations' currencies are still to be named.

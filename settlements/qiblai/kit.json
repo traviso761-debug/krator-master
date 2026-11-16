@@ -6,7 +6,6 @@
   "kits/qiblai/src"
  ],
  "external": [
-  "core/walk/20-core-walk.js",
   "settlements/verge/src/77-verge-rigs.js",
   "settlements/qiblai/gen/69q-kcity-bundle.js",
   "settlements/qiblai/gen/69r-flora-bundle.js",

@@ -40,3 +40,12 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `89z-host-build.js` | 6 |  |
 | `99-host-take.js` | 17 | the inspector's words (51); the probe's budgets and the kit's own checks (ve (65); the page, handed to the host (145) |
 | `99-tail.html` | <1 |  |
+
+## stations/
+
+Each station builds one page (`build.py --station <name>`) from its own fragments, with `src/` or its `base` station.
+
+| Station | Fragments | KB |
+|---|---|---|
+| hearths | 44z-host-site.js, 88-host-high.js, 89-host-sky.js, 89b-host-hearths.js, 98-host-hearths-take.js | 12 |
+| passes | 45-host-stage.js, 84-host-ground.js, 88-host-high.js, 89-host-sky.js, 89w-host-water.js, 99-host-take.js | 30 |

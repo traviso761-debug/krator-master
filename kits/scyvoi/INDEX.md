@@ -13,7 +13,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 
 From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
 
-From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-loop.js`, `92-host-panel.js`, `95-host-probe.js`, `94-host-polytool.js`
+From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-loop.js`, `92-host-panel.js`, `95-host-probe.js`, `94-host-polytool.js`, `92k-host-keys.js`
 
 ## src/
 
@@ -21,7 +21,7 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 |---|---|---|
 | `00-head.html` | 1 |  |
 | `26k-kit.js` | 5 |  |
-| `40-tk-tentkit.js` | 20 |  |
+| `40-tk-tentkit.js` | 21 |  |
 | `41-tk-dress.js` | 3 |  |
 | `42-ts-small.js` | 9 |  |
 | `44-tl-large.js` | 9 |  |

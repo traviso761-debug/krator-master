@@ -13,6 +13,12 @@ const XANADU_HOST=KHOST.take({
  inspect:(hit,hits,rec)=>{if(rec)return null;const o=hit.object,p=hit.point;
   return(o===groundM||(o.userData&&o.userData.isGround)?'ground':'unregistered '+(o.isInstancedMesh?'instance':'mesh'))+'\n'+p.x.toFixed(1)+', '+p.y.toFixed(1)+', '+p.z.toFixed(1);},
  minimap:{title:TITLE},
+ // with the interiors on (?interiors=1, 89y-xa-interiors.js): the walk on core/walk's floors, and X the cutaway of the furnished buildings
+ /* Erewhon walks on core/walk's floors always: the citadel's rooms, flights and ramps are registered with or without the
+    furnished interiors, and walking on the terrain alone went through its stairs (the owner, 2026-11-12). Its near plane follows
+    the eye's height (core/host's depth): from 300 m the courts' floor layers, 1 to 2 cm apart, fought at a 0.3 m near plane */
+ walk:(XAF.interiors||window.CITY)?KWALK:undefined,depth:window.CITY?{k:.04,min:.3,max:12}:undefined,cutaway:(XAF.interiors||XA_CUT.length)?{units:(XAF.interiors?xafUnits(XAF,VERN.defs):[]).concat(XA_CUT)}:undefined,   // XA_CUT: the Pleasure Dome, hollow with or without the interiors (kits/xanadu 78d)
+ 
  exporters:{tags:()=>KTAGS.page.export()},
  budget:BUDGET,api:window._api,
  // E opens or shuts the door within reach (core/door: KDOORHOST.toggleNear; 90-xa-doors.js); flying, E still climbs as well

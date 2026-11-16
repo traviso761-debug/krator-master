@@ -125,6 +125,8 @@ R('coffee', 'Coffee', 'beverage', [3, 4], [3, 4], {form: 'shrub', card: 'card.cr
 R('tea', 'Mist tea', 'beverage', [1, 3], [3, 4], {atm: [0, 2], form: 'shrub', card: 'card.crop.tea', home: ['xanadu', 'oidong'], stores: ['dried']});
 R('cacao', 'Cacao', 'beverage', [4, 4], [3, 4], {form: 'tree', card: 'card.croptree.glossy', src: 'xanadu', home: ['xanadu'], stores: ['dried', 'ground']});
 R('kava', 'Kava', 'beverage', [4, 4], [3, 4], {form: 'shrub', card: 'card.broadleaf', src: 'ringisles', home: ['ringisles'], stores: ['dried', 'ground']});
+R('tobacco', 'Tobacco', 'herb', [3, 4], [2, 3], {also: ['medicine'], form: 'plant', card: 'card.broadleaf', src: 'proposed', reach: 1, stores: ['dried'],
+  note: 'the broad leaf cured and smoked or chewed; the Hykkousoi colony Nephtos grows it for Tethys (settlements/isle-demo, 2026-11-09)'});
 R('rattlepod', 'Rattle coffee', 'beverage', [2, 3], [1, 2], {form: 'tree', src: 'swlowlands', home: ['swlowlands'], stores: ['dried']});
 R('alecap', 'Alecap', 'beverage', [0, 5], [0, 4], {also: ['vegetable', 'dye'], form: 'fungus', grown: 'underground', water: 'bed', works: 'dark-beds', card: 'card.mushroom.alecap', colour: 'purple', src: 'zeijani', home: ['throne'], stores: ['fermented', 'fresh'], note: 'fermented to a passable beer; the Zeijani beds (zj_farm_alecap)'});
 
@@ -141,6 +143,15 @@ R('stonepine', 'Pine nuts', 'nut', [0, 1], [1, 2], {atm: [0, 1], form: 'tree', c
 R('cloudberry', 'Cloudberry', 'berry', [0, 1], [3, 4], {atm: [0, 1], src: 'nwouterwall', home: ['nwouterwall'], stores: ['fresh', 'cured'], note: 'Rubus chamaemorus, in the alas bogs: frozen, or kept in fat'});
 R('crowberry', 'Crowberry', 'berry', [0, 1], [1, 3], {atm: [0, 1], form: 'shrub', src: 'nwouterwall', home: ['nwouterwall'], stores: ['fresh', 'dried'], note: 'Empetrum, on the tundra'});
 R('ivanchai', 'Ivan-chai', 'beverage', [0, 2], [1, 3], {also: ['greens'], atm: [0, 2], card: 'card.fireweed', src: 'nwouterwall', home: ['nwouterwall'], stores: ['fermented', 'dried'], note: 'fireweed (Chamerion angustifolium) on the burns and the larch edges: the fermented leaves are the Yeti\'s tea; the young shoots greens'});
+/* ---- the loess bench (biomes/wouterwall, PLAN.md section 4, the owner 2026-11-10: "make up some crops for it"): the Hayrant's terraces,
+   on the Loess Plateau's own habit (cool, summer-dry, deep silt, the spring line's water). Broomcorn millet and Tartary buckwheat are the
+   plateau's oldest grains; the jujube stands by every yaodong's door; garlic braids hang under the cave eaves. Drawn on station 1's
+   terraced fields (biomes/wouterwall src/88c), each field one crop, rotated millet, lentil, buckwheat, garlic, fallow */
+R('dustmillet', 'Dustmillet', 'grain', [1, 2], [0, 2], {atm: [0, 2], reach: 1, card: 'card.crop.plume', src: 'wouterwall', home: ['wouterwall'], stores: ['dried', 'ground'], note: 'broomcorn millet (Panicum miliaceum): sown late into the dust after the spring winds, ripe in ten weeks on the summer-dry loess; its nodding panicles gold by autumn, its straw the cave houses\' mats'});
+R('redstem', 'Redstem buckwheat', 'grain', [0, 2], [1, 3], {atm: [0, 2], reach: 1, card: 'card.crop.plume', src: 'wouterwall', home: ['wouterwall'], stores: ['ground', 'dried'], note: 'Tartary buckwheat (Fagopyrum tataricum): the upper terraces\' grain, bitter and frost-hard, its stems turning red as it ripens; ground for noodles and the winter porridge'});
+R('dust-lentil', 'Terrace lentil', 'pulse', [1, 2], [1, 2], {atm: [0, 2], reach: 1, card: 'card.crop.bean', src: 'wouterwall', home: ['wouterwall'], stores: ['dried'], note: 'the lentil (Lens culinaris): small and brown, sown in rotation after the millet to mend the silt'});
+R('cave-date', 'Cave-date', 'fruit', [1, 3], [0, 2], {also: ['dried-fruit'], atm: [1, 2], form: 'tree', card: 'card.croptree.glossy', src: 'wouterwall', home: ['wouterwall'], stores: ['fresh', 'dried'], note: 'the jujube (Ziziphus jujuba): a thorny small tree planted by each yaodong\'s door and on the terraces\' risers, its red dates dried on the cave roofs; only on the lower bench'});
+R('bench-garlic', 'Bench garlic', 'spice', [0, 2], [0, 2], {also: ['vegetable', 'medicine'], atm: [0, 2], reach: 1, card: 'card.crop.rosette', src: 'wouterwall', home: ['wouterwall'], stores: ['cured', 'dried'], note: 'hardneck garlic (Allium sativum): planted in autumn, lifted in summer, braided and hung under the cave eaves; the Hayrant eat it against the winter\'s cold'});
 /* ---- the Cut (biomes/cut, PLAN.md section 7, 2026-10-26): the hyperbamboo (its shoots; its culms and leaves stand in for weaving and
    thatch), the bamboo rice of a grove's gregarious flowering, the measure melon in its three sizes. The rest of the bowl grows
    nwlowlands' crops, at the warp's fixed sizes */

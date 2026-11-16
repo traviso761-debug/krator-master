@@ -64,3 +64,15 @@ reeds on the same mask as the ground's shingle layer. No scour module: this grou
 - **Spray by drop:** the page has no falls.
 - **Leafset (`31b`):** crowns take the card fit's `stems` (the owner's rule of 2026-10-27).
 - **`WATER.breakup` by default:** taken on this page only; the flip of the default stays in `TODO.md`.
+
+## The overlays' ground (2026-11-10; `biomes/nsemiarid/PLAN.md` section 8)
+
+The scablands' flood lake lay over this kit too (32,600 km² at its height; 14,300 of dry bed today). What the overlay needed is built, every
+hook inert when unset (`BIOME-API.md`, "The overlays' ground"):
+
+- **a zone on `rock`** (`src/57-biome-nwlowlands-overlay.js`): crag pines, tussock and saltbush on scoured ground, the kit's own trees and floor off it;
+- **a response to `bed` and `silt`**: young forest on the old lake's silt, its stands' height by the years dry (`yearsDry`);
+- **an overlay build path**: `build.py`'s `build(overlay=...)`, n semiarid's form, which `biomes/scablands/build.py --station highline-nw` reads in place.
+
+The kit's own two pages carry `57` and draw as before (the fragment returns at once without the fields); their bytes changed by its text, and both
+were re-verified on the GPU. Still owed from section 8 of nsemiarid's plan: the pass table and the variant trees (open-world readiness).
