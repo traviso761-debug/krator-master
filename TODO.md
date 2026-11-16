@@ -165,6 +165,11 @@ runtime and bison table, and the `tools/` listing staleness (every build rebuilt
 - **Opal Valley's strata recipes into `KSTRATA`'s own table** (2026-11-11, `biomes/opalvalley`): `opal-rhyolite` and `opal-firetuff` are
   data in `biomes/opalvalley/src/40-biome-opal-sites.js` (`OPAL_STRATA`), handed to `KSTRATA.add` by its ground; written into
   `core/terrain/35-core-strata.js`'s `RECIPES` they change every page that loads it, so they ride along. Then drop the kit's `KSTRATA.add`.
+- **The culture id `glazier` into the core vocabulary** (2026-11-16, the Glaziers' set in `kits/tungang`): it is added opt-in by
+  `core/tags/glazier/52g-tags-glazier.js`, which only the Tungang kit loads. Move `'glazier': 'Glaziers'` into `CULTURE_NAMES` in
+  `core/tags/52-core-tags-vocab.js` (and `NO_CATALOG` until a Glazier catalog culture file exists), delete `core/tags/glazier/`,
+  and drop it from `kits/tungang/build.py`. It moves every page that takes core/tags.
+
 - **`KSHADOW.units` counts what the GPU links** (2026-11-09, found by the Throne's fix): `core/shadow/host/12-core-shadow-host.js` counts
   declared samplers (some are never read and the GPU drops them), misses `scene.environment` on standard materials, and judges against the
   renderer's own limit (32 in SwiftShader, so shadows turn on where the GPU cannot link them). The Throne's `samplersOf`

@@ -360,3 +360,106 @@ FURN({
     F.rod(-0.4, 0.2, -0.155, 0.4, 0.2, -0.155, 0.02, F.col('scrap'), 'metal');
   }
 });
+
+/* ---------------------------------------------------------------- the fell villages and Wildcat (kits/tungang/PLAN.md section 4, 2026-11-11):
+   the Fowlers' rope wall, egg basket and peg rack, the Ice-cutters' tally board and ice sledge; Wildcat's Deeds, its horn
+   helmet and its shield rack (the bands' pieces, for the scrap pueblo) */
+FURN({
+  key: 'fellgang_common_ice_sledge', name: 'Ice sledge on tyre runners', culture: 'fellgang', tier: 'common', type: 'vessel', setting: 'outdoor',
+  rooms: ['yard', 'workshop', 'storage'], anchor: 'floor', clearance: { front: 0.6, back: 0.6 },
+  materials: ['timber', 'metal', 'hide', 'rope'], w: 0.9, d: 2.6, h: 0.8, variants: 2, variantNames: ['painted red and white', 'painted blue and ochre'],
+  build: function (F) {
+    const c = (F.variant | 0) === 1 ? ['blue', 'ochre'] : ['bloodRed', 'paintWhite'], paint = k => F.col(k === 'blue' ? 'labberGreen' : k);
+    for (const sx of [-1, 1]) { const x = sx * 0.36;
+      F.box(x, 0, -0.1, 0.1, 0.05, 2.2, 0, F.col('soot'), 'leather');                                           /* the runners: strips of tyre */
+      F.box(x, 0.05, -0.1, 0.07, 0.08, 2.2, 0, F.col('timberGrey'), 'wood');
+      F.rod(x, 0.1, 1.0, x, 0.45, 1.28, 0.04, F.col('timberGrey'), 'wood');                              /* curled up at the front */
+      for (const z of [-0.9, 0, 0.8]) F.rod(x, 0.13, z, x, 0.42, z, 0.025, F.col('scrap'), 'metal'); }
+    for (let k = 0; k < 6; k++) F.box(0, 0.42, -1.05 + k * 0.36, 0.86, 0.04, 0.33, 0, paint(c[k % 2]), 'wood');   /* the bed of painted boards */
+    for (const sx of [-1, 1]) F.box(sx * 0.42, 0.46, -0.1, 0.04, 0.2, 2.2, 0, paint(c[0]), 'wood');
+    F.rod(-0.3, 0.6, 1.25, 0.3, 0.6, 1.25, 0.02, F.col('hideDark'), 'rope');                                  /* the drag rope's bar */
+  }
+});
+FURN({
+  key: 'fellgang_poor_egg_basket', name: "Fowler's cliff basket", culture: 'fellgang', tier: 'poor', type: 'storage', setting: 'both',
+  rooms: ['storage', 'kitchen', 'yard'], anchor: 'floor', clearance: { front: 0.3 },
+  materials: ['wicker', 'rope', 'food'], w: 0.5, d: 0.5, h: 0.4, variants: 2, variantNames: ['eggs in moss', 'empty, its line coiled'],
+  build: function (F) {
+    F.lathe(0, 0, 0, [[0.14, 0], [0.22, 0.08], [0.24, 0.26], [0.22, 0.3]], 0, F.col('woolDun'), 'wicker');
+    for (let i = 0; i < 3; i++) { const a = i * F.TAU / 3; F.rod(Math.cos(a) * 0.22, 0.3, Math.sin(a) * 0.22, 0, 0.4, 0, 0.008, F.col('hideDark'), 'rope'); }
+    if ((F.variant | 0) === 0) { F.blob(0, 0.26, 0, 0.18, 0.04, 0, F.col('labberGreen'), 'food');
+      for (let i = 0; i < 5; i++) { const a = i * 1.3; F.ell(Math.cos(a) * 0.09, 0.3, Math.sin(a) * 0.09, 0.03, 0.04, 0.03, 0, F.col('bone'), 'food'); } }
+    else for (let k = 0; k < 3; k++) F.cyl(0, 0.24 + k * 0.03, 0, 0.16 - k * 0.025, 0.03, 0, F.col('hideDark'), 'rope');
+  }
+});
+FURN({
+  key: 'fellgang_common_wall_peg_rack', name: 'Peg rack: hooks, coils and a ladder', culture: 'fellgang', tier: 'common', type: 'rack', setting: 'both',
+  rooms: ['workshop', 'storage', 'yard', 'living'], anchor: 'wall', clearance: { front: 0.6 },
+  materials: ['timber', 'metal', 'rope'], w: 1.2, d: 0.3, h: 1.8, variants: 1,
+  build: function (F) {
+    F.box(0, 0.2, -0.13, 1.2, 0.12, 0.04, 0, F.col('timberGrey'), 'wood'); F.box(0, 1.5, -0.13, 1.2, 0.12, 0.04, 0, F.col('timberGrey'), 'wood');
+    for (let i = 0; i < 4; i++) { const x = -0.45 + i * 0.3; F.rod(x, 1.56, -0.11, x, 1.6, 0.08, 0.018, F.col('scrap'), 'metal');
+      if (i !== 2) for (let k = 0; k < 3; k++) F.cyl(x, 1.25 + k * 0.02, -0.02, 0.12, 0.025, 0, F.col(i % 2 ? 'hide' : 'woolDun'), 'rope'); }
+    for (const sx of [-1, 1]) F.rod(0.42 + sx * 0.12, 0, 0.05, 0.42 + sx * 0.12, 1.2, -0.08, 0.02, F.col('scrap'), 'metal');    /* a short pipe ladder leaned on it */
+    for (let k = 1; k < 5; k++) F.rod(0.3, k * 0.24, 0.05 - k * 0.026, 0.54, k * 0.24, 0.05 - k * 0.026, 0.012, F.col('timberGrey'), 'wood');
+  }
+});
+FURN({
+  key: 'fellgang_common_rope_wall', name: 'The rope wall (a rope is a vote)', culture: 'fellgang', tier: 'common', type: 'rack', setting: 'indoor',
+  rooms: ['hall', 'court'], anchor: 'wall', clearance: { front: 1.0 },
+  materials: ['timber', 'metal', 'rope', 'emissive'], w: 4.0, d: 0.4, h: 2.4, variants: 2, variantNames: ['every peg held', 'one family\'s peg empty'],
+  build: function (F) {
+    const cols = ['bloodRed', 'ochre', 'paintWhite', 'labberGreen', 'soot', 'hide'];
+    for (const y of [0.95, 1.85]) F.box(0, y, -0.17, 4.0, 0.1, 0.05, 0, F.col('timberGrey'), 'wood');
+    for (let i = 0; i < 14; i++) { const row = i < 7 ? 0 : 1, x = -1.65 + (i % 7) * 0.55, y = row ? 1.9 : 1.0;
+      F.rod(x, y + 0.05, -0.15, x, y + 0.08, 0.12, 0.02, F.col('scrap'), 'metal');
+      F.box(x, y + 0.22, -0.14, 0.14, 0.14, 0.01, 0, F.col(cols[i % 6]), 'metal');                      /* the family's mark over its peg */
+      if (!((F.variant | 0) === 1 && i === 9)) for (let k = 0; k < 4; k++) F.cyl(x, y - 0.32 + k * 0.03, 0.02, 0.17 - k * 0.012, 0.028, 0, F.col(k % 2 ? 'woolDun' : 'hide'), 'rope'); }
+  }
+});
+FURN({
+  key: 'fellgang_common_tally_board', name: "The Ice-cutters' tally board", culture: 'fellgang', tier: 'common', type: 'art', setting: 'indoor',
+  rooms: ['hall', 'storage', 'office'], anchor: 'wall', clearance: { front: 0.8 },
+  materials: ['timber', 'stone'], w: 3.0, d: 0.1, h: 1.4, variants: 1,
+  build: function (F) {
+    F.box(0, 0, -0.03, 3.0, 1.4, 0.03, 0, F.col('timberBlack'), 'wood');
+    for (let i = 0; i < 18; i++) { const x = -1.4 + i * 0.165, n = 3 + Math.floor(F.rr(0, 7));
+      F.box(x, 0.08, 0.0, 0.11, 1.2, 0.03, 0, F.col('timberGrey'), 'wood');
+      for (let k = 0; k < n; k++) F.box(x + 0.02, 0.2 + k * 0.13, 0.016, 0.07, 0.025, 0.006, 0, F.col('soot'), 'wood'); }
+  }
+});
+FURN({
+  key: 'fellgang_court_deeds_wall', name: "Wildcat's Deeds (boasts and their outcomes)", culture: 'fellgang', tier: 'court', type: 'art', setting: 'indoor',
+  rooms: ['hall', 'court'], anchor: 'wall', clearance: { front: 1.0 },
+  materials: ['metal', 'rustSteel', 'bone'], w: 4.0, d: 0.25, h: 2.4, variants: 1,
+  build: function (F) {
+    F.box(0, 0, -0.11, 4.0, 2.4, 0.03, 0, F.col('rust'), 'rust');
+    for (let r = 0; r < 4; r++) for (let i = 0; i < 6; i++) { const x = -1.6 + i * 0.64, y = 0.3 + r * 0.52, good = F.chance(0.65);
+      F.box(x - 0.08, y, -0.09, 0.38, 0.08, 0.006, 0, F.col('paintWhite'), 'metal');                        /* the boast, a painted bar */
+      if (good) F.box(x + 0.2, y - 0.04, -0.09, 0.1, 0.16, 0.006, 0, F.col('ochre'), 'metal');             /* made good: a tally (flat on the plate: a turn about y pushed it through the wall) */
+      else F.box(x + 0.2, y - 0.04, -0.09, 0.14, 0.03, 0.006, 0, F.col('bloodRed'), 'metal'); }          /* not: a red stroke */
+    F.ball(0, 2.25, -0.03, 0.08, F.col('bone'), 'bone');
+  }
+});
+FURN({
+  key: 'fellgang_court_horn_helmet_stand', name: 'Aurochs-horn helmet on its stand', culture: 'fellgang', tier: 'court', type: 'rack', setting: 'indoor',
+  rooms: ['hall', 'court', 'bedroom'], anchor: 'floor', clearance: { front: 0.5 },
+  materials: ['metal', 'bone', 'timber', 'stone'], w: 0.6, d: 0.6, h: 1.8, variants: 1,
+  build: function (F) {
+    F.cyl(0, 0, 0, 0.26, 0.06, 0, F.col('stoneDark'), 'stone'); F.rod(0, 0.06, 0, 0, 1.45, 0, 0.035, F.col('timberBlack'), 'wood');
+    F.ell(0, 1.5, 0, 0.13, 0.12, 0.15, 0, F.col('scrap'), 'metal');                                          /* the cap of plate */
+    for (const sx of [-1, 1]) { F.rod(sx * 0.1, 1.55, 0, sx * 0.24, 1.66, 0.02, 0.04, F.col('horn'), 'bone'); F.rod(sx * 0.24, 1.66, 0.02, sx * 0.26, 1.8, 0.1, 0.022, F.col('boneOld'), 'bone'); }
+  }
+});
+FURN({
+  key: 'fellgang_common_shell_shield_rack', name: 'Shield rack: glyptodont shell and Ancient plate', culture: 'fellgang', tier: 'common', type: 'rack', setting: 'both',
+  rooms: ['barracks', 'hall', 'yard'], anchor: 'wall', clearance: { front: 0.7 },
+  materials: ['timber', 'metal', 'bone'], w: 2.0, d: 0.5, h: 1.6, variants: 1,
+  build: function (F) {
+    for (const sx of [-1, 1]) F.rod(sx * 0.9, 0, 0.1, sx * 0.9, 1.5, -0.18, 0.04, F.col('timberGrey'), 'wood');
+    F.rod(-0.95, 1.2, -0.12, 0.95, 1.2, -0.12, 0.035, F.col('timberGrey'), 'wood');
+    for (let i = 0; i < 3; i++) { const x = -0.6 + i * 0.6;
+      if (i === 1) F.ell(x, 0.8, -0.05, 0.3, 0.34, 0.1, 0, F.col('paintWhite'), 'metal');                    /* an Ancient plate shield */
+      else F.ell(x, 0.78, -0.04, 0.32, 0.36, 0.14, 0, F.col('boneOld'), 'bone'); }                      /* glyptodont shell, domed */
+  }
+});

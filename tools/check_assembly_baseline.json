@@ -241,6 +241,7 @@
  "kits/interiors/dist/interiors.html: ORDER KratorSky": 1,
  "kits/pylon/dist/pylon.html: CLASH _api": 1,
  "kits/yuni/dist/yuni.html: CLASH FIX": 1,
+ "kits/tungang/dist/tungang.html: MISSING KCITY.stance": 1,
  "openworld/isle-demo/dist/isle-demo.artifact.html: CLASH _branches": 1,
  "openworld/isle-demo/dist/isle-demo.artifact.html: CLASH _layout": 1,
  "openworld/isle-demo/dist/isle-demo.artifact.html: CLASH _materials": 2,
