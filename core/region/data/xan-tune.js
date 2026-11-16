@@ -98,9 +98,9 @@ T.startDays=T.clockDay(T.calendar.windows.harvest[1])+30;
    stages). out: what Xanadu sends; in: what comes back */
 /* X1: each gateway enters at its staging town: the Catch caravans (Iziz, the Dasri) at Strongbow's lift, Dalab's great
    caravan at the capital. The Catch's salt feeds the south (Qiblai's side), the north's comes with Dalab (`side`).
-   Changed 2026-11-16 (the owner): "I don't think Thalaba should be a Yuni terminus": Yuni's caravans come by Stair, the
-   Twins and Strongbow, the road `PROPOSAL-XANADU.md` section 6 gives them beside the northern passes, and stage at
-   Strongbow with the Catch's.
+   Changed 2026-11-16 (the owner): "I don't think Thalaba should be a Yuni terminus", then "Yuni's caravans should go to
+   qiblai": they come from the north-east by the Geomancers' road (Yuni and Locus are neighbours, LORE.md 6.9) and end at
+   Qiblai beside the Geomancers' oil caravans; their salt is a third of the south's.
    THE GREAT CARAVAN (the owner, 2026-11-16): "the great caravan will leave in the spring from Xanadu every year, go to south
    Dalab for the summer visiting Blakhed, Nulab, and Shelf, then return in the fall, spending the winter in Xanadu visiting
    Erewhon, Theodiga, and Qiblai". One carrier on a round of seven stops, a leg each ~52 days (SIM.trade's round: one leg
@@ -112,7 +112,7 @@ T.startDays=T.clockDay(T.calendar.windows.harvest[1])+30;
 T.gateways=[
  {id:'gate.iziz',name:'Iziz (by the Catch, the Twins and Strongbow)',entry:'sfgtxw10kr',side:'south',days:64,carriers:8,cap:40000,out:['goldwork','cacao','opium','tea','silk','wheels'],in:['salt','iron','arms','pearls','oil']},
  {id:'gate.dasri',name:'The Dasri (by the Catch oases and Stair)',entry:'sfgtxw10kr',side:'south',days:22,carriers:6,cap:30000,out:['cacao','tea','silk','opium'],in:['salt']},
- {id:'gate.yuni',name:'Yuni (by Stair, the Twins and Strongbow)',entry:'sfgtxw10kr',side:'south',days:48,carriers:10,cap:20000,out:['goldwork','saffron','brocade','opal','silk'],in:['salt','iron','arms','wine','oil']},
+ {id:'gate.yuni',name:'Yuni (from the north-east by the Geomancers\' road, to Qiblai)',entry:'skm4jjo2vl',side:'south',days:48,carriers:10,cap:20000,out:['goldwork','saffron','brocade','opal','silk'],in:['salt','iron','arms','wine','oil']},
  {id:'gate.dalab',name:'Dalab (the Annual Great Caravan: south Dalab in summer, Xanadu in winter)',entry:'s57bkv9741',side:'north',round:true,days:52,carriers:1,cap:900000,
   dalab:[['gate.dalab.blakhed','Blakhed (south Dalab: the rim\'s market town)'],['gate.dalab.nulab','Nulab (south Dalab)'],['gate.dalab.shelf','Shelf (south Dalab)']],
   winter:['s57bkv9741','s4zvgepuru','skm4jjo2vl'],
@@ -445,11 +445,11 @@ T.valley=function(P,o){o=o||{};const K=o.scale==null?50:o.scale,yr=365,win=w=>{c
  const H=T.horns;H.houses.forEach(h=>house('horns')(h));
  const factorAt={};H.houses.forEach(([id,,parent])=>{if(parent)factorAt[parent]=id;});
  const cutOn=(roadId,cuts)=>{const Rd=R.find(r=>r.id===roadId);if(!Rd)return;Rd.cut=(Rd.cut||[]).concat(cuts);};
- ['trade.gate.iziz','trade.gate.dasri','trade.gate.yuni'].forEach(id=>cutOn(id,[
+ ['trade.gate.iziz','trade.gate.dasri'].forEach(id=>cutOn(id,[
   {at:'sfgtxw10kr',to:'horns.strongbow',share:H.tally,why:'the guides\' tally, half at the gate'},
   {at:id.slice(6),to:'horns.stair',share:H.tally,why:'the guides\' tally outbound, at Stair'},
   {at:'sfgtxw10kr',to:'xan.citadel',share:T.toll,why:'the Sultan\'s toll at the Strongbow lift'}]));
- ['trade.gate.geomancers','road.er-qb','road.er-th','road.qb-ks','road.qb-sw','road.sw-er','lake.cross','road.pher-thalaba'].forEach(id=>{const Rd=R.find(r=>r.id===id);if(!Rd)return;
+ ['trade.gate.geomancers','trade.gate.yuni','road.er-qb','road.er-th','road.qb-ks','road.qb-sw','road.sw-er','lake.cross','road.pher-thalaba'].forEach(id=>{const Rd=R.find(r=>r.id===id);if(!Rd)return;
   [Rd.from,Rd.to].forEach(end=>{if(factorAt[end])cutOn(id,[{at:end,to:factorAt[end],share:H.margin,why:'the merchant house\'s margin'}]);});});
  cutOn('caravan.great',[{at:'s57bkv9741',to:'tears.erehwon',share:T.tears.escort,why:'the Golden Tears\' escort of the Annual Great Caravan'},
   {at:'s57bkv9741',to:'horns.erehwon',share:H.margin,why:'the merchant house\'s margin'}]);

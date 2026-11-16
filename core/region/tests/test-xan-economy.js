@@ -106,7 +106,8 @@ const scaleCheck=Bk=>XAN_TUNE.provinces.every(Pv=>{const m=(Bk['prov.'+Pv.id].ma
  T.ok('the countrysides at '+XAN_TUNE.scaleBulk+' people an actor make the grain their arithmetic says',S2===8&&scaleCheck(B),
   XAN_TUNE.provinces.map(Pv=>Pv.id+' '+t(B['prov.'+Pv.id].made.grain||0)+'/'+t(Pv._made)).join(', '));
  T.neg('a countryside that made half its grain is caught',scaleCheck,Object.assign({},B,{'prov.p2':Object.assign({},B['prov.p2'],{made:{grain:(B['prov.p2'].made.grain||0)/2}})}),B);}
-// 14. the gateways at their staging towns: the Catch's and Yuni's salt lands at Strongbow and goes in by Kirstabal to Qiblai;
+// 14. the gateways at their staging towns: the Catch's salt lands at Strongbow and goes in by Kirstabal to Qiblai, Yuni's at
+// Qiblai itself;
 // the Great Caravan's lands at the capital at the winter's start and goes out by the lake to Phēr and up to Thalaba (2026-11-16)
 const stageCheck=Bk=>(Bk.sfgtxw10kr.imported.salt||0)>0&&(Bk.sl758m2396.imported.salt||0)>0&&(Bk.skm4jjo2vl.imported.salt||0)>0&&(Bk['xan.thalaba'].imported.salt||0)>0&&(Bk['xan.pher'].imported.salt||0)>0&&(Bk[E].imported.salt||0)>0;
 {const saltEaten=people.reduce((n,s)=>n+(B[s.id].eaten.salt||0),0),saltShort=people.reduce((n,s)=>n+(B[s.id].hungry.salt||0),0);

@@ -55,7 +55,7 @@ Two places in the polity's polygon are not Lizardman towns in the lore:
 - **The Pile** (pin `slonhq0jgv`, still named "Cube", 720,1567). Loj Nahn's Tungangs hold its upper levels and the
   Lizardmen surround it (LORE l.842-843). Its plateau has the best farmland in the country (319).
 - **The Tubes** (`sa8xk6pimb`, 608,1547, a cavern). The lore calls it a proposed ruin on the Rift line. Gemini counts it as
-  a Lizardman cavern town of 500.
+  a Lizardman cavern town of 500. **The owner (2026-11-16): "both a ruin and a lizardman town of about 1000".**
 
 **The two clusters.**
 - **The east** is Sauropolis, Tuatara and Komodo round the eastern sea. Sauropolis-Tuatara is 135 km, Sauropolis-Komodo
@@ -169,15 +169,22 @@ a gift `{id, kind, holder, since, dir}`, a debt `{from, to, kind, coil}`.
 
 ## 6. Questions for the owner
 
+**The owner's answers (2026-11-16)** are recorded below each question. Two are still open: the warrens' number, and the
+ring round the Pile.
+
 1. **How many?** The lore says "the villages are modest". Gemini's model has 9,400 in the four towns and the Tubes, and
-   232,560 in the whole polity (171,360 in warrens). *Proposed*: Sauropolis about 8,000; the three villages 1,500-3,000
-   each (enough to raid the Marches); the warrens 20,000-40,000 as bulk countrysides, as Xanadu's provinces are.
-2. **The Tubes and the Pile.** Is the Tubes a Lizardman cavern town (Gemini), or the Rift line's ruin (the lore)? Is the
-   ring round the Pile a settlement of its own?
-3. **The reliquaries.** One per cluster, as proposed, or more? Each one's place follows from the villages' ley stones.
-4. **The custom.** Keep the Coil Rounds (the spiral circuit, bronze outward and bone inward, the memory debt), or a
-   different custom?
-5. **The worth's name.** "The Interpreters' weight", or another?
-6. **Salt.** Gila's evaporites and Sauropolis's sea pans as the country's two salt sources?
-7. **The capital's hall.** The kit still calls `lk-greathall` the "Warlord's great hall", against the lore's "no warlord".
-   Rename it, for instance to "the Interpreters' hall of concert"?
+   232,560 in the whole polity (171,360 in warrens).
+   - **Answered:** "sauropolis will be about 15k and the regional villages 3k".
+   - So the towns hold about 25,000: Sauropolis ~15,000; Tuatara, Komodo and Gila ~3,000 each; the Tubes ~1,000 (question 2).
+   - **Still open:** the warrens' number. *Proposed*: 20,000-40,000 as bulk countrysides, as Xanadu's provinces are.
+2. **The Tubes and the Pile.**
+   - **Answered:** "tubes is both a ruin and a lizardman town of about 1000". It is the Rift line's ruined cavern, lived in
+     by about 1,000 Lizardmen, the western cluster's second place.
+   - **Still open:** is the ring round the Pile a settlement of its own?
+3. **The reliquaries.** **Answered:** "one reliquary per cluster for now". One in the east, on the sea's strand between
+   Sauropolis and Tuatara; one in the west, by Gila's lake. Each one's place follows from its cluster's ley stones.
+4. **The custom.** **Endorsed:** the Coil Rounds (the spiral circuit, bronze outward and bone inward, the memory debt).
+5. **The worth's name.** **Endorsed:** "the Interpreters' weight".
+6. **Salt.** **Endorsed:** Gila's evaporites and Sauropolis's sea pans are the country's two salt sources.
+7. **The capital's hall.** **Answered:** `lk-greathall` becomes **"the Hall of Intention"** (no longer the "Warlord's
+   great hall"). The rename in `kits/lizardmen` is owed: its label, and every page that shows it.
