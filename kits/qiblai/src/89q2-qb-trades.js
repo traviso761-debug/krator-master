@@ -8,7 +8,7 @@
 // ---------------------------------------------------------------- a shop front on a ground storey: a dark bay, a timber
 // counter with its shutter propped up as an awning, the goods on the counter; (x,z) on the face, ry outward
 function qnShopFront(x,y,z,ry,w,trim,goods){const p=loc(x,z,0,.04,ry);vB('vDarkB',p[0],y,p[1],w,1.9,.1,ry);
- for(const s of[-1,1]){const q=loc(x,z,s*(w/2+.1),.12,ry);vB('xPaint',q[0],y,q[1],.2,2.1,.24,ry,trim);}
+ for(const s of[-1,1]){const q=loc(x,z,s*(w/2+.1),.12,ry);vB('qLacqB',q[0],y,q[1],.2,2.1,.24,ry,trim);}   /* lacquered posts (the owner, 2026-11-16: "those columns seem textureless") */
  const l=loc(x,z,0,.16,ry);vB('vWood',l[0],y+2.05,l[1],w+.5,.2,.3,ry,xC(xPick(XPAL.timber)));
  const c=loc(x,z,0,.45,ry);vB('vWood',c[0],y,c[1],w,.85,.6,ry,xC(xPick(XPAL.timber)));
  const a=loc(x,z,0,.75,ry);kput('vWood',[a[0],y+2.25,a[1]],vQ(ry,-.5,0),[w+.2,.06,1.3],xC(xPick(XPAL.timber)));
@@ -61,7 +61,7 @@ function buildQbButcher(G,o){reseed(33331+(o.v|0));const V=xV(o),W=8,D=9,P=.4;
  qnPlinth(0,-1,W,D,P,0);const S=qnStack(0,P,-1,W,D,0,[3.2,2.8],wall,'wash');
  qnShopFront(-.8,P,D/2-1,0,4.2,R.trim,[0x8a2a22,0xa8382a,0xe8d8c8]);qnDoor(2.9,P,D/2-1,0,.95,2.0,{c:R.trim,val:false});
  // the rail under the shutter, the joints on hooks, the block, the salt tub
- const F=D/2-1;vB('vIron',-.8,P+1.9,F+1.1,4.4,.05,.05,0);for(let i=0;i<6;i++){const u=-2.6+i*.72;vB('xPaint',u,P+1.05,F+1.1,.24,.75,.2,0,red.clone().multiplyScalar(rr(.8,1.15)));}
+ const F=D/2-1;vB('vIron',-.8,P+1.9,F+1.1,4.4,.05,.05,0);for(let i=0;i<6;i++){const u=-2.6+i*.72;vB('qLacqB',u,P+1.05,F+1.1,.24,.75,.2,0,red.clone().multiplyScalar(rr(.8,1.15)));}
  vB('vWood',-2.6,0,F+2.2,.9,.9,.9,0,xC(xPick(XPAL.timber)));qnBarrel(2.4,F+1.8);
  qnWins(0,P,-1,W,D,0,[3.2,2.8],S.k,{pitch:2.4,ww:.75,wh:.95,trim:R.trim,from:1});
  qnRoof(0,S.y,-1,S.w,S.d,0,wall,{parapet:.6,corner:V===1?'flag':null});}
@@ -161,9 +161,11 @@ function qnGateMarket(o,W,D){const V=xV(o),Dr=6,P=.5,hs=[4.2,3.2];
   const n=Math.max(3,Math.round((L-2*Dr)/3.6)),inner=ry+Math.PI;
   for(let i=0;i<=n;i++){const u=-(L-2*Dr)/2+(L-2*Dr)*i/n,p=loc(x,z,u,-dd/2-1.2,ry);vB('xWashB',p[0],P,p[1],.7,3.4,.7,ry,wall);}
   const lp=loc(x,z,0,-dd/2-1.2,ry);vB('vWood',lp[0],P+3.4,lp[1],L-2*Dr+.7,.35,.8,ry,tim);const rp=loc(x,z,0,-dd/2-.6,ry);vB('xWashB',rp[0],P+3.75,rp[1],L-2*Dr+.7,.3,2.2,ry,wall);
-  for(let i=0;i<n;i++){const u=-(L-2*Dr)/2+(L-2*Dr)*(i+.5)/n;if(ry===0&&Math.abs(u)<2.5)continue;const p=loc(x,z,u,-dd/2+.02,ry);qnShopFront(p[0],P,p[1],inner,2.6,R.trim);}}
+  for(let i=0;i<n;i++){const u=-(L-2*Dr)/2+(L-2*Dr)*(i+.5)/n;if(ry===0&&Math.abs(u)<2.5)continue;const p=loc(x,z,u,-dd/2+.02,ry);
+   if(i===n-1||(i===0&&(ry===0||ry===Math.PI))){const q=loc(x,z,u,-dd/2,ry);qnDoor(q[0],P,q[1],inner,1.2,2.4,{c:R.trim,step:false,val:false});continue;}   /* the range's door from the arcade: its shops and stores (settlements/qiblai 90u) */
+   qnShopFront(p[0],P,p[1],inner,2.6,R.trim);}}
  // the gate through the front range, and the far one
- for(const [z,ry] of[[D/2,0],[-D/2,Math.PI]]){vB('vDarkB',0,P,z-Dr/2,3.6,3.6,Dr+.1,0);xnPortico(0,P,z,ry,6,1.4,4.0,wall,{band:true,valC:xC(XPAL.saffron)});}
+ for(const [z,ry] of[[D/2,0],[-D/2,Math.PI]]){vB('vDarkB',0,P,z-Math.sign(z)*Dr/2,3.6,3.6,Dr+.1,0);   /* the back passage through the back range (it stood 3 m behind it, 2026-11-16) */xnPortico(0,P,z,ry,6,1.4,4.0,wall,{band:true,valC:xC(XPAL.saffron)});}
  xnFlight(0,0,D/2+1.4+Math.max(2,Math.round(P/.17))*.34,0,5,P,'vStone',stone);
  // the square: paving, the stalls, the chorten on the axis
  qnPave(0,0,W-2*Dr-3,D-2*Dr-3,0,P);qnChorten(0,P,0,.8);

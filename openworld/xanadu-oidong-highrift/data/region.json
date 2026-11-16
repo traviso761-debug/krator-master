@@ -42856,6 +42856,18 @@
    "z": -212000.0,
    "reach_km": 22,
    "page": "settlements/thalaba"
+  },
+  {
+   "id": "slaitwal0001",
+   "name": "Lāiṭwāl",
+   "type": "town",
+   "culture": "xanadu",
+   "px": 1028,
+   "py": 1653,
+   "x": -326000.0,
+   "z": 168000.0,
+   "reach_km": 20,
+   "page": "settlements/lightwall"
   }
  ],
  "cut": {
@@ -42898,6 +42910,11 @@
     "name": "region High Rift (rmvhighrift100)",
     "kind": "region",
     "ref": "rmvhighrift100"
+   },
+   {
+    "name": "site Lāiṭwāl (slaitwal0001)",
+    "kind": "site",
+    "ref": "slaitwal0001"
    }
   ]
  }

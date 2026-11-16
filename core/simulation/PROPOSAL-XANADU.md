@@ -162,7 +162,7 @@ The islands:
 
 | Island | px | Name (gloss) | People | What it is |
 |---|---|---|---|---|
-| The great isle (113 m) | 816.5,1501.5 | **Grēṭ-Āil** | 600 | A monastery of the Decree, mid-lake |
+| The great isle (113 m) | 816.5,1501.5 | **Grēṭ-Āil** | 600 | A monastery of the Decree, mid-lake: **the head monastery of the Order of the Azure Dream, Qiblai's blue monastery** (the owner, 2026-11-16) |
 | The bay isle (64 m) | 808.5,1509 | **Bē-Āil** | 300 | The Sultan's fishponds and gardens, 15.7 km off Erehwon |
 | The west isle (100 m) | 797,1494 | **Wesṭ-Āil** | 400 | Fishermen |
 | The east isle (45 m) | 828,1497 | **Lāiṭ-Hāus** (lighthouse) | 200 | The light and the customs post on the run to the Ālph |
@@ -398,6 +398,32 @@ Each step ends in a node test on the valley host, with a negative for each check
       - **The saffron one, settled by the owner ("Yes, saffron")**: spoke 1, north-east of the Temple Mountain, ~300 m from the centre; built on the Qiblai page with the Order's blue, a parabolic gate, a toron spire, drum halls and the Order's banners.
       - It takes an eighth of the council's income in two parts: of the Prismarchy's oil, a `cut` where it lands; and of the Sultan's grants of esteem, `esteem.qiblai.order`.
       - The Qiblai kit session has the building side.
+    - **The Order of Viridian Thought** (the owner: "find a site that's a great tea production site and place the head monastery of Qiblai's green monastery there"). Qiblai's green monastery is this Order.
+      - Its head monastery and tea estate, `qb.viridian`, stand at px 962,1562, found by a scan of the scale model for mist tea: 813 m, Cfb, 18 °C, ~2,300 mm of rain, a 20 % west-facing slope under the scarp. It is 104 km from Qiblai, 93 km from Kirstabal.
+      - *Proposed:* 400 people and about 40 t of tea a year in the spring flush, sent to Qiblai, which feeds the estate.
+      - The pin is queued with the scale-model session; the Qiblai kit session has the building side.
+    - **The Order of the Azure Dream** (the owner: "Grēṭ-Āil will be the head monastery for qiblai's blue monastery, the Order of the Azure Dream"). Qiblai's blue monastery is this Order, and its head monastery is Grēṭ-Āil, the monastery isle in Erehwon's lake (`lk.great-isle`, 816.5,1501.5, 600 people, under Erehwon's hub). So two of the eight spokes now have head houses away from Qiblai: green on the scarp's tea, blue on the lake.
+    - **The lake re-fit** (scale model 5.1 edit 7 re-run, 5f659c054 on claude/gemini-trade-reconcile, 2026-11-16: the lake
+      narrower and in the valley's middle, 66 x 25 px round 845,1504, with the long isle).
+      - The sim follows it. Erehwon is at 841,1517, with the Citadel, the Dome (on the Pleasure Dome's landform, 840.9,1516.8) and the three houses' factor houses beside it. Phēr is at 843,1491. Every shore town is on the cell the model's run gives it, and Ōlḍ-Thalaba is at 860,1496.
+      - The long isle is Grēṭ-Āil, and the small isles moved with the lake. The march forts and the provinces' centres moved with Erehwon.
+      - Each point was checked against the re-run model's water mask: shore towns are dry with the lake beside them, isles dry with the lake round them.
+      - The cross-lake run and the road up to Thalaba are now measured from the towns. The old 34 km was half the true crossing even on the first lake; the crossing is now about 57 km.
+      - Erehwon's ring hamlets follow the town until the region (`openworld/xanadu-oidong-highrift/plan/sites.json`) is recut on the re-run model. One hamlet, farm-1, is moved a cell inland because it would land in the lake.
+    - **Phēr's additions** (the owner's answers in the Phēr plan's session, 8ef5899d0 on claude/pher-plan-55d3f2, 2026-11-16: "i likE all these").
+      - **The cacao house** (`ph.cacao`): beans pressed into **cacao cakes** (`cacaocake`, a new good, 1.25 kg of beans to the kg). The cakes cross the lake to Erehwon and go out with the Great Caravan (`T.gateWant` 55 kg a day).
+      - **The boat slip** (`ph.slip`): a work with no output, like `er.dockyard`.
+      - **The ring**: six farming villages of 240 on the rim plain (`T.pherRing`), tithing to Phēr. Their people come out of Nōrth-Shor's bulk district.
+      - **The fair's two days and the pilgrims' launches to Grēṭ-Āil** are `transport` records (`T.loops`). They are declared for the page that draws Phēr at 1:1 (its step P6); the valley runs its towns abstract, with no water layer, so it does not run them.
+      - **The Thalaba road goes up the Qol valley** ("up into the qol valley"): about 105 km traced on the re-run model (`T.thalaba.roadKm`).
+      - **Phēr's seat is held by the Sultan's heir** (the owner's later answer, narrowing "a family member of the sultan holds the seat"). That is recorded in the Phēr plan; the tune needs nothing for it.
+      - **Phēr's small stream is named the Swīṭ Siṭrīm** ("sweet stream"). It rises in springs at the scarp's foot; the Phēr session's map edit draws it.
+      - **The north-shore region** (`openworld/xanadu-north-shore`, Phēr and Thalaba, reaching east to Ḍāiyar, the long isle left out) is the Phēr session's. `T.pherRing` stands in until its core/hamlet ring is baked.
+    - **The White Lily and the Flashing Eye** (the owner, by way of the Qiblai kit's session, f5a10f8a4).
+      - Qiblai's **white monastery is the Order of the White Lily**, a medicine and healing Order. Its complex in Qiblai is its head house (it has none elsewhere) and the city's hospital.
+      - The **crimson monastery is the Order of the Flashing Eye**; no head house is given for it yet.
+      - The council's eight so far: saffron (the History Monks), green (Viridian Thought, the scarp's tea estate), blue (the Azure Dream, Grēṭ-Āil), white (the White Lily, Qiblai's hospital), crimson (the Flashing Eye), gold (the Yellow Monastery, the Order of the Beacon, its head house the beacon fort over the Rift: `settlements/beacon/PLAN.md`), and violet (the Order of the Violet Storm, its central monastery the House of the Tempest on the West Arm, 600, in the sim since Strongwall's W1). The White Lily also runs Kirstabal's latex house (K1). Turquoise is still unnamed. (LORE.md 6.13 carries the same, reconciled 2026-11-16.)
+      - *Sim, proposed:* the White Lily's hospital could take medicine and herbs and give back the sick's working days; not built.
     - The houses and the camp places are *proposed*. Beyond the owner's words there is no lore for the Tears or the Devisers yet, and the camps' pixels are approximate.
 - **X3. The gateways.**
   - The three gateway markets as off-map stores priced by PLAN-MONEY's M2 scarcity prices.

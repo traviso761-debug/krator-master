@@ -8,24 +8,36 @@ function buildDam(scene,gx,gz,d){reseed(9260+d);KOFF=[gx,0,gz];const G=new THREE
  // now carries bedding planes, vertical gullies and a coarser base noise, at a
  // grid fine enough to show them, plus a talus of fallen blocks at the foot.
  // All six wall meshes merge into one: they always shared a material.
- const ROCK=[];
+ const ROCK=[];let EAST=null;
+ // THE BORE TO STAIR (theodiga-today, T-town-6; settlements/theodiga PLAN.md): the Ancients' dead bore opens in the east wall at the
+ // canyon floor, below the Salvage Road's lowest legs. Its mouth is two of the wall's grid columns (106 and 107 of 118, z 468 to
+ // 490) and two rows (0 to 23 m) left open; the town's drawer sets the headwall in front of the hole and the bore behind it
+ // (src/8ay3-th-works.js). The talus is kept out of the mouth (its draws taken all the same). Without the town, as it was.
+ const BORE=d>0&&typeof thTownDraw==='function'&&typeof TH_WORKS!=='undefined',BOREZ=-700+107*1300/118;
  for(const s of [-1,1]){const CX=s*(SPAN/2+150);
   const face=(u,v)=>{
    const strata=9*Math.sin(v*34+fbm(u*4,0,2205,2)*7);                        // bedding planes
    const gully=26*Math.pow(Math.abs(fbm(u*19,v*3,2206+s,3)-.5)*2,1.7);       // vertical gullies
    const inner=-s*(150-32*fbm(u*13,v*7,2200+s,4)-strata-gully-18*(1-v)*(1-v));
    const wob=1+.12*fbm(u*6,v*2,2210,2);return CX+inner*wob;};
-  ROCK.push(gridSurface((u,v)=>[face(u,v),v*CH,-700+u*1300],118,38,{uS:40,vS:14}));
+  ROCK.push(gridSurface((u,v)=>[face(u,v),v*CH,-700+u*1300],118,38,{uS:40,vS:14,hole:s>0&&BORE?(u,v)=>u*118>106&&u*118<108&&v*38<2:null}));
+  if(s>0)EAST=face;   /* the east wall, for the town's ways down it (thTownDraw below): read as drawn, on its grid */
   // THE PLATEAU starts at the cliff's top edge (2026-11-11). It ran from CX-300, 150 m inside the face, and hung
   // over the reservoir as a lid at the rim's height: invisible from downstream, a ceiling over the Dome on the Water
   // from upstream. Its inner edge is the face's top edge, column for column, so the two meet with no crack.
-  ROCK.push(gridSurface((u,v)=>{const z=-700+u*1300,x=lerp(face(u,1),CX+s*300,v);
-   return[x,CH+v*(8*fbm(u*7,v*7,2220+s,2)+16*fbm(u*3,v*3,2221+s,2)),z];},118,12,{uS:40,vS:20}));
-  ROCK.push(gridSurface((u,v)=>{const z=-700+u*1300;const x=CX+s*300;return[x,v*CH,z];},40,6,{}));
+  // THE TOWN'S GROUND (theodiga-today, 2026-11-16): with the town on the page (THCITY, settlements/theodiga) the ruin's east
+  // plateau is the town's own ground (THCITY.town.ground: 440 m and a 2 m swell, 440 at the rim) and runs on to x 1260,
+  // past the upland farms, so every lot stands on what is drawn. Without the town it is as it was.
+  const TG=s>0&&d>0&&typeof THCITY!=='undefined'?THCITY.town.ground:null,XEND=TG?1260:CX+s*300;
+  ROCK.push(gridSurface((u,v)=>{const z=-700+u*1300,x=lerp(face(u,1),XEND,v);
+   return[x,TG?TG(x,z):CH+v*(8*fbm(u*7,v*7,2220+s,2)+16*fbm(u*3,v*3,2221+s,2)),z];},118,TG?60:12,{uS:40,vS:TG?60:20}));
+  ROCK.push(gridSurface((u,v)=>{const z=-700+u*1300;const x=XEND;return[x,v*(TG?TG(x,z):CH),z];},40,6,{}));
   for(let k=0;k<70;k++){const z=-700+rng()*1300,t=Math.pow(rng(),1.8);
    const bx=CX-s*(150-34*fbm((z+700)/1300*13,.1,2200+s,4))*(1-t*.5)+s*t*70;
    const sc=rr(3,15)*(1-t*.45);
-   kput('rubble',[bx,sc*.4+t*4,z],qEuler(rng()*3,rng()*3,rng()*3),[sc*rr(.7,1.5),sc*rr(.5,1),sc*rr(.7,1.5)],new THREE.Color().setHSL(rr(.05,.09),rr(.1,.3),rr(.26,.44)));}}
+   const q=qEuler(rng()*3,rng()*3,rng()*3),sz=[sc*rr(.7,1.5),sc*rr(.5,1),sc*rr(.7,1.5)],col=new THREE.Color().setHSL(rr(.05,.09),rr(.1,.3),rr(.26,.44));
+   if(s>0&&BORE&&Math.abs(z-BOREZ)<34)continue;
+   kput('rubble',[bx,sc*.4+t*4,z],q,sz,col);}}
  meshMerged(ROCK,MAT.rock,G);
  // the dam: arc in plan bulging upstream; downstream face battered, upstream face vertical
  const zc=x=>-140*(1-Math.pow(x/(SPAN/2),2));const th_=y=>50+110*(1-y/H);
@@ -83,8 +95,9 @@ function buildDam(scene,gx,gz,d){reseed(9260+d);KOFF=[gx,0,gz];const G=new THREE
  meshMerged(FACE,CONC(d),G);
  if(d>0)mesh(gridSurface((u,v)=>{const x=(u-.5)*SPAN,y=v*H;return[x,y,zc(x)+th_(y)-6];},48,20,
   {hole:(u,v)=>notch((u-.5)*SPAN,v*H)}),MAT.guts,G);
- // crest: light wells (arc of slots), residential arc, public centre dome, cultural domes
- for(let k=-13;k<=13;k++){const x=k*22;const z=zc(x);const gone=d>0&&rng()<.15;if(notch(x,H-1)||notch(x+9,H-1)||notch(x-9,H-1))continue;kput(BOXC(d),[x,H+9,z+8],null,[15,18,28],null);kput('boxD',[x,H+18.2,z+8],null,[9,.4,20],null);kput(BOXC(d),[x,H+8,z+50],null,[18,16,22],null);for(let r=0;r<2;r++)for(let c=-1;c<=1;c++)kput(d>0?'winSmD':'winSmI',[x+c*5,H+5+r*6,z+61.2],qFacing([0,0,1]),[2,2.4,1],null);
+ // crest: light wells (arc of slots), residential arc, public centre dome, cultural domes. With the town (theodiga-today) the
+ // crest is the clergy's inhabited levels (T-arc-1): its face-side windows are glazed and kept, not the ruin's dead ones
+ for(let k=-13;k<=13;k++){const x=k*22;const z=zc(x);const gone=d>0&&rng()<.15;if(notch(x,H-1)||notch(x+9,H-1)||notch(x-9,H-1))continue;kput(BOXC(d),[x,H+9,z+8],null,[15,18,28],null);kput('boxD',[x,H+18.2,z+8],null,[9,.4,20],null);kput(BOXC(d),[x,H+8,z+50],null,[18,16,22],null);for(let r=0;r<2;r++)for(let c=-1;c<=1;c++)kput(d>0&&!BORE?'winSmD':'winSmI',[x+c*5,H+5+r*6,z+61.2],qFacing([0,0,1]),[2,2.4,1],null);
   if(!gone){const lit=d>0?rng()<.12:true;kput('strip',[x,H+12.6,z+10],qEuler(0,Math.PI/2,0),[16,1,1],lit?CYAN:DEAD);}}
  // THE DOME ON THE WATER (the owner, 2026-11-11): with targets/theodiga's fragments on the page, the great dome
  // (THEODOME, drawn at the end of this builder) takes the public dome inside it as its hall. Without them the
@@ -92,7 +105,9 @@ function buildDam(scene,gx,gz,d){reseed(9260+d);KOFF=[gx,0,gz];const G=new THREE
  const DOME=typeof THEODOME!=='undefined';
  if(!DOME)mesh(lathe({rFn:y=>44*Math.pow(clamp(1-Math.pow(y/26,2),0,1),.55),H:26,flutes:24,amp:.06,sharp:2,nu:96,nv:14,hole:(u,y)=>Math.cos(u*TAU*24)<.3&&y>3&&y<22||(d>0&&fbm(u*4,y*.1,2310,2)<.3)}),skin,G,0,H+12,zc(0)+20);
  if(DOME){}else if(d===0)mesh(lathe({rFn:y=>42*Math.pow(clamp(1-Math.pow(y/26,2),0,1),.55),H:26,nu:48,nv:10}),MAT.glass,G,0,H+12,zc(0)+20);else mesh(lathe({rFn:y=>40*Math.pow(clamp(1-Math.pow(y/26,2),0,1),.55),H:26,nu:48,nv:10}),MAT.dark,G,0,H+12,zc(0)+20);
- for(const s of [-1,1])for(let k=0;k<3;k++){const x=s*(90+k*40);mesh(lathe({rFn:y=>15*Math.pow(clamp(1-Math.pow(y/12,2),0,1),.5)+.01,H:12,flutes:12,amp:.08,nu:36,nv:8,hole:holeFn(d*.7,2320+k,null,2.5)}),skin,G,x,H+12,zc(x)+40);}
+ // the six cultural domes; in the ruin the one the Notch reaches (x -170: its rim over the break) went down with the crest
+ // (the owner, 2026-11-16: "the dome in the center here hangs precariously"), as the crest's blocks over it did (above)
+ for(const s of [-1,1])for(let k=0;k<3;k++){const x=s*(90+k*40);if(notch(x,H-1)||notch(x-16,H-1)||notch(x+16,H-1))continue;mesh(lathe({rFn:y=>15*Math.pow(clamp(1-Math.pow(y/12,2),0,1),.5)+.01,H:12,flutes:12,amp:.08,nu:36,nv:8,hole:holeFn(d*.7,2320+k,null,2.5)}),skin,G,x,H+12,zc(x)+40);}
  // the cruciform on the downstream face: upper residential fins, learning-centre beam, lower splayed fins, central spine
  const zf=y=>zc(0)+th_(y);const fins=[];for(let k=-3;k<=3;k++)fins.push([k*46,244,H+10,30,d>0&&(k===2)]);for(let k=-2.5;k<=2.5;k++)fins.push([k*52,50,214,34,d>0&&(k===-1.5)]);
  fins.forEach((f,i)=>{const [x,y0,y1,w,broken]=f;const top=broken?lerp(y0,y1,.45):y1;const L=top-y0;const cy=(y0+top)/2;const zz=zf(cy);const splay=y0<100?.06:0;
@@ -198,8 +213,23 @@ function buildDam(scene,gx,gz,d){reseed(9260+d);KOFF=[gx,0,gz];const G=new THREE
   scatterMoss(0,2,zf(0)+200,0,300,120,3);rubbleRing(0,2,zf(0)+70,20,220,120,4);vinesOnRing(0,H+12,zc(0)+10,60,20,60);for(let k=0;k<30;k++)kput('vine',[rr(-300,300),rr(120,H),zf(200)+2],qEuler(rr(-.05,.05),0,0),[1.5,rr(15,60),1.5],null);}
  figures(0,zf(0)+200,10,60);
  // last, so its records draw nothing from rng() ahead of the dam's own decay and figures
- if(DOME)THEODOME.draw(G,d,{gx:gx,gz:gz,H:H,SPAN:SPAN,BOW:140,CREST:50,zc:zc,WL:WL});
+ /* the Dome as the faith keeps it today (the pilgrims' stairs, the re-glazed frame), with the town: 8ay4-th-dome-today.js */
+ if(DOME)THEODOME.draw(G,d,{gx:gx,gz:gz,H:H,SPAN:SPAN,BOW:140,CREST:50,zc:zc,WL:WL,today:BORE&&typeof thDomeToday!=='undefined'?thDomeToday:null});
  if(WTR)THEOWATER.dam(d,{gx:gx,gz:gz,H:H,SPAN:SPAN,WL:WL,NX:NX,NB:NB,wN:notchW(NB)-1.5,zc:zc,th:th_,zf:zf,
   RIVX:RIVX,RIVW:RIVW,floorY:floorY,bedY:bedY,outlets:[-40,40]});
+ // THE TOWN on the east rim (theodiga-today: settlements/theodiga/src/8ay1-th-town.js, read in place), beside the ruin only
+ // the ways down from it (T-town-3) hang on the east wall as DRAWN: its face at the grid's nodes (118 along the canyon, 38 up
+ // it), bilinear between them; the canyon floor downstream (the mud, the scene's plane beyond it) and the silt upstream
+ if(d>0&&typeof thTownDraw==='function'){const NU=118,NV=38,FC=new Map(),node=(i,j)=>{const k=i*64+j;let f=FC.get(k);if(f==null){f=EAST(i/NU,j/NV);FC.set(k,f);}return f;};
+  const wall=(z,y)=>{const u=clamp((z+700)/1300,0,1)*NU,v=clamp(y/CH,0,1)*NV,i=Math.min(NU-1,Math.floor(u)),j=Math.min(NV-1,Math.floor(v)),a=u-i,b=v-j;
+   return (node(i,j)*(1-a)+node(i+1,j)*a)*(1-b)+(node(i,j+1)*(1-a)+node(i+1,j+1)*a)*b;};
+  const z0=zf(0)+60,floor=(x,z)=>z>=z0&&z<=z0+500&&Math.abs(x)<(SPAN-40)/2?Math.max(floorY(x,z),0):0;
+  /* the bore's headwall: its front 1 m proud of the nearest the drawn wall comes over the mouth and its margins (z +-15, up to
+     26 m), its back 2 m past the farthest the wall falls back there, so the hole is inside it */
+  let bore=null;if(BORE){let lo=1e9,hi=-1e9;for(let z=BOREZ-15;z<=BOREZ+15;z+=1.5)for(let y=0;y<=26;y+=1.5){const f=wall(z,y);lo=Math.min(lo,f);hi=Math.max(hi,f);}
+   bore={x:lo-1,back:hi+2,z:BOREZ};}
+  /* and for the works below (T-town-4): where the floor is drawn, the river on it, the dam's upstream face, the Dome's piers */
+  thTownDraw(gx,gz,{wall,floor,bed:(x,z)=>Math.abs(x)<=(SPAN+40)/2?bedY(x,z):WL-6,WL,crest:{x:300,z0:4,z1:28,y:H},zc,
+   floorZone:{x1:(SPAN-40)/2,z0:z0,z1:z0+500},river:{x:RIVX,w:RIVW},face:x=>Math.abs(x)<=SPAN/2?zc(x):0,dome:{x:0,z:zc(0)-65,r:165},bore});}
  KOFF=[0,0,0];return G;}
 

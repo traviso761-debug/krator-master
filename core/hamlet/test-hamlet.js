@@ -243,5 +243,40 @@ ok('a key the host has no box for is placed as its declared box and marked pendi
     names.includes(H.hamletName('islander', 4242, ids[3], {}).name));
 }
 
+// ---- the Fellgang row and the fowling and ice focuses (core/hamlet/fellgang, opt-in: loaded only from here on, so every check
+// above ran on the focuses as they were). The stand-ins' row as riftrim's 84f has it (FELLGANG.ROW, commit 7cb179603), the
+// fixture the digest is compared with: the same village with `ranch` there as with `fowling' here.
+{
+  const foci0 = H.FOCI.slice();
+  load('core/hamlet/fellgang/22-hamlet-fellgang.js');
+  const OLD = { kit: 'fellgang', household: 5, workShare: .5, slopeMax: .22, religious: 'fg-cairnhall', civic: 'fg-meethall', general: 'fg-store', food: 'fg-smokehouse', warehouse: 'fg-barn',
+    services: { religious: 1, civic: 2, general: 1, food: 2, warehouse: 2 },
+    houses: { poor: [['fg-hut', 1, 3], ['fg-house', 2, 2]], middling: [['fg-longhouse', 3, 2], ['fg-house', 2, 1]], head: [['fg-headhouse', 1, 1]], middlingShare: .3 },
+    works: { ranch: [{ key: 'fg-ropehouse', jobs: 8, share: .55 }, { key: 'fg-eggstore', jobs: 5, share: .3 }, { key: 'fg-pens', jobs: 3, share: .15 }],
+      quarry: [{ key: 'fg-icehouse', jobs: 8, share: .75 }, { key: 'fg-sledgeshed', jobs: 6, share: .25 }] },
+    focusJobs: { ranch: 48, quarry: 48 }, reach: { ranch: 260, quarry: 260 }, pending: {} };
+  const BOX = { 'fg-hut': [6, 5, 4.2], 'fg-house': [9, 6, 4.8], 'fg-longhouse': [15, 6.5, 5.2], 'fg-headhouse': [13, 8, 5.8], 'fg-meethall': [18, 10, 7], 'fg-cairnhall': [7, 7, 6],
+    'fg-store': [8, 6, 4.5], 'fg-smokehouse': [6, 5, 4.5], 'fg-barn': [12, 7, 5.5], 'fg-ropehouse': [20, 5, 4], 'fg-eggstore': [6, 6, 4.5], 'fg-pens': [14, 12, 1.4],
+    'fg-icehouse': [12, 9, 4.5], 'fg-sledgeshed': [16, 7, 4.2] };
+  const fdims = k => BOX[k] ? { w: BOX[k][0], d: BOX[k][1], h: BOX[k][2] } : null;
+  const fspec = (culture, focus, o) => Object.assign({ id: 'fowlers', world: 8310, culture, focus, site: { x: 0, z: 0 }, link: { x: 30, z: -200 },
+    resource: { x: 0, z: 300, workers: 44 }, popMax: 150, dims: fdims }, o || {});
+  const fw = H.village(fspec('fellgang', 'fowling')), ic = H.village(fspec('fellgang', 'ice', { id: 'icecut', world: 8410, resource: { x: 0, z: 300, workers: 40 }, popMax: 120 }));
+  const worksOf = v => (v.records || []).filter(r => r.role === 'works').map(r => r.key);
+  const hasWorks = (v, keys) => !v.error && keys.every(k => worksOf(v).includes(k)) && worksOf(v).every(k => keys.includes(k));
+  ok('the fellgang row registers the fowling and ice focuses at load, after the seven it found (' + H.FOCI.join(', ') + ')',
+    !!H.CULTURES.fellgang && H.FOCI.join() === foci0.concat(['fowling', 'ice']).join(), foci0.indexOf('fowling') < 0 && !H.village(fspec('fellgang', 'skating')).records);
+  ok('a fowling village works the rope house, the egg store and the pens; an ice village the ice houses and the sledge shed (' + fw.records.length + ' and ' + ic.records.length + ' buildings)',
+    hasWorks(fw, ['fg-ropehouse', 'fg-eggstore', 'fg-pens']) && hasWorks(ic, ['fg-icehouse', 'fg-sledgeshed']),
+    !hasWorks(H.village(fspec('islander_east', 'fowling', { dims })), ['fg-ropehouse', 'fg-eggstore', 'fg-pens']) && !hasWorks(ic, ['fg-ropehouse', 'fg-eggstore', 'fg-pens']));
+  const same = (a, b) => H.hashOf(a) === H.hashOf(b) && a.records.length === b.records.length;
+  ok('the focuses move no building: fowling lays the village ranch laid on the stand-ins\' row, ice the one quarry laid',
+    same(fw, H.village(fspec(OLD, 'ranch'))) && same(ic, H.village(fspec(OLD, 'quarry', { id: 'icecut', world: 8410, resource: { x: 0, z: 300, workers: 40 }, popMax: 120 }))),
+    !same(fw, H.village(fspec(OLD, 'quarry'))));
+  ok('the meeting hall, the cairn house, the store, the smokehouse and a barn in each (the row\'s services)',
+    [fw, ic].every(v => ['fg-meethall', 'fg-cairnhall', 'fg-store', 'fg-smokehouse', 'fg-barn'].every(k => v.records.some(r => r.key === k))),
+    !['fg-meethall'].every(k => fw.records.filter(r => r.key !== 'fg-meethall').some(r => r.key === k)));
+}
+
 console.log(bad ? '\n' + bad + ' FAILED' : '\nOK');
 process.exit(bad ? 1 : 0);

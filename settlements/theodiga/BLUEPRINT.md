@@ -134,8 +134,28 @@ The page is `kits/ancients --target theodiga` (`dist/theodiga.html`).
   Strongbow's town).
 - The manifest (`FURNITURE.md`) counts one storey per room and takes Xanadu keys through Longsong's key map.
 
+## On the page (2026-11-16)
+
+`kits/ancients --target theodiga-today`. **The inhabited levels' interiors (T-arc-1):** `python3 theodiga_blueprint.py --export`
+writes the sheets' programs as `src/43-th-arc-program.js` (70 units in the dam's frame); `src/43-th-arc.js` (`TH_ARC`) makes
+each unit's storeys with kits/ancients-interiors' plates (a hall, or a bar of rooms off a corridor with a stair core), maps the
+sheets' programs onto kits/interiors' (cell, dormitory, bedroom, hall, shrine, study, library, kitchen, store...), and the
+Ancients kit's interiors pass draws and furnishes them in the Xanadu culture (`src/8zz1-th-arc-host.js`). The Dome's deck rooms
+are walled pavilions with their doors on the crest's side (but the Hall of the Song, the Threshold of the Fall and the Damsel's
+Shrine, left open), its big halls laid out by the hall recipes in a Xanadu dress (`TH_ARC.RECIPE`, `TH_ARC.DRESS`).
+`test-th-arc.js` (15 checks). **The Dome today (T-dome-1):** `src/44-th-dome-today.js` (`TH_DOME_TODAY`, [G data]) and
+`src/8ay4-th-dome-today.js`, which `THEODOME.draw` takes as `ctx.today` on the today page only:
+- **the two Pilgrims' Stairs** up from the middle kora into the sheet's stair heads. Each is a shaft of ashlar under the deck's
+  chord, against the lake-side blocks, leaving the kora 6 m, with five flights of 4 m in two lanes and a well cut in the deck.
+- **the frame re-glazed** with salvaged panes (seven tints, a tint a pane by KRAND), except at the Tear. The Hall of the Song
+  is re-glazed likewise.
+
+`test-th-dome-today.js` runs 13 checks. The cascade moves already: it is a core/water fall on core/atmos's clock (90w). The
+town, the ways down and the works below are `PLAN.md`.
+
 ## Next
 
-- The page: the re-glazed frame, the pilgrims' and clergy stairs, the cascade's motion (the lake, the cascade and the river are drawn).
-- The town on core/city (like Strongbow's), and the census as `core/simulation` roles.
+- Windows cut through the crest's and fins' shells; a Xanadu divan, rug and hanging for the deck's dress.
+- The caravans (the serai's trade), a walk cycle for the walkers, and indoor residents shown in the opened rooms. The census is
+  on `core/simulation`, walks, and feeds itself (T-sim-1, T-sim-2, T-econ-1, `PLAN.md`).
 - LORE 6.13 (on the branch that holds the faith): Theodiga as the Decree's shrine, the Order's delegation, the cascade.
