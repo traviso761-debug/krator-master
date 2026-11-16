@@ -174,9 +174,15 @@ terminus, and its relations: the gateway pools stay where each group's home is.
    the Geomancers run Yuni in practice, but the Guild trades on its own account, a rival as much as a partner on the Catch
    road. *Still open:* its name in Yuni's tongue, and whether it is the prominent families' (who choose the Emir) or a
    body of its own.
-4. **The oases' people.** Kolli ~80, Arfwai ~60, Bitta ~40, Lasso ~100: who are they? *Proposed:* each group keeps hands at
-   the wells (the Train at Arfwai, the Iziz houses at Kolli, Yuni's and the Geomancers' at Lasso), with Stair's merchants
-   between them.
+4. **The oases' people.** Kolli ~80, Arfwai ~60, Bitta ~40, Lasso ~100. **Answered (the owner, 2026-11-16): as proposed.**
+   Each caravan group keeps hands at its own well:
+   - the Train of Jabal at Arfwai, by the salt pans;
+   - the two Iziz houses at Kolli, the first water down from the Godsgate (one more ground for their rivalry);
+   - Yuni's Merchants' Guild and the Geomancers at Lasso, the last water before the Twins;
+   - Stair's merchants between them, and Bitta's brackish well kept by whoever holds Stair's pens.
+   
+   In the sim each oasis is a settlement of its keepers' faction; it sells water and fodder to all, and its own group's
+   caravans first.
 5. **Seasons.** Does the Catch floor close in the spring storms? Does the Twins' col close in winter (Route A only)?
 6. **Gemini's two pins.** Keep the Godsgate caravanserai (Bab al-Hawa) and the Twins fort (the Twins Pass Wardenry), or
    drop them? Neither has lore.
