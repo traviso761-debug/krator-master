@@ -137,7 +137,8 @@ terminus, and its relations: the gateway pools stay where each group's home is.
 
 **3d. Hazards as events** (with Xanadu's X5 and the Lizardmen's raids):
 - the Stalkers taking stragglers on the Catch floor (a caravan with explosives drives them off);
-- the spring black storms of caustic dust: *proposed*, the Catch floor's crossing closes for about six weeks in spring;
+- the spring black storms of caustic dust close the Catch floor's crossing (the owner, 2026-11-16; about six weeks,
+  *proposed*), and winter closes the Twins' col (the owner: Route B shut, Route A's tubes open, *proposed*);
 - an oasis found dry: its water site run down;
 - the cold and gales on the Twins' col;
 - the guides' traps, for a caravan that stiffs them.
@@ -183,7 +184,12 @@ terminus, and its relations: the gateway pools stay where each group's home is.
    
    In the sim each oasis is a settlement of its keepers' faction; it sells water and fodder to all, and its own group's
    caravans first.
-5. **Seasons.** Does the Catch floor close in the spring storms? Does the Twins' col close in winter (Route A only)?
+5. **Seasons.** **Answered (the owner, 2026-11-16): both close.**
+   - The Catch floor closes in the spring black storms, about six weeks (*proposed*): caravans wait them out at Stair and
+     Kolli.
+   - The Twins' col closes in winter. *Proposed:* Route B's open dash shuts, and only Route A's tubes stay passable, for
+     packs, not wagons.
+   - The sim's calendar windows, and the caravans' timetables round them, follow from this (step C5).
 6. **Gemini's two pins.** Keep the Godsgate caravanserai (Bab al-Hawa) and the Twins fort (the Twins Pass Wardenry), or
    drop them? Neither has lore.
 7. **The records.** Bring `LORE.md` and the Catch and Twins plans in line with Stair's 750, the peopled oases and 5.1's
