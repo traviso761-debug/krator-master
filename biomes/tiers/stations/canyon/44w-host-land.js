@@ -87,6 +87,12 @@ const STATION=(function(){
  Object.assign(L,{AX,LEN,at,TREADS,CUTS,partAt,plateau,TER,STAIR,SPRING,HEAD,ROADS,roadD,streamD,fill,CAN,W});return L;})();
 var ROCKS=[];
 STATION.ROCK.push(...ROCKS);
+/* THE FLASH FLOOD (44g: TIERS_FLOOD): a storm on the treads drains into the canyon and runs from the head's bowl down the stream's line to the
+   mouth, over each dry fall; ~90 m across, 2.2 m at the crest, its front 5 m/s (the mouth ~11 minutes after the head), a storm every 40 minutes (the page's 3x: ~16), so each wave clears the channel before the next (89f draws it; 88 registers its segments) */
+/* the line from the king's spring in the head's bowl (the axis's tip stands on the rim, 600 m over it) to the mouth */
+const FLOOD_LINE=(function(){const S=STATION,cut=S.LEN-70,pts=[S.HEAD];for(let i=S.AX.length-1;i>=0;i--){if(nearLine(S.AX,S.AX[i][0],S.AX[i][1]).t*S.LEN<cut-10)pts.push(S.AX[i]);}return pts;})();
+STATION.FLOODS=[TIERS_FLOOD({id:'tiers-canyon-flood',name:'The canyon\'s flash flood',line:FLOOD_LINE,floor:(x,z)=>STATION.terrainH(x,z),w:45,depth:2.2,seg:120,front:5,period:2400,
+ tell:{sign:'a roar from the head, the stream turning brown, flood wrack in the cottonwoods and drift lines on the walls',colour:'#7a5a3a'}})];
 const TERR=STATION.TERR,LAKES=STATION.LAKES,RIVER_SPEC=null,FALLS=[],SPINE=STATION.SPINE,STRATA=STATION.STRATA,ROCK=STATION.ROCK;
 function terrainH(x,z){return STATION.terrainH(x,z);}
 function waterH(x,z){return STATION.waterH(x,z);}
@@ -101,7 +107,7 @@ const LAND={name:'Coyote Canyon (tiers station 2)',title:'Krator biome — the T
  hour:11,
  hzSky:.45,   /* the head's bowl in its own shade: the horizon shade's sky term eased (src/84-host-horizon.js) */
  groundLayers:['meadow','steppe','terrace','lichen'],
- plants:['tiergrass','heath','moss','lichen','boulder'],
+ plants:['tiergrass','heath','moss','lichen','boulder','tlip','tiersage'],
  modelTol:45,
  /* the station's sculpts, out of the model check: the canyon (its filled cells and the cut) */
  sculpt:(x,z)=>!!STATION.partAt(x,z)||STATION.CAN.has(Math.round(x/MODEL.cell)+','+Math.round(z/MODEL.cell)),
@@ -109,18 +115,23 @@ const LAND={name:'Coyote Canyon (tiers station 2)',title:'Krator biome — the T
  /* the neighbours' trees, read in place: the eastern badlands' Fremont cottonwood by the stream on the floor, its juniper and pinyon on the shoulders */
  kin:[{ref:'ebadlands.cottonwood',key:'cottonwood',name:'Fremont cottonwood (the eastern badlands\', read in place)',cell:50,minR:7,accept:Z=>Z.seep*.5*(1-Z.cliff)*smooth(.6,.35,Z.slope)},
   {ref:'ebadlands.juniper',key:'juniper',name:'Utah juniper (the eastern badlands\', read in place)',cell:30,minR:4,accept:Z=>(Z.tread*.2+Z.dry*.05)*(1-Z.cliff)*smooth(.6,.35,Z.slope)},
-  {ref:'ebadlands.pinyon',key:'pinyon',name:'Pinyon pine (the eastern badlands\', read in place)',cell:40,minR:4,accept:Z=>Z.tread*.12*(1-Z.cliff)*smooth(.6,.35,Z.slope)}],
+  {ref:'ebadlands.pinyon',key:'pinyon',name:'Pinyon pine (the eastern badlands\', read in place)',cell:40,minR:4,accept:Z=>Z.tread*.12*(1-Z.cliff)*smooth(.6,.35,Z.slope)},
+  /* the flora pass (2026-11-16; PLAN.md section 4, "Read in place"): the rose weeper by the stream's water, the yucca on the walls' dry benches, the
+     ponderosa with the whorl pines on the north rim's cool flank */
+  {ref:'ebadlands.weeper',key:'weeper',name:'Rose weeper (the eastern badlands\', read in place)',cell:36,minR:5,accept:Z=>Z.seep*.28*(1-Z.cliff)*smooth(.6,.35,Z.slope)},
+  {ref:'ebadlands.yucca',key:'yucca',name:'Chaparral yucca (the eastern badlands\', read in place)',cell:16,minR:2,accept:Z=>(Z.dry*.05+Z.ledge*.06*Z.temperate)*(1-Z.cliff)},
+  {ref:'ebadlands.ponderosa',key:'ponderosa',name:'Ponderosa pine (the eastern badlands\', read in place)',cell:46,minR:6,accept:Z=>Z.cool*.16*Z.gentle*(1-Z.cliff)}],
  exportBox:null,exportProfile:['registry','items','buckets','materials','textures','terrain','stage','atmos','hazards','water'],
  prebuild:()=>typeof SEAT!=='undefined'?SEAT.build():null,
  hazards:()=>{const out=[],S=STATION;
-  /* along the stair: the rims' falls (both walls), rockfall under the walls (crush), and the floor's flash floods (drown; the gorge flood's cycle
-     is the shared amendment, PLAN.md section 10 item 4: a plain record until it lands) */
+  /* along the stair: the rims' falls (both walls), rockfall under the walls (crush), the dry falls' wet tufa (slip); the flash flood's segments
+     (drown on a cycle, the current's pull) at the end */
   S.TREADS.forEach((T,k)=>{const s=(T.s0+T.s1)/2,p=S.at(s),q=S.at(s+20),ux=(q[0]-p[0])/20,uz=(q[1]-p[1])/20,nx=-uz,nz=ux,e=S.W+6*20+14;
    if(Math.abs(p[0])>2400||Math.abs(p[1])>2400)return;
    const depth=S.plateau(p[0],p[1])-T.floor;if(depth>25)for(const sd of [-1,1]){out.push({name:'The canyon\'s rim (a fall of '+Math.round(depth)+' m)',kind:'fall',x:p[0]+nx*sd*e,z:p[1]+nz*sd*e,r:Math.min(150,(T.s1-T.s0)*.4),h:20,danger:.9,tell:{sign:'the shoulder\'s edge: a sheer stepped wall'}});
     out.push({name:'Rockfall under the canyon\'s wall',kind:'crush',x:p[0]+nx*sd*(S.W-20),z:p[1]+nz*sd*(S.W-20),r:40,h:25,danger:.45,tell:{sign:'fresh blocks on the floor\'s edge, scars on the risers'}});}
-   out.push({name:'The canyon\'s floor (flash floods: a storm on the treads drains into it)',kind:'drown',x:p[0],z:p[1],r:60,h:6,danger:.35,tell:{sign:'flood wrack in the cottonwoods, the stream\'s bed scoured'}});
    if(k)out.push({name:'The dry fall (a riser of the canyon\'s stair; wet tufa)',kind:'slip',x:S.at(T.s0)[0],z:S.at(T.s0)[1],r:30,h:40,danger:.3,tell:{sign:'green-slick lime curtains over the riser'}});});
+  S.FLOODS.forEach(F=>out.push(...F.records));
   return out;},
  hazardMin:8,
  views:H=>{const {look,atRec,nearRec}=H,S=STATION,A=S.at,Hd=S.HEAD;

@@ -26,17 +26,37 @@ function stone(x,z,set,big){const y=Y(x,z),r=(big?rr(.5,1.6):rr(.1,.3))*(.7+.6*r
 function column(x,z){const y=Y(x,z),L=rr(1,3),w=rr(.4,.8),a=rr(0,TAU);   /* a fallen basalt column, lying on its side */
  BIO.put('column',[x,y+w*.38,z],new BIO.host.THREE.Quaternion().setFromEuler(new BIO.host.THREE.Euler(Math.PI/2+rr(-.1,.1),a,0,'YXZ')),[w,L,w],tone(PAL.rock,rr(.85,1.05)));}
 /* the terracettes' lips: the top fifth of each 0.9 m step of the ground's height, on a slope (a grazed slope's level rows) */
-const LIP=.9,lipK=(x,z,sl)=>{const f=Y(x,z)/LIP;return smooth(.1,.3,sl)*smooth(.75,.9,f-Math.floor(f));};
+/* the terracettes (44t: TIERS_TERRACETTES, PLAN.md amendment 3) on the grazed slopes, built with the floor; their lip line is where the tiergrass
+   stands (the old height rule, a tuft in the top fifth of a 0.9 m step, when the form is not on the page) */
+let TC=null;
+const LIP=.9,lipK=(x,z,sl)=>{if(TC)return TC.lip(x,z,Y(x,z));const f=Y(x,z)/LIP;return smooth(.1,.3,sl)*smooth(.75,.9,f-Math.floor(f));};
+/* where the herds graze, so the terracettes form: open land off the fields, the roads, the water's edge and bare rock, on the lake tread's slopes and
+   the cold stair's (the hot floor has its forest) */
+const grazed=(x,z)=>{const Z=zones(x,z);return Z.land*Z.live*(1-Z.farm)*(1-Z.road)*(1-Z.rock)*(1-Z.shore)*(1-Z.talus)*Math.max(Z.temperate,Z.stair);};
+/* one lip strip on the row through (x, z): moved up the slope to its row's lip, turned along the contour, sunk to the ground under its middle */
+function terracette(x,z,st){const y0=Y(x,z),A=TC.at(x,z,y0);if(!A)return;const e=1.5,gx=(Y(x+e,z)-Y(x-e,z))/(2*e),gz=(Y(x,z+e)-Y(x,z-e))/(2*e),s=Math.hypot(gx,gz);if(s<.05)return;
+ const ux=gx/s,uz=gz/s,R=TC.record,dd=((1-R.rise*.35)-A.u)*R.step/s,px=x+ux*dd,pz=z+uz*dd,L=rr(1.3,2.3),yaw=Math.atan2(ux,uz);
+ BIO.put('tlip',[px,Y(px,pz)-.04,pz],qEuler(0,yaw,0),[L,R.step*1.15,rr(.7,1)],tone(Y(px,pz)>3900?PAL.soilGrey:PAL.soil,rr(.9,1.06)));st.tlip++;
+ if(rng()<.7)around(px+ux*.08,pz+uz*.08,ri(1,3),.2,L*.4,(qx,qz)=>tuft('tiergrass',qx,qz,rr(.22,.45),rr(.3,.5),tone(PAL.grass,.98)));}
 
 // ---------------------------------------------------------------- the planters, by zone: (x,z,Z,lv,st)
+/* THE TIER SAGE: a clump of three to six upright stems from a felted grey base, each ringed with four to six flower whorls stepping up it, yellow on the
+   dry slopes, lilac over ~1.8 km (the canyon's benches); near only (the whorls are small) */
+function tierSage(x,z,st,lv){const y=Y(x,z),lilac=y>1800,n=ri(2,4),fc=lilac?PAL.sageLilac:PAL.sageFlower;
+ tuft('heath',x,z,rr(.25,.4),rr(.5,.8),tone(PAL.sageLeaf,rr(.95,1.08)),.04);
+ for(let k=0;k<n;k++){const a=rr(0,TAU),d=rr(.05,.22),sx=x+Math.cos(a)*d,sz=z+Math.sin(a)*d,H=rr(.45,1),lean=rr(-.08,.08),nw=ri(3,5);
+  BIO.put('cane',[sx,y-.02,sz],qEuler(lean,rr(0,TAU),lean*.5),[.012,H,.012],tone(PAL.sageLeaf,.8));
+  for(let w=0;w<nw;w++){const u=.35+.6*w/Math.max(1,nw-1),r=rr(.035,.05)*(1.1-.4*u);BIO.put('sagewhorl',[sx+lean*H*u,y+H*u,sz+lean*.5*H*u],null,[r*2,r*1.4,r*2],tone(fc,rr(.92,1.08)));}}
+ st.tiersage++;}
 function plantDry(x,z,Z,lv,st){const t=rng(),lip=lipK(x,z,Z.slope);
- if(t<.55+.35*lip){around(x,z,lv===2?ri(2,4):1,.2,.8,(px,pz)=>tuft('tiergrass',px,pz,rr(.3,.6),rr(.35,.55),tone(PAL.grass)));st.tiergrass++;}
+ if(t<.55+.35*lip){around(x,z,lv===2?ri(3,5):1,.2,.8,(px,pz)=>tuft('tiergrass',px,pz,rr(.3,.6),rr(.35,.55),tone(PAL.grass)));st.tiergrass++;}
  else if(t<.75&&Z.rock>.35){tuft('heath',x,z,rr(.4,.9),rr(.6,1),tone(PAL.heath),.03);st.heath++;}   /* the heath keeps to rocky ground and the ledges (its own pass): not the open slopes */
+ else if(t<.82&&lv===2&&Z.rock<.3&&lip<.5&&BIO.lodD(x,z)<160)tierSage(x,z,st,lv);   /* within ~160 m: its whorls are a few centimetres */   /* the tier sage on the open dry slopes, between the terracettes' rows */
  else{stone(x,z,rng()<.7?PAL.rock:PAL.rockRed,false);st.stone++;}}
 /* the meadow's tufts: tawny on the dry side, green in the swales (the same slow patch the ground's meadow layer follows, and the wet) */
 const greenK=(x,z)=>clamp(Math.max(smooth(.5,.68,BIO.field('wet',x,z)),smooth(.52,.68,fbm(x*.0028,z*.0028,7.1,3))*.85),0,1);
 function grassCol(x,z){const g=greenK(x,z);return g>.05&&rng()<g?tone(PAL.grassGreen,1):tone(PAL.grass,1.05);}
-function plantGrass(x,z,Z,lv,st){around(x,z,lv===2?ri(2,4):1,.2,.9,(px,pz)=>tuft('tiergrass',px,pz,rr(.3,.65),rr(.4,.7),grassCol(px,pz)));st.tiergrass++;}
+function plantGrass(x,z,Z,lv,st){around(x,z,lv===2?ri(3,6):1,.2,.9,(px,pz)=>tuft('tiergrass',px,pz,rr(.3,.65),rr(.4,.7),grassCol(px,pz)));st.tiergrass++;}
 /* the cold stair (station 4): a pagoda bush, a stack cushion, a sparse tuft row or a cobble */
 function pagoda(x,z,st,lv){const y=Y(x,z),H=rr(.5,1.2),n=ri(3,6),R0=rr(.32,.55);BIO.put('pdisc',[x,y,z],null,[.07,H*10,.07],tone(PAL.pagodaStem));   /* the stem (the drum's unit is 0.1 tall) */
  for(let k=0;k<n;k++){const u=(k+1)/n,yy=y+H*(.25+.75*u),r=R0*(1.05-.55*u)*rr(.9,1.1),a=rr(0,TAU),ox=rr(-.04,.04),oz=rr(-.04,.04);
@@ -50,7 +70,8 @@ function plantShore(x,z,Z,lv,st){around(x,z,lv===2?ri(2,5):2,.3,1.2,(px,pz)=>tuf
 
 // ---------------------------------------------------------------- the pass
 TIERS.buildFloor=function(R,q){q=q==null?1:q;R=R||2500;
- const st={tiergrass:0,heath:0,reed:0,pad:0,lilybloom:0,moss:0,lichen:0,stone:0,boulder:0,column:0,pagoda:0,cushion:0};
+ const st={tiergrass:0,heath:0,reed:0,pad:0,lilybloom:0,moss:0,lichen:0,stone:0,boulder:0,column:0,pagoda:0,cushion:0,tlip:0,tiersage:0};
+ TC=typeof TIERS_TERRACETTES==='function'?TIERS_TERRACETTES({h:Y,zone:grazed,seed:64301}):null;TIERS.TERRACETTES=TC;
  const L=BIO.LOD(),bands=[[6,L.floor[0],0,'near'],[12,L.floor[1],L.floor[0],'mid'],[24,1e9,L.floor[1],'far']],box=[-R,-R,R,R];
  bands.forEach((b,bi)=>{const lv=2-bi,band=(x,z)=>{const ld=BIO.lodD(x,z);return ld<b[1]&&ld>=b[2];};
   // the dry slopes, the tread and the wood's floor: tiergrass in its rows (the terracettes' lips), heath on the rocky ground, cobbles
@@ -60,6 +81,9 @@ TIERS.buildFloor=function(R,q){q=q==null?1:q;R=R||2500;
   // the cold stair's tread (station 4): sparse, the pavement's stones between
   BIO.grid('floor-stair-'+b[3],b[0]*1.6,(x,z)=>{if(!band(x,z))return 0;const Z=zones(x,z);if(Z.stair<=0)return 0;return q*(lv===0?.5:1)*clamp(Z.stair*(1-Z.rock)*(1-Z.talus*.7)*.62,0,1);},
    (x,y,z)=>plantStair(x,z,zones(x,z),lv,st),{box,patch:.55,patchScale:.01,pad:.6});
+  // THE TERRACETTES: lip strips along the rows on the grazed slopes, near only (each a row's piece; the ground's mesh is far coarser than a step)
+  /* within ~140 m (a lip strip is a hand's height: past that the tiergrass's rows carry the lines) */
+  if(TC&&lv===2)BIO.grid('floor-terracettes',1.8,(x,z)=>{if(BIO.lodD(x,z)>140)return 0;return q*clamp(TC.k(x,z)*.38,0,1);},(x,y,z)=>terracette(x,z,st),{box,patch:.3,patchScale:.03,pad:.3});
   // the shore's reed band (the wet edge of the land)
   BIO.grid('floor-shore-'+b[3],b[0],(x,z)=>{if(!band(x,z))return 0;const Z=zones(x,z);return q*clamp(Z.temperate*Z.land*smooth(10,1,Z.shoreD)*(1-Z.farm)*(1-Z.road)*.8,0,1);},
    (x,y,z)=>plantShore(x,z,zones(x,z),lv,st),{box,patch:.5,patchScale:.02,pad:.4});});

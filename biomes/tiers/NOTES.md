@@ -94,6 +94,19 @@ fragment it needs: station 1's `86-host-village.js`) and its `station.json` name
 - **The dry gorge's floor**: a `KRELIEF.wadi` along it (cobble bars, banks).
 - **The crops entry**: written and tested, held as `patches/kits-crops-tiers.patch` (KNOWN_ISSUES.md: Longsong cannot be rebuilt here).
 
+## The gorge flood, the terracettes and the flora pass (2026-11-16)
+
+- **The gorge flood** (`src/44g` `TIERS_FLOOD`, `src/89f`): a channel cut into segments, each a `drown` record with a poly over the bed, a band
+  to the crest, an authored cycle offset (-s / front: the front travels) and `move` (slowed, pulled downstream; core/hazard 21 on every page).
+  89f draws each segment's water raised by its own `KHAZ.state`. Checks: the front's timing down the channel, the head at its crest with the far
+  end dry at that moment (each with a fault); node tests: the offsets, the polys and bands. `?floodt=<s>` pins the clock for a still.
+- **The terracettes** (`src/44t` `TIERS_TERRACETTES`): k (grazed zone x slope band x broken rows), at, lip, shape (stepped, cut and fill
+  balanced), record. 60 draws the lips (`tlip`) within ~140 m and the tiergrass reads the lip line (`lipK`). Node tests: balance, the slope band,
+  the lip a thin line.
+- **The flora pass**: the shelf oak's plates filled (sprays from an eighth of the way out, three twigs a branch, broader sprays); the near meadow
+  thicker; the tier sage (a new native, stacked flower whorls); saplings among the oaks, pines and candelabras; kin added in Coyote Canyon (rose
+  weeper, yucca, ponderosa).
+
 ## Not built yet
 
-Station 2's town (its layout); terracettes in the ground; the gorge flood. KNOWN_ISSUES.md lists them with the texture swaps.
+Station 2's town (its layout). KNOWN_ISSUES.md lists them with the texture swaps.

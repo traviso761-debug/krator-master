@@ -74,10 +74,11 @@ B.shelfoak=function(T,st,lv){const S=SP[T.sp],H=T.H,R=T.crownR,bc=barkCol(S.bark
  for(let t=0;t<nT;t++){const u=.34+.6*t/Math.max(1,nT-1),c=along(bole,u),Rt=R*(1-.55*t/Math.max(1,nT-1))*rr(.9,1.06),m=lv===2?ri(5,7):4,a0=rr(0,TAU);T.tierYs.push(c.y);
   for(let b=0;b<m;b++){const a=a0+b/m*TAU+rr(-.3,.3),L=Rt*rr(.82,1.04),P=grow(c,dirOf(a,rr(.02,.16)),L,c.r*.55,.03,lv===2?3:2,-.08);limb('bark.oak',P,bc,lv,st,lv===2?5:3,c.r);
    const twigs=[P];
-   if(lv===2)for(let k=0;k<2;k++){const q=along(P,rr(.35,.75)),W=grow(q,dirOf(a+(k?1:-1)*rr(.5,.9),rr(0,.1)),L*rr(.28,.42),q.r*.6,.015,2,-.05);limb('bark.oak',W,bc,lv,st,3,q.r);twigs.push(W);}
-   /* THE PLATE: sprays along every branch and twig of the tier, from a quarter of the way out to the tip, their stems on the wood, level */
-   for(const W of twigs){const Lw=Math.hypot(tip(W).x-W[0].x,tip(W).z-W[0].z),sz=(lv===2?rr(1.5,1.9):rr(2.4,3)),n=Math.max(1,Math.round(Lw*.75/sz*(lv===2?1.4:1)));
-    for(let k=0;k<n;k++){const p=along(W,.25+.75*(k+.5)/n),yaw=a+rr(-.9,.9),q=qEuler(rr(-.06,.06),-yaw+Math.PI/2,rr(-.06,.06));
+   if(lv===2)for(let k=0;k<3;k++){const q=along(P,rr(.25,.8)),W=grow(q,dirOf(a+(k%2?1:-1)*rr(.45,.95),rr(0,.1)),L*rr(.28,.42),q.r*.6,.015,2,-.05);limb('bark.oak',W,bc,lv,st,3,q.r);twigs.push(W);}
+   /* THE PLATE: sprays along every branch and twig of the tier, from an eighth of the way out to the tip, their stems on the wood, level; broad
+      sprays (the flora pass: the plates read as level mats, not tufts at the tips) */
+   for(const W of twigs){const Lw=Math.hypot(tip(W).x-W[0].x,tip(W).z-W[0].z),sz=(lv===2?rr(1.9,2.5):rr(2.6,3.2)),n=Math.max(1,Math.round(Lw*.88/sz*(lv===2?1.45:1)));
+    for(let k=0;k<n;k++){const p=along(W,.12+.88*(k+.5)/n),yaw=a+rr(-.9,.9),q=qEuler(rr(-.06,.06),-yaw+Math.PI/2,rr(-.06,.06));
      BIO.put('oakplate',[p.x,p.y+.02,p.z],q,[sz,sz,sz],bright(vary(lc,.02,.08,.07),rr(.92,1.08)),{n:[0,1,0]});st.clumps++;}
     const e=tip(W);rim=Math.max(rim,Math.hypot(e.x-T.x,e.z-T.z));}}
   top=Math.max(top,c.y);}
@@ -147,6 +148,7 @@ function buildFar(T,st){const S=SP[T.sp],K=BIO.bucket('far');if(!ICO)ICO=new T3.
  else if(S.key==='steppalm'){for(let k=0;k<3;k++)disc(T.x,T.y0+T.H*(.3+.2*k),T.z,T.rb*2.2,.4);disc(T.x,T.y0+T.H+.3,T.z,T.crownR*.9,T.crownR*.35);}
  for(let i=0;i<tris;i++)K.k.push(kk);K.tris+=tris;BIO.tally(tris,0,0);st.far+=tris;}
 const FAR_OK={shelfoak:true,steppalm:true,whorlpine:true};
+const YOUNG={shelfoak:true,whorlpine:true,candelabra:true};
 
 // ---------------------------------------------------------------- keep-clear between trees (core/space)
 let SPACE=null;
@@ -179,6 +181,9 @@ TIERS.buildTrees=function(R,q){reseed(551201);q=q==null?1:q;R=R||2500;
     const ld=BIO.lodD(x,z),lv=ld<LOD.hero?2:(ld<LOD.mid?1:0);if(lv===0&&!FAR_OK[S.key])return;
     const T=TIERS.make(S.i,x,Y(x,z),z);if(P.water){const w=wH(x,z);if(!(w>-1e8)||w-Y(x,z)<.08)return;T.water=w;T.y0=Y(x,z);}
     if(P.k){const k=P.k(Z);T.H*=k;T.crownR*=Math.sqrt(k);}T.lv=lv;
+    /* THE YOUNG (the flora pass, 2026-11-16): about a fifth of the oaks, pines and candelabras are saplings and poles, chosen by a hash of the
+       spot (no draw moves): a third to two thirds the height, two or three tiers */
+    if(YOUNG[S.key]){const yu=KRAND.unit(KRAND.hash(551203,Math.round(x*10),Math.round(z*10)));if(yu<.2){T.young=true;T.H*=.3+yu*1.8;T.crownR*=.45+yu*1.5;T.rb*=.4+yu;T.tiers=Math.max(2,Math.round(T.tiers*(.35+yu)));}}
     TREES.push(T);SPACE.insert({x,z,r:(S.key==='shelfoak'||S.key==='whorlpine'?T.crownR*.55:S.key==='steppalm'?T.crownR*.6:T.rb*1.6+.4)},x,z,T.crownR+2);
     BIO.owner=[x,z];try{if(lv===0){buildFar(T,st);st.fars++;}else{B[S.key](T,st,lv);st.heroes++;}}finally{BIO.owner=null;}st.byS[S.i]++;},
    {box:[-R,-R,R,R],patch:opt.patch==null?.5:opt.patch,patchScale:opt.patchScale==null?.012:opt.patchScale,pad:1,noMask:!!P.water});});

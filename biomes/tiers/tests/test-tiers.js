@@ -3,6 +3,8 @@
 //     at their heights (the Black Step's basalt at the lake tread, the Red, White and Grey Steps above)
 //   - station 1's far field (stations/lake/44f + src/44v): the plan's sill stands on the 79 dry rim cells under the upper lake's level
 //     (PLAN.md section 8a), the notch held at the level, and the model's own cells elsewhere untouched
+//   - the gorge flood (src/44g): its segments' phases put the front down the channel at its speed, each segment's poly over its piece of the line
+//   - the terracettes (src/44t): cut and fill balance across the steps, none on the flats or the cliffs, the lip a thin line along each row
 //   - outposts.json: the three candidate sites pass the open world's registry (KOUTPOST.offer), each clear of the Kingdom's places
 const fs = require('fs'), vm = require('vm'), path = require('path');
 const T = require('../../../tools/ktest.js')(__filename);
@@ -44,6 +46,31 @@ T.ok('the sill cells stand at 1,180 m (the notch at 1,150 m), the rest are the m
 const notch = M.raw(1246 - F.site.cx, 531 - F.site.cy);
 T.ok('the notch at 1246,531 is held at the level (the outfall)', notch === 1150, 'notch ' + notch);
 T.neg('a sill cell left under the level is caught', v => v >= 1150, 284, 1180);
+
+// ---- the gorge flood (TIERS_FLOOD): a straight channel 1 km long falling 50 m, 90 m segments, a front at 4 m/s
+load('biomes/tiers/src/44g-biome-tiers-flood.js');
+const FL = ctx.TIERS_FLOOD({id: 'test', line: [[0, 0], [1000, 0]], floor: (x, z) => 100 - x * .05, w: 20, depth: 2, seg: 90, front: 4});
+const frontOK = F => F.records.every((R, i) => i === 0 || Math.abs((F.startOf(i, 1) - F.startOf(i - 1, 1)) - ((R.flood.s0 - F.records[i - 1].flood.s0) / F.front)) < 1e-6);
+T.ok('the flood: each segment\'s warning starts s / front seconds after the head\'s', frontOK(FL), FL.records.map((R, i) => FL.startOf(i, 1).toFixed(1)).join(' '));
+const rev = Object.assign({}, FL, {records: FL.records.map((R, i, A) => Object.assign({}, R, {cycle: Object.assign({}, R.cycle, {offset: A[A.length - 1 - i].cycle.offset})}))});
+T.neg('a flood running uphill is caught', frontOK, rev, FL);
+const inPoly = (pts, x, z) => { let c = false; for (let i = 0, j = pts.length - 1; i < pts.length; j = i++) { const a = pts[i], b = pts[j];
+  if ((a[1] > z) !== (b[1] > z) && x < (b[0] - a[0]) * (z - a[1]) / (b[1] - a[1]) + a[0]) c = !c; } return c; };
+const covers = F => F.records.every(R => inPoly(R.shape.pts, 0, 0) && inPoly(R.shape.pts, 0, R.shape.pts[0][1] * .5)) && F.records.every(R => R.y < 100 - (R.x + 45) * .05);
+T.ok('the flood: every segment\'s poly holds its middle, its band from under the bed', covers(FL), FL.records.length + ' segments');
+T.neg('a segment set above its bed is caught', covers, Object.assign({}, FL, {records: FL.records.map(R => Object.assign({}, R, {y: R.y + 10}))}), FL);
+
+// ---- the terracettes (TIERS_TERRACETTES) on a plane rising .5 a metre (27 degrees), no breaks
+load('biomes/tiers/src/44t-biome-tiers-terracettes.js');
+const TT = ctx.TIERS_TERRACETTES({h: (x, z) => x * .5, breaks: 0});
+const balance = F => { let m = 0, n = 0; for (let x = 0; x < 60; x += .01) { m += F.shape(x, 0, x * .5) - x * .5; n++; } return Math.abs(m / n) < .01; };
+T.ok('the terracettes: cut and fill balance across the steps', balance(TT), 'mean offset over 60 m');
+T.neg('a stepped ground lifted 0.2 m is caught', balance, Object.assign({}, TT, {shape: (x, z, g) => TT.shape(x, z, g) + .2}), TT);
+const bands = F => F.k(5, 0) > .9 && ctx.TIERS_TERRACETTES({h: (x, z) => x * .02, breaks: 0}).k(5, 0) === 0 && ctx.TIERS_TERRACETTES({h: (x, z) => x * 1.4, breaks: 0}).k(5, 0) === 0;
+T.ok('the terracettes form on the grazed slope, not on the flats or the cliffs', bands(TT), 'k ' + TT.k(5, 0).toFixed(2));
+T.neg('terracettes on the flats are caught', F => F.k(5, 0) > .9 && F.k(500, 0) === 0, {k: () => 1}, {k: x => x < 100 ? 1 : 0});
+let lipN = 0, N = 0; for (let x = 0; x < 60; x += .01) { N++; if (TT.lip(x, 0, x * .5) > .5) lipN++; }
+T.ok('the terracettes: the lip is a thin line along each row (5-20% of the slope)', lipN / N > .05 && lipN / N < .2, (lipN / N).toFixed(3));
 
 // ---- the candidate sites (outposts.json) offered to the open world's registry
 load('openworld/outposts/src/10-outposts-registry.js');

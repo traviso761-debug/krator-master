@@ -83,7 +83,7 @@ const HCHK={
  // THE RULE (PLAN.md section 4): every native tree drawn near carries its tiers: the oak's whorls, the palm's collars, the candelabra's arm
  // rings, the reed's noded whorls (each species' least, SPECIES.tiers[0]; the reed's at least one: a short cane in deep water has few nodes)
  tiers(T,S){const bad=[],n={};for(const s of S||[]){n[s.key]=(n[s.key]||0)+1;if(!(s.discs>=3))bad.push(s.key+' at '+[s.x|0,s.z|0]+' ('+s.discs+' discs < 3)');}   /* a shrub's tiers: the pagoda bush's discs */
-  for(const t of T){if(t.lv!==2||t.borrow)continue;const S=TIERS.SPECIES[t.sp],min=S.key==='ladderreed'?1:S.tiers[0];n[S.key]=(n[S.key]||0)+1;
+  for(const t of T){if(t.lv!==2||t.borrow)continue;const S=TIERS.SPECIES[t.sp],min=S.key==='ladderreed'?1:t.young?2:S.tiers[0];   /* a sapling: two tiers */n[S.key]=(n[S.key]||0)+1;
    if(!t.tierYs||t.tierYs.length<min)bad.push(S.key+' at '+[t.x|0,t.z|0]+' ('+(t.tierYs?t.tierYs.length:0)+' < '+min+')');}
   return{ok:!bad.length&&Object.keys(n).length>0,detail:bad.length?bad.length+' near trees short of their tiers: '+bad.slice(0,3).join(', '):Object.keys(n).map(k=>k+' '+n[k]).join(', ')+' near trees, every one in its tiers'};},
  // THE LAKE: drawn on its mask over the bay and the far lake, and off the floor west of the sill (a dry model cell under the level)
@@ -120,6 +120,8 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P
  if(OPEN_LAKES.length)add('the lake is drawn over its bay and off the floor past the sill',HCHK.lake(OPEN_LAKES[0],LAKE_MID,LAKE_DRY));
  if(STATION.TER)add('the step moss pools are dug into the ground',HCHK.pools(POOLS_AT()));
  if(typeof VILLAGE!=='undefined')add('the village is records first, registered and pending',HCHK.village(VILLAGE.records,REG));
+ if(typeof FLOODS!=='undefined'&&FLOODS)add('the flood front runs down the gorge at its speed',FLOOD_CHK(FLOODS.floods,KHAZ.speed));
+ if(typeof FLOODS!=='undefined'&&FLOODS)add('the flood is drawn where it is: the head at its crest, the far end dry',FLOOD_DRAWN_CHK(FLOODS.drawn()));
  if(LAND.checks)LAND.checks(add);
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail});
@@ -139,6 +141,9 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  if(OPEN_LAKES.length&&LAKE_DRY)add('the lake over the floor past the sill',HCHK.lake({contains:()=>true},LAKE_MID,LAKE_DRY));
  if(STATION.TER){const P=POOLS_AT();add('a pool hanging 5 m over its floor',HCHK.pools(P.map((p,i)=>i?p:Object.assign({},p,{level:p.level+5}))));}
  if(typeof VILLAGE!=='undefined')add('a village record never registered',HCHK.village(VILLAGE.records.concat([{id:'test:unregistered',pending:true}]),REG));
+ if(typeof FLOODS!=='undefined'&&FLOODS){const F=FLOODS.floods[0],n=F.records.length;   /* the fault: the segments' phases reversed (the flood running uphill) */
+  add('a flood running up the gorge',FLOOD_CHK([Object.assign({},F,{records:F.records.map((R,i)=>Object.assign({},R,{cycle:Object.assign({},R.cycle,{offset:F.records[n-1-i].cycle.offset})}))})],KHAZ.speed));}
+ if(typeof FLOODS!=='undefined'&&FLOODS)add('a flood drawn wet at the far end while the head crests',FLOOD_DRAWN_CHK(Object.assign({},FLOODS.drawn(),{farDry:false})));
  if(LAND.negatives)LAND.negatives(add);   /* a station's own checks' faults (LAND.checks) */
  return R;}
 // ---------------------------------------------------------------- the page, handed to the host

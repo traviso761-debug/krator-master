@@ -7,8 +7,9 @@
 //   RECORDS (each a core/tags record carrying tags.hazard, registered before anything is drawn round it) from the station's own list,
 //          LAND.hazards() -> [{name, kind, x, z, y?, r, h?, danger?, tell?, ...}]: rockfall under the risers (crush), the risers' edges (fall),
 //          the lake's drop-off (drown), the step moss's wet tufa (slip).
-// Every danger reads before it kills (the tell says what the walker sees). Owed (KNOWN_ISSUES.md): the canyons' flash floods on a cycle (the
-// shared gorge-flood amendment, PLAN.md section 10 item 4: stations 2 and 4), the traps of Korona's floor (station 3, read in place).
+// Every danger reads before it kills (the tell says what the walker sees). The canyons' flash floods run on a cycle (44g: TIERS_FLOOD, the
+// gorge-flood amendment done kit-side: a travelling front of drown records, each with the current's pull, core/hazard 21; drawn by 89f).
+// Owed (KNOWN_ISSUES.md): the traps of Korona's floor (station 3, read in place).
 const HAZ=(function(){if(typeof KHAZ==='undefined')return null;const out={records:0,ambient:[]};
  const hourNow=()=>typeof KHOST!=='undefined'&&KHOST.host&&KHOST.host.clock?KHOST.host.clock.hour:13;
  const swing=(SITE.tw-SITE.tc)*.5;   /* the season's half-swing (28/13 at the lake: 7.5 degC); the page opens on the warm month */
@@ -16,8 +17,8 @@ const HAZ=(function(){if(typeof KHAZ==='undefined')return null;const out={record
  try{KHAZ.provide('pressure',(x,y,z)=>atmAt(y));KHAZ.provide('temperature',(x,y,z)=>tempAt(x,y,z));out.ambient=KHAZ.provided();}catch(e){reportErr('hazard (ambient): '+e.stack);}
  out.tempAt=tempAt;
  const list=LAND.hazards?LAND.hazards():[];out.list=list;
- list.forEach((H,i)=>{const hz={kind:H.kind};['danger','dose','effect','falloff','shape','tell','nav','cycle'].forEach(k=>{if(H[k]!=null)hz[k]=H[k];});
+ list.forEach((H,i)=>{const hz={kind:H.kind};['danger','dose','effect','falloff','shape','tell','nav','cycle','move','seed'].forEach(k=>{if(H[k]!=null)hz[k]=H[k];});
   try{KHAZ.make(hz);}catch(e){reportErr('hazard '+H.name+': '+e.message);return;}
-  BIO.record({name:H.name,key:'hazard.'+H.kind,x:H.x,z:H.z,y:H.y==null?terrainH(H.x,H.z)-2:H.y,r:H.r,h:H.h==null?6:H.h,tags:{hazard:hz}});out.records++;});
+  H._rec=BIO.record({name:H.name,key:'hazard.'+H.kind,x:H.x,z:H.z,y:H.y==null?terrainH(H.x,H.z)-2:H.y,r:H.r,h:H.h==null?6:H.h,tags:{hazard:hz}});out.records++;});   /* _rec: the registered record (89f reads its state) */
  return out;})();
 window._hazards=HAZ?{records:HAZ.records,ambient:HAZ.ambient}:null;

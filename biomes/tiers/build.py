@@ -126,6 +126,8 @@ for f in ['07-core-export.js', '09-core-export-adapters.js']:
 PATH.setdefault('20-core-space.js', P('core', 'space', '20-core-space.js'))
 # core/hazard (KHAZ, PLAN.md section 5): rockfall, the riser's edge, the lake's drop-off, wet tufa as records; pressure and temperature ambient
 PATH.setdefault('20-core-hazard.js', P('core', 'hazard', '20-core-hazard.js'))
+# and its flow (KHAZ.moveAt, drift): the flash floods' current that slows a walker and pulls him downstream (44g, 89f)
+PATH.setdefault('21-core-hazard-flow.js', P('core', 'hazard', '21-core-hazard-flow.js'))
 # core/hamlet (KHAMLET.village, PLAN.md section 6): the lake's fishing village as records, every building pending (KHAMLET.pendingRow('coyote'), in
 # 32-hamlet-platform.js) until kits/coyote exists; its lanes laid by core/city's frontage cursor, read in place (33-city-strategies.js)
 for f in ['10-hamlet-wood.js', '12-hamlet-gather.js', '14-hamlet-farmland.js', '18-hamlet-names.js', '20-hamlet-cultures.js', '30-hamlet-village.js',

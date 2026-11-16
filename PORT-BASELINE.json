@@ -737,20 +737,20 @@
    "sha256": "21d8a1af02556e92590f26058da0d8d0dd362a04b121ba33657c35440ebc4cce"
   },
   "biomes/tiers/dist/tiers-canyon.html": {
-   "bytes": 9890163,
-   "sha256": "2a9ed9e81c48aea5562907f9dec733abcccc80a27fc0b65d27e85c4d94fb6352"
+   "bytes": 9918544,
+   "sha256": "8fc8fccab79160602fd6fc50434e1d64bb7bf62f0c5ddf9c152773c056c8cdc2"
   },
   "biomes/tiers/dist/tiers-lip.html": {
-   "bytes": 12007332,
-   "sha256": "1e00a43a12953a10cb23a3ddef1338bfb809666e632938b13b362b2be6d3f397"
+   "bytes": 12034122,
+   "sha256": "ff00be7dcfd80eb8c45e82cc790719ff07ce858dfb07f17ab981ff666197f5df"
   },
   "biomes/tiers/dist/tiers-tread.html": {
-   "bytes": 9914684,
-   "sha256": "a2fa0073bd59d1cc8dc03f2206a23436b65f64f4e82842d8b96c2936b9151510"
+   "bytes": 9942500,
+   "sha256": "98ca92db4196fd524b4f7ce4fa5ce1a9c6845faffd9634103955e21913fb02b8"
   },
   "biomes/tiers/dist/tiers.html": {
-   "bytes": 9845248,
-   "sha256": "ea59a829b375416f8291902a3b6286bc637f2149e0d99e3d766c4a61824a0d52"
+   "bytes": 9872056,
+   "sha256": "7542f1738b73f190820d07d7796ecfb46cfffbafca5ffeb65bbaece039de9bba"
   },
   "biomes/twins/dist/twins-brazier.html": {
    "bytes": 2877421,

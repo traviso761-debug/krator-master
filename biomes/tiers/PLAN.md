@@ -441,8 +441,10 @@ north-east and the far field carries the rest of the stair.
 2. **Tiered plant parts** (kit work first): a whorl of flat branch plates, stacked collars, stepped domes, arm rings.
    Lift to `core/biome` if a second kit asks.
 3. **Terracettes** (small, new): the level soil steps that line grazed slopes, as a `KRELIEF.shape` form beside
-   `pavement`, with a lip line the tiergrass reads. Kit work first.
-4. **The gorge flood** on a cycle (shared hazard amendment; the Outland Gate plan's amendment 2).
+   `pavement`, with a lip line the tiergrass reads. Kit work first. **Done kit-side (2026-11-16):** `src/44t` (`TIERS_TERRACETTES`), the floor
+   draws the lips (`tlip`); the lift to a `KRELIEF` kind waits for a second kit.
+4. **The gorge flood** on a cycle (shared hazard amendment; the Outland Gate plan's amendment 2). **Done kit-side (2026-11-16):** `src/44g`
+   (`TIERS_FLOOD`: drown records with a travelling front and the current's pull, core/hazard 21), drawn by `src/89f`, on stations 2 and 4.
 5. **The lip's fall**: the sill is on the model after the map edit (section 8a); the page draws the fall on `WATER.fall`
    (tall falls) and the sill's face with `KRELIEF.scarp`.
 6. **The player-settlement registry** (shared, open world; `openworld/outposts`).

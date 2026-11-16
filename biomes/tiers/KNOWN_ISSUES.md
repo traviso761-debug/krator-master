@@ -19,6 +19,17 @@ biomes/tiers --fix` (a card sheet's cells and stems are its own), `python3 tools
   (keep .6) on the riser's bedded rock in level bands every 7.5 m of height (45: `GLW` 'lichen', weight rock x strata x `lichenBand`). The lichen crusts on the boulders (60: item
   `lichen`) are procedural blobs in the lichen's palette, not a library card.
 
+## The flora pass (2026-11-16)
+
+- [ ] **The tier sage is the pass's own native** (a thirteenth, proposed as the plan's were): a felted sage whose flowers ring the stem in
+  stacked whorls (the rule), yellow on the dry slopes, lilac over ~1.8 km; near only (within ~160 m), its whorls flattened tori, no card.
+- [ ] **A fifth of the oaks, pines and candelabras are young** (chosen by a hash of the spot): two or three tiers, a third to two thirds the
+  height; the tiers rule asks two of them.
+- [ ] **Read in place, added:** Coyote Canyon's rose weeper (by the water), yucca (the dry benches) and ponderosa (the north rim, with the
+  whorl pines), the eastern badlands'. The lowlands' sky bamboo is not read on the Lip: its habit is built outside the tree fragment a kin
+  row reads (a bamboo builder: one more fragment to carry). The plan's stack figs and gorge fan palms (`necanyons`) are not
+  read: their trees need that kit's layout fragments (Korona carries them), a heavier read than a kin row.
+
 ## Station 1, the Lake of the Tiers
 
 - [ ] **Software GL only.** Built and verified in a cloud session with no GPU (2026-11-16): every `verify.py --assert` run so far is
@@ -35,9 +46,11 @@ biomes/tiers --fix` (a card sheet's cells and stems are its own), `python3 tools
 - [ ] **The village is stand-ins** (`86-host-village.js`): every record `pending` (`KHAMLET.pendingRow('coyote')`) until `kits/coyote`
   draws the Tierhounds' stepped mud-brick rooms. Owed with it: a `landing` row for the culture (the reed boats, the fish weirs), the
   village's books on `core/simulation`, a pin in `model/src/60-settlements.js`.
-- [ ] **The terracettes are not in the ground.** The tiergrass stands in rows on their lips (60: a tuft where the height is in the top
-  fifth of a 0.9 m step), but the ground has no steps of its own: amendment 3 (`KRELIEF.shape` form, kit work first) is T4's. The
-  terraced fields' treads (2.4 m) are in the ground (44w), on the 10 m ground mesh: coarse up close.
+- [ ] **The terracettes are drawn, not in the ground's mesh** (2026-11-16: `src/44t`, `TIERS_TERRACETTES`, the plan's amendment 3 done kit-side,
+  shaped as a `KRELIEF` form beside `pavement`: `k`, `at`, `lip`, `shape`, a JSON-safe `record`). The page's ground mesh (~7 m) is far coarser
+  than a step (0.42 m), so the floor draws each row's lip as a strip of trampled soil (60: `tlip`, within ~140 m) with the tiergrass on it; past
+  that the grass's rows carry the lines. `shape()` (the stepped ground, cut and fill balanced) waits for a fine near-field ground or a port. Lift
+  to `core/terrain` as a `KRELIEF` kind when a second kit asks.
 - [ ] **The ground's grass is two library scans, not the plan's `ground.steppe`** (the owner, 2026-11-16: "a bit too brown, more varied"):
   `ground.withered_grass` (the dry side, keep .4) and `ground.leafy_grass` (the meadow: the wet ground and the swales of a ~300 m patch, keep
   .55), over a painted ground of golden and tawny grass, olive and green swales, red soil scars and pale stony rises. Judged in SwiftShader
@@ -67,8 +80,11 @@ biomes/tiers --fix` (a card sheet's cells and stems are its own), `python3 tools
 - [ ] **The whorl pine stands only on the canyon's north rim** (55: `cool`, 19 trees on station 2): the page tops out at ~2.5 km (14 degC), under
   the pine's own country (the middle steps' Dsb and Csb pockets, ~3-4 km: no station there), so it takes the great riser's south-looking
   flank over ~2 km, the plan's "risers' cool faces". Its sprays are `card.pine`, its bole `bark.ponderosa`: no set was named for it.
-- [ ] **The flash flood is a plain record** (`drown` on each tread's floor): the gorge flood on a cycle is the shared hazard amendment
-  (PLAN.md section 10, item 4).
+- [ ] **The flash flood is kit-side** (2026-11-16: `src/44g`, `TIERS_FLOOD`; drawn by `src/89f`): the plan's amendment 4 on what core/hazard
+  already carries: a chain of `drown` records down the channel, each with an authored cycle offset (the front travels at its speed) and the
+  current's pull (core/hazard 21, now on every page). Coyote Canyon's runs from the head to the mouth, the Great Tread's down its dry gorge. The
+  water is a flat muddy ribbon raised and lowered per segment, no foam, no debris, no sound; the page compresses the dry wait 3x (a storm every 40 minutes, ~16 on the page)
+  (`LAND.floodSpeed`). Lift to core/hazard when the Outland Gate's plan takes it (its amendment 2). `?floodt=<s>` pins the flood's clock.
 - [ ] **No contour carvings drawn**: the milestones and façades are boxes; the carving is the Coyote kit's `cyContour` (its C1).
 
 ## Station 3, the Lip (started 2026-11-16)
@@ -123,5 +139,4 @@ biomes/tiers --fix` (a card sheet's cells and stems are its own), `python3 tools
   `core/charactermodels/dist/pieces/`, which is not in the repo. On a machine that builds Longsong: `git apply` the patch, rebuild
   `kits/crops`, `settlements/longsong`, `biomes/ancientsvalley --station terraces`, `biomes/nwouterwall` (and `--station taiga`,
   `--station yeti`) and `biomes/wouterwall`, verify, and update their baseline rows.
-- [ ] **Not built yet (T4, T5):** station 2's town (above); the gorge flood (the shared hazard amendment); the terracettes in the ground
-  (amendment 3).
+- [ ] **Not built yet (T4, T5):** station 2's town (above).

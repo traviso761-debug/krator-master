@@ -29,7 +29,9 @@ const PAL=TIERS.PAL={
  grass:[0xb4a06a,0xa8945e,0xc0ac76,0x9a8a58],grassGreen:[0x7a8e4a,0x6a8244,0x88964e,0x5e7a3e],pad:[0x4a6a34,0x52763a,0x426030],lilyBloom:[0xf0e6d0,0xe8d8b8],
  moss:[0x6a8a3a,0x5e7e34,0x76964a],tufa:[0xd8d2c0,0xcac4b0],lichen:[0xd88a2a,0xe0a030,0x9aa87a,0x2a2826,0xc8b440],
  rock:[0x2e2c2a,0x3a3633,0x46423e,0x34302c],rockGrey:[0x8a867e,0x7a766e,0x96918a,0x6e6a64],   /* the Grey Steps' tuffs and limestones (station 4) */
- pagoda:[0x8a9284,0x7e8878,0x96a090,0x76806e],pagodaStem:[0x5a5248,0x4e463e],cushion:[0x6e7a4a,0x7a8452,0x627044,0x8a8a5a],rockRed:[0x5a3c30,0x664436,0x4e362c],far:[0x46602e,0x3e5a2a,0x506a36]};
+ pagoda:[0x8a9284,0x7e8878,0x96a090,0x76806e],sageLeaf:[0x8a9476,0x96a082,0x7e8a6c],sageFlower:[0xe8c23a,0xf0cc48,0xdcb432],sageLilac:[0xb894c8,0xa888bc,0xc4a2d2],
+ soil:[0x7a5e44,0x86684a,0x6e543e,0x8e7252],soilGrey:[0x76695c,0x6a5e52,0x807466],   /* the terracettes' trampled soil */
+pagodaStem:[0x5a5248,0x4e463e],cushion:[0x6e7a4a,0x7a8452,0x627044,0x8a8a5a],rockRed:[0x5a3c30,0x664436,0x4e362c],far:[0x46602e,0x3e5a2a,0x506a36]};
 
 // ---------------------------------------------------------------- the plants and their tags
 const HV=(wood,edible,med,note,gather)=>({wood:wood||'none',edible:edible||[],medicinal:!!med,fruit:null,note:note||'',gather:gather||null});
@@ -48,6 +50,9 @@ TIERS.PLANTS={
   HV('none',[],true,'A low shrub that grows only along the risers\' ledges, so each riser is striped with level lines of green. A yellow dye (proposed). 0.5-1.5 m.','dye'),{station:1}),
  candelabra:PK('Tier candelabra',K('temperate','arid..semiarid','no',['BSh','BSk','Csa']),['cbloom'],
   HV('none',['water (tapped from the stem)'],false,'A succulent tree with rings of upturned arms, one ring a good year, the lowest the oldest. Latex (proposed). 3-9 m.','water'),{station:1}),
+ /* the flora pass (2026-11-16): a forb for the open slopes that keeps the rule (proposed, as the plan's own natives were) */
+ tiersage:PK('Tier sage',K('temperate','semiarid','no',['Csa','BSh','BSk','Csb']),['sagewhorl','cane','heath'],
+  HV('none',[],true,'A felted grey sage whose flowers ring the stem in whorls, one above another, five or six to a stem: the dry slopes\' summer yellow, a lilac on the canyon\'s benches. Medicinal (a tea); bees. 0.4-1 m.','herb'),{station:1}),
  tiergrass:PK('Tiergrass',K('temperate..cold','semiarid','no',['Csa','BSh','BSk','Dsc','BWk']),['tiergrass'],
   HV('thatch',['seed (in a lean year)'],false,'The herds\' bunchgrass: its tufts sit on the lips of the terracettes, the little soil steps that line every grazed slope. Fodder.','pasture'),{station:1}),
  bandlichen:PK('Band lichen',K('temperate..polar','arid..subhumid','no',['Csa','BSh','BSk','Dsc','ET']),['lichen'],
@@ -118,6 +123,12 @@ G.whorl=function(){const pos=[],uv=[],nor=[],n=8;for(let k=0;k<n;k++){const a=k/
 G.cushion=function(){const P=[[.001,0],[.5,0],[.5,.14],[.4,.18],[.38,.32],[.28,.36],[.26,.48],[.15,.52],[.13,.6],[.001,.62]].map(([r,y])=>new T3.Vector2(r,y));
   return new T3.LatheGeometry(P,12);};   /* the axis points a millimetre off it: no zero-area faces at the poles */
 /* THE PAGODA BUSH'S DISC: a squat drum (the season's flush, seen edge-on), a unit across, 0.1 thick; its top a flat card (G.flat, the item 'pagoda') */
+/* A TERRACETTE'S LIP: a strip of trampled soil a unit long along +x, its riser facing downhill (-z) from y -.6 (sunk) to the lip at y .5, the lip
+   rounding over and the tread running uphill (+z) back into the ground; the ends taper so a row of strips reads as one line */
+G.tlip=function(){const P=[[0,-.6],[.05,.2],[.14,.46],[.26,.5],[.5,.38],[.85,-.25]],nx=3,pos=[],idx=[];
+  for(let i=0;i<=nx;i++){const x=i/nx-.5,hk=Math.pow(Math.sin(Math.PI*(i/nx)),.6)*.9+.1;P.forEach(([z,y])=>pos.push(x,y<0?y:y*hk,z));}
+  const m=P.length;for(let i=0;i<nx;i++)for(let j=0;j<m-1;j++){const a=i*m+j,b=a+m;idx.push(a,b,a+1,a+1,b,b+1);}
+  const g=new T3.BufferGeometry();g.setAttribute('position',new T3.Float32BufferAttribute(pos,3));g.setIndex(idx);g.computeVertexNormals();return g;};
 G.pdisc=function(){return new T3.CylinderGeometry(.5,.42,.1,10,1,false);};
 G.column=function(){return new T3.CylinderGeometry(.5,.5,1,6,1,false).translate(0,.5,0);};
 TIERS.G=G;
@@ -169,6 +180,9 @@ BIO.def('boulder',new T3.IcosahedronGeometry(1,1),M.rock,{label:'Boulders (basal
 BIO.def('stone',new T3.IcosahedronGeometry(1,0),M.rock,{label:'Stones (basalt cobbles)'});
 BIO.def('column',G.column(),M.rock,{label:'Fallen basalt columns'});
 BIO.def('pagoda',G.flat(),M.pagoda,{label:'Pagoda bush discs (the leaf tops; card.saltbush)'});
+/* a tier sage's whorl: a ring of flowers round the stem (a flattened torus) */
+BIO.def('sagewhorl',new T3.TorusGeometry(.5,.28,3,6).rotateX(Math.PI/2),M.solid,{label:'Tier sage flower whorls (stacked up the stem)'});
+BIO.def('tlip',G.tlip(),M.rock,{label:'Terracettes (the soil steps on the grazed slopes: their lips)'});
 BIO.def('pdisc',G.pdisc(),M.rock,{label:'Pagoda bush discs (the drums) and stems'});
 BIO.def('cushion',G.cushion(),M.cushion,{label:'Stack cushions (terraced mounds, a step a decade; surface.cushion)'});
 })();

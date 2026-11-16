@@ -16,22 +16,25 @@ From `core/terrain/` (shared; see `core/README.md`): `35-core-strata.js`, `37-co
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 1 |  |
+| `44g-biome-tiers-flood.js` | 4 |  |
 | `44r-biome-tiers-strata.js` | 5 |  |
+| `44t-biome-tiers-terracettes.js` | 4 |  |
 | `44v-host-landlib.js` | 8 |  |
 | `45-host-stage.js` | 27 | the climate fields, cached (the land's fieldsAt: (32); the host binding (50); the ground (61); the rock bodies (KSTACKS, 44w: the Black Step's  (199); the water (223) |
-| `50-biome-tiers-species.js` | 19 | palettes (sRGB; a library card with keep 0 takes (21); the plants and their tags (34); the tree-scale species (55 builds them) (65); procedural textures (the fallback when the page  (77); geometries (98); materials (the slots are materials.json's famili (125); instanced items (153) |
-| `55-biome-tiers-trees.js` | 20 | zones from the fields (the host's: biomes/WORLD. (18); colour (49); polyline helpers (54); the builders: (T, st, lv) with lv 2 near, 1 mid (67); the far level: the tiers in silhouette (a flatte (137); keep-clear between trees (core/space) (151); one tree: the shape every kit's make/grow has (a (157); the passes (data: species, cell, acceptance from (162) |
-| `60-biome-tiers-floor.js` | 11 | the planters, by zone: (x,z,Z,lv,st) (31); the pass (51) |
+| `50-biome-tiers-species.js` | 20 | palettes (sRGB; a library card with keep 0 takes (21); the plants and their tags (36); the tree-scale species (55 builds them) (70); procedural textures (the fallback when the page  (82); geometries (103); materials (the slots are materials.json's famili (136); instanced items (164) |
+| `55-biome-tiers-trees.js` | 20 | zones from the fields (the host's: biomes/WORLD. (18); colour (49); polyline helpers (54); the builders: (T, st, lv) with lv 2 near, 1 mid (67); the far level: the tiers in silhouette (a flatte (138); keep-clear between trees (core/space) (153); one tree: the shape every kit's make/grow has (a (159); the passes (data: species, cell, acceptance from (164) |
+| `60-biome-tiers-floor.js` | 14 | the planters, by zone: (x,z,Z,lv,st) (42); the pass (71) |
 | `70-biome-tiers.js` | <1 |  |
 | `83-host-far.js` | 4 |  |
 | `84-host-horizon.js` | 1 |  |
 | `87-host-kin.js` | 3 |  |
-| `88-host-hazard.js` | 2 |  |
+| `88-host-hazard.js` | 3 |  |
 | `89-host-sky.js` | 1 |  |
 | `89a-host-atmos.js` | 2 |  |
+| `89f-host-flood.js` | 5 |  |
 | `89w-host-water.js` | 5 |  |
 | `89z-host-build.js` | 6 |  |
-| `99-host-take.js` | 19 | the inspector's words (24); the probe's budgets and the kit's own checks (ve (37); the page, handed to the host (144) |
+| `99-host-take.js` | 20 | the inspector's words (24); the probe's budgets and the kit's own checks (ve (37); the page, handed to the host (149) |
 | `99-tail.html` | <1 |  |
 
 ## stations/
@@ -40,7 +43,7 @@ Each station builds one page (`build.py --station <name>`) from its own fragment
 
 | Station | Fragments | KB |
 |---|---|---|
-| canyon | 44f-host-far-data.js, 44w-host-land.js, 86-host-seat.js | 140 |
-| lake | 44f-host-far-data.js, 44w-host-land.js, 86-host-village.js | 136 |
+| canyon | 44f-host-far-data.js, 44w-host-land.js, 86-host-seat.js | 142 |
+| lake | 44f-host-far-data.js, 44w-host-land.js, 86-host-village.js | 137 |
 | lip | 44f-host-far-data.js, 44w-host-land.js, 89w2-host-outfall.js | 134 |
-| tread | 44f-host-far-data.js, 44w-host-land.js, 86-host-camp.js | 137 |
+| tread | 44f-host-far-data.js, 44w-host-land.js, 86-host-camp.js | 138 |

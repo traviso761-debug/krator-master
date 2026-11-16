@@ -68,6 +68,12 @@ var ROCKS=[];
   tiers:b.t.map(([h,r,e,ry])=>({h,r,e,ry})),bed:[2,5],weather:.6,shoulder:b.t.length>2?{h:10,back:6,bed:[1.5,3]}:null}));});
  ROCKS.forEach((S,i)=>{S.name=i<3?'A butte off the lower riser (the great tread\'s outlier, grey sandstone)':'A butte off the next step (an outlier on the tread)';});})();
 STATION.ROCK.push(...ROCKS);
+/* THE GORGE'S FLASH FLOOD (44g: TIERS_FLOOD): a storm on the next step drains into the dry gorge and runs from its sapped head to the hanging lip
+   and over it; the floor's width, 3 m at the crest, its front 4 m/s (the lip ~11 minutes after the head) (89f draws it; 88 registers its segments) */
+/* the line from 80 m into the sapped head (its tip is the bowl's wall) to the hanging lip */
+const GORGE_LINE=(function(){const G=STATION.GL,a=G[0],b=G[1],l=Math.hypot(b[0]-a[0],b[1]-a[1]);return[[a[0]+(b[0]-a[0])*80/l,a[1]+(b[1]-a[1])*80/l],...G.slice(1)];})();
+STATION.FLOODS=[TIERS_FLOOD({id:'tiers-gorge-flood',name:'The dry gorge\'s flash flood',line:GORGE_LINE,floor:(x,z)=>STATION.terrainH(x,z),w:22,depth:3,seg:80,front:4,period:2400,
+ tell:{sign:'a roar up the gorge under a storm on the next step, drift lines of grey mud on the walls, the cobbles freshly sorted',colour:'#6a5a4a'}})];
 const TERR=STATION.TERR,LAKES=STATION.LAKES,RIVER_SPEC=null,FALLS=[],SPINE=STATION.SPINE,STRATA=STATION.STRATA,ROCK=STATION.ROCK;
 function terrainH(x,z){return STATION.terrainH(x,z);}
 function waterH(x,z){return STATION.waterH(x,z);}
@@ -77,7 +83,7 @@ const LAND={name:'The Great Tread (tiers station 4)',title:'Krator biome — the
  region:{name:'The Great Tread (station 4)',x:0,z:0,r:TERR.R},sky:{px:SITE.sky[0],py:SITE.sky[1]},atm:atmAt(4637),cloud:.12,
  fog:{falloff:1/1400,sun:.25,sky:.25},climate:{},wet:false,groundN:780,
  groundLayers:['steppe','pave','lichen','gravel'],
- plants:['tiergrass','pagoda','cushion','lichen','boulder','stone'],
+ plants:['tiergrass','pagoda','cushion','lichen','boulder','stone','tlip'],
  modelTol:40,
  /* THE HOUR: 16:30, the sun low in the north-west: the risers' faces (they look south-west) lit along their strike, the tread's stones long-shadowed */
  hour:16.5,
@@ -105,6 +111,7 @@ const LAND={name:'The Great Tread (tiers station 4)',title:'Krator biome — the
    const m=STATION.GL[2];out.push({name:'The dry gorge\'s stepped walls',kind:'fall',x:m[0],z:m[1],r:200,h:20,danger:.4,tell:{sign:'ledges of grey rock dropping in steps to a cobble floor'}});}
   /* the cold: frost every night of the year, -21 degC in the worst of winter (cold), and the tread's dust storms (exposure) */
   out.push({name:'The tread\'s night frost (-11 degC the coldest month\'s mean)',kind:'cold',x:0,z:0,r:2400,h:40,danger:.35,tell:{sign:'rime on the stones at dawn, a herder\'s fire'}});
+  STATION.FLOODS.forEach(F=>out.push(...F.records));   /* the gorge's flash flood (drown on a cycle, the current's pull) */
   return out;},
  hazardMin:6,
  views:H=>{const {look,atRec,nearRec}=H,G=STATION.GL;
