@@ -369,11 +369,17 @@ and the cupping table. They go into the Xanadu culture file through the catalog'
 
 ## 9. Textures
 
-The Xanadu pack and the Qiblai kit's pack cover the walls, roofs, gold and wood. Two surfaces may want sets of their own. They
-go to `core/materials/PROMPTS-NEEDED.md` only if the owner wants them (question 10):
-- **bamboo tray weave**, for the withering trays and the drying racks;
-- **tea-hedge foliage**, a clipped, glossy dark-green leaf mass for the hedges' tops, unless the crops kit's or the Oidong
-  kit's tea card serves.
+The Xanadu pack and the Qiblai kit's pack cover the walls, roofs, gold and wood. **Question 10 is settled (the owner,
+2026-11-16: "we can make new textures").** The library already holds most of what the estate needs, so only one set is
+generated:
+- **the trays and racks:** `fibre.cane`, the weathered bamboo basket weave, from the library;
+- **the terraces' soil:** `ground.terrace.field`, or `ground.redsoil` on the High Garden, from the library;
+- **the nursery's bush:** `card.crop.tea`, the crops kit's card, from the library;
+- **the clipped hedges:** `foliage.tea.clipped`, **owed**. It is a new generic id (any clipped evergreen hedge can take
+  it), and its prompt is in `core/materials/PROMPTS-NEEDED.md` section 57.
+
+They become families in `settlements/viridian/materials.json`, packed by `python3 tools/textures/pack.py settlements/viridian`,
+once the tea's set arrives. The library's three are wired then too, in one pack.
 
 ## 10. Core adoption (write in full before the first fragment)
 
@@ -537,7 +543,12 @@ continue next step of build"; where a question is open, the plan's recommended a
 - **The flora** is the Vale of Xanadu's biome: forest on the open slopes, a shade tree here and there in the tea.
 - **The mist** is the sky's fog, thickened, so the scarp's top goes grey.
 - **Checked:** `verify.py` adds `estate-laid`, `bench-level`, `terraces-cut` and `tea-on-treads`; all four pass in the
-  in-app browser. The GPU run's result is in the commit that carries it.
+  in-app browser, and **the GPU verify passes on the rtx lane** (2026-11-16, the page of a7e376a92):
+  - every universal assert is clean;
+  - 15.9M of 16M triangles at the overview, 324 draw calls;
+  - the eye stands clear in all eight views.
+
+  The overview sits at the budget's edge, so the next pass thins the far tea or the flora (`KNOWN_ISSUES.md`).
 
 ## 12b. What the page assumed where a question is open (*proposed*)
 
@@ -550,7 +561,7 @@ continue next step of build"; where a question is open, the plan's recommended a
 | 6, the dress | white wash on the working buildings, the green on the sacred (recommended; `VT_DRESS`) |
 | 8, the cloud hermitages | **left out**: the plan gives no recommendation (the record exists, on the sheet) |
 | 9, the valley village | **left out**: the plan gives no recommendation |
-| 10, textures | the packs only |
+| 10, textures | **settled since** (the owner: "we can make new textures"): section 9; the page still wears the packs until the tea's set arrives |
 | 13, building it | the page now, before core/world cuts the region: this build cut its own region from the committed model, and the bench is a pad, not a landform (V1's `lf_viridian_bench` waits on the owner) |
 
 Questions 2, 7, 11 and 12 do not change the page. The dry garden's grange is 6 km off, beyond this page (V7).
@@ -578,7 +589,9 @@ Questions 2, 7, 11 and 12 do not change the page. The dry garden's grange is 6 k
 8. **The cloud hermitages** on the face at about 1,500 m: in, or not?
 9. **A valley village** on the floor below the hollow (about 957,1561, rice and grain, 100-200 people) to feed the estate, or
    all its grain from Qiblai?
-10. **Textures.** Ask for bamboo tray weave and tea-hedge foliage (section 9), or stay on the packs?
+10. ~~**Textures.**~~ **Settled (the owner, 2026-11-16): "we can make new textures".** One set is owed,
+    `foliage.tea.clipped` (`core/materials/PROMPTS-NEEDED.md` section 57); the trays, the soil and the nursery's bush come
+    from the library (section 9).
 11. **The White Lily's share.** 70 % of the herbs to the Qiblai hospital, 10 % to the Lily's house at Kirstabal and 20 % kept:
     right? And should the dream reagents (bell-pod, moon caps) also go to the Azure Dream's Hall of Dreaming?
 12. **A name** for the head house and its estate. A working name is *Misṭ-Gārḍan* (the Mist Garden), in the tune's spelling

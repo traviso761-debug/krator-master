@@ -17,6 +17,11 @@
   treads. Beyond it the near ground carries the rows painted at about 1 m a pixel, and its 8 m cells lie under the terraces
   (smooth), so the treads read only on the fine ground. Where the two meet, the near ground's edge sinks 0.8 m under the fine
   ground's.
+- **The estate's overview is at its budget's edge.** It draws 15.9M of 16M triangles: the near forest and the 149k tea
+  blocks. The next pass thins the far tea (a coarser block or a level of detail) or the flora's far rings.
+- **The tea's own texture is owed.** `foliage.tea.clipped` (`core/materials/PROMPTS-NEEDED.md` section 57). Until it
+  arrives the tea's blocks wear the Qiblai pack's grass in three greens. With it come `fibre.cane` (the trays),
+  `ground.terrace.field` and `ground.redsoil` (the treads), and `card.crop.tea`, packed from `materials.json`.
 - **The physic garden is thin in `kits/crops`.** On the wet ground only three bed crops fit and are not shade crops:
   bell-pod, camphor and circle lichen. The Vale's wild medicinal plants (ginkgo, cloud pine, whorl olive, frost willow,
   silverscrub, beard tree) are biome tags, not crop records. That is question 5; a crops-kit change if the owner wants it.
