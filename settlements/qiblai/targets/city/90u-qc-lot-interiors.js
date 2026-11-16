@@ -24,12 +24,17 @@ const QC_LIX=(function(){const S={lots:[],types:{},nTypes:0,built:0,clones:0,noS
  const hosts=new Set(((typeof QC_IX!=='undefined'&&QC_IX.rooms)||[]).map(R=>R.host).filter(Boolean));   /* a lot that holds one of 90t's great rooms keeps that room */
  const byId=new Map();for(const D of KDOOR.list){const m=/^(.*)\.\d+(#\d+)?$/.exec(D.id);if(m)(byId.get(m[1])||byId.set(m[1],[]).get(m[1])).push(D);}   /* a builder's doors by their placement: key@x,z */
  S.doors=0;S.walked=0;S.walk=typeof KWALK!=='undefined'?KWALK:null;
- const addLot=(p,id,sh,prog)=>{const pose={x:p.x,z:p.z,y:qcD(p.o.y,0),ry:p.ry},dr=qnIxDoorOf(sh,pose,byId.get(p.key+'@'+Math.round(p.x)+','+Math.round(p.z)));if(dr)S.doors++;
+ const addLot=(p,id,sh,prog)=>{const pose={x:p.x,z:p.z,y:qcD(p.o.y,0),ry:p.ry},dr=qnIxDoorOf(sh,pose,byId.get(p.key+'@'+Math.round(p.x)+','+Math.round(p.z)))||(QB_IX_ARCH[p.key]?Object.assign({D:null},QB_IX_ARCH[p.key]):null);if(dr)S.doors++;   /* an archway house: its arch's place (QB_IX_ARCH) */
   const tk=p.key+'|'+sh.sig+'|'+(dr?dr.n.join(',')+','+dr.t+','+dr.w+','+dr.h:'-'),c=loc(p.x,p.z,sh.x,sh.z,p.ry);
-  if(!S.types[tk]){S.types[tk]={tk,key:p.key,sh,prog:prog||null,door:dr?{n:dr.n,t:dr.t,w:dr.w,h:dr.h}:null,n:0,T:null,tried:false};S.nTypes++;}S.types[tk].n++;
+  if(!S.types[tk]){S.types[tk]={tk,key:p.key,sh,prog:prog||null,door:dr?{n:dr.n,t:dr.t,w:dr.w,h:dr.h,noPortal:!!dr.noPortal}:null,n:0,T:null,tried:false};S.nTypes++;}S.types[tk].n++;
   S.lots.push({p,id,tk,G:null,x:c[0],z:c[1],pose,D:dr?dr.D:null});};
- S.ranges=0;for(const p of QC_PLACE){if(p.kind!=='monastery'||!p.stacks)continue;let i=0;
-  for(const s of p.stacks){const dd=Math.min(s.w,s.d);if(dd<5.5||dd>7.5||Math.max(s.w,s.d)<14||s.hs[0]>4)continue;const sh=qnShellOf([s]);if(sh){addLot(p,p.id+'.range'+(i++),sh,QB_IX_MONKS);S.ranges++;}}
+ /* the gate markets' ranges (their shops) and the caravanserai's (its rooms) likewise (the owner, 2026-11-16: "finish all interiors") */
+ const RPROG={monastery:QB_IX_MONKS,market:QB_IX_MARKET,caravanserai:QB_IX_INN};
+ S.ranges=0;for(const p of QC_ALL){if(!RPROG[p.kind]||!p.stacks)continue;let i=0;
+  for(const s of p.stacks){const dd=Math.min(s.w,s.d);if(dd<5.5||dd>7.5||Math.max(s.w,s.d)<14||s.hs[0]>4.4)continue;const L=Math.max(s.w,s.d);
+   /* a gate market's front and back ranges have its passage through their middle: two shells, one each side of it */
+   const parts=p.kind==='market'&&Math.abs(s.x)<.5&&L>30?[-1,1].map(e=>{const c=loc(s.x,s.z,e*(L/4+1.15),0,s.ry);return Object.assign({},s,{x:c[0],z:c[1],w:L/2-2.3});}):[s];
+   for(const q of parts){const sh=qnShellOf([q]);if(sh){addLot(p,p.id+'.range'+(i++),sh,RPROG[p.kind]);S.ranges++;}}}
   p.stacks=null;}
  for(const p of QC_PLACE){if(p.kind!=='lot')continue;if(QB_IX_OPEN[p.key]||hosts.has(p)){p.stacks=null;S.open++;continue;}const sh=qnShellOf(p.stacks);p.stacks=null;
   if(!sh){S.noShell++;continue;}if(!qnIxProgram(p.key)){S.noProgram++;continue;}
@@ -62,11 +67,15 @@ const QC_LIX=(function(){const S={lots:[],types:{},nTypes:0,built:0,clones:0,noS
  // (KWALK.reach, the ground where no floor is) reaches every floor and stair of the house. The doors are shut again after
  S.walkIn=function(n){const out=[];if(!S.walk)return{error:'no core/walk on the page'};
   for(const ty of Object.values(S.types).filter(ty=>ty.T&&ty.door).sort((a,b)=>b.n-a.n).slice(0,n==null?6:n)){
-   const L=S.lots.find(L=>L.tk===ty.tk&&L.D);if(!L)continue;if(!L.G)S.place(L);const D=L.D,ox=Math.sin(D.yaw),oz=Math.cos(D.yaw),tag='interior:'+L.id;
-   KDOOR.close(D);for(let i=0;i<40;i++)KDOOR.step(.1);const shut=!!S.walk.blocked(D.at[0],D.at[1]+.1,D.at[2],.3,1.6);KDOOR.open(D,{by:'player'});for(let i=0;i<40;i++)KDOOR.step(.1);
-   const open=!S.walk.blocked(D.at[0],D.at[1]+.1,D.at[2],.3,1.6),sx=D.at[0]+ox*2.6,sz=D.at[2]+oz*2.6,sf=S.walk.floorBelow(sx,sz,D.at[1],.1),rb=Math.max(ty.sh.w,ty.sh.d)/2+8;
+   const L=S.lots.find(L=>L.tk===ty.tk);if(!L)continue;if(!L.G)S.place(L);const tag='interior:'+L.id,P0=L.pose;
+   /* the way in: the door record, or an archway house's arch (its place in the type's plan, turned to the lot) */
+   const ar=!L.D&&ty.T.door,w0=ar?loc(P0.x,P0.z,ar.at[0],ar.at[1],P0.ry):null,ay=ar?P0.ry+ty.sh.ry+Math.atan2(ty.door.n[0],ty.door.n[1]):0;
+   const D=L.D||{at:[w0[0],P0.y+ty.sh.y,w0[1]],yaw:ay,blocks:[]},ox=Math.sin(D.yaw),oz=Math.cos(D.yaw);
+   let shut=true,open=true;if(L.D){KDOOR.close(D);for(let i=0;i<40;i++)KDOOR.step(.1);shut=!!S.walk.blocked(D.at[0],D.at[1]+.1,D.at[2],.3,1.6);KDOOR.open(D,{by:'player'});for(let i=0;i<40;i++)KDOOR.step(.1);
+    open=!S.walk.blocked(D.at[0],D.at[1]+.1,D.at[2],.3,1.6);}
+   const sx=D.at[0]+ox*2.6,sz=D.at[2]+oz*2.6,sf=S.walk.floorBelow(sx,sz,D.at[1],.1),rb=Math.max(ty.sh.w,ty.sh.d)/2+8;
    const R=S.walk.reach([[sx,Math.max(terrainH(sx,sz),sf?sf[0]:-1e9),sz]],{ground:terrainH,box:[L.x-rb,L.x+rb,L.z-rb,L.z+rb]}),mine=F=>F.tag===tag;
-   const un=R.unreached.filter(mine).map(F=>F.name.split('.').slice(-3).join('.'));KDOOR.close(D);for(let i=0;i<40;i++)KDOOR.step(.1);
+   const un=R.unreached.filter(mine).map(F=>F.name.split('.').slice(-3).join('.'));if(L.D){KDOOR.close(D);for(let i=0;i<40;i++)KDOOR.step(.1);}
    out.push({key:ty.key+(ty.prog?' ('+ty.prog.name+')':''),lot:L.id,shut,open,floors:R.reached.filter(mine).length,unreached:un,ok:shut&&open&&!un.length&&R.reached.some(mine)});}
   return out;};
  S.buildTypes=function(n){const L=Object.values(S.types).sort((a,b)=>b.n-a.n).slice(0,n==null?8:n);L.forEach(S.buildType);report();return window._qiblaiLix;};

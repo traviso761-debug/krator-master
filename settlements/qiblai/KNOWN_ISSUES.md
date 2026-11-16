@@ -26,9 +26,9 @@
 - [ ] **The lots' interiors are guessed from the drawing** (`targets/city/90u-qc-lot-interiors.js`, kits/qiblai `89q5s`): the
   shell is the biggest storey stack (or ground block) a builder raised from the ground, with the stacks raised on it as its upper
   storeys (at most four); the stair (or, in the smallest houses, a ladder) is the planner's, not the drawing's. Storeys on
-  terraces set back from the main block (`qnTerraces`) keep no interior. The street door is the drawn one (2026-11-16) on 993 of
-  1,020 lots; 23 Xanadu courtyard houses (`xa_rich_c`) and a few others draw no door, so their plan keeps the front's middle,
-  with no doorway drawn through and nothing unlocked: their rooms are reached by flying in.
+  terraces set back from the main block (`qnTerraces`) keep no interior. The street door is the drawn one (2026-11-16) on every
+  lot: a door record up to 1.3 m in front of the wall (the manor's iwan) or, for the Xanadu merchant's konak, which draws its
+  way in as an arch with two plain timber leaves ajar (no door record), the arch's place (`QB_IX_ARCH`).
 - [ ] **Walking in is through solid bodies made to look hollow** (2026-11-16): the kit's buildings are solid, so a street doorway
   shows its room through a depth-only pane (`QB_IX_PORTAL`: the room drawn first, at renderOrder -2, the pane at -1, the body
   after). Something drawn after the body and behind the pane (a citizen in the doorway, a leaf swung inward) is hidden there;
@@ -42,6 +42,9 @@
   the ground from the open world's cut (`cut_site.py`), are still to do (PLAN.md Q7b). The country is a gentle plane.
 - [ ] **The inner gates sit on the upper terrace** with an ashlar block under them; the avenue's climb through each gate is the
   ground's slope, not a stair (`qb_terrace_stair`, PLAN.md Q7a, is not built yet).
-- [ ] **The wheel houses, gate markets, city gates and the caravanserai have no interior yet** (the wheel houses are open on
-  their front, the wheel inside); the shrines' chapels are seen through their window, not walked into (2.2 by 1.8 m).
+- [ ] **Every building has its interior now (2026-11-16), with these limits:** the shrines' chapels are seen through their window,
+  not walked into (2.2 by 1.8 m); the chortens and the kora's arcades are solid or open, with nothing inside. Twelve city gates
+  (the inner rings' 6 m and 4 m terraces, the outer wall's drop to the country) have no stair down on their lower side
+  (`qb_terrace_stair`, above): their passages and guard rooms are walked into from the city side only. The wheel houses, the
+  great wheel and the monasteries' and markets' courts are floors to the walker; the rest of the open ground is the terrain.
 - [ ] **Life (Q7e), the open world (Q7f), the Godot export and the gallery (Q7g)** are not started.

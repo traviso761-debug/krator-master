@@ -45,10 +45,10 @@ CITY_JS = r"""
  R.push({name:'people-by-ring',ok:!bad.length,budget:true,detail:Object.keys(T).map(k=>k+' '+(P[k]||0)+' / '+T[k]).join(', ')+'; total '+(P.total||0)+' / ~12,000'});
  const sh=Q.xanaduShare||0;R.push({name:'xanadu-share',ok:sh>=.28&&sh<=.38,budget:true,detail:(sh*100).toFixed(1)+' % of the lay houses the Xanadu kit\'s (the owner: 33 %)'});
  const I0=window._qiblaiIx,pre=I0?I0.built:0,I=I0&&I0.buildAll?I0.buildAll():I0,X=I&&I.tex;
- R.push({name:'interiors-on-demand',ok:!!(I&&I.rooms.length>=19&&I.built===I.rooms.length&&I.byRoom.length===I.rooms.length&&I.byRoom.every(r=>r.ok&&r.pieces>0)&&!I.fails.length&&X&&X.meshes&&X.mapped===X.meshes),
+ R.push({name:'interiors-on-demand',ok:!!(I&&I.rooms.length>=100&&I.built===I.rooms.length&&I.byRoom.length>=60&&I.byRoom.every(r=>r.ok&&r.pieces>0)&&!I.fails.length&&X&&X.meshes&&X.mapped===X.meshes),
   detail:I?(I.rooms.length+' rooms ('+pre+' built before the check), '+I.pieces+' pieces, '+I.ms+' ms; '+I.byRoom.map(r=>r.room+' '+r.pieces).join(', ')+(I.fails.length?'; FAILS '+I.fails.join(' | '):'')+(X?'; textured '+X.mapped+'/'+X.meshes+(X.bare.length?' bare: '+X.bare.join(','):''):'')):'window._qiblaiIx missing (targets/city/90t-qc-interiors.js)'});
  const WR=I0&&I0.walkIn?I0.walkIn():null,wrb=WR&&WR.length?WR.filter(w=>!w.ok):[];
- R.push({name:'walk-in-rooms',ok:!!(WR&&WR.length>=15&&!wrb.length),
+ R.push({name:'walk-in-rooms',ok:!!(WR&&WR.length>=100&&!wrb.length),
   detail:!WR?'window._qiblaiIx.walkIn missing (targets/city/90t-qc-interiors.js)':WR.error?WR.error:WR.length+' routes walked: the street through each monastery gate to its court and halls, each other room from its door'+
    (wrb.length?'; FAIL '+wrb.map(w=>w.at+' missed '+w.miss.join(', ')).join(' | '):'')});
  const J0=window._qiblaiLix,J=J0&&J0.buildTypes?J0.buildTypes(8):J0,share=J?J.lots/Math.max(1,J.lots+J.noShell+J.noProgram):0;

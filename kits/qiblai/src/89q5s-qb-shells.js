@@ -21,6 +21,10 @@ const QB_SHELLREC={cur:null};
 const QB_IX_OPEN={qb_shrine:1,qb_wheel_house:1,qb_chorten:1,qb_kora_arcade:1,qb_kora_corner:1};
 // the monks' quarters in a great monastery's cell range (settlements/qiblai 90u; prog for qnIxType): the chapel by the court door,
 // the kitchen, dormitories and a store on the ground storey; dormitories and a reading room above
+// the shops of a gate market's range (shops and their stores below, the shopkeepers' rooms above) and the caravanserai's
+// (a common room, its kitchen, a store and a stable below; the merchants' rooms above)
+const QB_IX_MARKET={name:'market',wealth:.5,program:(l,a)=>l?(a>=120?['bedroom','store','bedroom']:['bedroom','store']):(a>=120?['shop','store','shop','store']:['shop','store'])};
+const QB_IX_INN={name:'inn',wealth:.45,program:(l,a)=>l?(a>=120?['bedroom','bedroom','bedroom','store']:['bedroom','bedroom']):(a>=120?['tavern','kitchen','store','stable']:['tavern','store'])};
 const QB_IX_MONKS={name:'monks',wealth:.4,program:(l,a)=>l?(a>=150?['dormitory','study','dormitory','store']:['dormitory','study']):(a>=150?['shrine','kitchen','dormitory','store']:['shrine','dormitory'])};
 // the shell from a building's listed stacks: the biggest footprint standing on the ground (base within 2.6 m), at least 4 x 4 m
 // and a 2.4 m storey; then its upper storeys: a stack raised on its top (within 0.4 m), centred on it (within 1 m), at least
@@ -87,8 +91,8 @@ function qnIxType(shell,key,seed,door,prog){const P=prog||qnIxProgram(key),IX=ty
  for(const S of B.stairs||[])if(S.centre)qnIxStair(S,xC(0x7a5a3c));
  /* the street doorway through the wall's depth (the face to the lining): two jambs, a lintel, a threshold */
  const fw=side?shell.w/2:shell.d/2,dep=fw-(side?hw:hd)+.02,mid=(fw+(side?hw:hd))/2,bry=shell.ry+(side?Math.PI/2:0),dh=Math.max(2,Math.min(Dr.h,hs[0]-.3));
- if(door)for(const e of[-1,1]){const q=fp(mid,tt+e*(dw/2+.06));vB('xWashB',q[0],shell.y,q[1],.12,dh+.05,dep,bry,w0);}
- if(door){const q=fp(mid,tt);vB('xWashB',q[0],shell.y+dh,q[1],dw+.24,.25,dep,bry,w0);vB('qPlankB',q[0],shell.y,q[1],dw,.06,dep,bry,xC(0xf0e8dc));}
+ if(door&&!door.noPortal)for(const e of[-1,1]){const q=fp(mid,tt+e*(dw/2+.06));vB('xWashB',q[0],shell.y,q[1],.12,dh+.05,dep,bry,w0);}
+ if(door&&!door.noPortal){const q=fp(mid,tt);vB('xWashB',q[0],shell.y+dh,q[1],dw+.24,.25,dep,bry,w0);vB('qPlankB',q[0],shell.y,q[1],dw,.06,dep,bry,xC(0xf0e8dc));}
  KXF=saveK;kbake(G);for(const k in KIT.items)KIT.items[k].length=0;
  /* the upper floors: a plank slab over a lacquered ceiling, each with its stair's well cut out */
  if(Lv.length>1){const mC=qnIxCeilMat(ceilC.getHex());for(const F of B.floors||[]){if(!F.level)continue;
@@ -97,9 +101,12 @@ function qnIxType(shell,key,seed,door,prog){const P=prog||qnIxProgram(key),IX=ty
  const F=qnFurnishRooms(rooms,G,{seed:33871+(seed|0),noTags:true,perType:3,passes:2,backtrack:4,name:'furniture:'+key});
  /* drawn before the page (renderOrder -2), then the portal (-1) on the face, then the body, whose face the portal hides */
  G.traverse(o=>{if(o.isMesh)o.renderOrder=-2;});
- if(door){const q=fp(fw+.012,tt),m=new THREE.Mesh(new THREE.PlaneGeometry(dw,dh),QB_IX_PORTAL);m.position.set(q[0],shell.y+dh/2,q[1]);
+ if(door&&!door.noPortal){const q=fp(fw+.012,tt),m=new THREE.Mesh(new THREE.PlaneGeometry(dw,dh),QB_IX_PORTAL);m.position.set(q[0],shell.y+dh/2,q[1]);
   m.rotation.y=shell.ry+Math.atan2(Dr.n[0],Dr.n[1]);m.renderOrder=-1;m.castShadow=m.receiveShadow=false;m.raycast=()=>{};m.userData.probeSkip=true;m.name='portal';G.add(m);}
  return{G,plan:B,F,program:P.name||P.program,door:{at:fp(side?hw:hd,tt),w:dw,h:dh},ms:Math.round(performance.now()-t0)};}
+// the Xanadu kit's houses whose way in is no door record (core/door) but an archway: the merchant's konak's arch with its two
+// timber leaves ajar (u 3.2 on its front). door.noPortal: a doorway walked through with no pane drawn in it
+const QB_IX_ARCH={xa_rich_c:{n:[0,1],t:3.2,w:2.4,h:3.2}};
 // the depth-only pane in a street doorway: it writes depth and no colour, so the body's solid face behind it (drawn later)
 // fails the depth test there and the room drawn before it shows (the kit's bodies are solid: the Vernacular's locked doors)
 const QB_IX_PORTAL=new THREE.MeshBasicMaterial({colorWrite:false});
@@ -109,8 +116,9 @@ const QB_IX_PORTAL=new THREE.MeshBasicMaterial({colorWrite:false});
 function qnIxDoorOf(shell,pose,doors){let best=null,bs=1e9;const c=Math.cos(pose.ry),s=Math.sin(pose.ry),c2=Math.cos(shell.ry),s2=Math.sin(shell.ry);
  for(const D of doors||[]){const dx=D.at[0]-pose.x,dz=D.at[2]-pose.z,u=dx*c-dz*s-shell.x,v=dx*s+dz*c-shell.z,su=u*c2-v*s2,sv=u*s2+v*c2;
   if(Math.abs(D.at[1]-pose.y-shell.y)>.35)continue;
-  let n=null,t=0;if(Math.abs(Math.abs(sv)-shell.d/2)<.6&&Math.abs(su)<shell.w/2){n=[0,sv>0?1:-1];t=su;}
-  else if(Math.abs(Math.abs(su)-shell.w/2)<.6&&Math.abs(sv)<shell.d/2){n=[su>0?1:-1,0];t=sv;}
+  /* on a face: within 0.6 m inside it, or up to 1.3 m out in front of it (a door at the front of a porch or an iwan: the manor's) */
+  const on=e=>e>-.6&&e<1.3;let n=null,t=0;if(on(Math.abs(sv)-shell.d/2)&&Math.abs(su)<shell.w/2){n=[0,sv>0?1:-1];t=su;}
+  else if(on(Math.abs(su)-shell.w/2)&&Math.abs(sv)<shell.d/2){n=[su>0?1:-1,0];t=sv;}
   if(!n)continue;const sc=(n[1]===1?0:100)+Math.abs(t);if(sc<bs){bs=sc;best={D,n,t:Math.round(t*10)/10,w:Math.round(D.w*10)/10,h:Math.round(D.h*10)/10};}}
  return best;}
 // a type's plan into a core/walk registry at a building's place (pose {x, z, y, ry}): kits/interiors' IX.walk.register on a

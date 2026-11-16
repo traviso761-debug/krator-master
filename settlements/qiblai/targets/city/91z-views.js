@@ -15,7 +15,10 @@ const VIEWS=(function(){const V={},S=QC_B.z1,E=QC_B.x1,L=QC_LM,L0=QC_LM;
  // height on the room's floor, toward the room's head
  for(const R of(QC_IX&&QC_IX.rooms)||[]){const y=R.o.y+1.7,gh=R.key==='qb_ix_gatehall',f=gh?loc(R.x,R.z,-R.o.W/2+1.1,R.o.D/2-1,R.ry):loc(R.x,R.z,0,R.o.D/2-2.2,R.ry),
   t=gh?loc(R.x,R.z,R.o.W/2,-R.o.D/6,R.ry):loc(R.x,R.z,0,-R.o.D/2+1,R.ry);   /* a gate hall: from a front corner across to the guardian kings on the far wall */
-  V['Inside: '+R.name]=[f[0],y,f[1],t[0],R.o.y+1.4,t[1]];}
+  /* one view for the first of the gate passages and guard rooms (there are 41 and 48), each of the others its own */
+  const one={qb_ix_passage:'Inside a city gate passage',qb_ix_guardroom:'Inside a city gate guard room'}[R.key];if(one&&V[one])continue;
+  if(R.key==='qb_ix_passage'&&!/gate passage \(qiblai:wall/i.test(R.name))continue;
+  V[one||'Inside: '+R.name]=R.key==='qb_ix_guardroom'?[f[0],y,f[1],loc(R.x,R.z,0,-R.o.D/2,R.ry)[0],R.o.y+1.2,loc(R.x,R.z,0,-R.o.D/2,R.ry)[1]]:[f[0],y,f[1],t[0],R.o.y+1.4,t[1]];}
  // inside a few of the lots' own interiors (90u-qc-lot-interiors.js, built when the camera comes): a lot of each kind nearest the
  // Temple Mountain, from just inside its street door toward the back
  if(typeof QC_LIX!=='undefined')for(const [key,name] of[['qb_row_mid','a row house'],['qb_row_rich','a rich row house'],['qb_shop_row','a shop'],['qb_workshop','a workshop']]){
@@ -38,7 +41,15 @@ const VIEWS=(function(){const V={},S=QC_B.z1,E=QC_B.x1,L=QC_LM,L0=QC_LM;
  if(typeof QC_LIX!=='undefined'){const Lm=QC_LIX.lots.find(L=>/^qb_monastery\|/.test(L.tk)&&L.D);const ty=Lm&&QC_LIX.types[Lm.tk],T=ty&&QC_LIX.buildType(ty);
   if(T){const R=T.plan.rooms.filter(r=>r.level===0).sort((a,b)=>b.area-a.area)[0],P=Lm.pose,cx=R.poly.reduce((a,q)=>a+q[0],0)/R.poly.length,cz=R.poly.reduce((a,q)=>a+q[1],0)/R.poly.length;
    const far=R.poly.slice().sort((a,b)=>Math.hypot(b[0]-cx,b[1]-cz)-Math.hypot(a[0]-cx,a[1]-cz))[0],e=loc(P.x,P.z,cx-(far[0]-cx)*.4,cz-(far[1]-cz)*.4,P.ry),g=loc(P.x,P.z,far[0],far[1],P.ry),yy=P.y+R.y+1.6;
-   V['Inside the monks quarters']=[e[0],yy,e[1],g[0],yy-.4,g[1]];}}
+   V['Inside the monks quarters']=[e[0],yy,e[1],g[0],yy-.4,g[1]];}
+  /* likewise a gate market's shops and the caravanserai's rooms (2026-11-16: "finish all interiors") */
+  for(const [rx,nm] of[[/^qb_gate_market(_half)?\|/,'Inside a gate market shop'],[/^qb_caravanserai\|/,'Inside the caravanserai']]){const Lr=QC_LIX.lots.find(L=>rx.test(L.tk)&&L.D),tr=Lr&&QC_LIX.types[Lr.tk],Tr=tr&&QC_LIX.buildType(tr);if(!Tr)continue;
+   const R=Tr.plan.rooms.filter(r=>r.level===0).sort((a,b)=>b.area-a.area)[0],P=Lr.pose,cx=R.poly.reduce((a,q)=>a+q[0],0)/R.poly.length,cz=R.poly.reduce((a,q)=>a+q[1],0)/R.poly.length;
+   const far=R.poly.slice().sort((a,b)=>Math.hypot(b[0]-cx,b[1]-cz)-Math.hypot(a[0]-cx,a[1]-cz))[0],e=loc(P.x,P.z,cx-(far[0]-cx)*.4,cz-(far[1]-cz)*.4,P.ry),g=loc(P.x,P.z,far[0],far[1],P.ry),yy=P.y+R.y+1.6;
+   V[nm]=[e[0],yy,e[1],g[0],yy-.4,g[1]];}}
+ // a wheel house nearest the Temple Mountain, from its open front: the wheel, the hangings, the lamps
+ const wh=QC_PLACE.filter(p=>p.key==='qb_wheel_house').sort((a,b)=>Math.hypot(a.x-L0.x,a.z-L0.z)-Math.hypot(b.x-L0.x,b.z-L0.z))[0];
+ if(wh){const y=qcD(wh.o.y,0),e=loc(wh.x,wh.z,2.2,5.2,wh.ry),g=loc(wh.x,wh.z,-1.5,-4.8,wh.ry);V['Inside a wheel house']=[e[0],y+.8+1.6,e[1],g[0],y+.8+1.8,g[1]];}
  // the four meditation gardens in the corners, each from above its two gates (from inside the city, looking to the corner)
  for(const p of QC_PLACE)if(p.kind==='meditation'){const sx=Math.sign(p.x-L.x),sz=Math.sign(p.z-L.z),cx=p.x-sx*52,cz=p.z-sz*52;
   V['Meditation garden: '+QMED[p.o.v].name]=[cx,terrainH(cx,cz)+34,cz,p.x,terrainH(p.x,p.z)+1,p.z];}

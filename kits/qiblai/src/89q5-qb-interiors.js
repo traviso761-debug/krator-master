@@ -26,13 +26,13 @@ function qnRoomRec(name,kind,wealth,lpoly,y,h,ldoors,lfix){const c=VERN.cur,s=(c
 function qnIxShell(W,D,cut,P,H,wallC,floorC,doors,ceilC,floorIt){floorIt=floorIt||'qPlankB';const t=cut?.6:.12,o=cut?t/2:-t/2,h=cut?1.6:H,y0=cut?P:0;
  if(cut)qnPlinth(0,0,W+2*t,D+2*t,P,0);
  vB(floorIt,0,y0,0,W,.06,D,0,floorC);   /* the floor: Qiblai's floorboards or the sanctum's marble mosaic, in their own colours (floorC a light wash over them) */
- const wall=(side)=>{const along=side==='s'||side==='n'?W:D,gs=(doors||[]).filter(d=>d[0]===side).map(d=>[d[1]-d[2]/2,d[1]+d[2]/2]).sort((a,b)=>a[0]-b[0]);
+ const wall=(side)=>{const along=side==='s'||side==='n'?W:D,gs=(doors||[]).filter(d=>d[0]===side).map(d=>[d[1]-d[2]/2,d[1]+d[2]/2,d[3]]).sort((a,b)=>a[0]-b[0]);
   const seg=(u0,u1)=>{if(u1-u0<.05)return;const m=(u0+u1)/2,L=u1-u0;
    if(side==='s')vB('xWashB',m,y0,D/2+o,L,h,t,0,wallC);else if(side==='n')vB('xWashB',m,y0,-D/2-o,L,h,t,0,wallC);
    else if(side==='e')vB('xWashB',W/2+o,y0,m,t,h,L,0,wallC);else vB('xWashB',-W/2-o,y0,m,t,h,L,0,wallC);};
   let u=-along/2-(cut&&(side==='e'||side==='w')?t:0);const end=along/2+(cut&&(side==='e'||side==='w')?t:0);
   for(const [g0,g1] of gs){seg(u,g0);u=g1;}seg(u,end);
-  if(!cut)for(const [g0,g1] of gs){const m=(g0+g1)/2,L=g1-g0,dh=Math.min(h-.4,3.6);   /* the lintel over a door gap, the dark reveal of the building's door behind it */
+  if(!cut)for(const [g0,g1,gh] of gs){const m=(g0+g1)/2,L=g1-g0,dh=Math.min(h-.4,gh==null?3.6:gh);if(dh>=h-.05)continue;   /* a door's 4th entry: its height (an arch's) */   /* the lintel over a door gap, the dark reveal of the building's door behind it */
    if(side==='s')vB('xWashB',m,y0+dh,D/2+o,L,h-dh,t,0,wallC);else if(side==='n')vB('xWashB',m,y0+dh,-D/2-o,L,h-dh,t,0,wallC);
    else if(side==='e')vB('xWashB',W/2+o,y0+dh,m,t,h-dh,L,0,wallC);else vB('xWashB',-W/2-o,y0+dh,m,t,h-dh,L,0,wallC);}};
  for(const s of['s','n','e','w'])wall(s);
@@ -173,8 +173,62 @@ function buildQbIxGateHall(G,o){reseed(33841+(o.v|0));const X=qnIxDims(o,9,7,4.2
 // yaw, w x h. Drawn at renderOrder -1, after the room (-2) and before the body whose solid face it hides
 function qnIxPortal(x,y,z,ry,w,h){const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),QB_IX_PORTAL);m.position.set(x,y+h/2,z);m.rotation.y=ry;
  m.renderOrder=-1;m.castShadow=m.receiveShadow=false;m.raycast=()=>{};m.userData.probeSkip=true;m.name='portal';return m;}
+// ---------------------------------------------------------------- a gate's passage (a city gate, the caravanserai's, a gate market's)
+// The way through a gate block (the owner, 2026-11-16: "finish all interiors"): the walls washed, a stone floor, the ceiling
+// lacquered; where it is long enough the four guardian kings painted two a side in gilt frames, rails of hand prayer wheels
+// under them (a narrow passage keeps its width clear), lamps in niches. o.dh: the arch's height (the passage open at both ends
+// to it); o.guard: a door 1.2 m wide in the middle of each side wall, to a guard room (qb_ix_guardroom) beside it. No catalog
+// furniture: a passage is kept clear.
+function buildQbIxPassage(G,o){reseed(33861+(o.v|0));const X=qnIxDims(o,4,8,4.2),W=X.W,D=X.D,dh=o.dh==null?X.H-.3:o.dh;
+ const g=xC(xPick(XPAL.gold)),gl=xC(XPAL.gold[0]),dark=xC(0x2a1e18),tim=xC(xPick(XPAL.dark)),wash=xC(xPick(XPAL.wash));
+ vnReg('Gate passage (interior)',0,0,Math.hypot(W,D)/2,X.H);
+ const doors=[['s',0,W,dh],['n',0,W,dh]].concat(o.guard?[['e',0,1.2],['w',0,1.2]]:[]);
+ const y=qnIxShell(W,D,X.cut,.4,X.H,wash,xC(0xb8b0a0),doors,xC(xPick(XPAL.maroon)),'qAshB');
+ const rails=W>=4.2,ph=Math.min(2.6,X.H-1.8),seg=o.guard?(D/2-1.4):D-1.6,kings=[0xe8e4dc,0x2a5aa8,0xb02a24,0xd8a830];
+ if(D>=6)for(let i=0;i<4;i++){const s=i<2?1:-1,z=(i%2?-1:1)*(o.guard?D/4+.3:D/4),x=s*(W/2-.08),pw=Math.min(D/2-1.4,o.guard?D/2-2.2:D/2-.8);
+  vB('qGiltB',x,y+1.0,z,.04,ph+.16,pw+.16,0,g);vB('vClothB',x-s*.03,y+1.08,z,.03,ph,pw,0,xC(kings[i]));
+  vB('vClothB',x-s*.05,y+1.22,z,.02,ph*.72,pw*.42,0,dark);vBall('qGiltBall',x-s*.07,y+1.22+ph*.72+.08,z,.1,gl);}
+ if(rails)for(const s of[-1,1])for(const zc of o.guard?[-(D/4+.35),D/4+.35]:[0]){const x=s*(W/2-.32),n=Math.max(3,Math.floor(seg/.5));
+  vB('vWood',x,y,zc,.3,.28,seg,0,tim);for(let j=0;j<n;j++)kput('qSongDrum',[x,y+.28,zc-seg/2+.2+j*(seg-.4)/Math.max(1,n-1)],null,[.13,.38,.13],null);}
+ for(const s of[-1,1])for(const zz of[-D/2+.5,D/2-.5]){vB('vDarkB',s*(W/2-.02),y+2.1,zz,.05,.5,.4,0);vBall('qGiltBall',s*(W/2-.12),y+2.2,zz,.05,gl);vB('vWinLit',s*(W/2-.12),y+2.25,zz,.02,.06,.02,0);}}
+// ---------------------------------------------------------------- a gate's guard room
+// beside a city gate's passage, its door from the passage: the guards' bunks, chests and table (the catalog's, the barracks
+// programme), a weapon rack of spears on the back wall, a brazier
+function buildQbIxGuardroom(G,o){reseed(33871+(o.v|0));const X=qnIxDims(o,6,6,3.4),W=X.W,D=X.D,side=o.side==null?'w':o.side,P=.4;
+ const wash=xC(xPick(XPAL.wash)),tim=xC(xPick(XPAL.dark)),iron=xC(0x3a3430);
+ vnReg('Guard room (interior)',0,0,Math.hypot(W,D)/2,X.H);
+ const y=qnIxShell(W,D,X.cut,P,X.H,wash,xC(0xe8dccc),[[side,0,1.2]],xC(0x6a3a2a));
+ const bz=-D/2+.3,rw=Math.min(3,W-1.6);vB('vWood',0,y+.9,bz,rw,.08,.12,0,tim);vB('vWood',0,y+1.7,bz,rw,.08,.12,0,tim);
+ for(let i=0;i<Math.round(rw/.35);i++){const x=-rw/2+.2+i*.35;vPst('vPost',x,y,bz+.08,.025,2.1,tim);vB('vIron',x,y+2.1,bz+.08,.05,.22,.02,0,iron);}
+ const fix=[{kind:'rack',x:0,z:bz+.2,w:rw+.2,d:.4,h:2.3,front:.6}];
+ if(!X.cut){const cx=side==='w'?W/2-.8:-W/2+.8;kput('xDrumS',[cx,y,D/2-.8],null,[.35,.5,.35],iron);vB('vWinLit',cx,y+.5,D/2-.8,.3,.08,.3,0);fix.push({kind:'brazier',x:cx,z:D/2-.8,ry:Math.PI,w:.8,d:.8,h:.7,front:.4});}
+ const dx=side==='e'?W/2:side==='w'?-W/2:0,dz=side==='s'?D/2:side==='n'?-D/2:0;
+ qnRoomRec('Guard room','barracks',.4,[[-W/2,-D/2],[W/2,-D/2],[W/2,D/2],[-W/2,D/2]],y,X.H,[[dx,dz,1.2]],fix);}
+// ---------------------------------------------------------------- the treasury's strong room
+// The faith's gold behind the blank walls: the ground storey one hall, its floor the marble; on a gilt-railed dais at the back
+// the eight gilt images (one in each monastery's colour of cloth), the offering gold in ingots and coin chests in rows either
+// side of a clear aisle, the scripture boxes (the Song's copies) on shelves along the side walls in their silk wraps, lamps
+function buildQbIxVault(G,o){reseed(33881+(o.v|0));const X=qnIxDims(o,16,12,3.6),W=X.W,D=X.D,P=1.0;
+ const red=xC(xPick(XPAL.redwall)),g=xC(xPick(XPAL.gold)),gl=xC(XPAL.gold[0]),tim=xC(xPick(XPAL.dark)),iron=xC(0x3a3430);
+ vnReg('Treasury strong room (interior)',0,0,Math.hypot(W,D)/2,(X.cut?P:0)+X.H);
+ const y=qnIxShell(W,D,X.cut,P,X.H,red,xC(0xf0e8dc),[['s',0,2.2]],xC(0x4a1c18),'qMarbleB');
+ const fix=[],dz=-D/2+1.4;vB('vStone',0,y,dz,Math.min(W-2,12),.4,2,0,xC(xPick(QSTONE)));fix.push({kind:'dais',x:0,z:dz,w:Math.min(W-2,12),d:2.4,h:2,front:.8});
+ for(let i=0;i<8;i++){const x=(i-3.5)*Math.min(1.4,(W-3)/8);kput('qGiltBall',[x,y+.48,dz],null,[.22,.08,.22],gl);kput('qGiltBall',[x,y+.74,dz],null,[.18,.24,.15],gl);vBall('qGiltBall',x,y+1.04,dz,.09,gl);
+  kput('qGiltBall',[x,y+1.0,dz-.12],null,[.22,.22,.02],g);vB('vClothB',x,y+.42,dz+.2,.42,.22,.02,0,xC(QSPOKE[i].wall));}
+ vB('qGiltB',0,y+.4,dz+1.05,Math.min(W-2,12),.06,.06,0,g);
+ for(const s of[-1,1]){for(let r=0;r<2;r++)for(let k=0;k<Math.floor((D-5)/1.3);k++){const x=s*(1.8+r*1.4),z=dz+2.4+k*1.3;
+   vB('vWood',x,y,z,.9,.55,.6,0,tim);for(const t of[.12,.43])vB('vIron',x,y+t,z,.92,.05,.62,0,iron);vB('qGiltB',x,y+.55,z,.5,.08,.2,0,g);}
+  fix.push({kind:'chests',x:s*2.5,z:dz+2.4+(Math.floor((D-5)/1.3)-1)*.65,w:2.4,d:Math.floor((D-5)/1.3)*1.3,h:.7,front:.5});
+  const sx=s*(W/2-.35),L=D-4;vB('vWood',sx,y,dz+2+L/2-1,.5,2.4,L,0,tim);
+  for(let sh=0;sh<4;sh++)for(let k=0;k<Math.floor(L/.5);k++)vB('vClothB',sx-s*.02,y+.15+sh*.58,dz+1.3+k*.5,.4,.14,.42,0,xC(xPick([XPAL.saffron,XPAL.red,XPAL.gold[0],0x2a5aa8])));
+  fix.push({kind:'shelves',x:sx,z:dz+2+L/2-1,w:.6,d:L,h:2.4,front:.5});
+  if(!X.cut)qnLampTable(s*(W/2-2.2),y,D/2-1.2,0,1.2);}
+ qnRoomRec('Treasury strong room','store',.9,[[-W/2,-D/2],[W/2,-D/2],[W/2,D/2],[-W/2,D/2]],y,X.H,[[0,D/2,2.2]],fix);}
 QB.def({key:'qb_ix_sanctum',name:'Sanctum of the Rainbow Temple (interior)',family:'Interiors (cut-away)',tags:QTAG('civic',['religious'],{landmark:true,note:'the Station as it was, whole, at the centre; the eight colours round it; cut away'}),w:22,d:22,h:5,nv:1,eyes:[['above',0,13,0,-1,9]],build:buildQbIxSanctum});
 QB.def({key:'qb_ix_assembly',name:'Assembly hall (interior)',family:'Interiors (cut-away)',tags:QTAG('civic',['religious'],{note:'a great monastery\'s assembly hall, cut away'}),w:24,d:18,h:5,nv:1,eyes:[['above',0,13,0,-1,9]],build:buildQbIxAssembly});
 QB.def({key:'qb_ix_hall',name:'Council chamber of the Prismarchy (interior)',family:'Interiors (cut-away)',tags:QTAG('civic',['civic'],{note:'the Hall of the Decree\'s chamber: the eight abbots and the empty seat, cut away'}),w:26,d:20,h:5,nv:1,eyes:[['above',0,14,0,-1,10]],build:buildQbIxHall});
 QB.def({key:'qb_ix_gatehall',name:'Gate hall of a great monastery (interior)',family:'Interiors (cut-away)',tags:QTAG('civic',['religious'],{note:'the passage through the gate tower: the four guardian kings, the prayer wheels, cut away'}),w:10,d:8,h:5,nv:1,eyes:[['above',0,9,0,-1,6]],build:buildQbIxGateHall});
+QB.def({key:'qb_ix_passage',name:'Gate passage (interior)',family:'Interiors (cut-away)',tags:QTAG('civic',['infrastructure'],{note:'the way through a gate block: the guardian kings, prayer wheels, cut away'}),w:6,d:14,h:5,nv:1,eyes:[['above',0,11,0,-1,8]],build:(G,o)=>buildQbIxPassage(G,Object.assign({W:5.6,D:13,H:6.6,dh:6.2,guard:true},o))});
+QB.def({key:'qb_ix_guardroom',name:'Guard room (interior)',family:'Interiors (cut-away)',tags:QTAG('civic',['infrastructure'],{note:'beside a city gate\'s passage: bunks, spears, a brazier, cut away'}),w:8,d:8,h:4,nv:1,eyes:[['above',0,8,0,-1,6]],build:(G,o)=>buildQbIxGuardroom(G,Object.assign({W:7,D:7,side:'w'},o))});
+QB.def({key:'qb_ix_vault',name:'Treasury strong room (interior)',family:'Interiors (cut-away)',tags:QTAG('civic',['civic'],{note:'the faith\'s gold: the eight images, the coin chests, the scripture boxes, cut away'}),w:18,d:14,h:5,nv:1,eyes:[['above',0,12,0,-1,9]],build:buildQbIxVault});
 QB.def({key:'qb_ix_hostel',name:'Hostel dormitory (interior)',family:'Interiors (cut-away)',tags:QTAG('civic',['tavern/inn']),w:18,d:12,h:4,nv:1,eyes:[['above',0,10,0,-1,7]],build:buildQbIxHostel});

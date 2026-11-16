@@ -77,8 +77,14 @@ and `qiblai` in core/tags' vocabulary (`TODO.md`, the ride-along) are not prereq
   the court; the court is a floor, the gate a flight from the street. The Rainbow Temple's terraces are floors with their
   flights, so the sanctum is walked to. The 473 wayside shrines are small chapels seen through a glazed window (a hanging in one
   of the eight colours, the altar, a gilt image, the seven bowls, butter lamps, a hand prayer wheel). The page now names its
-  build (`window.CITY_BUILD`, Xanadu's `99-start.js` and `91t`). Still without an interior: the wheel houses (open), the gate
-  markets, the city gates, the caravanserai.
+  build (`window.CITY_BUILD`, Xanadu's `99-start.js` and `91t`).
+- **Every interior** (the owner, 2026-11-16: "finish all interiors"): each city gate's passage (the guardian kings, prayer
+  wheels, lamps) with a guard room either side (bunks, a spear rack, a brazier); the caravanserai's gate passage and its five
+  ranges (a common room, kitchen, store and stable below, the merchants' rooms above), each with a court door; the gate
+  markets' two passages and their ranges' shops (shops and stores below, the shopkeepers' rooms above), a door from the arcade
+  to each; the treasury's strong room (the eight gilt images, the coin chests, the scripture boxes); the wheel houses' insides
+  (a hanging, two murals, a rug, butter lamps) and the great wheel's floor; the manors and merchants' houses entered too. 109
+  great rooms and 1,073 lot interiors (52 types), every one walked into by the verify.
 
 ## 1. What the city build is
 

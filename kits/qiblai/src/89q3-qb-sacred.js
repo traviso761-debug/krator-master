@@ -131,7 +131,7 @@ function buildQbWheelHouse(G,o){reseed(33561+(o.v|0));const V=xV(o),W=10,D=10,P=
  qnPlinth(0,-.5,W+1,D,P,0,stone);
  // three walls, the front open on two red columns; the inside the room's dim back
  for(const [x,z,w,d] of[[0,-D/2+.3,W,.6],[-W/2+.3,0,.6,D-.6],[W/2-.3,0,.6,D-.6]])qnCube(x,P,z-.5,w,H,d,0,wash,'wash');
- xnRoom(0,P,-.6-D/2+.65,W-1.4,H-.2,.1,0);
+ xnRoom(0,P,-.6-D/2+.65,W-1.4,H-.2,.1,0);qnWheelInside(W,D,P,H,-.8,V);
  for(const s of[-1,1])xnCol(s*2.6,P,D/2-1.2,H-.4,.25,0,red,xC(XPAL.saffron));
  const t=qnRoof(0,P+H,-.5,W,D,0,wash,{band,gold:true,parapet:.6});qnCrown(0,t,-.5,W,D,0,{pav:[5,4.4],deerS:.85});
  // the wheel: a tall drum in the mosaic (the Song in the sound-grid script), gilt bands, a red cap, on its axle
@@ -141,6 +141,13 @@ function buildQbWheelHouse(G,o){reseed(33561+(o.v|0));const V=xV(o),W=10,D=10,P=
  if(V===2){vB('xWaterB',0,.05,0,2.2,.15,D+2,0,xC(XPAL.water));vB('vStone',-1.4,0,0,.5,.6,D+2,0,stone);vB('vStone',1.4,0,0,.5,.6,D+2,0,stone);}
  xnFolk(0,0,D/2+1.2,3,2);}
 
+// the wheel house's inside (the owner, 2026-11-16: "finish all interiors"): a hanging in the house's colour across the back, a
+// mural on each side wall in gilt frames, a rug round the wheel's base, butter lamps on tables in the back corners
+function qnWheelInside(W,D,P,H,cz,V){const g=xC(xPick(XPAL.gold)),c=xC(QSPOKE[(V*5+3)%8].wall),c2=xC(QSPOKE[(V*5+6)%8].wall),bz=-D/2-.5+.62;
+ vB('qRugB',0,P,cz,6.4,.02,6.4,0,xC(xPick(XPAL.maroon)));
+ vB('qGiltB',0,P+2.0,bz,5.2,3.4,.03,0,g);vB('vClothB',0,P+2.08,bz+.02,5.0,3.24,.02,0,c);
+ for(const s of[-1,1]){const x=s*(W/2-.62);vB('qGiltB',x,P+1.5,-1.6,.03,3.0,4.6,0,g);vB('vClothB',x-s*.02,P+1.58,-1.6,.02,2.84,4.44,0,s<0?c2:c);
+  qnLampTable(s*(W/2-1.6),P,bz+.5,0,1.4);}}
 // ---------------------------------------------------------------- the wayside shrine (the Xanadu kit's gap: shrine keepers)
 // a small white chapel, a mani-stone pile, prayer flags to a pole. The chapel is hollow (the owner, 2026-11-16: "fancy interiors
 // to shrines"): its front a glazed window in a gilt frame onto the inside, the floor marble, the ceiling lacquered: a hanging in
@@ -191,7 +198,8 @@ function buildQbCaravanserai(G,o){reseed(33591+(o.v|0));const V=xV(o),W=44,D=44,
   qnRoof(x,S.y,z,S.w,S.d,ry,wash,{parapet:.7});
   // the stables' lean-to along the court face, on posts
   const lp=loc(x,z,0,-dd/2-1.6,ry);kput('vWood',[lp[0],P+2.6,lp[1]],vQ(ry,.12,0),[L-4,.12,3.4],aged);
-  const n=Math.max(2,Math.round((L-4)/3.4));for(let i=0;i<=n;i++){const p=loc(x,z,-(L-4)/2+(L-4)*i/n,-dd/2-3.1,ry);vPst('vPost',p[0],P,p[1],.08,2.3,aged);}}
+  const n=Math.max(2,Math.round((L-4)/3.4));for(let i=0;i<=n;i++){const p=loc(x,z,-(L-4)/2+(L-4)*i/n,-dd/2-3.1,ry);vPst('vPost',p[0],P,p[1],.08,2.3,aged);}
+  const cd=loc(x,z,ry===0?-Math.sign(x)*1.7:1.7,-dd/2,ry);qnDoor(cd[0],P,cd[1],ry+Math.PI,1.2,2.4,{c:R.trim,step:false,val:false});}   /* the range's door to the court, between two posts (a front range's toward the gate: its far end is the side range's),  (settlements/qiblai 90u: the merchants' rooms) */
  // the gate block: a tall cube with the arch through it, rooms over it, flags
  const GB=qnStack(0,P,D/2-Dr/2,12,Dr+1,0,[hr[0]+hr[1]+3],wash,'wash');vB('vDarkB',0,P,D/2-Dr/2,4,4.2,Dr+1.1,0);
  xnArch('xArchS',0,P,D/2+.52,0,5.4,5.4,.4,stone);qnWins(0,P,D/2-Dr/2,12,Dr+1,0,[hr[0]+hr[1]+3],GB.k,{pitch:2.8,ww:.85,wh:1.1,trim:R.trim,left:false,right:false,from:0,skip:[[-3,3]],sill:5.4});

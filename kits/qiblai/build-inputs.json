@@ -187,13 +187,13 @@
     "kits/qiblai/src/89q0y-qb-script.js": "97bc52ef58b2dda523e2be1ba077e827508b8d2e123e1efbec365461e67f3c7f",
     "kits/qiblai/src/89q0z-qb-matlib.js": "d2306bbbd772dce7dbe16910d61eb77932af262f2c8c51656f4d72ba329c8149",
     "kits/qiblai/src/89q1-qb-houses.js": "c689265c61aeb563407a80f9d45b079b30c0f1479a571800a464315170be18ad",
-    "kits/qiblai/src/89q2-qb-trades.js": "f48778d140811eac4beb3194d78c65d8c53225fda022ae23839f95771ddf7a06",
-    "kits/qiblai/src/89q3-qb-sacred.js": "915bf35c7f2f6775ef4729cc0f12ff6258fa5df6cc6e0ca85090c79b42430f24",
+    "kits/qiblai/src/89q2-qb-trades.js": "feeec3ceee2ec89c9262c7c2ef16c483debf84b97797f521c26fce1f2698c554",
+    "kits/qiblai/src/89q3-qb-sacred.js": "027fdfec627c030675cf3aa1377f58ea89b2fb3217a684535bb494f9f9729e1a",
     "kits/qiblai/src/89q3m-qb-meditation.js": "d9418d86beb6478f62c2328a56ce76781eba78afbad2f6af571f25f589468f11",
     "kits/qiblai/src/89q4-qb-temple.js": "0f7a5ca275868333705c722d2f4e39ba258ba63caed42ffca7a9db5273804688",
-    "kits/qiblai/src/89q5-qb-interiors.js": "13f05eaed5a94c4d3c4884ff80415020fe0d98417a3449937ef5861ae365a329",
+    "kits/qiblai/src/89q5-qb-interiors.js": "070beb72b4ac4c297879e2d5ac1cedada8c9467df9353ffb7b9379b02d1eb669",
     "kits/qiblai/src/89q5f-qb-furnish.js": "912b8f633dd16c4e15a5eb4788dec38d9631cbc3dd08ac6f06a7309fd7da2444",
-    "kits/qiblai/src/89q5s-qb-shells.js": "5b94f2cf1fefa5b6819ccd4b424172d79a9c29868604ea1e7fa1381b66f0b3ae",
+    "kits/qiblai/src/89q5s-qb-shells.js": "386fedc8b0877aee0ccaf9cc87a778fcb5c5b2233899dbd412e3ffd8cdbf92ab",
     "kits/qiblai/src/89q9-qb-street.js": "cfee606a9261a5b5b55294f9b46af4c65d1e8b3b52268586c5a906b7bc1c1d72",
     "kits/qiblai/targets/kit/89z-rows.js": "e2da56c9d8085cb26a6398ead6fafd552911f94db58642a45d467fd6555d0b16",
     "kits/qiblai/targets/kit/90q-qb-furnish.js": "f2ab68148c5c98564896b771872a9a3899eb3072c465dc925b5db4df9eee07e7",
@@ -429,13 +429,13 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "kits/qiblai/build-manifest-kit.json": "a52f7e9f1b4bfbf0ddab5dced073b04ce66f63e4b0b3258adb715c13038c1387",
-    "kits/qiblai/dist/qiblai.html": "cb1145d3c5129788158a49d1d929358cf1bd799764dbc673c3cbcfb94a4feb0d",
+    "kits/qiblai/build-manifest-kit.json": "dd25a5b660d43790795ddba4eb9b2681e94b788ed7f12050d7afbd3b02c0a09a",
+    "kits/qiblai/dist/qiblai.html": "f983e96d8f3b4a600df0a9bc0c19c3e8544d38057f783f29393c09290e7ab896",
     "kits/qiblai/dist/xanadu.tex.xanadu.js": "b7ab9af39727de5892634a26e39a4a716e0a4621dd7bf3d8765decbfaa712197"
    },
    "outputs_raw": {
-    "kits/qiblai/build-manifest-kit.json": "d79dc69bbd94dd19a8e423ff3e04af6824294dafa3a435c7ed1ed47c581ebbd7",
-    "kits/qiblai/dist/qiblai.html": "cb1145d3c5129788158a49d1d929358cf1bd799764dbc673c3cbcfb94a4feb0d",
+    "kits/qiblai/build-manifest-kit.json": "8afc44addfd635a9fb5d0a2f68936042e881345aeb372a2dc3f3f6ecd14fde07",
+    "kits/qiblai/dist/qiblai.html": "f983e96d8f3b4a600df0a9bc0c19c3e8544d38057f783f29393c09290e7ab896",
     "kits/qiblai/dist/xanadu.tex.xanadu.js": "b7ab9af39727de5892634a26e39a4a716e0a4621dd7bf3d8765decbfaa712197"
    }
   }
