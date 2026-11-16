@@ -66,7 +66,8 @@ and `qiblai` in core/tags' vocabulary (`TODO.md`, the ride-along) are not prereq
   over a lacquered ceiling; all 31 types in ~4.5 s, 446 furniture meshes, all textured.
 - **The clergy ring in eight sectors** (the owner, 2026-11-15: "clearly defined areas of each color, and red is not
   over-represented"): its colleges and granaries take the colour of the monastery whose spoke their block stands on.
-- **Q7e-Q7g** not started.
+- **Q7e-Q7g** not started. **Q7e started 2026-11-16** (the owner, relayed: "proceed with the next steps of their builds"): see
+  the next entry but one at the end of this list.
 
 - **Walk in, and the rest of the interiors** (the owner, 2026-11-16: "unlock the front doors so I can walk in; work on open
   issues; and work on giving appropriately fancy interiors to shrines, monasteries, and anything else that doesn't have an
@@ -210,6 +211,14 @@ Each block's `use` decides what fills it; the lay blocks are filled by `frontage
   3's table; every census trade carried or marked `na` with a reason.
 
 ### Q7e. Life and light
+
+**Done 2026-11-16** (`targets/city/91l-qc-life.js`): Verge's instanced rigs (people and camels, procedural, read in place) walked
+along the plan's ways as pure functions of the clock: 260 pilgrims on the kora, clockwise, eyes lowered, round each chorten on its
+outer side; 14 monks a monastery in its colour on the ring street before its gate; ~990 townsfolk on the lay ring streets, cross
+streets and avenues (cut at each gate), more turbans the richer the ring; 76 at the four gate markets (half standing at the
+shopfronts); a caravan of six camels and two drivers between the south gate's stair and the Geomancers' field, out and back. The
+prayer wheels turn (the Song drum's texture scrolls, one turn a minute). By night a quarter stay out. Only people within 260 m are
+set each frame (0.6 ms a frame at the overview). Not yet: the banners, the people on core/simulation, core/charactermodels' figures.
 
 - The city's people from core/charactermodels' peoples (the Xanadui), the pilgrims walking the kora three times with
   eyes lowered, the monks, the market. Electric light only on rich and civic (the contract).
