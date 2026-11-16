@@ -20,6 +20,20 @@ What is settled, from the owner and the sim:
 - **A Two Horns' factor house** (`horns.thalaba`).
 - `core/simulation/PROPOSAL-XANADU.md` section 7 (X2) holds all of this.
 
+**The owner's answers to this plan's questions (2026-11-16):**
+- **The town stands on the spring line** at the riser's foot, at the pin.
+- **Thalaba has its own small sulfur node, but most of its sulfur comes by expedition.**
+- **The river's water is fit for the terraces.**
+- **The sulfur is a steady works**, not a field of short-lived beds.
+- **The Rare Devisers' people from Theodiga run the expedition, but many of the hired men are locals.**
+- **Names:** "I am open to proposals" (the proposals are in section 3a).
+- **No walls.**
+- **A small Dalab mission of about 30 people** lives in the town.
+- **The region:** "cut it into whichever polygon the new pin falls into". At 840,1463 that is the **Xanadu Sultanate**
+  (political, `rmufcgvtxatfx`). The open world cuts that polygon as the region `xanadu-oidong-highrift`
+  (`openworld/SITES.json`). The pin also falls in the Vale of Xanadu and the Rift (geographic) and in the `xanadu` biome,
+  but not in Godshearth, whose polygon stops at y 1451.
+
 Everything else here is *proposed*.
 
 Sources:
@@ -70,12 +84,13 @@ Sources:
 No lake and no vent record lies within 60 km. The nearest vent is the spillway's head fumarole (845,1396.5), 133 km north
 (`tools/scale-model/edit_512.py`).
 
-**Why the town stands at the riser's foot** (*proposed*). The river runs across the mouth, 300 m above the bench. Water that
-soaks into the mouth's gravels should come out as **a spring line along the riser's foot**, and the pin sits on that line.
-So the town gets:
+**Why the town stands at the riser's foot** (the spring line is **the owner's choice, 2026-11-16**; the reasons are
+*proposed*). The river runs across the mouth, 300 m above the bench. Water that soaks into the mouth's gravels comes out as
+**a spring line along the riser's foot**, and the pin sits on that line. So the town gets:
 - its drinking water from the springs, not from the river;
 - the riser behind it to terrace;
-- a leat off the river at the mouth that can water the riser by gravity;
+- a leat off the river at the mouth that waters the riser by gravity (the river's water is fit for the terraces: the
+  owner, 2026-11-16);
 - the bench before it for fields and pasture;
 - a view north up the riser to the mouth and the white cataract, 20 km off and 1 km high. Krator's settlements lie near
   40 S, so the sun is in the north: the view is lit all day.
@@ -92,26 +107,28 @@ outpost (section 3).
 
 | Site | px | Ground | Why not first |
 |---|---|---|---|
-| **The riser's foot** (chosen; the pin) | 840,1463 | 1,507 m, 13 °C, springs (proposed), the bench before it | |
+| **The riser's foot** (the pin; **the owner's choice**) | 840,1463 | 1,507 m, 13 °C, the spring line, the bench before it | |
 | **The mouth, on the river** | 840,1458 | 1,866 m, 11 °C, 44 m a km | On the river and 10 km nearer the gorge, but steeper, colder, cramped by the east wall (slopes over 150 m a km from x 850), and wide open to the cataract's spray and the gorge's night wind |
 | **The bench's middle** | 850,1465 | 1,659 m, 12 °C, flat | The best fields, but 15 km from the springs and the road. Left to the farms (section 3) |
 | **The Qol valley's head** | 827,1464 | 1,197 m, 15 °C | Warmer and on the Phēr road, but in a cleft under the second fall, 26 km from the gorge |
 
 ## 2. Who lives there
 
-About **2,400** (the tune), with the Devisers' house (40) and the Two Horns' factor (20) beside them. The shares below are
-*proposed* except the crews, which are the tune's (`tb.sulfur`, 15 %; `tb.terraces`, 30 %).
+About **2,400** (the tune), with the Devisers' house (40), the Two Horns' factor (20) and the Dalab mission (about 30, the
+owner) beside them. The shares below are *proposed* except the crews, which are the tune's (`tb.sulfur`, 15 %;
+`tb.terraces`, 30 %).
 
 | Who | People | What they do |
 |---|---|---|
 | **The terrace farmers** | **720** at harvest (the tune's crew), with their households | The riser's terraces and the bench's fields; barley, wheat and buckwheat at 1,500 m and 12-13 °C (`kits/crops` to pick: section 5); apricot and walnut on the terrace walls |
-| **The sulfur diggers and kiln men** | **360** (the tune's crew) | The spillway's sulfur diggings at the cataract's foot, working in shifts from a diggers' hamlet there (section 3) |
+| **The sulfur diggers and kiln men** | **360** (the tune's crew) | The town's own small sulfur node at the cataract's foot, a steady works all year (the owner). They work in shifts from a diggers' hamlet there (section 3) |
 | **The road** | ~150 | Muleteers, carters and porters on the road down to Phēr (the tune's six carriers) and up the gorge. Farriers, harness makers, a ropewalk |
-| **The expedition season** | ~150 away each summer (`exp.godshearth`, a separate settlement in the tune) | The Devisers' camp: diggers of sulfur and hearth wax, scavengers of rarities, guards, guides. *Proposed:* hired in spring from Thalaba's own young men and the north shore, mustering here |
+| **The expedition season** | ~150 away each summer (`exp.godshearth`, a separate settlement in the tune) | The Devisers' camp: diggers of sulfur and hearth wax, scavengers of rarities, guards, guides. **The owner: the Devisers' people from Theodiga run it, and many of the hired men are locals.** *Proposed:* about 30 Devisers' people (the master of the expedition, the clerks, the guides and guards, the assayer of rarities) and about 120 hired men, most of them Thalaba's own, a few from the north shore. They muster here each spring |
 | **The market and the trades** | ~300 | Smiths, tanners, potters, bakers, weavers, the inn and the teahouses, the market's sellers |
 | **The Sultan's people** | ~40 | The licence clerk: the Sultan's 10 % of the rarities is cut here (`expedition.godshearth`'s `cut` at the house). The road warden, a small watch at the bridge |
 | **The faith** | ~20 | A temple of the Decree with its wheel house, and a shrine at the bridge where the expeditions are blessed going up and counted coming down |
 | **Households** | the rest, about 650 | Elders and children |
+| **The Dalab mission** | **~30** (the owner), beside the 2,400 | The genepriests, who come over the rim for the hearth trees (the Godshearth plan, section 5), with their servants. *Proposed:* a compound on the town's east edge (section 3) |
 
 **The Rare Devisers' house** (40) is the town's biggest compound. It holds:
 - the yard where the expedition outfits;
@@ -127,12 +144,10 @@ wary of each other (X2: "wary of one another"), and the market square stands bet
 - Ḍāiyar (834,1493): 61 km.
 - Phēr (810,1483): 72 km straight, 86 km by road.
 - The Godshearth camp (828,1380): 168 km straight.
-- *Proposed, from the Godshearth plan:* the Dalab genepriests come over the rim for the hearth trees, and some may pass
-  through or winter here (question 7).
 
-## 3. The layout (*proposed*)
+## 3. The layout (*proposed*, except the spring line, the mission and the open town, which are the owner's)
 
-The town is about **1.5 km by 1 km** at the riser's foot, at 1,500-1,560 m, centred on the pin. **Two roads meet in it:**
+The town is about **1.5 km by 1 km** on the spring line at the riser's foot, at 1,500-1,560 m, centred on the pin. **Two roads meet in it:**
 - the **Phēr road**, coming in from the west: up the Qol Siṭrīm's valley to its head (827,1464, 1,197 m), then east onto
   the bench, about 300 m of climb in 13 km;
 - the **expedition road**, leaving north up the riser to the mouth.
@@ -145,8 +160,13 @@ The town is about **1.5 km by 1 km** at the riser's foot, at 1,500-1,560 m, cent
 - **The houses** climb the riser's first terraces behind the square, poor to rich. The rich houses are on the higher
   terraces, looking north to the cataract. The poor houses are on the bench's lip toward the Qol valley.
 - **The temple of the Decree** stands on a terrace above the square, with its wheel house.
-- **The road's quarter** is at the west gate, on the Phēr road: caravan yards, stables, the farriers and the ropewalk.
-- **The threshing floors and the granary** are at the east gate, toward the fields.
+- **The road's quarter** is at the west end, on the Phēr road: caravan yards, stables, the farriers and the ropewalk.
+- **The threshing floors and the granary** are at the east end, toward the fields.
+- **The Dalab mission** is a compound past the granary on the east edge: the genepriests' house, a seed and specimen
+  house, and lodgings for the parties going up the gorge. It stands apart from the Devisers' house; the two trade in hearth
+  seed and wax.
+- **No walls** (the owner). The town is open on every side. The "gates" above are where the roads come in, marked by a
+  wheel house or a shrine, not a gatehouse. The only watch is the road warden's at the bridge.
 
 **The riser terraces.** About 20 km of the riser either side of the expedition road (x 834-846, y 1459-1462). The grain needs
 **about 250-300 ha of terraces** with fallow: 192 t at 1.2-1.5 t a hectare (section 4).
@@ -160,7 +180,7 @@ The town is about **1.5 km by 1 km** at the riser's foot, at 1,500-1,560 m, cent
 - a ring of **farmsteads** (a `core/hamlet` pass after the town).
 - The bench breaks at its south edge into the caldera's wall. Watch points along the edge look down 2 km to the lake.
 
-**The mouth: Brij, the bridge ward** (about 840,1458; the name is a placeholder in the Xanadui style):
+**The mouth: Briḍj, the bridge ward** (about 840,1458; the names are coined in section 3a):
 - the bridge over the Solṭ Siṭrīm, 53 m of river, stone piers on the level reach above the second fall;
 - the road warden's toll and watch house;
 - the expeditions' shrine;
@@ -168,18 +188,39 @@ The town is about **1.5 km by 1 km** at the riser's foot, at 1,500-1,560 m, cent
 - the Devisers' summer muster ground and corrals. The camp gathers here in spring and is counted here in autumn.
 
 **The diggings** (about 841,1453, at the cataract's foot, 20 km north of the town):
-- the sulfur beds in the cataract's walls, where the spillway cut down through the shield's old fumarole lines (section 4
-  and question 2);
+- the town's **small sulfur node** (the owner): beds in the cataract's walls, where the spillway cut down through the
+  shield's old fumarole lines (*proposed*), worked steadily all year (section 4);
 - a **diggers' hamlet** of the shift crews;
 - the **kilns** (calcaroni: sulfur melted out of its rock in banked heaps). They stand on the mouth's east side, downwind
   of the town under the westerlies;
-- sulfur loaves carted down past Brij to the Devisers' sheds and the town's store.
+- sulfur loaves carted down past Briḍj to the Devisers' sheds and the town's store.
 
 **The landmarks seen from the town:**
 - the cataract: a 1 km white fall at the head of the view, its spray lit at sunset;
 - the gorge's walls behind it, 5.5 km high;
 - the second fall, 12 km west-north-west, where the Solṭ drops off the mouth;
 - southward, nothing until the lake 2 km below.
+
+## 3a. The names (*proposed*: the owner, 2026-11-16, "I am open to proposals")
+
+These are coined on the owner's tongues sheet, by the rules `PROPOSAL-XANADU.md` Q5 uses: English worn to sound Nepali,
+Tibetan or Persian; **t d** > **ṭ ḍ**; **f** > **ph**; **v** > **bh**; an initial **sc-/st-** breaks up, as *stream* >
+*Siṭrīm*; long vowels marked. One extension is new: initial **sp-** breaks up the same way.
+
+*Qāṭarāq* ("cataract") is already the province P3's name, so the falls here take *phōl* ("fall").
+
+| Place | Xanadui | Gloss |
+|---|---|---|
+| The cataract at the gorge's mouth (842,1449-1453) | **Gāḍz-Phōl** | "God's Fall": Godshearth's water falling off the shield |
+| The second fall, where the Solṭ Siṭrīm drops off the mouth (831-829,1460-1462) | **Solṭ-Phōl** | "the salt fall", after its river |
+| The mouth, the basin under the cataract | **Gōrj-Phuṭ** | "the gorge's foot" |
+| The bridge ward at the mouth | **Briḍj** | "the bridge" |
+| The riser's terraces | **Siṭēps** | "the steps" (*st-* broken, as *Siṭrīm*) |
+| The spring line at the town's back | **Siprīngz** | "the springs" (the new *sp-* rule) |
+| The diggers' hamlet and its kilns | **Salphar** | "sulphur" (the **ph** already there) |
+| The bench east of the town | **Bēnch** | "the bench": the fields and the pasture |
+
+The town keeps **Thalaba**, the owner's name; the dental **th** is kept as in *Nōrth-Shor*.
 
 ## 4. The economy (in `XAN_TUNE` as it stands; *proposed* additions marked)
 
@@ -193,11 +234,14 @@ and the expedition days 120-240.
 - The camp's 150 eat another **28.5 t** (camp diet, 190 kg). The valley host bumps it onto Thalaba (`bump(TB, …)`), and the
   town passes it on by `devisers.supply`.
 
-**Sulfur.**
-- The town's own diggings (`tb.sulfur`, 360) make **60 t a year**, steadily.
+**Sulfur** (the owner: a small node of its own, most of it by expedition, a steady works).
+- The town's own diggings (`tb.sulfur`, 360) make **60 t a year**, steadily all year: a works, not a field
+  (`XAN_TUNE.field` is not used here).
 - The camp brings home **90 t of sulfur, 40 t of hearth wax and 60 rarities** a season. The house keeps 95 % of the camp's
   make (`share`); the Sultan's **10 % of the rarities** is cut at the house for `xan.citadel` (`T.devisers.licence`).
-- Together Thalaba handles **150 t of sulfur a year**: more than the rest of the country (Hoṭ-Bāṭh's 40 t on the lake).
+- Together Thalaba handles **150 t of sulfur a year**, 60 % of it from the expedition, so the tune already has "most by
+  expedition". That is more than the rest of the country (Hoṭ-Bāṭh's 40 t on the lake). If "small" means smaller than
+  60 t, step T1 lowers `T.thalaba.make.sulfur` and its crew together.
 - Down the road it goes, with the wax and the rarities: to Phēr, across the lake (`lake.cross`) to the capital, and out
   with the Great Caravan in spring to Blakhed.
 
@@ -210,8 +254,10 @@ tea and tools. All of these are already on `road.pher-thalaba`.
 - **Mules, yaks and sheep** from the bench's pasture, sold to the expeditions and down to the north shore.
 - **The bridge's toll** on the expedition road: a road `share` to the Treasury, like the Strongbow lift's 5 %, if the owner
   wants the Sultan to tax the road and not only the licence.
-- **The sulfur as a field of beds** (`XAN_TUNE.field`), each bed a few years of the diggings' make, if the owner's
-  2-3-year rule for lodes is meant for sulfur too (question 4).
+- **The Dalab mission** (about 30, the owner) as its own settlement beside the town, as `yuni.mission` stands beside the
+  oil field: faction `dalab`, fed from Thalaba's market. It buys hearth seed and wax from the Devisers' house.
+- **The hired men's wages:** the expedition's ~120 locals leave the town in the expedition window (days 120-240) and come
+  home with pay. The sim does not count that yet; the camp is a separate settlement of 150.
 - **Night-soil and kiln ash** onto the terraces: the reason the terraces can carry half the grain at 1,500 m. It is not a sim
   good.
 
@@ -219,21 +265,21 @@ tea and tools. All of these are already on `road.pher-thalaba`.
 - The resources kit's sulfur family is `255 exp(−d/10 km)` within 40 km of a vent, + 60 on volcanic ground.
 - No vent lies within 130 km of the cataract, so the geology bake can give Thalaba's diggings at most the low volcanic
   floor.
-- The diggings want an authored deposit: a **sulfur lode record** in `kits/resources/data/lodes.json`, as
-  `lode:xanadu-gold` was authored for the Gold March. *Proposed:* `lode:thalaba-sulfur` at about 841,1452, r_km 8.
-- Or a vent record at the cataract (question 2).
+- So the town's small node is an authored deposit: a **sulfur lode record** in `kits/resources/data/lodes.json`, as
+  `lode:xanadu-gold` was authored for the Gold March. *Proposed:* `lode:thalaba-sulfur` at about 841,1452, small (r_km 3,
+  a modest peak), so it reads as a small node beside the caldera's vent fields.
 
 ## 5. Core adoption (to write in full before the first fragment)
 
 | Need | Module | How |
 |---|---|---|
-| the ground at 1:1 | `core/world` (`WORLD.H`, `ROADS`) | the site cut by `tools/scale-model/cut_site.py` into its open-world region (question 8); the Phēr road and the expedition road joined to `ROADS`, not drawn on their own |
+| the ground at 1:1 | `core/world` (`WORLD.H`, `ROADS`) | the site cut by `tools/scale-model/cut_site.py` into the open-world region `xanadu-oidong-highrift`, which cuts the Xanadu Sultanate polygon the pin falls in (the owner); the Phēr road and the expedition road joined to `ROADS`, not drawn on their own |
 | the riser, the terraces, the cataract step | `core/terrain` (`KRELIEF`, `KSTRATA`) | the terrace flights stepped into the riser; `gully` or `stepcut` for the cataract and the Reḍ Ḍrāi's trough; the Godthrone's tibasalt in the faces |
 | the town | `core/city` (`KCITY`) | streets and lots at the riser's foot, the Xanadu kit's buildings on them, as Qiblai and Erewhon are built; no bespoke street pass |
-| the buildings | `kits/xanadu` (on `VERN.def`, bundled as `XAK` by `kit_bundle.py`) | houses poor to rich, the square, the inn, the temple and wheel house, the granary, the caravan yards, the baoli. **New pieces** (to ask of the Xanadu kit, not to write here): the Devisers' compound with strongroom and sheds, the bridge and its toll house, the leat's headworks, the calcaroni |
+| the buildings | `kits/xanadu` (on `VERN.def`, bundled as `XAK` by `kit_bundle.py`) | houses poor to rich, the square, the inn, the temple and wheel house, the granary, the caravan yards, the baoli. **New pieces** (to ask of the Xanadu kit, not to write here): the Devisers' compound with strongroom and sheds, the bridge and its toll house, the leat's headworks, the calcaroni. The Dalab mission's house: in Dalab's own style or the town's (open question 2) |
 | a site under construction | `kits/construction` (`KCONS`) | if the town is shown growing; not at first |
-| the farmsteads, the diggers' hamlet, Brij | `core/hamlet` (`KHAMLET.village`) | the diggings as a resource (mining) village on the sulfur node; the farmsteads as a farming village on the bench |
-| the expedition camp | `core/camp` | not drawn here (it is at Godshearth); the muster at Brij could use a camp's pitch in spring |
+| the farmsteads, the diggers' hamlet, Briḍj | `core/hamlet` (`KHAMLET.village`) | the diggings as a resource (mining) village on the sulfur node; the farmsteads as a farming village on the bench |
+| the expedition camp | `core/camp` | not drawn here (it is at Godshearth); the muster at Briḍj could use a camp's pitch in spring |
 | water | `core/water` | `flow` for the Solṭ Siṭrīm and the leat, `fall` for the cataract and the second fall (seen from the town), `spring` for the spring line, `still` for the baoli |
 | sky, weather | `core/atmos`, `core/clock` | the standard skybox; the cataract's spray; the katabatic flow out of the gorge at night (`fx/89-atmos-fx-katabatic.js`) |
 | flora | `core/biome`, `biomes/xanadu` | Xanadu's dry-country species, which come up the gorge (Godshearth plan, section 4); the Hearths stay up in the caldera |
@@ -248,44 +294,43 @@ tea and tools. All of these are already on `road.pher-thalaba`.
 | surfaces | `core/materials` | the Xanadu pack (`kits/xanadu/materials.json`); tibasalt and sulfur from the library |
 | export, LOD | `core/export`, `core/lod` | as every build |
 | ruins | `core/ruins` | not taken: nothing here is ruined |
-| caverns | `core/terrain` cavern cut | not taken: the diggings are open beds, not adits (unless the owner's answer to question 2 makes them adits) |
+| caverns | `core/terrain` cavern cut | not taken: the small node is worked as open beds, not adits |
 
 ## 6. Steps
 
 | Step | What | Test |
 |---|---|---|
-| **T0** | **The records**, through the scale-model session's queue (pins and model edits are its work): the pin 5.1e12 merged where the region is cut; the sulfur lode record (or a vent record) at the cataract's foot; the region the site is cut into | the pin's ground is the bench (1,450-1,560 m); the geology bake shows sulfur at the diggings |
-| **T1** | **The tune's tidy-up and additions:** the stale comments (section 8); the bridge's toll and the pasture, if the owner wants them; the sulfur as a field, if question 4 says so | `test-xan-economy.js` and `test-east-rift.js` unchanged unless meant to move; Thalaba fed, the licence cut |
-| **T2** | **The ground:** the site cut; the riser and its terrace flights; the leat; the river, the bridge reach and the falls on `core/water` | the region's verify: no floating water, the leat descending, the terraces walkable |
+| **T0** | **The records**, through the scale-model session's queue (pins and model edits are its work): the pin 5.1e12 merged where the region is cut; the small sulfur lode record `lode:thalaba-sulfur` at the cataract's foot; `shvo49k0y2` added to `xanadu-oidong-highrift`'s `sites` in `openworld/SITES.json` (with the Dalab mission as a `"model": false` row, if it is drawn apart from the town) | the pin's ground is the bench (1,450-1,560 m); the geology bake shows sulfur at the diggings; `cut_site.py --dry` lists Thalaba in the region |
+| **T1** | **The tune's tidy-up and additions:** the stale comments (section 8); the Dalab mission (~30); the bridge's toll and the pasture, if the owner wants them; the town's own sulfur lowered, if "small" means under 60 t | `test-xan-economy.js` and `test-east-rift.js` unchanged unless meant to move; Thalaba and the mission fed, the licence cut |
+| **T2** | **The ground:** `cut_site.py xanadu-oidong-highrift` re-run with Thalaba in it; the riser and its terrace flights; the leat; the river, the bridge reach and the falls on `core/water` | the region's verify: no floating water, the leat descending, the terraces walkable |
 | **T3** | **The town on `core/city`** with the Xanadu kit (a target on Xanadu's page, as Qiblai is); the new pieces asked of the Xanadu kit | `core/city`'s tests; the GPU verify; the mixed street |
-| **T4** | **The outworks:** Brij, the diggers' hamlet and its kilns, the farmsteads (`core/hamlet`) | the hamlet's tests; the kilns' hazard records |
+| **T4** | **The outworks:** Briḍj, Salphar (the diggers' hamlet and its kilns), the farmsteads on the Bēnch (`core/hamlet`) | the hamlet's tests; the kilns' hazard records |
 | **T5** | **Interiors and people:** the Xanadu interiors, the Devisers' rooms, the people on `core/simulation` and the expedition's muster and return | the interiors' checks; the sim's schedules |
 | **T6** | **The open world:** the town in its region; the expedition road joined to the Godshearth station 4 (`xanaduspill`, 845,1422) | the region's verify |
 
 ## 7. Questions for the owner
 
-1. **The town's place.** At the pin, the riser's foot on the spring line (1,507 m, 13 °C), as this plan proposes? Or up at
-   the mouth by the river and the bridge (1,866 m, 11 °C, 10 km nearer the gorge)?
-2. **Thalaba's own sulfur: where is it dug?**
-   - The model has no vent within 130 km of the cataract, so the 60 t a year needs a source.
-   - *Proposed:* beds in the cataract's walls, where the spillway cut through the shield's old fumarole lines, as an
-     authored lode record.
-   - Or a live vent at the cataract's foot, a model edit that would warm the ground there too.
-   - Or the 60 t comes down the gorge from the spillway's head fumarole (133 km up), which would make the diggings a
-     second summer camp.
-3. **The river's water.** The Solṭ Siṭrīm below the junction is the hot lake's outflow ("iron stream"), with the
-   bloodfalls' brine about 1 in 30, and it once ran red (*Reḍ Riwā*). Is it fit for the terraces (the leat), and does the
-   red weed live in it this far down? The plan drinks from springs either way.
-4. **The sulfur as a field.** Does the rule for gold and opal (a field of veins, each 2-3 years, over 200 years) apply to
-   the sulfur beds too, or are they a steady works?
-5. **The expedition's men.** Thalaba's own young men each summer, or hired from the north shore and mustered here, or the
-   Devisers' own people from Theodiga?
-6. **Names.** The bridge ward (placeholder *Brij*), the cataract (the Godshearth plan's open question too), the second
-   fall, the riser's terraces: Xanadui names to coin, or yours?
-7. **Who else.** Do the Dalab genepriests (who come over the rim for the hearth trees) pass through or keep a house here?
-   Should the town have walls, or only the watch at the bridge?
-8. **The region.** Which open-world region is the site cut into: the one that holds Erewhon's north shore, or a region of
-   its own at the gorge's mouth?
+**Answered 2026-11-16** (the first round; the answers are folded into the sections above):
+1. ~~**The town's place.**~~ **The spring line**, at the pin.
+2. ~~**Thalaba's own sulfur.**~~ **A small node of its own; most of the sulfur comes by expedition.** The node is the
+   authored lode at the cataract's foot (section 4).
+3. ~~**The river's water.**~~ **Fit for the terraces.**
+4. ~~**The sulfur as a field.**~~ **A steady works.**
+5. ~~**The expedition's men.**~~ **The Devisers' people from Theodiga run it; many of the hired men are locals.**
+6. ~~**Names.**~~ **Open to proposals:** coined in section 3a.
+7. ~~**Who else.**~~ **No walls; a small Dalab mission of about 30.**
+8. ~~**The region.**~~ **The polygon the new pin falls in:** the Xanadu Sultanate, cut as `xanadu-oidong-highrift`.
+
+**Still open:**
+1. **How small is the node?** The tune has the town's own 60 t a year against the expedition's 90 t, so most already
+   comes by expedition. Keep the 60 t, or make the node smaller (say 25-30 t, with its crew halved)?
+2. **The Dalab mission.**
+   - Is its house built in Dalab's own style, or in the town's Xanadu style?
+   - Do the genepriests go up the gorge with the Devisers' expedition, or on their own?
+3. **The names** of section 3a (Gāḍz-Phōl, Solṭ-Phōl, Gōrj-Phuṭ, Briḍj, Siṭēps, Siprīngz, Salphar, Bēnch): keep, or
+   change any? The *sp-* rule is new.
+4. **The bridge's toll.** Should the Sultan tax the expedition road at Briḍj (a road `share`, as at the Strongbow lift),
+   or only take the licence on the rarities?
 
 ## 8. Found on the way (for the sessions that own them; not changed here)
 
