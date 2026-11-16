@@ -23,6 +23,36 @@
    "crest_m": -478.0,
    "water_m": -520.0,
    "note": "A basalt stack off the lake's west shore, 42 m over the water. Sub-cell; its cell's bed held as a shoal. edit_517, 2026-11-11."
+  },
+  {
+   "id": "lf_pher_headland",
+   "kind": "island",
+   "px": 840.65,
+   "py": 1491.2,
+   "r_m": 520.0,
+   "crest_m": -440.0,
+   "water_m": -520.0,
+   "note": "Phēr's headland (the owner, 2026-11-16: \"give it a headland and cove\"): the arm from the shore's bend west of the town, its rise joining the bench; the cove lies east of it. settlements/pher/PLAN.md section 1.2, edit_517_pher.py."
+  },
+  {
+   "id": "lf_pher_headland_tip",
+   "kind": "island",
+   "px": 841.05,
+   "py": 1491.65,
+   "r_m": 320.0,
+   "crest_m": -470.0,
+   "water_m": -520.0,
+   "note": "Phēr's headland (the owner, 2026-11-16: \"give it a headland and cove\"): the arm from the shore's bend west of the town, its rise joining the bench; the cove lies east of it. settlements/pher/PLAN.md section 1.2, edit_517_pher.py."
+  },
+  {
+   "id": "lf_pher_east_point",
+   "kind": "islet",
+   "px": 842.75,
+   "py": 1492.15,
+   "r_m": 240.0,
+   "crest_m": -495.0,
+   "water_m": -520.0,
+   "note": "The low point east of Phēr's cove, closing it to about 1 km across. settlements/pher/PLAN.md section 1.2, edit_517_pher.py."
   }
  ]
 }
