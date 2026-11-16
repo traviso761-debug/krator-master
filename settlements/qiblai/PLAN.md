@@ -61,8 +61,9 @@ and `qiblai` in core/tags' vocabulary (`TODO.md`, the ride-along) are not prereq
   of all 976 lot buildings that hold a room (28 types: the Qiblai kit's houses, trades, guilds, colleges, hostels, granaries and the
   Xanadu kit's houses; the 490 shrines, wheel houses and the great rooms' own lot left out), planned by kits/interiors, drawn with
   the kit's textured floorboards, lacquer and wash, furnished from the catalog, built per type and cloned onto each lot as the
-  camera comes (`targets/city/90u-qc-lot-interiors.js`; all 28 types in ~1.5 s, 314 furniture meshes, all textured). The upper
-  storeys are not yet furnished (a stair and its wells to draw).
+  camera comes (`targets/city/90u-qc-lot-interiors.js`). Every storey (the owner, 2026-11-16: "Yes, upper storeys"): up to four
+  storeys a building, a stair (a ladder in the smallest houses) between each pair, each upper floor a plank slab with its stair's well
+  over a lacquered ceiling; all 31 types in ~4.5 s, 446 furniture meshes, all textured.
 - **The clergy ring in eight sectors** (the owner, 2026-11-15: "clearly defined areas of each color, and red is not
   over-represented"): its colleges and granaries take the colour of the monastery whose spoke their block stands on.
 - **Q7e-Q7g** not started.

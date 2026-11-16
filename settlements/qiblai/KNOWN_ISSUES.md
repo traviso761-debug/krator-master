@@ -23,11 +23,12 @@
   another closed the gap on one side of a symmetric room; a required piece with no fit re-furnishes the room up to 51 times (minutes
   in a 1,000 m2 hall). The city therefore takes the default grid, caps the candidates (`perType` 3) and the passes (2, 4 backtracks),
   keeps a metre between fixtures, and furnishes the sanctum as an antechamber (its shrine is the altar). To report to kits/interiors.
-- [ ] **The lots' interiors are the ground storey only, and guessed from the drawing** (`targets/city/90u-qc-lot-interiors.js`,
-  kits/qiblai `89q5s`): the shell is the biggest storey stack (or ground block) a builder raised from the ground, its street door
-  the middle of that block's front, which is not always the drawn door's place (a Xanadu tenement's shop arches, a corner
-  house); the doors stay the kit's locked doors, so a room is reached by flying in. The upper storeys keep no interior (planBuilding
-  plans them with stairs; drawing the stairs and wells is owed).
+- [ ] **The lots' interiors are guessed from the drawing** (`targets/city/90u-qc-lot-interiors.js`, kits/qiblai `89q5s`): the
+  shell is the biggest storey stack (or ground block) a builder raised from the ground, with the stacks raised on it as its upper
+  storeys (at most four); its street door is the middle of that block's front, which is not always the drawn door's place (a
+  Xanadu tenement's shop arches, a corner house); the stair (or, in the smallest houses, a ladder) is the planner's, not the
+  drawing's; the doors stay the kit's locked doors, so a room is reached by flying in. Storeys on terraces set back from the
+  main block (`qnTerraces`) keep no interior.
 - [ ] **The rooms' fancy surfaces are owed** (core/materials/PROMPTS-NEEDED.md section 43): the painted murals, the mandala ceiling
   coffers, the temple rug, the beaten gold; today the library's wash, lacquer, wool rug and hammered gold stand in.
 - [ ] **The river is a ribbon.** Nahr ash-Shalalat is a flat water plane in a cut channel; its cataracts as core/water flow, and
