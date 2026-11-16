@@ -161,7 +161,7 @@
     if (typeof o.ground !== 'function') throw new Error('KTRANSIT.network: o.ground(x, z) is required');
     if (!Array.isArray(defs) || !defs.length) throw new Error('KTRANSIT.network: a list of road definitions, please');
     var roads = [], N = { roads: roads, nodes: [], junctions: [], segments: [], ground: o.ground, opts: o, defs: defs.slice() }, i;
-    var make = function (d) { var K = T.ROAD_KINDS[d.kind == null ? 'road' : d.kind] || T.ROAD_KINDS.road; return T.road(d.pts, { id: d.id, ground: o.ground, carve: o.carve, shift: o.shift, width: num(d.width, K.width), pavement: num(d.pavement, K.pavement), lines: d.lines == null ? K.lines : d.lines, kind: d.kind == null ? 'road' : d.kind, drift: d.drift, maxGrade: d.maxGrade, radius: d.radius, pins: d.pins }); };
+    var make = function (d) { var K = T.ROAD_KINDS[d.kind == null ? 'road' : d.kind] || T.ROAD_KINDS.road; return T.road(d.pts, { id: d.id, ground: o.ground, carve: o.carve, shift: o.shift, width: num(d.width, K.width), pavement: num(d.pavement, K.pavement), lines: d.lines == null ? K.lines : d.lines, kind: d.kind == null ? 'road' : d.kind, drift: d.drift, maxGrade: d.maxGrade, radius: d.radius, pins: d.pins, surface: d.surface, crosses: d.crosses }); };
     defs.forEach(function (d) { var R = make(d); R.network = N; R.netIndex = roads.length; roads.push(R); });
     var all = roads.map(function (R, k) { return k; });
     for (i = 0; i < roads.length; i++) meetsOf(roads, i, all.filter(function (j) { return j > i; })).forEach(function (m) { nodeOf(N, m); });
@@ -183,7 +183,7 @@
       if (best) { var kept = [pts[0]], acc = 0; for (var q = 1; q < pts.length; q++) { acc += Math.hypot(pts[q][0] - pts[q - 1][0], pts[q][1] - pts[q - 1][1]); if (acc < best.sP - 1) kept.push(pts[q]); else break; } kept.push([best.x, best.z]); pts = kept; } }
     /* (an end is not carried onto a road its other end already meets, nor when the carried road would be under 10 m) */
     [0, pts.length - 1].forEach(function (ei) { var e = pts[ei], far = pts[ei ? 0 : pts.length - 1], hit = null; N.roads.forEach(function (R) { var q = R.path.project(e[0], e[1]); if (q.d > 1.5 && q.d <= R.width / 2 + (R.pavement == null ? 0 : R.pavement) + 3 && q.s > 1 && q.s < R.L - 1 && R.path.project(far[0], far[1]).d > 1.5 && (!hit || q.d < hit.d)) hit = { d: q.d, s: q.s, R: R }; }); if (hit) { var c = hit.R.path.at(hit.s); if (Math.hypot(c.x - far[0], c.z - far[1]) >= 10) pts[ei] = [c.x, c.z]; } });
-    var Rd = T.road(pts, { id: d.id, ground: o.ground, carve: o.carve, shift: o.shift, width: num(d.width, K.width), pavement: num(d.pavement, K.pavement), lines: d.lines == null ? K.lines : d.lines, kind: d.kind == null ? 'road' : d.kind, drift: d.drift, maxGrade: d.maxGrade, radius: d.radius, pins: d.pins }), k = N.roads.length;
+    var Rd = T.road(pts, { id: d.id, ground: o.ground, carve: o.carve, shift: o.shift, width: num(d.width, K.width), pavement: num(d.pavement, K.pavement), lines: d.lines == null ? K.lines : d.lines, kind: d.kind == null ? 'road' : d.kind, drift: d.drift, maxGrade: d.maxGrade, radius: d.radius, pins: d.pins, surface: d.surface, crosses: d.crosses }), k = N.roads.length;
     Rd.network = N; Rd.netIndex = k; N.roads.push(Rd); N.defs.push(d);
     var others = N.roads.map(function (R, j) { return j; }).filter(function (j) { return j !== k; });
     meetsOf(N.roads, k, others).forEach(function (m) { nodeOf(N, m); });

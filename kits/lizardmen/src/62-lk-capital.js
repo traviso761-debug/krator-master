@@ -12,8 +12,8 @@ function lkPlinth(w,d,h,o){o=o||{};box(LK_PL,0,0,0,w,h,d,P('basaltD'));
  for(const [x,z,ry,L] of [[0,d/2,0,w],[0,-d/2,PI,w],[w/2,0,PI/2,d],[-w/2,0,-PI/2,d]])W(x,h*.6,z,ry,()=>{box('bronzeC',0,0,.02,L-.2,.06,.03,P('verd'));if(o.leiwen&&ry===0)W(0,-h*.45,.03,0,()=>lzLeiwen(Math.min(L-1,o.leiwen),h*.7,{cell:.3,mk:'bronze',back:'lacq',t:.03,proud:.02}));});}
 /* eyes along a face: n spiral eyes at height y on the +z face of a room w wide (z at the face), skipping the door's span */
 function lkEyes(n,w,y,z,R,skip){for(let i=0;i<n;i++){const x=-w/2+w*(i+.5)/n;if(skip&&Math.abs(x)<skip)continue;lzNoCut(()=>lzEye(x,y,z,0,R,{mk:'bronze'}));}}
-/* ---------------------------------------------------------------- the warlord's great hall: a tusk vault in stone */
-defBuilding({key:'lk-greathall',name:"Warlord's great hall",seed:7701,caste:'all',cut:true,w:22,d:30,h:15,budget:160000,
+/* ---------------------------------------------------------------- the Hall of Intention (the owner, 2026-11-16; once "the warlord's great hall": the lore has no warlord, only the Interpreters in concert): a tusk vault in stone */
+defBuilding({key:'lk-greathall',name:"Hall of Intention",seed:7701,caste:'all',cut:true,w:22,d:30,h:15,budget:160000,
  tags:{types:['civic','military'],wealth:'rich',role:'hall'},
  note:'the capital: the tusk vault of the lodge carved in polished basalt, nine pairs of stone tusks over a slab roof, a polished plinth inlaid with bronze, the front gable with seven spiral eyes and a nested bronze portal seven deep; the serpent throne on a dais at the far end',
  build(o){const L=22,Wd=12.5,h=11.5;lzCutFloor(.4);

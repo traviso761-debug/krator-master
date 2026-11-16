@@ -1,5 +1,11 @@
 # Longsong — known issues
 
+- [ ] **The sun's arc is the page's, not the compass's** (2026-11-11). The page's frame is turned 28.6 degrees onto the
+      Bīruk al-Ghaym's line (`LS.SITE.rot`), and the sky's landmarks are turned with it (`LS.pageBearing`), but the sun
+      (`LS.sunAt`, `SUN_NOON`) is still drawn in the page's frame as it was composed, so its noon is 28.6 degrees west of true
+      north. Turning it would move the light on the White Palace's face; it waits for the owner's eye.
+- [ ] **The 4.21 site's notes** (PLAN.md section 1, below its new head) describe the old stream and apron; the shapes the
+      plan authors (the rock, the terraces, the pond) were kept and fitted to the river site (2026-11-11), not redesigned.
 - [ ] **The festival's dance** (`89y`, `68`): the festival changes from week to week (2026-10-20: four programmes in turn,
       `LS.FESTIVAL.programmes`, core/simulation's week the whole four-week cycle: the cham, the procession, the great
       debate, the valley's day; the valley's turnout and the camp pitched to match, `LS.CAMP.pitched`), the cham's masks

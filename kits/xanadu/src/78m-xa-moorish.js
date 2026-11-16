@@ -26,6 +26,20 @@ vWorldUV(MAT.xPietra,1/1.2);vWorldUV(MAT.xSandR,.5);vWorldUV(MAT.xMarW,.5);vWorl
 const XM_MAT={Zel:MAT.xZel,Haft:MAT.xHaft,Gilt:MAT.xGiltC,Yes:MAT.xYes,Muq:MAT.xMuqT,Band:MAT.xBandR,Pietra:MAT.xPietra,Sand:MAT.xSandR,MarW:MAT.xMarW,MarK:MAT.xMarK,
  Wash:MAT.xWash,Gold:MAT.xGoldDS,Paint:MAT.xPaint};
 for(const k in XM_MAT)kdef('xm'+k,VBOX,XM_MAT[k]);
+/* the skins' boxes on one grid: vWorldUV starts a box's tiles at its own corner, so the piece over a door began its haft-rangi
+   stripes at another height from the pieces beside it (the owner, 2026-11-12). A box's walls (not its top) take their UVs from
+   the world position instead, at the same metres per tile. The def's material is read at bake, after KMAT.bindMat has put the
+   library's maps on XM_MAT, so it copies them then; the vaults, heads and rings keep XM_MAT itself */
+const XM_WPK={Zel:[1/1.6,1/1.6],Haft:[1/1.2,1/.8],Gilt:[1/1.2,1/1.2],Yes:[1/1.5,1/1.5],Muq:[1/1.2,1/1.2],Band:[1/1.5,1/1.5],Pietra:[1/1.2,1/1.2],
+ Sand:[.5,.5],MarW:[.5,.5],MarK:[.5,.5]};
+for(const k in XM_WPK){const D=KIT.defs['xm'+k],W=new THREE.MeshStandardMaterial(),K=XM_WPK[k],tag='xmwp|'+k;
+ const add=new Function('sh','r','var b=XM_MAT['+JSON.stringify(k)+'];if(b.onBeforeCompile)b.onBeforeCompile.call(this,sh,r);'+
+  'sh.vertexShader=sh.vertexShader.replace(/vUv=uv\\*_sw\\*[^;]*;/,function(s){return s+'+JSON.stringify(
+  'if(_an.y<0.5){vec4 _wp=modelMatrix*_im*vec4(position,1.0);vec3 _wn=abs(normalize(mat3(_im)*normal));'+
+  'vUv=vec2((_wn.x>0.5?_wp.z:_wp.x)*'+K[0].toFixed(4)+',_wp.y*'+K[1].toFixed(4)+');}')+';});');
+ Object.defineProperty(D,'mat',{configurable:true,get(){const b=XM_MAT[k];W.copy(b);W.onBeforeCompile=add;
+  const bk=b.customProgramCacheKey&&b.customProgramCacheKey!==THREE.Material.prototype.customProgramCacheKey?b.customProgramCacheKey():'';
+  W.customProgramCacheKey=()=>bk+'|'+tag;return W;}});}
 kdef('xmJali',VPLANE,MAT.xJaliC);
 
 // ---------------------------------------------------------------- geometry
@@ -76,7 +90,8 @@ const XM_C={white:null,ochre:xC(0xd8a060),sand:xC(0xe8c890),cobalt:xC(0x1c2fb8),
 // an arch head in a wall: (x,z) the opening's middle on the wall line, ry the wall's facing, w the span, y the springing, hh the
 // head's height, t the wall's thickness; mat the panel's material key (XM_MAT), ring a ring material or null
 function xmArchHead(kind,x,y,z,ry,w,hh,t,mat,ring,c){kput('xmHead.'+kind+'.'+mat,[x,y,z],qEuler(0,ry,0),[w,hh,t],c===undefined?null:c);
- if(ring)kput('xmRing.'+kind+'.'+ring,[x,y,z],qEuler(0,ry,0),[w,hh,t+.08],ring==='Gold'?XM_C.gold:null);}
+ /* the ring's opening 1.5 cm wider than the head's: the two shared the soffit's curve, gold and stone in one surface (2026-11-12) */
+ if(ring)kput('xmRing.'+kind+'.'+ring,[x,y,z],qEuler(0,ry,0),[w+.03,hh+.015,t+.08],ring==='Gold'?XM_C.gold:null);}
 // a muqarnas hood in a recess: (x,y,z) the middle of the back wall at the springing, ry facing out of the recess
 function xmMuqHood(x,y,z,ry,w,d,h,o){o=o||{};const cells=XMOOR.muqHood(w,d,h,(o.tiers==null?5:o.tiers),(o.cell==null?1.1:o.cell)),item=o.item||'xmCell';
  for(const C of cells){const p=loc(x,z,C.x,C.z,ry),it2=C.tier%2&&o.alt?o.alt:item;kput(it2,[p[0],y+C.y,p[1]],qEuler(0,ry+C.a,0),[C.w,C.h,C.d],it2==='xmCellG'?XM_C.gold:null);}
@@ -133,12 +148,15 @@ function xmRill(a,b,y,w){const dx=b[0]-a[0],dz=b[1]-a[1],L=Math.hypot(dx,dz),ry=
 function xmIwan(x,y,z,ry,w,h,d,o){o=o||{};const fw=o.fw||w+4,fh=o.fh||h+2.2,t=(o.t==null?1:o.t),mat=o.mat||'Haft',P=(u,v)=>loc(x,z,u,v,ry),hh=Math.min(w*1.05,h*.55),s=h-hh*.86;
  // the frame: two piers, the band over the crown, the head with the opening, the borders
  for(const sg of[-1,1]){const p=P(sg*(w/2+(fw-w)/4),-t/2);vB('xm'+mat,p[0],y,p[1],(fw-w)/2,fh,t,ry,null);
-  const b=P(sg*(fw/2-.18),.02);vB('xmBand',b[0],y,b[1],.36,fh,t+.06,ry,null);const c=P(sg*(w/2+.12),.02);vB('xmZel',c[0],y,c[1],.24,s,t+.08,ry,null);}
+  const b=P(sg*(fw/2-.19),.02);vB('xmBand',b[0],y,b[1],.36,fh,t+.06,ry,null);const c=P(sg*(w/2+.13),.02);   /* 1 cm in from the pier's faces (shared planes, 2026-11-12) */vB('xmZel',c[0],y,c[1],.24,s,t+.08,ry,null);}
  {const p=P(0,-t/2);vB('xm'+mat,p[0],y+h,p[1],w,fh-h,t,ry,null);const b=P(0,.02);vB('xmBand',b[0],y+fh-.36,b[1],fw,.36,t+.06,ry,null);vB('xmGold',b[0],y+fh,b[1],fw+.2,.18,t+.2,ry,XM_C.gold);}
  {const p=P(0,-t/2);xmArchHead('pointed',p[0],y+s,p[1],ry,w,hh,t,mat,'Gold');}
  // the recess: side walls and soffit, the hood
  for(const sg of[-1,1]){const p=P(sg*(w/2+.2),-t-d/2);vB('xm'+mat,p[0],y,p[1],.4,s,d,ry,null);const q=P(sg*(w/2-.05),-t-d/2);vB('xmSand',q[0],y,q[1],.12,1.2,d,ry,null);}
  const n=xmMuqHood(P(0,-t-d)[0],y+s,P(0,-t-d)[1],ry,w,d+t*.5,hh*.86,{tiers:(o.tiers==null?5:o.tiers),cell:(o.cell==null?1.0:o.cell),alt:'xmCellG',back:'xmCell'});
  if(o.back!==false){const p=P(0,-t-d-.3);vB('xm'+mat,p[0],y,p[1],w+.8,s,.6,ry,null);}
- if(o.star){const p=P(0,-t-d+.02);kput('xmJali',[p[0],y+s-o.star*.6-.4,p[1]],qEuler(0,ry,0),[o.star,o.star,1],null);}
+ /* with no back wall the opening is a passage: the jali is its transom, the opening's full width from the passage's head to the
+    hood (a 2.2 m star floated in it before; the owner, 2026-11-12) */
+ if(o.star){const p=P(0,-t-d+.02);if(o.back===false){const y0=y+Math.max(2.6,Math.min(s-1.2,4.2));xmJali(p[0],y0,p[1],ry,w,y+s+.05-y0);}
+  else kput('xmJali',[p[0],y+s-o.star*.6-.4,p[1]],qEuler(0,ry,0),[o.star,o.star,1],null);}
  return{s,hh,n};}

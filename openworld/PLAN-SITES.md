@@ -39,6 +39,43 @@
   ground (hash `8ad035b1`), and every check passes in the browser.
 - **Not moved yet:** Pinnacle Rock's own page and the published model (`openworld/pinnacle/KNOWN_ISSUES.md`).
 
+**Qiblai moved (the owner, 2026-11-11: "by a river and near plentiful resources").**
+- **Why it moved.** At 5.1 px 963,1566 the city stood 65 km from any river in the open world's data, with no salt
+  within 30 km.
+- **The survey.** Every river in the Xanadu overlay was scored, in 6 km steps, on resources within 30 km (`WRES.assess`),
+  farmland and flat ground for a 1.6 km grid. The owner chose **the cataracts of Nahr ash-Shalālāt, px 922,1595**: the
+  region's biggest river (~1,100 m³/s), 37 m of relief over the grid, rock salt (236), potash, rare earths, saltpeter,
+  copper and oil within reach, farmland 40%.
+  - The Ālph's best point was a gorge (~300 m of relief over the grid).
+  - Gūlī Qubbah was flat and mild but had no salt.
+- **The model's record moved** (`model/src/60-settlements.js`, `SETT_MOVED['5.1e3']`).
+- **The region followed it:** recut (the frame unchanged), the villages and links re-baked, the resources re-baked, the
+  verify's region check at the new pixel.
+- **Erewhon followed its lake** (below).
+
+**Erewhon's lake remade, and Erewhon on its shore (the owner, 2026-11-11: "more like Lake Atitlán, but bigger, with a few
+islands"; 120 x 65 km, the volcanoes a safe distance away).**
+- **The model edit** (`tools/scale-model/edit_512.py`, README "5.1 edit 2"): the 260 x 102 km rift lake became a caldera
+  lake, 121 x 66 km at -520 m, up to 945 m deep, with walls all round. Three volcanoes stand 13-14 px back from the south
+  shore (summits 1.9-2.4 km over the lake). There are four islands of 1-4 cells, and two small-island landform records
+  (`model/data/landforms.json`; the Pleasure Dome's isle among them), which core/world does not stamp yet.
+- **The Vale.** The old basin east of the lake is a farmed vale floor. The Ālph now rises at the lake's east tip and
+  crosses the vale to Theodiga's dam.
+- **Erewhon** moved from 800,1503 (now under the lake) to **805,1516** (`SETT_MOVED['5.1e4']`): a south-shore bench, with
+  the town's climb, a 90 m grey cliff, the palace plateau and the mountainside behind.
+- **Its ring** was re-laid for the new shore: along it east and west, and up the slopes south.
+- **Not done:**
+  - the published model and its database.
+- **The page fitted, the islands stamped** (the owner, 2026-11-11: "keep the page, move the record"; "a region fragment"):
+  - The Erewhon page already faces as the world does (the lake north). It stands with its centre on the pin, unturned,
+    its lake at -520 m (`ER_WORLD`, `settlements/xanadu/targets/erewhon/84-er-geo.js`). Its shore runs within ~250 m of
+    the world's. The world's 1:1 ground there is a 4 % rise and holds none of the page's cliff or plateau (a town-grid
+    bake would).
+  - `lf_pleasure_dome_isle` moved from 5 km out (806.6,1513.3) to the page's island (805.035,1515.6935, about 220 x 110 m,
+    14 m over the lake). The page's verify checks the two agree.
+  - `openworld/xanadu-oidong-highrift/src/44-world-landforms.js` stamps the records at 1:1 on `WORLD.landHook`. The region's
+    verify checks each island over its lake.
+
 **The second region, Xanadu, Oidong and the High Rift (2026-11-10): `openworld/xanadu-oidong-highrift`.**
 - **The cut:** 1,780 x 582 km at 1 km cells, in about 40 s.
 - **The villages:** Erehwon's and Qiblai's farming and ranching villages and Longsong's three, 15 in all (577 buildings),
@@ -63,9 +100,23 @@
 - **Core changes on the way:** `88s` picks a village's drawing by its row's kit (`VK`); the bake reads `VERN.def` boxes.
   One kit on several overlays is a shim in the region until `41` takes a list (`TODO.md`, "Ride along").
 
+**Resources and proposing a site (the owner, 2026-11-11), in every open-world page** (the isle demo's world page, Pinnacle,
+region 2, the Iziz cluster):
+- **"resources":** the region's census, from the scale model's geology (`kits/resources/data/geology.json`: 26 families
+  and the rock provinces per 4 km cell, cropped to the region) and farmland from the world's own climate and ground.
+  It shows a map of any layer, the richest mining, farmland and unique spots (placers, vents, rare rock, Ancient ruin
+  ground) as markers, and those markers in "Go to". The minimap takes the same layers as overlays.
+  `core/world/49r-world-resources.js`, `89r-world-resources-map.js`; `bake_sites.py <region> --resources` writes
+  `plan/resources.json`.
+- **"propose":** place a new site on the ground or the minimap, name and type it, and read its ground and resources within
+  its reach. It is kept in the browser, and can be exported or sent to the edit queue (`tools/edits/serve.py`).
+  `python3 tools/scale-model/propose_site.py <file> | --edits` lists them. `--accept <id> --region <r> --write` makes one a
+  site of `SITES.json` (state `proposed`) and a settlement of the scale model (its default list and a `SETT_ADDED`
+  version). Then `cut_site.py` and the region's spec take it up. Step 6's planner page grows from this.
+
 **Not yet:**
 - Step 3 (the generic town steps lifted out of `ISLE`): no region plans a town yet.
-- Step 6 (the region's planner page).
+- Step 6 (the region's planner page): proposing a site is its first part; laying out what stands round it is next.
 - Step 7 (Godot reading `plan/`).
 - Bridges (the Iziz cluster's links ride their rivers as causeways; region 2's stay unlaid).
 - The mesa in the world: `openworld/pinnacle/PLAN.md`, "What is left".

@@ -25,6 +25,9 @@ const QB_IX_OPEN={qb_shrine:1,qb_wheel_house:1,qb_chorten:1,qb_kora_arcade:1,qb_
 // (a common room, its kitchen, a store and a stable below; the merchants' rooms above)
 const QB_IX_MARKET={name:'market',wealth:.5,program:(l,a)=>l?(a>=120?['bedroom','store','bedroom']:['bedroom','store']):(a>=120?['shop','store','shop','store']:['shop','store'])};
 const QB_IX_INN={name:'inn',wealth:.45,program:(l,a)=>l?(a>=120?['bedroom','bedroom','bedroom','store']:['bedroom','bedroom']):(a>=120?['tavern','kitchen','store','stable']:['tavern','store'])};
+// the Order of the White Lily's ranges, its hospital (the owner, 2026-11-16): the porters' hall by the court door, the wards
+// (dormitories of beds), a bath, the kitchen, the apothecary's store; above, more wards and the physicians' study
+const QB_IX_HOSPITAL={name:'hospital',wealth:.55,program:(l,a)=>l?(a>=150?['dormitory','dormitory','study','store']:['dormitory','study']):(a>=150?['hall','dormitory','bath','kitchen','store']:['hall','dormitory'])};
 const QB_IX_MONKS={name:'monks',wealth:.4,program:(l,a)=>l?(a>=150?['dormitory','study','dormitory','store']:['dormitory','study']):(a>=150?['shrine','kitchen','dormitory','store']:['shrine','dormitory'])};
 // the shell from a building's listed stacks: the biggest footprint standing on the ground (base within 2.6 m), at least 4 x 4 m
 // and a 2.4 m storey; then its upper storeys: a stack raised on its top (within 0.4 m), centred on it (within 1 m), at least
@@ -93,6 +96,7 @@ function qnIxType(shell,key,seed,door,prog){const P=prog||qnIxProgram(key),IX=ty
  const fw=side?shell.w/2:shell.d/2,dep=fw-(side?hw:hd)+.02,mid=(fw+(side?hw:hd))/2,bry=shell.ry+(side?Math.PI/2:0),dh=Math.max(2,Math.min(Dr.h,hs[0]-.3));
  if(door&&!door.noPortal)for(const e of[-1,1]){const q=fp(mid,tt+e*(dw/2+.06));vB('xWashB',q[0],shell.y,q[1],.12,dh+.05,dep,bry,w0);}
  if(door&&!door.noPortal){const q=fp(mid,tt);vB('xWashB',q[0],shell.y+dh,q[1],dw+.24,.25,dep,bry,w0);vB('qPlankB',q[0],shell.y,q[1],dw,.06,dep,bry,xC(0xf0e8dc));}
+ const bulbs=[];QB_BULB_SINK=bulbs;if(P.wealth>=.5)for(const R of B.rooms){const lv=Lv[R.level]||Lv[0];qnIxBulbs(R.poly,lv.y,lv.h);}QB_BULB_SINK=null;   /* electric light, but not in the poor's houses */
  KXF=saveK;kbake(G);for(const k in KIT.items)KIT.items[k].length=0;
  /* the upper floors: a plank slab over a lacquered ceiling, each with its stair's well cut out */
  if(Lv.length>1){const mC=qnIxCeilMat(ceilC.getHex());for(const F of B.floors||[]){if(!F.level)continue;
@@ -103,10 +107,20 @@ function qnIxType(shell,key,seed,door,prog){const P=prog||qnIxProgram(key),IX=ty
  G.traverse(o=>{if(o.isMesh)o.renderOrder=-2;});
  if(door&&!door.noPortal){const q=fp(fw+.012,tt),m=new THREE.Mesh(new THREE.PlaneGeometry(dw,dh),QB_IX_PORTAL);m.position.set(q[0],shell.y+dh/2,q[1]);
   m.rotation.y=shell.ry+Math.atan2(Dr.n[0],Dr.n[1]);m.renderOrder=-1;m.castShadow=m.receiveShadow=false;m.raycast=()=>{};m.userData.probeSkip=true;m.name='portal';G.add(m);}
- return{G,plan:B,F,program:P.name||P.program,door:{at:fp(side?hw:hd,tt),w:dw,h:dh},ms:Math.round(performance.now()-t0)};}
+ return{G,plan:B,F,bulbs,program:P.name||P.program,door:{at:fp(side?hw:hd,tt),w:dw,h:dh},ms:Math.round(performance.now()-t0)};}
 // the Xanadu kit's houses whose way in is no door record (core/door) but an archway: the merchant's konak's arch with its two
 // timber leaves ajar (u 3.2 on its front). door.noPortal: a doorway walked through with no pane drawn in it
 const QB_IX_ARCH={xa_rich_c:{n:[0,1],t:3.2,w:2.4,h:3.2}};
+// electric light in a room (the owner, relayed 2026-11-16: "Qiblai will be electrified ... in buildings except in poor
+// areas"): a bulb on a short cord under the ceiling for every 5 m of the room's plan each way, inside its outline. poly in
+// the frame the caller draws in, y the floor, h the clear height; the caller bakes. Returns how many
+let QB_BULB_SINK=null;   /* a list the caller sets: each bulb's [x, y, z] in its frame, for the light pool (settlements/qiblai 90v) */
+function qnIxBulbs(poly,y,h){const xs=poly.map(p=>p[0]),zs=poly.map(p=>p[1]),x0=Math.min(...xs),x1=Math.max(...xs),z0=Math.min(...zs),z1=Math.max(...zs);
+ const inP=(x,z)=>{let c=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const a=poly[i],b=poly[j];if((a[1]>z)!==(b[1]>z)&&x<(b[0]-a[0])*(z-a[1])/(b[1]-a[1])+a[0])c=!c;}return c;};
+ const nx=Math.max(1,Math.round((x1-x0)/5)),nz=Math.max(1,Math.round((z1-z0)/5)),yc=y+h-.42,iron=xC(0x2e2a26);let n=0;
+ for(let i=0;i<nx;i++)for(let j=0;j<nz;j++){const x=x0+(i+.5)*(x1-x0)/nx,z=z0+(j+.5)*(z1-z0)/nz;if(!inP(x,z))continue;
+  kput('vBulb',[x,yc,z],null,[.1,.13,.1],null);vB('vIron',x,yc+.1,z,.015,.3,.015,0,iron);if(QB_BULB_SINK)QB_BULB_SINK.push([x,yc-.1,z]);n++;}
+ return n;}
 // the depth-only pane in a street doorway: it writes depth and no colour, so the body's solid face behind it (drawn later)
 // fails the depth test there and the room drawn before it shows (the kit's bodies are solid: the Vernacular's locked doors)
 const QB_IX_PORTAL=new THREE.MeshBasicMaterial({colorWrite:false});

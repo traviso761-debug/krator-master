@@ -33,6 +33,17 @@ door is LOCKED, with an id from its def, its placement and its number. A door ke
 purpose, as they are not openings: wells, the mine shaft, ovens and kilns behind their embers (`vDarkB`). `kit_bundle.py` carries
 core/door's 10 and 20 and 69e5 into `XAK` (the kit's own KDOOR; no walk: a proto's doors are in `userData.doors`, locked).
 
+**Opt-in pieces** (2026-11-16, `extra/`). New pieces that only one page takes so far wait in `extra/`, not `src/`, so no
+other page of the kit changes until the next all-builds rebuild moves them into `src/` (TODO.md, "Ride along with the next
+all-builds rebuild"). A page takes one through its kit.json `"external"` (`settlements/pher` takes them all):
+
+| File | What |
+|---|---|
+| `extra/88c-xa-caravanserai.js` | `xa_caravanserai` (the owner, 2026-11-16: "build xanadu one"): a 48 m court of two-storey battered ranges, the stables' arcade, a gate block with an open iwan, four corner towers, the fountain court; v0 wash and gold, v1 earth and plainer |
+| `extra/88d-xa-lakecraft.js` | the lake craft owed by `core/simulation/PROPOSAL-XANADU.md` 2a: `xa_dugout` (the cayuco; empty, with its fisher, beached), `xa_launch` (the lancha; under sail, furled), `xa_lake_barge` (the cargo barge; sail set, brailed) |
+| `extra/88e-xa-stall.js` | `xa_stall`: a trestle stall under a cloth awning, four trades (cloth, cacao and fruit, pots and baskets, fish and salt) |
+| `extra/69dz-ix-xanadu-extra.js` | the interior set `xanadu-extra`: the caravanserai's five ranges (the common room, its kitchen and the stores below, the travellers' rooms above). It joins `kits/interiors/sets/xanadu.js` with the pieces |
+
 **Hollow walls and interiors** (2026-11-09). The kit's interior set is `kits/interiors/sets/xanadu.js` (one item per def:
 the dwellings, trades, farms, sacred buildings, guilds, military, baths, the Turkish and Andean houses; the open pieces
 skipped with their reasons). Its pages (`settlements/xanadu`: the sheet and Erewhon) take it with `?interiors=1`
@@ -91,6 +102,14 @@ Pleasure Dome's North Door to the palace's gate iwan and postern (`XGW`, `xgwPla
 and the Dome's North Door moved to its north face for it (`XPDOME` patched where the citadel's files load; the vest's barrel cut
 back while the Dome builds; `o.gw` drops the north garden wall's east run). Erewhon places it (`xgwSite`); the sheet draws it
 alone at Erewhon's height: `settlements/xanadu/citadel/PLEASURE-DOME.md`, "The Golden Way".
+A fifth, `87k-xa-lake-trades.js` (2026-11-16, for Kirstabal: `settlements/kirstabal/PLAN.md`), is opt-in the same way: not in
+`xanadu.py`, read in place by name (`settlements/kirstabal/kit.json` "external"), so no other page changes. The lake's trades:
+`xa_serai` (the caravanserai: a walled court of two-storey ranges round a well, an iwan gate, corner towers), `xa_latex_house`
+(the White Monastery's: open drying halls of racks round a whitewashed court, the sealing room, the white banner), `xa_tea_factory`
+(the louvred withering lofts, the rolling shed, the trays), `xa_fermentary` (cacao sweat boxes and drying floors) and
+`xa_fish_racks` (a fishing village's racks and smokehouse: core/hamlet's fishing works on the Xanadu row, as Kirstabal's
+`KS_RING.fishingRow` extends it). A world that wants them lists the file; folding it into `FILES` changes every page that
+takes the kit (TODO.md, "Ride along").
 
 **Footprints** (2026-11-10; the owner: "the garden pieces ... stick out way over what their footprint is supposed to be").
 A def's footprint is its `w x d`, its lot: the sheet spaces sites by it, Erewhon's garden grid and blocks set 8 m and 16 m

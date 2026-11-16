@@ -364,3 +364,19 @@ The plan's questions:
 - `LORE.md` 6.1 (the tunnel wars, the Fellgangs, Dalab); `biomes/labyrinth/PLAN.md` (the Kimr, the megafauna);
   `biomes/riftrim/PLAN.md`; `biomes/copperglacier/PLAN.md`; `biomes/geyser`, `biomes/hearths`;
 - the core READMEs: `core/terrain` (`LAVA.md`, `47-core-therm.js`), `core/water`, `core/atmos`, `core/hazard`.
+
+---
+
+## 11. Scale-Model 5.1 Bimodal Volcanism & Showcase Station #8 (`2026-11-13`)
+
+### 11.1 Plume-Margin Volcanotectonic Origin & Bimodal `tibasalt` / `obsidian-pancake` Suite
+- **Tectonic Driver (Zero Subduction Arc):** Firebliss (`rmvfirebliss`) is **not** an Earth subduction stratovolcano arc (`GEOLOGY-SANITY-CHECK.md` §2); it is an **extensional plume-margin volcanotectonic fissure chain** bridging the western Rift shoulder and the Labyrinth radial dike swarm, producing classic bimodal basalt-rhyolite magmatism:
+  - **Firebliss Patera (`5.1 px 222, 1322`, `+2,240 m`, `1.21 atm`):** Low-shield caldera / boiling-lake patera floored by fractured **`tibasalt`** crust (`105.1 °C` pure-water boiling point at `1.21 atm`), feeding the Tlahn Warra hydrothermal plume and Solfatara Glen's native sulfur chimneys.
+  - **Five Silicic Pancake Domes (`obsidian-pancake`):** Anatexis of impact-fractured crust above ponded mafic sills extrudes **5 flat-topped, steep-sided viscous rhyolite/dacite pancake domes** (Venusian *farrum* / Newberry Big Obsidian Flow analogue, anchored by **`dome_fb_south` at `5.1 px (175, 1335)`**), bound to `KSTRATA` **`obsidian-pancake`** (`core/terrain/35-core-strata.js` — `2–6 m` flow-banded black obsidian carapace ledges with iridescent `irid: 1` sheen, frothy grey pumice partings, and basal perlite/autobreccia talus aprons).
+
+### 11.2 Showcase Station #8 — `Firebliss Obsidian Pancake Dome`
+- **Canonical `5.1` Coordinates:** **`(175, 1335)`** (`dome_fb_south`, southern flank of Great Firebliss Vale SW of lake `(184, 1318)`, paired on the range skyline with **Firebliss Patera** `(222, 1322)` and **Firebliss Mons** `(205, 1282)`).
+- **Elevation & Atmosphere:** **`+2,890 m`** ash-steppe moat floor climbing `400 m` up sheer autobreccia ramparts to the **`+3,290 m`** flat-topped dome carapace (**`1.11–1.16 atm`**, `Dfc` / `Cfb` cold geothermal margin, sub-boiling `95–103 °C` perimeter fumaroles).
+- **`KSTRATA` Binding:** **`obsidian-pancake`** (`2–6 m` foliated vitreous black-and-mahogany obsidian ledges with specular `sheen: 0.92` and subtle `irid: 1` peacock-blue oxidation film, alternating with pale vesicular pumice and `perlitic` crumble seams) over bedded valley-wall **`outland-tuff`** and **`tibasalt`** floor flows.
+- **Camera Framing (`5.2 × 5.2 km` dome-margin cut):** Low-angle golden-hour camera at `+22 m` on the warm `KTHERM` sinter-moss moat looking NNE up the `380 m` circular wall of `dome_fb_south`: glittering black conchoidal `obsidian-pancake` spines and concentric pressure-ridge ogives catching specular rim-light, white steam ribbons curling from basal perlite-breccia radial cracks (snow melted bare along `KTHERM`), a **Kimr / Fellgang** seasonal knapping camp (`KCAMP`, Aurochs-horn cairns and flaked obsidian debitage fans) on a dry pumice bench in the foreground, and Firebliss Mons' ash plume (`KFAR.sprites`) rising on the NNE skyline.
+- **Hydrology & Trade Tie-In:** Snowmelt on the fractured glassy carapace infiltrates instantly and emerges warm (`35–68 °C`) at the basal `obsidian-pancake` / `outland-tuff` contact to feed Great Firebliss Vale (`Yan` / `Tlahn Warra` headwaters); **Kimr** mammoth-hunters from the Labyrinth and **Tungang / Fellgang** toolmakers quarry surgical-grade black and mahogany obsidian cores here — the premier non-metallic cutting commodity of the southwestern highland trade web.

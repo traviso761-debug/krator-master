@@ -142,7 +142,9 @@ KHAMLET.resourceFor = function (spec, row) {
 KHAMLET.village = function (spec) {
   var row = KHAMLET.row(spec.culture);
   if (!row) return {id: spec.id, error: 'no culture ' + spec.culture};
-  if (KHAMLET.FOCI.indexOf(spec.focus) < 0) return {id: spec.id, error: 'no focus ' + spec.focus};
+  /* a focus is one of the common FOCI, or one a row keeps to itself (its works name it: the Order's `monastery`, the
+     Xanadu valley's `silk`), so a row's own trade needs no entry every other row must answer */
+  if (KHAMLET.FOCI.indexOf(spec.focus) < 0 && !(row.works && row.works[spec.focus])) return {id: spec.id, error: 'no focus ' + spec.focus};
   var found = KHAMLET.resourceFor(spec, row);
   if (found) spec = Object.assign({}, spec, {resource: found});
   var T = KHAMLET.TUNE, K = KRAND, idh = KHAMLET.idHash(spec.id), seed = K.hash(K.child(spec.world >>> 0, 'hamlet'), idh);

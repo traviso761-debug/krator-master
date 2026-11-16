@@ -50,6 +50,17 @@ const VIEWS=(function(){const V={},S=QC_B.z1,E=QC_B.x1,L=QC_LM,L0=QC_LM;
  // the outer wall's highest gate stair, from the country below its foot, up to the gate
  const stg=QC_EXTRA.filter(p=>p.kind==='stair').sort((a,b)=>b.o.rise-a.o.rise)[0];
  if(stg){const L=qnStairPlan(stg.o.rise).len,e=loc(stg.x,stg.z,9,L+22,stg.ry),g=loc(stg.x,stg.z,0,0,stg.ry);V['The outer gate stair']=[e[0],terrainH(e[0],e[1])+3,e[1],g[0],qcD(stg.o.y,0)+4,g[1]];}
+ // the oilfield and Yuni's mission (89zr, 90v): the field from above its south-west corner, the mission from its road, the
+ // south avenue's electric lamps from just inside the south gate
+ if(typeof QC_OIL!=='undefined'){const O=QC_OIL.O,gy=terrainH(O[0],O[1]);V['The oilfield']=[O[0]-250,gy+110,O[1]+260,O[0]+40,gy,O[1]];
+  const ms=QC_OIL.assets.find(R=>R.key==='park_gatehouse');if(ms){const e=[ms.x+30,ms.z+44];V['The Yuni mission']=[e[0],terrainH(e[0],e[1])+1.7,e[1],ms.x-10,terrainH(ms.x,ms.z)+6,ms.z-50];}
+  V['The lit south avenue']=[-3,terrainH(-3,QC_B.z1-30)+1.7,QC_B.z1-30,4,terrainH(4,QC_B.z1-220)+4,QC_B.z1-220];}
+ // the History Monks' monastery (the saffron spoke, the Order of Longsong's), from outside its parabolic gate
+ const om=QC_PLACE.find(p=>p.kind==='monastery'&&QSPOKE[p.o.v%8].order);if(om){const e=loc(om.x,om.z,9,58,om.ry),g=loc(om.x,om.z,0,14,om.ry),y=qcD(om.o.y,0);V['The History Monks monastery']=[e[0],y+5,e[1],g[0],y+6,g[1]];}
+ // the Order of Viridian Thought's house (the green spoke): its court of tea, from above
+ const gm=QC_PLACE.find(p=>p.kind==='monastery'&&QSPOKE[p.o.v%8].tea);if(gm){const e=loc(gm.x,gm.z,-6,4,gm.ry),g=loc(gm.x,gm.z,13.5,10,gm.ry),y=qcD(gm.o.y,0);V['The Viridian monastery court']=[e[0],y+20,e[1],g[0],y+1.2,g[1]];   /* from above the court, down at the east bed of tea */}
+ // the Order of the White Lily's house, its hospital: its physic garden from above
+ const wm=QC_PLACE.find(p=>p.kind==='monastery'&&QSPOKE[p.o.v%8].hospital);if(wm){const e=loc(wm.x,wm.z,-6,4,wm.ry),g=loc(wm.x,wm.z,13.5,10,wm.ry),y=qcD(wm.o.y,0);V['The White Lily hospital court']=[e[0],y+20,e[1],g[0],y+1.2,g[1]];}
  // a wheel house nearest the Temple Mountain, from its open front: the wheel, the hangings, the lamps
  const wh=QC_PLACE.filter(p=>p.key==='qb_wheel_house').sort((a,b)=>Math.hypot(a.x-L0.x,a.z-L0.z)-Math.hypot(b.x-L0.x,b.z-L0.z))[0];
  if(wh){const y=qcD(wh.o.y,0),e=loc(wh.x,wh.z,2.2,5.2,wh.ry),g=loc(wh.x,wh.z,-1.5,-4.8,wh.ry);V['Inside a wheel house']=[e[0],y+.8+1.6,e[1],g[0],y+.8+1.8,g[1]];}
@@ -59,3 +70,9 @@ const VIEWS=(function(){const V={},S=QC_B.z1,E=QC_B.x1,L=QC_LM,L0=QC_LM;
  return V;})();
 // the city as one budget (as Erewhon's 93-er-ui.js): every type in the class 'city'
 BUDGET.showcase={tris:30000000,calls:3000};BUDGET.cls.city=30000000;for(const k in TSTAT.by)BUDGET.type[k.split('/')[0]]='city';
+// the street lamps as data for Godot (krator-lamps, godot/krator/lamps_import.gd; Girder's format): godot/tools/export_spike.py's
+// qiblai case reads _api.lamps(box). Night hours as Girder's; warm, 24 m
+if(window._api)window._api.setHour=h=>{QC_SKY.hour=h;};   /* the clock, for a night shot */
+if(window._api&&typeof QC_LAMPS!=='undefined')window._api.lamps=b=>({format:'krator-lamps',version:1,convention:'metres, +Y up; at is the bulb; color sRGB; size the halo\'s world diameter',
+ lamps:QC_LAMPS.filter(l=>!b||(l[0]>=b[0]&&l[0]<=b[2]&&l[2]>=b[1]&&l[2]<=b[3])).map(l=>({at:[+l[0].toFixed(3),+l[1].toFixed(3),+l[2].toFixed(3)],amp:1,radius:24,cool:false,color:'#ffd6a0',size:1.4,hours:[17.2,30.8],kind:'lamp'}))
+  .concat((typeof QC_BULBS!=='undefined'?QC_BULBS:[]).filter(l=>!b||(l[0]>=b[0]&&l[0]<=b[2]&&l[2]>=b[1]&&l[2]<=b[3])).map(l=>({at:[+l[0].toFixed(3),+l[1].toFixed(3),+l[2].toFixed(3)],amp:.85,radius:9,cool:false,color:'#ffe2b8',size:.35,hours:[0,24],kind:'bulb'})))});   /* the room bulbs placed so far: always on (a room's light), 9 m */

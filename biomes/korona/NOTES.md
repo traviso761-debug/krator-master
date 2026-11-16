@@ -325,3 +325,7 @@ Plain data rules: `poor` and the trap thresholds as functions of the core's fiel
 cell from `core/rand` (`KRAND.hash` of world, cell, index, salt); every trap and every carving a tagged record; the
 tepuis as records the open world places on the model's ring crests. The model's `extract_region.py` cut for Korona
 (the region is already inside 'little demo' and 'big demo') is what the open world will read.
+
+## Scale-Model 5.1 Geology & Coordinates Note (`2026-11-13`)
+- **Canvas Offset (`+272, +330` from `4.21/4.23` to `5.1`):** On the `1821 × 1723` `5.1` grid, Korona's wet ring-gorge showcase **Silkhead Gorge & Hoar-Table Rim** sits at **`(1096, 526)`** (`+3,620 m` `tepui` quartzite rim over `-1,180 m` trench), the geyser `corona` trench field at **`(1123, 517)`** (`-1,892 m`), and the eastern trench silicic dome cluster at **`(1179, 578)`** (`KSTRATA` **`obsidian-pancake`**).
+- **Sulfur & Skarn Partitioning:** Uplifted `tepui` quartzite summit tables carry `sulfur = 0`; hydrothermal sulfur, `obsidian-pancake` domes, **`contact-marble`** dike-wall skarns, and **`evaporite-strand`** salt-lake benches are strictly restricted to the deep concentric ring-fault trenches.

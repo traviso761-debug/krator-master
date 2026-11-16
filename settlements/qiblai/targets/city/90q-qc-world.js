@@ -6,7 +6,7 @@
 reseed(QC.SEED+1);const QC_T0=performance.now();
 for(const f of FRAME_HOOKS_PRE)FRAME_HOOKS.push(f);
 // ---------------------------------------------------------------- the sky and its light (KratorSky, as Erewhon's)
-const QC_SKY={hour:9.6,day:120,dens:1.2};
+const QC_SKY={hour:(/[?&]hour=([\d.]+)/.exec(location.search)||[0,9.6])[1]*1,day:120,dens:1.2};   /* ?hour=21 opens the city by night (its lamps lit) */
 KratorSky.attach(scene,7000);scene.fog.density=.00022;
 const qcHemi=scene.children.find(o=>o.isHemisphereLight);
 function qcSkyTick(){KratorSky.update(camera.position,QC_SKY.hour,QC_SKY.day,QC_SKY.dens);const L=KratorSky.lighting();
@@ -45,6 +45,12 @@ const qcCv=qcCanvas(),qcMask=qcCanvas();
  // the ghat way to the river (flagstones: the pilgrims' road) and the road south (cobbles)
  g.strokeStyle='#8c8984';m.strokeStyle=FLAG;for(const c of[g,m])line(c,[[B.x1,0],[QC_RIVER.x-QC_RIVER.w/2-8,0]],12);
  m.strokeStyle=COB;for(const c of[g,m])line(c,[[0,B.z1],[0,QCG.z1]],10);
+ // the oilfield and the mission (89zr): the pads (the yard and village made ground, the mission's court flagstones, the tithe
+ // house's), the road (cobbles), the tracks to the wells (made ground)
+ if(typeof QC_OIL!=='undefined'){for(const p of QC_OIL.pads){const b=p.box,X=qgx(b[0]),Z=qgz(b[1]),W=(b[2]-b[0])*QCG_PX,H=(b[3]-b[1])*QCG_PX,fl=p.kind==='mission'||p.kind==='tithe';
+   g.fillStyle=fl?'#8c8984':p.kind==='yard'?'#6e665c':'#7a7268';g.fillRect(X,Z,W,H);m.fillStyle=fl?FLAG:DIRT;m.fillRect(X,Z,W,H);}
+  g.strokeStyle='#8a867e';m.strokeStyle=COB;for(const c of[g,m])line(c,QC_OIL.road,8);
+  g.strokeStyle='#70685e';m.strokeStyle=DIRT;for(const t of QC_OIL.tracks)for(const c of[g,m])line(c,t,3);}
  // the river's banks and bed (made ground's dirt, darker)
  g.fillStyle='#6a6660';g.fillRect(qgx(QC_RIVER.x-QC_RIVER.w/2-22),0,(QC_RIVER.w+44)*QCG_PX,qcCv.height);m.fillStyle=DIRT;m.fillRect(qgx(QC_RIVER.x-QC_RIVER.w/2-22),0,(QC_RIVER.w+44)*QCG_PX,qcMask.height);})();
 // the ground's material: the tint as its map, the four sets sampled in world metres in the fragment shader (sRGB to linear),

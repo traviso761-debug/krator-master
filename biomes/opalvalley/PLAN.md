@@ -207,6 +207,24 @@ When the owner approves reshaping the terrain for `opal valley` (`rmw52q8d7prwz`
    - Reclassify the valley floor from `Class O` into a realistic elevation-graduated sequence (`EF` glacier head -> `ET` periglacial -> `Dfc`/`Dsc` Upper Terrace -> `Cfb`/`Csb` Middle Terrace -> `Cfa`/`Csa` Lower Terrace -> `Af`/`Cfa` Rift mouth, with `WH` on the 10 lakes).
    - Paint the satellite (`st`) map with the eastern blue-white glacier tongue, pearlescent turquoise-opal lake waters, iridescent teal-and-violet Xanadu-kin forest slopes, and warm copper-rose opaline sinter scarps.
 
+## Fauna (proposed 2026-11-11, awaiting the owner)
+
+Drawn by `kits/fauna` and tagged by biome (`biomes/README.md`, "A fauna kit"); placed by `FAUNALANDS` (`kits/fauna/fauna-lands.js`).
+The brief (`kits/fauna/BIOME-FAUNA-PLAN.md`): two grazers, a predator, a flyer and a water creature, with **at least one animal
+found nowhere else**. **New** = to be built in the kit; *shared* = an existing key that also gets this biome's tag, because its
+range plausibly runs across the border. Nothing here is built.
+
+| Role | Animal | Status | Where | Why it is here |
+|---|---|---|---|---|
+| grazer | **opal tahr** | **new, unique** | the sinter ledges and the fault-step risers of the upper and middle terraces | a goat-antelope (`faWdQuad`) that eats the silica-armoured leaves (section 3) with ever-growing, self-sharpening teeth; the silica it takes in sheathes its long guard hairs, so **its coat shimmers** teal to violet like the trees. Its shed winter wool is gathered from the scrub and sold in Xanadu beside the opals. Small herds on the cliffs |
+| water | **opal mussel** | **new, unique** | the beds of all ten terraced lakes, thickest in the middle terrace's sinter lakes | a freshwater mussel (a new small shell build, or a `faWdCrab`-family part) that filters the silica-rich water and lays **opaline nacre**: its shell and its rare pearls throw opal fire. A second gem trade beside the mines, and a reason the lakes are fished |
+| grazer | *plateau-kiang* | shared (xanadu) | the upper terrace's moraines and the glacier's foot | the flora is Xanadu's kin, and the valley opens onto Xanadu's basin |
+| grazer | *yak* | shared (xanadu; domestic) | the miners' and pilgrims' camps | |
+| predator | *cloud-leopard* | shared (xanadu) | the upper and middle terraces | |
+| flyer | *bone-eater* | shared (xanadu) | over the headwall and the cliffs | |
+| flyer | *lamp-glider* | shared (rift) | the rift-floor mouth only, at night | the Rift's glider reaches up out of the Rift floor |
+| water | *ice-lake-char*, *lake-diver* | shared (xanadu) | the char in the upper tarns; the diver on all the lakes | |
+
 ---
 
 ## 8. Core adoption (written before the first fragment, 2026-11-11)
@@ -315,20 +333,11 @@ Each is the conservative choice; each is "default taken 2026-11-11, owner to con
 | the rock lichen | `rock.lichen.iris` | the "opaline lichen" of section 3.2, on the rock layer |
 | the warm mats | `ground.mat.thermal` | the seeps' run-off |
 | the cards | `card.irisfern` (prism fern), `card.lily.iridescent` (swirl lily), `card.giantpad` (opal lotus pads), `card.ichu` (tussock) | **owed: `card.leaf.photonic`** (a photonic-cuticle leaf spray: the opal-bark tree's own leaves); the Xanadu kin keep Xanadu's cards |
-## Fauna (proposed 2026-11-11, awaiting the owner)
 
-Drawn by `kits/fauna` and tagged by biome (`biomes/README.md`, "A fauna kit"); placed by `FAUNALANDS` (`kits/fauna/fauna-lands.js`).
-The brief (`kits/fauna/BIOME-FAUNA-PLAN.md`): two grazers, a predator, a flyer and a water creature, with **at least one animal
-found nowhere else**. **New** = to be built in the kit; *shared* = an existing key that also gets this biome's tag, because its
-range plausibly runs across the border. Nothing here is built.
+## 12. Scale-Model 5.1 Bimodal Opal Genesis & Showcase Station #9 Pairing (`2026-11-13`)
 
-| Role | Animal | Status | Where | Why it is here |
-|---|---|---|---|---|
-| grazer | **opal tahr** | **new, unique** | the sinter ledges and the fault-step risers of the upper and middle terraces | a goat-antelope (`faWdQuad`) that eats the silica-armoured leaves (section 3) with ever-growing, self-sharpening teeth; the silica it takes in sheathes its long guard hairs, so **its coat shimmers** teal to violet like the trees. Its shed winter wool is gathered from the scrub and sold in Xanadu beside the opals. Small herds on the cliffs |
-| water | **opal mussel** | **new, unique** | the beds of all ten terraced lakes, thickest in the middle terrace's sinter lakes | a freshwater mussel (a new small shell build, or a `faWdCrab`-family part) that filters the silica-rich water and lays **opaline nacre**: its shell and its rare pearls throw opal fire. A second gem trade beside the mines, and a reason the lakes are fished |
-| grazer | *plateau-kiang* | shared (xanadu) | the upper terrace's moraines and the glacier's foot | the flora is Xanadu's kin, and the valley opens onto Xanadu's basin |
-| grazer | *yak* | shared (xanadu; domestic) | the miners' and pilgrims' camps | |
-| predator | *cloud-leopard* | shared (xanadu) | the upper and middle terraces | |
-| flyer | *bone-eater* | shared (xanadu) | over the headwall and the cliffs | |
-| flyer | *lamp-glider* | shared (rift) | the rift-floor mouth only, at night | the Rift's glider reaches up out of the Rift floor |
-| water | *ice-lake-char*, *lake-diver* | shared (xanadu) | the char in the upper tarns; the diver on all the lakes | |
+### 1. Bimodal `outland-tuff` over Impermeable `tibasalt` Aquitard (`KSTRATA.glaze`)
+- **Why Precious Black Opal Forms Here (`GEOLOGY-SANITY-CHECK.md` §5; Lightning Ridge / Virgin Valley + Ethiopian Wollo Analogue):** Opal Valley (`rmw52q8d7prwz`) occupies a WNW-stepping rift-transfer relay graben where porous, silica-rich **`outland-tuff`** rhyolitic ignimbrite and weathered volcanic ash beds (`2–6 m` pale vitric sheets) overlie dense, impermeable **`tibasalt`** flood-basalt colonnades. Seasonal glacial meltwater (`r682` *Nahr al-Yāqūt*) leaches amorphous `SiO₂` spheres downward through the tuff until perched on the `tibasalt` aquitard and fault-step gouge, precipitating play-of-color **black and crystal opal** seams (`KSTRATA.glaze`) exposed in every fault-step cataract wall.
+- **Paired Showcase Station #9 (`Rift-Rim Footwall Scarp & Opal Valley Cuts`, `5.1 px 1038, 1662`):**
+  - **Site:** **Middle Terrace II (`middlebed`, `1038, 1662`, `+1,340 m`, `1.36 atm`, `Csb`)** on the dry shore beside the `+1,340 m` sinter-dammed rift lake (`1035, 1662`), paired structurally with the S-Rim planar footwall scarp at **`(624, 1618)`** (`biomes/riftrim/PLAN.md`).
+  - **Camera & Strata Framing:** Low canyon-bench camera looking ESE up the `110 m` Terrace I→II fault-step cataract where `r682` splits over copper-rose opaline sinter lips: dark `tibasalt` basal colonnades (`columns: 0.72`) topped by cream-and-rose `outland-tuff` cliff beds split by an iridescent `KSTRATA.glaze` opal-vein horizon, Xanadu gallery adits notched along the contact, shimmering teal-violet silica-armoured trees and **opal tahr** on the ledges, and **opal mussel** shell middens by the miners' sorting sluices.

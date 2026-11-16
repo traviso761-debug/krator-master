@@ -111,7 +111,9 @@ const QC_IX=(function(){const S={rooms:[],built:0,pieces:0,fails:[],byRoom:[],mi
     const ox=at[0]+nx*1.5,oz=at[1]+nz*1.5,fb=KW.floorBelow(ox,oz,y,.1),gy=Math.max(terrainH(ox,oz),fb?fb[0]:-1e9),rise=y-gy;
     if(rise>.45&&rise<3.5){const len=Math.max(.9,rise*1.4);flight([at[0]+nx*len,at[1]+nz*len,gy],[at[0]-nx*.6,at[1]-nz*.6,y],Math.min(2,w),tag+'.entry');}}}}
  S.build=function(R){if(R.built)return R;const t0=performance.now(),G=new THREE.Group();G.name='interior:'+R.key;scene.add(G);
-  const r0=QB_ROOMS.length;TSTAT.cur=R.key+'/0';VERN.place(G,R.key,R.x,R.z,R.ry,R.o);TSTAT.cur=null;kbake(G);for(const n in KIT.items)KIT.items[n].length=0;
+  const r0=QB_ROOMS.length;TSTAT.cur=R.key+'/0';VERN.place(G,R.key,R.x,R.z,R.ry,R.o);TSTAT.cur=null;
+  QB_BULB_SINK=QC_BULBS;for(const Rm of QB_ROOMS.slice(r0))qnIxBulbs(Rm.poly,Rm.y,Rm.h);QB_BULB_SINK=null;   /* electric light (the owner: "in buildings except in poor areas") */
+  kbake(G);for(const n in KIT.items)KIT.items[n].length=0;
   const F=qnFurnishRooms(QB_ROOMS.slice(r0),G,{seed:33861+S.rooms.indexOf(R),frag:'90t-qc-interiors.js',name:'furniture:'+R.key,perType:3,passes:2,backtrack:4});
   G.traverse(q=>{if(q.isMesh)q.renderOrder=-2;});   /* drawn before the doorways' portals and the body */
   for(const Dd of R.portals){const n=[Math.sin(Dd.yaw),Math.cos(Dd.yaw)];G.add(qnIxPortal(Dd.at[0]-n[0]*.028,Dd.at[1],Dd.at[2]-n[1]*.028,Dd.yaw,Dd.w,Dd.h));S.walk.portals++;}
