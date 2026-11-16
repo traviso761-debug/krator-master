@@ -19,8 +19,8 @@ From `core/terrain/` (shared; see `core/README.md`): `35-core-strata.js`, `37-co
 | `44r-biome-tiers-strata.js` | 5 |  |
 | `44v-host-landlib.js` | 8 |  |
 | `45-host-stage.js` | 27 | the climate fields, cached (the land's fieldsAt: (32); the host binding (50); the ground (61); the rock bodies (KSTACKS, 44w: the Black Step's  (199); the water (223) |
-| `50-biome-tiers-species.js` | 18 | palettes (sRGB; a library card with keep 0 takes (21); the plants and their tags (33); the tree-scale species (55 builds them) (64); procedural textures (the fallback when the page  (75); geometries (96); materials (the slots are materials.json's famili (123); instanced items (150) |
-| `55-biome-tiers-trees.js` | 17 | zones from the fields (the host's: biomes/WORLD. (18); colour (44); polyline helpers (49); the builders: (T, st, lv) with lv 2 near, 1 mid (62); the far level: the tiers in silhouette (a flatte (116); keep-clear between trees (core/space) (129); one tree: the shape every kit's make/grow has (a (135); the passes (data: species, cell, acceptance from (140) |
+| `50-biome-tiers-species.js` | 19 | palettes (sRGB; a library card with keep 0 takes (21); the plants and their tags (34); the tree-scale species (55 builds them) (65); procedural textures (the fallback when the page  (77); geometries (98); materials (the slots are materials.json's famili (125); instanced items (153) |
+| `55-biome-tiers-trees.js` | 20 | zones from the fields (the host's: biomes/WORLD. (18); colour (49); polyline helpers (54); the builders: (T, st, lv) with lv 2 near, 1 mid (67); the far level: the tiers in silhouette (a flatte (137); keep-clear between trees (core/space) (151); one tree: the shape every kit's make/grow has (a (157); the passes (data: species, cell, acceptance from (162) |
 | `60-biome-tiers-floor.js` | 11 | the planters, by zone: (x,z,Z,lv,st) (31); the pass (51) |
 | `70-biome-tiers.js` | <1 |  |
 | `83-host-far.js` | 4 |  |

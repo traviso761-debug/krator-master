@@ -64,6 +64,9 @@ biomes/tiers --fix` (a card sheet's cells and stems are its own), `python3 tools
   canyon's north-east axis) and `LAND.hzSky` sets the horizon shade's sky term to .45 (`src/84-host-horizon.js`, shared with station 4's gorge) (`KHORIZON.uniforms`; `?hzsky=0..1` on the
   URL tries others), so the spring hall's walls read in a dim brown light. Judge the level on the GPU; the head's view now looks down from the
   bowl's rim.
+- [ ] **The whorl pine stands only on the canyon's north rim** (55: `cool`, 19 trees on station 2): the page tops out at ~2.5 km (14 degC), under
+  the pine's own country (the middle steps' Dsb and Csb pockets, ~3-4 km: no station there), so it takes the great riser's south-looking
+  flank over ~2 km, the plan's "risers' cool faces". Its sprays are `card.pine`, its bole `bark.ponderosa`: no set was named for it.
 - [ ] **The flash flood is a plain record** (`drown` on each tread's floor): the gorge flood on a cycle is the shared hazard amendment
   (PLAN.md section 10, item 4).
 - [ ] **No contour carvings drawn**: the milestones and façades are boxes; the carving is the Coyote kit's `cyContour` (its C1).
@@ -80,8 +83,9 @@ biomes/tiers --fix` (a card sheet's cells and stems are its own), `python3 tools
 - [ ] **The hot floor's ground is leaf litter** (45: `GLW` 'litter', `ground.litter` on **`leaf.forest_leaves_02`**, Korona's set, its mean darkened to .3 for a damp floor): the
   layer's weight is the `hot` field (over ~25 degC mean), and the treads' grasses give way to it. Only the Lip takes it (`groundLayers`); judged
   in SwiftShader only.
-- [ ] **The floor's forest reads open from the Lip** (SwiftShader, 'Over the Lip'): the kin rows' cells (the north-western lowlands' trees)
-  leave the litter showing between crowns; a rainforest wants a closed canopy (denser cells, or Korona's own trees: the row above).
+- [ ] **The floor's forest still reads open from the Lip** (SwiftShader, 'Over the Lip'): the kin rows are denser (2026-11-16: the meranti
+  every ~50 m, the mid-storey under it), but the litter shows between crowns and the floor past ~1.5 km is bare. A closed rainforest wants a
+  far canopy (the kin trees' far level, or a canopy layer in the ground) or Korona's own trees (the row above).
 - [ ] **The fall is ~40 m across** (the lake's whole outflow down the notch): a curtain drawn by `WATER.drawFall`, no mist volume of its own
   over the 900 m drop beyond the plunge's spray.
 - [ ] **The kit's natives now refuse the hot floor** (55: zones times `temperate`, 1 under ~25 degC mean): stations 1 and 2 never reach it.
@@ -95,7 +99,7 @@ biomes/tiers --fix` (a card sheet's cells and stems are its own), `python3 tools
   wall where the far field meets it), so the great tread and the next step's tread ramp toward the edge.
 - [ ] **The dry gorge is 70 m deep, not the plan's 300-480 m.** The Chung-Gel's gorge is 16 km south of the pin, off the page (the far field
   draws its trough); the page's gorge is a tributary cut into the tread (`KRELIEF.stepcut`, four stepped walls), its head a sapped bowl, its
-  mouth hanging over the lower riser in a dry fall. No cobble bars on its floor (`KRELIEF.wadi` is not laid in it): the floor is gravel paint.
+  mouth hanging over the lower riser in a dry fall. Its floor is a dry wadi (`KRELIEF.wadi`: braided cobble bars, cut banks, no fan).
 - [ ] **The camp is stand-ins** (`stations/tread/86-host-camp.js`): core/camp's pitch and census on a culture row this station writes
   (`KCAMP.CULTURES['tierhound-herd']`: black goat-hair tents, a dairy, a store, stone folds, an ostrich pen, a dry-stone wall) until
   `kits/coyote` has camp pieces (its plan names none yet) and core/camp takes the row. Every record `pending`. No herders drawn (the
@@ -111,5 +115,13 @@ biomes/tiers --fix` (a card sheet's cells and stems are its own), `python3 tools
 - [ ] **Verified in software GL only** (2026-11-16: `verify.py --assert` passes in SwiftShader); the owner's GPU run is owed.
 - [ ] **The crown's ice on the skyline** is the far field's (KFAR's snow by height), not a drawn glacier.
 
-- [ ] **Not built yet (T4, T5):** the whorl pine (a record and tags in 50, no builder); station 2's town (above); the `tiers` entry in
-  `kits/crops`; `outposts.json`; the gorge flood (the shared hazard amendment); the terracettes in the ground (amendment 3).
+- [ ] **The `tiers` entry in `kits/crops` is written but held** (`patches/kits-crops-tiers.patch`, 2026-11-16): the biome's six zones
+  (the plan's five and the bays' `shallows`), six native records (the shelf oak's mast and tannin, the stair lily's rhizome, the step
+  palm's fibre, the band lichen's orchil, the step moss's lime; all `homeOnly`, so no other world's picks move), `tiers` in saffron's
+  homes, and two node tests (the Tiers make a plaid; the natives stay home), each with a fault. It passes `node tests/test-crops.js`. Held
+  because `kits/crops` reaches seven build commands, and Longsong's cannot run in a cloud checkout: it needs
+  `core/charactermodels/dist/pieces/`, which is not in the repo. On a machine that builds Longsong: `git apply` the patch, rebuild
+  `kits/crops`, `settlements/longsong`, `biomes/ancientsvalley --station terraces`, `biomes/nwouterwall` (and `--station taiga`,
+  `--station yeti`) and `biomes/wouterwall`, verify, and update their baseline rows.
+- [ ] **Not built yet (T4, T5):** station 2's town (above); the gorge flood (the shared hazard amendment); the terracettes in the ground
+  (amendment 3).

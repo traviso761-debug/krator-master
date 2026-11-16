@@ -38,17 +38,17 @@
     "biomes/ebadlands/tex/pack.json": "8995fd803ea3d491277ebf898fb4f9584b0091eae9b1d74b208a1805ac9c1473",
     "biomes/ebadlands/tex/stone.gem.albedo.webp": "fa2ddcfb1f8cceb9fa362593d3dba9eb17a8d5455cdd9bdfad8a37f060095dc8",
     "biomes/ebadlands/tex/wood.silver.albedo.webp": "56b7afbaa148477bc1c306df83d9b770f107fd49d38ecaeb19d20bc1b02dfc9b",
-    "biomes/tiers/KNOWN_ISSUES.md": "5909ee1975e6dafd8f2388c46aba83acfdda1618d04839055cfcf2f2991bef8d",
-    "biomes/tiers/PORT.md": "4258b47709bf9bd3e5a50196ad9ec6f3d600163f96bb996037418cb11eef653e",
+    "biomes/tiers/KNOWN_ISSUES.md": "91387075347cba51b489cf989683ce8c3d69cf050f967d4b814167fe77cad353",
+    "biomes/tiers/PORT.md": "52cde8f4008ccc4548101bda840896636cd2b9c3fad76f44d9a508c25a16f78a",
     "biomes/tiers/build.py": "62d06d3acb783bc22d855639a3a5e86ca4cdffe573282b7d22dc75a2bc68b1a0",
     "biomes/tiers/src/00-head.html": "0fa305196eeec2de35fbd9f86ea251592ba92e511870181c99a901c33126f080",
     "biomes/tiers/src/44r-biome-tiers-strata.js": "10586f8576e1d449b853bec3dcd280286c778647ccdd7aef3c76696e37691dbc",
     "biomes/tiers/src/44v-host-landlib.js": "285d72ac354b1815f0b7053ef16a465f35aa7b369bc8eafd1a5d9c53657275ea",
     "biomes/tiers/src/45-host-stage.js": "e76a3b1e2438203c0283a3a57193fe1aa2008da3c3866d0645e12c70b8ca9f55",
-    "biomes/tiers/src/50-biome-tiers-species.js": "4fedfeb9c5d05d9937cf5ba7de4c32c5466516f66a806cbc956b10c8bab1c6ad",
-    "biomes/tiers/src/55-biome-tiers-trees.js": "2fcb6e3b93294ef3113045287ad2e855aef5f57415c2b1a70c42b4665550aa1d",
+    "biomes/tiers/src/50-biome-tiers-species.js": "ffef45b89b9b9ec244ef48f268e6bef116cc58432eb61e242cf9a4f99e12cd53",
+    "biomes/tiers/src/55-biome-tiers-trees.js": "6b1ec536b948c92b9afb078e5a60203954f652f8c15096919e528ebf72b5183b",
     "biomes/tiers/src/60-biome-tiers-floor.js": "b6909a44946c5c448021ddf7ae86e4f9cbde3eb6309316a45d31e8f80e246a0a",
-    "biomes/tiers/src/70-biome-tiers.js": "ae8f5b981a5c3f5592bede170beca1f6b9e25399b630bbe334348a8690eb2472",
+    "biomes/tiers/src/70-biome-tiers.js": "e624497b63d2dc391355c408f87a7e97f442851a974391866fad7718e5cce684",
     "biomes/tiers/src/83-host-far.js": "04c4380487df4a083ea0899742aa6f23954474118e800348daa7e4ce72ce812f",
     "biomes/tiers/src/84-host-horizon.js": "fc6ae751c264f8398c8d20b214c549e04d8d0126e55804e35bb5d41bf17f4022",
     "biomes/tiers/src/87-host-kin.js": "24ee2d4365ad65e92d873cfbc3ab960c584d465c68e396933c1b147c36f2fc10",
@@ -66,6 +66,7 @@
     "biomes/tiers/tex/bark.cactus.albedo.webp": "63e3921cdafca669a938f0a29ead7f00c15071b741404b32dfa96f4e01b3488e",
     "biomes/tiers/tex/bark.oak.albedo.webp": "1acde04c70f219ed275b8edb54410bdf1f4a31357eca645f50d19f9b48673f19",
     "biomes/tiers/tex/bark.palm.albedo.webp": "452bfa61436e378dc5d8956f012bb2b7ffa5afe8d53474324d5bfc874b228351",
+    "biomes/tiers/tex/bark.pine.albedo.webp": "7616b374d020cb6ac72b53f9b806870c2af7a7f65ab989558dd25a6888ae3f55",
     "biomes/tiers/tex/bark.skirt.albedo.webp": "40de67c55452a28658a7c9326df2b37212902c77365fa4db98a963bedca1630d",
     "biomes/tiers/tex/cushion.albedo.webp": "478be447a79e50d18173c6e931aed3e3dcd6e6bcb21f98b797f2835f29d91ac7",
     "biomes/tiers/tex/cushion.normal.webp": "f30e60403df3269bb7027764dccc138ea3aa810d13233a9ced08ffda7a550653",
@@ -82,10 +83,11 @@
     "biomes/tiers/tex/groundDetail.albedo.webp": "36173cb4cf4e69c2ca3e5bdfe52de81fa25015851c22043b13c9a3ff99cd1cfc",
     "biomes/tiers/tex/heath.albedo.webp": "285abc7792b707572a4396436eb1b441cbde4c40ede0c9c49bbba4342b77c388",
     "biomes/tiers/tex/oakplate.albedo.webp": "040d1caab09099b8436708dd7b9d7c61d00f39e59bf689732c45bf5be08d72ca",
-    "biomes/tiers/tex/pack.json": "34f34aa7f1b4b3d63c99028f124d619133fd29337e121f787a718985571dab0e",
+    "biomes/tiers/tex/pack.json": "c3f4fe63e92fe4c888815901f16d33d3a6a02c3022330100f0fb0c44780b49eb",
     "biomes/tiers/tex/pad.albedo.webp": "ed2e10c8e11638302ff51e6b220cd99bbd9ac8e4ab79a917d14f0685ff41487b",
     "biomes/tiers/tex/pagoda.albedo.webp": "9ef9795add44e488a2ee7cd4fd9bbe3532e37bb39c6bd48f2550f0093aaad832",
     "biomes/tiers/tex/palmfan.albedo.webp": "6bca7fff655890a9cc7a14dd25ee78e136867116b355d12c04c817287a684f7b",
+    "biomes/tiers/tex/pinespray.albedo.webp": "82d4bf37673bd5ba025bb68d411bbf6be8de4949f0a8fa18ea1c5de99ec3d891",
     "biomes/tiers/tex/reed.albedo.webp": "410d1b88f8af5010a602c85aca948c6830318b19f7fbcfd825576955e281e5ae",
     "biomes/tiers/tex/tiergrass.albedo.webp": "c66c81d95c99a6ed3fdc658697758c643368c13a4129db3d0937720a667423e4",
     "core/atmos/89-atmos-0-core.js": "d7207293ab01d6a6e3cf3440fd6f83febaddabff7f0e753c10284fa11ec881be",
@@ -189,10 +191,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/tiers/dist/tiers.html": "b67c17d7974db96b5b46adb8c41341ded2b60eb3985307e2ea67d9616d355a30"
+    "biomes/tiers/dist/tiers.html": "ea59a829b375416f8291902a3b6286bc637f2149e0d99e3d766c4a61824a0d52"
    },
    "outputs_raw": {
-    "biomes/tiers/dist/tiers.html": "b67c17d7974db96b5b46adb8c41341ded2b60eb3985307e2ea67d9616d355a30"
+    "biomes/tiers/dist/tiers.html": "ea59a829b375416f8291902a3b6286bc637f2149e0d99e3d766c4a61824a0d52"
    }
   },
   "build.py --station canyon": {
@@ -232,17 +234,17 @@
     "biomes/ebadlands/tex/pack.json": "8995fd803ea3d491277ebf898fb4f9584b0091eae9b1d74b208a1805ac9c1473",
     "biomes/ebadlands/tex/stone.gem.albedo.webp": "fa2ddcfb1f8cceb9fa362593d3dba9eb17a8d5455cdd9bdfad8a37f060095dc8",
     "biomes/ebadlands/tex/wood.silver.albedo.webp": "56b7afbaa148477bc1c306df83d9b770f107fd49d38ecaeb19d20bc1b02dfc9b",
-    "biomes/tiers/KNOWN_ISSUES.md": "5909ee1975e6dafd8f2388c46aba83acfdda1618d04839055cfcf2f2991bef8d",
-    "biomes/tiers/PORT.md": "4258b47709bf9bd3e5a50196ad9ec6f3d600163f96bb996037418cb11eef653e",
+    "biomes/tiers/KNOWN_ISSUES.md": "91387075347cba51b489cf989683ce8c3d69cf050f967d4b814167fe77cad353",
+    "biomes/tiers/PORT.md": "52cde8f4008ccc4548101bda840896636cd2b9c3fad76f44d9a508c25a16f78a",
     "biomes/tiers/build.py": "62d06d3acb783bc22d855639a3a5e86ca4cdffe573282b7d22dc75a2bc68b1a0",
     "biomes/tiers/src/00-head.html": "0fa305196eeec2de35fbd9f86ea251592ba92e511870181c99a901c33126f080",
     "biomes/tiers/src/44r-biome-tiers-strata.js": "10586f8576e1d449b853bec3dcd280286c778647ccdd7aef3c76696e37691dbc",
     "biomes/tiers/src/44v-host-landlib.js": "285d72ac354b1815f0b7053ef16a465f35aa7b369bc8eafd1a5d9c53657275ea",
     "biomes/tiers/src/45-host-stage.js": "e76a3b1e2438203c0283a3a57193fe1aa2008da3c3866d0645e12c70b8ca9f55",
-    "biomes/tiers/src/50-biome-tiers-species.js": "4fedfeb9c5d05d9937cf5ba7de4c32c5466516f66a806cbc956b10c8bab1c6ad",
-    "biomes/tiers/src/55-biome-tiers-trees.js": "2fcb6e3b93294ef3113045287ad2e855aef5f57415c2b1a70c42b4665550aa1d",
+    "biomes/tiers/src/50-biome-tiers-species.js": "ffef45b89b9b9ec244ef48f268e6bef116cc58432eb61e242cf9a4f99e12cd53",
+    "biomes/tiers/src/55-biome-tiers-trees.js": "6b1ec536b948c92b9afb078e5a60203954f652f8c15096919e528ebf72b5183b",
     "biomes/tiers/src/60-biome-tiers-floor.js": "b6909a44946c5c448021ddf7ae86e4f9cbde3eb6309316a45d31e8f80e246a0a",
-    "biomes/tiers/src/70-biome-tiers.js": "ae8f5b981a5c3f5592bede170beca1f6b9e25399b630bbe334348a8690eb2472",
+    "biomes/tiers/src/70-biome-tiers.js": "e624497b63d2dc391355c408f87a7e97f442851a974391866fad7718e5cce684",
     "biomes/tiers/src/83-host-far.js": "04c4380487df4a083ea0899742aa6f23954474118e800348daa7e4ce72ce812f",
     "biomes/tiers/src/84-host-horizon.js": "fc6ae751c264f8398c8d20b214c549e04d8d0126e55804e35bb5d41bf17f4022",
     "biomes/tiers/src/87-host-kin.js": "24ee2d4365ad65e92d873cfbc3ab960c584d465c68e396933c1b147c36f2fc10",
@@ -254,12 +256,13 @@
     "biomes/tiers/src/99-host-take.js": "3992fca4ee6eca096ef6dfd087a29c0784c543c4f5f10df6ff183a52da381816",
     "biomes/tiers/src/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
     "biomes/tiers/stations/canyon/44f-host-far-data.js": "bc5e61f1abc3f9d6a246ec1a6c309894e15a60536280ec07a5c1977f770d588a",
-    "biomes/tiers/stations/canyon/44w-host-land.js": "d225549aece2024751bfc19545be55925c059b1e3152728b473ba7503eeafd56",
+    "biomes/tiers/stations/canyon/44w-host-land.js": "5e8a809a1ce9cec381b595b006db0439a3eb543f8b1dccd16b2cc3a48c5ca36d",
     "biomes/tiers/stations/canyon/86-host-seat.js": "659088b79901b442cb45da35dc4668bd0b3704cfcef1ebfdde8888c165199fd1",
     "biomes/tiers/stations/canyon/station.json": "c26a2cc87491613e7fd826783a17ae575917bee6fa0470769c75d97b61af4387",
     "biomes/tiers/tex/bark.cactus.albedo.webp": "63e3921cdafca669a938f0a29ead7f00c15071b741404b32dfa96f4e01b3488e",
     "biomes/tiers/tex/bark.oak.albedo.webp": "1acde04c70f219ed275b8edb54410bdf1f4a31357eca645f50d19f9b48673f19",
     "biomes/tiers/tex/bark.palm.albedo.webp": "452bfa61436e378dc5d8956f012bb2b7ffa5afe8d53474324d5bfc874b228351",
+    "biomes/tiers/tex/bark.pine.albedo.webp": "7616b374d020cb6ac72b53f9b806870c2af7a7f65ab989558dd25a6888ae3f55",
     "biomes/tiers/tex/bark.skirt.albedo.webp": "40de67c55452a28658a7c9326df2b37212902c77365fa4db98a963bedca1630d",
     "biomes/tiers/tex/cushion.albedo.webp": "478be447a79e50d18173c6e931aed3e3dcd6e6bcb21f98b797f2835f29d91ac7",
     "biomes/tiers/tex/cushion.normal.webp": "f30e60403df3269bb7027764dccc138ea3aa810d13233a9ced08ffda7a550653",
@@ -276,10 +279,11 @@
     "biomes/tiers/tex/groundDetail.albedo.webp": "36173cb4cf4e69c2ca3e5bdfe52de81fa25015851c22043b13c9a3ff99cd1cfc",
     "biomes/tiers/tex/heath.albedo.webp": "285abc7792b707572a4396436eb1b441cbde4c40ede0c9c49bbba4342b77c388",
     "biomes/tiers/tex/oakplate.albedo.webp": "040d1caab09099b8436708dd7b9d7c61d00f39e59bf689732c45bf5be08d72ca",
-    "biomes/tiers/tex/pack.json": "34f34aa7f1b4b3d63c99028f124d619133fd29337e121f787a718985571dab0e",
+    "biomes/tiers/tex/pack.json": "c3f4fe63e92fe4c888815901f16d33d3a6a02c3022330100f0fb0c44780b49eb",
     "biomes/tiers/tex/pad.albedo.webp": "ed2e10c8e11638302ff51e6b220cd99bbd9ac8e4ab79a917d14f0685ff41487b",
     "biomes/tiers/tex/pagoda.albedo.webp": "9ef9795add44e488a2ee7cd4fd9bbe3532e37bb39c6bd48f2550f0093aaad832",
     "biomes/tiers/tex/palmfan.albedo.webp": "6bca7fff655890a9cc7a14dd25ee78e136867116b355d12c04c817287a684f7b",
+    "biomes/tiers/tex/pinespray.albedo.webp": "82d4bf37673bd5ba025bb68d411bbf6be8de4949f0a8fa18ea1c5de99ec3d891",
     "biomes/tiers/tex/reed.albedo.webp": "410d1b88f8af5010a602c85aca948c6830318b19f7fbcfd825576955e281e5ae",
     "biomes/tiers/tex/tiergrass.albedo.webp": "c66c81d95c99a6ed3fdc658697758c643368c13a4129db3d0937720a667423e4",
     "core/atmos/89-atmos-0-core.js": "d7207293ab01d6a6e3cf3440fd6f83febaddabff7f0e753c10284fa11ec881be",
@@ -384,10 +388,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/tiers/dist/tiers-canyon.html": "14333cd70c9ef0dd5b2a9a02a30038740529169fba7559d233b571d24099e07e"
+    "biomes/tiers/dist/tiers-canyon.html": "2a9ed9e81c48aea5562907f9dec733abcccc80a27fc0b65d27e85c4d94fb6352"
    },
    "outputs_raw": {
-    "biomes/tiers/dist/tiers-canyon.html": "14333cd70c9ef0dd5b2a9a02a30038740529169fba7559d233b571d24099e07e"
+    "biomes/tiers/dist/tiers-canyon.html": "2a9ed9e81c48aea5562907f9dec733abcccc80a27fc0b65d27e85c4d94fb6352"
    }
   },
   "build.py --station lake": {
@@ -427,17 +431,17 @@
     "biomes/ebadlands/tex/pack.json": "8995fd803ea3d491277ebf898fb4f9584b0091eae9b1d74b208a1805ac9c1473",
     "biomes/ebadlands/tex/stone.gem.albedo.webp": "fa2ddcfb1f8cceb9fa362593d3dba9eb17a8d5455cdd9bdfad8a37f060095dc8",
     "biomes/ebadlands/tex/wood.silver.albedo.webp": "56b7afbaa148477bc1c306df83d9b770f107fd49d38ecaeb19d20bc1b02dfc9b",
-    "biomes/tiers/KNOWN_ISSUES.md": "63af693bce1f858e8b9c3edf181e45774d357bdd89c21b1a548a19dc70157ac2",
-    "biomes/tiers/PORT.md": "0715957b39d523c96e9504821741b3c089cac84d672329b9a327c6ed84f4fa18",
+    "biomes/tiers/KNOWN_ISSUES.md": "15b425addf1485866fb23384206ff9ba2526461ee0c0033da991c5f8f96b7b11",
+    "biomes/tiers/PORT.md": "3276a8e9ed800167a0de36f0d6f6f4082f2074430884ae086395ab2c18cf47c2",
     "biomes/tiers/build.py": "62d06d3acb783bc22d855639a3a5e86ca4cdffe573282b7d22dc75a2bc68b1a0",
     "biomes/tiers/src/00-head.html": "0fa305196eeec2de35fbd9f86ea251592ba92e511870181c99a901c33126f080",
     "biomes/tiers/src/44r-biome-tiers-strata.js": "10586f8576e1d449b853bec3dcd280286c778647ccdd7aef3c76696e37691dbc",
     "biomes/tiers/src/44v-host-landlib.js": "285d72ac354b1815f0b7053ef16a465f35aa7b369bc8eafd1a5d9c53657275ea",
     "biomes/tiers/src/45-host-stage.js": "e76a3b1e2438203c0283a3a57193fe1aa2008da3c3866d0645e12c70b8ca9f55",
-    "biomes/tiers/src/50-biome-tiers-species.js": "4fedfeb9c5d05d9937cf5ba7de4c32c5466516f66a806cbc956b10c8bab1c6ad",
-    "biomes/tiers/src/55-biome-tiers-trees.js": "2fcb6e3b93294ef3113045287ad2e855aef5f57415c2b1a70c42b4665550aa1d",
+    "biomes/tiers/src/50-biome-tiers-species.js": "ffef45b89b9b9ec244ef48f268e6bef116cc58432eb61e242cf9a4f99e12cd53",
+    "biomes/tiers/src/55-biome-tiers-trees.js": "6b1ec536b948c92b9afb078e5a60203954f652f8c15096919e528ebf72b5183b",
     "biomes/tiers/src/60-biome-tiers-floor.js": "b6909a44946c5c448021ddf7ae86e4f9cbde3eb6309316a45d31e8f80e246a0a",
-    "biomes/tiers/src/70-biome-tiers.js": "ae8f5b981a5c3f5592bede170beca1f6b9e25399b630bbe334348a8690eb2472",
+    "biomes/tiers/src/70-biome-tiers.js": "e624497b63d2dc391355c408f87a7e97f442851a974391866fad7718e5cce684",
     "biomes/tiers/src/83-host-far.js": "04c4380487df4a083ea0899742aa6f23954474118e800348daa7e4ce72ce812f",
     "biomes/tiers/src/84-host-horizon.js": "fc6ae751c264f8398c8d20b214c549e04d8d0126e55804e35bb5d41bf17f4022",
     "biomes/tiers/src/87-host-kin.js": "24ee2d4365ad65e92d873cfbc3ab960c584d465c68e396933c1b147c36f2fc10",
@@ -455,6 +459,7 @@
     "biomes/tiers/tex/bark.cactus.albedo.webp": "63e3921cdafca669a938f0a29ead7f00c15071b741404b32dfa96f4e01b3488e",
     "biomes/tiers/tex/bark.oak.albedo.webp": "1acde04c70f219ed275b8edb54410bdf1f4a31357eca645f50d19f9b48673f19",
     "biomes/tiers/tex/bark.palm.albedo.webp": "452bfa61436e378dc5d8956f012bb2b7ffa5afe8d53474324d5bfc874b228351",
+    "biomes/tiers/tex/bark.pine.albedo.webp": "7616b374d020cb6ac72b53f9b806870c2af7a7f65ab989558dd25a6888ae3f55",
     "biomes/tiers/tex/bark.skirt.albedo.webp": "40de67c55452a28658a7c9326df2b37212902c77365fa4db98a963bedca1630d",
     "biomes/tiers/tex/cushion.albedo.webp": "478be447a79e50d18173c6e931aed3e3dcd6e6bcb21f98b797f2835f29d91ac7",
     "biomes/tiers/tex/cushion.normal.webp": "f30e60403df3269bb7027764dccc138ea3aa810d13233a9ced08ffda7a550653",
@@ -471,10 +476,11 @@
     "biomes/tiers/tex/groundDetail.albedo.webp": "36173cb4cf4e69c2ca3e5bdfe52de81fa25015851c22043b13c9a3ff99cd1cfc",
     "biomes/tiers/tex/heath.albedo.webp": "285abc7792b707572a4396436eb1b441cbde4c40ede0c9c49bbba4342b77c388",
     "biomes/tiers/tex/oakplate.albedo.webp": "040d1caab09099b8436708dd7b9d7c61d00f39e59bf689732c45bf5be08d72ca",
-    "biomes/tiers/tex/pack.json": "34f34aa7f1b4b3d63c99028f124d619133fd29337e121f787a718985571dab0e",
+    "biomes/tiers/tex/pack.json": "c3f4fe63e92fe4c888815901f16d33d3a6a02c3022330100f0fb0c44780b49eb",
     "biomes/tiers/tex/pad.albedo.webp": "ed2e10c8e11638302ff51e6b220cd99bbd9ac8e4ab79a917d14f0685ff41487b",
     "biomes/tiers/tex/pagoda.albedo.webp": "9ef9795add44e488a2ee7cd4fd9bbe3532e37bb39c6bd48f2550f0093aaad832",
     "biomes/tiers/tex/palmfan.albedo.webp": "6bca7fff655890a9cc7a14dd25ee78e136867116b355d12c04c817287a684f7b",
+    "biomes/tiers/tex/pinespray.albedo.webp": "82d4bf37673bd5ba025bb68d411bbf6be8de4949f0a8fa18ea1c5de99ec3d891",
     "biomes/tiers/tex/reed.albedo.webp": "410d1b88f8af5010a602c85aca948c6830318b19f7fbcfd825576955e281e5ae",
     "biomes/tiers/tex/tiergrass.albedo.webp": "c66c81d95c99a6ed3fdc658697758c643368c13a4129db3d0937720a667423e4",
     "core/atmos/89-atmos-0-core.js": "d7207293ab01d6a6e3cf3440fd6f83febaddabff7f0e753c10284fa11ec881be",
@@ -578,10 +584,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/tiers/dist/tiers.html": "b67c17d7974db96b5b46adb8c41341ded2b60eb3985307e2ea67d9616d355a30"
+    "biomes/tiers/dist/tiers.html": "ea59a829b375416f8291902a3b6286bc637f2149e0d99e3d766c4a61824a0d52"
    },
    "outputs_raw": {
-    "biomes/tiers/dist/tiers.html": "b67c17d7974db96b5b46adb8c41341ded2b60eb3985307e2ea67d9616d355a30"
+    "biomes/tiers/dist/tiers.html": "ea59a829b375416f8291902a3b6286bc637f2149e0d99e3d766c4a61824a0d52"
    }
   },
   "build.py --station lip": {
@@ -642,17 +648,17 @@
     "biomes/nwlowlands/tex/under.albedo.webp": "54bbe74f9d52c7cfd1105139a88987b70bf17ec052f288e45e17be2e036bb2a2",
     "biomes/nwlowlands/tex/veil.albedo.webp": "2b34a384233488fe77471f0f8fafdb0b102397cd87a630613783ebcf103b8c01",
     "biomes/nwlowlands/tex/wood.albedo.webp": "8e31a224be5b1455147bc1c2f182f3d4a3d07975012e98bc89f05ba92be7278e",
-    "biomes/tiers/KNOWN_ISSUES.md": "5909ee1975e6dafd8f2388c46aba83acfdda1618d04839055cfcf2f2991bef8d",
-    "biomes/tiers/PORT.md": "4258b47709bf9bd3e5a50196ad9ec6f3d600163f96bb996037418cb11eef653e",
+    "biomes/tiers/KNOWN_ISSUES.md": "91387075347cba51b489cf989683ce8c3d69cf050f967d4b814167fe77cad353",
+    "biomes/tiers/PORT.md": "52cde8f4008ccc4548101bda840896636cd2b9c3fad76f44d9a508c25a16f78a",
     "biomes/tiers/build.py": "62d06d3acb783bc22d855639a3a5e86ca4cdffe573282b7d22dc75a2bc68b1a0",
     "biomes/tiers/src/00-head.html": "0fa305196eeec2de35fbd9f86ea251592ba92e511870181c99a901c33126f080",
     "biomes/tiers/src/44r-biome-tiers-strata.js": "10586f8576e1d449b853bec3dcd280286c778647ccdd7aef3c76696e37691dbc",
     "biomes/tiers/src/44v-host-landlib.js": "285d72ac354b1815f0b7053ef16a465f35aa7b369bc8eafd1a5d9c53657275ea",
     "biomes/tiers/src/45-host-stage.js": "e76a3b1e2438203c0283a3a57193fe1aa2008da3c3866d0645e12c70b8ca9f55",
-    "biomes/tiers/src/50-biome-tiers-species.js": "4fedfeb9c5d05d9937cf5ba7de4c32c5466516f66a806cbc956b10c8bab1c6ad",
-    "biomes/tiers/src/55-biome-tiers-trees.js": "2fcb6e3b93294ef3113045287ad2e855aef5f57415c2b1a70c42b4665550aa1d",
+    "biomes/tiers/src/50-biome-tiers-species.js": "ffef45b89b9b9ec244ef48f268e6bef116cc58432eb61e242cf9a4f99e12cd53",
+    "biomes/tiers/src/55-biome-tiers-trees.js": "6b1ec536b948c92b9afb078e5a60203954f652f8c15096919e528ebf72b5183b",
     "biomes/tiers/src/60-biome-tiers-floor.js": "b6909a44946c5c448021ddf7ae86e4f9cbde3eb6309316a45d31e8f80e246a0a",
-    "biomes/tiers/src/70-biome-tiers.js": "ae8f5b981a5c3f5592bede170beca1f6b9e25399b630bbe334348a8690eb2472",
+    "biomes/tiers/src/70-biome-tiers.js": "e624497b63d2dc391355c408f87a7e97f442851a974391866fad7718e5cce684",
     "biomes/tiers/src/83-host-far.js": "04c4380487df4a083ea0899742aa6f23954474118e800348daa7e4ce72ce812f",
     "biomes/tiers/src/84-host-horizon.js": "fc6ae751c264f8398c8d20b214c549e04d8d0126e55804e35bb5d41bf17f4022",
     "biomes/tiers/src/87-host-kin.js": "24ee2d4365ad65e92d873cfbc3ab960c584d465c68e396933c1b147c36f2fc10",
@@ -664,12 +670,13 @@
     "biomes/tiers/src/99-host-take.js": "3992fca4ee6eca096ef6dfd087a29c0784c543c4f5f10df6ff183a52da381816",
     "biomes/tiers/src/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
     "biomes/tiers/stations/lip/44f-host-far-data.js": "d5d809ddcc251bb0ecffcfaaaf9bc9c208b8f45c59d8a8d72535e2f4f8326732",
-    "biomes/tiers/stations/lip/44w-host-land.js": "b0cb6e7112b8ac97aca8027f9993df96ec3a46b7b0f17210ca68e51c9ec4bc47",
+    "biomes/tiers/stations/lip/44w-host-land.js": "02d126cca2b2b16a39c17fcdb161fbc2c20998111cd1e54bcb490396b7cf69dd",
     "biomes/tiers/stations/lip/89w2-host-outfall.js": "a0e158544cac4af48d14eda605140c17639a67459aba370284c81dfe51c2ac5e",
     "biomes/tiers/stations/lip/station.json": "b2188ac16608bf5e3833d6f789cfa769039b23cd3327d436793ca3e6cd2d8677",
     "biomes/tiers/tex/bark.cactus.albedo.webp": "63e3921cdafca669a938f0a29ead7f00c15071b741404b32dfa96f4e01b3488e",
     "biomes/tiers/tex/bark.oak.albedo.webp": "1acde04c70f219ed275b8edb54410bdf1f4a31357eca645f50d19f9b48673f19",
     "biomes/tiers/tex/bark.palm.albedo.webp": "452bfa61436e378dc5d8956f012bb2b7ffa5afe8d53474324d5bfc874b228351",
+    "biomes/tiers/tex/bark.pine.albedo.webp": "7616b374d020cb6ac72b53f9b806870c2af7a7f65ab989558dd25a6888ae3f55",
     "biomes/tiers/tex/bark.skirt.albedo.webp": "40de67c55452a28658a7c9326df2b37212902c77365fa4db98a963bedca1630d",
     "biomes/tiers/tex/cushion.albedo.webp": "478be447a79e50d18173c6e931aed3e3dcd6e6bcb21f98b797f2835f29d91ac7",
     "biomes/tiers/tex/cushion.normal.webp": "f30e60403df3269bb7027764dccc138ea3aa810d13233a9ced08ffda7a550653",
@@ -686,10 +693,11 @@
     "biomes/tiers/tex/groundDetail.albedo.webp": "36173cb4cf4e69c2ca3e5bdfe52de81fa25015851c22043b13c9a3ff99cd1cfc",
     "biomes/tiers/tex/heath.albedo.webp": "285abc7792b707572a4396436eb1b441cbde4c40ede0c9c49bbba4342b77c388",
     "biomes/tiers/tex/oakplate.albedo.webp": "040d1caab09099b8436708dd7b9d7c61d00f39e59bf689732c45bf5be08d72ca",
-    "biomes/tiers/tex/pack.json": "34f34aa7f1b4b3d63c99028f124d619133fd29337e121f787a718985571dab0e",
+    "biomes/tiers/tex/pack.json": "c3f4fe63e92fe4c888815901f16d33d3a6a02c3022330100f0fb0c44780b49eb",
     "biomes/tiers/tex/pad.albedo.webp": "ed2e10c8e11638302ff51e6b220cd99bbd9ac8e4ab79a917d14f0685ff41487b",
     "biomes/tiers/tex/pagoda.albedo.webp": "9ef9795add44e488a2ee7cd4fd9bbe3532e37bb39c6bd48f2550f0093aaad832",
     "biomes/tiers/tex/palmfan.albedo.webp": "6bca7fff655890a9cc7a14dd25ee78e136867116b355d12c04c817287a684f7b",
+    "biomes/tiers/tex/pinespray.albedo.webp": "82d4bf37673bd5ba025bb68d411bbf6be8de4949f0a8fa18ea1c5de99ec3d891",
     "biomes/tiers/tex/reed.albedo.webp": "410d1b88f8af5010a602c85aca948c6830318b19f7fbcfd825576955e281e5ae",
     "biomes/tiers/tex/tiergrass.albedo.webp": "c66c81d95c99a6ed3fdc658697758c643368c13a4129db3d0937720a667423e4",
     "core/atmos/89-atmos-0-core.js": "d7207293ab01d6a6e3cf3440fd6f83febaddabff7f0e753c10284fa11ec881be",
@@ -793,10 +801,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/tiers/dist/tiers-lip.html": "bcb68a8013f159634ae6a0fb62f4838c0a7d15c912b74a94fec5c823f95dc075"
+    "biomes/tiers/dist/tiers-lip.html": "1e00a43a12953a10cb23a3ddef1338bfb809666e632938b13b362b2be6d3f397"
    },
    "outputs_raw": {
-    "biomes/tiers/dist/tiers-lip.html": "bcb68a8013f159634ae6a0fb62f4838c0a7d15c912b74a94fec5c823f95dc075"
+    "biomes/tiers/dist/tiers-lip.html": "1e00a43a12953a10cb23a3ddef1338bfb809666e632938b13b362b2be6d3f397"
    }
   },
   "build.py --station tread": {
@@ -836,17 +844,17 @@
     "biomes/ebadlands/tex/pack.json": "8995fd803ea3d491277ebf898fb4f9584b0091eae9b1d74b208a1805ac9c1473",
     "biomes/ebadlands/tex/stone.gem.albedo.webp": "fa2ddcfb1f8cceb9fa362593d3dba9eb17a8d5455cdd9bdfad8a37f060095dc8",
     "biomes/ebadlands/tex/wood.silver.albedo.webp": "56b7afbaa148477bc1c306df83d9b770f107fd49d38ecaeb19d20bc1b02dfc9b",
-    "biomes/tiers/KNOWN_ISSUES.md": "5909ee1975e6dafd8f2388c46aba83acfdda1618d04839055cfcf2f2991bef8d",
-    "biomes/tiers/PORT.md": "0715957b39d523c96e9504821741b3c089cac84d672329b9a327c6ed84f4fa18",
+    "biomes/tiers/KNOWN_ISSUES.md": "91387075347cba51b489cf989683ce8c3d69cf050f967d4b814167fe77cad353",
+    "biomes/tiers/PORT.md": "52cde8f4008ccc4548101bda840896636cd2b9c3fad76f44d9a508c25a16f78a",
     "biomes/tiers/build.py": "62d06d3acb783bc22d855639a3a5e86ca4cdffe573282b7d22dc75a2bc68b1a0",
     "biomes/tiers/src/00-head.html": "0fa305196eeec2de35fbd9f86ea251592ba92e511870181c99a901c33126f080",
     "biomes/tiers/src/44r-biome-tiers-strata.js": "10586f8576e1d449b853bec3dcd280286c778647ccdd7aef3c76696e37691dbc",
     "biomes/tiers/src/44v-host-landlib.js": "285d72ac354b1815f0b7053ef16a465f35aa7b369bc8eafd1a5d9c53657275ea",
     "biomes/tiers/src/45-host-stage.js": "e76a3b1e2438203c0283a3a57193fe1aa2008da3c3866d0645e12c70b8ca9f55",
-    "biomes/tiers/src/50-biome-tiers-species.js": "4fedfeb9c5d05d9937cf5ba7de4c32c5466516f66a806cbc956b10c8bab1c6ad",
-    "biomes/tiers/src/55-biome-tiers-trees.js": "2fcb6e3b93294ef3113045287ad2e855aef5f57415c2b1a70c42b4665550aa1d",
+    "biomes/tiers/src/50-biome-tiers-species.js": "ffef45b89b9b9ec244ef48f268e6bef116cc58432eb61e242cf9a4f99e12cd53",
+    "biomes/tiers/src/55-biome-tiers-trees.js": "6b1ec536b948c92b9afb078e5a60203954f652f8c15096919e528ebf72b5183b",
     "biomes/tiers/src/60-biome-tiers-floor.js": "b6909a44946c5c448021ddf7ae86e4f9cbde3eb6309316a45d31e8f80e246a0a",
-    "biomes/tiers/src/70-biome-tiers.js": "ae8f5b981a5c3f5592bede170beca1f6b9e25399b630bbe334348a8690eb2472",
+    "biomes/tiers/src/70-biome-tiers.js": "e624497b63d2dc391355c408f87a7e97f442851a974391866fad7718e5cce684",
     "biomes/tiers/src/83-host-far.js": "04c4380487df4a083ea0899742aa6f23954474118e800348daa7e4ce72ce812f",
     "biomes/tiers/src/84-host-horizon.js": "fc6ae751c264f8398c8d20b214c549e04d8d0126e55804e35bb5d41bf17f4022",
     "biomes/tiers/src/87-host-kin.js": "24ee2d4365ad65e92d873cfbc3ab960c584d465c68e396933c1b147c36f2fc10",
@@ -858,12 +866,13 @@
     "biomes/tiers/src/99-host-take.js": "3992fca4ee6eca096ef6dfd087a29c0784c543c4f5f10df6ff183a52da381816",
     "biomes/tiers/src/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
     "biomes/tiers/stations/tread/44f-host-far-data.js": "c79a750f76d0b5dc54d544971c65b3d4b29b1028655b813a2f54702c9f9364be",
-    "biomes/tiers/stations/tread/44w-host-land.js": "c79f6732b8da3e12dbd9d09ef643deff85fe2e5cd9af6835038a30c1348bb46b",
+    "biomes/tiers/stations/tread/44w-host-land.js": "09de2b70197f294a844bafcc9408569a6e7face7f0a22ebf101e689debe86e66",
     "biomes/tiers/stations/tread/86-host-camp.js": "a3fc7995c889bc9f6743223e543411e6b89e72e272c8ec51b4892ebaa16b0427",
     "biomes/tiers/stations/tread/station.json": "d82d70679c969274b1db7b956415ed831436b07c40ec217286ef687e9d5f58fe",
     "biomes/tiers/tex/bark.cactus.albedo.webp": "63e3921cdafca669a938f0a29ead7f00c15071b741404b32dfa96f4e01b3488e",
     "biomes/tiers/tex/bark.oak.albedo.webp": "1acde04c70f219ed275b8edb54410bdf1f4a31357eca645f50d19f9b48673f19",
     "biomes/tiers/tex/bark.palm.albedo.webp": "452bfa61436e378dc5d8956f012bb2b7ffa5afe8d53474324d5bfc874b228351",
+    "biomes/tiers/tex/bark.pine.albedo.webp": "7616b374d020cb6ac72b53f9b806870c2af7a7f65ab989558dd25a6888ae3f55",
     "biomes/tiers/tex/bark.skirt.albedo.webp": "40de67c55452a28658a7c9326df2b37212902c77365fa4db98a963bedca1630d",
     "biomes/tiers/tex/cushion.albedo.webp": "478be447a79e50d18173c6e931aed3e3dcd6e6bcb21f98b797f2835f29d91ac7",
     "biomes/tiers/tex/cushion.normal.webp": "f30e60403df3269bb7027764dccc138ea3aa810d13233a9ced08ffda7a550653",
@@ -880,10 +889,11 @@
     "biomes/tiers/tex/groundDetail.albedo.webp": "36173cb4cf4e69c2ca3e5bdfe52de81fa25015851c22043b13c9a3ff99cd1cfc",
     "biomes/tiers/tex/heath.albedo.webp": "285abc7792b707572a4396436eb1b441cbde4c40ede0c9c49bbba4342b77c388",
     "biomes/tiers/tex/oakplate.albedo.webp": "040d1caab09099b8436708dd7b9d7c61d00f39e59bf689732c45bf5be08d72ca",
-    "biomes/tiers/tex/pack.json": "34f34aa7f1b4b3d63c99028f124d619133fd29337e121f787a718985571dab0e",
+    "biomes/tiers/tex/pack.json": "c3f4fe63e92fe4c888815901f16d33d3a6a02c3022330100f0fb0c44780b49eb",
     "biomes/tiers/tex/pad.albedo.webp": "ed2e10c8e11638302ff51e6b220cd99bbd9ac8e4ab79a917d14f0685ff41487b",
     "biomes/tiers/tex/pagoda.albedo.webp": "9ef9795add44e488a2ee7cd4fd9bbe3532e37bb39c6bd48f2550f0093aaad832",
     "biomes/tiers/tex/palmfan.albedo.webp": "6bca7fff655890a9cc7a14dd25ee78e136867116b355d12c04c817287a684f7b",
+    "biomes/tiers/tex/pinespray.albedo.webp": "82d4bf37673bd5ba025bb68d411bbf6be8de4949f0a8fa18ea1c5de99ec3d891",
     "biomes/tiers/tex/reed.albedo.webp": "410d1b88f8af5010a602c85aca948c6830318b19f7fbcfd825576955e281e5ae",
     "biomes/tiers/tex/tiergrass.albedo.webp": "c66c81d95c99a6ed3fdc658697758c643368c13a4129db3d0937720a667423e4",
     "core/atmos/89-atmos-0-core.js": "d7207293ab01d6a6e3cf3440fd6f83febaddabff7f0e753c10284fa11ec881be",
@@ -992,10 +1002,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/tiers/dist/tiers-tread.html": "0f55965a1b97f6b9a6027feb9e8290f35af444d7278847e77b9501a59f7aaaa7"
+    "biomes/tiers/dist/tiers-tread.html": "a2fa0073bd59d1cc8dc03f2206a23436b65f64f4e82842d8b96c2936b9151510"
    },
    "outputs_raw": {
-    "biomes/tiers/dist/tiers-tread.html": "0f55965a1b97f6b9a6027feb9e8290f35af444d7278847e77b9501a59f7aaaa7"
+    "biomes/tiers/dist/tiers-tread.html": "a2fa0073bd59d1cc8dc03f2206a23436b65f64f4e82842d8b96c2936b9151510"
    }
   }
  }

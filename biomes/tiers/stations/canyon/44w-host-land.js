@@ -131,5 +131,7 @@ const LAND={name:'Coyote Canyon (tiers station 2)',title:'Krator biome — the T
   'Down from the north rim':look(A(S.LEN*.6)[0]-330,A(S.LEN*.6)[1]-330,3,A(S.LEN*.35)[0],A(S.LEN*.35)[1],-40),
   'The walls and their ledges':look(A(S.LEN*.7)[0]+60,A(S.LEN*.7)[1]+60,2,A(S.LEN*.7)[0]-260,A(S.LEN*.7)[1]-160,120),
   'From afar':look(-2900,2900,900,1000,-1000,0)};
+  /* the whorl pines on the south-looking ledges (the nearest to the canyon's middle) */
+  const P=nearRec&&nearRec('whorlpine',600,-600);if(P)V['Whorl pines on the cool ledges']=atRec(P,P.r*3+10,2.5,6);
   return V;},
  probes:{}};

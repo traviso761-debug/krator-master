@@ -3,6 +3,7 @@
 //     at their heights (the Black Step's basalt at the lake tread, the Red, White and Grey Steps above)
 //   - station 1's far field (stations/lake/44f + src/44v): the plan's sill stands on the 79 dry rim cells under the upper lake's level
 //     (PLAN.md section 8a), the notch held at the level, and the model's own cells elsewhere untouched
+//   - outposts.json: the three candidate sites pass the open world's registry (KOUTPOST.offer), each clear of the Kingdom's places
 const fs = require('fs'), vm = require('vm'), path = require('path');
 const T = require('../../../tools/ktest.js')(__filename);
 const ROOT = path.join(__dirname, '..', '..', '..');
@@ -43,4 +44,17 @@ T.ok('the sill cells stand at 1,180 m (the notch at 1,150 m), the rest are the m
 const notch = M.raw(1246 - F.site.cx, 531 - F.site.cy);
 T.ok('the notch at 1246,531 is held at the level (the outfall)', notch === 1150, 'notch ' + notch);
 T.neg('a sill cell left under the level is caught', v => v >= 1150, 284, 1180);
+
+// ---- the candidate sites (outposts.json) offered to the open world's registry
+load('openworld/outposts/src/10-outposts-registry.js');
+const OP = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'outposts.json'), 'utf8'));
+const off = ctx.KOUTPOST.offer('tiers', OP.candidates);
+T.ok('outposts.json: every candidate kept by KOUTPOST.offer', off.kept.length === OP.candidates.length && !off.errors.length, JSON.stringify(off));
+const KINGDOM = [[1265, 500], [1262, 512], [1272, 522]];   /* the capital and the lake towns (PLAN.md section 6) */
+const clear = c => KINGDOM.every(([x, y]) => Math.hypot(c.place.px - x, c.place.py - y) >= 2);   /* 4 km and more (2 km a pixel) */
+T.ok('outposts.json: every candidate 4 km or more from the Kingdom\'s places', OP.candidates.every(clear), OP.candidates.filter(c => !clear(c)).map(c => c.id).join(', '));
+T.neg('a candidate on the lake town is caught', c => clear(c), {place: {px: 1272, py: 522}}, OP.candidates[0]);
+ctx.KOUTPOST.clearCandidates();
+T.neg('a candidate with an unknown kind is refused', c => ctx.KOUTPOST.offer('tiers', [c]).errors.length === 0,
+  Object.assign({}, OP.candidates[0], {id: 'tiers:test', suits: ['castle']}), Object.assign({}, OP.candidates[0], {id: 'tiers:test2'}));
 T.done();

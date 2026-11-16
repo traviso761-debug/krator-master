@@ -85,6 +85,34 @@
     "sourceMean": 0.3154
    }
   },
+  "bark.pine": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "bark.pine.albedo.webp"
+   },
+   "lib": "bark.ponderosa",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    1.0,
+    1.4
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "3be38ed0f0f7c2704a77e925002b2580b2f10ad7",
+    "normal": "5b86d12e03a60e9d369b36693f5091adb7b4ab14",
+    "roughness": "2343f176da8b6ac7fc597f66f216fb3a6a60facc"
+   },
+   "specular": 0.2,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.5,
+    "sourceMean": 0.4257
+   }
+  },
   "bark.skirt": {
    "breakup": null,
    "card": false,
@@ -642,6 +670,97 @@
     "keep": 1.0,
     "mean": 0.4421754531821461,
     "sourceMean": 0.4422
+   }
+  },
+  "pinespray": {
+   "anchor": "center",
+   "breakup": null,
+   "card": true,
+   "files": {
+    "map": "pinespray.albedo.webp"
+   },
+   "lib": "card.pine",
+   "metal": 0,
+   "normalScale": 1.0,
+   "plants": 9,
+   "rise": 0.12,
+   "roughLift": 0.0,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "09bd6b96b7fb7ecec51689c38a5fb138fa07e1a2"
+   },
+   "specular": 0.5,
+   "stems": [
+    {
+     "cell": [
+      0.018,
+      0.03,
+      0.329,
+      0.339
+     ],
+     "stem": [
+      0.04,
+      0.3213
+     ],
+     "tip": [
+      0.2898,
+      0.0752
+     ],
+     "w": [
+      -0.1083,
+      0.1176
+     ]
+    },
+    {
+     "cell": [
+      0.333,
+      0.349,
+      0.671,
+      0.671
+     ],
+     "stem": [
+      0.585,
+      0.6709
+     ],
+     "tip": [
+      0.4554,
+      0.3648
+     ],
+     "w": [
+      -0.122,
+      0.13
+     ]
+    },
+    {
+     "cell": [
+      0.686,
+      0.661,
+      0.985,
+      0.97
+     ],
+     "stem": [
+      0.6924,
+      0.9424
+     ],
+     "tip": [
+      0.9657,
+      0.7026
+     ],
+     "w": [
+      -0.1129,
+      0.1189
+     ]
+    }
+   ],
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.6,
+    "sourceMean": 0.3049
    }
   },
   "reed": {

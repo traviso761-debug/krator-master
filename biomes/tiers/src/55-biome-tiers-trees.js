@@ -34,10 +34,15 @@ function zones(x,z){const F=n=>BIO.field(n,x,z);
  /* ...nor on the cold stair (the great tread and the high steps, over ~4.2 km: under ~5 degC mean, frost every night): there the pagoda bush, the
     stack cushion and the tiergrass (60's tread pass) and the badlands' junipers and bristlecones (kin) */
  const high=smooth(.29,.38,cold),mild=temperate*(1-high);
+ /* the cool ground between them, the whorl pine's: the upper steps (~2.5-4 km) and the risers' cool faces (PLAN.md section 4): ground over ~2 km
+    that looks south, away from the sun (it stands in the north here), on the great riser's flank (Coyote Canyon's north rim) or a wall's ledge */
+ let coolFace=0;{const y=BIO.terrainH(x,z);if(y>1900&&cold<.14){const e=6,gz=(BIO.terrainH(x,z+e)-BIO.terrainH(x,z-e))/(2*e),gx=(BIO.terrainH(x+e,z)-BIO.terrainH(x-e,z))/(2*e),gl=Math.hypot(gx,gz);
+  if(gl>.02)coolFace=smooth(.1,.5,-gz/gl)*smooth(1900,2300,y)*smooth(.02,.08,gl);}}   /* downhill toward +z: the ground looks south */
+ const cool=Math.max(smooth(.04,.14,cold),coolFace)*(1-high)*land*live*(1-farm);
  const shore=mild*land*smooth(46,6,sd)*gentle*(1-farm),shallows=mild*(sd<0?1:0)*smooth(.06,.2,depth)*smooth(1.7,1.1,depth),bay=mild*(sd<0?1:0)*smooth(.25,.45,depth)*smooth(2.8,2.0,depth);
  const wood=mild*land*live*gentle*(1-farm)*smooth(20,60,sd)*smooth(700,250,sd)*(1-tread*.7)*smooth(.38,.5,wet)*(1-rock*.8);   /* the shore's woods: within ~half a kilometre of the water */
  const dry=mild*land*live*(1-farm)*smooth(25,80,sd)*Math.max(smooth(.18,.45,slope)*(1-rock*.6),tread)*(1-seep);
- return{slope,rock,wet,seep,ledge,farm,road,tread,cold,talus,shoreD:sd,depth,cliff,live,gentle,land,temperate:mild,high,stair:high*land*live*(1-farm),shore,shallows,bay,wood,dry,
+ return{slope,rock,wet,seep,ledge,farm,road,tread,cold,talus,shoreD:sd,depth,cliff,live,gentle,land,temperate:mild,high,cool,stair:high*land*live*(1-farm),shore,shallows,bay,wood,dry,
   wetShore:shore,face:smooth(.5,.8,slope)*smooth(.3,.6,F('strata'))};}
 TIERS.zones=zones;
 
@@ -101,6 +106,22 @@ B.candelabra=function(T,st,lv){const S=SP[T.sp],H=T.H,bc=C(pick(S.bark)),stem=gr
    limb('bark.cactus',P,bc,lv,st,lv===2?7:4,c.r);rim=Math.max(rim,out*1.1+r0);
    if(lv===2&&rng()<.3){const e=tip(P);BIO.put('cbloom',[e.x,e.y+e.r*.6,e.z],null,[.09,.06,.09],C(pick(PAL.cactusBloom)));st.blooms++;}}}
  regTree(T,S,rim+.3,H+.4);};
+// THE WHORL PINE (PLAN.md section 4: the middle steps' cool pockets, the risers' cool faces): a straight plated bole, bare between widely spaced
+// level whorls of four to six branches, each branch's outer two thirds carrying level needle sprays; the whorls shorten up the bole, a leader's
+// tuft on top: the tiers' silhouette on the skyline
+B.whorlpine=function(T,st,lv){const S=SP[T.sp],H=T.H,R=T.crownR,bc=barkCol(S.bark,'bark.pine'),lc=C(pick(S.leaf));
+ const bole=grow({x:T.x,y:T.y0-.3,z:T.z},dirOf(rr(0,TAU),rr(1.53,1.57)),H,T.rb,T.rb*.18,lv===2?6:3,0);limb('bark.pine',bole,bc,lv,st,lv===2?8:5);
+ const nW=lv===2?T.tiers:Math.max(3,T.tiers-3);let rim=R*.3,top=T.y0;T.tierYs=[];
+ for(let w=0;w<nW;w++){const u=.3+.62*w/Math.max(1,nW-1),c=along(bole,u),Rw=R*(1-.72*w/Math.max(1,nW-1))*rr(.88,1.08),m=lv===2?ri(4,6):4,a0=rr(0,TAU);T.tierYs.push(c.y);
+  for(let b=0;b<m;b++){const a=a0+b/m*TAU+rr(-.25,.25),L=Rw*rr(.85,1.05),P=grow(c,dirOf(a,rr(-.06,.04)),L,c.r*.42,.02,lv===2?3:2,.04);limb('bark.pine',P,bc,lv,st,lv===2?4:3,c.r);
+   const sz=lv===2?rr(1.1,1.4):rr(1.8,2.2),n=Math.max(1,Math.round(L*.66/sz*(lv===2?1.5:1)));
+   for(let k=0;k<n;k++){const p=along(P,.34+.66*(k+.5)/n),yaw=a+rr(-.7,.7),q=qEuler(rr(-.05,.05),-yaw+Math.PI/2,rr(-.05,.05));
+    BIO.put('pinespray',[p.x,p.y+.02,p.z],q,[sz,sz,sz],bright(vary(lc,.02,.07,.06),rr(.9,1.06)),{n:[0,1,0]});st.clumps++;}
+   const e=tip(P);rim=Math.max(rim,Math.hypot(e.x-T.x,e.z-T.z));}
+  top=Math.max(top,c.y);}
+ /* the leader's tuft */
+ {const e=tip(bole);for(let k=0;k<(lv===2?3:2);k++)BIO.put('pinespray',[e.x,e.y-.2-k*.25,e.z],qEuler(rr(-.4,.4),rr(0,TAU),rr(-.4,.4)),[.9,.9,.9],bright(lc,rr(.95,1.05)),{n:[0,1,0]});top=Math.max(top,e.y);}
+ T.tiersDrawn=nW;regTree(T,S,rim+.5,Math.max(H,top-T.y0+.8));};
 // THE LADDER REED (a clump in the shallows)
 B.ladderreed=function(T,st,lv){const S=SP[T.sp],nC=lv===2?ri(9,16):ri(5,8),lc=C(pick(S.leaf));let top=T.y0;T.tierYs=[];
  for(let c=0;c<nC;c++){const a=c*GOLD,d=c?Math.sqrt(c/nC)*T.rb:0,x=T.x+Math.cos(a)*d,z=T.z+Math.sin(a)*d,y0=Math.min(Y(x,z),T.y0)-.15,wl0=T.water==null?y0:T.water,h=Math.max(T.H*rr(.6,1.08),wl0-y0+rr(.9,1.4)),lean=rr(0,.08),la=rr(0,TAU);   /* every cane clears the water by its first node at least */
@@ -122,9 +143,10 @@ function buildFar(T,st){const S=SP[T.sp],K=BIO.bucket('far');if(!ICO)ICO=new T3.
    vtx(x+dx*rx,y+dy*ry,z+dz*rx,dx/nl,ny/nl,dz/nl,c);}tris+=ip.length/9;}
  st.far+=BIO.lathe('far',[{x:T.x,y:T.y0-.3,z:T.z,yy:0,col:[bc.r,bc.g,bc.b]},{x:T.x,y:T.y0+T.H*.95,z:T.z,yy:1,col:[bc.r,bc.g,bc.b]}],4,1,1,Rg=>Math.max(.12,T.rb*(1-.6*Rg.yy)),null);
  if(S.key==='shelfoak'){const n=Math.max(3,T.tiers-1);for(let t=0;t<n;t++){const u=.34+.6*t/Math.max(1,n-1),Rt=T.crownR*(1-.55*t/Math.max(1,n-1));disc(T.x,T.y0+T.H*u,T.z,Rt,.45);}}
+ else if(S.key==='whorlpine'){const n=Math.max(3,T.tiers-2);for(let t=0;t<n;t++){const u=.3+.62*t/Math.max(1,n-1);disc(T.x,T.y0+T.H*u,T.z,T.crownR*(1-.72*t/Math.max(1,n-1)),.35);}}
  else if(S.key==='steppalm'){for(let k=0;k<3;k++)disc(T.x,T.y0+T.H*(.3+.2*k),T.z,T.rb*2.2,.4);disc(T.x,T.y0+T.H+.3,T.z,T.crownR*.9,T.crownR*.35);}
  for(let i=0;i<tris;i++)K.k.push(kk);K.tris+=tris;BIO.tally(tris,0,0);st.far+=tris;}
-const FAR_OK={shelfoak:true,steppalm:true};
+const FAR_OK={shelfoak:true,steppalm:true,whorlpine:true};
 
 // ---------------------------------------------------------------- keep-clear between trees (core/space)
 let SPACE=null;
@@ -144,7 +166,9 @@ TIERS.PASSES=[
  {key:'ladderreed',cell:6,accept:Z=>Z.shallows*.85,water:true,opt:{pad:.8,patch:.55,patchScale:.02}},
  {key:'steppalm',cell:14,accept:Z=>Z.shore*.42+Z.seep*.25*Z.temperate,opt:{pad:2,patch:.5,patchScale:.012}},
  {key:'shelfoak',cell:26,accept:Z=>Z.wood*.42,opt:{pad:3,patch:.55,patchScale:.005},k:Z=>.85+.3*smooth(.45,.7,Z.wet)},
- {key:'candelabra',cell:24,accept:Z=>Z.dry*.16+Z.ledge*.1*Z.temperate,opt:{pad:1.6,patch:.6,patchScale:.01}}];
+ {key:'candelabra',cell:24,accept:Z=>Z.dry*.16+Z.ledge*.1*Z.temperate,opt:{pad:1.6,patch:.6,patchScale:.01}},
+ /* last, so the passes before it draw as they did: the whorl pine on the cool upper ground (the canyon's rims and benches, ~2.7-4 km) */
+ {key:'whorlpine',cell:22,accept:Z=>Z.cool*(.3*Z.gentle+.2*Z.ledge)*(1-Z.rock*.7),opt:{pad:2,patch:.55,patchScale:.008},k:Z=>.8+.35*smooth(.15,.3,Z.wet)}];
 TIERS.buildTrees=function(R,q){reseed(551201);q=q==null?1:q;R=R||2500;
  SP.forEach(S=>{if(typeof B[S.key]!=='function')BIO.err('tiers: no builder for species '+S.key);});
  const st=newStats(),TREES=TIERS.TREES;TREES.length=0;SPACE=KSPACE.create({cell:30});
@@ -155,7 +179,7 @@ TIERS.buildTrees=function(R,q){reseed(551201);q=q==null?1:q;R=R||2500;
     const ld=BIO.lodD(x,z),lv=ld<LOD.hero?2:(ld<LOD.mid?1:0);if(lv===0&&!FAR_OK[S.key])return;
     const T=TIERS.make(S.i,x,Y(x,z),z);if(P.water){const w=wH(x,z);if(!(w>-1e8)||w-Y(x,z)<.08)return;T.water=w;T.y0=Y(x,z);}
     if(P.k){const k=P.k(Z);T.H*=k;T.crownR*=Math.sqrt(k);}T.lv=lv;
-    TREES.push(T);SPACE.insert({x,z,r:(S.key==='shelfoak'?T.crownR*.55:S.key==='steppalm'?T.crownR*.6:T.rb*1.6+.4)},x,z,T.crownR+2);
+    TREES.push(T);SPACE.insert({x,z,r:(S.key==='shelfoak'||S.key==='whorlpine'?T.crownR*.55:S.key==='steppalm'?T.crownR*.6:T.rb*1.6+.4)},x,z,T.crownR+2);
     BIO.owner=[x,z];try{if(lv===0){buildFar(T,st);st.fars++;}else{B[S.key](T,st,lv);st.heroes++;}}finally{BIO.owner=null;}st.byS[S.i]++;},
    {box:[-R,-R,R,R],patch:opt.patch==null?.5:opt.patch,patchScale:opt.patchScale==null?.012:opt.patchScale,pad:1,noMask:!!P.water});});
  TIERS.COUNTS=SP.map((S,i)=>st.byS[i]);BIO.cur=null;

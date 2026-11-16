@@ -84,6 +84,16 @@ fragment it needs: station 1's `86-host-village.js`) and its `station.json` name
   talus is the Grey Steps' pale blocks (no basalt columns over 3.9 km); kin: the eastern badlands' Utah juniper and bristlecone pine on the
   talus and ledges. Ground: the steppe's withered grass, the desert pavement (`ground.pave`), the band lichen, the talus's gravel.
 
+## Open issues worked (2026-11-16)
+
+- **The whorl pine** (55: `B.whorlpine`, a fifth species whose pass runs last so the other passes draw as they did): a plated bole bare
+  between five to nine level whorls, each branch's outer two thirds in level needle sprays (`card.pine`), on the `cool` zone (the upper steps over
+  ~2.5 km, and ground over ~2 km that looks south, away from the sun: Coyote Canyon's north rim); its far silhouette a disc a whorl.
+- **`outposts.json`**: the plan's three candidates with the model's numbers, offered to `KOUTPOST` in the kit's node test.
+- **The Lip's floor**: denser kin rows (the meranti every ~50 m, the mid-storey under it); still open from the rim (KNOWN_ISSUES.md).
+- **The dry gorge's floor**: a `KRELIEF.wadi` along it (cobble bars, banks).
+- **The crops entry**: written and tested, held as `patches/kits-crops-tiers.patch` (KNOWN_ISSUES.md: Longsong cannot be rebuilt here).
+
 ## Not built yet
 
-Station 2's town (its layout); the whorl pine; terracettes in the ground; the `tiers` crops entry; `outposts.json`. KNOWN_ISSUES.md lists them with the texture swaps.
+Station 2's town (its layout); terracettes in the ground; the gorge flood. KNOWN_ISSUES.md lists them with the texture swaps.

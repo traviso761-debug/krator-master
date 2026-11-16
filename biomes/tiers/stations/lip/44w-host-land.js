@@ -101,11 +101,13 @@ const LAND={name:'The Lip (tiers station 3)',title:'Krator biome — the Tiers: 
  /* the floor's rainforest, read in place: the north-western lowlands' tropical trees as Korona's fertile basin reads them (the floor is Korona's
     country: PLAN.md section 2): mist palms, spire tree ferns, stilt pandans and pale paperbarks in the spray round the pool and along the river,
     sky meranti standing over the rainforest beyond */
- kin:[{ref:'nwlowlands.mistpalm',key:'mistpalm',name:'Mist palm (the north-western lowlands\', read in place)',cell:22,minR:4,accept:(Z,x,z)=>STATION.lowK(x,z)*(STATION.sprayK(x,z)*.6+.06)*(1-Z.cliff)*smooth(.6,.35,Z.slope)},
+ /* the floor's rainforest (Am): the meranti's emergent canopy every ~50 m, the paperbarks and mist palms under it, the spray forest's ferns and
+    palms round the pool; dense enough that the canopy closes seen from the Lip (2026-11-16: it read open at 90 m cells) */
+ kin:[{ref:'nwlowlands.mistpalm',key:'mistpalm',name:'Mist palm (the north-western lowlands\', read in place)',cell:22,minR:4,accept:(Z,x,z)=>STATION.lowK(x,z)*(STATION.sprayK(x,z)*.6+.14)*(1-Z.cliff)*smooth(.6,.35,Z.slope)},
   {ref:'nwlowlands.treefern',key:'treefern',name:'Spire tree fern (the north-western lowlands\', read in place)',cell:14,minR:3,accept:(Z,x,z)=>STATION.lowK(x,z)*(STATION.sprayK(x,z)*.7+.04)*(1-Z.cliff)*smooth(.6,.35,Z.slope)},
   {ref:'nwlowlands.pandan',key:'pandan',name:'Stilt pandan (the north-western lowlands\', read in place)',cell:20,minR:3,accept:(Z,x,z)=>STATION.lowK(x,z)*Z.seep*.6*(1-Z.cliff)},
-  {ref:'nwlowlands.paperbark',key:'paperbark',name:'Pale paperbark (the north-western lowlands\', read in place)',cell:30,minR:5,accept:(Z,x,z)=>STATION.lowK(x,z)*(Z.seep*.4+.05)*(1-Z.cliff)*smooth(.6,.35,Z.slope)},
-  {ref:'nwlowlands.meranti',key:'meranti',name:'Sky meranti (the north-western lowlands\', read in place)',cell:90,minR:18,accept:(Z,x,z)=>STATION.lowK(x,z)*(1-STATION.sprayK(x,z))*.3*(1-Z.cliff)*smooth(.5,.3,Z.slope)}],
+  {ref:'nwlowlands.paperbark',key:'paperbark',name:'Pale paperbark (the north-western lowlands\', read in place)',cell:24,minR:5,accept:(Z,x,z)=>STATION.lowK(x,z)*(Z.seep*.4+.14)*(1-Z.cliff)*smooth(.6,.35,Z.slope)},
+  {ref:'nwlowlands.meranti',key:'meranti',name:'Sky meranti (the north-western lowlands\', read in place)',cell:52,minR:14,accept:(Z,x,z)=>STATION.lowK(x,z)*(1-STATION.sprayK(x,z))*.55*(1-Z.cliff)*smooth(.5,.3,Z.slope)}],
  exportBox:null,exportProfile:['registry','items','buckets','materials','textures','terrain','stage','atmos','hazards','water'],
  hazards:()=>{const S=STATION,out=[];
   /* the Lip's edge (fall), every 400 m along the rim on the page; rockfall under it (crush) */

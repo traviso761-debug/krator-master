@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 15 (12%) | 0 (0%) | 1 (1%) | 65 (49%) | 50 (38%) |
+| KB | 15 (11%) | 0 (0%) | 1 (1%) | 65 (48%) | 54 (40%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -16,8 +16,8 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/44r-biome-tiers-strata.js` | 4.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/44v-host-landlib.js` | 8.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the land from the model (MODEL, the sill, tiersLand): plain maths |
 | `src/45-host-stage.js` | 26.6 | [web] | 22 | 3 | 3 | 1 | 0 | 3 | 8 | 1 | 0 | 0 | 0 |  |
-| `src/50-biome-tiers-species.js` | 17.9 | [draw] | 0 | 1 | 0 | 0 | 0 | 9 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
-| `src/55-biome-tiers-trees.js` | 16.8 | [draw] | 0 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/50-biome-tiers-species.js` | 18.6 | [draw] | 0 | 1 | 0 | 0 | 0 | 9 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
+| `src/55-biome-tiers-trees.js` | 19.7 | [draw] | 0 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/60-biome-tiers-floor.js` | 10.9 | [draw] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/70-biome-tiers.js` | 0.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/83-host-far.js` | 4.0 | [web] | 2 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 |  |

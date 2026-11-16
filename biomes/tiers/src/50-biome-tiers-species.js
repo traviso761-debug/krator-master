@@ -21,6 +21,7 @@ TIERS.BARREN=['EF'];
 // ---------------------------------------------------------------- palettes (sRGB; a library card with keep 0 takes these as its colour)
 const PAL=TIERS.PAL={
  oakLeaf:[0x3e5a2c,0x46622e,0x364e26,0x4e6a34],oakBark:[0x8a8884,0x7e7c78,0x969490,0x74726e],
+ pineLeaf:[0x2e4a32,0x34523a,0x2a422c,0x3a5a3e],pineBark:[0x6a4a36,0x7a5640,0x5e4232],   /* the whorl pine: dark blue-green sprays, a red-brown plated bole */
  palmLeaf:[0x5a7a3a,0x648442,0x4e6e34],palmBark:[0x7a6a54,0x6e5e4a,0x86765e],skirt:[0x8a7656,0x7e6a4c,0x96825e,0x6e5c42],palmFruit:[0x9a5a24,0xa8682c,0x7e4620],
  cactus:[0x5a7a4a,0x52704a,0x648456,0x4a6844],cactusBloom:[0xe8d26a,0xf0c050],
  reedCane:[0x8a9a54,0x9aa860,0x7e8e4a,0xa8a46a],reedLeaf:[0x5a7a3a,0x648444,0x4e6e34],reedTuft:[0x6a7a44,0x748450,0x5e6e3c],
@@ -53,10 +54,10 @@ TIERS.PLANTS={
   HV('none',[],false,'Crusts in level bands along the beds, orange, grey-green and black: the coloured cliffs\' last colour. An orchil purple (proposed): the Kingdom\'s trade dye.','dye'),{station:1}),
  stairlily:PK('Stair lily',K('temperate','subhumid','yes',['Csa','Cfa']),['pad','lilybloom'],
   HV('none',['rhizome (proposed)'],false,'Floating pads that grow in overlapping steps out from the shore of the sheltered bays, the oldest highest.','tuber'),{station:1}),
- /* T4's (stations 2 and 4): the pagoda bush and the stack cushion drawn by the floor (60: station 4's tread); the whorl pine a record, no builder yet */
+ /* T4's (stations 2 and 4): the pagoda bush and the stack cushion drawn by the floor (60: station 4's tread); the whorl pine a tree (55: the canyon's cool upper ground) */
  pagodabush:PK('Pagoda bush',K('cool','arid','no',['BWk','BSk','Dsc']),['pagoda','pdisc'],HV('none',[],false,'A grey shrub of stacked flat discs, each a season\'s flush. Fodder. 0.5-1.2 m (station 4).','pasture'),{station:4}),
  stackcushion:PK('Stack cushion',K('cold','arid','no',['Dsc','ET','BWk']),['cushion'],HV('fuel (dried)',[],false,'A cushion that grows in terraced mounds, a step a decade. Winter fodder. 0.2-1 m (station 4).','pasture'),{station:4}),
- whorlpine:PK('Whorl pine',K('cool','semiarid','no',['Dsb','Csb','Dfc']),[],HV('timber, resin',['pine nut'],false,'A conifer with widely spaced level whorls and bare trunk between: the tiers\' silhouette on the skyline. 10-25 m (station 2).','nut'),{station:2}),
+ whorlpine:PK('Whorl pine',K('cool','semiarid','no',['Dsb','Csb','Dfc']),['pinespray'],HV('timber, resin',['pine nut'],false,'A conifer with widely spaced level whorls and bare trunk between: the tiers\' silhouette on the skyline. 10-25 m (station 2).','nut'),{station:2}),
 };
 TIERS.plantOfItem=item=>{for(const k in TIERS.PLANTS)if(TIERS.PLANTS[k].items.indexOf(item)>=0)return TIERS.PLANTS[k];return null;};
 TIERS.FRUIT_KEYS=['palmfruit'];
@@ -67,7 +68,8 @@ TIERS.SPECIES=[
  {key:'shelfoak',name:'Shelf oak',H:[12,20],rb:[.28,.5],crownR:[5,8],tiers:[4,7],bark:PAL.oakBark,leaf:PAL.oakLeaf},
  {key:'steppalm',name:'Step palm',H:[6,14],rb:[.18,.28],crownR:[2.5,3.6],tiers:[3,8],bark:PAL.palmBark,leaf:PAL.palmLeaf},
  {key:'candelabra',name:'Tier candelabra',H:[3,9],rb:[.16,.3],crownR:[1.2,2.4],tiers:[2,5],bark:PAL.cactus,leaf:PAL.cactus},
- {key:'ladderreed',name:'Ladder reed',H:[2,5],rb:[.6,1.1],crownR:[.9,1.5],tiers:[3,7],bark:PAL.reedCane,leaf:PAL.reedLeaf}];
+ {key:'ladderreed',name:'Ladder reed',H:[2,5],rb:[.6,1.1],crownR:[.9,1.5],tiers:[3,7],bark:PAL.reedCane,leaf:PAL.reedLeaf},
+ {key:'whorlpine',name:'Whorl pine',H:[10,25],rb:[.22,.45],crownR:[2.4,4.2],tiers:[5,9],bark:PAL.pineBark,leaf:PAL.pineLeaf}];
 TIERS.SPECIES.forEach((S,i)=>{S.i=i;S.tags=TIERS.PLANTS[S.key].tags;});
 TIERS.byKey={};TIERS.SPECIES.forEach(S=>TIERS.byKey[S.key]=S);
 TIERS.TREES=[];TIERS.COUNTS=[];
@@ -123,8 +125,9 @@ TIERS.G=G;
 // ---------------------------------------------------------------- materials (the slots are materials.json's families: BIO.libSwap)
 const lf=(tex,key,o)=>BIO.leafMat(tex,key,Object.assign({swayW:'(position.y)',swayA:.05,alphaTest:.4},o||{}));
 const M=TIERS.MAT={
- bark:{oak:BIO.barkMat(TX.barkOak),palm:BIO.barkMat(TX.barkPalm),skirt:BIO.barkMat(TX.skirt),cactus:BIO.barkMat(TX.cactus)},
+ bark:{oak:BIO.barkMat(TX.barkOak),palm:BIO.barkMat(TX.barkPalm),skirt:BIO.barkMat(TX.skirt),cactus:BIO.barkMat(TX.cactus),pine:BIO.barkMat(TX.barkOak)},
  oakplate:BIO.leafMat(TX.plate,'oakplate',{aN:true,swayW:'1.0',swayA:.04,backlit:.3}),
+ pinespray:BIO.leafMat(TX.plate,'pinespray',{aN:true,swayW:'1.0',swayA:.05,backlit:.2}),   /* the whorl pine's level needle sprays (card.pine) */
  palmfan:lf(TX.fan,'palmfan',{swayA:.08,backlit:.3}),
  whorl:lf(TX.strap,'whorl',{swayW:'(position.x+position.z)',swayA:.05,alphaTest:.35}),
  reed:lf(TX.tuft,'reed',{swayA:.1}),
@@ -141,13 +144,14 @@ TIERS.LIB=BIO.libSwap('tiers',M);   /* every slot materials.json names takes its
 /* the library's mean brightness of the barks (materials.json tint.mean): a keep-0 bark's colour is divided by it, so the species' colour holds */
 TIERS.LIBMEAN={};
 {const P=n=>(typeof KMAT!=='undefined'&&KMAT.mode==='lib'&&KMAT.packed)?KMAT.packed('tiers',n):null;
- ['bark.oak','bark.palm','bark.skirt','bark.cactus'].forEach(k=>{const L=P(k);if(L&&L.tint&&L.tint.mean>0)TIERS.LIBMEAN[k]=L.tint.mean;});}
+ ['bark.oak','bark.palm','bark.skirt','bark.cactus','bark.pine'].forEach(k=>{const L=P(k);if(L&&L.tint&&L.tint.mean>0)TIERS.LIBMEAN[k]=L.tint.mean;});}
 
 [['oak','Shelf oak boles and tiers (bark.tiered owed: bark.smooth stands in)',[2,4]],['palm','Step palm trunks',[2,3]],['skirt','Step palm collar skirts (the dead crowns kept)',[2,2]],
- ['cactus','Tier candelabra stems and arm rings',[2,3]]].forEach(([k,lab,uv])=>BIO.bucket('bark.'+k,M.bark[k],{label:lab,uvScale:uv}));
+ ['cactus','Tier candelabra stems and arm rings',[2,3]],['pine','Whorl pine boles and whorl branches',[2,4]]].forEach(([k,lab,uv])=>BIO.bucket('bark.'+k,M.bark[k],{label:lab,uvScale:uv}));
 BIO.bucket('far',BIO.barkMat(null),{label:'Far trees (the tiers in silhouette)'});
 
 // ---------------------------------------------------------------- instanced items
+BIO.def('pinespray',BIO.geo.clump(),M.pinespray,{attrs:['aN'],label:'Whorl pine needle sprays (level, on the whorls; card.pine)'});
 BIO.def('oakplate',BIO.geo.clump(),M.oakplate,{attrs:['aN'],label:'Shelf oak tier plates (card.shelfoak owed: card.broadleaf.dry stands in, tinted)'});
 BIO.def('palmfan',G.fan(),M.palmfan,{label:'Step palm fronds'});
 BIO.def('palmfruit',new T3.IcosahedronGeometry(1,1),M.solid,{label:'Step palm fruit (date-like)'});

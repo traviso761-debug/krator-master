@@ -32,12 +32,15 @@ const STATION=(function(){
  const GAT=(x,z)=>KRELIEF.at(GORGE,x,z);
  /* the page's edge: the stair eased back onto the model over the last ~550 m, so the far field (the model's cells) meets the page with no wall
     (the great tread stands ~200 m under the model at the south-west edge, the next step ~200 m over it at the north-east) */
- function ground(x,z){const h=KRELIEF.shape(GORGE,x,z,g1(x,z)),e=smooth(1950,2500,Math.hypot(x,z));return e>0?mix(h,base0(x,z),e):h;}
+ /* the gorge's floor: a dry wadi down it (KRELIEF.wadi: braided cobble bars between the channels, cut banks, no fan: it hangs over the riser) */
+ const gCut=(x,z)=>KRELIEF.shape(GORGE,x,z,g1(x,z));
+ const WADI=KRELIEF.wadi({pts:GL.slice(1),ground:gCut,w:9,bank:1.6,bankW:3,braids:2.5,pools:0,fan:false,seed:64105});
+ function ground(x,z){const h=KRELIEF.shape(WADI,x,z,gCut(x,z)),e=smooth(1950,2500,Math.hypot(x,z));return e>0?mix(h,base0(x,z),e):h;}
  const ATu=(x,z)=>KRELIEF.at(RU,x,z),ATl=(x,z)=>KRELIEF.at(RL,x,z);
  const partK=a=>!a?0:a.part==='face'||a.part==='ravine'||a.part==='buttress'?1:a.part==='rim'?.5:a.part==='bench'?.4:0;
  const faceK=(x,z,sl)=>{const k=Math.max(partK(ATu(x,z)),partK(ATl(x,z)));const G=GAT(x,z),kg=G&&G.part==='riser'?1:0;return Math.max(k,kg)*Math.max(.6,smooth(.2,.45,sl));};
  const talusK=(x,z)=>{let t=0;for(const [W,A] of [[RU,ATu],[RL,ATl]]){const a=A(x,z);if(a&&a.part==='talus')t=Math.max(t,1-smooth(0,1,(a.d-W.run)/80));}
-  const G=GAT(x,z);if(G&&(G.part==='floor'||G.part==='tread'))t=Math.max(t,G.part==='floor'?.9:.5);
+  const G=GAT(x,z);if(G&&(G.part==='floor'||G.part==='tread'))t=Math.max(t,G.part==='floor'?.9:.5);if(KRELIEF.at(WADI,x,z))t=1;
   if(ROCKS.length){const f=KSTACKS.foot(ROCKS,x,z);if(f)t=Math.max(t,smooth(30,4,f.d));}return t;};
  const PAVE=KRELIEF.pavement({h:ground,ground:base0,wadis:[],slope:[.04,.16],seed:64104});
  /* the tread's own band: on the station's tread (between the rims), and how far behind a rim */
@@ -53,7 +56,7 @@ const STATION=(function(){
   tread:treadK,
   strata:TIERS_STRATA({}),
   spine:[[0,0],[-450,-650],[-900,-200],[600,-200],[300,500],[-1000,1000],[-1600,1500],[1100,-900],[1300,400],[-300,-1500],[-2000,700],[-600,1900]]});
- Object.assign(L,{L0,RU,RL,UP,LO,GL,GORGE,GAT,base:base0,flat,sideOf,faceK,talusK,treadK,
+ Object.assign(L,{L0,RU,RL,UP,LO,GL,GORGE,GAT,WADI,base:base0,flat,sideOf,faceK,talusK,treadK,
   /* where the camp and the flocks may go: the tread's open ground, off the gorge and the risers, gentle */
   openK:(x,z)=>{const G=GAT(x,z);if(G)return 0;if(nearLine(GL,x,z).d<60)return 0;return treadK(x,z);}});return L;})();
 // THE BUTTES: the risers' outliers, grey sandstone tables standing off the faces (KSTACKS butte; each foot under the lowest ground round it)
