@@ -1021,7 +1021,12 @@ is on its western edge under the Iziz highlands.
   A khan, the lore's caravanserai, could stand at one of them.
 - **The southern camps** (1117-1208, 945-1114) lie on the caravan line toward the Bowl and the Dasri town (section 9).
 
-**What it reaches:** village pins for the queue, when the owner picks, named in Dasrī; the camps as `core/camp` records; the
-trade model's Nomad Country members.
+**What it reaches:** village pins for the queue, named in Dasrī (the mixed ones in Izani and Dasrī); the camps as `core/camp`
+records; the trade model's Nomad Country and Iziz members.
 
-Not sent: the owner picks.
+**Sent** (the owner, 2026-11-15: "Send all eight"): W1-W8 as village pins to the queue.
+- W1-W3: Nomad Country.
+- W5: Iziz, a Dasri village.
+- W4, W6, W7, W8: Iziz, mixed Izani-Dasri villages.
+
+The camps stay `core/camp` records, not pins.
