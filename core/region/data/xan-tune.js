@@ -220,6 +220,12 @@ T.expedition={id:'exp.godshearth',name:'The Rare Devisers\' expedition camp at G
    March, its terraces two fifths of its grain and the rest from Strongwall */
 T.muskets={wage:12,men:{sxan7r1sln:30,'march.w':10,'march.s':10,'march.e':10},day:240};   /* wage: dinars a man a year (a dinar is 4 g of the Mint's gold) */
 T.tempest={id:'xan.tempest',name:'The House of the Tempest (the Order of the Violet Storm\'s central monastery, on the West Arm)',px:[886,1619],people:600,terraces:.4,km:80};
+/* settlements/beacon/PLAN.md, B4 (the owner, 2026-11-16: the beacon fort "will become the head monastery of the Order of the
+   Beacon"; ~300, the gold Prismarch there, Qiblai's gold house the daughter; the Sultan's watch fort above and the monastery
+   below): the Yellow Monastery's head house stands beside the beacon fort (`fort`, wherever its px is), fed from the capital,
+   its terraces two fifths of its grain. Its monks bear no arms and burn no powder; the lamp's oil stays the fort's
+   (T.lit['march.e']): the Sultan's licence pays for the light, the order's hands keep it */
+T.beacon={id:'xan.beacon',name:'The Order of the Beacon\'s head house (the Yellow Monastery, below the beacon fort over the Rift)',fort:'march.e',people:300,terraces:.4};
 T.tears={escort:.04,houses:[['tears.strongwall','The Golden Tears: their house in the Gold March (the Tears\' court, inside Strongwall)','sxan7r1sln',912,1640,80],['tears.erehwon','The Golden Tears\' factor house, Erehwon','s57bkv9741',841,1518,30]],
  camp:{id:'exp.rift-gold',name:'The Golden Tears\' armed prospecting camp in Lizard country (the Rift floor; approximate)',px:[850,1628],km:110,people:120,kgYr:70,years:30}};   /* kgYr: the gold its ore holds (30 kg of ore a kg) */
 /* THE BORE (the owner, 2026-11-16: "we can leave in the stair to theodiga tunnel", then Theodiga's end "as written",
@@ -340,7 +346,7 @@ T.valley=function(P,o){o=o||{};const K=o.scale==null?50:o.scale,yr=365,win=w=>{c
  mine('smgxtultfq','The gold mines on the lode',911,1665,950,'sxan7r1sln','goldore',T.mine.goldore);
  mine('sjuarjbku0','Opal Valley Mines (the Sultan\'s factor)',1038,1662,850,'slaitwal0001','opal',T.mine.opal);   /* Lāiṭwāl's works village across the lake (L1); its opal ferried to Lāiṭwāl (the owner, 2026-11-16: "Ferry to laitwal", over W1's "opal goes to Strongbow first") */
  /* the forts of the Marches */
- [['march.w','The west watch fort',818,1531],['march.s','The south watch fort',847,1549],['march.e','The beacon fort over the Rift (the refurbished Ancient beacon, kept by the Yellow Monastery)',881,1541]]   /* moved with Erehwon (+35,+1 px), each on dry ground */.forEach(([id,name,px,py])=>{const p=at(px,py);
+ [['march.w','The west watch fort',818,1531],['march.s','The south watch fort',847,1549],['march.e','The beacon fort over the Rift (the refurbished Ancient beacon, kept by the Yellow Monastery)',853,1540]]   /* march.w and march.s moved with Erehwon (+35,+1 px), each on dry ground; march.e on the east shoulder's knoll, the Order of the Beacon's head house below it (the owner, 2026-11-16: the site, then "Restore the knoll" when edit 7's re-run lowered it; settlements/beacon/PLAN.md) */.forEach(([id,name,px,py])=>{const p=at(px,py);
   add({id,name,faction:'xanadu',parent:'s57bkv9741',people:150,state:'kept',x:p.x,z:p.z,eats:eats('fort'),keepDays:30,start:{grain:Math.round(eatYr('fort',150)*.4),salt:300,tea:60,tools:40,arms:20,powder:100},
    works:[{id:id+'.store',kind:'fort',name:'the fort\'s store',crew:10,out:[],rate:0}]});bump('s57bkv9741',eatYr('fort',150));
   R.push({id:'road.'+id,from:'s57bkv9741',to:id,minutes:Math.round(Math.hypot(p.x-E.x,p.z-E.z)/1000/25*1440),cap:20000,want:40,goods:{s57bkv9741:['grain','salt','tea','tools','arms']}});});
@@ -350,6 +356,15 @@ T.valley=function(P,o){o=o||{};const K=o.scale==null?50:o.scale,yr=365,win=w=>{c
   const s=town(Tm.id,Tm.name,Tm.px[0],Tm.px[1],Tm.people,'fort',[{id:'tp.terraces',kind:'terraces',name:'the monks\' terraces on the West Arm',crew:tc,out:['grain'],rate:rate(terr,tc,win('harvest')),season:'harvest'}],
    {parent:'sxan7r1sln',feeder:'sxan7r1sln',keepDays:30,state:'kept'});
   delete s.eats.powder;s.start.arms=30;bump('sxan7r1sln',-terr);}   /* a year of arms in its armoury */
+ /* B4: the Order of the Beacon's head house beside the beacon fort (settlements/beacon/PLAN.md section 5): the fort diet
+    less arms and powder, its terraces two fifths of its grain, the rest from the capital on the fort's road */
+ {const Bc=T.beacon,F=S.find(q=>q.id===Bc.fort),tc=Math.round(Bc.people*.3),terr=eatYr('fort',Bc.people)*Bc.terraces;
+  const s=add({id:Bc.id,name:Bc.name,faction:'xanadu',parent:'s57bkv9741',people:Bc.people,x:F.x,z:F.z,eats:eats('fort'),keepDays:30,state:'kept',
+   start:{grain:Math.round(eatYr('fort',Bc.people)*T.startDays/yr),salt:Math.round(Bc.people*6*.4),tea:Bc.people,tools:Bc.people*.3},
+   works:[{id:Bc.id+'.market',kind:'market',name:'the granary and its stores',crew:10,out:[],rate:0},
+    {id:'bc.terraces',kind:'terraces',name:'the monks\' terraces on the saddle',crew:tc,out:['grain'],rate:rate(terr,tc,win('harvest')),season:'harvest'}]});
+  seats[Bc.id]=s;delete s.eats.powder;delete s.eats.arms;bump('s57bkv9741',eatYr('fort',Bc.people)-terr);
+  R.push({id:'road.er-beacon',from:'s57bkv9741',to:Bc.id,minutes:Math.round(Math.hypot(F.x-E.x,F.z-E.z)/1000/25*1440),cap:20000,want:40,goods:{s57bkv9741:['grain','salt','tea','tools']}});}
  /* ---- THE LAKE TOWNS AND ISLANDS: fish and their trade to the hub by share; grain, salt and tools back by want */
  const lakeTown=(L)=>{const pf=L.pre||'lk.',dk=L.diet||'lake',p=at(L.px,L.py),fishing=L.key!=='weaver'&&L.key!=='pottery'&&L.key!=='quarry'&&L.key!=='boatyard'&&L.key!=='landing',works=[],sh={};
   const crew=crewOf(L.people,400);
