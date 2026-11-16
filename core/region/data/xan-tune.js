@@ -44,14 +44,14 @@ T.netKgHH=y=>T.farm.inCropHa*y*1000*(1-T.farm.seed);
 /* THE PROVINCES (section 2). rural: the province's countryside people (the bulk district holds what the named places do
    not); y: grain t/ha; extra: what the land makes besides grain, kg a year, sent to the seat as a share */
 T.provinces=[
- {id:'p1',name:'Lēk-Shor (the Lake Shore)',seat:'s57bkv9741',rural:70000,y:1.6,px:[806,1525],extra:{fruit:900000,silk:9000}},
+ {id:'p1',name:'Lēk-Shor (the Lake Shore)',seat:'s57bkv9741',rural:70000,y:1.6,px:[841,1526],extra:{fruit:900000,silk:9000}},
  {id:'p2',name:'Bhēl (the Vale)',seat:'s4zvgepuru',rural:75000,y:2.2,px:[870,1530],extra:{cacao:180000,saffron:2200,tea:60000,opium:150000,silk:30000,fruit:600000}},
  {id:'p3',name:'Qāṭarāq (the Cataracts)',seat:'skm4jjo2vl',rural:80000,y:1.9,px:[930,1585],extra:{cacao:260000,timber:4000000,charcoal:600000,honey:30000,dairy:400000,fruit:800000}},
  {id:'p4',name:'Gōlḍ-Mārch (the Gold March)',seat:'sxan7r1sln',rural:10000,y:1.1,px:[912,1652],extra:{copper:240000}},
  {id:'p5',name:'Siqārp (the Scarp)',seat:'sl758m2396',rural:25000,y:1.3,px:[992,1606],extra:{tea:200000,cacao:90000,opium:120000,saffron:600}},
  {id:'p6',name:'Ōpal-Bhālī (Opal Valley)',seat:'sjuarjbku0',rural:4000,y:.9,px:[1036,1668],extra:{}},
- {id:'p7',name:'Nōrth-Shor (the North Shore)',seat:'xan.pher',rural:25000,y:1.5,px:[812,1478],extra:{silk:14000,cacao:60000,honey:12000,fruit:300000}},
- {id:'p8',name:'Mārchiz (the Marches)',seat:'s57bkv9741',rural:5000,y:1.2,px:[790,1540],extra:{}}];
+ {id:'p7',name:'Nōrth-Shor (the North Shore)',seat:'xan.pher',rural:25000,y:1.5,px:[845,1484],extra:{silk:14000,cacao:60000,honey:12000,fruit:300000}},
+ {id:'p8',name:'Mārchiz (the Marches)',seat:'s57bkv9741',rural:5000,y:1.2,px:[825,1541],extra:{}}];
 /* THE LAKE (section 2a): bearing from the lake's centre, the shore cell, people, trade (a work: kg a year), the province it
    belongs to and its hub (Erehwon in the south, Phēr in the north). The lake as the owner re-made it (scale model 5.1 edit 7
    re-run, 5f659c054, 2026-11-16: "a little narrower and ... more toward the center of the valley? settlements can move with
