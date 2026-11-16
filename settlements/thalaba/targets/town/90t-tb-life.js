@@ -24,7 +24,9 @@ const TB_LIFE=(function(){const L={MAX:900,R:650,on:false,err:null,last:null,act
   catch(e){L.err=e;window._life={on:false,people:N,err:String((e&&e.message)||e)};reportErr('people: core/simulation: '+((e&&e.stack)||e));}return L.on;}
  const cand=[];let tick=0;
  function frame(){if(!start())return;const C=clk(),m=SIM.minute();
-  if(m<L.last||m-L.last>120){SIM.jump();L.last=m;}else{let n=0;while(L.last<m&&n++<30){L.last++;SIM.step();}if(L.last<m)L.last=m;}
+  /* the expedition season: the hands' roles for the day (TBL.applySeason), re-read when the day turns or the clock jumps */
+  const jump=m<L.last||m-L.last>120;if(jump||Math.floor(m/1440)!==Math.floor(L.last/1440))TBL.applySeason(m);
+  if(jump){SIM.jump();L.last=m;}else{let n=0;while(L.last<m&&n++<30){L.last++;SIM.step();}if(L.last<m)L.last=m;}
   const t=C.t,P=camera.position,R2=L.R*L.R;cand.length=0;
   for(let i=0;i<N;i++){const a=L.actors[i];if(!a)continue;const q=SIM.pose(a,t,{cheap:true});if(q.hidden)continue;const dx=q.x-P.x,dz=q.z-P.z,d2=dx*dx+dz*dz;if(d2<R2)cand.push([d2,i]);}
   cand.sort((u,v)=>u[0]-v[0]);const n=Math.min(L.MAX,cand.length);
@@ -36,7 +38,8 @@ const TB_LIFE=(function(){const L={MAX:900,R:650,on:false,err:null,last:null,act
   // the census, once a second (the probe reads it)
   if((tick++%60)===0){const by={};let moving=0,indoors=0,stuck=0;for(const a of L.actors){if(!a)continue;const ak=a.activity||'none';by[ak]=(by[ak]==null?0:by[ak])+1;
     if(a.task){if(t<a.task.arrive)moving++;else if(a.task.indoor)indoors++;}else stuck++;}
-   window._life={on:true,actors:L.actors.filter(Boolean).length,people:N,places:TBL.nPlaces,nodes:TBL.nodes,edges:TBL.edges,problems:TBL.problems.length,
+   window._life={on:true,actors:L.actors.filter(Boolean).length,people:N,phase:TBL.phase==null?null:TBL.phase,
+    exp:{hands:TBL.EXP.length,devisers:TBL.EXP.filter(p=>p.exp==='devisers').length,dalab:TBL.EXP.filter(p=>p.exp==='dalab').length},places:TBL.nPlaces,nodes:TBL.nodes,edges:TBL.edges,problems:TBL.problems.length,
     firstProblems:TBL.problems.slice(0,4),ms:TBL.ms,shown:n,moving,indoors,stuck,by};}}
  FRAME_HOOKS.push(()=>{try{frame();}catch(e){if(!L.err){L.err=e;reportErr('people: '+((e&&e.stack)||e));}}});
  window._life={on:false,people:N};

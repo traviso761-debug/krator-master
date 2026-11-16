@@ -38,6 +38,15 @@ const TBL=(function(){const O={inited:false,problems:[],CELL:12};
  // the two halves of the diggers and of the road's men: half out while half is home
  for(const p of P)if(p.role==='digger'||p.role==='muleteer')p.role+='.'+(U(p.hh,p.k,2)<.5?0:1);
  for(const p of P)if(p.role==='artisan'||p.role==='household')p.role+='.'+(U(p.hh,p.k,3)<.5?0:1);
+ /* THE EXPEDITION SEASON (PLAN.md section 2: "about 150 away each summer"; the tune's camp, T.expedition, 150, and the Dalab
+    party, T.dalab.party, 40): the Devisers' own 30 of their house's 40 and 120 hired men, most of them Thalaba's; the
+    mission's party, 6 genepriests and 34 hired men. The hired men are the town's farmers and households ranked by a hash of
+    (seed, household, person) (the first 154). Each keeps its own role out of season (TBL.EXP; its role switched with the
+    calendar's windows: O.applySeason) */
+ {const pool=P.filter(p=>p.hh>=0&&(p.role==='farmer'||/^household/.test(p.role))).sort((a,b)=>U(a.hh,a.k,5)-U(b.hh,b.k,5)||(a.id<b.id?-1:1));
+  pool.slice(0,120).forEach(p=>{p.exp='devisers';});pool.slice(120,154).forEach(p=>{p.exp='dalab';});
+  P.filter(p=>p.role==='deviser').slice(0,30).forEach(p=>{p.exp='devisers';});P.filter(p=>p.role==='genepriest').slice(0,6).forEach(p=>{p.exp='dalab';});}
+ O.EXP=P.filter(p=>p.exp);
  O.PEOPLE=P;
  // ---------------------------------------------------------------- 2. the roles and their schedules (SIM.sched spans: [hour, ACT])
  const S={
@@ -75,7 +84,25 @@ const TBL=(function(){const O={inited:false,problems:[],CELL:12};
  for(const v of[0,1]){
   O.ROLES.push(R('digger.'+v,'town',null,{AWAY:{ids:['away:salphar']}},{scheds:{go:S.digGo,dig:S.dig,back:S.digBack,home:S.home},week:week(['go','dig','dig','dig','back','home','home'],v?3:0)}));
   O.ROLES.push(R('muleteer.'+v,'town',null,{AWAY:{ids:['away:pher']},YARD:{kinds:['yard']}},{scheds:{yard:S.yard,go:S.roadGo,road:S.road,back:S.roadBack},week:week(['yard','yard','go','road','back','yard','yard'],v?3:0)}));}
- const ACTS=['SLEEP','EAT','REST','AWAY','COUNT','HEAL','FARM','WORK','SELL','MARKET','SOCIALIZE','WATER','PRAY','OUTFIT','TEND','WATCH','YARD'];
+ /* the expedition's roles, one per window of the year and per house (the Devisers' camp at Godshearth, the Dalab party at the
+    Grove): the MUSTER at Briḍj in spring, AWAY up the gorge all summer, and home in autumn to UNLOAD at the Devisers' yard or
+    the mission's stores, where the Sultan's clerks count out his tenth and his fifth of the rarities (the clerks' COUNT) */
+ const XS={muster:[[0,'SLEEP'],[5,'EAT'],[6,'MUSTER'],[19,'EAT'],[20,'SLEEP']],away:[[0,'AWAY']],
+  count:[[0,'SLEEP'],[6,'EAT'],[7,'UNLOAD'],[13,'SOCIALIZE'],[18,'EAT'],[20,'SLEEP']]};
+ for(const [h,org,store] of[['exp','devisers','C:devisers-yard'],['dexp','mission','C:dalab_granaries']]){
+  O.ROLES.push(R(h+'.muster',org,XS.muster,{MUSTER:{ids:['C:muster']}}));
+  O.ROLES.push(R(h+'.away',org,XS.away,{AWAY:{ids:['away:godshearth']}}));
+  O.ROLES.push(R(h+'.count',org,XS.count,{UNLOAD:{ids:[store]}}));}
+ /* the year (core/simulation 77-sim-6-season.js on core/clock's: KCLOCK.YEAR starts the sim's day 0 at year day 259, mid-
+    spring, its summer centred on day 350): the muster the week from year day 290, the expedition from 297 to 45 (the summer
+    and the autumn's start, about 113 days), the count the week from 45. *Proposed* (PLAN.md section 2: "they muster here each
+    spring") */
+ O.WINDOWS={muster:[290,297],expedition:[297,45],count:[45,52]};
+ O.phaseAt=function(m){const S=SIM.season(m);if(!S)return null;const w=S.windows||{};return w.muster?'muster':w.expedition?'away':w.count?'count':null;};
+ /* every hand's role for the window minute m falls in (its own role out of season); returns how many changed */
+ O.applySeason=function(m){const ph=O.phaseAt(m);let n=0;O.phase=ph;
+  for(const p of O.EXP){const a=SIM.get('actor',p.id);if(!a)continue;const r=ph?(p.exp==='dalab'?'dexp.':'exp.')+ph:p.role;if(a.role!==r){a.role=r;n++;}}return n;};
+ const ACTS=['SLEEP','EAT','REST','AWAY','COUNT','HEAL','FARM','WORK','SELL','MARKET','SOCIALIZE','WATER','PRAY','OUTFIT','TEND','WATCH','YARD','MUSTER','UNLOAD'];
  const INDOOR={SLEEP:1,EAT:1,REST:1,AWAY:1,COUNT:1,HEAL:1};
  O.world=()=>({activities:ACTS.map(id=>({id,indoor:!!INDOOR[id]})),
   factions:[{id:'xanadu',name:'The Xanadu Sultanate'},{id:'devisers',name:'The Rare Devisers'},{id:'dalab',name:'The Dalab'}],
@@ -116,11 +143,11 @@ const TBL=(function(){const O={inited:false,problems:[],CELL:12};
    if(p.kind==='devisers'){add(id,nm,'devisers',x,z,{SLEEP:TB_HOUSE.devisers,EAT:TB_HOUSE.devisers,REST:TB_HOUSE.devisers,COUNT:40},{indoor:true});
     // the outfitting yard inside its gate: the yard's own spots (the house's frame: the yard is z -4 .. 16 before the hall)
     const ys=[];for(let i=0;i<30;i++){const lx=-14+(i%6)*5.6,lz=-2+Math.floor(i/6)*3.6,c=Math.cos(ry),s=Math.sin(ry);ys.push([p.x+lx*c+lz*s,p.z-lx*s+lz*c,gY(p.x+lx*c+lz*s,p.z-lx*s+lz*c)]);}
-    add('C:devisers-yard','The Rare Devisers\' outfitting yard','devisers-yard',x,z,{OUTFIT:30},{spots:ys,wander:1.4});continue;}
+    add('C:devisers-yard','The Rare Devisers\' outfitting yard','devisers-yard',x,z,{OUTFIT:30,UNLOAD:160},{spots:ys,wander:1.4});continue;}
    if(p.kind==='horns'){if(p.key==='xa_warehouse')add('C:horns-store','The Two Horns\' warehouse','horns',x,z,{WORK:12},{spots:spotsAt(x,z,ry,12,10),wander:1.2});
     else add(id,nm,'horns',x,z,{SLEEP:TB_HOUSE.horns,EAT:TB_HOUSE.horns,REST:TB_HOUSE.horns,WORK:8},{indoor:{SLEEP:true,EAT:true,REST:true},spots:spotsAt(x,z,ry,8,8)});continue;}
    if(p.kind==='dalab'){if(p.key==='dalab_healers')add(id,nm,'healers',x,z,{SLEEP:12,EAT:12,REST:12,HEAL:20,PRAY:12},{indoor:{SLEEP:true,EAT:true,REST:true,HEAL:true},spots:spotsAt(x,z,ry,12,10)});
-    else if(p.key==='dalab_granaries')add(id,nm,'seed-stores',x,z,{TEND:16},{spots:spotsAt(x,z,ry,16,12),wander:1.4});
+    else if(p.key==='dalab_granaries')add(id,nm,'seed-stores',x,z,{TEND:16,UNLOAD:40},{spots:spotsAt(x,z,ry,16,12),wander:1.4});
     else add(id,nm,'mission',x,z,{SLEEP:18,EAT:18,REST:18,WORK:10},{indoor:{SLEEP:true,EAT:true,REST:true},spots:spotsAt(x,z,ry,10,10)});continue;}
    if(p.kind==='warden'){add(id,nm,'watch',x,z,{SLEEP:6,EAT:6,REST:6,WATCH:3},{indoor:{SLEEP:true,EAT:true,REST:true},spots:spotsAt(x,z,ry,3,4),wander:2});continue;}
    const k=KIND[p.kind];if(!k)continue;
@@ -143,6 +170,11 @@ const TBL=(function(){const O={inited:false,problems:[],CELL:12};
   const ex=TB_EXPED[TB_EXPED.length-1],ph=TB_WAYS.find(w=>w.id==='pher').pts[0];
   add('away:salphar','Salphar\'s diggings (up the gorge)','away',ex[0],ex[1],{AWAY:400},{indoor:true});
   add('away:pher','The road down to Phēr','away',ph[0],ph[1],{AWAY:300},{indoor:true});
+  // the expedition's summer, up the gorge past Salphar to Godshearth (the road's end on the page; the camp is the tune's)
+  add('away:godshearth','Up the gorge to Godshearth (the expedition)','away',ex[0],ex[1],{AWAY:400},{indoor:true});
+  // the muster ground at Briḍj: the open ground west of the road below the watch house, where the expeditions gather in spring
+  {const z=-9950,x=tbLineX(TB_EXPED,z)-70,sp=[];for(let i=0;i<20;i++)for(let j=0;j<10;j++){const sx=x-38+i*4,sz=z-18+j*4;sp.push([sx,sz,gY(sx,sz)]);}
+   add('C:muster','The muster ground at Briḍj','muster',x,z,{MUSTER:200},{spots:sp,wander:1.6,r:40});}
   return out;};
  // ---------------------------------------------------------------- the declaration (once; the host's clock)
  O.init=function(clock){if(O.inited)return O;O.inited=true;const t0=Date.now();
@@ -153,6 +185,7 @@ const TBL=(function(){const O={inited:false,problems:[],CELL:12};
   O.loaded=SIM.load(O.world());
   for(const r of places)SIM.place(r);O.nPlaces=places.length;
   for(const p of O.PEOPLE)SIM.actor({id:p.id,role:p.role,home:p.home});
+  if(SIM.calendar){SIM.calendar({windows:O.WINDOWS});O.applySeason(SIM.minute());}else O.problems.push('core/simulation 77-sim-6-season.js is not on the page: no expedition season');
   SIM.REF={layer:'pedestrian',x:0,z:0};
   O.problems=O.problems.concat(SIM.check());O.ms=Date.now()-t0;O.nodes=G.nodes.length;O.edges=G.edges.length;return O;};
  return O;})();

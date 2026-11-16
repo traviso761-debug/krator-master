@@ -51,9 +51,13 @@
 - [ ] **The people are a first cut** (T5, 2026-11-16: `targets/town/89zu-tb-people.js`, `90t-tb-life.js`). Every resident
   (2,591: the town's households, the Devisers' 40, the Two Horns' 20, the mission's 30, the warden's 6) is a core/simulation
   actor on lazy routes over the plan's ways; they farm the terraces and the Bēnch, keep the market, the yard, the counting room,
-  the temple, the springs; the diggers walk out to Salphar and the road's men down to Phēr, half at a time. Still owed: the
-  **expedition season** (about 150 away each summer, the muster at Briḍj in spring, the Sultan's count at their return: SIM
-  has no season here yet); the **bodies** (placeholder robes and heads, not core/charactermodels' people); the **court
+  the temple, the springs; the diggers walk out to Salphar and the road's men down to Phēr, half at a time. **The expedition season** (2026-11-16):
+  the Devisers' 150 (30 of their house, 120 hired townsmen) and the Dalab party's 40 (6 genepriests, 34 hired) muster at
+  Briḍj the week from year day 290 (spring), are away up the gorge from 297 to 45, and unload at the Devisers' yard and the
+  mission's stores for the Sultan's count the week from 45, their own roles the rest of the year (core/simulation's calendar,
+  77-sim-6-season.js, on core/clock's year; the windows are *proposed*). The page's clock holds day 0 (mid-spring, before the
+  muster) unless it runs; the muster ground is a place, not drawn (no corrals or blessing shrine at the bridge yet), and the
+  fields are farmed all year (no sowing or harvest windows). Still owed: the **bodies** (placeholder robes and heads, not core/charactermodels' people); the **court
   houses' doors** join their nearest street in a straight line (the courts have no lanes), so a walker may cross a yard or a
   roof; jobs are drawn over the whole town, not by household (a farmer's house may hold no farmer); the fields more than 600 m
   from a way are left to the ring's farmsteads. No needs, money or economy on the page: the town's books are the region's

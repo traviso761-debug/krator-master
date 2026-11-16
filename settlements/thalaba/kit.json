@@ -46,7 +46,8 @@
      "77-sim-3-actors.js",
      "77-sim-4-nav.js",
      "77-sim-5-motion.js",
-     "77-sim-5r-routes.js"
+     "77-sim-5r-routes.js",
+     "77-sim-6-season.js"
     ]
    ]
   ]
@@ -81,6 +82,7 @@
   "77-sim-5-motion.js",
   "77-sim-5r-routes.js",
   "89zu-tb-people.js",
-  "90t-tb-life.js"
+  "90t-tb-life.js",
+  "77-sim-6-season.js"
  ]
 }

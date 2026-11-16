@@ -14,6 +14,8 @@ invariants and views are Xanadu's, and settlements/xanadu/verify.py runs it (on 
   people-walk        the town's people on core/simulation (89zu-tb-people.js, 90t-tb-life.js): every resident an actor, the
                      world declared without a problem (every reference known, every door on the walk graph), fewer than 2 %
                      of them left without a task, some drawn
+  expedition-season  the expedition's hands (the Devisers' 150, the Dalab party's 40) and the year's windows: the muster at
+                     Briḍj in spring, away up the gorge all summer, the count in autumn, at home the rest of the year
 
     KRATOR_GL=gpu python3 verify.py dist/thalaba.html --assert --views "Overview,The market square"
 """
@@ -39,7 +41,11 @@ if(typeof TB_PLACE!=="undefined"){const Q=window._thalaba||{},K=Q.byKind||{};   
   detail:(Wt.flows||0)+' flow, '+(Wt.stills||0)+' still; the leat '+L.length+' points'+(falls?', falling all its length':', NOT falling all its length')});
  const Lf=window._life||{};R.push({name:'people-walk',ok:!!(Lf.on&&Lf.actors===Lf.people&&Lf.actors>2000&&Lf.problems===0&&Lf.stuck<.02*Lf.actors&&Lf.shown>0),
   detail:Lf.on?(Lf.actors+' actors of '+Lf.people+', '+Lf.places+' places, '+Lf.nodes+' walk nodes; '+Lf.problems+' problems'+(Lf.problems?' ('+JSON.stringify(Lf.firstProblems)+')':'')+
-   ', '+Lf.stuck+' without a task, '+Lf.moving+' walking, '+Lf.indoors+' indoors, '+Lf.shown+' drawn; declared in '+Lf.ms+' ms'):('the simulation did not start'+(Lf.err?': '+Lf.err:''))});}
+   ', '+Lf.stuck+' without a task, '+Lf.moving+' walking, '+Lf.indoors+' indoors, '+Lf.shown+' drawn; declared in '+Lf.ms+' ms'):('the simulation did not start'+(Lf.err?': '+Lf.err:''))});
+ const E=Lf.exp||{},ph=d=>(typeof TBL!=='undefined'&&TBL.phaseAt&&typeof SIM!=='undefined'&&SIM.CAL)?TBL.phaseAt(d*1440+720):'no calendar',
+  XP={spring:ph(0),muster:ph(34),summer:ph(61),count:ph(154),winter:ph(250)};
+ R.push({name:'expedition-season',ok:!!(Lf.on&&E.devisers===150&&E.dalab===40&&XP.spring===null&&XP.muster==='muster'&&XP.summer==='away'&&XP.count==='count'&&XP.winter===null),
+  detail:'the hands: the Devisers\' '+E.devisers+' (150), the Dalab party '+E.dalab+' (40); the windows by sim day: '+JSON.stringify(XP)+'; now '+Lf.phase});}
 return R;}"""
 xv.ASSERT_JS = xv.ASSERT_JS.rstrip()[:-len('return R;}')] + TOWN_JS
 assert xv.ASSERT_JS.endswith('return R;}'), 'settlements/xanadu/verify.py ASSERT_JS no longer ends with return R;}'
