@@ -41,6 +41,10 @@ The second region of sites cut off the scale model into the open world (`openwor
 - **Bridges** (core/world 42b and 88b, since 2026-11-16): every road and link the region lays is bridged where it crosses a
   named river, in the Xanadu kit's stone (`SITE_SPEC.bridges`): Thalaba's north road over the Solṭ Siṭrīm, a Qiblai village
   road and the Qiblai-Longsong link.
+- **The expedition road** (`SITE_SPEC.ways`, core/world 48s, since 2026-11-16; the owner: "Grow the cut up the gorge"): Thalaba's
+  road goes on from Salphar up Godshearth's gorge toward the Spillway, the gorge's station 4 (`xanaduspill`, px 845,1422), 35.8 km
+  at 8 % with one more bridge, and is laid like the villages' roads. It ends at the cut's edge (px 842.8,1437.7, `short`) until
+  the region's recut takes a corridor up the gorge to the station.
   - **Lāiṭwāl** (`slaitwal0001`, px 1028,1653, added 2026-11-16: `settlements/lightwall`, its step L5): the Light Wall on the
     north shore of Opal Valley's great lake, under the north boundary fault. Its id is `model: false` in `SITES.json` until
     the scale model lists it (the pin is queued with the scale-model edits). Three farming villages on the shore's bench,

@@ -62,4 +62,4 @@ Thalaba's road north crosses the Solṭ Siṭrīm by a 120 m arched bridge at th
 
 ## What is not here yet (`KNOWN_ISSUES.md`)
 
-The stamp of Salphar's resource record, the expedition road beyond the region's edge (T6), the expedition season and the people's own bodies (core/charactermodels), the Godot export and the gallery.
+The stamp of Salphar's resource record, the expedition road's last 32 km (T6: until the region's recut), the expedition season and the people's own bodies (core/charactermodels), the Godot export and the gallery.

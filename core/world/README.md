@@ -24,7 +24,7 @@ page that reads it came out byte-identical after the move.
 | `85-world-flora.js` | [web] | the flora tile by tile, seeded by cell with `KRAND.hash` (the same tile in any order) |
 | `86-world-floor.js` | [web] | the kits' floor patches under the zones |
 | `87-world-places.js`, `88-world-towns.js` | [web] | the "Go to" list and the scale model's settlement markers |
-| `48s-world-sites.js`, `88s-world-sites.js` | [G data], [web] | `KSITES`: a region's sites planned (camps, hamlets, roads, links and their stops); drawn |
+| `48s-world-sites.js`, `88s-world-sites.js` | [G data], [web] | `KSITES`: a region's sites planned (camps, hamlets, roads, links and their stops, ways to a point); drawn |
 | `42b-world-bridges.js`, `88b-world-bridges.js` | [G data], [draw] | `BRIDGES`: where a laid road crosses a named river, a span of deck the ground is not shaped under, so the river runs on (a BRIDGE record: slab, arch, a row of arches or a viaduct, by its length and height; its piers; its builders' culture); drawn in stone, tagged, checked (`_bridges.checks`) |
 | `42k-world-caverns.js`, `88k-world-caverns.js` | [G data], [web] | `WTUBES`: a region's lava tubes (`SITE_SPEC.tubes`) planned as records under the ground and drawn with core/terrain's `KCAVERN` near the camera, the ground opened only at their portals and skylights; the walker (90's G) goes in and along them. Below, "Caverns" |
 | `49r-world-resources.js` | [G data] | `WRES`: the region's resources. The scale model's geology (`kits/resources/data/geology.json`, cropped to the region by `world_data.geology_crop`, read through `KRES`) and farmland from the world's fields: `census`, `markers` (the richest mining, farmland and unique spots), `layers`, `assess(x, z, reach)` |
@@ -58,7 +58,7 @@ through `WORLD.clearHook`. `openworld/PLAN-SITES.md` section 3 has the plan.
 
 **Sites** (`48s` plans, `bake_sites.py` bakes, `88s` draws): a region's `SITE_SPEC` names camps (core/camp, the Beast
 Riders' `BR_CAMP`), hamlets (core/hamlet: a row's `kit` picks the drawing, `88s` `VK`: `xanadu` through `XAK`, `iziz`
-through the isle demo's `IZV` bundle and its instancer) and roads, joined or not, and `links` between its towns (`keep`: routed in hops inside the polygon, off rivers' beds; `stops`: an inn every
+through the isle demo's `IZV` bundle and its instancer) and roads, joined or not, and `links` between its towns, and `ways` (opt-in, 2026-11-16: a road from a town, or one of its villages, to a point, routed as a kept link and ending at the cut's edge, `short`, while the point lies outside it; Thalaba's expedition road toward Godshearth's Spillway) (`keep`: routed in hops inside the polygon, off rivers' beds; `stops`: an inn every
 `every` m of road and a rest stop between, drawn as one-building villages; a stop with no ground is a `gap`). The bake
 reads the kits' declared boxes from their source (`ASSET`, `XA.def`, `VERN.def`); a new village kit adds its records
 there and an entry in `VK`.

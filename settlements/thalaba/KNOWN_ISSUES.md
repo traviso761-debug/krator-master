@@ -20,11 +20,11 @@
 - [x] ~~**The page's far land still has the old lake.**~~ Done 2026-11-16: claude/openworld-sites-24defd merged into this
   branch (112c0ce32) brought the re-made lake (scale model 5.1 edit 7 re-run, 5f659c054: Phēr at 843,1491), and the page was
   rebuilt on it (`gen/69u-tb-ground.js`); the region `xanadu-oidong-highrift` came already cut on it.
-- [ ] **The expedition road ends at the region's edge** (T6). The region's ground (the Xanadu Sultanate's polygon) reaches up the
-  gorge to about px y 1438, 32 km short of Godshearth station 4, the Spillway (`xanaduspill`, 845,1422), and core/world's site
-  spec lays roads only to its sites (a village's lane, a camp's gate, a link between two sites): neither a road to a free point
-  nor a corridor to a station page. Asked of the open-world session (2026-11-16): a corridor (or the Spillway as a site) through
-  the scale model's queue, and a road kind to a point in `core/world/48s-world-sites.js`.
+- [ ] **The expedition road ends at the region's edge** (T6, 2026-11-16; the owner: "Grow the cut up the gorge"). The road is
+  laid in the region (`openworld/xanadu-oidong-highrift`, `SITE_SPEC.ways`, core/world 48s's new opt-in road to a point): on from
+  Salphar up Godshearth's gorge toward the Spillway (`xanaduspill`, px 845,1422), 35.8 km at 8 % with a bridge, ending at the
+  cut's edge (px 842.8,1437.7, 32 km short). The open-world session folds a corridor up the gorge into the region's recut
+  (after the scale model's Twins sculpt and Gemini's reshaping); a re-bake then carries the road to the station.
 - [ ] **The people are estimates.** `TB_PEOPLE` in `targets/town/89zt-tb-site.js` gives each building a household; the town
   holds about 2,500 against the plan's 2,400 (`verify.py` reports it as a budget).
 - [ ] **The springs are the plan's.** The spring line at the riser's foot is the owner's choice and the plan's reasoning (the
