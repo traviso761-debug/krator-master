@@ -17,11 +17,14 @@
   `--lodes` pass (logged in `kits/resources/KNOWN_ISSUES.md`). Until then a page that wants the node places it as an owner node,
   `KRES.nodesIn(tile, {owner: [{id: 'lode:thalaba-sulfur', kind: 'sulfur', grade: 'medium', x, z}]})`. Salphar's `sulfur`
   focus needs no node, so nothing waits on it.
-- [ ] **The page's far land still has the old lake.** The owner's Phēr road (up the Qol valley, about 105 km) was traced on the
-  re-made lake's heights (scale model 5.1 edit 7 re-run, 5f659c054 on claude/gemini-trade-reconcile, Phēr at 843,1491), but
-  this branch's `tools/scale-model/model/data` is the old model, so `gen/69u-tb-ground.js` (and the region
-  `xanadu-oidong-highrift`) draw the lake where it was. Rebuild both once the re-run reaches this branch; the town and the bench
-  are outside the edit's box.
+- [x] ~~**The page's far land still has the old lake.**~~ Done 2026-11-16: claude/openworld-sites-24defd merged into this
+  branch (112c0ce32) brought the re-made lake (scale model 5.1 edit 7 re-run, 5f659c054: Phēr at 843,1491), and the page was
+  rebuilt on it (`gen/69u-tb-ground.js`); the region `xanadu-oidong-highrift` came already cut on it.
+- [ ] **The expedition road ends at the region's edge** (T6). The region's ground (the Xanadu Sultanate's polygon) reaches up the
+  gorge to about px y 1438, 32 km short of Godshearth station 4, the Spillway (`xanaduspill`, 845,1422), and core/world's site
+  spec lays roads only to its sites (a village's lane, a camp's gate, a link between two sites): neither a road to a free point
+  nor a corridor to a station page. Asked of the open-world session (2026-11-16): a corridor (or the Spillway as a site) through
+  the scale model's queue, and a road kind to a point in `core/world/48s-world-sites.js`.
 - [ ] **The people are estimates.** `TB_PEOPLE` in `targets/town/89zt-tb-site.js` gives each building a household; the town
   holds about 2,500 against the plan's 2,400 (`verify.py` reports it as a budget).
 - [ ] **The springs are the plan's.** The spring line at the riser's foot is the owner's choice and the plan's reasoning (the
