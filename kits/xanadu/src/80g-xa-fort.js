@@ -1,0 +1,219 @@
+// ================================================================= XANADU — the Xanadui fort, drawn (settlements/strongwall/PLAN.md section 5, F2-F3)
+// Draws XFORT's plan (80f-xa-fort-data.js): the curtains (a rubble talus, a battered body, the walk, pointed merlons on
+// the outer edge), the towers (square and battered, or drums), the gates (an iwan between two gate towers, the main one
+// with its gilt pavilion), the water gate, the keep (white storeys, the red chapel with its gilt roof: the only gold
+// but the gate's, the owner, 2026-11-16), the barracks, magazine, granary, stables, cistern, guns, the beacon, and at
+// Strongwall the assay court, the strongroom, the barbican and the Golden Tears' court. Four defs, each in three
+// states (o.v 0 kept, 1 damaged, 2 ruined: XFORT.damage, hashed): the watch fort (the Marches'), Strongwall (the march
+// fort), the gate works, the watch post. A damaged or ruined fort's rubble is a core/terrain KRUBBLE heap (decoration to
+// core/ruins); its fallen pieces are seated on their lowest points (core/ruins' rule); targets/sheet/91u-xasheet-ruins.js
+// watches every one with KRUINS. Seeds 32000-32399.
+const XF_STATES=['kept','damaged','ruined'];
+const XF_SEED={watch:32011,march:32111,gate:32211,post:32311};
+const XF_PLANS={watch:XFORT.plan({size:'watch'}),march:XFORT.plan({size:'march'}),gate:XFORT.plan({size:'gate'})};
+const XF_MAIN={watch:'gate',march:'gate.qiblai',gate:'gate'};   /* the gate with the gilt pavilion (the owner, 2026-11-16: "Gold on gate pavilion and chapel") */
+function xfCols(dress){const C={stone:xC(xPick(XPAL.stone)),wash:xC(xPick(XPAL.wash)),rubble:xC(xPick(XPAL.rubble)),earth:xC(xPick(XPAL.earth)),red:xC(xPick(XPAL.redwall)),
+  maroon:xC(xPick(XPAL.maroon)),tile:xC(xPick([0x8a4a32,0x7a4030,0x96543a])),tim:xC(xPick(XPAL.dark)),iron:xC(0x2e2a26),bronze:xC(0x7a5a32),dress};
+ C.body=dress==='royal'?C.stone:dress==='earth'?C.earth:C.wash;C.bodyItem=dress==='royal'?'xWallD':dress==='earth'?'xWallE':'xWallW';C.batKind=dress==='royal'?'dressed':dress==='earth'?'earth':'wash';
+ C.scorch=c=>c.clone().multiplyScalar(.42);return C;}
+const xfQ=ry=>qEuler(0,ry,0);
+/* a box lying on the ground on its lowest points: centre height from its rotated extents, sunk a little (core/ruins' rule) */
+function xfSeat(item,x,z,ry,tx,rz,s,c,sink){const q=vQ(ry,tx,rz),m=new THREE.Matrix4().makeRotationFromQuaternion(q).elements;
+ const hy=(Math.abs(m[1])*s[0]+Math.abs(m[5])*s[1]+Math.abs(m[9])*s[2])/2;kput(item,[x,hy-(sink==null?.12:sink),z],q,s,c);}
+/* a KRUBBLE heap drawn into the site's group: decoration to core/ruins (its blocks rest on its bed, the bed on the ground) */
+function xfHeap(H,c){if(typeof KRUBBLE==='undefined')return;const G=VERN.cur&&VERN.cur.G;if(!G)return;
+ const h=KRUBBLE.heap(Object.assign({cover:2.2,blocks:Math.round(6+H.rx),size:[.6,1.8]},H)),o=KRUBBLE.mesh(h,{cell:2}),g=new THREE.BufferGeometry(),uv=new Float32Array(o.uv.length);
+ for(let i=0;i<uv.length;i++)uv[i]=o.uv[i]/3;g.setAttribute('position',new THREE.BufferAttribute(o.pos,3));g.setAttribute('uv',new THREE.BufferAttribute(uv,2));g.setIndex(new THREE.BufferAttribute(new Uint32Array(o.idx),1));g.computeVertexNormals();
+ const M=new THREE.Mesh(g,MAT.xRubble);M.userData.decor=true;M.name='rubble '+H.id;if(c&&M.material.color){M.material=M.material.clone();M.material.color.copy(c);}G.add(M);}
+// ---------------------------------------------------------------- a stretch of curtain (u0..u1 of c), h high; o.merlons, o.band
+function xfCurtain(c,u0,u1,h,C,o){o=o||{};const a=[c.a[0]+(c.b[0]-c.a[0])*u0,c.a[1]+(c.b[1]-c.a[1])*u0],b=[c.a[0]+(c.b[0]-c.a[0])*u1,c.a[1]+(c.b[1]-c.a[1])*u1];
+ const dx=b[0]-a[0],dz=b[1]-a[1],L=Math.hypot(dx,dz);if(L<.3||h<.3)return;const ry=Math.atan2(dx,dz)-Math.PI/2,m=[(a[0]+b[0])/2,(a[1]+b[1])/2],Q=xfQ(ry),base=Math.min(1.4,h);
+ kput('xWallS',[m[0],0,m[1]],Q,[L,base,c.t+.9],C.rubble);   /* the rubble talus the curtain stands on */
+ if(h>base)kput(C.bodyItem,[m[0],base,m[1]],Q,[L,h-base,c.t],o.scorch?C.scorch(C.body):C.body);
+ if(!o.merlons)return;const tw=c.t*.82,on=(k)=>[m[0]+c.out[0]*k,m[1]+c.out[1]*k];
+ vB('vStone',m[0],h-.12,m[1],L,.14,tw,ry,C.stone);   /* the walk */
+ const ip=on(-(tw/2-.2));vB('vStone',ip[0],h,ip[1],L,.5,.35,ry,C.stone);   /* the inner lip */
+ const n=Math.max(1,Math.round(L/1.5));for(let i=0;i<=n;i++){const t=-L/2+.3+(L-.6)*i/n,p=loc(m[0],m[1],t,0,ry),q=[p[0]+c.out[0]*(tw/2-.28),p[1]+c.out[1]*(tw/2-.28)];
+  vB(C.dress==='earth'?'xEarthB':'vStone',q[0],h,q[1],.62,1.25,.5,ry,C.body);kput(C.dress==='royal'?'xArcS':'xArcW',[q[0],h+1.25,q[1]],Q,[.62,.4,.5],C.body);}
+ const op=on(tw/2-.05);vB('vStone',op[0],h-.5,op[1],L,.5,.4,ry,C.stone);   /* the string course under the merlons */
+ if(o.band&&L>3){const bp=on(tw/2+.06);vB('xBandB',bp[0],h-1.3,bp[1],L-.4,.6,.12,ry,C.maroon);}}
+/* a flight of steps up the inner face of a curtain, along it, to the walk; walked (core/walk): the flight a strip from the
+   ground to its head, a landing from its head onto the walk */
+function xfStair(c,u,h,C,tag){const L=Math.hypot(c.b[0]-c.a[0],c.b[1]-c.a[1]),dx=(c.b[0]-c.a[0])/L,dz=(c.b[1]-c.a[1])/L,run=Math.max(2,Math.round(h/.17))*.34;
+ const u0=Math.max(.02,Math.min(u,1-run/L-.02)),off=c.t/2+.75,p=[c.a[0]+dx*L*u0-c.out[0]*off,c.a[1]+dz*L*u0-c.out[1]*off];
+ xnFlight(p[0],0,p[1],Math.atan2(-dx,-dz),1.4,h-.1,'vStone',C.stone);
+ if(typeof KWALK==='undefined'||!tag)return null;const W=(x,y,z)=>{const v=IZDOOR._w(x,y,z);return[v[0],v[2],v[1]];},hd=[p[0]+dx*run,p[1]+dz*run],wk=[hd[0]+c.out[0]*off,hd[1]+c.out[1]*off];
+ KWALK.strip({a:W(p[0],0,p[1]),b:W(hd[0],h,hd[1]),w:1.3,name:'stair',tag});KWALK.strip({a:W(hd[0],h,hd[1]),b:W(wk[0],h,wk[1]),w:1.3,name:'stair head',tag});
+ return IZDOOR._w(p[0]+dx*.4,.2,p[1]+dz*.4);}   /* the foot, [x, y, z] for KWALK.reach (its strips take [x, z, y]) */
+/* a stretch of wall walk on core/walk: a strip along the curtain's centre line at its walk, between the lip and the merlons */
+function xfWalk(c,u0,u1,h,tag){if(typeof KWALK==='undefined')return;const W=(x,y,z)=>{const v=IZDOOR._w(x,y,z);return[v[0],v[2],v[1]];},P=t=>[c.a[0]+(c.b[0]-c.a[0])*t,c.a[1]+(c.b[1]-c.a[1])*t];
+ const a=P(u0),b=P(u1);KWALK.strip({a:W(a[0],h,a[1]),b:W(b[0],h,b[1]),w:Math.max(.9,c.t*.82-.9),name:'wall walk',tag});}
+// ---------------------------------------------------------------- a tower: keep the fraction of its height; fallen: its top lies at its foot
+function xfTower(t,C,o,id){o=o||{};const f=o.keep==null?1:o.keep,h=t.h*f,x=t.ctr[0],z=t.ctr[1],col=o.scorch?C.scorch(C.body):C.body;
+ if(t.form==='drum'){const r=t.r;kput(C.dress==='earth'?'xDrumE':'xDrumS',[x,0,z],null,[r,h,r],col);
+  if(f>=1){kput('xDrumS',[x,h,z],null,[r*1.08,.8,r*1.08],C.stone);for(let k=0;k<14;k++){const a=k/14*TAU;vB('vStone',x+Math.sin(a)*r*.98,h+.8,z+Math.cos(a)*r*.98,.62,1.2,.5,a,C.stone);}
+   for(let k=0;k<4;k++){const a=k/4*TAU+.4;xnRoom(x+Math.sin(a)*(r+.02),h*.55,z+Math.cos(a)*(r+.02),.28,1.2,.1,a);}}}
+ else{const w=t.w,k=xnWall(x,0,z,w,h,w,0,col,C.batKind),tw=w*k;
+  if(f>=1){vB('vStone',x,h-.15,z,tw+.3,.18,tw+.3,0,C.stone);xnCrenel(x,h,z,tw+.2,tw+.2,0,1.25,C.body,{item:'vStone',pointed:true});
+   if(C.dress==='royal'&&tw>5)xnBand(x,h-1.4,z,tw,tw,0,.6,C.maroon);
+   for(const a of[0,Math.PI/2,Math.PI,-Math.PI/2]){const p=loc(x,z,0,tw/2*1.04+.02,a);xnRoom(p[0],h*.6,p[1],.3,1.2,.1,a);}}}
+ if(o.fallen&&f<1){/* the top storey's wreck: blocks seated outside its foot, a heap under them */
+  const out=t.at[0]===x&&t.at[1]===z?[0,1]:[x-t.at[0],z-t.at[1]],ol=Math.max(1e-6,Math.hypot(out[0],out[1])),R=XFORT.half(t),s=KRAND.stream(KRAND.child((o.seed==null?1:o.seed),id));
+  const fx=x+out[0]/ol*(R+3.5),fz=z+out[1]/ol*(R+3.5);xfHeap({id:'tower.'+id,x:fx,z:fz,rx:R+1.5,rz:R*.9+1,ry:Math.atan2(out[1],out[0]),h:1.6,seed:KRAND.child((o.seed==null?1:o.seed),id+'.heap')},C.rubble);
+  for(let i=0;i<5;i++){const a=s.range(-.9,.9)+Math.atan2(out[0]/ol,out[1]/ol),d=R+1.5+s.range(0,4);
+   xfSeat('vStone',x+Math.sin(a)*d,z+Math.cos(a)*d,s.range(0,TAU),s.range(-.5,.5),s.range(-.4,.4),[s.range(1,2.4),s.range(.5,1),s.range(.7,1.6)],C.body);}}}
+// ---------------------------------------------------------------- a gate: the gatehouse over the curtain, its iwan and leaves; burnt, gone
+function xfGate(g,c,C,state,main){const ry=g.ry,x=g.at[0],z=g.at[1],gw=g.w+3.2,gd=(c?c.t:3)+3,gh=(c?c.h:7)+3;
+ if(state==='gone'){for(const s of[-1,1]){const p=loc(x,z,s*(g.w/2+.8),0,ry);xnWall(p[0],0,p[1],1.6,gh*.35,gd,ry,C.body,C.batKind);}return;}
+ const col=state==='burnt'?C.scorch(C.wash):C.wash;xnWall(x,0,z,gw,gh,gd,ry,col,'wash');
+ const P=(u,v)=>loc(x,z,u,v,ry),front=P(0,gd/2),back=P(0,-gd/2);
+ kput('xArchS',[front[0],0,front[1]],xfQ(ry),[g.w+1.4,g.w*1.45+1,.45],C.stone);kput('xArchS',[back[0],0,back[1]],xfQ(ry+Math.PI),[g.w+1.4,g.w*1.45+1,.45],C.stone);
+ if(state==='burnt'){for(const s of[1,-1]){const q=P(0,s*(gd/2+.04));xnRoom(q[0],0,q[1],g.w,g.w*1.4,.06,s>0?ry:ry+Math.PI);}}   /* the leaves burnt away: the passage's dim back */
+ else{for(const s of[1,-1]){const q=P(0,s*(gd/2+.02));xnDoorway(q[0],0,q[1],s>0?ry:ry+Math.PI,g.w,g.w*1.4,{c:C.tim});}
+  for(let k=0;k<4;k++){const q=P(0,gd/2+.12);vB('vIron',q[0],.8+k*g.w*.3,q[1],g.w*.96,.08,.04,ry,C.iron);}}
+ const top=xnFlatRoof(x,gh,z,gw,gd,ry,col,{band:C.dress==='royal'?C.maroon:null,parapet:false});xnCrenel(x,top,z,gw+.1,gd+.1,ry,1.2,col,{pointed:true});
+ const rp=P(0,gd/2+.02);xnRoundel(rp[0],gh-1.1,rp[1],ry,1.3);
+ if(main&&state!=='burnt')xnGiltRoof(x,top,z,Math.min(gw-2,6),Math.min(gd-2,4),ry,{frame:1.6,over:.8});}
+/* the water gate: arches through the curtain with iron grilles, cutwaters before them (Kruk Gill) */
+function xfWaterGate(g,c,C,gone){const ry=g.ry,x=g.at[0],z=g.at[1],P=(u,v)=>loc(x,z,u,v,ry),h=gone?c.h*.4:c.h;
+ xnWall(x,0,z,g.w,h,c.t+1.2,ry,C.body,C.batKind);if(gone)return;
+ for(const u of[-g.w/3,0,g.w/3]){for(const s of[1,-1]){const q=P(u,s*((c.t+1.2)/2+.03)),r=s>0?ry:ry+Math.PI;
+   kput('xArchS',[q[0],0,q[1]],xfQ(r),[2.8,5.4,.4],C.stone);xnRoom(q[0],0,q[1],2.2,4.6,.06,r);
+   if(s>0)for(let k=-2;k<=2;k++){const b=P(u+k*.42,(c.t+1.2)/2+.14);vB('vIron',b[0],0,b[1],.07,4.4,.07,ry,C.iron);}}
+  const cw=P(u,(c.t+1.2)/2+1.1);vB('vStone',cw[0],0,cw[1],.9,1.6,1.8,ry,C.stone);}}
+// ---------------------------------------------------------------- the keep: white storeys, the red chapel with the gilt roof, the beacon
+function xfKeep(b,C,o){o=o||{};const x=b.at[0],z=b.at[1],w=b.w,d=b.d,lit=xLit()?'lit':'glass',trim=xC(xPick(XPAL.trim));
+ const n=b.h>=25?5:3,hs=[];for(let i=0;i<n;i++)hs.push(i===0?4.8:4.3);const keepN=o.storeys==null?n:Math.min(n,o.storeys);
+ xnWall(x,0,z,w+1.2,1.2,d+1.2,0,C.stone,'dressed');
+ const S=xnStack(x,1.2,z,w,d,0,hs.slice(0,keepN),C.wash,'wash');
+ let yy=1.2;for(let k=0;k<keepN;k++){const f=Math.pow(.96,k),nx=Math.max(2,Math.round(w*f/3.2)),nz=Math.max(2,Math.round(d*f/3.2));
+  for(let i=0;i<nx;i++)for(const s of[-1,1]){const u=-w*f/2+w*f*(i+.5)/nx;if(s>0&&k===0&&Math.abs(u)<1.8)continue;xnTibWin(x+u,yy+hs[k]*.38,z+s*(d*f/2-.06),s>0?0:Math.PI,.8,1.1,o.ruined?'open':lit,trim,{noVal:true});}
+  for(let j=0;j<nz;j++)for(const s of[-1,1]){const v=-d*f/2+d*f*(j+.5)/nz;xnTibWin(x+s*(w*f/2-.06),yy+hs[k]*.38,z+v,s*Math.PI/2,.8,1.1,o.ruined?'open':lit,trim,{noVal:true});}
+  yy+=hs[k];}
+ if(o.ruined){xnRoom(x,1.2,z+d/2+.02,1.8,2.6,.06,0);for(let i=0;i<6;i++){const s=KRAND.stream(KRAND.child((o.seed==null?1:o.seed),'keep.top.'+i));vB('xRubB',x+s.range(-w*.35,w*.35),S.y,z+s.range(-d*.35,d*.35),s.range(1,2.4),s.range(.4,1.1),s.range(1,2.2),s.range(0,TAU),C.rubble);}return;}
+ xnDoorway(x,1.2,z+d/2+.02,0,1.8,2.6,{c:C.tim});xnFlight(x,0,z+d/2+.6+Math.round(1.2/.17)*.34,0,2.4,1.2,'vStone',C.stone);
+ const roof=xnFlatRoof(x,S.y,z,S.w,S.d,0,C.wash,{band:C.maroon,parapet:.6});
+ /* the chapel (lhakhang): a red block on the roof, the twig band, the gilt roof */
+ const rw=Math.min(S.w*.5,10),rd=Math.min(S.d*.5,8),ry0=S.y+.3,R=xnStack(x,ry0,z-S.d*.12,rw,rd,0,[3.6],C.red,'wash');
+ for(const s of[-1,1])xnTibWin(x,ry0+1.4,z-S.d*.12+s*(rd/2-.06),s>0?0:Math.PI,.85,1.2,lit,xC(XPAL.saffron),{valC:xC(XPAL.saffron)});
+ const rt=xnFlatRoof(x,ry0+3.6,z-S.d*.12,R.w,R.d,0,C.red,{band:true,eave:true,eaveC:C.tim,parapet:.4});
+ xnGiltRoof(x,rt-.4,z-S.d*.12,R.w*.62,R.d*.62,0,{frame:1.2,over:.8});
+ /* the beacon: an iron fire basket on the roof's front corner */
+ if(b.beacon){const bx=x+S.w/2-1.2,bz=z+S.d/2-1.2;vB('vIron',bx,roof,bz,.16,2.2,.16,0,C.iron);kput('xDrumE',[bx,roof+2.2,bz],null,[.55,.6,.55],C.iron);vB('xRubB',bx,roof+2.5,bz,.7,.3,.7,0,xC(0x3a2e24));}}
+// ---------------------------------------------------------------- a range (barracks, quarters, the Tears' house): two storeys, a colonnade on its ward face
+function xfRange(b,C,o){o=o||{};const x=b.at[0],z=b.at[1],alongZ=b.d>b.w,L=alongZ?b.d:b.w,D=alongZ?b.w:b.d,ry=alongZ?Math.PI/2:0,lit=xLit()?'lit':'glass',trim=xC(XPAL.red);
+ const face=alongZ?(x>0?-1:1):(z>0?-1:1),wash=b.kind==='merchant-house'?xC(xPick(XPAL.ochre)):C.wash;   /* the colonnade faces the ward's middle */
+ if(o.ruined){xfLowWalls(b,C,o);return;}
+ xnWall(x,0,z,b.w+.4,.6,b.d+.4,0,C.stone,'dressed');const top=o.burnt?C.scorch(wash):wash;
+ const S=xnStack(x,.6,z,L,D,ry,[3.3,3.1],wash,'wash');
+ const P=(u,v)=>loc(x,z,u,v,ry),nd=Math.max(1,Math.round(L/9)),nw=Math.max(2,Math.round(L/3.4));
+ for(let i=0;i<nd;i++){const u=-L/2+L*(i+.5)/nd,q=P(u,face*(D/2+.02));xnDoorway(q[0],.6,q[1],ry+(face>0?0:Math.PI),1.2,2.2,{c:C.tim});}
+ for(let i=0;i<nw;i++)for(const s of[-1,1]){const u=-L/2+L*(i+.5)/nw;if(s===face&&Math.abs(((u+L/2)/(L/nd))%1-.5)<.22)continue;const f=s===face?1:1;
+  const q=P(u,s*(D/2*.97-.05));xnTibWin(q[0],4.4,q[1],ry+(s>0?0:Math.PI),.8,1.05,lit,trim,{noVal:true});}
+ /* the colonnade: painted posts, a beam and a tiled lean-to before the ward face */
+ const cq=P(0,face*(D/2+1.4));for(let i=0;i<=Math.round(L/3.2);i++){const p=P(-L/2+.4+(L-.8)*i/Math.round(L/3.2),face*(D/2+2.5));xnCol(p[0],.6,p[1],2.7,.15,ry,trim);}
+ vB('vWood',cq[0],3.3,cq[1],(alongZ?2.8:L),.2,(alongZ?L:2.8),0,C.tim);vB('xTilesB',cq[0],3.5,cq[1],(alongZ?3.2:L+.3),.16,(alongZ?L+.3:3.2),0,C.tile);
+ if(o.burnt){vB('xRubB',x,S.y,z,S.w*.98,.3,S.d*.98,ry,xC(0x2e2620));for(let i=0;i<5;i++){const p=P(-L/2+L*(i+.5)/5,0);vB('vWood',p[0],S.y+.3,p[1],.25,1.6,.25,ry+.3*i,xC(0x241c16));}}
+ else xnFlatRoof(x,S.y,z,S.w,S.d,ry,top,{band:C.maroon,parapet:.5});}
+/* a ruined building: its walls to a third of their height, a heap within */
+function xfLowWalls(b,C,o){const x=b.at[0],z=b.at[1],s=KRAND.stream(KRAND.child((o.seed==null?1:o.seed),'walls.'+b.id)),t=.7;
+ for(const e of[[0,b.d/2,b.w,t],[0,-b.d/2,b.w,t],[b.w/2,0,t,b.d],[-b.w/2,0,t,b.d]]){const hh=Math.max(.5,(b.h==null?4:b.h)*s.range(.15,.45));vB('xRubB',x+e[0],0,z+e[1],e[2],hh,e[3],0,C.rubble);}
+ if(b.w*b.d>40)xfHeap({id:'bld.'+b.id,x,z,rx:Math.max(1.5,b.w*.32),rz:Math.max(1.5,b.d*.32),ry:0,h:Math.min(2.2,(b.h==null?4:b.h)*.25),seed:KRAND.child((o.seed==null?1:o.seed),'heap.'+b.id)},C.rubble);}
+// ---------------------------------------------------------------- the small buildings
+function xfSmall(b,C,o){o=o||{};const x=b.at[0],z=b.at[1],w=b.w,d=b.d,h=b.h;if(o.ruined&&b.kind!=='cistern'&&b.kind!=='muster'){xfLowWalls(b,C,o);return;}
+ const front=z>0?-1:1;
+ switch(b.kind){
+  case 'magazine':{xnWall(x,0,z,w,h,d,0,C.stone,'dressed');vB('xEarthB',x,h,z,w*.9,.8,d*.9,0,C.earth);xnDoorway(x,0,z+front*(d/2*.96+.03),front>0?0:Math.PI,1.1,2,{c:xC(0x8a5a32)});break;}
+  case 'granary':case 'strongroom':{xnWall(x,0,z,w,.8,d,0,C.stone,'dressed');const S=xnStack(x,.8,z,w*.96,d*.96,0,[h-.8],b.kind==='strongroom'?C.stone:C.wash,b.kind==='strongroom'?'dressed':'wash');
+   xnFlatRoof(x,S.y,z,S.w,S.d,0,C.wash,{parapet:.5,band:b.kind==='strongroom'?C.maroon:null});
+   if(b.kind==='granary')for(let i=0;i<3;i++)xnRoom(x-w*.3+w*.3*i,h*.6,z+front*(S.d/2+.02),.3,.6,.06,front>0?0:Math.PI);
+   else xnDoorway(x,.8,z+front*(S.d/2+.02),front>0?0:Math.PI,1.2,2.1,{c:C.iron});break;}
+  case 'assay-furnace':case 'assay-weigh':case 'smithy':case 'wheel-house':{const red=b.kind==='wheel-house',S=xnStack(x,0,z,w,d,0,[h],red?C.red:C.wash,'wash');
+   xnFlatRoof(x,S.y,z,S.w,S.d,0,red?C.red:C.wash,{band:C.maroon,parapet:.5,eave:red,eaveC:C.tim});
+   xnDoorway(x,0,z+front*(S.d/2*1.02+.02),front>0?0:Math.PI,1.8,2.6,{c:C.tim});
+   for(const s of[-1,1])xnTibWin(x+s*w*.3,h*.45,z+front*(S.d/2*1.02),front>0?0:Math.PI,.8,1.1,xLit()?'lit':'glass',xC(XPAL.trim),{noVal:true});
+   if(b.chimney||b.kind==='smithy'){const cx=x+w/2-1.4;vB('vStone',cx,S.y,z,1.5,b.chimney?7:3.5,1.5,0,C.stone);vB('vDarkB',cx,S.y+(b.chimney?7:3.5),z,1,.04,1,0);}
+   break;}
+  case 'stables':case 'ore-shed':{const alongZ=d>w,L=alongZ?d:w,D=alongZ?w:d,ry=alongZ?Math.PI/2:0,P=(u,v)=>loc(x,z,u,v,ry),sx=alongZ?(x>0?-1:1):(z>0?-1:1);
+   if(b.kind==='stables'){const q=P(0,-sx*(D/2-.4));vB('xRubB',q[0],0,q[1],alongZ?.8:L,h,alongZ?L:.8,0,C.rubble);}
+   for(let i=0;i<=Math.round(L/3.5);i++)for(const v of b.kind==='stables'?[sx*(D/2-.3)]:[-D/2+.3,D/2-.3]){const p=P(-L/2+.3+(L-.6)*i/Math.round(L/3.5),v);vPst('vPost',p[0],0,p[1],.12,h-.4,C.tim);}
+   vnShedRoof(x,h-.4,z,alongZ?D:L,alongZ?L:D,.8,b.kind==='stables'?(alongZ?(sx>0?-Math.PI/2:Math.PI/2):(sx>0?Math.PI:0)):0,'xTilesB',C.tile,.4);
+   if(b.kind==='ore-shed')for(let i=0;i<3;i++){const p=P(-L/3+L/3*i,0);vB('xRubB',p[0],0,p[1],2.6,1,2.2,i*.5,xC(0x6a5a48));}
+   break;}
+  case 'cistern':{vPst('vPostS',x,0,z,w*.4,.9,C.stone);vB('vDarkB',x,.9,z,w*.5,.03,w*.5,0);vB('vWood',x,1.8,z,w*.6,.12,.12,0,C.tim);for(const s of[-1,1])vB('vWood',x+s*w*.3,.9,z,.12,1,.12,0,C.tim);break;}
+  case 'muster':{xnPave(x,z,w,d,0,C.stone,3);if(!o.ruined)for(const s of[-1,1])xnXGSpears(x+s*(w/2-1.5),z,Math.PI/2,6);break;}
+  default:xfRange(b,C,o);}}
+// ---------------------------------------------------------------- a gun: a bronze piece on its carriage, laid out of the wall
+function xfGun(x,y,z,ry,C){vB('vStone',x,y,z,3,.25,3,ry,C.stone);vB('vWood',x,y+.25,z,1,.5,1.7,ry,C.tim);
+ for(const s of[-1,1]){const w=loc(x,z,s*.6,0,ry);kput('xDrumE',[w[0],y+.25+.45,w[1]],qEuler(0,ry,Math.PI/2),[.45,.12,.45],C.tim);}
+ const m=loc(x,z,0,.3,ry);kput('xColG',[m[0],y+1,m[1]],qEuler(0,ry,0).multiply(qEuler(Math.PI/2,0,0)),[.2,2.4,.2],C.bronze);}
+// ---------------------------------------------------------------- the whole fort, from its plan, in its state
+function xfDraw(size,G,o){const P=XF_PLANS[size],V=xV(o),st=o.state||XF_STATES[V]||'kept',seed=o.seed==null?XF_SEED[size]+V:o.seed;reseed(seed);
+ const C=xfCols(size==='watch'?'march':'royal'),Dm=XFORT.damage(P,st,seed),gated={};P.gates.forEach(g=>{gated[g.curtain]=(gated[g.curtain]||[]).concat([g]);});
+ const nm=VERN.defs[o._key].name;vnReg(nm,0,0,Math.max(P.w,P.d)/2,size==='march'?34:20,{part:'enclosure'});
+ /* the curtains: whole, breached, or in stubs; a standing fort's walks and stairs on core/walk (a ruined one has none) */
+ const tag='fort:'+o._key+'/'+V,feet=[];let walks=0;
+ P.curtains.forEach(c=>{const L=Math.hypot(c.b[0]-c.a[0],c.b[1]-c.a[1]),mid=[(c.a[0]+c.b[0])/2,(c.a[1]+c.b[1])/2];vnReg(nm+' — curtain',mid[0],mid[1],L/2,c.h+1.3,{part:'wall'});
+  if(Dm.stubs[c.id]){Dm.stubs[c.id].forEach(s=>xfCurtain(c,s.u0,s.u1,s.h,C,{}));return;}
+  const br=Dm.breaches.filter(b=>b.curtain===c.id),cuts=[0];br.forEach(b=>cuts.push(b.u0,b.u1));cuts.push(1);
+  for(let i=0;i<cuts.length;i+=2){xfCurtain(c,cuts[i],cuts[i+1],c.h,C,{merlons:true,band:C.dress==='royal'});xfWalk(c,cuts[i],cuts[i+1],c.h,tag);walks++;}
+  br.forEach(b=>xfCurtain(c,b.u0,b.u1,1.2,C,{}));   /* the breach's foot: the talus and a course of the body */
+  P.stairs.filter(s=>s.curtain===c.id&&!br.some(b=>s.u>b.u0-.15&&s.u<b.u1+.15)).forEach(s=>{const f=xfStair(c,s.u,c.h,C,tag);if(f)feet.push(f);});});
+ /* the walk audit's record (core/walk): the stairs' feet, this fort's tag, its lot in the world */
+ if(typeof KWALK!=='undefined'&&walks){const W=(x,y,z)=>IZDOOR._w(x,y,z),a=W(-P.w/2-6,0,-P.d/2-6),b=W(P.w/2+6,0,P.d/2+6);
+  (window._xaForts=window._xaForts||[]).push({key:o._key,v:V,state:st,tag,feet,walks,box:[Math.min(a[0],b[0]),Math.max(a[0],b[0]),Math.min(a[2],b[2]),Math.max(a[2],b[2])]});}
+ Dm.heaps.forEach(H=>xfHeap(H,C.rubble));
+ /* the towers */
+ P.towers.forEach(t=>{const T=Dm.towers[t.id]||{};vnReg(nm+' — tower',t.ctr[0],t.ctr[1],XFORT.half(t)+.5,t.h*(T.keep==null?1:T.keep)+2,{part:'tower'});xfTower(t,C,Object.assign({seed},T),t.id);});
+ /* the gates */
+ P.gates.forEach(g=>{const c=P.curtains.find(q=>q.id===g.curtain)||P.curtains.find(q=>q.ward==='works');vnReg(nm+' — '+(g.kind==='water'?'water gate':'gate'),g.at[0],g.at[1],g.w/2+2,(c?c.h:7)+4,{part:'gate'});
+  if(g.kind==='water')xfWaterGate(g,c,C,Dm.gates[g.id]==='gone');else xfGate(g,c,C,Dm.gates[g.id]||'kept',g.id===XF_MAIN[size]);});
+ /* the barbican before the Qiblai Gate (Strongwall): three low walls, the outer opening on its west side */
+ if(P.barbican){const b=P.barbican,x0=b.at[0]-b.w/2,x1=b.at[0]+b.w/2,z0=b.at[1]-b.d/2,z1=b.at[1]+b.d/2,S={curtH:6,curtT:2,walk:1.4};
+  const wall=(id,a,c2)=>({id,a,b:c2,h:S.curtH,t:S.curtT,out:[0,0]});
+  const ws=[Object.assign(wall('barb.f',[x0,z1],[x1,z1]),{out:[0,1]}),Object.assign(wall('barb.e',[x1,z1],[x1,z0]),{out:[1,0]}),Object.assign(wall('barb.w1',[x0,z0],[x0,z0+3]),{out:[-1,0]}),Object.assign(wall('barb.w2',[x0,z1-3],[x0,z1]),{out:[-1,0]})];
+  const ruined=st==='ruined';ws.forEach(c=>xfCurtain(c,0,1,ruined?c.h*.35:c.h,C,{merlons:!ruined}));vnReg(nm+' — barbican',b.at[0],b.at[1],b.w/2,S.curtH+1.3,{part:'wall'});
+  if(!ruined)kput('xArchS',[x0-1.05,0,b.at[1]],xfQ(-Math.PI/2),[5.4,6.2,.45],C.stone);}
+ /* the buildings */
+ P.buildings.forEach(b=>{if(b.kind!=='muster')vnReg(nm+' — '+b.kind.replace(/-/g,' '),b.at[0],b.at[1],Math.max(b.w,b.d)/2,(b.h==null?1:b.h)+(b.kind==='keep'?8:1),{part:b.kind});
+  const ruined=st==='ruined',burnt=Dm.roofs[b.id]==='burnt';
+  if(b.kind==='keep')xfKeep(b,C,{storeys:Dm.keep&&Dm.keep.storeys,ruined,seed});
+  else if(b.kind==='barracks'||b.kind==='married-quarters'||b.kind==='merchant-house')xfRange(b,C,{ruined,burnt,seed});
+  else xfSmall(b,C,{ruined,seed});});
+ /* the Golden Tears' court: its own low wall on the two sides inside the ward, its gate, its tower */
+ if(P.court){const K=P.court,p=K.poly,ruined=st==='ruined',wh=ruined?K.wallH*.4:K.wallH;   /* poly: front-left, front-right, back-right, back-left */
+  const segs=[[p[3],p[2]],[p[3],[K.gateAt[0],K.gateAt[1]-2.2]],[[K.gateAt[0],K.gateAt[1]+2.2],p[0]]];
+  segs.forEach(sg=>{const dx=sg[1][0]-sg[0][0],dz=sg[1][1]-sg[0][1],L=Math.hypot(dx,dz),m=[(sg[0][0]+sg[1][0])/2,(sg[0][1]+sg[1][1])/2];vB('xRubB',m[0],0,m[1],Math.abs(dx)>Math.abs(dz)?L:K.wallT,wh,Math.abs(dx)>Math.abs(dz)?K.wallT:L,0,C.rubble);
+   if(!ruined)vB('xWashB',m[0],wh,m[1],(Math.abs(dx)>Math.abs(dz)?L:K.wallT)+.1,.25,(Math.abs(dx)>Math.abs(dz)?K.wallT:L)+.1,0,xC(xPick(XPAL.ochre)));});
+  const T={id:K.id+'.tower',form:'square',w:K.tower.w,h:K.tower.h,at:K.tower.at,ctr:K.tower.at};xfTower(T,xfCols('march'),Object.assign({seed},Dm.towers[T.id]||(ruined?{keep:.45,fallen:true}:{})),T.id);
+  vnReg(nm+' — the Golden Tears\' court',(p[0][0]+p[1][0])/2,(p[0][1]+p[3][1])/2,Math.abs(p[1][0]-p[0][0])/2,K.tower.h,{part:'court'});
+  if(!ruined)xnDoorway(K.gateAt[0]-K.wallT/2-.02,0,K.gateAt[1],-Math.PI/2,3,3.2,{c:C.tim});}
+ /* the guns */
+ if(st!=='ruined')P.guns.forEach(g=>{if(g.curtain){const c=P.curtains.find(q=>q.id===g.curtain);if(Dm.breaches.some(b=>b.curtain===c.id&&g.u>b.u0-.05&&g.u<b.u1+.05))return;
+   const p=[c.a[0]+(c.b[0]-c.a[0])*g.u-c.out[0]*.3,c.a[1]+(c.b[1]-c.a[1])*g.u-c.out[1]*.3];xfGun(p[0],c.h,p[1],Math.atan2(c.out[0],c.out[1]),C);}
+  else{const gt=P.gates.find(q=>q.id===g.gate),c=P.curtains.find(q=>q.id===gt.curtain);if(Dm.gates[gt.id]==='burnt')return;
+   const gh=(c?c.h:7)+3+.3,p=loc(gt.at[0],gt.at[1],gt.w/2+.4,-.3,gt.ry);xfGun(p[0],gh,p[1],gt.ry,C);}});}
+// ---------------------------------------------------------------- the watch post: a square tower, its fire basket, a fuel store, a hut
+function xfPost(G,o){const V=xV(o),st=XF_STATES[V]||'kept',seed=XF_SEED.post+V;reseed(seed);const W=XFORT.post(),C=xfCols('march'),T=W.tower;
+ vnReg('Watch post',0,0,W.w/2,T.h+3,{part:'tower'});
+ const tw={id:'post',form:'square',w:T.w,h:T.h,at:[T.at[0],T.at[1]+T.w],ctr:T.at};
+ const keep=st==='kept'?1:st==='damaged'?.65:.38;xfTower(tw,C,{keep,fallen:keep<1,seed},'post');
+ if(st==='kept'){xnDoorway(T.at[0],0,T.at[1]+T.w/2*.93+.03,0,1,2,{c:C.tim});const k=xnBatterK(T.w,T.h,T.w);
+  const y=T.h+.15;vB('vIron',T.at[0],y,T.at[1],.14,W.basket.h,.14,0,C.iron);kput('xDrumE',[T.at[0],y+W.basket.h,T.at[1]],null,[.6,.6,.6],C.iron);vB('xRubB',T.at[0],y+W.basket.h+.3,T.at[1],.8,.3,.8,0,xC(0x3a2e24));}
+ for(const piece of[W.store,W.hut]){const b={id:piece===W.store?'store':'hut',kind:'hut',at:piece.at,w:piece.w,d:piece.d,h:piece.h};
+  if(st==='ruined'){xfLowWalls(b,C,{seed});continue;}
+  const S=xnStack(b.at[0],0,b.at[1],b.w,b.d,0,[b.h],C.earth,'earth');vnShedRoof(b.at[0],S.y,b.at[1],b.w+.3,b.d+.3,.4,0,'vThatchB',xC(xPick(VPAL.thatch)),.3);
+  if(piece===W.hut)xnDoorway(b.at[0],0,b.at[1]+S.d/2+.03,0,.9,1.9,{c:C.tim});
+  else for(let i=0;i<3;i++)vB('vWood',b.at[0]-1+i,0,b.at[1]+b.d/2+.5,.3,.9,.3,0,C.tim);}}
+/* the walk audit (core/walk's KWALK.reach): from every standing fort's stair feet, over its own floors, every wall walk and stair
+   reached; a walk cut off by a breach must have a stair of its own. -> [{key, v, state, floors, reached, unreached: [names]}] */
+function xfReach(Wk,forts){Wk=Wk||(typeof KWALK!=='undefined'?KWALK:null);if(!Wk)return null;   /* Wk, forts: another walk and its forts (the negative's) */
+ return(forts||window._xaForts||[]).map(F=>{const R=Wk.reach(F.feet,{box:F.box,cell:.5}),mine=f=>String(f.tag||'')===F.tag,re=R.reached.filter(mine),un=R.unreached.filter(mine);
+  return{key:F.key,v:F.v,state:F.state,floors:re.length+un.length,reached:re.length,unreached:un.map(f=>f.name),capped:!!R.capped};});}
+const XTAG_FORT=(more)=>({type:['military'].concat(more||[]),wealth:'civic',lit:false});
+const xfDef=(key,size,name,more)=>{const P=XF_PLANS[size];XA.def({key,name,family:'Forts',tags:XTAG_FORT(more),xfort:size,w:P.w+12,d:P.d+12,h:size==='march'?40:size==='gate'?20:30,fw:P.w,fd:P.d,nv:3,
+ build:(G,o)=>xfDraw(size,G,Object.assign({},o,{_key:key}))});};
+xfDef('xa_fort_watch','watch','Watch fort (the Marches\')',['civic']);
+xfDef('xa_fort_march','march','Strongwall (the march fort)',['civic']);
+xfDef('xa_fort_gate','gate','Gate works',['infrastructure']);
+XA.def({key:'xa_fort_post',name:'Watch post (the watch line\'s)',family:'Forts',tags:XTAG_FORT(['infrastructure']),xfort:'post',w:XFORT.post().w+6,d:XFORT.post().d+6,h:12,fw:XFORT.post().w,fd:XFORT.post().d,nv:3,build:xfPost});

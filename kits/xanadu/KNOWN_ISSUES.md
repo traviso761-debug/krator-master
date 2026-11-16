@@ -70,3 +70,21 @@ What reaches over, by kind:
 
 `xa_lighthouse` throws in `XAK` (`FRAME_HOOKS`, the lamp's turn hook, is a page global the sheet and Erewhon carry): the test
 skips it (`BUILD_FAILS`); measured on the page it is unchecked.
+
+## The Xanadui fort (2026-11-16, `src/80f`-`80g`; `settlements/strongwall/PLAN.md` section 5)
+
+- **No interiors yet** (its step F4 in part): the keep, the barracks, the assay court and the Tears' house are solid, every door
+  locked, and `kits/interiors/sets/xanadu.js` has no items for the four fort defs. No page loads the forts with interiors (the kit
+  sheet has none; Xanadu's `?interiors=1` page does not place them), so items written now could not be tested. They go in when
+  Strongwall or the House of the Tempest is placed on a page that takes interiors.
+- **The wall walks run through the towers and gatehouses** (core/walk strips at the curtain's walk height, end to end): the towers
+  have no doors or stairs of their own and their tops are not walk floors.
+- **A breach's ends are cut square** and a damaged gate's leaves simply go (the passage's dim back shows): no ragged masonry or
+  charred leaf yet. The burnt walls take the wash darkened by its colour until `wall.limewash.scorched` is delivered
+  (`core/materials/PROMPTS-NEEDED.md` section 53, with `wall.rubble.limewash` and `wood.gate.studded`).
+- **The monastery size** (`size:'monastery'`, the House of the Tempest round the Qiblai kit's violet monastery) is not built: its
+  blueprint is another session's (`settlements/strongwall/tempest/`), and the Qiblai kit is not on this sheet.
+- **The sheet is over its showcase budget**: 6.71 M triangles against 6.0 M (`targets/sheet/89z-rows.js`; reported, a failure
+  only with `--strict-budget`). The forts are about 0.44 M of it (a page of the four fort defs alone), so the sheet was near
+  6.27 M, already over, before them.
+

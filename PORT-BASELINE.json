@@ -1012,6 +1012,10 @@
    "bytes": 2528638,
    "sha256": "d3add636535274fd3f722369655b0025e5bf244eec089cc2e0b8e4f3ea9abd78"
   },
+  "kits/xanadu/dist/xanadu.html": {
+   "bytes": 1224869,
+   "sha256": "f98bc860e0e2329c638604466e54773e40b8ca8c8617934edd311e78ef4fa1b5"
+  },
   "kits/yeti/dist/yeti.html": {
    "bytes": 1065402,
    "sha256": "c59a54aa67de7995f7412b7917e0af952f18a3f274103fe762859f17b10b47eb"

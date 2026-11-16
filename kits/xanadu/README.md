@@ -104,6 +104,24 @@ alone and measures every instance's box against its lot (0.25 m tolerance, towns
 past it fails; any other def past it must be listed in the test's `KNOWN` with its overhang (`KNOWN_ISSUES.md`, "Defs past
 their lot") and must not grow.
 
+**The Xanadui fort** (2026-11-16, `settlements/strongwall/PLAN.md` section 5, its steps F1-F4). One fort for the Sultanate:
+Strongwall, the Marches' watch forts, the gate works of a town, the watch line's posts, and later the House of the Tempest
+round the Qiblai kit's violet monastery. It is planned before it is drawn:
+- `src/80f-xa-fort-data.js` (`[G data]`, `XFORT`): `XFORT.plan({size})` turns a size (`watch`, `march`, `gate`; a watch fort
+  may take a convex `outline`) into records (curtains with their outward normals, towers with the point on the wall the rules
+  read and the centre they are drawn at, gates, buildings, stairs, guns, the beacon); `XFORT.check(P)` holds the rules (a
+  tower at every corner, towers at most the size's gap apart, the gate on an edge, every wall walk joined to a stair, nothing
+  overlapping, the keep 6 m clear of the curtain); `XFORT.damage(P, state, seed)` hashes the damaged and ruined states from
+  core/rand. `node kits/xanadu/tests/test-fort.js` tests it, each rule with its negative.
+- `src/80g-xa-fort.js` draws it: four defs in the family *Forts* (`xa_fort_watch`, `xa_fort_march` (Strongwall),
+  `xa_fort_gate`, `xa_fort_post`), each with `o.v` 0 kept, 1 damaged, 2 ruined. The gold is only the main gate's pavilion and
+  the keep's chapel (the owner, 2026-11-16). A ruin's rubble is a core/terrain `KRUBBLE` heap (decoration to core/ruins); fallen
+  pieces are seated on their lowest points. A standing fort's wall walks, stairs and landings are on core/walk.
+- The sheet (`build.py` names both fragments, with `core/terrain/37c-core-rubble.js` and `core/ruins`, here and not in
+  `xanadu.py`: `XAK` and Xanadu's own pages do not take them): `targets/sheet/91u-xasheet-ruins.js` watches every damaged and
+  ruined fort with `KRUINS`; `verify.py` adds `fort-plans` and `fort-walks` (every standing fort's walks reached from its
+  stairs, with a negative) through `sheet_verify.run(extra=...)`.
+
 **Who takes it.** `settlements/xanadu` reads it in place (its `xanadu` target is the kit's sheet; its `erewhon` target is the
 city of Erewhon); `settlements/longsong` takes `kit_bundle.py`'s `XAK` (with Xanadu's texture pack).
 
