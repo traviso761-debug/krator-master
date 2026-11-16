@@ -132,13 +132,15 @@ SB_TOWN_READS = [(os.path.join(ROOT, 'settlements', 'strongbow', 'src'), '8ax1-s
                  (os.path.join(ROOT, 'core', 'walk'), '20-core-walk.js'),
                  (os.path.join(ROOT, 'settlements', 'strongbow', 'src'), '8ax2-sb-cutaway.js'),
                  (os.path.join(ROOT, 'settlements', 'isle-demo', 'src'), '58-isle-protos.js')]
-SB_CITY, SB_XAK = '8ax8-sb-city.js', '8ax9-sb-xak.js'
+SB_CITY, SB_XAK, SB_XPACK = '8ax8-sb-city.js', '8ax9-sb-xak.js', '8ax7-sb-xanadu-pack.js'
 
 
 def sb_city_files():
     city = os.path.join(ROOT, 'core', 'city')
     return ([os.path.join(ROOT, 'core', 'space', '20-core-space.js')]
             + [os.path.join(city, f) for f in sorted(os.listdir(city)) if re.match(r'^\d\d-city-.*\.js$', f) and 'host' not in f]
+            # kits/crops (plain data): what the foot's fields grow, from the Xanadu vale's crops (kits/crops/API.md, 'Reading it from a build')
+            + [os.path.join(ROOT, 'kits', 'crops', 'src', f) for f in ('10-crop-core.js', '20-crop-records.js', '40-crop-query.js')]
             + [os.path.join(ROOT, 'settlements', 'strongbow', 'src', '40-sb-town.js')])
 
 
@@ -281,7 +283,7 @@ DETERMINISTIC = {
     '8aw0-strongbow-plan.js', '8aw1-strongbow-parts.js', '8aw3-strongbow-foot.js',   # targets/strongbow: KRAND-hashed records; the drawing's parts and the foot, hashed, no rng()
     '37c-core-rubble.js',                              # core/terrain's KRUBBLE heaps, read by targets/strongbow: KRAND-hashed, no rng()
     '20-sb-census.js', '30-sb-layout.js', '31-sb-rules.js', '8ax0-sb-reclaim.js',   # settlements/strongbow, read by strongbow-today: records and a hashed drawing, no rng()
-    '8ax1-sb-town.js', '8ax2-sb-cutaway.js', '32-sb-walk.js', '8ax3-sb-walk.js', '20-core-walk.js', '58-isle-protos.js', '8ax8-sb-city.js', '8ax9-sb-xak.js',   # Strongbow's town (SB3): drawn from core/city's records (core/rand streams), the isle demo's flattener, the two sealed bundles
+    '8ax1-sb-town.js', '8ax2-sb-cutaway.js', '32-sb-walk.js', '8ax3-sb-walk.js', '20-core-walk.js', '8ax7-sb-xanadu-pack.js', '58-isle-protos.js', '8ax8-sb-city.js', '8ax9-sb-xak.js',   # Strongbow's town (SB3): drawn from core/city's records (core/rand streams), the isle demo's flattener, the two sealed bundles
 }
 DETERMINISTIC |= {'06-core-khook.js', '06b-core-kcolor.js'}   # core/shader (no rnd())
 
@@ -465,7 +467,9 @@ def build_one(target, do_checks, assert_origin):
         if target == 'strongbow-today':
             bodies[SB_CITY] = sb_city()
             bodies[SB_XAK] = sb_xak()
-            extra += [SB_CITY, SB_XAK]
+            # the Xanadu kit's library pack (settlements/xanadu/tex, 171 KB), inline: XAK.bind(KMAT) binds it onto the kit's MAT
+            bodies[SB_XPACK] = matlib_pack.fragment(os.path.join(ROOT, 'settlements', 'xanadu'), 'xanadu')
+            extra += [SB_CITY, SB_XAK, SB_XPACK]
         order = sorted(order + extra)
 
     if do_checks:

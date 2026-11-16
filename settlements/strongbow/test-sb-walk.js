@@ -26,6 +26,13 @@ ok(['L1','L2a+L2b','W1','W2','W3','W4','W5'].every(id=>R.rode.indexOf(id)>=0),'i
 /* every step it took on its feet was within the walker's rules (a ride is the car's) */
 {let bad=0;for(let i=1;i<R.path.length;i++){const a=R.path[i-1],b=R.path[i],dy=b[2]-a[2],dh=Math.hypot(b[0]-a[0],b[1]-a[1]);if(dh>.01&&(dy>SB_WALK.STEP+.01||-dy>SB_WALK.DROP+.01))bad++;}
  ok(!bad,'no step climbs more than '+SB_WALK.STEP+' m or drops more than '+SB_WALK.DROP+' m ('+R.path.length+' steps, '+(R.path.length?(Math.max(...R.path.map(p=>p[2]))).toFixed(0):0)+' m reached)');}
+/* with every car at its bottom stop, no floor is left over a shaft at the landing a car rises to: a walker cannot step into it */
+{const shafts=S.lifts.map(l=>({l,top:l.stops[l.stops.length-1]})).filter(o=>o.top.y-o.l.stops[0].y>5);
+ const over=(carsUp)=>{const W=KWALK.create(),RG=SB_WALK.register(W,S);let n=0;
+  for(const o of shafts){if(carsUp)RG.cars[o.l.id].y=o.top.y;const c=[o.l.frame[0],o.l.frame[1]];
+   for(const [dx,dz] of [[0,0],[1.5,1.5],[-1.5,1.5],[1.5,-1.5],[-1.5,-1.5]]){const f=W.floorBelow(c[0]+dx,c[1]+dz,o.top.y+.1,.3);if(f&&Math.abs(f[0]-o.top.y)<.05){n++;break;}}}return n;};
+ ok(over(false)===0,'no floor over a shaft at its top landing while the car is down ('+shafts.length+' shafts)');
+ ok(over(true)===shafts.length,'negative: with the cars up, each car is the floor over its shaft');}
 // ---- the negatives ---------------------------------------------------------------------------------------------------------------
 const neg=(name,o)=>{const N=walk(o);ok(!N.ok,'negative: '+name+(N.fail?' (stops: '+N.fail.name+')':''));};
 neg('the lobby\'s door left shut',{shut:['sb.door.lobby']});

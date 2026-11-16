@@ -10,7 +10,7 @@ const load=f=>vm.runInThisContext(fs.readFileSync(path.join(ROOT,f),'utf8'),{fil
 ['core/rand/08-core-rand.js','core/space/20-core-space.js'].forEach(load);
 fs.readdirSync(path.join(ROOT,'core','city')).filter(f=>/^\d\d-city-.*\.js$/.test(f)&&!/host/.test(f)).sort().forEach(f=>load('core/city/'+f));
 ['kits/ancients/targets/strongbow/8aw0-strongbow-plan.js','settlements/strongbow/src/20-sb-census.js','settlements/strongbow/src/30-sb-layout.js',
- 'settlements/strongbow/src/31-sb-rules.js','settlements/strongbow/src/40-sb-town.js'].forEach(load);
+ 'settlements/strongbow/src/31-sb-rules.js','kits/crops/src/10-crop-core.js','kits/crops/src/20-crop-records.js','kits/crops/src/40-crop-query.js','settlements/strongbow/src/40-sb-town.js'].forEach(load);
 /* the kit's boxes, from its defs (XA.def({key, ..., w, d, h, ...})) */
 const DIMS={};
 for(const f of ['kits/xanadu/src/87u-xs-build.js','kits/xanadu/src/87v-xs-poor.js']){const s=fs.readFileSync(path.join(ROOT,f),'utf8');

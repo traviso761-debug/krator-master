@@ -20,6 +20,8 @@ function sbFootKit(L){const P={};for(const p of L.parts)P[p.id]=p;const c=p=>{co
 function sbTownDraw(gx,gz){const O={buildings:0,people:0,protos:0,meshes:0,tris:0,errors:[],census:null,foot:0};
  if(!sbTownKit())return O;
  const KD=XAK.dims(),dims=(k,v)=>KD[k]?{key:k,v:v|0,w:KD[k].w,d:KD[k].d,h:KD[k].h}:null;
+ /* the kit's library maps from the Xanadu pack the page carries (kits/ancients/build.py SB_XPACK), as Longsong binds them (44c) */
+ try{const b=XAK.bind(typeof KMAT!=='undefined'?KMAT:null);O.bound=b?Object.keys(b).filter(k=>b[k]).length:0;}catch(e){O.errors.push('the kit library maps: '+e.message);}
  const L=sbLayout(),P=STRONGBOW.plan({seed:1647}),F=P.frame;KOFF=[gx,0,gz];
  let T;try{T=SBCITY.town.make({layout:L,plan:P,dims});}catch(e){O.errors.push('the town plan: '+(e&&e.stack||e));window._sbTown=O;return O;}
  O.census=T.census;
@@ -117,15 +119,15 @@ function sbTownDraw(gx,gz){const O={buildings:0,people:0,protos:0,meshes:0,tris:
   for(const w of T.ways){if(w.tag==='the road spoke')continue;const hw=w.w/2,hex=w.cls==='avenue'?0x9c8c6e:w.cls==='main'?0x928366:0x887a60;
    for(let i=1;i<w.pts.length;i++){const a=w.pts[i-1],b=w.pts[i],dx=b[0]-a[0],dz=b[1]-a[1],l=Math.hypot(dx,dz)||1,nx=-dz/l*hw,nz=dx/l*hw,ex=dx/l*.6,ez=dz/l*.6;
     quad([a[0]+nx-ex,a[1]+nz-ez],[b[0]+nx+ex,b[1]+nz+ez],[b[0]-nx+ex,b[1]-nz+ez],[a[0]-nx-ex,a[1]-nz-ez],hex);}}
-  const CROP={grain:0xc8b46a,fodder:0x8a9a52,fallow:0x8a7454};
+  const CROP={grain:0xc8b46a,pulse:0x7f9a4c,tuber:0x5f7a3c,fodder:0x8a9a52,fallow:0x8a7454};   /* by the crop's bucket (src/40-sb-town.js) */
   for(const f of T.fields){const K=f.corners,n=6;   /* six furrow strips a field, alternate shades */
    for(let k=0;k<n;k++){const t0=k/n,t1=(k+1)/n,l=(p,q,t)=>[p[0]+(q[0]-p[0])*t,p[1]+(q[1]-p[1])*t];
-    quad(l(K[0],K[1],t0),l(K[0],K[1],t1),l(K[3],K[2],t1),l(K[3],K[2],t0),k%2?CROP[f.crop]:(CROP[f.crop]&0xf0f0f0)-0x101008);}}
+    quad(l(K[0],K[1],t0),l(K[0],K[1],t1),l(K[3],K[2],t1),l(K[3],K[2],t0),k%2?CROP[f.bucket||f.crop]:(CROP[f.bucket||f.crop]&0xf0f0f0)-0x101008);}}
   const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));g.computeVertexNormals();
   const m=new THREE.Mesh(g,new THREE.MeshStandardMaterial({vertexColors:true,roughness:.97,side:THREE.DoubleSide,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2}));
   m.name='strongbow:town streets and fields';m.receiveShadow=true;m.userData.probeSkip=true;scene.add(m);}
  O.kitErrors=XAK.errors.slice(0,8);
- window._sbTown={buildings:O.buildings,people:O.people,foot:O.foot,protos:O.protos,meshes:O.meshes,tris:Math.round(O.tris),bigTris:Math.round(O.bigTris||0),skinTris:Math.round(O.skinTris||0),detailTris:Math.round(O.detailTris||0),cells:O.cells,
+ window._sbTown={bound:O.bound||0,buildings:O.buildings,people:O.people,foot:O.foot,protos:O.protos,meshes:O.meshes,tris:Math.round(O.tris),bigTris:Math.round(O.bigTris||0),skinTris:Math.round(O.skinTris||0),detailTris:Math.round(O.detailTris||0),cells:O.cells,
   get near(){return O.cells?O.nearCells():0;},level:f=>O.level&&O.level(f),census:O.census,errors:O.errors.concat(XAK.errors).slice(0,12),
   fields:T.fields.length,ways:T.ways.length};
  return O;}

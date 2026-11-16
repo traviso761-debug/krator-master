@@ -58,7 +58,13 @@ var SB_WALK=(function(){
   // ---- the terraces: their decks (DECK over the node), T1's landing plate in the neck, its walls --------------------------------
   const ter=n=>{const id='sb.T'+n,p=PT[id];return {id,c:[p.shape[1],p.shape[2]],r:p.shape[3],y:p.y+DECK};};
   const T1=ter(1),T2=ter(2),T3=ter(3);
-  for(const T of [T1,T2,T3])floor('sb.walk.'+T.id.slice(3),{disc:[T.c[0],T.c[1],T.r-.5],y:T.y});
+  /* a terrace's deck is an annulus: from the drum column at its middle (the Spine's radius + 1, where the saucer's deck starts)
+     out to its garden's edge; in sectors (core/walk's polygons are simple) */
+  const SPR=P.dim.SPINE.r+1;
+  for(const T of [T1,T2,T3]){const n=36,m=3;for(let i=0;i<n;i++){const pts=[];
+   for(let j=0;j<=m;j++){const a=(i+j/m)/n*Math.PI*2;pts.push([T.c[0]+(T.r-.5)*Math.cos(a),T.c[1]+(T.r-.5)*Math.sin(a),T.y]);}
+   for(let j=m;j>=0;j--){const a=(i+j/m)/n*Math.PI*2;pts.push([T.c[0]+SPR*Math.cos(a),T.c[1]+SPR*Math.sin(a),T.y]);}
+   floor('sb.walk.'+T.id.slice(3)+'.'+i,{poly:pts,y:T.y});}}
 
   // ---- the lifts: one record a frame (L2a and L2b share theirs), its stops, gates, gangways --------------------------------------
   const lw=L.ways.filter(w=>w.kind==='lift'&&!w.gated),byF=new Map();
@@ -124,6 +130,16 @@ var SB_WALK=(function(){
    if(top.part==='sb.nock.landing')S.holes.push({in:'sb.nock.w',rect:r,y0:P.nock.y-P.nock.th,y1:P.nock.y});
    if(l.id==='L1')S.holes.push({in:'sb.T1.plate',rect:r});}
   if(L1)S.holes.push({in:'drums',drums:['sb.sp.6.1','sb.sp.6.0'],rect:[L1.car.rect[0]-.3,L1.car.rect[1]+.3,L1.car.rect[2]-.3,L1.car.rect[3]+.3]});
+  /* a landing's floor is open where a car rises through it, so only the car bridges the shaft: with the car away a walker cannot
+     step into it (the ledges and the Nock's landing in up to four rectangles round the hole, T1's plate in sectors round it) */
+  for(const ho of S.holes){const fid=ho.in==='sb.nock.w'?'sb.walk.nock.landing':ho.in==='sb.T1.plate'?'sb.walk.T1.plate':/^sb\.wl\./.test(ho.in)?'sb.walk.'+ho.in.slice(3):null;
+   const k=fid?S.floors.findIndex(f=>f.id===fid):-1;if(k<0)continue;const f=S.floors[k],h=ho.rect.map((x,i)=>x+(i%2?-.3:.3));S.floors.splice(k,1);   /* cut at the car's own edge (the drawn hole is 0.3 m wider) */
+   if(f.rect){const [x0,x1,z0,z1]=f.rect,pc=(n,r)=>{if(r[1]-r[0]>.05&&r[3]-r[2]>.05)floor(fid+'.'+n,{rect:r,y:f.y});};
+    pc(0,[x0,Math.max(x0,h[0]),z0,z1]);pc(1,[Math.min(x1,h[1]),x1,z0,z1]);pc(2,[Math.max(x0,h[0]),Math.min(x1,h[1]),z0,Math.max(z0,h[2])]);pc(3,[Math.max(x0,h[0]),Math.min(x1,h[1]),Math.min(z1,h[3]),z1]);}
+   else if(f.disc){const [cx,cz,r]=f.disc,hc=[(h[0]+h[1])/2,(h[2]+h[3])/2],hw=(h[1]-h[0])/2,hd=(h[3]-h[2])/2,n=32,m=3;
+    const sq=a=>{const c=Math.cos(a),s=Math.sin(a),t=Math.min(Math.abs(c)>1e-9?hw/Math.abs(c):1e9,Math.abs(s)>1e-9?hd/Math.abs(s):1e9);return[hc[0]+c*t,hc[1]+s*t];};
+    for(let i=0;i<n;i++){const pts=[];for(let j=0;j<=m;j++){const a=(i+j/m)/n*Math.PI*2;pts.push([cx+r*Math.cos(a),cz+r*Math.sin(a),f.y]);}
+     for(let j=m;j>=0;j--){const a=(i+j/m)/n*Math.PI*2,q=sq(a);pts.push([q[0],q[1],f.y]);}floor(fid+'.'+i,{poly:pts,y:f.y});}}}
 
   // ---- the top: the plateau, the Sultanate's post (walls, a door in, a door out), the caravan yard -------------------------------
   const ly=F.lipY,PO=PT['sb.lip.post'].shape,YD=PT['sb.lip.yard'].shape;

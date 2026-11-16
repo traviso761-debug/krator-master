@@ -18,7 +18,8 @@
 // THE RINGS   wealth by ring (rules.wealth): the inner ring rich (courtyard houses), the middle ring the craftsmen (panel houses
 //             and rows), the outer ring poor (tank, hull, glint houses, shack rows, silo courts), beyond r 605 the farms (the
 //             avenue choosers draw `farm` there); rules.vacant leaves frontage open, more of it the further out.
-// THE FIELDS  each farm's fields are strips behind it, as records (crops owed: PLAN.md section 7, the foot's climate).
+// THE FIELDS  each farm's fields are strips behind it, as records: grain, pulse and a root crop by turn, from what the Xanadu vale
+//             grows by rain (kits/crops)
 //
 // SB_TOWN.make({layout, plan, dims, seed}) -> {lots, ways, fields, census, notes, centre}: layout is sbLayout() (its lobby,
 // frame, the quarry's pieces, the scree), plan STRONGBOW.plan (its frame and road), dims(key, v) -> {w, d, h} the
@@ -60,6 +61,13 @@ var SB_TOWN=(function(){
  const runs=(pts,ok,min)=>{const out=[];let cur=[];for(const p of pts){if(ok(p))cur.push(p);else{if(cur.length>=min)out.push(cur);cur=[];}}if(cur.length>=min)out.push(cur);return out;};
  const hypot=Math.hypot;
 
+ /* what a farm's three fields grow: grain, pulse and a root crop by turn, each a crop the Xanadu vale grows by rain (kits/crops:
+    the foot stands on the Xanadu floor; CROPS.forBiome('xanadu'), zone 'vale'), picked by the farm and field (seeded, the same
+    on every machine). Without kits/crops on the page: the bucket alone */
+ const ROT=['grain','pulse','tuber'];let VALE=null;
+ const sbCrop=(fi,k)=>{const b=ROT[(fi+k+3)%3];if(typeof CROPS==='undefined')return {crop:b,bucket:b};
+  if(!VALE)VALE=CROPS.forBiome('xanadu').filter(r=>r.zone==='vale'&&(r.how==='rain'||r.how==='irrigated'));
+  const r=CROPS.pick(VALE,b,{seed:1647,salt:fi*3+k});return r?{crop:r.crop.id,bucket:b,name:r.crop.name}:{crop:b,bucket:b};};
  function make(o){
   const LY=o.layout,P=o.plan,F=P.frame,C=[LY.lobby.at[0],LY.lobby.at[2]],seed=o.seed==null?1647:o.seed;
   const toL=(x,z)=>[x-C[0],z-C[1]],toW=(u,v)=>[u+C[0],v+C[1]];
@@ -122,7 +130,7 @@ var SB_TOWN=(function(){
    farms.forEach((L,fi)=>{const u=L.bo.u,v=L.bo.v,back=[L.bo.c[0]-v[0]*(L.bo.hd+2),L.bo.c[1]-v[1]*(L.bo.hd+2)];
     /* v points from the lot to its street (the front), so the fields go the other way; three strips side by side */
     for(let k=-1;k<=1;k++){const len=60+10*((fi+k+3)%3),hw=11,c=[back[0]-v[0]*len/2+u[0]*k*(2*hw+2),back[1]-v[1]*len/2+u[1]*k*(2*hw+2)],ob=obb(c,u,hw,len/2);
-     if(rOf(c)<RINGS[3]+10||!clearOf(ob))continue;out.push({o:ob,farm:L.id,crop:['grain','fodder','fallow'][(fi+k+3)%3]});}});
+     if(rOf(c)<RINGS[3]+10||!clearOf(ob))continue;out.push({o:ob,farm:L.id,...sbCrop(fi,k)});}});
    PLAN.sbFields=out;}];
   const Ci=KCITY.create({name:'strongbow-town',tune:tune(),seed,rand:'krand',index:{order:'insertion'},ground:{h:groundL},kit:{dims:o.dims},rules,steps,finish});
   Ci.run();
@@ -131,7 +139,7 @@ var SB_TOWN=(function(){
    return {id:'sb.town.'+n,key:L.key,v:L.v|0,cls:L.cls,civic:!!L.civic,x:w[0],z:w[1],y:L.y==null?groundL(L.x,L.z):L.y,ry:L.ry,w:L.w,d:L.d,h:L.h,
     ring:ringOf(r),people:PEOPLE[L.key]||0};});
   const ways=PL.ways.filter(w=>w.died==null).map(w=>({id:'sb.town.way.'+w.id,cls:w.cls,w:w.w,tag:w.tag,pts:w.pts.map(p=>toW(p[0],p[1]))}));
-  const fieldsOut=(PL.sbFields||[]).map((f,i)=>({id:'sb.town.field.'+i,farm:'sb.town.'+lots.findIndex(L=>L.x===toW(PL.lots[f.farm].x,0)[0]&&L.z===toW(0,PL.lots[f.farm].z)[1]),crop:f.crop,
+  const fieldsOut=(PL.sbFields||[]).map((f,i)=>({id:'sb.town.field.'+i,farm:'sb.town.'+lots.findIndex(L=>L.x===toW(PL.lots[f.farm].x,0)[0]&&L.z===toW(0,PL.lots[f.farm].z)[1]),crop:f.crop,bucket:f.bucket,cropName:f.name||f.crop,
    corners:obbCorners(f.o).map(p=>toW(p[0],p[1]))}));
   const census={buildings:lots.length,people:0,byRing:[0,0,0,0],byKey:{}};
   for(const L of lots){census.people+=L.people;census.byRing[L.ring]+=L.people;census.byKey[L.key]=(census.byKey[L.key]||0)+1;}
