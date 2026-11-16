@@ -123,6 +123,12 @@ TAGS_CORE = INTERIOR_CORE[:4]
 TARGET_READS = {'podium': [(os.path.join(ROOT, 'kits', 'eternian', 'src'), '42-et-head.js')],
                 # the engines' industrial set is watched by core/ruins (targets/engines/91y; the owner, 2026-11-10)
                 'engines': [(os.path.join(ROOT, 'core', 'ruins'), '20-core-ruins.js'), (os.path.join(ROOT, 'core', 'ruins'), '21-core-ruins-host.js')],
+                # Theodiga (the owner, 2026-11-15: "make sure this build is on core/water and all other relevant core modules"):
+                # its lake, outlets, cascade and river on core/water, bound to core/atmos as kits/port binds it (targets/theodiga
+                # 77c, 90w), and its ruin watched by core/ruins
+                'theodiga': [(os.path.join(ROOT, 'core', 'ruins'), '20-core-ruins.js'), (os.path.join(ROOT, 'core', 'ruins'), '21-core-ruins-host.js')]
+                            + [(os.path.join(ROOT, 'core', 'atmos'), f) for f in ('89-atmos-0-core.js', '89-atmos-0p-presets.js', '89-atmos-a-waves.js', '89-atmos-b-skylight.js')]
+                            + [(os.path.join(ROOT, 'core', 'water'), f) for f in ('20-core-water.js', '22-core-water-flow.js', '50-core-water-draw.js', '51-core-water-kinds.js')],
                 # the Sanctum (2026-10-22) shares the Podium's skins and materials (MAT.sn*), read in place
                 'sanctum': [(os.path.join(ROOT, 'kits', 'eternian', 'src'), '42-et-head.js'),
                             (os.path.join(HERE, 'targets', 'podium'), '8aq2-podium-skins.js')]}
@@ -234,6 +240,9 @@ DETERMINISTIC = {
     '8aq5-kept-pass.js',                               # targets/kept: a material pass, no placement
     '8at0-arcpile-plan.js',                            # targets/arcpile: KRAND-hashed records, no rng()
     '77a-theodiga-dome-plan.js', '77b-theodiga-dome-draw.js',   # targets/theodiga: the Dome on the Water, KRAND records, no rng()
+    '77c-theodiga-water.js', '90w-theodiga-water.js',           # targets/theodiga: the water's records and their drawing (core/water)
+    '89-atmos-0-core.js', '89-atmos-0p-presets.js', '89-atmos-a-waves.js', '89-atmos-b-skylight.js',   # core/atmos (IIFE, no rnd())
+    '20-core-water.js', '22-core-water-flow.js', '50-core-water-draw.js', '51-core-water-kinds.js',      # core/water (IIFE, no rnd())
 }
 DETERMINISTIC |= {'06-core-khook.js', '06b-core-kcolor.js'}   # core/shader (no rnd())
 

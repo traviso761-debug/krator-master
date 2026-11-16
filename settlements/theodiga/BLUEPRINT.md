@@ -53,8 +53,9 @@ The owner's answers to the four forks (2026-11-15; each was the recommended opti
 - The piers stand **about 145 m bare** over the water. Silt flats round the lake (272-300 m) are terraced into the temple
   estates' fields, reached by the Silt Road.
 - The Great Wheel on the Dome is turned by water from the dam's old penstock, raised by the rising main under the crest.
-- **The page does not draw this yet.** `buildDam`'s ruin draws the lake at 250 m (under the sill), with no cascade and no
-  river. See `kits/ancients/KNOWN_ISSUES.md`, "Theodiga".
+- **The page draws it** (2026-11-15): `buildDam`'s ruin holds the lake at the sill (273 m), with the cascade down the face,
+  its spray, and the river in a channel down the canyon (`kits/ancients` view 'Cascade'). It does not move yet
+  (`kits/ancients/KNOWN_ISSUES.md`, "Theodiga").
 
 ## The sheets (`floors/`)
 
@@ -106,6 +107,22 @@ At the festival of the Station's pass the town about doubles with pilgrims, who 
   Novices. The sixth (`x -170`) fell into the Notch.
 - **The Khan's empty seat** stands in the Hall of the Song, as the Sultan's does in Qiblai's Hall of the Decree.
 
+## Core adoption (the owner, 2026-11-15: "make sure this build is on core/water and all other relevant core modules")
+
+The page is `kits/ancients --target theodiga` (`dist/theodiga.html`).
+
+| Module | Taken | How |
+|---|---|---|
+| core/rand, core/tags | yes | the Dome's records (KRAND hashes, stable ids), every placed record in KTAGS before it is drawn (`TAGS_TARGETS`) |
+| core/water | yes | the lake, the outlets' falls, the overflow, the cascade (a fall on the battered face), the plunge pool, the river (`targets/theodiga/77c`, `90w`) |
+| core/atmos | the water's part | its core, presets, waves and skylight, bound as the Ancient Port kit binds them; the kit's own sky and lights are kept |
+| core/ruins | yes | the ruined site watched (`KRUINS.watch`): nothing floats, every wreck seated; asserted by the verify harness |
+| core/lod, core/materials, core/shader | yes | as every Ancients page |
+| core/host | not yet | the Ancients kit's own camera, probe and inspector serve all its pages; moving the kit is a kit-wide port |
+| core/terrain, core/world | not yet | the canyon is the kit's showcase rock; when Theodiga is placed in the open world, the ground is core/world's |
+| core/city, core/simulation | next | the town on the east rim and the census as roles |
+| core/biome | not yet | the park's trees are the kit's `VEG.tree` |
+
 ## Assumptions
 
 - Storeys of 4.5 m in the crest blocks (four storeys to 418 m) and 3.7 m in the fins (eleven from 370 to 410 m).
@@ -119,6 +136,6 @@ At the festival of the Station's pass the town about doubles with pilgrims, who 
 
 ## Next
 
-- The page: the lake at the Notch's sill with the cascade and the river, the re-glazed frame, and the pilgrims' and clergy stairs.
+- The page: the re-glazed frame, the pilgrims' and clergy stairs, the cascade's motion (the lake, the cascade and the river are drawn).
 - The town on core/city (like Strongbow's), and the census as `core/simulation` roles.
 - LORE 6.13 (on the branch that holds the faith): Theodiga as the Decree's shrine, the Order's delegation, the cascade.

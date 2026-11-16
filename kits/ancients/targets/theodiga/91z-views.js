@@ -9,6 +9,8 @@ const VIEWS={
  'Dome on the water':[-ROWS.dam.s+150,430,ROWS.dam.z-720,-ROWS.dam.s,460,ROWS.dam.z-205],
  'Dome ruin':[ROWS.dam.s-420,520,ROWS.dam.z-650,ROWS.dam.s,450,ROWS.dam.z-205],
  'Dome ruin piers':[ROWS.dam.s-210,290,ROWS.dam.z-500,ROWS.dam.s-60,350,ROWS.dam.z-250],
+ // the river (2026-11-15): the cascade through the Notch, from the canyon floor downstream
+ 'Cascade':[ROWS.dam.s-221+140,70,ROWS.dam.z+430,ROWS.dam.s-221,170,ROWS.dam.z+40],
  'Both':[0,700,ROWS.dam.z+2600,0,200,ROWS.dam.z],
  'Canyon floor':[-ROWS.dam.s+40,18,ROWS.dam.z+760,-ROWS.dam.s,120,ROWS.dam.z+200],
  'Apses':[-ROWS.dam.s+420,120,ROWS.dam.z+300,-ROWS.dam.s+120,110,ROWS.dam.z],

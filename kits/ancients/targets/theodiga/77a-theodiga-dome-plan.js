@@ -17,8 +17,9 @@
 //   the hall     the old crest's fluted public dome, moved inside onto the deck: the dome within the dome
 // The dam itself is unchanged: the same face, tunnels, outlets and reservoir level ("harnessed the cascade").
 //
-// THE RUIN (every d > 0, as the rest of buildDam): the reservoir is drawn down to 250 m, so the piers stand 166 m bare
-// over the mud. One sector of the dome, upstream and west (the notch's side), has failed: its outer piers broke, the
+// THE RUIN (every d > 0, as the rest of buildDam): the lake stands at the Notch's sill (273 m) and the river spills through
+// the Notch as a cascade down the face (buildDam, 2026-11-15), so the piers stand about 145 m bare
+// over the water and the silt. One sector of the dome, upstream and west (the notch's side), has failed: its outer piers broke, the
 // deck over them fell, and the dome above tore open nearly to the drum, a few of its ribs still standing (the broken
 // dome, as the Station is the broken wheel). The glass is gone everywhere; the bands are verdigris. What fell lies on
 // the mud under the gap and on the deck beside it.
@@ -32,7 +33,7 @@ THEODOME.DIM={R:120,ZOFF:65,DECK:20,DECKT:3.5,DRUM:16,DH:112,OC:14,RIBS:24,TIERS
  BEAMS:[300,345],
  // the failed sector: its centre angle (x = cos a, z = sin a: upstream is -z, west -x) and half-width
  SECTOR:{a0:-Math.PI/2-.75,w:.5},HALL_KEEP:58,
- WL:{intact:378,ruin:250},RUBBLE:40};
+ WL:{intact:378,ruin:273},RUBBLE:40};   /* the ruin's lake: at the Notch's sill (buildDam's NB + 1) */
 THEODOME.u=function(seed,a,b){return KRAND.unit(KRAND.hash(seed,a|0,b==null?0:b|0));};
 THEODOME.angDiff=function(a,b){const T=2*Math.PI;let x=(a-b)%T;if(x>Math.PI)x-=T;if(x<-Math.PI)x+=T;return x;};
 // the dam's arc in plan (buildDam's zc): the upstream face is zc(x)-2, the crest deck runs to zc(x)+CREST
@@ -83,13 +84,17 @@ THEODOME.plan=function(o){o=o||{};const D=THEODOME.DIM,S=o.seed==null?9270:o.see
  for(let i=0;i<D.LIGHTS;i++){const a=(i+.5)/D.LIGHTS*2*Math.PI;
   if(dd&&THEODOME.inSector(P,a,-.05))continue;
   P.lights.push({id:'theodiga.dome.light.'+i,a:a,lit:!dd||U(S,i,31)<.1});}
- // what fell: deck slabs, ribs and shell panels, on the mud under the gap and on the deck beside the hall
+ // what fell: deck slabs and shell panels on the deck beside the hall; into the lake (it stands at the Notch's sill, over
+ // the old silt), only the long ribs, standing tilted out of the water by the broken piers like a wreck. Flat pieces on the
+ // water read as floating boards (the owner, 2026-11-15), so none are laid there.
  if(dd)for(let i=0;i<D.RUBBLE;i++){const a=D.SECTOR.a0+(U(S,i,41)*2-1)*D.SECTOR.w*1.25,r=30+110*U(S,i,42),q=U(S,i,43);
-  const kind=q<.45?'slab':q<.75?'rib':'panel',on=r<D.HALL_KEEP-4&&r>P.hall.r+4?'deck':'mud';
-  if(on==='mud'&&r<P.hall.r+4)continue;
+  const on=r<D.HALL_KEEP-4&&r>P.hall.r+4?'deck':'lake';
+  if(on==='lake'&&r<P.hall.r+4)continue;
+  if(on==='lake'&&q>=.45)continue;
+  const kind=on==='lake'?'rib':q<.45?'slab':q<.75?'rib':'panel';
   const s1=U(S,i,44),s2=U(S,i,45),s3=U(S,i,46);
-  const size=kind==='slab'?[10+16*s1,2.5+s2,8+10*s3]:kind==='rib'?[2.2,20+30*s1,2.2]:[8+8*s1,.8,6+6*s3];
+  const size=kind==='slab'?[10+16*s1,2.5+s2,8+10*s3]:kind==='rib'?[2.2,(on==='lake'?34:20)+30*s1,2.2]:[8+8*s1,.8,6+6*s3];
   P.rubble.push({id:'theodiga.dome.rubble.'+i,kind:kind,on:on,x:P.cx+r*Math.cos(a),z:P.cz+r*Math.sin(a),
-   ry:U(S,i,47)*2*Math.PI,tilt:(U(S,i,48)*2-1)*.35,size:size});}
+   ry:U(S,i,47)*2*Math.PI,tilt:on==='lake'?.5+.6*U(S,i,48):(U(S,i,48)*2-1)*.35,size:size});}
  P.stats={piers:P.piers.length,broken:P.piers.filter(p=>p.broken).length,rubble:P.rubble.length,height:P.top};
  return P;};

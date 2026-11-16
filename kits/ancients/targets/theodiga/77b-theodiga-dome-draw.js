@@ -77,9 +77,9 @@ THEODOME.draw=function(G,d,ctx){
  mesh(lathe({rFn:y=>(dd?40:42)*Math.pow(clamp(1-Math.pow(y/26,2),0,1),.55),H:26,nu:48,nv:10}),dd?MAT.dark:MAT.glass,G,cx,DK.y,cz);
 
  // ---- what fell ----------------------------------------------------------------------------------------------
- // the mud's height is read off buildDam's own silt surface (src/77-dam.js, the reservoir), so a piece lies on it
- const mudY=(x,z)=>{const u=x/(ctx.SPAN+40)+.5,v=clamp((z+700)/(700+ctx.zc(x)-2),0,1);return ctx.WL-6+30*fbm(u*5,v*5,2500,2)*v*v;};
- for(const r of P.rubble){const y=r.on==='deck'?DK.y:mudY(r.x,r.z),s=r.size;
+ // on the deck the pieces lie flat; in the lake a rib stands tilted out of the water from the bed, its foot 4 m under
+ for(const r of P.rubble){const y=r.on==='deck'?DK.y:ctx.WL,s=r.size;
+  if(r.on==='lake'){kput('postR',[r.x,y-4,r.z],new THREE.Quaternion().setFromEuler(new THREE.Euler(r.tilt,r.ry,0,'YXZ')),s,null);continue;}
   if(r.kind==='rib')kput('postR',[r.x,y+1,r.z],qEuler(Math.PI/2+r.tilt*.3,r.ry,0),s,null);
   else if(r.kind==='slab')kput(BOXC(d),[r.x,y+s[1]*.3,r.z],qEuler(r.tilt,r.ry,r.tilt*.6),s,null);
   else kput('boxR',[r.x,y+.5,r.z],qEuler(r.tilt*1.4,r.ry,r.tilt),s,null);}
