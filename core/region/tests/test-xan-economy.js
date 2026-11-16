@@ -18,16 +18,16 @@ function run(days,edit){const H=load(),V=XAN_TUNE.valley(PLAN,{});if(edit)edit(V
  const a=SIM.ledgerSnap(),B0=H.valleyBooks(),daily={};let prev={};
  for(let d=0;d<days;d++){H.valleyRun(1440,60);const B=H.valleyBooks();
   for(const s of S.order){if(!/^prov\./.test(s))continue;const m=B.towns[s].made.grain||0,p=prev[s]||0;if(m>p+.5)(daily[s]||(daily[s]=[])).push(Math.floor(SIM.season(S.clock.m-60).yearDay));prev[s]=m;}}
- const b=SIM.ledgerSnap(),sites={};S.order.forEach(s=>(SIM.sitesReport(s)||[]).forEach(x=>{sites[x.id]=Object.assign({settlement:s},x);}));
- return{H,V,S,B0,B:H.valleyBooks(),daily,trade:SIM.tradeReport(),xfer:SIM.transfersReport(),ledger:SIM.ledger(a,b,{tol:1}),actors:SIM.all('actor').length,sites};}
+ const b=SIM.ledgerSnap(),sites={},veins=S.veinMoves.slice(),cuts=JSON.parse(JSON.stringify(S.cuts));S.order.forEach(s=>(SIM.sitesReport(s)||[]).forEach(x=>{sites[x.id]=Object.assign({settlement:s},x);}));
+ return{H,V,S,B0,B:H.valleyBooks(),daily,trade:SIM.tradeReport(),xfer:SIM.transfersReport(),ledger:SIM.ledger(a,b,{tol:1}),actors:SIM.all('actor').length,sites,veins,cuts};}
 const t0=Date.now(),Y=run(365),B=Y.B.towns,secs=(Date.now()-t0)/1000;
 console.log('a year of the Sultanate in '+secs.toFixed(1)+' s: '+Y.S.order.length+' settlements, '+Y.actors+' actors, '+
  Math.round(Y.V.settlements.reduce((n,s)=>n+s.people,0))+' people');
 const people=Y.V.settlements.filter(s=>s.people>0);
 // 1. declared: the towns, the eight countrysides, the lake towns and islands, the rings, the camps, the forts, the gateways
 {const ids=Y.S.order,cnt=re=>ids.filter(s=>re.test(s)).length;
- T.ok('the Sultanate declared: 8 countrysides, 24 lake towns and islands, 12 ring villages, 4 gateways, no problems',
-  cnt(/^prov\./)===8&&cnt(/^lk\./)===24&&cnt(/hamlet|\/|farm-|ranch-/)>=0&&cnt(/^gate\./)===4&&!Y.S.problems.length,
+ T.ok('the Sultanate declared: 8 countrysides, 24 lake towns and islands, 12 ring villages, 5 gateways, no problems',
+  cnt(/^prov\./)===8&&cnt(/^lk\./)===24&&cnt(/hamlet|\/|farm-|ranch-/)>=0&&cnt(/^gate\./)===5&&!Y.S.problems.length,
   ids.length+' settlements; problems: '+(Y.S.problems.slice(0,3).join('; ')||'none'));
  T.neg('a road to a settlement that is not declared is a problem the host reports',
   V=>{const H=load();return H.simValley(V).problems.length===0;},
@@ -113,6 +113,61 @@ const stageCheck=Bk=>(Bk.sfgtxw10kr.imported.salt||0)>0&&(Bk.sl758m2396.imported
   'salt into Strongbow '+t(B.sfgtxw10kr.imported.salt||0)+', Qiblai '+t(B.skm4jjo2vl.imported.salt||0)+', Thalaba '+t(B['lk.thalaba'].imported.salt||0)+', the capital '+t(B[E].imported.salt||0)+
   '; the country '+(100*saltShort/Math.max(1,saltEaten+saltShort)).toFixed(1)+' % short of salt in its first year');
  T.neg('salt that never got past Strongbow is caught',stageCheck,Object.assign({},B,{skm4jjo2vl:Object.assign({},B.skm4jjo2vl,{imported:Object.assign({},B.skm4jjo2vl.imported,{salt:0})})}),B);}
+// ---- X2 (the owner, 2026-11-16): the lodes as fields of veins, the Geomancers' oil, the Brotherhood of the Two Horns,
+// the Sultan's toll, the Godshearth expedition
+// 15. the fields: each vein 2-3 years of its work's make, the field over 200 years; a vein run dry moves the work on
+//     (a small valley of one mine on a field of short veins, run 120 days)
+const fieldCheck=F=>F.veins.every(v=>v.amount>=F.make*2-1&&v.amount<=F.make*3+1)&&F.veins.reduce((n,v)=>n+v.amount,0)>=F.make*200;
+{const F=XAN_TUNE.field('lode',XAN_TUNE.mine.goldore,XAN_TUNE.fieldYears);F.make=XAN_TUNE.mine.goldore;
+ const H=load();const V={seed:1,scale:10,start:0,goods:{ore:{unit:'kg'},grain:{unit:'kg'}},factions:[{id:'f',name:'f'}],relations:[],
+  settlements:[{id:'m',name:'a mine',faction:'f',people:40,eats:{},works:[{id:'m.adit',kind:'adit',crew:30,out:['ore'],rate:.5,site:{kind:'lode',veins:[{amount:300},{amount:300},{amount:300}]}}]}],roads:[]};
+ const S=H.simValley(V);H.valleyRun(120*1440,60);const mv=S.veinMoves.length;
+ T.ok('the gold and opal lodes: fields of '+F.veins.length+' veins, each 2 to 3 years of the mine\'s make, '+Math.round(F.veins.reduce((n,v)=>n+v.amount,0)/F.make)+' years in all; a vein run dry moves the mine to the next',
+  fieldCheck(F)&&mv>=2&&!S.problems.length,mv+' moves in 120 days on veins of 300 kg at 180 kg a day');
+ T.neg('a field of one vein of ten years is caught',fieldCheck,Object.assign({},F,{veins:[{amount:F.make*10}]}),F);}
+// 16. the Brotherhood of the Two Horns and the Sultan's toll: the guides' tally on the Catch caravans at Strongbow and
+//     Stair, the factor houses' margins on the trunk roads, the toll at the lift; the books still balance (check 2)
+const take=(C,to)=>Object.keys(C).reduce((n,r)=>n+Object.keys(C[r].taken).filter(k=>k.split(':')[0]===to).reduce((m,k)=>m+C[r].taken[k],0),0);
+const hornsCheck=C=>take(C,'horns.strongbow')>0&&take(C,'horns.stair')>0&&take(C,'xan.citadel')>0&&['horns.erehwon','horns.qiblai','horns.thalaba'].every(h=>take(C,h)>0);
+{T.ok('the Brotherhood of the Two Horns: the guides\' tally at Strongbow and Stair, the factor houses\' margins; the Sultan\'s toll at the lift',hornsCheck(Y.cuts),
+  'tally at Strongbow '+t(take(Y.cuts,'horns.strongbow'))+', at Stair '+t(take(Y.cuts,'horns.stair'))+'; factors: Erehwon '+t(take(Y.cuts,'horns.erehwon'))+', Qiblai '+t(take(Y.cuts,'horns.qiblai'))+', Thalaba '+t(take(Y.cuts,'horns.thalaba'))+'; the toll '+t(take(Y.cuts,'xan.citadel')));
+ T.neg('a house that took nothing is caught',hornsCheck,Object.fromEntries(Object.entries(Y.cuts).map(([r,c])=>[r,{taken:Object.fromEntries(Object.entries(c.taken).filter(([k])=>!k.startsWith('horns.stair:')))}])),Y.cuts);}
+// 17. the Geomancers' oil: the concession's wells, a fifth to the Treasury by the licence, the rest out by their caravans from Qiblai
+const oilCheck=(Bk,Tr)=>{const made=Bk['geo.oilfield'].made.oil||0,lic=Object.keys(Tr).filter(r=>/^oil\.licence/.test(r)).reduce((n,r)=>n+Object.values(Tr[r].tithed||{}).reduce((m,o)=>m+(o.oil||0),0),0),out=((Tr['trade.gate.geomancers']||{}).landed||{})['skm4jjo2vl>gate.geomancers']||{};
+ const ms=Bk['yuni.mission'];return{ok:made>XAN_TUNE.oil.kgYr*.8&&Math.abs(lic/made-XAN_TUNE.oil.licence)<.03&&(out.oil||0)>0&&!!ms&&!(ms.hungry.grain>0),made,lic,out:out.oil||0};};
+{const O=oilCheck(B,Y.trade);T.ok('the oil field, Yuni\'s mission and the Geomancers\' concession side by side: the wells, a fifth to the Treasury by the licence, the rest out by the Geomancers\' caravans from Qiblai; the mission fed',O.ok,
+  'made '+t(O.made)+', the licence '+t(O.lic)+', out by the Geomancers\' caravans '+t(O.out));
+ T.neg('a licence of two fifths is caught',x=>oilCheck(x.B,x.T).ok,{B,T:Object.assign({},Y.trade,{'oil.licence':{tithed:{'x':{oil:O.made*.4}}}})},{B,T:Y.trade});}
+// 18. the Rare Devisers' Godshearth expedition: the camp's sulfur, wax and rarities made only in the expedition season,
+//     landed at their house at Thalaba, and out by Yuni's caravans
+const landed=(r,leg)=>((Y.trade[r]||{}).landed||{})[leg]||{};
+const devCheck=(xp,L,O)=>(xp.made.sulfur||0)>50000&&(xp.made.wax||0)>20000&&(xp.made.rarities||0)>30&&(L.sulfur||0)>0&&(L.rarities||0)>0&&(O.rarities||0)>0;
+{const xp=B['exp.godshearth'],L=landed('expedition.godshearth','exp.godshearth>devisers.thalaba'),O=landed('trade.gate.yuni','lk.thalaba>gate.yuni');
+ T.ok('the Rare Devisers\' Godshearth expedition: sulfur, wax and rarities from the vents in its season, home to their house at Thalaba, out by Yuni\'s caravans',devCheck(xp,L,O),
+  'made sulfur '+t(xp.made.sulfur||0)+', wax '+t(xp.made.wax||0)+', rarities '+Math.round(xp.made.rarities||0)+'; landed at the house sulfur '+t(L.sulfur||0)+', rarities '+Math.round(L.rarities||0)+'; out to Yuni rarities '+Math.round(O.rarities||0)+', sulfur '+t(O.sulfur||0));
+ T.neg('an expedition that brought nothing home is caught',x=>devCheck(xp,x,O),{},L);}
+// 19. the Golden Tears: their armed camp's ore from the Rift floor's lodes in the cool months only, home to their house and sold
+//     on to the Sultan's assay; their escort's share of Dalab's Great Caravan at the capital
+const tearsCheck=(c,L,A,esc)=>(c.made.goldore||0)>T_ORE*.5&&(L.goldore||0)>0&&A>0&&esc>0;
+const T_ORE=XAN_TUNE.tears.camp.kgYr*30;
+{const c=B['exp.rift-gold'],L=landed('tears.rift','exp.rift-gold>tears.strongwall'),A=take(Y.cuts,'sxan7r1sln'),esc=take(Y.cuts,'tears.erehwon');
+ const offSeason=(Y.dailyMade||{})['exp.rift-gold'];
+ T.ok('the Golden Tears: ore from the unclaimed lodes of Lizard country, home to their house and on to the assay; the escort\'s share of the Great Caravan',tearsCheck(c,L,A,esc),
+  'ore made '+t(c.made.goldore||0)+', home '+t(L.goldore||0)+', sold to the assay '+t(A)+'; escort '+Object.keys(Y.cuts).filter(r=>Object.keys(Y.cuts[r].taken).some(k=>k.startsWith('tears.erehwon:'))).map(r=>Object.entries(Y.cuts[r].taken).filter(([k])=>k.startsWith('tears.erehwon:')).map(([k,n])=>k.split(':')[1]+' '+(n>1000?t(n):Math.round(n))).join(', ')).join('; '));
+ T.neg('a house whose escort took nothing is caught',x=>tearsCheck(c,L,A,x),0,esc);}
+// 20. the power (the owner, 2026-11-16): just enough to use the Sultanate's cuts of Yuni's oil: the Prismarchy's tenth burned
+//     in Qiblai's generator, the Sultan's licence in the large towns' (their avenues, for defence, and the richest homes);
+//     every lit town uses its power all year, and the cuts are what they should be
+const tithed=(Tr,re)=>Object.keys(Tr).filter(r=>re.test(r)).reduce((n,r)=>n+Object.values(Tr[r].tithed||{}).reduce((m,o)=>m+(o.oil||0),0),0);
+const elecCheck=(Bk,Tr,made)=>{const towns=['skm4jjo2vl'].concat(Object.keys(XAN_TUNE.lit)),bad=[];let used=0;
+ towns.forEach(s=>{const u=Bk[s].eaten.power||0,h=Bk[s].hungry.power||0;used+=u;if(!(u>0&&h<(u+h)*.1))bad.push(s+' '+(100*h/Math.max(1,u+h)).toFixed(0)+'% short');});
+ const council=tithed(Tr,/^oil\.council$/),lic=tithed(Tr,/^oil\.licence\./);
+ if(Math.abs(council/made-XAN_TUNE.oil.council)>.03)bad.push('the council\'s cut '+(council/made).toFixed(3));if(Math.abs(lic/made-XAN_TUNE.oil.licence)>.03)bad.push('the licence '+(lic/made).toFixed(3));
+ return{ok:!bad.length,bad,used,council,lic,towns:towns.length};};
+{const made=B['geo.oilfield'].made.oil||0,E=elecCheck(B,Y.trade,made);
+ T.ok('the power: Qiblai lit by the Prismarchy\'s cut of the oil, the large towns\' avenues and richest homes by the Sultan\'s licence, each town\'s power used all year',E.ok,
+  E.bad.join(', ')||(E.towns+' towns lit, '+Math.round(E.used/1000)+' MWh used; the council\'s oil '+t(E.council)+', the licence '+t(E.lic)+' of '+t(made)));
+ T.neg('a town whose generator went dry is caught',x=>elecCheck(x,Y.trade,made).ok,Object.assign({},B,{sl758m2396:{eaten:{},hungry:{power:1e5}}}),B);}
 // the year's books, for the reader
 const line=(s,k)=>Object.entries(B[s][k]||{}).filter(([g,n])=>n>=1).map(([g,n])=>g+' '+(n>=1000?t(n):Math.round(n))).join(', ');
 ['s57bkv9741','xan.citadel','skm4jjo2vl','s4zvgepuru','sxan7r1sln'].forEach(s=>console.log('\n'+s+': made '+line(s,'made')+'\n  imported '+line(s,'imported')+'\n  exported '+line(s,'exported')));

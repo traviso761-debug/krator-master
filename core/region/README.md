@@ -50,7 +50,9 @@ when it is absent (S0 step B):
 | `48-region-week.js` | the week's books and checks |
 | `49-region-govern.js` | the governor's and spoilage rules |
 | `50-region-valley.js` | **a valley at the abstract level** (S3): settlements declared from a plain spec, not a city plan; works as their own stores; the people eating by the hour; tithe roads; a road's `want` and `most` passed to SIM.trade (a long road needs a want that covers the gap between its carriers); the transfers. Longsong's valley and the Xanadu Sultanate run on it. **X1** (2026-11-16), each inert where absent: a settlement's own `scale`; a work's `site` (SIM.site: a lode that runs out, a fishery or the Dome's fall that regrows a night); a road's `stops` (a round of three or more, one leg time: SIM.trade lands a boat's whole load at the next stop, so a round is a relay and its stops `expect` the round's wares) |
-| `data/xan-tune.js` | `XAN_TUNE` (`[G data]`): **the Xanadu Sultanate's tune** (`core/simulation/PROPOSAL-XANADU.md`, step X0): about 350,000 people in 62 settlements: the towns and their works, the eight provinces' countrysides in bulk, the 21 lake towns and 4 islands, Erehwon's and Qiblai's rings (from `openworld/xanadu-oidong-highrift/plan/sites.json`), the work camps and forts, the four gateways, the dues and grants. `XAN_TUNE.valley(plan)` is the valley spec. Read in place; Longsong's `LS_TUNE` joins it at X2 |
+| `data/xan-tune.js` | `XAN_TUNE` (`[G data]`): **the Xanadu Sultanate's tune** (`core/simulation/PROPOSAL-XANADU.md`, step X0): about 350,000 people in 62 settlements: the towns and their works, the eight provinces' countrysides in bulk, the 21 lake towns and 4 islands, Erehwon's and Qiblai's rings (from `openworld/xanadu-oidong-highrift/plan/sites.json`), the work camps and forts, the four gateways, the dues and grants. `XAN_TUNE.valley(plan)` is the valley spec. Read in place. **X2** adds the gold and opal lodes as fields of short veins, the Geomancers' oil (Yuni's mission) and its power, and three merchant houses (the Two Horns, the Golden Tears, the Rare Devisers) whose take is road `cut`s |
+| `data/east-rift.js` | `EAST_RIFT` (`[G data]`, X2): the Sultanate and Longsong's valley as one economy. `EAST_RIFT.valley(Pxan, Pls)` joins `XAN_TUNE` and Longsong's `LS_TUNE`, unchanged. Longsong runs at 10 people an actor, with its windows prefixed `ls.`. Its caravan goes to Strongbow and its fealty to the citadel |
+| `tools/export-east-rift.js` | runs a year of the East Rift and writes its census (every settlement's pixel, people, works and books; every road's kind and landings; the cuts and transfers) for the census page |
 
 ## Still the isle's
 
@@ -71,7 +73,9 @@ Lift them into the tune when a culture needs them otherwise.
 - **The Xanadu Sultanate:** `node core/region/tests/test-xan-economy.js` (on `tools/ktest.js`). It runs a year by the hour
   on 472 actors, about 50 s, and holds it to PROPOSAL-XANADU's X0 and X1:
   - X0: everyone fed, the books balanced, the gold chain and the Fifth, the dues and grants, the lake's fish, the gateways, the iron, the seasons, the size;
-  - X1: the sites (the lode drawn down, the Dome's scrap capped, the fisheries holding), the lake's four market-boat rounds, the countrysides at 200 people an actor, the gateways staged at Strongbow and Thalaba.
+  - X1: the sites (the lode drawn down, the Dome's scrap capped, the fisheries holding), the lake's four market-boat rounds, the countrysides at 200 people an actor, the gateways staged at Strongbow and Thalaba;
+  - X2: the fields of veins, the Two Horns' tally and margins and the Sultan's toll, the Geomancers' oil, the Rare Devisers' expedition, the Golden Tears' camp and escort, the power.
+- **The East Rift (X2):** `node core/region/tests/test-east-rift.js` runs a year of the Sultanate and Longsong joined. It checks: declared, the books, everyone fed, the fealty and esteem, Longsong's caravan to Strongbow and its toll, the Order's goods out by Iziz, its crafts, the time.
 
   The salt runs about 8 % short in the first year (38 % before X1 staged the gateways); the owner expects a shortfall
   until the caravans from the north are built (2026-11-16).

@@ -25,6 +25,13 @@
        a road's `stops`: [settlement, ...] (three or more) in place of from/to: a round, 0, 1, ... and back to 0, each
          leg `minutes` long (SIM.trade's round: a carrier buys at each stop what the next one wants and lands it there;
          the lake's market boats round a shore)
+     X2 (2026-11-16, the owner: "the gold and opal lodes should collectively last >200 years but individually lodes may
+     dry up over the course of 2-3 years"; the Guilds of the Twins "try to profit from trade"):
+       a work's `site.veins`: [{amount}, ...]: a field of veins, one SIM.site each; the work draws on one until it runs dry,
+         then moves to the next (SIM.recipeSite), booked in S.veinMoves; the field is spent when the last runs dry;
+       a road's `cut`: [{at, to, share, goods?}]: of what the road lands at `at`, `share` goes on to `to` (a merchant
+         house's margin, a lift's toll), taken from `at`'s warehouses and landed in `to`'s first work (booked exported
+         and imported, so the books balance); S.cuts[road] = {taken: {good: n}}
      H.valleyRun(minutes, step)   the clock stepped `step` minutes at a time (60: the abstract level's hour)
      H.valleyBooks()         a snapshot: each settlement's people, stock, made, imported, exported, used and short by good,
                              what it ate and went without (`eaten`, `hungry`), and SIM.ledgerSnap()
@@ -37,7 +44,7 @@
 KREGION.part('50-region-valley', function (H) {
 H.simValley = function (V) {
   var KV = V.scale == null ? 10 : V.scale, m0 = V.start == null ? 0 : V.start, C = { m: m0, day: Math.floor(m0 / 1440), hour: (m0 % 1440 + 0.5) / 60, t: 0 };
-  var S = H.SIM = { clock: C, valley: V, towns: {}, order: [], problems: [], eaten: {}, hungry: {}, carry: {}, moves: [], last: m0 };
+  var S = H.SIM = { clock: C, valley: V, towns: {}, order: [], problems: [], eaten: {}, hungry: {}, carry: {}, moves: [], last: m0, veinWorks: [], veinMoves: [], cuts: {} };
   SIM.init({ seed: V.seed == null ? 1 : V.seed, hour: function () { return C.hour; }, day: function () { return C.day; }, t: function () { return C.t; }, err: function (m) { S.problems.push(m); } });
   ['SLEEP', 'WORK', 'REST'].forEach(function (a) { if (!SIM.R.activity[a]) SIM.activity({ id: a, indoor: a !== 'WORK' }); });
   if (V.calendar) SIM.calendar(V.calendar);
@@ -61,7 +68,12 @@ H.simValley = function (V) {
       X.places.push(P);
       SIM.store(Wk.id, { kind: 'warehouse', cap: Wk.cap });
       var R = { cap: Wk.cap, season: Wk.season, seasonRate: Wk.seasonRate };
-      if (Wk.site) {   /* X1: the work draws on a resource site of its settlement */
+      if (Wk.site && Wk.site.veins) {   /* X2: a field of veins, worked one at a time */
+        var Sv = Wk.site, vids = Sv.veins.map(function (v, i) { var vid = Wk.id + '.vein' + i;
+          SIM.site({ id: vid, settlement: s, kind: Sv.kind || Wk.kind, goods: Sv.goods || Wk.out, grade: v.grade == null ? Sv.grade : v.grade, yield: Sv.yield, amount: v.amount });
+          return vid; });
+        R.site = vids[0]; S.veinWorks.push({ work: Wk.id, settlement: s, veins: vids, at: 0 });
+      } else if (Wk.site) {   /* X1: the work draws on a resource site of its settlement */
         var St = Wk.site, sid = St.id || Wk.id + '.site';
         SIM.site({ id: sid, settlement: s, kind: St.kind || Wk.kind, goods: St.goods || Wk.out, grade: St.grade, yield: St.yield, amount: St.amount, regen: St.regen, capacity: St.capacity });
         R.site = sid; }
@@ -90,6 +102,27 @@ H.simValley = function (V) {
       minutes: Rd.minutes, stagger: Rd.stagger, mins: Rd.mins == null ? 60 : Rd.mins, goods: Rd.goods, expect: Rd.expect, share: Rd.share, keep: Rd.keep, want: Rd.want, most: Rd.most });
   });
   (V.transfers || []).forEach(function (Tr) { SIM.transfer(Tr); });
+  /* X2: the cuts: what a road landed at a stop since the last hour, a share of it moved on */
+  var CUTS = (V.roads || []).filter(function (Rd) { return Rd.cut && Rd.cut.length && SIM.TRADE && SIM.TRADE.routes[Rd.id]; });
+  CUTS.forEach(function (Rd) { S.cuts[Rd.id] = { taken: {}, seen: {} }; });
+  if (CUTS.length) SIM.stepHooks.push(function () {
+    CUTS.forEach(function (Rd) { var L = SIM.TRADE.routes[Rd.id].landed, Cx = S.cuts[Rd.id];
+      Rd.cut.forEach(function (c, ci) { if (!S.towns[c.at] || !S.towns[c.to]) return;
+        Object.keys(L).sort().forEach(function (leg) { if (leg.split('>')[1] !== c.at) return; var got = L[leg];
+          Object.keys(got).sort().forEach(function (g) { if (c.goods && c.goods.indexOf(g) < 0) return;
+            var k = ci + '|' + leg + '|' + g, d = (got[g] || 0) - (Cx.seen[k] || 0); if (d <= 0) return; Cx.seen[k] = got[g];
+            var owe = (Cx.carry && Cx.carry[k] || 0) + d * c.share, n = Math.floor(owe); (Cx.carry || (Cx.carry = {}))[k] = owe - n; if (n <= 0) return;
+            var took = 0; SIM.withEcon(c.at, function () { took = SIM.economyTake(g, n); if (took > 0) SIM.economyBook('exported', g, took); });
+            if (took <= 0) return;
+            SIM.withEcon(c.to, function () { SIM.economyLand(g, took, S.towns[c.to].spec.works[0].id); SIM.economyBook('imported', g, took); });
+            Cx.taken[c.to + ':' + g] = (Cx.taken[c.to + ':' + g] || 0) + took; }); }); }); });
+  });
+  /* X2: a vein run dry moves its work to the next vein of its field */
+  if (S.veinWorks.length) SIM.stepHooks.push(function (minute) {
+    S.veinWorks.forEach(function (Vw) { if (Vw.at >= Vw.veins.length - 1) return; var E = SIM.econ(Vw.settlement), st = E && E.resSites && E.resSites[Vw.veins[Vw.at]];
+      if (!st || st.amount == null || st.amount >= 1) return;
+      Vw.at++; SIM.recipeSite(Vw.work, Vw.veins[Vw.at]); S.veinMoves.push({ minute: minute, work: Vw.work, from: Vw.veins[Vw.at - 1], to: Vw.veins[Vw.at] }); });
+  });
   /* the herds to their summer pasture and home again (77-sim-6-season.js: the window's turn) */
   if (SIM.onSeason) SIM.onSeason(function (now, before, minute) {
     S.order.forEach(function (s) { S.towns[s].works.forEach(function (w) { if (!w.pasture) return; var on = !!now.windows[w.window], was = !!before.windows[w.window]; if (on === was) return;

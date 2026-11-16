@@ -25,7 +25,7 @@ T.goods={grain:{unit:'kg',crops:['vale-rice','emmer','basin-amaranth']},fish:{un
  salt:{unit:'kg'},tea:{unit:'kg'},cacao:{unit:'kg'},saffron:{unit:'kg'},opium:{unit:'kg',crop:'sky-poppy'},silk:{unit:'kg'},brocade:{unit:'kg'},
  timber:{unit:'kg'},charcoal:{unit:'kg'},copper:{unit:'kg'},goldore:{unit:'kg'},gold:{unit:'kg'},goldwork:{unit:'piece'},wheels:{unit:'wheel'},
  coin:{unit:'dinar'},opal:{unit:'kg'},scrap:{unit:'kg'},iron:{unit:'kg'},tools:{unit:'kg'},arms:{unit:'piece'},pearls:{unit:'kg'},wine:{unit:'kg'},oil:{unit:'kg'},
- sulfur:{unit:'kg'},pottery:{unit:'kg'},mats:{unit:'kg'}};
+ sulfur:{unit:'kg'},pottery:{unit:'kg'},mats:{unit:'kg'},wax:{unit:'kg'},rarities:{unit:'piece'},power:{unit:'kWh'}};
 /* the lake's and the capital's households also buy the market's wares (X1: what the market boats carry between the towns): the pots of Pāṭari, the mats of Lōṭas, the honey of Hāibh */
 T.diet={city:{grain:150*D,fish:15*D,fruit:12*D,salt:6*D,tea:1.5*D,cacao:.4*D,tools:.4*D,pottery:2*D,mats:1*D,honey:.3*D},
  town:{grain:160*D,fish:8*D,salt:6*D,tea:1*D,tools:.4*D},
@@ -38,7 +38,7 @@ T.diet={city:{grain:150*D,fish:15*D,fruit:12*D,salt:6*D,tea:1.5*D,cacao:.4*D,too
 /* the year (core/clock's 365 days; windows [from, to] in year days, 77-sim-6-season.js). The Vale is Cfa at about +25 °C:
    one long grain and rice harvest, tea flushed through spring, the poppy lanced at the end of the dry season, cacao
    picked through the wet, silk's spring rearing, saffron's autumn bloom */
-T.calendar={windows:{harvest:[150,200],'tea-flush':[40,130],lancing:[20,50],cacao:[150,250],silk:[60,120],saffron:[280,310],'summer-pasture':[120,240]}};
+T.calendar={windows:{harvest:[150,200],'tea-flush':[40,130],lancing:[20,50],cacao:[150,250],silk:[60,120],saffron:[280,310],'summer-pasture':[120,240],expedition:[120,240],'rift-season':[300,60]}};
 T.farm={inCropHa:1.5,seed:1/6,farmShare:.78,hh:5.5};   /* a household's land and seed; the share of the countryside's households that farm */
 T.netKgHH=y=>T.farm.inCropHa*y*1000*(1-T.farm.seed);
 /* THE PROVINCES (section 2). rural: the province's countryside people (the bulk district holds what the named places do
@@ -96,10 +96,44 @@ T.startDays=T.clockDay(T.calendar.windows.harvest[1])+30;
 T.gateways=[
  {id:'gate.iziz',name:'Iziz (by the Catch, the Twins and Strongbow)',entry:'sfgtxw10kr',side:'south',days:64,carriers:8,cap:40000,out:['goldwork','cacao','opium','tea','silk','wheels'],in:['salt','iron','arms','pearls','oil']},
  {id:'gate.dasri',name:'The Dasri (by the Catch oases and Stair)',entry:'sfgtxw10kr',side:'south',days:22,carriers:6,cap:30000,out:['cacao','tea','silk','opium'],in:['salt']},
- {id:'gate.yuni',name:'Yuni (by the northern passes from Thalaba)',entry:'lk.thalaba',side:'north',days:48,carriers:10,cap:20000,out:['goldwork','saffron','brocade','opal','silk'],in:['salt','iron','arms','wine','oil']},
- {id:'gate.dalab',name:'Dalab (the Annual Great Caravan, Nulab over the North Rift Bench)',entry:'s57bkv9741',side:'north',days:182,carriers:1,cap:420000,out:['cacao','saffron','opium','tea','brocade','silk'],in:['salt','iron','wine','pearls']}];
-T.gatePool={salt:1e7,iron:1e6,arms:1e5,pearls:1e4,wine:1e6,oil:1e6};
-T.gateWant={goldwork:2,cacao:1200,opium:650,saffron:8,tea:400,silk:80,brocade:40,opal:.4,wheels:3};   /* the gateways' take a day, all four together: what the country makes less its own use (Gemini's exports scaled to it) */
+ {id:'gate.yuni',name:'Yuni (by the northern passes from Thalaba)',entry:'lk.thalaba',side:'north',days:48,carriers:10,cap:20000,out:['goldwork','saffron','brocade','opal','silk','sulfur','wax','rarities'],in:['salt','iron','arms','wine','oil']},
+ {id:'gate.dalab',name:'Dalab (the Annual Great Caravan, Nulab over the North Rift Bench)',entry:'s57bkv9741',side:'north',days:182,carriers:1,cap:420000,out:['cacao','saffron','opium','tea','brocade','silk'],in:['salt','iron','wine','pearls']},
+ {id:'gate.geomancers',name:'The Geomancers (their oil caravans from Locus, stopping at Qiblai)',entry:'skm4jjo2vl',side:'oil',days:40,carriers:4,cap:30000,out:['oil','wheels','cacao'],in:['iron','tools']}];
+/* X2: the Geomancers' concession on Qiblai's oil field (about 6 km from the city; the region's oil marker within its reach) */
+T.oil={px:[925,1598],people:300,kgYr:400000,licence:.2,council:.1};
+T.mission=['yuni.mission','Yuni\'s mission at the oil field (its cloister and lodging beside the Geomancers\' wells)','skm4jjo2vl',926,1597,40];   /* the owner: the field is both */
+/* THE POWER (the owner, 2026-11-16): "if the geomancers have a presence at qiblai it will likely be partly electrified. the
+   council will take its cut"; "Qiblai will be electrified along all major avenues and in buildings except in poor areas;
+   elsewhere in Xanadu only the major avenues of large settlements, for defense, and in the richest of homes. just enough to
+   use the cut of oil they get from Yuni". The concession is Yuni's mission (the Geomancers, "mostly Yuni", LORE.md 6.9), so
+   the oil the Sultanate keeps is its two cuts: the Prismarchy's (`council`), burned in Qiblai's generator, and the Sultan's
+   licence (`licence`), sent to the generators of the large towns in the shares of `T.lit` (their avenues' lamps and the
+   richest homes). Each generator burns its cut at `T.chain.dynamo`'s kWh a kg, and its town uses the power all year */
+T.lit={s57bkv9741:.45,s4zvgepuru:.15,sl758m2396:.1,sfgtxw10kr:.15,'xan.pher':.15};   /* the licence's split: the capital (the citadel and the avenues), Theodiga, Kirstabal, Strongbow (the gate), Phēr */
+/* X2: the summer expedition from Thalaba to Godshearth's vents (Gemini's 218 km summer road; the camp's place is approximate,
+   north over the rim toward the Godthrone) */
+T.expedition={id:'exp.godshearth',name:'The Rare Devisers\' expedition camp at Godshearth (Thalaba\'s summer road)',faction:'devisers',home:'devisers.thalaba',px:[828,1380],km:218,people:150,make:{sulfur:90000,wax:40000,rarities:60}};
+/* X2 (the owner, 2026-11-16): two houses that compete with the Two Horns (*proposed*, no lore yet beyond the owner's words):
+   THE GOLDEN TEARS, "a bit more militaristic, running expeditions into Lizard country to seek out unclaimed gold lodes": their
+   house in the Gold March and a factor in the capital; an armed prospecting camp in the Rift floor working a field of short
+   lodes in the cool months, its ore home to the house and on to the Sultan's assay, where the Fifth is taken of the gold;
+   and they escort Dalab's Annual Great Caravan, a share of what it lands at the capital.
+   THE RARE DEVISERS, "whose specialty is running the expeditions to the Godshearth": their house at Thalaba and a factor in
+   the capital; the Godshearth camp is theirs (T.expedition), its sulfur, wax and rarities home to their house, which sells
+   them on to Yuni's caravans at Thalaba */
+T.tears={escort:.04,houses:[['tears.strongwall','The Golden Tears: their house in the Gold March','sxan7r1sln',913,1641,80],['tears.erehwon','The Golden Tears\' factor house, Erehwon','s57bkv9741',806,1517,30]],
+ camp:{id:'exp.rift-gold',name:'The Golden Tears\' armed prospecting camp in Lizard country (the Rift floor; approximate)',px:[850,1628],km:110,people:120,kgYr:70,years:30}};   /* kgYr: the gold its ore holds (30 kg of ore a kg) */
+T.devisers={houses:[['devisers.thalaba','The Rare Devisers: their house at Thalaba','lk.thalaba',826,1488,40],['devisers.erehwon','The Rare Devisers\' factor house, Erehwon','s57bkv9741',807,1516,15]]};
+/* X2: the Brotherhood of the Two Horns: [id, name, the town it stands in (null: off the map), px, py, people] */
+T.horns={tally:.04,margin:.03,houses:[
+ ['horns.strongbow','The Brotherhood of the Two Horns: the guild house at the Strongbow gate','sfgtxw10kr',1001,1597,300],
+ ['horns.stair','The Brotherhood\'s house at the Stair gate (off the map; its table is Stair\'s)',null,1106,1442,0],
+ ['horns.erehwon','The Two Horns\' factor house, Erehwon','s57bkv9741',806,1515,40],['horns.qiblai','The Two Horns\' factor house, Qiblai','skm4jjo2vl',922,1594,40],
+ ['horns.theodiga','The Two Horns\' factor house, Theodiga','s4zvgepuru',908,1534,20],['horns.kirstabal','The Two Horns\' factor house, Kirstabal','sl758m2396',989,1599,20],
+ ['horns.pher','The Two Horns\' factor house, Phēr','xan.pher',810,1482,20],['horns.thalaba','The Two Horns\' factor house, Thalaba','lk.thalaba',825,1487,20]]};
+T.toll=.05;   /* the Sultan's toll at the Strongbow lift, on what the Catch caravans land there */
+T.gatePool={salt:1e7,iron:1e6,arms:1e5,pearls:1e4,wine:1e6,oil:1e6,tools:1e5};
+T.gateWant={goldwork:2,cacao:1200,opium:650,saffron:8,tea:400,silk:80,brocade:40,opal:.4,wheels:3,oil:870,sulfur:230,wax:105,rarities:.15};   /* the gateways' take a day, all four together: what the country makes less its own use (Gemini's exports scaled to it) */
 /* THE DUES: a fixed yearly bill each province's seat sends the Treasury after the harvest (the Chancellor's assessment,
    bound by tradition, never answering a bad year); Qiblai's grant of fealty and the Sultan's grants of esteem */
 T.dues={day:T.clockDay(215),bills:{skm4jjo2vl:{grain:120000,cacao:4000,honey:800},s4zvgepuru:{grain:90000,saffron:60,tea:1500,silk:600},
@@ -111,10 +145,15 @@ T.dues={day:T.clockDay(215),bills:{skm4jjo2vl:{grain:120000,cacao:4000,honey:800
    for the gateways */
 T.chain={assay:{in:{goldore:30},out:{gold:1},hours:20},goldsmith:{in:{gold:.1},out:{goldwork:1},hours:600},mint:{in:{gold:1},out:{coin:250},hours:12},
  wheel:{in:{copper:4,gold:.02},out:{wheels:1},hours:580},weave:{in:{silk:1.2},out:{brocade:1},hours:110},
- smelt:{in:{scrap:1,charcoal:1},out:{iron:1},hours:2},smith:{in:{iron:1},out:{tools:1},hours:3}};
+ smelt:{in:{scrap:1,charcoal:1},out:{iron:1},hours:2},smith:{in:{iron:1},out:{tools:1},hours:3},
+ dynamo:{in:{oil:1},out:{power:3}}};   /* a kg of oil to 3 kWh (a generator's hours set by what it burns, in valley()) */
 T.mine={goldore:6400,copper:0,scrap:120000,opal:180};   /* a year's make: the gold mines' ore (about 210 kg of gold), the salvagers' scrap, Opal Valley's opal */
 T.fifth=.2;
-T.lodeYears=40;    /* X1: a lode's ore in the ground, in years of its make (the gold field, the opal diggings, the March's copper band) */
+T.lodeYears=40;    /* X1: the March's copper band's ore in the ground, in years of its make */
+/* X2 (the owner, 2026-11-16: the gold and opal lodes collectively last over 200 years, a lode may dry up in 2-3 years): a field
+   of veins, each 2 to 3 years of the work's make (spread by the golden ratio, so no draw), enough of them for years */
+T.field=(kind,kgYr,years)=>{const veins=[];let tot=0;for(let i=0;tot<kgYr*years;i++){const a=Math.round(kgYr*(2+((i*0.6180339887)%1)));veins.push({amount:a});tot+=a;}return{kind,grade:'rich',veins};};
+T.fieldYears=210;
 T.scaleBulk=200;   /* X1: people an actor stands for in a province's countryside (the drawn places keep the valley's 50) */
 T.valley=function(P,o){o=o||{};const K=o.scale==null?50:o.scale,yr=365,win=w=>{const W=T.calendar.windows[w];return(W[1]-W[0]+yr)%yr;};
  const rate=(kgYr,crew,days,k)=>{k=k==null?K:k;return kgYr/(Math.max(1,Math.round(crew/k))*k*(days==null?yr:days)*12);};
@@ -153,7 +192,7 @@ T.valley=function(P,o){o=o||{};const K=o.scale==null?50:o.scale,yr=365,win=w=>{c
  town('xan.pher','Phēr (the north shore\'s fair)',810,1483,6000,'lake',[{id:'ph.fishing',kind:'fishing',name:'the dugouts',crew:600,out:['fish'],rate:rate(6000*T.fishKgPerson*.6,600),site:T.fishery(6000*T.fishKgPerson*.6)}]);
  /* the work camps on the March */
  const mine=(id,name,px,py,people,parent,out,kgYr)=>{const p=at(px,py);seats[id]=add({id,name,faction:'xanadu',parent,people,x:p.x,z:p.z,eats:eats('camp'),keepDays:10,
-  start:{grain:Math.round(eatYr('camp',people)*T.startDays/yr),salt:people*2,tea:people*.3,tools:people*.4},works:[{id:id+'.works',kind:'adit',name,crew:Math.round(people*.8),out:[out],rate:rate(kgYr,Math.round(people*.8)),site:{kind:out==='goldore'?'lode':'opal-diggings',grade:'rich',amount:kgYr*T.lodeYears}}]});if(id!=='sjuarjbku0')bump(parent,eatYr('camp',people));};   /* Opal Valley is its province's seat: its own countryside feeds it */
+  start:{grain:Math.round(eatYr('camp',people)*T.startDays/yr),salt:people*2,tea:people*.3,tools:people*.4},works:[{id:id+'.works',kind:'adit',name,crew:Math.round(people*.8),out:[out],rate:rate(kgYr,Math.round(people*.8)),site:T.field(out==='goldore'?'lode':'opal-diggings',kgYr,T.fieldYears)}]});if(id!=='sjuarjbku0')bump(parent,eatYr('camp',people));};   /* Opal Valley is its province's seat: its own countryside feeds it */
  mine('smgxtultfq','The gold mines on the lode',911,1665,950,'sxan7r1sln','goldore',T.mine.goldore);
  mine('sjuarjbku0','Opal Valley Mines (the Sultan\'s factor)',1038,1662,850,'sxan7r1sln','opal',T.mine.opal);
  /* the forts of the Marches */
@@ -197,7 +236,7 @@ T.valley=function(P,o){o=o||{};const K=o.scale==null?50:o.scale,yr=365,win=w=>{c
     works:[{id:id+'.byre',kind:'byre',name:'the byres',crew,herd:{out:['dairy'],rate:.4/24,animals:300},pasture:{id:id+'.pasture',window:'summer-pasture'}}]});
    R.push({id:'tithe.'+id,from:id,to:sid,minutes:240,cap:20000,share:{[id]:{dairy:.6}},goods:{[sid]:['grain','salt','tea','tools']}});}});});
  /* ---- THE INTERNAL ROADS (net51's xanadu class and Gemini's barge links; minutes at 25 km a day by road, 60 by barge) */
- const road=(id,a,b,km,mode,goods,o3)=>R.push(Object.assign({id,from:a,to:b,minutes:Math.round(km/(mode==='barge'?60:25)*1440),cap:mode==='barge'?60000:30000,carriers:o3&&o3.carriers||3,stagger:Math.round(km/25*1440/3),want:o3&&o3.want||30,goods},o3&&o3.expect?{expect:o3.expect}:{}));
+ const road=(id,a,b,km,mode,goods,o3)=>R.push(Object.assign({id,from:a,to:b,minutes:Math.round(km/(mode==='barge'?60:25)*1440),cap:mode==='barge'?60000:30000,carriers:o3&&o3.carriers!=null?o3.carriers:3,stagger:Math.round(km/25*1440/3),want:o3&&o3.want!=null?o3.want:30,goods},o3&&o3.expect?{expect:o3.expect}:{}));
  road('road.er-qb','s57bkv9741','skm4jjo2vl',321,'road',{s57bkv9741:['salt','iron','tools','arms','wine','pearls','gold'],skm4jjo2vl:['grain','cacao','goldwork','wheels','honey','dairy','timber','charcoal','tea','opium','saffron','silk']},{carriers:6});
  road('road.er-th','s57bkv9741','s4zvgepuru',228,'barge',{s57bkv9741:['salt','tools','arms','charcoal'],s4zvgepuru:['grain','cacao','saffron','tea','opium','silk','iron','fruit']},{carriers:4,expect:{s4zvgepuru:{charcoal:330}}});
  road('road.qb-th','skm4jjo2vl','s4zvgepuru',155,'barge',{skm4jjo2vl:['charcoal','grain','salt'],s4zvgepuru:['iron','tools']},{carriers:3,expect:{s4zvgepuru:{charcoal:330},skm4jjo2vl:{iron:40}}});
@@ -251,7 +290,7 @@ T.valley=function(P,o){o=o||{};const K=o.scale==null?50:o.scale,yr=365,win=w=>{c
  /* ---- THE GATEWAYS: off the map, a pool each, reached from its staging town (X1). The caravans start at the gateway, so
     the first salt lands within their first passage. Each exported good's take is split among the gateways that carry it */
  const carriedBy={};T.gateways.forEach(G=>G.out.forEach(g=>{carriedBy[g]=(carriedBy[g]||0)+1;}));
- T.gateways.forEach(G=>{add({id:G.id,name:G.name+' (off the map)',faction:'gate',people:0,x:E.x,z:E.z-1e6,eats:{},keepDays:0,start:Object.assign({},T.gatePool),
+ T.gateways.forEach(G=>{add({id:G.id,name:G.name+' (off the map)',faction:'gate',people:0,x:E.x,z:E.z-1e6,eats:{},keepDays:0,start:Object.fromEntries(G.in.filter(g=>T.gatePool[g]).map(g=>[g,T.gatePool[g]])),   /* a gateway's pool holds only what it brings in */
    works:[{id:G.id+'.market',kind:'bazaar',name:'the gateway\'s bazaar',crew:0,out:[],rate:0}]});
   const exp={};G.out.forEach(g=>{if(T.gateWant[g])exp[g]=T.gateWant[g]/carriedBy[g];});G._exp=exp;
   R.push({id:'trade.'+G.id,from:G.id,to:G.entry,minutes:G.days*1440,carriers:G.carriers,stagger:Math.round(G.days*1440/G.carriers),cap:G.cap,keep:20,want:Math.max(60,G.days*2),
@@ -282,6 +321,85 @@ T.valley=function(P,o){o=o||{};const K=o.scale==null?50:o.scale,yr=365,win=w=>{c
   const wares=['pottery','mats','honey','fruit','fish'],use={};wares.forEach(g=>{use[g]=pts.reduce((n,s)=>n+s.people*((s.eats||{})[g]||0),0);});
   const expect={};stops.forEach(s=>{expect[s]={};wares.forEach(g=>{if(use[g]>0)expect[s][g]=use[g]*.5;});});
   R.push({id,stops,minutes:Math.round(km/pts.length/12*60)+30,cap:6000,carriers:3,stagger:120,want:8,keep:3,goods:null,expect});});
+ /* ---- X2: THE GEOMANCERS' OIL (the owner, 2026-11-16: "The geomancers run the oil near Qiblai no? maybe their caravans
+    should tend to stop there"). The Geomancers' concession (the drilling guild of Locus, LORE.md "The Geomancers") works
+    Qiblai's field as Yuni's mission (the owner: "the yuni mission/oilfield near town"): a fifth of the oil to the Sultan by
+    the licence and a tenth to the Prismarchy, both burned for power (THE POWER, above), the rest to Qiblai's market, where
+    their own caravans stop for it and trade (a gateway entering at Qiblai) */
+ {const p=at(T.oil.px[0],T.oil.px[1]);add({id:'geo.oilfield',name:'The Geomancers\' concession (Qiblai\'s oil field, beside Yuni\'s mission)',faction:'geomancer',parent:'skm4jjo2vl',people:T.oil.people,x:p.x,z:p.z,eats:eats('camp'),keepDays:20,
+   start:{grain:Math.round(eatYr('camp',T.oil.people)*T.startDays/yr),salt:T.oil.people*2,tea:60,tools:120},
+   works:[{id:'geo.wells',kind:'pumpjacks',name:'the wells and the still-house',crew:Math.round(T.oil.people*.7),out:['oil'],rate:rate(T.oil.kgYr,Math.round(T.oil.people*.7))},
+  ]});
+  bump('skm4jjo2vl',eatYr('camp',T.oil.people));
+  /* the generators: a town's cut of the oil burned all year, its power used by the town (Qiblai's avenues and all but its
+     poor quarters; elsewhere the avenues and the richest homes) */
+  const dynamo=(town,kgYr)=>{const s=S.find(q=>q.id===town);if(!s)return;const k=s.scale==null?K:s.scale,kWh=T.chain.dynamo.out.power;
+   s.works.push({id:town+'.dynamo',kind:'dynamo',name:'the generator (the Geomancers\' make, on an Ancient engine)',crew:k,batch:{in:{oil:1},out:{power:kWh},hours:12*k/(kgYr/yr)}});
+   s.eats=Object.assign({},s.eats,{power:kgYr*kWh/yr/s.people});s.start=Object.assign({},s.start,{power:Math.round(kgYr*kWh/yr*5),oil:Math.round((s.start.oil||0)+kgYr/yr*10)});};
+  const oilYr=T.oil.kgYr;dynamo('skm4jjo2vl',oilYr*T.oil.council);
+  R.push({id:'oil.qiblai',from:'geo.oilfield',to:'skm4jjo2vl',minutes:Math.round(12/25*1440),cap:30000,carriers:2,share:{'geo.oilfield':{oil:1-T.oil.licence-T.oil.council}},goods:{skm4jjo2vl:['grain','salt','tea','tools']}});
+  R.push({id:'oil.council',from:'geo.oilfield',to:'skm4jjo2vl',minutes:Math.round(12/25*1440),cap:10000,carriers:1,share:{'geo.oilfield':{oil:T.oil.council}},goods:{skm4jjo2vl:[]}});   /* the Prismarchy's cut */
+  /* the Sultan's licence, by the Treasury's tankers straight to the large towns' generators */
+  Object.keys(T.lit).forEach(town=>{const a=S.find(q=>q.id==='geo.oilfield'),b=S.find(q=>q.id===town);if(!b)return;const km=Math.hypot(a.x-b.x,a.z-b.z)/1000*1.3;
+   dynamo(town,oilYr*T.oil.licence*T.lit[town]);
+   R.push({id:'oil.licence.'+town,from:'geo.oilfield',to:town,minutes:Math.round(km/25*1440)+60,cap:10000,carriers:2,share:{'geo.oilfield':{oil:T.oil.licence*T.lit[town]}},goods:{[town]:[]}});});
+  addExpect(addGoods('road.er-qb','skm4jjo2vl',['oil']),'s57bkv9741',{oil:6});}
+ /* ---- X2: THE MERCHANT HOUSES: a house is a settlement of its faction beside its town, a counting house with no make,
+    that sells what it holds back into its town by want (the road's expect names what the town takes from it) */
+ const house=faction=>([id,name,parent,px,py,people],expect)=>{const p=at(px,py);add({id,name,faction,parent,people,x:p.x,z:p.z,eats:eats('town'),keepDays:10,
+   start:{grain:Math.round(eatYr('town',people)*T.startDays/yr),salt:people*3,tea:people,tools:people*.3},
+   works:[{id:id+'.house',kind:'counting-house',name:'the counting house and its warehouses',crew:Math.min(20,people),out:[],rate:0}]});
+  if(parent&&S.find(q=>q.id===parent))R.push(Object.assign({id:faction+'.sell.'+id.split('.')[1],from:id,to:parent,minutes:60,cap:20000,carriers:2,want:10,keep:5,goods:null},expect?{expect:{[parent]:expect}}:{}));};
+ /* ---- X2: YUNI'S MISSION at the oil field (the owner, 2026-11-16, by way of the Qiblai kit's session: the field is "both",
+    Yuni's mission and the Geomancers' concession side by side): the mission's cloister and lodging beside the wells,
+    supplied from Qiblai's market as a house is */
+ house('yuni')(T.mission);
+ /* ---- X2: THE RARE DEVISERS and their expeditions: Thalaba's summer road to Godshearth (Gemini's 218 km dirt road): their
+    camp works the vents in the expedition season, its sulfur, wax and rarities home to their house at Thalaba, which sells
+    them on to Yuni's caravans there */
+ {const Xp=T.expedition,p=at(Xp.px[0],Xp.px[1]);
+  T.devisers.houses.forEach(h=>house('devisers')(h,h[0]===Xp.home?{sulfur:Xp.make.sulfur/yr,wax:Xp.make.wax/yr,rarities:Xp.make.rarities/yr}:null));
+  add({id:Xp.id,name:Xp.name,faction:Xp.faction,parent:Xp.home,people:Xp.people,x:p.x,z:p.z,eats:eats('camp'),keepDays:20,
+   start:{grain:Math.round(eatYr('camp',Xp.people)*T.startDays/yr),salt:Xp.people*2,tea:30,tools:60},
+   works:Object.keys(Xp.make).map(g=>({id:Xp.id+'.'+g,kind:g+'-diggings',name:'the vents\' '+g,crew:Math.round(Xp.people*.4),out:[g],rate:rate(Xp.make[g],Math.round(Xp.people*.4),win('expedition')),season:'expedition'}))});
+  bump('lk.thalaba',eatYr('camp',Xp.people));
+  const sh={};Object.keys(Xp.make).forEach(g=>{sh[g]=.95;});
+  R.push({id:'expedition.godshearth',from:Xp.id,to:Xp.home,minutes:Math.round(Xp.km/25*1440),cap:20000,carriers:3,stagger:Math.round(Xp.km/25*1440/3),want:60,share:{[Xp.id]:sh},goods:{[Xp.home]:['grain','salt','tea','tools']}});
+  R.push({id:'devisers.supply',from:'lk.thalaba',to:Xp.home,minutes:60,cap:20000,carriers:1,want:30,keep:5,goods:{'lk.thalaba':['grain','salt','tea','tools'],[Xp.home]:[]},
+   expect:{[Xp.home]:{grain:eatYr('camp',Xp.people)/yr,salt:Xp.people*2/yr,tea:30/yr,tools:60/yr}}});}
+ /* ---- X2: THE GOLDEN TEARS: their house in the Gold March sends an armed camp into Lizard country in the cool months to
+    work the unclaimed lodes it finds (a field of short veins, as the Sultan's mines), the ore home to the house and on to
+    the Sultan's assay at the Gold March (where the Fifth is taken of the gold); their factor at the capital escorts Dalab's
+    Annual Great Caravan for a share of what it lands */
+ {const Tg=T.tears,C=Tg.camp,p=at(C.px[0],C.px[1]),home=Tg.houses[0][0],crew=Math.round(C.people*.6),ore=C.kgYr*30;
+  Tg.houses.forEach(h=>house('tears')(h));
+  add({id:C.id,name:C.name,faction:'tears',parent:home,people:C.people,x:p.x,z:p.z,eats:Object.assign(eats('camp'),{arms:.0005}),keepDays:45,
+   start:{grain:Math.round(eatYr('camp',C.people)*T.startDays/yr),salt:C.people*2,tea:30,tools:60,arms:40},
+   works:[{id:C.id+'.diggings',kind:'adit',name:'the prospectors\' diggings',crew,out:['goldore'],rate:rate(ore,crew,win('rift-season')),season:'rift-season',site:T.field('lode',ore,C.years)}]});
+  bump('sxan7r1sln',eatYr('camp',C.people));
+  R.push({id:'tears.rift',from:C.id,to:home,minutes:Math.round(C.km/20*1440),cap:10000,carriers:3,stagger:Math.round(C.km/20*1440/3),want:90,share:{[C.id]:{goldore:.95}},goods:{[home]:['grain','salt','tea','tools','arms']},
+   expect:{[C.id]:{arms:C.people*.0005}}});
+  /* the house sells its ore to the Sultan's assay as it lands (a cut of all of it), and buys the camp's stores in the town */
+  R.find(r=>r.id==='tears.rift').cut=[{at:home,to:'sxan7r1sln',share:1,goods:['goldore'],why:'the house sells its ore to the Sultan\'s assay'}];
+  R.push({id:'tears.supply',from:'sxan7r1sln',to:home,minutes:60,cap:10000,carriers:1,want:45,keep:5,goods:{sxan7r1sln:['grain','salt','tea','tools','arms'],[home]:[]},
+   expect:{[home]:{grain:eatYr('camp',C.people)/yr*1.5,salt:C.people*2/yr,tea:30/yr,tools:60/yr,arms:C.people*.0005}}});}
+ /* ---- X2: THE BROTHERHOOD OF THE TWO HORNS (Ṭā'ifat Dalīl al-Qaranayn: the Xanadui guides of the Twins' two routes,
+    biomes/twins/PLAN.md section 4; the owner, 2026-11-16: "the guilds of the twins as merchant houses with a presence
+    throughout Xanadu who additionally try to profit from trade"). Their guild houses at Strongbow and Stair (the gates of
+    the crossing), their factor houses in six towns. Their take, as cuts on what roads land:
+      the Custom of the Split Tally: a share of every Catch caravan, at Strongbow's gate inbound and at Stair outbound;
+      the merchant houses' margin: a share of what the trunk roads land where a factor house stands;
+    and the factors sell it back into their towns (a road by want). The Sultan's toll at the Strongbow lift is a cut too */
+ const H=T.horns;H.houses.forEach(h=>house('horns')(h));
+ const factorAt={};H.houses.forEach(([id,,parent])=>{if(parent)factorAt[parent]=id;});
+ const cutOn=(roadId,cuts)=>{const Rd=R.find(r=>r.id===roadId);if(!Rd)return;Rd.cut=(Rd.cut||[]).concat(cuts);};
+ ['trade.gate.iziz','trade.gate.dasri'].forEach(id=>cutOn(id,[
+  {at:'sfgtxw10kr',to:'horns.strongbow',share:H.tally,why:'the guides\' tally, half at the gate'},
+  {at:id.slice(6),to:'horns.stair',share:H.tally,why:'the guides\' tally outbound, at Stair'},
+  {at:'sfgtxw10kr',to:'xan.citadel',share:T.toll,why:'the Sultan\'s toll at the Strongbow lift'}]));
+ ['trade.gate.yuni','trade.gate.dalab','trade.gate.geomancers','road.er-qb','road.er-th','road.qb-ks','road.qb-sw','road.sw-er','lake.cross','road.pher-thalaba'].forEach(id=>{const Rd=R.find(r=>r.id===id);if(!Rd)return;
+  [Rd.from,Rd.to].forEach(end=>{if(factorAt[end])cutOn(id,[{at:end,to:factorAt[end],share:H.margin,why:'the merchant house\'s margin'}]);});});
+ cutOn('trade.gate.dalab',[{at:'s57bkv9741',to:'tears.erehwon',share:T.tears.escort,why:'the Golden Tears\' escort of the Annual Great Caravan'}]);
  /* ---- THE CHAIN OF SUPPLY: who feeds whom (the capital the root). X0's roads are two-stop, and a town's want is its own
     use: a seat that passes salt, tea and tools on to its villages wants more than it eats, so the road into it expects
     its whole subtree's use a day (X1's multi-stop roads take this over) */
@@ -320,8 +438,13 @@ T.valley=function(P,o){o=o||{};const K=o.scale==null?50:o.scale,yr=365,win=w=>{c
  tr.push({id:'fealty.qiblai',from:T.dues.fealty.from,to:'xan.citadel',goods:T.dues.fealty.goods,first:T.dues.fealty.day,every:365});
  tr.push({id:'esteem.qiblai',from:'xan.citadel',to:T.dues.esteem.to,goods:T.dues.esteem.goods,first:T.dues.esteem.day,every:365});
  const V={seed:20261116,scale:K,start:0,calendar:T.calendar,goods:T.goods,
-  factions:[{id:'xanadu',name:'The Sultanate of Xanadu'},{id:'gate',name:'The gateways (Iziz, Yuni, the Dasri, Dalab)'}],
-  relations:[{a:'xanadu',b:'gate',stance:'friendly'},{a:'gate',b:'xanadu',stance:'friendly'}],
+  factions:[{id:'xanadu',name:'The Sultanate of Xanadu'},{id:'gate',name:'The gateways (Iziz, Yuni, the Dasri, Dalab, the Geomancers)'},
+   {id:'geomancer',name:'The Geomancers (the drilling guild of Locus)'},{id:'horns',name:'The Brotherhood of the Two Horns (the Twins\' guides and merchant houses)'},
+   {id:'tears',name:'The Golden Tears (a merchant house: armed prospecting in Lizard country, caravan escorts)'},{id:'devisers',name:'The Rare Devisers (a merchant house: the Godshearth expeditions)'},
+   {id:'yuni',name:'Yuni (its mission at Qiblai\'s oil field)'}],
+  /* the three houses compete: wary of one another, friendly to the Sultanate, the gateways, the Geomancers and Yuni */
+  relations:(()=>{const F=['xanadu','gate','geomancer','yuni','horns','tears','devisers'],house=f=>['horns','tears','devisers'].indexOf(f)>=0;
+   return[].concat(...F.map(a=>F.filter(b=>b!==a).map(b=>({a,b,stance:house(a)&&house(b)?'wary':'friendly'}))));})(),
   settlements:S,roads:R,transfers:tr,_lake:X,_need:need};
  return V;};
 return T;})();
