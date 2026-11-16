@@ -180,7 +180,7 @@ let M,nx,ny,i0,j0,su,sv,cx,cy,X0,Y0,MW,MH,EL,WLV,WHAS,REL,CL,RN,TP,BI,MK,SL,SU,S
 let SID,KIT,STY,PALL,NB,CLCODE,CLGROUP;
 // a region with region.json `relief` (core/world/PLAN-RELIEF.md; 43-world-relief.js): terraces lie only on caprock
 // (WRELIEF.bench) instead of on the absolute height. Every overlay's style and palette are BIOME_GROUND's, relief or not
-let RELIEF=false;
+let RELIEF=false,LANDF=false;
 // the kits (47-world-kits.js) are read at init: which overlay each grows on
 let KITNAMES=[];W.KITS=KITNAMES;
 W.init=function(R){M=WORLD_DATA.meta;const Hd=M.heights,F=M.frame;
@@ -206,7 +206,7 @@ W.init=function(R){M=WORLD_DATA.meta;const Hd=M.heights,F=M.frame;
   const P=g?g.P:MISSING,o={};for(const k in P)o[k]=lin(P[k]);PALL[i]=o;});
  if(W.unstyled.length&&typeof reportErr==='function')reportErr('core/world: no ground style for the overlay(s) '+W.unstyled.join(', ')+' (add each to BIOME_GROUND in 41-world-fields.js)');
  CLCODE=M.classes.map(c=>c.code);CLGROUP=M.classes.map(c=>c.group);
- buildChannels();buildStreams();buildRoads();buildTowns();W.ready=true;};
+ buildChannels();buildStreams();buildLandforms();buildRoads();buildTowns();W.ready=true;};
 W.px=x=>cx+x/2000;W.py=z=>cy+z/2000;W.fromPx=(px,py)=>[(px-cx)*2000,(py-cy)*2000];
 W.box=()=>{const F=M.frame.box_px;return[(F[0]-cx)*2000,(F[1]-cy)*2000,(F[2]-cx)*2000,(F[3]-cy)*2000];};
 
@@ -446,6 +446,28 @@ const FP={};
 W.flowAt=function(x,z,out){out=out||{};out.h=H(x,z,150,FP,true,true);out.rain=W.rain(x,z);
  out.K=!W.inside(x,z)?3:W.lakeWater(x,z)>out.h-.5?1:FP.cd<FP.cw+20?2:0;return out;};
 
+// ---------------------------------------------------------------- the landform records (a relief region's: 43b-world-landforms.js)
+// core/world/PLAN-RELIEF.md P4 (R5, S7): KSTACKS bodies placed by KRAND per 2 km cell by the land style there (buttes only on
+// caprock), and a region's pinned ones (WLAND.pin: openworld/pinnacle's rock). They stand on the land without them
+// (formH: the model, its cliffs, its hills and ridges), and keep off the outside, the water, the channels and rivers (150 m
+// beyond their banks), the small streams, the towns and a site's ground (43b's KEEP_SITE).
+function formH(x,z){const SC=scarpAt(x,z,SCR),b=SC.w>0?scarpOf(baseH(x,z),SC):baseH(x,z),S=styleAt(x,z),rel=gridBil(REL,x,z);
+ let h=b+(N1.fbm(x/6000,z/6000,4)-.5)*2*clamp(rel*.12,12,420)*S.hills*(1-.75*SC.w);
+ const r=1-Math.abs(2*N2.fbm(x/1700,z/1700,3)-1);return h+(r*r-.35)*clamp(rel*.06,6,200)*S.ridge;}
+const LFK={k:0,d:1e9,hw:0,co:0,cut:0},LFS={k:0,d:1e9,hw:0,wet:0,bw:0};
+function buildLandforms(){LANDF=false;if(!RELIEF||typeof WLAND==='undefined'||typeof KSTACKS==='undefined')return;
+ const TW=((WORLD_DATA.towns&&WORLD_DATA.towns.towns)||[]).map(t=>[t.x,t.z,(t.R||300)+(t.band||400)]);
+ WLAND.init({ox:cx*2000,oz:cy*2000,seed:M.relief.seed,ground:formH,sites:(M.sites||[]).map(s=>({x:s.x,z:s.z})),
+  styleName:(x,z)=>{const b=W.biomeAt(x,z),g=b&&W.groundOf(b.name);return g?g.style:'';},
+  caprock:(x,z)=>WRELIEF.caprock(x,z,styleAt(x,z),gridBil(REL,x,z)),
+  keep:(x,z)=>{if(!W.inside(x,z))return true;const h=formH(x,z);if(W.lakeWater(x,z)>h-1)return true;
+   carveAt(x,z,h,.5,LFK);if(LFK.d<LFK.hw+150)return true;if(STHASH){streamAt(x,z,h,.5,LFS,0);if(LFS.d<40)return true;}
+   for(const t of TW)if(Math.hypot(x-t[0],z-t[1])<t[2])return true;return false;}});
+ LANDF=true;}
+// the landform records whose middle lies in the box (placing their cells): KSTACKS bodies with name, kind, x, z, top, R
+W.landforms=(x0,z0,x1,z1)=>LANDF?WLAND.list(x0,z0,x1,z1):[];
+W.landformAt=(x,z)=>LANDF?WLAND.at(x,z):null;
+
 // ---------------------------------------------------------------- the escarpments: cliffs at 1:1
 // Where the extractor marks an escarpment (the eastern abyss's rim: scarpw.png), the scale model's smooth rise from the
 // floor's level L to the plateau's U is gathered into a cliff: a point's share t of the way up is sharpened round a
@@ -566,6 +588,9 @@ function H(x,z,minWave,P,nr,nt){minWave=minWave||0;
    h=WRELIEF.erode(h,x,z,(Lf(x+e,z)-Lf(x-e,z))/(2*e),(Lf(x,z+e)-Lf(x,z-e))/(2*e),S,rel,minWave);}}
  else if(S.gully>.01&&minWave<240){const g=1-Math.abs(2*N4.fbm(x/240,z/240,2)-1);h-=S.gully*(3+rel*.004)*Math.pow(g,6)*2.2;}
  if(minWave<90)h+=(N3.vn(x/90+11,z/90-7)-.5)*2*(1.2+rel*.0015)*S.rough;
+ /* the landform records (43b-world-landforms.js, relief P4): the ground stands up into a butte, a kopje, an inselberg or a pinned rock, before
+    the channels cut (a channel cuts through what a record raised) */
+ if(LANDF&&minWave<1200)h=WLAND.apply(h,x,z,minWave);
  // the channels: carve to the bed line (or the local ground less the depth, whichever is lower); the wall leans wallK
  let cd=1e9,cut=0,cw=0,co=0;
  if(minWave<400){carveAt(x,z,h,S.wallK,CH,SC);h-=CH.k;cd=CH.d;cut=CH.cut;cw=CH.hw;co=CH.co;}

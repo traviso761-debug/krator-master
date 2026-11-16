@@ -57,6 +57,11 @@ def sample(region, box, step, core=None, bench=False):
         if os.path.isfile(p):
             parts.append(open(p, encoding='utf-8').read())
     parts.append(WD.fragment(data, 'var WORLD_KITS=[];\n', 'landshade', data))
+    reg = os.path.basename(os.path.dirname(os.path.abspath(data))) if os.path.basename(data) == 'data' else ''
+    for k in (WD.land_js(reg) if os.path.isfile(os.path.join(core, '43b-world-landforms.js')) else []):   # the landform records and the region's pins (an older core has none)
+        f = os.path.join(core, k[-1]) if k[:2] == ('core', 'world') else os.path.join(ROOT, *k)
+        if os.path.isfile(f):
+            parts.append(open(f, encoding='utf-8').read())
     parts.append(open(os.path.join(core, '41-world-fields.js'), encoding='utf-8').read())
     x0, z0, x1, z1 = box
     nx, nz = int((x1 - x0) / step) + 1, int((z1 - z0) / step) + 1

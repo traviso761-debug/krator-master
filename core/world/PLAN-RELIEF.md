@@ -441,6 +441,38 @@ The High Rift's hillshade shows the rings plainly: concentric risers 200 to 250 
   - two regions over one ground (oidong-highrift and xanadu-oidong-highrift) trace their streams apart, so they can differ
     near their edges.
 
+**P4, landforms as records (2026-11-16, the owner: "continue p4-p6").**
+- `43b-world-landforms.js` (`WLAND`, [G data]) is the record engine: a record is a core/terrain KSTACKS body, so the
+  world and a settlement's page share one shape.
+  - **Placed:** each 2 km cell (world-absolute, so two regions cut over one place agree) takes 0 to n records drawn by
+    KRAND from (seed, cell, try), by the land style at its middle (`WLAND.KINDS`): buttes only on caprock
+    (`WRELIEF.caprock`), kopjes (tors) and inselbergs (domes) on the savanna and dry country, hoodoos and fins in the
+    badlands, towers in karst.
+  - **Pinned:** a region's own (`WLAND.pin`, made at init on the world's ground): `openworld/pinnacle/src/43p-world-rock.js`
+    builds Pinnacle Rock from `settlements/pinnacle-rock`'s layout as that page's stage does: the mesa, its seven spurs,
+    the Garden's mesa and the Heart, ten fins, the Garden's pinnacles and the shrine's balanced rock (37 bodies).
+  - **Kept off** the region's outside, the water, the channels and rivers (and 150 m beyond), the small streams, the
+    towns and a site's ground (3.5 km round each).
+  - **In `H`:** after the erosion and before the channels cut. Each body's surface (KSTACKS.surface: its top, or its wall
+    where a bed tapers) and a talus apron round its foot (10 % of its height at the wall, out to 35 % of it) are
+    rasterised once on a world-aligned grid (2 to 6 m) and read bilinearly: asked of the beds at every call, a weathered
+    butte cost `H` five to ten times over. A far chunk leaves out a body smaller than half its `minWave`.
+  - `WORLD.landforms(box)` and `WORLD.landformAt(x, z)` give the records.
+- The bakes and `landshade.py` read the engine and a region's pins through `core/world/world_data.py` (`LAND_JS`,
+  `PINS`), so the streams flow round the rocks and the sites are planned on them.
+- `node core/world/test-landforms.js`: records by cell, the same in any window and order; two regions over one place
+  agree (a frame 700 m off does not); none in a jungle, no butte without caprock; none on kept ground or round a site; the
+  ground is a butte's top over its middle; a kopje at a near chunk and not at a far one; the apron round every side of a
+  foot; a pin stands on its ground; deterministic.
+- The probe (`91`): every record within 20 km of the camera stands out of the land, inside the region and dry. Negative:
+  the land read at a detail no record shows at.
+- **Numbers:** pinnacle 307 records (37 pinned, 240 kopjes, 30 inselbergs: its caprock lies where the jungle is, so no
+  placed butte); oidong-highrift 417 buttes (the High Rift's caprock). `H` near the records 2.4 to 3.3 us once a body's
+  raster is built; Pinnacle's rock builds its rasters in about 0.6 s, a placed butte in tens of milliseconds.
+- **Re-baked:** pinnacle `c07cb34f` (9 camps, 9 roads round the rock, every check ok); oidong-highrift `a4689533`.
+- **Left:** the planners building on a top (`KSITES` reading `WORLD.landforms` as flat ground with a rim: nothing is
+  planned on a top yet); the records in core/tags and on the minimap; the masks' table (S16).
+
 ## 6. Risks
 
 - **Sites move:**

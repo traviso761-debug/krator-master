@@ -73,6 +73,9 @@ def script(region):
             parts.append(WD.fragment(os.path.join(base, 'data'), 'var WORLD_KITS=[];\n', 'the region (core/world/bake_sites.py)',
                                      'openworld/%s/data, decoded by core/world/world_data.py' % region))
             continue
+        if j[-1] == '41-world-fields.js':   # the landform records first (core/world/world_data.py land_js)
+            for k in WD.land_js(region):
+                parts.append('\n// ---- %s\n' % '/'.join(k) + open(os.path.join(ROOT, *k), encoding='utf-8').read())
         parts.append('\n// ---- %s\n' % '/'.join(j) + open(os.path.join(ROOT, *j), encoding='utf-8').read())
     parts.append(WD.net_fragment(os.path.join(base, 'src', '48-world-site.js')))   # the network routes the region's links follow
     parts.append('\n// ---- openworld/%s/src/48-world-site.js\n' % region + open(os.path.join(base, 'src', '48-world-site.js'), encoding='utf-8').read())
@@ -98,6 +101,9 @@ def resources_script(region):
             parts.append(WD.fragment(os.path.join(base, 'data'), 'var WORLD_KITS=[];\n', 'the region (core/world/bake_sites.py)',
                                      'openworld/%s/data, decoded by core/world/world_data.py' % region))
             continue
+        if j[-1] == '41-world-fields.js':   # the landform records first (core/world/world_data.py land_js)
+            for k in WD.land_js(region):
+                parts.append('\n// ---- %s\n' % '/'.join(k) + open(os.path.join(ROOT, *k), encoding='utf-8').read())
         parts.append('\n// ---- %s\n' % '/'.join(j) + open(os.path.join(ROOT, *j), encoding='utf-8').read())
     parts.append(WD.geology_fragment(os.path.join(base, 'data')))
     for where, f in WD.RES_FRAGS + [('core/world', '49r-world-resources.js')]:

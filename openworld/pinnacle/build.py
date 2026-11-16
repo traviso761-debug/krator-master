@@ -82,7 +82,9 @@ ORDER = (
        ('core/materials/record', '23-mat-record.js'), ('core/materials/record', '24-tex-def.js'), ('core/materials/record', '25-matlib-host.js'),
        ('core/materials/record', '26-matlib-bind.js'),
        ('biomes/sedesert/src', '35-core-strata.js')]
-    + LDF('40-world-smooth.js', '43-world-relief.js', '44-world-streams.js', '41-world-fields.js', '42-world-roads.js')   # 40: the region is smoothed (SITES.json "smooth"); 43, 44: its relief and streams
+    + LDF('40-world-smooth.js', '43-world-relief.js', '44-world-streams.js') + [('core/terrain', '37-core-stacks.js')] + LDF('43b-world-landforms.js')
+    + [('settlements/pinnacle-rock/src', '40-pr-layout.js'), ('src', '43p-world-rock.js')]   # the rock, pinned (core/world/world_data.py PINS)
+    + LDF('41-world-fields.js', '42-world-roads.js')   # 40: the region is smoothed (SITES.json "smooth"); 43, 44, 43b: its relief, streams and landforms
     + LDF('45-world-host.js') + [('src', '46-world-config.js'), ('src', '47-world-kits.js'),
      ('biomes/hyperjungle/src', '41-hyperjungle-globals.js')]
     + [('pack', k) for k in PACK_KITS]

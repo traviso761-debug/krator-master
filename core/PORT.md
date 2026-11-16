@@ -264,6 +264,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `water/geyser/52b-core-water-geyser-draw.js` | 13.5 | [G shader] | 0 | 0 | 0 | 0 | 0 | 3 | 12 | 0 | 0 | 0 | 0 |  |
 | `world/40-world-smooth.js` | 14.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the smoothing: plain functions on arrays (heights at the cut; river curves on the page) |
 | `world/43-world-relief.js` | 7.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the relief: caprock benches, the erosion filter (PLAN-RELIEF.md) |
+| `world/43b-world-landforms.js` | 10.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the landform records: placed by cell, pinned, rasterised into the ground (PLAN-RELIEF.md P4) |
 | `world/44-world-streams.js` | 10.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the small streams: the trace (a bake), the encoding, the beds (PLAN-RELIEF.md P3) |
 | `world/41-world-fields.js` | 40.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `world/42-world-roads.js` | 11.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |

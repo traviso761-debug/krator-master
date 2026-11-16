@@ -15,6 +15,16 @@ from PIL import Image
 
 MAP = ('clim', 'rain', 'temp', 'biome', 'mask')
 
+# a relief region's landform records (core/world/PLAN-RELIEF.md P4): core/terrain's KSTACKS and core/world's record engine,
+# read before 41 by every page and bake of such a region, then the region's own pins (each a WLAND.pin), with what they read
+LAND_JS = [('core', 'terrain', '37-core-stacks.js'), ('core', 'world', '43b-world-landforms.js')]
+PINS = {'pinnacle': [('settlements', 'pinnacle-rock', 'src', '40-pr-layout.js'), ('openworld', 'pinnacle', 'src', '43p-world-rock.js')]}
+
+
+def land_js(region):
+    """the landform sources (repo-relative path tuples) a node bake of `region` reads before 41"""
+    return LAND_JS + PINS.get(region, [])
+
 
 def _rgb(path):
     return np.array(Image.open(path).convert('RGB')).astype(np.int64)

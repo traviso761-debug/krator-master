@@ -56,6 +56,9 @@ def script(region):
                                      'openworld/%s/data, decoded by core/world/world_data.py' % region))
             parts.append('delete WORLD_DATA.meta.streams;\n')   # the land without its streams: what they are traced on
             continue
+        if j[-1] == '41-world-fields.js':   # the landform records first (a relief region's buttes, kopjes, its pinned rock)
+            for k in WD.land_js(region):
+                parts.append('\n// ---- %s\n' % '/'.join(k) + open(os.path.join(ROOT, *k), encoding='utf-8').read())
         parts.append('\n// ---- %s\n' % '/'.join(j) + open(os.path.join(ROOT, *j), encoding='utf-8').read())
     parts.append(r'''
 WORLD.init(WORLD_R);

@@ -4,10 +4,10 @@
       the staircases, the streaks and the straight river cuts out of the land. The cross-shaped lake west of the K'etsaal
       Baatar's mouth still has square shores: the land round it lies under its level, so only the mask draws it.
 
-- [ ] **No mesa in the world.** The rock is `settlements/pinnacle-rock`'s own landform (KSTACKS records from its layout).
-      The world's ground is the model's: the bands' camps stand round a knoll, not round a 500 m mesa. `PLAN.md`, "What is left" 1.
-      On the list for the next scale-model run (the owner, 2026-11-10: `tools/scale-model/README.md`, "To do on the
-      model", "Pinnacle Rock's mesa"): a landform record the cut carries and core/world stamps at 1:1.
+- [x] **No mesa in the world** (2026-11-16, relief P4): `src/43p-world-rock.js` pins the rock's KSTACKS bodies, made from
+      `settlements/pinnacle-rock`'s layout as its stage makes them, into core/world's landform records; the world's ground
+      stands up into them (their tops and walls) and the bands' camps are planned round them. The page draws the same records
+      with their overhangs; the world's are a heightfield (no overhang).
 - [ ] **The frame rate over the camps** (about 1 fps) is being worked in its own session (pinnacle-perf, 2026-11-10).
 - [x] **The savage hyperjungle grew nothing** while the rock stood on the rim. Since the move of 2026-11-10 the
       hyperjungle is in the registry on that overlay (little-demo's pass table). The cut's two overlays (the savage
