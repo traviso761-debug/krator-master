@@ -148,25 +148,38 @@ airless.
 
 Water cells carry no family but water. The metals, coal and oil are zero on evaporite ground.
 
-### The mined goods' kinds (2026-11-16): no layer yet
+### The mined goods' kinds (2026-11-16): their layers written, not baked yet
 
-Ten node kinds came with Gemini's trade model (`src/42s-res-ore-mined.js`). None is a family in `data/geology.json`, so the
-node field places none of them: until a bake gives each a layer they are **owner nodes** (`KRES.nodesIn(tile, {owner: [...]})`,
-placed by a settlement or a biome kit, as Opal Valley's diggings already carry `{kind: 'opal', grade}`). The scale model is not
-edited here; a layer is a request to the scale-model session (`tools/scale-model/geology.py`). What each would need:
+Ten node kinds came with Gemini's trade model (`src/42s-res-ore-mined.js`). Their layers are written in
+`tools/scale-model/geology.py` (`mined()`, called by the full bake and by the in-place pass below), but **`data/geology.json`
+does not carry them yet**: baking them in rewrites the geology 13 build commands read (62 pages: every open-world region,
+Copper Glacier, Firebliss; `tools/reach.py`), so it rides with the next bake (the owner, 2026-11-16). Until then the node
+field places none of them and they are **owner nodes** (`KRES.nodesIn(tile, {owner: [...]})`), as Opal Valley's diggings
+already carry `{kind: 'opal', grade}`.
 
-| Kind | A layer of its own? | Where it would come from |
-|---|---|---|
-| lodestone | no: a rule on two layers | iron on the ultramafic province's crests (the Arch's lightning-struck magnetite) and the Compass Hills' iron (a region weight, as limestone's platforms) |
-| peat | **yes** | cold, wet, flat ground: rain over ~900 mm, low slope, a short warm season (the blanket bogs Gemini lists at Stahlborn, Cascade, Lipp, Gate Tarn Mires); no rock layer gives it |
-| silica | **yes**, derived | the quartzite province, the sand coasts, and the `glass` layer's melt-glass cullet |
-| quartz | no: a rule | granite and gneiss (vein quartz), the quartzite province; High Rift and Singing Gjar by name |
-| alabaster | no: gypsum's | the gypsum layer where the bed is massive (Jimjam's basin): an alias of gypsum, a finer grade of the same ring |
-| bitumen | no: oil's | the oil layer where it reaches the surface (a seep's ground), dug where the oil node is pumped |
-| opal | no: owner nodes | one valley (`biomes/opalvalley`), the tuff layer at Opal Valley; a region weight if it should spread |
-| diamond | no: owner nodes | the Korona Hoar-Table's quartzite conglomerate (K7): one site |
-| jade | no: a rule | ultramafic contacts (the Arch's nephrite); the Crook's Verdigris Jade is off the map |
-| amber | no: owner nodes | the Ria Valley is off the map; the East Abyss's swamp amber (Sfenops, Liikofi) by name |
+```
+python3 tools/scale-model/geology.py --mined kits/resources/data/geology.json     tools/scale-model/model/src/51-region-store.js --model tools/scale-model/model/data
+```
+
+The pass adds the ten layers, their `field.families` and their cells (`MINED_FIELD`), and keeps every other byte, stat and
+key (checked on a copy, 2026-11-16). Then: `node kits/resources/tests/test-res.js --ledger` (the ledger takes the new goods),
+the authored lodes that wait on these families (`data/lodes.json`; Lightwall's opal lode can then be stamped), and a rebuild of
+what `tools/reach.py kits/resources/data/geology.json` lists.
+
+| Kind | Cell (m) | The rule (bytes 0-255) | Nodes on the map (the field on a copy) |
+|---|---|---|---|
+| lodestone | 6000 | 150 on the ultramafic province's exposed crests (stone 200+: the Arch's lightning-struck magnetite), 40 on the rest of it; 220 in the Compass Hills | 1,909 |
+| peat | 3000 | blanket bog 230 x wet (rain 700-1400 mm) x cool (mean 14 C down to 4 C, above -6 C) x flat; fen 160 on the wet floodplains (clay 200+, rain over 500 mm); none on evaporites, cliffs, airless ground | 8,646 |
+| silica | 4000 | 170 x flat on the quartzite tables; 150 on the low (under 500 m) sand coasts of sedimentary, quartzite, granite and gneiss; 0.8 x the Ancients' melt glass | 6,090 |
+| quartz | 6000 | faint on the hard rocks (granite 30, quartzite 25, gneiss 10, impact 8, rift 10); 200 in High Rift | 10,861 |
+| alabaster | 4000 | 0.8 x gypsum where gypsum is 100+ (the massive bed at the ring's heart) | 594 |
+| bitumen | 6000 | 0.75 x oil where oil is 80+; 90 on the Ring Isles (Kautoa's tar-black seeps) | 3,319 |
+| opal | 6000 | 0.6 x tuff x aridity; 230 in Opal Valley | 953 |
+| diamond | 8000 | 170 on the tepui tables' edges in Korona (the basal conglomerate where it crops out); 25 on any quartzite | 701 |
+| jade | 8000 | 150 within 4 km either side of the ultramafic province's edge (nephrite at the serpentinite contact); 200 in the Crook | 3,391 |
+| amber | 6000 | 0.35 x coal where coal is 140+ (the lignite beds); 120 in the Ria Valley, 90 in the East Abyss (swamp amber) | 10,103 |
+
+For scale on the same map: marble 4,031 nodes, nickel 10,006, sulfur 70,861.
 
 ### The evaporite rings (feature 3)
 

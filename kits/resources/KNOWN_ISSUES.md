@@ -47,9 +47,10 @@
 - [x] **potash, soda and marble never drew their sets** (found 2026-11-16): they were packed (`materials.json`, `tex/`) but missing
       from `SV_LIB` (`26k-kit.js`), and the engine makes a material only for an `SV_LIB` key, so their nodes drew the fallback
       (vertex colours). Added to `SV_LIB` with the mined goods' sets; the resources page's look of those three changes.
-- [ ] **The mined goods' kinds have no geology layer** (2026-11-16, `42s-res-ore-mined.js`): the node field places none of the
-      ten; they are owner nodes until a bake gives each a layer. `GEOLOGY.md`, "The mined goods' kinds", says which need a
-      layer of their own (peat, silica) and which a rule on existing layers; the bake is the scale-model session's.
+- [ ] **The mined goods' layers are written, not baked** (2026-11-16): `tools/scale-model/geology.py` `mined()` and its
+      `--mined` pass give the ten kinds their layers (`GEOLOGY.md`, "The mined goods' kinds"), but `data/geology.json` does not
+      carry them: baking them in reaches 13 build commands (62 pages), so it rides with the next bake, with
+      `lode:thalaba-sulfur` and the ledger's rerun. Until then the node field places none of them: owner nodes only.
 - [ ] **Four of the mined goods draw on vertex colours:** lodestone (`rock.magnetite`), opal
       (`rock.opal.matrix`), jade (`rock.serpentinite`, `stone.nephrite`) and amber (`rock.amber.blueearth`); prompts in
       `core/materials/PROMPTS-NEEDED.md` sections 46, 52 and 53.
