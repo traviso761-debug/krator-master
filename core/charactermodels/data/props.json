@@ -286,6 +286,48 @@
    "grip": "wide"
   },
   {
+   "id": "tg_lamp_pole",
+   "label": "Tungang lamp pole",
+   "hand": "R",
+   "glb": "pieces/props/tg_lamp_pole.glb",
+   "grip": "fist",
+   "support": [
+    0,
+    0.3,
+    0,
+    0,
+    0.8,
+    0
+   ]
+  },
+  {
+   "id": "tg_spanner",
+   "label": "Tungang long spanner",
+   "hand": "R",
+   "glb": "pieces/props/tg_spanner.glb",
+   "grip": "fist",
+   "support": [
+    0,
+    0.2,
+    0,
+    0,
+    0.5,
+    0
+   ]
+  },
+  {
+   "id": "tg_bait_tin",
+   "label": "Tungang bait tin",
+   "hand": "L",
+   "glb": "pieces/props/tg_bait_tin.glb",
+   "grip": "fist",
+   "hang": [
+    0,
+    0,
+    1
+   ]
+  },
+  {
    "id": "tz_scepter",
    "label": "Sunforged Scepter (Tzintzun's staff of power)",
    "hand": "R",
