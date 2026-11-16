@@ -22,6 +22,9 @@
 - [ ] **The ground is the site's numbers, not the open world's**: the bench's profile, the wall's line and the north wall
       are functions of the scale model's numbers for the site (PLAN.md 1), not `core/world`'s heightfield. L5 puts the town on
       the open world.
+- [ ] **The north wall is a plain mass** (one rock colour by height, snow over 2,300 m): a far field with strata, ridges and
+      shading (`core/terrain`'s `KFAR`, `KSTRATA` with Opal Valley's recipes) is owed; so is a cliff face between the bands that
+      reads as rock rather than as stepped blocks.
 - [ ] **The lake is a plane** (Qiblai's river likewise): `core/water`'s still water and its shore are owed.
 - [ ] **The carved quarter costs about 11 s to mesh** (KCAVERN at 0.5 m over 174 sites, about 1.3 M triangles). A smaller
       quarter (`LW.CARVE`) or the cavern meshed by chunk near the camera would cut it.
