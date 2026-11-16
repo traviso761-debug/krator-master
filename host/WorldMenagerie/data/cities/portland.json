@@ -14,6 +14,7 @@
   -122.634
  ],
  "osm": "data/cities/portland-osm.json",
+ "canopy": "data/cities/portland-canopy.json",
  "fetch": {
   "bbox": [
    45.49,

@@ -337,6 +337,14 @@ scene = true
 blurb = "The deepest lake in America in the caldera Mount Mazama left: Wizard Island, the Phantom Ship, the lodge on the rim, and the mountain's fall as an event."
 
 [[route]]
+path = "/mthood"          # a real place: Mount Hood from OpenStreetMap on the USGS's 3DEP ground, its glaciers, trails, lifts and the year turning (src/mthood/)
+aliases = ["/mthood.html", "/mounthood", "/mount-hood", "/hood", "/wyeast"]
+file = "mthood.html"
+title = "Mount Hood: massing model"
+scene = true
+blurb = "Oregon's volcano on its real ground: the glaciers, the Timberline Trail and every other trail on a map, the ski lifts, Timberline Lodge, and the year turning from snow to wildflowers to huckleberry red."
+
+[[route]]
 path = "/chernobyl"       # a real place: the Chernobyl Exclusion Zone from OpenStreetMap on its real ground, the accident and the Zone since as events (src/chernobyl/)
 aliases = ["/chernobyl.html", "/chornobyl", "/pripyat", "/prypiat"]
 file = "chernobyl.html"

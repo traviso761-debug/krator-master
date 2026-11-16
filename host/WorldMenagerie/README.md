@@ -61,6 +61,7 @@ Page-only keys: the Backrooms' N (noclip), M (sound), R (start again); the City'
 | `/infinitycastle` | `/infinitycastle.html`, `/mugenjo`, `/infinity-castle`, `/nakime` | `infinitycastle.html` | The Infinity Castle (fan work) |
 | `/fleshpit` | `/fleshpit.html`, `/mfpnp`, `/pit` | `fleshpit.html` | Mystery Flesh Pit National Park (fan work) |
 | `/yellowstone` | `/yellowstone.html`, `/ynp`, `/caldera` | `yellowstone.html` | Yellowstone National Park: the real ground and the caldera |
+| `/mthood` | `/mthood.html`, `/mounthood`, `/mount-hood`, `/hood`, `/wyeast` | `mthood.html` | Mount Hood: the mountain on its real ground, its trails, lifts, glaciers and falls, through the year |
 | `/backrooms` | `/backrooms.html`, `/level0`, `/noclip` | `backrooms.html` | The Backrooms (fan work) |
 | `/city` | `/blame.html`, `/blame`, `/megastructure`, `/killy` | `blame.html` | The City, after *Blame!* (fan work) |
 | `/rivendell` | `/rivendell.html`, `/imladris` | `rivendell.html` | Rivendell: the cleft of the Bruinen (fan work) |
@@ -165,13 +166,16 @@ South Waterfront to the Fremont Bridge and from Washington Park to the Lloyd Dis
 - **Detailed areas:** Pioneer Courthouse Square, the Pearl District, Old Town and Chinatown, Waterfront Park.
 - **On the river:** sailboats, motorboats and kayaks that keep to the channel; cyclists on the Eastbank
   Esplanade, Waterfront and bridges.
-- **Woods:** Forest Park, Washington Park and the other wooded slopes carry their own trees (about 34,000), so
-  the West Hills read as forest rather than bare ground.
+- **Trees, from the canopy survey** (`canopy`, 2026-11-15): the USDA Forest Service's Tree Canopy Cover (NLCD 2021,
+  30 m, `portland-canopy.json` from `tools/fetch-tcc.py portland`) says how much of each 30 m of the city is under
+  crowns: 29% over the map, as the city's own figure has it. The street trees, the mapped trees and the parks' scatter
+  are planted first, then every 12 m cell is filled to its canopy (about 213,000 trees): Forest Park and Washington
+  Park close, the old east-side neighbourhoods leafy, downtown and the industrial flats nearly bare.
 - **Terrain:** the ground follows real elevation data (AWS Terrain Tiles, from SRTM/NED), so the West Hills,
   Marquam Hill and the river bluffs are modelled; streets, buildings, trees and traffic sit on the slopes, and
   Mount Hood and Mount St. Helens stand on the horizon.
 
-Data: `python3 tools/fetch-osm.py portland`, `python3 tools/fetch-terrain.py portland`, then `python3 tools/build-osm-city.py portland`.
+Data: `python3 tools/fetch-osm.py portland`, `python3 tools/fetch-terrain.py portland`, then `python3 tools/build-osm-city.py portland`; the canopy, `python3 tools/fetch-tcc.py portland`.
 
 ### `/nyc`: New York
 
@@ -560,6 +564,78 @@ ground itself.
   ground, not a fixed 250 m, or it covered the floor.
 - **Events** (`events.js`): the boat tour, the Old Man, Mount Mazama (the ghost of the mountain, the eruption and the
   collapse, with the Klamath account of Llao and Skell), winter, sunset from the Watchman, the night sky.
+
+**Mount Hood** (`mthood.html`, `src/mthood/`, `data/cities/mthood.json`). Mount Hood (Wy'east), 3,429 m, Oregon's
+highest mountain, and the Mount Hood National Forest round it, from 45.255 to 45.505 N and 121.86 to 121.55 W
+(about 24 by 28 km), on the USGS's 3DEP ground: the 40 m grid from `tools/build-osm-city.py` (datum 0, so a height
+is the real elevation) and the upper mountain at 12.5 m (`mthood-fine.json`, 11 by 11 km, through `src/core/fine.js`).
+The glaciers, streams, falls, lifts, ski runs, trails and places come from OpenStreetMap through `tools/make-mthood.py`
+into `mthood-mtn.json` (13 named glaciers, 511 streams, 51 falls, 34 lifts, 415 runs, 250 named trails, 20 route
+relations). The far Cascades, Rainier to Jefferson, are Sarajevo's `backdrop.js` over `mthood-far.json` (±200 km at
+1 km, AWS Terrain Tiles), with a new `hug` option that sinks the backdrop under the lowest map ground it covers, so no
+plate shows at the map's edge. `terrain.lakeLevels`, a new option of `build-osm-city.py`, sets each mapped lake to the
+ground round its shore and cuts its bed (Mirror Lake 1253 m, Trillium 1098 m, Lost Lake 959 m). `classWidths` (also
+new) gives the paths a metre and a half of dirt instead of a city's 3 m footway.
+- **The year** (`season.js`): the page opens on today's date, or `#doy=`, `#month=`, `#season=winter|spring|summer|autumn`;
+  `#turn` turns the year (`season.yearMinutes` a year), `#seasonui` opens the Season panel (four seasons, a day slider,
+  Turn the year, Today). The snow line follows a monthly table (750 m in January to 2,820 m in September), the glaciers
+  bare their ice and crevasses in late summer, the meadows melt out brown, green up, flower in a band that climbs behind
+  the snow, cure to tan and turn crimson with huckleberry in autumn; the vine maple
+  and alder turn and drop, the larches go gold. The sun follows the real date (declination, the equation of time, PST and
+  PDT; the engine now reads `ctx.sunAt` and `ctx.dayC`, which no other page sets), and the weather's odds follow the season
+  (`weather.setWeights`, a new call in `src/core/weather.js`, and the `cascade` climate). The season decides whether the
+  lifts run, the Palmer in summer, climbing season and hiking season.
+- **The ground** (`ground.js`): every vertex of the ground carries its cover (forest, meadow, bare, glacier; deciduous,
+  debris, larch) from the mapped glaciers, meadows, rock, scree and the pumice above the tree line, and the season is a
+  shader on it (`patchMaterial`, `snowOnTop`, shared with the other modules); tints for Crater Rock, Steel Cliff, Devil's
+  Kitchen, Illumination Rock, Mississippi Head and the headwalls. The forest's share is the Forest Service's canopy
+  survey (`mthood-canopy.json`, 2021, 30 m; `canopyFill: false` keeps the engine from planting its own), so the
+  clearcuts, the burns and the river bars are open where they are; what the rules call forest and the survey finds
+  open is brush. Trees by tiles streamed nearest first within a time
+  budget, fourteen species by elevation and aspect (Douglas fir, western hemlock and red cedar low, noble and silver fir,
+  mountain hemlock and subalpine fir high, whitebark pine at the tree line, lodgepole and ponderosa on the dry east side,
+  western larch, bigleaf and vine maple, alder, huckleberry), a lighter face of each for the far tiles, each tile culled
+  whole against the view. No trees on the downhill runs, the lifts, the roads, the lakes or the views on the ground. In
+  winter the trails go under the snow; the highways are ploughed.
+- **The trail map** (`trails.js`, `hoodTrails` in the config): a hillshaded topographic map drawn from the ground, contours
+  every 40 m, glaciers, lakes, streams, roads, the runs by difficulty and the lifts, 251 trails (the Timberline Trail and
+  the PCT heavier), peaks, trailheads, huts, camps and falls, a scale, a north arrow and the camera's own arrow; a winter
+  face. A trail's card: length, climb, high and low points, difficulty, today's conditions from the season, an elevation
+  profile and a note for the known trails; **Walk it** (at a walk, a run or flying over) takes the camera along it at eye
+  height. Hikers (walking, a vertex-shader stride matched to their pace: beanies, packs on frames, poles) on the trails by day in season, snowshoers on the low trails in winter, rope teams on the South Side
+  route by headlamp from midnight in climbing season; a sign at each trailhead. `#trail=<name>`, `#trailmap`,
+  `#walk=<name>&pace=run|fly`.
+- **Landmarks** (`landmarks.js`, `landmarks` in the config): Timberline Lodge on its mapped outline (the six-sided head
+  house and its chimney; the west wing stepping down with its cross gables, the Ski Lounge and the Cascade Dining Room
+  wings to the south-east, each ridge running into the head's roof in a valley; stone below, board-and-batten under
+  steep shingle with dormers, windows lit after dark), Skibowl's West Lodge and the Multorpor lodge's twin A-frames,
+  the Hood River Meadows base lodge, the Wy'East Day Lodge, Silcox Hut, Cloud Cap Inn with the cables over its roof, the Tilly Jane A-frame, the
+  Mount Hood Meadows lodges, and the stone shelters at McNeil Point, Cairn Basin and Cooper Spur; each with a card.
+  Snow lies on every roof by the season (`snowOnTop`, applied after any other patch's colour). Known gap: the engine's
+  plain OSM buildings round Government Camp keep grey roofs in winter (the patch reaches them, but something in their
+  material still darkens it; not yet found).
+- **The lifts** (`lifts.js`): all 34 mapped lifts, with 249 towers, terminals and bull wheels, the haul rope fading out
+  by a kilometre, and 2,455 chairs sized by seats (detachables faster and wider spaced) with riders; tows, platters and
+  magic carpets. They run 9 to 4 in the ski season (Ski Bowl till 10), only the Magic Mile and the Palmer in summer, and
+  slow to a stop. Skiers and boarders carve down 289 runs in season, and on the Palmer in summer. Towers, chairs,
+  riders and skiers are drawn only within 1 to 2.5 km. A terminal's card gives the lift's type, length and vertical.
+- **The water** (`water.js`): each lake freezes by its height and the date, snow on the ice, and breaks up in spring
+  into floes and slush; the lake nearest the camera is a true mirror (its own plane, as Atitlán's `waves.reflect`; none
+  when frozen, far or high; `#nomirror`). 1,076 km of streams flow downhill, faster and whiter where steep, milky below
+  the glaciers, hidden under the snow, dry gravel in late summer where OSM says intermittent; flow peaks in June. All
+  51 falls with a veil, mist and a pool, a basalt headwall where the ground is too smooth for the real drop, frozen to
+  icicles in midwinter. Steam at the Devil's Kitchen, Crater Rock and Hot Rocks, drifting with the wind.
+- **Events** (`events.js`, `hoodEvents` in the config): alpenglow from Trillium Lake, a cap cloud and the weather after
+  it, the Old Maid eruption of the 1780s (Crater Rock's dome, the plume, the lahars down the White River and the Sandy,
+  with the story of Wy'east, Pahto and Loowit), Lewis and Clark in 1805, the alpine start by headlamp, the first snow,
+  Paradise Park in flower and in huckleberries, Roosevelt at Timberline in 1937 (the cars, traffic and lifts hidden
+  while it runs: every object carries the stage that added it, `src/mthood/main.js`), summer skiing on the Palmer, and
+  wildfire smoke.
+- **Views**: 27, from Trillium Lake's dock to the summit ridge, Timberline, the Meadows, Skibowl, Multorpor, Hood River
+  Meadows, Cloud Cap, the foot of Ramona Falls (in a clearing), Tamanawas and Lost Lake. 25-45 fps in the headless probe from the views; a walk in the old forest, at 16-24, is the slowest.
+- **Rebuilding the data**: `python3 tools/fetch-terrain.py mthood`, `python3 tools/fetch-osm.py mthood` (Overpass, into
+  `data/osm/raw/mthood/`, not committed), `python3 tools/build-osm-city.py mthood`, then `python3 tools/make-mthood.py`;
+  the canopy, `python3 tools/fetch-tcc.py mthood`.
 
 **Chernobyl** (`chernobyl.html`, `src/chernobyl/`, `data/cities/chernobyl.json`). The Chernobyl Exclusion Zone in
 northern Ukraine from OpenStreetMap on its real ground at 20 m, 18 by 19 km: the power plant, Pripyat, the cooling pond,
@@ -3161,6 +3237,9 @@ them (`.gitattributes` marks them). The generators share `tools/lib/geo.py`.
 | `data/cities/yellowstone.json`, `yellowstone-land.json` | `tools/make-yellowstone.py` (the config too: edit the script) |
 | `data/cities/yachats-osm.json` | `tools/build-osm-city.py yachats`, from the Oregon extract (`tools/pbf-to-overpass.py`) |
 | `data/cities/yachats-land.json` | `tools/make-yachats.py` |
+| `data/cities/mthood-osm.json` | `tools/build-osm-city.py mthood` (with `terrain.lakeLevels`), from the cache of `tools/fetch-osm.py mthood` and `tools/fetch-terrain.py mthood` (3DEP) |
+| `data/cities/mthood-fine.json`, `mthood-far.json`, `mthood-mtn.json` | `tools/make-mthood.py` (after `build-osm-city.py mthood`) |
+| `data/cities/<city>-canopy.json` for mthood, portland | `tools/fetch-tcc.py <city>` (the Forest Service's canopy, clipped from the MRLC) |
 | `src/engine/build.js`, `src/iziz/build.js`, `src/voth/build.js` | `tools/build-page.py` (`./sitectl build`) from each `stages/` |
 | `krator.html` | `tools/build-krator.py` |
 
@@ -3436,6 +3515,14 @@ Craftsman porches (deck, brick pedestals, columns, rail, steps, a shed or gabled
 signboards are parts too; any part, and any `facadeStyles` entry, can take `where` (lat/lon boxes) to keep it to a
 neighbourhood. Portland's Arbor Lodge and Kenton use it: painted lap siding (`clapboard`) and porches on the houses,
 awnings along Denver Avenue, and Kenton's Paul Bunyan (`bunyan`, `src/portland/landmarks.js`) at Interstate and Denver.
+
+**Tree canopy** (`C.canopy`, an engine setting in `src/engine/stages/00-start.js` and `03b-details.js`): a file from
+`tools/fetch-tcc.py <city>`, the Forest Service's Tree Canopy Cover (the NLCD's, 30 m, 2011-2021, fetched clipped from
+the MRLC's WCS and resampled onto the city's grid). The engine reads it as `ctx.canopy.at(x, z)` (0 to 1, or null
+off the survey), skips its own scatter over the woodland kinds, and after the street, mapped, yard and park trees fills
+every 12 m cell to its canopy, one tree per `canopyCrown` m2 (150) of crown, woodland (`wood`) where it is over half and
+park trees under. `canopyFill: false` leaves the trees to the page and only loads the survey (Mount Hood's forest reads it).
+Portland and Mount Hood have one.
 
 **Tree species** (`C.treeSpecies`, an engine setting in `src/engine/stages/03b-details.js`): a city may plant its own
 trees instead of the one generic shape. Each species is a shape (`fir`, `cedar`, `round`, `oval`, `oak`, `slender`,
