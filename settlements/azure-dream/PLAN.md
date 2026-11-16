@@ -25,7 +25,7 @@ This is a plan for the owner to approve. Nothing is built. The blueprint sheets 
 | 11. The dress | **"White with blue dress"** |
 | 12. Textures | **"Yes new textures"**: three prompts in `core/materials/PROMPTS-NEEDED.md` section 56; felt and reed matting are already in the library |
 | 13. The people | **"300 people in monastery and 600 in villages"**: the isle holds 900, not 600 (section 3) |
-| 14. Building it | open |
+| 14. Building it | **"Build the page next"**: the page's first pass is built (README.md) |
 
 ## 0. What is settled, and what this plan proposes
 
@@ -80,13 +80,12 @@ then**; they are listed in the sheets' headers and in the section.
 
 **Where on the isle** (question 1). The owner asked for the wharf "on the shore that faces Erehwon". Erehwon at 841,1517
 lies almost exactly across the isle's axis from its middle (u -0.5, v +13.6 px in the isle's frame). The shore facing it
-is **row 1508's cells, x 845-848**, about 20 km NNE of the city. The cove goes at **px 846,1508.7** (its head on the waterline) under the shore
-cell 846,1508 (about 190 m), with a spur up through 848,1506 (279 m) to the crest at 845,1504 (the scale-model session's
-reading). Three placements were weighed:
+is **row 1508's cells, x 845-848**, about 20 km NNE of the city, under the shore cell 846,1508 (about 190 m), with a spur up
+through 848,1506 (279 m) to the crest at 845,1504 (the scale-model session's reading). Three placements were weighed:
 
 | | Where | For | Against |
 |---|---|---|---|
-| **A (chosen: the owner, "agreed")** | **The south-shore cove, its head at px 846,1508.7.** The monastery climbs from the wharf to the brow, about 60-80 m up. The summit kora stands apart, 8 km up the Dream Road | wharf, pilgrims' landing, hostel and Hall in one walk; the Hall faces Erehwon and the Pleasure Dome across 20 km of water; the Valaam and Athos pattern (a great house by the landing, sketes and a summit chapel inland) | the summit kora is a day's outing, not a daily circuit (section 4e) |
+| **A (chosen: the owner, "agreed")** | **The south-shore cove, its head at px 846.075,1508.493** (the scarp's toe at 1:1, below). The monastery climbs from the wharf up the scarp to terraces 74-122 m over the lake. The summit kora stands apart, 8 km up the Dream Road | wharf, pilgrims' landing, hostel and Hall in one walk; the Hall faces Erehwon and the Pleasure Dome across 20 km of water; the Valaam and Athos pattern (a great house by the landing, sketes and a summit chapel inland) | the summit kora is a day's outing, not a daily circuit (section 4e) |
 | B | The summit, the dome's middle. The wharf is an outstation 8 km away | the kora round the summit is the monastery's own; seen from every shore | every pilgrim and every fish walks 8 km uphill; the wharf and the Hall are two sites |
 | C | The west tip, facing the west stack and Erehwon's bay obliquely | the tip's narrower neck | Erehwon is not in front of it; 24 km from the summit |
 
@@ -98,49 +97,58 @@ reading). Three placements were weighed:
 The quarrel between the Sultan and the council (`kits/qiblai/PLAN.md` 2a: a pleasure dome "built for feasts, not by the
 Song") is then a view: from the Hall's terrace the Order looks across the water at the Sultan's dome.
 
-**The frame.** The sheets use the cove's frame:
-- The origin is the cove's head on the waterline, **px 846, 1508.703** (`edit_517_azure.report.json`).
-- u runs from the waterline inland and uphill, due north up column 846 toward the isle's crest (the shore here runs
-  along row 1508, east and west).
+**The shore at 1:1** (measured on the page, 2026-11-16). The page stands on the region cut of the scale-model line's model
+(with edit 517 and the cove applied) through the open world's fields (`WORLD.H`). It shows the south shore otherwise than the
+cells' Catmull-Rom, which put the waterline at py 1508.70:
+- **a flat about 400 m wide** at the lake's level, within a few metres of it, half drowned (3-11 m deep between x -200 and
+  +500 m of column 846, dry flats either side);
+- **a steep scarp behind it, whose toe is the real shore**: at py 1508.49 on column 846.075 (world metres 150, 2986);
+- above the toe: +4 m at 25 m in, +17 at 75, +34 at 125, **+58 at 150** (the scarp's steepest stretch, about 100 %), +73 at
+  200, +95 at 300, +121 at 400, +131 at 500, +144 at 600.
+
+**The frame.** The sheets and the page use the cove's frame:
+- The origin is the cove's head at the scarp's toe, **px 846.075, 1508.493** (`edit_517_azure.report.json`).
+- u runs inland and uphill, due north (the shore here runs along row 1508, east and west).
 - v runs along the shore, positive toward the isle's east tip.
 - Metres. u < 0 is the lake.
 
-Assumed heights over the lake:
+The heights on the page (the precinct's terraces are each one level, the mean of the ground under them, cut and filled):
 
-| Part | Height over the lake |
-|---|---|
-| the wharf | +2 to +5 m |
-| the lower ward | +5 to +20 m |
-| the Stair of Lowered Eyes | +20 to +60 m |
-| the upper precinct | +60 m (the Blue Gate) to +76 m (the Hall of Dreaming's terrace) |
-| the summit, 8 km on | about +300 m |
+| Part | Where (u) | Over the lake |
+|---|---|---|
+| the wharf | -60 to 25 | 0 to +6 |
+| the lower ward | 25 to 120 | +4 to +32, building by building on pads |
+| the Stair of Lowered Eyes | 108 to 160 | +41 to +75.5: a zigzag of six runs up the scarp's face, 34 m (a terrace stair, gentler than the scarp, would run out into the lake) |
+| the gate court | 160 to 222 | **+75.5** |
+| the monastery's terrace | 222 to 284 | **+94** |
+| the Lotus Garden's | 284 to 348 | **+105** |
+| the Hall of Dreaming's | 348 to 484 | **+120.5** |
+| between the terraces | | zigzag stairs down each face (18.5, 11 and 15.5 m) |
+| the summit, 8 km on | | about +300 |
 
-**The natural slope** up column 846 (core/world's Catmull-Rom on the cells) is about 15 % near the water: +31 m at
-200 m in, +62 m at 400 m, +92 m at 600 m, +122 m at 800 m. The wharf and the lower ward are cut into its foot, and the
-upper precinct's terraces (+60 to +76 m) are cut and filled into it 450-650 m in. That is the page's ground (the town's
-footprint in core/world), not the landform's. The gentler crest beyond carries the Dream Road.
+The sheets in `floors/` keep the first frame's u (the precinct drawn 120 m further up, the lower ward wider); the page's
+layout is in `targets/isle/89zad-site.js`.
 
 **The cove landform** (the owner, 2026-11-16: "can you make the cove landform here"; `tools/scale-model/edit_517_azure.py`,
-its report beside it). It is records only, after `edit_517_pher.py`, the way Phēr's cove was made:
-- **Two headlands**, one `island` record each: `lf_azure_cove_west` at px 845.76,1508.803 (crest 35 m over the lake) and
-  `lf_azure_cove_east` at px 846.24,1508.803 (40 m). Each is a knob 300 m in radius at its waterline, 200 m out from the
-  head and 480 m either side of the centre line, joined to the slope behind it.
-- **The cove** is the water left between them, open to the south-south-west toward Erehwon:
-  - about 370 m across at 200 m out;
-  - 7 m deep 50 m from its head, 21 m at 200 m, 50 m at 400 m;
-  - each arm dry for 500 m out from the head.
+its report beside it). It is records only, after `edit_517_pher.py`, the way Phēr's cove was made, and placed against the
+1:1 shore:
+- **Two headlands**, one `island` record each, on the drowned flat either side of the toe: `lf_azure_cove_west` at px
+  845.91,1508.568 (crest 30 m over the lake) and `lf_azure_cove_east` at px 846.24,1508.568 (34 m). Each is 220 m in radius at
+  its waterline, 150 m out from the head and 330 m either side of the centre line, joined to the scarp's foot behind it.
+- **The cove** is the drowned flat between them, open to the south-south-west toward Erehwon: about 250 m across at 120 m
+  out, 7-11 m deep; each arm dry for about 390 m out from the head.
 - **No new stamper kind is needed.** core/world's stamper (`41l-world-landforms.js`) already stamps islands. The plan
   first asked for a `cove` kind, as Phēr's first records did, but Phēr's final records (dc15601bc) use islands too.
 - **One record per arm.** The stamper stamps a point with the first record whose reach holds it, so an arm drawn as a
-  base and a tip would blank part of itself. The two arms' reaches overlap only over the cove's open water. There the
-  west arm's skirt lifts the bed by up to 9 m and the water stays.
-- **Checked** against the cells with core/world's Catmull-Rom and 41l's island profile (without the biome detail and the
-  waterline's wobble). On a scratch copy of the scale-model line (dc15601bc) the edit writes only `landforms.json`, and
-  `tests/test_smodel.py` gives 280 passes and the same 2 known failures as before (the north-east outer wall's station
-  bases).
-- **To land**, the scale-model session re-runs the script on its line, as it did Phēr's. The region cut checks the arms
-  at 1:1 (`WLAND.check`).
-- **The monastery's pin** is a separate step (AD1).
+  base and a tip would blank part of itself.
+- **The first take** (5e5d46b88: knobs 300 m in radius, 200 m out from py 1508.703) was placed against the cells'
+  Catmull-Rom. On the 1:1 ground it left two islands 400 m out from the real shore, so it was refitted when the page was
+  built. The page draws the same records (KNOWN_ISSUES.md: through `WORLD.landHook` until it takes core/world).
+- **Checked** on the page (`verify.py`'s `cove-water`: the water on the centre line 60-160 m out, the headlands out of it). On
+  a scratch copy of the scale-model line (dc15601bc) the edit writes only `landforms.json`, and `tests/test_smodel.py` gave
+  280 passes and the same 2 known failures as before (the north-east outer wall's station bases) with the first take.
+- **To land**, the scale-model session re-runs the script on its line, as it did Phēr's.
+- **The monastery's pin** is a separate step (AD1b).
 
 ## 2. The Order of the Azure Dream (lore, proposed)
 
@@ -588,10 +596,10 @@ isle's food bill, and a real demand for its dairy and hives.
 | **AD1a** (**written** 2026-11-16) | the cove: `tools/scale-model/edit_517_azure.py`, two headland records (section 1), to be re-run on the scale-model line after `edit_517_pher.py` | this session; the re-run is the scale-model session's | the script's own checks; `test_smodel.py` on that line |
 | **AD1b** | a pin for the monastery at the cove's head (846,1508), one for the Station Watch at the summit, the Dream Road; the three villages' pins | the scale-model session's queue | the pins' ground |
 | **AD2** | the sim: `lk.great-isle` re-fitted to 900 (the monastery 300 and three villages); pilgrims as a flow; the isle's goods | the sim session | its economy test |
-| **AD3** | the new records (section 6) in `settlements/azure-dream/src/` on the Qiblai kit's helpers and `QSPOKE[5]`'s dress, seeds 34000-34199, on a sheet beside the blue monastery; the reused records' blue dress | this settlement | the footprint test; the sheet's `verify.py --assert` |
+| **AD3** (**done** with the page: `src/89qa-ad-hall.js`, `src/89qb-ad-wharf.js`) | the new records (section 6) in `settlements/azure-dream/src/` on the Qiblai kit's helpers and `QSPOKE[5]`'s dress, seeds 34000-34199, on a sheet beside the blue monastery; the reused records' blue dress | this settlement | the footprint test; the sheet's `verify.py --assert` |
 | **AD4** | the 22 catalog pieces in the Xanadu culture file | the catalog's owner | `kits/catalog/verify.py --assert` |
 | **AD5** | the Hall as room data, its cot grid, the side rooms furnished; the reach audit in node first | | `core/walk` reach in node; the page's `--interiors` assert |
-| **AD6** | the page, `settlements/azure-dream`: the cove, the wharf, the ward, the stair, the precinct on core/world's ground, the lake on `core/water`, the night on `core/atmos` and `core/sched` (the Lulling, the watches, the shutters, the blue window), people asleep | | `verify.py --assert` on the GPU lane; `check_core_use` |
+| **AD6** (**first pass done** 2026-11-16, the owner: "build the page next"; README.md, KNOWN_ISSUES.md) | the page, `settlements/azure-dream`: the cove, the wharf, the ward, the stair, the precinct on core/world's ground, the lake on `core/water`, the night on `core/atmos` and `core/sched` (the Lulling, the watches, the shutters, the blue window), people asleep | | `verify.py --assert` on the GPU lane; `check_core_use` |
 | **AD7** | the three villages (`core/hamlet`); the summit kora as a second station, with a far form from the cove | | the page's asserts |
 | **AD8** | the open world's site; the Godot export; the gallery (a new settlement goes to the gallery when it reaches `main`) | | the export test; the gallery's card |
 
@@ -599,5 +607,5 @@ isle's food bill, and a real demand for its dairy and hives.
 
 Questions 1 to 13 are answered (the table at the top; 10 by the Qiblai kit's session). One is open:
 
-14. **Building it.** Is the page the next step after the owner's answers, or does it wait until core/world has cut the
+14. ~~**Building it.**~~ **Answered 2026-11-16: "build the page next"** (step AD6's first pass). The original question: Is the page the next step after the owner's answers, or does it wait until core/world has cut the
     isle on the new lake?
