@@ -11,11 +11,11 @@ The checks, each with a negative:
     and a river's stations outside the polygon are not judged), the villages' roads on the land at their grade, nothing
     growing on a road or a village, no NaN;
   - the region: each site where the cut put it (Erehwon px 805,1516 (on its caldera lake's south shore since edit 5.1-512) and Qiblai 922,1595 (at the cataracts since 2026-11-11) in the 'xanadu' overlay, Longsong
-    1226,1626 in the 'oidong valley'), on dry land, its kit growing there (the negative reads Erehwon at Longsong's spot,
-    in the Oidong Valley, where the Xanadu kit does not grow);
+    1228.88,1621.23 in the 'oidong valley' since the 2026-11-16 recut), on dry land, its kit growing there (the negative reads Erehwon at Longsong's spot,
+    in the Oidong Valley, where the Xanadu kit does not grow); Thalaba 840,1463 (since 2026-11-16, scale model 5.1e12) in the 'xanadu' overlay;
   - the lake's small islands (src/44-world-landforms.js, the scale model's landform records): each over its lake at its
-    centre with the lake round it, the Pleasure Dome's isle at the Erewhon page's island (the negative reads the land
-    without the stamp);
+    centre with the lake round it, the Pleasure Dome's isle at the Erewhon page's island (the negative reads each island
+    3 km out in the open lake);
   - the sites (core/world/88s-world-sites.js _sites.checks): the baked plan is the plan made again in the browser (the
     negative changes the world seed), every village whole, its buildings apart and on good ground, every road at its lane
     end (the negative stacks two buildings), every village cleared of flora, tagged and drawn with the kit's pieces (the
@@ -38,7 +38,7 @@ APPLIES = {'flora placement is seeded by cell (order-free)': 'kits', 'nothing ro
            'the highways lie on the land and keep their grade': 'roads', 'nothing grows on a highway or in a town': 'kits'}
 HAS = "({kits:WORLD_KITS.length>0,rivers:(WORLD_DATA.meta.rivers||[]).length>0,roads:!!WORLD_DATA.roads,towns:!!WORLD_DATA.towns})"
 REGION = r"""(neg)=>{const R=[],M=WORLD_DATA.meta,bad=[],lines=[];
- const want={s57bkv9741:{px:[805,1516],biome:'xanadu',kit:'xanadu'},skm4jjo2vl:{px:[922,1595],biome:'xanadu',kit:'xanadu'},sq80bzd7ep:{px:[1226,1626],biome:'oidong valley',kit:'oidong'}};
+ const want={s57bkv9741:{px:[805,1516],biome:'xanadu',kit:'xanadu'},skm4jjo2vl:{px:[922,1595],biome:'xanadu',kit:'xanadu'},sq80bzd7ep:{px:[1228.88,1621.23],biome:'oidong valley',kit:'oidong'},shvo49k0y2:{px:[840,1463],biome:'xanadu',kit:'xanadu'}};   /* Longsong at its 2026-11-11 pin since the 2026-11-16 recut */
  for(const id in want){const S=(M.sites||[]).find(s=>s.id===id),W=want[id];if(!S){bad.push('no site '+id);continue;}
   const L=(M.sites||[]).find(s=>s.id==='sq80bzd7ep'),moved=neg==='site'&&id==='s57bkv9741'&&L;   /* the negative: Erehwon read at Longsong's spot, in the Oidong Valley */
   const x=moved?L.x:S.x,z=moved?L.z:S.z,k=WORLD_KITS.findIndex(q=>q.name===W.kit);
@@ -50,11 +50,14 @@ REGION = r"""(neg)=>{const R=[],M=WORLD_DATA.meta,bad=[],lines=[];
  R.push({name:'the region: each site where the cut put it, on dry land, its kit growing there',ok:!bad.length,detail:bad.length?bad.join('; '):lines.join('; ')});
  /* the lake's small islands (src/44): each stands over its lake at its centre, the lake goes on round it (1.9 radii out,
     four ways), and the Pleasure Dome's isle is the Erewhon page's island (its ISLAND_C, 70,-613 m from the page's centre
-    on Erehwon's pin). The negative reads the land without the stamp: every centre under the water */
- const LF=WORLD.LANDFORMS,bad2=[],l2=[];LF.off=neg==='landforms';WORLD.H(0,0);
- const E=(M.sites||[]).find(s=>s.id==='s57bkv9741');
+    on Erehwon's pin). The negative reads each island 3 km out toward the lake's middle (px 810,1499.5), in open water: every
+    centre then under the water. (It switched the region's stamp off until 2026-11-16, but core/coast (44c, islandsOf) stamps
+    the same records too since, so the islands stood with it off and the negative could not fail) */
+ const LF=WORLD.LANDFORMS,bad2=[],l2=[];
+ const E=(M.sites||[]).find(s=>s.id==='s57bkv9741'),LCX=(810-1191)*2000,LCZ=(1499.5-1569)*2000;
  if(!LF.length)bad2.push('no landforms stamped');
- for(const I of LF){const h=WORLD.H(I.x,I.z),wl=WORLD.water(I.x,I.z);
+ for(const I0 of LF){let I=I0;if(neg==='landforms'){const dx=LCX-I0.x,dz=LCZ-I0.z,d=Math.hypot(dx,dz)||1;I=Object.assign({},I0,{x:I0.x+dx/d*3000,z:I0.z+dz/d*3000});}
+  const h=WORLD.H(I.x,I.z),wl=WORLD.water(I.x,I.z);
   if(!(h>wl+.5*(I.crest-I.water)))bad2.push(I.id+' at '+h.toFixed(1)+' m under its lake '+wl);
   for(const [a,b] of [[1,0],[-1,0],[0,1],[0,-1]]){const x=I.x+a*1.9*I.rx*1.25,z=I.z+b*1.9*I.rz*1.25;if(!(WORLD.H(x,z)<WORLD.water(x,z)))bad2.push(I.id+': dry '+Math.round(Math.hypot(x-I.x,z-I.z))+' m off');}
   l2.push(I.id+' '+(h-wl).toFixed(1)+' m over the lake');}

@@ -151,13 +151,36 @@ const devCheck=(xp,L,O)=>(xp.made.sulfur||0)>50000&&(xp.made.wax||0)>20000&&(xp.
  T.neg('an expedition that brought nothing home is caught',x=>devCheck(xp,x,O),{},L);}
 // 18b. the Rare Devisers' royal licence (the owner, 2026-11-16: "their main guild house at Theodiga; they are royally licensed
 //      in the scrap and rare artifact trade"): every kilo of the Salvagers' scrap through their guild house, sold on to the
-//      smelter, which still makes Theodiga's iron; the Sultan's fee a tenth of the rarities
-const licCheck=(sc,sold,iron,fee,rar)=>sc>0&&sold>sc*.6&&iron>0&&Math.abs(fee/Math.max(1,rar)-XAN_TUNE.devisers.licence)<.04;
+//      smelter, which still makes Theodiga's iron
+const licCheck=(sc,sold,iron)=>sc>0&&sold>sc*.6&&iron>0;
 {const sc=Object.values((Y.trade['devisers.scrap']||{}).tithed||{}).reduce((n,o)=>n+(o.scrap||0),0),sold=(landed('devisers.sell.theodiga','devisers.theodiga>s4zvgepuru').scrap||0),
-  iron=(B.s4zvgepuru.made.iron||0),C=(Y.cuts['expedition.godshearth']||{taken:{}}).taken,fee=C['xan.citadel:rarities']||0,rar=landed('expedition.godshearth','exp.godshearth>devisers.thalaba').rarities||0;
- T.ok('the Rare Devisers\' royal licence: the Salvagers\' scrap through their guild house at Theodiga to the smelter; the Sultan\'s tenth of the rarities',licCheck(sc,sold,iron,fee,rar),
-  'scrap to the house '+t(sc)+', sold to the smelter '+t(sold)+', Theodiga\'s iron '+t(iron)+'; the fee '+fee.toFixed(1)+' of '+rar.toFixed(1)+' rarities');
- T.neg('a house that kept the scrap is caught',x=>licCheck(sc,x,iron,fee,rar),0,sold);}
+  iron=(B.s4zvgepuru.made.iron||0);
+ T.ok('the Rare Devisers\' royal licence: the Salvagers\' scrap through their guild house at Theodiga to the smelter',licCheck(sc,sold,iron),
+  'scrap to the house '+t(sc)+', sold to the smelter '+t(sold)+', Theodiga\'s iron '+t(iron));
+ T.neg('a house that kept the scrap is caught',x=>licCheck(sc,x,iron),0,sold);}
+// 18c. the Sultan's share of the Godshearth hauls (the owner, 2026-11-16, settlements/thalaba/PLAN.md section 4: "10% of the
+//      overall haul and 20% of the rarities", "20% total not 30", "on dalab party too"): of what each expedition lands at
+//      its house in Thalaba, a tenth of every good and a fifth of the rarities to the Treasury
+const haulOf=g=>XAN_TUNE.haul[g]!=null?XAN_TUNE.haul[g]:XAN_TUNE.haul.all;
+const haulCheck=X=>{const bad=[];X.forEach(([road,leg,C])=>{const L=landed(road,leg);Object.keys(L).forEach(g=>{if(!(L[g]>=10))return;const f=(C[g]||0)/L[g];
+  if(Math.abs(f-haulOf(g))>.03)bad.push(road+' '+g+' '+(100*f).toFixed(1)+'%');});if(!Object.keys(L).length)bad.push(road+': nothing landed');});return{ok:!bad.length,bad};};
+{const tk=road=>{const C=(Y.cuts[road]||{taken:{}}).taken,o={};Object.keys(C).forEach(k=>{const [to,g]=k.split(':');if(to==='xan.citadel')o[g]=C[k];});return o;};
+ const X=[['expedition.godshearth','exp.godshearth>devisers.thalaba',tk('expedition.godshearth')],['expedition.dalab','exp.dalab>dalab.thalaba',tk('expedition.dalab')]],H=haulCheck(X);
+ const fmt=([road,leg,C])=>{const L=landed(road,leg);return road+': '+Object.keys(L).filter(g=>L[g]>=10).map(g=>g+' '+Math.round(C[g]||0)+' of '+Math.round(L[g])).join(', ');};
+ T.ok('the Sultan\'s share of the Godshearth hauls: a tenth of the sulfur, wax and hearth seed and a fifth of the rarities, the Devisers\' and the Dalab party\'s alike',H.ok,
+  H.bad.join('; ')||X.map(fmt).join('; '));
+ const X2=X.map(([r,l,C])=>[r,l,Object.assign({},C,{rarities:(C.rarities||0)*1.5})]);
+ T.neg('a share of 30 % of the rarities (10 + 20) is caught',x=>haulCheck(x).ok,X2,X);}
+// 18d. Thalaba (the owner, 2026-11-16): its own small deposit, 30 t of sulfur a year, a steady works; most of its sulfur by
+//      expedition; the Dalab mission (~30) fed beside it, its party's hearth seed gathered at the Grove in the expedition
+//      season and home to the mission, which sells what it keeps into Thalaba's market for the Great Caravan
+const tbCheck=(Bk,L,down)=>{const own=Bk['xan.thalaba'].made.sulfur||0,xp=Bk['exp.godshearth'].made.sulfur||0,ms=Bk['dalab.thalaba'],pt=Bk['exp.dalab'];
+ return{ok:Math.abs(own/XAN_TUNE.thalaba.make.sulfur-1)<.15&&xp>own&&!!ms&&!(ms.hungry.grain>0)&&(pt.made.hearthseed||0)>XAN_TUNE.dalab.party.make.hearthseed*.5&&(L.hearthseed||0)>0&&(down.sulfur||0)>0,own,xp,seed:pt.made.hearthseed||0};};
+{const L=landed('expedition.dalab','exp.dalab>dalab.thalaba'),sold=landed('dalab.sell.thalaba','dalab.thalaba>xan.thalaba'),down=landed('road.pher-thalaba','xan.thalaba>xan.pher'),Q=tbCheck(B,L,down);
+ T.ok('Thalaba: its own deposit\'s 30 t of sulfur, most of its sulfur by expedition; the Dalab mission fed, its party\'s hearth seed home from the Grove',Q.ok,
+  'Thalaba\'s own sulfur '+t(Q.own)+', the Devisers\' camp\'s '+t(Q.xp)+'; the party gathered '+Q.seed.toFixed(1)+' kg of hearth seed, landed at the mission '+(L.hearthseed||0).toFixed(1)+
+  ' kg, sold into the town '+(sold.hearthseed||0).toFixed(1)+' kg, down to Phēr '+(down.hearthseed||0).toFixed(1)+' kg');
+ T.neg('a town that dug the old 60 t is caught',x=>tbCheck(x,L,down).ok,Object.assign({},B,{'xan.thalaba':Object.assign({},B['xan.thalaba'],{made:Object.assign({},B['xan.thalaba'].made,{sulfur:60000})})}),B);}
 // 19. the Golden Tears: their armed camp's ore from the Rift floor's lodes in the cool months only, home to their house and sold
 //     on to the Sultan's assay; their escort's share of Dalab's Great Caravan at the capital
 const tearsCheck=(c,L,A,esc)=>(c.made.goldore||0)>T_ORE*.5&&(L.goldore||0)>0&&A>0&&esc>0;

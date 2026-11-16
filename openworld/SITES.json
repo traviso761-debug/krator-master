@@ -15,7 +15,7 @@
   "xanadu-oidong-highrift": {
    "name": "Xanadu, Oidong and the High Rift",
    "order": 2,
-   "sites": ["s57bkv9741", "sq80bzd7ep", "skm4jjo2vl"],
+   "sites": ["s57bkv9741", "sq80bzd7ep", "skm4jjo2vl", "shvo49k0y2"],
    "polygons": ["rmufcgvtxatfx", "rmuklrcae6jb5", "rmvhighrift100"],
    "upsample": "auto",
    "note": "the owner, 2026-11-09: one region over the Xanadu Sultanate (political), the Oidong Valley and the High Rift (biomes); about 1,740 x 540 km, so the sub-continental cut (1 km cells)"
@@ -56,6 +56,7 @@
   "smirrorgrange01": {"name": "The Mirror Grange", "type": "outpost", "px": 1430, "py": 1644, "model": false, "region": "oidong-highrift", "reach_km": 10, "culture": "order", "page": null, "state": "planned", "notes": "an accessory house of the Order on the Mirror Graben's fans, the High Rift's mildest ground (Dfb): the outpost's grain (openworld/oidong-highrift/PLAN.md)"},
   "scaldronhouse01": {"name": "The Caldron House", "type": "outpost", "px": 1366, "py": 1668, "model": false, "region": "oidong-highrift", "reach_km": 8, "culture": "order", "page": null, "state": "planned", "notes": "an accessory house of the Order at the foot of the graben staircase, where the beck road from Longsong climbs into the High Rift past the Opaline Cataract: the road's hospice and its toll of the peace (openworld/oidong-highrift/PLAN.md)"},
   "skm4jjo2vl": {"name": "Qiblai", "type": "city", "region": "xanadu-oidong-highrift", "reach_km": 30, "culture": "xanadu", "page": null, "state": "built"},
+  "shvo49k0y2": {"name": "Thalaba", "type": "town", "region": "xanadu-oidong-highrift", "reach_km": 22, "moved": "2026-11-16: 825,1481 -> 840,1463, the bench at the mouth of Godshearth's spillway gorge (the owner; scale model 5.1e12); reach 22 km so the ring reaches Salphar at the cataract's foot", "culture": "xanadu", "page": "settlements/thalaba", "state": "cut"},
   "seed07": {"name": "Girder", "type": "village", "region": "iziz-cluster", "reach_km": 15, "culture": "beast-rider", "page": "settlements/girder", "state": "built"},
   "skukf2qmmq": {"name": "Mav's Refuge", "type": "city", "region": "iziz-cluster", "reach_km": 30, "culture": "beast-rider", "page": "settlements/mavs-refuge", "state": "built"},
   "sor1zqih8x": {"name": "Talia", "type": "city", "region": "iziz-cluster", "reach_km": 30, "culture": "talia", "page": "kits/talia", "state": "built"},

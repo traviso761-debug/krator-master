@@ -82,7 +82,7 @@ ORDER = (
        ('core/materials/record', '26-matlib-bind.js'),
        ('biomes/sedesert/src', '35-core-strata.js')]
     + [('core/mask', '25-core-mask.js'), ('core/mask', '27-core-mask-distance.js'), ('core/coast', '30-core-coast.js')]   # core/coast (KCOAST): the natural coasts; core/mask's distance under it
-    + LDF('41-world-fields.js', '42-world-roads.js') + [('src', '43-world-xoh.js')] + LDF('44c-world-coast.js')
+    + LDF('41-world-fields.js', '42-world-roads.js', '42b-world-bridges.js') + [('src', '43-world-xoh.js')] + LDF('44c-world-coast.js')   # 42b: the roads bridged over the rivers (Thalaba's Bridj, 2026-11-16)
     + [('src', '44-world-landforms.js')]   # the lake's islands, chained on WORLD.landHook after core/coast's (44c)
     + LDF('45-world-host.js') + [('src', '46-world-config.js'), ('src', '47-world-kits.js'),
      ('biomes/hyperjungle/src', '41-hyperjungle-globals.js')]
@@ -97,7 +97,7 @@ ORDER = (
        ('core/hamlet', '20-hamlet-cultures.js'), ('core/hamlet', '30-hamlet-village.js'),
        ('ld', '48s-world-sites.js'), ('src', '48-world-site.js'), ('src', '49-world-xanadu.js')]
     + LDF('80-world-sky.js', '81-world-terrain.js', '83-world-water.js', '83w-world-seas.js', '84-world-nursery.js',
-          '85-world-flora.js', '86-world-floor.js', '87-world-places.js', '88-world-towns.js', '88s-world-sites.js')
+          '85-world-flora.js', '86-world-floor.js', '87-world-places.js', '88-world-towns.js', '88s-world-sites.js', '88b-world-bridges.js')
     + [('resgeo', 'geology')] + RES_FRAGS + [('ld', '49r-world-resources.js'), ('ld', '89r-world-resources-map.js')]   # the resources: census, layers, markers
     + LDF('90-world-camera.js', '91-world-probe.js', '93-world-propose.js', '98-world-start.js', '99-tail.html')   # 93: proposing a site
 )
