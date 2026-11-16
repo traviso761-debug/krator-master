@@ -29,6 +29,7 @@ const pen=(A,B)=>{let m=1e9;for(const ax of [A.u,A.v,B.u,B.v]){const pr=F=>Math.
  const d=Math.abs((A.c[0]-B.c[0])*ax[0]+(A.c[1]-B.c[1])*ax[1]);m=Math.min(m,pr(A)+pr(B)-d);}return m;};
 const segD=(p,a,b)=>{const dx=b[0]-a[0],dz=b[1]-a[1],l=dx*dx+dz*dz||1,t=Math.max(0,Math.min(1,((p[0]-a[0])*dx+(p[1]-a[1])*dz)/l));return Math.hypot(p[0]-a[0]-t*dx,p[1]-a[1]-t*dz);};
 const inside=(p,K)=>{let c=false;for(let i=0,j=3;i<4;j=i++){const a=K[i],b=K[j];if((a[1]>p[1])!==(b[1]>p[1])&&p[0]<(b[0]-a[0])*(p[1]-a[1])/(b[1]-a[1])+a[0])c=!c;}return c;};
+const HEAPS=STRONGBOW.ruin(STRONGBOW.plan({seed:1647})).heaps.filter(H=>H.y0<STRONGBOW.plan({seed:1647}).frame.FL+40);
 const LY=sbLayout(),C=T.centre,quarry=LY.parts.filter(q=>/^sb\.quiver\.p\d/.test(q.id)).map(q=>q.shape),scree=LY.parts.find(p=>p.id==='sb.scree.w').shape;
 const CHECKS={
  'no two buildings overlap':X=>{let n=0;const B=X.lots.map(box);for(let i=0;i<B.length;i++)for(let j=i+1;j<B.length;j++)if(Math.hypot(B[i].c[0]-B[j].c[0],B[i].c[1]-B[j].c[1])<60&&pen(B[i],B[j])>.3)n++;return [n===0,n+' pairs'];},
@@ -40,7 +41,12 @@ const CHECKS={
    const want=[900,1400,900,300],good=by.every((b,i)=>Math.abs(b-want[i])<=want[i]*.3)&&t>3000&&t<4000;return [good,by.join(' / ')+' = '+t];},
  'the farms stand beyond the rings, each with its fields':X=>{const farms=X.lots.filter(L=>L.key==='xa_scrap_farm');const bad=farms.filter(L=>L.ring!==3).length;
    const fed=new Set(X.fields.map(f=>f.farm));return [farms.length>=10&&bad===0&&fed.size>=farms.length*.5,farms.length+' farms, '+bad+' inside the rings, '+fed.size+' with fields'];},
- 'every lot is a key of the scrap set, its id unique':X=>{const ids=new Set(X.lots.map(L=>L.id));return [ids.size===X.lots.length&&X.lots.every(L=>DIMS[L.key]),X.lots.length+' lots'];}};
+ 'every lot is a key of the scrap set, its id unique':X=>{const ids=new Set(X.lots.map(L=>L.id));return [ids.size===X.lots.length&&X.lots.every(L=>DIMS[L.key]),X.lots.length+' lots'];},
+ /* the owner, 2026-11-15: "make sure buildings are not clipping into ruin rubble piles": no corner, edge middle or centre of a lot
+    inside a ground heap's footprint (STRONGBOW.ruin, KRUBBLE's frame) grown by 2 m */
+ 'none in the ruin\'s rubble heaps':X=>{let n=0;for(const L of X.lots){const B=box(L),pts=corners(B).concat([[L.x,L.z]]);for(let i=0;i<4;i++){const a=pts[i],b=pts[(i+1)%4];pts.push([(a[0]+b[0])/2,(a[1]+b[1])/2]);}
+   if(HEAPS.some(H=>pts.some(p=>{const dx=p[0]-H.x,dz=p[1]-H.z,c=Math.cos(H.ry||0),s=Math.sin(H.ry||0),u=(dx*c+dz*s)/(H.rx+2),v=(-dx*s+dz*c)/(H.rz+2);return u*u+v*v<1;})))n++;}
+   return [n===0,n+' in a heap, '+HEAPS.length+' heaps on the ground'];}};
 const hash=X=>{let h=2166136261;const s=JSON.stringify(X.lots.map(L=>[L.key,L.v,+L.x.toFixed(3),+L.z.toFixed(3),+L.ry.toFixed(4)]));for(let i=0;i<s.length;i++)h=Math.imul(h^s.charCodeAt(i),16777619)>>>0;return h;};
 const clone=()=>JSON.parse(JSON.stringify(T));
 const NEG=[X=>{const L=Object.assign({},X.lots[5]);L.id='x';L.x+=1;X.lots.push(L);},
@@ -48,7 +54,8 @@ const NEG=[X=>{const L=Object.assign({},X.lots[5]);L.id='x';L.x+=1;X.lots.push(L
  X=>{X.lots[2].x=C[0];X.lots[2].z=C[1]+100;},
  X=>{X.lots=X.lots.filter(L=>L.ring!==0);},
  X=>{X.lots.find(L=>L.key==='xa_scrap_farm').ring=1;},
- X=>{X.lots[1].id=X.lots[0].id;}];
+ X=>{X.lots[1].id=X.lots[0].id;},
+ X=>{const H=HEAPS.find(q=>!/hall/.test(q.id));X.lots[4].x=H.x;X.lots[4].z=H.z;}];
 Object.keys(CHECKS).forEach((name,i)=>{const [pass,detail]=CHECKS[name](T);ok(pass,name+' ('+detail+')');const X=clone();NEG[i](X);ok(!CHECKS[name](X)[0],'negative: '+name);});
 const T2=make();ok(hash(T2)===hash(T),'the town reruns the same ('+hash(T).toString(16)+')');
 const T3=SB_TOWN.make({layout:sbLayout(),plan:STRONGBOW.plan({seed:1647}),dims,seed:1648});ok(hash(T3)!==hash(T),'negative: another seed gives another town');

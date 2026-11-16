@@ -298,7 +298,7 @@ var SB_ROOMS=(function(){
  // ---- the registry --------------------------------------------------------------------------------------------------------------
  /* the town's buildings as solids: each lot's footprint (turned by ry) in slices a metre thick along its longer side, each slice's
     bounds a block */
- function solids(town){const out=[];if(!town)return out;for(const L of town.lots){const c=Math.cos(L.ry||0),s=Math.sin(L.ry||0),w=L.w/2,d=L.d/2,h=L.h||6;
+ function solids(town,skip){const out=[];if(!town)return out;for(const L of town.lots){if(skip&&skip.has(L.id))continue;const c=Math.cos(L.ry||0),s=Math.sin(L.ry||0),w=L.w/2,d=L.d/2,h=L.h||6;
    const long=L.w>=L.d,n=Math.max(1,Math.ceil(long?L.w:L.d));
    for(let k=0;k<n;k++){const u0=-1+2*k/n,u1=-1+2*(k+1)/n,pts=long?[[u0*w,-d],[u1*w,-d],[u1*w,d],[u0*w,d]]:[[-w,u0*d],[w,u0*d],[w,u1*d],[-w,u1*d]];
     let x0=1e9,x1=-1e9,z0=1e9,z1=-1e9;for(const [a,b] of pts){const x=L.x+a*c+b*s,z=L.z-a*s+b*c;x0=Math.min(x0,x);x1=Math.max(x1,x);z0=Math.min(z0,z);z1=Math.max(z1,z);}
@@ -309,8 +309,38 @@ var SB_ROOMS=(function(){
   for(const s of R.stairs)W.strip({a:[s.a[0],s.a[1],s.a[2]],b:[s.b[0],s.b[1],s.b[2]],w:s.w,name:s.id,tag:'sb.stair'});
   for(const w of R.walls)W.block(w.box,'sb.room.wall');
   for(const d of R.doors){if(d.open)continue;const b=[d.at[0]-d.w/2,d.at[0]+d.w/2,d.at[1]-d.w/2,d.at[1]+d.w/2,d.y,d.y+2.6];RG.doors[d.id]=W.block(b,d.locked?'sb.room.locked':'sb.room.door');}
-  for(const b of solids(o.town)){W.block(b.box,'sb.town.solid');RG.solids++;}
+  RG.town=o.town&&o.IX?town(W,o.town,o.IX,o.ground):null;
+  for(const b of solids(o.town,RG.town?RG.town.ids:null)){W.block(b.box,'sb.town.solid');RG.solids++;}
   return RG;}
+ /* the town's buildings with their interiors (the scrap Xanadu set, kits/interiors/sets/xanadu-scrap.js): each lot {key, v, x, z,
+    ry} whose def has an item is planned in place into the walk (IX.sets.instantiate: its floors, walls with the doorways open,
+    stairs, ladders and entry flights), on the ground the page stands it on (its footprint's highest corner, as src/8ax1-sb-town.js
+    does; a foot building at its own y); a lot whose def is skipped (open, or no item) stays a solid. Each placed building's front
+    door, and the step 1.6 m outside it, in world metres. The kit's door leaves (XAK.proto(key, v, {unlocked: true}), core/door)
+    are the page's to draw and swing: in the walk the doorways are open, as every unlocked door is for the audit */
+ function town(W,T,IX,ground){const S=IX.sets&&IX.sets.byName['xanadu-scrap'],out={placed:[],ids:new Set(),skipped:0};if(!S)return out;
+  for(const L of T.lots){const it=S.forDef(L.key,L.v|0);if(!it||it.skip){out.skipped++;continue;}
+   const c=Math.cos(L.ry||0),s=Math.sin(L.ry||0),T2=p=>[L.x+p[0]*c+p[1]*s,L.z-p[0]*s+p[1]*c];
+   let y=L.y;if(!L.foot&&ground){y=-1e9;for(const [u,v] of [[-1,-1],[1,-1],[1,1],[-1,1],[0,0]]){const q=T2([u*L.w/2,v*L.d/2]);y=Math.max(y,ground(q[0],q[1]));}}
+   const inst=IX.sets.instantiate(it,L.x,L.z,L.ry||0,{baseY:y,register:false,walk:W,prefix:L.id+'.'});
+   const R0=(S.doors[it.def]||[])[0],front=R0?T2([R0[0],R0[2]]):null,n=R0?[Math.sin(R0[3]),Math.cos(R0[3])]:null,step=R0?T2([R0[0]+n[0]*1.6,R0[2]+n[1]*1.6]):null;
+   /* on a slope a threshold stands over the street (the footprint's highest corner): from each of the def's street doors (a row's
+      every house, the court's) a flight down to the ground, as long as its drop needs at SLOPE, from just inside the item's own
+      doorway (an inset body's is in from the leaf; the ground under the sill is below it), so the street comes up to every door.
+      steps: the foot of each door's way in (the flight's, or the ground 1.6 m out) */
+   const idoors=[];for(const B of (it.bodies||[]))for(const q of (B.doors||[]))idoors.push(q.at);
+   for(const r of (it.rooms||[]))for(const q of (r.doors||[]))if(q.to==null||q.to==='street')idoors.push(q.at);
+   const steps=[];
+   (S.doors[it.def]||[]).forEach((Rk,k)=>{const nk=[Math.sin(Rk[3]),Math.cos(Rk[3])],sy=y+Rk[1];let di=null,dd=1.6;
+    for(const q of idoors){const e2=Math.hypot(q[0]-Rk[0],q[1]-Rk[2]);if(e2<dd){dd=e2;di=q;}}
+    if(!di)return;   /* a leaf no item door serves (the gate's passage): not a way in */
+    const out1=T2([Rk[0]+nk[0]*1.6,Rk[2]+nk[1]*1.6]);let gy=ground?ground(out1[0],out1[1]):sy;
+    if(!ground||sy-gy<=.3){steps.push([out1[0],Math.max(gy,sy-.3),out1[1]]);return;}
+    let len=Math.max(1.6,(sy-gy)/SLOPE),e=T2([Rk[0]+nk[0]*(len+.3),Rk[2]+nk[1]*(len+.3)]),ge=ground(e[0],e[1]);
+    len=Math.max(1.6,(sy-ge)/SLOPE);e=T2([Rk[0]+nk[0]*(len+.3),Rk[2]+nk[1]*(len+.3)]);ge=ground(e[0],e[1]);const a=T2([di[0]-nk[0]*.4,di[1]-nk[1]*.4]);
+    W.strip({a:[a[0],a[1],sy],b:[e[0],e[1],ge],w:Math.max(1.2,Rk[4]+.2),name:L.id+'.stoop.'+k,tag:'sb.town.step'});steps.push([e[0],ge,e[1]]);});
+   out.placed.push({id:L.id,key:L.key,item:it.key,y,inst,front:front&&[front[0],y+R0[1],front[1]],step:steps[0]||null,steps});out.ids.add(L.id);}
+  return out;}
 
  // ---- the audit: a flood per window (a storey, the lobby, a deck), chained ------------------------------------------------------
  /* W is a KWALK with the walk's records and these (doors open but the locked ones). Each window gets its own small KWALK of the
@@ -359,4 +389,4 @@ var SB_ROOMS=(function(){
     if(reached.has(nm))continue;reached.add(nm);
     if(/^door:/.test(nm)){const r=src.rect;seed([(r[0]+r[1])/2,src.y,(r[2]+r[3])/2]);}}}
   return {reached,windows:wins.length,floods,nodes,ms:Date.now()-t0};}
- return {plan,register,audit,solids,stairwells};})();
+ return {plan,register,audit,solids,stairwells,town};})();

@@ -146,6 +146,12 @@ function sbNock(X){const P=X.P,F=X.F,D=X.D,N=P.nock,gone=X.RU?new Set(X.RU.nockG
   g(N.y,'deck');g(N.y-N.th,'shade');
   SBG.put(X,'res',gridSurface((u,v)=>{const x=lerp(part.x0,part.x1,u);return[x,lerp(N.y-N.th,N.y-1.2,v),N.front(x)];},24,1,{uS:(part.x1-part.x0)/25.6,vS:N.th/25.6}),bound);
   SBG.put(X,X.dd?'whiteW':'white',gridSurface((u,v)=>{const x=lerp(part.x0,part.x1,u);return[x,lerp(N.y-1.2,N.y+1.4,v),N.front(x)+.2];},24,1,{uS:20,vS:1}),bound);
+  /* where the neighbouring part fell (RU.nockGone), the break: a jagged fracture face across the deck's whole depth and thickness
+     (the deck, its underside and its front are open surfaces: an uncapped end showed the sky through the slab; the owner,
+     2026-11-15: "there is also transparancy issue where the slab broke off the arcology") */
+  if(gone)for(const [nb,xe,sg] of [[N.parts.find(q=>q.x1===part.x0),part.x0,-1],[N.parts.find(q=>q.x0===part.x1),part.x1,1]]){if(!nb||!gone.has(nb.id))continue;
+   const jag=(u,v)=>sg*(STRONGBOW.h(F.seed,812,Math.round(u*10),Math.round(v*14))-.35)*3.2*Math.sin(Math.PI*Math.min(1,Math.max(0,v)))*Math.sin(Math.PI*Math.min(1,Math.max(0,u)));   /* flush with the deck's edges all round */
+   SBG.put(X,'frab',gridSurface((u,v)=>{const z=lerp(bk(xe),N.front(xe),v);return[xe+jag(u,v),lerp(N.y-N.th,N.y,u),z];},10,14,{uS:N.th/12,vS:(N.front(xe)-bk(xe))/12}),bound);}
   /* the Nock stays whole on the rock; the tower leans through its centre */}
  for(const pd of N.pads){if(gone&&gone.has('sb.nock.'+(pd.at[0]<0?'w':'e')))continue;const bound=false;
   SBG.put(X,X.dd?'poolR':'pool',gridSurface((u,v)=>[pd.at[0]+lerp(-pd.size[0]/2,pd.size[0]/2,u),N.y+.25,pd.at[2]+lerp(-pd.size[1]/2,pd.size[1]/2,v)],2,2,{}),bound);}}

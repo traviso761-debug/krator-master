@@ -100,6 +100,12 @@ var SB_TOWN=(function(){
     R.stampPoly(arc(CORE,0,2*Math.PI),OCC.HARD,-1);
     for(const q of quarry)R.stampPoly(arc(q.r,0,2*Math.PI).map(p=>[p[0]+q.p[0],p[1]+q.p[1]]),OCC.HARD,-1);
     {const a=toL(sc[1]-8,sc[3]-8),b=toL(sc[2]+8,sc[4]+8);R.stampPoly([[a[0],a[1]],[b[0],a[1]],[b[0],b[1]],[a[0],b[1]]],OCC.HARD,-1);}
+    /* and the ruin's rubble heaps on the ground (STRONGBOW.ruin: the fallen drums, the Nock's fallen slab, the crushed hall; the
+       owner, 2026-11-15: "make sure buildings are not clipping into ruin rubble piles"): each footprint ellipse 6 m wider all
+       round, in KRUBBLE's frame (u along the strike ry) */
+    if(typeof STRONGBOW!=='undefined'&&STRONGBOW.ruin)for(const H of (STRONGBOW.ruin(P).heaps||[])){if(H.y0>F.FL+40)continue;const pts=[];
+     for(let i=0;i<32;i++){const t=i/32*2*Math.PI,u=(H.rx+6)*Math.cos(t),v=(H.rz+6)*Math.sin(t),c=Math.cos(H.ry||0),s=Math.sin(H.ry||0);pts.push(toL(H.x+u*c-v*s,H.z+u*s+v*c));}
+     R.stampPoly(pts,OCC.HARD,-1);}
     SL.minSpacing=KCITY.site.minSpacing();SL.note(0,'the foot\'s half annulus and two farm corridors, '+land+' cells');}},
    {name:'landmarks',run(){SL.note(1,'the plaza\'s gate, shrine and pavilion and the serai are the foot\'s (the reclamation draws them)');}},
    {name:'districts',run(){SL.note(2,'the rings are wealth, not districts');}},

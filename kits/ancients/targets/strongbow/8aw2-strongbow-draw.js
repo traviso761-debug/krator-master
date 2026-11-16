@@ -82,12 +82,25 @@ function buildStrongbow(scene,gx,gz,d){reseed(9040+d);KOFF=[gx,0,gz];
    gs.push(['white',gridSurface((u,v)=>{const t=lerp(t0,t1,v),q=qp(t,1,1);return[q[0],q[1],q[2]+4*u];},1,12,{uS:1,vS:8})]);
    if(t0<=0)gs.push(['deck',gridSurface((u,v)=>{const s=u<.5?-1:1,q=qp(0,s,u<.5?u*2:2-u*2);return[lerp(Q.x,q[0],v),Q.top,lerp(Q.back+dq(0)*.3,q[2],v)];},24,2,{uS:8,vS:2})]);
    return gs;};
+  /* a fallen piece is closed (the owner, 2026-11-15: a "transparency issue where the slab broke off", and "that break should
+     probably show open decks, not windows"): its back, torn off the face, a fracture; at each break the storeys' decks laid open,
+     three floor plates a storey apart stepping into the piece, each a little more ragged and drawn in, and a dark plate behind
+     them so the shell is never seen through */
+  const dT=D.STO/(Q.top-Q.tip),plate=(t,k,list,sh)=>{const out=[],c=[Q.x,lerp(Q.top,Q.tip,t),Q.back+dq(t)*.3],N=10;
+    for(let i=0;i<=N;i++)out.push(qp(t,-1,i/N));for(let i=N;i>=0;i--)out.push(qp(t,1,i/N));
+    const pts=out.map((q,i)=>{const j=1-sh*(.6+.8*STRONGBOW.h(F.seed,830,k,i));return[c[0]+(q[0]-c[0])*j,c[1],c[2]+(q[2]-c[2])*j];});
+    /* both windings: the deck material draws one face, and a break is seen from outside the piece at either end */
+    return [0,1].map(r=>[list,gridSurface((u,v)=>{const uu=r?1-u:u,f=uu*(pts.length-1),a=Math.min(pts.length-2,Math.floor(f)),p=pts[a],q=pts[a+1],w=f-a;return[lerp(c[0],lerp(p[0],q[0],w),v),c[1],lerp(c[2],lerp(p[2],q[2],w),v)];},pts.length-1,1,{uS:4,vS:2})]);};
+  const breaks=(t0,t1)=>{const gs=[['frab',gridSurface((u,v)=>{const t=lerp(t0,t1,v);return[lerp(Q.x-wq(t),Q.x+wq(t),u),lerp(Q.top,Q.tip,t),Q.back];},4,Math.max(2,Math.round(n*(t1-t0))),{uS:4,vS:4})]];
+    for(const [te,dir] of [[t0,1],[t1,-1]]){if(te<=0||te>=1)continue;   /* the top piece's head has its deck; the tip closes itself */
+     for(let k=0;k<3;k++)gs.push(...plate(te+dir*(k+.05)*dT,k,'deck',.04+.07*k));gs.push(...plate(te+dir*2.6*dT,3,'shade',.05));}
+    return gs;};
   if(!RU)for(const [k,g] of loft(0,1))Lst[k].push(g);
   else for(const pc of RU.quiver.pieces){const t0=pc.i/3,t1=(pc.i+1)/3,mid=qp((t0+t1)/2,1,.3);
    const MQ=new THREE.Matrix4().makeTranslation(pc.at[0],Math.max(pc.at[1],hy(pc.at[0],pc.at[2])-wq((t0+t1)/2)*.5)+wq((t0+t1)/2)*.6,pc.at[2]).multiply(new THREE.Matrix4().makeRotationY(pc.ry))
     .multiply(new THREE.Matrix4().makeRotationZ(Math.PI/2+pc.tilt*.3)).multiply(new THREE.Matrix4().makeRotationX(pc.roll))
     .multiply(new THREE.Matrix4().makeTranslation(-mid[0],-mid[1],-mid[2]));
-   for(const [k,g] of loft(t0,t1)){g.applyMatrix4(MQ);Lst[k].push(g);}
+   for(const [k,g] of loft(t0,t1).concat(breaks(t0,t1))){g.applyMatrix4(MQ);Lst[k].push(g);}
   }}
 
  // ---- the Spine: drums on necks down from the keel, a terrace at every turn, struts to the bay's walls, the rotors, the pad ----

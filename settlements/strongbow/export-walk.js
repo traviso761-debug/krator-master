@@ -4,6 +4,7 @@
 // and listed under its region's `shut`, so the test's negative can put it back), the open ground at the foot as 4 m tiles.
 //   foot: from the town's ground in front of the lobby, through its door, up the great stair into the first drum, up the
 //         drums' switchbacks and the neck's flight to T1's plate, out by the neck's door and into a room of T1's ring
+//   town: from the street into a three-storey scrap house on a slope (its stoop, its door, its stairs) to its top storey
 //   lip:  from the stop of W5 on the lip, through the Sultanate's post and the yard, into the Order's gatehouse and up its
 //         switchback to a room on its top storey
 // Also lifts.json: every lift as its stops (a NavigationLink each way, for a host that rides them).
@@ -14,6 +15,16 @@ const {L,P,S,R}=T,ground=(x,z)=>P.frame.ground(x,z);
 const W=KWALK.create(),RS=SB_WALK.register(W,S);for(const k in RS.doors)W.setBlock(RS.doors[k],false);
 const RR=SB_ROOMS.register(W,R);for(const d of R.doors)if(RR.doors[d.id])W.setBlock(RR.doors[d.id],!!d.locked);
 const PT={};for(const p of L.parts)PT[p.id]=p;
+/* the town with its buildings' interiors (the scrap Xanadu set, SB_ROOMS.town): core/space, core/city, the crops and the town plan
+   loaded here (test-sb-rooms loads the rest), the kit's boxes read off its defs as test-sb-town.js does */
+const vm=require('vm'),loadF=f=>vm.runInThisContext(fs.readFileSync(path.join(ROOT,f),'utf8'),{filename:f});
+['core/space/20-core-space.js'].concat(fs.readdirSync(path.join(ROOT,'core','city')).filter(f=>/^\d\d-city-.*\.js$/.test(f)&&!/host/.test(f)).sort().map(f=>'core/city/'+f),
+ ['kits/crops/src/10-crop-core.js','kits/crops/src/20-crop-records.js','kits/crops/src/40-crop-query.js','settlements/strongbow/src/40-sb-town.js']).forEach(loadF);
+const DIMS={};for(const f of ['kits/xanadu/src/87u-xs-build.js','kits/xanadu/src/87v-xs-poor.js']){const s=fs.readFileSync(path.join(ROOT,f),'utf8');
+ for(const m of s.matchAll(/XA\.def\(\{key:'(xa_scrap_[a-z_]+)'.*?,w:([\d.]+),d:([\d.]+),h:([\d.]+)/g))DIMS[m[1]]={w:+m[2],d:+m[3],h:+m[4]};}
+const TOWN=SB_TOWN.make({layout:L,plan:P,dims:(k,v)=>DIMS[k]?{key:k,v:v||0,w:DIMS[k].w,d:DIMS[k].d,h:DIMS[k].h}:null});
+const IX=global.KratorInteriors=require(path.join(ROOT,'kits','interiors','dist','interiors-core.js'));(0,eval)(fs.readFileSync(path.join(ROOT,'kits','interiors','sets','xanadu-scrap.js'),'utf8'));
+const RT=SB_ROOMS.town(W,TOWN,IX,ground);for(const b of SB_ROOMS.solids(TOWN,RT.ids))W.block(b.box,'sb.town.solid');
 const ctr=rm=>{const P=rm.poly;let x=0,z=0;for(const q of P){x+=q[0];z+=q[1];}return [x/P.length,rm.y,z/P.length];};
 /* the regions */
 const T1=PT['sb.T1'],t1c=[T1.shape[1],T1.shape[2]],t1r=T1.shape[3],LB=P.foot.lobby,t1y=T1.y+1.6;
@@ -26,6 +37,17 @@ const regions=[
   shut:['sb.door.lobby'],note:'the town to a room of T1\'s ring, on foot'},
  {id:'lip',box:[gh.shape[1]-6,P.frame.lipY-5,Math.min(yard[3],gh.shape[3],post[3])-6,Math.max(yard[2],post[2],startB[0])+8,gh.y+gh.h+3,Math.max(yard[4],gh.shape[4],post[4],startB[2])+8],from:startB,to:goalB,
   shut:R.doors.filter(d=>!d.locked&&!d.open&&/^sb\.room\.door\./.test(d.id)&&/gatehouse/.test(d.id)).map(d=>d.id),note:'W5\'s top stop to a room on the gatehouse\'s top storey (the negative shuts both its doors, the yard\'s and the ramp\'s)'}];
+/* town: the three-storey scrap house nearest the lobby that stands over its street (it has a stoop): from the street below its
+   stoop, up the stoop, through its door, up its stairs to a room on the top storey. The negative: its doorways blocked */
+{const lb=[LB.at[0],LB.at[2]],cand=RT.placed.filter(q=>q.item==='xa_scrap_house'&&W.floors.some(F=>(F.name||'').startsWith(q.id+'.stoop.')))
+  .sort((a,b)=>Math.hypot(a.inst.x-lb[0],a.inst.z-lb[1])-Math.hypot(b.inst.x-lb[0],b.inst.z-lb[1])),q=cand[0];
+ const own=W.floors.filter(F=>(F.name||'').startsWith(q.id+'.')),top=own.filter(F=>F.kind==='poly'&&/\.floor\.2(\.|$)/.test(F.name)).sort((a,b)=>Math.abs(b.pts.reduce((s,p,i,A)=>s+p[0]*A[(i+1)%A.length][1]-A[(i+1)%A.length][0]*p[1],0))-Math.abs(a.pts.reduce((s,p,i,A)=>s+p[0]*A[(i+1)%A.length][1]-A[(i+1)%A.length][0]*p[1],0)))[0];
+ const tc=top.pts.reduce((s,p)=>[s[0]+p[0]/top.pts.length,s[1]+p[2]/top.pts.length,s[2]+p[1]/top.pts.length],[0,0,0]),from=q.steps[0];
+ const b=[1e9,-1e9,1e9,-1e9];for(const F of own)for(const p of (F.kind==='poly'?F.pts:F.kind==='strip'?[F.a,F.b]:[]))b[0]=Math.min(b[0],p[0]),b[1]=Math.max(b[1],p[0]),b[2]=Math.min(b[2],p[1]),b[3]=Math.max(b[3],p[1]);
+ const c=Math.cos(q.inst.ry),s=Math.sin(q.inst.ry),DR=IX.sets.byName['xanadu-scrap'].doors.xa_scrap_house;
+ regions.push({id:'town',box:[b[0]-10,from[1]-4,b[2]-10,b[1]+10,tc[1]+5,b[3]+10],from,to:tc,ground:true,
+  shut:DR.map((R0,k)=>({id:q.id+'.door.'+k,box:(()=>{const x=q.inst.x+R0[0]*c+R0[2]*s,z=q.inst.z-R0[0]*s+R0[2]*c;return [x-1.2,x+1.2,z-1.2,z+1.2,q.y-1.5,q.y+3];})()})),
+  note:'the street to the top storey of '+q.id+' ('+q.item+', on a slope: '+q.steps.length+' stoop(s)), on foot'});}
 /* the waypoints a path should pass (the test reports how near it came to each: where a failing path stops) */
 const sp=(id,e)=>{const s=R.stairs.find(q=>q.id===id);return s?[s[e][0],s[e][2],s[e][1]]:null;},sd=id=>{const d=S.doors.find(q=>q.id===id)||R.doors.find(q=>q.id===id);return d?[d.at[0],d.y,d.at[1]]:null;};
 const low=(x,z)=>{const f=W.floorsAt(x,z).filter(q=>q[0]<3);return f.length?f[0][0]:ground(x,z);},r1=S.route[1].at,r2=S.route[2].at;
@@ -49,9 +71,9 @@ for(const g of regions){const b=g.box;
   if(x1>=b[0]&&x0<=b[3]&&z1>=b[2]&&z0<=b[5]&&y1>=b[1]&&y0<=b[4]){seenF.add(i);floors.push(f);}});   /* by its bounds (the plaza's corners lie outside the region) */
  EX.blocks.forEach((k,i)=>{if(seenB.has(i)||k.off)return;const q=k.box;if(q[1]>=b[0]&&q[0]<=b[3]&&q[3]>=b[2]&&q[2]<=b[5]&&q[5]>=b[1]&&q[4]<=b[4]){seenB.add(i);blocks.push(k);}});
  /* the open ground: 4 m tiles at the ground's height wherever no floor is within 2 m above it */
- if(g.id==='foot')for(let x=b[0];x<b[3];x+=4)for(let z=b[2];z<b[5];z+=4){const y=ground(x+2,z+2);if(W.floorsAt(x+2,z+2).some(q=>q[0]>y-.3&&q[0]<y+2))continue;floors.push({kind:'rect',rect:[x,x+4,z,z+4],y,name:'ground',tag:'ground'});}
+ if(g.id==='foot'||g.ground)for(let x=b[0];x<b[3];x+=4)for(let z=b[2];z<b[5];z+=4){const y=ground(x+2,z+2);if(W.floorsAt(x+2,z+2).some(q=>q[0]>y-.3&&q[0]<y+2))continue;floors.push({kind:'rect',rect:[x,x+4,z,z+4],y,name:'ground',tag:'ground'});}
  /* the shut doors' blocks, which the negative puts back */
- g.shut=g.shut.map(id=>{const d=S.doors.find(q=>q.id===id)||R.doors.find(q=>q.id===id),rec=RS.doors[id]||RR.doors[id];return rec?{id,box:rec.box.slice()}:{id,box:null};});}
+ g.shut=g.shut.map(id=>{if(typeof id==='object')return id;const d=S.doors.find(q=>q.id===id)||R.doors.find(q=>q.id===id),rec=RS.doors[id]||RR.doors[id];return rec?{id,box:rec.box.slice()}:{id,box:null};});}
 const lifts=S.lifts.map(l=>({id:l.id,stops:l.stops.map(s=>({y:s.y,at:[s.gate.at[0]+s.side[0]*1.2,s.y,s.gate.at[1]+s.side[1]*1.2],gate:s.gate.id}))}));
 fs.mkdirSync(OUT,{recursive:true});
 const walk={format:EX.format,version:EX.version,convention:EX.convention,floors,blocks,zones:[],regions};
