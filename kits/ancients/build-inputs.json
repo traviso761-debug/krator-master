@@ -3180,8 +3180,8 @@
     "core/water/22-core-water-flow.js": "eab9b6ee42e8747dfd1082a1b6d76804b4659d5fd3a2b3d4bc1a566af13dbed7",
     "core/water/50-core-water-draw.js": "9b487271223b64c2935b3336667963139dddcc055b852ac4f0a1912b2a9dd7e0",
     "core/water/51-core-water-kinds.js": "e0c2edba19b476b4b46a4e08a63f0af695423d88b1da15b380795b2e4d07ead4",
-    "kits/ancients/KNOWN_ISSUES.md": "dec03f587f6550cdb67da61770fc1400441ce4579c2482fe22cea32b49e4dacd",
-    "kits/ancients/PORT.md": "9cebe7a33c7470c342a84d924741a8f8b2b0e88fae6481b534ed711254105cc2",
+    "kits/ancients/KNOWN_ISSUES.md": "565eafc19385a5ea27bde92dc44b1930744dbe9071663af6dc8e68432ff393d8",
+    "kits/ancients/PORT.md": "977b1e0b53e79bc218b178e7727ab7552cb5fc2ce64c21c59e6b9a22cdbab3a0",
     "kits/ancients/build.py": "d16b28e81571c1790e5840f6bec850e79fe1dea5cd58da096a75dc0585adf368",
     "kits/ancients/src/00-head.html": "0943bbc0cfb9e39df9a2d653ced3bd64adf319eda202c2a1574fa422dca301f4",
     "kits/ancients/src/10-core.js": "7c31cf7eb63a1666c0f1c8cd97fd810c1531d10e8d014c105f807a2ad521138b",
@@ -3411,7 +3411,7 @@
     "kits/ancients/targets/spire/91z-views.js": "d0680b6c5634e43d0ba1ad1a1013e1d4829a14a7bee28e562239d88bc80b87ac",
     "kits/ancients/targets/theodiga-today/89z-rows.js": "3e5d88c576fe201159dee491b2ec6de946870248b275b2c3afb009958efa9af7",
     "kits/ancients/targets/theodiga-today/91z-views.js": "f8cdede74be3ca0ef64b1be2345cae442caaec58e50494b011110d7b8afdd960",
-    "kits/ancients/targets/theodiga/77-dam.js": "7d51943d2de9b06812ed6a1d602548e91bef98dfa4c2dc6ac669a8524b07ef50",
+    "kits/ancients/targets/theodiga/77-dam.js": "a8ce18b341299019e8f75b3f9aed933fdd582040c19f1c7d49e094cc5165cb28",
     "kits/ancients/targets/theodiga/77a-theodiga-dome-plan.js": "fa05207538504406946d62999a2246877816d03f98dff0b93e857e527ed4bd59",
     "kits/ancients/targets/theodiga/77b-theodiga-dome-draw.js": "cfaedc8e7429e95808290eb627f887e7112718e67439f0ee5e9f1fe529bb7dd3",
     "kits/ancients/targets/theodiga/77c-theodiga-water.js": "5ec4fe721ae0dcbc5354865a73aff137c282ae093a2c59a2d3f72401498ccc71",
@@ -3558,14 +3558,14 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "kits/ancients/build-manifest-theodiga.json": "eb33487628d365f14e32e6ffe2370a132a13984dff7f95057c7c0251a0534100",
+    "kits/ancients/build-manifest-theodiga.json": "5ba37619f811e16b58457fdc778887b746fe2caeabf34cff3329642e6dd1db37",
     "kits/ancients/dist/ancients.tex.ancients.js": "c7ed83f8f8f6137f51a41f8e4e6d9d29f58231c89061aff467c3d4710a313883",
-    "kits/ancients/dist/theodiga.html": "f0b7d37cee5ef0a3170087b9bbe19a334660ad20093a6da98ec04e8f9560adfa"
+    "kits/ancients/dist/theodiga.html": "ed56514a7238d4207d0f3df7f562edfea26908412f38f19f35f599629450ca4d"
    },
    "outputs_raw": {
-    "kits/ancients/build-manifest-theodiga.json": "463e5bf0aa71c97362e7aa669f8afb62ec339790e9e056b922658b80fd944fde",
+    "kits/ancients/build-manifest-theodiga.json": "903da0ea469f382e03eafc194c32d797ecc5d7538057bfa57762ce843704f27a",
     "kits/ancients/dist/ancients.tex.ancients.js": "c7ed83f8f8f6137f51a41f8e4e6d9d29f58231c89061aff467c3d4710a313883",
-    "kits/ancients/dist/theodiga.html": "f0b7d37cee5ef0a3170087b9bbe19a334660ad20093a6da98ec04e8f9560adfa"
+    "kits/ancients/dist/theodiga.html": "ed56514a7238d4207d0f3df7f562edfea26908412f38f19f35f599629450ca4d"
    }
   },
   "build.py --target theodiga-today": {
@@ -3612,8 +3612,8 @@
     "core/water/22-core-water-flow.js": "eab9b6ee42e8747dfd1082a1b6d76804b4659d5fd3a2b3d4bc1a566af13dbed7",
     "core/water/50-core-water-draw.js": "9b487271223b64c2935b3336667963139dddcc055b852ac4f0a1912b2a9dd7e0",
     "core/water/51-core-water-kinds.js": "e0c2edba19b476b4b46a4e08a63f0af695423d88b1da15b380795b2e4d07ead4",
-    "kits/ancients/KNOWN_ISSUES.md": "dec03f587f6550cdb67da61770fc1400441ce4579c2482fe22cea32b49e4dacd",
-    "kits/ancients/PORT.md": "9cebe7a33c7470c342a84d924741a8f8b2b0e88fae6481b534ed711254105cc2",
+    "kits/ancients/KNOWN_ISSUES.md": "565eafc19385a5ea27bde92dc44b1930744dbe9071663af6dc8e68432ff393d8",
+    "kits/ancients/PORT.md": "977b1e0b53e79bc218b178e7727ab7552cb5fc2ce64c21c59e6b9a22cdbab3a0",
     "kits/ancients/build.py": "d16b28e81571c1790e5840f6bec850e79fe1dea5cd58da096a75dc0585adf368",
     "kits/ancients/src/00-head.html": "0943bbc0cfb9e39df9a2d653ced3bd64adf319eda202c2a1574fa422dca301f4",
     "kits/ancients/src/10-core.js": "7c31cf7eb63a1666c0f1c8cd97fd810c1531d10e8d014c105f807a2ad521138b",
@@ -3843,7 +3843,7 @@
     "kits/ancients/targets/spire/91z-views.js": "d0680b6c5634e43d0ba1ad1a1013e1d4829a14a7bee28e562239d88bc80b87ac",
     "kits/ancients/targets/theodiga-today/89z-rows.js": "3e5d88c576fe201159dee491b2ec6de946870248b275b2c3afb009958efa9af7",
     "kits/ancients/targets/theodiga-today/91z-views.js": "f8cdede74be3ca0ef64b1be2345cae442caaec58e50494b011110d7b8afdd960",
-    "kits/ancients/targets/theodiga/77-dam.js": "7d51943d2de9b06812ed6a1d602548e91bef98dfa4c2dc6ac669a8524b07ef50",
+    "kits/ancients/targets/theodiga/77-dam.js": "a8ce18b341299019e8f75b3f9aed933fdd582040c19f1c7d49e094cc5165cb28",
     "kits/ancients/targets/theodiga/77a-theodiga-dome-plan.js": "fa05207538504406946d62999a2246877816d03f98dff0b93e857e527ed4bd59",
     "kits/ancients/targets/theodiga/77b-theodiga-dome-draw.js": "cfaedc8e7429e95808290eb627f887e7112718e67439f0ee5e9f1fe529bb7dd3",
     "kits/ancients/targets/theodiga/77c-theodiga-water.js": "5ec4fe721ae0dcbc5354865a73aff137c282ae093a2c59a2d3f72401498ccc71",
@@ -4007,7 +4007,7 @@
     "settlements/isle-demo/src/58-isle-protos.js": "d36369e7f45d2423e857278cbc2505604f5cd611ddc6ba4043e57f01a6d3d0fc",
     "settlements/theodiga/src/40-th-town.js": "4b2a91022d6ec7327331eba231884c714d524bf29f8419fe03d3e27207955c92",
     "settlements/theodiga/src/41-th-descent.js": "a82d8f7083db02c5b279dc879514f179b38f60b1e2f52a568579c329474f9d9e",
-    "settlements/theodiga/src/8ay1-th-town.js": "0fab64f9d414e2142ddb936d1f024dc6cb25c020877b8fe335e2fc96608ef92f",
+    "settlements/theodiga/src/8ay1-th-town.js": "579cba10769b6330781d15ae021892f56d30d42ed30d396e9e2c253ad29af210",
     "settlements/theodiga/src/8ay2-th-descent.js": "afe52568bb2c3bd2ae7ef4dc7d1716e5c46c1b7ffd774f563c7cf451cef477c7",
     "settlements/xanadu/tex/brick.albedo.webp": "53082de37ff72e5737cb4c2033350174acf8be097c623f9e879b7a5e348cfffb",
     "settlements/xanadu/tex/brick.normal.webp": "e455bcc1650918bb1c5118cefa1917f2a53bb99f02cea091c6baf62375a95651",
@@ -4212,20 +4212,20 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "kits/ancients/build-manifest-theodiga-today.json": "0b6b4cb2aa67978269317acd69927137ce9f4d2da88a5ef106c2e173d023ebcf",
+    "kits/ancients/build-manifest-theodiga-today.json": "2adb1aaabcdfe66a4a4565af74d794b3e4e24eb3fa35cc1653923bd057e2315d",
     "kits/ancients/dist/ancients.tex.ancients.js": "c7ed83f8f8f6137f51a41f8e4e6d9d29f58231c89061aff467c3d4710a313883",
     "kits/ancients/dist/ancients.tex.qiblai.js": "1dac9ba8f546f8b073c0cfa461730db3b01d7d5408b0331bab83ad8f070e1e91",
     "kits/ancients/dist/ancients.tex.xanadu-2.js": "7503fe94ba1a6aef4913c3cad9745cf6d7167d1529833981c9a17e0bb342cf46",
     "kits/ancients/dist/ancients.tex.xanadu.js": "2f50bf4d1e032c7a6b33fa398ddffa2388623ef2713b7005f3a50991bc22f1a9",
-    "kits/ancients/dist/theodiga-today.html": "5e9c6e11ded80bfc9431482a7346b9e5a4163789a16eb1f3d064da215b65ddb7"
+    "kits/ancients/dist/theodiga-today.html": "1825c5182b7ac02dfa789ab75dc14566080ad25225e9ea8f9a2565cdf1a665c3"
    },
    "outputs_raw": {
-    "kits/ancients/build-manifest-theodiga-today.json": "a419701bc68ef611d64bd507ee3fc265dd6e38d5f632be52b46aba1e285d38ea",
+    "kits/ancients/build-manifest-theodiga-today.json": "d0ab101af3effc22734c36c7b5e4581fb5f9af309840fdc81b9f84dbbd4ebb17",
     "kits/ancients/dist/ancients.tex.ancients.js": "c7ed83f8f8f6137f51a41f8e4e6d9d29f58231c89061aff467c3d4710a313883",
     "kits/ancients/dist/ancients.tex.qiblai.js": "1dac9ba8f546f8b073c0cfa461730db3b01d7d5408b0331bab83ad8f070e1e91",
     "kits/ancients/dist/ancients.tex.xanadu-2.js": "7503fe94ba1a6aef4913c3cad9745cf6d7167d1529833981c9a17e0bb342cf46",
     "kits/ancients/dist/ancients.tex.xanadu.js": "2f50bf4d1e032c7a6b33fa398ddffa2388623ef2713b7005f3a50991bc22f1a9",
-    "kits/ancients/dist/theodiga-today.html": "5e9c6e11ded80bfc9431482a7346b9e5a4163789a16eb1f3d064da215b65ddb7"
+    "kits/ancients/dist/theodiga-today.html": "1825c5182b7ac02dfa789ab75dc14566080ad25225e9ea8f9a2565cdf1a665c3"
    }
   }
  }

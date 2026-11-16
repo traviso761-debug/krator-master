@@ -301,6 +301,21 @@
             "autoPort": false
         },
         {
+            "name": "qiblai-dist",
+            "runtimeExecutable": "python",
+            "runtimeArgs": [
+                "-m",
+                "http.server",
+                "8883",
+                "--bind",
+                "127.0.0.1",
+                "--directory",
+                "kits/qiblai/dist"
+            ],
+            "port": 8883,
+            "autoPort": false
+        },
+        {
             "name": "motor-vehicles",
             "runtimeExecutable": "python",
             "runtimeArgs": [

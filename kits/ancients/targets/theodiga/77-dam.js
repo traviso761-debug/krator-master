@@ -97,7 +97,9 @@ function buildDam(scene,gx,gz,d){reseed(9260+d);KOFF=[gx,0,gz];const G=new THREE
  const DOME=typeof THEODOME!=='undefined';
  if(!DOME)mesh(lathe({rFn:y=>44*Math.pow(clamp(1-Math.pow(y/26,2),0,1),.55),H:26,flutes:24,amp:.06,sharp:2,nu:96,nv:14,hole:(u,y)=>Math.cos(u*TAU*24)<.3&&y>3&&y<22||(d>0&&fbm(u*4,y*.1,2310,2)<.3)}),skin,G,0,H+12,zc(0)+20);
  if(DOME){}else if(d===0)mesh(lathe({rFn:y=>42*Math.pow(clamp(1-Math.pow(y/26,2),0,1),.55),H:26,nu:48,nv:10}),MAT.glass,G,0,H+12,zc(0)+20);else mesh(lathe({rFn:y=>40*Math.pow(clamp(1-Math.pow(y/26,2),0,1),.55),H:26,nu:48,nv:10}),MAT.dark,G,0,H+12,zc(0)+20);
- for(const s of [-1,1])for(let k=0;k<3;k++){const x=s*(90+k*40);mesh(lathe({rFn:y=>15*Math.pow(clamp(1-Math.pow(y/12,2),0,1),.5)+.01,H:12,flutes:12,amp:.08,nu:36,nv:8,hole:holeFn(d*.7,2320+k,null,2.5)}),skin,G,x,H+12,zc(x)+40);}
+ // the six cultural domes; in the ruin the one the Notch reaches (x -170: its rim over the break) went down with the crest
+ // (the owner, 2026-11-16: "the dome in the center here hangs precariously"), as the crest's blocks over it did (above)
+ for(const s of [-1,1])for(let k=0;k<3;k++){const x=s*(90+k*40);if(notch(x,H-1)||notch(x-16,H-1)||notch(x+16,H-1))continue;mesh(lathe({rFn:y=>15*Math.pow(clamp(1-Math.pow(y/12,2),0,1),.5)+.01,H:12,flutes:12,amp:.08,nu:36,nv:8,hole:holeFn(d*.7,2320+k,null,2.5)}),skin,G,x,H+12,zc(x)+40);}
  // the cruciform on the downstream face: upper residential fins, learning-centre beam, lower splayed fins, central spine
  const zf=y=>zc(0)+th_(y);const fins=[];for(let k=-3;k<=3;k++)fins.push([k*46,244,H+10,30,d>0&&(k===2)]);for(let k=-2.5;k<=2.5;k++)fins.push([k*52,50,214,34,d>0&&(k===-1.5)]);
  fins.forEach((f,i)=>{const [x,y0,y1,w,broken]=f;const top=broken?lerp(y0,y1,.45):y1;const L=top-y0;const cy=(y0+top)/2;const zz=zf(cy);const splay=y0<100?.06:0;

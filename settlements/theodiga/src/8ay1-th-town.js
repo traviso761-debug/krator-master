@@ -5,9 +5,9 @@
 // (targets/theodiga/77-dam.js) for the ruin only, with KOFF at the dam; without THCITY or XAK on the page it draws nothing.
 // THE METHOD is Strongbow's town's (settlements/strongbow/src/8ax1-sb-town.js, branch claude/keen-swanson-68a311): each def is
 // built once per variant and footing depth at the origin (XAK.proto), flattened to one geometry per material (isleFlatten,
-// settlements/isle-demo/src/58-isle-protos.js, read in place) in three layers, each merged by material over the whole town:
-// its big pieces at every distance (core/lod simplifies them far off), its plain boxes within 300 m of the eye and the rest of
-// its detail within 200 m, by 120 m cells. Both towns should draw through one core/city host module (KNOWN_ISSUES.md).
+// settlements/isle-demo/src/58-isle-protos.js, read in place) in two layers (Strongbow's has three; below), each merged by
+// material over the whole town: its big pieces and plain boxes at every distance (core/lod simplifies them far off) and the
+// rest of its detail within 300 m, by 120 m cells. Both towns should draw through one core/city host module (KNOWN_ISSUES.md).
 // A building stands on the highest ground under its footprint (the town's ground, THCITY.town.ground, which the plateau is
 // drawn on) over a footing as deep as the ground falls. The streets are packed earth on the ground, the kora's flagstone a
 // paler shade, the fields strips in their crop's colour. Everything is registered in core/tags first.
@@ -36,10 +36,15 @@ function thTownDraw(gx,gz,ctx){const O={buildings:0,people:0,protos:0,meshes:0,t
   for(const r of all){const K=KD[r.key];TG.child(B,{'class':r.civic?'landmark':'building',kind:r.key.replace(/^xa_scrap_|^qb_/,''),key:r.id,name:r.name||K.name,at:[r.x+gx,GR(r.x,r.z),r.z+gz],ry:r.ry,size:[r.w,r.d,r.h],
    tags:{culture:cultureOf(r.key),kit:/^qb_/.test(r.key)?'qiblai':'xanadu',types:K.types,quarter:TT.QUARTER_NAME[r.quarter]||r.quarter}});}
   for(const f of T.fields)TG.child(B,{'class':'feature',kind:'field',key:f.id,at:[(f.corners[0][0]+f.corners[2][0])/2+gx,440,(f.corners[0][1]+f.corners[2][1])/2+gz],tags:{culture:'xanadu-scrap',crop:f.crop}});}
- // ---- the kits' buildings: protos, flattened once each, in three layers -----------------------------------------------------------
- const PROTOS={},FOOT=0x8f8676,BIG_R=1.5;
- const LAYERS=[{id:'big',near:Infinity},{id:'skin',near:300},{id:'detail',near:200}];
- const layerOf=(r,tris)=>r>=BIG_R?'big':tris<=12?'skin':'detail';
+ // ---- the kits' buildings: protos, flattened once each, in two layers -------------------------------------------------------------
+ /* TWO LAYERS (2026-11-16; Strongbow's three put the plain boxes, a scrap house's wall panels and a Qiblai house's window
+    surrounds, in a layer of their own within 300 m and the rest within 200 m, so between them a scrap wall showed its dark
+    body and a Qiblai house black holes, the owner's "lot of black/missing textures"): BIG is every piece of 1.5 m radius
+    and every plain box (12 triangles) of 0.7 m or more, at every distance; NEAR the rest (glazing bars, lamps, finials,
+    small boxes), within 300 m */
+ const PROTOS={},FOOT=0x8f8676,BIG_R=1.5,BOX_R=.7;
+ const LAYERS=[{id:'big',near:Infinity},{id:'detail',near:300}];
+ const layerOf=(r,tris)=>r>=BIG_R||(tris<=12&&r>=BOX_R)?'big':'detail';
  const split=(G,id)=>{const H=new THREE.Group(),m=new THREE.Matrix4(),p=new THREE.Vector3(),q=new THREE.Quaternion(),s=new THREE.Vector3(),c=new THREE.Color();G.updateMatrixWorld(true);
   G.traverse(o=>{if(!o.isMesh||!o.geometry||!o.geometry.attributes.position)return;const g=o.geometry;if(!g.boundingSphere)g.computeBoundingSphere();
    const r0=g.boundingSphere.radius,tris=(g.index?g.index.count:g.attributes.position.count)/3;
@@ -68,7 +73,7 @@ function thTownDraw(gx,gz,ctx){const O={buildings:0,people:0,protos:0,meshes:0,t
   const c=Math.cos(r.ry),s=Math.sin(r.ry);steps.push([r.x+gx+s*(K.fd/2+.35),top-.16,r.z+gz+c*(K.fd/2+.35),r.ry]);}
  const CL=[...cells.values()];
  // ---- each layer merged by material over the whole town. The big layer is a plain static mesh (core/lod takes it over); the
- // skin's and the detail's index holds only the cells in reach, rewritten as a cell comes into reach or leaves it (lodSkip)
+ // detail's index holds only the cells in reach, rewritten as a cell comes into reach or leaves it (lodSkip)
  const v3=new THREE.Vector3(),n3=new THREE.Matrix3(),MESHES={};
  const merge=lv=>{const by=new Map(),out=MESHES[lv]=[];
   for(const C of CL)for(const {L,m} of C.items)for(const p of L[lv]){const names=Object.keys(p.geo.attributes).sort(),k=p.mat.uuid+'|'+names.join(',');
@@ -127,6 +132,6 @@ function thTownDraw(gx,gz,ctx){const O={buildings:0,people:0,protos:0,meshes:0,t
  if(DS)O.errors.push(...DS.errors);
  O.kitErrors=XAK.errors.slice(0,8);
  window._thTown={descent:DS?{ways:DS.ways,boxes:DS.boxes,tris:Math.round(DS.tris),stair:DS.stair,salvage:DS.salvage,silt:DS.silt}:null,bound:O.bound||0,buildings:O.buildings,people:O.people,protos:O.protos,meshes:O.meshes,tris:Math.round(O.tris),bigTris:Math.round(O.bigTris||0),
-  skinTris:Math.round(O.skinTris||0),detailTris:Math.round(O.detailTris||0),cells:O.cells,census:O.census,errors:O.errors.concat(XAK.errors).slice(0,12),
+  detailTris:Math.round(O.detailTris||0),cells:O.cells,census:O.census,errors:O.errors.concat(XAK.errors).slice(0,12),
   fields:T.fields.length,ways:T.ways.length,qiblai:all.filter(r=>/^qb_/.test(r.key)).length,level:f=>O.level&&O.level(f)};
  return O;}

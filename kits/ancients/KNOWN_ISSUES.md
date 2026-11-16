@@ -321,6 +321,11 @@ records drawn from the scrap Xanadu set and the Qiblai kit (`XAK`, `kit_bundle.b
 - [ ] **The ways are plain masonry in vertex colours**, no library texture (the stair-block reads as a flat beige box from afar);
       no salvage yards at the Salvage Road's foot and no fields on the silt flats; nobody on them. The Warden's House is a
       scrap court, not its own building.
+- [x] ~~Black walls and windowless houses at a distance~~ (the owner, 2026-11-16): the town's drawer took Strongbow's three layers,
+      so a scrap house's wall panels and a Qiblai house's window surrounds dropped out past 300 m and the glazing past 200 m,
+      showing dark bodies and black holes. Now two layers: every big piece and every plain box of 0.7 m or more at all
+      distances (3.6M triangles, simplified far off by core/lod), the small detail within 300 m (2.5M). The view from Gate
+      Square draws 5.0M triangles (it drew 3.2M). The crest's cultural dome over the Notch (x -170) is gone in the ruin.
 - [ ] **The town has no interiors, no people, no lamps at night.** The scrap set's interiors (`kits/interiors` `xanadu-scrap`)
       and Qiblai's walk-in rooms are not wired here; the census is numbers only (core/simulation is later).
 - [ ] **The east plateau is the town's ground only on this page.** With the town on the page (`THCITY`) the ruin's east plateau
