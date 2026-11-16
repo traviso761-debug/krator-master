@@ -6,7 +6,7 @@
 // comes within NEAR of it, shown while it stays within NEAR + 30 m (the glass and the drums' skins hide them from further off;
 // the cutaway shows them through the skin). window._sbRooms has the counts.
 var SB_ROOMS_R=null;
-function sbRoomsPlan(){if(SB_ROOMS_R)return SB_ROOMS_R;if(typeof SB_ROOMS==='undefined'||typeof KratorAncientsInteriors==='undefined')return null;const S=sbWalkPlan();if(!S)return null;
+function sbRoomsPlan(){if(SB_ROOMS_R)return SB_ROOMS_R;if(typeof SB_ROOMS==='undefined'||typeof SB_AI==='undefined')return null;const S=sbWalkPlan();if(!S)return null;
  SB_ROOMS_R=SB_ROOMS.plan(sbLayout(),STRONGBOW.plan({seed:1647}),S);return SB_ROOMS_R;}
 function sbRoomsDraw(gx,gz){const R=sbRoomsPlan();if(!R)return null;const O={buckets:0,built:0,shown:0,tris:0,rooms:R.rooms.length,walls:R.walls.length,stairs:R.stairs.length,warn:R.warn.slice()};
  const std=(c,o)=>new THREE.MeshStandardMaterial(Object.assign({color:new THREE.Color(c).convertSRGBToLinear(),roughness:.85,metalness:.05},o||{}));

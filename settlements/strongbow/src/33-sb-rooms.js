@@ -32,7 +32,7 @@ var SB_ROOMS=(function(){
  const hyp=Math.hypot;
  const segD=(p,a,b)=>{const dx=b[0]-a[0],dz=b[1]-a[1],l=dx*dx+dz*dz;let t=l>0?((p[0]-a[0])*dx+(p[1]-a[1])*dz)/l:0;t=Math.max(0,Math.min(1,t));return hyp(p[0]-a[0]-t*dx,p[1]-a[1]-t*dz);};
  function plan(L,P,S){
-  const AI=typeof KratorAncientsInteriors!=='undefined'?KratorAncientsInteriors:null;
+  const AI=typeof SB_AI!=='undefined'&&SB_AI?SB_AI:typeof KratorAncientsInteriors!=='undefined'?KratorAncientsInteriors:null;   /* the page seals them as SB_AI */
   const F=P.frame,PT={};for(const p of L.parts)PT[p.id]=p;
   const R={storeys:[],rooms:[],floors:[],walls:[],doors:[],stairs:[],locked:[],parts:{},warn:[]};
   const floor=(id,o)=>{o.id=id;R.floors.push(o);return o;};

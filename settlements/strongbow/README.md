@@ -13,6 +13,9 @@ the elevator to the lip, the outcasts in the upper Spine, the Order in the tower
 | `src/31-sb-rules.js` | the layout's 15 rules and its area |
 | `src/40-sb-town.js` | the town at the foot (SB3) on `core/city`: its site, ring roads and spokes, rules and fields; `SB_TOWN.make` gives its records |
 | `src/32-sb-walk.js` | the walk up ([G data]): the floors, walls, doors, lift cars, gates and gangways from the town to the caravan yard on the lip, on core/walk, and a walker with core/host's rules (`SB_WALK.plan`, `.register`, `.run`, `.cuts`) |
+| `src/33-sb-rooms.js` | the interiors ([G data], 2026-11-15): every standing part's storeys as rooms on kits/ancients-interiors' plates (the drums' ring plates, the terraces' pavilion rings, the boxes' bars round a stair hall, the Order's wedge), their stairs (the drums' and halls' switchbacks, the neck flights, the climbs between stacked boxes, the Order's shaft to the Nock), the doors of the layout's ways (locked where it keeps them shut), the walls as solid blocks, and a stairwell cut through the floor over every flight (`SB_ROOMS.plan`, `.register`, `.audit`, `.stairwells`) |
+| `src/8ax4-sb-rooms.js` | the interiors drawn on the page: floors, walls, treads and barred doors, built per 48 m cell and 30 m band when the eye comes within 90 m (`window._sbRooms`) |
+| `export-walk.js` | the walk and the interiors as core/walk's export for Godot, clipped to the test's two regions (`godot/data/strongbow/walk.json`, `lifts.json`) |
 | `src/8ax3-sb-walk.js` | the walk up drawn on the page (cars, gates, doors, gangways, the T1 plate, the post), run once on the page (a failure is an error), and the `walk up (u)` replay |
 | `src/8ax0-sb-reclaim.js` | the page's drawing of the reclamation (the lifts, bridges, rope ways, the bazaar, the balloon, the post at the lip; stand-ins for the foot's four scrap buildings where the kit is not on the page) |
 | `src/8ax2-sb-cutaway.js` | the cutaway (the c key, the button, the views "Cutaway — the Spine / the tower / the foot"): the column cut on its axis by a KHOOK layer, a slab for every storey coloured by who holds it, and a legend of the people each holder houses |
@@ -27,6 +30,9 @@ node settlements/strongbow/test-census.js            # the census against the pl
 node settlements/strongbow/test-strongbow-town.js    # the layout's rules, each with a negative; AREAS.md current
 node settlements/strongbow/test-sb-walk.js           # the walk up: town to the lip through 21 doors and 7 lifts, 9 negatives (-v lists the legs)
 node settlements/strongbow/test-sb-town.js           # the town on core/city: no overlap, off the streets and the foot, the rings' people, the farms
+node settlements/strongbow/test-sb-rooms.js          # the interiors: every room the open ways join reached, none of the sealed parts', 4 negatives (-v: per part)
+node settlements/strongbow/export-walk.js            # -> godot/data/strongbow/walk.json, then (PowerShell, from the repo root):
+#   & $GODOT --headless --path godot --script res://tests/strongbow/strongbow_walk_test.gd   # Recast: town -> T1 room, lip -> gatehouse top
 python3 settlements/strongbow/strongbow_blueprint.py # the sheets and AREAS.md
 python3 tools/build.py kits/ancients --target strongbow-today
 cd kits/ancients && python3 verify.py dist/strongbow-today.html --assert --all-views
@@ -57,10 +63,12 @@ Measured 2026-11-12 in the browser pane, with core/lod on and its proxies built 
 
 ## Not yet
 
-- **The foot's crops.** The fields are grain, fodder and fallow by turn, as a placeholder: what the foot grows is owed to its height
-  and climate on the scarp (PLAN.md section 7).
-- **The town's textures.** The scrap set draws its procedural maps here: the page carries the Ancients' library pack, not
-  Xanadu's (`XAK.bind` needs the `xanadu` pack registered).
+- **The town's buildings inside.** They are solids (`SB_ROOMS.solids`) until the scrap set's interiors are wired: the scrap
+  Xanadu session delivered them on `claude/scrap-xanadu-interiors` (eb6c3c393; the gate's doors are re-indexed there).
+- **The outcasts' rope ways** and **L3** (the Salvagers' lift, T3 to T5) are not walked: the outcasts' drums (3.x, 2.x) and T4,
+  T5 are reached only by them, so the audit counts them shut.
+- **Furnishing.** The rooms carry kinds (bedroom, workshop, bunkroom, store...), not furniture yet (`AI.furnishPlan`).
+- **The walk's own floors** (T1's plate) are cut for stairwells in the export only; the page draws them whole.
 - **The sheets.** S0 does not yet draw the town's lots and streets.
 - **Life (SB4).** It goes on `core/simulation`.
 - **Placement in the open world.** That is `openworld/oidong-highrift`'s job.
