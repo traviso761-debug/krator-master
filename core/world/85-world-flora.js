@@ -2,8 +2,8 @@
 // PLACEMENT [G data] is the kits' own: their pass tables (SEDESERT.PASSES, EASTABYSS.PASSES: species, cell, acceptance
 // from the zones) and their zones() read on the world's fields. What changes for an open world (biomes/WORLD.md):
 //  - SEEDED BY CELL. Every pass lays a jittered grid aligned to the world (cell origin at multiples of its cell size);
-//    a cell's draws are KRAND.hash(seed, kit, pass, cell x, cell z), and a cell belongs to the 512 m tile its origin
-//    falls in. A tile built alone holds exactly what it holds in any order of building (the probe checks it).
+//    a cell's draws are KRAND.hash(seed, kit, pass, cell x, cell z), and its tree belongs to the 512 m tile its jittered
+//    point falls in. A tile built alone holds exactly what it holds in any order of building (the probe checks it).
 //  - WEIGHTED BY THE OVERLAY. A kit's acceptance is multiplied by its weight there (WORLD.kitW: the overlays blend over
 //    a few km, so two kits' trees interpenetrate at a border), and nothing grows outside the region's polygon.
 //  - LEVEL-FREE RECORDS. A record is {kit, species, variant, place, turn, height}; the level is chosen when it is drawn.
@@ -13,9 +13,13 @@
 // instance list of its prototype (NURSERY), one InstancedMesh per prototype part, positioned at a floating origin.
 var FLORA;LATE.push(()=>{FLORA=(function(){'use strict';
 const scene=HOST.scene,camera=HOST.camera,TAU=Math.PI*2;
-// MARGIN: a tile also places the cells within this of its edge (the field grid covers them), so a tree near the edge
-// sees its neighbours in the next tile when the keep-clear decides; only the tile's own cells are kept
-const TS=512,MARGIN=64,FS=32,FG=(TS+2*MARGIN)/FS+1,SEED=424242,VARIANTS=4;
+// KEEP: the keep-clear's reach (a stronger tree's radius plus a newcomer's pad: the hyperjungle's baobab, 33 m plus a
+// 20 m pad, is the widest). A tile also places every cell whose jittered point lands within KEEP of its edge, whatever
+// the cell's size (a cell's point lies anywhere in it, up to a whole cell from its origin: 165 m in the hyperjungle's
+// giant pass), so a tree near the edge sees every neighbour that can reach it; only the points inside the tile are kept.
+// MARGIN: the field grid's reach past the tile, holding those points (2026-11-15: the candidates were the cells whose
+// ORIGIN lay within MARGIN, so a stronger tree 64-165 m out was never seen and both stood, openworld/pinnacle's probe)
+const TS=512,MARGIN=64,KEEP=60,FS=32,FG=(TS+2*MARGIN)/FS+1,SEED=424242,VARIANTS=4;
 const smooth=(a,b,x)=>{let t=(x-a)/(b-a);t=t<0?0:t>1?1:t;return t*t*(3-2*t);};
 const H=KRAND.hash,U=KRAND.unit;
 const ST={tiles:0,records:0,tileMs:0,drawn:0,pools:0,levels:[0,0,0],queue:0,yielded:0};
@@ -57,9 +61,10 @@ function buildTile(tx,tz){const t0=performance.now(),x0=tx*TS,z0=tz*TS,recs=[];
  HOST.fieldSource(samp,null);
  try{for(let ki=0;ki<NK;ki++){if(live[ki]<.02)continue;const K=KITS[ki];
   K.passes.forEach((P,pi)=>{const c=P.cell,pk=P.opt.patch==null?.6:P.opt.patch,ps=P.opt.patchScale||.01;
-   const gx0=Math.ceil((x0-MARGIN)/c),gx1=Math.ceil((x0+TS+MARGIN)/c)-1,gz0=Math.ceil((z0-MARGIN)/c),gz1=Math.ceil((z0+TS+MARGIN)/c)-1;
+   /* every cell whose point can land within KEEP of the tile: its span [g c, g c + c) meets [x0 - KEEP, x0 + TS + KEEP) */
+   const ax=x0-KEEP,bx=x0+TS+KEEP,az=z0-KEEP,bz=z0+TS+KEEP,gx0=Math.floor(ax/c),gx1=Math.ceil(bx/c)-1,gz0=Math.floor(az/c),gz1=Math.ceil(bz/c)-1;
    for(let gz=gz0;gz<=gz1;gz++)for(let gx=gx0;gx<=gx1;gx++){const h=H(SEED,ki,pi,gx,gz),x=(gx+U(H(h,1)))*c,z=(gz+U(H(h,2)))*c,u=U(H(h,3));
-    // (the jitter may carry a cell's point over the tile's edge: the cell's own tile still owns it, and no other does)
+    if(x<ax||x>=bx||z<az||z>=bz)continue;   /* too far to reach the tile's own trees: no field is read for it */
     /* inside: the tile grid's blend is a quick reject, the map's own pixel (WORLD.inside, as the probe reads it) the rule;
        the blend alone let a record over the edge where the region is a narrow corridor (openworld/iziz-cluster) */
     const w=bil(F.w[ki],F,x,z);if(w<.02||bil(F.inside,F,x,z)<.5||!WORLD.inside(x,z))continue;
@@ -84,7 +89,7 @@ function buildTile(tx,tz){const t0=performance.now(),x0=tx*TS,z0=tz*TS,recs=[];
     // the keep-clear: the kits' own numbers (a tree holds rb*1.4+1 round its foot, a newcomer keeps its pass's pad)
     const rb=sap?Ht*(sp===3?.085:.032)+.25:(S.rb?(S.rb[0]+S.rb[1])/2:1);
     if(WORLD.roadD(x,z)<rb*1.4+2.5)continue;
-    const own=gx*c>=x0&&gx*c<x0+TS&&gz*c>=z0&&gz*c<z0+TS;
+    const own=x>=x0&&x<x0+TS&&z>=z0&&z<z0+TS;
     cand.push({k:ki,sp,sap,v:H(h,6)%VARIANTS,x,y:y-.3,z,rot:U(H(h,7))*TAU,Ht,far:P.far,pass:pi,r:rb*1.4+1,pad:P.opt.pad==null?4:P.opt.pad,pr:h,own});}});}}
  finally{HOST.fieldSource(null);}
  // ORDER-FREE SPACING (biomes/WORLD.md: repairs decide from position alone). A candidate yields to a stronger one
@@ -94,7 +99,7 @@ function buildTile(tx,tz){const t0=performance.now(),x0=tx*TS,z0=tz*TS,recs=[];
  const B=new Map(),BC=24,bk=(i,j)=>i*100003+j;
  for(const q of cand){const k=bk(Math.floor(q.x/BC),Math.floor(q.z/BC));let L=B.get(k);if(!L){L=[];B.set(k,L);}L.push(q);}
  const stronger=(a,b)=>a.Ht>b.Ht||(a.Ht===b.Ht&&a.pr>b.pr);
- for(const q of cand){if(!q.own)continue;const reach=60,i0=Math.floor((q.x-reach)/BC),i1=Math.floor((q.x+reach)/BC),j0=Math.floor((q.z-reach)/BC),j1=Math.floor((q.z+reach)/BC);let ok=true;
+ for(const q of cand){if(!q.own)continue;const reach=KEEP,i0=Math.floor((q.x-reach)/BC),i1=Math.floor((q.x+reach)/BC),j0=Math.floor((q.z-reach)/BC),j1=Math.floor((q.z+reach)/BC);let ok=true;
   for(let j=j0;j<=j1&&ok;j++)for(let i=i0;i<=i1&&ok;i++){const L=B.get(bk(i,j));if(!L)continue;
    for(const o of L){if(o===q||!stronger(o,q))continue;const d=Math.hypot(o.x-q.x,o.z-q.z);if(d<o.r+q.pad){ok=false;break;}}}
   if(ok){delete q.own;delete q.pr;recs.push(q);}else ST.yielded++;}
