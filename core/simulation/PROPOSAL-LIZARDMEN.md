@@ -79,7 +79,7 @@ Two places in the polity's polygon are not Lizardman towns in the lore:
 | **The placer camps** | Komodo's rivers, 12-27 km | gold and tin from the gravels |
 | **The warrens** | the floor between the towns | the countryside. Gemini's model gives the polity 171,360 rural people in "dispersed Rift geothermal marsh warrens"; the lore says "the villages are modest". The owner decides the number (section 6) |
 | **The war camps** | toward the Marches' forts and the Golden Tears' camp | `lc-hide`, `lc-shield`, `lc-seer`, `lc-sail` are the kit's raid tents (`core/camp`: "War camps only (a raid from the Rift)") |
-| **The ring round the Pile** | the plateau's foot | the watch on Loj Nahn: "attack its night parties but have never pressed it further" |
+| **The farming town near the Pile** (the owner: a settlement of its own, "not around the pile, but on some prime farmland nearby") | *proposed* px 713,1569, 15 km west of the Pile, -373 m | the capital's granary on the plateau's flat, wet farmland, about 3,000 (*proposed*); it also keeps the watch on Loj Nahn: "attack its night parties but have never pressed it further" |
 
 ## 2. What each place makes and lacks
 
@@ -169,7 +169,8 @@ a gift `{id, kind, holder, since, dir}`, a debt `{from, to, kind, coil}`.
 
 ## 6. Questions for the owner
 
-**The owner's answers (2026-11-16)** are recorded below each question. One is still open: the ring round the Pile.
+**The owner's answers (2026-11-16)** are recorded below each question. All seven are answered; the farming town near the
+Pile still needs a name and the owner's word on its site and size.
 
 1. **How many?** The lore says "the villages are modest". Gemini's model has 9,400 in the four towns and the Tubes, and
    232,560 in the whole polity (171,360 in warrens).
@@ -180,7 +181,12 @@ a gift `{id, kind, holder, since, dir}`, a debt `{from, to, kind, coil}`.
 2. **The Tubes and the Pile.**
    - **Answered:** "tubes is both a ruin and a lizardman town of about 1000". It is the Rift line's ruined cavern, lived in
      by about 1,000 Lizardmen, the western cluster's second place.
-   - **Still open:** is the ring round the Pile a settlement of its own?
+   - **Answered:** the ring is a settlement of its own, "but it's not around the pile, but on some prime farmland nearby".
+     - *Proposed site:* **px 713,1569**, 15 km west of the Pile on its plateau, at -373 m. It is flat (0.6 % slope, a full
+       7-by-7-cell flat patch, 14 km across), mean 23 °C, about 1,990 mm of rain, class Af. That is the plateau's prime
+       farmland: the survey scores the Pile's ground the best in the country, 319 farm-equivalent km².
+     - *Proposed:* a granary town of about 3,000, the regional villages' size, feeding the capital 107 km away.
+     - Its name is the owner's to give; the towns so far are named for lizards.
 3. **The reliquaries.** **Answered:** "one reliquary per cluster for now". One in the east, on the sea's strand between
    Sauropolis and Tuatara; one in the west, by Gila's lake. Each one's place follows from its cluster's ley stones.
 4. **The custom.** **Endorsed:** the Coil Rounds (the spiral circuit, bronze outward and bone inward, the memory debt).
