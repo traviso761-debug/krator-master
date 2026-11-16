@@ -56,21 +56,30 @@
   (`furnitureTex: true`). Publish every `dist/*.js` with the page.
 - **The town's grain after its first year**: a two-year run of the Sultanate (the economy test's setup, 730 days) leaves no
   settlement hungry; Lāiṭwāl eats 1,250 t in the two years, 583 t of it up the Kirstabal road.
+- **The flora is Opal Valley's** (`targets/town/90s-lw-flora.js`, `gen/69r-lw-flora-bundle.js`: today's core/biome with the Vale
+  of Xanadu and Opal Valley kits sealed as `LW_FLORA`, as Qiblai's `QC_FLORA`): the middle terrace's station (`middlebed`) grown
+  over the bench's mask, its kin trees (239), its floor plants (27,600: the tussock, the prism ferns, the opal lotus pads at the
+  lake's edge), and every orchard plot and one yard in three planted with a kin tree (about 700), clear of the walls
+  (`opal-flora`; the view "An orchard of Opal Valley trees"). The page's Vale grows only without it.
+- **The north wall has relief**: gullies down the fault's face and buttresses between them (a ridged value noise, `lwFace` in
+  `terrainH`), a rougher grain over it, and beds that thicken up the wall (7.5 m on the bands to about 60 m half a kilometre
+  over them), so from the bench or the lake it reads as the fault's column, not a fine tiled stripe.
+- **Screes** (`targets/town/90n-lw-scree.js`, core/terrain KRUBBLE): a talus cone at each band's two ends against its
+  buttress, heaps in the gaps on the ledges and at the wall's foot (19 heaps), the ledges' walked (`wall-scree`; the view
+  "Screes at the east end of the bands").
 
 ## Open
 
-- [ ] **The flora is the Vale of Xanadu's**, the page's own biome, as Qiblai's: Opal Valley's (`biomes/opalvalley`, on
-      the sites branch) is owed, sealed as Qiblai seals the biome kits it wants.
 - [ ] **The ground is the site's numbers, not the open world's**: the bench's profile, the wall's line and the north wall
       are functions of the scale model's numbers for the site (PLAN.md 1), not `core/world`'s heightfield (the site is on the
       open world since L5, its countryside planned there; the town's page is not yet).
-- [ ] **The north wall is one mesh in beds** (the strata tint and the rock face, snow over 2,300 m): ridges, buttresses and
-      gullies, and Opal Valley's own strata (`KSTRATA` with its recipes, `KFAR` past a few km) are owed. From far off the rock
-      face's tile still shows as horizontal banding.
-- [ ] **The bands are stepped blocks with rock faces**: their faces are rock (displaced, in beds, textured), their ends
-      buttresses, but their ledges are straight. Screes and ledges that wander are the next step.
-- [ ] **The carved quarter costs about 8 s to mesh** (KCAVERN at 0.5 m over 131 sites). The cavern meshed by chunk near the
-      camera would cut it further.
+- [ ] **The north wall is a heightfield** (its gullies and buttresses since 2026-11-16): Opal Valley's own strata recipes
+      (`KSTRATA` with `OPAL.STRATA`) and `KFAR` past a few km are owed; overhangs it cannot have.
+- [ ] **The ledges' lips are straight in plan**: the screes break the ledges' line, but the lip itself runs straight (the
+      band's block and its face meet on one line). A lip that wanders wants the block's top and the face cut on one curve.
+- [ ] **The carved quarter costs about 8 s to mesh** (KCAVERN.drawRock: 216 chunks, about 1 M triangles, of a 30 s load).
+      Meshing it a few chunks a frame, nearest the camera first, needs a pending hook in core/host first: the page is ready
+      after its first frame (core/host 91), so the verify's shots could catch the rock half drawn.
 - [ ] **Interiors near the Stair Foot only**: the bench's houses past 260 m are solid; the wall's fronts past the carved
       quarter are fronts on whole rock (by design: the quarter is what is walked).
 - [ ] No people (`core/charactermodels`).
@@ -80,4 +89,6 @@
       (`kits/resources/data/lodes.json`) are asked of the resource-nodes session, which is working in `kits/resources`.
 - [ ] **The town's page and its open-world site are two grounds**: the page shapes its ground from the site's numbers; the
       region's ground is the scale model's at 1 km cells. The page placed on `core/world` (as Longsong's) is owed.
-- [ ] **The Register's numbers are Latin digits** (the kit's: `kits/tungang/KNOWN_ISSUES.md`).
+- [ ] **The Register's numbers are Latin digits** (the kit's: `kits/tungang/KNOWN_ISSUES.md`). Xanadui is English in Indic
+      dress and its syllabary has no numerals, so the Register would spell its numbers as words in the syllables: the number
+      words are the owner's to settle.

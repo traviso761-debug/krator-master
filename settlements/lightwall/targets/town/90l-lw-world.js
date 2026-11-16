@@ -20,7 +20,10 @@ FRAME_HOOKS.push(lwSkyTick);lwSkyTick();
    a tint by height, the beds warped by core/rand's value noise, written into out[0..2] as a multiplier of the library's
    hewn basalt (over 1 lifts it toward the rhyolite's rose and the tuff's pale) */
 const LW_BEDS=[[.78,.78,.84],[1.22,1.02,.96],[1.02,.94,.92],[1.34,1.24,1.12],[.86,.84,.88],[1.16,.98,.94]];
-function lwStrata(x,y,out){const w=y+6*KRAND.vnoise(x*.012,y*.02,0,LW.SEED+31)+2*KRAND.vnoise(x*.06,y*.1,0,LW.SEED+32),t=w/7.5,i=Math.floor(t),f=t-i,
+/* the beds thicken up the north wall (7.5 m on the bands, about 60 m half a kilometre over their top): seen from the bench or the
+   lake a thin bed's repeat read as fine horizontal banding; a thick one reads as the fault's column */
+function lwStrata(x,y,out){const up=Math.max(0,y-LW_TOP),w=y+6*KRAND.vnoise(x*.012,y*.02,0,LW.SEED+31)+2*KRAND.vnoise(x*.06,y*.1,0,LW.SEED+32)+up*.25*(KRAND.vnoise(x*.003,0,0,LW.SEED+37)-.5),
+  t=w<=LW_TOP?w/7.5:LW_TOP/7.5+10*Math.log(1+(w-LW_TOP)*.1/7.5),i=Math.floor(t),f=t-i,   /* a bed 7.5+0.1(w-top) m thick: its count integrated */
   a=LW_BEDS[((i%LW_BEDS.length)+LW_BEDS.length)%LW_BEDS.length],b=LW_BEDS[(((i+1)%LW_BEDS.length)+LW_BEDS.length)%LW_BEDS.length],s=f<.8?0:(f-.8)/.2,g=.92+.16*KRAND.vnoise(x*.3,y*.3,0,LW.SEED+33);
  for(let k=0;k<3;k++)out[k]=(a[k]*(1-s)+b[k]*s)*g;return out;}
 /* the scarp's rock face: the library's rock.rock_face (a scanned cliff, Xanadu's own xRock: no new pack), at twice its tile,

@@ -37,7 +37,12 @@ terrainH=function(x,z){
  if(Math.abs(x)<LW.CARVE+12&&d<LW.BANDS*LW.BAND_SET+19){let lo=1e9;for(let k=0;k<LW.BANDS;k++){const dk=d-k*LW.BAND_SET;if(dk>-1&&dk<19)lo=Math.min(lo,LW.Y0+k*LW.BAND_H-1);}
   if(lo<1e9)return Math.min(lo,d<40?LW.Y0+(LW_TOP+6-LW.Y0)*lwSm(d/40):1e9);}
  if(d<40)return LW.Y0+(LW_TOP+6-LW.Y0)*lwSm(d/40);
- const e=d-40;return LW_TOP+6+1.1*e-.00006*e*e+40*Math.sin(x/310+e/520)*Math.min(1,e/200);};
+ const e=d-40;return LW_TOP+6+1.1*e-.00006*e*e+40*Math.sin(x/310+e/520)*Math.min(1,e/200)+lwFace(x,e);};
+/* the north fault's face (KNOWN_ISSUES.md: "ridges, buttresses and gullies"): gullies cut down it (a ridged value noise across x,
+   stretched along the slope, the ridges between them the buttresses), a rougher grain over it, both growing in from the band
+   top's lip (0 at the lip, whole 300 m up); core/rand's KRAND.vnoise, so every machine draws the same face */
+function lwFace(x,e){const k=Math.min(1,e/300),g=1-Math.abs(2*KRAND.vnoise(x/170+e/2600,e/1400,0,LW.SEED+35)-1),s=KRAND.vnoise(x/55,e/210,0,LW.SEED+36);
+ return k*(70*(g*g-.35)+18*(s-.5));}
 // ---------------------------------------------------------------- the wall: four bands of fronts
 const LW_BANDS=[...Array(LW.BANDS).keys()].map(k=>({k,z:LW.WALL-k*LW.BAND_SET,y:LW.Y0+k*LW.BAND_H,half:LW.HALF[k]}));
 /* a gz-stair of three flights (10.2 m: one band) and of two */

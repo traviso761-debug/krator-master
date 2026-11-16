@@ -64,7 +64,9 @@ FRAME_HOOKS.push(()=>{camera.updateMatrixWorld();lwPm.multiplyMatrices(camera.pr
 /* the flora: the Vale of Xanadu biome over the town's mask (89zl), then baked with the builders' own plants (xaPlant); its LOD
    ticks with the chunks' */
 if(typeof BIO!=='undefined'&&BIO.host){BIO.setScene(scene);BIO.setSun([-.5,.76,.52]);
- try{window._biome=XANADU.build({R:1300,quality:.7,lakeHue:typeof XANADU_LAKE!=='undefined'?XANADU_LAKE.hue:undefined});}catch(e){reportErr('biome: '+(e&&e.stack||e));}
+ /* the bench's own flora is Opal Valley's (90s-lw-flora.js, the sealed LW_FLORA); the page's Vale grows only without it, and its
+    bake below keeps the builders' own plants (xaPlant) */
+ if(typeof LW_FLORA==='undefined'){try{window._biome=XANADU.build({R:1300,quality:.7,lakeHue:typeof XANADU_LAKE!=='undefined'?XANADU_LAKE.hue:undefined});}catch(e){reportErr('biome: '+(e&&e.stack||e));}}
  try{window._bioBake=BIO.bake();}catch(e){reportErr('biome bake: '+e.message);}
  if(BIO.lodTick)FRAME_HOOKS.push(()=>BIO.lodTick(camera));}
 LABELS=new THREE.Group();LABELS.userData.probeSkip=true;scene.add(LABELS);

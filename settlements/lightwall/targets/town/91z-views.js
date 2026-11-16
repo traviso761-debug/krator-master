@@ -15,6 +15,8 @@ const VIEWS=(function(){const V={};const Wz=LW.WALL,Y=LW.Y0;
  V['The carved quarter (cut-away)']=[0,Y+70,Wz+60,0,Y+12,Wz-12];
  V['Podiums and steps on the slope']=lwEye(-1,-98,-1,-200,0);
  V['The gardens of the bench']=[-160,70,-20,-120,10,-110];
+ V['Screes at the east end of the bands']=[760,128,-200,690,96,-282];
+ V['An orchard of Opal Valley trees']=lwEye(60,-100,110,-60,0);
  /* inside a Glazier hearth room: the carved household front on the second band nearest the main stair, from its doorway */
  const hf=LW_CARVED.filter(s=>s.key==='gz-front'&&s.band===1).sort((a,b)=>Math.abs(a.x)-Math.abs(b.x))[0];
  if(hf){const H=TG.gz.plan('gz-front',{v:hf.v}).H;V['Inside a Glazier hearth room']=[hf.x+H.x,hf.y+1.5,hf.z-1.2,hf.x+H.x,hf.y+1.1,hf.z+H.z-H.d/2];}

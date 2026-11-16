@@ -8,7 +8,9 @@
  "external": [
   "settlements/lightwall/gen/69l-kcity-bundle.js",
   "settlements/lightwall/gen/69t-tungang-bundle.js",
+  "settlements/lightwall/gen/69r-lw-flora-bundle.js",
   "core/tags/glazier/52g-tags-glazier.js",
+  "core/terrain/37c-core-rubble.js",
   "core/terrain/39-core-cavern.js",
   "core/terrain/host/39e-core-cavern-draw.js",
   "core/terrain/host/39h-core-cavern-cut.js",
@@ -18,7 +20,9 @@
  "scoped": [
   "69l-kcity-bundle.js",
   "69t-tungang-bundle.js",
+  "69r-lw-flora-bundle.js",
   "52g-tags-glazier.js",
+  "37c-core-rubble.js",
   "39-core-cavern.js",
   "39e-core-cavern-draw.js",
   "39h-core-cavern-cut.js",
@@ -55,7 +59,11 @@
   "50-core-water-draw.js",
   "51-core-water-kinds.js",
   "56-core-water-breakup.js",
-  "90lw-lw-lake.js"
+  "90lw-lw-lake.js",
+  "69r-lw-flora-bundle.js",
+  "90s-lw-flora.js",
+  "37c-core-rubble.js",
+  "90n-lw-scree.js"
  ],
  "interiors": [
   "town"

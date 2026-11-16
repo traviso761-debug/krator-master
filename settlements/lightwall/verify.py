@@ -17,6 +17,10 @@ invariants and views are Xanadu's, and settlements/xanadu/verify.py runs it (on 
   ix-glazier          L4: from each carved home's front room a walker reaches its first carved room (core/walk: the front's
                       floor from the walked draw, the doorway, the cavern's floor); the carved rooms furnished
   bench-ground        the blocks' open ground is kitchen gardens, orchards and yards, not bare (the owner, 2026-11-16)
+  wall-scree          the wall's screes (core/terrain KRUBBLE): a talus cone at each band's two ends and heaps in the gaps on
+                      the ledges, each on its ground (the bench or the ledge), the ledges' heaps walkable (core/walk)
+  opal-flora          the bench grows Opal Valley's middle terrace (biomes/opalvalley 'middlebed', sealed in LW_FLORA): its kin
+                      trees in the orchards and yards, its own floor plants, every species found, none on a street or a building
   lake-water          the great lake is core/water's open water with its shore grid: wet out on the lake and at the quays'
                       heads, dry on the bench above the shore; WATER.heightAt within a metre of the lake's level there
   bench-stairs        every building on the bench whose floor stands over the street has a podium and a flight of steps
@@ -57,6 +61,17 @@ TOWN_JS = r"""
  let n=0,bare=0,kinds={};for(const b of (typeof LW_BLOCKS!=='undefined'?LW_BLOCKS:[]))if(b.kind!=='field'){const xs=b.poly.map(p=>p[0]),zs=b.poly.map(p=>p[1]);
   for(let x=Math.min(...xs)+2;x<Math.max(...xs);x+=9)for(let z=Math.min(...zs)+2;z<Math.max(...zs);z+=9){const pl=lwPlot(x,z);if(pl==null)continue;n++;kinds[pl]=(kinds[pl]||0)+1;if(pl==='dooryard')bare++;}}
  R.push({name:'bench-ground',ok:n>500&&bare<n*.35&&(kinds.garden||0)>n*.15&&(kinds.orchard||0)>n*.15,detail:n+' samples of the blocks\' open ground: '+JSON.stringify(kinds)});
+ {const SC=typeof LW_SCREE!=='undefined'?LW_SCREE:[],off=SC.filter(H=>{const g=H.walk?null:terrainH(H.x,H.z);return g!=null&&Math.abs(g-H.y0)>.6;}),
+   unwalked=SC.filter(H=>H.walk&&!KWALK.floorsAt(H.x,H.z).some(f=>f[1].tag==='lightwall:scree'));
+  R.push({name:'wall-scree',ok:SC.length>=15&&SC.filter(H=>/end/.test(H.id)).length===2*LW.BANDS&&!off.length&&!unwalked.length,
+   detail:SC.length+' heaps ('+SC.filter(H=>/end/.test(H.id)).length+' talus cones at the ends of the bands,'+SC.filter(H=>H.walk).length+' walked on the ledges); off their ground '+off.length+'; ledge heaps not walkable '+unwalked.length});}
+ {const FL=typeof LW_FL!=='undefined'?LW_FL:{},K=(FL.stats&&FL.stats.kin)||{},own=FL.stats?(FL.stats.tussock||0)+(FL.stats.ferns||0)+(FL.stats.pads||0):0;
+  /* the rooted floor plants (the prism ferns, the tussock: an instance is a plant at its root; the trees' leaf instances spread
+     with their crowns, and the lake's pads are on the water) read from their matrices: on the mask */
+  let bad=0,n=0;const G=typeof LW_FLORA!=='undefined'?LW_FLORA.BIO:null;for(const m of (G&&G.baked)||[]){if(!m.isInstancedMesh||!/opfern|optuss/.test(m.name))continue;const A=m.instanceMatrix.array,c=m.count,st=Math.max(1,Math.floor(c/300));
+   for(let i=0;i<c;i+=st){const x=A[i*16+12],z=A[i*16+14];if(z>LW.SHORE-2)continue;n++;if(lwBioMask(x,z)<=0)bad++;}}
+  R.push({name:'opal-flora',ok:!!FL.on&&(K.trees||0)>150&&(FL.stats.orchard||0)>300&&!(K.missing||[]).length&&!K.errors&&own>5000&&!bad,
+   detail:'kin trees '+(K.trees||0)+', orchard and yard trees '+((FL.stats&&FL.stats.orchard)||0)+'; '+' '+JSON.stringify(Object.fromEntries(Object.entries(K).filter(([k])=>!/^(trees|errors|missing)$/.test(k))))+'; floor plants '+own+'; trees off the mask '+bad+' of '+n+' read; '+(FL.ms||0)+' ms'});}
  {const LK=typeof LW_LAKE!=='undefined'?LW_LAKE:null,wet=(x,z)=>!!(LK&&LK.wetAt&&LK.wetAt(x,z)),out=[0,LW.SHORE+400],bench=[0,LW.SHORE-40],h=LK?WATER.heightAt(out[0],out[1],0):null;
   R.push({name:'lake-water',ok:!!LK&&!!LK.bed&&wet(...out)&&!wet(...bench)&&h!=null&&Math.abs(h-LW.LAKE)<1,
    detail:LK?('level '+LW.LAKE+'; heightAt out on the lake '+(h==null?'none':h.toFixed(2))+'; wet out on the lake '+wet(...out)+', on the bench '+wet(...bench)+'; shore grid '+(LK.bed&&LK.bed.nx)+' x '+(LK.bed&&LK.bed.nz)):'no core/water lake'});}

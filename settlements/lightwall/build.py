@@ -59,9 +59,37 @@ def tungang_bundle():
     return js
 
 
+# Opal Valley's flora (KNOWN_ISSUES.md: "the flora is the Vale of Xanadu's"): today's core/biome with the Vale of Xanadu kit (the
+# source of Opal Valley's kin, BIO.kin('xanadu.<key>')) and the Opal Valley kit, sealed in one closure as Qiblai's
+# (settlements/qiblai/build.py flora_bundle: Xanadu's page runs its own older vendored biome core, without BIO.kit, kin or the
+# impostors these kits need). Each kit in its own closure inside it; the closure's BIO on a window of its own. targets/town/
+# 90s-lw-flora.js binds it to the town's ground and grows the middle terrace's station (middlebed) over the bench
+FLORA_CORE = ['10-core-head.js', '20-core-kit.js', '30-core-foliage.js', '30s-core-season-flush.js', '31-core-dither.js',
+              '31b-core-leafset.js', '31j-core-joint.js', '32-core-variants.js', '33-core-fungoid.js', '33b-core-bamboo.js',
+              '34-core-impostor.js', '35-core-anim.js', '35b-core-anim-turn.js', '40-core-place.js']
+FLORA_KITS = [('xanadu', 'XANADU', ['50-biome-xanadu-species.js', '52-biome-xanadu-library.js', '55-biome-xanadu-trees.js', '70-biome-xanadu.js']),
+              ('opalvalley', 'OPAL', ['40-biome-opal-sites.js', '50-biome-opal-species.js', '55-biome-opal-place.js', '70-biome-opal.js'])]
+
+
+def flora_bundle():
+    part = lambda rel: '/* ---- %s ---- */\n%s\n' % (rel, rd(rel))
+    boot = ('/* the bootstrap: THREE before the kits load (their fragment 50 makes textures); the town binds its scene and '
+            'ground later (targets/town/90s-lw-flora.js) */\n'
+            'BIO.init({ THREE: THREE, scene: null, terrainH: function () { return 0; }, mask: function () { return 0; }, obstacles: [],\n'
+            '  ticks: function () {}, seed: 9450, origin: [[0, 0]], center: [0, 0], fields: {} });\n')
+    kits = ''.join('var %s = (function () {\n%s\nreturn %s;\n})();\n' % (g, ''.join(part('biomes/%s/src/%s' % (k, f)) for f in fs), g)
+                   for k, g, fs in FLORA_KITS)
+    return ('/* LW_FLORA: core/biome and the Vale of Xanadu and Opal Valley kits in one closure (settlements/lightwall/build.py). '
+            'GENERATED: edit core/biome and biomes/. */\n'
+            'var LW_FLORA = (function (window) {\n' +
+            "Object.defineProperty(window, 'BIO', { get: function () { return BIO; } });   /* the closure's own BIO, on its own window */\n" +
+            ''.join(part('core/biome/' + f) for f in FLORA_CORE) + boot + kits +
+            'return { BIO: BIO, reseed: reseed, kits: { xanadu: XANADU, opalvalley: OPAL } };\n})(Object.create(window));\n')
+
+
 def write_gen():
     os.makedirs(GEN, exist_ok=True)
-    for name, make in (('69l-kcity-bundle.js', kcity_bundle), ('69t-tungang-bundle.js', tungang_bundle)):
+    for name, make in (('69l-kcity-bundle.js', kcity_bundle), ('69t-tungang-bundle.js', tungang_bundle), ('69r-lw-flora-bundle.js', flora_bundle)):
         out = os.path.join(GEN, name)
         new = make()
         old = io.open(out, encoding='utf-8').read() if os.path.exists(out) else None
@@ -70,7 +98,8 @@ def write_gen():
                 fh.write(new)
 
 
-BSRC.note(*([SPACE] + ['core/city/' + f for f in CITY_JS] + ['kits/tungang/tungang_bundle.py']))
+BSRC.note(*([SPACE] + ['core/city/' + f for f in CITY_JS] + ['kits/tungang/tungang_bundle.py'] + ['core/biome/' + f for f in FLORA_CORE] +
+            ['biomes/%s/src/%s' % (k, f) for k, g, fs in FLORA_KITS for f in fs]))
 # the Xanadui script the Qiblai kit lifts from the chart (kits/qiblai/xanadui_script.py), current before its fragments are read
 sys.path.insert(0, os.path.join(ROOT, 'kits', 'qiblai')); import xanadui_script
 BSRC.note(xanadui_script.CHART, os.path.join(ROOT, 'kits', 'qiblai', 'xanadui_script.py'))
