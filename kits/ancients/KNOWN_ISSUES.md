@@ -282,9 +282,13 @@ exceeded ceiling as `OVER`; `--strict-budget` makes it fail.
 
 ## Theodiga (`--target theodiga`): the Dome on the Water (2026-11-11)
 
-- [ ] **No way up to the deck.** The deck stands on the crest blocks' roofs (H+20) with no stair, lift or ramp from the
-      crest's residential arc or the light tunnels; the hall on it has no doors. The crest's light-well and tunnel
-      slots under the dome's chord are covered by the deck.
+- [ ] **No way up to the deck on `--target theodiga`.** The deck stands on the crest blocks' roofs (H+20); the hall on it has
+      no doors, and the crest's light-well and tunnel slots under the dome's chord are covered by the deck. On
+      `theodiga-today` (T-dome-1, 2026-11-16) the pilgrims come up from the middle kora by the two Pilgrims' Stairs. Each is
+      a shaft in the faith's ashlar under the deck's chord, with five flights in two lanes up through a well cut in the deck
+      into the sheet's stair heads (`settlements/theodiga/src/44-th-dome-today.js`, `8ay4-th-dome-today.js`). On that page
+      the frame is also re-glazed with salvaged panes, a tint a pane, except at the Tear; the Hall of the Song likewise.
+      The ruin page is unchanged. The clergy's stair is the Priests' House's interior.
 - [ ] **The tear faces west and upstream.** In the ruin the empty frames show the kit's dark void (as the old public
       dome's did) and the torn sector is open through it; from the east and from downstream the dome looks whole (the
       'Dome ruin' view looks from the west). The fallen ribs are the kit's rusted posts (`postR`), not curved rib pieces.

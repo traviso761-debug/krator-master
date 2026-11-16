@@ -212,7 +212,8 @@ function buildDam(scene,gx,gz,d){reseed(9260+d);KOFF=[gx,0,gz];const G=new THREE
   scatterMoss(0,2,zf(0)+200,0,300,120,3);rubbleRing(0,2,zf(0)+70,20,220,120,4);vinesOnRing(0,H+12,zc(0)+10,60,20,60);for(let k=0;k<30;k++)kput('vine',[rr(-300,300),rr(120,H),zf(200)+2],qEuler(rr(-.05,.05),0,0),[1.5,rr(15,60),1.5],null);}
  figures(0,zf(0)+200,10,60);
  // last, so its records draw nothing from rng() ahead of the dam's own decay and figures
- if(DOME)THEODOME.draw(G,d,{gx:gx,gz:gz,H:H,SPAN:SPAN,BOW:140,CREST:50,zc:zc,WL:WL});
+ /* the Dome as the faith keeps it today (the pilgrims' stairs, the re-glazed frame), with the town: 8ay4-th-dome-today.js */
+ if(DOME)THEODOME.draw(G,d,{gx:gx,gz:gz,H:H,SPAN:SPAN,BOW:140,CREST:50,zc:zc,WL:WL,today:BORE&&typeof thDomeToday!=='undefined'?thDomeToday:null});
  if(WTR)THEOWATER.dam(d,{gx:gx,gz:gz,H:H,SPAN:SPAN,WL:WL,NX:NX,NB:NB,wN:notchW(NB)-1.5,zc:zc,th:th_,zf:zf,
   RIVX:RIVX,RIVW:RIVW,floorY:floorY,bedY:bedY,outlets:[-40,40]});
  // THE TOWN on the east rim (theodiga-today: settlements/theodiga/src/8ay1-th-town.js, read in place), beside the ruin only

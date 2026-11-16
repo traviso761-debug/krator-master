@@ -23,6 +23,10 @@ const VIEWS={
  // fins stand at z -74 to -30; the Dome's centre is z -205
  'Inside the crest':[ROWS.dam.s+150,460,ROWS.dam.z-20,ROWS.dam.s+100,405,ROWS.dam.z-105,0,{site:'dam/crest-e',storey:1}],
  'Inside a fin head':[ROWS.dam.s+85,425,ROWS.dam.z+10,ROWS.dam.s+46,388,ROWS.dam.z-52,0,{site:'dam/fin+46',storey:5}],
+ // the Dome today (T-dome-1): the Pilgrims' Stair's door on the middle kora, its well on the deck, the re-glazed frame
+ 'The Pilgrims\' Stair':[ROWS.dam.s+104,405,ROWS.dam.z-95,ROWS.dam.s+62,402,ROWS.dam.z-105],
+ 'The stair head on the deck':[ROWS.dam.s+36,428,ROWS.dam.z-96,ROWS.dam.s+60,419,ROWS.dam.z-108],
+ 'The re-glazed Dome':[ROWS.dam.s+430,530,ROWS.dam.z+150,ROWS.dam.s,480,ROWS.dam.z-205],
  'Inside the Dome':[ROWS.dam.s+70,470,ROWS.dam.z-110,ROWS.dam.s,421,ROWS.dam.z-205,0,{site:'dam/dome',storey:0}],
  // the ruin, as the theodiga target shows it
  'Theodiga ruin':[ROWS.dam.s+60,260,ROWS.dam.z+1000,ROWS.dam.s,200,ROWS.dam.z],
