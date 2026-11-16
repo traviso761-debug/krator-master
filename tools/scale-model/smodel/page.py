@@ -175,6 +175,21 @@ def up(a, OH, OW, order=0):
     return nd.zoom(a.astype(float), (OH / a.shape[0], OW / a.shape[1]), order=order)[:OH, :OW]
 
 
+def regions():
+    """the page's own region defaults (model/src/51-region-store.js, `defRegs`): the model's regions on its own canvas.
+    openworld/little-demo/source/regions.json was their copy until it was retired to archive/ (5be246474)"""
+    import re
+    s = open(os.path.join(build.SRC, '51-region-store.js'), encoding='utf-8').read()
+    return json.loads(re.search(r'const defRegs = (\[.*?\]);\n', s).group(1))
+
+
+def settlements():
+    """the page's own settlement defaults (model/src/60-settlements.js, `defSetts`)"""
+    import re
+    s = open(os.path.join(build.SRC, '60-settlements.js'), encoding='utf-8').read()
+    return json.loads(re.search(r'const defSetts = (\[.*?\]);\n', s).group(1))
+
+
 def docs(folder):
     """a collection (regions, settlements) as a folder of one JSON file per document, or one JSON list of documents (each
     with its 'id'): the page's Copy JSON buttons give the list"""

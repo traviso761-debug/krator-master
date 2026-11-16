@@ -58,7 +58,7 @@ function tkYurt(o){const r=o.r,wH=o.wallH,cH=o.crownH,cR=o.crownR||Math.max(.5,r
  if(o.posts){for(const s of [-1,1])pole('lacq',[s*cR*.5,0,0],[s*cR*.5,cH-.12,0],.07,null,8);}
  // the door: frame, carved double leaves (core/door: shut, they open inward on E or an NPC), the rolled felt curtain over it
  W(0,0,r,0,()=>{const fr=o.doorCol||null;box('lacq',-dW/2-.07,0,0,.14,dH+.1,.16,fr);box('lacq',dW/2+.07,0,0,.14,dH+.1,.16,fr);box('lacq',0,dH,0,dW+.28,.16,.18,fr);box('carved',0,0,0,dW+.28,.08,.2,0x9a6a3a);
-  svLeaf(0,.06,-.04,0,dW-.04,dH-.08,{split:true,mk:'lacq',col:fr,t:.05,style:'panel',name:'ger door'});
+  svLeaf(0,.06,-.04,0,dW-.04,dH-.08,{split:true,mk:'lacq',col:fr,t:.05,style:'banded',hwCol:0xb8913f,name:'ger door'});   /* core/door's 'banded' leaf: the panels under three brass bands, studded, a ring pull (2026-11-09) */
   beam(o.band||'felt',[-dW/2-.16,dH+.25,.2],[dW/2+.16,dH+.25,.2],.13,o.band?null:fc,true,10);});   // the door felt, rolled up over the lintel
  tkFloor(o.floor||'felt',o.floorCol||(o.floor?null:P('feltG')),r-.03);
  door(0,0,r+.1,0,dW);

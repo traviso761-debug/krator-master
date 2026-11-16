@@ -98,7 +98,7 @@ CORE_EXPORT = ['07-core-export.js', '09-core-export-adapters.js']
 # core/water: the soda lake (WATER.open, drawn in 89w), the oasis pools (WATER.still), the north fan's trickle (WATER.flow)
 CORE_WATER = ['20-core-water.js', '21-core-water-shore.js', '22-core-water-flow.js', '50-core-water-draw.js', '51-core-water-kinds.js']
 # the final rebuild: the edge audit, the reflections switch (off at load: 98z), the shore's fields (tools/fragment_needs.json orders them)
-CORE_WATER_EXT = ['57-core-water-audit.js', '58-core-water-mirror.js', '60-core-water-fields.js']
+CORE_WATER_EXT = ['56-core-water-breakup.js', '57-core-water-audit.js', '58-core-water-mirror.js', '60-core-water-fields.js']
 # core/atmos: the core, presets, the dust off dry ground, the weather and its selector, the export, the wave chunk, the skylight
 CORE_ATMOS = ['89-atmos-0-core.js', '89-atmos-0p-presets.js', '89-atmos-3d-dust.js', '89-atmos-4-weather.js', '89-atmos-8-export.js',
               '89-atmos-9-host.js', '89-atmos-a-waves.js', '89-atmos-b-skylight.js']

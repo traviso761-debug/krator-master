@@ -1,0 +1,40 @@
+{
+ "name": "The Brazier (station 2, Oasis 3 of Route B; PLAN.md section 6): Al-Mijmarah on the inter-Twin col at 4,680 m (0.89 atm), a geothermal oasis 800 x 500 m along a fault-fissure in the frozen col: sinter-lipped hot pools, low geyser cones, mud pots, orange and black thermophile mats down the runoff, bobby-sock sedge flats, the Hearths' dwarf pocket-hearths, the Shrine of the Split Horn where the guide's second coin falls due, Route B's cairns on toward the Brimstone-Tarn; the two fissure vents steaming 20 km off either side",
+ "out": "twins-brazier.html",
+ "region": "region.json",
+ "reads": {
+  "45a-core-therm.js": "core/terrain/47-core-therm.js",
+  "21-core-hazard-flow.js": "core/hazard/21-core-hazard-flow.js",
+  "33-core-fungoid.js": "core/biome/33-core-fungoid.js",
+  "35-core-anim.js": "core/biome/35-core-anim.js",
+  "39-core-lean.js": "core/biome/39-core-lean.js",
+  "22-core-hazard-env.js": "core/hazard/22-core-hazard-env.js"
+ },
+ "water": [
+  "20-core-water.js",
+  "21-core-water-shore.js",
+  "22-core-water-flow.js",
+  "50-core-water-draw.js",
+  "51-core-water-kinds.js",
+  "geyser/52-core-water-geyser.js",
+  "geyser/52b-core-water-geyser-draw.js",
+  "geyser/52c-core-water-thermal.js",
+  "geyser/52d-core-water-thermal-draw.js"
+ ],
+ "kin": {
+  "hearths": [
+   [
+    "src/50-biome-hearths-species.js",
+    "src/55-biome-hearths-place.js"
+   ],
+   "HEARTH"
+  ]
+ },
+ "tex": [
+  "scree",
+  "sinter",
+  "sedge",
+  "fern",
+  "lichenCrust"
+ ]
+}

@@ -204,6 +204,16 @@ _args = sys.argv[sys.argv.index('--') + 1:]
 if '--only' in _args:
     _only = set(_args[_args.index('--only') + 1].split(','))
     ITEMS['items'] = [x for x in ITEMS['items'] if x[2] in _only]
+# an item tools/garments owns now (its kit entry made_by garments) is not exported here: a stale copy of it in MPFB's
+# user data overwrote the Dalab robe's chains (REVIEW-GARMENTS-2026-11-06.md). --force-replace id,id exports it anyway
+_kit = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'data', 'mpfb_' + body, 'kit.json')
+if os.path.exists(_kit):
+    _own = {e['id'] for e in json.load(open(_kit, encoding='utf-8'))['items'] if e.get('made_by') == 'garments'}
+    _force = set(_args[_args.index('--force-replace') + 1].split(',')) if '--force-replace' in _args else set()
+    _skip = [x[2] for x in ITEMS['items'] if x[2] in _own and x[2] not in _force]
+    if _skip:
+        print('SKIP (tools/garments owns them):', ', '.join(_skip))
+        ITEMS['items'] = [x for x in ITEMS['items'] if x[2] not in _skip]
 KIND = {'torso': 'clothes', 'legs': 'clothes', 'feet': 'clothes', 'head': 'clothes', 'beard': 'clothes', 'hair': 'hair', 'eyebrows': 'eyebrows',
         'eyelashes': 'eyelashes', 'eyes': 'eyes'}
 ATYPE = {'clothes': 'Clothes', 'hair': 'Hair', 'eyebrows': 'Eyebrows', 'eyelashes': 'Eyelashes', 'eyes': 'Eyes'}

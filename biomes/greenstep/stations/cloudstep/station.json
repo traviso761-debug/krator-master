@@ -1,0 +1,18 @@
+{
+ "note": "Station 5, the Cloud Bench (PLAN.md section 6; 5.1 px 662,1304, 2,595 m, +11 degC, 925 mm): Terrace IV between the Mist-Curtain Scarp (riser 4) and the Upper Citadel Scarp (riser 3), the upper Clodosriba in its unroofed lava tube (KRELIEF.tube, KRELIEF.tubeRille) under three natural bridges (KCAVERN). reads: KCAVERN and KRELIEF's lava forms, by path. kin: the S highlands' cloud forest, read in place (BIO.kin; 87-host-kin.js); the SW lowlands' kit is not on this page",
+ "reads": {
+  "38b-core-relief-lava.js": "core/terrain/38b-core-relief-lava.js",
+  "39-core-cavern.js": "core/terrain/39-core-cavern.js"
+ },
+ "kin": {
+  "shighlands": [
+   [
+    "src/50-biome-shigh-species.js",
+    "src/55-biome-shigh-trees.js"
+   ],
+   "SHIGH",
+   "*",
+   "shigh"
+  ]
+ }
+}

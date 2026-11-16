@@ -6,8 +6,10 @@
 
 Each closure is the town's own fragments, READ IN PLACE (settlements/<town>/src and the core modules its build.py
 takes), in its own order, up to its architecture: the palette, core, layout, kit, textures, structure, furniture and
-architecture; not its trees, jungle, life, sky, terrain or host. Inside it, after the town's 45-kit.js, the kit's hook
-(towns/hook.js: it keeps the marked buildings) and the town's port table (towns/<town>-ports.js). The closure runs the
+architecture, and its openings (54-openings.js: its doors as core/door records, its walls cut for windows); not its trees,
+jungle, life, sky, terrain or host. Inside it, after the town's 45-kit.js, core/door's records and glass (KDOOR, KGLASS:
+sealed on the closure's own root), the kit's hook (towns/hook.js: it keeps the marked buildings, their doors and their
+panes) and the town's port table (towns/<town>-ports.js). The closure runs the
 town as its page does, so every building falls as in the town, and returns BRT_API() (hook.js).
 
 The generated parts, as the town's build.py makes them: the furniture bundle (kits/catalog furniture_bundle.py with the
@@ -34,10 +36,10 @@ GIRDER = {
     'files': [_src('girder', '05-palette.js'), 'core/rand/08-core-rand.js', _src('girder', '10-core.js'), 'core/space/20-core-space.js',
               'core/materials/record/23-mat-record.js', 'core/materials/record/24-tex-def.js', 'core/materials/record/25-matlib-host.js',
               'core/materials/record/26-matlib-bind.js', _src('girder', '30-layout.js'), _src('girder', '32-branches.js'),
-              'core/ports/44-core-ports.js', _src('girder', '45-kit.js'), 'HOOK', 'PORTS', 'PACK', _src('girder', '47-texture.js'),
+              'core/ports/44-core-ports.js', _src('girder', '45-kit.js'), 'DOOR', 'HOOK', 'PORTS', 'PACK', _src('girder', '47-texture.js'),
               _src('girder', '48-detail.js'), 'core/furnish/50-core-furnish.js', 'core/tags/50-core-tags.js', _src('girder', '50-structure.js'),
               'BUNDLE', 'core/furnish/52-core-furnish-draw.js', 'core/tags/52-core-tags-vocab.js', 'core/furnish/53-core-furnish-host.js',
-              'core/tags/53-core-tags-host.js', _src('girder', '53-furnish.js'), _src('girder', '55-arch.js')],
+              'core/tags/53-core-tags-host.js', _src('girder', '53-furnish.js'), _src('girder', '54-openings.js'), _src('girder', '55-arch.js')],
     # the families Girder's ported buildings draw with (45-kit.js FAMMAT; the library look's panels) and its furniture's
     # detail maps (f_*); not its trees, jungle, ground, flyers, the towers' rust and concrete
     'families': ['awning', 'banner', 'blanket', 'cloth', 'flag', 'fruit', 'gourd', 'hidep', 'inlay', 'lacquer', 'lantern', 'leafy', 'mat',
@@ -49,14 +51,20 @@ MAVS = {
     'cultures': ['beast-rider', 'lizardmen', 'generic'], 'harvested': True,
     'files': [_src('mavs-refuge', '05-palette.js'), 'core/rand/08-core-rand.js', _src('mavs-refuge', '10-core.js'), 'core/space/20-core-space.js',
               'core/materials/record/23-mat-record.js', 'core/materials/record/25-matlib-host.js', _src('mavs-refuge', '30-layout.js'),
-              _src('mavs-refuge', '32-branches.js'), 'core/ports/44-core-ports.js', _src('mavs-refuge', '45-kit.js'), 'HOOK', 'PORTS', 'PACK',
+              _src('mavs-refuge', '32-branches.js'), 'core/ports/44-core-ports.js', _src('mavs-refuge', '45-kit.js'), 'DOOR', 'HOOK', 'PORTS', 'PACK',
               _src('mavs-refuge', '47-texture.js'), 'core/furnish/50-core-furnish.js', 'core/tags/50-core-tags.js',
               _src('mavs-refuge', '50-structure.js'), 'core/furnish/52-core-furnish-draw.js', 'core/tags/52-core-tags-vocab.js', 'BUNDLE',
               'core/furnish/53-core-furnish-host.js', 'core/tags/53-core-tags-host.js', _src('mavs-refuge', '53-furnish.js'),
-              _src('mavs-refuge', '55-arch.js'), _src('mavs-refuge', '56-levels.js'), _src('mavs-refuge', '72-lights.js')],
+              _src('mavs-refuge', '54-openings.js'), _src('mavs-refuge', '55-arch.js'), _src('mavs-refuge', '56-levels.js'), _src('mavs-refuge', '72-lights.js')],
     'families': ['bark3', 'cloth', 'leafy', 'plank', 'rock', 'rope', 'shingle', 'thatch', 'timber', 'wall'],
 }
 PORT_FILE = {'girder': 'girder-ports.js', 'mavs-refuge': 'mavs-ports.js'}
+# core/door's records and glass (KDOOR, KGLASS), sealed into each town's closure ahead of its hook (DOOR above): the town's
+# 54-openings.js draws its leaves as KDOOR records and cuts its walls (goLeaf, goSectorWins), and the hook hands each
+# building its doors and panes (hook.js). The modules' last line binds window.KDOOR (window.KGLASS); in the closure they bind
+# a local root, so each town keeps its own registry in the town's world and the page's own KDOOR (if any) is untouched
+DOOR_FILES = ['core/door/10-core-door.js', 'core/door/20-core-glass.js']
+DOOR_ROOT = "})(typeof window!=='undefined'?window:globalThis);"
 
 
 def rd(p):
@@ -112,7 +120,16 @@ def _pack(T, img):
 def _closure(T, img):
     parts, files = [], []
     for f in T['files']:
-        if f == 'HOOK':
+        if f == 'DOOR':
+            name, body = 'core/door (sealed: KDOOR and KGLASS on the closure\'s own root)', 'var BRT_DOOR_ROOT = { THREE: THREE };\n'
+            for df in DOOR_FILES:
+                src = rd(os.path.join(ROOT, df))
+                if src.count(DOOR_ROOT) != 1:
+                    sys.exit('kits/beast-riders/towns.py: %s no longer ends by binding its root as expected; update the seal' % df)
+                body += '/* -- %s -- */\n%s\n' % (df, src.replace(DOOR_ROOT, '})(BRT_DOOR_ROOT);   /* sealed (kits/beast-riders/towns.py) */'))
+                files.append(df)
+            body += 'var KDOOR = BRT_DOOR_ROOT.KDOOR, KGLASS = BRT_DOOR_ROOT.KGLASS;\n'
+        elif f == 'HOOK':
             name, body = 'kits/beast-riders/towns/hook.js', rd(os.path.join(TOWNS_DIR, 'hook.js'))
         elif f == 'PORTS':
             name = 'kits/beast-riders/towns/' + PORT_FILE[T['town']]
@@ -140,7 +157,7 @@ def _closure(T, img):
                     if body.count(old) != 1:
                         sys.exit('kits/beast-riders/towns.py: %s no longer sets window.%s as expected; update the seal' % (mod, var))
                     body = body.replace(old, "/* sealed (kits/beast-riders/towns.py): window.%s is the page's, not this town's */" % var)
-        if f not in ('PACK', 'BUNDLE'):
+        if f not in ('PACK', 'BUNDLE', 'DOOR'):
             files.append(name)
         parts.append('/* ---- %s ---- */\n%s\n;\n' % (name, body))
     head = ('/* %s: %s\'s engine and builders, one closure (kits/beast-riders/towns.py). GENERATED: edit settlements/%s/src, '

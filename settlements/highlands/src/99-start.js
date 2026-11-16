@@ -17,6 +17,8 @@ const HL_HOST=KHOST.take({
  budget:BUDGET,api:window._api,
  // E opens or shuts the door within reach (core/door: KDOORHOST.toggleNear; 95-hl-doors.js); flying, E still climbs as well
  keys:{e:()=>KDOORHOST.toggleNear(camera.position,hlWalking())},
+ // with the interiors on (?interiors=1): X opens the furnished building nearest the view's middle, storey by storey (89y hlfUnits)
+ cutaway:HLF.interiors?{units:hlfUnits(HLF,VERN.defs)}:undefined,
 });
 // walking (the host's F) or flying: the reach of the E key and its tip
 function hlWalking(){return !!(KHOST.cam&&KHOST.cam.ctl&&KHOST.cam.ctl.walk);}

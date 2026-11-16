@@ -171,8 +171,10 @@ sorted-spiral cells.
       sky site, or rebuild its stage as a band of the 3 km face with the paramo moved up to the rim (PLAN-STATIONS.md).
 - [ ] **The icefall is the host's own mesh** (`stations/fellfield/86-host-ice.js`): no core ice kind is approved. It is not core/water and not
       exported as water; its crevasses are cut into a 1.5 m grid, so they read best from tens of metres, not at the lip.
-- [ ] **The sorted spirals' fines are the lichen crust**, the snail rosettes wear the groundsel sheet's silver leaf, and the dwarf heath is the
-      kit's plain lobe: three prompts owed (`core/materials/PROMPTS-NEEDED.md`, section 37).
+- [ ] **The sorted spirals' fines are the lichen crust** and the snail rosettes wear the groundsel sheet's silver leaf, though both sets are in the
+      library since 2026-11-10 (`ground.fellfield.fines`: a family under `STATION_GL`'s x weight where `sorted` is high; `card.rosette.snail`: a
+      leaf a cell on the `snail` whorl, `"cell"` or `"sheet": "geometry"`); the dwarf heath is the kit's plain lobe: one prompt owed
+      (`core/materials/PROMPTS-NEEDED.md`, section 37).
 - [ ] **No streams on either station** (the meltwater runs under the scree and the needles; a stream off the snout and the snowbeds is a later pass).
 - [ ] **No snow lies on the stage by itself**: the snowbeds are painted and on KGROUND's snow layer; the weather's snow cover (fx snowcover) only
       adds snow while it snows (`snowBase` .25 / .45 for the season's old snow on lit materials).

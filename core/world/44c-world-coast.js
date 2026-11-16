@@ -71,7 +71,7 @@ W.init=function(R){init0(R);build();};
 function build(){const t0=Date.now();keeps();   /* first: a region's own shaping reads keepAt, and the bodies' old masks are flooded on it */
  const B=W.waterBodies();on=false;LIST.length=0;
  const HD=M.heights,cellM=Math.max(2000,Math.sqrt((2000/HD.su)*(2000/HD.sv)));   /* the cells the coast came from: the height grid's (4 km on the isles) or the scale model's 2 km pixel the finer grids were drawn up from */
- for(const b of B){const C=KCOAST.build({id:b.id,level:b.level,mask:b.mask,seed:SEED,salt:b.salt>.5,sample:SAMPLE,frame:{ox:OX,oz:OZ},sourceCell:cellM,islands:islandsOf(b)});
+ for(const b of B){const C=KCOAST.build({id:b.id,level:b.level,mask:b.mask,seed:SEED,salt:b.salt>.5,sample:SAMPLE,frame:{ox:OX,oz:OZ},sourceCell:cellM,islands:islandsOf(b),stampLand:!W.LANDFORMS});   /* a region with its own landform stamp (WORLD.LANDFORMS) raises the islands' ground itself */
   C.body=b;LIST.push(C);}
  on=true;
  for(const C of LIST){const b=C.body,nm=KCOAST.mask(C);b.oldMask=b.mask;b.mask=nm;

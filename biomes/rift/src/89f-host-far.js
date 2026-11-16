@@ -12,9 +12,11 @@ const FAR=(function(){if(typeof KFAR==='undefined'||!KFAR.grid||typeof FAR_MODEL
  const at=(A,i,j)=>{i=Math.max(0,Math.min(n-1,i));j=Math.max(0,Math.min(n-1,j));return A[j*n+i];};
  const mh=(x,z)=>{const u=(x-M.x0)/M.cell,v=(z-M.z0)/M.cell,i=Math.floor(u),j=Math.floor(v),fu=u-i,fv=v-j,r=[];
   for(let k=-1;k<=2;k++)r.push(cr(at(M.h,i-1,j+k),at(M.h,i,j+k),at(M.h,i+1,j+k),at(M.h,i+2,j+k),fu));return cr(r[0],r[1],r[2],r[3],fv);};
- /* the water level: the nearest water cell's (they are flat seas); null where no water cell is within one cell */
+ /* the water level: the nearest water cell's (they are flat seas); null where no water cell is within one cell. A cell at the model's floor (h 1-2:
+    the terminal sea's surface at y 0, which the model's water mask leaves unflagged) is the sea too (the quality pass, 2026-11-09: it drew as a flat
+    green plain round the jungle station, 50 km of it) */
  const wl=(x,z)=>{const i=Math.round((x-M.x0)/M.cell),j=Math.round((z-M.z0)/M.cell);let best=null,bd=1e9;
-  for(let b=-1;b<=1;b++)for(let a=-1;a<=1;a++){const w=at(M.w,i+a,j+b);if(w==null)continue;const d=Math.hypot(a,b);if(d<bd){bd=d;best=w;}}return best;};
+  for(let b=-1;b<=1;b++)for(let a=-1;a<=1;a++){let w=at(M.w,i+a,j+b);if(w==null&&at(M.h,i+a,j+b)<=2)w=0;if(w==null)continue;const d=Math.hypot(a,b);if(d<bd){bd=d;best=w;}}return best;};
  const KF=(x,z,o,s)=>KRAND.fbm(x,0,z,o,s);
  /* the relief between the model's cells: ridged noise (spurs and gullies) whose depth grows with height over the floor, none on the
     flat (the island's flanks are carved, the savannah stays smooth); two octaves, the gullies' spacing ~1.2 and ~0.5 km */

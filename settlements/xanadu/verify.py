@@ -38,6 +38,28 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'
 import harness as _harness
 from check_trades import trades_check   # the Voth census table (tools/check_trades.py)
 
+LANDFORMS = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools', 'scale-model', 'model', 'data', 'landforms.json')
+# Erewhon only: the page's island stands where the scale model's landform record does (the page's centre on Erehwon's
+# pin, unturned: ER_WORLD in targets/erewhon/84-er-geo.js), within 10 m, and is land at its centre. The negative turns the
+# page a quarter turn round its pin: the island then lands 900 m off the record.
+ISLE_JS = r"""(turn)=>{if(typeof ER_WORLD==='undefined')return null;const c=Math.cos(turn),s=Math.sin(turn),x=ISLAND_C[0],z=ISLAND_C[1];
+ return{px:erWorldPx(x*c-z*s,x*s+z*c),land:terrainBase(ISLAND_C[0],ISLAND_C[1])>ER.LAKE,id:ER_WORLD.island,lake:ER_WORLD.lake};}"""
+
+
+async def _er_island(pg, turn=0.0):
+    r = await pg.evaluate(ISLE_JS, turn)
+    if r is None:
+        return None
+    rec = next((l for l in json.load(open(LANDFORMS, encoding='utf-8'))['landforms'] if l['id'] == r['id']), None)
+    if rec is None:
+        return {'name': 'erewhon-island-is-the-landform', 'ok': False, 'detail': 'no landform record ' + r['id']}
+    d = ((r['px'][0] - rec['px']) ** 2 + (r['px'][1] - rec['py']) ** 2) ** .5 * 2000
+    ok = d <= 10 and r['land'] and rec['water_m'] == r['lake']
+    return {'name': 'erewhon-island-is-the-landform', 'ok': ok,
+            'detail': 'the page\'s island at px %.4f,%.4f, %s %.1f m off; land at its centre: %s; lake %s / %s m' % (
+                r['px'][0], r['px'][1], rec['id'], d, r['land'], r['lake'], rec['water_m'])}
+
+
 def _voth_trades():
     # the trades table moved with the kit (kits/xanadu/src/89-*-trades.js, 2026-11-03: MODULARITY-PLAN.md step 4)
     ok, detail, _ = trades_check(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'kits', 'xanadu'))
@@ -98,7 +120,16 @@ const R=[];
   R.push({name:'showcase-draw-calls', ok:renderer.info.render.calls<=B.calls, budget:true,
           detail:renderer.info.render.calls+' / '+B.calls+' draw calls at this camera'}); }
 
-// 5. the registry and the instance bake both ran.
+// 5. the Golden Way (kits/xanadu 78o, Erewhon only): the descending court walked from inside the Pleasure Dome's North Door, every
+//    floor and flight of it reached, and the palace's door strips at the gate iwan and the Harem Postern reached
+{ const S=window._xaGoldenWay;
+  if(S&&S.erewhon&&typeof xgwReach==='function'){const g=xgwReach();
+    R.push({name:'golden-way-descent', ok:!!g&&g.floors>0&&!g.unreached.length&&g.gate&&g.postern&&!g.capped,
+            detail:g?(g.reached+' of '+g.floors+' floors and flights reached from the North Door ('+S.N+' risers of '+S.riser+' m, '+S.gates+' gates); the gate iwan '
+                      +(g.gate?'reached':'NOT reached')+', the postern '+(g.postern?'reached':'NOT reached')+(g.unreached.length?'; unreached: '+g.unreached.slice(0,6).join(' | '):''))
+                    :'core/walk missing'}); } }
+
+// 6. the registry and the instance bake both ran.
 { R.push({name:'registry-and-bake-ran', ok:window._registered>0&&window._instances>0,
           detail:window._registered+' registered volumes, '+window._instances+' baked instances'}); }
 return R;}"""
@@ -108,7 +139,8 @@ async def run(a):
     from playwright.async_api import async_playwright
     here = os.path.dirname(os.path.abspath(__file__))
     os.makedirs(a.out, exist_ok=True)
-    async with verify_page(a.html, here=os.path.dirname(os.path.abspath(__file__)), size=a.size) as V:
+    async with verify_page(a.html, here=os.path.dirname(os.path.abspath(__file__)), size=a.size,
+                           query='?interiors=1' if a.interiors else '') as V:
         pg, errs, fails, b, port = V.page, V.errs, V.fails, V.browser, V.port
         if not V.ready:
             print("timed out waiting for the kit to build")
@@ -142,6 +174,15 @@ async def run(a):
                 print(tag + r["name"] + " : " + r["detail"])
                 if not r["ok"] and not soft:
                     fails.append("assert " + r["name"])
+            isl = await _er_island(pg)
+            if isl is not None:
+                print(("  PASS  " if isl["ok"] else "  FAIL  ") + isl["name"] + " : " + isl["detail"])
+                if not isl["ok"]:
+                    fails.append("assert " + isl["name"])
+                neg = await _er_island(pg, 1.5708)
+                print(("  PASS  " if not neg["ok"] else "  MISSED") + " negative (the page a quarter turn) " + neg["name"] + " : " + neg["detail"])
+                if neg["ok"]:
+                    fails.append("negative " + isl["name"])
             print("\n--- per type (scene triangles, instances, meshes) ---")
             ts = await pg.evaluate("()=>window._api.typeStats()")
             for k in sorted(ts, key=lambda k: -ts[k]["tris"]):
@@ -222,6 +263,21 @@ async def run(a):
             except Exception as e:
                 print("eval failed:", str(e)[:400])
 
+        if a.interiors:   # the hollow walls and the furnished rooms (?interiors=1): the reachability audit (tools/ix_reach_audit.js)
+            src = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools', 'ix_reach_audit.js'), encoding='utf-8').read()
+            r = await pg.evaluate(src[src.index('*/') + 2:].strip())
+            print("\n--- interiors (?interiors=1) ---")
+            print(json.dumps({k: r.get(k) for k in ('vauto', 'hollow', 'doors', 'interiors', 'pieces', 'reach')}))
+            for line in r.get('list', [])[:60]:
+                print('  ' + line)
+            must = []   # the buildings planned room by room: every floor reached
+            bad = [l for l in r.get('list', []) if l.split(' ')[0] in must and ' unreached 0' not in l]
+            ok = bool(r.get('hollow') and r['hollow']['bodies'] > 0 and r.get('interiors')) and not bad
+            print(("  PASS  " if ok else "  FAIL  ") + "interiors-hollow-and-reach : %d hollow bodies, %d furnished buildings, %d of %d floors reached%s"
+                  % ((r.get('hollow') or {}).get('bodies', 0), r.get('interiors') or 0, r['reach']['floors'] - r['reach']['unreached'], r['reach']['floors'],
+                     ('; not all reached in ' + ', '.join(bad)) if bad else ''))
+            if a.assert_ and not ok:
+                fails.append("assert interiors-hollow-and-reach")
         if a.save_baseline:
             json.dump({"counters": counters, "tris": st["tris"], "calls": st["calls"]},
                       open(a.save_baseline, "w"), indent=1, sort_keys=True)
@@ -244,4 +300,5 @@ if __name__ == "__main__":
     ap.add_argument("--cam-name", default="cam")
     ap.add_argument("--eval", action="append", help="JS arrow function source to evaluate (repeatable)")
     ap.add_argument("--size", default="1280x800")
+    ap.add_argument("--interiors", action="store_true", help="load with ?interiors=1 and run the hollow-wall reachability audit")
     sys.exit(asyncio.run(run(ap.parse_args())))

@@ -38,7 +38,9 @@ kdef('vWinClear',VBOX,MAT.izGlass);kdef('vDoorLeaf',VBOX,MAT.wood);
 // the leaf styles as kit items (core/door's KDOORLEAF, where the page carries 30-core-door-leaf.js): 'vDoorLeaf.<style>'
 // the leaf in the wood, 'vDoorGlass.<style>' its lights in the clear glass; an item no door used bakes nothing
 const IZ_LEAFSTYLES=typeof KDOORLEAF!=='undefined'?KDOORLEAF.STYLES.filter(st=>st!=='flat'):[];
-for(const st of IZ_LEAFSTYLES){const G=KDOORLEAF.geometry(THREE,st);kdef('vDoorLeaf.'+st,G.frame,MAT.wood);if(G.glass)kdef('vDoorGlass.'+st,G.glass,MAT.izGlass);}
+// a hardware style's metal part ('banded', 'scrolled', '<style>+pull', '+ring': core/door's hw) is 'vDoorHw.<style>' in polished brass
+MAT.izBrass=new THREE.MeshStandardMaterial({color:vC(0xb8913f),roughness:.32,metalness:.85});
+for(const st of IZ_LEAFSTYLES){const G=KDOORLEAF.geometry(THREE,st);kdef('vDoorLeaf.'+st,G.frame,MAT.wood);if(G.glass)kdef('vDoorGlass.'+st,G.glass,MAT.izGlass);if(G.hw)kdef('vDoorHw.'+st,G.hw,MAT.izBrass);}
 // (draw calls: the glow pane is vWinLit, the room card a dim vPlaster in IZ_ROOMC, KGLASS.SPEC.room's colour. The leaves are their own item, vDoorLeaf, which 95j
 // keeps out of core/lod: a moved instance of a shared, LOD-copied item kept its old pose on screen)
 const IZ_ROOMC=vC(0x6e5a46);
@@ -49,12 +51,12 @@ const IZDOOR={get list(){return KDOOR.list;},get SWING(){return KDOOR.SWING;},ge
  // draw a leaf in the doorway and register it. (x, z): the middle of the doorway's line in the builder's frame; y the sill
  leaf(x,y,z,ry,w,h,t,c,o){o=o||{};if(o.preset!=null)o=Object.assign({},KDOOR.PRESET[o.preset]||{},o);
   if(o.kind==='hatch')throw new Error('IZDOOR.leaf: a hatch is not drawn here');
-  const st=o.style&&KIT.defs['vDoorLeaf.'+o.style]?o.style:null,fr=st?'vDoorLeaf.'+st:'vDoorLeaf',gl=st&&KIT.defs['vDoorGlass.'+st]?'vDoorGlass.'+st:null;
+  const st=o.style&&KIT.defs['vDoorLeaf.'+o.style]?o.style:null,fr=st?'vDoorLeaf.'+st:'vDoorLeaf',gl=st&&KIT.defs['vDoorGlass.'+st]?'vDoorGlass.'+st:null,hw=st&&KIT.defs['vDoorHw.'+st]?'vDoorHw.'+st:null;
   // the shut leaves in the builder's frame: a scratch record at the origin facing +z (KDOOR.leaves, the same rules as the real one)
   const Ks=IZDOOR._k||(IZDOOR._k=KDOOR.create());Ks.clear();
   const S=Ks.add({at:[0,0,0],yaw:0,w,h,t,sign:o.mirror?-1:1,kind:o.kind,pair:o.pair,roll:o.roll}),parts=[],col=c||vC(VPAL.woodMid[0]);
   for(const L of Ks.leaves(S)){const m=loc(x,z,L.p[0],L.p[2],ry),P=[],q=vQ(ry,0,0);
-   for(const item of gl?[fr,gl]:[fr]){const it=KIT.items[item],idx=it.length;kput(item,[m[0],y+L.p[1],m[1]],q,L.size,item===gl?null:col);const R=it[idx];if(!R)return null;P.push({item,idx,ref:R});}
+   for(const item of [fr,gl,hw].filter(Boolean)){const it=KIT.items[item],idx=it.length;kput(item,[m[0],y+L.p[1],m[1]],q,L.size,item===fr?col:null);const R=it[idx];if(!R)return null;P.push({item,idx,ref:R});}
    parts.push(P);}
   const R0=parts[0][0].ref,hl=loc(x,z,o.mirror?w/2:-w/2,0,ry),C=VERN.cur,s=KXF&&KXF.s?KXF.s:1;
   let id=o.id;if(id==null&&C){C._door=(C._door||0)+1;const b=C.D.key+'@'+Math.round(C.x)+','+Math.round(C.z)+'.'+(C._door-1);id=b;for(let k=1;KDOOR.get(id);k++)id=b+'#'+k;}
@@ -77,7 +79,7 @@ const IZDOOR={get list(){return KDOOR.list;},get SWING(){return KDOOR.SWING;},ge
     IZDOOR._s.set(S[0]*L.s[0],S[1]*L.s[1],S[2]*L.s[2]);IZDOOR._m.compose(IZDOOR._p,IZDOOR._q,IZDOOR._s);im.setMatrixAt(q.idx,IZDOOR._m);IZDOOR._dirty.add(im);}}},
  _flush(){IZDOOR._dirty.forEach(im=>{im.instanceMatrix.needsUpdate=true;});IZDOOR._dirty.clear();},
  // the meshes that hold leaves (core/lod keeps its hands off them: they move)
- meshes(M){M=M||KIT.meshes||{};return Object.keys(M).filter(k=>/^vDoor(Leaf|Glass)/.test(k)).map(k=>M[k]);},
+ meshes(M){M=M||KIT.meshes||{};return Object.keys(M).filter(k=>/^vDoor(Leaf|Glass|Hw)/.test(k)).map(k=>M[k]);},
  _dirty:new Set(),_ax:new THREE.Vector3(),_q0:new THREE.Quaternion(),
  _p:new THREE.Vector3(),_q:new THREE.Quaternion(),_s:new THREE.Vector3(),_m:new THREE.Matrix4(),_up:new THREE.Vector3(0,1,0)};
 // is the point on a hollow body's face? (69e's vnFaceOf, without the side effect of a cut)

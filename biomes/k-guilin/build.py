@@ -143,7 +143,7 @@ CORE_WATER=['20-core-water.js','21-core-water-shore.js','22-core-water-flow.js',
 for f in CORE_WATER:
     if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','water',f))
 # the final rebuild's water ext: the audit (57), the reflections switch (58: off at load), by path (tools/fragment_needs.json orders them)
-for f in ['57-core-water-audit.js','58-core-water-mirror.js']: PATH.setdefault(f,J('core','water','ext',f))
+for f in ['56-core-water-breakup.js','57-core-water-audit.js','58-core-water-mirror.js']: PATH.setdefault(f,J('core','water','ext',f))
 # core/atmos: the core, presets, the weather (4) and its selector (9), the export, the waves, the skylight; ATMOS.bindHost,
 # ATMOS.bindWeather and the shared sky's host (core/atmos/host) and the shared sky (core/atmos/sky, SKY-PLAN.md step S1), as
 # biomes/swbay and biomes/nwouterwall take them: src/89a-host-atmos.js binds, src/89s-host-sky.js draws the sky and the weather

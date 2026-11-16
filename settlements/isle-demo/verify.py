@@ -88,7 +88,7 @@ CITY_JS = r"""(neg)=>{const C=window._city,out=[],town=C.town,R=C.cur.R,G=C.cur.
 
 """P7b: both towns on core/simulation (src/40-46), checked on the Valapo page under --assert (the page declares both,
 in one order, whichever town it draws). SIM_JS runs a world day minute by minute (ISLE.simDay, once) and returns for a
-town ({town, neg}) src/45-isle-sim-checks.js's checks: every lot of a census trade (kits/islanders IS_TRADES) a place,
+town ({town, neg}) core/region/45-region-sim-checks.js's checks: every lot of a census trade (kits/islanders IS_TRADES) a place,
 every resident a home and every worker a job in the town (its census's people, every post filled), the stocks map
 finding every place from its lot, the food made, hauled and eaten with nothing short for the day and the food made
 covering what was eaten. Each check has a negative (neg): a trade's lot taken from the places, a resident housed in the
@@ -113,7 +113,7 @@ TRADE_JS = r"""(neg)=>{const P={};Object.keys(_city.simPlans).forEach(t=>{P[t]={
  if(neg==='balance'){const b=C(),g=B.goods.find(g=>b.towns.kautoa.rows[g]&&b.towns.kautoa.rows[g].today);b.towns.kautoa.rows[g].today.change+=10;return pick(ISLE.tradeChecks(b,P),/balance/);}
  return [];}"""
 TRADE_NEGS = ('berth', 'ways', 'trace', 'imported', 'sea', 'balance')
-# P7d, the week test (src/48-isle-week.js; PLAN.md section 7): after the canoe line's checks, a week with Valapo watched
+# P7d, the week test (core/region/48-region-week.js; PLAN.md section 7): after the canoe line's checks, a week with Valapo watched
 # (Kautoa abstract), then a week with Kautoa watched (Valapo abstract), and ISLE.weekChecks on the two; each with its
 # negative on a changed copy. The page keeps the two weeks (window._week) and the wall time of each
 WEEK_JS = r"""(neg)=>{if(!window._week){const w1=ISLE.simWeek('Valapo',7*1440),w2=ISLE.simWeek('Kautoa',7*1440);ISLE.simWatch(_city.town);window._week=[w1,w2];}
@@ -219,6 +219,14 @@ async def run_city(a):
                     seen.add(r['name'])
                     print(('  PASS  ' if r['ok'] else '  FAIL  ') + r['name'] + ' : ' + str(r['detail']))
                     if not r['ok']: tf.append(r['name'])
+                # core/door (src/63-isle-doors.js): the Vernacular's doors hosted, on their lots, posed; the negative: records left
+                # in the piece's frame (as every piece's were before 2026-11-09) are off their lots
+                r = await pg.evaluate('typeof IDOORS !== "undefined" ? IDOORS.check() : {ok:false, detail:"no IDOORS"}')
+                print(('  PASS  ' if r['ok'] else '  FAIL  ') + 'doors-hosted : ' + r['detail'])
+                if not r['ok']: tf.append('doors-hosted')
+                r = await pg.evaluate('typeof IDOORS !== "undefined" ? IDOORS.check("origin") : {ok:true, detail:"no IDOORS"}')
+                print(('  PASS  ' if not r['ok'] else '  MISSED') + ' negative (doors in the piece\'s frame) : ' + r['detail'])
+                if r['ok']: tf.append(town + ': negative doors')
                 for neg in ('overlap', 'sea', 'landmark'):
                     rs = await pg.evaluate(CITY_JS, neg)
                     caught = bool(rs) and not any(r['ok'] for r in rs)

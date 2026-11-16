@@ -76,9 +76,8 @@ first biome; `./sitectl build --no-build` uses the pages already in each `dist/`
 To add a Krator page, add it to `ENTRIES` in `gallery/build_gallery.py`, as for the artifact. To drop another
 Menagerie page, add its route to `drop_routes` and its files to `drop_paths` in `krator.toml`.
 
-The service listens on port 8001 so it can run beside the Menagerie's own (`menagerie`, port 8000). To replace
-that one: `systemctl --user disable --now menagerie`, set `port = 8000` in `krator.toml`, then `./sitectl sync` and
-`./sitectl restart`. Serve it on the LAN only; never port-forward it.
+The service listens on port 8001, the one site server (the Menagerie's own service on 8000 is retired, and its
+`sitectl` no longer starts one). Serve it on the LAN only; never port-forward it.
 
 ## The embedded Menagerie
 
@@ -86,13 +85,5 @@ that one: `systemctl --user disable --now menagerie`, set `port = 8000` in `krat
 Krator serves everything with no second checkout. `sync.py` copies from it what the Menagerie's `site.toml` serves,
 less the drops above. Its Voth stays in the source tree but is never copied or served.
 
-To bring in later Menagerie work from its own checkout (commit it there first; run from the repo root):
-
-```
-git subtree pull --prefix=host/WorldMenagerie ../WorldMenagerie main
-cd host && ./sitectl update
-```
-
-Changes made here, inside `host/WorldMenagerie/`, go back with
-`git subtree push --prefix=host/WorldMenagerie ../WorldMenagerie <branch>`. Keep such commits to that folder alone.
-`[sync] menagerie` in `krator.toml` can still point at a separate checkout instead.
+This is the only copy of the Menagerie: its separate checkout (`../WorldMenagerie`) was retired on 2026-11-02, with
+everything in it already on `main`. Work on it here, then `./sitectl sync && ./sitectl reload` from `host/`.

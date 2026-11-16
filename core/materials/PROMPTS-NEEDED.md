@@ -3,12 +3,23 @@
 Every texture or pattern sheet the owner still has to source or generate, each with its finished prompt. Paste a block
 as it is, one image per block. **Everything delivered lives in `PROMPTS-archived.md`** (checked against `core/materials/library/`, `patterns/` and each build's `materials.json` on `origin/main`, 2026-10-19); this file holds only what is still owed.
 
-**Count: 23 prompt blocks** (2026-11-09: +3 for the southern highlands' upper stations, section 37; +15 for the hyperjungle's lands and the savannah rims, section 40, 2026-11-08; counted 2026-11-04 before them).
+**Count: 57 prompts** (+3 for Opal Valley, section 55, merged from the Theodiga branch 2026-11-16; +11 for the Tungang kit's section 43 and glass.moonglass, merged from the Lightwall branch 2026-11-16; +3 for Grēṭ-Āil's Hall of Dreaming, section 56, 2026-11-16; +3 for the Xanadui fort, section 54, 2026-11-16; +3 for the mined goods' resource nodes, section 53, 2026-11-16; +6 for the Arch, section 52, and +3 for the Rift battery, section 51, at Integration 3, 2026-11-11; +3 for the Tiers, section 50; 19 fenced blocks, counted by their fences, and the Ancient Transit's three table rows at the second integration merge, 2026-11-11: sections 43-49 added since, the Ancient Transit, Firebliss, the NE outer wall and the Great Chasm among them; before that, 2026-11-10, after -22 delivered from sections 37, 40, 41 and 42: `PLAN.md`, "Delivered 2026-11-10"; the hand count before was 36, and two blocks had lost their closing fence; 2026-11-09: +11 for Erewhon's citadel, section 41; +2 for the Tents kit's army and Eternian cloths, section 42; +3 for the southern highlands' upper stations, section 37; +15 for the hyperjungle's lands and the savannah rims, section 40, 2026-11-08; counted 2026-11-04 before them). (+7 for the Qiblai kit, section 43: its gilt sheet and mantra drum, 2026-11-11, and the walk-in rooms' mural, coffer and temple rug, 2026-11-15; merged 2026-11-15)
+
+**Delivered 2026-11-10:** 22 of sections 37, 40, 41 and 42 (Erewhon's citadel but the jali, the Tents kit's two cloths and the cedar, the
+fellfield's two, seven of the hyperjungle's and the savannah rims'), `PLAN.md` "Delivered 2026-11-10": the citadel's, the tents' and the two grasses
+wired and packed, the other eight in the library for their builds' next turn.
 
 **Delivered 2026-11-03:** section 31's five (the Gills: `rock.lamina.pipe`, `mineral.crust.ferromanganese`, `mineral.crust.brucite`,
 `card.breathfringe`, `card.turf.limed`) and ten owed on unmerged branches (High Rift, nwbay, nhighlands, ringisles, the rift rim, Copper Glacier),
 `PLAN.md` "Delivered 2026-11-03": the ten are wired at their merge, and their entries are deleted on their branches then. Still owed from that
 day: `rock.megabreccia` (nhighlands' branch) and `card.umbrella.plate` (the abyssal savannah).
+
+**Delivered 2026-11-10** (`PLAN.md` "Delivered 2026-11-10"): `mineral.selenite` and `rock.limestone.ironstained` (section 36, the Cave
+of Crystals), `rock.megabreccia.polished` (section 33, the Cut's face), `ground.bench` (section 14, Farside's scour bench) and
+`card.umbrella.plate` (section 24, the abyssal savannah): installed and wired, their entries deleted here. Also `metal.scorched`, whose
+entry lives only on the Ancient's Valley branches (`claude/ancient-vehicles-935f93`, `claude/ancientsvalley-7f521c`, their section 36):
+in the library, not wired (the Motor Vehicles kit's `scorched` slot is on those branches); **delete that entry and wire the slot at
+their merge**. Still owed: `rock.megabreccia` (section 32, nhighlands' crater wall: the polished slab is not it).
 
 Open prompt files elsewhere in this folder (`PROMPTS-ready.md`, `PROMPTS-nomads.md`, `PROMPTS-iziz-beast-riders.md`) are older history; their open rows were copied here.
 
@@ -108,24 +119,6 @@ the prism heath (the kit tints it by season), `ground.sphagnum` for the moor spo
 `ground.lichen.crust`, the snows and ices, and the Rift's, the SW lowlands' and the S highlands' own sets for the borrowed
 species.
 
-## 14. Farside (`biomes/farside`, planned 2026-10-23)
-
-The ocean coast where the sea's plants are invading the land (`biomes/farside/PLAN.md` section 9, which lists the many
-marine sets the library already has: the kelp cards, seaweed, seagrass, reef and coral sets).
-
-**Owed by the final rebuild (pair 10, 2026-11-04): the tsunami's scour bench** (station 1, `biomes/farside/src/47-host-land.js`: drawn
-today as the wet-rock layer `ground.rock` whitened by the vertex tint, a procedural stand-in for the bleached bedrock). Slot
-`ground.bench` in `biomes/farside/materials.json` (the ground's eighth layer when it lands; the weight is `FIELD.bench` times the rock's).
-Prompt (the base template, then):
-
-```
-Material: wave-planed coastal bedrock scoured by a tsunami, seen from directly above: a flat, smoothed surface of grey-brown
-volcanic and sedimentary rock bleached pale by salt, a fine white salt crust in the hollows and along hairline cracks, shallow
-scour grooves all running one way, scattered rounded cobbles and a few half-buried boulders worn smooth, patches of dried
-brown wrack and small dark limpet scars. Keep colours natural but slightly muted and even, so the texture can be tinted to
-different palettes without looking stained.
-```
-
 ## 15. Crop and garden cards: the Ring Sea isles and Guilin (2026-10-26)
 
 `biomes/ringisles/KNOWN_ISSUES.md` (rice and cane blades procedural; greens and sweet potato on a wrong `card.paddle` cell)
@@ -173,17 +166,6 @@ umbrella tree), `card.heartleaf` (the tongue tree), `card.broadleaf` (the kopje 
 fronds), `bark.cork`, `bark.lepido`, `bark.armored`, `bark.smooth`, `rock.granite.tor`, `rock.sandstone.bedded.red`,
 `ground.redsoil`. Two gaps: the ground under the tall grass and the tall grass itself (its stand-ins: `ground.redsoil`,
 and `card.grass.dry`'s knee-high bunchgrass drawn three metres tall).
-
-**Owed from the final rebuild's turn (pair 8, 2026-11-03):** the umbrella tree's crown plate (slot `plate`, `G.plate` in
-`50-biome-absav-species.js`: a flat disc 5-14 m across, its UVs radial over the whole card). `check_cells.py --fix` cut `card.acacia`'s
-sheet to one plant (`cell` [.343, .345, .663, .655]), so the plate now shows one sprig stretched over the disc; before, it showed all
-nine sprigs at once. Wire it as `plate` in `biomes/abyssal-savannah/materials.json` (keep 0, mean .7, no `cell`: the whole sheet is the
-plate), then `pack.py` and rebuild.
-
-`card.umbrella.plate`:
-```
-Square, 2048x2048. Orthographic view looking straight down on a single cut-out object centred in the frame, on a solid flat bright magenta (#ff00ff) background that fills everything outside the object, with no shadow cast on the background. Flat, even, shadowless lighting: no highlights, no vignette. No perspective, no text, no border, no watermark. Object: the flat-topped crown layer of an umbrella thorn tree (Vachellia tortilis) seen from directly above, one roughly circular, slightly lobed plate filling about 90% of the frame: a dense, flat mat of tiny bipinnate leaflets on fine interlaced twigs, thick and even in the middle, breaking up toward the rim into separate sprays with magenta showing between them, a few small gaps inside, no trunk or branches showing. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.
-```
 
 ## 27. The southern highlands' last canvases (`biomes/shighlands`, 2026-10-26)
 
@@ -233,12 +215,6 @@ the page wires `ground.beads.orange`, `ground.sand.black`, `ground.obsidian`, `g
 `ground.lava.crust`, `card.pele.hair` and `concrete.ancient` (`biomes/godthrone/materials.json`). **One stand-in**: the
 titanium basalt's grain is `rock.basalt.flowbanded` grey under KSTRATA's colours (the plan allows a tint). The optional
 `rock.basalt.titanium` (the ilmenite sheen in the map) was delivered 2026-10-27 (`PLAN.md`, "Delivered 2026-10-27"): not wired yet.
-
-## 21. The W outer wall (`biomes/wouterwall`, planned 2026-10-26)
-
-The loess bench, the slump scarps and the sturzstroms (`biomes/wouterwall/PLAN.md` section 8). Reused: `ground.steppe`,
-`ground.tundra`, `ground.turf.polygon`, `ground.tilled` (the terraces, tinted buff), `card.stipa`, `card.grass.dry`, the
-nwouterwall's sets (section 8 here) and `rock.megabreccia` (section 20). Needed before the kit's W1.
 
 ## 22. The SW highlands (`biomes/swhighlands`, planned 2026-10-26)
 
@@ -303,54 +279,6 @@ rock is still owed. Until it comes the megabreccia is KSTRATA's and KGROUND's pr
 Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a polished-looking but natural weathered rock face of impact megabreccia, angular clasts of many different rocks from fist size to a metre packed together at every angle in a fine grey crushed matrix: black basalt, rusty red basalt, banded pale grey gneiss, cream tuff, brick-red sandstone and pale grey limestone, a few clasts themselves made of smaller clasts, thin black glassy veins (pseudotachylite) cutting across several clasts, scattered tiny bottle-green and black glass flecks in the matrix, light grey-green lichen patches on a few clasts; every rock type clearly different in colour.
 ```
 
-## 33. The Cut's polished face (`biomes/cut`, station `face`, the final rebuild pair 10, 2026-11-04)
-
-The geology bake puts the Cut's west lip in the `impact` province, so the sphere's clean section through it is megabreccia sawn flat and polished
-(KSTRATA's blocks, `stations/face/48z-host-face.js`). Its grain is the library's `rock.megabreccia` for now: a weathered face with lichen, true to the
-rock but not to the polish. Wire it as `ground.breccia` in `biomes/cut/materials.json` (replace the lib) and rerun `pack.py biomes/cut`.
-
-`rock.megabreccia.polished` (the cut face's grain under KSTRATA's block colours; seen close up from the face's views, satin-polished, never weathered):
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no reflections, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a sawn and finely polished slab of impact megabreccia, like a polished breccia countertop, perfectly flat and smooth: angular clasts of many different rocks from fist size to half a metre packed together at every angle in a fine grey crushed matrix, each clast cut clean through so its inner texture shows: black basalt with tiny pale crystals, rusty red basalt, banded pale grey gneiss with fine wavy foliation, cream tuff, brick-red sandstone with faint lamination, pale grey limestone, a few clasts themselves made of smaller clasts; thin black glassy veins (pseudotachylite) cutting straight across several clasts; scattered tiny bottle-green and black glass flecks in the matrix; sharp crisp clast edges; no lichen, no dirt, no weathering, no cracks, no pits, no saw marks; every rock type clearly different in colour.
-```
-
-## 36. The Cave of Crystals (`biomes/hearths --station crystals`, 2026-11-03)
-
-`biomes/hearths/PLAN.md` section 18. Stand-ins until these arrive: `stone.alabaster` (massive gypsum, tinted pale green) for the
-selenite beams and blades, `rock.gossan` toned down for the iron-stained walls (`biomes/hearths/materials.json`). Both are full
-colour (the colour is the point). Wire them as `crystal.selenite` and `rock.ironstain` in that file, re-pack and rebuild.
-
-`mineral.selenite` (2 m; up is the crystal's length):
-
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view,
-perfectly flat surface filling the whole frame edge to edge. Flat, even,
-shadowless lighting, as if scanned: no highlights, no vignette, no shading
-gradient across the image. No perspective, no objects, no text, no border,
-no watermark. The left edge must continue into the right edge and the top
-into the bottom. Material: the side face of a giant selenite (gypsum)
-crystal, milky translucent white to the palest green (#dfe8da), long straight
-growth striations and fine parallel cleavage lines running from top to
-bottom, faint cloudy veils and inclusions deeper inside, a few thin hairline
-fractures across the grain, a soft satin sheen, no bubbles and no colour
-patches.
-```
-
-`rock.limestone.ironstained` (3 m):
-
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view,
-perfectly flat surface filling the whole frame edge to edge. Flat, even,
-shadowless lighting, as if scanned: no highlights, no vignette, no shading
-gradient across the image. No perspective, no objects, no text, no border,
-no watermark. The left edge must continue into the right edge and the top
-into the bottom. Material: a damp limestone cave wall stained by iron oxide:
-dull rust red and red-brown staining (#7a3a22, #9a5a34) in irregular
-blotches and runs over grey-buff limestone (#8a8478), small solution pits
-and shallow scallops, crusts of tiny white gypsum crystals in the hollows,
-a thin wet film with darker damp patches, matte.
-```
-
 ## 38. The Ring Sea isles' lagoon station (`biomes/ringisles --station lagoon`, 2026-11-03)
 
 Numbered 32 until 2026-11-08 (three branches each took 32; a stale second copy of section 32 was dropped then). `ground.coral.rubble` is in the library
@@ -382,42 +310,24 @@ Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfec
 
 Stations 2 and 3 (`biomes/shighlands/PLAN-STATIONS.md`, "Built") are wired on library sets that already exist (`bark.twisted.red`, `bark.whorled`,
 `bark.juniper`, `card.pine`, `card.spruce`, `card.juniper`, `ground.needles`, `ground.snow.drift`, `ground.lichen.crust`, `rock.rubble.sturzstrom`,
-`surface.cushion`, `ice.glacier`; the spiral cones are geometry, not a card). Three surfaces are still the kit's stand-ins:
-
-`card.rosette.snail` (station 3's snail-shell rosettes, drawn now with the groundsel sheet's silver leaf: `snail` in `stations/fellfield/62-biome-shigh-fell.js`;
-a sheet of nine, one cell a leaf, wired as a family with `"cell"` or `"sheet": "geometry"` on its whorl):
-```
-Square, 2048x2048. Orthographic view looking straight down on nine separate single leaves in a 3x3 grid, each centred in its third of the frame with magenta all round it, on a solid flat bright magenta (#ff00ff) background that fills everything outside the objects, with no shadow cast on the background. Flat, even, shadowless lighting: no highlights, no vignette. No perspective, no text, no border, no watermark. Objects: the fleshy spoon-shaped rosette leaves of a high-alpine succulent, each leaf a thick, slightly cupped spatula with a rounded tip and a narrow base, a fine pale waxy bloom over a grey-green surface, faint parallel veins, the tip a little reddened on three of them; all nine the same size and pointing the same way, base at the bottom of their cell. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.
-```
-
-`ground.fellfield.fines` (station 3's sorted spirals: the frost-sorted fine soil in the cells between the stone arms, drawn now as the lichen crust;
-a family under `STATION_GL`'s x weight where `sorted` is high):
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: the fine-grained centre of a frost-sorted soil circle on a high fellfield: bare, frost-heaved silt and fine gravel, slightly domed and cracked into a faint net of shallow hairline cracks, scattered pea-sized grey and brown pebbles, a few tiny patches of black and grey crust lichen, no plants, no large stones. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.
-```
+`surface.cushion`, `ice.glacier`; the spiral cones are geometry, not a card). One surface is still the kit's stand-in (the fines and the snail
+rosettes' leaf arrived 2026-11-10: `ground.fellfield.fines`, `card.rosette.snail`, in the library and not yet wired: `PLAN.md`, "Delivered 2026-11-10"):
 
 `card.heath.whorl` (station 2's dwarf whorl-heath on the forest floor and the crest, drawn now as the kit's plain shrub lobes: `dwarf` in
 `stations/conifers/62-biome-shigh-conifers.js`; a sheet of nine sprigs on the clump, `"sheet": "geometry"`):
 ```
 Square, 2048x2048. Orthographic view looking straight down on nine separate sprigs in a 3x3 grid, each centred in its third of the frame with magenta all round it, on a solid flat bright magenta (#ff00ff) background that fills everything outside the objects, with no shadow cast on the background. Flat, even, shadowless lighting: no highlights, no vignette. No perspective, no text, no border, no watermark. Objects: sprigs of a dwarf alpine heath, each a short woody shoot densely clothed in tiny needle-like leaves set in tight whorls of four up the stem so the leaves spiral round it, dark green leaves with paler tips, three of the sprigs carrying a few small nodding pink bell flowers, seen from above. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.
+```
 
 ## 40. The hyperjungle's lands and the savannah rims (`biomes/hyperjungle` stations `savage` and `north`, `biomes/abyssal-savannah` stations `serim`, `erim` and `north`; J2-J6, 2026-11-08)
 
 `biomes/hyperjungle/PLAN-LANDS.md` section 10's list, for the species built on 2026-11-08 with a stand-in each (named in the build's
 KNOWN_ISSUES.md, "J2-J6"). The library sets already wired are not listed (bark.strangler, organic.pod.honeycomb, wood.silver,
-bark.bamboo.jade, card.bamboo.giant, earth.termite and the rest). Wire each into the named build's `materials.json` when it comes (the rims' sets into `biomes/abyssal-savannah/materials.json`, on the rim stations' families: `build.py` `RIM_PACK`; the rims were built as `biomes/savannarim` and folded in there on 2026-11-08).
+bark.bamboo.jade, card.bamboo.giant, earth.termite and the rest). Wire each into the named build's `materials.json` when it comes (the rims' sets into `biomes/abyssal-savannah/materials.json`, on the rim stations' families: `build.py` `RIM_PACK`; the rims were built as `biomes/savannarim` and folded in there on 2026-11-08). **2026-11-10:** seven of the fifteen arrived (`bark.palm.spined`, `bark.tualang`,
+`card.ghostpipe`, `card.grass.elephant`, `card.grass.themeda`, `ground.ironstone`, `card.leaf.miombo`: `PLAN.md`, "Delivered 2026-11-10"); the two grasses are wired,
+the other five are in the library for the builds' next turn.
 
 ### The savage land (J2)
-
-`bark.palm.spined` (the armour palm's trunk; now vertex-coloured rings and modelled spines):
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: the bark of a spiny palm trunk (Bactris, Aiphanes): grey-brown fibrous rings 6 to 10 cm apart running straight across, each ring bristling with dense black needle spines 5 to 30 cm long lying flat against the bark and pointing in every direction, broken spine stubs between them, pale leaf-scar bands between the rings. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.
-```
-
-`bark.tualang` (the comb tree's bole; now the ghostwood's bark, its cousin's):
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: the smooth bark of a giant emergent tree (Koompassia excelsa, tualang): pale pinkish-grey to silver-grey, very smooth and almost polished, with faint vertical streaks, scattered small round lenticels, a few thin horizontal ring creases, patches of pale lichen and faint greenish algae stains, no furrows or plates. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.
-```
 
 `organic.comb.bee` (the giant bees' combs; now organic.pod.honeycomb, a stand-in):
 ```
@@ -461,36 +371,75 @@ Square, 2048x2048. Orthographic view of a single cut-out object centred in the f
 Square, 2048x2048. Orthographic view of a single cut-out object centred in the frame, on a solid flat bright magenta (#ff00ff) background that fills everything outside the object, with no shadow cast on the background. Flat, even, shadowless lighting: no highlights, no vignette. No perspective, no text, no border, no watermark. Object: a cluster of dry snapdragon seed pods (Antirrhinum) grown to the size of fists, each a pale bone-coloured papery capsule with two dark round openings and a small dark slit below them, so each looks like a tiny skull, on brittle brown stalks. Full colour: not tinted.
 ```
 
-`card.ghostpipe` (the ghost pipe; now modelled white stems):
-```
-Square, 2048x2048. Orthographic view of a single cut-out object centred in the frame, on a solid flat bright magenta (#ff00ff) background that fills everything outside the object, with no shadow cast on the background. Flat, even, shadowless lighting: no highlights, no vignette. No perspective, no text, no border, no watermark. Object: a clump of ghost pipe plants (Monotropa uniflora): waxy translucent white stems with small scale leaves, each bent over at the top into a nodding white bell-shaped flower, a faint pink tinge at the bases, seen from the side. Full colour: not tinted.
-```
-
 ### The savannah's base (`biomes/abyssal-savannah` rim stations, `blind` and `grass`, J4)
-
-`card.grass.elephant` (the blind grass; now card.rankgrass):
-```
-Square, 2048x2048. Orthographic view of a single cut-out object centred in the frame, on a solid flat bright magenta (#ff00ff) background that fills everything outside the object, with no shadow cast on the background. Flat, even, shadowless lighting: no highlights, no vignette. No perspective, no text, no border, no watermark. Object: a single clump of elephant grass (Pennisetum purpureum) seen from the side, filling the frame top to bottom: tall cane-like culms with joints, long flat arching leaf blades 2 to 4 cm wide with a pale midrib, a few buff cylindrical bristly flower plumes at the tops, the base dense and upright, nothing touching the frame edges at the sides. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.
-```
-
-`card.grass.themeda` (the red oat grass; now card.grass.dry):
-```
-Square, 2048x2048. Orthographic view of a single cut-out object centred in the frame, on a solid flat bright magenta (#ff00ff) background that fills everything outside the object, with no shadow cast on the background. Flat, even, shadowless lighting: no highlights, no vignette. No perspective, no text, no border, no watermark. Object: a single tussock of red oat grass (Themeda triandra) seen from the side: a dense base of fine leaves, arching stems carrying drooping clusters of large rust-red to bronze awned spikelets with long twisted dark awns, the leaves turning from green at the base to red-bronze at the tips. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.
-```
-
-`ground.ironstone` (the laterite pavements; now the ground's paint only):
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a laterite pavement seen from above: a hard red-brown iron crust broken into irregular plates, strewn with round pisolitic ironstone gravel 0.5 to 2 cm across, dark purple-brown to rust, glossy where weathered, fine red dust in the cracks, a few dry grass stems lying across. Full colour: not tinted.
-```
 
 ### The se rim (`biomes/abyssal-savannah` station `serim`, J6)
 
-`card.leaf.miombo` (the rust miombo's crown; now a painted stand-in, and the incense tree's leaflets with it):
+## 41. Erewhon's citadel: the Pleasure Domes and the Moorish and Mughal palaces (`kits/xanadu`, `settlements/xanadu/citadel`, 2026-11-09)
+
+The owner's references (`settlements/xanadu/citadel/refs/`) and brief: the Pleasure Domes in black and white (the citadel's dome black over white, the Dome of the Bay white over black); the rest of the citadel Moorish and Mughal, psychedelic in its own way. **Reuse, so no prompt:** `metal.gold` (gilt trim, joints, rails), `rock.sandstone.red` (Mughal red sandstone), `plaster.white_stucco_02`, `rock.marble.white` where the marble is plain. The stripes, checkers and chevrons of the domes are geometry, not images. **2026-11-10:** ten of the eleven arrived and are wired in both
+`materials.json` (`PLAN.md`, "Delivered 2026-11-10"), and `wood.cedar.moorish` (section 42, now pruned) with them, in the library for the kit to take up; the
+jali card below is the one still owed.
+
+`patterns/xanadu/jali` (pierced marble window screens (keyed card)):
 ```
-Square, 2048x2048. Orthographic view of a single cut-out object centred in the frame, on a solid flat bright magenta (#ff00ff) background that fills everything outside the object, with no shadow cast on the background. Flat, even, shadowless lighting: no highlights, no vignette. No perspective, no text, no border, no watermark. Object: a spray of miombo leaves (Brachystegia spiciformis) seen from above: pinnate leaves of four to seven pairs of oval leaflets on a slender twig, in the copper-red to wine flush of new growth, glossy, a few leaflets turning olive at their bases. Full colour: not tinted.
+Square, 2048x2048. Orthographic view of a single cut-out object centred in the frame, on a solid flat bright magenta (#ff00ff) background that fills everything outside the object, with no shadow cast on the background. Flat, even, shadowless lighting: no highlights, no vignette. No perspective, no text, no border, no watermark. Object: a rectangular pierced white marble jali screen seen straight on, 1:1, filling the frame: a dense geometric lattice of interlaced hexagons and six-pointed stars cut right through the stone, so every opening shows the magenta background; the stone's edges crisp, a thin plain border round the screen.
 ```
 
-## 41. Raw clay (`kits/islanders`, the clay pit, 2026-11-09)
+## 43. The gypsum maze under Cube's plateau (`biomes/rift --station maze`, 2026-11-09)
+
+`biomes/rift/PLAN-STATIONS.md` section 11; `biomes/KARST-SITES-5.1.md` site 3. The library has no bedded gypsum, the maze's whole rock (its
+walls, roofs and the scarp's face), so the Hearths' pack stands in, read in place: `crystal.selenite` (`stone.alabaster`, massive gypsum: it
+reads as veined marble up close) for the gypsum, `ground.gypsum` (`ground.gypsum.crust`) on the floors, `rock.limestone`
+(`rock.limestone.karst`) on the stromatolite beds. Wire the new set as a `rock.gypsum` family in `biomes/rift/materials.json`, run
+`python3 tools/textures/pack.py biomes/rift`, add `rock.gypsum` to `stations/maze/station.json` `own`, and point the base layer of
+`stations/maze/84-host-rock.js` at it in place of `crystal.selenite`. Full colour (the colour is the point). Reuse: any gypsum or evaporite
+wall (the Hearth hold's upper storey, Korona's gypsum rims, KARST-SITES site 7).
+
+`rock.gypsum.bedded` (2 m; up is the bedding's up):
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view,
+perfectly flat surface filling the whole frame edge to edge. Flat, even,
+shadowless lighting, as if scanned: no highlights, no vignette, no shading
+gradient across the image. No perspective, no objects, no text, no border,
+no watermark. The left edge must continue into the right edge and the top
+into the bottom. Material: a dry cave wall cut in bedded gypsum rock, the
+beds running straight across the image from left to right: sugary
+fine-grained white to pale grey gypsum (#d8d4cc, #c9c4ba) in beds 10 to 40
+cm thick, thin darker grey-green marl partings between some beds (#8f948a),
+a few beds of larger interlocking clear-grey gypsum crystals with a faint
+glitter, short hairline cracks across the beds, small shallow solution
+pockets and smooth scalloped hollows, a light dusting of buff clay in the
+lowest hollows; matte, dry.
+```
+
+## 44. The Hearth field's warm ground (`biomes/riftrim --station hearths`, 2026-11-09)
+
+`biomes/riftrim/PLAN.md`, "Station 7, the Hearth field". Inside each disc the snow never lies and the library has no warm bare soil, so the
+ground there is the kit's paint (black-brown, 4 m texels: soft up close). Wire the set as a `ground.warmsoil` family in
+`biomes/riftrim/materials.json`, run `python3 tools/textures/pack.py biomes/riftrim`, add it to `GLW` in `src/45-host-stage.js` on the mask
+`smooth(.06,.2,F.geo)*smooth(.6,.45,F.geo)` (the disc, not the sinter apron) and name it in the station's `groundLayers` in place of `lenswort`
+(the station has four layers: the bare-snow mask holds the fifth unit). Full colour. Reuse: the Cold Hearths (oidong), Godstep's hearth, any
+geothermal ground off the sinter (the Throne's vent country's warm flats).
+
+`ground.warmsoil` (3 m):
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view,
+perfectly flat surface filling the whole frame edge to edge. Flat, even,
+shadowless lighting, as if scanned: no highlights, no vignette, no shading
+gradient across the image. No perspective, no objects, no text, no border,
+no watermark. The left edge must continue into the right edge and the top
+into the bottom. Material: warm geothermal ground on a cold plateau: damp
+fine black-brown volcanic soil (#2a2420, #1e1a17) with a low dark fleshy
+turf in irregular cushions over a third of it (#23211f, #34302a), scattered
+pale grey-white sinter crumbs and flakes (#c8c2b4), a few small rust and
+dull sulphur-yellow stains (#8a5a34, #b8a046), fine cracks; no snow, no
+grass, no leaves; matte, slightly moist.
+```
+
+## 45. Raw clay (`kits/islanders`, the clay pit, 2026-11-09)
 
 `kits/islanders/KNOWN_ISSUES.md`, "The clay pit": the clay diggers' pit (`ie-claypit`, `src/69-ie-hamlet.js`) draws its cut
 blocks, its heap and its pit floor with the library's `clay` set, which is fired clay, tinted grey (`IE_RAWCLAY`). Lands as
@@ -501,12 +450,280 @@ blocks, its heap and its pit floor with the library's `clay` set, which is fired
 ```
 Seamless tileable texture, 2048x2048, front orthographic, flat even lighting, no shadows: freshly dug wet potter's clay, a cut face of dense smooth grey-ochre clay #9a9284 and #b0a48e with darker damp patches #7e786c, spade cuts and finger smears across it, a few small grey pebbles and root threads, a faint sheen of moisture; no grass, no stones larger than a fingernail, no text
 ```
+## 46. The Ancient Transit kit (`kits/ancient-transit`, 2026-11-08)
+
+The Ancients' transport infrastructure in ruin (the valley's highway, cargo and passenger lines, street furniture). Stand-ins until these
+land: `ground.asphalt` for the decks and roads (the lane paint is geometry), `ground.gravel042` for the ballast, `metal.rust.heavy` for the
+rails and every ruined metal. **3 prompts.** Each takes the base template, then:
+
+| id | Material line |
+|---|---|
+| `ground.asphalt.lanes` | Worn dark asphalt road surface with faded lane paint: fine aggregate showing through the bitumen (#4a4846, #585450), a patched crack running across, and one broken white lane dash (#d8d4c8, worn to 60%) along one edge of the tile and a faded yellow edge line (#c8a040) along the other, so the tile repeats as a lane. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. |
+| `ground.ballast.rail` | Railway track ballast: angular grey granite stones 3 to 6 cm (#7e7a74, #8a8680, #6a6660), packed, dusty with rust-brown fines between them (#6a4a36), two faint darker bands across the tile where sleepers lay. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. |
+| `metal.rail.rusted` | The head and web of a steel rail a thousand years idle: flaking orange-brown rust (#8a4a2c, #a65a36) over pitted dark steel (#4a4644), the running surface a dull grey band along the tile's middle with rust creeping over it, scale lifting at the edges. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. |
+
+## 47. The Firebliss Range (`biomes/firebliss`, 2026-11-10)
+
+The four stations are wired on library sets that already exist (`ground.ash`, `ground.ash.soil`, `ground.cinder`, `ground.sinter`, `ground.mat.thermal`,
+`ground.sulphur`, `ground.grass.lush`, `ground.snow011`, `ice.glacier`, `rock.basalt.flowbanded`, `rock.basalt.vesicular`, `stone.pumice`,
+`stone.obsidian`, `cloth.hide.canopy`, `bone.horn`, `card.fireweed`, `card.ichu`, `card.reed`...). One surface is the kit's stand-in:
+
+`ground.snow.ash` (station 4, Firebliss Mons, and the plume's track on the range's south-east snow: the snow under the plume, drawn now as
+`ground.snow` greyed by the plume's ash-fall mask in the paint, `aAshfall` in `84-host-ground.js`; a family under the snow layer where the deposit is high):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: old wind-packed snow on a volcano's flank dusted and streaked with fine dark basaltic-andesite ash: grey-white snow with a sugary grain, the ash lying in soft dark grey wind streaks and patches, thicker in the small hollows of the snow's surface, a few scattered black lapilli grains, thin grey-brown sun-cupped edges where the ash has warmed the snow, no footprints, no plants. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.
+```
+
+## 48. The NE outer wall (`biomes/neouterwall`, station 1 Vitreous Hollow, 2026-11-10)
+
+The Glass-Skarn Bastion (`biomes/neouterwall/PLAN.md` sections 2 and 8). Station 1 stands on stand-ins until these come: the cauldron's
+wall is `rock.megabreccia` (the impact rim's host rock, under KSTRATA's megabreccia blocks) where it should be banded skarn, and the
+pseudotachylite mirrors are not drawn (station 4's slump faces need them most). Reused: `ground.sinter`, `ground.mat.thermal`,
+`ground.grass.lush`, `ground.moss001`, `ground.gravel019`, `ground.tundra`, `rock.basalt.polygonal` (the dikes), `card.treefern`,
+`card.reed`, `bark.mossy`; the contact marble is `rock.marble.white` until a closer set is wanted. Full colour (the bands are the rock's own).
+
+`rock.skarn.banded` (the cauldrons' walls and the Epidote Badlands' ribs: KGROUND's rock layer on the steep, read from the side):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a weathered rock face of contact-metamorphic skarn, seen square-on: irregular lensing bands from a finger to a forearm thick that pinch and swell and bend round each other, never flat beds: apple-to-olive green epidote (#7a8a3a, #5e7030), red-brown grossular garnet in granular sugary masses with a few clear dodecahedral crystals (#7a3a2a, #8e4a32), black metallic magnetite seams with a faint blue-grey sheen (#1e2024), and white to pale grey coarse-crystalline marble (#e8e4dc, #c8c4bc); thin rusty orange iron stains bleeding down from the magnetite, a few hairline fractures filled with white calcite; sharp contacts between the bands; dry rock, no lichen, no moss.
+```
+
+`rock.pseudotachylite.mirror` (the slump faults' glassy faces: station 4's mirror scarp, and the rim's inner face at station 1 when it is drawn; a KGROUND rock layer, roughness low):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a natural fault surface of black pseudotachylite friction-melt glass, polished to a dull mirror by the fault's slip: smooth, very dark glassy black-brown (#14110f, #221c18), long straight parallel slickenside grooves and fine striations all running the same way across the whole image, a few thin pale grey host-rock gneiss slivers (#8a8780) and small angular clasts dragged out into streaks along the grooves, thin black glass veins branching into the grey host rock at one or two places, faint iridescent oily blue-green and bronze tints on the smoothest patches, a few small chips where the glass has spalled off showing grey rock under it; no lichen, no dirt.
+
+## 49. The Great Chasm (`biomes/greatchasm`, 2026-11-11)
+
+The Deep's floor (`biomes/greatchasm/PLAN.md` sections 2 and 7: the code's paint is "dark komatiite and obsidian on the floor"). Until it
+comes, the Deep's ground draws `ground.sand.black` with `ground.obsidian` in patches (`biomes/greatchasm/materials.json`, `ground.black`
+and `ground.obsidian`): a named stand-in. Full colour, 2 m a tile; it replaces `ground.black` in the Deep's four layers (the slot keeps its
+name).
+
+`ground.komatiite.pavement`:
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a hot desert pavement on an ancient ultramafic lava floor: closely packed angular to sub-rounded pebbles and small cobbles of dark green-black komatiite (#24261f, #2e3128, #3a3c31) with a few with a faint bladed spinifex texture of crossed needle-like crystals on their faces, a dull desert varnish sheen on the stones' tops (#4a4232, #3e3628), scattered chips of black glassy obsidian (#121214, #1c1a1e), a fine grey-brown dust (#6a6254, #7a7062) in the gaps between the stones, and here and there a pale white salt crust (#d8d2c4) in the lowest gaps. No plants. Full colour.
+```
+
+## 50. The Tiers (`biomes/tiers`, planned 2026-11-10)
+
+The Tiers' plan (`biomes/tiers/PLAN.md` sections 4 and 11): the flora's rule is that everything grows in tiers. Until these
+come, the kit draws `card.broadleaf.dry`, `bark.smooth` and `rock.lichen.circles`, tinted (its `KNOWN_ISSUES.md` will say so).
+
+`card.shelfoak` (the shelf oak's tier plates: a sheet of nine, one cell a plate, wired as a family with `"cell"`; near-colourless, the
+kit's palette tints it):
+```
+Square, 2048x2048. Orthographic view looking straight down on nine separate flat leaf sprays in a 3x3 grid, each centred in its third of the frame with magenta all round it, on a solid flat bright magenta (#ff00ff) background that fills everything outside the objects, with no shadow cast on the background. Flat, even, shadowless lighting: no highlights, no vignette. No perspective, no text, no border, no watermark. Objects: the level, plate-like branch tiers of a "wedding-cake" tree seen from above, each one a roughly oval fan of fine twigs radiating from a short stub at the bottom of its cell, covered in small, leathery, rounded leaves held flat and overlapping like shingles, dense in the middle and breaking into separate sprays toward the rim with magenta showing between them; all nine about the same size, a little different in outline. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.
+```
+
+`bark.tiered` (the shelf oak's bole; near-colourless, 1.5 m a tile):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: smooth, thin, pale grey tree bark with fine horizontal lenticels in short dashes, broken every so often by a raised horizontal ring of wrinkled bark where a whorl of branches grew (two or three rings across the tile, running left to right), faint vertical stress cracks between the rings, a few small round branch scars, patches of thin crust lichen. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.
+```
+
+`rock.lichen.ledges` (the band lichen on a riser; full colour, 2 m a tile, the bands running left to right as the beds do):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a weathered pale buff sandstone cliff face (#c9b48e, #a8946e) in thin horizontal beds running left to right, each bed a slightly different tone, crossed by level bands of crust lichen that follow the bedding: a band of bright orange lichen (#d9822b) along a ledge, a band of grey-green foliose lichen (#8a9a78) above it, thin black streaks of tar lichen (#2a2a26) where water runs over the lip of a bed, the bare rock between the bands; small dark pits and a few hairline vertical joints. Full colour: not tinted.
+```
+## 51. The Rift battery (`biomes/galvanic`, 2026-11-11)
+
+The strand of the Rift's eastern terminal sea, where metal-rich sulfide mud oxidises into its own acid (`biomes/galvanic/PLAN.md`
+section 15). Stand-ins until these land, each named in `biomes/galvanic/KNOWN_ISSUES.md`: `ground.brown_mud_02` tinted for the
+strand, `mineral.crust.ferromanganese` for the reefs, `rock.gossan` for the cut ore. **3 prompts.** Each takes the base template, then:
+
+| id | Material line |
+|---|---|
+| `ground.sulfide.oxidised` | Oxidising sulfide mud on a dry lake strand, seen from above: dense grey-black mud (#3a3836, #4a4642) glittering faintly with fine brassy pyrite grains, its top centimetre rusted orange-brown (#8a4a26, #a65e2e) in patches, cracked into shallow polygons 10 to 20 cm across whose rims curl, a white efflorescence of zinc salts (#e8e6de) and a few pale blue copper-salt specks (#9ac4d0) along the cracks, a little yellow sulfur (#d8c040) in one corner. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. |
+| `organic.reef.galvanic` | The skin of a mineral reef grown by microbes in acid water: knobbly black iron-oxide crust (#1e1c1c, #2e2826) studded with small brassy pyrite knobs (#b89a4a), a thin-film peacock tarnish over the knobs (iridescent blue, violet and gold, #3a4a8a, #6a3a7a, #c8a040, kept faint), wet sheen in the hollows, orange ochre (#a65a2a) caught in the crevices. Macro, even light. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. |
+| `rock.sphalerite` | A broken face of massive sulfide ore: resinous dark brown-black sphalerite (#2a1e16, #3e2c1e) with honey-yellow translucent grains (#b8862e) where it is thin, brassy chalcopyrite veinlets (#c0a040) and pale pyrite cubes (#c8b878) through it, rust staining (#8a4a26) along the fractures. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. |
+## 52. The Arch (`biomes/arch`, 2026-11-11)
+
+Krator's bare mantle (`biomes/arch/PLAN.md` sections 6 and 15). Stand-ins until these land, each listed in the kit's `KNOWN_ISSUES.md`:
+`rock.schist.emerald` darkened for the serpentinite, `ground.olivine` for the peridotite's rind, `mineral.crust.brucite` and
+`ground.travertine.white` for the brucite travertine, `rock.basalt.vesicular` for the pillows, `rock.palagonite` for the hyaloclastite, and a
+procedural two-face material for the curtains. **6 prompts.** Each takes the base template, then:
+
+| id | Material line |
+|---|---|
+| `rock.serpentinite` | A slickensided serpentinite outcrop: glossy green-black rock (#1e2a22, #2c3a2e, #3e5040) broken into scaly, lens-shaped shear flakes 2 to 10 cm long with a waxy sheen, pale apple-green patches (#7a9a6a) where the flakes are polished, a few thin white veins of magnesite and calcite (#e8e6dc) crossing at angles, one fine fibrous vein of pale gold chrysotile. Full colour: not tinted. |
+| `rock.peridotite.rind` | Weathered peridotite (harzburgite): a rough buff-orange to tan weathering rind (#b8864e, #a07040, #c89a62) with a sandpaper grain, small knobbly crystals of pyroxene standing proud in relief, and two chipped patches where the fresh dark olive-green rock shows through (#4a5a32, #3a4628). Full colour: not tinted. |
+| `mineral.travertine.brucite` | A fresh hyperalkaline travertine crust from a serpentinite spring: bright chalk-white and bluish-white carbonate and brucite (#f2f4f2, #dfe8ec, #c8d8e0), finely rippled in shallow rimstone ridges, with thin translucent calcite rafts like ice skins in the low parts and a faint pale-turquoise wet sheen in the hollows. Full colour: not tinted. |
+| `rock.basalt.pillow` | Seen from above, a field of basalt pillow lavas: rounded black-grey pillows 40 to 90 cm across (#2a2a2c, #3a3836), each with a glassy darker rind cracked in radial joints and a thin brown palagonite skin (#6a4a2c) in the seams between pillows, small white barnacle and shell crusts in a few seams. Full colour: not tinted. |
+| `rock.hyaloclastite` | Hyaloclastite breccia: angular shards of black volcanic glass 1 to 6 cm (#1c1c1e, #2a2826) cemented in an ochre-yellow to brown palagonite matrix (#a07a3a, #8a6430, #b88e48), a few vesicular grey clasts, granular and crumbly. Full colour: not tinted. |
+| `mineral.curtain` | A thin mineral membrane seen face-on, as from a chemical garden: a glossy black-green film of iron-nickel sulphide and green rust (#141c16, #22302a, #3a5240) with fine vertical ribs and wavy growth lines, small blistered bubbles, and a few rust-orange spots (#9a5a2a) where it has oxidised; the upper edge of the tile pale green (#9ab88a) and fleshy, as a living hem. Full colour: not tinted. |
+
+## 43. The Qiblai kit (`kits/qiblai`, 2026-11-11)
+
+The holy city of the Decree (`kits/qiblai/PLAN.md` section 9, item 2; the owner, 2026-11-11: "sure new textures"). Its dressed
+stone reuses `stone.sandstone.ashlar` (wired: `kits/qiblai/materials.json`, `qAshlar`). Two are owed. They land as families in
+`kits/qiblai/materials.json` (`qGoldSheet` for the gilt roofs, crowns and finials, now the plain `xGold`; `qMantra` for the prayer
+wheels' drums, under the Song in the real Xanadui script that the kit draws over it, `src/89q0y-qb-script.js`), then `python3 tools/textures/pack.py kits/qiblai` and a rebuild.
+
+The walk-in rooms (2026-11-15, the owner: "feel free to ask for new textures if needed to make things fancy"; `src/89q5-qb-interiors.js`,
+settlements/qiblai `90t-qc-interiors.js`) take library sets today: the sanctum's floor `paving.marble_mosaic_tiles` (`qMarble`), the halls'
+`wood.old_wooden_floor_02` (`qPlank`), the gilt `metal.gold` (`qGilt`), the columns and ceilings `wood.lacquer` (`qLacq`), the council's runner
+`cloth.rug.wool` (`qRug`), the walls the Xanadu wash. Three more would make them a Qiblai temple's: the painted walls, the painted
+ceiling and the temple rug. They land as families `qMural` (the rooms' walls above a dado: `qnIxShell`), `qCoffer` (the ceilings) and
+`qTempleRug` (the council's runner, the monks' rows' cushions), each in place of the stand-in named. **5 prompts**, all full colour.
+
+| id | Prompt |
+|---|---|
+| `metal.gold.sheet.beaten` | Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a Tibetan temple's gilt roof sheet: hand-beaten copper sheets fire-gilded with gold, laid in overlapping rectangular panels about 60 by 40 cm with narrow raised seams between them, every panel covered in small overlapping hammer facets, the gold rich and warm (#d8a838, #c8902a, #e8c060) and worn thin on the facets' edges so the coppery red beneath shows through (#a8583a), a little dark grime in the seams (#5a4024). Full colour: keep the gold and copper as they are, do not tint. |
+| `metal.copper.mantra` | Seamless tileable texture, square, 2048x2048. Orthographic view of a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no letters, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: the hammered copper skin of a great prayer wheel's drum: six plain horizontal bands of smooth beaten copper, each between two raised beaded ridges, the copper reddish-brown (#a8603a, #8a4a2c) with fine hammer facets, the beads rubbed bright by hands (#d89058), green-blue verdigris (#4a8a78) and dark tarnish (#3a2a20) gathered along the ridges. The bands stay blank: the script is drawn over them in the game. Full colour: keep the copper and verdigris as they are, do not tint. |
+| `wall.mural.temple` | Seamless tileable texture, square, 2048x2048. Orthographic view of a flat, front-on painted wall filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no text, no letters, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a Himalayan temple's mural in mineral pigments on smooth lime plaster: a repeating frieze of seated robed figures with gold haloes in rows, each on a lotus seat, between them eight-spoked golden wheels and pairs of kneeling deer, the ground a deep malachite green and azurite blue (#2f6a52, #2a4a8a) with cinnabar red robes (#a8302a), saffron (#d8862a), white (#eee8dc) and gold outlines (#d4b040), fine black ink linework, the paint worn and faintly crazed, soot-darkened at the top. Full colour: keep the pigments as they are, do not tint. |
+| `ceiling.coffer.mandala` | Seamless tileable texture, square, 2048x2048. Orthographic view looking straight up at a flat painted ceiling filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no text, no letters, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a temple's painted wooden ceiling of square coffers about 60 cm across, four by four in the tile, each coffer a lotus mandala: an eight-petalled lotus in red and gold (#a8302a, #d4b040) on a deep blue ground (#1e3a6e), ringed in green and white (#2f7a4a, #eee8dc), the coffers framed by narrow beams painted with a running red-and-gold scroll, the colours slightly faded and smoke-darkened. Full colour: keep the colours as they are, do not tint. |
+| `cloth.rug.temple` | Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a hand-knotted wool temple rug, the field a deep madder red (#8a1e24) worked with a repeating lattice of small golden eight-spoked wheels and lotus rosettes (#d4a03a), outlined in indigo (#1e2a5a) and ivory (#e8dcc4), the pile short and slightly worn in paths, the knots just visible. Full colour: keep the colours as they are, do not tint. |
+
+## 55. Opal Valley (`biomes/opalvalley`, 2026-11-11)
+
+Numbered 46 on its branch, 54 since the merge of 2026-11-16 (main's 46 is the Ancient Transit kit's; 41 is the Line's; the painted highlands, the cliff lungs and the siphon pits
+are being built beside it). Three sets the kit's surfaces want (`biomes/opalvalley/PLAN.md` section 11); until each comes the kit draws the
+stand-in its `KNOWN_ISSUES.md` names. Full colour: the colour is the point (do not tint them).
+
+`ground.sinter.opaline` (the middle bed's dams and aprons; 2 m a tile; today `ground.sinter` under the kit's procedural sheen):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: freshly precipitated opaline silica sinter on the floor of a terraced hot-spring apron: a hard, finely laminated white-to-pale-grey crust (#e6e2d8, #d8d6d0) in thin overlapping shelves and scalloped micro-rimstone ridges a few centimetres high, beaded geyserite knobs along the ridges, small shallow pools between them dried to a satin film, and here and there flecks and thin veinlets of precious opal showing play-of-colour (small sharp patches of electric blue #3a8ad8, green #3ac88a, violet #8a5ad8 and orange-red #e8602a, each a few millimetres, like broken pinfire opal) set in the white; faint orange and green mat stains in the lowest channels. Full colour: not tinted.
+```
+
+`rock.opal.matrix` (the risers' opal seams and the adits' faces; 1 m a tile; today the strata's thin seams and the sheen):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: boulder opal matrix: a broken face of brown ironstone and pale grey-buff rhyolite (#7a4a2a, #8a5634, #b6a490, #c2b19c), cut by thin wavy veins and lenses of precious opal 2-10 mm thick that fill cracks and cavities; the opal shows strong play-of-colour in patches (electric blue #2a6ad8, emerald #2ab878, violet #7a4ad8, flame orange #e8602a and red #d83a2a) against a dark potch backing in places, with milky white common-opal potch (#d0d6de) lining other veins; the rock between is rough and slightly porous. Full colour: not tinted.
+```
+
+`card.leaf.photonic` (the opal-bark tree's and the kit's own leaf sprays; a card: cut-out on green, as the library's leaf cards):
+```
+Leaf spray cut-out on a fully transparent background, PNG with alpha, square, 2048x2048: three short sprays of glossy oval leaves, each 4-7 cm, thick and waxy with a faint fine grain of silica, seen from above in soft even light. The leaves are a deep jade green (#2f8a76, #3a9a84) at their bases, and their surface carries a structural, view-dependent sheen: toward the tips and edges it shifts through peacock teal (#2aa8a8) to violet (#7a4ab8) and rose (#c86a8a), like a beetle's wing or a soap film, never a glow and never a flat pigment. No flowers, no stems longer than the leaves, nothing else on the card.
+```
+
+## 53. The mined goods' resource nodes (`kits/resources`, 2026-11-16)
+
+The nodes for the mined goods of Gemini's trade model (`kits/resources/src/44s`-`44u`). Until these come the nodes draw vertex
+colours (`kits/resources/KNOWN_ISSUES.md`). Three sets owed elsewhere are wanted here too, so each serves both when it lands:
+`rock.sphalerite` (section 51: the zinc node's blackjack bands), `rock.opal.matrix` (section 46: the opal node's outcrop) and
+`rock.serpentinite` (section 52: the jade node's host rock). Wire each into `kits/resources/materials.json` as well as its first
+build. Full colour, 1 m a tile: the colour is the point (do not tint them). **3 prompts.**
+
+`rock.magnetite` (the lodestone node's boulders; the Arch's lodestones and the Compass Hills' ore):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a weathered face of massive magnetite iron ore: dense iron-black rock (#1a1a1c, #242426, #2e2c2a) with a dull metallic sub-lustre, granular texture of small octahedral crystal faces 1-4 mm catching the light faintly, a thin brown-red rust bloom (#5a3424, #6e3e26) along a few hairline cracks, and short bristly tufts of black iron filings clinging in two or three small patches. Full colour: not tinted.
+```
+
+`stone.nephrite` (the jade node's boulders and their sawn face; any jade carving or inlay):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a sawn and lightly polished face of nephrite jade: deep spinach-green to leaf-green stone (#2e5a36, #3a6a3e, #4e7e4a) with a waxy, slightly translucent depth, soft cloudy mottling and fine fibrous streaks running one way, a few small black chromite specks (#1a1e1a) and one pale apple-green band (#7aa86a). Full colour: not tinted.
+```
+
+`rock.amber.blueearth` (the amber node's cut bank: amber in its bed):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a freshly cut face of "blue earth", the glauconitic clay sand that amber is dug from: damp blue-grey to green-grey clay (#5e6a6e, #6a7a80, #586468) with fine dark green glauconite grains, a few flakes of black lignite and wood (#2a2420), and rounded nodules of raw amber 1-4 cm embedded in it, their crusts dull ochre (#a8681e) and, where a nodule is broken, clear honey to cognac amber (#d88a1e, #e8a83a, #b8601a). Full colour: not tinted.
+
+## 54. The Xanadui fort (`kits/xanadu`, the fort asset of `settlements/strongwall/PLAN.md` section 5, 2026-11-16)
+
+The owner, 2026-11-16: "I'm open to new texture proposals". These are for the fort asset that Strongwall, the Marches' watch
+forts and the gate works will share. Until each set arrives, the fort draws the stand-in named in its row. Each set lands as a
+family in `kits/xanadu/materials.json`, wired when the fort is built (the plan's step F2), followed by `python3 tools/textures/pack.py kits/xanadu`.
+**3 prompts.**
+
+`wall.rubble.limewash` (the curtains, towers and keep of every dress but `earth` and `scrap`; family `xFortWall`, 3 m a tile;
+today `rock.old_stone_wall` bare, or `plaster.white_stucco_02` smooth, neither of them a dzong's wall). Near-colourless, so the
+kit's wash palette tints it:
+```
+Seamless tileable texture, square, 2048x2048. Orthographic view of a flat, front-on wall filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a Himalayan fortress wall of rough rubble masonry, irregular split field stones 15 to 50 cm across laid in mud mortar with small flat chinking stones packed in the gaps, the whole face under many coats of thick lime wash that has been poured from above, so the wash runs down in soft vertical drips and ridges and gathers thicker in the hollows between stones, the stones' lumps still reading through it; in scattered patches the wash has flaked away to show grey stone and brown mud mortar beneath, with fine rain streaks and a faint grey grime. Near-colourless: white, pale grey and grey-beige only, so it can be tinted.
+```
+
+`wood.gate.studded` (the gate leaves of every fort; family `xGate`, one leaf 2.4 m wide a tile; today `wood.wooden_gate` with no
+iron). Full colour:
+```
+Seamless tileable texture, square, 2048x2048. Orthographic view of a flat, front-on surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: the face of a heavy fortress gate leaf in the Indian manner: vertical planks of dark weathered hardwood 25 to 30 cm wide, sun-checked and split along the grain (#5a4632, #6e5a44, #3e3024), crossed every 60 cm by broad hand-forged iron straps fixed with rows of large domed nail heads, and between the straps a regular grid of pointed iron spikes about 10 cm long, seen point-on as round iron studs; the iron black-brown (#2e2a26, #3a3430) with rust bleeding down the wood below each stud and strap (#6a3a20, #8a4a26). Full colour: keep the wood and iron as they are, do not tint.
+```
+
+`wall.limewash.scorched` (the `damaged` and `ruined` states: the burnt gate's towers, the barracks after a fire; family
+`xScorch`, 3 m a tile; today the wash darkened by the material's colour, which reads as grey paint, not soot). Near-colourless:
+```
+Seamless tileable texture, square, 2048x2048. Orthographic view of a flat, front-on wall filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a lime-washed plaster wall over rubble after a fire: broad soft blotches of black soot and smoke-staining scattered over the white wash, densest in irregular patches across the tile and fading through greys to clean white between them; in the worst places the lime is calcined to a crumbly grey and has spalled off in flakes, showing heat-cracked stone and burnt mud mortar; soot washed down by rain in thin vertical streaks. Near-colourless: white, greys and black only, so it can be tinted.
+```
+
+## 56. Grēṭ-Āil, the Azure Dream's Hall of Dreaming (`settlements/azure-dream`, 2026-11-16)
+
+The head monastery of the Order of the Azure Dream (`settlements/azure-dream/PLAN.md` section 9; the owner, 2026-11-16:
+"yes new textures"). Numbered 56 to keep clear of the other branches of 2026-11-16 (53 is taken twice). Felt and reed
+matting come from the library already (`cloth.felt`, `fibre.reedmat`, `reed.mat.woven`). Three sets are owed, for the
+Hall of Dreaming. They land as families in `settlements/azure-dream/materials.json` (`adNight` for the cot bays' painted
+ceiling, `adMural` for the Hall's and the Waking Gallery's walls above the dado, `adBlanket` for the 256 dream cots'
+blankets), then `python3 tools/textures/pack.py settlements/azure-dream`. Until then the page draws `wood.lacquer` in the
+Order's blue, the Xanadu wash and `cloth.wool`. **3 prompts**, all full colour.
+
+| id | Prompt |
+|---|---|
+| `ceiling.night.stars` | Seamless tileable texture, square, 2048x2048. Orthographic view looking straight up at a flat painted ceiling filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no text, no letters, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a Himalayan monastery's painted wooden ceiling of planks about 25 cm wide, painted as the night sky: a deep lapis and azurite blue ground (#142a5e, #1a3570, #20407e) laid on unevenly so faint brush sweeps show, scattered with small eight-pointed gold-leaf stars of three sizes (#d8b040, #c89a30), the largest about 4 cm, and fine silver-white dots between them (#d8dce6), and, sparse and evenly spaced, four small eight-spoked golden wheels about 12 cm across; the gold slightly rubbed, the blue darkened with lamp smoke along the plank joints. Full colour: keep the blue and gold as they are, do not tint. |
+| `wall.mural.dream` | Seamless tileable texture, square, 2048x2048. Orthographic view of a flat, front-on painted wall filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no text, no letters, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a Himalayan temple mural in mineral pigments on smooth lime plaster, a repeating frieze in two registers: below, rows of robed sleepers lying on low cots under blue blankets, their eyes closed, seen from the side; above them, in curling white clouds on a deep azurite night (#1e3a7a, #2a4a8a) with gold stars, a woman in a flowing robe playing a hammered dulcimer on her lap, a golden halo behind her, beside her a large eight-spoked golden wheel; robes in white, saffron and pale blue (#eee8dc, #d8862a, #8aa8d8), gold outlines (#d4b040), fine black ink linework, the paint faintly crazed and soot-darkened toward the top. Full colour: keep the pigments as they are, do not tint. |
+| `cloth.blanket.azure` | Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a hand-woven wool blanket, plain weave with a slightly felted, soft surface and the yarn's twist just visible: broad bands of deep indigo (#1e2e6a) alternating with narrower bands of undyed cream wool (#e8e0cc), each cream band edged on both sides by a thin saffron line (#d8902a), and in the indigo bands a row of small woven cream diamonds every 10 cm; the bands run across the image, about 18 cm repeat, a little uneven as hand weaving is. Full colour: keep the colours as they are, do not tint. |
+
+## 43. The Tungang kit (`kits/tungang`, 2026-11-11)
+
+`kits/tungang/PLAN.md` section 7, agreed by the owner on 2026-11-11 ("agree with your suggestions"). The Line's biome
+(`biomes/line`) wants the lining segment and the hewn rock too. Wire them into `kits/tungang/materials.json` (and the
+Line's) when they come. Numbered 43 because sections 41 and 42 are owed on `claude/rift-hearths-cavern-b8baf6`.
+
+`rock.hewn.drillmarked` (the hand-cut galleries of the Line and the holds):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a hand-hewn tunnel wall in hard grey gneiss with limestone bands: parallel rows of half-barrel drill holes running diagonally across the rock, pick and chisel scars between them, sharp angular facets, fine grey dust in the hollows, faint dark soot staining in patches and a smoother, slightly polished worn area across the middle as if many shoulders had brushed it. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.
+```
+
+`concrete.lining.segment` (the precast lining of the Line's gallery and bores; the ring house's walls):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: the face of a precast concrete tunnel lining segment seen straight on: smooth dense grey concrete with faint formwork marks, two rows of square bolt pockets each holding a rusted steel bolt head and washer, a narrow rubber gasket groove running along the joints at the tile's edges so neighbouring tiles read as segments of a ring, pale calcite streaks and brown water stains running down from the joints, a faded rectangular patch of old paint where a ring number once was. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.
+```
+
+`organic.fungus.leather` (the Tungangs' pressed and tanned fungus hide: bags, aprons, seat covers):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: leather made from pressed and tanned mushroom mycelium: a felted, suede-like fibrous surface with faint wavy growth layers, soft creases and scuffs, panels joined by rows of coarse hand stitching in pale thread, slightly irregular edges at the seams. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.
+```
+
+`patterns/tungang/loj-banner` (a loj's banner, carried at meetings and funerals; a single panel, not tiling):
+```
+Square, 2048x2048. A flat, front-on decorative panel filling the whole frame edge to edge: one whole banner, not tiling. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no watermark, no readable words. Panel: a hand-painted guild banner on heavy crimson silk, made by an underground people in honour of their ancestors, the crews of a vanished high-technology transit line: a gold scroll across the top and another across the bottom with worn lettering-shapes that cannot be read; a large central oval painting of pale, hooded tunnel crews raising their hands together at a meeting, dressed in close-fitting padded work suits with high collars, smooth rounded helmet shells under their hoods, small red lamps built into the helmets and chests, tool harnesses across the body, the suits patched with salvaged panels; behind them the smooth curved wall of a perfectly round, machine-bored tunnel lined with glowing strip lights; beneath the oval an emblem of a wheel and a lamp; gold and cream scrollwork in the four corners, a gold fringe along the bottom edge; a thousand years of mending: patched cloth, faded and flaking paint, darned tears, smoke darkening toward the edges. The people and machines in the painting belong to a far-future technology, not to any historical period: no steam, no smoke from machines, no coal, no picks or oil lamps, no nineteenth-century or Victorian clothing, no coats, waistcoats, caps or top hats. Full colour: crimson #7a1a17, gold #c9a24a, cream #f3dfa6.
+```
+
+`patterns/tungang/loj-banner.b` (a second banner):
+```
+Square, 2048x2048. A flat, front-on decorative panel filling the whole frame edge to edge: one whole banner, not tiling. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no watermark, no readable words. Panel: a hand-painted guild banner on heavy deep green silk, made by an underground people in honour of the crews of a vanished high-technology transit line: gold scrolls at top and bottom with worn lettering-shapes that cannot be read; a central oval painting of a long train of sleek white cars gliding out of a perfectly round, machine-bored tunnel mouth ringed with lights: smooth rounded white bodies of seamed panels banded with bronze hoops, a rounded sealed cab at the front, one continuous ribbon of lit blue windows with thin bronze mullions, glowing cyan strips along the sill and the roof, running low on a single raised concrete guideway beam, its wheels hidden under the body; hooded crew figures in close-fitting padded work suits and smooth helmets with built-in lamps standing beside the guideway; cream and gold ornament round the oval, a fringe along the bottom; centuries of mending: patches, faded paint, darns, soot. Far-future technology, not any historical period: no steam locomotive, no chimney, no smoke, no rails on wooden sleepers, no overhead wires, no nineteenth-century or Victorian clothing, no coats, caps or top hats. Full colour: green #2f5a3a, gold #c9a24a, cream #f3dfa6, the train's lamps #e8b24a.
+```
+
+`patterns/tungang/loj-banner.c` (a third banner):
+```
+Square, 2048x2048. A flat, front-on decorative panel filling the whole frame edge to edge: one whole banner, not tiling. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no watermark, no readable words. Panel: a hand-painted guild banner on heavy dark blue silk, made by an underground people in honour of the crews of a vanished high-technology transit line: gold scrolls at top and bottom with worn lettering-shapes that cannot be read; a central oval painting of a column of hooded crew figures in close-fitting padded work suits and smooth helmets with built-in lamps, carrying long slender cutting tools and cable reels, walking down into a perfectly round, light-ringed tunnel mouth, while a red sky burns above the mountains behind them and the tall slender white towers of a gleaming city break and fall on the horizon; two clasped gloved hands in a gold medallion beneath the oval, cream and gold corner scrolls, a fringe along the bottom; centuries of mending: patches, faded paint, darns, soot. Far-future technology, not any historical period: no steam, no smoke from machines, no picks or oil lamps, no nineteenth-century or Victorian clothing, no coats, caps or top hats. Full colour: blue #1f2a4a, gold #c9a24a, cream #f3dfa6, red sky #a8382c.
+```
+
+`patterns/tungang/enamel-signs` (a 4 x 4 atlas of the Line's enamel signs; read as holy marks):
+```
+Square, 2048x2048. A flat, front-on decorative panel filling the whole frame edge to edge: a 4 by 4 grid of sixteen separate enamel signs, each in its own equal cell on a plain dark grey ground. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no border, no watermark, no words. Signs: vitreous enamel signs on steel from a high-technology transit line, rectangular, round and diamond, with clean modern pictogram design in red on cream, cream on red, cream on green and white on blue; each carries only a large numeral, an arrow, a lamp symbol, a bell symbol, a downward chevron, a simple pictogram of a person in a rounded helmet, or a side view of a sleek rounded train car with one ribbon of windows on a single raised guideway beam (no chimney, no smoke, no rails), never words; every sign chipped at its edges and corners down to black iron, with small rust blooms, screw holes at the corners, and the enamel faded unevenly. Full colour: red #a8382c, cream #e2d8bc, green #2f6a4a, blue #2a4a7a, iron #2a2826.
+```
+
+`patterns/tungang/crew-mosaic` (the platform's landmark wall; a single panel):
+```
+Square, 2048x2048. A flat, front-on decorative panel filling the whole frame edge to edge: one whole mural, not tiling. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no border, no watermark, no words. Panel: a worn monumental mosaic mural in a heroic civic style with bold, simplified shapes, showing the crews of a vanished high-technology transit line: three tall stylised figures in close-fitting sealed work suits with high collars, smooth rounded helmets with glowing lamp visors and tool harnesses, holding light-wands and long slender cutting tools; behind them a sleek white train with a rounded sealed cab, bronze hoops and one continuous ribbon of lit windows glides out of a perfectly round, light-ringed tunnel mouth on a single raised guideway beam, its wheels hidden under the body; rays fanning out from a great lamp above; far-future technology, not any historical period: no steam locomotive, no chimney, no smoke, no rails, no coats, caps, overalls or nineteenth-century clothing; small tesserae of ceramic, coloured glass and bits of scrap metal; many tiles missing in patches showing grey mortar beneath, cracks running through, grime and soot darkening the upper part. Full colour, muted by age: brick red #8a3a2c, ochre #b8893a, deep green #3a5a44, gold glass #c9a24a, grey mortar #8a867c.
+```
+
+`patterns/fellgang/daub` (a 2 x 2 atlas of the Fellgangs' daubed marks on plate; the slogans' letters are the kit's own decals):
+```
+Square, 2048x2048. A flat, front-on decorative panel filling the whole frame edge to edge: a 2 by 2 grid of four separate squares, each a sheet of rusty steel plate. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no border, no watermark, no letters or words. Panels: crude marks daubed and sprayed in thick paint on rusted, dented steel plate, with runs and drips: (1) a bold wheel symbol in white, scraped and repainted; (2) a charging aurochs with great horns in red; (3) rows of handprints and tally marks in black and white; (4) a large X and jagged stripes in red over older faded paint; paint flaking where the rust has pushed through. Full colour: rust #7a4a32, white #e8e2d4, red #a8302a, black #1c1a18.
+```
+
+`patterns/glazier/cholet-front` (the painted band on the Glaziers' carved fronts; tiles horizontally):
+```
+Seamless tileable texture, 2048x512 (a horizontal band). Orthographic view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge. Panel: a painted decorative band on whitewashed plaster, in the bright flat colours of Andean cholet facades combined with Tibetan and Persian ornament: a row of stepped lozenges and zigzags, a running band of small eight-spoked wheels, thin gilt lines edging each band, colours rose, teal, saffron and white on the whitewash, the paint slightly worn. Full colour: rose #c8607a, teal #2a8a88, saffron #e0a030, white #f2eee4, gilt #c9a24a.
+```
+
+`glass.moonglass` (the Glaziers' window panes: potch, the common opal with no fire, sliced thin; `kits/tungang` key `potch` and
+the panes, now `glass.frosted` through KGLASS; seen lit from behind at dusk):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Surface: thin translucent slices of common opal (potch) with no play of colour, laid edge to edge like small panes, each slice 8 to 12 cm across: milky white to pale grey-blue, soft cloudy silica banding and faint growth lines, a few tiny inclusions, the edges of each slice slightly ground and frosted. Colour: milk white #e2e4dc, cloud grey #cfd6d2, a faint blue cast #c4d4dc.
+```
 
 ## Gaps with no prompt yet
 
 Owed, but a prompt waits on something first; listed so they are not lost.
 
-- **Bare concrete block** (the World Menagerie's Lake Atitlán and Sarajevo, 2026-10-28): the grey cinder block of an unfinished house (obra gris), laid in running bond with grey mortar, some cells broken. No library set has it; Atitlán's unfinished houses are plaster tinted grey. Needs a read of the block size and the tile before the prompt.
+- **Bare concrete block** (the World Menagerie's Lake AtitlÃ¡n and Sarajevo, 2026-10-28): the grey cinder block of an unfinished house (obra gris), laid in running bond with grey mortar, some cells broken. No library set has it; AtitlÃ¡n's unfinished houses are plaster tinted grey. Needs a read of the block size and the tile before the prompt.
 - **Korona's therian tribes' skins** (`core/charactermodels/NONHUMAN.md`): fur (short, tintable), feathers, beak keratin and
   throat-sac skin, once LORE 6.18 names the tribes and what each is like; written then, one set per kind of hide.
 - **The Yeti kit's lintel band** (`kits/yeti/PLAN.md` section 2): the clan's name in the Khaayken cut script on a

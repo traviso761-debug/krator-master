@@ -42,8 +42,9 @@ BIO.host.farside={wind:[SQ,SQ],coastD:STAGE.coastD||null,station:STAGE.key};
 _mark('binding');
 
 // ---------------------------------------------------------------- the library layers (or procedural without the pack)
-// the ground's seven layers: the forest floor under everything, then sand, wrack, coral, wet rock, burn and turf by weight
-const LAYER_KEYS=['ground.floor','ground.sand','ground.wrack','ground.coral','ground.rock','ground.burn','ground.turf'];
+// the ground's eight layers: the forest floor under everything, then sand, wrack, coral, wet rock, burn and turf by weight, and the
+// tsunami's scour bench over the rock (ground.bench, delivered 2026-11-10: its weight FIELD.bench times the rock's)
+const LAYER_KEYS=['ground.floor','ground.sand','ground.wrack','ground.coral','ground.rock','ground.burn','ground.turf','ground.bench'];
 const LIBG=(function(){if(typeof KMAT==='undefined'||KMAT.mode!=='lib')return {};const o={};
  LAYER_KEYS.forEach(k=>{const P=KMAT.packed('farside',k);if(P)o[k]=Object.assign({scale:P.scale[0]},KMAT.textures(P,{aniso:8}));});return o;})();
 const greyTex=(fn,col)=>BIO.canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data,c=new THREE.Color(col);
@@ -56,11 +57,12 @@ const PROC={
  'ground.coral':[greyTex((x,y)=>210+30*(fbm(x/6,y/6,23,3)-.5)-40*smooth(.6,.7,fbm(x/3,y/3,24,2)),0xe4ddd2),2],
  'ground.rock':[greyTex((x,y)=>160+40*(fbm(x/9,y/9,25,3)-.5)+30*(_h3(x,y,26)-.5),0x34363a),4],
  'ground.burn':[greyTex((x,y)=>150+50*(fbm(x/6,y/6,27,2)-.5)+30*(_h3(x,y,28)-.5),0x2e2a26),2.5],
- 'ground.turf':[greyTex((x,y)=>200+40*(fbm(x/4,y/4,29,2)-.5)+30*(_h3(x,y,30)-.5),0x5a6a34),1.8]};
+ 'ground.turf':[greyTex((x,y)=>200+40*(fbm(x/4,y/4,29,2)-.5)+30*(_h3(x,y,30)-.5),0x5a6a34),1.8],
+ 'ground.bench':[greyTex((x,y)=>190+30*(fbm(x/12,y/3,31,3)-.5)+20*(_h3(x,y,32)-.5),0x9a968c),3]};
 const layer=k=>LIBG[k]?{map:LIBG[k].map,s:LIBG[k].scale,lib:true}:{map:PROC[k][0],s:PROC[k][1],lib:false};
 const LAYERS=LAYER_KEYS.map(layer);LAYERS.forEach(L=>{L.map.wrapS=L.map.wrapT=THREE.RepeatWrapping;});
 
-// ---------------------------------------------------------------- the ground (one mesh: seven layers by vertex weight, tinted)
+// ---------------------------------------------------------------- the ground (one mesh: eight layers by vertex weight, tinted)
 // DITHERED SAMPLING (the owner, 2026-10-26: "ground needs dithering for most textures"): Korona's hex-cell bomb (biomes/korona,
 // 47-host-land.js, the owner's 2026-10-19 rulings), copied whole: the plane is cut into triangles ~2 tiles across, each corner
 // turns and shifts the tile by its own hash and a point blends the three corners' reads (weights cubed: no ghosting), at the
@@ -74,35 +76,37 @@ const GROUND_MAT=new THREE.MeshLambertMaterial({vertexColors:true,color:0xffffff
 // in the same order with the same weights (the floor under everything, then turf, burn, coral, sand, wrack, the wet rock), hex-tiled,
 // scaled with distance and blended by height in place of the hex-cell bomb; the sand is KGROUND's 'sand' kind (BACKPORT.md's row,
 // "sand on the strand": wind ripples across the onshore north-wester, glints of single grains). The coarse mottle (kmacro, from
-// BIO.DITHER) stays over the lot. All or none: a page missing a layer's set keeps the old bomb whole. ?kground=0 for the old one
+// BIO.DITHER) stays over the lot. All or none: a page missing a layer's set keeps the old bomb whole. ?kground=0 for the old one.
+// The eighth, the scour bench (2026-11-10), lies last over the wet rock; its grooves turn with the hex tiles (KGROUND's rot .6), not one way
 const USE_KG=typeof KGROUND!=='undefined'&&new URLSearchParams(location.search).get('kground')!=='0';
-const KG_LAYERS=USE_KG?[['floor','1.0'],['turf','vW1.y'],['burn','vW1.x'],['coral','vW0.z'],['sand','vW0.x',{kind:'sand',ripple:.11,wind:[Math.SQRT1_2,Math.SQRT1_2],seed:311,crest:.1,glintDensity:.12}],['wrack','vW0.y'],['rock','vW0.w']]
+const KG_LAYERS=USE_KG?[['floor','1.0'],['turf','vW1.y'],['burn','vW1.x'],['coral','vW0.z'],['sand','vW0.x',{kind:'sand',ripple:.11,wind:[Math.SQRT1_2,Math.SQRT1_2],seed:311,crest:.1,glintDensity:.12}],['wrack','vW0.y'],['rock','vW0.w'],['bench','vW1.z']]
  .map(L=>KGROUND.layer('farside','ground.'+L[0],Object.assign({w:L[1],amt:1,gain:1,name:L[0]},L[2]||{}))):[];
-const KG_ON=KG_LAYERS.length===7&&KG_LAYERS.every(Boolean);
+const KG_ON=KG_LAYERS.length===8&&KG_LAYERS.every(Boolean);
 GROUND_MAT.onBeforeCompile=sh=>{
  const sc=LAYERS.map(L=>L.s.toFixed(3)),rd=(i,w)=>(w?'if('+w+'>0.004)':'')+'{vec3 t=pow(kdither'+(i===4?'W':'')+'(uL'+i+',p/'+sc[i]+').rgb,vec3(2.2));g=mix(g,t,'+(w||'1.0')+');}';
  if(!KG_ON)LAYERS.forEach((L,i)=>{sh.uniforms['uL'+i]={value:L.map};});
- sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nattribute vec4 aW0;attribute vec2 aW1;varying vec4 vW0;varying vec2 vW1;varying vec3 vGWP;')
+ sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nattribute vec4 aW0;attribute vec3 aW1;varying vec4 vW0;varying vec3 vW1;varying vec3 vGWP;')
   .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvW0=aW0;vW1=aW1;vGWP=(modelMatrix*vec4(transformed,1.0)).xyz;');
- sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+(KG_ON?'':LAYERS.map((L,i)=>'uniform sampler2D uL'+i+';').join(''))+'varying vec4 vW0;varying vec2 vW1;varying vec3 vGWP;\n'+GDITHER)
+ sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+(KG_ON?'':LAYERS.map((L,i)=>'uniform sampler2D uL'+i+';').join(''))+'varying vec4 vW0;varying vec3 vW1;varying vec3 vGWP;\n'+GDITHER)
   .replace('#include <map_fragment>',KG_ON?'diffuseColor.rgb=vec3(0.18);\n/*KGROUND*/\ndiffuseColor.rgb*=kmacro(vGWP.xz);':['{vec2 p=vGWP.xz;vec3 g=vec3(0.0);',
-   rd(0,null),rd(6,'vW1.y'),rd(5,'vW1.x'),rd(3,'vW0.z'),rd(1,'vW0.x'),rd(2,'vW0.y'),rd(4,'vW0.w'),
+   rd(0,null),rd(6,'vW1.y'),rd(5,'vW1.x'),rd(3,'vW0.z'),rd(1,'vW0.x'),rd(2,'vW0.y'),rd(4,'vW0.w'),rd(7,'vW1.z'),
    'diffuseColor.rgb*=g*kmacro(p);}'].join('\n'));};   /* the layers are sRGB: decoded per read (a raw sampler skips three's decode) */
 GROUND_MAT.customProgramCacheKey=()=>'farside-ground-'+(KG_ON?'kground':'dither');
 if(KG_ON)KGROUND.hook(GROUND_MAT,{key:'farside-ground',at:'/*KGROUND*/',layers:KG_LAYERS});
 window._kground=KG_ON?KG_LAYERS.map(L=>L.name):null;
 const GROUND=(function(){const S=SR*2.2,N=STAGE.groundN||480,g=new THREE.PlaneGeometry(S,S,N,N);g.rotateX(-Math.PI/2);
- const p=g.attributes.position,n=p.count,w0=new Float32Array(n*4),w1=new Float32Array(n*2),col=new Float32Array(n*3),c=new THREE.Color(),OL=new THREE.Color(0x8a8c50),DULL=new THREE.Color(0x9a9a78),SALT=new THREE.Color(0xd8d6cc);   /* SALT: the bench's salt-bleached bedrock */
+ const p=g.attributes.position,n=p.count,w0=new Float32Array(n*4),w1=new Float32Array(n*3),col=new Float32Array(n*3),c=new THREE.Color(),OL=new THREE.Color(0x8a8c50),DULL=new THREE.Color(0x9a9a78),SALT=new THREE.Color(0xd8d6cc);   /* SALT: the bench's salt-bleached bedrock */
  for(let i=0;i<n;i++){const x=p.getX(i),z=p.getZ(i),y=terrainH(x,z);p.setY(i,y);
   const sand=F.sand(x,z),coral=F.coral(x,z),rock=F.rock(x,z),strand=F.strand(x,z),inv=F.invade(x,z),burn=F.burn(x,z),graze=F.graze(x,z),fr=F.front(x,z),bench=FIELD.bench(x,z);
   // wrack: the strand's wrack line, and the kelp coast's floor (the fall of blades and wrack under the stands), thinner where grazed
   const wr=clamp(Math.max(strand*.95,inv*(1-sand)*(1-coral)*(.74+.26*fbm(x*.02,z*.02,411,2))*(1-graze*.7)),0,1);
   w0[i*4]=sand;w0[i*4+1]=wr*(1-rock);w0[i*4+2]=coral;w0[i*4+3]=rock;
-  w1[i*2]=burn;w1[i*2+1]=clamp(graze*(1-sand)*(1-coral)*.65,0,1);
-  // the tint: the wet shine under the sea's flora (olive), a whitewash on the cove's terraces (the harbour's own lime), under water darker
-  c.setRGB(1,1,1).lerp(OL,inv*(1-sand)*(1-coral)*(1-bench*.6)*.4).lerp(DULL,graze*.45).lerp(SALT,bench*rock*.55).multiplyScalar(1-.3*F.native(x,z));if(y<0)c.multiplyScalar(.7);
+  w1[i*3]=burn;w1[i*3+1]=clamp(graze*(1-sand)*(1-coral)*.65,0,1);w1[i*3+2]=clamp(bench*rock,0,1);
+  // the tint: the wet shine under the sea's flora (olive), a whitewash on the cove's terraces (the harbour's own lime), under water darker;
+  // the bench's salt-white only without its set (the set is salt-bleached itself)
+  c.setRGB(1,1,1).lerp(OL,inv*(1-sand)*(1-coral)*(1-bench*.6)*.4).lerp(DULL,graze*.45).lerp(SALT,bench*rock*(LAYERS[7].lib?0:.55)).multiplyScalar(1-.3*F.native(x,z));if(y<0)c.multiplyScalar(.7);
   c.convertSRGBToLinear();col[i*3]=c.r;col[i*3+1]=c.g;col[i*3+2]=c.b;}
- g.setAttribute('aW0',new THREE.BufferAttribute(w0,4));g.setAttribute('aW1',new THREE.BufferAttribute(w1,2));g.setAttribute('color',new THREE.BufferAttribute(col,3));
+ g.setAttribute('aW0',new THREE.BufferAttribute(w0,4));g.setAttribute('aW1',new THREE.BufferAttribute(w1,3));g.setAttribute('color',new THREE.BufferAttribute(col,3));
  g.computeVertexNormals();const m=new THREE.Mesh(g,GROUND_MAT);m.userData.probeSkip=true;m.userData.host=true;m.userData.inspectLabel=STAGE.name+': the ground';scene.add(m);return m;})();
 _mark('ground');
 // ---------------------------------------------------------------- the far country

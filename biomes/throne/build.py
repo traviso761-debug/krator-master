@@ -122,7 +122,7 @@ else:
 # THE FINAL REBUILD (2026-11-02), every page with core/water: the audit (57), the reflections switch (58, off at page load; src/89y-host-core.js
 # installs it on a station's largest still), the shore's fields (60: WATER.fieldAt for the wet ground and the flora); tools/fragment_needs.json has their order
 if '20-core-water.js' in PATH:
-    for f in ['57-core-water-audit.js','58-core-water-mirror.js','60-core-water-fields.js']:
+    for f in ['56-core-water-breakup.js','57-core-water-audit.js','58-core-water-mirror.js','60-core-water-fields.js']:
         PATH.setdefault(f,os.path.normpath(os.path.join(HERE,'..','..','core','water','ext',f)))
 # the air (core/atmos/README.md, "Adopting the final rebuild's atmos items"): height fog, the rain's occlusion map and the branched lightning on every page that
 # binds the weather (every page but the tube, underground); src/89y-host-core.js calls them with each station's numbers (ATMOS_AIR in its 45)

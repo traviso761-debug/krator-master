@@ -102,7 +102,7 @@ var KCHAR = (function(){
     if(kit.style === 'mpfb') return { id:'base', name:'Base', style:'base', face:null };   // the head is the base's
     return byId(kit.heads, rec.head) || byId(kit.heads, kit.base);
   }
-  var MPFB_SLOTS = ['feet', 'legs', 'torso', 'hair', 'beard', 'head'];   // head last: older strangers draw the same
+  var MPFB_SLOTS = ['feet', 'legs', 'torso', 'hair', 'beard', 'head', 'back', 'implant', 'gloves'];   // head/back/implant/gloves last: older strangers draw the same
   function mpfbItem(rec, kit, slot){
     var id = (slot === 'hair' || slot === 'beard') ? rec[slot] : (rec.armour || {})[slot];
     var it = id && byId(kit.items, id);
@@ -149,7 +149,7 @@ var KCHAR = (function(){
       // beard or headgear: they are fitted to the human head it hides
       var beast = replacesHead(rec, kit);
       MPFB_SLOTS.forEach(function(slot){
-        var it = beast && (slot === 'hair' || slot === 'beard' || slot === 'head') ? null : mpfbItem(rec, kit, slot);
+        var it = beast && (slot === 'hair' || slot === 'beard' || slot === 'head' || slot === 'implant') ? null : mpfbItem(rec, kit, slot);
         if(it && !(slot === 'hair' && hat && hat.covers_hair)) out.push({ key:key(it.glb), mesh:'*', role:(slot === 'hair' || slot === 'beard') ? slot : 'armour', slot:slot });
         if(it && it.sleeves2 && !bare) out.push({ key:key(it.sleeves2), mesh:'*', role:'armour', slot:slot });
       });
@@ -186,7 +186,7 @@ var KCHAR = (function(){
       var o = new Uint8Array(kit.base_tris);
       var beast = replacesHead(rec, kit);
       MPFB_SLOTS.forEach(function(slot){
-        var it = beast && (slot === 'hair' || slot === 'beard' || slot === 'head') ? null : mpfbItem(rec, kit, slot); if(!it || !it.hide) return;
+        var it = beast && (slot === 'hair' || slot === 'beard' || slot === 'head' || slot === 'implant') ? null : mpfbItem(rec, kit, slot); if(!it || !it.hide) return;
         var b = unbits(it.hide, kit.base_tris);
         for(var i=0;i<b.length;i++) o[i] |= b[i];
       });
@@ -218,7 +218,7 @@ var KCHAR = (function(){
     if(kit.style !== 'mpfb') return out;
     var beast = replacesHead(rec, kit);
     MPFB_SLOTS.forEach(function(slot){
-      var it = beast && (slot === 'hair' || slot === 'beard' || slot === 'head') ? null : mpfbItem(rec, kit, slot);
+      var it = beast && (slot === 'hair' || slot === 'beard' || slot === 'head' || slot === 'implant') ? null : mpfbItem(rec, kit, slot);
       ((it && it.hide_parts) || []).forEach(function(m){ out[m] = true; });
     });
     // and a mod's (an animal head leaves out the lips, ears, brows, lashes and eyes it covers)
@@ -227,8 +227,8 @@ var KCHAR = (function(){
   }
 
   function blank(kit){
-    if(kit.style === 'mpfb') return { body:kit.body, hair:null, beard:null, armour:{ torso:null, legs:null, feet:null, head:null }, sliders:{},
-                                      morph:{}, ancestry:null, skin:null, hair_color:null, eye_color:null, people:null, dye:{} };
+    if(kit.style === 'mpfb') return { body:kit.body, hair:null, beard:null, armour:{ torso:null, legs:null, feet:null, head:null, back:null, implant:null, gloves:null }, sliders:{},
+                                      morph:{}, ancestry:null, skin:null, hair_color:null, eye_color:null, people:null, dye:{}, facepaint:null, makeup:null };
     return { body:kit.body, head:kit.base, hair:null, beard:null, armour:{ torso:null, legs:null, feet:null },
              sliders:{}, dye:{} };
   }
@@ -332,12 +332,14 @@ var KCHAR = (function(){
         rec.armour[slot] = want && kit.items.some(function(it){ return it.id === want && it.slot === slot && fits(it, rec, kit); }) ? want : null;
         return;
       }
-      if(slot === 'head'){ rec.armour.head = null; return; }     // headgear only comes with a people's outfit
+      if(slot === 'head' || slot === 'back' || slot === 'implant' || slot === 'gloves'){ rec.armour[slot] = null; return; }     // headgear, backpacks, implants & gloves only come with a people's outfit
       // a culture's own clothes (kit item culture) go only to its people's strangers
-      var have = kit.items.filter(function(it){ return it.slot === slot && (!it.culture || it.culture === P.id) && fits(it, rec, kit); });
+      var sex = kit.body.replace(/^mpfb_/, '');
+      var have = kit.items.filter(function(it){ return it.slot === slot && (!it.culture || it.culture === P.id) && (slot !== 'hair' || !it.gender || it.gender === sex) && fits(it, rec, kit); });
       if(slot === 'hair' && styles){ var pref = have.filter(function(it){ return styles.indexOf(it.id) >= 0; }); if(pref.length && r() < (P.style_share == null ? 0.75 : P.style_share)) have = pref; }
       var odds = slot === 'beard' ? (P.beard === undefined ? 0.4 : P.beard) : slot === 'hair' ? 0.92 : 0.9;
       var id = have.length && r() < odds ? pick(have).id : null;
+      if(outfit && outfit[slot] !== undefined) id = outfit[slot] && kit.items.some(function(it){ return it.id === outfit[slot] && it.slot === slot && fits(it, rec, kit); }) ? outfit[slot] : null;
       if(slot === 'hair' || slot === 'beard') rec[slot] = id; else rec.armour[slot] = id;
     });
     rec.morph = {};

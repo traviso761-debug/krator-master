@@ -4,10 +4,12 @@
 //   built     the two towns the isle demo builds (settlements/isle-demo/PLAN.md): their markers say so
 //   goOrder   the settlements first in "Go to"
 //   goViews   the region's own views: the archipelago, and each of the scale model's geyser vents (region.json vents)
+//   start     the place the first view frames (98-world-start.js), where verify.py's flora checks run: Kautoa (without
+//             it the world's start fell back to (0,0), 158 m of open sea, and every flora check read an empty tile)
 var WORLD_CONFIG=(function(){
 const M=WORLD_DATA.meta,o=M.frame.origin_px,xz=px=>[(px[0]-o[0])*2000,(px[1]-o[1])*2000];
 const views=[{label:'Overview: the archipelago from 260 km up',pos:[0,260000,230000],look:[0,0,0]},
  {label:'The isles from 30 km up, looking north',view:[0,120000,30000,0,-.5]}];
 (M.vents||[]).filter(v=>v.kind==='geyser').forEach((v,i)=>{const [x,z]=xz(v.px);views.push({label:'Geyser vent '+(i+1)+' (px '+v.px.join(',')+')',view:[x+900,z+1400,400,0,-.25]});});
 return{built:{'Kautoa':'settlements/isle-demo (Kautoa, the city)','Valapo':'settlements/isle-demo (Valapo, the village)'},
- goOrder:['Kautoa','Valapo'],goViews:views};})();
+ goOrder:['Kautoa','Valapo'],goViews:views,start:'Kautoa'};})();

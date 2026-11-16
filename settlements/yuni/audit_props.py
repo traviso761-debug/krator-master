@@ -1,5 +1,9 @@
-import asyncio
+import asyncio, http.server, os, socketserver, threading
 from playwright.async_api import async_playwright
+# its own temporary server on a free port (the one standing site is port 8001)
+folder=os.path.dirname(os.path.abspath(__file__))
+httpd=socketserver.TCPServer(("127.0.0.1",0),lambda *x,**k: http.server.SimpleHTTPRequestHandler(*x,directory=folder,**k)); port=httpd.server_address[1]
+threading.Thread(target=httpd.serve_forever,daemon=True).start()
 JS=r"""()=>{
  const sat=(A,B)=>{const axes=[];for(const P of [A,B])for(let i=0;i<4;i++){const p=P[i],q=P[(i+1)%4];axes.push([-(q[1]-p[1]),q[0]-p[0]]);}
    let minO=1e9;for(const ax of axes){const l=Math.hypot(ax[0],ax[1])||1;const a=[ax[0]/l,ax[1]/l];const pr=P=>{let lo=1e9,hi=-1e9;for(const p of P){const v=p[0]*a[0]+p[1]*a[1];lo=Math.min(lo,v);hi=Math.max(hi,v);}return [lo,hi];};
@@ -19,7 +23,7 @@ async def main():
     async with async_playwright() as p:
         b=await p.chromium.launch(args=["--use-gl=swiftshader","--enable-webgl","--ignore-gpu-blocklist"])
         pg=await b.new_page(viewport={"width":400,"height":300})
-        await pg.goto("http://localhost:8765/iziz_test.html",timeout=180000); await pg.wait_for_timeout(3000); await pg.evaluate("renderer.shadowMap.enabled=false")
+        await pg.goto(f"http://127.0.0.1:{port}/iziz_test.html",timeout=180000); await pg.wait_for_timeout(3000); await pg.evaluate("renderer.shadowMap.enabled=false")
         r=await pg.evaluate(JS); print({k:v for k,v in r.items() if k!='sample'})
         for h in r['sample']: print(h)
         await b.close()

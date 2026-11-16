@@ -11,8 +11,10 @@ roads between the towns. The towns themselves are their pages' (settlements/xana
   data/         region.json and the rasters (tools/scale-model/cut_site.py xanadu-oidong-highrift), embedded as PNGs and
                 decoded in the page (core/world/98-world-start.js): decoded at build time they would be ~28 MB, over the page cap
   plan/         sites.json (python3 core/world/bake_sites.py xanadu-oidong-highrift)
-  src/          43 (the fields the kits read that the world does not make), 46 (config), 47 (kits), 48 (the sites' spec),
-                49 (the Xanadu kit's pass table as data)
+  src/          43 (the fields the kits read that the world does not make), 44 (the lake's small islands: the scale model's
+                landform records, tools/scale-model/model/data/landforms.json), 46 (config), 47 (kits), 48 (the sites' spec),
+                48k (the lava tubes' spec: Route A of the Twins crossing, core/world 42k and 88k), 49 (the Xanadu kit's pass
+                table as data)
 
   python3 build.py
   python3 build.py --no-checks
@@ -25,6 +27,7 @@ sys.path.insert(0, os.path.join(ROOT, 'tools')); import build_sources as BSRC   
 SRC = os.path.join(HERE, 'src')
 DATA = os.path.join(HERE, 'data')
 PLAN = os.path.join(HERE, 'plan', 'sites.json')
+LANDFORMS = os.path.join(ROOT, 'tools', 'scale-model', 'model', 'data', 'landforms.json')   # the model's sub-cell landforms (edit 5.1-512)
 DIST = os.path.join(HERE, 'dist')
 OUT = 'xanadu-oidong-highrift.html'
 WORLD_SRC = os.path.join(ROOT, 'core', 'world')   # the world's fragments (core/world, read in place)
@@ -51,6 +54,8 @@ def _fams(path):
     return sorted(json.load(open(pj, encoding='utf8')).get('families', {})) if os.path.isfile(pj) else []
 _DROP = lambda k: k.startswith('tower') or k.startswith('jetty') or k.startswith('ground')
 PACK_EXCL = {k: [f for f in _fams(os.path.join(ROOT, 'biomes', k)) if _DROP(f)] for k in PACK_KITS}
+# the Twins kit's pack: only the titanium basalt's face (rock.basalt.titanium), the lava tubes' rock (core/world 88k)
+PACK_EXCL['twins'] = [f for f in _fams(os.path.join(ROOT, 'biomes', 'twins')) if f != 'rockFace']
 # the Xanadu building kit's library pack (still settlements/xanadu's), only the families the village buildings draw
 # (settlements/longsong/build.py XA_FAMS, the same villages)
 XA = os.path.join(ROOT, 'settlements', 'xanadu')
@@ -80,10 +85,14 @@ ORDER = (
        ('core/materials/record', '26-matlib-bind.js'),
        ('biomes/sedesert/src', '35-core-strata.js')]
     + [('core/mask', '25-core-mask.js'), ('core/mask', '27-core-mask-distance.js'), ('core/coast', '30-core-coast.js')]   # core/coast (KCOAST): the natural coasts; core/mask's distance under it
-    + LDF('41-world-fields.js', '42-world-roads.js') + [('src', '43-world-xoh.js')] + LDF('44c-world-coast.js')
+    + LDF('41-world-fields.js', '42-world-roads.js', '42b-world-bridges.js')   # 42b: the roads bridged over the rivers (Thalaba's Bridj, 2026-11-16)
+    # the caverns (core/world 42k: WTUBES, the tubes as records on core/terrain's KCAVERN; 88k draws them): Route A's tubes, src/48k
+    + [('core/terrain', '39-core-cavern.js'), ('core/terrain/host', '39e-core-cavern-draw.js'), ('ld', '42k-world-caverns.js')]
+    + [('src', '43-world-xoh.js')] + LDF('44c-world-coast.js')
+    + [('src', '44-world-landforms.js')]   # the lake's islands, chained on WORLD.landHook after core/coast's (44c)
     + LDF('45-world-host.js') + [('src', '46-world-config.js'), ('src', '47-world-kits.js'),
      ('biomes/hyperjungle/src', '41-hyperjungle-globals.js')]
-    + [('pack', k) for k in PACK_KITS] + [('xapack', 'xanadu')]
+    + [('pack', k) for k in PACK_KITS] + [('xapack', 'xanadu')] + [('pack', 'twins')]   # twins: only its rockFace (the tubes' basalt)
     + KIT_FRAGS
     # the sites: the Xanadu building kit (XAK) and the kit-piece flattener the isle demo shares, core/city's primitives,
     # core/hamlet, the site planner, this region's spec and the Xanadu kit's pass table as data
@@ -92,9 +101,10 @@ ORDER = (
        ('core/hamlet', '10-hamlet-wood.js'), ('core/hamlet', '12-hamlet-gather.js'),
        ('core/hamlet', '14-hamlet-farmland.js'), ('core/hamlet', '16-hamlet-names.js'), ('core/hamlet', '18-hamlet-names.js'),
        ('core/hamlet', '20-hamlet-cultures.js'), ('core/hamlet', '30-hamlet-village.js'),
-       ('ld', '48s-world-sites.js'), ('src', '48-world-site.js'), ('src', '49-world-xanadu.js')]
+       ('ld', '48s-world-sites.js'), ('src', '48-world-site.js'), ('src', '48k-world-tubes.js'), ('src', '49-world-xanadu.js')]
     + LDF('80-world-sky.js', '81-world-terrain.js', '83-world-water.js', '83w-world-seas.js', '84-world-nursery.js',
-          '85-world-flora.js', '86-world-floor.js', '87-world-places.js', '88-world-towns.js', '88s-world-sites.js')
+          '85-world-flora.js', '86-world-floor.js', '87-world-places.js', '88-world-towns.js', '88s-world-sites.js', '88b-world-bridges.js',
+          '88k-world-caverns.js')
     + [('resgeo', 'geology')] + RES_FRAGS + [('ld', '49r-world-resources.js'), ('ld', '89r-world-resources-map.js')]   # the resources: census, layers, markers
     + LDF('90-world-camera.js', '91-world-probe.js', '93-world-propose.js', '98-world-start.js', '99-tail.html')   # 93: proposing a site
 )
@@ -124,10 +134,14 @@ def data_fragment():
     # not laid yet: they cross the rivers' carved channels, and the world has no bridge, so their fill would bury the rivers
     # (KNOWN_ISSUES.md)
     roads = [dict(r, town=r['to']) for S in P['sites'] for r in S['roads']]
+    # the scale model's sub-cell landforms inside the cut (edit 5.1-512's islands), stamped by src/44-world-landforms.js
+    bx = meta['frame']['box_px']
+    lf = [r for r in json.load(open(LANDFORMS, encoding='utf-8'))['landforms'] if bx[0] <= r['px'] <= bx[2] and bx[1] <= r['py'] <= bx[3]]
     return ('// ==================== 05-world-data.js (generated by build.py from data/ and plan/: do not edit)\n'
             'var WORLD_DATA={meta:' + json.dumps(meta, separators=(',', ':'), ensure_ascii=False) + ',png:' + json.dumps(png)
             + ',sites:' + json.dumps(P, separators=(',', ':'), ensure_ascii=False)
-            + ',roads:' + json.dumps({'format': 'krator-openworld-roads', 'version': 1, 'roads': roads}, separators=(',', ':')) + '};\n')
+            + ',roads:' + json.dumps({'format': 'krator-openworld-roads', 'version': 1, 'roads': roads}, separators=(',', ':'))
+            + ',landforms:' + json.dumps(lf, separators=(',', ':'), ensure_ascii=False) + '};\n')
 
 
 def xak_bundle():

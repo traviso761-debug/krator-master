@@ -107,7 +107,7 @@ const INSTANCES = [];
   }
   WIDTH = Math.max(WIDTH, x);
   const ROWS = Math.ceil(lanes.length / ROW);
-  label('Krator mechs', 'the Iziz war-walkers and the Stalkers · ' + lanes.length + ' mechs', WIDTH / 2, -ROWS * ROW_Z + 8, 14, true);
+  label('Krator mechs', 'the Iziz war-walkers, the Stalkers and the Ancients\' feral machines · ' + lanes.length + ' mechs', WIDTH / 2, -ROWS * ROW_Z + 8, 14, true);
 
   /* --- the sky (vendored 81-sky.js) at mid-morning; Night drops it to 21:30 */
   let hour = 10.5;

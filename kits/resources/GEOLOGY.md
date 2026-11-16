@@ -26,6 +26,13 @@ python3 godot/tools/sync_core.py                    # the Godot test's copies
 python3 tools/build.py kits/resources
 ```
 
+**Rebaked 2026-11-09** on scale model 5.1 after edit 3 (`tools/scale-model/edit_513.py`; the owner asked for it with the
+Firebliss Range's decisions). The 11-03 bake predated 5.1 round 3, edit 1 and the Firebliss Range's carving: it masked that
+range airless. Now the range is 1,432 volcanic cells round its cones (its vent records have a radius at last), sulphur to 255
+at the vents. Across the map the provinces moved on 30,000 cells (crystalline 263,493 to 242,495, sedimentary 191,704 to
+203,082, granite 58,665 to 67,456, volcanic 40,214 to 41,644); gold lodes 115,845 to 112,268, tin 120,187 to 121,169; the
+ledger rewritten (`test-res.js --ledger`: all 55 checks pass), the Godot field test passes on it.
+
 Deterministic: the same model and regions give the same bytes. 2026-11-03: scale model 5.1, 118 regions, 117 settlements;
 4 km cells (`--cell 4`: every second pixel of 5.1's 2 km grid, as the 4.23 page's half-resolution grid was), 911 x 862;
 4.4 MB of data, 18 s. Every window the bake uses (relief, the volcanic share, the oil's smoothing, the margins, the
@@ -53,6 +60,14 @@ and the other rocks were first added to that bake in place (`--carbonate`, `--ro
 python3 tools/scale-model/geology.py --carbonate kits/resources/data/geology.json tools/scale-model/model/src/51-region-store.js --shift=-272,-330
 python3 tools/scale-model/geology.py --rocks kits/resources/data/geology.json tools/scale-model/model/src/51-region-store.js --vents tools/scale-model/model/data --shift=-272,-330
 ```
+
+**Authored deposits.** The owner's lodes that the model's geology does not give live in `data/lodes.json`
+(`krator-lodes`: `{id, family, px, py, r_km, peak, why}`, 5.1 px). They are stamped on the bake in place:
+- the command is `python3 tools/scale-model/geology.py --lodes kits/resources/data/geology.json kits/resources/data/lodes.json`;
+- each land cell within `r_km` is raised to `peak * sqrt(1 - (d/r)^2)` and never lowered, so a second run changes nothing;
+- **run it after every re-bake.**
+
+The first lode is Xanadu's gold field (2026-11-12, `openworld/TRADE-GOODS.md`).
 ## The format (`krator-geology`, version 1)
 
 One JSON object. The browser, node and Godot read the same integers; nothing is interpolated.
@@ -95,7 +110,7 @@ point:** `i = floor(x / 2000 x (w - 1) / (fullW - 1) + 0.5)`, `j` the same with 
 | 5 | rift | the regions rift and The Rift |
 | 6 | carbonate | a sedimentary or crystalline cell whose platform byte (below, limestone) is 128 or more: k-guilin, NW bay, the Neo-Ozarks, Spider Lake |
 | 7 | impact | the crater walls' crystalline (megabreccia, pseudotachylite): the biome regions n highlands, s highlands, e inner wall, w outer wall, NW outer wall, ne outer wall |
-| 8 | basalt | flood basalt: the sedimentary and crystalline cells of n semiarid, Siphon Pits and Region 99 (their dried lake beds stay evaporite) |
+| 8 | basalt | flood basalt: the sedimentary and crystalline cells of n semiarid, Siphon Pits and the Loom Chasms (their dried lake beds stay evaporite) |
 | 9 | granite | the rest of the crystalline that is rugged (stone byte 150 and up) and not airless, in 6-cell pluton blocks whose hash (`rock:granite`) is under .45 |
 | 10 | quartzite | Korona / NE's volcanic cells beyond 8 km of a vent (its tepui tables), and the rest of the crystalline that is flat (stone under 100) and not airless (high plateau sandstone). The painted highlands' volcanic beyond 8 km of a vent goes back to sedimentary |
 | 11 | ultramafic | where mantle is bare: the region the arch (8,169 cells on 5.1) |
@@ -132,6 +147,27 @@ airless.
 | glass | the Ancients' seven blast basins in Ancient's Valley: 180 on the melt floor, 255 on the vitrified rim (to 1.5 radii) |
 
 Water cells carry no family but water. The metals, coal and oil are zero on evaporite ground.
+
+### The mined goods' kinds (2026-11-16): no layer yet
+
+Eleven node kinds came with Gemini's trade model (`src/42s-res-ore-mined.js`). None is a family in `data/geology.json`, so the
+node field places none of them: until a bake gives each a layer they are **owner nodes** (`KRES.nodesIn(tile, {owner: [...]})`,
+placed by a settlement or a biome kit, as Opal Valley's diggings already carry `{kind: 'opal', grade}`). The scale model is not
+edited here; a layer is a request to the scale-model session (`tools/scale-model/geology.py`). What each would need:
+
+| Kind | A layer of its own? | Where it would come from |
+|---|---|---|
+| zinc | **yes** | Gemini's rebake (`data/geology-gemini.json`) already has a `zinc` layer (mean 25.5); `geology.py` on this line does not. Sphalerite with galena: carbonate-hosted (limestone, the Mississippi Valley type) and skarn, + volcanic massive sulfide. Port Gemini's rule into `geology.py` |
+| lodestone | no: a rule on two layers | iron on the ultramafic province's crests (the Arch's lightning-struck magnetite) and the Compass Hills' iron (a region weight, as limestone's platforms) |
+| peat | **yes** | cold, wet, flat ground: rain over ~900 mm, low slope, a short warm season (the blanket bogs Gemini lists at Stahlborn, Cascade, Lipp, Gate Tarn Mires); no rock layer gives it |
+| silica | **yes**, derived | the quartzite province, the sand coasts, and the `glass` layer's melt-glass cullet |
+| quartz | no: a rule | granite and gneiss (vein quartz), the quartzite province; High Rift and Singing Gjar by name |
+| alabaster | no: gypsum's | the gypsum layer where the bed is massive (Jimjam's basin): an alias of gypsum, a finer grade of the same ring |
+| bitumen | no: oil's | the oil layer where it reaches the surface (a seep's ground), dug where the oil node is pumped |
+| opal | no: owner nodes | one valley (`biomes/opalvalley`), the tuff layer at Opal Valley; a region weight if it should spread |
+| diamond | no: owner nodes | the Korona Hoar-Table's quartzite conglomerate (K7): one site |
+| jade | no: a rule | ultramafic contacts (the Arch's nephrite); the Crook's Verdigris Jade is off the map |
+| amber | no: owner nodes | the Ria Valley is off the map; the East Abyss's swamp amber (Sfenops, Liikofi) by name |
 
 ### The evaporite rings (feature 3)
 

@@ -1,0 +1,9 @@
+{
+ "name": "The First Breath (station 1, the pyroduct; PLAN.md section 6): Route A's tube A1 coming out at the First Skylight Break on the Twins' south-west flank (4,300 m, 0.94 atm), its breakdown ramp, the 3.5 km cairned sprint across the frozen scree past an obsidian coulee, and the dive into tube A2 down a collapsed lava trench; the NW Twin smoking 24 km off",
+ "out": "twins.html",
+ "region": "region.json",
+ "reads": {
+  "39-core-cavern.js": "core/terrain/39-core-cavern.js"
+ },
+ "tex": ["scree", "lichenCrust", "fern"]
+}

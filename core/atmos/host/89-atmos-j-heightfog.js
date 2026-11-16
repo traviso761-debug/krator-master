@@ -9,7 +9,11 @@
 //               exponential, as nhighlands' is); compress [start, scale]: a page's distance compression (nhighlands 4000, 5000)
 //     mist      {density (1/m at full), y (the level it pools below, m; or below: metres under the reference), depth (m: how fast it thins above), noise (0..1:
 //               patchiness), night (its share at night, default .25), dawn [h0, h1, h2, h3] (rises h0..h1, burns off h2..h3;
-//               default [3.5, 5.2, 8, 10.5])}: thicker in the weather's fog (W.fog), thinner in a gale
+//               default [3.5, 5.2, 8, 10.5]), day (its share through the day, default 0: a dawn mist; 1 for a smog that never
+//               lifts), field {at: (x,z) -> 0..1, extent [x0,z0,x1,z1] or centre [x,z] + radius (default
+//               6 km round the camera), res (default 128)} (opt-in: the mist's density by place, a texture built once: the smog
+//               universal in a city, thin on its terraces; F.field.at(x,z) reads what the shader reads), samples (the ray's
+//               samples of the field, default 6, at most 8)}: thicker in the weather's fog (W.fog), thinner in a gale
 //     band      {density (1/m), y [bottom, top] (m), cover (0..1), noise (0..1)}: a cloud layer at mid-height; the rain and
 //               the fog thicken it
 //     ride      how fast the patches drift on the wind (default 1: the wind's own speed, gusts and all)
@@ -27,11 +31,17 @@
   const F=A.fog={o,falloff:o.falloff==null?1/900:o.falloff,lift:o.lift==null?0:o.lift,sun:o.sun==null?.35:o.sun,sky:o.sky==null?.4:o.sky,
    shape:o.shape||'exp2',compress:o.compress||null,ride:o.ride==null?1:o.ride,ref:null,mistD:0,bandD:0};
   const dawn=M.dawn||[3.5,5.2,8,10.5],cam=h.camera;
+  // the mist field: built once, at half precision, as the belt's is; the chunk takes its lines when a material compiles
+  if(M.field&&typeof M.field.at==='function'){const c=M.field.centre||(M.field.extent?null:cam?[cam.position.x,cam.position.z]:[0,0]);
+   const MF=F.field=A.fogMistFieldMake(Object.assign({},M.field,c?{centre:c}:{})),n=MF.n,e=MF.extent;
+   const tex=new T.DataTexture(MF.half,n,n,T.RGBAFormat,T.HalfFloatType);tex.minFilter=tex.magFilter=T.LinearFilter;tex.wrapS=tex.wrapT=T.ClampToEdgeWrapping;tex.generateMipmaps=false;tex.needsUpdate=true;
+   U.fogMistE={value:new T.Vector4().set(e[0],e[1],1/(e[2]-e[0]),1/(e[3]-e[1]))};U.fogMistK={value:new T.Vector2().set(n,Math.max(1,Math.min(8,M.samples==null?6:M.samples)))};U.fogMistT={value:tex};
+   MF.texture=tex;A.fogMistFieldOn=true;}
   F.step=(t,hour,dt)=>{const W=A.W||{},S=A.skyUniforms;
    // the reference height: the ground under the eye, eased (a cliff's edge does not pop the fog)
    const g=typeof o.ref==='number'?o.ref:(cam?A.ground(cam.position.x,cam.position.z):0)+F.lift;F.ref=F.ref==null||dt<=0?g:F.ref+(g-F.ref)*Math.min(1,dt*1.5);
    const wind=W.wind==null?1:W.wind,calm=Math.max(0,1-.35*Math.max(0,wind-1));
-   F.mistD=(M.density||0)*Math.min(1,A.ss(dawn[0],dawn[1],hour)*(1-A.ss(dawn[2],dawn[3],hour))+(M.night==null?.25:M.night)*A.night(hour))*(1+2*(W.fog||0))*calm;
+   F.mistD=(M.density||0)*Math.min(1,Math.max(M.day==null?0:M.day,A.ss(dawn[0],dawn[1],hour)*(1-A.ss(dawn[2],dawn[3],hour)))+(M.night==null?.25:M.night)*A.night(hour))*(1+2*(W.fog||0))*calm;
    F.bandD=(B.density||0)*(1+1.5*(W.rain||0)+(W.fog||0));
    if(F.off){F.mistD=F.bandD=0;}   /* F.off: the plain fog in the same shape (an A/B check: verify's before shots) */
    U.fogH.value.set(F.off?0:F.falloff,F.ref,F.off?0:F.sun,F.off?0:F.sky);U.fogMist.value.set(F.mistD,M.below!=null?F.ref-M.below:(M.y||0),1/Math.max(1,M.depth||40),M.noise==null?.6:M.noise);
@@ -41,8 +51,9 @@
    // the drift: the patches ride the wind at the eye, gusts and all (atmGust's JS twin)
    if(dt>0&&U.wind){const w=U.wind.value,k=(1+U.gustAmp.value*A.gust(t,cam?cam.position.x:0,cam?cam.position.z:0))*F.ride*dt;U.fogDrift.value.x-=w.x*k;U.fogDrift.value.y-=w.y*k;}};
   F.step(0,h.hour?h.hour():12,0);A.hook(F.step);
-  A.rec('heightfog',{falloff:F.falloff,ref:typeof o.ref==='number'?o.ref:'ground',lift:F.lift,sun:F.sun,sky:F.sky,shape:F.shape,compress:F.compress,mist:o.mist||null,band:o.band||null,
-   note:'fog = 1 - exp(-(air^shape + mist + band)); air = scene fog density * the pool integral of exp(-falloff (y - ref)); the mist pools below mist.y at dawn; the band is a slab of cloud (sky/89-atmos-j-fog.js)'});
+  const mistRec=o.mist?Object.assign({},o.mist,F.field?{field:{extent:F.field.extent,res:F.field.n,samples:U.fogMistK.value.y}}:{}):null;   /* the field as data: its grid, not its function */
+  A.rec('heightfog',{falloff:F.falloff,ref:typeof o.ref==='number'?o.ref:'ground',lift:F.lift,sun:F.sun,sky:F.sky,shape:F.shape,compress:F.compress,mist:mistRec,band:o.band||null,
+   note:'fog = 1 - exp(-(air^shape + mist + band)); air = scene fog density * the pool integral of exp(-falloff (y - ref)); the mist pools below mist.y at dawn, scaled by its field where one is given (a texture, R the field 0..1); the band is a slab of cloud (sky/89-atmos-j-fog.js)'});
   return F;};
  A.heightFogOn=function(mat){if(!mat||!A.U||!A.U.fogH)return mat;
   const K=A.KH();return A.shaderHook(mat,'atmos-heightfog',function(sh){const U=A.U;
@@ -50,6 +61,7 @@
    sh.uniforms.atmFogH=U.fogH;sh.uniforms.atmFogMist=U.fogMist;sh.uniforms.atmFogBand=U.fogBand;sh.uniforms.atmFogX=U.fogX;
    sh.uniforms.atmFogSunDir=U.fogSunDir;sh.uniforms.atmFogSunC=U.fogSunC;sh.uniforms.atmFogZen=U.fogZen;sh.uniforms.atmFogDrift=U.fogDrift;
    if(A.fogBeltOn){sh.uniforms.atmFogBelt=U.fogBelt;sh.uniforms.atmFogBeltK=U.fogBeltK;sh.uniforms.atmFogBeltE=U.fogBeltE;sh.uniforms.atmFogBeltT=U.fogBeltT;}
+   if(A.fogMistFieldOn){sh.uniforms.atmFogMistE=U.fogMistE;sh.uniforms.atmFogMistK=U.fogMistK;sh.uniforms.atmFogMistT=U.fogMistT;}
    /* the eye from the view matrix, in the vertex shader: three r128 sets the fragment's cameraPosition only for Phong, Standard,
       Toon, ShaderMaterial or an envMap, so a Lambert ground read (0,0,0) there (the first pilot run's dawn white-out) */
    sh.vertexShader='varying vec3 vAtmFogP;varying vec3 vAtmFogC;\n'+K.rep(sh.vertexShader,'#include <fog_vertex>','#include <fog_vertex>\n{vec4 atmFP=vec4(transformed,1.0);\n#ifdef USE_INSTANCING\natmFP=instanceMatrix*atmFP;\n#endif\nvAtmFogP=(modelMatrix*atmFP).xyz;vAtmFogC=-(transpose(mat3(viewMatrix))*viewMatrix[3].xyz);}');

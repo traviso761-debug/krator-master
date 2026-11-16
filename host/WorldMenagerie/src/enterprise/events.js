@@ -361,6 +361,11 @@ export function events(W){
   const note=m=>{if(W.toast)W.toast('Tactical',m);};
   const HO=hostile(W,{sprite,flash,run,sound,toFX,dirFX,shipCentre,world,T:()=>T,red:()=>red,redAlert:()=>redAlert(),sync:()=>sync(),incoming,note,debris});
   W.contact=()=>{HO.contact();};
+  // for orders.js and comms.js: the fights, and a starbase's repair crews
+  W.HO=HO;W.damage=()=>({hull:hullP,shields:shStr});
+  // for helm.js and the Z key: the two toggles a captain wants under one finger
+  W.toggleShields=()=>{shields();sync();};W.toggleRed=()=>{redAlert();sync();};W.shieldsState=()=>({up:shUp,str:shStr,red});
+  W.repair=k=>{hullP=Math.min(100,hullP+k);shStr=Math.min(100,shStr+k);};
   // for extras.js: the effects kit
   W.fx={sound,flash,run,debris,sprite,world,toFX,dirFX,shipCentre,note,T:()=>T,ease,sync:()=>sync()};
   const spread=()=>{torpedo(-0.09);setTimeout(()=>torpedo(0),140);setTimeout(()=>torpedo(0.09),280);};
@@ -369,14 +374,14 @@ export function events(W){
   // the events panel
   const panel=document.createElement('div');panel.id='pitpanel';panel.setAttribute('role','dialog');panel.setAttribute('aria-label','Events');
   const list=[['Warp',()=>W.flight.on?(W.flight.warp?(W.course.clear(),dropOut()):engage(W.course.w)):engage(5)],['Red alert',redAlert],['Shields',shields],['Phasers',phasers],['Torpedo',()=>torpedo()],['Torpedo spread',spread],
-    ['Hostile contact',()=>HO.contact()],['A Varr cruiser',()=>HO.contact('varr')],['A Lattice ship',()=>HO.contact('lattice')],['Battle',()=>HO.battle()],
+    ['Hostile contact',()=>HO.contact()],['A Varr cruiser',()=>HO.contact('varr')],['A Lattice ship',()=>HO.contact('lattice')],['A Kethri swarm',()=>HO.swarm(5)],['An Ossari ship (first contact)',()=>W.ossari&&W.ossari()],['Battle',()=>HO.battle()],
     ['A Sere ship (a friend)',()=>HO.sere()],['A trader convoy',()=>HO.convoy()],['A derelict',()=>HO.derelict()],['Tractor beam',tractorBeam],['Incoming fire',incoming],['Separate the saucer',separate],['Launch a shuttle',shuttle]];
   {const h=document.createElement('div');h.className='sub';h.textContent='Events';panel.appendChild(h);}
   for(const [lab,fn] of list){const b=document.createElement('button');b.type='button';b.textContent=lab;b.onclick=()=>{ac();fn();sync();};panel.appendChild(b);}
   document.body.appendChild(panel);
-  const sync=()=>{for(const b of panel.querySelectorAll('button')){const t=b.textContent;
+  const sync=()=>{for(const b of panel.querySelectorAll(':scope > button')){const t=b.textContent;
     b.setAttribute('aria-pressed',String(t==='Tractor beam'?!!tractor&&!tractor.off:t==='Red alert'?red:t==='Shields'?shUp:t==='Separate the saucer'?sep:false));}};
   const hud=()=>[red?'RED ALERT':'',HO.hud(),shUp||shStr<100?'shields '+(shUp?'up ':'down ')+Math.round(shStr)+'%':'',hullP<100?'hull '+Math.round(hullP)+'%':'',tractor&&!tractor.off?'tractor beam':'',sep?'saucer separated':''].filter(Boolean).join(' · ');
-  const act={spread,warp:list[0][1],hostile:()=>HO.contact(),varr:()=>HO.contact('varr'),lattice:()=>HO.contact('lattice'),sere:()=>HO.sere(),convoy:()=>HO.convoy(),derelict:()=>HO.derelict(),battle:()=>HO.battle(),red:redAlert,tractor:tractorBeam,shields,phasers,torpedo,incoming,separate,shuttle};
+  const act={spread,warp:list[0][1],hostile:()=>HO.contact(),varr:()=>HO.contact('varr'),lattice:()=>HO.contact('lattice'),swarm:()=>HO.swarm(5),ossari:()=>W.ossari&&W.ossari(),sere:()=>HO.sere(),convoy:()=>HO.convoy(),derelict:()=>HO.derelict(),battle:()=>HO.battle(),red:redAlert,tractor:tractorBeam,shields,phasers,torpedo,incoming,separate,shuttle};
   return {panel,hud,act,sync,state:()=>({red,shUp,sep,rockDead})};
 }

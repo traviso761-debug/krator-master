@@ -59,9 +59,6 @@ ENTRIES = [
      "quarters on core/city), the Garden's great-houses, the Deep Root cavern opening from the Garden's wall, the farm ring and "
      "the bands' camps; the hour slider and N for the night (the Crown's fires, the stall lamps, the beacons). Walk mode, the "
      "minimap (M) and the inspector.", 'new'),
-    ('world', 'girder-hero', 'settlements/girder/hero/dist/girder-hero.html', 'Girder · Hero',
-     'Girder with Styv, a third-person character you order about with the mouse, and people to talk to (Phil in the '
-     'Assembly Hall). Same village, same rooms; the models slimmed to fit the gallery (MADE).', 'new'),
     ('world', 'mavs-refuge', 'settlements/mavs-refuge/mavs-refuge.html', "Mav's Refuge",
      'A refuge in the hypertropic jungle on the lee shore of the Ring Sea: every apartment, workshop, storehouse, house '
      'and hut planned into rooms and furnished from the catalog, real windows, and lamps and hearths lit at night.'),
@@ -455,8 +452,7 @@ LINKED = {
                             'https://claude.ai/artifact/8Gwe3uUG9Ex86Mp3YbHXEM', ['dist/isle-demo.html', 'dist/isle-demo.tex.*.js']),
 }
 
-MADE = {'settlements/girder/hero/dist/girder-hero.html':
-        ['build_hero.py', '--slim', '--out', 'hero/dist/girder-hero.html']}
+MADE = {}   # Girder Hero's --slim page lived here until its page was retired to archive/girder-hero (2026-11-10)
 
 
 def build_dir(path):

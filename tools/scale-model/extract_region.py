@@ -123,6 +123,7 @@ KITS = {
     'xanadu': 'xanadu',
     'the catch': 'catch',
     'region 99': 'loom-chasms',
+    'loom chasms': 'loom-chasms',     # region 99's name since 5.1 edit 3 (2026-11-11)
     'siphon pits': 'siphon-pits',
     'n outlands': 'outlands',
     's outlands': 'outlands',
@@ -558,7 +559,7 @@ def synthesize_option_c_relief(D, elev, whas, wflag, bmap, biomes, omap, overlay
             fam_ids['karst'].append(bid)
         elif nm in ('n semiarid', 'ria valley'):
             fam_ids['scabland'].append(bid)
-        elif nm in ('siphon pits', 'region 99'):
+        elif nm in ('siphon pits', 'region 99', 'loom chasms'):
             fam_ids['maar_chasm'].append(bid)
         elif nm == 'sw highlands':
             fam_ids['ringfold'].append(bid)
@@ -1281,6 +1282,22 @@ def main():
                         item['m'] = [round((item['px'][0] - cx) * 2000.0, 1), round((item['px'][1] - cy) * 2000.0, 1)]
         tubes.append(tb_rec)
 
+    # ---- the landform records under a cell (DATA.landforms: edit_512's islets, edit_513's) whose reach meets the box, in
+    # the region's frame, for core/world/41l-world-landforms.js to stamp at 1:1 (openworld/PLAN-VOTH.md section 3, item 4)
+    landforms = []
+    for lf in (D.get('landforms') or {}).get('landforms', []):
+        # its points: the centre, a channel's path, a page water's parts; its reach: twice its radius or half-width, or 1 km
+        pts = [(lf['px'], lf['py'])] + [tuple(p) for p in lf.get('path_px', [])]
+        for part in lf.get('parts', []):
+            pts += [tuple(part['px'])] + ([tuple(part['px_to'])] if part.get('px_to') else [])
+        w = lf.get('width_m')
+        r_px = 2.0 * float(lf.get('r_m') or (max(w) if isinstance(w, list) else w) or 500) / 2000.0
+        if not any(x0 - r_px <= a <= x1 + r_px and y0 - r_px <= b <= y1 + r_px for a, b in pts):
+            continue
+        rec_l = copy.deepcopy(lf)
+        rec_l['x'], rec_l['z'] = round((lf['px'] - cx) * 2000.0, 1), round((lf['py'] - cy) * 2000.0, 1)
+        landforms.append(rec_l)
+
     # ---- settlements inside the polygon
     def inside_px(px, py):
         X, Y = int(round(px)) - x0, int(round(py)) - y0
@@ -1359,11 +1376,8 @@ def main():
         meta['overlays'] = overlays
     if palaeo:
         meta['palaeo'] = palaeo
-    # the sub-cell landforms (model/data/landforms.json: an island under a 2 km cell) in the box, for core/coast to stamp at 1:1
-    lfs = [dict(lf, x=round((lf['px'] - cx) * 2000.0, 1), z=round((lf['py'] - cy) * 2000.0, 1))
-           for lf in (D.get('landforms') or {}).get('landforms', []) if x0 <= lf['px'] <= x1 and y0 <= lf['py'] <= y1]
-    if lfs:
-        meta['landforms'] = lfs
+    if landforms:
+        meta['landforms'] = landforms
     json.dump(meta, open(os.path.join(out, 'region.json'), 'w', encoding='utf-8', newline='\n'), separators=(',', ':'))
     print('region %s: box px %s, %d x %d px, polygon %d km2' % (reg['name'], [x0, y0, x1, y1], W, H, meta['region']['area_km2']))
     print('heights %d x %d cells (%.0f m/cell, su=%.2f, synth=%s); %d channels, %d vertices; %d water cells lowered to their spill height' % (
@@ -1373,6 +1387,9 @@ def main():
     print('  %d dry valleys' % len(valleys))
     if tubes:
         print('  %d lava tubes/caverns' % len(tubes))
+    for lf in landforms:
+        print('  landform %s (%s%s)%s' % (lf['id'], lf['kind'], '/' + lf['form'] if lf.get('form') else '',
+              ': r %g m, crest %g m over water %g m' % (lf['r_m'], lf['crest_m'], lf['water_m']) if 'r_m' in lf and 'crest_m' in lf else ''))
     for b in biomes:
         print('  biome %2d %-18s kit %-16s %7d px (%d in region)' % (b['id'], b['name'], b['kit'], b['px'], b['px_in_region']))
     print('  %d px took the nearest overlay' % filled)

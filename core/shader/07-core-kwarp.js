@@ -13,14 +13,16 @@
    KWARP.text(vs, glsl) -> the vertex text with the warp in, or null when it has no world projection to bend (a screen quad, atmQuad).
      Pure: three shapes. <project_vertex>; a hook that wrote its own 'gl_Position = projectionMatrix * mvPosition' (the sway, the anim,
      the impostors, the lava); any other 'gl_Position = projectionMatrix * <expression>'. mvPosition is rewritten too, so fog and
-     vViewPosition follow. Normals are not bent. Culling is three's, on the unbent bounds: a far chunk the warp lifts into view vanishes early */
+     vViewPosition follow. Idempotent: text that has the warp comes back as it is (a material cloned with its source's onBeforeCompile, the
+     composed KHOOK hook, runs that hook and then its own, so the warp twice: kWarp defined twice, the program not compiled). Normals are not bent. Culling is three's, on the unbent bounds: a far chunk the warp lifts into view vanishes early */
 (function(root){'use strict';
  var W={},K=function(){if(root.KHOOK)return root.KHOOK;throw new Error('KWARP: core/shader/06-core-khook.js is not on this page');};
  var VIEW='vec4 kWarpV(vec4 mv){vec3 w=transpose(mat3(viewMatrix))*(mv.xyz-viewMatrix[3].xyz);return viewMatrix*vec4(kWarp(w),mv.w);}\n';
  var EYE='\n#ifndef KHOOK_EYE\n#define KHOOK_EYE\nvec3 kEye(){return -(viewMatrix[3].xyz*mat3(viewMatrix));}\n#endif\n';
  var PROJ=/gl_Position\s*=\s*projectionMatrix\s*\*\s*([^;]+);/g;
  var CHUNK='#include <project_vertex>';
- W.text=function(vs,glsl){var head=EYE+glsl+'\n'+VIEW,fix='mvPosition=kWarpV(mvPosition);gl_Position=projectionMatrix*mvPosition;';
+ W.text=function(vs,glsl){if(vs.indexOf('vec4 kWarpV(')>=0)return vs;   /* once: a clone that took its source's composed hook runs the warp twice (2026-11-09) */
+ var head=EYE+glsl+'\n'+VIEW,fix='mvPosition=kWarpV(mvPosition);gl_Position=projectionMatrix*mvPosition;';
   if(vs.indexOf(CHUNK)>=0)return head+vs.replace(CHUNK,function(){return CHUNK+'\n'+fix;});
   var hit=false,out=vs.replace(PROJ,function(m,e){hit=true;return /^mvPosition\s*$/.test(e)?fix:'gl_Position=projectionMatrix*kWarpV('+e.trim()+');';});
   return hit?head+out:null;};

@@ -52,7 +52,7 @@ ISLE.exportScene = function (ctx) {
       kitOf: function (m) { return m.userData && m.userData.isleProto ? m.userData.isleProto + '/' + m.userData.part : null; },
       itemKit: function (kit) { return kit ? ISLE.EXPORT_KIT[kit.split(':')[0]] || 'isle' : 'isle'; },
       ownerOf: function (m, i) { var L = m.userData && m.userData.lots; return L ? L[i] || null : null; },
-      skipInstanced: function (m) { return m === DRAW.massB || m === DRAW.massR ? 'massing (its lots drawn in full)' : m.name === 'citizens' ? 'citizens (the sim section)' : hidden(m) ? 'hidden' : null; },
+      skipInstanced: function (m) { return (DRAW.massMeshes || []).indexOf(m) >= 0 ? 'massing (its lots drawn in full)' : m.name === 'citizens' ? 'citizens (the sim section)' : hidden(m) ? 'hidden' : null; },
       skipMesh: function (m) { return m.name === 'ground' ? 'the ground (the terrain section)' : m.name === 'sea' ? 'the sea' : hidden(m) ? 'hidden' : null; }
     }).assemble(ctx);
   } finally { DRAW.nearR = keep.r; DRAW.nearMax = keep.n; DRAW.near(keep.at || [cx, cz], true); }

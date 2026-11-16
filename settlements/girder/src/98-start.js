@@ -58,7 +58,7 @@ var gDoorTip = KDOORHOST.tip(function(){ return camera.position; }, goWalking); 
 window._doors = { doors:KDOOR.list.length, locked:KDOOR.list.filter(function(D){ return D.locked; }).length, open:KDOOR.list.filter(function(D){ return D.open>0; }).length,
   panes:NL_WINDOWS.length, cut:NL_WINDOWS.filter(function(W){ return W[11]; }).length, cards:window._panes ? window._panes.cards : 0, voids:0,
   get cleared(){ return GOPEN.cleared; }, get blocks(){ return KDOOR.list.reduce(function(a,D){ return a+D.blocks.length; },0); } };
-var GHOST = KHOST.take({
+var GHOST = KHOST.take(KHOST.standard({
   build:'girder', title:'Girder', hint:'an outlying Beast Rider village in the central-crater hyperjungle',
   scene:scene, camera:camera, renderer:renderer, ground:terrainH, walk:KWALK, walker:{ step:0.55, drop:1.4, r:0.28, h:1.75 }, clear:1.6, minR:4, maxR:5000,
   views:gViews, start:VIEWS[0][0],
@@ -74,13 +74,13 @@ var GHOST = KHOST.take({
   exporters:{ tags:function(){ return KTAGS.page.export(); } },
   budget:BUDGET, api:window._api,
   /* E opens or shuts the door within reach (core/door: KDOORHOST.toggleNear; 54-openings.js); flying, E still climbs as well */
-  keys:{ e:function(){ goToggleNear(); } },
+  std:{ door:function(){ goToggleNear(); } }   /* Door (E): the one key map (core/host/92k-host-keys.js) */,
   draw:function(sc, cam){   /* the sky's pass, then the world over it: as 80-camera.js's frame drew */
     renderer.info.autoReset = false; renderer.info.reset();
     renderer.autoClear = true; skyRender();
     if(typeof SKY_STUB === 'undefined'){ renderer.autoClear = false; renderer.clearDepth(); }
     renderer.render(sc, cam); renderer.autoClear = true; }
-});
+}));
 /* the orbit target stays over the map and under the canopy's top (80-camera.js's pan clamp) */
 KHOST.on(function girderClamp(){ if(CAM_HOOK) return; var t = GHOST.ctl.target; t.x = clamp(t.x, -HW+60, HW-60); t.z = clamp(t.z, -HW+60, HW-60); t.y = clamp(t.y, -10, 700); }, 'tick');
 /* Girder's own frame, after the host has placed the camera: the walk, the sky, the night, the ticks, the sun, the atmosphere.

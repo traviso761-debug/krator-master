@@ -1,0 +1,370 @@
+{
+ "format": "krator-region-resources",
+ "version": 1,
+ "region": "xanadu-lake-shore",
+ "census": {
+  "area_km2": 5344,
+  "step_m": 4000,
+  "provinces": {
+   "water": 1008,
+   "rift": 4336
+  },
+  "families": {
+   "iron": {
+    "mean": 56.8,
+    "good_km2": 0,
+    "rich_km2": 0,
+    "peak": {
+     "byte": 70,
+     "x": -62000,
+     "z": -22000
+    },
+    "nodes": 132
+   },
+   "copper": {
+    "mean": 97.4,
+    "good_km2": 4336,
+    "rich_km2": 0,
+    "peak": {
+     "byte": 120,
+     "x": -62000,
+     "z": -22000
+    },
+    "nodes": 128
+   },
+   "tin": {
+    "mean": 40.6,
+    "good_km2": 0,
+    "rich_km2": 0,
+    "peak": {
+     "byte": 50,
+     "x": -62000,
+     "z": -22000
+    },
+    "nodes": 53
+   },
+   "nickel": {
+    "mean": 0,
+    "good_km2": 0,
+    "rich_km2": 0,
+    "peak": {
+     "byte": 0,
+     "x": -70000,
+     "z": -38000
+    },
+    "nodes": 0
+   },
+   "gold": {
+    "mean": 73,
+    "good_km2": 0,
+    "rich_km2": 0,
+    "peak": {
+     "byte": 90,
+     "x": -62000,
+     "z": -22000
+    },
+    "nodes": 61
+   },
+   "silver": {
+    "mean": 64.9,
+    "good_km2": 0,
+    "rich_km2": 0,
+    "peak": {
+     "byte": 80,
+     "x": -62000,
+     "z": -22000
+    },
+    "nodes": 54
+   },
+   "rare-earth": {
+    "mean": 154.2,
+    "good_km2": 4336,
+    "rich_km2": 4336,
+    "peak": {
+     "byte": 190,
+     "x": -62000,
+     "z": -22000
+    },
+    "nodes": 90
+   },
+   "coal": {
+    "mean": 0,
+    "good_km2": 0,
+    "rich_km2": 0,
+    "peak": {
+     "byte": 0,
+     "x": -70000,
+     "z": -38000
+    },
+    "nodes": 0
+   },
+   "oil": {
+    "mean": 51.5,
+    "good_km2": 1648,
+    "rich_km2": 0,
+    "peak": {
+     "byte": 110,
+     "x": -62000,
+     "z": -22000
+    },
+    "nodes": 43
+   },
+   "sulfur": {
+    "mean": 0,
+    "good_km2": 0,
+    "rich_km2": 0,
+    "peak": {
+     "byte": 0,
+     "x": -70000,
+     "z": -38000
+    },
+    "nodes": 0
+   },
+   "saltpeter": {
+    "mean": 0.1,
+    "good_km2": 0,
+    "rich_km2": 0,
+    "peak": {
+     "byte": 20,
+     "x": -26000,
+     "z": -6000
+    },
+    "nodes": 0
+   },
+   "halite": {
+    "mean": 0,
+    "good_km2": 0,
+    "rich_km2": 0,
+    "peak": {
+     "byte": 0,
+     "x": -70000,
+     "z": -38000
+    },
+    "nodes": 0
+   },
+   "gypsum": {
+    "mean": 0,
+    "good_km2": 0,
+    "rich_km2": 0,
+    "peak": {
+     "byte": 0,
+     "x": -70000,
+     "z": -38000
+    },
+    "nodes": 0
+   },
+   "potash": {
+    "mean": 0,
+    "good_km2": 0,
+    "rich_km2": 0,
+    "peak": {
+     "byte": 0,
+     "x": -70000,
+     "z": -38000
+    },
+    "nodes": 0
+   },
+   "alkali": {
+    "mean": 0,
+    "good_km2": 0,
+    "rich_km2": 0,
+    "peak": {
+     "byte": 0,
+     "x": -70000,
+     "z": -38000
+    },
+    "nodes": 0
+   },
+   "marble": {
+    "mean": 0,
+    "good_km2": 0,
+    "rich_km2": 0,
+    "peak": {
+     "byte": 0,
+     "x": -70000,
+     "z": -38000
+    },
+    "nodes": 0
+   },
+   "stone": {
+    "mean": 190.1,
+    "good_km2": 4336,
+    "rich_km2": 4208,
+    "peak": {
+     "byte": 255,
+     "x": -62000,
+     "z": -22000
+    },
+    "nodes": 0
+   },
+   "clay": {
+    "mean": 12.4,
+    "good_km2": 288,
+    "rich_km2": 288,
+    "peak": {
+     "byte": 230,
+     "x": -62000,
+     "z": -22000
+    },
+    "nodes": 0
+   },
+   "wood": {
+    "mean": 153.2,
+    "good_km2": 4256,
+    "rich_km2": 2864,
+    "peak": {
+     "byte": 255,
+     "x": -22000,
+     "z": -18000
+    },
+    "nodes": 0
+   },
+   "water": {
+    "mean": 248,
+    "good_km2": 5344,
+    "rich_km2": 5312,
+    "peak": {
+     "byte": 255,
+     "x": -70000,
+     "z": -38000
+    },
+    "nodes": 0
+   },
+   "limestone": {
+    "mean": 56.8,
+    "good_km2": 0,
+    "rich_km2": 0,
+    "peak": {
+     "byte": 70,
+     "x": -62000,
+     "z": -22000
+    },
+    "nodes": 0
+   },
+   "impactite": {
+    "mean": 0,
+    "good_km2": 0,
+    "rich_km2": 0,
+    "peak": {
+     "byte": 0,
+     "x": -70000,
+     "z": -38000
+    },
+    "nodes": 0
+   },
+   "ultramafic": {
+    "mean": 0,
+    "good_km2": 0,
+    "rich_km2": 0,
+    "peak": {
+     "byte": 0,
+     "x": -70000,
+     "z": -38000
+    },
+    "nodes": 0
+   },
+   "tuff": {
+    "mean": 0,
+    "good_km2": 0,
+    "rich_km2": 0,
+    "peak": {
+     "byte": 0,
+     "x": -70000,
+     "z": -38000
+    },
+    "nodes": 0
+   },
+   "skarn": {
+    "mean": 0,
+    "good_km2": 0,
+    "rich_km2": 0,
+    "peak": {
+     "byte": 0,
+     "x": -70000,
+     "z": -38000
+    },
+    "nodes": 0
+   },
+   "glass": {
+    "mean": 0,
+    "good_km2": 0,
+    "rich_km2": 0,
+    "peak": {
+     "byte": 0,
+     "x": -70000,
+     "z": -38000
+    },
+    "nodes": 0
+   }
+  },
+  "farm": {
+   "mean": 0.258,
+   "good_km2": 1520,
+   "best_km2": 1088,
+   "peak": {
+    "score": 0.985,
+    "x": -58000,
+    "z": -22000
+   }
+  },
+  "placers": {
+   "gold": 0,
+   "tin": 0
+  },
+  "ruin_km2": 0,
+  "vents": 1,
+  "geology": true
+ },
+ "markers": [
+  {
+   "id": "res-mining-rare-earth--62--22",
+   "kind": "mining",
+   "family": "rare-earth",
+   "x": -62000,
+   "z": -22000,
+   "score": 190,
+   "label": "Ore: rare earths (rich, 190/255)",
+   "why": "the scale model's geology: rare earths prospectivity 190 on rift ground"
+  },
+  {
+   "id": "res-farm--10-34",
+   "kind": "farm",
+   "family": "farmland",
+   "x": -10000,
+   "z": 34000,
+   "score": 0.83,
+   "label": "Farmland: the best (83%, 973 mm, 21 °C)",
+   "why": "warm, watered, flat and deep-soiled (Csa)"
+  },
+  {
+   "id": "res-farm-2--14",
+   "kind": "farm",
+   "family": "farmland",
+   "x": 2000,
+   "z": -14000,
+   "score": 0.75,
+   "label": "Farmland: the best (75%, 643 mm, 23 °C)",
+   "why": "warm, watered, flat and deep-soiled (Csb)"
+  },
+  {
+   "id": "res-farm--46--10",
+   "kind": "farm",
+   "family": "farmland",
+   "x": -46000,
+   "z": -10000,
+   "score": 0.71,
+   "label": "Farmland: the best (71%, 941 mm, 22 °C)",
+   "why": "warm, watered, flat and deep-soiled (Csa)"
+  },
+  {
+   "id": "res-farm--66--34",
+   "kind": "farm",
+   "family": "farmland",
+   "x": -66000,
+   "z": -34000,
+   "score": 0.53,
+   "label": "Farmland: good (53%, 1318 mm, 23 °C)",
+   "why": "warm, watered, flat and deep-soiled (Cfa)"
+  }
+ ]
+}

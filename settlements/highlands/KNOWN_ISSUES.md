@@ -2,6 +2,24 @@
 
 Open items are `- [ ]` lines; build.py prints them.
 
+- [ ] (2026-11-10) **Hollow walls, the Hall of the Republic and the Fortress (`?interiors=1`; the 2026-11-09 WIP finished).**
+      The furnished defs' blocks are drawn hollow by the Vernacular's auto bodies (`kits/iziz-vernacular/src/69e6-vern-autobody.js`),
+      their doors unlocked into the planned rooms; the Hall and the Fortress are planned room by room on their blueprints
+      (`kits/highlands/hall/BLUEPRINT.md`, `kits/highlands/fortress/BLUEPRINT.md`) and drawn by `kits/highlands/src/72c-hl-plan.js`.
+      `verify.py --interiors` runs `tools/ix_reach_audit.js` and fails unless every floor of the Hall and the Fortress is reached:
+      on the sheet 52 of 52 and 33 of 33; the sheet as a whole 1,322 of 1,367 floors (87 slivers beside stairwells counted
+      apart), 45 unreached in 24 buildings (the container stacks', the tank row's, the radome tower's, the gasholder's and the
+      kontor's upper units, which have no stair in their set item; the market halls', the smithies' and the windmills' floors
+      with no kit door near; the cliff village's huts; the astronomers' tower). Roketstad (`verify.py dist/roketstad.html --assert --interiors`, 2026-11-10: OK): 17,555 of 18,101 floors reached (17,187 before
+      this pass), 851 slivers apart, the Hall and the Fortress whole.
+      Left: (1) the room kinds `chamber committee gallery lobby guard war_room armoury magazine audience signals cell` are
+      registered by `kits/interiors/sets/highlands.js`, as the other sets register theirs, not in `kits/interiors/src/30-programs.js`
+      as the owner's brief asked: that file reaches 30 builds and 184 pages (`tools/reach.py`), a rebuild this change did not
+      take on; moving them is a one-line move for the next all-builds rebuild (TODO.md). (2) The catalog has no curved member's
+      bench with a desk front, rostrum, mace and its table, division clerks' desks or map table: the chamber seats catalog benches
+      on the builder's tiers, and the war room's map table is the builder's own (78 `hnMapTable`). (3) Reed Lake, Dalab and Ys:
+      `--vendor-check` 2026-11-10: Reed Lake identical (73 adapted on purpose), Ys no unexpected drift, Dalab drifts in 71, 71b,
+      73 and 74 as before (none of them touched here); not re-vendored.
 - [ ] (2026-11-03) **Doors and glass: the kit's bodies are solid.** The kit takes core/door and the Vernacular's openings
       (69e5) and `kits/highlands/src/71c-hl-openings.js` (kits/highlands/README.md, "Doors and glass"): on the sheet 325 doors
       (each a real leaf in KDOOR, with an id from its def and placement) and 4,578 panes where there were black plates and

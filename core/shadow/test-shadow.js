@@ -51,4 +51,17 @@ const dir = (() => { const v = [-0.6, 0.65, 0.45], l = Math.hypot(...v); return 
   const Q = make('?shadow=1');
   ok(Q.renderer.shadowMap.enabled && Q.H.enabled(), '?shadow=1 asks for them at load');
   ok(!make('?shadow=10').H.enabled() && !make('?shadow=0').H.enabled(), 'negative: ?shadow=0 or another value does not'); }
+/* KSHADOW.units and maxUnits (the Throne's samplersOf in core, 2026-11-09): the units a program links, against min(16, GL) */
+{ const vm = require('vm'), fs = require('fs'), path = require('path');
+  const lib = { vertexShader: 'void main(){}', fragmentShader: '#include <map_pars_fragment>\nvoid main(){}' };
+  const ctx = { KSHADOW: Object.assign({}, S), THREE: { ShaderLib: { lambert: lib, standard: lib } } };
+  vm.runInNewContext(fs.readFileSync(path.join(__dirname, 'host', '12-core-shadow-host.js'), 'utf8'), ctx);
+  const K = ctx.KSHADOW;
+  const hook = sh => { sh.fragmentShader = 'uniform sampler2D uA, uB;\nuniform highp sampler3D uNoise;\nuniform sampler2D uDead;\n' + sh.fragmentShader.replace('void main(){}', 'void main(){ texture2D(uA,v); texture2D(uB,v); texture(uNoise,w); }'); };
+  ok(K.units({ type: 'MeshLambertMaterial', map: {}, onBeforeCompile: hook }) === 4, 'a map and three samplers read (uDead declared, never read: no unit)');
+  const std = { type: 'MeshStandardMaterial', isMeshStandardMaterial: true, map: {} };
+  ok(K.units(std, null, { environment: {} }) === 2 && K.units(std, null, {}) === 1, 'scene.environment takes a unit on a standard material');
+  ok(K.units(Object.assign({}, std, { envMap: {} }), null, { environment: {} }) === 2, 'negative: not twice when it has its own envMap');
+  ok(K.units({ type: 'MeshLambertMaterial', onBeforeCompile() { throw new Error('x'); } }) === 99, 'a failing hook counts 99');
+  ok(K.maxUnits({ capabilities: { maxTextures: 32 } }) === 16 && K.maxUnits({ capabilities: { maxTextures: 8 } }) === 8 && K.maxUnits({}) === 16, 'the limit is min(16, GL)'); }
 console.log(bad ? bad + ' failed' : 'all passed'); process.exit(bad ? 1 : 0);

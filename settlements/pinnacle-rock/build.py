@@ -113,7 +113,7 @@ import host as khost
 # viewer"): host.FULL, the shell and the record inspector, stocks, marks (they supersede the polytool), pictures, the
 # minimap, the editor and the cutaway, with core/edits, core/space and core/minimap; the page's edits log inlined
 # (host.edits_js: <build>/edits.json, or a newer browser draft)
-CORE_HOST=khost.FULL
+CORE_HOST=khost.FULL+khost.KEYS   # KEYS: the one key map and the one walk mode (core/host/92k-host-keys.js)
 khost.resolve(PATH,CORE_HOST)
 # core/walk (KWALK): the floors a walker stands on that the ground does not carry (the decks, the climbs, the bridges, the
 # Stair, the lift road, the Deep Root: 89h-host-walk.js, and KCAVERN writes its own); core/lod (every build takes it:
@@ -125,6 +125,7 @@ CORE_X={'20-core-walk.js':('walk','20-core-walk.js'),'09-lod.js':('lod','09-lod.
         '44-core-stage.js':('biome','44-core-stage.js')}
 for f in ('89-atmos-0-core.js','89-atmos-0p-presets.js','89-atmos-2-lights.js','89-atmos-8-export.js','89-atmos-a-waves.js','89-atmos-b-skylight.js'): CORE_X[f]=('atmos',f)
 for f in ('20-core-water.js','21-core-water-shore.js','22-core-water-flow.js','50-core-water-draw.js','51-core-water-kinds.js'): CORE_X[f]=('water',f)
+CORE_X['56-core-water-breakup.js']=('water','ext/56-core-water-breakup.js')   # the breakup (core/water ext/56), on by default since 2026-11-09
 for f,(d,n) in CORE_X.items():
     if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core',d,n))
 miss=[f for f in ('10-core-head.js','20-core-kit.js','30-core-foliage.js','40-core-place.js') if f not in PATH]

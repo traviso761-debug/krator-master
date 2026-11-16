@@ -12,7 +12,7 @@ const FAR=(function(){
   for(let k=0;k<NA;k++){const a=k/NA*TAU,x=Math.cos(a)*r,z=Math.sin(a)*r,o=3*(i*NA+k);
    let h=landH(x,z,mw);const w=worldWater(x,z),wet=w>-1e8&&w>=h-.5;
    if(wet){h=w;water++;C.setRGB(.05,.09,.1);}
-   else{const S=WORLD.at(x+WX,z+WZ);WORLD.ground(x+WX,z+WZ,S,out);C.setRGB(out[0],out[1],out[2]);}
+   else{const q=LS.toWorld(x,z),S=WORLD.at(q[0],q[1]);WORLD.ground(q[0],q[1],S,out);C.setRGB(out[0],out[1],out[2]);}
    // the inner rings sink under the page's own ground where they meet it
    pos[o]=x;pos[o+1]=h-(i===0?3:0);pos[o+2]=z;col[o]=C.r;col[o+1]=C.g;col[o+2]=C.b;}}
  for(let i=0;i<NR-1;i++)for(let k=0;k<NA;k++){const a=i*NA+k,b=i*NA+(k+1)%NA,c=a+NA,d=b+NA;idx.push(a,b,c,b,d,c);}

@@ -35,6 +35,15 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `89t-host-weather.js` | 3 |  |
 | `89w-host-water.js` | 6 |  |
 | `89zy-host-bend.js` | 2 |  |
-| `89zz-host-shadow.js` | 3 |  |
+| `89zz-host-shadow.js` | 2 |  |
 | `99-host-take.js` | 14 | the inspector's words (8); the compass (the warp's needle: PLAN.md section  (18); the probe's budgets (25); the kit's own checks (verify.py --assert) (29); the water the eye sees (the final rebuild, pair  (69); the page, handed to the host (88) |
 | `99-tail.html` | <1 |  |
+
+## stations/
+
+Each station builds one page (`build.py --station <name>`) from its own fragments, with `src/` or its `base` station.
+
+| Station | Fragments | KB |
+|---|---|---|
+| face | 00-head.html, 45-host-stage.js, 48z-host-face.js | 15 |
+| wall | 00-head.html, 45-host-stage.js | 9 |
