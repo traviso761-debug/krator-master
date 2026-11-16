@@ -4,7 +4,9 @@ The owner, 2026-11-16: *"can we find a site that's a great tea production site a
 green monastery there, the Order of Viridian Thought?"* Later the same day: *"plan the Viridian Thought head monastery /
 master tea and medicinal herb farm"*.
 
-This is a plan for the owner to approve. Nothing is built. `SURVEY.md` holds the site survey and `survey_site.py` re-runs it.
+This is a plan for the owner to approve. The steps the owner's open questions do not block are built: the Order's own
+buildings on a sheet (V3) and the estate's records (V4, the data side). Section 12a says what they are. Nothing else is
+built. `SURVEY.md` holds the site survey and `survey_site.py` re-runs it.
 Each item is marked by where it comes from:
 - **owner**: the owner's words;
 - *brief*: the Xanadu sim session's brief for this plan;
@@ -299,26 +301,29 @@ blocks**. As in Qiblai, the green is `QSPOKE[3]`'s.
 | `qb_row_poor`, `qb_row_mid` | the lay families' lines |
 | `qb_workshop` | the cooper, the basket maker, the potter of the tea jars |
 | `qb_meditation_garden` | the form under the physic garden (as the Azure Dream's lotus garden takes it) |
-| `qb_terrace_stair` | the stairs between the benches; it is on the kit's own branch (`claude/zealous-allen-0cd44d`), not yet on this one |
+| `qb_terrace_stair` | the stairs between the benches (from the kit's branch, now merged into this one) |
 
-**New**, prefix **`qb_vt_`** (*proposed*; sizes are estimates):
+**New**, prefix **`qb_vt_`**. These are built (V3): the lot is each def's `w` x `d`, and every one stays on it within 0.3 m
+(`tests/test-vt-records.js`):
 
-| Record | What | Size (m) | Budget (tris) |
+| Record | What | Lot (m) | Fragment |
 |---|---|---|---|
-| `qb_vt_wither` | a withering loft: three floors, louvred walls, the tray racks seen through them | 60 x 14, 12 high | 60k |
-| `qb_vt_roll_fire` | the rolling hall and the firing hall in one range: the tables, sixteen woks, the chimney range, the steaming room and presses | 40 x 32 | 80k |
-| `qb_vt_pack` | the sorting and packing house, with the winnowing yard | 30 x 16 | 30k |
-| `qb_vt_tasting` | the tasting room: a pavilion with a long table, the cups set out to the north light | 18 x 12 | 25k |
-| `qb_vt_drying` | the herb drying house: slatted racks round a white court (Kirstabal's `xa_latex_house` is the form) | 40 x 30 | 50k |
-| `qb_vt_still` | the still-room and dispensary: the stills, the camphor still, the syrup kitchen, the Bitter Room, the counter | 30 x 20 | 50k |
-| `qb_vt_curing` | the curing house: a half-sunk cube with root cellars | 20 x 14 | 20k |
-| `qb_vt_shade` | a lath shade house for the ginseng beds where the grove is thin | 24 x 12 | 10k |
-| `qb_vt_log_yard` | the log yard: stacked inoculated logs under a thatch roof on posts | 30 x 10 | 15k |
-| `qb_vt_spring` | the spring house and cistern: a cube over the spring, a stone tank, the head of the rills | 12 x 12 | 15k |
-| `qb_vt_grange` | the dry garden's grange: a lodge, a drying shed, a walled yard | 30 x 24 | 30k |
-| `qb_vt_shelter` | the High Garden's pluckers' shelter, with a shrine and a basket rack | 10 x 8 | 8k |
-| `qb_vt_hermitage` | a cloud hermitage cell on the face | 6 x 6 | 5k |
-| tea hedges, herb beds | flora on the terraces' treads, not buildings: the crops kit's records placed by `KRAND` (section 10) | | instanced |
+| `qb_vt_wither` (3 variants) | a withering loft: a wash ground storey, two timber storeys with louvres front and back, the tray racks seen through them, the roof lanterns; v1 shorter (40 m), v2 with the weighing yard under an awning | 62 x 28 | `89qv` |
+| `qb_vt_roll_fire` | the rolling hall (twenty tables behind tall windows) and the firing hall (a stove bench with sixteen woks, a chimney to each pair), the steaming room and the brick presses at the west end | 54 x 32 | `89qv` |
+| `qb_vt_pack` | the sorting and packing house, the winnowing yard, the sealed jars, the Order's chests | 31 x 18 | `89qv` |
+| `qb_vt_tasting` | the tasting room: an open pavilion with a gilt crown, the cupping table with its bowls, the grade jars | 19 x 15 | `89qv` |
+| `qb_vt_drying` | the herb drying house: two open rack halls round a white court, the mats, the closed store at the back | 41 x 31 | `89qv` |
+| `qb_vt_still` | the still-room and dispensary: the counter window and the drawers of simples, the stills' flue, the Bitter Room, the camphor still in its side yard | 33 x 25 | `89qv` |
+| `qb_vt_curing` | the curing house: a low cube over a sunk cellar, slit vents, a ramp to the cellar door | 21 x 24 | `89qv` |
+| `qb_vt_shade` | the lath shade house over two ginseng beds | 24.5 x 12.5 | `89qw` |
+| `qb_vt_log_yard` | the log yard: six cribs of logs under thatch, the caps and brackets, the soaking trough | 31 x 9 | `89qw` |
+| `qb_vt_spring` | the spring house and cistern, the rill's head, a chorten | 12 x 13 | `89qw` |
+| `qb_vt_grange` | the dry garden's grange: the walled yard, the lodge, the drying shed, two beds | 31 x 27 | `89qw` |
+| `qb_vt_shelter` | the High Garden's pluckers' shelter: the cube, the lean-to and the basket rack, a chorten and a flag pole | 10 x 8 | `89qw` |
+| `qb_vt_hermitage` (3 variants) | a cloud hermitage cell on its ledge, a flag pole | 6 x 6 | `89qw` |
+| `qb_vt_terrace_plot` (Low, High) | the sheet's sample of two tea treads, three hedge rows each, the rill, the riser (earth or stone) and the path's steps | 24.5 x 16 | `89qw` |
+| `qb_vt_physic` | the physic garden: eight beds either side of the axis rill, the nursery's cuttings beds, the pavilion at the head, the green-banded wall | 61 x 79 | `89qw` |
+| tea hedges, herb beds | not buildings: `VTE` (`src/40-vt-estate.js`) traces the hedges along the terraces' treads and picks every bed's crop from `kits/crops` (section 12a); the page draws them (V6) | | `40` |
 
 **Where they live.** The same arrangement the Azure Dream settled with the Qiblai kit's session (its PLAN.md section 6,
 commit 12cb1eb1a):
@@ -438,11 +443,58 @@ where rice can be paddy) could feed part of it.
 | **V1** | the map: the bench landform `lf_viridian_bench` (the house's bench, about 350 x 400 m at ~800-845 m, centre px 962,1562); pins for the dry garden's grange, the hermitages and the valley village if wanted; the road's line up the hollow | the scale-model session's queue | the pins' ground; core/world's stamp at 1:1 |
 | **V2** | the sim (section 11): herbs, the herb work, the White Lily's house, the people | the Xanadu sim session | its economy test and the new check |
 | **V3** | the new `qb_vt_*` records in `settlements/viridian/src/` on the Qiblai kit's helpers and `QSPOKE[3]`'s dress, seeds 34200-34399, on a sheet beside the green monastery, the cloister court with `qnTeaTouches`; built from `claude/zealous-allen-0cd44d` or after it merges | this settlement | the footprint test; the sheet's `verify.py --assert` |
-| **V4** | the terraces (`KRELIEF.terraces` per garden), the tea hedges and the herb beds placed from `kits/crops` by `KRAND`; a node test that every hedge stands on a tread, every bed's crop fits its ground (`CROPS.at`), and the same seeds give the same beds | this settlement | `node settlements/viridian/tests/test-estate.js` (`tools/ktest.js`, each check with its negative) |
+| **V4** | the terraces (`KRELIEF.terraces` per garden), the tea hedges and the herb beds placed from `kits/crops` by `KRAND`; a node test that every hedge stands on a tread, every bed's crop fits its ground (`CROPS.at`), and the same seeds give the same beds | this settlement | `node settlements/viridian/tests/test-vt-estate.js` (`tools/ktest.js`, each check with its negative) |
 | **V5** | the interiors: the factory, the still-room, the dispensary, the assembly hall; the new catalog pieces | this settlement; the catalog's owner | `core/walk` reach in node; the page's `--interiors` assert; `kits/catalog/verify.py --assert` |
 | **V6** | the page, `settlements/viridian`, started from Longsong: the hollow on core/world's ground, the bench, the terraces, the stream and rills on `core/water`, the mist on `core/atmos`, the plucking day on `core/sched`, people | this settlement | `verify.py --assert` on a GPU lane; `check_core_use` |
 | **V7** | the dry garden's grange and the hermitages as stations; the valley village (`core/hamlet`) if wanted | | the page's asserts |
 | **V8** | the open world's site in `xanadu-oidong-highrift`; the Godot export; the gallery (a new settlement goes to the gallery when it reaches `main`) | | the export test; the gallery's card |
+
+## 12a. Built so far (2026-11-16)
+
+The owner asked for the next steps where the open questions do not block them. Those are V3 and V4's data side. V1 waits on
+the site (question 1), V2 is the sim session's, and V5-V8 wait on the page (question 13).
+
+**V3, the records on a sheet.** `settlements/viridian` is a target on Xanadu's page, as the Azure Dream's and Kirstabal's
+are.
+- `dist/viridian-sheet.html` shows the fifteen `qb_vt_*` records (section 7) at every variant in three rows (the tea works,
+  the herbs, the estate), with Qiblai's green monastery beside them.
+- The records are written on the Qiblai kit's helpers, in `QSPOKE[3]`'s dress, with seeds 34201-34341.
+- `VT_DRESS` is the one switch for question 6: white wash on the working buildings (the recommendation), or green walls
+  throughout.
+- **Tested:** `tests/test-vt-records.js` builds every def at every variant headless (the Xanadu kit's bundle with the
+  Qiblai kit) and checks it stands on its lot within 0.3 m, that every seed is in the block and the dress is the green
+  spoke's. 8 checks pass, each negative failing its fault. `verify.py --assert` adds `viridian-laid` to Xanadu's
+  invariants; the GPU run's result is in the commit that carries it.
+
+**V4, the estate as records** (`src/40-vt-estate.js`, `VTE`, `[G data]`):
+- the three gardens as `KRELIEF.terraces` records: a 1.4 m rise, the Low Garden's earth risers (0.22 of a step) and the
+  High Garden's stone faces (0.15), each held to its polygon and height band;
+- **the hedge rows**: traced as contours of the step coordinate along each tread, three rows to a tread at 0.3, 0.56 and
+  0.82 of it, walked at 0.8 m. The terraces' wobble is read through `KRELIEF`'s own public `shape` and `at`, so nothing
+  in core/terrain is copied;
+- **the beds**: five places on three grounds (the physic garden, the shade house and the log yard on the wet ground, the
+  low bed, the dry garden), every crop from `kits/crops` (`CROPS.at`, `CROPS.pick` with seed 34361), all rain-fed, the
+  shade crops in the shade only;
+- **tested:** `tests/test-vt-estate.js`, 17 checks, on a stand-in ground with the cell's slopes and the hollow's flanks.
+  core/world's ground replaces it at V6.
+
+**What the beds came out as:**
+
+| Place | Crops |
+|---|---|
+| the physic garden | bell-pod, camphor and circle lichen |
+| the shade house | valley ginseng |
+| the log yard | moon caps and rainbow brackets |
+| the low bed | rimdew, herbs (lemongrass, ginger, basil) and tobacco |
+| the dry garden | the plan's eight |
+
+**Found on the way:**
+- **The wet ground's open beds are thin in `kits/crops`.** Only three crops fit there that are not shade crops. That is
+  question 5 again: the Vale's wild medicinal plants as crop records would fill the physic garden.
+- **Every prayer-flag rope is drawn half its length past its far end** (the Xanadu and Qiblai kits' `xnPennants`). It
+  draws its rope with `beam()`, which centres the geometry, but `vRope` (`kits/iziz-vernacular/src/69b-vern-mat.js`) is
+  a cylinder based at 0. The fix belongs to the kits' owners (`KNOWN_ISSUES.md`). The small records here stand their
+  flags on a pole instead.
 
 ## 13. Questions for the owner
 
