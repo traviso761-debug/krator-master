@@ -327,32 +327,38 @@ def ubox(pid, n, name, kind, b, decor, note=''):
     return up(pid, n, name, kind, b[0], b[1], b[2], b[3], decor, note)
 def upanel(pid, label):
     c, r = UPAN[pid]; du = -63 + c * 30; dv = 16 if r == 0 else -16
-    return (du - 1, du + 23, dv - 12, dv + 12, label)
-FLOORS.append(dict(R=50, rect=(-65, 21, -29, 29), id='U', tier=0,
+    return (du - 4, du + 23, dv - 12, dv + 12, label)
+FLOORS.append(dict(R=50, rect=(-68, 21, -29, 29), id='U', tier=0,
   title='Sheet U: the Prismarch\'s tower (the utse), its five floors side by side',
-  sub='The owner, 2026-11-16: the violet Prismarch lives here, in a tower between the wards: the war room and the order\'s banner below, his cell in the middle, his chapel and the beacon on top; he rides to Qiblai for the councils. 22 x 22 m, battered, about 23 m to the roof; the inner gate climbs 4 m through its base. In each panel the Main Gate side (east) is on the left.',
+  sub='The owner, 2026-11-16: the violet Prismarch lives here, in a tower between the wards: the war room and the order\'s banner below, his cell in the middle, his chapel and the beacon on top; he rides to Qiblai for the councils. 22 x 22 m, battered, about 23 m to the roof; the inner gate climbs 4 m through its base, under the murder gallery. One stair serves every floor; a rope hoist in its well carries the runners\' notes up to the War Room. The balcony on U2\'s east face looks down on the muster court. In each panel the Main Gate side (east) is on the left.',
   axisnote='each panel: east (the muster court) on the left, the inner court on the right; north up',
   outlines=[upanel('U0', 'U0 ground (0 m)'), upanel('U1', 'U1 (5 m)'), upanel('U2', 'U2 (9.5 m)'), upanel('U3', 'U3 (14.5 m)'), upanel('U4', 'U4 top (18.5 m)')],
   rooms=[
     up('U0', 1, 'Inner Gate passage', 'passage', 0, 22, -3, 3, 2, 'a covered ramp up 4 m to the inner court; two leaves, murder holes'),
     up('U0', 2, 'Keepers of the Inner Gate', 'guard', 0, 17, 3, 11, 1),
     ubox('U0', 3, 'Stair', 'stair', US, 2),
+    up('U0', 0, 'Lobby', 'passage', 17, 22, 3, 6, 1, 'the stair\'s foot, off the passage behind the keepers\' door'),
     up('U0', 4, 'Runners\' Room', 'runners', 0, 22, -11, -3, 1, 'messages from the Storm Tower and the posts come in here and go up'),
-    up('U1', 5, 'War Room', 'war_room', 0, 22, -11, 3, 3, 'the map of Lizard country and the Kruk Warra, the beacon codes, the raid ledger; the Marshal and the captains in council'),
-    up('U1', 6, 'Clerks of the Raid Ledger', 'office', 0, 17, 3, 11, 2),
-    ubox('U1', 7, 'Stair', 'stair', US, 2),
-    up('U2', 8, 'Hall of the Banner', 'banner_hall', 0, 17, -11, 11, 3, 'the Violet Storm\'s banner and the eight companies\'; the balcony on the east face, where the Prismarch shows himself to the muster'),
-    up('U2', 9, 'Antechamber', 'antechamber', 17, 22, -11, 6, 2),
-    ubox('U2', 10, 'Stair', 'stair', US, 2),
-    up('U3', 11, 'Audience Room', 'audience', 0, 11, -11, 11, 3, 'small: the Prismarch rules in a small room'),
-    up('U3', 12, 'The Prismarch\'s Cell', 'abbot_cell', 11, 22, -11, 1, 2, 'a monk\'s cell with his own sword and bow'),
-    up('U3', 13, 'Secretary', 'office', 11, 17, 1, 11, 2),
-    ubox('U3', 14, 'Stair', 'stair', US, 2),
-    up('U4', 15, 'Roof Terrace', 'roof', 0, 22, -11, 11, 2),
-    up('U4', 16, 'Chapel of the Prismarch', 'chapel', 3, 19, -8, 8, 4, 'the keep\'s gilt chapel of the fort asset (its gilt finial)'),
-    up('U4', 17, 'Beacon', 'beacon', 0, 5, -11, -6, 1, 'the fire basket and the signal mirror: the line east to Strongwall and the watch posts'),
-    ubox('U4', 18, 'Stair (head)', 'stair', US, 2),
+    up('U1', 5, 'War Room', 'war_room', 0, 22, -11, -3, 3, 'the map of Lizard country and the Kruk Warra, the beacon codes, the raid ledger; the Marshal and the captains in council'),
+    up('U1', 6, 'Murder Gallery', 'murder', 0, 17, -3, 3, 1, 'over the passage: the holes in its floor, the leaves\' winch'),
+    up('U1', 7, 'Clerks of the Raid Ledger', 'office', 0, 17, 3, 11, 2),
+    ubox('U1', 8, 'Stair', 'stair', US, 2),
+    up('U1', 0, 'Landing', 'passage', 17, 22, -3, 6, 1, 'the hoist comes up here from the runners'),
+    up('U2', 9, 'Hall of the Banner', 'banner_hall', 0, 17, -11, 11, 3, 'the Violet Storm\'s banner and the eight companies\''),
+    up('U2', 10, 'Balcony', 'balcony', -2.5, 0, -6, 6, 3, 'where the Prismarch shows himself to the companies at the muster (the dzong\'s festival balcony)'),
+    up('U2', 11, 'Antechamber', 'antechamber', 17, 22, -11, 6, 2),
+    ubox('U2', 12, 'Stair', 'stair', US, 2),
+    up('U3', 13, 'Audience Room', 'audience', 0, 11, -11, 11, 3, 'small: the Prismarch rules in a small room'),
+    up('U3', 14, 'The Prismarch\'s Cell', 'abbot_cell', 11, 22, -11, 1, 2, 'a monk\'s cell with his own sword and bow'),
+    up('U3', 15, 'Secretary', 'office', 11, 17, 1, 11, 2),
+    up('U3', 16, 'Attendant and Garderobe', 'attendant', 17, 22, 1, 6, 1, 'the attendant sleeps by the stair'),
+    ubox('U3', 17, 'Stair', 'stair', US, 2),
+    up('U4', 18, 'Roof Terrace', 'roof', 0, 22, -11, 11, 2),
+    up('U4', 19, 'Chapel of the Prismarch', 'chapel', 3, 19, -8, 8, 4, 'the keep\'s gilt chapel of the fort asset (its gilt finial)'),
+    up('U4', 20, 'Beacon', 'beacon', 0, 5, -11, -6, 1, 'the fire basket and the signal mirror: the line east to Strongwall and the watch posts'),
+    ubox('U4', 21, 'Stair (head)', 'stair', US, 2),
   ]))
+for _i, _r in enumerate(FLOORS[-1]['rooms']): _r['n'] = _i + 1   # sheet U is numbered in list order
 
 # ------------------------------------------------------------------------------------------------ the programmes
 cs = lambda n: max(1, round(n))
@@ -385,7 +391,9 @@ def programs():
       'towers': lambda a, w, d, D: [('xanadu_common_weapon_rack', N_TOWERS), ('xanadu_arms_arrow_bin', N_TOWERS), ('xanadu_common_bench', N_TOWERS)],
       'caravan_halt': lambda a, w, d, D: [('xanadu_trade_trough', 4), ('xanadu_trade_hayrack', 4), ('xanadu_common_bench', 4)],
       'tea_kitchen': lambda a, w, d, D: [('xanadu_common_tea_copper', 2), ('xanadu_common_hearth', 1), ('xanadu_works_churn', 2), ('xanadu_common_workbench', 1), ('xanadu_common_jug', 12)],
-      'latrine': lambda a, w, d, D: [], 'sang': lambda a, w, d, D: [('xanadu_court_incense_burner', 1)],
+      'latrine': lambda a, w, d, D: [],
+      'murder': lambda a, w, d, D: [('xanadu_common_weapon_rack', 2), ('xanadu_arms_arrow_bin', 2), ('xanadu_common_store', 2)],
+      'balcony': lambda a, w, d, D: [], 'attendant': lambda a, w, d, D: [('xanadu_common_bed', 1), ('xanadu_common_chest', 1)], 'sang': lambda a, w, d, D: [('xanadu_court_incense_burner', 1)],
       'lists': lambda a, w, d, D: [], 'bank': lambda a, w, d, D: [], 'field': lambda a, w, d, D: [], 'threshing': lambda a, w, d, D: [], 'cloister_court': lambda a, w, d, D: [],
       'roof': lambda a, w, d, D: [],
       'refectory': lambda a, w, d, D: [('xanadu_common_table', cs(a / 19)), ('xanadu_common_bench', cs(a / 9.5)), ('xanadu_common_reader_seat', 1), ('xanadu_common_bowl', cs(a / 4)), ('xanadu_common_jug', cs(a / 19))],
@@ -425,7 +433,7 @@ def programs():
     }
 
 OPEN = {'muster', 'lists', 'drill_court', 'archery', 'bank', 'yard', 'maydan', 'horse_park', 'field', 'threshing', 'cloister_court',
-        'fallen', 'founder', 'song_drum', 'roof', 'well', 'inner_court', 'porch', 'watch', 'hay', 'midden', 'garderobe', 'caravan_halt', 'sang'}
+        'fallen', 'founder', 'song_drum', 'roof', 'well', 'inner_court', 'porch', 'watch', 'hay', 'midden', 'garderobe', 'caravan_halt', 'sang', 'balcony'}
 
 def keymap():
     m = LS.keymap()
@@ -483,10 +491,15 @@ def draw_section():
     rect(-12.5, 25, 5.2, 11.6, (238, 228, 242)); dr.text((X(-12.5) + 3, Y(11.6) - 22), 'side ranges', font=fs, fill=(110, 90, 120))
     dr.rectangle([X(-9.2), Y(9.4), X(-5.2), Y(5.2)], fill=(238, 220, 150), outline=(30, 30, 30)); dr.text((X(-12), Y(9.4) - 22), 'Song drum', font=fs, fill=(0, 0, 0))
     rect(2.6, 5.8, 5.8, 9.0, (236, 232, 218))
-    for h0, h1, nm in [(5.8, 14.8, 'Assembly Hall (2 storeys)'), (14.8, 18.4, "Hall of Vigil; gonkhang")]:
-        rect(5.8, 22.8, h0, h1, (200, 160, 210)); dr.text((X(5.8) + 3, Y(h1) + 2), nm, font=fs, fill=(0, 0, 0))
+    rect(5.8, 22.8, 5.8, 14.8, (200, 160, 210)); dr.text((X(5.8) + 3, Y(14.8) + 2), 'Assembly Hall', font=fs, fill=(0, 0, 0))
+    dr.text((X(5.8) + 3, Y(14.8) + 22), '(two storeys)', font=fs, fill=(0, 0, 0))
+    rect(5.8, 11.6, 14.8, 18.4, (200, 160, 210)); dr.text((X(5.8) + 3, Y(18.4) + 2), 'vigil', font=fs, fill=(0, 0, 0))
+    rect(17.0, 22.8, 14.8, 18.4, (150, 110, 160)); dr.text((X(23.5), Y(18.4) - 4), 'gonkhang', font=fs, fill=(90, 50, 100))
+    rect(11.6, 17.0, 14.8, 18.4, (255, 255, 240))
+    for du in (1.2, 2.7, 4.2):
+        dr.line([(X(11.6 + du), Y(18.4)), (X(11.0 + du), Y(12.5))], fill=(220, 180, 60), width=2)
     dr.polygon([(X(11.6), Y(18.4)), (X(17.0), Y(18.4)), (X(16), Y(21)), (X(14.3), Y(22.5)), (X(12.6), Y(21))], fill=(238, 220, 150), outline=(120, 80, 0))
-    dr.text((X(18), Y(22.5) - 22), 'the gilt crown', font=fs, fill=(120, 80, 0))
+    dr.text((X(18), Y(22.5) - 22), 'the gilt crown: its light falls through the well into the hall', font=fs, fill=(120, 80, 0))
     rect(25, 32, 5.2, 11.6, (200, 160, 210)); dr.text((X(20), Y(4) + 4), 'back range', font=fs, fill=(0, 0, 0))
     rect(38, 48, 4, 12, (238, 220, 150)); dr.text((X(36), Y(12) - 22), "Founder's Chorten", font=fs, fill=(0, 0, 0))
     rect(53, 57, 0, 12, (236, 232, 218)); dr.text((X(48), Y(12) - 44), 'inner curtain 12 m', font=fs, fill=(0, 0, 0))
@@ -494,13 +507,16 @@ def draw_section():
     for h0, h1, nm in [(0, 5, 'west watch'), (5, 10, 'signal room'), (10, 15, 'watch'), (15, 20, 'mirrors, fire')]:
         rect(114, 140, h0, h1, (236, 232, 218)); dr.text((X(114) + 3, Y(h1) + 2), nm, font=fs, fill=(0, 0, 0))
     dr.text((X(108), Y(20) - 22), 'Storm Tower', font=fs, fill=(0, 0, 0))
-    rect(128, 132, 0, 9, (236, 232, 218))
     dr.line([(X(50), Y(4)), (X(52), Y(-4)), (X(150), Y(-4))], fill=(160, 0, 0), width=3); dr.text((X(62), Y(-4) + 4), "the Founder's Way (tunnel) to the brow's scrub", font=fs, fill=(160, 0, 0))
     k = 0
     for u, h0, h1, name, col in [(-43.5, 0, 22.5, 'utse stair', (0, 0, 0)), (-11.2, 5.2, 11.6, 'front stairs', (0, 120, 0)), (20.9, 5.8, 18.4, 'hall stair', (160, 0, 120)),
                                  (28.5, 5.2, 11.6, 'back stair', (0, 0, 160)), (137, 0, 20, 'tower stair', (120, 80, 0))]:
-        dr.line([(X(u), Y(h0)), (X(u), Y(h1))], fill=col, width=5); dr.text((X(u) + 6, Y(h1) + 30 + 20 * (k % 2)), name, font=fs, fill=col); k += 1
+        dr.line([(X(u), Y(h0)), (X(u), Y(h1))], fill=col, width=5)
+        dr.line([(X(-80) + k * 150, Y(-6) + 6), (X(-80) + k * 150 + 26, Y(-6) + 6)], fill=col, width=5); dr.text((X(-80) + k * 150 + 32, Y(-6) - 4), name, font=fs, fill=col); k += 1
     dr.line([(X(-170), Y(0)), (X(150), Y(0))], fill=(80, 80, 80), width=1)
+    for hh in range(0, 30, 5):
+        dr.line([(X(146), Y(hh)), (X(148), Y(hh))], fill=(0, 0, 0), width=2); dr.text((X(148) + 4, Y(hh) - 10), '%d m' % hh, font=fs, fill=(90, 90, 90))
+    dr.line([(X(146), Y(0)), (X(146), Y(25))], fill=(0, 0, 0), width=2)
     dr.line([(X(-160), Y(-6)), (X(-110), Y(-6))], fill=(0, 0, 0), width=3); dr.text((X(-160), Y(-6) + 4), '50 m', font=fs, fill=(0, 0, 0))
     return img
 
