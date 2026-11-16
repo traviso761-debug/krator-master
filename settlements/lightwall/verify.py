@@ -17,6 +17,8 @@ invariants and views are Xanadu's, and settlements/xanadu/verify.py runs it (on 
   ix-glazier          L4: from each carved home's front room a walker reaches its first carved room (core/walk: the front's
                       floor from the walked draw, the doorway, the cavern's floor); the carved rooms furnished
   bench-ground        the blocks' open ground is kitchen gardens, orchards and yards, not bare (the owner, 2026-11-16)
+  lake-water          the great lake is core/water's open water with its shore grid: wet out on the lake and at the quays'
+                      heads, dry on the bench above the shore; WATER.heightAt within a metre of the lake's level there
   bench-stairs        every building on the bench whose floor stands over the street has a podium and a flight of steps
                       up to it, and a walker climbs from the flight's foot onto the podium's front and, in a furnished
                       house, through the door onto its floor (core/walk; the owner, 2026-11-16: "podiums / stairs / walk test")
@@ -55,6 +57,9 @@ TOWN_JS = r"""
  let n=0,bare=0,kinds={};for(const b of (typeof LW_BLOCKS!=='undefined'?LW_BLOCKS:[]))if(b.kind!=='field'){const xs=b.poly.map(p=>p[0]),zs=b.poly.map(p=>p[1]);
   for(let x=Math.min(...xs)+2;x<Math.max(...xs);x+=9)for(let z=Math.min(...zs)+2;z<Math.max(...zs);z+=9){const pl=lwPlot(x,z);if(pl==null)continue;n++;kinds[pl]=(kinds[pl]||0)+1;if(pl==='dooryard')bare++;}}
  R.push({name:'bench-ground',ok:n>500&&bare<n*.35&&(kinds.garden||0)>n*.15&&(kinds.orchard||0)>n*.15,detail:n+' samples of the blocks\' open ground: '+JSON.stringify(kinds)});
+ {const LK=typeof LW_LAKE!=='undefined'?LW_LAKE:null,wet=(x,z)=>!!(LK&&LK.wetAt&&LK.wetAt(x,z)),out=[0,LW.SHORE+400],bench=[0,LW.SHORE-40],h=LK?WATER.heightAt(out[0],out[1],0):null;
+  R.push({name:'lake-water',ok:!!LK&&!!LK.bed&&wet(...out)&&!wet(...bench)&&h!=null&&Math.abs(h-LW.LAKE)<1,
+   detail:LK?('level '+LW.LAKE+'; heightAt out on the lake '+(h==null?'none':h.toFixed(2))+'; wet out on the lake '+wet(...out)+', on the bench '+wet(...bench)+'; shore grid '+(LK.bed&&LK.bed.nx)+' x '+(LK.bed&&LK.bed.nz)):'no core/water lake'});}
  const bsSP=(typeof LW_PLACE!=='undefined'?LW_PLACE:[]).filter(p=>p.kind!=='quay'&&VERN.defs[p.key]),bsFlights=bsSP.filter(p=>p.stair);
  const bsDoorH=p=>{const D=VERN.defs[p.key],n=D.d/2+.15+.7;return p.o.y-terrainH(p.x+Math.sin(p.ry)*n,p.z+Math.cos(p.ry)*n);};
  const bsOwed=bsSP.filter(p=>!p.stair&&bsDoorH(p)>=.3),bsNoPod=bsSP.filter(p=>p.o.y-lwPodiumLo(p,VERN.defs[p.key])>.25&&!p.podium);

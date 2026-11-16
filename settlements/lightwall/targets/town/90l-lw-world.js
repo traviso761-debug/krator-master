@@ -9,7 +9,7 @@ reseed(LW.SEED+1);const LW_T0=performance.now();
 for(const f of FRAME_HOOKS_PRE)FRAME_HOOKS.push(f);
 // ---------------------------------------------------------------- the sky and its light (KratorSky, as Qiblai's and Erewhon's)
 const LW_SKY={hour:16.4,day:150,dens:1.1};
-KratorSky.attach(scene,9000);scene.fog.density=.00016;
+const LW_SKYG=KratorSky.attach(scene,9000);scene.fog.density=.00016;
 const lwHemi=scene.children.find(o=>o.isHemisphereLight);
 function lwSkyTick(){KratorSky.update(camera.position,LW_SKY.hour,LW_SKY.day,LW_SKY.dens);const L=KratorSky.lighting();
  sun.position.copy(L.sunDir).multiplyScalar(1500).add(camera.position);sun.target.position.copy(camera.position);sun.target.updateMatrixWorld();sun.intensity=L.sunIntensity;sun.color.copy(L.sunColor);
@@ -95,7 +95,8 @@ function lwGroundMat(){const tex=new THREE.CanvasTexture(lwCv);tex.encoding=THRE
  const wg=new THREE.BufferGeometry();wg.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));wg.setAttribute('color',new THREE.Float32BufferAttribute(col,3));wg.setIndex(idx);wg.computeVertexNormals();
  const wall=new THREE.Mesh(wg,lwRockLayer(new THREE.MeshStandardMaterial({vertexColors:true,roughness:.95,metalness:0,color:0x9a928c})));wall.name='the north wall';wall.userData.isGround=true;wall.userData.probeSkip=true;wall.receiveShadow=true;scene.add(wall);
  /* the lake: still water at -30, milky turquoise (silica in suspension: biomes/opalvalley), out to the far shore */
- const lake=new THREE.Mesh(new THREE.PlaneGeometry(16000,9000),new THREE.MeshStandardMaterial({color:0x78bcbc,roughness:.14,metalness:.08,transparent:true,opacity:.9}));
- lake.rotation.x=-Math.PI/2;lake.position.set(0,LW.LAKE,LW.SHORE+4500);lake.userData.probeSkip=true;lake.name='the great lake';lake.receiveShadow=true;scene.add(lake);
+ /* the plane stays only where core/water is missing (90lw draws the lake on core/water: its shore, its waves) */
+ if(typeof WATER==='undefined'||typeof ATMOS==='undefined'){const lake=new THREE.Mesh(new THREE.PlaneGeometry(16000,9000),new THREE.MeshStandardMaterial({color:0x78bcbc,roughness:.14,metalness:.08,transparent:true,opacity:.9}));
+ lake.rotation.x=-Math.PI/2;lake.position.set(0,LW.LAKE,LW.SHORE+4500);lake.userData.probeSkip=true;lake.name='the great lake';lake.receiveShadow=true;scene.add(lake);}
  const bed=new THREE.Mesh(new THREE.PlaneGeometry(16000,9000),new THREE.MeshStandardMaterial({color:0x5c6a62,roughness:1}));bed.rotation.x=-Math.PI/2;bed.position.set(0,-46.5,LW.SHORE+4500);bed.userData.probeSkip=true;scene.add(bed);})();
 window._worldMs=Math.round(performance.now()-LW_T0);

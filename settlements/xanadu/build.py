@@ -374,21 +374,24 @@ def build_one(target, do_checks):
     # a kit with library families of its own (kit.json "pack": its name; its materials.json packed into its tex/ by
     # tools/textures/pack.py): KMAT.pack('<name>') inlined here, bound by the kit's own fragment (KMAT.bindMat), as Iziz's --kit
     _pd = os.path.join(ROOT, *KIT['packFrom'].split('/')) if KIT and KIT.get('packFrom') else (KIT['dir'] if KIT else None)   # "packFrom": a kit's pack another folder's build takes (the city of Qiblai takes kits/qiblai's)
+    # kit.json "sidePacks": true puts the kit's pack, the vendored biome's and the furniture's detail maps beside the page too
+    # (xanadu.tex.<key>.js; settlements/lightwall, 2026-11-16: its page near the 16 MB cap). Absent, they stay inline as before
+    _sp = side if KIT and KIT.get('sidePacks') else None
     if KIT and KIT.get('pack') and os.path.isfile(os.path.join(_pd, 'tex', 'pack.json')):
-        bodies[KIT_MATLIB_PACK] = matlib_pack.fragment(_pd, KIT['pack'])
+        bodies[KIT_MATLIB_PACK] = matlib_pack.fragment(_pd, KIT['pack'], side=_sp)
         order = sorted(order + [KIT_MATLIB_PACK])
     if KIT and target in KIT.get('interiors', []):   # a kit target with interiors: the furniture bundle and the interiors core
         sys.path.insert(0, os.path.join(ROOT, 'kits', 'catalog'))
         sys.path.insert(0, os.path.join(ROOT, 'kits', 'interiors'))
         import furniture_bundle, kit_bundle
         # kit.json "furnitureTex": true gives every piece the library's detail maps (KF_TEX, krator-furniture-detail.js)
-        bodies[KIT_FURN_BUNDLE] = furniture_bundle.bundle(KIT.get('furniture'), tex=bool(KIT.get('furnitureTex'))) + \
+        bodies[KIT_FURN_BUNDLE] = furniture_bundle.bundle(KIT.get('furniture'), tex=bool(KIT.get('furnitureTex')), side=_sp) + \
             kit_bundle.bundle(KIT.get('interiorSets', []))
         order = sorted(order + [KIT_FURN_BUNDLE])
     if any(f.startswith('86-bio-') for f in order):   # the vendored xanadu biome: its library pack, before the biome code
         # under its own key (2026-11-12): as 'xanadu' the building kit's pack (88x, after it) replaced it whole (KMAT.pack
         # sets, it does not merge), so its ground sets never reached the page. Erewhon's ground reads it (85-er-paint, 90a)
-        bodies['86-bio-00-matlib-pack.js'] = matlib_pack.fragment(os.path.join(ROOT, 'biomes', 'xanadu'), 'xanadu-bio')
+        bodies['86-bio-00-matlib-pack.js'] = matlib_pack.fragment(os.path.join(ROOT, 'biomes', 'xanadu'), 'xanadu-bio', side=_sp if KIT else None)
         order = sorted(order + ['86-bio-00-matlib-pack.js'])
 
     if do_checks:

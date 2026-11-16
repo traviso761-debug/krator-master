@@ -44,11 +44,21 @@
   podium and, opening the unlocked doors as a walker would, into every furnished house that has one (18; 24 have only the
   kit's locked doors).
 
+## Done (2026-11-16, the owner: "work on all open issues")
+
+- **The lake is core/water's** (`targets/town/90lw-lw-lake.js`): one `WATER.open` surface at the lake's level on core/atmos's
+  wave field, the sky in it from the skylight; along the town's shore its bed is a shore grid (4 m, 650 x 145 cells), so the
+  water stops at the shoreline, its waves shoal and surf breaks along the beach (`lake-water`). The plane stays only where
+  core/water is missing.
+- **The page has room again**: kit.json `sidePacks` (an opt-in of Xanadu's `--kit` build, 2026-11-16) puts the Qiblai pack,
+  the vendored biome's cards and the catalog furniture's detail maps beside the page (`dist/xanadu.tex.*.js`), as Xanadu's
+  own pack and the Glaziers' already were: the page is 5.4 MB, was 15.2. The furniture now wears the library's detail maps
+  (`furnitureTex: true`). Publish every `dist/*.js` with the page.
+- **The town's grain after its first year**: a two-year run of the Sultanate (the economy test's setup, 730 days) leaves no
+  settlement hungry; Lāiṭwāl eats 1,250 t in the two years, 583 t of it up the Kirstabal road.
+
 ## Open
 
-- [ ] **The furniture has no detail maps** (`kit.json` `furnitureTex: false`): the page holds about 15.1 MB of its 16. The
-      catalog's maps want a sidecar of their own beside the page, as the Glaziers' textures have (the page cap's warning says
-      plan the split now).
 - [ ] **The flora is the Vale of Xanadu's**, the page's own biome, as Qiblai's: Opal Valley's (`biomes/opalvalley`, on
       the sites branch) is owed, sealed as Qiblai seals the biome kits it wants.
 - [ ] **The ground is the site's numbers, not the open world's**: the bench's profile, the wall's line and the north wall
@@ -59,7 +69,6 @@
       face's tile still shows as horizontal banding.
 - [ ] **The bands are stepped blocks with rock faces**: their faces are rock (displaced, in beds, textured), their ends
       buttresses, but their ledges are straight. Screes and ledges that wander are the next step.
-- [ ] **The lake is a plane** (Qiblai's river likewise): `core/water`'s still water and its shore are owed.
 - [ ] **The carved quarter costs about 8 s to mesh** (KCAVERN at 0.5 m over 131 sites). The cavern meshed by chunk near the
       camera would cut it further.
 - [ ] **Interiors near the Stair Foot only**: the bench's houses past 260 m are solid; the wall's fronts past the carved
@@ -71,6 +80,4 @@
       (`kits/resources/data/lodes.json`) are asked of the resource-nodes session, which is working in `kits/resources`.
 - [ ] **The town's page and its open-world site are two grounds**: the page shapes its ground from the site's numbers; the
       region's ground is the scale model's at 1 km cells. The page placed on `core/world` (as Longsong's) is owed.
-- [ ] **In the economy the town's first year eats its stores** (as every town's does: the clock opens after the harvest);
-      from the second year its grain comes up from Kirstabal (the road expects it; the test runs one year).
 - [ ] **The Register's numbers are Latin digits** (the kit's: `kits/tungang/KNOWN_ISSUES.md`).
