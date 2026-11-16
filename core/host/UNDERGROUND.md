@@ -221,12 +221,13 @@ stays at its full 4 m with at least 1.12 m clear of the rock.
   parents and clipped points (`C.drawn`, calling `KHOST.section.clipped` for its planes). `node core/host/test-feet.js` and this
   page's `check.py` prove each with a negative. Rebuilt: this page, the Hearths' camera station and Dhelv; every other page takes it
   with the next all-builds rebuild (TODO.md's ride-along list says what moves).
-- **Dhelv's tubes give no pin**: from "The braid", "The outer tube", "The west mouth" and "Under the light well" three's raycast
-  of the whole scene hits nothing (measured 2026-11-15 on the RTX), so the cave rock there cannot be picked; the pin refuses, as
-  the old pick did from under the ground. F there now stands in the tube (the braid: y -13.2, was the forest at 55.5). A pin in the
-  tubes needs Dhelv's own `o.pick` (on its cavern's distance field) or raycastable rock chunks.
-- **The rock cut and the inspector**: KCAVERN's rock cut is a shader discard (no planes), so a pick can still land on rock it opened.
-  `KCAVERN.cut.discards(x, y, z, ownFloor)` needs the hit vertex's own floor (`aKCut`); not wired.
+- **Dhelv's tubes**: F there stands in the tube (the braid: y -13.2, was the forest at 55.5), and a double-click pins the tube's
+  floor once the rock round the camera is meshed (Dhelv streams 16 m chunks within 120 m, `DH_STREAM`; measured 2026-11-15 on the
+  RTX after `_api.meshAround`: the braid at y -10.3, the outer tube at -27.2). A ray into chunks not meshed yet, or out of a mouth
+  at the sky, hits nothing and drops no pin, as the old pick did from under the ground.
+- **The rock cut and the inspector: done** (2026-11-15). `C.drawn` asks `KCAVERN.cut.discards` for a hit on a material that carries
+  the `kcavern-cut` layer, with the hit face's own floor (`aKCut` read across the face by its barycentric weights, as the shader's
+  varying is), so the inspector and the pin skip rock the cut opened. The Zeijani kit's fork of the cut (Dhelv's own C) is not read.
 - **Ghosted decks** (the decks above as a faint outline, not hidden) are not built. Hidden decks cast no shadow in three
   r128.
 - **Dhelv**: the core/biome `stemClump` leak, above. Dhelv does not opt in to any of this yet (its V is its nav graph and its C

@@ -164,7 +164,7 @@
     "core/export/09-core-export-adapters.js": "bb08d2140882dc07c0a9c33787d103c67301e4444b31dce0f6d53e4fd8938316",
     "core/hazard/20-core-hazard.js": "5a623c9210f70a01f4e8647443de24283bcbc51eb6a12c649cf080f69cf3d7d2",
     "core/hazard/21-core-hazard-flow.js": "7fcd020514737f68c2152f463ac93a2ac51d9fe364f493a249e04df0216251b2",
-    "core/host/90-host-camera.js": "ed925bd75ca64c5f7f1e30c54e15105e5ae000bd27b05aa158b97d85684abc6c",
+    "core/host/90-host-camera.js": "ecd2dd8ded83f5d4280e6938cc772c3833fe9221bc49dfbac874dedc609ad966",
     "core/host/91-host-loop.js": "240f833bc2e031506de36b503594acd2939e3f45aee21115effd00666fa66986",
     "core/host/91b-host-follow.js": "816e8b667b2b0ae5784c37d680933f1ebfe9f9ef33108bcf5882e2e34b6d1ea6",
     "core/host/92-host-panel.js": "3d65cd6c0bb873e48eb4189fffad906ab21aef1950164a454254a4fefe7a0b88",
@@ -222,10 +222,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/hearths/dist/hearths-camera.html": "9fae70a768df485ef8b9e89f45adfeaf726cbb3d0c3005771d993499e916554f"
+    "biomes/hearths/dist/hearths-camera.html": "f6468eb9f69b871a34a4c1d9ccfbf1daf3ff423e8bc12bcc5c566b8f144787fd"
    },
    "outputs_raw": {
-    "biomes/hearths/dist/hearths-camera.html": "9fae70a768df485ef8b9e89f45adfeaf726cbb3d0c3005771d993499e916554f"
+    "biomes/hearths/dist/hearths-camera.html": "f6468eb9f69b871a34a4c1d9ccfbf1daf3ff423e8bc12bcc5c566b8f144787fd"
    }
   },
   "build.py --station crystals": {

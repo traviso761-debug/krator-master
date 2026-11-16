@@ -2500,11 +2500,22 @@ K.camera=function(o){
  // Raycaster ignores visibility up the tree and every clipping plane, so the inspector and the pin ask this (BUGS-2026-11-15 C8)
  C.drawn=function(h){for(let q=h.object;q;q=q.parent)if(!q.visible)return false;
   let m=h.object.material;if(Array.isArray(m))m=h.face&&m[h.face.materialIndex];if(m&&m.visible===false)return false;
-  const p=h.point,S=K.section;if(m&&m.isShaderMaterial&&!m.clipping)return true;   /* three clips a ShaderMaterial only when it asks */
+  const p=h.point,S=K.section;
+  /* the rock cut (core/terrain/host/39h, KCAVERN.cut): a shader discard with no planes. Its rule in JS on the hit face's own floor
+     (aKCut, read across the face as the shader's varying is) */
+  const KC=root.KCAVERN&&root.KCAVERN.cut,KH=root.KHOOK;
+  if(KC&&KC.on&&KC.discards&&m&&KH&&KH.names&&h.face){const ln=KH.names(m).find(n=>n.indexOf('kcavern-cut')===0);
+   if(ln){const at=h.object.geometry&&h.object.geometry.attributes[ln.split(':')[1]||'aKCut'];if(at&&KC.discards(p.x,p.y,p.z,cutOwn(h,at)))return false;}}
+  if(m&&m.isShaderMaterial&&!m.clipping)return true;   /* three clips a ShaderMaterial only when it asks */
   if(renderer.clippingPlanes&&FEET.planesClip(renderer.clippingPlanes,false,p.x,p.y,p.z))return false;
   if(!m||!m.clippingPlanes||!m.clippingPlanes.length||!renderer.localClippingEnabled)return true;
   if(S&&S.clipped&&m.clippingPlanes===S.planes)return !S.clipped(p.x,p.y,p.z);   /* 99-host-section's planes: its own filter */
   return !FEET.planesClip(m.clippingPlanes,m.clipIntersection,p.x,p.y,p.z);};
+ // a vertex attribute (one float) at a hit, across its face by the hit's barycentric weights
+ const tA=new THREE.Vector3(),tB=new THREE.Vector3(),tC=new THREE.Vector3(),tP=new THREE.Vector3(),tW=new THREE.Vector3(),tM=new THREE.Matrix4();
+ function cutOwn(h,at){const g=h.object.geometry,P=g.attributes.position,f=h.face;
+  tA.fromBufferAttribute(P,f.a);tB.fromBufferAttribute(P,f.b);tC.fromBufferAttribute(P,f.c);tP.copy(h.point).applyMatrix4(tM.copy(h.object.matrixWorld).invert());
+  THREE.Triangle.getBarycoord(tP,tA,tB,tC,tW);return at.getX(f.a)*tW.x+at.getX(f.b)*tW.y+at.getX(f.c)*tW.z;}
  // what the scene draws along a ray, for the pin: meshes only (no lines, points or sprites), drawn, not the host's own marks or the
  // probe's helpers, not a sky dome (BackSide), not a dense instanced crowd (grass: it says nothing of where the floor is)
  C.sceneHits=function(rc,far){const scene=o.scene;if(!scene)return [];const list=[];

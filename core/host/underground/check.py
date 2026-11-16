@@ -157,6 +157,16 @@ CHECKS = r"""async()=>{
  /* a hidden parent: the props' group hidden, a crate's mesh itself still visible */
  view([36.5,1,2.8,40,.8,2.8]);[mx,my]=mid();K.inspectAt(mx,my);const crOn=K.selected;UG_PROPS.visible=false;K.inspectAt(mx,my);const crOff=K.selected;UG_PROPS.visible=true;
  ok('inspector - a crate under a hidden group is not picked',crOn&&crOn.kind==='crate'&&!(crOff&&crOff.kind==='crate'),!(crOn&&crOn.kind==='crate'),(crOn?crOn.name:'-')+' / hidden: '+(crOff?crOff.name:'(nothing)'));
+ /* the rock cut (H) opens each void's rock 2 m over its own floor by a shader discard: from inside the loj hall (floor 4.5), a ray at
+    its north wall at about y 7.2 hits rock the cut has opened; the first hit it keeps is the sets' far wall (floor 9), beyond */
+ view([-8,5.5,10,-8,7.2,16]);[mx,my]=mid();
+ const rk=()=>C.ray(mx,my).intersectObjects(K.host.scene.children,true).filter(h=>!h.object.userData.khost&&h.object.material===UG_ROCK);
+ const r0=rk();const drawnOff=r0[0]?C.drawn(r0[0]):null;S.set('rock');await wait(200);const r1=rk(),kept=r1.filter(h=>C.drawn(h));
+ ok('rock cut - a hit on the loj hall wall over its floor + 2 is not drawn, the sets wall beyond is',
+  r1[0]&&r1[0].point.y>6.5&&!C.drawn(r1[0])&&kept[0]&&kept[0].distance>r1[0].distance+1&&kept[0].point.y>9,false,
+  (r1[0]?'first y '+r1[0].point.y.toFixed(2)+' z '+r1[0].point.z.toFixed(2):'no hit')+'; kept '+(kept[0]?'y '+kept[0].point.y.toFixed(2)+' z '+kept[0].point.z.toFixed(2):'none'));
+ ok('rock cut (negative) with the cut off the same wall hit is drawn',drawnOff===true,drawnOff===false,String(drawnOff));
+ S.off();
  ok('every program linked',KHOOK.checkPrograms().length===0,false,JSON.stringify(KHOOK.checkPrograms()).slice(0,200));
  return out;}"""
 

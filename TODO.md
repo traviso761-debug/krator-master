@@ -118,7 +118,8 @@ runtime and bison table, and the `tools/` listing staleness (every build rebuilt
     mesh under the pointer, on the floor under it, or no pin. `o.pickScene: false` keeps the old pick. A double-click now raycasts the
     scene once (meshes only; instanced crowds over 2000 skipped).
   - **The inspector** skips hits on hidden parents and on points a cut's clipping planes cut away (`C.drawn`; 99-host-section's
-    `KHOST.section.clipped` for its planes). The rock cut (KCAVERN's shader discard) is not filtered yet.
+    `KHOST.section.clipped` for its planes), and hits on rock KCAVERN's rock cut has opened (`KCAVERN.cut.discards` on the hit's
+    own floor).
   - Leaving a walk (F off) puts the orbit's target 6 m over the floor under the walker, not over `ground()`.
   Checks: `node core/host/test-feet.js`, `python3 core/host/underground/check.py` (the C5-C8 checks with their negatives).
 - **core/world: a kit on several biome overlays** (2026-11-11, the Iziz cluster's open-world region): `core/world/41-world-fields.js`
