@@ -111,7 +111,7 @@
     "core/biome/42-core-export.js": "d3a95fe4dede2daa20504e712a57dbe9e3a18ea1bc57bfe59e53945f12fd0b2b",
     "core/biome/43-core-export-host.js": "15e7613a6210a39203ee80a56eeb1ab21906645033925759db50da27c0757fde",
     "core/biome/44-core-stage.js": "9205840ce8a41144089ba4dbb03f809e0070da433ad2d44d74c1b220e5590478",
-    "core/catalog/krator-furniture-core.js": "1c8bfa11d261b36895fd50645358e2c4ebe54febf67daeed700a38fbd6256fe9",
+    "core/catalog/krator-furniture-core.js": "4872bf46f2707b3fa156b18b8110f42ba830f10fdf670a1e79cf9c25f8941498",
     "core/clock/20-core-clock.js": "27f205a2e908a21cb5d07f07431352d7a02a214baf543fc94cd545d7d588ddbe",
     "core/edits/40-core-edits.js": "7eeb4220c100904bd42d761b29ad688a818620deaf2cb03dad8fb1bdff2b187b",
     "core/export/07-core-export.js": "b50800e8f1f2ab9f566c877d24c112c3d12899d5589a63fbb9aa283ca9c16f2c",
@@ -179,10 +179,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/catch/dist/catch.html": "a2912bbf277a15c176a0e81a8de5c7be5e41b875f67d481e6b326a454de1267c"
+    "biomes/catch/dist/catch.html": "dd55b4110394edaa1415e8ebba978eef8a4e804d5be08848199a04c04567dfc3"
    },
    "outputs_raw": {
-    "biomes/catch/dist/catch.html": "a2912bbf277a15c176a0e81a8de5c7be5e41b875f67d481e6b326a454de1267c"
+    "biomes/catch/dist/catch.html": "dd55b4110394edaa1415e8ebba978eef8a4e804d5be08848199a04c04567dfc3"
    }
   },
   "build.py --station fan": {
@@ -296,7 +296,7 @@
     "core/biome/42-core-export.js": "d3a95fe4dede2daa20504e712a57dbe9e3a18ea1bc57bfe59e53945f12fd0b2b",
     "core/biome/43-core-export-host.js": "15e7613a6210a39203ee80a56eeb1ab21906645033925759db50da27c0757fde",
     "core/biome/44-core-stage.js": "9205840ce8a41144089ba4dbb03f809e0070da433ad2d44d74c1b220e5590478",
-    "core/catalog/krator-furniture-core.js": "1c8bfa11d261b36895fd50645358e2c4ebe54febf67daeed700a38fbd6256fe9",
+    "core/catalog/krator-furniture-core.js": "4872bf46f2707b3fa156b18b8110f42ba830f10fdf670a1e79cf9c25f8941498",
     "core/clock/20-core-clock.js": "27f205a2e908a21cb5d07f07431352d7a02a214baf543fc94cd545d7d588ddbe",
     "core/edits/40-core-edits.js": "7eeb4220c100904bd42d761b29ad688a818620deaf2cb03dad8fb1bdff2b187b",
     "core/export/07-core-export.js": "b50800e8f1f2ab9f566c877d24c112c3d12899d5589a63fbb9aa283ca9c16f2c",
@@ -365,10 +365,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/catch/dist/catch-fan.html": "e42857bbcfa6f65dad3df735dc01fdae2d11ca3d902a3a25eea3d51e4528ce1a"
+    "biomes/catch/dist/catch-fan.html": "40fe31193c0462d7c9ecba5a90cb78ea5d051f473a1c5604a2fd75b7a1105be6"
    },
    "outputs_raw": {
-    "biomes/catch/dist/catch-fan.html": "e42857bbcfa6f65dad3df735dc01fdae2d11ca3d902a3a25eea3d51e4528ce1a"
+    "biomes/catch/dist/catch-fan.html": "40fe31193c0462d7c9ecba5a90cb78ea5d051f473a1c5604a2fd75b7a1105be6"
    }
   },
   "build.py --station lake": {
@@ -482,7 +482,7 @@
     "core/biome/42-core-export.js": "d3a95fe4dede2daa20504e712a57dbe9e3a18ea1bc57bfe59e53945f12fd0b2b",
     "core/biome/43-core-export-host.js": "15e7613a6210a39203ee80a56eeb1ab21906645033925759db50da27c0757fde",
     "core/biome/44-core-stage.js": "9205840ce8a41144089ba4dbb03f809e0070da433ad2d44d74c1b220e5590478",
-    "core/catalog/krator-furniture-core.js": "1c8bfa11d261b36895fd50645358e2c4ebe54febf67daeed700a38fbd6256fe9",
+    "core/catalog/krator-furniture-core.js": "4872bf46f2707b3fa156b18b8110f42ba830f10fdf670a1e79cf9c25f8941498",
     "core/clock/20-core-clock.js": "27f205a2e908a21cb5d07f07431352d7a02a214baf543fc94cd545d7d588ddbe",
     "core/edits/40-core-edits.js": "7eeb4220c100904bd42d761b29ad688a818620deaf2cb03dad8fb1bdff2b187b",
     "core/export/07-core-export.js": "b50800e8f1f2ab9f566c877d24c112c3d12899d5589a63fbb9aa283ca9c16f2c",
@@ -551,10 +551,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/catch/dist/catch-lake.html": "a586ef63181525b4f70a0f9ba8dd630f5c949295f4905aef16fbd2b157f53736"
+    "biomes/catch/dist/catch-lake.html": "b7d751b41f3086893503fd4d86e78642e697093fb5b09b6dffe71fde93bdb2ce"
    },
    "outputs_raw": {
-    "biomes/catch/dist/catch-lake.html": "a586ef63181525b4f70a0f9ba8dd630f5c949295f4905aef16fbd2b157f53736"
+    "biomes/catch/dist/catch-lake.html": "b7d751b41f3086893503fd4d86e78642e697093fb5b09b6dffe71fde93bdb2ce"
    }
   },
   "build.py --station oasis": {
@@ -668,7 +668,7 @@
     "core/biome/42-core-export.js": "d3a95fe4dede2daa20504e712a57dbe9e3a18ea1bc57bfe59e53945f12fd0b2b",
     "core/biome/43-core-export-host.js": "15e7613a6210a39203ee80a56eeb1ab21906645033925759db50da27c0757fde",
     "core/biome/44-core-stage.js": "9205840ce8a41144089ba4dbb03f809e0070da433ad2d44d74c1b220e5590478",
-    "core/catalog/krator-furniture-core.js": "1c8bfa11d261b36895fd50645358e2c4ebe54febf67daeed700a38fbd6256fe9",
+    "core/catalog/krator-furniture-core.js": "4872bf46f2707b3fa156b18b8110f42ba830f10fdf670a1e79cf9c25f8941498",
     "core/clock/20-core-clock.js": "27f205a2e908a21cb5d07f07431352d7a02a214baf543fc94cd545d7d588ddbe",
     "core/edits/40-core-edits.js": "7eeb4220c100904bd42d761b29ad688a818620deaf2cb03dad8fb1bdff2b187b",
     "core/export/07-core-export.js": "b50800e8f1f2ab9f566c877d24c112c3d12899d5589a63fbb9aa283ca9c16f2c",
@@ -737,10 +737,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/catch/dist/catch-oasis.html": "34d0a7bc584e9781fa809d5483b2c0815431a8353dd8a8fc11af349e0adff723"
+    "biomes/catch/dist/catch-oasis.html": "16c1024feb5dbcbd36be062b689a90d2a7c83238c57b0f7cb07e204d74c896ac"
    },
    "outputs_raw": {
-    "biomes/catch/dist/catch-oasis.html": "34d0a7bc584e9781fa809d5483b2c0815431a8353dd8a8fc11af349e0adff723"
+    "biomes/catch/dist/catch-oasis.html": "16c1024feb5dbcbd36be062b689a90d2a7c83238c57b0f7cb07e204d74c896ac"
    }
   }
  }

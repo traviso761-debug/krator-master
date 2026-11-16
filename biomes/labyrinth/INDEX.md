@@ -29,7 +29,7 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `44z-host-site.js` | 3 |  |
 | `45-host-stage.js` | 16 | the land (40); the fields (cached below) (109); the host binding (135) |
 | `50-biome-labyrinth-species.js` | 20 | palettes (sRGB; a full-colour library card carri (20); the trees (35); the small plants, tagged (60 and 65 place them;  (64); textures (procedural, greyscale: only a page wit (89); geometries (kit-local) (103); materials (BIO.libSwap gives each slot its libra (126); instanced items (157) |
-| `55-biome-labyrinth-trees.js` | 19 | the station profiles (PLAN.md section 8; the hos (16); the placement grid (28); the zones from the host's fields (52); keep-clear between trees (core/space) (74); the builders: (T, st, lv) with lv 2 near, 1 mid (91); impostors (the far trees) (145); the pass (169) |
+| `55-biome-labyrinth-trees.js` | 19 | the station profiles (PLAN.md section 8; the hos (16); the placement grid (28); the zones from the host's fields (52); keep-clear between trees (core/space) (74); the builders: (T, st, lv) with lv 2 near, 1 mid (92); impostors (the far trees) (147); the pass (171) |
 | `60-biome-labyrinth-floor.js` | 9 |  |
 | `65-biome-labyrinth-dress.js` | 5 |  |
 | `70-biome-labyrinth.js` | 1 |  |

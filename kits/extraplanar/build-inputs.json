@@ -20,7 +20,7 @@
     "core/biome/31b-core-leafset.js": "e58ebcc03d77e6da79d54c90eb7582fb806775454c8ed0879e1d7f2359a2788f",
     "core/biome/34-core-impostor.js": "b67d538fbcb5c7a4b077a20c1cffab6bdc48e0e157ea3e240696041403468f53",
     "core/biome/40-core-place.js": "f1277b48ab3c5d779bf85452c581888be7d5b2ed94a0d21e21ade12f0602c9d7",
-    "core/catalog/krator-furniture-core.js": "1c8bfa11d261b36895fd50645358e2c4ebe54febf67daeed700a38fbd6256fe9",
+    "core/catalog/krator-furniture-core.js": "4872bf46f2707b3fa156b18b8110f42ba830f10fdf670a1e79cf9c25f8941498",
     "core/clock/20-core-clock.js": "27f205a2e908a21cb5d07f07431352d7a02a214baf543fc94cd545d7d588ddbe",
     "core/host/90-host-camera.js": "6ad6af57adcf1fb2facd04968db769350c0d27de1d2fe20829d9948be75a2847",
     "core/host/91-host-loop.js": "240f833bc2e031506de36b503594acd2939e3f45aee21115effd00666fa66986",
@@ -71,14 +71,14 @@
     "tools": "5d8cb54bfd5566913f21e3e094a6a85418e1354e6e39cf6138ec20bda1add512"
    },
    "outputs": {
-    "kits/extraplanar/build-manifest.json": "a104964881ae19a98b608ee2814ae7ef629cbc0c5d559767ed0283ca56ebdc62",
-    "kits/extraplanar/dist/extraplanar.html": "de967feb6e4cc3e9764cc35e84378c5c046772bcd5402137f313a785516b7b1e",
-    "kits/extraplanar/dist/krator-extraplanar.js": "c114210057d531c05c7bb860e7f17073cf28fa343c0cef4ad4f856a163f37012"
+    "kits/extraplanar/build-manifest.json": "6168abb3551994724e8a7c7aa028f535f325e96d22704b4196109aa83b03d955",
+    "kits/extraplanar/dist/extraplanar.html": "8aa0e5511b2a325611fd82e40c3517aab14de78cc1e80efb437dc7394e777de3",
+    "kits/extraplanar/dist/krator-extraplanar.js": "58955abfa4ecbe619ca2581a16bfbdbf1609b3bfcd447fd3d0c71704efb68bf7"
    },
    "outputs_raw": {
-    "kits/extraplanar/build-manifest.json": "a104964881ae19a98b608ee2814ae7ef629cbc0c5d559767ed0283ca56ebdc62",
-    "kits/extraplanar/dist/extraplanar.html": "de967feb6e4cc3e9764cc35e84378c5c046772bcd5402137f313a785516b7b1e",
-    "kits/extraplanar/dist/krator-extraplanar.js": "c114210057d531c05c7bb860e7f17073cf28fa343c0cef4ad4f856a163f37012"
+    "kits/extraplanar/build-manifest.json": "6168abb3551994724e8a7c7aa028f535f325e96d22704b4196109aa83b03d955",
+    "kits/extraplanar/dist/extraplanar.html": "8aa0e5511b2a325611fd82e40c3517aab14de78cc1e80efb437dc7394e777de3",
+    "kits/extraplanar/dist/krator-extraplanar.js": "58955abfa4ecbe619ca2581a16bfbdbf1609b3bfcd447fd3d0c71704efb68bf7"
    }
   }
  }

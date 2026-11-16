@@ -101,7 +101,7 @@
     "core/biome/44-core-stage.js": "9205840ce8a41144089ba4dbb03f809e0070da433ad2d44d74c1b220e5590478",
     "core/catalog/catalog.py": "5d4a79810193b831fc1c686c934990afd10ecb63b5a55d05e0f3d7dd4c84d88a",
     "core/catalog/files.json": "a400e7bf3e1197698d129db83964d883fd9ea2818173fe7df3c7d1b4a054d72f",
-    "core/catalog/krator-furniture-core.js": "1c8bfa11d261b36895fd50645358e2c4ebe54febf67daeed700a38fbd6256fe9",
+    "core/catalog/krator-furniture-core.js": "4872bf46f2707b3fa156b18b8110f42ba830f10fdf670a1e79cf9c25f8941498",
     "core/catalog/krator-furniture-kit.js": "5220ef8dd95dd5c33960ad1452f09f437379c2e26d40c9b480877b1a4e65f16b",
     "core/catalog/krator-furniture-runtime.js": "5bd95301145e7adfb6528e85de8d2fb39206b0cf558409718dbd85db437e57c9",
     "core/city/10-city-core.js": "cad0879f60fa725f13caa30b6d7d749f92bb13e3ad765c81499436c18403d7b9",
@@ -534,7 +534,7 @@
     "kits/eastern-abyssal": "3b50c5e4cd5eadbdb24b1d78ede6fbc1b1d05638beee604e6316be78fc62b9bd",
     "kits/eastern-abyssal/src": "e9391cb31c0fa8eb98ec34023270a9b992c2830f94fc2ff95bec44eadd7663e4",
     "kits/interiors": "c343f7e77884e1f4a489c5a2327ea3c5a7a54a1f9bc070a21766131363cf07f7",
-    "kits/interiors/sets": "25e1fa66e47b9b929bd298c5bc39a8afb287b6cc27aee48c82a238a7c99fc191",
+    "kits/interiors/sets": "6878430e9531e1e8d7677660d90b9c12627e59981cf0a00feb423bbf87787cf2",
     "kits/interiors/src": "fe72f6be1b5eb6012c769b91a5fc7c558f24144155f758942db210e347392bab",
     "kits/iziz-vernacular": "4a1c35741a306f725b4dbc4e35c5987534d6fd34a8045e1851e67ecb5b264cee",
     "kits/iziz-vernacular/src": "4add7a31b18bd16063818ad685970c0660bd99fccbc27c50037561a45189976d",
@@ -547,8 +547,8 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "settlements/verge/build-manifest.json": "ef196e06b92305f697e61478e4b841d7f574cd8a4931ace231bb62b46889e898",
-    "settlements/verge/dist/verge.html": "c4146103ae61c2dd6641d4a515c21a735617546e41d973ba21d0ff01adfa9bda",
+    "settlements/verge/build-manifest.json": "4b1124a0b117847f1b3c54781ccc53bfae3325cfeb99fccd30d766e9ff96b214",
+    "settlements/verge/dist/verge.html": "d288d40842397aceda6f749b3333c87138d24d7227899cf8ce14886d87ab3633",
     "settlements/verge/dist/verge.tex.eastabyss.js": "4a4b46edc96c221d958e8da3a49cc72e940ee4536ad0fd4148d76327e5399253",
     "settlements/verge/dist/verge.tex.iziz-2.js": "f92aff02705e9b781270b964c67e39a933a129f4e0ca36cb62f9b6f69a362438",
     "settlements/verge/dist/verge.tex.iziz.js": "df5a7a3382e5e2861e0f6e67ba890c40d56dbd396e1f6a48cb78f802bf58e712",
@@ -556,8 +556,8 @@
     "settlements/verge/dist/verge.tex.sedesert.js": "e9b19c082894aa70d99db0d8e51167108fdb92038cf1506cf38946928120e5bf"
    },
    "outputs_raw": {
-    "settlements/verge/build-manifest.json": "ef196e06b92305f697e61478e4b841d7f574cd8a4931ace231bb62b46889e898",
-    "settlements/verge/dist/verge.html": "c4146103ae61c2dd6641d4a515c21a735617546e41d973ba21d0ff01adfa9bda",
+    "settlements/verge/build-manifest.json": "4b1124a0b117847f1b3c54781ccc53bfae3325cfeb99fccd30d766e9ff96b214",
+    "settlements/verge/dist/verge.html": "d288d40842397aceda6f749b3333c87138d24d7227899cf8ce14886d87ab3633",
     "settlements/verge/dist/verge.tex.eastabyss.js": "4a4b46edc96c221d958e8da3a49cc72e940ee4536ad0fd4148d76327e5399253",
     "settlements/verge/dist/verge.tex.iziz-2.js": "f92aff02705e9b781270b964c67e39a933a129f4e0ca36cb62f9b6f69a362438",
     "settlements/verge/dist/verge.tex.iziz.js": "df5a7a3382e5e2861e0f6e67ba890c40d56dbd396e1f6a48cb78f802bf58e712",

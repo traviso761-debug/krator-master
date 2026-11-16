@@ -6,7 +6,7 @@ The Ancients kit: ruined megastructures of the ancient civilisation, 33 structur
 
 Docs: `API.md`, `DESIGN.md`, `HANDOVER.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `PORT.md`, `README.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/alt-civic.html`, `dist/alt-domestic.html`, `dist/alt-towers.html`, `dist/ancients-kit.html`, `dist/arcbeam.html`, `dist/arcoindian.html`, `dist/arcoindian2.html`, `dist/arcpile.html`, `dist/arcube.html`, `dist/blades.html`, `dist/canyon.html`, `dist/crescent.html`, `dist/dalab.html`, `dist/darco.html`, `dist/drum.html`, `dist/engines.html`, `dist/forest.html`, `dist/funicular.html`, `dist/hexahedron.html`, `dist/hill.html`, `dist/hosts.html`, `dist/interiors.html`, `dist/iziz-style.html`, `dist/iziz-variants.html`, `dist/kept.html`, `dist/launch.html`, `dist/ledge.html`, `dist/lighthouse.html`, `dist/lozenge.html`, `dist/monolith.html`, `dist/plymouth.html`, `dist/podium.html`, `dist/quintagon.html`, `dist/ring.html`, `dist/sanctum.html`, `dist/skyi.html`, `dist/skyj.html`, `dist/skyk.html`, `dist/spaceport.html`, `dist/span.html`, `dist/spire.html`, `dist/theodiga.html`, `dist/trigon.html`, `dist/veladiga.html`, `dist/wheel.html`, `dist/wing.html`, `dist/worn.html`, `dist/yuni-variants.html`
+Built output (never open it; edit `src/` and rebuild): `dist/alt-civic.html`, `dist/alt-domestic.html`, `dist/alt-towers.html`, `dist/ancients-kit.html`, `dist/arcbeam.html`, `dist/arcoindian.html`, `dist/arcoindian2.html`, `dist/arcpile.html`, `dist/arcube.html`, `dist/blades.html`, `dist/canyon.html`, `dist/crescent.html`, `dist/dalab.html`, `dist/darco.html`, `dist/drum.html`, `dist/engines.html`, `dist/forest.html`, `dist/funicular.html`, `dist/gatearc.html`, `dist/hexahedron.html`, `dist/hill.html`, `dist/hosts.html`, `dist/interiors.html`, `dist/iziz-style.html`, `dist/iziz-variants.html`, `dist/kept.html`, `dist/launch.html`, `dist/ledge.html`, `dist/lighthouse.html`, `dist/lozenge.html`, `dist/monolith.html`, `dist/plymouth.html`, `dist/podium.html`, `dist/quintagon.html`, `dist/ring.html`, `dist/sanctum.html`, `dist/skyi.html`, `dist/skyj.html`, `dist/skyk.html`, `dist/spaceport.html`, `dist/span.html`, `dist/spire.html`, `dist/theodiga.html`, `dist/trigon.html`, `dist/veladiga.html`, `dist/wheel.html`, `dist/wing.html`, `dist/worn.html`, `dist/yuni-variants.html`
 
 Build: `cd kits/ancients && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
@@ -183,6 +183,7 @@ Each target adds its own fragments to `src/` and builds one output.
 | `engines` | `89z-rows.js`, `8aj-engines3.js`, `91y-engine-checks.js`, `91z-views.js` | 36 |
 | `forest` | `89z-rows.js`, `91z-views.js` | 5 |
 | `funicular` | `89z-rows.js`, `91z-views.js` | 5 |
+| `gatearc` | `89z-rows.js`, `8av0-gatearc-plan.js`, `8av1-gatearc-draw.js`, `8av2-gatestacks-plan.js`, `8av3-gatestacks-draw.js`, `91z-views.js` | 61 |
 | `hexahedron` | `89z-rows.js`, `91z-views.js` | 8 |
 | `hill` | `89z-rows.js`, `91z-views.js` | 13 |
 | `hosts` | `89z-rows.js`, `91z-views.js` | 6 |

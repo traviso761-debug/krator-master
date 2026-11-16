@@ -4,7 +4,7 @@
 
 Characters: MakeHuman (MPFB2) bodies with morphing face, build and ancestry; library clothes, hair and beards that follow the morphs; skin and hair tint; peoples (data/peoples.json) that keep a culture's strangers in range; two pages: the Cosmetic Lab (one figure, every look; strangers in bulk for NPCs) and the Animation Lab (six bodies, every clip, a review mark per clip); a Godot twin (godot/krator/character/, behind).
 
-Docs: `CREDITS.md`, `HANDOFF-BLENDER-MCP.md`, `HANDOFF-CLIPPING.md`, `HANDOFF-CLOTHING.md`, `HANDOFF-GARMENT-DEFECTS.md`, `HANDOFF-GARMENT-NEXT.md`, `KNOWN_ISSUES.md`, `NIGHT-2026-11-10.md`, `NONHUMAN.md`, `PORT.md`, `README.md`, `REVIEW-GARMENTS-2026-11-06.md`, `prompt-clothes.md`
+Docs: `CREDITS.md`, `HANDOFF-BLENDER-MCP.md`, `HANDOFF-CLIPPING.md`, `HANDOFF-CLOTHING.md`, `HANDOFF-GARMENT-DEFECTS.md`, `HANDOFF-GARMENT-NEXT.md`, `KNOWN_ISSUES.md`, `NIGHT-2026-11-10.md`, `NONHUMAN.md`, `PORT.md`, `README.md`, `REVIEW-GARMENTS-2026-11-06.md`, `TUNGANG-OUTFITS.md`, `prompt-clothes.md`
 
 Built output (never open it; edit `src/` and rebuild): `dist/animation-lab.html`, `dist/cosmetic-lab.html`
 

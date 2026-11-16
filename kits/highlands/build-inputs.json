@@ -7,7 +7,7 @@
     "core/atmos/placeholder/placeholder.py": "a56878038fdd42d4d41752866926a3cf59815924a08f2ef42b56484766848aab",
     "core/catalog/catalog.py": "5d4a79810193b831fc1c686c934990afd10ecb63b5a55d05e0f3d7dd4c84d88a",
     "core/catalog/files.json": "a400e7bf3e1197698d129db83964d883fd9ea2818173fe7df3c7d1b4a054d72f",
-    "core/catalog/krator-furniture-core.js": "1c8bfa11d261b36895fd50645358e2c4ebe54febf67daeed700a38fbd6256fe9",
+    "core/catalog/krator-furniture-core.js": "4872bf46f2707b3fa156b18b8110f42ba830f10fdf670a1e79cf9c25f8941498",
     "core/catalog/krator-furniture-kit.js": "5220ef8dd95dd5c33960ad1452f09f437379c2e26d40c9b480877b1a4e65f16b",
     "core/catalog/krator-furniture-runtime.js": "5bd95301145e7adfb6528e85de8d2fb39206b0cf558409718dbd85db437e57c9",
     "core/clock/20-core-clock.js": "27f205a2e908a21cb5d07f07431352d7a02a214baf543fc94cd545d7d588ddbe",
@@ -286,21 +286,21 @@
     "kits/highlands/targets": "78af7bdb5626eb0a046772b3edda705ca9e60ba7af0960eea89f7fa201d685a8",
     "kits/highlands/targets/sheet": "c15cbbbf38aded51420b67648cfbf6924920127af4422544e38ce86b2f112aef",
     "kits/interiors": "c343f7e77884e1f4a489c5a2327ea3c5a7a54a1f9bc070a21766131363cf07f7",
-    "kits/interiors/sets": "25e1fa66e47b9b929bd298c5bc39a8afb287b6cc27aee48c82a238a7c99fc191",
+    "kits/interiors/sets": "6878430e9531e1e8d7677660d90b9c12627e59981cf0a00feb423bbf87787cf2",
     "kits/interiors/src": "fe72f6be1b5eb6012c769b91a5fc7c558f24144155f758942db210e347392bab",
     "kits/iziz-vernacular": "4a1c35741a306f725b4dbc4e35c5987534d6fd34a8045e1851e67ecb5b264cee",
     "tools": "5d8cb54bfd5566913f21e3e094a6a85418e1354e6e39cf6138ec20bda1add512",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "kits/highlands/build-manifest.json": "8d2e2dc9ff718cb57c85af9492ed11f09f439a878d4672e496002d4c2e3ffba5",
-    "kits/highlands/dist/highlands.html": "1c54bb81565886aa7e97b96aae0d19698e5c8fd27446a80bbe66cd4571d4ac62",
+    "kits/highlands/build-manifest.json": "b3cdc2cdf02f16632cc6214dbd2d51147f18e52d964502d53865422475b45d6c",
+    "kits/highlands/dist/highlands.html": "8e24dd7d7f258c04ecad98689eb858130e5c9d2353c1c687e81fe21f68a68dad",
     "kits/highlands/dist/highlands.tex.highlands-2.js": "707642234ab07f68ea03205c5f7ececec2676936d36fa1dd415b7d490976c464",
     "kits/highlands/dist/highlands.tex.highlands.js": "54b43917fbd1d716ccf37f8e9e0b071f3439ebd152c622d44c947f537b123462"
    },
    "outputs_raw": {
-    "kits/highlands/build-manifest.json": "8d2e2dc9ff718cb57c85af9492ed11f09f439a878d4672e496002d4c2e3ffba5",
-    "kits/highlands/dist/highlands.html": "1c54bb81565886aa7e97b96aae0d19698e5c8fd27446a80bbe66cd4571d4ac62",
+    "kits/highlands/build-manifest.json": "b3cdc2cdf02f16632cc6214dbd2d51147f18e52d964502d53865422475b45d6c",
+    "kits/highlands/dist/highlands.html": "8e24dd7d7f258c04ecad98689eb858130e5c9d2353c1c687e81fe21f68a68dad",
     "kits/highlands/dist/highlands.tex.highlands-2.js": "707642234ab07f68ea03205c5f7ececec2676936d36fa1dd415b7d490976c464",
     "kits/highlands/dist/highlands.tex.highlands.js": "54b43917fbd1d716ccf37f8e9e0b071f3439ebd152c622d44c947f537b123462"
    }

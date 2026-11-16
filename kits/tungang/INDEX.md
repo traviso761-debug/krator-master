@@ -24,8 +24,13 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `37-wk-rec.js` | 3 |  |
 | `40-fg-kit.js` | 18 |  |
 | `42-fg-mass.js` | 21 |  |
+| `44-fg-wc-plan.js` | 9 |  |
 | `44-tg-kit.js` | 16 |  |
+| `45-fg-wc-furn.js` | 3 |  |
+| `46-fg-wc-draw.js` | 29 |  |
 | `46-tg-homes.js` | 8 |  |
+| `47-fg-bc-plan.js` | 6 |  |
+| `48-fg-bc-draw.js` | 5 |  |
 | `48-tg-civic.js` | 8 |  |
 | `50-fg-dwell.js` | 10 |  |
 | `52-fg-civic.js` | 8 |  |
@@ -35,9 +40,13 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `60-fg-road.js` | 16 |  |
 | `80-fg-host.js` | 10 |  |
 | `82-tg-host.js` | 5 |  |
+| `82-wc-host.js` | 8 |  |
 | `89-rows.js` | 2 |  |
+| `89w-wc-rows.js` | <1 |  |
 | `91g-tg-sheet.js` | 6 |  |
 | `91t-fg-sheet.js` | 9 |  |
+| `91w-wc-sheet.js` | 16 |  |
 | `96g-tg-views.js` | <1 |  |
 | `96t-fg-views.js` | <1 |  |
+| `96w-wc-views.js` | 3 |  |
 | `99-sheet-fg.js` | 1 |  |

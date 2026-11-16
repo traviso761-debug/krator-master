@@ -42,4 +42,5 @@ if __name__ == '__main__':
     ap.add_argument("--eval", action="append")
     ap.add_argument("--size", default="1280x800")
     ap.add_argument("--no-cache", action="store_true")
+    ap.add_argument("--interiors", action="store_true", help="load with ?interiors=1 and run the hollow-wall reachability audit (settlements/xanadu/verify.py)")
     sys.exit(asyncio.run(xv.run(ap.parse_args(sys.argv[1:]))))

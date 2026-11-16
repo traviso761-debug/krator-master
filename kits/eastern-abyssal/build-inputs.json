@@ -8,7 +8,7 @@
     "core/atmos/placeholder/placeholder.py": "a56878038fdd42d4d41752866926a3cf59815924a08f2ef42b56484766848aab",
     "core/catalog/catalog.py": "5d4a79810193b831fc1c686c934990afd10ecb63b5a55d05e0f3d7dd4c84d88a",
     "core/catalog/files.json": "a400e7bf3e1197698d129db83964d883fd9ea2818173fe7df3c7d1b4a054d72f",
-    "core/catalog/krator-furniture-core.js": "1c8bfa11d261b36895fd50645358e2c4ebe54febf67daeed700a38fbd6256fe9",
+    "core/catalog/krator-furniture-core.js": "4872bf46f2707b3fa156b18b8110f42ba830f10fdf670a1e79cf9c25f8941498",
     "core/catalog/krator-furniture-kit.js": "5220ef8dd95dd5c33960ad1452f09f437379c2e26d40c9b480877b1a4e65f16b",
     "core/catalog/krator-furniture-runtime.js": "5bd95301145e7adfb6528e85de8d2fb39206b0cf558409718dbd85db437e57c9",
     "core/clock/20-core-clock.js": "27f205a2e908a21cb5d07f07431352d7a02a214baf543fc94cd545d7d588ddbe",
@@ -183,16 +183,16 @@
     "core/atmos/placeholder": "93e72701f4f204e698b400c25d1989704d985203b33d5a076ec9e170c3bb9552",
     "core/catalog": "30a9e7a2a0ea642339cc1158c3060327682167fbeb74a8c68a584185e0c6d094",
     "core/door": "606c86cebee6cecd509a1319eb00f4f3b96202499526068992bd052a85bdca4a",
-    "core/furnish": "09dc20b7272ccbab9dbdf81fa2c1eecb624e5d192d40370d2ae9c1443e6c81c7",
+    "core/furnish": "ce80f99bac79c2ceb339d05ec0e601e97b7ebdf9aba7b964e57178fb20fccdd4",
     "core/host": "d729ffbc0ed36e68e9036bd9c454abc6462a27b22a4bc16b88c38d836e6f4a37",
     "core/rand": "2174a8e3e509270343eb7e2c6e69ec9c0a221daa415e05d960123007b253bc77",
     "core/tags": "cd6f040d0e4dc63956ba50d287f27cda97e471bfd15ee98f2638981d4f9e1127",
-    "core/walk": "c6769307f01d663d946e7a69638ff7e4fee9c46e1ff5bc8acc98125dd4bb4619",
+    "core/walk": "c2dba1d905c6546cc60841fa95b468a852915494776bd7eee35713cb4f48c648",
     "kits/catalog": "10322ea778934242b7ce59b2a1b14f40befde097c5b9b80081f11fd0cb8a57ce",
     "kits/eastern-abyssal/dist": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "kits/eastern-abyssal/src": "e9391cb31c0fa8eb98ec34023270a9b992c2830f94fc2ff95bec44eadd7663e4",
     "kits/interiors": "c343f7e77884e1f4a489c5a2327ea3c5a7a54a1f9bc070a21766131363cf07f7",
-    "kits/interiors/sets": "25e1fa66e47b9b929bd298c5bc39a8afb287b6cc27aee48c82a238a7c99fc191",
+    "kits/interiors/sets": "6878430e9531e1e8d7677660d90b9c12627e59981cf0a00feb423bbf87787cf2",
     "kits/interiors/src": "fe72f6be1b5eb6012c769b91a5fc7c558f24144155f758942db210e347392bab",
     "kits/locus": "def117585c2c9fcfd579c370b33e79a91b1442f8b0755a7402311e3cfb05b782",
     "kits/locus/src": "8795515269e5f23e5418f30f422e7d1d66882ad23b81dce7d27e7c8a2379d813",
@@ -201,13 +201,13 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "kits/eastern-abyssal/build-manifest.json": "bf42c11eac848235bd7ce632646b32b51cd2f5e7c5165cfb26a199cf74809bb1",
-    "kits/eastern-abyssal/dist/eastern-abyssal.html": "918887f44298391270f1a86ac306b6fabbfe58c35ec1d09e9673739c2b4ad24b",
+    "kits/eastern-abyssal/build-manifest.json": "b0dcf07d624018c2ac6db6e5c647af24b43759daae919a7c0aaa2e1cc36e57b2",
+    "kits/eastern-abyssal/dist/eastern-abyssal.html": "c38cbacb8fbdf58a4cc21700f2f3a3e309ba56250ffe5897615421b61c0f604e",
     "kits/eastern-abyssal/dist/eastern-abyssal.tex.locus.js": "62f14adbe9d2fcb1af99e6e72a51e2e87f28d01496f9cd6b2025841083965741"
    },
    "outputs_raw": {
-    "kits/eastern-abyssal/build-manifest.json": "bf42c11eac848235bd7ce632646b32b51cd2f5e7c5165cfb26a199cf74809bb1",
-    "kits/eastern-abyssal/dist/eastern-abyssal.html": "918887f44298391270f1a86ac306b6fabbfe58c35ec1d09e9673739c2b4ad24b",
+    "kits/eastern-abyssal/build-manifest.json": "b0dcf07d624018c2ac6db6e5c647af24b43759daae919a7c0aaa2e1cc36e57b2",
+    "kits/eastern-abyssal/dist/eastern-abyssal.html": "c38cbacb8fbdf58a4cc21700f2f3a3e309ba56250ffe5897615421b61c0f604e",
     "kits/eastern-abyssal/dist/eastern-abyssal.tex.locus.js": "62f14adbe9d2fcb1af99e6e72a51e2e87f28d01496f9cd6b2025841083965741"
    }
   }
