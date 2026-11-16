@@ -6,7 +6,7 @@
       wants the owner's word before the recut.
 - [ ] **The tubes' portals lie on the uncarved ground.** The Twins' sculpt is not on the map, so the mouths open wherever the
       model's ground is at the spec's points: the feeder's Strongbow portal is a ramp down into flat ground (a pit mouth), its SE
-      Twin portal climbs a steep flank as an open trench for ~240 m. The floors are laid at a depth, so they follow the sculpt;
+      Twin gasp climbs a steep flank as an open trench. The floors are laid at a depth, so they follow the sculpt;
       the portals' points may want moving to the sculpted brows (the spec's `at`), data only.
 - [ ] **Up to 630 m of rock over a tube.** The floor keeps its 8 % grade under the uncarved ridges, so A1 and A2 run deep
       under the Godthrone's shield ramp in places; skylights are only drawn where the cover is under 60 m.

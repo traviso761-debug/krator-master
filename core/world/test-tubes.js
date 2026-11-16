@@ -22,10 +22,12 @@ const SPEC = () => [
     halls: [{ px: [102, 100.5], name: 'the hall', rx: 30, rz: 20, h: 18, skylight: { r: 2.5, name: 'the roof crack' } }],
     chokes: { every: 2500, p: .9, w: 3.5, h: 4.5, len: [48, 72] }, skylights: { every: 2000, p: .9, r: [3, 5] } },
   { id: 'T2', name: 'the short tube', px: [[100, 103], [103, 103]], seg: { w: 14, h: 11 }, depth: 35,
-    open: [{ kind: 'portal', at: 'start', name: 'its one portal' }, { kind: 'skylight', at: [102, 103], r: 4, name: 'its skylight' }] }];
+    open: [{ kind: 'portal', at: 'start', name: 'its one portal' }, { kind: 'skylight', at: [102, 103], r: 4, name: 'its skylight' }] },
+  { id: 'T3', name: 'the branch', px: [[101.2, 102.3], [101.7, 101.4], [102, 100.5]], seg: { w: 12, h: 10 }, depth: 32, join: { tube: 'T1', at: 'end' },
+    open: [{ kind: 'portal', at: 'start', name: 'the branch portal' }] }];
 const plan = (spec, seed) => WTUBES.plan(spec, { ground, fromPx, seed: seed == null ? 4242 : seed });
 const clone = P => WTUBES.bind(JSON.parse(JSON.stringify(P)), { ground });
-const P = plan(SPEC()), h0 = WTUBES.hash(P), T1 = P.tubes[0], T2 = P.tubes[1];
+const P = plan(SPEC()), h0 = WTUBES.hash(P), T1 = P.tubes[0], T2 = P.tubes[1], T3 = P.tubes[2];
 const checks = Q => WTUBES.check(Q, { ground, fromPx });
 const named = (Q, key) => checks(Q).find(r => r.name.indexOf(key) >= 0);
 
@@ -37,7 +39,7 @@ const named = (Q, key) => checks(Q).find(r => r.name.indexOf(key) >= 0);
 // ---------------------------------------------------------------- determinism
 const one = (Q, id) => WTUBES.hash({ tubes: Q.tubes.filter(t => t.id === id) });
 T.neg('the records are the same planned again (a plan of another world seed differs)', Q => WTUBES.hash(Q) === h0, plan(SPEC(), 4243), plan(SPEC()));
-T.ok('the records do not hang on the spec\'s order', one(plan(SPEC().reverse()), 'T1') === one(P, 'T1') && one(plan(SPEC().reverse()), 'T2') === one(P, 'T2'));
+T.ok('the records do not hang on the spec\'s order (a branch listed before the tube it joins)', ['T1', 'T2', 'T3'].every(id => one(plan(SPEC().reverse()), id) === one(P, id)));
 T.ok('a tube\'s records do not change when another is added', one(plan([SPEC()[0]]), 'T1') === one(P, 'T1'));
 T.ok('the chokes and skylights are drawn (by cell)', T1.sec.some(s => s.kind === 'choke') && T1.open.some(O => O.kind === 'skylight' && !O.name),
   T1.sec.filter(s => s.kind === 'choke').length + ' chokes, ' + T1.open.filter(O => O.kind === 'skylight').length + ' skylights');
@@ -55,6 +57,12 @@ const moved = clone(P), pe = moved.tubes[0].open.find(O => O.kind === 'portal' &
 T.neg('an opening away from where the spec puts it is caught', Q => named(Q, 'where the spec puts it').ok, moved, P);
 const steep = clone(P), sp = steep.tubes[0].st, si = Math.floor(sp.length * .45); sp[si][2] -= 9;
 T.neg('a floor over its grade is caught', Q => named(Q, 'keeps its grade').ok, steep, P);
+const offJoin = clone(P), oj = offJoin.tubes[2]; oj.st[oj.join.i][2] += 4;
+T.neg('a branch whose floor misses the tube it joins is caught', Q => named(Q, 'joined tube').ok, offJoin, P);
+T.ok('the branch ends on the hall\'s station, on its floor', T3.join && T3.join.tube === 'T1' && T3.join.j === T1.halls[0].i
+  && T3.st[T3.st.length - 1][2] === T1.st[T1.halls[0].i][2], JSON.stringify(T3.join));
+{ let threw = ''; try { plan([SPEC()[2]]); } catch (e) { threw = e.message; }
+  T.ok('a branch joined to a tube not in the spec is refused', /not in the spec/.test(threw), threw); }
 { const [x0, z0] = fromPx(100, 100), s = T1.st[0], O = T1.open[0];
   T.ok('the west portal is where the spec puts it, its floor at the ground', s[0] === x0 && s[1] === z0 && O.kind === 'portal' && O.i === 0 && Math.abs(s[2] - ground(s[0], s[1])) < .5); }
 
@@ -96,16 +104,19 @@ const S = P.square, keyOf = (x, z) => Math.floor(x / S) + ',' + Math.floor(z / S
   T.ok('two squares\' meshes meet at their seam (one lattice, the same field)', vb.length > 10 && !miss.length, vb.length + ' seam vertices, ' + miss.length + ' unmatched'); }
 
 // ---------------------------------------------------------------- the walker: in at the west portal, along the floor, out at the east
-const walkLine = (Q, t) => { const st = t.st, n = st.length, e = (a, b) => [a[0] + (a[0] - b[0]) * 1.5, a[1] + (a[1] - b[1]) * 1.5];
-  const pts = [e(st[0], st[1])].concat(st.map(s => [s[0], s[1]]), [e(st[n - 1], st[n - 2])]);
+const walkLine = (Q, t, inside) => { const st = t.st, n = st.length, e = (a, b) => [a[0] + (a[0] - b[0]) * 1.5, a[1] + (a[1] - b[1]) * 1.5];
+  const pts = [e(st[0], st[1])].concat(st.map(s => [s[0], s[1]]), inside ? [] : [e(st[n - 1], st[n - 2])]);
   let feet = ground(pts[0][0], pts[0][1]), blocked = 0, jump = 0, tube = 0, kinds = '', last = 0, from = pts[0];
   for (let i = 0; i < pts.length - 1; i++) { const A = pts[i], B = pts[i + 1], L = Math.hypot(B[0] - A[0], B[1] - A[1]);
     for (let s = 0; s < L; s += 2) { const x = A[0] + (B[0] - A[0]) * s / L, z = A[1] + (B[1] - A[1]) * s / L, gy = ground(x, z), w = WTUBES.walk(Q, x, z, feet, gy, from);
       if (!w) { blocked++; continue; } jump = Math.max(jump, Math.abs(w.y - feet)); if (w.kind === 'tube') tube++; if (kinds.slice(-1) !== w.kind[0]) kinds += w.kind[0]; feet = w.y; last = gy; from = [x, z]; } }
-  return { blocked, jump, tube, kinds, end: feet - last }; };
+  return { blocked, jump, tube, kinds, end: feet - last, feet }; };
 { const w = walkLine(P, T1);
   T.ok('the walker goes in at the west portal, along the floor, and out at the east', w.blocked === 0 && w.kinds === 'gtg' && Math.abs(w.end) < 1e-9 && w.tube > 1000 && w.jump < 2.5,
     JSON.stringify(w)); }
+{ const w = walkLine(P, T3, true), hy = T1.st[T1.halls[0].i][2];
+  T.ok('the walker goes in at the branch portal and along it onto the hall\'s floor', w.blocked === 0 && w.kinds === 'gt' && w.tube > 50 && w.jump < 2.5 && Math.abs(w.feet - hy) < .75,
+    JSON.stringify(w) + ', the hall floor ' + hy); }
 { const s = T1.st[Math.floor(T1.st.length * .3)], q = T1.st[Math.floor(T1.st.length * .3) + 1], l = Math.hypot(q[0] - s[0], q[1] - s[1]), px = -(q[1] - s[1]) / l, pz = (q[0] - s[0]) / l;
   const feet = s[2], at = d => [s[0] + px * d, s[1] + pz * d];
   T.neg('the walker is stopped by the tube\'s wall', p => WTUBES.walk(P, p[0], p[1], feet, ground(p[0], p[1])) !== null, at(14), at(0));

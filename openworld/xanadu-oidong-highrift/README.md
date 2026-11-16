@@ -64,7 +64,9 @@ The second region of sites cut off the scale model into the open world (`openwor
 - **The lava tubes** (2026-11-16, step W3 of `PLAN-TWINS-CROSSING.md`; core/world `42k`, `88k`, its README "Caverns"): Route A
   of the Twins crossing, the Dark-Tube Road, under the ground: A1 from the Vale's portal at the Alph's chasm (938,1496) to the
   First Skylight Break, A2, A3 with the Hall of the Tally-Marks and its roof crack, A4 to the 18 m arch, and the south feeder
-  (`tube_xanadu_se_10`'s lower galleries, the Strongbow branch, 1010,1517 > 1028,1506): 244 km at the plan's pixels, 10 portals,
+  (the Strongbow branch: `tube_xanadu_se_10`'s lower galleries 1010,1517 > 1028,1506, a gasp up onto Route B under the SE Twin,
+  then the model's Saddle dike conduit 1024,1485 > the Hall at 1014,1464, where it joins A3 underground: WTUBES `join`, the
+  owner, 2026-11-16, "Join the branch to the main line"): 244 km of Route A at the plan's pixels and the feeder's ~131, 10 portals,
   17 skylights, 14 chokes of 3.5 m. All of it lies inside the present box; only A1's first ~15 km are inside the cut's polygons.
   The spec is `src/48k-world-tubes.js`; the floors lie at a depth under the ground, so they follow the Twins' sculpt when it lands.
   "Go to" has each portal from outside, a walk inside each tube and the Hall.
@@ -112,8 +114,9 @@ Each check has a negative:
     raised over the ground mid-tube);
   - the ground opens at each portal and only there (a ray down at each portal's ramp meets the tube; over each tube between the
     openings it meets the ground; every terrain chunk opened is on a hole; each probe's negative is the other kind of place);
-  - the walker (G) enters the south feeder at its portal, walks its 42 km on the floor and comes out at the other portal, the
-    drawn floor under its feet and the rock over its head every 3 km; steered into the wall it is stopped (the negative: along
+  - the walker (G) enters the south feeder at Strongbow's portal, walks it on the floor, up through the gasp under the SE Twin
+    and on into the Hall of the Tally-Marks, ending on A3's floor where the feeder joins it, the drawn floor under its feet and
+    the rock over its head every 3 km; steered into the wall it is stopped (the negative: along
     the tube it goes);
   - underground the pick meets the rock and the inspector names the tube (the negative: on the ground by the portal);
   - shots of the feeder's portals, inside it and the Hall, with the frame time at each.

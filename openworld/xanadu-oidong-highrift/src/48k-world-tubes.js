@@ -26,7 +26,11 @@ SITE_SPEC.tubes=[
   px:[[1024,1459],[1031,1455.5],[1038,1452]],seg:[{w:16,h:14},{w:20,h:18}],depth:45,
   open:[{kind:'portal',at:'start',name:'The Catch-Leap dive'},{kind:'portal',at:'end',name:'The 18 m basalt arch onto the gravel fan'}],
   chokes:{every:9000,p:.5,w:3.5,h:4.5,len:[48,96]},skylights:{every:6000,p:.5,r:[3,6]}},
- {id:'A-feeder',route:'A',name:'The south feeder: the lower galleries of tube_xanadu_se_10 (the Strongbow branch)',model:'tube_xanadu_se_10',
-  px:[[1010,1517],[1019,1511.5],[1028,1506]],seg:{w:16,h:12},depth:42,
-  open:[{kind:'portal',at:'start',name:'The feeder portal above Strongbow'},{kind:'portal',at:'end',name:'The feeder portal under the SE Twin'}],
+ /* the Strongbow branch (the owner, 2026-11-16: "Join the branch to the main line"): the lower galleries of tube_xanadu_se_10 up to
+    the SE Twin, then north-west along the model's Saddle fissure dike conduit to the Hall of the Tally-Marks, where it runs into
+    A3 underground (WTUBES `join`): the sim's Route A caravans for Strongbow go Hall, feeder, Strongbow. The old end portal under
+    the SE Twin is a gasp mid-tube now, the way up onto Route B's trail */
+ {id:'A-feeder',route:'A',name:'The south feeder: the lower galleries of tube_xanadu_se_10 and the Saddle dike conduit (the Strongbow branch)',model:'tube_xanadu_se_10',
+  px:[[1010,1517],[1019,1511.5],[1028,1506],[1024,1485],[1014,1464]],seg:{w:16,h:12},depth:42,join:{tube:'A3',at:'end'},
+  open:[{kind:'portal',at:'start',name:'The feeder portal above Strongbow'},{kind:'portal',at:[1028,1506],name:'The feeder gasp under the SE Twin (up onto Route B)'}],
   chokes:{every:9000,p:.5,w:3.5,h:4.5,len:[48,96]},skylights:{every:6000,p:.5,r:[3,6]}}];
