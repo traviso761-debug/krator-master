@@ -1008,6 +1008,10 @@
    "bytes": 8194343,
    "sha256": "064269814a12e49a5cd4abefac5d4dbad556fe29e6ec0bb990858f501102b597"
   },
+  "openworld/iziz-cluster/dist/iziz-cluster.html": {
+   "bytes": 5802504,
+   "sha256": "976e4d6dce840ba483321b1301b6aded9fae01879cfc9e44e1e2ad1d606557ab"
+  },
   "openworld/little-demo/dist/little-demo.artifact.html": {
    "bytes": 5088461,
    "sha256": "319308d69fde833b5f08452efd0851508d8d83e865b3715cb50840dab09cca45"
@@ -1016,9 +1020,17 @@
    "bytes": 5088719,
    "sha256": "43e0dc8e7d2fb8a2fa2a6eeb2c8e7036806cee73e1fc250735abcef1f242b87a"
   },
+  "openworld/oidong-highrift/dist/oidong-highrift.html": {
+   "bytes": 10344757,
+   "sha256": "60fd05f21ab838b78c6b810cf4e4a84ae9dd7a0fc6d472d0fab6ab0e90d6addc"
+  },
   "openworld/pinnacle/dist/pinnacle.html": {
-   "bytes": 5290152,
-   "sha256": "e0395d260e160bfe4072b652248648d962489afea520f3948c87cdfaf4fb489f"
+   "bytes": 5771623,
+   "sha256": "74117dab0eb78e13907cca68257a66bd7b27924c3c802e596d4bf97f83f53006"
+  },
+  "openworld/xanadu-north-shore/dist/xanadu-north-shore.html": {
+   "bytes": 2627240,
+   "sha256": "d8634bc7c8d51ca255c4701000b0df95f6d8e2dcb5f64d8f91ed22de11237158"
   },
   "settlements/dalab/dist/dalab-set.html": {
    "bytes": 6603017,

@@ -24,18 +24,24 @@ from harness import verify_page  # noqa: E402
 FLY = r"""async (o)=>{/* a straight flight from the view's spot, o.speed m/s on its heading at its height above the ground, o.secs
  seconds: the page's own frames (streaming, growing, drawing) counted, and the worst frames */
  /* where the frame's CPU time goes while flying: each streaming step, the flora's draw, each tick, the render */
- const T={},wrap=(o,k,n)=>{const f=o[k];if(typeof f!=='function'||f._w)return;const g=function(){const a=performance.now();try{return f.apply(this,arguments);}finally{T[n]=(T[n]||0)+performance.now()-a;}};g._w=f;o[k]=g;};
+ const T={},F={},wrap=(o,k,n)=>{const f=o[k];if(typeof f!=='function'||f._w)return;const g=function(){const a=performance.now();try{return f.apply(this,arguments);}finally{const dt=performance.now()-a;T[n]=(T[n]||0)+dt;F[n]=(F[n]||0)+dt;}};g._w=f;o[k]=g;};
+ /* the worst frame's own steps, and the long tasks (over 50 ms, from anything on the main thread) */
+ let worstF={ms:0},LT=[];const po=typeof PerformanceObserver!=='undefined'?new PerformanceObserver(l=>{for(const e of l.getEntries())LT.push(Math.round(e.duration));}):null;try{po&&po.observe({entryTypes:['longtask']});}catch(e){}
  wrap(TERRAIN,'update','terrain');wrap(FLORA,'residency','flora tiles');wrap(NURSERY,'update','nursery');wrap(FLOOR,'update','floor');wrap(SEAS,'update','seas');
  wrap(FLORA,'draw','flora draw');wrap(HOST.renderer,'render','render');HOST.TICKS.forEach((f,i)=>wrap(HOST.TICKS,i,'tick'+i));
- const unwrap=()=>{for(const [o,k] of [[TERRAIN,'update'],[FLORA,'residency'],[NURSERY,'update'],[FLOOR,'update'],[SEAS,'update'],[FLORA,'draw'],[HOST.renderer,'render']])if(o[k]._w)o[k]=o[k]._w;HOST.TICKS.forEach((f,i)=>{if(f._w)HOST.TICKS[i]=f._w;});};
+ /* each prototype the nursery grows, and how long it took (its key: kit index|species|variant|level) */
+ const GROWN=[],ps=NURSERY.protos,pset=ps.set;let gt=performance.now();const nu=NURSERY.update;NURSERY.update=function(){gt=performance.now();return nu.apply(this,arguments);};
+ ps.set=function(k,v){const now=performance.now();GROWN.push([k,Math.round(now-gt)]);gt=now;return pset.call(this,k,v);};
+ const unwrap=()=>{NURSERY.update=nu;delete ps.set;for(const [o,k] of [[TERRAIN,'update'],[FLORA,'residency'],[NURSERY,'update'],[FLOOR,'update'],[SEAS,'update'],[FLORA,'draw'],[HOST.renderer,'render']])if(o[k]._w)o[k]=o[k]._w;HOST.TICKS.forEach((f,i)=>{if(f._w)HOST.TICKS[i]=f._w;});};
  const cam=HOST.camera,y0=cam.position.y-WORLD.H(cam.position.x,cam.position.z),d=new THREE.Vector3();cam.getWorldDirection(d);d.y=0;d.normalize();
  const ts=[];let last=performance.now();const t0=last;
- await new Promise(res=>{function step(){const now=performance.now();ts.push(now-last);last=now;
+ await new Promise(res=>{function step(){const now=performance.now(),dt=now-last;ts.push(dt);last=now;
+  if(dt>worstF.ms){worstF={ms:Math.round(dt),at:Math.round(now-t0),steps:Object.fromEntries(Object.entries(F).map(([k,v])=>[k,Math.round(v)]))};}for(const k in F)delete F[k];
   const s=(now-t0)/1000*o.speed;const x=o.x0+d.x*s,z=o.z0+d.z*s;cam.position.set(x,WORLD.H(x,z)+y0,z);
   if(now-t0<o.secs*1000)requestAnimationFrame(step);else res();}requestAnimationFrame(step);});
- unwrap();ts.shift();const sorted=ts.slice().sort((a,b)=>a-b),n=ts.length,per={};for(const k in T)per[k]=Math.round(T[k]/n*10)/10;
+ unwrap();po&&po.disconnect();ts.shift();const sorted=ts.slice().sort((a,b)=>a-b),n=ts.length,per={};for(const k in T)per[k]=Math.round(T[k]/n*10)/10;
  return{fps:Math.round(n/o.secs*10)/10,p50:Math.round(sorted[n>>1]*10)/10,p95:Math.round(sorted[Math.floor(n*.95)]*10)/10,worst:Math.round(sorted[n-1]),
-  over100:ts.filter(t=>t>100).length,frames:n,msPerFrame:per};}"""
+  over100:ts.filter(t=>t>100).length,frames:n,msPerFrame:per,worstFrame:worstF,grown:GROWN.sort((x,y)=>y[1]-x[1]).slice(0,6),longTasks:LT.sort((a,b)=>b-a).slice(0,8)};}"""
 
 ABLATE = r"""async ()=>{/* the world pass's GPU time with each kind of mesh hidden in turn (the minimum of 10 frames) */
  const R=HOST.renderer,gl=R.getContext(),ext=gl.getExtension('EXT_disjoint_timer_query_webgl2'),sc=HOST.scene,cam=HOST.camera;if(!ext)return null;
@@ -49,6 +55,14 @@ ABLATE = r"""async ()=>{/* the world pass's GPU time with each kind of mesh hidd
  const top=sc.children.filter(o=>kind(o)),out={all:await gpu()};
  for(const k of ['flora far','flora mid','flora hero','flora saplings','floor','ground','water','camps','other']){const L=top.filter(o=>kind(o)===k&&o.visible);if(!L.length)continue;L.forEach(o=>o.visible=false);out['no '+k]=await gpu();L.forEach(o=>o.visible=true);}
  const bg=sc.background;sc.background=null;out['no background']=await gpu();sc.background=bg;
+ /* the ground's own shader, varied in place (its material recompiled with a text swap; put back after) */
+ const gm=top.find(o=>kind(o)==='ground');if(gm){const M=gm.material,ob=M.onBeforeCompile,ck=M.customProgramCacheKey;
+  const vary=async(name,a,b)=>{M.onBeforeCompile=function(sh){ob.call(this,sh);sh.fragmentShader=sh.fragmentShader.split(a).join(b);};M.customProgramCacheKey=()=>'perf-'+name;M.needsUpdate=true;
+   R.render(sc,cam);out['ground: '+name]=await gpu();};
+  await vary('strata off','vec3 bc=strataColor(vSWP,vSWN);','vec3 bc=vec3(0.5);');
+  await vary('strata where rock','{vec3 bc=strataColor(vSWP,vSWN);','{vec3 bc=vRock>0.0?strataColor(vSWP,vSWN):vec3(0.0);');
+  await vary('no detail maps','vec3 near=d1*d2*1.16,mid=d2*d3*1.12,far=d3*d4*1.1;','vec3 near=vec3(1.0),mid=vec3(1.0),far=vec3(1.0);');
+  M.onBeforeCompile=ob;M.customProgramCacheKey=ck;M.needsUpdate=true;R.render(sc,cam);}
  const pr=R.getPixelRatio();R.setPixelRatio(pr*.5);out['half pixel ratio']=await gpu();R.setPixelRatio(pr);
  return out;}"""
 
@@ -85,6 +99,30 @@ MEASURE = r"""async (o)=>{const R=HOST.renderer,gl=R.getContext(),ext=gl.getExte
  return out;}"""
 
 
+def hot(prof, n=14, html=None):
+    """the profile's self time by function (name, fragment:line), the top n, in ms"""
+    marks = []
+    if html:
+        for i, line in enumerate(open(html, encoding='utf-8')):
+            if line.startswith('// ==================== '):
+                marks.append((i, line[24:].strip()))
+    def where(ln):
+        best = None
+        for i, name in marks:
+            if i > ln:
+                break
+            best = (i, name)
+        return '%s:%d' % (best[1].split('/')[-1], ln - best[0]) if best else str(ln + 1)
+    nodes = {x['id']: x for x in prof['nodes']}
+    dt = prof.get('timeDeltas') or []
+    self_ms = {}
+    for i, sid in enumerate(prof.get('samples') or []):
+        cf = nodes[sid]['callFrame']
+        k = '%s %s' % (cf['functionName'] or '(anon)', where(cf['lineNumber']) if cf['lineNumber'] >= 0 else '')
+        self_ms[k] = self_ms.get(k, 0) + (dt[i] if i < len(dt) else 0) / 1000
+    return sorted(self_ms.items(), key=lambda kv: -kv[1])[:n]
+
+
 async def run(a):
     res = {}
     async with verify_page(a.html, here=HERE, size=a.size, settle_ms=0, lock=False,
@@ -117,11 +155,23 @@ async def run(a):
                 print('   GPU ms by what is hidden:', json.dumps(await pg.evaluate(ABLATE)), flush=True)
             if a.fly:
                 p =await pg.evaluate('[HOST.camera.position.x,HOST.camera.position.z]')
+                cdp = None
+                if a.profile:
+                    cdp = await pg.context.new_cdp_session(pg)
+                    await cdp.send('Profiler.enable')
+                    await cdp.send('Profiler.setSamplingInterval', {'interval': 500})
+                    await cdp.send('Profiler.start')
                 f = await pg.evaluate(FLY, {'x0': p[0], 'z0': p[1], 'speed': a.fly if v != 'walk' else 6, 'secs': a.flysecs})
+                if cdp:
+                    prof = (await cdp.send('Profiler.stop'))['profile']
+                    await cdp.detach()
+                    print('   hottest functions while flying (self ms):', ', '.join('%s %d' % kv for kv in hot(prof, html=a.html)), flush=True)
                 m['fly'] = f
                 print('   flight %s m/s for %ss: %.1f fps, frame p50 %s ms, p95 %s ms, worst %s ms, %d frames over 100 ms'
                       % (a.fly if v != 'walk' else 6, a.flysecs, f['fps'], f['p50'], f['p95'], f['worst'], f['over100']), flush=True)
                 print('   CPU ms a frame while flying:', json.dumps(f['msPerFrame']), flush=True)
+                print('   worst frame:', json.dumps(f['worstFrame']), ' long tasks (ms):', f['longTasks'], flush=True)
+                print('   slowest prototypes grown (key, ms):', f['grown'], flush=True)
         res['_gpu'] = gpu
         panel = await pg.evaluate("document.getElementById('errs').textContent")
         lost = await pg.evaluate("HOST.renderer.getContext().isContextLost()")
@@ -147,4 +197,5 @@ if __name__ == '__main__':
     ap.add_argument('--fly', type=float, default=0, help='after each view, fly on at this speed (m/s; the walk view walks at 6)')
     ap.add_argument('--flysecs', type=float, default=12)
     ap.add_argument('--ablate', action='store_true', help='GPU time with each kind of mesh hidden in turn')
+    ap.add_argument('--profile', action='store_true', help='a CPU sampling profile of each flight: the hottest functions')
     sys.exit(asyncio.run(run(ap.parse_args())))
