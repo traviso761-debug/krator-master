@@ -777,7 +777,11 @@ river's `walls_unforced` field is its marker).
   (422). No biome station's pin and no lake stands on the changed ground. The Godthrone kit's `-blood` station (r442's
   bloodfalls, not built) will read r442's lower flow.
 - `tests/test_smodel.py` section 18: the walls' band under 400 mm, the caldera's rain kept, the river at 120-135 m³/s.
-## 5.1 edit 3: `edit_513.py` (2026-11-12): the Slabfields (was Mid Basin)
+## 5.1 edit 7: `edit_517.py` (2026-11-12, run on main 2026-11-16): the Slabfields (was Mid Basin)
+
+Written as 5.1 edit 3 (`edit_513.py`) on `claude/slabfields`; renumbered 7 at the merge into main, where edits 2-6 were taken,
+and re-run on main's data (edits 4-6 in it): its own river check passed with Ostrukh Riba on its rerouted course. The
+reconcile key is `krator.regMerged.5.1e7`. Below, the branch's text: read "edit 3" and `edit_513` as edit 7 and `edit_517`.
 
 `python3 tools/scale-model/edit_513.py` edits `model/data` and `model/src/51-region-store.js` in place and writes
 `edit_513.report.json` (`--dry-run` runs every step and check and writes nothing); it refuses to run twice (the springs list
@@ -828,6 +832,66 @@ data.)
    the old canvas (edit 1's note).
 2. **Publish:** `python3 tools/scale-model/model/build.py --split`, then publish `model/dist/split/index.html` with
    `data-1.js` and `data-2.js` beside it to the artifact's URL (as version 91 was), and look at the page.
+## 5.1 edit 8: `edit_518.py` (2026-11-12, run on main 2026-11-16 with the patera held): the pancake domes in Firebliss and round Korona
+
+Written as 5.1 edit 2 (`edit_512.py`) on `claude/firebliss-patera-domes`; renumbered 8 at the merge into main. At the merge
+main held a built Firebliss station 1 on the Great Firebliss Vale, the floor the patera takes over, so the owner chose
+"domes only for now" (2026-11-16): the script runs with `PATERA_ON = False` and raises the ten domes and their records only.
+The patera, the Holm, the heat low and the Tlahn Warra's new head are written in it, off. Below, the branch's text as it
+planned the whole edit: read "edit 2" and `edit_512` as edit 8 and `edit_518`.
+
+`python3 tools/scale-model/edit_512.py` edits `model/data` in place and writes `edit_512.report.json`; it refuses to run
+twice (the patera's vent record is its marker). The plans are `biomes/firebliss/PLAN.md` sections 1a-1g and
+`biomes/korona/PLAN.md`, "Amendment 2026-11-12" (the owner's decisions of 2026-11-12).
+
+- **The Firebliss Patera** (a lava lake, Io's Loki Patera at Krator's size): the Great Firebliss Vale's floor taken over by
+  an oval **48 x 32 km** round **181,1317.5** (semi-axes 12 x 8 px, long axis 6 degrees north of east), its crust flat at
+  **2,240 m** over **282 cells (1,128 km²)**, dry land of a new climate class **`L`, patera (lava-lake crust)** (`#5a1a0a`,
+  appended to `climate.json`'s classes so no index moves). Cut up to 2,370 m into the vale's walls; the shore stands at
+  2,740 m or more all round (median 3,607 m): a lip of 2,740 m held on 71 cells where the vale ran out east and south-west
+  (a fill of up to 441 m), eased back into the ground by 1.55 radii. The vale's tarn (60 cells at 2,280 m, WH) is gone.
+  **The Holm**, the island: 12 x 9 km round 175.5,1315, 22 cells (88 km²), flat at 2,700 m. Heat 1.1 / 3.4 / 5.6 TW at
+  1 / 3 / 5 kW/m² (the plan's arithmetic: 2.5-6.4% of Krator's 53-133 TW at the central flux).
+- **Its climate:** the floor a heat island (mean 28 C, warm month 34, cold month 20, hottest afternoon 50, coldest night
+  +8; 1,200 mm that flashes off the crust); **the heat low's rain ring**, +900 mm at its peak 8-24 km off the shore, nothing
+  past 56 km (3,970 cells, mean 647 to 1,191 mm; most of it snow on the plateau), its classes kept (ET, EF, Dfc, Cfb: none
+  dry; the script asserts it). The wind raster `wd` is not touched.
+- **The domes** (a new key, `domes.json`, ten records): flat-topped, one to two cells of wall.
+
+  | Dome | px | Across | Ground | Top |
+  |---|---|---|---|---|
+  | North Glass | 175,1302 | 12 km | 5,133 m | 5,633 m |
+  | West Glass | 157,1324 | 10 km | 4,819 m | 5,269 m |
+  | South Glass | 175,1335 | 14 km | 4,503 m | 5,053 m |
+  | Ember Glass | 201,1331 | 8 km | 4,679 m | 5,079 m |
+  | Gate Glass | 211,1305 | 10 km | 5,396 m | 5,846 m |
+  | Korona 1, NW trench | 1007,490 | 14 km | -1,492 m | -892 m |
+  | Korona 2, NE trench | 1131,494 | 12 km | -901 m | -379 m |
+  | Korona 3, S trench | 1038,581 | 16 km | -852 m | -202 m |
+  | Korona 4, SE moat | 1179,578 | 16 km | -103 m | 547 m |
+  | Korona 5, N trench | 1071,430 | 14 km | -297 m | 303 m |
+
+  None touches water or a river (asserted). Three dam a few upslope cells (pit cells in a 29-cell box: South Glass 23 to 47,
+  Ember Glass 23 to 30, Korona 1 24 to 34, Korona 3 34 to 44): dome-dammed hollows, left dry.
+- **The records:** the patera as a vent (`kind: patera`, `floor` 2,240, `radius` 16 km, `scale` 0.6: the page draws its
+  lava disc, glow and smoke), and as a basin (`kind: lava lake`, `climate: L`, the Holm under `island`). **The Tlahn Warra**
+  (`r_fb_central`) loses its first point, 190,1319, on the lava: it heads on the east lip at 199,1323 (bed 2,292 m), 306 km
+  instead of 326. No settlement and no region record changes.
+- **What moved:** heights on 677 cells (488 in Firebliss, 189 in Korona, 0 elsewhere: asserted); water levels on the 60 tarn
+  cells; temperatures on 659 cells (`th`, `tl` 469); rain on 4,667, class on 556, zone on 98 (the sites, `reclimate`'s
+  re-derived cells round them, and the ring). Every other cell of `h`, `wl`, the five temperatures, `p`, `c` and `z` is
+  checked unchanged; the painted maps (`st`, `t`, `rt`, `ct`) are relit and repainted round the sites and re-encoded.
+- **With edit 513** (the Slabfields, Mid Basin, on another branch): the script reads whatever `model/data` holds and checks
+  only its own cells, so whichever branch merges second reruns its script on the merged data (from a checkout of the other's
+  `model/data`) instead of merging the binary rasters.
+- `tests/test_smodel.py` section 15 checks the crust (flat, dry, class `L`), the shore over 2,640 m, the Holm, the tarn gone,
+  the Tlahn Warra's head, the basin and vent records, the floor's temperatures, the rain ring, and every dome's flat top and
+  height; section 13 now counts the five stratovolcanoes and the three remaining tarns. The test read the little demo's
+  regions from `openworld/little-demo/`, which moved to `archive/`; it now falls back to `archive/little-demo/source/`.
+- **Owed by the owner (not done in the session):** publish the page, `python3 tools/scale-model/model/build.py --split`,
+  then `model/dist/split/index.html` with `data-1.js` and `data-2.js` beside it to the artifact's URL. **No database write
+  is owed:** no settlement or region changed, and the page's defaults (`model/src/`) are untouched. If the owner settles
+  the Holm, its marker is a new settlement (the page's default list and the live database, on the 5.1 canvas).
 
 ## Cutting a region out for the open world
 

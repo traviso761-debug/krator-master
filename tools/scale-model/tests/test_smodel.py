@@ -454,13 +454,12 @@ check('Xanadu (rmvkkmitffbjk) has fine-scale Rift microclimate mosaic (%d classe
 fb_reg = next((r for r in R if r.get('id') == 'rmw8hj62nmugn'), None)
 mask_fb_test = G.poly(fb_reg['points'], 1.0, 1.0, (D['fullH'], D['fullW'])) > 0.5
 fb_c_codes = {codes_test[int(k)] for k in c_grid_full[mask_fb_test]}
-fb_vents = [v for v in D.get('vents', []) if v.get('region') == 'Firebliss Range']
+fb_vents = [v for v in D.get('vents', []) if v.get('region') == 'Firebliss Range' and v.get('kind') == 'stratovolcano']
 check('Firebliss Range (rmw8hj62nmugn) has 5 volcanic vents (%d) and sheltered temperate geothermal valleys (classes: %s)' % (
     len(fb_vents), sorted(fb_c_codes)),
     len(fb_vents) == 5 and 'WH' in fb_c_codes and bool(fb_c_codes & {'Cfa', 'Cfb', 'Csb'}) and 'EF' in fb_c_codes)
 for fb_lk_nm, fb_x, fb_y, fb_wl in [
     ('West Bliss Cauldron Tarn', 126, 1344, 2640.0),
-    ('Great Firebliss Vale Lake', 184, 1318, 2280.0),
     ('Solfatara Glen Tarn', 238, 1322, 2120.0),
     ('East Bliss Vale Tarn', 284, 1318, 1960.0),
 ]:
@@ -650,4 +649,19 @@ for pa_x, pa_y, pa_lev, pa_nm in ((1601.5, 1388.6, 1997, 'the Leaner\'s Patera')
           and any(b.get('name') == pa_nm[0].upper() + pa_nm[1:] and b['level_m'] == pa_lev for b in D['basins']))
 spr_ids = {r['id'] for r in D.get('springs', [])}
 check('the Slabfields\' eight springs are in DATA.springs', len([i for i in spr_ids if i.startswith('spr_slab_')]) == 8)
+# ---- 15c. 5.1 edit 8 (edit_518.py, 2026-11-16): the pancake domes in Firebliss and round Korona; the patera written and
+#          held (PATERA_ON = False: the owner, 2026-11-16, main's Firebliss station 1 stands on the vale it would take)
+check('the Firebliss Patera is held: no patera vent, the Great Firebliss Vale\'s tarn still at 184,1318',
+      not any(v.get('kind') == 'patera' for v in D['vents']) and bool(whas[1318, 184]))
+domes_t = D.get('domes', [])
+check('ten pancake domes: five in Firebliss, five in Korona', len(domes_t) == 10
+      and sum(d['region'] == 'Firebliss Range' for d in domes_t) == 5 and sum(d['region'] == 'Korona / NE' for d in domes_t) == 5)
+for d in domes_t:
+    dcx, dcy, dR = d['px'][0], d['px'][1], d['d_km'] / 4.0
+    dr = np.hypot(xx_b - dcx, yy_b - dcy) / dR
+    top_cells = E[dr < 0.6]
+    check('dome %s: flat top at %d m (spread %.0f m) and %.0f m over the ground 1.5 radii out' % (
+        d['id'], d['top_m'], float(top_cells.max() - top_cells.min()), d['top_m'] - float(np.median(E[(dr > 1.4) & (dr < 1.7)]))),
+        float(top_cells.max() - top_cells.min()) <= 2.0 and abs(float(top_cells.max()) - d['top_m']) <= 2.0
+        and d['top_m'] - float(np.median(E[(dr > 1.4) & (dr < 1.7)])) >= 300.0)
 print('%d checks passed' % ok)
