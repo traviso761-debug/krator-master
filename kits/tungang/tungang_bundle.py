@@ -44,6 +44,9 @@ var TG_ERRS = [], TG_TEXRESET = false;
 var window = new Proxy(globalThis.window || globalThis, { get: function (t, k) { if (k === 'addEventListener') return function () {};
     var v = t[k]; return typeof v === 'function' && !/^[A-Z]/.test(String(k)) ? v.bind(t) : v; },
   set: function (t, k, v) { if (k === 'onerror') return true;
+    /* a host's own globals stay its own: the closure's core files publish theirs (23-mat-record.js: window.KMAT = KMAT), and
+       on a page that already has one (Laitwal, on Xanadu's page, whose KMAT carries bindMat) the closure keeps its copy inside */
+    if (typeof k === 'string' && /^[A-Z]/.test(k) && k in t) return true;
     if (k === '_texPending' && v === 0 && typeof t._texPending === 'number' && !TG_TEXRESET) { TG_TEXRESET = true; return true; }
     t[k] = v; return true; } });
 var document = (function () { var D = globalThis.document, stub = { style: {}, textContent: '' };

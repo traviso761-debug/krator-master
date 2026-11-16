@@ -124,9 +124,59 @@ is the Glaziers'; the bench is the Sultan's.
    in the wall, where the Tungang plan (`kits/tungang/PLAN.md` 1.4.1) had proposed 300-500 at the upper riser. Still
    open, *proposed*: the upper hold at the riser (x ~1060) stays as the loj's old first hold, a small working outpost on
    the first terrace's tarns, where the crystal opal for the lenses is gathered.
-3. **The writ.** The bench is under 1,800 m, so inside the Sultan's writ by the valley plan. Is the town the Sultan's, with
-   the Glaziers' wall governed by its own loj (the count wall), or something else?
+3. ~~**The writ.**~~ **Answered 2026-11-16: the bench is the Sultan's, the wall the loj's.** The bench town is the Sultan's,
+   under his factor; the wall governs itself as a loj (its steward, the show of hands, the count wall) and pays the Fifth in
+   opals. The Stair Foot is the line between them.
 4. ~~**The province's seat.**~~ **Answered 2026-11-16: Lāiṭwāl is the seat of Ōpal-Bhālī** (P6), not the Sultan's mines.
    The mines (`sjuarjbku0`) become one of its works villages across the lake. In `XAN_TUNE` (step L1) the province's
    tithe roads and its dues go to Lāiṭwāl.
 5. ~~**The halves.**~~ **Answered 2026-11-16: half and half in people**, about 2,500 Glaziers and 2,500 Xanadui.
+6. ~~**The footprint.**~~ **Answered 2026-11-16: compact, round the Stair Foot.** About 1.5-2 km of shore, the wall above it;
+   the caravanserai and the monastery brought in to the town's west and east edges rather than the 16 km strip's ends.
+7. ~~**This pass.**~~ **Answered 2026-11-16: L2 and L3, the town's own page.** The bench town on `core/city` with the Xanadu kit
+   and the Glaziers' carved wall, on ground shaped from the scale model's numbers for the site. L0, L1 and L5 stay with the
+   sites and sim sessions; L4 (interiors) follows.
+
+## 8. The page (L2, L3; 2026-11-16)
+
+`settlements/lightwall`: a target on Xanadu's page, as Qiblai is (`settlements/xanadu/build.py --kit settlements/lightwall`),
+`dist/lightwall.html`.
+
+**The frame.** Metres; x east along the shore, z south toward the lake; the origin is the Stair Foot on the bench. Heights are
+the model's less 1,330 m: the lake at -30 (1,300 m), the bench from the shore (-28) up to the wall's foot (+90, 1,420 m).
+
+| Part | Where | What |
+|---|---|---|
+| The lake | z > 430 | still water at -30 (`core/water` on Xanadu's page), a shingle shore; the far shore and the Sultan's mines are far field |
+| The bench | z 430 to -270, x -1,000 to 1,000 | the Xanadui town: the shore road, the quays and boatsheds, the lotus terraces; the bazaar avenue up from the quay to the Stair Foot; terrace streets along the contours; blocks between them filled by `core/city`'s frontage-courts (Xanadu kit houses poor to rich, shops, the teahouse, the warehouse) |
+| The Stair Foot | x 0, z -270 | the bazaar where the Glaziers' main stair comes down: the assay house, the factor's house and the strongroom beside it |
+| The wall | z < -280 | the Glaziers': four bands of fronts, each band's face 10.2 m high (one three-flight `gz-stair`), each set back 9 m from the band below; the main stair climbs them at the Stair Foot; beyond the fourth band the north wall rises to the far field (5,964 m) |
+| The ends | x -900, x +900 | the caravanserai on the road down the valley (west), the Decree's monastery on its spur (east) |
+
+**The wall, carved and drawn.** The central quarter (about 300 m either side of the main stair) is carved: each site stands in
+its own block of rock (a KCAVERN mass) carved from its `gz-*` void plan, the cut-away opening every room. The outer wall is
+drawn as fronts on whole rock (`TG.gz.draw` with `facade: true`: nothing behind the face): the same fronts, no rooms, which
+keeps the page within its budget. Each band's face between the sites is a plain block of the same rock.
+
+**The Glaziers' wall, by the numbers** (about 2,500 people): about 120 cells (poor, the bands' ends), 110 household fronts and
+30 rich houses (mid-height at the centre), with the tea hall and the Register on the main stair, the monks' house, four glass
+shops, the wheel walks along the ledges, adits on the Great Potch Line (the first band's foot) and at two higher contacts, vein
+galleries, the dark adits in the oldest workings, lotus ponds stepped to the shore.
+
+## 9. Core adoption (written 2026-11-16, before the first fragment)
+
+| Module | Taken | For |
+|---|---|---|
+| Xanadu's page (`settlements/xanadu/build.py --kit`) | yes | the scene, the sky (`core/atmos`), the host (`core/host`), the doors and glass (`core/door`), `core/lod`, the Xanadu kit's buildings (`VERN.place`), `core/rand`, `core/tags`, `core/walk`, `core/water` |
+| `core/city` and `core/space` | yes, sealed in one closure (`gen/69l-kcity-bundle.js`, as Qiblai's) | the bench town: its ways and blocks as records (the site steps), the blocks filled by `frontage-courts`, every lot in the city index |
+| `kits/tungang` (`tungang_bundle.py`, `TG`) | yes, sealed (`gen/69t-tungang-bundle.js`) | the Glaziers' fronts and rooms: `TG.gz.carve` into the wall's cavern, `TG.gz.draw` the fronts, `facade` for the outer wall; the culture id `glazier` (opt-in `core/tags/glazier`) |
+| `core/terrain` (`KCAVERN`, `host/39e`, `host/39h`) | yes | the wall's carved quarter: the sites' rock masses carved from their void plans, the floors to core/walk, the cut-away's rock cut |
+| `core/rand` (`KRAND`) | yes | every seed: the bench's blocks (frontage-courts' cell streams), the wall's sites (a hash of the band, the slot and a salt) |
+| `core/tags` (`KTAGS`) | yes | every site registered before it is drawn: the Xanadui houses through the page's registry, the Glazier sites with `culture: 'glazier'` |
+| `core/water` | yes (Xanadu's page) | the lake |
+| `core/world`, `core/region`, `core/charactermodels` | not yet | the open-world site (L5), the town in `XAN_TUNE` (L1), its people |
+| `kits/interiors` | not yet | L4 |
+
+**Not taken, and why.** No new PRNG, noise, sky or camera: Xanadu's page and the modules above. The ground is the page's own
+`terrainH` (a function of the site's numbers, written as records: the bench's profile, the wall's bands), never read back from
+pixels; `core/mask` is not needed (the bench's blocks are polygons, the city raster is core/city's).
