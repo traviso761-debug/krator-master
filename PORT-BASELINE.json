@@ -540,6 +540,26 @@
    "bytes": 1853240,
    "sha256": "4e39ecefc0262be46c200ca237e079380ca5f8792e1f0ddd14199a4ada4d167b"
   },
+  "biomes/opalvalley/dist/opalvalley-glacier.html": {
+   "bytes": 8544210,
+   "sha256": "7dee7902555ba6b11f324ba6f54487f7e3a8e1c063e4c88a4a1d327d20ab5894"
+  },
+  "biomes/opalvalley/dist/opalvalley-lowerbed.html": {
+   "bytes": 6344910,
+   "sha256": "9e67cb266e1d3750d3b4790794f6acf98d3c3dd19dc06b186a4c273a8017b7e9"
+  },
+  "biomes/opalvalley/dist/opalvalley-riftmouth.html": {
+   "bytes": 6928497,
+   "sha256": "94a0e883ab667aa23ed2602fc50fae9903747bfefcb5a72c6288deddb91d18fe"
+  },
+  "biomes/opalvalley/dist/opalvalley-upperbed.html": {
+   "bytes": 8502302,
+   "sha256": "c6de9e0467c2c4fb6663f2f25037610e2ce249f6e95cfb5f920c7c56a81bf57d"
+  },
+  "biomes/opalvalley/dist/opalvalley.html": {
+   "bytes": 6344661,
+   "sha256": "66aa5a1bc6118174837f27d619723657bf68c3a6fde5b4e400a1471a909d50b9"
+  },
   "biomes/rift/dist/rift-highland.html": {
    "bytes": 7554190,
    "sha256": "8ec52cc2da1329360bd3be2376cc2d50a458a004abe0fe05999e83e0aa2aa16e"
