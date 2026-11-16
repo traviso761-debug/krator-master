@@ -59,13 +59,17 @@ function streams(rev,off){const L=WORLD.streams?WORLD.streams():[];if(!L.length)
   if(!WORLD.inside(x,z))continue;n++;const c=WORLD.streamAt(x,z);if(c&&c.k>=.3)cut++;else first=first||[Math.round(x),Math.round(z)];}}
  return{ok:prob.length===0&&n>0&&cut>=.97*n,detail:L.length+' streams ('+L.filter(S=>S.wet).length+' wet), '+pick.length+' sampled: '+(prob.length?prob.length+' beds rising (first: '+prob[0]+')':'every bed falls')+
   '; '+cut+' of '+n+' stations carved'+(first?' (first not at '+first+')':'')};}
-// the landform records (a relief region's: 43b-world-landforms.js, PLAN-RELIEF.md P4) within 20 km of the camera: each
-// stands out of the land (the ground at or by its middle at least half its height over its foot), inside the region and out
+// the landform records (a relief region's: 43b-world-landforms.js, PLAN-RELIEF.md P4, P7) within 20 km of the camera: each
+// (a fissure: is cut into it, its middle half its depth under the ground beside it) stands out of the land (the ground at or by its middle at least half its height over its foot), inside the region and out
 // of the water. Hf: the ground as the check reads it (the negative: the land at a detail no record shows at)
 function landforms(Hf){Hf=Hf||((x,z)=>WORLD.H(x,z,0));if(!WORLD.landforms)return{ok:true,detail:'no landform records in this region'};
  const P=HOST.camera.position,L=WORLD.landforms(P.x-20000,P.z-20000,P.x+20000,P.z+20000);if(!L.length)return{ok:true,detail:'no landform records within 20 km'};
  let low=0,wet=0,out=0,first=null;const k={};
- for(const B of L){k[B.kind]=(k[B.kind]||0)+1;const q=B.R*.25,g=Math.max(Hf(B.x,B.z),Hf(B.x+q,B.z),Hf(B.x-q,B.z),Hf(B.x,B.z+q),Hf(B.x,B.z-q)),H=(B.top==null?B.R:B.top-B.y0);   /* a kopje's middle may lie between its columns */
+ for(const B of L){k[B.kind]=(k[B.kind]||0)+1;
+  if(B.carve){/* a fissure (relief P7): its middle at least half its depth under the ground either side of it */
+   const ux=B.b[0]-B.a[0],uz=B.b[1]-B.a[1],ul=Math.hypot(ux,uz),nx=-uz/ul,nz=ux/ul,o=B.w/2+B.d/20+4,g0=Hf(B.x,B.z),g1=Math.min(Hf(B.x+nx*o,B.z+nz*o),Hf(B.x-nx*o,B.z-nz*o));
+   if(!(g0<g1-.5*B.d)){low++;first=first||B;}continue;}
+  const q=B.R*.25,g=Math.max(Hf(B.x,B.z),Hf(B.x+q,B.z),Hf(B.x-q,B.z),Hf(B.x,B.z+q),Hf(B.x,B.z-q)),H=(B.top==null?B.R:B.top-B.y0);   /* a kopje's middle may lie between its columns */
   if(!(g>=B.y0+.5*H)){low++;first=first||B;}if(!B.pinned&&!WORLD.inside(B.x,B.z)){out++;first=first||B;}if(!B.pinned&&WORLD.lakeWater(B.x,B.z)>g-1){wet++;first=first||B;}}
  return{ok:low===0&&wet===0&&out===0,detail:L.length+' records '+JSON.stringify(k)+'; '+low+' not standing out of the land, '+wet+' in the water, '+out+' outside the region'+
   (first?' (first: '+first.id+' at '+Math.round(first.x)+','+Math.round(first.z)+')':'')};}
@@ -138,7 +142,7 @@ function hostNegatives(){const out=[],P=HOST.camera.position,[tx,tz]=tileOf(P.x,
  {const T=FLORA.buildTile(tx,tz).slice(0,40);if(T.length){const a=T[0];T.push(Object.assign({},a,{x:a.x+.5,Ht:a.Ht-1}));}
   out.push(Object.assign({name:'negative: a tree put at the foot of another'},spaced(T)));}
  out.push(Object.assign({name:'negative: a river with its water taken away'},rivers((x,z)=>-1e9)));
- if(WORLD.landforms&&WORLD.landforms(-1e7,-1e7,1e7,1e7).length)out.push(Object.assign({name:'negative: the land read at a detail no record shows at'},landforms((x,z)=>WORLD.H(x,z,5000))));
+ if(WORLD.landforms&&WORLD.landforms(P.x-20000,P.z-20000,P.x+20000,P.z+20000).length)out.push(Object.assign({name:'negative: the land read at a detail no record shows at'},landforms((x,z)=>WORLD.H(x,z,5000))));
  if(WORLD.streams&&WORLD.streams().length){out.push(Object.assign({name:'negative: the streams read backwards'},streams(true,0)));
   out.push(Object.assign({name:'negative: each stream station moved 150 m aside'},streams(false,150)));}
  if(typeof STREAMW!=='undefined'&&STREAMW&&STREAMW.stats().pieces)out.push(Object.assign({name:'negative: the stream water read 2 m lower'},STREAMW.check(true)));

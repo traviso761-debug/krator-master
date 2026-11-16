@@ -48,6 +48,12 @@ const RP0=WSTREAMS.trace(Object.assign(grid(pit,{}),{pit:1e9})),DP0=RP0.lines.ma
 const across=D=>D.some(P=>P.slice(0,-1).some(inPit));
 ok('a depression: '+RP.lines.filter(L=>L.e==='p').length+' lines end in it, one starts at its outlet, none runs across it ('+RP.pits+' depression cells)',
  RP.lines.some(L=>L.e==='p')&&!across(DP)&&DP.some(P=>P[0][1]/cell>80&&Math.abs(P[0][0]/cell-60)<9)&&WSTREAMS.check(DP).length===0,across(DP0)===false);
+// the tarns (relief P7): the deep depression holds one, at its spill less 0.3 m, its rows taking in its deepest cell; a dry
+// land's (250 mm) holds none
+{const T=RP.ponds,Td=WSTREAMS.trace(grid(pit,{rain:250})).ponds,t=T[0];
+ const deep=t&&WSTREAMS.pondRows(t).some(([j,i0,i1])=>j===80&&i0<=60&&i1>=60);
+ ok('a depression holds a tarn ('+T.length+': level '+(t?(t.l/10).toFixed(1):'-')+' m, '+(t?(t.d/10).toFixed(0):'-')+' m deep), a dry one none ('+Td.length+')',
+  T.length===1&&deep&&t.d>=20&&Td.length===0,false);}
 // wet by its catchment's rain
 const wet=WSTREAMS.trace(grid(valley,{rain:900})),dry=WSTREAMS.trace(grid(valley,{rain:250}));
 ok('wet by rain: at 900 mm '+wet.lines.filter(L=>L.w).length+'/'+wet.lines.length+' wet, at 250 mm '+dry.lines.filter(L=>L.w).length+'/'+dry.lines.length,

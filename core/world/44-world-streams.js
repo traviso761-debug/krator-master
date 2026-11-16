@@ -21,6 +21,7 @@
 //                        the curve the page draws (the trace's own, the fill of its cells, lies off that curve: a cell is
 //                        250 m, and the curve is relaxed and wanders between them)
 //   WSTREAMS.check(lines) the problems of decoded lines ([] when none): a bed that rises, a line under two vertices
+//   WSTREAMS.pondRows(P) a tarn's rows (trace's `ponds`: relief P7) as [[j, i0, i1]...]: each row's cells, the basin grown by one
 //
 // The trace: priority-flood with an epsilon (Barnes, Lehman and Mulla 2014: every pit filled to its spill, flats given a
 // fall of 1 mm a cell toward their outlet), D8 on the filled surface (the steepest fall, ties to the first neighbour in
@@ -113,7 +114,21 @@ T.trace=function(o){const nx=o.nx,ny=o.ny,n=nx*ny,E=o.E,K=o.K,cell=o.cell;
    if(k){d+=dir[C[k-1]];const v=Math.min(q,Math.round(F0[c]*10));db.push(q-v);q=v;}}
   const m=C[C.length-2];
   lines.push({h:[h%nx,(h-h%nx)/nx],d,b:b0,db:db.join(','),s,w:RA[m]/AA[m]>=wetMM?1:0,e:L.end});}
- return{lines,cells,heads:heads.length,kept:lines.length,pits:PT.reduce((a,v)=>a+v,0),F,A};};
+ // THE TARNS (relief P7, S12 small water): each depression (the cells the fill raised over pitD, joined 8 ways) is a basin;
+ // one at least o.pondDepth (2 m) deep, of o.pondCells (2) cells or more, whose mean rain reaches wetMM holds water to its
+ // spill less 0.3 m. Encoded {c: [i, j] its lowest cell, l: the level (dm), d: its depth (dm), r: its rows, 'j:i0-i1' joined
+ // by ';', the basin's cells grown by one (the shore lies inside them)}
+ const ponds=[],seen=new Uint8Array(n),pd=o.pondDepth==null?2:o.pondDepth,pc=o.pondCells==null?2:o.pondCells;
+ for(let c0=0;c0<n;c0++){if(!PT[c0]||seen[c0])continue;const Q=[c0];seen[c0]=1;let lvl=-1e9,lo=c0,rs=0;
+  for(let q=0;q<Q.length;q++){const c=Q[q],i=c%nx,j=(c-i)/nx;if(F0[c]>lvl)lvl=F0[c];if(E[c]<E[lo])lo=c;rs+=o.RM[c];
+   for(let k=0;k<8;k++){const a=i+N8[k][0],b=j+N8[k][1];if(a<0||b<0||a>=nx||b>=ny)continue;const r=b*nx+a;if(PT[r]&&!seen[r]){seen[r]=1;Q.push(r);}}}
+  const depth=lvl-E[lo];if(Q.length<pc||depth<pd||rs/Q.length<wetMM)continue;
+  const R=new Map();for(const c of Q){const i=c%nx,j=(c-i)/nx;for(let b=-1;b<=1;b++){const jj=j+b;if(jj<0||jj>=ny)continue;let e=R.get(jj);if(!e){e=[1e9,-1e9];R.set(jj,e);}e[0]=Math.min(e[0],Math.max(0,i-1));e[1]=Math.max(e[1],Math.min(nx-1,i+1));}}
+  const rows=[...R.keys()].sort((a,b)=>a-b).map(j=>j+':'+R.get(j)[0]+'-'+R.get(j)[1]).join(';');
+  ponds.push({c:[lo%nx,(lo-lo%nx)/nx],l:Math.round((lvl-.3)*10),d:Math.round(depth*10),r:rows});}
+ return{lines,cells,heads:heads.length,kept:lines.length,pits:PT.reduce((a,v)=>a+v,0),ponds,F,A};};
+// a tarn's rows as [[j, i0, i1]...]
+T.pondRows=P=>P.r.split(';').map(t=>{const a=t.split(':'),b=a[1].split('-');return [+a[0],+b[0],+b[1]];});
 
 // a line's bed set again from B (m, one per vertex: the bake's, from the ground along the page's own curve), never rising
 T.rebed=function(L,B){let q=Math.round(B[0]*10);const db=[];L.b=q;

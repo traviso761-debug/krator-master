@@ -212,7 +212,7 @@ W.init=function(R){M=WORLD_DATA.meta;const Hd=M.heights,F=M.frame;
   const P=g?g.P:MISSING,o={};for(const k in P)o[k]=lin(P[k]);PALL[i]=o;});
  if(W.unstyled.length&&typeof reportErr==='function')reportErr('core/world: no ground style for the overlay(s) '+W.unstyled.join(', ')+' (add each to BIOME_GROUND in 41-world-fields.js)');
  CLCODE=M.classes.map(c=>c.code);CLGROUP=M.classes.map(c=>c.group);
- buildChannels();buildStreams();buildLandforms();buildRoads();buildTowns();W.ready=true;};
+ buildChannels();buildStreams();buildPonds();buildLandforms();buildRoads();buildTowns();W.ready=true;};
 W.px=x=>cx+x/2000;W.py=z=>cy+z/2000;W.fromPx=(px,py)=>[(px-cx)*2000,(py-cy)*2000];
 W.box=()=>{const F=M.frame.box_px;return[(F[0]-cx)*2000,(F[1]-cy)*2000,(F[2]-cx)*2000,(F[3]-cy)*2000];};
 
@@ -412,6 +412,19 @@ function streamWater(x,z){if(!STHASH)return -1e9;
   if(d<hw&&d<bd){bd=d;px=qx;pz=qz;wd=.6*stD(s);}}
  return bd<1e9?H(px,pz,0,null,true)+wd:-1e9;}
 W.streamWater=streamWater;
+// THE TARNS (relief P7, S12: region.json streams.ponds, 44-world-streams.js): each a level over its basin's cells (grown by one:
+// the shore, where the ground rises over the level, lies inside them). PONDC maps a stream-grid cell to its tarn; WORLD.ponds()
+// gives each with its outline (each row's run of cells, joined down the left and up the right: a simple polygon) for 83s
+let PONDS=null;const PONDC=new Map();
+function buildPonds(){PONDS=[];PONDC.clear();const SR=M.streams;if(!SR||!SR.ponds)return;const c=SR.cell;
+ SR.ponds.forEach((P,k)=>{const R=WSTREAMS.pondRows(P),L=[],Rt=[];let x0=1e18,z0=1e18,x1=-1e18,z1=-1e18;
+  for(const [j,i0,i1] of R){for(let i=i0;i<=i1;i++)PONDC.set(j*65536+i,k);
+   const xl=SR.x0+(i0-.5)*c,xr=SR.x0+(i1+.5)*c,zt=SR.z0+(j-.5)*c,zb=SR.z0+(j+.5)*c;L.push([xl,zt],[xl,zb]);Rt.push([xr,zt],[xr,zb]);
+   x0=Math.min(x0,xl);x1=Math.max(x1,xr);z0=Math.min(z0,zt);z1=Math.max(z1,zb);}
+  PONDS.push({id:k,level:P.l/10,depth:P.d/10,x:(x0+x1)/2,z:(z0+z1)/2,r:Math.hypot(x1-x0,z1-z0)/2,low:[SR.x0+P.c[0]*c,SR.z0+P.c[1]*c],poly:L.concat(Rt.reverse())});});}
+function pondWater(x,z){if(!PONDS||!PONDS.length)return -1e9;const SR=M.streams,i=Math.floor((x-SR.x0)/SR.cell+.5),j=Math.floor((z-SR.z0)/SR.cell+.5),k=PONDC.get(j*65536+i);
+ return k==null?-1e9:PONDS[k].level;}
+W.pondWater=pondWater;W.ponds=()=>PONDS||[];
 // the wet streams in pieces for drawing their water (83s-world-streams.js: built near the camera, dropped behind it):
 // [{line, s0, s1, x, z, r}], a piece a run of about PIECE m of one line's segments (s0 to s1, the last shared with the next
 // piece so the ribbons meet), its centre and the radius that holds it. Made once
@@ -464,14 +477,14 @@ const LFK={k:0,d:1e9,hw:0,co:0,cut:0},LFS={k:0,d:1e9,hw:0,wet:0,bw:0};
 function buildLandforms(){LANDF=false;if(!RELIEF||typeof WLAND==='undefined'||typeof KSTACKS==='undefined')return;
  const TW=((WORLD_DATA.towns&&WORLD_DATA.towns.towns)||[]).map(t=>[t.x,t.z,(t.R==null?300:t.R)+(t.band==null?400:t.band)]);
  WLAND.init({ox:cx*2000,oz:cy*2000,seed:M.relief.seed,ground:formH,sites:(M.sites||[]).map(s=>({x:s.x,z:s.z})),
-  styleName:(x,z)=>{const b=W.biomeAt(x,z),g=b&&W.groundOf(b.name);return g?g.style:'';},
+  styleName:(x,z)=>{const b=W.biomeAt(x,z),g=b&&W.groundOf(b.name);return g?g.style:'';},overlay:(x,z)=>{const b=W.biomeAt(x,z);return b?String(b.name).trim().toLowerCase():'';},
   caprock:(x,z)=>WRELIEF.caprock(x,z,styleAt(x,z),gridBil(REL,x,z)),
   keep:(x,z)=>{if(!W.inside(x,z))return true;const h=formH(x,z);if(W.lakeWater(x,z)>h-1)return true;
-   carveAt(x,z,h,.5,LFK);if(LFK.d<LFK.hw+150)return true;if(STHASH){streamAt(x,z,h,.5,LFS,0);if(LFS.d<40)return true;}
+   carveAt(x,z,h,.5,LFK);if(LFK.d<LFK.hw+150)return true;if(pondWater(x,z)>-1e8)return true;if(STHASH){streamAt(x,z,h,.5,LFS,0);if(LFS.d<40)return true;}
    for(const t of TW)if(Math.hypot(x-t[0],z-t[1])<t[2])return true;return false;}});
  LANDF=true;}
 // the landform records whose middle lies in the box (placing their cells): KSTACKS bodies with name, kind, x, z, top, R
-W.landforms=(x0,z0,x1,z1)=>LANDF?WLAND.list(x0,z0,x1,z1):[];
+W.landforms=(x0,z0,x1,z1)=>{if(!LANDF)return [];const B=W.box();return WLAND.list(Math.max(x0,B[0]),Math.max(z0,B[1]),Math.min(x1,B[2]),Math.min(z1,B[3]));};   /* clipped to the region's box: each cell asked for is placed and kept */
 W.landformAt=(x,z)=>LANDF?WLAND.at(x,z):null;
 
 // ---------------------------------------------------------------- the escarpments: cliffs at 1:1
@@ -670,7 +683,7 @@ W.waterBodies=function(){if(BODIES)return BODIES;BODY=new Int32Array(nx*ny).fill
    mask:refineMask(cells,data,mnx,mnz,mi0,mj0,x0,z0,cw,ch,lv),
    box:[cellX(i0b-1)-cw/2,cellZ(j0b-1)-ch/2,cellX(i1b+1)+cw/2,cellZ(j1b+1)+ch/2]});}
  return BODIES;};
-W.water=(x,z)=>Math.max(W.lakeWater(x,z),riverWater(x,z),streamWater(x,z));   // a river's water where it is above a lake's (it runs into the lake at its mouth)
+W.water=(x,z)=>Math.max(W.lakeWater(x,z),riverWater(x,z),streamWater(x,z),pondWater(x,z));   // a river's water where it is above a lake's (it runs into the lake at its mouth)
 
 // ---------------------------------------------------------------- the whole sample
 // W.at samples the height and its slope itself; a terrain chunk, which has its heights on a grid already, keeps the

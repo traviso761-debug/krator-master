@@ -507,6 +507,29 @@ The High Rift's hillshade shows the rings plainly: concentric risers 200 to 250 
 - Re-cut both regions (`cut_site.py`, which re-bakes the streams), then the sites and resources: pinnacle `c07cb34f` (its
   plan unchanged: 9 camps round the rock, 9 roads), oidong-highrift `c425cee9` (938 records, 15 bridges).
 
+**P7, the kinds by biome: small water and the High Rift's fissures (2026-11-16, the owner: "do p7-p9").** The order the
+plan gave for this region (volcanic, faults, small water, geothermal) is taken as small water and faults first; the cones and
+the geothermal ground wait, as the region's vents carry the model's own 2 km volcanoes and a cone on each would draw them twice.
+- **S12, tarns** (`44-world-streams.js`, the trace): each depression the streams end in (the cells the fill raised over
+  1.5 m, joined 8 ways) is a basin; one at least 2 m deep, of two cells or more, whose mean rain reaches the streams' wet
+  threshold (450 mm) holds water to its spill less 0.3 m. region.json keeps each as its lowest cell, level, depth and rows
+  (the basin grown by one cell: the shore, where the ground rises over the level, lies inside). 41 maps the cells to their
+  tarn (`WORLD.pondWater`, in `WORLD.water`, so the flora, the floor, the camera and the sites keep out of it; the records
+  keep off it); 83s draws each within 1.8 km as a core/water still surface over its stepped outline, the ground over the
+  level hiding it past the shore. pinnacle 15 tarns, oidong-highrift 105. `test-streams.js`: the deep depression holds one
+  at its spill, a dry one (250 mm) none. The probe: each drawn tarn holds water over its lowest point (negative: read 50 m low).
+- **S10, the High Rift's gjar swarm** (`43b`, `WLAND.OVERLAY['high rift']`, biomes/highrift/PLAN.md station 5: "a swarm of
+  narrow en-echelon tension fissures, 1-40 m wide and 2-60 m deep", NNE-SSW): carving records, up to three a 2 km cell (a 30 %
+  chance each), 400 m to 2.4 km long, 2 to 30 m wide, as deep as twice their width (at most 50 m), striking 20 degrees east
+  of north +- 8, each offset from the last across its strike (en echelon), their lines wandering up to 1.5 widths (ruler-
+  straight cracks read as the grid's artifact), their walls a ramp of a twentieth of their depth, their ends easing out.
+  Cut after the raised records. oidong-highrift: 17,113 over the High Rift. `test-landforms.js`: only the High Rift, every
+  strike 12 to 28 degrees, the full depth cut at the middle, the land continuous across. The probe: each fissure near the
+  camera is cut half its depth under the ground beside it.
+- `WORLD.landforms(box)` is clipped to the region's box (a query over the whole world placed 25 million cells).
+- **Left:** S9 (cinder cones, maars, spatter ramparts by the vents: they need the model's volcanoes told apart from the page's
+  own), S15 (sinter and travertine round the springs), S6, S8, S11, S13, S14, the master gja through the High Rift's middle.
+
 ## 6. Risks
 
 - **Sites move:**

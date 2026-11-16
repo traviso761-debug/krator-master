@@ -85,7 +85,8 @@ R.lines.forEach((L,t)=>{const P=CV[t].pts,V=WSMOOTH.line(WSTREAMS.decode(L,SR),{
  WSTREAMS.rebed(L,B);});
 delete SR.lines;   /* written last */
 process.stdout.write(JSON.stringify(Object.assign(SR,{amin:O.chan_min*O.frac,chan_min:O.chan_min,rain_floor:O.floor,wet_mm:O.wet_mm,min_len:O.min_len,incise:O.incise,
- stats:{cells_inside:inside,stream_cells:R.cells,heads:R.heads,pits:R.pits,lines:R.lines.length,vertices:verts,wet,ends},
+ stats:{cells_inside:inside,stream_cells:R.cells,heads:R.heads,pits:R.pits,lines:R.lines.length,vertices:verts,wet,ends,ponds:R.ponds.length},
+ ponds:R.ponds,
  note:'core/world/PLAN-RELIEF.md P3: 44-world-streams.js says how a line is encoded; 41 decodes, curves and carves them',
  lines:R.lines})));
 ''' % json.dumps({'cell': CELL, 'chan_min': CHANNEL_MIN, 'frac': FRAC, 'floor': RAIN_FLOOR, 'wet_mm': WET_MM, 'min_len': MIN_LEN, 'step': STEP, 'relax': RELAX, 'meander': MEANDER, 'incise': INCISE}))
@@ -116,8 +117,8 @@ def main():
         sys.exit('bake_streams: %s has no relief (openworld/SITES.json "relief"): its land keeps no streams' % region)
     S = trace(region)
     st = S['stats']
-    print('streams %s: %d lines (%d wet), %d vertices, %d heads, %d depression cells; ends %s; %d KB' % (
-        region, st['lines'], st['wet'], st['vertices'], st['heads'], st['pits'], json.dumps(st['ends'], sort_keys=True),
+    print('streams %s: %d lines (%d wet), %d vertices, %d heads, %d depression cells, %d tarns; ends %s; %d KB' % (
+        region, st['lines'], st['wet'], st['vertices'], st['heads'], st['pits'], st['ponds'], json.dumps(st['ends'], sort_keys=True),
         len(json.dumps(S['lines'], separators=(',', ':'))) // 1024))
     if '--dry' in a:
         return

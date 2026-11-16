@@ -15,7 +15,7 @@
 // streams, and a site's ground (KEEP_SITE m round each region.json site, unless the site pins its own).
 //
 //   WLAND.pin(f)               before init: f(o) -> KSTACKS bodies (with name), made at init with its ground (or an array)
-//   WLAND.init({ox, oz, seed, ground(x, z), styleName(x, z), caprock(x, z), keep(x, z), sites})  ground: the land
+//   WLAND.init({ox, oz, seed, ground(x, z), styleName(x, z), overlay(x, z), caprock(x, z), keep(x, z), sites})  ground: the land
 //                              without records (stable at any LOD); styleName: the land style there; caprock 0..1; keep:
 //                              true where no record may stand; sites [{x, z, pinned}]
 //   WLAND.apply(h, x, z, minWave)  the ground h with the records near (x, z): the highest of h, a body's surface and its
@@ -24,7 +24,8 @@
 //   WLAND.at(x, z)             {S, top, wall} the record surface over (x, z), or null
 //   WLAND.list(x0, z0, x1, z1) the records whose middle lies in the box (placing their cells)
 //   WLAND.pins()               the pinned records
-//   WLAND.KINDS                the table of what each style's cells may hold
+//   WLAND.KINDS                the table of what each style's cells may hold; WLAND.OVERLAY the carving kinds by overlay
+//                              (relief P7: the High Rift's tension fissures, cut from the land after the raised records)
 var WLAND=(function(){'use strict';
 const L={version:1};
 const clamp=(v,a,b)=>v<a?a:v>b?b:v,lerp=(a,b,t)=>a+(b-a)*t;
@@ -40,6 +41,10 @@ L.KINDS={
  korona:  [{kind:'butte',p:.2,cap:.3,h:[60,180],r:[90,260]}],
  highland:[{kind:'tor',p:.3,n:2,H:[6,16],r:[8,20]}],
  karst:   [{kind:'tower',p:.6,n:3,H:[40,135],r:[35,90]}]};
+// per overlay (its name, lower case): carving kinds (relief P7). The High Rift's gjar swarm (biomes/highrift/PLAN.md, station 5:
+// "a swarm of narrow en-echelon tension fissures, 1-40 m wide and 2-60 m deep", striking NNE-SSW): up to three a cell, each
+// offset from the last across its strike, as Thingvellir's are
+L.OVERLAY={'high rift':[{kind:'fissure',p:.3,n:3,L:[400,2400],w:[2,30],d:[3,50],strike:20,jit:8}]};
 let OX=0,OZ=0,SEED=0,O=null,PINS=[],PINF=[];const CELLS=new Map();
 L.pin=function(f){PINF.push(f);return L;};
 L.init=function(o){O=o;OX=o.ox||0;OZ=o.oz||0;SEED=KRAND.child(o.seed==null?0x4C4E44:o.seed,'landform');CELLS.clear();
@@ -58,14 +63,15 @@ function footY(x,z,rx,rz){let m=O.ground(x,z);for(let a=0;a<8;a++)for(const k of
 // the records of cell (i, j) (world-absolute: cell i spans OX + i CELL .. OX + (i + 1) CELL in the world's frame, so two
 // regions cut over one place agree): placed once, kept. Positions are the region's (local) metres
 function cellOf(i,j){const key=(i+32768)*65536+(j+32768);let C=CELLS.get(key);if(C)return C;C=[];CELLS.set(key,C);
- const bx=i*CELL-OX,bz=j*CELL-OZ,mx=bx+CELL/2,mz=bz+CELL/2,K=L.KINDS[O.styleName(mx,mz)];if(!K)return C;
+ const bx=i*CELL-OX,bz=j*CELL-OZ,mx=bx+CELL/2,mz=bz+CELL/2,K=L.KINDS[O.styleName(mx,mz)];
+ fissures(i,j,bx,bz,mx,mz,C);if(!K)return C;
  K.forEach((D,di)=>{const n=D.n==null?1:D.n;
   for(let t=0;t<n;t++){const k=di*8+t;if(u01(i,j,k,0)>=D.p)continue;
    const big=D.kind==='butte'||D.kind==='dome'||D.kind==='tower',r=rng(D.r,i,j,k,1),inset=Math.min(CELL*.45,(big?r*1.6:r*3)+40);
    const x=bx+inset+(CELL-2*inset)*u01(i,j,k,2),z=bz+inset+(CELL-2*inset)*u01(i,j,k,3);
    if(D.cap&&O.caprock(x,z)<D.cap)continue;
    if(!free(x,z,big?r*1.4:r*2))continue;
-   if(C.some(B=>Math.hypot(B.x-x,B.z-z)<B.R+(big?r*1.4:r*2)+30))continue;
+   if(C.some(B=>Math.hypot(B.x-x,B.z-z)<B.R+(big?r*1.4:r*2)+30))continue;   /* a body, or a fissure, already in the cell */
    const seed=KRAND.hash(SEED,i,j,k*16+9)>>>0,ry=u01(i,j,k,4)*3.14159,id='lf:'+D.kind+':'+i+':'+j+':'+t;let B=null;
    if(D.kind==='butte'){const e=1+u01(i,j,k,5)*.8,y0=footY(x,z,r/Math.sqrt(e),r*Math.sqrt(e)),h=rng(D.h,i,j,k,6);
     B=KSTACKS.make({id,kind:'butte',x,z,y0,seed,lobes:.18,weather:.8,tiers:[{h:h+(O.ground(x,z)-y0),r,e,ry}],shoulder:{h:Math.min(20,h*.15),back:Math.min(18,h*.12),bed:[3,6]}});
@@ -78,10 +84,30 @@ function cellOf(i,j){const key=(i+32768)*65536+(j+32768);let C=CELLS.get(key);if
    else if(D.kind==='tower'){const H=rng(D.H,i,j,k,6),y0=footY(x,z,r,r);B=KSTACKS.tower({id,seed,x,z,H:H+(O.ground(x,z)-y0),R:r,y0});B.name='A karst tower ('+Math.round(H)+' m)';}
    if(B){B.placed=1;C.push(B);}}});
  return C;}
+// THE FISSURES of cell (i, j): a carving record {kind 'fissure', carve, a, b (its ends), w, d, x, z, R}, en echelon: each next
+// one offset across the strike by 3 to 6 widths and along it by a third of its length
+function fissures(i,j,bx,bz,mx,mz,C){const ov=O.overlay?O.overlay(mx,mz):'',F=ov&&L.OVERLAY[ov];if(!F)return;
+ F.forEach((D,di)=>{let px=null,pz=null;
+  for(let t=0;t<D.n;t++){const k=64+di*8+t;if(u01(i,j,k,0)>=D.p)continue;
+   const len=rng(D.L,i,j,k,1),w=rng(D.w,i,j,k,2),d=Math.min(rng(D.d,i,j,k,3),w*2+2),a=(D.strike+(u01(i,j,k,4)-.5)*2*D.jit)*Math.PI/180,ux=Math.sin(a),uz=-Math.cos(a);
+   let x,z;if(px==null){x=bx+CELL*(.25+.5*u01(i,j,k,5));z=bz+CELL*(.25+.5*u01(i,j,k,6));}
+   else{const off=w*(3+3*u01(i,j,k,5)),al=len*.33*(u01(i,j,k,6)<.5?-1:1);x=px-uz*off+ux*al;z=pz+ux*off+uz*al;}
+   const hl=Math.min(len/2,CELL*.45),A=[x-ux*hl,z-uz*hl],B2=[x+ux*hl,z+uz*hl];   /* its reach takes in the wander (R + 14 m) */
+   if(O.keep(x,z)||O.keep(A[0],A[1])||O.keep(B2[0],B2[1]))continue;
+   C.push({id:'lf:fissure:'+i+':'+j+':'+t,kind:'fissure',carve:1,placed:1,x,z,a:A,b:B2,w,d,R:hl+w+14,name:'A tension fissure ('+Math.round(w)+' m wide, '+Math.round(d)+' m deep)'});px=x;pz=z;}});}
+// a fissure's cut at (x, z): its depth across the width (the walls a ramp of a twentieth of the depth, so the land stays
+// continuous), easing out over the last fifth of its length at each end
+// Its line wanders across the strike (KRAND value noise along it, two octaves, at most 1.5 widths or 12 m): a ruler-straight
+// crack read as the grid artifact this module takes out
+function fissureCut(F,x,z){const dx=F.b[0]-F.a[0],dz=F.b[1]-F.a[1],l2=dx*dx+dz*dz,l=Math.sqrt(l2);let t=((x-F.a[0])*dx+(z-F.a[1])*dz)/l2;if(t<-.05||t>1.05)return 0;t=t<0?0:t>1?1:t;
+ const s=((x-F.a[0])*dz-(z-F.a[1])*dx)/l,u=t*l,sd=F.sd==null?(F.sd=KRAND.hash(SEED,Math.round(F.x),Math.round(F.z),77)>>>0):F.sd,
+  wob=((KRAND.vnoise(u/220,0,.5,sd)-.5)*1.4+(KRAND.vnoise(u/70,3.1,.5,sd^0x55)-.5)*.6)*Math.min(12,F.w*1.5);
+ const d=Math.abs(s-wob),hw=F.w/2*(1-smooth(.8,1,Math.abs(2*t-1))),edge=hw+F.d/20+.5;if(d>=edge||hw<=0)return 0;
+ return F.d*(1-smooth(.8,1,Math.abs(2*t-1)))*(1-smooth(hw,edge,d));}
 // the records whose reach covers (x, z): the pins and the placed of the 3 x 3 cells round it
 const NEAR=[];
 // a body's reach: its radius and its talus apron (TALUS_W of its height, and 8 m)
-const ht=B=>B.top==null?B.R:B.top-B.y0,reach=B=>B._reach||(B._reach=B.R+ht(B)*TALUS_W+10);
+const ht=B=>B.top==null?B.R:B.top-B.y0,reach=B=>B._reach||(B._reach=B.carve?B.R+2:B.R+ht(B)*TALUS_W+10);
 function near(x,z){NEAR.length=0;for(const B of PINS){const R=reach(B);if(Math.abs(x-B.x)<=R&&Math.abs(z-B.z)<=R)NEAR.push(B);}
  const i=Math.floor((x+OX)/CELL),j=Math.floor((z+OZ)/CELL);
  for(let b=-1;b<=1;b++)for(let a=-1;a<=1;a++){const C=cellOf(i+a,j+b);for(const B of C){const R=reach(B);if(Math.abs(x-B.x)<=R&&Math.abs(z-B.z)<=R)NEAR.push(B);}}
@@ -107,12 +133,14 @@ function raster(B){if(B._r)return B._r;const R=reach(B),cs=clamp(B.R/50,2,6),x0=
  return B._r={x0,z0,cs,nx,nz,top,apr};}
 const LOW=-1e9,WALL=20;
 L.apply=function(h,x,z,minWave){if(!O)return h;const N=near(x,z);if(!N.length)return h;let out=h;
- for(const B of N){if(B.R*2<(minWave==null?0:minWave)*.25)continue;   /* under a quarter of the asking wavelength across: a far chunk, a kopje */const r=raster(B),u=(x-r.x0)/r.cs,v=(z-r.z0)/r.cs;if(u<0||v<0||u>=r.nx-1||v>=r.nz-1)continue;
+ let cut=0;
+ for(const B of N){if(B.carve){if(B.w>=(minWave==null?0:minWave)*.25){const c=fissureCut(B,x,z);if(c>cut)cut=c;}continue;}
+  if(B.R*2<(minWave==null?0:minWave)*.25)continue;   /* under a quarter of the asking wavelength across: a far chunk, a kopje */const r=raster(B),u=(x-r.x0)/r.cs,v=(z-r.z0)/r.cs;if(u<0||v<0||u>=r.nx-1||v>=r.nz-1)continue;
   const i=Math.floor(u),j=Math.floor(v),fu=u-i,fv=v-j,o=j*r.nx+i,T=r.top,A=r.apr;
   const t=(T[o]*(1-fu)+T[o+1]*fu)*(1-fv)+(T[o+r.nx]*(1-fu)+T[o+r.nx+1]*fu)*fv;if(t>out)out=t;
   const a=(A[o]*(1-fu)+A[o+1]*fu)*(1-fv)+(A[o+r.nx]*(1-fu)+A[o+r.nx+1]*fu)*fv;if(h+a>out)out=h+a;}
- return out;};
-L.at=function(x,z){if(!O)return null;const N=near(x,z);if(!N.length)return null;const s=KSTACKS.surface(N,x,z);return s?{S:s.S,top:s.top,wall:s.wall}:null;};
+ return out-cut;};
+L.at=function(x,z){if(!O)return null;const N=near(x,z).filter(B=>!B.carve);if(!N.length)return null;const s=KSTACKS.surface(N,x,z);return s?{S:s.S,top:s.top,wall:s.wall}:null;};
 L.list=function(x0,z0,x1,z1){const out=PINS.filter(B=>B.x>=x0&&B.x<=x1&&B.z>=z0&&B.z<=z1);if(!O)return out;
  for(let j=Math.floor((z0+OZ)/CELL);j<=Math.floor((z1+OZ)/CELL);j++)for(let i=Math.floor((x0+OX)/CELL);i<=Math.floor((x1+OX)/CELL);i++)for(const B of cellOf(i,j))if(B.x>=x0&&B.x<=x1&&B.z>=z0&&B.z<=z1)out.push(B);
  return out;};

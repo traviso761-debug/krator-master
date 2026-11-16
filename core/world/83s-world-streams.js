@@ -35,7 +35,7 @@ function build(n){const L=WORLD.streamWaterLine(P[n],STEP);if(L.pts.length<2){dr
  D.line=L;drawn.set(n,D);stats.built++;}
 function drop(n){const D=drawn.get(n);drawn.delete(n);if(!D)return;scene.remove(D.mesh);D.mesh.geometry.dispose();D.material.dispose();stats.dropped++;}
 // build for up to ms milliseconds (at least one piece a call while any is wanted)
-function update(ms){if(!P.length)return;const t0=performance.now();scan();
+function update(ms){if(!P.length)return;   /* the streams' pieces (the tarns: pscan, below) */const t0=performance.now();scan();
  let k=0;while(want.length&&(k===0||performance.now()-t0<ms)){build(want.shift());k++;}
  stats.ms=Math.round(performance.now()-t0);stats.drawn=[...drawn.values()].filter(Boolean).length;}
 // the check (91's probe): every piece within NEAR drawn, and every drawn ribbon's water in its bed: at the stream's centre
@@ -50,5 +50,20 @@ function check(sunk){if(!P.length)return{ok:true,detail:'no wet streams in this 
   if(!(y>g-.8&&y<g+3)){bad++;first=first||[Math.round(p[0]),Math.round(p[1]),+(y-g).toFixed(2)];}}
  return{ok:want.length===0&&n>0&&bad===0,detail:P.length+' pieces of wet stream, '+stats.drawn+' drawn near the camera'+(want.length?', '+want.length+' WITHIN '+NEAR+' m NOT DRAWN':'')+alt+
   '; '+n+' points of their water, '+bad+' out of the bed'+(first?' (first at '+first[0]+','+first[1]+': '+first[2]+' m over the ground)':'')};}
-return{update,pending:()=>{if(!P.length)return 0;scan();return want.length;},check,stats:()=>Object.assign({},stats)};
+// THE TARNS (relief P7): each a core/water still surface at its level over its outline (WORLD.ponds), drawn within NEAR, dropped
+// past FAR, taken back out of WATER.surfaces as a stream's piece is; the ground over the level hides it past the shore
+const PO=WORLD.ponds?WORLD.ponds():[],pdrawn=new Map();stats.ponds=PO.length;stats.pondsDrawn=0;
+function pscan(){const x=camera.position.x,z=camera.position.z;
+ for(const p of PO){const d=Math.max(0,Math.hypot(p.x-x,p.z-z)-p.r),has=pdrawn.has(p.id);
+  if(!has&&d<NEAR){const S=WATER.still({name:'tarn '+p.id,level:p.level,poly:p.poly});if(WATER.surfaces[WATER.surfaces.length-1]===S)WATER.surfaces.pop();
+   pdrawn.set(p.id,WATER.drawStill(S,{color:0x2c4f52,roughness:.1,metalness:.08,envMapIntensity:.5}));}
+  else if(has&&d>FAR){const D=pdrawn.get(p.id);pdrawn.delete(p.id);scene.remove(D.mesh);D.mesh.geometry.dispose();D.material.dispose();}}
+ stats.pondsDrawn=pdrawn.size;}
+const update0=update;
+// a tarn's check: each drawn holds water over its lowest point (the ground there under its level)
+function pcheck(sunk){let n=0,dry=0,first=null;for(const [id] of pdrawn){const p=PO[id],g=WORLD.H(p.low[0],p.low[1]),y=p.level-(sunk?50:0);n++;if(!(y>g+.2)){dry++;first=first||p;}}
+ return{n,dry,first};}
+return{update:ms=>{update0(ms);pscan();},pending:()=>{if(!P.length)return 0;scan();return want.length;},
+ check:sunk=>{const r=check(sunk),q=pcheck(sunk);r.ok=r.ok&&q.dry===0;r.detail+='; '+PO.length+' tarns, '+q.n+' drawn near the camera, '+q.dry+' with no water over their lowest point'+(q.first?' (tarn '+q.first.id+')':'');return r;},
+ stats:()=>Object.assign({},stats)};
 })();});

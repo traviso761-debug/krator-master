@@ -53,6 +53,19 @@ WLAND.reset();WLAND.pin(o=>[Object.assign(KSTACKS.make({id:'pin',kind:'butte',x:
 WLAND.init(Object.assign({ox:0,oz:0},base,{styleName:()=>'jungle'}));
 {const P=WLAND.pins(),g=ground(5000,5000),h=WLAND.apply(g,5000,5000,0);
  ok('a pin stands on the ground it was given ('+P.length+' pinned, its top '+(h-g).toFixed(0)+' m over the land)',P.length===1&&P[0].pinned&&h>g+180,false);}
+// the fissures (relief P7): only on the High Rift; striking NNE (20 +- 8 degrees), en echelon; cut their depth at the middle;
+// the land stays continuous across them
+WLAND.reset();WLAND.init(Object.assign({ox:0,oz:0},base,{styleName:()=>'steps',caprock:()=>0,overlay:()=>'high rift'}));
+{const F=WLAND.list(0,0,30000,30000).filter(B=>B.kind==='fissure');
+ const strike=F.map(B=>Math.atan2(B.b[0]-B.a[0],-(B.b[1]-B.a[1]))*180/Math.PI);
+ ok('the High Rift is cut by tension fissures ('+F.length+' over 30 km), every one striking 12 to 28 degrees east of north',F.length>60&&strike.every(a=>a>=12-1e-9&&a<=28+1e-9),false);
+ const B=F.find(f=>f.d>15),g=ground(B.x,B.z),c=g-WLAND.apply(g,B.x,B.z,0);
+ ok('a fissure cuts its depth at its middle ('+c.toFixed(1)+' of '+B.d.toFixed(1)+' m)',Math.abs(c-B.d)<.01,false);
+ const ux=B.b[0]-B.a[0],uz=B.b[1]-B.a[1],ul=Math.hypot(ux,uz),nx=-uz/ul,nz=ux/ul;let worst=0,p=null;
+ for(let s=-B.w;s<=B.w;s+=.02){const x=B.x+nx*s,z=B.z+nz*s,v=WLAND.apply(ground(x,z),x,z,0);if(p!=null)worst=Math.max(worst,Math.abs(v-p));p=v;}
+ ok('the land is continuous across a fissure (the steepest 2 cm step '+worst.toFixed(2)+' m)',worst<1.2,false);
+ WLAND.reset();WLAND.init(Object.assign({ox:0,oz:0},base,{styleName:()=>'steps',caprock:()=>0,overlay:()=>'opal valley'}));
+ ok('none outside the High Rift ('+WLAND.list(0,0,30000,30000).filter(B=>B.kind==='fissure').length+')',WLAND.list(0,0,30000,30000).every(B=>B.kind!=='fissure'),false);}
 // determinism: two inits give the same records
 WLAND.reset();WLAND.init(Object.assign({ox:0,oz:0},base));const D2=WLAND.list(0,0,40000,40000);
 ok('deterministic: two inits, the same records',ids(D2)===ids(A)&&JSON.stringify(D2.map(B=>B.top))===JSON.stringify(A.map(B=>B.top)),false);
