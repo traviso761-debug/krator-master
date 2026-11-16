@@ -129,7 +129,7 @@
     "core/water/50-core-water-draw.js": "9b487271223b64c2935b3336667963139dddcc055b852ac4f0a1912b2a9dd7e0",
     "core/water/51-core-water-kinds.js": "e0c2edba19b476b4b46a4e08a63f0af695423d88b1da15b380795b2e4d07ead4",
     "core/world/00-head.html": "f13d6e95835b879b2558b833c915dec3020683afff8a62962d2c7aaa68659c6e",
-    "core/world/41-world-fields.js": "88c947260ab20ea94f7785ef0df48e744866d2464e953fb4155b6147c006af90",
+    "core/world/41-world-fields.js": "4b1b33a090b7b23c2caf9e22251733b0c4d081ee195a1de074c68d5f9adfe8f9",
     "core/world/42-world-roads.js": "8b9b8bf77763f7f8c1507f103352c821d1032021ec73218b96aa4a5783451277",
     "core/world/45-world-host.js": "4f67add1a87c01af548999122e1c4562345f8871418ea7a478eebfb8699323bc",
     "core/world/48s-world-sites.js": "052e49e1052971e0e34193b354082d4bd99d838dc8ad1e7aadb7e08b6bd3f132",
@@ -146,7 +146,7 @@
     "core/world/88s-world-sites.js": "cbb7d10cbc75bc7e19465950dc44683332e4d5ff1078b46fa7070fdb44f8cd09",
     "core/world/89r-world-resources-map.js": "710c0886b885ee442c5426afc6f0896823a665d5111170ad66a71ebe4ec35563",
     "core/world/90-world-camera.js": "a772ca7598b110af2c126df79b3e76add563a9e0ff7407905548669f71124a65",
-    "core/world/91-world-probe.js": "7fb7ac1029bb0d348d56c49565edf0de21f89f796e1ccb7c549e909d0b6ac7fb",
+    "core/world/91-world-probe.js": "873dd5e2fe7021f8d529e66212ca8d1ec0d3c759ff2b9f818c67f1f72d0546e5",
     "core/world/93-world-propose.js": "df6242ce0b069c014d9e4250610a7db1479b647974f00d9c1dda0432fe0c6917",
     "core/world/98-world-start.js": "ee26dc2dbbc1ce90133036d91177a23fef7435cc30121289756b86d9648c257b",
     "core/world/99-tail.html": "5c1404e034c7ec0d2b8ac19a6c1a2c4786dbd3037cbb48efdc8cfe4820c14aea",
@@ -206,7 +206,7 @@
     "openworld/xanadu-oidong-highrift/data/scarpw.png": "dcd59af91d0ccf56876593a3ea8e6915eaf37926a18d9d8e8701f11e7ad76694",
     "openworld/xanadu-oidong-highrift/data/temp.png": "5306c98cfa3e975fb83882e16ab74663b3628ced25f8f98a45dd4e563ccc96c1",
     "openworld/xanadu-oidong-highrift/data/wlev.png": "8e67d4b6ea29ac1e0942fbd46dc3a8f305eee715532b75c85e5f59124d141080",
-    "openworld/xanadu-oidong-highrift/plan/sites.json": "e8913aad538c37f8cc3d36259d2e77614734a499852265370584b9ac1c50053c",
+    "openworld/xanadu-oidong-highrift/plan/sites.json": "0e7851aed197dbfd89b03ac5524682e9815714657951437a24938e02dcb5789f",
     "openworld/xanadu-oidong-highrift/src/43-world-xoh.js": "516868f08a23ec2515291f2d565a15d58c97fd034799b8c354f906821f1fe0d4",
     "openworld/xanadu-oidong-highrift/src/46-world-config.js": "4ffbee4eced5186af028ff6db36659d23794049f2f38d77f8f0a712c8768af5e",
     "openworld/xanadu-oidong-highrift/src/47-world-kits.js": "bcc8bcc0c30847c0c9b1d4ef038a8420a8c65623ee6c0e419b7a03100caabf35",
@@ -287,12 +287,12 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.html": "f0e50bf086379d085c85f0078ca7ca7ab3cf2533ce381c1ab3d4c723762f51e2",
+    "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.html": "58036a8cc0fa0b4ae16adba26fe6c9fa9dccbc0dbabc170f680d01b82917043a",
     "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.tex.oidong.js": "88510acf50c6f8c3830549722810e5183c685781ea2deaa2904e9297452e8086",
     "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.tex.xanadu.js": "7216145e7a4349521c0a4ed9f2f4478f5a709cb771ad7fa4c30270d0df288196"
    },
    "outputs_raw": {
-    "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.html": "f0e50bf086379d085c85f0078ca7ca7ab3cf2533ce381c1ab3d4c723762f51e2",
+    "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.html": "58036a8cc0fa0b4ae16adba26fe6c9fa9dccbc0dbabc170f680d01b82917043a",
     "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.tex.oidong.js": "88510acf50c6f8c3830549722810e5183c685781ea2deaa2904e9297452e8086",
     "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.tex.xanadu.js": "7216145e7a4349521c0a4ed9f2f4478f5a709cb771ad7fa4c30270d0df288196"
    }
