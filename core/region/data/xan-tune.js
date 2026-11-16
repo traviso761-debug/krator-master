@@ -152,6 +152,12 @@ T.tears={escort:.04,houses:[['tears.strongwall','The Golden Tears: their house i
 /* the owner, 2026-11-16: "the rare devisers will have their main guild house at Theodiga; they are royally licensed in the
    scrap and rare artifact trade". Every kilo of the Salvagers' scrap passes through their house at Theodiga, which sells it
    on to the smelter; the Sultan's licence fee is `licence` of the rarities the Godshearth camp brings home */
+/* THE BORE (the owner, 2026-11-16: "we can leave in the stair to theodiga tunnel", then Theodiga's end "as written",
+   settlements/theodiga/PLAN.md "The bore to Stair"): the Ancients' dead bore from Theodiga to Stair, its portal in the east
+   canyon wall at the foot of the Salvage Road; the Rare Devisers work it under their royal licence from their lodge at the
+   portal (the Salvagers, who take only what the Dome lets fall, hire on as haulers and lamp-men). Its yield, *proposed*:
+   salvaged scrap and Ancient rarities, a finite site (a dead tunnel does not refill), `years` of it */
+T.bore={scrap:20000,rarities:15,crew:40,years:80};
 T.devisers={licence:.1,houses:[['devisers.theodiga','The Rare Devisers: their guild house at Theodiga (the royal licence in scrap and rare artifacts)','s4zvgepuru',909,1535,80],
  ['devisers.thalaba','The Rare Devisers\' house at Thalaba (the Godshearth expeditions)','xan.thalaba',841,1463,40],['devisers.erehwon','The Rare Devisers\' factor house, Erehwon','s57bkv9741',807,1516,15]]};
 /* X2: the Brotherhood of the Two Horns: [id, name, the town it stands in (null: off the map), px, py, people] */
@@ -271,7 +277,7 @@ T.valley=function(P,o){o=o||{};const K=o.scale==null?50:o.scale,yr=365,win=w=>{c
  /* ---- THE INTERNAL ROADS (net51's xanadu class and Gemini's barge links; minutes at 25 km a day by road, 60 by barge) */
  const road=(id,a,b,km,mode,goods,o3)=>R.push(Object.assign({id,from:a,to:b,minutes:Math.round(km/(mode==='barge'?60:25)*1440),cap:mode==='barge'?60000:30000,carriers:o3&&o3.carriers!=null?o3.carriers:3,stagger:Math.round(km/25*1440/3),want:o3&&o3.want!=null?o3.want:30,goods},o3&&o3.expect?{expect:o3.expect}:{}));
  road('road.er-qb','s57bkv9741','skm4jjo2vl',321,'road',{s57bkv9741:['salt','iron','tools','arms','wine','pearls','gold'],skm4jjo2vl:['grain','cacao','goldwork','wheels','honey','dairy','timber','charcoal','tea','opium','saffron','silk']},{carriers:6});
- road('road.er-th','s57bkv9741','s4zvgepuru',228,'barge',{s57bkv9741:['salt','tools','arms','charcoal'],s4zvgepuru:['grain','cacao','saffron','tea','opium','silk','iron','fruit']},{carriers:4,expect:{s4zvgepuru:{charcoal:330}}});
+ road('road.er-th','s57bkv9741','s4zvgepuru',228,'barge',{s57bkv9741:['salt','tools','arms','charcoal'],s4zvgepuru:['grain','cacao','saffron','tea','opium','silk','iron','fruit','rarities']},{carriers:4,expect:{s4zvgepuru:{charcoal:330}}});   /* rarities: the bore's, for the Great Caravan */
  road('road.qb-th','skm4jjo2vl','s4zvgepuru',155,'barge',{skm4jjo2vl:['charcoal','grain','salt'],s4zvgepuru:['iron','tools']},{carriers:3,expect:{s4zvgepuru:{charcoal:330},skm4jjo2vl:{iron:40}}});
  road('road.qb-sw','skm4jjo2vl','sxan7r1sln',83,'road',{skm4jjo2vl:['grain','salt','tea','tools','dairy'],sxan7r1sln:['gold','copper','opal']},{carriers:3,expect:{skm4jjo2vl:{gold:.12,copper:20}}});
  road('road.qb-ks','skm4jjo2vl','sl758m2396',108,'barge',{skm4jjo2vl:['grain','salt','tools'],sl758m2396:['tea','cacao','opium','saffron','silk']},{carriers:3});
@@ -408,7 +414,10 @@ T.valley=function(P,o){o=o||{};const K=o.scale==null?50:o.scale,yr=365,win=w=>{c
     season, its sulfur, wax and rarities home to their house at Thalaba, which sells them on to Yuni's caravans there; the
     Sultan's licence fee is a share of the rarities */
  {const Xp=T.expedition,p=at(Xp.px[0],Xp.px[1]),scrapDay=T.mine.scrap/yr;
-  T.devisers.houses.forEach(h=>house('devisers')(h,h[0]===Xp.home?{sulfur:Xp.make.sulfur/yr,wax:Xp.make.wax/yr,rarities:Xp.make.rarities/yr}:h[0]==='devisers.theodiga'?{scrap:scrapDay}:null));
+  T.devisers.houses.forEach(h=>house('devisers')(h,h[0]===Xp.home?{sulfur:Xp.make.sulfur/yr,wax:Xp.make.wax/yr,rarities:Xp.make.rarities/yr}:h[0]==='devisers.theodiga'?{scrap:scrapDay+T.bore.scrap/yr,rarities:T.bore.rarities/yr}:null));
+  /* the bore, worked by the Devisers from their lodge at its portal (the guild house stands for it in the sim) */
+  {const dt=S.find(q=>q.id==='devisers.theodiga'),B=T.bore;['scrap','rarities'].forEach(g=>dt.works.push({id:'devisers.bore.'+g,kind:'bore-salvage',
+   name:'the Theodiga bore\'s '+g+' (the Ancients\' dead tunnel to Stair, under the royal licence)',crew:B.crew,out:[g],rate:rate(B[g],B.crew),site:{kind:'bore',amount:B[g]*B.years}}));}
   R.push({id:'devisers.scrap',from:'s4zvgepuru',to:'devisers.theodiga',minutes:60,cap:20000,carriers:2,share:{s4zvgepuru:{scrap:1}},goods:{'devisers.theodiga':[]}});   /* the licence: every kilo of the floor's scrap to the house */
   add({id:Xp.id,name:Xp.name,faction:Xp.faction,parent:Xp.home,people:Xp.people,x:p.x,z:p.z,eats:eats('camp'),keepDays:20,
    start:{grain:Math.round(eatYr('camp',Xp.people)*T.startDays/yr),salt:Xp.people*2,tea:30,tools:60},

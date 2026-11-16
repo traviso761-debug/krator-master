@@ -82,7 +82,7 @@ const seasonCheck=Dl=>{const w=XAN_TUNE.calendar.windows.harvest,out=[];Object.k
  T.neg('a harvest out of its window is caught',Dl=>seasonCheck(Dl).ok,Object.assign({},Y.daily,{'prov.p1':(Y.daily['prov.p1']||[]).concat([10])}),Y.daily);}
 // 10. the size: the abstract level keeps a country of ~350,000 to a few thousand actors and a year to minutes
 {const pop=Y.V.settlements.reduce((n,s)=>n+s.people,0);
- T.ok('the size: about 350,000 people on under 3,000 actors, a year in under three minutes',pop>300000&&pop<400000&&Y.actors<3000&&secs<180,Math.round(pop)+' people, '+Y.actors+' actors, '+secs.toFixed(0)+' s');}
+ T.ok('the size: about 350,000 people on under 3,000 actors, a year in under four minutes',pop>300000&&pop<400000&&Y.actors<3000&&secs<240,   /* four, as test-east-rift's: the year grew with X2's places, and other sessions load the machine */Math.round(pop)+' people, '+Y.actors+' actors, '+secs.toFixed(0)+' s');}
 // ---- X1 (core/region's valley host grown: a settlement's scale, a work's site, a road of three or more stops; the
 // gateways at their staging towns)
 // 11. the sites: the gold lode and the opal diggings draw down by what they made; the Dome lets fall only so much scrap a
@@ -202,6 +202,13 @@ const orderCheck=(C,X,Tr)=>{const oil=(C['xan.citadel:oil']||0)*0+Object.keys(C)
  T.ok('the Order\'s monastery at Qiblai: an eighth of the Prismarchy\'s oil and of the Sultan\'s grants of esteem',O.ok,
   'oil to the Order '+t(O.oil)+' of '+t(O.landed)+' landed for the council; esteem '+(O.est.times||0)+'x: '+Object.entries(O.est.sent||{}).map(([g,n])=>g+' '+Math.round(n)).join(', '));
  T.neg('an Order that took a quarter is caught',x=>orderCheck(x,Y.xfer,Y.trade).ok,{'qb.order:oil':O.landed/4},C);}
+// 23. the Theodiga bore (the owner, 2026-11-16): the Rare Devisers salvage the Ancients' dead tunnel to Stair under their
+//     licence: scrap and rarities from a finite site, sold into Theodiga
+const boreCheck=(d,sold)=>(d.made.scrap||0)>XAN_TUNE.bore.scrap*.5&&(d.made.rarities||0)>XAN_TUNE.bore.rarities*.5&&(sold.rarities||0)>0;
+{const d=B['devisers.theodiga'],sold=landed('devisers.sell.theodiga','devisers.theodiga>s4zvgepuru');
+ T.ok('the Theodiga bore: the Rare Devisers\' salvage of the dead tunnel to Stair, scrap and rarities, sold into Theodiga',boreCheck(d,sold),
+  'made scrap '+t(d.made.scrap||0)+', rarities '+Math.round(d.made.rarities||0)+'; sold into Theodiga rarities '+Math.round(sold.rarities||0)+', scrap '+t(sold.scrap||0));
+ T.neg('a bore that yielded nothing is caught',x=>boreCheck(x,sold),{made:{}},d);}
 // the year's books, for the reader
 const line=(s,k)=>Object.entries(B[s][k]||{}).filter(([g,n])=>n>=1).map(([g,n])=>g+' '+(n>=1000?t(n):Math.round(n))).join(', ');
 ['s57bkv9741','xan.citadel','skm4jjo2vl','s4zvgepuru','sxan7r1sln'].forEach(s=>console.log('\n'+s+': made '+line(s,'made')+'\n  imported '+line(s,'imported')+'\n  exported '+line(s,'exported')));

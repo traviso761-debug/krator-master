@@ -32,14 +32,16 @@ Stale records the build must not trust, fixed with it or before it:
   Twins (`rift.bowl.theodiga-stair`, 438 km, no trains). It is a third, hard way across for the sim's caravans: dark,
   with little food or water. Station 2's portal at Stair is its mouth. The plans now say so.
   - **Theodiga's end** (proposed by the Theodiga session, `settlements/theodiga/PLAN.md` "The bore to Stair", 3f5c12ebd on
-    `claude/theodiga-floorplan`; **awaiting the owner**):
+    `claude/theodiga-floorplan`; **settled by the owner 2026-11-16, "as written"**; drawing it is that plan's T-town-6):
     - **Where:** the portal opens in the east canyon wall at the canyon floor, at the foot of the Salvage Road beside the
       salvage yards. It branches off the Rift line, so the yards' track runs into it.
     - **Inside:** open on Theodiga's side, with a licence gatehouse a few hundred metres in; the first stretch is stripped
       and lamp-lit, then dark. The seal is at the Stair end.
     - **Who works it:** the Rare Devisers, under their royal licence. The Salvagers take only what the Dome lets fall, so
       they hire on as haulers and lamp-men (friction between the guilds). The Devisers keep a lodge at the portal.
-    - **In the sim (when settled):** the Devisers' salvage from the bore is a site at Theodiga beside the Dome's fall.
+    - **In the sim (done 2026-11-16, `T.bore` in `xan-tune.js`):** two works at the Devisers' Theodiga house, the bore's
+      scrap (~20 t a year) and rarities (~15), each on a finite site of 80 years (*proposed* numbers), sold into Theodiga;
+      the rarities go on to the capital for the Great Caravan.
 - **The Twins plan's distances are about half** what its own 5.1 points measure. Route A is "~93 km" in the plan but 228 km
   on its waypoints.
 - **Strongbow** stands at 1001,1596. The Twins plan and `kits/resources/data/ledger.json` still use 1026,1594.
