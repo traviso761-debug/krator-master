@@ -19,6 +19,7 @@ own src/ (the BIO.def line that names the slot's material), and reports, with th
   WHOLE SHEET    a sheet drawn whole on one card (no cell, no "sheet": "geometry"): a grid of plants on every card
   CELL CUTS      a cell that cuts into its plant (a fragment of it: the old CELL ON ONE, a cell cut from a single plant)
   CELL OFF GRID  a cell that holds no one plant of the sheet (it straddles two, or holds none)
+  ONE CUT        a single plant cut into a sheet's cells ("sheet": "geometry" or BIO.geo.cells): a fragment of it on each card
   LOOSE          a single plant drawn whole, or a cell much wider than its plant, on a geometry that holds it by one end: the
                  margin hangs the plant away from its stem
   NO BASE        a geometry that holds its plant by one end, and no "base": the plant is drawn sideways, upside down, or
@@ -362,12 +363,14 @@ def geometry(build_dir):
                             cut = j
                             break
                     gexpr, mexpr = lib_branch(rest[:cut]), rest[cut + 1:]
-                    kind = next((k for k, rx in GEO if re.search(rx, gexpr)), 'other')
+                    # every kind the expression names (2026-11-15): BIO.geo.cells(BIO.geo.clump()) is a crown cut into cells, so both;
+                    # read as 'cells' alone, a sheet of sprigs on the clump was never asked for its stems (ehighlands' fir needles)
+                    found = [k for k, rx in GEO if re.search(rx, gexpr)] or ['other']
                     mm = re.match(r'\s*([\w.$\[\]\'"]+)', mexpr)
                     if not mm:
                         continue
                     key = re.split(r'[.\[]', mm.group(1).replace("'", '').replace('"', '').rstrip(']'))[-1]
-                    kinds.setdefault(key, set()).add(kind)
+                    kinds.setdefault(key, set()).update(found)
     return kinds
 
 
@@ -386,6 +389,11 @@ def check_slot(slot, e, ks):
         return []
     out = []
     many = len(ps) > 1
+    # ONE plant cut into a sheet's cells (2026-11-15, ehighlands' beech: card.broadleaf is one spray; "sheet": "geometry" and BIO.geo.cells
+    # drew a ninth of it on each card, with straight edges)
+    if not many and (e.get('sheet') == 'geometry' or 'cells' in ks) and e.get('cell') is None and not e.get('stems'):
+        out.append(('ONE CUT', 'one plant cut into a sheet\'s cells: draw it whole (no "sheet"; no BIO.geo.cells in the code)', {'sheet': None}))
+        return out
     # a crown on the clump (2026-10-27, the owner: attach each sprig's stem to the twig, its leaves out along its long
     # axis): its sprigs held by their stems, BIO.geo.stemClump. A spray seen from above (one plant, centre) has no stem
     if 'clump' in ks and not ks & {'frond', 'ribbon', 'hang'}:

@@ -3,7 +3,7 @@
 Every texture or pattern sheet the owner still has to source or generate, each with its finished prompt. Paste a block
 as it is, one image per block. **Everything delivered lives in `PROMPTS-archived.md`** (checked against `core/materials/library/`, `patterns/` and each build's `materials.json` on `origin/main`, 2026-10-19); this file holds only what is still owed.
 
-**Count: 21 prompt blocks** (2026-11-11: +2 for the Qiblai kit, section 43; +1, `metal.scorched` for the Motor Vehicles kit's burnt ruins, section 36; 2026-11-10: -5, the owner's delivery of that day; 2026-11-09: +3 for the southern highlands' upper stations, section 37; +15 for the hyperjungle's lands and the savannah rims, section 40, 2026-11-08; counted 2026-11-04 before them).
+**Count: 22 prompt blocks** (2026-11-15: +1, `card.beech.southern` for the eastern highlands' combed beech, section 44; 2026-11-11: +2 for the Qiblai kit, section 43; +1, `metal.scorched` for the Motor Vehicles kit's burnt ruins, section 36; 2026-11-10: -5, the owner's delivery of that day; 2026-11-09: +3 for the southern highlands' upper stations, section 37; +15 for the hyperjungle's lands and the savannah rims, section 40, 2026-11-08; counted 2026-11-04 before them).
 
 **Delivered 2026-11-03:** section 31's five (the Gills: `rock.lamina.pipe`, `mineral.crust.ferromanganese`, `mineral.crust.brucite`,
 `card.breathfringe`, `card.turf.limed`) and ten owed on unmerged branches (High Rift, nwbay, nhighlands, ringisles, the rift rim, Copper Glacier),
@@ -467,3 +467,15 @@ Owed, but a prompt waits on something first; listed so they are not lost.
   generator will not keep those letterforms, so the band is a bake from the chart's paths (a PNG or a `TEX.def`, not a
   generated image), cut into the lintel's stone (`stone.soapstone` or `stone.corbel.slab`, already in the library). No
   clan's name is fixed in the kit yet; the bake needs the names.
+
+## 44. The eastern highlands' combed beech (`biomes/ehighlands`, stations 5 and 6, 2026-11-15)
+
+The combed beech (a southern beech of the cool rainforest: small, stiff, toothed leaves in flat sprays) draws `card.broadleaf`, a
+jungle broadleaf rosette of big monstera-like leaves: drawn whole since 2026-11-15 (it was cut into ninths), but not a beech. The slot
+is `beech` in `biomes/ehighlands/materials.json` (tint keep 0: the species' green); the crowns are clumps of flat tiers, so a sheet of
+nine sprays held by their stems (`"stems"`, measured into `card-bases.json`) fits the fir's way:
+
+`card.beech.southern`:
+```
+Square, 2048x2048. Orthographic view looking straight down on nine separate leafy sprays in a 3x3 grid, each centred in its third of the frame with magenta all round it, on a solid flat bright magenta (#ff00ff) background that fills everything outside the objects, with no shadow cast on the background. Flat, even, shadowless lighting: no highlights, no vignette. No perspective, no text, no border, no watermark. Objects: flat sprays of a southern beech (Nothofagus) of a cold cloud forest, each a thin dark twig branching in one plane like a fishbone, densely set with small, stiff, oval leaves a centimetre or two long with finely toothed edges, overlapping in neat rows along the twigs, the twig's cut end at the top of each cell and the spray fanning down and out from it. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.
+```

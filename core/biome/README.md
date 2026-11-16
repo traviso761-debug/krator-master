@@ -237,18 +237,30 @@ sprig's mass, a tie going to the lower end); `core/materials/library/card-bases.
 
 - **The card guard.** `BIO.def` (and `BIO.libSwap`, for items defined before it) reports through `BIO.err` a library card it
   cannot draw right: a sheet drawn whole (no cell, stems, `BIO.geo.cells`, `"sheet": "geometry"` or a uv cut by the kit's own
-  code), a library plant on a frond, ribbon or hang with no `base`, a crown on the clump with no `stems` or `base`.
+  code), a library plant on a frond, ribbon or hang with no `base`, a crown on the clump with no `stems` or `base`, and (2026-11-15,
+  ehighlands' beech) ONE plant (`plants 1`) cut into a sheet's cells by `BIO.geo.cells` or `"sheet": "geometry"`.
   `BIO.cardFaults` lists them. It reads `plants` and `anchor` from the pack entry (`tools/textures/pack.py`): a pack written
-  before them is never refused.
+  before them is never refused, but since 2026-11-15 it is reported: `BIO.cardMute` lists the slots whose pack says nothing of
+  the image, and `guardChecks` fails them ("library cards described by the page's pack"). It found the guard silent on fifteen
+  biome packs written before `plants`, and on ehighlands, whose own pack writer dropped `cell`, `base` and `stems` as well: rerun
+  `tools/textures/pack.py <build>`, and write a page's pack with `tools/textures/matlib_pack.py`.
+- **Inside out.** `BIO.insideOut({ground})` (2026-11-15, ehighlands' fumarole: a lathe written lip to foot) lists the opaque,
+  front-sided, non-instanced meshes whose area is mostly faces turned down that stand above the ground: from above such a mesh
+  shows its unlit underside through a culled near side, a flat black shape. A cave's roof or a carved overhang lies under the
+  heightfield and is not counted.
 - **One box a chunk.** At bake every chunk mesh takes the height range (so the distance and the cull sphere) of every mesh
   sharing its square and minRange: a tree's bark, rods and cards switch at one distance. `BIO.LOD.ownBox = true`: as before.
 - **The attachment audit.** `BIO.attachAudit({ground})` reads the baked scene: each leaf or hang card above the ground
-  (sampled, 20,000 at most) against the nearest structure (instanced non-card items along their long axes; every other mesh's
-  triangle edges, on KSPACE near the samples): floating, in another chunk, or reaching past its structure's range. An item
-  defined with `{free: true}` is skipped.
+  (sampled, 20,000 at most) against the nearest structure (instanced non-card items as segments along their long axes, point to
+  segment since 2026-11-15 (it sampled them every 2 m); every other mesh's triangles, on KSPACE near the samples): floating, in
+  another chunk, or reaching past its structure's range. An item defined with `{free: true}` is skipped. A crown held by its
+  stems (a clump whose slot gives `stems`: its sprigs' stem ends are its origin) must have that origin within `o.stemTol` (.15 m)
+  of a structure, not a share of its size (2026-11-15, ehighlands' fir: `.25 x size + .5` passed a sprig 60 cm off its twig);
+  `stemmed` and `stemFloat` count them.
 - **The checks.** `BIO.guardChecks(o)` and `BIO.guardNegatives(o)` (each with controls that must fail: a made-up fern with no
-  base, every card lifted 6 m, every card reaching four times its range) are appended by the host probe to every build's
-  `hostChecks` and `hostNegatives`; `KHOST.take({guards: false | {maxShare, minUp, k, kStem, pad, max}})` turns them off or
+  base, a made-up one-plant card in cells, a made-up disc wound toward the ground, every card lifted 6 m, every stem-held clump
+  lifted 0.4 m, every card reaching four times its range) are appended by the host probe to every build's
+  `hostChecks` and `hostNegatives`; `KHOST.take({guards: false | {maxShare, minUp, k, kStem, stemTol, pad, max}})` turns them off or
   tunes them (maxShare .01 by default). `HANDOFF-REBUILD.md`, "the foliage guards", has the rule for a build that fails.
   Test: `test-guards.js`.
 
