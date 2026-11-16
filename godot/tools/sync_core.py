@@ -10,9 +10,9 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 GODOT = os.path.dirname(HERE)
 REPO = os.path.dirname(GODOT)
 PAIRS = [(f"core/rand/{f}", f"godot/tests/rand/{f}") for f in ("krand.gd", "krand_test.gd", "golden.json")]
-PAIRS += [(f"core/tags/{f}", f"godot/tests/tags/{f}") for f in ("ktags.gd", "ktags_test.gd", "golden.json")]
+PAIRS += [(f"core/tags/{f}", f"godot/tests/tags/{f}") for f in ("ktags.gd", "ktags_test.gd", "golden.json", "ksound.gd", "ksound_test.gd", "golden-sound.json")]
 PAIRS += [(f"core/mask/{f}", f"godot/tests/mask/{f}") for f in ("kmask.gd", "kmask_test.gd", "golden.json", "kmask_distance_test.gd", "golden-distance.json")]
-PAIRS += [(f"core/clock/{f}", f"godot/tests/clock/{f}") for f in ("kseason.gd", "kseason_test.gd", "golden-season.json")]   # KCLOCK.season's twin
+PAIRS += [(f"core/clock/{f}", f"godot/tests/clock/{f}") for f in ("kseason.gd", "kseason_test.gd", "golden-season.json", "kseason_flush_test.gd", "golden-flush.json")]   # KCLOCK.season's twin
 PAIRS += [(f"core/biome/{f}", f"godot/tests/fire/{f}") for f in ("kfire.gd", "kfire_test.gd", "golden-fire.json")]   # KFIRE (38-core-fire.js)
 PAIRS += [("core/simulation/ksim.gd", "godot/tests/sim/ksim.gd")]   # SIM.pose's twin (its test reads a world's export: tests/dhelv)
 # KField (class_name: the importer godot/krator/field_import.gd uses it from here)
@@ -20,7 +20,8 @@ PAIRS += [(f"core/terrain/{f}", f"godot/tests/terrain/{f}") for f in ("kfield.gd
                                                                            "kstrata.gd", "kstrata_test.gd", "golden-strata.json",
                                                                            "klava.gd", "klava_test.gd", "golden-lava.json",
     "ktherm.gd", "ktherm_test.gd", "golden-therm.json",
-    "klamina.gd", "klamina_test.gd", "golden-lamina.json")]   # KLava: 46-core-lava.js; KTherm: 47-core-therm.js; KLamina: 35b-core-lamina.js
+    "klamina.gd", "klamina_test.gd", "golden-lamina.json",
+    "kstrata_vary.gd", "kstrata_vary_test.gd", "golden-strata-vary.json")]   # KLava: 46-core-lava.js; KTherm: 47-core-therm.js; KLamina: 35b-core-lamina.js; KStrataVary: 35c-core-strata-vary.js
 # kits/resources' node field (KResField), its test and vectors, the geology it reads, and krand.gd beside it (it preloads it)
 PAIRS += [(f"kits/resources/godot/{f}", f"godot/tests/resources/{f}") for f in ("kres_field.gd", "kres_field_test.gd", "golden-field.json")]
 PAIRS += [("kits/resources/data/geology.json", "godot/tests/resources/geology.json"), ("core/rand/krand.gd", "godot/tests/resources/krand.gd")]

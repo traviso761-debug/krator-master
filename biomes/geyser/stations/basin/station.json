@@ -1,0 +1,5 @@
+{
+ "base": "field",
+ "nojungle": true,
+ "tex": ["st.needles", "st.snow", "st.pine", "st.pinebark"]
+}

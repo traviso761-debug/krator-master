@@ -24,7 +24,7 @@ const FAR=(function(){
    /* the faces: the basalt's black, a band now and then (the column's colour averaged over 40 m: a coarse lattice cannot draw beds) */
    const rk=smooth(.35,.85,sl),st=STRATA.colorAt(Math.floor(h/40)*40);c=mixC(c,mixC(C.rock,L(st.map(v=>v*255)),.35),rk);
    const south=smooth(.2,.7,G0n(x,z));c=mixC(c,C.frost,.18*south*rk);
-   return c;}},FARK));
+   return MODEL.farColor?MODEL.farColor(x,z,h,sl,c,{mixC,L,C}):c;}},FARK));   /* a station's own colours (the orange belt's palagonite, the ice) */
  function G0n(x,z){const e=40;return (baseH(x,z+e)-baseH(x,z-e))/(2*e)*-1;}   // >0: the ground falls southward (it faces south: the shaded side at this site)
  const mesh=KFAR.mesh(G,{name:'far:caldera',label:'The caldera and the upper shield (far country)'});
  mesh.position.set(CX,0,CZ);mesh.updateMatrixWorld(true);mesh.frustumCulled=false;mesh.userData.probeSkip=true;mesh.userData.farField=true;scene.add(mesh);

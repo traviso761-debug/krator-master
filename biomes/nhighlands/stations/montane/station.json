@@ -1,0 +1,14 @@
+{
+ "note": "Station 2, the dry-summer montane (Dsb, Csb; PLAN-STATIONS.md): the base land of stations 3 and 4 (stations/montane/45-host-stage.js, driven by each station's 44z SITE). src/ minus the tower, the pillars and the Cut's natives.",
+ "drop": [
+  "85-host-tower.js",
+  "86-host-pillars.js",
+  "87-host-cut.js"
+ ],
+ "families": [
+  "cornlily",
+  "ground.needles",
+  "ground.goldgrass",
+  "ground.slab"
+ ]
+}

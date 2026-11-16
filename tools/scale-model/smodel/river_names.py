@@ -28,6 +28,7 @@
      25. `talovolci`   — Talovolci Cloud-Giant Tongue (`Talovolci Chiefs`, `s highlands`, `godstep valley`)
      26. `hum`         — Hām / Coyote-Bark Hum (`Korona / NE`, `Arachnoid Canyons`, `The Tiers`, `Coyote Kingdom`, `N Outlands`, `S Outlands`, `Outland Gate`)
      27. `tungang`     — Tungang / Fellgangs Northern English (`Tungang Union`, `Fellgangs`, `rift rim N`, `rift rim S`, `w rift highland`, `The Crook`, `Copper Glacier`, `The Rift`, `Lizardmen`, `High Rift`)
+     28. `shumari`     — Shumari Highland Mamluk Tongue (`Shumar`)
   - Preserves all canon/lore-referenced river names (`Dariba`, `Kaskejt Rivr`, `Chimes Riba`, `the Bigga`,
     `Pan Riba`, `Ālph`, `Dip Rivrh`, `Shim Rivrh`, `Drïm Rivrh`, `Tors Rivrh`, `Rrivar Falz`, `Rrivar Grin`,
     `Rrivar Isguifta`, `Rrivar Loña`, `Borun Gulusu`, `Filem Gulusu`, `Sivift Gulusu`, `Bitir Gulusu`,
@@ -96,12 +97,18 @@ CANON_BY_ID = {
     9107: ('Pāk-Mā (North Ria Fork)', 'eternian', "Pāk-Mā ('White-Peak Water') — 560 km Blue-Nile-style northern tributary joining the lower Ria River"),
 }
 
-# Explicit canon overrides by string river ID (for the 4 SE-complex rivers)
+# Explicit canon overrides by string river ID (for the SE-complex, Labyrinth, and Xanadu cataract rivers)
 CANON_BY_STR_ID = {
     'r_sg_vapora_bigga': ('Vapora Riba', 'yuni', "Vapora Riba ('Steam-Gate River') — geothermal headwater of the Bigga rising in the Stalker Gate"),
     'r_mb_siphon_breach': ('Ostrukh Riba', 'yuni', "Ostrukh Riba ('Ostrukh Breach River') — Mid Basin & Siphon Pits overflow channel feeding Lake Ostrukh"),
     'r_hr_verdigris': ('Verdigris Beck', 'tungang', "Verdigris Beck ('Copper-Ice Beck') — High Rift turquoise glacial meltwater stream"),
     'r_hr_jokulhlaup': ('Brant-Fell Gill', 'tungang', "Brant-Fell Gill ('Steep-Fell Jökulhlaup Gorge') — catastrophic glacial outburst gorge descending from the High Rift rim"),
+    'r_lab_cat_nw': ('Siphon-Pit Beck', 'tungang', "Siphon-Pit Beck ('Catena Meltwater Beck') — northwestern pit-crater meltwater stream of the Labyrinth"),
+    'r_lab_cat_sw': ('Graben-Tarn Gill', 'tungang', "Graben-Tarn Gill ('Southern Catena Gill') — southwestern pit-crater meltwater stream of the Labyrinth"),
+    'r_lab_chaos_n': ('Fell-Block Beck', 'tungang', "Fell-Block Beck ('North Chaos Cross-Channel') — anastomosing meltwater channel threading the northern Chaos mesas"),
+    'r_lab_chaos_s': ('Shatter-Scarp Gill', 'tungang', "Shatter-Scarp Gill ('South Chaos Cross-Channel') — anastomosing meltwater channel threading the southern Chaos mesas"),
+    'r_oidong_cataract': ('Nahr Uydūng', 'xanadui', "Nahr Uydūng ('Oidong Cataract River') — eastern rift river discharging from the Oidong Rift Lake over the Great Eastern Cataract into the Lower Xanadu Lake"),
+    'r_xanadu_low_cataracts': ('Nahr ash-Shalālāt', 'xanadui', "Nahr ash-Shalālāt ('River of the Stepped Cataracts') — outflow river descending a series of low cataracts from the Lower Xanadu Lake to the Lizardman Rift Sea"),
 }
 
 
@@ -120,7 +127,12 @@ REGION_TO_TONGUE = {
     'Vale of Xanadu': ('xanadui', 3),
     'Yuni Emirate': ('yuni', 3),
     'Dalab Council': ('dalab', 3),
+    'Realm of Dalab': ('dalab', 3),
     'Giant Country': ('vrivolci', 3),
+    'Vrivolci': ('vrivolci', 3),
+    'Shumar': ('shumari', 4),
+    'Greenstep': ('vrivolci', 2),
+    'Green Valley': ('vrivolci', 2),
     'Iron Republic': ('republic', 3),
     'Free Clans': ('republic', 3),
     'Painted Men': ('painted', 3),
@@ -158,6 +170,7 @@ REGION_TO_TONGUE = {
     'Oidong Valley': ('xanadui', 2),
     'Yuni Valley': ('yuni', 2),
     'Region 99': ('yuni', 2),
+    'Loom Chasms': ('yuni', 2),          # region 99's name since 5.1 edit 3 (2026-11-11)
     'Siphon Pits': ('yuni', 2),
     'Mid Basin': ('yuni', 2),
     'Stalker Gate': ('yuni', 2),
@@ -211,6 +224,8 @@ REGION_TO_TONGUE = {
     'w rift highland': ('tungang', 2),
     'the crook': ('tungang', 2),
     'copper glacier': ('tungang', 2),
+    'Labyrinth': ('tungang', 2),
+    'Firebliss Range': ('tungang', 2),
     'rift': ('tungang', 2),
     'The Rift': ('tungang', 2),
     'High Rift': ('tungang', 2),
@@ -247,6 +262,7 @@ TONGUE_GENERICS = {
     'talovolci':  ('Rivros',   'Brucos',   'Gilva',    'WG'),
     'hum':        ('Hām',      'Kē',       'Gèl',      'WG'),
     'tungang':    ('Warra',    'Beck',     'Gill',     'WG'),
+    'shumari':    ('Nārun',    'Buruqu',   'Ḫarrun',   'WG'),
 }
 
 
@@ -446,6 +462,14 @@ TONGUE_LEXICON = {
         ('Fell', 'high-fell'), ('Tarn', 'mountain-tarn'), ('Kruk', 'crook-bend'), ('Kopa', 'copper-ice'),
         ('Blek', 'black-shale'), ('Weyt', 'white-water'), ('Deyp', 'deep-gill'), ('Brant', 'steep-brow'),
     ],
+    'shumari': [
+        ('Šubaru', 'sword-caste'), ('Urudīru', 'ordeal'), ('Suṭāru', 'star'), ('Ṣunun', 'sun'),
+        ('Gurudun', 'gold'), ('Širubun', 'silver'), ('Suṭōnun', 'stone'), ('Qōrudu', 'cold'),
+        ('ʾAyrun', 'iron'), ('Dīpun', 'deep'), ('Ḫayun', 'high'), ('Purī', 'free'),
+        ('Ṭirānu', 'cadet-train'), ('Bētun', 'hearth-house'), ('Dōriyan', 'old-shore'), ('Nazāru', 'ruin-kin'),
+        ('Šumāru', 'highland-watch'), ('Qappu', 'crest-keep'), ('Kattu', 'blade-cut'), ('Wārun', 'war-host'),
+        ('Ṣōrun', 'salt-rime'), ('Mīṣu', 'mist'), ('Pāyaru', 'beacon-fire'), ('Gēdun', 'giant-spear'),
+    ],
 }
 
 
@@ -570,6 +594,10 @@ def format_river_name(tongue, stem, generic, order, rid):
         # Hām / Coyote-Bark monosyllabic compound: `Hau-Hām`, `Tsēk-Kē`, `Pāk-Gèl`
         return f'{stem_c}-{generic}'
 
+    if tongue == 'shumari':
+        # Shumari Akkadian-Japanese highland compound: `Šubaru-Nārun`, `Urudīru-Buruqu`, `Suṭōnun-Ḫarrun`
+        return f'{stem_c}-{generic}'
+
     if tongue == 'vrivolci':
         # Free Giants compound: `Spirlariba`, `Uarosbruk`, `Stanosguli`
         return f'{stem_c}{generic.lower()}'
@@ -606,6 +634,24 @@ def _stable_river_seed(rid_str, tng, mod_a, mod_b):
     seed_a = int.from_bytes(digest[:4], 'big') % max(1, mod_a)
     seed_b = int.from_bytes(digest[4:8], 'big') % max(1, mod_b)
     return seed_a, seed_b
+
+
+def drains_to(to):
+    """the table's "Drains To": a river's name, a sea's, a lake's or basin's level; '—' where the record says only where it ends"""
+    to = to or {}
+    if to.get('name'):
+        return to['name']
+    if to.get('river'):
+        return str(to['river'])
+    if to.get('sea') or to.get('kind') == 'sea':
+        return to.get('sea') or 'sea'
+    if 'lake_m' in to:
+        return 'lake (%s m%s)' % (format(int(to['lake_m']), ','), ', through' if to.get('through') else '')
+    if 'basin_m' in to:
+        return 'basin (%s m)' % format(int(to['basin_m']), ',')
+    if 'below_lake_m' in to:
+        return 'ends below a lake (%s m)' % format(int(to['below_lake_m']), ',')
+    return to.get('kind') or '—'
 
 
 def rename_all_rivers_culturally(rivers_exp, regs_exp, setts_exp, En_exp=None, markdown_out_path=None, old_rivers=None):
@@ -730,6 +776,7 @@ def rename_all_rivers_culturally(rivers_exp, regs_exp, setts_exp, En_exp=None, m
         'talovolci': [('Uxo', 'upper'), ('Ande', 'lower'), ('Marios', 'great'), ('Bccos', 'little'), ('Touto', 'north'), ('Dexso', 'south')],
         'hum':       [('Sāng', 'upper'), ('Hā', 'lower'), ('Tāi', 'great'), ('Sīu', 'little'), ('Pāk', 'north'), ('Nām', 'south'), ('Tōng', 'east'), ('Sī', 'west')],
         'tungang':   [('Haa', 'high'), ('Laa', 'low'), ('Muckle', 'great'), ('Lile', 'little'), ('Noth', 'north'), ('Sooth', 'south'), ('Yist', 'east'), ('Wist', 'west')],
+        'shumari':   [('ʾElū', 'upper'), ('Šaplū', 'lower'), ('Gurēṭu', 'great'), ('Ṣīru', 'little'), ('Nōšu', 'north'), ('Ṣūšu', 'south'), ('ʾĪṣu', 'east'), ('Weṣu', 'west')],
     }
 
     for r in remaining:
@@ -739,11 +786,16 @@ def rename_all_rivers_culturally(rivers_exp, regs_exp, setts_exp, En_exp=None, m
         def_tng_key = f'{rid_str}:__tongue__'
         if existing_tng and existing_tng in TONGUE_GENERICS:
             tng = existing_tng
-        elif def_tng_key in frozen_map and frozen_map[def_tng_key] in TONGUE_GENERICS:
-            tng = frozen_map[def_tng_key]
         else:
-            tng = infer_river_tongue(r, t_grid, id_to_t, setts_exp)
+            inferred_tng = infer_river_tongue(r, t_grid, id_to_t, setts_exp)
+            if inferred_tng == 'shumari':
+                tng = 'shumari'
+            elif def_tng_key in frozen_map and frozen_map[def_tng_key] in TONGUE_GENERICS:
+                tng = frozen_map[def_tng_key]
+            else:
+                tng = inferred_tng
         r['tongue'] = tng
+        frozen_map[def_tng_key] = tng
 
         freeze_key = f'{rid_str}:{tng}'
         if freeze_key in frozen_map:
@@ -794,7 +846,7 @@ def rename_all_rivers_culturally(rivers_exp, regs_exp, setts_exp, En_exp=None, m
                 q_loc, q_en = quals[(q_seed + q_step) % len(quals)]
                 for step in range(len(lex)):
                     stem, gls_en = lex[(seed_idx + step) % len(lex)]
-                    if tng in {'eternian', 'hum', 'zeijani', 'jimjam'}:
+                    if tng in {'eternian', 'hum', 'zeijani', 'jimjam', 'shumari'}:
                         comp_stem = f'{q_loc}-{stem}'
                     elif tng == 'dasri':
                         comp_stem = f'{stem} {q_loc}'
@@ -820,7 +872,7 @@ def rename_all_rivers_culturally(rivers_exp, regs_exp, setts_exp, En_exp=None, m
         tongue_counts[tng] = tongue_counts.get(tng, 0) + 1
         frozen_map[freeze_key] = {'name': chosen_name, 'gloss': chosen_gloss}
 
-    if not os.path.exists(FROZEN_NAMES_PATH):
+    if markdown_out_path or not os.path.exists(FROZEN_NAMES_PATH):
         try:
             with open(FROZEN_NAMES_PATH, 'w', encoding='utf-8', newline='\n') as f:
                 json.dump(frozen_map, f, ensure_ascii=False, indent=2, sort_keys=True)
@@ -875,8 +927,7 @@ def rename_all_rivers_culturally(rivers_exp, regs_exp, setts_exp, En_exp=None, m
         ]
         major.sort(key=lambda r: (-float(r.get('length_km') or 0.0), _rid_num(r['id'])))
         for r in major:
-            to_d = r.get('to') or {}
-            to_str = to_d.get('name') or to_d.get('kind') or 'sea'
+            to_str = drains_to(r.get('to'))
             old_nm = r.get('old_name') or '—'
             lines.append(
                 f"| `{r['id']}` | `{old_nm}` | **{r['name']}** | `{r.get('tongue')}` | {r.get('kind')} "
@@ -893,8 +944,7 @@ def rename_all_rivers_culturally(rivers_exp, regs_exp, setts_exp, En_exp=None, m
         ])
         all_sorted = sorted(rivers_exp, key=lambda r: _rid_num(r['id']))
         for r in all_sorted:
-            to_d = r.get('to') or {}
-            to_str = to_d.get('name') or to_d.get('kind') or 'sea'
+            to_str = drains_to(r.get('to'))
             old_nm = r.get('old_name') or '—'
             lines.append(
                 f"| `{r['id']}` | `{old_nm}` | **{r['name']}** | `{r.get('tongue')}` | {r.get('kind')} "

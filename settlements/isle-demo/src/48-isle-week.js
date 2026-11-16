@@ -19,7 +19,7 @@ ISLE.simWatch = function (town) {
   S.watched = town; return me;
 };
 ISLE.weekSnap = function () {
-  var S = ISLE.SIM, I = SIM.ITEMS, out = { minute: SIM.minute(), towns: {}, routes: {} };
+  var S = ISLE.SIM, I = SIM.ITEMS, out = { minute: SIM.minute(), towns: {}, routes: {}, ledger: SIM.ledgerSnap() };
   S.order.forEach(function (s) {
     var E = SIM.econ(s), St = SIM.stocks(s), B = (I.statsBy || {})[s] || {}, X = S.towns[s], T = { goods: {}, food: 0, workers: X.pop.workers };
     var U = S.uses || {};
@@ -113,6 +113,16 @@ ISLE.weekChecks = function (w1, w2, o) {
     buy.push({ g: g, made: made, sold: sold }); });
   ok('the ships from beyond the isles bought the cloves and the cacao the towns made', buy.every(function (x) { return x.made > 0 && x.sold >= 0.75 * x.made; }),
     buy.map(function (x) { return x.g + ' ' + x.sold + ' bought of ' + x.made + ' made'; }).join('; '));
+  /* the ledger (core 77-sim-7-ledger.js, SCHEMA.md "The books"; PLAN-ECONOMY.md Phase 0): each week's statement balances per
+     good and settlement with spoilage on its own line, every leg reconciles, every good has a unit and an owner, and
+     what went abroad is exactly what the ships bought */
+  var led = [], abr = [], units = 0;
+  weeks.forEach(function (W) { var LG = SIM.ledger(W.a.ledger, W.b.ledger); LG.problems.forEach(function (p) { led.push(W.watched + ' watched: ' + p); });
+    Object.keys(W.b.towns).forEach(function (s) { var T = LG.towns[s] || {};
+      Object.keys(T).forEach(function (g) { units++; if (T[g].unit === 'unit' || T[g].owner !== s) led.push(s + ' ' + g + ': no unit or owner');
+        var sold = (W.b.towns[s].sold[g] || 0) - (W.a.towns[s].sold[g] || 0); if (Math.abs(T[g].abroadOut - sold) > 0.5) abr.push(W.watched + ' watched, ' + s + ' ' + g + ': ' + T[g].abroadOut + ' abroad, the ships bought ' + sold); }); }); });
+  ok('the ledger: every good adds up with spoilage apart, every leg reconciles, every good has a unit and an owner', units > 0 && !led.length, led.length ? led.length + ' problems: ' + led.slice(0, 3).join('; ') : units + ' statements');
+  ok('the ledger: what left the map is what the ships bought', units > 0 && !abr.length, abr.length ? abr.slice(0, 3).join('; ') : 'both weeks, both towns');
   /* the other town's foods eaten (2026-10-26, `trade.diet`): over the two weeks each imported food bought a person a day
      within half to twice its ration, and the canoes landed at least three quarters of what was bought */
   var DT = (ISLE.TUNE.sim.trade && ISLE.TUNE.sim.trade.diet) || {}, eat = [];

@@ -12,14 +12,19 @@ defBuilding({key:'et_ministry',name:'Ministry',seed:7101,cut:true,w:27,d:22,h:46
  tags:{types:['civic'],wealth:'rich',style:'ministry'},
  note:'the stepped pier bundle in pale brick, figures in its niches, a verdigris spire, a lancet bundle and oculus over a civic door held by two ancestors; the hall behind under celadon; a tube head in its flank',
  build(o){const sd=P('stoneD'),br=P('brick'),brD=new THREE.Color(br).multiplyScalar(.86),G=1.2;
-  box('stone',0,0,0,25,G,20,sd);for(let k=0;k<4;k++)box('stone',0,0,10.3+k*.32,9-k*.6,G-k*.3,.32,sd);
+  /* the podium and its steps (core/engine svStair: the old steps were boxes from the ground, the upper two over 0.7 m, walls to a walker) */
+  box('stone',0,0,0,25,G,20,sd);svFloor([[-12.5,-10],[12.5,-10],[12.5,10],[-12.5,10]],G);svStair(0,10+1.62,0,G,PI,{style:'solid',w:9,run:1.62,col:sd});   /* its top a floor (a 1.2 m box is a block to the box reader) */
   // the hall behind
   pushM(TF(0,G,-3));
    const bw=y=>[{x:-5,w:1.2,h:2.4,y:y,steel:true,shut:false},{x:5,w:1.2,h:2.4,y:y,steel:true,shut:false}];
-   etWalls(20,12,0,14,'brick',br,{back:bw(1.2).concat(bw(5.8),bw(10.4)),front:[{x:0,w:2.0,h:3.2,door:true,mask:false,leaf:P('bronze')}]},{frame:brD});
+   /* the hall's front door stands behind the pier bundle, so the clerks come in by a door in its left flank, off the podium */
+   etWalls(20,12,0,14,'brick',br,{back:bw(1.2).concat(bw(5.8),bw(10.4)),front:[{x:0,w:2.0,h:3.2,door:true,mask:false,leaf:P('bronze')}],
+    left:[{x:0,w:1.4,h:2.6,door:true,mask:false,leaf:P('bronze')}]},{frame:brD});
    box('paving',0,-.02,0,19.4,.05,11.4,P('paving'));
-   for(const y of [4.6,9.2]){box('timber',1.15,y-.25,0,17.1,.25,11.4,P('timber'));box('timber',-8.55,y-.25,-2.2,2.3,.25,7,P('timber'));
-    etStair(-8.55,y-4.6,1.4,1.6,.23,.21,20,P('timberL'));}
+   for(const y of [4.6,9.2]){box('timber',1.15,y-.25,0,17.1,.25,11.4,P('timber'));box('timber',-8.55,y-.25,-2.2,2.3,.25,7,P('timber'));}
+   /* the stair in the front left corner, a dog-leg a storey (core/engine svStairCase), arriving where the side floor meets it (the old
+      flight climbed away from that floor, too steep for a walker) */
+   svStairCase({x0:-9.7,x1:-7.4,z0:1.3,z1:5.7},[0,4.6,9.2],{w:1.0,col:P('timberL'),scol:P('timber')});
    /* the clerks and the archive; the council room; the minister's floor and the household's niche */
    for(const x of [-4,0,4])FURNISH('eternian_common_register_desk',x,0,-1.8,0);
    for(const x of [-7.5,-2.5,2.5,7.5])FURNISH('eternian_common_archive_shelf',x,0,-5.47,0);
@@ -55,13 +60,15 @@ defBuilding({key:'et_registry',name:'Registry',seed:7102,cut:true,w:30,d:18,h:17
  note:'a long hall of pale brick, seven lancets between pilasters, a civic door held by two ancestors, a celadon hip; a stone vault behind; the clerks and the registers inside',
  build(o){const sd=P('stoneD'),br=P('brick'),brD=new THREE.Color(br).multiplyScalar(.86),G=.8,W=26,D=10,H=8;
   box('stone',0,0,0,W+1,G,D+1,sd);for(let k=0;k<3;k++)box('stone',0,0,D/2+.8+k*.3,6-k*.5,G-k*.25,.3,sd);
+  wkPad(0,0,W+1,D+1,G);wkPad(0,D/2+.725,6,.45,G);   /* the podium and its top step are 0.8 m tall: core/walk/box reads them as blocks, so their tops are
+     declared floors (the reachability audit, 2026-11-03: the hall was unreached through its open door) */
   box('paving',0,G-.02,0,W-.6,.05,D-.6,P('paving'));
-  etWalls(W,D,G,H,'brick',br,{back:[{x:-8,w:1.2,h:2.2,y:4,steel:true,shut:false},{x:8,w:1.2,h:2.2,y:4,steel:true,shut:false}],
+  etWalls(W,D,G,H,'brick',br,{front:[{x:0,w:2.0,h:3.9,y:0,gap:true}],back:[{x:-8,w:1.2,h:2.2,y:4,steel:true,shut:false},{x:8,w:1.2,h:2.2,y:4,steel:true,shut:false}],   /* the front cut for the civic door (it stood against the wall) */
    left:[{x:0,w:1.2,h:2.2,y:4,steel:true,shut:false}],right:[{x:0,w:1.2,h:2.2,y:4,steel:true,shut:false}]},{frame:brD});
   for(let i=0;i<8;i++){const x=-W/2+.4+i*(W-.8)/7;box('brick',x,G,D/2+.15,.6,H,.3,brD);}
   for(let i=0;i<7;i++){const x=-W/2+.4+(i+.5)*(W-.8)/7;if(i!==3)etLancet(x,G+1.6,D/2+.15,1.3,5.6,{light:'glass'});}
   etFrieze(0,G+H-1.6,D/2+.32,W-1,1.2);
-  pushM(TF(0,G,0));etCivicDoor(0,D/2+.15,2.0,3.9,{metal:'bronze'});popM();
+  pushM(TF(0,G,0));etCivicDoor(0,D/2+.15,2.0,3.9,{metal:'bronze',hollow:true});popM();
   box('stone',0,G+H,0,W+.06,.35,D+.06,sd);
   etHip(W,D,G+H+.35,5.2,{mk:'celadon',ov:.7,flare:.5,under:P('timber'),cap:P('celadon')});
   // the vault

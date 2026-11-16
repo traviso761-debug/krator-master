@@ -1151,6 +1151,57 @@ section.tongue .wrap{grid-template-columns:minmax(0,1fr)}
 :is(#argot,[data-tongue="argot"]) .dot{fill:var(--orange)}
 :is(#argot,[data-tongue="argot"]) .esg.br path{fill:var(--rust)}
 #eternian .lnk{font:inherit;color:var(--cobalt);background:none;border:0;padding:0;text-decoration:underline;cursor:pointer}
+:root :is(#shumari,[data-tongue="shumari"]){--bg:#eef0f3;--panel:#f7f8fa;--ink:#181d24;--muted:#525c68;--line:#c5cdd6;--accent:#9e2a2b;--accent-soft:#ead4d4;--gold:#b8861b;--mono:ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;--serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif}
+#shumari{background:var(--bg);color:var(--ink);font-family:var(--serif);line-height:1.55}
+#shumari .wrap{max-width:1080px;margin:0 auto;padding:32px 24px 80px;display:grid;gap:44px}
+#shumari header{border-bottom:2px solid var(--ink);padding-bottom:20px;display:grid;gap:10px}
+#shumari .eyebrow{font:600 .75rem/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--accent)}
+#shumari h1{font-size:clamp(1.9rem,3.6vw,2.75rem);font-weight:700;letter-spacing:-.01em}
+#shumari h2{font-size:1.2rem;font-weight:700;letter-spacing:.02em;text-transform:uppercase;border-bottom:1px solid var(--line);padding-bottom:6px;margin-bottom:12px}
+#shumari p{max-width:72ch}
+#shumari .hero-glyphs{padding:14px 18px;background:var(--panel);border:1px solid var(--line);border-left:5px solid var(--accent);min-height:84px;display:flex;align-items:center;overflow-x:auto}
+#shumari .scribe{background:var(--panel);border:1px solid var(--line);padding:20px;display:grid;gap:14px}
+#shumari label{font:600 .75rem/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+#shumari .row{display:flex;gap:8px;flex-wrap:wrap}
+#shumari input[type="text"]{flex:1;min-width:240px;font:1.05rem/1.4 var(--mono);padding:10px 12px;background:var(--bg);color:var(--ink);border:1px solid var(--line)}
+#shumari input[type="text"]:focus{outline:2px solid var(--accent);border-color:var(--accent)}
+#shumari .keys,#shumari .samples{display:flex;flex-wrap:wrap;gap:6px}
+#shumari button{font:.8rem/1 var(--mono);padding:7px 10px;background:var(--bg);color:var(--ink);border:1px solid var(--line);cursor:pointer}
+#shumari button:hover{border-color:var(--accent);background:var(--accent-soft)}
+#shumari .out{min-height:96px;padding:16px;background:var(--bg);border:1px solid var(--line);display:flex;align-items:center;overflow-x:auto}
+#shumari .tokens{display:flex;flex-wrap:wrap;gap:6px;font:.78rem/1.2 var(--mono);color:var(--muted)}
+#shumari .tokens span{padding:3px 6px;background:var(--bg);border:1px solid var(--line)}
+#shumari .tokens b{color:var(--ink)}
+#shumari .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(122px,1fr));gap:8px}
+#shumari .cell{background:var(--panel);border:1px solid var(--line);padding:10px 8px;display:grid;justify-items:center;gap:4px;cursor:pointer;text-align:center}
+#shumari .cell:hover{border-color:var(--accent);background:var(--accent-soft)}
+#shumari .cell svg{height:58px;width:auto;overflow:visible}
+#shumari .cell .rom{font:700 .95rem/1 var(--mono)}
+#shumari .cell .ipa{font:.75rem/1 var(--mono);color:var(--muted)}
+#shumari .cell .nm{font-size:.78rem;color:var(--accent);font-weight:600}
+#shumari .cell .gl{font-size:.72rem;color:var(--muted);font-style:italic}
+#shumari .vbridge{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+#shumari .vbcard{background:var(--panel);border:1px solid var(--line);padding:12px;display:grid;gap:6px}
+#shumari .vbcard .vbtop{display:flex;align-items:center;justify-content:space-around;padding:6px 0;border-bottom:1px solid var(--line)}
+#shumari .vbcard svg{height:52px;width:auto;overflow:visible}
+#shumari .vbcard .vblbl{font:.74rem/1.35 var(--mono);color:var(--muted)}
+#shumari .vbcard .vblbl b{color:var(--ink)}
+#shumari .tbl{overflow-x:auto}
+#shumari table{border-collapse:collapse;width:100%;min-width:560px;font-size:.94rem}
+#shumari th,#shumari td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+#shumari th{font:.7rem var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+#shumari td.m{font-family:var(--mono);font-size:.85rem}
+#shumari td.lo{font-style:italic;color:var(--accent);font-weight:700}
+#shumari td.sg svg{height:44px;width:auto;overflow:visible}
+#shumari .note{font-size:.9rem;color:var(--muted)}
+:is(#shumari,[data-tongue="shumari"]) .line{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px}
+:is(#shumari,[data-tongue="shumari"]) .word{display:inline-flex;align-items:center;gap:2px}
+:is(#shumari,[data-tongue="shumari"]) .word svg{height:54px;width:auto;overflow:visible}
+#shumari .hero-glyphs .word svg{height:66px}
+:is(#shumari,[data-tongue="shumari"]) .blade{fill:none;stroke:var(--ink);stroke-width:3.8;stroke-linecap: butt;stroke-linejoin:miter}
+:is(#shumari,[data-tongue="shumari"]) .thorn{fill:none;stroke:var(--gold);stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round}
+:is(#shumari,[data-tongue="shumari"]) .bar{fill:none;stroke:var(--accent);stroke-width:3.2;stroke-linecap:square}
+:is(#shumari,[data-tongue="shumari"]) .gem{fill:var(--accent);stroke:none}
 </style>
 
 <nav class="tabs" aria-label="Tongues"><div class="in" id="tabbar" role="tablist"></div></nav>
@@ -1173,7 +1224,7 @@ section.tongue .wrap{grid-template-columns:minmax(0,1fr)}
     <p>Ten separate traditions, and one people who write nothing. Only the Izani letters spread: to the Republic unchanged, to the Beast Riders with four marks added, to Voth transformed, and to the Islanders of the Ring Sea, who use barely half of them.</p>
     <div class="tree">
       <div><b>Latin, never lost</b><span>Yuni (gate capitals copied from campus signs), the desert nomads and the abyssal people (who learned them at Yuni and made a joined caravan hand and painted salt marks of them), the Monks of History (a rounded book hand with margin marks for evidence), Dalab's priests (with the God's fixed-width letters as the holy form).</span></div>
-      <div><b>The Izani capitals</b><span>Cut in straight strokes by the Empire. The Iron Republic kept them unchanged; the Beast Riders took them for trade and added four marks. The Chichani, as the Empire's clients, bent them into brushed loops and added marks of their own: the Vothic letters. The Islanders write with sixteen of the twenty-seven on the east shore and fourteen on the west, and gave the idle Q a new job. The northern traders write their argot in them too, with Eternian signs dropped in.</span></div>
+      <div><b>The Izani capitals</b><span>Cut in straight strokes by the Empire. The Iron Republic kept them unchanged; the Beast Riders took them for trade and added four marks. The Chichani, as the Empire's clients after conquering the old Shumari cities on the south-west lakeshore, bent the Izani capitals into brushed loops and grafted on the hooked blades, breath-thorns, bars and diamond stops of the Shumari alphabet: the Vothic letters. The Islanders write with sixteen of the twenty-seven on the east shore and fourteen on the west, and gave the idle Q a new job. The northern traders write their argot in them too, with Eternian signs dropped in.</span></div>
       <div><b>Greek symbols, read as letters</b><span>Copied by the Hykkousoi from the etched labels and charts of a drowned Ancient gene-lab at Ys, Dalab's rival.</span></div>
       <div><b>Latin cut in tuff</b><span>The Zeijani chiselled English letters into soft rock until every curve was gone and every stroke a wedge; the ash nomads paint the same wedges on hide.</span></div>
       <div><b>Melody, not letters</b><span>The peoples of Korona carve the Hum as grooves on the tepui walls: the tune of each syllable and its vowel's colour, never a consonant, so any people who whistle it can read it.</span></div>
@@ -1182,15 +1233,15 @@ section.tongue .wrap{grid-template-columns:minmax(0,1fr)}
       <div><b>Latin cut with a knife</b><span>The Khaayken of the High Country cut the Latin capitals in straight strokes on bone, antler, wood and ice, and made their vowels one wedge turned four ways, holed for the front vowels, as the Inuit syllabics turn theirs.</span></div>
       <div><b>Latin, kept for the Book</b><span>The Tungangs of the Rift line read English for the sake of the Book, the old agreement with the Ancients: its letters and spelling as they were, read aloud in their own sounds. Along the tunnels they talk in the line's bell codes and red-lamp signals, and copy the Ancients' stencilled signs as holy marks; their Fellgang kin on the fells read nothing and keep only the bells.</span></div>
       <div><b>Brands, not letters</b><span>The Scyvoi write nothing. Each clan burns its brand, a tamga, into its lizards' hides and cuts it into the granite; the tribes under Voth have Vothic scribes count their tribute.</span></div>
-      <div><b>Invented</b><span>Xanadu lost writing completely. Its temple grammarians built a syllabary on a grid of sounds for the prayer wheels. Jimjam's day-keepers made a script for the count, borrowing shapes from the Latin letters on the broken dams upstream, rounded on palm leaf and stacked in square blocks, one per syllable.</span></div>
+      <div><b>Invented</b><span>The Shumari soldier-clerks invented a twenty-eight-letter alphabet of hooked blades, breath-thorns and caste bars for their muster rolls and boundary stelae; when the Chichani conquered Doriyan (Driyan) and the basin lakeshore, those blades and thorns became the second parent of the Vothic script. Xanadu lost writing completely; its temple grammarians built a syllabary on a grid of sounds for the prayer wheels. Jimjam's day-keepers made a script for the count, borrowing shapes from the Latin letters on the broken dams upstream, rounded on palm leaf and stacked in square blocks, one per syllable.</span></div>
     </div>
   </div>
 
   <div>
-    <h2>One word, twenty-six roads</h2>
+    <h2>One word, twenty-seven roads</h2>
     <p>In order of how far each tongue drifted from English.</p>
     <div class="tbl"><table>
-      <thead><tr><th>English</th><th>Dalab high</th><th>Historians'</th><th>Yuni</th><th>Tungang</th><th>Dalab low</th><th>Fell speech</th><th>Hajlandsk</th><th>Hayrant</th><th>Talovolci</th><th>Tł'aai</th><th>Boruntun</th><th>Khaayken</th><th>Izani</th><th>Matok</th><th>Jamṭōkku</th><th>Hykkousik</th><th>Vothic</th><th>Ash nomad</th><th>Zeijani</th><th>Dasrī</th><th>Tabist</th><th>Sikau</th><th>Hām</th><th>Eternian</th><th>Farside</th><th>Xanadui</th></tr></thead>
+      <thead><tr><th>English</th><th>Dalab high</th><th>Historians'</th><th>Yuni</th><th>Tungang</th><th>Dalab low</th><th>Fell speech</th><th>Hajlandsk</th><th>Hayrant</th><th>Talovolci</th><th>Tł'aai</th><th>Boruntun</th><th>Khaayken</th><th>Izani</th><th>Matok</th><th>Jamṭōkku</th><th>Hykkousik</th><th>Vothic</th><th>Ash nomad</th><th>Zeijani</th><th>Shumari</th><th>Dasrī</th><th>Tabist</th><th>Sikau</th><th>Hām</th><th>Eternian</th><th>Farside</th><th>Xanadui</th></tr></thead>
       <tbody id="fam"></tbody>
     </table></div>
   <div>
@@ -1213,7 +1264,7 @@ section.tongue .wrap{grid-template-columns:minmax(0,1fr)}
   <div class="eyebrow">Tzintzuntzan · the script of the Realm of the Son of the Sun</div>
   <h1>Vothic Script</h1>
   <div class="hero-glyphs plain" id="vothic-hero" aria-label="Tzintzuntzan written in Vothic script"></div>
-  <p>Thirty-three letters, one for each sound of the tongue spoken from Shim to Zey'danin. The bowls and loops come from a Georgian hand, the blades and hooked serifs from Daedric. Vowels are round. Consonants end in a cut. A gold <b>thorn</b> marks a breathed sound.</p>
+  <p>Thirty-three letters, one for each sound of the tongue spoken from Shim to Zey'danin. Its letter skeletons and order come from the Izani capitals, bent into Georgian bowls and loops, while its hooked Daedric blades, cross-bars, syllable-cut hooks, diamond full stops, and raised gold <b>thorn</b> (<i>thon</i>) were taken from the older <button type="button" class="lnk" data-go="shumari" style="font:inherit;color:var(--accent);background:none;border:0;padding:0;text-decoration:underline;cursor:pointer">Shumari alphabet</button> of the conquered south-west lakeshore cities such as Driyan (formerly Shumari <i>Doriyan</i>). Vowels are round. Consonants end in a cut.</p>
 </header>
 
 <section class="scribe" aria-labelledby="vothic-scribe-h">
@@ -1325,7 +1376,7 @@ section.tongue .wrap{grid-template-columns:minmax(0,1fr)}
   <p>Every Vothic letter descends from an Izani capital, rounded by brush and nib. Most kept their sound. Three things changed on the way:</p>
   <p><b>The sibilants shifted.</b> Chichani speech moved each hiss one step: the Izani letter for <i>s</i> came to write <i>tz</i>, the one for <i>sh</i> (X) came to write <i>s</i>, and the one for <i>zh</i> (J) came to write <i>sh</i>.</p>
   <p><b>The root came from two Izani letters.</b> The tilde of Ñ slid under the line and became the tail of <i>ng</i>. The doubled stroke of Rr became the tail of <i>rh</i>, and later <i>ï</i>.</p>
-  <p><b>The thorn and bar are Chichani inventions</b>, made for sounds the Empire never wrote. F and Q died out: Chichani had no f, and wrote kw as k with u. (Q still said kw when the Chichani took it; in Iziz it now says q'.)</p>
+  <p><b>The thorn, bar and hooked blades came from the Shumari alphabet.</b> When the Chichani conquered Doriyan (now Driyan) and the south-west basin lakeshore from the Shumari, they adopted the Shumari muster-clerks' hooked blade terminals, cross-bar, diamond full stop and raised breath-thorn (Shumari <i>ḫa-ṭōnu</i>, Vothic <i>thon</i>) and grafted them onto the Empire's Izani capitals to write sounds Iziz never had. F and Q died out: Chichani had no f, and wrote kw as k with u. (Q still said kw when the Chichani took it; in Iziz it now says q'.)</p>
   <div class="legend"><span><span class="sw" style="background:var(--ink)"></span>Izani capital</span><span><span class="sw" style="background:var(--voth)"></span>Vothic letter</span><span><span class="sw" style="background:var(--accent)"></span>Chichani mark</span></div>
   <div class="desc" id="izani-desc" style="margin-top:12px"></div>
 </section>
@@ -3201,10 +3252,78 @@ section.tongue .wrap{grid-template-columns:minmax(0,1fr)}
 </div>
 </section>
 
+<section id="shumari" class="tongue" data-label="Shumari" hidden>
+<div class="wrap">
+<header>
+  <div class="eyebrow">Shumar · the Mamluk highland plateau above the SW basin · Šumārum / Šubaru-šu</div>
+  <h1>Shumari</h1>
+  <div class="hero-glyphs" id="shumari-hero" aria-label="Šumārum · Šubaru-šu written in Shumari blade script"></div>
+  <p>The Shumari are believed to descend from their near-cousins, the ruin-dwelling <b>Nazari</b>, as they fanned out into the countryside after the Cataclysm. Much has been lost to the mists of pre-recorded history, but their territory was once far more extensive: <b>Driyan</b> (formerly <i>Doriyan</i>, Shumari <i>Dōriyan</i>) and other cities along the south-west basin lakeshore were once theirs before the Chichani came. Through centuries of war against the Chichani, the Shumari augmented their numbers with slave-soldiers purchased from <b>Nazar</b>, <b>Dalab</b>, and the other lakeshore nations that would eventually be subsumed into Voth. It was not enough. Driven back at last to a cold highland plateau refuge — <b>Shumar</b>, between the Vothic lowlands, Greenstep, and the western flank of Godthrone — that they found easier to defend against the Chichani, they discovered that their slave-soldier corps (<i>Šubārum</i> / <b>Šubaru-šu</b>) had evolved into a Mamluk-like military and administrative caste almost as large as the native Shumari. In the highlands, this caste subsumed the rest of society: the position of slave was inverted as the soldiery became the true ruling class.</p>
+  <p>Slavery as it was no longer exists, but its legacy endures in <b>the Ordeal</b> (<i>Urudīru</i>, formal state-citation <i>ʾUrdīlum</i>): families seeking their children to advance may submit their sons to be drafted into the soldiery, where they start at the bottom of the hierarchy (the cadet-caste, marked by <b>-ko</b>), subjected to a brutal training and survival process on the subarctic upper ramp of the plateau that not all survive, and in time may rise as far as their ability takes them. This offer extends to outsiders as well: after the conquest of Nazar, many Nazari slaves escaped to the plateau and the braver and stronger among them submitted to the Ordeal and earned their place among the ruling Sword-Caste (<b>-šu</b>). While most escaped Giants prefer the sanctuary of Tallwalls in Greenstep, not a few <b>Free Giants</b> (<i>Gēdu-šu</i>) are found among the Shumari these days either.</p>
+  <p>Their language is English evolved to sound like a fusion of <b>Akkadian and Japanese</b>: it shares the old Proto-Nazari / Zeijani emphatic consonants (<i>ṣ, ṭ, q</i>), <i>š</i> for <i>th</i>, <i>p/b</i> for <i>f/v</i>, long vowels, and fossilized Akkadian mimation (<i>-um / -im</i>) in state citations, reshaped in the polyglot Mamluk barracks by Japanese-style open syllables, broken clusters, geminate stops (<i>kk, tt, pp, ss</i>), word-final moraic <i>-n</i>, and strict verb-final syntax. Reference to <b>caste</b> is mandatory in the grammar, and their invented twenty-eight-letter <b>Blade-and-Hook Alphabet</b> (<i>Šumaru-kattu</i>) was one of the parent influences on the <button type="button" class="lnk" data-go="vothic" style="font:inherit;color:var(--accent);background:none;border:0;padding:0;text-decoration:underline;cursor:pointer">Vothic alphabet</button>.</p>
+</header>
 
+<section class="scribe" aria-labelledby="shumari-scribe-h">
+  <h2 id="shumari-scribe-h">Scribe · Šumaru-kattu (The Blade-and-Hook Alphabet)</h2>
+  <label for="shumari-src">Romanized Shumari</label>
+  <div class="row">
+    <input id="shumari-src" type="text" value="Šumārum. Ṣē-šu Urudīru bi suṭōn-šu. Dōriyan nu nārun." autocomplete="off" spellcheck="false">
+  </div>
+  <div class="keys" id="shumari-keys"></div>
+  <div class="samples" id="shumari-samples"></div>
+  <div class="out" id="shumari-out" aria-live="polite"></div>
+  <div class="tokens" id="shumari-tok"></div>
+  <p class="note">Twenty-eight invented letters cut with a chisel-nib in straight and hooked katakana-like blades. A raised gold <b>breath-thorn</b> (<i>ḫa-ṭōnu</i>) marks the emphatics and spirants (<span class="mono">ṣ ṭ q š ḫ</span>); a crimson <b>caste-bar</b> marks voiced and affricate mates (<span class="mono">b d g z č j</span>). An apostrophe or glottal (<span class="mono">' ʾ</span>) writes the syllable-cut hook; a full stop is the diamond seal (<span class="mono">◆</span>).</p>
+</section>
 
+<section aria-labelledby="shumari-alpha-h">
+  <h2 id="shumari-alpha-h">The twenty-eight letters</h2>
+  <p>Click any letter to insert it into the Scribe above. Long vowels (<span class="mono">ā ē ī ō ū</span>) add the hooked length-blade to their short vowel.</p>
+  <div class="grid" id="shumari-chart"></div>
+</section>
 
+<section aria-labelledby="shumari-voth-h">
+  <h2 id="shumari-voth-h">How Shumari and Izani made the Vothic script</h2>
+  <p>When the Chichani conquered <b>Driyan</b> (Shumari <i>Dōriyan</i>) and the south-west lakeshore cities, they encountered Shumari boundary stelae, tax tallies, and muster rolls written in <i>Šumaru-kattu</i>. Later, as clients of the Empire of Iziz, Chichani scribes took the 27 Izani capitals as their base skeletons, bent their bodies into brushed Georgian loops, and grafted four Shumari inventions directly onto them: <b>the hooked blade terminals</b>, <b>the raised gold breath-thorn</b> (Shumari <i>ḫa-ṭōnu</i> → Vothic <i>thon</i>), <b>the cross-bar</b>, and <b>the diamond full stop</b>.</p>
+  <div class="vbridge" id="shumari-voth"></div>
+</section>
 
+<section aria-labelledby="shumari-caste-h">
+  <h2 id="shumari-caste-h">Grammar of the Inverted Caste &amp; the Ordeal</h2>
+  <p>In Shumari, caste is not merely a title; it is a mandatory grammatical category bound to every animate noun, pronoun, and finite verb. Because the slave-soldiers (<i>Šubārum</i>, from English <i>servant / slave</i> reshaped on Akkadian <i>šubarum</i> "freedman" and echoing Japanese <i>saburau / samurai</i>) became the ruling class, the old word for a purchased bond-soldier is now the highest honorific stem in the language. A speaker cannot form a sentence without marking the caste of the subject and the caste of the listener:</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Caste Register</th><th>Who Bears It</th><th>Noun / Name Suffix</th><th>1st / 2nd Pronouns</th><th>Finite Verb Ending</th><th>Example Clause</th></tr></thead>
+    <tbody id="shumari-caste"></tbody>
+  </table></div>
+</section>
+
+<section aria-labelledby="shumari-changes-h">
+  <h2 id="shumari-changes-h">From English: Akkadian and Japanese</h2>
+  <p>Shumari began as a sister dialect of <b>Nazari</b> and <b>Zeijani</b>, sharing the post-Cataclysm pharyngeal/emphatic shift around the southern volcanos. When the Shumari retreated to the cold plateau and their polyglot slave-soldier barracks became the state, barracks speech broke every remaining consonant cluster with <i>u</i> or <i>i</i>, merged <i>l</i> and <i>r</i> into a single flap <i>r</i>, doubled stops after short stressed vowels (<i>sokuon</i> gemination: <i>kk, tt, pp, ss</i>), and turned old Akkadian mimation (<i>-um / -im</i>) into the Japanese-style moraic nasal <b>-n</b> (kept as <i>-um / -im</i> only in frozen state citations).</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Shift</th><th>Rule</th><th>English → Proto-Nazari → Shumari</th></tr></thead>
+    <tbody id="shumari-changes"></tbody>
+  </table></div>
+</section>
+
+<section aria-labelledby="shumari-cog-h">
+  <h2 id="shumari-cog-h">Four cousins around the south-west basin</h2>
+  <p>How the same English words diverged between the subterranean <b>Zeijani</b>, the old lakeshore <b>Nazari</b>, the highland <b>Shumari</b>, and their ancient enemies the <b>Chichani (Voth)</b>:</p>
+  <div class="tbl"><table>
+    <thead><tr><th>English</th><th>Zeijani (Dhelv)</th><th>Old Nazari (Nazar)</th><th>Shumari (Shumar)</th><th>Chichani (Vothic)</th></tr></thead>
+    <tbody id="shumari-cog"></tbody>
+  </table></div>
+</section>
+
+<section aria-labelledby="shumari-names-h">
+  <h2 id="shumari-names-h">Names on the record</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>Name</th><th>Shumari Form</th><th>Blade Script</th><th>Origin &amp; Lore</th></tr></thead>
+    <tbody id="shumari-names"></tbody>
+  </table></div>
+</section>
+</div>
+</section>
 
 <script>
 /* Vothic */
@@ -4981,6 +5100,200 @@ document.querySelectorAll("#argot [data-mtk]").forEach(el=>render(el.dataset.mtk
 document.querySelectorAll("#argot [data-esign]").forEach(el=>{el.innerHTML=KR.etSign(el.dataset.esign)});
 })();
 
+/* Shumari */
+(()=>{
+  const THORN=(x,y)=>`M${x} ${y} L${x+6} ${y-11} L${x+12} ${y-3}`;
+  const LONG_HOOK=`M46 16 L54 12 L50 38`;
+  /* 28 invented letters of Šumaru-kattu: [rom, ipa, name, gloss, bladePath, thornPath, barPath] */
+  const ALPHA=[
+    ["a","a","ʾAlu","all / first","M16 58 L28 16 L44 16 L38 58 M21 38 L40 38","",""],
+    ["ā","aː","ʾAlu-nāga","long a","M16 58 L28 16 L44 16 L38 58 M21 38 L40 38",LONG_HOOK,""],
+    ["e","e","ʾĒru","edge / air","M16 18 L44 18 L38 36 L20 36 L16 58 L44 58","",""],
+    ["ē","eː","ʾĒru-nāga","long e","M16 18 L44 18 L38 36 L20 36 L16 58 L44 58",LONG_HOOK,""],
+    ["i","i","ʾĪnu","in / eye","M24 18 L34 14 L28 58 L20 62","",""],
+    ["ī","iː","ʾĪnu-nāga","long i","M24 18 L34 14 L28 58 L20 62",LONG_HOOK,""],
+    ["o","o","ʾŌru","old / orb","M18 20 L42 16 L44 54 L16 58 Z","",""],
+    ["ō","oː","ʾŌru-nāga","long o","M18 20 L42 16 L44 54 L16 58 Z",LONG_HOOK,""],
+    ["u","u","ʾŪru","up / urn","M16 16 L24 14 L20 56 L42 54 L44 16","",""],
+    ["ū","uː","ʾŪru-nāga","long u","M16 16 L24 14 L20 56 L42 54 L44 16",LONG_HOOK,""],
+    ["p","p","Pāru","post / pike","M18 62 L22 14 L44 18 L38 38 L20 38","",""],
+    ["b","b","Bēru","bar / blade","M18 62 L22 14 L44 18 L38 38 L20 38","","M12 48 L46 48"],
+    ["t","t","Tāru","tall / tower","M12 16 L48 14 M30 15 L26 60 L18 64","",""],
+    ["ṭ","tˤ","Ṭōnu","thorn-t (emphatic)","M12 16 L48 14 M30 15 L26 60 L18 64",THORN(26,13),""],
+    ["d","d","Dōru","door / shield","M12 16 L48 14 M30 15 L26 60 L18 64","","M16 38 L44 38"],
+    ["k","k","Kattu","cut / cleaver","M18 14 L24 12 L20 60 M44 18 L22 38 L44 58","",""],
+    ["q","q","Qappu","crest-q (emphatic)","M18 14 L24 12 L20 60 M44 18 L22 38 L44 58",THORN(22,12),""],
+    ["g","g","Gēdu","giant-spear","M18 14 L24 12 L20 60 M44 18 L22 38 L44 58","","M12 38 L48 38"],
+    ["s","s","Sāru","saw / edge","M42 16 L18 20 L40 40 L16 56 L24 60","",""],
+    ["ṣ","sˤ","Ṣūnu","sun-ṣ (emphatic)","M42 16 L18 20 L40 40 L16 56 L24 60",THORN(24,14),""],
+    ["z","z","Zāru","zeal / iron-link","M42 16 L18 20 L40 40 L16 56 L24 60","","M14 38 L46 38"],
+    ["š","ʃ","Šubaru","sword-caste š","M16 18 L30 14 L26 58 M42 20 L28 38 L46 56",THORN(24,12),""],
+    ["č","tʃ","Čiču","watch-č","M16 18 L30 14 L26 58 M42 20 L28 38 L46 56","","M14 38 L46 38"],
+    ["j","dʒ","Jāru","judge-j","M20 16 L42 16 L36 56 L18 58",THORN(24,13),"M14 36 L46 36"],
+    ["ḫ","x~h","Ḫāru","high-breath","M16 14 L22 12 L18 58 M42 14 L38 58 M19 36 L40 34",THORN(24,12),""],
+    ["m","m","Māru","muster-mark","M14 58 L18 16 L30 38 L42 16 L46 58","",""],
+    ["n","n~ɴ","Nārun","river / moraic -n","M16 58 L20 16 L40 54 L44 14","",""],
+    ["r","ɾ","Rānu","run / rank","M18 60 L22 14 L42 18 L34 36 L44 58","",""],
+    ["w","w","Wārun","war-bow","M12 16 L22 58 L30 30 L38 58 L48 16","",""],
+    ["y","j","Yūšu","yoke / lord","M16 16 L30 36 L44 16 M30 36 L26 60","",""],
+    ["ʾ","ʔ","Kattu-ḫukku","syllable-cut hook","M28 14 L36 10 L30 32","",""],
+  ];
+  const MAP=new Map();
+  ALPHA.forEach(a=>MAP.set(a[0],a));
+  MAP.set("h",MAP.get("ḫ"));
+  MAP.set("l",MAP.get("r"));
+  MAP.set("'",MAP.get("ʾ"));
+  MAP.set("f",MAP.get("p"));
+  MAP.set("v",MAP.get("b"));
+
+  function svgGlyph(entry){
+    const [, , , , blade, thorn, bar]=entry;
+    return `<svg viewBox="0 0 60 72" aria-hidden="true"><path class="blade" d="${blade}"/>${thorn?`<path class="thorn" d="${thorn}"/>`:""}${bar?`<path class="bar" d="${bar}"/>`:""}</svg>`;
+  }
+  function svgStop(){
+    return `<svg viewBox="0 0 36 72" aria-hidden="true"><polygon class="gem" points="18,26 27,38 18,50 9,38"/></svg>`;
+  }
+  function svgDash(){
+    return `<svg viewBox="0 0 32 72" aria-hidden="true"><path class="bar" d="M6 38 L26 38"/></svg>`;
+  }
+
+  function tokenizeWord(w){
+    const out=[];
+    const s=w.toLowerCase();
+    for(let i=0;i<s.length;i++){
+      const c=s[i];
+      if(c==="."){out.push({type:"stop",rom:"."});continue;}
+      if(c==="-"){out.push({type:"dash",rom:"-"});continue;}
+      if(MAP.has(c)){out.push({type:"let",rom:c,entry:MAP.get(c)});}
+    }
+    return out;
+  }
+
+  function renderShumari(text,container,tokContainer){
+    if(!container)return;
+    const words=String(text||"").trim().split(/\s+/).filter(Boolean);
+    const allToks=[];
+    const htmlWords=words.map(w=>{
+      const tks=tokenizeWord(w);
+      allToks.push(...tks);
+      const inner=tks.map(tk=>{
+        if(tk.type==="stop")return svgStop();
+        if(tk.type==="dash")return svgDash();
+        return svgGlyph(tk.entry);
+      }).join("");
+      return `<span class="word">${inner}</span>`;
+    }).join("");
+    container.innerHTML=`<div class="line">${htmlWords}</div>`;
+    if(tokContainer){
+      tokContainer.innerHTML=allToks.filter(t=>t.type==="let").map(t=>`<span><b>${t.rom}</b> · ${t.entry[2]} (${t.entry[1]})</span>`).join("");
+    }
+  }
+
+  window.KR=window.KR||{};
+  window.KR.shumari=(txt,el)=>renderShumari(txt,el,null);
+
+  renderShumari("Šumārum. Šubaru-šu.",document.getElementById("shumari-hero"),null);
+
+  const src=document.getElementById("shumari-src");
+  const out=document.getElementById("shumari-out");
+  const tok=document.getElementById("shumari-tok");
+  function update(){renderShumari(src.value,out,tok)}
+  src.addEventListener("input",update);
+  update();
+
+  const keysEl=document.getElementById("shumari-keys");
+  ["ṣ","ṭ","q","š","č","ḫ","ʾ","ā","ē","ī","ō","ū"].forEach(k=>{
+    const b=document.createElement("button");
+    b.type="button";b.textContent=k;
+    b.addEventListener("click",()=>{
+      const st=src.selectionStart||src.value.length;
+      src.value=src.value.slice(0,st)+k+src.value.slice(src.selectionEnd||st);
+      src.focus();update();
+    });
+    keysEl.appendChild(b);
+  });
+
+  const samples=[
+    ["Muster oath","Ṣē-šu Urudīru bi suṭōn-šu."],
+    ["Lost Doriyan","Dōriyan nu nārun wa šubaru-šu qīpu-maṣu."],
+    ["Cadet's trial","Nazāru-ko wa urudīru ni ṭirānu-ṭiru."],
+    ["Free Giant","Gēdu-šu wa Šumāru ni suṭurōn-maṣu."],
+  ];
+  const sampEl=document.getElementById("shumari-samples");
+  samples.forEach(([lbl,val])=>{
+    const b=document.createElement("button");
+    b.type="button";b.textContent=lbl;
+    b.addEventListener("click",()=>{src.value=val;update()});
+    sampEl.appendChild(b);
+  });
+
+  const chart=document.getElementById("shumari-chart");
+  chart.innerHTML=ALPHA.map(a=>`<div class="cell" data-ch="${a[0]}">${svgGlyph(a)}<div class="rom">${a[0]}</div><div class="ipa">[${a[1]}]</div><div class="nm">${a[2]}</div><div class="gl">${a[3]}</div></div>`).join("");
+  chart.addEventListener("click",e=>{
+    const c=e.target.closest(".cell");
+    if(!c)return;
+    src.value+=c.dataset.ch;
+    update();
+  });
+
+  /* Visual comparison: Shumari blade + Izani capital -> Vothic glyph */
+  const vbridge=document.getElementById("shumari-voth");
+  const VB=[
+    ["ṭ / th","Ṭōnu (breath-thorn)","Izani T + Shumari gold breath-thorn (ḫa-ṭōnu) → Vothic breathed th (thon)",MAP.get("ṭ")],
+    ["ṣ / tz","Ṣūnu (hooked blade)","Izani S + Shumari hooked blade serif → Vothic tz / tzh",MAP.get("ṣ")],
+    ["š / sh","Šubaru (cleft blade)","Shumari cleft-blade š + Izani J/X → Vothic sh / chh",MAP.get("š")],
+    ["d / dh","Dōru (caste-bar)","Izani D + Shumari crimson cross-bar → Vothic barred dh",MAP.get("d")],
+    ["k / kh","Kattu (cleaver-hook)","Shumari top-hooked stem + breath-thorn → Vothic k / kh",MAP.get("q")],
+    ["ʾ / .","Kattu-ḫukku & Diamond","Shumari syllable-cut hook (') and diamond seal-stop (◆) → Vothic ' and ◆",MAP.get("ʾ")],
+  ];
+  vbridge.innerHTML=VB.map(([sym,title,desc,ent])=>`<div class="vbcard"><div class="vbtop">${svgGlyph(ent)}${sym.includes(".")?svgStop():""}</div><div class="vblbl"><b>${sym} · ${title}</b><br>${desc}</div></div>`).join("");
+
+  const casteRows=[
+    ["1. Sword-Caste (Ruling Mamluks)","<b>Šubaru-šu</b> (<i>Šubārum</i>) — descendants of the slave-soldiers who subsumed Shumari society, plus any native son, escaped Nazari slave, or Free Giant who has survived the Ordeal.","<b>-šu</b> (from <i>sir / master</i>; cf. Akkadian <i>-šu</i>, Japanese <i>-shu</i>)","<b>ṣē-šu</b> (I)<br><b>yū-šu</b> (you)","<b>-maṣu</b> (honorific indicative, from <i>master</i>, cf. Japanese <i>-masu</i>)<br><b>-šaru</b> (decree, from <i>shall</i>)","<i>Šubaru-šu wa Šumāru ni rūru-maṣu.</i><br>The Sword-Lord rules on the plateau."],
+    ["2. Hearth-Caste (Native Commons)","<b>Bētu-ra</b> (<i>Bētum</i>, from <i>built-house</i>) — civilian Shumari householders, terrace-farmers, smiths, and families who have not yet submitted a son to the Ordeal.","<b>-ra</b> (from <i>lot / folk</i>; cf. Japanese <i>-ra</i>)","<b>ē-ra</b> (I)<br><b>yū-ra</b> (you)","<b>-baru</b> (plain indicative among equals, from <i>bear / be</i>)<br><b>-ṣabu</b> (humble deferential before <i>-šu</i>, from <i>serve</i>)","<i>Ē-ra wa gurudun bi bētu-ra qīpu-ṣabu.</i><br>I (of the Hearth) humbly keep the house's gold."],
+    ["3. Ordeal-Cadets (Initiates in Training)","<b>Ṭirānu-ko</b> (from <i>train</i>) — drafted Shumari sons, escaped <b>Nazari</b> slaves (<i>Nazāru-ko</i>), and <b>Free Giant</b> initiates (<i>Gēdu-ko</i>) enduring the brutal Ordeal at the bottom of the hierarchy.","<b>-ko</b> (from <i>colt / kid</i>; cf. Japanese <i>-ko</i>). Struck and replaced by <b>-šu</b> upon surviving the Ordeal.","<b>ku-ko</b> (this cadet)<br><b>yū-ko</b> (you, cadet)","<b>-ṭiru</b> (striving / ordeal indicative, from <i>try</i>)","<i>Nazāru-ko wa urudīru ni suṭōn-ṭiru.</i><br>The escaped Nazari cadet endures the Ordeal like stone."],
+    ["4. Unbound / Outlanders","<b>ʾAwtu-no</b> (from <i>out</i>) — lowland foreigners outside the Ordeal system: the Chichani of Voth (<i>Čičāni-no</i>) and lowland traders.","<b>-no</b> (from <i>none / outside</i>)","<b>ē-no</b> / <b>yū-no</b>","<b>-naru</b> (external reportative)","<i>Čičāni-no wa Dōriyan ni kāmu-naru.</i><br>The Chichani outlanders came to Doriyan."],
+  ];
+  document.getElementById("shumari-caste").innerHTML=casteRows.map(r=>`<tr><td class="lo">${r[0]}</td><td>${r[1]}</td><td class="m">${r[2]}</td><td class="m">${r[3]}</td><td class="m">${r[4]}</td><td>${r[5]}</td></tr>`).join("");
+
+  const changeRows=[
+    ["Proto-Nazari Emphatics","Shared with Zeijani and old Nazari: <i>s, t, k</i> near back vowels or clusters became emphatic <b>ṣ, ṭ, q</b>; <i>th</i> [θ] became <b>š</b>; <i>dh</i> [ð] became <b>z</b>; <i>f/v</i> merged into <b>p/b</b>.","<i>sun</i> → <i>ṣunum</i> → <b>ṣunun</b> · <i>star</i> → <i>ṣṭārum</i> → <b>suṭāru</b> · <i>thing</i> → <i>šingim</i> → <b>šingun</b> · <i>free</i> → <b>purī</b>"],
+    ["Japanese Cluster-Breaking","Every consonant cluster is broken by an epenthetic <b>u</b> (or <b>i</b> after coronals/palatals); word-final stops take <b>-u / -i</b>.","<i>strong</i> → <b>suṭurōn</b> · <i>train</i> → <b>ṭirānu</b> · <i>ordeal</i> → <i>ʾurdīlum</i> → <b>urudīru</b> · <i>stone</i> → <b>suṭōnun</b>"],
+    ["Liquid Merger (l → r)","Old <i>l</i> and <i>r</i> merged completely into the alveolar flap <b>r</b> [ɾ], turning <i>l</i>-clusters into <i>ru / ri</i>.","<i>gold</i> → <i>guldum</i> → <b>gurudun</b> · <i>silver</i> → <i>šilbum</i> → <b>širubun</b> · <i>cold</i> → <b>qōrudu</b> · <i>light</i> → <b>rīṭun</b>"],
+    ["Sokuon Gemination","Voiceless stops and sibilants after a short stressed vowel double (<b>kk, tt, pp, ss</b>).","<i>ship</i> → <b>šippu</b> · <i>cut</i> → <b>kattu</b> · <i>cap / keep</i> → <b>qappu</b>"],
+    ["Mimation to Moraic -n","Old Akkadian-like noun mimation (<b>-um / -im</b>, preserved in formal state citations like <i>Šumārum</i>) wore down in spoken Shumari to the Japanese-style moraic nasal <b>-n</b> or dropped before caste suffixes.","<i>wārum</i> → <b>wārun</b> (war) · <i>bētum</i> → <b>bētun</b> / <b>bētu-ra</b> (house) · <i>nārum</i> → <b>nārun</b> (river)"],
+  ];
+  document.getElementById("shumari-changes").innerHTML=changeRows.map(r=>`<tr><td class="lo">${r[0]}</td><td>${r[1]}</td><td class="m">${r[2]}</td></tr>`).join("");
+
+  const cogRows=[
+    ["sun","ṣunum","ṣunu","ṣunun","tzun"],
+    ["star","ṣṭārum","ṣṭāru","suṭāru","tzhar"],
+    ["ship","šippum","šippu","šippu","sip"],
+    ["war","wārum","wāru","wārun","vorh"],
+    ["gold","guldum","guldu","gurudun","gol"],
+    ["fire","pērum","pēru","pāyaru","vairh"],
+    ["stone","ṣṭōnum","ṣṭōnu","suṭōnun","shtown"],
+    ["cold","qōldum","qōldu","qōrudu","kowld"],
+    ["water","wāṭarum","wāṭaru","wāṭarun","vatarh"],
+    ["servant / Mamluk","šubārum (bondman)","šubāru (purchased soldier)","šubaru-šu (Sword-Caste lord)","tzlav (slave)"],
+    ["ordeal / trial","ʾurdīlum","ʾurdīlu","urudīru (the Ordeal)","—"],
+  ];
+  document.getElementById("shumari-cog").innerHTML=cogRows.map(r=>`<tr><td>${r[0]}</td><td class="m">${r[1]}</td><td class="m">${r[2]}</td><td class="m"><b>${r[3]}</b></td><td class="m">${r[4]}</td></tr>`).join("");
+
+  const nameRows=[
+    ["Shumar","Šumārum / Šumaru-šu","Šumārum.","The cold continental highland plateau above the SW basin, last refuge of the Shumari against the Chichani (from <i>summer-hill / shimmer-high</i> through Proto-Nazari <i>Šumārum</i>)."],
+    ["Driyan (Doriyan)","Dōriyan","Dōriyan.","Ancient Shumari lakeshore city on the SW basin shore (from <i>door-ton / Dorian</i>), conquered by the Chichani and contracted in Vothic to <b>Driyan</b>; where Chichani scribes first encountered the Shumari blade alphabet."],
+    ["The Sword-Caste","Šubaru-šu (Šubārum)","Šubaru-šu.","The Mamluk-like military and administrative ruling caste, originally slave-soldiers purchased from Nazar, Dalab, and the lakeshore towns who subsumed Shumari society and inverted the position of slave into sovereign."],
+    ["The Ordeal","Urudīru (ʾUrdīlum)","Urudīru.","The brutal high-altitude military training and survival rite by which drafted Shumari sons (<i>Ṭirānu-ko</i>), escaped <b>Nazari</b> slaves (<i>Nazāru-ko</i>), and <b>Free Giants</b> (<i>Gēdu-ko</i>) earn the Sword-Caste suffix <b>-šu</b>."],
+    ["Nazar & the Nazari","Nazārum / Nazāru-ko","Nazāru-ko.","Near-cousins of the Shumari among the ruins; after Voth conquered Nazar, many escaped Nazari slaves fled up to Shumar to undergo the Ordeal."],
+    ["Free Giants of Shumar","Gēdu-šu (Vrivolci)","Gēdu-šu.","Escaped Giants from Voth and Dalab who, rather than settling in Tallwalls down in Greenstep, climbed the SW saddle into Shumar, passed the Ordeal, and serve as heavy shock-officers of the Sword-Caste."],
+    ["Tallhouse","Ṭāru-bētun","Ṭāru-bētun.","The northern watch-fort and border gate at the NW rim of Shumar overlooking the Vothic lowland road."],
+  ];
+  const nmBody=document.getElementById("shumari-names");
+  nmBody.innerHTML=nameRows.map((r,idx)=>`<tr><td class="lo">${r[0]}</td><td class="m">${r[1]}</td><td class="sg" id="sh-nm-${idx}"></td><td>${r[3]}</td></tr>`).join("");
+  nameRows.forEach((r,idx)=>renderShumari(r[2],document.getElementById("sh-nm-"+idx),null));
+})();
+
 /* overview and tabs */
 (()=>{
   const CARDS=[
@@ -5003,10 +5316,11 @@ document.querySelectorAll("#argot [data-esign]").forEach(el=>{el.innerHTML=KR.et
    ["eternian","Eternian","the Eternal State: five dialects under one paper, the officials' Paper speech, the Heirs' English","English worn to single syllables without tones: nasal vowels, words said in pairs, measure words, and levels for rank in the officials' speech. Signs grown from the Ancients' icons, with sound-marks beside them; Ainu-like highlands, clicks on Farside, an avoidance speech of swapped compounds and breathed words in Carcosa.","Tẽ-tè"],
    ["argot","Matok","the northern traders and the dam basins","A trade argot of capital Eternian, Jamṭōkku and Izani: Jimjam's numbers and measure words, the Empire's road and gold, the State's market and paper. Written in Izani letters, with the Eternian signs every trader knows dropped in.","Matok"],
    ["zeijani","Zeijani","the Zeijani of Dhelv and the ash nomads","Brother tongues, cousins of Chichani, gone Babylonian and Cappadocian. Latin letters chiselled into tuff until every stroke became a wedge.","Zeijanī"],
+   ["shumari","Shumari","the Mamluk highland refuge of Shumar","Near-cousin of Nazari and Zeijani, evolved to sound like Akkadian and Japanese. Slave-soldiers inverted into a ruling Sword-Caste (-šu) recruited through the Ordeal; mandatory grammatical caste; an invented 28-letter blade alphabet that helped shape Vothic.","Šumārum"],
   ];
   const cards=document.getElementById("cards");
   cards.innerHTML=CARDS.map(c=>`<button type="button" class="cardx" data-go="${c[0]}"><span class="nm">${c[1]}</span><span class="who">${c[2]}</span><span class="d">${c[3]}</span><span class="go">Open ${c[1]} →</span></button>`).join("");
-  const FAM=[["sun","sun","sun","san","sun","sun","sun","sun","san","sunos","są","san","suŋ","son","son","san","san","tzun","sunu","ṣunum","ṣan","aṣan","sana","sān","sõ","sõ","sã"],["star","star","star","sta","star","tar","stur","stjar","sutar","starros","istar","sıtar","ïstaar","istar","satar","saṭār","astar","tzhar","stāru","ṣṭārum","istār","tastart","tā","tā","ta","ca","sitār"],["ship","ship","ship","shippo","ship","ship","ship","šip","sip","sipos","ship","şip","sip","xipa","xipa","shippu","sip","sip","šippu","šippum","šib","ašif","sipi","sí","si","si","śip"],["war","war","war","wo","waar","wa","wor","vor","wor","uaros","baar","vor","boor","guar","war","vār","ouar","vorh","māru","wārum","wār","awar","vā","wo","wò","wò","wār"],["gold","gold","gold","gol'","gowd","gol","gow","golt","korut","goldos","gol","golt","goold","golda","golda","goḷḍu","gould","gol","guldu","guldum","jūld","aguld","kolo","kǒ","gou","gou","ghol"],["fire","fire","fire","foya","fah","faya","fa","fajr","payar","viros","paar","fayır","paayar","fira","faia","faiyar","phyr","vairh","pēru","pērum","fāyar","afayar","faia","pāi","fa","fa","phāyar"],["thing","thing","thing (dental th)","ting","thing","ting","theng","ting","sin","đingos","łį","sin","tiŋ","tiñ","tin","tiṅ","thing","thing","šingi","šingim","thinj","atin","tiñi","tīn","tĩ","cĩ","thĩ"],["the lab","the lab","the lab","da labbo","Tlab","Dalab","lab","labet","rap","Labos","","lap","lhab","de laba","Laba","da labbu","","","ze-labbu","ze-labbum","al-Labbū","alabbu","te lapa","lǎ","La","La",""]];
+  const FAM=[["sun","sun","sun","san","sun","sun","sun","sun","san","sunos","są","san","suŋ","son","son","san","san","tzun","sunu","ṣunum","ṣunun","ṣan","aṣan","sana","sān","sõ","sõ","sã"],["star","star","star","sta","star","tar","stur","stjar","sutar","starros","istar","sıtar","ïstaar","istar","satar","saṭār","astar","tzhar","stāru","ṣṭārum","suṭāru","istār","tastart","tā","tā","ta","ca","sitār"],["ship","ship","ship","shippo","ship","ship","ship","šip","sip","sipos","ship","şip","sip","xipa","xipa","shippu","sip","sip","šippu","šippum","šippu","šib","ašif","sipi","sí","si","si","śip"],["war","war","war","wo","waar","wa","wor","vor","wor","uaros","baar","vor","boor","guar","war","vār","ouar","vorh","māru","wārum","wārun","wār","awar","vā","wo","wò","wò","wār"],["gold","gold","gold","gol'","gowd","gol","gow","golt","korut","goldos","gol","golt","goold","golda","golda","goḷḍu","gould","gol","guldu","guldum","gurudun","jūld","aguld","kolo","kǒ","gou","gou","ghol"],["fire","fire","fire","foya","fah","faya","fa","fajr","payar","viros","paar","fayır","paayar","fira","faia","faiyar","phyr","vairh","pēru","pērum","pāyaru","fāyar","afayar","faia","pāi","fa","fa","phāyar"],["thing","thing","thing (dental th)","ting","thing","ting","theng","ting","sin","đingos","łį","sin","tiŋ","tiñ","tin","tiṅ","thing","thing","šingi","šingim","šingun","thinj","atin","tiñi","tīn","tĩ","cĩ","thĩ"],["the lab","the lab","the lab","da labbo","Tlab","Dalab","lab","labet","rap","Labos","","lap","lhab","de laba","Laba","da labbu","","","ze-labbu","ze-labbum","ze-rabun","al-Labbū","alabbu","te lapa","lǎ","La","La",""]];
   document.getElementById("fam").innerHTML=FAM.map(r=>`<tr>${r.map((c,i)=>i?`<td class="m">${c||"—"}</td>`:`<td>${c}</td>`).join("")}</tr>`).join("");
 
   const secs=[...document.querySelectorAll("section.tongue")];
@@ -5023,21 +5337,21 @@ document.querySelectorAll("#argot [data-esign]").forEach(el=>{el.innerHTML=KR.et
   document.addEventListener("click",e=>{const b=e.target.closest("[data-go]");if(b&&(b.closest("#tabbar")||b.closest("#cards")||b.classList.contains("lnk")))show(b.dataset.go,true)});
 
   /* phrasebook: [key, tongue, renderer, wrapper class] */
-  const PT=[["vothic","Vothic","vothic","plain"],["izani","Izani","izani",""],["hykkousik","Hykkousik","hykkousik",""],["xanadui","Xanadui","xanadui","plain"],["yuni","Yuni","latin","st"],["dalab","Dalab low tongue","none",""],["tungang","Tungang","latin",""],["fell","Fell speech","none",""],["jimjam","Jamṭōkku","jimjam",""],["republic","Hajlandsk","republic",""],["talovolci","Talovolci","ogham",""],["riders","Tł'aai","riders",""],["scyvoi","Boruntun","none",""],["khaay","Khaayken","khaay",""],["zeijani","Zeijani","zeijani","plain"],["ash","Ash nomad","ash","ashh plain"],["dasri","Dasrī","dasri",""],["tabist","Tabist","tabist",""],["islander","Sikau, east","islander",""],["islanderw","Sikau, west","islander",""],["hum","Hām","hum",""],["eternian","Eternian","eternian",""],["yusar","Yusar","latin",""],["heiland","Hayrant","eternian",""],["farside","Farside","eternian",""],["argot","Matok","matok",""]];
+  const PT=[["vothic","Vothic","vothic","plain"],["izani","Izani","izani",""],["hykkousik","Hykkousik","hykkousik",""],["xanadui","Xanadui","xanadui","plain"],["yuni","Yuni","latin","st"],["dalab","Dalab low tongue","none",""],["tungang","Tungang","latin",""],["fell","Fell speech","none",""],["jimjam","Jamṭōkku","jimjam",""],["republic","Hajlandsk","republic",""],["talovolci","Talovolci","ogham",""],["riders","Tł'aai","riders",""],["scyvoi","Boruntun","none",""],["khaay","Khaayken","khaay",""],["zeijani","Zeijani","zeijani","plain"],["ash","Ash nomad","ash","ashh plain"],["shumari","Shumari","shumari",""],["dasri","Dasrī","dasri",""],["tabist","Tabist","tabist",""],["islander","Sikau, east","islander",""],["islanderw","Sikau, west","islander",""],["hum","Hām","hum",""],["eternian","Eternian","eternian",""],["yusar","Yusar","latin",""],["heiland","Hayrant","eternian",""],["farside","Farside","eternian",""],["argot","Matok","matok",""]];
   const PH=[
    {en:"Greetings.",nt:"The formal greeting. Each people greets by what it values: the Sun, the day, the claw, light in the dark, a calm sea. Jamṭōkku puts the verb first.",r:{argot:["Gudu roda!", "good · road"],eternian:["Lõ-li!", "long · live: may you live long"],yusar:["Isneslay stilsta!", "Listeners · stand-still: may the Listeners stand still"],heiland:["Heyru!", "hail"],farside:["Gu ca!", "good · tide"],talovolci:["Tornet spirla!", "turns · spiral: may the spiral turn for you"],khaay:["Khaay ïskaay!", "high · sky: may the sky stand high"],tungang:["Lahnklia, broo.", "line · clear · brother: the words of the 3-1 bell"],fell:["Fair o fell.", "fair · on · fell: fair weather on the fell"],
-    vothic:["Tzun tzi yu.","sun · see · you: may the Sun see you"],izani:["Guda de.","good day"],hykkousik:["Goud dē.","good day"],xanadui:["Guḍ ḍe, sar.","good day, sir"],yuni:["Gdai, mai.","g'day, mate"],dalab:["Wa a gwaan?","what · is · going on"],republic:["Gut dej.","good day"],riders:["Bį tł'aa!","wing · claw: wings and claws"],zeijani:["Lētum ze-dāqin.","light-SUBJ · the-dark-IN: light in the dark"],dasri:["Jidāy!","g'day, from Yuni"],tabist:["Gidday!","g'day, from Yuni"],islander:["Sī kāma.","sea · calm: a calm sea to you"],islanderw:["Hī kāma.","sea · calm: a calm sea to you"],hum:["Kǔ ti.","good · deal: may the trade be good"],jimjam:["Bī gūḍḍu ḍē.","be · good · day: may the day be good"],scyvoi:["Gıras gırovsun!","grass · grow-MAY: may the grass come back"]}},
-   {en:"Hello.",nt:"The everyday word, between equals. Hykkousik hy is hi, by the change that made isles into Ys. The Islanders greet with love, as the real Pacific does.",r:{argot:["Lo, barada.", "hello · brother"],eternian:["Lò.", "hello, worn to its end"],yusar:["Ellohay.", "hello: a fossil of the Pig Latin years"],heiland:["Heru.", "hello"],farside:["Lò.", "hello"],talovolci:["Ailos!", "hail"],khaay:["Khaay!", "hi: the same word as high"],tungang:["Ayup!", "eh up"],fell:["Nathen.", "now then"],vothic:["Hel, vren.", "hail · friend"],izani:["Elo.", "hello, the h lost"],hykkousik:["Hy!", "hi"],xanadui:["Xelo.", "hello"],yuni:["Hoi!", "hi"],dalab:["Ail op!", "hail · up"],republic:["Hej.", "hey"],riders:["Khee!", "hey"],zeijani:["Ḫēl.", "hail"],dasri:["Ḥayl!", "hail"],tabist:["Hayl!", "hail"],islander:["Lava!", "love"],islanderw:["Rava!", "love"],hum:["Hāi!","hi"],jimjam:["Hai!","hi"],scyvoi:["Hay!","hey"]}},
-   {en:"How are you?",nt:"The Riders ask after your wing. Hajlandsk asks how it goes, Norse-fashion.",r:{argot:["Hau yu go?", "how · you · go"],eternian:["Ho yu?", "how · you"],yusar:["How be one?", "how · is · one: the Yusar say one, not I or you"],heiland:["Hau e-ar?", "how · you-are"],farside:["Ho yu?", "how · you"],talovolci:["Uo ari tu?", "how · are · you"],khaay:["Khoo ar suu?", "how · are · you"],tungang:["Owsta?", "how-is-thou"],fell:["Owsta gannin?", "how-is-thou · going"],vothic:["Hau go yu?", "how · go · you"],izani:["Au ar yu?", "how · are · you"],hykkousik:["Ar jou ouel?", "are · you · well"],xanadui:["Yū xau, sar?", "you · how, sir"],yuni:["Awyagoi?", "how-you-going"],dalab:["Ou yu de?", "how · you · there"],republic:["Hau gor det?", "how · goes · that"],riders:["Khau bį?", "how · wing: how flies it"],zeijani:["Yūm ḫau?", "you-SUBJ · how"],dasri:["Ḥaw yū?", "how · you"],tabist:["Haw yu?", "how · you"],islander:["Au iu?", "how · you"],islanderw:["Hau iu?", "how · you"],hum:["Hāu yu há?","how · you · huh"],jimjam:["Is hau yū?","is · how · you"],scyvoi:["Yu hav?","you · how"]}},
-   {en:"Welcome.",nt:"Islander mai is English my, worn down to mean towards me.",r:{argot:["Welkam!", "welcome"],eternian:["Wèu-kõ!", "well · come"],yusar:["Comewel!", "come-well: welcome, its halves swapped"],heiland:["Weru-kam!", "well · come"],farside:["Wèu-qõ!", "well · come: the k a click"],talovolci:["Uelcomos!", "welcome"],khaay:["Qumun.", "come-in"],tungang:["Kumthiwayin.", "come · thy · way · in"],fell:["Kumin, warm thi.", "come-in · warm · thee"],vothic:["Velkïm.", "welcome"],izani:["Guelkom.", "welcome"],hykkousik:["Ouelkam.", "welcome"],xanadui:["Welqam, sar.", "welcome, sir"],yuni:["Kmin, mai.", "come-in, mate"],dalab:["Kom iin.", "come · in"],republic:["Vjelkom.", "welcome"],riders:["Belkam.", "welcome"],zeijani:["Wēlqum.", "welcome"],dasri:["Walqam.", "welcome"],tabist:["Walqam.", "welcome"],islander:["Kama mai.", "come · towards-me"],islanderw:["Kama mai.", "come · towards-me"],hum:["Kām!","come"],jimjam:["Velkam.","welcome"],scyvoi:["Velkım.","welcome"]}},
-   {en:"Thank you.",nt:"",r:{argot:["Tanku.", "thank you"],eternian:["Tã-yu.", "thank · you"],yusar:["Youthank.", "you-thank: thank you, swapped"],heiland:["Tenki.", "thank · ye"],farside:["Cã-yu.", "thank · you: the t a click"],talovolci:["Đancu tu.", "thank · you"],khaay:["Taŋ suu.", "thank · you"],tungang:["Ta, broo.", "ta · brother"],fell:["Ta.", "ta"],vothic:["Thengk yu.","thank you"],izani:["Tanka.","thanks"],hykkousik:["Thank jou.","thank you"],xanadui:["Thãk yū, sar.","thank you, sir"],yuni:["Ta.","ta"],dalab:["Tenk yu.","thank you"],republic:["Tak.","thanks"],riders:["Łąk'.","thanks"],zeijani:["Šankum.","thanks-SUBJ"],dasri:["Thanqū.","thank-you"],tabist:["Tanqu.","thank-you"],islander:["Tañiu.","thank-you"],islanderw:["Taniu.","thank-you"],hum:["Tá yu.","thank · you"],jimjam:["Teṅkyū.","thank-you"],scyvoi:["Sankyu.","thank-you"]}},
-   {en:"Where is the market?",nt:"Xanadui, Tł'aai and Zeijani put the question word last.",r:{argot:["We mape?", "where · market: the market sign written in"],eternian:["Wè ma-pè?", "where · market-place"],yusar:["Where is placemarket?", "where · is · place-market"],heiland:["Maket wer an?", "market · where · is"],farside:["Wè ma-pè?", "where · market-place"],talovolci:["Uer esti marcatos?", "where · is · market"],khaay:["Beer marqït?", "where · market"],tungang:["Wearz tmarkit?", "where-is · the-market"],fell:["Wearz swap?", "where-is · swap: there is no market on the fells"],vothic:["Vehrh dha makit?","where · the · market"],izani:["Guer iz de markeda?","where · is · the · market"],hykkousik:["Ouer is ve markit?","where · is · the · market"],xanadui:["Mārkeṭ wer?","market · where"],yuni:["Wezza markiddo?","where's-the · market"],dalab:["We damaakit de?","where · the-market · there"],republic:["Ver er marktet?","where · is · market-the"],riders:["Maakit' beer?","market · where"],zeijani:["Markitum wēr?","market-SUBJ · where"],dasri:["Wayn al-mārqit?","where · the-market"],tabist:["Wayn amarqit?","where · the-market"],islander:["Vea te māʻiti?","where · the · market"],islanderw:["Vea te mākiti?","where · the · market"],hum:["Ma we há?","market · where · huh"],jimjam:["Is vēr mārkeṭṭu?","is · where · market"],scyvoi:["Markıt verde?","market · where-AT"]}},
-   {en:"I am a stranger here.",nt:"Voth says outlander, auhlandarh, and the Islanders say auta, outer. In Hykkousik, I is y, from the same change that made isles into Ys.",r:{argot:["Mi nyu man ia.", "I · new · person · here"],eternian:["A tẽ-mã i.", "I · strange-man · here (heard too as: I am an Heir here)"],yusar:["One is sideout here.", "one · is · side-out · here: one says one, not I, where a Listener may hear"],heiland:["Hir mi-terenca an.", "here · I-stranger · am"],farside:["A cẽ-mã i.", "I · strange-man · here"],talovolci:["Mi ammi strangiros eri.", "I · am · stranger · here"],khaay:["Aay isterenjer khiir.", "I · stranger · here"],tungang:["Uznobba strenja eer.", "I-am · only · a stranger · here"],fell:["Uz frem eer.", "I-am · strange (fremd) · here"],vothic:["Ai auhlandarh hirh.","I · outlander · here"],izani:["Ai iz istrenjar ir.","I · am · stranger · here"],hykkousik:["Y am astrēnzar hir.","I · am · stranger · here"],xanadui:["Āi xīr sitrenjarã.","I · here · stranger-am"],yuni:["Oim nod frumia.","I'm · not · from-here"],dalab:["Mi a tranja.","me · am · stranger"],republic:["Aj er strenžr her.","I · am · stranger · here"],riders:["Aa istrenjar khii.","I · stranger · here"],zeijani:["Ē ṣṭrenjum ḫīrin.","I · stranger-SUBJ · here-IN"],dasri:["Ay istrānjar hīr.","I · stranger · here"],tabist:["Ay d astranjar hir.","I · is · stranger · here"],islander:["E auta ai ia.","an · outer · I · here"],islanderw:["E auta ai hia.","an · outer · I · here"],hum:["Ai tê hī.","I · stranger · here"],jimjam:["Am siṭirēnjar hīr, ai.","am · stranger · here, I"],scyvoi:["Ay sitrencir hirde.","I · stranger · here-AT"]}},
-   {en:"Water, please.",nt:"Tł'aai baatar, water, happens to be Mongolian for a hero.",r:{argot:["Wata, piliz.", "water · please"],eternian:["Wò, pi.", "water · please"],yusar:["Water, please.", "water · please: the small words kept as they were"],heiland:["Wata, puris.", "water · please"],farside:["Wò, pi.", "water · please"],talovolci:["Uatera, plisu.", "water · please"],khaay:["Baa'ar, piliis.", "water · please"],tungang:["Warra, iftha zowt.", "water · if · thou · has-aught"],fell:["Beckwarra.", "beck-water"],vothic:["Vatarh, plis.","water, please"],izani:["Guadar, plez.","water, please"],hykkousik:["Ouatar, plis.","water, please"],xanadui:["Wāṭar, pilīj.","water, please"],yuni:["Wada, pleez.","water, please"],dalab:["Wata, plis.","water, please"],republic:["Vatr, plis.","water, please"],riders:["Baatar, pliis.","water, please"],zeijani:["Wāṭarum, plīz.","water-SUBJ, please"],dasri:["Wāṭar, blīz.","water, please"],tabist:["Awaṭar, flīz.","the-water, please"],islander:["Vata, pīsi.","water, please"],islanderw:["Vata, pīhi.","water, please"],hum:["Wǒ, pî.","water, please"],jimjam:["Va'ar, pilīsu.","water, please"],scyvoi:["Vatır, filis.","water, please"]}},
-   {en:"How much?",nt:"The brothers say it alike: short words survive their differences.",r:{argot:["Hau machu?", "how · much"],eternian:["Ho mo?", "how · much"],yusar:["How much?", "how · much"],heiland:["Hau mac?", "how · much"],farside:["Ho mo?", "how · much"],talovolci:["Uo mucos?", "how · much"],khaay:["Khoo much?", "how · much"],tungang:["Owmuch?", "how-much"],fell:["Owmonnyowz?", "how-many-ewes: everything is priced in ewes"],vothic:["Hau mïch?","how much"],izani:["Au mocha?","how much"],hykkousik:["Hao makh?","how much"],xanadui:["Xau mac?","how much"],yuni:["Awmuchi?","how-much"],dalab:["Ou moch?","how much"],republic:["Hau mač?","how much"],riders:["Khau mach?","how much"],zeijani:["Ḫau maš?","how much"],dasri:["Ḥaw maš?","how much"],tabist:["Haw maš?","how much"],islander:["Au masa?","how much"],islanderw:["Hau maha?","how much"],hum:["Hāu mà?","how · much"],jimjam:["Hau macchu?","how much"],scyvoi:["Hav maç?","how much"]}},
-   {en:"Go away!",nt:"",r:{argot:["Gova!", "go-away"],eternian:["Gò wè!", "go · away"],yusar:["Goʰ way!", "go (breathed: an order) · away"],heiland:["E-ko awey!", "you-go · away"],farside:["Gò wè!", "go · away"],talovolci:["Goi aua!", "go · away"],khaay:["Goo daaŋ!", "go · down: back to the lowlands"],tungang:["Gerroff!", "get-off"],fell:["Gan wom!", "go · home"],vothic:["Go avei!","go away"],izani:["Go ague!","go away"],hykkousik:["Go aouē!","go away"],xanadui:["Gho!","go"],yuni:["Rakkof!","rack off: get lost"],dalab:["Gwaan!","go on"],republic:["Go vej!","go away"],riders:["Go abee!","go away"],zeijani:["Gū awē!","go away"],dasri:["Jū awāy!","go away"],tabist:["Gu away!","go away"],islander:["Ko avei!","go away"],islanderw:["Ko avei!","go away"],hum:["Ko we!","go · away"],jimjam:["Gō avē!","go away"],scyvoi:["Getavt!","get out"]}},
-   {en:"Goodbye.",nt:"Voth commends you to the Sun and the Zeijani to the dark. Yuni huru is hooroo, an old Australian goodbye.",r:{argot:["Si yu roda.", "see · you · road: until the road"],eternian:["Gu-ba.", "good · bye"],yusar:["Byegood.", "bye-good: goodbye, swapped"],heiland:["Kut-pai.", "good · bye"],farside:["Gu-ɓa.", "good · bye: the b drawn in"],talovolci:["Varuela!", "fare · well"],khaay:["Isteey khaay.", "stay · high"],tungang:["Tarra.", "ta-ra"],fell:["Gan canny.", "go · carefully"],vothic:["Tzun kip yu.", "sun · keep · you"],izani:["Farguel.", "farewell"],hykkousik:["Phērouel.", "farewell"],xanadui:["Phārwel, sar.", "farewell, sir"],yuni:["Huru.", "hooroo"],dalab:["Waak gud.", "walk · good"],republic:["Farvjel.", "farewell"],riders:["Plai khai.", "fly · high"],zeijani:["Ze-dāqum yūan qīp.", "the-dark-SUBJ · you-OBJ · keeps: the dark keep you"],dasri:["Jū bi-bīs.", "go · in-peace"],tabist:["Gu di afis.", "go · in · the-peace"],islander:["Sei kutu.", "sail · good"],islanderw:["Hei kutu.", "sail · good"],hum:["Kǔ pai.","good · bye"],jimjam:["Bī gūḍḍu ḍēsu.","be · good · days: may your days be good"],scyvoi:["Farvel.","farewell"]}},
-   {en:"A saying",nt:"Not one phrase but each people's own proverb.",r:{argot:["Pepa no lai, man lai.", "paper · not · lie · person · lie: paper does not lie, people lie"],eternian:["Wè fa, sẽ tè.", "word · flies · sign · stays: the spoken word flies off, the written sign stays (heard too as: the sign is the State)"],yusar:["Crooksay, longlive.", "crooked-say · long-live: speak crooked, live long"],heiland:["Hom hay an, Setet par an.", "home · high · is · State · far · is"],farside:["Sèu qõ, sèu gò, ca cè.", "sail · comes · sail · goes · tide · stays"],talovolci:["Sub clodu spirla, ver clodu skios.", "under · cloud · spiral · over · cloud · sky"],khaay:["Aayslar khoold khool.", "ice-PL · hold · hall: the ice holds the hall, while the winter does"],tungang:["Njritawun znjritorl.", "an injury to one · is an injury to all: the banner's words"],fell:["Sunz nobbalamp thacanna putoot.", "the sun · is · only · a lamp · thou · can-not · put out"],vothic:["Dha Tzun it vïrhst.","the Sun · eats · first"],izani:["Iziz iz forevar.","Iziz · is · forever"],hykkousik:["Hou has gilloi nids sip.","who · has · gills · needs · ship: even a man with gills needs a ship"],xanadui:["Āiālbi sīn, māuthbi se.","eye-PL-BY seen, mouth-BY said: eyes see, mouths say"],yuni:["Da Vol opnz fa nobbo.","the · Vault · opens · for · nobody"],dalab:["Mek no mistekdem.","make · no · mistake-PL: the priests' prayer, said to anyone about to do something foolish"],republic:["Serviz gir sidizan.","service · gives · citizen"],riders:["Tł'aa erimembar.","claw · remembers"],zeijani:["Ze-dāqum ḫiddanan qīp.","the-dark-SUBJ · hidden-OBJ · keeps: the dark keeps what is hidden"],dasri:["Wāṭar bifūr tūq.","water · before · talk: water first, then talk"],tabist:["Awaṭar bifur atuq.","the-water · before · the-talk"],islander:["Ko te tai, kama te tai.","goes · the · tide, comes · the · tide"],islanderw:["Ko te tai, kama te tai.","goes · the · tide, comes · the · tide"],hum:["Sōn ko, pí no ko.","song · goes, feet · not · go: the song crosses where feet cannot"],jimjam:["Kamsu nevar bakku ḍē.","comes · never · back · day: no day comes twice"],scyvoi:["Fayır firs, sıkayt aftır.","fire · first, scythe · after: nothing is reaped that was not burned"]}},
+    vothic:["Tzun tzi yu.","sun · see · you: may the Sun see you"],izani:["Guda de.","good day"],hykkousik:["Goud dē.","good day"],xanadui:["Guḍ ḍe, sar.","good day, sir"],yuni:["Gdai, mai.","g'day, mate"],dalab:["Wa a gwaan?","what · is · going on"],republic:["Gut dej.","good day"],riders:["Bį tł'aa!","wing · claw: wings and claws"],zeijani:["Lētum ze-dāqin.","light-SUBJ · the-dark-IN: light in the dark"],shumari:["Suṭōn-šu kippu-maṣu.","stone-SWORD · keeps-HON: may the stone of the Sword-Caste hold"],dasri:["Jidāy!","g'day, from Yuni"],tabist:["Gidday!","g'day, from Yuni"],islander:["Sī kāma.","sea · calm: a calm sea to you"],islanderw:["Hī kāma.","sea · calm: a calm sea to you"],hum:["Kǔ ti.","good · deal: may the trade be good"],jimjam:["Bī gūḍḍu ḍē.","be · good · day: may the day be good"],scyvoi:["Gıras gırovsun!","grass · grow-MAY: may the grass come back"]}},
+   {en:"Hello.",nt:"The everyday word, between equals. Hykkousik hy is hi, by the change that made isles into Ys. The Islanders greet with love, as the real Pacific does.",r:{argot:["Lo, barada.", "hello · brother"],eternian:["Lò.", "hello, worn to its end"],yusar:["Ellohay.", "hello: a fossil of the Pig Latin years"],heiland:["Heru.", "hello"],farside:["Lò.", "hello"],talovolci:["Ailos!", "hail"],khaay:["Khaay!", "hi: the same word as high"],tungang:["Ayup!", "eh up"],fell:["Nathen.", "now then"],vothic:["Hel, vren.", "hail · friend"],izani:["Elo.", "hello, the h lost"],hykkousik:["Hy!", "hi"],xanadui:["Xelo.", "hello"],yuni:["Hoi!", "hi"],dalab:["Ail op!", "hail · up"],republic:["Hej.", "hey"],riders:["Khee!", "hey"],zeijani:["Ḫēl.", "hail"],shumari:["Ḫēru-šu.","hail-SWORD"],dasri:["Ḥayl!", "hail"],tabist:["Hayl!", "hail"],islander:["Lava!", "love"],islanderw:["Rava!", "love"],hum:["Hāi!","hi"],jimjam:["Hai!","hi"],scyvoi:["Hay!","hey"]}},
+   {en:"How are you?",nt:"The Riders ask after your wing. Hajlandsk asks how it goes, Norse-fashion.",r:{argot:["Hau yu go?", "how · you · go"],eternian:["Ho yu?", "how · you"],yusar:["How be one?", "how · is · one: the Yusar say one, not I or you"],heiland:["Hau e-ar?", "how · you-are"],farside:["Ho yu?", "how · you"],talovolci:["Uo ari tu?", "how · are · you"],khaay:["Khoo ar suu?", "how · are · you"],tungang:["Owsta?", "how-is-thou"],fell:["Owsta gannin?", "how-is-thou · going"],vothic:["Hau go yu?", "how · go · you"],izani:["Au ar yu?", "how · are · you"],hykkousik:["Ar jou ouel?", "are · you · well"],xanadui:["Yū xau, sar?", "you · how, sir"],yuni:["Awyagoi?", "how-you-going"],dalab:["Ou yu de?", "how · you · there"],republic:["Hau gor det?", "how · goes · that"],riders:["Khau bį?", "how · wing: how flies it"],zeijani:["Yūm ḫau?", "you-SUBJ · how"],shumari:["Yū-šu wa ḫau-maṣu ka?","you-SWORD · TOP · how-HON · Q"],dasri:["Ḥaw yū?", "how · you"],tabist:["Haw yu?", "how · you"],islander:["Au iu?", "how · you"],islanderw:["Hau iu?", "how · you"],hum:["Hāu yu há?","how · you · huh"],jimjam:["Is hau yū?","is · how · you"],scyvoi:["Yu hav?","you · how"]}},
+   {en:"Welcome.",nt:"Islander mai is English my, worn down to mean towards me.",r:{argot:["Welkam!", "welcome"],eternian:["Wèu-kõ!", "well · come"],yusar:["Comewel!", "come-well: welcome, its halves swapped"],heiland:["Weru-kam!", "well · come"],farside:["Wèu-qõ!", "well · come: the k a click"],talovolci:["Uelcomos!", "welcome"],khaay:["Qumun.", "come-in"],tungang:["Kumthiwayin.", "come · thy · way · in"],fell:["Kumin, warm thi.", "come-in · warm · thee"],vothic:["Velkïm.", "welcome"],izani:["Guelkom.", "welcome"],hykkousik:["Ouelkam.", "welcome"],xanadui:["Welqam, sar.", "welcome, sir"],yuni:["Kmin, mai.", "come-in, mate"],dalab:["Kom iin.", "come · in"],republic:["Vjelkom.", "welcome"],riders:["Belkam.", "welcome"],zeijani:["Wēlqum.", "welcome"],shumari:["Weruqamu-maṣu.","welcome-HON"],dasri:["Walqam.", "welcome"],tabist:["Walqam.", "welcome"],islander:["Kama mai.", "come · towards-me"],islanderw:["Kama mai.", "come · towards-me"],hum:["Kām!","come"],jimjam:["Velkam.","welcome"],scyvoi:["Velkım.","welcome"]}},
+   {en:"Thank you.",nt:"",r:{argot:["Tanku.", "thank you"],eternian:["Tã-yu.", "thank · you"],yusar:["Youthank.", "you-thank: thank you, swapped"],heiland:["Tenki.", "thank · ye"],farside:["Cã-yu.", "thank · you: the t a click"],talovolci:["Đancu tu.", "thank · you"],khaay:["Taŋ suu.", "thank · you"],tungang:["Ta, broo.", "ta · brother"],fell:["Ta.", "ta"],vothic:["Thengk yu.","thank you"],izani:["Tanka.","thanks"],hykkousik:["Thank jou.","thank you"],xanadui:["Thãk yū, sar.","thank you, sir"],yuni:["Ta.","ta"],dalab:["Tenk yu.","thank you"],republic:["Tak.","thanks"],riders:["Łąk'.","thanks"],zeijani:["Šankum.","thanks-SUBJ"],shumari:["Šanku-maṣu.","thank-HON"],dasri:["Thanqū.","thank-you"],tabist:["Tanqu.","thank-you"],islander:["Tañiu.","thank-you"],islanderw:["Taniu.","thank-you"],hum:["Tá yu.","thank · you"],jimjam:["Teṅkyū.","thank-you"],scyvoi:["Sankyu.","thank-you"]}},
+   {en:"Where is the market?",nt:"Xanadui, Tł'aai and Zeijani put the question word last.",r:{argot:["We mape?", "where · market: the market sign written in"],eternian:["Wè ma-pè?", "where · market-place"],yusar:["Where is placemarket?", "where · is · place-market"],heiland:["Maket wer an?", "market · where · is"],farside:["Wè ma-pè?", "where · market-place"],talovolci:["Uer esti marcatos?", "where · is · market"],khaay:["Beer marqït?", "where · market"],tungang:["Wearz tmarkit?", "where-is · the-market"],fell:["Wearz swap?", "where-is · swap: there is no market on the fells"],vothic:["Vehrh dha makit?","where · the · market"],izani:["Guer iz de markeda?","where · is · the · market"],hykkousik:["Ouer is ve markit?","where · is · the · market"],xanadui:["Mārkeṭ wer?","market · where"],yuni:["Wezza markiddo?","where's-the · market"],dalab:["We damaakit de?","where · the-market · there"],republic:["Ver er marktet?","where · is · market-the"],riders:["Maakit' beer?","market · where"],zeijani:["Markitum wēr?","market-SUBJ · where"],shumari:["Marukittu-ra wa wēru-baru ka?","market-HEARTH · TOP · where-PLAIN · Q"],dasri:["Wayn al-mārqit?","where · the-market"],tabist:["Wayn amarqit?","where · the-market"],islander:["Vea te māʻiti?","where · the · market"],islanderw:["Vea te mākiti?","where · the · market"],hum:["Ma we há?","market · where · huh"],jimjam:["Is vēr mārkeṭṭu?","is · where · market"],scyvoi:["Markıt verde?","market · where-AT"]}},
+   {en:"I am a stranger here.",nt:"Voth says outlander, auhlandarh, and the Islanders say auta, outer. In Hykkousik, I is y, from the same change that made isles into Ys.",r:{argot:["Mi nyu man ia.", "I · new · person · here"],eternian:["A tẽ-mã i.", "I · strange-man · here (heard too as: I am an Heir here)"],yusar:["One is sideout here.", "one · is · side-out · here: one says one, not I, where a Listener may hear"],heiland:["Hir mi-terenca an.", "here · I-stranger · am"],farside:["A cẽ-mã i.", "I · strange-man · here"],talovolci:["Mi ammi strangiros eri.", "I · am · stranger · here"],khaay:["Aay isterenjer khiir.", "I · stranger · here"],tungang:["Uznobba strenja eer.", "I-am · only · a stranger · here"],fell:["Uz frem eer.", "I-am · strange (fremd) · here"],vothic:["Ai auhlandarh hirh.","I · outlander · here"],izani:["Ai iz istrenjar ir.","I · am · stranger · here"],hykkousik:["Y am astrēnzar hir.","I · am · stranger · here"],xanadui:["Āi xīr sitrenjarã.","I · here · stranger-am"],yuni:["Oim nod frumia.","I'm · not · from-here"],dalab:["Mi a tranja.","me · am · stranger"],republic:["Aj er strenžr her.","I · am · stranger · here"],riders:["Aa istrenjar khii.","I · stranger · here"],zeijani:["Ē ṣṭrenjum ḫīrin.","I · stranger-SUBJ · here-IN"],shumari:["Ē-ra wa ḫīru ni ʾawtu-no-ṣabu.","I-HEARTH · TOP · here · AT · outlander-OUT-HUMBLE"],dasri:["Ay istrānjar hīr.","I · stranger · here"],tabist:["Ay d astranjar hir.","I · is · stranger · here"],islander:["E auta ai ia.","an · outer · I · here"],islanderw:["E auta ai hia.","an · outer · I · here"],hum:["Ai tê hī.","I · stranger · here"],jimjam:["Am siṭirēnjar hīr, ai.","am · stranger · here, I"],scyvoi:["Ay sitrencir hirde.","I · stranger · here-AT"]}},
+   {en:"Water, please.",nt:"Tł'aai baatar, water, happens to be Mongolian for a hero.",r:{argot:["Wata, piliz.", "water · please"],eternian:["Wò, pi.", "water · please"],yusar:["Water, please.", "water · please: the small words kept as they were"],heiland:["Wata, puris.", "water · please"],farside:["Wò, pi.", "water · please"],talovolci:["Uatera, plisu.", "water · please"],khaay:["Baa'ar, piliis.", "water · please"],tungang:["Warra, iftha zowt.", "water · if · thou · has-aught"],fell:["Beckwarra.", "beck-water"],vothic:["Vatarh, plis.","water, please"],izani:["Guadar, plez.","water, please"],hykkousik:["Ouatar, plis.","water, please"],xanadui:["Wāṭar, pilīj.","water, please"],yuni:["Wada, pleez.","water, please"],dalab:["Wata, plis.","water, please"],republic:["Vatr, plis.","water, please"],riders:["Baatar, pliis.","water, please"],zeijani:["Wāṭarum, plīz.","water-SUBJ, please"],shumari:["Wāṭarun, purīzu-ṣabu.","water, please-HUMBLE"],dasri:["Wāṭar, blīz.","water, please"],tabist:["Awaṭar, flīz.","the-water, please"],islander:["Vata, pīsi.","water, please"],islanderw:["Vata, pīhi.","water, please"],hum:["Wǒ, pî.","water, please"],jimjam:["Va'ar, pilīsu.","water, please"],scyvoi:["Vatır, filis.","water, please"]}},
+   {en:"How much?",nt:"The brothers say it alike: short words survive their differences.",r:{argot:["Hau machu?", "how · much"],eternian:["Ho mo?", "how · much"],yusar:["How much?", "how · much"],heiland:["Hau mac?", "how · much"],farside:["Ho mo?", "how · much"],talovolci:["Uo mucos?", "how · much"],khaay:["Khoo much?", "how · much"],tungang:["Owmuch?", "how-much"],fell:["Owmonnyowz?", "how-many-ewes: everything is priced in ewes"],vothic:["Hau mïch?","how much"],izani:["Au mocha?","how much"],hykkousik:["Hao makh?","how much"],xanadui:["Xau mac?","how much"],yuni:["Awmuchi?","how-much"],dalab:["Ou moch?","how much"],republic:["Hau mač?","how much"],riders:["Khau mach?","how much"],zeijani:["Ḫau maš?","how much"],shumari:["Ḫau mašu-baru ka?","how · much-PLAIN · Q"],dasri:["Ḥaw maš?","how much"],tabist:["Haw maš?","how much"],islander:["Au masa?","how much"],islanderw:["Hau maha?","how much"],hum:["Hāu mà?","how · much"],jimjam:["Hau macchu?","how much"],scyvoi:["Hav maç?","how much"]}},
+   {en:"Go away!",nt:"",r:{argot:["Gova!", "go-away"],eternian:["Gò wè!", "go · away"],yusar:["Goʰ way!", "go (breathed: an order) · away"],heiland:["E-ko awey!", "you-go · away"],farside:["Gò wè!", "go · away"],talovolci:["Goi aua!", "go · away"],khaay:["Goo daaŋ!", "go · down: back to the lowlands"],tungang:["Gerroff!", "get-off"],fell:["Gan wom!", "go · home"],vothic:["Go avei!","go away"],izani:["Go ague!","go away"],hykkousik:["Go aouē!","go away"],xanadui:["Gho!","go"],yuni:["Rakkof!","rack off: get lost"],dalab:["Gwaan!","go on"],republic:["Go vej!","go away"],riders:["Go abee!","go away"],zeijani:["Gū awē!","go away"],shumari:["ʾAwtu-no wa gō-šaru!","outlander-OUT · TOP · go-DECREE"],dasri:["Jū awāy!","go away"],tabist:["Gu away!","go away"],islander:["Ko avei!","go away"],islanderw:["Ko avei!","go away"],hum:["Ko we!","go · away"],jimjam:["Gō avē!","go away"],scyvoi:["Getavt!","get out"]}},
+   {en:"Goodbye.",nt:"Voth commends you to the Sun and the Zeijani to the dark. Yuni huru is hooroo, an old Australian goodbye.",r:{argot:["Si yu roda.", "see · you · road: until the road"],eternian:["Gu-ba.", "good · bye"],yusar:["Byegood.", "bye-good: goodbye, swapped"],heiland:["Kut-pai.", "good · bye"],farside:["Gu-ɓa.", "good · bye: the b drawn in"],talovolci:["Varuela!", "fare · well"],khaay:["Isteey khaay.", "stay · high"],tungang:["Tarra.", "ta-ra"],fell:["Gan canny.", "go · carefully"],vothic:["Tzun kip yu.", "sun · keep · you"],izani:["Farguel.", "farewell"],hykkousik:["Phērouel.", "farewell"],xanadui:["Phārwel, sar.", "farewell, sir"],yuni:["Huru.", "hooroo"],dalab:["Waak gud.", "walk · good"],republic:["Farvjel.", "farewell"],riders:["Plai khai.", "fly · high"],zeijani:["Ze-dāqum yūan qīp.", "the-dark-SUBJ · you-OBJ · keeps: the dark keep you"],shumari:["Šubaru-šu wa yū-šu qīpu-maṣu.","sword-caste-SWORD · TOP · you-SWORD · keep-HON"],dasri:["Jū bi-bīs.", "go · in-peace"],tabist:["Gu di afis.", "go · in · the-peace"],islander:["Sei kutu.", "sail · good"],islanderw:["Hei kutu.", "sail · good"],hum:["Kǔ pai.","good · bye"],jimjam:["Bī gūḍḍu ḍēsu.","be · good · days: may your days be good"],scyvoi:["Farvel.","farewell"]}},
+   {en:"A saying",nt:"Not one phrase but each people's own proverb.",r:{argot:["Pepa no lai, man lai.", "paper · not · lie · person · lie: paper does not lie, people lie"],eternian:["Wè fa, sẽ tè.", "word · flies · sign · stays: the spoken word flies off, the written sign stays (heard too as: the sign is the State)"],yusar:["Crooksay, longlive.", "crooked-say · long-live: speak crooked, live long"],heiland:["Hom hay an, Setet par an.", "home · high · is · State · far · is"],farside:["Sèu qõ, sèu gò, ca cè.", "sail · comes · sail · goes · tide · stays"],talovolci:["Sub clodu spirla, ver clodu skios.", "under · cloud · spiral · over · cloud · sky"],khaay:["Aayslar khoold khool.", "ice-PL · hold · hall: the ice holds the hall, while the winter does"],tungang:["Njritawun znjritorl.", "an injury to one · is an injury to all: the banner's words"],fell:["Sunz nobbalamp thacanna putoot.", "the sun · is · only · a lamp · thou · can-not · put out"],vothic:["Dha Tzun it vïrhst.","the Sun · eats · first"],izani:["Iziz iz forevar.","Iziz · is · forever"],hykkousik:["Hou has gilloi nids sip.","who · has · gills · needs · ship: even a man with gills needs a ship"],xanadui:["Āiālbi sīn, māuthbi se.","eye-PL-BY seen, mouth-BY said: eyes see, mouths say"],yuni:["Da Vol opnz fa nobbo.","the · Vault · opens · for · nobody"],dalab:["Mek no mistekdem.","make · no · mistake-PL: the priests' prayer, said to anyone about to do something foolish"],republic:["Serviz gir sidizan.","service · gives · citizen"],riders:["Tł'aa erimembar.","claw · remembers"],zeijani:["Ze-dāqum ḫiddanan qīp.","the-dark-SUBJ · hidden-OBJ · keeps: the dark keeps what is hidden"],shumari:["Ṭirānu-ko wa urudīru bi šubaru-šu naru-maṣu.","cadet-CADET · TOP · Ordeal · BY · sword-lord-SWORD · become-HON: through the Ordeal, the cadet becomes the Sword-Lord"],dasri:["Wāṭar bifūr tūq.","water · before · talk: water first, then talk"],tabist:["Awaṭar bifur atuq.","the-water · before · the-talk"],islander:["Ko te tai, kama te tai.","goes · the · tide, comes · the · tide"],islanderw:["Ko te tai, kama te tai.","goes · the · tide, comes · the · tide"],hum:["Sōn ko, pí no ko.","song · goes, feet · not · go: the song crosses where feet cannot"],jimjam:["Kamsu nevar bakku ḍē.","comes · never · back · day: no day comes twice"],scyvoi:["Fayır firs, sıkayt aftır.","fire · first, scythe · after: nothing is reaped that was not burned"]}},
   ];
   const toAshTxt=t=>t.split(/(\s+)/).map(w=>w.replace(/ṣ/g,"s").replace(/Ṣ/g,"S").replace(/ṭ/g,"t").replace(/Ṭ/g,"T").replace(/q/g,"k").replace(/Q/g,"K").replace(/ü/g,"i").replace(/^([Ww])/,m=>m==="W"?"M":"m").replace(/([aeiuāēīū])m([.,!?]?)$/,"$1$2")).join("");
   const esc=t=>t.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));

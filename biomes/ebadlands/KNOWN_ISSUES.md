@@ -107,6 +107,9 @@ the floor is `vale` and `rip` (gambel oak, bigtooth maple, cottonwoods, rose wee
   `biomes/sedesert/stations/bowl/66-biome-sedesert-halo.js`: the Bowl exports it, then `src/87-host-kin.js` grows it on the wadis' bars),
   Korona's frost tank (Korona's turn, pair 9); as vendor, ebadlands' juniper to sedesert's main page and cottonwood to the Bowl's delta
   (sedesert's next turn: its `build.py` NEIGH and `87-host-kin.js`, then its pages' verifies), and the bristlecone to Korona (Korona's turn).
+  2026-11-08: checked: the mesquite is read in place (`BIO.kin('sedesert.mesquite')`, sedesert's own builder; ebadlands holds no copy of its
+  crown placement), so sedesert's crown fix (BIO.snapSeg/BIO.holdTo, under way in biomes/sedesert) reaches it for free. Nothing to change here;
+  once that fix lands, put sedesert's species fragment back on the page and re-run station 1's attach audit.
 - [ ] **The glacier is host ice** (station 4): the ground drawn as ice and firn (barren, snow), no ice kind in core/water; its surface has no
   crevasses or séracs.
 - [ ] **The overview's sky site** (old canvas 1043,508) lies in the abyss's rim on scale model 5.1 (-1,648 m): kept, since the sky reads only
@@ -116,7 +119,7 @@ the floor is `vale` and `rip` (gambel oak, bigtooth maple, cottonwoods, rose wee
   every item drawn through the variants (the stilt pod's head, its tendrils, the trees' leaf clumps and fruit) came out as scrambled triangles: the
   pod's head was 30 of its 180. The harvest expands an indexed item first. The attach audit could not see it: it samples BIO's baked items, and the
   variant trees are 86's own pools; a check does now (`the variants keep every triangle of their items`, with its negative). **A trap for the open
-  world:** `openworld/isle-demo/src/world/84-world-nursery.js` harvests the same way; it is safe only while no open world sets `INDEX_ITEMS`.
+  world:** `core/world/84-world-nursery.js` harvests the same way; it is safe only while no open world sets `INDEX_ITEMS`.
 - [x] **The ember crown's joins and the needle bloom's seat** (the owner, 2026-11-03): every limb in this kit now leaves its parent through
   `BIO.flareJoin` (core/biome 31j: the root sunk into the parent, a collar, 6-8 sides at the joint; a reader without the fragment draws the old
   tube); the ember crown's bottle has a shoulder over the limbs' roots. The needle bloom's head stood .55 of its size over its stem's tip; it sits

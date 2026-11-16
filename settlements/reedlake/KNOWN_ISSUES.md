@@ -25,6 +25,14 @@ Open items are `- [ ]` lines; build.py prints them.
       (`hnTotem`, `hnWoodpile`, `hnFirepit`, `hnMenhir` call `FURNISH`, plus `hlRngSkip`, `hnFurn` and the Iziz yard
       pieces), and Reed Lake loads no catalog furniture (no `89y-hl-furnish.js`, no `FURNISH`) while `hnRLHearth` and the
       tavern call `hnFirepit`. So it is kept behind on purpose and named in `ADAPTED` in build.py (see the open item below).
+- [x] (2026-11-03) `--vendor-check` reported `69-mat-salvage.js`, `71-hl-mat.js` and `71b-hl-motif.js` drifted from
+      `../highlands/src`. Read: all three were only behind (the lines only here were the old forms of lines upstream
+      extended). Upstream adds `patchOpening` (no caller here), the paving and library frieze materials (`hCobble`, `hAshlarP`,
+      `hFrz*`: Highlands' builders use them, Reed Lake's do not) and three folk murals and a roundel in the motif pools,
+      which this kit's kept `73-hl-carve.js` picks from (`vPick`: one draw either way, so nothing else moves). Re-vendored.
+      `verify.py --assert` before and after: every assert and count the same; the opening and the great mudhif at eye level
+      pixel-identical (no board in those views picked a new motif). The pages wait for the all-builds rebuild: they were
+      behind their sources before this.
 - [ ] (ADAPTED, 2026-10-13) `src/73-hl-carve.js` is Highlands' copy from before its catalog-furniture conversion (the drawn
       totem, woodpile, firepit and menhir). Re-vendor it when Reed Lake places furniture from the catalog (take
       `89y-hl-furnish.js` and the catalog runtime as Highlands does); until then `--vendor-check` reports it as

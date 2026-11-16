@@ -10,12 +10,17 @@ Write code with an eye to an eventual port to Godot.
   |---|---|
   | randomness, a seed, a hash of (world, cell, index, salt) | `core/rand` (`KRAND`): never `Math.random`, a hand-rolled PRNG or `fract(sin())` |
   | height, relief, strata, noise, rivers on the ground | `core/terrain` (and the scale model's fields), not your own `fbm` or `terrainH` |
+  | the scale model's land at 1:1, an open-world region, a settlement on the map's ground | `core/world` (`WORLD.H`, `ROADS`, the streamed flora; `openworld/PLAN-SITES.md`), never a copy of it or a ground of your own |
+  | the ground as drawn, for an audit or a camera (not `terrainH`) | `core/drawn` (`KDRAWN.h`: the strip cells, else the mesh's triangles) |
   | what is where, overlap tests, occupancy | `core/space` (`KSPACE`), `core/mask` (`KMASK.canvas`); never `getImageData` for placement |
   | sky, sun, fog, light, weather, cloud deck, the wave field | `core/atmos` (`ATMOS.bindHost` from `core/atmos/host`), the standard skybox plus local detail |
+  | a sky for a kit's viewer page (its pieces are lit by their site's sky in the world) | the placeholder sky, `core/atmos/placeholder` (`KratorSky`), read by path through its `placeholder.py`: never a copy in `src/` |
   | the sea, a lake, a river, a fall, a pool, a hot spring, a geyser | `core/water` (open, shore, flow, fall, still, spring, geyser, terraces): no `MAT_WATER`, no ripple shader of your own |
   | camera, viewer, inspector, polygon tool, walk keys, probe, cut-away | `core/host` (`KHOST`), `core/walk`: do not write a camera or a probe |
+  | underground: a follow camera that keeps out of the rock, a deck cut with caps, a band or section cut, a deck map and line map, a dither fade, an x-ray, the rock opened over each void's floor | `khost.UNDERGROUND` (`core/host/UNDERGROUND.md`: `91b` follow, `99-host-section` section, `97b` + `core/minimap/decks` map, `core/shader/aids` `KFADE`) and `core/terrain/host/39h-core-cavern-cut.js` (`KCAVERN.cutLayer`) on `KCAVERN`: never a cut shader or spring arm of your own |
   | records, tags, names, vocabulary | `core/tags` (`KTAGS`); everything placed is registered before it is drawn |
-  | furniture and interiors | `kits/catalog` through `core/furnish`, with `kits/interiors` for rooms |
+  | a building kit's engine (merged geometry by material, `defBuilding` and its records, the sheet's scene, the host hand-over) | `core/engine` (`engine.py`), read by path: a new kit starts from it, never from a copy of another kit's `src/` |
+  | furniture and interiors | `kits/catalog` (its engine `core/catalog`, names resolved by `core/catalog/catalog.py`) through `core/furnish`, with `kits/interiors` for rooms |
   | streets, lots, a town | `core/city`; a village or camp: `core/hamlet`; people and time: `core/simulation`, `core/sched`, `core/clock` |
   | flora, fauna, biome zones | `core/biome` and the biome kits (`kits/fauna`, `kits/crops`); new species go into the kit, not the page |
   | surfaces and textures | `core/materials` (the library through `materials.json` and `tools/textures/pack.py`) |
@@ -23,7 +28,8 @@ Write code with an eye to an eventual port to Godot.
   | a ruined structure (a ruin, a wrecked machine, an engine, anything with fallen pieces) | `core/ruins` (`KRUINS.watch` it once drawn): the verify harness then asserts nothing floats and every wreck lies on the ground. The default for every ruined structure (the owner, 2026-11-10) |
 
 - **If core lacks it, stop and say so.** Add the piece to core (an opt-in subfolder if builds that pool the folder would change: `core/water/geyser`, `core/atmos/host`) or ask; do not write a bespoke one in the build, and never leave a vendored copy of a core fragment.
-- **A check enforces it.** `python3 tools/check_core_use.py` (a step of `tools/test_all.py`) fails on a build that does not list the core modules its kind needs, or whose own fragments write a PRNG, a `fract(sin())` hash, a value noise, `getImageData`, `MAT_WATER =` or a sky dome. It compares with `tools/core_use_baseline.json` (today's findings), so old code passes and new code cannot add to the pile. A deliberate exception is a line in the script with its reason: `NOT_APPLICABLE` (a module a build cannot use), `PLACED` (settlements already placed on the world map with their biome data: Pinnacle Rock, the isle demo, Hook, Longsong; the sky and water rules apply to them and they are rebuilt when the biome files change; every other settlement is left alone until it is placed), and `SINGLE_COMPLEX` / `CAVERN` (Longsong, Dhelv: exempt from "takes `core/simulation` therefore takes `core/city`" until `core/city` has a single-complex mode and a cavern setting). Run it before you say a build is done.
+- **A check enforces it.** `python3 tools/check_core_use.py` (a step of `tools/test_all.py`) fails on a build that does not list the core modules its kind needs, or whose own fragments write a PRNG, a `fract(sin())` hash, a value noise, `getImageData`, `MAT_WATER =`, a sky dome or a copy of the placeholder sky (`KratorSky`). It compares with `tools/core_use_baseline.json` (today's findings), so old code passes and new code cannot add to the pile. A deliberate exception is a line in the script with its reason: `NOT_APPLICABLE` (a module a build cannot use), `PLACED` (settlements already placed on the world map with their biome data: Pinnacle Rock, the isle demo, Hook, Longsong; the sky and water rules apply to them and they are rebuilt when the biome files change; every other settlement is left alone until it is placed), and `SINGLE_COMPLEX` / `CAVERN` (Longsong, Dhelv: exempt from "takes `core/simulation` therefore takes `core/city`" until `core/city` has a single-complex mode and a cavern setting). Run it before you say a build is done.
+- **A new build takes the survey's checks from its first commit** (CORE-IMPROVEMENTS.md items 22-31, the survey of 2026-11-11): list it under every check in `tools/checks_optin.json`, start `build.py` and `verify.py` from `tools/new_build/` (`buildlib.through_tools_build`, `buildlib.CORE_BIOME_MIN`, `verify_page(..., checks=harness.SURVEY)`), write node tests on `tools/ktest.js`, run `python3 tools/lfs_needs.py <build> --pull` in a fresh worktree and commit with `python3 tools/commit.py -F msg.txt`. `tools/new_build/README.md` has the list. Old builds take them at the next all-builds rebuild (TODO.md, "switch on checks 22-31 everywhere").
 
 We want new builds to reference core modules as much as possible rather than building bespoke systems for each build.
 
@@ -147,7 +153,7 @@ the pillars, the banned outcomes, the measured gates, the delta loop and which e
 each part; read it before a new build or a lighting or texture pass. Settlements are in `settlements/`, building
 kits in `kits/`, biomes in `biomes/`, shared code in `core/`, and open worlds (a region of the scale model at 1:1,
 streamed, with the biome kits' flora, the built settlements placed in it as tiles baked from their own pages, and
-highways between them) in `openworld/` (`openworld/little-demo/README.md`). The gallery of every
+highways between them) in `openworld/` (`openworld/isle-demo/README.md`; the first, the eastern desert, is retired: `archive/little-demo`). The gallery of every
 built world is published from `gallery/` (see `gallery/README.md`).
 
 **Keep the Krator Worlds gallery current.** Update it automatically only when you

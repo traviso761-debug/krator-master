@@ -12,9 +12,10 @@ The kit's frame is +z the snout, y up, **+x the animal's LEFT**. The rigs were c
 L / R (wingL, legR, footL, leg0Lt ...) are renamed here by the sign of their pivot's x, once, so the kit's part names are
 true (wingL is the left wing, the one on +x).
 
-Needs numpy and PIL. Reads only the GLB it is given (never the Meshy API), so a repack is deterministic.
+Needs numpy and PIL. Reads only the GLB it is given and rig/sources/<key>/ (never the Meshy API), so a repack is deterministic. After a
+pack, run rig/fit_anchors.js and rig/patch_models.py, then tests/test-models.js, which a new model must clear with no waiver.
 """
-import argparse, base64, io, json, os, re, struct, sys
+import argparse, base64, hashlib, io, json, os, re, struct, sys
 import numpy as np
 from PIL import Image
 
@@ -45,6 +46,37 @@ def jpeg(blob, size, q):
     return 'data:image/jpeg;base64,' + base64.b64encode(out.getvalue()).decode('ascii')
 
 
+def webp_lossless(blob, size):
+    """A normal map stays lossless, as tools/textures/pack.py keeps every normal map."""
+    im = Image.open(io.BytesIO(blob)).convert('RGB')
+    if max(im.size) > size:
+        im = im.resize((size, size), Image.LANCZOS)
+    out = io.BytesIO(); im.save(out, 'WEBP', lossless=True, method=6)
+    return 'data:image/webp;base64,' + base64.b64encode(out.getvalue()).decode('ascii')
+
+
+def webp_rgba(blob, size):
+    im = Image.open(io.BytesIO(blob)).convert('RGBA')
+    if max(im.size) > size:
+        im = im.resize((size, size), Image.LANCZOS)
+    out = io.BytesIO(); im.save(out, 'WEBP', quality=84, method=6)
+    return 'data:image/webp;base64,' + base64.b64encode(out.getvalue()).decode('ascii')
+
+
+def source_record(key, name='source.json'):
+    """What the model was made from (PLAN-MESHY.md, C1): rig/sources/<key>/source.json, naming the raw GLB beside it. A pack without it
+    is refused, because the first 19 models kept nothing and none can be regenerated."""
+    d = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'rig', 'sources', key); p = os.path.join(d, name)
+    if not os.path.isfile(p):
+        sys.exit('models_pack: no %s (prompt, reference, Meshy task ids, model, credits, raw: the raw GLB\'s file name)' % os.path.relpath(p))
+    rec = json.load(open(p, encoding='utf-8'))
+    for k in ('prompt', 'task_ids', 'ai_model', 'credits', 'raw'):
+        if k not in rec:
+            sys.exit('models_pack: %s has no %s' % (os.path.relpath(p), k))
+    rec['raw_sha256'] = hashlib.sha256(open(os.path.join(d, rec['raw']), 'rb').read()).hexdigest()
+    return rec
+
+
 SIDE = re.compile(r'^(wing2?|wingO2?|leg\d*|legT\d*|foot)([LR])([tf]?)$')
 
 
@@ -54,8 +86,11 @@ def main():
     ap.add_argument('--key', required=True); ap.add_argument('--group', required=True)
     ap.add_argument('--scale', type=float, required=True, help='metres per model unit')
     ap.add_argument('--truthful-sides', action='store_true', help='the rig already names L (+x of the animal\'s own centreline) and R: do not rename by absolute x')
+    ap.add_argument('--source', default='source.json', help='the source record in rig/sources/<key>/, when an animal has several candidates')
     ap.add_argument('--tex', type=int, default=1024, help='base colour and normal map size (px)')
+    ap.add_argument('--nrmtex', type=int, default=0, help='normal map size (px), when lossless is too large at --tex')
     ap.add_argument('--mrtex', type=int, default=512, help='metallic-roughness map size (px)')
+    ap.add_argument('--merge', action='store_true', help='draw every part as one skinned mesh (the runtime\'s mergedGeo): a model of many parts')
     a = ap.parse_args()
     J, BIN = load_glb(a.glb)
     nodes = J['nodes']
@@ -83,6 +118,8 @@ def main():
         out_nodes.append({'name': names[i], 'parent': parent.get(i, -1), 't': [round(float(x), 6) for x in nd.get('translation', [0, 0, 0])]})
         if 'mesh' not in nd:
             continue
+        if len(J['meshes'][nd['mesh']]['primitives']) != 1:      # only one is read: the rest would vanish without a word, as the dragonfly's wing material did
+            sys.exit('models_pack: mesh of node %s has %d primitives; a part is one primitive, one material' % (nd.get('name'), len(J['meshes'][nd['mesh']]['primitives'])))
         prim = J['meshes'][nd['mesh']]['primitives'][0]; at = prim['attributes']
         P = accessor(J, BIN, at['POSITION']).astype(np.float64); Nn = accessor(J, BIN, at['NORMAL']).astype(np.float64)
         UV = accessor(J, BIN, at['TEXCOORD_0']).astype(np.float64); idx = accessor(J, BIN, prim['indices']).reshape(-1)
@@ -162,11 +199,27 @@ def main():
         return J['images'][J['textures'][texinfo['index']]['source']]
     def data(im):
         v = J['bufferViews'][im['bufferView']]; return BIN[v['byteOffset']:v['byteOffset'] + v['byteLength']]
-    tex = {'map': jpeg(data(img(pbr['baseColorTexture'])), a.tex, 84), 'nrm': jpeg(data(img(mat['normalTexture'])), a.tex, 84),
+    tex = {'map': jpeg(data(img(pbr['baseColorTexture'])), a.tex, 84), 'nrm': webp_lossless(data(img(mat['normalTexture'])), a.nrmtex or a.tex),
            'mr': jpeg(data(img(pbr['metallicRoughnessTexture'])), a.mrtex, 84)}
+    # every other material a primitive uses (a see-through wing card) goes with the parts that use it: the first version kept
+    # materials[0] alone, and the dragonfly's wings drew the body's atlas, opaque
+    mats = {}
+    for i, nd in enumerate(nodes):
+        if 'mesh' not in nd:
+            continue
+        mi = J['meshes'][nd['mesh']]['primitives'][0].get('material', 0)
+        if mi:
+            m_ = J['materials'][mi]; p_ = m_['pbrMetallicRoughness']; e = mats.setdefault(m_.get('name') or 'mat%d' % mi, {'parts': [], 'roughness': p_.get('roughnessFactor', 0.5)})
+            e['parts'].append(names[i]); e['_img'] = data(img(p_['baseColorTexture']))
+    for e in mats.values():
+        e['parts'].sort(); e['map'] = webp_rgba(e.pop('_img'), a.mrtex)
 
     doc = {'format': 1, 'key': a.key, 'group': a.group, 'scale': S, 'tris': tris, 'rest': info, 'nodes': out_nodes, 'meshes': meshes, 'anims': anims, 'tex': tex,
-           'renamed': rename}
+           'renamed': rename, 'source': source_record(a.key, a.source)}
+    if a.merge:
+        doc['merge'] = True
+    if mats:
+        doc['mats'] = mats
     os.makedirs(os.path.dirname(os.path.abspath(a.out)), exist_ok=True)
     with open(a.out, 'w', encoding='utf-8', newline='\n') as fh:
         json.dump(doc, fh, sort_keys=True, separators=(',', ':'))

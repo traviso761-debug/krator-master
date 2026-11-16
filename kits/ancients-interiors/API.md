@@ -58,9 +58,8 @@ Recipes (`AI.RECIPES`; each has `name`, `kind`, default `w`, `d`, `h`, `min` cou
 | `plaza` | 30 × 24, open | the fountain, four beds, four benches facing it, eight lamp standards, stalls on the back edge |
 | `quay` | 40 × 8, open | bollards along the water's edge (`+z`), capstans, lamp standards, chain, nets and stores along the back |
 
-**Opt-in: `reception`** (16 × 6 default; `opt/38-ai-reception.js`). Not in `AI.RECIPES` unless the build asks for it:
-`kit_bundle.bundle(reception=True)` appends the fragment after the core (in node, load it after `src/10-49`). It is
-opt-in only until the next interiors update, when it moves to `src/` and every build that takes the kit is rebuilt.
+**`reception`** (16 × 6 default; `src/38-ai-reception.js`, in the core since 2026-11-08; opt-in before, through
+`kit_bundle.bundle(reception=True)`, which is gone).
 
 | key | default (m) | what |
 |---|---|---|
@@ -95,11 +94,10 @@ import importlib.util, os
 spec = importlib.util.spec_from_file_location('ai_bundle', os.path.join(ROOT, 'kits', 'ancients-interiors', 'kit_bundle.py'))
 ai_bundle = importlib.util.module_from_spec(spec); spec.loader.exec_module(ai_bundle)
 js = interiors_kit_bundle.bundle(['noahs-regret']) + ai_bundle.bundle()
-js = interiors_kit_bundle.bundle(['noahs-regret']) + ai_bundle.bundle(reception=True)   # opt-in: the reception recipe
 ```
 
-`bundle()` with no argument is the bundle as before, byte for byte; `reception=True` appends `opt/38-ai-reception.js`
-after the core (opt-in until the next interiors update).
+`bundle()` takes no argument: the reception recipe is in the core (`src/38-ai-reception.js`) since 2026-11-08 (an old
+`reception=True` is accepted and ignored until `biomes/ancientsvalley/build.py` drops it).
 
 Load it under its own module name: `kits/interiors` has a `kit_bundle.py` too.
 

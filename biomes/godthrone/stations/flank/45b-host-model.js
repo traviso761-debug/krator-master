@@ -70,8 +70,9 @@ const RILLE=KRELIEF.rille({pts:KRELIEF.meander(xzDA(-1800+OLDVENTS[0].r*.25,-400
 const TUBE=KRELIEF.tube({pts:KRELIEF.meander(xzDA(-4200,1300),xzDA(5200,1700),{amp:180,wave:2100,seed:KR.hash(WORLD,9,0,0x113)}),
  ground:flowGround,r:16,roof:9,ridge:2.5,every:150,p:.55,sky:.25,seed:KR.hash(WORLD,9,1,0x114)});
 const FORMS=[RILLE,TUBE];
-// the rock: the same titanium basalt (fresh: the alteration line, 8,500 m, is below)
-const STRATA=KSTRATA.create({seed:KR.hash(WORLD,0,2,0x57A7),formations:[{recipe:'tibasalt'}],range:[10000,11800],
+// the rock: the titanium basalt with the summit's ash between its flows (the flank is DOWNWIND, south-east of the summit:
+// kits/resources/ROCK-PROPOSAL.md's tuff aprons; src/35t-godthrone-strata.js `tibasalt-ash`); fresh: the alteration line, 8,500 m, is below
+const STRATA=KSTRATA.create({seed:KR.hash(WORLD,0,2,0x57A7),formations:[{recipe:'tibasalt-ash'}],range:[10000,11800],
  dip:[DOWN[0],DOWN[1],.004],warp:[6,1.6],wash:{m:2},regolith:.35,dust:0x2a2624});
 const _ground=KRELIEF.apply(flowGround,FORMS);
 function baseH(x,z){return _ground(x,z);}
@@ -88,6 +89,8 @@ const MODEL={fieldsAt(x,z,sl,hollow,o){const g0=flowGround(x,z),r=KRELIEF.at(RIL
   /* the youngest flow is bare black rock, glassy-skinned; older ones carry their share of the beads */
   const young=F.age===FLOWS.last&&F.th>.8?1:0;
   o.halo=clamp((.18+.82*ring+.3*hollow)*smooth(.95,.45,sl)*(1-.6*ra)*(1-.75*young),0,1);o.glass=.45*young;
-  o.orange=clamp(orr+.15*hollow*ring,0,1);return o;},
+  o.orange=clamp(orr+.15*hollow*ring,0,1);
+  /* the summit's ash, drifted into the hollows of the older flows (the youngest is bare): pale, thin, downwind */
+  o.tuff=clamp(.55*hollow*(1-young)*smooth(.8,.3,sl)*(1-.7*ring),0,.6);return o;},
  after(){const C=VENT;C.base=terrainH(C.x+C.r*1.2,C.z);C.top=C.base+C.h;C.lavaY=terrainH(C.x,C.z);}};
 var PORTAL=null;

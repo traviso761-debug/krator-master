@@ -90,6 +90,21 @@ Open items are `- [ ]`; `build.py` counts them. Close an item when the fix is in
   Fixed (2026-10-26): the lid is a shallow dome (0.22 m high, its edge turned down) with the spur standing up and back
   at the hinge (`50`, the `hood` def; 63 triangles where the card had 10: +0.17 M on the hollow's 3,114), on the same hinge hook and trap cycle. Its
   veins are the pitcher skin's mottle; a midrib in the map is for when the plant is redone.
+- [ ] **The final rebuild's owed items** (pair 9, 2026-11-03; `PLAN.md`, "Core adoption"). (1) The necanyons kit's seep curtains and ferns
+  are placed at a bed's outline, past the lip KSTACKS draws (`footR x (1 - ch)`); this page seats them on the drawn lip (`89z`, `?seat=0`),
+  and the fix in `biomes/necanyons/src/57-biome-necanyons-carnivores.js` (`outR` from `lipR`) is owed to necanyons' next turn (9 build
+  commands, 38 pages read it). (2) The hoar table's `polygon` ground (BACKPORT's row) wants KGROUND on the top's material (`MAT_TOP`).
+  (3) Karst site 7 (the west trench rims: gypsum dolines, a salt-shore spring; `biomes/KARST-SITES-5.1.md`) waits on the trenches'
+  5.1 re-survey. (4) The receiver rows (bristlecone, caribou moss, ghost gum, sea buckthorn) and the vendor rows `wallfern` and
+  `bladderpool` (`KORONA.plant` takes four of six). (5) Wet ground (R9) not taken: oidong saw `WATER.wetGround` over KGROUND draw black
+  (`?wet=1` to look). (6) Two banding systems on the walls (the kit's per tier, KSTRATA's per bed): the owner's eye. (7) Two vendors' items are
+  left out of this kit's attach audit (`89z`, `window._auditOwed`; `?owed=0` audits them): the eastern highlands' `bloom` on the hoar table
+  (82% float: flowers on the poured cushions, which the audit sees only as axes; ehighlands' own page 81.5%, pair 13) and the eastern
+  desert's `bloom` on the gorge and the trenches (sedesert's own page 15.4%, its next turn), and the northern highlands' `needle` and `beard` on
+  the trenches' crest (4.38% with them; its pair-7 turn, not merged here yet). Each comes back when its vendor's turn holds it.
+  (8) The trenches lacked `31b-core-leafset` and `33-core-fungoid`, which nhighlands' species need since the core pass (`G.disc` threw):
+  `stations/trench/station.json` lists them now. (9) KGROUND reads the eye uniform r128 leaves at 0 on a Lambert ground; this floor
+  redirects it to `kEye` (`47`), the fix belongs in `core/terrain/43-core-ground.js` (necanyons' floor has the same read). (9) is closed by the core fix of 2026-11-08: `43-core-ground.js` and `30-core-foliage.js` take the eye from `viewMatrix`.
 
 ## Closed
 

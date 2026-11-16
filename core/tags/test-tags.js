@@ -13,9 +13,9 @@ const ok = (c, m) => { console.log((c ? 'ok   ' : 'FAIL ') + m); if (!c) fails++
 const throws = f => { try { f(); return false; } catch (e) { return true; } };
 const V = K.VOCAB;
 
-// ---- the vocabulary still matches its source (kits/catalog/krator-furniture-core.js) ----
+// ---- the vocabulary still matches its source (core/catalog/krator-furniture-core.js; the culture files in kits/catalog) ----
 const CAT = path.join(__dirname, '..', '..', 'kits', 'catalog');
-const core = fs.readFileSync(path.join(CAT, 'krator-furniture-core.js'), 'utf8');
+const core = fs.readFileSync(path.join(__dirname, '..', 'catalog', 'krator-furniture-core.js'), 'utf8');
 const lit = name => { const m = new RegExp('const ' + name + ' = ([\\[{][\\s\\S]*?[\\]}]);').exec(core); return m ? Function('return ' + m[1])() : null; };
 const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 ok(same(V.catalog.cultures, lit('FURN_CULTURES')), 'cultures: the copy matches FURN_CULTURES');
@@ -30,7 +30,7 @@ for (const m of core.matchAll(/'([a-z-]+)': \{ name: '([^']+)'/g)) srcNames[m[1]
 for (const f of fs.readdirSync(CAT).filter(f => /^krator-master-furniture-.*\.js$/.test(f)))
   for (const m of fs.readFileSync(path.join(CAT, f), 'utf8').matchAll(/FURN_CULTURE\('([a-z-]+)', \{ name: '([^']+)'/g)) srcNames[m[1]] = m[2];
 const nameBad = V.cultures.filter(c => V.noCatalog.indexOf(c) < 0 && V.cultureNames[c] !== srcNames[c === 'yuni' ? 'yuni-common' : c]);
-ok(V.cultures.length === 24 && !nameBad.length, '24 cultures, display names from FURN_CULTURE_INFO' + (nameBad.length ? ' (differ: ' + nameBad + ')' : ''));
+ok(V.cultures.length === 30 && !nameBad.length, '30 cultures, display names from FURN_CULTURE_INFO' + (nameBad.length ? ' (differ: ' + nameBad + ')' : ''));
 const covered = new Set(V.catalog.cultures.map(c => V.cultureAlias[c] ? V.cultureAlias[c].culture : c).filter(c => c));
 ok(covered.size + V.noCatalog.length === V.cultures.length && V.cultures.every(c => covered.has(c) !== (V.noCatalog.indexOf(c) >= 0)), 'every catalog culture is a culture or an alias of one, and the only others are the listed noCatalog cultures (Jimjam, Dalab)');
 ok(V.noCatalog.every(c => V.cultures.indexOf(c) >= 0 && V.catalog.cultures.indexOf(c) < 0), 'noCatalog cultures are vocabulary cultures and not catalog ones');
@@ -217,10 +217,10 @@ ok(exs.records[0].count === 3 && exs.records[0].table === undefined && exi.recor
 
 // the export, and its digest
 const ex = T.export();
-ok(ex.format === 'krator-tags' && ex.version === 1 && ex.build === 'test' && ex.records.length === 13 && ex.vocab.cultures.length === 24, 'export shape');
+ok(ex.format === 'krator-tags' && ex.version === 1 && ex.build === 'test' && ex.records.length === 13 && ex.vocab.cultures.length === 30, 'export shape');
 const s = JSON.stringify(ex);
 let h = 2166136261 >>> 0; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; }
-const DIGEST = 'f8fc8840';   // 2026-10-26: the mine kind and the effect emp; before it c05a017e: sightContrast (KHAZ.seen, KHAZ.aim); before it 5337b270: dust, ash and caustic dust (the fields dust, ash, alkali, visibility; dustSight); before it 202f9e43: the time kind and the effect stasis (the History Monks' Procrastinator); before it 9584dd11: acid rain (the ambient fields rain and ph; a row's times); before it e5d9d25f: the ambient rows (ambientFields, ambientKinds: thin-air, cold, hot); before it 858cfe5c: the hazard kinds lava, fire, luck and trap (radiant, soak, a trigger; the effects shock, paralysis, damage; the trigger beam) (radiant, soak), the effect misfortune and the taboo key (core/hazard: the Godthrone, the live fire, the Outlands' C6); before it 5ee8e4c7, 2026-10-26: the hazard key (VOCAB.keys.hazard, hazardKinds, hazardEffects, hazardShapes, hazardFalloffs, hazardTriggers, navLayers; core/hazard); before it 794c58fc, 2026-10-23: merged with the Eternians (24 cultures); before it ec80484b, 2026-10-20: the Jimjam and Dalab cultures (23; VOCAB.noCatalog); before it 803f4891, 2026-10-12: the biome kits (stage 2c): the flora and fauna keys (climate, aridity, abyssal, riparian, diet, the kits' traits) and the Köppen classes XA XV HF O Cwa Cwb; before it, 1aa3363 (2026-10-08: the Zeijani branch merged (the Zeijani culture, their jobs, rock/level/district keys and light kinds: 617a177c on the branch); main's before it: ad3297ba, the jobs took 'alchemy' (main's FURN_JOBS); before it, the Ash Nomads: e17a6622 (the Scyvoi culture: 2670333f; step 4, Iziz's aliases: b93dacd3; step 1: 4d836bbd))
+const DIGEST = 'f4072dea';   // 2026-11-03: the modularity merge (the shared culture rebuild on the final biome rebuild's mine kind and emp); before it 93dde0de: the shared culture rebuild (30 cultures; noCatalog empty); before it 794c58fc, 2026-10-23: merged with the Eternians (24 cultures); before it ec80484b, 2026-10-20: the Jimjam and Dalab cultures (23; VOCAB.noCatalog); before it 803f4891, 2026-10-12: the biome kits (stage 2c): the flora and fauna keys (climate, aridity, abyssal, riparian, diet, the kits' traits) and the Köppen classes XA XV HF O Cwa Cwb; before it, 1aa3363 (2026-10-08: the Zeijani branch merged (the Zeijani culture, their jobs, rock/level/district keys and light kinds: 617a177c on the branch); main's before it: ad3297ba, the jobs took 'alchemy' (main's FURN_JOBS); before it, the Ash Nomads: e17a6622 (the Scyvoi culture: 2670333f; step 4, Iziz's aliases: b93dacd3; step 1: 4d836bbd))
 ok(h.toString(16) === DIGEST, 'export digest ' + h.toString(16) + (h.toString(16) === DIGEST ? '' : ' (expected ' + DIGEST + ')'));
 console.log(fails ? fails + ' failed' : 'all passed');
 process.exit(fails ? 1 : 0);

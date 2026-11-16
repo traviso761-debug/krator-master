@@ -166,6 +166,7 @@ is nearer still to nwlowlands and nhighlands, so the rows name it where the plan
 ### crater drylands N ↔ swhighlands
 
 - **Existing exchanges: none.** `swhighlands/PLAN.md:98` only names the crater drylands as a neighbour.
+- **Taken (2026-11-09, `claude/swhighlands-rest-f8a7ee`):** swhighlands' station 5 (`-coast`) grows the crater drylands' `yucca` in place and its`n  `swordspire` as the glaucous cousin (`stations/coast/87-host-kin.js`: `CRATERDRY.make`/`grow`).
 - **Shared ground:** swhighlands' dry east scarp and its fan deltas are station 5, `-coast`, in the rain shadow
   (~400 mm). Its low Csa is at about 1.8 km (+15 °C).
 
@@ -339,7 +340,9 @@ is nearer still to nwlowlands and nhighlands, so the rows name it where the plan
 ### swhighlands ↔ swlowlands
 
 - **swlowlands → swhighlands: exists (plan).** `swhighlands/PLAN.md` section 3: the sprawl oak (as the derived sprawl cap),
-  `cedar`, `madrone` and `manzanita`.
+  `cedar`, `madrone` and `manzanita`. **Built in part (2026-11-09):** the flayed madrone grows on swhighlands' station 3
+  (`-span`) in place (`stations/span/87-host-kin.js`); the tier cedar is held back (the core attach audit), the sprawl cap and the
+  manzanita are still owed.
 - **swhighlands → swlowlands: exists (plan).** `swlowlands/PLAN-FLORA.md`: `fishingbridge`, a red lattice sprawl derived
   from `latticeoak`, `coralmelon`, and bead coral.
 - No proposals needed.
@@ -439,7 +442,7 @@ on a floor at 400-1,000 m (BWk, 16 mm). **Neither side has a plant that lives on
 - **hyperjungle→crater-drylands: yes, a cousin.** The `prismmallee` is "a much smaller relative of the hyperjungle's
   prism gum" (`crater-drylands/NOTES.md:30,46`; `src/50-biome-craterdry-species.js:11`).
 - **crater-drylands→hyperjungle: none.** `hyperjungle/PLAN-LANDS.md` §5.3 sends the prism mallee and the frill-tree out
-  of the patch, but to the se savannah rim (`biomes/savannarim`), not to the hyperjungle kit.
+  of the patch, but to the se savannah rim (`biomes/abyssal-savannah` station `serim`; built as `biomes/savannarim`), not to the hyperjungle kit.
 
 | direction | vendor key | name | carried by | taken as | where in receiver | why it fits |
 |---|---|---|---|---|---|---|
@@ -496,6 +499,12 @@ gradual), and the gorge station draws hoodoo landforms only (`korona/stations/go
 | korona→ebadlands | `frosttank` | Frost tank | water (snowmelt) and birds | read in place | the melt pools of ebadlands' ET/Dfc high band (5.1-5.9 km) | Korona's ET/Dsc ice-table trap, already tagged for exactly this ground |
 
 **Waiting on Korona's turn (pair 9)** for both rows: Korona is the later vendor and reader (ebadlands' turn, 2026-11-02, left them).
+**Status (pair 9, 2026-11-03, Korona's side):** the vendor's half of `frosttank` is ready: `KORONA.plant('frosttank', x, y, z, {lv, seed, id})`
+(`biomes/korona/src/57-biome-korona-carnivores.js`) grows one with the kit's own builder and registers its trap; a reader takes Korona's `50` and
+`57` in place. The same call takes `butterwort`, `cobralily` and `greatsundew` (the nwouterwall, nhighlands and crater-drylands rows); `wallfern` and
+`bladderpool` are placed by the kit's passes against walls and pools and are owed. **Not taken (receiver):** the bristlecone on the hoar table (it
+wants ebadlands' 50 and 55 read in place on a station that already reads ehighlands: the hoar's next pass); the caribou moss, the ghost gum and the
+sea buckthorn wait on their vendors' turns (nwouterwall, crater-drylands; nsemiarid runs beside this turn). `biomes/korona/PLAN.md`, "Core adoption".
 
 ### ebadlands ↔ sedesert (the Bowl and main)
 
@@ -599,6 +608,13 @@ at about 6.1 km.
 |---|---|---|---|---|---|---|
 | nsemiarid→korona | `buckthorn` | Sea buckthorn | birds (berries) | read in place | the east lobe's lake shore on Korona's side (about 830 m) | a temperate, semiarid, salt-tolerant shore shrub; the same shore runs on both sides |
 | korona→nsemiarid | `bladderpool` | Sucking pool | birds (fragments on their feet) | cousin: a small pond bladderwort bed, danger 0, with no sucking | fresh pools and reed margins on nsemiarid's lake shore | bladderworts grow in steppe pools on Earth; Korona's version is scaled down for richer ground |
+
+**Status (2026-11-09):** `bladderpool` **taken** (korona→nsemiarid): the cousin as the row says, the **pond bladderwort**
+(`biomes/nsemiarid/src/50`: item `bladder`, `NSEMIARID.PLANTS.bladderwort` with `tags.kin: 'korona.bladderpool'`, danger 0, no sucking; `60`'s last
+pass), mats on still, fresh, warm water: station 1's spring pool (not its salt lake, not the stream), and the overlays' fresh water (the coulee's plunge
+lake and potholes, the high line's rain pond); not the high country's cold tarns. `buckthorn` (nsemiarid→korona) **owed**: no Korona station stands on
+the east lobe's lake shore yet (the basin's lake is the Tiers' lake, the trenches' a salt lake); nsemiarid's `buckthorn` item and `60`'s `buckthorn()`
+are ready to read in place there. `biomes/nsemiarid/KNOWN_ISSUES.md`.
 
 ### korona ↔ nwouterwall
 

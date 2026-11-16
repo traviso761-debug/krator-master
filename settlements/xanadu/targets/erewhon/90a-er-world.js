@@ -55,9 +55,10 @@ const erWallSegs=[];{const PALW=new Set(ER_LINES.wall.filter(P=>P.some(p=>Math.h
    for(const [e,j] of[[Wl[i],i-1],[Wl[i+1],i+1]]){if(j<0||j>=Wl.length-1||k[j])continue;const n=nearLoop(e);if(n.d<160)erWallSegs.push([e,n.q]);}}}}
 for(let i=0;i<CIT.loop.length;i++){const a=CIT.loop[i],b=CIT.loop[(i+1)%CIT.loop.length],mx=(a[0]+b[0])/2,mz=(a[1]+b[1])/2;if(CIT.inS(CIT.bath,mx,mz,3))continue;erWallSegs.push([a,b,true]);}
 // the citadel's own loop keeps its clearance from the garden by construction: the garden filter is for the map's lines
-for(const [a,b,cit] of erWallSegs){if(GATES.some(g=>Math.hypot((a[0]+b[0])/2-g.x,(a[1]+b[1])/2-g.z)<18))continue;if(!cit&&erWallInGarden(a,b))continue;erWallSeg(a,b,8);
+let erWallAt=null;   // a wall that stands: the inspector's volume for the walls (it stood at the palace district's rim, where no wall is since the citadel's loop)
+for(const [a,b,cit] of erWallSegs){if(GATES.some(g=>Math.hypot((a[0]+b[0])/2-g.x,(a[1]+b[1])/2-g.z)<18))continue;if(!cit&&erWallInGarden(a,b))continue;erWallSeg(a,b,8);if(!erWallAt&&cit)erWallAt=[(a[0]+b[0])/2,(a[1]+b[1])/2];
  cstroke(mg,[a,b],10,'#000');const mm=[(a[0]+b[0])/2,(a[1]+b[1])/2];BIO_OBSTACLES.push({x:mm[0],z:mm[1],r:Math.hypot(b[0]-a[0],b[1]-a[1])/2+4});}
 erBakeMasks();   // placement reads the baked copy: without this the walls were never in it, and houses stood in them
-REG.push({name:'The city walls',x:PAL.x,y:terrainH(PAL.x,PAL.z),z:PAL.z+PAL.r,r:20,h:12,cls:'building',key:'er_wall',tags:{culture:'xanadu',type:['military'],wealth:'civic',lit:false}});
+{const wa=erWallAt||[PAL.x,PAL.z+PAL.r];REG.push({name:'The city walls',x:wa[0],y:terrainH(wa[0],wa[1])-3,z:wa[1],r:20,h:12,cls:'building',key:'er_wall',tags:{culture:'xanadu',type:['military'],wealth:'civic',lit:false}});}
 TSTAT.cur=null;
 window._worldMs=Math.round(performance.now()-ER_T0);

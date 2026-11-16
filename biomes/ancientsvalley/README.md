@@ -237,6 +237,16 @@ floors, 560 fallen shaft sections blocked; about 38,700 walk floors and 9,300 bl
 triangles and 1,176 calls (the park; budgets 20 M and 1,200, unchanged). Seen on the GPU: a blocked door's steps and heap, a skeleton's storey
 with its stair rising to the next, the torn top 104 m up over the city.
 
+**The lobbies' rough edges (2026-11-10, the second pass):** **walls** now stop the walker at every standing tower: its ground outline on
+`core/walk`, a block every 1.5 m from under the plinth to over the lobby (`AV.towerOutlines`, `AV.towerWalls`), the design heroes' own lobby
+outlines (`userData.walk`, kits/metropolis 54, read off the intact hero the shell bake builds anyway) and the Spindle's skirt and fins and the
+Ledger's arcade from their records; shut all round but for an open or stair-blocked tower's door, whose corridor runs from the street to 6 m
+inside. So a blocked tower is blocked everywhere, and a hero's other doors are shut. The way in runs through the door, radially in to a circle
+round the stair's box and round it to the stair (a Spindle's portal stands up to 60 degrees off the street's normal), and a tower whose own
+inner lobby rings cut it (the Swell's lobes, the Terrarium's dome, known only off the hero) is shut at its door instead. The families of several bodies (the Organ's pipes, the
+Pods, the Crescent) are never climbed (their floors would hang between the parts), intact towers never open (their glass stands), and a flight
+down to a sunk plinth keeps its cheeks at the pavement's level as retaining walls of a sunken court.
+
 ## Station 2a: the Yards (2026-11-10; `stations/yards/`, `dist/ancientsvalley-yards.html`)
 
 ```

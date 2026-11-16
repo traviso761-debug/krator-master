@@ -1,0 +1,11 @@
+{
+ "name": "The basal escarpment (station 4): the Godthrone's south-western scarp at ~7 km, the stack of titanium-basalt flows in a cliff 600 m high, thick ponded flows in colonnades, the bead horizons altered to ochre palagonite stripes, talus and snow on the benches",
+ "out": "godthrone-scarp.html",
+ "water": [],
+ "tex": [
+  "rockColumns",
+  "palagonite",
+  "lichenCrust"
+ ],
+ "region": "region.json"
+}

@@ -1,0 +1,14 @@
+{
+ "prompt": "Queen's front, side and top views through image-to-image: same pose, eight legs in the same place; thick hairy tarantula legs, thick fanged chelicerae, medium oval hairy abdomen, pale ivory-grey casting",
+ "task_ids": [
+  "01a19b56-98ef-75dd-9498-5398ead98211",
+  "01a19b56-9b11-7401-97cd-51540abc4cfe",
+  "01a19b56-9c7f-71a5-abd4-a282c72c9852",
+  "01a19b58-7300-774f-8ecd-a3ad6b57e523"
+ ],
+ "ai_model": "meshy-7.1",
+ "credits": 57,
+ "raw": "raw-meshy71.glb",
+ "route": "image-to-image from spider-queen, then multi-image, front left top",
+ "rights": "generated on the owner's Meshy account"
+}

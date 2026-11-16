@@ -25,7 +25,7 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `41-av-field.js` | 24 |  |
 | `41b-av-wrecks.js` | 9 |  |
 | `41c-av-house.js` | 6 |  |
-| `41c-av-lobbies.js` | 27 |  |
+| `41c-av-lobbies.js` | 32 **big** |  |
 | `41e-av-cardrects.js` | 7 |  |
 | `46-av-feral.js` | 13 |  |
 | `46y-host-parts.js` | 3 |  |
@@ -38,7 +38,7 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `74-host-transit.js` | 15 |  |
 | `75-host-extraplanar.js` | 15 |  |
 | `75-host-house.js` | 11 |  |
-| `76-host-lobbies.js` | 19 | the geometry: flat-shaded prisms in the kit's co (31); the checks (verify.py --assert; 99 calls them),  (95) |
+| `76-host-lobbies.js` | 24 | the geometry: flat-shaded prisms in the kit's co (50); the checks (verify.py --assert; 99 calls them),  (119) |
 | `88-host-build.js` | 12 |  |
 | `89a-host-atmos.js` | <1 |  |
 | `89s-host-sky.js` | 3 |  |
@@ -53,3 +53,12 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `98-host-atmos-ui.js` | 10 |  |
 | `99-host-take.js` | 37 **big** | the inspector's words (6); the probe's budgets (14); the kit's own checks (verify.py --assert) (18); the page, handed to the host (202) |
 | `99-tail.html` | <1 |  |
+
+## stations/
+
+Each station builds one page (`build.py --station <name>`) from its own fragments, with `src/` or its `base` station.
+
+| Station | Fragments | KB |
+|---|---|---|
+| terraces | 41d-av-farm.js, 46z-host-stage.js, 70t-host-farm.js, 72-host-keepers.js, 73-host-wrecks.js, 75-host-extraplanar.js, 75-host-house.js, 87t-host-thicket.js, 89y-host-anomaly.js | 83 |
+| yards | 46z-host-stage.js, 70y-host-yards.js, 75-host-extraplanar.js, 75-host-house.js, 89y-host-anomaly.js, 98y-host-yards-checks.js | 58 |

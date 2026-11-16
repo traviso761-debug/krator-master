@@ -263,6 +263,7 @@ THRONE.PLANTS={
  mossdome:PK('Moss domes','temperate','subhumid','both',['BSk'],'native','seam',['brain','rod'],HV('none',[],false,'Squat lumpy green domes in the gullies and the skylights, a pale fringe of roots on their downhill side.')),
  redcoral:PK('Red coral-fern','temperate','subhumid','both',['BSk'],'native','seam',['feather'],HV('none',[],false,'Branching red sprays among the moss domes.')),
  snareraft:PK('Snare raft','temperate','humid','yes',['BSk'],'native','vent',['acidpad','rafthair'],HV('none',[],true,'Carnivorous: the runners\' discs hold what lands on the water. Part of the arrow poison (NOTES.md).')),
+ charscrub:PK('Burnt scrub','temperate','subhumid','no',['Dfc'],'earth','shoulder',['charred0','charred1','charred2','charred3','charred4','charred5','charred6','charred7','charred8'],HV('fuel',[],false,'The understorey the blast\'s heat killed where it did not flatten it: black forking skeletons with an ash coat, a few scorched leaves still hanging.')),
 };
 /* THE MAT IS A HAZARD (core/hazard, 2026-10-26): a slime mould that digests what sleeps on it, so it corrodes slowly and the
    longer one stays the worse (a soak: nothing at first, full after half an hour, forgotten over ten minutes off it); paths
@@ -601,6 +602,8 @@ THRONE.LIB.cards={};
  // THE SAVANNA's cards (stations/savanna): tall seeding grass tussocks, and the flowers that come up after a fire
  sheet('card.grassdry','grassdry',C3,3,{swayW:'(position.y)',swayA:.1});
  sheet('card.flowerspike','flowerspike',C3,3,{swayW:'(position.y)',swayA:.06});
+ // THE BLAST's burnt shrubs (stations/blast): nine charred skeletons, standing where the heat passed and the blast did not flatten
+ sheet('card.charred','charred',C3,3,{swayW:'(position.y)',swayA:.02});
  // THE STAR ALOE's BLOSSOMS (the owner's, 2026-10-06): the six upright spikes (single and candelabra), each rising out of its
  // own small leaf star at the foot of its cell
  sheet('card.aloeflower','aloeflower',[[0,0],[1,0],[2,0],[0,1],[1,1],[2,1]],3,{swayW:'(position.y)',swayA:.04});
@@ -681,6 +684,8 @@ const libMap=(n,k)=>{const L=LIBP(n);if(!L)return null;const t=KMAT.textures(L,{
 {const L=libMap('bark.elfin','elfin');BIO.bucket('elfin',BIO.barkMat(L?L.t:null),{label:'Elfin bark (moss-grown)',uvScale:L?L.scale:[1,1.4]});THRONE.LIB.elfin=!!L;}
 // the coconut palm's trunk: the owner's coir, in its own colour (B[20] gives its vertices white)
 {const L=libMap('bark.brimstone','brimstone');BIO.bucket('brimstone',BIO.barkMat(L?L.t:null),{label:'Brimstone bark (sulphur-banded)',uvScale:L?L.scale:[1,1.4]});THRONE.LIB.brimstone=!!L;}
+// the blast's silver deadwood (stations/blast: the logs and the snags weathered grey), keep-0 under their vertex colours as bark0
+{const L=libMap('bark.silver','silver');BIO.bucket('silver',BIO.barkMat(L?L.t:null),{label:'Silver deadwood (the blast\'s logs and snags)',uvScale:L?L.scale:[1.2,1.8]});THRONE.LIB.silver=!!L;}
 {const L=libMap('bark.coir','coir');BIO.bucket('coir',BIO.barkMat(L?L.t:null),{label:'Coir (the coconut palm\'s trunk)',uvScale:L?L.scale:[1,1.4]});THRONE.LIB.coir=!!L;}
 {const L=libMap('wood.sulphur','wood');if(L)M.wood.map=L.t;BIO.bucket('wood',M.wood,{label:'Dead wood',uvScale:L?L.scale:[3,4]});}
 // the alien bodies too big to instance (a bone bell's root curtain) go into vertex-coloured buckets

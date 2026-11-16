@@ -34,7 +34,8 @@
 //
 // Placement (KRAND, per kind and index; each returns records and keeps them for G.records()):
 //   G.seracs({u:[u0,u1], du:14, across:.84, step:.045, skip:.35, s:[4,11], minIce:8, max})     the icefall's blocks
-//   G.bergs({level, n:16, u:[snout-160, snout-10], s:[2,7], ok:(x,z)=>bool})                     calved into the lake
+//   G.bergs({level, n:16, u:[snout-160, snout-10], s:[2,7], ok:(x,z)=>bool, water})            calved into the lake (water(x,z): the host's own lake,
+//                          for a snout that calves into water the module does not hold, as Copper Tarn)
 //   G.crevasses({u:[u0,u1], du:22, across:.8, len:[18,60], w:[1.2,3.5], skip:.3})                 split across the ice
 //   G.caves(list, {floor:(x,z)=>h})   ice caves from specs {x, z, R, H, face, mouth, name}; each a record with its floor
 //   KGLACIER.version
@@ -78,7 +79,7 @@
       placed.serac.push(...out);return out;}
     // icebergs calved from the snout, floating near it where ok(x,z) says the lake is deep enough
     function bergs(s){s=s||{};const n=pick(s,'n',16),uu=pick(s,'u',[SNOUT-160,SNOUT-10]),S=pick(s,'s',[2,7]),ok=s.ok||(()=>true),out=[];
-      for(let i=0;i<n*25&&out.length<n;i++){const u=R('berg',i,0,uu[0],uu[1]),p=TERM.p0+R('berg',i,1,-.8,.8)*TERM.W0,xz=at(u,p);if(lakeAt(xz[0],xz[1])<.6||!ok(xz[0],xz[1]))continue;
+      for(let i=0;i<n*25&&out.length<n;i++){const u=R('berg',i,0,uu[0],uu[1]),p=TERM.p0+R('berg',i,1,-.8,.8)*TERM.W0,xz=at(u,p);if((s.water?!s.water(xz[0],xz[1]):lakeAt(xz[0],xz[1])<.6)||!ok(xz[0],xz[1]))continue;
         const sz=R('berg',i,2,S[0],S[1]);out.push({class:'feature',kind:'berg',id:'berg-'+i,x:xz[0],z:xz[1],y:s.level,s:sz,h:sz*R('berg',i,3,.5,.9),d:sz*R('berg',i,4,.6,1),yaw:R('berg',i,5,0,6.2831853),tilt:[R('berg',i,6,-.3,.3),R('berg',i,7,-.3,.3)]});}
       placed.berg.push(...out);return out;}
     // crevasses: slots across the ice (transverse, where it stretches over a steepening), a row every du, staggered

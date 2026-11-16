@@ -23,7 +23,10 @@ const base=SEDESERT.buildFloor;
 SEDESERT.buildFloor=function(R,q){const out=base(R,q);reseed(670021);q=q==null?1:q;R=R||3000;
  const st={grass:0,croton:0,kalanchoe:0,aloe:0,fern:0,blooms:0,rows:0};
  const ok=(x,z,p)=>!SEDESERT.blocked(x,z,p)&&BIO.clearOf(x,z,p)&&dry(x,z);
- function grass(x,y,z,lv){const n=lv===2?ri(3,6):lv===1?2:1,h0=rr(.8,1.6)*(lv===0?1.5:1);
+ /* COUNTED (2026-11-08, the instance cap): the spine runs along the shore, the streams and the springs, so the near band covers most of
+    the pocket: this and the tall grass below put 643,785 'grass' and 315,146 'rankgrass' (the core's cap is 250k). A clump is now one or
+    two tufts close (it was three to six) and the tall grass's cells are 6.2 m and 12 m (3.6, 7.5): 230,847 'grass' and 113,910 'rankgrass' now */
+ function grass(x,y,z,lv){const n=lv===2?ri(1,2):1,h0=rr(.8,1.6)*(lv===0?1.5:1);
   for(let i=0;i<n;i++){const a=rr(0,TAU),d=i?rr(.4,1.8):0,px=x+Math.cos(a)*d,pz=z+Math.sin(a)*d;if(i&&BIO.mask(px,pz)<=0)continue;
    const rk=rng()<.35;tuft(rk?'rankgrass':'grass',px,BIO.terrainH(px,pz),pz,h0*rr(.75,1.15),h0*rr(1,1.4),leafCol(rk?PP.rank:PP.grass,1.25,.03));}st.grass++;}
  function croton(x,y,z,lv){const Rs=rr(.7,1.6);card('small',x,y+Rs*.45,z,Rs*1.5,Rs*.95,leafCol(PP.croton,1.3,.03),.25);if(lv===2&&rng()<.5)card('small',x+rr(-.8,.8),y+Rs*.35,z+rr(-.8,.8),Rs,Rs*.7,leafCol(PP.croton,1.2,.03),.25);st.croton++;}
@@ -46,8 +49,8 @@ SEDESERT.buildFloor=function(R,q){const out=base(R,q);reseed(670021);q=q==null?1
    if(t<.38)croton(x,y,z,lv);else if(t<.38+.3*smooth(.85,.97,w))fern(x,y,z,lv);else if(t<.82)kalanchoe(x,y,z,lv);else{agaveR(x,y,z,SEDESERT.PAL.agave,.7);st.aloe++;}},{patch:.6,patchScale:.015,pad:.6,box:BIO.originBox(b[1])});});
  // THE TALL GRASS: the monsoon's savanna is grass to the knee and the waist, not a lawn: a sward of tufts close by, bigger ones
  // further off (past that the ground's grass layer carries it)
- [[3.6,L.floor[0],0,2],[7.5,L.floor[1],L.floor[0],1]].forEach(b=>{BIO.grid(b[0],0,R,(x,z)=>{const ld=BIO.lodD(x,z);if(ld>=b[1]||ld<b[2])return 0;return F('lush',x,z)*(1-F('garden',x,z))*.95*q;},
-  (x,y,z)=>{if(SEDESERT.blocked(x,z,.4))return;const lv=b[3],h=rr(.7,1.5)*(lv===1?1.4:1),rk=rng()<.3;
+ [[6.2,L.floor[0],0,2],[12,L.floor[1],L.floor[0],1]].forEach(b=>{BIO.grid(b[0],0,R,(x,z)=>{const ld=BIO.lodD(x,z);if(ld>=b[1]||ld<b[2])return 0;return F('lush',x,z)*(1-F('garden',x,z))*.95*q;},
+  (x,y,z)=>{if(SEDESERT.blocked(x,z,.4))return;const lv=b[3],h=rr(.7,1.5)*(lv===1?1.4:1)*1.2,rk=rng()<.3;
    tuft(rk?'rankgrass':'grass',x,y,z,h,h*rr(1.1,1.5)*(lv===1?1.3:1),leafCol(rk?PP.rank:PP.grass,1.25,.04));st.grass++;},{patch:.5,patchScale:.02,pad:.3,box:BIO.originBox(b[1])});});
  return Object.assign(out,{pocket:st});};
 })();

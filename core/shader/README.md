@@ -8,6 +8,7 @@ pure. Each fragment's header is its API.
 | `06-core-khook.js` | `KHOOK`: the one door for shader hooks. Every layer on a material composes in one fixed order, the program is keyed from every layer, and a missing anchor throws. `KHOOK.checkPrograms(renderer?, scene?, only?)` lists what did not link and what anchor was missed |
 | `06b-core-kcolor.js` | `KCOLOR`: display (sRGB) against linear, once: the JS conversions, the GLSL include (`sampleSRGB`), the renderer's output and exposure |
 | `07-core-kwarp.js` | `KWARP`, opt-in: one vertex warp on every material a scene draws (below). No build takes it yet |
+| `aids/08-core-kfade.js` | `KFADE`, opt-in by file and by material: the screen-door dither fade (the occluder between the camera and a target; a soft band over a height) and the x-ray silhouette (stencil). In a subfolder so the builds that read `core/shader/` whole do not take it (`core/host/UNDERGROUND.md`) |
 | `warp_check.py` | a test warp on a built page: what bent, what was left out and why, two pictures |
 | `r128.js` | node only: the real three.js r128 for a hook's test (real chunk order, not a stub of `#include` lines) |
 | `test-khook.js`, `test-kcolor.js` | `node core/shader/test-khook.js`, each rule with a negative |
@@ -33,9 +34,9 @@ files by hand names them itself: `'shader'` in `CORE_DIRS` or `CORE_MODULES` (th
 
 ## KCOLOR: what moved and what did not
 
-Nothing is decoded that was not decoded before. core/water's colours go in as written (`WATER.colAsWritten`): those hexes were
-tuned as linear, and decoding them would darken every page's water. So a surface that wants a true display hex passes
-`KCOLOR.lin(hex)`, a `THREE.Color`, and each page's own colours wait for its turn (`CORE-IMPROVEMENTS.md` 9a: "pages at their
+core/water's colours are decoded (`WATER.colLin`, the owner, 2026-11-08): a hex is a display colour and goes into the water's shaders
+linear, as the Godot importer always read it; a `THREE.Color` goes in as it is. Until then they went in as written (read as linear), so
+every page's water darkened with the change; `WATER.colAsWritten` keeps the old reading. Each page's own colours wait for its turn (`CORE-IMPROVEMENTS.md` 9a: "pages at their
 turn"). The mirror (`core/water/ext/58`) already matches the page's output encoding and needs nothing from here.
 
 ## The warp: `KHOOK.warp` and `KWARP`

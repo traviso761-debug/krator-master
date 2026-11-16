@@ -1,0 +1,15 @@
+{
+ "name": "The mixed belt (station 5): the cool rainforest of the wet face, 2.35-2.85 km: combed beeches, the last laurels below, the first firs above",
+ "out": "ehighlands-mixed.html",
+ "packSkip": [
+  "ground.ash",
+  "ground.scoria",
+  "leaf.ichu",
+  "skin.fleece",
+  "skin.cushion",
+  "leaf.broad",
+  "leaf.rag",
+  "bark.ragbark",
+  "ground.verge"
+ ]
+}

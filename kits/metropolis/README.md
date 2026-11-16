@@ -172,15 +172,17 @@ Offices** (the flared ring and the lobed tower), **the Crown Library**, **the Wa
 
 The sun casts (`core/shadow`, written for this, the owner's choice of a core module over a local one): one box that follows the view,
 90 m round a walker and up to 600 m from high up, on a 4096 map. The heroes, the open storeys and the near rubble cast and take
-shadows; the baked shells and the impostors draw their own light and take none. `?noshadow` turns them off.
+shadows; the baked shells and the impostors draw their own light and take none. **Off by default** (the owner, 2026-11-03: toggleable and
+off in every build; `core/shadow` from `claude/biome-rebuild`): the panel's `shadows` button or `?shadow=1` turns them on, and the page's own
+wiring (what casts, what takes) stands either way; `?noshadow` leaves the box out altogether.
 
 ## The Ledger's reception (2026-11-03)
 
 The reception (the arcade's middle bay, both sides of the corridor) is laid out by `kits/ancients-interiors`' new **reception** recipe
-(a counter facing the door, waiting groups, a notice board), opt-in until the next interiors update (`ab.bundle(reception=True)`;
-`TODO.md`). Its furniture had been laid out at 28.6 degrees through the corridor: the kit turns a room's frame toward its first
-door's point, so a door off the room's middle skews it. `mpFrameDoors` (`56`) hands the kit a squared door until the kit is fixed
-(`TODO.md`). A storey on the street lifts its slab and furniture 3 cm, off the street plane it was fighting.
+(a counter facing the door, waiting groups, a notice board), in the kit's core since 2026-11-08 (opt-in before). Its furniture had
+been laid out at 28.6 degrees through the corridor: the kit turned a room's frame toward its first door's point, so a door off the
+room's middle skewed it; since 2026-11-08 the kit's frame faces the door wall's normal (`AI.furnishPlan`), and the squared door this
+build handed it (`mpFrameDoors`) is gone. A storey on the street lifts its slab and furniture 3 cm, off the street plane it was fighting.
 
 The plaza's walk floor reaches 1.2 km round the eye (it was the whole 16 km ground: 2.3 s each time a view changed) and follows it.
 
@@ -353,6 +355,11 @@ fifth a store of cargo pods (the rest), in runs nearest the core first, 240 piec
 triangles). A part's storeys above its core's run (the Rig's deck on its legs, 20 m over the block's roof) get a core of their own when they hold
 200 m2 of floor (`MP.floors`). All twenty-five Ancients buildings' plans pass the audit. Views `Inside the Vault, a server floor` and
 `Inside the Gantry Hall, the floor`.
+
+**Open issues, 2026-11-04.** Shadows are off by default (above). A record's `open` boxes stay one tall space (the Gantry Hall's assembly hall;
+the Furnace Stacks' halls are `floors: false`). A short bridge's doorway now splits a big triangle in its path (to about half a square metre
+near the opening) and drops a kit piece under 4 m reaching in: 374 of the 377 doorways are clear. A ruin's cut instances are taken out of
+the count rather than hidden at zero scale, and its slab cells go in runs: every design's ruins are within budget.
 
 **The yards' pieces** (the owner, 2026-11-10: the Ancient's Valley's industrial district, its Yards station; `46f-mp-yards.js` records,
 `57y-mp-yards-draw.js` drawing). What stands between the industrial halls, as plain records first (`MP.yards`, [G data]: numbers in, records

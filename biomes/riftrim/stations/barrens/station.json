@@ -1,0 +1,18 @@
+{
+ "note": "Station 6, the black barrens (the S rim, the black rim). kin: the Rift's giant groundsel, in the sheltered hollows: PLAN.md section 3 (the S rim borrows little). The pack families are the ones the rows draw with (measured on the page, 2026-11-03: every material a kin mesh uses, by its vendor slot), so the page stays under the gallery's 16 MB",
+ "kin": {
+  "rift": [
+   [
+    "src/50-biome-rift-species.js",
+    "src/52-biome-rift-library.js",
+    "src/55-biome-rift-trees.js"
+   ],
+   "RIFT",
+   [
+    "needle",
+    "candle",
+    "hang"
+   ]
+  ]
+ }
+}

@@ -72,5 +72,11 @@ ok('the profile runs from 1 at the rim to 0 at the foot',gP.share[0]===1&&gP.sha
 ok('the published share is what the shape draws (rim to foot, on a plain stretch)',(()=>{const R=K.scarp({pts:W0.pts,h:800,run:900,benches:{n:2,w:60},talus:false,rough:0,seed:3}),Q=K.scarpProfile(R,32);return Q.d.every((d,i)=>Math.abs(y(R,0,-d)-800*Q.share[i])<.05);})(),false);
 const gF=path.join(__dirname,'golden-scarp.json'),js=JSON.stringify(gP);
 if(process.argv.includes('--write')){fs.writeFileSync(gF,js);console.log('wrote golden-scarp.json');}
-ok('golden-scarp.json is the module\'s output (--write rewrites it)',fs.existsSync(gF)&&fs.readFileSync(gF,'utf8')===js,false);
+// the same numbers to 1e-12 relative, not the same text: the file is written on one machine and read on others, whose Math functions can
+// differ in the last bit (2026-11-09: two shares off by one ulp on Linux against a golden written elsewhere)
+const near12=(a,b)=>{if(typeof a==='number'&&typeof b==='number')return a===b||Math.abs(a-b)<=1e-12*Math.max(1,Math.abs(a),Math.abs(b));
+ if(Array.isArray(a)&&Array.isArray(b))return a.length===b.length&&a.every((x,i)=>near12(x,b[i]));
+ if(a&&b&&typeof a==='object'&&typeof b==='object'){const ka=Object.keys(a).sort(),kb=Object.keys(b).sort();return ka.join()===kb.join()&&ka.every(k=>near12(a[k],b[k]));}
+ return a===b;};
+ok('golden-scarp.json is the module\'s output to 1e-12 (--write rewrites it)',fs.existsSync(gF)&&near12(JSON.parse(fs.readFileSync(gF,'utf8')),JSON.parse(js)),false);
 console.log(bad?bad+' FAILED':'all passed');process.exit(bad?1:0);

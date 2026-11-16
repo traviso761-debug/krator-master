@@ -1,0 +1,15 @@
+{
+ "legs": 6,
+ "contacts": 6,
+ "wings": 2,
+ "segments": 3,
+ "swap": true,
+ "budget": {
+  "head": 1500,
+  "thorax": 1000,
+  "abd": 1100,
+  "femur": 200,
+  "tibia": 200,
+  "tarsus": 110
+ }
+}

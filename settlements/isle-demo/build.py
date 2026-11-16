@@ -8,7 +8,7 @@ The planner is Voth's site editor, read IN PLACE from settlements/voth (never co
 shell (with this page's own words swapped in), the site model (10), the scene (50) and the tools (55). Voth's own
 ground, cantons and start are left out. In their place:
   - the open world's ground: the isle demo's region (openworld/isle-demo/data) and the world's height and colour
-    fragments (the world's 41 and 42 in openworld/isle-demo/src/world, and 43: the coast as terrain), so what is drawn here stands on the
+    fragments (the world's 41 and 42 in core/world, and 43: the coast as terrain), so what is drawn here stands on the
     ground the open world draws;
   - src/10-isle-frame.js [G data]: a town's frame (local metres round its settlement, the sea at 0) and a VOTH object
     made from that ground, the names Voth's fragments read;
@@ -22,18 +22,19 @@ import base64, glob, hashlib, json, os, re, shutil, subprocess, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.normpath(os.path.join(HERE, '..', '..'))
+sys.path.insert(0, os.path.join(ROOT, 'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 VOTH = os.path.join(ROOT, 'settlements', 'voth')
 VSITE = os.path.join(VOTH, 'targets', 'voth-site')
 WORLD = os.path.join(ROOT, 'openworld', 'isle-demo')
-LD = os.path.join(ROOT, 'openworld', 'isle-demo', 'src', 'world')
+LD = os.path.join(ROOT, 'core', 'world')
 DIST = os.path.join(HERE, 'dist')
 SITE_JSON = os.path.join(HERE, 'site', 'isle-site.json')
 REC = os.path.join(HERE, 'voth-sources.json')
 NL = '\n'
 
 # the engine page Voth's site editor runs on (scene, camera, renderer, controls), as Voth's build.py lists it
-VENDOR = [os.path.join(VOTH, 'three.min.js'), os.path.join(ROOT, 'kits', 'catalog', 'krator-furniture-core.js'),
-          os.path.join(ROOT, 'kits', 'catalog', 'krator-asset-engine.js'), os.path.join(VOTH, 'catalog', 'lod.js')]
+VENDOR = [os.path.join(VOTH, 'three.min.js'), os.path.join(ROOT, 'core', 'catalog', 'krator-furniture-core.js'),
+          os.path.join(ROOT, 'core', 'catalog', 'krator-asset-engine.js'), os.path.join(VOTH, 'catalog', 'lod.js')]
 # the open world's ground: the noise, the fields (heights, water, colour) and the isle's coast
 GROUND = [os.path.join(ROOT, 'core', 'rand', '08-core-rand.js'), os.path.join(ROOT, 'core', 'terrain', '38-core-relief.js'),
           os.path.join(LD, '41-world-fields.js'), os.path.join(LD, '42-world-roads.js'), os.path.join(WORLD, 'src', '43-world-isles.js')]
@@ -50,7 +51,7 @@ SWAP = [('<title>Voth Site Editor</title>', '<title>Isle Demo Site Planner</titl
         ('<button id="m-ferry">B ferry stop</button>', '<button id="m-ferry">B canoe landing</button>'),
         ('<button id="m-strider">N elephant bug station</button>', '<button id="m-strider">N land stop</button>'),
         ('<button id="b-voth">add Voth\'s current districts</button>',
-         '<button id="b-voth" style="display:none"></button><button id="t-Kautoa">Kautoa</button><button id="t-Valapo">Valapo</button>'),
+         '<button id="b-voth" style="display:none"></button><button id="t-Kautoa">Kautoa</button><button id="t-Valapo">Valapo</button><button id="t-Nephtos">Nephtos</button>'),
         ("Raising Voth's ground...", 'Raising the isle...')]
 # the Voth files this page reads, hashed (the shim is made to fit these)
 VOTH_READ = [os.path.join(VOTH, 'tex', 'pack.json'), HEAD, TAIL, os.path.join(VSITE, '10-site-model.js'), os.path.join(VSITE, '50-site-scene.js'), os.path.join(VSITE, '55-site-tools.js')]
@@ -74,6 +75,8 @@ def sources(accept):
     now = {rel(p): sha(p) for p in VOTH_READ}
     old = json.load(open(REC, encoding='utf-8'))['files'] if os.path.isfile(REC) else None
     if accept or old is None:
+        if BSRC.LISTING:   # --list-sources writes nothing
+            return []
         with open(REC, 'w', encoding='utf-8', newline=NL) as f:
             json.dump({'note': "the Voth files build.py reads in place; the shim (src/10, 56, 98) fits these", 'files': now}, f, indent=1)
             f.write(NL)
@@ -163,10 +166,10 @@ def dims_fragment():
             if re.search(r"cls\s*:\s*'(life|flora)'", b) or not num(b, 'w'):
                 continue
             out[m.group(1)] = rec(b, 'isk', 'types')
-    for f in sorted(glob.glob(os.path.join(ROOT, 'settlements', 'iziz', 'src', '7*-vern-*.js'))):
+    for f in sorted(glob.glob(os.path.join(ROOT, 'kits', 'iziz-vernacular', 'src', '7*-vern-*.js'))):   # the Vernacular kit (MODULARITY-PLAN.md step 4)
         for m in re.finditer(r"VERN\.def\(\{key:'([^']+)'(.*?)build:", read(f)):
             out[m.group(1)] = rec(m.group(2), 'izv', 'type', 8)
-            for tag, t in (('VTAG_SF', 'dwelling-single'), ('VTAG_MF', 'dwelling-multi')):   # settlements/iziz/src/70-vern-dwellings.js
+            for tag, t in (('VTAG_SF', 'dwelling-single'), ('VTAG_MF', 'dwelling-multi')):   # kits/iziz-vernacular/src/70-vern-dwellings.js
                 if tag in m.group(2):
                     out[m.group(1)]['types'] = [t]
     BRK = os.path.join(ROOT, 'kits', 'beast-riders')
@@ -181,12 +184,31 @@ def dims_fragment():
             D = dims[m.group(1)]
             out[m.group(1)] = {'w': float(max(v[0] for v in D)), 'd': float(max(v[1] for v in D)), 'h': float(max(v[2] for v in D)), 'kit': 'cat',
                                'types': strs(m.group(2), 'types'), 'role': None, 'job': None, 'wealth': None, 'family': strv(m.group(2), 'family')}
+    # the Hykkousoi buildings (settlements/ys, bundles.py HYK_NAMES: Nephtos's), free-standing only (a grown-on pod is no lot);
+    # Ys's type words as the vocabulary's (core/tags CATALOG_TYPES)
+    HYK_T = {'single-family dwelling': 'dwelling-single', 'multi-family dwelling': 'dwelling-multi', 'market/shop': 'shop', 'tavern/inn': 'tavern', 'military': 'civic'}
+    import bundles as _bd
+    for f in _bd.HYK_NAMES:
+        p = os.path.join(ROOT, 'settlements', 'ys', 'src', f)
+        if not os.path.exists(p):
+            continue
+        for m in re.finditer(r"HYK\.def\(\{key:'([^']+)'(.*?)\bbuild\s*:", read(p), re.S):
+            b = m.group(2)
+            if re.search(r'grown\s*:\s*true', b) or not num(b, 'w'):
+                continue
+            r = rec(b, 'hyk', 'type')
+            st = re.search(r"tags\s*:\s*hykShopTags\('(\w+)'", b)   # 71-hyk-shops.js: a shop's tags from its wealth
+            if st:
+                r['types'], r['wealth'] = ['market/shop'], st.group(1)
+            r['types'] = sorted(set(HYK_T.get(t, t) for t in r['types']))
+            r['family'] = r['family'] or ('dwelling' if any(t.startswith('dwelling') for t in r['types']) else None)
+            out[m.group(1)] = r
     for f in sorted(glob.glob(os.path.join(ROOT, 'kits', 'ringsea', 'src', '*.js'))):
         for m in re.finditer(r"RS_VESSEL\(\{key:'([^']+)'(.*?)\bbuild\s*[:(]", read(f), re.S):
             b = m.group(2)
             if num(b, 'L'):
                 ves[m.group(1)] = {'L': float(num(b, 'L')), 'B': float(num(b, 'B')), 'H': float(num(b, 'H')), 'culture': strv(b, 'culture'), 'name': strv(b, 'name')}
-    return ('/* GENERATED by build.py: the kits\' declared boxes (kits/islanders, settlements/iziz, kits/beast-riders, kits/ringsea) */' + NL +
+    return ('/* GENERATED by build.py: the kits\' declared boxes (kits/islanders, settlements/iziz, kits/beast-riders, settlements/ys, kits/ringsea) */' + NL +
             'var ISLE_DIMS = ' + json.dumps(out, sort_keys=True, separators=(',', ':')) + ';' + NL +
             'var ISLE_VDIMS = ' + json.dumps(ves, sort_keys=True, separators=(',', ':')) + ';' + NL)
 
@@ -242,6 +264,8 @@ def main():
     parts.append('<script>' + NL + '"use strict";' + NL + body + '</script>' + NL)
     parts.append(read(TAIL))
     html = ''.join(parts)
+    if BSRC.LISTING:   # --list-sources: the site page's files are read; the city page reads its own and reports
+        city_page()
     os.makedirs(DIST, exist_ok=True)
     out = os.path.join(DIST, 'isle-site.html')
     with open(out, 'w', encoding='utf-8', newline=NL) as f:
@@ -273,21 +297,27 @@ def main():
 #     fields and the isle's coast, core/simulation, core/materials/record (KMAT) and the two packs' loaders
 #   the bundles: KCITY, CAT (the Beast Riders' buildings: the kit's own and its ports), ISK (the Islanders), IZV (the Vernacular), RINGSEA
 #   this page's own: 15 (the sim's tuning), 20 (ground), 30 (programme), 32 (the city plan), 34 (census, checks), 40-47 (the
-#   towns on core/simulation, the canoe line) [G data]; 57 (the sim's run loop), 59 (citizens near the camera), 60 (draw), 61 (the canoe line's vessels), 98 (start) [web]
+#   towns on core/simulation, the canoe line) [G data]; 57 (the sim's run loop), 59 (citizens near the camera), 60 (draw), 61 (the canoe line's vessels), 63 (the doors on core/door), 98 (start) [web]
 # The [G data] half (data, ground, core/simulation, KCITY, 15-49) is also written as dist/isle-city.plan.js, which the node
 # tests run.
 CITY_CORE = [os.path.join(ROOT, *p.split('/')) for p in (
     'core/rand/08-core-rand.js', 'core/space/20-core-space.js', 'core/tags/50-core-tags.js', 'core/tags/52-core-tags-vocab.js',
-    'core/terrain/38-core-relief.js', 'core/hamlet/10-hamlet-wood.js', 'core/hamlet/20-hamlet-cultures.js', 'core/hamlet/30-hamlet-village.js')] + [os.path.join(LD, '41-world-fields.js'), os.path.join(LD, '42-world-roads.js'),
+    'core/terrain/38-core-relief.js', 'core/hamlet/10-hamlet-wood.js', 'core/hamlet/14-hamlet-farmland.js', 'core/hamlet/16-hamlet-names.js', 'core/hamlet/18-hamlet-names.js', 'core/hamlet/20-hamlet-cultures.js', 'core/hamlet/30-hamlet-village.js')] + [os.path.join(LD, '41-world-fields.js'), os.path.join(LD, '42-world-roads.js'),
                                           os.path.join(WORLD, 'src', '43-world-isles.js')]
 CITY_MAT = [os.path.join(ROOT, 'core', 'materials', 'record', f) for f in ('23-mat-record.js', '24-tex-def.js', '25-matlib-host.js', '26-matlib-bind.js')]
 # core/export (P6b, PLAN.md section 7): the container and its adapters, so the page exports and verify.py checks its profile
 CITY_EXPORT = [os.path.join(ROOT, 'core', 'export', f) for f in ('07-core-export.js', '09-core-export-adapters.js', '10-core-export-scene.js')] + [os.path.join(ROOT, 'core', 'biome', '44-core-stage.js')]   # KSTAGE: the stage section (light, fog, sky, the ground's look; standalone, needs only THREE)
 # core/simulation (P7b, PLAN.md section 9): every fragment, as Dhelv and Shade take it; the isle host is src/15 and 40-49
 CITY_SIM = [os.path.join(ROOT, 'core', 'simulation', f) for f in sorted(os.listdir(os.path.join(ROOT, 'core', 'simulation'))) if re.match(r'77-sim-.*\.js$', f)]
-CITY_DATA_JS = ['15-isle-tune.js', '20-isle-ground.js', '30-isle-programme.js', '32-isle-city.js', '34-isle-census.js',
-                '40-isle-sim.js', '41-isle-nav.js', '42-isle-people.js', '43-isle-items.js', '44-isle-economy.js', '45-isle-sim-checks.js', '46-isle-stocks.js', '47-isle-trade.js', '47h-isle-hamlets.js', '48-isle-week.js', '49-isle-govern.js', '50-isle-export.js']
-CITY_WEB_JS = ['57-isle-run.js', '58-isle-protos.js', '59-isle-citizens.js', '60-isle-draw.js', '61-isle-canoes.js', '62-isle-export-scene.js', '98-isle-city-start.js']
+CITY_DATA_JS = ['15-isle-tune.js', '20-isle-ground.js', '30-isle-programme.js', '32-isle-city.js', '33-isle-spurs.js', '34-isle-census.js',
+                '40-isle-sim.js', '41-isle-nav.js', '42-isle-people.js', '43-isle-items.js', '44-isle-economy.js', '45-isle-sim-checks.js', '46-isle-stocks.js', '47-isle-trade.js', '47b-isle-build.js', '47c-isle-crime.js', '47f-isle-found.js', '47h-isle-hamlets.js', '47k-isle-colony.js', '47x-isle-expeditions.js', '47y-isle-houses.js', '47n-isle-herders.js', '47m-isle-money.js', '47u-isle-unrest.js', '47r-isle-refugees.js', '48-isle-week.js', '49-isle-govern.js', '50-isle-export.js']
+# the Construction kit (kits/construction, KCONS: a building site's gear) and core/city's build-up of a kit piece
+# (KCITY.constructMesh), read in place for the empty lots' works (60, 2026-11-04)
+CITY_CONSTRUCT = [os.path.join(ROOT, 'core', 'city', '54-city-host-construct.js'), os.path.join(ROOT, 'kits', 'construction', 'src', '10-cons-site.js')]
+# core/door's host (KDOORHOST: the leaves posed, the tick, E), for the Vernacular's doors the page hosts (src/63-isle-doors.js);
+# KDOOR, KGLASS and KDOORLEAF come with the IZV bundle (kits/iziz-vernacular/vernacular.py DOOR)
+CITY_CONSTRUCT.append(os.path.join(ROOT, 'core', 'door', '90-core-door-host.js'))
+CITY_WEB_JS = ['57-isle-run.js', '58-isle-protos.js', '59-isle-citizens.js', '60-isle-draw.js', '61-isle-canoes.js', '62-isle-export-scene.js', '63-isle-doors.js', '98-isle-city-start.js']
 CITY_HEAD = '''<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Isle Demo Towns</title>
 <style>
@@ -345,8 +375,9 @@ def city_page():
     rs, _ = bundles.ringsea_fragment()
     sc = lambda s: '<script>' + NL + s + '</script>' + NL
     html = (CITY_HEAD + '<script>/* %s */%s%s%s</script>%s' % (rel(VENDOR[0]), NL, read(VENDOR[0]), NL, NL) +
-            sc(data) + sc(core) + sc(mats) + sc(kc) + sc(cat) + sc(isk) + sc(izv) + sc(rs) + sc(own(CITY_DATA_JS)) + sc(own(CITY_WEB_JS)) +
+            sc(data) + sc(core) + sc(mats) + sc(kc) + sc(cat) + sc(isk) + sc(izv) + sc(rs) + sc(own(CITY_DATA_JS)) + sc(''.join('/* ---- %s ---- */%s%s%s' % (rel(p), NL, read(p), NL) for p in CITY_CONSTRUCT)) + sc(own(CITY_WEB_JS)) +
             '</body></html>' + NL)
+    BSRC.report()   # --list-sources: both pages' files, then exit
     os.makedirs(DIST, exist_ok=True)
     html = matlib_pack.write_sidecar(side, html, DIST, 'isle-city.tex.js')
     out = os.path.join(DIST, 'isle-city.html')

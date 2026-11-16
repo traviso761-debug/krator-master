@@ -217,7 +217,7 @@ function pinAt(x,z){const c=TSINGY.cell,A=PGRID.get(Math.floor(x/c)+','+Math.flo
 // inside their rims (the ground mesh draws groundBase and is cut round each
 // rim); terrainH is what the biome sees: groundH, with a stack's domed top
 // inside its footprint.
-function groundBase(x,z){
+function groundBase0(x,z){
  const lk=bayIn(x,z),rd=riverD(x,z),rise=riseAt(x,z);
  const sw=fbm(x*.0008+3,z*.0008-1,17,3)-.5,ro=fbm(x*.0045-2,z*.0045+5,29,2)-.5;
  let h=1.9+sw*2.4+ro*1.1;
@@ -232,6 +232,12 @@ function groundBase(x,z){
  const bk=basaltK(x,z);h=mix(h,Math.max(h,4.2+bk*2.4),bk);                                // the basalt plinth
  const inL=smooth(25,-15,lk),bed=-.6-2.0*smooth(0,-220,lk)-11*smooth(-220,-900,lk)+1.6*(fbm(x*.0018+5,z*.0018+9,77,2)-.5)*smooth(-40,-220,lk);
  return mix(h,Math.min(bed,-.35),inL);}
+// THE CAVERNS STATION'S HOOK (stations/caverns, PLAN.md "The caverns station"; the catch-up pass, 2026-11-03): a station that defines
+// NWBAY_KARST(o) lays the Hykkousoi karst (KKARST) under this ground and hands back its surface, the dolines and cenotes on KRELIEF;
+// groundBase is then the open ground with them, and everything drawn from it (the ground mesh, terrainH, the plants) follows. On the main
+// page there is no NWBAY_KARST: groundBase is groundBase0 and nothing moves
+var NWBAY_KARST_N=typeof NWBAY_KARST==='function'?NWBAY_KARST({ground:groundBase0,SINKS,STACKS,BAY,XZ,uvOf,bayIn,riverD,tsingyK,lavaK,basaltK,shelfK,sinkAt,sinkRad,smooth}):null;
+function groundBase(x,z){return NWBAY_KARST_N&&NWBAY_KARST_N.surf?NWBAY_KARST_N.surf(x,z):groundBase0(x,z);}
 SINKS.forEach(S=>{S.top=groundBase(S.x,S.z);S.floorY=S.floor!=null?S.floor:S.top-S.depth;});
 function groundH(x,z){const Q=sinkAt(x,z);if(Q&&Q.d<0)return sinkFloorH(Q.S,x,z,Q.d);return groundBase(x,z);}
 // THE STACKS AS RECORDS: a tower's foot under the lowest ground round it, its top at the stack's h (KSTACKS.tower)
@@ -283,7 +289,8 @@ BIO.init({tags:'nwbay',THREE:THREE,scene:scene,terrainH:terrainH,
  BIO.LOD.cull=BIO.LOD.fade>0&&q.get('lodcull')!=='0';
  // the leaf looks the kit takes on this page only (50-biome-nwbay-species.js, NWBAY_LOOK): the broadleaf back-light (?backlit=0), the
  // floor cover's root in the ground's colour (?rootcol=0; gain: the ground's tint .6 times its detail's mean .9), the dry season (?season=0)
- window.NWBAY_LOOK={backlit:q.get('backlit')==='0'?0:.35,ground:q.get('rootcol')==='0'?0:.54,season:q.get('season')!=='0',fung:q.get('fung')!=='0'};}
+ window.NWBAY_LOOK={backlit:q.get('backlit')==='0'?0:.35,ground:q.get('rootcol')==='0'?0:.54,season:q.get('season')!=='0',fung:q.get('fung')!=='0',
+  joints:q.get('joints')!=='0',holds:q.get('holds')!=='0'};}   /* BIO.holdTo on the blooms and the umbrella thorn's crown (55 holdB, holdC) */   /* BIO.flareJoin on the limbs (55 J; the catch-up pass, 2026-11-03) */
 BIO.setSun([-1200,900,-600]);
 // ---------------------------------------------------------------- the ground
 // One mesh (plus a finer strip along the terrace reach of the river). Painted
@@ -340,11 +347,17 @@ const TEX_GROUND=BIO.canvasTex(1536,1536,(g,w,h)=>{const id=g.createImageData(w,
 const TEX_DETAIL=BIO.canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
  for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4,v=232+(fbm(x/9,y/9,5,2)-.5)*36+(BIO.fn.h3(x,y,9)-.5)*20;d[i]=d[i+1]=d[i+2]=clamp(v,0,255);d[i+3]=255;}
  g.putImageData(id,0,0);});
-const MAT_GROUND=new THREE.MeshLambertMaterial({map:TEX_GROUND,color:0x9a9890});
-MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:hostGroundLib('groundDetail',TEX_DETAIL)};
- sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;attribute vec4 aGL;varying vec4 vGL;').replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vGL=aGL;');
- sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail;varying vec3 vGWP;varying vec4 vGL;')
+/* THE GROUND'S LIGHT PER PIXEL (the cloud kits' merge, 2026-11-04; core/terrain/GROUND.md, the relief's adoption list): on KGROUND the ground is
+   MeshStandard, so the relief's bump and the mesh's hollows reach the light (r128's Lambert lights per vertex); ?kground=0 keeps the Lambert,
+   ?kgrelief=0 drops the relief (the before-and-after) */
+const KG_STD=typeof KGROUND!=='undefined'&&new URLSearchParams(location.search).get('kground')!=='0',KG_RELIEF=KG_STD&&new URLSearchParams(location.search).get('kgrelief')!=='0';
+const MAT_GROUND=KG_STD?new THREE.MeshStandardMaterial({map:TEX_GROUND,color:0x9a9890,roughness:.96,metalness:0}):new THREE.MeshLambertMaterial({map:TEX_GROUND,color:0x9a9890});
+/* the ground's own hook, kept by name: the sinkholes' lip takes it (not MAT_GROUND.onBeforeCompile, which is KHOOK's composite once a layer is on) */
+const GROUND_HOOK=sh=>{sh.uniforms.uDetail={value:hostGroundLib('groundDetail',TEX_DETAIL)};
+ sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;attribute vec4 aGL;varying vec4 vGL;attribute vec2 aGL2;varying vec2 vGL2;').replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vGL=aGL;vGL2=aGL2;');
+ sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail;varying vec3 vGWP;varying vec4 vGL;varying vec2 vGL2;')
   .replace('#include <map_fragment>','#include <map_fragment>\n{vec3 dt=texture2D(uDetail,vGWP.xz*0.165).rgb;vec3 dt2=texture2D(uDetail,vGWP.xz*0.021+0.37).rgb;diffuseColor.rgb*=mix(vec3(1.0),dt*dt2*1.12,0.85);\n/*KGROUND*/}');};
+MAT_GROUND.onBeforeCompile=GROUND_HOOK;
 // THE GROUND'S LIBRARY LAYERS (core/terrain KGROUND, 43-core-ground.js; the final rebuild, 2026-10-27; ?kground=0 for the paint and its
 // grain alone): four of the library's ground sets laid over the paint by zone, hex-tiled, scaled with distance and blended by height:
 // leaf mulch on the jungle's and the rainforest's floor (ground.ground072, nhighlands' mulch) and over the old lava tongues' weathered
@@ -359,11 +372,37 @@ function glWeights(x,z){const up=FC.at(FC.a.up,x,z),lk=FC.at(FC.a.lk,x,z),rd=FC.
  const sand=smooth(90,6,lk)*smooth(-60,-10,lk)*(1-lava)*(1-trav),bare=Math.max(ts,smooth(14,1,kd)*smooth(-6,-1,kd));
  const litter=(1-smooth(.4,.62,up))*(1-sand)*(1-black)*(1-bk)*(1-trav)*(1-bare)*smooth(-4,8,lk);
  return[litter,sand,lava,trav];}
-function addGL(g){if(!GL_ON)return g;const p=g.attributes.position,a=new Float32Array(p.count*4);
- for(let i=0;i<p.count;i++){const w=glWeights(p.getX(i),p.getZ(i));a.set(w,i*4);}g.setAttribute('aGL',new THREE.BufferAttribute(a,4));return g;}
+// THE BAY'S ROCK (44n-host-geology.js, NWBAY_GEO: the 5.1 geology read at the page's anchor; the catch-up pass, 2026-11-03): a second pair of
+// weights (aGL2: marble, ash). THE WHITE MARBLE BAND (?marble=0 off) on the limestone at the page's own volcanic contact, the outer margin of
+// each old lava tongue and of the basalt headland (where each one's field falls off: NWBAY_GEO.band), and an outcrop round each marble node
+// the field puts in the page's box (two, medium grade: the Hykkousoi's quarries). The stacks keep their limestone (they are not ground).
+// THE ASH SOILS (?ash=0 off) on the volcanic ground itself, the tongues and the basalt: at this anchor the vents' tuff (93-170) lies on the
+// volcanic side and none reaches the limestone. Drawn in the library's grey ash darkened toward a fertile ash soil: a stand-in, named in
+// PROMPTS-NEEDED.md until a real andosol set is sourced
+const GEO_Q=new URLSearchParams(location.search),GEO_MARBLE=GEO_Q.get('marble')!=='0',GEO_ASH=GEO_Q.get('ash')!=='0';
+const GEO_OUTCROPS=(typeof NWBAY_GEO!=='undefined'?NWBAY_GEO.nodes:[]).filter(n=>n.kind==='marble');
+function glWeights2(x,z){const lv=FC.at(FC.a.lv,x,z),bk=FC.at(FC.a.bk,x,z),E=(typeof NWBAY_GEO!=='undefined'?NWBAY_GEO.band.lavaEdge:[0,.1,.45]);
+ let m=0;if(GEO_MARBLE){m=Math.max(smooth(E[0],E[1],lv)*smooth(E[2],E[1],lv),.8*smooth(E[0],E[1],bk)*smooth(E[2],E[1],bk));
+  const R=(typeof NWBAY_GEO!=='undefined'?NWBAY_GEO.band.outcrop:46);for(const n of GEO_OUTCROPS){const d=Math.hypot(x-n.x,z-n.z);if(d<R*1.4)m=Math.max(m,smooth(R,R*.45,d+8*(fbm(x*.05+3,z*.05,74,2)-.5)));}
+  m*=smooth(-1,4,FC.at(FC.a.lk,x,z));}
+ const ash=GEO_ASH?clamp(Math.max(smooth(.45,.85,lv)*.85,smooth(.4,.9,bk)*.5),0,1):0;
+ return[clamp(m,0,1),ash];}
+function addGL(g){if(!GL_ON)return g;const p=g.attributes.position,a=new Float32Array(p.count*4),a2=new Float32Array(p.count*2);
+ for(let i=0;i<p.count;i++){const w=glWeights(p.getX(i),p.getZ(i));a.set(w,i*4);a2.set(glWeights2(p.getX(i),p.getZ(i)),i*2);}g.setAttribute('aGL',new THREE.BufferAttribute(a,4));g.setAttribute('aGL2',new THREE.BufferAttribute(a2,2));return g;}
 if(GL_ON){const L=(slot,w,amt,gain)=>KGROUND.layer('nwbay',slot,{w,amt,gain,tint:'diffuse'});
  const LY=[L('groundLitter','vGL.x',.6,1.2),L('groundSand','vGL.y',.6,1.0),L('groundLava','vGL.z',.7,1.0),L('groundTrav','vGL.w',.7,1.1)];
- KGROUND.hook(MAT_GROUND,{layers:LY.every(Boolean)?LY:[],key:'nwbay-ground'});}
+ /* the bay's rock (above): the ash over the cinder on the old flows, the marble last (a band of bare white stone at the contact) */
+ const LA=KGROUND.layer('nwbay','groundAsh',{w:'vGL2.y',amt:.8,gain:1,tint:'vec3(1.0)'}),   /* ground.ash.soil, the delivered andosol: no tint (NWBAY_GEO.ash.tint darkened the stand-in) */
+  LM=KGROUND.layer('nwbay','groundMarble',{w:'vGL2.x',amt:.9,gain:1.05});
+ const LY2=LY.every(Boolean)?LY.concat([GEO_ASH?LA:null,GEO_MARBLE?LM:null].filter(Boolean)):[];
+ KGROUND.hook(MAT_GROUND,{layers:LY2,relief:KG_RELIEF?{bump:.075,cavity:.8,mesh:1}:null,key:'nwbay-ground'+(LY2.length>4?'-rock'+(GEO_ASH&&LA?'a':'')+(GEO_MARBLE&&LM?'m':''):'')});}
+// the resource nodes the field puts in the page's box (NWBAY_GEO.nodes, read from the 5.1 data at the anchor, not invented): each a core/tags
+// record (class feature, kind resource) where it stands on dry ground; the marble's two are the outcrops above (registered volumes: they
+// are drawn), the others core/tags records alone (nothing is drawn in them, so no registered volume). No node model is drawn
+// (kits/resources' node defs are not on this page): the records are what a game reads
+const GEO_NODES=(typeof NWBAY_GEO!=='undefined'?NWBAY_GEO.nodes:[]).map(n=>{const h=groundBase(n.x,n.z),dry=h>.5&&bayIn(n.x,n.z)>8;
+ if(dry)(n.kind==='marble'?REGISTER:BIO.record)({name:'A '+n.kind+' node ('+n.grade+' grade; the geology field, map 5.1)',x:n.x,y:h,z:n.z,r:n.kind==='marble'?(NWBAY_GEO.band.outcrop==null?46:NWBAY_GEO.band.outcrop):6,h:4,kind:'resource',
+  tags:{resource:{id:n.id,kind:n.kind,grade:n.grade,src:'kits/resources/data/geology.json',anchor:NWBAY_GEO.anchor}}});return Object.assign({dry},n);});
 // THE RISERS AS DROPS (2026-10-25): the river's treads and risers worked out here exactly as 89w-host-water.js hands them to
 // WATER.terraces (the samples every 5 m, a tread a run of non-ramp samples on one step, kept when 4 m or longer, a step that
 // does not descend joining the one above), so the ground can be drawn to them: downstream of every lip (the top of a riser,
@@ -398,7 +437,7 @@ function stripK(u,v){return smooth(STRIP.hw,STRIP.hw*.5,Math.abs(v-vR(u)))*smoot
  const p=g.attributes.position,inS=new Uint8Array(p.count);for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i),uv=uvOf(x,z);p.setY(i,groundBase(x,z)-1.2*stripK(uv[0],uv[1]));{const q=riserAt(x,z,14);if(q&&stripK(uv[0],uv[1])>.99)p.setY(i,Math.min(p.getY(i),q.R.yLo-2.5));}const Q=sinkAt(x,z);inS[i]=Q&&Q.d<0?1:0;}
  // cut round each sinkhole: drop every triangle with a corner inside a rim (the lip hides the jagged edge)
  {const I=g.index.array,keep=[];for(let t=0;t<I.length;t+=3){if(inS[I[t]]||inS[I[t+1]]||inS[I[t+2]])continue;keep.push(I[t],I[t+1],I[t+2]);}g.setIndex(keep);}
- g.computeVertexNormals();addGL(g);const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.inspectLabel='The bay floor';scene.add(m);
+ g.computeVertexNormals();addGL(g);const m=new THREE.Mesh(g,MAT_GROUND);if(KG_RELIEF)KGROUND.cavityMesh(m);m.userData.probeSkip=true;m.userData.inspectLabel='The bay floor';scene.add(m);
  // the strip: along u, across v, uv matched to the big texture by world position
  // rows every 3 m along u, and two more at every riser's lip (the drop is drawn within a metre of it); columns 1.5 m apart over
  // the channel (|v| < 18 m: the pools, the faces' ends), 4 m over the banks, 8 m at the strip's feathered edge
@@ -410,7 +449,7 @@ function stripK(u,v){return smooth(STRIP.hw,STRIP.hw*.5,Math.abs(v-vR(u)))*smoot
   pos.push(P[0],riserDrawH(P[0],P[1],groundH(P[0],P[1])),P[1]);uvs.push((P[0]-(CENTER[0]-S/2))/S,1-(P[1]-(CENTER[1]-S/2))/S);}}
  for(let i=0;i<NU;i++)for(let j=0;j<NV;j++){const a=i*(NV+1)+j,b=a+NV+1;idx.push(a,a+1,b,a+1,b+1,b);}   // CCW seen from above
  const sg=new THREE.BufferGeometry();sg.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));sg.setAttribute('uv',new THREE.Float32BufferAttribute(uvs,2));sg.setIndex(idx);sg.computeVertexNormals();addGL(sg);
- const sm=new THREE.Mesh(sg,MAT_GROUND);sm.userData.probeSkip=true;sm.userData.inspectLabel='The travertine terraces';scene.add(sm);})();
+ const sm=new THREE.Mesh(sg,MAT_GROUND);if(KG_RELIEF)KGROUND.cavityMesh(sm);sm.userData.probeSkip=true;sm.userData.inspectLabel='The travertine terraces';scene.add(sm);})();
 
 // ---------------------------------------------------------------- the karst stacks (meshes: KSTACKS.mesh, guilin's look)
 // Two meshes for all the stacks: the walls (grey limestone streaked black where the rain runs and ochre where iron
@@ -528,7 +567,11 @@ const SINK_GEOS=[];
   LITTER=new THREE.Color(0x3e3020),LITTER2=new THREE.Color(0x56462c),BED=new THREE.Color(0xb8b4a0),BLK_ALC=new THREE.Color(0x1e1c1a),c=new THREE.Color();
  const S0=TERR.R*2.2,gUV=(x,z)=>[(x-(CENTER[0]-S0/2))/S0,1-(z-(CENTER[1]-S0/2))/S0];
  const MAT_FLOOR=new THREE.MeshLambertMaterial({map:TEX_DETAIL,vertexColors:true,color:0xffffff});
- const MAT_LIP=MAT_GROUND.clone();MAT_LIP.onBeforeCompile=MAT_GROUND.onBeforeCompile;if(MAT_GROUND.customProgramCacheKey!==THREE.Material.prototype.customProgramCacheKey)MAT_LIP.customProgramCacheKey=MAT_GROUND.customProgramCacheKey;MAT_LIP.polygonOffset=true;MAT_LIP.polygonOffsetFactor=-2;MAT_LIP.polygonOffsetUnits=-4;
+ /* the lip is ground: the ground's own hook and a copy of its layers (KHOOK.copy: the KGROUND layers on it now; the sky's cloud shade, the wet and
+    the horizon reach each material on their own). It took MAT_GROUND.onBeforeCompile and its key before (2026-11-03, the catch-up pass): that is
+    KHOOK's composite, so the lip compiled the ground's cloud shade and then its own, which found its anchor gone (the shader-programs failure,
+    'atmos-cloudshade-0.6: #include <lights_fragment_begin>', a dead frame wherever a sinkhole's lip was in view), and shared the ground's key */
+ const MAT_LIP=MAT_GROUND.clone();MAT_LIP.onBeforeCompile=GROUND_HOOK;if(typeof KHOOK!=='undefined'&&KHOOK.copy)KHOOK.copy(MAT_GROUND,MAT_LIP);MAT_LIP.polygonOffset=true;MAT_LIP.polygonOffsetFactor=-2;MAT_LIP.polygonOffsetUnits=-4;
  function mesh(pos,col,uv,idx,mat,label){const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));
   if(col)g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));g.setIndex(idx);g.computeVertexNormals();if(mat===MAT_LIP)addGL(g);const m=new THREE.Mesh(g,mat);m.userData.inspectLabel=label;m.userData.host=true;scene.add(m);return g;}
  SINKS.forEach((S,si)=>{const seg=S.r>50?96:48,cen=S.kind==='cenote';

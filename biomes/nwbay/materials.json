@@ -1,6 +1,6 @@
 {
  "build": "nwbay",
- "note": "The nwbay kit's adapter onto the material library (core/materials/PLAN.md). Keys are the kit's MAT slots (50-*-species.js; BIO.libSwap names an array entry by index, a nested table's entry as key.name). Grey detail maps (keep 0) normalised to the measured mean of the procedural map each replaces (2026-10-06), so the species tints keep their tone; prism gum keeps its own colour. Slots not listed stay procedural. Hosts that vendor the kit get these by inlining the kit's pack (tools/textures/matlib_pack.py). Run python3 tools/textures/pack.py biomes/nwbay after any change, then python3 build.py. Slots drawn as a single plant (grass, reeds, fronds, palms, rosettes, paddles, moss) show one cell of their nine-plant sheet (`cell`, the middle one); crown and canopy cards keep the whole sheet. bloom (2026-10-06, late): card.flower.bloom, grey at the procedural map's mean, so each species' instance colour colours its flowers. groundDetail (2026-10-06, late): the host's ground layers multiplied over the painted ground (45-host-stage.js hostGroundLib), grey and bright (mean .9), colour map only. The host's girder tower and jetty (stone.cut, 86-host-jetty.js) (2026-10-06, late; 85-host-tower.js hostTowerLib): concrete.ancient and metal.rust.plate at the procedural maps' brightness and colour, worked out from their painters. rock.wall and rock.top (2026-10-25): the karst stacks drawn as guilin's towers (45-host-stage.js), with guilin's karst limestone and moss at guilin's scales. 2026-10-26: the grey bark canvases (kinds 1-6) are lifted in linear light (50 barkLift) until their mean sits above the brightest channel of the species' tints (they clipped to white before, the ironbark 2.2x over); bark1..6 means are the lifted canvases' measured sRGB luminance. groundLitter, groundSand, groundLava, groundTrav (2026-10-27, the final rebuild): the ground's KGROUND layers by zone (45-host-stage.js), full colour as nhighlands' ground sets.",
+ "note": "The nwbay kit's adapter onto the material library (core/materials/PLAN.md). Keys are the kit's MAT slots (50-*-species.js; BIO.libSwap names an array entry by index, a nested table's entry as key.name). Grey detail maps (keep 0) normalised to the measured mean of the procedural map each replaces (2026-10-06), so the species tints keep their tone; prism gum keeps its own colour. Slots not listed stay procedural. Hosts that vendor the kit get these by inlining the kit's pack (tools/textures/matlib_pack.py). Run python3 tools/textures/pack.py biomes/nwbay after any change, then python3 build.py. Slots drawn as a single plant (grass, reeds, fronds, palms, rosettes, paddles, moss) show one cell of their nine-plant sheet (`cell`, the middle one); crown and canopy cards keep the whole sheet. bloom (2026-10-06, late): card.flower.bloom, grey at the procedural map's mean, so each species' instance colour colours its flowers. groundDetail (2026-10-06, late): the host's ground layers multiplied over the painted ground (45-host-stage.js hostGroundLib), grey and bright (mean .9), colour map only. The host's girder tower and jetty (stone.cut, 86-host-jetty.js) (2026-10-06, late; 85-host-tower.js hostTowerLib): concrete.ancient and metal.rust.plate at the procedural maps' brightness and colour, worked out from their painters. rock.wall and rock.top (2026-10-25): the karst stacks drawn as guilin's towers (45-host-stage.js), with guilin's karst limestone and moss at guilin's scales. 2026-10-26: the grey bark canvases (kinds 1-6) are lifted in linear light (50 barkLift) until their mean sits above the brightest channel of the species' tints (they clipped to white before, the ironbark 2.2x over); bark1..6 means are the lifted canvases' measured sRGB luminance. groundLitter, groundSand, groundLava, groundTrav (2026-10-27, the final rebuild): the ground's KGROUND layers by zone (45-host-stage.js), full colour as nhighlands' ground sets. 2026-11-03 (the catch-up pass): the current pack.py writes each card's plants and anchor, and the card guard then refused three slots pair 1 never showed: sword and strap (crown clumps of a centre-based sheet) take \"base\": \"centre\", the reviewed base in card-bases.json (BIO.cardTurn makes no turn for it: nothing drawn moves), and bloom takes check_cells' cell, as nwlowlands and xanadu did.",
  "size": 512,
  "families": {
   "bark0": {
@@ -527,7 +527,8 @@
     0.34,
     0.66,
     0.66
-   ]
+   ],
+   "base": "centre"
   },
   "strap": {
    "lib": "card.sword",
@@ -545,7 +546,8 @@
     0.34,
     0.66,
     0.66
-   ]
+   ],
+   "base": "centre"
   },
   "paddle": {
    "lib": "card.paddle",
@@ -815,7 +817,13 @@
    },
    "metal": 0,
    "normalScale": 1.0,
-   "size": 512
+   "size": 512,
+   "cell": [
+    0.495,
+    0.022,
+    0.97,
+    0.976
+   ]
   },
   "groundDetail": {
    "lib": "ground.gravelly_sand",
@@ -1067,6 +1075,38 @@
    "specular": 0.25,
    "mapOnly": true,
    "own": true
+  },
+  "groundMarble": {
+   "lib": "rock.marble.white",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true,
+   "own": true,
+   "_note": "2026-11-03, the catch-up pass: the white marble band at the limestone's volcanic contact and the marble nodes' outcrops (45-host-stage.js glWeights2; 44n NWBAY_GEO); rock.marble.white from the 2026-11-03 delivery (was rock.marble012, a grey trim marble)"
+  },
+  "groundAsh": {
+   "lib": "ground.ash.soil",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true,
+   "own": true,
+   "_note": "2026-11-03, the catch-up pass: the ash soils on the old flows: ground.ash.soil (an andosol) from the 2026-11-03 delivery, untinted (was ground.ash darkened by the layer's tint)"
   }
  }
 }

@@ -25,8 +25,17 @@ ISLE.simPeople = function (TS, places) {
   var counts = {}, role = function (o) { SIM.role(Object.assign({ org: org, settlement: s, homes: ['home'], prefers: prefers(), needs: needsOf(o.name) }, o)); };
   Object.keys(T.jobs).forEach(function (j) {
     var J = T.jobs[j], n = J.kinds.reduce(function (a, k) { return a + (posts[k] || 0); }, 0); if (!n) return;
-    counts[j] = n;
-    role({ id: s + '.' + j, name: j, count: n, homes: (J.homes || ['home']).slice(), work: { kinds: J.kinds.slice(), act: 'WORK', near: true }, sched: T.sched[J.sched || 'work'] });
+    var Pt = J.patrol, w = Pt ? Math.round(n * Pt.share) : 0;
+    counts[j] = n - w;
+    role({ id: s + '.' + j, name: j, count: n - w, homes: (J.homes || ['home']).slice(), work: { kinds: J.kinds.slice(), act: 'WORK', near: true }, sched: T.sched[J.sched || 'work'] });
+    if (!w) return;
+    /* the watch: posted with the rest, walking the markets, greens and plazas by day, moving on every `every` minutes */
+    places.forEach(function (P) { if (Pt.at.indexOf(P.kind) >= 0) P.activities.PATROL = Math.max(P.activities.PATROL || 0, Pt.cap); });
+    if (SIM.placesChanged) SIM.placesChanged();
+    var pf = prefers(); pf.PATROL = { kinds: Pt.at.slice(), spread: 4 }; counts[Pt.role] = w;
+    var cy = {}; cy.PATROL = Pt.every;
+    role({ id: s + '.' + Pt.role, name: Pt.role, count: w, homes: (J.homes || ['home']).slice(), prefers: pf, work: { kinds: J.kinds.slice(), act: 'WORK', near: true },
+      sched: T.sched[Pt.sched], cycle: cy, needs: needsOf(Pt.role) });
   });
   var kids = Math.round(beds * A.children), pupils = Math.min(kids, study), elders = Math.round(beds * A.elders);
   if (pupils) role({ id: s + '.pupil', name: 'pupil', count: pupils, work: { kinds: ['school', 'temple', 'shrine'], act: 'STUDY', near: true }, sched: T.sched.pupil });

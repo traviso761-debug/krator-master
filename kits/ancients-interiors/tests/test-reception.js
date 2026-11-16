@@ -1,7 +1,7 @@
 #!/usr/bin/env node
-/* kits/ancients-interiors/tests/test-reception.js: the OPT-IN reception recipe (opt/38-ai-reception.js) on the real
-   catalog. The kit's core (src/10-49) is loaded first and checked to hold no reception (the default bundle is as before),
-   then the opt-in fragment; then at shallow and deep sizes, in both dresses and two seeds:
+/* kits/ancients-interiors/tests/test-reception.js: the reception recipe (src/38-ai-reception.js, in the core since 2026-11-08)
+   on the real catalog. The kit's core (src/10-49) is loaded, and the fragment once more to check it registers once; then at
+   shallow and deep sizes, in both dresses and two seeds:
      - AI.audit passes (every key in the catalog, every piece inside, no overlaps, the doorway and reserved floor clear,
        the minimum counts: a counter, a chair, two divans), and nothing was skipped at the sizes the recipe is for;
      - the counter faces the door, off the back wall, with a chair behind it;
@@ -30,15 +30,11 @@ global.document = { createElement: () => ({ getContext: () => new Proxy({}, { ge
 (0, eval)(fs.readFileSync(path.join(CACHE, 'fb.js'), 'utf8') + ';\n' + fs.readFileSync(path.join(CACHE, 'ib.js'), 'utf8') + ';global.KF=KratorFurniture;global.IX=KratorInteriors;');
 const core = fs.readdirSync(path.join(KIT, 'src')).filter(f => /^\d/.test(f) && f.endsWith('.js') && f < '50').sort();
 (0, eval)(core.map(f => fs.readFileSync(path.join(KIT, 'src', f), 'utf8')).join('\n') + ';global.AI=KratorAncientsInteriors;');
-ok(!AI.RECIPES.reception && !('board' in AI.DRESS.ancient), 'the default core has no reception recipe and no board role');
+ok(core.indexOf('38-ai-reception.js') >= 0 && AI.RECIPES.reception, 'the core holds the reception recipe');
 const nBefore = Object.keys(AI.RECIPES).length, ancientBefore = JSON.stringify(AI.DRESS.ancient);
-(0, eval)(fs.readFileSync(path.join(KIT, 'opt', '38-ai-reception.js'), 'utf8'));
-(0, eval)(fs.readFileSync(path.join(KIT, 'opt', '38-ai-reception.js'), 'utf8'));
-ok(AI.RECIPES.reception && Object.keys(AI.RECIPES).length === nBefore + 1, 'the opt-in fragment registers the reception recipe, once');
-{
-  const a = Object.assign({}, AI.DRESS.ancient); delete a.board;
-  ok(JSON.stringify(a) === ancientBefore && AI.DRESS.ancient.board === 'ancients_board' && AI.DRESS.occupied.board === 'post-apoc_common_board', 'it adds the board role and changes no other');
-}
+(0, eval)(fs.readFileSync(path.join(KIT, 'src', '38-ai-reception.js'), 'utf8'));
+ok(Object.keys(AI.RECIPES).length === nBefore && JSON.stringify(AI.DRESS.ancient) === ancientBefore, 'the fragment registers the reception recipe once (a second load changes nothing)');
+ok(AI.DRESS.ancient.board === 'ancients_board' && AI.DRESS.occupied.board === 'post-apoc_common_board', 'it adds the board role to both dresses');
 AI.install(IX);
 const cat = IX.runtimeAdapter(KF, KF.batch()), G = AI._geo;
 

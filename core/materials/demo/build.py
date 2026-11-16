@@ -28,14 +28,18 @@ ImageFile.MAXBLOCK = 1 << 24       # optimize=True with subsampling=0 overflows 
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(HERE)))
+sys.path.insert(0, os.path.join(ROOT, 'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 MAT = os.path.join(ROOT, 'core', 'materials')
 
 
 def find_three():
-    for c in (os.path.join(HERE, 'three.min.js'), os.path.join(ROOT, 'kits', 'ringsea', 'three.min.js'),
-              os.path.join(ROOT, 'kits', 'ancients', 'three.min.js'), os.path.join(ROOT, 'biomes', 'sedesert', 'three.min.js')):
-        if os.path.isfile(c):
-            return c
+    """The pinned three.js r128, from the one place every core demo takes it (tools/harness.py local_three; MODULARITY-PLAN.md
+    step 5): a copy beside this file, else the repo's."""
+    sys.path.insert(0, os.path.join(ROOT, 'tools'))
+    import harness
+    c = harness.local_three(HERE)
+    if os.path.isfile(c):
+        return c
     sys.exit('build.py: no local three.min.js (r128) found')
 
 
@@ -81,8 +85,9 @@ def main():
     ap.add_argument('--size', type=int, default=512)
     ap.add_argument('--artifact', action='store_true', help='drop the document wrapper (the Artifact host adds its own)')
     ap.add_argument('--out', default=os.path.join(HERE, 'dist', 'materials-demo.html'))
-    a = ap.parse_args()
+    a = ap.parse_args([x for x in sys.argv[1:] if x != BSRC.FLAG])
     man = json.load(open(os.path.join(HERE, 'manifest.json'), encoding='utf-8'))
+    BSRC.report([resolve(e['src'], a.scratch) for e in man['entries']], find_three())   # --list-sources: the sets' folders and the three.js it takes (not encoded: the maps are in Git LFS), then exit
     sets, skipped = [], []
     for e in man['entries']:
         d = resolve(e['src'], a.scratch)

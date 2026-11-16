@@ -24,6 +24,7 @@ Nhighlands is the worked example (`biomes/nhighlands`: `45-host-stage.js`, `55` 
 | **Water** | `margin`, `spray:'drop'`, `lipK`, `chute`, wet ground and puddles (`WATER.hollows`), W4 gradients | where the kit has water |
 | **No breakers on still water** (the owner, 2026-11-02) | a lake or a sheltered arm drawn by `WATER.draw` takes `surf:false, breakers:false`: a shore grid's breakers drew white contour rings round every island and stripes along the banks. A sea keeps them | done: swlowlands (and its delta), nwlowlands. Owed at their turns: the Catch's lake station, the Cut, k-guilin, the Throne's glacier, xanadu |
 | **Reflections** | `WATER.mirrorSwitch` on the kit's largest still, **off at page load** | where the kit has a large still; `core/water/README.md`, "The reflections switch" |
+| **Sun shadows** | `KSHADOW.attach` (core/shadow), **toggleable and off by default** (the owner, 2026-11-03): the panel's `shadows` button or `?shadow=1`; off costs nothing (no shadow pass, no shadow variant) | every build and rebuild, where the lit materials keep one texture unit free for the map; `core/shadow/README.md`, "Off by default" |
 | **Ground** | `KGROUND` (the core ground shader), `KHORIZON` shadows, `KFAR` far field | where the kit still paints its own ground |
 | **Export** | the split by `lod.ranges`, per-instance labels, the hazards section | automatic once the page takes the merge |
 

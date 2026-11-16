@@ -63,11 +63,17 @@ domes in tile, marble, plaster and gilt; egg and onion lathes; the tile cone and
 
 **No dark voids** (the owner, 2026-10-19). Every opening is a door, a window or an open portal, never a black plate:
 `tanArch` takes a dark fill (or none) as a DOOR when it is door-shaped (2 m or more, taller than wide, no sill or rail;
-`o.door` overrides) and as a WINDOW otherwise. Doors are walnut leaves with raised panels and a brass pull under a glazed
-fanlight (`tanLeaves`, `tanArchDoor`; glazed double doors at 2.4 m wide or more); windows are Talia's sky-grey pane
-(`taWinB`, the same values as Pylon's) with glazing bars (`tanGlaze`). On a hollow body both cut the wall (`vnHole`), so
-they open into the furnished rooms, the leaves swung in. `tanDoor` and `tanWin` stand in for the Vernacular's `vnDoor` and
-`vnWin` (closed leaves instead of the dark recess; the pane over the dark glass). The loggias open their heads into the
+`o.door` overrides) and as a WINDOW otherwise.
+
+**Real doors and real glass** (the owner, 2026-11-03; `core/door`). A door is walnut leaves under a glazed fanlight
+(`tanArchDoor`, `tanDoorLeaves`): real leaves through the Vernacular's `IZDOOR.leaf` (records in `KDOOR`, stable ids
+`<def key>@x,z.n`; two, mirrored, over 1.4 m wide), which open with E or by an NPC (`KDOOR.open`) on a hollow body, standing in
+the cut wall's middle, and stand shut and locked on a solid one. A window is core/door's glass (`KGLASS`: `taWinB` is the
+clear pane, `MAT.izGlass`, the Vernacular's own; the lit fill the warm pane; the cobalt the `stained` kind) with glazing bars
+(`tanGlaze`): on a hollow body in the cut (the room behind it), elsewhere over the room card (`taRoomB`, `taDiscD`,
+`taGableD`, `taHalfD`: the room's dim back, `KGLASS.SPEC.room`). A round head and a door's fanlight are half discs
+(`taHalfG`, `taHalfL`, `taHalfC`), so two panes never lie over one another and the card leaves the doorway clear.
+`tanDoor` and `tanWin` stand in for the Vernacular's `vnDoor` and `vnWin` (on a hollow face they are those). The loggias open their heads into the
 recess under orange vaults; the court galleries alternate doors and windows; the slits are glazed between stone lips; the
 observatory's slot shows its shutters drawn back and the telescope; the palace's light courts are glazed over.
 
@@ -75,11 +81,19 @@ observatory's slot shows its shutters drawn back and the telescope; the palace's
 armchairs and ottomans in orange, the white sofa, brass and walnut tables, the plaster bench and wall niche, the painted
 chest and the jar stand, bookcase, map and specimen cases, the plaster and canopy beds, the hearth, the lectern, the
 scholar's desk, the slate, the globe, the easel, the modelling stand, the kilim and the meander rug, the palm planter, the
-brass lantern, the aedicule). `kits/interiors/sets/talia.js` furnishes 32 of the kit's 45 items (one per key, the faculty's
-three sizes each) and registers Talia's room kinds, `lecture` and `studio`; the rest say why they are skipped. The page
+brass lantern, the aedicule). `kits/interiors/sets/talia.js` furnishes 35 of the kit's 45 items (one per key, the faculty's
+three sizes each; the caravanserai and the stoa since 2026-11-09) and registers Talia's room kinds, `lecture` and `studio`; the rest say why they are skipped. The page
 bundles them through `kit.json` (`furniture`, `interiorSets`). With an item, a body is hollow: `tanRoundBox` then draws one
 hollow body with round corner piers. Check: `cd kits/interiors && python3 verify.py dist/interiors-sets.html --sets
 --assert --query set=talia`.
 
-**Next** (PLAN.md section 8): P7, the Godot export check and the gallery; the interiors the set skips (the library's
-well, the anatomy theatre's tiers, the caravanserai and the stoa, the palace by its blueprint).
+**The governor's palace's rooms** (2026-11-09). The palace's item in the set is not planned but explicit: 49 rooms from the
+blueprint's sheets G and U (`palace/`), and the item's `plan` (the cells in the blueprint's (u, v), the edges between them, the
+doors, the pavilions) is what the builder draws inside (`talpInterior`, 74t): partitions with their doors on core/door, rails
+round the hall's well, glass to the light courts, the upper floor, the private and back stairs, the dais and the hall's
+coffered ceiling, and the seven pavilions as hollow drums (`talpRing`, `talpDisc`). Walkable (F): the upper floor, the
+pavilions' upper floors and the stairs are core/walk records. X cuts it away like any building. With `?interiors=0` the
+palace is the solid exterior it was.
+
+**Next** (PLAN.md section 8): the interiors the set still skips (the library's rotunda, the anatomy theatre, the glasshouse:
+KNOWN_ISSUES.md), the palace's undercroft, the owner's eye-level review of P2.

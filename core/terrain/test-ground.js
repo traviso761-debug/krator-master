@@ -48,7 +48,7 @@ ok('KGROUND.layer is null without the library',G.layer('nhighlands','ground.mulc
 // ---- the defaults are frozen: with no kind asked, the library, the layer code and the hooked shaders are byte for byte
 // what they were before the kinds (2026-10-26, the hashes of 43-core-ground.js at 71bed9f4d)
 const crypto=require('crypto'),sha=x=>crypto.createHash('sha1').update(x).digest('hex').slice(0,16);
-const FROZEN={glsl:'c8172f17c7a34804',glslNoHex:'a9e67aa4ceb6fedc',code:'8fadd0c5654d5f33',codePlain:'9ef2c66796916db8',fs:'1ab17892e2ddaf4b',vs:'5fecc5c7883e02f0',key:'|kground-k-2-764'};
+const FROZEN={glsl:'c8172f17c7a34804',glslNoHex:'a9e67aa4ceb6fedc',code:'cc45db7207dae11f',codePlain:'05e620a5ea7bd641',fs:'099817c7e920ca2b',vs:'5fecc5c7883e02f0',key:'|kground-k-2-789'};
 const freeze=(layers)=>{const F1={map:{id:1},k:1/3,w:'vGL.x',amt:.7,gain:1.25,tint:'diffuse',name:'mulch'},F2={map:{id:2},k:1/3.2,w:'vGL.y',amt:.75,name:'meadow',h:{from:'a'},lin:false};
   const LL=layers||[F1,F2],m={userData:{},customProgramCacheKey:proto.customProgramCacheKey,onBeforeCompile:null};G.hook(m,{layers:LL,key:'k'});const s=fake();m.onBeforeCompile(s);
   return {glsl:sha(G.glsl()),glslNoHex:sha(G.glsl({hex:false})),code:sha(G.code({},LL)),codePlain:sha(G.code({blend:0,far:false},[LL[0]])),fs:sha(s.fragmentShader),vs:sha(s.vertexShader),key:m.customProgramCacheKey()};};
@@ -124,5 +124,35 @@ ok('a seed is taken below 997 (12 and 1009 the same cells)',G.code({},[{kind:'po
   const gp=path.join(__dirname,'..','..','godot','tests','shaders','kground_kinds_golden.json'),txt=JSON.stringify({made:'node core/terrain/test-ground.js --golden',rows:G2},null,1)+'\n';
   if(process.argv.includes('--golden'))fs.writeFileSync(gp,txt);
   ok('the Godot twin\'s golden is current ('+G2.length+' values; --golden rewrites it)',fs.existsSync(gp)&&fs.readFileSync(gp,'utf8')===txt,false);}
+
+// ---- relief and triplanar (opt-in, 2026-11-03, GROUND.md): absent, nothing changes (FROZEN above); asked, the right edits land
+{const stdFake=()=>{const s=fake();s.vertexShader=s.vertexShader.replace('void main() {','void main() {\n#include <beginnormal_vertex>');
+    s.fragmentShader=s.fragmentShader.replace('#include <aomap_fragment>','#include <normal_fragment_begin>\n#include <normal_fragment_maps>\n#include <aomap_fragment>');return s;};
+  const run=(o,sf)=>{const m=kmat();G.hook(m,Object.assign({layers:[L1]},o));const s=(sf||fake)();m.onBeforeCompile(s);return {m,s,key:m.customProgramCacheKey()};};
+  const off=run({}),onS=run({relief:true},stdFake),onL=run({relief:true}),tr=run({tri:true});
+  ok('relief on a Standard material bumps the lit normal and occludes the summed light',/normal=kgBump\(/.test(onS.s.fragmentShader)&&/reflectedLight\.indirectDiffuse\*=kgOcc/.test(onS.s.fragmentShader),
+    /kgBump|kgOcc/.test(off.s.fragmentShader));
+  ok('relief on a Lambert material (no normal_fragment_maps) scales the sun by the bumped facing instead',!/normal=kgBump/.test(onL.s.fragmentShader)&&/directionalLights\[0\]\.direction/.test(onL.s.fragmentShader),
+    /directionalLights/.test(onS.s.fragmentShader));
+  ok('relief and tri change the program key; without them it is the old key',onS.key!==off.key&&tr.key!==off.key&&/-r10$/.test(onS.key)&&/-r01$/.test(tr.key),/-r/.test(off.key));
+  ok('tri samples the side planes where the ground is steep, from a world normal varying',/kgTS\(uKG0/.test(tr.s.fragmentShader)&&/kgWN=normalize/.test(tr.s.vertexShader)&&/varying vec3 kgWN/.test(tr.s.fragmentShader),
+    /kgTS|kgWN/.test(off.s.fragmentShader+off.s.vertexShader));
+  const ms=run({relief:{mesh:.8}});
+  ok('relief.mesh reads the cavity attribute aKGAO through a varying',/attribute float aKGAO/.test(ms.s.vertexShader)&&/vKGAO=aKGAO/.test(ms.s.vertexShader)&&/vKGAO,0\.0,1\.0/.test(ms.s.fragmentShader),
+    /aKGAO/.test(onL.s.vertexShader));
+  const st=run({relief:{strata:.3}}),stk=run({relief:{strata:.3}},()=>{const s=fake();s.fragmentShader=s.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uKSBed;');return s;});
+  ok('the bed relief is drawn only on the core strata path (uKSBed); elsewhere it is left out, so the shader still links',
+    /ksRelief\(vSWP/.test(stk.s.fragmentShader)&&/float ksRelief/.test(stk.s.fragmentShader)&&!/ksRelief|kgSF/.test(st.s.fragmentShader),/ksRelief/.test(onL.s.fragmentShader));
+  ok('the switch ?kgrelief=1 does nothing without the query (node has no location)',!off.m.userData.kgroundRelief,!onS.m.userData.kgroundRelief);}
+// ---- the mesh's cavities: a hollow reads deeper than a crest, a plane reads 0, the result is deterministic
+{const N=41,pos=new Float32Array(N*N*3),nrm=new Float32Array(N*N*3),idx=[];const h=(x,z)=>-6*Math.exp(-((x-10)*(x-10)+(z-20)*(z-20))/40)+6*Math.exp(-((x-30)*(x-30)+(z-20)*(z-20))/40);
+  for(let j=0;j<N;j++)for(let i=0;i<N;i++){const k=j*N+i;pos[k*3]=i;pos[k*3+1]=h(i,j);pos[k*3+2]=j;nrm[k*3+1]=1;}
+  for(let j=0;j<N-1;j++)for(let i=0;i<N-1;i++){const a=j*N+i,b=a+N;idx.push(a,b,a+1,b,b+1,a+1);}
+  const c=G.cavity({pos,index:new Uint32Array(idx),normal:nrm,count:N*N}),at=(i,j)=>c[j*N+i];
+  ok('a hollow reads as a cavity ('+at(10,20).toFixed(2)+'), a crest as open ('+at(30,20).toFixed(2)+')',at(10,20)>.3&&at(30,20)<.02,at(30,20)>at(10,20));
+  const flat=new Float32Array(pos);for(let k=0;k<N*N;k++)flat[k*3+1]=0;const cf=G.cavity({pos:flat,index:new Uint32Array(idx),normal:nrm,count:N*N});
+  ok('a plane reads 0 everywhere (interior)',Math.max(...Array.from(cf).filter((v,k)=>{const i=k%N,j=(k/N)|0;return i>20&&i<N-20&&j>20&&j<N-20;}))<1e-9,false);
+  const c2=G.cavity({pos,index:new Uint32Array(idx),normal:nrm,count:N*N});ok('the cavity bake is deterministic',c2.every((v,k)=>v===c[k]),false);
+  ok('the cavity stays in 0..1',c.every(v=>v>=0&&v<=1),[-.1,1.2].every(v=>v>=0&&v<=1));}
 
 console.log(bad?bad+' FAILED':'all passed');process.exit(bad?1:0);

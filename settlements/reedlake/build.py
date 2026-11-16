@@ -82,8 +82,10 @@ except Exception:
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(HERE))   # repo root: biomes/, kits/, settlements/
+sys.path.insert(0, os.path.join(ROOT, 'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 UPSTREAM = {'ancients': os.path.join(ROOT, 'kits', 'ancients'), 'iziz': os.path.join(ROOT, 'settlements', 'iziz'),
-            'highlands': os.path.join(ROOT, 'settlements', 'highlands')}
+            'highlands': os.path.join(ROOT, 'settlements', 'highlands'), 'highlands-kit': os.path.join(ROOT, 'kits', 'highlands'),
+            'iziz-vernacular': os.path.join(ROOT, 'kits', 'iziz-vernacular')}
 SRC = os.path.join(HERE, 'src')
 TARGETS = os.path.join(HERE, 'targets')
 DIST = os.path.join(HERE, 'dist')
@@ -108,6 +110,7 @@ TAGS_FILES = {f: os.path.join(ROOT, 'core', d, f) for d in ('rand', 'tags') for 
 sys.path.insert(0, os.path.join(ROOT, 'core', 'host'))
 import host as khost
 CORE_HOST = [f for f in khost.FULL if f not in ('20-core-space.js', '40-core-edits.js')]
+CORE_HOST = CORE_HOST + khost.KEYS   # the one key map and the one walk mode (core/host/92k-host-keys.js; TODO.md, Viewers)
 # the shared atmosphere (core/atmos/README.md: its core, presets, the open-water wave field and the sky's light) and core/water
 # (core/water/README.md: the open surface, its CPU twins, the CDLOD water mesh): the lake is a WATER.open surface
 # (src/90w-rl-lake.js), the troughs' and the wallow's water WATER.still (src/90x-rl-still.js). Listed by name, like core/materials/record above; a src/ copy with the same name wins.
@@ -115,6 +118,7 @@ ATMOS_DIR = os.path.join(ROOT, 'core', 'atmos')
 CORE_ATMOS = ['89-atmos-0-core.js', '89-atmos-0p-presets.js', '89-atmos-a-waves.js', '89-atmos-b-skylight.js']
 WATER_DIR = os.path.join(ROOT, 'core', 'water')
 CORE_WATER = ['20-core-water.js', '21-core-water-shore.js', '22-core-water-flow.js', '50-core-water-draw.js', '51-core-water-kinds.js']
+CORE_WATER_EXT = ['56-core-water-breakup.js']   # the breakup (core/water ext/56), on by default since 2026-11-09
 
 
 def srcpath(f, base=None):
@@ -151,7 +155,7 @@ DETERMINISTIC = {
 }
 DETERMINISTIC |= {'06-core-khook.js', '06b-core-kcolor.js'}   # core/shader (no rnd())
 DETERMINISTIC |= {'82-rl-trades.js'}   # the Voth census table (data only, read by tools/check_trades.py)
-DETERMINISTIC |= set(CORE_ATMOS) | set(CORE_WATER)   # core/atmos and core/water: IIFE-scoped, their own PRNG, nothing placed
+DETERMINISTIC |= set(CORE_ATMOS) | set(CORE_WATER) | set(CORE_WATER_EXT)   # core/atmos and core/water: IIFE-scoped, their own PRNG, nothing placed
 DETERMINISTIC |= set(CORE_HOST) | set(TAGS_FILES) | {'99-start.js', '91t-reedlake-tags.js'}   # core/host (no rnd()); core/rand, core/tags; the take; REG into core/tags (reads only)
 
 # Seed ranges known to collide, kept here so the build stays green while the
@@ -265,6 +269,7 @@ def build_one(target, do_checks, assert_origin):
     src.update({f: os.path.join(LOD_DIR, f) for f in LOD_FILES if f not in src})
     src.update({f: os.path.join(ATMOS_DIR, f) for f in CORE_ATMOS if f not in src})
     src.update({f: os.path.join(WATER_DIR, f) for f in CORE_WATER if f not in src})
+    src.update({f: os.path.join(WATER_DIR, 'ext', f) for f in CORE_WATER_EXT if f not in src})
     src.update({f: p for f, p in TAGS_FILES.items() if f not in src})
     khost.resolve(src, CORE_HOST)   # a src/ copy with a shell file's name would win (none)
     tgt = {f: os.path.join(tdir, f) for f in os.listdir(tdir) if f[0].isdigit()}
@@ -303,6 +308,8 @@ def build_one(target, do_checks, assert_origin):
         html = re.sub(r'<title>.*?</title>', lambda _: '<title>%s</title>' % m.group(1),
                       html, count=1)
     out = os.path.join(DIST, TARGET_OUT[target])
+    if BSRC.LISTING:   # --list-sources: every file this target read is recorded; main() reports every target's
+        return order, None, None
     os.makedirs(DIST, exist_ok=True)
     if side:
         html = matlib_pack.write_sidecar(side, html, DIST, 'reedlake.tex.js', prune=False)
@@ -317,8 +324,8 @@ def build_one(target, do_checks, assert_origin):
 VENDORED = ['10-core.js', '12-stats.js', '20-textures.js', '22-materials.js', '30-kit.js',
             '32-surfaces.js', '34-kitdefs.js', '36-decor.js', '38-helpers2.js', '50-registry.js',
             '54-mat-concrete.js', '68-mat-v5.js', '69-mat-salvage.js', '69b-vern-mat.js', '69c-vern-helpers.js',
-            '70-hl-tex.js', '71-hl-mat.js', '71b-hl-motif.js', '72-hl-helpers.js', '73-hl-carve.js',
-            '91-probe.js', '92-camera.js', '93-labels.js']          # all from ../highlands/src
+            '91-probe.js', '92-camera.js', '93-labels.js']          # the Ancients core, the Vernacular's two, Highlands' viewer shell (vendor_check)
+HL_VENDORED = ['70-hl-tex.js', '71-hl-mat.js', '71b-hl-motif.js', '72-hl-helpers.js', '73-hl-carve.js']   # the Highlands kit, kits/highlands (its files left Highlands' src/ on 2026-11-03: MODULARITY-PLAN.md step 4)
 IZIZ_VENDORED = []
 # kept behind upstream on purpose: drift expected, recorded in KNOWN_ISSUES.md. 73-hl-carve.js keeps the drawn
 # furniture helpers (hnTotem, hnWoodpile, hnFirepit, hnMenhir): Highlands' copy places them from the master catalog
@@ -329,7 +336,7 @@ ADAPTED = {'73-hl-carve.js'}
 def vendor_manifest():
     """VENDOR.json: sha1 of every vendored fragment, so drift is visible."""
     out = {}
-    for f in VENDORED + IZIZ_VENDORED:
+    for f in VENDORED + IZIZ_VENDORED + HL_VENDORED:
         with open(srcpath(f), 'rb') as fh:
             out[f] = hashlib.sha1(fh.read()).hexdigest()[:12]
     with open(os.path.join(HERE, 'VENDOR.json'), 'w', encoding='utf-8') as fh:
@@ -338,8 +345,15 @@ def vendor_manifest():
 
 
 def vendor_check():
-    """Compare vendored fragments with ../highlands/src."""
-    for up_name, files in (('highlands', VENDORED),):
+    """Compare each vendored fragment with the module it comes from."""
+    # Each copy is compared with the module it comes from (MODULARITY-PLAN.md step 6), not with Highlands' copy of it:
+    # the Ancients core with kits/ancients (and core/materials), the Vernacular's two with kits/iziz-vernacular, the sky
+    # with core/atmos/placeholder. The viewer shell (91-93) is Highlands' own (its 91-probe adapted on purpose), so it is
+    # compared with Highlands'.
+    vern, shell = ['69b-vern-mat.js', '69c-vern-helpers.js'], ['91-probe.js', '92-camera.js', '93-labels.js']
+    groups = (('ancients', [f for f in VENDORED if f not in vern + shell]), ('iziz-vernacular', vern),
+              ('highlands', shell), ('highlands-kit', HL_VENDORED))
+    for up_name, files in groups:
         up = os.path.join(UPSTREAM[up_name], 'src')
         if not os.path.isdir(up):
             print('vendor-check: ../%s/src not found; skipped' % up_name)
@@ -358,7 +372,8 @@ def main():
     if '--vendor-check' in sys.argv:
         vendor_check()
         return
-    vendor_manifest()
+    if not BSRC.LISTING:   # --list-sources writes nothing
+        vendor_manifest()
     do_checks = '--no-checks' not in sys.argv
     assert_origin = '--assert-origin' in sys.argv
     wanted = [a.split('=', 1)[1] for a in sys.argv if a.startswith('--target=')]
@@ -369,6 +384,8 @@ def main():
 
     for target in wanted:
         order, html, out = build_one(target, do_checks, assert_origin)
+        if BSRC.LISTING:
+            continue
 
         # --- byte-identity with the single file this repo was split out of ---
         origin_note = ''
@@ -401,6 +418,7 @@ def main():
 
 if __name__ == '__main__':
     main()
+    BSRC.report(vendor_check=vendor_check)   # --list-sources: every target's files (and what --vendor-check compares), then exit
 
 # --- remind whoever is building of the open issues (see KNOWN_ISSUES.md) ---
 _ki = os.path.join(HERE, 'KNOWN_ISSUES.md')

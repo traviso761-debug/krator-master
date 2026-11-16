@@ -49,6 +49,7 @@ ok('seracs stand on ice at least minIce thick, in the icefall\'s rows',S.every(r
 const half=mk({}).seracs({u:[1300,1500]}),capped=mk({}).seracs({u:[1300,1725],max:50});ok('a serac\'s draws do not hang on how many came before (a shorter run is a prefix)',half.length<S.length&&half.every((r,i)=>JSON.stringify(r)===JSON.stringify(S[i]))&&capped.length===50,!half.length);
 const B=G.bergs({level:5000});ok('bergs float in the lake basin, at its level',B.length===16&&B.every(r=>G.lakeAt(r.x,r.z)>=.6&&r.y===5000),B.length===0);
 const B0=mk({lake:null}).bergs({level:5000});ok('no lake, no bergs',B0.length===0,B.length===0);
+const Bw=mk({lake:null}).bergs({level:5000,water:(x,z)=>x*UP[0]+z*UP[1]<GL.SNOUT});ok('a host\'s own water takes the bergs a snout calves (no lake of the module\'s)',Bw.length===16&&Bw.every(r=>r.x*UP[0]+r.z*UP[1]<GL.SNOUT),Bw.length===0);
 const Cr=G.crevasses({u:[400,1200]});ok('crevasses lie across the ice, inside it',Cr.length>20&&Cr.every(r=>G.iceAt(r.x,r.z)>6&&r.len>=18&&r.len<=60),Cr.length===0);
 const Cv=G.caves([{x:10,z:20,R:14,H:11,face:1}],{floor:(x,z)=>x+z});ok('caves take their floor from the ground',Cv[0].floor===30&&Cv[0].kind==='icecave'&&Cv[0].mouth===.36,Cv[0].floor!==30);
 const R=G.records();ok('records: the glacier and everything placed, plain data with ids',R[0].kind==='glacier'&&R.length===1+S.length+B.length+Cr.length+1&&R.every(r=>r.class==='feature'&&r.id)&&JSON.parse(JSON.stringify(R)).length===R.length,false);

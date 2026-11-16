@@ -16,7 +16,7 @@ const STATION_STAGE=(function(){const {smooth,mix,clamp,fbm}=BIO.fn,S=stationStr
   return stationSea(x,z,g,14);}
  const over=(x,z)=>h(x,z)-Y(sOf(x,z));
  const talus=(x,z)=>{const s=sOf(x,z),q=qOf(x,z,s,Math.abs(tOf(x,z)-RIVER_T(s)));return smooth(0,.06,q)*smooth(.2,.1,q)*smooth(-1400,-900,s);};
- return{terrainH:h,riverY:Y,riverW:W,riverFrom:-1460,rapids:[.02,.09],riverLook:[0x3f8f78,0x12463e],feetOwed:123,springs:[[-160,1,190],[880,-1,210]],strata:S,
+ return{groundTri:true,terrainH:h,riverY:Y,riverW:W,riverFrom:-1460,rapids:[.02,.09],riverLook:[0x3f8f78,0x12463e],feetOwed:123,springs:[[-160,1,190],[880,-1,210]],strata:S,
   fields:{tropic:(x,z)=>.55*smooth(-700,-1700,sOf(x,z)),dry:(x,z)=>.85*smooth(80,320,over(x,z)),wet:(x,z)=>mix(.84,.5,smooth(60,320,over(x,z))),upland:(x,z)=>clamp((over(x,z)-60)/320,0,1)},
   mask:(x,z)=>{const s=sOf(x,z),d=Math.abs(tOf(x,z)-RIVER_T(s));if(d<W(s)*1.25)return 0;const e=5,sl=Math.hypot(h(x+e,z)-h(x-e,z),h(x,z+e)-h(x,z-e))/(2*e);return sl>.62?0:1;},
   rock:(x,z,sl)=>Math.max(smooth(.55,1,sl),.5*smooth(.05,.3,qOf(x,z,sOf(x,z),Math.abs(tOf(x,z)-RIVER_T(sOf(x,z)))))*smooth(.6,.4,1-sl)),

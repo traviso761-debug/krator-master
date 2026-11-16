@@ -33,7 +33,7 @@ republished (https://claude.ai/artifact/UhTfQ2kioZEbrzZR1agHv9, version 23).
 
 ## PAUSED 2026-09-29 (user stopped to save usage) — resume here
 - Merged and published: QA domestic, towers, civic, this month's arcologies (arcC). Kit artifact https://claude.ai/artifact/FSKTzZ3duwQ2zrbdEEqYYf.
-- PORT round 3 DONE 2026-10-01 (settlements/port): land blocks (lb*, ch*), sea platform spYard, infra (inspector, bounds toggle `b`, grid placement, every vessel, `harbour` target); showcase 9.06M tris / 883 calls.
+- PORT round 3 DONE 2026-10-01 (kits/port): land blocks (lb*, ch*), sea platform spYard, infra (inspector, bounds toggle `b`, grid placement, every vessel, `harbour` target); showcase 9.06M tris / 883 calls.
 - Unmerged WIP from three stopped agents (QA arcA, QA arcB, lighthouse): `wip/` (README lists each patch). Their base commits are from the pre-purge history and no longer on the remote: apply each patch with `git apply --3way` onto the current tree, mapping `voth/ancients/` to `kits/ancients/`.
 - Queue after those land: (3) arco1/arco2 alternates of every building type; (4) six ancient machines; (5) port arcology;
   low priority: regroup kit rows by category, skyscraper stumps beside each tower, Iziz variants (Sky C tripod market,

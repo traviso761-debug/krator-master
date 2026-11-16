@@ -6,7 +6,7 @@ The scablands, an overlay (biomes/scablands/PLAN.md): the ground the dam break's
 
 Docs: `KNOWN_ISSUES.md`, `PLAN.md`, `PORT.md`, `README.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/coulee.html`
+Built output (never open it; edit `src/` and rebuild): `dist/coulee.html`, `dist/highline-nw.html`, `dist/highline.html`
 
 Build: `cd biomes/scablands && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
@@ -19,4 +19,14 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `72-biome-scablands-pools.js` | 9 |  |
 | `87-host-erratics.js` | 5 |  |
 | `87a-host-pools.js` | 1 |  |
-| `99-host-take.js` | 13 | the budgets (the kit's) (28); the overlay's checks (30); the page, handed to the host (99) |
+| `87g-host-geodes.js` | 8 |  |
+| `99-host-take.js` | 19 | the budgets (the kit's) (34); the overlay's checks (36); the page, handed to the host (133) |
+
+## stations/
+
+Each station builds one page (`build.py --station <name>`) from its own fragments, with `src/` or its `base` station.
+
+| Station | Fragments | KB |
+|---|---|---|
+| highline | 45b-host-stage.js, 56-biome-scablands-highline.js, 87h-host-hulks.js, 87w-host-wrack.js, 99-host-take.js | 38 |
+| highline-nw | 45-host-stage.js, 83-host-far.js, 86-host-fields.js, 88-host-build.js, 89-host-sky.js, 89a-host-atmos.js, 89w-host-water.js, 99-host-take.js | 54 |

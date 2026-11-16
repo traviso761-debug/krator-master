@@ -141,9 +141,8 @@
    "anchor": "none",
    "pad": 0.0,
    "key": "#ff00ff",
-   "spill": "line",
-   "subject": "#d8efe9",
-   "key_hi": 90
+   "spill": "vlahos",
+   "key_gain": 1.3
   },
   "record": {
    "id": "card.glasscane",
@@ -163,7 +162,7 @@
     "prompt_where": "core/materials/PROMPTS-NEEDED.md on claude/riftrim-cloud, \"The rift rim's build\"",
     "reuse": "the rift rim's glass cane groves in the N rim's lake shallows; any clear jointed cane",
     "note": "a nine-cell sheet (3 x 3), kept whole: each clump standing on its cell's bottom edge",
-    "key_note": "the canes are translucent, so the magenta showed through them (lavender canes under the default key); keyed onto the line from the key to the cane colour the prompt names (#d8efe9, key_hi 90): the canes come out their own pale cyan at their blend alpha, the green joints keyed by distance with the spill taken out. Usable; checked on a contact sheet"
+    "key_note": "the canes are translucent, so the magenta showed through them (lavender canes under the default key). Re-keyed 2026-11-03 with cards.py spill 'vlahos' (key_gain 1.3; npu-cutout's trial, tools/textures/trials/npu-cutout): alpha from the key's tint and the colour unmixed against it, so the canes keep their glass shading and clean edges; a faint lavender cast stays (gain 1.0 leaves more). 25% of the sheet is over alpha 0.5, so it alpha-tests. The first take keyed onto a line to #d8efe9 (key_hi 90) flattened the canes and left broken dark rims on a light ground"
    }
   }
  }

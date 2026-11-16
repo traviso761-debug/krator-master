@@ -161,10 +161,12 @@ async def run(a):
 
             print("\n--- export profile (core/export/README.md, \"Profiles\") ---")
             prof = [s.strip() for s in a.profile.split(",") if s.strip()] if a.profile else EXPORT_PROFILE
-            pok, lines = await check_profile(pg, EXPORT_BOX, prof)
+            # a station whose plants stand elsewhere names its own box (STAGE.exportBox, an array or a function; the Lesser Throne, 2026-11-08)
+            box = await pg.evaluate("()=>{if(typeof STAGE==='undefined'||!STAGE.exportBox)return null;const b=STAGE.exportBox;return typeof b==='function'?b():b;}") or EXPORT_BOX
+            pok, lines = await check_profile(pg, box, prof)
             for ln in lines:
                 print("  " + ln)
-            print(("  PASS  " if pok else "  FAIL  ") + "export-profile : box %s" % EXPORT_BOX)
+            print(("  PASS  " if pok else "  FAIL  ") + "export-profile : box %s" % box)
             if not pok:
                 fails.append("assert export-profile")
 

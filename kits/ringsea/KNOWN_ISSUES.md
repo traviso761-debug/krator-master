@@ -9,7 +9,15 @@
   (a copy of `SYMBOLS.lotus` beside `rsSymSun` in `41-rs-tex.js`, and `xanadu` in `RS_CULT`, so `build.py --vendor-check`
   holds them to the pack, as it does Iziz's and Voth's), rebuild, and rebuild the builds that take the vessels.
 
-- Vendored drift from `settlements/reedlake/src`: `93-labels.js` also labels `cls:'vessel'` and shrinks the font before truncating a long name; `92-camera.js` starts with the Labels button off. `00-head.html` has its own title. 2026-10-01: re-vendored after Reedlake's re-vendor from Highlands: `30-kit.js` verbatim (adds `KIT.meshes`), and `93-labels.js` is Reedlake's new one (with the label declutter) plus the same two vessel changes.
+- **Vendored from `kits/ancients/src` since 2026-11-03** (`10-core.js`, `12-stats.js`, `30-kit.js`, `99-tail.html`: the vessels' engine;
+  Reed Lake vendors the same files from there, and this kit used to check them against Reed Lake, a settlement:
+  MODULARITY-PLAN.md step 5). `10-core.js` is identical again since 2026-11-03 (re-vendored with the all-builds rebuild: upstream's
+  frame hook, `TICKS` and `tick()`, which the vessels do not use; inside Voth's and the isle demo's `RINGSEA` closure it shadows
+  nothing).
+- [ ] **The viewer shell is this kit's own** (since 2026-11-03; it began as Reed Lake's): `00-head.html`, `92-camera.js`,
+  `93-labels.js`, `verify.py`, `jscheck.py`. Its place is `core/host` (camera, labels, the probe) and `tools/harness.py` (the
+  Chromium launcher `verify.py` and `jscheck.py` paste), as Scyvoi's host port did (kits/scyvoi/KNOWN_ISSUES.md "Host port").
+  The history of the copies, as Reed Lake's: `93-labels.js` also labels `cls:'vessel'` and shrinks the font before truncating a long name; `92-camera.js` starts with the Labels button off. `00-head.html` has its own title. 2026-10-01: re-vendored after Reedlake's re-vendor from Highlands: `30-kit.js` verbatim (adds `KIT.meshes`), and `93-labels.js` is Reedlake's new one (with the label declutter) plus the same two vessel changes.
 - Walk mode stands on a 0.4 m heightfield of each vessel's flat surfaces and is stopped by anything in a 0.4 m-round
   body 0.5-1.7 m above its feet (masts, walls, rails, crew, cargo). It boards from the water over the side without a
   climb, and leaves by flying over the rail (E). Narrow gaps between crew or cargo (under ~0.8 m) do not pass; a

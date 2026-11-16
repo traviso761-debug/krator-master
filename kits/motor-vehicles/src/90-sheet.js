@@ -186,7 +186,8 @@ const INSTANCES = [];
   window._sheet = { rows: rows, instances: INSTANCES, width: maxW, gotoRow: gotoRow, view: view, showAll: showAll, views: Object.keys(VIEWS),
     setDrive: setDrive, setLights: setLights, setNight: setNight, setState: setState, state: function () { return state; } };
   /* ready once the detail maps have decoded into the atlas (verify.py and the screenshots wait on it) */
-  /* the harness waits for !window._texPending (a flag, not a function: a function is always truthy) */
-  window._texPending = KV.textures().pending > 0;
-  (function wait() { if (KV.textures().pending > 0) return setTimeout(wait, 50); window._texPending = false; window._ready = true; })();
+  /* the harness waits on !window._texPending (a count, as KMAT keeps it): a getter, so it reads the live count (a function is always
+     truthy, and the wait never cleared: 2026-11-09, as fauna's) */
+  Object.defineProperty(window, '_texPending', { configurable: true, get: function () { return KV.textures().pending; } });
+  (function wait() { if (KV.textures().pending > 0) return setTimeout(wait, 50); window._ready = true; })();
 })();

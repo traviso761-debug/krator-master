@@ -28,6 +28,9 @@ function gwToWalk(s){
       if(GATES.some(function(q){ return Math.hypot(rx-q.x,rz-q.z) < 5.0; })) continue;
       W.block([rx-s.hw-0.1,rx+s.hw+0.1,rz-s.hw-0.1,rz+s.hw+0.1,s.bot,s.top], tag); }
     return; }
+  if(s.r && GW_FLOOR[s.tag]){                                               /* a round floor (a hut's plinth, the hall's steps): a 24-gon at its top */
+    var D=[]; for(i=0;i<24;i++){ var da=i/24*Math.PI*2; D.push([s.x+Math.cos(da)*s.r, s.z+Math.sin(da)*s.r, s.top]); }
+    W.poly({ pts:D, name:s.tag, tag:tag }); return; }                       /* (it was a block: a walker could not stand on a plinth, 2026-11-03 audit) */
   if(s.r){ var q=s.r;                                                       /* a trunk, a capstan: a square, or a fat plus for a big one */
     if(q<=0.9) W.block([s.x-q*0.9,s.x+q*0.9,s.z-q*0.9,s.z+q*0.9,s.bot,s.top], tag);
     else { var A=q*0.95, B=q*0.55; W.block([s.x-A,s.x+A,s.z-B,s.z+B,s.bot,s.top], tag); W.block([s.x-B,s.x+B,s.z-A,s.z+A,s.bot,s.top], tag); }
@@ -64,6 +67,7 @@ function wkBuild(){
         if(F.missing.indexOf(bi+','+bj)>=0) continue;
         if(bi||bj) L.push(wkRect(T.x+bi*16, T.z+bj*16, 8.01, 8.01, y, y-SLAB, 'plate'));
         else if(F.k<TOWER_N){ L.push(wkRect(T.x-6.2, T.z, 1.8, 8, y, y-SLAB, 'plate')); L.push(wkRect(T.x+1.8, T.z-6.1, 6.2, 1.9, y, y-SLAB, 'plate')); L.push(wkRect(T.x+1.8, T.z+6.1, 6.2, 1.9, y, y-SLAB, 'plate')); }
+        else L.push(wkRect(T.x-6.2, T.z, 1.8, 8, y, y-SLAB, 'plate'));   /* the roof's west landing, at the last flight's head (50-structure.js) */
       }
       if(F.k<TOWER_N){
         var H=F.H;
@@ -114,6 +118,7 @@ function wkBuild(){
   L.forEach(function(s){ GWALK.solids.push(s); });
   GWALK.solids.forEach(gwToWalk);
   GWALK.onAdd = gwToWalk;                  /* furniture the interiors place later joins the registry as it comes */
+  goWalk(KWALK);                           /* the doors (54-openings.js, core/door): each doorway's blocks, off while the door stands open */
   GW_WALK.built = true; GW_WALK.buildMs = Math.round(performance.now()-t0);
 }
 function wkSegS(ax,az,bx,bz,th,y0,y1,tag){ var dx=bx-ax, dz=bz-az, L=Math.hypot(dx,dz)||1; return { x:(ax+bx)/2, z:(az+bz)/2, ux:dx/L, uz:dz/L, hw:L/2, hd:th/2, top:y1, bot:y0, tag:tag }; }
@@ -148,6 +153,7 @@ window._walk = {
     return gwPose(); },
   support:function(x, z, feet){ wkBuild(); var f=KWALK.floorBelow(x,z,feet,0.55); return f ? Math.max(f[0],terrainH(x,z)) : terrainH(x,z); },
   navAudit:function(){ return gwNavAudit(); },
+  reach:function(o){ return gwReach(o); },
   solids:function(){ return GWALK.solids.length; },
   layout:function(){ return { TOWERS:TOWERS, LIFTS:LIFTS, PALISADE:PALISADE, GATES:GATES, BRIDGES:BRIDGES }; }   /* for tests */
 };
@@ -173,6 +179,40 @@ function gwNavAudit(){
     if(w) badE.push({ id:e.id, kind:e.kind, tags:a.tag+'-'+b.tag, a:[r1(a.x),r1(a.y),r1(a.z)], b:[r1(b.x),r1(b.y),r1(b.z)], stop:at, why:w });
   });
   return { nodes:NAV.nodes.length, edges:NAV.edges.length, badNodes:badN, badEdges:badE };
+}
+/* the reachability audit (core/walk KWALK.reach; the doors-and-glass pass, 2026-11-03): with every unlocked door opened, a
+   flood from each building's doorstep on the ground (a tower's four steps, a house's gate, the hall's four doors; a rope
+   bridge from the decks at its ends) over the
+   floors, stairs and open ground in the building's box, and the floors in that box no walker gets to. A floor in two boxes
+   (a house's yard) counts as reached when any flood reached it. o: {cell (.4), only: a unit name}. "big": 2 m2 or more. */
+function gwReach(o){
+  wkBuild(); o = o || {};
+  var W=KWALK, D=typeof KDOOR!=='undefined' ? KDOOR : null, keep=[];
+  if(D) D.list.forEach(function(d){ if(d.locked) return; keep.push([d, d.blocks.map(function(b){ return !b.off; })]); W.setBlock(d.blocks, false); });
+  var units=[], r1=function(v){ return Math.round(v*10)/10; };
+  TOWERS.forEach(function(T){ var R=T.half+DECK_W+6, st=[]; [[1,0],[-1,0],[0,1],[0,-1]].forEach(function(f){ var x=T.x+f[0]*(T.half+4.5), z=T.z+f[1]*(T.half+4.5); st.push([x,terrainH(x,z),z]); });
+    units.push({ name:'tower '+T.id+' ('+T.name+')', box:[T.x-R,T.x+R,T.z-R,T.z+R], starts:st }); });
+  HOUSES.forEach(function(Hs){ var hx=Hs.w/2+3, hz=Hs.d/2+3, gx=Hs.x+Hs.ox*(Math.max(Hs.w,Hs.d)/2+1.5), gz=Hs.z+Hs.oz*(Math.max(Hs.w,Hs.d)/2+1.5);
+    units.push({ name:'house '+Hs.id+' ('+Hs.kind+')', box:[Hs.x-hx,Hs.x+hx,Hs.z-hz,Hs.z+hz], starts:[[gx,terrainH(gx,gz),gz]] }); });
+  BRIDGES.forEach(function(b,i){ var ux=(b.b.x-b.a.x)/b.L, uz=(b.b.z-b.a.z)/b.L;   /* a rope bridge from the deck just short of each end */
+    units.push({ name:'bridge '+i, box:[Math.min(b.a.x,b.b.x)-5,Math.max(b.a.x,b.b.x)+5,Math.min(b.a.z,b.b.z)-5,Math.max(b.a.z,b.b.z)+5],
+      starts:[[b.a.x-ux*1.5,b.a.y,b.a.z-uz*1.5],[b.b.x+ux*1.5,b.b.y,b.b.z+uz*1.5]] }); });
+  var hr=HALL.R+4; units.push({ name:'the Assembly Hall', box:[HALL.x-hr,HALL.x+hr,HALL.z-hr,HALL.z+hr],
+    starts:HALL.doors.map(function(d){ var a=Math.atan2(d.z-HALL.z,d.x-HALL.x), x=HALL.x+Math.cos(a)*(HALL.R+2.2), z=HALL.z+Math.sin(a)*(HALL.R+2.2); return [x,terrainH(x,z),z]; }) });
+  function area(F){ if(F.kind==='rect') return (F.rect[1]-F.rect[0])*(F.rect[3]-F.rect[2]); if(F.kind==='strip') return Math.hypot(F.b[0]-F.a[0],F.b[1]-F.a[1])*F.w; var b=F.bbox; return b ? (b[1]-b[0])*(b[3]-b[2])*0.6 : 0; }
+  function yOf(F){ return F.kind==='rect' ? F.y : F.kind==='strip' ? Math.min(F.a[2],F.b[2]) : F.pts ? F.pts[0][2] : 0; }
+  var seen=new Map(), out=[], t0=performance.now();
+  units.forEach(function(U){ if(o.only && U.name.indexOf(o.only)<0) return;
+    var R=W.reach(U.starts,{ cell:o.cell==null?0.4:o.cell, box:U.box, ground:terrainH, limit:4e6 });
+    R.reached.forEach(function(F){ seen.set(F, true); }); R.unreached.forEach(function(F){ if(!seen.has(F)) seen.set(F, false); });
+    out.push({ unit:U, reached:R.reached, unreached:R.unreached, nodes:R.nodes, capped:R.capped }); });
+  var rows=out.map(function(q){ var un=q.unreached.filter(function(F){ return !seen.get(F); });
+    return { unit:q.unit.name, floors:q.reached.length+q.unreached.length, reached:q.reached.length, unreached:un.length, nodes:q.nodes, capped:q.capped,
+      big:un.filter(function(F){ return area(F)>=2; }).map(function(F){ return { name:F.name, tag:F.tag, y:r1(yOf(F)), area:r1(area(F)) }; }) }; });
+  keep.forEach(function(k){ k[0].blocks.forEach(function(b,i){ W.setBlock(b, k[1][i]); }); });
+  var all=Array.from(seen.values());
+  return { floors:all.length, reached:all.filter(function(v){ return v; }).length, unreached:all.filter(function(v){ return !v; }).length,
+    doors:D ? D.list.length : 0, ms:Math.round(performance.now()-t0), units:rows };
 }
 /* every tick: build the registry once, move the lift cages' floors with the cages, tell a lift it has a rider, show the walk hint */
 var gwWasWalking = false;

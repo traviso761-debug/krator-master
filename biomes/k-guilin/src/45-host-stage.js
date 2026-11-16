@@ -43,6 +43,11 @@ const hemi=new THREE.HemisphereLight(0xc8d4dc,0x3a4634,.7);scene.add(hemi);
 const SUN_POS=[-1100,1000,-500];
 const sun=new THREE.DirectionalLight(0xfff2dc,1.3);sun.position.set(...SUN_POS);scene.add(sun);
 const fill=new THREE.DirectionalLight(0xbcc8cc,.32);fill.position.set(800,400,900);scene.add(fill);
+// NWBAY'S LOOKS ON THIS PAGE (the final rebuild, pair 13, 2026-11-09): nwbay's species read in place (48n1-48n3) take only what a host asks
+// (biomes/nwbay/src/45-host-stage.js NWBAY_LOOK). Taken here: its attach-audit fixes, so nothing borrowed floats off its limb: BIO.flareJoin on
+// the limbs of .25 m and up (55 J; ?joints=0) and BIO.holdTo on the blooms and the crown clumps (55 holdB, holdC; ?holds=0). Its looks (the
+// back-light, the floor cover's root colour, the dry season, the bracket fungi's new shape) stay off: they are nwbay's page's, not asked for here
+{const q=new URLSearchParams(location.search);window.NWBAY_LOOK={backlit:0,ground:0,season:false,fung:false,joints:q.get('joints')!=='0',holds:q.get('holds')!=='0'};}
 
 // ---------------------------------------------------------------- the lake, the plain, the wadi, the stone forest's bench
 const TERR={R:1600};

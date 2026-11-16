@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """Build Hook (settlements/hook/PLAN.md) on the Ancient Port kit: dist/hook.html.
 
-Hook is a city on the Ancient Port kit (settlements/port). This build reads the kit IN PLACE: every fragment of
-settlements/port/src, the kit's core/ lists (core/materials, core/lod, core/atmos, core/water, core/materials/record)
-and the kit's texture pack (settlements/port/tex, through tools/textures/matlib_pack.py). Nothing of the kit is
+Hook is a city on the Ancient Port kit (kits/port). This build reads the kit IN PLACE: every fragment of
+kits/port/src, the kit's core/ lists (core/materials, core/lod, core/atmos, core/water, core/materials/record)
+and the kit's texture pack (kits/port/tex, through tools/textures/matlib_pack.py). Nothing of the kit is
 copied here. The kit's own build rules (seed discipline, shared scope, registration keys) come from
-settlements/port/build.py, imported, so Hook's fragments are checked by the same code.
+kits/port/build.py, imported, so Hook's fragments are checked by the same code.
 
 Hook adds, in filename order with the kit's fragments:
   targets/<target>/*      the layout (89z-rows.js: TITLE, PORT_LAYOUT_DEF) and the views (91z-views.js)
@@ -13,7 +13,7 @@ Hook adds, in filename order with the kit's fragments:
                           shadows it (an ADAPTED copy): `--vendor-check` diffs every such file against the kit's.
 
 Usage:  python3 build.py [--target hook] [--no-checks] [--inline-packs]
-        python3 build.py --vendor-check     (every src/ file that shadows a settlements/port/src fragment)
+        python3 build.py --vendor-check     (every src/ file that shadows a kits/port/src fragment)
 """
 import contextlib, hashlib, importlib.util, io, json, os, re, subprocess, sys
 
@@ -31,7 +31,8 @@ except Exception:
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(HERE))            # repo root
-PORT = os.path.join(ROOT, 'settlements', 'port')         # the Ancient Port kit, read in place
+sys.path.insert(0, os.path.join(ROOT, 'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
+PORT = os.path.join(ROOT, 'kits', 'port')         # the Ancient Port kit, read in place
 PORT_SRC = os.path.join(PORT, 'src')
 SRC = os.path.join(HERE, 'src')
 TARGETS = os.path.join(HERE, 'targets')
@@ -40,7 +41,7 @@ PACK_KEY = 'port'                                        # the kit's pack (src/8
 
 
 def port_build():
-    """settlements/port/build.py as a module: its check(), find_node(), DETERMINISTIC and core file lists. Its import-time
+    """kits/port/build.py as a module: its check(), find_node(), DETERMINISTIC and core file lists. Its import-time
     side effects (the port lint on its own folder, the open-issues print) are skipped and silenced."""
     spec = importlib.util.spec_from_file_location('port_build', os.path.join(PORT, 'build.py'))
     mod = importlib.util.module_from_spec(spec)
@@ -64,7 +65,7 @@ def discover():
 
 
 def kit_paths():
-    """{fragment name: path} of the kit as settlements/port/build.py assembles it (its src/, then the core lists it
+    """{fragment name: path} of the kit as kits/port/build.py assembles it (its src/, then the core lists it
     names), without the pack fragment."""
     src = {f: os.path.join(PORT_SRC, f) for f in os.listdir(PORT_SRC) if f[0].isdigit()}
     src.update({f: os.path.join(PB.CORE, f) for f in PB.CORE_FILES if f not in src})
@@ -73,6 +74,7 @@ def kit_paths():
     src.update({f: os.path.join(PB.ATMOS_DIR, f) for f in PB.CORE_ATMOS if f not in src})
     src.update({f: os.path.join(PB.WATER_DIR, f) for f in PB.CORE_WATER if f not in src})
     src.update({f: os.path.join(ROOT, 'core', 'materials', 'record', f) for f in PB.RECORD_FILES if f not in src})
+    src.update({f: q for f, q in PB.DOOR_FILES.items() if f not in src})   # core/door and the kit's openings (kits/port/build.py)
     return src
 
 
@@ -99,7 +101,7 @@ def build_one(target, do_checks):
             bodies[f] = fh.read()
     sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
     import matlib_pack
-    # the kit's library pack, read from settlements/port/tex: one sidecar beside the page (dist/hook.tex.port.js),
+    # the kit's library pack, read from kits/port/tex: one sidecar beside the page (dist/hook.tex.port.js),
     # or inlined with --inline-packs
     side = None if '--inline-packs' in sys.argv else {}
     bodies[PB.MATLIB_PACK] = matlib_pack.fragment(PORT, PACK_KEY, side=side)
@@ -118,6 +120,8 @@ def build_one(target, do_checks):
     if m:
         html = re.sub(r'<title>.*?</title>', lambda _: '<title>%s</title>' % m.group(1), html, count=1)
     out = os.path.join(DIST, target + '.html')
+    if BSRC.LISTING:   # --list-sources: every file this target read is recorded; main() reports every target's
+        return order, None, None
     os.makedirs(DIST, exist_ok=True)
     if side:
         html = matlib_pack.write_sidecar(side, html, DIST, target + '.tex.js')
@@ -129,12 +133,12 @@ def build_one(target, do_checks):
 
 
 def vendor_check():
-    """Every src/ file that shadows a settlements/port/src fragment is an adapted copy: report whether it still matches
+    """Every src/ file that shadows a kits/port/src fragment is an adapted copy: report whether it still matches
     the kit's. Drift that is deliberate is recorded in KNOWN_ISSUES.md."""
     kit = {f: os.path.join(PORT_SRC, f) for f in os.listdir(PORT_SRC)}
     shadow = sorted(f for f in own_src() if f in kit)
     if not shadow:
-        print('vendor-check: nothing vendored (src/ shadows no settlements/port/src fragment)')
+        print('vendor-check: nothing vendored (src/ shadows no kits/port/src fragment)')
         return True
     bad = 0
     for f in shadow:
@@ -142,7 +146,7 @@ def vendor_check():
         b = open(kit[f], 'rb').read().replace(b'\r\n', b'\n')
         same = a == b
         bad += not same
-        print('  %-28s %s' % (f, 'same' if same else 'DRIFT from settlements/port/src/' + f))
+        print('  %-28s %s' % (f, 'same' if same else 'DRIFT from kits/port/src/' + f))
     print('vendor-check: ' + ('OK' if not bad else '%d adapted file(s) differ (see KNOWN_ISSUES.md)' % bad))
     return True
 
@@ -158,6 +162,8 @@ def main():
             sys.exit('no targets found under targets/*/89z-rows.js')
     for target in wanted:
         order, html, out = build_one(target, do_checks)
+        if BSRC.LISTING:
+            continue
         blocks = re.findall(r'<script[^>]*>(.*?)</script>', html, re.S)
         body = max(blocks, key=len) if blocks else ''
         chk = os.path.join(HERE, '.syntax-%s.js' % target)
@@ -188,3 +194,4 @@ if __name__ == '__main__':
     if '--vendor-check' in sys.argv:
         sys.exit(0 if vendor_check() else 1)
     main()
+    BSRC.report(vendor_check=vendor_check)   # --list-sources: every target's files (and what --vendor-check compares), then exit

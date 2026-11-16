@@ -22,7 +22,7 @@ import base64, json, os
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 CATALOG = os.path.join(os.path.dirname(HERE), 'catalog')
-CORE = [(CATALOG, 'krator-furniture-core.js'), (HERE, 'vehicles-core.js'), (HERE, 'vehicles-detail.js')]
+CORE = [(os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'catalog'), 'krator-furniture-core.js'), (HERE, 'vehicles-core.js'), (HERE, 'vehicles-detail.js')]
 TEX = os.path.join(HERE, 'tex')                 # tools/textures/pack.py kits/motor-vehicles (materials.json)
 DEFAULT_SLOTS = ('paint', 'metal', 'rubber')    # vehicles-detail.js falls back to these for any culture
 RUIN_SLOTS = ('rust', 'rustHeavy', 'verdigris', 'char', 'scorched')  # the runtime's ruin pass paints these on any culture's vehicle (every bundle)
@@ -56,7 +56,7 @@ def files(cultures=None):
 
 
 def label(d, f):
-    return ('kits/catalog/' if d == CATALOG else 'kits/motor-vehicles/') + f
+    return os.path.relpath(os.path.join(d, f), os.path.dirname(os.path.dirname(HERE))).replace(os.sep, '/')   # repo-relative
 
 
 def textures(fs, on=True):

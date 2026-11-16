@@ -10,7 +10,7 @@
 //  - the cores: a 6 x 6 m stair and lift shaft (4 x 4: a stair) in each part of the plan, inside the most storeys in a row, nearest the part's
 //    middle (below, at the cores), concrete, with a door in the middle of each face on every storey it serves.
 // o: sh (storey height), y0 (the first plate, default sh), top (no plate within a storey of it: default the roof), floors (false: none),
-// maxY (no plate above it), cell (1), roofAccess (a head-house over the core on the roof), roof (a building the kit left open-topped, as the Watch's drum: under this height an enclosed cell
+// maxY (no plate above it), open (boxes [x0, x1, z0, z1] kept one tall space: no plate in them), cell (1), roofAccess (a head-house over the core on the roof), roof (a building the kit left open-topped, as the Watch's drum: under this height an enclosed cell
 // counts as covered, and a roof plate is drawn at it), tile (a ruin's: the plates in pieces of 8 m at most, so a tear cuts them). Returns a Group named
 // 'floors', or null; userData { storeys, cells, core, tris, grid } (grid: the cells, for the plans on it, 46d: x0, z0, cell, W, D, the ground storey's
 // inside cells and each level's, the core).
@@ -88,7 +88,9 @@ MP.floors = function (G, o) {
     return e;
   }
   const levels = [];
-  if (!noPlates) for (let y = y0; y <= top - sh + 0.01; y += sh) { const g = inside(y); let c = 0; for (let k = 0; k < N; k++) c += g[k]; if (c >= 20) levels.push({ y, g, c }); }
+  /* o.open: boxes [x0, x1, z0, z1] that stay one tall space (an assembly hall under its sawtooth roof): no plate in them over the ground */
+  const opened = k => { if (!o.open) return false; const x = cx(k % W), z = cz(Math.floor(k / W)); return o.open.some(b => x > b[0] && x < b[1] && z > b[2] && z < b[3]); };
+  if (!noPlates) for (let y = y0; y <= top - sh + 0.01; y += sh) { const g = inside(y); let c = 0; for (let k = 0; k < N; k++) { if (g[k] && opened(k)) g[k] = 0; c += g[k]; } if (c >= 20) levels.push({ y, g, c }); }
   /* an open-topped building's roof: the cells enclosed just under it, a plate drawn there like the others (below, with the levels) */
   if (roof != null && !noPlates) { const g = inside(roof - 0.3, roof - 1.2, roof - 0.4); let c = 0; for (let k = 0; k < N; k++) c += g[k]; if (c >= 20) levels.push({ y: roof, g, c, roof: true }); }
   if (!levels.length && !noPlates) return null;

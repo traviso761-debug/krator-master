@@ -378,6 +378,10 @@ def main():
         if pid in STRING:
             out[-1]['string'], out[-1]['arrow'] = STRING[pid], 'arrow'
         print('%-10s %s %6d tris' % (pid, hand, sum(len(t) for t in m.parts.values())))
+    # the imported props (tools/import_props.py: Meshy models, kept by their 'src') stay after the made ones
+    pj = os.path.join(HERE, 'data', 'props.json')
+    if os.path.exists(pj):
+        out += [p for p in json.load(open(pj, encoding='utf-8'))['props'] if p.get('src')]
     json.dump({'about': 'Hand-held props (tools/make_props.py), modelled in the grip frame: +Y along the handle, +Z where '
                'the fingers point, +X out of the palm; hand R or L. grip: how the hand closes (skeleton.json hands curls). '
                'support: the segment of the handle the left hand may hold when a clip\'s two_hands names the prop. string: a bow '

@@ -15,7 +15,14 @@ const HL_HOST=KHOST.take({
  minimap:{title:TITLE},
  exporters:{tags:()=>KTAGS.page.export()},
  budget:BUDGET,api:window._api,
+ // E opens or shuts the door within reach (core/door: KDOORHOST.toggleNear; 95-hl-doors.js); flying, E still climbs as well
+ keys:{e:()=>KDOORHOST.toggleNear(camera.position,hlWalking())},
+ // with the interiors on (?interiors=1): X opens the furnished building nearest the view's middle, storey by storey (89y hlfUnits)
+ cutaway:HLF.interiors?{units:hlfUnits(HLF,VERN.defs)}:undefined,
 });
+// walking (the host's F) or flying: the reach of the E key and its tip
+function hlWalking(){return !!(KHOST.cam&&KHOST.cam.ctl&&KHOST.cam.ctl.walk);}
+FRAME_HOOKS.push(KDOORHOST.tip(()=>camera.position,hlWalking));   // "E: open the door" at the foot of the page
 KHOST.on(function hlHooks(dt){const now=performance.now();for(const f of FRAME_HOOKS)f(dt,now);},'tick');
 KHOST.on(function hlSky(){if(sky)sky.position.copy(camera.position);if(giant)giant.position.copy(camera.position).addScaledVector(giantDir,4000);},'view');
 KHOST.hover(true);

@@ -19,5 +19,6 @@
   "22-core-water-flow.js",
   "50-core-water-draw.js",
   "51-core-water-kinds.js"
- ]
+ ],
+ "hazard": true
 }

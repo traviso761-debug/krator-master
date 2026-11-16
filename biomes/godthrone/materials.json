@@ -1,18 +1,321 @@
 {
  "build": "godthrone",
- "note": "The Godthrone kit's adapter onto the material library (core/materials/PLAN.md). Keys are the kit's MAT slots (50-biome-godthrone-species.js, BIO.libSwap) and the host's ground slots (84-host-ground.js: KGROUND.layer and hostGroundLib). Station 1 (the summit vent, 2026-10-26): the halo's beads are KGROUND's sand kind over ground.beads.orange (the Moon's orange soil) and ground.sand.black (the crystallised beads), full colour; the pit's glassy floor ground.obsidian and the spatter ground.scoria, full colour; groundDetail a grey multiply (ground.cinder); rockFace the basalt's grain on every face, grey under KSTRATA's tibasalt colours (rock.basalt.flowbanded: THE TITANIUM BASALT IS A TINT, a stand-in the plan's section 8 allows; core/materials/PROMPTS-NEEDED.md section 20 has the optional prompt for its own set); rock the talus blocks and stones (the same grain, grey under the instance's near-black); bomb the bombs' and the spatter's glass skin (ground.lava.crust, grey); lavaCrust the throat's crust grain (fx/lava's crust); hair Pele's hair (card.pele.hair, a 3x3 sheet: one mat a card, the middle cell); portal the sealed portal's white render (concrete.ancient). Run python3 tools/textures/pack.py biomes/godthrone after any change, then python3 build.py.",
+ "note": "The Godthrone kit's adapter onto the material library (core/materials/PLAN.md). Keys are the kit's MAT slots (50-biome-godthrone-species.js, BIO.libSwap) and the host's ground slots (84-host-ground.js: KGROUND.layer and hostGroundLib). Station 1 (the summit vent, 2026-10-26): the halo's beads are KGROUND's sand kind over ground.beads.orange (the Moon's orange soil) and ground.sand.black (the crystallised beads), full colour; the pit's glassy floor ground.obsidian and the spatter ground.scoria, full colour; groundDetail a grey multiply (ground.cinder); rockFace the titanium basalt's grain on every face, grey under KSTRATA's tibasalt colours (rock.basalt.titanium, delivered 2026-10-27, wired 2026-11-04 in place of the rock.basalt.flowbanded stand-in); rock the talus blocks and stones (the same titanium grain, grey under the instance's near-black); bomb the bombs' and the spatter's glass skin (ground.lava.crust, grey); lavaCrust the throat's crust grain (fx/lava's crust); hair Pele's hair (card.pele.hair, a 3x3 sheet: one mat a card, the middle cell); portal the sealed portal's white render (concrete.ancient). Run python3 tools/textures/pack.py biomes/godthrone after any change, then python3 build.py. The new stations' sets (2026-11-04; each page takes only those its station.json \"tex\" names, build.py BASE_TEX): rockTafoni (rock.tafoni: the orange belt's cliff faces), palagonite (rock.palagonite: the altered glass on the ground), iceDebris (ice.debris: the debris-covered tongues), lichenCrust (ground.lichen.crust: the crusts), rockMega (rock.megabreccia: the rim's faces under KSTRATA's megabreccia), pavement (ground.pavement.desert: the rim's regolith), iceGlacier (ice.glacier), iceRust (ice.rust: the bloodfalls' stained ice), rustTerrace (ground.rust.terrace: the seep's terraces), riverweed (ground.riverweed.red: the blood river's weed), ferroCrust (mineral.crust.ferromanganese: the Red Gills' rust collar, delivered for it and wired here), tuff (rock.tuff) and ash (ground.ash: the downwind ash beds), rockColumns (rock.columnar: the scarp's colonnades, the tube's ilmenite columns).",
  "size": 512,
  "families": {
-  "beadsOrange": {"lib": "ground.beads.orange", "scale": [2.5, 2.5], "tint": {"keep": 1.0, "mean": null}, "roughLift": 0.2, "mapOnly": true},
-  "beadsBlack": {"lib": "ground.sand.black", "scale": [2.5, 2.5], "tint": {"keep": 1.0, "mean": null}, "roughLift": 0.2, "mapOnly": true},
-  "glass": {"lib": "ground.obsidian", "scale": [4, 4], "tint": {"keep": 1.0, "mean": null}, "mapOnly": true},
-  "spatter": {"lib": "ground.scoria", "scale": [3, 3], "tint": {"keep": 1.0, "mean": null}, "mapOnly": true},
-  "groundDetail": {"lib": "ground.cinder", "scale": [5, 5], "size": 256, "tint": {"keep": 0, "mean": 0.9, "contrast": 1.2}, "mapOnly": true},
-  "rockFace": {"lib": "rock.basalt.flowbanded", "scale": [8, 8], "tint": {"keep": 0, "mean": 0.5, "contrast": 1.15}, "mapOnly": true},
-  "rock": {"lib": "rock.basalt.flowbanded", "scale": [3, 3], "tint": {"keep": 0, "mean": 0.62}, "mapOnly": true},
-  "bomb": {"lib": "ground.lava.crust", "scale": [2, 2], "tint": {"keep": 0, "mean": 0.62}, "mapOnly": true},
-  "lavaCrust": {"lib": "ground.lava.crust", "scale": [6, 6], "tint": {"keep": 1.0, "mean": null}, "mapOnly": true},
-  "hair": {"lib": "card.pele.hair", "scale": [1, 1], "tint": {"keep": 1.0, "mean": null}, "size": 512, "cell": [0.34, 0.34, 0.66, 0.66]},
-  "portal": {"lib": "concrete.ancient", "scale": [4, 4], "tint": {"keep": 1.0, "mean": null}, "mapOnly": true}
+  "beadsOrange": {
+   "lib": "ground.beads.orange",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.2,
+   "mapOnly": true
+  },
+  "beadsBlack": {
+   "lib": "ground.sand.black",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.2,
+   "mapOnly": true
+  },
+  "glass": {
+   "lib": "ground.obsidian",
+   "scale": [
+    4,
+    4
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "mapOnly": true
+  },
+  "spatter": {
+   "lib": "ground.scoria",
+   "scale": [
+    3,
+    3
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "mapOnly": true
+  },
+  "groundDetail": {
+   "lib": "ground.cinder",
+   "scale": [
+    5,
+    5
+   ],
+   "size": 256,
+   "tint": {
+    "keep": 0,
+    "mean": 0.9,
+    "contrast": 1.2
+   },
+   "mapOnly": true
+  },
+  "rockFace": {
+   "lib": "rock.basalt.titanium",
+   "scale": [
+    8,
+    8
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.5,
+    "contrast": 1.15
+   },
+   "mapOnly": true
+  },
+  "rock": {
+   "lib": "rock.basalt.titanium",
+   "scale": [
+    3,
+    3
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.62
+   },
+   "mapOnly": true
+  },
+  "bomb": {
+   "lib": "ground.lava.crust",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.62
+   },
+   "mapOnly": true
+  },
+  "lavaCrust": {
+   "lib": "ground.lava.crust",
+   "scale": [
+    6,
+    6
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "mapOnly": true
+  },
+  "hair": {
+   "lib": "card.pele.hair",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "size": 512,
+   "cell": [
+    0.34,
+    0.34,
+    0.66,
+    0.66
+   ]
+  },
+  "portal": {
+   "lib": "concrete.ancient",
+   "scale": [
+    4,
+    4
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "mapOnly": true
+  },
+  "rockTafoni": {
+   "lib": "rock.tafoni",
+   "scale": [
+    6,
+    6
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.5,
+    "contrast": 1.2
+   },
+   "mapOnly": true
+  },
+  "palagonite": {
+   "lib": "rock.palagonite",
+   "scale": [
+    4,
+    4
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "mapOnly": true
+  },
+  "iceDebris": {
+   "lib": "ice.debris",
+   "scale": [
+    5,
+    5
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "mapOnly": true
+  },
+  "lichenCrust": {
+   "lib": "ground.lichen.crust",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "mapOnly": true
+  },
+  "rockMega": {
+   "lib": "rock.megabreccia",
+   "scale": [
+    10,
+    10
+   ],
+   "tint": {
+    "keep": 0.35,
+    "mean": 0.5,
+    "contrast": 1.1
+   },
+   "mapOnly": true
+  },
+  "pavement": {
+   "lib": "ground.pavement.desert",
+   "scale": [
+    3,
+    3
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "mapOnly": true
+  },
+  "iceGlacier": {
+   "lib": "ice.glacier",
+   "scale": [
+    6,
+    6
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "mapOnly": true
+  },
+  "iceRust": {
+   "lib": "ice.rust",
+   "scale": [
+    4,
+    4
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "mapOnly": true
+  },
+  "rustTerrace": {
+   "lib": "ground.rust.terrace",
+   "scale": [
+    4,
+    4
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "mapOnly": true
+  },
+  "riverweed": {
+   "lib": "ground.riverweed.red",
+   "scale": [
+    3,
+    3
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "mapOnly": true
+  },
+  "ferroCrust": {
+   "lib": "mineral.crust.ferromanganese",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "mapOnly": true
+  },
+  "tuff": {
+   "lib": "rock.tuff",
+   "scale": [
+    5,
+    5
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "mapOnly": true
+  },
+  "ash": {
+   "lib": "ground.ash",
+   "scale": [
+    3,
+    3
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "mapOnly": true
+  },
+  "rockColumns": {
+   "lib": "rock.columnar",
+   "scale": [
+    8,
+    8
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.5,
+    "contrast": 1.15
+   },
+   "mapOnly": true
+  }
  }
 }

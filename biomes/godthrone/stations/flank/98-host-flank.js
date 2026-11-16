@@ -39,8 +39,18 @@ const FCHK={
  flows(F,box){const E=F.B.eruptions,done=E.every(e=>e.done||e.quenched),o={};let n=0,cov=0,lev=0,chn=0;
   for(let z=box[1];z<box[3];z+=60)for(let x=box[0];x<box[2];x+=60){n++;F.at(x,z,o);if(o.th>.5)cov++;if(o.levee>1)lev++;if(o.channel>1)chn++;}
   const share=cov/n;return{ok:done&&share>.15&&lev>50&&chn>20,detail:E.length+' eruptions, '+E.map(e=>(e.frozen/1e6).toFixed(1)+' Mm3'+(e.done?'':' (quenched)')).join(', ')+'; '+(share*100).toFixed(0)+'% of the map under flows; '+lev+' samples on a levee, '+chn+' in a channel; baked in '+F.ms+' ms'};},
+ // the beds downwind: the rille's walls show the summit's ash between the flows (ROCK-PROPOSAL.md's tuff aprons), all fresh (no palagonite)
+ ash(samples){const k={};samples.forEach(q=>k[q.kind]=(k[q.kind]||0)+1);const ash=(k.ash||0)+(k.ignimbrite||0);
+  return{ok:samples.length>100&&ash>=samples.length*.04&&!k.palagonite,detail:samples.length+' wall samples: '+JSON.stringify(k)};},
  // the air: four tenths of an atmosphere at the old vent (the model's law); the cold: about -40 C (the plan's table)
  air(p,t){const ok=Math.abs(p-.40)<.02&&t>-60&&t<-20;return{ok,detail:p.toFixed(3)+' atm and '+t.toFixed(0)+' C at the old vent'};}};
+/* the rille's walls: strata samples down its faces (the beds a reader sees), from 8 m over its floor to 4 m under the rim, on both
+   walls across the rille's line. The rille's record (KRELIEF.rille) keeps no depth (its depth is the ground over its floor), so the
+   wall's height is read at each point: the plain's ground (flowGround, before the cut) over the floor. It read RILLE.depth, which is
+   undefined, so the check sampled nothing (GPU verify 2026-11-08: "0 wall samples") */
+const rilleWall=()=>{const o=[],P=RILLE.pts;for(let i=0;i<P.length;i+=2){const p=P[i],a0=P[Math.max(0,i-1)],a1=P[Math.min(P.length-1,i+1)],
+  tx=a1.x-a0.x,tz=a1.z-a0.z,l=Math.hypot(tx,tz)||1,D=flowGround(p.x,p.z)-p.y;
+  for(let d=-1;d<=1;d+=2)for(let h=8;h<D-4;h+=3.5){const x=p.x-tz/l*d*RILLE.w*.42,z=p.z+tx/l*d*RILLE.w*.42,a=STRATA.at(x,p.y+h,z);if(inMap(x,z))o.push({kind:a.kind});}}return o;};
 const presAt=y=>ATMOS.airPressureAt(SKY.preset||{air:{pressure:1.6,thin:{y0:0,scale:8000}}},y);
 function flankChecks(){const R=[],add=(n,r)=>R.push(Object.assign({name:n},r)),h=KHAZ.here(VENT.x,VENT.top,VENT.z,0);
  add('the rille: its floor falls and is drawn',FCHK.rille(RILLE.pts,terrainH));
@@ -48,6 +58,7 @@ function flankChecks(){const R=[],add=(n,r)=>R.push(Object.assign({name:n},r)),h
  add('the old vents\' dark rings',FCHK.rings(OLDVENTS,FIELD.halo));
  add('the flows: frozen, with levees and channels',FCHK.flows(FLOWS,[TERR.X0,TERR.Z0,TERR.X1,TERR.Z1]));
  add('the air at 11 km',FCHK.air(presAt(VENT.top),tempMean(VENT.top)));
+ add('the beds downwind: ash between the flows',FCHK.ash(rilleWall()));
  return R;}
 function flankNegatives(){const R=[],add=(n,r)=>R.push({name:n,failed:!r.ok,detail:r.detail});
  add('the rille run uphill',FCHK.rille(RILLE.pts.slice().reverse(),terrainH));
@@ -55,4 +66,6 @@ function flankNegatives(){const R=[],add=(n,r)=>R.push({name:n,failed:!r.ok,deta
  add('no rings (a flat halo)',FCHK.rings(OLDVENTS,()=>.5));
  add('flows with no levees or channels',FCHK.flows({B:FLOWS.B,ms:0,at:(x,z,o)=>{FLOWS.at(x,z,o);o.levee=0;o.channel=0;return o;}},[TERR.X0,TERR.Z0,TERR.X1,TERR.Z1]));
  add('the summit\'s air on the flank',FCHK.air(presAt(25000),-75));
+ add('the upwind beds (no ash)',FCHK.ash(rilleWall().map(q=>q.kind==='ash'||q.kind==='ignimbrite'?Object.assign({},q,{kind:'flow'}):q)));
  return R;}
+const STATION_CHECKS=flankChecks,STATION_NEGATIVES=flankNegatives;   // 99-host-take.js reads these

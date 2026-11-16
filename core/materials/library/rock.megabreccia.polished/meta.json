@@ -1,0 +1,64 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.306,
+    1.202
+   ],
+   "seam_before": [
+    1.419,
+    1.161
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.1,
+   "mute": 0.0,
+   "normal_strength": 0.25,
+   "pattern": false,
+   "rough": 0.3,
+   "rough_var": 0.1,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "rock",
+  "id": "rock.megabreccia.polished",
+  "metal": 0,
+  "roughness": 0.3,
+  "scale": [
+   2,
+   2
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "rock.megabreccia.polished.webp",
+  "generator": "supplied by the owner (krator-textures-2026-11-10, webp, 1254 px), generated from core/materials/PROMPTS-NEEDED.md section 33 (biomes/cut, station face)",
+  "licence": "generated for this project by its owner",
+  "look_note": "on its prompt but for two clasts with a hairline crack across them (the prompt said no cracks); the luminance invents relief on a polished slab, so the normal is kept faint (normal_strength 0.25); 2 m a tile puts the largest clasts at the prompt's half metre (the Cut's face packs it at 3 m)",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no reflections, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a sawn and finely polished slab of impact megabreccia, like a polished breccia countertop, perfectly flat and smooth: angular clasts of many different rocks from fist size to half a metre packed together at every angle in a fine grey crushed matrix, each clast cut clean through so its inner texture shows: black basalt with tiny pale crystals, rusty red basalt, banded pale grey gneiss with fine wavy foliation, cream tuff, brick-red sandstone with faint lamination, pale grey limestone, a few clasts themselves made of smaller clasts; thin black glassy veins (pseudotachylite) cutting straight across several clasts; scattered tiny bottle-green and black glass flecks in the matrix; sharp crisp clast edges; no lichen, no dirt, no weathering, no cracks, no pits, no saw marks; every rock type clearly different in colour.",
+  "prompt_where": "core/materials/PROMPTS-NEEDED.md section 33 (biomes/cut, station face)",
+  "reuse": "the Cut's polished face (cut, ground.breccia: the grain under KSTRATA's megabreccia blocks); any sawn and polished breccia, conglomerate or terrazzo slab, a polished floor or counter",
+  "sha1": "fbc84ff601f3de08e08015b0f91ea774684c11e5",
+  "size_note": "the source is 1254 px, under the prompt's 2048: the pipeline writes 1024 px sets, so nothing was upscaled"
+ }
+}

@@ -5,11 +5,11 @@ builds, the first-generation registry, and the new building types. They are
 drawn on one orbitable, walkable sheet with an inspector and automatic LOD.
 
 Open `index.html` from a local server rooted at the repo root, because the page
-loads `../three.min.js` and the engine from `../../../kits/catalog/`:
+loads `../three.min.js`, the engine from `../../../core/catalog/` and the Voth buildings from `../../../kits/catalog/`:
 
 ```
-python3 -m http.server 8000          # from the repo root
-# http://localhost:8000/settlements/voth/catalog/index.html
+python3 -m http.server 0 --bind 127.0.0.1   # from the repo root: a free port, printed at start-up
+# http://localhost:<port>/settlements/voth/catalog/index.html
 #   ?src=voth-shops   ?fam=military   ?only=voth_tavern_b   ?lod=off|auto|0|1|2
 ```
 
@@ -24,7 +24,7 @@ python3 -m http.server 8000          # from the repo root
 | `registry/voth-warehouses.js` | `voth_warehouse_b`: canal warehouse with hoist bay, bonded grain store |
 | `registry/voth-civic.js` | school (Temple college, schoolhouse), generator (turbine hall, fumarole vent house), farmhouses (Velothi, chinampa, Hlaalu), governor's palace |
 | `registry/voth-military.js` | garrison (Velothi fortress, harbour fort), barracks (Hlaalu, Velothi), mustering grounds, army camp |
-| `../../../kits/catalog/krator-master-buildings-voth.js` | first-generation registry (27 entries): the 13 first ones, the citizen simulation's 8 (2026-10-12: watchhouse, caravanserai, coast-guard berth, weaver, tannery, brewery, butcher, bakery), the power station, and the rest day's two temples (the Ash Saints, the Tide Mother), the village chapel and the village shrine (2026-10-12), the shipwright's dock (2026-10-13), each with an `ix` shell for its interior (`settlements/voth` 41-vc-building-interiors.js) |
+| `../../../kits/catalog/krator-master-buildings-voth.js` | first-generation registry (28 entries): the 13 first ones, the citizen simulation's 8 (2026-10-12: watchhouse, caravanserai, coast-guard berth, weaver, tannery, brewery, butcher, bakery), the power station, and the rest day's two temples (the Ash Saints, the Tide Mother), the village chapel and the village shrine (2026-10-12), the shipwright's dock (2026-10-13), the Ordinators' citadel (2026-10-15, not placed in Voth), each with an `ix` shell for its interior (`settlements/voth` 41-vc-building-interiors.js) |
 | `registry/voth-city-captured.js` + `.data.js` | **generated**: every structure the city builds, pulled from a live build (see below) |
 
 ## Walk records: stairs and ladders
@@ -101,7 +101,7 @@ The whole catalog is 250 builds and 2.1 M triangles at L0. It draws in about
 
 ## Engine additions
 
-These are in `../../../kits/catalog/krator-asset-engine.js`:
+These are in `../../../core/catalog/krator-asset-engine.js`:
 * `F.hipRoof(lx, ly, lz, w, h, d, ry, colour, family)` is a true hip roof
   with a ridge along the longer side. `F.pyrRoof` always met at one point
   and read as a stretched pyramid on any long building.

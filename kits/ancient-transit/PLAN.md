@@ -22,7 +22,7 @@ the furniture (the catalog core, the `ancient` culture's pieces, the assembler),
 ## 2. The three things
 
 **Street furniture** (`krator-transit-furniture.js`, catalog `ASSET`s of culture `ancient` on the catalog core,
-`kits/catalog/krator-furniture-core.js`): lamp standards (the valley's `AV_LAMPS` are boxes), traffic signals, overhead
+`core/catalog/krator-furniture-core.js`): lamp standards (the valley's `AV_LAMPS` are boxes), traffic signals, overhead
 sign gantries, street signs, benches, bollards, bins, hydrants, planters, kiosks, tram and bus shelters, transformer and
 utility cabinets, crash barriers, guardrails, pedestrian bridges; and the wreckage: pavement rubble, glass heaps, cable
 tangles. Every kind has the ruin states it can have of `intact`, `bent` (leaning, kinked), `fallen`, `burnt`, `crushed`;
@@ -86,7 +86,7 @@ The modules this kit takes, by name, and for each it does not, why.
 | `core/city` | no | a city's streets are the host's (`core/city` in the valley later); this kit takes a street as a polyline and a width and furnishes it |
 | `core/furnish` | no | the pieces are catalog `ASSET`s of a culture, built by this kit's assembler into merged meshes with planar metre UVs (the library maps on them without a triplanar hook), not furniture placed in rooms |
 | `core/export`, `core/lod`, `core/minimap`, `core/simulation`, `core/clock` | no | the records are exportable as plain JSON (`[G data]`); a host owns LOD, the minimap and the clock |
-| `kits/catalog` | read in place | the catalog core inside the furniture closure (`makeFrame`, the `mk*` primitives, `FPAL`, `ASSET`) |
+| `core/catalog` | read in place | the catalog core inside the furniture closure (`makeFrame`, the `mk*` primitives, `FPAL`, `ASSET`) |
 
 Checked at the end with `python tools/check_core_use.py kits/ancient-transit` (rand and tags named in `build.py`; no PRNG,
 noise, `getImageData`, water shader or sky dome of this kit's own).

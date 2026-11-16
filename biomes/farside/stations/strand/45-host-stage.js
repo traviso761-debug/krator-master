@@ -1,7 +1,7 @@
 // ================================================================= HOST — stage (Farside, station 3: THE STRAND)
 // The same host as station 1's with another landform and another STAGE: 44z (the shell) and 47 (the land) are shared.
 //
-// WHERE (PLAN.md section 6): an open strand on the coast north of Farport (scale model px 30,240), under the full spray: the
+// WHERE (PLAN.md section 6): an open strand on the coast north of Farport (scale model 5.1 px 293,573; 4.23 px 21,243), under the full spray: the
 // first two kilometres in from the surf, where the sea's flora holds everything. Krator's sea has little tide, so the spray
 // coral builds its reefs out of the sand above the waterline.
 //
@@ -31,7 +31,9 @@ function groundH(x,z){const d=coastD(x,z);let h;
  return h;}
 const STAGE={
  key:'strand',name:'Farside: the strand',R:1600,seed:2633,
- site:{px:30,py:240},air:{pressure:1.3,humidity:.95},clouds:{cover:.55},fogDensity:.00026,weather:'clear',
+ /* re-sited on map 5.1 (pair 10): the old pixel (5.1 px 302,570) now stands at 1,725 m on the wall's slope; the nearest strand is 5.1 px
+    293,573 (16 m, on the tsunami's scour bench, 30 km north of Farport). The sky's frame is on the 4.23 canvas (5.1 less 272,330) */
+ site:{px:21,py:243},air:{pressure:1.3,humidity:.95},clouds:{cover:.55},fogDensity:.00026,weather:'clear',
  ground:groundH,coastD,UV,XZ,sea:{level:0,seeds:[XZ(-1500,0),XZ(-1500,-900),XZ(-1500,900)]},
  fields:{
   spray:(x,z)=>{const d=coastD(x,z);return d<0?1:smooth(1800,0,d);},

@@ -79,12 +79,20 @@
     "gloss": "Chimes River ('Chimes Riba') — the Great Lake outlet gorge plunging past Chimes into the Rift",
     "name": "Chimes Riba"
   },
-  "r006:__tongue__": "tungang",
+  "r006:__tongue__": "dalab",
+  "r006:dalab": {
+    "gloss": "Geit (gate) + Riba (river)",
+    "name": "Geit Riba"
+  },
   "r006:tungang": {
     "gloss": "Fah (far) + Warra (river)",
     "name": "Fah Warra"
   },
-  "r007:__tongue__": "vrivolci",
+  "r007:__tongue__": "shumari",
+  "r007:shumari": {
+    "gloss": "Bētun (hearth-house) + Nārun (river)",
+    "name": "Bētun-Nārun"
+  },
   "r007:vrivolci": {
     "gloss": "Tarvos (bull-tor) + Riba (river)",
     "name": "Tarvosriba"
@@ -94,7 +102,11 @@
     "gloss": "Coldkeep (keep-cold) + Waywater (river)",
     "name": "Waywater Coldkeep"
   },
-  "r009:__tongue__": "tungang",
+  "r009:__tongue__": "dalab",
+  "r009:dalab": {
+    "gloss": "Gould (gold) + Riba (river)",
+    "name": "Gould Riba"
+  },
   "r009:tungang": {
     "gloss": "Weyt (white-water) + Warra (river)",
     "name": "Weyt Warra"
@@ -214,10 +226,14 @@
     "gloss": "Periya (great) + āṟu (river)",
     "name": "Periya-āṟu"
   },
-  "r033:__tongue__": "izani",
+  "r033:__tongue__": "riders",
   "r033:izani": {
     "gloss": "geit (gate) + Rrivar (river)",
     "name": "Rrivar geit"
+  },
+  "r033:riders": {
+    "gloss": "Tsékooh (sinkhole-gorge) + Baatar (river)",
+    "name": "Tsékooh Baatar"
   },
   "r034:__tongue__": "vothic",
   "r034:vothic": {
@@ -249,10 +265,14 @@
     "gloss": "Ixos (ice-peak) + Riba (river)",
     "name": "Ixosriba"
   },
-  "r040:__tongue__": "izani",
+  "r040:__tongue__": "riders",
   "r040:izani": {
     "gloss": "taur (tower) + Rrivar (river)",
     "name": "Rrivar taur"
+  },
+  "r040:riders": {
+    "gloss": "Kǫ' (sun-fire) + Baatar (river)",
+    "name": "Kǫ' Baatar"
   },
   "r041:__tongue__": "farside",
   "r041:farside": {
@@ -284,12 +304,20 @@
     "gloss": "Béesh (obsidian) + Baatar (river)",
     "name": "Béesh Baatar"
   },
-  "r047:__tongue__": "izani",
+  "r047:__tongue__": "riders",
   "r047:izani": {
     "gloss": "Dippa (deep) + Rrivar (river)",
     "name": "Rrivar Dippa"
   },
-  "r048:__tongue__": "tungang",
+  "r047:riders": {
+    "gloss": "Tł'éé' (night-jungle) + Baatar (river)",
+    "name": "Tł'éé' Baatar"
+  },
+  "r048:__tongue__": "dalab",
+  "r048:dalab": {
+    "gloss": "Swift (swift) + Riba (river)",
+    "name": "Swift Riba"
+  },
   "r048:tungang": {
     "gloss": "Pimp (Fifth) + Warra (river)",
     "name": "Pimp Warra"
@@ -389,10 +417,14 @@
     "gloss": "Solt (Salt) + Riba (river)",
     "name": "Solt Riba"
   },
-  "r068:__tongue__": "izani",
+  "r068:__tongue__": "riders",
   "r068:izani": {
     "gloss": "Caulda (cold) + Rrivar (river)",
     "name": "Rrivar Caulda"
+  },
+  "r068:riders": {
+    "gloss": "Na'ashǫ́'ii (caiman) + Baatar (river)",
+    "name": "Na'ashǫ́'ii Baatar"
   },
   "r069:__tongue__": "vrivolci",
   "r069:vrivolci": {
@@ -444,17 +476,25 @@
     "gloss": "Tōng (east) + Sēk (stone-weir) + Mā (river)",
     "name": "Tōng-Sēk-Mā"
   },
-  "r079:__tongue__": "dasri",
+  "r079:__tongue__": "tabist",
   "r079:dasri": {
     "gloss": "al-Ghubār (dust-plume) + Rīfar (river)",
     "name": "Rīfar al-Ghubār"
+  },
+  "r079:tabist": {
+    "gloss": "Fḍḍ (silver-sylvite) + Rvr (river)",
+    "name": "Rvr Fḍḍ"
   },
   "r080:__tongue__": "dalab",
   "r080:dalab": {
     "gloss": "Star (star) + Riba (river)",
     "name": "Star Riba"
   },
-  "r081:__tongue__": "tungang",
+  "r081:__tongue__": "dalab",
+  "r081:dalab": {
+    "gloss": "Kould (cold) + Riba (river)",
+    "name": "Kould Riba"
+  },
   "r081:tungang": {
     "gloss": "Yan (First) + Warra (river)",
     "name": "Yan Warra"
@@ -544,10 +584,14 @@
     "gloss": "Sām (deep-notch) + Hām (river)",
     "name": "Sām-Hām"
   },
-  "r099:__tongue__": "izani",
+  "r099:__tongue__": "riders",
   "r099:izani": {
     "gloss": "Salta (salt) + Rrivar (river)",
     "name": "Rrivar Salta"
+  },
+  "r099:riders": {
+    "gloss": "Níłch'i (monsoon-wind) + Baatar (river)",
+    "name": "Níłch'i Baatar"
   },
   "r100:__tongue__": "farside",
   "r100:farside": {
@@ -564,10 +608,14 @@
     "gloss": "al-Sarāb (mirage) + Rīfar (river)",
     "name": "Rīfar al-Sarāb"
   },
-  "r103:__tongue__": "izani",
+  "r103:__tongue__": "riders",
   "r103:izani": {
     "gloss": "cedra (cedar) + Rrivar (river)",
     "name": "Rrivar cedra"
+  },
+  "r103:riders": {
+    "gloss": "Dootł'izh (jade-green) + Baatar (river)",
+    "name": "Dootł'izh Baatar"
   },
   "r104:__tongue__": "vothic",
   "r104:vothic": {
@@ -629,7 +677,11 @@
     "gloss": "Flint (flint) + Rivrh (river)",
     "name": "Flint Rivrh"
   },
-  "r116:__tongue__": "tungang",
+  "r116:__tongue__": "dalab",
+  "r116:dalab": {
+    "gloss": "Blak (black) + Riba (river)",
+    "name": "Blak Riba"
+  },
   "r116:tungang": {
     "gloss": "Tlahn (iron-clan) + Warra (river)",
     "name": "Tlahn Warra"
@@ -684,15 +736,23 @@
     "gloss": "Kowld (cold) + Rivrh (river)",
     "name": "Kowld Rivrh"
   },
-  "r127:__tongue__": "yuni",
+  "r127:__tongue__": "tabist",
+  "r127:tabist": {
+    "gloss": "Šms (sun-furnace) + Rvr (river)",
+    "name": "Rvr Šms"
+  },
   "r127:yuni": {
     "gloss": "Grina (Green) + Riba (river)",
     "name": "Grina Riba"
   },
-  "r128:__tongue__": "izani",
+  "r128:__tongue__": "riders",
   "r128:izani": {
     "gloss": "pina (pine) + Bruk (stream)",
     "name": "Bruk pina"
+  },
+  "r128:riders": {
+    "gloss": "Tł'aai (canopy) + Baatar (river)",
+    "name": "Tł'aai Baatar"
   },
   "r129:__tongue__": "tungang",
   "r129:tungang": {
@@ -754,7 +814,11 @@
     "gloss": "Pimp (Fifth) + Beck (stream)",
     "name": "Pimp Beck"
   },
-  "r141:__tongue__": "yusar",
+  "r141:__tongue__": "dalab",
+  "r141:dalab": {
+    "gloss": "Vali (valley) + Riba (river)",
+    "name": "Vali Riba"
+  },
   "r141:yusar": {
     "gloss": "Smallway (little) + Shadowlong (long-shadow) + Runbrook (stream)",
     "name": "Runbrook Smallway Shadowlong"
@@ -764,10 +828,14 @@
     "gloss": "Glassblue (blue-glass) + Runbrook (stream)",
     "name": "Runbrook Glassblue"
   },
-  "r143:__tongue__": "izani",
+  "r143:__tongue__": "riders",
   "r143:izani": {
     "gloss": "Sola (sun) + Rrivar (river)",
     "name": "Rrivar Sola"
+  },
+  "r143:riders": {
+    "gloss": "Dził (whaleback-ridge) + Baatar (river)",
+    "name": "Dził Baatar"
   },
   "r144:__tongue__": "dalab",
   "r144:dalab": {
@@ -799,7 +867,11 @@
     "gloss": "Sēk (stone-weir) + Mā (river)",
     "name": "Sēk-Mā"
   },
-  "r150:__tongue__": "tungang",
+  "r150:__tongue__": "dalab",
+  "r150:dalab": {
+    "gloss": "Stoun (stone) + Riba (river)",
+    "name": "Stoun Riba"
+  },
   "r150:tungang": {
     "gloss": "Kruk (crook-bend) + Beck (stream)",
     "name": "Kruk Beck"
@@ -841,8 +913,8 @@
   },
   "r158:__tongue__": "dalab",
   "r158:dalab": {
-    "gloss": "Stoun (stone) + Riba (river)",
-    "name": "Stoun Riba"
+    "gloss": "Brait (bright) + Riba (river)",
+    "name": "Brait Riba"
   },
   "r159:__tongue__": "vothic",
   "r159:vothic": {
@@ -889,7 +961,11 @@
     "gloss": "vindos (white-snow) + Bruk (stream)",
     "name": "vindosbruk"
   },
-  "r168:__tongue__": "tungang",
+  "r168:__tongue__": "dalab",
+  "r168:dalab": {
+    "gloss": "Sun (sun) + Riba (river)",
+    "name": "Sun Riba"
+  },
   "r168:tungang": {
     "gloss": "Kual (coal) + Beck (stream)",
     "name": "Kual Beck"
@@ -934,7 +1010,11 @@
     "gloss": "Pepa (paper-treaty) + Rivar (river)",
     "name": "Pepa Rivar"
   },
-  "r177:__tongue__": "tungang",
+  "r177:__tongue__": "dalab",
+  "r177:dalab": {
+    "gloss": "Wait (white) + Riba (river)",
+    "name": "Wait Riba"
+  },
   "r177:tungang": {
     "gloss": "Weyt (white-water) + Beck (stream)",
     "name": "Weyt Beck"
@@ -966,8 +1046,8 @@
   },
   "r183:__tongue__": "dalab",
   "r183:dalab": {
-    "gloss": "Kould (cold) + Riba (river)",
-    "name": "Kould Riba"
+    "gloss": "Fols (falls) + Riba (river)",
+    "name": "Fols Riba"
   },
   "r184:__tongue__": "farside",
   "r184:farside": {
@@ -999,7 +1079,11 @@
     "gloss": "Shadowlong (long-shadow) + Waywater (river)",
     "name": "Waywater Shadowlong"
   },
-  "r190:__tongue__": "yusar",
+  "r190:__tongue__": "dalab",
+  "r190:dalab": {
+    "gloss": "Klir (clear) + Riba (river)",
+    "name": "Klir Riba"
+  },
   "r190:yusar": {
     "gloss": "Northway (north) + Golddeep (deep-gold) + Runbrook (stream)",
     "name": "Runbrook Northway Golddeep"
@@ -1009,7 +1093,11 @@
     "gloss": "Methera (Fourth) + Beck (stream)",
     "name": "Methera Beck"
   },
-  "r192:__tongue__": "tungang",
+  "r192:__tongue__": "dalab",
+  "r192:dalab": {
+    "gloss": "Long (long) + Riba (river)",
+    "name": "Long Riba"
+  },
   "r192:tungang": {
     "gloss": "Gowd (gold) + Beck (stream)",
     "name": "Gowd Beck"
@@ -1064,10 +1152,14 @@
     "gloss": "Muckle (great) + Weyt (white-water) + Beck (stream)",
     "name": "Muckle Weyt Beck"
   },
-  "r203:__tongue__": "izani",
+  "r203:__tongue__": "riders",
   "r203:izani": {
     "gloss": "Rreda (red) + Bruk (stream)",
     "name": "Bruk Rreda"
+  },
+  "r203:riders": {
+    "gloss": "Łichíí' (laterite-red) + Baatar (river)",
+    "name": "Łichíí' Baatar"
   },
   "r204:__tongue__": "yusar",
   "r204:yusar": {
@@ -1144,10 +1236,14 @@
     "gloss": "Vrivolci (free-clan) + Bruk (stream)",
     "name": "Vrivolcibruk"
   },
-  "r219:__tongue__": "izani",
+  "r219:__tongue__": "riders",
   "r219:izani": {
     "gloss": "stara (star) + Bruk (stream)",
     "name": "Bruk stara"
+  },
+  "r219:riders": {
+    "gloss": "Yas (cloud-mist) + Baatar (river)",
+    "name": "Yas Baatar"
   },
   "r220:__tongue__": "yuni",
   "r220:yuni": {
@@ -1179,7 +1275,11 @@
     "gloss": "Tarvos (bull-tor) + Bruk (stream)",
     "name": "Tarvosbruk"
   },
-  "r226:__tongue__": "tungang",
+  "r226:__tongue__": "dalab",
+  "r226:dalab": {
+    "gloss": "Long (long) + Bruk (stream)",
+    "name": "Long Bruk"
+  },
   "r226:tungang": {
     "gloss": "Muckle (great) + Yan (First) + Beck (stream)",
     "name": "Muckle Yan Beck"
@@ -1209,10 +1309,14 @@
     "gloss": "Longa (Long) + Bruk (stream)",
     "name": "Longa Bruk"
   },
-  "r232:__tongue__": "dasri",
+  "r232:__tongue__": "tabist",
   "r232:dasri": {
     "gloss": "al-Kawkab (falling-star) + al-Bīruk (stream)",
     "name": "al-Bīruk al-Kawkab"
+  },
+  "r232:tabist": {
+    "gloss": "Ḏhb (ochre-gold) + Brk (stream)",
+    "name": "Brk Ḏhb"
   },
   "r233:__tongue__": "argot",
   "r233:argot": {
@@ -1284,12 +1388,20 @@
     "gloss": "Mape (chart-map) + Kriki (stream)",
     "name": "Mape Kriki"
   },
-  "r247:__tongue__": "izani",
+  "r247:__tongue__": "scyvoi",
   "r247:izani": {
     "gloss": "Dippa (deep) + Bruk (stream)",
     "name": "Bruk Dippa"
   },
-  "r248:__tongue__": "yusar",
+  "r247:scyvoi": {
+    "gloss": "Kumun (sand-sheet) + Buruku (stream)",
+    "name": "Kumun Buruku"
+  },
+  "r248:__tongue__": "dalab",
+  "r248:dalab": {
+    "gloss": "Dip (deep) + Bruk (stream)",
+    "name": "Dip Bruk"
+  },
   "r248:yusar": {
     "gloss": "Wideway (great) + Walkcrook (crooked-walk) + Runbrook (stream)",
     "name": "Runbrook Wideway Walkcrook"
@@ -1329,7 +1441,11 @@
     "gloss": "Blaca (black) + Rrivar (river)",
     "name": "Rrivar Blaca"
   },
-  "r256:__tongue__": "tungang",
+  "r256:__tongue__": "dalab",
+  "r256:dalab": {
+    "gloss": "Ridj (ridge) + Bruk (stream)",
+    "name": "Ridj Bruk"
+  },
   "r256:tungang": {
     "gloss": "Deyp (deep-gill) + Beck (stream)",
     "name": "Deyp Beck"
@@ -1369,7 +1485,11 @@
     "gloss": "Silvr (silver) + Brük (stream)",
     "name": "Silvr Brük"
   },
-  "r264:__tongue__": "yuni",
+  "r264:__tongue__": "izani",
+  "r264:izani": {
+    "gloss": "Loña (long) + Bruk (stream)",
+    "name": "Bruk Loña"
+  },
   "r264:yuni": {
     "gloss": "Silba (Silver) + Riba (river)",
     "name": "Silba Riba"
@@ -1444,7 +1564,11 @@
     "gloss": "Garth (garth-enclosure) + Beck (stream)",
     "name": "Garth Beck"
   },
-  "r279:__tongue__": "yusar",
+  "r279:__tongue__": "republic",
+  "r279:republic": {
+    "gloss": "Ajrn (iron) + Bruk (stream)",
+    "name": "Ajrn Bruk"
+  },
   "r279:yusar": {
     "gloss": "Smallway (little) + Windlow (low-wind) + Runbrook (stream)",
     "name": "Runbrook Smallway Windlow"
@@ -1464,37 +1588,65 @@
     "gloss": "Frost (frost) + Bruk (stream)",
     "name": "Frost Bruk"
   },
-  "r283:__tongue__": "tungang",
+  "r283:__tongue__": "dalab",
+  "r283:dalab": {
+    "gloss": "Red (red) + Riba (river)",
+    "name": "Red Riba"
+  },
   "r283:tungang": {
     "gloss": "Tethera (Third) + Warra (river)",
     "name": "Tethera Warra"
   },
-  "r284:__tongue__": "vrivolci",
+  "r284:__tongue__": "shumari",
+  "r284:shumari": {
+    "gloss": "Dōriyan (old-shore) + Nārun (river)",
+    "name": "Dōriyan-Nārun"
+  },
   "r284:vrivolci": {
     "gloss": "vindos (white-snow) + Riba (river)",
     "name": "vindosriba"
   },
-  "r285:__tongue__": "vrivolci",
+  "r285:__tongue__": "shumari",
+  "r285:shumari": {
+    "gloss": "Nazāru (ruin-kin) + Nārun (river)",
+    "name": "Nazāru-Nārun"
+  },
   "r285:vrivolci": {
     "gloss": "Gedos (spear-ridge) + Riba (river)",
     "name": "Gedosriba"
   },
-  "r286:__tongue__": "vrivolci",
+  "r286:__tongue__": "shumari",
+  "r286:shumari": {
+    "gloss": "Mīṣu (mist) + Nārun (river)",
+    "name": "Mīṣu-Nārun"
+  },
   "r286:vrivolci": {
     "gloss": "Vrivolci (free-clan) + Riba (river)",
     "name": "Vrivolciriba"
   },
-  "r287:__tongue__": "vrivolci",
+  "r287:__tongue__": "shumari",
+  "r287:shumari": {
+    "gloss": "Qappu (crest-keep) + Nārun (river)",
+    "name": "Qappu-Nārun"
+  },
   "r287:vrivolci": {
     "gloss": "Rixos (king-stone) + Riba (river)",
     "name": "Rixosriba"
   },
-  "r288:__tongue__": "vrivolci",
+  "r288:__tongue__": "shumari",
+  "r288:shumari": {
+    "gloss": "Pāyaru (beacon-fire) + Buruqu (stream)",
+    "name": "Pāyaru-Buruqu"
+  },
   "r288:vrivolci": {
     "gloss": "Uatera (water-leap) + Bruk (stream)",
     "name": "Uaterabruk"
   },
-  "r289:__tongue__": "vrivolci",
+  "r289:__tongue__": "shumari",
+  "r289:shumari": {
+    "gloss": "Dīpun (deep) + Buruqu (stream)",
+    "name": "Dīpun-Buruqu"
+  },
   "r289:vrivolci": {
     "gloss": "Spirla (spiral) + Bruk (stream)",
     "name": "Spirlabruk"
@@ -1524,27 +1676,47 @@
     "gloss": "Ashgrey (grey-ash) + Runbrook (stream)",
     "name": "Runbrook Ashgrey"
   },
-  "r295:__tongue__": "tungang",
+  "r295:__tongue__": "dalab",
+  "r295:dalab": {
+    "gloss": "Grin (green) + Riba (river)",
+    "name": "Grin Riba"
+  },
   "r295:tungang": {
     "gloss": "Howe (howe-mound) + Warra (river)",
     "name": "Howe Warra"
   },
-  "r296:__tongue__": "tungang",
+  "r296:__tongue__": "dalab",
+  "r296:dalab": {
+    "gloss": "Grin (green) + Bruk (stream)",
+    "name": "Grin Bruk"
+  },
   "r296:tungang": {
     "gloss": "Haa (high) + Leet (light) + Beck (stream)",
     "name": "Haa Leet Beck"
   },
-  "r297:__tongue__": "tungang",
+  "r297:__tongue__": "dalab",
+  "r297:dalab": {
+    "gloss": "Aian (iron) + Riba (river)",
+    "name": "Aian Riba"
+  },
   "r297:tungang": {
     "gloss": "Methera (Fourth) + Warra (river)",
     "name": "Methera Warra"
   },
-  "r298:__tongue__": "tungang",
+  "r298:__tongue__": "dalab",
+  "r298:dalab": {
+    "gloss": "Fols (falls) + Bruk (stream)",
+    "name": "Fols Bruk"
+  },
   "r298:tungang": {
     "gloss": "Stuan (stone) + Beck (stream)",
     "name": "Stuan Beck"
   },
-  "r299:__tongue__": "tungang",
+  "r299:__tongue__": "dalab",
+  "r299:dalab": {
+    "gloss": "Vali (valley) + Bruk (stream)",
+    "name": "Vali Bruk"
+  },
   "r299:tungang": {
     "gloss": "Tethera (Third) + Beck (stream)",
     "name": "Tethera Beck"
@@ -1554,22 +1726,38 @@
     "gloss": "dervos (oak-wood) + Riba (river)",
     "name": "dervosriba"
   },
-  "r301:__tongue__": "vrivolci",
+  "r301:__tongue__": "shumari",
+  "r301:shumari": {
+    "gloss": "Suṭōnun (stone) + Buruqu (stream)",
+    "name": "Suṭōnun-Buruqu"
+  },
   "r301:vrivolci": {
     "gloss": "Viros (true-giant) + Bruk (stream)",
     "name": "Virosbruk"
   },
-  "r302:__tongue__": "vrivolci",
+  "r302:__tongue__": "shumari",
+  "r302:shumari": {
+    "gloss": "Dōriyan (old-shore) + Buruqu (stream)",
+    "name": "Dōriyan-Buruqu"
+  },
   "r302:vrivolci": {
     "gloss": "Clodos (cloud-bench) + Bruk (stream)",
     "name": "Clodosbruk"
   },
-  "r303:__tongue__": "vrivolci",
+  "r303:__tongue__": "shumari",
+  "r303:shumari": {
+    "gloss": "Kattu (blade-cut) + Buruqu (stream)",
+    "name": "Kattu-Buruqu"
+  },
   "r303:vrivolci": {
     "gloss": "Ixos (ice-peak) + Bruk (stream)",
     "name": "Ixosbruk"
   },
-  "r304:__tongue__": "vrivolci",
+  "r304:__tongue__": "shumari",
+  "r304:shumari": {
+    "gloss": "Ṣōrun (salt-rime) + Nārun (river)",
+    "name": "Ṣōrun-Nārun"
+  },
   "r304:vrivolci": {
     "gloss": "Stanos (standing-stone) + Riba (river)",
     "name": "Stanosriba"
@@ -1609,10 +1797,14 @@
     "gloss": "Yūt (moon-bridge) + Kē (stream)",
     "name": "Yūt-Kē"
   },
-  "r312:__tongue__": "eternian",
+  "r312:__tongue__": "republic",
   "r312:eternian": {
     "gloss": "Pāk (white-jade) + Mā (river)",
     "name": "Pāk-Mā"
+  },
+  "r312:republic": {
+    "gloss": "Red (red) + Rivr (river)",
+    "name": "Red Rivr"
   },
   "r313:__tongue__": "eternian",
   "r313:eternian": {
@@ -1751,8 +1943,8 @@
   },
   "r340:__tongue__": "dalab",
   "r340:dalab": {
-    "gloss": "Fols (falls) + Bruk (stream)",
-    "name": "Fols Bruk"
+    "gloss": "Brait (bright) + Bruk (stream)",
+    "name": "Brait Bruk"
   },
   "r341:__tongue__": "dalab",
   "r341:dalab": {
@@ -1771,13 +1963,13 @@
   },
   "r344:__tongue__": "republic",
   "r344:republic": {
-    "gloss": "Grin (green) + Bruk (stream)",
-    "name": "Grin Bruk"
+    "gloss": "ミル (mill) + Bruk (stream)",
+    "name": "Mil Bruk"
   },
   "r345:__tongue__": "republic",
   "r345:republic": {
-    "gloss": "Dip (deep) + Bruk (stream)",
-    "name": "Dip Bruk"
+    "gloss": "Hamer (hammer) + Bruk (stream)",
+    "name": "Hamer Bruk"
   },
   "r346:__tongue__": "izani",
   "r346:izani": {
@@ -1814,10 +2006,14 @@
     "gloss": "Quetzal Water (K'etsaal Baatar) — the Beast Riders' river 11 km from Pinnacle Rock",
     "name": "K'etsaal Baatar"
   },
-  "r353:__tongue__": "izani",
+  "r353:__tongue__": "riders",
   "r353:izani": {
     "gloss": "クラウン (crown) + Rrivar (river)",
     "name": "Rrivar Craun"
+  },
+  "r353:riders": {
+    "gloss": "Tsé (tepui-stone) + Baatar (river)",
+    "name": "Tsé Baatar"
   },
   "r354:__tongue__": "izani",
   "r354:izani": {
@@ -1854,37 +2050,65 @@
     "gloss": "cKould (cold-click) + cBruk (stream)",
     "name": "cKould cBruk"
   },
-  "r361:__tongue__": "izani",
+  "r361:__tongue__": "riders",
   "r361:izani": {
     "gloss": "Sola (sun) + Bruk (stream)",
     "name": "Bruk Sola"
   },
-  "r362:__tongue__": "izani",
+  "r361:riders": {
+    "gloss": "Dził (whaleback-ridge) + Buruuk (stream)",
+    "name": "Dził Buruuk"
+  },
+  "r362:__tongue__": "riders",
   "r362:izani": {
     "gloss": "clifa (cliff) + Bruk (stream)",
     "name": "Bruk clifa"
   },
-  "r363:__tongue__": "izani",
+  "r362:riders": {
+    "gloss": "Jóhonaa'éí (sun) + Buruuk (stream)",
+    "name": "Jóhonaa'éí Buruuk"
+  },
+  "r363:__tongue__": "riders",
   "r363:izani": {
     "gloss": "brij (bridge) + Bruk (stream)",
     "name": "Bruk brij"
   },
-  "r364:__tongue__": "izani",
+  "r363:riders": {
+    "gloss": "Kǫ' (sun-fire) + Buruuk (stream)",
+    "name": "Kǫ' Buruuk"
+  },
+  "r364:__tongue__": "riders",
   "r364:izani": {
     "gloss": "geit (gate) + Bruk (stream)",
     "name": "Bruk geit"
   },
-  "r365:__tongue__": "izani",
+  "r364:riders": {
+    "gloss": "Łizhin (black-water) + Buruuk (stream)",
+    "name": "Łizhin Buruuk"
+  },
+  "r365:__tongue__": "riders",
   "r365:izani": {
     "gloss": "Grin (green) + Bruk (stream)",
     "name": "Bruk Grin"
   },
-  "r366:__tongue__": "tungang",
+  "r365:riders": {
+    "gloss": "Na'ashǫ́'ii (caiman) + Buruuk (stream)",
+    "name": "Na'ashǫ́'ii Buruuk"
+  },
+  "r366:__tongue__": "dalab",
+  "r366:dalab": {
+    "gloss": "Gould (gold) + Bruk (stream)",
+    "name": "Gould Bruk"
+  },
   "r366:tungang": {
     "gloss": "Fah (far) + Beck (stream)",
     "name": "Fah Beck"
   },
-  "r367:__tongue__": "tungang",
+  "r367:__tongue__": "dalab",
+  "r367:dalab": {
+    "gloss": "Silba (silver) + Bruk (stream)",
+    "name": "Silba Bruk"
+  },
   "r367:tungang": {
     "gloss": "Wist (west) + Tkyoob (Cube) + Beck (stream)",
     "name": "Wist Tkyoob Beck"
@@ -1974,10 +2198,14 @@
     "gloss": "al-Dhahab (gold-dust) + al-Bīruk (stream)",
     "name": "al-Bīruk al-Dhahab"
   },
-  "r385:__tongue__": "izani",
+  "r385:__tongue__": "riders",
   "r385:izani": {
     "gloss": "Loña (long) + Bruk (stream)",
     "name": "Bruk Loña"
+  },
+  "r385:riders": {
+    "gloss": "Tó (spring-water) + Buruuk (stream)",
+    "name": "Tó Buruuk"
   },
   "r386:__tongue__": "argot",
   "r386:argot": {
@@ -1999,7 +2227,11 @@
     "gloss": "Nḥs (copper-brine) + Brk (stream)",
     "name": "Brk Nḥs"
   },
-  "r391:__tongue__": "yusar",
+  "r391:__tongue__": "dalab",
+  "r391:dalab": {
+    "gloss": "West (west) + Sun (sun) + Bruk (stream)",
+    "name": "West Sun Bruk"
+  },
   "r391:yusar": {
     "gloss": "Glassblue (blue-glass) + Waywater (river)",
     "name": "Waywater Glassblue"
@@ -2009,17 +2241,29 @@
     "gloss": "Wajt (white) + Bruk (stream)",
     "name": "Wajt Bruk"
   },
-  "r393:__tongue__": "tungang",
+  "r393:__tongue__": "dalab",
+  "r393:dalab": {
+    "gloss": "Nort (north) + Ridj (ridge) + Bruk (stream)",
+    "name": "Nort Ridj Bruk"
+  },
   "r393:tungang": {
     "gloss": "Yan (First) + Beck (stream)",
     "name": "Yan Beck"
   },
-  "r394:__tongue__": "vrivolci",
+  "r394:__tongue__": "shumari",
+  "r394:shumari": {
+    "gloss": "Gēdun (giant-spear) + Buruqu (stream)",
+    "name": "Gēdun-Buruqu"
+  },
   "r394:vrivolci": {
     "gloss": "Uaros (high-crag) + Bruk (stream)",
     "name": "Uarosbruk"
   },
-  "r395:__tongue__": "vrivolci",
+  "r395:__tongue__": "shumari",
+  "r395:shumari": {
+    "gloss": "Wārun (war-host) + Buruqu (stream)",
+    "name": "Wārun-Buruqu"
+  },
   "r395:vrivolci": {
     "gloss": "dervos (oak-wood) + Bruk (stream)",
     "name": "dervosbruk"
@@ -2061,23 +2305,31 @@
   },
   "r403:__tongue__": "dalab",
   "r403:dalab": {
-    "gloss": "Vali (valley) + Bruk (stream)",
-    "name": "Vali Bruk"
+    "gloss": "Big (great) + Aian (iron) + Bruk (stream)",
+    "name": "Big Aian Bruk"
   },
-  "r404:__tongue__": "tungang",
+  "r404:__tongue__": "dalab",
+  "r404:dalab": {
+    "gloss": "Big (great) + Sun (sun) + Bruk (stream)",
+    "name": "Big Sun Bruk"
+  },
   "r404:tungang": {
     "gloss": "Tyan (Second) + Beck (stream)",
     "name": "Tyan Beck"
   },
-  "r405:__tongue__": "tungang",
+  "r405:__tongue__": "dalab",
+  "r405:dalab": {
+    "gloss": "Apa (upper) + Solt (salt) + Bruk (stream)",
+    "name": "Apa Solt Bruk"
+  },
   "r405:tungang": {
     "gloss": "Neet (night) + Beck (stream)",
     "name": "Neet Beck"
   },
   "r406:__tongue__": "dalab",
   "r406:dalab": {
-    "gloss": "Ridj (ridge) + Bruk (stream)",
-    "name": "Ridj Bruk"
+    "gloss": "Nort (north) + Geit (gate) + Bruk (stream)",
+    "name": "Nort Geit Bruk"
   },
   "r407:__tongue__": "eternian",
   "r407:eternian": {
@@ -2086,8 +2338,8 @@
   },
   "r408:__tongue__": "republic",
   "r408:republic": {
-    "gloss": "Hamer (hammer) + Bruk (stream)",
-    "name": "Hamer Bruk"
+    "gloss": "Ford (ford) + Bruk (stream)",
+    "name": "Ford Bruk"
   },
   "r409:__tongue__": "yusar",
   "r409:yusar": {
@@ -2096,8 +2348,8 @@
   },
   "r410:__tongue__": "dalab",
   "r410:dalab": {
-    "gloss": "Long (long) + Bruk (stream)",
-    "name": "Long Bruk"
+    "gloss": "Apa (upper) + Long (long) + Bruk (stream)",
+    "name": "Apa Long Bruk"
   },
   "r411:__tongue__": "eternian",
   "r411:eternian": {
@@ -2499,10 +2751,14 @@
     "gloss": "Barada (brother-crew) + Guli (wadi)",
     "name": "Barada Guli"
   },
-  "r494:__tongue__": "dasri",
+  "r494:__tongue__": "tabist",
   "r494:dasri": {
     "gloss": "al-Nar (ember) + Wādī (wadi)",
     "name": "Wādī al-Nar"
+  },
+  "r494:tabist": {
+    "gloss": "Ḏhb (ochre-gold) + Gl (wadi)",
+    "name": "Gl Ḏhb"
   },
   "r495:__tongue__": "dasri",
   "r495:dasri": {
@@ -2564,10 +2820,14 @@
     "gloss": "Hau (coyote-hound) + Gèl (wadi)",
     "name": "Hau-Gèl"
   },
-  "r507:__tongue__": "dasri",
+  "r507:__tongue__": "tabist",
   "r507:dasri": {
     "gloss": "al-Ḥajar (black-basalt) + Wādī (wadi)",
     "name": "Wādī al-Ḥajar"
+  },
+  "r507:tabist": {
+    "gloss": "Šms (sun-furnace) + Gl (wadi)",
+    "name": "Gl Šms"
   },
   "r508:__tongue__": "dasri",
   "r508:dasri": {
@@ -2624,10 +2884,14 @@
     "gloss": "yardang (wind-keel) + Guli (wadi)",
     "name": "yardang Guli"
   },
-  "r520:__tongue__": "hykkousik",
+  "r520:__tongue__": "scyvoi",
   "r520:hykkousik": {
     "gloss": "Pheurle (pearl) + Ghouly (wadi)",
     "name": "Pheurle Ghouly"
+  },
+  "r520:scyvoi": {
+    "gloss": "Kumun (sand-sheet) + Gulusu (wadi)",
+    "name": "Kumun Gulusu"
   },
   "r521:__tongue__": "xanadui",
   "r521:xanadui": {
@@ -2714,7 +2978,11 @@
     "gloss": "Swift (swift) + Guli (wadi)",
     "name": "Swift Guli"
   },
-  "r538:__tongue__": "tungang",
+  "r538:__tongue__": "dalab",
+  "r538:dalab": {
+    "gloss": "Sun (sun) + Guli (wadi)",
+    "name": "Sun Guli"
+  },
   "r538:tungang": {
     "gloss": "Fell (high-fell) + Gill (wadi)",
     "name": "Fell Gill"
@@ -2914,7 +3182,11 @@
     "gloss": "al-Kabīr (great) + al-Raml (red-sand) + Wādī (wadi)",
     "name": "Wādī al-Raml al-Kabīr"
   },
-  "r579:__tongue__": "yuni",
+  "r579:__tongue__": "tabist",
+  "r579:tabist": {
+    "gloss": "Fḍḍ (silver-sylvite) + Gl (wadi)",
+    "name": "Gl Fḍḍ"
+  },
   "r579:yuni": {
     "gloss": "Likl (little) + Stoun (Stone) + Guli (wadi)",
     "name": "Likl Stoun Guli"
@@ -3324,7 +3596,11 @@
     "gloss": "Aays (blue-ice) + Quli (wadi)",
     "name": "Aays Quli"
   },
-  "r661:__tongue__": "tungang",
+  "r661:__tongue__": "dalab",
+  "r661:dalab": {
+    "gloss": "Ridj (ridge) + Guli (wadi)",
+    "name": "Ridj Guli"
+  },
   "r661:tungang": {
     "gloss": "Kual (coal) + Gill (wadi)",
     "name": "Kual Gill"
@@ -3366,8 +3642,8 @@
   },
   "r669:__tongue__": "dalab",
   "r669:dalab": {
-    "gloss": "Sun (sun) + Guli (wadi)",
-    "name": "Sun Guli"
+    "gloss": "Dip (deep) + Guli (wadi)",
+    "name": "Dip Guli"
   },
   "r670:__tongue__": "eternian",
   "r670:eternian": {
@@ -3521,8 +3797,8 @@
   },
   "r702:__tongue__": "dalab",
   "r702:dalab": {
-    "gloss": "Dip (deep) + Guli (wadi)",
-    "name": "Dip Guli"
+    "gloss": "Long (long) + Guli (wadi)",
+    "name": "Long Guli"
   },
   "r704:__tongue__": "dasri",
   "r704:dasri": {
@@ -3639,7 +3915,11 @@
     "gloss": "Pimp (Fifth) + Gill (wadi)",
     "name": "Pimp Gill"
   },
-  "r727:__tongue__": "yusar",
+  "r727:__tongue__": "dalab",
+  "r727:dalab": {
+    "gloss": "Star (star) + Guli (wadi)",
+    "name": "Star Guli"
+  },
   "r727:yusar": {
     "gloss": "Coldkeep (keep-cold) + Cutdry (wadi)",
     "name": "Cutdry Coldkeep"
@@ -3689,7 +3969,11 @@
     "gloss": "Apa (upper) + Stoun (Stone) + Guli (wadi)",
     "name": "Apa Stoun Guli"
   },
-  "r737:__tongue__": "yuni",
+  "r737:__tongue__": "tabist",
+  "r737:tabist": {
+    "gloss": "Ḥmm (hot-brine) + Gl (wadi)",
+    "name": "Gl Ḥmm"
+  },
   "r737:yuni": {
     "gloss": "Loua (lower) + Mista (Mist) + Guli (wadi)",
     "name": "Loua Mista Guli"
@@ -3706,8 +3990,8 @@
   },
   "r740:__tongue__": "dalab",
   "r740:dalab": {
-    "gloss": "Long (long) + Guli (wadi)",
-    "name": "Long Guli"
+    "gloss": "Grin (green) + Guli (wadi)",
+    "name": "Grin Guli"
   },
   "r741:__tongue__": "hum",
   "r741:hum": {
@@ -3719,10 +4003,14 @@
     "gloss": "Veḷḷi (silver) + kāl (wadi)",
     "name": "Veḷḷi-kāl"
   },
-  "r743:__tongue__": "dasri",
+  "r743:__tongue__": "tabist",
   "r743:dasri": {
     "gloss": "al-Gharb (west) + al-Ṣakhr (sandstone-mesa) + Wādī (wadi)",
     "name": "Wādī al-Ṣakhr al-Gharb"
+  },
+  "r743:tabist": {
+    "gloss": "Ḍbb (pressure-haze) + Gl (wadi)",
+    "name": "Gl Ḍbb"
   },
   "r744:__tongue__": "vothic",
   "r744:vothic": {
@@ -3809,10 +4097,14 @@
     "gloss": "Alta (high) + pina (pine) + Guli (wadi)",
     "name": "Guli Alta pina"
   },
-  "r761:__tongue__": "dasri",
+  "r761:__tongue__": "tabist",
   "r761:dasri": {
     "gloss": "al-Gharb (west) + al-Sarāb (mirage) + Wādī (wadi)",
     "name": "Wādī al-Sarāb al-Gharb"
+  },
+  "r761:tabist": {
+    "gloss": "Mlh (halite-salt) + Gl (wadi)",
+    "name": "Gl Mlh"
   },
   "r762:__tongue__": "tungang",
   "r762:tungang": {
@@ -3866,18 +4158,22 @@
   },
   "r772:__tongue__": "tabist",
   "r772:tabist": {
-    "gloss": "Ḍbb (pressure-haze) + Gl (wadi)",
-    "name": "Gl Ḍbb"
+    "gloss": "Bḥr (sunken-sea) + Gl (wadi)",
+    "name": "Gl Bḥr"
   },
   "r773:__tongue__": "tungang",
   "r773:tungang": {
     "gloss": "Tyan (Second) + Gill (wadi)",
     "name": "Tyan Gill"
   },
-  "r775:__tongue__": "dasri",
+  "r775:__tongue__": "tabist",
   "r775:dasri": {
     "gloss": "al-Taḥt (lower) + al-Layl (star-night) + Wādī (wadi)",
     "name": "Wādī al-Layl al-Taḥt"
+  },
+  "r775:tabist": {
+    "gloss": "Ṣḫr (fault-scarp) + Gl (wadi)",
+    "name": "Gl Ṣḫr"
   },
   "r776:__tongue__": "dalab",
   "r776:dalab": {
@@ -3916,8 +4212,8 @@
   },
   "r783:__tongue__": "dalab",
   "r783:dalab": {
-    "gloss": "Star (star) + Guli (wadi)",
-    "name": "Star Guli"
+    "gloss": "Vali (valley) + Guli (wadi)",
+    "name": "Vali Guli"
   },
   "r784:__tongue__": "hum",
   "r784:hum": {
@@ -3934,10 +4230,14 @@
     "gloss": "Jeḍ (jade) + Ḍrāi (wadi)",
     "name": "Jeḍ Ḍrāi"
   },
-  "r787:__tongue__": "izani",
+  "r787:__tongue__": "scyvoi",
   "r787:izani": {
     "gloss": "Pica (little) + onda (wave) + Guli (wadi)",
     "name": "Guli Pica onda"
+  },
+  "r787:scyvoi": {
+    "gloss": "Akun (white-salt) + Gulusu (wadi)",
+    "name": "Akun Gulusu"
   },
   "r788:__tongue__": "yusar",
   "r788:yusar": {
@@ -3999,15 +4299,19 @@
     "gloss": "Gypsum (gypsum) + Wash (wadi)",
     "name": "Gypsum Wash"
   },
-  "r800:__tongue__": "tungang",
+  "r800:__tongue__": "dalab",
+  "r800:dalab": {
+    "gloss": "Blak (black) + Guli (wadi)",
+    "name": "Blak Guli"
+  },
   "r800:tungang": {
     "gloss": "Methera (Fourth) + Gill (wadi)",
     "name": "Methera Gill"
   },
   "r801:__tongue__": "tabist",
   "r801:tabist": {
-    "gloss": "Ḥmm (hot-brine) + Gl (wadi)",
-    "name": "Gl Ḥmm"
+    "gloss": "Nḥs (copper-brine) + Gl (wadi)",
+    "name": "Gl Nḥs"
   },
   "r802:__tongue__": "heiland",
   "r802:heiland": {
@@ -4064,10 +4368,14 @@
     "gloss": "al-Kabīr (great) + al-Qaṣr (butte-fortress) + Wādī (wadi)",
     "name": "Wādī al-Qaṣr al-Kabīr"
   },
-  "r813:__tongue__": "dasri",
+  "r813:__tongue__": "tabist",
   "r813:dasri": {
     "gloss": "al-Ṣaghīr (little) + al-Salsal (dry-clay) + Wādī (wadi)",
     "name": "Wādī al-Salsal al-Ṣaghīr"
+  },
+  "r813:tabist": {
+    "gloss": "Rml (gypsum-sand) + Gl (wadi)",
+    "name": "Gl Rml"
   },
   "r814:__tongue__": "dasri",
   "r814:dasri": {
@@ -4304,10 +4612,14 @@
     "gloss": "al-Kabīr (great) + al-Shams (sun-scorch) + Wādī (wadi)",
     "name": "Wādī al-Shams al-Kabīr"
   },
-  "r861:__tongue__": "dasri",
+  "r861:__tongue__": "tabist",
   "r861:dasri": {
     "gloss": "al-Ṣaghīr (little) + al-Bālm (date-palm) + Wādī (wadi)",
     "name": "Wādī al-Bālm al-Ṣaghīr"
+  },
+  "r861:tabist": {
+    "gloss": "Kbrt (sulfur) + Gl (wadi)",
+    "name": "Gl Kbrt"
   },
   "r862:__tongue__": "izani",
   "r862:izani": {
@@ -4341,15 +4653,23 @@
   },
   "r868:__tongue__": "dalab",
   "r868:dalab": {
-    "gloss": "Gould (gold) + Bruk (stream)",
-    "name": "Gould Bruk"
+    "gloss": "Ist (east) + Wind (wind) + Bruk (stream)",
+    "name": "Ist Wind Bruk"
   },
-  "r869:__tongue__": "tungang",
+  "r869:__tongue__": "dalab",
+  "r869:dalab": {
+    "gloss": "Big (great) + Silba (silver) + Bruk (stream)",
+    "name": "Big Silba Bruk"
+  },
   "r869:tungang": {
     "gloss": "Fell (high-fell) + Beck (stream)",
     "name": "Fell Beck"
   },
-  "r870:__tongue__": "tungang",
+  "r870:__tongue__": "dalab",
+  "r870:dalab": {
+    "gloss": "Apa (upper) + Brod (broad) + Bruk (stream)",
+    "name": "Apa Brod Bruk"
+  },
   "r870:tungang": {
     "gloss": "Yist (east) + Tkyoob (Cube) + Beck (stream)",
     "name": "Yist Tkyoob Beck"
@@ -4403,6 +4723,21 @@
   "r880:dasri": {
     "gloss": "al-Sharq (east) + al-Qaṣr (butte-fortress) + Wādī (wadi)",
     "name": "Wādī al-Qaṣr al-Sharq"
+  },
+  "r_fb_central:__tongue__": "tungang",
+  "r_fb_central:tungang": {
+    "gloss": "Tlahn (iron-clan) + Warra (river)",
+    "name": "Tlahn Warra"
+  },
+  "r_fb_east:__tongue__": "tungang",
+  "r_fb_east:tungang": {
+    "gloss": "Weyt (white-water) + Warra (river)",
+    "name": "Weyt Warra"
+  },
+  "r_fb_west:__tongue__": "tungang",
+  "r_fb_west:tungang": {
+    "gloss": "Yan (First) + Warra (river)",
+    "name": "Yan Warra"
   },
   "r_hr_jokulhlaup:__tongue__": "tungang",
   "r_hr_jokulhlaup:tungang": {

@@ -64,11 +64,14 @@ def find_node():
 
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(HERE)), 'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 SRC = os.path.join(HERE, 'src')
 LOD_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'lod')   # shared level of detail (core/lod/README.md)
 FURNISH_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'furnish')   # the furniture placement pass (core/furnish/README.md)
 RAND_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'rand')   # KRAND: the tags' uid is its hash
 TAGS_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'tags')   # the tag registry the furniture is registered in (core/tags/README.md)
+DOOR_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'door')   # KDOOR, KGLASS, KDOORHOST: doors that open and real glass (core/door/README.md; src/54-openings.js)
+WALK_FILE = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'walk', '20-core-walk.js')   # KWALK: the units' floors and walls, the doors' blocks (src/83-mr-walk.js)
 PORTS_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'ports')   # PORT: each building's draw marked, for kits/beast-riders (core/ports/README.md)
 # the material records (core/materials/record: KMAT and the browser loader; not 24-tex-def.js, Mav's has no TEX.def
 # painters) and the library pack (materials.json -> tools/textures/pack.py -> tex/ -> generated 46-matlib-pack.js)
@@ -78,6 +81,7 @@ TEX_DIR = os.path.join(HERE, 'tex')
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'host'))
 import host as khost                       # core/host: the camera, loop, panel, probe, inspector, marks, pictures, minimap, editor,
 CORE_HOST = khost.FULL                     # cutaway (core/host/README.md; ROADMAP.md section 10, step 5), with core/edits, core/space, core/minimap
+CORE_HOST = CORE_HOST + khost.KEYS   # the one key map and the one walk mode (core/host/92k-host-keys.js; TODO.md, Viewers)
 OUT = os.path.join(HERE, 'mavs-refuge.html')
 MANIFEST = os.path.join(HERE, 'build-manifest.json')
 
@@ -91,6 +95,8 @@ PALETTE_FILE = '05-palette.js'
 DETERMINISTIC |= set(RECORD_FILES) | {'46-matlib-pack.js'}   # core/materials/record and the pack (no rnd())
 DETERMINISTIC.add('53-furnish.js')     # the furniture glue (FURNISH, brfMaterial): no generation of its own
 DETERMINISTIC |= {'57a-interiors.js', '57c-interiors-draw.js'}   # the rooms inside (data; drawing near the camera): no rnd()
+DETERMINISTIC |= {'10-core-door.js', '20-core-glass.js', '30-core-door-leaf.js', '90-core-door-host.js', '54-openings.js'}   # core/door and its drawing (no rnd())
+DETERMINISTIC |= {'20-core-walk.js', '83-mr-walk.js'}   # core/walk and the walk's registration (no rnd())
 DETERMINISTIC.add('65-mr-trades.js')   # the Voth census table (plain data, no rnd())
 DETERMINISTIC |= set(CORE_HOST)        # core/host and the modules it reads: IIFE-scoped or plain data (no rnd())
 # PARTS: a fragment cut at its section markers so it can be read (ROADMAP 3.4: none over 80 KB) -> the fragment it
@@ -256,10 +262,11 @@ def main():
     for f in RECORD_FILES:
         if f not in paths:
             paths[f] = os.path.join(RECORD_DIR, f)
-    for d in (LOD_DIR, FURNISH_DIR, RAND_DIR, TAGS_DIR, PORTS_DIR):       # a src/ copy with the same name overrides
+    for d in (LOD_DIR, FURNISH_DIR, RAND_DIR, TAGS_DIR, PORTS_DIR, DOOR_DIR):       # a src/ copy with the same name overrides
         for f in os.listdir(d):
             if f[0].isdigit() and f.endswith('.js') and f not in paths:
                 paths[f] = os.path.join(d, f)
+    paths.setdefault('20-core-walk.js', WALK_FILE)
     khost.resolve(paths, CORE_HOST)        # a src/ copy with a shell file's name would override it (none today)
     order = sorted(list(paths) + list(vb))
     bodies = dict(vb)
@@ -277,8 +284,9 @@ def main():
                 print('  -', e)
             sys.exit(1)
 
+    BSRC.report()   # --list-sources: every file read so far is what the page is made of; then exit
     html = ''.join(bodies[f] for f in order)
-    with open(OUT, 'w', encoding='utf-8') as fh:
+    with open(OUT, 'w', encoding='utf-8', newline='\n') as fh:
         fh.write(html)
     with open(MANIFEST, 'w', encoding='utf-8') as fh:
         json.dump({f: hashlib.sha1(bodies[f].encode()).hexdigest()[:12] for f in order},

@@ -6,8 +6,9 @@ The southern highlands kit (`SHIGH`) is built on the shared biome core exactly a
 
 ## The region
 
-The Inner Wall's southern flank above the hyperjungle's scarp, ~1 atm: a cloud forest where the cloud sea laps against
-the Wall, a paramo of giant rosettes above it, drying to the south-east. Koppen Cfb, Cwb, ET and BSk (`SHIGH.KOPPEN`;
+The Inner Wall's southern face above the hyperjungle (map 5.1: one face ~3 km tall), 1.0-1.4 atm: a cloud forest on the face where
+the cloud sea laps against it, the elfin forest above it, and a paramo of giant rosettes on the plateau behind the rim, drying to the
+south-east. Koppen Cfb, Cwb, ET and BSk (`SHIGH.KOPPEN`;
 an ESTIMATE, the scale model's rasters were not read: `KNOWN_ISSUES.md`).
 
 ## The fields it reads
@@ -66,6 +67,10 @@ SHIGH.SPECIES / byKey / PAL / TAGS / KOPPEN / HARVEST / PLANTS / plantOfItem(ite
 SHIGH.zones(x,z) / PASSES / make(sp,x,y,z) / grow(T,lv) / nearestTree(sp,x,z,minH,{hand})
 SHIGH.mirrorAt   // [{key,x,z}]: before build, ask for the nearest hero of that species there to be mirror-handed
 SHIGH.MIRROR_EVERY   // 320: about one tree in this many is mirror-handed
+SHIGH.IMPOSTORS      // false before build: the far trees as the 'far' bucket's blobs, not octahedral impostors (core/biome 34; ?diet=0)
+SHIGH.SHORE          // (x,z) -> metres to the water's edge (signed), set by a host before build: a tree whose bole would stand in the water
+                     // is made (its draws and keep-clear kept) but not drawn. Unset (riftrim), every tree is drawn as before
+SHIGH.IMPOSTOR_SPECIES   // after build: how many species baked an impostor
 SHIGH.buildFloor(R,q) / floorWeights(Z) / FLOOR_ZONES
 SHIGH.canopyH(x,z), COUNTS
 ```
@@ -84,10 +89,14 @@ No fauna (the owner's plan: one fauna kit for every biome, `biomes/README.md`). 
 55-biome-shigh-trees.js            zones; twistTrunk and corkscrew; builders; impostors; PASSES; make/grow; the hands
 60-biome-shigh-floor.js            the floor by zone; boulders; fallen wood; rush in the tarn
 70-biome-shigh.js                  build / canopyH; BIO.kitEnd
-82-host-sky.js        (host)       the cloud sea to the horizon, the Throne in the north, the Wall east and west; the giant
-84-host-ground.js     (host)       the ground painted by zone; the tarn and the bog pools; the mist
-88-host-build.js      (host)       the mirror request, build order and bake
-89z-host-atmos.js     (host)       core/atmos bound (ATMOS.init); the cloud sea as ATMOS.cloudDeck (core/atmos/GODOT.md)
+84-host-ground.js     (host)       the ground painted by zone, its library layers on KGROUND (core/terrain 43); the mist
+85-host-far.js        (host)       the plateau past the map (KFAR) and the terrain's horizon (KHORIZON)
+89-host-sky.js        (host)       the shared sky (ATMOS.skyBiome): the Throne in the north, the Wall east and west, the giant
+89z-host-atmos.js     (host)       core/atmos bound (ATMOS.init); the cloud sea as ATMOS.cloudDeck (core/atmos/GODOT.md); the
+                                   weather; the wind on the foliage, height fog, the fog belt on the scarp, the rain cover
+89zw-host-water.js    (host)       the tarn, the bog pools and the ravine streams on core/water; the breakup
+89zx-host-build.js    (host)       the water's fields, the mirror request, build order, bake, the impostors' bake, the horizon on
+                                   the flora, KSHADOW (off by default)
 99-host-take.js       (host)       the page handed to core/host (KHOST.take): presets, the inspector's words, budgets and checks;
                                    the camera, loop, panel, probe and polygon/path tool are core/host's (core/host/README.md)
 ```

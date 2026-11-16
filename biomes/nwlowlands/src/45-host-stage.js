@@ -186,23 +186,31 @@ const TEX_GROUND=BIO.canvasTex(1536,1536,(g,w,h)=>{const id=g.createImageData(w,
 const TEX_DETAIL=BIO.canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
  for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4,v=232+(fbm(x/9,y/9,5,2)-.5)*36+(BIO.fn.h3(x,y,9)-.5)*20;d[i]=d[i+1]=d[i+2]=clamp(v,0,255);d[i+3]=255;}
  g.putImageData(id,0,0);});
-const MAT_GROUND=new THREE.MeshLambertMaterial({map:TEX_GROUND,color:0x9a9890}),GROUND_MESHES=[];
+const GL_ON=NWQ_ON('kground')&&typeof KGROUND!=='undefined',GL_STD=GL_ON&&NWQ_ON('kgstd'),KG_RELIEF=GL_STD&&NWQ_ON('kgrelief');
+/* MeshStandard under KGROUND (2026-11-04, the ground catch-up; core/terrain/GROUND.md: r128's Lambert lights per vertex on the 16 m cells, so no relief could show on it):
+   the light per pixel, roughness high as dry ground is; ?kground=0 keeps the Lambert floor. ?kgstd=0 the Lambert ground with its layers (and no relief), ?kgrelief=0
+   the Standard ground without the relief: the two before states */
+const GMAT=()=>GL_STD?new THREE.MeshStandardMaterial({map:TEX_GROUND,color:0x9a9890,roughness:.96,metalness:0}):new THREE.MeshLambertMaterial({map:TEX_GROUND,color:0x9a9890});
+const MAT_GROUND=GMAT(),GROUND_MESHES=[];
 function groundShader(mat,marl){mat.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:hostGroundLib('groundDetail',TEX_DETAIL)};
  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;attribute vec4 aGL;attribute vec3 aGL2;varying vec4 vGL;varying vec3 vGL2;').replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGL=aGL;vGL2=aGL2;vGWP=(modelMatrix*vec4(transformed,1.0)).xyz;');
  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail;varying vec3 vGWP;varying vec4 vGL;varying vec3 vGL2;')
   .replace('#include <map_fragment>','#include <map_fragment>\n{vec3 dt=texture2D(uDetail,vGWP.xz*0.165).rgb;vec3 dt2=texture2D(uDetail,vGWP.xz*0.021+0.37).rgb;diffuseColor.rgb*=mix(vec3(1.0),dt*dt2*1.12,0.85);\n/*KGROUND*/}'+(marl?'\n{vec3 sc=strataColor(vSWP,vSWN);diffuseColor.rgb*=mix(vec3(1.0),sc/0.42,vGL2.z*0.75);}':''));
  if(marl)marl.inject(sh);};}
 groundShader(MAT_GROUND,null);
-const MAT_MARL=NW_MARL?new THREE.MeshLambertMaterial({map:TEX_GROUND,color:0x9a9890}):null;if(MAT_MARL)groundShader(MAT_MARL,NW_MARL);   /* the gorge's strip: a page's 16 texture units hold the ground's five layers or the beds, not both */
+const MAT_MARL=NW_MARL?GMAT():null;if(MAT_MARL)groundShader(MAT_MARL,NW_MARL);   /* the gorge's strip: a page's 16 texture units hold the ground's five layers or the beds, not both */
 // THE GROUND'S LIBRARY LAYERS (core/terrain KGROUND; the final rebuild; ?kground=0 for the paint alone): hex-tiled, scaled with distance, blended by height, each by a documented
 // mask (GLW in 86-host-fields.js, once the water's fields exist; the kit's own zone fields and the water's shore): the rainforest floor, the lawn of the glades, the hills' red soil,
 // the beach's sand, wet mud within the water's reach, shingle on the river's bars
-const GL_ON=NWQ_ON('kground')&&typeof KGROUND!=='undefined';
+/* THE RELIEF (2026-11-04, the ground catch-up; HANDOFF-REBUILD's adoption list): the layers' height bumps the lit normal (no texture unit), its low and the meshes'
+   own hollows (KGROUND.cavityMesh on every ground mesh, below) lose sky light; on the marl gorge's strip the beds stand by hardness where they show (vGL2.z) and its
+   steep walls take the side planes. ?kgrelief=0 the ground before it, for judging */
+const KG_RL=KG_RELIEF?{bump:.075,cavity:.8,mesh:1}:null,KG_RLM=KG_RELIEF?{bump:.075,cavity:.8,mesh:1,strata:.45,strataW:'vGL2.z'}:null;
 if(GL_ON){const L=(slot,w,amt,gain)=>KGROUND.layer('nwlowlands',slot,{w,amt,gain,tint:'diffuse'});
  const LY=[L('ground.rainfloor','vGL.x',.65,1.1),L('ground.lawn','vGL.y',.7,1.25),L('groundDry','vGL.z',.6,1.05),L('groundSand','vGL.w',.75,1.1),L('groundMud','vGL2.x',.8,.8),L('groundGravel','vGL2.y',.85,1.0)];
- if(!MG)KGROUND.hook(MAT_GROUND,{layers:LY.filter(Boolean),key:'nwlowlands-ground'});
- if(MG)LY.push(L('groundBurn','vGL2.z',.55,.75)),KGROUND.hook(MAT_GROUND,{layers:LY.filter(Boolean),key:'nwlowlands-margins'});
- if(MAT_MARL)KGROUND.hook(MAT_MARL,{layers:[LY[4],LY[5],L('rockMarl','vGL2.z',.9,1.0)].filter(Boolean),key:'nwlowlands-marl'});}
+ if(!MG)KGROUND.hook(MAT_GROUND,{layers:LY.filter(Boolean),key:'nwlowlands-ground',relief:KG_RL});
+ if(MG)LY.push(L('groundBurn','vGL2.z',.55,.75)),KGROUND.hook(MAT_GROUND,{layers:LY.filter(Boolean),key:'nwlowlands-margins',relief:KG_RL});
+ if(MAT_MARL)KGROUND.hook(MAT_MARL,{layers:[LY[4],LY[5],L('rockMarl','vGL2.z',.9,1.0)].filter(Boolean),key:'nwlowlands-marl',relief:KG_RLM,tri:KG_RELIEF?true:null});}
 const STRIP={KOF:{g:8,r:8},cov:null};   /* the strips' cells at 2 m (drawnH reads them) */
 (function(){const N=400,S=TERR.R*2.2,g=new THREE.PlaneGeometry(S,S,N,N);g.rotateX(-Math.PI/2);
  const p=g.attributes.position;for(let i=0;i<p.count;i++)p.setY(i,terrainH(p.getX(i),p.getZ(i)));
@@ -234,7 +242,8 @@ const STRIP={KOF:{g:8,r:8},cov:null};   /* the strips' cells at 2 m (drawnH read
   const g2=new THREE.BufferGeometry();g2.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g2.setAttribute('uv',new THREE.Float32BufferAttribute(pos.map((v,k)=>k%3===0?v/S+.5:k%3===2?.5-v/S:0).filter((v,k)=>k%3!==1),2));g2.setIndex(idx);
   const n=pos.length/3;g2.setAttribute('aGL',new THREE.BufferAttribute(new Float32Array(n*4),4));g2.setAttribute('aGL2',new THREE.BufferAttribute(new Float32Array(n*3),3));g2.computeVertexNormals();
   const m2=new THREE.Mesh(g2,mat);m2.userData.probeSkip=true;m2.userData.inspectLabel=label;scene.add(m2);GROUND_MESHES.push(m2);};
- strip('g',MAT_MARL||MAT_GROUND,'The marl gorge');strip('r',MAT_GROUND,'The river\'s banks');})();
+ strip('g',MAT_MARL||MAT_GROUND,'The marl gorge');strip('r',MAT_GROUND,'The river\'s banks');
+ if(KG_RELIEF)GROUND_MESHES.forEach(m=>KGROUND.cavityMesh(m,{rings:[3,18],depth:[.5,4]}));})();
 
 // ---------------------------------------------------------------- the water
 // 2026-10-20 (migration phase 3): the water is core/water's. The lake, the lowland river and the ponds were one plane at y=0 in the page's own

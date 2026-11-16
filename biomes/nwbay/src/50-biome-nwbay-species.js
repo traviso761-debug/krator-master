@@ -535,7 +535,7 @@ BIO.def('ribbon',BIO.geo.ribbon(4,.55,.18),M.hang,{label:'Hanging growth'});
 BIO.def('strand',BIO.geo.ribbon(2,.4,.05),M.hang,{label:'Strands and drop roots'});
 BIO.def('mossmat',BIO.geo.mat(),M.moss,{label:'Moss'});
 BIO.def('lobe',BIO.geo.lobe(),M.solid,{label:'Bush lobes'});
-BIO.def('bloom',BIO.geo.bloom(),M.bloom,{label:'Blooms'});
+BIO.def('bloom',BIO.geo.bloom(),M.bloom,{label:'Blooms',onLeaf:true});   /* onLeaf (core/biome attach audit, 2026-11-02): a flower held inside a leaf card's body counts as held; audit-only, nothing drawn moves */
 BIO.def('lotus',BIO.geo.bloom(),M.lotus,{attrs:['aC2'],label:'Lotus-trumpet fringe'});
 BIO.def('cup',G.cup(),M.cup,{label:'Lotus flowers'});
 BIO.def('lilypad',G.pad(),M.pad,{label:'Lily pads'});

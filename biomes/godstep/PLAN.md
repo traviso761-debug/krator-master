@@ -19,8 +19,10 @@ connection to the Godthrone's network and Pluton as lore, and the Talovolci use 
 for harvesting near the mouths, never deep into the mountain** (the owner, later the same day); **every flow is old**, none fresh and black; the **Talovolci names** are coined from the tongue (section 5a); and **core
 proposals 1-3 are taken**, owed before the kit's D2 (section "Core adoption").
 
-**Status: plan, settled; awaiting station 1's turn** (after the biome rebuild's pairs). Nothing built. No change to `LORE.md`
-or the model is made here: lore sentences and the Talovolci words are *proposed* wording.
+**Status: every station built, 2026-11-10** (a cloud session, `claude/godstep-finish-cloud`): station 1, the stair (`dist/godstep.html`,
+GPU-verified 2026-11-09), and stations 2-5, the rille, the hearths, the redlands and the wall (`--station rille|hearths|redlands|wall`), each
+in its own section "Station N, as built" at the end. Stations 2-5 pass `verify.py --assert` in software GL only: their GPU verify is owed. No change to `LORE.md` or the model is made here: lore sentences and
+the Talovolci words are *proposed* wording.
 
 ## What changed on 5.1, and why the plan moved
 
@@ -207,6 +209,8 @@ The model's names here are Izani (the Empire's maps); the Talovolci's own words 
 2. **Guli Cistal's `to.basin_m` 2,693** is stale: the ground at its mouth is 3,130-3,160 m and no closed hollow is there.
 3. **1,744 km² of WH** ("highland lake") on steps 3-4 and the low end with no water on the water layer: left over from an
    earlier pass. The owner's answer is a dry salt playa, so the class there would be BSk/BWh when the climate is next run.
+   **Done in scale model 5.1 edit 2** (`tools/scale-model/edit_512.py`, 2026-11-10): the 437 dry WH cells (1,748 km²) took
+   the class of the dry land most like them: BSk 383, Csb 35, Csa 11, Dsb 8.
 4. **The tube on the polygon's edge** below front 1: kept as it is (the rille station stays on step 1).
 
 ## 2. The rock
@@ -229,6 +233,12 @@ thin flank flows above the head are plain `tibasalt`.
   Australia's breakaways are in 200-300 mm country (`refs/05`). On the north wall, with ~1,000 mm, red soil is **still forming**
   under forest and the laterite there is living. `tibasalt-ponded`'s `laterite` kind, altered by height at the low end (the
   recipe's `alter` `below`) and laid on the north wall's cliffs, does both; the red soil is a `KGROUND` layer.
+- **Aura geodes** (the owner, 2026-11-09; `biomes/CRYSTAL-CAVES-5.1.md` site 3, "Aura and bismuth"). The ponded flows' vesicular tops
+  hold geodes, and here their quartz took a film from the titanium rock: **aura**, teal, blue and violet with a little gold
+  (`KGEODE.MINERALS.aura`). Placed as the scablands' coulee places its geodes (`biomes/scablands/src/87g-host-geodes.js`):
+  `KGEODE.scatter` in a band under each flow top (`tibasalt-ponded`'s flow tops) on every front and rille wall, the talus under
+  them, with this valley's palette (*proposed*: aura .6, quartz .3, amethyst .1), drawn by `KGEODE.draw` with its `update` on the
+  page's tick. Core adoption: `core/terrain/39-core-cavern.js`, `39f-core-geode.js`, `host/39g-core-geode-draw.js`.
 
 ## 3. The flora
 
@@ -440,3 +450,124 @@ Everything this plan needs is in the library: `ground.lava.aa`, `ground.lava.cru
   `LORE.md` and the tongue sheet.
 - Whether the Hearths' plan should name its Godstep station's trees by section 5a's *Harđotreoi* (the Hearths' plan asks for the
   Talovolci's word: this is the offer).
+
+## Station 1, as built (2026-11-09)
+
+`python3 build.py` -> `dist/godstep.html`; station 1 is `src/` itself (`src/station.json`), started from `biomes/godthrone`'s host
+(`NOTES.md`). What it draws, on the page's frame at 5.1 px 903,1116 (DOWN the valley's ENE axis):
+
+- **The trap stair** on core's `KRELIEF.stair`: the head step's floor at ~3,140 m and step 2's at ~2,425 m (each within 35 m of the
+  model's flat floors on the same axis, checked), one lobate front ~3 km in run falling ~720 m in ~18 benches, each flow a steep
+  colonnade riser over its bench (`riser` .1), the old frozen lava falls (`tongues`) where flows poured over the lip. The floors tilt
+  1.8 m/km downstream; the rock is the stair's own flows (one `KSTRATA` formation a flow, `src/35g-godstep-strata.js`: tibasalt-ponded
+  with its bead partings already palagonite) dipping with them.
+- **The plains' flows** baked at build time (`KLAVA.bakeLayers`, `src/bake-flows.js` -> `src/flows.json`): two lobes on the head step,
+  two breakouts on step 2's floor; **~1,100 tumuli and pressure ridges** on them (`KRELIEF.tumuli`, filed in `KSPACE`).
+- **Step 2's floor**: black sand in transverse dunes across the down-valley wind, three old scoria cones with moss skins on their
+  north faces (refs/08).
+- **A playa behind a lobe** on the head step, its meltwater pond iced (`WATER.still`).
+- **The procession's way** (*Godostera*), cairned every ~110 m down the nearest frozen fall.
+- **The lava pioneers** (section 3: cushions and crusts on `BIO.fung`), the talus under every riser with whole fallen columns, the
+  plains' stones; late winter's snow on the upper benches and the head step's hollows, none below ~2,850 m.
+- **The far country** from the model (`src/region.json`), the Godthrone's mass to the south-west.
+
+Checks (`verify.py --assert`, section 9): the floors against 5.1, the stair stepping down monotonically, the front's rock (ponded
+flows, palagonite partings, no fresh bead), the pioneers off the faces, the sand and the pan and the moss on the cones, snow above
+and none below, the air on the lip (1.08 atm), `BIO.envCheck`, the tumuli, the items resting on the ground, each with a broken input
+that must fail. Not yet: the GPU's measures, `--all-views`, and the adoption items `KNOWN_ISSUES.md` lists.
+
+## Stations 2-5: how they are made (2026-11-10)
+
+Each is `stations/<name>/` over `src/` (`build.py --station <name>`): its `station.json` ("out", "region" from
+`biomes/godthrone/tools/region.py <name> <px> <py> --kit biomes/godstep`, "tex" (its families only), "reads" (the core pieces and the
+neighbours' fragments it takes by path), "packs" (a neighbour's pack narrowed to the families it needs), "water"), its own `44a` (STN), `45b`
+(the ground model), `98-host-<name>.js` (records, views, checks with their negatives) and what else it needs; src's `98-host-stair.js` is
+dropped for every station. The shared hooks (`src/`): `STN.kground` (at most three layers with a map: **every ground at 15 texture units or
+fewer**; station 1 dropped its lichen-crust layer to get there), `STN.pack`, `STN.fields`, `STN.env`, `STN.exportBox`, `STN.budget`,
+`MODEL.coreFields`, `GROUND_HOLE` (a KCAVERN well's hole in the ground), `GSTEP.PASSES` and `GSTEP.stalks` (the red guyed stalk, `src/51`).
+Every station takes core/rand, core/tags, core/mask (its site polygons as a KMASK raster, read through `KMASK.distance`), KSHADOW off at
+load, `KGROUND` relief and core/water.
+
+## Station 2, as built (2026-11-10)
+
+`python3 build.py --station rille` -> `dist/godstep-rille.html`, on the frame at 5.1 px 902,1140, the tube's line laid on `tube_god_07`'s
+mapped path (893,1145 -> 910,1134), DOWN its ENE bearing.
+- **The rille** on core's `KRELIEF.rille`: ~1 km rim to rim, ~118 m deep in the head step's plain at ~2,990 m (5.1's own relief), its floor
+  2,871-2,877 m; its walls the ponded flows' colonnades stepping back at each flow's top (one `godstep-ponded` stack, its tops the rille's
+  `tops`) over a broad apron of fallen columns, a rounded head wall where the roof still stands.
+- **A spring** at a palagonite parting in the north-west wall, its stream (`WATER.flow`) down the talus and the floor, sinking into the head
+  wall's talus; the Talovolci's red stalk fields either side of it (polygons on core/mask), the stalks only where the stream's own wet field
+  (`WATER.fields`) reaches.
+- **Past the head wall** `tube_god_07` roofed under the plain (`KRELIEF.tube`: its crown 55 m down), a chain of pits and skylights, one
+  fresh collapse (`KRELIEF.tubeRille`), hornitos over it (`KSTACKS` chimneys, form pipe).
+- **One skylight walked down** into the tube (`KCAVERN`: the 48 x 28 m bore, the shaft, a breakdown ramp and a ladder), the gathered caves
+  off it (fungus beds, the ice cave, guano ledges, gypsum crusts, baskets, lamps), cairned turnings down the tube road (Tuboroda). Early
+  summer. The ground's layers: the fields' tilled soil, moss, lichen crust (15 units).
+
+## Station 3, as built (2026-11-10)
+
+`python3 build.py --station hearths` -> `dist/godstep-hearths.html`, on the frame at vent 77 (5.1 px 892.8,1145.2), DOWN the valley's axis.
+One station, not two: the Hearths' fifth station is this page (`biomes/hearths/PLAN.md` section 11, item 5).
+- **The pit** (Viropitos): `KRELIEF.scarp` along a closed lobate ring, a ~130 m wall of stacked thin flows in benches with buttresses and
+  ravines over its talus apron, red oxidised scoria on the upper wall (`35h`: `godstep-scoria`), the dish rising to the plain at
+  3,000-3,050 m and 5.1's own relief past the map (the Godthrone to the S and SW).
+- **The heat**: `KTHERM` (core/terrain 47), one point vent on the floor over the winter soil, the warm spring beside it; one disc of hearth
+  trees (Harđotreoi) round it from `HEARTH.layout` (`biomes/hearths` read in place), the ember mat, coal moss, stokers and the rings of dead
+  stalks; the fans' breath mode driven by `HEARTH.work` (open flat at night, folded silver by day), the fumaroles' steam
+  (`ATMOS.smokeGroups`); the snow kept off ground over 0 C by KTHERM's snow mask, through the paint (snow cover's own unit would pass 15).
+- **The spring's stream** (the nemetos's lawn of moss on its banks) across the floor ENE into `tube_god_07`'s mouth; **the two tube mouths**
+  in the wall's foot, `tube_god_07` leaving ENE and the West Godstep Rim Cross-Conduit coming in from the SW, each a `KCAVERN` tube to its
+  first bend, opening into the air at a cut where its roof fell.
+- **The older crater** on the plain to the NE (`KRELIEF.volcano`'s crater), its lake and the Talovolci's walled fields (polygons on core/mask,
+  their dry-stone walls items); **the procession's way** over the lip and down a ravine's fan to the spring. A winter night first; a noon
+  view with the field shut and silver. The ground's layers: snow, scoria, the moss lawn (15 units).
+
+## Station 4, as built (2026-11-10)
+
+`python3 build.py --station redlands` -> `dist/godstep-redlands.html`, on the frame at 5.1 px 975,1085 (the model's 900 m; DOWN the ENE axis).
+- **The floor** is the model's own, a plane falling ~2 m/km east and ~8 m/km south, within 2 m of 5.1.
+- **Front 3** on core's `KRELIEF.stair` at the kit's scale (as station 1 compresses front 1): step 3's plain at ~1,613 m falling 713 m in 20
+  benches of ponded flows to the floor, its old frozen falls; past the map that plain runs on west until 5.1's own country stands higher.
+- **The relict laterite breakaways** (`KRELIEF.scarp`): a ~22 m hardpan cliff over pale gullied kaolin, three mesas of the same cap cut off
+  on the slopes (`KSTACKS`); the rock the laterite profile (`godstep-hardpan` over `godstep-kaolin`, `35r`) dipping with the floor, the
+  stair's own flows taking over west of its toe (KSTRATA's lateral stack).
+- **The salt playa** (Saltomagos): a polygon on core/mask, dead flat with a polygon-cracked crust (KGROUND's `polygon` kind), its old
+  lake's strandlines on the slopes round it (`KBASIN`); a storm's sheet water in its lowest part (`WATER.still`), its reflections the mirror
+  switch's, off at load.
+- **The sedesert's shrubs** read in place on the steppe, salt-tolerant ones (saltbush, grass) in a ring round the pan and none on it; the kit's
+  pioneers and stones on the stair's basalt. A hot steppe's haze and pale dust. The ground's layers: salt, desert pavement, the pale playa
+  silt (15 units).
+
+## Station 5, as built (2026-11-10)
+
+`python3 build.py --station wall` -> `dist/godstep-wall.html`, on the frame at 5.1 px 939,1069 (Rrivar Cistal's head); DOWN faces the
+valley (SSE), ALONG the wall's strike (ENE).
+- **The wall**: a stair of ponded flows on core's `KRELIEF.stair` (chosen over `scarp`: its benches are the flows' own tops, which the
+  strata and the springs read), the plateau at ~2,402 m falling ~235 m in 9-11 benches to the foot at ~2,170 m, each riser a colonnade; the
+  model's 22 km ramp compressed into the stair, each floor checked against the model's own floors up and down the axis (within 10 m).
+- **The rock**: `godstep-wall` (`35w`), tibasalt-ponded with its palagonite partings and the living laterite laid between the flows.
+- **The water**: the springs of Rrivar Cistal's head at a palagonite parting near 2,268 m and a higher thread; Guli Blaca off the plateau,
+  falling off bench after bench (refs/09); each a `WATER.flow` on a carved bed, its 21 falls (14-33 m) `WATER.fallsOf`'s slope breaks.
+- **The forest**: the southern highlands' spiral species read in place (`biomes/shighlands`, by `BIO.kin`), the mirror-handed tree at the
+  kit's rate, on living red soil, no tree on a face; wild red stalk along the water; the Talovolci's terraces (core/mask) at the foot with
+  their dry-stone walls and stalk rows; the cairned way up beside the falls. The wet season, its fog. The ground's layers: red soil, the
+  forest's litter, grass (15 units).
+
+## Fauna (proposed 2026-11-11, awaiting the owner)
+
+Drawn by `kits/fauna` and tagged by biome (`biomes/README.md`, "A fauna kit"); placed by `FAUNALANDS` (`kits/fauna/fauna-lands.js`).
+The brief (`kits/fauna/BIOME-FAUNA-PLAN.md`): two grazers, a predator, a flyer and a water creature, with **at least one animal
+found nowhere else**. **New** = to be built in the kit; *shared* = an existing key that also gets this biome's tag, because its
+range plausibly runs across the border. Nothing here is built.
+
+| Role | Animal | Status | Where | Why it is here |
+|---|---|---|---|---|
+| water | **playa shrimp** | **new, unique** | the salt playa on step 4, in the days of sheet water after a storm | a tadpole shrimp (*Triops*), forearm-long in the dense, warm air at the low end. Its eggs lie dormant in the salt for years; a storm fills the pan and within a day the sheet water is thick with them, then they are gone. The valley's only open water belongs to them. Drawn as a short-lived swarm on a storm flag (`core/atmos` weather) |
+| grazer | *argali*, *chamois* | shared (shighlands) | the north wall and the north arm (Cfa/Csa, the wet country) | the north wall's forest is the southern highlands' |
+| grazer | *desert-oryx*, *salt-beetle* | shared (sedesert) | steps 3-4 and the playa's edge (BSk, +15 to +22 °C) | steps 3-4 already read the sedesert's hot-steppe shrubs |
+| predator | *mountain-lion* | shared (shighlands) | the north wall and the fronts | |
+| predator | *coyote* | shared (sedesert) | steps 2-4 | |
+| flyer | *mountain-condor* | shared (shighlands) | over the fronts' updrafts | |
+| flyer | *giant-bat* | shared (hyperjungle; drawn wild) | the tube mouths | section 5's guano: the colonies roost just inside the mouths where the Talovolci harvest |
+| head (the Hearths) | fin-mouse, fin-owl, hearth-stalker; *cinder-crawler*, *cavern-leaper* | the Hearths' plan (the first three not built yet) | the vent pit and the tube mouths at step 1 | `biomes/hearths/PLAN.md`; read in place, not this kit's |
+| domestic | *goat*, *sheep* | shared | the Talovolci's rille farms | |

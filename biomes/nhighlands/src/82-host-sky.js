@@ -27,7 +27,7 @@
 //                            ridges growing, forest giving way to rock and snow
 const FAR=(function(){
  const RIN=TERR.X1,CELL=110,IN2=8250,ROUT=35000,SINK=25;
- const farRamp=s=>s<=-4900?-330*smooth(-4900,-9800,s):s>=4900?1400+1300*smooth(4900,13000,s)+600*smooth(13000,30000,s):rampH(s);
+ const farRamp=typeof STATION_FAR_RAMP==='function'?STATION_FAR_RAMP:(s=>s<=-4900?-330*smooth(-4900,-9800,s):s>=4900?1400+1300*smooth(4900,13000,s)+600*smooth(13000,30000,s):rampH(s));   /* a station on other ground gives its own (stations/<name>/) */
  // the lake: an irregular lobe along the axis, 12-28 km out to the NW; rho<1 is water
  const LK={s:-20000,t:1200,a:8000,b:5000,lev:-355};
  const rimOf=th=>1+.32*(fbm(Math.cos(th)*1.6+4,Math.sin(th)*1.6,91,3)-.5)+.14*(fbm(Math.cos(th)*5+1,Math.sin(th)*5,92,2)-.5);

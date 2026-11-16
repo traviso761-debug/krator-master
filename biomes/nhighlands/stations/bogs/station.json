@@ -1,0 +1,24 @@
+{
+ "note": "Station 5, the bog country on the Footfall plateau (PLAN-STATIONS.md). src/ minus the tower, the pillars and the Cut's natives; the station's own stage, plants, ground hooks, build, sky, water and views. The bog pools are one mesh (core/water ext/53b WATER.drawPools); the mire's hazards are core/hazard records (KHAZ on KTRAPS's clock).",
+ "drop": [
+  "85-host-tower.js",
+  "86-host-pillars.js",
+  "87-host-cut.js"
+ ],
+ "core": {
+  "53-core-water-terraces.js": "core/water/ext/53-core-water-terraces.js",
+  "53b-core-water-terraces-draw.js": "core/water/ext/53b-core-water-terraces-draw.js",
+  "20-core-hazard.js": "core/hazard/20-core-hazard.js",
+  "37-core-traps.js": "core/biome/37-core-traps.js"
+ },
+ "families": [
+  "cloudberry",
+  "cornlily",
+  "cotton",
+  "dwarfbirch",
+  "ground.peat",
+  "ground.peatflat",
+  "ground.sphagnum",
+  "sedge"
+ ]
+}

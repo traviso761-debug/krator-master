@@ -124,21 +124,21 @@ NSEMIARID.byKey={};NSEMIARID.SPECIES.forEach((S,i)=>{S.i=i;NSEMIARID.byKey[S.key
 // owed to biomes/FRUIT.md), so `fruit` is null and the probe names them as drawn without a catalog piece.
 const HV=(wood,edible,medicinal,notes,fruit)=>({wood,edible:edible||[],medicinal:!!medicinal,notes:notes||'',fruit:fruit||null});
 NSEMIARID.HARVEST={
- pistachio:HV('fuel, carving',['nuts'],true,'The nuts split when they ripen; the resin is a chewing gum and a varnish.'),
+ pistachio:HV('fuel, carving',['nuts'],true,'The nuts split when they ripen; the resin is a chewing gum and a varnish.','generic_fruit_pistachio'),
  saxaul:HV('fuel (the hardest in the steppe), charcoal',[],false,'Burns like coal; the caravans carry it.'),
  plane:HV('timber, carving',[],true,'The great tree of the springs: a village gathers under it.'),
  judas:HV('none',['flowers (raw, pickled)','buds'],false,'The magenta flowers break straight out of the bark and the trunk.'),
- almond:HV('fuel',['kernels (sweet strains)'],true,'Most wild trees are bitter: the sweet strains are marked and guarded.'),
- apple:HV('fuel, tool handles',['apples'],true,'The Ancients\' lakeside orchards gone wild: every tree a different apple.'),
- walnut:HV('timber (fine)',['walnuts'],true,'The husk dyes brown; the wood is the cabinetmaker\'s.'),
- apricot:HV('fuel',['apricots','kernels'],true,'Dried on the roofs in late summer.'),
- pear:HV('tool handles',['pears'],false,'Small, hard and sweet after a frost or a long keep.'),
+ almond:HV('fuel',['kernels (sweet strains)'],true,'Most wild trees are bitter: the sweet strains are marked and guarded.','generic_fruit_almond'),
+ apple:HV('fuel, tool handles',['apples'],true,'The Ancients\' lakeside orchards gone wild: every tree a different apple.','generic_fruit_wild_apple'),
+ walnut:HV('timber (fine)',['walnuts'],true,'The husk dyes brown; the wood is the cabinetmaker\'s.','generic_fruit_walnut'),
+ apricot:HV('fuel',['apricots','kernels'],true,'Dried on the roofs in late summer.','generic_fruit_apricot'),
+ pear:HV('tool handles',['pears'],false,'Small, hard and sweet after a frost or a long keep.','generic_fruit_wild_pear'),
  samara:HV('poles, tool handles',[],false,'Its seeds come down as half-metre helicopters; children race them.'),
  poplar:HV('timber, fuel',['catkins'],true,'Gold in its season; it sheds cotton in drifts like snow.'),
  frill:HV('none',['seed (roasted)'],false,'Each fin is a seed on a plume; the seeds are knocked out of the shed fins and roasted.'),
  trumpet:HV('none',['nectar'],false,'The funnel spins in the wind and flings its winged seeds over its rim.'),
  lantern:HV('none',[],true,'The bulbs lift away at dusk; a crushed bulb is a cooling salve.'),
- pomegranate:HV('none',['pomegranates'],true,'Sour wild fruit; the rind tans leather and dyes it yellow.'),
+ pomegranate:HV('none',['pomegranates'],true,'Sour wild fruit; the rind tans leather and dyes it yellow.','generic_fruit_pomegranate'),
  foxtail:HV('none',['young roots (cooked)'],false,'The spike opens from the bottom up; bees work it all day.'),
  dandelion:HV('none',['leaves','root (roasted)'],true,'The clock sheds its seeds downwind first.'),
 };
@@ -358,8 +358,24 @@ G.rosette=function(){const pos=[],nor=[],uv=[],col=[];
 // (skin.cactus: six of the skin's eight ribs round the six of the mesh, v at the same texel size up a barrel ~2.7 of its
 // heights round)
 G.barrel=function(){return lathe([[0,.36],[.12,.47],[.45,.5],[.8,.44],[.95,.26],[1,.04]],12,.07,null,[.75,.28]);};
-// a ribbed COLUMN (the sail candelabra's stems), unit height, radius .5
-G.column=function(){return lathe([[0,.5],[.6,.49],[.9,.42],[1,.18]],8,.08,null,[.5,1.5]);};
+// a ribbed COLUMN (the sail candelabra's stems and arms, the censers' stalks), unit height, radius .5
+// the succulent columns' quality pass (TODO.md's ride-along: biomes/sedesert's 2026-10-26 work, backported 2026-11-09): the
+// profile starts at a NARROW, ROUNDED FOOT closed by a small cap (the stem constricts where it leaves the ground or the trunk,
+// as a Euphorbia's segments do), the top closes in a dome, and a profile row may give its normal's y (third value: down-out at
+// the foot, so the constriction shades as a curve; the lathe's were one flat guess). The lathe's ribs and uv tiling are kept.
+// 80 triangles (was 48, open at both ends)
+const columnGeo=(seg,prof,rib,top,uvs)=>{const pos=[],nor=[],uv=[],col=[],uR=uvs[0],vR=uvs[1];
+ const R=prof.map(p=>{const r=[];for(let s=0;s<seg;s++){const a=s/seg*TAU,k=1+rib*(s%2?1:-1);r.push([Math.cos(a)*p[1]*k,p[0],Math.sin(a)*p[1]*k,s%2?.82:1]);}return r;});
+ const ny=i=>prof[i][2]!=null?prof[i][2]:i===0?.15:.3;
+ const put=(p,n,u)=>{push3(pos,p);push3(nor,n);uv.push(u*uR,p[1]*vR);col.push(p[3],p[3],p[3]);};
+ for(let i=0;i<prof.length-1;i++)for(let s=0;s<seg;s++){const a=R[i][s],b=R[i][(s+1)%seg],c=R[i+1][s],d=R[i+1][(s+1)%seg],u0=s/seg,u1=(s+1)/seg;
+  const na=[a[0],ny(i),a[2]],nb=[b[0],ny(i),b[2]],nc=[c[0],ny(i+1),c[2]],nd=[d[0],ny(i+1),d[2]];
+  put(a,na,u0);put(d,nd,u1);put(c,nc,u0);put(a,na,u0);put(b,nb,u1);put(d,nd,u1);}
+ const tp=[0,top,0,1],L=R[prof.length-1];for(let s=0;s<seg;s++){const a=L[s],b=L[(s+1)%seg];put(a,[a[0],.6,a[2]],s/seg);put(b,[b[0],.6,b[2]],(s+1)/seg);put(tp,[0,1,0],(s+.5)/seg);}
+ /* the foot's cap, facing down (in the ground or the trunk it leaves, but shown where a stem leans) */
+ const bp=[0,-.01,0,.8],F=R[0];for(let s=0;s<seg;s++){const a=F[s],b=F[(s+1)%seg];put(a,[a[0],-.8,a[2]],s/seg);put(bp,[0,-1,0],(s+.5)/seg);put(b,[b[0],-.8,b[2]],(s+1)/seg);}
+ return BIO.geo._make(pos,nor,uv,col);};
+G.column=()=>columnGeo(8,[[0,.3,-.2],[.07,.46,-.12],[.17,.5,.15],[.62,.49],[.9,.4]],.08,1.0,[.5,1.5]);
 // a BEAD: a squashed sphere, unit height, origin at its base
 G.bead=function(){return lathe([[0,.05],[.25,.42],[.75,.42],[1,.05]],6,0,(p,i)=>.75+.25*Math.sin(i/3*Math.PI));};
 // a STEP CONE: tiers stacked like a termite tower (a tier a wet year), unit height, radius .5
@@ -596,8 +612,12 @@ BIO.def('sword',G.rosette(),M.vcol,{label:'Roll-egg sword leaves'});
 // waxy skin, the sail candelabra's columns banded joints, the mace heads' spikes horny plates, the horn pipes ribbed rings
 // a keep-0 skin is grey relief about its pack's mean (sRGB): the material's colour divides that out, as the ground's layers
 // do, so a species keeps the colour it had and gains the relief. A three.js rod or cone has no vertex colours: solidMat
+// the final rebuild (2026-11-03): these bodies are solid, so they are drawn as wood (BIO.barkMat, vertex-coloured), not as a still leaf card: the
+// core's attach audit took a leaf material for a card, so a bead chain's upper beads and the blooms on a strider's crown read as floating with nothing
+// under them (the handoff's 81%). The host's ?bodies=leaf (BIO.host.bodyLeaf, 46-host-graphics.js) for the old leaf material
+const BODY_LEAF=!!BIO.host.bodyLeaf;
 const libMat=(n,key,solid)=>{const L=LIBP(n),t=L?KMAT.textures(L,{aniso:4}).map:null;
- const m=solid?BIO.solidMat(t):BIO.leafMat(t,key,{swayW:'0.0',swayA:0,alphaTest:0,vertexColors:true});
+ const m=solid?BIO.solidMat(t):BODY_LEAF?BIO.leafMat(t,key,{swayW:'0.0',swayA:0,alphaTest:0,vertexColors:true}):BIO.barkMat(t);
  if(L)m.color.setScalar(Math.min(4,1/Math.pow(L.mean||.5,2.2)));return m;};
 M.strider=libMat('skin.cactus','strider');M.stilt=libMat('bark.gnarled','stilt',true);M.bead=libMat('skin.smooth','bead');
 M.column=libMat('skin.banded','column');M.mace=libMat('organic.chitin','mace');M.horn=libMat('organic.coil.ribbed','horn');
@@ -609,6 +629,9 @@ BIO.def('stilt',G.rod(),M.stilt,{label:'Strider stilts'});
 BIO.def('stub',G.cone(),M.stilt,{label:'Dead stilt stubs (a strider\'s trail)'});
 BIO.def('column',G.column(),M.column,{label:'Sail candelabra'});
 BIO.def('blade',BIO.geo.frond(2),BIO.leafMat(M.fin.map,'blade',{swayW:'(position.x)',swayA:.1,alphaTest:.35}),{label:'Sail blades'});
+// the blades torn loose and kiting downwind (a still frame of flight, 60-biome-nsemiarid-floor.js sail()): free, as seed fluff is (the attach audit's
+// rule); the same card and material, a new item after the kit's own so no item's index moves (the final rebuild, 2026-11-03)
+BIO.def('kite',BIO.geo.frond(2),BIO.defs.blade.mat,{label:'Sail blades aloft',free:true});
 BIO.def('star',BIO.geo.clump(),M.pappus,{attrs:['aN'],label:'Star drifters'});
 BIO.def('censer',G.censer(),M.vsway,{label:'Censer caps'});
 BIO.def('horn',G.horn(),M.horn,{label:'Horn pipes'});
@@ -629,7 +652,7 @@ BIO.def('crawlerSpines',G.cactusSpines(6),M.vcol,{label:'Crawler spines'});
 BIO.def('balloon',BIO.geo.pod(),M.vhang,{label:'Balloon pods'});
 BIO.def('silk',BIO.geo.clump(),M.pappus,{label:'Balloon-pod silk'});
 BIO.def('gourd',BIO.geo.pod(),M.vhang,{label:'Glider gourds'});
-BIO.def('glider',G.samara(),M.vcol,{label:'Glider seeds'});
+BIO.def('glider',G.samara(),M.vcol,{label:'Glider seeds',free:true});   /* only ever in flight (seedsAloft): free, as seed fluff (2026-11-03) */
 BIO.def('samara',G.samara(),M.vcol,{label:'Kite-ash seeds'});
 // the trumpet's crown turns in the wind: spin materials (86-host-variants.js turns them about the crown's own origin)
 M.spin=BIO.leafMat(null,'spin',{swayW:'0.0',swayA:0,alphaTest:0,vertexColors:true,spin:true});
@@ -646,4 +669,18 @@ BIO.def('rod',G.rod(),M.solid,{label:'Stems'});
 BIO.def('boulder',new T3.IcosahedronGeometry(1,1),M.rock,{label:'Boulders'});
 BIO.def('stone',new T3.IcosahedronGeometry(1,0),M.rock,{label:'Stones'});
 BIO.def('fruit',new T3.IcosahedronGeometry(1,1),M.solid,{label:'Fruit (apples, apricots, pears, walnuts, pomegranates, nuts)'});
+// THE POND BLADDERWORT (2026-11-09; EXCHANGES.md korona -> nsemiarid, `bladderpool`, taken as a cousin): Korona's sucking pool scaled down to a
+// fresh pool's bladderwort bed, danger 0, nothing sucked down: a mat of fine green threads set with bladders floating just under the surface of fresh
+// water, small yellow flowers on stalks above it (the floor's last pass, 60). Defined after every other item and drawn with no draw from the kit's
+// stream (its texture's marks are KRAND hashes), so no item's index and no other plant's look moves
+TX.bladder=BIO.alphaTex(256,(g,S)=>{const u=(i,k)=>KRAND.unit(KRAND.hash(6113,i,k));g.lineCap='round';
+ for(let i=0;i<70;i++){const a=u(i,1)*TAU,d=S*.42*Math.sqrt(u(i,2)),x=S/2+Math.cos(a)*d,y=S/2+Math.sin(a)*d,b=u(i,3)*TAU,L=S*(.06+.12*u(i,4));
+  g.strokeStyle='rgb('+Math.round(110+90*u(i,5))+','+Math.round(110+90*u(i,5))+','+Math.round(110+90*u(i,5))+')';g.lineWidth=1.2+u(i,6);g.beginPath();g.moveTo(x,y);g.lineTo(x+Math.cos(b)*L,y+Math.sin(b)*L);g.stroke();
+  for(let k=0;k<4;k++){const t=u(i,10+k),r=1.6+2.2*u(i,20+k);g.fillStyle='rgb('+Math.round(150+80*u(i,30+k))+','+Math.round(150+80*u(i,30+k))+','+Math.round(150+80*u(i,30+k))+')';
+   g.beginPath();g.arc(x+Math.cos(b)*L*t,y+Math.sin(b)*L*t,r,0,TAU);g.fill();}}},[140,140,140]);
+M.bladder=BIO.leafMat(TX.bladder,'bladder',{swayW:'0.0',swayA:0,alphaTest:.3});
+BIO.def('bladder',BIO.defs.litter.raw||BIO.defs.litter.geo,M.bladder,{label:'Pond bladderwort (a mat under the surface)'});
+NSEMIARID.PLANTS.bladderwort=Object.assign(PK('Pond bladderwort','temperate','subhumid','yes',['Csa','Cfa','BSh'],['bladder'],'fragments',
+ HV('none',[],false,'A cousin of Korona\'s sucking pool, scaled down for a fresh pool: a floating mat of threads set with tiny bladders that snap up water fleas, harmless to anything larger; birds carry its fragments from pool to pool.')),{kin:'korona.bladderpool'});
+NSEMIARID.PLANTS.bladderwort.tags.kin='korona.bladderpool';
 })();

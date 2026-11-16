@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 14 (3%) | 23 (5%) | 10 (2%) | 26 (6%) | 356 (83%) |
+| KB | 14 (3%) | 23 (5%) | 10 (2%) | 26 (6%) | 357 (83%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -24,7 +24,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/50-registry.js` | 0.6 | [draw] | 3 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
 | `src/54-mat-concrete.js` | 4.2 | [draw] | 8 | 2 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/60-jj-mat.js` | 18.9 | [G shader] | 23 | 2 | 0 | 0 | 0 | 1 | 2 | 0 | 0 | 0 | 0 |  |
-| `src/61-jj-helpers.js` | 24.1 | [draw] | 23 | 0 | 0 | 0 | 0 | 13 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/61-jj-helpers.js` | 24.4 | [draw] | 24 | 0 | 0 | 0 | 0 | 13 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/62-jj-culture.js` | 14.5 | [draw] | 8 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/63-jj-zfix.js` | 7.4 | [web] | 0 | 0 | 0 | 0 | 2 | 1 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
 | `src/70-jj-housing.js` | 56.1 | [draw] | 12 | 0 | 0 | 0 | 0 | 9 | 0 | 0 | 0 | 0 | 0 |  |
@@ -33,7 +33,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/73-jj-civic.js` | 23.8 | [draw] | 5 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/74-jj-sacred.js` | 18.2 | [draw] | 11 | 0 | 0 | 0 | 0 | 7 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/75-jj-palace.js` | 22.0 | [draw] | 6 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/76-jj-military.js` | 31.3 | [draw] | 11 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/76-jj-military.js` | 31.1 | [draw] | 10 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/77-jj-agri.js` | 25.7 | [draw] | 11 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/78-jj-trades.js` | 4.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the Voth census table: plain data |
 | `src/80-cultures.js` | 15.3 | [draw] | 2 | 1 | 0 | 0 | 0 | 13 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
@@ -42,7 +42,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/85-jj-flora-placeholder.js` | 1.7 | [draw] | 3 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/90-scene.js` | 3.9 | [web] | 9 | 0 | 1 | 0 | 0 | 2 | 1 | 0 | 0 | 0 | 0 | the shadow box follows core/host's orbit target (KHOST.cam.ctl) |
 | `src/91-probe.js` | 6.2 | [web] | 4 | 0 | 0 | 0 | 0 | 0 | 1 | 2 | 2 | 0 | 0 |  |
-| `src/91t-jj-tags.js` | 2.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | REG into core/tags before the take (core/tags/README.md); Jimjam's spellings mapped, 0 unknowns |
+| `src/91t-jj-tags.js` | 2.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | REG into core/tags before the take (core/tags/README.md); Jimjam's spellings mapped, 0 unknowns |
 | `src/92-camera.js` | 1.4 | [web] | 0 | 0 | 3 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | what stays of the camera on core/host: ui, uiButton, setView with a view's sky, Labels (2026-10-15) |
 | `src/93-labels.js` | 4.0 | [G shader] | 6 | 2 | 0 | 0 | 0 | 1 | 3 | 0 | 0 | 0 | 0 |  |
 | `src/99-start.js` | 1.7 | [web] | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 1 | 0 | 0 | 0 | KHOST.take: views (a view's sky through onView), ground, records, inspector words, minimap; FRAME_HOOKS before the camera, the sky after it: host shell |

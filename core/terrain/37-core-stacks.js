@@ -513,6 +513,10 @@
       for(var r=0;r<rows.length;r++)for(var s=0;s<=seg;s++){var q=rows[r](s);pos.push(q[0],q[1],q[2]);uv.push(q[3],q[4]);part.push(p);bedA.push(bk);occ.push(q[5]);}
       for(r=0;r<rows.length-1;r++)for(s=0;s<seg;s++){var a=base+r*(seg+1)+s,c=a+seg+1;
         if(flip)idx.push(a,c,a+1,a+1,c,c+1);else idx.push(a,a+1,c,a+1,c+1,c);}}
+    // a ringed top closed at its centre (2026-11-08; KSEAT found the hole, core/terrain/SEAT.md): a fan from the last row grid() wrote to
+    // one vertex at (x, y, z), wound as grid's own quads (a, a+1, inward), so the top no longer shows the ground through it from above
+    function fan(seg,p,bk,x,y,z){var r0=pos.length/3-(seg+1),C=r0+seg+1;pos.push(x,y,z);uv.push(x,z);part.push(p);bedA.push(bk);occ.push(1);
+      for(var s=0;s<seg;s++)idx.push(r0+s,r0+s+1,C);}
     // THE GRIDDED TOP (opt.top {grid: G metres, minCells}; Korona's hoar pavement, 2026-10-26): a square grid on world
     // multiples of G, clipped to the top's edge ring, the ring being the wall's top row exactly (the same seg vertices on
     // topH), so wall and top share their edge and no crack opens. A cell no ring edge touches is a quad (inside) or
@@ -608,7 +612,7 @@
       if(nx&&b.col>=0&&nx.col===b.col&&!b.ot){}                                            // a mound's spire bed under the next: its top is inside the column
       else if(GT&&Math.min(b.rx,b.rz)*(1-b.ch)*t1*(1-b.lob)>GT*MC)gridTop(b,k,seg,ang,c1,t1,GT,k+1<B.beds.length&&opt.top.cull!==false?B.beds[k+1]:null);
       else{var tops=rhos.map(function(rho){return function(s){var a=ang(s),R=footR(b,a)*(1-b.ch)*t1*rho,x=c1[0]+Math.cos(a)*R,z=c1[1]+Math.sin(a)*R;return [x,TH(b,x,z),z,x,z,1];};});
-        grid(tops,seg,1,k,false);}
+        grid(tops,seg,1,k,false);fan(seg,1,k,c1[0],TH(b,c1[0],c1[1]),c1[1]);}
       // an overhang's underside (a balanced cap, a bed wider than the top below it): a disc facing down at its foot
       var below=k>0?B.beds[k-1]:null,over=false;
       if(below&&b.col!=null&&below.col!==b.col)below=null;                            // a mound's spire stands set into the skirt
@@ -628,7 +632,7 @@
           var us=[0,.5,1],row=function(u,cl){return function(s){var a=ang(s),c=cAt(b,u),R=footR(b,a)*tAt(b,u)*(cl?1-b.ch:1),x=c[0]+Math.cos(a)*R,z=c[1]+Math.sin(a)*R,y=u===1?(last?TH(b,x,z):b.y+b.h):yAt(b,a,u);return [x,y,z,arc[s],y,u===0&&hollow&&k===0?.6:1];};};
           grid(us.map(function(u){return row(u,false);}),seg,0,k,false);
           var ringAt=function(rf){return function(s){var a=ang(s),R=rf(a),x=c1[0]+Math.cos(a)*R,z=c1[1]+Math.sin(a)*R;return [x,last?TH(b,x,z):b.y+b.h,z,x,z,1];};};
-          if(!hollow){grid(rhos.map(function(rho){return ringAt(function(a){return footR(b,a)*t1*rho;});}),seg,1,k,false);return;}
+          if(!hollow){grid(rhos.map(function(rho){return ringAt(function(a){return footR(b,a)*t1*rho;});}),seg,1,k,false);fan(seg,1,k,c1[0],last?TH(b,c1[0],c1[1]):b.y+b.h,c1[1]);return;}
           if(last)grid([ringAt(function(a){return footR(b,a)*t1;}),ringAt(function(a){return (footR(b,a)*t1+b.bt)/2;}),ringAt(function(){return b.bt;})],seg,1,k,false);
           else{var nf=footR(nxb,0)/footR(b,0);if(nf<t1-.002)grid([ringAt(function(a){return footR(b,a)*t1;}),ringAt(function(a){return footR(nxb,a);})],seg,1,k,false);}
           var dark=function(y){return clamp(1-(topY-y)/(Math.max(b.bo,b.bt)*8),.08,1);};

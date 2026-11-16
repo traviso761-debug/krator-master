@@ -1,7 +1,7 @@
 // ================================================================= NIGHT: lamp and fire halos, a small pool of real lights near the eye
 // HALOS are recorded while building (haloAt() in builders, the catalog pieces' lights in 91f-furnish.js). They become one
 // additive point cloud (glow sprites, brighter at night) and, at night, the NIGHT_POOL point lights move to the halos
-// nearest the camera, so a tent interior is lit by its own lanterns and braziers. Night: KratorSky at 21:30.
+// nearest the camera, so a room is lit by its own lamps and braziers. Night: KratorSky at 21:30.
 const NIGHT={on:false,pts:null,lights:[],POOL:10};
 const haloTex=(()=>{const c=document.createElement('canvas');c.width=c.height=64;const g=c.getContext('2d');const gr=g.createRadialGradient(32,32,0,32,32,32);
  gr.addColorStop(0,'rgba(255,255,255,1)');gr.addColorStop(.25,'rgba(255,255,255,.55)');gr.addColorStop(1,'rgba(255,255,255,0)');g.fillStyle=gr;g.fillRect(0,0,64,64);const t=new THREE.CanvasTexture(c);return t;})();

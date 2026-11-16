@@ -5,7 +5,7 @@
 //   SIM.needs({ list:[names], rate:{need: per world hour}, fill:{ACT:{need: per hour}}, work:{need: per hour},
 //               weight:{need: w}, traits:{name:{need: w multiplier}}, cultures:{name:{fill:{ACT:{..}}}},
 //               free:[ACT..] (a role's needs.free its own: an animal's), dwell, jitter, keep, done, interrupt:{need:{at, act, until, max, cool}},
-//               bands:[{label, min, eff}], loyalty:{tau, bands:[{label, min}]}, init, secPerMinute, pain })
+//               bands:[{label, min, eff}], loyalty:{tau, bands:[{label, min}]}, init, secPerMinute, pain, vital?:{need: line} })
 //   role.needs = { rate:{need: multiplier}, labour: 0..1 }        actor.trait, actor.culture, actor.nd (meters),
 //   actor.boost {ACT: multiplier of that activity's fills} (a meal of two foods against one: 77-sim-6-items.js)
 //   SIM.needsPeek(a, minute) -> the meters then, the actor untouched; SIM.happiness(a, nd?) of those meters
@@ -15,7 +15,9 @@
 // (heavy labour: thirst, a little hunger). The meters are advanced lazily: only when the actor decides, or something
 // asks (SIM.needsOf), over the stretch since: first the trip (the task's duration over `secPerMinute` motion seconds a
 // world minute: nothing fills on the way), then the activity. HAPPINESS is 100 less the weighted mean pain of the
-// meters (pain = 100 (m/100)^pain: a meter near full hurts more than two half-full ones); the trait multiplies a
+// meters (pain = 100 (m/100)^pain: a meter near full hurts more than two half-full ones), and a VITAL need (opt-in: hunger,
+// thirst) past its line caps it, from 100 at the line to 0 at a full meter (a weighted mean would let a starving man stay
+// content on his other needs: PLAN-MONEY.md M6); the trait multiplies a
 // need's weight (about +-33%: "more happiness from some needs, less unhappiness when they go unmet"). EFFICIENCY is the
 // happiness band's `eff` (8.2: a score with bands); LOYALTY drifts toward happiness with time constant `tau` minutes.
 //
@@ -31,7 +33,7 @@
   SIM.needs = function(o){
     var N = { list:o.list.slice(), idx:{}, rate:[], fill:{}, work:[], weight:[], traits:{}, cultures:{}, free:(o.free||[]).slice(), freeSet:{},
               dwell:o.dwell==null?60:o.dwell, jitter:o.jitter|0, keep:o.keep==null?1.25:o.keep, done:o.done==null?15:o.done, interrupt:[], bands:o.bands||[{ label:'content', min:0, eff:1 }],
-              loyalty:o.loyalty||null, init:o.init==null?25:o.init, secPerMinute:o.secPerMinute==null?60:o.secPerMinute, pain:o.pain==null?1.5:o.pain };
+              loyalty:o.loyalty||null, init:o.init==null?25:o.init, secPerMinute:o.secPerMinute==null?60:o.secPerMinute, pain:o.pain==null?1.5:o.pain, vital:[] };
     var vec = function(t, d){ return N.list.map(function(n){ return t && t[n]!=null ? t[n] : d; }); };
     N.list.forEach(function(n, i){ N.idx[n]=i; });
     N.rate = vec(o.rate, 0); N.work = vec(o.work, 0); N.weight = vec(o.weight, 1);
@@ -39,6 +41,7 @@
     Object.keys(o.traits||{}).forEach(function(t){ N.traits[t]=vec(o.traits[t], 1); });
     Object.keys(o.cultures||{}).forEach(function(c){ var F={}; Object.keys((o.cultures[c]||{}).fill||{}).forEach(function(act){ F[act]=vec(o.cultures[c].fill[act], 0); }); N.cultures[c]={ fill:F }; });
     N.free.forEach(function(a){ N.freeSet[a]=1; });
+    Object.keys(o.vital||{}).forEach(function(n){ if(N.idx[n]==null) throw new Error('SIM.needs: vital on an unknown need '+n); N.vital.push({ i:N.idx[n], at:o.vital[n] }); });
     Object.keys(o.interrupt||{}).forEach(function(n){ var I=o.interrupt[n]; if(N.idx[n]==null) throw new Error('SIM.needs: interrupt on an unknown need '+n);
       N.interrupt.push({ need:n, i:N.idx[n], at:I.at, act:I.act, until:I.until==null?20:I.until, max:I.max==null?45:I.max, cool:I.cool==null?60:I.cool }); });
     N.bands.sort(function(a,b){ return b.min-a.min; });
@@ -63,6 +66,7 @@
   SIM.needsOf = function(a, minute){
     var N=SIM.NEED; if(!N) return null; minute = minute==null ? SIM.minute() : minute; ensure(a, minute);
     var dt=minute-a.ndT; if(dt<=0) return a.nd;
+    if(SIM.ABSTRACT && SIM.ABSTRACT[SIM.settlementOf(a)]) return SIM.needsAbstract(a, minute);   /* a town nobody watches: lived by the schedule */
     var from=a.ndFrom==null?a.ndT:a.ndFrom, trip=Math.max(0, Math.min(minute, from)-a.ndT);
     run(a, null, trip); run(a, a.activity, dt-trip);
     if(N.loyalty){ var h=SIM.happiness(a); a.loyal = a.loyal==null ? h : a.loyal + (h-a.loyal)*(1-Math.exp(-dt/(N.loyalty.tau||4320))); }
@@ -79,8 +83,24 @@
   SIM.happiness = function(a, nd){
     var N=SIM.NEED; nd = nd || a.nd; if(!N || !nd) return null; var T=a.trait && N.traits[a.trait], s=0, w=0;
     for(var i=0;i<nd.length;i++){ var wi=N.weight[i]*(T?T[i]:1); if(!wi) continue; s+=wi*100*Math.pow(nd[i]/100, N.pain); w+=wi; }
-    return w ? 100 - s/w : 100;
+    var h = w ? 100 - s/w : 100;
+    for(var v=0;v<N.vital.length;v++){ var V=N.vital[v], m=nd[V.i]; if(m>V.at) h=Math.min(h, 100*(1-(m-V.at)/(100-V.at))); }   /* a vital need past its line caps the rest: starving, nothing else consoles */
+    return a.hmods && a.hmods.length ? Math.max(0, Math.min(100, h - SIM.happinessMod(a))) : h;
   };
+  /* HAPPINESS MODIFIERS (opt-in, by whoever pushes one: a household's fall, 77-sim-6-money.js): a.hmods [{n, t (minute),
+     days, why}], each n points off happiness at first (a negative n: points on, a cheer), fading to nothing over its days; spent ones dropped */
+  SIM.happinessMod = function(a, minute){ var m=minute==null ? SIM.minute() : minute, L=a.hmods||[], t=0;
+    for(var i=L.length-1;i>=0;i--){ var f=1-(m-L[i].t)/(L[i].days*1440); if(f<=0){ L.splice(i, 1); continue; } if(f<1 || m>=L[i].t) t+=L[i].n*Math.min(1, f); }
+    return t; };
+  SIM.happinessAdd = function(a, n, days, why){ (a.hmods||(a.hmods=[])).push({ n:n, t:SIM.minute(), days:days, why:why||null }); };
+  /* THE HAPPINESS POOL (PLAN-MONEY.md M6; the owner, 2026-11-03): a settlement's people's mean happiness, collective and by
+     class (`classOf(a)`, default a.cls) -> {all: {mean, n}, byClass: {cls: {mean, n}}}; unrest is how far it falls below 50 */
+  SIM.happinessPool = function(s, classOf){ var out={ all:{ mean:null, n:0 }, byClass:{} }, sum=0, by={};
+    if(!SIM.NEED) return out;
+    SIM.all('actor').forEach(function(a){ if(a.driven || a.animal || a.transient) return; var t=SIM.settlementOf(a); if(s!=null && t!==s) return; var ab=SIM.ABSTRACT && SIM.ABSTRACT[t]; if(!a.nd && !ab) return;
+      var h=SIM.happiness(a, ab ? SIM.needsOf(a) : SIM.needsPeek(a)); if(h==null) return;   /* the meters now: a watched town's read, an abstract one's lived */
+      sum+=h; out.all.n++; var c=classOf ? classOf(a) : a.cls; if(c==null) return; var B=by[c]||(by[c]={ s:0, n:0 }); B.s+=h; B.n++; });
+    out.all.mean=out.all.n ? sum/out.all.n : null; Object.keys(by).sort().forEach(function(c){ out.byClass[c]={ mean:by[c].s/by[c].n, n:by[c].n }; }); return out; };
   function bandOf(list, v){ for(var i=0;i<list.length;i++) if(v>=list[i].min) return list[i]; return list[list.length-1]; }
   SIM.mood = function(a){ var h=SIM.happiness(a); if(h==null) return null; var B=bandOf(SIM.NEED.bands, h), L=SIM.NEED.loyalty;
     return { happiness:h, band:B.label, eff:(B.eff==null?1:B.eff)*(SIM.ITEMS ? SIM.itemsEff(a) : 1), loyal:a.loyal,   /* a broken tool, a hurt (77-sim-6-items.js) */ loyalty:L && L.bands && a.loyal!=null ? bandOf(L.bands, a.loyal).label : null }; };
@@ -142,7 +162,49 @@
      risen `mins` minutes at their rate (the role's multiplier, no activity), the actor's clock untouched */
   SIM.needsDrift = function(a, names, mins){ var N=SIM.NEED; if(!N || !(mins>0)) return; if(!a.nd) ensure(a, SIM.minute());
     names.forEach(function(n){ var i=N.idx[n]; if(i==null) return; var v=a.nd[i]+slope(a, null, i)*mins/60; a.nd[i]= v<0?0:v>100?100:v; }); };
-  SIM.needsJump = function(a, minute){ if(!SIM.NEED) return; ensure(a, minute); a.ndT=minute; a.ndFrom=minute; a.fr=null; a.intr=null; a.intrCool=0; };
+  /* THE ABSTRACT LEVEL'S NEEDS (77-sim-7-lod.js; PLAN-MONEY.md M6: the happiness pool of a town nobody watches): the
+     meters lived from the actor's clock to `minute` as the watched town lives them, without a step, in `ABSTRACT_STEP`
+     minute steps: the activity its schedule gives the hour (its lag kept); a free hour the free activity whose fills
+     times the meters is highest (the resolver's score, `keep` favouring the scheduled one) of those offered within its reach
+     of its home (the resolver's rule); a labourer's interrupt (the well trip) as the watched one takes it; `ABSTRACT_TRIP` minutes on the way
+     (nothing fills) each time the activity changes; EAT at the boost its household's last meals gave
+     (SIM.itemsAbstractHome). Deterministic, draws nothing. A commanded actor (jailed) does its command. */
+  SIM.ABSTRACT_STEP = 15; SIM.ABSTRACT_TRIP = 10;
+  var OFFERS = {};
+  /* whether a place within the actor's reach of its home offers `act` (the resolver's `available`), kept by role, home,
+     activity and hour */
+  function reachOffers(a, act, h){ var key=a.role+'|'+a.home+'|'+act+'|'+h; if(OFFERS[key]==null){ var R=SIM.R.role[a.role], pref=(R && R.prefers && R.prefers[act])||{}, H=SIM.R.place[a.home];
+      if(pref.pin==='home') OFFERS[key]=H && SIM.offers(H, act) ? 1 : 0;
+      else OFFERS[key]=SIM.placesFor(act, a, h, { near:H ? [H.x, H.z] : (a.at||[0,0]), kinds:pref.kinds, limit:1, maxR:pref.reach!=null?pref.reach:SIM.REACH }).length ? 1 : 0; }
+    return OFFERS[key]; }
+  function absPick(a, act, h){
+    var N=SIM.NEED, FR=freeOf(a); if(!FR.freeSet[act]) return act;
+    var T=a.trait && N.traits[a.trait], best=null, bs=-1;
+    FR.free.forEach(function(opt){ var F=fillOf(a, opt), sc=0; for(var i=0;i<F.length;i++) if(F[i]>0 && a.nd[i]>N.done) sc+=F[i]*a.nd[i]*N.weight[i]*(T?T[i]:1);
+      if(opt===act) sc=sc*N.keep+1e-6; if(sc>bs && (opt===act || reachOffers(a, opt, h))){ bs=sc; best=opt; } });
+    return best || act;
+  }
+  SIM.needsAbstract = function(a, minute){
+    var N=SIM.NEED; if(!N) return null; ensure(a, minute); var t=a.ndT, t0=t; if(minute<=t) return a.nd;
+    if(minute-t>3*1440) t=minute-3*1440;   /* a long gap: its last three days (the meters settle well within them) */
+    var lab=labour(a), st=SIM.ABSTRACT_STEP, prev=a.absAct||null, I=a.absIntr||null;
+    while(t<minute){
+      var dt=Math.min(st, minute-t), act;
+      if(a.cmd && t<a.cmd.until) act=a.cmd.act;
+      else { var ml=t-SIM.lagOf(a), sc=SIM.schedOf(a, ml); act=sc ? sc[Math.floor((((ml%1440)+1440)%1440)/60)] : 'IDLE'; }
+      if(act==='WORK' && lab>0 && N.interrupt.length){
+        if(I && (a.nd[I.i]<=I.until || t-a.absIntrT>=I.max)){ a.absCool=t+I.cool; I=null; }
+        if(!I && t>=(a.absCool||0)) for(var k=0;k<N.interrupt.length;k++) if(a.nd[N.interrupt[k].i]>=N.interrupt[k].at){ I=N.interrupt[k]; a.absIntrT=t; break; }
+        if(I) act=I.act;
+      } else { if(I) a.absCool=t+I.cool; I=null; act=absPick(a, act, Math.floor((((t%1440)+1440)%1440)/60)); }
+      var trip=0; if(act!==prev && prev!=null){ trip=Math.min(dt, SIM.ABSTRACT_TRIP); run(a, null, trip); }
+      run(a, act, dt-trip); prev=act; t+=dt;
+    }
+    a.absAct=prev; a.absIntr=I;
+    if(N.loyalty){ var h=SIM.happiness(a); a.loyal = a.loyal==null ? h : a.loyal + (h-a.loyal)*(1-Math.exp(-(minute-t0)/(N.loyalty.tau||4320))); }
+    a.ndT=minute; a.ndFrom=minute; return a.nd;
+  };
+  SIM.needsJump = function(a, minute){ if(!SIM.NEED) return; ensure(a, minute); a.ndT=minute; a.ndFrom=minute; a.fr=null; a.intr=null; a.intrCool=0; a.absAct=null; a.absIntr=null; };
 
   /* ---------------------------------------------------------------- the census of needs */
   /* by `key(actor)` (or all): how many, mean happiness, mean efficiency, the band counts, each need's mean and how many

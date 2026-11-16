@@ -193,7 +193,7 @@ const TEX_GROUND=BIO.canvasTex(1536,1536,(g,w,h)=>{const id=g.createImageData(w,
 const TEX_DETAIL=BIO.canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
  for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4,v=232+(fbm(x/9,y/9,5,2)-.5)*36+(BIO.fn.h3(x,y,9)-.5)*20;d[i]=d[i+1]=d[i+2]=clamp(v,0,255);d[i+3]=255;}
  g.putImageData(id,0,0);});
-const GQ=new URLSearchParams(location.search),USE_KG=typeof KGROUND!=='undefined'&&GQ.get('kground')!=='0';
+const GQ=new URLSearchParams(location.search),USE_KG=typeof KGROUND!=='undefined'&&GQ.get('kground')!=='0',KG_RELIEF=USE_KG&&GQ.get('kgrelief')!=='0';
 /* Standard under KGROUND (roughness high, as dry ground is): the rain's gloss and the puddles show on it, as they cannot on Lambert; ?kground=0 for the old floor */
 const MAT_GROUND=USE_KG?new THREE.MeshStandardMaterial({map:TEX_GROUND,color:0x9a9890,roughness:.96,metalness:0}):new THREE.MeshLambertMaterial({map:TEX_GROUND,color:0x9a9890});
 /* the library's two ground layers over the painted floor, by the fields (materials.json ground.bayoumud: the bayou mud, dark patches on pale silt (ground095b); ground.oaklitter: the oak woods muddy leaf litter (ground020)), each anti-tiled
@@ -210,7 +210,11 @@ MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:hostGroundLib('ground
    diagnosis of the three grounds (HANDOFF-REBUILD.md) has not run, so this takes the universal row and no more */
 if(USE_KG)KGROUND.hook(MAT_GROUND,{key:'swlowlands-ground',at:'/*KGROUND*/',layers:[KGROUND.layer('swlowlands','ground.bayoumud',{w:'vGL.x',amt:.65,gain:1.2,tint:'diffuse'}),
  KGROUND.layer('swlowlands','ground.oaklitter',{w:'vGL.y',amt:.7,gain:1.2,tint:'diffuse'}),
- KGROUND.layer('swlowlands','rock',{w:'vGM.x',amt:.9,gain:1.15,tint:'diffuse*vec3(1.5,1.32,1.2)',name:'rock'})]});
+ KGROUND.layer('swlowlands','rock',{w:'vGM.x',amt:.9,gain:1.15,tint:'diffuse*vec3(1.5,1.32,1.2)',name:'rock'})],
+ /* THE RELIEF (2026-11-04, the ground catch-up; core/terrain/GROUND.md, HANDOFF-REBUILD's adoption list): the layers' height bumps the lit normal (no texture unit),
+    its low and the mesh's own hollows (KGROUND.cavityMesh on the floor, below) lose sky light, and on a station's walls the beds stand by hardness where the rock
+    shows (vGM.x). The gorge's walls (its stage's groundTri) take the side planes too. ?kgrelief=0 the ground before it (already MeshStandard), for judging */
+ relief:KG_RELIEF?{bump:.075,cavity:.8,mesh:1,strata:.45,strataW:'vGM.x'}:null,tri:KG_RELIEF&&ST&&ST.groundTri?true:null});
 if(ST&&ST.strata&&stationStrata.hook)stationStrata.hook(MAT_GROUND);
 /* THE GROUND MESH (2026-10-26): the 400 cells of ~16.5 m (PlaneGeometry's layout and diagonal), but
    every cell that straddles the waterline (its corners both under .3 m and over -.3 m: ~3.7k cells, the bayou, the oxbows and
@@ -245,7 +249,7 @@ const RIVER_STRIP=CHANNEL_ON&&new URLSearchParams(location.search).get('riverstr
  {const gl=new Float32Array(p.count*2);for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i);const tr=FC.at(FC.a.tr,x,z),dry=FC.at(FC.a.dry,x,z),sk=FC.at(FC.a.sk,x,z),si=FC.at(FC.a.si,x,z),beach=smooth(150,40,si),open=(1-tr)*(1-dry)*(1-sk)*(1-beach);gl[i*2]=sk;gl[i*2+1]=open;}g.setAttribute('aGL',new THREE.BufferAttribute(gl,2));}
  /* THE GROUND'S MASKS (documented above): aGM.x exposed rock, from the ground's slope (BIO.ENV: rock over bands.slope [.6, 1.2]) or the station's own; aGM.y filled by 89z from the water's shore */
  {const gm=new Float32Array(p.count*2),E0=4;for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i),sl=Math.hypot(terrainH(x+E0,z)-terrainH(x-E0,z),terrainH(x,z+E0)-terrainH(x,z-E0))/(2*E0);gm[i*2]=ST&&ST.rock?ST.rock(x,z,sl):smooth(.6,1.2,sl);}g.setAttribute('aGM',new THREE.BufferAttribute(gm,2));}
- g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.seat='ground';m.userData.inspectLabel='The lowland floor';scene.add(m);window._groundMesh=m;
+ g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);if(KG_RELIEF)KGROUND.cavityMesh(m,{rings:[3,18],depth:[.5,4]});m.userData.probeSkip=true;m.userData.seat='ground';m.userData.inspectLabel='The lowland floor';scene.add(m);window._groundMesh=m;
  GROUND_SEAT=KSEAT.tris(pos,idx,{id:'ground',cls:'ground'});})();   /* the drawn ground: what drawnH and the probe's contact sweep read */
 
 // ---------------------------------------------------------------- the water

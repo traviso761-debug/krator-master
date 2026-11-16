@@ -150,7 +150,11 @@ const TEX_CRACK=BIO.canvasTex(256,256,(g,w,h)=>{g.fillStyle='#ffffff';g.fillRect
 const GLIB=(function(){if(typeof KGROUND==='undefined'||new URLSearchParams(location.search).get('kground')==='0')return null;
  const D=KGROUND.layer('eastabyss','groundDetail',{w:'1.0',amt:.85,gain:1.12,tint:'diffuseColor.rgb',lin:false}),K=KGROUND.layer('eastabyss','groundCrack',{w:'vCrack',amt:1,gain:1,tint:'diffuseColor.rgb',lin:false});
  return D&&K?[D,K]:null;})();
-const MAT_GROUND=new THREE.MeshLambertMaterial({map:TEX_GROUND,color:0x9a9890});
+/* THE GROUND'S LIGHT PER PIXEL (2026-11-04, the ground catch-up; core/terrain/GROUND.md): on KGROUND the floor is MeshStandard, so the
+   relief's bump and cavities reach the light (r128's Lambert lights per vertex, here on 19 m cells); ?kground=0 keeps the Lambert;
+   ?kgrelief=0 drops the relief (the before-and-after on this page) */
+const KG_RELIEF=!!GLIB&&new URLSearchParams(location.search).get('kgrelief')!=='0';
+const MAT_GROUND=GLIB?new THREE.MeshStandardMaterial({map:TEX_GROUND,color:0x9a9890,roughness:.96,metalness:0}):new THREE.MeshLambertMaterial({map:TEX_GROUND,color:0x9a9890});
 MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:hostGroundLib('groundDetail',TEX_DETAIL)};sh.uniforms.uCrack={value:hostGroundLib('groundCrack',TEX_CRACK)};
  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;attribute float aCrack;varying float vCrack;').replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vCrack=aCrack;');
  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail,uCrack;varying vec3 vGWP;varying float vCrack;')
@@ -159,11 +163,12 @@ MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:hostGroundLib('ground
 // grain (groundDetail) and the salt pan's cracks (groundCrack, weighted per vertex by the salt field) hex-tiled, scaled with
 // distance and blended by height, multiplied over the paint with the strengths the page's own mix had (tint: the paint under
 // it). Without the pack (or with ?kground=0) the page's own mix above, as before
-if(typeof KGROUND!=="undefined")KGROUND.hook(MAT_GROUND,{key:'eastabyss-ground',layers:GLIB||[]});
+if(typeof KGROUND!=="undefined")KGROUND.hook(MAT_GROUND,{key:'eastabyss-ground',layers:GLIB||[],
+ relief:KG_RELIEF?{bump:.075,cavity:.8,mesh:1}:null});   /* the relief (no texture unit) and the mesh's hollows (aKGAO below); no tri: the floor is flat */
 (function(){const N=400,S=TERR.R*2.2,g=new THREE.PlaneGeometry(S,S,N,N);g.rotateX(-Math.PI/2);
  const p=g.attributes.position,ck=new Float32Array(p.count);for(let i=0;i<p.count;i++){p.setY(i,terrainH(p.getX(i),p.getZ(i)));ck[i]=smooth(.3,.8,FC.at(FC.a.salt,p.getX(i),p.getZ(i)));}
  g.setAttribute('aCrack',new THREE.BufferAttribute(ck,1));
- g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.inspectLabel='The basin floor';scene.add(m);})();
+ g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);if(KG_RELIEF)KGROUND.cavityMesh(m);m.userData.probeSkip=true;m.userData.inspectLabel='The basin floor';scene.add(m);})();
 
 // ---------------------------------------------------------------- the water
 // The lake, the marsh pools and the rivers are core/water's (89w-host-water.js, from 2026-10-20; before, one plane at y=0 with a vertex colour by

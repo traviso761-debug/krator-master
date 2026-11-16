@@ -20,8 +20,9 @@ const LAKE_BOX=(function(){const pu0=TERM.u0-20,pu1=GL.SNOUT+280,pp0=TERM.p0-TER
 const LAKE_SEED=upAt((termU(TERM.p0)+GL.SNOUT)/2,TERM.p0);
 const LAKE_WATER=WATER.open({name:LAKE.name,level:LAKE.level,field:.1,bounds:LAKE_BOX,bed:terrainH,bedBox:LAKE_BOX,
  shore:{cell:4,band:40,seeds:[LAKE_SEED],land:(x,z)=>lakeAt(x,z)<.12}});
-const LAKE_DRAW=WATER.draw(LAKE_WATER,{renderOrder:1,roughness:.12,metalness:.05,envMapIntensity:.4,surf:false,breakers:false,   /* still water: no breaker rings round the islands (HANDOFF-REBUILD.md, 'Still water takes no breakers') */pick:true,
- shallow:new THREE.Color(.3,.56,.6).convertSRGBToLinear(),deep:new THREE.Color(.2,.44,.5).convertSRGBToLinear()});
+/* the lake's look is core/water's proglacial (ext/54: turquoise rock-flour meltwater, deep to the rim), recorded on the surface for the export
+   (BACKPORT.md's row, 2026-11-03); the lake is not frozen (WATER.ice): its icebergs float in open water */
+const LAKE_DRAW=WATER.draw(WATER.withLook(LAKE_WATER,'proglacial'),WATER.lookDraw('proglacial','open',{renderOrder:1,roughness:.12,metalness:.05,envMapIntensity:.4,surf:false,breakers:false,   /* still water: no breaker rings round the islands (HANDOFF-REBUILD.md, 'Still water takes no breakers') */pick:true}));
 LAKE_DRAW.mesh.userData.inspectLabel=LAKE.name;LAKE_DRAW.mesh.userData.probeSkip=true;
 // ---- the river's braids
 const RIVER_FLOWS=[];

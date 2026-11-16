@@ -25,7 +25,7 @@ function curtain(p,dx,dz,len,w,opt){opt=opt||{};const m=Math.hypot(dx,dz);
   BIO.put('ribbon',[p[0]+tx*o+dx*rr(.05,.35),p[1]+rr(-.15,.05),p[2]+tz*o+dz*rr(.05,.35)],q,[w/nrb*rr(1,1.8),L,1],c.clone().multiplyScalar(rr(.82,1.12)));}
  if(rng()<.75){const o=rr(-w/2,w/2);BIO.put('strand',[p[0]+tx*o+dx*.4,p[1]-rr(0,.2),p[2]+tz*o+dz*.4],q,[rr(.14,.34),len*rr(.9,1.5),1],c.clone().multiplyScalar(.85));}
  if(opt.flowers&&rng()<.55){const fc=bloomCol(),item=rng()<.5?'anemone':'urchin';for(let b=0,nb=2+Math.floor(rng()*5);b<nb;b++){const s=rr(.35,.7);
-  BIO.put(item,[p[0]+tx*rr(-.5,.5)*w+dx*.45,p[1]-rr(.2,len*.75),p[2]+tz*rr(-.5,.5)*w+dz*.45],qEuler(0,rng()*TAU,0),[s,s,s],fc);}}}
+  BIO.put(item,BIO.holdTo(p,[p[0]+tx*rr(-.5,.5)*w+dx*.45,p[1]-rr(.2,len*.75),p[2]+tz*rr(-.5,.5)*w+dz*.45],.55*s),qEuler(0,rng()*TAU,0),[s,s,s],fc);}}}   /* held to the curtain's head on the shell (BIO.holdTo; 2026-11-09: they hung up to 12 m down a ribbon, and the attach audit read them floating) */
 // AERIAL ROOTS off a ceiling: thin, long, hanging straight down
 function roots(p,len,w){const q=qEuler(0,rng()*TAU,0),c=vcol();
  for(let i=0,n=1+Math.floor(rng()*3);i<n;i++)BIO.put('strand',[p[0]+rr(-w,w),p[1],p[2]+rr(-w,w)],q,[rr(.1,.3),len*rr(.6,1.2),1],c.clone().multiplyScalar(rr(.8,1.1)));}

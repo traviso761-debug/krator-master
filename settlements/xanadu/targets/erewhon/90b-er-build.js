@@ -11,19 +11,25 @@ const gy=(x,z)=>terrainBase(x,z);
 // every other cell, retaining walls wherever two cells step; every piece is an obstacle to the biome, which grows the
 // park in the band the tiles leave along the wall
 const CIT_TILES=[];
-function placeTileGround(G,TL,avoidLm){for(const B of G.blocks)planLandmark(B.key,B.x,B.z,0,{v:B.v,y:B.y,ppad:0,noFlat:true});
+function placeTileGround(G,TL,avoidLm){for(const B of G.blocks)planLandmark(B.key,B.x,B.z,0,{v:B.v,y:B.y,ppad:0,noFlat:true,o:B.o});
  const courts=['xa_star_court','xa_plunge_pool','xa_lily_pond','xa_cactus_court','xa_pergola','xa_kiosk','xa_brick_court','xa_bath_pool','xa_vault_pavilion','xa_rill_jets'];let ci=0;
  for(let r=0;r<G.NR;r++)for(let c=0;c<G.NC;c++){if(!G.ok[r][c]||G.used[r][c])continue;const x=G.X(c),z=G.Z(r),y=G.Q[r][c];let key,ry;
   if(avoidLm&&PLAN.some(P=>{if(!P.landmark||!P.obb)return false;const o=P.obb,dx=x-o.x,dz=z-o.z,cc=Math.cos(o.ry),sn=Math.sin(o.ry);return Math.abs(dx*cc-dz*sn)<o.hx+6&&Math.abs(dx*sn+dz*cc)<o.hz+6;}))continue;   // a landmark stands here
   if((r+c)%3===0){key=courts[ci%courts.length];ci++;ry=[0,Math.PI/2,Math.PI,-Math.PI/2][(r*3+c)%4];}else{key='xa_parterre';ry=[0,Math.PI/2][(r+c)%2];}
   const T=plan(key,x,z,ry,{v:(r+c)%3,y},{h:6,garden:true});T.y=y;TL.push(T);BIO_OBSTACLES.push({x,z,r:5.7});}
- const stone=xC(xPick(XPAL.stone));const wall=(x,z,w,d,lo,hi)=>{vB('vStone',x,lo-.4,z,w,hi-lo+.5,d,0,stone);vB('vStone',x,hi+.1,z,w+.2,.14,d+.2,0,stone.clone().multiplyScalar(1.06));};
+ // no retaining wall across the Golden Way (87-er-layout GOLDEN_WAY.built): the palace's and the Dome's blocks meet there, 18 m apart,
+ // and the Way's own masonry is the step
+ const GWC=typeof GOLDEN_WAY!=='undefined'&&GOLDEN_WAY?GOLDEN_WAY.built:null;
+ const stone=xC(xPick(XPAL.stone));const wall=(x,z,w,d,lo,hi)=>{if(GWC&&x+w/2>GWC[0]&&x-w/2<GWC[1]&&z+d/2>GWC[2]&&z-d/2<GWC[3])return;vB('vStone',x,lo-.4,z,w,hi-lo+.5,d,0,stone);vB('vStone',x,hi+.1,z,w+.2,.14,d+.2,0,stone.clone().multiplyScalar(1.06));};
  for(let r=0;r<G.NR;r++)for(let c=0;c<G.NC;c++){if(!G.ok[r][c])continue;const x=G.X(c),z=G.Z(r),q=G.Q[r][c];
   if(c<G.NC-1&&G.ok[r][c+1]&&Math.abs(q-G.Q[r][c+1])>.05){const n=G.Q[r][c+1];wall(x+4+(q<n?-.3:.3),z,.6,8.2,Math.min(q,n),Math.max(q,n));}
   if(r<G.NR-1&&G.ok[r+1][c]&&Math.abs(q-G.Q[r+1][c])>.05){const n=G.Q[r+1][c];wall(x,z+4+(q<n?-.3:.3),8.2,.6,Math.min(q,n),Math.max(q,n));}}
 }
 // the citadel's grounds, then the gridded gardens (GRID_GARDENS: tiles only)
 placeTileGround(CIT_G,CIT_TILES);
+// the Golden Way (kits/xanadu 78o): the descending court from the Pleasure Dome's North Door to the palace's gate iwan and postern,
+// on the palace's block, its top the Dome's floor (87-er-layout GOLDEN_WAY: its ground is cut to the palace's level)
+if(GOLDEN_WAY)planLandmark(XGW.key,GOLDEN_WAY.x,GOLDEN_WAY.z,0,{y:GOLDEN_WAY.y,ppad:0,noFlat:true,o:{top:GOLDEN_WAY.top}});
 window._citTiles=CIT_TILES.length;window._citBlocks=CIT_G.blocks.map(B=>B.key);
 {const g=GATES.find(g=>g.kind==='palace');if(g)planLandmark('xa_palace_gate',g.x,g.z,g.ry+Math.PI,{apron:8,rk:.7});}
 // the plaza before the palace gate: a fountain garden tile and the mustering ground beside the military district
@@ -240,10 +246,10 @@ const CHUNK_GROUPS=[];let ER_INST=0;
 function erBakeChunk(key,list){const G=new THREE.Group();G.name='chunk:'+key;scene.add(G);let x0=1e9,z0=1e9,x1=-1e9,z1=-1e9,y1=-1e9,y0=1e9;
  for(const Pl of list){TSTAT.cur=Pl.key+'/'+((Pl.o&&Pl.o.v)||0);const r0=REG.length;const g=VERN.place(G,Pl.key,Pl.x,Pl.z,Pl.ry,Pl.o);if(g)Pl.G=g;for(let i=r0;i<REG.length;i++){REG[i].type=Pl.key;if(Pl.o.y)REG[i].y=(REG[i].y||0);}
   x0=Math.min(x0,Pl.x-40);x1=Math.max(x1,Pl.x+40);z0=Math.min(z0,Pl.z-40);z1=Math.max(z1,Pl.z+40);y0=Math.min(y0,(Pl.o.y||0)-(Pl.o.drop||0));y1=Math.max(y1,(Pl.o.y||0)+(Pl.h||12));}
- TSTAT.cur=null;kbake(G);ER_INST+=window._instances||0;for(const n in KIT.items)KIT.items[n].length=0;
+ TSTAT.cur=null;kbake(G);xaDoorsBind();ER_INST+=window._instances||0;for(const n in KIT.items)KIT.items[n].length=0;   /* the chunk's door leaves to the host (90-xa-doors.js) before its items go */
  const e={G,key,sphere:new THREE.Sphere(new THREE.Vector3((x0+x1)/2,(y0+y1)/2,(z0+z1)/2),Math.hypot(x1-x0,y1-y0,z1-z0)/2+20),range:key==='landmark'?1e9:1700,n:list.length};CHUNK_GROUPS.push(e);return e;}
 // the walls and the mine boulders already sit in KIT.items: they bake first as the world chunk (always drawn)
-{const G=new THREE.Group();G.name='chunk:world';scene.add(G);kbake(G);ER_INST+=window._instances||0;for(const n in KIT.items)KIT.items[n].length=0;CHUNK_GROUPS.push({G,key:'world',sphere:new THREE.Sphere(new THREE.Vector3(0,100,0),3000),range:1e9,n:0});}
+{const G=new THREE.Group();G.name='chunk:world';scene.add(G);kbake(G);xaDoorsBind();ER_INST+=window._instances||0;for(const n in KIT.items)KIT.items[n].length=0;CHUNK_GROUPS.push({G,key:'world',sphere:new THREE.Sphere(new THREE.Vector3(0,100,0),3000),range:1e9,n:0});}
 for(const k in CHUNKS)erBakeChunk(k,CHUNKS[k]);
 
 // the hanging lights on the avenues: wherever two buildings face each other across a lit road within 24 m, a string of
@@ -255,7 +261,8 @@ for(const k in CHUNKS)erBakeChunk(k,CHUNKS[k]);
     if(!A||!B)continue;const ya=A.y+Math.min(A.h,9)*.72,yb=B.y+Math.min(B.h,9)*.72;const pa=[A.front[0],ya,A.front[1]],pb=[B.front[0],yb,B.front[1]];
     if(Math.hypot(pa[0]-pb[0],pa[2]-pb[2])>34)continue;if(n%2)xnBasketLights(pa,pb,5);else xnUmbrellaLights(pa,pb,5);n++;}
    acc+=L;}}
- kbake(G);ER_INST+=window._instances||0;for(const k in KIT.items)KIT.items[k].length=0;window._instances=ER_INST;CHUNK_GROUPS.push({G,key:'lights',sphere:new THREE.Sphere(new THREE.Vector3(0,100,0),3000),range:900,n});window._lights=n;})();
+ kbake(G);xaDoorsBind();ER_INST+=window._instances||0;for(const k in KIT.items)KIT.items[k].length=0;window._instances=ER_INST;CHUNK_GROUPS.push({G,key:'lights',sphere:new THREE.Sphere(new THREE.Vector3(0,100,0),3000),range:900,n});window._lights=n;})();
+if(typeof xaIxWalk==='function')xaIxWalk();   // with the interiors on: the doors' walk blocks, once every chunk is built (89y-xa-interiors.js)
 // the runtime LOD: a chunk is drawn while it is in the view and within its range; the biome's own chunks tick beside it
 const _fr=new THREE.Frustum(),_pm=new THREE.Matrix4();
 FRAME_HOOKS.push(()=>{camera.updateMatrixWorld();_pm.multiplyMatrices(camera.projectionMatrix,camera.matrixWorldInverse);_fr.setFromProjectionMatrix(_pm);const P=camera.position;let shown=0;

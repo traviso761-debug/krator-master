@@ -24,7 +24,7 @@ function ytSatellite(D,season){const S=YT_SIDE,AE={hw:S.hw+S.t,hv:S.hv+S.t,ys:S.
  if(season==='summer')ytDome('turfCap',D.Ro+.3,D.Ho+.3,P('ice'),{doors:[AD(.25,-.2)],rTop:D.rVent+.22,seg:36});
  ytWalkDisc(0,0,D.Rr-.05,D.yFl);ytWalkTarget('satellite',0,D.yFl,0);
  if(D.lined){const zP=.1;prism('slab',ytSegment(D.Rr-.02,zP,18),D.yFl,D.yFl+.6,P('slab'));prism('caribou',ytSegment(D.Rr-.2,zP-.1,18),D.yFl+.6,D.yFl+.66,P('ice'));
-  ytLamp(.5,D.yFl+.66,zP-.25,0);FURNISH('generic_chest',-.8,D.yFl+.66,-.8,.6);}
+  ytLamp(.5,D.yFl+.66,zP-.25,0);FURNISH('khaayken_common_chest',-.75,D.yFl+.66,-.75,.6);}
  else{FURNISH('generic_cured_meat',-.7,D.yFl,-.5,.8);FURNISH('generic_sack',.7,D.yFl,-.6,-.6);FURNISH('generic_storage_jar',0,D.yFl,-1.0,0);FURNISH('generic_hanging_larder',-.2,D.yFl,.4,0);}}
 const YT_SLEEP=ytSatDims(1.55*YT_S,2.45,true),YT_STORE=ytSatDims(1.45*YT_S,2.3,false);
 defBuilding({key:'yt_sleep_dome',name:'Sleeping dome',seed:9111,w:YT_SLEEP.Ro*2+2,d:YT_SLEEP.Ro*2+2,h:YT_SLEEP.Ho+1.2,cut:true,budget:40000,

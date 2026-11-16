@@ -1,0 +1,289 @@
+{
+  "id": "soundtrack-ancients-valley",
+  "region": "ancients-valley",
+  "name": "Ancient's Valley (Relics & Toxic Lake)",
+  "masterVol": 0.9,
+  "bed": {
+    "bpm": 120,
+    "meter": 4,
+    "quantize": "bar",
+    "transitions": {
+      "riserClip": "adobe-production-element-title-transition-swell-01",
+      "riserLeadTime": 2.0,
+      "hitClip": "adobe-production-element-title-transition-stab-dark-long-01",
+      "tailClip": "adobe-production-element-title-transition-descend-01",
+      "vol": 0.9,
+      "autoOnCombat": true,
+      "autoOnXfade": true,
+      "filterSweep": true
+    },
+    "major": {
+      "clip": "music-ancient-valley-toxic-relics-10min",
+      "name": "Ancient Valley Relics & Toxic Lake (10-Minute Epic Bed)",
+      "vol": 0.85,
+      "fadeIn": 6.0,
+      "fadeOut": 5.0,
+      "duty": 70,
+      "cycle": 90
+    },
+    "minors": [
+      {
+        "id": "minor_av_bass_loop",
+        "clip": "user-ancient-bass-loop",
+        "name": "Ancient Sub-Bass Synthesizer Rhythm Loop (8.0s)",
+        "vol": 0.85,
+        "fadeIn": 4.0,
+        "fadeOut": 4.0,
+        "lockedToMajor": true,
+        "chance": 85,
+        "every": 35
+      },
+      {
+        "id": "minor_av_space_arp",
+        "clip": "lotsofsounds-space-arp-f-chord-473996",
+        "name": "Cosmic Space Arp (F Chord Atmosphere)",
+        "vol": 0.75,
+        "fadeIn": 5.0,
+        "fadeOut": 4.0,
+        "lockedToMajor": false,
+        "chance": 80,
+        "every": 50
+      },
+      {
+        "id": "minor_alien_vib",
+        "clip": "pixabay-alien-exoplanetary-vibration-f-290898",
+        "name": "Alien Exoplanetary Vibration",
+        "vol": 0.65,
+        "fadeIn": 5.0,
+        "fadeOut": 4.0,
+        "lockedToMajor": true,
+        "chance": 80,
+        "every": 45
+      },
+      {
+        "id": "minor_relic_bed",
+        "clip": "adobe-drone-production-element-imaging-alien-bed-01",
+        "name": "Extraterrestrial Relic Resonance Bed",
+        "vol": 0.7,
+        "fadeIn": 6.0,
+        "fadeOut": 4.0,
+        "lockedToMajor": false,
+        "chance": 75,
+        "every": 55
+      },
+      {
+        "id": "minor_reactor_hum",
+        "clip": "adobe-drone-production-element-imaging-flange-low-tones-electrical-hum-01",
+        "name": "Flanged Plasma Reactor Harmonic Hum",
+        "vol": 0.68,
+        "fadeIn": 5.0,
+        "fadeOut": 5.0,
+        "lockedToMajor": false,
+        "chance": 70,
+        "every": 60
+      },
+      {
+        "id": "minor_space_amb",
+        "clip": "pixabay-ambient-soundscapes-006-space-303245",
+        "name": "Ambient Soundscapes 006 Space Atmosphere",
+        "vol": 0.75,
+        "fadeIn": 7.0,
+        "fadeOut": 5.0,
+        "lockedToMajor": true,
+        "chance": 85,
+        "every": 50
+      }
+    ]
+  },
+  "env": {
+    "duckVol": 0.4,
+    "tracks": [
+      {
+        "id": "env_geiger",
+        "clip": "pixabay-sci-fi-geiger-mono-222759",
+        "name": "Sci-Fi Geiger Counter (Radiation Detector)",
+        "vol": 0.75,
+        "continuous": true,
+        "stackable": true,
+        "fadeIn": 3.0,
+        "fadeOut": 3.0,
+        "every": 10,
+        "jitter": 3
+      },
+      {
+        "id": "env_wind",
+        "clip": "adobe-ambience-nature-field-windy-02",
+        "name": "Wasteland Prairie Gale Wind Bed",
+        "vol": 0.7,
+        "continuous": true,
+        "stackable": true,
+        "fadeIn": 3.0,
+        "fadeOut": 3.0,
+        "every": 15,
+        "jitter": 5
+      },
+      {
+        "id": "env_toxic_lake",
+        "clip": "adobe-ambience-ocean-shore-01",
+        "name": "Toxic Terminal Lake Wash & Surf",
+        "vol": 0.65,
+        "continuous": true,
+        "stackable": true,
+        "fadeIn": 4.0,
+        "fadeOut": 4.0,
+        "every": 12,
+        "jitter": 4
+      },
+      {
+        "id": "env_highlands_cascade",
+        "clip": "mixkit-calm-thunderstorm-jungle-2415",
+        "name": "SW Highlands Rain Wall & Cascade Roar",
+        "vol": 0.68,
+        "continuous": false,
+        "stackable": true,
+        "fadeIn": 5.0,
+        "fadeOut": 5.0,
+        "every": 25,
+        "jitter": 6
+      },
+      {
+        "id": "env_pneumatic_vent",
+        "clip": "adobe-industry-tool-air-compressor-blow-air-quick-01",
+        "name": "Pneumatic Pressure Relief Valve & Servo Vent",
+        "vol": 0.72,
+        "continuous": false,
+        "stackable": false,
+        "fadeIn": 0.1,
+        "fadeOut": 1.0,
+        "every": 8,
+        "jitter": 3
+      }
+    ]
+  },
+  "stings": [
+    {
+      "id": "sting_alien_talk",
+      "clip": "pixabay-alien-talking-312011",
+      "name": "Alien Talking (Extraterrestrial Vocalizations)",
+      "vol": 0.85,
+      "interval": 300,
+      "jitterPct": 40,
+      "chance": 90,
+      "pitch": 0,
+      "pitchVar": 3.0,
+      "pan": 0,
+      "panVar": 0.7
+    },
+    {
+      "id": "sting_robo_menace",
+      "clip": "pixabay-robo-alien-menace_cybernetic-alien-creature_fnx-sound-28",
+      "name": "Robo Alien Menace Cybernetic Creature",
+      "vol": 0.8,
+      "interval": 420,
+      "jitterPct": 50,
+      "chance": 80,
+      "pitch": -2,
+      "pitchVar": 2.0,
+      "pan": 0,
+      "panVar": 0.5
+    },
+    {
+      "id": "sting_deep_sea",
+      "clip": "pixabay-studio-deep-sea-alien-sound-487681",
+      "name": "Studio Deep Sea Alien Sound",
+      "vol": 0.75,
+      "interval": 270,
+      "jitterPct": 35,
+      "chance": 85,
+      "pitch": 1,
+      "pitchVar": 2.5,
+      "pan": 0,
+      "panVar": 0.6
+    },
+    {
+      "id": "sting_war_horn",
+      "clip": "sfxmint-war-horn-02",
+      "name": "Distant Solitary Ancient Horn Echo",
+      "vol": 0.82,
+      "interval": 240,
+      "jitterPct": 30,
+      "chance": 85,
+      "pitch": -1,
+      "pitchVar": 1.5,
+      "pan": 0,
+      "panVar": 0.4
+    },
+    {
+      "id": "sting_beast_screech",
+      "clip": "adobe-horror-beast-screech-01",
+      "name": "Valley Mutant Predator Screech",
+      "vol": 0.65,
+      "interval": 360,
+      "jitterPct": 45,
+      "chance": 75,
+      "pitch": 2,
+      "pitchVar": 3.0,
+      "pan": 0,
+      "panVar": 0.8
+    }
+  ],
+  "combat": {
+    "intensity": 0,
+    "layerProgression": true,
+    "bedVol": 0.25,
+    "envVol": 0.35,
+    "holdTail": 5.0,
+    "dangerTracks": [
+      {
+        "id": "danger_tribal",
+        "clip": "pixabay-rhythmic-tribal-groove-by-alien-i-trust-125_bpm-275682",
+        "name": "Rhythmic Tribal Groove (Danger)",
+        "vol": 0.85,
+        "fadeIn": 3.0,
+        "fadeOut": 3.0
+      },
+      {
+        "id": "danger_taiko",
+        "clip": "sfxmint-taiko-drum-02",
+        "name": "Pounding Rhythm Taiko Drum 02",
+        "vol": 0.9,
+        "fadeIn": 2.0,
+        "fadeOut": 3.0
+      },
+      {
+        "id": "danger_signal",
+        "clip": "pixabay-cosmic-signal-351588",
+        "name": "Cosmic Signal Pulse Lead",
+        "vol": 0.82,
+        "fadeIn": 3.0,
+        "fadeOut": 3.0
+      },
+      {
+        "id": "danger_av_bass_loop",
+        "clip": "user-ancient-bass-loop",
+        "name": "Ancient Sub-Bass Rhythm (Combat Danger)",
+        "vol": 0.9,
+        "fadeIn": 2.0,
+        "fadeOut": 3.0
+      }
+    ],
+    "fullCombatTracks": [
+      {
+        "id": "combat_drums",
+        "clip": "mixkit-cinematic-ancient-drums-heartbeat-487",
+        "name": "Cinematic Ancient Drums Heartbeat (Full Combat)",
+        "vol": 0.95,
+        "fadeIn": 2.0,
+        "fadeOut": 3.0
+      },
+      {
+        "id": "combat_war_thunder",
+        "clip": "pixabay-ancient-war-drums-thunder-groove",
+        "name": "Ancient War Drums Thunder Groove",
+        "vol": 0.92,
+        "fadeIn": 2.0,
+        "fadeOut": 3.0
+      }
+    ]
+  }
+}

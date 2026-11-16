@@ -575,148 +575,110 @@ def remodel_volcanoes(Eo, whas0, wlev0, regs_list, vents_list, volc_dict):
 
 
     # ==========================================================================
-    # 3B. CATCH-XANADU TWIN WALL STRATOVOLCANOES (`vents[2]` & `vents[3]`)
+    # 3B. CATCH-XANADU TWIN WALL STRATOVOLCANOES (`vents[2]` & `vents[3]`, Option A)
     # ==========================================================================
-    # Standing on the high boundary wall SW of `the catch` (`rmvka7icdn1dq`) and
-    # NE of `xanadu` (`rmvkkmitffbjk`):
-    # - NW High Cone (`vents[2]` at px 716, 1128): 12,180.0 m WSW summit rim crest
-    #   around the canonical 11,080.0 m caldera floor (vents[2]['floor'] = 11080.0),
-    #   replacing the incomplete one-sided wall dent on Eo.
-    # - SE Glaciated Ice-Cave Cone (`vents[3]` at px 770, 1168): 9,340.0 m NW summit
-    #   rim crest around the canonical 8,535.2 m subglacial fumarolic caldera floor
-    #   (vents[3]['floor'] = 8535.2), replacing the flat-topped 8,360 m pillbox mesa
-    #   and sculpting the 7,180..7,380 m SW subglacial geothermal bench for Station 5
-    #   of the Geyser kit (`biomes/geyser/PLAN-STATIONS.md`, `--station ice`: Mount
-    #   Erebus fumarolic ice towers & Kverkfjoll subglacial ice caves).
+    # Standing in `"twins"` (`rmw536m06wlyf`) dividing `the catch` (`rmvka7icdn1dq`)
+    # and `xanadu` (`rmvkkmitffbjk`) as two active small volcanoes:
+    # - NW Active Cone (`vents[2]` at px 716, 1128 / expanded 988, 1458): 6,480.0 m WSW
+    #   summit rim crest around the 5,980.0 m crater floor (vents[2]['floor'] = 5980.0).
+    # - SE Glaciated Ice-Cave Cone (`vents[3]` at px 770, 1168 / expanded 1042, 1498):
+    #   5,880.0 m NW summit rim crest around the 5,420.0 m subglacial fumarolic caldera
+    #   floor (vents[3]['floor'] = 5420.0), with a 4,980..5,180 m SW subglacial
+    #   geothermal bench for Mount Erebus fumarolic ice towers & Kverkfjoll ice caves.
     # - Connecting NW-SE Fissure Saddle Ridge across (743, 1148) with 2 parasitic
-    #   fissure cones at (735, 1142) and (752, 1155).
-    sigma_cx = 34.0 / cell_km
-    E_bg_cx = nd.gaussian_filter(Eo, sigma=sigma_cx)
+    #   fissure cones at (735, 1142) [4,680 / 4,840 m] and (752, 1155) [4,460 / 4,610 m].
+    # First lower the uncarved 8-12 km Catch-Xanadu dividing spine along the NW-SE axis
+    # to a natural +3,300..+4,450 m mountain ridge so the two volcanic cones rise
+    # monotonically above the ridge with zero circular moat around their bases:
+    ux_cx, uy_cx = (770.0 - 716.0) / 67.23, (1168.0 - 1128.0) / 67.23
+    s_cx = ((px - 716.0) * ux_cx + (py - 1128.0) * uy_cx) * 2.0  # 0 to 134.46 km
+    p_cx = (-(px - 716.0) * uy_cx + (py - 1128.0) * ux_cx) * 2.0  # km perp to axis
+    w_spine_cx = (
+        G.sstep(-68.0, -18.0, s_cx)
+        * G.sstep(205.0, 152.0, s_cx)
+        * G.sstep(68.0, 26.0, np.abs(p_cx))
+        * (~whas2).astype(float)
+    )
+    E_spine_cx = (
+        4280.0
+        - 880.0 * np.clip((np.abs(p_cx) / 48.0) ** 1.45, 0.0, 1.4)
+        - 220.0 * np.exp(-0.5 * ((s_cx - 67.0) / 26.0) ** 2)
+    )
+    En = En * (1.0 - w_spine_cx) + np.minimum(En, E_spine_cx) * w_spine_cx
 
-    # --- NW Stratovolcano (`vents[2]`, px 716, 1128) ---
+    # --- NW Stratovolcano (`vents[2]`, px 716, 1128 / expanded 988, 1458) ---
     vx2, vy2 = 716.0, 1128.0
     dx_v2 = (px - vx2) * 2.0
     dy_v2 = (py - vy2) * 2.0
     r_v2 = np.hypot(dx_v2, dy_v2)
     th_v2 = np.arctan2(dy_v2, dx_v2)
 
-    r_rim_v2 = 7.2 + 0.65 * np.cos(2.0 * (th_v2 - 0.64))
-    r_base_v2 = 42.0
+    r_rim_v2 = 4.2 + 0.35 * np.cos(2.0 * (th_v2 - 0.64))
+    r_base_v2 = 34.0
     h_rim_v2 = (
-        11920.0
-        + 260.0 * np.cos(th_v2 - 2.65)
-        - 180.0 * np.exp(-0.5 * (_angle_diff(th_v2, -0.45) / 0.38) ** 2)
+        6260.0
+        + 220.0 * np.cos(th_v2 - 2.65)
+        - 130.0 * np.exp(-0.5 * (_angle_diff(th_v2, -0.45) / 0.38) ** 2)
     )
     u_v2 = np.clip((r_v2 - r_rim_v2) / (r_base_v2 - r_rim_v2), 0.0, 1.0)
-    # Cap inner background under the cone rim so the 12,180 m summit stands cleanly
-    # above the western highland ridge as a true 360-degree composite stratocone
-    E_base_v2 = np.minimum(E_bg_cx, h_rim_v2 - 420.0 - 42.0 * np.maximum(0.0, r_v2 - r_rim_v2))
-    E_flank_v2 = E_base_v2 + (h_rim_v2 - E_base_v2) * (
-        0.66 * (1.0 - u_v2) ** 2.35 + 0.34 * np.exp(-2.85 * u_v2)
-    )
+    prof_v2 = 0.68 * ((1.0 - u_v2) ** 2.25) + 0.32 * np.exp(-2.85 * u_v2)
+    E_flank_v2 = En + np.maximum(0.0, h_rim_v2 - En) * prof_v2
     s_cal_v2 = np.clip(r_v2 / r_rim_v2, 0.0, 1.0)
-    r_dome_v2 = np.hypot(dx_v2 + 2.0, dy_v2 + 1.2)
-    E_cal_v2 = (
-        11080.0
-        + (h_rim_v2 - 11080.0)
-        * (0.55 * G.sstep(0.52, 0.76, s_cal_v2) + 0.45 * G.sstep(0.78, 1.00, s_cal_v2))
-        + 145.0 * np.exp(-0.5 * (r_dome_v2 / 1.3) ** 2) * G.sstep(0.5, 1.8, r_v2)
-    )
-    barranco_v2 = (
-        -155.0
-        * (np.clip(-np.sin(12.0 * th_v2 + 0.055 * r_v2), 0.0, 1.0) ** 2.2)
-        * G.sstep(8.5, 14.5, r_v2)
-        * G.sstep(40.0, 28.0, r_v2)
-    )
-    E_target_v2 = np.where(r_v2 < r_rim_v2, E_cal_v2, E_flank_v2 + barranco_v2)
-    w_v2 = G.sstep(42.0, 26.0, r_v2)
-    En = En * (1.0 - w_v2) + E_target_v2 * w_v2
+    E_cal_v2 = 5980.0 + (h_rim_v2 - 5980.0) * G.sstep(0.28, 1.00, s_cal_v2)
+    w_v2 = G.sstep(34.0, 18.0, r_v2)
+    En = np.where(r_v2 < r_rim_v2, E_cal_v2, En * (1.0 - w_v2) + E_flank_v2 * w_v2)
 
-    # --- SE Stratovolcano (`vents[3]`, px 770, 1168) ---
+    # --- SE Stratovolcano (`vents[3]`, px 770, 1168 / expanded 1042, 1498) ---
     vx3, vy3 = 770.0, 1168.0
     dx_v3 = (px - vx3) * 2.0
     dy_v3 = (py - vy3) * 2.0
     r_v3 = np.hypot(dx_v3, dy_v3)
     th_v3 = np.arctan2(dy_v3, dx_v3)
 
-    r_rim_v3 = 7.2 + 0.60 * np.cos(2.0 * (th_v3 - 0.64))
-    r_base_v3 = 44.0
+    r_rim_v3 = 4.2 + 0.35 * np.cos(2.0 * (th_v3 - 0.64))
+    r_base_v3 = 36.0
     h_rim_v3 = (
-        9160.0
-        + 180.0 * np.cos(th_v3 + 2.46)
-        - 210.0 * np.exp(-0.5 * (_angle_diff(th_v3, -0.35) / 0.36) ** 2)
+        5710.0
+        + 170.0 * np.cos(th_v3 + 2.46)
+        - 130.0 * np.exp(-0.5 * (_angle_diff(th_v3, -0.35) / 0.36) ** 2)
     )
     u_v3 = np.clip((r_v3 - r_rim_v3) / (r_base_v3 - r_rim_v3), 0.0, 1.0)
-    E_base_v3 = np.minimum(E_bg_cx, h_rim_v3 - 380.0 - 38.0 * np.maximum(0.0, r_v3 - r_rim_v3))
-    E_flank_v3 = E_base_v3 + (h_rim_v3 - E_base_v3) * (
-        0.65 * (1.0 - u_v3) ** 2.40 + 0.35 * np.exp(-2.95 * u_v3)
-    )
-    # Kverkfjoll / Mount Erebus Subglacial Geothermal Bench (Station 5 `--station ice`,
-    # biomes/geyser/PLAN-STATIONS.md): 7,180..7,380 m iced cauldron bench on the SW flank
-    # (px ~ 756, 1176, r ~ 20..30 km) where fumaroles carve blue-lit glacier ice caves
-    d_erebus = np.hypot((px - 756.0) * 2.0, (py - 1176.0) * 2.0)
-    erebus_bench = 7260.0 - 14.0 * ((756.0 - px) * 0.78 + (py - 1176.0) * 0.62)
-    w_erebus = G.sstep(14.0, 5.0, d_erebus)
-    E_flank_v3 = E_flank_v3 * (1.0 - w_erebus) + erebus_bench * w_erebus
-
+    prof_v3 = 0.66 * ((1.0 - u_v3) ** 2.30) + 0.34 * np.exp(-2.90 * u_v3)
+    E_flank_v3 = En + np.maximum(0.0, h_rim_v3 - En) * prof_v3
     s_cal_v3 = np.clip(r_v3 / r_rim_v3, 0.0, 1.0)
-    r_dome_v3 = np.hypot(dx_v3 + 2.0, dy_v3 + 1.0)
-    E_cal_v3 = (
-        8535.2
-        + (h_rim_v3 - 8535.2)
-        * (0.58 * G.sstep(0.54, 0.78, s_cal_v3) + 0.42 * G.sstep(0.80, 1.00, s_cal_v3))
-        + 130.0 * np.exp(-0.5 * (r_dome_v3 / 1.3) ** 2) * G.sstep(0.5, 1.8, r_v3)
-    )
-    barranco_v3 = (
-        -145.0
-        * (np.clip(-np.sin(12.0 * th_v3 + 0.06 * r_v3), 0.0, 1.0) ** 2.2)
-        * G.sstep(8.5, 14.5, r_v3)
-        * G.sstep(42.0, 30.0, r_v3)
-    )
-    E_target_v3 = np.where(r_v3 < r_rim_v3, E_cal_v3, E_flank_v3 + barranco_v3)
-    w_v3 = G.sstep(44.0, 28.0, r_v3)
-    En = En * (1.0 - w_v3) + E_target_v3 * w_v3
+    E_cal_v3 = 5420.0 + (h_rim_v3 - 5420.0) * G.sstep(0.28, 1.00, s_cal_v3)
+    w_v3 = G.sstep(36.0, 19.0, r_v3)
+    En = np.where(r_v3 < r_rim_v3, E_cal_v3, En * (1.0 - w_v3) + E_flank_v3 * w_v3)
 
-    # --- Connecting NW-SE Fissure Saddle Ridge between (716, 1128) and (770, 1168) ---
-    ux_cx, uy_cx = (770.0 - 716.0) / 67.23, (1168.0 - 1128.0) / 67.23
-    s_cx = ((px - 716.0) * ux_cx + (py - 1128.0) * uy_cx) * 2.0  # 0 to 134.46 km
-    p_cx = (-(px - 716.0) * uy_cx + (py - 1128.0) * ux_cx) * 2.0  # km perp to axis
-    saddle_env = G.sstep(18.0, 34.0, s_cx) * G.sstep(116.0, 100.0, s_cx)
+    # --- Connecting NW-SE Fissure Saddle Cones between (716, 1128) and (770, 1168) ---
     d_cone_a = np.hypot((px - 735.0) * 2.0, (py - 1142.0) * 2.0)
     d_cone_b = np.hypot((px - 752.0) * 2.0, (py - 1155.0) * 2.0)
-    saddle_lift = (
-        360.0 * np.exp(-0.5 * (p_cx / 5.5) ** 2) * saddle_env
-        + 420.0 * np.exp(-0.5 * (d_cone_a / 4.2) ** 2)
-        - 160.0 * np.exp(-0.5 * (d_cone_a / 1.4) ** 2)
-        + 380.0 * np.exp(-0.5 * (d_cone_b / 4.0) ** 2)
-        - 150.0 * np.exp(-0.5 * (d_cone_b / 1.4) ** 2)
-    )
-    En += saddle_lift * G.sstep(18.0, 6.0, np.abs(p_cx)) * saddle_env
 
-    # Sculpt the two parasitic cones on the saddle at (735, 1142) [peak 9493.1 m, floor 9333.1 m]
-    # and (752, 1155) [peak 7535.4 m, floor 7385.4 m] so their rim crests and crater floors are exact
+    # Sculpt the two parasitic fissure cones on the saddle at (735, 1142) [peak 4840.0 m, floor 4680.0 m]
+    # and (752, 1155) [peak 4610.0 m, floor 4460.0 m] as purely additive cones with exact rim crests and floors:
     for pvx, pvy, p_fl, p_pk, d_c in (
-        (735.0, 1142.0, 9333.1, 9493.1, d_cone_a),
-        (752.0, 1155.0, 7385.4, 7535.4, d_cone_b),
+        (735.0, 1142.0, 4680.0, 4840.0, d_cone_a),
+        (752.0, 1155.0, 4460.0, 4610.0, d_cone_b),
     ):
-        u_pc = np.clip((d_c - 2.6) / (11.0 - 2.6), 0.0, 1.0)
+        u_pc = np.clip((d_c - 2.4) / (11.0 - 2.4), 0.0, 1.0)
+        E_pc_flank = En + np.maximum(0.0, p_pk - En) * ((1.0 - u_pc) ** 2.15)
         E_pc = np.where(
-            d_c < 2.6,
-            p_fl + (p_pk - p_fl) * G.sstep(0.35, 1.0, d_c / 2.6),
-            En + np.maximum(0.0, p_pk - En) * ((1.0 - u_pc) ** 2.1),
+            d_c < 2.4,
+            p_fl + (p_pk - p_fl) * G.sstep(0.28, 1.0, d_c / 2.4),
+            E_pc_flank,
         )
         w_pc = G.sstep(11.0, 4.5, d_c)
         En = En * (1.0 - w_pc) + E_pc * w_pc
 
     # Pin exact summit peaks and canonical crater floors for vents[2], vents[3], and the 2 parasitic vents
-    En[int(round(1129.0 * sv)), int(round(713.0 * su))] = 12180.0
-    En[int(round(vy2 * sv)), int(round(vx2 * su))] = 11080.0
-    En[int(round(1166.0 * sv)), int(round(767.0 * su))] = 9340.0
-    En[int(round(vy3 * sv)), int(round(vx3 * su))] = 8535.2
-    En[int(round(1141.0 * sv)), int(round(734.0 * su))] = 9493.1
-    En[int(round(1142.0 * sv)), int(round(735.0 * su))] = 9333.1
-    En[int(round(1154.0 * sv)), int(round(751.0 * su))] = 7535.4
-    En[int(round(1155.0 * sv)), int(round(752.0 * su))] = 7385.4
+    En[int(round(1129.0 * sv)), int(round(713.0 * su))] = 6480.0
+    En[int(round(vy2 * sv)), int(round(vx2 * su))] = 5980.0
+    En[int(round(1166.0 * sv)), int(round(767.0 * su))] = 5880.0
+    En[int(round(vy3 * sv)), int(round(vx3 * su))] = 5420.0
+    En[int(round(1141.0 * sv)), int(round(734.0 * su))] = 4840.0
+    En[int(round(1142.0 * sv)), int(round(735.0 * su))] = 4680.0
+    En[int(round(1154.0 * sv)), int(round(751.0 * su))] = 4610.0
+    En[int(round(1155.0 * sv)), int(round(752.0 * su))] = 4460.0
 
 
     # ==========================================================================
@@ -771,11 +733,11 @@ def remodel_volcanoes(Eo, whas0, wlev0, regs_list, vents_list, volc_dict):
             v["floor"] = 6070.0
             v["peak"] = 6880.0
         elif math.hypot(vpx[0] - 716.0, vpx[1] - 1128.0) < 3.0:
-            v["floor"] = 11080.0
-            v["peak"] = 12180.0
+            v["floor"] = 5980.0
+            v["peak"] = 6480.0
         elif math.hypot(vpx[0] - 770.0, vpx[1] - 1168.0) < 3.0:
-            v["floor"] = 8535.2
-            v["peak"] = 9340.0
+            v["floor"] = 5420.0
+            v["peak"] = 5880.0
         elif math.hypot(vpx[0] - 577.85, vpx[1] - 932.59) < 3.0:
             v["floor"] = 21194.0
             v["peak"] = 25000.0
@@ -785,10 +747,16 @@ def remodel_volcanoes(Eo, whas0, wlev0, regs_list, vents_list, volc_dict):
 
     # Add the 2 parasitic fissure vents on the Catch-Xanadu NW-SE volcanic saddle if not present
     for p_vent in (
-        {"px": [735.0, 1142.0], "floor": 9333.1, "peak": 9493.1, "scale": 0.18, "radius": 1.6},
-        {"px": [752.0, 1155.0], "floor": 7385.4, "peak": 7535.4, "scale": 0.18, "radius": 1.6},
+        {"px": [735.0, 1142.0], "floor": 4680.0, "peak": 4840.0, "scale": 0.18, "radius": 1.6},
+        {"px": [752.0, 1155.0], "floor": 4460.0, "peak": 4610.0, "scale": 0.18, "radius": 1.6},
     ):
-        if not any(math.hypot(v.get("px", [0, 0])[0] - p_vent["px"][0], v.get("px", [0, 0])[1] - p_vent["px"][1]) < 2.0 for v in vents_out):
+        found_pv = False
+        for v in vents_out:
+            if math.hypot(v.get("px", [0, 0])[0] - p_vent["px"][0], v.get("px", [0, 0])[1] - p_vent["px"][1]) < 2.0:
+                v["floor"] = p_vent["floor"]
+                v["peak"] = p_vent["peak"]
+                found_pv = True
+        if not found_pv:
             vents_out.append(p_vent)
 
     volc_out = copy.deepcopy(volc_dict) if volc_dict is not None else {}
@@ -1201,12 +1169,12 @@ def build_tubes_and_zeijani_data(dx=0.0, dy=0.0):
             ],
         },
 
-        # 9. CATCH-XANADU NW HIGH CONE PYRODUCT & ALPH HEADWATER CONDUIT (`vents[2]`, px 716, 1128)
+        # 9. TWINS NW ACTIVE CONE CARAVAN PYRODUCT & ALPH HEADWATER CONDUIT (`vents[2]`, px 716, 1128 / expanded 988, 1458)
         {
             "id": "tube_xanadu_nw_09",
-            "name": "North-West Wall Pyroduct & Alph Headwater Conduit",
-            "region": "rmvkkmitffbjk",
-            "culture": "uninhabited",
+            "name": "Twins Caravan Pyroduct & Alph Headwater Conduit",
+            "region": "rmw536m06wlyf",
+            "culture": "xanadui_guides_and_caravaneers",
             "state": "geothermal",
             "rock": "dacite_and_basalt",
             "width_m": 26.0,
@@ -1214,15 +1182,15 @@ def build_tubes_and_zeijani_data(dx=0.0, dy=0.0):
             "depth_m": 60.0,
             "km": 172,
             "px": [
-                [716.0, 1128.0], [706.0, 1138.0], [694.0, 1149.0],
-                [680.0, 1159.0], [666.0, 1166.0],
+                [716.0, 1128.0], [708.0, 1137.0], [698.0, 1149.0],
+                [688.0, 1162.0], [666.0, 1166.0],
             ],
             "branches": [
                 {
-                    "name": "Catch SW Wall Sub-Fan Drainage Pyroduct",
+                    "name": "Caravan Pyroduct Cross-Range Route (Xanadu Portal to Catch Portal)",
                     "state": "habitable",
-                    "width_m": 14.0,
-                    "px": [[716.0, 1128.0], [728.0, 1116.0], [742.0, 1102.0]],
+                    "width_m": 16.0,
+                    "px": [[688.0, 1162.0], [708.0, 1137.0], [728.0, 1116.0], [742.0, 1102.0]],
                 },
                 {
                     "name": "NW-SE Saddle Fissure Dike Conduit",
@@ -1234,13 +1202,13 @@ def build_tubes_and_zeijani_data(dx=0.0, dy=0.0):
             "caverns": [
                 {
                     "id": "cav_xanadu_nw_summit",
-                    "name": "NW Wall Caldera Magma-Throat Vault",
-                    "kind": "magma_chamber",
-                    "px": [715.0, 1129.0],
+                    "name": "NW Twin Caldera & Caravan Skylight Vault (Nafkh al-Dukhān)",
+                    "kind": "skylight_well",
+                    "px": [708.0, 1137.0],
                     "span_m": [210, 145],
                     "height_m": 52,
                     "skylight_m": 28,
-                    "notes": "Drained high-altitude (11,080 m, 0.42 atm) fumarolic throat cavern beneath the 12,180 m WSW summit rim.",
+                    "notes": "Main caravan lava-tube skylight hall at +4,240 m on the WSW flank of the NW Twin (+6,480 m peak, +5,980 m crater floor), where caravaneers dash 1.8 km between Tube Segment I and Tube Segment II (biomes/twins/PLAN.md).",
                 },
                 {
                     "id": "cav_alph_headwater",
@@ -1250,16 +1218,16 @@ def build_tubes_and_zeijani_data(dx=0.0, dy=0.0):
                     "span_m": [240, 160],
                     "height_m": 64,
                     "skylight_m": 22,
-                    "notes": "Subglacial meltwater cavern at ~6.3 km on Xanadu's NE ice wall where geothermal pressure drives the bursting chasm fountain at the head of the Sacred River Alph (biomes/xanadu/NOTES.md).",
+                    "notes": "Subglacial meltwater cavern on Xanadu's NE ice wall where geothermal pressure drives the bursting chasm fountain at the head of the Sacred River Alph (biomes/xanadu/NOTES.md).",
                 },
             ],
         },
 
-        # 10. CATCH-XANADU SE CONE EREBUS ICE CAVES & OASIS FEEDER TUBE (`vents[3]`, px 770, 1168)
+        # 10. TWINS SE CONE EREBUS ICE CAVES & OASIS FEEDER TUBE (`vents[3]`, px 770, 1168 / expanded 1042, 1498)
         {
             "id": "tube_xanadu_se_10",
             "name": "Erebus Subglacial Ice-Cave & Catch Oasis Feeder Tube",
-            "region": "rmvka7icdn1dq",
+            "region": "rmw536m06wlyf",
             "culture": "caravaneers_and_divers",
             "state": "geothermal",
             "rock": "basalt_and_glacier_ice",
@@ -1290,11 +1258,11 @@ def build_tubes_and_zeijani_data(dx=0.0, dy=0.0):
                     "id": "cav_erebus_ice_field",
                     "name": "Kverkfjoll / Erebus Blue-Ice Fumarole Vaults",
                     "kind": "bottle_hall",
-                    "px": [756.0, 1176.0],
+                    "px": [770.0, 1168.0],
                     "span_m": [190, 125],
                     "height_m": 40,
                     "skylight_m": 18,
-                    "notes": "Geyser Station 5 (`--station ice`, biomes/geyser/PLAN-STATIONS.md): subglacial ice caves at ~7.26 km (0.64 atm, -20 C) lit blue from within, with 88 C boiling geysers and hollow fumarolic ice chimneys.",
+                    "notes": "Subglacial ice caves at +5,420 m beneath the +5,880 m SE Twin summit (`erebustwin`, biomes/twins/PLAN.md): blue-lit glacier vaults with 88 C boiling geysers and hollow fumarolic ice chimneys.",
                 },
                 {
                     "id": "cav_bitta_spring",
@@ -1484,21 +1452,21 @@ def build_tubes_and_zeijani_data(dx=0.0, dy=0.0):
             "depth_m": 48.0,
             "km": 310,
             "px": [
-                [860.0, -40.0], [820.0, -18.0], [784.0, 0.0],
-                [748.0, 10.0], [716.0, -6.0],
+                [974.0, -158.0], [940.0, -156.0], [924.0, -151.0],
+                [904.0, -146.0], [872.0, -162.0],
             ],
             "branches": [
                 {
                     "name": "Red Porphyry Dike Contact Gallery",
                     "state": "habitable",
                     "width_m": 22.0,
-                    "px": [[820.0, -18.0], [796.0, -34.0], [768.0, -42.0]],
+                    "px": [[940.0, -156.0], [962.0, -178.0], [986.0, -194.0]],
                 },
                 {
                     "name": "Spider Lake Sub-Escarpment Phreatic Conduit",
                     "state": "geothermal",
                     "width_m": 20.0,
-                    "px": [[784.0, 0.0], [802.0, 20.0], [824.0, 34.0]],
+                    "px": [[940.0, -156.0], [956.0, -138.0], [974.0, -124.0]],
                 },
             ],
             "caverns": [
@@ -1506,7 +1474,7 @@ def build_tubes_and_zeijani_data(dx=0.0, dy=0.0):
                     "id": "cav_ozarks_porphyry",
                     "name": "Cathedral of the Red Porphyry Vein",
                     "kind": "bottle_hall",
-                    "px": [784.0, 0.0],
+                    "px": [940.0, -156.0],
                     "span_m": [280, 165],
                     "height_m": 52,
                     "skylight_m": 16,
@@ -1516,7 +1484,7 @@ def build_tubes_and_zeijani_data(dx=0.0, dy=0.0):
                     "id": "cav_ozarks_onyx",
                     "name": "Onyx Pillar & Chert-Bridge Labyrinth",
                     "kind": "kipuka_portal",
-                    "px": [748.0, 10.0],
+                    "px": [904.0, -146.0],
                     "span_m": [210, 140],
                     "height_m": 38,
                     "skylight_m": 12,
@@ -1526,7 +1494,7 @@ def build_tubes_and_zeijani_data(dx=0.0, dy=0.0):
                     "id": "cav_ozarks_resurgence",
                     "name": "The Shut-In Big Spring Resurgence",
                     "kind": "stepwell_cistern",
-                    "px": [716.0, -6.0],
+                    "px": [872.0, -162.0],
                     "span_m": [175, 115],
                     "height_m": 28,
                     "skylight_m": 22,

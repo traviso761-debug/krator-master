@@ -78,7 +78,7 @@
       var wb=Math.max(rate(EB, g), (R.expect && R.expect[b] && R.expect[b][g]) || 0); if(!(wb>0)) return;   /* `expect`: the receiver's planned use a day, a floor */
       var have=stockIn(EB, g)+sitesIn(EB, g)+atSea(g, b, 'to'), need=Math.ceil(want*wb-have); if(need<=0) return;
       if(fellShort(EA, g)) return;
-      var spare=Math.floor(stockIn(EA, g)-keep*rate(EA, g)); if(spare<=0) return;
+      var spare=Math.floor(stockIn(EA, g)-keep*rate(EA, g)-(((EA.policy||{})[g]||{}).reserve||0)); if(spare<=0) return;   /* a policy's `reserve` stays */
       rows.push({ good:g, days:have/wb, n:Math.min(need, spare, R.most) }); });
     rows.sort(function(p, q){ return p.days-q.days || (p.good<q.good?-1:1); });
     var left=R.cap, out=[];

@@ -13,7 +13,7 @@ python3 ../../tools/textures/pack.py kits/crops    # (from the repo root) after 
 
 ## What is in it
 
-- **163 crops** over 25 food, material and utility **buckets** in seven groups: staple (grain, pulse, tuber, starch-fruit),
+- **165 crops** over 25 food, material and utility **buckets** in seven groups: staple (grain, pulse, tuber, starch-fruit),
   protein-fat (nut, oil, alga), produce (vegetable, greens, mushroom, fruit, berry, dried-fruit), flavour (spice, herb,
   sweetener), drink (beverage), material (spinning, cordage, weaving, sheet, thatch) and utility (dye, reagent, fuel).
 - **Three axes**, warmth (polar to hot), air pressure (thin, standard, dense) and aridity (arid to wet). Each crop is a range

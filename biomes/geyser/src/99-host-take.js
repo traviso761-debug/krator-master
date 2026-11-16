@@ -9,7 +9,11 @@ const SPI=k=>GEYSER.SPECIES?GEYSER.SPECIES.findIndex(S=>S.key===k):-1;
 function nearTree(key,x,z,minH){const T=GEYSER.nearestTree&&GEYSER.nearestTree(SPI(key),x,z,minH);return T||{x:x,z:z,y0:gh(x,z),H:6,crownR:3};}
 function atTree(T,d,az,dy,ty){const cx=T.x+Math.cos(az)*d,cz=T.z+Math.sin(az)*d;return[cx,Math.max(gh(cx,cz,1.6),T.y0+(dy==null?T.H*.45:dy)),cz,T.x,T.y0+T.H*(ty==null?.5:ty),T.z];}
 const VMODE={},VERUPT={};
-const VIEWS={
+// A STATION (stations/<name>/, PLAN-STATIONS.md) hands its words, views and checks here as STATION_TAKE (oidong's lines): {build, title, hint, views() ->
+// {name: [cx, cy, cz, tx, ty, tz]}, erupt {view: geyser key}, checks(add, P), negatives(add, P), types {pass: class}, ownViews (the showcase's views left
+// out: a station on other ground has no Old Kettle, Prism or Stair), baseChecks / baseNegatives (the names of the showcase's checks it keeps)}
+const ST_TAKE=typeof STATION_TAKE!=='undefined'?STATION_TAKE:null;
+const VIEWS=ST_TAKE&&ST_TAKE.ownViews?{}:{
  'The geyser basin':(function(){const c=[-60,330],t=[0,-330];return[c[0],gh(c[0],c[1],62),c[1],t[0],gh(t[0],t[1],10),t[1]];})(),
  'Geyser Hill':(function(){const g=GY('kettle');return toward(g.x-150,g.z+160,g.x+60,g.z-60,230,16,6);})(),
  'The Old Kettle erupting':(function(){const g=GY('kettle');return toward(g.x-70,g.z+95,g.x,g.z,120,5,24);})(),
@@ -28,8 +32,9 @@ const VIEWS={
  'The basin at night':(function(){const c=[420,200],t=[-60,-260];return[c[0],gh(c[0],c[1],40),c[1],t[0],gh(t[0],t[1],10),t[1]];})(),
  'From above':[-1000,1250,1400,0,40,-120],
 };
-VMODE['The basin at night']='night';
-VERUPT['Geyser Hill']='kettle';VERUPT['The Old Kettle erupting']='kettle';VERUPT['Grandmother']='grandmother';VERUPT['The Twins and the Lantern']='twins';VERUPT['The geyser basin']='grandmother';
+if(!(ST_TAKE&&ST_TAKE.ownViews)){VMODE['The basin at night']='night';
+VERUPT['Geyser Hill']='kettle';VERUPT['The Old Kettle erupting']='kettle';VERUPT['Grandmother']='grandmother';VERUPT['The Twins and the Lantern']='twins';VERUPT['The geyser basin']='grandmother';}
+if(ST_TAKE&&ST_TAKE.views){try{Object.assign(VIEWS,ST_TAKE.views());Object.assign(VERUPT,ST_TAKE.erupt||{});}catch(e){reportErr('station views: '+e.stack);}}
 // a preset that shows a geyser sets it off 8 s before the shot, so its column stands at its height
 const goLight=k=>{setLightMode(VMODE[k]||'day');if(VERUPT[k]&&GEYSER.SHOW)GEYSER.erupt(VERUPT[k],GEYSER.SHOW.t-8);};   // the host's onView
 // day and night; THE GEYSERS: set one off (the select), all of them, or run to the timetable (the default: each on its own clock)
@@ -60,7 +65,7 @@ function describe(hit){const p=hit.point,o=hit.object;
  let best2=null;for(const r of REG){if(r.r>900)continue;if(regHas(r,p.x,p.y,p.z)&&(!best2||r.r<best2.r))best2=r;}
  const lab=o.userData.inspectLabel||o.name||'mesh',isItem=o.isInstancedMesh&&o.userData.biome,kit=o.userData.kit||'';
  let name=isItem?lab+(best2?'  (under '+best2.name+')':''):(best2?best2.name+'  ·  '+lab:lab);
- const item=isItem?(o.name||'').replace(/^biome:/,''):null,PLT=item&&kit!=='hyperjungle'&&GEYSER.plantOfItem&&GEYSER.plantOfItem(item);
+ const item=isItem?(o.name||'').replace(/^biome:/,''):null,PLT=item&&kit==='hearths'&&typeof HEARTH!=='undefined'?HEARTH.plantOfItem(item):item&&kit!=='hyperjungle'&&GEYSER.plantOfItem&&GEYSER.plantOfItem(item);   /* the Stills' station: the Hearths' own records */
  const S=best2&&best2.key&&GEYSER.byKeyS&&GEYSER.byKeyS[best2.key],tg=S?S.tags:(PLT?PLT.tags:null);
  if(PLT&&!S)name=PLT.name+'  ·  '+lab;
  const g=GEYSER.at(p.x,p.z,landH(p.x,p.z)),T=Math.round(g.T);
@@ -79,6 +84,7 @@ const BUDGET={
  cls:{pass:16000000,host:900000},
  type:{'geyser/sinter':'pass','geyser/trees':'pass','geyser/floor':'pass','geyser/show':'pass','jungle/trees':'pass','jungle/floor':'pass','jungle/fauna':'pass','host':'host'},
 };
+if(ST_TAKE&&ST_TAKE.types)Object.assign(BUDGET.type,ST_TAKE.types);   /* a station's own passes */
 // every instanced item: [x, y, z, its name, its kit]
 const instPoints=()=>{const o=[],m=new THREE.Matrix4(),p=new THREE.Vector3(),q=new THREE.Quaternion(),sc=new THREE.Vector3();
  scene.traverse(M=>{if(!M.isInstancedMesh||!M.userData.biome)return;for(let i=0;i<M.count;i++){M.getMatrixAt(i,m);m.decompose(p,q,sc);o.push([p.x,p.y,p.z,M.name,M.userData.kit||'']);}});return o;};
@@ -123,9 +129,9 @@ const HCHK={
 const plantList=()=>Object.keys(GEYSER.PLANTS).map(k=>Object.assign({key:k},GEYSER.PLANTS[k]));
 const counts=T=>T.reduce((C,t)=>{C[t.sp]++;return C;},GEYSER.SPECIES.map(()=>0));
 // the Stair's pools' levels down its axis (a pool lower than the one above it, or level with it; a climb is a fault)
-const stairLevels=()=>{const t=LAYOUT.terraces[0],L=[];let last=null;for(let z=STAIR.z0+130;z<shoreZ(STAIR.x0)-30;z+=1){const x=stairX(z)+20;if(terraceMask(x,z)<.99)continue;
+const stairLevels=()=>{if(STAIR.none||!LAYOUT.terraces.length)return[];const t=LAYOUT.terraces[0],L=[];let last=null;for(let z=STAIR.z0+130;z<shoreZ(STAIR.x0)-30;z+=1){const x=stairX(z)+20;if(terraceMask(x,z)<.99)continue;
  const q=GEYSER.poolAt(t,x,z);if(q.A&&!q.A.sea&&q.A!==last){L.push(q.A.L);last=q.A;}}return L;};
-function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P=instPoints(),T=GEYSER.TREES||[];
+function hostChecks(){const R=[],keep=n=>!(ST_TAKE&&ST_TAKE.baseChecks)||ST_TAKE.baseChecks.indexOf(n)>=0,add=(name,r)=>{if(keep(name))R.push(Object.assign({name},r));},P=instPoints(),T=GEYSER.TREES||[];
  add('nothing lives on the scalding ground',HCHK.scald(P,T));
  add('the run-off cools as it runs',HCHK.runoff(LAYOUT.runoff));
  add('every geyser erupts on its own cycle',HCHK.cycles(LAYOUT.geysers));
@@ -137,8 +143,9 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P
  add('every species of the kit placed',HCHK.placed(counts(T)));
  add('every species and plant tagged',HCHK.tagged(GEYSER.SPECIES.concat(plantList())));
  add('preset cameras clear of the ground',HCHK.camerasOut(Object.keys(VIEWS).map(k=>({view:k,x:VIEWS[k][0],y:VIEWS[k][1],z:VIEWS[k][2]}))));
+ if(ST_TAKE&&ST_TAKE.checks)ST_TAKE.checks((name,r)=>R.push(Object.assign({name},r)),P);
  return R;}
-function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),s=LAYOUT.springs[0],T=GEYSER.TREES||[];
+function hostNegatives(){const R=[],keep=n=>!(ST_TAKE&&ST_TAKE.baseNegatives)||ST_TAKE.baseNegatives.indexOf(n)>=0,add=(name,r)=>{if(keep(name))R.push({name,failed:!r.ok,detail:r.detail});},s=LAYOUT.springs.reduce((a,b)=>b.temp>a.temp?b:a,LAYOUT.springs[0]),T=GEYSER.TREES||[];   /* the hottest spring (the showcase's first, the Great Prism) */
  add('a fern in the Great Prism',HCHK.scald([[s.x,terrainH(s.x,s.z),s.z,'biome:fern','geyser']],[]));
  add('a channel that warms as it runs',HCHK.runoff(LAYOUT.runoff.map((c,i)=>i?c:Object.assign({},c,{T0:20}))));
  add('a geyser with no column',HCHK.cycles(LAYOUT.geysers.map((g,i)=>i?g:Object.assign({},g,{dur:0,_c:null}))));
@@ -150,6 +157,7 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  {const C=counts(T);C[0]=0;add('a species never placed',HCHK.placed(C));}
  add('a species with no origin',HCHK.tagged(GEYSER.SPECIES.map((S,i)=>i===0?Object.assign({},S,{tags:Object.assign({},S.tags,{origin:null})}):S)));
  add('a camera under the ground',HCHK.camerasOut([{view:'under',x:0,y:terrainH(0,0)-2,z:0}]));
+ if(ST_TAKE&&ST_TAKE.negatives)ST_TAKE.negatives((name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),instPoints());
  return R;}
 // ---------------------------------------------------------------- the page, handed to the host
 KHOST.on(timetable);
@@ -157,21 +165,22 @@ KHOST.on(timetable);
 KHOST.on(function geyserScale(){if(GEYSER.SHOW)GEYSER.SHOW.setScale(innerHeight*renderer.getPixelRatio()/(2*Math.tan(camera.fov*Math.PI/360)));},'view');
 let HOSTED=null;
 KHOST.on(SKY.view,'view');   /* the shared sky, its lights and fog at the hour (89-host-sky.js) */
-HOSTED=KHOST.take({build:'geyser',title:'Krator biome — the geyser basin (the Steampits)',
- hint:"The geyser basin: a basin in the Steampits on the Ring Sea's north shore (~1.5 km below the datum, ~1.9 atm, ~33 °C), cut into the hyperjungle. Geysers on sinter cones erupting on their own cycles, prismatic springs with mat-banded run-off, mud pots and fumaroles, travertine terraces stepping down to the sea, a dead forest drowned in silica at the edges, and the thermophile life of the warm ground (ideal type). N for night, R erupts the geyser nearest the view (G flies to the pin, as on every page); the geysers keep their real periods (the Old Kettle ~110 min, Grandmother ~11 h): the panel's Demo speed (or ?geysers=demo) plays them every few minutes",
+HOSTED=KHOST.take({build:ST_TAKE&&ST_TAKE.build||'geyser',title:ST_TAKE&&ST_TAKE.title||'Krator biome — the geyser basin (the Steampits)',
+ hint:ST_TAKE&&ST_TAKE.hint||"The geyser basin: a basin in the Steampits on the Ring Sea's north shore (~1.5 km below the datum, ~1.9 atm, ~33 °C), cut into the hyperjungle. Geysers on sinter cones erupting on their own cycles, prismatic springs with mat-banded run-off, mud pots and fumaroles, travertine terraces stepping down to the sea, a dead forest drowned in silica at the edges, and the thermophile life of the warm ground (ideal type). N for night, R erupts the geyser nearest the view (G flies to the pin, as on every page); the geysers keep their real periods (the Old Kettle ~110 min, Grandmother ~11 h): the panel's Demo speed (or ?geysers=demo) plays them every few minutes",
  scene,camera,renderer,ground:terrainH,floor:(x,z)=>Math.max(terrainH(x,z),waterH(x,z)),clear:1.6,registry:REG,regHas,views:VIEWS,ticks:TICKS,
  onView:goLight,controls:GCTL,
  // N: night; R sets off the geyser nearest the view (G stays the host's: fly to the pin)
  keys:{n:()=>setLightMode(LIGHT_MODE==='night'?'day':'night'),
   r:()=>{if(!GEYSER.SHOW)return;const T=HOSTED.ctl.target;let b=null,bd=1e9;for(const g of LAYOUT.geysers){if(g.kind==='spouter')continue;const d=Math.hypot(g.x-T.x,g.z-T.z);if(d<bd){bd=d;b=g;}}if(b)GEYSER.erupt(b.key,GEYSER.SHOW.t);}},
- clock:{hour:ATMOS.SKY.viewHour},draw:SKY.draw,   /* the shared sky's pass, then the world (89-host-sky.js) */
- inspect:describe,stats:()=>'inst '+window._instances,
+ clock:{hour:ST_TAKE&&ST_TAKE.hour!=null?ST_TAKE.hour:ATMOS.SKY.viewHour},   /* a station whose 11:00 is in the giant's eclipse opens later (puna) */draw:SKY.draw,   /* the shared sky's pass, then the world (89-host-sky.js) */
+ inspect:describe,...(ST_TAKE&&ST_TAKE.guards!=null?{guards:ST_TAKE.guards}:{}),   /* a station with no cards turns the foliage guards off (ice) */
+stats:()=>'inst '+window._instances,
  layers:{'hazards':KTAGS.hazardLayer(),'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'structures':{match:o=>!!(o.userData&&o.userData.host)},'rings':{objects:()=>[giantRing]}},
  exporters:{biome:()=>BIO.export()},
  budget:BUDGET,types:()=>BIO.stats,
  api:{hostChecks,hostNegatives,
  get totals(){const t=BIO.totals();return {tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},
- setLightMode,
+ setLightMode,exportBox:ST_TAKE&&ST_TAKE.exportBox||null,exportProfile:ST_TAKE&&ST_TAKE.exportProfile||null,
  biome:()=>window._biome,records:()=>GEYSER.records(),erupt:k=>GEYSER.erupt(k,GEYSER.SHOW?GEYSER.SHOW.t:0),setClock,clock:()=>GCLOCK,
  at:(x,z)=>{const o={h:terrainH(x,z),water:waterH(x,z)};FNAMES.forEach(n=>o[n]=+FIELD[n](x,z).toFixed(3));const g=GEYSER.at(x,z);['T','heat','sinter','film','acid','dead','spray','terr','bw'].forEach(k=>o[k]=+(+g[k]).toFixed(3));return o;}}});
 setClock(/[?&]geysers=demo\b/.test(location.search)?'demo':'real');

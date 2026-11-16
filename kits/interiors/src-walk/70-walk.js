@@ -390,7 +390,8 @@
   window._interiors = {
     items: items, rooms: rooms, get plans() { return plans; }, get plansById() { return plansById; }, buildings: buildings, stairs: stairs,
     shells: planned, pickables: items.map(function (E) { return E.shell; }).filter(Boolean),
-    catalog: catalog, gotoItem: gotoItem, overview: overview, walkTo: function (i) { walkTo(items[i]); }, walkToDoor: walkToDoor, support: support, setCut: setCut, setLevel: setLevel, setPlanned: setPlanned,
+    catalog: catalog, reseed: function (s) { seed = s == null ? 0 : s; $('seedBtn').textContent = 'Seed ' + seed + ' (R)'; furnish(); },
+    gotoItem: gotoItem, overview: overview, walkTo: function (i) { walkTo(items[i]); }, walkToDoor: walkToDoor, support: support, setCut: setCut, setLevel: setLevel, setPlanned: setPlanned,
     stand: function (x, z, y, az) { if (!ctl.walk) ctl.walk = true; floorY = y || 0; ctl.target.set(x, floorY + EYE, z); ctl.az = az || 0; ctl.el = 0.1; last.copy(ctl.target); updateCamera(); applyClip(); },
     pose: function () { return { x: last.x, y: floorY, z: last.z, room: (roomAt(last.x, last.z, floorY) || {}).id || null }; }
   };

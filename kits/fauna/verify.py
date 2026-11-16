@@ -37,7 +37,7 @@ ASSERT_JS = r"""()=>{const KF=KratorFauna,V=KF.VOCAB,Y=KF.YIELDS,R=[];const fail
   const Lf=E.life;if(!(Lf.maturity>0&&Lf.lifespan>Lf.maturity&&Lf.litter>0))fails.life.push(L.key);
   for(const b of (L.breeds||[null]))for(let v=0;v<L.variants;v++){const tag=L.key+(b?'/'+b:'')+'#'+v;let g;
    try{g=KF.build(L.key,{variant:v,breed:b,seed:3});}catch(e){fails.build.push(tag+' '+e.message);continue;}
-   const u=g.userData;g.updateMatrixWorld(true);const box=new THREE.Box3().setFromObject(g);let nan=false;
+   const u=g.userData;g.updateMatrixWorld(true);const box=new THREE.Box3();let nan=false;if(u._mx){const q=new THREE.Vector3();g.traverse(o=>{if(o.isMesh){const p=o.geometry.attributes.position;for(let i=0;i<p.count;i++)box.expandByPoint(q.fromBufferAttribute(p,i).applyMatrix4(o.matrixWorld));}});}else box.setFromObject(g);
    g.traverse(o=>{if(o.isMesh){const a=o.geometry.attributes.position.array;for(let i=0;i<a.length;i++)if(!isFinite(a[i])){nan=true;break;}}});
    if(nan)fails.build.push(tag+' NaN');
    const bw=box.max.x-box.min.x,bd=box.max.z-box.min.z,bh=box.max.y;

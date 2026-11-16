@@ -108,8 +108,8 @@ if(A.hostChecks){ for(const c of A.hostChecks()) R.push({name:c.name, ok:c.ok, d
   for(const n of A.hostNegatives()) R.push({name:'negative: '+n.name, ok:n.failed,
     detail:(n.failed?'fails as it must: ':'PASSED A BROKEN INPUT (the check cannot fail): ')+n.detail}); }
 
-// 6. THE BIOME'S OWN INVARIANTS (src/91-host-probe.js, biomeChecks)
-{ const B=A.biomeChecks();
+// 6. THE BIOME'S OWN INVARIANTS (src/91-host-probe.js, biomeChecks); a station names those of station 1's features it does not have (B.skip)
+{ const B=A.biomeChecks();const R0=R.length;
   R.push({name:'every-species-placed', ok:B.missing.length===0, detail:B.missing.length?'missing '+B.missing.join(', '):B.bySpecies});
   R.push({name:'stream-descends', ok:B.stream.monotone&&B.stream.bedUnder&&B.stream.falls>=1,
           detail:(B.stream.monotone?'surface monotone':'SURFACE CLIMBS')+', '+(B.stream.bedUnder?'bed under it':'BED ABOVE IT')+', '+B.stream.drop+' m over '+B.stream.lenKm+' km, '+B.stream.falls+' falls'});
@@ -121,7 +121,9 @@ if(A.hostChecks){ for(const c of A.hostChecks()) R.push({name:c.name, ok:c.ok, d
   R.push({name:'tower-hung-with-growth', ok:B.towerHanging>=300&&B.towerGradient&&B.towerGradient.lichenHigh>B.towerGradient.lichenLow&&B.towerGradient.mossLow>B.towerGradient.mossHigh,
           detail:B.towerHanging+' hanging items under the slabs; '+JSON.stringify(B.towerGradient)});
   R.push({name:'night-raises-the-glow', ok:B.night.bulb>1&&B.night.pod>1&&B.day.bulb<.2,
-          detail:'night bulb '+B.night.bulb+' pod '+B.night.pod+'; restored to '+B.day.bulb.toFixed(2)}); }
+          detail:'night bulb '+B.night.bulb+' pod '+B.night.pod+'; restored to '+B.day.bulb.toFixed(2)});
+  for(let i=R0;i<R.length;i++)if((B.skip||[]).indexOf(R[i].name)>=0)R[i]={name:R[i].name,ok:true,detail:'not on this station ('+R[i].detail+')'};
+  if(A.stationChecks)for(const c of A.stationChecks())R.push(c); }
 return R;}"""
 
 
@@ -173,10 +175,11 @@ async def run(a):
 
             print("\n--- export profile (core/export/README.md, \"Profiles\") ---")
             prof = [s.strip() for s in a.profile.split(",") if s.strip()] if a.profile else EXPORT_PROFILE
-            pok, lines = await check_profile(pg, EXPORT_BOX, prof)
+            box = await pg.evaluate("()=>window._api&&window._api.exportBox||null") or EXPORT_BOX   # a station's own box (its water), else station 1's
+            pok, lines = await check_profile(pg, box, prof)
             for ln in lines:
                 print("  " + ln)
-            print(("  PASS  " if pok else "  FAIL  ") + "export-profile : box %s" % EXPORT_BOX)
+            print(("  PASS  " if pok else "  FAIL  ") + "export-profile : box %s" % box)
             if not pok:
                 fails.append("assert export-profile")
 

@@ -116,11 +116,15 @@ CUT.LIB=BIO.libSwap('cut',M);
 CUT.CULM_N=[20,24,28];
 /* three LOD tiers each (CUT.CULM_LOD: the core's runtime ranges): near in full, mid with two rows an internode, far one */
 CUT.CULM_LOD={near:350,mid:1200};
-CUT.CULM_N.forEach(n=>{BIO.def('hculm'+n,G.culm(n,6),M.culm,{label:'Hyperbamboo culms',cls:'flora'});
- BIO.def('hculmm'+n,G.culm(n,5,null,[0,.5]),M.culm,{label:'Hyperbamboo culms',cls:'flora'});BIO.def('hculmf'+n,G.culm(n,4,null,[0]),M.culm,{label:'Hyperbamboo culms',cls:'flora'});});
+/* ON THE CORE'S BAMBOO (BIO.bamboo.culm, core/biome/33b-core-bamboo.js; the final rebuild, pair 10, BACKPORT.md's "BIO.bamboo for every bamboo"): the
+   culm was lifted from G.culm above, and with these options writes its vertices exactly (node core/biome/test-bamboo.js, which reads G.culm here: keep
+   it). A page without 33b (nhighlands, which reads this file for exchanges 7 and 8) draws from G.culm, the same vertices */
+const CULM=o=>BIO.bamboo&&BIO.bamboo.culm?BIO.bamboo.culm(o):G.culm(o.n,o.seg,o.bite||null,o.fs,o.cut);
+CUT.CULM_N.forEach(n=>{BIO.def('hculm'+n,CULM({n,seg:6}),M.culm,{label:'Hyperbamboo culms',cls:'flora'});
+ BIO.def('hculmm'+n,CULM({n,seg:5,fs:[0,.5]}),M.culm,{label:'Hyperbamboo culms',cls:'flora'});BIO.def('hculmf'+n,CULM({n,seg:4,fs:[0]}),M.culm,{label:'Hyperbamboo culms',cls:'flora'});});
 CUT.BITTEN=[{n:24,y:8.4,r:1.3},{n:24,y:12.5,r:1.1},{n:28,y:18.5,r:1.4}];
-CUT.BITTEN.forEach((b,i)=>BIO.def('hculmb'+i,G.culm(b.n,10,b,[0,.02,.08,.45,.86]),M.culm,{label:'Hyperbamboo culms, bitten open to their chambers',cls:'flora'}));
-BIO.def('hecho',G.culm(24,5,null,[0]),M.echo,{label:'An echo (a faint copy of a culm, seen at dusk)',cls:'flora'});
+CUT.BITTEN.forEach((b,i)=>BIO.def('hculmb'+i,CULM({n:b.n,seg:10,bite:{y:b.y,r:b.r},fs:[0,.02,.08,.45,.86]}),M.culm,{label:'Hyperbamboo culms, bitten open to their chambers',cls:'flora'}));
+BIO.def('hecho',CULM({n:24,seg:5,fs:[0]}),M.echo,{label:'An echo (a faint copy of a culm, seen at dusk)',cls:'flora'});
 [0,4,8].forEach((c,i)=>BIO.def('hleaf'+i,G.hang(c),M.hleaf,{label:'Hyperbamboo leaf sprays',cls:'flora'}));
 BIO.def('hshoot',G.shoot(),M.shoot,{label:'Hyperbamboo shoots',cls:'flora'});
 [1,4,7].forEach((c,i)=>BIO.def('reed'+i,G.stand(c,3),M.reed,{label:'Ring reeds',cls:'flora'}));

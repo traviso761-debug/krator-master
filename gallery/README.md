@@ -1,10 +1,58 @@
 # gallery/
 
-The shareable gallery of every built world, in four parts (below); it starts at https://claude.ai/artifact/UhTfQ2kioZEbrzZR1agHv9
+The shareable gallery of every built world, in nine parts (below); it starts at https://claude.ai/artifact/UhTfQ2kioZEbrzZR1agHv9
 
-It is shared as anyone-with-the-link.
+It is shared as anyone-with-the-link (the four world parts and Krator Biomes A–E; the four parts made on 2026-11-09 are private until shared).
 
-**Deprecated entry:** the Little Demo (`openworld/little-demo`) is deprecated (October 2026; its `DEPRECATED.md`). `build_gallery.py` labels it so; the published gallery is not republished for that, so the live page keeps the old label until the next publish.
+**Retired entry:** the Little Demo was deprecated (October 2026) and retired to `archive/little-demo` (owner, 2026-11-03; its `DEPRECATED.md`). `build_gallery.py` no longer lists it; the 2026-11-09 publish dropped it from the live parts.
+
+## Nine artifacts: the biomes by the alphabet (2026-11-09)
+
+The owner (2026-11-09), after the biome rebuild landed on `main` (2d530d405): "Republish now. Split biomes into multiple
+artifacts organized in alphabetical order if needed." The biome sections (Biomes, The Throne, Korona) are now four
+artifacts by the alphabet, the objects one of their own, and the world parts were re-split round the new pages:
+
+| Part | URL | Version |
+|---|---|---|
+| Krator Worlds A–H | https://claude.ai/artifact/UhTfQ2kioZEbrzZR1agHv9 | 103 |
+| Krator Worlds H–N (was I–S) | https://claude.ai/artifact/3Q5T4Pswhnf1Hx51xDRV3z | 37 |
+| Krator Worlds P–V | https://claude.ai/artifact/SGLsybd5LJJB6DySmToPKM | 29 |
+| Krator Worlds X–Z (was V–Z) | https://claude.ai/artifact/7s7dsXbECz92WU21LDhgjF | 10 |
+| Krator Biomes A–E (was Biomes and Objects) | https://claude.ai/artifact/CaKSU16sowMsexa3djES5g | 36 |
+| Krator Biomes E–N (new, private) | https://claude.ai/artifact/MJz7qQZBcCPek7NyaioWNL | 6 |
+| Krator Biomes N–R (new, private) | https://claude.ai/artifact/XsLyGhXkZH62ac15Lg5fiC | 6 |
+| Krator Biomes R–X (new, private) | https://claude.ai/artifact/4qCUwBddE97YsdgBHPpthr | 4 |
+| Krator Objects (new, private) | https://claude.ai/artifact/JEtGhA4yWuXUhKfs8Sd2P8 | 3 |
+
+The four new ones are private until the owner shares them from their Share menus. The Throne Stations
+(https://claude.ai/artifact/TJaH7TYHoZf4p56C1i5xcX, private) went to version 5 with all fourteen stations
+(`build_throne.py`, no rebuild; the lava delta, the blast zone and the lee's penitentes are new there).
+
+Built from `main`'s pages as they were (`build_gallery.py --no-build`; only Girder's slim hero page was made, by its
+`MADE` command), then:
+
+```
+python3 gallery/split_site.py --alpha --alone "biome,throne,korona=Krator Biomes" --alone "objects=Krator Objects" --urls "https://claude.ai/artifact/UhTfQ2kioZEbrzZR1agHv9,https://claude.ai/artifact/3Q5T4Pswhnf1Hx51xDRV3z,https://claude.ai/artifact/SGLsybd5LJJB6DySmToPKM,https://claude.ai/artifact/7s7dsXbECz92WU21LDhgjF,https://claude.ai/artifact/CaKSU16sowMsexa3djES5g,https://claude.ai/artifact/MJz7qQZBcCPek7NyaioWNL,https://claude.ai/artifact/XsLyGhXkZH62ac15Lg5fiC,https://claude.ai/artifact/4qCUwBddE97YsdgBHPpthr,https://claude.ai/artifact/JEtGhA4yWuXUhKfs8Sd2P8"
+```
+
+`split_site.py` changes: `--alone` may be given more than once, each group a part (or parts) of its own after the world
+parts; with `--alpha` a group over the cap is split by the alphabet like the world parts and titled by its range
+(`<title> A–E`); `--urls` names every part's artifact in order, the world parts first, then the `--alone` parts. The world
+parts' behaviour is unchanged. The ranges move as pages are added: rerun the split and republish every part whose pages
+moved, with nulls for what it no longer holds.
+
+`build_gallery.py` changes: `ENTRIES` lines for every station page of a listed biome build (a listed build's other pages
+are never discovered) and for the new multi-page biome builds (abyssal-savannah, catch, copperglacier, cut, farside,
+godthrone, hearths, highrift, nwouterwall, riftrim, swhighlands), all in the Biomes section, named
+"<biome> · <station>" so a biome's stations sort together; the stale second Pinnacle Rock line removed; Voth's city page
+and the Isle Demo are `ELSEWHERE` and `LINKED` (their cards open the Voth City Plan and the Isle Demo's own artifact,
+https://claude.ai/artifact/8Gwe3uUG9Ex86Mp3YbHXEM, as the live indexes already did; the Voth catalog stays in the parts).
+`crater-drylands-n.html` (a copy of station 1 under its new name) is not listed.
+
+Left as they were: `kits/ash-nomads` (19.0 MB) and `kits/desert-nomads` (16.9 MB) are over the 16 MiB a file now, so
+Krator Worlds A–H keeps their earlier live pages (15.7 and 14.4 MB); slim them or move their textures to packs before the
+next publish. Each part holds 117 to 238 MiB. Publishing: a call per 60 MB batch, the first call to an existing part
+nulling every old path, so no version held old and new at once.
 ## The Krator System in the top list (2026-10-26)
 
 The owner (2026-10-26): the Krator System, the giant, its seven moons, Krator and the broken station with their astronomy and a 3D
@@ -102,6 +150,11 @@ Biomes and Objects v28). Republish the tongues page to the new URL from now on.
 
 `index.template.html` links the two labs of `core/charactermodels` after the Throne: the Cosmetic Lab
 (https://claude.ai/artifact/VaNLVcaDZaYHAHpEgxKsSw) and the Animation Lab (https://claude.ai/artifact/WStXx16aNHT63stCoz331x).
+The therian heads (the coyote, cat, lion, rat, monkey and bird of `core/charactermodels/tools/heads.py` and
+`therian.py`, 2026-11-02) have no room in the Cosmetic Lab's 256 MB, so they are a lab of their own, "Cosmetic Lab:
+therian heads" (https://claude.ai/artifact/S2nPEgRriRyjzCxbecqMeY, private): the same page with the two bodies, their
+clips and default dress, and the six heads and their tails (`tools/tails.py`) as Body mods chips (the chips of the other items show names only: their
+pieces and thumbnails are not there). Publish the heads' pieces there, not to the main lab.
 They stay their own artifacts (each loads about 240 MB of pieces beside its page) and are not built by
 `build_gallery.py` (core/ is not discovered). They were published private: a gallery viewer opens them only once the
 owner shares them (each page's Share menu). Only Krator Worlds A–H's index was republished with the two links (version 86, the
@@ -196,7 +249,7 @@ the console.
 
 ## The Ancients and the Port: their own artifact (2026-10-07)
 
-The Ancients kit's pages (the city kits and the arcologies, `kits/ancients`) and the Ancient Port (`settlements/port`)
+The Ancients kit's pages (the city kits and the arcologies, `kits/ancients`) and the Ancient Port (`kits/port`)
 are published as their own artifact, https://claude.ai/artifact/As2ZG7F8ee3Dx4Dr87FkR1 ("The Ancients and the Port":
 61 pages, 103 MB with their two shared library packs), which the Krator Worlds index links to under the Throne. With them
 Krator Worlds hit the artifact's 256 MiB a version once Locus and Mungo took the material library.
@@ -206,7 +259,7 @@ build them for it) and keeps them in any other `--out` site (the LAN host's). Th
 `ENTRIES`. To update:
 
 ```
-python3 gallery/build_ancients.py --build     # rebuilds kits/ancients and settlements/port, writes gallery/ancients-site/
+python3 gallery/build_ancients.py --build     # rebuilds kits/ancients and kits/port, writes gallery/ancients-site/
 ```
 
 Then publish `gallery/ancients-site/index.html` to the URL above with every file in `gallery/ancients-site/worlds/`, in

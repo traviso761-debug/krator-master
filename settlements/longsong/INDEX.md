@@ -31,7 +31,7 @@ From `core/terrain/` (shared; see `core/README.md`): `38-core-relief.js`
 | `63-ls-signs.js` | 8 |  |
 | `64-ls-monastery.js` | 56 **big** | the outer wall, its towers and gates (18); the Great Gate: the parabolic arch between two p (39); the ward: the terraces' retaining walls, the ave (74); the Great Stair and the White Palace's base (L1) (119); the White Palace round the Debate Court (L2-L4) (175); the drum halls: the Assembly, the Hall of Hours, (213); the Red Palace (R1-R3) and its wings; the gilded (225); the Eastern Watch: the Archive's louvre tower (254); the Lower Gate and its paired drums (L1) (278); the rock top's other houses: the Closed Ward, th (287) |
 | `65-ls-marks.js` | 3 |  |
-| `66-ls-vault.js` | 41 **big** | THE PROCRASTINATOR (151); the lights' arrays for the shader (fixed after t (310); the Vault's checks (verify.py --assert) (315) |
+| `66-ls-vault.js` | 43 **big** | THE PROCRASTINATOR (151); the lights' arrays for the shader (fixed after t (329); the Vault's checks (verify.py --assert) (334) |
 | `68-ls-life.js` | 22 |  |
 | `69-ls-figures.js` | 11 |  |
 | `84-ls-ground.js` | 9 | the water's records (core/water draws it: 89w-ls (88) |
@@ -45,5 +45,5 @@ From `core/terrain/` (shared; see `core/README.md`): `38-core-relief.js`
 | `89y-ls-festival.js` | 11 |  |
 | `89z-ls-atmos.js` | 3 |  |
 | `94-ls-export.js` | 10 |  |
-| `99-host-take.js` | 15 | the inspector's words: the record under the hit  (54); the camera: above the ground, or inside the Vaul (73); the probe's budgets and the page's checks (verif (84); the page, handed to the host (107) |
+| `99-host-take.js` | 16 | the inspector's words: the record under the hit  (54); the camera: above the ground, or inside the Vaul (76); the probe's budgets and the page's checks (verif (87); the page, handed to the host (110) |
 | `99-tail.html` | <1 |  |

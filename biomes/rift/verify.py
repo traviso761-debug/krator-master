@@ -50,6 +50,7 @@ STATION_EXPORT = {
     'rift-savannah.html': ([-300, 900, 0, 1200], ['registry', 'items', 'buckets', 'materials', 'textures', 'terrain', 'stage', 'atmos']),   # the densest 300 m cell of big heroes (44 trees, 2026-10-27); no standing water (89w)
     'rift-plateau.html': ([1260, -1320, 1560, -1020], EXPORT_PROFILE),   # the north-east stream's valley in the east island's forest
     'rift-highland.html': ([-900, -480, -600, -180], ['registry', 'items', 'buckets', 'materials', 'textures', 'terrain', 'stage', 'atmos']),   # the face in the cloud core ('In the cloud'); no water until the ravines' streams (KNOWN_ISSUES)
+    'rift-maze.html': ([-200, 0, -80, 120], ['registry', 'hazards', 'terrain', 'stage', 'atmos', 'water']),   # the cave page (stations/maze): the scarp's foot, its springs and the perched water; no flora (no items, buckets or BIO materials)
 }
 
 # Structure names contain em dashes; the Windows console default codepage

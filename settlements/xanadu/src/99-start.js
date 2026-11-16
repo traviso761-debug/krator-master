@@ -12,9 +12,17 @@ const XANADU_HOST=KHOST.take({
  inspect:(hit,hits,rec)=>{if(rec)return null;const o=hit.object,p=hit.point;
   return(o===groundM||(o.userData&&o.userData.isGround)?'ground':'unregistered '+(o.isInstancedMesh?'instance':'mesh'))+'\n'+p.x.toFixed(1)+', '+p.y.toFixed(1)+', '+p.z.toFixed(1);},
  minimap:{title:TITLE},
+ // with the interiors on (?interiors=1, 89y-xa-interiors.js): the walk on core/walk's floors, and X the cutaway of the furnished buildings
+ walk:XAF.interiors?KWALK:undefined,cutaway:(XAF.interiors||XA_CUT.length)?{units:(XAF.interiors?xafUnits(XAF,VERN.defs):[]).concat(XA_CUT)}:undefined,   // XA_CUT: the Pleasure Dome, hollow with or without the interiors (kits/xanadu 78d)
+ 
  exporters:{tags:()=>KTAGS.page.export()},
  budget:BUDGET,api:window._api,
+ // E opens or shuts the door within reach (core/door: KDOORHOST.toggleNear; 90-xa-doors.js); flying, E still climbs as well
+ keys:{e:()=>KDOORHOST.toggleNear(camera.position,xaWalking())},
 });
+// walking (the host's F) or flying: the reach of the E key and its tip
+function xaWalking(){return !!(KHOST.cam&&KHOST.cam.ctl&&KHOST.cam.ctl.walk);}
+FRAME_HOOKS.push(KDOORHOST.tip(()=>camera.position,xaWalking));   // "E: open the door" at the foot of the page
 KHOST.on(function xanaduNightFlag(){NIGHT=!!(window.CITY&&window.KratorSky&&KratorSky.state&&KratorSky.state.sun&&KratorSky.state.sun.y<-0.105);},'tick');
 KHOST.on(function xanaduHooks(dt){const now=performance.now();for(const f of FRAME_HOOKS)f(dt,now);},'tick');
 KHOST.on(function xanaduSky(){if(sky)sky.position.copy(camera.position);if(giant)giant.position.copy(camera.position).addScaledVector(giantDir,4000);},'view');

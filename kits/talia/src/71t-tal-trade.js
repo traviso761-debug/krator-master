@@ -20,7 +20,7 @@ function buildTalCustomsHouse(G,o){reseed(9501+(o.v|0));const W=22,D=10,H1=5.2,H
  // the ground storey: ochre, round lit arches in white bands with gilt keystones, white pilasters, the door on the axis
  vnBody('vPlaster',0,Y0,Z0,W,H1,D,0,oc,{t:.35});
  for(let j=0;j<5;j++){const x=(j-2)*BAY;if(j===2)continue;tanArch(x,Y0+.6,zf,0,1.8,3.4,{fill:'L',band:wh,bw:.16,key:gi,sill:wh});}
- tanDoor(0,Y0,zf,0,1.8,3.4,'taMarble',wh,wal,false);tanArcBand(0,Y0+3.4,zf,0,1.0,.2,.14,.08,wh,0,Math.PI,10,'taGilt');tanDiscAt('taDiscL',0,Y0+3.4,zf,0,.9,.03,.1,null);
+ tanDoor(0,Y0,zf,0,1.8,3.4,'taMarble',wh,wal,false);tanArcBand(0,Y0+3.4,zf,0,1.0,.2,.14,.08,wh,0,Math.PI,10,'taGilt');tanDiscAt('taDiscL',0,Y0+3.4,zf,0,.9,.03,.1,null,true);
  for(const s of[-1,1])for(const zz of[Z0-2.5,Z0+2.5])tanArch(s*W/2,Y0+.6,zz,s*Math.PI/2,1.5,3.2,{fill:'L',band:wh,bw:.16,key:gi,sill:wh});
  for(let j=0;j<6;j++)tanPilaster((j-2.5)*BAY,Y0,zf,0,.7,H1,wh,gi);
  tanString(0,Y0+H1,Z0,W,D,0,wh,.22,.3);
@@ -67,7 +67,7 @@ function buildTalBourse(G,o){reseed(9511+(o.v|0));const HW=16,HD=16,H=10,Y0=1.0,
  vB('taMarble',0,0,Z0,PW+2.4,Y0,PD+2.4,0,mb);vB('taMarble',0,Y0,Z0,PW+2.6,.12,PD+2.6,0,wh);vnStairs(0,0,pf+2.0,0,8,Y0,5,'taMarble',mb);
  // the hall's ground tier: three lit arches a face in gilt-banded orange, the door on the front axis
  vnBody('vPlaster',0,Y0,Z0,HW,H,HD,0,wh,{t:.4});
- for(const [lx,lz,a] of[[0,HD/2,0],[0,-HD/2,Math.PI],[HW/2,0,Math.PI/2],[-HW/2,0,-Math.PI/2]])for(let j=-1;j<=1;j++){const g=loc(0,Z0,lx,lz,0);const c=loc(g[0],g[1],j*4.6,0,a);if(a===0&&j===0){tanDoor(c[0],Y0,c[1],a,2.0,3.6,'taMarble',wh,wal,false);tanArcBand(c[0],Y0+3.6,c[1],a,1.1,.2,.14,.08,or,0,Math.PI,10,'taGilt');tanDiscAt('taDiscL',c[0],Y0+3.6,c[1],a,1.0,.03,.1,null);continue;}
+ for(const [lx,lz,a] of[[0,HD/2,0],[0,-HD/2,Math.PI],[HW/2,0,Math.PI/2],[-HW/2,0,-Math.PI/2]])for(let j=-1;j<=1;j++){const g=loc(0,Z0,lx,lz,0);const c=loc(g[0],g[1],j*4.6,0,a);if(a===0&&j===0){tanDoor(c[0],Y0,c[1],a,2.0,3.6,'taMarble',wh,wal,false);tanArcBand(c[0],Y0+3.6,c[1],a,1.1,.2,.14,.08,or,0,Math.PI,10,'taGilt');tanDiscAt('taDiscL',c[0],Y0+3.6,c[1],a,1.0,.03,.1,null,true);continue;}
   tanArch(c[0],Y0+.5,c[1],a,2.0,4.0,{fill:'L',band:or,bw:.16,gilt:true,key:gi,sill:mb});}
  // the arcade round it: Corinthian columns at the walk's edge (each corner once), orange arch bands between, the
  // entablature over the walk and its balustrade, a kiosk on each corner
@@ -103,13 +103,15 @@ function buildTalCaravanserai(G,o){reseed(9521+(o.v|0));const W=36,D=30,R=5,H1=3
  vnBody('vPlaster',0,Y0,-D/2+R/2,W,TOP,R,0,wh,{t:.3});tanString(0,Y0+H1,-D/2+R/2,W,R,0,or,.12,.14);
  for(const s of[-1,1]){vnBody('vPlaster',s*(W/2-R/2),Y0,0,R,TOP,D-2*R,0,wh,{t:.3});tanString(s*(W/2-R/2),Y0+H1,0,R,D-2*R-.3,0,or,.12,.14);
   vnBody('vPlaster',s*10.5,Y0,GZ,15,TOP,R,0,wh,{t:.3});tanString(s*10.5,Y0+H1,GZ,15-.3,R,0,or,.12,.14);}
+ // with interiors (the set's item, 2026-11-09) the corner towers stand in the back and front ranges' ends: a wall shuts them off
+ if(VERN.cur&&VERN.cur.hollow)for(const s of[-1,1])for(const zc of[-D/2+R/2,GZ])vB('vPlaster',s*14.5,Y0,zc,.3,TOP,R-.6,0,wh);
  // the parapet: the outer ring and the court ring, each wall .24 thick with an orange coping
  const par=(x,z,L,a)=>{vB('vPlaster',x,Y0+TOP,z,L,.6,.24,a,wh);vB('vPlaster',x,Y0+TOP+.6,z,L+.06,.08,.32,a,or);};
  par(0,D/2-.12,W,0);par(0,-D/2+.12,W,0);par(W/2-.12,0,D-.5,Math.PI/2);par(-W/2+.12,0,D-.5,Math.PI/2);
  par(0,ID/2+.12,IW+.24,0);par(0,-ID/2-.12,IW+.24,0);par(IW/2+.12,0,ID-.3,Math.PI/2);par(-IW/2-.12,0,ID-.3,Math.PI/2);
  // the gate block: taller, proud of the front, the arch through it on both faces, the jharokha over the gate, a parapet
- vB('vPlaster',0,Y0,GZ,6,TOP+2.6,R+.6,0,wh);const gf=D/2+.3,gb=D/2-R-.3;
- tanArch(0,Y0,gf,0,3.6,5.0,{fill:'D',band:or,bw:.2,key:wh});tanArch(0,Y0,gb,Math.PI,3.6,5.0,{fill:'D',band:or,bw:.2,key:wh});
+ tanPierBox('vPlaster',0,Y0,GZ,6,TOP+2.6,R+.6,0,wh,3.6,3.2);const gf=D/2+.3,gb=D/2-R-.3;   // the block, open through its arch
+ tanArch(0,Y0,gf,0,3.6,5.0,{fill:'D',band:or,bw:.2,key:wh,gate:true});tanArch(0,Y0,gb,Math.PI,3.6,5.0,{fill:'D',band:or,bw:.2,key:wh,open:true});   // the gates open; the court side is a clear arch
  tanJharokha(0,Y0+6.4,gf,0,3.0,2.4,1.2,wh,or,{fill:'D',domeC:tile});
  for(const [x,z,L,a] of[[0,gf-.12,6,0],[0,gb+.12,6,0],[3-.12,GZ,R+.6-.5,Math.PI/2],[-3+.12,GZ,R+.6-.5,Math.PI/2]]){vB('vPlaster',x,Y0+TOP+2.6,z,L,.5,.24,a,wh);vB('vPlaster',x,Y0+TOP+3.1,z,L+.06,.08,.32,a,or);}
  // the outer faces: the upper storey's small arched windows in orange bands, slits below; the crawler bays through the
@@ -152,6 +154,8 @@ function buildTalAgoraStoa(G,o){reseed(9531+(o.v|0));const L=o.len==null?30:o.le
  vB('vPlaster',0,Y0+H1,Z0+BD/2+WK/2,L,.3,WK+.2,0,wh);vB('vPlaster',0,Y0+H1+.3,zc+.05,L-.4,.1,.26,0,or);
  // the upper storey: the block's arched windows, the Ionic colonnade above the lower on a plain balustrade, its beam
  vnBody('vPlaster',0,Y0+H1+.3,Z0,L,H2,BD,0,wh,{t:.3});
+ // with interiors (2026-11-09) the two hollow storeys leave the floor's .3 m between them open on the back and the ends: a band
+ if(VERN.cur&&VERN.cur.hollow){vB('vPlaster',0,Y0+H1,Z0-BD/2+.15,L,.3,.3,0,wh);for(const s of[-1,1])vB('vPlaster',s*(L/2-.25),Y0+H1,Z0+WK/2,.5,.3,BD+WK,0,wh);}
  for(let k=0;k<N;k++)tanArch(-L/2+(k+.5)*b,Y0+H1+1.0,zs,0,1.1,1.8,{fill:'G',band:or,bw:.12,sill:wh,rail:k%3===1?ir:null});
  for(let k=1;k<N;k+=2)tanArch(-L/2+(k+.5)*b,Y0+H1+1.2,Z0-BD/2,Math.PI,.8,1.4,{fill:'G',band:or,bw:.1});
  for(const s of[-1,1]){vB('vPlaster',s*(L/2-.25),Y0+H1+.3,Z0+WK/2,.5,H2,BD+WK,0,wh);tanArch(s*L/2,Y0+H1+1.2,Z0,s*Math.PI/2,.9,1.6,{fill:'G',band:or,bw:.12,sill:wh});}
@@ -224,7 +228,7 @@ function buildTalBath(G,o){reseed(9561+(o.v|0));const HW=14,HD=14,H=7,Y0=.8,Z0=-
  // the hall: lit arches in gilt bands on the front, oculi in gilt rings high on the sides, the door and its porch
  vB('taMarble',0,-.1,Z0,HW+1.2,Y0+.1,HD+1.2,0,mb);vnBody('vPlaster',0,Y0,Z0,HW,H,HD,0,wh,{t:.4});
  for(const x of[-4.6,4.6])tanArch(x,Y0+.5,zf,0,1.8,3.8,{fill:'L',band:or,bw:.16,gilt:true,key:gi,sill:mb});
- tanDoor(0,Y0,zf,0,1.8,3.4,'taMarble',wh,wal,false);tanArcBand(0,Y0+3.4,zf,0,1.0,.2,.14,.08,or,0,Math.PI,10,'taGilt');tanDiscAt('taDiscL',0,Y0+3.4,zf,0,.9,.03,.1,null);
+ tanDoor(0,Y0,zf,0,1.8,3.4,'taMarble',wh,wal,false);tanArcBand(0,Y0+3.4,zf,0,1.0,.2,.14,.08,or,0,Math.PI,10,'taGilt');tanDiscAt('taDiscL',0,Y0+3.4,zf,0,.9,.03,.1,null,true);
  for(const s of[-1,1])for(const zz of[Z0-4,Z0,Z0+4]){tanDiscAt('taDiscL',s*HW/2,Y0+5.9,zz,s*Math.PI/2,.5,.04,.1,null);kput('taRingGi',[s*(HW/2+.08),Y0+5.9,zz],vQ(s*Math.PI/2,Math.PI/2,0),[.58,.58,.58],gi);}
  for(const x of[-4,0,4]){tanDiscAt('taDiscL',x,Y0+5.9,Z0-HD/2,Math.PI,.5,.04,.1,null);kput('taRingGi',[x,Y0+5.9,Z0-HD/2-.08],vQ(Math.PI,Math.PI/2,0),[.58,.58,.58],gi);}
  for(const x of[-4.6,0,4.6])tanArch(x,Y0+.6,Z0-HD/2,Math.PI,1.4,2.8,{fill:'L',band:or,bw:.14,gilt:true,sill:mb});
@@ -262,8 +266,8 @@ function buildTalInn(G,o){reseed(9571+(o.v|0));const W=22,D=20,R=5.5,H1=3.6,H2=3
   tanString(x,Y0+H1,z,w-(w===R?0:.3),d-(d===R?0:.3),0,or,.1,.12);vB('vPlaster',x,Y0+TOP,z,w+.2,.2,d+.2,0,or);vnHipRoof('taHipTile',x,Y0+TOP+.2,z,w,d,1.7,0,tile,.6);}
  // the gate block between the front halves (a little taller and proud), the carriage arch through it on both faces,
  // the sign, the tap room's arch and benches, the windows
- vB('vPlaster',0,Y0,D/2-R/2,4.2,TOP+.8,R+.4,0,wh);vB('vPlaster',0,Y0+TOP+.8,D/2-R/2,4.4,.12,R+.6,0,or);
- tanArch(0,Y0,zf+.2,0,3.4,4.2,{fill:'D',band:or,bw:.18,key:wh});tanArch(0,Y0,zf-R-.2,Math.PI,3.4,4.2,{fill:'D',band:or,bw:.18,key:wh});vnSign(2.4,Y0+4.9,zf+.2,0,vC(vPick(VPAL.awning)));
+ tanPierBox('vPlaster',0,Y0,D/2-R/2,4.2,TOP+.8,R+.4,0,wh,3.4,2.5);vB('vPlaster',0,Y0+TOP+.8,D/2-R/2,4.4,.12,R+.6,0,or);   // the block, open through its arch
+ tanArch(0,Y0,zf+.2,0,3.4,4.2,{fill:'D',band:or,bw:.18,key:wh,gate:true});tanArch(0,Y0,zf-R-.2,Math.PI,3.4,4.2,{fill:'D',band:or,bw:.18,key:wh,open:true});   // the carriage gates open; the yard side is a clear archvnSign(2.4,Y0+4.9,zf+.2,0,vC(vPick(VPAL.awning)));
  tanArch(-6.5,Y0,zf,0,2.4,2.8,{fill:'D',band:or,bw:.14});vnAwning(-6.5,Y0+2.9,zf,0,3.2,1.3,vC(vPick(VPAL.awning)));
  for(const x of[-9.6,-3.6])vB('vWood',x,Y0,zf+.5,1.6,.45,.45,0,wood);vnBarrel(-9.6,0,zf+1.5,.36,.9,null);vnBarrel(-8.6,0,zf+1.8,.36,.9,null);
  for(const x of[3.6,6.5,9.2])tanArch(x,Y0+.9,zf,0,1.0,1.7,{fill:'G',band:or,bw:.12,sill:wh});

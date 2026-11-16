@@ -2,28 +2,28 @@
 
 Hook is the Ancient port city of the Ring Sea's south-western shore, the Izani Empire's premier port, retaken from
 Voth a few months before game start (`LORE.md` section 6.2, the Hook entry; section 6.12, "Hook is lost"). `PLAN.md`
-is the plan: the Ancient Port kit (`settlements/port`) lays the waterfront, `core/city` will lay the town behind it,
+is the plan: the Ancient Port kit (`kits/port`) lays the waterfront, `core/city` will lay the town behind it,
 and six building kits will dress the layers of its history. **This folder is at phase P0**: the harness and the
 waterfront, every Port segment and vessel placed at least once.
 
 ## The build
 
 ```
-git lfs pull --include="settlements/port/tex/*"    # the kit's texture pack is in LFS: pointer files build black surfaces
+git lfs pull --include="kits/port/tex/*"    # the kit's texture pack is in LFS: pointer files build black surfaces
 cd settlements/hook
 python3 build.py                                   # dist/hook.html (+ dist/hook.tex.port.js, the kit's texture pack)
 python3 verify.py dist/hook.html --assert --views "Overview;The Hook from the sea" --out shots/x
 python3 build.py --vendor-check                    # every src/ file that shadows a kit fragment, against the kit's copy
 ```
 
-`build.py` reads the Port kit **in place**: every fragment of `settlements/port/src`, the core lists the kit's own
+`build.py` reads the Port kit **in place**: every fragment of `kits/port/src`, the core lists the kit's own
 `build.py` names (`core/materials`, `core/lod`, `core/atmos`, `core/water`, `core/materials/record`) and the kit's
-texture pack (`settlements/port/tex`, written beside the page as a sidecar). Nothing of the kit is copied here; the
+texture pack (`kits/port/tex`, written beside the page as a sidecar). Nothing of the kit is copied here; the
 kit's build rules (seed discipline, one shared scope, unique registration keys) run on Hook's fragments through the
-imported `settlements/port/build.py`. Hook's own fragments go in `src/` (none yet); a `src/` file with the same name
+imported `kits/port/build.py`. Hook's own fragments go in `src/` (none yet); a `src/` file with the same name
 as a kit fragment shadows it and is an adapted copy that `--vendor-check` reports.
 
-`verify.py` is on `tools/harness.py` and runs the kit's invariants (`settlements/port/verify.py`, imported) plus
+`verify.py` is on `tools/harness.py` and runs the kit's invariants (`kits/port/verify.py`, imported) plus
 Hook's own:
 
 * `port-every-key`: every key registered with `PORT_SEG` or `PORT_VESSEL` is placed at least once (`PLAN.md`
@@ -33,8 +33,8 @@ Hook's own:
 
 ## The layout (`targets/hook/89z-rows.js`)
 
-`PLAN.md` section 2 as a `PORT_LAYOUT_DEF` on the kit's grid placement (`settlements/port/API.md`, "Grid
-placement"), the way `settlements/port/targets/harbour` does it. One coastal run, west to east: the Point (`hbHaven`),
+`PLAN.md` section 2 as a `PORT_LAYOUT_DEF` on the kit's grid placement (`kits/port/API.md`, "Grid
+placement"), the way `kits/port/targets/harbour` does it. One coastal run, west to east: the Point (`hbHaven`),
 the Strand (`hbFish`, `hbMarina`), the Tethyan quarter (`tmPass`), the Customs (`cgStore`, `cgBox`, `cgCrane`), the
 Hook (`pier`), the Imperial quay (`quay`), the eastern crane, the Iron Court (`slBerth`, `slPen`), the Arsenal
 (`tmShip`, `ddDock`, `ddShed`, `ddYard`), the Sun Canton (`tmHeli`) and the Stacks' shore (`quay110` twice). Behind

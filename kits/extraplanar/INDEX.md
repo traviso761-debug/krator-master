@@ -4,7 +4,7 @@
 
 The Extraplanar kit: the Ancient's Valley's extraplanar entities as one bundle (KratorExtraplanar): four hunters on the Mechs kit's machinery (the Stilter on three stilts, the Haloed with its halo of eyes, the Sun-headed giant, the Crawler on four long limbs; idle, a gait with planted feet, an attack that opens with the shared tell), the phenomena (a void with eyes that drifts, a solid with its own weather that hums, a haloed presence) and the portals (a door, a tear, the drowned-hall kind) as records on core/rand, core/space and core/tags first, drawn after, their weather on core/atmos; the shared far-tier silhouette set the robots' and mutants' far tiers can draw. Verified: build.py, tests/test-extraplanar.js, verify.py --assert. Read README.md, API.md
 
-Docs: `API.md`, `KNOWN_ISSUES.md`, `PLAN.md`, `README.md`
+Docs: `API.md`, `KNOWN_ISSUES.md`, `PLAN.md`, `PORT.md`, `README.md`
 
 Built output (never open it; edit `src/` and rebuild): `dist/extraplanar.html`
 

@@ -509,6 +509,11 @@ are open frames once ruined (`MP.ruinDesign` cuts the glass and the floors), the
   doorway rubble (two towers on a corner, doors facing), or by a cutting or sinkhole deeper than 2.5 m in its plinth is never open and is left out
   of the blocked check (its way is shut by something else). A door within 1.6 m of its flight's head may stand past its plinth's edge (the slab
   towers were drawn turned against their plinths until the parent session's -yaw fix); its flight ends at the door and a level path runs 4 m in.
+- **Walls** (the second pass, 2026-11-10): every standing tower's ground outline as `KWALK` blocks every 1.5 m (the design heroes' own lobby
+  outlines, `userData.walk`; the Spindle's skirt and fins and the Ledger's arcade from their records), open only in the door's corridor of an open
+  or stair-blocked tower; a blocked tower is then blocked everywhere, not only at its rubble. A door whose way in its own walls cut (an inner
+  lobby ring, known only off the hero) is shut at its door before anything is registered (76). The families of several bodies (`F.towers`: the
+  Organ, the Pods, the Crescent) have no climb, and intact towers never open.
 - **A climb** for an open tower (`AV.climb(F, state, T)`): the family's storeys (`F.levels`, each `y` and `h`) up to what the ruin leaves:
   intact and gutted to the roof, the rest to the whole skin's top (`MP.ruin`'s cut less its torn depth), at most 70 storeys. On each, **a plate**
   (a disc of 0.8 of the skin's radius at that height, `F.envR` or the Spindle's lathe, from 2 m outside the stair to 26 m; a slab family without
@@ -562,6 +567,8 @@ them yet.*
 | the slag glow | `fx/89-atmos-fx-slag.js` | `ATMOS.slagOn(material, o)`: glowing seams in a heap's dark crust (an integer-hash Voronoi in world space), hottest at the fresh pour, breathing slowly, brighter at night |
 | the aqueduct spills | `fx/89-atmos-fx-spill.js` | `ATMOS.spillRec(o)` from an aqueduct's deck line and its break: the curtain's lip, direction, speed and drop (also as `WATER.fall`'s options for a page with `core/water`), drips from the cracks along the span, the spray and the wet stain at the foot; `ATMOS.spill(rec)` draws them on `localFx` and the smoke's `spray` |
 | wind over the crop rows | `fx/89-atmos-fx-gustsheen.js` | `ATMOS.gustSheenOn(material)`: the paler band that runs across a field as a gust front bends the stems (the foliage's own `atmGust`, so the sheen and the sway agree); `ATMOS.chaff(fields)`: seed heads and chaff lifted along the front |
+
+**Checked 2026-11-10** (`core/atmos/fxdemo/verify.py --assert`): every effect recorded for the export, the pools' acid and the arcs' shock on core/hazard where they are and nowhere else, the slag glowing at night against its heat turned off, the plumes moving, the crop rows moving with the gust against the gust turned off, both spills landing on the ground over their wet stains. `node core/atmos/fx/test-industry.js` holds the records and the JS twins (and the GLSL KRAND chunk against `KRAND.h3`).
 
 The Yards' smog and oily rain are the Overlook's (`89v`, `89x`) with the Yards' defaults; the stations place these records on their own
 ground (the tank farms' pools, the stacks of the twelve industrial buildings, the aqueduct's breaks, the farm pods' crops).

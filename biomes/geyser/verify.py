@@ -166,11 +166,13 @@ async def run(a):
                          "   OVER" if v["over"] else ""))
 
             print("\n--- export profile (core/export/README.md, \"Profiles\") ---")
-            prof = [s.strip() for s in a.profile.split(",") if s.strip()] if a.profile else EXPORT_PROFILE
-            pok, lines = await check_profile(pg, EXPORT_BOX, prof)
+            sprof = await pg.evaluate("()=>window._api&&window._api.exportProfile||null")   # a station's own (no sea, no Stair: its field)
+            box = await pg.evaluate("()=>window._api&&window._api.exportBox||null") or EXPORT_BOX   # a station's own box (its field), else the showcase's
+            prof = [s.strip() for s in a.profile.split(",") if s.strip()] if a.profile else (sprof or EXPORT_PROFILE)
+            pok, lines = await check_profile(pg, box, prof)
             for ln in lines:
                 print("  " + ln)
-            print(("  PASS  " if pok else "  FAIL  ") + "export-profile : box %s" % EXPORT_BOX)
+            print(("  PASS  " if pok else "  FAIL  ") + "export-profile : box %s" % box)
             if not pok:
                 fails.append("assert export-profile")
 

@@ -139,6 +139,15 @@ ok('every deck is above its ground and every pier reaches it',V.decks.every(d=>d
   ok('weak floors only in broken, crown-gone and skeleton towers ('+weak.length+' towers, '+reg.weak.length+' weak floors; the negative: one in an intact tower)',weak.length>0&&weakOK(D),weakOK(D.concat([{state:'intact',climb:{weak:1}}])));}
  {const mid=b=>[(b[0]+b[1])/2,(b[2]+b[3])/2,b[4]+1],shut=Wx=>LB.fallen.every(b=>{const m=mid(b);return !!Wx.blocked(m[0],m[2],m[1],.35,1.7);});
   ok('every fallen tower\'s shaft is blocked ('+LB.fallen.length+' boxes; the negative: a walk without them)',LB.fallen.length>0&&shut(W),shut(KWALK.create()));}
+ /* the walls (41c AV.towerOutlines / towerWalls, from the records: the Spindle's skirt and fins, the slab families' rectangles) */
+ {const WW=KWALK.create();AV.lobbyWalk(WW,LB,TW);const doorOf=new Map(D.map(d=>[d.ti,d]));let n=0;
+  const wall=(Wx,shut)=>TW.forEach((T,ti)=>{if(T.state==='fallen')return;const F=MP.FAMILY[T.family],d=doorOf.get(ti),bx=AV.towerWalls(T,AV.towerOutlines(F,skin,null),shut&&d?Object.assign({},d,{mode:'door'}):d);bx.forEach(b=>Wx.block(b,'wall'));n+=bx.length;});
+  wall(WW,false);const gr=(x,z)=>{const ap=WW.floorsAt(x,z).find(f=>f[1].tag==='approach');if(ap)return ap[0]-.03;const line=(Math.floor(x/P-.5)+1.5)*P;return line-x<dB?-1.15:0;};
+  const O=byMode('open'),bad=O.filter(d=>{const r=AV.walkRoute(WW,gr,d.route);return !r.ok||r.y<TW[d.ti].y+d.climb.top-.75;});
+  const W5=KWALK.create();AV.lobbyWalk(W5,LB,TW);wall(W5,true);const shutOut=O.every(d=>!AV.walkRoute(W5,gr,d.route).ok);
+  if(bad.length)console.log('   walls cut: '+bad.slice(0,4).map(d=>{const r=AV.walkRoute(WW,gr,d.route);return d.id+' '+d.family+'.'+d.state+' '+r.why+' leg '+r.i+'/'+d.route.length+' tag '+r.tag;}).join('; '));
+  ok('walls on every standing tower ('+n+' blocks); every open tower still climbable through its door (the negative: every door walled up)',!bad.length&&n>500,!shutOut);
+  const T0=TW[O[0].ti],side=AV.doorWorld(T0,0,0);ok('a walker walking into a tower\'s side meets its wall',!AV.walkRoute(WW,gr,[[side[0]+300*0,T0.z+150],[T0.x,T0.z]]).ok);}
  ok('the same seed, the same doors; another seed, others',JSON.stringify(mk().doors.map(d=>d.mode))===JSON.stringify(D.map(d=>d.mode))&&JSON.stringify(mk({seed:32}).doors.map(d=>d.mode))!==JSON.stringify(D.map(d=>d.mode)));
 }
 /* the bucketed fields give the brute-force scan's numbers, bit for bit (AV.bucket, 2026-11-10: the build's time was the scan) */

@@ -42,6 +42,7 @@ def find_node():
 
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(HERE)), 'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 ROOT = os.path.dirname(os.path.dirname(HERE))
 SRC = os.path.join(HERE, 'src')
 TARGET = os.path.join(HERE, 'targets', 'kit')
@@ -64,6 +65,7 @@ TAGS_FILES = {f: os.path.join(ROOT, 'core', d, f) for d in ('rand', 'tags') for 
 sys.path.insert(0, os.path.join(ROOT, 'core', 'host'))
 import host as khost
 CORE_HOST = [f for f in khost.FULL if f != '40-core-edits.js']
+CORE_HOST = CORE_HOST + khost.KEYS   # the one key map and the one walk mode (core/host/92k-host-keys.js; TODO.md, Viewers)
 SHARED_CORE = set(TAGS_FILES) | set(CORE_HOST)   # shared modules: each its own scope (IIFEs), left out of the name rules
 MANIFEST_FILES = [
     '10-core.js', '12-stats.js', '30-kit.js', '32-surfaces.js', '34-kitdefs.js',
@@ -177,6 +179,7 @@ def build():
     title_match = re.search(r"const TITLE\s*=\s*'([^']*)'", bodies.get('89z-rows.js', ''))
     if title_match:
         html = re.sub(r'<title>.*?</title>', '<title>' + title_match.group(1) + '</title>', html, count=1)
+    BSRC.report(vendor_check=vendor_check)   # --list-sources: every file read so far is what the page is made of (and what --vendor-check compares); then exit
     os.makedirs(DIST, exist_ok=True)
     output = os.path.join(DIST, 'jimjam-kit.html')
     with open(output, 'w', encoding='utf-8', newline='') as dst:
@@ -203,9 +206,11 @@ def build():
 
 def vendor_check():
     ancients = os.path.join(ROOT, 'kits', 'ancients', 'src')
-    iziz = os.path.join(ROOT, 'settlements', 'iziz', 'src')
-    checks = [('iziz', f, os.path.join(iziz, f)) for f in MANIFEST_FILES
-              if f not in SHARED_MATERIALS and f not in ('37-sockets.js', '80-cultures.js')]
+    # The Ancients core is compared with kits/ancients (below), where it comes from; until 2026-11-03 it was compared
+    # with Iziz's copies of it as well (MODULARITY-PLAN.md step 6: a copy is checked against its upstream, once).
+    checks = []
+    # KratorSky moved from Iziz's src/ to core/atmos/placeholder (2026-11-02); src/ keeps its copy until MODULARITY-PLAN.md step 4
+    checks.append(('placeholder', '81-sky.js', os.path.join(ROOT, 'core', 'atmos', 'placeholder', '81-sky.js')))
     checks.extend(('materials', f, os.path.join(CORE, f)) for f in SHARED_MATERIALS)
     checks.extend(('sockets', f, os.path.join(SOCKETS, f)) for f in ('37-sockets.js', '80-cultures.js'))
     drift = []

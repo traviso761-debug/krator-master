@@ -12,6 +12,7 @@
      node kits/catalog/tests/test-segments.js --json f   # also the per-piece census (key, type, tris per kind|radius band) */
 const fs = require('fs'), vm = require('vm'), path = require('path');
 const CAT = path.join(__dirname, '..');
+const AT = require(path.join(__dirname, '..', '..', '..', 'core', 'catalog', 'catalog-files.js'));   // a catalog name -> its file (core/catalog or here)
 const args = process.argv.slice(2), jsonOut = args[0] === '--json' ? args[1] : null;
 const ctx2d = new Proxy({}, { get: (t, k) => {
   if (k === 'measureText') return () => ({ width: 10 });
@@ -29,7 +30,7 @@ function census(detail) {
   vm.runInContext(fs.readFileSync(path.join(CAT, 'three.min.js'), 'utf8'), g);
   const files = ['krator-furniture-core.js', 'krator-symbols.js', 'krator-furniture-kit.js', 'krator-master-furniture.js']
     .concat(fs.readdirSync(CAT).filter(f => f.startsWith('krator-master-furniture-') && f.endsWith('.js')).sort());
-  const src = 'var scene = { add() {}, remove() {} };\n' + files.map(f => fs.readFileSync(path.join(CAT, f), 'utf8')).join('\n;\n') + `
+  const src = 'var scene = { add() {}, remove() {} };\n' + files.map(f => fs.readFileSync(AT(f), 'utf8')).join('\n;\n') + `
 ;(function () {
   _LOD = ${detail};
   const R = { mkCyl: [3], mkCone: [3], mkDome: [3], mkBlob: [3], mkBall: [3], mkRod: [6], mkEll: [3, 4, 5], mkFrustum: [3, 4], mkBolster: [4] };

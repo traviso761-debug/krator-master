@@ -74,6 +74,7 @@ kilometre (several times the surface's); the airless rim crossable only in tunne
   arcology is a new site nearer the route (the router measures both).
 - Tunnels are where the Tungangs' kind live (the Rift line's are theirs): an Inner Wall tunnel may hold kin of theirs,
   or something worse.
+- **The bores and the caves they meet** (2026-11-03): `ANCIENT-TUNNELS.md`. It covers both lines profiled on 5.1 (the Rift line, 306 km of straight bore with 36 km under more than 6 km of rock; the Inner Wall tunnel, 142 km under at most 3.1 km), the straight bores' section, the natural caves they cut and who lives in each, the hazards, and what to build.
 
 ## 4. What is left of it
 

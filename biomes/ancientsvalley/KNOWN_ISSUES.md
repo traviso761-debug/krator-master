@@ -2,12 +2,15 @@
 
 - [ ] **The lobbies and climbs (2026-11-10, PLAN.md section 15; `41c`, `76`) are drawn by the page, not read off the heroes.** A climb's plates
   are discs of 0.8 of the family's skin radius (`envR`, the Spindle's lathe) and its stair is a 3 by 7.2 m switchback in the family's first stair
-  shaft: where a design's drawn shape departs from its `envR` (the Wedge's lean, the Organ's pipes, the Yoke's frame, the Reed's twist) a plate can
-  stand proud of the hero or short of it, and the stair stands in the hero's drawn core where it has one. A door on a family without portals is
-  at the middle of the frontage, which may meet a wall of the hero: the heroes' own lobby doors (`userData.walk`, kits/metropolis 54) are not read.
-  Nothing stops a walker at a tower's wall yet (the walker's collision with the heroes is another session's, on `claude/sad-mcclintock-f211c2`):
-  a blocked tower is blocked at its door and stair only, so a walker can still step through its skin beside the rubble. The cure is the hero's own
-  floors and doors as records (kits/metropolis `MP.floors` reads them off the drawn geometry; its outlines would serve the walk too).
+  shaft: where a design's drawn shape departs from its `envR` (the Wedge's lean, the Yoke's frame, the Reed's twist) a plate can stand proud of the
+  hero or short of it, and the stair stands in the hero's drawn core where it has one. *Since 2026-11-10:* the families of several bodies (the
+  Organ's pipes, the Pods, the Crescent: `F.towers`) are never climbed (shut at the door), and intact towers never open (their glass). A door on a
+  family without portals is at the middle of the frontage, chosen before the heroes exist (the ground mesh is built in 47, before kits/metropolis's
+  hero builders load), so it may meet a pier of the hero rather than one of its own doors. **The walls (2026-11-10):** every standing tower's ground
+  outline is on core/walk now (the hero's own lobby outline, `userData.walk`, for the designs; the Spindle's skirt and fins and the Ledger's arcade
+  from their records), shut but at an open or stair-blocked tower's door, so a walker no longer steps through a skin and a hero's other doors are
+  shut; a tower whose own inner lobby rings cut the way to its stair (the Swell's lobes, the Terrarium's dome: two on station 0) is shut at its
+  door instead (76, `AVL.shut`). The walls are about 155,000 blocks registered at the boot (450 ms with the rest of the lobbies). Owed: the plates from `MP.storey`'s outlines (a pure function the page already takes), and the door from the hero's own door table.
 - [x] **The slab towers are drawn turned 34 degrees against their plinths and the street grid** (found 2026-11-10 by the lobbies' checks): `70`
   draws a hero with `rotation.y = yaw`, which takes its local x to world (cos yaw, -sin yaw), while the plinth (`46z` `padD`), the DEBRIS check,
   `AV.kerbPlace`'s extents and `HCHK.kerb` take it to (cos yaw, sin yaw). Measured: a Ledger's long axis at -17.2 degrees, its pad and the lattice at
@@ -19,7 +22,9 @@
   without a kerb (about one in twenty, left on their nodes by `AV.kerbPlace`) have no door; an open tower is set plumb (its lean cleared), so the
   ruin shares' lean count falls by the open ones; the approach's steps are solid blocks on a ground that takes their plane, but the ground mesh is
   coarser than a tread, so its triangles can show between the cheeks on a steep flight; a rise over 6.3 m has a rubble ramp, not steps, and its
-  tower is never open; a plinth more than 6.3 m under its street has no approach (29 of 444 on station 0).
+  tower is never open; a plinth more than 6.3 m under its street has no approach (29 of 444 on station 0). A flight down to a sunk plinth (the
+  open Spindle nearest the Overlook, 3.6 m down) still reads poorly from the street on the GPU even with its cheeks held at the pavement's level as
+  retaining walls (2026-11-10): the plinth's eased bowl around it dominates; a retaining wall round the whole sunk plinth would read better.
 
 - [ ] **The tiers, after the owner's six passes on them (2026-11-07 to 09; `70-host-city.js`, "THE TIERS, plainly"):** every family and every look
   has a box shell (KSHELL box mode, the test bed's prototype, 66 looks in two 2048 atlases baked at the boot from the rusted heroes), so one rule

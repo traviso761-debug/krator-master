@@ -6,14 +6,14 @@
 # Relative file and dir paths are resolved from host/.
 
 [sync]
-menagerie = "WorldMenagerie"   # the World Menagerie: the git subtree embedded here (a separate checkout works too)
+menagerie = "WorldMenagerie"   # the World Menagerie: the git subtree embedded here, its only copy
 menagerie_index = "/menagerie"       # the Menagerie's front page moves here: / is Krator's
 drop_routes = ["/voth"]              # the Menagerie's Voth is not served: Krator's is (route below)
 drop_paths = ["voth.html", "src/voth", "css/voth.css"]   # and its files are not copied
 
 [server]
 host = "0.0.0.0"        # "127.0.0.1" = this machine only
-port = 8001             # the menagerie service has 8000 until this one replaces it
+port = 8001             # the one site server; nothing serves on 8000
 log_requests = true
 health = "/healthz"
 name = "Krator"

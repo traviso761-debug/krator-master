@@ -35,11 +35,19 @@ function nrDrawPlan(inst,o){o=o||{};const fl=o.floor||['conc',hc(0xbab4a8)],pa=o
    else{const side=[-d[1],d[0]],L=Math.hypot(S.run,S.y1-S.y0),rungs=Math.floor(L/.3);
     for(const sg of [-1,1])beam('paint',[S.foot[0]+side[0]*sg*S.w/2,S.y0,S.foot[1]+side[1]*sg*S.w/2],[S.top[0]+side[0]*sg*S.w/2,S.y1,S.top[1]+side[1]*sg*S.w/2],.035,hc(0x5a5a5a),true,6);
     for(let i=1;i<rungs;i++){const f=i/rungs;box('paint',S.foot[0]+(S.top[0]-S.foot[0])*f,S.y0+(S.y1-S.y0)*f-.02,S.foot[1]+(S.top[1]-S.foot[1])*f,S.w,.04,.05,hc(0x5a5a5a),S.ry);}}}
-  for(const R of B.rooms)for(const dd of R.doors){if(dd.swing==='none'||!dd.leaf||dd.to==='street')continue;
-   const left=[-dd.n[1],dd.n[0]],hs=dd.hinge==='right'?-1:1,hx=dd.at[0]+left[0]*hs*dd.w/2,hz=dd.at[1]+left[1]*hs*dd.w/2;
-   const dir=dd.swing==='out'?-1:1,ang=75*PI/180,cx=-left[0]*hs,cz=-left[1]*hs,ox=dd.n[0]*dir,oz=dd.n[1]*dir;
-   const vx=cx*Math.cos(ang)+ox*Math.sin(ang),vz=cz*Math.cos(ang)+oz*Math.sin(ang),lh=Math.min(dd.h||2.1,R.h-.1)-.02;
-   box(dr[0],hx+vx*dd.w/2,R.y+.01,hz+vz*dd.w/2,dd.w-.04,lh,.05,dr[1],Math.atan2(-vz,vx));}}}
+  /* the door leaves on core/door (svLeaf, core/engine 36o-open.js): an inner door stands open 75 degrees the way it swings, as
+     the planner hung it; a street door (the glazing leaves its bay open, 56-60) is the Ancients' bi-parting sliding glass
+     (core/door's preset 'biparting', KDOORLEAF's 'glass': two framed lights on one record), drawn shut.
+     E opens and shuts each. dd.n points the way the door swings in (the planner's normal); the face looks the other way */
+  const hung=new Set();   /* one leaf a doorway (a door two rooms share is in both rooms' lists) */
+  for(const R of B.rooms)for(const dd of R.doors){if(dd.swing==='none'||!dd.leaf)continue;const street=dd.to==='street';
+   const hk=Math.round(dd.at[0]*20)+','+Math.round(dd.at[1]*20)+','+Math.round(R.y*20);if(hung.has(hk))continue;hung.add(hk);
+   const dir=dd.swing==='out'?-1:1,yaw=Math.atan2(-dd.n[0]*dir,-dd.n[1]*dir),ux=Math.cos(yaw),uz=-Math.sin(yaw);
+   const left=[-dd.n[1],dd.n[0]],hs=dd.hinge==='right'?-1:1,lh=Math.min(dd.h||2.1,R.h-.1)-.02;
+   /* svLeaf hinges on -ux (+ux mirrored): the planner's hinge jamb is at +left*hs */
+   if(street){svLeaf(dd.at[0],R.y+.01,dd.at[1],yaw,dd.w-.04,lh,{t:.05,mk:'white',col:hc(0xe8e4dc),split:false,preset:'biparting',style:'glass',name:'street door'});continue;}
+   svLeaf(dd.at[0],R.y+.01,dd.at[1],yaw,dd.w-.04,lh,{t:.05,mk:dr[0],col:dr[1],split:false,
+    mirror:Math.sign(ux*left[0]*hs+uz*left[1]*hs)>0,ajar:75*PI/180,name:'door'});}}}
 /* the planned storeys' floor heights (local y) of a plan */
 function nrPlanFloors(inst){const F=[];for(const B of inst.buildings)for(const Lv of B.levels)F.push(Lv.y);return F;}
 /* register a placed deck building for the walk floors and the furnishing pass */

@@ -4,7 +4,7 @@
 // the error panel. A real world replaces this section with its own; the kits read it only through BIO.host.
 //
 // THE MAP (PLAN.md section 7; x east, up the slope; z south; y 0 is -600 m on the scale model): the eastern abyss's gentle
-// east rim at px ~1021,350, from the jungle's last terrace at the foot (west) up two risers and a caprock rim to the bench:
+// east rim at px ~1026,350 (map 5.1; it was 1021 on 4.22), from the jungle's last terrace at the foot (west) up two risers and a caprock rim to the bench:
 //   x < -2100      the FOOT (Am): the last of the jungle, y 0..40
 //   x ~ -1500      the first RISER (70-135 m)
 //   -1200 .. 300   the PARKLAND tread (Aw), y ~160-200, kopjes on it
@@ -25,8 +25,10 @@ window.addEventListener('unhandledrejection',e=>reportErr('promise: '+(e.reason&
 const TICKS=[];
 function tick(fn){TICKS.push(fn);}
 const REG=[];function REGISTER(o){REG.push(o);BIO.record(o);}   // BIO.record: the volume as a core/tags record too
-// the station on the scale model (PLAN.md section 1): its pixel, the model's height of y 0, and the air there
-const SITE={px:1021,py:350,y0abs:-600,model:'Krator Scale Model 4.22'};
+// the station on the scale model (PLAN.md section 1): its pixel, the model's height of y 0, and the air there. MAP 5.1 (biomes/STATIONS-MAP-5.1.md,
+// re-surveyed 2026-11-03): at px 1021 the climb had moved ~5 px east (-179 -> -1,062 m, Aw -> XV), so the site is px 1026 (-638 m, Aw, 1,239 mm,
+// +30 degC on 5.1). The px is on the old canvas (1549 x 1393), as every kit's and the sky's frame are; the 5.1 canvas adds (272, 330)
+const SITE={px:1026,py:350,y0abs:-600,model:'Krator Scale Model 5.1'};
 const atmAt=y=>1.6*Math.exp(-(y+SITE.y0abs)/8000);   /* the model's pressure (atm0 1.6, scale 8 km) */
 
 const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setSize(innerWidth,innerHeight);
@@ -38,7 +40,7 @@ const sun=new THREE.DirectionalLight(0xfff0d0,1.45);sun.position.set(-1200,900,-
 const fill=new THREE.DirectionalLight(0xc8c0a8,.28);fill.position.set(800,400,900);scene.add(fill);
 
 // ---------------------------------------------------------------- the rim slope as functions (data: [G data] arithmetic on KRAND)
-const SEED=10213503;                       /* the world seed of this station (px 1021, row 350) */
+const SEED=10213503;                       /* the world seed of this station (named for px 1021, row 350 on 4.22: kept, so nothing placed moves) */
 const KF=(x,z,o,salt)=>KRAND.fbm(x,z,0,o,SEED+salt);   /* [0,1] */
 const TERR={X:3200,Z:2500,cell:12.5};
 const CENTER=[0,0];
@@ -52,7 +54,8 @@ function profile(xs){
   +265*(.30*smooth(250,1100,xs)+.70*smooth(560,770,xs))
   +30*smooth(1000,3200,xs)
   +170*smooth(3200,9500,xs)
-  -1150*smooth(-3600,-9000,xs);}          /* the floor falling away west (the far country: the XV belt and the lake, 1.7 km down) */
+  -460*(smooth(-3600,-10000,xs)+smooth(-10000,-22000,xs)+smooth(-22000,-30000,xs));}   /* the floor falling away west on 5.1's grade (the far country: -1,062 m
+     10 km west at px 1021, -1,523 at px 1015, the lake shore near -1,980 m some 30 km west); 0 on the map (xs > -3,500), so nothing placed moves */
 const RIM={face:[560,770],lip:770};       /* the caprock's face in xs; its lip */
 // the GULLIES: z = zc(x) along the slope from their heads on the bench to the foot; depth and width grow where the slope is steep
 const GULLY=[
@@ -148,7 +151,7 @@ BIO.setSun([-1200,900,-600]);
 // ---------------------------------------------------------------- the ground
 // One mesh on the 12.5 m grid (its vertices are the grid's, so a plant on terrainH stands on the drawn ground), painted by
 // zone and burn age from the fields, with the library's soil and rock detail multiplied in (materials.json groundDetail,
-// groundRock; procedural greys without the pack).
+// groundRock; procedural greys without the pack). Built by 80-host-ground.js once the kit is on the page (the paint reads ABSAV.burn).
 function hostGroundLib(n,fb){const L=(typeof KMAT!=='undefined'&&KMAT.mode==='lib'&&KMAT.packed)?KMAT.packed('abyssal-savannah',n):null;if(!L)return fb;
  const c=hostGroundLib.c||(hostGroundLib.c={});return c[n]||(c[n]=KMAT.textures(L,{aniso:8}).map);}
 const TEX_DETAIL=BIO.canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
@@ -157,6 +160,11 @@ const TEX_DETAIL=BIO.canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h)
 // the ground's colour by zone; the burn mosaic is the kit's (ABSAV.burn, 55): read here when the kit is on the page
 const GROUND={foot:0x4a3424,footG:0x4e4a2a,gold:0xb39552,gold2:0x9c8048,green:0x6e7a3a,char:0x2a241e,ash:0x8c8478,bench:0xb8a06a,bench2:0xa48e5c,
  rock:0x8a6a56,rock2:0x6e5446,salt:0xd8ccb0,saltO:0xc0a070,gully:0x5a4630,soil:0x9c6a54};
+// THE CAPROCK'S BEDS (core/terrain 35, KSTRATA; BACKPORT.md's row, "strata on the bench's edge"): the rim's bedded red sandstone as KSTRATA's canyon
+// column over the rim's 300 m, dipping gently east and warped, its colour taken into the ground's paint on the steep faces of the caprock band only
+// (on the CPU, per vertex: no texture unit, the same beds Godot reads). ?strata=0 for the old paint
+const STRATA=typeof KSTRATA!=='undefined'&&new URLSearchParams(location.search).get('strata')!=='0'?KSTRATA.create({seed:KRAND.hash(SEED,0x57a7),recipe:'canyon',range:[60,560],dip:[1,0,.004],warp:[7,2.2]}):null;
+const strataK=(x,z,xs)=>smooth(RIM.face[0]-90,RIM.face[0]+10,xs)*smooth(RIM.lip+60,RIM.lip-10,xs);   /* the caprock band, in the warped coordinate */
 function groundColour(x,z,c,t){const up=FIELD.upland(x,z),wet=FIELD.wet(x,z),fl=FIELD.flow(x,z),rk=FIELD.rock(x,z),sa=FIELD.salt(x,z);
  const n=KF(x*.011,z*.011,2,31)-.5,age=(typeof ABSAV!=='undefined'&&ABSAV.burn)?ABSAV.burn(x,z):8;
  c.set(GROUND.gold).lerp(t.set(GROUND.gold2),clamp(.5+n*1.6,0,1));
@@ -166,43 +174,53 @@ function groundColour(x,z,c,t){const up=FIELD.upland(x,z),wet=FIELD.wet(x,z),fl=
  if(age<=0)c.lerp(t.set(GROUND.char).lerp(new THREE.Color(GROUND.ash),clamp(.3+n*2,0,1)*.5),.85*(1-rk));
  c.lerp(t.set(GROUND.gully),fl*.65);
  c.lerp(t.set(GROUND.rock).lerp(new THREE.Color(GROUND.rock2),clamp(.5-n*1.8,0,1)),rk*.85);
+ if(STRATA){const xs=x+warpZ(z),k=strataK(x,z,xs)*smooth(.25,.6,rk);if(k>0){const B=STRATA.at(x,terrainH(x,z),z),q=B.colour;c.lerp(t.setRGB(q[0],q[1],q[2]),k*.8);}}
  c.lerp(t.set(GROUND.saltO).lerp(new THREE.Color(GROUND.salt),smooth(.4,.95,sa)),sa*.9);
  return c;}
-let GROUND_MESH=null;
+// THE LIBRARY LAYERS ON KGROUND (43-core-ground.js; BACKPORT.md's ground row, the final rebuild 2026-11-03): four surfaces hex-tiled, scaled with
+// distance and blended by height over the paint, each on its documented mask (the review's first line), per vertex in aGL:
+//   soil    aGL.x  the red soil: the gullies' beds (flow), the foot's wet trampled ground (wet over .6 below upland .15), off rock
+//   burn    aGL.y  this year's burns (ABSAV.burn 0: the char and ash), off rock and the gallery (which does not burn)
+//   salt    aGL.z  the pan (the salt field)
+//   gravel  aGL.w  the bench's stony steppe (upland over .65, a macro patch ~400 m) and the talus apron under the caprock's lip
+//   wet     aWet   the water's wet band: WATER.fieldAt's shore distance from the water the eye sees (89z), darkening the ground to the edge
+// Standard under KGROUND (roughness high, as dry ground is) so the rain's gloss shows; ?kground=0 for the old floor (Lambert, the old mix)
+const USE_KG=typeof KGROUND!=='undefined'&&new URLSearchParams(location.search).get('kground')!=='0';
+function groundMasks(x,z,o){const up=FIELD.upland(x,z),wet=FIELD.wet(x,z),fl=FIELD.flow(x,z),rk=FIELD.rock(x,z),sa=FIELD.salt(x,z),xs=x+warpZ(z);
+ const age=(typeof ABSAV!=='undefined'&&ABSAV.burn)?ABSAV.burn(x,z):8,off=1-smooth(.35,.7,rk),pat=KF(x*.0025,z*.0025,2,51);
+ o[0]=clamp(Math.max(smooth(.35,.75,fl),smooth(.55,.85,wet)*smooth(.16,.06,up)*smooth(.4,.62,pat)),0,1)*off;
+ o[1]=(age<=0?1:0)*off*(1-smooth(.3,.6,fl));
+ o[2]=smooth(.3,.85,sa);
+ o[3]=clamp(Math.max(smooth(.65,.85,up)*smooth(.42,.62,pat)*(1-o[2]),smooth(RIM.lip+10,RIM.lip+40,xs)*smooth(RIM.lip+220,RIM.lip+120,xs)*.8),0,1)*(1-o[1]);
+ return o;}
+let GROUND_MESH=null,MAT_GROUND=null;
 function buildGround(){const S=[2*TERR.X,2*TERR.Z],g=new THREE.PlaneGeometry(S[0],S[1],HG.nx-1,HG.nz-1);g.rotateX(-Math.PI/2);
- const p=g.attributes.position,col=new Float32Array(p.count*3),c=new THREE.Color(),t=new THREE.Color();
- for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i);p.setY(i,terrainH(x,z));groundColour(x,z,c,t);c.convertSRGBToLinear();col[i*3]=c.r;col[i*3+1]=c.g;col[i*3+2]=c.b;}
- g.setAttribute('color',new THREE.BufferAttribute(col,3));g.computeVertexNormals();
- const m=new THREE.MeshLambertMaterial({vertexColors:true,color:0xb0aaa0});
+ const p=g.attributes.position,col=new Float32Array(p.count*3),gl=new Float32Array(p.count*4),c=new THREE.Color(),t=new THREE.Color(),o=[0,0,0,0];
+ for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i);p.setY(i,terrainH(x,z));groundColour(x,z,c,t);c.convertSRGBToLinear();col[i*3]=c.r;col[i*3+1]=c.g;col[i*3+2]=c.b;
+  groundMasks(x,z,o);gl[i*4]=o[0];gl[i*4+1]=o[1];gl[i*4+2]=o[2];gl[i*4+3]=o[3];}
+ g.setAttribute('color',new THREE.BufferAttribute(col,3));g.setAttribute('aGL',new THREE.BufferAttribute(gl,4));
+ g.setAttribute('aWet',new THREE.BufferAttribute(new Float32Array(p.count),1));   /* aWet: 89z fills it from the water's fields */
+ g.computeVertexNormals();
+ const m=USE_KG?new THREE.MeshStandardMaterial({vertexColors:true,color:0xb0aaa0,roughness:.95,metalness:0}):new THREE.MeshLambertMaterial({vertexColors:true,color:0xb0aaa0});
  m.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:hostGroundLib('groundDetail',TEX_DETAIL)};sh.uniforms.uRock={value:hostGroundLib('groundRock',TEX_DETAIL)};
-  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;varying vec3 vGWN;').replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vGWN=normalize(mat3(modelMatrix)*objectNormal);');
-  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail;uniform sampler2D uRock;varying vec3 vGWP;varying vec3 vGWN;')
-   .replace('#include <color_fragment>','#include <color_fragment>\n{vec3 dt=texture2D(uDetail,vGWP.xz*0.16).rgb;vec3 dt2=texture2D(uDetail,vGWP.xz*0.021+0.37).rgb;'
+  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;varying vec3 vGWN;attribute vec4 aGL;varying vec4 vGL;attribute float aWet;varying float vWet;').replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vGWN=normalize(mat3(modelMatrix)*objectNormal);vGL=aGL;vWet=aWet;');
+  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail;uniform sampler2D uRock;varying vec3 vGWP;varying vec3 vGWN;varying vec4 vGL;varying float vWet;')
+   .replace('#include <color_fragment>','#include <color_fragment>\n'+(USE_KG?'/*KGROUND*/\n':'')+'{vec3 dt=texture2D(uDetail,vGWP.xz*0.16).rgb;vec3 dt2=texture2D(uDetail,vGWP.xz*0.021+0.37).rgb;'
     +'float st=smoothstep(0.86,0.62,abs(vGWN.y));vec2 ru=abs(vGWN.x)>abs(vGWN.z)?vGWP.zy:vGWP.xy;vec3 rk=texture2D(uRock,ru*0.11).rgb;'
-    +'vec3 d=mix(dt*dt2*1.12,rk*1.05,st);diffuseColor.rgb*=mix(vec3(1.0),d,0.85);}');};
- GROUND_MESH=new THREE.Mesh(g,m);GROUND_MESH.userData.probeSkip=true;GROUND_MESH.userData.inspectLabel='The rim slope';scene.add(GROUND_MESH);}
-// ---------------------------------------------------------------- the far country
-// A coarse second terrain, 30 km across (100 m cells), carrying what the map's edge would cut off: the floor falling away
-// west to the abyss's savanna belt and its lake (the level -2,331 m: 1.73 km under y 0; the water is core/water's), the
-// rim running on north and south, the bench and the plateau rising east. Inside the map it is the fine mesh's ground,
-// a few metres down, so the fine mesh always wins. Host-only.
-const FAR={x0:-17000,x1:13000,z0:-15000,z1:15000,lake:{level:-2331-SITE.y0abs,x:-15500,w:5200}};
+    +'vec3 d=mix(dt*dt2*1.12,rk*1.05,st);diffuseColor.rgb*=mix(vec3(1.0),d,0.85*(1.0-0.55*max(max(vGL.x,vGL.y),max(vGL.z,vGL.w))));'
+    +'diffuseColor.rgb*=mix(vec3(1.0),vec3(0.62,0.6,0.56),vWet);}');};
+ if(USE_KG)KGROUND.hook(m,{key:'absav-ground',at:'/*KGROUND*/',layers:[
+  KGROUND.layer('abyssal-savannah','ground.soil',{w:'vGL.x',amt:.55,gain:1.1,tint:'diffuse',name:'red soil'}),
+  KGROUND.layer('abyssal-savannah','ground.burn',{w:'vGL.y',amt:.75,gain:1.0,name:'this year\'s burn'}),
+  KGROUND.layer('abyssal-savannah','ground.salt',{w:'vGL.z',amt:.7,gain:1.1,name:'the pan\'s salt'}),
+  KGROUND.layer('abyssal-savannah','ground.gravel',{w:'vGL.w',amt:.5,gain:1.05,tint:'diffuse',name:'bench gravel'})]});
+ MAT_GROUND=m;
+ GROUND_MESH=new THREE.Mesh(g,m);GROUND_MESH.receiveShadow=true;GROUND_MESH.userData.probeSkip=true;GROUND_MESH.userData.inspectLabel='The rim slope';scene.add(GROUND_MESH);}
+// ---------------------------------------------------------------- the far country (its config; the mesh is KFAR's: 80-host-ground.js)
+// The country past the map, out to 36 km: the floor falling away west on 5.1's grade to the abyss's savanna belt (XV) and its lake (the level -2,331 m:
+// 1.73 km under y 0; the water is core/water's), the rim running on north and south, the bench and the plateau rising east. Host-only.
+const FAR={x0:-36000,x1:22000,z0:-30000,z1:30000,out:36000,lake:{level:-2331-SITE.y0abs,x:-36000,w:5200}};
 function farH(x,z){let h=heightFn(x,z);
  const xs=x+warpZ(z);h+=28*(KF(x*.0005,z*.0005,3,41)-.5)*2*smooth(-4000,-9000,xs);   /* the floor's hummocks */
- h-=680*smooth(-11800,-14500,xs);                                                       /* the lake's bed, under its level (FAR.lake) */
+ h-=400*smooth(-29500,-31500,xs);                                                       /* the lake's bed, under its level (FAR.lake) */
  return h;}
-function buildFar(){const N=300,g=new THREE.PlaneGeometry(FAR.x1-FAR.x0,FAR.z1-FAR.z0,N,N);g.rotateX(-Math.PI/2);g.translate((FAR.x0+FAR.x1)/2,0,(FAR.z0+FAR.z1)/2);
- const p=g.attributes.position,col=new Float32Array(p.count*3),c=new THREE.Color(),t=new THREE.Color();
- const JUN=new THREE.Color(0x24402a),JUN2=new THREE.Color(0x30502e),SAV=new THREE.Color(0x8e7c4a),SALT=new THREE.Color(0xc8bea8),STEP=new THREE.Color(0xa89464),PLAT=new THREE.Color(0x8a7656);
- for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i),inside=Math.abs(x)<TERR.X-30&&Math.abs(z)<TERR.Z-30;let y;
-  if(inside){let lo=terrainH(x,z);const cs=100;for(let a=-1;a<=1;a++)for(let b=-1;b<=1;b++)lo=Math.min(lo,terrainH(x+a*cs*.5,z+b*cs*.5));y=lo-3;}else y=farH(x,z);p.setY(i,y);
-  const xs=x+warpZ(z),n=KF(x*.0011,z*.0011,2,42)-.5;
-  // the floor: jungle at the slope's foot and round the lake, the savanna belt between, salt patches; the rim's grass; the plateau
-  c.copy(SAV).lerp(STEP,smooth(500,2500,xs)).lerp(PLAT,smooth(3500,9000,xs));
-  c.lerp(JUN.clone().lerp(JUN2,clamp(.5+n*2,0,1)),smooth(-2000,-3400,xs)*smooth(-6200,-4600,xs));   /* the foot's jungle */
-  c.lerp(SALT,smooth(.62,.7,KF(x*.0004,z*.0004,2,43))*smooth(-6500,-8000,xs)*smooth(-11500,-10000,xs)*.7);
-  c.lerp(JUN.clone().lerp(JUN2,clamp(.5-n*2,0,1)),smooth(-10500,-12500,xs));          /* the lake's jungle */
-  c.multiplyScalar(1+n*.14).convertSRGBToLinear();col[i*3]=c.r;col[i*3+1]=c.g;col[i*3+2]=c.b;}
- g.setAttribute('color',new THREE.BufferAttribute(col,3));g.computeVertexNormals();
- const fm=new THREE.MeshLambertMaterial({vertexColors:true,color:0xa8a49c});
- const m=new THREE.Mesh(g,fm);m.userData.probeSkip=true;m.userData.inspectLabel='The far country (the abyss floor, the rim, the plateau)';scene.add(m);}

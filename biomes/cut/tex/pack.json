@@ -29,6 +29,34 @@
     "sourceMean": 0.5972
    }
   },
+  "ground.breccia": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "ground.breccia.albedo.webp"
+   },
+   "lib": "rock.megabreccia.polished",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.0,
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "179e4e8f8cc81b1aa25afff418c53ea553d76792",
+    "normal": "363809734731c31aa561e74a6d8cf28035e8e74f",
+    "roughness": "93fa4aa149d63561d9dd4cb0e5ed8355e41f9234"
+   },
+   "specular": 0.2,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.7,
+    "sourceMean": 0.4933
+   }
+  },
   "ground.efflor": {
    "breakup": null,
    "card": false,
@@ -226,6 +254,7 @@
    }
   },
   "hleaf": {
+   "anchor": "none",
    "breakup": null,
    "card": true,
    "files": {
@@ -234,11 +263,13 @@
    "lib": "card.bamboo.giant",
    "metal": 0,
    "normalScale": 1.0,
+   "plants": 9,
    "roughLift": 0,
    "scale": [
     1,
     1
    ],
+   "sheet": "geometry",
    "size": 1024,
    "source": {
     "albedo": "7fe093acca9963af3056218f419fcd297acf8907"
@@ -252,6 +283,7 @@
    }
   },
   "melon": {
+   "anchor": "none",
    "breakup": null,
    "card": true,
    "files": {
@@ -260,11 +292,13 @@
    "lib": "card.crop.melon",
    "metal": 0,
    "normalScale": 1.0,
+   "plants": 9,
    "roughLift": 0,
    "scale": [
     1,
     1
    ],
+   "sheet": "geometry",
    "size": 1024,
    "source": {
     "albedo": "0303f7928264397b5af42d093640bf38372a160f"
@@ -278,6 +312,7 @@
    }
   },
   "rank": {
+   "anchor": "none",
    "breakup": null,
    "card": true,
    "files": {
@@ -286,11 +321,13 @@
    "lib": "card.rankgrass",
    "metal": 0,
    "normalScale": 1.0,
+   "plants": 9,
    "roughLift": 0,
    "scale": [
     1,
     1
    ],
+   "sheet": "geometry",
    "size": 1024,
    "source": {
     "albedo": "ceafd2e4e0aa0b9fbcacdd19af50e2359c1b40d4"
@@ -304,6 +341,7 @@
    }
   },
   "reed": {
+   "anchor": "center",
    "breakup": null,
    "card": true,
    "files": {
@@ -312,11 +350,13 @@
    "lib": "card.reed",
    "metal": 0,
    "normalScale": 1.0,
+   "plants": 9,
    "roughLift": 0,
    "scale": [
     1,
     1
    ],
+   "sheet": "geometry",
    "size": 1024,
    "source": {
     "albedo": "8510a8eadd2f43d9cf6460115a32c47f98c00826"

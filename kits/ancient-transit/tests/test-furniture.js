@@ -5,7 +5,7 @@ const fs = require('fs'), path = require('path'), vm = require('vm'), ROOT = pat
 const ctx = { console, Math, setTimeout, clearTimeout }; ctx.window = ctx; ctx.self = ctx; ctx.globalThis = ctx; vm.createContext(ctx);
 const load = p => vm.runInContext(fs.readFileSync(path.join(ROOT, p), 'utf8'), ctx, { filename: p });
 load('kits/catalog/three.min.js'); load('core/rand/08-core-rand.js'); load('kits/ancient-transit/src/40-tr-records.js');
-const parts = ['kits/catalog/krator-furniture-core.js', 'kits/ancient-transit/krator-transit-furniture.js', 'kits/ancient-transit/transit-furnish.js'];
+const parts = ['core/catalog/krator-furniture-core.js', 'kits/ancient-transit/krator-transit-furniture.js', 'kits/ancient-transit/transit-furnish.js'];
 vm.runInContext('var KratorTransitFurniture = (function () {\n' + parts.map(p => fs.readFileSync(path.join(ROOT, p), 'utf8')).join('\n') + '\nreturn KTF_API;\n})();', ctx, { filename: 'bundle' });
 const KTF = vm.runInContext('KratorTransitFurniture', ctx), T = vm.runInContext('KTRANSIT', ctx);
 let bad = 0; const ok = (c, m) => { if (!c) { bad++; console.log('FAIL ' + m); } };

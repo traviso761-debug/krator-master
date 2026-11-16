@@ -73,12 +73,12 @@
  // (W.poolGLSL; twin: the surface's gradientT). o.tint: a hex multiplier on the colour (drawStill's). Without either, all is as before.
  W.poolGLSL='float wtrPoolT(vec2 p,vec4 g){return pow(clamp(length(p-g.xy)*g.z,0.0,1.0),g.w);}';
  W.drawPools=(list,o)=>{o=o||{};const A=ATMOS,T=o.THREE||A.T,scene=o.scene||A.h.scene,name=o.name||'pools',pos=[],idx=[];
-  const GR=list.map(S=>S.gradient||(o.gradient?(S.gradient=W.gradientOf(S,o.gradient)):null)),anyG=GR.some(Boolean),ga=[],gc=[],gr=[],cv=c=>{const q=new T.Color(c);return[q.r,q.g,q.b];};
+  const GR=list.map(S=>S.gradient||(o.gradient?(S.gradient=W.gradientOf(S,o.gradient)):null)),anyG=GR.some(Boolean),ga=[],gc=[],gr=[],cv=c=>W.colLin(T,c);
   list.forEach((S,si)=>{const M=W.stillMesh(S),b=pos.length/3,G=GR[si];for(const v of M.pos)pos.push(v);for(const k of M.idx)idx.push(b+k);
    if(anyG){const a=G?[G.at[0],G.at[1],1/G.radius,G.power]:[0,0,0,-1],c0=G?cv(G.centre):[0,0,0],c1=G?cv(G.rim):[0,0,0];for(let k=0;k<M.pos.length/3;k++){ga.push(...a);gc.push(...c0);gr.push(...c1);}}});
   const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(pos,3));g.setAttribute('normal',new T.Float32BufferAttribute(new Float32Array(pos.length).map((v,i)=>i%3===1?1:0),3));g.setIndex(idx);g.computeBoundingSphere();
   if(anyG){g.setAttribute('wtrGA',new T.Float32BufferAttribute(ga,4));g.setAttribute('wtrGC',new T.Float32BufferAttribute(gc,3));g.setAttribute('wtrGR',new T.Float32BufferAttribute(gr,3));}
-  const CF=(anyG?'if(vWtrGA.w>=0.0)diffuseColor.rgb=mix(vWtrGC,vWtrGR,wtrPoolT(vWtrW.xz,vWtrGA));':'')+(o.tint!=null?'diffuseColor.rgb*='+(q=>'vec3('+[q.r,q.g,q.b].map(f).join(',')+')')(new T.Color(o.tint))+';':''),
+  const CF=(anyG?'if(vWtrGA.w>=0.0)diffuseColor.rgb=mix(vWtrGC,vWtrGR,wtrPoolT(vWtrW.xz,vWtrGA));':'')+(o.tint!=null?'diffuseColor.rgb*='+('vec3('+W.colLin(T,o.tint).map(f).join(',')+')')+';':''),
    GV=anyG?'\n'+W.poolGLSL+'\nvarying vec4 vWtrGA;varying vec3 vWtrGC;varying vec3 vWtrGR;':'';
   const mat=new T.MeshStandardMaterial({color:o.color==null?0x24443f:o.color,roughness:o.roughness==null?.06:o.roughness,metalness:o.metalness==null?.15:o.metalness,
    transparent:o.opacity!=null&&o.opacity<1,opacity:o.opacity==null?1:o.opacity,depthWrite:!(o.opacity!=null&&o.opacity<1)});sky(mat,o);W.biasMaterial(mat,o);

@@ -50,7 +50,29 @@ python3 ../../tools/textures/pack.py kits/yeti   # from the repo root, after any
 
 ## Status
 
-Y1 to Y4 (PLAN.md section 9): the scaffold, the toolkit, the tunnels; the dwellings of every tier in three seasons; the
+Y1 to Y6 (PLAN.md section 9): the scaffold, the toolkit, the tunnels; the dwellings of every tier in three seasons; the
 winter street on one covered network; the night glow; the state, the trades (`YT_TRADES`), the stores, the stock and
-war; the three dome caps mapped from the crown. Every `--assert` check passes but
-`tags-vocabulary`: `khaayken` is registered in core/tags in Y5, with its catalog culture file (`KNOWN_ISSUES.md`).
+war; the three dome caps mapped from the crown; **Y5** the interiors (the khaayken catalog culture file in every room, the
+figure generator, the war loot on its rule with the Eternian faces read in place, the 1.15x scale on the generic goods
+through core/furnish, the interiors set `kits/interiors/sets/khaayken.js`); **Y6** Leng's occupation pieces in a stand-in
+Ancient hall and the forest-steppe set (the urasa, the khoton, the balagan) on the nwouterwall kit's own flora. Every
+`--assert` check passes (`KNOWN_ISSUES.md` for what is left).
+
+## Inside (Y5) and the forest-steppe (Y6)
+
+- `45-yt-inside.js`: `ytFigure` (the figure generator), `ytLoot` / `YT_LOOT_N` (the loot rule), `ytGoods` (a dome house's goods by
+  tier), `ytWallAt` / `ytWallSlot` (a piece on a dome's curved inner face). The State's faces come from
+  `kits/eternian/src/42-et-head.js`, which `build.py` reads in place (`CORE_FILES`); never copy it.
+- `91g-yt-furn.js`: the Khaayken's scale on the catalog (core/furnish's opt-in `cfg.scale`): generic pieces at 1.15x, the
+  khaayken and Eternian pieces at their own size.
+- `65-yt-leng.js`: the bay house, the plug, the hall. `66-yt-steppe.js`: the urasa, the khoton.
+- The forest-steppe row's flora: `build.py`'s `BIO_BAND` reads core/space, core/biome and `biomes/nwouterwall/src/46-70` in place;
+  `93b-bio-45-yt-init.js` binds it (the row's box, Leng's fields), `93b-bio-80-yt-flora.js` builds and bakes it once at load
+  (`?flora=0` skips it; `window._flora` says what it placed).
+- The interiors set: `cd kits/interiors && python3 build.py --sets-page khaayken && python3 verify.py dist/interiors-sets.khaayken.html --sets --assert --query set=khaayken`.
+
+## Doors and glass (core/door, 2026-11-03)
+
+The owner: "remove all dark voids and make all windows, doors and portals actual doors or windows that have transparency". The page loads `core/door` (KDOOR, KGLASS, KDOORHOST) and the engine draws it (`core/engine/36o-open.js`: `svLeaf`, `svDoorway`, `svPane`, `svRoom`). A door leaf is a KDOOR record with a stable id (`<def key>.<placement>.d<n>`), shut unless the builder drew it standing open; **E** opens or shuts the one within reach (walking or flying), and `KDOOR.open(id, {by: 'npc'})` does the same for a quest or an NPC. A door on a body with nothing behind it is locked. `_api.openings()`, `_api.doorExport()` and `_api.doorState()` are on the probe. Where the page has `core/walk`, each door's doorway is blocked while it is shut and clear while open (`KDOOR.walk`), and any wall box standing in an unlocked doorway is switched off (`svOpenWalk`).
+
+What it changed here: the balagan's cold porch has its door. The domes' arched doorways and the entry tunnels are open by design (the cold trap), and the windows are the kit's ice lenses and gut panes (already translucent: `28-yt-mat.js`), so nothing else changed.

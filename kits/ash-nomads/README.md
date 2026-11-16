@@ -39,7 +39,7 @@ python3 ../../tools/textures/pack.py kits/ash-nomads        # (from the repo roo
 
 ## How it is made
 
-Forked from `kits/scyvoi`: the engine fragments are the Scyvoi kit's, VENDORED unchanged (`build.py --vendor-check`); the kit's
+Forked from `kits/scyvoi`: the engine is `core/engine`, read in place (its README; MODULARITY-PLAN.md step 2), its alternative materials `31-alt-takes.js`; the kit's
 identity and look are `src/26k-kit.js`. Its shapes are in `40a-ak-ash.js` (the concave spire, the five-spired chief, the dome,
 the ridge, the bands of figures, banners, the sun disc), the defs in `42`-`59`.
 
@@ -50,3 +50,9 @@ the Krator sky gives the giant), on the assembly's frame and every banner; its s
 `organic.chitin` and `chitin.millipede`.
 
 See `API.md` for the fragments and `KNOWN_ISSUES.md` for what is open.
+
+## Doors and glass (core/door, 2026-11-03)
+
+The owner: "remove all dark voids and make all windows, doors and portals actual doors or windows that have transparency". The page loads `core/door` (KDOOR, KGLASS, KDOORHOST) and the engine draws it (`core/engine/36o-open.js`: `svLeaf`, `svDoorway`, `svPane`, `svRoom`). A door leaf is a KDOOR record with a stable id (`<def key>.<placement>.d<n>`), shut unless the builder drew it standing open; **E** opens or shuts the one within reach (walking or flying), and `KDOOR.open(id, {by: 'npc'})` does the same for a quest or an NPC. A door on a body with nothing behind it is locked. `_api.openings()`, `_api.doorExport()` and `_api.doorState()` are on the probe. The page has no `core/walk`, so the doors carry no walk blocks here.
+
+What it changed here: the shared tent kit (`40-tk-tentkit.js`, identical to the Scyvoi kit's) draws the ger's leaves on core/door, but this kit has no ger: every Ash tent's door is cloth tied back (the chitin arch's flaps), an open doorway, so the page carries no door records. Nothing was a dark void.

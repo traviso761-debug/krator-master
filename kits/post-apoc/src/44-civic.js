@@ -43,11 +43,13 @@ function cvLonghouse(o){
  for(const x of [-12,12])sock('awning',x,py+2.78,fz+.02,0,{w:3.6,d:1.5,drop:.4,h:2.3});
  for(const x of [-9,-3,3,9]){cvPole(x,fz+1.8,wy+1.75,.09);sock('banner',x,wy+1.65,fz+1.86,0,{w:.7,h:2.2});}   // props that hold the front roof slope lifted
  }else{ // closed front: solid plank wall, three framed door bays (the middle one open a crack, the outer two ajar), small windows, porch roof at normal height
-  patchWall(0,py-.03,fz,HW,wy-py+.03,0);
-  for(const x of [-12,12]){const sg=x>0?1:-1,hx=x-sg*.7,an=1.1;box('iron',x,py,fz+.075,1.4,2.3,.03,jc(0x14100c,.02));
+  /* the three bays are real doorways cut through the wall (the outer two were black plates behind their leaves, dark voids): the hall's doors
+     open and shut (core/door; 35-pa-open.js), the outer two standing ajar as drawn, the middle one open a crack; E swings them */
+  patchWall(0,py-.03,fz,HW,wy-py+.03,0,{holes:[{x0:-12.7,x1:-11.3,y0:.03,y1:2.33},{x0:-.75,x1:.75,y0:.03,y1:2.43},{x0:11.3,x1:12.7,y0:.03,y1:2.33}]});
+  for(const x of [-12,12]){const sg=x>0?1:-1,an=1.1;jc(0x14100c,.02);   /* the void's colour, still drawn: the stream stays the builder's */
    for(const sx of [-1,1])box('plank',x+sx*.78,py,fz+.09,.14,2.5,.16,jc(0x5c4630,.06));box('plank',x,py+2.4,fz+.09,1.7,.16,.16,jc(0x5c4630,.06));
-   box('plank',hx+sg*Math.cos(an)*.62,py,fz+.12+Math.sin(an)*.62,1.24,2.2,.07,jc(pick([0x7a2e28,0x2f5f8f,0xc99a2e]),.06),-sg*an);}
-  door(0,py,fz+.05,1.5,2.4,{step:false,col:0x7a2e28});
+   poLeaf(x,py,fz+.09,1.36,2.2,{col:jc(pick([0x7a2e28,0x2f5f8f,0xc99a2e]),.06),t:.07,hinge:-sg,ajar:an,out:true});}
+  door(0,py,fz+.05,1.5,2.4,{step:false,col:0x7a2e28,ajar:.2});
   for(const x of [-8,-5,5,8])win(x,py+1.1,fz+.07,1.0,.9,{lit:true,shutters:x%2!==0});
   for(const x of [-9,-3,3,9])lgPatch(x,py+1.9,fz+.08,1.3,.9,pick([0x2f7f8e,0xc45a30,0xd8a020,0x4d6f3c]));
   lgLean(0,fz,HW-1.5,2.7,wy-.1,wy-.8,{col:0xb85a3a});
@@ -208,7 +210,7 @@ function cvShaman(o){
  for(let c=0;c<9;c++){const y=c*.24+.12,Rc=(R0+.12)*Math.sqrt(Math.max(.02,1-Math.pow(y/(Hh+.1),2)));const n=Math.max(3,Math.round(TAU*Rc/.7));
   for(let k=0;k<n;k++){const a=(k+(c%2)*.5)/n*TAU;if(c<5&&Math.abs(Math.atan2(Math.sin(a-PI/2),Math.cos(a-PI/2)))<.34)continue;tire(Math.cos(a)*Rc,y,Math.sin(a)*Rc,TYR.R,TYR.t,undefined,rng()*TAU,rr(-.25,.25),rr(-.25,.25));}}
  // doorway: plank frame, dark hollow, hide curtain
- box('iron',0,0,R0*.98,1.2,1.4,.1,jc(0x14100c,.02));entry(0,0,R0+.15,1.2,1.5);/* front door: the curtained doorway */for(const sx of [-1,1])beam('wood',[sx*.62,0,R0+.15],[sx*.62,1.5,R0+.15],.12,jc(0x5c4630,.06));beam('wood',[-.7,1.5,R0+.15],[.7,1.5,R0+.15],.14,jc(0x5c4630,.06));
+ jc(0x14100c,.02);poCard(0,0,R0*.98,1.2,1.4);entry(0,0,R0+.15,1.2,1.5);/* front door: the curtained doorway */for(const sx of [-1,1])beam('wood',[sx*.62,0,R0+.15],[sx*.62,1.5,R0+.15],.12,jc(0x5c4630,.06));beam('wood',[-.7,1.5,R0+.15],[.7,1.5,R0+.15],.14,jc(0x5c4630,.06));
  plane4('cloth',[-.5,1.45,R0+.2],[.5,1.45,R0+.2],[-.5,.3,R0+.35],[-.5,.3,R0+.35],.03,jc(0x8a3a2c,.06));
  // bottle-glass windows set into the dome
  for(const a of [.2,PI-.2,PI+.7,-.7+TAU*.0]){const Rw=(R0+.06)*Math.sqrt(1-Math.pow(1.05/(Hh+.1),2));W(Math.cos(a)*Rw,1.05,Math.sin(a)*Rw,PI/2-a,()=>{box('bottle',0,-.4,0,.9,.8,.34,null);for(const sx of [-1,1])beam('wood',[sx*.5,-.45,.2],[sx*.5,.45,.2],.08,jc(0x5c4630,.06));box('glow',0,-.1,-.1,.5,.4,.05,jc(0xf2c26a,.05));});}

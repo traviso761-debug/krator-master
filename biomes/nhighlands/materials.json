@@ -32,7 +32,8 @@
     0.34,
     0.66,
     0.66
-   ]
+   ],
+   "base": "top"
   },
   "maple": {
    "lib": "card.lobed",
@@ -108,7 +109,30 @@
     "keep": 0.0,
     "mean": 0.73
    },
-   "size": 512
+   "size": 512,
+   "stems": [
+    {
+     "cell": [
+      0.034,
+      0.005,
+      0.968,
+      0.956
+     ],
+     "stem": [
+      0.46,
+      0.04
+     ],
+     "tip": [
+      0.4987,
+      0.9502
+     ],
+     "w": [
+      -0.4073,
+      0.3722
+     ]
+    }
+   ],
+   "rise": -0.5
   },
   "pinnate": {
    "lib": "card.acacia",
@@ -135,11 +159,12 @@
    },
    "size": 512,
    "cell": [
-    0.34,
-    0.34,
-    0.66,
-    0.66
-   ]
+    0.405,
+    0.329,
+    0.595,
+    0.671
+   ],
+   "base": "top"
   },
   "beard": {
    "lib": "card.beard",
@@ -157,7 +182,8 @@
     0.34,
     0.66,
     0.66
-   ]
+   ],
+   "base": "top"
   },
   "frond": {
    "lib": "card.fern",
@@ -169,7 +195,14 @@
     "keep": 0.0,
     "mean": 0.732
    },
-   "size": 512
+   "size": 512,
+   "cell": [
+    0.089,
+    0.046,
+    0.911,
+    0.995
+   ],
+   "base": "bottom"
   },
   "lady": {
    "lib": "card.fern",
@@ -181,7 +214,14 @@
     "keep": 0.0,
     "mean": 0.758
    },
-   "size": 512
+   "size": 512,
+   "cell": [
+    0.089,
+    0.046,
+    0.911,
+    0.995
+   ],
+   "base": "bottom"
   },
   "bracken": {
    "lib": "card.frond.needle",
@@ -267,7 +307,30 @@
     "keep": 0.0,
     "mean": 0.702
    },
-   "size": 512
+   "size": 512,
+   "stems": [
+    {
+     "cell": [
+      0.022,
+      0.118,
+      0.978,
+      0.997
+     ],
+     "stem": [
+      0.5015,
+      0.9912
+     ],
+     "tip": [
+      0.5015,
+      0.124
+     ],
+     "w": [
+      -0.3853,
+      0.3823
+     ]
+    }
+   ],
+   "rise": 1.25
   },
   "paddle": {
    "lib": "card.paddle",
@@ -491,7 +554,8 @@
     0.3333,
     1.0
    ],
-   "size": 512
+   "size": 512,
+   "base": "bottom"
   },
   "staghorn": {
    "lib": "card.staghorn",
@@ -623,6 +687,263 @@
    },
    "mapOnly": true,
    "size": 512
+  },
+  "cotton": {
+   "lib": "card.cottongrass",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.5,
+    "mean": 0.8
+   },
+   "size": 512,
+   "cell": [
+    0.393,
+    0.349,
+    0.609,
+    0.648
+   ]
+  },
+  "cloudberry": {
+   "lib": "card.cloudberry",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.5,
+    "mean": 0.6
+   },
+   "size": 512,
+   "cell": [
+    0.352,
+    0.349,
+    0.651,
+    0.632
+   ]
+  },
+  "cornlily": {
+   "lib": "card.cornlily",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.5,
+    "mean": 0.65
+   },
+   "size": 512,
+   "cell": [
+    0.393,
+    0.345,
+    0.603,
+    0.655
+   ]
+  },
+  "ground.sphagnum": {
+   "lib": "ground.sphagnum",
+   "scale": [
+    2.4,
+    2.4
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.3,
+   "mapOnly": true
+  },
+  "ground.peat": {
+   "lib": "ground.peat.hag",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.2,
+   "specular": 0.35,
+   "mapOnly": true
+  },
+  "rock.megabreccia": {
+   "lib": "rock.megabreccia",
+   "scale": [
+    4,
+    4
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.2,
+   "mapOnly": true
+  },
+  "ground.peatflat": {
+   "lib": "ground.peat.black",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.2,
+   "specular": 0.35,
+   "mapOnly": true
+  },
+  "dwarfbirch": {
+   "lib": "card.dwarfbirch",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.5,
+    "mean": 0.6
+   },
+   "size": 512,
+   "cell": [
+    0.345,
+    0.22,
+    0.655,
+    0.394
+   ]
+  },
+  "sedge": {
+   "lib": "card.sedge.fen",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.5,
+    "mean": 0.6
+   },
+   "size": 512,
+   "cell": [
+    0.495,
+    0.091,
+    0.993,
+    0.464
+   ]
+  },
+  "ground.needles": {
+   "lib": "ground.needles",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.goldgrass": {
+   "lib": "ground.withered_grass",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.slab": {
+   "lib": "ground.slickrock",
+   "scale": [
+    4.0,
+    4.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.chaparral": {
+   "lib": "ground.redsoil",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.lush": {
+   "lib": "ground.grass.lush",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.fell": {
+   "lib": "ground.tundra",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.scree": {
+   "lib": "ground.gravel042",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.snowbed": {
+   "lib": "ground.snow.drift",
+   "scale": [
+    4.0,
+    4.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
   }
  }
 }

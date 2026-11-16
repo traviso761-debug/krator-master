@@ -5,6 +5,7 @@
 // sun, the hemisphere, the fills, the fog and the exposure from the colour script; the clouds shade the lit materials.
 // Kept from the dome: the Throne's cone far to the SSE and the kopjes (ridges); its plume, the wildfire smoke at az 48 and the
 // Ring Sea's silver line are not drawn (no landmark layer in the sky yet: KNOWN_ISSUES).
-const SKY=ATMOS.skyBiome({renderer,camera,scene,sun:sun,site:{px:502,py:384},
+const SKY=ATMOS.skyBiome({renderer,camera,scene,sun:sun,site:typeof STATION!=='undefined'&&STATION.site?STATION.site:{px:502,py:384},   /* a station's own place (stations/<name>/45-host-stage.js) */
+
  preset:{"air":{"pressure":1.9,"dustK":0.25,"dust":[0.85,0.81,0.72]},"clouds":{"cover":0.3},"fogDensity":0.0001516,"ridges":[{"base":3.85,"amp":0.4,"cycles":24,"octaves":2,"seed":31,"win":[152,37.8,2.1],"floor":-1,"dist":300000,"haze":0.0165,"rock":[0.7,0.72,0.75]},{"base":0.2,"amp":0.5,"cycles":48,"octaves":3,"seed":17,"peaks":18,"peakAmp":1.6,"win":[320,180,0.25],"floor":0.05,"dist":20000,"haze":0.187,"rock":[0.69,0.67,0.63]},{"base":0.1,"amp":0.3,"cycles":48,"octaves":3,"seed":42,"peaks":18,"peakAmp":0.9,"win":[320,180,0.25],"floor":0.03,"dist":8000,"haze":0.3433,"rock":[0.53,0.49,0.41]}],"landmarks":[{"kind":"plume","from":[152,4.07],"via":[145,8],"to":[121,11.7],"width":[0.8,5],"lit":[0.84,0.82,0.78],"belly":[0.42,0.39,0.36],"alpha":0.5,"haze":0.3,"drift":0.02},{"kind":"plume","from":[48,0],"via":[44,12],"to":[30,15],"width":[0.5,6],"lit":[0.78,0.7,0.62],"belly":[0.45,0.4,0.36],"alpha":0.55,"haze":0.3,"drift":0.015},{"kind":"band","win":[140,90,6],"el":[0,0.19],"lit":[1.1,1.1,1.08],"alpha":0.5,"noise":0,"haze":0.25}]}});
-const {sky,giantRing}=SKY.legacy;   /* the old dome's names, for what still reads them (the water's skylight scene, a layer) */
+const {sky,giant,giantRing}=SKY.legacy;   /* the old dome's names, for what still reads them (the water's skylight scene, a layer) */

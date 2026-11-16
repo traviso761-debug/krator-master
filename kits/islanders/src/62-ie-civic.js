@@ -61,7 +61,7 @@ function ieRoofY(rf,x,z){const f=rf.F(z<0?-1:1);let best=1e9,y=0;for(let i=0;i<=
 /* a solid flight of stone steps from the ground (at local z = run, outward) up to y1 (at z = 0), w wide, at (x, z) turned ry:
    each step a block down to the ground, carved balustrades along both sides ending in posts. Returns the run. */
 function ieSteps(x,z,ry,y1,w,o){o=o||{};const n=Math.max(2,Math.ceil(y1/.2)),rise=y1/n,go=o.go||.32,run=n*go,cv=P('carvN');
- W(x,0,z,ry,()=>{for(let i=0;i<n;i++){WKOFF=1;box('stone',0,0,run-go*(i+.5),w,rise*(i+1),go+.02,P('stone'));WKOFF=0;wkPad(0,run-go*(i+.5),w,go+.02,rise*(i+1));}
+ W(x,0,z,ry,()=>{for(let i=0;i<n;i++){WKOFF=1;box('stone',0,0,run-go*(i+.5),w,rise*(i+1),go+.02,P('stone'));WKOFF=0;}svStripWalk([0,0,run],[0,y1,go],Math.max(.5,w-.1));   /* the walk: one strip (core/engine), not a pad per step */
   if(o.rail!==false)for(const s of [-1,1]){beam('carved',[s*(w/2+.13),.45+.5,run],[s*(w/2+.13),y1+.5,0],.26,cv,false,undefined,1.0);box('carved',s*(w/2+.13),0,run,.4,1.25,.4,cv);
    box('stone',s*(w/2+.13),0,run/2,.26,.45,run,P('stone'));}});return run;}
 /* FURNISH a list: [key, x, y, z, ry, opts] */
@@ -131,10 +131,11 @@ function ieGallery(L,gd,o){o=o||{};const ph=o.postH||2.9,pl=.38,cv=P('carvN');
  box('wood',0,pl+ph-.08,gd/2-.32,L,.26,.26,P('woodD'));
  const rf=isGabled({L:L-1.2,W:gd,eaveY:pl+ph+.12,ridgeY:pl+ph+2.2,over:.7,mk:'thatchR',col:P('thatchE'),th:.24,nu:Math.max(8,Math.round(L/1.5)),nv:3});
  for(const s of o.ends||[])rf.gable(s*(L/2-.62),pl+ph+.12,gd/2,'patGableE',{});}
-/* a corner tower: a coral-stone block s x 2 square, bh tall, a painted band, a dark door on the court side, a tall spire */
+/* a corner tower: a coral-stone block s x 2 square, bh tall, a painted band, a locked door on the court side (core/door: the
+   block is solid), a tall spire */
 function ieSpireTower(s,bh,towerH,doorRy){box('coral',0,0,0,2*s,bh,2*s,P('coral'));box('stone',0,bh,0,2*s+.3,.2,2*s+.3,P('stone'));
  for(let k=0;k<4;k++)W(0,0,0,k*PI/2,()=>box('patGableE',0,bh-1.5,s+.01,2*s-.8,1.0,.02,WHITE));
- W(0,0,0,doorRy,()=>{box('plain',0,0,s+.01,1.1,2.1,.02,P('black'));box('wood',0,2.1,s+.04,1.5,.2,.08,P('woodD'));});
+ W(0,0,0,doorRy,()=>{svDoorway(0,0,s+.03,0,1.1,2.1,{hollow:false,mk:'planks',col:P('woodD'),t:.05,style:'plank',name:'tower door'});box('wood',0,2.1,s+.04,1.5,.2,.08,P('woodD'));});
  return ieRoofE({hw:s+.7,hd:s+.7,eY:bh+.15,skirtH:1.1,skirtS:.62,towerH,towerS:.56,topSx:.14,topSz:.1,sq:4,th:.26,finial:'horns',facade:'patGableE',tnu:24});}
 defBuilding({key:'ie-square',name:'Ceremonial square (Kautoa)',seed:6102,w:58,d:50,h:24,budget:400000,front:{x:0,z:22.5,yaw:0},
  tags:{types:['plaza','religious','civic'],wealth:'rich',style:'east',role:'ceremonial square'},

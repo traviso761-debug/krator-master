@@ -12,7 +12,15 @@
           for keys the kit lacks), ground {ok(x, z) -> bool} (dry, not a cliff, not too steep; default everywhere),
           siteReach (m to look for dry flat ground round site when site itself is not: default 600),
           ore (a mine's node kind, kits/resources' RES_ORE.kinds: default any kind a mine works), kres (a loaded node field,
-          RES_GEO.load(data): default globalThis.KRES), kresOpts (its nodesIn options: ground, owner, deltas)}
+          RES_GEO.load(data): default globalThis.KRES), kresOpts (its nodesIn options: ground, owner, deltas),
+          worksOut (keys of works the village counts and staffs but does not lay out: a farming village's farmsteads
+          stand on their holdings in the farmland, 14-hamlet-farmland.js; returned as `outWorks` for the host to place),
+          vacant (the owner, 2026-11-04 and 2026-11-09: the hamlets grow, up to double their first size by empty lots: a
+          share of the households laid as empty house plots after the houses, along the lanes, each marked `vacant`
+          with the house its plot allows; as many as fit, `vacant` in the result counting them),
+          landing {x, z, ux, uz} (the owner, 2026-11-09: "a little port and cargo stop ... for any hamlets near the coast":
+          the shore point the host found and the seaward direction; the culture row's `landing` piece, the Islanders' quay
+          with its cargo shed, stands on it facing the sea, a lane runs to it, and `landing` in the result names it)}
    A mine with no resource takes the nearest node in its reach of the site (KHAMLET.resourceFor: KRES.near, a tie the
    higher grade, then the id); out.resource says which. Without a field, or with no node in reach, it is placed as before.
 
@@ -46,9 +54,10 @@ KHAMLET.census = function (spec, row) {
   warehouses = 1 + Math.floor(focusJobs / 80);
   focusJobs = Math.max(0, Math.min(focusJobs, maxWorkers - services()));
   /* the works buildings: each kind takes its share of the focus jobs, rounded up to whole buildings */
+  var outK = spec.worksOut || [];
   var works = (row.works[spec.focus] || []).map(function (w) {
     var n = focusJobs > 0 ? Math.max(1, Math.ceil(focusJobs * w.share / w.jobs)) : 0;
-    return {key: w.key, n: n, jobs: w.jobs};
+    return {key: w.key, n: n, jobs: w.jobs, out: outK.indexOf(w.key) >= 0};
   });
   var workers = focusJobs + services(), pop = Math.min(popMax, Math.ceil(workers / row.workShare));
   return {popMax: popMax, pop: pop, workers: workers, focusJobs: focusJobs, serviceJobs: services(), warehouses: warehouses,
@@ -60,7 +69,7 @@ KHAMLET.program = function (C, row, st) {
   var P = [{role: 'civic', key: row.civic}, {role: 'religious', key: row.religious}, {role: 'general', key: row.general},
            {role: 'food', key: row.food}];
   for (var i = 0; i < C.warehouses; i++) P.push({role: 'warehouse', key: row.warehouse});
-  C.works.forEach(function (w) { for (var j = 0; j < w.n; j++) P.push({role: 'works', key: w.key}); });
+  C.works.forEach(function (w) { if (w.out) return; for (var j = 0; j < w.n; j++) P.push({role: 'works', key: w.key}); });
   /* houses: the headman's, then drawn by weight (middling at middlingShare) until every household has a roof */
   var H = row.houses, left = C.households - H.head[0][1], draw = function (list) {
     var tot = 0, k; for (k = 0; k < list.length; k++) tot += list[k][2];
@@ -147,17 +156,18 @@ KHAMLET.village = function (spec) {
   var ux = lx / L0, uz = lz / L0, vx = -uz, vz = ux;
   var at = function (a, b) { return [site.x + ux * a + vx * b, site.z + uz * a + vz * b]; };
   var space = KSPACE.create({cell: 24}), placed = [], records = [], lanes = [];
-  var free = function (R, pad) {
+  var free = function (R, pad, noGround) {
     var hit = space.some(R.x, R.z, KHAMLET.rectR(R) + 40, function (it) { return KHAMLET.overlap(R, it.R, pad); });
     if (hit) return false;
+    if (noGround) return true;   /* a quay stands at the water's edge */
     var cs = KHAMLET.corners(R);
     for (var i = 0; i < 4; i++) if (!KHAMLET.groundOk(spec, cs[i][0], cs[i][1])) return false;
     return KHAMLET.groundOk(spec, R.x, R.z);
   };
   var hold = function (R, what) { space.insert({R: R, what: what}, R.x, R.z, KHAMLET.rectR(R)); };
-  var put = function (p, i, x, z, fx, fz) {          /* the front faces (fx, fz) */
+  var put = function (p, i, x, z, fx, fz, noGround) {          /* the front faces (fx, fz) */
     var b = KHAMLET.box(spec, row, p.key), R = KHAMLET.rect(x, z, fz, -fx, b.w, b.d);
-    if (!free(R, T.pad)) return null;
+    if (!free(R, T.pad, noGround)) return null;
     hold(R, p.role);
     var rec = {id: spec.id + ':' + i, key: p.key, role: p.role, x: x, z: z, ry: Math.atan2(fx, fz), w: b.w, d: b.d, h: b.h,
                pending: !!(row.pending && row.pending[p.key] && !(spec.dims && spec.dims(p.key))), village: spec.id, focus: spec.focus};
@@ -279,10 +289,52 @@ KHAMLET.village = function (spec) {
   }
   if (hi < houses.length) fail.push((houses.length - hi) + ' houses');
 
-  /* the lanes as records: each runs from the green to its last building's far edge */
+  /* THE EMPTY PLOTS (spec.vacant): more house plots drawn from the same lists, laid on along the lanes where the houses
+     left off, marked vacant; a plot that finds no room is simply not there */
+  var VAC = { wanted: 0, placed: 0 };
+  if (spec.vacant > 0 && houses.length) {
+    var Hs = row.houses, stV = stream(6, 0), nV = Math.ceil(C.households * spec.vacant), vacs = [];
+    var drawV = function (list) { var tot = 0, k; for (k = 0; k < list.length; k++) tot += list[k][2]; var r = stV.next() * tot; for (k = 0; k < list.length; k++) { r -= list[k][2]; if (r < 0) return list[k]; } return list[list.length - 1]; };
+    for (var kv = 0; kv < nV; kv++) { var hv = drawV(stV.next() < Hs.middlingShare ? Hs.middling : Hs.poor), pv = { role: 'house', key: hv[0], households: hv[1], vacant: true }; vacs.push([pv, P.length]); P.push(pv); }
+    VAC.wanted = nV;
+    var vi = 0;
+    for (var pass2 = 0; vi < vacs.length && pass2 < 200; pass2++) {
+      var moved2 = false;
+      for (var ri2 = 0; ri2 < runs.length && vi < vacs.length; ri2++) {
+        var R2 = runs[ri2]; if (R2.t >= T.laneMax) continue;
+        var n2 = front(R2.l, R2.side, vacs.slice(vi, vi + T.chunk), R2.st, R2.t, Math.min(T.laneMax, R2.t + T.chunk * 30), R2);
+        vi += n2; if (n2) moved2 = true;
+        if (!n2) R2.t = Math.min(T.laneMax, R2.t + 30);
+      }
+      if (!moved2 && runs.every(function (q) { return q.t >= T.laneMax; })) break;
+    }
+    VAC.placed = vi;
+    vacs.forEach(function (q) { var rec = records[q[1]]; if (rec) rec.vacant = true; });
+  }
+
+  /* THE LANDING (spec.landing, above): the quay on the shore point, its front two metres back from the water's edge and
+     the rest over the water, facing the sea; its lane from the end of the village's lane that points most toward the shore */
+  var LD = null;
+  if (spec.landing && row.landing) {
+    var Ld = spec.landing, lu = Math.hypot(Ld.ux, Ld.uz) || 1, sx = Ld.ux / lu, sz = Ld.uz / lu, pL = { role: 'landing', key: row.landing.key }, iL = P.length; P.push(pL);
+    /* on the shore point, or slid along the shore (either way, up to 90 m) and a little out when the village stands against it */
+    var qb = KHAMLET.box(spec, row, pL.key), rq = null, tries = [[0, 0], [30, 0], [-30, 0], [60, 0], [-60, 0], [90, 0], [-90, 0], [0, 12], [30, 12], [-30, 12], [60, 12], [-60, 12], [90, 12], [-90, 12]];
+    for (var qt = 0; qt < tries.length && !rq; qt++) rq = put(pL, iL, Ld.x + sx * (qb.d / 2 - 2 + tries[qt][1]) - sz * tries[qt][0], Ld.z + sz * (qb.d / 2 - 2 + tries[qt][1]) + sx * tries[qt][0], sx, sz, true);
+    if (rq) {
+      rq.landing = true;
+      var dxL = Ld.x - site.x, dzL = Ld.z - site.z, bestL = LN.slice().sort(function (a, b) { return (b.ax * dxL + b.az * dzL) - (a.ax * dxL + a.az * dzL); })[0], far0 = 0;
+      placed.forEach(function (r) { if (r.landing) return; var t = (r.x - bestL.x0) * bestL.ax + (r.z - bestL.z0) * bestL.az, s2 = Math.abs((r.x - bestL.x0) * -bestL.az + (r.z - bestL.z0) * bestL.ax);
+        if (t > 0 && s2 < T.laneW / 2 + T.setback + Math.max(r.w, r.d) + 2) far0 = Math.max(far0, t + Math.max(r.w, r.d) / 2); });
+      var from = [bestL.x0 + bestL.ax * far0, bestL.z0 + bestL.az * far0], back = [rq.x - sx * (qb.d / 2 + 2), rq.z - sz * (qb.d / 2 + 2)];
+      lanes.push({ id: spec.id + ':lane:landing', kind: 'lane', w: T.laneW, pts: [[+from[0].toFixed(2), +from[1].toFixed(2)], [+back[0].toFixed(2), +back[1].toFixed(2)]], landing: true });
+      LD = { quay: rq.id, x: rq.x, z: rq.z, ry: rq.ry, shore: { x: Ld.x, z: Ld.z }, seaward: [sx, sz], lane: spec.id + ':lane:landing' };
+    } else { P.pop(); LD = { error: 'no room for the quay' }; }   /* a village is never refused for its landing */
+  }
+
+  /* the lanes as records: each runs from the green to its last building's far edge (the quay is on its own lane) */
   LN.forEach(function (l) {
     var far = 0;
-    placed.forEach(function (r) { var t = (r.x - l.x0) * l.ax + (r.z - l.z0) * l.az, s = Math.abs((r.x - l.x0) * -l.az + (r.z - l.z0) * l.ax);
+    placed.forEach(function (r) { if (r.landing) return; var t = (r.x - l.x0) * l.ax + (r.z - l.z0) * l.az, s = Math.abs((r.x - l.x0) * -l.az + (r.z - l.z0) * l.ax);
       if (t > 0 && s < T.laneW / 2 + T.setback + Math.max(r.w, r.d) + 2) far = Math.max(far, t + Math.max(r.w, r.d) / 2); });
     if (l === worksLane) placed.forEach(function (r) { if (r.role === 'works') far = Math.max(far, (r.x - l.x0) * l.ax + (r.z - l.z0) * l.az - Math.max(r.w, r.d) / 2); });
     if (l === LN[0] && spec.link) far = Math.max(far, Math.min(T.laneMax, Math.hypot(spec.link.x - l.x0, spec.link.z - l.z0)));
@@ -292,7 +344,8 @@ KHAMLET.village = function (spec) {
 
   var out = {id: spec.id, culture: row.kit, focus: spec.focus, site: site, frame: {u: [ux, uz], v: [vx, vz]},
              green: {x: site.x, z: site.z, w: T.green[1], d: T.green[0], ry: Math.atan2(ux, uz)},
-             census: C, records: records.filter(Boolean), lanes: lanes};
+             census: C, records: records.filter(Boolean), lanes: lanes, landing: LD, vacant: VAC,
+             outWorks: C.works.filter(function (w) { return w.out && w.n > 0; }).map(function (w) { return {key: w.key, n: w.n, jobs: w.jobs, box: KHAMLET.box(spec, row, w.key)}; })};
   if (found) out.resource = found;
   if (fail.length) out.error = 'could not place: ' + fail.join(', ');
   return out;

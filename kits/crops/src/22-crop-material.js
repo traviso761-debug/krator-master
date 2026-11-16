@@ -26,7 +26,7 @@ R('annatto', 'Sunseed annatto', 'dye', [4, 4], [3, 4], {form: 'shrub', card: 'ca
 R('indigo', 'Jungle indigo', 'dye', [4, 4], [2, 4], {form: 'shrub', card: 'card.crop.indigo', colour: 'blue', home: ['hyperjungle']});
 R('woad', 'Valley woad', 'dye', [1, 3], [1, 3], {atm: [0, 2], card: 'card.crop.woad', colour: 'blue', home: ['ebadlands', 'nhighlands'], note: 'also Clan woad: the northern clans'});
 R('broom', 'Heath broom', 'dye', [0, 2], [1, 3], {atm: [0, 2], form: 'shrub', card: 'card.broom', colour: 'yellow', home: ['nhighlands']});
-R('lichen', 'Rosette lichen', 'dye', [0, 3], [1, 3], {atm: [0, 2], colour: 'brown', home: ['shighlands', 'sedesert', 'nwouterwall'], src: 'shighlands', note: 'a lichen dye (the colour is not named in the kits)'});
+R('lichen', 'Rosette lichen', 'dye', [0, 3], [1, 3], {atm: [0, 2], colour: 'brown', home: ['shighlands', 'sedesert', 'nwouterwall', 'wouterwall'], src: 'shighlands', note: 'a lichen dye (the colour is not named in the kits)'});
 R('rabbitbrush', 'Rabbitbrush flowers', 'dye', [2, 4], [0, 1], {form: 'shrub', colour: 'yellow', home: ['ebadlands'], src: 'ebadlands'});
 R('ghost-gum', 'Ghost-gum leaf', 'dye', [2, 4], [0, 2], {form: 'tree', card: 'card.ghostwood', colour: 'gold', home: ['nwlowlands']});
 R('alder-bark', 'Grey alder bark', 'dye', [1, 2], [3, 3], {form: 'tree', colour: 'red', also: [], home: ['nhighlands'], src: 'nhighlands', note: 'red and black'});
@@ -103,9 +103,13 @@ R('woolly-willow', 'Woolly willow withies', 'weaving', [0, 1], [2, 4], {also: ['
 R('cottongrass', 'Cottongrass down', 'fuel', [0, 1], [3, 4], {also: ['sheet'], atm: [0, 1], card: 'card.cottongrass', src: 'nwouterwall', home: ['nwouterwall'], stores: ['dried'], note: 'Eriophorum in the alas bogs: wicks for the lamps, and padding'});
 R('sphagnum', 'Bog moss', 'sheet', [0, 2], [3, 4], {atm: [0, 2], src: 'nwouterwall', home: ['nwouterwall'], stores: ['dried'], note: 'sphagnum, red and green, cut in the alases: dressing, nappies, insulation, and the fibre of moss pycrete where there is no timber'});
 R('beard-lichen', 'Larch beard', 'medicine', [0, 1], [1, 3], {atm: [0, 1], src: 'nwouterwall', home: ['nwouterwall'], stores: ['dried'], note: 'beard lichens (Bryoria, Usnea) hanging on the larch: a wound dressing, and the caribou\'s winter fodder'});
-R('larch-bark', 'Fur-larch bark', 'dye', [0, 1], [1, 2], {atm: [0, 2], form: 'tree', colour: 'red-brown', src: 'nwouterwall', home: ['nwouterwall'], note: 'the bark\'s tannin: a red-brown, and the tanner\'s bark; the larch\'s gum is chewed'});
+R('larch-bark', 'Fur-larch bark', 'dye', [0, 1], [1, 2], {atm: [0, 2], form: 'tree', colour: 'red-brown', src: 'nwouterwall', home: ['nwouterwall', 'wouterwall'], note: 'the bark\'s tannin: a red-brown, and the tanner\'s bark; the larch\'s gum is chewed'});
 R('silverthorn', 'Silverthorn', 'berry', [0, 2], [0, 2], {also: ['dye'], atm: [0, 2], form: 'shrub', card: 'card.seabuckthorn', colour: 'yellow', src: 'nwouterwall', home: ['nwouterwall'], stores: ['fresh', 'cured'], note: 'sea buckthorn in the forest-steppe\'s gullies: the berries against the winter\'s scurvy, a yellow dye'});
-R('birch-tar', 'Birch tar', 'dye', [0, 1], [1, 3], {also: ['fuel'], atm: [0, 1], form: 'shrub', colour: 'black', src: 'nwouterwall', home: ['nwouterwall'], note: 'dry-distilled from the snow birch\'s bark: glue, waterproofing and a black'});
+R('birch-tar', 'Birch tar', 'dye', [0, 1], [1, 3], {also: ['fuel'], atm: [0, 1], form: 'shrub', colour: 'black', src: 'nwouterwall', home: ['nwouterwall', 'wouterwall'], note: 'dry-distilled from the snow birch\'s bark: glue, waterproofing and a black'});
+
+/* ---- the loess bench (biomes/wouterwall, PLAN.md section 4, 2026-11-10): the Hayrant's rope and sacking */
+R('cave-madder', 'Cave madder', 'dye', [1, 2], [0, 2], {also: ['medicine'], atm: [0, 2], form: 'vine', colour: 'red', src: 'wouterwall', home: ['wouterwall'], stores: ['dried'], note: "Indian madder (Rubia cordifolia), scrambling over the terraces' risers and the gully walls: its roots dug in the third autumn for the Hayrant's red; with the larch's red-brown, the birch tar's black and the lichen's brown they weave a plaid"});
+R('wallhemp', 'Wallhemp', 'cordage', [1, 2], [1, 3], {also: ['spinning', 'oil'], atm: [0, 2], card: 'card.crop.nettle', src: 'wouterwall', home: ['wouterwall'], stores: ['dried'], note: 'hemp (Cannabis sativa) on the lower terraces: retted in the spring brooks for rope and coarse sacking; its seed pressed for lamp oil in the cave houses'});
 
 /* ---- the Cut (biomes/cut, PLAN.md section 7, 2026-10-26) */
 R('rankgrass', 'Rankgrass', 'thatch', [4, 5], [0, 1], {needs: 'salt', form: 'grass', card: 'card.rankgrass', src: 'cut', home: ['cut'], note: 'a salt grass seeding in straight lines along the field of the warp; grazing on the flats, salt-tolerant thatch'});

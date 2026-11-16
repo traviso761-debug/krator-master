@@ -90,7 +90,10 @@ MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:hostGroundLib('ground
    GLAY?' {vec3 mb=pow(texture2D(uLMarb,mix(vGWP.xz,vec2(vGWP.x+vGWP.z*0.7,vGWP.y),smoothstep(0.3,0.7,steep))*'+GLAY.marbK.toFixed(4)+').rgb,vec3(2.2))/'+GLAY.marbM.toFixed(4)+';st*=mix(vec3(1.0),mb,vGL.w);}':'',
    ' diffuseColor.rgb=mix(diffuseColor.rgb,mix(diffuseColor.rgb,st,0.30+0.25*texture2D(uDetail,vGWP.xz*0.004).r),max(smoothstep(0.45,0.8,steep),vGM.x*0.6));',
    ' diffuseColor.rgb*=mix(vec3(1.0),vec3(0.62,0.6,0.56),vGM.y*0.8);}'].join('\n'));};
-if(USE_KG&&GLAY)KGROUND.hook(MAT_GROUND,{key:'xanadu-ground',at:'/*KGROUND*/',layers:[KGROUND.layer('xanadu','ground.shore',{w:'vGL.x',amt:.8,gain:1.3,tint:'diffuse'}),
+// THE RELIEF (KGROUND's opt-in relief, core/terrain/GROUND.md; the ground catch-up 2026-11-04): the layers' height bumps the lit normal near the eye,
+// the low of it and the mesh's hollows (aKGAO, KGROUND.cavityMesh on the mesh below) lose sky light. No side planes (tri): ?relief=0 none
+const KG_REL=XQ_ON('relief')?{bump:.075,cavity:.8,mesh:1}:null;
+if(USE_KG&&GLAY)KGROUND.hook(MAT_GROUND,{key:'xanadu-ground',at:'/*KGROUND*/',relief:KG_REL,layers:[KGROUND.layer('xanadu','ground.shore',{w:'vGL.x',amt:.8,gain:1.3,tint:'diffuse'}),
  KGROUND.layer('xanadu','ground.pebble',{w:'vGL.y',amt:.8,gain:1.3,tint:'diffuse'}),
  KGROUND.layer('xanadu','ground.gravel',{w:'vGL.z',amt:.75,gain:1.3,tint:'diffuse'})]});
 /* THE BEDDED ROCK AS DATA (core/terrain 35, KSTRATA; BACKPORT.md xanadu's row "strata"): the cliffs' petrified-wood beds as a stack the placement reads
@@ -109,7 +112,7 @@ const STRATA=(typeof KSTRATA!=='undefined'&&XQ_ON('strata'))?KSTRATA.create({see
  g.setAttribute('aGL',new THREE.BufferAttribute(lay,4));g.setAttribute('aGM',new THREE.BufferAttribute(gm,2));
  // PlaneGeometry's uv runs v up the plane; the canvas's y runs down it (z south): match them
  const uv=g.attributes.uv;for(let i=0;i<uv.count;i++){uv.setXY(i,(p.getX(i)-TERR.X0)/SX,1-(p.getZ(i)-TERR.Z0)/SZ);}
- g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.seat='ground';m.userData.inspectLabel=LAND.label;scene.add(m);window._groundMesh=m;
+ g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.seat='ground';m.userData.inspectLabel=LAND.label;if(USE_KG&&GLAY&&KG_REL)KGROUND.cavityMesh(m,{rings:[3,18],depth:[.5,4]});   /* aKGAO: relief.mesh */scene.add(m);window._groundMesh=m;
  GROUND_SEAT=KSEAT.tris(p.array,g.index.array,{id:'ground',cls:'ground'});})();   /* the drawn ground: what drawnH and the probe's contact sweep read */
 
 // ---------------------------------------------------------------- the lake

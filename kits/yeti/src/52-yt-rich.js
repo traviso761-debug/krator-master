@@ -17,8 +17,16 @@ function ytClanRiches(D){const yP=D.yPlat+.07,cw=-PI/2,win=-PI/2+.5;
  const zf=D.zPlat-.05+.09;box('bead',0,D.yFl+.28,zf,2.6,.5,.02,P('ice'));
  ytRug('mosaic',0,D.yFl,D.zPlat+1.25,3.2,1.9,0);
  W(0,D.yFl,0,0,()=>ytSerge(-1.9,D.zPlat+.55,2.4));
- /* the household's goods, a cut above the common (catalog pieces until the khaayken file) */
- FURNISH('generic_strongbox',1.9,yP,-1.9,-.6);FURNISH('generic_spirits',-.9,yP,-.9,.2);FURNISH('generic_tea_set',.6,yP,-.8,0);}
+ /* the household's goods, a cut above the common: the khaayken court's beaded chest and antler screen, the tea board */
+ FURNISH('khaayken_court_bead_chest',1.75,yP,-1.75,-.75);FURNISH('generic_spirits',-.9,yP,-.9,.2);
+ FURNISH('khaayken_common_tea_board',.55,yP,-.75,0);FURNISH('generic_tea_set',.55,yP+(typeof svfH==='function'?svfH('khaayken_common_tea_board',0,.42):.42),-.75,0);
+ /* carved figures on the platform's front corners; the war loot (45-yt-inside.js: a wall of it in the rich house): faces on
+    stands along the platform's back, masks hung over the hangings, a lacquer chest and an alabaster lamp on the front floor */
+ ytFigure(-1.55,yP,D.zPlat-.3,.3,.5,{});ytFigure(1.2,yP,D.zPlat-.35,-.3,.42,{});
+ const sl=[];for(const a of [PI+.75,TAU-.75]){const [x,z,ry]=ytWallAt(D,a,yP,.4,.4,.05);sl.push(['head',x,yP,z,ry,.42]);}
+ for(const a of [PI+.55,PI+1.0,TAU-1.0+.0]){const y=yP+1.55,[x,z,ry]=ytWallAt(D,a,y,.3,.06,.14);sl.push(['mask',x,y,z,ry,.32]);}
+ sl.push(['eternian_court_alabaster_lamp',-2.3,D.yFl,D.zPlat+.6,PI/2]);sl.push(['porcelain',-.2,yP,-1.65,0]);
+ ytLoot(sl,'rich');}
 defBuilding({key:'yt_clan_compound',name:"Clan compound (the rich household)",seed:9131,w:YT_CLAN.w,d:YT_CLAN.d,h:YT_CLAN.D.h,cut:true,budget:280000,
  tags:{types:['dwelling-single'],wealth:'rich',style:'rich',role:'clan'},mouth:YT_CLAN_C.D.cz+YT_CLAN_C.D.z1,
  note:'a stone hall with its mass heater and a ring of pycrete domes; serge at the door; hangings, a fur-mosaic rug and beadwork inside',

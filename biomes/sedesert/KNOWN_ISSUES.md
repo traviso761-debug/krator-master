@@ -4,6 +4,33 @@ Read before changing anything here. `build.py` prints the open count.
 
 ## Open
 
+### The attach audit and the instance cap (the integration pass, 2026-11-08)
+- [x] (2026-11-08) **Crowns held by their wood; the stations' grass counted.** All four pages failed the core attach audit (the west
+  catch-up, 2026-11-04) and Mantis and the steppe the instance cap. Fixed in the kit's own files, no draw from the stream added or moved
+  in the tree passes (only the grass passes' cells changed), species keys and indices unchanged:
+  - `55`: `forkTree` logs every span it draws (the bole's axis, each fork's tube) and holds each tuft, plume, skirt and the fallback tuft
+    to the nearest (`BIO.snapSeg`, `BIO.holdTo`); it returns the log. The mesquite does the same over its stems, secondaries and rods (a
+    shrub's spots on its straight rod). The bottle tree's, the desert rose's and the columns' blooms are held to their tips (`blooms`
+    takes `o.hold`). How far a card may stand is `SEDESERT.reachOf(item, size)`: half its size for a centred tripod, `.2*size+.3` for a
+    card the 'sedesert' pack holds by its stem (the feathers: a reach of half the size left them 1.4 m off, read as `d:null`).
+  - Bowl `66`: a rod from the tamarisk's trunk top to each crown clump (its crown had no structure), its plumes held on the clump; the
+    saxaul's twig tufts held to their stem tips. Mantis `57`: the beard lichen hangs from the nearest limb (`forkTree`'s log), the
+    cucumber tree's plume held to its tip.
+  - The cap: the steppe's bunchgrass bands 3.6/10 m -> 9.6/17 m, tufts a quarter larger (1,233,010 bunch -> under 250k); Mantis's pocket
+    grass clumps one or two tufts close (were three to six) and its tall grass 3.6/7.5 m -> 6.2/12 m (grass 643,785 -> 230,847,
+    rankgrass 315,146 -> 113,910). No `capWhy`: the old numbers were the spine's lattice making the whole map the near band.
+  - Audit before -> after (GPU unless marked): main 14.72% -> 0.05%; Bowl 13.97% -> 0.01%; Mantis 7.26% (SwiftShader) -> 0.03%; steppe
+    15.07% (SwiftShader) -> 0.00%.
+  - The Bowl's ground needed 17 texture units on the GPU (nine library layers, detail, noise, the strata's three, the map, the shadow and
+    the rain occlusion map the cloud shade adds; D3D gives 16), so it did not compile: the Bowl station sets `STATION.rainCover:false`
+    (`src/89x-host-air.js` skips the occlusion map; rain under a crown darkens the ground there too). Moving the layers onto KGROUND or an
+    atlas would give the unit back.
+  - `55` is read in place by shade, verge, the Catch (four pages), eastabyss (two), Korona (gorge, trench), ringisles (two) and the isle
+    demo (`tools/reach.py`): only the Catch's oasis was rebuilt in this pass.
+    The Catch's oasis (reads the mesquite in place) passes too (0.00%, GPU); its own `holdFeathers` wrapper in `biomes/catch/src/88` is
+    now redundant, left for the Catch's turn.
+  - Not this kit's: SwiftShader shows shader errors on these pages that the GPU does not (`#define attribute` in a vertex shader).
+
 ### The final rebuild's turn (2026-10-27, `PLAN-STATIONS.md` "Core adoption")
 - [ ] **The looks to judge** (each behind its switch): the impostors' gain (2.6, `?impgain=`; the core bake is ~4x dark), the pavement's
   stones (`?pave=0`), the dune ripples (`?sand=0`), the Bowl's pressure polygons (`?polygon=0`) and shore pan (`?pan=0`), the height fog
@@ -57,8 +84,8 @@ Read before changing anything here. `build.py` prints the open count.
       not built); the rim walls are the shared sky's ridges, not ground.
 - [ ] **Glasswort's colour follows the salt, not the season** (crimson where the salt is strongest). The saxaul's twigs borrow the
       glasswort card (`card.samphire`): no saxaul card exists.
-- [ ] **The fauna is the kit's** (kites, swifts, striders, lizards, coyotes; no deer: too hot). Section 6's Bowl mantis, brine flies,
-      wading bird and salt beetles are `kits/fauna`'s work.
+- [ ] **The fauna is the kit's** (kites, swifts, striders, lizards, coyotes; no deer: too hot). Section 6's brine flies, wading bird and salt
+      beetles are `kits/fauna`'s work. The Bowl mantis is built (`bowl-mantis`, 2026-11-02), in the kit's `hyperjungle` file: this page bundles only `desert`, so it needs that group, or the mantis moved.
 - [ ] **The station's `dist/sedesert-bowl.html` is not in `PORT-BASELINE.json`** (the baseline is rewritten on the merged branch).
 - [ ] **The shared sky (SKY-PLAN.md section 9, 2026-10-26): the look to judge.** The painted dome and the giant mesh are
       gone; `89s-host-sky.js` calls `ATMOS.skyBiome` (core/atmos) on the host clock: the page opens at 06:00 on game start's

@@ -63,6 +63,7 @@ def find_node():
 
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(HERE)), 'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 SRC = os.path.join(HERE, 'src')
 LOD_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'lod')   # shared level of detail (core/lod/README.md)
 RAND_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'rand')  # KRAND: the tags' uid is its hash
@@ -73,11 +74,15 @@ TAGS_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'tags') 
 # Park-Miller rnd() and noise (the exception in GODOT-PLAN.md, Phase 2 item 1).
 # export: core/export (07-core-export.js and its adapters: the krator-world container; core/export/README.md), which
 # 77-export.js fills with Yuni's fixtures beside its KRATOR_EXPORT route (GAME_EXPORT.md, "Two routes").
-CORE_MODULES = ['clock', 'sched', 'minimap', 'export', os.path.join('materials', 'record')]
+# door: the doors' records and the glass (KDOOR, KGLASS, KDOORHOST: core/door/README.md), which 53-assets.js draws its
+# openings with and 76-doors.js drives; walk: KWALK, for the reachability audit of the interiors only (76-doors.js
+# DOORS.reach: Yuni's walker is its own, on the interior plans)
+CORE_MODULES = ['clock', 'sched', 'minimap', 'export', os.path.join('materials', 'record'), 'door', 'walk']
 CORE_DIRS = (LOD_DIR, RAND_DIR, TAGS_DIR) + tuple(os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', m) for m in CORE_MODULES)
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'host'))
 import host as khost                         # core/host: the camera, loop, panel, probe, inspector, marks, pictures, minimap, editor,
 CORE_HOST = khost.FULL                       # cutaway (core/host/README.md; ROADMAP.md section 10, step 5), with core/edits, core/space, core/minimap
+CORE_HOST = CORE_HOST + khost.KEYS   # the one key map and the one walk mode (core/host/92k-host-keys.js; TODO.md, Viewers)
 TEX_DIR = os.path.join(HERE, 'tex')          # the library pack: tools/textures/pack.py writes it from materials.json
 PACK_FRAGMENT = '46-matlib-pack.js'          # GENERATED from tex/ (never written to src/)
 # The eastern badlands biome (biomes/ebadlands, BIOME-API.md: "the valley of Yuni" is its humid south): core/biome and
@@ -95,6 +100,11 @@ BIO_CANON = {'69a1-bio-core-head.js': ('core', 'biome', '10-core-head.js'),
              '69c4-bio-ebadlands-dress.js': ('biomes', 'ebadlands', 'src', '65-biome-ebadlands-dress.js'),
              '69c5-bio-ebadlands.js': ('biomes', 'ebadlands', 'src', '70-biome-ebadlands.js')}
 BIO_CANON = {k: os.path.join(_ROOT, *v) for k, v in BIO_CANON.items()}
+# The Yuni kit (kits/yuni: the houses, the poor quarters, the wealthy compounds and the Emir's palace, the Order's civic
+# buildings and park; MODULARITY-PLAN.md step 4b), read in place under its old names, so the page keeps its filename order.
+# Not a core fragment: 59a-59c still continue 59-civic.js as one unit for the build rules.
+sys.path.insert(0, os.path.join(_ROOT, 'kits', 'yuni'))
+import yunikit
 OUT = os.path.join(HERE, 'yuni.html')
 OUT_SHEET = os.path.join(HERE, 'yuni-assets.html')
 OUT_FLORA = os.path.join(HERE, 'yuni-plants.html')
@@ -250,6 +260,8 @@ def check(order, bodies):
 def main():
     do_checks = '--no-checks' not in sys.argv
     paths = {f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()}
+    for f, p in yunikit.paths().items():   # the Yuni kit (a src/ copy with the same name wins)
+        paths.setdefault(f, p)
     for d in CORE_DIRS:                    # a src/ copy with the same name overrides
         for f in os.listdir(d):
             if f[0].isdigit() and f.endswith('.js') and f not in paths:
@@ -284,12 +296,13 @@ def main():
                 print('  -', e)
             sys.exit(1)
 
+    BSRC.report()   # --list-sources: every file read so far is what the page is made of; then exit
     html = ''.join(bodies[f] for f in order)
     if SIDE:   # the pack beside the pages, one file they all share
         sys.path.insert(0, os.path.join(_ROOT, 'tools', 'textures'))
         import matlib_pack as _mp
         html = _mp.write_sidecar(SIDE, html, HERE, 'yuni.tex.js', prune=False)
-    with open(OUT, 'w', encoding='utf-8') as fh:
+    with open(OUT, 'w', encoding='utf-8', newline='\n') as fh:
         fh.write(html)
     def flavour(target, title, h1, loading):
         t = html.replace('<title>Yuni</title>', '<title>%s</title>' % title, 1)
@@ -298,9 +311,9 @@ def main():
 
     sheet = flavour('sheet', 'Yuni Building Kit', 'Yuni — building kit', 'Laying out the kit…')
     flora = flavour('flora', 'Yuni Plants',       'Yuni — plants',       'Laying out the plants…')
-    with open(OUT_SHEET, 'w', encoding='utf-8') as fh:
+    with open(OUT_SHEET, 'w', encoding='utf-8', newline='\n') as fh:
         fh.write(sheet)
-    with open(OUT_FLORA, 'w', encoding='utf-8') as fh:
+    with open(OUT_FLORA, 'w', encoding='utf-8', newline='\n') as fh:
         fh.write(flora)
     # artifact flavour: the publish skeleton supplies doctype/html/head/body, so strip ours
     import re as _re
@@ -309,7 +322,7 @@ def main():
         a_ = src_html
         for tag in ('<!DOCTYPE html>','<html lang="en">','<head>','</head>','<body>','</body>','</html>','<meta charset="utf-8">','<meta name="viewport" content="width=device-width,initial-scale=1">'):
             a_ = a_.replace(tag,'')
-        with open(os.path.join(HERE,'publish',name),'w', encoding='utf-8') as fh: fh.write(a_.lstrip())
+        with open(os.path.join(HERE,'publish',name),'w', encoding='utf-8', newline='\n') as fh: fh.write(a_.lstrip())
     with open(MANIFEST, 'w', encoding='utf-8') as fh:
         json.dump({f: hashlib.sha1(bodies[f].encode()).hexdigest()[:12] for f in order},
                   fh, indent=1, sort_keys=True)

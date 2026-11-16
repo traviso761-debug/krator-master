@@ -63,9 +63,10 @@ const S=[G].concat(ROCK);
 {const d=K.down(ROCK,20,10),t=KSTACKS.topH(mesa.beds[mesa.beds.length-1],20,10);
  ok('the drawn top is the top function where a ring meets it ('+(d&&d.y.toFixed(2))+' vs '+t.toFixed(2)+')',d&&Math.abs(d.y-t)<1.2&&d.id==='m1'&&d.cls==='rock',!d);
  ok('under the rock\'s top, a point is in it; over it, not',K.under(ROCK,20,20,10)>30&&K.under(ROCK,20,70,10)===0,K.under(ROCK,300,20,4)>0);
- // what KSEAT found here: a ringed top's last ring is at .08 of its radius and is not closed, so the drawn top has a hole
- // at its centre (37-core-stacks.js, rhos); a ray there falls through to the ground
- ok('the drawn top has a hole at its centre (the top rings of KSTACKS.mesh stop at .08)',K.down(ROCK,mesa.beds[0].cx,mesa.beds[0].cz)===null,false);
+ // what KSEAT found here: a ringed top's last ring stopped at .08 of its radius, so the drawn top had a hole at its centre and a
+ // ray there fell through to the ground; since 2026-11-08 a centre fan closes it (37-core-stacks.js, fan)
+ {const c=K.down(ROCK,mesa.beds[0].cx,mesa.beds[0].cz),t=KSTACKS.topH(mesa.beds[mesa.beds.length-1],mesa.beds[0].cx,mesa.beds[0].cz);
+  ok('the drawn top is closed at its centre (a ray down meets the rock '+(c&&c.y.toFixed(2))+' vs '+t.toFixed(2)+')',c&&c.cls==='rock'&&Math.abs(c.y-t)<1.2,!c);}
  // the outline at mid-height against the drawn wall: the level gap from outside reads positive in the air, negative in rock
  const b=mesa.beds[0],a=.9,R=KSTACKS.footR(b,a),px=b.cx+Math.cos(a)*(R+20),pz=b.cz+Math.sin(a)*(R+20),gIn=K.gap(ROCK,px,b.y+b.h*.5,pz,-Math.cos(a),-Math.sin(a));
  ok('gap: 20 m out from the outline the drawn wall is '+(gIn==null?'?':gIn.toFixed(2))+' m off',gIn!=null&&gIn>10&&gIn<40,gIn!=null&&gIn<0);}

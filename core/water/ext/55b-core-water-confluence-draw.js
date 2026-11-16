@@ -11,7 +11,7 @@
 //   WATER.ribbonFadeGLSL(C) that line (twin: 1 - C.fadeAt)
 (function(){const W=WATER;
  const glf=v=>{const q=String(+v);return/[.e]/.test(q)?q:q+'.0';},f=glf;
- const lin=(T,c)=>{const q=new T.Color(c);return'vec3('+[q.r,q.g,q.b].map(glf).join(',')+')';};
+ const lin=(T,c)=>'vec3('+W.colLin(T,c).map(glf).join(',')+')';
  const AT=()=>{try{return typeof ATMOS!=='undefined'?ATMOS:null;}catch(e){return null;}};
  const sky=(mat,o)=>{const A=AT();if(o.envMapIntensity!=null)mat.envMapIntensity=o.envMapIntensity;
   A.hook(()=>{const E=A.skyEnv,tx=E&&E.target&&E.target.texture;if(tx&&mat.envMap!==tx){mat.envMap=tx;mat.needsUpdate=true;}});};

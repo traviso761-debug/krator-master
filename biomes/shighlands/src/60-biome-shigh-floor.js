@@ -61,7 +61,7 @@ function log(x,y,z,st){const a=rr(0,TAU),L=rr(5,13),r0=rr(.25,.5),hx=Math.cos(a)
  BIO.tube('wood',pts,col,{seg:6,cap:true});st.logs++;
  for(let i=0;i<n;i++){const p=pts[i];BIO.put('moss',[p.x,p.y+p.r*.7,p.z],qEuler(rr(-.2,.2),rr(0,TAU),rr(-.2,.2)),[p.r*3,p.r*1.1,p.r*3],leafCol(PAL.moss,1.15,.03,.08,.05),{n:[0,1,0]});}
  return true;}
-SHIGH.small={tuft,swirl,daisies,fern,coral};
+SHIGH.small={tuft,swirl,daisies,fern,coral,stone,boulder,mossMat,cushion,rosette,around,rockTint};   /* a station's floor (stations/<name>/) reuses them */
 
 // ---------------------------------------------------------------- the zone planters
 // Each takes (x,y,z,Z,lv,st) and places one plant of the zone's mix.
@@ -128,7 +128,7 @@ SHIGH.FLOOR_ZONES=['forest','elfin','paramo','bog','dry','crag','stream'];
 const PLANTERS=[plantForest,plantElfin,plantParamo,plantBog,plantDry,plantCrag,plantStream];
 SHIGH.floorWeights=Z=>[Z.forest*1.5,Z.elfin*1.3,Z.paramo*1.2,Z.bog*1.4,Z.dry*.9,Z.crag*.8,Z.stream*1.6];
 SHIGH.buildFloor=function(R,q){
- reseed(600047);q=q==null?1:q;R=R||2500;means();
+ reseed(600047);q=q==null?1:q;R=R==null?2500:R;means();
  const st={moss:0,begonias:0,ferns:0,ginger:0,shrubs:0,tussocks:0,rush:0,rosettes:0,flowers:0,sundews:0,albuca:0,spears:0,aloes:0,lichen:0,stones:0,boulders:0,logs:0};
  function plant(x,y,z,lv){if(blocked(x,z,.6))return;const Z=zones(x,z);if(Z.cliff>.6)return;
   const w=SHIGH.floorWeights(Z);let tot=0;for(let i=0;i<w.length;i++)tot+=w[i];if(tot<=0)return;

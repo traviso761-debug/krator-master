@@ -1,0 +1,284 @@
+{
+ "build": "highrift",
+ "note": "The High Rift kit's adapter onto the material library (core/materials/PLAN.md; biomes/highrift/PLAN.md section 2). The ground's KGROUND layers by family (84-host-ground.js: sinter, the thermophile mats, the tundra, the Gill's cobble, the older white and the acid travertine, the coulee's block field, the gjar's tuff; rock.basalt.oxidised stands in for the fault mirror's owed rock.hematite.mirror), and the two cards by material slot (BIO.libSwap: tussock -> card.ichu, heath -> card.steamcomb). Run python3 tools/textures/pack.py biomes/highrift after any change, then python3 build.py --all.",
+ "size": 512,
+ "families": {
+  "ground.sinter": {
+   "lib": "ground.sinter",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.mat.thermal": {
+   "lib": "ground.mat.thermal",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.tundra": {
+   "lib": "ground.tundra",
+   "scale": [
+    2.6,
+    2.6
+   ],
+   "tint": {
+    "keep": 0.6,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.wadi.cobble": {
+   "lib": "ground.wadi.cobble",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.travertine.white": {
+   "lib": "ground.travertine.white",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.travertine.acid": {
+   "lib": "ground.travertine.acid",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "rock.hematite.mirror": {
+   "lib": "rock.hematite.mirror",
+   "_note": "station mirror's fault face (84-host-ground.js): the 2026-11-03 delivery, in place of rock.basalt.oxidised at a low roughness",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.lava.aa": {
+   "lib": "ground.lava.aa",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "rock.tuff": {
+   "lib": "rock.tuff",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 0.7,
+    "mean": 0.7
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "tussock": {
+   "lib": "card.ichu",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.66
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "stems": [
+    {
+     "cell": [
+      0.03,
+      0.028,
+      0.337,
+      0.339
+     ],
+     "stem": [
+      0.0518,
+      0.3037
+     ],
+     "tip": [
+      0.3079,
+      0.1272
+     ],
+     "w": [
+      -0.1551,
+      0.1147
+     ]
+    },
+    {
+     "cell": [
+      0.349,
+      0.329,
+      0.655,
+      0.657
+     ],
+     "stem": [
+      0.3564,
+      0.6162
+     ],
+     "tip": [
+      0.6336,
+      0.4369
+     ],
+     "w": [
+      -0.1486,
+      0.1122
+     ]
+    },
+    {
+     "cell": [
+      0.661,
+      0.661,
+      0.98,
+      0.982
+     ],
+     "stem": [
+      0.6631,
+      0.9365
+     ],
+     "tip": [
+      0.953,
+      0.7635
+     ],
+     "w": [
+      -0.1585,
+      0.1216
+     ]
+    }
+   ]
+  },
+  "heath": {
+   "lib": "card.steamcomb",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.66
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "stems": [
+    {
+     "cell": [
+      0.011,
+      0.026,
+      0.339,
+      0.306
+     ],
+     "stem": [
+      0.0693,
+      0.2842
+     ],
+     "tip": [
+      0.2742,
+      0.0752
+     ],
+     "w": [
+      -0.1194,
+      0.1327
+     ]
+    },
+    {
+     "cell": [
+      0.341,
+      0.36,
+      0.671,
+      0.653
+     ],
+     "stem": [
+      0.6436,
+      0.5986
+     ],
+     "tip": [
+      0.3844,
+      0.4135
+     ],
+     "w": [
+      -0.1276,
+      0.1319
+     ]
+    },
+    {
+     "cell": [
+      0.661,
+      0.679,
+      0.995,
+      0.984
+     ],
+     "stem": [
+      0.6689,
+      0.8877
+     ],
+     "tip": [
+      0.9896,
+      0.792
+     ],
+     "w": [
+      -0.1272,
+      0.117
+     ]
+    }
+   ]
+  }
+ }
+}
