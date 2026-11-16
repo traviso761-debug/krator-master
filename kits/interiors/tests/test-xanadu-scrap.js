@@ -1,7 +1,7 @@
 /* kits/interiors/tests/test-xanadu-scrap.js: the Scrap Xanadu interiors (sets/xanadu-scrap.js) against the defs they serve.
    1. every def xa_scrap_* has an item or a skip for each variant (forDef), and every item carries its def key;
-   2. THE DOORS: every street door of every item (bar a doorway marked court: true, off a court inside the def, where the kit
-      draws no leaf) stands in one of the def's own door openings (XAK.proto(key, v).userData.doors,
+   2. THE DOORS: every street door of every item (bar a doorway marked court: true, off a court inside the def, or inner: true,
+      between two parts of it, where the kit draws no leaf) stands in one of the def's own door openings (XAK.proto(key, v).userData.doors,
       the set's DOORS table): along the wall within the leaf's half width, through it within 1.1 m (an inset body's door sits on
       the footprint inside the batter); and every one of the def's doors is served by a door of the item, or is listed below
       with why not;
@@ -29,7 +29,7 @@ const ok = (c, m) => { checks++; if (!c) bad(m); return c; };
 
 /* the def's doors that no item door serves, and why */
 const UNSERVED = {
-  xa_scrap_gate: { 0: 'the gate between the towers: an open passage under the walk', 1: 'the gate (second leaf)' },
+  xa_scrap_gate: { 2: 'the gate between the towers: an open passage under the walk', 3: 'the gate (second leaf)' },
   xa_scrap_bridge: { 1: 'the span\'s door into the west tower\'s top storey: the host\'s span deck', 3: 'the span\'s door into the east tower' }
 };
 /* floors the walker from the front door is not expected to reach (the host's climb reaches them) */
@@ -43,8 +43,8 @@ for (const it of S.items) ok(DEFS.indexOf(it.def) >= 0 && it.key.split('#')[0] =
 /* an item's street doors in its own frame: [{at, w, body}] */
 function streetDoors(it) {
   const out = [];
-  (it.bodies || []).forEach(b => (b.doors || []).forEach(d => out.push({ at: d.at, w: d.w, body: b.id, court: !!d.court })));
-  (it.rooms || []).forEach(r => (r.doors || []).forEach(d => { if (d.to == null || d.to === 'street') out.push({ at: d.at, w: d.w, body: r.id }); }));
+  (it.bodies || []).forEach(b => (b.doors || []).forEach(d => out.push({ at: d.at, w: d.w, body: b.id, court: !!(d.court || d.inner) })));
+  (it.rooms || []).forEach(r => (r.doors || []).forEach(d => { if (d.to == null || d.to === 'street') out.push({ at: d.at, w: d.w, body: r.id, court: !!(d.court || d.inner) }); }));
   return out;
 }
 /* the record a door stands in, or null: along the leaf's wall within its half width (+0.1), through it within 1.1 m */
@@ -97,14 +97,16 @@ for (const it of S.items) {
   /* the front door in world metres, and a step outside it on the ground */
   const d0 = streetDoors(it)[0], R0 = DOORS[it.def][recordOf(it.def, d0).i], nL = [Math.sin(R0[3]), Math.cos(R0[3])];
   const start = T([R0[0] + nL[0] * 1.6, R0[2] + nL[1] * 1.6]);
-  const rooms = W.floors.filter(F => F.kind === 'poly' && !/\.entry$/.test(F.name || ''));
+  const rooms = W.floors.filter(F => F.kind === 'poly' && !/\.entry$/.test(F.name || '') && !/\.stair\./.test(F.name || ''));   /* a ladder's rungs are its climb, not a room */
   /* a floor part narrower than a walker (a strip left between a stair well and the wall) is no room: its area over its longest side */
   const wide = (F) => { const P = F.pts; let a = 0, L = 0; for (let i = 0; i < P.length; i++) { const p = P[i], q = P[(i + 1) % P.length]; a += p[0] * q[1] - q[0] * p[1]; L = Math.max(L, Math.hypot(q[0] - p[0], q[1] - p[1])); } return Math.abs(a / 2) / (L || 1) >= 0.5; };
   const skipF = ABOVE[it.def] || [], want = rooms.filter(F => wide(F) && !skipF.some(s2 => (F.name || '').endsWith(s2) || (F.name || '').indexOf(s2 + '.') >= 0));
   floorsAll += want.length;
-  const ground = () => BY, inside = (R) => R.reached.filter(F => rooms.indexOf(F) >= 0);
+  /* flooded on a 0.2 m grid: a building turned inside the item (the widest silo's square faces its yard) lays its ladder
+     diagonally across the grid, where the 0.4 m default reads the 0.6 m rungs as blocked */
+  const ground = () => BY, RO = { ground: () => BY, cell: 0.2 }, inside = (R) => R.reached.filter(F => rooms.indexOf(F) >= 0);
   /* negative: the leaves shut, nothing inside */
-  const shut = W.reach([[start[0], BY, start[1]]], { ground: ground });
+  const shut = W.reach([[start[0], BY, start[1]]], RO);
   ok(!inside(shut).length, it.key + ': negative: with the doors shut the walker still reaches ' + inside(shut).map(F => F.name.replace(inst.id + '.', '')).slice(0, 3).join(', '));
   /* the walker at the front door: the door it finds is that door, unlocked; locked, it will not open and the way stays shut */
   const near = D.nearest(start[0], BY + R0[1], start[1], 2.2);
@@ -113,12 +115,12 @@ for (const it of S.items) {
   D.list.forEach(Dr => D.lock(Dr, true));
   ok(!D.open(near), it.key + ': negative: a locked leaf opened');
   D.step(10);
-  ok(!inside(W.reach([[start[0], BY, start[1]]], { ground: ground })).length, it.key + ': negative: the doors locked, the walker still gets in');
+  ok(!inside(W.reach([[start[0], BY, start[1]]], RO)).length, it.key + ': negative: the doors locked, the walker still gets in');
   /* unlocked (the scrap proto's {unlocked: true}): the walker opens each leaf as it comes to it; every floor */
   D.list.forEach(Dr => { D.lock(Dr, false); D.open(Dr, { by: 'npc' }); });
   D.step(10);
   ok(D.list.every(Dr => Dr.open === 1 && Dr.blocks.every(b => b.off)), it.key + ': a leaf did not swing open or its blocks stayed on');
-  const open = W.reach([[start[0], BY, start[1]]], { ground: ground });
+  const open = W.reach([[start[0], BY, start[1]]], RO);
   const miss = want.filter(F => open.reached.indexOf(F) < 0);
   if (ok(!miss.length && !open.capped, it.key + ': from the front door the walker misses ' + miss.length + ' of ' + want.length + ' floors: ' + miss.map(F => F.name.replace(inst.id + '.', '')).slice(0, 5).join(', '))) walked++;
 }
