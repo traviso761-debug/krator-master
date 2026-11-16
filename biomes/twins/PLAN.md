@@ -2,9 +2,18 @@
 
 > **Status: Built in software GL (`2026-11-09`): station 1, the pyroduct (`dist/twins.html`, GPU-verified); stations 2-6 built in a cloud session (`dist/twins-brazier.html`, `twins-lavasump.html`, `twins-shroudvale.html`, `twins-erebustwin.html`, `twins-catchlookout.html`; `NOTES.md` has each), their GPU verify owed (`KNOWN_ISSUES.md`). Section 0.1 is the core adoption; the scale model already carries Option A (`tools/scale-model/build_425_master.py` section 4, `D['vents']`).** First written as a Proposed Biome Kit & Scale-Model `5.1` Sculpting Blueprint (`2026-11-06`).
 >
+> **Updated 2026-11-16 (`core/simulation/PROPOSAL-CATCH.md`, its survey `CATCH-SURVEY.md`).** Strongbow stands at **(1001, 1596)** since
+> scale-model key 5.1e5 (2026-11-11); the old (1026, 1594) is corrected below. **The distances in sections 3.1 and 3.2 are about half what
+> this plan's own 5.1 points measure** (2 km a pixel): Route A from its A1 entry to the A4 exit is **~228 km** on its waypoints, not ~93;
+> the A4 exit is **~137 km** from Stair, not ~65; Route B from Oasis 5 to Oasis 1 is **~152 km**, then ~184 km to Strongbow, so Stair to
+> Strongbow is **~410-450 km** either way. Route A's entry (938, 1496) stands at **~5,150 m** on 5.1, not +2,950. On 5.1 the oases
+> sample Csb at ~400 mm, not the Catch-side BSk/BWk of section 7.2. The owner's answers of 2026-11-16 for the sim: the Twins' col
+> **closes in winter** (Route A's tubes stay open for packs, *proposed*); Gemini's "Twins fort" pin (1042, 1525) is **dropped**; the
+> Brotherhood keeps the five oases as its waystations.
+>
 > **Polygon:** `twins` (`id: "rmw536m06wlyf"`, `kind: "biome"`, `7` vertices: `[[935, 1476], [978, 1419], [1059, 1472], [1095, 1521], [1092, 1556], [1043, 1570], [987, 1515]]`).
 > - **Bounding Box & Area:** `X = 935..1095` (`~320 km` NW–SE), `Y = 1419..1570` (`~302 km` NE–SW); **`12,159 px` = `48,636 km²`** on the `1821 × 1723` (`2 km/px`) Scale Model `5.1` master grid (subtract `DX = 272, DY = 330` for legacy `4.23` coordinates).
-> - **Adjacencies (`5.1`):** Divides the **Vale of Xanadu** (`rmuf30815vwms`, SW at `X = 769..950, Y = 1455..1547`), **Xanadu** (`rmvkkmitffbjk`) / **Xanadu Sultanate** (`rmufcgvtxatfx`), and the caravan gate-town of **Strongbow** (`(1026, 1594)`) from the hyperarid endorheic basin of **The Catch** (`rmuf346nvpktx` / `rmvka7icdn1dq`, NE at `X = 958..1274, Y = 1288..1520`) and the Hill-arcology camp of **Stair** (`(1106, 1442)` on `5.1`, old `(834, 1112)`). Flanked to the NW by the **Godthrone** (`rmvkkebdukgx7`) and **Godshearth** (`rmw4wou2y1hhc`, `X = 808..880, Y = 1370..1451`), and to the SE by **Oidong Valley** (`rmuklrcae6jb5`, `X = 997..1307, Y = 1564..1680`).
+> - **Adjacencies (`5.1`):** Divides the **Vale of Xanadu** (`rmuf30815vwms`, SW at `X = 769..950, Y = 1455..1547`), **Xanadu** (`rmvkkmitffbjk`) / **Xanadu Sultanate** (`rmufcgvtxatfx`), and the caravan gate-town of **Strongbow** (`(1001, 1596)`) from the hyperarid endorheic basin of **The Catch** (`rmuf346nvpktx` / `rmvka7icdn1dq`, NE at `X = 958..1274, Y = 1288..1520`) and the Hill-arcology camp of **Stair** (`(1106, 1442)` on `5.1`, old `(834, 1112)`). Flanked to the NW by the **Godthrone** (`rmvkkebdukgx7`) and **Godshearth** (`rmw4wou2y1hhc`, `X = 808..880, Y = 1370..1451`), and to the SE by **Oidong Valley** (`rmuklrcae6jb5`, `X = 997..1307, Y = 1564..1680`).
 
 ---
 
@@ -121,7 +130,7 @@ Rising along a `78 km`-long NW–SE extensional transfer fissure that splays off
 
 ## 3. The Two Savvy Caravan Crossings Between Xanadu & The Catch
 
-Merchants hauling **Xanadui silk, cloud-timber, tea, and lacquerware** northeast from **Strongbow** (`(1026, 1594)`) or **Vale of Xanadu** (`(938, 1496)`) to **Stair** (`(1106, 1442)`), and returning with **Catch potash, alkali salts, and salvaged Ancient energy cells** (`biomes/catch/PLAN.md` §6a), never attempt the open ridge crest (`-20 to -35 °C`, `90–120 km/h` katabatic gales). Instead, savvy travellers rely on one of two specialized routes across the `~130 km` mountain core:
+Merchants hauling **Xanadui silk, cloud-timber, tea, and lacquerware** northeast from **Strongbow** (`(1001, 1596)`) or **Vale of Xanadu** (`(938, 1496)`) to **Stair** (`(1106, 1442)`), and returning with **Catch potash, alkali salts, and salvaged Ancient energy cells** (`biomes/catch/PLAN.md` §6a), never attempt the open ridge crest (`-20 to -35 °C`, `90–120 km/h` katabatic gales). Instead, savvy travellers rely on one of two specialized routes across the `~130 km` mountain core:
 
 ```
          SCHEMATIC MAP OF THE TWO CARAVAN CROSSINGS & GUIDE TRAPS (5.1 CANVAS)
@@ -145,7 +154,7 @@ Merchants hauling **Xanadui silk, cloud-timber, tea, and lacquerware** northeast
                                        (1010,1517)  Tube 10 (SE)      [Erebus Ice Volcano]
                                            ▲                            \
                                            │                             \ Trap F2 (1068, 1528)
-                                 From STRONGBOW (1026, 1594)              [Frozen Box Vale]
+                                 From STRONGBOW (1001, 1596)              [Frozen Box Vale]
 ```
 
 ---
@@ -193,7 +202,7 @@ Merchants hauling **Xanadui silk, cloud-timber, tea, and lacquerware** northeast
 ## 4. The Xanadui Guides (*Dalīl al-Qaranayn*) & The Traps for the Unpaying
 
 ### 4.1 Guild Customs, the Split-Coin Contract, & How Betrayals Happen
-- **The Brotherhood of the Two Horns (*Ṭā'ifat Dalīl al-Qaranayn*):** Based in **Strongbow** (`(1026, 1594)`) and **Stair** (`(1106, 1442)`), the Xanadui mountain guides guard the shifting topology of the Twins as a hereditary trade secret. Because roof falls periodically seal lava-tube skylights on Route A and phreatic quakes shift which springs are boiling vs. dormant on Route B, an unguided caravan has less than a one-in-three chance of crossing without losing its pack train.
+- **The Brotherhood of the Two Horns (*Ṭā'ifat Dalīl al-Qaranayn*):** Based in **Strongbow** (`(1001, 1596)`) and **Stair** (`(1106, 1442)`), the Xanadui mountain guides guard the shifting topology of the Twins as a hereditary trade secret. Because roof falls periodically seal lava-tube skylights on Route A and phreatic quakes shift which springs are boiling vs. dormant on Route B, an unguided caravan has less than a one-in-three chance of crossing without losing its pack train.
 - **The Custom of the Split Tally:** By ancient law, a guide is paid **half the silver and rations at the gate** (Strongbow or Stair) and **the second half at the Mid-Col Shrine** (**Hall of the Tally-Marks** at `(1014, 1464)` on Route A, or **The Brazier / Oasis 3** at `(1016, 1479)` on Route B), plus a sworn share of tea, furs, and warm tent-space.
 - **The Retribution of the Stiffed Guide:** Arrogant outlander factors, greedy merchant-captains, or harsh caravan masters who **withhold the mid-col payment, cheat the tally weight, beat a guide, or force them to march outside the warm perimeter** rarely survive to boast of it. The guide smiles, bows in the courtly Xanadui fashion, and claims to know a *"sheltered shortcut tube"* or a *"sixth hidden hot-spring vale just around the spur"*—leading the caravan straight into one of two classic death-traps before vanishing through a hidden crack-chimney in the night.
 

@@ -81,10 +81,19 @@ See https://claude.ai/artifact/N76KxfMXL5C7hfRGHKJK5q for scale map; some region
   Xanadu and everywhere else**. It has **oases, but only just enough for the crossing to be doable, not comfortable or
   safe**. **No Ancient tunnel crosses the Catch's walls to Stair** [the owner, 2026-11-11, dropping the sealed tunnel
   that stood here]. The Ancients reached Stair over the surface by the **Godsgate highway**, whose broken way the
-  caravans still follow in places (`openworld/ANCIENT-NETWORK.md` section 8). Stair, the nearest thing to a settlement, is **a glorified campground** of **a couple of hundred people**: a handful of
-  merchants, the caravans passing through, and occasional bands of daring or desperate arcology divers. There are **five
-  oases** on the crossing, unnamed, and **none is lived in but Stair's**. The residents, the traders and the oases' names
-  are **Yuni, Izani, Dasrī or Xanadui**, with very occasional bold ventures from further off. The Catch is Krator's one great salt field, an alkaline soda lake whose
+  caravans still follow in places (`openworld/ANCIENT-NETWORK.md` section 8). Stair, the nearest thing to a settlement, is a caravan town of **about 750** [the owner, 2026-11-16, in place of "a couple
+  of hundred"]: its merchants, who sell water, fodder, repairs and news; the caravan groups' factors and pens; the
+  Brotherhood of the Two Horns' guild house; and the arcology divers. There are **five oases** on the crossing: Stair's
+  and four more, **Kolli, Arfwai, Bitta and Lasso** (`biomes/catch/PLAN.md`), each **~100 people or less** [the owner,
+  2026-11-16, in place of "none is lived in but Stair's"]. Each is kept by one caravan group's hands at its well (the Train
+  of Jabal at Arfwai, Iziz's two houses at Kolli, Yuni's Merchants' Guild and the Geomancers at Lasso; Bitta's brackish well
+  is kept by Stair's merchants), who sell water and fodder to all. The residents, the traders and the oases' names are
+  **Yuni, Izani, Dasrī or Xanadui**, with very occasional bold ventures from further off.
+  **The northern caravaneers** [the owner, 2026-11-16]: the Geomancers; the Yuni Merchants' Guild, independent of the
+  Geomancers; two rival Izani merchant noble houses, Getmastarz (the Gatemasters) and Goldanda; and **the Train of Jabal**,
+  the Dasri's salt caravan company out of Jabal, which works both the Catch's salt works (Ṣalṭ al-Bān) and the Bowl's
+  (Solta). **The seasons** [the owner, 2026-11-16]: the Catch floor closes in the spring's black dust storms, and the
+  Twins' col in winter (`core/simulation/PROPOSAL-CATCH.md`). The Catch is Krator's one great salt field, an alkaline soda lake whose
   resources are **potash and alkali salts** [the owner, 2026-10-23]; its alkali dust is caustic in the storms. Stair's
   ruin is **the Hill arcology** (`kits/ancients/targets/hill`), in the springs' hollow through the basin's interior hills
   (moved there on the model 2026-10-23, px 834,1112, `biomes/catch/PLAN.md` section 6b). *Proposed*: the divers' prospect is **the Hill

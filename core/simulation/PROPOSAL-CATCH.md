@@ -193,5 +193,8 @@ terminus, and its relations: the gateway pools stay where each group's home is.
 6. **Gemini's two pins.** **Answered (the owner, 2026-11-16): drop both**, the Godsgate caravanserai (Bab al-Hawa,
    `gem_godsgate`) and the Twins fort (the Twins Pass Wardenry, `gem_twins_pass`). Their removal from the map goes through
    the scale-model session's queue.
-7. **The records.** Bring `LORE.md` and the Catch and Twins plans in line with Stair's 750, the peopled oases and 5.1's
+7. **The records.** **Answered (the owner, 2026-11-16): yes; done the same day.** `LORE.md` (the Catch), `biomes/catch/PLAN.md`
+   and its README, and `biomes/twins/PLAN.md` now carry Stair's 750, the peopled oases, the caravaneers, the seasons, the
+   dropped tunnel (station 2's portal is owed removal), Strongbow's 5.1 point and the Twins' measured distances.
+   The question was: bring `LORE.md` and the Catch and Twins plans in line with Stair's 750, the peopled oases and 5.1's
    distances, once you agree?

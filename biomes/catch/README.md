@@ -8,7 +8,7 @@ each its own page:
 | # | Page | Station |
 |---|---|---|
 | 1 | `dist/catch.html` | **The sand sea**: linear and star dunes (to ~160 m), the gravel reg, an old lake bed with yardangs, a dead channel with its tugai dead standing (living at two seeps), salt cedars on their sand cones, a Stalker pair half under the sand |
-| 2 | `dist/catch-oasis.html` | **Stair's oasis**: the spring hollow through the interior hills, its pool and seeps, Euphrates poplars, salt cedars, reeds, the eastern desert's palms and mesquite, the caravans' campground, the Hill's empty slope (Stair's site), the tunnel's southern portal with the divers' camp |
+| 2 | `dist/catch-oasis.html` | **Stair's oasis**: the spring hollow through the interior hills, its pool and seeps, Euphrates poplars, salt cedars, reeds, the eastern desert's palms and mesquite, the caravans' campground, the Hill's empty slope (Stair's site), the tunnel's southern portal with the divers' camp (the tunnel is dropped from the lore, 2026-11-11: the portal is owed removal) |
 | 3 | `dist/catch-lake.html` | **The lake and the lake beds**: the soda lake (pink, teal and ochre brine on core/water), algal mats, soda crust, white efflorescence, a playa of ochre salt polygons, the old lake's strandlines, yardangs and castellated mesas of wind-cut lake beds (the White Dragon Mounds), dead channels, saltbush and brine lamps |
 | 4 | `dist/catch-fan.html` | **The north fan and the walls**: the gravel fan under the 6.2 km notch, braided dry channels, the gorge's mouth, the mountain front, Kolli (the first oasis) at the fan's toe; the walls close, snow on their shoulders, bare crests above the air |
 
