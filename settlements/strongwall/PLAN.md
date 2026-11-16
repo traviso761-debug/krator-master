@@ -17,7 +17,8 @@ build a Xanadui fort asset as well"*.
 - **The opal goes to Strongbow first**, as it is closer.
 - **The watch posts go on the map**, with English names.
 - The musketeers are **"all of the above"**: Izani, Yuni and free companies of the Crater.
-- The beacon's keepers are **the Yellow Monastery, the Order of the Beacon**.
+- The beacon's keepers are **the Yellow Monastery, the Order of the Beacon**: Qiblai's gold monastery, which may keep
+  other beacon lights as well.
 
 This is a plan, not a build: no kit code and no pages. Everything not quoted from the owner, the lore or the sim tune is
 *proposed*. The fort asset (section 5) is a specification. Its code goes to a later step, owned by whoever owns
@@ -345,12 +346,15 @@ beacon that has been moved there by Xanadu and connected to a generator". The re
   be. It is bolted down with Xanadui iron straps, and its cable runs down the plinth in a stone channel.
 - **The generator house** stands against the curtain: an oil generator of the Geomancers' kind (the oil licence,
   section 4), its fuel tank in a walled pit, and a small workshop where the beacon's keepers mend it.
-- **The keepers are monks: the Yellow Monastery, the Order of the Beacon** (the owner, 2026-11-16). *Proposed:*
-  - their brothers keep the lamp, the generator and the signal book at the fort;
+- **The keepers are monks: the Yellow Monastery, the Order of the Beacon** (the owner, 2026-11-16). It is **one of
+  Qiblai's eight great monasteries, the gold one**, so its abbot is the gold Prismarch. It **may keep other beacon
+  lights as well**. *Proposed:*
+  - its brothers keep the lamp, the generator and the signal book at the fort;
   - their cells are a small cloister inside the fort: a chapel to the Beacon, a yellow-washed lhakhang where the
     keep's chapel would stand (the gilt chapel of 5.5), with the lamp's plinth beside it;
-  - the yellow wash is their colour, as each of Qiblai's monasteries has one;
-  - where their mother house stands is open (question 15).
+  - the yellow wash and the gilt are the gold spoke's colour, the colour its banner on Qiblai's Rainbow Temple flies;
+  - the other lights it keeps are for their own plans to name: any Ancient lamp the Sultanate has refurbished would
+    go to the Order.
 - **The beam** draws with the Ancients kit's lighthouse beam (`kits/ancients/src/89n-lighthouse.js`, `lhBeamGeo` and
   `LH_BEACONS`): crossed quads, widening, readable from any bearing. **The lamp head is a new Ancients piece**, owned by
   `kits/ancients`, with the Xanadu kit's mount and plinth around it. It is lit only while the generator has fuel (the
@@ -432,6 +436,6 @@ The rest is the library already in the Xanadu pack: `stone.cut`, `earth.rammed`,
 13. ~~**The beacon's keepers.**~~ **Answered 2026-11-16: the Yellow Monastery, the Order of the Beacon** (section 5.7).
 14. ~~**The posts' names.**~~ **Answered 2026-11-16: the English names are fine** (the Brow, Cold, Lode, Fan,
     Bench-end and Rift posts).
-15. **The Yellow Monastery.** Where is its mother house? Is it one of Qiblai's eight great monasteries (the gold
-    spoke, say), or an order of its own outside the Prismarchy? Does it keep only the beacon fort's lamp, or other
-    Ancient lights in the Sultanate too?
+15. ~~**The Yellow Monastery.**~~ **Answered 2026-11-16: it is one of Qiblai's eight, the gold one, and it may keep
+    other beacon lights as well** (section 5.7). For `kits/qiblai/PLAN.md` (its question 1, the monasteries' names):
+    the gold spoke is the Yellow Monastery, the Order of the Beacon.
