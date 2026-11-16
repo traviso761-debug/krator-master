@@ -687,6 +687,64 @@ board, the salvage bin. A dwelling holds its platform, hearth, shelves, jars and
 some); a store its bins, jars and sacks; the hero's (or the captain's) rooms the horned seat, the spear rack, a war drum.
 Wildcat 3,343 pieces, Barricade 2,629; drawn in 40 m chunks shown near the camera, opened by **the storey section** (K
 on the sheet, `TG.fg.section(level)`): every house clipped at a storey, or at the plaza's level to open the kivas.
+### 1.3.3 Blakhed: the rim's market town at the Blak Riba head (the owner, 2026-11-11: the site; the rest *proposed*)
+
+The owner asked for a non-raiding Fellgang settlement of 1,000-2,000, related to the Fowlers and the Ice-cutters and
+culturally tied to both. **The site is settled: the Blak Riba head, model pixel 441,1400** (5.1, 2 km per px).
+
+**Where it is.** A sheltered bench on the Rift's south shoulder, about 3,650 m up, where the south road tops out of the Chimes
+gorge. That gorge at the Rift's head is the one land crossing between the north rim and the south, so the Fowlers
+(571,1397) and the Ice-cutters (470,1521) meet here, each about 250 km off. Wildcat (427,1453) is 110 km away, off the ice
+road it raids. Fells rise behind it to the south and west, to 4.1-4.2 km, and the gorge falls away north and east. It is the
+most sheltered of the three sites surveyed (wind 0.79 of the 22 km median); the Blak Riba runs perennial 2 km off
+(the falls bench is at 445,1397); the climate is Dsb, about 890 mm, +3 °C (16 / -10). The Line's Nulab-Chimes leg runs under
+the gorge floor 53 km off (Chimes station 56 km), with no shaft head on the fell. The western Hearth vent (430,1388) is 33 km
+away and Nulab 82 km. The two runners-up were the Wait Riba head (480,1378) and the high fell (464,1430: clear of Dalab's
+polygon, no water on the model).
+
+**What it is** (the name **Blakhed**, the owner's, 2026-11-11; the rest *proposed*). The rim's market and meeting
+town, 150-300 households in longhouses, of mixed descent, ten times either village's size. It lives by storing and carrying,
+not one craft:
+- ice houses holding the Ice-cutters' blocks for the warm great-lake basin (+16 °C) and Nulab;
+- an egg and honey store for the Fowlers' take;
+- a rope walk that makes and keeps the gorge stair's ropes and ladders (Fowler craft);
+- beast pens and sledge sheds.
+
+Its meeting hall keeps both peoples' customs, the Fowlers' **rope wall** (a rope is a vote) beside the Ice-cutters' **tally
+board**. It keeps a **market peace**, since it lives by the trade that raiding kills. It is the Travellers' Fair's
+permanent ground and their winter quarter, and the Kradz may winter near the western vent's caves. Its buildings are the
+Fellgang set's (3.3), at town scale.
+
+**Dalab** (the owner, 2026-11-11). The site lies inside the **Realm of Dalab** polygon, and Dalab holds the ground: **the
+town pays Dalab a toll** and keeps its market peace under Dalab's claim. That is the price of the crossing, so Dalab's
+caravans and toll-men are seen in the market, and the town stands between the Realm and the Fellgangs who resent it.
+*Proposed:* the toll is paid in kind, as ice, eggs and rope, at Dalab's toll house by the gorge stair's head. And where
+the town sits when the Union strikes against Dalab's caravans (section 1.2.1) is the town's own politics.
+
+**Not on the model:** Blakhed's wind direction, grazing, and water and slope at town
+scale are not on the 2 km model. The survey's scripts and outputs (`survey.py`, `detail.py`, `rays.py`, `lineprof.py`) were
+scratch, not committed.
+
+### 1.3.4 The western Fellgangs: drovers, pass-keepers and coppersmiths (the owner, 2026-11-11: the three; the rest *proposed*)
+
+The owner asked for Fellgangs west of Nulab (5.1 px 443,1359) and chose three peoples, not one. None raids, and none is the
+Fowlers' or the Ice-cutters' kind. All three lie in the Fellgangs, Realm of Dalab and `w rift highland` polygons (biome kit
+`biomes/riftrim`; the pass-keepers also `copper glacier`), with no settlement within 40 km. Like Blakhed they live under
+Dalab's claim.
+
+| | Where (5.1 px) | Ground | Livelihood and ties (*proposed*) |
+|---|---|---|---|
+| **The drovers** | 393,1338, 108 km W of Nulab | 3,676 m, flat (a 10 km box spans 3,587-3,746 m), Dsb, 925 mm, +3 °C; the Grin Riba (perennial, 176 m³/s) 6 km off; the most sheltered of the three (wind 289 W/m²) | herders of the west highland: felt, hides, meat and wool, driven to Blakhed (157 km) and down to Dalab's basin; Ledge 89 km. Their summer shielings (`fg-shieling`, 3.3) |
+| **The pass-keepers** | 352,1262, 266 km NW of Nulab, at the foot of Copper Glacier's pass | 2,540 m; the Gould Riba (perennial, 522 m³/s) 4 km off; wet (1,584 mm) and windy (1,700 W/m²); the model reads ET with a +11 °C mean, which looks inconsistent | guides and porters over the pass, prospectors and fishers: the Fellgangs' way west to Firebliss and Barricade (`biomes/firebliss/PLAN.md` 1, "past Copper Glacier's pass"). They carry the coppersmiths' copper out |
+| **The coppersmiths** | at Copper Glacier's copper pass (`biomes/copperglacier` station 2: the field at 320,1248, the trough 326-332,1236-1244), about 64 km W of the pass-keepers; **the exact site is still to be surveyed** | the trough's floor 2.6-2.8 km under walls of 5-7 km, ET, about 1,900 mm, +5 °C (18/-8) | they work **the glacier's copper**: the malachite and azurite the ice grinds out, the gossan scree, the moraines (copperglacier PLAN.md section 1: the copper is rich only on the skarn band; the lore's porphyry is not in the data). Smiths of the cold work, selling wire, sheet and fittings for the Tungangs' windings (through the Fixers) and to the Travellers' salvage-smiths. Copper flower marks their ground |
+
+**The skarn is Dalab's, not theirs.** The richer skarn at 416,1377 (65 km WSW of Nulab; copper 240 and iron 210 in
+`kits/resources/data/geology.json`, against 120 / 70 on the rift fill) will be **a large Dalab mining hamlet of its own**
+(the owner, 2026-11-11): `core/hamlet`'s mining village in Dalab's culture, not a Fellgang place. That puts Dalab's miners
+65 km from the coppersmiths and selling the same metal. *Proposed:* the rivalry is the coppersmiths' story, since they trade
+copper beyond Dalab's reach.
+
+The survey's scripts and outputs (`gorge.py`, `barricade.py`, `west.py`) were scratch, not committed.
 
 ### 1.4 The Glaziers: the eastern loj of Opal Valley (*proposed*, all of it but the place)
 
@@ -1346,9 +1404,9 @@ these eight sets, the banner in three variants):
 | `rock.hewn.drillmarked` | hand-hewn gallery wall in grey gneiss and limestone: pick and drill scars in parallel rows, soot along the top, a polish at shoulder height where people pass | `stone.tuff.hewn` is a soft volcanic tuff; the Line's rock is hard and shows drill rows |
 | `concrete.lining.segment` | a precast tunnel lining segment's face: bolt pockets in a grid, gasket grooves at the joints, water stains, a painted ring number | `concrete.ancient` has no segment features; the ring house and every bore need them (also `kits/ancients`' Line) |
 | `organic.fungus.leather` | pressed and tanned fungus leather, pale tan, fibrous, with stitch rows | no fungal hide in the library |
-| `patterns/tungang/loj-banner` | a lodge banner: painted canvas, a central scene (crews at a lamp, the show of hands), a scroll with a number and a worn-English motto, fringe, a thousand years' fading (three variants) | the miners' banner is the culture's centrepiece |
+| `patterns/tungang/loj-banner` | a lodge banner: painted silk, a central scene (crews at a lamp, the show of hands; the Line's train; the descent at the Cataclysm), a scroll with a number and a worn-English motto, fringe, a thousand years' fading (three variants). The crews are drawn as the Ancients' Line crews in padded, sealed work suits and lamp helmets, and the train as the Line's white guideway train: the prompts name no historical banner, since generators copied its steam engines and Victorian coats (the owner, 2026-11-12) | the miners' banner is the culture's centrepiece |
 | `patterns/tungang/enamel-signs` | an enamel sign sheet: station numbers, the lamp-code symbols, arrows, red on cream and cream on green, chipped to black iron (a 4 x 4 atlas) | signage is everywhere in a hold |
-| `patterns/tungang/crew-mosaic` | a worn scrap-tile mural of the crews (Soviet metro mosaic in style: workers with lamps and spanners, a train, rays), tiles missing | the platform's landmark wall |
+| `patterns/tungang/crew-mosaic` | a worn scrap-tile mural of the crews in a heroic civic style (sealed suits, lamp visors, light-wands, the Line's white train on its guideway, rays), tiles missing; the prompt names no historical mosaic (the owner, 2026-11-12, as for the banners) | the platform's landmark wall |
 | `patterns/fellgang/daub` | daubed marks on rusty plate (the wheel, a charging aurochs, handprints and tallies, a red X), drips, scraped and repainted (a 2 x 2 atlas); the slogans' letters are the kit's own decals, since generated images cannot be trusted with words | the Fellgangs' look |
 | `patterns/glazier/cholet-front` | a carved front's painted band: Andean cholet colours (rose, teal, saffron, white) in Xanadui lozenge and zigzag, gilt edges, on whitewash | the Glaziers' fronts |
 
@@ -1427,6 +1485,7 @@ Big Meeting, 11 shine for rank, 12 the 0.94 scale, 14 the core extensions (each 
 19. **Loj Nahn** as a fourth set later (the Tungang shell under the sky on the Pile's crown), or the Tungang set dressed?
 27. **The Fellgang villages ahead of the order?** They need neither the Line nor the cavern setting: build the Fellgang
     village defs of section 3.3.1 (and the row's move into `core/hamlet`) in parallel with the Line's biome?
+29. *Answered 2026-11-11*: the market town is **Blakhed**, and it pays Dalab a toll (section 1.3.3).
 
 ## 11. Rejected and parked ideas
 

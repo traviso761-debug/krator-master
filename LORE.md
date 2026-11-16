@@ -251,7 +251,15 @@ The Ancients were the original civilization that colonized Krator, with roots, h
     (`biomes/labyrinth/PLAN.md` §5), and the Kimr's bravado shapes its raiding: capital-H heroism in a **scrap pueblo**, stepped
     room blocks faced in salvage, ladders pulled up at night. A raid is proposed by **a Boast** from the round room's roof and
     joined by **show of hands**; the minute book became **the Deeds**, every boast and whether it was made good; the
-    Aurochs-horn helmet is earned, never inherited; its walls carry heroes and trophies, no spirits. **The Travellers** (the
+    Aurochs-horn helmet is earned, never inherited; its walls carry heroes and trophies, no spirits. A **market town** of
+    1,000-2,000, **Blakhed** (the owner, 2026-11-11), stands at **the Blak Riba head** (5.1 px 441,1400),
+    where the south road tops out of the Chimes gorge, the one land crossing between the rims. Kin to both villages and
+    raiding no one, it stores the Ice-cutters' ice and the Fowlers' eggs and keeps the gorge stair's ropes; it **pays
+    Dalab a toll**, whose realm holds the ground, and keeps its market peace under Dalab's claim
+    (`kits/tungang/PLAN.md` 1.3.3). West of Nulab live three more Fellgang peoples (the owner, 2026-11-11): **the
+    drovers** of the west highland, **the pass-keepers** at the foot of Copper Glacier's pass, and **the coppersmiths**,
+    who work the glacier's copper. The richer skarn west of Nulab is a Dalab mining hamlet (`kits/tungang/PLAN.md`
+    1.3.4). **The Travellers** (the
     owner, 2026-11-11) are the Fellgang families who live on the road, with some cultural similarities to the Irish
     Travellers: hauling, dealing in beasts and goods, mending salvage, guiding, portering on the Line's branches near the
     surface but never deeper in, save for **one clan that ventures into the dark unexplored caverns** and services and
