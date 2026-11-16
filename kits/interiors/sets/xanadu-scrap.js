@@ -35,7 +35,7 @@
       [-14.93, 0, 12, 1.571, 1.08, 2.37], [-14.93, 0, 6, 1.571, 1.08, 2.37], [-14.93, 0, 0, 1.571, 1.08, 2.37], [-14.93, 0, -6, 1.571, 1.08, 2.37], [-14.93, 0, -12, 1.571, 1.08, 2.37],
       [14.93, 0, -12, -1.571, 1.08, 2.37], [14.93, 0, -6, -1.571, 1.08, 2.37], [14.93, 0, 0, -1.571, 1.08, 2.37], [14.93, 0, 6, -1.571, 1.08, 2.37], [14.93, 0, 12, -1.571, 1.08, 2.37],
       [-1.15, 0, 23.05, 0, 2.29, 5.2], [1.15, 0, 23.05, 0, 2.29, 5.2]],
-    xa_scrap_gate: [[-1.4, 0, 4.05, 0, 2.79, 6.4], [1.4, 0, 4.05, 0, 2.79, 6.4], [-8.25, 0, -2.93, 0, 1.08, 2.27], [-2.75, 0, -2.93, 0, 1.08, 2.27], [2.75, 0, -2.93, 0, 1.08, 2.27], [8.25, 0, -2.93, 0, 1.08, 2.27]],
+    xa_scrap_gate: [[-6.5, 0, 0.48, 3.142, 1.08, 2.27], [6.5, 0, 0.48, 3.142, 1.08, 2.27], [-1.4, 0, 4.05, 0, 2.79, 6.4], [1.4, 0, 4.05, 0, 2.79, 6.4], [-8.25, 0, -2.93, 0, 1.08, 2.27], [-2.75, 0, -2.93, 0, 1.08, 2.27], [2.75, 0, -2.93, 0, 1.08, 2.27], [8.25, 0, -2.93, 0, 1.08, 2.27]],
     xa_scrap_tower: [[0, 0, 4.57, 0, 1.27, 2.17]],
     xa_scrap_shrine: [[0, 1, 1.02, 0, 1.57, 2.77]],
     xa_scrap_pavilion: [],
@@ -140,19 +140,25 @@
   rowItem('xa_scrap_row', 'Panel Row', [2, 3, 2], [0, 2]);
   rowItem('xa_scrap_row#1', 'Panel Row (variant 2: the middle house lower)', [3, 2, 3], [1]);
 
+  const DRUM_R = r3(2.05 / Math.cos(Math.PI / 16)), DRUM_X = r3(-11.8 + 2.05);   /* the drum's room: its inside face at 2.05 m */
   /* 3. Lantern House: four ranges round a court (wash storeys 3.6 m and the band to 4.05, panel storeys over them: the front and
      sides 3 m, the back hall 6 m, two storeys). The gate (the double leaf at z 12) runs through the front range into the court:
      the front range's entrance room has the gate and a doorway on the court; the other ranges open off the court arcade by
-     doorways (the kit draws no leaf there). The corner drum (12 m) is a stair of windows the kit draws solid: not entered */
+     doorways (the kit draws no leaf there). The corner drum (r 2.3 at (-11.8, 10.8), 12 m) stands proud of the front range's west
+     end: its ground storey is a round study entered from the front range (the range planned from x -9.75, where the drum's
+     inside meets it; the doorway between is the house's own, marked inner). Its storeys over that are a stair of windows to
+     the glass cap: the planner's ladder needs 3.05 m of straight wall and the drum gives 2.8, so they are not planned */
   add({ key: 'xa_scrap_court', name: 'Lantern House', wealth: RICH, types: SF, lot: [28, 27],
     bodies: [
-      inset([-12.85, 12.85, 7.15, 11.85], 'front', { flat: true, hs: [4.05, 3], doors: [leaf('xa_scrap_court', 0, 1), { at: [0, 7.15], w: 2.0, court: true }],
+      inset([DRUM_X, 12.85, 7.15, 11.85], 'front', { flat: true, hs: [4.05, 3], doors: [leaf('xa_scrap_court', 0, 1), { at: [0, 7.15], w: 2.0, court: true }, { at: [DRUM_X, 10.8], w: 1.0, inner: true }],
         program: [['antechamber', 'kitchen', 'store'], ['bedroom', 'bedroom']] }),
       inset([-12.85, 12.85, -11.85, -5.15], 'hall', { flat: true, hs: [4.05, 3, 3], doors: [{ at: [0, -5.15], w: 2.0, court: true }],
         program: [['hall', 'kitchen'], ['study', 'library'], ['bedroom', 'bedroom']] }),
       inset([-12.85, -7.15, -4.85, 6.85], 'west', { flat: true, hs: [4.05, 3], doors: [{ at: [-7.15, 1], w: 1.2, court: true }], program: [['living', 'store'], ['bedroom']] }),
       inset([7.15, 12.85, -4.85, 6.85], 'east', { flat: true, hs: [4.05, 3], doors: [{ at: [7.15, 1], w: 1.2, court: true }], program: [['study', 'store'], ['bedroom']] })],
-    note: 'four ranges round the pool court; the court doorways of the hall and the side ranges are open (no leaf in the kit); the corner drum and the hall lantern are not entered' });
+    rooms: [{ id: 'drum', kind: 'study', poly: ring(DRUM_R, 16, -11.8, 10.8, Math.PI / 2), y: 0, h: 3.8,
+      doors: [{ at: ringDoor(DRUM_R, 16, -11.8, 10.8, Math.PI / 2), w: 1.0, inner: true }] }],
+    note: 'four ranges round the pool court and the corner drum\'s study; the court doorways of the hall and the side ranges are open (no leaf in the kit); the drum\'s upper storeys (a stair of windows to its cap) and the hall lantern are not entered' });
 
   /* ================================================================ trade (87u: 4-5) */
   /* 4. Girder Arcade: five shops 6 m wide in one wash block (30 x 9, z -6..3, 4.4 m) under a panel storey (29.6 x 8.6, 3 m);
@@ -164,44 +170,40 @@
     }),
     note: 'five shops behind the girder arcade (the arcade itself is open street)' });
 
-  /* 5. Terminus Serai: four ranges round the court (H 22, E 15: 7 m deep, wash 4 m + band to 4.45, a panel storey 3 m), five
-     rooms' doors on the court face of each, every 6 m; the gate pylon (14 x 4 at z 21, the double gate at z 23) is a passage
-     through the front range to the court (its court door the front range's middle door, at z 15). Every range is a row of
-     cells: the court doors are theirs. The panel storey over them is the travellers' rooms, reached by a stair in each corner
-     range (the kit draws the gallery, not the stair). */
-  const serai = [];
-  [[1, 'n'], [-1, 's']].forEach(function (q) {
-    const s = q[0], z0 = s > 0 ? 15 : -22, z1 = s > 0 ? 22 : -15;
-    for (let i = 0; i < 5; i++) {
-      const x0 = -15 + i * 6, di = s > 0 ? 4 - i : 5 + i;               /* the record's index: the north range's run from +x */
-      if (s > 0 && i === 2) continue;                                 /* the gate passage */
-      const D = DOORS.xa_scrap_serai[di];
-      serai.push({ id: q[1] + i, kind: i % 2 ? 'store' : 'dormitory', poly: rect(5.8, 6.6, x0 + 3, (z0 + z1) / 2), y: 0, h: 3.9,
-        doors: [{ at: [D[0], s > 0 ? 15.2 : -15.2], w: D[4] }] });
-    }
-  });
-  [[-1, 'w'], [1, 'e']].forEach(function (q) {
-    const s = q[0], x0 = s > 0 ? 15 : -22, x1 = s > 0 ? 22 : -15;
-    for (let i = 0; i < 5; i++) {
-      const z = -12 + i * 6, di = s < 0 ? 14 - i : 15 + i, D = DOORS.xa_scrap_serai[di];
-      serai.push({ id: q[1] + i, kind: ['tavern', 'kitchen', 'dormitory', 'store', 'dormitory'][i], poly: rect(6.6, 5.8, (x0 + x1) / 2, z), y: 0, h: 3.9,
-        doors: [{ at: [s > 0 ? 15.2 : -15.2, D[2]], w: D[4] }] });
-    }
-  });
+  /* 5. Terminus Serai: four ranges round the court (H 22, E 15: 7 m deep, wash 4 m + band to 4.45, a panel block 3 m
+     over it, 0.15 m in), five doors on the court face of each, every 6 m. Every range is a body of two storeys, its ground the
+     serai's rooms on the court and its panel storey the travellers' rooms, reached by a stair inside the range (the kit's
+     gallery over the arcade is the walk outside them). The gate pylon (14 x 4 at z 21, the double gate at z 23) is a passage
+     through the front range to the court, its court door the front range's middle one (z 15): the front range is two bodies,
+     one each side of it */
+  const SD = DOORS.xa_scrap_serai, sd = function (i) { return { at: [SD[i][0], SD[i][2]], w: SD[i][4] }; };
   const gate = leaf('xa_scrap_serai', 20, 21);
-  serai.push({ id: 'gate', kind: 'antechamber', poly: [[-2.9, 15.2], [2.9, 15.2], [2.9, 19.4], [6.6, 19.4], [6.6, 22.6], [-6.6, 22.6], [-6.6, 19.4], [-2.9, 19.4]], y: 0, h: 4.6,
-    doors: [{ at: [gate.at[0], 22.6], w: gate.w, swing: 'none' }, { at: [0, 15.2], w: DOORS.xa_scrap_serai[2][4] }] });
-  add({ key: 'xa_scrap_serai', name: 'Terminus Serai', wealth: CIVIC, types: ['tavern/inn', 'market/shop', 'infrastructure'], lot: [46, 47], rooms: serai,
-    note: 'nineteen cells on the court (the wash storey) and the gate passage; the panel storey of travellers\' rooms over them is left to a later pass: the kit draws its gallery but no stair or door up' });
+  add({ key: 'xa_scrap_serai', name: 'Terminus Serai', wealth: CIVIC, types: ['tavern/inn', 'market/shop', 'infrastructure'], lot: [46, 47],
+    bodies: [
+      inset([-21.85, -2.9, 15.15, 21.85], 'north-w', { flat: true, hs: [4.45, 3], doors: [sd(4), sd(3)], program: [['tavern', 'kitchen'], ['dormitory', 'bedroom']] }),
+      inset([2.9, 21.85, 15.15, 21.85], 'north-e', { flat: true, hs: [4.45, 3], doors: [sd(1), sd(0)], program: [['store', 'store'], ['dormitory', 'dormitory']] }),
+      inset([-21.85, 21.85, -21.85, -15.15], 'south', { flat: true, hs: [4.45, 3], doors: [5, 6, 7, 8, 9].map(sd),
+        program: [['stable', 'store', 'store', 'stable'], ['dormitory', 'dormitory', 'bedroom', 'dormitory']] }),
+      inset([-21.85, -15.15, -14.85, 14.85], 'west', { flat: true, hs: [4.45, 3], doors: [10, 11, 12, 13, 14].map(sd),
+        program: [['tavern', 'kitchen', 'store'], ['dormitory', 'dormitory', 'bedroom']] }),
+      inset([15.15, 21.85, -14.85, 14.85], 'east', { flat: true, hs: [4.45, 3], doors: [15, 16, 17, 18, 19].map(sd),
+        program: [['shop', 'shop', 'store'], ['dormitory', 'dormitory', 'study']] })],
+    rooms: [{ id: 'gate', kind: 'antechamber', poly: rect(5.8, 7.85, 0, 19.075), y: 0, h: 4.6,
+      doors: [{ at: [gate.at[0], 23], w: gate.w, swing: 'none' }, { at: [0, 15.15], w: SD[2][4] }] }],
+    note: 'the four ranges (the serai\'s rooms on the court, the travellers\' rooms over them up a stair in each range) and the gate passage; the gallery over the arcade is open' });
 
   /* ================================================================ garrison and civic (87u: 6-15) */
   /* 6. Garrison Gate: the barracks behind (22 x 8 at z -7, wash 3.4 + band to 3.8, a panel storey 3 m), four doors on its
-     front; the towers are drawn solid (no door) and the gate (the double leaf at z 4) is a passage under the walk */
+     front; the two towers (battered 7 x 7 at x +-6.5, z 4, 5 m, the band to 5.4, a panel block of three 3.33 m storeys), each
+     its door on the yard behind (the kit's, since 2026-11-15); the gate (the double leaf at z 4) is a passage under the walk */
   add({ key: 'xa_scrap_gate', name: 'Garrison Gate', wealth: CIVIC, types: ['military', 'civic'], lot: [38, 24],
     bodies: [inset([-10.8, 10.8, -10.8, -3.2], 'barracks', { flat: true, hs: [3.8, 3],
-      doors: [2, 3, 4, 5].map(function (i) { return leaf('xa_scrap_gate', i); }),
-      program: [['barracks', 'kitchen', 'store', 'barracks'], ['barracks', 'barracks', 'study']] })],
-    note: 'the barracks only: the two towers have no door in the kit (drawn solid), the gate is an open passage under the walk' });
+      doors: [4, 5, 6, 7].map(function (i) { return leaf('xa_scrap_gate', i); }),
+      program: [['barracks', 'kitchen', 'store', 'barracks'], ['barracks', 'barracks', 'study']] })].concat([-1, 1].map(function (s) {
+        return inset(panelP(s * 6.5, 4, 7, 7, 5), s < 0 ? 'tower-w' : 'tower-e', { hs: [5.4, 3.33, 3.33, 3.34], doors: [leaf('xa_scrap_gate', s < 0 ? 0 : 1)],
+          program: [['antechamber'], ['barracks'], ['store'], ['study']] });
+      })),
+    note: 'the barracks and the two towers (a ladder a storey: 5.9 m square); the gate is an open passage under the walk, whose doors into the towers the kit does not draw' });
 
   /* 7. Glass-Crowned Tower: the battered base (9 x 9, 2.4 m, the band to 2.75) and the panel drum (r 3.6) of 18 m (v0, v2) or
      21 m (v1) over it, its lantern on top. The drum's storeys are planned on the octagon inside it */
@@ -267,10 +269,12 @@
     add({ key: 'xa_scrap_bath', name: 'Bathhouse', wealth: CIVIC, types: ['civic'], lot: [18, 34],
       rooms: [
         { id: 'hall', kind: 'hall', poly: rect(2 * b, r3(1 + b + 4.75), 0, r3((1 + b - 4.75) / 2)), y: 0, h: 6.0,
-          doors: [{ at: [front.at[0], r3(1 + b)], w: front.w }, { id: 'hot', at: [0, -4.75], w: 1.4, to: '.hot', swing: 'in' }] },
-        { id: 'hot', kind: 'hall', poly: rect(15.2, 7.85, 0, -8.675), y: 0, h: 4.0,
-          doors: [{ id: 'hot', at: [0, -4.75], w: 1.4, to: '.hall', swing: 'none' }] }],
-      note: 'the changing hall and the hot rooms (planned as halls: the kit\'s catalog has no bath pieces yet); the pool before the porch is open' }); }
+          doors: [{ at: [front.at[0], r3(1 + b)], w: front.w }, { id: 'wash', at: [-2.4, -4.75], w: 1.4, to: '.wash', swing: 'in' }] },
+        { id: 'wash', kind: 'bath', culture: 'ancients-salvage', poly: rect(7.6, 7.85, -3.8, -8.675), y: 0, h: 4.0,
+          doors: [{ id: 'wash', at: [-2.4, -4.75], w: 1.4, to: '.hall', swing: 'none' }, { id: 'hot', at: [0, -8.675], w: 1.2, to: '.hot', swing: 'in' }] },
+        { id: 'hot', kind: 'hall', poly: rect(7.6, 7.85, 3.8, -8.675), y: 0, h: 4.0,
+          doors: [{ id: 'hot', at: [0, -8.675], w: 1.2, to: '.wash', swing: 'none' }] }],
+      note: 'the changing hall, the washroom (its tubs, basins and privy the Ancients\' own moulded fittings, reclaimed: the catalog\'s ancients-salvage) and the hot room under the eyed domes; the pool before the porch is open' }); }
 
   /* ================================================================ the poor and the farm (87v: 16-21) */
   /* 16. Tank House: a tank stood up (r 2.8, 5.6 m on a 0.4 m slab) is the house, one tall room; the copper tank on its roof
@@ -284,13 +288,20 @@
   /* 17. Silo Court: four silos round a yard, each a home of one room, its door facing the yard (0, 0.6) */
   { const SI = [[-3.6, -2.4, 2.3, 7.4], [2.8, -3.0, 2.7, 9.2], [4.8, 2.8, 1.9, 6.0], [-4.4, 3.4, 1.8, 5.2]];
     add({ key: 'xa_scrap_silos', name: 'Silo Court', culture: 'scrap', wealth: POOR, types: MF, units: 4, lot: [16, 16],
+      /* the tallest and widest (r 2.7, 9.2 m) holds a loft: two storeys planned on the square inside it, a face toward the yard,
+         up a ladder (the narrower silos' squares are under the ladder's 3.05 m) */
+      /* the square (3.7 m, its corners on the drum) drawn out at its front to the drum's wall, so the doorway meets the leaf */
+      bodies: [(function () { const s = SI[1], a = Math.atan2(-s[0], 0.6 - s[1]), c = Math.cos(a), sn = Math.sin(a);
+        const P = function (u, v) { return [r3(s[0] + u * c + v * sn), r3(s[1] - u * sn + v * c)]; };   /* u along the front, v out toward the yard */
+        return { id: 'silo1', poly: [P(-1.85, -1.85), P(1.85, -1.85), P(1.85, 1.85), P(0.73, 2.6), P(-0.73, 2.6), P(-1.85, 1.85)].reverse(),
+          y: 0, levels: [{ h: 2.75 }, { h: 2.75 }], wall: 0.2, roof: 'flat', doors: [{ at: P(0, 2.6), w: 0.98 }], program: [['living'], ['bedroom']] }; })()],
       rooms: SI.map(function (s, i) {
         const a = Math.atan2(-s[0], 0.6 - s[1]), r = s[2] - 0.08;
         const room = { id: 'silo' + i, kind: 'cottage', poly: ring(r, 16, s[0], s[1], a), y: 0, h: 3.0, doors: [{ at: ringDoor(r, 16, s[0], s[1], a), w: 0.98 }] };
         if (r < 2.3) { room.kind = 'xs_drum'; room.fixtures = [bunk(r, s[0], s[1], a)]; }     /* too small for a bed and a way round it */
         return room;
-      }),
-      note: 'one household a silo, the three narrower sleeping on a bunk round the wall; the volume over 3 m (a loft under the dome) is left unplanned; the deck between the tall silos is open' }); }
+      }).filter(function (R) { return R.id !== 'silo1'; }),
+      note: 'one household a silo, the three narrower sleeping on a bunk round the wall, the widest with a loft up a ladder; the narrower ones\' volume over 3 m is left unplanned (too narrow for a ladder); the deck between the tall silos is open' }); }
 
   /* 18. Hull House: a hull section laid down as a vault (r 3, 9 long, on a 0.7 m bed), mud ends, the door in the front one */
   add({ key: 'xa_scrap_hull', name: 'Hull House', culture: 'scrap', wealth: POOR, types: SF, lot: [10, 16],
