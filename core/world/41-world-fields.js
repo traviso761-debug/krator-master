@@ -212,7 +212,7 @@ W.init=function(R){M=WORLD_DATA.meta;const Hd=M.heights,F=M.frame;
   const P=g?g.P:MISSING,o={};for(const k in P)o[k]=lin(P[k]);PALL[i]=o;});
  if(W.unstyled.length&&typeof reportErr==='function')reportErr('core/world: no ground style for the overlay(s) '+W.unstyled.join(', ')+' (add each to BIOME_GROUND in 41-world-fields.js)');
  CLCODE=M.classes.map(c=>c.code);CLGROUP=M.classes.map(c=>c.group);
- buildChannels();buildStreams();buildPonds();buildLandforms();buildRoads();buildTowns();W.ready=true;};
+ buildChannels();buildStreams();buildPonds();buildFans();buildLandforms();buildRoads();buildTowns();W.ready=true;};
 W.px=x=>cx+x/2000;W.py=z=>cy+z/2000;W.fromPx=(px,py)=>[(px-cx)*2000,(py-cy)*2000];
 W.box=()=>{const F=M.frame.box_px;return[(F[0]-cx)*2000,(F[1]-cy)*2000,(F[2]-cx)*2000,(F[3]-cy)*2000];};
 
@@ -398,13 +398,13 @@ function buildStreams(){STSEG=null;STHASH=null;STIDX=null;STLN=[];STPC=null;cons
 // to a side, so a terrain chunk (which asks for detail down to 1.5 x its vertex spacing) has a vertex in it: a bed narrower
 // than the grid fell between its vertices, and the ground drawn between bank and bank stood through the water in
 // triangles and squares (the near chunks keep the bed's own width; a far one draws a wider flat bed the water lies on)
-function streamAt(x,z,h,S,C,minWave){C.k=0;C.d=1e9;C.hw=0;C.wet=0;C.bw=0;const hwMin=.7*(minWave==null?0:minWave);S=S||SDEF;
+function streamAt(x,z,h,S,C,minWave,extra){C.k=0;C.d=1e9;C.hw=0;C.wet=0;C.bw=0;const hwMin=.7*(minWave==null?0:minWave);S=S||SDEF;
  const ix=Math.floor(x/STCELL)-STG.x0,iz=Math.floor(z/STCELL)-STG.z0;if(ix<0||iz<0||ix>=STG.nx||iz>=STG.nz)return C;
  const c=iz*STG.nx+ix,e=STHASH[c+1];
  for(let i=STHASH[c];i<e;i++){const o=STIDX[i]*9,ax=STSEG[o],az=STSEG[o+1],dx=STSEG[o+2]-ax,dz=STSEG[o+3]-az,l2=dx*dx+dz*dz;
   let t=l2>0?((x-ax)*dx+(z-az)*dz)/l2:0;t=t<0?0:t>1?1:t;const ex=ax+dx*t-x,ez=az+dz*t-z,d=Math.sqrt(ex*ex+ez*ez);
   if(d>SREACH)continue;
-  const s=lerp(STSEG[o+4],STSEG[o+5],t),P=stProf(S,s,STSEG[o+8],PR),hw=Math.max(stW(s)*P.wm,hwMin),depth=stD(s)*P.dm,bed=Math.max(lerp(STSEG[o+6],STSEG[o+7],t),h-depth-SDMAX*P.dm);
+  const s=lerp(STSEG[o+4],STSEG[o+5],t),P=stProf(S,s,STSEG[o+8],PR),hw=Math.max(stW(s)*P.wm,hwMin),depth=stD(s)*P.dm,bed=Math.max(lerp(STSEG[o+6],STSEG[o+7],t),h-depth-SDMAX*P.dm-(extra||0));
   const Dc=h-Math.min(h-depth,bed-depth*.5),outer=Math.min(SREACH-5,hw+2+Dc*P.wk),vw=stVW(s)*P.vm;
   let k=(d<outer?Dc*(1-smooth(hw,outer,d)):0)+(d<vw?stVD(s)*P.vm*(1-smooth(0,vw,d)):0);
   if(P.bars>0&&d<hw)k-=P.bars*depth*(1-smooth(hw*.6,hw,d))*Math.max(0,NS.vn(x/9,z/9)*2-1);   /* a dry floor's bars: cobble ridges a share of the depth high */
@@ -438,6 +438,14 @@ function buildPonds(){PONDS=[];PONDC.clear();const SR=M.streams;if(!SR||!SR.pond
 function pondWater(x,z){if(!PONDS||!PONDS.length)return -1e9;const SR=M.streams,i=Math.floor((x-SR.x0)/SR.cell+.5),j=Math.floor((z-SR.z0)/SR.cell+.5),k=PONDC.get(j*65536+i);
  return k==null?-1e9:PONDS[k].level;}
 W.pondWater=pondWater;W.ponds=()=>PONDS||[];
+// THE FANS (relief P13: WSTREAMS.fans on the curves the page carves): each in the 1 km cells its radius touches; H raises the
+// land by the highest fan over a point before the streams cut (the stream runs through its fan)
+let FANS=null;const FANC=new Map(),FCELL=1024;
+function buildFans(){FANS=null;FANC.clear();if(!STHASH)return;FANS=WSTREAMS.fans(W.streams());
+ FANS.forEach((F,k)=>{for(let j=Math.floor((F.z-F.R)/FCELL);j<=Math.floor((F.z+F.R)/FCELL);j++)for(let i=Math.floor((F.x-F.R)/FCELL);i<=Math.floor((F.x+F.R)/FCELL);i++){
+  const key=(i+65536)*131072+(j+65536);let a=FANC.get(key);if(!a){a=[];FANC.set(key,a);}a.push(k);}});W.fanCount=FANS.length;}
+function fanRise(x,z){const a=FANC.get((Math.floor(x/FCELL)+65536)*131072+(Math.floor(z/FCELL)+65536));if(!a)return 0;let m=0;for(const k of a){const v=WSTREAMS.fanAt(FANS[k],x,z);if(v>m)m=v;}return m;}
+W.fans=()=>FANS||[];
 // the wet streams in pieces for drawing their water (83s-world-streams.js: built near the camera, dropped behind it):
 // [{line, s0, s1, x, z, r}], a piece a run of about PIECE m of one line's segments (s0 to s1, the last shared with the next
 // piece so the ribbons meet), its centre and the radius that holds it. Made once
@@ -489,7 +497,7 @@ function formH(x,z){const SC=scarpAt(x,z,SCR),b=SC.w>0?scarpOf(baseH(x,z),SC):ba
 const LFK={k:0,d:1e9,hw:0,co:0,cut:0},LFS={k:0,d:1e9,hw:0,wet:0,bw:0};
 function buildLandforms(){LANDF=false;if(!RELIEF||typeof WLAND==='undefined'||typeof KSTACKS==='undefined')return;
  const TW=((WORLD_DATA.towns&&WORLD_DATA.towns.towns)||[]).map(t=>[t.x,t.z,(t.R==null?300:t.R)+(t.band==null?400:t.band)]);
- WLAND.init({ox:cx*2000,oz:cy*2000,seed:M.relief.seed,ground:formH,sites:(M.sites||[]).map(s=>({x:s.x,z:s.z})),
+ WLAND.init({ox:cx*2000,oz:cy*2000,seed:M.relief.seed,ground:formH,inside:W.inside,sites:(M.sites||[]).map(s=>({x:s.x,z:s.z})),
   styleName:(x,z)=>{const b=W.biomeAt(x,z),g=b&&W.groundOf(b.name);return g?g.style:'';},overlay:(x,z)=>{const b=W.biomeAt(x,z);return b?String(b.name).trim().toLowerCase():'';},
   caprock:(x,z)=>WRELIEF.caprock(x,z,styleAt(x,z),gridBil(REL,x,z)),
   keep:(x,z)=>{if(!W.inside(x,z))return true;const h=formH(x,z);if(W.lakeWater(x,z)>h-1)return true;
@@ -628,7 +636,8 @@ function H(x,z,minWave,P,nr,nt){minWave=minWave||0;
     the channels cut (a placed record keeps 150 m off a channel; a pinned one stands over it: the model's drainage line under Pinnacle Rock's
     north rim cut a 250 m gorge through the mesa when it came after), before the small streams (traced round them) */
  if(LANDF)h=WLAND.apply(h,x,z,minWave);   /* at every minWave: the road router reads the land at 4000 m and must see a mesa */
- let sd=1e9,sw=0,sbw=0;if(STHASH&&minWave<150){streamAt(x,z,h,S,STC,minWave);h-=STC.k;sd=STC.d;sw=STC.hw;sbw=STC.bw;}
+ let fr=0;if(FANS&&FANS.length&&minWave<600){fr=fanRise(x,z);h+=fr;}   /* relief P13: the alluvial fans, before the streams cut through them (a fanhead trench: fr more) */
+ let sd=1e9,sw=0,sbw=0;if(STHASH&&minWave<150){streamAt(x,z,h,S,STC,minWave,fr);h-=STC.k;sd=STC.d;sw=STC.hw;sbw=STC.bw;}
  if(minWave<13)h+=((N5.vn(x/13,z/13)-.5)*1.1+(N5.vn(x/3.1+50,z/3.1)-.5)*.3)*(1-sbw);   /* not in a stream's bed (STC.bw): it stood through the water there */
  // a world's own shaping of its land (W.landHook: openworld/isle-demo's coast, reef and mangrove flats); none here
  if(W.landHook)h=W.landHook(x,z,h,minWave);

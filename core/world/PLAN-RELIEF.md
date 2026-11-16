@@ -264,6 +264,9 @@ Each one changes `WORLD.H`, so each turn:
 | **P10 The records in the world** (R5's rest, R7) | Every landform record registered in core/tags (kind, name, its footprint), named by the inspector, marked on the minimap; the planners building on a mesa's top (`KSITES` reads `WORLD.landforms`: a top is flat ground with a rim band) | The owner, 2026-11-15: "the planners may build on a mesa's top" |
 | **P11 Channel profiles by style** (S5's rest) | The small streams' cross-section from the land style: a box canyon with an amphitheatre head (loess), a slot gorge (highland, chasm, steps), a braided cobble floor (a dry stream, a wadi), a peat cut (the moors) | The streams are carved one way everywhere until then |
 | **P12 The High Rift's master gja** (S10's rest) | The one master gja biomes/highrift/PLAN.md draws through the plateau's middle: about 310 m deep, 300 to 600 m wide at the lip, its walls stepped where blocks dropped; a pinned carving record beside the swarm | The swarm (P7) stands beside it |
+| **P13 Alluvial fans** (S6's start) | Where a stream leaves steep ground for flat, the fan it lays (`WSTREAMS.fans`, cut through by its own stream) | Fans are the first fluvial form the streams make possible |
+| **P14 The masks** (S16, R7) | Where the relief must not go: a town's footprint, a road's carriageway, a site's ground, the model's water; each part (benches, gullies, peaks, records, fans) fades out over a band | The relief so far reshapes ground a town or a road was laid on |
+| **P15 A GDScript twin** (P9's bar) | `WRELIEF` (benches, caprock, erosion, peaks) ported to GDScript, run headless in Godot 4.7.2 on golden-relief.json's inputs and compared to 1e-6 | The first module through the bar P9 set |
 
 ### Done so far
 
@@ -569,6 +572,21 @@ deep, its head an amphitheatre (wider near the source); a peat cut (the highland
 banks; a dry stream where nothing confines it a braided cobble floor, two and a half times wider and shallow, with bars.
 A wet stream's water takes its bed's width. Measured across a dry Oidong stream: a flat floor about 10 m wide between
 steep 2 m banks, where it was a V; across a High Rift stream (`steps`): a slot 1.2 m deep, where it was 0.5.
+
+**P12, the High Rift's master gja (2026-11-16).** `WLAND.FEATURES`: world-absolute features by the model's pixel, placed in any
+region whose polygon takes them in (oidong-highrift and xanadu-oidong-highrift both do). The master gja lies on the model's
+fissure 4 (5.1 px 1569, 1643, 6 km west of the Singing Gjar outpost), 24 km long NNE-SSW, 300 to 600 m wide, its line
+wandering 40 m. The model already holds the fissure as a trough 2-7 km wide, so the gja is cut to a level (310 m under the
+plateau 4 to 6 km either side) and never fills; its walls step down a dropped block's shelf at 55 % of the depth (each step
+a ramp of 1 in 20). On Oidong's land: the plateau at 3,906 m, the floor at 3,625. `test-landforms.js`: the floor 311 m under
+a synthetic plateau with a trough beneath, the land 900 m out untouched, continuous; a region that does not take it in has none.
+
+**P13, alluvial fans (2026-11-16; S6).** `WSTREAMS.fans`: where a stream's bed falls over 6 % in the 300 m above a vertex and
+under 2 % in the 300 m below it, one fan a stream at its sharpest break: radius 150 to 600 m with its strength, rising 1.5 %
+of its radius, over 60 degrees each side of the stream (fading over 30 more), from nothing at the apex. 41 raises the land
+by the highest fan over a point before the streams cut, and a stream may cut through what its fan laid (a fanhead trench:
+at 3 % the fan buried its own stream at the apex). pinnacle 3 fans, oidong-highrift 502. `test-streams.js`: one fan at an
+8 %-to-1 % break, none on an even slope; nothing behind the apex; continuous.
 
 ## 6. Risks
 

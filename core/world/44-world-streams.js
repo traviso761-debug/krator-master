@@ -21,6 +21,8 @@
 //                        the curve the page draws (the trace's own, the fill of its cells, lies off that curve: a cell is
 //                        250 m, and the curve is relaxed and wanders between them)
 //   WSTREAMS.check(lines) the problems of decoded lines ([] when none): a bed that rises, a line under two vertices
+//   WSTREAMS.fans(lines) / fanAt(F, x, z)  the alluvial fans where streams leave steep ground for flat (relief P13), and a
+//                        fan's rise at a point
 //   WSTREAMS.pondRows(P) a tarn's rows (trace's `ponds`: relief P7) as [[j, i0, i1]...]: each row's cells, the basin grown by one
 //
 // The trace: priority-flood with an epsilon (Barnes, Lehman and Mulla 2014: every pit filled to its spill, flats given a
@@ -140,6 +142,23 @@ T.decode=function(L,S){const cell=S.cell,P=[],db=L.db.split(',');let i=L.h[0],j=
   P.push([S.x0+i*cell,S.z0+j*cell,(L.s.charCodeAt(k)-97)/25,b/10]);}
  return P;};
 
+// THE FANS (relief P13, S6): where a stream leaves steep ground for flat (its bed falling over STEEP over the 300 m above a
+// vertex and under FLAT over the 300 m below it), it drops its load in a fan: {x, z (the apex), ux, uz (down the stream),
+// R (m: 150 + 450 x its strength), H (m: its rise, 1.5 % of R), s}. lines: the curves as the page carves them [{pts:
+// [[x, z, s, bed]...]}]. One fan a stream, at its sharpest break; H 1.5 % of R (3 % buried its own stream at the apex)
+T.fans=function(lines,o){o=o||{};const STEEP=o.steep==null?.06:o.steep,FLAT=o.flat==null?.02:o.flat,W=o.window==null?300:o.window,out=[];
+ for(const L of lines){const P=L.pts;if(P.length<4)continue;const arc=[0];for(let i=1;i<P.length;i++)arc.push(arc[i-1]+Math.hypot(P[i][0]-P[i-1][0],P[i][1]-P[i-1][1]));
+  let best=null,a=0,b=0;
+  for(let i=1;i<P.length-1;i++){while(arc[i]-arc[a]>W)a++;while(b<P.length-1&&arc[b]-arc[i]<W)b++;
+   if(arc[i]-arc[a]<W*.8||arc[b]-arc[i]<W*.8)continue;const up=(P[a][3]-P[i][3])/(arc[i]-arc[a]),dn=(P[i][3]-P[b][3])/(arc[b]-arc[i]);
+   if(up>=STEEP&&dn<=FLAT&&(!best||up-dn>best.k))best={i,k:up-dn};}
+  if(!best)continue;const p=P[best.i],q=P[Math.min(P.length-1,best.i+3)],l=Math.max(1e-6,Math.hypot(q[0]-p[0],q[1]-p[1])),R=150+450*p[2];
+  out.push({x:p[0],z:p[1],ux:(q[0]-p[0])/l,uz:(q[1]-p[1])/l,R,H:.015*R,s:p[2]});}
+ return out;};
+// a fan's rise at (x, z): its height easing out to its radius as (1 - r/R)^2, over a sector of 60 degrees each side of its
+// axis (fading over the next 30), from nothing at its apex (it leaves the canyon's mouth) to full 15 % of its radius out
+T.fanAt=function(F,x,z){const dx=x-F.x,dz=z-F.z,r=Math.sqrt(dx*dx+dz*dz);if(r>=F.R)return 0;const c=r>1e-6?(dx*F.ux+dz*F.uz)/r:1;
+ const sm=(a,b,v)=>{let t=(v-a)/(b-a);t=t<0?0:t>1?1:t;return t*t*(3-2*t);},q=1-r/F.R;return F.H*q*q*sm(0,.15*F.R,r)*sm(0,.5,c);};
 T.check=function(lines){const out=[];
  lines.forEach((P,n)=>{if(P.length<2){out.push('stream '+n+': under two vertices');return;}
   for(let k=1;k<P.length;k++)if(P[k][3]>P[k-1][3]+1e-6){out.push('stream '+n+': its bed rises at vertex '+k+' ('+P[k-1][3]+' to '+P[k][3]+' m)');break;}});

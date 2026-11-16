@@ -66,6 +66,20 @@ WLAND.reset();WLAND.init(Object.assign({ox:0,oz:0},base,{styleName:()=>'steps',c
  ok('the land is continuous across a fissure (the steepest 2 cm step '+worst.toFixed(2)+' m)',worst<1.2,false);
  WLAND.reset();WLAND.init(Object.assign({ox:0,oz:0},base,{styleName:()=>'steps',caprock:()=>0,overlay:()=>'opal valley'}));
  ok('none outside the High Rift ('+WLAND.list(0,0,30000,30000).filter(B=>B.kind==='fissure').length+')',WLAND.list(0,0,30000,30000).every(B=>B.kind!=='fissure'),false);}
+// the master gja (relief P12): a world-absolute feature, placed where the region takes it in; its floor 310 m under the plateau
+// beside it (cut to a level, so the model's broad trough under it is not cut twice), a shelf between, the land beyond its lip
+// untouched, continuous across
+{const plateau=3800,trough=(x,z)=>plateau-200*Math.exp(-(((x*.94+z*.34)/2500)**2)),ox=1569*2000,oz=1643*2000;
+ WLAND.reset();WLAND.init({ox,oz,seed:77,ground:trough,styleName:()=>'jungle',overlay:()=>'',caprock:()=>0,keep:()=>false,sites:[],inside:()=>true});
+ const G=WLAND.pins().find(B=>B.kind==='gja');
+ const at=(s)=>{const ux=Math.sin(20*Math.PI/180),uz=-Math.cos(20*Math.PI/180),x=-uz*s,z=ux*s;return WLAND.apply(trough(x,z),x,z,0);};
+ let lo=1e9;for(let s=-60;s<=60;s+=2)lo=Math.min(lo,at(s));
+ let worst=0,p=null;for(let s=-400;s<=400;s+=.05){const v=at(s);if(p!=null)worst=Math.max(worst,Math.abs(v-p));p=v;}
+ const ux=Math.sin(20*Math.PI/180),uz=-Math.cos(20*Math.PI/180),far=WLAND.apply(trough(-uz*900,ux*900),-uz*900,ux*900,0)-trough(-uz*900,ux*900);
+ ok('the master gja: its floor at '+(G?(plateau-lo).toFixed(0):'-')+' m under the plateau (310), the land 900 m out untouched ('+far.toFixed(2)+'), the steepest 5 cm step '+worst.toFixed(2)+' m',
+  G&&Math.abs(plateau-lo-310)<15&&Math.abs(far)<1e-9&&worst<2.5,false);
+ WLAND.reset();WLAND.init({ox:0,oz:0,seed:77,ground:trough,styleName:()=>'jungle',overlay:()=>'',caprock:()=>0,keep:()=>false,sites:[],inside:(x,z)=>Math.hypot(x,z)<50000});
+ ok('a region that does not take it in has no master gja',!WLAND.pins().some(B=>B.kind==='gja'),false);}
 // determinism: two inits give the same records
 WLAND.reset();WLAND.init(Object.assign({ox:0,oz:0},base));const D2=WLAND.list(0,0,40000,40000);
 ok('deterministic: two inits, the same records',ids(D2)===ids(A)&&JSON.stringify(D2.map(B=>B.top))===JSON.stringify(A.map(B=>B.top)),false);

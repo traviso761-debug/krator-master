@@ -24,7 +24,8 @@
 //   WLAND.at(x, z)             {S, top, wall} the record surface over (x, z), or null
 //   WLAND.list(x0, z0, x1, z1) the records whose middle lies in the box (placing their cells)
 //   WLAND.pins()               the pinned records
-//   WLAND.KINDS                the table of what each style's cells may hold; WLAND.OVERLAY the carving kinds by overlay
+//   WLAND.KINDS                the table of what each style's cells may hold; WLAND.OVERLAY the carving kinds by overlay;
+//                              WLAND.FEATURES world-absolute features by map pixel (relief P12: the High Rift's master gja)
 //                              (relief P7: the High Rift's tension fissures, cut from the land after the raised records)
 var WLAND=(function(){'use strict';
 const L={version:1};
@@ -44,11 +45,23 @@ L.KINDS={
 // per overlay (its name, lower case): carving kinds (relief P7). The High Rift's gjar swarm (biomes/highrift/PLAN.md, station 5:
 // "a swarm of narrow en-echelon tension fissures, 1-40 m wide and 2-60 m deep", striking NNE-SSW): up to three a cell, each
 // offset from the last across its strike, as Thingvellir's are
+// world-absolute features (relief P12): a record of its own, by the scale model's pixel, placed in any region whose box takes
+// it in. The High Rift's master gja (biomes/highrift/PLAN.md, station 5: "one master gja through the centre, ~310 m deep and
+// 300-600 m wide at the lip (its walls stepped where blocks have dropped)", on the model's fissure 4 at 5.1 px x ~1569 on the
+// station's row, NNE-SSW). The model holds the fissure as a trough 2-7 km wide (its envelope at 2 km a cell), so the gja is
+// cut to a level (310 m under the plateau beside it), not 310 m under whatever ground lies there
+L.FEATURES=[{id:'gja:master',kind:'gja',name:'The master gja of the Singing Gjar',px:[1569,1643],strike:20,len:24000,w:[300,600],d:310}];
 L.OVERLAY={'high rift':[{kind:'fissure',p:.3,n:3,L:[400,2400],w:[2,30],d:[3,50],strike:20,jit:8}]};
 let OX=0,OZ=0,SEED=0,O=null,PINS=[],PINF=[];const CELLS=new Map();
 L.pin=function(f){PINF.push(f);return L;};
 L.init=function(o){O=o;OX=o.ox||0;OZ=o.oz||0;SEED=KRAND.child(o.seed==null?0x4C4E44:o.seed,'landform');CELLS.clear();
- PINS=[];for(const f of PINF)for(const B of (typeof f==='function'?f(o):f)||[]){B.pinned=1;PINS.push(B);}return L;};
+ PINS=[];for(const f of PINF)for(const B of (typeof f==='function'?f(o):f)||[]){B.pinned=1;PINS.push(B);}
+ for(const F of L.FEATURES){const x=F.px[0]*2000-OX,z=F.px[1]*2000-OZ,a=F.strike*Math.PI/180,ux=Math.sin(a),uz=-Math.cos(a),hl=F.len/2;
+  if(!o.inside||!o.inside(x,z))continue;   /* placed only in a region that takes it in */
+  /* the plateau's level: the highest ground 4 to 6 km either side of its line, every 2 km along it (its envelope lies between) */
+  let top=-1e9;for(let t=-hl;t<=hl;t+=2000)for(const sd of [-6000,-4000,4000,6000]){const px=x+ux*t-uz*sd,pz=z+uz*t+ux*sd;if(!o.inside||o.inside(px,pz))top=Math.max(top,o.ground(px,pz));}
+  PINS.push({id:F.id,kind:F.kind,name:F.name,carve:1,pinned:1,feature:1,x,z,a:[x-ux*hl,z-uz*hl],b:[x+ux*hl,z+uz*hl],w:(F.w[0]+F.w[1])/2,wr:F.w,d:F.d,bed:top-F.d,R:hl+F.w[1]});}
+ return L;};
 L.reset=function(){PINS=[];PINF=[];CELLS.clear();O=null;};
 const u01=(i,j,k,s)=>KRAND.unit(KRAND.hash(SEED,i,j,k*16+s));
 const rng=(a,i,j,k,s)=>a[0]+(a[1]-a[0])*u01(i,j,k,s);
@@ -104,6 +117,16 @@ function fissureCut(F,x,z){const dx=F.b[0]-F.a[0],dz=F.b[1]-F.a[1],l2=dx*dx+dz*d
   wob=((KRAND.vnoise(u/220,0,.5,sd)-.5)*1.4+(KRAND.vnoise(u/70,3.1,.5,sd^0x55)-.5)*.6)*Math.min(12,F.w*1.5);
  const d=Math.abs(s-wob),hw=F.w/2*(1-smooth(.8,1,Math.abs(2*t-1))),edge=hw+F.d/20+.5;if(d>=edge||hw<=0)return 0;
  return F.d*(1-smooth(.8,1,Math.abs(2*t-1)))*(1-smooth(hw,edge,d));}
+// THE MASTER GJA's cut at (x, z) on ground h: its width wandering 300-600 m along it, its line wandering as a fissure's (up to
+// 40 m), stepped: the floor (the inner 40 %) at its bed, a dropped block's shelf (55 to 80 % out) at 55 % of its depth under
+// the plateau, the lip beyond; each step a ramp of 1 in 20, so the land stays continuous. Never fills: the cut is to the
+// level, where the ground lies higher
+function gjaCut(F,h,x,z){const dx=F.b[0]-F.a[0],dz=F.b[1]-F.a[1],l2=dx*dx+dz*dz,l=Math.sqrt(l2);let t=((x-F.a[0])*dx+(z-F.a[1])*dz)/l2;if(t<-.02||t>1.02)return 0;t=t<0?0:t>1?1:t;
+ const u=t*l,sd=KRAND.hash(SEED,77,13,5)>>>0,s=((x-F.a[0])*dz-(z-F.a[1])*dx)/l,wob=(KRAND.vnoise(u/1800,0,.5,sd)-.5)*80;
+ const end=1-smooth(.85,1,Math.abs(2*t-1)),hw=(F.wr[0]+(F.wr[1]-F.wr[0])*KRAND.vnoise(u/3000,7,.5,sd^9))/2*end,d=Math.abs(s-wob);if(hw<=1||d>hw+F.d/20+2)return 0;
+ const top=F.bed+F.d,shelf=F.bed+F.d*.45,R=F.d/20;
+ const lvl=d<hw*.4?F.bed:d<hw*.4+R?lerp(F.bed,shelf,smooth(hw*.4,hw*.4+R,d)):d<hw*.8?shelf:lerp(shelf,top+50,smooth(hw*.8,hw+R,d));
+ return Math.max(0,h-lvl)*(1-smooth(hw,hw+R,d))+(d<hw?0:0);}
 // the records whose reach covers (x, z): the pins and the placed of the 3 x 3 cells round it
 const NEAR=[];
 // a body's reach: its radius and its talus apron (TALUS_W of its height, and 8 m)
@@ -134,7 +157,7 @@ function raster(B){if(B._r)return B._r;const R=reach(B),cs=clamp(B.R/50,2,6),x0=
 const LOW=-1e9,WALL=20;
 L.apply=function(h,x,z,minWave){if(!O)return h;const N=near(x,z);if(!N.length)return h;let out=h;
  let cut=0;
- for(const B of N){if(B.carve){if(B.w>=(minWave==null?0:minWave)*.25){const c=fissureCut(B,x,z);if(c>cut)cut=c;}continue;}
+ for(const B of N){if(B.carve){if(B.w>=(minWave==null?0:minWave)*.25){const c=B.kind==='gja'?gjaCut(B,h,x,z):fissureCut(B,x,z);if(c>cut)cut=c;}continue;}
   if(B.R*2<(minWave==null?0:minWave)*.25)continue;   /* under a quarter of the asking wavelength across: a far chunk, a kopje */const r=raster(B),u=(x-r.x0)/r.cs,v=(z-r.z0)/r.cs;if(u<0||v<0||u>=r.nx-1||v>=r.nz-1)continue;
   const i=Math.floor(u),j=Math.floor(v),fu=u-i,fv=v-j,o=j*r.nx+i,T=r.top,A=r.apr;
   const t=(T[o]*(1-fu)+T[o+1]*fu)*(1-fv)+(T[o+r.nx]*(1-fu)+T[o+r.nx+1]*fu)*fv;if(t>out)out=t;
@@ -144,7 +167,7 @@ L.apply=function(h,x,z,minWave){if(!O)return h;const N=near(x,z);if(!N.length)re
 // test)} or a fissure's cut {S, cut}; null where none (the inspector, KSITES' rim, the probe)
 L.at=function(x,z){if(!O)return null;const N=near(x,z);if(!N.length)return null;const R=N.filter(B=>!B.carve);
  const s=R.length?KSTACKS.surface(R,x,z):null;if(s)return{S:s.S,top:s.top,wall:s.wall,d:s.d};
- for(const B of N)if(B.carve){const c=fissureCut(B,x,z);if(c>0)return{S:B,cut:c};}return null;};
+ for(const B of N)if(B.carve){const c=B.kind==='gja'?gjaCut(B,O.ground(x,z),x,z):fissureCut(B,x,z);if(c>0)return{S:B,cut:c};}return null;};
 L.list=function(x0,z0,x1,z1){const out=PINS.filter(B=>B.x>=x0&&B.x<=x1&&B.z>=z0&&B.z<=z1);if(!O)return out;
  for(let j=Math.floor((z0+OZ)/CELL);j<=Math.floor((z1+OZ)/CELL);j++)for(let i=Math.floor((x0+OX)/CELL);i<=Math.floor((x1+OX)/CELL);i++)for(const B of cellOf(i,j))if(B.x>=x0&&B.x<=x1&&B.z>=z0&&B.z<=z1)out.push(B);
  return out;};

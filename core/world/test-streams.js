@@ -54,6 +54,15 @@ ok('a depression: '+RP.lines.filter(L=>L.e==='p').length+' lines end in it, one 
  const deep=t&&WSTREAMS.pondRows(t).some(([j,i0,i1])=>j===80&&i0<=60&&i1>=60);
  ok('a depression holds a tarn ('+T.length+': level '+(t?(t.l/10).toFixed(1):'-')+' m, '+(t?(t.d/10).toFixed(0):'-')+' m deep), a dry one none ('+Td.length+')',
   T.length===1&&deep&&t.d>=20&&Td.length===0,false);}
+// the fans (relief P13): a stream falling 8 % onto a 1 % plain lays one at the break; an even slope none; a fan is nothing
+// behind its apex and continuous
+{const line=g=>{const P=[];let bed=500;for(let k=0;k<=60;k++){P.push([0,k*50,.5,bed]);bed-=50*g(k*50);}return {pts:P};};
+ const F=WSTREAMS.fans([line(z=>z<1500?.08:.01)]),N=WSTREAMS.fans([line(()=>.03)]),f=F[0];
+ let worst=0,p=null;if(f)for(let s=-f.R;s<=f.R;s+=.25){const v=WSTREAMS.fanAt(f,f.x+s*.6,f.z+s*.8);if(p!=null)worst=Math.max(worst,Math.abs(v-p));p=v;}
+ ok('a fan where a stream leaves steep ground ('+F.length+(f?', apex at '+f.z+' m, '+Math.round(f.R)+' m across, '+f.H.toFixed(1)+' m high':'')+'), none on an even slope ('+N.length+')',
+  F.length===1&&Math.abs(f.z-1500)<=150&&N.length===0,false);
+ ok('a fan: nothing behind its apex, full below it, continuous (the steepest 25 cm step '+worst.toFixed(3)+' m)',
+  f&&WSTREAMS.fanAt(f,f.x,f.z-f.R*.4)===0&&WSTREAMS.fanAt(f,f.x,f.z+f.R*.3)>f.H*.3&&worst<.1,false);}
 // wet by its catchment's rain
 const wet=WSTREAMS.trace(grid(valley,{rain:900})),dry=WSTREAMS.trace(grid(valley,{rain:250}));
 ok('wet by rain: at 900 mm '+wet.lines.filter(L=>L.w).length+'/'+wet.lines.length+' wet, at 250 mm '+dry.lines.filter(L=>L.w).length+'/'+dry.lines.length,
