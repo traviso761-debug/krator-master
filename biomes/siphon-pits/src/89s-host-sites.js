@@ -4,7 +4,7 @@
 // and expect it to be replaced"). Each is drawn as a plain placeholder: boxes, posts, a cone, merged by material. The Arete's iron stanchions and chains
 // are the trail's own furniture and are drawn properly. The flensers' lairs are hazard records (kind 'hunter') with nothing drawn: the walls hold them.
 const SITES_PEOPLE=[];
-const STRUCT=(function(){const parts={stone:[],timber:[],iron:[],canvas:[],copper:[],sod:[]},PP={},M4=new THREE.Matrix4(),Q=new THREE.Quaternion(),V=new THREE.Vector3(),Sc=new THREE.Vector3();
+const STRUCT=(function(){const parts={stone:[],timber:[],iron:[],canvas:[],copper:[],sod:[],slate:[]},PP={},M4=new THREE.Matrix4(),Q=new THREE.Quaternion(),V=new THREE.Vector3(),Sc=new THREE.Vector3();
  const add=(mat,geo,x,y,z,ry,sx,sy,sz)=>{const g=geo.index?geo.toNonIndexed():geo.clone();Q.setFromEuler(new THREE.Euler(0,ry||0,0));M4.compose(V.set(x,y,z),Q,Sc.set(sx,sy,sz));g.applyMatrix4(M4);parts[mat].push(g);(PP[mat]=PP[mat]||[]).push(x,y,z);};
  const BOX=new THREE.BoxGeometry(1,1,1),CYL=new THREE.CylinderGeometry(.5,.5,1,10),CONE=new THREE.ConeGeometry(.5,1,8);
  const site=(o)=>{SITES_PEOPLE.push(o);REGISTER({name:o.name,x:o.x,z:o.z,y:terrainH(o.x,o.z)-2,r:o.r,h:o.h,tags:Object.assign({class:'structure',placeholder:true,culture:null,kind:o.kind,type:o.type},o.tags||{})});};
@@ -47,7 +47,29 @@ const STRUCT=(function(){const parts={stone:[],timber:[],iron:[],canvas:[],coppe
   SITE.lairs.forEach((l,i)=>{const[x,s]=l,e=s*(L.crestW(x)/2+8),y=g(x,e)-25;REGISTER({name:'A flenser-hound\'s lair (under the rim: an ambush on the trail)',x,z:e,y,r:14,h:40,
    tags:{hazard:{kind:'hunter',danger:.9},life:{species:'flenser-hound',kit:'kits/fauna',role:'predator',den:true}}});});
   REGISTER({name:'Black rime on the knife-edge (the windward faces glazed: it slips)',x:0,z:0,y:SITE.base-25,r:C[1],h:40,tags:{hazard:{kind:'slip',danger:.4}}});}
- const MATS={stone:0x5a5654,timber:0x6a5038,iron:0x2a2828,canvas:0xc8b898,copper:0xb06a3a,sod:0x5a6a3a},out={};
+ // STATION 14: the edge of Ostrukh-on-Water (sostrukhyuni01: a Yuni village on the model's 5.0 pins; no settlement kit draws it yet). The quay along the
+ // waterline, the slate-roofed granaries on the lowest treads, the wax-caravan staging yard, the qanats' mouths, and the waterfront's first houses at the
+ // frame's two ends. Sites tagged with the settlement's id and its culture, for the Yuni kit and a hamlet pass to take; placeholders drawn
+ if(SKEY==='polynya'){const LV=SITE.lake.level,u=[-SITE.toLake[1],SITE.toLake[0]],ry=-Math.atan2(u[1],u[0]),T0={culture:'yuni',settlement:SITE.settlement.id};
+  const at=(a,dIn)=>L.at(a,dIn),Q=SITE.quay;
+  for(let a=Q.a[0];a<Q.a[1];a+=20){const p=L.xz(L.shoreD(a+10)-2,a+10);add('stone',BOX,p[0],LV+.05,p[1],ry,20.6,3.1,Q.w);}
+  {const p=L.xz(L.shoreD((Q.a[0]+Q.a[1])/2)-2,(Q.a[0]+Q.a[1])/2);
+   site({name:'The quay (Ostrukh-on-Water\'s waterfront on the frozen bay: a site for the Yuni kit; placeholder)',kind:'quay',type:['infrastructure','harbour'],x:p[0],z:p[1],r:(Q.a[1]-Q.a[0])/2,h:8,tags:T0});}
+  SITE.granaries.forEach((G,i)=>{const p=at(G[0],G[1]),y=g(p[0],p[1]);
+   site({name:'A granary (slate and basalt: the Siphon Pits\' grain and fodder store; placeholder)',kind:'granary',type:['storage','agriculture'],x:p[0],z:p[1],r:G[2]*1.4,h:16,tags:T0});
+   add('stone',CYL,p[0],y+3.5,p[1],0,G[2]*2,9,G[2]*2);add('slate',CONE,p[0],y+10.2,p[1],0,G[2]*2.3,4.4,G[2]*2.3);});
+  {const Y=SITE.yard,p=at(Y.a,Y.d),y=g(p[0],p[1]);
+   site({name:'The wax-caravan staging yard (the Siphon-Ropers\' wax ingots and amethyst geodes from the Arete Way; placeholder)',kind:'yard',type:['trade','industry'],x:p[0],z:p[1],r:Y.r,h:10,tags:T0});
+   for(let k=0;k<28;k++){const a=k/28*TAU,x=p[0]+Math.cos(a)*Y.r,z=p[1]+Math.sin(a)*Y.r;add('timber',BOX,x,g(x,z)+.8,z,-a,.25,1.8,.25);}
+   for(let k=0;k<9;k++){const x=p[0]+(k%3-1)*9+KRAND.unit(KRAND.hash(9894,k))*3,z=p[1]+(Math.floor(k/3)-1)*9,yy=g(x,z);add('copper',BOX,x,yy+.5,z,ry,2.4,1,1.4);}
+   add('canvas',BOX,p[0]+20,y+3.4,p[1]-14,ry,16,.3,8);add('timber',BOX,p[0]+20,y+1.6,p[1]-14,ry,15,3.2,.3);}
+  L.QL.forEach((QQ,i)=>{const p=QQ.P[0],q=QQ.P[1],y=g(p[0],p[1]),a=-Math.atan2(q[1]-p[1],q[0]-p[0]);
+   site({name:'A qanat\'s mouth (the gallery from the plain\'s aquifer daylights here: clear water all winter)',kind:'qanat',type:['infrastructure','irrigation'],x:p[0],z:p[1],r:6,h:8,tags:T0});
+   add('stone',BOX,p[0],y+1.4,p[1],a,3,3.2,4.2);add('stone',BOX,p[0],y+3.1,p[1],a,3.6,.5,4.8);});
+  SITE.edge.forEach((E,i)=>{const p=at(E[0],E[1]),y=g(p[0],p[1]),w=9+4*KRAND.unit(KRAND.hash(9895,i)),dp=7+3*KRAND.unit(KRAND.hash(9895,i,1));
+   site({name:'A house of the village\'s edge (Ostrukh-on-Water: a site for the Yuni kit; placeholder)',kind:'house',type:['single-family dwelling'],x:p[0],z:p[1],r:w*.8,h:12,tags:T0});
+   add('stone',BOX,p[0],y+1.6,p[1],ry,w,5.2,dp);add('slate',BOX,p[0],y+4.4,p[1],ry,w+1,.5,dp+1);});}
+ const MATS={stone:0x5a5654,timber:0x6a5038,iron:0x2a2828,canvas:0xc8b898,copper:0xb06a3a,sod:0x5a6a3a,slate:0x3c4046},out={};
  for(const k in parts){if(!parts[k].length)continue;let n=0;for(const p of parts[k])n+=p.attributes.position.count;const pos=new Float32Array(n*3),nor=new Float32Array(n*3);let o=0;
   for(const p of parts[k]){pos.set(p.attributes.position.array,o*3);nor.set(p.attributes.normal.array,o*3);o+=p.attributes.position.count;}
   const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.BufferAttribute(pos,3));geo.setAttribute('normal',new THREE.BufferAttribute(nor,3));

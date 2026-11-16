@@ -8,8 +8,12 @@
 ATMOS.bindHost({THREE,scene,camera,renderer,ticks:TICKS,ground:(x,z)=>terrainH(x,z),hour:()=>typeof KHOST!=='undefined'&&KHOST.host?KHOST.host.clock.hour:13,seed:9870+SITE.zone,viewH:()=>innerHeight});
 if(BIO.bindAtmosWind)BIO.bindAtmosWind();
 const DECK=SKEY==='pitfloor'?{y:SITE.fog.top,density:SITE.fog.density,depth:20,noise:.25}:SKEY==='arete'?{y:SITE.floor+150,density:.012,depth:40,noise:.5}:null;
+// STATION 14: the frost smoke, the height fog's mist at the dawn over the open water (its field: 1 over the polynya, thin over the ice, none on land),
+// pooled under 30 m over the lake. The dawn window is the winter's (sunrise ~8:30): it rises from 5 and burns off by 12:30
+const FROST_SMOKE=SKEY==='polynya'&&typeof POLYNYA!=='undefined'&&POLYNYA&&!POLYNYA.missing?{density:.006,y:SITE.lake.level+30,depth:24,noise:.55,night:.6,dawn:[5,7,10.5,12.5],
+ field:{at:(x,z)=>terrainH(x,z)<SITE.lake.level?(POLYNYA.inside(x,z)?1:.2):0,extent:[-TERR.R*1.1,-TERR.R*1.1,TERR.R*1.1,TERR.R*1.1],res:128}}:null;
 const AIR=(function(){const q=new URLSearchParams(location.search),out={hfog:false,raincover:false,snow:false,deck:null};
- if(q.get('hfog')!=='0'&&ATMOS.heightFog){ATMOS.heightFog(Object.assign({falloff:1/700,sun:.3,sky:.3},DECK?{mist:{density:DECK.density,y:DECK.y,depth:DECK.depth,noise:DECK.noise,night:1,dawn:[-2,-1,25,26]}}:{}));
+ if(q.get('hfog')!=='0'&&ATMOS.heightFog){ATMOS.heightFog(Object.assign({falloff:1/700,sun:.3,sky:.3},DECK?{mist:{density:DECK.density,y:DECK.y,depth:DECK.depth,noise:DECK.noise,night:1,dawn:[-2,-1,25,26]}}:FROST_SMOKE?{mist:FROST_SMOKE}:{}));
   ATMOS.heightFogScene(scene);out.hfog=true;out.deck=DECK;}
  if(ATMOS.rainCover&&RAIN_FITS){try{out.raincover=!!ATMOS.rainCover({renderer});}catch(e){reportErr('rain cover: '+e.stack);}}
  else if(ATMOS.rainCover)out.raincover='skipped: the ground reads '+samplersOf(MAT_GROUND)+' of '+MAXT+' texture units';

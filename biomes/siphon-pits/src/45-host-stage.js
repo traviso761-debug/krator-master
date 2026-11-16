@@ -114,6 +114,33 @@ const L=(function(){const S=SITE;
   return{land,water:()=>-1e9,P,plateau,farBase:S.floor,crestN:crestZ,
    crestW:x=>{const e=(R,z)=>KRELIEF.at(R,x,z)?1:0;let a=0,b=0;for(let z=0;z>-80&&!e(P[0],z);z-=.25)a=z;for(let z=0;z<80&&!e(P[1],z);z+=.25)b=z;return b-a;},
    spine:[[0,0],[-500,0],[500,0],[0,-1250],[0,1250],[-1500,0],[1500,0]]};}
+ if(SKEY==='polynya'){const B=S.base,LV=S.lake.level,n=S.toLake,u=[-n[1],n[0]],SH=S.shore,T=S.terr,BD=S.bed;
+  // the frame: d toward the lake (north-east), a along the shore (south-east); x, z back from them
+  const dOf=(x,z)=>x*n[0]+z*n[1],aOf=(x,z)=>x*u[0]+z*u[1],xz=(d,a)=>[d*n[0]+a*u[0],d*n[1]+a*u[1]];
+  const shoreD=a=>SH.d+SH.amp[0]*Math.sin(a*.0011+.7)+SH.amp[1]*Math.sin(a*.0031+2.1);
+  // the plain: the pin's height at the pin (its noise taken back there), rising gently south-west as the model's does (2.5 m a km)
+  const nz=(x,z)=>6*n2(x,z,.0012,51)+2*n2(x,z,.01,52),N0=nz(0,0);
+  function ground0(x,z){const d=dOf(x,z),a=aOf(x,z),s=shoreD(a);let g=B-.0025*d+nz(x,z)-N0;
+   g+=(LV+4-g)*smooth(SH.top,s-SH.beach,d);   /* the loess bluff, 138 m down to the beach's back */
+   g+=-3.7*smooth(s-SH.beach,s,d);   /* the shingle beach to 0.3 m over the lake */
+   g-=(BD.depth+.3)*smooth(s,s+BD.reach,d)+BD.fault.drop*smooth(s+BD.fault.d-40,s+BD.fault.d+40,d);   /* the bay's bed and the fault's step under it */
+   if(d>s)g+=.8*n2(x,z,.004,53);return g;}
+  const TER=KRELIEF.terraces({rise:T.rise,riser:T.riser,base:B,wobble:.12,fill:.5,bund:.3,field:T.field,band:[LV+T.band[0],LV+T.band[1]],bandFade:6,seed:9881});
+  // the qanats: each gallery daylights in the bluff and its channel runs straight down the fall line to the waterline, cut 0.45 m into the treads
+  const QL=S.qanats.map((q,i)=>{const a0=q[0],s=shoreD(a0),pts=[];for(let k=0;k<=24;k++){const d=s-q[1]+k*(q[1]-4)/24,a=a0+14*Math.sin(k*.7+i);pts.push(xz(d,a));}return lineFrame(pts);});
+  function land1(x,z){const d=dOf(x,z),a=aOf(x,z);let g=ground0(x,z);if(d<shoreD(a)-SH.beach-8)g=KRELIEF.shape(TER,x,z,g);return g;}
+  function qanatAt(x,z){let best=null;for(let i=0;i<QL.length;i++){const q=QL[i].at(x,z);if(q.s>0&&q.s<QL[i].L&&(!best||q.d<best.d))best={i,d:q.d,s:q.s};}return best;}
+  // the hot springs' pools on the beach: a basin 0.6 m deep; the pool 1.2 m over the lake
+  const SP=S.springs.map(p=>{const s=shoreD(p[0]),c=xz(s-p[1],p[0]);return{x:c[0],z:c[1],r:p[2],T:p[3],level:LV+1.2};});
+  function land(x,z){let g=land1(x,z);const q=qanatAt(x,z);if(q&&q.d<2.4)g-=.45*smooth(2.4,1.1,q.d);
+   for(const p of SP){const dd=Math.hypot(x-p.x,z-p.z);if(dd<p.r*1.6)g=mix(Math.min(g,p.level-.6),g,smooth(p.r*.7,p.r*1.6,dd));}return g;}
+  function water(x,z){const d=dOf(x,z);if(d>shoreD(aOf(x,z))-4&&land(x,z)<LV)return LV;
+   for(const p of SP)if(Math.hypot(x-p.x,z-p.z)<p.r*.92)return p.level;
+   const q=qanatAt(x,z);if(q&&q.d<.9)return land1(x,z)-.12;return -1e9;}
+  const at=(a,dIn)=>xz(shoreD(a)-dIn,a);
+  const lots=S.granaries.map(g=>at(g[0],g[1]).concat([g[2]*2.2])).concat([at(S.yard.a,S.yard.d).concat([S.yard.r*1.2])]).concat(S.edge.map(e=>at(e[0],e[1]).concat([26])));
+  return{land,water,ground0,TER,QL,qanatAt,SP,shoreD,dOf,aOf,xz,at,lots,level:LV,off:0,farBase:LV,
+   spine:[[0,0],xz(SH.d*.6,0),xz(SH.d+S.polynya.d,S.polynya.a),xz(SH.d*.5,-900),xz(SH.d*.5,900)].concat(lots.map(l=>[l[0],l[1]]))};}
  throw new Error('no station '+SKEY);})();
 // THE GROUND AS DATA (core/terrain KFIELD): the land baked once on an 8 m lattice over the page's square (the Arete's knife-edge in a 0.5 m inset);
 // the page, its fields and the export read the field. Past the square the far field reads the land itself (landH)
@@ -139,7 +166,7 @@ function fieldsAt(x,z,h,slope){
  for(let k=0;k<8&&wd&&near<.8;k++){const a=k/8*TAU;if(waterH(x+Math.cos(a)*70,z+Math.sin(a)*70)>-1e8){near=Math.max(near,.45);break;}}
  const rock=clamp(Math.max(smooth(.5,.82,slope),smooth(.35,.6,slope)*.45),0,1);
  const deck=SKEY==='pitfloor'?smooth(SITE.fog.top+20,SITE.fog.top-30,h):0;
- const wet=clamp(.16+.6*near+.45*deck+(SKEY==='terraces'?.12:0)-.2*rock+.06*n2(x,z,.002,131),0,1);
+ const wet=clamp(.16+.6*near+.45*deck+(SKEY==='terraces'||SKEY==='polynya'?.12:0)-.2*rock+.06*n2(x,z,.002,131),0,1);
  return{wet,flow:0,upland:1,canyon:0,rim:0,rock,dune:0,oasis:0,slope,abyss:0,salt:0,cold:clamp(.5+(h-SITE.snow[0])/1400+(SITE.temp.mean<3?.25:0),0,1),geo:0,barren:0,fog:deck,mist:0,flat:1-smooth(.06,.2,slope),deck};}
 const FNAMES=['wet','flow','upland','canyon','rim','rock','dune','oasis','slope','abyss','salt','cold','geo','barren','fog','mist','flat','deck'];
 const FC=(function(){const N=400,S=TERR.R*2.2,a={};FNAMES.forEach(n=>a[n]=new Float32Array(N*N));a.h=new Float32Array(N*N);

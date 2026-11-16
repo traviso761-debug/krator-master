@@ -1,12 +1,12 @@
 # biomes/siphon-pits: the kit's API
 
-Region 98 on scale model 5.1: the Ostrukh Terraces (NW) and the Siphon Pits (SE). Four ideal-type stations, one kit (`SIPHON`), on the shared
+Region 98 on scale model 5.1: the Ostrukh Terraces (NW) and the Siphon Pits (SE). Five ideal-type stations (four of the plan's and Gemini's showcase station 14), one kit (`SIPHON`), on the shared
 biome core. `PLAN.md` is the plan (section 0 the survey and its corrections, section 6 the core adoption, section 7 the order of work).
 
 ```
-cd biomes/siphon-pits && python3 build.py --all        # dist/siphon-pits.html (station 3) and dist/siphon-pits-<terraces|scarp|arete>.html
+cd biomes/siphon-pits && python3 build.py --all        # dist/siphon-pits.html (station 3) and dist/siphon-pits-<terraces|scarp|arete|polynya>.html
 python3 verify.py dist/siphon-pits.html --assert        # the invariants, the host's checks and their negatives, the plan table
-node tests/test-land.js                                 # the four lands headless, and the records against the air law
+node tests/test-land.js                                 # the five lands headless, and the records against the air law
 ```
 
 ## The pages
@@ -17,13 +17,14 @@ node tests/test-land.js                                 # the four lands headles
 | `dist/siphon-pits-scarp.html` | 2, the Scarp Pass (3,289 m, 1.06 atm, +4 degC, Dsc) | the Ostrukh Wall (`KRELIEF.scarp`) with its ravine and scree fan, the caravan road's switchbacks, frost polygons and lobes (`KFROST`), cushion moss, lichen, sedge; the tollhouse and beacon sites. No trees |
 | `dist/siphon-pits.html` | 3, the Siphon Maar Floor (2,277 m, 1.20 atm, +18 degC, Cfa) | a 420 m maar (`KRELIEF.stepcut`) in the sink, the amber deck (the height fog's mist and its lid), the woolly siphon groves (cap 250), siphon felt, suture galls, the vent well's geyser, mud pots, the roper camp's site |
 | `dist/siphon-pits-arete.html` | 4, the Arete Way (4,269 m, 0.94 atm, -5 degC, ET) | a 6 m knife-edge between two 420 m pits (a 0.5 m `KFIELD` inset), the blizzard (opens in it: `?weather=clear`), iron stanchions and chains, the gantry, the flensers' lairs. No trees |
+| `dist/siphon-pits-polynya.html` | 14, the Ostrukh-on-Water Polynya (Gemini's 5.1 showcase; 1,988 m, 1.25 atm, +18 degC, Cwb; Lake Ostrukh 1,850 m) | a winter dawn: the village's loess bluff terraced down to the lake (`KRELIEF.terraces`, the crops), its bay frozen (`WATER.ice`, ext/54) but for a 900 m polynya on KTHERM's 7 degC contour over three fault springs (`WATER.still`), frost smoke (the height fog's mist with a field, steam mouths), qanat channels (`WATER.flow`), beach hot springs (`WATER.spring`), the village's edge (quay, granaries, caravan yard, houses: placeholders) |
 
 ## Data (plain, `[G data]`)
 
 - `SIPHON_STATIONS` (inlined by `build.py` from `stations/*/station.json`): each station's surveyed record: `px`, `py`, `base`, `atm`, `mean`,
   `warm`, `cold`, `high`, `low`, `rain`, `cls`, `wind`, `fog`, `water`, `crops`. The survey's one copy.
 - `SIPHON_SITES[key]` (`40`): the record plus each station's layout (the braids, the wall, the maar, the pits, the vents, the sites).
-- `SIPHON_TREECAP`: `{terraces: null, scarp: 0, pitfloor: 250, arete: 0}`. `SIPHON.treeRule(station, trees)` -> `{ok, detail}`.
+- `SIPHON_TREECAP`: `{terraces: null, scarp: 0, pitfloor: 250, arete: 0, polynya: null}`. `SIPHON.treeRule(station, trees)` -> `{ok, detail}`.
 - `SIPHON_SOUND[key]`: sound sources for core/audio (records only).
 - `SIPHON.SPECIES`, `SIPHON.byKey`, `SIPHON.HARVEST`: seven species, tagged (climate, aridity, riparian, Koppen, `heat`, `native`, `tree`,
   `stations`, harvest). `SIPHON.TREES`: every tree stood, `{key, kin, x, z, y0, H, rb}`.

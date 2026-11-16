@@ -4,7 +4,7 @@
 
 Docs: `BIOME-API.md`, `KNOWN_ISSUES.md`, `PLAN-STATIONS.md`, `PLAN.md`, `PORT.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/siphon-pits-arete.html`, `dist/siphon-pits-scarp.html`, `dist/siphon-pits-terraces.html`, `dist/siphon-pits.html`
+Built output (never open it; edit `src/` and rebuild): `dist/siphon-pits-arete.html`, `dist/siphon-pits-polynya.html`, `dist/siphon-pits-scarp.html`, `dist/siphon-pits-terraces.html`, `dist/siphon-pits.html`
 
 Build: `cd biomes/siphon-pits && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
@@ -26,24 +26,24 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 1 |  |
-| `40-biome-siphon-sites.js` | 5 |  |
-| `45-host-stage.js` | 16 | the land (34); the climate fields (the field contract's units:  (129); the air as fields (core/hazard's ambient bridge) (161); the host binding (169) |
-| `48-host-therm.js` | 2 |  |
+| `40-biome-siphon-sites.js` | 7 |  |
+| `45-host-stage.js` | 19 | the land (34); the climate fields (the field contract's units:  (156); the air as fields (core/hazard's ambient bridge) (188); the host binding (196) |
+| `48-host-therm.js` | 3 |  |
 | `50-biome-siphon-species.js` | 10 | palettes (sRGB hex) (14); the species (22); textures and materials. The library swaps in by  (46); the items (66) |
 | `60-biome-siphon-place.js` | 9 | station 3: the groves, the felt, the galls (20); stations 2 and 4: the cold ground's small life ( (52); station 1: the crops, the willow, the sedge (63) |
 | `70-biome-siphon.js` | 2 |  |
-| `80-host-plan.js` | 4 |  |
-| `84-host-ground.js` | 10 |  |
+| `80-host-plan.js` | 5 |  |
+| `84-host-ground.js` | 11 |  |
 | `85-host-far.js` | 5 |  |
-| `88-host-place.js` | 2 |  |
+| `88-host-place.js` | 3 |  |
 | `89-host-sky.js` | 3 |  |
 | `89a-host-atmos.js` | 3 |  |
 | `89b-host-steam.js` | 3 |  |
-| `89s-host-sites.js` | 8 |  |
-| `89w-host-water.js` | 3 |  |
-| `89y-host-fauna.js` | 4 |  |
+| `89s-host-sites.js` | 11 |  |
+| `89w-host-water.js` | 4 |  |
+| `89y-host-fauna.js` | 5 |  |
 | `89z-host-build.js` | 6 |  |
-| `99-host-take.js` | 12 |  |
+| `99-host-take.js` | 15 |  |
 | `99-tail.html` | <1 |  |
 
 ## stations/
@@ -54,5 +54,6 @@ Each station builds one page (`build.py --station <name>`) from its own fragment
 |---|---|---|
 | arete |  | <1 |
 | pitfloor | 87g-host-geode.js | 4 |
+| polynya | 89wp-host-polynya.js | 4 |
 | scarp |  | <1 |
 | terraces |  | <1 |

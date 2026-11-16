@@ -187,6 +187,10 @@ runtime and bison table, and the `tools/` listing staleness (every build rebuilt
 - **kits/fauna: the Köppen vocabulary lacks Cwb and Dsc** (2026-11-11, biomes/siphon-pits): `FAUNA_VOCAB.koppen` in `kits/fauna/fauna-core.js`.
   Region 98's hexapods (`krator-fauna-xeno.js`) carry their nearest classes (Cfb, Dfb) meanwhile. Add the two, then give the Ghaunt-Ox Cwb and
   the Flenser-Hound Dsc. It moves every page that bundles kits/fauna.
+- **core/water: the ice record has no `levelAt`** (2026-11-16, biomes/siphon-pits station 14): `WATER.fields` (`ext/60`, `levelAt`) reads
+  `S.levelAt(0)` from every surface but a flow or a still, and `WATER.ice` (`ext/54`) makes none, so a page with ice and water fields throws
+  unless it adds one (siphon-pits' `stations/polynya/89wp-host-polynya.js` does). Give ext/54's ice `S.levelAt=()=>S.level` (or let ext/60 read `S.level`), then
+  drop the page's line. It moves every page that lists ext/54 or ext/60.
 
 - **`KSHADOW.units` counts what the GPU links** (2026-11-09, found by the Throne's fix): `core/shadow/host/12-core-shadow-host.js` counts
   declared samplers (some are never read and the GPU drops them), misses `scene.environment` on standard materials, and judges against the

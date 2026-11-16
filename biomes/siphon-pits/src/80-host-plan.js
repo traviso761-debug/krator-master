@@ -9,13 +9,8 @@ const PLAN=(function(){const P={station:SKEY};
  const PX=4,S=TERR.R*1.1,W=Math.ceil(2*S/PX);
  const toPx=(x,z)=>[(x+S)/PX,(z+S)/PX];
  const distOf=c=>{const D=KMASK.distance(c,{channel:0,threshold:128});return(x,z)=>{const p=toPx(x,z);return D.empty?1e9:D.sample(p[0],p[1])*PX;};};
- if(SKEY==='terraces'&&typeof KMASK!=='undefined'){
-  const WM=KMASK.canvas(W,W),wc=WM.getContext('2d');wc.fillStyle='#000';wc.fillRect(0,0,W,W);wc.strokeStyle='#f00';
-  for(const b of L.BR){wc.lineWidth=b.w/PX;wc.beginPath();for(let x=-S;x<=S;x+=20){const p=toPx(x,L.zc(x)+b.q(x));x===-S?wc.moveTo(p[0],p[1]):wc.lineTo(p[0],p[1]);}wc.stroke();}
-  const LM=KMASK.canvas(W,W),lc=LM.getContext('2d');lc.fillStyle='#000';lc.fillRect(0,0,W,W);lc.fillStyle='#f00';
-  for(const f of SITE.farms){const p=toPx(f[0],f[1]);lc.beginPath();lc.arc(p[0],p[1],f[2]/PX,0,TAU);lc.fill();}
-  P.braid=distOf(WM);P.lot=distOf(LM);P.mask={water:KMASK.hash(WM),lots:KMASK.hash(LM),px:PX,size:W,ops:KMASK.ops(WM).length+KMASK.ops(LM).length};
-  // the crops kits/crops gives the station (PLAN.md section 3): a grain, a second grain, a pulse and a tuber
+ // the crops kits/crops gives the station (PLAN.md section 3): a grain, a second grain, a pulse and a tuber (stations 1 and 14)
+ function cropsOf(P){
   const Q=SITE.crops&&SITE.crops.query||{warmth:'temperate',atm:'standard',arid:'semiarid'};
   if(typeof CROPS!=='undefined'){const R=CROPS.BIOMES['siphon-pits']?CROPS.forBiome('siphon-pits').filter(r=>r.zone==='terraces'||r.zone==='braids'):CROPS.at(Q),pk=(b,pref,salt)=>{const r=CROPS.pick(R,b,{seed:9850,salt:salt==null?0:salt,prefer:[pref]});return r?r.crop:null;};
    const paint={grain:0xb8a060,pulse:0x6a8a3e,tuber:0x587044};
@@ -23,11 +18,35 @@ const PLAN=(function(){const P={station:SKEY};
    P.query=Q;P.offered=R.length;}
   else P.crops=[];
   SIPHON.CROP_OF={};P.crops.forEach(c=>{SIPHON.CROP_OF[SIPHON.CROP_ITEMS[c.bucket]]=c;});
+ }
+ if(SKEY==='terraces'&&typeof KMASK!=='undefined'){
+  const WM=KMASK.canvas(W,W),wc=WM.getContext('2d');wc.fillStyle='#000';wc.fillRect(0,0,W,W);wc.strokeStyle='#f00';
+  for(const b of L.BR){wc.lineWidth=b.w/PX;wc.beginPath();for(let x=-S;x<=S;x+=20){const p=toPx(x,L.zc(x)+b.q(x));x===-S?wc.moveTo(p[0],p[1]):wc.lineTo(p[0],p[1]);}wc.stroke();}
+  const LM=KMASK.canvas(W,W),lc=LM.getContext('2d');lc.fillStyle='#000';lc.fillRect(0,0,W,W);lc.fillStyle='#f00';
+  for(const f of SITE.farms){const p=toPx(f[0],f[1]);lc.beginPath();lc.arc(p[0],p[1],f[2]/PX,0,TAU);lc.fill();}
+  P.braid=distOf(WM);P.lot=distOf(LM);P.mask={water:KMASK.hash(WM),lots:KMASK.hash(LM),px:PX,size:W,ops:KMASK.ops(WM).length+KMASK.ops(LM).length};
+  cropsOf(P);
   // each tread's field: its crop by its own hash (a fifth lie fallow), rows along the contour
   const cache=new Map();
   FIELD_OF=(x,z)=>{if(Math.abs(z-L.zc(x))<SITE.chan.w+30||P.lot(x,z)<14)return null;const g=terrainH(x,z),A=KRELIEF.at(L.TER,x,z,g-L.off);if(!A||A.part!=='tread'||A.w<.6)return null;
    let f=cache.get(A.field);if(f===undefined){const m=/(-?\d+):(-?\d+),(-?\d+)/.exec(A.field)||[0,0,0,0],h=KRAND.hash(9851,+m[1],+m[2],+m[3]),k=h%5;
     f=k<P.crops.length&&P.crops.length?{id:A.field,crop:P.crops[k],paint:P.crops[k].paint,rows:KRAND.unit(KRAND.hash(9852,+m[1],+m[2]))*Math.PI}:{id:A.field,crop:null};cache.set(A.field,f);}
+   return f;};
+  P.fields=cache;}
+ // STATION 14: the qanats' channels as the water (the willow and the sedge keep to them) and the village's lots (granaries, the caravan yard, the
+ // waterfront's houses: L.lots) as the lots; the crops as station 1's; each tread's field off the qanats, the beach and the lots
+ if(SKEY==='polynya'&&typeof KMASK!=='undefined'){
+  const WM=KMASK.canvas(W,W),wc=WM.getContext('2d');wc.fillStyle='#000';wc.fillRect(0,0,W,W);wc.strokeStyle='#f00';wc.lineWidth=2.4/PX*2;
+  for(const Q of L.QL){wc.beginPath();for(let k=0;k<Q.P.length;k++){const p=toPx(Q.P[k][0],Q.P[k][1]);k?wc.lineTo(p[0],p[1]):wc.moveTo(p[0],p[1]);}wc.stroke();}
+  const LM=KMASK.canvas(W,W),lc=LM.getContext('2d');lc.fillStyle='#000';lc.fillRect(0,0,W,W);lc.fillStyle='#f00';
+  for(const f of L.lots){const p=toPx(f[0],f[1]);lc.beginPath();lc.arc(p[0],p[1],f[2]/PX,0,TAU);lc.fill();}
+  P.braid=distOf(WM);P.lot=distOf(LM);P.mask={water:KMASK.hash(WM),lots:KMASK.hash(LM),px:PX,size:W,ops:KMASK.ops(WM).length+KMASK.ops(LM).length};
+  cropsOf(P);
+  const cache=new Map();
+  FIELD_OF=(x,z)=>{if(P.braid(x,z)<6||P.lot(x,z)<10||L.dOf(x,z)>L.shoreD(L.aOf(x,z))-SITE.shore.beach-12)return null;const g=terrainH(x,z),A=KRELIEF.at(L.TER,x,z,g);
+   if(!A||A.part!=='tread'||A.w<.6)return null;
+   let f=cache.get(A.field);if(f===undefined){const m=/(-?\d+):(-?\d+),(-?\d+)/.exec(A.field)||[0,0,0,0],h=KRAND.hash(9891,+m[1],+m[2],+m[3]),k=h%5;
+    f=k<P.crops.length&&P.crops.length?{id:A.field,crop:P.crops[k],paint:P.crops[k].paint,rows:KRAND.unit(KRAND.hash(9892,+m[1],+m[2]))*Math.PI}:{id:A.field,crop:null};cache.set(A.field,f);}
    return f;};
   P.fields=cache;}
  if(SKEY==='pitfloor'&&typeof KMASK!=='undefined'){const CM=KMASK.canvas(W,W),cc=CM.getContext('2d');cc.fillStyle='#000';cc.fillRect(0,0,W,W);cc.fillStyle='#f00';

@@ -469,20 +469,24 @@
    "sha256": "b053c9661c53cc37fe78f4fc6b7c3edbd20a799f5f8bcb17459d5ef09489c013"
   },
   "biomes/siphon-pits/dist/siphon-pits-arete.html": {
-   "bytes": 5019071,
-   "sha256": "053b278bf7421b46837627e730dfb541a4dbf86ad185c8336e794bf2430c884d"
+   "bytes": 5041894,
+   "sha256": "c7d1cbb23c3250cf081d3b3084443070e0f42d383cca17573f291c1b914a0318"
+  },
+  "biomes/siphon-pits/dist/siphon-pits-polynya.html": {
+   "bytes": 5153870,
+   "sha256": "5494091231987101d8663eb1a666f7638612938bc71a8803083052c9f76c492d"
   },
   "biomes/siphon-pits/dist/siphon-pits-scarp.html": {
-   "bytes": 5019071,
-   "sha256": "ceaf7c484dc10ec203fce19c127230eec0a3a1eb56bd88c5ed1fee52bdba2f70"
+   "bytes": 5041894,
+   "sha256": "2b7ef89e5c5e1a14c640c0c74a5e22fb2fc9b7708c0f3e4442119112f6844fe6"
   },
   "biomes/siphon-pits/dist/siphon-pits-terraces.html": {
-   "bytes": 5084272,
-   "sha256": "9fa1e71eef180c3978efdac136b09b60a4bc24be66903aecd480cd047cff0704"
+   "bytes": 5107095,
+   "sha256": "70497aa0f41e762c6a6170d4e6bb0e6f106aaa3dda5afb4791a8e144d0505332"
   },
   "biomes/siphon-pits/dist/siphon-pits.html": {
-   "bytes": 5572048,
-   "sha256": "017951c257fc4b8eeb2b79438983a85a3ca1e91b2906896451e395dfa1a163a6"
+   "bytes": 5594871,
+   "sha256": "2070e73890fd736dc445569a60ea1998f37a653c66e87e1467f19b0d9dd6e53b"
   },
   "biomes/swbay/dist/swbay.html": {
    "bytes": 8889448,

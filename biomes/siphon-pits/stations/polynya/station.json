@@ -1,0 +1,88 @@
+{
+ "canvas": "5.1 (1821x1723)",
+ "name": "Ostrukh-on-Water Geothermal Polynya (Gemini 5.1 showcase station 14): the loess bluff of the village's terraces stepping down to Lake Ostrukh's frozen south-west bay, a 900 m polynya kept open by sub-lacustrine fault springs, frost smoke at a winter dawn, qanat mouths, the waterfront's edge",
+ "out": "siphon-pits-polynya.html",
+ "site": {
+  "name": "polynya",
+  "title": "Ostrukh-on-Water Polynya",
+  "px": 1516,
+  "py": 1471,
+  "base": 1988.0,
+  "atm": 1.25,
+  "mean": 18,
+  "rain": 439,
+  "cls": "Cwb",
+  "lat": -50.7,
+  "warm": 30,
+  "cold": 4,
+  "high": 38,
+  "low": -4,
+  "surveyed": "scale model 5.1, 2026-11-16 (PLAN.md section 8.3): h 1,987.6 m at the pin; atm = 1.6 exp(-h/8000); temperatures tm/tw/tc/th/tl; the lake's level from wl",
+  "lake": {
+   "name": "Lake Ostrukh",
+   "level": 1850.0,
+   "km2": 224,
+   "px": [1524.5, 1462.5],
+   "near_px": [1521, 1466],
+   "near_km": 14.1,
+   "note": "the model's lake: 56 water cells (224 km2) at 1,849.8 m, its floor 1,835 m; its nearest cell 14 km north-east of the pin, the plain falling 140 m to it. The page brings its south-west shore to 1.2 km of the pin (an ideal type): PLAN.md section 8.3"
+  },
+  "settlement": {
+   "id": "sostrukhyuni01",
+   "name": "Ostrukh-on-Water",
+   "type": "village",
+   "polity": "Yuni Emirate",
+   "note": "tools/scale-model/model/src/60-settlements.js (the 5.0 pins); openworld/populations-gemini.json: 300 now, 1,100 on screen. No settlement kit draws it: the page shows its edge as site records (placeholders)"
+  },
+  "lat_note": "the shared sky's site frame (ATMOS.siteAt on the old canvas px 1244,1141)"
+ },
+ "water": [
+  {
+   "kind": "ice",
+   "name": "Lake Ostrukh's bay ice",
+   "level": 1850.0
+  },
+  {
+   "kind": "still",
+   "name": "The polynya",
+   "level": 1850.0,
+   "width_m": 900
+  },
+  {
+   "kind": "spring",
+   "name": "The fault springs",
+   "temp": [28, 42]
+  },
+  {
+   "kind": "flow",
+   "name": "The qanat mouths"
+  }
+ ],
+ "crops": {
+  "query": {
+   "warmth": "temperate",
+   "atm": "standard",
+   "arid": "semiarid"
+  },
+  "buckets": [
+   "grain",
+   "pulse",
+   "tuber"
+  ],
+  "note": "as station 1: CROPS.forBiome('siphon-pits') on its terraces and braids zones (the query is the fallback, CROPS.at)"
+ },
+ "wind": {
+  "speed": 7.7,
+  "dir": 225,
+  "note": "mean from the model (wd); the dawn's drift of the frost smoke from the south-west (the cold air draining off the plain onto the lake)"
+ },
+ "core": {
+  "48a-crop-core.js": "kits/crops/src/10-crop-core.js",
+  "48b-crop-records.js": "kits/crops/src/20-crop-records.js",
+  "48c-crop-material.js": "kits/crops/src/22-crop-material.js",
+  "48d-crop-query.js": "kits/crops/src/40-crop-query.js",
+  "54-core-water-kinds-ext.js": "core/water/ext/54-core-water-kinds-ext.js",
+  "54b-core-water-kinds-ext-draw.js": "core/water/ext/54b-core-water-kinds-ext-draw.js"
+ },
+ "core_note": "kits/crops read in place, as station 1; core/water's ext/54 for the lake's ice (WATER.ice, WATER.drawIce), opt-in by path"
+}

@@ -13,7 +13,8 @@ with biomes/geyser's --list-sources hook (tools/build_sources.py).
   99-tail.html      closes <script>
 
   python3 build.py                     dist/siphon-pits.html: station 3, the Siphon Maar Floor (stations/pitfloor)
-  python3 build.py --station <name>    dist/siphon-pits-<name>.html: terraces (1), scarp (2), arete (4)
+  python3 build.py --station <name>    dist/siphon-pits-<name>.html: terraces (1), scarp (2), arete (4), polynya (14: Gemini's 5.1 showcase,
+                                       Ostrukh-on-Water's geothermal polynya; PLAN.md section 8)
   python3 build.py --all               every page
 
 The core and the biome leaf never reference a host global except through
@@ -58,7 +59,7 @@ def find_node():
 HERE=os.path.dirname(os.path.abspath(__file__))
 ROOT=os.path.normpath(os.path.join(HERE,'..','..'))
 sys.path.insert(0,os.path.join(ROOT,'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
-STATIONS=['terraces','scarp','pitfloor','arete']   # the plan's order, 1..4
+STATIONS=['terraces','scarp','pitfloor','arete','polynya']   # the plan's order, 1..4, then the showcase station 14
 DEFAULT='pitfloor'
 if '--all' in sys.argv:
     _a=[a for a in sys.argv[1:] if a!='--all']
@@ -84,7 +85,7 @@ _sd=os.path.join(HERE,'stations',STATION)
 for f in os.listdir(_sd):
     if re.match(r'\d',f): PATH[f]=os.path.join(_sd,f)
 for f,pth in SJ.get('core',{}).items(): PATH.setdefault(f,J(pth))
-# THE STATIONS' RECORDS (PLAN.md section 0): station.json is the survey's one copy; the page carries all four (the inspector and verify read them)
+# THE STATIONS' RECORDS (PLAN.md section 0): station.json is the survey's one copy; the page carries all five (the inspector and verify read them)
 VIRTUAL={'39-biome-siphon-stations.js':'// ================================================================= SIPHON PITS - the stations\' records (stations/*/station.json, inlined by build.py)  [G data]\n'
   +'var SIPHON_STATIONS='+_json.dumps({k:dict(_sj(k)['site'],fog=_sj(k).get('fog'),wind=_sj(k).get('wind'),water=_sj(k).get('water',[]),crops=_sj(k).get('crops'),out=_sj(k)['out']) for k in STATIONS},sort_keys=True,ensure_ascii=False)+';\n'
   +'var STATION_KEY='+_json.dumps(STATION)+';\n'}

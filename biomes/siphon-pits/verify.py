@@ -51,7 +51,7 @@ local_three = lambda folder: _harness.local_three(folder, os.path.dirname(os.pat
 # Left out of the profile: water and atmos (see KNOWN_ISSUES.md).
 EXPORT_BOX = [-200, -200, 200, 200]
 PLAN_STATIONS = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'PLAN-STATIONS.md')
-ROWS = {'1': 'terraces', '2': 'scarp', '3': 'pitfloor', '4': 'arete'}
+ROWS = {'1': 'terraces', '2': 'scarp', '3': 'pitfloor', '4': 'arete', '14': 'polynya'}
 EXPORT_PROFILE = ["registry", "items", "materials", "textures", "terrain", "stage", "atmos", "water"]
 
 # Structure names contain em dashes; the Windows console default codepage
@@ -124,7 +124,7 @@ def plan_rows():
     out = {}
     num = lambda t: float(t.replace(',', '').replace('+', '').replace('\u2212', '-'))
     for line in open(PLAN_STATIONS, encoding='utf-8'):
-        m = re.match(r'\|\s*\*\*(\d)\*\*\s*\|', line)
+        m = re.match(r'\|\s*\*\*(\d+)\*\*\s*\|', line)
         if not m or m.group(1) not in ROWS:
             continue
         c = [x.strip() for x in line.strip().strip('|').split('|')]
@@ -197,8 +197,8 @@ async def run(a):
             print(("  PASS  " if not nok else "  FAIL  ") + "negative: a perturbed plan row (atm +7%%, mean +3) : %s" % (("fails as it must: " + ndet) if not nok else "PASSED A BROKEN ROW"))
             if nok:
                 fails.append("assert plan-table negative")
-            if len(rows) != 4:
-                print("  FAIL  the plan table: %d rows read of 4" % len(rows)); fails.append("assert plan rows")
+            if len(rows) != len(ROWS):
+                print("  FAIL  the plan table: %d rows read of %d" % (len(rows), len(ROWS))); fails.append("assert plan rows")
             print("\n--- per type (scene triangles, instances, meshes) ---")
             ts = await pg.evaluate("()=>window._api.typeStats()")
             for k in sorted(ts, key=lambda k: -ts[k]["tris"]):

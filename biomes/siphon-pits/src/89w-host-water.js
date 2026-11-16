@@ -25,5 +25,16 @@ if(SKEY==='pitfloor'){const G=SITE.geyser,y=terrainH(G.x,G.z);
  SITE.mud.forEach((m,i)=>{spring('mud'+i,'A mud pot (boiling)',m[0],m[1],m[2]*.92,SITE.base-.15,1,'iron',{milky:.95});
   REGISTER({name:'A mud pot (boiling: it scalds)',x:m[0],z:m[1],y:SITE.base-3,r:m[2],h:6,tags:{hazard:{kind:'heat',danger:.7}}});});
  W_OUT.mud=SITE.mud.length;}
+// STATION 14: the qanats' channels (WATER.flow) and the beach's hot springs (WATER.spring); the polynya and the bay's ice are the station's own fragment
+// (stations/polynya/89wp-host-polynya.js: core/water's ext/54 is on that page only)
+if(SKEY==='polynya'){const LV=SITE.lake.level;W_OUT.qanats=0;W_OUT.springs=0;
+ L.QL.forEach((Q,i)=>{const pts=[];for(let s=0;s<=Q.L+1e-6;s+=6){const p=Q.pt(s);pts.push([p[0],p[1],L.land(p[0],p[1])+.33]);}
+  const F=WATER.flow({name:'A qanat\'s channel',pts,width:1.6,speed:.9,rapids:[.04,.12]});
+  const D=WATER.drawFlow(F,{shallow:lin(0x9ab8b8),deep:lin(0x4e6e74),color:0xffffff,roughness:.1,metalness:.05,envMapIntensity:.4,step:4,across:3,margin:.4,depthBias:2,renderOrder:2,pick:true});
+  D.mesh.userData.inspectLabel='A qanat\'s channel (clear springwater from the gallery, unfrozen)';W_OUT.qanats++;});
+ L.SP.forEach((p,i)=>{spring('shore'+i,'A hot spring on the beach ('+p.T+' degC: the fault breaking out)',p.x,p.z,p.r*.92,p.level,p.T/100,'sinter',{milky:.12});W_OUT.springs++;});
+ REGISTER({name:'Lake Ostrukh (fresh, its bay frozen; the model\'s level, 1,850 m)',x:L.xz(SITE.shore.d+1400,0)[0],z:L.xz(SITE.shore.d+1400,0)[1],y:LV-SITE.bed.depth-8,r:1300,h:SITE.bed.depth+10,
+  tags:{hazard:{kind:'drown',danger:.5}}});
+ }   /* the polynya and the ice: stations/polynya/89wp-host-polynya.js */
 if(WATER.breakupFlows)WATER.breakupFlows();
 window._water=Object.assign({station:SKEY,surfaces:WATER.surfaces.length},W_OUT);

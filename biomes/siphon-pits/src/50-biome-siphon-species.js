@@ -28,13 +28,13 @@ const SPECIES=SIPHON.SPECIES=[
  {key:'suturegall',name:'Suture gall',how:'fleshy amber bulbs that store wax, growing in rows along the damp fractures of the columnar basalt at the walls\' foot, where the deck\'s condensate runs down',
   items:['spgall'],tags:K('temperate','humid','no',['Cfa'],{heat:[12,45],stations:['pitfloor']})},
  {key:'cushionmoss',name:'Cushion moss',how:'tight olive cushions in the lee of every block on the scarp and the plateau, the frost polygons\' troughs and the ravine\'s scree',
-  items:['spcushion'],tags:K('polar','semiarid','no',['Dsc','ET'],{heat:[-30,12],stations:['scarp','arete','terraces']}),native:false},
+  items:['spcushion'],tags:K('polar','semiarid','no',['Dsc','ET'],{heat:[-30,12],stations:['scarp','arete','terraces','polynya']}),native:false},
  {key:'rocklichen',name:'Orange rock lichen',how:'orange crusts on the basalt\'s faces and the knife-edge\'s blocks, brightest on the windward rime-free side',
   items:['splichen'],tags:K('polar','arid','no',['Dsc','ET'],{heat:[-40,10],stations:['scarp','arete']}),native:false},
  {key:'screesedge',name:'Scree sedge',how:'tawny sedge tussocks on the talus and the fans, the one grass of the cold stations',
-  items:['spsedge'],tags:K('polar','semiarid','no',['Dsc','ET','Cwb'],{heat:[-30,15],stations:['scarp','terraces']}),native:false},
+  items:['spsedge'],tags:K('polar','semiarid','no',['Dsc','ET','Cwb'],{heat:[-30,15],stations:['scarp','terraces','polynya']}),native:false},
  {key:'bluewillow',name:'Dwarf blue willow',how:'a knee-high grey-blue willow on the braids\' banks and bars, the meltwater\'s own shrub (an Earth willow gone wild; a shrub, not a tree)',
-  items:['spwillow'],tags:K('cold-temperate','subhumid','yes',['Cwb','Dsb'],{heat:[-20,20],stations:['terraces']}),native:false}];
+  items:['spwillow'],tags:K('cold-temperate','subhumid','yes',['Cwb','Dsb'],{heat:[-20,20],stations:['terraces','polynya']}),native:false}];
 SPECIES.forEach((S,i)=>{S.i=i;});
 SIPHON.HARVEST={woollysiphon:HV('none (a hollow trunk)',[],false,'Machine-wax: the pelt is harvested by the siphon-ropers and rendered in copper kettles into amber ingots (lubricant, waterproofing, candles).'),
  siphonfelt:HV('none',[],false,'Cut and dried it is bedding and the ropers\' padding.'),suturegall:HV('none',['the wax bulbs (rendered, not eaten)'],false,'Rendered with the pelt: a cleaner, paler wax.'),
