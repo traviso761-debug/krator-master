@@ -11,6 +11,25 @@ the blueprint. Nothing is drawn or built yet.
 Marks used throughout: ***proposed*** is invented here and waits for the owner; **(est.)** is an estimate, with its basis beside it.
 Everything else is quoted from a source named in the line or in "Sources read" at the end.
 
+## 0. The owner's answers (2026-11-16)
+
+These settle sections 3-5 where they differ; the blueprint session starts from them.
+
+- **The Line slopes down to Ledge** ("The Line must slope down to it"). It does not arrive level at the cliff top: the bore
+  descends from the table-land (~3,480 m) to its station in the face, so question 4's spiral (or a long graded descent) is the
+  shape, not a level arrival at the head.
+- **It is partly inhabited, and half ruined.** "The arcology is half ruined": the blueprint draws a shell with whole decks
+  dead or fallen, not a full one.
+- **Who lives where:**
+  - **the Tungangs (Loj Fower) hold the middle decks, by the Line's station**, not the rock behind every deck;
+  - **sizeable Dalab and Fellgang settlements on the top and at the bottom**: the head on the table-land's edge, and the
+    foot on the shore and the terraces by the lake. Fellgangs live at Ledge, not only Dalabites.
+- **The elevators still work, sized for vehicles**: each car takes several pack animals at once. They are the arcology's
+  own, running; the Tungangs' lever is that they work them and hold the decks the cars pass through.
+- So the levels of section 3 read: the **head** (Dalab and Fellgangs, on top), the **middle decks** (the Line's station
+  and Loj Fower), the **ruined decks** (dead or fallen, between), and the **foot** (Dalab and Fellgangs, the harbour and
+  the shore). How the 10,000 split between them is still question 11.
+
 ## 1. What Ledge is
 
 ### 1.1 What the sources say

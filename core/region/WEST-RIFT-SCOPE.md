@@ -187,7 +187,7 @@ The census types are: city 8,000, arcology 10,000, town 2,500, village 300, outp
 | **The great lake basin** (Nulab's and Ledge's countryside: shore farms, fishing hamlets, Dalab's gene farms) | **50,000 (est.)** | The owner, 2026-11-16: "account for rural pop too", then "a slightly higher rural ratio" than 2x. Rural at **2.5x** the two cities' 20,000: the breadbasket (1,654 km²-eq of farmland) must feed the cities, Blakhed and the Union's grain. Range 20,000 (1x) to 72,000 (Gemini's 3.6x for Dalab); Xanadu runs 5x |
 | **The Union's other lojes** (Loj Fower at Ledge's lifts 1,500; about thirty more on the Line's stations, the rift fill's caverns and the vents' holds, ~450 each, 14,000) | **15,500 (est.)** | The owner, 2026-11-16: the Tungangs are **~20,000** across all the lojes. Close to Gemini's 18,760; the census 500 and the tungang plan's 25,000-40,000 are retired |
 | **The Kimr** (the Labyrinth's pueblos and great houses, and the Hall of Heroes' keepers) | **6,000 (est.)** | The owner, 2026-11-16: "We'll also account for the Kimr". Nothing gives a figure; three great houses of ~500 (*greidhaws*: "several hundred", KIMR.md) and ~25 knob villages of ~150, and ~750 round the Hall. Range 3,000 to Gemini's 11,600 (10,000 pueblos, 1,600 Hall). Wildcat's Kimr half stays in Wildcat's 400 |
-| **The Fellgang fells** (shielings, hunters, small bands) | **3,000 (est.)** | Gemini 9,000 (its rural ratio 5x on 300); a third of it |
+| **The Fellgang fells** (shielings, hunters, small bands; and Blakhed's hamlet network) | **5,000 (est.)** | Gemini 9,000 (its rural ratio 5x on 300); a third of it, 3,000, plus Blakhed's hamlets, ~2,000 (the owner, 2026-11-16: "a healthy hamlet network around it"; about a dozen of ~150, *proposed*) |
 | **Greenstep's terraces** (Tallwalls' farms and towers) | **3,000 (est.)** | Gemini 8,750 rural; with the owner's "poorer, smaller" Tallwalls, about a third |
 
 ### 3d. Totals (all estimates)
@@ -201,14 +201,14 @@ across all the lojes, the Kimr in the count.
 |---|---|---|---|
 | Dalab in the Rift (Ledge 10,000, Nulab 10,000, the skarn 400, posts 100; the basin) | 20,500 | 50,000 | **70,500** |
 | Tungang Union, all the lojes (Loj Twenny 2,000, the Hearth hold 2,000, the saltpeter works 150, G2 350; Loj Fower 1,500 and ~30 more lojes 14,000) | 4,500 | 15,500 | **20,000** |
-| Fellgangs (Wildcat, the gold camp, Blakhed, the Fowlers, the Ice-cutters, the drovers, pass-keepers and coppersmiths, the Travellers; the fells) | 7,250 | 3,000 | **10,250** |
+| Fellgangs (Wildcat, the gold camp, Blakhed, the Fowlers, the Ice-cutters, the drovers, pass-keepers and coppersmiths, the Travellers; the fells and Blakhed's hamlets) | 7,250 | 5,000 | **12,250** |
 | Free Giants (Tallwalls, Tallhouse; Greenstep's terraces) | 2,650 | 3,000 | **5,650** |
 | Kimr (the great houses, the knob villages, the Hall of Heroes) | - | 6,000 | **6,000** |
-| **The West Rift** | **~34,900** | **~77,500** | **~112,500 (est.)** |
+| **The West Rift** | **~34,900** | **~79,500** | **~114,500 (est.)** |
 | *Outside the count:* Loj Nahn ~1,000 (sealed in the Pile, Lizardmen country); Dalab's heartland (Dalab 20,000, Shelf 10,000 by type) as the north gateway; the Shumari (Gemini 7,600 town) | | | |
 
-That is **about a third of the Sultanate's ~350,000** (32 %). The basin's rural ratio moves it most: 1x gives ~82,500,
-2x ~102,500, Gemini's 3.6x ~134,500. **What the owner's figures change in section 4:** the Union is large (20,000, about twice the
+That is **about a third of the Sultanate's ~350,000** (32 %). The basin's rural ratio moves it most: 1x gives ~84,500,
+2x ~104,500, Gemini's 3.6x ~136,500. **What the owner's figures change in section 4:** the Union is large (20,000, about twice the
 old working figure), so its grain by the Line is the Line's biggest southbound cargo: if a third of its bread is Dalab's grain,
 ~3 t a day (~1,200 t a year), which the basin's surplus must cover alongside the two cities and Blakhed. That makes the Union's
 grain the Realm's lever over it, as the lifts and tunnels are the Union's lever over the Realm. Ledge at 10,000 makes
@@ -297,6 +297,24 @@ the one surplus that has to feed both cities and Blakhed.
    Ledge needs 88 t and Nulab 77 t (census customers). The only big source nearby is Tallwalls, held by the Free Giants, Dalab's
    runaways. *Yet the Great Caravan brings salt to Xanadu from Shelf.* The two cannot both stand without a Dalab salt source north
    of the Wall (Q5).
+
+   **The map's answer (2026-11-16, asked by the owner: "the closest salt source in the west that is least vulnerable to the
+   lizardmen").** The geology layer (`kits/resources/data/geology.json`, halite and gypsum) has **no salt and no gypsum within
+   120 km of Nulab, Ledge or Blakhed**. The nearest salt is **the western fells' high salt basins**: two closed basins drying
+   to salt, `basin:104` at 344,1347 (level 5,896 m, 45 cells) and the larger `basin:32` at 322,1341 (5,924 m, 308 cells), with
+   halite in about 20 cells at 327-355 x 1335-1359 (strongest 151 of 255; the census's "good rock salt at 354,1347" is its
+   east edge). It is the Changthang's pattern: salt lakes on a 6 km plateau, harvested in summer and carried down by drove.
+   - **Distances (straight):** the drovers (393,1338) 98 km; Ledge's head on the table-land 189 km; Nulab 197 km; Blakhed
+     219 km. The straight lines cross 6.1-6.3 km ground; a drove road would find the valleys.
+   - **The Lizardmen:** the basins are **~460 km from the Lizardmen's polygon** (565-882 x 1417-1675), the farthest salt in the
+     West from them, and every road from them runs west and north, away from it. Nulab and Blakhed are themselves 250-270 km
+     from the polygon. The West's strongest halite (205-254) lies **inside** the Lizardmen's country (641-715 x 1483-1525,
+     the salt lakes at -1,700 m), 430-470 km from the towns; Tallwalls' salt (~500 t) is the Free Giants'.
+   - **Who works it** (*proposed*): the western Fellgangs, the drovers and their kin, in the summer shielings; salt down by
+     drove to Blakhed's market and to Ledge's head for grain and metal, as the Changthang's salt went for barley. At 5.9 km
+     (~0.77 atm) only the cold-hardy can work it: the Fellgangs, or Dalab's cold-modded.
+   - **What it must cover** (est.): about 7.5 kg a person a year (Nulab's plan) across ~112,500 people is **~850 t a year**,
+     the Tungangs' share included. A works of a few hundred summer hands on two basins can make that.
 2. **Ledge rests on the Union.** Its lifts and the road's tunnels are Tungang ground; Dalab's cold mods came from Tungang genes.
    The bargain is grain, medicine and cloth for passage and guides; the strike is the Union's weapon.
 3. **The Union rests on Dalab's grain and timber**, and on the long run staying whole. The north end's iron and tin reach the
@@ -338,7 +356,8 @@ the one surplus that has to feed both cities and Blakhed.
    and the loj?
 4. **Loj Twenny.** The pin move to 445,1266 (station 3) is on its branch, not the map; its size is 165 drawn against 500 by type.
 5. **Salt.** Where does the West Rift's salt come from? Tallwalls (hostile), a new works on the unclaimed rock salt at 354,1347
-   (a Fellgang works, beside the drovers and pass-keepers?), or Dalab's own? And how does Shelf ship salt to Xanadu with the
+   (a Fellgang works, beside the drovers and pass-keepers?), or Dalab's own? *The map's answer (4.4, item 1): the western
+   fells' high salt basins, 327-355 x 1335-1359, the nearest salt and the farthest from the Lizardmen; the owner to confirm.* And how does Shelf ship salt to Xanadu with the
    Great Caravan if south Dalab is short?
 6. **The Great Caravan's path across the Rift.** riftrim's 2026-11-13 note (Gemini, "for the owner to review") runs it by the S-rim
    footwall ramps past Cthonos and the Opal Valley relay. XAN_TUNE's legs are 52 days each; Gemini says 831 km in 90 days. Does it

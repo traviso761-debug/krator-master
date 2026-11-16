@@ -28,6 +28,10 @@ Sources:
 - **The cone gets a vent** ("Give it a cone"): the dormant volcano becomes a smoking crater on the scale model, a vent
   record queued with the scale-model session (`edit_517` drew it "not vents"). The house's fire is the mountain's own.
 - **The cliff band is authored on the page.** The model has no true cliff here (section 3.4).
+- **The first answers** (the owner, 2026-11-16, "Agreed", to questions 1, 2, 3 and 5 as put to him): the doctrine of section 1
+  stands (the Eye that does not close); the house is about **320**; the vent **flashes** (Strombolian bursts, red at night,
+  the recommended answer to question 3); the Eye **keeps the council's mirror line by day** and is **the relay between the
+  Beacon and the capital**. Questions 4 and 6-13 are still open.
 
 ## 1. The Order of the Flashing Eye
 

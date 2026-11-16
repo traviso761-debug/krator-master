@@ -19,6 +19,10 @@ marked *proposed*. Every estimate is marked (est.). Pixels are on scale model 5.
 - **The Great Caravan** stops at Blakhed each summer (the owner, 2026-11-16, `core/region/data/xan-tune.js` l.163-176:
   `gate.dalab.blakhed`, year day ~159, between Erehwon and Nulab). There Blakhed "takes the exports".
 - **The size:** 5,000 (the owner, 2026-11-16).
+- **The town and its country** (the owner, 2026-11-16: "Some live in farmsteads. And there is a healthy hamlet network around
+  it"): the 5,000 are the town and its farmsteads along the river (question 1's ~4,400 and ~600, *proposed*), and a network of
+  Fellgang hamlets on core/hamlet lies round it beyond them. *Proposed:* about a dozen hamlets of ~150, ~2,000 people (est.),
+  counted with the scope's Fellgang fells; their grain, herds and ice come to Blakhed's market.
 
 Sources read: `core/region/WEST-RIFT-SCOPE.md`; `LORE.md` 6.1 (l.236-284); `kits/tungang/PLAN.md` 1.3, 1.3.3, 1.3.4, 3.3,
 3.3.1, `README.md`, `API.md`; `biomes/riftrim/PLAN.md` (the 5.1 survey, section 6, stations 8 and 9, the 2026-11-13 note);
@@ -422,7 +426,8 @@ Its roads and others' records:
 6. **The Fair.** In autumn, after the shielings come down (proposed)? And on Blakhed's own Fairfell, or on "a fell everyone
    knows" nearby?
 7. **The herd beasts.** The rim's big animals are still unnamed (tungang plan 1.3). What are the town's herds?
-8. **Salt.** Where does Blakhed's salt come from? No salt lies within 169 km (scope Q5). The fells' rock salt at 354,1347
+8. **Salt.** (*The map's answer, 2026-11-16, in the scope's 4.4 item 1: the western fells' high salt basins, 219 km west,
+   the farthest salt from the Lizardmen, worked by the western Fellgangs and droved to Blakhed's market.*) Where does Blakhed's salt come from? No salt lies within 169 km (scope Q5). The fells' rock salt at 354,1347
    (204 km straight), carried by the drovers?
 9. **The Great Caravan at Blakhed.** Is Blakhed a **transit market** where Dalab's factors buy Xanadu's goods (proposed),
    or does `WR_TUNE` have Blakhed eat them? Does the caravan camp on the Fairfell?
