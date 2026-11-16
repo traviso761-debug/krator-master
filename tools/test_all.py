@@ -206,7 +206,12 @@ def run_step(cmd, cwd, timeout):
     try:
         r = subprocess.run(cmd, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True,
                            encoding='utf-8', errors='replace', timeout=timeout)
-        return r.returncode == 0, r.stdout or '', ''
+        out = r.stdout or ''
+        if r.returncode != 0 and not out.strip():   # died before it printed: say so, so a crash is not read as the test's verdict
+            code = r.returncode & 0xFFFFFFFF
+            return False, out, 'exited %s with no output: it may not have started (a machine out of memory, or the app crashing); rerun it' % (
+                '0x%08X' % code if code > 0xFFFF else str(r.returncode))
+        return r.returncode == 0, out, ''
     except subprocess.TimeoutExpired as e:
         out = e.stdout or e.output or ''
         if isinstance(out, bytes):

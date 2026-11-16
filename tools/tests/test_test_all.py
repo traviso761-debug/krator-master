@@ -67,6 +67,10 @@ def main():
     ok('...the step that cannot start says so', 'could not run' in out)
     ok('...exit 1, and the summary counts 3 failed', code == 1 and '4 steps, 3 failed' in out)
     ok('...and says where to resume', '--from 1' in out)
+    ok_, _, note = test_all.run_step([PY, '-c', 'import os; os._exit(3)'], ROOT, 30)
+    ok('a step that dies with no output says it may not have started', not ok_ and 'exited 3 with no output' in note)
+    ok_, _, note = test_all.run_step([PY, '-c', 'print("3 != 4"); raise SystemExit(1)'], ROOT, 30)
+    ok('negative control: a step that fails with output gets no such note', not ok_ and note == '')
     code, out, err = run_main(['--no-build'], [PLAN[3]])
     ok('negative control: a plan of passing steps exits 0', err is None and code == 0 and '1 steps, 0 failed' in out)
 
