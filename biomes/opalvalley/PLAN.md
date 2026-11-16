@@ -249,7 +249,7 @@ highrift's does not). Every module the stations take, and for each one it does n
 | iridescence | `core/biome` 30: **`BIO.iridBarkMat`** (the one `irid` bark kind, with this kit's own tints: the opal-phytolith boles and the sinter chalices) and **the leaf hook's `irid` option** (per-instance `c2`: the photonic cuticles) | no second iridescent material kind; the ground's opal sheen is the kit's ground shader (as High Rift's fault mirror), on its own channel |
 | tags, records | `core/tags` (50, 52, 53) | every plant, the lakes, the diggings and spoil, the hazards |
 | host | `core/host` (`FULL` + polytool) | the page shell, camera, inspector, probe, polygon tool |
-| textures | `core/materials` (`record`, the pack: `materials.json`, `tools/textures/pack.py biomes/opalvalley`) | the library sets of section 11; the owed ones in `PROMPTS-NEEDED.md` section 46 |
+| textures | `core/materials` (`record`, the pack: `materials.json`, `tools/textures/pack.py biomes/opalvalley`) | the library sets of section 11; the owed ones in `PROMPTS-NEEDED.md` section 54 |
 | shadows | `core/shadow` (`KSHADOW`, attached, off at load: `?shadow=1`) | as every kit since 2026-11-03 |
 | export | `core/export` (07, 09) | the krator-world container |
 

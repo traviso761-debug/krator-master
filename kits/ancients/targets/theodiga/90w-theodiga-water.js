@@ -21,4 +21,4 @@ ATMOS.skylight({renderer,sky:THEO_SKY,scene:THEO_ENV,ground:()=>new THREE.Color(
 {const R=THEOWATER.sites.find(s=>s.d>0);
  if(R&&typeof KRUINS!=='undefined'){const c=R.c,GROUND=new Set([MAT.rock,MAT.mud,MAT.lawn]);
   KRUINS.watch(scene,{name:'Theodiga, the ruin',inside:(x,z)=>Math.abs(x-c.gx)<c.SPAN/2+40&&z-c.gz>-700&&z-c.gz<640,
-   ground:(x,z)=>THEOWATER.ground(R,x,z),skip:m=>GROUND.has(m.material)||!!(m.userData&&m.userData.lodSkip)});}}
+   ground:(x,z)=>THEOWATER.ground(R,x,z),skip:m=>GROUND.has(m.material)||!!(m.userData&&m.userData.lodSkip)||/^theodiga:town/.test(m.name||'')});}}   // the town on the rim (theodiga-today) is no wreckage

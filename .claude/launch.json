@@ -338,6 +338,36 @@
         "settlements/lightwall/dist"
       ],
       "port": 8823
+    },
+    {
+      "name": "ancients-dist",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8881",
+        "--bind",
+        "127.0.0.1",
+        "--directory",
+        "kits/ancients/dist"
+      ],
+      "port": 8881,
+      "autoPort": false
+    },
+    {
+      "name": "qiblai-dist",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8883",
+        "--bind",
+        "127.0.0.1",
+        "--directory",
+        "kits/qiblai/dist"
+      ],
+      "port": 8883,
+      "autoPort": false
     }
   ]
 }

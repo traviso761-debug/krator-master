@@ -25,6 +25,16 @@ python jscheck.py .syntax-xanadu.js                         # parse check when n
 * `API.md` — the contract: registry, palette, kit items, helpers, rules for package work.
 * `NOTES.md` — round by round. `KNOWN_ISSUES.md` — what is open.
 
+## Scrap Xanadu (the `scrap` target)
+
+`python3 build.py --target scrap` writes `dist/xanadu-scrap.html`, the sheet of Scrap Xanadu (`kits/xanadu/PLAN-SCRAP.md`):
+the kit's foundation and the opt-in scrap package only (`TARGET_KIT`), every def at its three variants, and its pools on
+core/water through the kit page's `90-xa-still.js`, read in place.
+
+```
+python3 verify.py dist/xanadu-scrap.html --assert --views "Overview,Scrap: civic,Terminus Serai — eye level" --out shots/scrap
+```
+
 ## Erewhon, Pearl of Xanadu (round 9)
 
 The city: `python3 build.py --target erewhon` → `dist/erewhon.html`. Its terrain is Travis's MS-paint map run through

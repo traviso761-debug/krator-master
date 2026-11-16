@@ -36,7 +36,7 @@
   monasteries' and the temple's floors: the rest of the city is still walked through, as before.
 - [ ] **A plan whose rooms miss a required piece is planned again** (up to three seeds, 90u): with the street door where the
   builder drew it, a bedroom can come out too tight for its chest; no type misses one today (41 types, 2026-11-16).
-- [ ] **The rooms' fancy surfaces are owed** (core/materials/PROMPTS-NEEDED.md section 43): the painted murals, the mandala ceiling
+- [ ] **The rooms' fancy surfaces are owed** (core/materials/PROMPTS-NEEDED.md section 53): the painted murals, the mandala ceiling
   coffers, the temple rug, the beaten gold; today the library's wash, lacquer, wool rug and hammered gold stand in.
 - [ ] **The river is a ribbon.** Nahr ash-Shalalat is a flat water plane in a cut channel; its cataracts as core/water flow, and
   the ground from the open world's cut (`cut_site.py`), are still to do (PLAN.md Q7b). The country is a gentle plane.

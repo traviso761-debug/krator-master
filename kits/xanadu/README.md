@@ -140,3 +140,15 @@ take `MAT.xWater`). Xanadu's `xanadu` target stays Xanadu's sheet; `kit_bundle.p
 **Interiors:** the sheet builds the bodies solid, every door locked. A `?interiors=1` mode goes in `targets/sheet/` once the kit's
 interiors and hollow walls land (`kits/interiors/sets/xanadu.js`; another session's work): it already has core/walk, core/door's
 host and `KDOOR.clearDoorways`. The `doors` assert expects every door locked and must be relaxed for that mode.
+
+**Scrap Xanadu** (the owner, 2026-11-11; `PLAN-SCRAP.md`). The Xanadu body built with the Ancients' reclaimed materials,
+well ordered and never ramshackle (the contrast is `kits/post-apoc`). Whole shell panels are laid in courses as checker,
+band and stripe facings; glazing becomes jali grilles, lantern clerestories and glass domes on bronze ribs; girders are
+dressed columns and lintels; cable makes the balustrades; bronze the finials and the eight-spoked Wheel; the poor live in tanks, silos and hull vaults nearly as found. Twenty-one defs,
+`xa_scrap_*` (culture `xanadu-scrap`), in `src/87s-xs-mat.js` (items), `87t-xs-helpers.js` (the `xnXS*` vocabulary) and
+`87u-xs-build.js` (the buildings), `87v-xs-poor.js` (the poor tier and the farm). The package is **opt-in**: `xanadu.py` lists it as `SCRAP`, not in `FILES`, so the
+pages that take the kit do not change. Its sheet is `settlements/xanadu`'s `scrap` target (`dist/xanadu-scrap.html`);
+`kit_bundle.bundle(scrap=True)` seals it into `XAK` for a world (Strongbow's town first) with core/rand.
+`kit_bundle.bundle(qiblai=True)` adds the Qiblai kit's buildings (`kits/qiblai`, `qb_*`, read in place: every family and the
+cut-away rooms' vocabulary, not the walk-in rooms' furnishing nor the mixed street sheet): `XAK.dims()` lists them,
+`XAK.proto` builds them, and `XAK.bind` binds a `qiblai` pack where the page registered one. Theodiga's town takes both.
