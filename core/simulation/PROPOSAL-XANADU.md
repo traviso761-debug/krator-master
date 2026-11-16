@@ -43,15 +43,18 @@ The sources disagree on the country's scale by a factor of ten. Every rate below
 | Thalaba | none | 4,500 (pin 750) | none |
 | Gold mines, Opal Valley, Strongwall | none | 1,400 / 1,500 / 250 | none |
 
-**The proposal: lore sizes for the towns, Gemini's rural share for the land.**
+**The answer (the owner, 2026-11-15/16): between the first proposal (~230,000) and Gemini's 465,300, with the lake the
+heart of the country, many villages and hamlets along its shores on the pattern of Lake Atitlán, and constant boat
+traffic (section 2a).**
 
 | Group | People |
 |---|---|
-| Towns: Erehwon 20,000, Qiblai 12,000, Theodiga 5,000, Strongbow 3,500, Kirstabal 2,200, the mines and forts ~3,000 | ~46,000 |
-| Rural: about 4x the towns, Gemini's ratio held, which also feeds Qiblai's 30,000-person hinterland | ~185,000 |
-| **The Sultanate** | **~230,000** |
+| Towns: Erehwon 25,000 (the lore's 20,000 city and 5,000 in its quays and suburbs), Qiblai 15,000, Theodiga 6,000, Strongbow 4,000, Kirstabal 3,000, the mines and forts ~3,000 | ~56,000 |
+| Rural: about 5x the towns, between the first proposal's 4x and Gemini's 3.5x on a larger town base. A third of it (~95,000) lives on the lake's shores | ~294,000 |
+| **The Sultanate** | **~350,000** |
 
-This is half Gemini's total. Its rural density is 2.5 people per km² over Gemini's 73,808 km² of habitable land, which a hilly valley can carry.
+This is three-quarters of Gemini's total. Its rural density is 4 people per km² over Gemini's 73,808 km² of habitable
+land, much higher on the lake's shores.
 
 Gemini scales supply and demand by a polity multiplier (about 4.82 for Xanadu) and then rewrites each town's population as 4.5x its sim figure. The sim must not do either. Its people are counted once, as residents of settlements.
 
@@ -68,19 +71,108 @@ Names are working names (section 9, Q5); the px coordinates are on the 5.1 canva
 
 | # | Province (seat) | Ground | Rural people | Named places | What it makes |
 |---|---|---|---|---|---|
-| P1 | **The Lake Shore** (Erehwon) | The caldera rim round the lake at -520 m, 121 x 66 km: the south-shore bench, the terraces under the three volcanoes, the four islands | 30,000 | Erehwon's ring of 5 farming villages and 1 ranch (`sites.json`, 1,345 people); 2-3 fishing villages; the Pleasure island | Lake fish (the census gives 1,212 fish-eq km²), terrace grain and fruit, the Vale apricot and strawberry-tree, mulberry silk, volcanic sulfur, pumice |
-| P2 | **The Vale of Xanadu** (Theodiga) | The old basin between the lake and the dam: 1,591 cells, Cfa, ~913 mm, the Ālph across it | 55,000 | Theodiga's silt-flat temple fields, hives and dairies; 3-4 named Vale villages on the Ālph | The country's granary and its native crops: cacao, Vale saffron, mist tea, the sky poppy; mulberry and silk reeling; lotus root and wild rice |
-| P3 | **Shalālāt** (Qiblai) | The lowlands on the cataracts of Nahr ash-Shalālāt, ~-1,900 m, Af | 60,000 | Qiblai's ring (5 farming villages and 1 ranch, 1,345 people); the temple-estate farms; the ghats; a caravanserai on the Erehwon road; the salt pan at 922,1580 | Timber (42,000 t, third on the map), cacao, fruit, potash; honey and milk for the sacraments. The oil field is worked by Yuni under licence (`TRADE-SCOPE.md:94-98`) |
-| P4 | **The Gold March** (the Master of Mines' seat at Strongwall) | South of Qiblai: `lode:xanadu-gold` (911,1665, r 16 km), the copper band beside Strongwall (923,1650), placer gold down the rivers | 8,000 | The gold mines (`smgxtultfq`, ~950), Strongwall (a fort of 150-250), 2 placer camps | Gold ore to gold, copper; saltpeter (Gemini: 70 t). The mines eat food from P3 |
-| P5 | **The Scarp** (Kirstabal) | The foot of the Oidong–Xanadu scarp, where Kirstabal and Strongbow stand (989-1001,1596-1600) | 20,000 | Kirstabal (2,200), plantation hamlets on the slopes, the foot of the Strongbow lift | Mist tea, cacao and saffron on the slopes, the sky poppy. Not sugar or coffee: the native rule (`TRADE-SCOPE.md:161`) gives those to the Ring Isles and the SW lowlands, so Gemini's sugar, coffee and cotton are dropped |
-| P6 | **Opal Valley** (the Sultan's factor) | 1038,1662: terraces of opal diggings, east of the Gold March | 3,000 | Opal Valley Mines (~850) | Precious opal and photonic opal; the Sultan's Fifth |
-| P7 | **The North Shore** (Thalaba) | The north shore of the lake and the summer road to Godshearth (217 km) | 6,000 | Thalaba (750 to ~1,000) | Fish; sulfur and machine-wax from the summer expeditions; the vent fields |
-| P8 | **The Marches** (the Military quarter of Erehwon) | The south and west rim facing the Lizardmen's floor, lowered to 0.8 km by edit 7 (Tuatara 818,1554, Komodo 865,1617) | 3,000 | 3-4 watch forts and a beacon line | No goods. It is fed and paid; Lizardman raids are its events (section 7, X5) |
-| **Total** | | | **~185,000** | | |
+| P1 | **The Lake Shore** (Erehwon) | The caldera lake's south, west and east shores at -520 m (121 x 66 km), the terraces under the three volcanoes, the four islands | 70,000 | The lake towns of section 2a (south, west and east shores, the islands); Erehwon's ring of 5 farming villages and 1 ranch (`sites.json`, 1,345 people); ~130 lake hamlets | Lake fish (the census gives 1,212 fish-eq km²), terrace grain and fruit, the Vale apricot and strawberry-tree, mulberry silk, volcanic sulfur, pumice, the boats |
+| P2 | **The Vale of Xanadu** (Theodiga) | The old basin between the lake and the dam: 1,591 cells, Cfa, ~913 mm, the Ālph across it | 75,000 | Theodiga's silt-flat temple fields, hives and dairies; 3-4 named Vale villages on the Ālph | The country's granary and its native crops: cacao, Vale saffron, mist tea, the sky poppy; mulberry and silk reeling; lotus root and wild rice |
+| P3 | **Shalālāt** (Qiblai) | The lowlands on the cataracts of Nahr ash-Shalālāt, ~-1,900 m, Af | 80,000 | Qiblai's ring (5 farming villages and 1 ranch, 1,345 people); the temple-estate farms; the ghats; a caravanserai on the Erehwon road; the salt pan at 922,1580 | Timber (42,000 t, third on the map), cacao, fruit, potash; honey and milk for the sacraments. The oil field is worked by Yuni under licence (`TRADE-SCOPE.md:94-98`) |
+| P4 | **The Gold March** (the Master of Mines' seat at Strongwall) | South of Qiblai: `lode:xanadu-gold` (911,1665, r 16 km), the copper band beside Strongwall (923,1650), placer gold down the rivers | 10,000 | The gold mines (`smgxtultfq`, ~950), Strongwall (a fort of 150-250), 2 placer camps | Gold ore to gold, copper; saltpeter (Gemini: 70 t). The mines eat food from P3 |
+| P5 | **The Scarp** (Kirstabal) | The foot of the Oidong–Xanadu scarp, where Kirstabal and Strongbow stand (989-1001,1596-1600) | 25,000 | Kirstabal (2,200), plantation hamlets on the slopes, the foot of the Strongbow lift | Mist tea, cacao and saffron on the slopes, the sky poppy. Not sugar or coffee: the native rule (`TRADE-SCOPE.md:161`) gives those to the Ring Isles and the SW lowlands, so Gemini's sugar, coffee and cotton are dropped |
+| P6 | **Opal Valley** (the Sultan's factor) | 1038,1662: terraces of opal diggings, east of the Gold March | 4,000 | Opal Valley Mines (~850) | Precious opal and photonic opal; the Sultan's Fifth |
+| P7 | **The North Shore** (Phēr, the north shore's market town) | The lake's north shore and the summer road to Godshearth (217 km) | 25,000 | The north-shore lake towns of section 2a, Thalaba among them (to ~3,000); ~60 lake hamlets | Fish; mulberry and silk; cacao groves; honey; sulfur and machine-wax from the summer expeditions; the vent fields |
+| P8 | **The Marches** (the Military quarter of Erehwon) | The south and west rim facing the Lizardmen's floor, lowered to 0.8 km by edit 7 (Tuatara 818,1554, Komodo 865,1617) | 5,000 | 3-4 watch forts and a beacon line | No goods. It is fed and paid; Lizardman raids are its events (section 7, X5) |
+| **Total** | | | **~294,000** | | |
 
 The Order of Historians' valley (Longsong, the Singing Gjár, the Mirror Grange, the Caldron House: 4,904 people
 simulated today) and the Order's White Gills Hermitage stay the Order's. **Strongbow** sits on the line: in Xanadu's polygon and
 in the Oidong Valley's (section 9, Q4).
+
+## 2a. The lake: Atitlán's pattern (the owner, 2026-11-16)
+
+"There should be many villages and hamlets along the lakes; Lake Atitlán is the inspiration. There will be constant boat
+traffic."
+
+At Atitlán a dozen towns ring one caldera lake under three volcanoes. Each town keeps its own trade (weaving, coffee, fishing, reed
+mats, a market), and the launches never stop crossing between them. Erewhon's caldera lake is Atitlán at 46 times the area:
+5,980 km² against 130, 121 x 66 km, three volcanoes on the south rim, four islands. So it holds about **twenty lake towns**,
+**about two hundred lake hamlets** and **some five hundred boats**, and crossings take hours, not minutes.
+
+**The lake towns.** Each stands on the shore cell found round the lake every 15 degrees (the merged model with edit 7; the
+bearing is measured from the lake's centre at 810,1499.5, 0° east, 90° south). X0 snaps each one to the 1:1 shore with
+`core/hamlet` placement. The names are coined Xanadui on the tongues sheet, as for the provinces, all *proposed*.
+
+| Bearing | px (shore cell) | Name (gloss) | People | Trade |
+|---|---|---|---|---|
+| 0° | 839,1499 | **Ālph-Hēḍ** (Alph-head) | 4,000 | The lake's outlet at the Ālph's head: the weir, the mills, the river barges to Theodiga. A holy place of the Decree |
+| 15° | 838,1507 | **Hoṭ-Bāṭh** (hot bath) | 1,800 | The east volcano's hot springs and bathhouses; sulfur and pumice |
+| 30° | 834,1514 | **Ṭī-Ṭeras** (tea terraces) | 2,000 | Mist tea on the east volcano's flank |
+| 45° | 827,1517 | **Pāṭari** (pottery) | 1,500 | Clay and the lake's pottery |
+| 60° | 820,1517 | **Saphran** (saffron) | 1,800 | Vale saffron under the middle volcano |
+| 75° | 815,1517 | **Wībhar** (weaver) | 2,500 | Silk weaving, the lake's dyed cloth |
+| 90° | 810,1517 | **Boṭ-Yārḍ** (boatyard) | 2,000 | Erehwon's east suburb: the boatbuilders. Most of the lake's hulls are laid down here |
+| 105° | 806,1516 | **Erehwon** | 25,000 | The capital and its quays: the lake's hub (section 3a) |
+| 120° | 801,1514 | **Gārḍan** (garden) | 1,800 | Erehwon's west suburb: market gardens and flowers for the city |
+| 135° | 797,1513 | **Qorī** (quarry) | 1,500 | The west volcano's basalt quarries; masons |
+| 150° | 793,1510 | **Ōrcharḍ** (orchard) | 1,600 | Vale apricot, strawberry-tree, pitaya |
+| 165° | 788,1505 | **Lōṭas** (lotus) | 1,500 | Giant lotus root, reeds, willow withies: mats and baskets |
+| 180° | 782,1499 | **Phish-Mārkiṭ** (fish market) | 4,000 | The west end's fishing town and the lake's great fish market |
+| 195° | 780,1491 | **Siṭāq** (stack) | 900 | The ferry to the west isle; the shrine on the west stack (`lf_west_stack`) |
+| 210° | 785,1485 | **Hāibh** (hive) | 1,200 | Hives and honey: the sacrament's honey for the temples |
+| 225° | 793,1483 | **Malbari** (mulberry) | 2,200 | Mulberry and silk reeling |
+| 240° | 800,1482 | **Nēṭ** (net) | 1,400 | Fishing |
+| 255° | 805,1482 | **Qōqō** (cocoa) | 1,800 | Cacao groves on the north shore |
+| 270° | 810,1483 | **Phēr** (fair) | 6,000 | The north shore's market town, across the lake from Erehwon: the north's hub and P7's seat |
+| 300° | 818,1485 | **Māuṭh** (mouth) | 1,500 | Fishing at the mouths of the north-shore rivers |
+| 330° | 825,1488 | **Thalaba** | 3,000 | The north-shore village grown into a town: the summer expeditions to Godshearth (sulfur, machine-wax, the vents) |
+| 345° | 834,1493 | **Ḍāiyar** (dyer) | 1,400 | The dyers: saffron yellow, agate-wood maroon |
+
+The islands:
+
+| Island | px | Name (gloss) | People | What it is |
+|---|---|---|---|---|
+| The great isle (113 m) | 816.5,1501.5 | **Grēṭ-Āil** | 600 | A monastery of the Decree, mid-lake |
+| The bay isle (64 m) | 808.5,1509 | **Bē-Āil** | 300 | The Sultan's fishponds and gardens, 15.7 km off Erehwon |
+| The west isle (100 m) | 797,1494 | **Wesṭ-Āil** | 400 | Fishermen |
+| The east isle (45 m) | 828,1497 | **Lāiṭ-Hāus** (lighthouse) | 200 | The light and the customs post on the run to the Ālph |
+| Pleasure island | 805.035,1515.69 | The Dome of the Bay | (the Dome) | The Sultans' feasting dome, 0.6 km off the quays (section 3a) |
+
+That makes about 70,000 people in the named lake towns, Erehwon included (45,000 without), and 1,500 on the islands.
+The ~190 lake hamlets of 150-240 people (P1's ~130, P7's ~60) hold some 40,000 more, between and behind the towns and on
+the terraces above them. With Erehwon's farm ring, the lake's shores hold about 120,000 people, a third of the country. Fishing
+hamlets are on the water; farming hamlets are on the terraces.
+
+**The boats.** Their numbers are scaled from Atitlán's launches and dugouts to the lake's people:
+
+| Craft | Number | What it does |
+|---|---|---|
+| Fishing dugouts (*cayucos*) | ~400: one to four fishing households | Out at dawn, back by noon, every day but the market's |
+| Cargo boats and lake barges | ~120: about one to 800 lake people | The goods between the towns, the Ālph-Hēḍ transfer to the river barges, the north shore's silk and cacao to Erehwon |
+| Passenger launches | ~60 | Scheduled runs (below) |
+| The Sultan's barges and dragon boats | ~12 | The court's festival boats; the Dome's barge; the customs launch from Lāiṭ-Hāus |
+
+**The traffic.** Two hubs, Erehwon in the south and Phēr in the north:
+- Launches run hub-and-spoke from each hub to every town on its shore, and back, all day.
+- **The cross-lake run** (Erehwon to Phēr, about 34 km): a launch every two hours by day.
+- **The long runs** to Ālph-Hēḍ (about 74 km) and Phish-Mārkiṭ (about 50 km): one a day each way.
+- At 12 km/h (sail and oar; the court's barges are rowed) the cross-lake run takes about 3 hours, so on any daylight hour some 40-60 launches and cargo boats are under way, and the dugouts are out every morning.
+- **The market week:** each day of the lake's seven-day week is one town's market day. The boats converge on it, as Atitlán's do on Sololá's and Santiago's days.
+  - Erehwon's great market and Phēr's fair take two days.
+  - Ālph-Hēḍ, Phish-Mārkiṭ, Thalaba, Wībhar and Malbari take one each.
+  - The rest go to market at the nearest of these.
+
+**On the sim:**
+- **Passengers:** the launches are `transport` records (77-sim-5r, the ferries), each on a fixed loop with a timetable. Market-goers and pilgrims ride them. On a market day a town's people are sent to the market's town by ferry and back.
+- **Cargo:** each pair of towns on a regular run is a `SIM.trade` road with `carriers` (its cargo boats), `minutes` from the distance at 12 km/h and `want`. The two hubs gather and redistribute, so most roads are town to hub.
+- **Fishing:** each fishing town has a fishing work whose crew takes the dugouts out in the morning window. The catch is fish, and its rate comes from the lake's fish-eq.
+- **Drawing:** the region page draws the boats in view.
+  - *Near the camera:* the presented level places each launch and cargo boat at its leg's progress from the sim clock.
+  - *Far off:* boats are seeded on the runs' lines by `KRAND` from (run, hour, index) and the clock, so the lake looks as busy from Erehwon's palace as the sim says it is.
+- **Owed for drawing:** the Xanadu lake craft. There are no models yet for:
+  - a launch;
+  - a dugout;
+  - a cargo barge;
+  - a dragon boat;
+  - the Sultan's barge.
+
+  `kits/ringsea` has 31 sea vessels, none of them these.
 
 ## 3. Settlements: towns, villages, hamlets and special districts
 
@@ -142,9 +234,10 @@ From its blueprint:
 
 ### 3e. The villages and hamlets
 
-The census engine (`KHAMLET.census`) fixes a village at 240 people (44 households) on the `xanadu` row and a ranch at 145. So the ~185,000 rural people are **~770 villages**. The sim does not draw them one by one:
+The census engine (`KHAMLET.census`) fixes a village at 240 people (44 households) on the `xanadu` row and a ranch at 145. So the ~294,000 rural people are **about 1,200 villages and hamlets**. The sim does not draw them one by one:
 
-- **Drawn and declared one by one**, about 40 villages:
+- **Drawn and declared one by one**, about 75 places:
+  - the 21 lake towns and 4 islands of section 2a;
   - each town's ring (the region's `sites.json`: 6 at Erehwon and 6 at Qiblai today, 3-4 to add at Theodiga and Kirstabal);
   - the named villages of section 2;
   - the work camps.
@@ -258,7 +351,21 @@ Each step ends in a node test on the valley host, with a negative for each check
   - The Treasury's shortfall reaching the garrison first.
   - These want core/simulation's events and the needs and unrest levels (the city host has them; the valley host does not yet).
 
-**Sizes:** at the valley host's scale of 10 people per actor, 230,000 people would be 23,000 actors. The bulk rural districts therefore use a scale of 200 (about 925 actors over all eight districts). The towns use 50 (about 900); the drawn villages and the Order keep 10. The valley host takes a `scale` per settlement (an X1 change).
+**Sizes:** at the valley host's scale of 10 people per actor, 350,000 people would be 35,000 actors. So the scale is set per settlement, which the valley host takes after X1:
+
+| Who | People per actor | People | Actors |
+|---|---|---|---|
+| The bulk rural districts | 250 | ~175,000 | ~700 |
+| The towns and lake towns | 50 | ~120,000 | ~2,400 |
+| The drawn villages, the islands, the work camps and the Order | 10 | ~30,000 | ~3,000 |
+
+**The lake's traffic (section 2a)** is its own step, **X1b**:
+- the launches as `transport` loops with timetables;
+- the cargo roads between the towns and the hubs;
+- the fishing works' morning window;
+- the seven-day market week.
+
+**Test:** every lake town is fed; fish reach the hubs; market days draw riders; and a launch's position on its loop at any hour agrees with the timetable (the drawing's contract).
 
 ## 8. What this does not do
 
@@ -269,7 +376,8 @@ Each step ends in a node test on the valley host, with a negative for each check
 ## 9. Open questions for the owner
 
 **Answered 2026-11-15** (the owner):
-- **Q1, the scale:** about 230,000, option (a): lore-sized towns plus Gemini's rural share, as section 1 proposes.
+- **Q1, the scale:** first about 230,000, then (2026-11-16) "something between this and Gemini's numbers": **about
+  350,000**, with the lake's shores holding a third of it on the pattern of Lake Atitlán, and constant boat traffic (sections 1 and 2a).
 - **Q2, the Dalab caravan:** **Dalab becomes a fourth gateway.** The Annual Great Caravan stays: once a year, Erehwon to
   Nulab over the North Rift Bench (831 km, 90 days, run by Dalab, Xanadu and the Tungang Union). The rule now reads: the
   East Rift trades directly with Iziz, Yuni, the Dasri and Dalab. `TRADE-SCOPE.md`'s rule is to be updated to match.
