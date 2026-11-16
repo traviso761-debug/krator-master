@@ -131,6 +131,9 @@ async def run(a):
         pg.set_default_timeout(900000)
         gpu = await pg.evaluate(harness.RENDERER_JS)
         print('renderer:', gpu, flush=True)
+        ld = await pg.evaluate("new Promise(r=>{(function w(){if(START.ready)r(Math.round(performance.now()-START.t0));else setTimeout(w,50);})();})")
+        pg_ = await pg.evaluate("NURSERY.pregrow?[NURSERY.pregrow.specs,NURSERY.pregrow.grown()]:null")
+        print('load: the curtain lifted %d ms after the page began; prototypes pregrown %s; nursery %s' % (ld, pg_, await pg.evaluate('JSON.stringify(NURSERY.stats)')), flush=True)
         await pg.evaluate('_api.settle(240000)')
         for v in [t.strip() for t in a.views.split(',') if t.strip()]:
             await pg.evaluate(GO[v] if v in GO else '_api.go(%d)' % int(v))

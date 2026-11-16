@@ -65,10 +65,18 @@
 - [ ] **The Arc 140T is still fill-bound.** ~17 ms at view 2: the mid crowns ~4.5 ms, the ground ~4 ms, the heroes and
       far impostors ~2 ms each. Half the pixel ratio halves the frame, and a laptop window at pixel ratio 1.5 draws 2.25x
       the pixels measured here. Next: a render scale (`core/world/45-world-host.js`), or cheaper mid crowns.
-- [ ] **A prototype grown on demand is a hitch.** The nursery grows each species' level the first time a tree of it
-      comes into reach; an eastern abyss mid tree takes 0.5-0.9 s on the Arc (`tools/perf.py --fly` names it: key
-      `1|0|3|1`), the first time a flight reaches the NE rim. Growing the region's prototypes ahead, behind the loading
-      curtain or one per idle frame, would take it out.
+- [x] **A prototype grown on demand was a hitch** (fixed 2026-11-16, the third pass). The nursery grew each species'
+      level the first time a tree of it came into reach, and the first tree of a kit paid for the kit's own setup: an
+      eastern abyss mid tree stalled a flight 0.1-0.5 s the first time it reached the NE rim. Timed one by one
+      (`tools/grow_times.py`) the region's 152 prototypes are 0.71 M triangles and grow in 0.3 s on a warm page, the
+      slowest 41 ms: the stall was the kit's first use. `core/world/85p-world-pregrow.js` (opt-in, listed here) queues
+      all of them at load behind the streaming's own requests; the curtain waits for them (0.8-1.7 s of nursery work
+      in all, against 0.6-0.9 s before; the curtain lifted at the same time within the runs' spread). No flight grows
+      one since. On the RTX 5060 the flight from view 2 at 150 m/s went from 3-6 frames over 100 ms (worst 178-423 ms)
+      to 1 (worst 119-150 ms).
+- [ ] **Terrain and floor chunks are the flight's remaining hitches.** One terrain chunk (`core/world/81`, 0.2-0.7 s)
+      or floor chunk (`86`, once 1.8 s on the Arc 140T) built in a frame past its budget: `tools/perf.py --fly` prints
+      the worst frame's steps. Both are shared by every region; splitting a chunk's build across frames is the fix.
 - [ ] **The far canopy's look changed** with the impostors: from the blob crowns' rounded pastel greens to the kit's own
       crowns (purple, lime, rust, the ghostwood's white boles), with gaps to the dark floor. Their light is the kit's
       impostor look at gain 2.4 (`src/47-world-kits.js`). Awaiting the owner's eye.

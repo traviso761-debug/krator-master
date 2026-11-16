@@ -188,6 +188,7 @@
     "core/world/84-world-nursery.js": "527af1608c8011b8bfc78d0c2ce84d256aa6745bad782f7deeaa0cf198942938",
     "core/world/84i-world-impostors.js": "e6d1ba7702b493dd06d3f837bb40225d6252f1a4f4a41eb0804b2d16594ee37e",
     "core/world/85-world-flora.js": "c9f5d993402edd41f0596a26eb41377bbd1b78ed618cca69012ed737458a9bcd",
+    "core/world/85p-world-pregrow.js": "f012355df44cf02a5aabb6d1808c1a1f823870bd4962f7a0129f4ce2409e3c45",
     "core/world/86-world-floor.js": "92528cb595295f88b2a1fd040014636a8dc443d79e14391b2e50cda36d3510a5",
     "core/world/87-world-places.js": "c2e365d5edf628bb849a1c0e00453d4a6d0489fc2c2afd278d71df00d1471682",
     "core/world/88-world-towns.js": "59db64b6f6aa1c4a7c59f0e1f64ddb069161f182c30f9e7dfaad6914a59e0c25",
@@ -333,7 +334,7 @@
     "kits/resources/src/42r-res-ore.js": "795b57d189506369e35b7e2b3de5795d940d8bff91bb51e6dedb7df3f2432a04",
     "kits/resources/src/45r-res-field.js": "ca8bf0860266e0eef84783236767da2b4758be920bd26e7aef63c1f8447440ab",
     "openworld/pinnacle/PORT.md": "33a762702fc934757c07e1ca6017ed90fe2c9609fe32f571a0efd2745e4fcabd",
-    "openworld/pinnacle/build.py": "e16e64365a8b6f1bc3bbceae871950568df702e6737df6ecf1c34402ad5fff1b",
+    "openworld/pinnacle/build.py": "e74c243436d1d65dab314f8973d71e47957c1a1bbda5cd7d888ca2a4b18c8cae",
     "openworld/pinnacle/data/biome.png": "e5a81ed31e57261860e168f19c755b713e7f23e0d6941fd869cec502ed1e16d2",
     "openworld/pinnacle/data/clim.png": "ae847be78ef870bfa8a2b329d4a5fda76a42041b54f1a59b96a750bb080d08db",
     "openworld/pinnacle/data/elev.png": "0872771f828e4bf9a09046f7ca27bec96792b5195dbb979f7c62ab6bd6dfd859",
@@ -488,7 +489,7 @@
    },
    "listings": {
     "core/catalog": "30a9e7a2a0ea642339cc1158c3060327682167fbeb74a8c68a584185e0c6d094",
-    "core/world": "82e445c9ba8f2e5b60673c41e65701e92c418346bcfa81fc301dfe469a503328",
+    "core/world": "38cd913bc425fc809ed952b4bdff1432a10bbc80631425a39da4fffb5920d6eb",
     "kits/beast-riders": "d9d6ff54b07b380c4c01d604d0abf574a4c7a0f7c8fef82300bb18ae34a4e752",
     "kits/beast-riders/src": "412f8a15ae820ba9e10cfed89956d42d93a8ebe49f6460674b51399764284bc8",
     "kits/catalog": "10322ea778934242b7ce59b2a1b14f40befde097c5b9b80081f11fd0cb8a57ce",
@@ -503,7 +504,7 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "openworld/pinnacle/dist/pinnacle.html": "74117dab0eb78e13907cca68257a66bd7b27924c3c802e596d4bf97f83f53006",
+    "openworld/pinnacle/dist/pinnacle.html": "f39e74eaaa67e8fad52c5bbb6efee15178b5d9e71125729cb0613452346cb175",
     "openworld/pinnacle/dist/pinnacle.tex.abyssal-savannah.js": "79098378216d55f9f51eb8b12deb98c79f8b2a65a2f0f6aed07d2f0572111fde",
     "openworld/pinnacle/dist/pinnacle.tex.brtowns.js": "8b0a64a836ed9f8241276c635367d5868add677be8077d5f2a8a957ac15621fa",
     "openworld/pinnacle/dist/pinnacle.tex.eastabyss.js": "adb215a74b951f5abfbe99995243b1852642413c63ff52cf206b1b3e6312892b",
@@ -511,7 +512,7 @@
     "openworld/pinnacle/dist/pinnacle.tex.kftex.js": "75223875a57f714df4f068e09e66292721bf3f11c05ee54ab9414a9e4daaa346"
    },
    "outputs_raw": {
-    "openworld/pinnacle/dist/pinnacle.html": "74117dab0eb78e13907cca68257a66bd7b27924c3c802e596d4bf97f83f53006",
+    "openworld/pinnacle/dist/pinnacle.html": "f39e74eaaa67e8fad52c5bbb6efee15178b5d9e71125729cb0613452346cb175",
     "openworld/pinnacle/dist/pinnacle.tex.abyssal-savannah.js": "79098378216d55f9f51eb8b12deb98c79f8b2a65a2f0f6aed07d2f0572111fde",
     "openworld/pinnacle/dist/pinnacle.tex.brtowns.js": "8b0a64a836ed9f8241276c635367d5868add677be8077d5f2a8a957ac15621fa",
     "openworld/pinnacle/dist/pinnacle.tex.eastabyss.js": "adb215a74b951f5abfbe99995243b1852642413c63ff52cf206b1b3e6312892b",
