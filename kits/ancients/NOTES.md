@@ -1231,3 +1231,15 @@ The owner: "make sure this build is on core/water and all other relevant core mo
 - The Dome's fallen sector: flat slabs on the lake read as floating boards, so what fell into the lake is long ribs standing
   tilted out of the water; slabs and panels lie only on the deck.
 - Read in place through `TARGET_READS['theodiga']`; listed in `DETERMINISTIC`.
+
+## buildDam moves into Theodiga's target (2026-11-15)
+
+The owner asked why every Theodiga change rebuilt every Ancients page. Every `src/` fragment goes into every target's page,
+so `src/77-dam.js` shipped in all 49 though only `theodiga.html` places the dam, and each edit re-hashed the other 48. It is
+now `targets/theodiga/77-dam.js` (same name, same place in the order), and `90-scene.js` adds `dam: buildDam` to `BUILDERS`
+only when the page carries it (`typeof buildDam`). This round rebuilt every page once more (the scene's builder table
+changed); from here a dam edit changes only `theodiga.html`: a full rebuild leaves the other 48 pages byte-identical (no
+baseline entries, no new LFS objects). `reach.py` still lists every page, because it works per build command and the one
+`build.py` run writes them all; only the per-target retry runs of this round were dropped from `build-inputs.json`.
+Veladiga's builder moved the same way in the same round (`targets/veladiga/65-veladiga.js`): only its own target placed it
+(through `EXTRA_BUILDERS`), so nothing else changed. Screamers keeps its own vendored copy.

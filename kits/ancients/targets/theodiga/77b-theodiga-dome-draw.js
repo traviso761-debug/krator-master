@@ -1,5 +1,5 @@
 // ================================================================= THEODIGA — the Dome on the Water: the drawing
-// Draws THEODOME.plan's records into buildDam's group (src/77-dam.js calls it when this target is on the page; without
+// Draws THEODOME.plan's records into buildDam's group (77-dam.js calls it; without
 // it the dam keeps its old low public dome). ctx: {gx,gz} the group's world offset, {H,SPAN,BOW,CREST} the dam's
 // numbers, zc the dam's arc, WL the reservoir level. Registers every record with core/tags before drawing it. Draws no
 // rng(): the dam's own draws (fins, tunnels, decay) are the same with the dome as without it.

@@ -2,7 +2,7 @@
 
 A floorplan, drawn with the large-building method (the painting-to-3d-world skill, `references/large-buildings.md`), before
 any planner data or page. The sheets and the manifest come from `theodiga_blueprint.py` on the shared generator
-(`settlements/voth/palace/blueprint.py`), in the drawn dam's own geometry (`kits/ancients/src/77-dam.js`, the ruined state,
+(`settlements/voth/palace/blueprint.py`), in the drawn dam's own geometry (`kits/ancients/targets/theodiga/77-dam.js`, the ruined state,
 and the Dome on the Water, `kits/ancients/targets/theodiga/77a`/`77b`).
 
 ```

@@ -1,4 +1,6 @@
 // ================================================================= DAM ARCOLOGY — "Theodiga" (after Soleri)
+// In targets/theodiga since 2026-11-15 (the owner: it was in src/, so every edit re-hashed all 49 Ancients pages, though
+// only Theodiga's places the dam). 90-scene.js takes buildDam into BUILDERS when a page carries it.
 function buildDam(scene,gx,gz,d){reseed(9260+d);KOFF=[gx,0,gz];const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);const skin=SHELL(d);
  const H=400,SPAN=640,CH=440;REGISTER({name:'Dam arcology — Theodiga ('+STATE(d)+')',x:0,z:0,r:520,h:H+40});
  // canyon walls: two rock masses, rough, running upstream (−z) and downstream (+z)

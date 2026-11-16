@@ -499,7 +499,7 @@ Open on the new build (see `targets/spire/NOTES.md`):
       gullies and a talus of fallen blocks; the fin cells cluster into patches
       and bands instead of scattering by coin-flip; and the light tunnels are
       punched clean through the downstream face with collars, open shafts and a
-      recessed glow. `buildDam` is shared source in `src/77-dam.js`, so this
+      recessed glow. `buildDam` was shared source in `src/77-dam.js` (since 2026-11-15 `targets/theodiga/77-dam.js`), so this
       lands in any future kit that places the dam again.
 - [x] ~~Vegetation is lollipop trees.~~ `VEG.tree(x,y,z,species,h)` is the hand-off
       point, with a cheap default; `trees()` and every planting call go through

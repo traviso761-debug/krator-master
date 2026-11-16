@@ -7,7 +7,7 @@ it are lived in, and only partly (the crest, the gallery inside the dam under it
 the Dome is the shrine; priests, monks and scholars live in the arcology (about 900), the History Monks keep a delegation;
 everything lower is ruined and sealed; the town (scrap Xanadu, about 4,100) stands on the east rim.
 
-Geometry is the drawn dam's (kits/ancients/src/77-dam.js, buildDam, the RUINED state, and the Dome on the Water,
+Geometry is the drawn dam's (kits/ancients/targets/theodiga/77-dam.js, buildDam, the RUINED state, and the Dome on the Water,
 kits/ancients/targets/theodiga/77a-77b), in the dam group's frame: x across the span (+x east: the Notch is west),
 z along the stream (-z upstream, the lake), y up. Each sheet says its own frame:
   T0 site      plan: u = x, v = -z (upstream up)
