@@ -338,7 +338,7 @@ T.valley=function(P,o){o=o||{};const K=o.scale==null?50:o.scale,yr=365,win=w=>{c
  const mine=(id,name,px,py,people,parent,out,kgYr)=>{const p=at(px,py);seats[id]=add({id,name,faction:'xanadu',parent,people,x:p.x,z:p.z,eats:eats('camp'),keepDays:10,
   start:{grain:Math.round(eatYr('camp',people)*T.startDays/yr),salt:people*2,tea:people*.3,tools:people*.4},works:[{id:id+'.works',kind:'adit',name,crew:Math.round(people*.8),out:[out],rate:rate(kgYr,Math.round(people*.8)),site:T.field(out==='goldore'?'lode':'opal-diggings',kgYr,T.fieldYears)}]});bump(parent,eatYr('camp',people));};   /* the camps' grain counts on their parent's (L1: the opal mines on Lāiṭwāl's) */
  mine('smgxtultfq','The gold mines on the lode',911,1665,950,'sxan7r1sln','goldore',T.mine.goldore);
- mine('sjuarjbku0','Opal Valley Mines (the Sultan\'s factor)',1038,1662,850,'slaitwal0001','opal',T.mine.opal);   /* Lāiṭwāl's works village across the lake (L1), its opal to Strongbow first (W1; the owner, 2026-11-16: "opal goes to Strongbow first as it's closer" (about 160 km against Strongwall's 260) */
+ mine('sjuarjbku0','Opal Valley Mines (the Sultan\'s factor)',1038,1662,850,'slaitwal0001','opal',T.mine.opal);   /* Lāiṭwāl's works village across the lake (L1); its opal ferried to Lāiṭwāl (the owner, 2026-11-16: "Ferry to laitwal", over W1's "opal goes to Strongbow first") */
  /* the forts of the Marches */
  [['march.w','The west watch fort',818,1531],['march.s','The south watch fort',847,1549],['march.e','The beacon fort over the Rift (the refurbished Ancient beacon, kept by the Yellow Monastery)',881,1541]]   /* moved with Erehwon (+35,+1 px), each on dry ground */.forEach(([id,name,px,py])=>{const p=at(px,py);
   add({id,name,faction:'xanadu',parent:'s57bkv9741',people:150,state:'kept',x:p.x,z:p.z,eats:eats('fort'),keepDays:30,start:{grain:Math.round(eatYr('fort',150)*.4),salt:300,tea:60,tools:40,arms:20,powder:100},
@@ -416,13 +416,12 @@ T.valley=function(P,o){o=o||{};const K=o.scale==null?50:o.scale,yr=365,win=w=>{c
  road('road.ks-sb','sl758m2396','sfgtxw10kr',15,'road',{sl758m2396:['grain','salt','tools','fish'],sfgtxw10kr:['tea','silk']},{carriers:2});
  R[R.length-1].minutes+=T.lift;
  road('road.sw-gold','sxan7r1sln','smgxtultfq',50,'road',{sxan7r1sln:['grain','salt','tea','tools']},{carriers:2});
- road('road.sb-opal','sfgtxw10kr','sjuarjbku0',160,'road',{sfgtxw10kr:['grain','salt','tea','tools']},{carriers:2});   /* W1: the opal mines on Strongbow's road (the owner, 2026-11-16), not Strongwall's 260 km */
  road('road.sw-tempest','sxan7r1sln',T.tempest.id,T.tempest.km,'road',{sxan7r1sln:['grain','salt','tea','tools','arms']},{carriers:2});
  R.push({id:'mine.gold',from:'smgxtultfq',to:'sxan7r1sln',minutes:Math.round(50/25*1440),cap:20000,carriers:2,share:{smgxtultfq:{goldore:1}},goods:{sxan7r1sln:['grain','salt','tea','tools']}});
- R.push({id:'mine.opal',from:'sjuarjbku0',to:'sfgtxw10kr',minutes:Math.round(160/25*1440),cap:5000,carriers:2,share:{sjuarjbku0:{opal:1-T.fifth}},goods:{sfgtxw10kr:['grain','salt','tea','tools']}});   /* the Fifth goes straight to the Treasury (below) */
- /* L1: Lāiṭwāl's ferry over the lake to the mines, its works village (27 km): their bread; the mines' opal goes to Strongbow
-    first (W1, mine.opal) */
- R.push({id:'ferry.lw-mines',from:'slaitwal0001',to:'sjuarjbku0',minutes:Math.round(T.laitwal.ferryKm/60*1440),cap:20000,carriers:2,want:30,goods:{'slaitwal0001':['grain','salt','tea','tools'],sjuarjbku0:[]},expect:{sjuarjbku0:{grain:eatYr('camp',850)/yr,salt:850*2/yr,tea:60/yr,tools:120/yr}}});
+ /* L1 (the owner, 2026-11-16: "Ferry to laitwal"): the mines' opal over the lake to Lāiṭwāl by its ferry (27 km), the mines'
+    bread back; from Lāiṭwāl it goes down the valley with the town's own (road.lw-ks). The Fifth goes straight to the Treasury */
+ R.push({id:'mine.opal',from:'sjuarjbku0',to:'slaitwal0001',minutes:Math.round(T.laitwal.ferryKm/60*1440),cap:20000,carriers:2,want:30,share:{sjuarjbku0:{opal:1-T.fifth}},
+  goods:{'slaitwal0001':['grain','salt','tea','tools']},expect:{sjuarjbku0:{grain:eatYr('camp',850)/yr,salt:850*2/yr,tea:60/yr,tools:120/yr}}});
  /* L1: the Glaziers' Fifth in opals from the assay house on the bench; Lāiṭwāl's opal and moonglass down the valley by
     Kirstabal (its grain up the same road) and the barges to Qiblai, where Yuni's caravans take them */
  R.push({id:'fifth.opal.lw',from:'slaitwal0001',to:'xan.citadel',minutes:Math.round(560/25*1440),cap:1000,carriers:1,share:{'slaitwal0001':{opal:T.fifth}},goods:{'xan.citadel':[]}});
