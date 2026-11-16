@@ -45,6 +45,7 @@
     "biomes/xanadu/tex/star.albedo.webp": "1620c520171ecc75824287e09c171eea323ba15ee9f37c998cb237623468a5be",
     "biomes/xanadu/tex/under.albedo.webp": "653b5da172acffd091c9bf4ef2a222d75693a54bd24fef808641f6b723bc4ae9",
     "biomes/xanadu/tex/willow.albedo.webp": "4964809cce206cdc1e3e7c1f10e951f5abc87a8589d826091b697291ed18affd",
+    "core/biome/31b-core-leafset.js": "e58ebcc03d77e6da79d54c90eb7582fb806775454c8ed0879e1d7f2359a2788f",
     "core/catalog/catalog.py": "5d4a79810193b831fc1c686c934990afd10ecb63b5a55d05e0f3d7dd4c84d88a",
     "core/catalog/files.json": "a400e7bf3e1197698d129db83964d883fd9ea2818173fe7df3c7d1b4a054d72f",
     "core/catalog/krator-furniture-core.js": "1c8bfa11d261b36895fd50645358e2c4ebe54febf67daeed700a38fbd6256fe9",
@@ -229,9 +230,10 @@
     "kits/xanadu/xanadu.py": "6e7562ab022acc1e2aeadfa55a0222b7ed8a4994a4e70ff5e1982ddce617cf46",
     "settlements/pher/KNOWN_ISSUES.md": "a8502b9946b290909ed109f26550a19df12deb9a7f7d9bbbecf5bc86033ebd2c",
     "settlements/pher/PORT.md": "3ba67894a92bdd05f971b9528cb3a448a0838f2e079aed9b9fa25ac6ecb07882",
-    "settlements/pher/build.py": "f45fc139c74ef6e95569c3706c388aab255a23904fc8cf24a6426331cc2a615f",
+    "settlements/pher/build.py": "47cc879b3f7f52c168b63a95403450b0581635a9f6576ecc455560f76a6a7523",
     "settlements/pher/gen/69p-kcity-bundle.js": "b1a74c3801af9238fd374b1eb8e9ad283a4cf3ab30994bfd2bd9cd95d1aab27a",
-    "settlements/pher/kit.json": "48acf05d349ceedc06b46d18db967864e4b9b6e0feab86279c751557527c06f6",
+    "settlements/pher/gen/86-bio-31b-core-leafset.js": "c2c41c6f3cc2cc35b44269bf97c5d8efa64ef3dbde448516a1d481f19e3f3ad1",
+    "settlements/pher/kit.json": "b0f494ab3507595a66be955297fd14b159f3380a2ed5a83d29379a77bb0ab271",
     "settlements/pher/targets/town/89z-rows.js": "0a9d6c43e18637b4e27499c385f00f2ea0ccb0579af737dd21b7cf18d9777f02",
     "settlements/pher/targets/town/89zp-ph-site.js": "1bf992ecb16fcf1fce26c57e917585b0c6d4bd1d5850ebf97cee5ca8d3a6c08a",
     "settlements/pher/targets/town/90q-ph-world.js": "2e7488030bfd90166d8493fd8ab98bf19ab405e399e0997cdc118ba146a99e0d",
@@ -451,14 +453,14 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "settlements/pher/build-manifest-town.json": "8331a49aa615c04fd18494b9befefb1ab695e33c811dc24aa3c79638ce02f85b",
-    "settlements/pher/dist/pher.html": "7ca14ae416a4cbcdbc17f82592503bbca7a22cff8e9013e87fba95adfb43970e",
+    "settlements/pher/build-manifest-town.json": "d9b4118d4a1b89f9388d1e5b7a85737f04881f765efb8f1de9f2ec437c8a52e1",
+    "settlements/pher/dist/pher.html": "6215940afde03649269882e1d81899a9b80b7a047c9274c67e54b12d00211333",
     "settlements/pher/dist/xanadu.tex.xanadu-2.js": "be1d57f174e08cf71b5511aff65a313eec8edc29e057c48d027e9b60630f3ab5",
     "settlements/pher/dist/xanadu.tex.xanadu.js": "3fe87059ee305d523fa5026dddfd91123354e88d5839097de9df44137500f2a4"
    },
    "outputs_raw": {
-    "settlements/pher/build-manifest-town.json": "20a7afe62f1e2225f23d756430fc4a0436358a7a1752f24f6dc9dfb037600bad",
-    "settlements/pher/dist/pher.html": "7ca14ae416a4cbcdbc17f82592503bbca7a22cff8e9013e87fba95adfb43970e",
+    "settlements/pher/build-manifest-town.json": "edbe203d273621c6cb2ec908dd23da4eca91f91e8fdff34490bed8482b6a44d7",
+    "settlements/pher/dist/pher.html": "6215940afde03649269882e1d81899a9b80b7a047c9274c67e54b12d00211333",
     "settlements/pher/dist/xanadu.tex.xanadu-2.js": "be1d57f174e08cf71b5511aff65a313eec8edc29e057c48d027e9b60630f3ab5",
     "settlements/pher/dist/xanadu.tex.xanadu.js": "3fe87059ee305d523fa5026dddfd91123354e88d5839097de9df44137500f2a4"
    }

@@ -6,6 +6,12 @@
 - **The Swīṭ Siṭrīm is not joined to the model's stream.** In the world the town's stream runs down its ravine at its own
   height (`core/world` 41t `over`) from a spring above the upper town; the model's `r_pher_swit` ends at the band, about
   45 m under the rim plain, so it cannot run in (PLAN.md question 17).
+- **The biome core is Xanadu's older copy.** The page takes Xanadu's vendored `core/biome` (`settlements/xanadu/src/86-bio-*`)
+  and, from core, `31b-core-leafset.js` (generated into `gen/` by `build.py`, `BIO_MIN`). `34-core-impostor.js` is not
+  taken: it calls `BIO._newItem` and `BIO.kitKey`, which only the current `20-core-kit.js` defines; its MINSET finding
+  is baselined (`tools/check_assembly_baseline.json`) until Xanadu's page re-vendors its biome core. The page's own
+  `window._registered` clashes with core/host's probe as on every town on Xanadu's page (Xanadu's `KHOST.take` hands no
+  registry); baselined the same way.
 - **The heir's palace is the Grand Vizier's design.** The kit's hollow citadel palace (`xa_cit_vizier`, walk-in with
   `?interiors=1`) stands for the heir's seat. A palace of the heir's own is a later commission. The kit's plain palace
   (`xa_palace`) is solid inside, so it was not used.
