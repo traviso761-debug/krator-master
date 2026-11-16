@@ -17,6 +17,7 @@
 // by the court door, kitchen, dormitories, a store; dormitories and a reading room above), entered by the door each range has
 // to the court (kits/qiblai 89q3). The assembly and gate halls are 90t's.
 const QC_LIX_NEAR=34,QC_LIX_FAR=80;
+const QC_BULBS=[];   /* every room bulb placed so far, world [x, y, z]: the light pool (90v), the krator-lamps export (91z) */
 const QC_LIX=(function(){const S={lots:[],types:{},nTypes:0,built:0,clones:0,noShell:0,noProgram:0,open:0,fails:[],ms:0,byProgram:{},tex:{meshes:0,mapped:0}};
  const report=()=>{window._qiblaiLix={lots:S.lots.length,types:S.nTypes,built:S.built,clones:S.clones,noShell:S.noShell,noProgram:S.noProgram,open:S.open,
   byProgram:S.byProgram,fails:S.fails.slice(0,8),ms:S.ms,tex:S.tex,doors:S.doors,walked:S.walked,ranges:S.ranges,buildTypes:S.buildTypes,walkIn:S.walkIn};};
@@ -55,6 +56,7 @@ const QC_LIX=(function(){const S={lots:[],types:{},nTypes:0,built:0,clones:0,noS
  const T0=()=>KTAGS.page||(KTAGS.page=KTAGS.create({build:'xanadu'}));
  S.place=function(L){const ty=S.types[L.tk],T=ty&&ty.T;if(!T)return;const p=L.p,y=qcD(p.o.y,0),g=T.G.clone();
   g.name='interior:'+L.id;g.position.set(p.x,y,p.z);g.rotation.y=p.ry;scene.add(g);L.G=g;S.clones++;
+  for(const b of T.bulbs||[]){const w=loc(p.x,p.z,b[0],b[2],p.ry);QC_BULBS.push([w[0],y+b[1],w[1]]);}
   if(S.walk){const D=L.D,on=D?D.blocks.map(b=>!b.off):[];if(D)S.walk.setBlock(D.blocks,false);   /* the flight's climb test walks through the doorway */
    const a=D?[D.at[0]+Math.sin(D.yaw)*1.2,D.at[2]+Math.cos(D.yaw)*1.2]:[p.x,p.z];
    const ga=S.walk.floorBelow(a[0],a[1],L.pose.y+T.plan.levels[0].y,.1);   /* outside: a monastery's court floor, else the ground */

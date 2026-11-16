@@ -49,8 +49,10 @@
 - [ ] **The oilfield and the mission are drawn by Verge's YKIT bundle** (gen/69y-ykit-bundle.js, made by Verge's own build
   function; 2026-11-16): the Locus builders' small catalog props (lanterns, jars, the pieces Verge's furniture glue places
   through core/furnish, in the yuni, abyss and post-apocalyptic cultures the page's catalog bundle does not carry) are left
-  out (`furnishAt`, `FURNISH` answer null in the bundle); their buildings have no interiors and no walk records; the night
-  glow (YKIT.glow) is not baked. The pumpjacks nod (Locus's 76-locus-anim.js, in the bundle as YKIT.anim, since the second
+  out (`furnishAt`, `FURNISH` answer null in the bundle). Their interiors (2026-11-16) are the interiors kit's own sets
+  (sets/locus.js, sets/yuni-town.js) for 30 buildings, plus a room each for the mission's school and bathhouse (no set item);
+  the bell tower, the gatehouse, the tanks, racks and pumpjacks hold none; a few middle stilt houses' kitchens find no hearth
+  that fits (the verify allows 8 rooms short). The night glow (YKIT.glow) is not baked. The pumpjacks nod (Locus's 76-locus-anim.js, in the bundle as YKIT.anim, since the second
   pass). The page's size: the Qiblai pack is written beside the page (kit.json `packSide`, `xanadu.tex.qiblai.js`, 5.2 MB),
   so the page is 10.3 MB of its 16 MB cap; the artifact takes that file too.
 - [ ] **The town's electric light** (90v; the owner, relayed 2026-11-16: "Qiblai will be electrified along all major avenues and
@@ -58,9 +60,12 @@
   house by the south road feeds a pole line up the south gate's stair and along the four major avenues (a lamp on every pole,
   one hung across the street at every other, the wire strung through each gate's arch), and along the kora's outer side; the
   lots' rooms with a wealth of 0.5 or more and every great room have ceiling bulbs (the poor's houses and the monks' quarters
-  none). By night the six street lamps nearest the eye are point lights (warm, 24 m; `?hour=21` opens the city by night),
-  the rest bright bulbs; the rooms' bulbs give no light. How the wire reaches each avenue from the feed is not drawn (each
-  avenue's run starts at its outer end). In Godot (godot/tests/qiblai/lamps_test.gd; the spike's qiblai case) the lamps come
-  through as krator-lamps (halos, the nearest 32 OmniLight3D by the Atmos clock's hours); the wires (a line set) and the
-  ceiling bulbs do not, and a white sky piece of the page's lands near the region's camera (an export gap).
+  none). One pool of eight point lights follows the eye (the count fixed, so nothing recompiles): the room bulbs within 30 m,
+  day and night (a room's own counts nearest: the indoor glow, warm over 9 m), and by night the street lamps (warm, 24 m;
+  `?hour=21` opens the city by night); the rest stay bright bulbs. The lights pass through walls (no shadows). How the wire reaches each avenue from the feed is not drawn (each
+  avenue's run starts at its outer end). In Godot (godot/tests/qiblai/lamps_test.gd; the spike's qiblai case) the street
+  lamps and the room bulbs of the eleven lit houses the export places come through as krator-lamps, lit at run time by the
+  same pool (krator/lamp_pool.gd, KratorLampPool: eight lights to the nearest lit, by the Atmos clock's hours); the wires (a
+  line set) do not come through, a white sky piece of the page's lands near the region's camera, and a room's inner walls
+  were not seen in a render from inside (export gaps).
 - [ ] **Life (Q7e), the open world (Q7f), the Godot export and the gallery (Q7g)** are not started.

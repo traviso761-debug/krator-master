@@ -172,7 +172,7 @@ func _load_case(name: String) -> Dictionary:
 			var box: Array = g.get_meta("krator", {}).get("box", [0, 0, 0, 0])
 			focus = Vector3((box[0] + box[2]) * 0.5, 0, (box[1] + box[3]) * 0.5)
 			if FileAccess.file_exists(dir + "lamps.json"):   # the page's flames and halos as data (krator/lamps_import.gd)
-				var lp := KratorLamps.build(dir + "lamps.json", focus)
+				var lp := KratorLamps.build(dir + "lamps.json", focus, name == "qiblai")   # Qiblai: the pool that follows the eye (krator/lamp_pool.gd)
 				world.add_child(lp)
 				reports[name + "-lamps"] = lp.get_meta("report")
 				_print_report(name + "-lamps", reports[name + "-lamps"])

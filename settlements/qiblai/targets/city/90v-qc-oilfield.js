@@ -17,6 +17,37 @@ const QC_OILF=(function(){const S={assets:0,errors:[],poles:0,lamps:0,wireSpans:
  catch(e){S.errors.push('emit: '+(e&&e.stack||e));}
  /* the pumpjacks nod (Locus's 76-locus-anim.js, in the bundle as YKIT.anim: their moving parts on the page's TICKS) */
  try{const a=YKIT.anim&&YKIT.anim();S.anim=a?{records:a.records,meshes:a.meshes}:null;}catch(e){S.errors.push('anim: '+(e&&e.stack||e));}
+ // ---- the interiors (the owner, 2026-11-16: "do mission/oilfield interiors"): every building the interiors kit has a set
+ // item for (kits/interiors sets/locus.js and sets/yuni-town.js: rooms drawn to the Locus and Yuni builders' own bodies, in
+ // their frames) is instantiated where it stands, its floors, walls, stairs and entry flights into core/walk at once
+ // (IX.walk.register); its rooms are furnished (qnFurnishRooms: the catalog's yuni-common, eastabyss and generic pieces) and
+ // lit (ceiling bulbs, into QC_BULBS; the poor's huts none) the first time the camera comes within 60 m
+ const IX=typeof KratorInteriors!=='undefined'?KratorInteriors:null,FI=[];S.interiors={items:0,built:0,rooms:0,pieces:0,fails:[],noItem:[]};
+ const itemOf=k=>{for(const s of(IX&&IX.sets&&IX.sets.list)||[])if(s.byKey&&s.byKey[k])return s.byKey[k];return null;};
+ // the mission's school and bathhouse have no set item: a room each, a rectangle within the body's middle (0.55 of its plan),
+ // its floor on the ground, its door on the front; the bell tower and the gatehouse hold no room
+ const OWN={civic_school:{kind:'school',name:'The mission school\'s classroom'},civic_bathhouse:{kind:'bath',name:'The mission bathhouse'}};
+ for(const R of QC_OIL.assets){const it=(R.v&&itemOf(R.key+'#'+R.v))||itemOf(R.key),own=OWN[R.key];
+  if(own&&YKIT.ASSET_BY_KEY[R.key]){const A=YKIT.ASSET_BY_KEY[R.key],w=A.w*.55,d=A.d*.55,y=terrainH(R.x,R.z)+.12,W=(u,v)=>loc(R.x,R.z,u,v,R.ry);
+   const room={key:R.key,name:own.name,kind:own.kind,culture:'yuni-common',wealth:.55,y,h:3.2,poly:[W(-w/2,-d/2),W(w/2,-d/2),W(w/2,d/2),W(-w/2,d/2)],doors:[{at:W(0,d/2),w:1.2,to:'street',swing:'none'}],fixtures:[]};
+   FI.push({R,inst:{rooms:[room]},G:null,lit:true,own:true});S.interiors.items++;continue;}
+  if(!it||it.skip){S.interiors.noItem.push(R.key);continue;}
+  try{const y=terrainH(R.x,R.z),inst=IX.sets.instantiate(it,R.x,R.z,R.ry,{baseY:y,seed:R.seed%1000,prefix:R.id+'.'});if(!inst||!inst.rooms||!inst.rooms.length){S.interiors.noItem.push(R.key);continue;}
+   if(typeof KWALK!=='undefined'&&IX.walk)IX.walk.register(inst,KWALK,{tag:R.id});
+   FI.push({R,inst,G:null,lit:qcD(it.wealth,.5)>=.3});S.interiors.items++;}
+  catch(e){S.interiors.fails.push(R.key+': '+(e&&e.message||e));}}
+ S.buildInterior=F=>{if(F.G)return F;let G=null;
+  try{let r=null;for(let k=0;k<3;k++){   /* a room missing a required piece is furnished again on the next seed (up to three), as 90u's */
+    const g=new THREE.Group();g.name='interior:'+F.R.id;const q=qnFurnishRooms(F.inst.rooms,g,{seed:33991+(F.R.seed%997)+k*7919,perType:3,passes:2,backtrack:4,noTags:true,frag:'90v-qc-oilfield.js',name:'furniture:'+F.R.key});
+    if(!r||q.fails.length<r.fails.length){r=q;G=g;}if(!r.fails.length)break;}
+   const TG=KTAGS.page;if(TG)for(const q of r.placed||[])TG.add({prefix:'oilf','class':'furniture',kind:q.kind,key:q.key,name:q.name,at:[q.x,q.y,q.z],ry:q.ry,size:q.size,
+    tags:Object.assign({},q.tags,{building:F.R.id}),frag:'90v-qc-oilfield.js'});   /* the kept attempt's pieces, registered where they stand (world: the rooms are) */
+   S.interiors.pieces+=r.pieces;S.interiors.rooms+=F.inst.rooms.length;if(r.fails&&r.fails.length)S.interiors.fails=S.interiors.fails.concat(r.fails.map(f=>F.R.key+': '+f)).slice(0,12);
+   if(F.lit){QB_BULB_SINK=QC_BULBS;for(const Rm of F.inst.rooms)qnIxBulbs(Rm.poly,Rm.y,Rm.h);QB_BULB_SINK=null;kbake(G);for(const n in KIT.items)KIT.items[n].length=0;}}
+  catch(e){S.interiors.fails.push(F.R.key+': '+(e&&e.message||e));}
+  if(!G)G=new THREE.Group();scene.add(G);F.G=G;S.interiors.built++;return F;};
+ S.buildInteriors=()=>{FI.forEach(S.buildInterior);return S.interiors;};
+ {let tk=0;FRAME_HOOKS.push(()=>{if((tk++)%8)return;const P=camera.position;let n=0;for(const F of FI){const d=Math.hypot(P.x-F.R.x,P.z-F.R.z);if(F.G){F.G.visible=d<160;continue;}if(d<60&&n<2){S.buildInterior(F);n++;}}});}
  // ---- the light (the owner, relayed 2026-11-16: "Qiblai will be electrified along all major avenues and in buildings except
  // in poor areas ... just enough to use the cut of oil they get from Yuni"). Runs of nodes [x, z, ground y, kind, c]: kind
  // 'pole' (a plain pole), 'lamp' (a lamp on an arm toward c, the street's middle), 'cross' (that, and a lamp hung on a wire
@@ -73,9 +104,16 @@ const QC_OILF=(function(){const S={assets:0,errors:[],poles:0,lamps:0,wireSpans:
  // ---- real light by night: the LIGHTS nearest the eye of every street lamp become point lights (warm, 24 m), chosen again
  // twice a second; by day their intensity is 0 (they stay in the scene, so no shader recompiles at dusk). The rest stay
  // bulbs. Night is the sky's (the sun under the horizon, 81-sky.js / 99-start.js NIGHT)
- const LIGHTS=6,pool=[];for(let i=0;i<LIGHTS;i++){const L=new THREE.PointLight(0xffd6a0,0,24,2);L.castShadow=false;L.name='lamp light '+i;scene.add(L);pool.push(L);}
- let lt=0;FRAME_HOOKS.push(dt=>{lt+=dt||.016;if(lt<.5)return;lt=0;const P=camera.position,night=typeof NIGHT!=='undefined'&&NIGHT;
-  const near=night?QC_LAMPS.map(l=>[l,(l[0]-P.x)**2+(l[2]-P.z)**2]).filter(e=>e[1]<160*160).sort((a,b)=>a[1]-b[1]).slice(0,LIGHTS):[];
-  pool.forEach((L,i)=>{const e=near[i];if(e){L.position.set(e[0][0],e[0][1],e[0][2]);L.intensity=1.8;}else L.intensity=0;});S.lit=near.length;});
+ // Indoors (the owner, 2026-11-16: "work on indoor glow"): the same pool takes the room bulbs nearest the eye (QC_BULBS: the
+ // lots' rooms, the great rooms, the field's), day or night, within 30 m: a bulb lights its room warm over 9 m. One pool of
+ // LIGHTS, the count fixed (so nothing recompiles); a street lamp is taken by night only, within 160 m
+ const LIGHTS=8,pool=[],KIND={lamp:{i:1.8,d:24,c:0xffd6a0},bulb:{i:1.0,d:9,c:0xffe2b8}};
+ for(let i=0;i<LIGHTS;i++){const L=new THREE.PointLight(0xffd6a0,0,24,2);L.castShadow=false;L.name='lamp light '+i;scene.add(L);pool.push(L);}
+ let lt=0;FRAME_HOOKS.push(dt=>{lt+=dt||.016;if(lt<.5)return;lt=0;const P=camera.position,night=typeof NIGHT!=='undefined'&&NIGHT,cand=[];
+  for(const b of QC_BULBS){const d=(b[0]-P.x)**2+(b[1]-P.y)**2+(b[2]-P.z)**2;if(d<900)cand.push([b,d*.5,'bulb']);}   /* a bulb counts nearer: the room the eye is in */
+  if(night)for(const l of QC_LAMPS){const d=(l[0]-P.x)**2+(l[2]-P.z)**2;if(d<160*160)cand.push([l,d,'lamp']);}
+  cand.sort((a,b)=>a[1]-b[1]);let nb=0;
+  pool.forEach((L,i)=>{const e=cand[i];if(e){const K=KIND[e[2]];L.position.set(e[0][0],e[0][1],e[0][2]);L.intensity=K.i;L.distance=K.d;L.color.setHex(K.c);if(e[2]==='bulb')nb++;}else L.intensity=0;});
+  S.lit=Math.min(LIGHTS,cand.length);S.litBulbs=nb;});
  REG.push({name:'The town\'s power line (the Prismarchy\'s generator to the avenues\' lamps)',x:cg.x,y:terrainH(cg.x,cg.z),z:cg.z,r:6,h:10,cls:'infrastructure',key:'oil_power_line',tags:{culture:'qiblai',poles:S.poles,lamps:S.lamps}});
  return S;})();

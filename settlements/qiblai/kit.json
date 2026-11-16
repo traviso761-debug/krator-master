@@ -47,8 +47,12 @@
   "eastabyss",
   "generic",
   "generic-goods",
-  "jobs"
+  "jobs",
+  "yuni-common"
  ],
  "furnitureTex": true,
- "interiorSets": []
+ "interiorSets": [
+  "locus",
+  "yuni-town"
+ ]
 }

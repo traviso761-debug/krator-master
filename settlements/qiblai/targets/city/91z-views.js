@@ -68,4 +68,5 @@ BUDGET.showcase={tris:30000000,calls:3000};BUDGET.cls.city=30000000;for(const k 
 // qiblai case reads _api.lamps(box). Night hours as Girder's; warm, 24 m
 if(window._api)window._api.setHour=h=>{QC_SKY.hour=h;};   /* the clock, for a night shot */
 if(window._api&&typeof QC_LAMPS!=='undefined')window._api.lamps=b=>({format:'krator-lamps',version:1,convention:'metres, +Y up; at is the bulb; color sRGB; size the halo\'s world diameter',
- lamps:QC_LAMPS.filter(l=>!b||(l[0]>=b[0]&&l[0]<=b[2]&&l[2]>=b[1]&&l[2]<=b[3])).map(l=>({at:[+l[0].toFixed(3),+l[1].toFixed(3),+l[2].toFixed(3)],amp:1,radius:24,cool:false,color:'#ffd6a0',size:1.4,hours:[17.2,30.8]}))});
+ lamps:QC_LAMPS.filter(l=>!b||(l[0]>=b[0]&&l[0]<=b[2]&&l[2]>=b[1]&&l[2]<=b[3])).map(l=>({at:[+l[0].toFixed(3),+l[1].toFixed(3),+l[2].toFixed(3)],amp:1,radius:24,cool:false,color:'#ffd6a0',size:1.4,hours:[17.2,30.8],kind:'lamp'}))
+  .concat((typeof QC_BULBS!=='undefined'?QC_BULBS:[]).filter(l=>!b||(l[0]>=b[0]&&l[0]<=b[2]&&l[2]>=b[1]&&l[2]<=b[3])).map(l=>({at:[+l[0].toFixed(3),+l[1].toFixed(3),+l[2].toFixed(3)],amp:.85,radius:9,cool:false,color:'#ffe2b8',size:.35,hours:[0,24],kind:'bulb'})))});   /* the room bulbs placed so far: always on (a room's light), 9 m */
