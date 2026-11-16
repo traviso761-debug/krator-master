@@ -223,6 +223,22 @@ spring, sealed deep inside). Theodiga's end:
      (T-life-1) stand down; their lamps stay.
    - **The checks.** `test-th-walk.js` runs 11. The graph is one piece; no edge leaps; the street nodes are on the ground; no
      deck node is in a pavilion, well, hall or the Tear; a door is joined near itself; the same twice.
-   - **Next.** A walk cycle and activity poses, indoor residents shown in the opened rooms, and the economy (the yards'
-     salvage, the fields' grain, the dairies' honey and milk).
-10. **Later**: the Qiblai buildings' rooms (as Strongbow's), core/simulation's roles, the open world.
+   - **Next.** A walk cycle and activity poses, and indoor residents shown in the opened rooms.
+10. **T-econ-1, the economy** (done 2026-11-16, the owner: "Yes, the economy").
+    - **The economy.** `src/49-th-econ.js` (`TH_ECON`, [G data]) gives the settlement its own economy on core/simulation
+      (keyed by settlement; the isle demo's 44 and 43 are the worked examples):
+      - **the goods:** grain, pulse and tubers from the fields, each its crop; milk from the dairies and honey from the hives
+        (the farmsteads by turns); bread from the arcology's kitchens in batches of grain; salvage from the yards, drawn from
+        the Dome's fall (a site of 60,000 lots that runs down); artifacts from the bore (a site with no end);
+      - **the stores:** the storehouses, granaries and serai are the warehouses, opened with three days of the town's meals;
+        16 carters haul the makers' stores to them;
+      - **the table:** a household buys its food at the bazaar's stalls; the arcology's homes, the hostels and the Devisers'
+        lodge are messes; the hostels sell a meal out.
+    - **The yields are sized to the people.** Each food has a share of the diet. Each kind of maker gets the rate that, with
+      the workers the census dealt it, makes its food's share of the town's meals and 12% more (the bread's grain on the
+      grain fields).
+    - **The checks.** `test-th-econ.js` runs 10, a week at the abstract level each. The books balance (core's ledger); the
+      town feeds itself; every maker makes; the Dome's fall runs down by what was taken; the carters are there.
+    - **Next.** The caravans (the serai's trade by the East Gate road: salvage and artifacts out, what the canyon lacks in),
+      money, tools and clothes, and the Lamp Hall's butter.
+11. **Later**: the Qiblai buildings' rooms (as Strongbow's), core/simulation's roles, the open world.

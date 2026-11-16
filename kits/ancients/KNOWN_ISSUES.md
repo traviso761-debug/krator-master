@@ -387,8 +387,12 @@ records drawn from the scrap Xanadu set and the Qiblai kit (`XAK`, `kit_bundle.b
       figures stand down.
 - [ ] **The walkers are the kit's cylinder figures**, unanimated, with no walk cycle and no activity poses. An indoor
       resident is hidden, not drawn in the opened rooms. The arcology's storeys are a node at each unit's middle, not its
-      rooms, and its fin heads reach the kora by a straight "bridge" edge. No economy (stocks, recipes, trade) is declared.
-      Posing 5,016 residents costs about 5 ms a frame.
+      rooms, and its fin heads reach the kora by a straight "bridge" edge. Posing 5,016 residents costs about 5 ms a frame.
+- [ ] **The economy feeds the town but trades nothing** (T-econ-1, 2026-11-16, `settlements/theodiga/src/49-th-econ.js`).
+      The fields, dairies, hives, kitchens, yards and bore make; the warehouses store; the carters haul; the households and
+      messes eat; the books balance. But the salvage and the artifacts pile up in the warehouses: no caravan takes them out
+      by the East Gate. There is no money, the tools and clothes do not wear, and the Lamp Hall burns no butter. The yields
+      are sized to the census (TH_ECON's diet and surplus), not to the fields' areas.
 - [ ] **The Panel Row's kitchens cannot take a hearth** (`kits/interiors/sets/xanadu-scrap.js`, `xa_scrap_row` houses: a room
       2.2 m wide with the stair in it; no hearth fits at any seed from any culture). The town furnishes them as stores
       (`8zz2-th-town-rooms.js`, `AIK.townRekinded`). The set should widen the kitchen or move the stair.

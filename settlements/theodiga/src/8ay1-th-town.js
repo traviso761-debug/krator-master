@@ -165,10 +165,10 @@ function thTownDraw(gx,gz,ctx){const O={buildings:0,people:0,protos:0,meshes:0,t
   LS=thLifeDraw(gx,gz,ctx,LF,{noPeople:WALKING});}catch(e){O.errors.push('the people: '+(e&&e.stack||e));}
  /* the census on core/simulation (T-sim-1: src/47-th-sim.js): Theodiga's settlement, places, roles and residents as records,
     dealt once here (the record level: nobody walks yet) */
- let SM=null;
+ let SM=null,EC=null;
  if(typeof SIM!=='undefined'&&typeof TH_SIM!=='undefined')try{
   const zc=ctx.zc||(x=>-140*(1-Math.pow(x/320,2))),mid=f=>[(f.corners[0][0]+f.corners[2][0])/2,(f.corners[0][1]+f.corners[2][1])/2];
-  const fields=T.fields.map(f=>({id:f.id,corners:f.corners,y:GR(...mid(f)),upland:true})).concat(WK?WK.fields.map(f=>({id:f.id,corners:f.corners,y:ctx.bed(...mid(f))})):[]);
+  const fields=T.fields.map(f=>({id:f.id,corners:f.corners,y:GR(...mid(f)),upland:true,bucket:f.bucket||f.crop})).concat(WK?WK.fields.map(f=>({id:f.id,corners:f.corners,y:ctx.bed(...mid(f)),bucket:f.bucket||f.crop})):[]);
   /* the walk graph (src/48-th-walk.js): the streets, the square, the ways, the works, the fields, the kora, the Pilgrims' Stairs, the
      Dome's deck (clear of its pavilions, the wells and the Tear) and the arcology's storeys */
   let WG=null;
@@ -182,6 +182,9 @@ function thTownDraw(gx,gz,ctx){const O={buildings:0,people:0,protos:0,meshes:0,t
     deck:DP2?{cx:DP2.cx,cz:DP2.cz,r:DP2.drum.r,y:DP2.deck.y,hall:DP2.hall.r,open:(x,z)=>pav(x,z)||well(x,z)||THEODOME.deckGone(DP2,Math.atan2(z-DP2.cz,x-DP2.cx),Math.hypot(x-DP2.cx,z-DP2.cz))}:null});}
   SM=TH_SIM.declare(SIM,{lots:PLACED,census:T.census,square:T.landmarks.find(m=>m.id===TT.SQUARE.id),arc:typeof TH_ARC_PROGRAM!=='undefined'?TH_ARC_PROGRAM:[],kora:{x0:-100,x1:280,zc,y:400},gx,gz,fields,
    walk:WG,ref:[TT.SQUARE.x0+20,(TT.SQUARE.z0+TT.SQUARE.z1)/2],hour:()=>TH_CLOCK.hour(),day:()=>TH_CLOCK.day(),t:()=>TH_CLOCK.t()});
+  /* the economy (T-econ-1: src/49-th-econ.js): the makers, the warehouses and the carters, the households' food; declared before
+     the walkers so the carters walk too */
+  if(typeof TH_ECON!=='undefined'&&SIM.economy){try{EC=TH_ECON.declare(SIM,{fields});}catch(e){O.errors.push('the economy: '+(e&&e.stack||e));}}
   if(WG&&typeof thWalkersDraw==='function')thWalkersDraw(gx,gz);
   if(SM.problems.length)O.errors.push('the sim: '+SM.problems.slice(0,3).join(' | '));}catch(e){O.errors.push('the sim: '+(e&&e.stack||e));}
  if(WS)O.errors.push(...WS.errors);
@@ -192,6 +195,8 @@ function thTownDraw(gx,gz,ctx){const O={buildings:0,people:0,protos:0,meshes:0,t
   detailTris:Math.round(O.detailTris||0),cells:O.cells,census:O.census,errors:O.errors.concat(XAK.errors).slice(0,12),
   sim:SM?{places:SM.places,actors:SM.actors,byRole:SM.byRole,beds:SM.beds,homeless:SM.homeless,capacity:SM.capacity,unknownActivities:SM.unknownActivities,problems:SM.problems.length,ms:SM.ms,
    nodes:SM.nodes,edges:SM.edges,unroutable:SM.unroutable,unroutableList:SM.unroutableList,walkers:typeof thWalkers!=='undefined'?{on:thWalkers.on,n:thWalkers.n}:null}:null,
+  econ:EC?{warehouses:EC.warehouses,makers:EC.makers,carts:EC.carts,shops:EC.shops,messes:EC.messes,stores:EC.stores,rates:EC.rates,
+   report:()=>typeof TH_ECON!=='undefined'?TH_ECON.report(SIM,EC):null}:null,
   life:LF?{people:LF.people.length,lamps:LF.lamps.length,lights:LS?LS.lights:0,roles:LF.people.reduce((m,p)=>(m[p.role]=(m[p.role]||0)+1,m),{})}:null,
   fields:T.fields.length,ways:T.ways.length,qiblai:all.filter(r=>/^qb_/.test(r.key)).length,level:f=>O.level&&O.level(f)};
  return O;}
