@@ -10,7 +10,7 @@
    XANADU_REG_ID (a Map) gives each REG entry's record id. */
 const XANADU_REG_ID = new Map();
 (function(){
- const T = KTAGS.page || (KTAGS.page = KTAGS.create({ build: window.CITY ? 'erewhon' : 'xanadu' }));
+ const T = KTAGS.page || (KTAGS.page = KTAGS.create({ build: window.CITY ? (window.CITY_BUILD || 'erewhon') : 'xanadu' }));
  const BY_TYPE = { plaza: 'feature', statue: 'landmark' };
  const CULTURE = {};
  const TYPE = {};

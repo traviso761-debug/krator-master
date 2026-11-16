@@ -516,6 +516,26 @@
    "bytes": 3669112,
    "sha256": "82c511eda4503757db08854b0dabec70beb15c553f572ef710831cbc660daf4d"
   },
+  "biomes/opalvalley/dist/opalvalley-glacier.html": {
+   "bytes": 8544210,
+   "sha256": "7dee7902555ba6b11f324ba6f54487f7e3a8e1c063e4c88a4a1d327d20ab5894"
+  },
+  "biomes/opalvalley/dist/opalvalley-lowerbed.html": {
+   "bytes": 6344910,
+   "sha256": "9e67cb266e1d3750d3b4790794f6acf98d3c3dd19dc06b186a4c273a8017b7e9"
+  },
+  "biomes/opalvalley/dist/opalvalley-riftmouth.html": {
+   "bytes": 6928497,
+   "sha256": "94a0e883ab667aa23ed2602fc50fae9903747bfefcb5a72c6288deddb91d18fe"
+  },
+  "biomes/opalvalley/dist/opalvalley-upperbed.html": {
+   "bytes": 8502302,
+   "sha256": "c6de9e0467c2c4fb6663f2f25037610e2ce249f6e95cfb5f920c7c56a81bf57d"
+  },
+  "biomes/opalvalley/dist/opalvalley.html": {
+   "bytes": 6344661,
+   "sha256": "66aa5a1bc6118174837f27d619723657bf68c3a6fde5b4e400a1471a909d50b9"
+  },
   "biomes/outlands/dist/outlands.html": {
    "bytes": 1853240,
    "sha256": "4e39ecefc0262be46c200ca237e079380ca5f8792e1f0ddd14199a4ada4d167b"
@@ -1232,6 +1252,10 @@
    "bytes": 3087707,
    "sha256": "9a06e8c46caf84a3a8f76d52a39c265ddfa11c49f13f29f81a1035ad5585fb8a"
   },
+  "kits/qiblai/dist/qiblai.html": {
+   "bytes": 14115178,
+   "sha256": "deca0d6a2b3196f7e55a88eb4c6efada79ebe0a44ba13a3bedb61e32ea6f8b16"
+  },
   "kits/resources/dist/resources.html": {
    "bytes": 5573362,
    "sha256": "24faad98a9f4cc549338586792b7a67e44e15648c26929fa01fee049ba483510"
@@ -1528,6 +1552,10 @@
    "bytes": 884103,
    "sha256": "42512fb9fab4b13e9e182988a8383fca8744b866a0d35482a72bfd9250c25d7a"
   },
+  "settlements/qiblai/dist/qiblai.html": {
+   "bytes": 14998438,
+   "sha256": "9fa085a6b49f92202def1093396fcac676bb5cc3f36c440d73e7dc831f8fe79e"
+  },
   "settlements/reedlake/dist/reedlake-village.html": {
    "bytes": 850587,
    "sha256": "0f15872a2f7e8ea9b9ecf7bc5d0d39c28aedebc561b26a49c107b3c1a32c1ca1"
@@ -1565,16 +1593,16 @@
    "sha256": "62072fe13143fd60c928119cf5d3e496ef1b9e6f4db5dbbd5d2ce612ffc08870"
   },
   "settlements/xanadu/dist/erewhon.html": {
-   "bytes": 8964430,
-   "sha256": "4db64bf4aaf26e98a59dbb8bd35dcadc5b054a5f0c14d169b2025ac23acadaa4"
+   "bytes": 8964704,
+   "sha256": "88f2c0435e6e70a5c00d71a58e8348d0367aeaff8e651a3103423116c5d4f7f1"
   },
   "settlements/xanadu/dist/xanadu-scrap.html": {
-   "bytes": 8537272,
-   "sha256": "9d9bcbe0eff7bfaec9916e8dbd69169919856a356e56954e9d65d47f6fa3f23d"
+   "bytes": 8537546,
+   "sha256": "f2308976e3ba7d717c9d4db3ff086a9f2fcc6f6f210afe496da1e9a841c2dbc2"
   },
   "settlements/xanadu/dist/xanadu.html": {
-   "bytes": 8798794,
-   "sha256": "519ea7f53a2872f9dc4566ede293c72fe70bea1546346197ac9e4167d2f729ac"
+   "bytes": 8799068,
+   "sha256": "000e903ec9c7de07c16b302a26b25bbc21a8965b8b0c7ca5b4bf5027e01534d9"
   },
   "settlements/ys/dist/kit.html": {
    "bytes": 1716760,

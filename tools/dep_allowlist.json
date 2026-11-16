@@ -11,6 +11,7 @@
   "kits/eastern-abyssal -> settlements/locus",
   "kits/locus -> settlements/locus",
   "kits/pylon -> settlements/iziz",
+  "kits/qiblai -> settlements/xanadu",
   "kits/talia -> settlements/iziz",
   "kits/yuni -> settlements/yuni"
  ],
@@ -46,6 +47,7 @@
   "settlements/pinnacle-rock -> settlements/girder",
   "settlements/pinnacle-rock -> settlements/isle-demo",
   "settlements/pinnacle-rock -> settlements/mavs-refuge",
+  "settlements/qiblai -> settlements/xanadu",
   "settlements/reedlake -> settlements/highlands",
   "settlements/span -> settlements/dalab",
   "settlements/verge -> settlements/iziz",

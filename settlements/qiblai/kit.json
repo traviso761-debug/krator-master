@@ -1,0 +1,47 @@
+{
+ "targets": {
+  "city": "qiblai.html"
+ },
+ "externalDirs": [
+  "kits/qiblai/src"
+ ],
+ "external": [
+  "settlements/qiblai/gen/69q-kcity-bundle.js",
+  "settlements/qiblai/gen/69r-flora-bundle.js"
+ ],
+ "scoped": [
+  "69q-kcity-bundle.js",
+  "69r-flora-bundle.js"
+ ],
+ "pack": "qiblai",
+ "packFrom": "kits/qiblai",
+ "deterministic": [
+  "20-core-walk.js",
+  "89q0-qb-helpers.js",
+  "89q0x-qb-xanadui.js",
+  "89q0y-qb-script.js",
+  "89q0z-qb-matlib.js",
+  "69q-kcity-bundle.js",
+  "89zq-qc-site.js",
+  "90q-qc-world.js",
+  "90r-qc-build.js",
+  "69r-flora-bundle.js",
+  "90p-qc-flora.js",
+  "89q5f-qb-furnish.js",
+  "90t-qc-interiors.js",
+  "89q5s-qb-shells.js",
+  "90u-qc-lot-interiors.js"
+ ],
+ "interiors": [
+  "city"
+ ],
+ "furniture": [
+  "xanadu",
+  "eastabyss",
+  "generic",
+  "generic-goods",
+  "jobs"
+ ],
+ "furnitureTex": true,
+ "interiorSets": []
+}
