@@ -12,6 +12,7 @@ The page is one <script> made of, in filename order:
   core/engine           the engine (engine.py: 10-core ... 99-host-take, 99-tail.html), read in place
   core/rand             08-core-rand.js (KRAND: every seed; core/tags' uid is its hash)
   core/space            20-core-space.js (KSPACE: core/hamlet's overlap index)
+  core/pueblo           10, 20, 30 (KPUEBLO: Wildcat's plans, the scrap pueblo's room cells, terraces, ladders, kivas)
   core/hamlet           10, 20, 30 (KHAMLET: the sheet's sample village) and fellgang/22-hamlet-fellgang.js (the opt-in
                         `fellgang` row with the `fowling` and `ice` focuses), with core/city/33-city-strategies.js (KCITY.prim)
   core/materials/record 23-mat-record.js, 24-tex-def.js, 25-matlib-host.js (KMAT: the material records and the library loader)
@@ -75,7 +76,8 @@ sys.path.insert(0, os.path.join(ROOT, 'tools')); import build_sources as BSRC   
 KIT_ID = 'tungang'
 OUT = os.path.join(DIST, KIT_ID + '.html')
 TEX_DIR = os.path.join(HERE, 'tex')
-CORE_DIRS = [os.path.join(ROOT, 'core', *d.split('/')) for d in ('shader', 'rand', 'space', 'materials/record', 'tags', 'furnish', 'atmos', 'door', 'walk', 'walk/box')]
+CORE_DIRS = [os.path.join(ROOT, 'core', *d.split('/')) for d in ('shader', 'rand', 'space', 'materials/record', 'tags', 'furnish', 'atmos', 'door', 'walk', 'walk/box',
+                                                                  'pueblo')]
 # core/hamlet by name (its other fragments are not needed here), its opt-in Fellgang row (a subfolder no other build lists:
 # core/hamlet/fellgang/README.md), and the one core/city fragment the village generator reads (KCITY.prim)
 CORE_FILES = ['core/hamlet/10-hamlet-wood.js', 'core/hamlet/20-hamlet-cultures.js', 'core/hamlet/fellgang/22-hamlet-fellgang.js',

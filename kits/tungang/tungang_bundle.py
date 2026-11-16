@@ -27,8 +27,11 @@ TEX = os.path.join(HERE, 'tex')
 NL = '\n'
 ENGINE = ['10-core.js', '27-mat.js', '30-geo.js', '36-def.js', '36o-open.js', '36s-stair.js']
 CORE = [('core/rand', '08-core-rand.js'), ('core/materials/record', '23-mat-record.js'), ('core/materials/record', '24-tex-def.js'),
-        ('core/materials/record', '25-matlib-host.js')]
-KIT_SKIP = ('00-head.html', '89-rows.js', '91t-fg-sheet.js', '96t-fg-views.js', '99-sheet-fg.js', '91g-tg-sheet.js', '96g-tg-views.js')
+        ('core/materials/record', '25-matlib-host.js'),
+        # Wildcat's plans (src/44-fg-wc-plan.js): core/pueblo and the spatial index it reads (KPUEBLO, KSPACE)
+        ('core/space', '20-core-space.js'), ('core/pueblo', '10-pueblo-plan.js'), ('core/pueblo', '20-pueblo-access.js'), ('core/pueblo', '30-pueblo-court.js'),
+        ('core/pueblo', '40-pueblo-rooms.js')]
+KIT_SKIP = ('00-head.html', '89-rows.js', '91t-fg-sheet.js', '96t-fg-views.js', '99-sheet-fg.js', '91g-tg-sheet.js', '96g-tg-views.js', '89w-wc-rows.js', '91w-wc-sheet.js', '96w-wc-views.js')
 LEAN = ('stone', 'turf', 'pole', 'wood', 'plate', 'rust', 'rope', 'cord')
 
 HEAD = r'''

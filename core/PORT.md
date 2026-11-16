@@ -243,6 +243,10 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `minimap/88a-core-minimap-host.js` | 3.8 | [web] | 0 | 5 | 5 | 4 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the browser panel, the M key, hover and click; moves to core/host/ (Phase 1) |
 | `minimap/decks/88b-core-minimap-decks.js` | 10.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `ports/44-core-ports.js` | 7.5 | [draw] | 2 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | PORT marks for kits/beast-riders: bucket ranges are data; the box measure reads three.js |
+| `pueblo/10-pueblo-plan.js` | 13.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 | KPUEBLO: shapes, blocks, room cells (convex quads by stable id), neighbours on core/space, the terraced storeys; no three.js |
+| `pueblo/20-pueblo-access.js` | 7.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | rooms, doors, hatches, ladders, the reach graph and its mending |
+| `pueblo/30-pueblo-court.js` | 17.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | passages, kivas, the hull and enclosure, the census, KPUEBLO.house, register (core/tags), the checks |
+| `pueblo/40-pueblo-rooms.js` | 9.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | inside the rooms: each room's frame, the furnishing by use and the kivas' ring, furniture into core/tags, the checks |
 | `rand/08-core-rand.js` | 4.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | one stream (the lineages' mulberry32), an integer hash, noise: golden.json, test-rand.js, test_rand.py; GDScript twin krand.gd (passing in Godot 4.5 since 2026-10-05). Used by Ys's city |
 | `ruins/20-core-ruins.js` | 6.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `ruins/21-core-ruins-host.js` | 6.0 | [draw] | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 |  |

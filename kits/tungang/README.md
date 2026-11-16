@@ -9,7 +9,8 @@ section 3.2; below). The Glazier (`gz`) set comes later.
 - **Page:** `dist/tungang.html` (the kit sheet), its library pack beside it (`dist/tungang.tex.tungang.js`).
 - **Build:** `python3 tools/build.py kits/tungang` (runs `build.py`, records `build-inputs.json`).
 - **Check:** `python3 verify.py dist/tungang.html --assert` (on `tools/harness.py`; `KRATOR_GL=gpu` for the real GPU),
-  `node tests/test-bundle.js` (the sealed bundle in plain node), `node core/hamlet/test-hamlet.js` (the `fellgang` row).
+  `node tests/test-bundle.js` (the sealed bundle in plain node), `node core/hamlet/test-hamlet.js` (the `fellgang` row),
+  `node tests/test-wildcat.js` (Wildcat through the bundle), `node core/pueblo/test-pueblo.js` (the pueblo builder).
 - **For another world:** `tungang_bundle.py` seals the kit as the global `TG`; `API.md` says what to call (`TG.fg.draw`).
   `bundle(furniture=True, furniture_tex=True)` seals the catalog's library detail maps in with the furniture (about 1.9 MB:
   every family, since a piece's family is known only when it is built), so the pieces are textured, not vertex colours only;
@@ -88,6 +89,42 @@ East of the rows **a sample village** laid by `KHAMLET.village` on core/hamlet's
 through `TG.fg.draw`, with a stretch of lantern road, a halt and a wagon; west **a sloped pad** (12 % and 5 %) with five
 buildings on its ground; north-west **a test wall** with a ledge, six families' ropes, wall stations, nest gear and burial ledges.
 
+## Wildcat: the scrap pueblo
+
+The Fellgangs' raiding village, about half Kimr (`PLAN.md` 1.3.1, the owner's round 6): **one great house** of Pueblo
+Bonito's scale and **two hamlets**, planned by **`core/pueblo`** (`KPUEBLO.house`: room cells keyed by stable ids, storeys
+stepping back from the plazas, terraces, kivas, ladders, the stockade's ring; plain records, no three.js) and drawn by the
+kit: drystone and rammed-earth columns faced in salvage (sheet, rusted and white plate, car shells, container panels),
+vigas and rail ends in rows, parapets, T-doors framed in mammoth ivory onto the terraces, plate hatches, ladders of pipe and
+fir, no door at the ground; the round room (the great kiva, the Boast's stand on its roof, trophy poles), small kivas; the
+dress: the hero's horned crest and aurochs skulls, the Deeds on the front, NO SKABS on the outer walls, glyptodont shells.
+
+| | |
+|---|---|
+| The great house | a D 148 x 83 m: 805 rooms up to five storeys, 1,145 people, two plazas, the round room and three kivas, 98 ladders, a stockade 24 m out at the knoll's foot |
+| The hamlets | the ford's U (60 people, a low stockade), the pens' L (82) |
+| Fragments | `44-fg-wc-plan.js` (the specs and the dress: records), `46-fg-wc-draw.js` (the drawing and the six `fg-wc-*` defs), `82-wc-host.js` (`TG.fg.pueblo`, `TG.fg.puebloRegister`, `TG.fg.check.pueblo`), and the sheet's `89w`, `91w`, `96w` |
+| On the sheet | the great house on a knoll at (600, -170), the hamlets below it; rows of one room block alone, the round room and kivas, the stockade; `Wildcat:` views |
+
+## Barricade: the wall across the pass
+
+The second great house (`PLAN.md` 1.3.2, the owner's round 7): Fellgangs who wall **the Weyt Warra's gorge**, a major pass into
+Firebliss, and count everyone through (*proposed*: the union's picket line made stone). core/pueblo's **`bar`**: one block four
+rows deep and 176 m across, its outer face sheer and **barricaded with stacked Ancient wrecks**, bastions of six storeys at
+the gorge's walls with crow's nests, terraces stepping down to a long plaza open toward Firebliss between two wings; **a gate
+tunnel** (the tallies of the crossings painted inside) and **a culvert** for the river under its rooms; red picket banners;
+NOBODY CROSSES. 620 rooms, 1,027 people; the count room (the great kiva) with its count boards and toll chests. Fragments
+`47-fg-bc-plan.js` (spec, dress) and `48-fg-bc-draw.js` (def `fg-bc-greathouse`); on the sheet across a gorge at (-480, -170).
+
+## Inside the pueblos
+
+Both great houses (and the hamlets and the row's blocks) are hollow (`PLAN.md` 1.3.5): every room walled, plastered, its
+door or window open, its hatch and ladder; the kivas dug (bench, pilasters, hearth, deflector); the plazas paved. Every room
+furnished by its use from the catalog (12 new Fellgang pueblo pieces: sleeping platform, mealing bins, corner hearth, wall
+shelves, grain bin, storage jars, water jar, felting frame, horned seat, spear rack, count board, salvage bin), placed by
+core/pueblo (`KPUEBLO.furnish`), drawn in chunks near the camera. **K** steps the storey section (whole, the kivas, storeys
+1-6); the `... inside:` views open it.
+
 ## Core adoption
 
 What this set takes (trimmed from `PLAN.md` section 8 to what is built; `python3 tools/check_core_use.py` passes):
@@ -97,6 +134,7 @@ What this set takes (trimmed from `PLAN.md` section 8 to what is built; `python3
 | `core/engine` | yes, read in place | the defs, their records, the merged buckets, the sheet's scene; the host draw (`80-fg-host.js`) runs it dry into buckets of its own |
 | `core/rand` (`KRAND`) | yes | the village's look per building (a hash of the world seed and the record's index), the test grounds; the engine's per-def stream is seeded by `place()` from the def's seed and variant |
 | `core/tags` (`KTAGS`) | yes | every row building, piece and furniture piece registered before it is drawn; the sheet registers its test grounds' records first, as a station does; culture `fellgang` (in the vocabulary) |
+| `core/pueblo` (`KPUEBLO`) | yes, read in place (new) | Wildcat's great house and hamlets: the plan as records; the bundle seals it with `core/space` |
 | `core/hamlet` | yes | the sample village; the new opt-in `core/hamlet/fellgang/22-hamlet-fellgang.js` (the `fellgang` row, the `fowling` and `ice` focuses) |
 | `core/space` (`KSPACE`) | through core/hamlet | the village's overlap index (no new occupancy grid) |
 | `core/city` | `33-city-strategies.js` only, through core/hamlet | `KCITY.prim` (the lanes' frontage cursor), read in place; the cavern setting comes with the Tungang set |
@@ -125,6 +163,12 @@ What this set takes (trimmed from `PLAN.md` section 8 to what is built; `python3
 | `fixed-line-follows` | the six ropes: every cable and cordage vertex within 0.12 m of its record, every record point within 0.12 m of the line; pegs and rungs drawn | the records moved 3 m east |
 | `host-api` | `TG.fg.draw` draws every record of the sample village | a record of a key the kit lacks is reported missing |
 | `coverage`, `no-nan`, `furniture-keys`, `material-records` | every def drawn; no NaN; every catalog key found; the library records | an unknown def, a NaN mesh, an unknown catalog key |
+| `wildcat-plan` | the great house's plan passes `KPUEBLO.check` (terraces, reach from outside, no ground doors, no overlap, kivas, ids), 1,000-2,000 people, every column, kiva, door and hatch drawn | a front room raised to nine storeys over the terrace behind it |
+| `wildcat-on-knoll` | the floor at the hull's highest ground on the knoll, the footings to the ground, the stockade's stakes down the slope | the floor checked against the knoll 3 m lower |
+| `wildcat-tags` | every room, kiva and ladder a child of the house's record in core/tags | the rooms counted against one more |
+| `wildcat-dress`, `wildcat-hamlets` | the crest, six trophy poles, the Deeds, the slogans, the shells; both hamlets pass, 40-300 people, yards open | seven poles; the hamlets against the great house's range |
+| `barricade-plan`, `barricade-in-the-gorge` | Barricade's plan passes, 600-2,000 people, its gate and culvert, wrecks, gear, lookouts, pickets, slogans drawn; its floor on the gorge's floor, its bastions within 4 m of the walls, the river's bed under the culvert | its plan against Wildcat's draw; walls 1 m off |
+| `pueblo-interiors`, `pueblo-furniture-table`, `pueblo-section` | both houses' rooms hollow, every piece placed, `KPUEBLO.check.furniture` clean; the table's keys and sizes as the catalog's; the section clips every house at a storey and closes | a piece on its hatch; `fellgang_nonesuch`; storey 2 as the ground floor |
 
 `node tests/test-bundle.js` runs the sealed bundle without a browser: both riftrim villages (their stations' specs) drawn on a
 slope, the plinth, the hall variants by focus, every key at 8 seeds in three characters within the contract, the ice village
