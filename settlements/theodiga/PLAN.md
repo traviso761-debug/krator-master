@@ -96,9 +96,14 @@ set alone gave 3,985 in 417, and five other seeds 3,877 to 4,344 with every chec
    `test-th-town.js` (no overlaps, nothing on a street, nothing on the landmarks, the road heads or off the plateau, the
    census by quarter, the farms beyond the kora with their fields, the civic buildings, the scrap set's keys, the same
    twice), each check with a negative (`tools/ktest.js`).
-2. **T-town-2, the page**: a `kits/ancients` target `theodiga-today` (the ruined dam, the Dome, the water, and the town),
-   reading `settlements/theodiga/src` in place, with core/city and `XAK` (the scrap set and Qiblai's buildings) bundled.
-   Both are on this branch since 2026-11-16 (the scrap set cherry-picked, the Qiblai branch merged).
+2. **T-town-2, the page** (done 2026-11-16): `python3 tools/build.py kits/ancients --target theodiga-today` writes
+   `kits/ancients/dist/theodiga-today.html` (1.7 MB; the Xanadu and Qiblai packs are sidecars beside it): the ruined dam, the
+   Dome and the water as `--target theodiga` draws them, and the town, drawn by `src/8ay1-th-town.js` from core/city's records
+   (`THCITY`) with the scrap set and Qiblai's buildings (`XAK`). The ruin's east plateau is drawn on the town's ground
+   (`TH_TOWN.ground`). `verify.py dist/theodiga-today.html --assert --all-views` (GPU) passes: 438 buildings, 4,033 people
+   (the page's ground, a little more relief than the test's), every one registered and found, core/ruins clean. Views: the
+   overview, Gate Square, Bazaar Street, the East Gate, a kora corner, the farms, the town from the Dome, and the ruin's.
+   `kits/ancients/KNOWN_ISSUES.md` lists what it lacks.
 3. **T-town-3**: the Stair of Descent, Gate Square and the Warden's House drawn; the Salvage and Silt roads down the canyon
    walls; the outer kora's wheel shrines.
 4. **Later**: the town's interiors (as Strongbow's), core/simulation's roles, the open world.

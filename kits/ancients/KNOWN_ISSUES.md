@@ -305,6 +305,22 @@ exceeded ceiling as `OVER`; `--strict-budget` makes it fail.
 - [ ] **The kit's own camera, probe and inspector, not core/host.** Every Ancients page shares them (`90-scene`, `91-probe`,
       `92-camera`); moving the kit onto core/host is a kit-wide port, not Theodiga's.
 
+## Theodiga today (`--target theodiga-today`): the town on the east rim (2026-11-16)
+
+The ruin of `--target theodiga` (its fragments read in place) with the town of `settlements/theodiga` (`PLAN.md`): core/city's
+records drawn from the scrap Xanadu set and the Qiblai kit (`XAK`, `kit_bundle.bundle(scrap=True, qiblai=True)`).
+
+- [ ] **The town's drawer is a second copy of Strongbow's** (`settlements/theodiga/src/8ay1-th-town.js`, after
+      `settlements/strongbow/src/8ax1-sb-town.js` on `claude/keen-swanson-68a311`): protos from `XAK`, `isleFlatten`, the three
+      layers by distance, the cells. Both should draw through one core/city host module (an `XAK` town drawer), written when
+      Strongbow's branch lands; the bundles (`th_city`, `th_xak`) likewise duplicate `sb_city`, `sb_xak`.
+- [ ] **No Stair of Descent, no road heads drawn.** Gate Square is paving at the rim with no way down to the crest; the Silt and
+      Salvage roads end at their heads (`PLAN.md`, T-town-3). The Warden's House is a scrap court, not its own building.
+- [ ] **The town has no interiors, no people, no lamps at night.** The scrap set's interiors (`kits/interiors` `xanadu-scrap`)
+      and Qiblai's walk-in rooms are not wired here; the census is numbers only (core/simulation is later).
+- [ ] **The east plateau is the town's ground only on this page.** With the town on the page (`THCITY`) the ruin's east plateau
+      is drawn on `THCITY.town.ground` out to x 1260; on `--target theodiga` it is as it was (rough, to x 770).
+
 ## Veladiga (`--target veladiga`)
 
 - [x] ~~Piers read flatter than the sheets.~~ They are now swept from a five-point

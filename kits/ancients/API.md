@@ -22,6 +22,7 @@ its own site table and view list, merged into one sorted filename order:
 |---|---|---|
 | `kit` | `dist/ancients-kit.html` | the 32-type showcase, rows along +z |
 | `theodiga` | `dist/theodiga.html` | the dam arcology alone, at the origin |
+| `theodiga-today` | `dist/theodiga-today.html` | the ruin with its Dome and river and the town on the east rim (`settlements/theodiga`): reads the theodiga target's fragments, the town's plan and drawer in place; core/city and `XAK` (scrap Xanadu + Qiblai) sealed |
 | `hosts` | `dist/hosts.html` | the five Ancient host types (`src/8ap-host-*`), each also cut and holed as Ys hosts it |
 
 Everything else — core, helpers, the builders — is one shared source, so a fix

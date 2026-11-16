@@ -89,8 +89,14 @@ var TH_TOWN=(function(){
  const thCrop=(fi,k)=>{const b=ROT[(fi+k+3)%3];if(typeof CROPS==='undefined')return {crop:b,bucket:b};
   if(!VALE)VALE=CROPS.forBiome('xanadu').filter(r=>r.zone==='vale'&&(r.how==='rain'||r.how==='irrigated'));
   const r=CROPS.pick(VALE,b,{seed:2207,salt:fi*3+k});return r?{crop:r.crop.id,bucket:b,name:r.crop.name}:{crop:b,bucket:b};};
+ /* THE GROUND of the east rim's plateau (the dam's frame): 440 m, the cliff's top, with a gentle swell of up to 2 m from
+    core/rand (KRAND.fbm, seeded) that eases in over the first 80 m from the rim, so the plateau meets the cliff's edge at 440
+    exactly. The page's plateau is drawn on it (targets/theodiga/77-dam.js, when the town is on the page) and every lot stands
+    on it: one function for both. Without core/rand (none on the page): flat */
+ const ground=(x,z)=>{if(typeof KRAND==='undefined')return 440;const k=Math.max(0,Math.min(1,(x-345)/80));
+  return 440+k*4*(KRAND.fbm(x/150,0,z/150,3,2207)-.5);};
  function make(o){
-  o=o||{};const seed=o.seed==null?2207:o.seed,ground=o.ground||(()=>440);
+  o=o||{};const seed=o.seed==null?2207:o.seed,ground=o.ground||TH_TOWN_GROUND;
   const groundL=(u,v)=>ground(u+C[0],v+C[1]);
   const L=pts=>pts.map(p=>toL(p[0],p[1]));
   /* the zone: the town inside the kora (its west leg runs along the rim's edge, its north and south legs 14 m in from the
@@ -169,5 +175,6 @@ var TH_TOWN=(function(){
   for(const F of lots){census.people+=F.people;census.byQuarter[F.quarter]+=F.people;census.byKey[F.key]=(census.byKey[F.key]||0)+1;}
   return {lots,ways,fields,landmarks,census,notes:PL.log||[],centre:C};
  }
- return {make,PEOPLE,QUARTERS,QUARTER_NAME,quarterOf,SQUARE,WARDEN,HEADS,KORA,ZONE:{x0:X0,x1:X1,z1:Z1}};
+ const TH_TOWN_GROUND=ground;
+ return {make,ground,PEOPLE,QUARTERS,QUARTER_NAME,quarterOf,SQUARE,WARDEN,HEADS,KORA,ZONE:{x0:X0,x1:X1,z1:Z1},C};
 })();

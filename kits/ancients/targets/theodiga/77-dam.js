@@ -19,9 +19,13 @@ function buildDam(scene,gx,gz,d){reseed(9260+d);KOFF=[gx,0,gz];const G=new THREE
   // THE PLATEAU starts at the cliff's top edge (2026-11-11). It ran from CX-300, 150 m inside the face, and hung
   // over the reservoir as a lid at the rim's height: invisible from downstream, a ceiling over the Dome on the Water
   // from upstream. Its inner edge is the face's top edge, column for column, so the two meet with no crack.
-  ROCK.push(gridSurface((u,v)=>{const z=-700+u*1300,x=lerp(face(u,1),CX+s*300,v);
-   return[x,CH+v*(8*fbm(u*7,v*7,2220+s,2)+16*fbm(u*3,v*3,2221+s,2)),z];},118,12,{uS:40,vS:20}));
-  ROCK.push(gridSurface((u,v)=>{const z=-700+u*1300;const x=CX+s*300;return[x,v*CH,z];},40,6,{}));
+  // THE TOWN'S GROUND (theodiga-today, 2026-11-16): with the town on the page (THCITY, settlements/theodiga) the ruin's east
+  // plateau is the town's own ground (THCITY.town.ground: 440 m and a 2 m swell, 440 at the rim) and runs on to x 1260,
+  // past the upland farms, so every lot stands on what is drawn. Without the town it is as it was.
+  const TG=s>0&&d>0&&typeof THCITY!=='undefined'?THCITY.town.ground:null,XEND=TG?1260:CX+s*300;
+  ROCK.push(gridSurface((u,v)=>{const z=-700+u*1300,x=lerp(face(u,1),XEND,v);
+   return[x,TG?TG(x,z):CH+v*(8*fbm(u*7,v*7,2220+s,2)+16*fbm(u*3,v*3,2221+s,2)),z];},118,TG?60:12,{uS:40,vS:TG?60:20}));
+  ROCK.push(gridSurface((u,v)=>{const z=-700+u*1300;const x=XEND;return[x,v*(TG?TG(x,z):CH),z];},40,6,{}));
   for(let k=0;k<70;k++){const z=-700+rng()*1300,t=Math.pow(rng(),1.8);
    const bx=CX-s*(150-34*fbm((z+700)/1300*13,.1,2200+s,4))*(1-t*.5)+s*t*70;
    const sc=rr(3,15)*(1-t*.45);
@@ -201,5 +205,7 @@ function buildDam(scene,gx,gz,d){reseed(9260+d);KOFF=[gx,0,gz];const G=new THREE
  if(DOME)THEODOME.draw(G,d,{gx:gx,gz:gz,H:H,SPAN:SPAN,BOW:140,CREST:50,zc:zc,WL:WL});
  if(WTR)THEOWATER.dam(d,{gx:gx,gz:gz,H:H,SPAN:SPAN,WL:WL,NX:NX,NB:NB,wN:notchW(NB)-1.5,zc:zc,th:th_,zf:zf,
   RIVX:RIVX,RIVW:RIVW,floorY:floorY,bedY:bedY,outlets:[-40,40]});
+ // THE TOWN on the east rim (theodiga-today: settlements/theodiga/src/8ay1-th-town.js, read in place), beside the ruin only
+ if(d>0&&typeof thTownDraw==='function')thTownDraw(gx,gz);
  KOFF=[0,0,0];return G;}
 

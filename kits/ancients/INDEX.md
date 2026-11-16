@@ -6,7 +6,7 @@ The Ancients kit: ruined megastructures of the ancient civilisation, 33 structur
 
 Docs: `API.md`, `DESIGN.md`, `HANDOVER.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `PORT.md`, `README.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/alt-civic.html`, `dist/alt-domestic.html`, `dist/alt-towers.html`, `dist/ancients-kit.html`, `dist/arcbeam.html`, `dist/arcoindian.html`, `dist/arcoindian2.html`, `dist/arcpile.html`, `dist/arcube.html`, `dist/blades.html`, `dist/canyon.html`, `dist/crescent.html`, `dist/dalab.html`, `dist/darco.html`, `dist/drum.html`, `dist/engines.html`, `dist/forest.html`, `dist/funicular.html`, `dist/hexahedron.html`, `dist/hill.html`, `dist/hosts.html`, `dist/interiors.html`, `dist/iziz-style.html`, `dist/iziz-variants.html`, `dist/kept.html`, `dist/launch.html`, `dist/ledge.html`, `dist/lighthouse.html`, `dist/lozenge.html`, `dist/monolith.html`, `dist/plymouth.html`, `dist/podium.html`, `dist/quintagon.html`, `dist/ring.html`, `dist/sanctum.html`, `dist/skyi.html`, `dist/skyj.html`, `dist/skyk.html`, `dist/spaceport.html`, `dist/span.html`, `dist/spire.html`, `dist/theodiga.html`, `dist/trigon.html`, `dist/veladiga.html`, `dist/wheel.html`, `dist/wing.html`, `dist/worn.html`, `dist/yuni-variants.html`
+Built output (never open it; edit `src/` and rebuild): `dist/alt-civic.html`, `dist/alt-domestic.html`, `dist/alt-towers.html`, `dist/ancients-kit.html`, `dist/arcbeam.html`, `dist/arcoindian.html`, `dist/arcoindian2.html`, `dist/arcpile.html`, `dist/arcube.html`, `dist/blades.html`, `dist/canyon.html`, `dist/crescent.html`, `dist/dalab.html`, `dist/darco.html`, `dist/drum.html`, `dist/engines.html`, `dist/forest.html`, `dist/funicular.html`, `dist/hexahedron.html`, `dist/hill.html`, `dist/hosts.html`, `dist/interiors.html`, `dist/iziz-style.html`, `dist/iziz-variants.html`, `dist/kept.html`, `dist/launch.html`, `dist/ledge.html`, `dist/lighthouse.html`, `dist/lozenge.html`, `dist/monolith.html`, `dist/plymouth.html`, `dist/podium.html`, `dist/quintagon.html`, `dist/ring.html`, `dist/sanctum.html`, `dist/skyi.html`, `dist/skyj.html`, `dist/skyk.html`, `dist/spaceport.html`, `dist/span.html`, `dist/spire.html`, `dist/theodiga-today.html`, `dist/theodiga.html`, `dist/trigon.html`, `dist/veladiga.html`, `dist/wheel.html`, `dist/wing.html`, `dist/worn.html`, `dist/yuni-variants.html`
 
 Build: `cd kits/ancients && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
@@ -42,7 +42,6 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `63-canyon.js` | 18 |  |
 | `64-dalab.js` | 12 |  |
 | `64-houses-def.js` | 9 |  |
-| `65-veladiga.js` | 16 |  |
 | `66-office-c.js` | 2 |  |
 | `66b-flatiron.js` | 8 |  |
 | `67-cultural.js` | 8 |  |
@@ -70,7 +69,6 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `76-65-biome-hyperjungle-dress.js` | 7 |  |
 | `76-70-biome-hyperjungle.js` | <1 |  |
 | `76-campus.js` | 11 |  |
-| `77-dam.js` | 14 |  |
 | `77z-iziz-style.js` | 55 **big** | ANCIENT IZIZ STYLE (1) |
 | `78-factory-silo.js` | 2 |  |
 | `79-government.js` | 8 |  |
@@ -207,9 +205,10 @@ Each target adds its own fragments to `src/` and builds one output.
 | `spaceport` | `89z-rows.js`, `91z-views.js` | 2 |
 | `span` | `89z-rows.js`, `8as0-span-parts.js`, `91z-views.js` | 30 |
 | `spire` | `89z-rows.js`, `91z-views.js` | 4 |
-| `theodiga` | `77a-theodiga-dome-plan.js`, `77b-theodiga-dome-draw.js`, `89z-rows.js`, `91z-views.js` | 16 |
+| `theodiga` | `77-dam.js`, `77a-theodiga-dome-plan.js`, `77b-theodiga-dome-draw.js`, `77c-theodiga-water.js`, `89z-rows.js`, `90w-theodiga-water.js`, `91z-views.js` | 41 |
+| `theodiga-today` | `89z-rows.js`, `91z-views.js` | 2 |
 | `trigon` | `89z-rows.js`, `91z-views.js` | 5 |
-| `veladiga` | `89z-rows.js`, `91z-views.js` | 1 |
+| `veladiga` | `65-veladiga.js`, `89z-rows.js`, `91z-views.js` | 17 |
 | `wheel` | `89z-rows.js`, `91z-views.js` | 7 |
 | `wing` | `89z-rows.js`, `91z-views.js` | 5 |
 | `worn` | `89z-rows.js`, `91z-views.js` | 11 |

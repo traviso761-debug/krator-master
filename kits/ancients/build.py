@@ -116,7 +116,7 @@ INTERIOR_CORE = [(CORE_RAND, '08-core-rand.js'), (CORE_TAGS, '50-core-tags.js'),
                  (CORE_FURNISH, '53-core-furnish-host.js')]
 # A target listed here takes the shared core/rand and core/tags (no interiors): its placement draws from KRAND and it
 # registers what it places with KTAGS before drawing it (CLAUDE.md, "Write code that is the same on every machine").
-TAGS_TARGETS = {'podium', 'sanctum', 'span', 'arcpile', 'theodiga'}   # theodiga: the Dome on the Water (2026-11-11)
+TAGS_TARGETS = {'podium', 'sanctum', 'span', 'arcpile', 'theodiga', 'theodiga-today'}   # theodiga: the Dome on the Water (2026-11-11)
 TAGS_CORE = INTERIOR_CORE[:4]
 # fragments a target reads in place from another kit: the Sanctum's statuary is the Eternian kit's head generator
 # (kits/eternian/src/42-et-head.js, [G data]: one generator for every build that carries the Eternians' faces)
@@ -132,6 +132,49 @@ TARGET_READS = {'podium': [(os.path.join(ROOT, 'kits', 'eternian', 'src'), '42-e
                 # the Sanctum (2026-10-22) shares the Podium's skins and materials (MAT.sn*), read in place
                 'sanctum': [(os.path.join(ROOT, 'kits', 'eternian', 'src'), '42-et-head.js'),
                             (os.path.join(HERE, 'targets', 'podium'), '8aq2-podium-skins.js')]}
+# THEODIGA TODAY (settlements/theodiga, T-town-2, 2026-11-16): the ruined dam, its Dome and its water as the theodiga target
+# draws them (its fragments read in place from targets/theodiga), and the town on the east rim: its drawer from the settlement
+# (src/8ay1-th-town.js) and the isle demo's flattener (58-isle-protos.js), read in place; and three generated bodies, the first
+# two sealed in closures of their own so their globals meet none of the kit's (core/city's clamp and segDist are the kit's names
+# too): TH_CITY, core/space + core/city's [G data] fragments + kits/crops + the town's plan (src/40-th-town.js) as THCITY;
+# TH_XAK, the Xanadu kit with the scrap set and the Qiblai kit's buildings as XAK (kits/xanadu/kit_bundle.py); and the packs
+# their maps come from, Xanadu's and Qiblai's, sidecars beside the page. Every file is read live, never copied.
+THEO_TARGET = os.path.join(HERE, 'targets', 'theodiga')
+TARGET_READS['theodiga-today'] = (TARGET_READS['theodiga']
+                                  + [(THEO_TARGET, f) for f in ('77-dam.js', '77a-theodiga-dome-plan.js', '77b-theodiga-dome-draw.js',
+                                                                '77c-theodiga-water.js', '90w-theodiga-water.js')]
+                                  + [(os.path.join(ROOT, 'settlements', 'theodiga', 'src'), '8ay1-th-town.js'),
+                                     (os.path.join(ROOT, 'settlements', 'isle-demo', 'src'), '58-isle-protos.js')])
+TH_CITY, TH_XAK, TH_XPACK, TH_QPACK = '8ay8-th-city.js', '8ay9-th-xak.js', '8ay7-th-xanadu-pack.js', '8ay6-th-qiblai-pack.js'
+SEALED = {TH_CITY, TH_XAK}   # generated closures: the build rules' scans do not reach inside them
+
+
+def th_city_files():
+    city = os.path.join(ROOT, 'core', 'city')
+    return ([os.path.join(ROOT, 'core', 'space', '20-core-space.js')]
+            + [os.path.join(city, f) for f in sorted(os.listdir(city)) if re.match(r'^\d\d-city-.*\.js$', f) and 'host' not in f]
+            + [os.path.join(ROOT, 'kits', 'crops', 'src', f) for f in ('10-crop-core.js', '20-crop-records.js', '40-crop-query.js')]
+            + [os.path.join(ROOT, 'settlements', 'theodiga', 'src', '40-th-town.js')])
+
+
+def th_city():
+    """core/city and the town's plan in one closure: var THCITY = {KCITY, KSPACE, town: TH_TOWN}"""
+    body = ''
+    for f in th_city_files():
+        with open(f, encoding='utf-8', newline='') as fh:
+            body += '/* ---- %s ---- */\n%s\n;\n' % (os.path.relpath(f, ROOT).replace(os.sep, '/'), fh.read())
+    return ('/* THCITY: core/space, core/city, kits/crops and Theodiga\'s town plan sealed in one closure (kits/ancients/build.py '
+            'th_city). GENERATED: edit core/city or settlements/theodiga/src. */\nvar THCITY = (function(){\n' + body
+            + 'return { KCITY: KCITY, KSPACE: KSPACE, town: TH_TOWN };\n})();\n')
+
+
+def th_xak():
+    """the Xanadu kit, its scrap set and the Qiblai kit's buildings, sealed as XAK (kits/xanadu/kit_bundle.py, read live)"""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location('th_xanadu_kit_bundle', os.path.join(ROOT, 'kits', 'xanadu', 'kit_bundle.py'))
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod.bundle('XAK', scrap=True, qiblai=True)[0]
 # the furniture an intact Ancient building takes: the harvested registry (the ancient pieces) and the goods
 INTERIOR_FURN = ['generic-goods']
 
@@ -169,6 +212,7 @@ TARGET_OUT = {
     'worn': 'worn.html',                   # every type intact and worn (decay 5)
     'iziz-style': 'iziz-style.html',       # the Ancient Iziz Style: families, wreck states, Iziz variants
     'theodiga': 'theodiga.html',           # the dam arcology, on its own
+    'theodiga-today': 'theodiga-today.html',   # Theodiga as it stands now: the ruin, the Dome, the water and the town on the east rim (settlements/theodiga)
     'spire': 'spire.html',                 # the recursive spire, on its own
     'canyon': 'canyon.html',               # the cross-canyon span works
     'dalab': 'dalab.html',                 # the ancient lab domes (domes only)
@@ -243,6 +287,7 @@ DETERMINISTIC = {
     '77c-theodiga-water.js', '90w-theodiga-water.js',           # targets/theodiga: the water's records and their drawing (core/water)
     '89-atmos-0-core.js', '89-atmos-0p-presets.js', '89-atmos-a-waves.js', '89-atmos-b-skylight.js',   # core/atmos (IIFE, no rnd())
     '20-core-water.js', '22-core-water-flow.js', '50-core-water-draw.js', '51-core-water-kinds.js',      # core/water (IIFE, no rnd())
+    '8ay1-th-town.js', '58-isle-protos.js', '8ay7-th-xanadu-pack.js', '8ay6-th-qiblai-pack.js',   # theodiga-today: the town drawn from core/city's records (KRAND), the flattener, the packs
 }
 DETERMINISTIC |= {'06-core-khook.js', '06b-core-kcolor.js'}   # core/shader (no rnd())
 
@@ -324,7 +369,7 @@ def check(order, bodies):
         # THE INTERIOR BUNDLE is generated from other kits (the catalog's buildFurn/buildPlant/buildAsset are not kit
         # builders and keep their own seeds), and the core/rand, core/tags and core/furnish fragments are shared
         # modules: none of them draws from the kit's stream
-        if f == INTERIOR_BUNDLE or f in {n for _, n in INTERIOR_CORE}:
+        if f == INTERIOR_BUNDLE or f in {n for _, n in INTERIOR_CORE} or f in SEALED:
             continue
         body = bodies[f]
 
@@ -361,7 +406,7 @@ def check(order, bodies):
     # 2. shared-scope collisions
     decl = {}
     for f in order:
-        if not f.endswith('.js') or '-biome-' in f:    # closures: see above
+        if not f.endswith('.js') or '-biome-' in f or f in SEALED:    # closures: see above
             continue
         for rx in (RE_DECL, RE_DECL_MULTI):
             for m in rx.finditer(bodies[f]):
@@ -583,6 +628,23 @@ def build_one(target, do_checks, assert_origin):
     for f in order:
         with open(paths[f], encoding='utf-8', newline='') as fh:
             bodies[f] = fh.read()
+    # what a target reads in place (core/tags, TARGET_READS) is read here. What it reads from OUTSIDE core/ (another target's
+    # fragments, a settlement's, another kit's) is read BEFORE the prune, so it is a root like the target's own fragments: a
+    # kit name it uses keeps its fragment on the page (2026-11-16; until then every read was added after the prune). A core
+    # module never uses a kit's names, and the name scan is generous (core/ruins' self-test has a box it calls 'wreck', the Iziz
+    # style's top-level function's name), so core reads are added after the prune, as before
+    core_dir = os.path.normcase(os.path.join(ROOT, 'core')) + os.sep
+    reads = (TAGS_CORE if target in TAGS_TARGETS else []) + TARGET_READS.get(target, [])
+    late = [(d, f) for d, f in reads if os.path.normcase(os.path.abspath(d) + os.sep).startswith(core_dir)]
+    if reads:
+        for d, f in reads:
+            if f in bodies or (d, f) in late:
+                continue
+            paths[f] = os.path.join(d, f)
+            with open(paths[f], encoding='utf-8', newline='') as fh:
+                bodies[f] = fh.read()
+            order.append(f)
+        order = sorted(order)
     if '--no-prune' not in sys.argv:          # PRUNE: only the fragments this target's page reaches
         order = prune(target, order, bodies, paths)
         bodies = {f: bodies[f] for f in order}
@@ -602,15 +664,21 @@ def build_one(target, do_checks, assert_origin):
                 bodies[f] = fh.read()
             extra.append(f)
         order = sorted(order + extra)
-    if target in TAGS_TARGETS or target in TARGET_READS:   # a target may read core or another kit in place without core/tags (engines: core/ruins)
+    if late:   # the core modules a target reads in place, after the prune (above)
         extra = []
-        for d, f in (TAGS_CORE if target in TAGS_TARGETS else []) + TARGET_READS.get(target, []):
+        for d, f in late:
             if f in bodies:
                 continue
             with open(os.path.join(d, f), encoding='utf-8', newline='') as fh:
                 bodies[f] = fh.read()
             extra.append(f)
         order = sorted(order + extra)
+    if target == 'theodiga-today':   # the town's sealed bodies and the packs its kits' maps come from (THEODIGA TODAY above)
+        bodies[TH_CITY] = th_city()
+        bodies[TH_XAK] = th_xak()
+        bodies[TH_XPACK] = matlib_pack.fragment(os.path.join(ROOT, 'settlements', 'xanadu'), 'xanadu', side=side)
+        bodies[TH_QPACK] = matlib_pack.fragment(os.path.join(ROOT, 'kits', 'qiblai'), 'qiblai', side=side)
+        order = sorted(order + [TH_CITY, TH_XAK, TH_XPACK, TH_QPACK])
 
     if do_checks:
         errs = check(order, bodies)

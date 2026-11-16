@@ -1265,3 +1265,21 @@ prunes each target's list (PRUNE, `prune()`):
   `52-sky-abc` for `toppledUpper`, `62-robotics`, `66-office-c`). A per-site page (Theodiga, Veladiga, the Podium, the
   Sanctum, Span) is the core and its own target: 22 shared fragments of 140; the showcase keeps 87.
 - `--no-prune` builds the old all-in pages. A row whose builder is not on its page is a build error.
+- What a target reads in place from outside `core/` (`TARGET_READS`: another target's fragments, a settlement's, another
+  kit's) is read before the prune since 2026-11-16, so it is a root like the target's own fragments; it used to be added
+  after, and a kit name only it used was pruned away. The core modules it reads (core/tags, core/ruins, core/atmos, core/water)
+  are still added after: they never use a kit's names, and the generous scan took core/ruins' self-test box 'wreck' for the
+  Iziz style's `function wreck` (56 KB more on the engines page for nothing).
+
+## Theodiga today (`--target theodiga-today`, 2026-11-16)
+
+The town of `settlements/theodiga` beside the ruin (the owner: "start working on the surface city", with the scrap Xanadu set
+and "some qiblai-style buildings"). The target is two files (rows: the ruin only, `DECAYS [1]`; views); everything else is
+read: the theodiga target's dam, Dome and water fragments (`targets/theodiga`), the town's drawer (`settlements/theodiga/src/
+8ay1-th-town.js`) and the isle demo's flattener (`58-isle-protos.js`), through `TARGET_READS['theodiga-today']`. Generated:
+`THCITY` (core/space, core/city, kits/crops and the town's plan `40-th-town.js`, sealed) and `XAK` (the Xanadu kit with the
+scrap set and the Qiblai kit's buildings, sealed), both kept out of the build rules' scans (`SEALED`), and the Xanadu and
+Qiblai packs as sidecars (`dist/ancients.tex.xanadu*.js`, `ancients.tex.qiblai.js`). `buildDam` calls `thTownDraw` for the
+ruin when the page has it, and draws the ruin's east plateau on the town's ground (`THCITY.town.ground`) out to x 1260;
+core/ruins skips the town's meshes (`theodiga:town ...`). On `--target theodiga` none of it is present and nothing changes but
+the text of those two fragments.
