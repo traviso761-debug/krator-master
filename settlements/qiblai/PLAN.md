@@ -218,7 +218,8 @@ outer side; 14 monks a monastery in its colour on the ring street before its gat
 streets and avenues (cut at each gate), more turbans the richer the ring; 76 at the four gate markets (half standing at the
 shopfronts); a caravan of six camels and two drivers between the south gate's stair and the Geomancers' field, out and back. The
 prayer wheels turn (the Song drum's texture scrolls, one turn a minute). By night a quarter stay out. Only people within 260 m are
-set each frame (0.6 ms a frame at the overview). Not yet: the banners, the people on core/simulation, core/charactermodels' figures.
+set each frame (0.6 ms a frame at the overview). The 24 spoke banners wave (the kit's `QB_BANNER_SINK` hands their cloths to the
+page; one mesh, swung in its vertex shader). Not yet: the people on core/simulation, core/charactermodels' figures.
 
 - The city's people from core/charactermodels' peoples (the Xanadui), the pilgrims walking the kora three times with
   eyes lowered, the monks, the market. Electric light only on rich and civic (the contract).

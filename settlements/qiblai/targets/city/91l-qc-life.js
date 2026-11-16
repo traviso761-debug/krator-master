@@ -137,5 +137,35 @@ const QC_LIFE=(function(){
     opt.phase=(dd/CSTRIDE)%1;opt.speed=.95;opt.pitch=0;opt.look=K2.look;opt.pose='walk';opt.t=t+j;
     CP.set(j,o.x,terrainH(o.x,o.z),o.z,Math.atan2(o.ux*r[1],o.uz*r[1]),opt);}CP.flush();}
   S.shown=shown;S.moved=moved;S.frameMs=+(performance.now()-t0).toFixed(3);});
+ // ---------------------------------------------------------------- the banners in the wind
+ /* every spoke banner the kit handed over (QC_BANNERS, 90r: the Rainbow Temple's eight, the meditation gardens'), one mesh:
+    each cloth a grid (the body, its hem, three tails; the History Monks' device painted in), swung in the vertex shader by
+    the hang below the bar, a lean down-wind and a travelling ripple; textured with the kit's cloth */
+ S.banners=0;
+ if(typeof QC_BANNERS!=='undefined'&&QC_BANNERS.length){try{
+  const pos=[],col=[],uv=[],sw=[],ph=[],nn=[],idx=[],lin=h=>xC(h);
+  const quad=(B,u0,u1,d0,d1,nu,nv,colAt)=>{const cs=Math.cos(B.ry),sn=Math.sin(B.ry),rx=cs,rz=-sn,fx=sn,fz=cs,Lt=B.L+(.4+1.2)*B.s,base=pos.length/3;
+   for(let j=0;j<=nv;j++)for(let i=0;i<=nu;i++){const u=u0+(u1-u0)*i/nu,d=d0+(d1-d0)*j/nv;pos.push(B.x+rx*u,B.y-d,B.z+rz*u);
+    const c=colAt(u,d);col.push(c.r,c.g,c.b);uv.push(u/2,d/2);sw.push(d/Lt);ph.push(B.ph+u*.35);nn.push(fx,0,fz);}
+   for(let j=0;j<nv;j++)for(let i=0;i<nu;i++){const a=base+j*(nu+1)+i,b=a+1,c=a+nu+1,e=c+1;idx.push(a,c,b,b,c,e);}};
+  const seen={};
+  for(const B of QC_BANNERS){const key=Math.round(B.x*10)+','+Math.round(B.z*10)+','+Math.round(B.y*10);if(seen[key])continue;seen[key]=1;
+   B.ph=KRAND.unit(KRAND.hash(SEED,9,Math.round(B.x),Math.round(B.z)))*6.28;
+   const C=lin(B.col),H=lin(B.band),W=lin(0xf4efe4),Bl=lin(QN_ORDER_BLUE),G=lin(XPAL.gold[0]),w=B.w,L=B.L,s=w*.5,dc=L*.62-(s+.16)/2;
+   const body=(u,d)=>{if(d>L)return H;if(B.order){const du=Math.abs(u),dv=Math.abs(d-dc);if(du<=s/2&&dv<=s/2)return Math.hypot(u,d-dc)<s*.16?G:Bl;if(du<=s/2+.08&&dv<=s/2+.08)return W;}return C;};
+   quad(B,-w/2,w/2,0,L+.4*B.s,B.order?40:6,B.order?72:12,body);
+   for(let k=0;k<3;k++){const c0=(k-1)*w/3,hw=(w/3-.15*B.s)/2;quad(B,c0-hw,c0+hw,L+.4*B.s,L+1.6*B.s,1,3,()=>C);}
+   S.banners++;}
+  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));
+  g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.setAttribute('aSway',new THREE.Float32BufferAttribute(sw,1));g.setAttribute('aPh',new THREE.Float32BufferAttribute(ph,1));
+  g.setAttribute('aN',new THREE.Float32BufferAttribute(nn,3));g.setIndex(idx);g.computeVertexNormals();g.computeBoundingSphere();
+  const M=(MAT.cloth&&MAT.cloth.clone)?MAT.cloth.clone():new THREE.MeshLambertMaterial();M.vertexColors=true;M.side=THREE.DoubleSide;M.color=new THREE.Color(0xffffff);
+  const uT={value:0};
+  M.onBeforeCompile=sh=>{sh.uniforms.uT=uT;sh.vertexShader='attribute float aSway;\nattribute float aPh;\nattribute vec3 aN;\nuniform float uT;\n'+sh.vertexShader.replace('#include <begin_vertex>',
+   '#include <begin_vertex>\n float qa=aSway*aSway;\n transformed+=aN*(qa*(.55*sin(uT*1.7+aPh-aSway*4.2)+.25*sin(uT*3.1+aPh*1.7-aSway*7.0))+aSway*.9);\n transformed.y+=qa*.25*(1.0-cos(uT*1.7+aPh));');};
+  M.customProgramCacheKey=()=>'qc-banner';
+  const mesh=new THREE.Mesh(g,M);mesh.name='qc-banners';mesh.frustumCulled=false;scene.add(mesh);
+  FRAME_HOOKS.push(dt=>{uT.value+=(dt==null?.016:Math.min(dt,.1));});S.bannerTris=idx.length/3;
+ }catch(e){S.errors.push('banners: '+(e&&e.stack||e));}}
  S.at=i=>{const T=path[i];return T?{kind:kind[i],len:Math.round(T.L)}:null;};
  return S;})();

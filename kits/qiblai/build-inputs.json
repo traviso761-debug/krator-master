@@ -182,7 +182,7 @@
     "kits/qiblai/PORT.md": "aecfd00460ef1e6b2b256ad37744083ca19a2b8f63086d13ec43ba6bf4a9cd5e",
     "kits/qiblai/build.py": "4d90362588d6ec28a9e8ff223a42a0e5ed12b46ad29ab8656b2dfe04c05eec83",
     "kits/qiblai/kit.json": "f6c6923c232ea05aa213ffa40465a5263f62d1c1c307142ed93dea9717e43f89",
-    "kits/qiblai/src/89q0-qb-helpers.js": "b411ea683588eeeb94ef07ca2144f8ca9f6dc25961ad5235e39811a613a5f9b7",
+    "kits/qiblai/src/89q0-qb-helpers.js": "9de495e8233ffabc789147abd23c4158b70e5677774de9ddba512da558bb718e",
     "kits/qiblai/src/89q0x-qb-xanadui.js": "65d4177b3c13a81e69fb26282c08a019e0c9d9c036318f1250c8c90515758849",
     "kits/qiblai/src/89q0y-qb-script.js": "97bc52ef58b2dda523e2be1ba077e827508b8d2e123e1efbec365461e67f3c7f",
     "kits/qiblai/src/89q0z-qb-matlib.js": "d2306bbbd772dce7dbe16910d61eb77932af262f2c8c51656f4d72ba329c8149",
@@ -429,14 +429,14 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "kits/qiblai/build-manifest-kit.json": "3dc88bccf9a8675b5e479ee46ac063052a48b91a8a90fc9d86b7392267d2f65b",
-    "kits/qiblai/dist/qiblai.html": "200ec71774f0d8375c4741e5dabe6c92a643511e8f50374aef01164e7704e981",
+    "kits/qiblai/build-manifest-kit.json": "e49aae12b24f19171836417c8435a9888ac10ca61f182520c3ddbd88a3e8e43b",
+    "kits/qiblai/dist/qiblai.html": "f3aee215f7f07c6b9367e759222d15b3df60151e094eb7fc8b0da7d22c9c15b0",
     "kits/qiblai/dist/xanadu.tex.qiblai.js": "31374323647466f5f1977771cb8ef28d561e19c7b87bf62359247faa1d783dcf",
     "kits/qiblai/dist/xanadu.tex.xanadu.js": "b7ab9af39727de5892634a26e39a4a716e0a4621dd7bf3d8765decbfaa712197"
    },
    "outputs_raw": {
-    "kits/qiblai/build-manifest-kit.json": "f04e64997fc40ea50c07839cb89eaa784b3beb0b9e07e96b588f9c03841fedb1",
-    "kits/qiblai/dist/qiblai.html": "200ec71774f0d8375c4741e5dabe6c92a643511e8f50374aef01164e7704e981",
+    "kits/qiblai/build-manifest-kit.json": "8f614e0e4dc45e0bf2f48d78f02adc8215651d6c63a51065c5608f75e2f056d6",
+    "kits/qiblai/dist/qiblai.html": "f3aee215f7f07c6b9367e759222d15b3df60151e094eb7fc8b0da7d22c9c15b0",
     "kits/qiblai/dist/xanadu.tex.qiblai.js": "31374323647466f5f1977771cb8ef28d561e19c7b87bf62359247faa1d783dcf",
     "kits/qiblai/dist/xanadu.tex.xanadu.js": "b7ab9af39727de5892634a26e39a4a716e0a4621dd7bf3d8765decbfaa712197"
    }

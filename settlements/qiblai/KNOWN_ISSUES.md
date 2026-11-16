@@ -68,9 +68,11 @@
   same pool (krator/lamp_pool.gd, KratorLampPool: eight lights to the nearest lit, by the Atmos clock's hours); the wires (a
   line set) do not come through, a white sky piece of the page's lands near the region's camera, and a room's inner walls
   were not seen in a render from inside (export gaps).
-- [ ] **Life (Q7e) is in, without the banners** (2026-11-16, `targets/city/91l-qc-life.js`): 1,436 people on Verge's rigs (read in
+- [ ] **Life (Q7e) is in** (2026-11-16, `targets/city/91l-qc-life.js`): 1,436 people on Verge's rigs (read in
   place from `settlements/verge/src/77-verge-rigs.js`, procedural, no assets) and a caravan of six camels; the prayer wheels turn.
-  Open: the Rainbow Temple's banners do not move yet (they are merged into the kit's batches); the people are not
+  The 24 spoke banners (the Rainbow Temple's eight, the meditation gardens') wave: the kit hands their cloths to the page
+  (`QB_BANNER_SINK`), which draws them as one mesh swung in its vertex shader; the History Monks' device is painted in
+  vertex colours, so its edges are soft. Open: the other banners (the parapets', the gates') are still; the people are not
   core/charactermodels' figures (those need megabytes of pieces: the page is at 10.3 MB of 16); no one prostrates on the kora;
   the walkers are drawn but not on core/simulation (no needs, no homes); the kit's old static figures (`xnFolk`: a cylinder and a
   ball) still stand at some doors and look poor beside the rigs; a walker can brush a monastery's gate flight where it juts into
