@@ -50,6 +50,11 @@ const VIEWS=(function(){const V={},S=QC_B.z1,E=QC_B.x1,L=QC_LM,L0=QC_LM;
  // the outer wall's highest gate stair, from the country below its foot, up to the gate
  const stg=QC_EXTRA.filter(p=>p.kind==='stair').sort((a,b)=>b.o.rise-a.o.rise)[0];
  if(stg){const L=qnStairPlan(stg.o.rise).len,e=loc(stg.x,stg.z,9,L+22,stg.ry),g=loc(stg.x,stg.z,0,0,stg.ry);V['The outer gate stair']=[e[0],terrainH(e[0],e[1])+3,e[1],g[0],qcD(stg.o.y,0)+4,g[1]];}
+ // the oilfield and Yuni's mission (89zr, 90v): the field from above its south-west corner, the mission from its road, the
+ // south avenue's electric lamps from just inside the south gate
+ if(typeof QC_OIL!=='undefined'){const O=QC_OIL.O,gy=terrainH(O[0],O[1]);V['The oilfield']=[O[0]-250,gy+110,O[1]+260,O[0]+40,gy,O[1]];
+  const ms=QC_OIL.assets.find(R=>R.key==='park_gatehouse');if(ms){const e=[ms.x+30,ms.z+44];V['The Yuni mission']=[e[0],terrainH(e[0],e[1])+1.7,e[1],ms.x-10,terrainH(ms.x,ms.z)+6,ms.z-50];}
+  V['The lit south avenue']=[-3,terrainH(-3,QC_B.z1-30)+1.7,QC_B.z1-30,4,terrainH(4,QC_B.z1-220)+4,QC_B.z1-220];}
  // a wheel house nearest the Temple Mountain, from its open front: the wheel, the hangings, the lamps
  const wh=QC_PLACE.filter(p=>p.key==='qb_wheel_house').sort((a,b)=>Math.hypot(a.x-L0.x,a.z-L0.z)-Math.hypot(b.x-L0.x,b.z-L0.z))[0];
  if(wh){const y=qcD(wh.o.y,0),e=loc(wh.x,wh.z,2.2,5.2,wh.ry),g=loc(wh.x,wh.z,-1.5,-4.8,wh.ry);V['Inside a wheel house']=[e[0],y+.8+1.6,e[1],g[0],y+.8+1.8,g[1]];}

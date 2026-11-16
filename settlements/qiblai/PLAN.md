@@ -88,6 +88,17 @@ and `qiblai` in core/tags' vocabulary (`TODO.md`, the ride-along) are not prereq
 - **The terrace stairs** (the owner, 2026-11-16: "make gates go both ways"; Q7a's `qb_terrace_stair`): before every city gate's
   lower side a stair down to the ground outside (flights of 3 m, 3 m landings, ashlar side walls, banner posts at the foot);
   the verify walks each gate from the city side and from its stair's foot.
+- **The oilfield and Yuni's mission** (the owner, 2026-11-16: "we need to also build the yuni mission/oilfield near town";
+  whose: "both"): ~1.7 km south-east of the centre, as the Xanadu sim's tune has it (XAN_TUNE: ~300 workers, ~400 t of oil a
+  year, most to Qiblai, a fifth to the Sultan's citadel; the Geomancers' caravans stop at the town). The Geomancers' yard (the
+  still-house, four tanks, pipe racks, the generator house, warehouses, drum stacks, their chapterhouse, the caravans' fuel
+  station), twelve pumpjacks, the workers' village of stilt houses and tents; Yuni's mission (the Order's chapter house behind
+  a gatehouse, its school, bell tower and bathhouse); the Prismarchy's tithe house on the road (the council's cut: a Qiblai
+  gate temple; the council's cut a tenth, the Sultan's licence a fifth); a cobbled road off the south road. The light (the
+  owner, relayed the same day: "Qiblai will be electrified along all major avenues and in buildings except in poor areas"):
+  the Prismarchy's generator house by the south road burns its cut and wires the four major avenues (a lamp on every pole,
+  others hung across the street), and the rooms of every building not poor get ceiling bulbs. Records
+  `targets/city/89zr-qc-oil-site.js`, drawing `90v-qc-oilfield.js`.
 
 ## 1. What the city build is
 

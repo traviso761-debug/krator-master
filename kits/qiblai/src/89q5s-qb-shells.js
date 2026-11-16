@@ -93,6 +93,7 @@ function qnIxType(shell,key,seed,door,prog){const P=prog||qnIxProgram(key),IX=ty
  const fw=side?shell.w/2:shell.d/2,dep=fw-(side?hw:hd)+.02,mid=(fw+(side?hw:hd))/2,bry=shell.ry+(side?Math.PI/2:0),dh=Math.max(2,Math.min(Dr.h,hs[0]-.3));
  if(door&&!door.noPortal)for(const e of[-1,1]){const q=fp(mid,tt+e*(dw/2+.06));vB('xWashB',q[0],shell.y,q[1],.12,dh+.05,dep,bry,w0);}
  if(door&&!door.noPortal){const q=fp(mid,tt);vB('xWashB',q[0],shell.y+dh,q[1],dw+.24,.25,dep,bry,w0);vB('qPlankB',q[0],shell.y,q[1],dw,.06,dep,bry,xC(0xf0e8dc));}
+ let bulbs=0;if(P.wealth>=.5)for(const R of B.rooms){const lv=Lv[R.level]||Lv[0];bulbs+=qnIxBulbs(R.poly,lv.y,lv.h);}   /* electric light, but not in the poor's houses */
  KXF=saveK;kbake(G);for(const k in KIT.items)KIT.items[k].length=0;
  /* the upper floors: a plank slab over a lacquered ceiling, each with its stair's well cut out */
  if(Lv.length>1){const mC=qnIxCeilMat(ceilC.getHex());for(const F of B.floors||[]){if(!F.level)continue;
@@ -107,6 +108,15 @@ function qnIxType(shell,key,seed,door,prog){const P=prog||qnIxProgram(key),IX=ty
 // the Xanadu kit's houses whose way in is no door record (core/door) but an archway: the merchant's konak's arch with its two
 // timber leaves ajar (u 3.2 on its front). door.noPortal: a doorway walked through with no pane drawn in it
 const QB_IX_ARCH={xa_rich_c:{n:[0,1],t:3.2,w:2.4,h:3.2}};
+// electric light in a room (the owner, relayed 2026-11-16: "Qiblai will be electrified ... in buildings except in poor
+// areas"): a bulb on a short cord under the ceiling for every 5 m of the room's plan each way, inside its outline. poly in
+// the frame the caller draws in, y the floor, h the clear height; the caller bakes. Returns how many
+function qnIxBulbs(poly,y,h){const xs=poly.map(p=>p[0]),zs=poly.map(p=>p[1]),x0=Math.min(...xs),x1=Math.max(...xs),z0=Math.min(...zs),z1=Math.max(...zs);
+ const inP=(x,z)=>{let c=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const a=poly[i],b=poly[j];if((a[1]>z)!==(b[1]>z)&&x<(b[0]-a[0])*(z-a[1])/(b[1]-a[1])+a[0])c=!c;}return c;};
+ const nx=Math.max(1,Math.round((x1-x0)/5)),nz=Math.max(1,Math.round((z1-z0)/5)),yc=y+h-.42,iron=xC(0x2e2a26);let n=0;
+ for(let i=0;i<nx;i++)for(let j=0;j<nz;j++){const x=x0+(i+.5)*(x1-x0)/nx,z=z0+(j+.5)*(z1-z0)/nz;if(!inP(x,z))continue;
+  kput('vBulb',[x,yc,z],null,[.1,.13,.1],null);vB('vIron',x,yc+.1,z,.015,.3,.015,0,iron);n++;}
+ return n;}
 // the depth-only pane in a street doorway: it writes depth and no colour, so the body's solid face behind it (drawn later)
 // fails the depth test there and the room drawn before it shows (the kit's bodies are solid: the Vernacular's locked doors)
 const QB_IX_PORTAL=new THREE.MeshBasicMaterial({colorWrite:false});

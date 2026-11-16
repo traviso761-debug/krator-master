@@ -46,4 +46,16 @@
   at the inner rings and 7 to 35 m from the outer wall to the country (the outer stairs are long: the 35 m one runs about 107 m, landings every
   3 m of rise), out along the avenue; they stand on solid ashlar, not fitted to anything already there. The wheel houses, the
   great wheel and the monasteries' and markets' courts are floors to the walker; the rest of the open ground is the terrain.
+- [ ] **The oilfield and the mission are drawn by Verge's YKIT bundle** (gen/69y-ykit-bundle.js, made by Verge's own build
+  function; 2026-11-16): the Locus builders' small catalog props (lanterns, jars, the pieces Verge's furniture glue places) are
+  left out (`furnishAt`, `FURNISH` answer null in the bundle); the pumpjacks stand still (Locus's 76-locus-anim.js is not in
+  the bundle); their buildings have no interiors and no walk records; the night glow (YKIT.glow) is not baked. The bundle adds
+  ~0.65 MB: the page is at 92 % of its 16 MB cap (`page cap warn`), so the next large addition needs the split.
+- [ ] **The town's electric light** (90v; the owner, relayed 2026-11-16: "Qiblai will be electrified along all major avenues and
+  in buildings except in poor areas ... just enough to use the cut of oil they get from Yuni"): the Prismarchy's generator
+  house by the south road feeds a pole line up the south gate's stair and along the four major avenues (a lamp on every pole,
+  one hung across the street at every other, the wire strung through each gate's arch); the lots' rooms with a wealth of 0.5
+  or more and every great room have ceiling bulbs (the poor's houses and the monks' quarters none). The bulbs are unlit
+  material, not light sources; the kora (the pilgrims' ring) is not counted a major avenue and is not wired; how the wire
+  reaches each avenue from the feed is not drawn (each avenue's run starts at its outer end).
 - [ ] **Life (Q7e), the open world (Q7f), the Godot export and the gallery (Q7g)** are not started.

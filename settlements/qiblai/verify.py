@@ -51,6 +51,9 @@ CITY_JS = r"""
  R.push({name:'walk-in-rooms',ok:!!(WR&&WR.length>=100&&!wrb.length),
   detail:!WR?'window._qiblaiIx.walkIn missing (targets/city/90t-qc-interiors.js)':WR.error?WR.error:WR.length+' routes walked: the street through each monastery gate to its court and halls, each other room from its door'+
    (wrb.length?'; FAIL '+wrb.map(w=>w.at+' missed '+w.miss.join(', ')).join(' | '):'')});
+ const OIL=window._qiblaiOil,nO=typeof QC_OIL!=='undefined'?QC_OIL.assets.length:0;
+ R.push({name:'oilfield-and-mission',ok:!!(OIL&&nO>50&&OIL.assets===nO&&!OIL.errors.length&&OIL.poles>=40&&OIL.lamps>=20),
+  detail:!OIL?'window._qiblaiOil missing (targets/city/90v-qc-oilfield.js)':OIL.assets+' / '+nO+' buildings (the Geomancers yard, wells and village, the Yuni mission), '+OIL.instances+' instances; the power line '+OIL.poles+' poles, '+OIL.lamps+' lamps'+(OIL.errors.length?'; ERRORS '+OIL.errors.slice(0,4).join(' | '):'')});
  const J0=window._qiblaiLix,J=J0&&J0.buildTypes?J0.buildTypes(8):J0,share=J?J.lots/Math.max(1,J.lots+J.noShell+J.noProgram):0;
  R.push({name:'interiors-every-building',ok:!!(J&&share>=.85&&J.built>=6&&!J.fails.length&&J.tex.meshes&&J.tex.mapped===J.tex.meshes),
   detail:J?(J.lots+' lots with an interior ('+(share*100).toFixed(0)+' %; '+J.noShell+' without a shell, '+J.noProgram+' without a programme), '+J.types+' types; the 8 commonest built in '+J.ms+' ms ('+JSON.stringify(J.byProgram)+'), textured '+J.tex.mapped+'/'+J.tex.meshes+(J.fails.length?'; FAILS '+J.fails.join(' | '):'')):'window._qiblaiLix missing (targets/city/90u-qc-lot-interiors.js)'});
