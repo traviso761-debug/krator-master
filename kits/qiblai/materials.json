@@ -1,0 +1,20 @@
+{
+ "build": "qiblai",
+ "note": "Qiblai's own library families, bound onto its MAT keys by src/89q0z-qb-matlib.js (KMAT.bindMat('qiblai')); the kit also draws in the Xanadu kit's sets, which Xanadu's own pack binds (settlements/xanadu/materials.json). qAshlar: the dressed ashlar of the plinths, the terrace platforms and the ring walls' base courses, half-metre courses on a 3 m tile, tinted by QSTONE (reused from Ys's arcades, stone.sandstone.ashlar; the owner, 2026-11-11: new textures for Qiblai). Owed (core/materials/PROMPTS-NEEDED.md section 43): the beaten-gold roof sheet and the prayer-wheel copper with mantra relief.",
+ "size": 512,
+ "families": {
+  "qAshlar": {
+   "lib": "stone.sandstone.ashlar",
+   "scale": [
+    3,
+    3
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.72
+   },
+   "metal": 0,
+   "roughLift": 0.15
+  }
+ }
+}

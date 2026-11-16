@@ -332,6 +332,34 @@
                 "."
             ],
             "port": 8862
+        },
+        {
+            "name": "ancients-kit",
+            "runtimeExecutable": "python",
+            "runtimeArgs": [
+                "-m",
+                "http.server",
+                "8863",
+                "--bind",
+                "127.0.0.1",
+                "--directory",
+                "kits/ancients/dist"
+            ],
+            "port": 8863
+        },
+        {
+            "name": "labyrinth",
+            "runtimeExecutable": "python",
+            "runtimeArgs": [
+                "-m",
+                "http.server",
+                "8864",
+                "--bind",
+                "127.0.0.1",
+                "--directory",
+                "biomes/labyrinth/dist"
+            ],
+            "port": 8864
         }
     ]
 }

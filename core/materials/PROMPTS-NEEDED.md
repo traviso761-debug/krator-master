@@ -3,7 +3,7 @@
 Every texture or pattern sheet the owner still has to source or generate, each with its finished prompt. Paste a block
 as it is, one image per block. **Everything delivered lives in `PROMPTS-archived.md`** (checked against `core/materials/library/`, `patterns/` and each build's `materials.json` on `origin/main`, 2026-10-19); this file holds only what is still owed.
 
-**Count: 50 prompts** (+6 for the Rift line, section 53, and +10 for the Tungang kit, section 54, at wave 2, 2026-11-15; +6 for the Arch, section 52, and +3 for the Rift battery, section 51, at Integration 3, 2026-11-11; +3 for the Tiers, section 50; 19 fenced blocks, counted by their fences, and the Ancient Transit's three table rows at the second integration merge, 2026-11-11: sections 43-49 added since, the Ancient Transit, Firebliss, the NE outer wall and the Great Chasm among them; before that, 2026-11-10, after -22 delivered from sections 37, 40, 41 and 42: `PLAN.md`, "Delivered 2026-11-10"; the hand count before was 36, and two blocks had lost their closing fence; 2026-11-09: +11 for Erewhon's citadel, section 41; +2 for the Tents kit's army and Eternian cloths, section 42; +3 for the southern highlands' upper stations, section 37; +15 for the hyperjungle's lands and the savannah rims, section 40, 2026-11-08; counted 2026-11-04 before them).
+**Count: 63 prompts** (+9 for the Kimr, section 55, +2 for the Qiblai kit, section 56, and +2 for the Labyrinth's flora, section 57, at wave 2, 2026-11-15; +6 for the Rift line, section 53, and +10 for the Tungang kit, section 54, at wave 2, 2026-11-15; +6 for the Arch, section 52, and +3 for the Rift battery, section 51, at Integration 3, 2026-11-11; +3 for the Tiers, section 50; 19 fenced blocks, counted by their fences, and the Ancient Transit's three table rows at the second integration merge, 2026-11-11: sections 43-49 added since, the Ancient Transit, Firebliss, the NE outer wall and the Great Chasm among them; before that, 2026-11-10, after -22 delivered from sections 37, 40, 41 and 42: `PLAN.md`, "Delivered 2026-11-10"; the hand count before was 36, and two blocks had lost their closing fence; 2026-11-09: +11 for Erewhon's citadel, section 41; +2 for the Tents kit's army and Eternian cloths, section 42; +3 for the southern highlands' upper stations, section 37; +15 for the hyperjungle's lands and the savannah rims, section 40, 2026-11-08; counted 2026-11-04 before them).
 
 **Delivered 2026-11-10:** 22 of sections 37, 40, 41 and 42 (Erewhon's citadel but the jali, the Tents kit's two cloths and the cedar, the
 fellfield's two, seven of the hyperjungle's and the savannah rims'), `PLAN.md` "Delivered 2026-11-10": the citadel's, the tents' and the two grasses
@@ -647,6 +647,88 @@ Square, 2048x2048. A flat, front-on decorative panel filling the whole frame edg
 `patterns/glazier/cholet-front` (the painted band on the Glaziers' carved fronts; tiles horizontally):
 ```
 Seamless tileable texture, 2048x512 (a horizontal band). Orthographic view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge. Panel: a painted decorative band on whitewashed plaster, in the bright flat colours of Andean cholet facades combined with Tibetan and Persian ornament: a row of stepped lozenges and zigzags, a running band of small eight-spoked wheels, thin gilt lines edging each band, colours rose, teal, saffron and white on the whitewash, the paint slightly worn. Full colour: rose #c8607a, teal #2a8a88, saffron #e0a030, white #f2eee4, gilt #c9a24a.
+
+## 55. The Kimr (`biomes/labyrinth/KIMR.md`, planned 2026-11-11)
+
+The Labyrinth's people (`LORE.md` section 6.24): their pueblos, masks, armour and the Hall of Heroes' funerary dressing. No Kimr kit is
+built yet; these land with the first one (`kits/kimr`, or the Labyrinth's pueblo station), and the two surfaces marked *fauna* are
+wanted by `kits/fauna`'s megafauna too. Everything else the Kimr need is already in the library (`KIMR.md` section 4's table: horn,
+ivory, skull, ossuary, adobe, ochre plaster, buckskin, fur, rawhide, terracotta). Palette hexes are `KIMR.md` section 2's.
+
+`hide.pachyderm` (near-colourless; tusker-hide armour, drums and litters; *fauna*: every pachyderm's skin):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: thick elephant or mammoth hide, a deep net of crossing wrinkles and creases dividing the skin into small irregular polygons, each slightly domed with a fine pebbled grain, deeper folds running in long roughly parallel lines, a few sparse coarse bristles, dried mud caught in the deepest creases, one or two old healed scratches. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.
+```
+
+`shell.glyptodont` (near-colourless; round-room roofs, cisterns, scale armour, shields; *fauna*: the glyptodont's carapace):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: the bony carapace of a giant fossil armadillo (glyptodont), a tight mosaic of thick hexagonal and pentagonal bone plates about the size of a palm, fitted edge to edge with narrow dark seams, each plate carrying a raised rosette: a central round boss ringed by six smaller bosses, the bone surface finely pitted and porous, weathered matte, a few plates chipped at the rim. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.
+```
+
+`earth.dung.stack` (near-colourless; the dung-cake walls at the foot of every pueblo's rock):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic front view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a wall of dried dung fuel cakes stacked flat in rough courses, each cake a round flattened disc about 30 cm across seen edge-on and slightly overlapping, with straw and coarse grass fibres showing in the cracked dry surface, hand-pressed finger marks on some, crumbs and dust between the courses. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.
+```
+
+`patterns/kimr/handprints` (full colour; the Hall's niches and the houses' walls):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a rough wall of white clay wash (#ece5d3) over earth plaster, covered with prehistoric hand-prints in red ochre (#9c3b23): about twenty adult and a few child hand-prints, fingers spread, some solid prints and some stencilled outlines with the ochre sprayed round the hand, at slightly different angles, overlapping in places, the older ones faded to pink, the plaster a little cracked. The pattern repeats in both directions. Full colour.
+```
+
+`patterns/kimr/bowl-band` (full colour; black-on-white bowls and ollas):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a painted pottery band in the Mimbres black-on-white style, flat matte kaolin white slip (#ece5d3) with fine hand-painted black (#221c18) lines: two thin framing lines top and bottom, between them a row of stepped terraces alternating with fine zigzag hatching, and a narrow lower band of small walking animals (shaggy cattle, mammoths, elk) all facing right, each a few strokes. The pattern repeats horizontally. Hand-painted, slightly uneven line weight, faint brush marks, no glaze shine.
+```
+
+`patterns/kimr/kilt-band` (full colour; woven kilt and sash borders, mantle edges):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a hand-woven border band of coarse undyed wool (#e8dfca) with a visible plain weave, carrying a pattern woven in black (#221c18) and red ochre (#9c3b23): a central row of large black stepped pyramids (terraces) each with a red stepped core, small red diamonds between them, and thin black and red stripes above and below. The pattern repeats horizontally. Slightly uneven dye and weave, a few slubs.
+```
+
+`patterns/kimr/shield` (full colour; one centred figure: shields and hide screens):
+```
+Square, 2048x2048. Orthographic front view of a flat, front-on decorative panel, flat even shadowless lighting, as if scanned: no highlights, no vignette, no perspective, no text, no border, no watermark. A single centred figure with a clear margin of plain ground all round: a round painted rawhide shield face seen flat, filling about 80 % of the frame, the ground natural tan rawhide (#8b6a48) with faint hair follicles and stretch marks; painted in flat red ochre (#9c3b23), yellow ochre (#d0a03c), charcoal black (#221c18) and white (#ece5d3): two concentric rings near the rim, short black rays between them, and in the centre a frontal bull's head with great horns raised into a lyre. Hand-painted with mineral pigments, edges slightly uneven, worn at the rim.
+```
+
+`patterns/kimr/mural` (full colour; the round rooms' murals):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a wall mural on matte clay plaster in the style of Pueblo kiva murals: a procession of four stiff frontal masked dancers on a pale ground (#e7d6b5), each with a tall cylindrical white mask with black eye bars and a different crown (great bull horns, ivory tusks, an elk antler, a big cat's fangs), red ochre (#9c3b23) and yellow ochre (#d0a03c) kilts and sashes, black (#221c18) outlines, one small touch of turquoise (#3a9e94) on the first mask's brow; under them a narrow band of small walking animals in black. Flat colour, no shading, plaster cracks and a few flaked patches. The pattern repeats horizontally.
+```
+
+`patterns/kimr/labyrinth` (full colour; one centred figure: the emblem on banners, hatches and rock art):
+```
+Square, 2048x2048. Orthographic front view of a flat, front-on decorative panel, flat even shadowless lighting, as if scanned: no highlights, no vignette, no perspective, no text, no border, no watermark. A single centred figure with a clear margin of plain ground all round: the classical seven-circuit labyrinth, its paths drawn as thick red ochre (#9c3b23) lines on a flat kaolin white (#ece5d3) ground, square-cornered as in Hopi rock art, with its one entrance at the bottom; above it, touching its top, a frontal bull's head in charcoal black (#221c18) with great horns curving up into a lyre. Painted with mineral pigment, edges slightly uneven, the white ground with a faint plaster grain.
+```
+
+## 56. The Qiblai kit (`kits/qiblai`, 2026-11-11)
+
+The holy city of the Decree (`kits/qiblai/PLAN.md` section 9, item 2; the owner, 2026-11-11: "sure new textures"). Its dressed
+stone reuses `stone.sandstone.ashlar` (wired: `kits/qiblai/materials.json`, `qAshlar`). Two are owed. They land as families in
+`kits/qiblai/materials.json` (`qGoldSheet` for the gilt roofs, crowns and finials, now the plain `xGold`; `qMantra` for the prayer
+wheels' drums, under the Song in the real Xanadui script that the kit draws over it, `src/89q0y-qb-script.js`), then `python3 tools/textures/pack.py kits/qiblai` and a rebuild. **2 prompts**, both full colour.
+
+| id | Prompt |
+|---|---|
+| `metal.gold.sheet.beaten` | Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a Tibetan temple's gilt roof sheet: hand-beaten copper sheets fire-gilded with gold, laid in overlapping rectangular panels about 60 by 40 cm with narrow raised seams between them, every panel covered in small overlapping hammer facets, the gold rich and warm (#d8a838, #c8902a, #e8c060) and worn thin on the facets' edges so the coppery red beneath shows through (#a8583a), a little dark grime in the seams (#5a4024). Full colour: keep the gold and copper as they are, do not tint. |
+| `metal.copper.mantra` | Seamless tileable texture, square, 2048x2048. Orthographic view of a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no letters, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: the hammered copper skin of a great prayer wheel's drum: six plain horizontal bands of smooth beaten copper, each between two raised beaded ridges, the copper reddish-brown (#a8603a, #8a4a2c) with fine hammer facets, the beads rubbed bright by hands (#d89058), green-blue verdigris (#4a8a78) and dark tarnish (#3a2a20) gathered along the ridges. The bands stay blank: the script is drawn over them in the game. Full colour: keep the copper and verdigris as they are, do not tint. |
+
+## 57. The Labyrinth's flora (`biomes/labyrinth` src/50-70, 2026-11-12)
+
+The mammoth steppe's own kit (`biomes/labyrinth/README.md`, "The flora"). Everything else it draws is already in the library. Two are
+owed. **`card.birch.silver`** replaces the stand-in on the silver birch's crowns (the slot `birchleaf` draws the summer row of
+`card.birch.dwarf` today: dwarf birch's round leaves on a tree birch); it lands in `biomes/labyrinth/materials.json` `birchleaf` (run
+`python3 tools/textures/check_cells.py biomes/labyrinth` for its stems). **`surface.melon.rind`** is the wild melon's skin (the slot
+`melon`, today plain colour on `M.solid`): add a `melon` family and give the item a `BIO.solidMat` of its own in `src/50`. Then
+`python3 tools/textures/pack.py biomes/labyrinth` and a rebuild of the four stations. **2 prompts**, both near-colourless.
+
+`card.birch.silver` (near-colourless; the silver birch's leaf sprays, Betula pendula):
+```
+Square, 2048x2048. Orthographic view looking straight down on nine separate sprigs in a 3x3 grid, each centred in its third of the frame with magenta all round it, on a solid flat bright magenta (#ff00ff) background that fills everything outside the objects, with no shadow cast on the background. Flat, even, shadowless lighting: no highlights, no vignette. No perspective, no text, no border, no watermark. Objects: hanging twig sprays of silver birch (Betula pendula), each a thin dark brown twig with a fine fork, carrying eight to twelve small triangular-ovate leaves with doubly serrated edges and pointed tips on slender stalks, the leaves alternate along the twig and drooping slightly, two sprays with a small green catkin; all nine the same size, the twig's base at the top of its cell and the spray hanging down from it. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.
+```
+
+`surface.melon.rind` (near-colourless; the wild melon's skin: a giant gourd to a metre across):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: the rind of a giant wild gourd, smooth and slightly waxy, with broad irregular lengthwise stripes of lighter and darker skin running top to bottom across the tile, a fine net of pale corky lines over part of the surface like a cantaloupe's, a few small scars and sun-bleached blotches, faint shallow grooves between the stripes. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.
 ```
 
 ## Gaps with no prompt yet

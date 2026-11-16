@@ -107,6 +107,21 @@ runtime and bison table, and the `tools/` listing staleness (every build rebuilt
   k.overlay.indexOf(name)>=0:...`), then drop the shim in `openworld/iziz-cluster/src/47-world-kits.js` (`WORLD_KITS.findIndex`, which
   tries each name of a list). It moves every page that reads core/world (the isle demo's two city pages, Longsong, Pinnacle Rock and the
   open-world regions) without changing what they draw.
+- **core/tags: the culture `qiblai`** (2026-11-11, `kits/qiblai`): the Qiblai kit tags its buildings `culture:'qiblai'` (the owner's
+  brief), which `core/tags/52-core-tags-vocab.js` does not list yet, so the kit's page counts it as an unknown value in `T.audit()`
+  (counted, never thrown). Add `'qiblai': 'Qiblai'` to `CULTURE_NAMES` and `'qiblai'` to `NO_CATALOG` (it has no catalog culture file:
+  its interiors take the Xanadu pieces), as Pylon and Talia were added on 2026-11-03. It moves every page that takes core/tags.
+- **`BIO.attachAudit` measures a thin instanced item at points, not to its segment** (2026-11-11, found on the Labyrinth's station 1):
+  `core/biome/20-core-kit.js:646-650` samples an instanced structure (a rod, a beam) at points CELL/4 (2 m) apart along its axis, less its
+  radius, not point-to-segment as `core/biome/README.md` ("What held means") says. A card beside the middle of a long thin rod reads as
+  floating. The case: the NW lowlands grass trees' flower-spike blooms (`biomes/nwlowlands/src/55-biome-nwlowlands-trees.js`,
+  `B.grasstree`), 0.1 m off a 2.5-4.5 m rod, read 0.85-0.89 m off against a 0.57 m tolerance. It put `biomes/labyrinth` at 1.30%
+  (90 of 930 blooms) while that read the NW lowlands in place (no longer: its own flora, 2026-11-12, draws no grass trees). The fix: for each near sample, the distance to
+  the segment A-B less r (query KSPACE round the segment's box), and a case in `core/biome/test-attach.js` (a card beside a rod's
+  middle holds; lifted off it, floats). It moves every biome page (the owner's call). Do not split the rods in a kit to pass the audit.
+- **core/tags: the culture `kimr`** (2026-11-11, `kits/kimr`): add `'kimr'` to `CULTURES` and `'kimr': 'Kimr'` to `CULTURE_NAMES` in
+  `core/tags/52-core-tags-vocab.js` (every page carries the vocabulary). Until then `kits/kimr/src/89-rows.js` adds it to its own page at
+  load; drop those two lines when the vocabulary has it.
 
 - **`KSHADOW.units` counts what the GPU links** (2026-11-09, found by the Throne's fix): `core/shadow/host/12-core-shadow-host.js` counts
   declared samplers (some are never read and the GPU drops them), misses `scene.environment` on standard materials, and judges against the

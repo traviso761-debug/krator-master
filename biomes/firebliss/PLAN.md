@@ -342,8 +342,9 @@ Found while building (2026-11-10):
 The plan's questions:
 
 - **The volcanoes' activity:** the plan takes all five as degassing and only the Copper-Fissure Vent as flowing lava.
-- **The two peoples:** do the Fellgangs and the Kimr have a truce here, a border, or a feud? Do they pass at different
-  seasons?
+- **The two peoples:** do the Fellgangs and the Kimr have a truce here, a border, or a feud? (The owner, 2026-11-11, `LORE.md`
+  section 6.24, "Relations": intermarried, and feuded with as the Kimr feud with each other, house by house; Wildcat is about half
+  Kimr. The Kimr call the range *Mawʼn Ffair*: `lore/kimr-tongue.md`.)
 - **An old outpost?** Should one valley hold a ruined hunters' lodge a player could take over, as an abandoned outpost?
 - **The plateau's rock:** a `VOLCANIC_REGIONS` entry for the range in the bake, so the 4-5 km plateau between the cones reads as
   ash and lava, not sediment and granite?

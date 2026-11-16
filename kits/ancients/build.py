@@ -116,7 +116,7 @@ INTERIOR_CORE = [(CORE_RAND, '08-core-rand.js'), (CORE_TAGS, '50-core-tags.js'),
                  (CORE_FURNISH, '53-core-furnish-host.js')]
 # A target listed here takes the shared core/rand and core/tags (no interiors): its placement draws from KRAND and it
 # registers what it places with KTAGS before drawing it (CLAUDE.md, "Write code that is the same on every machine").
-TAGS_TARGETS = {'podium', 'sanctum', 'span', 'arcpile', 'theodiga'}   # theodiga: the Dome on the Water (2026-11-11)
+TAGS_TARGETS = {'podium', 'sanctum', 'span', 'arcpile', 'theodiga', 'gatearc'}   # theodiga: the Dome on the Water (2026-11-11); gatearc: the Hall of Heroes
 TAGS_CORE = INTERIOR_CORE[:4]
 # fragments a target reads in place from another kit: the Sanctum's statuary is the Eternian kit's head generator
 # (kits/eternian/src/42-et-head.js, [G data]: one generator for every build that carries the Eternians' faces)
@@ -125,7 +125,9 @@ TARGET_READS = {'podium': [(os.path.join(ROOT, 'kits', 'eternian', 'src'), '42-e
                 'engines': [(os.path.join(ROOT, 'core', 'ruins'), '20-core-ruins.js'), (os.path.join(ROOT, 'core', 'ruins'), '21-core-ruins-host.js')],
                 # the Sanctum (2026-10-22) shares the Podium's skins and materials (MAT.sn*), read in place
                 'sanctum': [(os.path.join(ROOT, 'kits', 'eternian', 'src'), '42-et-head.js'),
-                            (os.path.join(HERE, 'targets', 'podium'), '8aq2-podium-skins.js')]}
+                            (os.path.join(HERE, 'targets', 'podium'), '8aq2-podium-skins.js')],
+                # the Hall of Heroes' stacks (2026-11-11) are core/terrain's KSTACKS rock bodies, read in place
+                'gatearc': [(os.path.join(ROOT, 'core', 'terrain'), '37-core-stacks.js')]}
 # the furniture an intact Ancient building takes: the harvested registry (the ancient pieces) and the goods
 INTERIOR_FURN = ['generic-goods']
 
@@ -207,6 +209,7 @@ TARGET_OUT = {
     'span': 'span.html',                       # Span's pieces (targets/span; settlements/span PLAN.md SP2): gallery, range, dome, pad, Cross, weir, portal
     'kept': 'kept.html',                       # the Wing and Arcoindian as the True Heirs keep them (targets/kept; kits/eternian P5)                 # the Eternians' capital arcology, as built and as the Heirs keep it (targets/sanctum)
     'quintagon': 'quintagon.html',             # the pentagonal star arcology (src/8au-quintagon.js, targets/quintagon)
+    'gatearc': 'gatearc.html',                 # the Hall of Heroes at the Labyrinth's mouth and its five stacks (targets/gatearc)
 }
 
 # Fragments with no builder in them: helpers, materials, the scene, the shell.
@@ -234,6 +237,8 @@ DETERMINISTIC = {
     '8aq5-kept-pass.js',                               # targets/kept: a material pass, no placement
     '8at0-arcpile-plan.js',                            # targets/arcpile: KRAND-hashed records, no rng()
     '77a-theodiga-dome-plan.js', '77b-theodiga-dome-draw.js',   # targets/theodiga: the Dome on the Water, KRAND records, no rng()
+    '8av0-gatearc-plan.js', '8av2-gatestacks-plan.js', # targets/gatearc: KRAND-hashed records, no rng()
+    '37-core-stacks.js',                               # core/terrain's KSTACKS (gatearc): KRAND-hashed, no rng()
 }
 DETERMINISTIC |= {'06-core-khook.js', '06b-core-kcolor.js'}   # core/shader (no rnd())
 
