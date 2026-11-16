@@ -15,7 +15,7 @@ is surveyed on the re-run model. The wadi is now 60 km west and plays no part he
 - the town on **two levels**;
 - a **headland and a cove** for the harbour;
 - a **small stream** for the town;
-- the seat held by **a member of the Sultan's family**;
+- the seat held by **a member of the Sultan's family**: **the heir** (the owner, 2026-11-16, question 9);
 - **every proposed addition** to the economy;
 - a **new open-world region north of Erewhon's** that also holds Thalaba;
 - the road **up the Qol Siṭrīm's valley**;
@@ -117,7 +117,7 @@ and its warp. These things depend on it:
    - It runs south across the plain, about 22 km at 6-7 m a km, through a shallow vale.
    - It drops down the wall in a ravine to the cove's head at about 842.5,1492.
    - Its catchment is the scarp's face and the plain, about 250 km² at ~1,000 mm.
-   - Name *to be coined* (a Xanadui *Siṭrīm*), or the owner's.
+   - Its name is coined (the owner, 2026-11-16: "coined name"): **Swīṭ Siṭrīm**, "sweet stream" (`r_pher_swit`).
 
    The stream gives Phēr water and a wooded ravine, the way down for the town's terraces, and a mouth for the dugouts'
    beach. On the model it is a `rivers.json` record and a ravine cut in `h.png`: the scale-model session's queue.
@@ -144,7 +144,7 @@ and its warp. These things depend on it:
 | **The boat people** | ~800 | Crews of the launches and cargo boats based at Phēr: the cross-lake run's six carriers, the two market-boat rounds, the pilgrims' launches to Grēṭ-Āil, the passenger launches of the north shore. Caulkers, sailmakers and a repair slip (the hulls are laid down at Boṭ-Yārḍ, across the lake) |
 | **The fair's people** | ~1,100 | Brokers, warehousemen, porters, the fish market's sellers and salters, the weighmasters; the cacao and silk buyers from the north-shore towns; inns for the fair's crowds |
 | **The road's people** | ~350 | Muleteers and carters on the Thalaba road (the tune's six carriers), farriers, harness makers, the caravanserai's keepers, the granary men |
-| **The Sultan's people** | ~350 | **The governor of Nōrth-Shor, a member of the Sultan's family** (the owner, 2026-11-16), and the governor's household; the tax and dues clerks (section 4); the harbour master; the customs launch; the generator's keepers and lamplighters; a small watch (~60) |
+| **The Sultan's people** | ~350 | **The governor of Nōrth-Shor, the Sultan's heir** (the owner, 2026-11-16), and the governor's household; the tax and dues clerks (section 4); the harbour master; the customs launch; the generator's keepers and lamplighters; a small watch (~60) |
 | **The temples' people** | ~150 | A temple of the Decree; a house of the Azure Dream where the pilgrims to Grēṭ-Āil wait for the launch (*proposed*) |
 | **The rest** | ~1,050 | Craftsmen, servants, gardeners of the wall's terraces, the rim's market gardeners |
 
@@ -284,6 +284,13 @@ tune at step P1 (the tune's session):
 | **P4** | **The boats** (owed models), and the harbour's traffic drawn from the sim | the boats on the water, none aground or through the headland |
 | **P5** | **Interiors** for the governor's house, the factor house, the inns | the interiors' checks |
 | **P6** | **The fair's days:** the launches' `transport` loops and the crowds climbing to the fair ground | the sim's market-week test |
+| **P7** | **The town in the region:** the page's ground and the world's met; Phēr's footprint on core/world in `openworld/xanadu-north-shore` | the region's verify, the town's |
+
+**Done (2026-11-16, the owner: "do p0-3"):**
+- **P0:** `tools/scale-model/edit_517_pher.py` (the pin `spher0north1`, the headland, the east point, the Swīṭ Siṭrīm); `tests/test_smodel.py` section 17.
+- **P1:** `core/region/data/xan-tune.js` (82dd21e8f, the open-world sites session): the five additions, the Qol road at 105 km, P7's point; `test-xan-economy.js` 50 passed.
+- **P2:** `openworld/xanadu-north-shore` (README.md there): the cut, Phēr's farming ring, the Thalaba road (104.8 km, 7 hans, 6 bridges); its GPU verify passes.
+- **P3:** this folder's town on `core/city` (README.md): two levels, about 1,280 buildings for about 6,700 people; `tests/test-pher-site.js` and `verify.py`.
 
 ## 7. Questions for the owner
 
@@ -299,13 +306,20 @@ tune at step P1 (the tune's session):
 7. ~~**The road.**~~ **Up the Qol Siṭrīm's valley** (about 105 km, section 3).
 8. ~~**The name's gloss.**~~ **Kept:** *Phēr*, "fair".
 
+**Answered 2026-11-16 (second round):**
+9. ~~**The governor's rank.**~~ **The heir** holds the seat.
+10. ~~**The stream's name.**~~ **Coined:** *Swīṭ Siṭrīm*, "sweet stream".
+11. ~~**The region's name and box.**~~ **Reach east, not the long isle:** `openworld/xanadu-north-shore` reaches along the
+    shore to Ḍāiyar (870,1500) by corridors; the long isle is outside every polygon.
+
 **Still open:**
-9. **The governor's rank.** Which member of the Sultan's family: a brother or uncle of the Sultan, a younger son, or a
-   princess with her household? The plan draws a small palace either way; the title (and whether the seat passes by
-   blood) is the owner's.
-10. **The stream's name.** A coined Xanadui *Siṭrīm*, or yours?
-11. **The region's name and box.** `openworld/xanadu-north-shore`, about px 815-870 by 1455-1498, or another name or
-    extent? Should it take the whole north shore to Ḍāiyar (870,1500) and the long isle?
+12. **The heir's household.** The plan draws the governor's house as the kit's vizier's house on the wall's bench. Should
+    the heir's seat be grander (a small palace with a garden court and a water-stair to the cove), and does the heir keep
+    a guard of the Sultan's own?
+13. **The caravanserai.** The rim's caravan yard stands in for one. Use Qiblai's caravanserai (`qb_caravanserai`) at Phēr,
+    or a Xanadu one of its own?
+14. **The wall between the levels.** The avenue's switchbacks carry only a stall or teahouse at each turn. Should houses
+    line its lower legs (a ribbon of the town up the wall), or is the wall left to the terraced gardens?
 
 ## 8. Found on the way (for the sessions that own them; not changed here)
 

@@ -1156,6 +1156,10 @@
    "bytes": 12117800,
    "sha256": "f94028859f190afb0fe0831d17582c9eb9390565be504b0250d88feb6e0bef86"
   },
+  "settlements/pher/dist/pher.html": {
+   "bytes": 8849987,
+   "sha256": "40381ca13f327f6f62b0c2448f43bef9150e08d58e774241d521f42c1919a94e"
+  },
   "settlements/pinnacle-rock/dist/pinnacle-rock.html": {
    "bytes": 4342913,
    "sha256": "1392982a6acdd881148a91a2e3d4b0caa657c7f8bfc2ccc5988d8f3557074e36"
