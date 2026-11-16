@@ -239,6 +239,23 @@ spring, sealed deep inside). Theodiga's end:
       grain fields).
     - **The checks.** `test-th-econ.js` runs 10, a week at the abstract level each. The books balance (core's ledger); the
       town feeds itself; every maker makes; the Dome's fall runs down by what was taken; the carters are there.
-    - **Next.** The caravans (the serai's trade by the East Gate road: salvage and artifacts out, what the canyon lacks in),
-      money, tools and clothes, and the Lamp Hall's butter.
-11. **Later**: the Qiblai buildings' rooms (as Strongbow's), core/simulation's roles, the open world.
+11. **T-econ-2, the caravans** (done 2026-11-16, the next step of the build, relayed by the open-world session).
+    - **The goods** take the region tune's names (core/region/data/xan-tune.js on the open-world line): the yards' scrap, the
+      bore's rarities. The Salvagers' smelter is the yard with the most hands; it turns scrap and charcoal to iron in
+      batches. Every field hand, yard hand, dairyman and bore hand owns an iron tool that wears by the worked hour and is
+      bought again at the bazaar. The warehouses open with the Salvagers' stockpile, so the smelter runs from the first hour
+      (a good nobody uses yet is no carter's errand).
+    - **The road.** The tea the town drinks (its households' diet) and the smelter's charcoal come by the East Gate road. When
+      either runs under three days the serai sends for a lot: a caravan comes in by the road's port, the town's east-most
+      street node, walks to the serai, unloads, stays, and leaving buys the town's surplus of scrap or iron.
+    - **Fixed on the way.**
+      - The stalls had no room to buy at (core's `BUY` slots), so the households went without.
+      - The motion clock ran in real seconds, not six times them (the walks' convention), so every walk took six times its
+        world minutes and the carters and field hands fell behind.
+      - Rush hours: the router's first searches all fell in one minute (seconds a step). Now every resident's commute and
+        errand pairs are warmed in the background after load, and the town's roles keep two schedules an hour apart. The
+        worst step went from 3.6 s to under 0.2 s.
+    - **On the page** (two days fast-forwarded): the caravan came, landed 3,000 tea and took 2,747 scrap; no meal went
+      without; grain holds; the books balance. `test-th-econ.js` runs 14 checks.
+    - **Next.** Money, clothes, the Lamp Hall's butter, the rarities' sale to the Devisers' factor house.
+12. **Later**: the Qiblai buildings' rooms (as Strongbow's), core/simulation's roles, the open world.

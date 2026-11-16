@@ -184,7 +184,9 @@ function thTownDraw(gx,gz,ctx){const O={buildings:0,people:0,protos:0,meshes:0,t
    walk:WG,ref:[TT.SQUARE.x0+20,(TT.SQUARE.z0+TT.SQUARE.z1)/2],hour:()=>TH_CLOCK.hour(),day:()=>TH_CLOCK.day(),t:()=>TH_CLOCK.t()});
   /* the economy (T-econ-1: src/49-th-econ.js): the makers, the warehouses and the carters, the households' food; declared before
      the walkers so the carters walk too */
-  if(typeof TH_ECON!=='undefined'&&SIM.economy){try{EC=TH_ECON.declare(SIM,{fields});}catch(e){O.errors.push('the economy: '+(e&&e.stack||e));}}
+  /* the East Gate road's port (T-econ-2): the town's east-most street node, where the caravans come in and go out */
+  let port=null;if(WG){const east=WG.nodes.filter(n=>n.tag==='street').sort((a,b)=>b.x-a.x||(a.id<b.id?-1:1))[0];if(east)port={x:east.x+gx,y:east.y,z:east.z+gz,node:east.id};}
+  if(typeof TH_ECON!=='undefined'&&SIM.economy){try{EC=TH_ECON.declare(SIM,{fields,port});}catch(e){O.errors.push('the economy: '+(e&&e.stack||e));}}
   if(WG&&typeof thWalkersDraw==='function')thWalkersDraw(gx,gz);
   if(SM.problems.length)O.errors.push('the sim: '+SM.problems.slice(0,3).join(' | '));}catch(e){O.errors.push('the sim: '+(e&&e.stack||e));}
  if(WS)O.errors.push(...WS.errors);
