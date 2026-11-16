@@ -4,7 +4,8 @@
 // piece's ribbon (WATER.flow + WATER.drawFlow, as 83-world-water.js draws the named rivers) built when the camera comes
 // within NEAR of it and dropped when it is past FAR. Oidong's 1,116 wet streams run thousands of kilometres: drawn at
 // load, as the named rivers are, they would be thousands of meshes. A ribbon's water is WORLD.streamWaterLine's: the
-// carved ground at the stream's centre plus 60 % of its depth, 85 % of the bed's width, a point every 8 m.
+// carved ground at the stream's centre (its roughness under 90 m left out) plus 60 % of its depth, held from climbing
+// downstream, 85 % of the bed's width, a point every 8 m.
 // core/water keeps every flow it makes in WATER.surfaces (and has no way to take one out); a streamed piece is drawn,
 // not a surface the world asks about (WORLD.water already answers for it), so it is taken back out at once, or the list
 // would grow as the camera walks. START.pump drives STREAMW.update(ms); settle waits for STREAMW.pending().
@@ -37,8 +38,8 @@ function drop(n){const D=drawn.get(n);drawn.delete(n);if(!D)return;scene.remove(
 function update(ms){if(!P.length)return;const t0=performance.now();scan();
  let k=0;while(want.length&&(k===0||performance.now()-t0<ms)){build(want.shift());k++;}
  stats.ms=Math.round(performance.now()-t0);stats.drawn=[...drawn.values()].filter(Boolean).length;}
-// the check (91's probe): every piece within NEAR drawn, and every drawn ribbon's water in its bed: over the ground at the
-// stream's centre and under 3 m above it. With none near the camera, the nearest piece's water is read instead (not drawn).
+// the check (91's probe): every piece within NEAR drawn, and every drawn ribbon's water in its bed: at the stream's centre
+// no more than 0.8 m under the ground (the ground's 13 m grain stands through it as stones) and under 3 m above it. With none near the camera, the nearest piece's water is read instead (not drawn).
 // sunk: read the water 2 m lower (the negative)
 function check(sunk){if(!P.length)return{ok:true,detail:'no wet streams in this region'};scan();
  const x=camera.position.x,z=camera.position.z,lines=[...drawn.values()].filter(Boolean).map(D=>D.line);let alt='';
@@ -46,7 +47,7 @@ function check(sunk){if(!P.length)return{ok:true,detail:'no wet streams in this 
   alt=' (none near the camera: the nearest piece, '+Math.round(dist(P[b],x,z))+' m off, read instead)';}
  let n=0,bad=0,first=null;
  for(const L of lines)for(let i=0;i<L.pts.length;i+=6){const p=L.pts[i],g=WORLD.H(p[0],p[1]),y=p[2]-(sunk?2:0);n++;
-  if(!(y>g+.05&&y<g+3)){bad++;first=first||[Math.round(p[0]),Math.round(p[1]),+(y-g).toFixed(2)];}}
+  if(!(y>g-.8&&y<g+3)){bad++;first=first||[Math.round(p[0]),Math.round(p[1]),+(y-g).toFixed(2)];}}
  return{ok:want.length===0&&n>0&&bad===0,detail:P.length+' pieces of wet stream, '+stats.drawn+' drawn near the camera'+(want.length?', '+want.length+' WITHIN '+NEAR+' m NOT DRAWN':'')+alt+
   '; '+n+' points of their water, '+bad+' out of the bed'+(first?' (first at '+first[0]+','+first[1]+': '+first[2]+' m over the ground)':'')};}
 return{update,pending:()=>{if(!P.length)return 0;scan();return want.length;},check,stats:()=>Object.assign({},stats)};

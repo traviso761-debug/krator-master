@@ -421,8 +421,19 @@ The High Rift's hillshade shows the rings plainly: concentric risers 200 to 250 
   85 % of the bed's width, a point every 8 m. White water only from a 6 % fall (core/water's river band, from 1.5 %,
   whitened nearly every stream). A streamed ribbon is taken back out of `WATER.surfaces`, which has no remove and would
   grow as the camera walks; `WORLD.water` already answers for it. `START.pump` drives it; `settle` waits for it.
+  - **No blocks in the water** (2026-11-16, the owner: "work on blocky ripple pattern"). Close up, the water showed pale
+    squares, Ls and hard-edged bands. Four causes, each seen in a frame at 9 m over an Oidong stream:
+    - core/water's foam is cut from value noise, which flattens along its lattice lines: the threshold cut squares along its
+      cells. Now gradient noise in two octaves (`wtrBreak`; core/water, `TODO.md` "Ride along");
+    - its ribbon shaded by each point's slope to the next: on a line every 8 m off a rough bed the foam flipped row by row.
+      Now the slope over 24 m (`slopeV`);
+    - the terrain's chunks are 2 to 8 m a vertex past the nearest, and a bed 1.5 m wide fell between vertices, so the banks
+      stood through the water: a bed is now at least 0.7 x the asking `minWave` to a side (`streamAt`);
+    - the ground's 13 m grain (up to 0.7 m) stood through the water too: it is left out of a bed (`STC.bw`), and the water
+      lies on the bed without the 90 m roughness, never under 0.1 m over the ground. The current is taken over 32 m and
+      eased, so the ripples are carried smoothly.
   - The probe: every piece within 1.8 km drawn, and its water in its bed (over the ground at the centre, under 3 m above
-    it). Negative: the water read 2 m lower. On the GPU: 8 to 21 ribbons drawn at each of five spots, every point in its
+    it; the ground's 13 m grain may stand 0.8 m through it). Negative: the water read 2 m lower. On the GPU: 8 to 21 ribbons drawn at each of five spots, every point in its
     bed; the negative fails every point.
 - **Left for later:**
   - **the profile by style** (S5: the loess's box canyons, slot gorges, braided wadi floors, peat cuts) and the loess tables

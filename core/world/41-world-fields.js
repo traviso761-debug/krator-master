@@ -375,17 +375,22 @@ function buildStreams(){STSEG=null;STHASH=null;STIDX=null;STLN=[];STPC=null;cons
  STIDX=new Int32Array(cnt[STG.nx*STG.nz]);const fill=cnt.slice();for(let s=0;s<n;s++)span(s,c=>{STIDX[fill[c]++]=s;});
  STHASH=cnt;
  W.streamCount=SR.lines.length;W.streamSegments=n;}
-// the cut at (x,z) on ground h: as carveAt, the deepest of the streams near the point. Fills C {k, d, hw, wet} (the
-// nearest stream's distance, half-width and whether it is wet, where none cuts)
-function streamAt(x,z,h,wallK,C){C.k=0;C.d=1e9;C.hw=0;C.wet=0;
+// the cut at (x,z) on ground h: as carveAt, the deepest of the streams near the point. Fills C {k, d, hw, wet, bw} (the
+// nearest stream's distance, half-width and whether it is wet, where none cuts; bw 1 in a bed, easing to 0 3 m past its
+// bank: H leaves the ground's 13 m grain out there, which stood through the water). minWave: the bed is made at least 0.7 x it
+// to a side, so a terrain chunk (which asks for detail down to 1.5 x its vertex spacing) has a vertex in it: a bed narrower
+// than the grid fell between its vertices, and the ground drawn between bank and bank stood through the water in
+// triangles and squares (the near chunks keep the bed's own width; a far one draws a wider flat bed the water lies on)
+function streamAt(x,z,h,wallK,C,minWave){C.k=0;C.d=1e9;C.hw=0;C.wet=0;C.bw=0;const hwMin=.7*(minWave||0);
  const ix=Math.floor(x/STCELL)-STG.x0,iz=Math.floor(z/STCELL)-STG.z0;if(ix<0||iz<0||ix>=STG.nx||iz>=STG.nz)return C;
  const c=iz*STG.nx+ix,e=STHASH[c+1];
  for(let i=STHASH[c];i<e;i++){const o=STIDX[i]*9,ax=STSEG[o],az=STSEG[o+1],dx=STSEG[o+2]-ax,dz=STSEG[o+3]-az,l2=dx*dx+dz*dz;
   let t=l2>0?((x-ax)*dx+(z-az)*dz)/l2:0;t=t<0?0:t>1?1:t;const ex=ax+dx*t-x,ez=az+dz*t-z,d=Math.sqrt(ex*ex+ez*ez);
   if(d>SREACH)continue;
-  const s=lerp(STSEG[o+4],STSEG[o+5],t),hw=stW(s),depth=stD(s),bed=Math.max(lerp(STSEG[o+6],STSEG[o+7],t),h-depth-SDMAX);
+  const s=lerp(STSEG[o+4],STSEG[o+5],t),hw=Math.max(stW(s),hwMin),depth=stD(s),bed=Math.max(lerp(STSEG[o+6],STSEG[o+7],t),h-depth-SDMAX);
   const Dc=h-Math.min(h-depth,bed-depth*.5),outer=Math.min(SREACH-5,hw+2+Dc*wallK),vw=stVW(s);
   const k=(d<outer?Dc*(1-smooth(hw,outer,d)):0)+(d<vw?stVD(s)*(1-smooth(0,vw,d)):0);
+  const bw=1-smooth(hw,hw+3,d);if(bw>C.bw)C.bw=bw;
   if(k>C.k||(C.k===0&&d<C.d)){if(k>C.k)C.k=k;C.d=d;C.hw=hw;C.wet=STSEG[o+8];}}
  return C;}
 // a wet stream's water at (x,z): inside its bed, the carved ground at its centre line abreast of the point plus 60 % of
@@ -404,7 +409,7 @@ W.streamWater=streamWater;
 // the wet streams in pieces for drawing their water (83s-world-streams.js: built near the camera, dropped behind it):
 // [{line, s0, s1, x, z, r}], a piece a run of about PIECE m of one line's segments (s0 to s1, the last shared with the next
 // piece so the ribbons meet), its centre and the radius that holds it. Made once
-const PIECE=1000;
+const PIECE=1000,STPOOL=.8;
 W.streamPieces=function(){if(STPC)return STPC;STPC=[];
  STLN.forEach((Ln,li)=>{if(!Ln.wet)return;let a=Ln.s0;const e=Ln.s0+Ln.n;
   while(a<e){let b=a,len=0;while(b<e&&len<PIECE){const o=b*9;len+=Math.hypot(STSEG[o+2]-STSEG[o],STSEG[o+3]-STSEG[o+1]);b++;}
@@ -412,13 +417,22 @@ W.streamPieces=function(){if(STPC)return STPC;STPC=[];
    STPC.push({line:li,s0:a,s1:b,x:(x0+x1)/2,z:(z0+z1)/2,r:Math.hypot(x1-x0,z1-z0)/2});a=b;}});
  return STPC;};
 // a piece's water as a flow line: pts [[x, z, y]...] every `step` m down its segments (the water: the carved ground at the
-// centre plus 60 % of the stream's depth, as streamWater), w its width there (m: 85 % of the bed's), v the current (1 m/s on
+// centre, its roughness under 90 m left out, plus 60 % of the stream's depth; never under 0.1 m over the ground less its 13 m grain), w its width there (m: 85 % of the bed's), v the current (1 m/s on
 // the flat, faster as the water falls, at most 3)
 W.streamWaterLine=function(pc,step){step=step==null?8:step;const pts=[],w=[];
  for(let s=pc.s0;s<pc.s1;s++){const o=s*9,ax=STSEG[o],az=STSEG[o+1],bx=STSEG[o+2],bz=STSEG[o+3],L=Math.hypot(bx-ax,bz-az),m=Math.max(1,Math.ceil(L/step));
   for(let k=0;k<m+(s===pc.s1-1?1:0);k++){const t=k/m,x=ax+(bx-ax)*t,z=az+(bz-az)*t,st=lerp(STSEG[o+4],STSEG[o+5],t);
-   pts.push([x,z,H(x,z,0,null,true)+.6*stD(st)]);w.push(2*stW(st)*.85);}}
- const v=pts.map((p,i)=>{const q=pts[Math.min(i+1,pts.length-1)],L=Math.max(1e-6,Math.hypot(q[0]-p[0],q[1]-p[1]));return Math.min(3,1+40*Math.max(0,(p[2]-q[2])/L));});
+   pts.push([x,z,Math.max(H(x,z,90,null,true)+.6*stD(st),H(x,z,13,null,true)+.1)]);w.push(2*stW(st)*.85);}}
+ /* the water lies on the carved bed without the ground's roughness under 90 m (followed, the water met the banks in jagged steps), but never under
+    0.1 m over the ground less its 13 m grain (which stands through as stones),, and never climbs downstream past
+    a pool of STPOOL m held behind a sill: read off the full ground every 8 m its surface rose and fell with every bump */
+ for(let i=pts.length-2;i>=0;i--)if(pts[i][2]<pts[i+1][2])pts[i][2]=Math.min(pts[i+1][2],pts[i][2]+STPOOL);
+ /* the current from the fall over 32 m round each point, then eased (three passes of 1-2-1): core/water carries its ripples and its breakup noise down
+    the current, so a speed that jumped row by row (1 to 3 m/s off each 8 m step's own slope) stretched the pattern into squares and seams */
+ const n=pts.length,arc=[0];for(let i=1;i<n;i++)arc.push(arc[i-1]+Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1]));
+ let v=pts.map((p,i)=>{let a=i,b=i;while(a>0&&arc[i]-arc[a]<16)a--;while(b<n-1&&arc[b]-arc[i]<16)b++;const L=arc[b]-arc[a];
+  return L>1e-6?Math.min(3,1+40*Math.max(0,(pts[a][2]-pts[b][2])/L)):1;});
+ for(let it=0;it<3;it++)v=v.map((s,i)=>(v[Math.max(0,i-1)]+2*s+v[Math.min(n-1,i+1)])/4);
  return{pts,w,v};};
 // the decoded streams: [{wet, end, pts: [[x, z, s, bed]...]}] (the curves the page carves; made again at each call, for a
 // probe or a test: the page keeps only its segments)
@@ -555,8 +569,8 @@ function H(x,z,minWave,P,nr,nt){minWave=minWave||0;
  // the channels: carve to the bed line (or the local ground less the depth, whichever is lower); the wall leans wallK
  let cd=1e9,cut=0,cw=0,co=0;
  if(minWave<400){carveAt(x,z,h,S.wallK,CH,SC);h-=CH.k;cd=CH.d;cut=CH.cut;cw=CH.hw;co=CH.co;}
- let sd=1e9,sw=0;if(STHASH&&minWave<150){streamAt(x,z,h,S.wallK,STC);h-=STC.k;sd=STC.d;sw=STC.hw;}
- if(minWave<13)h+=(N5.vn(x/13,z/13)-.5)*1.1+(N5.vn(x/3.1+50,z/3.1)-.5)*.3;
+ let sd=1e9,sw=0,sbw=0;if(STHASH&&minWave<150){streamAt(x,z,h,S.wallK,STC,minWave);h-=STC.k;sd=STC.d;sw=STC.hw;sbw=STC.bw;}
+ if(minWave<13)h+=((N5.vn(x/13,z/13)-.5)*1.1+(N5.vn(x/3.1+50,z/3.1)-.5)*.3)*(1-sbw);   /* not in a stream's bed (STC.bw): it stood through the water there */
  // a world's own shaping of its land (W.landHook: openworld/isle-demo's coast, reef and mangrove flats); none here
  if(W.landHook)h=W.landHook(x,z,h,minWave);
  // the roads, last: the carriageway is level at the road's height whatever the detail did

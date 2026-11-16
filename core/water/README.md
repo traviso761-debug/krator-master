@@ -307,10 +307,18 @@ byte-identical) adds `wtrShoalK`, `wtrShoreDist`, `wtrWet`, `wtrSurf`, `wtrSurfS
   climbs where the line does not), as wide as the channel plus `margin` m a side under the banks, each row turned to the
   bisector at a bend (and stretched to keep its width). Per vertex: the current, the line's slope, the distance to the bank
   (negative under it), the distance downstream. Built as arrays: `KWater.ribbon` builds the same vertices in Godot.
+  The slope it carries is `slopeV` (2026-11-16): the fall over `PRESETS.flow.slopeWin` m (24) round each point, which
+  `WATER.flow` adds beside each point's own slope (to the next point: `fallsOf` and `sprayPoints` still read that). On a line
+  sampled finely off a rough bed the point's slope jumped in and out of the rapids band row by row, and the foam came out in
+  hard-edged bands; `slopeWin: 0` gives the old slope. The Godot twin (`KWater.ribbon`) still carries the point's slope: port it.
 - **`WATER.drawFlow(S, o)`**: the ribbon on one material: ripples **advected** along the current (`WATER.flowNormal`, the
   shader's `wtrFlowN`: two copies of a fixed ripple pattern, each carried downstream for half a phase and cross-faded, 150
   phases per wave period, turned with the current), rougher and white on the rapids (the line's slope, 1.2 % to 7 %) and
   along the banks (`wtrFlowFoam`), paler toward the banks, fading under them. `o.origin` keeps a long river's vertices local.
+  The foam is cut from a breakup noise carried with the current: `wtrBreak` (twin `WATER.breakNoise`, 2026-11-16), gradient
+  noise in two octaves, the second turned 37 degrees. The value noise before it flattens along its lattice lines, so the
+  threshold cut squares, Ls and diamonds along its 1.8 m cells (`test-flow-look.js`: 27 % of the foam's edges along the axes,
+  now 13 %, as edges with no preferred direction give).
 - **`WATER.curtain(S, {rows, cols})`**: a fall's curtain at equal times of flight down an arc (20's `curtainAt`: a parabola
   from the lip speed) that widens by `spread` m a side at the foot; its normals face out and up.
   **`WATER.drawFall(S, o)`** draws it with streaks that **fall with the water** (`WATER.fallStreak`: a periodic value noise
