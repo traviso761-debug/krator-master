@@ -34,9 +34,15 @@ const QRING={
 // Hall of the Decree, is the Prismarchy; each Prismarch's throne wears his monastery's colour. The great temple flies a banner
 // of each colour toward its monastery, so it is also called the Rainbow Temple (qnSpokeBanner). Spoke i stands on the bearing
 // i x 45 degrees, clockwise from north (qnSpokeDir: local -z is north). Earth-pigment tints over the textured wash.
+// The saffron monastery is the History Monks', the Order of Longsong's (the owner, 2026-11-16: "one of the monasteries of
+// Qiblai (and therefore of the Prismatic Council) is a History Monk monastery, and uses the Order's banner and color. as such
+// the order gets 1/8 of the council income"; saffron, the Order's colour, LORE.md): its trim and band in the Order's blue
+// (settlements/longsong 62-ls-arch.js LSP.blue), its buildings with Longsong's touches (qnOrderTouches, 89q3), its banner
+// on the Rainbow Temple with the Order's device (qnSpokeBanner). `order` marks it.
+const QN_ORDER_BLUE=0x2e5a9c,QN_ORDER_BLUE2=0x1f3f78;
 const QSPOKE=[
  {name:'Crimson',wall:0xa8302a,trim:XPAL.saffron,band:0x5a1c1c},
- {name:'Saffron',wall:0xd8862a,trim:XPAL.white,band:0x7a3a1a},
+ {name:'Saffron',wall:0xd8862a,trim:QN_ORDER_BLUE,band:QN_ORDER_BLUE2,order:'the History Monks (the Order of Longsong)'},
  {name:'Gold',wall:0xd4b040,trim:XPAL.red,band:0x6e4a1a},
  {name:'Green',wall:0x3f7a44,trim:XPAL.saffron,band:0x1f3f24},
  {name:'Turquoise',wall:0x2a9a94,trim:XPAL.white,band:0x1a4a48},
@@ -54,7 +60,9 @@ function qnSpokeBanner(x,y,z,i,h,cw){cw=cw==null?3.2:cw;const ry=qnSpokeYaw(i),g
  vB('vWood',x,y+h-.45,z,cw+.3,.16,.16,ry,xC(xPick(XPAL.dark)));
  const L=h*.58,p=loc(x,z,0,.14,ry);vB('vClothB',p[0],y+h-.55-L,p[1],cw,L,.06,ry,col);
  vB('vClothB',p[0],y+h-.55-L-.4,p[1],cw,.4,.07,ry,xC(QSPOKE[i].band));   /* a dark hem along the foot */
- for(let k=0;k<3;k++){const t=loc(x,z,(k-1)*cw/3,.14,ry);vB('vClothB',t[0],y+h-.55-L-1.6,t[1],cw/3-.15,1.2,.06,ry,col);}}   /* three tails */
+ for(let k=0;k<3;k++){const t=loc(x,z,(k-1)*cw/3,.14,ry);vB('vClothB',t[0],y+h-.55-L-1.6,t[1],cw/3-.15,1.2,.06,ry,col);}   /* three tails */
+ if(QSPOKE[i].order){const q=loc(x,z,0,.19,ry),s=cw*.5;vB('vClothB',q[0],y+h-.55-L*.62,q[1],s+.16,s+.16,.04,ry,xC(XPAL.white));   /* the Order's device: a blue field in a white border */
+  const q2=loc(x,z,0,.22,ry);vB('vClothB',q2[0],y+h-.55-L*.62+.08,q2[1],s,s,.04,ry,xC(QN_ORDER_BLUE));vBall('xGold',q2[0],y+h-.55-L*.62+.08+s/2,q2[1],s*.16,xC(XPAL.gold[0]));}}
 // o.sp a spoke (0-7): a clergy building in the inner ring takes the colour of the monastery whose sector it stands in (the
 // owner, 2026-11-15: "clearly defined areas of each color, and red is not over-represented"; settlements/qiblai sets o.sp by block)
 function qnRingC(ring,o){if(o&&o.sp!=null){const S=QSPOKE[o.sp%8];return{wall:xC(S.wall).multiplyScalar(rr(.95,1.02)),trim:xC(S.trim),band:xC(S.band)};}const R=QRING[ring]||QRING.lay;return{wall:xC(xPick(R.wall)),trim:xC(xPick(R.trim)),band:R.band?xC(xPick(R.band)):null};}

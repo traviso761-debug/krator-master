@@ -55,6 +55,8 @@ const VIEWS=(function(){const V={},S=QC_B.z1,E=QC_B.x1,L=QC_LM,L0=QC_LM;
  if(typeof QC_OIL!=='undefined'){const O=QC_OIL.O,gy=terrainH(O[0],O[1]);V['The oilfield']=[O[0]-250,gy+110,O[1]+260,O[0]+40,gy,O[1]];
   const ms=QC_OIL.assets.find(R=>R.key==='park_gatehouse');if(ms){const e=[ms.x+30,ms.z+44];V['The Yuni mission']=[e[0],terrainH(e[0],e[1])+1.7,e[1],ms.x-10,terrainH(ms.x,ms.z)+6,ms.z-50];}
   V['The lit south avenue']=[-3,terrainH(-3,QC_B.z1-30)+1.7,QC_B.z1-30,4,terrainH(4,QC_B.z1-220)+4,QC_B.z1-220];}
+ // the History Monks' monastery (the saffron spoke, the Order of Longsong's), from outside its parabolic gate
+ const om=QC_PLACE.find(p=>p.kind==='monastery'&&QSPOKE[p.o.v%8].order);if(om){const e=loc(om.x,om.z,9,58,om.ry),g=loc(om.x,om.z,0,14,om.ry),y=qcD(om.o.y,0);V['The History Monks monastery']=[e[0],y+5,e[1],g[0],y+6,g[1]];}
  // a wheel house nearest the Temple Mountain, from its open front: the wheel, the hangings, the lamps
  const wh=QC_PLACE.filter(p=>p.key==='qb_wheel_house').sort((a,b)=>Math.hypot(a.x-L0.x,a.z-L0.z)-Math.hypot(b.x-L0.x,b.z-L0.z))[0];
  if(wh){const y=qcD(wh.o.y,0),e=loc(wh.x,wh.z,2.2,5.2,wh.ry),g=loc(wh.x,wh.z,-1.5,-4.8,wh.ry);V['Inside a wheel house']=[e[0],y+.8+1.6,e[1],g[0],y+.8+1.8,g[1]];}

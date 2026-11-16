@@ -60,7 +60,32 @@ function buildQbMonastery(G,o){const V=xV(o)%8;reseed(33501+V);const W=52,D=52,P
  else if(piece===1){vPst('vPostB',0,P,cz,.22,14,xC(0x5a4632));vBall('xGold',0,P+14.2,cz,.3,xC(XPAL.gold[0]));for(let i=0;i<8;i++){const a=i*Math.PI/4;qnFlags([0,P+13.6,cz],[Math.cos(a)*14,P+3.6,cz+Math.sin(a)*8],18);}}
  else if(piece===2){kput('xDrumT',[0,P,cz],null,[2.0,.5,2.0],stone);kput('qSongDrum',[0,P+.5,cz],null,[1.6,3.4,1.6],null);for(const t of[.5,2.1,3.9])kput('xDrumS',[0,P+t,cz],null,[1.68,.2,1.68],xC(XPAL.gold[0]));qnRoof(0,P+4.2,cz,4,4,0,wash,{parapet:.3});for(const sx of[-1,1])for(const sz of[-1,1])vPst('xColS',sx*1.8,P,cz+sz*1.8,.2,4.2,stone);}
  else{xnTree(0,cz,9,null,P);vB('vStone',0,P,cz,4,.6,4,0,stone);}
- for(const s of[-1,1])vnLamp(s*3.4,P+3.4,D/2+.5,0);xnFolk(0,P,cz+4,5,6);}
+ for(const s of[-1,1])vnLamp(s*3.4,P+3.4,D/2+.5,0);xnFolk(0,P,cz+4,5,6);
+ if(SP.order)qnOrderTouches(W,D,P,SP);}   /* the History Monks' monastery: Longsong's touches */
+// ---------------------------------------------------------------- the History Monks' monastery: Longsong's touches
+// The saffron monastery is the Order of Longsong's (QSPOKE[1].order): the Great Gate's parabolic arch between two pylons
+// banded in the Order's blue, on the gate tower's face; the Eastern Watch's toron spire (banco tiers stuck with timber
+// torons, a blue band to each, a gilt finial) in the court's front corner; two drum halls under tile cones with electric
+// lanterns (Longsong has electric light) either side of the court; the Order's banners either side of the gate.
+// (settlements/longsong/BLUEPRINT.md: the drum halls, the parabolic gate, the toron spire, the Order's blue)
+function qnOrderTouches(W,D,P,SP){const blue=xC(QN_ORDER_BLUE),blue2=xC(QN_ORDER_BLUE2),stone=xC(0xb6b0a6),banco=xC(0xb07a4c),tim=xC(0x5a3a24),g=xC(XPAL.gold[0]);
+ // the parabolic gate on the gate tower's face (its door at z D/2+0.5)
+ const zf=D/2+.85,S=6.4,H=7.6,N=16,arc=u=>[u*S/2,P+H*(1-u*u),zf],nrm=[0,0,1];
+ for(let i=0;i<N;i++){const a=arc(-1+2*i/N),b=arc(-1+2*(i+1)/N);xnMember('qAshB',a,b,.8,.6,nrm,stone);}
+ for(const s of[-1,1]){const px=s*(S/2+1.9);vB('qAshB',px,0,zf-.1,2.6,P+H+2.2,1.7,0,stone);
+  for(const k of[2.6,5.4,H+.6])vB('xBandB',px,P+k,zf-.1,2.72,.45,1.82,0,blue);vBall('qGiltBall',px,P+H+2.5,zf-.1,.35,g);
+  qnBanner(s*(S/2+4.6),0,zf+1.8,4.4,xC(SP.wall),blue);}
+ // the toron spire in the court's front right corner
+ let y=P;const sx=W/2-7-4.2,sz=D/2-7-4.2;
+ for(const [w,h] of[[3.6,3.2],[3.0,3.0],[2.4,2.8],[1.8,2.6],[1.1,2.2]]){vB('xWashB',sx,y,sz,w,h,w,0,banco);vB('xBandB',sx,y+h-.32,sz,w+.06,.3,w+.06,0,blue);
+  for(const [nx,nz] of[[1,0],[-1,0],[0,1],[0,-1]])for(const u of[-w/3,0,w/3]){const q=[sx+nx*(w/2+.35)+(nz?u:0),sz+nz*(w/2+.35)+(nx?u:0)];vB('vWood',q[0],y+h*.45,q[1],nx?.7:.12,.12,nz?.7:.12,0,tim);}
+  y+=h;}
+ kput('xConeG',[sx,y,sz],null,[.45,1.2,.45],g);vBall('qGiltBall',sx,y+1.3,sz,.3,g);
+ // the two drum halls, either side of the court, their doors to its middle
+ for(const s of[-1,1]){const x=s*(W/2-7-5.5),z=2,R=3.4,h=4.8;kput('xDrumW',[x,P,z],null,[R,h,R],xC(XPAL.white));
+  kput('xDrumS',[x,P+h-.55,z],null,[R+.06,.4,R+.06],blue);kput('xDomeT',[x,P+h,z],null,[R+.4,1.8,R+.4],xC(0x8a847a));vBall('qGiltBall',x,P+h+1.9,z,.25,g);
+  const d=[x-s*R,z];vB('vDarkB',d[0]-s*.05,P,d[1],.12,2.3,1.3,0);vB('xBandB',d[0]-s*.1,P+2.3,d[1],.14,.3,1.6,0,blue);
+  kput('vBulb',[d[0]-s*.45,P+2.75,d[1]],null,[.16,.2,.16],null);vB('vIron',d[0]-s*.2,P+2.95,d[1],.5,.06,.06,0,xC(0x2e2a26));}}
 
 // ---------------------------------------------------------------- the grammarians' college
 // a smaller cloistered court of two-storey ranges, the library hall at the back: its walls carry the sound-grid
