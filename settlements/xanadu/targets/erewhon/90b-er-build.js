@@ -23,28 +23,62 @@ function placeTileGround(G,TL,avoidLm){for(const B of G.blocks)planLandmark(B.ke
  // and the Way's own masonry is the step
  const GWC=typeof GOLDEN_WAY!=='undefined'&&GOLDEN_WAY?GOLDEN_WAY.built:null;
  const stone=xC(xPick(XPAL.stone));const wall=(x,z,w,d,lo,hi)=>{if(GWC&&x+w/2>GWC[0]&&x-w/2<GWC[1]&&z+d/2>GWC[2]&&z-d/2<GWC[3])return;vB('vStone',x,lo-.4,z,w,hi-lo+.5,d,0,stone);vB('vStone',x,hi+.1,z,w+.2,.14,d+.2,0,stone.clone().multiplyScalar(1.06));};
- /* a wall the path crosses keeps a 3.2 m gap at its middle for the flight (citWalks) */
- const onPath=(r,c,r2,c2)=>PATH&&PATH.has(r,c)&&PATH.has(r2,c2);
- const wallGap=(x,z,w,d,lo,hi)=>{const along=w>d,L=along?w:d,s=(L-3.2)/2,o=(L-s)/2;
-  for(const sg of[-1,1])wall(along?x+sg*o:x,along?z:z+sg*o,along?s:w,along?d:s,lo,hi);};
+ /* a wall a flight crosses keeps a 3.2 m gap for it, centred on the flight (its lateral offset, citFlightPlan) */
+ const FP=PATH?citFlightPlan(PATH):null;
+ const wallGap=(x,z,w,d,lo,hi,off)=>{const along=w>d,L=along?w:d,g0=off-1.6,g1=off+1.6;
+  for(const [a,b] of[[-L/2,g0],[g1,L/2]]){if(b-a<.1)continue;const m=(a+b)/2;wall(along?x+m:x,along?z:z+m,along?b-a:w,along?d:b-a,lo,hi);}};
+ const wallAt=(key,x,z,w,d,lo,hi)=>{const f=FP&&FP.byEdge.get(key);if(f)wallGap(x,z,w,d,lo,hi,f.off);else wall(x,z,w,d,lo,hi);};
  for(let r=0;r<G.NR;r++)for(let c=0;c<G.NC;c++){if(!G.ok[r][c])continue;const x=G.X(c),z=G.Z(r),q=G.Q[r][c];
-  if(c<G.NC-1&&G.ok[r][c+1]&&Math.abs(q-G.Q[r][c+1])>.05){const n=G.Q[r][c+1];(onPath(r,c,r,c+1)?wallGap:wall)(x+4+(q<n?-.3:.3),z,.6,8.2,Math.min(q,n),Math.max(q,n));}
-  if(r<G.NR-1&&G.ok[r+1][c]&&Math.abs(q-G.Q[r+1][c])>.05){const n=G.Q[r+1][c];(onPath(r,c,r+1,c)?wallGap:wall)(x,z+4+(q<n?-.3:.3),8.2,.6,Math.min(q,n),Math.max(q,n));}}
- if(PATH)citWalks(G,PATH);
+  if(c<G.NC-1&&G.ok[r][c+1]&&Math.abs(q-G.Q[r][c+1])>.05){const n=G.Q[r][c+1];wallAt(r+','+c+'|'+r+','+(c+1),x+4+(q<n?-.3:.3),z,.6,8.2,Math.min(q,n),Math.max(q,n));}
+  if(r<G.NR-1&&G.ok[r+1][c]&&Math.abs(q-G.Q[r+1][c])>.05){const n=G.Q[r+1][c];wallAt(r+','+c+'|'+(r+1)+','+c,x,z+4+(q<n?-.3:.3),8.2,.6,Math.min(q,n),Math.max(q,n));}}
+ if(PATH){citBandWalls(G,PATH,FP,wallGap,wall);citWalks(G,PATH,FP);}
 }
+// the path's flights, planned before the walls (their gaps): one per link that steps, from the high cell's edge down into the
+// low cell; where a low cell takes two or more, each is moved off its walk's centre line (0 or 1.55 m either side, the
+// least that keeps their footprints apart), so two flights into one tile stand side by side (2026-11-12)
+function citFlightPlan(PATH){const cellOf=new Map(PATH.cells.map(q=>[q.r+','+q.c,q])),key=(A,B)=>{const [p,q]=[A,B].sort((u,v)=>u.r-v.r||u.c-v.c);return p.r+','+p.c+'|'+q.r+','+q.c;};
+ const F=[];for(const L of PATH.links){const A=cellOf.get(L.a.join(',')),B=cellOf.get(L.b.join(','));if(!A||!B)continue;const d=A.y-B.y;if(Math.abs(d)<.3)continue;
+  const hi=d>0?A:B,lo=d>0?B:A,D=Math.abs(d),n=Math.ceil(D/.2);F.push({hi,lo,ux:Math.sign(lo.x-hi.x),uz:Math.sign(lo.z-hi.z),ex:(hi.x+lo.x)/2,ez:(hi.z+lo.z)/2,D,n,t:.27,run:(n-1)*.27,off:0,key:key(A,B)});}
+ const foot=f=>{const ax=f.ex+(f.uz?f.off:0),az=f.ez+(f.ux?f.off:0),bx=ax+f.ux*f.run,bz=az+f.uz*f.run;
+  return[Math.min(ax,bx)-(f.uz?1.4:0),Math.max(ax,bx)+(f.uz?1.4:0),Math.min(az,bz)-(f.ux?1.4:0),Math.max(az,bz)+(f.ux?1.4:0)];};
+ const clear=G=>{for(let i=0;i<G.length;i++)for(let j=i+1;j<G.length;j++){const A=foot(G[i]),B=foot(G[j]);if(A[0]<B[1]&&B[0]<A[1]&&A[2]<B[3]&&B[2]<A[3])return false;}return true;};
+ const byLo=new Map();for(const f of F){const k=f.lo.r+','+f.lo.c;(byLo.get(k)||byLo.set(k,[]).get(k)).push(f);}let clash=0;
+ for(const G of byLo.values()){if(G.length<2||clear(G))continue;const O=[0,-1.55,1.55];let best=null;
+  for(let m=0;m<Math.pow(3,G.length);m++){let v=m,s=0;G.forEach(f=>{f.off=O[v%3];s+=Math.abs(f.off);v=Math.floor(v/3);});if(clear(G)&&(!best||s<best.s))best={s,o:G.map(f=>f.off)};}
+  if(best)G.forEach((f,i)=>f.off=best.o[i]);else{G.forEach(f=>f.off=0);clash++;}}
+ return{list:F,byEdge:new Map(F.map(f=>[f.key,f])),clash};}
+// walls round a path's band cells (87-er-layout keeps them flat at their path level): on each edge where the ground beside
+// differs, on its low side, with a flight's gap; a band cell next to a band cell on the path draws the shared edge once
+function citBandWalls(G,PATH,FP,wallGap,wall){const cellOf=new Map(PATH.cells.map(q=>[q.r+','+q.c,q]));let n=0;
+ for(const q of PATH.cells){if(q.kind!=='band')continue;
+  for(const [a,b] of[[0,1],[1,0],[0,-1],[-1,0]]){const r2=q.r+a,c2=q.c+b;if(r2<0||c2<0||r2>=G.NR||c2>=G.NC||G.used[r2][c2])continue;const o=cellOf.get(r2+','+c2);
+   if(o&&o.kind==='band'&&(r2<q.r||(r2===q.r&&c2<q.c)))continue;
+   const ny=o?o.y:G.ok[r2][c2]?G.Q[r2][c2]:terrainH(G.X(c2),G.Z(r2));if(Math.abs(ny-q.y)<.05)continue;
+   const ex=q.x+b*4,ez=q.z+a*4,low=q.y<ny?-1:1,x=ex+b*.3*low,z=ez+a*.3*low,w=a?8.2:.6,d=a?.6:8.2,lo=Math.min(q.y,ny),hi=Math.max(q.y,ny);
+   const [p1,p2]=[[q.r,q.c],[r2,c2]].sort((u,v)=>u[0]-v[0]||u[1]-v[1]),f=FP.byEdge.get(p1.join(',')+'|'+p2.join(','));
+   if(f)wallGap(x,z,w,d,lo,hi,f.off);else wall(x,z,w,d,lo,hi);n++;}}
+ window._citBandWalls=n;}
 // the citadel's walks (CIT_PATH, 87-er-layout; the owner, 2026-11-12): on a path's tile or band cell a paved square and an
 // arm 3 m wide to each neighbour on the path; on every link that steps, a flight of solid steps (risers 0.2 m or less,
 // treads 0.27 m) from the high cell's edge down into the low cell, through the wall's gap, and its strip in core/walk. The
 // Dome's precinct keeps its own walks. Paving and flights in the citadel's stone
-function citWalks(G,PATH){const pave=xC(XPAL.stone[0]),stair=xC(XPAL.stone[1]);let flights=0,steps=0;
+function citWalks(G,PATH,FP){const pave=xC(XPAL.stone[0]),stair=xC(XPAL.stone[1]);let flights=0,steps=0;const FL=[];
  const cellOf=new Map(PATH.cells.map(q=>[q.r+','+q.c,q]));
  for(const q of PATH.cells){if(q.kind==='dome')continue;const y=q.y;vB('vStone',q.x,y-.06,q.z,3.4,.1,3.4,0,pave);
   for(const [a,b] of[[0,1],[1,0],[0,-1],[-1,0]]){if(!cellOf.has((q.r+a)+','+(q.c+b)))continue;vB('vStone',q.x+b*2.85,y-.06,q.z+a*2.85,b?2.3:3,.1,a?2.3:3,0,pave);}}
- for(const L of PATH.links){const A=cellOf.get(L.a.join(',')),B=cellOf.get(L.b.join(','));if(!A||!B)continue;const d=A.y-B.y;if(Math.abs(d)<.3)continue;
-  const hi=d>0?A:B,lo=d>0?B:A,ux=Math.sign(lo.x-hi.x),uz=Math.sign(lo.z-hi.z),ex=(hi.x+lo.x)/2,ez=(hi.z+lo.z)/2,D=Math.abs(d),n=Math.ceil(D/.2),t=.27;
+ for(const f of FP.list){const {hi,lo,ux,uz,D,n,t}=f,ex=f.ex+(uz?f.off:0),ez=f.ez+(ux?f.off:0);
   for(let k=0;k<n-1;k++){const top=hi.y-(k+1)*D/n,cx=ex+ux*(k+.5)*t,cz=ez+uz*(k+.5)*t;vB('vStone',cx,lo.y-.05,cz,ux?t+.01:2.8,top-lo.y+.05,uz?t+.01:2.8,0,stair);steps++;}
-  flights++;if(typeof KWALK!=='undefined')KWALK.strip({a:[ex-ux*.4,hi.y,ez-uz*.4],b:[ex+ux*((n-1)*t+.3),lo.y,ez+uz*((n-1)*t+.3)],w:2.6,name:'citadel walk flight',tag:'citadel:walk'});}
- window._citWalks={cells:PATH.cells.length,flights,steps};}
+  /* a flight moved off the walk's line: the paving carried over to it at the foot */
+  if(f.off){const fx=ex+ux*(f.run+.6),fz=ez+uz*(f.run+.6);vB('vStone',fx,lo.y-.06,fz,ux?1.4:2.9,.1,uz?1.4:2.9,0,pave);}
+  flights++;FL.push({lo:[lo.r,lo.c],hi:[hi.r,hi.c],ex,ez,ux,uz,off:f.off,run:f.run,y0:lo.y,y1:hi.y});
+  if(typeof KWALK!=='undefined')KWALK.strip({a:[ex-ux*.4,hi.y,ez-uz*.4],b:[ex+ux*(f.run+.3),lo.y,ez+uz*(f.run+.3)],w:2.6,name:'citadel walk flight',tag:'citadel:walk'});}
+ /* the Vale's plants in the lawn quarters beside the walks (the owner, 2026-11-12): about half the quarters of a path's
+    tile, the species and the quarter from core/rand by cell, the crown fitted to the quarter (xaPlant's room) */
+ let planted=0;const SEED=KRAND.child(20261112,'citadel walk plants'),KINDS=[[27,1.2],[17,1.0],[15,1.0],[32,1.4],[5,1.4],[31,1.0],[14,1.2]];   /* small crowns only: a wisteria (6-9 m) squeezed to a quarter drew nothing (an empty volume, 2026-11-15) */
+ if(typeof xaPlant==='function')for(const q of PATH.cells){if(q.kind!=='tile')continue;
+  for(const [sx,sz] of[[-1,-1],[1,-1],[-1,1],[1,1]]){if(KRAND.unit(KRAND.hash(SEED,q.r,q.c,sx,sz))>.5)continue;
+   const K=KINDS[Math.floor(KRAND.unit(KRAND.hash(SEED,q.r,q.c,sx,sz,7))*KINDS.length)];if(xaPlant('tree',q.x+sx*2.75,q.y,q.z+sz*2.75,null,{sp:K[0],r:K[1]})===true)planted++;}}
+ window._citWalks={cells:PATH.cells.length,flights,steps,planted,clash:FP.clash};window._citFlights=FL;}
 // the citadel's grounds, then the gridded gardens (GRID_GARDENS: tiles only)
 placeTileGround(CIT_G,CIT_TILES);
 // the Golden Way (kits/xanadu 78o): the descending court from the Pleasure Dome's North Door to the palace's gate iwan and postern,

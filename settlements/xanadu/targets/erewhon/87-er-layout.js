@@ -291,6 +291,10 @@ const CIT_PATH=(function(){const G=CIT_G,NR=G.NR,NC=G.NC,K=(r,c)=>r*NC+c,gate=GA
  return{cells:[...net].map(k=>{const r=Math.floor(k/NC),c=k%NC;return{r,c,x:G.X(c),z:G.Z(r),y:L.get(k),kind:kind(r,c)};}),
   has:(r,c)=>net.has(K(r,c)),links:links.map(([p,q])=>({a:[Math.floor(p/NC),p%NC],b:[Math.floor(q/NC),q%NC],ya:L.get(p),yb:L.get(q)})),
   targets:T.map(t=>({name:t.name,cell:t.cell})),steep,length:net.size*G.U};})();
+/* a path's cell on the band along the wall is flat at its path level (the band's ground otherwise takes the nearest tile's
+   level and ramps between them, through the flights; 2026-11-12); 90b walls it where it meets other ground */
+if(CIT_PATH){const BAND=new Map(CIT_PATH.cells.filter(q=>q.kind==='band').map(q=>[q.r+','+q.c,q]));
+ if(BAND.size){const G=CIT_G,h0=CIT_HFN;CIT_HFN=(x,z)=>{const q=BAND.get(Math.round((z-G.oz)/G.U)+','+Math.round((x-G.ox)/G.U));return q?q.y:h0(x,z);};}}
 CIT_G.path=CIT_PATH;window._citPath=CIT_PATH&&{cells:CIT_PATH.cells.length,length:CIT_PATH.length,links:CIT_PATH.links.length,steep:CIT_PATH.steep};
 for(const g of GATES){disc(g.x,g.z,22,'plaza','#c9b48a');precinct(g.x,g.z,20,g.kind+' gate');}
 // ---------------------------------------------------------------- the plazas, the markets, the parks (painted; the build fills them)

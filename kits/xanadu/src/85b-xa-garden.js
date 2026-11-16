@@ -36,7 +36,7 @@ function xnXPPot(x,y,z,r,c,plant){vPst('xDrumS',x,y,z,r,r*1.4,xC(c));kput('xDisc
  if(plant!==false&&!(typeof xaPlant==='function'&&xaPlant('shrub',x,y+r*1.4,z,r*3)))kput('xLeaf',[x,y+r*1.7,z],null,[r*1.6,r*1.4,r*1.6],xC(xPick(XPAL.leaf)));}
 // a hedge ribbon L long, run along ry's local z (as xnRill runs): until 2026-11-10 it ran across, so the jet allée's and the
 // parterre's 8 m hedges stood 3-4 m out over their neighbours' tiles
-function xnXPHedge(x,y,z,ry,L){const p=loc(x,z,0,0,ry);vB('xPaint',p[0],y,p[1],.5,.8,L,ry,xC(XGP.hedge));}
+function xnXPHedge(x,y,z,ry,L){const p=loc(x,z,0,0,ry);vB('xHedgeB',p[0],y,p[1],.5,.8,L,ry,xC(XGP.hedge));}   // leaves, not paint (86b, 2026-11-12)
 // a garden palm: the Vale's (xaPlant fits its crown to the lot), else a trunk of drums and seven fronds, the fronds' reach
 // (3 m at full size) shrunk to the crown room as xnTree's leaves are
 function xnXPPalm(x,z,h){if(typeof xaPlant==='function'&&xaPlant('palm',x,0,z,h))return;const k=Math.min(1,xaRoom(x,z)/3),t=xC(0x8a6a48);
@@ -149,6 +149,6 @@ xaGardenDef('xa_gate_fall','Gate waterfall (4 m)',function(G,o){reseed(32821+(o.
 xaGardenDef('xa_parterre','Parterre',function(G,o){reseed(32831+(o.v|0));const V=xV(o),c=xC(xPick(XPAL.stone));vnReg('Parterre',0,0,4.2,3);
  vB('xEarthB',0,-.06,0,8,.1,8,0,xC(0xc9a06a));vB('xEarthB',0,-.02,0,8,.1,1.2,0,xC(0xd9c29a));vB('xEarthB',0,-.02,0,1.2,.1,8,0,xC(0xd9c29a));
  const cols=V===1?[0x9a4aa8,0xf2c12e,0xe8a0c0]:V===2?[0xd0302a,0xf07020,0xf8d848]:[0xe8a0c0,0xf4efe4,0xd04a8a];
- for(const s of[[-1,-1],[-1,1],[1,-1],[1,1]]){const cx=s[0]*2.3,cz=s[1]*2.3;vB('xEarthB',cx,-.02,cz,2.8,.14,2.8,0,xC(0x5a4a34));vB('xPaint',cx,0,cz+s[1]*1.3,2.8,.5,.3,0,xC(XGP.hedge));
+ for(const s of[[-1,-1],[-1,1],[1,-1],[1,1]]){const cx=s[0]*2.3,cz=s[1]*2.3;vB('xEarthB',cx,-.02,cz,2.8,.14,2.8,0,xC(0x5a4a34));vB('xHedgeB',cx,0,cz+s[1]*1.3,2.8,.5,.3,0,xC(XGP.hedge));
   for(let k=0;k<8;k++){const p=[cx+rr(-1.1,1.1),cz+rr(-1.0,1.0)];kput('xLeaf',[p[0],.16,p[1]],null,[.3,.24,.3],xC(0x3f7a34));vBall('xPaintBall',p[0],.34,p[1],.08,xC(xPick(cols)));}}
  for(const s of[-1,1])xnXPHedge(s*3.7,0,0,0,8);xnTree(2.6,-2.6,rr(3,4.5));if(V===2)xnXPPot(0,0,0,.3,XGP.terracotta);},{h:5});

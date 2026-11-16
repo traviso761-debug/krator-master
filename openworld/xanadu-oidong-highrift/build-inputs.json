@@ -171,7 +171,7 @@
     "kits/xanadu/src/70-xa-tex.js": "2efcc6922687bd9e374c03bdc8c3b75d5d2a1f06bf7da6656e4f95d0d32df02f",
     "kits/xanadu/src/71-xa-mat.js": "d08001da45495ca8d49b9df566d56c8c5b2567ee7d49b8e8b60c73deac436d41",
     "kits/xanadu/src/71c-xa-openings.js": "b018f238df3a253e4573734db17edf867545ecdb6978f8ef980b51c25abd8d1f",
-    "kits/xanadu/src/72-xa-helpers.js": "1afea4611a678e9489bc833ba4dea3b9ccc6a858145286b5906d85db430f7a2f",
+    "kits/xanadu/src/72-xa-helpers.js": "f3cf8104a0bd25b377ad2094f5bd182db09d71e705a517f61a39ca456c83d27d",
     "kits/xanadu/src/74-xa-dwell.js": "bb9c91c412efa39261e024b14a3775cfea0b13d6c431fcb9c5268d33752f0773",
     "kits/xanadu/src/75-xa-trade.js": "3895008e41a75239e86eeef378a5fbc4105fad02d76c9e05b23f93d952e9daf5",
     "kits/xanadu/src/76-xa-farm.js": "521948ad2d1b357968419c09366526657e2c9b8905a46f63076c141decdad861",
@@ -186,11 +186,11 @@
     "kits/xanadu/src/81-xa-public.js": "4097666e9e26d85cb1dcf20a5e2762e59c1401d2351c6428e88759fe06a2ed9b",
     "kits/xanadu/src/82-xa-hill.js": "f9c22d7ecbf4f7be22691f7ebf6a54944c430ed0c3583a56bdc9101e918799f8",
     "kits/xanadu/src/83-xa-turk.js": "8f6d5bfa2ad54116b10b16d2d461003563e6e0813990396636ddf4d1315d8306",
-    "kits/xanadu/src/84-xa-grandbath.js": "5de3aa99d6781df1097227c5458ed83c473dfd4c7ef3389543425de3d4d90844",
+    "kits/xanadu/src/84-xa-grandbath.js": "26907798a871a95454092dbcf46b37e43c8e215b7d8d016dcc7ea4d9462e0607",
     "kits/xanadu/src/85-xa-water.js": "77705cdd79600992c5dbb862b84f068c0ecf5f6d78419d33fb25d453205695b6",
-    "kits/xanadu/src/85b-xa-garden.js": "38f4801e1aa90fa4403a80877389f5bd36e9b5d83d82fd30682baa64687281d2",
-    "kits/xanadu/src/86-xa-vizier.js": "dff28b74cc0c2b39adc55303263cfd04f5b1e3ce5ae221e5450d80348dbd4c59",
-    "kits/xanadu/src/86b-xa-plants.js": "6c2692661d2ecb8b17eeb32167adaae5d0f2afce0e9067fe3e6fd98c4c8eede3",
+    "kits/xanadu/src/85b-xa-garden.js": "6891cc3c25d3f87c9c4515a5b5d32b9034374046695ac5ab5b4f16a138f6d5c6",
+    "kits/xanadu/src/86-xa-vizier.js": "81d804bd18ec7429f2c73576d8c0f905a25a503e0fbc7d6acb72f1ba0ec59398",
+    "kits/xanadu/src/86b-xa-plants.js": "9a0d930405ad5084b1a59d418042d5475699d63b2ab965d1da78ca6492ab01b4",
     "kits/xanadu/src/87-xa-spicer.js": "a33e757eef4182ab5fe0003d6be20792c247da6d1cd74a4cdb511f503c6977c3",
     "kits/xanadu/src/87b-xa-andean.js": "a153512190df7ee8b6f31ad1e1d6661c1c2c861648e0fbc1a426345032581ede",
     "kits/xanadu/src/87c-xa-erewhon.js": "e19ce7c9662d187a11ac62c2edf8a435ac4cf75b9ca9224e68b351b149414cfc",
@@ -294,12 +294,12 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.html": "25d5ec42177a45c397db385c7c42463de9cf9063b15b330f8311f28a409e03dd",
+    "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.html": "fe47ada300d20ab24d65283840bd3e1bdc9606031d2a8189c61d237c9c2d64ce",
     "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.tex.oidong.js": "88510acf50c6f8c3830549722810e5183c685781ea2deaa2904e9297452e8086",
     "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.tex.xanadu.js": "7216145e7a4349521c0a4ed9f2f4478f5a709cb771ad7fa4c30270d0df288196"
    },
    "outputs_raw": {
-    "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.html": "25d5ec42177a45c397db385c7c42463de9cf9063b15b330f8311f28a409e03dd",
+    "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.html": "fe47ada300d20ab24d65283840bd3e1bdc9606031d2a8189c61d237c9c2d64ce",
     "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.tex.oidong.js": "88510acf50c6f8c3830549722810e5183c685781ea2deaa2904e9297452e8086",
     "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.tex.xanadu.js": "7216145e7a4349521c0a4ed9f2f4478f5a709cb771ad7fa4c30270d0df288196"
    }

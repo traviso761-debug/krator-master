@@ -259,8 +259,15 @@ Open:
   its plot's level), drawn as a paved square and 3 m arms on each path tile and band cell, and on every link that steps
   a flight of solid steps (risers 0.2 m or less, treads 0.27 m) through a 3.2 m gap in the retaining wall, each with a
   core/walk strip: 27 flights, 320 steps. Audit after: median 1.51 (was 1.71), 222 of 985 pairs over 2 (was 277).
+  **Flights checked** (2026-11-15): the flights are planned before the walls (`citFlightPlan`); where a tile takes two,
+  they stand side by side, 1.55 m off the walk's line (three moved; footprints checked apart); a path's cell on the band
+  is flat at its path level (87, `CIT_HFN`) and walled where it meets other ground (`citBandWalls`, 20), so no ground
+  rises over a step. The Vale's plants in about half the lawn quarters beside the walks (63; species and quarter from
+  core/rand by cell). **Garden green**: the hedges (`xHedgeB`: the parterre's, the char-bagh beds', the Grand Baths'
+  walk, the Vizier's garden) and the beds' leaf balls take the Vale's cushion leaves (86b); `xaPlant`'s plants are
+  obstacles to the biome's zone pass, which runs after the gardens; no tree crowns overlap in the gardens or the citadel.
   Still open: five links step over 3 m at fixed ends (an entry, the band, the Dome's edge), so their flights run 6 to
-  8 m; the band's ground (`G.at`, nearest tile) can step without a wall where a path crosses it; the Pleasure Dome's
+  8 m; the Pleasure Dome's
   south door to the palace gate is still 104 m walked (the Golden Way's own flights); mines to kitchens (the kitchens'
   door faces north) and the palace's west doors to the Chancellor are the worst left; the Temple and the Envoys have
   no door facing out; the path tiles are plain walks, the garden pieces fitted to them are next.

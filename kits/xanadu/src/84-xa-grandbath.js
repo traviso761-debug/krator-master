@@ -79,7 +79,7 @@ function buildXaGrandBath(G,o){reseed(32201+(o.v|0));const V=xV(o),lit=xLit();
   kput('xDiscG',[0,cy,z+.09],qEuler(Math.PI/2,0,0),[.5,.06,.5],cu.clone().multiplyScalar(1.2));for(let k=0;k<16;k++){const a=k/16*TAU,L=k%2?1.0:1.5;const r=1.05+L/2;
    kput('xGoldB',[Math.cos(a)*r,cy+Math.sin(a)*r,z],qEuler(0,0,a),[L,.16,.14],cu);}}}
  // the gardens: cypress avenues either side of the pool, parterres beyond them, hedges, lamps at night
- for(const s of[-1,1]){for(let k=0;k<7;k++)xnCypress(s*5.6,BZ-3-k*4,rr(6,9));xnCharBagh(s*15,0,BZ-14,12,22,0,{r:1.6,channel:.8});vB('xPaint',s*9,0,BZ-14,.4,.6,26,0,xC(xPick(XPAL.leaf)).multiplyScalar(.8));}
+ for(const s of[-1,1]){for(let k=0;k<7;k++)xnCypress(s*5.6,BZ-3-k*4,rr(6,9));xnCharBagh(s*15,0,BZ-14,12,22,0,{r:1.6,channel:.8});vB('xHedgeB',s*9,0,BZ-14,.4,.6,26,0,xC(xPick(XPAL.leaf)).multiplyScalar(.8));}
  if(lit){for(const s of[-1,1]){vnLampPost(s*6,0,HZ+HD/2+9,3.4);vnLampPost(s*4.6,0,BZ-24,3.2);}for(let i=0;i<NX;i++)for(const s of[-1,1])vBall('vBulb',px[i],PH-2.2,HZ+s*(HD/2-.9),.09);}
  vnFolk(0,HZ+HD/2+8,4,3);vnFolk(0,BZ-10,3,2);}
 
