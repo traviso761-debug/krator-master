@@ -27,8 +27,9 @@ room programmes (`settlements/longsong/longsong_blueprint.py`). It adds:
 | `floors/section.png` | along u from the lake to the Quiet Walk, heights x3 |
 | `FURNITURE.md` | the manifest: 6,186 pieces as a brief; 22 new pieces listed at the end |
 
-**The frame.** u runs from the cove's waterline uphill, bearing NNE toward the isle's crest; v runs along the shore,
-positive toward the isle's east tip. Metres. The heights are assumptions until core/world draws the isle (`PLAN.md`
+**The frame.** The origin is the cove's head on the waterline, px 846, 1508.703. u runs uphill, due north up column
+846 toward the isle's crest; v runs east along the shore, toward the isle's east tip. The cove's two headlands
+(`tools/scale-model/edit_517_azure.py`) stand at u -200, v ±480; sheets G and W show their roots. Metres. The heights are assumptions until core/world draws the isle (`PLAN.md`
 section 1).
 
 ## What the references teach

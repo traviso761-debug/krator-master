@@ -9,6 +9,24 @@ This is a plan for the owner to approve. Nothing is built. The blueprint sheets 
 `FURNITURE.md` is the furniture manifest drawn from the same room data. Everything not quoted from the owner is
 *proposed*. The questions are in section 13.
 
+## The owner's answers (2026-11-16)
+
+| Question | Answer |
+|---|---|
+| 1. The site | **"Agreed"**: the south-shore cove facing Erehwon. Then: "can you make the cove landform here": done, section 1 (`tools/scale-model/edit_517_azure.py`) |
+| 2. The Hall's size | **"Keep it"**: 256 cots in eight turnings of 32 |
+| 3. The doctrine and the wheels | **"Stop at night"**: the Hall's wheels are braked at the Lulling. The doctrine (the Song dreamed and unfinished) stands as proposed |
+| 4. The dream cup | **"Honey. Milk, lotus"** |
+| 5. Who may sleep | **"Anyone who has fasted and bathed; men and women's side"**: the east turnings are the women's, the west the men's (section 5) |
+| 6. The White Lily's sick | **"Sure"**: the Seven Nights |
+| 7. The Station | **"Sure"**: its passes are clock events for the shutters and the festivals |
+| 8. The fishermonks | **"Fish without qualm; night fishing is fine"** |
+| 9. The names | **"Not fixed anywhere. Village names are fine"**: the turnings' names here stand for the Order; West End, North Shore, East End |
+| 11. The dress | **"White with blue dress"** |
+| 12. Textures | **"Yes new textures"**: three prompts in `core/materials/PROMPTS-NEEDED.md` section 56; felt and reed matting are already in the library |
+| 13. The people | **"300 people in monastery and 600 in villages"**: the isle holds 900, not 600 (section 3) |
+| 14. Building it | open |
+
 ## 0. What is settled, and what this plan proposes
 
 **Settled** (the owner and the repo):
@@ -32,7 +50,7 @@ This is a plan for the owner to approve. Nothing is built. The blueprint sheets 
 3. The Hall of Dreaming: 256 cots in eight turnings, its rites, its keepers, its quiet and its light.
 4. The buildings as records: mostly the Qiblai kit's own in the blue dress, plus new ones in this settlement's `src/`
    (section 6).
-5. The isle's 600 people: the Order about 236 and three fishing villages about 364.
+5. The isle's people: the owner set them at 900, the monastery 300 and three fishing villages 600 (section 3).
 
 ## 1. The site
 
@@ -62,13 +80,13 @@ then**; they are listed in the sheets' headers and in the section.
 
 **Where on the isle** (question 1). The owner asked for the wharf "on the shore that faces Erehwon". Erehwon at 841,1517
 lies almost exactly across the isle's axis from its middle (u -0.5, v +13.6 px in the isle's frame). The shore facing it
-is **row 1508's cells, x 845-848**, about 20 km NNE of the city. The cove goes at **px 846,1509** (water) under the shore
+is **row 1508's cells, x 845-848**, about 20 km NNE of the city. The cove goes at **px 846,1508.7** (its head on the waterline) under the shore
 cell 846,1508 (about 190 m), with a spur up through 848,1506 (279 m) to the crest at 845,1504 (the scale-model session's
 reading). Three placements were weighed:
 
 | | Where | For | Against |
 |---|---|---|---|
-| **A (recommended)** | **The south-shore cove at 846,1509.** The monastery climbs from the wharf to the brow, about 60-80 m up. The summit kora stands apart, 8 km up the Dream Road | wharf, pilgrims' landing, hostel and Hall in one walk; the Hall faces Erehwon and the Pleasure Dome across 20 km of water; the Valaam and Athos pattern (a great house by the landing, sketes and a summit chapel inland) | the summit kora is a day's outing, not a daily circuit (section 4e) |
+| **A (chosen: the owner, "agreed")** | **The south-shore cove, its head at px 846,1508.7.** The monastery climbs from the wharf to the brow, about 60-80 m up. The summit kora stands apart, 8 km up the Dream Road | wharf, pilgrims' landing, hostel and Hall in one walk; the Hall faces Erehwon and the Pleasure Dome across 20 km of water; the Valaam and Athos pattern (a great house by the landing, sketes and a summit chapel inland) | the summit kora is a day's outing, not a daily circuit (section 4e) |
 | B | The summit, the dome's middle. The wharf is an outstation 8 km away | the kora round the summit is the monastery's own; seen from every shore | every pilgrim and every fish walks 8 km uphill; the wharf and the Hall are two sites |
 | C | The west tip, facing the west stack and Erehwon's bay obliquely | the tip's narrower neck | Erehwon is not in front of it; 24 km from the summit |
 
@@ -81,8 +99,10 @@ The quarrel between the Sultan and the council (`kits/qiblai/PLAN.md` 2a: a plea
 Song") is then a view: from the Hall's terrace the Order looks across the water at the Sultan's dome.
 
 **The frame.** The sheets use the cove's frame:
-- u runs from the waterline inland and uphill, bearing NNE (toward the isle's crest).
-- v runs along the shore, positive toward the isle's east tip (ESE).
+- The origin is the cove's head on the waterline, **px 846, 1508.703** (`edit_517_azure.report.json`).
+- u runs from the waterline inland and uphill, due north up column 846 toward the isle's crest (the shore here runs
+  along row 1508, east and west).
+- v runs along the shore, positive toward the isle's east tip.
 - Metres. u < 0 is the lake.
 
 Assumed heights over the lake:
@@ -95,18 +115,32 @@ Assumed heights over the lake:
 | the upper precinct | +60 m (the Blue Gate) to +76 m (the Hall of Dreaming's terrace) |
 | the summit, 8 km on | about +300 m |
 
-These heights fit the 1:1 slope: about 190 m over about 2 km, so the precinct's +60 to +76 m stands 600-700 m in from
-the water. The precinct is cut and filled into terraces on the slope; the gentler crest beyond carries the Dream Road.
+**The natural slope** up column 846 (core/world's Catmull-Rom on the cells) is about 15 % near the water: +31 m at
+200 m in, +62 m at 400 m, +92 m at 600 m, +122 m at 800 m. The wharf and the lower ward are cut into its foot, and the
+upper precinct's terraces (+60 to +76 m) are cut and filled into it 450-650 m in. That is the page's ground (the town's
+footprint in core/world), not the landform's. The gentler crest beyond carries the Dream Road.
 
-**A landform record to ask for** (step AD1, through the scale-model session's queue). The session asks for the cove's
-centre and radius and the brow's height:
-- `lf_azure_cove`: a sheltered cove centred at **px 846,1509**, **radius about 250 m**, with its two headlands.
-- **A brow terrace at +70 m** over the lake (the upper precinct, about 320 x 340 m), reached by a spur from the cove up
-  the line of 848,1506.
-- Like `lf_pleasure_dome_isle`, a sub-cell landform that core/world stamps at 1:1.
-- Requested only after the owner approves the site. The scale-model session holds it until then (2026-11-16).
-- **It waits on a `cove` kind in core/world's landform stamper**, which so far stamps only islands. Phēr's
-  `lf_pher_cove` and `lf_pher_headland` (e87e34dc2) wait on the same kind. Whichever session adds it first serves both.
+**The cove landform** (the owner, 2026-11-16: "can you make the cove landform here"; `tools/scale-model/edit_517_azure.py`,
+its report beside it). It is records only, after `edit_517_pher.py`, the way Phēr's cove was made:
+- **Two headlands**, one `island` record each: `lf_azure_cove_west` at px 845.76,1508.803 (crest 35 m over the lake) and
+  `lf_azure_cove_east` at px 846.24,1508.803 (40 m). Each is a knob 300 m in radius at its waterline, 200 m out from the
+  head and 480 m either side of the centre line, joined to the slope behind it.
+- **The cove** is the water left between them, open to the south-south-west toward Erehwon:
+  - about 370 m across at 200 m out;
+  - 7 m deep 50 m from its head, 21 m at 200 m, 50 m at 400 m;
+  - each arm dry for 500 m out from the head.
+- **No new stamper kind is needed.** core/world's stamper (`41l-world-landforms.js`) already stamps islands. The plan
+  first asked for a `cove` kind, as Phēr's first records did, but Phēr's final records (dc15601bc) use islands too.
+- **One record per arm.** The stamper stamps a point with the first record whose reach holds it, so an arm drawn as a
+  base and a tip would blank part of itself. The two arms' reaches overlap only over the cove's open water. There the
+  west arm's skirt lifts the bed by up to 9 m and the water stays.
+- **Checked** against the cells with core/world's Catmull-Rom and 41l's island profile (without the biome detail and the
+  waterline's wobble). On a scratch copy of the scale-model line (dc15601bc) the edit writes only `landforms.json`, and
+  `tests/test_smodel.py` gives 280 passes and the same 2 known failures as before (the north-east outer wall's station
+  bases).
+- **To land**, the scale-model session re-runs the script on its line, as it did Phēr's. The region cut checks the arms
+  at 1:1 (`WLAND.check`).
+- **The monastery's pin** is a separate step (AD1).
 
 ## 2. The Order of the Azure Dream (lore, proposed)
 
@@ -126,12 +160,12 @@ mend the Broken Wheel. The Azure Dream holds that **the Song is not whole yet**:
   disturber and a curse.
 - **The wheels stop at night in the Hall.** This is the Order's heresy, if it is one. At the Lulling the Hall's kora
   wheels are braked, because the dreamers turn the Wheel in their sleep. The great wheels on the Ālph never stop, and the
-  other seven Prismarchs have argued the point for a century. This is question 3.
+  other seven Prismarchs have argued the point for a century. (The owner, 2026-11-16: "stop at night".)
 - **The Station's nights** are the Order's festivals. When the Station crosses overhead (LORE 6.14), the Hall's
   clerestory shutters are opened and its light falls on the sleepers. On those nights the whole Order walks the High Kora.
 - **The sacraments of the night.** Honey and milk, the faith's own sacraments ("For he on honey-dew hath fed, / And drunk
   the milk of Paradise"), taken with steeped **blue lotus** from the precinct's ponds. The biome's lotus lies on still
-  water (`biomes/xanadu`, zone *shore*). This is question 4.
+  water (`biomes/xanadu`, zone *shore*). (The owner, 2026-11-16: "honey. Milk, lotus".)
 
 **The secret this sets up.** Longsong's sealed library holds the poem's English text with its author's name
 (`kits/qiblai/PLAN.md` 2a). The plan proposes that it also holds the author's preface: the poem was composed in a dream
@@ -145,31 +179,35 @@ back. They say nothing. A quest could put the preface in the player's hands.
 - **The Prior** keeps Grēṭ-Āil when the Prismarch is away.
 - **The Master of the Hall** keeps the Hall of Dreaming and its keepers.
 - **The Master of the Wharf** keeps the fishermonks, the barge and the catch.
-- **The dream-keepers**, twenty-four: the keepers of the night, the scribes of the Waking Gallery, and the readers.
-- **The fishermonks**, forty, who fish the lake for the house.
+- **The dream-keepers**, thirty: the keepers of the night, the scribes of the Waking Gallery, and the readers. Women
+  keepers keep the women's side.
+- **The fishermonks**, fifty, who fish the lake for the house.
 
 **The Order and the others** (proposed):
 - **The Order of the White Lily** (Qiblai's hospital) sends it the sick who are not mending. They sleep the **Seven
-  Nights** in the Hall. This is the Asclepieion's incubation, the oldest dream rite there is (question 6).
+  Nights** in the Hall. This is the Asclepieion's incubation, the oldest dream rite there is (the owner, 2026-11-16: "sure").
 - **Erehwon's court** comes across the water on festival nights in its own boats. The Order takes the Sultan's gold and
   disapproves of his dome.
 
-## 3. Who lives on the isle (about 600)
+## 3. Who lives on the isle (900: the owner, 2026-11-16)
 
-| Who | Where | People *est.* |
+The owner: "300 people in monastery and 600 in villages". The sim's `lk.great-isle` had about 600 for the whole isle,
+so its re-fit takes 900 (section 11). The split inside each is *est.*
+
+| Who | Where | People |
 |---|---|---|
-| choir monks (the Prismarch, the Prior, the officers, the senior monks) | the upper precinct's cells and the great monastery | 82 |
-| fishermonks | the Fishermonks' House at the wharf | 40 |
-| dream-keepers (keepers, scribes, readers) | the Dream-keepers' House | 24 |
+| choir monks (the Prismarch, the Prior, the officers, the senior monks) | the upper precinct's cells and the great monastery | 100 |
+| fishermonks | the Fishermonks' House at the wharf | 50 |
+| dream-keepers (keepers, scribes, readers) | the Dream-keepers' House | 30 |
 | the Station Watch | the summit | 4 |
-| novices | the Novices' College | 30 |
-| lay servants and their families | the lower ward | 56 |
-| **the monastery** | | **236** |
-| **West End** (*Wesṭ-Ēn*, proposed name), fishing, on the isle's west tip facing the west stack | core/hamlet fishing village | 150 |
-| **North Shore** (*Nōṛ-Shōr*), fishing, facing Old Thalaba across the water | core/hamlet fishing village | 120 |
-| **East End** (*Īsṭ-Ēn*), fishing and the Order's herds, on the east tip by the east isle | core/hamlet fishing village | 94 |
-| **the villages** (the Order's lay tenants: a share of the catch, and boats for the festival) | | **364** |
-| **the isle** | | **600** |
+| novices | the Novices' College | 40 |
+| lay servants and their families | the lower ward | 76 |
+| **the monastery** | | **300** |
+| **West End** (*Wesṭ-Ēn*), fishing, on the isle's west tip facing the west stack | core/hamlet fishing village | 250 |
+| **North Shore** (*Nōṛ-Shōr*), fishing, facing Phēr and Old Thalaba across the water | core/hamlet fishing village | 200 |
+| **East End** (*Īsṭ-Ēn*), fishing and the Order's herds, on the east tip by the east isle | core/hamlet fishing village | 150 |
+| **the villages** (the Order's lay tenants: a share of the catch, and boats for the festival) | | **600** |
+| **the isle** | | **900** |
 
 **Pilgrims come on top of this; they are not residents.**
 - An ordinary night has about 60-120 sleepers.
@@ -214,7 +252,7 @@ waking way does not cross the sleeping way.**
 - **the Net Loft** over the cool fish store, where the Order's share is set aside;
 - **a 180 m Ropewalk** for the net cord and the mooring lines;
 - **the Boatwrights' Yard**, where trunks floated round from the woods are hollowed;
-- **the Fishermonks' House**: forty cells round a court, a refectory and a chapel with its own lake wheel. They keep night
+- **the Fishermonks' House**: fifty cells round a court, a refectory and a chapel with its own lake wheel. They keep night
   hours, so they live by the boats, below the hill and far from the sleepers.
 
 **At night the fishermonks' lamps on the water are a second, lower sky,** seen from the Hall's terrace. Their one rule
@@ -255,7 +293,8 @@ From the gate up the axis:
 4. Flanking it:
    - **the Prismarch's House** and **the Prior's and Officers' House** (west);
    - **the Novices' College** and **the Refectory and Kitchen** (east);
-   - **two ranges of Monks' Cells**, sixty cells each in two storeys, along the precinct's sides.
+   - **two ranges of Monks' Cells**, seventy cells each in two storeys, along the precinct's sides (the choir monks, the
+     keepers' novices and guests of the Order).
 5. **The Lotus Garden, the Garden of Lowered Voices.** Blue lotus in four still ponds and gravel walks. The last talk is
    allowed here, before the Hall.
 6. **The Hall of Dreaming** at the head of the axis, on the highest terrace, wrapped in its kora (section 5). Beside it:
@@ -298,6 +337,12 @@ The faith walks its kora three times with eyes lowered (LORE 6.13). The Order wa
 - **Eight turnings of 32 cots** (4 x 4 bays), named for the Song's eight turnings. They are read round the hall
   clockwise from the foot: 1 to 4 up the east side, 5 to 8 down the west. A low painted screen with the turning's number
   in the sound-grid script stands at each end.
+- **The women's side and the men's side** (the owner, 2026-11-16: "men and women's side"). The east side, turnings 1 to
+  4, is the women's; the west side, turnings 5 to 8, is the men's. Women keepers walk the east half of the Keepers' Walk,
+  and men keepers the west. A low lattice screen runs down the middle of the walk, between the lamp niches, from the
+  Porlock Screen to the Lulling dais. The shrine at the head faces both sides. The Lustral Bath and the Robing Room each
+  have two halves, and the Waking Gallery has eight booths a side. Each side's pilgrims rest in their own hostel range
+  below.
 - **At the head:**
   - **the Lulling Dais**, where a keeper plays the first turning on the dulcimer at dusk;
   - **the Damsel's Shrine**: her gilt image with her dulcimer, and the one gold lamp in the hall, never put out;
@@ -375,7 +420,7 @@ leaves by the clerestory's vents.
 
 Most of the head house is the Qiblai kit's own buildings, in the blue dress (`QSPOKE[5]`: wall `0x2a4a9a`, gold trim,
 band `0x1a2a5a`), so it reads as one of Qiblai's Orders. On the shore and in the lower ward the walls are white wash,
-with the blue on the upper blocks of the sacred buildings only, as Longsong keeps red for its Red Palace (question 11).
+with the blue on the upper blocks of the sacred buildings only, as Longsong keeps red for its Red Palace (the owner, 2026-11-16: "white with blue dress").
 
 | Record | What | From | Size *est.* (m) | Budget |
 |---|---|---|---|---|
@@ -465,12 +510,18 @@ monastery and to the Dream Road.
 ## 9. Textures
 
 The Xanadu pack (`settlements/xanadu/materials.json`) and the Qiblai kit's (`kits/qiblai/tex`) cover the walls, roofs,
-gold, wood and tile. Three surfaces may want sets of their own. They go to `core/materials/PROMPTS-NEEDED.md` only if
-the owner wants them (question 12):
-1. **The painted night ceiling**: deep blue with gold stars and the eight-spoked Wheel. It could also be a decal on a
-   plain blue.
-2. **Felt**: the floor runners, the curtains of the Porlock Screen, the wall lining.
-3. **Reed matting** (*tul*) for the cots and the boathouse floor.
+gold, wood and tile. The owner wants new sets for the Hall (2026-11-16: "yes new textures"). **Three prompts** are in
+`core/materials/PROMPTS-NEEDED.md` section 56, all full colour. They land as families in `settlements/azure-dream/materials.json`:
+
+| id | Family | For |
+|---|---|---|
+| `ceiling.night.stars` | `adNight` | the painted night over the cot bays: deep blue, gold eight-pointed stars, small whole Wheels. The great Wheel over the Keepers' Walk is drawn over it with the Qiblai kit's wheel sign, in gold |
+| `wall.mural.dream` | `adMural` | the Hall's walls above the dado, the Waking Gallery, the Readers' Room: sleepers in rows under a blue night, and in the clouds above them the Damsel with her dulcimer and the Wheel |
+| `cloth.blanket.azure` | `adBlanket` | the dream cots' blankets: the Order's weave, indigo and white with a saffron line |
+
+Two surfaces the plan first listed are **already in the library**, so no prompt is needed:
+- **felt** (`cloth.felt`, family `adFelt`): the floor runners, the Porlock Screen's curtains, the wall lining;
+- **reed matting** (`fibre.reedmat`, or `reed.mat.woven` for the boathouse floor; family `adReed`): the cots' mats.
 
 ## 10. Core adoption (write in full before the first fragment)
 
@@ -504,7 +555,8 @@ The page is a settlement placed on the world map, so it starts from `settlements
 These numbers are for whoever re-fits `lk.great-isle` in `XAN_TUNE` (the sim session on `claude/openworld-sites-24defd`).
 This plan does not edit the tune.
 
-**People.** The 600 split into the monastery (236) and three villages (150, 120, 94), as in section 3. Pilgrims are a
+**People.** 900 (the owner): the monastery 300 and three villages of 250, 200 and 150, as in section 3. `lk.great-isle`
+has about 600 today. Pilgrims are a
 flow from Erehwon: about 100 a night, and 256 or more on the Station's nights.
 
 **What the isle makes:**
@@ -532,9 +584,10 @@ isle's food bill, and a real demand for its dairy and hives.
 
 | Step | What | Who | Proved by |
 |---|---|---|---|
-| **AD0** | this plan and its sheets; the owner's answers to section 13 | this session, the owner | |
-| **AD1** | the map: the cove (`lf_azure_cove`, centre px 846,1509, radius about 250 m, the brow terrace at +70 m; needs core/world's landform stamper to take a `cove` kind, as Phēr's records do) and its spur; a pin for the monastery at the cove, one for the Station Watch at the summit, the Dream Road; the three villages' pins | the scale-model session's queue | the pins' ground; core/world's stamp at 1:1 |
-| **AD2** | the sim: `lk.great-isle` split into the monastery and three villages; pilgrims as a flow; the isle's goods | the sim session | its economy test |
+| **AD0** (**done** 2026-11-16) | this plan and its sheets; the owner's answers to section 13 (all but 14) | this session, the owner | |
+| **AD1a** (**written** 2026-11-16) | the cove: `tools/scale-model/edit_517_azure.py`, two headland records (section 1), to be re-run on the scale-model line after `edit_517_pher.py` | this session; the re-run is the scale-model session's | the script's own checks; `test_smodel.py` on that line |
+| **AD1b** | a pin for the monastery at the cove's head (846,1508), one for the Station Watch at the summit, the Dream Road; the three villages' pins | the scale-model session's queue | the pins' ground |
+| **AD2** | the sim: `lk.great-isle` re-fitted to 900 (the monastery 300 and three villages); pilgrims as a flow; the isle's goods | the sim session | its economy test |
 | **AD3** | the new records (section 6) in `settlements/azure-dream/src/` on the Qiblai kit's helpers and `QSPOKE[5]`'s dress, seeds 34000-34199, on a sheet beside the blue monastery; the reused records' blue dress | this settlement | the footprint test; the sheet's `verify.py --assert` |
 | **AD4** | the 22 catalog pieces in the Xanadu culture file | the catalog's owner | `kits/catalog/verify.py --assert` |
 | **AD5** | the Hall as room data, its cot grid, the side rooms furnished; the reach audit in node first | | `core/walk` reach in node; the page's `--interiors` assert |
@@ -544,34 +597,7 @@ isle's food bill, and a real demand for its dairy and hives.
 
 ## 13. Questions for the owner
 
-1. **The site.** **A (recommended):** the south-shore cove facing Erehwon (px 846,1509, under shore cell 846,1508), the monastery climbing from
-   the wharf to the brow, the summit kora 8 km up the Dream Road. **B:** the whole monastery on the summit, with the
-   wharf an outstation 8 km off. **C:** the west tip.
-2. **The Hall's size.** 256 cots (eight turnings of 32) in a 54 x 30 m pillared hall. Keep it, double it (a second hall
-   or a gallery storey of cots), or make it smaller?
-3. **The doctrine** (proposed): the Song was dreamed and is unfinished, and the Order seeks its lost turnings in dreams.
-   Keep it? And **do the Hall's wheels stop at night** (the Order's heresy, argued on the council), or keep turning
-   silently?
-4. **The dream cup.** Honey, milk and steeped blue lotus, a mild draught from the precinct's ponds. Or honey and milk
-   only?
-5. **Who may sleep.** Anyone who has fasted and bathed, of any faith? Men and women in the same hall, kept apart by
-   turning? Or a men's side and a women's side, as at Oropos?
-6. **The White Lily** sends the sick who are not mending to sleep the Seven Nights (dream incubation for healing). Keep
-   the link?
-7. **The Station.** Is it in the sky that `core/atmos` draws, so its passes can be clock events for the shutters and the
-   festivals? If not, the shutters open on a schedule.
-8. **The fishermonks.** The faith forbids war-making by clergy, not fishing. Do Decree monks fish without qualm? And is
-   night-lamp fishing right for the lake?
-9. **The names.** The eight turnings are named here from the poem's sections: the Decree, the Garden, the Chasm, the
-   Fountain, the Dome and the Caves, the Damsel, the Song Revived, the Circle Thrice. Has the faith's division of the
-   Song been fixed elsewhere? And are the villages West End, North Shore and East End (*Wesṭ-Ēn*, *Nōṛ-Shōr*, *Īsṭ-Ēn*)?
-10. ~~**Where the new records live.**~~ **Settled with the Qiblai kit's session (2026-11-16):** in the settlement's own
-    `src/`, on the kit's helpers, seeds 34000-34199. The Orders' head houses stay out of `kits/qiblai`.
-11. **The dress.** White wash with the Order's blue on the sacred buildings' upper blocks (recommended), or the blue spoke's
-    blue walls throughout, as in Qiblai's clergy ring?
-12. **The textures.** Ask for the painted night ceiling, felt and reed matting (section 9), or stay on the packs and draw
-    the ceiling as a decal?
-13. **The population split.** The monastery 236, the villages 364. Or does the owner want the Order larger, with the
-    villages smaller?
+Questions 1 to 13 are answered (the table at the top; 10 by the Qiblai kit's session). One is open:
+
 14. **Building it.** Is the page the next step after the owner's answers, or does it wait until core/world has cut the
     isle on the new lake?

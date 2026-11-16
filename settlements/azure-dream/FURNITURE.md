@@ -91,7 +91,7 @@ The cove faces Erehwon across 20 km of water, the bay isle (a lamp chorten, the 
 
 ## Sheet H1: the Hall of Dreaming, the sleepers' floor
 
-A Tibetan pillared hall (a dukhang) 54 x 30 m inside, on a 3 m grid: 18 bays long, 10 across. Two bays down the middle are the Keepers' Walk under the clerestory; four bays either side hold the cots, two to a bay, 256 in all, in eight turnings of 32 named for the Song's eight turnings, read round the hall clockwise from the foot. The Damsel's shrine and the Lulling dais at the head; the Porlock Screen at the foot. Round the hall, the covered kora with its wheels. West of the foot, the waking way: the Waking Gallery's sixteen booths and the Register. East, the sleepers' way in: the Lustral Bath and the Cup House.
+A Tibetan pillared hall (a dukhang) 54 x 30 m inside, on a 3 m grid: 18 bays long, 10 across. Two bays down the middle are the Keepers' Walk under the clerestory; four bays either side hold the cots, two to a bay, 256 in all, in eight turnings of 32 named for the Song's eight turnings, read round the hall clockwise from the foot: the east side (1-4) the women's, the west (5-8) the men's, a low lattice down the walk between them. The Damsel's shrine and the Lulling dais at the head; the Porlock Screen at the foot. Round the hall, the covered kora with its wheels. West of the foot, the waking way: the Waking Gallery's sixteen booths and the Register. East, the sleepers' way in: the Lustral Bath and the Cup House.
 
 | # | Room | Kind | Decor | m2 | Pieces |
 |---|---|---|---|---|---|

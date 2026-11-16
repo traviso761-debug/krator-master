@@ -3,7 +3,7 @@
 Every texture or pattern sheet the owner still has to source or generate, each with its finished prompt. Paste a block
 as it is, one image per block. **Everything delivered lives in `PROMPTS-archived.md`** (checked against `core/materials/library/`, `patterns/` and each build's `materials.json` on `origin/main`, 2026-10-19); this file holds only what is still owed.
 
-**Count: 21 prompt blocks** (2026-11-11: +2 for the Qiblai kit, section 43; +1, `metal.scorched` for the Motor Vehicles kit's burnt ruins, section 36; 2026-11-10: -5, the owner's delivery of that day; 2026-11-09: +3 for the southern highlands' upper stations, section 37; +15 for the hyperjungle's lands and the savannah rims, section 40, 2026-11-08; counted 2026-11-04 before them).
+**Count: 24 prompt blocks** (2026-11-16: +3 for Grēṭ-Āil's Hall of Dreaming, section 56; 2026-11-11: +2 for the Qiblai kit, section 43; +1, `metal.scorched` for the Motor Vehicles kit's burnt ruins, section 36; 2026-11-10: -5, the owner's delivery of that day; 2026-11-09: +3 for the southern highlands' upper stations, section 37; +15 for the hyperjungle's lands and the savannah rims, section 40, 2026-11-08; counted 2026-11-04 before them).
 
 **Delivered 2026-11-03:** section 31's five (the Gills: `rock.lamina.pipe`, `mineral.crust.ferromanganese`, `mineral.crust.brucite`,
 `card.breathfringe`, `card.turf.limed`) and ten owed on unmerged branches (High Rift, nwbay, nhighlands, ringisles, the rift rim, Copper Glacier),
@@ -484,6 +484,22 @@ Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfec
 ```
 Leaf spray cut-out on a fully transparent background, PNG with alpha, square, 2048x2048: three short sprays of glossy oval leaves, each 4-7 cm, thick and waxy with a faint fine grain of silica, seen from above in soft even light. The leaves are a deep jade green (#2f8a76, #3a9a84) at their bases, and their surface carries a structural, view-dependent sheen: toward the tips and edges it shifts through peacock teal (#2aa8a8) to violet (#7a4ab8) and rose (#c86a8a), like a beetle's wing or a soap film, never a glow and never a flat pigment. No flowers, no stems longer than the leaves, nothing else on the card.
 ```
+
+## 56. Grēṭ-Āil, the Azure Dream's Hall of Dreaming (`settlements/azure-dream`, 2026-11-16)
+
+The head monastery of the Order of the Azure Dream (`settlements/azure-dream/PLAN.md` section 9; the owner, 2026-11-16:
+"yes new textures"). Numbered 56 to keep clear of the other branches of 2026-11-16 (53 is taken twice). Felt and reed
+matting come from the library already (`cloth.felt`, `fibre.reedmat`, `reed.mat.woven`). Three sets are owed, for the
+Hall of Dreaming. They land as families in `settlements/azure-dream/materials.json` (`adNight` for the cot bays' painted
+ceiling, `adMural` for the Hall's and the Waking Gallery's walls above the dado, `adBlanket` for the 256 dream cots'
+blankets), then `python3 tools/textures/pack.py settlements/azure-dream`. Until then the page draws `wood.lacquer` in the
+Order's blue, the Xanadu wash and `cloth.wool`. **3 prompts**, all full colour.
+
+| id | Prompt |
+|---|---|
+| `ceiling.night.stars` | Seamless tileable texture, square, 2048x2048. Orthographic view looking straight up at a flat painted ceiling filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no text, no letters, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a Himalayan monastery's painted wooden ceiling of planks about 25 cm wide, painted as the night sky: a deep lapis and azurite blue ground (#142a5e, #1a3570, #20407e) laid on unevenly so faint brush sweeps show, scattered with small eight-pointed gold-leaf stars of three sizes (#d8b040, #c89a30), the largest about 4 cm, and fine silver-white dots between them (#d8dce6), and, sparse and evenly spaced, four small eight-spoked golden wheels about 12 cm across; the gold slightly rubbed, the blue darkened with lamp smoke along the plank joints. Full colour: keep the blue and gold as they are, do not tint. |
+| `wall.mural.dream` | Seamless tileable texture, square, 2048x2048. Orthographic view of a flat, front-on painted wall filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no text, no letters, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a Himalayan temple mural in mineral pigments on smooth lime plaster, a repeating frieze in two registers: below, rows of robed sleepers lying on low cots under blue blankets, their eyes closed, seen from the side; above them, in curling white clouds on a deep azurite night (#1e3a7a, #2a4a8a) with gold stars, a woman in a flowing robe playing a hammered dulcimer on her lap, a golden halo behind her, beside her a large eight-spoked golden wheel; robes in white, saffron and pale blue (#eee8dc, #d8862a, #8aa8d8), gold outlines (#d4b040), fine black ink linework, the paint faintly crazed and soot-darkened toward the top. Full colour: keep the pigments as they are, do not tint. |
+| `cloth.blanket.azure` | Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a hand-woven wool blanket, plain weave with a slightly felted, soft surface and the yarn's twist just visible: broad bands of deep indigo (#1e2e6a) alternating with narrower bands of undyed cream wool (#e8e0cc), each cream band edged on both sides by a thin saffron line (#d8902a), and in the indigo bands a row of small woven cream diamonds every 10 cm; the bands run across the image, about 18 cm repeat, a little uneven as hand weaving is. Full colour: keep the colours as they are, do not tint. |
 
 ## Gaps with no prompt yet
 
