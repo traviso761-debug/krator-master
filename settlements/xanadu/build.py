@@ -350,7 +350,9 @@ def build_one(target, do_checks):
     # tools/textures/pack.py): KMAT.pack('<name>') inlined here, bound by the kit's own fragment (KMAT.bindMat), as Iziz's --kit
     _pd = os.path.join(ROOT, *KIT['packFrom'].split('/')) if KIT and KIT.get('packFrom') else (KIT['dir'] if KIT else None)   # "packFrom": a kit's pack another folder's build takes (the city of Qiblai takes kits/qiblai's)
     if KIT and KIT.get('pack') and os.path.isfile(os.path.join(_pd, 'tex', 'pack.json')):
-        bodies[KIT_MATLIB_PACK] = matlib_pack.fragment(_pd, KIT['pack'])
+        # kit.json "packSide": true writes the kit's pack beside the page too (<page>.tex.<pack>.js, as Xanadu's own), so a
+        # page near its size cap keeps its code inline and its images apart (the city of Qiblai, 2026-11-16: 7.5 MB of 15)
+        bodies[KIT_MATLIB_PACK] = matlib_pack.fragment(_pd, KIT['pack'], side=side if KIT.get('packSide') else None)
         order = sorted(order + [KIT_MATLIB_PACK])
     if KIT and target in KIT.get('interiors', []):   # a kit target with interiors: the furniture bundle and the interiors core
         sys.path.insert(0, os.path.join(ROOT, 'kits', 'catalog'))

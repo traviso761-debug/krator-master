@@ -6,7 +6,7 @@
 reseed(QC.SEED+1);const QC_T0=performance.now();
 for(const f of FRAME_HOOKS_PRE)FRAME_HOOKS.push(f);
 // ---------------------------------------------------------------- the sky and its light (KratorSky, as Erewhon's)
-const QC_SKY={hour:9.6,day:120,dens:1.2};
+const QC_SKY={hour:(/[?&]hour=([\d.]+)/.exec(location.search)||[0,9.6])[1]*1,day:120,dens:1.2};   /* ?hour=21 opens the city by night (its lamps lit) */
 KratorSky.attach(scene,7000);scene.fog.density=.00022;
 const qcHemi=scene.children.find(o=>o.isHemisphereLight);
 function qcSkyTick(){KratorSky.update(camera.position,QC_SKY.hour,QC_SKY.day,QC_SKY.dens);const L=KratorSky.lighting();

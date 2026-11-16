@@ -57,6 +57,11 @@ CASES = {
                  box=[-80, -80, 80, 80], height="(x,z)=>terrainH(x,z)", step=2,
                  hbox=[-440, -620, 620, 450], hstep=4),
     "yuni": dict(page="settlements/yuni/yuni.html", kind="records", building="bld_00005"),
+    # Qiblai's electric light (2026-11-16): a 260 m reach of the south avenue inside the south gate, its poles, wires and
+    # street lamps (krator-lamps from _api.lamps: the bulbs, warm, 24 m), for the lighting test (godot/tests/qiblai)
+    "qiblai": dict(page="settlements/qiblai/dist/qiblai.html", kind="gltf",
+                   box=[-40, 530, 40, 790], height="(x,z)=>terrainH(x,z)", step=2,
+                   lamps="b => _api.lamps(b)", lamp_margin=10),
 }
 
 

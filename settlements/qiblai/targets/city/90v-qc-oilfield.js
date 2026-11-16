@@ -5,6 +5,7 @@
 // field's line, and the town's from the Prismarchy's generator along every major avenue. Poles in the kit's timber and iron
 // (baked once), the wires one line set with a sag.
 // window._qiblaiOil reports.
+const QC_LAMPS=[];   /* every street lamp's bulb [x, y, z]: the light pool below, the krator-lamps export (_api.lamps, 91z) */
 const QC_OILF=(function(){const S={assets:0,errors:[],poles:0,lamps:0,wireSpans:0};window._qiblaiOil=S;
  if(typeof YKIT==='undefined'||typeof QC_OIL==='undefined'){S.errors.push('no YKIT or QC_OIL');return S;}
  for(const R of QC_OIL.assets){const A=YKIT.ASSET_BY_KEY[R.key];if(!A){S.errors.push('no asset '+R.key);continue;}const y=terrainH(R.x,R.z);
@@ -14,6 +15,8 @@ const QC_OILF=(function(){const S={assets:0,errors:[],poles:0,lamps:0,wireSpans:
   catch(e){S.errors.push(R.key+': '+(e&&e.message||e));}}
  try{const E=YKIT.emitBuckets(),M=YKIT.emitMerged();YKIT.kitDone();S.instances=E.instances;S.meshes=E.meshes+M.meshes;S.tris=M.tris;}
  catch(e){S.errors.push('emit: '+(e&&e.stack||e));}
+ /* the pumpjacks nod (Locus's 76-locus-anim.js, in the bundle as YKIT.anim: their moving parts on the page's TICKS) */
+ try{const a=YKIT.anim&&YKIT.anim();S.anim=a?{records:a.records,meshes:a.meshes}:null;}catch(e){S.errors.push('anim: '+(e&&e.stack||e));}
  // ---- the light (the owner, relayed 2026-11-16: "Qiblai will be electrified along all major avenues and in buildings except
  // in poor areas ... just enough to use the cut of oil they get from Yuni"). Runs of nodes [x, z, ground y, kind, c]: kind
  // 'pole' (a plain pole), 'lamp' (a lamp on an arm toward c, the street's middle), 'cross' (that, and a lamp hung on a wire
@@ -44,6 +47,13 @@ const QC_OILF=(function(){const S={assets:0,errors:[],poles:0,lamps:0,wireSpans:
     if(prev){const G=gates.find(G=>segD([G.x,G.z],prev,c)<8);if(G){const gy=qcD(G.o.y,0),gc=[G.x+rx*Math.min(off,1.4),G.z+rz*Math.min(off,1.4)];R.push(node(gc[0],gc[1],gy+(G.o.v===1?5:7.5)-.7-8.6,'hang'));}}
     const nearX=xs.some(q=>Math.hypot(q[0]-c[0],q[1]-c[1])<12);R.push(node(p[0],p[1],null,(k++%2&&!nearX)?'cross':'lamp',c));prev=c;}}
   if(R.length>1)runs.push(R);}
+ // the kora (the pilgrims' ring) wired as well (2026-11-16, "work on the limits"): its outer side, the same stations
+ if(QC_KORA&&QC_KORA.pts&&QC_KORA.pts.length>2){const K=QC_KORA.pts.concat([QC_KORA.pts[0]]),R=[],off=(QC_KORA.w==null?12:QC_KORA.w)/2-1.2;let prev=null,k=0;
+  for(let i=1;i<K.length;i++){const a=K[i-1],b=K[i],L=Math.hypot(b[0]-a[0],b[1]-a[1]);if(L<1)continue;const ux=(b[0]-a[0])/L,uz=(b[1]-a[1])/L;let rx=-uz,rz=ux;
+   const m=[(a[0]+b[0])/2,(a[1]+b[1])/2];if(rx*(m[0]-QC_LM.x)+rz*(m[1]-QC_LM.z)<0){rx=-rx;rz=-rz;}   /* the outer side */
+   for(let t=16;t<L-8;t+=32){const c=[a[0]+ux*t,a[1]+uz*t],p=[c[0]+rx*off,c[1]+rz*off];if(gates.some(G=>Math.hypot(G.x-c[0],G.z-c[1])<11))continue;
+    const nearX=xs.some(q=>Math.hypot(q[0]-c[0],q[1]-c[1])<14);if(nearX)continue;R.push(node(p[0],p[1],null,k++%2?'cross':'lamp',c));prev=c;}}
+  if(R.length>1)runs.push(R);}
  // ---- drawn: poles (timber, a cross-arm, three insulators), the lamps (an iron arm and a bulb), the posts opposite, the wires
  const G=new THREE.Group();G.name='oil:power';const saveK=KXF;KXF=null;const tim=xC(0x5a4634),iron=xC(0x2e2a26),H=9,V=[];
  const sag=(a,b,s)=>{const n=8;for(let i=0;i<n;i++){const t0=i/n,t1=(i+1)/n,p=t=>[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t-s*4*t*(1-t),a[2]+(b[2]-a[2])*t];V.push(...p(t0),...p(t1));}};
@@ -52,13 +62,20 @@ const QC_OILF=(function(){const S={assets:0,errors:[],poles:0,lamps:0,wireSpans:
    if(k!=='hang'){const nx=R[Math.min(R.length-1,i+1)],pv=R[Math.max(0,i-1)],ry=Math.atan2(nx[0]-pv[0],nx[1]-pv[1])+Math.PI/2;
     vPst('vPost',x,y,z,.12,H,tim);vB('vWood',x,y+H-.5,z,1.8,.14,.14,ry,tim);for(const u of[-.75,0,.75]){const q=loc(x,z,u,0,ry);vB('vIron',q[0],y+H-.36,q[1],.08,.16,.08,0,iron);}S.poles++;
     if(c){const dx=c[0]-x,dz=c[1]-z,L=Math.hypot(dx,dz)||1,ux=dx/L,uz=dz/L,ay=Math.atan2(-uz,ux);
-     vB('vIron',x+ux*1.1,y+6.2,z+uz*1.1,2.2,.08,.08,ay,iron);kput('vBulb',[x+ux*2.2,y+6.0,z+uz*2.2],null,[.16,.2,.16],null);S.lamps++;
-     if(k==='cross'){const o=[2*c[0]-x,2*c[1]-z],oy=terrainH(o[0],o[1]),cy=terrainH(c[0],c[1]);vPst('vPost',o[0],oy,o[1],.1,6.8,tim);kput('vBulb',[c[0],cy+5.6,c[1]],null,[.2,.24,.2],null);S.lamps++;
+     vB('vIron',x+ux*1.1,y+6.2,z+uz*1.1,2.2,.08,.08,ay,iron);kput('vBulb',[x+ux*2.2,y+6.0,z+uz*2.2],null,[.16,.2,.16],null);S.lamps++;QC_LAMPS.push([x+ux*2.2,y+5.9,z+uz*2.2]);
+     if(k==='cross'){const o=[2*c[0]-x,2*c[1]-z],oy=terrainH(o[0],o[1]),cy=terrainH(c[0],c[1]);vPst('vPost',o[0],oy,o[1],.1,6.8,tim);kput('vBulb',[c[0],cy+5.6,c[1]],null,[.2,.24,.2],null);S.lamps++;QC_LAMPS.push([c[0],cy+5.5,c[1]]);
       const m=[c[0],cy+6.0,c[1]];sag([x,y+6.6,z],m,.15);sag(m,[o[0],oy+6.6,o[1]],.15);}}}
    if(last){sag(last,at,.6);S.wireSpans++;}last=at;}}
  KXF=saveK;kbake(G);for(const n in KIT.items)KIT.items[n].length=0;scene.add(G);
  const wg=new THREE.BufferGeometry();wg.setAttribute('position',new THREE.Float32BufferAttribute(V,3));
  const wires=new THREE.LineSegments(wg,new THREE.LineBasicMaterial({color:0x161412}));wires.name='oil:wires';wires.userData.probeSkip=true;wires.raycast=()=>{};scene.add(wires);
  S.runs=runs.length;
+ // ---- real light by night: the LIGHTS nearest the eye of every street lamp become point lights (warm, 24 m), chosen again
+ // twice a second; by day their intensity is 0 (they stay in the scene, so no shader recompiles at dusk). The rest stay
+ // bulbs. Night is the sky's (the sun under the horizon, 81-sky.js / 99-start.js NIGHT)
+ const LIGHTS=6,pool=[];for(let i=0;i<LIGHTS;i++){const L=new THREE.PointLight(0xffd6a0,0,24,2);L.castShadow=false;L.name='lamp light '+i;scene.add(L);pool.push(L);}
+ let lt=0;FRAME_HOOKS.push(dt=>{lt+=dt||.016;if(lt<.5)return;lt=0;const P=camera.position,night=typeof NIGHT!=='undefined'&&NIGHT;
+  const near=night?QC_LAMPS.map(l=>[l,(l[0]-P.x)**2+(l[2]-P.z)**2]).filter(e=>e[1]<160*160).sort((a,b)=>a[1]-b[1]).slice(0,LIGHTS):[];
+  pool.forEach((L,i)=>{const e=near[i];if(e){L.position.set(e[0][0],e[0][1],e[0][2]);L.intensity=1.8;}else L.intensity=0;});S.lit=near.length;});
  REG.push({name:'The town\'s power line (the Prismarchy\'s generator to the avenues\' lamps)',x:cg.x,y:terrainH(cg.x,cg.z),z:cg.z,r:6,h:10,cls:'infrastructure',key:'oil_power_line',tags:{culture:'qiblai',poles:S.poles,lamps:S.lamps}});
  return S;})();

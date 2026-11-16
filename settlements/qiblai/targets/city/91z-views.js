@@ -64,3 +64,8 @@ const VIEWS=(function(){const V={},S=QC_B.z1,E=QC_B.x1,L=QC_LM,L0=QC_LM;
  return V;})();
 // the city as one budget (as Erewhon's 93-er-ui.js): every type in the class 'city'
 BUDGET.showcase={tris:30000000,calls:3000};BUDGET.cls.city=30000000;for(const k in TSTAT.by)BUDGET.type[k.split('/')[0]]='city';
+// the street lamps as data for Godot (krator-lamps, godot/krator/lamps_import.gd; Girder's format): godot/tools/export_spike.py's
+// qiblai case reads _api.lamps(box). Night hours as Girder's; warm, 24 m
+if(window._api)window._api.setHour=h=>{QC_SKY.hour=h;};   /* the clock, for a night shot */
+if(window._api&&typeof QC_LAMPS!=='undefined')window._api.lamps=b=>({format:'krator-lamps',version:1,convention:'metres, +Y up; at is the bulb; color sRGB; size the halo\'s world diameter',
+ lamps:QC_LAMPS.filter(l=>!b||(l[0]>=b[0]&&l[0]<=b[2]&&l[2]>=b[1]&&l[2]<=b[3])).map(l=>({at:[+l[0].toFixed(3),+l[1].toFixed(3),+l[2].toFixed(3)],amp:1,radius:24,cool:false,color:'#ffd6a0',size:1.4,hours:[17.2,30.8]}))});

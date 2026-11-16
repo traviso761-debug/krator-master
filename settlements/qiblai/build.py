@@ -116,6 +116,13 @@ def ykit_bundle():
                         "/* Verge's furniture glue (71-verge-furnish.js) places the catalog pieces a Locus builder asks for (a lantern, a jar): here\n"
                         "   they are left out (KNOWN_ISSUES.md), the builders' own geometry kept */\n"
                         'function furnishAt() { return null; }\nfunction FURNISH() { return null; }\n', 1)
+    # the pumpjacks' motion (2026-11-16, "work on the limits"): Locus's 76-locus-anim.js, which Verge leaves out, run on demand
+    # once the wells are built (it reads LOCUS_ANIM, which their builders fill, and ticks on the page's TICKS)
+    ret = '\nreturn { PAL: PAL,'
+    assert text.count(ret) == 1, 'the YKIT bundle no longer returns its object as ' + ret
+    anim = io.open(os.path.join(ROOT, 'settlements', 'locus', 'src', '76-locus-anim.js'), encoding='utf-8').read()
+    text = text.replace(ret, '\n/* ---- settlements/locus/src/76-locus-anim.js, run on demand (after the pumpjacks are built) ---- */\n'
+                        'function YK_ANIM(){\n' + anim + '\nreturn window._locusAnim || null;\n}' + ret + ' anim: YK_ANIM,', 1)
     return text.replace('(settlements/verge/build.py)', '(settlements/verge/build.py, for settlements/qiblai: the oilfield and the mission)', 1)
 
 
@@ -132,7 +139,8 @@ def write_gen():
 
 BSRC.note(*([SPACE] + ['core/city/' + f for f in CITY_JS] + ['core/biome/' + f for f in FLORA_CORE] +
             ['biomes/%s/src/%s' % (k, f) for k, g, fs in FLORA_KITS for f in fs]))
-BSRC.note(*(VERGE.ykit_files() + [os.path.join(ROOT, 'settlements', 'locus', 'src', '81-glow.js'), os.path.join(ROOT, 'settlements', 'verge', 'build.py')]))
+BSRC.note(*(VERGE.ykit_files() + [os.path.join(ROOT, 'settlements', 'locus', 'src', f) for f in ('81-glow.js', '76-locus-anim.js')] +
+            [os.path.join(ROOT, 'settlements', 'verge', 'build.py')]))
 # the Xanadui script the kit lifts from the chart (kits/qiblai/xanadui_script.py), current before the kit's fragments are read
 sys.path.insert(0, os.path.join(ROOT, 'kits', 'qiblai')); import xanadui_script
 BSRC.note(xanadui_script.CHART, os.path.join(ROOT, 'kits', 'qiblai', 'xanadui_script.py'))

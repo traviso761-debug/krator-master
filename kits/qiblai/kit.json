@@ -12,6 +12,7 @@
   "89q5s-qb-shells.js"
  ],
  "pack": "qiblai",
+ "packSide": true,
  "interiors": [
   "kit"
  ],

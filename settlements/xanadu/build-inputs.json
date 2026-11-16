@@ -119,7 +119,7 @@
     "kits/xanadu/xanadu.py": "233e036b8d2d9d1e1b76d7c46ca3cc1b331a959cf5b3b161bedc7484324d98b0",
     "settlements/xanadu/KNOWN_ISSUES.md": "661a2f207e9bf708b502c3a7859add715fb76219203d7d8e998e63912a1c841e",
     "settlements/xanadu/PORT.md": "9c272d3ac51922e1baf86f07a4986b638776c7ff723dcf2a2ce44a08977c9add",
-    "settlements/xanadu/build.py": "d8e1ff06435bc82d4e29474561aabd72e83d98b6ba73addb1bc3126d8956fb8d",
+    "settlements/xanadu/build.py": "dcd0a53c79c7ac2e4c7d8af5e3e6fc46751c6dd564dca792f0d4b891a59cbdd7",
     "settlements/xanadu/src/00-head.html": "d84d1b9dcb330ed808adb6f76edc7630736d3b91250ee188af2d532a3429434f",
     "settlements/xanadu/src/10-core.js": "7c31cf7eb63a1666c0f1c8cd97fd810c1531d10e8d014c105f807a2ad521138b",
     "settlements/xanadu/src/12-stats.js": "67d17e87faa80d6e5503dd3dc0d53cb2b9e0d68ce77f256187968ee914f881bd",

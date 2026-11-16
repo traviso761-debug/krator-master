@@ -10,10 +10,11 @@
 # GODOT-PLAN.md asks the spike for. README.md and CHECKLIST.md say what to look at.
 extends Node3D
 
-const CASES := ["hyperjungle", "rift", "girder", "iziz", "yuni", "verge", "dhelv", "sedesert", "world-sedesert", "world-iziz", "world-sedesert-falls", "world-yuni"]   # keys 1-9; world-iziz, world-sedesert-falls and world-yuni by name (tools/shot.sh world-iziz)
+const CASES := ["hyperjungle", "rift", "girder", "iziz", "yuni", "verge", "dhelv", "sedesert", "world-sedesert", "world-iziz", "world-sedesert-falls", "world-yuni", "qiblai"]   # keys 1-9; world-iziz, world-sedesert-falls and world-yuni by name (tools/shot.sh world-iziz)
 const ABOUT := {
 	"hyperjungle": "krator-biome JSON: one hyperjungle tile (canvas textures, foliage hook, no LOD chunks)",
 	"rift": "krator-biome JSON: one rift tile (every mesh LOD-chunked; irid bark and far impostors are hooked)",
+	"qiblai": "glTF + krator-lamps: a 260 m reach of Qiblai's south avenue, its poles and wires, and its street lamps (halos; the nearest become OmniLight3D): the electric light of 2026-11-16",
 	"girder": "glTF from three's GLTFExporter: a 60 m region of Girder (material library textures; hooks lost)",
 	"iziz": "krator-atmos JSON for the whole city + a glTF region of the city centre",
 	"yuni": "KRATOR_EXPORT records: every building, door, window and light as tagged records; one interior in full",
@@ -156,7 +157,7 @@ func _load_case(name: String) -> Dictionary:
 				if terrain:
 					terrain.queue_free()
 				terrain = b.get_meta("ground")
-		"girder", "iziz":
+		"girder", "iziz", "qiblai":
 			if terrain:
 				terrain.position.y = -0.25   # the region carries its own ground: keep the sampled one just under it
 			if name == "iziz" and FileAccess.file_exists(dir + "atmos.json"):

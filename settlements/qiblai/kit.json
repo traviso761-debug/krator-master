@@ -17,6 +17,7 @@
   "69y-ykit-bundle.js"
  ],
  "pack": "qiblai",
+ "packSide": true,
  "packFrom": "kits/qiblai",
  "deterministic": [
   "20-core-walk.js",
