@@ -98,7 +98,12 @@ u -63..-41, v -11..11. With the barbican and the towers the footprint is about 3
    in the Blade Room by it (*proposed*). The cloister is the Decree's, the outer ward the order's work.
 4. **The order sleeps over its horses** (the Templars, the owner's fork). Eight companies of forty (*proposed*, named for
    the eight winds) sleep dressed above the stables of the north and south curtains, each pair of halls with a stair and
-   its captains between, each flank's companies with their own sally gate onto their own road.
+   its captains between, each flank's companies with their own sally gate onto their own road. The captains' stairs run
+   from the stables to the wall walk: at the gong each company either mans its own stretch of curtain or goes down to its
+   horses, without crossing another company's ground.
+12. **The horse is the House's biggest eater.** Hay sheds in the lists hold each flank's week; the year's hay is in barns
+    and ricks on the crest; the muck goes out by the sally gates to two middens and onto the terraces, which is why the
+    terraces can give two fifths of the grain.
 5. **The arms are issued at the threshold.** The Sword Hall and the Quiver House stand by the Main Gate and the muster
    court; the Marshal lives over his hall.
 6. **One link in a chain of fires** (the ribats). The Storm Tower on the west front reads the brow relay's mirrors and
@@ -134,9 +139,9 @@ and in the walled paddock by night; the milking herd at the byres.
 
 | Sheet | Level | What it holds |
 |---|---|---|
-| T0 | the crest | the House, the barbican and the Strongwall road; the Maydan and the horse-archery track; the remounts' paddock, the byres, the great tank; the barley terraces west and south, the threshing floors, the tea garden, the hives, the commons; the beacon line east and the relay west |
-| T1 | ground | the barbican, the Main Gate and its guards, the Sword Hall, the Marshal's Hall, the Gate Stable, the guest house; the stables of the north and south with their sally gates; the novices' court (school, refectory, the Little Armoury, the Hall of the Bow); the Great Refectory, the kitchens, the granary, the dairy; the Storm Tower, the smithy, the bowyers; the muster court, the lists, the archery range, the drill court; in the inner ward the utse, the inner court with the oath stone, the monastery, the infirmary, the bath, the cistern, the Field of the Fallen, the Founder's Garden and Chorten, the Founder's Way; the towers |
-| T2 | upper | the gate chamber and the gilt pavilion, the Bow Loft, the Quiver House, the Marshal, the grooms, the guests; the eight company halls and their captains; the novices' dormitories and the masters of arms; the lay brothers, the Cellarer, the stores; the Storm Tower's signal room, the armourers, the bow-curing loft; the infirmary's upper ward |
+| T0 | the crest | the House, the barbican, the Strongwall road and the caravan halt; the north and south sally tracks down the flanks; the Maydan and the horse-archery track; the remounts' paddock, the hay barns and ricks, the byres, the great tank, the near corner of the commons; the two middens; the barley terraces west and south, the threshing floors, the tea garden, the hives; the thorn brake where the Founder's Way comes out; the beacon line east and the relay west |
+| T1 | ground | the barbican, the Main Gate and its guards, the Sword Hall, the Marshal's Hall, the Gate Stable, the guest house; the stables of the north and south with their sally gates, hay sheds and garderobe turrets; the novices' court (school, refectory, the Little Armoury, the Hall of the Bow); the Great Refectory, the kitchens, the granary, the dairy; the Storm Tower (the west watch, its fuel store and stair), the smithy, the bowyers; the muster court over its great cistern, the lists, the archery range, the drill court; three corner stairs; in the inner ward the utse, the inner court with the oath stone, the monastery, the infirmary, the bath, the cistern, the Field of the Fallen, the Founder's Garden and Chorten, the Founder's Way; the 28 towers drawn grey as one entry |
+| T2 | upper | the gate chamber and the gilt pavilion, the Bow Loft, the Quiver House, the Marshal, the grooms, the guests; the eight company halls and the captains' stairs up to the wall walk; the novices' dormitories and the masters of arms; the lay brothers, the Cellarer, the stores; the Storm Tower's signal room and the west watch's barrack, the armourers, the bow-curing loft; the infirmary's upper ward; the wall walk round the outer curtain |
 | M1 | monastery, ground | the Gate of the Song, the Blade Room, the sacristy, the cloister court and the Wheel of the Storm, the cloister walks and the kora behind the hall, the porch, the Assembly Hall, the Shrine of the Storm, the Library of the Song, the scriptorium, the old brothers' cells, the chapter house, the treasury |
 | M2 | monastery, upper | the Drum of the Hours, the chapter's cells, the Prior, the chant-master, the daughter house's guests; the Masters' Gallery round the hall |
 | MR | monastery, top | the Protectors' Chapel and the Protector's Room; the lookout; the roofs; the gilt crown |
@@ -194,6 +199,12 @@ The owner's concentric answer means the fourth size is **two curtains**, not a w
 - Water: no stream on the crest (the Kruk Warra's head is 16-18 km south). Roof water into the cisterns under the
   inner ward and the muster court; the great tank for the herds. About 25,000 m2 of roof at 990 mm gives some 20,000 m3
   a year against about 10,000 for the people and the horses.
+- **Fodder is not in the sim yet** (an open point for `xan.tempest`). 327 stabled horses eat about 1,000 t of hay a
+  year at 8 kg a day, and some 240 t of barley at 2 kg, which is more than the House's own grain (about 107 t). Two ways
+  out, both *proposed*: keep only the duty companies' horses stabled and the rest on grass by rota (the barley falls to
+  about a third); or give the House a fodder line in the tune (hay from the crest's meadows, barley up from Strongwall).
+  Pasture: 600-odd horses and the milking herd want several hundred hectares; the West Arm (some 24 x 18 km) has them,
+  so T0 draws only the commons' near corner.
 - The brow lookout (879,1618) and its relay are 14 km west, off T0; they are fort-asset watch posts, sited at 1:1.
 - The counts (eight companies of forty, the chapter of about 70, 292 + 35 stabled horses) are a starting point; the
   sim holds the House as one settlement of 600 (`xan.tempest`).

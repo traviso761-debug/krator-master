@@ -7,24 +7,30 @@ Decor: 0 bare (stores, cells), 1 plain (service), 2 fine (offices, the lesser gu
 
 ## Sheet T0: the West Arm's crest round the House (1,000 x 800 m)
 
-The flat crest at 519 m (Cfb, 19 C, ~990 mm), between Komodo's roads: the trough road and the Vale road pass 31 km north-west, the Strongwall road 16 km south at the Kruk Warra's head. The House in the middle; the Strongwall road arrives from the east into the barbican; the Maydan (the riders' ground and the horse-archery track) on the north side; the remounts' night paddock, the byres and the great tank east; the barley terraces west and south (two fifths of the House's grain), the tea garden and the hives north-west. The beacon line runs east to Strongwall (66 km, in sight); the relay runs west to the brow lookout (879,1618), which sees Komodo. *Proposed* throughout.
+The flat crest at 519 m (Cfb, 19 C, ~990 mm), between Komodo's roads. The Strongwall road arrives from the east past the caravan halt into the barbican. The sally tracks leave the north and south sally gates down the crest's flanks: north across the Maydan toward the trough road and the Vale road (31 km north-west), south between the terraces to the Kruk Warra road (16 km). The horse ground is east and north: the Maydan and its horse-archery track, the remounts' night paddock, the hay barns, the byres, the great tank, the commons, which run on beyond the sheet over the West Arm (some 24 x 18 km). The barley terraces west and south take the middens' muck and give two fifths of the House's grain. The beacon line runs east to Strongwall (66 km, in sight), the relay west to the brow lookout (879,1618), which sees Komodo. *Proposed* throughout.
 
 | # | Room | Kind | Decor | m2 | Pieces |
 |---|---|---|---|---|---|
 | 2 | Barbican | lists | plain | 1248 |  |
-| 3 | The Maydan | maydan | plain | 40000 | xanadu_common_mounting_block x1 **NEW**, xanadu_training_archery_butt x1, xanadu_training_horse_target x2 **NEW** |
+| 3 | The Maydan | maydan | plain | 35000 | xanadu_common_mounting_block x1 **NEW**, xanadu_training_archery_butt x1, xanadu_training_horse_target x2 **NEW** |
 | 4 | Remounts' Paddock | horse park | bare | 48400 | xanadu_trade_hayrack x2, xanadu_trade_trough x2 |
 | 5 | Byres and the Herdsmen's Huts | byres | plain | 4200 | xanadu_common_banner x1, xanadu_common_bed x2, xanadu_common_hanging x9, xanadu_common_hearth x1, xanadu_common_lamp x18, xanadu_trade_hayrack x1, xanadu_trade_trough x1, xanadu_works_churn x1 |
-| 7 | Barley Terraces (west) | field | plain | 166400 |  |
-| 8 | Barley Terraces (south) | field | plain | 74400 |  |
-| 9 | Threshing Floors | threshing | bare | 1600 |  |
-| 10 | Tea Garden | field | fine | 48400 |  |
-| 11 | Hives | field | plain | 3600 |  |
-| 12 | Commons of the Crest | field | bare | 96200 |  |
+| 7 | Barley Terraces (west) | field | plain | 161200 |  |
+| 8 | Barley Terraces (south-east) | field | plain | 30000 |  |
+| 9 | Barley Terraces (south-west) | field | plain | 39600 |  |
+| 10 | Threshing Floors | threshing | bare | 1600 |  |
+| 11 | Tea Garden | field | fine | 44000 |  |
+| 12 | Hives | field | plain | 2700 |  |
+| 13 | Commons of the Crest | field | bare | 91800 |  |
+| 14 | Hay Barns and Ricks | hay | bare | 4500 | xanadu_trade_bin x28, xanadu_trade_hayrack x38 |
+| 15 | Midden (south) | midden | bare | 1225 |  |
+| 16 | Midden (north) | midden | bare | 700 |  |
+| 17 | Caravan Halt | caravan halt | plain | 4200 | xanadu_common_bench x1, xanadu_trade_hayrack x1, xanadu_trade_trough x1 |
+| 18 | Thorn Brake | field | bare | 660 |  |
 
 ## Sheet T1: the House, ground floor (outer curtain 260 x 190 m; concentric)
 
-The owner's forks (2026-11-16): concentric wards; the Prismarch in the utse; the novices in their own court; the horses inside with three gates. The Main Gate (the gilt pavilion) east behind its bent barbican; the muster court before the Prismarch's tower; the stables along the north and south curtains, each with its sally gate onto its flank's road; the novices' court north-west, the refectory and kitchens south-west, the Storm Tower on the west front toward Komodo; the archery range in the south lists, the drill court in the west. The inner ward on its 4 m talus: the inner court, the violet great monastery (sheets M1-MR), the infirmary, the Field of the Fallen, the Founder's Garden and the hidden Founder's Way.
+The owner's forks (2026-11-16): concentric wards; the Prismarch in the utse; the novices in their own court; the horses inside with three gates. The Main Gate (the gilt pavilion) east behind its bent barbican; the muster court before the Prismarch's tower; the stables along the north and south curtains, each flank with its sally gate, its hay shed in the lists and its garderobe turrets; the novices' court north-west, the refectory and kitchens south-west, the Storm Tower on the west front toward Komodo; the archery range in the south lists, the drill court in the west. The inner ward on its 4 m talus: the inner court, the violet great monastery (sheets M1-MR), the infirmary, the Field of the Fallen, the Founder's Garden and the hidden Founder's Way (red). The towers are drawn grey (one entry in the key); the wall walk is reached from the corner stairs, the gate towers, the captains' stairs (T2) and the Storm Tower.
 
 | # | Room | Kind | Decor | m2 | Pieces |
 |---|---|---|---|---|---|
@@ -46,7 +52,7 @@ The owner's forks (2026-11-16): concentric wards; the Prismarch in the utse; the
 | 16 | Stables of the South (west) | stable | bare | 1080 | xanadu_arms_saddle_rack x27 **NEW**, xanadu_common_lamp x12, xanadu_common_mounting_block x4 **NEW**, xanadu_trade_hayrack x18, xanadu_trade_stall x72, xanadu_trade_trough x18 |
 | 17 | Novices' Yard | yard | plain | 900 | xanadu_common_well x1, xanadu_training_archery_butt x1, xanadu_training_pell x2 **NEW**, xanadu_training_training_dummy x3 |
 | 18 | School of the Song | song school | fine | 288 | xanadu_common_art x2, xanadu_common_banner x2, xanadu_common_board x2, xanadu_common_hanging x3, xanadu_common_lamp x6, xanadu_common_low_table x48, xanadu_common_meditation_cushion x96, xanadu_common_prayer_wheels x1, xanadu_common_rug x5, xanadu_common_scroll x1, xanadu_common_scroll_rack x2 |
-| 19 | Novices' Refectory and Kitchen | novice refectory | plain | 288 | xanadu_common_banner x1, xanadu_common_bench x24, xanadu_common_bowl x48, xanadu_common_hanging x2, xanadu_common_hearth x1, xanadu_common_lamp x5, xanadu_common_table x12, xanadu_common_tea_copper x1, xanadu_common_wall_shelves x2 |
+| 19 | Novices' Refectory | novice refectory | plain | 288 | xanadu_common_banner x1, xanadu_common_bench x24, xanadu_common_bowl x48, xanadu_common_hanging x2, xanadu_common_hearth x1, xanadu_common_lamp x5, xanadu_common_table x12, xanadu_common_tea_copper x1, xanadu_common_wall_shelves x2 |
 | 20 | Master of Novices | chamber | fine | 144 | xanadu_common_art x2, xanadu_common_banner x1, xanadu_common_bed x1, xanadu_common_chair x2, xanadu_common_chest x1, xanadu_common_desk x1, xanadu_common_hanging x1, xanadu_common_lamp x3, xanadu_common_rug x2, xanadu_common_screen x1, xanadu_common_scroll x1, xanadu_common_table x1 |
 | 21 | The Little Armoury | novice armoury | plain | 216 | xanadu_arms_arrow_bin x2 **NEW**, xanadu_arms_bow_rack x11 **NEW**, xanadu_common_banner x1, xanadu_common_chest x2, xanadu_common_hanging x2, xanadu_common_lamp x4, xanadu_common_weapon_rack x14 |
 | 22 | Novices' Wash House | wash | plain | 144 | xanadu_common_banner x1, xanadu_common_bath_basin x10, xanadu_common_bench x2, xanadu_common_hanging x1, xanadu_common_hearth x1, xanadu_common_lamp x2 |
@@ -56,66 +62,45 @@ The owner's forks (2026-11-16): concentric wards; the Prismarch in the utse; the
 | 27 | Great Kitchen | kitchen | plain | 480 | xanadu_common_banner x1, xanadu_common_bowl x12, xanadu_common_hanging x4, xanadu_common_hearth x5, xanadu_common_jug x12, xanadu_common_lamp x8, xanadu_common_store x14, xanadu_common_table x5, xanadu_common_tea_copper x2, xanadu_common_wall_shelves x8, xanadu_common_workbench x10, xanadu_works_bread_oven x2 |
 | 28 | Bakehouse | bakehouse | plain | 240 | xanadu_common_banner x1, xanadu_common_hanging x2, xanadu_common_lamp x4, xanadu_common_store x4, xanadu_common_workbench x3, xanadu_trade_bin x3, xanadu_works_bread_oven x2 |
 | 29 | Granary | granary | bare | 504 | xanadu_common_ladder x1, xanadu_common_lamp x6, xanadu_trade_bin x25, xanadu_works_tally_board x1, xanadu_works_weigh_scale x1 |
-| 30 | Larder | larder | bare | 240 | xanadu_common_lamp x3, xanadu_common_store x10, xanadu_common_wall_shelves x6, xanadu_trade_larder x12 |
+| 30 | Larder, Tea and Butter | larder | bare | 240 | xanadu_common_lamp x3, xanadu_common_store x10, xanadu_common_wall_shelves x6, xanadu_trade_larder x12 |
 | 31 | Dairy | dairy | plain | 192 | xanadu_common_banner x1, xanadu_common_hanging x2, xanadu_common_lamp x3, xanadu_common_store x6, xanadu_common_wall_shelves x5, xanadu_works_cheese_press x3, xanadu_works_churn x6 |
-| 32 | Tea and Butter Store | store | bare | 144 | xanadu_common_ladder x1, xanadu_common_lamp x2, xanadu_common_store x6, xanadu_common_wall_shelves x2, xanadu_trade_bin x4 |
-| 33 | Storm Tower | guard | fine | 624 | xanadu_arms_arrow_bin x1 **NEW**, xanadu_common_armour_stand x2, xanadu_common_art x3, xanadu_common_banner x2, xanadu_common_bench x2, xanadu_common_fire x1, xanadu_common_hanging x6, xanadu_common_lamp x14, xanadu_common_rug x10, xanadu_common_scroll x2, xanadu_common_table x1, xanadu_common_weapon_rack x2 |
-| 34 | Smithy and Farriery | smithy | plain | 378 | xanadu_common_banner x1, xanadu_common_hanging x3, xanadu_common_lamp x6, xanadu_common_rack x5, xanadu_common_workbench x5, xanadu_trade_anvil x5, xanadu_trade_forge x3, xanadu_trade_grindstone x3, xanadu_trade_trough x1 |
-| 35 | Bowyers and Fletchers | bowyers | plain | 378 | xanadu_arms_bow_form x9 **NEW**, xanadu_arms_fletching_bench x15 **NEW**, xanadu_common_banner x1, xanadu_common_hanging x3, xanadu_common_hearth x1, xanadu_common_lamp x6, xanadu_common_stool x13, xanadu_common_wall_shelves x9, xanadu_common_workbench x9 |
-| 36 | Muster Court | muster | fine | 8058 | xanadu_common_alarm_gong x1 **NEW**, xanadu_common_mounting_block x8 **NEW** |
-| 37 | Well and Troughs of the Muster | well | plain | 144 | xanadu_common_well x1, xanadu_trade_trough x4 |
-| 38 | Riders' Lane (north lists) | lists | plain | 4147 |  |
-| 39 | South Lists | lists | plain | 4147 |  |
-| 40 | Archery Range | archery | fine | 2016 | xanadu_arms_arrow_bin x4 **NEW**, xanadu_common_bench x2, xanadu_training_archery_butt x4 |
-| 41 | Stop Bank | bank | bare | 80 |  |
-| 42 | Drill Court | drill court | fine | 3978 | xanadu_common_bench x4, xanadu_common_weapon_rack x4, xanadu_training_pell x20 **NEW**, xanadu_training_stance_stones x2 **NEW**, xanadu_training_training_dummy x20 |
-| 44 | Inner Court | inner court | rich | 1092 | xanadu_common_prayer_wheels x2, xanadu_court_oath_stone x1 **NEW** |
-| 46 | Infirmary of the Order | infirmary | fine | 816 | xanadu_common_art x4, xanadu_common_banner x3, xanadu_common_chest x14, xanadu_common_hanging x8, xanadu_common_hearth x1, xanadu_common_lamp x18, xanadu_common_rug x14, xanadu_common_scroll x3, xanadu_common_wall_shelves x14, xanadu_court_altar x1, xanadu_works_herb_bench x1, xanadu_works_sickbed x68 |
-| 47 | Apothecary | apothecary | fine | 192 | xanadu_common_art x2, xanadu_common_banner x1, xanadu_common_desk x1, xanadu_common_hanging x2, xanadu_common_lamp x4, xanadu_common_rug x3, xanadu_common_scroll x1, xanadu_common_store x2, xanadu_common_wall_shelves x13, xanadu_works_herb_bench x2 |
-| 48 | Physic Garden | garden | fine | 624 | xanadu_common_bench x2, xanadu_common_fire x1, xanadu_common_planter x4, xanadu_court_statue x1 |
-| 49 | Bath House of the Brothers | wash | plain | 416 | xanadu_common_banner x1, xanadu_common_bath_basin x28, xanadu_common_bench x2, xanadu_common_hanging x3, xanadu_common_hearth x1, xanadu_common_lamp x7 |
-| 51 | Field of the Fallen | fallen | rich | 896 | xanadu_common_butter_lamp_rack x1, xanadu_court_chorten x22, xanadu_court_name_wall x2 |
-| 52 | Founder's Garden | garden | rich | 988 | xanadu_common_bench x3, xanadu_common_fire x2, xanadu_common_planter x7, xanadu_court_statue x1 |
-| 53 | Founder's Chorten | founder | sumptuous | 100 | xanadu_common_butter_lamp_rack x2, xanadu_court_chorten x1, xanadu_court_incense_burner x1 |
-| 54 | Founder's Way (stair head) | stair | plain | 24 | xanadu_common_lamp x1 |
-| 55 | Corner drum | tower | bare | 196 | xanadu_arms_arrow_bin x1 **NEW**, xanadu_common_bench x1, xanadu_common_lamp x2, xanadu_common_weapon_rack x1 |
-| 56 | Corner drum | tower | bare | 196 | xanadu_arms_arrow_bin x1 **NEW**, xanadu_common_bench x1, xanadu_common_lamp x2, xanadu_common_weapon_rack x1 |
-| 57 | Corner drum | tower | bare | 196 | xanadu_arms_arrow_bin x1 **NEW**, xanadu_common_bench x1, xanadu_common_lamp x2, xanadu_common_weapon_rack x1 |
-| 58 | Corner drum | tower | bare | 196 | xanadu_arms_arrow_bin x1 **NEW**, xanadu_common_bench x1, xanadu_common_lamp x2, xanadu_common_weapon_rack x1 |
-| 59 | Tower | tower | bare | 36 | xanadu_arms_arrow_bin x1 **NEW**, xanadu_common_bench x1, xanadu_common_lamp x1, xanadu_common_weapon_rack x1 |
-| 60 | Tower | tower | bare | 36 | xanadu_arms_arrow_bin x1 **NEW**, xanadu_common_bench x1, xanadu_common_lamp x1, xanadu_common_weapon_rack x1 |
-| 61 | Tower | tower | bare | 36 | xanadu_arms_arrow_bin x1 **NEW**, xanadu_common_bench x1, xanadu_common_lamp x1, xanadu_common_weapon_rack x1 |
-| 62 | Tower | tower | bare | 36 | xanadu_arms_arrow_bin x1 **NEW**, xanadu_common_bench x1, xanadu_common_lamp x1, xanadu_common_weapon_rack x1 |
-| 63 | Tower | tower | bare | 36 | xanadu_arms_arrow_bin x1 **NEW**, xanadu_common_bench x1, xanadu_common_lamp x1, xanadu_common_weapon_rack x1 |
-| 64 | Tower | tower | bare | 36 | xanadu_arms_arrow_bin x1 **NEW**, xanadu_common_bench x1, xanadu_common_lamp x1, xanadu_common_weapon_rack x1 |
-| 65 | Tower | tower | bare | 36 | xanadu_arms_arrow_bin x1 **NEW**, xanadu_common_bench x1, xanadu_common_lamp x1, xanadu_common_weapon_rack x1 |
-| 66 | Tower | tower | bare | 36 | xanadu_arms_arrow_bin x1 **NEW**, xanadu_common_bench x1, xanadu_common_lamp x1, xanadu_common_weapon_rack x1 |
-| 67 | Tower | tower | bare | 36 | xanadu_arms_arrow_bin x1 **NEW**, xanadu_common_bench x1, xanadu_common_lamp x1, xanadu_common_weapon_rack x1 |
-| 68 | Tower | tower | bare | 36 | xanadu_arms_arrow_bin x1 **NEW**, xanadu_common_bench x1, xanadu_common_lamp x1, xanadu_common_weapon_rack x1 |
-| 69 | Tower | tower | bare | 36 | xanadu_arms_arrow_bin x1 **NEW**, xanadu_common_bench x1, xanadu_common_lamp x1, xanadu_common_weapon_rack x1 |
-| 70 | Tower | tower | bare | 36 | xanadu_arms_arrow_bin x1 **NEW**, xanadu_common_bench x1, xanadu_common_lamp x1, xanadu_common_weapon_rack x1 |
-| 71 | Tower | tower | bare | 36 | xanadu_arms_arrow_bin x1 **NEW**, xanadu_common_bench x1, xanadu_common_lamp x1, xanadu_common_weapon_rack x1 |
-| 72 | Tower | tower | bare | 36 | xanadu_arms_arrow_bin x1 **NEW**, xanadu_common_bench x1, xanadu_common_lamp x1, xanadu_common_weapon_rack x1 |
-| 73 | Tower | tower | bare | 36 | xanadu_arms_arrow_bin x1 **NEW**, xanadu_common_bench x1, xanadu_common_lamp x1, xanadu_common_weapon_rack x1 |
-| 74 | Tower | tower | bare | 36 | xanadu_arms_arrow_bin x1 **NEW**, xanadu_common_bench x1, xanadu_common_lamp x1, xanadu_common_weapon_rack x1 |
-| 75 | Tower | tower | bare | 36 | xanadu_arms_arrow_bin x1 **NEW**, xanadu_common_bench x1, xanadu_common_lamp x1, xanadu_common_weapon_rack x1 |
-| 76 | Tower | tower | bare | 36 | xanadu_arms_arrow_bin x1 **NEW**, xanadu_common_bench x1, xanadu_common_lamp x1, xanadu_common_weapon_rack x1 |
-| 77 | Tower | tower | bare | 36 | xanadu_arms_arrow_bin x1 **NEW**, xanadu_common_bench x1, xanadu_common_lamp x1, xanadu_common_weapon_rack x1 |
-| 78 | Tower | tower | bare | 36 | xanadu_arms_arrow_bin x1 **NEW**, xanadu_common_bench x1, xanadu_common_lamp x1, xanadu_common_weapon_rack x1 |
-| 79 | Tower | tower | bare | 36 | xanadu_arms_arrow_bin x1 **NEW**, xanadu_common_bench x1, xanadu_common_lamp x1, xanadu_common_weapon_rack x1 |
-| 80 | Tower | tower | bare | 36 | xanadu_arms_arrow_bin x1 **NEW**, xanadu_common_bench x1, xanadu_common_lamp x1, xanadu_common_weapon_rack x1 |
-| 81 | Inner drum | tower | bare | 100 | xanadu_arms_arrow_bin x1 **NEW**, xanadu_common_bench x1, xanadu_common_lamp x1, xanadu_common_weapon_rack x1 |
-| 82 | Inner drum | tower | bare | 100 | xanadu_arms_arrow_bin x1 **NEW**, xanadu_common_bench x1, xanadu_common_lamp x1, xanadu_common_weapon_rack x1 |
-| 83 | Inner drum | tower | bare | 100 | xanadu_arms_arrow_bin x1 **NEW**, xanadu_common_bench x1, xanadu_common_lamp x1, xanadu_common_weapon_rack x1 |
-| 84 | Inner drum | tower | bare | 100 | xanadu_arms_arrow_bin x1 **NEW**, xanadu_common_bench x1, xanadu_common_lamp x1, xanadu_common_weapon_rack x1 |
+| 32 | Corner stair and garderobe | stair | bare | 144 | xanadu_common_lamp x1 |
+| 33 | West Watch | guard | fine | 416 | xanadu_arms_arrow_bin x1 **NEW**, xanadu_common_armour_stand x2, xanadu_common_art x3, xanadu_common_banner x2, xanadu_common_bench x2, xanadu_common_fire x1, xanadu_common_hanging x4, xanadu_common_lamp x9, xanadu_common_rug x7, xanadu_common_scroll x2, xanadu_common_table x1, xanadu_common_weapon_rack x2 |
+| 34 | Beacon Fuel Store | store | bare | 144 | xanadu_common_ladder x1, xanadu_common_lamp x2, xanadu_common_store x6, xanadu_common_wall_shelves x2, xanadu_trade_bin x4 |
+| 35 | Storm Tower Stair | stair | plain | 64 | xanadu_common_lamp x1 |
+| 36 | Smithy and Farriery | smithy | plain | 378 | xanadu_common_banner x1, xanadu_common_hanging x3, xanadu_common_lamp x6, xanadu_common_rack x5, xanadu_common_workbench x5, xanadu_trade_anvil x5, xanadu_trade_forge x3, xanadu_trade_grindstone x3, xanadu_trade_trough x1 |
+| 37 | Bowyers and Fletchers | bowyers | plain | 378 | xanadu_arms_bow_form x9 **NEW**, xanadu_arms_fletching_bench x15 **NEW**, xanadu_common_banner x1, xanadu_common_hanging x3, xanadu_common_hearth x1, xanadu_common_lamp x6, xanadu_common_stool x13, xanadu_common_wall_shelves x9, xanadu_common_workbench x9 |
+| 38 | Muster Court | muster | fine | 8058 | xanadu_common_alarm_gong x1 **NEW**, xanadu_common_mounting_block x8 **NEW** |
+| 39 | Well and Troughs of the Muster | well | plain | 144 | xanadu_common_well x1, xanadu_trade_trough x4 |
+| 40 | Riders' Lane (north lists) | lists | plain | 4147 |  |
+| 41 | South Lists | lists | plain | 4147 |  |
+| 42 | Hay Shed (north) | hay | bare | 288 | xanadu_trade_bin x7, xanadu_trade_hayrack x10 |
+| 43 | Hay Shed (south) | hay | bare | 168 | xanadu_trade_bin x4, xanadu_trade_hayrack x6 |
+| 44 | Archery Range | archery | fine | 2016 | xanadu_arms_arrow_bin x4 **NEW**, xanadu_common_bench x2, xanadu_training_archery_butt x4 |
+| 45 | Stop Bank | bank | bare | 80 |  |
+| 46 | Drill Court | drill court | fine | 3978 | xanadu_common_bench x4, xanadu_common_weapon_rack x4, xanadu_training_pell x20 **NEW**, xanadu_training_stance_stones x2 **NEW**, xanadu_training_training_dummy x20 |
+| 48 | Inner Court | inner court | rich | 1092 | xanadu_common_prayer_wheels x2, xanadu_court_oath_stone x1 **NEW** |
+| 50 | Infirmary of the Order | infirmary | fine | 816 | xanadu_common_art x4, xanadu_common_banner x3, xanadu_common_chest x14, xanadu_common_hanging x8, xanadu_common_hearth x1, xanadu_common_lamp x18, xanadu_common_rug x14, xanadu_common_scroll x3, xanadu_common_wall_shelves x14, xanadu_court_altar x1, xanadu_works_herb_bench x1, xanadu_works_sickbed x68 |
+| 51 | Apothecary | apothecary | fine | 192 | xanadu_common_art x2, xanadu_common_banner x1, xanadu_common_desk x1, xanadu_common_hanging x2, xanadu_common_lamp x4, xanadu_common_rug x3, xanadu_common_scroll x1, xanadu_common_store x2, xanadu_common_wall_shelves x13, xanadu_works_herb_bench x2 |
+| 52 | Physic Garden | garden | fine | 624 | xanadu_common_bench x2, xanadu_common_fire x1, xanadu_common_planter x4, xanadu_court_statue x1 |
+| 53 | Bath House of the Brothers | wash | plain | 416 | xanadu_common_banner x1, xanadu_common_bath_basin x28, xanadu_common_bench x2, xanadu_common_hanging x3, xanadu_common_hearth x1, xanadu_common_lamp x7 |
+| 55 | Field of the Fallen | fallen | rich | 896 | xanadu_common_butter_lamp_rack x1, xanadu_court_chorten x22, xanadu_court_name_wall x2 |
+| 56 | Founder's Garden | garden | rich | 988 | xanadu_common_bench x3, xanadu_common_fire x2, xanadu_common_planter x7, xanadu_court_statue x1 |
+| 57 | Founder's Chorten | founder | sumptuous | 100 | xanadu_common_butter_lamp_rack x2, xanadu_court_chorten x1, xanadu_court_incense_burner x1 |
+| 58 | Founder's Way (stair head) | stair | plain | 24 | xanadu_common_lamp x1 |
+| 59 | Garderobe Turret | garderobe | bare | 36 |  |
+| 60 | Garderobe Turret | garderobe | bare | 36 |  |
+| 61 | Garderobe Turret | garderobe | bare | 36 |  |
+| 62 | Garderobe Turret | garderobe | bare | 36 |  |
+| 63 | Towers (grey): 4 corner drums, 20 interval towers at about 30 m, 4 inner drums | towers | bare | 196 | xanadu_arms_arrow_bin x28 **NEW**, xanadu_common_bench x28, xanadu_common_lamp x2, xanadu_common_weapon_rack x28 |
 
 ## Sheet T2: the House, upper storey of the ranges (about 4.5 m)
 
-The eight companies of the professed (*proposed*: forty each, named for the eight winds) sleep over their horses, dressed, their arms at their beds, a stair and the captains' cells between each pair of halls (the Templars' rule). The Bow Loft and the Quiver House over the Sword Hall; the Marshal over his hall; the gate chambers with the gilt pavilion; the novices' dormitories; the lay brothers over the kitchens; the Storm Tower's signal room. The inner ward's upper floors are the infirmary's; the monastery and the utse have their own sheets.
+The eight companies of the professed (*proposed*: forty each, named for the eight winds) sleep over their horses, dressed, their arms at their beds; between each pair of halls a stair rises from the stables past the captains' cells to the wall walk (violet line), so at the gong each company mans its own stretch of curtain or goes down to its horses (the Templars' rule). The Bow Loft and the Quiver House over the Sword Hall; the Marshal over his hall; the gate chambers with the gilt pavilion; the novices' dormitories; the lay brothers over the kitchens; the Storm Tower's signal room and the west watch. The inner ward's upper floors are the infirmary's; the monastery and the utse have their own sheets.
 
 | # | Room | Kind | Decor | m2 | Pieces |
 |---|---|---|---|---|---|
-| 1 | Gate Chamber and the Gilt Pavilion | gatehouse | rich | 432 | xanadu_common_alarm_gong x1 **NEW**, xanadu_common_bench x2, xanadu_common_fire x1, xanadu_common_planter x4, xanadu_common_weapon_rack x2, xanadu_court_art x3, xanadu_court_carpet x5, xanadu_court_hanging x5, xanadu_court_lamp x11, xanadu_court_statue x1, xanadu_court_tapestry x5, xanadu_court_wall_rug x3 |
+| 1 | Gate Chamber, gilt pavilion | gatehouse | rich | 432 | xanadu_common_alarm_gong x1 **NEW**, xanadu_common_bench x2, xanadu_common_fire x1, xanadu_common_planter x4, xanadu_common_weapon_rack x2, xanadu_court_art x3, xanadu_court_carpet x5, xanadu_court_hanging x5, xanadu_court_lamp x11, xanadu_court_statue x1, xanadu_court_tapestry x5, xanadu_court_wall_rug x3 |
 | 2 | Gate Watch | barracks | plain | 140 | xanadu_common_banner x1, xanadu_common_bench x2, xanadu_common_hanging x1, xanadu_common_lamp x2, xanadu_common_table x1, xanadu_common_weapon_rack x1, xanadu_trade_bunk x18, xanadu_trade_locker x9 |
 | 3 | Gate Watch | barracks | plain | 140 | xanadu_common_banner x1, xanadu_common_bench x2, xanadu_common_hanging x1, xanadu_common_lamp x2, xanadu_common_table x1, xanadu_common_weapon_rack x1, xanadu_trade_bunk x18, xanadu_trade_locker x9 |
 | 4 | Bow Loft | bow loft | plain | 294 | xanadu_arms_bow_form x49 **NEW**, xanadu_arms_bow_rack x10 **NEW**, xanadu_common_banner x1, xanadu_common_hanging x2, xanadu_common_lamp x5, xanadu_common_store x5, xanadu_common_workbench x2 |
@@ -146,15 +131,18 @@ The eight companies of the professed (*proposed*: forty each, named for the eigh
 | 29 | Masters of Arms | chamber | fine | 144 | xanadu_common_art x2, xanadu_common_banner x1, xanadu_common_bed x1, xanadu_common_chair x2, xanadu_common_chest x1, xanadu_common_desk x1, xanadu_common_hanging x1, xanadu_common_lamp x3, xanadu_common_rug x2, xanadu_common_screen x1, xanadu_common_scroll x1, xanadu_common_table x1 |
 | 30 | Novices' Stair | stair | plain | 36 | xanadu_common_lamp x1 |
 | 32 | Lay Brothers' Dormitory | lay dorm | plain | 720 | xanadu_common_banner x1, xanadu_common_bed x40, xanadu_common_chest x40, xanadu_common_hanging x6, xanadu_common_lamp x12, xanadu_common_stool x18 |
-| 33 | The Cellarer | office | fine | 144 | xanadu_common_art x2, xanadu_common_banner x1, xanadu_common_board x1, xanadu_common_bookcase x3, xanadu_common_chair x5, xanadu_common_chest x1, xanadu_common_desk x4, xanadu_common_hanging x1, xanadu_common_lamp x3, xanadu_common_rug x2, xanadu_common_scroll x1 |
-| 34 | Stores | store | bare | 432 | xanadu_common_ladder x1, xanadu_common_lamp x5, xanadu_common_store x17, xanadu_common_wall_shelves x7, xanadu_trade_bin x11 |
-| 35 | Granary Loft | store | bare | 504 | xanadu_common_ladder x1, xanadu_common_lamp x6, xanadu_common_store x20, xanadu_common_wall_shelves x8, xanadu_trade_bin x13 |
-| 36 | Signal Room of the Storm Tower | signal | fine | 624 | xanadu_common_art x3, xanadu_common_banner x2, xanadu_common_board x2, xanadu_common_chair x2, xanadu_common_desk x1, xanadu_common_hanging x6, xanadu_common_lamp x14, xanadu_common_rug x10, xanadu_common_scroll x2, xanadu_common_signal_mirror x2 **NEW**, xanadu_common_store x2 |
-| 37 | Armourers' Loft | armourers | plain | 378 | xanadu_common_armour_stand x13, xanadu_common_banner x1, xanadu_common_hanging x3, xanadu_common_lamp x6, xanadu_common_stool x13, xanadu_common_wall_shelves x6, xanadu_common_workbench x9 |
-| 38 | Bow-curing Loft | bow loft | plain | 378 | xanadu_arms_bow_form x63 **NEW**, xanadu_arms_bow_rack x13 **NEW**, xanadu_common_banner x1, xanadu_common_hanging x3, xanadu_common_lamp x6, xanadu_common_store x6, xanadu_common_workbench x2 |
-| 41 | Infirmary, Upper Ward | infirmary | fine | 624 | xanadu_common_art x4, xanadu_common_banner x3, xanadu_common_chest x10, xanadu_common_hanging x6, xanadu_common_hearth x1, xanadu_common_lamp x14, xanadu_common_rug x10, xanadu_common_scroll x2, xanadu_common_wall_shelves x10, xanadu_court_altar x1, xanadu_works_herb_bench x1, xanadu_works_sickbed x52 |
-| 42 | The Infirmarer | chamber | fine | 192 | xanadu_common_art x2, xanadu_common_banner x1, xanadu_common_bed x1, xanadu_common_chair x2, xanadu_common_chest x1, xanadu_common_desk x1, xanadu_common_hanging x2, xanadu_common_lamp x4, xanadu_common_rug x3, xanadu_common_screen x1, xanadu_common_scroll x1, xanadu_common_table x1 |
-| 43 | Herb Drying Loft | drying | plain | 192 | xanadu_common_banner x1, xanadu_common_drying_rack x16, xanadu_common_hanging x2, xanadu_common_lamp x3, xanadu_common_store x2 |
+| 33 | The Cellarer | office | fine | 240 | xanadu_common_art x2, xanadu_common_banner x2, xanadu_common_board x1, xanadu_common_bookcase x5, xanadu_common_chair x8, xanadu_common_chest x1, xanadu_common_desk x6, xanadu_common_hanging x2, xanadu_common_lamp x5, xanadu_common_rug x4, xanadu_common_scroll x1 |
+| 34 | Stores | store | bare | 192 | xanadu_common_ladder x1, xanadu_common_lamp x2, xanadu_common_store x8, xanadu_common_wall_shelves x3, xanadu_trade_bin x5 |
+| 35 | Corner stair | stair | bare | 144 | xanadu_common_lamp x1 |
+| 36 | Granary Loft | store | bare | 504 | xanadu_common_ladder x1, xanadu_common_lamp x6, xanadu_common_store x20, xanadu_common_wall_shelves x8, xanadu_trade_bin x13 |
+| 37 | Signal Room of the Storm Tower | signal | fine | 312 | xanadu_common_art x3, xanadu_common_banner x2, xanadu_common_board x2, xanadu_common_chair x2, xanadu_common_desk x1, xanadu_common_hanging x3, xanadu_common_lamp x7, xanadu_common_rug x5, xanadu_common_scroll x2, xanadu_common_signal_mirror x2 **NEW**, xanadu_common_store x2 |
+| 38 | Barrack of the West Watch | barracks | plain | 216 | xanadu_common_banner x1, xanadu_common_bench x3, xanadu_common_hanging x2, xanadu_common_lamp x4, xanadu_common_table x1, xanadu_common_weapon_rack x2, xanadu_trade_bunk x27, xanadu_trade_locker x14 |
+| 39 | Storm Tower Stair | stair | plain | 64 | xanadu_common_lamp x1 |
+| 40 | Armourers' Loft | armourers | plain | 378 | xanadu_common_armour_stand x13, xanadu_common_banner x1, xanadu_common_hanging x3, xanadu_common_lamp x6, xanadu_common_stool x13, xanadu_common_wall_shelves x6, xanadu_common_workbench x9 |
+| 41 | Bow-curing Loft | bow loft | plain | 378 | xanadu_arms_bow_form x63 **NEW**, xanadu_arms_bow_rack x13 **NEW**, xanadu_common_banner x1, xanadu_common_hanging x3, xanadu_common_lamp x6, xanadu_common_store x6, xanadu_common_workbench x2 |
+| 44 | Infirmary, Upper Ward | infirmary | fine | 624 | xanadu_common_art x4, xanadu_common_banner x3, xanadu_common_chest x10, xanadu_common_hanging x6, xanadu_common_hearth x1, xanadu_common_lamp x14, xanadu_common_rug x10, xanadu_common_scroll x2, xanadu_common_wall_shelves x10, xanadu_court_altar x1, xanadu_works_herb_bench x1, xanadu_works_sickbed x52 |
+| 45 | The Infirmarer | chamber | fine | 192 | xanadu_common_art x2, xanadu_common_banner x1, xanadu_common_bed x1, xanadu_common_chair x2, xanadu_common_chest x1, xanadu_common_desk x1, xanadu_common_hanging x2, xanadu_common_lamp x4, xanadu_common_rug x3, xanadu_common_screen x1, xanadu_common_scroll x1, xanadu_common_table x1 |
+| 46 | Herb Drying Loft | drying | plain | 192 | xanadu_common_banner x1, xanadu_common_drying_rack x16, xanadu_common_hanging x2, xanadu_common_lamp x3, xanadu_common_store x2 |
 
 ## Sheet M1: the great monastery, ground floor (the kit's 52 m block, violet dress)
 
@@ -253,33 +241,34 @@ The owner, 2026-11-16: the violet Prismarch lives here, in a tower between the w
 |---|---|---|
 | xanadu_common_bed | 675 |  |
 | xanadu_common_chest | 619 |  |
-| xanadu_common_lamp | 565 |  |
+| xanadu_common_lamp | 528 |  |
 | xanadu_common_armour_stand | 382 |  |
 | xanadu_trade_stall | 327 |  |
 | xanadu_common_weapon_rack | 295 |  |
 | xanadu_common_meditation_cushion | 269 |  |
-| xanadu_common_bench | 262 |  |
+| xanadu_common_bench | 264 |  |
 | xanadu_common_bowl | 258 |  |
 | xanadu_arms_bow_rack | 230 | strung horn-and-sinew recurve bows on wall pegs, a quiver hung under each, violet cords |
-| xanadu_common_hanging | 200 |  |
+| xanadu_common_hanging | 198 |  |
 | xanadu_common_candle | 196 |  |
-| xanadu_arms_arrow_bin | 127 | a slatted bin of arrows in sheaves of thirty, fletched violet and white |
-| xanadu_common_rug | 126 |  |
-| xanadu_common_desk | 125 |  |
+| xanadu_trade_hayrack | 139 |  |
+| xanadu_common_desk | 127 |  |
+| xanadu_arms_arrow_bin | 125 | a slatted bin of arrows in sheaves of thirty, fletched violet and white |
 | xanadu_arms_saddle_rack | 123 | saddles on wall pegs, bridles and the violet saddle-cloths below |
 | xanadu_arms_bow_form | 121 | a composite bow lashed to its shaped wooden form to cure (a loft holds them in rows for a year) |
+| xanadu_common_rug | 120 |  |
 | xanadu_works_sickbed | 120 |  |
-| xanadu_common_store | 109 |  |
-| xanadu_common_table | 107 |  |
-| xanadu_common_chair | 104 |  |
-| xanadu_common_wall_shelves | 104 |  |
-| xanadu_common_banner | 97 |  |
+| xanadu_common_table | 108 |  |
+| xanadu_common_chair | 107 |  |
+| xanadu_common_wall_shelves | 100 |  |
+| xanadu_common_store | 100 |  |
+| xanadu_common_banner | 99 |  |
+| xanadu_trade_bin | 97 |  |
 | xanadu_court_lamp | 97 |  |
-| xanadu_trade_trough | 89 |  |
-| xanadu_trade_hayrack | 84 |  |
+| xanadu_trade_trough | 90 |  |
 | xanadu_court_tapestry | 81 |  |
 | xanadu_common_art | 73 |  |
-| xanadu_trade_bin | 64 |  |
+| xanadu_trade_bunk | 63 |  |
 | xanadu_common_low_table | 54 |  |
 | xanadu_common_jug | 54 |  |
 | xanadu_common_stool | 52 |  |
@@ -290,8 +279,8 @@ The owner, 2026-11-16: the violet Prismarch lives here, in a tower between the w
 | xanadu_common_scroll | 41 |  |
 | xanadu_common_prayer_wheels | 41 |  |
 | xanadu_common_bath_basin | 38 |  |
-| xanadu_trade_bunk | 36 |  |
 | xanadu_court_art | 35 |  |
+| xanadu_trade_locker | 32 |  |
 | xanadu_common_mounting_block | 31 | a stepped stone mounting block |
 | xanadu_court_painted_hanging | 27 |  |
 | xanadu_training_training_dummy | 23 |  |
@@ -299,10 +288,9 @@ The owner, 2026-11-16: the violet Prismarch lives here, in a tower between the w
 | xanadu_court_statue | 22 |  |
 | xanadu_court_wall_rug | 22 |  |
 | xanadu_training_pell | 22 | a stout scarred post sunk in the sand for sword cuts |
+| xanadu_common_bookcase | 21 |  |
 | xanadu_common_scroll_rack | 21 |  |
 | xanadu_court_frieze | 21 |  |
-| xanadu_common_bookcase | 19 |  |
-| xanadu_trade_locker | 18 |  |
 | xanadu_common_drying_rack | 16 |  |
 | xanadu_arms_fletching_bench | 15 | the fletcher's bench: shafts, a feather box, a glue pot on a brazier, a straightening iron |
 | xanadu_common_hearth | 14 |  |
@@ -357,7 +345,7 @@ The owner, 2026-11-16: the violet Prismarch lives here, in a tower between the w
 
 ## Pieces the catalog lacks (NEW)
 
-- `xanadu_arms_arrow_bin`: a slatted bin of arrows in sheaves of thirty, fletched violet and white (x127)
+- `xanadu_arms_arrow_bin`: a slatted bin of arrows in sheaves of thirty, fletched violet and white (x125)
 - `xanadu_arms_bow_form`: a composite bow lashed to its shaped wooden form to cure (a loft holds them in rows for a year) (x121)
 - `xanadu_arms_bow_rack`: strung horn-and-sinew recurve bows on wall pegs, a quiver hung under each, violet cords (x230)
 - `xanadu_arms_fletching_bench`: the fletcher's bench: shafts, a feather box, a glue pot on a brazier, a straightening iron (x15)

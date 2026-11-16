@@ -33,67 +33,75 @@ MS_H = (19, 22.8, 8, 12)       # the hall stair: the Masters' Gallery, the Prote
 NE_ST = (-128, -114, 79, 93)   # corner stairs to the wall walk and the upper floors (and the garderobes)
 SE_ST = (-128, -114, -93, -79)
 NV_ST = (80, 86, 75, 81)       # the novices' stair
-FW_ST = (48, 52, -26, -20)     # the Founder's Way: the stair down to the tunnel
+FW_ST = (48, 52, -26, -20)
+SW_ST = (116, 128, -93, -81)  # the south-west corner stair
+ST_ST = (132, 140, 4, 12)     # the Storm Tower's stair     # the Founder's Way: the stair down to the tunnel
 
 FLOORS = []
 
 # ------------------------------------------------------------------------------------------------ T0 the crest
 FLOORS.append(dict(R=510, rect=(-500, 500, -400, 400), id='T0', tier=0,
   title='Sheet T0: the West Arm\'s crest round the House (1,000 x 800 m)',
-  sub='The flat crest at 519 m (Cfb, 19 C, ~990 mm), between Komodo\'s roads: the trough road and the Vale road pass 31 km north-west, the Strongwall road 16 km south at the Kruk Warra\'s head. The House in the middle; the Strongwall road arrives from the east into the barbican; the Maydan (the riders\' ground and the horse-archery track) on the north side; the remounts\' night paddock, the byres and the great tank east; the barley terraces west and south (two fifths of the House\'s grain), the tea garden and the hives north-west. The beacon line runs east to Strongwall (66 km, in sight); the relay runs west to the brow lookout (879,1618), which sees Komodo. *Proposed* throughout.',
+  sub='The flat crest at 519 m (Cfb, 19 C, ~990 mm), between Komodo\'s roads. The Strongwall road arrives from the east past the caravan halt into the barbican. The sally tracks leave the north and south sally gates down the crest\'s flanks: north across the Maydan toward the trough road and the Vale road (31 km north-west), south between the terraces to the Kruk Warra road (16 km). The horse ground is east and north: the Maydan and its horse-archery track, the remounts\' night paddock, the hay barns, the byres, the great tank, the commons, which run on beyond the sheet over the West Arm (some 24 x 18 km). The barley terraces west and south take the middens\' muck and give two fifths of the House\'s grain. The beacon line runs east to Strongwall (66 km, in sight), the relay west to the brow lookout (879,1618), which sees Komodo. *Proposed* throughout.',
   axisnote='u -> west (Komodo\'s side); the Main Gate faces east (left), toward Strongwall; v north, up the sheet',
   lines=[([(-500, -150), (-300, -140), (-200, -90), (-162, -30)], (140, 100, 60), 5, 'the Strongwall road (road.sw-tempest, 80 km)'),
+         ([(-16, 101), (0, 230), (160, 400)], (140, 100, 60), 3, 'north sally track: to the trough road'),
+         ([(-16, -101), (5, -140), (5, -400)], (140, 100, 60), 3, 'south sally track: to the Kruk Warra road'),
          ([(-60, 12), (-500, 60)], (110, 60, 150), 3, 'the beacon line to Strongwall, 66 km east'),
-         ([(140, 0), (500, 12)], (110, 60, 150), 3, 'to the relay and the brow lookout, 14 km west'),
-         ([(-60, 228), (240, 228)], (90, 60, 30), 4, 'horse-archery track, 300 m, three targets')],
+         ([(500, 12), (140, 0)], (110, 60, 150), 3, 'the relay line to the brow lookout, 14 km west'),
+         ([(-60, 218), (240, 218)], (90, 60, 30), 4, 'horse-archery track, 300 m'),
+         ([(50, -23), (165, -25)], (160, 0, 0), 3)],
   rooms=[
     R(1, 'The House of the Tempest (sheets T1, T2)', 'void', -130, 130, -95, 95, 4, 'the outer curtain 260 x 190 m, the inner ward on the crest\'s crown'),
     R(2, 'Barbican', 'lists', -162, -138, -26, 26, 1, 'the road enters on its south side and turns west to the Main Gate'),
-    R(3, 'The Maydan', 'maydan', -100, 300, 140, 240, 1, 'the riders\' ground: the companies wheel and charge here; the horse-archery track along its north edge (the yabusame and the Mamluk maydan)'),
-    R(4, 'Remounts\' Paddock', 'horse_park', -420, -200, -360, -140, 0, 'a walled night paddock for some 300 remounts; by day they graze the crest\'s commons under the herdsmen'),
+    R(3, 'The Maydan', 'maydan', -100, 250, 130, 230, 1, 'the riders\' ground before the North Sally Gate: the companies form, wheel and charge here; the horse-archery track along its north edge (the Mamluk maydan, the yabusame)'),
+    R(4, 'Remounts\' Paddock', 'horse_park', -420, -200, -360, -140, 0, 'a walled night paddock for some 300 remounts; by day they graze the commons under the herdsmen'),
     R(5, 'Byres and the Herdsmen\'s Huts', 'byres', -200, -130, -360, -300, 1, 'the milking herd (milk is a sacrament of the Decree), the herdsmen\'s huts'),
-    R(6, 'The Great Tank', 'cistern', -300, -220, -110, -40, 0, 'rain off the crest for the herds and the horses; the House drinks from its own cisterns'),
-    R(7, 'Barley Terraces (west)', 'field', 180, 500, -400, 120, 1, 'low banked terraces on the crest\'s west flank, manured from the stables'),
-    R(8, 'Barley Terraces (south)', 'field', -130, 180, -400, -160, 1),
-    R(9, 'Threshing Floors', 'threshing', 140, 180, -150, -110, 0),
-    R(10, 'Tea Garden', 'field', 260, 480, 160, 380, 2),
-    R(11, 'Hives', 'field', 200, 260, 160, 220, 1, 'the honey of the sacrament'),
-    R(12, 'Commons of the Crest', 'field', -500, -130, 140, 400, 0, 'grazing for the herds and the remounts'),
+    R(6, 'The Great Tank', 'cistern', -300, -220, -110, -40, 0, 'rain off the crest for the herds and the remounts; the House drinks from its own cisterns'),
+    R(7, 'Barley Terraces (west)', 'field', 190, 500, -400, 120, 1, 'low banked terraces on the crest\'s west flank; open ground under the Storm Tower\'s eye'),
+    R(8, 'Barley Terraces (south-east)', 'field', -130, -5, -400, -160, 1),
+    R(9, 'Barley Terraces (south-west)', 'field', 15, 180, -400, -160, 1),
+    R(10, 'Threshing Floors', 'threshing', 140, 180, -150, -110, 0),
+    R(11, 'Tea Garden', 'field', 260, 480, 180, 380, 2),
+    R(12, 'Hives', 'field', 260, 320, 125, 170, 1, 'the honey of the sacrament'),
+    R(13, 'Commons of the Crest', 'field', -500, -160, 130, 400, 0, 'the near corner of the commons: the herds and remounts graze on over the West Arm beyond the sheet, the hay meadows with them'),
+    R(14, 'Hay Barns and Ricks', 'hay', -190, -140, -250, -160, 0, 'the year\'s hay from the crest\'s meadows (about 1,000 t for the stabled horses), carted in weekly to the hay sheds in the lists'),
+    R(15, 'Midden (south)', 'midden', -60, -25, -150, -115, 0, 'the south stables\' muck, out by the South Sally Gate, to the terraces'),
+    R(16, 'Midden (north)', 'midden', -70, -35, 106, 126, 0, 'the north stables\' muck, carted round to the west terraces'),
+    R(17, 'Caravan Halt', 'caravan_halt', -240, -170, 20, 80, 1, 'the donkey trains from Strongwall (grain, arms, salt and tea) unload here before the barbican'),
+    R(18, 'Thorn Brake', 'field', 160, 182, -42, -12, 0, 'the Founder\'s Way comes out here, under scrub on the crest\'s edge'),
   ]))
 
 # ------------------------------------------------------------------------------------------------ T1 the enclosure, ground
 OUTER = [(-130, -95), (130, -95), (130, 95), (-130, 95)]
 INNER_LINE = ([(-55, -48), (55, -48), (55, 48), (-55, 48), (-55, -48)], (70, 40, 100), 6)
 TALUS = ([(-59, -52), (59, -52), (59, 52), (-59, 52)], (236, 228, 210))
+WALK = ([(-128.5, -93.5), (128.5, -93.5), (128.5, 93.5), (-128.5, 93.5), (-128.5, -93.5)], (150, 120, 170), 2)
 ENCL = dict(R=170, rect=(-165, 145, -108, 108), poly=OUTER,
   axisnote='u -> west (Komodo\'s side); the Main Gate east (left), toward Strongwall; v north, up the sheet')
 
-def towers(n0):
-    """the outer curtain's drums at the corners, interval towers at about 30 m (the fort asset's march rule), the inner drums"""
-    out = []; n = n0
-    for (u, v) in [(-130, 95), (130, 95), (-130, -95), (130, -95)]:
-        out.append(C(n, 'Corner drum', 'tower', u, v, 7, 0)); n += 1
-    for u in (-98, -70, -46, 8, 34, 60, 104):
-        out.append(R(n, 'Tower', 'tower', u - 3, u + 3, 95, 101, 0)); n += 1
-        out.append(R(n, 'Tower', 'tower', u - 3, u + 3, -101, -95, 0)); n += 1
-    for v in (-70, -40, 40, 70):
-        out.append(R(n, 'Tower', 'tower', -136, -130, v - 3, v + 3, 0)); n += 1
-    for v in (-62, -30, 30, 62):
-        out.append(R(n, 'Tower', 'tower', 130, 136, v - 3, v + 3, 0)); n += 1
-    for (u, v) in [(-55, 48), (55, 48), (-55, -48), (55, -48)]:
-        out.append(C(n, 'Inner drum', 'tower', u, v, 5, 0)); n += 1
-    return out
+TWR = (205, 205, 200)
+def octo(u, v, r):
+    import math
+    return [(u + r * math.cos(math.pi / 8 + k * math.pi / 4), v + r * math.sin(math.pi / 8 + k * math.pi / 4)) for k in range(8)]
+def sq(u, v, h):
+    return [(u - h, v - h), (u + h, v - h), (u + h, v + h), (u - h, v + h)]
+TOWER_FILLS = ([(octo(u, v, 7), TWR) for (u, v) in [(-130, 95), (130, 95), (-130, -95), (130, -95)]]
+  + [(sq(u, s * 98, 3), TWR) for u in (-98, -46, 8, 60, 84, 108) for s in (1, -1)]
+  + [(sq(-133, v, 3), TWR) for v in (-70, -40, 40, 70)] + [(sq(133, v, 3), TWR) for v in (-62, -30, 30, 62)]
+  + [(octo(u, v, 5), TWR) for (u, v) in [(-55, 48), (55, 48), (-55, -48), (55, -48)]])
+N_TOWERS = 4 + 12 + 8 + 4
 
 FLOORS.append(dict(ENCL, id='T1', tier=0,
   title='Sheet T1: the House, ground floor (outer curtain 260 x 190 m; concentric)',
-  sub='The owner\'s forks (2026-11-16): concentric wards; the Prismarch in the utse; the novices in their own court; the horses inside with three gates. The Main Gate (the gilt pavilion) east behind its bent barbican; the muster court before the Prismarch\'s tower; the stables along the north and south curtains, each with its sally gate onto its flank\'s road; the novices\' court north-west, the refectory and kitchens south-west, the Storm Tower on the west front toward Komodo; the archery range in the south lists, the drill court in the west. The inner ward on its 4 m talus: the inner court, the violet great monastery (sheets M1-MR), the infirmary, the Field of the Fallen, the Founder\'s Garden and the hidden Founder\'s Way.',
-  fills=[TALUS + ('the talus (4 m)',)],
+  sub='The owner\'s forks (2026-11-16): concentric wards; the Prismarch in the utse; the novices in their own court; the horses inside with three gates. The Main Gate (the gilt pavilion) east behind its bent barbican; the muster court before the Prismarch\'s tower; the stables along the north and south curtains, each flank with its sally gate, its hay shed in the lists and its garderobe turrets; the novices\' court north-west, the refectory and kitchens south-west, the Storm Tower on the west front toward Komodo; the archery range in the south lists, the drill court in the west. The inner ward on its 4 m talus: the inner court, the violet great monastery (sheets M1-MR), the infirmary, the Field of the Fallen, the Founder\'s Garden and the hidden Founder\'s Way (red). The towers are drawn grey (one entry in the key); the wall walk is reached from the corner stairs, the gate towers, the captains\' stairs (T2) and the Storm Tower.',
+  fills=[TALUS + ('the talus (4 m)',)] + TOWER_FILLS,
   lines=[INNER_LINE,
          ([(50, -23), (90, -23), (130, -20), (145, -20)], (160, 0, 0), 3),
          ([(-172, -40), (-162, -30), (-150, -26)], (140, 100, 60), 5)],
   rooms=[
     R(1, 'Barbican', 'lists', -162, -138, -26, 26, 1, 'walled; the road enters from the south and turns west, so no charge meets the leaves straight (Krak\'s bent ramp, the fort asset\'s bent entrance)'),
-    R(2, 'Main Gate', 'gatehouse', -138, -114, -9, 9, 3, 'the iwan between two towers, the Sultan\'s roundel, the gilt pavilion over it (the fort asset\'s gate); murder holes in the vault'),
+    R(2, 'Main Gate', 'gatehouse', -138, -114, -9, 9, 3, 'the iwan between two towers, the Sultan\'s roundel, the gilt pavilion over it (the fort asset\'s gate); murder holes in the vault; a stair in each tower'),
     R(3, 'Guard of the Gate', 'guard', -128, -114, 9, 19, 1),
     R(4, 'Guard of the Gate', 'guard', -128, -114, -19, -9, 1),
     R(5, 'Sword Hall (the armoury)', 'armoury', -128, -114, 19, 57, 1, 'the order\'s swords and bows, the lamellar and the helmets; no powder'),
@@ -103,14 +111,14 @@ FLOORS.append(dict(ENCL, id='T1', tier=0,
     box(9, 'Corner stair and garderobe', 'stair', NE_ST, 0),
     box(10, 'Corner stair and garderobe', 'stair', SE_ST, 0),
     R(11, 'Stables of the North (east)', 'stable', -114, -22, 81, 93, 0, 'two rows of stalls, the aisle between; the companies sleep over them'),
-    R(12, 'North Sally Gate', 'sally_gate', -22, -10, 81, 101, 2, 'onto the north flank and the trough road'),
+    R(12, 'North Sally Gate', 'sally_gate', -22, -10, 81, 101, 2, 'onto the Maydan and the north flank: the trough road; a stair in its tower'),
     R(13, 'Stables of the North (west)', 'stable', -10, 80, 81, 93, 0),
     R(14, 'Stables of the South (east)', 'stable', -114, -22, -93, -81, 0),
-    R(15, 'South Sally Gate', 'sally_gate', -22, -10, -101, -81, 2, 'onto the south flank and the Kruk Warra road'),
+    R(15, 'South Sally Gate', 'sally_gate', -22, -10, -101, -81, 2, 'onto the south flank and the Kruk Warra road; a stair in its tower'),
     R(16, 'Stables of the South (west)', 'stable', -10, 80, -93, -81, 0),
     R(17, 'Novices\' Yard', 'yard', 86, 116, 51, 81, 1, 'the boys\' practice ground: posts, a short butt, the well'),
     R(18, 'School of the Song', 'song_school', 80, 104, 81, 93, 2, 'the Song in the morning'),
-    R(19, 'Novices\' Refectory and Kitchen', 'novice_refectory', 104, 128, 81, 93, 1),
+    R(19, 'Novices\' Refectory', 'novice_refectory', 104, 128, 81, 93, 1, 'and its kitchen'),
     R(20, 'Master of Novices', 'chamber', 116, 128, 69, 81, 2),
     R(21, 'The Little Armoury', 'novice_armoury', 116, 128, 51, 69, 1, 'wooden swords, boys\' bows, blunt arrows'),
     R(22, 'Novices\' Wash House', 'wash', 116, 128, 39, 51, 1),
@@ -121,41 +129,50 @@ FLOORS.append(dict(ENCL, id='T1', tier=0,
     R(27, 'Great Kitchen', 'kitchen', 80, 104, -81, -61, 1),
     R(28, 'Bakehouse', 'bakehouse', 104, 116, -81, -61, 1),
     R(29, 'Granary', 'granary', 116, 128, -81, -39, 0, 'a half-year\'s grain against a siege, about 75 t'),
-    R(30, 'Larder', 'larder', 80, 100, -93, -81, 0),
+    R(30, 'Larder, Tea and Butter', 'larder', 80, 100, -93, -81, 0),
     R(31, 'Dairy', 'dairy', 100, 116, -93, -81, 1, 'butter for the lamps and the tea'),
-    R(32, 'Tea and Butter Store', 'store', 116, 128, -93, -81, 0),
-    R(33, 'Storm Tower', 'guard', 114, 140, -12, 12, 2, 'the west front\'s great tower toward Komodo: the west watch; the signal room and the mirrors above (T2)'),
-    R(34, 'Smithy and Farriery', 'smithy', 114, 128, 12, 39, 1),
-    R(35, 'Bowyers and Fletchers', 'bowyers', 114, 128, -39, -12, 1, 'horn, sinew and glue; the shafts straightened, the arrows fletched'),
-    R(36, 'Muster Court', 'muster', -114, -63, -79, 79, 2, 'the eight companies form here before the Prismarch\'s tower; the alarm gong'),
-    R(37, 'Well and Troughs of the Muster', 'well', -104, -92, -70, -58, 1),
-    R(38, 'Riders\' Lane (north lists)', 'lists', -63, 80, 52, 81, 1, 'the north companies saddle and form here for the North Sally Gate'),
-    R(39, 'South Lists', 'lists', -63, 80, -81, -52, 1),
-    R(40, 'Archery Range', 'archery', -50, 76, -74, -58, 2, 'four lanes, 120 m, shot from the east end; the long shots go on the Maydan'),
-    R(41, 'Stop Bank', 'bank', 76, 80, -76, -56, 0, 'an earth bank behind the butts'),
-    R(42, 'Drill Court', 'drill_court', 63, 114, -39, 39, 2, 'the sword yard: pells, stance stones, the sand floor (Shaolin\'s worn floor)'),
-    R(43, 'The Prismarch\'s Tower (the utse; sheet U)', 'void', -63, -41, -11, 11, 3, 'astride the inner curtain: the inner gate climbs 4 m through its base'),
-    R(44, 'Inner Court', 'inner_court', -41, -20, -26, 26, 3, 'the oath stone, where vows are taken and the companies swear before a sally'),
-    R(45, 'The great monastery (sheets M1, M2, MR)', 'void', -20, 32, -26, 26, 4, 'the Qiblai kit\'s great monastery in its violet dress'),
-    R(46, 'Infirmary of the Order', 'infirmary', -51, 0, 30, 46, 2, 'the wounded beside the hall, an altar at its end (the Hospitallers\')'),
-    R(47, 'Apothecary', 'apothecary', 0, 12, 30, 46, 2),
-    R(48, 'Physic Garden', 'garden', 12, 51, 30, 46, 2),
-    R(49, 'Bath House of the Brothers', 'wash', -51, -25, -46, -30, 1, 'hot baths for the wounded and the tired'),
-    R(50, 'Cistern and Well-house', 'cistern', -25, -5, -46, -30, 0, 'the inner ward\'s water, fed from its roofs'),
-    R(51, 'Field of the Fallen', 'fallen', -5, 51, -46, -30, 3, 'small chortens of the masters, the wall of names of the brothers (Shaolin\'s pagoda forest)'),
-    R(52, 'Founder\'s Garden', 'garden', 34, 53, -26, 26, 3),
-    R(53, 'Founder\'s Chorten', 'founder', 38, 48, -5, 5, 4, 'the founder of the Violet Storm and his sword'),
-    box(54, 'Founder\'s Way (stair head)', 'stair', FW_ST, 1, 'the hidden way out: a tunnel under the drill court and the west curtain to the brow\'s scrub'),
-  ] + towers(55)))
+    box(32, 'Corner stair and garderobe', 'stair', SW_ST, 0),
+    R(33, 'West Watch', 'guard', 114, 140, -12, 4, 2, 'the Storm Tower\'s ground floor: the guard of the west front toward Komodo'),
+    R(34, 'Beacon Fuel Store', 'store', 114, 132, 4, 12, 0, 'wood and pitch for the tower\'s fire'),
+    box(35, 'Storm Tower Stair', 'stair', ST_ST, 1, 'to the signal room, the watch and the roof'),
+    R(36, 'Smithy and Farriery', 'smithy', 114, 128, 12, 39, 1),
+    R(37, 'Bowyers and Fletchers', 'bowyers', 114, 128, -39, -12, 1, 'horn, sinew and glue; the shafts straightened, the arrows fletched'),
+    R(38, 'Muster Court', 'muster', -114, -63, -79, 79, 2, 'the eight companies form here before the Prismarch\'s tower; the alarm gong'),
+    R(39, 'Well and Troughs of the Muster', 'well', -104, -92, -70, -58, 1, 'over the great cistern under the court'),
+    R(40, 'Riders\' Lane (north lists)', 'lists', -63, 80, 52, 81, 1, 'the north companies saddle and form here for the North Sally Gate'),
+    R(41, 'South Lists', 'lists', -63, 80, -81, -52, 1),
+    R(42, 'Hay Shed (north)', 'hay', 56, 80, 69, 81, 0, 'a week\'s hay and barley for the north stables'),
+    R(43, 'Hay Shed (south)', 'hay', -63, -51, -80, -66, 0, 'for the south stables'),
+    R(44, 'Archery Range', 'archery', -50, 76, -74, -58, 2, 'four lanes, 120 m, shot from the east end; the long shots go on the Maydan'),
+    R(45, 'Stop Bank', 'bank', 76, 80, -76, -56, 0, 'an earth bank behind the butts'),
+    R(46, 'Drill Court', 'drill_court', 63, 114, -39, 39, 2, 'the sword yard: pells, stance stones, the sand floor (Shaolin\'s worn floor)'),
+    R(47, 'Utse (sheet U)', 'void', -63, -41, -11, 11, 3, 'the Prismarch\'s tower, astride the inner curtain: the inner gate climbs 4 m through its base'),
+    R(48, 'Inner Court', 'inner_court', -41, -20, -26, 26, 3, 'the oath stone, where vows are taken and the companies swear before a sally'),
+    R(49, 'The great monastery (sheets M1, M2, MR)', 'void', -20, 32, -26, 26, 4, 'the Qiblai kit\'s great monastery in its violet dress'),
+    R(50, 'Infirmary of the Order', 'infirmary', -51, 0, 30, 46, 2, 'the wounded beside the hall, an altar at its end (the Hospitallers\')'),
+    R(51, 'Apothecary', 'apothecary', 0, 12, 30, 46, 2),
+    R(52, 'Physic Garden', 'garden', 12, 51, 30, 46, 2),
+    R(53, 'Bath House of the Brothers', 'wash', -51, -25, -46, -30, 1, 'hot baths for the wounded and the tired'),
+    R(54, 'Cistern and Well-house', 'cistern', -25, -5, -46, -30, 0, 'the inner ward\'s water, fed from its roofs'),
+    R(55, 'Field of the Fallen', 'fallen', -5, 51, -46, -30, 3, 'small chortens of the masters, the wall of names of the brothers (Shaolin\'s pagoda forest)'),
+    R(56, 'Founder\'s Garden', 'garden', 34, 53, -26, 26, 3),
+    R(57, 'Founder\'s Chorten', 'founder', 38, 48, -5, 5, 4, 'the founder of the Violet Storm and his sword'),
+    box(58, 'Founder\'s Way (stair head)', 'stair', FW_ST, 1, 'the hidden way out: a tunnel under the drill court and the west curtain to the thorn brake on the crest\'s edge (T0)'),
+    R(59, 'Garderobe Turret', 'garderobe', -70, -64, 93, 99, 0, 'off the north captains\' stair (the dansker of Malbork, small)'),
+    R(60, 'Garderobe Turret', 'garderobe', 32, 38, 93, 99, 0),
+    R(61, 'Garderobe Turret', 'garderobe', -70, -64, -99, -93, 0),
+    R(62, 'Garderobe Turret', 'garderobe', 32, 38, -99, -93, 0),
+    C(63, 'Towers (grey): 4 corner drums, 20 interval towers at about 30 m, 4 inner drums', 'towers', -130, 95, 7, 0, 'the fort asset\'s march rule; each a guard post with arrows and a stair to the walk'),
+  ]))
 
 # ------------------------------------------------------------------------------------------------ T2 the enclosure, upper
 FLOORS.append(dict(ENCL, id='T2', tier=1,
   title='Sheet T2: the House, upper storey of the ranges (about 4.5 m)',
-  sub='The eight companies of the professed (*proposed*: forty each, named for the eight winds) sleep over their horses, dressed, their arms at their beds, a stair and the captains\' cells between each pair of halls (the Templars\' rule). The Bow Loft and the Quiver House over the Sword Hall; the Marshal over his hall; the gate chambers with the gilt pavilion; the novices\' dormitories; the lay brothers over the kitchens; the Storm Tower\'s signal room. The inner ward\'s upper floors are the infirmary\'s; the monastery and the utse have their own sheets.',
-  fills=[TALUS], lines=[INNER_LINE],
+  sub='The eight companies of the professed (*proposed*: forty each, named for the eight winds) sleep over their horses, dressed, their arms at their beds; between each pair of halls a stair rises from the stables past the captains\' cells to the wall walk (violet line), so at the gong each company mans its own stretch of curtain or goes down to its horses (the Templars\' rule). The Bow Loft and the Quiver House over the Sword Hall; the Marshal over his hall; the gate chambers with the gilt pavilion; the novices\' dormitories; the lay brothers over the kitchens; the Storm Tower\'s signal room and the west watch. The inner ward\'s upper floors are the infirmary\'s; the monastery and the utse have their own sheets.',
+  fills=[TALUS] + TOWER_FILLS, lines=[INNER_LINE, WALK],
   outlines=[(-114, -63, -79, 79, 'muster court'), (63, 114, -39, 39, 'drill court'), (-63, 80, 52, 81, 'north lists'), (-63, 80, -81, -52, 'south lists'), (86, 116, 51, 81, 'novices\' yard')],
   rooms=[
-    R(1, 'Gate Chamber and the Gilt Pavilion', 'gatehouse', -138, -114, -9, 9, 3, 'the winch of the leaves, the murder holes; the pavilion over it is the fort\'s gold'),
+    R(1, 'Gate Chamber, gilt pavilion', 'gatehouse', -138, -114, -9, 9, 3, 'the winch of the leaves, the murder holes; the pavilion over it is the fort\'s gold'),
     R(2, 'Gate Watch', 'barracks', -128, -114, 9, 19, 1),
     R(3, 'Gate Watch', 'barracks', -128, -114, -19, -9, 1),
     R(4, 'Bow Loft', 'bow_loft', -128, -114, 19, 40, 1, 'the strung bows and the spares'),
@@ -166,7 +183,7 @@ FLOORS.append(dict(ENCL, id='T2', tier=1,
     R(9, 'Guest Chambers', 'hostel', -128, -114, -79, -57, 2),
     box(10, 'Corner stair', 'stair', NE_ST, 0), box(11, 'Corner stair', 'stair', SE_ST, 0),
     R(12, 'Company of the North Wind', 'company_hall', -114, -70, 81, 93, 1),
-    R(13, 'Stair and Captains\' Cells', 'captains', -70, -64, 81, 93, 2),
+    R(13, 'Stair and Captains\' Cells', 'captains', -70, -64, 81, 93, 2, 'up to the wall walk; the garderobe turret off it'),
     R(14, 'Company of the North-East Wind', 'company_hall', -64, -22, 81, 93, 1),
     R(15, 'North Sally Gate chamber', 'gatehouse', -22, -10, 81, 101, 1),
     R(16, 'Company of the North-West Wind', 'company_hall', -10, 32, 81, 93, 1),
@@ -186,17 +203,20 @@ FLOORS.append(dict(ENCL, id='T2', tier=1,
     box(30, 'Novices\' Stair', 'stair', NV_ST, 1),
     R(31, 'Great Refectory (rises through)', 'void', 80, 116, -61, -39, 2),
     R(32, 'Lay Brothers\' Dormitory', 'lay_dorm', 80, 116, -81, -61, 1, 'the fifty lay brothers: cooks, grooms, smiths, herdsmen off the crest'),
-    R(33, 'The Cellarer', 'office', 80, 92, -93, -81, 2),
-    R(34, 'Stores', 'store', 92, 128, -93, -81, 0),
-    R(35, 'Granary Loft', 'store', 116, 128, -81, -39, 0),
-    R(36, 'Signal Room of the Storm Tower', 'signal', 114, 140, -12, 12, 2, 'the brow relay\'s mirrors by day and fires by night are read here and sent to the utse'),
-    R(37, 'Armourers\' Loft', 'armourers', 114, 128, 12, 39, 1, 'lamellar laced in violet, helmets, mending'),
-    R(38, 'Bow-curing Loft', 'bow_loft', 114, 128, -39, -12, 1, 'warm and dry over the glue hearth: a composite bow cures a year on its form'),
-    R(39, 'The Prismarch\'s Tower (sheet U)', 'void', -63, -41, -11, 11, 3),
-    R(40, 'The great monastery (sheet M2)', 'void', -20, 32, -26, 26, 4),
-    R(41, 'Infirmary, Upper Ward', 'infirmary', -51, -12, 30, 46, 2),
-    R(42, 'The Infirmarer', 'chamber', -12, 0, 30, 46, 2),
-    R(43, 'Herb Drying Loft', 'drying', 0, 12, 30, 46, 1),
+    R(33, 'The Cellarer', 'office', 80, 100, -93, -81, 2),
+    R(34, 'Stores', 'store', 100, 116, -93, -81, 0),
+    box(35, 'Corner stair', 'stair', SW_ST, 0),
+    R(36, 'Granary Loft', 'store', 116, 128, -81, -39, 0),
+    R(37, 'Signal Room of the Storm Tower', 'signal', 114, 140, -12, 0, 2, 'the brow relay\'s mirrors by day and fires by night are read here and sent to the utse'),
+    R(38, 'Barrack of the West Watch', 'barracks', 114, 132, 0, 12, 1, 'the duty half-company of the west front'),
+    box(39, 'Storm Tower Stair', 'stair', ST_ST, 1),
+    R(40, 'Armourers\' Loft', 'armourers', 114, 128, 12, 39, 1, 'lamellar laced in violet, helmets, mending'),
+    R(41, 'Bow-curing Loft', 'bow_loft', 114, 128, -39, -12, 1, 'warm and dry over the glue hearth: a composite bow cures a year on its form'),
+    R(42, 'Utse (sheet U)', 'void', -63, -41, -11, 11, 3),
+    R(43, 'The great monastery (sheet M2)', 'void', -20, 32, -26, 26, 4),
+    R(44, 'Infirmary, Upper Ward', 'infirmary', -51, -12, 30, 46, 2),
+    R(45, 'The Infirmarer', 'chamber', -12, 0, 30, 46, 2),
+    R(46, 'Herb Drying Loft', 'drying', 0, 12, 30, 46, 1),
   ]))
 
 # ------------------------------------------------------------------------------------------------ the great monastery
@@ -333,6 +353,10 @@ def programs():
       'horse_park': lambda a, w, d, D: [('xanadu_trade_trough', 8), ('xanadu_trade_hayrack', 8)],
       'byres': lambda a, w, d, D: [('xanadu_trade_trough', 4), ('xanadu_trade_hayrack', 4), ('xanadu_works_churn', 2), ('xanadu_common_bed', 6), ('xanadu_common_hearth', 2)],
       'lay_dorm': lambda a, w, d, D: [('xanadu_common_bed', cs(a / 18)), ('xanadu_common_chest', cs(a / 18)), ('xanadu_common_stool', cs(a / 40))],
+      'hay': lambda a, w, d, D: [('xanadu_trade_hayrack', cs(a / 30)), ('xanadu_trade_bin', cs(a / 40))],
+      'midden': lambda a, w, d, D: [], 'garderobe': lambda a, w, d, D: [],
+      'towers': lambda a, w, d, D: [('xanadu_common_weapon_rack', N_TOWERS), ('xanadu_arms_arrow_bin', N_TOWERS), ('xanadu_common_bench', N_TOWERS)],
+      'caravan_halt': lambda a, w, d, D: [('xanadu_trade_trough', 4), ('xanadu_trade_hayrack', 4), ('xanadu_common_bench', 4)],
       'lists': lambda a, w, d, D: [], 'bank': lambda a, w, d, D: [], 'field': lambda a, w, d, D: [], 'threshing': lambda a, w, d, D: [], 'cloister_court': lambda a, w, d, D: [],
       'roof': lambda a, w, d, D: [],
       'refectory': lambda a, w, d, D: [('xanadu_common_table', cs(a / 19)), ('xanadu_common_bench', cs(a / 9.5)), ('xanadu_common_reader_seat', 1), ('xanadu_common_bowl', cs(a / 4)), ('xanadu_common_jug', cs(a / 19))],
@@ -372,7 +396,7 @@ def programs():
     }
 
 OPEN = {'muster', 'lists', 'drill_court', 'archery', 'bank', 'yard', 'maydan', 'horse_park', 'field', 'threshing', 'cloister_court',
-        'fallen', 'founder', 'song_drum', 'roof', 'well', 'inner_court', 'porch', 'watch'}
+        'fallen', 'founder', 'song_drum', 'roof', 'well', 'inner_court', 'porch', 'watch', 'hay', 'midden', 'garderobe', 'caravan_halt'}
 
 def keymap():
     m = LS.keymap()
@@ -455,7 +479,7 @@ def main():
     B.KEYMAP.update(keymap()); B.EXTRA_PROGRAMS.update(LS.programs()); B.EXTRA_PROGRAMS.update(programs())
     B.OPEN_KINDS.update(OPEN)
     for k in OPEN: B.KIND_FILL.setdefault(k, (214, 236, 250))
-    B.KIND_FILL.update({'field': (226, 238, 200), 'maydan': (236, 228, 200), 'horse_park': (226, 238, 200), 'roof': (236, 236, 236), 'bank': (200, 186, 160)})
+    B.KIND_FILL.update({'field': (226, 238, 200), 'maydan': (236, 228, 200), 'horse_park': (226, 238, 200), 'roof': (236, 236, 236), 'bank': (200, 186, 160), 'midden': (200, 186, 160), 'hay': (236, 228, 190), 'towers': (205, 205, 200), 'garderobe': (205, 205, 200)})
     B.NEW.clear(); B.NEW.update(NEW); B.CITY.clear()
     intro = ('Generated by `tempest_blueprint.py` (on `settlements/voth/palace/blueprint.py`, with Longsong\'s Xanadu key map and room programmes) from the same room data as the sheets. Keys are catalog pieces (`kits/catalog`): `xanadu_court_*`, `xanadu_common_*` (with the Arms file\'s `xanadu_common_weapon_rack` and `xanadu_common_armour_stand`), `xanadu_training_*`, `xanadu_trade_*` (the horse stall, trough, fodder rack, forge) and `xanadu_works_*` (sickbed, herb bench, churn, weigh scale). **NEW** marks a piece the catalog lacks; they are listed at the end. Open grounds (the muster court, lists, drill court, the range, the Maydan, the fields, the cloister court, the Field of the Fallen, roofs) are not dressed; nothing is counted at a quarter except the crest sheet\'s zones.\n')
     B.main(floors=FLOORS, out=OUT, here=HERE, title='# The House of the Tempest: furniture manifest\n', intro=intro, section=draw_section, zone_R=510)
