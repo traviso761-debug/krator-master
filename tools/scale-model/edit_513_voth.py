@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """Scale model 5.1, edit 3 (2026-11-11): the Bay of Voth shrunk to Voth's page, its rim softened, the Turm re-routed.
 
     python tools/scale-model/edit_513_voth.py            # edits model/data in place, writes edit_513_voth.report.json
@@ -45,7 +45,7 @@ REPO = os.path.dirname(os.path.dirname(HERE))
 sys.path[:0] = [HERE, os.path.join(HERE, 'history')]   # edit_511 is in history/ since 5.1 edit 3
 import smodel.page as P, smodel.geom as G, smodel.climate as C, smodel.paint as PA   # noqa: E402
 from edit_511 import priority_fill, hexrgb   # noqa: E402
-from edit_512_caldera import cells_along, resample, box_fade, at, pits   # noqa: E402   (Erewhon's caldera, 5.1 edit 2 before the renumbering)
+from edit_517 import cells_along, resample, box_fade, at, pits   # noqa: E402   (Erewhon's caldera, 5.1 edit 7; edit_512 on this line before the renumbering)
 
 SRC = os.path.join(HERE, 'model', 'src')
 

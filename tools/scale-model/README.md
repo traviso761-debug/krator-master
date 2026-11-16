@@ -778,27 +778,103 @@ river's `walls_unforced` field is its marker).
   bloodfalls, not built) will read r442's lower flow.
 - `tests/test_smodel.py` section 18: the walls' band under 400 mm, the caldera's rain kept, the river at 120-135 m³/s.
 
-## Queued: Erewhon's caldera, `edit_512_caldera.py` (2026-11-11, not yet run on this model)
-- **What it is:** the owner's Atitlán-like caldera for Erewhon's lake (121 x 66 km at -520 m, three volcanoes set back
-  from the south shore, four islands, two sub-cell landforms) and Erehwon moved onto its south shore at 805,1516.
-- **Where it ran:** as `edit_512.py` on claude/openworld-sites-24defd (5e31f0ceb), whose 5.1 edit 2 it was there.
-- **Why it isn't here:** main's model never took it, and main's own `edit_512.py` is Godshearth's vents.
-  claude/clever-mirzakhani-030fd5 merged origin/main on 2026-11-12 with main's model (the owner: main's model, the edit
-  queue re-runs), so the script is kept under this name for the queue.
-- **Already here:**
-  - its landform records (`model/data/landforms.json`, `DATA.landforms`), with the Pleasure Dome's isle moved to the
-    Erewhon page's island (805.035,1515.6935) and no shoal for it; `openworld/xanadu-oidong-highrift` stamps them;
-  - that region's cut, made on the caldera model.
-- **Owed with the run:**
-  - `SETT_MOVED['5.1e4']` (Erehwon from 800,1503 to 805,1516) in `model/src/60-settlements.js`;
-  - `tests/test_smodel.py` section 15 (the lake, walls, volcanoes, islands, the Pleasure Dome's landform in Erehwon's
-    bay, the Alph's head, the vale);
-  - a recut of `openworld/xanadu-oidong-highrift`.
-  All are on 98d15b9b9 and its parents.
+## 5.1 edit 7: `edit_517.py` (2026-11-11): Erewhon's lake as a caldera lake
+
+First run as "5.1 edit 2" (`edit_512.py`) on the openworld-sites line (5e31f0ceb, 2026-11-11), which `gemini-trade` carries.
+Main's own edit 2 is Godshearth's vents, and the rasters cannot be merged, so the edit was re-run on main's model (edits
+1-6 in) as edit 7 on 2026-11-15, when `gemini-trade` was merged. Two changes from the first run: the Pleasure Dome's
+landform stands at the Erewhon page's island with no shoal (the owner, 2026-11-11, d1555243e on
+claude/clever-mirzakhani-030fd5), and Thalaba, one of the owner's live pins (825,1481), now under the lake, moves to
+825,1488 (where Gemini's trade map has it; checked dry).
+
+`python tools/scale-model/edit_517.py` edits `model/data` in place and writes `edit_517.report.json`; `--dry` computes
+and prints the report without writing; it refuses to run twice (`DATA.landforms` is its marker). The owner's decision of
+2026-11-11: one great lake on the pattern of Atitlan, about 120 x 65 km, caldera walls all round, a chain of volcanoes
+along the south side set back from the shore, and a few islands. Everything moves inside the box x 758-918, y
+1464-1556 (the old lake's box, 774-906 x 1482-1534, with the volcanoes' margin); heights and water 3 cells inside it,
+and every raster (heights, water, the five temperatures, rain, class, zone) is checked unchanged outside it.
+
+- **The lake**: a smoothed ellipse 60 x 32 px round 810,1499.5 on the old lake's axis (15 degrees south of east), in the
+  west of the old basin: 1,495 cells (5,980 km2; the old lake 2,197), 121 x 66 km, at -520 m. Its bed is a caldera bowl,
+  60 m deep at the shore and steepening to about 945 m in the middle (bed -1,465 m). The walls rise from 20-80 m over
+  the water on the shore to about 350 m one cell back and 500 m two cells back (no higher than 80 m over the lake on the
+  shore, then 300 m a cell: the old horst stood 1.5 km at the water), with a bench behind them on the north and west that
+  slopes back to the lake, so the escarpment behind holds no trench.
+- **The south rim and the volcanoes**: the horst between the lake and the Lizardman Rift lowered to a caldera rim (its
+  height over the lake compressed as 700 ln(1 + h/700): 3.3 km fell to 0.8 km), and on it three stratovolcanoes,
+  straight-sided cones 5.5 px in radius, summits 13-14 px (26-28 km) back from the shore: west 794,1525 (2.0 km over the
+  lake), middle 819,1530 (2.3 km), east 843,1523 (2.5 km), each with a summit crater. Not vents (`DATA.vents` would
+  light and smoke them); in the report.
+- **Erehwon's new site** (reported; the settlement record moves separately): **805,1516**, a bench on the south shore
+  between the western and middle volcanoes, -497 m; behind it the town's climb (-415 m), a 90 m step (the grey cliff),
+  the palace plateau (-325 to -305 m), then the mountainside (-210, -20, +180, +370 m at 5-8 cells back). The old pin
+  (800,1503) is under the lake.
+- **The Vale**: the old basin east of the lake's east tip, filled (up to 1.95 km over the old bed) to a floor falling
+  gently to Theodiga: the river 0.35 m a px (-522 m at the lake to -546 m at r070's old head 903.5,1529.5), the floor
+  rising about 2-3 m a px to its sides (-497 m near the lake, -535 m near Theodiga). Cfa, ~900 mm, +25 C (32/18).
+- **The outlet**: the Alph (`r070`) now rises at the lake's east tip (840,1503; sill -521.8 m), crosses the east wall in
+  a V-gorge and the vale, and passes Theodiga's broken dam by a breach west of the pin (1531,905 to 1541,912, -548 to
+  -568 m; two of r070's old -2,025 m slot cells there raised to the bed). Theodiga's pin (908,1535, -495 m) is the dam's
+  standing crest. The old lake stood 32 m under the dam's sill (-488 m): closed in the raster. DATA.outlets gains the
+  outlet. The north shore's rivers (`r613`, `r753`, `r492`, `r272`) are cut through the wall and end in the lake; the
+  vale's wadis (`r488`, `r616`) cross the floor to the Alph; their records' courses, beds, lengths and mouths follow.
+  `r442` (joining `r272` far up) and `r683` (into the Alph at the dam) are unchanged.
+- **Islands**: four of one to four cells (113, 64, 100 and 45 m over the lake; the bay isle 16 km off Erehwon), and two
+  sub-cell islands as landform records, `DATA.landforms` (`model/data/landforms.json`, `{format: 'krator-landforms',
+  version: 1, landforms: [{id, kind: 'island', px, py, r_m, crest_m, water_m, note}]}`, crest absolute) for core/world to
+  stamp at 1:1: `lf_pleasure_dome_isle` (805.035,1515.6935, the Erewhon page's island, ~220 x 110 m, 14 m over the lake,
+  about 0.6 km off the quays; no shoal, its cell is the shore bench) and `lf_west_stack` (its cell held as a 40 m shoal).
+- **Checks**: the lake's bed filled to its way out spills at the outlet's sill (-521.8 m); with the outlet's gorge
+  blocked, not under 340 m over the level; no new pit in the box (a few hollows at the cones' feet and on the vale floor,
+  up to 63 m, filled); every settlement pin in the box but Erehwon's unchanged (Theodiga, Tuatara). Temperatures lapsed
+  with the surface; the cells that turned to land take their land twins' (place and height), new water the lake's; rain,
+  class and zone by `climate.reclimate`; the paint relit and retinted, the lake and the vale painted, the Alph drawn.
+  DATA.basins gains the lake (a through lake).
+- `tests/test_smodel.py`: section 12's lake and Erehwon check moved to the new lake; section 19 checks the lake, its
+  walls, the volcanoes, the islands, the Pleasure Dome's landform, the Alph's head, the vale and the rivers' mouths.
+- The Erehwon record moved to 805,1516 with the openworld-sites line's pin batch (SETT_MOVED 5.1e6).
+- **Left for later**: re-cutting `openworld/xanadu-oidong-highrift` on this model, the Erewhon page's world coordinates,
+  and the stale basin record at 922.8,1527.7 (-759 m, outside the box).
+
+## 5.1e11 (2026-11-15): Gemini's trade branch reconciled with the map (no raster change)
+
+The owner, 2026-11-15: "reconcile the map edits to your version of the map (don't lose the new polygons or
+settlements, but do bear in mind we don't need duplicate settlements)", and pull in the `gemini-trade` branch's work.
+That branch's map is `openworld/world-pins-gemini.json` (Gemini's merge of the live map with its own pins and types).
+Read against the page's defaults and the live artifact database (2026-11-15), and written as page defaults under the
+reconcile key `5.1e11` (`krator.regMerged.5.1e11`, `SETT_ADDED`/`SETT_MOVED['5.1e11']`). The full list is in
+`reconcile_5.1e11.json`.
+
+- **Settlement types**: `town`, `fort` and `inhabited ruin` join SETT_TYPES, each with its glyph and key entry (the owner
+  asked for town and fort on 2026-11-12; Gemini's map uses all three). The Tabist town already used `town`.
+- **Polygons**: the 25 the owner drew on the live map (Hookfleet, Frogmen, Tiguantin, Jabal Shiekdom, Kimr, and twenty
+  biome and geographic ones) and Gemini's Andaru; e badlands, NW outer wall, s highlands and arachnoid canyons take the
+  live map's shapes. Six of the live polygons redraw ground an older default already names, and both are kept, as
+  plans and tests read the old ids: ria valley (`rmvriavalley` / `rmwetlrvemher`), the arch (`rmvthearch` /
+  `rmwetfxp9qgeu`), copper glacier (`rmvcopperglacier` / `rmwetaguz7zhe`), Tharn Uplands (`rmvtharnuplands` /
+  `rmwgv03cawwvm`), double delta and Delta, the crook and crookwash/crookhead. Also NW outer wall twice
+  (`rmuqm8dxeuvhi`, `rmwgv3ot4jv87`). For the owner to settle.
+- **Settlements, 98 added**: the 34 the owner placed on the live map; 35 the owner approved through the queue
+  (openworld/TRADE-SCOPE.md: the eastern highlands harvesters, Pit-Head 04, the Coyote village, Baelu B1-B5, Korona
+  K1-K10, E1-E4 and N1-N5, the desert villages W1-W8); 29 of Gemini's own (with Gemini's `polity`).
+- **Retyped to fort** (Gemini's types, the owner's fort type): Bastion, Fort Vaklu, Strongwall, Tallhouse, The Gate,
+  Tzunfort, Veil. Gemini's other retypes (cities and villages to towns, ruins to inhabited ruins, and its `polity` on
+  the older pins) are not applied: for the owner.
+- **Duplicates dropped**: Gemini's copies of the queue's pins keep Gemini's ids, so its trade, population and road files
+  still point at them (Guari is the eastern highlands harvesters, `s5p5j083tj`; Siphon Maar Works is Pit-Head 04,
+  `sk9e4psl4b`; Coyote Lake Village; Baelu North/Mid/South; K2, K7, E1), with the owner's names and positions. Kolli
+  Oasis, Arfwai Oasis, the Xanadu Goldfields and the second Singing Gjar duplicate pins already on the page and are
+  referenced nowhere. Catch Salt Works (`svhmyhf33w`) and Bowl Salt Works (`s0zgu7u6yb`) are the owner's held batch
+  5.1e10 (Salt al-Ban, Solta): not placed; when it runs it takes those ids. The resource census's `new-singing-gjar` is
+  the page's Singing Gjar Quartz (`s57rejd9iv`).
+- **Checked**: no two pins within 3 px; every settlement id in Gemini's trade, population, fleet, road and network files
+  is on the page but the two held salt works.
 
 ## 5.1 edit 3, Voth: `edit_513_voth.py` (2026-11-11): the Bay of Voth shrunk to Voth's page
 
-*Renamed from edit_513.py on 2026-11-15, when this branch met the rerun line, whose edit_513.py is the Firebliss Range; it is re-run on the merged model. Its helpers come from edit_512_caldera.py (Erewhon), which was edit_512.py on this branch.*
+*Renamed from `edit_513.py` on 2026-11-15, when claude/openworld-sites-24defd met the rerun line, whose `edit_513.py` is the
+Firebliss Range. It runs on the merged model after `edit_517.py` (Erewhon's caldera, 5.1 edit 7), whose helpers it imports
+and whose landforms it appends to.*
 
 `python tools/scale-model/edit_513_voth.py` edits `model/data` in place and writes `edit_513_voth.report.json`; `--dry` computes
 and prints the report without writing; `--terrain <out.npz>` gives the heights only; it refuses to run twice (the

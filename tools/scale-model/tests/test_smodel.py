@@ -629,15 +629,15 @@ check('the Godthrone walls round Godshearth are dry again (4-6 km band %.0f mm)'
 check('Godshearth keeps its own rain inside the caldera (%.0f mm)' % _rain4[gh_floor].mean(), 700 <= _rain4[gh_floor].mean() <= 950)
 gso4 = next(r for r in D['rivers'] if r['id'] == 'r_gh_spillway')
 check('Āirã Siṭrīm carries about 129 m3/s (%.1f), perennial' % gso4['q_mouth_m3s'], 120 <= gso4['q_mouth_m3s'] <= 135 and gso4['perennial'])
-# ---- 15. 5.1 edit 2 (edit_512.py, 2026-11-11): Erewhon's caldera lake, its walls, volcanoes, islands, the Vale and
+# ---- 19. 5.1 edit 7 (edit_517.py, 2026-11-11): Erewhon's caldera lake, its walls, volcanoes, islands, the Vale and
 #          the Alph's new head
-import edit_512 as E512   # noqa: E402
+import edit_517 as E517   # noqa: E402
 yy_c, xx_c = np.mgrid[0:E.shape[0], 0:E.shape[1]].astype(float)
-_, _, r_c = E512.lake_frame(xx_c, yy_c)
+_, _, r_c = E517.lake_frame(xx_c, yy_c)
 lk_full = r_c <= 1.0
 lk = lk_full & whas & (np.abs(np.nan_to_num(wlev, nan=0.0) + 520.0) <= 1.0)
 isl_c = np.zeros(E.shape, bool)
-for _, i_x, i_y, i_rx, i_ry, _ in E512.ISLANDS:
+for _, i_x, i_y, i_rx, i_ry, _ in E517.ISLANDS:
     isl_c |= np.hypot((xx_c - i_x) / i_rx, (yy_c - i_y) / i_ry) <= 1.0
 check('Erewhon\'s caldera lake: %d cells wet at -520 m (1,400-1,600), %.0f m deep at most (>= 700 m), dry only on its islands' % (
     int(lk.sum()), -520.0 - float(E[lk].min())),
@@ -646,12 +646,12 @@ check('Erewhon\'s caldera lake: %d cells wet at -520 m (1,400-1,600), %.0f m dee
 s_c = nd.distance_transform_edt(~lk_full)
 wall2 = float(np.median(E[~lk_full & (np.abs(s_c - 2.0) < 0.5) & (yy_c > 1470) & (yy_c < 1545) & (xx_c > 770) & (xx_c < 850)]))
 check('the caldera walls stand %.0f m over the lake two cells off the shore (>= 250 m)' % (wall2 + 520.0), wall2 + 520.0 >= 250.0)
-for v_id, v_x, v_y, v_top, v_rb in E512.VOLCS:
+for v_id, v_x, v_y, v_top, v_rb in E517.VOLCS:
     v_h = float(E[int(v_y), int(v_x)])
     check('%s (%d, %d) stands %.0f m over the lake (1.5-2.6 km), %.1f px back from the shore (10-15)' % (
         v_id, v_x, v_y, v_h + 520.0, s_c[int(v_y), int(v_x)]),
           1500.0 <= v_h + 520.0 <= 2600.0 and 10.0 <= s_c[int(v_y), int(v_x)] <= 15.0)
-for i_id, i_x, i_y, i_rx, i_ry, i_c in E512.ISLANDS:
+for i_id, i_x, i_y, i_rx, i_ry, i_c in E517.ISLANDS:
     i_j, i_i = int(round(i_y)), int(round(i_x))
     check('island %s (%.1f, %.1f) is dry, %.0f m over the lake' % (i_id, i_x, i_y, E[i_j, i_i] + 520.0),
           not bool(whas[i_j, i_i]) and 20.0 <= float(E[i_j, i_i]) + 520.0 <= 160.0)

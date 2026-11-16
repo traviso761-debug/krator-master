@@ -1,17 +1,8 @@
 #!/usr/bin/env python3
-"""Scale model 5.1 (2026-11-11): Erewhon's lake remodelled as a caldera lake on the pattern of Atitlan.
+"""Scale model 5.1, edit 2 (2026-11-11): Erewhon's lake remodelled as a caldera lake on the pattern of Atitlan.
 
-QUEUED FOR THE SCALE-MODEL EDIT QUEUE (2026-11-12). Written as edit_512.py on claude/openworld-sites-24defd (5e31f0ceb) and
-run there; main's model never took it, and main has its own edit_512.py (Godshearth's vents). Renamed here when
-claude/clever-mirzakhani-030fd5 merged origin/main (the owner: main's model, the queue re-runs). Changed since that run:
-the Pleasure Dome's landform record stands at the Erewhon page's island (805.035,1515.6935, r 80 m, 14 m over the lake,
-'shoal': False, since its rounded cell is the shore bench), so no shoal is held for it; edit_511 is read from history/;
-the run guard is Erewhon's lake in DATA.basins, not DATA.landforms (the records are already in model/data, the region
-reads them). Also owed with it: SETT_MOVED['5.1e4'] (Erehwon to 805,1516) in model/src/60-settlements.js and
-tests/test_smodel.py's section 15, both as on claude/clever-mirzakhani-030fd5 before the merge (98d15b9b9).
-
-    python tools/scale-model/edit_512_caldera.py        # edits model/data in place, writes edit_512_caldera.report.json
-    python tools/scale-model/edit_512_caldera.py --dry  # computes and prints the report, writes nothing
+    python tools/scale-model/edit_517.py            # edits model/data in place, writes edit_517.report.json
+    python tools/scale-model/edit_517.py --dry      # computes and prints the report, writes nothing
 
 The owner's decision of 2026-11-11: one great lake, about 120 x 65 km, caldera walls all round, a chain of volcanoes
 along the south side set back from the shore, and a few islands.
@@ -50,9 +41,8 @@ from scipy.spatial import cKDTree
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(os.path.dirname(HERE))
-sys.path.insert(0, HERE)
+sys.path[:0] = [HERE, os.path.join(HERE, 'history')]
 import smodel.page as P, smodel.geom as G, smodel.climate as C, smodel.paint as PA   # noqa: E402
-sys.path.insert(0, os.path.join(HERE, 'history'))   # edit_511 moved to history/ on main
 from edit_511 import priority_fill, hexrgb   # noqa: E402
 
 SRC = os.path.join(HERE, 'model', 'src')
@@ -75,20 +65,21 @@ ISLANDS = [  # id, px, py, rx, ry, crest over the lake (m)
     ('isle_erewhon_east', 828.0, 1497.0, 0.6, 0.6, 45.0),
 ]
 LANDFORMS = [
-    # moved 2026-11-11 to the Erewhon page's island (the owner: keep the page, move the record; it stays off the quays,
-    # about 0.6 km): no shoal, its rounded cell is the shore bench and the 1:1 lake is 6-10 m deep there
     {'id': 'lf_pleasure_dome_isle', 'kind': 'island', 'px': 805.035, 'py': 1515.6935, 'r_m': 80.0, 'rx_m': 110.0,
      'rz_m': 55.0, 'crest_m': -506.0, 'water_m': LEVEL, 'shoal': False,
      'note': "The Pleasure Dome of the Bay's island in Erehwon's bay: the Erewhon page's island (settlements/xanadu, "
              "target erewhon, ISLAND_C at 70,-613 m from the page's centre, which stands on Erehwon's pin 805,1516 "
-             "unturned), about 220 x 110 m and 14 m over the lake, some 150 m off the world's shore. Stamped at 1:1 by "
-             "openworld/xanadu-oidong-highrift/src/44-world-landforms.js. edit_512_caldera, 2026-11-11."},
+             "unturned), about 220 x 110 m and 14 m over the lake, some 150 m off the world's shore (the owner, "
+             "2026-11-11: keep the page, move the record; it stays off the quays, about 0.6 km). No shoal: its rounded "
+             "cell is the shore bench. Stamped at 1:1 by openworld/xanadu-oidong-highrift/src/44-world-landforms.js. "
+             "edit_517 (first run as edit_512 on claude/openworld-sites, 2026-11-11)."},
     {'id': 'lf_west_stack', 'kind': 'island', 'px': 784.4, 'py': 1491.6, 'r_m': 160.0, 'crest_m': -478.0,
      'water_m': LEVEL,
      'note': "A basalt stack off the lake's west shore, 42 m over the water. Sub-cell; its cell's bed held as a shoal. "
-             "edit_512, 2026-11-11."},
+             "edit_517, 2026-11-11."},
 ]
 SHOAL_M = 40.0
+THALABA_ID, THALABA_NEW = 'shvo49k0y2', (825, 1488)   # the owner's Thalaba moves off the new lake (Gemini's spot)
 EREHWON = (805, 1516)                     # the new pin: the bench on the south shore (reported; the record moves apart)
 # s (cells off the shore) -> m: the quays' bench, the town's climb, the cliff (90 m), the palace plateau, the mountainside
 EREHWON_PROFILE = {1: -497.0, 2: -415.0, 3: -325.0, 4: -305.0, 5: -210.0, 6: -20.0, 7: 180.0, 8: 360.0}
@@ -164,9 +155,9 @@ def pits(S, box):
 
 def main(dry=False):
     D = P.load()
-    if any(b.get('name') == "Erewhon's lake" for b in D.get('basins', [])):
-        sys.exit('edit_512_caldera has run already (Erewhon\'s lake is in DATA.basins)')
-    rep = {'edit': '5.1 edit 2', 'date': '2026-11-11'}
+    if 'landforms' in D:
+        sys.exit('edit_517 has run already (DATA.landforms is in model/data)')
+    rep = {'edit': '5.1 edit 7', 'date': '2026-11-11'}
     Eo, water0 = P.heights(D)
     whas0, wlev0 = P.water_levels(D)
     sh = Eo.shape
@@ -312,7 +303,7 @@ def main(dry=False):
         sm = lake & (ri > 1.0) & (ri <= 3.2)
         En[sm] = np.maximum(En[sm], LEVEL - 12 - 95 * (ri[sm] - 1))
     for lf in LANDFORMS:
-        if not lf.get('shoal', True):
+        if lf.get('shoal') is False:
             continue
         c = (int(round(lf['py'])), int(round(lf['px'])))
         assert lake[c], lf['id'] + ' stands in the lake'
@@ -442,9 +433,13 @@ def main(dry=False):
         if y0 <= st['py'] < y1 and x0 <= st['px'] < x1:
             pins[st['name']] = {'px': [st['px'], st['py']], 'before_m': round(float(Eo[st['py'], st['px']])),
                                 'after_m': round(float(En[st['py'], st['px']])), 'wet_after': bool(whas2[st['py'], st['px']])}
-            if st['id'] != 's57bkv9741':
+            if st['id'] not in ('s57bkv9741', THALABA_ID):
                 assert abs(En[st['py'], st['px']] - Eo[st['py'], st['px']]) < 0.5 and not whas2[st['py'], st['px']], st['name']
     rep['pins'] = pins
+    # Thalaba (the owner's live pin, 825,1481) stands where the lake now is: moved 7 px south as on Gemini's trade map
+    pins['Thalaba (moved)'] = {'px': list(THALABA_NEW), 'after_m': round(float(En[THALABA_NEW[1], THALABA_NEW[0]])),
+                               'wet_after': bool(whas2[THALABA_NEW[1], THALABA_NEW[0]])}
+    assert not whas2[THALABA_NEW[1], THALABA_NEW[0]], "Thalaba's new spot is dry"
 
     moved = (np.abs(En - Eo) > 0.5) | (whas2 != whas0)
     assert not (moved & ~inbox).any(), 'heights moved outside the box'
@@ -539,10 +534,11 @@ def main(dry=False):
     basin = {'at_px': [LAKE['cx'], LAKE['cy']], 'level_m': int(LEVEL), 'km2': int(lake.sum()) * 4,
              'depth_m': round(LEVEL - float(En[lake].min())), 'kind': 'through lake',
              'climate': codes[int(np.bincount(cnow[shore & ~whas2]).argmax())], 'spill_m': round(spill),
-             'name': "Erewhon's lake", 'notes': 'A caldera lake (edit_512, 2026-11-11): its outlet the Alph (r070).'}
+             'name': "Erewhon's lake", 'notes': 'A caldera lake (edit_517, 2026-11-11): its outlet the Alph (r070).'}
     D['basins'].append(basin)
     rep['basin'] = basin
-    D['landforms'] = {'format': 'krator-landforms', 'version': 1, 'landforms': LANDFORMS}
+    D['landforms'] = {'format': 'krator-landforms', 'version': 1,
+                      'landforms': [{k: v for k, v in lf.items() if k != 'shoal'} for lf in LANDFORMS]}
     dc = Counter(cnow.ravel().tolist())
     for pr in D['climate']['present']:
         k = codes.index(pr['code'])
@@ -561,7 +557,7 @@ def main(dry=False):
     rep['box'] = {'y': [y0, y1], 'x': [x0, x1]}
     if not dry:
         P.save(D)
-        json.dump(rep, open(os.path.join(HERE, 'edit_512_caldera.report.json'), 'w', encoding='utf-8', newline='\n'), indent=1,
+        json.dump(rep, open(os.path.join(HERE, 'edit_517.report.json'), 'w', encoding='utf-8', newline='\n'), indent=1,
                   ensure_ascii=False)
     print(json.dumps(rep, indent=1, ensure_ascii=False))
     return D, En

@@ -171,10 +171,6 @@
     ],
     "harbour_wlev_m": 0.0
    }
-  },
-  {
-   "key": "landforms",
-   "file": "landforms.json"
   }
  ]
 }
