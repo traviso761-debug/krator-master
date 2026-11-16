@@ -81,14 +81,14 @@ def main():
     n = sum(len(s['rooms']) for s in sheets.values()) + sum(len(f['rooms']) for f in utse['floors'].values())
     print('wrote', os.path.basename(OUT), len(sheets), 'sheets +', len(utse['floors']), 'utse floors,', n, 'rooms,', len(T.TOWERS), 'towers')
 
-# *proposed* (the plan's recommended answer, relayed 2026-11-16 while the owner's question stays open): the duty rota
+# the owner, 2026-11-16: "add fodder"; the duty rota and its numbers are the plan's recommended answer (*proposed*)
 FODDER = {
-  'answer': 'duty rota (proposed)',
+  'answer': 'duty rota (the owner: "add fodder"; the numbers proposed)',
   'rule': 'four companies\' horses and the gate stable stabled at a time, the other four at grass on the crest with the remounts; every stall kept for the wet months and the alarm',
   'stabled_avg': 181, 'hay_kg_day': 8, 'barley_kg_day_season': 2, 'season_days': 182,
   'hay_t_yr': 530, 'barley_t_yr': 66,
   'hay_from': 'the crest\'s meadows (no trade)', 'barley_from': 'up the Strongwall road with the grain (road.sw-tempest carries grain)',
-  'for_the_tune': 'xan.tempest: a hay line local to the House and about 70 t of barley a year added to its grain draw; not yet in xan-tune.js',
+  'tune': 'core/region/data/xan-tune.js T.tempest.horses: the good fodder, the work tp.meadows, the barley in the House\'s grain passed on by Strongwall',
 }
 
 if __name__ == '__main__':

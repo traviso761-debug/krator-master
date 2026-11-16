@@ -180,12 +180,13 @@ The owner's concentric answer means the fourth size is **two curtains**, not a w
   at least 6 m".
 - A **west front** toward the enemy with one great tower (the Storm Tower) and no gate.
 
-## Lore (*proposed*, for the owner)
+## Lore
 
-- **The Decree forbids war-making by its clergy** (`kits/qiblai/PLAN.md` 2a, "The Fall"). The Violet Storm's answer,
-  *proposed*: it **makes no war; it keeps the Vale**. It never rides beyond the Rift's rim except in pursuit of a raid,
-  and it takes no spoil but arms, which go to the Protectors' Chapel. The council can therefore keep a martial order
-  without breaking the Song, and the order's founding is a story (the first raid the Vale could not bear).
+- **The Decree forbids war-making by its clergy** (`kits/qiblai/PLAN.md` 2a, "The Fall"). The Violet Storm **makes no
+  war; it keeps the Vale: its riders go out only to chase a raid** (the owner, 2026-11-16: "they ride out to chase a
+  raid"; `LORE.md` 6.13). *Proposed* round it: it takes no spoil but arms, which go to the Protectors' Chapel; the
+  council can therefore keep a martial order without breaking the Song; the order's founding is a story (the first raid
+  the Vale could not bear).
 - The **eight companies named for the eight winds** echo the eight spokes; the banner is the eight-spoked wheel struck
   through by lightning.
 - The **oath stone** in the inner court: the vows are taken on it, and the companies touch it before a sally.
@@ -200,14 +201,17 @@ The owner's concentric answer means the fourth size is **two curtains**, not a w
 - Water: no stream on the crest (the Kruk Warra's head is 16-18 km south). Roof water into the cisterns under the
   inner ward and the muster court; the great tank for the herds. About 25,000 m2 of roof at 990 mm gives some 20,000 m3
   a year against about 10,000 for the people and the horses.
-- **Fodder: the duty rota** (*proposed*: the plan's recommended answer, taken on 2026-11-16 while the owner's question
-  stays open). All 327 stabled would eat about 1,000 t of hay a year at 8 kg a day and some 240 t of barley at 2 kg,
+- **Fodder: the duty rota**, in the sim (the owner, 2026-11-16: "add fodder"; the rota and its numbers are the plan's
+  recommended answer, *proposed*). All 327 stabled would eat about 1,000 t of hay a year at 8 kg a day and some 240 t of barley at 2 kg,
   more than the House's own grain (about 107 t). So four companies' horses and the gate stable are stabled at a time
   (about 181), the other four companies' at grass on the crest with the remounts, changing over with the companies'
   duty; every stall is kept for the wet months and the alarm. Barley goes only to the stabled horses in the raiding
   season (about 182 days). That makes **about 530 t of hay a year, from the crest's meadows** (no trade), and **about
-  66 t of barley, up the Strongwall road with the grain**. For the tune's owner (not yet in `xan-tune.js`): a hay line
-  local to `xan.tempest`, and about 70 t a year added to its grain draw on `road.sw-tempest`. Pasture: 600-odd horses
+  66 t of barley, up the Strongwall road with the grain**. In the tune (`core/region/data/xan-tune.js`, `T.tempest.horses`):
+  a new good, `fodder`; the House's work `tp.meadows` (60 crew, the summer-pasture window) cuts the hay; the House eats
+  the stabled horses' hay, kept in the barns from one cut to the next (the tune's year opens some 230 days before the cut,
+  so it starts with 250 days of hay); the barley is added to its grain, and
+  Strongwall passes it on. `test-xan-economy.js` section 29 checks the horses are fed (with a negative). Pasture: 600-odd horses
   and the milking herd want several hundred hectares; the West Arm (some 24 x 18 km) has them, so T0 draws only the
   commons' near corner.
 - The brow lookout (879,1618) and its relay are 14 km west, off T0; they are fort-asset watch posts, sited at 1:1.

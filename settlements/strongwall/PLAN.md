@@ -255,7 +255,12 @@ Xanadu's last high ground before the Rift, between the two low roads.
   inner ward, the martial ranges against the outer curtain); **the Prismarch lives in the utse** between the wards;
   **the novices in their own court**; **the horses inside, three gates** (the Main Gate east, sally gates north and
   south). So `size:'monastery'` (section 5.4) is two curtains with the utse astride the inner one (BLUEPRINT, "For the
-  fort asset").
+  fort asset"). The data for V2, F4 and V3 is `tempest/tempest_plan.json`.
+- **War and the Decree** (the owner, 2026-11-16: "they ride out to chase a raid"): the order makes no war; its riders go
+  out only after a raid (`LORE.md` 6.13).
+- **Fodder** (the owner, 2026-11-16: "add fodder"): in the tune as `T.tempest.horses`, the duty rota (*proposed* numbers):
+  about 181 horses stabled at a time, about 530 t of hay a year from the crest's meadows (`tp.meadows`, the good
+  `fodder`), about 66 t of barley up the Strongwall road with the grain (BLUEPRINT, "Assumptions").
 
 ## 4. The economy (tied to `XAN_TUNE`)
 
