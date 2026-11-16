@@ -47,6 +47,27 @@ terrain splat texture and the placement input; (3) the minimap drawn from export
 
 - ~~**Reroute the Ostrukh Riba south into Lake Ostrukh.**~~ **Done in scale model 5.1 edit 4** (`tools/scale-model/edit_514.py`, 2026-11-10, re-run on the merged model 2026-11-11): a travertine sill at 2,050 m closes the flagship maar's north breach, and the river runs 262 km south into Lake Ostrukh (1,850 m), 0.9 m³/s of the model's runoff. Reed, Nazar and Mungo's plans were corrected with 5.1 edit 3 (`biomes/loom-chasms`, `biomes/godshearth`).
 
+## With the native-crop rule *(the owner, 2026-11-12; `openworld/TRADE-SCOPE.md` section 2.5)*
+
+- **Rework the isle demo's crops.** Under the native-crop rule cacao is the Vale's, so the Ring Isles can no longer grow
+  it (indigo, annatto and tobacco stay: the isles are in their homes). Change all of it to a crop native to the isles
+  (clove, coffee, kava, sugar cane) or to cacao bought in:
+  - Nephtos's cacao plantings (`settlements/isle-demo/src/15-isle-tune.js:663`);
+  - **Kautoa's own cacao plantation and export** (`settlements/isle-demo/PLAN.md:515`, `:990`; `README.md:174`) and the
+    advantage table;
+  - the cacao in the traders' buy lists (`15-isle-tune.js:335`, `:346`). The stocks proof and `test-sim.js` move on
+  purpose and are re-baselined. Do it when the rule lands in `kits/crops`, not before.
+
+## Lacquerware for Xanadu and the Eternians *(the owner, 2026-11-12; `openworld/TRADE-SCOPE.md` section 7.6)*
+
+- **Both make lacquerware; nothing builds it yet.** It needs:
+  - a lacquer source in `kits/crops`: a lacquer tree native to the Vale and to the NW lowlands, or one each; the abyss's
+    `abyss-lac` is an insect lac and stays the abyss's;
+  - the lacquer workshop in `kits/xanadu` and in the Eternian kit;
+  - the goods row and the recipe (sap to lacquer to lacquerware) in the sim's culture tables (`core/simulation`).
+
+  `biomes/twins/PLAN.md:90` already has Xanadui lacquerware as caravan cargo.
+
 ## Ride along with the next all-builds rebuild
 
 **Taken by the second integration pass** (`claude/integration-2`, 2026-11-10 and 11; HANDOFF-REBUILD.md): the `dalab` sockets pack,
@@ -107,6 +128,11 @@ runtime and bison table, and the `tools/` listing staleness (every build rebuilt
   k.overlay.indexOf(name)>=0:...`), then drop the shim in `openworld/iziz-cluster/src/47-world-kits.js` (`WORLD_KITS.findIndex`, which
   tries each name of a list). It moves every page that reads core/world (the isle demo's two city pages, Longsong, Pinnacle Rock and the
   open-world regions) without changing what they draw.
+- **core/world: a `xanadu` style** (2026-11-11, the owner: "Xanadu should be lush where moisture allows"). `41-world-fields.js`
+  `BIOME_STYLE` has no entry for the 'xanadu' overlay, so it takes `desert`: the red sandstone palette and desert shaping (terraces .75
+  at 55 m steps). Add a `xanadu` style and palette (green by wetness, as `openworld/xanadu-oidong-highrift/src/43-world-xoh.js`'s
+  `WORLD.ground` wrapper does now; shaping nearer `highland`), then drop that wrapper. The shaping changes `WORLD.H`, so the region's
+  `plan/sites.json` re-bakes. Same reach as the item above.
 
 - **`KSHADOW.units` counts what the GPU links** (2026-11-09, found by the Throne's fix): `core/shadow/host/12-core-shadow-host.js` counts
   declared samplers (some are never read and the GPU drops them), misses `scene.environment` on standard materials, and judges against the

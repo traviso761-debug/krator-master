@@ -60,6 +60,11 @@ LDF = lambda *fs: [('ld', f) for f in fs]
 CORE_BIOME = ['10-core-head.js', '20-core-kit.js', '30-core-foliage.js', '30s-core-season-flush.js', '31b-core-leafset.js', '31j-core-joint.js',
               '32-core-variants.js', '33-core-fungoid.js', '34-core-impostor.js', '35-core-anim.js', '36-core-walker.js', '38-core-fire.js',
               '39-core-lean.js']
+# the region's resources (core/world/world_data.py: the geology cropped to the box; kits/resources' field, read in place)
+import importlib.util as _ilu   # noqa: E402
+_wds = _ilu.spec_from_file_location('core_world_data', os.path.join(ROOT, 'core', 'world', 'world_data.py'))
+_WD = _ilu.module_from_spec(_wds); _wds.loader.exec_module(_WD)
+RES_FRAGS = _WD.RES_FRAGS
 ORDER = (
     LDF('00-head.html') + [('gen', '05-world-data.js'),
      ('core/shader', '06-core-khook.js'), ('core/shader', '06b-core-kcolor.js'),
@@ -89,7 +94,8 @@ ORDER = (
        ('ld', '48s-world-sites.js'), ('src', '48-world-site.js'), ('src', '49-world-xanadu.js')]
     + LDF('80-world-sky.js', '81-world-terrain.js', '83-world-water.js', '83w-world-seas.js', '84-world-nursery.js',
           '85-world-flora.js', '86-world-floor.js', '87-world-places.js', '88-world-towns.js', '88s-world-sites.js')
-    + LDF('90-world-camera.js', '91-world-probe.js', '98-world-start.js', '99-tail.html')
+    + [('resgeo', 'geology')] + RES_FRAGS + [('ld', '49r-world-resources.js'), ('ld', '89r-world-resources-map.js')]   # the resources: census, layers, markers
+    + LDF('90-world-camera.js', '91-world-probe.js', '93-world-propose.js', '98-world-start.js', '99-tail.html')   # 93: proposing a site
 )
 HEAD = [('<title>Krator Little Demo</title>', '<title>Krator: Xanadu, Oidong and the High Rift</title>'),
         ("<b>Little Demo</b> · the scale model's eastern desert at 1:1",
@@ -134,6 +140,9 @@ def xak_bundle():
 def main():
     out, bad = [], []
     for where, f in ORDER:
+        if where == 'resgeo':   # the region's geology (core/world/world_data.py geology_fragment: kits/resources' data cropped to the box)
+            out.append(_WD.geology_fragment(DATA))
+            continue
         if where == 'gen':
             out.append(data_fragment())
             continue

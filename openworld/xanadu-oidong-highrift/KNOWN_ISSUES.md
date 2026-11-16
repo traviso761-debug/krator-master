@@ -7,6 +7,10 @@
       `plan/sites.json` (`links`), but the build leaves them out of `WORLD_DATA.roads`. Laid, their fill buried a carved
       river channel at (-569 km, -70 km), near Theodiga: 27.6 m of road over the ground and a dry river station. The
       world has no bridge yet.
+- [ ] **The Xanadu overlay's green is a wrapper.** core/world 41 has no style for the 'xanadu' overlay (it takes the desert's),
+      so `src/43-world-xoh.js` re-colours `WORLD.ground` there by wetness. The land is still shaped as desert (terraces at
+      55 m steps). The core fix is parked in `TODO.md` ("Ride along"). The High Rift, Godthrone, twins and the other
+      kit-less overlays are still the desert's red.
 - [ ] **The Xanadu kit's lake shore does not grow.** The kit reads its shore from the ground's absolute height (`Z.h`
       between 2.5 and 10 m, its page's lake at 0). In the world that is the real height, so `Z.shore` is 0 and its
       shore and river-mouth stands are missing.
@@ -22,3 +26,14 @@
       searched for good ground within 3 km. busy-keller's hinterland survey, lifted into core, would place them by the
       land's fitness. They have no farmland yet.
 - [ ] **The villages are not on core/simulation.**
+- [ ] **Farmland is a reading, not a crop map.** The resources panel's farmland is warmth x water x flat x soil from the world's
+      fields (core/world/49r-world-resources.js `farm`); it does not ask kits/crops what grows there (no climate-to-band
+      mapper exists yet) and the scale model has no soil layer.
+- [ ] **Proposals live in the browser until they are sent or exported.** `93-world-propose.js` keeps them in localStorage
+      per region; clearing the site data loses unsent ones.
+- [ ] **The lake's small islands are records only.** Scale-model edit 5.1-512 wrote the Pleasure Dome's isle and a stack
+      as landforms (`tools/scale-model/model/data/landforms.json`). Each one's cell is a 40 m shoal; core/world does not
+      stamp them at 1:1 yet.
+- [ ] **Erewhon's page and the world disagree on its ground.** The page (`settlements/xanadu`, target erewhon) draws its own
+      terrain (lake at -0.5 m, its island at `ISLAND_C`). The world's town now stands on the caldera lake's south shore,
+      with the lake to the north; the page has not been fitted to it.

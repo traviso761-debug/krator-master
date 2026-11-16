@@ -479,6 +479,25 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
   - The **Pleasure Dome of the Bay** is the Sultans' own extravagance, built for their feasts. It is not Ancient: no Ancient dome stood there. [the owner, Oct 2026]
   - **The Caves of Ice** are an Ancient construction, not a natural cave. Something deep inside keeps them unnaturally cold. The sacred river Alph. [the owner, Oct 2026]
 - **Origins:** the Xanadui likely descend from **Theodiga**, the Ancient dam arcology at the valley mouth that harnessed the cascade (§4). *Xanadu*, *Alph* and the *Caves of Ice* are Ancient names, taken from Coleridge's *Kubla Khan*. [the owner, Oct 2026]
+- **The faith: the Decree (*Ḍikrī*) and the Broken Wheel** [the owner, 2026-11-11; the detail is *proposed*:
+  `kits/qiblai/PLAN.md` section 2a].
+  - **Scripture.** It is *Kubla Khan*, kept by **sound alone** since the Latin letters were lost. The temple grammarians'
+    sound-grid syllabary writes how the Song (*Gīt*) sounds, not what it means.
+  - **Belief.** The Khan (*Qublā*) decreed the dome and the Ancients built it. They did not heed the "ancestral voices
+    prophesying war", and it fell.
+  - **The Broken Wheel.** The **dome in air is the Station**, the Ancients' broken wheel in the sky. The eight-spoked
+    wheel is its picture, whole.
+  - **The prayer wheels.** Every turn sings the Song once and turns where the broken Wheel cannot. Sung whole, the Song
+    will mend the Wheel.
+  - **Prophet and sacraments.** The prophet is the Damsel (*the Ḍāmsal*) with her dulcimer. The sacraments are honey and
+    milk.
+  - **Pilgrimage.** The kora is walked three times with eyes lowered. The **Ālph** is the sacred river; the geysers, the
+    Caves of Ice and **the Singing Gjár** in the High Rift are holy places.
+  - **Qiblai** (Kubla's city) is its holy city, under a council of abbots.
+  - **Theodiga.** *Proposed:* Theodiga, the arcology the Xanadui come from, is the dome on earth; it is to be redesigned
+    with a dome or domes.
+  - **Distinct from the History Monks,** who keep the same poem as an English text with its author's name, and say
+    nothing.
 - What to say of the fabled city of Erewhon, Pearl of Xanadu, Queen of Cities? Its great wealth and great remoteness make it a byword for exoticism and luxury among the peoples of the northern crater. The Vale of Xanadu is blessed by geography – a lush vale in an eastern rift lake, rising above the abyssal lakes that stretch west; to the north, rough high passes, often blocked by lava flows or earthquakes, are the most direct way to reach the teeming peoples of the Crater. With this ruggedness, only brave adventurers and traders brave the country, its bandits, and the robotic stalkers rumored to haunt it to venture south to Xanadu. But ah, what rewards! For Xanadu has plentiful gold mines and lush fields of cacao and other spices to match. Even the poorest of Erewhon eat like nobles elsewhere – and the Sultan himself? Well, the feasts and orgies of the Pleasure Dome have made Xanadu a byword for decadence as well. With its closest neighbors being the peaceful History Monks of the chilly Oidong Valley, and the lowlands tribes of Lizardmen who occasionally raid, but find the highland air too thin and chilly, the Sultanate has enjoyed splendid isolation for most of its history; even Iziz at its height was not so arrogant as to try to conquer it.
 - Things may be poised to change however. The current Sultan, a tremendously fat man who relies on 4 servants to carry him around in a palanquin, is such a prodigal spender that even the Sultanate’s ledgers are running in the red; and his longsuffering Grand Vizier has been pulling his beard out trying to muster up more money for guard patrols. The Lizardmen, from as much as can be gathered about that famously hostile race, seem to have new leadership, and their raids grow increasingly bold. While rich, the Sultanate is rather deficient in iron ore and scrap, and their best weapons are always obtained from Izizian and Yuni traders. If something were to cut that trade off, trouble may well come to paradise….
 - Sign: the **eight-spoked wheel**, saffron and maroon. Ships: a swan barge, a dragon boat, a bullion carrack.
@@ -595,8 +614,14 @@ marked *proposed* is this session's and waits on the owner. Its placeholder entr
   **Yeti Valley** (px 53-225 by 75-261) on the Outer Wall's flank above it. The Iron Republic holds the highlands to the east
   (§6.3; its polygon's western edge lies at px 226, beside the capital's candidate site: the border wants checking on the
   model). Jimjam, a separate people, shares the lowlands (§6.14).
-- **The capital** stands round an arcology [the owner, 2026-10-19], near the placeholder **Centrum** (px 223,315); the owner
-  may swap its name with **Fulcrum** (px 339,266, on Jimjam's lake). From Centrum: Farport 407 km north-west, Roketstad 241
+- **The capital stands round the arcology Fulcrum** [the owner, 2026-11-12], at scale model 5.1 px 409,621. The arcology
+  stands on rich iron (812 km² rich within reach) beside the Līng-Mā (1,277 m³/s), on Cfa farmland
+  (`openworld/RESOURCES-SETTLEMENTS.md`). Lux (5.1 px 495,645) stays a city of the State.
+  - The older placeholders were legacy 4.x pixels: **Centrum** (px 223,315) is 5.1's Lux, and the old **Fulcrum** px
+    339,266 is open floodzone water on 5.1.
+  - The distances below were measured from Centrum and want re-measuring from Fulcrum.
+  - Earlier: the capital stands round an arcology [the owner, 2026-10-19], near the placeholder Centrum; the owner may
+    swap its name with Fulcrum. From Centrum: Farport 407 km north-west, Roketstad 241
   km east, Jimjam 537 km east-north-east, Dilihan 500 km east, Leng (ruined arcology, px 218,224) 182 km north, Henge
   (arcology, px 185,405) 195 km south, Carcosa (ruin, px 123,482) 389 km south-west. The arcology is its own [the owner,
   2026-10-20, in place of the proposed Plymouth; its form redrawn 2026-10-22]: **the Sanctum**, the owner's name
@@ -1078,9 +1103,9 @@ Rule: a building never names a culture. Its sockets (awning, banner, flag, emble
 - **The Ancients' highways** (§4, `openworld/ANCIENT-ROADS.md` section 7): the Republic's arcology over the Inner Wall tunnel (Cascade or a new site), other cities on Ancient ground, and the tentative ruins, before the network is routed for good.
 - **The Talovolci** (§6.21): the Empire's loans *Emparos* and *comandaros* are proposed; their clans, chiefs and the ceremonial rites at Daridel are open.
 - Who lives in the NW bay and the badlands? (The southern highlands are the Talovolci's, §6.21.) Which tribes, human and therian, live in Korona, and what are their home tongues?
-- The Eternal State (§6.19): where exactly the capital stands (near Centrum, px 223,315, or its name swapped with Fulcrum, 339,266: the owner's call), what the Eternians call it and its arcology (the owner calls the arcology the Sanctum); the Eternian tongue's proposals (the signs from icons, the Valley march dialect, the Paper speech's levels, the Yusar's words, Matok's words; settled 2026-10-23: the Heirs' English and the forbidden letters, the five dialects, Hayrant on the Outer Wall like Ainu, Farside's clicks from over the sea, the Yusar's avoidance speech, the dam basins' traders' argot); the kingdom's population; who the visitors at Farport are, what they want and what tongue gave Farside its clicks; the Yusar's (the cybernetics tribe's, at Carcosa and Henge) own customs beyond their speech; the Yeti Kingdom (*Khaay Qantïr*) beyond `biomes/nwouterwall/PLAN.md`: its clans, its High Chief's line, its war with the State; whether the Republic's polygon really reaches px 226; and what the Heirs' Clock says against Jimjam's Long Count.
+- The Eternal State (§6.19): the capital's name and its arcology's (it stands round Fulcrum, 5.1 px 409,621: the owner, 2026-11-12), what the Eternians call it and its arcology (the owner calls the arcology the Sanctum); the Eternian tongue's proposals (the signs from icons, the Valley march dialect, the Paper speech's levels, the Yusar's words, Matok's words; settled 2026-10-23: the Heirs' English and the forbidden letters, the five dialects, Hayrant on the Outer Wall like Ainu, Farside's clicks from over the sea, the Yusar's avoidance speech, the dam basins' traders' argot); the kingdom's population; who the visitors at Farport are, what they want and what tongue gave Farside its clicks; the Yusar's (the cybernetics tribe's, at Carcosa and Henge) own customs beyond their speech; the Yeti Kingdom (*Khaay Qantïr*) beyond `biomes/nwouterwall/PLAN.md`: its clans, its High Chief's line, its war with the State; whether the Republic's polygon really reaches px 226; and what the Heirs' Clock says against Jimjam's Long Count.
 - **Farside** (`biomes/farside/PLAN.md` section 8): the species and the animals; the lung octopus's build; the people's relation to the coast and the State's view of the traders' invasion.
 - **The Catch** (`biomes/catch/PLAN.md` section 8): what drove Hub 01 mad (contamination, a virus or reprogramming: left open); the five oases' names (in Yuni, Izani, Dasrī or Xanadui); the preserved salvage (proposed); whether the sealed tunnel ever opens fully.
 - When did the scablands' lake fill and break (the Ancients' time, a wetter age)? Did the Godthrone ever erupt explosively? (Not needed for the Catch any more: its soft rock is old lake beds.)
-- What are the religions of Iziz, Yuni, the Beast Riders and the Hykkousoi? On record so far: The God at Dalab, the Republic's Pantheon, Voth's Temple and ancestor cult, Xanadu's prayer-wheel faith, the Altar of the Abyss, the Deep Aquifer, Jimjam's calendar, and the Beast Riders' nature shrines.
+- What are the religions of Iziz, Yuni, the Beast Riders and the Hykkousoi? On record so far: The God at Dalab, the Republic's Pantheon, Voth's Temple and ancestor cult, Xanadu's Decree and the Broken Wheel (§6.13), the Altar of the Abyss, the Deep Aquifer, Jimjam's calendar, and the Beast Riders' nature shrines.
 - Is there a common calendar (Jimjam's reckoning is the nearest, §6.14), a common language, or writing (post-apoc signs are pictographs)? *Coinage is settled* (the owner, 2026-11-03): each nation has its own currency (the Republic has a Mint), and the Izani Talent is the trade money everyone takes (§6.2). The other nations' currencies are still to be named.

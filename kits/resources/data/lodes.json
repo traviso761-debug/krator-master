@@ -1,0 +1,9 @@
+{
+  "format": "krator-lodes",
+  "version": 1,
+  "note": "Authored deposits the scale model's geology does not give, stamped on geology.json by `python3 tools/scale-model/geology.py --lodes kits/resources/data/geology.json kits/resources/data/lodes.json` (never lowers a byte; run after every re-bake). px, py on the 5.1 canvas.",
+  "lodes": [
+    {"id": "lode:xanadu-gold", "family": "gold", "px": 911, "py": 1665, "r_km": 16, "peak": 225,
+     "why": "The owner, 2026-11-12: Xanadu's lore has plentiful gold mines paying for the gold on everything (LORE.md 6.13), but the geology gave only low-grade gold; a rich field near Qiblai and Strongwall, the best spot near a pin (openworld/TRADE-GOODS.md)."}
+  ]
+}
