@@ -292,6 +292,11 @@ exceeded ceiling as `OVER`; `--strict-budget` makes it fail.
       intact reservoir; there is no bed under it to stand them on (they go to y = 0).
 - [ ] **Not in the kit target.** `buildDam` is placed only on its own page; the kit showcase never places the dam, so the
       dome exists only where `targets/theodiga` is on the page. A world that places Theodiga needs both fragments.
+- [ ] **The river does not pass the ruin** (the owner, 2026-11-15: "there should still be a river/cascade passing through the
+      broken dam"). The ruin draws the lake at 250 m, under the Notch's sill (272 m), with no cascade and no river on the canyon
+      floor. `settlements/theodiga/BLUEPRINT.md` holds the lake at the sill, with a 272 m cascade down the face through the Notch
+      and a river down the canyon. The page wants: the ruined lake at about 272 m, a waterfall through the Notch, the river and its
+      spray on the canyon floor.
 
 ## Veladiga (`--target veladiga`)
 
