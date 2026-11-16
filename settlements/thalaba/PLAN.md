@@ -149,7 +149,9 @@ wary of each other (X2: "wary of one another"), and the market square stands bet
   Qol road (section 3).
 - Ōlḍ-Thalaba (860,1496, on the lake's north-east shore since the re-made lake): 77 km straight, 2 km below.
 - Ḍāiyar (870,1500): 95 km straight.
-- The Godshearth camp (828,1380): 168 km straight.
+- The Godshearth camp (828,1380 in the tune): 168 km straight. Its own site plan is `settlements/devisers-camp/PLAN.md`
+  (2026-11-16, the owner: "make the expedition's semi-permanent main camp as its own settlement"), which proposes the hot
+  lake's outlet, 839,1398, about 130 km by the road up the gorge.
 
 ## 3. The layout (*proposed*, except the spring line, the mission and the open town, which are the owner's)
 
