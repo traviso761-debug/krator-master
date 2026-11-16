@@ -6,6 +6,16 @@ The owner's polygon `the catch` (2026-10-23; `regions` doc `rmvka7icdn1dq`; the 
 what the model should carry instead (a 4.22 item), and what kit the corrected basin wants. Everything is *proposed*
 unless marked.
 
+> **Updated 2026-11-16 (the owner, by way of `core/simulation/PROPOSAL-CATCH.md`).** Stair is a caravan town of **about
+> 750**, not "a couple of hundred". The other oases are lived in, **~100 or less** each: Kolli, Arfwai, Bitta and Lasso, each
+> kept by a caravan group's hands. **The northern tunnel is dropped** (`LORE.md`, 2026-11-11): the Ancients reached Stair from
+> the north over the surface by the Godsgate highway, so the "sealed tunnel ... Yuni stripped the northern half" passages
+> below are history. **The Theodiga tunnel stays** (the owner, 2026-11-16): the Ancients' dead bore from Theodiga to Stair
+> under the Twins (`openworld/ANCIENT-NETWORK.md`, `rift.bowl.theodiga-stair`), where no trains run. Station 2's portal by
+> Stair's spring is its Stair mouth, sealed inside as settled 2026-10-26, and the divers' camp stays at it. The Catch floor closes in the spring storms. On 5.1 the oases stand where scale-model
+> edit 5 put them (two north of Stair, two south), not at the 100-150 km spacing below. Section 7 and the passages below are
+> otherwise as settled on their dates.
+
 **The owner's brief** (2026-10-23): the Catch is **the biggest barrier to trade between Xanadu and everywhere else**. It
 has oases, but **only just enough to make the crossing doable, not comfortable or safe**. The Ancients' tunnel to Stair
 has been **closed by seismic activity since about the Cataclysm**. **Stair** is the nearest thing to a settlement: a
@@ -115,8 +125,8 @@ fans and sink into them; the last of the water pools in a salt lake at the lowes
   fans' toes, and those few springs and seeps are the **oases**: a pool, a reed bed, a stand of poplar and tamarisk, a
   well. **Five of them** on the crossing [the owner, 2026-10-23], none named yet. The crossing from the notch to the
   southern passes is ~700 km, so they lie *~100-150 km apart*: three to five days with loaded beasts, which carry water
-  between them. A caravan that misses one, or finds it dry, is in trouble. No oasis waters fields, and **none is lived in
-  but Stair's** [the owner].
+  between them. A caravan that misses one, or finds it dry, is in trouble. No oasis waters fields. ~~None is lived in but
+  Stair's~~: **each is kept by ~100 people or less** [the owner, 2026-11-16], one caravan group's hands at its well.
 - **The terminal lake** at the lowest point (px 762,1067, 225 m) is **salt, not drinking water**: a few hundred km² of
   brine and salt crust that moves as its feeders shift, the way Lop Nur did ("the wandering lake").
 - **Groundwater** runs under the fans toward the floor. Wells dug at the fans' toes reach it; whether anyone ever dug
@@ -152,19 +162,23 @@ species fit has not been checked yet.
   lead into the Stalker Peaks, and nobody takes them (section 6c). At 0.64-0.76 atm the passes are breathable but
   bitterly cold, and the floor between them is a furnace. The hazards: **the Stalkers** above all (section 6c), the black
   storms and their caustic dust, an oasis found dry, the beasts' water running out between stages.
-- **The Ancients' road** to Stair (`openworld/ANCIENT-ROADS.md`: Arcbeam to Stair) ran through a tunnel under the walls,
+- ~~**The Ancients' road** to Stair ran through a tunnel~~ **Dropped (the owner, 2026-11-11):** no Ancient tunnel crosses
+  the north walls; the road came over the surface by the Godsgate highway (`LORE.md`, `openworld/ANCIENT-NETWORK.md` section 8).
+  **The southern bore from Theodiga stays** (the owner, 2026-11-16): its Stair mouth is station 2's portal.
+  The passage as first settled: the Ancients' road to Stair (`openworld/ANCIENT-ROADS.md`: Arcbeam to Stair) ran through a tunnel under the walls,
   **closed by seismic activity since about the time of the Cataclysm** [the owner, 2026-10-23]. It is **sealed halfway
   through**: both halves are open from their own ends, and both offer salvage. **Yuni stripped the northern half bare a
   long time ago**; the **southern half**, entered from Stair, is the divers' prospect.
 - **Stair** [the owner, 2026-10-23]: the closest thing to a settlement in the Catch, and more of a **glorified
   campground**. Its ruin is **the Hill arcology** (`kits/ancients/targets/hill`, `src/89e-hill.js`: a city of 111
-  garden terraces climbing ~500 m of hillside, sinuous along the contour), at the biggest of the five oases, and the only one lived in, by **a couple of hundred
-  people**. A handful of merchants (who sell water, fodder, repairs and news at the prices the Catch allows), the
+  garden terraces climbing ~500 m of hillside, sinuous along the contour), at the biggest of the five oases, lived in by **about 750 people** [the owner, 2026-11-16; once "a couple of
+  hundred"]: the caravan groups' factors and pens and the Brotherhood of the Two Horns' guild house, as well as the following. A handful of merchants (who sell water, fodder, repairs and news at the prices the Catch allows), the
   caravans passing through, and now and then **bands of daring or desperate arcology divers** working the ruin.
 - **Who** [the owner, 2026-10-23]: the residents, the traders and the oases' future names are **Yuni, Izani, Dasrī or
   Xanadui**, the four peoples whose roads meet here, with very occasional bold ventures from further off. Each oasis
   carries a name in more than one of their tongues, as Silk Road towns did (Kashgar, Kashi, Shule) [the owner].
-- **Nobody else lives here.** No oasis people, no ruler of the passes.
+- ~~Nobody else lives here. No oasis people~~: the four other oases are kept by the caravan groups' hands, ~100 or less each
+  (the owner, 2026-11-16). Still **no ruler of the passes**.
 
 ## 6a. What the Catch has that nowhere else does
 
@@ -186,7 +200,7 @@ since long before the Ancients, with no outlet at all, its walls the Godthrone's
      noted in its `KNOWN_ISSUES.md`).
 2. **The preservation.** Rust needs water. In air this dry, sealed off for a thousand years, **Ancient metal and Ancient
    machines keep** as they do nowhere else on Krator: the Tarim's mummies and Turpan's silk lasted for the same reason.
-   *Proposed*: that is the divers' trade. Out of Stair's lower levels and the tunnel's southern half they bring **alloys**
+   *Proposed*: that is the divers' trade. Out of Stair's lower levels (the tunnel's southern half, now dropped) they bring **alloys**
    (structural stock and fittings that come out bright, not as rust) and **energy cells**, intact and some still holding
    a charge, which in a wet ruin anywhere else would long since have corroded through. The caustic dust is the one
    enemy of the haul: what lay open to it is etched, what lay sealed is pristine.
@@ -302,7 +316,8 @@ takes them all, with `rock.yardang.silt`, `card.tamarisk`, `card.reed`, `card.sa
 
    Caravaneers say whichever their master's tongue is; Stair's merchants answer to all four. The records carry every form
    (`CATCH.OASES`, `src/50-biome-catch-species.js`).
-2. **The sealed tunnel** [the owner, 2026-10-26]: **it stays sealed**. The kit shows the southern portal by Stair's
+2. **The sealed tunnel** [the owner, 2026-10-26]: **it stays sealed**. *2026-11-11 dropped the northern tunnel; 2026-11-16
+   (the owner) kept the Theodiga bore, so the portal below is that bore's Stair mouth, sealed deep inside.* The kit shows the southern portal by Stair's
    spring, open, with the divers' camp at its mouth (fire rings, a few spoil heaps); the seal is a rubble plug deep inside,
    not drawn. Whether it ever opens is left to the story.
 3. **The kit** [settled 2026-10-26]: `biomes/catch`, the four stations of section 5 on the shared biome core; the potash
