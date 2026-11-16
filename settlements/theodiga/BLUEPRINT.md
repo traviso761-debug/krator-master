@@ -156,5 +156,6 @@ town, the ways down and the works below are `PLAN.md`.
 ## Next
 
 - Windows cut through the crest's and fins' shells; a Xanadu divan, rug and hanging for the deck's dress.
-- The town on core/city (like Strongbow's), and the census as `core/simulation` roles.
+- The census walking: a walk graph over the town, the ways and the arcology, the life drawn from `SIM.pose`, and the economy.
+  The census is on `core/simulation` as records (T-sim-1, `PLAN.md`).
 - LORE 6.13 (on the branch that holds the faith): Theodiga as the Decree's shrine, the Order's delegation, the cascade.

@@ -191,4 +191,22 @@ spring, sealed deep inside). Theodiga's end:
    - **The checks.** `test-th-town-rooms.js` runs 13. Every room lies inside its building as placed; every storey stands at
      its plot's base; a building's street door is its own turned onto the plot; a piece lands in its room; one plan a kind;
      the quarters' boxes hold their buildings. The views are 'Inside the bazaar' and 'Inside the poor tier'.
-8. **Later**: the Qiblai buildings' rooms (as Strongbow's), core/simulation's roles, the open world.
+8. **T-sim-1, the census on core/simulation** (done 2026-11-16, the owner: "Census on the sim").
+   - **The declaration.** `src/47-th-sim.js` (`TH_SIM`, [G data]) declares Theodiga to core/simulation at the record level
+     (SCHEMA.md; Longsong's and Dhelv's are the worked examples). It is a settlement 'theodiga' of the Xanadu Sultanate, with
+     the faith of the Decree and the Order of Historians as factions.
+   - **The places.** A home is each building with people, its census people its beds. The work places are the town's
+     buildings by what they are, the yards, the fields, the bore and its lodge, and the kora. The arcology's units are taken
+     by program: its homes' beds are the blueprint's people by area, spread by floor area.
+   - **The roles.** There is one role a quarter, its count the census's. The arcology has six, by the blueprint. Then come
+     the Rare Devisers, and the pilgrims, as many as the hostels sleep.
+   - **The residents.** `SIM.populate` deals them to homes and posts. Every place's slots are counted from the workers sent
+     there.
+   - **The host.** `8ay1-th-town.js` declares it once, after the town is drawn (`window._thTown.sim`). kits/ancients/build.py
+     reads core/simulation in place (`TH_SIM_FILES`, Longsong's set).
+   - **The checks.** `test-th-sim.js` runs 11, each case in a fresh sim. Every resident has a home; each quarter's role is the
+     census's; the arcology's people are the blueprint's in their areas; every job is of its role's kinds; no hour is short
+     of places; the same twice.
+   - **Next.** A walk graph and the life drawn from `SIM.pose`, then the economy (the yards' salvage, the fields' grain and
+     the dairies' honey and milk).
+9. **Later**: the Qiblai buildings' rooms (as Strongbow's), core/simulation's roles, the open world.

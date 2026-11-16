@@ -80,7 +80,7 @@ function thTownDraw(gx,gz,ctx){const O={buildings:0,people:0,protos:0,meshes:0,t
   O.buildings++;O.people+=r.people|0;
   if(!L)continue;
   /* where it stands, for the town's interiors (T-town-7: src/8zz2-th-town-rooms.js plans its rooms in the same frame) */
-  PLACED.push({id:r.id,key:r.key,v,x:r.x,z:r.z,ry:r.ry,y:top,quarter:r.quarter||'works',name:r.name||K.name,types:K.types||null});
+  PLACED.push({id:r.id,key:r.key,v,x:r.x,z:r.z,ry:r.ry,y:top,quarter:r.quarter||'works',name:r.name||K.name,types:K.types||null,people:r.people|0,work:r.work||null});
   const m=new THREE.Matrix4().compose(new THREE.Vector3(r.x+gx,top,r.z+gz),new THREE.Quaternion().setFromAxisAngle(Y,r.ry),new THREE.Vector3(1,1,1));
   cellOf(r.x,r.z).items.push({L,m});
   const c=Math.cos(r.ry),s=Math.sin(r.ry);steps.push([r.x+gx+s*(K.fd/2+.35),top-.16,r.z+gz+c*(K.fd/2+.35),r.ry]);}
@@ -160,12 +160,22 @@ function thTownDraw(gx,gz,ctx){const O={buildings:0,people:0,protos:0,meshes:0,t
     open:(x,z)=>pav(x,z)||THEODOME.deckGone(DOMEP,Math.atan2(z-DOMEP.cz,x-DOMEP.cx),Math.hypot(x-DOMEP.cx,z-DOMEP.cz))}:null,
    works:WK,floor:ctx.floor,bed:ctx.bed,offFloor:ctx.river?(x,z)=>Math.abs(x-ctx.river.x(z))<ctx.river.w(z)+2:null});
   LS=thLifeDraw(gx,gz,ctx,LF);}catch(e){O.errors.push('the people: '+(e&&e.stack||e));}
+ /* the census on core/simulation (T-sim-1: src/47-th-sim.js): Theodiga's settlement, places, roles and residents as records,
+    dealt once here (the record level: nobody walks yet) */
+ let SM=null;
+ if(typeof SIM!=='undefined'&&typeof TH_SIM!=='undefined')try{
+  const zc=ctx.zc||(x=>-140*(1-Math.pow(x/320,2)));
+  SM=TH_SIM.declare(SIM,{lots:PLACED,census:T.census,arc:typeof TH_ARC_PROGRAM!=='undefined'?TH_ARC_PROGRAM:[],kora:{x0:-100,x1:280,zc,y:400},gx,gz,
+   fields:T.fields.map(f=>({id:f.id,corners:f.corners,y:GR((f.corners[0][0]+f.corners[2][0])/2,(f.corners[0][1]+f.corners[2][1])/2)}))
+    .concat(WK?WK.fields.map(f=>({id:f.id,corners:f.corners,y:ctx.bed((f.corners[0][0]+f.corners[2][0])/2,(f.corners[0][1]+f.corners[2][1])/2)})):[])});
+  if(SM.problems.length)O.errors.push('the sim: '+SM.problems.slice(0,3).join(' | '));}catch(e){O.errors.push('the sim: '+(e&&e.stack||e));}
  if(WS)O.errors.push(...WS.errors);
  if(DS)O.errors.push(...DS.errors);
  O.kitErrors=XAK.errors.slice(0,8);
  window._thTown={descent:DS?{ways:DS.ways,boxes:DS.boxes,tris:Math.round(DS.tris),stair:DS.stair,salvage:DS.salvage,silt:DS.silt}:null,
   works:WK?{bore:WK.bore?{x:WK.bore.x,z:WK.bore.z,lots:WK.bore.lots.length,lamps:WK.bore.lamps.length,drawn:WS?WS.bore:0}:null,yard:WK.lots.length,huts:WK.huts.length,heaps:WK.heaps.length,fields:WK.fields.length,track:Math.round(WK.track.a[0]-WK.track.b[0]),drawn:WS?WS.meshes:0}:null,bound:O.bound||0,buildings:O.buildings,people:O.people,protos:O.protos,meshes:O.meshes,tris:Math.round(O.tris),bigTris:Math.round(O.bigTris||0),
   detailTris:Math.round(O.detailTris||0),cells:O.cells,census:O.census,errors:O.errors.concat(XAK.errors).slice(0,12),
+  sim:SM?{places:SM.places,actors:SM.actors,byRole:SM.byRole,beds:SM.beds,homeless:SM.homeless,capacity:SM.capacity,unknownActivities:SM.unknownActivities,problems:SM.problems.length,ms:SM.ms}:null,
   life:LF?{people:LF.people.length,lamps:LF.lamps.length,lights:LS?LS.lights:0,roles:LF.people.reduce((m,p)=>(m[p.role]=(m[p.role]||0)+1,m),{})}:null,
   fields:T.fields.length,ways:T.ways.length,qiblai:all.filter(r=>/^qb_/.test(r.key)).length,level:f=>O.level&&O.level(f)};
  return O;}

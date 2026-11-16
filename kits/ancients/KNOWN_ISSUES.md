@@ -373,8 +373,13 @@ records drawn from the scrap Xanadu set and the Qiblai kit (`XAK`, `kit_bundle.b
       parts (`8zz2-th-town-rooms.js`). The furniture is records at load. The rooms' partitions, wall linings, floors and
       furniture are drawn when a quarter is opened, one quarter at a time.
 - [ ] **The Qiblai buildings, the Cistern Pavilion and the Granary have no rooms.** The scrap set skips the two defs; Qiblai's
-      rooms (`kits/qiblai` 89q5) are drawn by its own builders and are not wired here. The census is numbers only
-      (core/simulation is later).
+      rooms (`kits/qiblai` 89q5) are drawn by its own builders and are not wired here.
+- [ ] **The census is on core/simulation as records only** (T-sim-1, 2026-11-16, `settlements/theodiga/src/47-th-sim.js`).
+      Theodiga is a settlement with its homes, work places, the kora and the arcology's units as places. A role stands for
+      each of the town's quarters (its count the census's), the arcology's six by the blueprint, the Devisers and the
+      pilgrims. Every resident is dealt a home and a post, with no capacity shortfall. Nobody walks: there is no walk graph
+      over the town, the ways and the arcology, the figures (T-life-1) are still poses, and no economy (stocks, recipes,
+      trade) is declared.
 - [ ] **The Panel Row's kitchens cannot take a hearth** (`kits/interiors/sets/xanadu-scrap.js`, `xa_scrap_row` houses: a room
       2.2 m wide with the stair in it; no hearth fits at any seed from any culture). The town furnishes them as stores
       (`8zz2-th-town-rooms.js`, `AIK.townRekinded`). The set should widen the kitchen or move the stair.
