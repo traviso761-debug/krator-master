@@ -723,4 +723,21 @@ check("DATA.basins holds Voth's lake at -1,500 m and DATA.outlets its strait",
       and any(o_.get('name') == "Voth's strait" for o_ in D['outlets']))
 check('Torus (774,1007) unchanged: dry at %.0f m' % float(E[1007, 774]),
       not bool(whas[1007, 774]) and abs(float(E[1007, 774]) + 789.0) <= 2.0)
+# ---- 17. Phēr (edit_517_pher.py, 2026-11-16; settlements/pher/PLAN.md): the pin on the wall's foot, its headland, east point
+#          and stream as records (finer than the cells)
+setts_p = {s_['id']: s_ for s_ in P.settlements()}
+ph = setts_p.get('spher0north1')
+check('Phēr (843,1491) is pinned, dry on the wall\'s foot (%.0f m), the lake two cells south' % float(E[1491, 843]),
+      ph is not None and (ph['px'], ph['py']) == (843, 1491) and not bool(whas[1491, 843]) and bool(whas[1493, 843])
+      and -470.0 <= float(E[1491, 843]) <= -420.0)
+lf_p = {l_['id']: l_ for l_ in D['landforms']['landforms'] if l_['id'].startswith('lf_pher_')}
+check('DATA.landforms holds Phēr\'s headland (two island records) and the cove\'s east point, all over the lake (-520 m)',
+      set(lf_p) == {'lf_pher_headland', 'lf_pher_headland_tip', 'lf_pher_east_point'}
+      and all(l_['water_m'] == -520.0 and l_['crest_m'] > -520.0 for l_ in lf_p.values()))
+sw = next((r_ for r_ in D['rivers'] if r_['id'] == 'r_pher_swit'), None)
+check('the Swīṭ Siṭrīm runs downhill from the scarp\'s foot to the lake at Phēr\'s cove (%s)' % (sw and sw['px'][-1]),
+      sw is not None and sw['perennial'] and sw['to'].get('lake_m') == -520
+      and all(sw['bed_m'][i_ + 1] < sw['bed_m'][i_] for i_ in range(len(sw['bed_m']) - 1))
+      and abs(sw['px'][-1][0] - 843) < 1.5 and abs(sw['px'][-1][1] - 1491.5) < 1.0
+      and not any(bool(whas[int(y_), int(x_)]) for x_, y_ in sw['px'][:-1]))
 print('%d checks passed' % ok)
