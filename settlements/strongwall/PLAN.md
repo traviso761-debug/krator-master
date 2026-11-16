@@ -21,7 +21,8 @@ build a Xanadui fort asset as well"*.
   other beacon lights as well.
 - **The Violet Monks of Qiblai** will have their central monastery on a strategic site not far from Strongwall: **the
   Order of the Violet Storm**, a martial order that protects the Vale against Lizardmen incursions (section 3a). Its
-  site is **the West Arm** (886,1619).
+  site is **the West Arm** (886,1619). It is **the House of the Tempest**, 600 strong in the Gold March, its monks of
+  **sword and bow**, and Qiblai's violet monastery is its daughter house.
 
 This is a plan, not a build: no kit code and no pages. Everything not quoted from the owner, the lore or the sim tune is
 *proposed*. The fort asset (section 5) is a specification. Its code goes to a later step, owned by whoever owns
@@ -226,9 +227,13 @@ Xanadu's last high ground before the Rift, between the two low roads.
 | Water | the Kruk Warra's head 16-18 km south; wells and cisterns on the crest | Kruk Gill's floods; wells |
 | Why | it **stands between Komodo's roads**: a raid toward Qiblai or the Vale passes under its north flank, one toward Strongwall under its south. Its riders come down on either road, and its fires reach Strongwall and the watch line. It is the Gold March's shield, with Strongwall the gate behind it | close and safe, but it guards only Strongwall's road. A raid along the trough toward Qiblai or the Vale never comes in sight of it |
 
-**The monastery, on the West Arm** (site A, chosen by the owner, 2026-11-16; pin `886,1619`, its lookout `879,1618`):
-- **People.** *Proposed:* about **600**: some 400 fighting monks, 150 novices, 50 lay brothers, herdsmen and smiths.
-  This is the order's central house. Its spoke in Qiblai would be a daughter house (question 18).
+**The House of the Tempest, on the West Arm** (the owner, 2026-11-16: site A; the name; "sword and bow"; pin `886,1619`, its lookout
+`879,1618`):
+- **People.** **600, in the Gold March** (the owner, 2026-11-16). *Proposed* split: some 400 fighting monks, 150
+  novices, 50 lay brothers, herdsmen and smiths.
+- **The order's central house.** **Qiblai's violet monastery is its daughter house** (the owner, 2026-11-16).
+- **Its monks fight with sword and bow** (the owner, 2026-11-16), mounted. They take no powder: the forts' guns and
+  hired muskets are the Sultan's, the swords and bows the order's.
 - **The building is a dzong in the full sense**, monastery and fortress in one. It is the Qiblai kit's great monastery
   in **its violet dress** (`kits/qiblai`: the great monastery has its eight dresses), set inside the fort asset's
   curtain, towers and gate (section 5). This is a fourth size of the fort, `size:'monastery'`: the curtain round a
@@ -236,18 +241,19 @@ Xanadu's last high ground before the Rift, between the two low roads.
   - It is holy, so **the gilt crown** goes on its assembly hall (the crowns are the monasteries', `kits/qiblai/PLAN.md`
     section 4).
   - Its gate keeps the forts' **gilt pavilion**.
-  - Inside: a drill court beside the cloister, the armoury and the order's stables (horses: the Order rides).
+  - Inside: a drill court and archery butts beside the cloister, the armoury of swords and bows, and the order's
+    stables (horses).
 - **The forward lookout** stands on the west brow (879,1618): a watch post of the fort asset, with a relay to the
   crest sited at 1:1.
 - **The fields.** The crest is `Cfb` and farmable: barley, tea and the order's herds. The rest comes up from
   Strongwall and Qiblai's roads.
-- **In the sim** (W1): a settlement of the Xanadu polity in P4 or the Marches (P8; question 17), fed through
-  Strongwall. It draws arms like the forts. In the Lizardmen's Z4, the order's riders are what meets a raid on the
-  trough road and the Kruk Warra.
+- **In the sim** (W1, done): `xan.tempest`, 600 of the Xanadu polity in P4, fed through Strongwall (`road.sw-tempest`,
+  80 km). Its terraces make two fifths of its grain (43 t in the test year), and it draws arms but no powder. In the
+  Lizardmen's Z4, the order's riders are what meets a raid on the trough road and the Kruk Warra.
 
 ## 4. The economy (tied to `XAN_TUNE`)
 
-What the tune already does, from `test-xan-economy.js` on this branch:
+What the tune did before W1, from `test-xan-economy.js` on this branch:
 
 | Flow | The tune | The year's figure |
 |---|---|---|
@@ -257,29 +263,40 @@ What the tune already does, from `test-xan-economy.js` on this branch:
 | **The Sultan's Fifth** | `fifth`: a 0.2 share of the gold to `xan.citadel`, 404 km | about **55 kg a year** |
 | The rest of the gold | `road.sw-er` to Erehwon (404 km) and `road.qb-sw` to Qiblai (83 km) | 275 kg exported |
 | Copper | P4's countryside's copper (240 t a year, the band's lode) passes through | 203 t in, mostly on to Qiblai and Erehwon |
-| Opal | `mine.opal`: Opal Valley Mines' opal less its Fifth, 260 km | 136 kg in today. **To change:** "opal goes to Strongbow first as it's closer" (the owner, 2026-11-16). The mines (1038,1662) are about 150 km from Strongbow (`sfgtxw10kr`, 1001,1596), against 260 km to Strongwall. So `mine.opal` lands at Strongbow, and the opal leaves Strongwall's ledger (W1; with the Light Wall's step L1, which makes Lāiṭwāl P6's seat) |
+| Opal | `mine.opal`: Opal Valley Mines' opal less its Fifth, 260 km | 136 kg in. **Moved to Strongbow in W1** (below) |
 | Food | grain, salt, tea and tools up from Qiblai (`road.qb-sw`) and on to the mines (`road.sw-gold`) | 231 t of grain in. The fort eats about 45 t; the rest feeds the mines' 950 |
 
-What the plan adds to the tune is *proposed*, for whoever owns the tune, in step W1:
-- **The fort as a store.** The fort's `keepDays` sizes its granary. It holds a season of the mines' grain as well as its
-  own: about 60 t, a granary of about 100 m³. That is why the granary is a building of the outer ward, not a shed.
-- **The Fifth caravan as an event.** Gold is light: a year's 277 kg is about 14 litres, and a season's Fifth fits in two
-  chests. *Proposed:* the Fifth goes down twice a year under escort. The strongroom is a vault for the seals, the
-  scales and the ingots, not a warehouse.
-- **The Golden Tears' season.** The camp's return in the hot months could be a schedule on `exp.rift-gold` (its
-  `keepDays` and a home window). This only matters for the court's size. Their house's px moves into the fort with
-  them (`tears.strongwall`, 913,1641 to the fort's cell).
-- **Powder and hired muskets** (the owner, 2026-11-16). *Proposed:*
-  - **powder** as a good the Sultanate buys from the north, as it buys its best arms (LORE 6.13). P4 has saltpeter
-    (Gemini's 70 t), so a powder works could be a later chain; for now the powder is bought;
-  - **the musketeers' hire** as a share of the Treasury's spending on the Marches. They are the lore's "guard
-    patrols" the Grand Vizier is pulling his beard out to pay for, so the musketeers go short first in a bad year.
-- **The beacon fort's generator** (the owner, 2026-11-16: "a refurbished Ancient high-intensity beacon ... connected to
-  a generator"). *Proposed:* `march.e` takes a share of the Sultan's oil licence (`T.lit`) and burns it at
-  `T.chain.dynamo`, as the large towns' generators do. That is a W1 item for the tune, and the Marches' plan's to place.
-- **Raids** are the Lizardmen plan's Z4 (`core/camp`'s ventures). Their targets near Strongwall are the Golden Tears'
-  camp (37 km from Komodo), the ore trains on the gorge road, and the bench villages. The fort's **state** (section 5.5)
-  is the record a raid's outcome would set. The sim never draws it.
+**W1, done 2026-11-16** (`core/region/data/xan-tune.js`; the test, `core/region/tests/test-xan-economy.js`, 48 passed,
+with a new check 24 and its negative: "Strongwall's W1"):
+
+| What | In the tune | The test year |
+|---|---|---|
+| **The opal to Strongbow first** (the owner) | `mine('sjuarjbku0',...)` under `sfgtxw10kr`; `mine.opal` lands at Strongbow (160 km, against 260); `road.sb-opal` supplies the mines from Strongbow in place of `road.sw-opal`; the opal goes inward on `road.ks-sb` and `road.qb-ks`, each expecting a day's make (`T.gateWant.opal`), to Qiblai (Yuni's caravans) and on `road.er-qb` to the capital. Strongwall's roads no longer carry opal. `fifth.opal` still goes straight from the mines to the Treasury | 139 kg landed at Strongbow, 76 kg on to Kirstabal, 64 kg to Qiblai, 52 kg on from Qiblai; none at Strongwall |
+| **The Golden Tears inside the fort** (the owner) | `tears.strongwall` at 912,1640, "the Tears' court, inside Strongwall" | the camp's ore still sold to the assay |
+| **Powder** (the owner: "enough gunpowder for a few cannon") | a new good `powder` (kg), brought in by the Iziz and Yuni gateways (`T.gatePool`); the fort diet eats 2 kg a head a year (drill and the guns' proof); it travels on every road that carries arms; `road.qb-sw` now carries arms and powder up to Strongwall | 280 kg into Strongwall, 25 arms |
+| **The hired musketeers** (the owner: "mostly hired from the north"; Izani, Yuni and free companies) | `T.muskets`: 30 at Strongwall and 10 at each Marches fort, 12 dinars a man a year (a dinar is 4 g of the Mint's gold), paid by the Treasury on year day 240 as transfers `pay.muskets.*`, owed when it is short | 360 dinars to Strongwall |
+| **The beacon fort's generator** (the owner) | `march.e` takes a fiftieth of the Sultan's oil licence (`T.lit`, from the capital's share, now 0.43) and burns it as the large towns' generators do; its name says the Ancient beacon and the Yellow Monastery | lit all year (the power check) |
+| **The forts' state** | `state:'kept'` on Strongwall, the Marches' forts and the House of the Tempest: the fort asset's kept, damaged or ruined, for a raid's outcome to set | |
+| **The House of the Tempest** (the owner: the Gold March, 600, sword and bow) | `xan.tempest` at 886,1619, the fort diet less powder, its terraces two fifths of its grain, the rest through Strongwall on `road.sw-tempest` (80 km); counted in P4's named people | made 43 t of grain of the 108 t it ate; its first year's grain is in its stores; salt, tea, tools and arms landed from Strongwall |
+
+**Not done in W1, and why:**
+- **The Fifth twice a year.** The valley host's roads run continuously and have no departure schedule. The Fifth stays
+  a share road until the host has one, and the plan's two escorted caravans are for the drawing (S3).
+- **Strongwall's stores** (a season of the mines' grain). `keepDays` stays at the towns' 20. A larger keep holds goods
+  back from the mines, and the test year shows no shortage either way.
+- **The Golden Tears' season home** (the camp's return in the hot months). It changes only the court's size in the
+  drawing.
+
+**Found on the way, not changed:**
+- **Arms never reach Erehwon.** No gateway landing at the capital brings them: the Dalab caravan carries salt, iron,
+  wine and pearls. So the Marches' three forts are fed their arms only from their opening stores, and now their powder
+  the same way.
+- A small back-and-forth of arms runs between Strongwall and the House of the Tempest (15 one way, 16 the other in the
+  test year): each sends the other its surplus by want.
+
+**Raids** are the Lizardmen plan's Z4 (`core/camp`'s ventures). Their targets near Strongwall are the Golden Tears'
+camp (37 km from Komodo), the ore trains on the gorge road, and the bench villages. The fort's `state` is the record a
+raid's outcome would set. The sim never draws it.
 
 ## 5. The fort asset (the Xanadui fort)
 
@@ -457,8 +474,8 @@ The rest is the library already in the Xanadu pack: `stone.cut`, `earth.rammed`,
 
 | Step | What | Who | Test |
 |---|---|---|---|
-| **W0** | **The model and the pins**, through the scale-model session's queue (`local_bf163a02`; asked 2026-11-16): **six watch-post pins** (G1 917,1648; G2 911,1653; G3 915,1664; R1 906,1635; R2 905,1626; R3 894,1624), each `type:'outpost'` of the Xanadu Sultanate; **the Golden Tears' house pin into the fort** (913,1641 to 912,1640); **the slot kept**, so nothing is smoothed on row 1641; **the pit** at 913-915, 1633-1635 filled to the bench (already owed) | the scale-model session | the pins' ground; each post's line to the one before it re-run on the edited model |
-| **W1** | The tune: **the opal road to Strongbow** (`mine.opal` and `fifth.opal`); Strongwall's stores and the Fifth's two caravans; `tears.strongwall`'s px into the fort; the Golden Tears' season; powder bought and the musketeers' hire on the Marches' bill; **the beacon fort's generator** (`march.e` on the oil licence); the fort's `state` as a record raid outcomes can set | the tune's owner | `test-xan-economy.js` |
+| **W0** (asked 2026-11-16; the scale-model session's to do) | **The model and the pins**, through the scale-model session's queue (`local_bf163a02`): **six watch-post pins** (G1 917,1648; G2 911,1653; G3 915,1664; R1 906,1635; R2 905,1626; R3 894,1624), each `type:'outpost'` of the Xanadu Sultanate; **the Golden Tears' house pin into the fort** (913,1641 to 912,1640); **the slot kept**, so nothing is smoothed on row 1641; **the pit** at 913-915, 1633-1635 filled to the bench (already owed) | the scale-model session | the pins' ground; each post's line to the one before it re-run on the edited model |
+| **W1** (**done** 2026-11-16, section 4) | The tune: **the opal road to Strongbow** (`mine.opal` and `fifth.opal`); Strongwall's stores and the Fifth's two caravans; `tears.strongwall`'s px into the fort; the Golden Tears' season; powder bought and the musketeers' hire on the Marches' bill; **the beacon fort's generator** (`march.e` on the oil licence); the fort's `state` as a record raid outcomes can set | the tune's owner | `test-xan-economy.js` |
 | **F0** | This specification accepted, the questions answered | the owner | |
 | **F1** | `XFORT.plan` as `[G data]` (`kits/xanadu/src/80f-xa-fort-data.js`, *proposed* name), with a node test of its rules (the corner towers, the gate on the approach edge, every walk joined, no overlap) | **whoever owns `kits/xanadu` then** | `node kits/xanadu/tests/test-fort.js` (`tools/ktest.js`, with negatives) |
 | **F2** | The pieces drawn (`80g-xa-fort.js`, *proposed*): curtain, towers, gates, the water gate, keep, barracks, magazine, gun platforms, beacon, cistern, granary, stables, the assay court; the four dresses; the three new texture sets wired as they arrive; on Xanadu's sheet. The Ancient beacon's lamp head is `kits/ancients`' piece (5.7) | the same, and `kits/ancients`' owner for the lamp head | `kits/xanadu/verify.py --assert` (the overlap audit, every door in KDOOR); `check_core_use` |
@@ -469,7 +486,7 @@ The rest is the library already in the Xanadu pack: `stone.cut`, `earth.rammed`,
 | **S3** | Life: the garrison's rota, the ore trains up and down the gorge, the assay's furnaces at work, the Fifth's escort | | the sim's schedule matches the tune's batches |
 | **S4** | The raids (Lizardmen Z4) set the fort's state | the Lizardmen session | a raid's outcome draws the damaged fort |
 | **V0** | **The Violet Storm's monastery on the map** (site A, the owner, 2026-11-16; asked 2026-11-16): a pin for the monastery at 886,1619 and one for its west-brow lookout at 879,1618, through the scale-model session's queue | the scale-model session | the pin's ground; its lines to Strongwall and the posts re-run |
-| **V1** | The monastery in `XAN_TUNE`: its people, fields and arms, fed through Strongwall | the tune's owner | `test-xan-economy.js` |
+| **V1** (**done** 2026-11-16, with W1) | The House of the Tempest in `XAN_TUNE`: its people, fields and arms, fed through Strongwall | the tune's owner | `test-xan-economy.js` |
 | **V2** | The building: the fort asset's `size:'monastery'` round the Qiblai kit's violet great monastery | `kits/xanadu`'s owner and `kits/qiblai`'s | the two kits' verifies |
 | **V3** | The monastery on the open world, with the forward lookout and its relay sited at 1:1 | the open-world session | the region's verify; the lookout sees the trough |
 
@@ -502,7 +519,6 @@ The rest is the library already in the Xanadu pack: `stone.cut`, `earth.rammed`,
     the gold spoke is the Yellow Monastery, the Order of the Beacon.
 16. ~~**The Violet Storm's site.**~~ **Answered 2026-11-16: A, the West Arm** (886,1619). Its pin and its west-brow
     lookout's (879,1618) are asked of the scale-model session (V0).
-17. **Its province and size.** Is it in the Gold March (P4) or the Marches (P8)? Are about 600 monks right?
-18. **Its spoke in Qiblai.** Is the violet monastery in Qiblai a daughter house of this central one, or the other way
-    round?
-19. **Its name**, and **how its monks fight**: on horseback with lance and bow, or with the muskets the forts hire?
+17. ~~**Its province and size.**~~ **Answered 2026-11-16: the Gold March, 600.**
+18. ~~**Its spoke in Qiblai.**~~ **Answered 2026-11-16: Qiblai's violet monastery is the daughter house of this one.**
+19. ~~**Its name and arms.**~~ **Answered 2026-11-16: the House of the Tempest; sword and bow.**

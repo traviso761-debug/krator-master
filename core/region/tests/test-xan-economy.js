@@ -209,6 +209,25 @@ const boreCheck=(d,sold)=>(d.made.scrap||0)>XAN_TUNE.bore.scrap*.5&&(d.made.rari
  T.ok('the Theodiga bore: the Rare Devisers\' salvage of the dead tunnel to Stair, scrap and rarities, sold into Theodiga',boreCheck(d,sold),
   'made scrap '+t(d.made.scrap||0)+', rarities '+Math.round(d.made.rarities||0)+'; sold into Theodiga rarities '+Math.round(sold.rarities||0)+', scrap '+t(sold.scrap||0));
  T.neg('a bore that yielded nothing is caught',x=>boreCheck(x,sold),{made:{}},d);}
+// 24. Strongwall's W1 (settlements/strongwall/PLAN.md; the owner's answers, 2026-11-16): the opal to Strongbow first and
+//     inward from there; powder in by the gateways to the fort; the hired musketeers paid by the Treasury; the beacon fort's
+//     generator; the House of the Tempest fed through Strongwall and its terraces; the Golden Tears' house inside the fort
+const swCheck=(Bk,Tr,X)=>{const bad=[],op=(((Tr['mine.opal']||{}).landed||{})['sjuarjbku0>sfgtxw10kr']||{}).opal||0,
+  inward=(Bk.skm4jjo2vl.imported.opal||0)+(Bk[E].imported.opal||0),tp=Bk['xan.tempest']||{made:{},imported:{},eaten:{}},pay=X['pay.muskets.sxan7r1sln']||{sent:{},owed:{}},th=XAN_TUNE.tears.houses[0];
+ if(!(op>0))bad.push('no opal landed at Strongbow');if(Bk.sxan7r1sln.imported.opal)bad.push('opal still at Strongwall');if(!(inward>0))bad.push('no opal inward of Strongbow');
+ if(!((Bk.sxan7r1sln.eaten.powder||0)>0))bad.push('no powder at Strongwall');
+ if(!(((pay.sent||{}).coin||0)+((pay.owed||{}).coin||0)>0))bad.push('the musketeers unpaid and not owed');
+ if(!((Bk['march.e'].eaten.power||0)>0))bad.push('the beacon fort dark');
+ const tpIn=Object.values(((Tr['road.sw-tempest']||{}).landed||{})['sxan7r1sln>xan.tempest']||{}).reduce((n,v)=>n+v,0);   /* its first year's grain is in its stores: the road lands its salt, tea and tools */
+ if(!((tp.made.grain||0)>0&&tpIn>0))bad.push('the Tempest\'s terraces or its road from Strongwall');
+ if(th[2]!=='sxan7r1sln'||th[3]!==912||th[4]!==1640)bad.push('the Tears\' house outside the fort');
+ return{ok:!bad.length,bad,op,inward,tp,pay};};
+{const C=swCheck(B,Y.trade,Y.xfer);
+ T.ok('Strongwall\'s W1: the opal to Strongbow and inward, powder at the fort, the musketeers paid, the beacon fort lit, the House of the Tempest fed, the Tears inside the fort',C.ok,
+  C.bad.join(', ')||('opal landed at Strongbow '+Math.round(C.op*1000)/1000+' kg, at Qiblai and the capital '+Math.round(C.inward*1000)/1000+' kg; Strongbow imported opal '+Math.round((B.sfgtxw10kr.imported.opal||0)*1000)/1000+
+  ', Kirstabal '+Math.round((B.sl758m2396.imported.opal||0)*1000)/1000+'; powder eaten at Strongwall '+Math.round(B.sxan7r1sln.eaten.powder||0)+' kg; pay sent '+((C.pay.sent||{}).coin||0)+', owed '+((C.pay.owed||{}).coin||0)+
+  '; the Tempest made grain '+t(C.tp.made.grain||0)+' of the '+t(C.tp.eaten.grain||0)+' it ate'));
+ T.neg('opal that never got past Strongbow is caught',x=>swCheck(x,Y.trade,Y.xfer).ok,Object.assign({},B,{skm4jjo2vl:Object.assign({},B.skm4jjo2vl,{imported:Object.assign({},B.skm4jjo2vl.imported,{opal:0})}),[E]:Object.assign({},B[E],{imported:Object.assign({},B[E].imported,{opal:0})})}),B);}
 // the year's books, for the reader
 const line=(s,k)=>Object.entries(B[s][k]||{}).filter(([g,n])=>n>=1).map(([g,n])=>g+' '+(n>=1000?t(n):Math.round(n))).join(', ');
 ['s57bkv9741','xan.citadel','skm4jjo2vl','s4zvgepuru','sxan7r1sln'].forEach(s=>console.log('\n'+s+': made '+line(s,'made')+'\n  imported '+line(s,'imported')+'\n  exported '+line(s,'exported')));
