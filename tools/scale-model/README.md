@@ -784,8 +784,38 @@ First run as "5.1 edit 2" (`edit_512.py`) on the openworld-sites line (5e31f0ceb
 Main's own edit 2 is Godshearth's vents, and the rasters cannot be merged, so the edit was re-run on main's model (edits
 1-6 in) as edit 7 on 2026-11-15, when `gemini-trade` was merged. Two changes from the first run: the Pleasure Dome's
 landform stands at the Erewhon page's island with no shoal (the owner, 2026-11-11, d1555243e on
-claude/clever-mirzakhani-030fd5), and Old Thalaba, the fishing village on Thalaba's old shore (825,1488, key 5.1e12),
-is checked dry on the new shore.
+claude/clever-mirzakhani-030fd5), and Old Thalaba, the fishing village on the lake's north shore (key 5.1e12), is checked
+dry on the new shore.
+
+**The 2026-11-16 re-run** (the owner's map polish; it supersedes the first run's numbers below where they differ):
+- "make a lake that's central, with a more irregular, atitlan-like shoreline but of similar size", then "can we make the
+  lake a little narrower and move it more toward the center of the valley? settlements can move with it" and "add one
+  large oblong island in the middle of the lake". The lake is 66 x 25 px round **845,1504**, the old lake's middle (it was
+  60 x 32 round 810,1499.5), its shore Atitlan-like (four harmonics of the ellipse, their phases chosen so Erehwon's
+  bench, the Alph's head, every isle and Old Thalaba's shore hold): 1,175 wet cells (4,700 km2), 937 m deep at most.
+  Every point drawn against the first lake moves with it, keeping its place against the shore (`move()`): Erehwon to
+  **841,1517**, Old Thalaba to **860,1496**, the volcanoes to 829,1526 / 856,1532 / 881,1526 (11-13 px back), the
+  Pleasure Dome's landform to 840.9,1516.8, the west stack to 816.8,1495.6, the small isles to whole cells (bay
+  844.1,1511.5, west 831,1499, east 864,1503). The great isle gives way to **the long isle**: 24 x 8 px (48 x 16 km)
+  on the lake's axis at its middle, 300 m over the water (145 cells); every isle's shallows reach ~2 px.
+- The moved lake's north-east shore borders the Vale's lowland (a north river's valley meets it ~30 m over the lake), so
+  the check is that the outlet is the lowest way out by 20 m (`RIM_MIN`; blocked, the lake would spill at -491.6 m), not
+  a caldera closed 200 m all round; the Vale's floor keeps 6.5 cells off the shore (`VALE_S`), a whole wall between.
+- `edit_517_crease.py` (after the edit): the straight crease in the heights across the Twins' north-west (985,1419 to
+  918,1493, a 150-350 m slope break over a cell) and along the south edge of an old stamp round Qiblai's basin (y
+  1639-1640) blended toward a 1.3-px blur within 2.5 px; temperatures lapsed, the paint relit.
+- `edit_517_paint.py` (last): the old lake's bed, dry now, painted again from the land round it, its relief put back
+  (it kept its water colours: "you can still see the outline of the old lake"); and the straight edges of edit 7's box
+  and of the old stamp round Qiblai's basin blurred across themselves only (2.5 px, fading within ~6 px), the texture
+  along them kept ("a rectangular outline").
+- `edit_517_alph.py` (last; the owner: "make sure the river alph still connects the two lakes"): the Alph's course
+  stopped 7 px short of Qiblai's lake (-1,685 m) in its gorge's slot (-2,025 m), its record's mouth naming a lake of
+  -1,706 m on dry ground (both so on main before edit 7). Its course now goes on to the lake's shore (941.3,1591.8; six
+  cells cut to the slot's floor, the river drawn) and `to` names the lake at 942,1593. It runs from Erewhon's lake
+  (head 876.9,1511.7 at -520 m) to Qiblai's, falling all the way. Note: the slot's floor (-2,025 m) lies 340 m under
+  the lake it now reaches, as the gorge did before; for the owner whether the lake should flood back up it.
+- Run order from the pre-edit model (055bc43ce): `edit_517.py`, `edit_517_crease.py`, `edit_517_paint.py`,
+  `edit_517_alph.py`.
 
 **5.1e12 (2026-11-16, records only)**: the owner, "we can move thalaba to the mouth of godshearth and put a new village
 on the lake in its place": Thalaba (`shvo49k0y2`) moves from 825,1481 to 840,1463, where Godshearth's spillway gorge
@@ -839,7 +869,8 @@ and every raster (heights, water, the five temperatures, rain, class, zone) is c
   DATA.basins gains the lake (a through lake).
 - `tests/test_smodel.py`: section 12's lake and Erehwon check moved to the new lake; section 19 checks the lake, its
   walls, the volcanoes, the islands, the Pleasure Dome's landform, the Alph's head, the vale and the rivers' mouths.
-- The Erehwon record moved to 805,1516 with the openworld-sites line's pin batch (SETT_MOVED 5.1e6).
+- The Erehwon record moved to 805,1516 with the openworld-sites line's pin batch (SETT_MOVED 5.1e6), and to 841,1517
+  with the lake (SETT_MOVED 5.1e12, which runs after 5.1e6).
 - **Left for later**: re-cutting `openworld/xanadu-oidong-highrift` on this model, the Erewhon page's world coordinates,
   and the stale basin record at 922.8,1527.7 (-759 m, outside the box).
 
