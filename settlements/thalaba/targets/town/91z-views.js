@@ -4,7 +4,7 @@ const tbEye=(x,z,tx,tz,dy,ty)=>[x,terrainH(x,z)+1.7+tbD(dy,0),z,tx,terrainH(tx,t
 const VIEWS=(function(){const V={};
  V['Overview']=[620,terrainH(620,820)+520,820,-40,terrainH(-40,-260)+10,-260];
  V['The market square']=tbEye(-48,34,40,-30,0);
- V['Up the Phere road']=tbEye(14,1100,0,0,0);
+ V['Down the Phere road']=tbEye(-900,104,-60,0,0);
  V['Up the expedition road']=tbEye(14,-140,90,-1300,0,12);
  V['The spring line']=tbEye(-200,-520,-120,-470,2,-1);
  V['The Siteps from above']=[-500,terrainH(-500,-1900)+260,-1900,-150,terrainH(-150,-4600)+2,-4600];

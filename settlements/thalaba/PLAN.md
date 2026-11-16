@@ -11,7 +11,7 @@ What is settled, from the owner and the sim:
 - **The town in the sim** (`core/region/data/xan-tune.js`, `T.thalaba`, `xan.thalaba`):
   - 2,400 people;
   - the spillway's sulfur, 60 t a year in the tune (**30 t**: the owner's second answer, section 4);
-  - the bench's terraces grow half its grain, and Phēr, about 60 km down the road to the south, sends the rest;
+  - the bench's terraces grow half its grain, and Phēr, about 105 km down the Qol road, sends the rest;
   - it is not a caravan terminus: Yuni's caravans end at Qiblai.
 - **The Rare Devisers' house** (`devisers.thalaba`). The Devisers are the merchant house with the royal licence in scrap and
   rare artifacts; their guild house is at Theodiga. From here they run the summer expedition into Godshearth: a camp of 150
@@ -83,7 +83,7 @@ Sources:
 |---|---|---|
 | **Āirã Siṭrīm** (`r_gh_spillway`, "iron stream") | The hot lake's outlet: 124 km, **95-131 m³/s**, 51 m wide. Added by 5.1 edit 5 | Comes down the gorge floor on x 842, over the cataract (3,148 m at 842,1449), and joins the Solṭ Siṭrīm at **846.7,1453.6** (2,549 m) |
 | **Solṭ Siṭrīm** (`r442`, "salt stream", old name *Reḍ Riwā*) | The Godthrone plan's blood river, from the bloodfalls' brine. Only **3-5 m³/s** above the junction, **135-139 m³/s** below it: the hot lake's water, the brine about 1 part in 30. 53 m wide, 2.3 m deep | Runs south down to 847,1458 (2,117 m), then **west along row 1458 across the mouth**: 1,935 m at 843, 1,829 m at 839, a level reach of 1,820 m from 837 to 831. Then a **second fall**: about **420 m** to 1,402 m at 829,1462. It joins the Qol Siṭrīm at 826.7,1463.6. **Nearest the pin: 840.7,1457.6, 10.9 km north and about 330 m higher** |
-| **Qol Siṭrīm** (`r272`, "cold stream") | 139.7 m³/s, from the junction (1,198 m) down to the lake at 821,1487 (−520 m), 52 km | The valley head is **13 km west** of the pin and 300 m below it. Since the lake was re-made (scale model 5.1 edit 7 re-run, 5f659c054) the river enters the lake at 824,1489, 38 km west of Phēr, so its valley is the road to the lake's west shore, not to Phēr |
+| **Qol Siṭrīm** (`r272`, "cold stream") | 139.7 m³/s, from the junction (1,198 m) down to the lake at 821,1487 (−520 m), 52 km | The valley head is **13 km west** of the pin and 300 m below it. It is the road down to the lake and Phēr (the owner, 2026-11-16: "up into the qol valley"); since the lake was re-made the river reaches the lake at 824,1489, by Malbari |
 | **Reḍ Ḍrāi** (`r836`, "red wadi") | Seasonal, 1.1 m³/s at its mouth | Runs down **the trough beside the cataract** (839,1444 to 841,1456: 3,286 m to 1,917 m), the lowest line of the cataract step. It joins the Solṭ at 838.7,1457.6 |
 
 No lake and no vent record lies within 60 km. The nearest vent is the spillway's head fumarole (845,1396.5), 133 km north
@@ -115,7 +115,7 @@ outpost (section 3).
 | **The riser's foot** (the pin; **the owner's choice**) | 840,1463 | 1,507 m, 13 °C, the spring line, the bench before it | |
 | **The mouth, on the river** | 840,1458 | 1,866 m, 11 °C, 44 m a km | On the river and 10 km nearer the gorge, but steeper, colder, cramped by the east wall (slopes over 150 m a km from x 850), and wide open to the cataract's spray and the gorge's night wind |
 | **The bench's middle** | 850,1465 | 1,659 m, 12 °C, flat | The best fields, but 15 km from the springs and the road. Left to the farms (section 3) |
-| **The Qol valley's head** | 827,1464 | 1,197 m, 15 °C | Warmer and on the road to the lake's west shore, but in a cleft under the second fall, 26 km from the gorge |
+| **The Qol valley's head** | 827,1464 | 1,197 m, 15 °C | Warmer and on the Phēr road, but in a cleft under the second fall, 26 km from the gorge |
 
 ## 2. Who lives there
 
@@ -145,7 +145,8 @@ owner) beside them. The shares below are *proposed* except the crews, which are 
 wary of each other (X2: "wary of one another"), and the market square stands between them.
 
 **Neighbours:**
-- Phēr (843,1491 since the lake was re-made): 56 km straight, about 60 km by the road (section 3).
+- Phēr (843,1491 since the lake was re-made, scale model 5.1 edit 7 re-run, 5f659c054): 56 km straight, about 105 km by the
+  Qol road (section 3).
 - Ōlḍ-Thalaba (860,1496, on the lake's north-east shore since the re-made lake): 77 km straight, 2 km below.
 - Ḍāiyar (870,1500): 95 km straight.
 - The Godshearth camp (828,1380): 168 km straight.
@@ -153,27 +154,23 @@ wary of each other (X2: "wary of one another"), and the market square stands bet
 ## 3. The layout (*proposed*, except the spring line, the mission and the open town, which are the owner's)
 
 The town is about **1.5 km by 1 km** on the spring line at the riser's foot, at 1,500-1,560 m, centred on the pin. **Two roads meet in it:**
-- the **Phēr road**, coming in from the south (re-routed 2026-11-16 for the re-made lake: scale model 5.1 edit 7 re-run,
-  5f659c054, Phēr at 843,1491). Routed on the re-run heights at a 7 % ruling grade on a 500 m resample, it runs about 60 km
-  (56 km straight): from Phēr's harbour up its own wall to the caldera's rim (about −20 m, 843,1488), due north across the
-  plain rising gently to the scarp's foot (about 130 m at 841.5,1479, 20 km), up the scarp along x 840-842.5 (160 m to
-  1,140 m in about 14 km, winding where it steepens past 7 %, at 841,1472.5 and 840,1471), onto the bench (1,220 m at
-  840,1469.5) and north across it into the town by its south gate. Its line in px: 843,1491; 841.75,1489.75; 841.25,1488.25;
-  841.5,1487; 841.5,1479; 842.5,1477; 842.5,1475; 841.5,1473; 840.5,1471.5; 840,1470.5; 840,1463;
-- the **Qol road**, west down the Qol Siṭrīm's valley to the lake's west shore (the old Phēr road, before the lake was
-  re-made), about 300 m down in 13 km to the valley's head;
+- the **Phēr road**, coming in from the west: **up the Qol Siṭrīm's valley** (the owner, 2026-11-16, in the Phēr plan's
+  session: "up into the qol valley"; `settlements/pher/PLAN.md`, 8ef5899d0 on claude/pher-plan-55d3f2, traced on the re-made
+  lake's heights, 5f659c054). About 105 km, 4 days: west-north-west 42 km across the rim plain from Phēr (843,1491) to the Qol
+  where it leaves its lower gorge (822.7,1480); 34 km up the valley to its head (826.7,1463.6, 1,198 m), the steep part between
+  rows 1470 and 1468 by the second fall; then 27 km east along the bench, over a rise of about 1,515 m (833.5,1463.5), into the
+  town by its west gate;
 - the **expedition road**, leaving north up the riser to the mouth.
 
 **The town:**
 - **The market square** stands where the two roads meet: the Devisers' house on its north-east side (toward the gorge), the
-  Two Horns' factor on its south-west corner, on the Phēr road, the inn and the teahouses between them.
+  Two Horns' factor on its west side (toward Phēr), the inn and the teahouses between them.
 - **The spring line** runs along the town's north edge, at the riser's foot. Its springs feed fountains and a stepped tank
   (a Xanadu baoli) under the market, and the bathhouse.
 - **The houses** climb the riser's first terraces behind the square, poor to rich. The rich houses are on the higher
   terraces, looking north to the cataract. The poor houses are on the bench's lip toward the Qol valley.
 - **The temple of the Decree** stands on a terrace above the square, with its wheel house.
-- **The road's quarter** is at the south gate, on the Phēr road: the caravan yard on its west side, the stables and the
-  farrier on its east.
+- **The road's quarter** is at the west end, on the Phēr road: caravan yards, stables, the farriers and the ropewalk.
 - **The threshing floors and the granary** are at the east end, toward the fields.
 - **The Dalab mission** is a compound past the granary on the east edge, **built in Dalab's style** (the owner): the
   genepriests' house, a seed and specimen house, its own yard and store for its expedition, and lodgings for the hired
@@ -243,8 +240,8 @@ and the expedition days 120-240.
 **Grain.**
 - The town eats 2,400 × 160 kg = **384 t a year**.
 - The terraces (`tb.terraces`, 720 at harvest) make **half**, 192 t.
-- Phēr sends the other half up `road.pher-thalaba`: about 68 km (1.2 × the straight line, measured by the sim from the two
-  towns since the re-made lake), six carriers, 10 t each, about 3 days.
+- Phēr sends the other half up `road.pher-thalaba`: about 105 km by the Qol road (the sim's `T.thalaba.roadKm`, 82dd21e8f on
+  claude/openworld-sites-24defd), six carriers, 10 t each, about 4 days.
 - The camp's 150 eat another **28.5 t** (camp diet, 190 kg). The valley host bumps it onto Thalaba (`bump(TB, …)`), and the
   town passes it on by `devisers.supply`.
 
@@ -366,7 +363,15 @@ tea and tools. All of these are already on `road.pher-thalaba`.
 1. ~~**The Sultan's share.**~~ **20 % of the rarities in all, not 30 %; it falls on the Dalab party's haul too.**
 2. ~~**The Dalab party's haul.**~~ **Yes: hearth seed and specimens for Dalab, home with the Great Caravan.**
 
-**Still open:** none from this plan. What is left is the work of section 6, and the found-on-the-way items of section 8 for
+**Still open (2026-11-16):**
+1. **A mule path straight up the scarp?** The Phēr road is the owner's, up the Qol valley (about 105 km, 4 days). A direct
+   line north from Phēr up the scarp under the bench was traced on the re-made lake's heights (5f659c054) at a 7 % ruling
+   grade: about 60 km, from Phēr up its wall to the caldera's rim, due north across the plain on x 841.5 to the scarp's foot,
+   up the scarp along x 840-842.5 (160 m to 1,140 m in about 14 km, winding at 841,1472.5 and 840,1471), onto the bench at
+   840,1469.5 and into the town from the south (its px line: 843,1491; 841.25,1488.25; 841.5,1479; 842.5,1477; 842.5,1475;
+   841.5,1473; 840.5,1471.5; 840,1470.5; 840,1463). Should it exist as a steep mule path (not the carts' road), or not at all?
+
+Besides that, what is left is the work of section 6, and the found-on-the-way items of section 8 for
 the sessions that own them.
 
 ## 8. Found on the way (for the sessions that own them; not changed here)

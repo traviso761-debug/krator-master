@@ -3,7 +3,7 @@
 // 69u-tb-ground.js: bicubic round the pin, as core/world reads the same cells), with the town's own work cut into it: the
 // Siṭēps (the terraces on the riser, 1.5-6.6 km north of the spring line), the leat that waters them, the spring line's basins
 // and the stepped tank. The town is a core/city instance: its own steps lay the raster, the two roads that meet at the market
-// square (the Phēr road from the south, the expedition road north up the riser to the gorge's mouth), the contour streets and
+// square (the Phēr road from the west, the expedition road north up the riser to the gorge's mouth), the contour streets and
 // the cross streets; the frontage-courts strategy fills the house blocks with the Xanadu kit's keys; the civic buildings
 // stand on their own blocks round the square. This fragment makes the plan only (records); 90r draws it.
 // Metres; x east, z south (north is -z); the origin is the pin, px 840,1463 (2 km a pixel). [G data] records, no drawing.
@@ -23,16 +23,15 @@ function tbModel(x,z){const N=TB_GROUND.near,f=tbBil(TB_GROUND.far,TB_FAR,x,z),e
  if(e<=0)return f;const n=tbBil(N,TB_NEAR,x,z),t=Math.max(0,1-e/300);return n*(1-t)+f*t;}
 
 // ---------------------------------------------------------------- the ways (core/city lays them below; the ground reads them too)
-// the main roads: the Phēr road from the south (re-routed 2026-11-16 for the re-made lake, scale model 5.1 edit 7 re-run: up
-// the scarp from the plain over the caldera's rim and due north across the bench, PLAN.md section 3), the Qol road west down
-// the Qol Siṭrīm's valley to the lake's west shore, the road east to the Bēnch's farms, the expedition road north up the riser
-// to Briḍj and the gorge's mouth; then the contour streets and the cross streets of the town's grid
+// the main roads: the Phēr road from the west (up the Qol Siṭrīm's valley to its head, then east onto the bench), the road east
+// to the Bēnch's farms, the expedition road north up the riser to Briḍj and the gorge's mouth; then the contour streets and the
+// cross streets of the town's grid, and a farm track south toward the caldera's rim
 const TB_X=[-650,-480,-240,0,240,480,650],TB_Z=[-560,-360,-180,0,170,330];
 const TB_WAYS=[
- {id:'qol',name:'the Qol road',cls:'main',pts:[[-2380,250],[-1700,190],[-1100,110],[-650,0],[0,0]]},
+ {id:'pher',name:'the Phēr road',cls:'main',pts:[[-2380,250],[-1700,190],[-1100,110],[-650,0],[0,0]]},
  {id:'east',name:'the Bēnch road',cls:'main',pts:[[0,0],[650,0],[1200,30],[2380,110]]},
  {id:'exped',name:'the expedition road',cls:'main',pts:[[0,0],[0,-560],[30,-800],[110,-1250],[230,-1800],[300,-2600],[380,-4000],[420,-6000],[380,-8000],[250,-10300]]},
- {id:'pher',name:'the Phēr road',cls:'main',pts:[[0,0],[0,330],[0,1000],[0,2380]]}];   /* the route's line runs on x 840 from the bench's edge (px 1469.5) to the pin */
+ {id:'south',name:'the farm track south',cls:'lane',pts:[[0,330],[-40,900],[-120,1600],[-150,2380]]}];
 for(const z of[-560,-360,-180,170,330])TB_WAYS.push({id:'street z'+z,name:z===-560?'the spring street':'a contour street',cls:'side',pts:[[-650,z],[650,z]]});
 for(const x of[-650,-480,-240,240,480,650])TB_WAYS.push({id:'street x'+x,name:'a cross street',cls:'side',pts:[[x,-560],[x,330]]});
 const TB_W={main:TB.MAIN,side:TB.STREET,lane:4.5};
@@ -89,7 +88,7 @@ KTAGS.page=KTAGS.page||KTAGS.create({build:'thalaba'});
 // ---------------------------------------------------------------- the blocks: the town's grid between its streets
 // i west to east (TB_X), j north to south (TB_Z). The civic buildings take the blocks round the square (PLAN.md section 3);
 // the corners are orchards; the rest are house blocks, the richest uphill toward the spring line and the view north
-const TB_LAND={'2,2':'temple','3,2':'devisers','2,3':'horns','3,3':'granary','2,4':'yard','3,4':'stables','5,1':'dalab','2,0':'tank',
+const TB_LAND={'2,2':'temple','3,2':'devisers','2,3':'horns','3,3':'granary','0,2':'yard','0,3':'stables','5,1':'dalab','2,0':'tank',
  '0,0':'orchard','5,0':'orchard','0,4':'orchard','5,4':'orchard','1,4':'orchard','4,4':'orchard','3,0':'garden'};
 const tbHalfW=v=>v===0?TB.MAIN/2+1:TB.STREET/2+1;
 const TB_BLOCKS=[];
@@ -158,10 +157,9 @@ tbCivic('xa_rich_c','horns',2,3,.70,.30,TB_FN,{name:'The Two Horns\' factor hous
 tbCivic('xa_teahouse','inn',2,3,.22,.26,TB_FN,{name:'The inn on the square'});tbCivic('xa_teahouse','inn',2,3,.22,.62,TB_FE);
 // the granary, the threshing floors' sheds and the smithy, south-east of the square, toward the Bēnch
 tbCivic('xa_granary','granary',3,3,.28,.30,TB_FN);tbCivic('xa_granary','granary',3,3,.52,.30,TB_FN);tbCivic('xa_granary','granary',3,3,.76,.30,TB_FN);tbCivic('xa_smithy','granary',3,3,.30,.78,TB_FN);
-// the road's quarter at the south gate, either side of the Phēr road: the caravan yard (the muster ground's walls) on its west,
-// the farrier and the stables' pens on its east
-tbCivic('xa_muster','yard',2,4,.62,.5,TB_FE,{name:'The caravan yard'});tbCivic('xa_smithy','stables',3,4,.22,.3,TB_FW,{name:'The farrier'});
-tbCivic('xa_pens','stables',3,4,.3,.75,0);tbCivic('xa_pens','stables',3,4,.6,.6,0);
+// the road's quarter at the west gate: the caravan yard (the muster ground's walls), the stables' pens, the farrier
+tbCivic('xa_muster','yard',0,2,.5,.5,TB_FE,{name:'The caravan yard'});tbCivic('xa_smithy','stables',0,3,.5,.25,TB_FE,{name:'The farrier'});
+tbCivic('xa_pens','stables',0,3,.3,.7,0);tbCivic('xa_pens','stables',0,3,.7,.7,0);
 // the spring garden at the tank (the rill running down from the springs), and the town's garden beside the expedition road
 tbCivic('xa_rill_hill','tank',2,0,.80,.55,TB_FS,{name:'The spring garden'});tbCivic('xa_garden','garden',3,0,.5,.5,TB_FW,{name:'The garden by the spring street'});
 // the orchards at the town's four corners: the kit's public garden (a chahar-bagh) at each, the rest of the block trees
