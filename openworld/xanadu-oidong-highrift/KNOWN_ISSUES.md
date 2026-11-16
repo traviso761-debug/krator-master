@@ -40,7 +40,7 @@
       ~250 m of the world's. But the world's 1:1 ground there is the model's 2 km cells smoothed: a 4 % rise from the shore,
       no 90 m cliff, no palace plateau. Only a bake of the page's ground into the world as a town grid would give it that
       (`openworld/isle-demo/src/48t-world-towns.js` does this for the isles' towns); nothing here does yet.
-- [ ] **The landform stamp is this region's, not core's.** `src/44-world-landforms.js` chains on `WORLD.landHook`. If a
-      core hook set after it does not chain (core/coast's `44c`, on `claude/coast-31ce37`, when it merges), the islands
-      vanish: the verify's island check catches it. The coast session proposed stamps in its field instead; lift the stamp
-      into core/world or core/coast when a second region has landforms.
+- [ ] **The landform stamp is this region's, not core's.** `src/44-world-landforms.js` chains on `WORLD.landHook` after
+      core/coast's `44c` (merged 2026-11-15), which also takes the islands into its coast field (`KCOAST.build({islands})`)
+      for their beaches and cliffs; both read region.json's `landforms`. Lift the stamp into core/world or core/coast when a
+      second region has landforms; the verify's island check catches a hook that does not chain.

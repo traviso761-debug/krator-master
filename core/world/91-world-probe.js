@@ -78,6 +78,7 @@ function hostChecks(){const out=[],P=HOST.camera.position,[tx,tz]=tileOf(P.x,P.z
  out.push(Object.assign({name:'the highways lie on the land and keep their grade'},highways()));
  out.push(Object.assign({name:'nothing grows on a highway or in a town'},clearOf(allRecs())));
  out.push({name:'no NaN in the drawn terrain',ok:nan===0&&TERRAIN.meshes().length>0,detail:TERRAIN.meshes().length+' chunks drawn, '+nan+' with NaN'});
+ if(WORLD.coast&&WORLD.coast.list.length)out.push(WORLD.coast.check(300));   /* core/coast (44c): ground, water and mask agree on the shore */
  return out;}
 function hostNegatives(){const out=[],P=HOST.camera.position,[tx,tz]=tileOf(P.x,P.z);
  const rnd=(a,b)=>FLORA.buildTile(a,b).map(r=>Object.assign({},r,{x:r.x+Math.random()*1e-3}));
@@ -96,6 +97,7 @@ function hostNegatives(){const out=[],P=HOST.camera.position,[tx,tz]=tileOf(P.x,
   out.push(Object.assign({name:'negative: a tree put on a highway and one in a town'},clearOf(F)));}
  const L0=lines()[0],xs=(L0[0]+L0[2])/2;   // the step crosses the first test line at its middle
  out.push(Object.assign({name:'negative: a 3 m step put in the land'},continuity(lines(),(x,z)=>WORLD.H(x,z)+(x>xs?3:0))));
+ if(WORLD.coast&&WORLD.coast.list.length){const r=WORLD.coast.check(300,'mask');out.push(Object.assign(r,{name:'negative: the coast against the bodies\' old masks'}));}
  return out;}
 return{ready:()=>START.ready,hostChecks,hostNegatives,
  stats:()=>({terrain:TERRAIN.stats,flora:FLORA.stats,floor:FLOOR.stats,nursery:Object.assign({},NURSERY.stats,{queued:NURSERY.queued()}),seas:SEAS.stats(),rivers:RIVERS.stats(),

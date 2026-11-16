@@ -13,11 +13,12 @@ page that reads it came out byte-identical after the move.
 | `41t-world-town-water.js` | [G data] | `WTOWN`: a town's own water with its ground (WORLD_DATA.towns, `bake_towns.py`): inside its footprint the town's water mask decides the water (`lakeWater`, `waterBodyAt`), its water joins the model's body at its level (one body, the mask taking it in), its river is served by `riverWater`, the model river it joins is cut outside the band and led in by a carved link; `drawn: false` keeps 41 from sinking the ground 3 m. `WTOWN.check()`: the shore against the page's trace, the river, one body. Listed right after 41 |
 | `41l-world-landforms.js` | [G data] | `WLAND`: the scale model's landform records under a cell (`DATA.landforms`, carried by `extract_region.py` into region.json) stamped at 1:1 through the land hook: island, islet, stack, shoal; water (edit_513's forms page, narrows and strait as one field: the bed set to the record's profile, the coarse wet cells beside closed to its width; river left to 41's named river) and shelf (the page's bed for the water it names); `WLAND.check()` |
 | `42-world-roads.js` | [G data] | `ROADS`: least-cost routing on the land at a held grade; the carriageway shaped into the ground |
+| `44c-world-coast.js` | [G data] | the coasts on core/coast (`KCOAST`, `core/coast/README.md`): at init each water body gets a coast field, `landHook` is chained (the coast's profile, sign-safe, then the region's own hook), each body's mask is redrawn from the field, the fields `coast`, `coastC`, `coast:<class>` join `WORLD.FIELDS`, `WORLD.ground` takes the coast's colour bands; a town's ground and a region's `WORLD.coastKeeps()` keep their coast; the region's sub-cell `landforms` (region.json, from the scale model's `model/data/landforms.json`) are stamped as islands by the body they stand in. `WORLD.coast` {list, at, stats, check}. Listed after the region's `43-*`, with core/mask (25, 27) and core/coast (30) before 41 |
 | `45-world-host.js` | [web] | the renderer, scene and frame loop the world draws into |
 | `80-world-sky.js` | [G native] | the sky and light |
 | `81-world-terrain.js` | [web] | the terrain tiles (the land drawn, coloured by `WORLD.ground`) |
 | `83-world-water.js` | [G data] | the water levels |
-| `83w-world-seas.js` | [web] | the seas and lakes drawn |
+| `83w-world-seas.js` | [web] | the seas and lakes drawn; with core/water/farbed listed, each body's far bed (no straight edge at the shore window) |
 | `84-world-nursery.js` | [web] | each kit's species grown as variants (`KIT.make`, `KIT.grow`) |
 | `85-world-flora.js` | [web] | the flora tile by tile, seeded by cell with `KRAND.hash` (the same tile in any order) |
 | `86-world-floor.js` | [web] | the kits' floor patches under the zones |
