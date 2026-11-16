@@ -107,6 +107,11 @@ runtime and bison table, and the `tools/` listing staleness (every build rebuilt
   k.overlay.indexOf(name)>=0:...`), then drop the shim in `openworld/iziz-cluster/src/47-world-kits.js` (`WORLD_KITS.findIndex`, which
   tries each name of a list). It moves every page that reads core/world (the isle demo's two city pages, Longsong, Pinnacle Rock and the
   open-world regions) without changing what they draw.
+- **`WATER.drawFlow`'s program cache key leaves out its colours** (2026-11-12, found by `biomes/arch`): `core/water/51-core-water-kinds.js`
+  bakes `o.shallow` and `o.deep` into the fragment shader text but builds `customProgramCacheKey` from the common chunk and the flags only, so
+  every flow on a page after the first draws the first one's colours (three.js reuses the program). Add the two colours (and `o.color`) to the
+  key. `biomes/arch/src/89w-host-water.js` works round it by extending the key itself; drop that once core has it. It moves every page that
+  draws a flow (147 build commands, `python3 tools/reach.py core/water/51-core-water-kinds.js`).
 
 - **`KSHADOW.units` counts what the GPU links** (2026-11-09, found by the Throne's fix): `core/shadow/host/12-core-shadow-host.js` counts
   declared samplers (some are never read and the GPU drops them), misses `scene.environment` on standard materials, and judges against the
