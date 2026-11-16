@@ -1,5 +1,23 @@
 # Xanadu, Oidong and the High Rift: known issues
 
+- [ ] **Route A is 244 km at the plan's pixels, not ~82 km.** The Twins plan's itinerary (`biomes/twins/PLAN.md` 3.1) gives
+      A1 938,1496 > 978,1468 (98 km at 2 km a pixel; the plan says ~40 km) and its sprints 9 km each (the plan: 3-4 km). The tubes
+      are laid at the plan's pixels as asked; the plan's kilometres read as if a pixel were ~0.8 km. Either the line or the text
+      wants the owner's word before the recut.
+- [ ] **The tubes' portals lie on the uncarved ground.** The Twins' sculpt is not on the map, so the mouths open wherever the
+      model's ground is at the spec's points: the feeder's Strongbow portal is a ramp down into flat ground (a pit mouth), its SE
+      Twin portal climbs a steep flank as an open trench for ~240 m. The floors are laid at a depth, so they follow the sculpt;
+      the portals' points may want moving to the sculpted brows (the spec's `at`), data only.
+- [ ] **Up to 630 m of rock over a tube.** The floor keeps its 8 % grade under the uncarved ridges, so A1 and A2 run deep
+      under the Godthrone's shield ramp in places; skylights are only drawn where the cover is under 60 m.
+- [ ] **The tubes have no fixtures yet.** The Hall of the Tally-Marks is a hall with its roof crack; its carved cistern, the
+      guides' iron torch brackets and the curb-ledge causeways' cairns are not drawn. No hazards (core/hazard) in the tubes (W5).
+- [ ] **A square of tube costs ~170 ms of meshing** (1 m cells), spread over the frames at 5 ms a frame; the feeder's cliff
+      portal, with seven holes, ~2 s. Running at Shift speed underground stays ahead of it; flying fast through a tube can
+      outrun it (the far end of the streamed tube shows the dark).
+- [ ] **The tubes are not in Godot yet.** The plan is data (42k) and the shape is KCAVERN's (its export and load); the
+      drawing (88k) is the preview's. A Godot region would plan the same records and mesh the squares from KCAVERN's export.
+
 - [ ] **Most of the region grows nothing.** Only the Xanadu and Oidong overlays have kits here. The High Rift
       (21,261 px), the Godthrone's flank, the rift rim, the twins, Opal Valley and Godshearth are bare ground for now
       (`PLAN.md`, "What is left" 1).

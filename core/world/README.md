@@ -26,6 +26,7 @@ page that reads it came out byte-identical after the move.
 | `87-world-places.js`, `88-world-towns.js` | [web] | the "Go to" list and the scale model's settlement markers |
 | `48s-world-sites.js`, `88s-world-sites.js` | [G data], [web] | `KSITES`: a region's sites planned (camps, hamlets, roads, links and their stops); drawn |
 | `42b-world-bridges.js`, `88b-world-bridges.js` | [G data], [draw] | `BRIDGES`: where a laid road crosses a named river, a span of deck the ground is not shaped under, so the river runs on (a BRIDGE record: slab, arch, a row of arches or a viaduct, by its length and height; its piers; its builders' culture); drawn in stone, tagged, checked (`_bridges.checks`) |
+| `42k-world-caverns.js`, `88k-world-caverns.js` | [G data], [web] | `WTUBES`: a region's lava tubes (`SITE_SPEC.tubes`) planned as records under the ground and drawn with core/terrain's `KCAVERN` near the camera, the ground opened only at their portals and skylights; the walker (90's G) goes in and along them. Below, "Caverns" |
 | `49r-world-resources.js` | [G data] | `WRES`: the region's resources. The scale model's geology (`kits/resources/data/geology.json`, cropped to the region by `world_data.geology_crop`, read through `KRES`) and farmland from the world's fields: `census`, `markers` (the richest mining, farmland and unique spots), `layers`, `assess(x, z, reach)` |
 | `89r-world-resources-map.js` | [web] | the "resources" panel: the census table, a map of any layer with the markers, the markers' list and beacons; the markers join `MAP_MARKS` ("Go to", the minimap) and the layers `MAP_LAYERS` (the minimap's overlays) |
 | `90-world-camera.js` | [web] | the camera, the minimap (its overlays: Köppen, biome regions, a page's `MAP_LAYERS`), "Go to", the inspector, the polygon tool, `pick` |
@@ -97,6 +98,36 @@ then bridged where it crosses a named river:
 
 The plan gains `bridges` and each bridged road its `spans`. The probe judges a deck's grade, not its height over the
 ground. A region that does not ask plans exactly as before.
+
+**Caverns** (2026-11-16; `42k` plans, `88k` draws; `node core/world/test-tubes.js`; step W3 of
+`openworld/xanadu-oidong-highrift/PLAN-TWINS-CROSSING.md`, the owner: "Build open world caverns now"). A region opts in by
+listing core/terrain's `39-core-cavern.js` and `host/39e-core-cavern-draw.js`, `42k` after `42`, its spec fragment
+(`SITE_SPEC.tubes = [...]`, after `48-world-site.js`) and `88k` after `88s`; `tools/fragment_needs.json` holds the order.
+- **The spec is the region's, the shape is KCAVERN's.** Each tube is a polyline in scale-model pixels (the region's `fromPx`),
+  a width and floor-to-crown height per span, a DEPTH (the floor under the ground, never a height: a sculpt can land under it),
+  its openings (`portal`: the floor ramps up to the ground at its mouth; `skylight`: a shaft through the roof), halls, and
+  chokes and skylights drawn by cell (`KRAND` on the cell and the index along the tube, never on draw order). Why
+  `SITE_SPEC` and not the scale model's `tubes` (region.json): those are the map's records, generated and edited only through the
+  scale-model queue, and their lines are not the ways walked (Route A is the Twins plan's itinerary, not `tube_xanadu_nw_09`'s line);
+  the spec names the model record it details (`model`), as `SITE_SPEC.bridges` opts a region into bridges. More tubes are rows.
+- **The plan** (`WTUBES.plan`, about 0.3 s for 244 km): stations every 24 m (6 m within 350 m of a portal), meandering by a
+  position-seeded noise; the floor is the ground smoothed along the tube less the depth, lowered until every wall's ground holds
+  the roof and the cover (4 m) over it, its grade held (8 %), and raised up a 25 % ramp to the ground at each portal. Each opening
+  carries its holes (circles where the ground opens) and the stations whose cover it waives. `WTUBES.check` reads it all against
+  the ground as it is now, so a sculpt that lands under a tube shows up as a failed check, not a hole in a hill.
+- **The ground as drawn.** The cavern is cut against `WTUBES.drawnGround(WORLD.H)`: 81's finest chunks exactly (H at 3 m detail on
+  the 2 m lattice, each cell split on 81's diagonal). The terrain's finest chunks drop their triangles wholly inside a hole as they
+  are built (88k watches `TERRAIN.meshes()`); the cavern meshes the ground inside each hole's rim and 88k draws it with the
+  terrain's own material and attributes, its rim sunk a hand under the terrain's straddling triangles. Nowhere else does the ground
+  open, and the checks say so.
+- **Streaming.** 128 m square columns, each a KCAVERN of its own in the square's own frame (no float jitter a million metres
+  out; every square samples one world lattice, so the seams meet: the node test welds two), built a few chunks a frame (5 ms) round
+  the camera when it is in a tube or within 700 m of an opening, and round every opening within 1.6 km; dropped when not wanted.
+  About 170 ms of meshing a square (1 m cells, 16 m chunks), 5-20 k triangles.
+- **The walker.** `WTUBES.walk` (a pure function: the ground, or the tube floor, or a wall) under 90's `CAM.update`, wrapped by
+  88k; flying, the camera stays in a tube it is in, and the rock stops it. The pick reaches the rock (`TERRAIN.meshes` wrapped)
+  and the inspector names the tube. Inside: the walker's lamp, the haze turned to the tube's dark, the sky hidden. 81 and 90 are
+  not edited.
 
 **Known debt, moved with it** (from `tools/core_use_baseline.json` and `check_source_baseline.json`, where these were
 the isle demo's):
