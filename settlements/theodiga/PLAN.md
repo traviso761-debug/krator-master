@@ -106,8 +106,7 @@ spring, sealed deep inside). Theodiga's end:
   theirs. The Salvagers' rule is that they take only what the Dome lets fall, and the bore is not the Dome's, so they may not
   work it. Salvagers still hire on as haulers and lamp-men, which keeps the two guilds in friction. The Devisers' guild house
   stands at the portal: a lodge with its stores and assay hall, beside the yards. Their town house goes in the bazaar.
-- On the page (T-town-6, next): the portal in the drawn wall (a core/terrain carve), the gatehouse, the lodge and the
-  track's run in, as `42-th-works` records. A view 'The bore to Stair'.
+- On the page (T-town-6, done 2026-11-16): see Order of work, item 5.
 
 ## Order of work
 
@@ -147,4 +146,23 @@ spring, sealed deep inside). Theodiga's end:
      field huts at the Silt Road's foot.
    Workplaces: their people are counted in the town above. The ways are textured with the library's dressed ashlar (Qiblai's
    pack, `stone.sandstone.ashlar`). `test-th-works.js` checks them on grounds of the page's kind.
-5. **Later**: the town's interiors (as Strongbow's), core/simulation's roles, the open world.
+5. **T-town-6, the bore to Stair** (done 2026-11-16; the section above):
+   - **The records.** `TH_WORKS.make(o)` takes `o.bore` (the headwall's front, back and the bore's axis, which the page reads off
+     the drawn wall) and returns `bore`:
+     - the mouth (radius 6.5 m, drawn 90 m deep);
+     - the spur on from the road's foot along the wall's foot and into the bore;
+     - nine lamps down the first stretch;
+     - the Devisers' licence gate across the bore at 72 m (the plan said a few hundred metres in; the gate stands at the drawn
+       stretch's end);
+     - the Rare Devisers' lodge (a Lantern House), their stores and assay hall, and the haulers' row, on the floor beside the
+       mouth with their fronts on the spur.
+   - **The rock.** `targets/theodiga/77-dam.js` leaves the east wall's two grid columns and rows at the mouth open (z 468 to 490,
+     0 to 23 m) and keeps the talus out of it, both only with the town on the page.
+   - **The drawing.** `src/8ay3-th-works.js` draws:
+     - the Ancients' headwall in their concrete round the hole, with a collar round the arch;
+     - the lined bore, its deck, the dark beyond;
+     - the corrugated gate with its door;
+     - the lamps.
+   - **The checks.** `test-th-works.js` (20 checks): the spur from the foot into the bore short of the gate, the Devisers'
+     buildings by the mouth off the spur, the lamps before the gate. View 'The bore to Stair'.
+6. **Later**: the town's interiors (as Strongbow's), core/simulation's roles, the open world.

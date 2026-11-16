@@ -347,6 +347,10 @@ records drawn from the scrap Xanadu set and the Qiblai kit (`XAK`, `kit_bundle.b
 - [ ] **The interiors stand inside solid shells**: the crest's blocks and the fins are the kit's solid boxes, so the rooms show
       only through the cut-away; their windows are painted on the shell, not cut through to the rooms. The gallery's rooms sit
       inside the dam's mass with no openings to the faces.
+- [ ] **The bore to Stair is drawn 90 m deep** (T-town-6, 2026-11-16; `settlements/theodiga` PLAN.md "The bore to Stair"). Its
+      mouth is a hole of two grid cells by two in the east wall, which only the headwall hides; a view from inside the rock
+      would see the void behind the face. The bore past its drawn depth, the licence gate's booth, and the people (Devisers,
+      haulers) are owed. The gate stands at the drawn stretch's end (72 m), not a few hundred metres in.
 - [ ] **The dam's interiors ride on two wrappers** (`settlements/theodiga/src/8zz1-th-arc-host.js`): `AI.kitPlan` takes the dam's
       plan whole and furnished though its row is the ruin, and the one site is split into ten parts after the pass. Both would
       be cleaner as options of kits/ancients-interiors (a per-type ruin fraction) and of the pass (a plan's own sites).

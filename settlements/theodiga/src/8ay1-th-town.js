@@ -34,9 +34,9 @@ function thTownDraw(gx,gz,ctx){const O={buildings:0,people:0,protos:0,meshes:0,t
    heads:{salvage:TT.HEADS.find(h=>/salvage/.test(h.id)),silt:TT.HEADS.find(h=>/silt/.test(h.id))}});}catch(e){O.errors.push('the ways: '+(e&&e.message||e));}}
  if(DP&&ctx.floorZone&&typeof TH_WORKS!=='undefined'){const end=P=>{const s=P.segs[P.segs.length-1];return {x:s.b[0],z:s.b[2]};};
   try{WK=TH_WORKS.make({floor:ctx.floor,floorZone:ctx.floorZone,river:ctx.river,bed:ctx.bed,WL:ctx.WL,face:ctx.face,dome:ctx.dome,
-   salvageFoot:end(DP.salvage),siltFoot:end(DP.silt),crops:THCITY.crops,dims:k=>KD[k]?{w:KD[k].w,d:KD[k].d}:null});}catch(e){O.errors.push('the works: '+(e&&e.message||e));}}
+   salvageFoot:end(DP.salvage),siltFoot:end(DP.silt),bore:ctx.bore||null,crops:THCITY.crops,dims:k=>KD[k]?{w:KD[k].w,d:KD[k].d}:null});}catch(e){O.errors.push('the works: '+(e&&e.message||e));}}
  if(WK)for(const r of WK.lots.concat(WK.huts))all.push(Object.assign({},r,{h:KD[r.key].h,quarter:'works',people:0,
-  name:(r.work==='salvage'?'the salvage yards: ':'the silt fields: ')+KD[r.key].name,gr:r.ground==='floor'?ctx.floor:ctx.bed}));
+  name:r.work==='the bore'?'the bore to Stair: '+r.name:(r.work==='salvage'?'the salvage yards: ':'the silt fields: ')+KD[r.key].name,gr:r.ground==='floor'?ctx.floor:ctx.bed}));
  const cultureOf=k=>/^qb_/.test(k)?'qiblai':'xanadu-scrap';
  // ---- core/tags: the town and every building in it, before anything is drawn ----------------------------------------------------
  {const TG=KTAGS.theodiga||(KTAGS.theodiga=KTAGS.create({build:'ancients-theodiga'})),B='town/theodiga',C=T.centre;
@@ -146,7 +146,7 @@ function thTownDraw(gx,gz,ctx){const O={buildings:0,people:0,protos:0,meshes:0,t
  if(DS)O.errors.push(...DS.errors);
  O.kitErrors=XAK.errors.slice(0,8);
  window._thTown={descent:DS?{ways:DS.ways,boxes:DS.boxes,tris:Math.round(DS.tris),stair:DS.stair,salvage:DS.salvage,silt:DS.silt}:null,
-  works:WK?{yard:WK.lots.length,huts:WK.huts.length,heaps:WK.heaps.length,fields:WK.fields.length,track:Math.round(WK.track.a[0]-WK.track.b[0]),drawn:WS?WS.meshes:0}:null,bound:O.bound||0,buildings:O.buildings,people:O.people,protos:O.protos,meshes:O.meshes,tris:Math.round(O.tris),bigTris:Math.round(O.bigTris||0),
+  works:WK?{bore:WK.bore?{x:WK.bore.x,z:WK.bore.z,lots:WK.bore.lots.length,lamps:WK.bore.lamps.length,drawn:WS?WS.bore:0}:null,yard:WK.lots.length,huts:WK.huts.length,heaps:WK.heaps.length,fields:WK.fields.length,track:Math.round(WK.track.a[0]-WK.track.b[0]),drawn:WS?WS.meshes:0}:null,bound:O.bound||0,buildings:O.buildings,people:O.people,protos:O.protos,meshes:O.meshes,tris:Math.round(O.tris),bigTris:Math.round(O.bigTris||0),
   detailTris:Math.round(O.detailTris||0),cells:O.cells,census:O.census,errors:O.errors.concat(XAK.errors).slice(0,12),
   fields:T.fields.length,ways:T.ways.length,qiblai:all.filter(r=>/^qb_/.test(r.key)).length,level:f=>O.level&&O.level(f)};
  return O;}

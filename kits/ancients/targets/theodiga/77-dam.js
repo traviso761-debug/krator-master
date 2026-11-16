@@ -9,13 +9,18 @@ function buildDam(scene,gx,gz,d){reseed(9260+d);KOFF=[gx,0,gz];const G=new THREE
  // grid fine enough to show them, plus a talus of fallen blocks at the foot.
  // All six wall meshes merge into one: they always shared a material.
  const ROCK=[];let EAST=null;
+ // THE BORE TO STAIR (theodiga-today, T-town-6; settlements/theodiga PLAN.md): the Ancients' dead bore opens in the east wall at the
+ // canyon floor, below the Salvage Road's lowest legs. Its mouth is two of the wall's grid columns (106 and 107 of 118, z 468 to
+ // 490) and two rows (0 to 23 m) left open; the town's drawer sets the headwall in front of the hole and the bore behind it
+ // (src/8ay3-th-works.js). The talus is kept out of the mouth (its draws taken all the same). Without the town, as it was.
+ const BORE=d>0&&typeof thTownDraw==='function'&&typeof TH_WORKS!=='undefined',BOREZ=-700+107*1300/118;
  for(const s of [-1,1]){const CX=s*(SPAN/2+150);
   const face=(u,v)=>{
    const strata=9*Math.sin(v*34+fbm(u*4,0,2205,2)*7);                        // bedding planes
    const gully=26*Math.pow(Math.abs(fbm(u*19,v*3,2206+s,3)-.5)*2,1.7);       // vertical gullies
    const inner=-s*(150-32*fbm(u*13,v*7,2200+s,4)-strata-gully-18*(1-v)*(1-v));
    const wob=1+.12*fbm(u*6,v*2,2210,2);return CX+inner*wob;};
-  ROCK.push(gridSurface((u,v)=>[face(u,v),v*CH,-700+u*1300],118,38,{uS:40,vS:14}));
+  ROCK.push(gridSurface((u,v)=>[face(u,v),v*CH,-700+u*1300],118,38,{uS:40,vS:14,hole:s>0&&BORE?(u,v)=>u*118>106&&u*118<108&&v*38<2:null}));
   if(s>0)EAST=face;   /* the east wall, for the town's ways down it (thTownDraw below): read as drawn, on its grid */
   // THE PLATEAU starts at the cliff's top edge (2026-11-11). It ran from CX-300, 150 m inside the face, and hung
   // over the reservoir as a lid at the rim's height: invisible from downstream, a ceiling over the Dome on the Water
@@ -30,7 +35,9 @@ function buildDam(scene,gx,gz,d){reseed(9260+d);KOFF=[gx,0,gz];const G=new THREE
   for(let k=0;k<70;k++){const z=-700+rng()*1300,t=Math.pow(rng(),1.8);
    const bx=CX-s*(150-34*fbm((z+700)/1300*13,.1,2200+s,4))*(1-t*.5)+s*t*70;
    const sc=rr(3,15)*(1-t*.45);
-   kput('rubble',[bx,sc*.4+t*4,z],qEuler(rng()*3,rng()*3,rng()*3),[sc*rr(.7,1.5),sc*rr(.5,1),sc*rr(.7,1.5)],new THREE.Color().setHSL(rr(.05,.09),rr(.1,.3),rr(.26,.44)));}}
+   const q=qEuler(rng()*3,rng()*3,rng()*3),sz=[sc*rr(.7,1.5),sc*rr(.5,1),sc*rr(.7,1.5)],col=new THREE.Color().setHSL(rr(.05,.09),rr(.1,.3),rr(.26,.44));
+   if(s>0&&BORE&&Math.abs(z-BOREZ)<34)continue;
+   kput('rubble',[bx,sc*.4+t*4,z],q,sz,col);}}
  meshMerged(ROCK,MAT.rock,G);
  // the dam: arc in plan bulging upstream; downstream face battered, upstream face vertical
  const zc=x=>-140*(1-Math.pow(x/(SPAN/2),2));const th_=y=>50+110*(1-y/H);
@@ -215,8 +222,12 @@ function buildDam(scene,gx,gz,d){reseed(9260+d);KOFF=[gx,0,gz];const G=new THREE
   const wall=(z,y)=>{const u=clamp((z+700)/1300,0,1)*NU,v=clamp(y/CH,0,1)*NV,i=Math.min(NU-1,Math.floor(u)),j=Math.min(NV-1,Math.floor(v)),a=u-i,b=v-j;
    return (node(i,j)*(1-a)+node(i+1,j)*a)*(1-b)+(node(i,j+1)*(1-a)+node(i+1,j+1)*a)*b;};
   const z0=zf(0)+60,floor=(x,z)=>z>=z0&&z<=z0+500&&Math.abs(x)<(SPAN-40)/2?Math.max(floorY(x,z),0):0;
+  /* the bore's headwall: its front 1 m proud of the nearest the drawn wall comes over the mouth and its margins (z +-15, up to
+     26 m), its back 2 m past the farthest the wall falls back there, so the hole is inside it */
+  let bore=null;if(BORE){let lo=1e9,hi=-1e9;for(let z=BOREZ-15;z<=BOREZ+15;z+=1.5)for(let y=0;y<=26;y+=1.5){const f=wall(z,y);lo=Math.min(lo,f);hi=Math.max(hi,f);}
+   bore={x:lo-1,back:hi+2,z:BOREZ};}
   /* and for the works below (T-town-4): where the floor is drawn, the river on it, the dam's upstream face, the Dome's piers */
   thTownDraw(gx,gz,{wall,floor,bed:(x,z)=>Math.abs(x)<=(SPAN+40)/2?bedY(x,z):WL-6,WL,crest:{x:300,z0:4,z1:28,y:H},zc,
-   floorZone:{x1:(SPAN-40)/2,z0:z0,z1:z0+500},river:{x:RIVX,w:RIVW},face:x=>Math.abs(x)<=SPAN/2?zc(x):0,dome:{x:0,z:zc(0)-65,r:165}});}
+   floorZone:{x1:(SPAN-40)/2,z0:z0,z1:z0+500},river:{x:RIVX,w:RIVW},face:x=>Math.abs(x)<=SPAN/2?zc(x):0,dome:{x:0,z:zc(0)-65,r:165},bore});}
  KOFF=[0,0,0];return G;}
 

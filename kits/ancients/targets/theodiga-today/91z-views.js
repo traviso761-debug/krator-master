@@ -14,6 +14,8 @@ const VIEWS={
  'The Silt Road':[ROWS.dam.s+80,330,ROWS.dam.z-620,ROWS.dam.s+340,350,ROWS.dam.z-330],
  // the works below (T-town-4): the salvage yards on the canyon floor, the silt fields above the lake
  'The salvage yards':[ROWS.dam.s+330,70,ROWS.dam.z+520,ROWS.dam.s+180,8,ROWS.dam.z+395],
+ // the bore to Stair (T-town-6): its mouth in the east wall at the canyon floor, the Devisers' lodge beside it
+ 'The bore to Stair':[ROWS.dam.s+235,24,ROWS.dam.z+545,ROWS.dam.s+335,7,ROWS.dam.z+479],
  'The silt fields':[ROWS.dam.s+150,345,ROWS.dam.z-330,ROWS.dam.s+240,281,ROWS.dam.z-110],
  'The town from the Dome':[ROWS.dam.s-100,520,ROWS.dam.z-280,ROWS.dam.s+700,442,ROWS.dam.z],
  // the arcology's inhabited levels, opened (T-arc-1; 92z-interior-ui.js: a view's eighth element opens a part at one of its
