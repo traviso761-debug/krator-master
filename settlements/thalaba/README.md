@@ -57,5 +57,5 @@ Thalaba's road north crosses the Solṭ Siṭrīm by a 120 m arched bridge at th
 
 ## What is not here yet (`KNOWN_ISSUES.md`)
 
-Dalab's texture pack on the mission's pieces, the toll house at the bridge, Salphar's resource record, interiors, the life
+Dalab's texture pack on the mission's pieces, the toll house at the bridge, the stamp of Salphar's resource record, interiors, the life
 layer, the Godot export and the gallery.

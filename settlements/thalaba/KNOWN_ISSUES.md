@@ -9,9 +9,12 @@
   `kits/xanadu` once the owner has seen them. Until then the open world's Salphar draws its calcaroni as the hamlet row's
   pending boxes (`openworld/xanadu-oidong-highrift/src/48-world-site.js`, row `xanadu-sulfur`). Still owed of PLAN.md's list:
   the bridge's toll house (the region's bridge itself is core/world's, in the Xanadu kit's stone).
-- [ ] **Salphar's sulfur deposit has no resource record.** The authored lode (`lode:thalaba-sulfur`, px 841,1452, r 3 km) was
-  sent to the resource-nodes session (claude/resource-nodes-7ec053), which is rewriting `kits/resources/data`; the message was
-  not picked up when sent. The hamlet's `sulfur` focus needs no node, so nothing is broken meanwhile.
+- [ ] **Salphar's sulfur deposit is recorded but not stamped.** `lode:thalaba-sulfur` (px 841,1452, r 3 km) is in
+  `kits/resources/data/lodes.json` on the resource-nodes branch (claude/resource-nodes-7ec053, f568d34e9, 2026-11-16), not yet
+  stamped on `geology.json`: stamping changes the geology 13 build commands read (62 pages), so it rides with the next bake or
+  `--lodes` pass (logged in `kits/resources/KNOWN_ISSUES.md`). Until then a page that wants the node places it as an owner node,
+  `KRES.nodesIn(tile, {owner: [{id: 'lode:thalaba-sulfur', kind: 'sulfur', grade: 'medium', x, z}]})`. Salphar's `sulfur`
+  focus needs no node, so nothing waits on it.
 - [ ] **The people are estimates.** `TB_PEOPLE` in `targets/town/89zt-tb-site.js` gives each building a household; the town
   holds about 2,500 against the plan's 2,400 (`verify.py` reports it as a budget).
 - [ ] **The springs are the plan's.** The spring line at the riser's foot is the owner's choice and the plan's reasoning (the
