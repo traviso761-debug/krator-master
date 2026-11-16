@@ -15,8 +15,8 @@ const QC_IX=(function(){const S={rooms:[],built:0,pieces:0,fails:[],byRoom:[],mi
   built:S.built,pieces:S.pieces,fails:S.fails.slice(0,8),byRoom:S.byRoom,missing:S.missing,tex:S.tex,ms:S.ms,buildAll:S.buildAll};};
  if(!VERN.defs.qb_ix_sanctum||!QC_LM){report();return S;}
  // a room inside a building: (bx, bz, bry) the building's plot, (lx, lz, ly) the storey's centre and base in its frame
- const add=(name,key,bx,bz,bry,by,lx,lz,ly,o)=>{const p=loc(bx,bz,lx,lz,bry);
-  S.rooms.push({name,key,x:p[0],z:p[1],ry:bry,o:Object.assign({cut:false,y:by+ly},o),cx:p[0],cy:by+ly+o.H/2,cz:p[1],G:null,built:false});};
+ const add=(name,key,bx,bz,bry,by,lx,lz,ly,o,host)=>{const p=loc(bx,bz,lx,lz,bry);   /* host: the lot it stands in (90u leaves that lot's own interior out) */
+  S.rooms.push({name,key,x:p[0],z:p[1],ry:bry,o:Object.assign({cut:false,y:by+ly},o),cx:p[0],cy:by+ly+o.H/2,cz:p[1],G:null,built:false,host:host||null});};
  const L=QC_LM,LY=qcD(L.level,0),inset=.9;
  // the temple's sanctum: 28 m square, on the third of three 6 m terraces (each 0.3 m over the last's roof), its storey 5.2 m;
  // the terrace's roof plate runs on under it (0.98 m over the storey's base) and its own roof slab hangs 0.8 m into it, so the
@@ -29,7 +29,7 @@ const QC_IX=(function(){const S={rooms:[],built:0,pieces:0,fails:[],byRoom:[],mi
  if(m)add('Assembly hall ('+QSPOKE[m.o.v%8].name+')','qb_ix_assembly',m.x,m.z,m.ry,qcD(m.o.y,0),0,-26+7+2.2+8.5,1.8,{W:24-inset,D:17-inset,H:5.0,v:m.o.v});
  // the hostel nearest the south avenue on the kora: its storey 24 x 14 m, 3.6 m on a 0.7 m plinth, 1 m back
  const hs=QC_PLACE.filter(p=>p.key==='qb_hostel'&&p.z>L.z).sort((a,b)=>(Math.abs(a.x-L.x)-Math.abs(b.x-L.x))||(a.z-b.z));
- if(hs.length){const h=hs[0];add('Hostel dormitory','qb_ix_hostel',h.x,h.z,h.ry,qcD(h.o.y,0),0,-1,.7,{W:24-inset,D:14-inset,H:3.6});}
+ if(hs.length){const h=hs[0];add('Hostel dormitory','qb_ix_hostel',h.x,h.z,h.ry,qcD(h.o.y,0),0,-1,.7,{W:24-inset,D:14-inset,H:3.6},h);}
  S.build=function(R){if(R.built)return R;const t0=performance.now(),G=new THREE.Group();G.name='interior:'+R.key;scene.add(G);
   const r0=QB_ROOMS.length;TSTAT.cur=R.key+'/0';VERN.place(G,R.key,R.x,R.z,R.ry,R.o);TSTAT.cur=null;kbake(G);for(const n in KIT.items)KIT.items[n].length=0;
   const F=qnFurnishRooms(QB_ROOMS.slice(r0),G,{seed:33861+S.rooms.indexOf(R),frag:'90t-qc-interiors.js',name:'furniture:'+R.key,perType:3,passes:2,backtrack:4});

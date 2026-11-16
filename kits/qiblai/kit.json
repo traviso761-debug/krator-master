@@ -8,18 +8,49 @@
   "89q0y-qb-script.js",
   "89q0z-qb-matlib.js",
   "89q5f-qb-furnish.js",
-  "90q-qb-furnish.js"
+  "90q-qb-furnish.js",
+  "89q5s-qb-shells.js"
  ],
  "pack": "qiblai",
- "interiors": ["kit"],
- "furniture": ["xanadu", "eastabyss", "generic", "generic-goods", "jobs"],
+ "interiors": [
+  "kit"
+ ],
+ "furniture": [
+  "xanadu",
+  "eastabyss",
+  "generic",
+  "generic-goods",
+  "jobs"
+ ],
  "furnitureTex": true,
  "interiorSets": [],
  "files": {
   "kit": [
-   ["core/atmos", ["89-atmos-0-core.js", "89-atmos-0p-presets.js", "89-atmos-a-waves.js", "89-atmos-b-skylight.js"]],
-   ["core/water", ["20-core-water.js", "21-core-water-shore.js", "22-core-water-flow.js", "50-core-water-draw.js", "51-core-water-kinds.js"]],
-   ["settlements/xanadu/targets/xanadu", ["90-xa-still.js"]]
+   [
+    "core/atmos",
+    [
+     "89-atmos-0-core.js",
+     "89-atmos-0p-presets.js",
+     "89-atmos-a-waves.js",
+     "89-atmos-b-skylight.js"
+    ]
+   ],
+   [
+    "core/water",
+    [
+     "20-core-water.js",
+     "21-core-water-shore.js",
+     "22-core-water-flow.js",
+     "50-core-water-draw.js",
+     "51-core-water-kinds.js"
+    ]
+   ],
+   [
+    "settlements/xanadu/targets/xanadu",
+    [
+     "90-xa-still.js"
+    ]
+   ]
   ]
  }
 }

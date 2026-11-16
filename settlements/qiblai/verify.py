@@ -12,6 +12,8 @@ invariants and views are Xanadu's, and settlements/xanadu/verify.py runs it (on 
   interiors-on-demand   the four walk-in rooms (targets/city/90t-qc-interiors.js: the Rainbow Temple's sanctum, the Hall of the
                         Decree's council chamber, a monastery's assembly hall, a hostel dormitory), built and furnished on
                         demand: buildAll() builds every one, each furnished with every programme met (IX.audit) and textured
+  interiors-every-building  every lot building's ground storey (targets/city/90u-qc-lot-interiors.js): 85 % of the lots have a
+                        shell and a programme; the 8 commonest types plan, draw and furnish with no failure, every piece textured
 
     KRATOR_GL=gpu python3 verify.py dist/qiblai.html --assert --views "Overview,From the south gate"
 """
@@ -37,7 +39,10 @@ CITY_JS = r"""
  const sh=Q.xanaduShare||0;R.push({name:'xanadu-share',ok:sh>=.28&&sh<=.38,budget:true,detail:(sh*100).toFixed(1)+' % of the lay houses the Xanadu kit\'s (the owner: 33 %)'});
  const I0=window._qiblaiIx,pre=I0?I0.built:0,I=I0&&I0.buildAll?I0.buildAll():I0,X=I&&I.tex;
  R.push({name:'interiors-on-demand',ok:!!(I&&I.rooms.length===4&&I.built===4&&I.byRoom.length===4&&I.byRoom.every(r=>r.ok&&r.pieces>0)&&!I.fails.length&&X&&X.meshes&&X.mapped===X.meshes),
-  detail:I?(I.rooms.length+' rooms ('+pre+' built before the check), '+I.pieces+' pieces, '+I.ms+' ms; '+I.byRoom.map(r=>r.room+' '+r.pieces).join(', ')+(I.fails.length?'; FAILS '+I.fails.join(' | '):'')+(X?'; textured '+X.mapped+'/'+X.meshes+(X.bare.length?' bare: '+X.bare.join(','):''):'')):'window._qiblaiIx missing (targets/city/90t-qc-interiors.js)'});}
+  detail:I?(I.rooms.length+' rooms ('+pre+' built before the check), '+I.pieces+' pieces, '+I.ms+' ms; '+I.byRoom.map(r=>r.room+' '+r.pieces).join(', ')+(I.fails.length?'; FAILS '+I.fails.join(' | '):'')+(X?'; textured '+X.mapped+'/'+X.meshes+(X.bare.length?' bare: '+X.bare.join(','):''):'')):'window._qiblaiIx missing (targets/city/90t-qc-interiors.js)'});
+ const J0=window._qiblaiLix,J=J0&&J0.buildTypes?J0.buildTypes(8):J0,share=J?J.lots/Math.max(1,J.lots+J.noShell+J.noProgram):0;
+ R.push({name:'interiors-every-building',ok:!!(J&&share>=.85&&J.built>=6&&!J.fails.length&&J.tex.meshes&&J.tex.mapped===J.tex.meshes),
+  detail:J?(J.lots+' lots with an interior ('+(share*100).toFixed(0)+' %; '+J.noShell+' without a shell, '+J.noProgram+' without a programme), '+J.types+' types; the 8 commonest built in '+J.ms+' ms ('+JSON.stringify(J.byProgram)+'), textured '+J.tex.mapped+'/'+J.tex.meshes+(J.fails.length?'; FAILS '+J.fails.join(' | '):'')):'window._qiblaiLix missing (targets/city/90u-qc-lot-interiors.js)'});}
 return R;}"""
 xv.ASSERT_JS = xv.ASSERT_JS.rstrip()[:-len('return R;}')] + CITY_JS
 assert xv.ASSERT_JS.endswith('return R;}'), 'settlements/xanadu/verify.py ASSERT_JS no longer ends with return R;}'

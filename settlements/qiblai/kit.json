@@ -27,10 +27,20 @@
   "69r-flora-bundle.js",
   "90p-qc-flora.js",
   "89q5f-qb-furnish.js",
-  "90t-qc-interiors.js"
+  "90t-qc-interiors.js",
+  "89q5s-qb-shells.js",
+  "90u-qc-lot-interiors.js"
  ],
- "interiors": ["city"],
- "furniture": ["xanadu", "eastabyss", "generic", "generic-goods", "jobs"],
+ "interiors": [
+  "city"
+ ],
+ "furniture": [
+  "xanadu",
+  "eastabyss",
+  "generic",
+  "generic-goods",
+  "jobs"
+ ],
  "furnitureTex": true,
  "interiorSets": []
 }
