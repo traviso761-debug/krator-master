@@ -44,8 +44,10 @@ The page's first pass (2026-11-16, the owner: "build the page next"). What it do
       south shore 5.4 km east of the cove (851.5, 1508.8): the true east end is a steep coast. The scale-model session's queue
       holds the old pins. The fishers' hall is the Farmers' Guild's (`xa_guild_farm`, a stand-in); East End's meadows for the
       Order's herds are not drawn; the footpath round the isle is drawn only on each village's near ground.
-- [ ] **check_assembly reports `MISSING KCITY.stance` on all five pages (owner's call).** core/hamlet needs core/city's`n      `33-city-strategies.js` (its `KCITY.prim.frontageRun` and `huntNear`); one of that fragment's street strategies, never
-      run here, calls `KCITY.stance` from `15-city-ground.js`. That fragment needs `10-city-core.js`, whose top-level `clamp`n      clashes with the Xanadu page's `10-core.js`, so neither can be taken. Two ways out, neither taken: the five pages in
+- [ ] **check_assembly reports `MISSING KCITY.stance` on all five pages (owner's call).** core/hamlet needs core/city's
+      `33-city-strategies.js` (its `KCITY.prim.frontageRun` and `huntNear`); one of that fragment's street strategies, never
+      run here, calls `KCITY.stance` from `15-city-ground.js`. That fragment needs `10-city-core.js`, whose top-level `clamp`
+      clashes with the Xanadu page's `10-core.js`, so neither can be taken. Two ways out, neither taken: the five pages in
       `tools/check_assembly_baseline.json` as Ys is (a baseline edit was refused in this session), or a guard on the call in
       `core/city/33-city-strategies.js` (a shared file: merge the open-world line first, rebuild every build that takes it).
 - [ ] **Not on the page:** the bay isle's Threshold Light, the people asleep in the
