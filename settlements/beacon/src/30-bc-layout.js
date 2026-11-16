@@ -134,12 +134,20 @@ const BEACON_LAYOUT = (function () {
       { id: 'tears', name: 'the Golden Tears\' camp', px: [850, 1628], km: 176, bearing: 181, clear: 28, must: true },
       { id: 'sauropolis', name: 'Sauropolis', px: [765, 1596], km: 208, bearing: 237, clear: 11, must: false },
       { id: 'tuatara', name: 'Tuatara', px: [818, 1554], km: 75, bearing: 248, clear: 37, must: true },
-      { id: 'march.s', name: 'the south watch fort', px: [812, 1548], km: 83, bearing: 258, clear: 27, must: true },
       { id: 'pin', name: 'the ravine (the tune pin)', px: [846, 1540], km: 14, bearing: 270, clear: 22, must: false },
       { id: 'komodo', name: 'Komodo', px: [865, 1617], km: 155, bearing: 171, clear: -555, must: false },
-      { id: 'erehwon', name: 'Erehwon', px: [806, 1516], km: 105, bearing: 297, clear: -710, must: false },
-      { id: 'march.w', name: 'the west watch fort', px: [783, 1530], km: 141, bearing: 278, clear: -610, must: false },
-      { id: 'strongwall', name: 'Strongwall', px: [912, 1640], km: 232, bearing: 149, clear: -265, must: false }]
+      { id: 'strongwall', name: 'Strongwall', px: [912, 1640], km: 232, bearing: 149, clear: -265, must: false, via: 'g1' },
+      /* the stations that moved with the edit 7 re-run (the tune, 2026-11-16), taken on a composite: today's model with the
+         shoulder (850-858 x 1534-1544) from the model before the re-run, as the scale-model session restores it
+         (provisional until that edit is merged: step B0) */
+      { id: 'march.s', name: 'the south watch fort (moved to 847,1549, at -1,319 m below the scarp)', px: [847, 1549], km: 22, bearing: 214, clear: -288, must: false, note: 'at 843,1546 (10 km off) it would see the lamp by +25 m and Tuatara by +34: the fort\'s place is the open-world session\'s' },
+      { id: 'march.w', name: 'the west watch fort (moved)', px: [818, 1531], km: 72, bearing: 284, clear: -216, must: false },
+      { id: 'erehwon', name: 'Erehwon (moved to the new lake\'s south shore)', px: [841, 1517], km: 52, bearing: 332, clear: -468, must: false, via: 'eye' },
+      { id: 'eye', name: 'the Eye Post (the Order of the Flashing Eye, the relay to the capital)', px: [881, 1526], km: 63, bearing: 63, clear: -95, must: false, via: 'rimpost', note: 'the restored rim massif north-east of the knoll (1,111 m at 857.9,1537.5) stands in the line; a 40 m lamp still misses by 80 m' }],
+    /* relays: posts that carry the lamp's signals to a station it cannot see (the fort asset's watch post, XFORT.post()) */
+    relays: [
+      { id: 'rimpost', name: 'the Rim Post (the order\'s relay to the Flashing Eye)', px: [856, 1532], h: 12, ground: 1578, km: 17, to: 'eye', seeLamp: 57, seeFar: 68,
+        note: 'on the rim massif 17 km north-north-east of the lamp: a watch post with a mirror and a shuttered lamp, two keepers on the Lamp Watch\'s rota; not needed if the restore leaves the massif lowered (then the lamp sees the Eye by +14 m)' }]
   };
 
   /* the power, from the tune (core/region/data/xan-tune.js: T.oil.kgYr 400,000, licence 0.2, T.lit['march.e'] 0.02,
