@@ -528,6 +528,13 @@ recipes, the nine natives of the lake tread, the lake on `WATER.open`, the step 
 GPU verify is owed before merge. The map edit (T1), T4 and T5 are not started. The lake tread's ground takes `ground.withered_grass` and
 `ground.leafy_grass` for section 11's `ground.steppe` (the owner, 2026-11-16: the ground "a bit too brown, more varied").
 
+**Station 2 started (2026-11-16, software GL only):** Coyote Canyon (`dist/tiers-canyon.html`) on the model's pin at 1265,500, the canyon's mouth: the
+canyon's cells filled and recut as nine `KRELIEF.stepcut` treads (its floor descending in dry falls, the head a bowl), the king's spring and its
+stream down the stair on `WATER.terraces`, irrigated terraces on the treads, the natives and ebadlands' kin, the seat's landmarks as records under the
+Coyote kit's `cy_*` keys (`kits/coyote/PLAN.md`, draft 2026-11-16; its bundle `KratorCoyote` replaces the stand-ins at its C9). **Open:** the town's
+rows on the walls (Masuleh's rule) wait on a layout: `core/city` has no terraced mode, and the Coyote kit's plan leaves that rule at a city's size to
+the city session (KNOWN_ISSUES.md).
+
 ## Sources
 
 - The model's data on `main` (`tools/scale-model/model/data`: `h`, `wl`, `c`, `p`, `tm`, `tw`, `tc`, `th`, `tl`;

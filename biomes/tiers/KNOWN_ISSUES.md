@@ -8,7 +8,7 @@ The Tiers' three sets were generated on 2026-11-12 (`core/materials/PROMPTS-NEED
 unpushed local branch, so they are not in the library yet. Each slot in `materials.json` names its stand-in in `lib` and the
 owed id in `owed`. When a set lands: set `lib` to the `owed` id, delete `owed`, run `python3 tools/textures/check_cells.py
 biomes/tiers --fix` (a card sheet's cells and stems are its own), `python3 tools/textures/pack.py biomes/tiers`, and
-`python3 tools/build.py biomes/tiers --all`.
+`python3 tools/build.py biomes/tiers --stations`.
 
 - [ ] **`card.shelfoak`** (the shelf oak's tier plates, a 3x3 sheet): slot `oakplate` draws **`card.broadleaf.dry`**, keep 0, tinted
   the oak's leathery green (`TIERS.PAL.oakLeaf`). Its stems are the dry sheet's (three sprigs, `check_cells.py --fix`); the new
@@ -47,6 +47,25 @@ biomes/tiers --fix` (a card sheet's cells and stems are its own), `python3 tools
 - [ ] **The ladder reed's whorls and the step moss's mats are procedural** (a strap and a blob drawn by the kit), not library cards:
   no set is owed for them in PLAN.md section 11 (the plan names `card.reed` and `card.wingreed`; `card.wingreed` is a winged alien
   plant, not a cane). `card.reed` draws the shore reeds.
-- [ ] **Not built yet (T4, T5):** the pagoda bush, the stack cushion and the whorl pine (records and tags in 50, no builder); stations 2
-  (Coyote Canyon, `core/city`), 3 (the Lip: waits on the map edit's sill) and 4 (the Great Tread, `core/camp`); the `tiers` entry in
+## Station 2, Coyote Canyon (started 2026-11-16)
+
+- [ ] **The town is not laid out: a question for the owner.** The seat's landmarks are on the page as records under the Coyote kit's keys
+  (`86-host-seat.js`: `cy_spring_hall` over the spring, `cy_treasury`, `cy_council`, `cy_runner_shrine` at the road's foot, four `cy_rock_facade`
+  on the walls, `cy_milestone`s), all pending stand-ins. The stepped town down the walls (Masuleh's rule) is not: a capital's lots belong on
+  `core/city` (CLAUDE.md), which has no terraced mode, and the Coyote kit's plan (draft 2026-11-16, section 4, amendment 2) leaves that rule at a
+  city's size to the city session. Waiting on the owner: wait for core/city's terraced mode, or lay a first cut on `core/hamlet`'s terraced
+  fragment (`36-hamlet-terrace.js`, the Coyote kit's C5/C7) when it lands.
+- [ ] **The canyon is the station's own landform.** The model draws a V four kilometres wide; the page fills the canyon's six cells north-east
+  of the site and recuts it as nine `KRELIEF.stepcut` treads (the floor climbing 11% in ~39 m dry falls, the last ending in the head's bowl).
+  Out of the model check (`LAND.sculpt`). The plan's "box canyon in the great riser ... the great tread's rim 1.8-2.3 km overhead, 20 km
+  up-canyon": the page holds the canyon's lower 3.2 km, its head bowl ~600-850 m deep; the great tread's rim is the far field's.
+- [ ] **The head's bowl renders near black at 14:00** (SwiftShader; the canyon's shaded walls nearly as dark): the bowl is ~600 m deep under a sun
+  from the north-west, and the horizon shade (KHORIZON) dims the sky's light there too, so the spring hall stands in the dark. Judge it on the GPU;
+  the levers: a station hour when the sun runs up the canyon's axis (it trends north-east), or a floor on the horizon shade's sky term.
+- [ ] **The flash flood is a plain record** (`drown` on each tread's floor): the gorge flood on a cycle is the shared hazard amendment
+  (PLAN.md section 10, item 4).
+- [ ] **No contour carvings drawn**: the milestones and façades are boxes; the carving is the Coyote kit's `cyContour` (its C1).
+
+- [ ] **Not built yet (T4, T5):** the pagoda bush, the stack cushion and the whorl pine (records and tags in 50, no builder); station 2's
+  town (above), stations 3 (the Lip: waits on the map edit's sill) and 4 (the Great Tread, `core/camp`); the `tiers` entry in
   `kits/crops`; `outposts.json`; the gorge flood (the shared hazard amendment).

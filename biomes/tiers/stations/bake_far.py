@@ -24,7 +24,7 @@ sys.path.insert(0, os.path.join(ROOT, 'tools', 'scale-model'))
 from smodel import page  # noqa: E402
 
 # station 1, the Lake of the Tiers: centred on the drawn north shore (PLAN.md 10a: the pin 1262,512 stands 4 km from the water)
-SITES = {'lake': (1262, 513.4)}
+SITES = {'lake': (1262, 513.4), 'canyon': (1265, 500)}   # station 2, Coyote Canyon: the model's village pin, on the canyon's floor
 CODES = ['Af', 'Am', 'Aw', 'BWh', 'BWk', 'BSh', 'BSk', 'Csa', 'Csb', 'Csc', 'Cwa', 'Cwb', 'Cwc', 'Cfa', 'Cfb', 'Cfc', 'Dsa', 'Dsb', 'Dsc', 'Dwa',
          'Dwb', 'Dwc', 'Dfa', 'Dfb', 'Dfc', 'Dfd', 'ET', 'EF', 'XA', 'XV', 'XS', 'XW', 'HT', 'HF', 'O', 'WS', 'WX', 'WH']
 KEY = {c: 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOP'[i] for i, c in enumerate(CODES)}

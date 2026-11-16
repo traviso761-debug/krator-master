@@ -17,9 +17,10 @@
   99-tail.html      closes <script>
 
   python3 tools/build.py biomes/tiers                      dist/tiers.html: station 1, the Lake of the Tiers (stations/lake/)
+  python3 tools/build.py biomes/tiers --station canyon     dist/tiers-canyon.html: station 2, Coyote Canyon (stations/canyon/)
   python3 tools/build.py biomes/tiers --station <name>     dist/tiers-<name>.html (PLAN.md section 9; the stations built so far:
                                                            STATIONS below)
-  python3 tools/build.py biomes/tiers --all                every station
+  python3 tools/build.py biomes/tiers --stations           every station (NOT --all: tools/build.py takes --all as every build in the repo)
   (a plain `python3 build.py ...` re-runs itself through tools/build.py, so build-inputs.json is always written: item 25)
 
 stations/<name>/station.json: "kin" {"<kit>": [[fragments], "<API>", [pack families] | "*"]} (the kits whose species the station grows, read in
@@ -68,12 +69,12 @@ def find_node():
     return None
 
 
-STATIONS = ['lake']   # station 1 first (the owner, 2026-11-10); canyon and tread (T4), lip (T5, after the map edit's sill) to come
+STATIONS = ['lake', 'canyon']   # station 1 first (the owner, 2026-11-10), then Coyote Canyon (T4); tread (T4) and lip (T5, after the map edit's sill) to come
 BSRC.variants([['--station', _s] for _s in STATIONS[1:]])   # every station's page (--list-sources)
-if '--all' in sys.argv:
+if '--stations' in sys.argv:
     _rc = 0
     for _s in STATIONS:
-        _rc |= subprocess.call([sys.executable, os.path.abspath(__file__), '--station', _s] + [a for a in sys.argv[1:] if a != '--all'])
+        _rc |= subprocess.call([sys.executable, os.path.abspath(__file__), '--station', _s] + [a for a in sys.argv[1:] if a != '--stations'])
     sys.exit(_rc)
 _args = [a for a in sys.argv[1:] if not a.startswith('--') or a == '--station']
 STATION = _args[_args.index('--station') + 1] if '--station' in _args else None

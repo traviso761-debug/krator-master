@@ -1,0 +1,16 @@
+{
+ "note": "Station 2, Coyote Canyon (PLAN.md section 9: the model's village pin, 5.1 px 1265,500, the canyon's mouth). kin: the eastern badlands' Fremont cottonwood by the stream on the floor, Utah juniper and pinyon on the riser's shoulders, read in place (PLAN.md section 4, 'Read in place'). The pack families are the ones its builder draws with. core: core/terrain's landforms (KRELIEF.stepcut: the canyon's treads), this station's alone so station 1's page does not move.",
+ "kin": {
+  "ebadlands": [
+   [
+    "src/50-biome-ebadlands-species.js",
+    "src/55-biome-ebadlands-trees.js"
+   ],
+   "EBADLANDS",
+   "*"
+  ]
+ },
+ "core": {
+  "38c-core-landforms.js": "core/terrain/38c-core-landforms.js"
+ }
+}

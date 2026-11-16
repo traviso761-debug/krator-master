@@ -8,7 +8,7 @@ This file says how the kit is built; PLAN.md says what it is and why.
 ```
 python3 tools/lfs_needs.py biomes/tiers --pull            # first, in a fresh worktree (the library sets, ebadlands' tex/)
 python3 tools/build.py biomes/tiers                        # dist/tiers.html: station 1, the Lake of the Tiers
-python3 tools/build.py biomes/tiers --all                  # every station
+python3 tools/build.py biomes/tiers --stations             # every station (never --all: tools/build.py reads it as every build in the repo)
 python3 biomes/tiers/verify.py biomes/tiers/dist/tiers.html --assert [--all-views --out shots]
 python3 biomes/tiers/stations/bake_far.py --all            # the model round each station (44f), after a model change
 python3 tools/textures/pack.py biomes/tiers                # after materials.json changes
@@ -39,7 +39,20 @@ fragment it needs: station 1's `86-host-village.js`) and its `station.json` name
   model, the sampler units, the hazards, the kin, the cameras) and the kit's own: the natives in their tiers, the lake on its bay and off
   the floor past the sill, the pools dug in, the village registered and pending; each with a negative that must fail.
 
+## Station 2, Coyote Canyon (started 2026-11-16)
+
+- **The site**: the model's village pin, 5.1 px 1265,500 (1,603 m, BSh): the canyon's mouth, opening south-west onto a hollow at 950-1,300 m;
+  the canyon climbs north-east into the riser.
+- **The land** (`stations/canyon/44w-host-land.js`): the plateau is the model's surface with the canyon's six cells filled from their high
+  neighbours (the Great Chasm headwall's `MODEL.h` cell filter); the canyon is recut as nine `KRELIEF.stepcut` treads, mouth to head, each its
+  own floor (1,560 to 1,873 m: dry falls of ~39 m between), five ledges up each wall, the last tread ending in stepcut's head bowl. Each
+  tread's cut is skipped outside its box (nine reads a point cost 7x the page's sampling; the boxes take it back, the same heights).
+- **The water**: the king's spring a still pool in the head's bowl; its stream down the stair as `WATER.terraces` (a pool a tread, a fall a
+  riser: the step moss's dams).
+- **The seat** (`stations/canyon/86-host-seat.js`): the landmarks as records under the Coyote kit's `cy_*` keys (its plan, draft 2026-11-16),
+  pending stand-ins, `KratorCoyote.dims` taking over when the bundle is on the page. The town's rows wait on the layout (KNOWN_ISSUES.md).
+
 ## Not built yet
 
-Stations 2 (Coyote Canyon), 3 (the Lip) and 4 (the Great Tread); the pagoda bush, the stack cushion and the whorl pine; terracettes in the
+Station 2's town (its layout), stations 3 (the Lip) and 4 (the Great Tread); the pagoda bush, the stack cushion and the whorl pine; terracettes in the
 ground; the `tiers` crops entry; `outposts.json`. KNOWN_ISSUES.md lists them with the texture swaps.

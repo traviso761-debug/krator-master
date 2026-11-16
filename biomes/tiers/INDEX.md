@@ -4,7 +4,7 @@
 
 Docs: `BIOME-API.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `PLAN.md`, `PORT.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/tiers.html`
+Built output (never open it; edit `src/` and rebuild): `dist/tiers-canyon.html`, `dist/tiers.html`
 
 Build: `cd biomes/tiers && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
@@ -39,4 +39,5 @@ Each station builds one page (`build.py --station <name>`) from its own fragment
 
 | Station | Fragments | KB |
 |---|---|---|
+| canyon | 44f-host-far-data.js, 44w-host-land.js, 86-host-seat.js | 140 |
 | lake | 44f-host-far-data.js, 44w-host-land.js, 86-host-village.js | 136 |

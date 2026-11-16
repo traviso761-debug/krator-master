@@ -736,9 +736,13 @@
    "bytes": 1240372,
    "sha256": "21d8a1af02556e92590f26058da0d8d0dd362a04b121ba33657c35440ebc4cce"
   },
+  "biomes/tiers/dist/tiers-canyon.html": {
+   "bytes": 8421942,
+   "sha256": "f2350882653bbc24c89a0c529f9e95b1407dbc3bb59c8bd6e0326eeaef218081"
+  },
   "biomes/tiers/dist/tiers.html": {
-   "bytes": 8377619,
-   "sha256": "c47355173f12285fc5bfc65cae2df248a626082c3b2b5d2c91b641a93cbbd0a4"
+   "bytes": 8377711,
+   "sha256": "cd192f0bea8c3708f75e9496b937f9bf8ca2d0e4878e44660b0f1d90a5b5fa0b"
   },
   "biomes/twins/dist/twins-brazier.html": {
    "bytes": 2877421,

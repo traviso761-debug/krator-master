@@ -18,7 +18,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/45-host-stage.js` | 26.0 | [web] | 22 | 3 | 3 | 1 | 0 | 3 | 8 | 1 | 0 | 0 | 0 |  |
 | `src/50-biome-tiers-species.js` | 16.4 | [draw] | 0 | 1 | 0 | 0 | 0 | 7 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
 | `src/55-biome-tiers-trees.js` | 16.2 | [draw] | 0 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/60-biome-tiers-floor.js` | 8.7 | [draw] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/60-biome-tiers-floor.js` | 8.8 | [draw] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/70-biome-tiers.js` | 0.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/83-host-far.js` | 4.0 | [web] | 2 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/87-host-kin.js` | 2.9 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | host: grows the neighbours' species (BIO.kin) on the page |

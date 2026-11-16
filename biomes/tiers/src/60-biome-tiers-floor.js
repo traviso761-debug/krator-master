@@ -29,7 +29,7 @@ const LIP=.9,lipK=(x,z,sl)=>{const f=Y(x,z)/LIP;return smooth(.1,.3,sl)*smooth(.
 // ---------------------------------------------------------------- the planters, by zone: (x,z,Z,lv,st)
 function plantDry(x,z,Z,lv,st){const t=rng(),lip=lipK(x,z,Z.slope);
  if(t<.55+.35*lip){around(x,z,lv===2?ri(2,4):1,.2,.8,(px,pz)=>tuft('tiergrass',px,pz,rr(.3,.6),rr(.35,.55),tone(PAL.grass)));st.tiergrass++;}
- else if(t<.75&&Z.rock>.1){tuft('heath',x,z,rr(.4,.9),rr(.6,1),tone(PAL.heath),.03);st.heath++;}
+ else if(t<.75&&Z.rock>.35){tuft('heath',x,z,rr(.4,.9),rr(.6,1),tone(PAL.heath),.03);st.heath++;}   /* the heath keeps to rocky ground and the ledges (its own pass): not the open slopes */
  else{stone(x,z,rng()<.7?PAL.rock:PAL.rockRed,false);st.stone++;}}
 /* the meadow's tufts: tawny on the dry side, green in the swales (the same slow patch the ground's meadow layer follows, and the wet) */
 const greenK=(x,z)=>clamp(Math.max(smooth(.5,.68,BIO.field('wet',x,z)),smooth(.52,.68,fbm(x*.0028,z*.0028,7.1,3))*.85),0,1);
