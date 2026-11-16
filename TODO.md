@@ -213,6 +213,32 @@ along: do them in that change, rebuild once, rewrite the baseline once. Take an 
     `godot/krator/kdoor.gd`; `godot/tests/door/door_test.gd` passes on 4.7.2. The isle demo's export does not carry its doors yet.
 
 ## With the final biome rebuild *(the owner, 2026-10-26)*
+- **Place the garrison's arms** (the owner, 2026-10-22: not before a round that rebuilds the builds anyway, such as
+  placing towns in the open world or adding a new core module). `kits/catalog/krator-master-furniture-arms.js` gives all
+  30 catalog cultures a weapon rack (`<prefix>_<tier>_weapon_rack`, wall) and an armour stand (`_armour_stand`, floor)
+  for `armoury`, `barracks`, `guardroom` and `watch` rooms (`kits/catalog/README.md`, "The garrison's arms"); no build
+  bundles them yet. Per build: add `'arms'` to its `FURN_CULTURES` (the list it passes to `furniture_bundle.bundle`), then
+  place the pair in its military rooms: the interiors sets' `armoury` rooms (`kits/interiors/sets/highlands.js`,
+  `iziz.js`), Zeijani's `guardroom` program (`sets/zeijani.js` asks for types `rack`/`weapon`, so it finds them once
+  bundled), the Iziz palace (`pal_armoury`, `pal_guard`), the Eternian fort's armoury and barracks
+  (`kits/eternian/src/61-et-defence.js` draws its glaive racks as geometry; the Eternians' armour stand is in the file),
+  and each settlement's barracks, gatehouses, forts and war camps in its furnish lists. Rebuild each page, run its
+  `verify.py --assert`, then `tools/port_baseline.py`.
+
+- **Real doors and glass across the kits** (the owner, 2026-10-20; for the next wide sweep over the building kits).
+  Iziz's `settlements/iziz/src/69e5-iziz-openings.js` (2026-10-19) wraps the Vernacular's `vnDoor`, `vnWin` and `vnStrip`:
+  a shut leaf registered in `IZDOOR` instead of a dark recess, see-through glass instead of an opaque plate, and the
+  `vnPlate`, `vnHole`, `vnOpening` and `IZ_ROOMC` the vernacular fragments now call. Where it stands:
+  - Iziz, Pylon and Talia build on Iziz's own fragment order (`--kit`), so they take 69e5 and `95j-iziz-doors.js`
+    (walk blocks for shut leaves, the E key in `99-start.js`). Talia's branch (`claude/vassal-kits`) predates 69e5:
+    rebuild and verify Talia when it merges main.
+  - Verge (`build.py` `izv_files`, 2026-10-20) and the isle demo (`bundles.py` `izv_files`, c135f802a) take 69e5 only:
+    their doors are drawn shut and never open, and a shut leaf blocks no walker. Ys vendors pre-69e5 copies of 70 and 71
+    and takes none of it.
+  - The kits' own doorway shapes cut a hole (`vnHole`) but hang no leaf: Pylon's `pylDoorway` (`69q-pyl-helpers.js`),
+    Talia's arches (`69u-tal-helpers.js`). Give them a leaf in `IZDOOR`.
+  - The other building kits (Ancients, Islanders, Lizardmen, the nomads, Scyvoi, Zeijani, Eternian ...) still draw
+    doorways as dark voids and windows as opaque plates. Take them onto the door module below, not onto 69e5's wrappers.
 
 Work parked for the coming rebuild of every biome kit: do it there, rebuild each page once, rewrite each baseline once and on
 purpose. Take an item out when it is done.
