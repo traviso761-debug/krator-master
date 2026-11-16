@@ -145,7 +145,7 @@ function qnStairPlan(rise,o){o=o||{};const rh=.17,td=.34,every=o.every==null?3:o
   if(left>1e-6){segs.push({k:'land',z0:z,z1:z+land,y});z+=land;}}
  segs.push({k:'land',z0:z,z1:z+1,y});return{segs,len:z+1};}
 function buildQbTerraceStair(G,o){reseed(33791+(o.v|0));const rise=o.rise==null?4:o.rise,w=o.w==null?8:o.w,stone=xC(xPick(QSTONE)),base=-rise-1.5,S=qnStairPlan(rise);
- vnReg('Terrace stair',0,S.len/2,Math.max(w,S.len)/2+1,1.2);
+ vnReg('Terrace stair',0,S.len/2,Math.max(w,S.len)/2+1,1.2);{const R=REG[REG.length-1],s=o.scale==null?1:o.scale;R.y-=rise*s;R.h+=rise*s;}   /* the volume spans the stair's whole fall, from its foot (rise below the head) to 1.2 m above it */
  const mass=(x,ww,zc,d,top)=>vB('qAshB',x,base,zc,ww,top-base,d,0,stone);
  for(const s of S.segs){if(s.k==='land'){mass(0,w,(s.z0+s.z1)/2,s.z1-s.z0,s.y);for(const e of[-1,1])mass(e*(w/2+.3),.6,(s.z0+s.z1)/2,s.z1-s.z0,s.y+.9);continue;}
   const rh=(s.y0-s.y1)/s.n,td=(s.z1-s.z0)/s.n;
