@@ -1,6 +1,7 @@
 # The Twins crossing and the White Gills Hermitage in the open world (plan, 2026-11-16)
 
-**Status: a proposal; nothing is built.** The owner, 2026-11-16: *"I want to build the twins pathways and white gill
+**Status: the plan, its questions answered by the owner 2026-11-16 (section 9); nothing is built yet.** Moved here from
+`openworld/twins-crossing/` when the owner chose to grow this region rather than cut a new one. The owner, 2026-11-16: *"I want to build the twins pathways and white gill
 hermitage as part of the open world, if we haven't drafted plans for that yet."* No plan existed:
 - the Twins kit (`biomes/twins`, six stations built) draws each station as its own page;
 - the White Gills are a band kit read in place (`biomes/gills`), whose showcase station #10 is being built in a cloud session;
@@ -25,25 +26,29 @@ unless it quotes the owner or a plan the owner settled. Pixels are scale model 5
   region's `SITE_SPEC.tubes` laid as `KCAVERN` tubes under the streamed ground, cut where they open (skylights,
   portals), streamed with the tiles they run under. It is core work: its own session, or ask.
 
-## 2. The region: `openworld/twins-crossing`
+## 2. The region: `xanadu-oidong-highrift`, grown north to the Catch
 
-- **The box:** about px 930-1112 x 1420-1605 (364 x 370 km), its frame's origin at px 1021,1512. It holds:
+**The owner, 2026-11-16: "Growing the region north to connect to Catch".** The region's box grows north over the
+Twins until it meets the Catch's south toe, and its frame's origin (px 1191,1569) stays put, so every record already
+baked keeps its coordinates. The grown part:
+- **The new rows:** about px 930-1112 x 1420 up to the box's present north edge. The exact box is
+  `tools/scale-model/cut_site.py`'s, recut after the Twins' sculpt. It holds:
   - Strongbow at 1001,1596 (the Sultan's lift town, at the edge);
   - the Vale portal at the Alph's chasm, 938,1496;
   - the whole Twins massif;
   - both candidate sites of the Hermitage (section 6);
   - the Catch's south toe: Lasso 1083,1474, Bitta 1088,1455 and Stair's campground at 1106,1442, at the edge.
-- **Not a new map:** cut by `tools/scale-model/cut_site.py twins-crossing` like the other regions (`openworld/PLAN-SITES.md`).
-  Its SITES.json row holds the Brotherhood's waystations, the Hermitage and Strongbow's caravanserai. Strongbow's own
-  page and Lasso and Bitta stay their kits'.
+- **Recut, not a new region:** `tools/scale-model/cut_site.py xanadu-oidong-highrift` with the larger box
+  (`openworld/PLAN-SITES.md`). The region's SITES.json row gains the Brotherhood's waystations, the Hall, the Hermitage and
+  Strongbow's caravanserai. Strongbow's own page and Lasso and Bitta stay their kits'.
+- **The recut also moves Erehwon's square onto the re-made lake** (the region's KNOWN_ISSUES), so one recut does both.
 - **Its flora** is the Twins kit's, read in place as the regions read biome kits:
   - the five oases' islands of warm ground;
   - the dwarf agate-bark pines and pocket-hearth shrubs;
   - nothing on the ice.
   
   The White Gills' life is the gills kit's, round the pipes.
-- **Overlap.** `xanadu-oidong-highrift`'s box takes the polygon's south edge: the new region owns the Twins, and the old
-  one's 1,424 px of bare Twins ground are left to it (a note in that region's KNOWN_ISSUES).
+- **The bare Twins ground** this region already holds (1,424 px) gets the Twins kit's flora with the rest.
 
 ## 3. The ways
 
@@ -59,8 +64,9 @@ They are drawn by the region's roads code where they run on the ground, and by W
 | **The Hermitage path** | path | from the nearer route to the Hermitage (section 6) | the monks' and the caravans' turn-off |
 
 The sim's rounds name the same stops (`twins.sinter`, `twins.kettle`, `twins.brazier`, `twins.tarn`, `twins.lookout`,
-`twins.hall`, `sttkxo9ndy`). Today the sim's Route A starts from Strongbow through Sinter-Gate (the feeder), not from the
-Vale (question 3).
+`twins.hall`, `sttkxo9ndy`). **Route A starts at the Vale's chasm with the Strongbow branch** (the owner, 2026-11-16:
+"Vale chasm with strongbow branch"). The sim's Route A caravans are bound for Strongbow, so they take the branch: the
+Hall, then the feeder's galleries down to Strongbow, not Sinter-Gate. The Vale's portal is the way on into the Vale.
 
 ## 4. The waystations and the traps
 
@@ -98,7 +104,10 @@ What the plan would build:
 - the pipe field round it: the gills kit's Breath Pipes (`KSTACKS.chimney`, 15-35 m, bone-white brucite), the saltcups and the candles;
 - the path to the nearer route.
 
-**Where (question 1).** Two places are recorded, 100 px apart:
+**Where: the White pipe field** (the owner, 2026-11-16, question 1). The house stands at about 1015,1430 (+3,746 m),
+below the live ring fissure at 1015,1438. The map pin moves there through the scale-model session's queue, and the sim's
+record follows. **Fifteen monks** (the owner, question 2): a larger house than the 2026-11-02 "two or three", now that it is
+the crossing's caravan stop; the counting room, the cells, the guest court. The two places that were recorded, 100 px apart:
 - **The White pipe field at about 1015,1430-1438.** `biomes/gills/PLAN.md` station #10 puts it there: the live ring fissure at 1015,1438, +4,670 m; the pipe field, candles and hermitage at 1015,1430, +3,746 m. That is north of the Twins, near the Catch side of the pass and Route A's line, and it matches the lore's "in the White pipe field".
 - **The map pin "White Gills Hermitage" (`sttkxo9ndy`) at 1035,1535,** on the Xanadu side south of the SE Twin. Gills station #10 names it a secondary structural window; the Catch's sim and Gemini's trade model use the pin.
 
@@ -120,14 +129,24 @@ What the plan would build:
 | Step | What | Check |
 |---|---|---|
 | **W0** | The owner's answers (section 9); the Twins' sculpt landed on the model | |
-| **W1** | Cut `openworld/twins-crossing` from the sculpted model; SITES.json rows for the waystations, the Hall and the Hermitage | the region builds; every site on dry ground at its plan's height within a band |
+| **W1** | Recut `xanadu-oidong-highrift`, grown north to the Catch, from the sculpted model (Erehwon's square onto the new lake with it); SITES.json rows for the waystations, the Hall and the Hermitage | the region builds; every site on dry ground at its plan's height within a band |
 | **W2** | Route B, the feeder's surface and the Catch descents as trails on the ground; the waystations drawn | the trail's grade under its limit, a day between oases, nothing on a trail bed |
 | **W3** | Caverns in the open world (core work): Route A's four tubes and their skylights and portals, the Hall of the Tally-Marks | a walker goes Vale to arch by tube and sprint; the tubes open only where the plan opens them |
 | **W4** | The White Gills Hermitage and its pipe field | the house on its bench; the pipes on the serpentinite window; the path joins a route |
 | **W5** | The traps and hazards; the life read in place | each trap a hazard record with a negative |
 | **W6** | The sim's caravans drawn at the waystations (`core/camp`) | carriers stand where the sim says |
 
-## 9. Questions for the owner
+## 9. Questions for the owner: answered 2026-11-16
+
+The owner: *"1. White pipe field. 15 monks. Vale chasm with strongbow branch. Growing the region north to connect to
+Catch. Build open world caverns now"*:
+1. The Hermitage stands in the White pipe field (about 1015,1430).
+2. Fifteen monks.
+3. Route A starts at the Vale's chasm, with the Strongbow branch.
+4. This region grows north to meet the Catch (no new region).
+5. The open world's caverns are built now (W3).
+
+The questions as they were put:
 
 1. **Where is the Hermitage:** the White pipe field at about 1015,1430 (the gills plan and the lore), or the map pin at 1035,1535? If the pipe field, the pin moves through the scale-model session's queue and the sim's record follows.
 2. **How many monks:** two or three (the gills plan, the owner's 2026-11-02 words), with the Catch sim's 15 (a guess of mine) brought down to match? Or a larger house now that it is a caravan stop?

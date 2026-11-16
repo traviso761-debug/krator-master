@@ -75,4 +75,82 @@ const expectVoyages=(legs,mins)=>{let m=60+STAY,i=0,n=0;while(m<=mins){n++;m+=le
  T.ok('C2: a dry oasis costs a caravan: at a dry Bitta its beasts go unwatered, half the unwatered die, and it remounts at home',lost(RD),
   RD?'died '+RD.died+', remounted '+RD.remounted+', short at Bitta '+Math.round(((RD.dry.scatchbitta01||{}).water||0)/1000)+' m3':'no route');
  T.neg('a caravan that loses no beasts at a dry oasis is caught',lost,R,RD);}
+
+// ---- C3-C5: the crossing joined to Xanadu (CATCH_TUNE.join): the groups' caravans in place of Xanadu's four Catch
+//      gateways, the Twins' routes and tally, the seasons and hazards. A year, every departure recorded by the hour
+const PLAN=JSON.parse(rd('openworld/xanadu-oidong-highrift/plan/sites.json'));
+function runJoined(days,o,edit){const H=load();(0,eval)(rd('core/region/data/xan-tune.js'));
+ const V=CATCH_TUNE.join(XAN_TUNE.valley(PLAN,{}),o);if(edit)edit(V);const S=H.simValley(V),deps=[],seen={};
+ const a=SIM.ledgerSnap();
+ for(let h=0;h<days*24;h++){H.valleyRun(60,60);const m=S.clock.m;
+  Object.keys(SIM.TRADE.routes).forEach(id=>{if(!/^caravan\./.test(id)||!SIM.TRADE.routes[id].legs)return;SIM.TRADE.routes[id].carriers.forEach(C=>{const k=id+'#'+C.k;
+   if(C.phase==='sail'&&seen[k]!==C.from+'@'+C.eta){seen[k]=C.from+'@'+C.eta;const dm=C.eta-(SIM.TRADE.routes[id].legs[C.from]);deps.push({id,k:C.k,from:C.from,m:dm,storm:SIM.inSeason('storms',dm),col:SIM.inSeason('col',dm)});}});});}
+ const b=SIM.ledgerSnap(),Bk=H.valleyBooks().towns;
+ const site=SIM.econ('scatcharfwai01').resSites['scatcharfwai01.well.site'],dry={regen:site?site.regen:null,open:SIM.inSeason('dry',S.clock.m)};
+ return{H,V,S,B:Bk,deps,dry,trade:SIM.tradeReport(),ledger:SIM.ledger(a,b,{tol:1}),cuts:JSON.parse(JSON.stringify(S.cuts)),losses:JSON.parse(JSON.stringify(S.losses||{}))};}
+const t1=Date.now(),J=runJoined(365),JB=J.B,road=id=>J.V.roads.find(r=>r.id===id);
+console.log('a year of Xanadu and the Catch joined in '+((Date.now()-t1)/1000).toFixed(0)+' s: '+J.S.order.length+' settlements');
+const GROUPS=CATCH_TUNE.groups.map(g=>'caravan.'+g.id),landedAt=(Tr,ids,at)=>{const o={};ids.forEach(id=>{const L=(Tr[id]||{}).landed||{};Object.keys(L).forEach(l=>{if(l.split('>')[1]!==at)return;for(const g in L[l])o[g]=(o[g]||0)+L[l][g];});});return o;};
+// C3. 1: the gateways' long roads are gone, the five groups' rounds and the Train's salt run are on, no problems
+{const ids=J.V.roads.map(r=>r.id),good=!ids.some(i=>/^trade\.gate\.(iziz|dasri|yuni|geomancers)$/.test(i))&&GROUPS.concat(['caravan.train.salt']).every(i=>ids.indexOf(i)>=0)&&!J.S.problems.length;
+ T.ok('C3: Xanadu\'s four Catch gateways become the five groups\' caravan rounds (Getmastarz, Goldanda, the Train, Yuni\'s Guild, the Geomancers) and the Train\'s salt run; no problems',good,
+  ids.filter(i=>/^caravan\./.test(i)).join(', ')+'; problems: '+(J.S.problems.slice(0,2).join('; ')||'none'));}
+T.ok('C3: the joined year\'s books balance, every settlement, road and good',J.ledger.ok,J.ledger.ok?'all goods':J.ledger.problems.slice(0,3).join('; '));
+{const f=fedCheck(JB);T.ok('C3: every settlement of Xanadu and the Catch fed and watered all year (under 1 % short)',f.ok,f.bad.slice(0,4).join('; ')||'none short');}
+// 2: salt, iron and arms reach Strongbow and Qiblai; Xanadu's exports reach the homes
+const reachCheck=(Tr,Bk)=>{const sb=landedAt(Tr,GROUPS.concat(['caravan.train.salt']),'sfgtxw10kr'),q=Bk.skm4jjo2vl.imported,homes=['gate.iziz','gate.dasri','gate.yuni','gate.geomancers'];
+ const home=homes.map(h=>landedAt(Tr,GROUPS,h)),good=(sb.salt||0)>100000&&(sb.iron||0)>0&&(sb.arms||0)>0&&(q.salt||0)>0&&(q.iron||0)>0&&home.every(o=>Object.values(o).reduce((a,b)=>a+b,0)>0);
+ return{ok:good,sb,q,home,homes};};
+{const r=reachCheck(J.trade,JB);
+ T.ok('C3: salt, iron and arms reach Strongbow and Qiblai, and Xanadu\'s exports reach every home (Iziz, the Dasri, Yuni, the Geomancers)',r.ok,
+  'Strongbow landed salt '+t(r.sb.salt||0)+', iron '+t(r.sb.iron||0)+', arms '+Math.round(r.sb.arms||0)+'; Qiblai imported salt '+t(r.q.salt||0)+', iron '+t(r.q.iron||0)+'; homes '+r.homes.map((h,i)=>h+' '+t(Object.values(r.home[i]).reduce((a,b)=>a+b,0))).join(', '));
+ const N=runJoined(120,{},V=>{V.roads=V.roads.filter(x=>!/^caravan\./.test(x.id));});
+ T.neg('a valley without the caravans is caught (nothing crosses)',x=>reachCheck(x.trade,x.B).ok,N,J);}
+// 3: Stair and the oases live on the trade: Stair's bread comes off the caravans, every peopled oasis is sold to
+{const st=JB.s2o8f4p123,oases=['scatchkolli01','scatchkolli01.goldanda','scatcharfwai01','scatchbitta01','scatchlasso01','scatchlasso01.geo','twins.sinter','twins.brazier','twins.lookout'];
+ const good=(st.imported.grain||0)>=(st.eaten.grain||0)*.8&&oases.every(s=>(JB[s].imported.grain||0)>0);
+ T.ok('C3: Stair lives on the trade (the caravans land at least four fifths of the grain it eats) and every peopled oasis on the road is sold its bread',good,
+  'Stair imported '+t(st.imported.grain||0)+' of grain, ate '+t(st.eaten.grain||0)+'; the oases: '+oases.map(s=>s.replace(/^scatch|^twins\./,'')+' '+t(JB[s].imported.grain||0)).join(', '));}
+// 4: the two Iziz houses each carry Iziz's trade; the Train's pans' salt reaches Strongbow
+{const g=landedAt(J.trade,['caravan.getmastarz'],'sfgtxw10kr'),d=landedAt(J.trade,['caravan.goldanda'],'sfgtxw10kr'),s=landedAt(J.trade,['caravan.train.salt'],'sfgtxw10kr');
+ T.ok('C3: both Iziz houses land at Strongbow, and the Train brings the Catch\'s salt, soda and potash up from its pans',(g.iron||0)>0&&(d.iron||0)>0&&(s.salt||0)>100000&&(s.soda||0)>0&&(s.potash||0)>0,
+  'Getmastarz iron '+t(g.iron||0)+', Goldanda iron '+t(d.iron||0)+'; the pans: salt '+t(s.salt||0)+', soda '+t(s.soda||0)+', potash '+t(s.potash||0));}
+// C4. 1: the routes: the Iziz houses' pack trains by Route A's tubes (the Hall), the wagons by Route B's oases (the Brazier)
+{const via=(id,st)=>road(id).stops.indexOf(st)>=0,good=via('caravan.getmastarz','twins.hall')&&via('caravan.goldanda','twins.hall')&&!via('caravan.getmastarz','twins.brazier')&&
+  ['caravan.train','caravan.yuniguild','caravan.geomancer','caravan.train.salt'].every(id=>via(id,'twins.brazier')&&!via(id,'twins.hall'));
+ T.ok('C4: the Iziz houses\' pack trains cross by Route A\'s tubes and the Hall of the Tally-Marks; the Train\'s, Yuni\'s and the Geomancers\' wagons by Route B\'s oases and the Brazier',good,
+  GROUPS.map(id=>id.slice(8)+': '+road(id).stops.filter(s=>/^twins\./.test(s)).slice(0,5).map(s=>s.slice(6)).join('>')).join('; '));}
+// 2: the Split Tally lands at both points, the gate and the shrine (the Hall on Route A, the Brazier on B), and outbound at Stair
+const tallyCheck=(cuts,id,shrine)=>{const k=Object.keys((cuts[id]||{}).taken||{});return k.some(x=>x.indexOf('twins.sinter:')===0)&&k.some(x=>x.indexOf(shrine+':')===0);};
+{const both=tallyCheck(J.cuts,'caravan.getmastarz','twins.hall')&&tallyCheck(J.cuts,'caravan.goldanda','twins.hall')&&tallyCheck(J.cuts,'caravan.train.salt','twins.brazier')&&tallyCheck(J.cuts,'caravan.yuniguild','twins.brazier');
+ const sum=(id,at)=>Object.entries((J.cuts[id]||{}).taken||{}).filter(([k])=>k.indexOf(at+':')===0).reduce((n,[,v])=>n+v,0),out=GROUPS.reduce((n,id)=>n+sum(id,'horns.stair'),0);
+ T.ok('C4: the Brotherhood\'s Split Tally lands at both points, the gate (Sinter-Gate) and the shrine (the Hall or the Brazier), and its outbound half at Stair',both&&out>0,
+  'Getmastarz: gate '+t(sum('caravan.getmastarz','twins.sinter'))+', Hall '+t(sum('caravan.getmastarz','twins.hall'))+'; the Train\'s salt: gate '+t(sum('caravan.train.salt','twins.sinter'))+', Brazier '+t(sum('caravan.train.salt','twins.brazier'))+'; outbound at Stair '+t(out));}
+// 3: a caravan that refuses the guides: no tally, and the Twins take part of its train (two crossings in three)
+{const U=runJoined(365,{unguided:['goldanda']}),ev=(L,id)=>(L[id]||[]).filter(x=>/unguided/.test(x.why));
+ const unguided=(x)=>ev(x.losses,'caravan.goldanda').length>0&&!tallyCheck(x.cuts,'caravan.goldanda','twins.hall');
+ T.ok('C4: Goldanda\'s caravans crossing without the guides pay no tally and lose beasts on the Twins',unguided(U),
+  ev(U.losses,'caravan.goldanda').length+' losses, '+ev(U.losses,'caravan.goldanda').reduce((n,x)=>n+x.dead,0)+' beasts; tally '+(tallyCheck(U.cuts,'caravan.goldanda','twins.hall')?'paid':'none'));
+ T.neg('a guided caravan is not taken for an unguided one',unguided,J,U);}
+// C5. 1: the spring black storms hold the caravans off the Catch floor: no train sets out across it while they blow; they
+//      wait them out where they are, at Stair and Kolli (and Arfwai) among them
+const stormCheck=x=>{let crossed=0,waited=0;GROUPS.concat(['caravan.train.salt']).forEach(id=>{const Rd=x.V.roads.find(r=>r.id===id),fl=Rd._legs.floor;waited+=(x.trade[id].waited||0);
+  x.deps.filter(d=>d.id===id&&fl.indexOf(d.from)>=0).forEach(d=>{if(d.storm)crossed++;});});return{ok:crossed===0&&waited>0,crossed,waited};};
+{const s=stormCheck(J);T.ok('C5: the spring storms close the Catch floor: no caravan sets out across it while they blow, and they wait them out',s.ok,
+  s.crossed+' departures across the floor in the storms; '+s.waited+' carrier-hours waited');
+ const Q=runJoined(365,{hazards:false});
+ T.neg('caravans that cross the floor in the storms are caught',x=>stormCheck(x).ok,Q,J);}
+// 2: winter shuts the col to Route B (the wagons wait) while Route A's tubes stay open to the pack trains
+{let bIn=0,aIn=0;J.deps.forEach(d=>{const Rd=road(d.id);if(!d.col)return;if(Rd._legs.colB&&Rd._legs.colB.indexOf(d.from)>=0)bIn++;if(/getmastarz|goldanda/.test(d.id)&&Rd._legs.twins.indexOf(d.from)>=0)aIn++;});
+ T.ok('C5: winter shuts the Twins\' col to Route B\'s wagons, and Route A\'s pack trains still cross by the tubes',bIn===0&&aIn>0,
+  bIn+' Route B departures in the col\'s winter; '+aIn+' Route A crossings legs');}
+// 3: the Stalkers take stragglers on the Catch floor, never from the Geomancers (their explosives); the col's gales on Route A
+{const L=J.losses,n=(id,re)=>(L[id]||[]).filter(x=>re.test(x.why)).length,good=n('caravan.getmastarz',/Stalkers/)>0&&n('caravan.train',/Stalkers/)>0&&n('caravan.geomancer',/Stalkers/)===0&&n('caravan.getmastarz',/gales/)>0;
+ T.ok('C5: the Stalkers take stragglers off the Catch floor (never the Geomancers\', who carry explosives), and the col\'s gales take from Route A\'s trains',good,
+  GROUPS.map(id=>id.slice(8)+' '+n(id,/Stalkers/)+'/'+n(id,/gales/)).join(', ')+' (Stalkers/gales)');}
+// 4: Arfwai found dry in late summer: its well's recharge cut while the dry window is open
+{const st=CATCH_TUNE.places.find(p=>p.id==='scatcharfwai01').well[0],Sd=J.V.siteSeasons.find(q=>q.settlement==='scatcharfwai01');
+ const site={regen:J.dry.regen},open=J.dry.open;
+ T.ok('C5: Arfwai\'s well runs low in late summer: its recharge cut to '+Math.round(CATCH_TUNE.hazards.dryRegen*100)+' % while the dry window is open',!!Sd&&Sd.regen===CATCH_TUNE.hazards.dryRegen&&site.regen!=null&&Math.abs(site.regen-(open?st*Sd.regen:st))<1e-6,
+  'the window '+JSON.stringify(CATCH_TUNE.hazards.windows.dry)+', its recharge now '+(site?site.regen:'?')+' l a day ('+(open?'open':'closed')+')');}
 T.done();

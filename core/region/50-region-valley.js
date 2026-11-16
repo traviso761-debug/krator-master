@@ -36,6 +36,11 @@
        a road's `legs`: [minutes, ...], a passage per leg of a round (a caravan's stages differ);
        a road's `provision`: {beasts, eat: {good: a beast a day}, loss?, home?}: a caravan's beasts draw water and fodder at
          each stop for the leg ahead, a shortfall kills some, a train short of beasts carries less until it remounts at home
+     C3-C5 (the same proposal): a road's `halts`, `sells` and `closed` (SIM.trade's: waystations that keep the cargo
+       aboard, the oasis towns that buy from it as it passes, legs shut in a season); a road's `losses`: [{legs, every,
+       spare, share, window?, why}] (a provisioned caravan's beasts lost on those legs, by a fixed rule: the Stalkers, the
+       col, an unguided crossing of the Twins); V.siteSeasons: [{settlement, site, window, regen}] (a site's recharge cut in
+       a season: an oasis found dry)
      H.valleyRun(minutes, step)   the clock stepped `step` minutes at a time (60: the abstract level's hour)
      H.valleyBooks()         a snapshot: each settlement's people, stock, made, imported, exported, used and short by good,
                              what it ate and went without (`eaten`, `hungry`), and SIM.ledgerSnap()
@@ -104,8 +109,28 @@ H.simValley = function (V) {
     if (miss.length) { S.problems.push('road ' + Rd.id + ': no settlement ' + miss[0]); return; }
     SIM.trade({ id: Rd.id, stops: ids.map(function (k) { return { settlement: k, place: S.towns[k].spec.works[0].id }; }), cap: Rd.cap, carriers: Rd.carriers,
       minutes: Rd.minutes, stagger: Rd.stagger, mins: Rd.mins == null ? 60 : Rd.mins, goods: Rd.goods, expect: Rd.expect, share: Rd.share, keep: Rd.keep, want: Rd.want, most: Rd.most,
-      legs: Rd.legs, provision: Rd.provision });
+      legs: Rd.legs, provision: Rd.provision, halts: Rd.halts, sells: Rd.sells, forHalts: Rd.forHalts, closed: Rd.closed });
   });
+  /* C4-C5: a caravan's losses on the way, as data: on a road's leg (from stop `leg`), of every `every` passages a carrier
+     makes, `spare` cross whole and the others lose `share` of the beasts (deterministic, by the carrier's count of
+     passages of the loss's legs); `window` limits it to a season. S.losses[road] = [{carrier, leg, dead, why, minute}] */
+  var LOSS = (V.roads || []).filter(function (Rd) { return Rd.losses && Rd.losses.length && SIM.TRADE && SIM.TRADE.routes[Rd.id] && SIM.TRADE.routes[Rd.id].provision; });
+  S.losses = {}; LOSS.forEach(function (Rd) { S.losses[Rd.id] = []; });
+  if (LOSS.length) SIM.stepHooks.push(function (minute) {
+    LOSS.forEach(function (Rd) { var TR = SIM.TRADE.routes[Rd.id];
+      TR.carriers.forEach(function (Cr) { if (Cr.phase !== 'sail' || Cr.from == null) return; var mark = Cr.from + '@' + Cr.eta;
+        if (Cr._lossSeen === mark) return; Cr._lossSeen = mark;
+        Rd.losses.forEach(function (Ls) { if (Ls.legs.indexOf(Cr.from) < 0) return; if (Ls.window && !(SIM.inSeason && SIM.inSeason(Ls.window, minute))) return;
+          var cnt = Cr._lossN || (Cr._lossN = {}), key = Ls.why, n = cnt[key] = (cnt[key] || 0) + 1, every = Ls.every || 1, spare = Ls.spare || 0;   /* counted over every leg of its kind */
+          if ((n - 1) % every < spare || Cr.beasts <= 0) return;
+          var dead = Math.max(1, Math.round(Cr.beasts * Ls.share)); Cr.beasts -= dead; TR.died += dead;
+          S.losses[Rd.id].push({ carrier: Cr.k, leg: Cr.from, dead: dead, why: Ls.why, minute: minute });
+          SIM.logEvent('caravan loss', { route: Rd.id, carrier: Cr.k, leg: Cr.from, dead: dead, why: Ls.why }); }); }); });
+  });
+  /* C5: a well run down in a season: a site's nightly regen times `regen` while `window` is open (an oasis found dry) */
+  var SS = (V.siteSeasons || []).map(function (q) { var E = SIM.econ(q.settlement), st = E && E.resSites && E.resSites[q.site]; return st ? { q: q, st: st, base: st.regen } : null; }).filter(Boolean);
+  if (SS.length) SIM.stepHooks.push(function (minute) {
+    SS.forEach(function (o) { o.st.regen = SIM.inSeason && SIM.inSeason(o.q.window, minute) ? o.base * o.q.regen : o.base; }); });
   (V.transfers || []).forEach(function (Tr) { SIM.transfer(Tr); });
   /* X2: the cuts: what a road landed at a stop since the last hour, a share of it moved on */
   var CUTS = (V.roads || []).filter(function (Rd) { return Rd.cut && Rd.cut.length && SIM.TRADE && SIM.TRADE.routes[Rd.id]; });

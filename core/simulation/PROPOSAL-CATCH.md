@@ -169,10 +169,44 @@ terminus, and its relations: the gateway pools stay where each group's home is.
 | **C1** | **Legs of their own length** in a `SIM.trade` round (a change to `core/simulation`'s trade: a leg time per stop pair), with `test-sim.js`, the isle demo and every tune unchanged where it is not used | the Great Caravan and the lake rounds give the same books as before |
 | **C2** | **Provisioning**: a carrier draws water and fodder for its beasts at each stop, by the beasts' number and the leg's days. A caravan that cannot water loses beasts | the oases' water and fodder are bought; a dry oasis costs a caravan |
 | | **C0-C2 done (the owner, 2026-11-16: "begin implement the catch according to plan, steps 0-2"):** `core/region/data/catch-tune.js` (CATCH_TUNE) declares the 16 places on their own wells, reed beds, pans and salvage with a stocked start of 400 days. Kolli and Lasso are each split between their two keepers, and the Twins' numbers are proposed. `SIM.trade` takes `legs` and `provision` (`77-sim-6-trade.js`); both do nothing where absent, and the old and new trade files give the same output on test-sim, six isle-demo tests and both economy tests. `core/region/tests/test-catch.js` has 13 checks | |
+| | **C3-C5 done (the owner, 2026-11-16: "Do c3-c5"):** `CATCH_TUNE.join(XV)` puts the crossing into Xanadu's valley (`core/region/tests/test-catch.js`, 29 checks; Xanadu's own tune and tests unchanged). See the notes below the table | |
 | **C3** | Each group's caravan as a round through the crossing, replacing `gate.iziz`, `gate.dasri`, `gate.yuni` and `gate.geomancers`; the two Iziz houses splitting Iziz's trade; the Train working the salt works | salt, iron and arms reach Strongbow and Qiblai; Xanadu's exports reach the homes; Stair lives on the trade |
 | **C4** | The Twins: route choice, the Split Tally's two halves, the unguided crossing's loss | the Brotherhood's take lands at both points |
 | **C5** | Hazards as events: the Stalkers, the spring storms, the dry oasis, the col | a storm season holds the caravans at Stair and Kolli |
 | **C6** | Joined into `EAST_RIFT` with Xanadu and Longsong | one ledger; the salt shortfall Xanadu has carried since X1 narrows |
+
+**How C3-C5 were built (2026-11-16).**
+- **The rounds.** Each group's caravan is a `SIM.trade` round, out and back.
+  - It runs from its home's pool (the old gateway's, still off the map) through the oases and the Twins to Strongbow.
+  - Yuni's Guild and the Geomancers go on to Qiblai.
+  - Iziz's trade is split half and half between Getmastarz and Goldanda.
+  - The Train has a second round of its own, from its pans to Strongbow (salt, soda, potash, saltpeter, gypsum up; food back).
+- **What the trade code gained** (each inert where unused; old and new give the same output on every other sim test):
+  - `halts`: the oases are waystations, where a carrier rests and provisions with its cargo aboard.
+  - `sells`: the peopled halts are selling halts that buy from the cargo as it passes, so Stair and the oases live on the trade.
+  - `forHalts`: grain, tea and tools ride for them only, never for the far town, which is fed from behind.
+  - `closed`: legs shut in a season.
+  - Provisioning's `maxDays`: a train carries six days' water and fodder, since the off-map road home has its own waters.
+- **The cuts move onto the rounds:**
+  - the Sultan's toll at the Strongbow lift;
+  - the Split Tally's gate half to Sinter-Gate, and its shrine half to the Hall of the Tally-Marks (Route A) or the Brazier (Route B);
+  - its outbound half to the Brotherhood's Stair house;
+  - the margin at Qiblai.
+  
+  They take only the trade goods, never the bread the trains carry.
+- **The Twins (C4).** The Iziz houses' pack trains cross by Route A's tubes; the Train's, Yuni's and the Geomancers' wagons by Route B's oases. A group that refuses the guides pays no tally and loses a quarter of its beasts on two crossings in three.
+- **The hazards (C5)** are data on the roads, through the valley host's `losses` and `siteSeasons`:
+  - the spring black storms close the Catch floor (year days 70-112);
+  - winter shuts the col to Route B (330-60), while Route A stays open to packs and loses a few beasts to the gales;
+  - the Stalkers take a twentieth of a train on one floor crossing in six (never the Geomancers', who carry explosives);
+  - Arfwai's well recharges at 30 % in late summer (200-260).
+- **Proposed numbers, not the owner's:**
+  - the windows, the loss rates, a train's speed (30 km a day) and load (200 kg a beast);
+  - the oases' wells and reed beds, scaled to the traffic (about 31 caravans);
+  - the caravanserais' wells and fodder yards at Strongbow and Qiblai;
+  - the homes' distances off the map;
+  - the even split of Kolli and Lasso between their keepers.
+- **Not yet:** C6 (the join into `EAST_RIFT` with Longsong, and the census).
 
 ## 5. Questions for the owner
 

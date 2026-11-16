@@ -23,11 +23,20 @@
 //               legs?: [minutes, ...] (a passage per leg, legs[i] from stop i to the next, in place of `minutes`: a
 //               caravan's road whose stages differ; PROPOSAL-CATCH.md step C1),
 //               provision?: {beasts (a carrier's pack animals), eat: {good: a beast a day}, loss? (the share of the
-//               beasts a shortfall kills: .5), home? (the stop that remounts the train: 0)} (a caravan's beasts: leaving a
+//               beasts a shortfall kills: .5), home? (the stop that remounts the train: 0), maxDays? (the most days of
+//               it a train carries: a longer leg has waters of its own on the way)} (a caravan's beasts: leaving a
 //               stop, a carrier draws from that settlement what its beasts eat over the leg ahead, SIM.supply's draw,
 //               booked used there and short where the stop has too little; a shortfall kills `loss` of the beasts it
 //               leaves unfed, and a carrier's cap is cap x its beasts / `beasts` until it remounts at `home`;
-//               PROPOSAL-CATCH.md step C2) })
+//               PROPOSAL-CATCH.md step C2),
+//               halts?: [stop index, ...] (waystations: a carrier rests and provisions there with its cargo aboard,
+//               buying and landing nothing; it loads at a trade stop for the next trade stop beyond the halts, and the
+//               books' legs run trade stop to trade stop), sells?: [halt index, ...] (halts that also buy from the cargo
+//               as it passes: a carrier leaving a trade stop loads for them too, and lands at each what it wants; an
+//               oasis town on a caravan road), forHalts?: [good, ...] (goods it loads for the selling halts only, never
+//               for the trade stop beyond them: the oases' bread, which the far town gets from behind), closed?: [{legs: [stop index, ...], window}] (a carrier does not set out
+//               on those legs while the calendar's `window` is open: it waits where it is, a storm season or a shut col;
+//               PROPOSAL-CATCH.md steps C3 and C5) })
 //             Each is inert where it is absent: a route without them runs, books and reports as before.
 //   SIM.trades(a, b) -> true when settlement a sells to b: one faction, or each faction's relation to the other does
 //               not shut trade (`trade` false, 'none' or 'closed'; with no `trade`, a stance of wary or better)
@@ -60,8 +69,12 @@
             goods:o.goods||null, keep:o.keep, want:o.want, most:o.most==null ? o.cap : o.most, expect:o.expect||null, shipped:{}, landed:{}, voyages:0, refused:0, empty:0 };
     if(o.share){ R.share=o.share; R.tithed={}; R.owed={}; R.mark={}; }   /* a tithe road (S3): see the header */
     if(o.legs!=null) R.legs=o.legs.slice();   /* C1: a passage per leg */
-    if(o.provision!=null){ var Pv=o.provision; R.provision={ beasts:Pv.beasts, eat:Pv.eat, loss:Pv.loss==null ? .5 : Pv.loss, home:Pv.home==null ? 0 : Pv.home };
+    if(o.provision!=null){ var Pv=o.provision; R.provision={ beasts:Pv.beasts, eat:Pv.eat, loss:Pv.loss==null ? .5 : Pv.loss, home:Pv.home==null ? 0 : Pv.home, maxDays:Pv.maxDays==null ? Infinity : Pv.maxDays };
       R.provisioned={}; R.dry={}; R.died=0; R.remounted=0; }   /* C2: the beasts' draw at each stop */
+    if(o.halts!=null && o.halts.length){ R.halt={}; o.halts.forEach(function(i){ R.halt[i]=1; }); (o.sells||[]).forEach(function(i){ if(R.halt[i]) R.halt[i]=2; });
+      if(Object.keys(R.halt).length>=o.stops.length) throw new Error('SIM.trade '+o.id+': halts, and at least one trade stop'); R.held=0; }   /* C3 */
+    if(o.forHalts!=null) R.forHalts=o.forHalts.slice();   /* C3: goods loaded for the selling halts, never for the trade stop */
+    if(o.closed!=null && o.closed.length){ R.closed=o.closed.map(function(c){ var m={}; c.legs.forEach(function(i){ m[i]=1; }); return { legs:m, window:c.window }; }); R.waited=0; }   /* C5 */
     for(var k=0;k<(o.carriers==null ? 1 : o.carriers);k++) R.carriers.push({ k:k, phase:null, at:null, to:null, cargo:[], departs:null, eta:null, dock:undefined });
     if(R.provision) R.carriers.forEach(function(C){ C.beasts=R.provision.beasts; });
     T.routes[R.id]=R; T.order.push(R.id); return R;
@@ -83,7 +96,8 @@
   function stockIn(E, g){ var n=0; E.warehouses.forEach(function(W){ n+=W.stock[g]||0; }); return n; }
   function sitesIn(E, g){ var n=0; E.sites.forEach(function(P){ n+=P.stock[g]||0; }); return n; }
   function atSea(g, key, end){ var T=SIM.TRADE, n=0; if(!T) return 0;
-    T.order.forEach(function(id){ var R=T.routes[id]; R.carriers.forEach(function(C){ if(C.to==null) return; var s=R.stops[end==='to' ? C.to : C.from];
+    T.order.forEach(function(id){ var R=T.routes[id]; R.carriers.forEach(function(C){ if(C.to==null && C.dest==null) return;   /* C3: a carrier past a halt is still bound for its trade stop */
+      var s=R.stops[end==='to' ? (C.dest!=null ? C.dest : C.to) : (C.orig!=null ? C.orig : C.from)];
       if(!s || s.settlement!==key) return; C.cargo.forEach(function(c){ if(c.good===g) n+=c.n; }); }); });
     return n; }
   SIM.tradeInbound = function(g, s){ if(!SIM.TRADE) return 0; var k=s!=null ? s : SIM.ECON && SIM.ECON.settlement; return k==null ? 0 : atSea(g, k, 'to'); };
@@ -93,7 +107,7 @@
   function passage(R, i){ return R.legs ? R.legs[i] : R.minutes; }
   /* C2: leaving stop i, the carrier's beasts draw what they eat over the leg ahead; a shortfall kills `loss` of the unfed */
   function provision(R, C, i){
-    var Pv=R.provision, a=R.stops[i].settlement, days=passage(R, i)/1440;
+    var Pv=R.provision, a=R.stops[i].settlement, days=Math.min(passage(R, i)/1440, Pv.maxDays);   /* a train carries at most maxDays: a long leg has waters of its own */
     if(i===Pv.home && C.beasts<Pv.beasts){ R.remounted+=Pv.beasts-C.beasts; C.beasts=Pv.beasts; }   /* remounted at home */
     if(!SIM.ECONS || !SIM.ECONS[a] || C.beasts<=0) return;
     var fed=1;
@@ -117,7 +131,40 @@
     rows.forEach(function(r){ if(left<=0) return; var n=Math.min(r.n, left); if(n>0){ out.push({ good:r.good, n:n }); left-=n; } });
     return out;
   }
+  /* C3: leaving a halt, a carrier rests and provisions and sails on with its cargo; leaving a trade stop on a road with
+     halts, it loads for the next trade stop and for the selling halts before it, each by its own want */
+  function departHalted(R, C, i){
+    var n=R.stops.length, j=(i+1)%n, a=R.stops[i].settlement;
+    C.from=i; C.to=j; C.at=null; C.phase='sail';
+    if(R.halt[i]){ R.held++; if(R.provision) provision(R, C, i); return; }
+    var k=j, targets=[]; while(R.halt[k]){ if(R.halt[k]===2) targets.push(k); k=(k+1)%n; } targets.push(k);
+    C.cargo=[]; C.orig=i; C.dest=k; R.voyages++;
+    if(R.provision) provision(R, C, i);
+    var left=R.provision ? Math.floor(R.cap*C.beasts/R.provision.beasts) : R.cap;
+    targets.forEach(function(t){ var b=R.stops[t].settlement, key=a+'>'+b;
+      if(!SIM.ECONS || !SIM.ECONS[a] || !SIM.ECONS[b] || !SIM.trades(a, b)){ if(t===k){ R.refused++; SIM.logEvent('trade refused', { route:R.id, carrier:C.k, from:a, to:b }); } return; }
+      if(left<=0) return;   /* full */
+      var rows=loadFor(R, a, b, left);
+      if(t===k && R.forHalts) rows=rows.filter(function(w){ return R.forHalts.indexOf(w.good)<0; });   /* goods carried for the halts only */
+      SIM.withEcon(a, function(){ rows.forEach(function(w){ var got=SIM.economyTake(w.good, w.n); if(got<=0) return; left-=got;
+        SIM.economyBook('exported', w.good, got); C.cargo.push({ good:w.good, n:got, at:t }); stat(R.shipped[key]||(R.shipped[key]={}), w.good, got); }); }); });
+    if(!C.cargo.length) R.empty++;
+    SIM.logEvent('trade out', { route:R.id, carrier:C.k, from:a, to:R.stops[k].settlement, cargo:C.cargo.map(function(c){ return c.good+' '+c.n; }).join(', ') });
+  }
+  function arriveHalted(R, C, j){
+    var a=R.stops[C.orig!=null ? C.orig : C.from].settlement, b=R.stops[j].settlement, key=a+'>'+b, P=R.stops[j].place, end=!R.halt[j];
+    C.at=j; C.phase='docked'; C.to=null;
+    var land=C.cargo.filter(function(c){ return end || c.at===j; });
+    if(land.length && SIM.ECONS && SIM.ECONS[b]) SIM.withEcon(b, function(){ land.forEach(function(c){ var to=SIM.economyLand(c.good, c.n, P); if(to==null) return;
+      SIM.economyBook('imported', c.good, c.n); stat(R.landed[key]||(R.landed[key]={}), c.good, c.n); }); });
+    C.cargo=C.cargo.filter(function(c){ return land.indexOf(c)<0; });
+    if(end){ if(C.cargo.length) SIM.logEvent('trade unlanded', { route:R.id, carrier:C.k, at:b });   /* no store took it */
+      SIM.logEvent('trade in', { route:R.id, carrier:C.k, from:a, to:b, at:P, cargo:land.map(function(c){ return c.good+' '+c.n; }).join(', ') });
+      C.cargo=[]; C.orig=null; C.dest=null; }
+  }
+  function closedNow(R, i, m){ return R.closed.some(function(c){ return c.legs[i] && SIM.inSeason && SIM.inSeason(c.window, m); }); }
   function depart(R, C, i, minute){
+    if(R.halt) return departHalted(R, C, i);
     var j=(i+1)%R.stops.length, a=R.stops[i].settlement, b=R.stops[j].settlement, key=a+'>'+b;
     C.from=i; C.to=j; C.at=null; C.phase='sail'; C.cargo=[]; R.voyages++;
     if(R.provision) provision(R, C, i);   /* C2: the beasts water and feed whether or not the stop trades */
@@ -135,6 +182,7 @@
     SIM.logEvent('trade out', { route:R.id, carrier:C.k, from:a, to:b, cargo:C.cargo.map(function(c){ return c.good+' '+c.n; }).join(', ') });
   }
   function arrive(R, C, j, minute){
+    if(R.halt) return arriveHalted(R, C, j);
     var a=R.stops[C.from].settlement, b=R.stops[j].settlement, key=a+'>'+b, P=R.stops[j].place;
     C.at=j; C.phase='docked';
     if(C.cargo.length && SIM.ECONS && SIM.ECONS[b]) SIM.withEcon(b, function(){ C.cargo.forEach(function(c){ var to=SIM.economyLand(c.good, c.n, P); if(to==null) return;
@@ -147,7 +195,9 @@
   function stepTimer(R, C, minute){
     if(C.phase==null){ C.at=C.k % R.stops.length; C.phase='docked'; C.departs=minute+R.mins+C.k*R.stagger; }
     for(var guard=0; guard<64; guard++){   /* a jump: voyage after voyage, each at its own minute */
-      if(C.phase==='docked' && minute>=C.departs){ var i=C.at; depart(R, C, i, C.departs); C.eta=C.departs+passage(R, i); continue; }
+      if(C.phase==='docked' && minute>=C.departs){ var i=C.at;
+        if(R.closed && closedNow(R, i, C.departs)){ R.waited++; C.departs+=60; continue; }   /* C5: the leg is shut; wait an hour */
+        depart(R, C, i, C.departs); C.eta=C.departs+passage(R, i); continue; }
       if(C.phase==='sail' && minute>=C.eta){ arrive(R, C, C.to, C.eta); C.departs=C.eta+R.mins; C.eta=null; continue; }
       break; }
   }
@@ -176,7 +226,8 @@
           cargo:C.cargo.map(function(c){ return { good:c.good, n:c.n }; }), eta:C.eta }; }) };
       if(R.share){ out[k].tithed=JSON.parse(JSON.stringify(R.tithed)); out[k].owed=JSON.parse(JSON.stringify(R.owed)); }   /* a tithe road's (only: the others' reports unchanged) */
       if(R.provision){ out[k].provisioned=JSON.parse(JSON.stringify(R.provisioned)); out[k].dry=JSON.parse(JSON.stringify(R.dry)); out[k].died=R.died; out[k].remounted=R.remounted;
-        out[k].carriers.forEach(function(c, n){ c.beasts=R.carriers[n].beasts; }); } });   /* C2: a caravan's (only) */
+        out[k].carriers.forEach(function(c, n){ c.beasts=R.carriers[n].beasts; }); }   /* C2: a caravan's (only) */
+      if(R.halt) out[k].held=R.held; if(R.closed) out[k].waited=R.waited; });   /* C3, C5 */
     return id!=null ? out[id] || null : out;
   };
 })(typeof window!=='undefined'?window:globalThis);
