@@ -19,6 +19,8 @@ build a Xanadui fort asset as well"*.
 - The musketeers are **"all of the above"**: Izani, Yuni and free companies of the Crater.
 - The beacon's keepers are **the Yellow Monastery, the Order of the Beacon**: Qiblai's gold monastery, which may keep
   other beacon lights as well.
+- **The Violet Monks of Qiblai** will have their central monastery on a strategic site not far from Strongwall: **the
+  Order of the Violet Storm**, a martial order that protects the Vale against Lizardmen incursions (section 3a).
 
 This is a plan, not a build: no kit code and no pages. Everything not quoted from the owner, the lore or the sim tune is
 *proposed*. The fort asset (section 5) is a specification. Its code goes to a later step, owned by whoever owns
@@ -187,6 +189,60 @@ gorge's mouth so the road and the wadi both pass under it. North is downhill and
     Golden Tears' camp.
 - **The bench below**: the copper diggings on the scarp face to the west, the placer camps on Kruk Gill's lower
   gravels, the hamlets. The road up to the mines follows the wadi through the gorge.
+
+## 3a. The Violet Storm's monastery
+
+The owner, 2026-11-16: *"not far from Strongwall, on a strategic site, the Violet Monks of Qiblai will have their
+central monastery. The Order of the Violet Storm is a martial order that protects the Vale against Lizardmen
+incursions"*. The violet house is one of Qiblai's eight great monasteries (LORE 6.13: crimson, saffron, gold, green,
+turquoise, blue, violet, white). Everything below the quote is *proposed*.
+
+**What "strategic" means here.** The survey traced the walkers' easiest routes out of Komodo on the 2 km grid (a
+least-cost path that penalises steep ground both ways). Three roads lead out of Lizard country toward the Sultanate:
+
+| Road | Length | Its course | Air on it |
+|---|---|---|---|
+| **The trough road to Qiblai** | 128 km | east along the Rift floor's trough at -2,600 to -1,480 m (y 1596-1604), over a low sill at 904-913,1598, into Qiblai's basin at -1,860 m | ~2.1-2.2 atm all the way: Lizard air to the holy city's door |
+| **The Vale road** | 170 km | the same trough as far as 877,1601, then north over the ridge at 1,100-1,635 m (900-907, 1541-1574) and down to Theodiga and the Vale | the one road that climbs into thin air |
+| **The Strongwall road** | 96 km | east up the **Kruk Warra** (`r088`, perennial, 51 m³/s; it rises at 885,1628 at -794 m and runs 40 km west to Komodo's lake), onto the bench's west end at 895,1630 and along the bench | ~2.2 atm at Komodo, 1.5 atm on the bench |
+
+All three leave Komodo together and part within 25 km of it, west of x 880. The ground between the Kruk Warra's
+valley and the trough is a **broad western arm of the bench**, about 400-520 m high (881-893, 1614-1623). It is
+Xanadu's last high ground before the Rift, between the two low roads.
+
+**The candidate sites:**
+
+| | **A. The West Arm** (recommended) | **B. The Bench-end knoll** |
+|---|---|---|
+| px | **886,1619** | 906,1628 |
+| Ground | 519 m on a flat crest (steepest step 35 m a km): room for a great monastery and its fields | 541 m, a knoll (72-118 m a km) above the bench's west edge, beside the R2 post |
+| Climate | 19 °C, ~990 mm, `Cfb` | 19 °C, ~925 mm, `Cfb` |
+| From Strongwall | 66 km west-north-west, **in sight** (+18 m) | 26 km, in sight (+23 m) |
+| From Komodo | 42 km | 84 km |
+| From the roads | the Strongwall road 16 km south (Kruk Warra's head); the trough road and the Vale road 31 km north-west | the Strongwall road's climb onto the bench, 18 cells of it in view |
+| Sees | Strongwall, R1 (+30 m), R2, R3 (+3 m, marginal), G1 (+45 m) | Strongwall, R1, R2, R3, G1 (+61 m) |
+| Does not see | Komodo, the trough. Its own west brow (879,1618, 153 m, 22 °C) sees **Komodo** (+40 m, 28 km), **the Golden Tears' camp** (+21 m) and all three roads, but not the crest (-117 m). On the 2 km grid no single cell sees both the crest and Komodo, so the forward lookout and its relay are sited at 1:1 | Komodo, the trough road, the Vale road |
+| Water | the Kruk Warra's head 16-18 km south; wells and cisterns on the crest | Kruk Gill's floods; wells |
+| Why | it **stands between Komodo's roads**: a raid toward Qiblai or the Vale passes under its north flank, one toward Strongwall under its south. Its riders come down on either road, and its fires reach Strongwall and the watch line. It is the Gold March's shield, with Strongwall the gate behind it | close and safe, but it guards only Strongwall's road. A raid along the trough toward Qiblai or the Vale never comes in sight of it |
+
+**The monastery** (for site A):
+- **People.** *Proposed:* about **600**: some 400 fighting monks, 150 novices, 50 lay brothers, herdsmen and smiths.
+  This is the order's central house. Its spoke in Qiblai would be a daughter house (question 18).
+- **The building is a dzong in the full sense**, monastery and fortress in one. It is the Qiblai kit's great monastery
+  in **its violet dress** (`kits/qiblai`: the great monastery has its eight dresses), set inside the fort asset's
+  curtain, towers and gate (section 5). This is a fourth size of the fort, `size:'monastery'`: the curtain round a
+  monastery's courts.
+  - It is holy, so **the gilt crown** goes on its assembly hall (the crowns are the monasteries', `kits/qiblai/PLAN.md`
+    section 4).
+  - Its gate keeps the forts' **gilt pavilion**.
+  - Inside: a drill court beside the cloister, the armoury and the order's stables (horses: the Order rides).
+- **The forward lookout** stands on the west brow (879,1618): a watch post of the fort asset, with a relay to the
+  crest sited at 1:1.
+- **The fields.** The crest is `Cfb` and farmable: barley, tea and the order's herds. The rest comes up from
+  Strongwall and Qiblai's roads.
+- **In the sim** (W1): a settlement of the Xanadu polity in P4 or the Marches (P8; question 17), fed through
+  Strongwall. It draws arms like the forts. In the Lizardmen's Z4, the order's riders are what meets a raid on the
+  trough road and the Kruk Warra.
 
 ## 4. The economy (tied to `XAN_TUNE`)
 
@@ -411,6 +467,10 @@ The rest is the library already in the Xanadu pack: `stone.cut`, `earth.rammed`,
 | **S2** | The Marches' three watch forts (the beacon fort with the Ancient beacon and its generator) and Kirstabal's and Strongbow's gate works from the same asset, each by its own plan | those plans' sessions | |
 | **S3** | Life: the garrison's rota, the ore trains up and down the gorge, the assay's furnaces at work, the Fifth's escort | | the sim's schedule matches the tune's batches |
 | **S4** | The raids (Lizardmen Z4) set the fort's state | the Lizardmen session | a raid's outcome draws the damaged fort |
+| **V0** | **The Violet Storm's monastery on the map**, once the owner picks its site (question 16): a pin for the monastery and one for its west-brow lookout, through the scale-model session's queue | the scale-model session | the pin's ground; its lines to Strongwall and the posts re-run |
+| **V1** | The monastery in `XAN_TUNE`: its people, fields and arms, fed through Strongwall | the tune's owner | `test-xan-economy.js` |
+| **V2** | The building: the fort asset's `size:'monastery'` round the Qiblai kit's violet great monastery | `kits/xanadu`'s owner and `kits/qiblai`'s | the two kits' verifies |
+| **V3** | The monastery on the open world, with the forward lookout and its relay sited at 1:1 | the open-world session | the region's verify; the lookout sees the trough |
 
 ## 8. Questions for the owner
 
@@ -439,3 +499,10 @@ The rest is the library already in the Xanadu pack: `stone.cut`, `earth.rammed`,
 15. ~~**The Yellow Monastery.**~~ **Answered 2026-11-16: it is one of Qiblai's eight, the gold one, and it may keep
     other beacon lights as well** (section 5.7). For `kits/qiblai/PLAN.md` (its question 1, the monasteries' names):
     the gold spoke is the Yellow Monastery, the Order of the Beacon.
+16. **The Violet Storm's site.** A, the West Arm (886,1619: between Komodo's roads, 66 km from Strongwall, in sight
+    of it), as recommended? Or B, the Bench-end knoll (906,1628: 26 km, guarding only Strongwall's road)? Or another
+    place?
+17. **Its province and size.** Is it in the Gold March (P4) or the Marches (P8)? Are about 600 monks right?
+18. **Its spoke in Qiblai.** Is the violet monastery in Qiblai a daughter house of this central one, or the other way
+    round?
+19. **Its name**, and **how its monks fight**: on horseback with lance and bow, or with the muskets the forts hire?
