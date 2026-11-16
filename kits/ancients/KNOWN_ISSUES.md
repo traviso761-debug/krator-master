@@ -318,9 +318,12 @@ records drawn from the scrap Xanadu set and the Qiblai kit (`XAK`, `kit_bundle.b
       five flights in two lanes, 40 m), the Salvage Road (nine legs, 2.9 km at 15 %, to the canyon floor) and the Silt Road (four
       legs, 1.6 km at 10 %, to the silt flats) hang on the east wall as drawn (`settlements/theodiga/src/41-th-descent.js`,
       `8ay2-th-descent.js`; `buildDam` hands over the wall on its grid).
-- [ ] **The ways are plain masonry in vertex colours**, no library texture (the stair-block reads as a flat beige box from afar);
-      no salvage yards at the Salvage Road's foot and no fields on the silt flats; nobody on them. The Warden's House is a
-      scrap court, not its own building.
+- [x] ~~The ways are plain masonry; nothing at the roads' feet~~ (T-town-4, 2026-11-16): the ways are the library's dressed ashlar
+      (Qiblai's pack, world-scale uvs); the salvage yards (13 scrap buildings, 11 KRUBBLE heaps of the Dome's white panels, a
+      456 m track) stand on the canyon floor at the Salvage Road's foot, 39 field strips and 3 huts on the silt at the Silt
+      Road's (`settlements/theodiga/src/42-th-works.js`, `8ay3-th-works.js`).
+- [ ] **Nobody on the ways or in the works**; the yards have no crane or carts; the fields are flat strips laid on the silt (no
+      dykes or channels from the lake). The Warden's House is a scrap court, not its own building.
 - [x] ~~Black walls and windowless houses at a distance~~ (the owner, 2026-11-16): the town's drawer took Strongbow's three layers,
       so a scrap house's wall panels and a Qiblai house's window surrounds dropped out past 300 m and the glazing past 200 m,
       showing dark bodies and black holes. Now two layers: every big piece and every plain box of 0.7 m or more at all

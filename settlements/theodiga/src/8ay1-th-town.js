@@ -26,6 +26,17 @@ function thTownDraw(gx,gz,ctx){const O={buildings:0,people:0,protos:0,meshes:0,t
   name:'the Warden\'s House',civic:true,quarter:'square',people:14,landmark:true}]:[];
  for(const r of warden)Object.assign(r,{w:KD[r.key].w,d:KD[r.key].d,h:KD[r.key].h});
  const all=warden.concat(T.lots);
+ /* the ways down (T-town-3, src/41-th-descent.js) and the works below (T-town-4, src/42-th-works.js), planned here, first, so the
+    works start where the roads end; the yards' buildings and the field huts join the town's buildings, each on its own ground
+    (the canyon floor, the silt): workplaces, their people counted in the town */
+ let DP=null,WK=null;
+ if(ctx&&ctx.wall&&typeof TH_DESCENT!=='undefined'){try{DP=TH_DESCENT.make({face:ctx.wall,rim:z=>GR(ctx.wall(z,440),z),rimY:440.25,floor:ctx.floor,bed:ctx.bed,WL:ctx.WL,crest:ctx.crest,
+   heads:{salvage:TT.HEADS.find(h=>/salvage/.test(h.id)),silt:TT.HEADS.find(h=>/silt/.test(h.id))}});}catch(e){O.errors.push('the ways: '+(e&&e.message||e));}}
+ if(DP&&ctx.floorZone&&typeof TH_WORKS!=='undefined'){const end=P=>{const s=P.segs[P.segs.length-1];return {x:s.b[0],z:s.b[2]};};
+  try{WK=TH_WORKS.make({floor:ctx.floor,floorZone:ctx.floorZone,river:ctx.river,bed:ctx.bed,WL:ctx.WL,face:ctx.face,dome:ctx.dome,
+   salvageFoot:end(DP.salvage),siltFoot:end(DP.silt),crops:THCITY.crops,dims:k=>KD[k]?{w:KD[k].w,d:KD[k].d}:null});}catch(e){O.errors.push('the works: '+(e&&e.message||e));}}
+ if(WK)for(const r of WK.lots.concat(WK.huts))all.push(Object.assign({},r,{h:KD[r.key].h,quarter:'works',people:0,
+  name:(r.work==='salvage'?'the salvage yards: ':'the silt fields: ')+KD[r.key].name,gr:r.ground==='floor'?ctx.floor:ctx.bed}));
  const cultureOf=k=>/^qb_/.test(k)?'qiblai':'xanadu-scrap';
  // ---- core/tags: the town and every building in it, before anything is drawn ----------------------------------------------------
  {const TG=KTAGS.theodiga||(KTAGS.theodiga=KTAGS.create({build:'ancients-theodiga'})),B='town/theodiga',C=T.centre;
@@ -33,8 +44,8 @@ function thTownDraw(gx,gz,ctx){const O={buildings:0,people:0,protos:0,meshes:0,t
    tags:{culture:'xanadu-scrap',types:['dwelling-multi','market','inn','farm','religious']},note:'core/city: '+T.census.buildings+' buildings, '+T.census.people+' people'});
   for(const m of T.landmarks){const x=m.r?m.x:(m.x0+m.x1)/2,z=m.r?m.z:(m.z0+m.z1)/2;
    TG.child(B,{'class':'feature',kind:m.r?'road-head':'plaza',key:m.id,name:m.name,at:[x+gx,m.y,z+gz],tags:{culture:'xanadu-scrap'}});}
-  for(const r of all){const K=KD[r.key];TG.child(B,{'class':r.civic?'landmark':'building',kind:r.key.replace(/^xa_scrap_|^qb_/,''),key:r.id,name:r.name||K.name,at:[r.x+gx,GR(r.x,r.z),r.z+gz],ry:r.ry,size:[r.w,r.d,r.h],
-   tags:{culture:cultureOf(r.key),kit:/^qb_/.test(r.key)?'qiblai':'xanadu',types:K.types,quarter:TT.QUARTER_NAME[r.quarter]||r.quarter}});}
+  for(const r of all){const K=KD[r.key];TG.child(B,{'class':r.civic?'landmark':'building',kind:r.key.replace(/^xa_scrap_|^qb_/,''),key:r.id,name:r.name||K.name,at:[r.x+gx,(r.gr||GR)(r.x,r.z),r.z+gz],ry:r.ry,size:[r.w,r.d,r.h],
+   tags:{culture:cultureOf(r.key),kit:/^qb_/.test(r.key)?'qiblai':'xanadu',types:K.types,quarter:TT.QUARTER_NAME[r.quarter]||'below the rim',work:r.work}});}
   for(const f of T.fields)TG.child(B,{'class':'feature',kind:'field',key:f.id,at:[(f.corners[0][0]+f.corners[2][0])/2+gx,440,(f.corners[0][1]+f.corners[2][1])/2+gz],tags:{culture:'xanadu-scrap',crop:f.crop}});}
  // ---- the kits' buildings: protos, flattened once each, in two layers -------------------------------------------------------------
  /* TWO LAYERS (2026-11-16; Strongbow's three put the plain boxes, a scrap house's wall panels and a Qiblai house's window
@@ -63,9 +74,9 @@ function thTownDraw(gx,gz,ctx){const O={buildings:0,people:0,protos:0,meshes:0,t
  const CELL=120,HYST=25,cells=new Map(),cellOf=(x,z)=>{const k=Math.floor(x/CELL)+','+Math.floor(z/CELL);
   let C=cells.get(k);if(!C){C={i:cells.size,k,x:(Math.floor(x/CELL)+.5)*CELL+gx,z:(Math.floor(z/CELL)+.5)*CELL+gz,y:440,items:[],on:{}};cells.set(k,C);}return C;};
  const Y=new THREE.Vector3(0,1,0),steps=[];
- for(const r of all){const K=KD[r.key],hs=corners(r,K.fw,K.fd).map(([x,z])=>GR(x,z)),top=Math.max.apply(null,hs),low=Math.min.apply(null,hs);
+ for(const r of all){const K=KD[r.key],G0=r.gr||GR,hs=corners(r,K.fw,K.fd).map(([x,z])=>G0(x,z)),top=Math.max.apply(null,hs),low=Math.min.apply(null,hs);
   const drop=Math.min(6,Math.ceil(top-low+.4)),v=Math.max(0,Math.min((K.variants|0)-1,r.v|0)),L=proto(r.key,v,drop);
-  REGISTER({name:'Theodiga — '+(r.name||K.name)+' ('+(TT.QUARTER_NAME[r.quarter]||'the town')+')',x:r.x,z:r.z,y:low-.5,r:Math.max(r.w,r.d)/2+.8,h:r.h+(top-low)+1});
+  REGISTER({name:'Theodiga — '+(r.name||K.name)+' ('+(TT.QUARTER_NAME[r.quarter]||'below the rim')+')',x:r.x,z:r.z,y:low-.5,r:Math.max(r.w,r.d)/2+.8,h:r.h+(top-low)+1});
   O.buildings++;O.people+=r.people|0;
   if(!L)continue;
   const m=new THREE.Matrix4().compose(new THREE.Vector3(r.x+gx,top,r.z+gz),new THREE.Quaternion().setFromAxisAngle(Y,r.ry),new THREE.Vector3(1,1,1));
@@ -128,10 +139,14 @@ function thTownDraw(gx,gz,ctx){const O={buildings:0,people:0,protos:0,meshes:0,t
   const m=new THREE.Mesh(g,new THREE.MeshStandardMaterial({vertexColors:true,roughness:.97,side:THREE.DoubleSide,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2}));
   m.name='theodiga:town streets, square and fields';m.receiveShadow=true;m.userData.probeSkip=true;m.userData.lodSkip=true;scene.add(m);}
  /* the ways down from the rim (T-town-3: src/8ay2-th-descent.js), on the wall buildDam hands over */
- let DS=null;if(typeof thDescentDraw==='function'){try{DS=thDescentDraw(gx,gz,ctx,{ground:GR,heads:TT.HEADS});}catch(e){O.errors.push('the ways: '+(e&&e.stack||e));}}
+ let DS=null;if(DP&&typeof thDescentDraw==='function'){try{DS=thDescentDraw(gx,gz,ctx,{ground:GR,heads:TT.HEADS},DP);}catch(e){O.errors.push('the ways: '+(e&&e.stack||e));}}
+ /* the works' heaps, track and fields (T-town-4: src/8ay3-th-works.js); their buildings were drawn with the town's */
+ let WS=null;if(WK&&typeof thWorksDraw==='function'){try{WS=thWorksDraw(gx,gz,ctx,WK);}catch(e){O.errors.push('the works: '+(e&&e.stack||e));}}
+ if(WS)O.errors.push(...WS.errors);
  if(DS)O.errors.push(...DS.errors);
  O.kitErrors=XAK.errors.slice(0,8);
- window._thTown={descent:DS?{ways:DS.ways,boxes:DS.boxes,tris:Math.round(DS.tris),stair:DS.stair,salvage:DS.salvage,silt:DS.silt}:null,bound:O.bound||0,buildings:O.buildings,people:O.people,protos:O.protos,meshes:O.meshes,tris:Math.round(O.tris),bigTris:Math.round(O.bigTris||0),
+ window._thTown={descent:DS?{ways:DS.ways,boxes:DS.boxes,tris:Math.round(DS.tris),stair:DS.stair,salvage:DS.salvage,silt:DS.silt}:null,
+  works:WK?{yard:WK.lots.length,huts:WK.huts.length,heaps:WK.heaps.length,fields:WK.fields.length,track:Math.round(WK.track.a[0]-WK.track.b[0]),drawn:WS?WS.meshes:0}:null,bound:O.bound||0,buildings:O.buildings,people:O.people,protos:O.protos,meshes:O.meshes,tris:Math.round(O.tris),bigTris:Math.round(O.bigTris||0),
   detailTris:Math.round(O.detailTris||0),cells:O.cells,census:O.census,errors:O.errors.concat(XAK.errors).slice(0,12),
   fields:T.fields.length,ways:T.ways.length,qiblai:all.filter(r=>/^qb_/.test(r.key)).length,level:f=>O.level&&O.level(f)};
  return O;}

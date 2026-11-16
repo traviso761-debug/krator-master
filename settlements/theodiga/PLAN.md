@@ -117,4 +117,15 @@ set alone gave 3,985 in 417, and five other seeds 3,877 to 4,344 with every chec
    `test-th-descent.js` (13 checks with negatives, on a cliff of the page's kind): grades, ends, no leg in another's way,
    every run on its wall, within its bounds, the block into the cliff. The page's views: 'The Stair of Descent', 'The Salvage
    Road', 'The Silt Road'. Owed: the salvage yards at the road's foot, the fields on the silt, the ways' textures.
-4. **Later**: the town's interiors (as Strongbow's), core/simulation's roles, the open world.
+4. **T-town-4, the works below** (done 2026-11-16; on the page: 13 yard buildings, 11 heaps, a 456 m track, 39 field strips,
+   3 huts; views 'The salvage yards', 'The silt fields'; `test-th-works.js` 14 checks): where the two roads lead. `src/42-th-works.js` (`TH_WORKS`, [G data], KRAND by
+   cell and index) lays out, from the page's own grounds (the canyon floor, the silt, the river, the dam's upstream face):
+   - **the salvage yards** on the canyon floor at the Salvage Road's foot, east of the river and clear of the dam's toe: a yard
+     track west from the road's foot, scrap stores, sheds and hull huts along it (the scrap set's), and the salvage between
+     them as core/terrain `KRUBBLE` heaps of the Dome's fallen white panels;
+   - **the silt fields** on the silt the drawn-down lake left above its water, upstream of the dam's east half (clear of the
+     dam's arched face and of the Dome's piers): strips of grain, pulse and a root crop (kits/crops, the Xanadu vale), with
+     field huts at the Silt Road's foot.
+   Workplaces: their people are counted in the town above. The ways are textured with the library's dressed ashlar (Qiblai's
+   pack, `stone.sandstone.ashlar`). `test-th-works.js` checks them on grounds of the page's kind.
+5. **Later**: the town's interiors (as Strongbow's), core/simulation's roles, the open world.

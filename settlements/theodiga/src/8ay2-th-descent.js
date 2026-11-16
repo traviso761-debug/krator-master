@@ -5,21 +5,34 @@
 // body under it (tied back to the rock), a parapet on its open side, corbels under the outer lane, the landings at the turns;
 // and the lead from each road's head on the plateau to the rim. Called by thTownDraw with the wall as buildDam draws it
 // (ctx.wall, targets/theodiga/77-dam.js). Each way is registered (REGISTER, core/tags) before it is drawn.
-function thDescentDraw(gx,gz,ctx,town){const O={ways:0,boxes:0,tris:0,errors:[]};
+function thDescentDraw(gx,gz,ctx,town,D0){const O={ways:0,boxes:0,tris:0,errors:[]};
  if(typeof TH_DESCENT==='undefined'||!ctx||!ctx.wall)return O;
- const GR=town.ground,W=ctx.wall;let D;
- try{D=TH_DESCENT.make({face:W,rim:z=>GR(W(z,440),z),rimY:440.25,floor:ctx.floor,bed:ctx.bed,WL:ctx.WL,crest:ctx.crest,
+ const GR=town.ground,W=ctx.wall;let D=D0;   /* D0: the plan thTownDraw already made (the works start where its roads end) */
+ if(!D)try{D=TH_DESCENT.make({face:W,rim:z=>GR(W(z,440),z),rimY:440.25,floor:ctx.floor,bed:ctx.bed,WL:ctx.WL,crest:ctx.crest,
    heads:{salvage:town.heads.find(h=>/salvage/.test(h.id)),silt:town.heads.find(h=>/silt/.test(h.id))}});}
  catch(e){O.errors.push('the ways: '+(e&&e.message||e));return O;}
  const C3=new THREE.Color(),col=h=>{C3.setHex(h).convertSRGBToLinear();return [C3.r,C3.g,C3.b];};
- const ROAD=col(0x9a8a70),BODY=col(0xa99377),PARA=col(0xb8a585),STEP=col(0xc9b799),BLOCK=col(0xbfa98a),LAND=col(0xa4937a);
+ const ASH0=typeof XAK!=='undefined'&&XAK.MAT&&XAK.MAT.qAshlar&&XAK.MAT.qAshlar.map;   /* the stone multiplies these: paler tints over it */
+ const ROAD=col(ASH0?0xb3a48c:0x9a8a70),BODY=col(ASH0?0xd9cbb4:0xa99377),PARA=col(ASH0?0xeadfca:0xb8a585),STEP=col(ASH0?0xf2e8d6:0xc9b799),
+  BLOCK=col(ASH0?0xe4d6be:0xbfa98a),LAND=col(ASH0?0xcdbda2:0xa4937a);
+ /* THE STONE (T-town-4, 2026-11-16): the library's dressed ashlar (stone.sandstone.ashlar, Qiblai's pack: XAK.MAT.qAshlar once
+    XAK.bind has bound it), on world-scale uvs, 3 m a tile, each face mapped along its own plane; tinted by each part's colour.
+    Without the pack the ways keep their plain colours */
+ const ASH=typeof XAK!=='undefined'&&XAK.MAT&&XAK.MAT.qAshlar&&XAK.MAT.qAshlar.map?XAK.MAT.qAshlar:null;
+ if(ASH)for(const k of ['map','normalMap','roughnessMap'])if(ASH[k]){ASH[k].wrapS=ASH[k].wrapT=THREE.RepeatWrapping;ASH[k].needsUpdate=true;}
  /* a box with sloping top and bottom: x0..x1 across, from end a to end b along z, each end its own top and bottom heights */
- const boxer=()=>{const pos=[],cs=[];let n=0;
-  const quad=(p,q,r,s,c)=>{for(const v of [p,q,r,p,r,s]){pos.push(v[0]+gx,v[1],v[2]+gz);cs.push(c[0],c[1],c[2]);}};
+ const boxer=()=>{const pos=[],cs=[],uv=[];let n=0;
+  const quad=(p,q,r,s,c)=>{const ax=[q[0]-p[0],q[1]-p[1],q[2]-p[2]],bx=[r[0]-p[0],r[1]-p[1],r[2]-p[2]];
+   const nx=Math.abs(ax[1]*bx[2]-ax[2]*bx[1]),ny=Math.abs(ax[2]*bx[0]-ax[0]*bx[2]),nz=Math.abs(ax[0]*bx[1]-ax[1]*bx[0]);
+   for(const v of [p,q,r,p,r,s]){pos.push(v[0]+gx,v[1],v[2]+gz);cs.push(c[0],c[1],c[2]);
+    if(nx>=ny&&nx>=nz)uv.push(v[2]/3,v[1]/3);else if(ny>=nz)uv.push(v[0]/3,v[2]/3);else uv.push(v[0]/3,v[1]/3);}};
   const add=(x0,x1,za,ta,ba,zb,tb,bb,c)=>{const A=[[x0,ba,za],[x1,ba,za],[x1,ta,za],[x0,ta,za]],B=[[x0,bb,zb],[x1,bb,zb],[x1,tb,zb],[x0,tb,zb]];
    quad(A[3],A[2],B[2],B[3],c);quad(A[0],B[0],B[1],A[1],c);quad(A[0],A[3],B[3],B[0],c);quad(A[1],B[1],B[2],A[2],c);quad(A[0],A[1],A[2],A[3],c);quad(B[0],B[3],B[2],B[1],c);n++;};
   return {add,mesh:(name)=>{const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('color',new THREE.Float32BufferAttribute(cs,3));
-   g.computeVertexNormals();const m=new THREE.Mesh(g,new THREE.MeshStandardMaterial({vertexColors:true,roughness:.93,flatShading:true,side:THREE.DoubleSide}));m.name=name;m.castShadow=m.receiveShadow=true;
+   g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.computeVertexNormals();
+   const M=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.93,flatShading:true,side:THREE.DoubleSide});
+   if(ASH){M.map=ASH.map;M.normalMap=ASH.normalMap||null;M.roughnessMap=ASH.roughnessMap||null;M.roughness=1;}
+   const m=new THREE.Mesh(g,M);m.name=name;m.castShadow=m.receiveShadow=true;
    O.boxes+=n;O.tris+=pos.length/9;return m;}};};
  const TG=KTAGS.theodiga||(KTAGS.theodiga=KTAGS.create({build:'ancients-theodiga'}));
  const register=(P,name,kind)=>{let x0=1e9,x1=-1e9,z0=1e9,z1=-1e9,y0=1e9,y1=-1e9;

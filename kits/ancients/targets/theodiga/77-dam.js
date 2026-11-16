@@ -215,6 +215,8 @@ function buildDam(scene,gx,gz,d){reseed(9260+d);KOFF=[gx,0,gz];const G=new THREE
   const wall=(z,y)=>{const u=clamp((z+700)/1300,0,1)*NU,v=clamp(y/CH,0,1)*NV,i=Math.min(NU-1,Math.floor(u)),j=Math.min(NV-1,Math.floor(v)),a=u-i,b=v-j;
    return (node(i,j)*(1-a)+node(i+1,j)*a)*(1-b)+(node(i,j+1)*(1-a)+node(i+1,j+1)*a)*b;};
   const z0=zf(0)+60,floor=(x,z)=>z>=z0&&z<=z0+500&&Math.abs(x)<(SPAN-40)/2?Math.max(floorY(x,z),0):0;
-  thTownDraw(gx,gz,{wall,floor,bed:(x,z)=>Math.abs(x)<=(SPAN+40)/2?bedY(x,z):WL-6,WL,crest:{x:300,z0:4,z1:28,y:H},zc});}
+  /* and for the works below (T-town-4): where the floor is drawn, the river on it, the dam's upstream face, the Dome's piers */
+  thTownDraw(gx,gz,{wall,floor,bed:(x,z)=>Math.abs(x)<=(SPAN+40)/2?bedY(x,z):WL-6,WL,crest:{x:300,z0:4,z1:28,y:H},zc,
+   floorZone:{x1:(SPAN-40)/2,z0:z0,z1:z0+500},river:{x:RIVX,w:RIVW},face:x=>Math.abs(x)<=SPAN/2?zc(x):0,dome:{x:0,z:zc(0)-65,r:165}});}
  KOFF=[0,0,0];return G;}
 

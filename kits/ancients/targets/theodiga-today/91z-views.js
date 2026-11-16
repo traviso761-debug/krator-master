@@ -12,6 +12,9 @@ const VIEWS={
  'The Stair of Descent':[ROWS.dam.s+215,420,ROWS.dam.z+70,ROWS.dam.s+305,420,ROWS.dam.z+14],
  'The Salvage Road':[ROWS.dam.s+60,140,ROWS.dam.z+650,ROWS.dam.s+340,200,ROWS.dam.z+390],
  'The Silt Road':[ROWS.dam.s+80,330,ROWS.dam.z-620,ROWS.dam.s+340,350,ROWS.dam.z-330],
+ // the works below (T-town-4): the salvage yards on the canyon floor, the silt fields above the lake
+ 'The salvage yards':[ROWS.dam.s+330,70,ROWS.dam.z+520,ROWS.dam.s+180,8,ROWS.dam.z+395],
+ 'The silt fields':[ROWS.dam.s+150,345,ROWS.dam.z-330,ROWS.dam.s+240,281,ROWS.dam.z-110],
  'The town from the Dome':[ROWS.dam.s-100,520,ROWS.dam.z-280,ROWS.dam.s+700,442,ROWS.dam.z],
  // the ruin, as the theodiga target shows it
  'Theodiga ruin':[ROWS.dam.s+60,260,ROWS.dam.z+1000,ROWS.dam.s,200,ROWS.dam.z],
