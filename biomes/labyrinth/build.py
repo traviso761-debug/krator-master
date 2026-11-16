@@ -72,8 +72,8 @@ if STATION:
 CORE_TERRAIN=['35-core-strata.js','37-core-stacks.js','38-core-relief.js','38c-core-landforms.js','43-core-ground.js','44-core-farfield.js','45-core-horizon.js']
 for f in CORE_TERRAIN: PATH.setdefault(f,J('core','terrain',f))
 for f in ['44-core-farfield-draw.js','45-core-horizon-shade.js']: PATH.setdefault(f,J('core','terrain','host',f))
-# the biome core from core/biome
-CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','31j-core-joint.js','32-core-variants.js','34-core-impostor.js',
+# the biome core from core/biome (31b: BIO.leafOn/leafQ, which 20-core-kit calls for a stem-held leaf; check_assembly asks for it)
+CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','31b-core-leafset.js','31j-core-joint.js','32-core-variants.js','34-core-impostor.js',
  '35-core-anim.js','39-core-lean.js','40-core-place.js','41-core-env.js','42-core-export.js','43-core-export-host.js','44-core-stage.js']
 for f in CORE_BIOME: PATH.setdefault(f,J('core','biome',f))
 PATH.setdefault('20-core-space.js',J('core','space','20-core-space.js'))
