@@ -30,7 +30,7 @@ The second region of sites cut off the scale model into the open world (`openwor
     by a river, near rock salt and ore; the owner's word), with no page yet: the same ring, re-planned on the new ground.
   - **Longsong** (`sq80bzd7ep`, px 1226,1626): the History Monks' monastery (`settlements/longsong`). Its three villages
     stand where its page lays them: Shar and Nub (farming) and Dzo-ling (the herders), 585 people in 110 buildings.
-  - **Lāiṭwāl** (`slaitwal01`, px 1028,1653, added 2026-11-16: `settlements/lightwall`, its step L5): the Light Wall on the
+  - **Lāiṭwāl** (`slaitwal0001`, px 1028,1653, added 2026-11-16: `settlements/lightwall`, its step L5): the Light Wall on the
     north shore of Opal Valley's great lake, under the north boundary fault. Its id is `model: false` in `SITES.json` until
     the scale model lists it (the pin is queued with the scale-model edits). Three farming villages on the shore's bench,
     east and west, and a ranch at its western end. Opal Valley grows no kit yet, so they stand on bare ground. Its square was

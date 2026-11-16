@@ -207,7 +207,7 @@ const orderCheck=(C,X,Tr)=>{const oil=(C['xan.citadel:oil']||0)*0+Object.keys(C)
 //     Sultan's mines across the lake fed by its ferry; the opal and moonglass down the valley by Kirstabal to Qiblai; the
 //     Line a field of veins
 const lwFed=x=>{const e=x.eaten.grain||0,h=x.hungry.grain||0;return h<=(e+h)*.01;};
-const lwCheck=(Bk,Tr)=>{const L=Bk['xan.laitwal'],M=Bk.sjuarjbku0,Q=Bk.skm4jjo2vl,W=XAN_TUNE.laitwal;if(!L||!M||!Q)return{ok:false};
+const lwCheck=(Bk,Tr)=>{const L=Bk['slaitwal0001'],M=Bk.sjuarjbku0,Q=Bk.skm4jjo2vl,W=XAN_TUNE.laitwal;if(!L||!M||!Q)return{ok:false};
  const op=L.made.opal||0,mg=L.made.moonglass||0,ft=Tr['fifth.opal.lw']||{},tith=Object.values(ft.tithed||{}).reduce((n,o)=>n+(o.opal||0),0),r=fifthOf(op,tith);
  const F=XAN_TUNE.field('opal-diggings',W.make.opal,XAN_TUNE.fieldYears);F.make=W.make.opal;
  const qo=Q.imported.opal||0,qm=Q.imported.moonglass||0,mf=M.imported.grain||0;
@@ -218,8 +218,8 @@ const lwCheck=(Bk,Tr)=>{const L=Bk['xan.laitwal'],M=Bk.sjuarjbku0,Q=Bk.skm4jjo2v
   'opal '+Math.round(C.op)+' kg, moonglass '+t(C.mg)+', the Fifth '+(C.tith||0).toFixed(1)+' kg ('+(100*(C.r||0)).toFixed(1)+' %); fed: the town '+C.fedL+', the mines '+C.fedM+' (grain over the lake '+t(C.mf||0)+'); into Qiblai: opal '+Math.round(C.qo||0)+' kg, moonglass '+t(C.qm||0)+'; the Line '+C.veins+' veins');
  T.neg('an assay house that took two fifths of the town\'s opal is caught',Tr=>lwCheck(B,Tr).ok,
   Object.assign({},Y.trade,{'fifth.opal.lw':{tithed:Object.fromEntries(Object.entries((Y.trade['fifth.opal.lw']||{}).tithed||{}).map(([k,o])=>[k,{opal:(o.opal||0)*2}]))}}),Y.trade);
- T.neg('a Lāiṭwāl that went hungry is caught',Bk=>lwCheck(Bk,Y.trade).ok,Object.assign({},B,{'xan.laitwal':Object.assign({},B['xan.laitwal'],{hungry:{grain:1e6},eaten:{grain:1}})}),B);}
+ T.neg('a Lāiṭwāl that went hungry is caught',Bk=>lwCheck(Bk,Y.trade).ok,Object.assign({},B,{'slaitwal0001':Object.assign({},B['slaitwal0001'],{hungry:{grain:1e6},eaten:{grain:1}})}),B);}
 // the year's books, for the reader
 const line=(s,k)=>Object.entries(B[s][k]||{}).filter(([g,n])=>n>=1).map(([g,n])=>g+' '+(n>=1000?t(n):Math.round(n))).join(', ');
-['s57bkv9741','xan.citadel','skm4jjo2vl','s4zvgepuru','sxan7r1sln','xan.laitwal','sjuarjbku0','sl758m2396'].forEach(s=>console.log('\n'+s+': made '+line(s,'made')+'\n  imported '+line(s,'imported')+'\n  exported '+line(s,'exported')));
+['s57bkv9741','xan.citadel','skm4jjo2vl','s4zvgepuru','sxan7r1sln','slaitwal0001','sjuarjbku0','sl758m2396'].forEach(s=>console.log('\n'+s+': made '+line(s,'made')+'\n  imported '+line(s,'imported')+'\n  exported '+line(s,'exported')));
 T.done();

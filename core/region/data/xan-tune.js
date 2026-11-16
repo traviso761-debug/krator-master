@@ -49,7 +49,7 @@ T.provinces=[
  {id:'p3',name:'Qāṭarāq (the Cataracts)',seat:'skm4jjo2vl',rural:80000,y:1.9,px:[930,1585],extra:{cacao:260000,timber:4000000,charcoal:600000,honey:30000,dairy:400000,fruit:800000}},
  {id:'p4',name:'Gōlḍ-Mārch (the Gold March)',seat:'sxan7r1sln',rural:10000,y:1.1,px:[912,1652],extra:{copper:240000}},
  {id:'p5',name:'Siqārp (the Scarp)',seat:'sl758m2396',rural:25000,y:1.3,px:[992,1606],extra:{tea:200000,cacao:90000,opium:120000,saffron:600}},
- {id:'p6',name:'Ōpal-Bhālī (Opal Valley)',seat:'xan.laitwal',rural:7500,y:.9,px:[1036,1668],extra:{}},
+ {id:'p6',name:'Ōpal-Bhālī (Opal Valley)',seat:'slaitwal0001',rural:7500,y:.9,px:[1036,1668],extra:{}},
  {id:'p7',name:'Nōrth-Shor (the North Shore)',seat:'xan.pher',rural:25000,y:1.5,px:[812,1478],extra:{silk:14000,cacao:60000,honey:12000,fruit:300000}},
  {id:'p8',name:'Mārchiz (the Marches)',seat:'s57bkv9741',rural:5000,y:1.2,px:[790,1540],extra:{}}];
 /* THE LAKE (section 2a): bearing from the lake's centre (810,1499.5), the shore cell, people, trade (a work: kg a year),
@@ -92,7 +92,7 @@ T.rounds=[['round.south-east','s57bkv9741',['boatyard','weaver','saffron','potte
    Line's adits (a field of veins, about 600 miners), the glass shops (potch to moonglass), the lake's dugouts, the bench
    terraces (a quarter of its grain; the rest bought down the valley with opal, by Kirstabal). The Glaziers pay the Fifth in
    opals at the assay house on the bench; the mines' opal comes over by the ferry (27 km) and goes on with the town's */
-T.laitwal={id:'xan.laitwal',name:'Lāiṭwāl (the Light Wall: the Glaziers\' hold and the seat of Ōpal-Bhālī)',px:[1028,1653],people:5000,
+T.laitwal={id:'slaitwal0001',name:'Lāiṭwāl (the Light Wall: the Glaziers\' hold and the seat of Ōpal-Bhālī)',px:[1028,1653],people:5000,
  make:{opal:300,moonglass:6000},adits:600,glass:80,terraces:.25,fishK:1.2,ferryKm:27,kirstabalKm:150};
 T.thalaba={id:'xan.thalaba',name:'Thalaba (at the mouth of Godshearth, over the spillway)',px:[840,1463],people:2400,make:{sulfur:60000},terraces:.5};
 /* the first stores are last year's harvest: they last to the end of the first harvest the clock reaches and a month over.
@@ -243,7 +243,7 @@ T.valley=function(P,o){o=o||{};const K=o.scale==null?50:o.scale,yr=365,win=w=>{c
  const mine=(id,name,px,py,people,parent,out,kgYr)=>{const p=at(px,py);seats[id]=add({id,name,faction:'xanadu',parent,people,x:p.x,z:p.z,eats:eats('camp'),keepDays:10,
   start:{grain:Math.round(eatYr('camp',people)*T.startDays/yr),salt:people*2,tea:people*.3,tools:people*.4},works:[{id:id+'.works',kind:'adit',name,crew:Math.round(people*.8),out:[out],rate:rate(kgYr,Math.round(people*.8)),site:T.field(out==='goldore'?'lode':'opal-diggings',kgYr,T.fieldYears)}]});bump(parent,eatYr('camp',people));};   /* the camps' grain counts on their parent's (L1: the opal mines on Lāiṭwāl's) */
  mine('smgxtultfq','The gold mines on the lode',911,1665,950,'sxan7r1sln','goldore',T.mine.goldore);
- mine('sjuarjbku0','Opal Valley Mines (the Sultan\'s factor)',1038,1662,850,'xan.laitwal','opal',T.mine.opal);
+ mine('sjuarjbku0','Opal Valley Mines (the Sultan\'s factor)',1038,1662,850,'slaitwal0001','opal',T.mine.opal);
  /* the forts of the Marches */
  [['march.w','The west watch fort',783,1530],['march.s','The south watch fort',812,1548],['march.e','The beacon fort over the Rift',846,1540]].forEach(([id,name,px,py])=>{const p=at(px,py);
   add({id,name,faction:'xanadu',parent:'s57bkv9741',people:150,x:p.x,z:p.z,eats:eats('fort'),keepDays:30,start:{grain:Math.round(eatYr('fort',150)*.4),salt:300,tea:60,tools:40,arms:20},
@@ -295,12 +295,12 @@ T.valley=function(P,o){o=o||{};const K=o.scale==null?50:o.scale,yr=365,win=w=>{c
  road('road.sw-gold','sxan7r1sln','smgxtultfq',50,'road',{sxan7r1sln:['grain','salt','tea','tools']},{carriers:2});
  R.push({id:'mine.gold',from:'smgxtultfq',to:'sxan7r1sln',minutes:Math.round(50/25*1440),cap:20000,carriers:2,share:{smgxtultfq:{goldore:1}},goods:{sxan7r1sln:['grain','salt','tea','tools']}});
  /* L1: the mines' opal over the lake to Lāiṭwāl by its ferry, the town's grain back */
- R.push({id:'mine.opal',from:'sjuarjbku0',to:'xan.laitwal',minutes:Math.round(T.laitwal.ferryKm/60*1440),cap:20000,carriers:2,share:{sjuarjbku0:{opal:1-T.fifth}},goods:{'xan.laitwal':['grain','salt','tea','tools']}});
+ R.push({id:'mine.opal',from:'sjuarjbku0',to:'slaitwal0001',minutes:Math.round(T.laitwal.ferryKm/60*1440),cap:20000,carriers:2,share:{sjuarjbku0:{opal:1-T.fifth}},goods:{'slaitwal0001':['grain','salt','tea','tools']}});
  /* L1: the Glaziers' Fifth in opals from the assay house on the bench; Lāiṭwāl's opal and moonglass down the valley by
     Kirstabal (its grain up the same road) and the barges to Qiblai, where Yuni's caravans take them */
- R.push({id:'fifth.opal.lw',from:'xan.laitwal',to:'xan.citadel',minutes:Math.round(560/25*1440),cap:1000,carriers:1,share:{'xan.laitwal':{opal:T.fifth}},goods:{'xan.citadel':[]}});
+ R.push({id:'fifth.opal.lw',from:'slaitwal0001',to:'xan.citadel',minutes:Math.round(560/25*1440),cap:1000,carriers:1,share:{'slaitwal0001':{opal:T.fifth}},goods:{'xan.citadel':[]}});
  {const lw=T.laitwal,dn=(lw.make.opal*(1-T.fifth)+T.mine.opal*(1-T.fifth))/365*.9,mg=lw.make.moonglass/365*.9;
-  road('road.lw-ks','xan.laitwal','sl758m2396',lw.kirstabalKm,'road',{'xan.laitwal':['opal','moonglass','fish'],sl758m2396:['grain','salt','tea','tools']},{carriers:3,expect:{sl758m2396:{opal:dn,moonglass:mg}}});
+  road('road.lw-ks','slaitwal0001','sl758m2396',lw.kirstabalKm,'road',{'slaitwal0001':['opal','moonglass','fish'],sl758m2396:['grain','salt','tea','tools']},{carriers:3,expect:{sl758m2396:{opal:dn,moonglass:mg}}});
   const qk=R.find(r=>r.id==='road.qb-ks');qk.goods.sl758m2396=qk.goods.sl758m2396.concat(['opal','moonglass']);qk.expect=Object.assign({},qk.expect||{},{skm4jjo2vl:{opal:dn*.95,moonglass:mg*.95}});}   /* the Fifth goes straight to the Treasury (below) */
  /* the Sultan's Fifth: a fifth of the gold the assay makes and of the opal, to the Treasury */
  R.push({id:'fifth',from:'sxan7r1sln',to:'xan.citadel',minutes:Math.round(404/25*1440),cap:5000,carriers:2,share:{sxan7r1sln:{gold:T.fifth}},goods:{'xan.citadel':[]}});
@@ -327,8 +327,8 @@ T.valley=function(P,o){o=o||{};const K=o.scale==null?50:o.scale,yr=365,win=w=>{c
  /* a seat whose provinces cannot feed what it feeds passes the rest up its road (the March's camps to Qiblai, the capital's
     lake to the Vale and the Cataracts); the road between expects it, a floor on the hungry end's want */
  const NEED={};Object.keys(need).forEach(s=>{NEED[s]=need[s]*1.15+dueGrain(s);});
- const moved=[],passTo={'xan.laitwal':'sl758m2396',sxan7r1sln:'skm4jjo2vl',sl758m2396:'skm4jjo2vl','xan.pher':'s57bkv9741'};
- ['xan.laitwal','sxan7r1sln','sl758m2396','xan.pher'].forEach(s=>{const d=(NEED[s]||0)-(cap[s]||0);if(d>0&&passTo[s]){NEED[passTo[s]]=(NEED[passTo[s]]||0)+d;NEED[s]-=d;moved.push([passTo[s],s,d]);}});
+ const moved=[],passTo={'slaitwal0001':'sl758m2396',sxan7r1sln:'skm4jjo2vl',sl758m2396:'skm4jjo2vl','xan.pher':'s57bkv9741'};
+ ['slaitwal0001','sxan7r1sln','sl758m2396','xan.pher'].forEach(s=>{const d=(NEED[s]||0)-(cap[s]||0);if(d>0&&passTo[s]){NEED[passTo[s]]=(NEED[passTo[s]]||0)+d;NEED[s]-=d;moved.push([passTo[s],s,d]);}});
  {const d=(NEED[E.id]||0)-(cap[E.id]||0);if(d>0){const spare=s=>Math.max(0,(cap[s]||0)-(NEED[s]||0)),sv=['s4zvgepuru','skm4jjo2vl'],tot=sv.reduce((n,s)=>n+spare(s),0);
   sv.forEach(s=>{const k=tot>0?d*spare(s)/tot:d/2;NEED[s]=(NEED[s]||0)+k;moved.push([s,E.id,k]);});NEED[E.id]-=d;}}
  moved.forEach(([from,to,kg])=>{const Rd=R.find(r=>(r.from===from&&r.to===to)||(r.to===from&&r.from===to));if(!Rd)return;Rd.expect=Rd.expect||{};

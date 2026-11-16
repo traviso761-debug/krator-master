@@ -83,10 +83,14 @@
 - [ ] **Interiors near the Stair Foot only**: the bench's houses past 260 m are solid; the wall's fronts past the carved
       quarter are fronts on whole rock (by design: the quarter is what is walked).
 - [ ] No people (`core/charactermodels`).
-- [ ] **L0 is with two other sessions** (2026-11-16): the town's pin on the scale model is queued with the scale-model edits
-      session (until it lands, the site is `slaitwal01` with `model: false` in `openworld/SITES.json`, and the economy's id is
-      `xan.laitwal`; both give way to the model's id); the `opal` resource family and the Great Potch Line's lode record
-      (`kits/resources/data/lodes.json`) are asked of the resource-nodes session, which is working in `kits/resources`.
+- [ ] **L0, the pin, is on another branch** (2026-11-17): the scale-model edits session made it `slaitwal0001` (model edit
+      5.1e12, commit 4ba66f57c on `claude/gemini-trade-reconcile`, with the plan's notes in 08447477d; its ground 1,430 m on the
+      bench, the lake two cells south), and Opal Valley Mines' note names it Lāiṭwāl's works village. Every id here is
+      `slaitwal0001` already (the economy, the open-world site); `openworld/SITES.json` keeps `"model": false` and its own px
+      until that branch merges here, then the flag goes and the region is re-cut.
+- [ ] **L0, the lode**: the `opal` node is built on `claude/resource-nodes-7ec053` (774f200b2); the `opal` geology family (a
+      layer the node field places from) needs a geology rebake by the scale-model session; until then the Great Potch Line's
+      field can only be placed by hand (owner nodes).
 - [ ] **The town's page and its open-world site are two grounds**: the page shapes its ground from the site's numbers; the
       region's ground is the scale model's at 1 km cells. The page placed on `core/world` (as Longsong's) is owed.
 - [ ] **The Register's numbers are Latin digits** (the kit's: `kits/tungang/KNOWN_ISSUES.md`). Xanadui is English in Indic

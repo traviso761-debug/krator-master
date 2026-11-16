@@ -42395,7 +42395,7 @@
    "page": null
   },
   {
-   "id": "slaitwal01",
+   "id": "slaitwal0001",
    "name": "Lāiṭwāl",
    "type": "town",
    "culture": "xanadu",
@@ -42444,9 +42444,9 @@
     "ref": "rmvhighrift100"
    },
    {
-    "name": "site Lāiṭwāl (slaitwal01)",
+    "name": "site Lāiṭwāl (slaitwal0001)",
     "kind": "site",
-    "ref": "slaitwal01"
+    "ref": "slaitwal0001"
    }
   ]
  }
