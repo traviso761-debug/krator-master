@@ -129,6 +129,10 @@ SB_TODAY_READS = ([(os.path.join(HERE, 'targets', 'strongbow'), f) for f in ('8a
 SB_TOWN_READS = [(os.path.join(ROOT, 'settlements', 'strongbow', 'src'), '8ax1-sb-town.js'),
                  (os.path.join(ROOT, 'settlements', 'strongbow', 'src'), '32-sb-walk.js'),   # the walk up (2026-11-12): its records and walker
                  (os.path.join(ROOT, 'settlements', 'strongbow', 'src'), '8ax3-sb-walk.js'),   # ... drawn, checked and replayed on the page
+                 (os.path.join(ROOT, 'kits', 'ancients-interiors', 'src'), '10-ai-core.js'),   # the interiors (2026-11-15): kits/ancients-interiors' plates
+                 (os.path.join(ROOT, 'kits', 'ancients-interiors', 'src'), '35-ai-plates.js'),
+                 (os.path.join(ROOT, 'settlements', 'strongbow', 'src'), '33-sb-rooms.js'),   # ... the rooms, storeys, stairs and solid walls as records
+                 (os.path.join(ROOT, 'settlements', 'strongbow', 'src'), '8ax4-sb-rooms.js'),   # ... drawn near the eye
                  (os.path.join(ROOT, 'core', 'walk'), '20-core-walk.js'),
                  (os.path.join(ROOT, 'settlements', 'strongbow', 'src'), '8ax2-sb-cutaway.js'),
                  (os.path.join(ROOT, 'settlements', 'isle-demo', 'src'), '58-isle-protos.js')]
@@ -283,7 +287,7 @@ DETERMINISTIC = {
     '8aw0-strongbow-plan.js', '8aw1-strongbow-parts.js', '8aw3-strongbow-foot.js',   # targets/strongbow: KRAND-hashed records; the drawing's parts and the foot, hashed, no rng()
     '37c-core-rubble.js',                              # core/terrain's KRUBBLE heaps, read by targets/strongbow: KRAND-hashed, no rng()
     '20-sb-census.js', '30-sb-layout.js', '31-sb-rules.js', '8ax0-sb-reclaim.js',   # settlements/strongbow, read by strongbow-today: records and a hashed drawing, no rng()
-    '8ax1-sb-town.js', '8ax2-sb-cutaway.js', '32-sb-walk.js', '8ax3-sb-walk.js', '20-core-walk.js', '8ax7-sb-xanadu-pack.js', '58-isle-protos.js', '8ax8-sb-city.js', '8ax9-sb-xak.js',   # Strongbow's town (SB3): drawn from core/city's records (core/rand streams), the isle demo's flattener, the two sealed bundles
+    '8ax1-sb-town.js', '8ax2-sb-cutaway.js', '32-sb-walk.js', '8ax3-sb-walk.js', '10-ai-core.js', '35-ai-plates.js', '33-sb-rooms.js', '8ax4-sb-rooms.js', '20-core-walk.js', '8ax7-sb-xanadu-pack.js', '58-isle-protos.js', '8ax8-sb-city.js', '8ax9-sb-xak.js',   # Strongbow's town (SB3): drawn from core/city's records (core/rand streams), the isle demo's flattener, the two sealed bundles
 }
 DETERMINISTIC |= {'06-core-khook.js', '06b-core-kcolor.js'}   # core/shader (no rnd())
 
