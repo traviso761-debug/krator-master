@@ -464,7 +464,10 @@ are.
 - **Tested:** `tests/test-vt-records.js` builds every def at every variant headless (the Xanadu kit's bundle with the
   Qiblai kit) and checks it stands on its lot within 0.3 m, that every seed is in the block and the dress is the green
   spoke's. 8 checks pass, each negative failing its fault. `verify.py --assert` adds `viridian-laid` to Xanadu's
-  invariants; the GPU run's result is in the commit that carries it.
+  invariants.
+- **GPU verify:** it passes on the rtx lane (2026-11-16, the page of c4d2e0889). `viridian-laid` finds 20 builds and the
+  green monastery. The scene is 1.03M triangles of a 3M budget, 35 draw calls, 26,063 baked instances; the largest build is
+  the physic garden. The shaders, textures, geometry and eye checks are clean.
 
 **V4, the estate as records** (`src/40-vt-estate.js`, `VTE`, `[G data]`):
 - the three gardens as `KRELIEF.terraces` records: a 1.4 m rise, the Low Garden's earth risers (0.22 of a step) and the
