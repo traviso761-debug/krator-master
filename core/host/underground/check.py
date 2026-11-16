@@ -9,6 +9,10 @@ arm asked for would be; a rope (thin) never shortens the arm, a crate does; the 
 hall; first person in the narrow way. The cut-away (99-host-section): the deck cut hides the deck above, keeps the rest, caps the rock, clips
 above the cut and not below; the band follows the eye; the section clips the camera's side only; the slab joins its planes. The map
 (97b, 88b): the band is the eye's deck, the line map is exported. The x-ray (KFADE) on the walker; the fade's segment while following.
+core/host's walker and pick (90, 93; BUGS-2026-11-15 C5-C8): F stands on the floor under the eye (under a sealed set, and with the
+ground made the surface); a 0.9 m step stops at a 0.15 m car wall, by C.move and in the loop held at 2 fps; the double-click pins the
+floor under the pointer, not the fallback ground's depth, and a drawn ground keeps the old pin; the inspector skips a hit the deck cut
+clips and one under a hidden group. Each against the old behaviour as its negative.
 """
 import argparse, asyncio, json, os, sys
 
@@ -94,6 +98,65 @@ CHECKS = r"""async()=>{
  K.go('The sets');await wait(500);const MD=K.minimapDecks,band=MD.band(),ex=K.minimap.export();
  ok('the map\'s band is the eye\'s deck',band[2]==='Sets',band[2]==='Platform',JSON.stringify(band));
  ok('the export carries the line map and the heights',ex.schematic&&ex.schematic.nodes.length===8&&ex.schematic.edges.length===7&&ex.heights.filter(h=>h!=null).length>5,!ex.schematic);
+ // ---- core/host's walker and pick underground (90-host-camera.js, 93-host-inspect.js; BUGS-2026-11-15 C5-C8)
+ S.off();K.cut.off();C.walk(false,true);K.minimapPanel&&K.minimapPanel.open(false);
+ const cam=K.host.camera,cv=K.host.renderer.domElement,mid=()=>{const r=cv.getBoundingClientRect();return [r.left+r.width/2,r.top+r.height/2];};
+ const view=a=>{c.walk=false;C.walkAt=null;K.setView(a[0],a[1],a[2],a[3],a[4],a[5]);C.apply();cam.updateMatrixWorld();};
+ const SURF=()=>UG.SURF,DEEP=UG.ground;
+ /* C5: F from the gallery under the sealed set (x 30-45, its floor 9 m up): the floor under the eye */
+ view([37,3,2.5,40,1,-1]);C.walk(true);const f5=c.target.y-c.eye;C.stand();const s5=C.walkAt[2];
+ ok('F - from the gallery under a set, the walker stands in the gallery',Math.abs(f5)<.05&&Math.abs(s5)<.05,false,'F at '+f5.toFixed(2)+', stood at '+s5.toFixed(2));
+ ok('F (negative) the highest floor at that x, z (the old F) is the floor of the set 9 m up',Math.abs(C.standY(37,2.5)-9)<.05,false,C.standY(37,2.5).toFixed(2));
+ /* the cave page's case: the ground is the surface 60 m up (set after the view, which the orbit keeps over the ground) */
+ view([37,3,2.5,40,1,-1]);UG.ground=SURF;C.walk(true);const f5s=c.target.y-c.eye;C.stand();const s5s=C.walkAt[2];
+ const fb=KWALK.floorBelow(37,2.5,0,.7),old5=fb&&fb[0]>=UG.SURF-.3?fb[0]:UG.SURF;UG.ground=DEEP;
+ ok('F with the ground the surface over the cave - stands and stays in the gallery',Math.abs(f5s)<.05&&Math.abs(s5s)<.05,false,'F at '+f5s.toFixed(2)+', stood at '+s5s.toFixed(2));
+ ok('F (negative) the old stand lifted the walker to the surface',old5===UG.SURF,false,old5);
+ /* C6: a 0.9 m step (2 fps: dt capped at 0.1 s) at the car wall at x -66 (0.15 m), from 0.35 m short of it, west */
+ for(const k in C.keys)C.keys[k]=false;c.speed=1;
+ const step=sw=>{C.walker.sweep=sw;c.walk=true;C.walkAt=[-65.3,0,0];c.target.set(-65.3,1.7,0);c.theta=Math.PI/2;c.phi=Math.PI/2;
+  C.keys.w=true;C.move(.1);C.keys.w=false;C.stand();const x=C.walkAt[0];C.walker.sweep=.3;return x;};
+ const x6=step(.3),x6n=step(0);
+ ok('swept step - a 0.9 m step stops at the 0.15 m wall',x6>-65.925,false,'walker x '+x6.toFixed(3));
+ ok('swept step (negative) unswept, the push settles it past the wall',x6n<-66.075,x6n>-65.925,'walker x '+x6n.toFixed(3));
+ /* the same in the real loop at 2 frames a second (each frame held 480 ms), W held */
+ let slow=false,frames=0;K.on(function ugSlow(){if(!slow)return;frames++;const t0=performance.now();while(performance.now()-t0<480);},'tick');
+ const real=async sw=>{C.walker.sweep=sw;c.walk=true;C.walkAt=[-65.3,0,0];c.target.set(-65.3,1.7,0);c.theta=Math.PI/2;c.phi=Math.PI/2;slow=true;await wait(1100);frames=0;
+  dispatchEvent(new KeyboardEvent('keydown',{key:'w'}));await wait(2200);dispatchEvent(new KeyboardEvent('keyup',{key:'w'}));const n=frames;slow=false;await wait(150);
+  const x=C.walkAt[0];C.walker.sweep=.3;return [x,n];};
+ const r6=await real(.3),r6n=await real(0);
+ ok('swept step at 2 fps in the loop - W held, the walker stops at the wall',r6[0]>-65.925&&r6[1]<=8,false,'x '+r6[0].toFixed(3)+' after '+r6[1]+' frames');
+ ok('swept step at 2 fps (negative) unswept, it walks through',r6n[0]<-66.075,r6n[0]>-65.925,'x '+r6n[0].toFixed(3)+' after '+r6n[1]+' frames');
+ /* C7: the pin. Looking down the gallery at its floor; the ground (-50) is a constant fallback, drawn nowhere */
+ view([-20,3.5,2.5,-14,0,-1]);let [mx,my]=mid();const g7=C.groundHit(C.ray(mx,my).ray);C.pin=null;
+ cv.dispatchEvent(new MouseEvent('dblclick',{clientX:mx,clientY:my,bubbles:true}));const p7=C.pin;
+ ok('pin - the double-click pins the gallery floor under the pointer',p7&&Math.abs(p7[1])<.3&&Math.hypot(p7[0]+14,p7[2]+1)<2,!p7,JSON.stringify(p7));
+ ok('pin (negative) the hit of the ground alone is at the fallback depth, far off',g7&&g7.p[1]===-50&&Math.hypot(g7.p[0]+14,g7.p[2]+1)>20,false,g7&&JSON.stringify(g7.p.map(v=>+v.toFixed(1))));
+ UG.ground=SURF;const g7s=C.groundHit(C.ray(mx,my).ray),p7s=C.pick(mx,my);UG.ground=DEEP;
+ ok('pin with the ground the surface over the cave (the camera under it) the floor',p7s&&Math.abs(p7s[1])<.3,!p7s,JSON.stringify(p7s));
+ ok('pin (negative) the ground gives nothing from under it (the old pick - no pin)',g7s===null,false);
+ /* a ground that is drawn keeps the old pin (the surface pages' case): a plane drawn at -50 under the gallery */
+ const gp=new THREE.Mesh(new THREE.PlaneGeometry(600,600),new THREE.MeshBasicMaterial({color:0x223322}));gp.rotation.x=-Math.PI/2;gp.position.y=-50;K.host.scene.add(gp);gp.updateMatrixWorld();
+ const p7d=C.pick(mx,my);K.host.scene.remove(gp);gp.geometry.dispose();
+ ok('pin - a drawn ground keeps the pin on the ground (every surface page)',p7d&&p7d[1]===-50,false,JSON.stringify(p7d));
+ C.pin=null;C.pinDraw();
+ /* C8: the inspector. A rope's upper half (no deck: not hidden) at y 4, ahead in the gallery; the deck cut at the platform clips
+    everything over 2.3 m in the hold's box. three's raycast hits it still */
+ const rv=[54,4,-1.2,58,4,-1.2];view(rv);[mx,my]=mid();K.inspectAt(mx,my);const selOff=K.selected;
+ K.cut.to('hold',0);view(rv);await wait(150);
+ const raw=C.ray(mx,my).intersectObjects(K.host.scene.children,true).filter(h=>!h.object.userData.khost);
+ K.inspectAt(mx,my);const selOn=K.selected;
+ /* the ropes on this line stand at x 58, 70 and 82; the hold's box ends at x 73, so the first two are clipped and the third is not */
+ const at0=r=>r?r.name+' at x '+r.at[0]:'(nothing)';
+ ok('inspector - under the deck cut the clipped ropes (x 58, 70) are passed, the first one outside the box (x 82) picked',
+  selOn&&selOn.kind==='rope'&&selOn.at[0]>73,selOn&&selOn.at[0]<73,at0(selOn));
+ ok('inspector (negative) the raycast of three hits the rope at x 58 first, clipped; with the cut off that rope is picked',
+  raw[0]&&/^rope/.test(raw[0].object.name)&&raw[0].point.y>2.3&&!C.drawn(raw[0])&&selOff&&selOff.kind==='rope'&&selOff.at[0]<60,false,
+  (raw[0]?raw[0].object.name+' y '+raw[0].point.y.toFixed(2):'no hit')+'; cut off: '+at0(selOff));
+ K.cut.off();
+ /* a hidden parent: the props' group hidden, a crate's mesh itself still visible */
+ view([36.5,1,2.8,40,.8,2.8]);[mx,my]=mid();K.inspectAt(mx,my);const crOn=K.selected;UG_PROPS.visible=false;K.inspectAt(mx,my);const crOff=K.selected;UG_PROPS.visible=true;
+ ok('inspector - a crate under a hidden group is not picked',crOn&&crOn.kind==='crate'&&!(crOff&&crOff.kind==='crate'),!(crOn&&crOn.kind==='crate'),(crOn?crOn.name:'-')+' / hidden: '+(crOff?crOff.name:'(nothing)'));
  ok('every program linked',KHOOK.checkPrograms().length===0,false,JSON.stringify(KHOOK.checkPrograms()).slice(0,200));
  return out;}"""
 

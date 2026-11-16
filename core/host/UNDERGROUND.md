@@ -65,7 +65,7 @@ KHOST.arm.march / step / mode / ceiling                  // the maths, pure (nod
 ```
 
 V follows: from the walker if walking, else from the floor under the camera. That is not the highest floor at that x, z,
-which is what core/host's F takes (below, "Dhelv"). F goes back to first person, and the wheel sets the arm's length. A
+which is what core/host's F took until 2026-11-15 (below, "Dhelv"; now F takes the floor under the eye too). F goes back to first person, and the wheel sets the arm's length. A
 sphere of 0.3 m is marched back along the view. The arm pulls in at once if the camera's spot is in rock, after 0.15 s if
 only the line is blocked, and eases out at 2.5 m/s after 0.4 s free. Under 1.2 m of arm the camera goes over the shoulder,
 under 0.6 m it is first person. A cast up from the pivot every third frame lowers the pitch limit. The walker is drawn as a
@@ -214,10 +214,19 @@ stays at its full 4 m with at least 1.12 m clear of the rock.
   `kits/zeijani/KNOWN_ISSUES.md`.
 - **The rock cut on the Hearths station**: it is not on. The Hearths' `84-host-rock.js` fixes drawRock's attributes
   (`aGyp`, `aIron`), and a natural cave has no decks: the band is its cut.
-- **core/host's F** stands the walker on the highest floor at x, z. The fix belongs in `90-host-camera.js` (408 pages), so
-  it waits for the next all-builds rebuild (TODO.md's ride-along list).
-- **The inspector's picks** do not filter clipped hits yet. `KHOST.section.clipped()` is the filter, and 93 should call it.
-  That is a change to `93-host-inspect.js` (also on every FULL page).
+- **core/host's F, the swept step, the pin and the inspector's picks: fixed in source** (2026-11-15, BUGS-2026-11-15.md C5-C8).
+  F stands on the floor under the eye and the stand keeps a walker under a roof of ground (`KHOST.feet.under`); a key step over
+  0.3 m is swept against the walk blocks (`KHOST.feet.sweep`, `walker.sweep`); the double-click's pin takes the ground only where
+  the scene draws something there, else the first mesh under the pointer (`C.pick`, `o.pickScene`); the inspector skips hidden
+  parents and clipped points (`C.drawn`, calling `KHOST.section.clipped` for its planes). `node core/host/test-feet.js` and this
+  page's `check.py` prove each with a negative. Rebuilt: this page, the Hearths' camera station and Dhelv; every other page takes it
+  with the next all-builds rebuild (TODO.md's ride-along list says what moves).
+- **Dhelv's tubes give no pin**: from "The braid", "The outer tube", "The west mouth" and "Under the light well" three's raycast
+  of the whole scene hits nothing (measured 2026-11-15 on the RTX), so the cave rock there cannot be picked; the pin refuses, as
+  the old pick did from under the ground. F there now stands in the tube (the braid: y -13.2, was the forest at 55.5). A pin in the
+  tubes needs Dhelv's own `o.pick` (on its cavern's distance field) or raycastable rock chunks.
+- **The rock cut and the inspector**: KCAVERN's rock cut is a shader discard (no planes), so a pick can still land on rock it opened.
+  `KCAVERN.cut.discards(x, y, z, ownFloor)` needs the hit vertex's own floor (`aKCut`); not wired.
 - **Ghosted decks** (the decks above as a faint outline, not hidden) are not built. Hidden decks cast no shadow in three
   r128.
 - **Dhelv**: the core/biome `stemClump` leak, above. Dhelv does not opt in to any of this yet (its V is its nav graph and its C

@@ -22,6 +22,9 @@ const UGC=KCAVERN.create({ground:()=>UG.SURF,cell:.5,chunk:16,seed:61,walk:KWALK
  C.stair({id:'st.01',a:[-30,0,2.4],b:[-30,D[1].y,8],w:2,h:2.6});
  C.stair({id:'st.12',a:[5,D[1].y,13],b:[5,D[2].y,20],w:1.8,h:2.5});
  C.stair({id:'st.0s',a:[-12,0,-2.4],b:[-12,D[1].y,-8],w:2,h:2.6});
+ /* a set over the gallery with no way in (core/host's F test, BUGS-2026-11-15 C5): at x 30-45 the highest floor is this one, 9 m
+    over the gallery's, so an F that stands on the highest floor at x, z leaves the gallery for it */
+ C.room({id:'over',poly:[[30,-3],[45,-3],[45,3],[30,3]],y:D[2].y,h:2.6,ceil:'flat',r:.4,finish:'plaster'});
  /* the lift shaft from the gallery's side to the surface, and its head */
  C.shaft({id:'shaft',c:UG.SHAFT.c,y0:0,y1:UG.SURF+2,r0:UG.SHAFT.r,r1:UG.SHAFT.r});
  C.room({id:'shaftfoot',poly:[[19,-12],[31,-12],[31,-3],[19,-3]],y:0,h:3.4,ceil:'flat',r:.4});
@@ -35,6 +38,8 @@ UG.PROPS=[];
  add('crate',0,-40,0,-2.5,1.6,1.4,1.6,'crate');add('crate',0,-44,0,-2.6,1.2,1,1.2,'crate');add('crate',0,40,0,2.8,2,1.6,1.4,'crate');
  add('table',1,-8,4.5,11,2.4,.8,1.2,'table');add('table',1,8,4.5,9,2,.8,1,'table');add('bench',1,-20,4.5,14,3,.45,.5,'bench');
  add('crate',1,-16,4.5,-12,1.4,1.2,1.4,'crate');
+ /* a car wall across the gallery's west end, 0.15 m thick: the swept step's test (BUGS-2026-11-15 C6) */
+ add('wall',0,-66,0,0,.15,3.5,8,'car wall');
  add('bed',2,-6,9,25,2,.5,1,'bed');add('bed',2,8,9,25,2,.5,1,'bed');add('table',2,2,9,21,1.6,.8,.9,'table');
  for(let i=0;i<5;i++)add('rope',null,58+i*6,.2,(i%2?1.2:-1.2),.06,4.8,.06,'rope thin');
  [[92,-1],[99,-7],[102,1]].forEach(p=>add('rope',null,p[0],0,p[1],.08,11.5,.08,'rope thin'));})();

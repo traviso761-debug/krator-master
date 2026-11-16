@@ -164,11 +164,11 @@
     "core/export/09-core-export-adapters.js": "bb08d2140882dc07c0a9c33787d103c67301e4444b31dce0f6d53e4fd8938316",
     "core/hazard/20-core-hazard.js": "5a623c9210f70a01f4e8647443de24283bcbc51eb6a12c649cf080f69cf3d7d2",
     "core/hazard/21-core-hazard-flow.js": "7fcd020514737f68c2152f463ac93a2ac51d9fe364f493a249e04df0216251b2",
-    "core/host/90-host-camera.js": "6ad6af57adcf1fb2facd04968db769350c0d27de1d2fe20829d9948be75a2847",
+    "core/host/90-host-camera.js": "ed925bd75ca64c5f7f1e30c54e15105e5ae000bd27b05aa158b97d85684abc6c",
     "core/host/91-host-loop.js": "240f833bc2e031506de36b503594acd2939e3f45aee21115effd00666fa66986",
     "core/host/91b-host-follow.js": "816e8b667b2b0ae5784c37d680933f1ebfe9f9ef33108bcf5882e2e34b6d1ea6",
     "core/host/92-host-panel.js": "3d65cd6c0bb873e48eb4189fffad906ab21aef1950164a454254a4fefe7a0b88",
-    "core/host/93-host-inspect.js": "cf7e676324297688199a85d9a26c34381732955955985462aa3dbd2c12431f90",
+    "core/host/93-host-inspect.js": "bac4f00a4d7aca14069a83f97526b29333f7594550a679bb364247a8fd7a83ca",
     "core/host/93-host-stocks.js": "ee986893621f17b4419db1feb1edbc01b7e28f067e85fd8b811112ec65456a69",
     "core/host/94-host-marks.js": "a57a2a38ef92f4d06232659773249de63296e79e200da27a24f0253eff3f0284",
     "core/host/95-host-probe.js": "91a9ef729db002716d0e840ebd6e0efc799f2ae0c99419fb06c3f44eda5f6471",
@@ -217,15 +217,15 @@
     "biomes/hearths/stations/camera": "27c873a6af0a1af036e72f95905a0d777037185451e41b4db69ec5fe846b3668",
     "biomes/hearths/stations/crystals": "14d1aab11cc74bd44568b4e815c6360483b6f0a49449295032ec3de25b449ddf",
     "biomes/hearths/stations/hold": "e6d0b2105ac483d00728d472fd1e6408390eb048b34e08357f8cf8e22d3a9090",
-    "core/host": "d729ffbc0ed36e68e9036bd9c454abc6462a27b22a4bc16b88c38d836e6f4a37",
+    "core/host": "ffcdc2074b23c0fdeee59c4de3ac6163916687212038146a3fa7ceaf12b9f7a9",
     "tools": "5d8cb54bfd5566913f21e3e094a6a85418e1354e6e39cf6138ec20bda1add512",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/hearths/dist/hearths-camera.html": "2c9a30129b92ee194411df09cede65f884c99b5cef0a0d85c938c37eaf461773"
+    "biomes/hearths/dist/hearths-camera.html": "9fae70a768df485ef8b9e89f45adfeaf726cbb3d0c3005771d993499e916554f"
    },
    "outputs_raw": {
-    "biomes/hearths/dist/hearths-camera.html": "2c9a30129b92ee194411df09cede65f884c99b5cef0a0d85c938c37eaf461773"
+    "biomes/hearths/dist/hearths-camera.html": "9fae70a768df485ef8b9e89f45adfeaf726cbb3d0c3005771d993499e916554f"
    }
   },
   "build.py --station crystals": {
