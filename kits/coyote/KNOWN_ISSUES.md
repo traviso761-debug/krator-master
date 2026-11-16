@@ -18,3 +18,6 @@
   of the owner before it is written.
 - [ ] **On the sheet the sunk rooms stand in the ground** (`89-rows.js` places them 2.6 and 2.8 m down, as in the yard), so
   their painted interiors are hidden by the sheet's ground plane even in the cut-away; the village's are reached by the walk.
+- [ ] **`check_assembly` baselines `MISSING KCITY.stance`** on the page (`tools/check_assembly_baseline.json`, as riftrim's Fowlers
+  and Icecut stations do): `core/city/33-city-strategies.js` names `KCITY.stance` (in `core/city/15-city-ground.js`) only on a
+  city tune's high-stance path, which `core/hamlet` never takes; the page reads 33 alone for `KCITY.prim`.

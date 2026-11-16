@@ -234,6 +234,7 @@
  "kits/construction/dist/construction.html: CLASH _projectFire": 1,
  "kits/construction/dist/construction.html: CLASH onerror": 2,
  "kits/construction/dist/construction.html: ORDER KCITY": 1,
+ "kits/coyote/dist/coyote.html: MISSING KCITY.stance": 1,
  "kits/fauna/dist/fauna.html: CLASH FA_MODELS_SIDE": 1,
  "kits/interiors/dist/interiors-sets.html: ORDER KratorSky": 1,
  "kits/interiors/dist/interiors-walk.html: CLASH _onWalkChange": 1,
