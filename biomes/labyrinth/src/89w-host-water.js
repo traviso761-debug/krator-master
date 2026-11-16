@@ -27,7 +27,7 @@ const FALL_DRAWS=(function(){const out=[];if(!GATE)return out;const P=GATE.plan;
  for(const p of P.pools){const poly=[];for(let k=0;k<20;k++){const a=k/20*TAU;poly.push([p.x+Math.cos(a)*p.r,p.z+Math.sin(a)*p.r]);}
   try{const S=WATER.still({name:p.quarry?'The quarry lake':'The fall\'s plunge pool',level:LEVEL+p.level,poly});out.push(WATER.drawStill?WATER.drawStill(S,{shallow:lin(0x6a8a7a),deep:lin(0x2e4c48)}):S);}catch(e){reportErr('pool: '+e.stack);}}
  for(const f of P.falls){const px=-f.nz,pz=f.nx,ly=LEVEL+f.y0,pool=P.pools.find(q=>!q.quarry);
-  try{const F=WATER.fall({name:'The Garden Stack\'s fall (its cistern\'s overflow)',lip:[[f.x-px*f.w/2,f.z-pz*f.w/2,ly],[f.x+px*f.w/2,f.z+pz*f.w/2,ly]],
+  try{const F=WATER.fall({name:'The fall of the Garden Stack (its cistern\'s overflow)',lip:[[f.x-px*f.w/2,f.z-pz*f.w/2,ly],[f.x+px*f.w/2,f.z+pz*f.w/2,ly]],
     dir:[f.nx,f.nz],speed:1.2,drop:ly-(LEVEL+(pool?pool.level:f.y1)),foot:pool?[pool.x,pool.z,LEVEL+pool.level]:[f.x+f.nx*20,f.z+f.nz*20,LEVEL+f.y1],fit:true,
     face:(x,z)=>{const t=KSTACKS.topAt(STACKS,x,z);return t>-1e8?LEVEL+t:terrainH(x,z);}});
    out.push(WATER.drawFall(F,{color:lin(0xd8e2de),opacity:.85,rows:64,cols:4,margin:1,lipK:.85,spray:'drop',rain:true,envMapIntensity:.25,renderOrder:3,plungeR:pool?pool.r*.7:12,footK:.8}));}catch(e){reportErr('fall: '+e.stack);}}

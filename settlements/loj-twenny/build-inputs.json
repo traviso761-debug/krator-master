@@ -61,6 +61,7 @@
     "core/engine/36-def.js": "5479088bdba91414994281ac4dd74d7459744bb844b6101fad3c207578e0e703",
     "core/engine/36o-open.js": "3099a2be44910e6737fb8e827abad230fca8393b286839764136516d225ed31f",
     "core/engine/36s-stair.js": "f254687a185b86dc7a3f6ee1d82289527e93ae76c46fc75bd7c97825a5c8af9f",
+    "core/engine/37-wk-rec.js": "bf39a3a82cfd8b9f24d528aeacd44d332d3d23751f4ff2a14b21b72f4b95ea91",
     "core/host/90-host-camera.js": "6ad6af57adcf1fb2facd04968db769350c0d27de1d2fe20829d9948be75a2847",
     "core/host/91-host-loop.js": "240f833bc2e031506de36b503594acd2939e3f45aee21115effd00666fa66986",
     "core/host/91b-host-follow.js": "816e8b667b2b0ae5784c37d680933f1ebfe9f9ef33108bcf5882e2e34b6d1ea6",
@@ -268,7 +269,7 @@
     "kits/motor-vehicles/vehicles-core.js": "85b818f33a3305886128379a011df40103dc76cbdd2656d422a2d5af6d472990",
     "kits/motor-vehicles/vehicles-detail.js": "833b14b967d19983c354920b5ad13850363118fc260dc11f358101ab8ae80ce8",
     "kits/tungang/src/26k-kit.js": "ce6235f27156b1447c497cb7e61bd1e5afa7a08952158af0b4ab2b16be097475",
-    "kits/tungang/src/37-wk-rec.js": "05b5e7cedc5b107b3ec783ce9dbbeff6e3bd141da0cd5a8978f84132b8d3de42",
+    "kits/tungang/src/37t-wk-ring.js": "9db696db4e09420bba161830e82eb1fc13bc9e8f457e1b479036781265e5e98f",
     "kits/tungang/src/40-fg-kit.js": "4457dec62d05596696ff3e0cfa4f7dde9056d89761ed7798358b154a78b8a987",
     "kits/tungang/src/42-fg-mass.js": "9f8afab43289c36515b62ff8922d26f98ff612fc5737d506de96b1bf9b6fd59b",
     "kits/tungang/src/44-fg-wc-plan.js": "bb3b693acae6dda4e28693767b6f0bda3679f3ef8ba3440d452d0be2a4ac7cf2",
@@ -313,7 +314,7 @@
     "kits/tungang/tex/wood.albedo.webp": "af92ec5a90da3fb61efe4e041c3232dd7c10ae1e5484b016fc079799a2750966",
     "kits/tungang/tex/wood.normal.webp": "795ef401ec856aa70ef2659626f11e433e6bf0e39a3a4c2b4e21d7366950005b",
     "kits/tungang/tex/wood.rough.webp": "a0aaf35beedc4ad83f8ab4cd611e6a65ebd332b1fcfab7c33f2ad886bd0a7e17",
-    "kits/tungang/tungang_bundle.py": "58a065d04e4a4bbd7cad2a13dc5742fc1445e17a96d6c1dae58b8f628a597a5b",
+    "kits/tungang/tungang_bundle.py": "2c961dc074a6aafaa98902db98cfede526e91b61c3bad4ba3b6169ee447bd1b4",
     "settlements/loj-twenny/PORT.md": "97226f3927accf47f6ec980bd40643a49c7fb13d21943f062f683c1d98bb2a0e",
     "settlements/loj-twenny/build.py": "bfaf8b711a5b06db8b03d9f9f981eed86589d0e0cd73690a7a7d504b2196191f",
     "settlements/loj-twenny/src/00-head.html": "cdfb923480c49219a95ee38d24e2c88448d1a2f92835f0708e8b31c0ebf8d49f",
@@ -327,7 +328,7 @@
     "settlements/loj-twenny/src/70-lt-light.js": "092ed27077b0e932054d1f5abfee6d6ef11187c9880e954489990410329247b3",
     "settlements/loj-twenny/src/80-lt-life.js": "f8c9552b4c45d05683aa2ea0ee8fda7f739546264a1683e8b665f26c21b9ed78",
     "settlements/loj-twenny/src/90-lt-checks.js": "082e02901717e47d028e96fab4690a49c6c586b2fac5dff0452a953554450686",
-    "settlements/loj-twenny/src/98-lt-take.js": "307b53d37b008790ba31616a06ad30e0da188312061c3885a58c0172eee3c9eb",
+    "settlements/loj-twenny/src/98-lt-take.js": "08d8b482e2efbca2f58bc3187d764f8a0c0adbf107384d095b5dfa05b8b27f8c",
     "settlements/loj-twenny/src/99-tail.html": "893cb35f3016a3523c33b676c4dfbe5686c4b99a1e7128d78e2e3fa271cd4829",
     "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
     "tools/buildlib.py": "24ec6d636869007e626446a0b8e9cc886fd595af0c9f95b78c4d4b272a18ec0e",
@@ -341,16 +342,16 @@
     "kits/catalog": "10322ea778934242b7ce59b2a1b14f40befde097c5b9b80081f11fd0cb8a57ce",
     "kits/motor-vehicles": "79f2e933748115e800ee33c488ac3fffc5b8cf3c474143d9ad47a3747f4f5ec6",
     "kits/tungang": "1cd268ed51395ab41fc0bb50d43605d362481f954952cc485a20bf63abf1531f",
-    "kits/tungang/src": "d98b19b637482743d28479eaadda23ab10902e564df55e5392aa8897581f9076",
+    "kits/tungang/src": "8193af5b3d7a7cbe2c38294c3bef350af6572d54ebc8030abbb49600015d83b5",
     "settlements/loj-twenny/src": "361aed8854f0e1f7813e2c6715beee06b9efc28c4195695eba7f17dcc51309bb",
     "tools": "5d8cb54bfd5566913f21e3e094a6a85418e1354e6e39cf6138ec20bda1add512",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "settlements/loj-twenny/dist/loj-twenny.html": "bb6fb6682e176b154e99c3b7e2afd4a37291063b162794a902cf9435d8a314ef"
+    "settlements/loj-twenny/dist/loj-twenny.html": "34b819d202f6d635638aec7deb51146dcef7098f0e05429a4cd5a8c346a5f4fc"
    },
    "outputs_raw": {
-    "settlements/loj-twenny/dist/loj-twenny.html": "bb6fb6682e176b154e99c3b7e2afd4a37291063b162794a902cf9435d8a314ef"
+    "settlements/loj-twenny/dist/loj-twenny.html": "34b819d202f6d635638aec7deb51146dcef7098f0e05429a4cd5a8c346a5f4fc"
    }
   }
  }

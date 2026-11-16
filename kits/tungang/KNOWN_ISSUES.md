@@ -23,7 +23,7 @@
   bow-sided, Welsh, croft with outshots, beehive cells; plate lean-to, buried container, cab porch, fir porch); roof form,
   pitch, wall height, chimney, door offset, windows and turf by seed; a village's character ('stony', 'low') from its
   focus. Sheds, pens, the ice house, the cairn house and the egg store vary in fill.
-- **Walls block a walker** (`src/37-wk-rec.js`, core/walk and core/walk/box; round walls as arcs of blocks).
+- **Walls block a walker** (`core/engine/37-wk-rec.js`, round walls `src/37t-wk-ring.js`, core/walk and core/walk/box; round walls as arcs of blocks).
 - **Furniture in a world's draw**: `tungang_bundle.bundle(furniture=True)` (+387 KB without textures).
 - **The catalog pieces** of `PLAN.md` section 4: `fellgang_common_ice_sledge` (placed by the sledge shed), `_poor_egg_basket`
   (the egg store, the nest gear), `_common_wall_peg_rack` (the rope house), `_common_rope_wall`, `_common_tally_board`,

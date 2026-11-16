@@ -7,7 +7,7 @@
 
 The text defines the single global `TG` (src/26k-kit.js, its host API src/80-fg-host.js): TG.fg.draw(V, o), TG.fg.ropes,
 TG.fg.pieces, TG.fg.proto, TG.fg.dims, TG.fg.BOX, TG.fg.check, TG.errors. Inside the closure, read in place at bundle
-time (never copied): the building-kit engine (core/engine: 10-core, 27-mat, 30-geo, 36-def, 36o-open, 36s-stair), core/rand
+time (never copied): the building-kit engine (core/engine: 10-core, 27-mat, 30-geo, 36-def, 36o-open, 36s-stair, 37-wk-rec), core/rand
 (KRAND), core/materials/record (KMAT, its own pack of this kit's tex/), and the kit's fragments (26k-kit.js, the Fellgang
 set 40-60, 80-fg-host.js). Left out: the sheet (00-head, 89-rows, 91t, 96t, 99-sheet), the engine's page shell (scene,
 furniture adapter, night, world, clock, host take, tail). Their top-level names (MAT, REG, TAU, clamp, terrainH, KIT...)
@@ -25,7 +25,8 @@ ROOT = os.path.dirname(os.path.dirname(HERE))
 SRC = os.path.join(HERE, 'src')
 TEX = os.path.join(HERE, 'tex')
 NL = '\n'
-ENGINE = ['10-core.js', '27-mat.js', '30-geo.js', '36-def.js', '36o-open.js', '36s-stair.js']
+ENGINE = ['10-core.js', '27-mat.js', '30-geo.js', '36-def.js', '36o-open.js', '36s-stair.js',
+          '37-wk-rec.js']   # the walk records (wkLadder, the building wrap) the kit's src/37t-wk-ring.js adds round walls to (wave 2, 2026-11-16)
 CORE = [('core/rand', '08-core-rand.js'), ('core/materials/record', '23-mat-record.js'), ('core/materials/record', '24-tex-def.js'),
         ('core/materials/record', '25-matlib-host.js'),
         # Wildcat's plans (src/44-fg-wc-plan.js): core/pueblo and the spatial index it reads (KPUEBLO, KSPACE)

@@ -54,7 +54,7 @@ const LINE=(function(){
   walkWant:[[SEC.walk.x0+1,SEC.walk.y,600,'the walkway'],[(SEC.road.x0+SEC.road.x1)/2,SEC.road.y,600,'the road'],[0,SEC.strip.y,600,'the strip'],
    [vein.pts[1][0],vein.pts[1][1],vein.pts[1][2],'the vein\'s gallery']].concat(SEC.tracks.map(T=>[T.x,SEC.guide.h,600,'guideway '+T.id])),
   reach:{start:[SEC.walk.x0+1,SEC.walk.y,600],box:[SEC.walk.x0+.05,48,560,760],note:'along the east side: the walkway, its niches and the vein\'s gallery'},
-  records(){const V=vein;return [{name:'The Fixers\' vein working: rare earths and copper in the rift fill (KRES nodes; PLAN.md 2.1)',key:V.id,x:(V.pts[0][0]+V.pts[2][0])/2,z:V.z+3,y:V.pts[0][1],r:15,h:V.h,
+  records(){const V=vein;return [{name:'The Fixers vein working: rare earths and copper in the rift fill (KRES nodes; PLAN.md 2.1)',key:V.id,x:(V.pts[0][0]+V.pts[2][0])/2,z:V.z+3,y:V.pts[0][1],r:15,h:V.h,
    tags:{line:{kind:'vein',family:V.family,with:V.with,grade:V.grade,state:V.state}}}];},
   export(){return {format:'krator-line-window',version:1,station:STATION.key,s0:S0,sec:SEC,win:WIN,cond,crossovers,niches,lamps,vein,standing,
    trains:trains.map(T=>({id:T.id,track:T.track,cars:T.cars,timeline:T.timeline.export()})),routes};}};

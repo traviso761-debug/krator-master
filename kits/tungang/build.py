@@ -20,7 +20,7 @@ The page is one <script> made of, in filename order:
   core/furnish          50/52/53-core-furnish*.js (KFURN: the catalog furniture placement pass)
   core/atmos            89-atmos-*.js (ATMOS: the sky's light on the library materials, ATMOS.skylight)
   core/walk             20-core-walk.js, box/24-core-walk-box.js (KWALK, KWALKBOX: the boxes a building draws are its floors
-                        and walls, src/37-wk-rec.js; F walks the sheet)
+                        and walls, core/engine/37-wk-rec.js, round walls src/37t-wk-ring.js; F walks the sheet)
   core/door             10-core-door.js, 20-core-glass.js, 90-core-door-host.js (KDOOR, KGLASS, KDOORHOST: the plate
                         doors on their cable hinges open with E; core/engine/36o-open.js draws them)
   26-matlib-pack.js     GENERATED from tex/ (tools/textures/pack.py from materials.json): the library maps as data URLs

@@ -143,7 +143,7 @@ What this set takes (trimmed from `PLAN.md` section 8 to what is built; `python3
 | `core/door` | yes | the plate doors are `KDOOR` records: they open with E on the sheet |
 | `core/host` | yes | camera, panel, inspector, polygon tool, probe |
 | `core/atmos` | yes | the placeholder sky and the skylight on the library materials |
-| `core/walk`, `core/walk/box` | yes | every box a building draws is a floor or a block (`src/37-wk-rec.js`); round walls as arcs of blocks; the doors' blocks switch as they open; F walks the sheet |
+| `core/walk`, `core/walk/box` | yes | every box a building draws is a floor or a block (`core/engine/37-wk-rec.js`, round walls `src/37t-wk-ring.js`); round walls as arcs of blocks; the doors' blocks switch as they open; F walks the sheet |
 | `core/sockets`, `core/lod`, `core/export`, `core/terrain` (`KCAVERN`), `core/camp`, `core/minimap`, `core/shader` x-ray, `core/hazard`, `kits/ancient-transit`, `kits/motor-vehicles` | not yet | the Tungang set's holds and the Line; the Godot export is a `KNOWN_ISSUES.md` item |
 
 ## Checks

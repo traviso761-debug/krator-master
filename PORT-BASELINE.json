@@ -421,12 +421,12 @@
    "sha256": "08061bd5829a1ec9bf45656ca2451cdcf637262917df6a89869e81618784b146"
   },
   "biomes/labyrinth/dist/labyrinth.html": {
-   "bytes": 1823137,
-   "sha256": "3c6f27b0be11ef9671c9689b84e547951a937bd55272891448eeace4292d3f69"
+   "bytes": 1823145,
+   "sha256": "b0b352f72057f2bc120071736e165bd2ec1db22b04ee1c010933a36fb260a05c"
   },
   "biomes/line/dist/line-bore.html": {
-   "bytes": 8069014,
-   "sha256": "8d1d84f4875fcf11ad447c5fd47ad0f210a6ccaaae068a8e5e45610a83e7b696"
+   "bytes": 8069010,
+   "sha256": "aaf21fdc4e89529efd047234e9afefbfd8e9b7e781b1cbf3b5e4aeb9cb12bf1a"
   },
   "biomes/line/dist/line-breach.html": {
    "bytes": 8077309,
@@ -437,20 +437,20 @@
    "sha256": "70cca37858507703cd1484e614d1a3d37905666029cf470ffb6c3ab94e547b4a"
   },
   "biomes/line/dist/line-gap.html": {
-   "bytes": 8086074,
-   "sha256": "bca618f04a0de8a39e86b76c2f624c33a08e9135db907f81a61f720c5a6e095a"
+   "bytes": 8086077,
+   "sha256": "3a80356094b961b7307bc8c4493479459012a5229f98b0b5c1ca7b888ea50ce9"
   },
   "biomes/line/dist/line-hotdoor.html": {
-   "bytes": 8090307,
-   "sha256": "5a4c0cc0d98b93d2a0e0e11a4cb56b019a93a4f2f3c422b9be97c3eb81da9a3f"
+   "bytes": 8090304,
+   "sha256": "3f77a6e077b4e63bef5077b880e515ea9b4b90fa456ba352530d4f7b46c2fafa"
   },
   "biomes/line/dist/line-portal.html": {
-   "bytes": 8243932,
-   "sha256": "ca7525dde98f98192654635bfb028dcbf3ae41990e709808beb4fe2dc693b371"
+   "bytes": 8243941,
+   "sha256": "be0db5373adf289e05365dbccf2b59babcdb91c2a0ae6fb19db31ac3dac1d4be"
   },
   "biomes/line/dist/line-station.html": {
-   "bytes": 8093337,
-   "sha256": "56a56c4ad42469bbba7d31fca5e6a4c11685f04aae73a5a8dd8a808d4483def7"
+   "bytes": 8093335,
+   "sha256": "fc8c78f4d74cc61ae158e57fa9c1bc42e64a41e1b569d94437b834723a080545"
   },
   "biomes/necanyons/dist/necanyons-benches.html": {
    "bytes": 1648924,
@@ -593,8 +593,8 @@
    "sha256": "40612ec501973ca983f3d666a1522a386b92a3fbb8e674b4da2c6c4e1d83588e"
   },
   "biomes/riftrim/dist/riftrim-fowlers.html": {
-   "bytes": 12178360,
-   "sha256": "653de3150dbb2f787f7f480ddc37366cd2e250a73243a2f08b06a5f79eddedc0"
+   "bytes": 12179064,
+   "sha256": "dc6e500613594a5c5a421004dd116ead1521e63353ba0635f1571163f7dc0679"
   },
   "biomes/riftrim/dist/riftrim-gorge.html": {
    "bytes": 8516645,
@@ -609,8 +609,8 @@
    "sha256": "2ee136e8ec66cafd8f11165a760d38645e4bb7e1cc7322819d5ff315b22c489b"
   },
   "biomes/riftrim/dist/riftrim-icecut.html": {
-   "bytes": 12180504,
-   "sha256": "4e6aaed0937efb970ce6c52c230e6cf9cac7c5ab028ff911ba83f586b56f8de1"
+   "bytes": 12181208,
+   "sha256": "f2e627d2e3d4bc12b5c82414f7adb5036f26b8c8ad3a84b81c60fa8108774928"
   },
   "biomes/riftrim/dist/riftrim-lakes.html": {
    "bytes": 8967058,
@@ -857,8 +857,8 @@
    "sha256": "b3bc24644b4dffdc5ed00100131fdae5f409ba18dd428cc24e80e2b320afa220"
   },
   "kits/ancient-transit/dist/ancient-transit.html": {
-   "bytes": 2550331,
-   "sha256": "c69c5f0a82f2a2feb2f16fac6433a2e28451b588f7492d6f863fc527bd6c7459"
+   "bytes": 2550346,
+   "sha256": "08c8357e5eac3690ebc2df6af4929e118d5bcb9d871f01da01d1b68597d15da9"
   },
   "kits/ancients-interiors/dist/ancients-interiors.html": {
    "bytes": 374845,
@@ -1309,8 +1309,8 @@
    "sha256": "5d70a7840755e6af903ef56012edfaba375737f142fd0675779396812e4a1b2c"
   },
   "kits/tungang/dist/tungang.html": {
-   "bytes": 3021872,
-   "sha256": "dc0c241485ce1eae84aa59301e85478a2f661adc5ecfd4685f1e2f41036042bd"
+   "bytes": 3022530,
+   "sha256": "2d74c7a526df09cff6d4e88083f27a4af8f44b59fd3dbe6a62cb1ce4d7fec16a"
   },
   "kits/xanadu/dist/xanadu.html": {
    "bytes": 1143015,
@@ -1441,8 +1441,8 @@
    "sha256": "c66bfed38c88f2ec21d542c626c1f8f5a83e028beff48c67a8743280c5271b02"
   },
   "settlements/loj-twenny/dist/loj-twenny.html": {
-   "bytes": 14844288,
-   "sha256": "bb6fb6682e176b154e99c3b7e2afd4a37291063b162794a902cf9435d8a314ef"
+   "bytes": 14844993,
+   "sha256": "34b819d202f6d635638aec7deb51146dcef7098f0e05429a4cd5a8c346a5f4fc"
   },
   "settlements/longsong/dist/longsong.html": {
    "bytes": 5404317,

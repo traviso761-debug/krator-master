@@ -24,8 +24,8 @@ const LT_VIEWS={
  'A street of homes - cream over red, the numbers, the red lamps':[24.6,9.3,380,62,8.6,380],
  'The dark beds - the pale fungus in amber light':[-46.4,-1,563.6,-46.4,-1.8,575],
  'The loj hall - the banner wall and the count wall':[89.8,5.4,422.2,101.6,3.2,417.6],
- 'The loj\'s way - the gate and the carriage houses':[24.2,4.2,411,70,3,416],
- 'The great shaft\'s foot - the hoist and the ice':[-12,4.4,520,-22,7,540],
+ 'The loj way - the gate and the carriage houses':[24.2,4.2,411,70,3,416],
+ 'The foot of the great shaft - the hoist and the ice':[-12,4.4,520,-22,7,540],
  'The station from the east mezzanine - the platforms, the island, the shaft':[21,9.5,350,-12,2.2,480],
  'The last stop (sealed)':[-70,9.3,337.6,-70,8.6,344]};
 const LT_LINE={title:'Loj Twenny (20) at station 3 of the Line, under the great shaft',lines:{line:'#46c27a',shaft:'#e8e8e8',gap:'#c24a3a'},

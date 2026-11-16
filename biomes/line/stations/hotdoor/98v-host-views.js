@@ -3,7 +3,7 @@
 // close, inside the airlock with the sealed train, past the inner door (the cyan burning, the spalls).
 const VIEWS=(function(){const V={},w=SEC.walk,Pl=LINE.plant,Cl=LINE.cleft,O=LINE.OUT,I=LINE.INN;
  V['Down the gallery to the outer door']=[w.x0+1,w.y+1.65,150,-2,4,O];
- V['The plant\'s hall — the generators']=[40,Pl.y+1.65,140,28,Pl.y+3,200];
+ V['The plant hall — the generators']=[40,Pl.y+1.65,140,28,Pl.y+3,200];
  V['The cooling banks and the cells on charge']=[34,Pl.y+1.65,214,40,Pl.y+2,250];
  V['The pipes along the east wall']=[w.x0+1,w.y+1.65,250,14.4,4.9,O];
  V['The cleft shrine']=[-20.4,SEC.road.footY+1.65,86,Cl.c[0],Cl.c[1]+1.4,Cl.z];

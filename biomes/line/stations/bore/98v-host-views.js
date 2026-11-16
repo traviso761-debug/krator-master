@@ -9,7 +9,7 @@ const VIEWS=(function(){const V={},w=SEC.walk,r=SEC.road;
  V['Over the tracks (the central strip)']=[0,SEC.strip.y+1.7,520,0,4.5,1150];
  V['Across the gallery (the section)']=[w.x0+.9,w.y+1.7,250,-16,4.5,262];
  V['The crossover (from the walkway)']=[w.x0+.8,w.y+1.7,272,-2,.6,368];
- V['The Fixers\' vein working']=[w.x0+1.1,w.y+1.65,LINE.vein.z-8,SEC.x1+6,1.6,LINE.vein.z+2];
+ V['The Fixers vein working']=[w.x0+1.1,w.y+1.65,LINE.vein.z-8,SEC.x1+6,1.6,LINE.vein.z+2];
  V[TRAIN_VIEW]=[w.x0+1.0,w.y+1.65,620,4.5,2.5,470];
  return V;})();
 function onView(name){if(name===TRAIN_VIEW){const T=LINE.trains[0];TRAINS.at(TRAINS.when(T,560));}else TRAINS.fixed=null;}

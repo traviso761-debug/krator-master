@@ -24,7 +24,7 @@ const VIEWS=(function(){const V={},Y=LEVEL;
  // the stacks from the pond's north-east bank: the bridges, the saucers, the Garden Stack's fall
  {const S=stk('S1');V['The stacks']=lookY(820,Y+140,-820,S.x,Y+150,S.z);}   /* from the north-east, the Works Stack nearest, the Garden and Mine Stacks and their bridges behind */
  // the Garden Stack's fall into its pool
- {const f=GATE.plan.falls[0];if(f)V['The Garden Stack\'s fall']=look(f.x+f.nx*240+f.nz*80,f.z+f.nz*240-f.nx*80,20,f.x,f.z,120);}
+ {const f=GATE.plan.falls[0];if(f)V['The fall of the Garden Stack']=look(f.x+f.nx*240+f.nz*80,f.z+f.nz*240-f.nx*80,20,f.x,f.z,120);}
  // the Gowd Warra above the pond, its gallery woods
  {const P=RIVER.lines[0],a=P[Math.floor(P.length*.45)],b=P[Math.floor(P.length*.75)];V['The Gowd Warra']=look(a[0],a[1]+60,8,b[0],b[1],2);}
  // a knob of the chaos

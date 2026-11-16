@@ -39,6 +39,7 @@
     "core/engine/36-def.js": "5479088bdba91414994281ac4dd74d7459744bb844b6101fad3c207578e0e703",
     "core/engine/36o-open.js": "3099a2be44910e6737fb8e827abad230fca8393b286839764136516d225ed31f",
     "core/engine/36s-stair.js": "f254687a185b86dc7a3f6ee1d82289527e93ae76c46fc75bd7c97825a5c8af9f",
+    "core/engine/37-wk-rec.js": "bf39a3a82cfd8b9f24d528aeacd44d332d3d23751f4ff2a14b21b72f4b95ea91",
     "core/engine/90-scene.js": "7ad278f7c04c8fad78a4897de8922b7272ba2e9d5b6357bda393bd481bc5c002",
     "core/engine/91f-furnish.js": "bb209bd5dcd246ec2d018079a5427c3515d90896b36dce8d1e543b9f819e9b1e",
     "core/engine/91i-interiors.js": "5b580ae54cd8726ccfde1b9ce1cd0579057e089a3b1703c87e7380f6e6b1348e",
@@ -167,12 +168,12 @@
     "kits/catalog/tex/wax.albedo.webp": "d2ba69a61d4b4bc750aa5833c086fabb207ffa4eeaa7c8a4b8d292dded453e26",
     "kits/catalog/tex/wicker.albedo.webp": "88010bf97a4e66158e7db9fca32a3c010a8e4c19a04a01fcbc4ba914229a4f52",
     "kits/catalog/tex/wood.albedo.webp": "bdf1af0b681f77edfadda2ac8e991cbd0b9bb44a8abf65a1a17690da70e7112c",
-    "kits/tungang/KNOWN_ISSUES.md": "26a89ce647621b5d322f10596941f6567fa5d94cdf65b94af4c930266ad3cbaa",
+    "kits/tungang/KNOWN_ISSUES.md": "afe30b7579fde197a2c6faa4933ff5e1cb596ba59076f79099a23774b7c36385",
     "kits/tungang/PORT.md": "77bd012da34ea646a7c7c8d50a1c5dfced6789aff9489f5be31676364220f52d",
-    "kits/tungang/build.py": "7506a3bd392d9ef470fe2617a57d3a258afc245a5d0f7d64c2b5d5389aa1ebb5",
+    "kits/tungang/build.py": "dcb1b4b49ea83114acba850ab71c109f3ae8fc5ef6b105805c422bbbc0a037c3",
     "kits/tungang/src/00-head.html": "fba12988e841f1850990769e31c4ee6ca7a12a59ecf113ebd50bc39c76b8bc9b",
     "kits/tungang/src/26k-kit.js": "ce6235f27156b1447c497cb7e61bd1e5afa7a08952158af0b4ab2b16be097475",
-    "kits/tungang/src/37-wk-rec.js": "05b5e7cedc5b107b3ec783ce9dbbeff6e3bd141da0cd5a8978f84132b8d3de42",
+    "kits/tungang/src/37t-wk-ring.js": "9db696db4e09420bba161830e82eb1fc13bc9e8f457e1b479036781265e5e98f",
     "kits/tungang/src/40-fg-kit.js": "4457dec62d05596696ff3e0cfa4f7dde9056d89761ed7798358b154a78b8a987",
     "kits/tungang/src/42-fg-mass.js": "9f8afab43289c36515b62ff8922d26f98ff612fc5737d506de96b1bf9b6fd59b",
     "kits/tungang/src/44-fg-wc-plan.js": "bb3b693acae6dda4e28693767b6f0bda3679f3ef8ba3440d452d0be2a4ac7cf2",
@@ -311,18 +312,18 @@
     "core/walk": "c2dba1d905c6546cc60841fa95b468a852915494776bd7eee35713cb4f48c648",
     "core/walk/box": "640d3e2f0368a531fc4c1f0be0fdca8de1f41b5e2f176112f6212377ea41494d",
     "kits/catalog": "10322ea778934242b7ce59b2a1b14f40befde097c5b9b80081f11fd0cb8a57ce",
-    "kits/tungang/src": "d98b19b637482743d28479eaadda23ab10902e564df55e5392aa8897581f9076",
+    "kits/tungang/src": "8193af5b3d7a7cbe2c38294c3bef350af6572d54ebc8030abbb49600015d83b5",
     "tools": "5d8cb54bfd5566913f21e3e094a6a85418e1354e6e39cf6138ec20bda1add512",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "kits/tungang/build-manifest.json": "ff1eaf0cbdc67a8f2cfade738f2a0a4c1874588913278858a0118b3f3c37bba5",
-    "kits/tungang/dist/tungang.html": "dc0c241485ce1eae84aa59301e85478a2f661adc5ecfd4685f1e2f41036042bd",
+    "kits/tungang/build-manifest.json": "cd01afcfd1507f0dfee643e521a506009b2085c89dc881717d3600db5c8c81ed",
+    "kits/tungang/dist/tungang.html": "2d74c7a526df09cff6d4e88083f27a4af8f44b59fd3dbe6a62cb1ce4d7fec16a",
     "kits/tungang/dist/tungang.tex.tungang.js": "68c3b000af1b2130000941b6ce097f125bcadf3f12433566c4ef0fa85f1992de"
    },
    "outputs_raw": {
-    "kits/tungang/build-manifest.json": "ff1eaf0cbdc67a8f2cfade738f2a0a4c1874588913278858a0118b3f3c37bba5",
-    "kits/tungang/dist/tungang.html": "dc0c241485ce1eae84aa59301e85478a2f661adc5ecfd4685f1e2f41036042bd",
+    "kits/tungang/build-manifest.json": "cd01afcfd1507f0dfee643e521a506009b2085c89dc881717d3600db5c8c81ed",
+    "kits/tungang/dist/tungang.html": "2d74c7a526df09cff6d4e88083f27a4af8f44b59fd3dbe6a62cb1ce4d7fec16a",
     "kits/tungang/dist/tungang.tex.tungang.js": "68c3b000af1b2130000941b6ce097f125bcadf3f12433566c4ef0fa85f1992de"
    }
   }

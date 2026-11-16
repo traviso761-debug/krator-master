@@ -63,7 +63,7 @@
     "kits/ancient-transit/src/56b-tr-draw-subway.js": "7f283287bcc81f594b4694bd0050b4ef2cc2f5cff7e13b9cf5e551cfe19fe9ee",
     "kits/ancient-transit/src/56c-tr-draw-line.js": "417f40f94bd4d7dba1116f16fe13ac3bb757cb5db7329ea433b8559e9087d21d",
     "kits/ancient-transit/src/57-tr-draw-dress.js": "0921a5ebc5554a72bfef576defc91830ae3cf9881fd4fc91a8091a6179b77493",
-    "kits/ancient-transit/src/70-host-stage.js": "461e2eff7fd9a7ae5bb1e1ec6bd8a141f32748018c8b851e595db16d5e53db69",
+    "kits/ancient-transit/src/70-host-stage.js": "7106aaadb865b2ab2c802b6b5058f6d3d32961e6d6524f3085c6f01162956677",
     "kits/ancient-transit/src/89-host-sky.js": "39a1f55a76c99aeec2a5fe6e7142ef4cac7c71a3c0efc107ea3e06e9846c70e7",
     "kits/ancient-transit/src/99-host-take.js": "06c0a4ba881094c06bc43ac0bd123f84b0e40e6af34ad44cccbea99622c11f96",
     "kits/ancient-transit/src/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
@@ -162,13 +162,13 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "kits/ancient-transit/build-manifest.json": "e2974157bbfa7dce28eca49479cae68c62d9a1a079b49d24342f65be2efafd93",
-    "kits/ancient-transit/dist/ancient-transit.html": "c69c5f0a82f2a2feb2f16fac6433a2e28451b588f7492d6f863fc527bd6c7459",
+    "kits/ancient-transit/build-manifest.json": "9e875388a9efa56a523fc939b6fdd2326c46a6ddbfae6c916db6bcf4853f2d3c",
+    "kits/ancient-transit/dist/ancient-transit.html": "08c8357e5eac3690ebc2df6af4929e118d5bcb9d871f01da01d1b68597d15da9",
     "kits/ancient-transit/dist/ancient-transit.tex.ancient-transit.js": "006858241b75ab6107bbac839d32b32b193f166df8aa30816d70ab975c61a306"
    },
    "outputs_raw": {
-    "kits/ancient-transit/build-manifest.json": "e2974157bbfa7dce28eca49479cae68c62d9a1a079b49d24342f65be2efafd93",
-    "kits/ancient-transit/dist/ancient-transit.html": "c69c5f0a82f2a2feb2f16fac6433a2e28451b588f7492d6f863fc527bd6c7459",
+    "kits/ancient-transit/build-manifest.json": "9e875388a9efa56a523fc939b6fdd2326c46a6ddbfae6c916db6bcf4853f2d3c",
+    "kits/ancient-transit/dist/ancient-transit.html": "08c8357e5eac3690ebc2df6af4929e118d5bcb9d871f01da01d1b68597d15da9",
     "kits/ancient-transit/dist/ancient-transit.tex.ancient-transit.js": "006858241b75ab6107bbac839d32b32b193f166df8aa30816d70ab975c61a306"
    }
   }

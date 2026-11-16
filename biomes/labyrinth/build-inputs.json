@@ -21,9 +21,9 @@
     "biomes/labyrinth/src/89a-host-atmos.js": "38b798cfd51e84154ae45ae6410686565816a763544ae3369222ad9c2f603151",
     "biomes/labyrinth/src/89g-host-gate.js": "1b1906cd97ca152838260258510b63111f4b2624c9f0f3b5d88c147967ac3270",
     "biomes/labyrinth/src/89h-host-hazards.js": "39fa554a25165516fa4e87c1d5a4ad819d0dca8800f0124e7143b0e4c1b883c3",
-    "biomes/labyrinth/src/89w-host-water.js": "052549a26ed81685ddd9f210ec38f5f6c4fc53d70b1e10afa6e229163a30edbf",
+    "biomes/labyrinth/src/89w-host-water.js": "8378418d8c37832fa76c65ac07ead4682930764978df102b79668290581f17a4",
     "biomes/labyrinth/src/89z-host-build.js": "3fa5f7a9faddce2121965bd73ab51232b2e2a17f0d9b46dcaf054e023b0d7db5",
-    "biomes/labyrinth/src/99-host-take.js": "58a4cc6ce21a99ca98c6b91ef6b9daee9a5dd5a64fb07f4b08d8e0287916709a",
+    "biomes/labyrinth/src/99-host-take.js": "152efa59c50f851bd715925e66c573f9679eb54f652fbcaded35e9141b805bdf",
     "biomes/labyrinth/src/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
     "biomes/labyrinth/tex/bark.birch.albedo.webp": "0b5207b9e47923cf22956ca459e65ab8f4a40865389d78ffbd175da94df80d93",
     "biomes/labyrinth/tex/bark.larch.albedo.webp": "b39a68f1e7110e913459fc879f00a70bad207edf7f23310eac695fc9be858d86",
@@ -249,12 +249,12 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/labyrinth/dist/labyrinth.html": "3c6f27b0be11ef9671c9689b84e547951a937bd55272891448eeace4292d3f69",
+    "biomes/labyrinth/dist/labyrinth.html": "b0b352f72057f2bc120071736e165bd2ec1db22b04ee1c010933a36fb260a05c",
     "biomes/labyrinth/dist/labyrinth.tex.ancients.js": "aaec378babc435a934207a1b9ea006e1d953a15d6e7e03e32bfb01b2333cbe55",
     "biomes/labyrinth/dist/labyrinth.tex.labyrinth.js": "48c9f479ea05c56592df34572e52528ac2d5e35d479f38f7e2d190d5366b6ca4"
    },
    "outputs_raw": {
-    "biomes/labyrinth/dist/labyrinth.html": "3c6f27b0be11ef9671c9689b84e547951a937bd55272891448eeace4292d3f69",
+    "biomes/labyrinth/dist/labyrinth.html": "b0b352f72057f2bc120071736e165bd2ec1db22b04ee1c010933a36fb260a05c",
     "biomes/labyrinth/dist/labyrinth.tex.ancients.js": "aaec378babc435a934207a1b9ea006e1d953a15d6e7e03e32bfb01b2333cbe55",
     "biomes/labyrinth/dist/labyrinth.tex.labyrinth.js": "48c9f479ea05c56592df34572e52528ac2d5e35d479f38f7e2d190d5366b6ca4"
    }
