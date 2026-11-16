@@ -468,6 +468,22 @@
    "bytes": 3713416,
    "sha256": "b053c9661c53cc37fe78f4fc6b7c3edbd20a799f5f8bcb17459d5ef09489c013"
   },
+  "biomes/siphon-pits/dist/siphon-pits-arete.html": {
+   "bytes": 5019071,
+   "sha256": "053b278bf7421b46837627e730dfb541a4dbf86ad185c8336e794bf2430c884d"
+  },
+  "biomes/siphon-pits/dist/siphon-pits-scarp.html": {
+   "bytes": 5019071,
+   "sha256": "ceaf7c484dc10ec203fce19c127230eec0a3a1eb56bd88c5ed1fee52bdba2f70"
+  },
+  "biomes/siphon-pits/dist/siphon-pits-terraces.html": {
+   "bytes": 5084272,
+   "sha256": "9fa1e71eef180c3978efdac136b09b60a4bc24be66903aecd480cd047cff0704"
+  },
+  "biomes/siphon-pits/dist/siphon-pits.html": {
+   "bytes": 5572048,
+   "sha256": "017951c257fc4b8eeb2b79438983a85a3ca1e91b2906896451e395dfa1a163a6"
+  },
   "biomes/swbay/dist/swbay.html": {
    "bytes": 8889448,
    "sha256": "b4f0b23be11874165bc4b585d9b2e0659b062b8cb3c0083d2881e3a849f5b793"
@@ -793,8 +809,8 @@
    "sha256": "43d112c1308747841b1f9afc6f294cd8a3f9ba6821259d0837b8f7e52feaf8df"
   },
   "kits/crops/dist/crops.html": {
-   "bytes": 2570483,
-   "sha256": "000315cee56acfc01b762d8654abfd8e2e484bd9d0f2e6556e986b57b09c69db"
+   "bytes": 2577911,
+   "sha256": "957ff6f8486cdcff37d97a30225226c9f67aa6cb5e122fd7e05aff9f3a6f892b"
   },
   "kits/desert-nomads/dist/desert-nomads.html": {
    "bytes": 16905357,
@@ -805,8 +821,8 @@
    "sha256": "74837a10508ce09f294253a6df3a8369bb9f222bd100f9b441535a32f32356bb"
   },
   "kits/fauna/dist/fauna.html": {
-   "bytes": 1212081,
-   "sha256": "506cedc7eae5860bb7a092f7ee751691a612d0759cdbf4ccccc5a3b5ba7ee7a2"
+   "bytes": 1220864,
+   "sha256": "b3ed09afe1ec34207fc92228aaeb54e8354e9b0a9a80ca1fb69604503dcec6db"
   },
   "kits/interiors/dist/interiors-sets.html": {
    "bytes": 734495,
