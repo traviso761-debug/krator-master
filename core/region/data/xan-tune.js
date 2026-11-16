@@ -122,11 +122,11 @@ T.gateways=[
 T.oil={px:[925,1598],people:300,kgYr:400000,licence:.2,council:.1};
 /* THE ORDER'S MONASTERY (the owner, 2026-11-16, a proposal: "one of the monasteries of Qiblai (and therefore of the
    Prismatic Council) is a History Monk monastery, and uses the Order's banner and color. as such the order gets 1/8 of the
-   council income"): one of the eight great monasteries (the saffron one, proposed: LORE.md l.561, "their saffron is the
-   Order's colour"), about 300 of Qiblai's ~2,400 monks, its Prismarch on the council. It takes an eighth of what the
+   council income"): one of the eight great monasteries (the saffron one, the owner settled it: LORE.md l.561, "their
+   saffron is the Order's colour"), about 300 of Qiblai's ~2,400 monks, its Prismarch on the council. It takes an eighth of what the
    council receives: the Prismarchy's cut of the oil (a road `cut` where it lands) and the Sultan's grants of esteem (a
    transfer of its own) */
-T.orderHouse={share:1/8,house:['qb.order','The Order\'s monastery at Qiblai (the History Monks: one of the eight great monasteries, under the Order\'s saffron banner)','skm4jjo2vl',921,1595,300]};
+T.orderHouse={share:1/8,house:['qb.order','The Order\'s monastery at Qiblai (the History Monks: one of the eight great monasteries, under the Order\'s saffron banner)','skm4jjo2vl',922.107,1594.893,300]};   /* the saffron spoke (spoke 1, NE of the Temple Mountain), settled by the owner: "Yes, saffron"; the Qiblai page's monastery at x 213.8, z -213.8 m from the centre (922,1595) */
 T.mission=['yuni.mission','Yuni\'s mission at the oil field (its cloister and lodging beside the Geomancers\' wells)','skm4jjo2vl',926,1597,40];   /* the owner: the field is both */
 /* THE POWER (the owner, 2026-11-16): "if the geomancers have a presence at qiblai it will likely be partly electrified. the
    council will take its cut"; "Qiblai will be electrified along all major avenues and in buildings except in poor areas;

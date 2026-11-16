@@ -394,7 +394,7 @@ Each step ends in a node test on the valley host, with a negative for each check
       - The rarities the Godshearth camp brings home in summer leave with the next spring's caravan.
     - **The Order's monastery at Qiblai** (the owner, a proposal: "one of the monasteries of Qiblai (and therefore of the Prismatic Council) is a History Monk monastery, and uses the Order's banner and color. as such the order gets 1/8 of the council income").
       - `qb.order` is one of the eight great monasteries: about 300 of Qiblai's monks, faction `order`, its Prismarch on the council.
-      - *Proposed:* the saffron one, since LORE.md says "their saffron is the Order's colour".
+      - **The saffron one, settled by the owner ("Yes, saffron")**: spoke 1, north-east of the Temple Mountain, ~300 m from the centre; built on the Qiblai page with the Order's blue, a parabolic gate, a toron spire, drum halls and the Order's banners.
       - It takes an eighth of the council's income in two parts: of the Prismarchy's oil, a `cut` where it lands; and of the Sultan's grants of esteem, `esteem.qiblai.order`.
       - The Qiblai kit session has the building side.
     - The houses and the camp places are *proposed*. Beyond the owner's words there is no lore for the Tears or the Devisers yet, and the camps' pixels are approximate.
