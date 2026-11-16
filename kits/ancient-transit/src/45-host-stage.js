@@ -26,6 +26,17 @@ const TR_RELIEF=(x,z)=>TR_RELIEF0(x,z)+KTRANSIT.quakeH(TR_QUAKE,x,z);
 /* THE SUBWAY (the owner, 2026-11-08): its records come before the ground, because where its roof fell in the ground is carved into a sinkhole
    that opens onto the tunnel (KTRANSIT.sinkholeH). A north-south line east of the side street st1, two stations, one of them fallen in */
 const TR_SUBWAY=KTRANSIT.subway([[-120,-1750],[-120,-700],[-60,-250],[-60,1750]],{id:'sw',ground:TR_RELIEF,stations:[900,2500],stationStates:['ruined','collapsed'],seed:4471});
+/* THE DEEP LINE (biomes/line; KTRANSIT.line), its records before the ground (its cutting and its sinkhole are carved): a short line north of the
+   passenger line showing each form once: elevated on piers, open in a cutting, shallow (a stretch fallen in, its sinkhole), the gallery passing
+   under the subway (a door open across it, a spalled and a flooded stretch, a crossover), the junction cavern with its station (the tracks splayed
+   round an island platform, side platforms), a shaft and a branch */
+const TR_LINE_SPLAY=(id,s)=>{const nom={t1:10.5,t2:4.5,t3:-4.5,t4:-10.5}[id],sta={t1:13.4,t2:7.4,t3:-7.4,t4:-13.4}[id],t=s<2300||s>2760?0:s<2380?(s-2300)/80:s>2680?(2760-s)/80:1;return nom+(sta-nom)*t*t*(3-2*t);};
+const TR_LINE=KTRANSIT.line({id:'deep',seed:4481,ground:TR_RELIEF,pts:[[-1500,8,1250],[-1200,8,1250],[-1000,-0.5,1250],[-600,-16,1250],[-250,-22,1250],[-60,-28,1250],[800,-40,1250],[1700,-40,1250]],offAt:TR_LINE_SPLAY,
+ forms:[{s0:0,s1:450,kind:'elevated'},{s0:450,s1:900,kind:'open'},{s0:900,s1:1250,kind:'shallow'},{s0:1250,s1:2300,kind:'gallery'},{s0:2300,s1:2760,kind:'junction'},{s0:2760,s1:3200,kind:'gallery'}],
+ cond:[{s0:0,s1:3200,track:'t1',state:'kept'},{s0:1000,s1:1040,track:'*',state:'cut'},{s0:1500,s1:1700,track:'t4',state:'flooded',depth:0.4},{s0:1900,s1:2100,track:'t3',state:'worn'},{s0:3000,s1:3200,track:'t2',state:'blocked'}],
+ lining:[{s0:1600,s1:1660,state:'spalled'},{s0:1500,s1:1520,state:'flooded'}],crossovers:[{s:2150,a:'t2',b:'t3'}],doors:[{s:1800,state:'open'}],
+ stations:[{num:1,s:2530,len:300,state:'kept',name:'the demo junction',platforms:[{track:'t1',side:1,w:7.2},{track:'t2',side:-1,w:5.5},{track:'t3',side:1,w:5.5},{track:'t4',side:-1,w:7}]}],
+ shafts:[{s:2600,side:-1,off:-20,r:3.5}],branches:[{s:2470,side:1,to:'a branch'}]});
 /* THE STREETS AND THEIR WAR (the owner, 2026-11-08: "various levels of cratering and strewn wreckage ... along the roads"): the avenue from a riot at
    its west end to bombed to smithereens at its east (damage 0.1 to 1 along it); the first side street shelled with military positions (a checkpoint
    at the avenue); the second a riot with a checkpoint. The craters carve the ground, so the records come before it */
@@ -48,7 +59,7 @@ const TR_WAR_O=[{damage:s=>0.1+0.9*s/3000,seed:901,blockades:[1560]},{damage:0.5
  {damage:0.22,seed:904},{damage:0.15,seed:905},{damage:0.15,seed:906},{damage:0.3,military:0.5,seed:907},{damage:0.3,seed:908},{damage:0.2,seed:909}];
 /* the cargo line too comes before the ground: its cutting through the knoll is carved */
 const TR_CARGO=KTRANSIT.rail([[-1750,-150],[650,-150],[1750,-900]],{id:'cargo',ground:TR_RELIEF,streets:TR_STREETS.slice(1),catenary:true,shift:TR_SHIFT,quake:TR_QUAKE});
-const terrainH=(x,z)=>{let h=TR_RELIEF(x,z)+KTRANSIT.sinkholeH(TR_SUBWAY,x,z);for(let i=0;i<TR_WAR.length;i++)h+=KTRANSIT.craterH(TR_WAR[i],x,z);for(let i=0;i<TR_ROADS.length;i++)h+=KTRANSIT.lineH(TR_ROADS[i],x,z);h+=KTRANSIT.lineH(TR_CARGO,x,z,{form:0.45});return h;},waterH=()=>-1e6;
+const terrainH=(x,z)=>{let h=TR_RELIEF(x,z)+KTRANSIT.sinkholeH(TR_SUBWAY,x,z);for(let i=0;i<TR_WAR.length;i++)h+=KTRANSIT.craterH(TR_WAR[i],x,z);for(let i=0;i<TR_ROADS.length;i++)h+=KTRANSIT.lineH(TR_ROADS[i],x,z);h+=KTRANSIT.lineH(TR_CARGO,x,z,{form:0.45});h+=KTRANSIT.lineCarveH(TR_LINE,x,z);return h;},waterH=()=>-1e6;
 /* THE HIGHWAY is built here, with the data, not on the stage: its ramps' landing roads JOIN the network (KTRANSIT.joinRamps: the off ramp's lands on
    the street rs, a T; the on ramp's ends beside st2 and is carried to it, a T), so those junctions exist before the wars and the dress. The wars
    come after it (a crater is carved only once the war exists; the deck clears the ground without them) */
@@ -56,7 +67,7 @@ const TR_H=KTRANSIT.highway([[-1750,-560],[-700,-560],[250,-360],[1750,-360]],{i
 const TR_RAMP_ROADS=KTRANSIT.joinRamps(TR_NET,TR_H);
 TR_WAR=TR_STREETS.map((st,i)=>KTRANSIT.war(st,Object.assign({network:TR_NET,road:i},TR_WAR_O[i])));
 /* everything carved: where the ground mesh refines itself (47): the subway's holes, the craters, the fault's line, the cuttings */
-const TR_CARVED=[].concat(KTRANSIT.carved(TR_SUBWAY),...TR_WAR.map(W=>W.craters.map(c=>({x:c.x,z:c.z,r:c.r}))));
+const TR_CARVED=[].concat(KTRANSIT.carved(TR_SUBWAY),KTRANSIT.lineCarved(TR_LINE),...TR_WAR.map(W=>W.craters.map(c=>({x:c.x,z:c.z,r:c.r}))));
 for(let s=0;s<TR_QUAKE.L;s+=18){const p=TR_QUAKE.path.at(s);TR_CARVED.push({x:p.x,z:p.z,r:12,k:8});}
 /* the graded lines: refined where they CUT the ground (a cutting's edge and its slopes are finer than a coarse cell); a line at grade or on a fill
    changes no ground (the owner, 2026-11-09, triangles: refining every road's whole length cost 0.8 M) */

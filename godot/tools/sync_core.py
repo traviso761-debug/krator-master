@@ -15,6 +15,7 @@ PAIRS += [(f"core/mask/{f}", f"godot/tests/mask/{f}") for f in ("kmask.gd", "kma
 PAIRS += [(f"core/clock/{f}", f"godot/tests/clock/{f}") for f in ("kseason.gd", "kseason_test.gd", "golden-season.json", "kseason_flush_test.gd", "golden-flush.json")]   # KCLOCK.season's twin
 PAIRS += [(f"core/biome/{f}", f"godot/tests/fire/{f}") for f in ("kfire.gd", "kfire_test.gd", "golden-fire.json")]   # KFIRE (38-core-fire.js)
 PAIRS += [("core/simulation/ksim.gd", "godot/tests/sim/ksim.gd")]   # SIM.pose's twin (its test reads a world's export: tests/dhelv)
+PAIRS += [(f"core/simulation/ride/{f}", f"godot/tests/ride/{f}") for f in ("kride.gd", "kride_test.gd", "golden-ride.json", "golden-ride-ferry.json")]   # riding's twin (PLAN-RIDING.md)
 # KField (class_name: the importer godot/krator/field_import.gd uses it from here)
 PAIRS += [(f"core/terrain/{f}", f"godot/tests/terrain/{f}") for f in ("kfield.gd", "kfield_test.gd", "golden-field.json",
                                                                            "kstrata.gd", "kstrata_test.gd", "golden-strata.json",

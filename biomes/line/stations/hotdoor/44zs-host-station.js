@@ -1,0 +1,4 @@
+// ================================================================= HOST — the station: which window of the Line this page draws
+// biomes/line/PLAN.md section 5, station 4, `hotdoor`: the north door of the hot section.
+const STATION={key:'hotdoor',name:'The hot door (station 4)',num:4,state:'kept',
+ hint:"Station 4 of the Line: the hot section's north door (bore km 55), 2900 m under the crest: the airlock of two door walls 260 m apart (four train leaves, a walkway hatch and a road gate in each), the power and cooling plant in its hall off the east wall (generators on rare-earth magnets, the cooling banks, power cells on charge), its heat exchangers' pipes running through both doors into the hot rock; a sealed train waiting in the airlock; past the inner door the Ancients' cyan still burning, spalls in the vault; a crystal cleft shrine behind a rail in the granite of the west wall"};

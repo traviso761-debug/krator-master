@@ -296,6 +296,42 @@
                 "kits/motor-vehicles"
             ],
             "port": 8798
+        },
+        {
+            "name": "ride-lab",
+            "runtimeExecutable": "python",
+            "runtimeArgs": [
+                "-m",
+                "http.server",
+                "8857",
+                "--directory",
+                "core/simulation/ride/lab/dist"
+            ],
+            "port": 8857
+        },
+        {
+            "name": "line",
+            "runtimeExecutable": "python",
+            "runtimeArgs": [
+                "-m",
+                "http.server",
+                "8860",
+                "--directory",
+                "biomes/line/dist"
+            ],
+            "port": 8860
+        },
+        {
+            "name": "repo-root",
+            "runtimeExecutable": "python",
+            "runtimeArgs": [
+                "-m",
+                "http.server",
+                "8862",
+                "--directory",
+                "."
+            ],
+            "port": 8862
         }
     ]
 }

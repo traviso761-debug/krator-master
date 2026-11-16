@@ -270,6 +270,32 @@ turnRadius 4.2, maxSteer 0.38, cargo 80, mass 760, battery 40, range 300, wheelb
 8.5, 0.3, 1800, 4200, 260, 500, 3.85, 1.6`; hauler `22, 1.2, 9.5, 0.38, 9000, 9800, 420, 420, 5.45, 2.1`; tram `20,
 1.0, 0, 0, 0, 18000, 600, 0 (the guideway feeds it), 9.6, 2.0, standing 30`. `tank` is 0 on all six.
 
+## The Ancient Line train and the Tungangs' stock (`krator-vehicles-line.js`, `krator-vehicles-tungang.js`; 2026-11-11)
+
+The Rift line's train (`biomes/line/PLAN.md` section 7): culture `ancient`, in the tram's language stretched for the Line, in a file of
+its own so a host that bundles only `'ancient'` (the Ancient's Valley) is unchanged. **Bundle `['ancient', 'line']`** (it reuses the
+Ancients' helpers and culture; `'tungang'` for the Tungangs' stock). The frame: y = 0 is the guideway's running surface; two bogies a
+car, four wheels a bogie at x +-0.85, none steers (`maxSteer` 0); the car floor at 1.2 m (the platform's height).
+
+| Key | Box (w x d x h) | Inside | Wheels | Variants | Triangles (built / kept) |
+|---|---|---|---|---|---|
+| `anc_line_power` | 3.6 x 22 x 4.4 | a raked cab for two, the cooling and pressure plant, roof coolers | 8, r 0.45, bogies z +-7.5 | Built, Kept (Tungang) | 5 892 / 6 620 |
+| `anc_line_saloon` | 3.6 x 24 x 4.4 | 64 seats (2 + 2, 16 rows), 40 standing, a vestibule and a door each side at each end | 8, bogies z +-8.5 | the same | 6 516 / 7 404 |
+| `anc_line_crew` | 3.6 x 24 x 4.4 | twelve berths, the galley, eight seats, the guard's brake | the saloon's | the same | 6 228 / 7 092 |
+| `anc_line_van` | 3.6 x 24 x 4.4 | six bays, three double doors a side, tie-down rails | the saloon's | the same | 5 528 / 6 176 |
+| `anc_line_tank` | 3.6 x 22 x 4.4 | a 110 m3 cooling-water tank, a walkway on top, the loop's pipes | the power car's | the same | 5 412 / 5 460 |
+| `tg_trolley` | 2.9 x 4.6 x 2.8 | the Fixers' pump trolley: a walking beam, benches, a salvaged Ancient cell, the lamp code on a pole | 4, r 0.35, one bogie | Trolley | 1 450 |
+| `tg_flat` | 3.2 x 12.4 x 2.4 | a flat wagon on two salvaged bogies, stakes; towed | 8, r 0.45, bogies z +-4.2 | Empty, Spoil | 2 180 / 2 740 |
+| `tg_icewagon` | 3.2 x 10.4 x 3.6 | an insulated box of fungus felt on a plate frame, wax-sealed doors; towed | 8, bogies z +-3.4 | Ice wagon | 1 958 |
+
+**The four states** (agreed with the vehicles session): `built` is `intact`, `derelict` is `weathered`, `wreck` is `wreck` (`burnt` for a
+fire). **`kept` is variant 1** of each Line car, "Kept (Tungang)": salvaged plate riveted over the white skin in faded railway colours,
+the ribbon plated to slits, cream-over-green livery, an enamel number plate; the power car adds the lamp code (green running, red tail,
+white under a hood) and a bell. A kept car takes the ruin states too. **Riding**: each car's `data.ride` is what
+`SIM.rideSource` reads (`core/simulation/PLAN-RIDING.md` section 3), in the car's frame, from the numbers the build draws: `b`, `cap`,
+`seats [{id, at, yaw}]`, `stand [[x0, x1, z0, z1, y]]`, `doors [{id, side, at}]`, `floor`, and `slots` on the van (six bays), the tank
+car (its water), the flat (its deck) and the ice wagon. The ruin check's settled box allows for a long vehicle's swing (`verify.py`).
+
 ## Adding a vehicle
 
 A culture file `krator-vehicles-<culture>.js`: `VEHICLE_CULTURE(key, { name, sign, lore, detail, palette })` once, then

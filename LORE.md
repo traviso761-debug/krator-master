@@ -221,6 +221,44 @@ The Ancients were the original civilization that colonized Krator, with roots, h
 - **Ledge** (the owner, 2026-10-23): the **Ancient arcology** that gives the settlement its name, on the cliff over the great lake at the Rift's western head, across the Outer Wall: where the Ancients' Rift line came out of the Wall (§4; Arccube was the Rift's hub), and **a bridge between two levels**, the highland where the road arrives and the basin and lake ~1.3 km below, so holding it means working both. Dalab has occupied the abandoned arcology to **study the rim's flora and fauna (as strange as the Rift's, but temperate) for useful genes**. Dalab is the only real power on the rift rim (too high for the Lizardmen to venture comfortably, too far and too many Lizardmen in the way for Xanadu), because its genepriests can **mod for cold and altitude**: Dalab's people cross the Outer Wall by a road built partly through **Ancient tunnels** under its airless crest (`biomes/riftrim/PLAN.md`). **The hold is tenuous**: the distance and the crossing make every supply train an expedition. **The rim's natives are an Ancient worker caste gone feral: the Tungangs** (the owner, 2026-10-23: a name evolved from the *tunnel gangs*, *proposed*; `biomes/riftrim/PLAN.md` section 6), in **two branches, perhaps divergent**: the **underground** branch in the tunnels and caverns, and **wilder highland-dwelling** branches on the rim's fells (*proposed*: the **Fellgangs**): the crews the Ancients engineered to run the Rift line, **Morlock-like and born to the dark** (the Zeijani merely adopted the night): pale, huge-eyed and dazzled by day, echolocating by tongue-clicks, with **holds within the caverns**, which they know better than anyone. They still keep stretches of the tunnels and Ledge's lifts, the old timetable and signal codes kept as rite. **The crews were unionised, and it runs deep in them still** (the owner, 2026-10-23), though a thousand years in the dark have kept **the forms without their meanings**: syndicalist communes, each hold a **loj** under a steward elected by show of hands at an open meeting, bound by the old agreement with the Ancients (the Book), in practice often run by a charismatic steward or a big man; over them the union **President** (*Tpresden*), an honour most of the time, granted exceptional powers when the lojes agree there is a crisis; out of crisis the Tpresden judges disputes between lojes and oversees the **Fixers**, the cadre who keep up the Line far from the holds and the whole network maintained. The lojes are **numbered** after the Line's original stations north to south (Ledge's lifts are Loj Fower), an order broken by lojes lost to disaster and new ones founded as they spread into new caverns. **Tungangs once lived throughout the Rift**: those east of Chimes were wiped out in tunnel wars after the Lizardmen came, and many Fellgangs descend from those who fled; a lost loj in the east is rumoured, unheard from officially in over five hundred years. **The truth of Loj Nahn** [the owner, 2026-10-23; known to no one outside it]: the lost loj is **Loj Nahn**, the number no Tungang says. In the tunnel wars it retreated into **the upper levels of Arccube** and sealed them off. About **a thousand people** have held out there ever since, farming the arcology's **upper terraces**, surrounded by Lizardmen, and lowering **stealthy gathering parties at night** for wood and the few other things the arcology cannot give them. The Lizardmen attack any they meet, but seem to lack the means or the will to press the loj further. Five centuries on open terraces have changed them, as the fells changed the Fellgangs, and the hold is **the human heart of the reward** that waits for whoever braves the Lizardmen (both the owner's, 2026-10-23). **The Tungangs' tales of the Cataclysm** [the owner, 2026-10-23]: there was a great war, because **the Gaffers got too greedy**; the crews called **the Great Strike**, went underground, and rode out the catastrophes that followed. What happened when the Lizardmen came they are not sure of: the sagas tell of **much wailing and screaming in Arccube, and then the Lizardmen were there; and there were no Ancient bodies.** Tungang and Fellgang agree that the only thing worse than a Labber is a Lizard. With no one to negotiate with until Dalab came, the Book gathered a Midrash of **readings**, argued by the Bookmen, who **still read English** for its sake (many lojes go by an oral tradition of the laws); *skab* is the general curse (traitor, bastard). **Their tongue is Northern English worn past understanding** (*us'll nobbut gan t'wark while t'stoord sez* > *usl nobga twak wilstood sez*). Dalab's road and Ledge's lifts depend on an uneasy bargain with them, and **Dalab's cold and altitude mods were learned from their genes**, which they remember.
   - **Perhaps a fluid society** (the owner, 2026-11-03): the Tungangs, the tunnel people of the Rift and the southern
     Outer Wall, might, like the Iron Republic and Yuni, let a person rise two stations in a life (core/simulation/PLAN-MONEY.md).
+  - **Friendly Morlocks** (the owner, 2026-11-10/11; `kits/tungang/PLAN.md`): pale, light-shy, nocturnal tunnel folk who are
+    decent people, not monsters, and not dwarves: the night shift that never ended. **The Line is at least four tracks wide**
+    (a gallery 37 m across with a two-lane service road along its west wall; where it runs above ground an Ancient highway
+    runs beside it, on elevated decks over bog and water: the owner, 2026-11-11, `biomes/line/PLAN.md`), broken in places
+    but mostly running: where the whole width has fallen it is cut into segments, each segment's trains
+    trapped in it since the collapses, shuttling between its gaps, and **travellers walk the caverns between intact
+    segments**; holds grow at the gaps. Their light is rationed and coded, **the lamp code** on every gallery and door (red a
+    home, green the Line, amber work, glow-cap the passages, white the surface and danger, hooded at once), with rooms lit
+    by wax. At a meeting the hands are counted **by their shadows** on a white **count wall**; every junction is cut with
+    **click-ribs** that give it its own echo; the rich live in **carriage houses**, derelict cars drawn into a siding; once a
+    year at **the Big Meeting** every loj walks its banner down the Line to the Tpresden; rank is **shine**, ground-glass bead
+    strips on a faded copy of the crews' orange. They stand about 0.94 of a human. Much of what they own is fitted salvage of
+    the Line.
+  - **The stations' numbers** (the owner, 2026-11-11: "cube is loj nahn so renumber accordingly"), north to south: 1 Dalab,
+    2 Shelf, 3 the Twenny junction, 4 Ledge's lifts (Loj Fower), 5 Nulab, 6 Chimes, 7 Cthonos, 8 The Tubes, **9 Cube: Loj
+    Nahn, the number no one says**; the other stops are lettered halts. Loj Twenny (20) is a later founding by the Twenny
+    junction. Whether the Line ran on past Cube to Theodiga, Strongbow, Stair and an arcology in the Bowl (10-13) is open.
+  - **What the Line gives them** (the owner, 2026-11-11): more to trade than copper. The bores cut **veins of metal** and the
+    Tungangs work them, for they need metal to keep the trains running; *maybe* something more exotic keeps the power
+    running (agreed 2026-11-11: rare earths from the rift fill's carbonatites for the magnets of a power plant that runs on
+    the deep middle's heat by the hot doors, and a few recharged Ancient power cells, the rarest thing they sell); they take **ice and other
+    things from the mountains**; and **at least a few ventilation shafts** reach the surface, whose heads are their second
+    way out (`kits/tungang/PLAN.md` §1.2.1). **The shaft heads are kept well hidden from outsiders**, and a striking Union
+    might use them to take **direct action against Dalab's caravans**: up by night, a caravan's road blocked or its cargo
+    taken down, and no door for Dalab to find (the owner, 2026-11-11).
+  - **The Fellgangs' villages and Wildcat** (the owner, 2026-11-10/11): the Fowlers (a rope is a vote) and the Ice-cutters
+    ("the Cold is owed") are built (`biomes/riftrim` stations 8 and 9). **Wildcat** is about half **Kimr** by descent
+    (`biomes/labyrinth/PLAN.md` §5), and the Kimr's bravado shapes its raiding: capital-H heroism in a **scrap pueblo**, stepped
+    room blocks faced in salvage, ladders pulled up at night. A raid is proposed by **a Boast** from the round room's roof and
+    joined by **show of hands**; the minute book became **the Deeds**, every boast and whether it was made good; the
+    Aurochs-horn helmet is earned, never inherited; its walls carry heroes and trophies, no spirits. **The Travellers** (the
+    owner, 2026-11-11) are the Fellgang families who live on the road, with some cultural similarities to the Irish
+    Travellers: hauling, dealing in beasts and goods, mending salvage, guiding, portering on the Line's branches near the
+    surface but never deeper in, save for **one clan that ventures into the dark unexplored caverns** and services and
+    porters for the underground and the ventilation shafts (the owner, 2026-11-11: **the Kradz**, *dark* said backwards in the cant; they marry into the lojes more than any other
+    family, and their way-marks and enamel-plate maps are the best of the Line's unknown parts);
+    barrel-top sledge-wagons and halting places along the lantern roads; a yearly Fair
+    on a fell everyone knows, and a cant of their own (`lore/tongues-of-krator.html`, "The Travellers' cant").
 - **Language.** Two tongues. The priests' **high tongue** is our English, held in place because the God only answers to it; that is the root of priestly rule. The peasants' **low tongue** drifted like a creole: *the* fused on as *da-* (*Dalab* = the lab, *Daranch* = the ranch), plural *-dem*, tense particles *di/go/a*. Latin letters; the God's fixed-width letters are holy. The oldest prayers are the staff's prompts; the formula that let the God forget is lost. The lab had a rival at Ys (§6.16). `lore/tongues-of-krator.html` [the owner, Oct 2026]
 
 ### 6.2 The Empire of Iziz: the Izani (hyperjungle)
@@ -489,6 +527,15 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
   few loanwords** and **a greater proclivity for large eyes among the Xanadui**. The loans (settled 2026-10-23), Northern English by
   way of the crews: *gāphar* (an overseer, from *gaffer*), *mārā* (a comrade, from *marra*), *bāiṭ* (a traveller's packed
   food, from *bait*), *lāin* (a caravan route, from *line*).
+- **The Glaziers, the crews who were not absorbed** (the owner, 2026-11-10/11; `kits/tungang/PLAN.md` §1.4). One crew went on up
+  into **Opal Valley** and kept a loj in the fault scarp over its milk-opal tarns, above the Sultanate's writ, a thousand years
+  apart from the Union: no Line, no trains, and still they read **the timetable of a train that never comes** at every turn.
+  The Xanadui call them **the Mārā**, "the comrades"; the Tungangs call them *glaizaz*. They sell precious opal down the valley
+  (the Sultan's Fifth paid in cut stones) and cut **potch**, the common opal jewellers throw away, into lamp panes
+  (*moonglass*). From Oidong's herbalist-monks they took the register (every adit and vein numbered like a station) and the
+  long watch; from Xanadu gilt, click wheels and painted fronts tiered on the scarp. Their tongue is now **half Xanadui**:
+  Tungang words in Xanadui grammar and sounds (`lore/tongues-of-krator.html`, "Glazier speech"). They wear **turbans like the
+  Xanadui**, with slight touches of the Orient in their dress and halls.
 
 ### 6.14 Jimjam
 
@@ -535,6 +582,8 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
   - Saffron-robed monks and academics; only they and the geomancers may enter the **Vault**.
   - Their saffron is the Order's colour.
   - Chapterhouses at Dalab, Iziz and Locus.
+  - **An outpost at the High Rift's Singing Gjár** (the owner, 2026-11-11): monks keep watch on its singing crystal fissures
+    from a small house in Longsong's style (`biomes/highrift/PLAN.md` station 5).
   - They keep the Ear.
   - Main monastery is **Longsong**, in the Oidong Valley east of Xanadu (owner, 2026-10-15; an older note put Oidong far south over the outer wall). The Ear is at Yuni.
   - Rumored to have techniques to speed up and slow down time. Some say they can travel in time; authorially they cannot.
@@ -808,8 +857,8 @@ marked *proposed* is this session's and waits on the owner. Its placeholder entr
   far as the Vale, for livestock, tools and valuables (§6.13).
 - **The tunnel wars** [the owner, 2026-10-23]. The Ancients' Rift line once ran the length of the Rift, worked by the
   crews who became the Tungangs (§6.1). When the Lizardmen came, the Tungangs east of Chimes were wiped out in **vicious
-  tunnel wars**; the survivors fled west and up onto the fells, and many Fellgangs descend from them. One loj did hold out: **Loj Nahn**,
-  sealed into the upper levels of **Arccube**, about a thousand people farming its terraces among the Lizardmen, who
+  tunnel wars**; the survivors fled west and up onto the fells, and many Fellgangs descend from them. One loj did hold out: **Loj Nahn**
+  (Cube was the Line's ninth station: the owner, 2026-11-11), sealed into the upper levels of **Arccube**, about a thousand people farming its terraces among the Lizardmen, who
   attack its night parties but have never pressed it further (§6.1). Tungang and Fellgang agree that the only thing worse than a Labber is a Lizard.
 - **What everyone can see** [the owner, 2026-10-23]: the Lizardmen **try to use Ancient relics**, fumblingly, in bizarre
   and esoteric ways no human would think of: the strange constructions in the reliquaries are made of them. And they
