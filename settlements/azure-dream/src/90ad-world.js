@@ -68,12 +68,15 @@ function adGroundMat(){const tex=new THREE.CanvasTexture(adCv);tex.encoding=THRE
  const inNear=(x,z)=>x>ADG.x0-1&&x<ADG.x1+1&&z>ADG.z0-1&&z<ADG.z1+1;
  for(let j=0;j<=NZf;j++)for(let i=0;i<=NXf;i++){const k=j*(NXf+1)+i,x=X0+i*FC,z=Z0+j*FC,onEdge=x>=ADG.x0-1&&x<=ADG.x1+1&&z>=ADG.z0-1&&z<=ADG.z1+1;
   pos[3*k]=x;pos[3*k+1]=onEdge?terrainH(x,z)-1:adBase(x,z,FC);pos[3*k+2]=z;}
- // its colours in the near ground's key (linear): the grass of the isle's slopes, drier with height, rock where steep, sand by
+ // its colours in the near ground's key (linear): the isle's woods and glades, drier with height, rock where steep, sand by
  // the water (the world's own palette reads salmon against the near ground's textured grass at the seam)
- const GR=[.085,.125,.05],DR=[.15,.14,.085],RK=[.2,.185,.165],SD=[.34,.3,.22],mix=(a,b,t)=>[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,a[2]+(b[2]-a[2])*t];
+ // the woods: the near ground's flora has forest where AD_WOODN's noise is high and glades where it is low (89zaa, the biome's
+ // 'wet'), so the far ground wears the same noise as a canopy's dark green below 600 m, and the lowland trees run to the horizon
+ const GR=[.085,.125,.05],WD=[.032,.058,.024],DR=[.15,.14,.085],RK=[.2,.185,.165],SD=[.34,.3,.22],mix=(a,b,t)=>[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,a[2]+(b[2]-a[2])*t];
+ const wood=(x,z,h)=>adSm(.36,.5,AD_WOODN.fbm(x/600+3.1,z/600-7.7,3))*adSm(3,12,h)*adSm(650,420,h);
  for(let j=0;j<=NZf;j++)for(let i=0;i<=NXf;i++){const k=j*(NXf+1)+i,h=pos[3*k+1],hx=pos[3*(j*(NXf+1)+Math.min(NXf,i+1))+1]-pos[3*(j*(NXf+1)+Math.max(0,i-1))+1],
    hz=pos[3*(Math.min(NZf,j+1)*(NXf+1)+i)+1]-pos[3*(Math.max(0,j-1)*(NXf+1)+i)+1],sl=Math.hypot(hx,hz)/(2*FC);
-  let c=mix(GR,DR,adSm(80,700,h));c=mix(c,RK,adSm(.35,.8,sl));c=mix(c,SD,adSm(4,.5,h));col[3*k]=c[0];col[3*k+1]=c[1];col[3*k+2]=c[2];}
+  let c=mix(GR,WD,wood(pos[3*k],pos[3*k+2],h));c=mix(c,DR,adSm(450,900,h));c=mix(c,RK,adSm(.35,.8,sl));c=mix(c,SD,adSm(4,.5,h));col[3*k]=c[0];col[3*k+1]=c[1];col[3*k+2]=c[2];}
  for(let j=0;j<NZf;j++)for(let i=0;i<NXf;i++){const cxm=X0+(i+.5)*FC,czm=Z0+(j+.5)*FC;if(inNear(cxm,czm))continue;
   const a=j*(NXf+1)+i,b=a+1,c=a+NXf+1,d=c+1;idx.push(a,c,b,b,c,d);}
  const fg=new THREE.BufferGeometry();fg.setAttribute('position',new THREE.BufferAttribute(pos,3));fg.setAttribute('color',new THREE.BufferAttribute(col,3));fg.setIndex(idx);fg.computeVertexNormals();

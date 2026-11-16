@@ -87,5 +87,10 @@ function adBioMask(x,z){const B=AD.BOX;if(x<B[0]+20||x>B[2]-20||z<B[1]+20||z>B[3
  const pd=adPadAt(x,z);if(pd)return pd.id.startsWith('terrace:')?.22:0;   /* the terraces' grass: trees here and there between the buildings */
  for(const [k,w,P] of AD_WAYS)for(let i=0;i+1<P.length;i++)if(adSegD(x,z,P[i],P[i+1])<w/2+2)return 0;
  return h<12?.8:1;}
+// The fields as the biome reads them (biomes/xanadu 55's zones): 'upland' is the vale's mountain flank, and its forest, parkland and
+// shore all fade out above upland .22, so the isle (a low island, +308 m at its crest) reads as lowland throughout (its height
+// over 5 km); 'wet' sets forest (over .64, full at .78) against open parkland (under .80, full at .62), so a slow noise over 600 m
+// gives the isle woods with glades in them, and the shore's band is wetter still
+const AD_WOODN=KRELIEF.noise(34158);
 if(typeof BIO!=='undefined'&&BIO.host)Object.assign(BIO.host,{mask:adBioMask,origin:AD_SITE.bio.origin,center:AD_SITE.bio.center,
- fields:{wet:(x,z)=>Math.min(1,.62+.3*adSm(14,1.5,terrainH(x,z))),salt:()=>0,upland:(x,z)=>Math.max(0,Math.min(1,terrainH(x,z)/520)),flow:()=>0,mist:(x,z)=>Math.max(0,Math.min(.4,(terrainH(x,z)-90)/200))}});
+ fields:{wet:(x,z)=>Math.min(1,.56+.42*AD_WOODN.fbm(x/600+3.1,z/600-7.7,3)+.3*adSm(14,1.5,terrainH(x,z))),salt:()=>0,upland:(x,z)=>Math.max(0,Math.min(1,terrainH(x,z)/5000)),flow:()=>0,mist:(x,z)=>Math.max(0,Math.min(.4,(terrainH(x,z)-90)/200))}});

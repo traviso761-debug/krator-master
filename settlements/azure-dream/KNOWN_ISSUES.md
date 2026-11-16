@@ -22,8 +22,13 @@ The page's first pass (2026-11-16, the owner: "build the page next"). What it do
       not walked into: Qiblai's city does that through its lot-interiors fragment (`settlements/qiblai` 90t, 90u), which this
       page does not take yet.
 - [ ] **The flora is the Vale of Xanadu's biome over a mask** (`89zaa`'s `adBioMask`: woods on the open slopes, the shore zone by
-      the water, nothing on pads, ways or footprints), bound on `BIO.host` as Qiblai's city binds it. The Lotus Garden's four
-      ponds are on `core/water` (still). Still missing: the terraced orchards (apricot, persimmon: `kits/crops`) and the hives.
+      the water, nothing on pads, ways or footprints), bound on `BIO.host` as Qiblai's city binds it. The page's fields make the
+      isle wooded lowland throughout (the owner, 2026-11-16: "a lot more foliage on this island"): `upland` is height over 5 km, so
+      the biome's forest never fades out with height, and `wet` follows a slow noise (`AD_WOODN`), giving forest with glades. The
+      far ground wears the same noise as a canopy's dark green. The woods cost triangles: the isle's scene is 10.3M of its 16M
+      budget (2.7M before), the summit's 6.7M (0.9M), the floor pass the heaviest; no frame timing taken yet. Beyond the near
+      ground the woods are a colour only, with no trees. The Lotus Garden's four ponds are on `core/water` (still). Still
+      missing: the terraced orchards (apricot, persimmon: `kits/crops`) and the hives.
 - [ ] **The sheets in `floors/` keep the first frame.** The page's layout was refitted to the 1:1 shore (the scarp's toe, PLAN.md
       section 1); the sheets still draw the plan's u (the precinct 120 m further up, the lower ward wider). Redraw them from
       `targets/isle/89zad`'s records when the layout settles.

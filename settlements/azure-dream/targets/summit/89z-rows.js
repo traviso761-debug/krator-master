@@ -8,4 +8,4 @@ const XA_EXTRA=[];
 const SITES=[];
 // the site (src/89zaa-ad-ground.js): the page's origin the crest of the isle's dome, scale-model px 845.05, 1504.35 (the highest
 // ground at 1:1 smoothed over 100 m, +308 m over the lake; the plan's pin is 845, 1504); the near ground 1.6 km square
-const AD_SITE={id:'summit',PX:[845.05,1504.35],BOX:[-800,-800,800,800],bio:{origin:[[0,0],[0,300],[300,0],[-300,0],[0,-300]],center:[0,0]}};
+const AD_SITE={id:'summit',PX:[845.05,1504.35],BOX:[-800,-800,800,800],bio:{origin:[[0,0],[0,300],[300,0],[-300,0],[0,-300]],center:[0,0],R:1135}};   /* R: the biome's disc round center, to the near box's corners */
