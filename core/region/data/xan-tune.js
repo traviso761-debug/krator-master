@@ -78,8 +78,10 @@ T.islands=[['great-isle','Grēṭ-Āil (the long isle: the head monastery of the
 /* PHĒR'S RING (the owner, 2026-11-16, settlements/pher/PLAN.md section 4: "the plain's farms as named villages"): KHAMLET
    farming villages on the rim plain behind Phēr (the plain rises north at 6-7 m a km from the rim at -20 m), tithing to
    Phēr as Erehwon's and Qiblai's rings do, their people taken out of Nōrth-Shor's bulk district. Each spot is dry on the
-   re-run model (5f659c054). Until core/hamlet lays them out (the north-shore region), they are drawn up here in its shape */
-T.pherRing=[['farm-1',836,1484],['farm-2',841,1482],['farm-3',846,1482],['farm-4',851,1485],['farm-5',838,1478],['farm-6',848,1477]]
+   re-run model (5f659c054). Where core/hamlet laid them out in the Phēr session's bake of openworld/xanadu-north-shore
+   (claude/pher-plan-55d3f2 a2c5d1a56, plan/sites.json, site spher0north1; its frame's origin px 845,1479), until that
+   region reaches this branch and the tune reads its plan as it reads Erehwon's and Qiblai's */
+T.pherRing=[['farm-1',839.37,1489.31],['farm-2',839.85,1486.49],['farm-3',844.29,1486.17],['farm-4',846.18,1487.82],['farm-5',841.12,1484],['farm-6',848.64,1488.95]]
  .map(([key,px,py])=>({id:'xan.pher/hamlet/'+key,name:'farming village',focus:'farming',px,py,census:{pop:240,households:44}}));
 /* THE FAIR'S DAYS AND THE PILGRIMS' LAUNCHES (the owner, 2026-11-16): core/simulation transport records (77-sim-5r), declared
    here for the page that draws Phēr at 1:1 (its step P6). The valley runs its towns at the abstract level with no water
