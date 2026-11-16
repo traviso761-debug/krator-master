@@ -402,6 +402,13 @@ Each step ends in a node test on the valley host, with a negative for each check
       - *Proposed:* 400 people and about 40 t of tea a year in the spring flush, sent to Qiblai, which feeds the estate.
       - The pin is queued with the scale-model session; the Qiblai kit session has the building side.
     - **The Order of the Azure Dream** (the owner: "Grēṭ-Āil will be the head monastery for qiblai's blue monastery, the Order of the Azure Dream"). Qiblai's blue monastery is this Order, and its head monastery is Grēṭ-Āil, the monastery isle in Erehwon's lake (`lk.great-isle`, 816.5,1501.5, 600 people, under Erehwon's hub). So two of the eight spokes now have head houses away from Qiblai: green on the scarp's tea, blue on the lake.
+    - **The lake re-fit** (scale model 5.1 edit 7 re-run, 5f659c054 on claude/gemini-trade-reconcile, 2026-11-16: the lake
+      narrower and in the valley's middle, 66 x 25 px round 845,1504, with the long isle).
+      - The sim follows it. Erehwon is at 841,1517, with the Citadel, the Dome (on the Pleasure Dome's landform, 840.9,1516.8) and the three houses' factor houses beside it. Phēr is at 843,1491. Every shore town is on the cell the model's run gives it, and Ōlḍ-Thalaba is at 860,1496.
+      - The long isle is Grēṭ-Āil, and the small isles moved with the lake. The march forts and the provinces' centres moved with Erehwon.
+      - Each point was checked against the re-run model's water mask: shore towns are dry with the lake beside them, isles dry with the lake round them.
+      - The cross-lake run and the road up to Thalaba are now measured from the towns. The old 34 km was half the true crossing even on the first lake; the crossing is now about 57 km.
+      - Erehwon's ring hamlets follow the town until the region (`openworld/xanadu-oidong-highrift/plan/sites.json`) is recut on the re-run model. One hamlet, farm-1, is moved a cell inland because it would land in the lake.
     - **The White Lily and the Flashing Eye** (the owner, by way of the Qiblai kit's session, f5a10f8a4).
       - Qiblai's **white monastery is the Order of the White Lily**, a medicine and healing Order. Its complex in Qiblai is its head house (it has none elsewhere) and the city's hospital.
       - The **crimson monastery is the Order of the Flashing Eye**; no head house is given for it yet.

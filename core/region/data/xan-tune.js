@@ -52,23 +52,28 @@ T.provinces=[
  {id:'p6',name:'Ōpal-Bhālī (Opal Valley)',seat:'sjuarjbku0',rural:4000,y:.9,px:[1036,1668],extra:{}},
  {id:'p7',name:'Nōrth-Shor (the North Shore)',seat:'xan.pher',rural:25000,y:1.5,px:[812,1478],extra:{silk:14000,cacao:60000,honey:12000,fruit:300000}},
  {id:'p8',name:'Mārchiz (the Marches)',seat:'s57bkv9741',rural:5000,y:1.2,px:[790,1540],extra:{}}];
-/* THE LAKE (section 2a): bearing from the lake's centre (810,1499.5), the shore cell, people, trade (a work: kg a year),
-   the province it belongs to and its hub (Erehwon in the south, Phēr in the north) */
+/* THE LAKE (section 2a): bearing from the lake's centre, the shore cell, people, trade (a work: kg a year), the province it
+   belongs to and its hub (Erehwon in the south, Phēr in the north). The lake as the owner re-made it (scale model 5.1 edit 7
+   re-run, 5f659c054, 2026-11-16: "a little narrower and ... more toward the center of the valley? settlements can move with
+   it"): 66 x 25 px round 845,1504 (was 60 x 32 round 810,1499.5), its level -520 m; every shore cell below is dry with the
+   lake beside it on that model, every isle dry with the lake round it */
 T.lake=[
- ['alph-head','Ālph-Hēḍ',0,839,1499,4000,{grain:900000},'p1'],['hot-bath','Hoṭ-Bāṭh',15,838,1507,1800,{sulfur:40000},'p1'],
- ['tea-terraces','Ṭī-Ṭeras',30,834,1514,2000,{tea:45000},'p1'],['pottery','Pāṭari',45,827,1517,1500,{pottery:120000},'p1'],
- ['saffron','Saphran',60,820,1517,1800,{saffron:900},'p1'],['weaver','Wībhar',75,815,1517,2500,{brocade:0},'p1'],
- ['boatyard','Boṭ-Yārḍ',90,810,1517,2000,{},'p1'],['garden','Gārḍan',120,801,1514,1800,{fruit:300000},'p1'],
- ['quarry','Qorī',135,797,1513,1500,{},'p1'],['orchard','Ōrcharḍ',150,793,1510,1600,{fruit:420000},'p1'],
- ['lotus','Lōṭas',165,788,1505,1500,{mats:60000,fruit:120000},'p1'],['fish-market','Phish-Mārkiṭ',180,782,1499,4000,{},'p1'],
- ['stack','Siṭāq',195,780,1491,900,{},'p1'],['hive','Hāibh',210,785,1485,1200,{honey:24000},'p7'],
- ['mulberry','Malbari',225,793,1483,2200,{silk:16000},'p7'],['net','Nēṭ',240,800,1482,1400,{},'p7'],
- ['cocoa','Qōqō',255,805,1482,1800,{cacao:50000},'p7'],['pher','Phēr',270,810,1483,6000,{},'p7'],
- ['mouth','Māuṭh',300,818,1485,1500,{},'p7'],['old-thalaba','Ōlḍ-Thalaba (the fishing village left on Thalaba\'s shore)',330,825,1488,600,{},'p7'],
- ['dyer','Ḍāiyar',345,834,1493,1400,{},'p7']]
+ ['alph-head','Ālph-Hēḍ',358,876,1503,4000,{grain:900000},'p1'],['hot-bath','Hoṭ-Bāṭh',16,876,1513,1800,{sulfur:40000},'p1'],
+ ['tea-terraces','Ṭī-Ṭeras',26,872,1517,2000,{tea:45000},'p1'],['pottery','Pāṭari',35,865,1518,1500,{pottery:120000},'p1'],
+ ['saffron','Saphran',51,857,1519,1800,{saffron:900},'p1'],['weaver','Wībhar',65,852,1519,2500,{brocade:0},'p1'],
+ ['boatyard','Boṭ-Yārḍ',86,846,1519,2000,{},'p1'],['garden','Gārḍan',125,836,1517,1800,{fruit:300000},'p1'],
+ ['quarry','Qorī',137,832,1516,1500,{},'p1'],['orchard','Ōrcharḍ',156,827,1512,1600,{fruit:420000},'p1'],
+ ['lotus','Lōṭas',173,822,1507,1500,{mats:60000,fruit:120000},'p1'],['fish-market','Phish-Mārkiṭ',186,815,1501,4000,{},'p1'],
+ ['stack','Siṭāq',195,812,1495,900,{},'p1'],['hive','Hāibh',207,817,1490,1200,{honey:24000},'p7'],
+ ['mulberry','Malbari',219,825,1488,2200,{silk:16000},'p7'],['net','Nēṭ',233,833,1488,1400,{},'p7'],
+ ['cocoa','Qōqō',245,838,1489,1800,{cacao:50000},'p7'],['pher','Phēr',261,843,1491,6000,{},'p7'],
+ ['mouth','Māuṭh',305,852,1494,1500,{},'p7'],['old-thalaba','Ōlḍ-Thalaba (the fishing village left on Thalaba\'s shore)',332,860,1496,600,{},'p7'],
+ ['dyer','Ḍāiyar',351,870,1500,1400,{},'p7']]
  .map(([key,name,brg,px,py,people,make,prov])=>({key,name,brg,px,py,people,make,prov,hub:prov==='p7'?'xan.pher':'s57bkv9741'}));
-T.islands=[['great-isle','Grēṭ-Āil (the monastery isle: the head monastery of the Order of the Azure Dream, Qiblai\'s blue monastery)',816.5,1501.5,600],   /* the owner, 2026-11-16 */['bay-isle','Bē-Āil (the Sultan\'s fishponds)',808.5,1509,300],
- ['west-isle','Wesṭ-Āil (the fishermen\'s isle)',797,1494,400],['east-isle','Lāiṭ-Hāus (the light and the customs)',828,1497,200]]
+/* the isles: Grēṭ-Āil is now the long isle in the lake's middle (24 x 8 px, 300 m high; the owner, 2026-11-16: "add one large
+   oblong island in the middle of the lake"), the small isles moved with the lake */
+T.islands=[['great-isle','Grēṭ-Āil (the long isle: the head monastery of the Order of the Azure Dream, Qiblai\'s blue monastery)',845,1504,600],   /* the owner, 2026-11-16 */['bay-isle','Bē-Āil (the Sultan\'s fishponds)',844.1,1511.5,300],
+ ['west-isle','Wesṭ-Āil (the fishermen\'s isle)',831,1499,400],['east-isle','Lāiṭ-Hāus (the light and the customs)',864,1503,200]]
  .map(([key,name,px,py,people])=>({key,name,px,py,people}));
 T.fishKgPerson=260;   /* a fishing town's catch a year, a head of its people: about a third of them fish (the dugouts) */
 T.lakeTerraces=.6;    /* the share of a lake town's grain its own terraces grow */
@@ -154,7 +159,7 @@ T.expedition={id:'exp.godshearth',name:'The Rare Devisers\' expedition camp at G
    THE RARE DEVISERS, "whose specialty is running the expeditions to the Godshearth": their house at Thalaba and a factor in
    the capital; the Godshearth camp is theirs (T.expedition), its sulfur, wax and rarities home to their house, which sells
    them on to Yuni's caravans at Thalaba */
-T.tears={escort:.04,houses:[['tears.strongwall','The Golden Tears: their house in the Gold March','sxan7r1sln',913,1641,80],['tears.erehwon','The Golden Tears\' factor house, Erehwon','s57bkv9741',806,1517,30]],
+T.tears={escort:.04,houses:[['tears.strongwall','The Golden Tears: their house in the Gold March','sxan7r1sln',913,1641,80],['tears.erehwon','The Golden Tears\' factor house, Erehwon','s57bkv9741',841,1518,30]],
  camp:{id:'exp.rift-gold',name:'The Golden Tears\' armed prospecting camp in Lizard country (the Rift floor; approximate)',px:[850,1628],km:110,people:120,kgYr:70,years:30}};   /* kgYr: the gold its ore holds (30 kg of ore a kg) */
 /* the owner, 2026-11-16: "the rare devisers will have their main guild house at Theodiga; they are royally licensed in the
    scrap and rare artifact trade". Every kilo of the Salvagers' scrap passes through their house at Theodiga, which sells it
@@ -166,14 +171,14 @@ T.tears={escort:.04,houses:[['tears.strongwall','The Golden Tears: their house i
    salvaged scrap and Ancient rarities, a finite site (a dead tunnel does not refill), `years` of it */
 T.bore={scrap:20000,rarities:15,crew:40,years:80};
 T.devisers={licence:.1,houses:[['devisers.theodiga','The Rare Devisers: their guild house at Theodiga (the royal licence in scrap and rare artifacts)','s4zvgepuru',909,1535,80],
- ['devisers.thalaba','The Rare Devisers\' house at Thalaba (the Godshearth expeditions)','xan.thalaba',841,1463,40],['devisers.erehwon','The Rare Devisers\' factor house, Erehwon','s57bkv9741',807,1516,15]]};
+ ['devisers.thalaba','The Rare Devisers\' house at Thalaba (the Godshearth expeditions)','xan.thalaba',841,1463,40],['devisers.erehwon','The Rare Devisers\' factor house, Erehwon','s57bkv9741',840,1519,15]]};
 /* X2: the Brotherhood of the Two Horns: [id, name, the town it stands in (null: off the map), px, py, people] */
 T.horns={tally:.04,margin:.03,houses:[
  ['horns.strongbow','The Brotherhood of the Two Horns: the guild house at the Strongbow gate','sfgtxw10kr',1001,1597,300],
  ['horns.stair','The Brotherhood\'s house at the Stair gate (off the map; its table is Stair\'s)',null,1106,1442,0],
- ['horns.erehwon','The Two Horns\' factor house, Erehwon','s57bkv9741',806,1515,40],['horns.qiblai','The Two Horns\' factor house, Qiblai','skm4jjo2vl',922,1594,40],
+ ['horns.erehwon','The Two Horns\' factor house, Erehwon','s57bkv9741',842,1518,40],['horns.qiblai','The Two Horns\' factor house, Qiblai','skm4jjo2vl',922,1594,40],
  ['horns.theodiga','The Two Horns\' factor house, Theodiga','s4zvgepuru',908,1534,20],['horns.kirstabal','The Two Horns\' factor house, Kirstabal','sl758m2396',989,1599,20],
- ['horns.pher','The Two Horns\' factor house, Phēr','xan.pher',810,1482,20],['horns.thalaba','The Two Horns\' factor house, Thalaba','xan.thalaba',839,1463,20]]};
+ ['horns.pher','The Two Horns\' factor house, Phēr','xan.pher',843,1490,20],['horns.thalaba','The Two Horns\' factor house, Thalaba','xan.thalaba',839,1463,20]]};
 T.toll=.05;   /* the Sultan's toll at the Strongbow lift, on what the Catch caravans land there */
 T.gatePool={salt:1e7,iron:1e6,arms:1e5,pearls:1e4,wine:1e6,oil:1e6,tools:1e5};
 T.gateWant={goldwork:2,cacao:1200,opium:650,saffron:8,tea:400,silk:80,brocade:40,opal:.4,wheels:3,oil:870,sulfur:230,wax:105,rarities:.15};   /* the gateways' take a day, all four together: what the country makes less its own use (Gemini's exports scaled to it) */
@@ -210,16 +215,16 @@ T.valley=function(P,o){o=o||{};const K=o.scale==null?50:o.scale,yr=365,win=w=>{c
   start:{grain:Math.round(eatYr(diet,people)*T.startDays/yr),salt:Math.round(people*6*.4),tea:people,tools:people*.3,fish:Math.round(people*(T.diet[diet].fish||0)*yr*.1)},
   works:[{id:id+'.market',kind:'market',name:'the market and its warehouses',crew:20,out:[],rate:0}].concat(works||[])},o2||{}));seats[id]=s;
   bump(o2&&o2.feeder||id,eatYr(diet,people));return s;};   /* a town fed by another (the court and the Dome by the capital, Strongbow by Kirstabal) counts on its feeder's grain */
- const E=town('s57bkv9741','Erehwon',806,1516,25000,'city',[
+ const E=town('s57bkv9741','Erehwon',841,1517,25000,'city',[   /* on the new lake's south shore (5f659c054; was 806,1516) */
   {id:'er.goldsmiths',kind:'goldsmiths',name:'the Goldsmiths\' quarter',crew:300,batch:T.chain.goldsmith},
   {id:'er.weavers',kind:'weavers',name:'the weavers and dyers of the industry quarters',crew:200,batch:T.chain.weave},
   {id:'er.smithy',kind:'smithy',name:'the smiths (tools from the iron)',crew:120,batch:T.chain.smith},
   {id:'er.dockyard',kind:'dockyard',name:'the dockyard and the waterfront',crew:150,out:[],rate:0},
   {id:'er.caves',kind:'ice-caves',name:'the Caves of Ice',crew:20,out:[],rate:0}]);
  E.start.gold=40;E.start.iron=3000;
- town('xan.citadel','The Citadel (the Sultan\'s Treasury, the court and the gate company)',805,1517,1200,'court',[
+ town('xan.citadel','The Citadel (the Sultan\'s Treasury, the court and the gate company)',840,1518,1200,'court',[
   {id:'cit.mint',kind:'mint',name:'the Mint and assay (the Master of Mines and Mints)',crew:20,batch:T.chain.mint}],{parent:'s57bkv9741',feeder:'s57bkv9741'});
- town('xan.dome','The Pleasure Dome (the harem and the Dome of the Bay)',805,1515,260,'dome',[],{parent:'s57bkv9741',feeder:'s57bkv9741'});
+ town('xan.dome','The Pleasure Dome (the harem and the Dome of the Bay)',840.9,1516.8,260,'dome',[],{parent:'s57bkv9741',feeder:'s57bkv9741'});
  town('skm4jjo2vl','Qiblai',922,1595,15000-T.orderHouse.house[5],'city',[
   {id:'qb.wheels',kind:'wheel-works',name:'the kora\'s prayer-wheel works',crew:200,batch:T.chain.wheel},
   {id:'qb.goldsmiths',kind:'goldsmiths',name:'the Goldsmiths\' hall of Qiblai',crew:120,batch:T.chain.goldsmith},
@@ -232,7 +237,7 @@ T.valley=function(P,o){o=o||{};const K=o.scale==null?50:o.scale,yr=365,win=w=>{c
  town('sl758m2396','Kirstabal',989,1600,3000,'town');
  town('sxan7r1sln','Strongwall (the Master of Mines\' fort)',912,1640,250,'fort',[
   {id:'sw.assay',kind:'assay-house',name:'the assay house',crew:20,batch:T.chain.assay}]);
- town('xan.pher','Phēr (the north shore\'s fair)',810,1483,6000,'lake',[{id:'ph.fishing',kind:'fishing',name:'the dugouts',crew:600,out:['fish'],rate:rate(6000*T.fishKgPerson*.6,600),site:T.fishery(6000*T.fishKgPerson*.6)}]);
+ town('xan.pher','Phēr (the north shore\'s fair)',843,1491,6000,'lake',[{id:'ph.fishing',kind:'fishing',name:'the dugouts',crew:600,out:['fish'],rate:rate(6000*T.fishKgPerson*.6,600),site:T.fishery(6000*T.fishKgPerson*.6)}]);
  {const Tb=T.thalaba,c=Math.round(Tb.people*.15),tc=Math.round(Tb.people*.3);   /* Thalaba at the mouth of Godshearth: the vents' sulfur, the bench's terraces */
   town(Tb.id,Tb.name,Tb.px[0],Tb.px[1],Tb.people,'town',[{id:'tb.sulfur',kind:'sulfur-works',name:'the spillway\'s sulfur diggings',crew:c,out:['sulfur'],rate:rate(Tb.make.sulfur,c)},
    {id:'tb.terraces',kind:'terraces',name:'the terraces on the bench',crew:tc,out:['grain'],rate:rate(eatYr('town',Tb.people)*Tb.terraces,tc,win('harvest')),season:'harvest'}],{parent:'xan.pher',feeder:'xan.pher'});}
@@ -242,7 +247,7 @@ T.valley=function(P,o){o=o||{};const K=o.scale==null?50:o.scale,yr=365,win=w=>{c
  mine('smgxtultfq','The gold mines on the lode',911,1665,950,'sxan7r1sln','goldore',T.mine.goldore);
  mine('sjuarjbku0','Opal Valley Mines (the Sultan\'s factor)',1038,1662,850,'sxan7r1sln','opal',T.mine.opal);
  /* the forts of the Marches */
- [['march.w','The west watch fort',783,1530],['march.s','The south watch fort',812,1548],['march.e','The beacon fort over the Rift',846,1540]].forEach(([id,name,px,py])=>{const p=at(px,py);
+ [['march.w','The west watch fort',818,1531],['march.s','The south watch fort',847,1549],['march.e','The beacon fort over the Rift',881,1541]]   /* moved with Erehwon (+35,+1 px), each on dry ground */.forEach(([id,name,px,py])=>{const p=at(px,py);
   add({id,name,faction:'xanadu',parent:'s57bkv9741',people:150,x:p.x,z:p.z,eats:eats('fort'),keepDays:30,start:{grain:Math.round(eatYr('fort',150)*.4),salt:300,tea:60,tools:40,arms:20},
    works:[{id:id+'.store',kind:'fort',name:'the fort\'s store',crew:10,out:[],rate:0}]});bump('s57bkv9741',eatYr('fort',150));
   R.push({id:'road.'+id,from:'s57bkv9741',to:id,minutes:Math.round(Math.hypot(p.x-E.x,p.z-E.z)/1000/25*1440),cap:20000,want:40,goods:{s57bkv9741:['grain','salt','tea','tools','arms']}});});
@@ -268,10 +273,16 @@ T.valley=function(P,o){o=o||{};const K=o.scale==null?50:o.scale,yr=365,win=w=>{c
   X.push({id,hub:L.hub,km,fishing});};
  T.lake.filter(L=>L.key!=='pher').forEach(lakeTown);
  T.islands.forEach(I=>lakeTown({key:I.key,name:I.name,px:I.px,py:I.py,people:I.people,make:{},prov:'p1',hub:'s57bkv9741'}));
- /* the hubs: the cross-lake run, Erehwon to Phēr (34 km) */
- R.push({id:'lake.cross',from:'s57bkv9741',to:'xan.pher',minutes:Math.round(34/12*60)+60,cap:20000,carriers:6,want:12,goods:{s57bkv9741:['grain','salt','tea','tools','pottery','mats'],'xan.pher':['fish','silk','cacao','honey','sulfur','fruit']}});
+ /* the hubs: the cross-lake run, Erehwon to Phēr, measured from the two (52 km straight over; a tenth more round the long isle) */
+ const crossKm=Math.hypot(E.x-seats['xan.pher'].x,E.z-seats['xan.pher'].z)/1000*1.1;
+ R.push({id:'lake.cross',from:'s57bkv9741',to:'xan.pher',minutes:Math.round(crossKm/12*60)+60,cap:20000,carriers:6,want:12,goods:{s57bkv9741:['grain','salt','tea','tools','pottery','mats'],'xan.pher':['fish','silk','cacao','honey','sulfur','fruit']}});
  /* ---- THE RINGS (the open world's plan): Erehwon's and Qiblai's farming villages and ranches, a tithe road each */
- ['s57bkv9741','skm4jjo2vl'].forEach(sid=>{const St=site(sid);if(!St)return;St.hamlets.forEach(V=>{const id=V.id.replace(/\//g,'.'),y=sid==='s57bkv9741'?1.6:1.9;
+ /* the ring follows its town: the region plan still has Erehwon on the first lake's shore (805,1516) until the region is recut
+    on the re-run model, so each hamlet keeps its place relative to the town (farm-1 would fall in the new lake: a cell inland) */
+ const ringFix={'s57bkv9741/hamlet/farm-1':[843,1520]};
+ ['s57bkv9741','skm4jjo2vl'].forEach(sid=>{let St=site(sid);if(!St)return;const dx=seats[sid].x-St.x,dz=seats[sid].z-St.z;
+  St=Object.assign({},St,{hamlets:St.hamlets.map(V=>{const f=ringFix[V.id],p=f?at(f[0],f[1]):{x:V.site.x+dx,z:V.site.z+dz};return Object.assign({},V,{site:Object.assign({},V.site,{x:p.x,z:p.z})});})});
+  St.hamlets.forEach(V=>{const id=V.id.replace(/\//g,'.'),y=sid==='s57bkv9741'?1.6:1.9;
   const hh=V.census.households,crew=Math.round(V.census.pop*.45);
   if(V.focus==='farming'){const made=hh*T.netKgHH(y),own=eatYr('rural',V.census.pop),share=Math.max(0,Math.min(.9,(made-own)*.8/made));
    add({id,name:V.name+' ('+seats[sid].name+'\'s ring)',faction:'xanadu',parent:sid,people:V.census.pop,x:V.site.x,z:V.site.z,eats:eats('rural'),
@@ -354,7 +365,7 @@ T.valley=function(P,o){o=o||{};const K=o.scale==null?50:o.scale,yr=365,win=w=>{c
     from the capital (a road for goods beside Thalaba's tithe road, which carries nothing for want out of Thalaba) */
  const takeAt=entry=>{const e={};T.gateways.filter(G=>G.entry===entry).forEach(G=>{for(const g in G._exp)e[g]=(e[g]||0)+G._exp[g];});return e;};
  const TB=T.thalaba.id,sbTake=takeAt('sfgtxw10kr'),thTake=takeAt(TB),gList=o=>Object.keys(o);
- /* Phēr up to Thalaba on the bench (about 86 km by the road up the gorge's side, 3 to 4 days): the gateways' goods and
+ /* Phēr up to Thalaba on the bench (about 68 km by the road up the gorge's side from the new shore, under 3 days): the gateways' goods and
     Thalaba's grain up, the northern salt and the sulfur down */
  {const a=seats['xan.pher'],b=seats[TB],km=Math.hypot(a.x-b.x,a.z-b.z)/1000*1.2,tbDay=eatYr('town',T.thalaba.people)*(1-T.thalaba.terraces)/yr;
   R.push({id:'road.pher-thalaba',from:'xan.pher',to:TB,minutes:Math.round(km/25*1440),cap:10000,carriers:6,stagger:Math.round(km/25*1440/6),want:25,
