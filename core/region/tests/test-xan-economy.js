@@ -216,6 +216,13 @@ const virCheck=(v,L)=>(v.made.tea||0)>XAN_TUNE.viridian.tea*.6&&(L.tea||0)>0&&!(
  T.ok('the Order of Viridian Thought: its tea estate on the scarp makes its tea in the flush and sends it to Qiblai, and is fed',virCheck(v,L),
   'tea made '+t(v.made.tea||0)+', landed at Qiblai '+t(L.tea||0)+'; grain short '+t(v.hungry.grain||0));
  T.neg('an estate whose tea never reached Qiblai is caught',x=>virCheck(v,x),{},L);}
+// 25. Phēr (the owner's answers, 2026-11-16): the cacao house presses the north shore's beans into cakes that cross the lake
+//     to the capital for the Great Caravan, and the rim plain's farming villages tithe their grain to Phēr
+const pherCheck=(p,L,R)=>(p.made.cacaocake||0)>10000&&(L.cacaocake||0)>0&&R.length===XAN_TUNE.pherRing.length&&R.every(x=>(x.grain||0)>0);
+{const p=B['xan.pher'],L=landed('lake.cross','xan.pher>s57bkv9741'),R=XAN_TUNE.pherRing.map(V=>{const id=V.id.replace(/\//g,'.');return landed('tithe.'+id,id+'>xan.pher');});
+ T.ok('Phēr: its cacao house presses cakes that cross the lake to the capital, and its six rim villages tithe grain to it',pherCheck(p,L,R),
+  'cakes made '+t(p.made.cacaocake||0)+', landed at Erehwon '+t(L.cacaocake||0)+'; tithes '+R.map(x=>t(x.grain||0)).join(', '));
+ T.neg('a ring village that sent no grain is caught',x=>pherCheck(p,L,x),R.map((x,i)=>i?x:{}),R);}
 // the year's books, for the reader
 const line=(s,k)=>Object.entries(B[s][k]||{}).filter(([g,n])=>n>=1).map(([g,n])=>g+' '+(n>=1000?t(n):Math.round(n))).join(', ');
 ['s57bkv9741','xan.citadel','skm4jjo2vl','s4zvgepuru','sxan7r1sln'].forEach(s=>console.log('\n'+s+': made '+line(s,'made')+'\n  imported '+line(s,'imported')+'\n  exported '+line(s,'exported')));

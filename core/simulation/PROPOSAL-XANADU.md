@@ -409,6 +409,13 @@ Each step ends in a node test on the valley host, with a negative for each check
       - Each point was checked against the re-run model's water mask: shore towns are dry with the lake beside them, isles dry with the lake round them.
       - The cross-lake run and the road up to Thalaba are now measured from the towns. The old 34 km was half the true crossing even on the first lake; the crossing is now about 57 km.
       - Erehwon's ring hamlets follow the town until the region (`openworld/xanadu-oidong-highrift/plan/sites.json`) is recut on the re-run model. One hamlet, farm-1, is moved a cell inland because it would land in the lake.
+    - **Phēr's additions** (the owner's answers in the Phēr plan's session, 8ef5899d0 on claude/pher-plan-55d3f2, 2026-11-16: "i likE all these").
+      - **The cacao house** (`ph.cacao`): beans pressed into **cacao cakes** (`cacaocake`, a new good, 1.25 kg of beans to the kg). The cakes cross the lake to Erehwon and go out with the Great Caravan (`T.gateWant` 55 kg a day).
+      - **The boat slip** (`ph.slip`): a work with no output, like `er.dockyard`.
+      - **The ring**: six farming villages of 240 on the rim plain (`T.pherRing`), tithing to Phēr. Their people come out of Nōrth-Shor's bulk district.
+      - **The fair's two days and the pilgrims' launches to Grēṭ-Āil** are `transport` records (`T.loops`). They are declared for the page that draws Phēr at 1:1 (its step P6); the valley runs its towns abstract, with no water layer, so it does not run them.
+      - **The Thalaba road goes up the Qol valley** ("up into the qol valley"): about 105 km traced on the re-run model (`T.thalaba.roadKm`).
+      - **Phēr's seat is held by a member of the Sultan's family.** That is recorded in the Phēr plan; the tune needs nothing for it.
     - **The White Lily and the Flashing Eye** (the owner, by way of the Qiblai kit's session, f5a10f8a4).
       - Qiblai's **white monastery is the Order of the White Lily**, a medicine and healing Order. Its complex in Qiblai is its head house (it has none elsewhere) and the city's hospital.
       - The **crimson monastery is the Order of the Flashing Eye**; no head house is given for it yet.
