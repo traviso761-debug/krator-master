@@ -104,7 +104,9 @@ centre and radius and the brow's height:
 - **A brow terrace at +70 m** over the lake (the upper precinct, about 320 x 340 m), reached by a spur from the cove up
   the line of 848,1506.
 - Like `lf_pleasure_dome_isle`, a sub-cell landform that core/world stamps at 1:1.
-- Requested only after the owner approves the site.
+- Requested only after the owner approves the site. The scale-model session holds it until then (2026-11-16).
+- **It waits on a `cove` kind in core/world's landform stamper**, which so far stamps only islands. Phēr's
+  `lf_pher_cove` and `lf_pher_headland` (e87e34dc2) wait on the same kind. Whichever session adds it first serves both.
 
 ## 2. The Order of the Azure Dream (lore, proposed)
 
@@ -531,7 +533,7 @@ isle's food bill, and a real demand for its dairy and hives.
 | Step | What | Who | Proved by |
 |---|---|---|---|
 | **AD0** | this plan and its sheets; the owner's answers to section 13 | this session, the owner | |
-| **AD1** | the map: the cove (`lf_azure_cove`, centre px 846,1509, radius about 250 m, the brow terrace at +70 m) and its spur; a pin for the monastery at the cove, one for the Station Watch at the summit, the Dream Road; the three villages' pins | the scale-model session's queue | the pins' ground; core/world's stamp at 1:1 |
+| **AD1** | the map: the cove (`lf_azure_cove`, centre px 846,1509, radius about 250 m, the brow terrace at +70 m; needs core/world's landform stamper to take a `cove` kind, as Phēr's records do) and its spur; a pin for the monastery at the cove, one for the Station Watch at the summit, the Dream Road; the three villages' pins | the scale-model session's queue | the pins' ground; core/world's stamp at 1:1 |
 | **AD2** | the sim: `lk.great-isle` split into the monastery and three villages; pilgrims as a flow; the isle's goods | the sim session | its economy test |
 | **AD3** | the new records (section 6) in `settlements/azure-dream/src/` on the Qiblai kit's helpers and `QSPOKE[5]`'s dress, seeds 34000-34199, on a sheet beside the blue monastery; the reused records' blue dress | this settlement | the footprint test; the sheet's `verify.py --assert` |
 | **AD4** | the 22 catalog pieces in the Xanadu culture file | the catalog's owner | `kits/catalog/verify.py --assert` |
