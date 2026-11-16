@@ -3,7 +3,7 @@
 The owner, 2026-11-16: *"we can go ahead an plan a settlement of 5k in the Opal Valley using the new set that's half Glazier
 and half normal-Xanadu buildings. we'd need to find a good site near a great opal lode and a steep mountain"*.
 
-Everything here is *proposed* except the owner's words above. The name is a placeholder for the owner to keep or change.
+Everything here is *proposed* except the owner's words above and the name. **The name is the owner's: kept 2026-11-16.**
 It is Xanadui in its English-in-Indic form, like *Ōpal-Bhālī* and *Gōlḍ-Mārch*: "the light wall", for the cliff of glowing
 moonglass panes the Glaziers' fronts make at dusk (`kits/tungang/PLAN.md` 1.4).
 
@@ -117,7 +117,7 @@ is the Glaziers'; the bench is the Sultan's.
 
 ## 7. Questions for the owner
 
-1. **The name.** Keep *Lāiṭwāl*, "the Light Wall", or give another?
+1. ~~**The name.**~~ **Answered 2026-11-16: keep *Lāiṭwāl*, "the Light Wall".**
 2. **The Glaziers' hold.** Is this town the eastern loj's main hold (with the upper hold at the riser left as its old
    first loj, or dropped), or a second hold beside it? The Tungang plan's figure was 300-500 Glaziers; this makes them
    ~2,500.
