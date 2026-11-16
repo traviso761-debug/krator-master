@@ -30,6 +30,8 @@ Use `KRATOR_GL=gpu`: software GL loses the page's context (`KNOWN_ISSUES.md`). P
 | `55-mp-hero-ancients.js` | [draw] | `MP.heroAncient`: a kit builder run into a hero of its own, its instanced detail baked there |
 | `59-mp-floors.js` | [draw] | `MP.floors`: storeys and a core for the buildings without plans, read off the drawn shape |
 | `59b-mp-ruin-design.js` | [draw] | `MP.ruinDesign`: a design's hero cut to a ruin state of its record, with slabs, core and rubble |
+| `44b-mp-sockets.js` | [G data] | `MP.skin`, `MP.sockets`: where every family and state can carry a plant, as records (`API.md`) |
+| `59e-mp-overgrow.js` | [draw] | `MP.overgrow`, `MP.plant`, `MP.overgrowDress`: strands, roots, moss, soil and stand-ins drawn at the sockets; the planter adapter |
 | `58-mp-cutaway.js` | [web] | the cut-away: X cuts the building in front of you at a storey's ceiling, `[` and `]` move it |
 | `57-mp-debris.js` | [draw] | `MP.debris(F, state)`: a ruin's rubble (`KSTACKS` mounds, crushed shaft sections, the lamp's disc, slabs) and what stands free (a stump's fins, a skeleton's frame) |
 | `60-mp-shell-host.js` | [web] | `KSHELL`'s bake and draw |
@@ -98,6 +100,32 @@ rubble as records, a Spindle's along a fin, the Ledger's onto itself and into th
 - **Black shells were a hidden pane:** a page that boots with `innerHeight` 0 set the trace's pixel size to Infinity. It is set every frame now.
 
 The fallen Ledger keeps its arcade (the owner, 2026-11-03): its arches, piers and flares stand in the mound.
+
+## The overgrowth: sockets, growth, wild looks (2026-11-09)
+
+The owner: "I want the ruins themselves to be overgrown in places, like the middle sections of Girder but all over" (Midgar at the end of
+FF7). The kit now says **where** every family and every state can carry a plant, as records, and draws **what it draws itself** there;
+a biome grows its own species at the same places through a planter. `API.md` has the calls.
+
+- **Sockets** (`44b-mp-sockets.js`, `[G data]`): `MP.sockets(F, look, seed)` reads the family's skin (`MP.skin`: the same radius, rectangle,
+  arc and terrace numbers the builders draw from, as parts) and the state's tear, and gives plain records in the hero's frame: `floor`,
+  `ledge`, `edge`, `top`, `wall`, `root` and `heap`, each with its outward normal, the size of plant it holds, the room it has and a unit hash a
+  host filters by density with. Deterministic by KRAND from (family, state, seed, part, level, index). The node test proves every socket
+  of every family and state on its skin and under the state's top. About 1,100 a Spindle crown, 500 a Ledger, 4,300 the Swell (87 k in all).
+- **Growth** (`59e-mp-overgrow.js`, `[draw]`): `MP.overgrow(hero, F, state, o)` draws creeper strands as real tubes down the wall from sills,
+  torn edges and rims (forking, thinning, leaved), roots down the plinth, moss and soil in the vertex colours round each wet socket (blotches
+  from floors and tops, drips under sills, a damp band at the foot), rubble soil on the open floors, and the kit's own stand-in bushes and
+  small trees. Because it is geometry and vertex colour on the hero, **the shells and impostors bake it**: a wild Spindle's shell shows the
+  strands and the moss at 130 m. `MP.plant(F, state, at, o)` hands each kept socket to a host's planter in the world frame.
+- **Wild looks**: a look is a state or `state.wild`; `MP.look` splits it and every reader of a state takes one, so `MP.hero('spindle',
+  'crown.wild')`, `KSHELL.record(F, 'crown.wild')` and `MP.debris(F, 'crown.wild')` work. On this page the wild heroes are planted with the
+  lowland kits' trees and floor plants (`59d`) on their tops, floors, heaps and feet; the test bed stands every family in three states beside
+  their wild looks (`Wild, <family>`), the Spindle and the Ledger beside their baked wild shells, and two wild looks in the tiers' city. The
+  shells now pack as many 2048 atlases as they need (two).
+- **Fixed on the way:** `MP.ruinDesign` cut a design's triangles out of the index but kept every vertex, so a stump's bounding box (and the
+  impostor's card framed from it) still stood at the whole tower's height (an Organ stump read 240 m against its record's 47). The kept
+  triangles are compacted into a new geometry (`MP.compact`) and the hero's triangle count is recounted from its meshes (`MP.countTris`).
+  Also a `children.forEach(c => G.add(c))` that skipped every other child (THREE's `add` removes it from its parent mid-loop).
 
 ## The other fourteen, close up (2026-11-03)
 

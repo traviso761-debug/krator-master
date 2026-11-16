@@ -20,7 +20,7 @@ async def main():
     async with verify_page(a.html, here=HERE, size=a.size, settle_ms=1500, query=a.query, init=[os.environ['MP_HOOK']] if os.environ.get('MP_HOOK') else ()) as V:
         pg = V.page
         pg.on('console', lambda m: print('CONSOLE', m.text[:1400]) if ('ERROR' in m.text or 'rror:' in m.text) else None)
-        await pg.wait_for_function('window._api && window._api.stage && window._api.stage().ready && MPS.impN===MPS.keys.length && (typeof MPF==="undefined" || (MPF.ready && MPF.impN===MPF.keys.length))', timeout=600000)   # the farm belt's impostors too (70f)   # every impostor (one a frame; about 25 s on software GL) before the checks
+        await pg.wait_for_function('window._api && window._api.stage && window._api.stage().ready && MPS.impN===MPS.impKeys.length && (typeof MPF==="undefined" || (MPF.ready && MPF.impN===MPF.keys.length))', timeout=600000)   # the farm belt's impostors too (70f); every impostor (one a frame; about 25 s on software GL) before the checks: the keys with impostors (four wild looks take none)
         s = await pg.evaluate('window._api.stage()')
         await pg.wait_for_timeout(2500)
         print(json.dumps(await pg.evaluate('window._api.stage()'))[:900]); print('errs:', await pg.evaluate('document.getElementById("errs").textContent.slice(0,600)'))

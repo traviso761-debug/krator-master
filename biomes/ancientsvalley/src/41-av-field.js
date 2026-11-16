@@ -51,7 +51,7 @@ AV.debris=function(o){var out=[],seed=o.seed|0,C=o.craters||[];
    53 s in craterH and 37 s in scar of a 560 s software-GL profile). A grid of `cell` metres lists, in the list's own order, the items whose reach
    (rad(item)) overlaps each cell; a field reads only its cell's items and gives the same numbers, bit for bit (the skipped items add nothing).
    AV.bucket(list, rad, cell) -> (x, z) => [indices] (an empty array outside every reach); cached on the list for its reach function */
-AV.bucket=function(list,rad,cell){cell=cell||128;var G={},none=[];for(var i=0;i<list.length;i++){var r=rad(list[i]),it=list[i];
+AV.bucket=function(list,rad,cell){cell=cell==null?128:cell;var G={},none=[];for(var i=0;i<list.length;i++){var r=rad(list[i]),it=list[i];
   for(var gx=Math.floor((it.x-r)/cell);gx<=Math.floor((it.x+r)/cell);gx++)for(var gz=Math.floor((it.z-r)/cell);gz<=Math.floor((it.z+r)/cell);gz++){var k=gx+','+gz;(G[k]||(G[k]=[])).push(i);}}
  return function(x,z){return G[Math.floor(x/cell)+','+Math.floor(z/cell)]||none;};};
 /* where a subway's sinkholes, voids and stair pits can reach (kits/ancient-transit KTRANSIT.sinkholeH: the least of their drops, 0 beyond them all): a
@@ -61,6 +61,23 @@ AV.sinkGate=function(SW){var L=[];(SW.sinkholes||[]).forEach(function(k){L.push(
  (SW.voids||[]).forEach(function(V){L.push({x:V.x,z:V.z,r:Math.hypot(V.w/2,V.len/2)+V.ramp*1.5+1});});
  (SW.pits||[]).forEach(function(p){L.push({x:p.x,z:p.z,r:Math.hypot(p.w/2,p.run+.6)+1});});
  var B=AV.bucket(L,function(e){return e.r;},128);return function(x,z){var I=B(x,z);for(var q=0;q<I.length;q++){var e=L[I[q]];if(Math.hypot(x-e.x,z-e.z)<e.r)return true;}return false;};};
+/* THE GROUND'S LATTICE (the owner, 2026-11-10: "is there any way to get these load times down even further"; the profile: the kits' placement scans
+   asked the page's ground and fields millions of times, each a walk down the model's bicubic, two noises, the pads, the craters and the roads' grades).
+   fn sampled once at the nodes of a `cell`-metre lattice over [-half, half] squared, filled a tile of tile x tile cells at a time where first asked, and
+   read bilinearly between them. Each cell is also sampled at its centre: where the centre is off the bilinear guess by more than `tol` metres (a pit's
+   rim, a kerb, a crater's lip inside the cell) the cell is "sharp" and its reads go to fn itself, so the lattice is within tol of fn wherever its
+   features are wider than a cell, and exact where they are not. A node's value is fn's at that node, so the reads are the same in any order of asking.
+   Outside the square: fn. AV.lattice(fn, {cell, half, tile, tol}) -> {h(x, z), stats: {tiles, sharp, cells}} */
+AV.lattice=function(fn,o){var c=o.cell,hf=o.half,T=o.tile==null?8:o.tile,tol=o.tol==null?.12:o.tol,n=Math.ceil(2*hf/c),nt=Math.ceil(n/T),W=T+1,tiles=new Array(nt*nt),st={tiles:0,sharp:0,cells:0};
+ function tile(k,ti,tj){var A=new Float32Array(W*W),S=new Uint8Array(T*T),x0=-hf+ti*T*c,z0=-hf+tj*T*c,i,j;
+  for(j=0;j<W;j++)for(i=0;i<W;i++)A[j*W+i]=fn(x0+i*c,z0+j*c);
+  for(j=0;j<T;j++)for(i=0;i<T;i++){var p=j*W+i,g=(A[p]+A[p+1]+A[p+W]+A[p+W+1])/4;if(Math.abs(fn(x0+(i+.5)*c,z0+(j+.5)*c)-g)>tol){S[j*T+i]=1;st.sharp++;}}
+  st.tiles++;st.cells+=T*T;return tiles[k]={A:A,S:S};}
+ return{h:function(x,z){var u=(x+hf)/c,v=(z+hf)/c;if(!(u>=0&&v>=0&&u<n&&v<n))return fn(x,z);
+   var i=Math.floor(u),j=Math.floor(v),ti=(i/T)|0,tj=(j/T)|0,k=tj*nt+ti,L=tiles[k]||tile(k,ti,tj),li=i-ti*T,lj=j-tj*T;if(L.S[lj*T+li])return fn(x,z);
+   var A=L.A,p=lj*W+li,a=A[p],b=A[p+1],d=A[p+W],e=A[p+W+1],fu=u-i,fv=v-j;return a+(b-a)*fu+(d-a)*fv+(a-b-d+e)*fu*fv;},stats:st,
+  /* tiles nt x nt; fill(k) fills tile k now if it is not yet (a page fills them ahead in slices, 46y; the same values as filled on first read) */
+  nt:nt,fill:function(k){if(!tiles[k])tile(k,k%nt,(k/nt)|0);}};};
 AV.craterH=function(list,x,z){var h=0,B=list._avB||(list._avB=AV.bucket(list,function(c){return c.r*1.6;},128)),I=B(x,z);for(var q=0;q<I.length;q++){var c=list[I[q]],d=Math.hypot(x-c.x,z-c.z);if(d>c.r*1.6)continue;var u=d/c.r;
   if(u<1){var b=1-u*u;h-=c.depth*b*b;}h+=c.rim*AV.smooth(.6,1,u)*AV.smooth(1.6,1.1,u);}return h;};
 AV.BANDS=[['floor',100],['shelf',300],['terraces',600],['forest',Infinity]];
@@ -72,8 +89,9 @@ AV.model=function(G){var H=G.h,nx=G.nx,nz=G.nz;
  var at=function(i,j){return H[j<0?0:j>=nz?nz-1:j][i<0?0:i>=nx?nx-1:i];};
  var cr=function(p0,p1,p2,p3,t){return p1+.5*t*(p2-p0+t*(2*p0-5*p1+4*p2-p3+t*(3*(p1-p2)+p3-p0)));};
  var W={};G.water.forEach(function(w){W[w[0]+','+w[1]]=w[2];});
- return{at:function(x,z){var u=(x-G.x0)/G.dx,v=(z-G.z0)/G.dz,i=Math.floor(u),j=Math.floor(v),fu=u-i,fv=v-j,r=[];
-   for(var k=-1;k<=2;k++)r.push(cr(at(i-1,j+k),at(i,j+k),at(i+1,j+k),at(i+2,j+k),fu));return cr(r[0],r[1],r[2],r[3],fv);},
+ /* the four rows' values held in locals, not pushed to an array (the same sums in the same order: the same heights, bit for bit) */
+ return{at:function(x,z){var u=(x-G.x0)/G.dx,v=(z-G.z0)/G.dz,i=Math.floor(u),j=Math.floor(v),fu=u-i,fv=v-j;
+   return cr(cr(at(i-1,j-1),at(i,j-1),at(i+1,j-1),at(i+2,j-1),fu),cr(at(i-1,j),at(i,j),at(i+1,j),at(i+2,j),fu),cr(at(i-1,j+1),at(i,j+1),at(i+1,j+1),at(i+2,j+1),fu),cr(at(i-1,j+2),at(i,j+2),at(i+1,j+2),at(i+2,j+2),fu),fv);},
   cell:function(x,z){return[Math.round((x-G.x0)/G.dx),Math.round((z-G.z0)/G.dz)];},
   water:function(x,z){var c=this.cell(x,z),w=W[c[0]+','+c[1]];return w==null?null:w;},
   W:W};};

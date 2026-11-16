@@ -40,3 +40,17 @@
 - [ ] **A big machine hall is worked only round its core:** 240 pieces a storey (about 125 k triangles) fill a cluster near the core of the Vault's 400 m floor, the rest bare. More would want the furniture instanced across storeys, or a hall drawn at range as a texture.
 - [ ] **The ledges are left unworked:** a machine hall's part under 200 m2 that no shaft, bridge or street reaches (the Assembler's sheds' shelves, a mezzanine's end) is a ledge, as the room plan's thin parts are corridors; there is no way onto it.
 - [ ] **The Terrarium's plants are the kits' as they are now:** they are vended through `SWLOW.treeAt`, `SWLOW.plantAt` and `BIO.kitBuilder`; a change to those kits' species moves the deck's planting, and the page's hash with it.
+- [ ] **A wild shell holds no leaf-card plants** (2026-11-09): the biome kits' trees and floor plants planted on a wild hero are flagged `noShell` and left out of
+  the bake (a leaf card bakes as a solid quad). The shell holds the strands, the moss, the soil and the kit's solid stand-ins; the planted trees show
+  to the kits' own LOD range. A host that wants canopies in its shells draws solid stand-ins at the tree sockets (`MP.overgrow` with `standins: true`)
+  and plants its own on top, or bakes canopy blobs of its own.
+- [ ] **Moss is per vertex:** a blotch smaller than a facade quad (a 3 m bay by a storey) reads as a gradient across the quad, not a patch; the reaches are
+  set wide (2.4 to 6 m) so it reads as damp staining. A moss layer in the materials would not reach the shells (the bake reads colours), so a finer
+  moss wants the facade quads split or a moss map in the library blended by the same field.
+- [ ] **Wild shells and impostors on this page are the Spindle's and the Ledger's only** (six wild looks shelled, two with impostors): the designs' box
+  shells are the valley's (`biomes/ancientsvalley/70-host-city.js`), which bakes from its own flattened stubs; for a wild key it runs `MP.overgrow` on
+  the stub after its rust (`API.md`). A wild design here is a hero in its `Wild, <family>` view only.
+- [ ] **The Swell's growth is capped** (`MP.WILD_CAP`, 900 sockets of its 4,300 at a density of 1): its four lobes carry more sills than any other family,
+  and uncapped its growth was 130 k triangles. The cap keeps the lowest unit hashes, so it is deterministic and the host's density still orders them.
+- [ ] **A wild hero takes half a second to a second and a half to build** (the Spindle 0.5 s, the Swell 1.7 s, mostly the moss pass over its vertices):
+  the page's boot grew by about 4 s for its six wild keys. A host building many wild keys should spread them over frames or bake them at build time.

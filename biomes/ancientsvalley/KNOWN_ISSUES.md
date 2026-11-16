@@ -179,7 +179,10 @@
   the crops stop at 650 m and the orchards at 1.3 km (the paint carries the fields past that). **The measure melon is left out of the fields**:
   its card (`card.crop.melon`) is in the material library but not in the crops kit's pack (`kits/crops/materials.json`); adding it there (the crops
   kit's own change) brings it back. The station checks that every card has its map and stays inside one cell of its sheet. **The pylons' wires are straight sagging lengths** between standing pylons; a leaning pylon's
-  wires attach where it would stand upright. **Roads are paint and asphalt on the ground** (KGROUND), no kerbs; a spoke laid nearly along the
+  wires attach where it would stand upright. **The roads are the transit kit's** (since the second pass): its asphalt has no crack texture of its own, so the
+  cracks are the weeds' lines (`87t`) and the riot's scorch; the pods' clumps and the weeds are whole-plant cards with no impostor (the clumps stop
+  at 900 m, the weeds at 700 m); the vine mats over the domes are drawn to the fog. The mats are the station's (87t), not the kit's: a pod on the
+  metropolis kit's page is bare. A spoke laid nearly along the
   aqueduct is not built (`41d`: no crossing can square it), so a few clusters have no road. **The aqueduct is level on a contour** with a bed under
   its arches levelled up to 6.6 m (its modules are one height): where the contour wanders the bed reads as a cut or an embankment. Shells and
   impostors of the eight families come from `70-host-city.js` unchanged (box shells): a pod's dome is a box at 600 m and beyond.
@@ -187,13 +190,30 @@
   (`STAGE.checks`); the lattice, transit, wreck, keeper and extraplanar checks stay the Overlook's.
 - [ ] **The build is long and blocks the page** (the owner, 2026-11-10: "the station pages really seem to take forever to load ... station 0 keeps
   freezing on load"). Measured on the GPU verify lanes that day, with other sessions' jobs sharing the machine: station 0 112 to 329 s, the Yards
-  343 s, the Terraces 35 to 55 s; nearly all of it the two lowland kits' forest (the marks `_t.swlowlands`, `_t.nwlowlands`), which ask the page's
+  343 s, the Terraces 35 to 55 s (73 to 100 s after its second pass, 2026-11-10: the honeycombs and the roads' cuttings, read off a 4 m lattice gated by the road distance, still on every ground sample; not profiled yet); nearly all of it the two lowland kits' forest (the marks `_t.swlowlands`, `_t.nwlowlands`), which ask the page's
   ground and mask for every sample. The build is one synchronous run, so the page freezes until it ends. A CPU profile of station 0 on software GL
   (560 s) found the valley's own fields scanning every crater and scar per sample (90 s) and the subway's sinkholes (27 s): bucketed by cell now
-  (41, `AV.bucket`, `AV.sinkGate`: the same numbers bit for bit, tested), 346 s to 218 s there. Left: core/biome's `BIO.alphaTex` reads a canvas
-  back for each of the lowland kits' 52 generated cards (52 s; a `willReadFrequently` canvas is the likely fix, core-wide); the model's bicubic
-  heights (`at`, `cr`: 50 s; a fine pre-sampled grid would do, at a few millimetres' difference); the relief's noise (27 s); and the build yielding
-  to the browser between kits so the page shows progress instead of freezing (core/biome's kit loop).
+  (41, `AV.bucket`, `AV.sinkGate`: the same numbers bit for bit, tested), 346 s to 218 s there. Since then: core/biome's `BIO.alphaTex` reads its canvas as `willReadFrequently` (CPU-backed: the readback is a copy, not a GPU stall), and
+  the build yields (88 runs each kit's trees, its floor and the bake as stages, showing where it is and giving the browser a turn between them; the
+  page's fragments after 88 wait in a text block, `av-after`, run when the build finishes). Then (2026-11-11, the owner: "pre-sample the ground"):
+  a build asked the model-and-noise ground 94 million times, the model's bicubic 468 million and the whole ground 16 million. The stages read
+  them off lattices now (41, `AV.lattice`: sampled at the nodes, filled a tile where first asked, read bilinearly, exact in a cell whose centre is
+  off by more than 0.12 m, so a pit's rim or a kerb stays exact; tested): the model's height and slope at 32 m (within 2 cm), the relief under
+  everything at 4 m, and the whole ground at 4 m for the fields and the kits (BIO's `terrainH`, 47); the drawn ground, the towers and the roads
+  keep the whole ground itself. On software GL the build went from 131 s to 67 s (the bake's mark) and the profiled load from 341 s to 208 s; 6.4
+  million model-and-noise reads, 32 million bicubic, 7.2 million whole ground. Building the near forest first was measured and dropped: the
+  south-western trees' drawing is about 13 s of what is left, the rest is placement (one rng stream through the floor, and the north-western
+  kit's trees draw without reseeding), so a deferred far draw would save about 5 s for a second bake. Left: the first frame's shader compiles
+  (20 s on software GL), the transit's drawing (11 s), the take (11 s). The core/biome change reaches 72 builds: the all-builds integration
+  rebuilds them. Then (2026-11-11, the owner: station 0 and the Yards "still seem to get stuck on 'building the valley'"): the page showed
+  nothing at all while 47 (the land) filled the ground's lattice, 12 s on software GL and nearly 40 s in a slow browser, and nothing between the
+  bake and the first frame. The page now loads in parts (46y, `AV_PARTS`; build.py splits it before 47): the lattice is filled in quarter-second
+  slices with the share done on the note, every build stage says which of five and the seconds so far, and the last stage (the towers, the
+  streets, the sky) has a note of its own; each yield waits for a painted frame. The Yards' pools are read by cell (`AV.bucket`: 13.5 s of a
+  build, the same heights). A load still takes minutes in a hidden or throttled tab, or on a machine busy with other jobs. A hidden tab takes no turns (the browser holds
+  its timers to a second each, so the slices crawled there). The oily rain (the owner, 2026-11-11: "may be lagging the page") measured no
+  dearer than clear on either lane, in the render or the whole frame, inside the field and looking across it (Arc, 2880 x 1620: 48-90 ms both);
+  the page is that heavy at that size on the Arc whatever the weather, with stalls of 200-470 ms a frame now and then in every mode.
 - [ ] **The ground's detail map is sampled raw** (`47-host-land.js`, the lint's one RAWTEX on this build, locked in the baseline): the library's
   `groundDetail` albedo multiplies the ground's colour without an sRGB decode, as the two lowlands' pages do (the valley copies their ground). A
   decode darkens the ground a fifth; do it with the lowlands together and retune the gain, not here alone.

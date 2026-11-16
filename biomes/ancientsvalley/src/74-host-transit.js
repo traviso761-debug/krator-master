@@ -37,7 +37,7 @@ AVTR.build=function(){if(AVTR.ready)return true;if(window._texPending>0)return f
     kept the streets' builder alive: 400 MB of the 2 GB the boot held). Every caller finishes a builder last (the rail reads B.ties after, not B.b) */
  const mkB=KTRANSIT.builder;KTRANSIT.builder=function(){const B=mkB.apply(this,arguments),f=B.finish;B.finish=(name,o)=>{const G=f.call(B,name,Object.assign({chunk:AV_TR_CHUNK},o||{}));B.b={};return G;};return B;};
  const SB=KTRANSIT.builder();
- T.streets.forEach((st,i)=>{const Rd=T.net.roads[i],W=T.wars[i],D=KTRANSIT.dress(st,{seed:KRAND.hash(STAGE.seed|0,81,i,0),space,blocked,war:W,damage:W.damageAt,network:T.net,road:i});pieces+=D.pieces.length;warPieces+=W.pieces.length;
+ T.streets.forEach((st,i)=>{const Rd=T.net.roads[i],W=T.wars[i],D=KTRANSIT.dress(st,Object.assign({seed:KRAND.hash(STAGE.seed|0,81,i,0),space,blocked,war:W,damage:W.damageAt,network:T.net,road:i},T.dressOpts||{}));pieces+=D.pieces.length;warPieces+=W.pieces.length;
   KTRANSIT.draw.road(SB,Rd,terrainH,{pavement:Rd.pavement==null?3.5:Rd.pavement,network:T.net,road:i});
   D.pieces.forEach(p=>{const C=cellOf(p.x,p.z);C.dress.push([p,i]);C.streets[i]=1;});W.pieces.forEach(p=>{const C=cellOf(p.x,p.z);C.war.push([p,i]);C.streets[i]=1;});
   W.scorch.forEach(sc=>cellOf(sc.x,sc.z).scorch.push([sc,i]));W.craters.forEach(c=>cellOf(c.x,c.z).scorch.push([{x:c.x,z:c.z,r:c.r*1.6,deep:true},i]));
@@ -55,15 +55,16 @@ AVTR.build=function(){if(AVTR.ready)return true;if(window._texPending>0)return f
  /* the junctions: a patch, the filleted pavement corners, the crosswalks */
  {const JB=KTRANSIT.builder();KTRANSIT.draw.junctions(JB,T.net,terrainH);add(JB.finish('junctions',{chunk:AV_TR_CHUNK}),'the junctions of the grid','junction',{count:T.net.junctions.length});}
  /* the highway, its ramps, the piers culled where they meet a plinth */
- AVTR.culled=KTRANSIT.cull(T.highway,blocked);
- add(KTRANSIT.draw.highway(T.highway,{furn,vehicles:veh,shadow:sh,err:reportErr}),'the elevated highway','highway',{spans:T.highway.spans.length,ramps:T.highway.ramps.length,culled:AVTR.culled});
+ /* a station with streets alone (the Terraces' farm roads: STAGE.transit without the lines) draws only what it has */
+ AVTR.culled=T.highway?KTRANSIT.cull(T.highway,blocked):0;
+ if(T.highway)add(KTRANSIT.draw.highway(T.highway,{furn,vehicles:veh,shadow:sh,err:reportErr}),'the elevated highway','highway',{spans:T.highway.spans.length,ramps:T.highway.ramps.length,culled:AVTR.culled});
  /* the lines, the subway, the trains */
- add(KTRANSIT.draw.rail(T.cargo,{shadow:sh}),'the cargo line','rail',{crossings:T.cargo.crossings.length});
- add(KTRANSIT.draw.rail(T.pax,{shadow:sh}),'the elevated passenger line','rail',{stations:T.pax.stations.length});
- add(KTRANSIT.draw.subway(T.subway,{furn,shadow:sh}),'the subway','subway',{stations:T.subway.stations.length,sinkholes:T.subway.sinkholes.length});
- T.trains.forEach(tr=>add(KTRANSIT.draw.train(tr,{shadow:sh}),'a train: '+tr.id+' ('+tr.state+')','train',{cars:tr.cars.length,state:tr.state}));
+ if(T.cargo)add(KTRANSIT.draw.rail(T.cargo,{shadow:sh}),'the cargo line','rail',{crossings:T.cargo.crossings.length});
+ if(T.pax)add(KTRANSIT.draw.rail(T.pax,{shadow:sh}),'the elevated passenger line','rail',{stations:T.pax.stations.length});
+ if(T.subway)add(KTRANSIT.draw.subway(T.subway,{furn,shadow:sh}),'the subway','subway',{stations:T.subway.stations.length,sinkholes:T.subway.sinkholes.length});
+ (T.trains||[]).forEach(tr=>add(KTRANSIT.draw.train(tr,{shadow:sh}),'a train: '+tr.id+' ('+tr.state+')','train',{cars:tr.cars.length,state:tr.state}));
  KTRANSIT.builder=mkB;AVTR.chunked=[];AVTR.groups.forEach(G=>G.traverse(m=>{if(m.isMesh&&m.userData.chunk!=null){const k=m.userData.chunk.split(',');m.userData.chunkAt=[(+k[0]+.5)*AV_TR_CHUNK,(+k[1]+.5)*AV_TR_CHUNK];AVTR.chunked.push(m);}}));
- AVTR.n={roads:T.streets.length,dressed:T.streets.length,pieces,warPieces,cells:AVTR.cellList.length,junctions:T.net.junctions.length,ramps:T.highway.ramps.length,crossings:T.cargo.crossings.length,stations:T.subway.stations.length,trains:T.trains.length};
+ AVTR.n={roads:T.streets.length,dressed:T.streets.length,pieces,warPieces,cells:AVTR.cellList.length,junctions:T.net.junctions.length,ramps:T.highway?T.highway.ramps.length:0,crossings:T.cargo?T.cargo.crossings.length:0,stations:T.subway?T.subway.stations.length:0,trains:(T.trains||[]).length};
  AVTR.ms=Math.round(performance.now()-t0);AVTR.ready=true;return true;};
 /* a cell's furniture and war, built when the eye first comes near it (one cell a frame): the scorch marks (the kit's: dark discs on the ground),
    the pieces of the furniture bundle merged, the barricades' vehicles, the rubble instanced; one mesh a family */

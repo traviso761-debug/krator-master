@@ -239,9 +239,37 @@ if bad: print('BIOME FRAGMENT DEPENDS ON A HOST ENGINE:\n  '+'\n  '.join(bad)); 
 os.makedirs(DIST,exist_ok=True)
 html=''.join(out)
 if SIDE: html=_mp.write_sidecar(SIDE,html,DIST,'ancientsvalley.tex.js',prune=False)
+# THE BUILD YIELDS (2026-11-10): 88-host-build.js builds the forest in stages that give the browser a turn between them, so what follows it on the page
+# must wait: the fragments after it go in a text block (av-after) that the build runs when it finishes (88's AV_AFTER). Classic scripts share the
+# page's globals, so the block runs as if it had followed in place. The split is checked: nothing after it may close a script itself.
+SPLIT='\n</script>\n<script type="text/plain" id="av-after">'
+_after=[f for f in frags if f>'88-host-build.js' and f.endswith('.js')]
+if '88-host-build.js' in frags and _after:
+    _mk=f'\n// ==================== {_after[0]}\n'
+    _i=html.find(_mk)
+    if _i<0: print('BUILD SPLIT: no marker for '+_after[0]); sys.exit(1)
+    if len(re.findall(r'</script',html[_i:],re.I))!=1: print('BUILD SPLIT: the fragments after 88 close a script themselves; the deferred block would break'); sys.exit(1)
+    html=html[:_i]+SPLIT+html[_i:]
+# THE PAGE LOADS IN PARTS (2026-11-11, src/46y-host-parts.js): the fragments from 47 (the land) to 88 are a block of their own (data-av-part), run
+# by AV_PARTS.run() after the first script ends, with its prep (the ground's lattice filled in slices, a note between them) before it. The call is
+# written after the page's last script block; the split is checked like the one above.
+PART_AT='47-host-land.js'
+RUNCALL='\n<script>AV_PARTS.run();</script>'
+PSPLIT=f'\n</script>\n<script type="text/plain" data-av-part="{PART_AT}">'
+if PART_AT in frags and '46y-host-parts.js' in frags:
+    _mk=f'\n// ==================== {PART_AT}\n'
+    _i=html.find(_mk)
+    if _i<0: print('BUILD SPLIT: no marker for '+PART_AT); sys.exit(1)
+    _j=html.find(SPLIT)
+    if _j<0 or _j<_i or len(re.findall(r'</script',html[_i:_j],re.I))!=0: print('BUILD SPLIT: the part from 47 to 88 would not be one block'); sys.exit(1)
+    html=html[:_i]+PSPLIT+html[_i:]
+    _e=html.find('</script>',html.find(SPLIT)+len(SPLIT))
+    if _e<0: print('BUILD SPLIT: no end to the deferred block'); sys.exit(1)
+    _e+=len('</script>')
+    html=html[:_e]+RUNCALL+html[_e:]
 open(os.path.join(DIST,OUT),'w',encoding='utf-8',newline='\n').write(html)
 # syntax check on the script body
-m=re.search(r'<script>\n(?!document)(.*)</script>\s*</body>',html,re.S)
+m=re.search(r'<script>\n(?!document)(.*)</script>\s*</body>',html.replace(SPLIT,'').replace(PSPLIT,'').replace(RUNCALL,''),re.S)
 js=m.group(1) if m else ''
 chk=os.path.join(HERE,'.syntax.js'); open(chk,'w',encoding='utf-8',newline='\n').write(js)
 node=find_node()

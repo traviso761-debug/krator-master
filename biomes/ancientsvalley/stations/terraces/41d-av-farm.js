@@ -3,7 +3,7 @@
 // the fields and orchards gone to thicket. Plain records on core/rand (KRAND) and core/space (KSPACE): no THREE, no DOM, so Godot takes the
 // same plan (tests/test-farm.js). Everything is decided here; the stage draws what this returns (70-host-city.js the buildings through the
 // metropolis kit's tiers, 70t-host-farm.js the lines, 87t-host-thicket.js the fields).
-//   AV.farm(o) -> {hub, towers, aqueduct, roads, pylons, fields, clusters, roadD(x,z), aqD(x,z), fieldAt(x,z), boxD(T,x,z), ...}
+//   AV.farm(o) -> {hub, towers, aqueduct, roads, pylons, fields, clusters, arrays, roadD(x,z), aqD(x,z), fieldAt(x,z), boxD(T,x,z), ...}
 //     o: {R, seed, ground(x,z) (the raw ground, page y), lakeY, extent(family) -> [hw, hd] (the footprint's half extents in its frame),
 //         crops: [{id, card, form}] (what the fields grow: kits/crops, picked by the stage), hubNear [x, z]}
 //   AV.FARM_CUTS, AV.AQ_CUTS  the farm belt's ruin shares (cumulative, AV.RUINS's order), the aqueduct's apart (a line that reads as one)
@@ -12,7 +12,9 @@
 //   2 THE AQUEDUCT: a contour line 320 m upslope of the hub, traced both ways in modules of the kit's joint (MP.aqueductJoin's length: 66 m),
 //     each turning at most 5 degrees from the last, level but for a fall of 3 cm a module toward its west end; the pump house and the water
 //     tower beside it on the hub's side, where the line passes nearest
-//   3 THE CLUSTERS: on rings round the hub, each a honeycomb of growing pods, a row of vault houses along the contour, or (on the steeper
+//   2b THE HONEYCOMBS: four arrays of twelve to nineteen pods packed on a 53 m hex lattice (flat to flat, a walk of 8 m between), each on one
+//     level the relief cuts and fills, out on the belt off the aqueduct and the trunk's line; a spoke road to each (out.arrays, also in clusters)
+//   3 THE CLUSTERS: on rings round the hub, each a small honeycomb (the lattice's first ring) of growing pods, a row of vault houses along the contour, or (on the steeper
 //     ground) growing stacks facing down the slope; a road from the ring to each
 //   4 THE ROADS: the ring, a spoke to each cluster and to the pump house, the trunk road down the slope to the page's edge; where a road
 //     meets the aqueduct it passes under an arch (the crossing moved to the arch's middle, square to the line)
@@ -55,7 +57,7 @@
     c:Math.cos(yaw),s:Math.sin(yaw),rx:e[0]+margin,rz:e[1]+margin};T.padR=Math.hypot(T.rx,T.rz);T.ease=14;
    if(fam!=='aqueduct'&&(st==='broken'||st==='crown'||st==='stump'))T.lean=(st==='broken'?3:1.5)*u(salt,8,1);T.leanDir=u(salt,9,1)*Math.PI*2;return T;};
   /* the conflicts: another pad (their boxes closer than gap), a road, the aqueduct's corridor, the page's edge, the slope */
-  var near=[];var padClash=function(T,gap){near.length=0;PADS.query(T.x,T.z,T.padR+gap+80,near);for(var i=0;i<near.length;i++){var P=near[i];if(P===T)continue;
+  var near=[];var padClash=function(T,gap){near.length=0;PADS.query(T.x,T.z,T.padR+gap+80,near);for(var i=0;i<near.length;i++){var P=near[i];if(P===T||(T.array!=null&&P.array===T.array))continue;   /* a honeycomb's own pods share their walks */
     var corners=[[1,1],[1,-1],[-1,1],[-1,-1],[1,0],[-1,0],[0,1],[0,-1],[0,0]];for(var k=0;k<corners.length;k++){var q=corners[k],lx=q[0]*T.rx,lz=q[1]*T.rz,wx=T.x+lx*T.c+lz*T.s,wz=T.z-lx*T.s+lz*T.c;if(boxD(P,wx,wz)<gap)return true;}
     var cs=[[1,1],[1,-1],[-1,1],[-1,-1]];for(k=0;k<4;k++){q=cs[k];lx=q[0]*P.rx;lz=q[1]*P.rz;wx=P.x+lx*P.c+lz*P.s;wz=P.z-lx*P.s+lz*P.c;if(boxD(T,wx,wz)<gap)return true;}}return false;};
   var put=function(T){PADS.insert(T,T.x,T.z,T.padR+20);out.towers.push(T);return T;};
@@ -86,12 +88,33 @@
   var toHub=[hub[0]-best[0],hub[1]-best[1]],th=Math.hypot(toHub[0],toHub[1])||1;toHub=[toHub[0]/th,toHub[1]/th];
   var pump=put(mk('pumphouse',best[0]+toHub[0]*46,best[1]+toHub[1]*46,Math.atan2(-toHub[1],toHub[0])+Math.PI,'av.f.pump',AV.FARM_CUTS,13));
   put(mk('watertower',pump.x+along[0]*72,pump.z+along[1]*72,0,'av.f.water',AV.FARM_CUTS,14));
+  // ---------------------------------------------------------------- 2b the honeycombs: pods packed on a hex lattice
+  /* the pod's hex has its corners on its frame x (52 m across them, 45 across the flats): on a lattice of 53 m its neighbours face it flat to flat
+     with a walk of 8 m between, at 30, 90, 150... degrees. A honeycomb is the lattice's slots to a ring (1: seven, 2: nineteen) on one level y (the
+     slots' median ground), every pod on it; a slot is kept when its box's ground lies within 5 m of that level (the relief cuts and fills it,
+     the walks with it) and it is clear of everything else; the array stands when minN pods or more are kept */
+  var AS=53,LAT=[];for(var qa=-2;qa<=2;qa++)for(var ra=-2;ra<=2;ra++){var sa3=-qa-ra;if(Math.abs(sa3)>2)continue;LAT.push({lx:qa*AS*Math.cos(Math.PI/6),lz:qa*AS*.5+ra*AS,ring:Math.max(Math.abs(qa),Math.abs(ra),Math.abs(sa3)),q:qa,r:ra});}
+  LAT.sort(function(a,b){return a.ring-b.ring||a.q-b.q||a.r-b.r;});
+  var underT=function(T){var lo=1e9,hi=-1e9;for(var a=-1;a<=1;a+=.5)for(var b=-1;b<=1;b+=.5){var lx=a*(T.rx-margin),lz=b*(T.rz-margin),h=G(T.x+lx*T.c+lz*T.s,T.z-lx*T.s+lz*T.c);if(h<lo)lo=h;if(h>hi)hi=h;}return[lo,hi];};
+  var roadClash=null;
+  var honey=function(id,x,z,rings,minN,salt,dry){var slots=LAT.filter(function(s){return s.ring<=rings;}),hs=slots.map(function(s){return G(x+s.lx,z+s.lz);}).sort(function(a,b){return a-b;}),y0=hs[hs.length>>1],got=[],drop={edge:0,aq:0,pad:0,road:0,slope:0};
+   slots.forEach(function(s,k){var T=mk('pod',x+s.lx,z+s.lz,0,id+'.p'+k,AV.FARM_CUTS,salt+k);T.array=id;T.y=y0;
+    if(Math.hypot(T.x,T.z)+T.padR>R-40){drop.edge++;return;}if(aqD(T.x,T.z)<Math.max(T.rx,T.rz)+12){drop.aq++;return;}if(padClash(T,4)){drop.pad++;return;}
+    if(roadClash&&roadClash(T)){drop.road++;return;}var lh=underT(T);if(lh[0]<y0-5||lh[1]>y0+5){drop.slope++;return;}got.push(T);});
+   if(dry)return got.length;if(got.length<minN)return null;for(var k in drop)out.dropped[k]+=drop[k];
+   var arr={id:id,x:x,z:z,y:y0,rings:rings,members:[],reach:0};got.forEach(function(T){put(T);arr.members.push(T.id);arr.reach=Math.max(arr.reach,Math.hypot(T.x-x,T.z-z)+T.padR);});return arr;};
+  /* the arrays: four of them (twelve pods or more), on the belt 950 to 2,150 m from the hub, 700 m apart, off the aqueduct and the trunk's line */
+  out.arrays=[];{var dn0=[-up[0],-up[1]],cand=[];for(var rr2=950;rr2<=2150;rr2+=240)for(var k2=0;k2<40;k2++){var t2=(k2+u(rr2,k2,61)*.6)/40*Math.PI*2,x=hub[0]+Math.cos(t2)*rr2,z=hub[1]+Math.sin(t2)*rr2;
+    if(Math.hypot(x,z)>R-200||aqD(x,z)<230)continue;if(segD([hub[0],hub[1]],[hub[0]+dn0[0]*2*R,hub[1]+dn0[1]*2*R],x,z).d<240)continue;cand.push({x:x,z:z,r:rr2,k:k2});}
+   cand.forEach(function(c){c.n=honey('x',c.x,c.z,2,0,0,true);c.sc=-c.n+u(c.r,c.k,62)*.9;});cand.sort(function(a,b){return a.sc-b.sc;});
+   for(var ci2=0;ci2<cand.length&&out.arrays.length<4;ci2++){var c=cand[ci2];if(c.n<14)break;if(out.arrays.some(function(A){return Math.hypot(A.x-c.x,A.z-c.z)<700;}))continue;
+    var A=honey('av.f.a'+out.arrays.length,c.x,c.z,2,12,3000+out.arrays.length*20);if(A){A.kind='array';out.arrays.push(A);out.clusters.push(A);}}}
   // ---------------------------------------------------------------- 3 the clusters, and 4 their roads
   var road=function(id,pts,w,kind){var r={id:id,pts:pts,w:w,kind:kind};out.roads.push(r);return r;};
   var ring=[];for(i=0;i<=40;i++){var t=i/40*Math.PI*2;ring.push([hub[0]+Math.cos(t)*out.hub.ring,hub[1]+Math.sin(t)*out.hub.ring]);}road('av.f.r.ring',ring,8,'ring');
   var CEN=[],RINGS=[[620,5],[1020,7],[1450,9],[1900,11],[2350,12]];
   RINGS.forEach(function(rg,ri){for(var k=0;k<rg[1];k++){var t=(k+u(ri,k,21))/rg[1]*Math.PI*2+u(ri,0,22)*6,rr=rg[0]+(u(ri,k,23)-.5)*160,x=hub[0]+Math.cos(t)*rr,z=hub[1]+Math.sin(t)*rr;
-   if(Math.hypot(x,z)>R-170){out.dropped.edge++;continue;}if(aqD(x,z)<150){out.dropped.aq++;continue;}if(CEN.some(function(c){return Math.hypot(c[0]-x,c[1]-z)<300;}))continue;
+   if(Math.hypot(x,z)>R-170){out.dropped.edge++;continue;}if(aqD(x,z)<150){out.dropped.aq++;continue;}if(CEN.some(function(c){return Math.hypot(c[0]-x,c[1]-z)<300;}))continue;if(out.arrays.some(function(A){return Math.hypot(A.x-x,A.z-z)<A.reach+260;}))continue;
    var sl=slope(x,z);if(sl>.2){out.dropped.slope++;continue;}CEN.push([x,z,sl,ri,k]);}});
   /* each road from the ring toward its cluster, stopping 100 m short (its turning place); the trunk down the slope; the spoke to the pump */
   var spoke=function(id,tx,tz,stop){var d=[tx-hub[0],tz-hub[1]],l=Math.hypot(d[0],d[1])||1;d=[d[0]/l,d[1]/l];var a=[hub[0]+d[0]*out.hub.ring,hub[1]+d[1]*out.hub.ring],b=[tx-d[0]*stop,tz-d[1]*stop];
@@ -101,6 +124,7 @@
    return road(id,pts,7,'spoke');};
   CEN.forEach(function(c,ci){c.road=spoke('av.f.r.c'+ci,c[0],c[1],100);});
   spoke('av.f.r.pump',pump.x,pump.z,48);
+  out.arrays.forEach(function(A){A.road=spoke('av.f.r.'+A.id.split('.').pop(),A.x,A.z,A.reach+6);});
   {var dn=[-up[0],-up[1]],pts=[[hub[0]+dn[0]*out.hub.ring,hub[1]+dn[1]*out.hub.ring]];for(var s=1;s<=60;s++){var q=[pts[0][0]+dn[0]*s*60,pts[0][1]+dn[1]*s*60];if(Math.hypot(q[0],q[1])>R-30)break;near.length=0;PADS.query(q[0],q[1],120,near);if(near.some(function(P){return boxD(P,q[0],q[1])<8;}))break;pts.push(q);}if(pts.length>2)road('av.f.r.trunk',pts,9,'trunk');}
   /* a road that meets the aqueduct passes under an arch: the crossing moved to the arch's middle, the road square to the line for 24 m either side */
   /* a crossing is good when it lies in an arch's clear span with the carriageway and 1.5 m either side; the others are moved, and the pass runs
@@ -127,7 +151,7 @@
   var rq=[];var roadNear=function(x,z,reach){rq.length=0;RS.query(x,z,reach,rq);var d=1e9,w=0;for(var i=0;i<rq.length;i++){var e=segD(rq[i].a,rq[i].b,x,z).d-rq[i].w/2;if(e<d){d=e;w=rq[i].w;}}return d;};
   out.roadD=function(x,z){return roadNear(x,z,200);};
   /* a building's box clear of the roads (its edge 3 m off the carriageway), sampled round its outline */
-  var roadClash=function(T){for(var k=0;k<16;k++){var t=k/16*Math.PI*2,lx=Math.cos(t)*T.rx,lz=Math.sin(t)*T.rz,q=Math.max(Math.abs(Math.cos(t)),Math.abs(Math.sin(t)));lx/=q;lz/=q;lx=CL(lx,-T.rx,T.rx);lz=CL(lz,-T.rz,T.rz);
+  roadClash=function(T){for(var k=0;k<16;k++){var t=k/16*Math.PI*2,lx=Math.cos(t)*T.rx,lz=Math.sin(t)*T.rz,q=Math.max(Math.abs(Math.cos(t)),Math.abs(Math.sin(t)));lx/=q;lz/=q;lx=CL(lx,-T.rx,T.rx);lz=CL(lz,-T.rz,T.rz);
     var wx=T.x+lx*T.c+lz*T.s,wz=T.z-lx*T.s+lz*T.c;if(roadNear(wx,wz,T.padR+20)<3)return true;}return roadNear(T.x,T.z,T.padR+20)<T.padR*.3;};
   var place=function(T){if(Math.hypot(T.x,T.z)+T.padR>R-40){out.dropped.edge++;return null;}if(padClash(T,4)){out.dropped.pad++;return null;}if(roadClash(T)){out.dropped.road++;return null;}
    if(T.family!=='aqueduct'&&aqD(T.x,T.z)<Math.max(T.rx,T.rz)+12){out.dropped.aq++;return null;}if(slope(T.x,T.z)>.24){out.dropped.slope++;return null;}
@@ -136,8 +160,7 @@
    if(hi-lo>(T.family==='stack'?10:6)){out.dropped.slope++;return null;}T.y=G(T.x,T.z);return put(T);};
   /* the hub's own buildings must not stand in its ring road: they were placed first; they are checked like the rest */
   CEN.forEach(function(c,ci){var x=c[0],z=c[1],g=grad(x,z),l=Math.hypot(g[0],g[1])||1,dn=[-g[0]/l,-g[1]/l],al=[-dn[1],dn[0]],kind=c[2]>.075?'stack':u(ci,1,31)<.62?'pods':'vaults',cl={id:'av.f.c'+ci,x:x,z:z,kind:kind,members:[]};out.clusters.push(cl);
-   if(kind==='pods'){/* a honeycomb: the centre and its six neighbours, a hex's width and a walk (8 m) apart */var n=3+Math.floor(u(ci,2,31)*5),dirs=[[0,0]];for(var k=0;k<6;k++){var t=(30+60*k)*Math.PI/180;dirs.push([Math.cos(t)*53,Math.sin(t)*53]);}
-    for(k=0;k<dirs.length&&cl.members.length<n;k++){var T=place(mk('pod',x+dirs[k][0],z+dirs[k][1],0,cl.id+'.p'+k,AV.FARM_CUTS,2000+ci*10+k));if(T)cl.members.push(T.id);}}
+   if(kind==='pods'){/* a small honeycomb: the centre and its ring, on one level */var A=honey(cl.id,x,z,1,1,2000+ci*10);if(A){cl.members=A.members;cl.y=A.y;cl.reach=A.reach;}}
    else if(kind==='vaults'){var nv=2+Math.floor(u(ci,3,31)*2),ya=Math.atan2(-al[1],al[0]);for(k=0;k<nv;k++){var o2=(k-(nv-1)/2)*52;T=place(mk('vault',x+dn[0]*o2,z+dn[1]*o2,ya,cl.id+'.v'+k,AV.FARM_CUTS,2000+ci*10+k));if(T)cl.members.push(T.id);}}
    else{/* stacks side by side along the contour, each facing down the slope (its frame +z downhill) */var ns=1+Math.floor(u(ci,4,31)*2),ys=Math.atan2(dn[0],dn[1]);for(k=0;k<ns;k++){o2=(k-(ns-1)/2)*84;T=place(mk('stack',x+al[0]*o2,z+al[1]*o2,ys,cl.id+'.s'+k,AV.FARM_CUTS,2000+ci*10+k));if(T)cl.members.push(T.id);}
     /* and a pod or two beside them */for(k=0;k<2;k++){var side=k?1:-1,px=x+al[0]*side*(ns*42+40),pz=z+al[1]*side*(ns*42+40);T=place(mk('pod',px,pz,0,cl.id+'.p'+k,AV.FARM_CUTS,2100+ci*10+k));if(T)cl.members.push(T.id);}}});

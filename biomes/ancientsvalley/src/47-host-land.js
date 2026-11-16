@@ -17,11 +17,13 @@ const sun=new THREE.DirectionalLight(0xfff0d8,1.45);sun.position.set(...SUN_POS)
 const fill=new THREE.DirectionalLight(0xb0c4cc,.28);fill.position.set(800,400,-900);scene.add(fill);
 const TERR={R:STAGE.R};
 const terrainH=STAGE.ground;
+/* what the kits stand on and read their mask by: the stage's whole ground on its 4 m lattice (46z, AV.lattice; within 0.12 m of it, exact at a pit's rim) */
+const kitH=STAGE.groundFast||terrainH;
 const OBSTACLES=[];
 const WATER_LEVEL=STAGE.water.level;
 const waterH=(x,z)=>WATER_LEVEL;
-BIO.init({tags:'ancientsvalley',THREE,scene,terrainH,
- mask:(x,z)=>{const d=terrainH(x,z)-WATER_LEVEL;return d<.15?0:d<.7?(d-.15)/.55:1;},
+BIO.init({tags:'ancientsvalley',THREE,scene,terrainH:kitH,
+ mask:(x,z)=>{const d=kitH(x,z)-WATER_LEVEL;return d<.15?0:d<.7?(d-.15)/.55:1;},
  waterH,obstacles:OBSTACLES,ticks:tick,seed:STAGE.seed,origin:STAGE.spine,center:[0,0],fields:STAGE.fields,err:reportErr,register:o=>REGISTER(o)});
 BIO.setSun(SUN_POS);BIO.LOD.fade=.15;   /* the shells' dither band (kits/metropolis 60: uBand) */
 // ---------------------------------------------------------------- the ground
