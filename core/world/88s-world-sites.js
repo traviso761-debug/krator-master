@@ -7,10 +7,15 @@
 // hedge (WORLD.clearHook, chained). The tracks are already the world's roads (the build put the plan's roads into
 // WORLD_DATA.roads: the ground is shaped to them and the terrain draws them). Each frame: a camp within FULL of the
 // camera draws the kit's own pieces (CAT with the Beast Riders' tent set, built once each and flattened by the shared
-// instancer, settlements/isle-demo/src/58-isle-protos.js); farther, a massing dome a tent out to FAR.
+// instancer, settlements/isle-demo/src/58-isle-protos.js), a thorn run past NEAR its card; farther, out to FAR, a massing
+// dome a tent, a box a pen, a card a hedge or rail piece (the tiers: "the pieces", below).
 // window._sites holds the plan, the counts and errors, the tag audit and the checks verify.py reads.
 var SITES_DRAW;LATE.push(()=>{SITES_DRAW=(function(){'use strict';
-const scene=HOST.scene,camera=HOST.camera,FULL=3500,FAR=30000,t0=performance.now();
+/* FULL: a camp's own pieces within this of the camera (on the ground's plane; height counts half). Was 3,500 m: over the
+   threehorn camp that drew all nine camps' 2,177 hedge and rail pieces and 147 tents in full, 12.7 M triangles and 2,093
+   draw calls of the frame's 17.8 M and 2,433 (2026-11-10, openworld/pinnacle KNOWN_ISSUES.md); a tent 900 m off is a dozen
+   pixels, as its massing dome draws it */
+const scene=HOST.scene,camera=HOST.camera,FULL=900,FAR=30000,t0=performance.now();
 const PLAN=WORLD_DATA.sites||{sites:[],errors:['no baked plan (python3 core/world/bake_sites.py <region>)']};
 const S={camps:0,records:0,pieces:0,roads:0,errors:(PLAN.errors||[]).slice(),ms:0,full:0,missing:[]};
 const CATK=(typeof CAT!=='undefined'&&CAT&&CAT.ASSET_BY_KEY)||{};
@@ -47,31 +52,62 @@ WORLD.clearHook=(x,z)=>{if(prevClear&&prevClear(x,z))return true;if(off)return f
   for(let i=0;i<C.P.length;i++){const a=C.P[i],b=C.P[(i+1)%C.P.length],ex=b[0]-a[0],ez=b[1]-a[1],L2=ex*ex+ez*ez,t=Math.max(0,Math.min(1,((x-a[0])*ex+(z-a[1])*ez)/L2));
    if(Math.hypot(x-a[0]-ex*t,z-a[1]-ez*t)<3)return true;}}
  return false;};
-/* ---------------------------------------------------------------- the pieces: full near, massing far */
+/* ---------------------------------------------------------------- the pieces: full near, massing far
+   Three tiers by the camera's distance to a camp (on the ground's plane, its height counting half):
+     within FULL      the kit's own pieces; but a thorn run (br_hedge_thorn, ~9,700 triangles: 240 cut branches with their
+                      twigs) is the kit's own only within NEAR of the camera, and past that its card (below), piece by piece
+     within FAR       the massing: a dome a tent, a box a pen, a card a hedge or rail piece
+   A card is the run piece's own box (its place, its turn, its span), its top ragged for the thorn and two slats for the rails:
+   the same pieces and gates as the kit draws, a dozen triangles each. */
 const CACHE={protos:{},failed:{},built:0},m4=new THREE.Matrix4(),q=new THREE.Quaternion(),e=new THREE.Euler(),v3=new THREE.Vector3();
 const domeG=new THREE.SphereGeometry(.5,10,6,0,Math.PI*2,0,Math.PI/2).scale(1,2,1),boxG=new THREE.BoxGeometry(1,1,1).translate(0,.5,0);
-const tentM=new THREE.MeshLambertMaterial({color:0xd8c8a4}),penM=new THREE.MeshLambertMaterial({color:0x7a6248}),pendM=new THREE.MeshLambertMaterial({color:0x8a7e6a});
-function mat(C,x,y,z,ry,sx){q.setFromEuler(e.set(0,ry,0));return m4.compose(v3.set(x-C.c.site.x,y,z-C.c.site.z),q,new THREE.Vector3(sx==null?1:sx,1,1)).clone();}
-function full(C){const G=new THREE.Group(),by={},missing=[];
+/* the stand-ins' colours are sRGB, as the kit's are (the renderer's colours are linear: unconverted, they read pale) */
+const lam=c=>new THREE.MeshLambertMaterial({color:new THREE.Color(c).convertSRGBToLinear()});
+const tentM=lam(0xc8b48c),penM=lam(0x7a6248),pendM=lam(0x8a7e6a);
+const NEAR=350,HEDGE='br_hedge_thorn';
+const hedgeM=lam(0x4a3d2b),railM=lam(0x6e5c44);
+/* the thorn's card: a unit box on the ground, its top cut ragged (KRAND, fixed); the rails': two slats */
+const hedgeCardG=(()=>{const g=new THREE.BoxGeometry(1,1,1,8,1,1).translate(0,.5,0),P=g.attributes.position;
+ for(let i=0;i<P.count;i++)if(P.getY(i)>.9)P.setY(i,.72+.28*KRAND.unit(KRAND.hash(9187,Math.round((P.getX(i)+.5)*8))));g.computeVertexNormals();return g;})();
+const railCardG=(()=>{const parts=[[.5,.62],[.98,1.1]].map(([a,b])=>new THREE.BoxGeometry(1,b-a,.1).translate(0,(a+b)/2,0).toNonIndexed());
+ const g=new THREE.BufferGeometry();['position','normal'].forEach(n=>{const A=parts.map(p=>p.attributes[n].array),out=new Float32Array(A[0].length+A[1].length);out.set(A[0]);out.set(A[1],A[0].length);g.setAttribute(n,new THREE.BufferAttribute(out,3));});return g;})();
+function mat(C,x,y,z,ry,sx,sy,sz){q.setFromEuler(e.set(0,ry,0));return m4.compose(v3.set(x-C.c.site.x,y,z-C.c.site.z),q,new THREE.Vector3(sx==null?1:sx,sy==null?1:sy,sz==null?1:sz)).clone();}
+const spanOf=p=>{const A=CATK[p.key]||{},sp=A.span||{};return{def:p.v?(sp.gate==null?7:sp.gate):(sp.default==null?8:sp.default),len:p.v?(sp.gate==null?7:sp.gate):p.span};};
+function card(C,p){const s=spanOf(p);return p.key===HEDGE?mat(C,p.x,p.y,p.z,p.ry,s.len,1.75,1.5):mat(C,p.x,p.y,p.z,p.ry,s.len,1,1);}
+function full(C){const G=new THREE.Group(),by={},missing=[],thorn=[];
  const add=(key,v,M4)=>{const P=typeof isleProto==='function'?isleProto('cat',key,v,CACHE):null;if(!P)return false;(by[P.id]||(by[P.id]={P,L:[]})).L.push(M4);return true;};
  for(const r of C.recs)if(!add(r.key,r.v,mat(C,r.x,r.y,r.z,r.ry)))missing.push(r);
- /* a run piece is built at the kit's default span and stretched to its own; a gate is its own fixed piece */
- for(const p of C.runs){const A=CATK[p.key]||{},sp=A.span||{},def=p.v?(sp.gate==null?7:sp.gate):(sp.default==null?8:sp.default);
-  if(!add(p.key,p.v,mat(C,p.x,p.y,p.z,p.ry,p.v?1:p.span/def)))missing.push({key:p.key,x:p.x,y:p.y,z:p.z,ry:p.ry,w:p.span,d:1,h:1.5});}
+ /* a run piece is built at the kit's default span and stretched to its own; a gate is its own fixed piece; a thorn run
+    waits for the near/far split (below) */
+ for(const p of C.runs){const s=spanOf(p),M4=mat(C,p.x,p.y,p.z,p.ry,p.v?1:p.span/s.def);
+  if(p.key===HEDGE&&!p.v){const P=typeof isleProto==='function'?isleProto('cat',p.key,p.v,CACHE):null;if(P){thorn.push({p,M4,C4:card(C,p),P});continue;}}
+  if(!add(p.key,p.v,M4))missing.push({key:p.key,x:p.x,y:p.y,z:p.z,ry:p.ry,w:p.span,d:1,h:1.5});}
  for(const id in by){const B=by[id];for(const pt of B.P.parts){const im=new THREE.InstancedMesh(pt.geo,pt.mat,B.L.length);B.L.forEach((M4,i)=>im.setMatrixAt(i,M4));im.name=id;im.userData.inspectLabel=id;G.add(im);}}
  if(missing.length){const im=new THREE.InstancedMesh(boxG,pendM,missing.length);missing.forEach((r,i)=>{q.setFromEuler(e.set(0,r.ry,0));im.setMatrixAt(i,m4.compose(v3.set(r.x-C.c.site.x,r.y,r.z-C.c.site.z),q,new THREE.Vector3(r.w,r.h,r.d)));});G.add(im);
   missing.forEach(r=>{if(S.missing.indexOf(r.key)<0)S.missing.push(r.key);});}
+ /* the thorn runs: the kit's piece near, its card past NEAR (split() fills both lists as the camera moves) */
+ if(thorn.length){const P=thorn[0].P,id=P.id;
+  C.thorn={L:thorn,near:P.parts.map(pt=>{const im=new THREE.InstancedMesh(pt.geo,pt.mat,thorn.length);im.name=id;im.userData.inspectLabel=id;im.count=0;G.add(im);return im;}),
+   cards:new THREE.InstancedMesh(hedgeCardG,hedgeM,thorn.length),at:null};
+  C.thorn.cards.name='camp hedge cards';C.thorn.cards.count=0;G.add(C.thorn.cards);}
  G.position.set(C.c.site.x,0,C.c.site.z);G.name='camp '+C.c.id;scene.add(G);return G;}
+function split(C,P){const T=C.thorn;if(!T)return;if(T.at&&T.at.distanceTo(P)<8){S.near+=T.n;return;}T.at=(T.at||P.clone()).copy(P);let n=0,c=0;
+ for(const t of T.L){const d=Math.hypot(P.x-t.p.x,P.z-t.p.z,(P.y-t.p.y)*.5);
+  if(d<NEAR){for(const im of T.near)im.setMatrixAt(n,t.M4);n++;}else T.cards.setMatrixAt(c++,t.C4);}
+ for(const im of T.near){im.count=n;im.visible=n>0;im.instanceMatrix.needsUpdate=true;}T.cards.count=c;T.cards.visible=c>0;T.cards.instanceMatrix.needsUpdate=true;T.n=n;S.near+=n;}
 function massing(C){const T=C.recs.filter(r=>r.kind!=='pen'),Pn=C.recs.filter(r=>r.kind==='pen');
  const a=new THREE.InstancedMesh(domeG,tentM,Math.max(1,T.length)),b=new THREE.InstancedMesh(boxG,penM,Math.max(1,Pn.length));
  T.forEach((r,i)=>{q.setFromEuler(e.set(0,r.ry,0));a.setMatrixAt(i,m4.compose(v3.set(r.x-C.c.site.x,r.y,r.z-C.c.site.z),q,new THREE.Vector3(r.w*.9,r.h*.5,r.d*.9)));});
  Pn.forEach((r,i)=>{q.setFromEuler(e.set(0,r.ry,0));b.setMatrixAt(i,m4.compose(v3.set(r.x-C.c.site.x,r.y,r.z-C.c.site.z),q,new THREE.Vector3(r.w,1.2,r.d)));});
- a.count=T.length;b.count=Pn.length;const G=new THREE.Group();G.add(a,b);G.position.set(C.c.site.x,0,C.c.site.z);G.name='camp massing '+C.c.id;scene.add(G);return G;}
-function update(){const P=camera.position;let nf=0;
- for(const C of X){const d=Math.hypot(P.x-C.c.site.x,P.z-C.c.site.z),want=d<FULL?'full':d<FAR?'mass':'none';
+ a.count=T.length;b.count=Pn.length;const G=new THREE.Group();G.add(a,b);
+ const hr=C.runs.filter(p=>p.key===HEDGE),rr=C.runs.filter(p=>p.key!==HEDGE);
+ [[hr,hedgeCardG,hedgeM],[rr,railCardG,railM]].forEach(([L,g,m])=>{if(!L.length)return;const im=new THREE.InstancedMesh(g,m,L.length);L.forEach((p,i)=>im.setMatrixAt(i,card(C,p)));G.add(im);});
+ G.position.set(C.c.site.x,0,C.c.site.z);G.name='camp massing '+C.c.id;scene.add(G);return G;}
+function update(){const P=camera.position;let nf=0;S.near=0;
+ for(const C of X){const d=Math.hypot(P.x-C.c.site.x,P.z-C.c.site.z,(P.y-H(C.c.site.x,C.c.site.z))*.5),want=d<FULL?'full':d<FAR?'mass':'none';
   if(want==='full'&&!C.group)C.group=full(C);
   if(want==='mass'&&!C.massG)C.massG=massing(C);
-  if(C.group)C.group.visible=want==='full';if(C.massG)C.massG.visible=want==='mass';if(want==='full')nf++;}
+  if(C.group)C.group.visible=want==='full';if(C.massG)C.massG.visible=want==='mass';if(want==='full'){nf++;split(C,P);}}
  S.full=nf;}
 HOST.TICKS.push(()=>update());
 S.ms=Math.round(performance.now()-t0);
@@ -87,6 +123,9 @@ function checks(neg){const R=[];
   R.push({name:"the sites on the world's ground: every camp whole, its boxes apart and on good ground, inside its hedge, every track at its gate",ok:K.ok&&K.counts.camps>0,
    detail:K.ok?JSON.stringify(K.counts):K.problems.slice(0,6).join('; ')});}
  {const clr=neg==='clear'?prevClear:WORLD.clearHook,bad=[];
+  /* every camp's pieces looked up, drawn or not (a camp past FULL has not asked for its pieces yet) */
+  for(const C of X){for(const r of C.recs)if(!(typeof isleProto==='function'&&isleProto('cat',r.key,r.v,CACHE))&&S.missing.indexOf(r.key)<0)S.missing.push(r.key);
+   for(const p of C.runs)if(!(typeof isleProto==='function'&&isleProto('cat',p.key,p.v,CACHE))&&S.missing.indexOf(p.key)<0)S.missing.push(p.key);}
   for(const C of X){const pts=C.recs.map(r=>[r.x,r.z]).concat(C.c.pasture?C.c.pasture.pts:[]),kept=pts.filter(p=>!(clr&&clr(p[0],p[1]))).length;if(kept)bad.push(C.c.id+': '+kept+' places not clear');}
   const A=TAGS.audit();if(A.unknown)bad.push(A.unknown+' unknown tag values');
   if(S.missing.length&&!neg)bad.push('no piece for '+S.missing.join(', '));

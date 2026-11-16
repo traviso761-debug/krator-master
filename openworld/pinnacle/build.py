@@ -89,6 +89,7 @@ ORDER = (
        ('kits/beast-riders/src', '79-br-camp.js'), ('ld', '48s-world-sites.js'), ('src', '48-world-site.js'),
        ('src', '49-world-absav.js')]   # the savannah kit as the world reads it (its own trees and the eastern abyss's)
     + LDF('80-world-sky.js', '81-world-terrain.js', '83-world-water.js', '83w-world-seas.js', '84-world-nursery.js',
+          '84i-world-impostors.js',   # the hyperjungle's far level as octahedral impostors (47-world-kits.js: impostor)
           '85-world-flora.js', '86-world-floor.js', '87-world-places.js', '88-world-towns.js', '88s-world-sites.js')
     + LDF('90-world-camera.js', '91-world-probe.js', '98-world-start.js', '99-tail.html')
 )
