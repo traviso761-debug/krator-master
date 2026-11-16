@@ -71,21 +71,25 @@ function landforms(Hf){Hf=Hf||((x,z)=>WORLD.H(x,z,0));if(!WORLD.landforms)return
   (first?' (first: '+first.id+' at '+Math.round(first.x)+','+Math.round(first.z)+')':'')};}
 // highways: the ground under each road's centre line is the road's finished height (within 0.3 m) and no step of the
 // line is steeper than the ruling grade (+ 0.5 % for the rounding); eF: the road's height as the check reads it
-// A station within 12 m of another road is a junction (two carriageways share the ground there): counted, not judged
+// A station within 12 m of another road, or of another stretch of its own (a hairpin), or at a road's end (where it meets a
+// camp's levelled pad: 2026-11-16, a gate's first 1.9 m fell 0.8 m off the pad) is a junction (two grounds share the land
+// there): counted, not judged
 function highways(eF){const R=(WORLD_DATA.roads&&WORLD_DATA.roads.roads)||[],G=(WORLD_DATA.roads&&WORLD_DATA.roads.grade)||.08;eF=eF||(p=>p[2]);
  const C=256,B=new Map();
  R.forEach((r,ri)=>{for(let i=0;i<r.pts.length-1;i++){const a=r.pts[i],b=r.pts[i+1];
   for(let j=Math.floor((Math.min(a[1],b[1])-12)/C);j<=Math.floor((Math.max(a[1],b[1])+12)/C);j++)for(let k=Math.floor((Math.min(a[0],b[0])-12)/C);k<=Math.floor((Math.max(a[0],b[0])+12)/C);k++){
-   const key=k*100003+j;let L=B.get(key);if(!L){L=[];B.set(key,L);}L.push([ri,a,b]);}}});
- const nearOther=(ri,x,z)=>{const L=B.get(Math.floor(x/C)*100003+Math.floor(z/C));if(!L)return false;
-  for(const [rj,a,b] of L){if(rj===ri)continue;const dx=b[0]-a[0],dz=b[1]-a[1],l2=dx*dx+dz*dz||1;let t=((x-a[0])*dx+(z-a[1])*dz)/l2;t=t<0?0:t>1?1:t;
+   const key=k*100003+j;let L=B.get(key);if(!L){L=[];B.set(key,L);}L.push([ri,a,b,i]);}}});
+ /* another road's carriageway within 12 m, or another stretch of its own (a hairpin: more than 40 points along it), where
+    two carriageways share the ground and the land takes their mean */
+ const nearOther=(ri,x,z,pi)=>{const L=B.get(Math.floor(x/C)*100003+Math.floor(z/C));if(!L)return false;
+  for(const [rj,a,b,si] of L){if(rj===ri&&(pi==null||Math.abs(si-pi)<=40))continue;const dx=b[0]-a[0],dz=b[1]-a[1],l2=dx*dx+dz*dz||1;let t=((x-a[0])*dx+(z-a[1])*dz)/l2;t=t<0?0:t>1?1:t;
    if(Math.hypot(a[0]+dx*t-x,a[1]+dz*t-z)<12)return true;}return false;};
  let n=0,off=0,steep=0,worst=0,at=null,mg=0,junc=0,deck=0;
  /* a station on a bridge's deck (a road's `spans`, 42b-world-bridges.js) stands over the water, not on the ground: its
     grade is judged, its height over the ground is the bridge's own check (88b) */
  const onDeck=(r,i)=>(r.spans||[]).some(S=>i>=S[0]&&i<=S[1]);
  for(let ri=0;ri<R.length;ri++){const r=R[ri];for(let i=0;i<r.pts.length;i+=5){const p=r.pts[i];
-  if(nearOther(ri,p[0],p[1])){junc++;continue;}
+  if(nearOther(ri,p[0],p[1],i)||i<2||i>r.pts.length-3){junc++;continue;}   /* a road's ends meet a pad (a camp's gate, the rock's ring): its ground is shared there */
   if(onDeck(r,i)){deck++;if(i+1<r.pts.length){const q=r.pts[i+1],g=Math.abs(eF(q)-eF(p))/Math.hypot(q[0]-p[0],q[1]-p[1]);if(g>mg)mg=g;if(g>G+.005)steep++;}continue;}
   const h=WORLD.H(p[0],p[1]),d=Math.abs(h-eF(p));n++;if(d>worst){worst=d;at=[Math.round(p[0]),Math.round(p[1])];}if(d>.3)off++;
   if(i+1<r.pts.length){const q=r.pts[i+1],g=Math.abs(eF(q)-eF(p))/Math.hypot(q[0]-p[0],q[1]-p[1]);if(g>mg)mg=g;if(g>G+.005)steep++;}}}

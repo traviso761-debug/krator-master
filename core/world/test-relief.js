@@ -88,4 +88,23 @@ function aniso(f){let vx=0,vz=0;for(let j=1;j<NE;j++)for(let i=1;i<NE;i++){const
  ok('flat and near-flat ground (under 2 %) is left as it was',flat&&gentle,WRELIEF.erode(42,17,29,SL,0,SE,RE,0)===42);}
 {const A=WRELIEF.init({ox:2000000,oz:3000000,seed:7}).erode(500,1000,2000,-SL,0,SE,RE,0),B=WRELIEF.init({ox:2001000,oz:2998000,seed:7}).erode(500,0,4000,-SL,0,SE,RE,0);
  WRELIEF.init({ox:2000000,oz:3000000,seed:7});ok('two cuts of one place get the same gullies',Math.abs(A-B)<1e-9,false);}
+// ---- P5: the peaks (WRELIEF.peaks)
+{const SP={peak:1},RP=1200,amp=RP*.18,P=(x,z,pk,mw,s)=>WRELIEF.peaks(0,x,z,s||SP,RP,pk==null?1:pk,mw||0);
+ let s=0,n=0,lo=0,hi=0;for(let k=0;k<40000;k++){const d=P((k*977)%40000,(k*631)%40000);s+=d;n++;lo=Math.min(lo,d);hi=Math.max(hi,d);}
+ console.log('      the peaks crease the land %s m to %s m, %s m on average (amplitude %s m)',lo.toFixed(0),hi.toFixed(0),(s/n).toFixed(1),amp.toFixed(0));
+ ok('the peaks crease, not lift (mean under 6 % of the amplitude) and cut deep (over the amplitude end to end)',Math.abs(s/n)<.06*amp&&hi-lo>amp,false);
+ /* sharpness: on a ridge the crest's curvature (minus the second difference across it) against its height: the ridged noise's
+    crests are sharp, a smooth fbm's of the same amplitude rounded. Read as the 95th percentile of -d2 over the 95th of the height */
+ const vn=(x,z,s)=>KRAND.vnoise(x,z,.5,s),fbmS=(x,z)=>{let a=0,w=0,t=1,f=1;for(let o=0;o<4;o++){a+=vn(x*f/1300,z*f/1300,40+o)*t;w+=t;t*=.5;f*=2;}return (a/w-.5)*2*amp;};
+ const sharp=f=>{const C=[],Hh=[],st=10;for(let k=0;k<6000;k++){const x=(k*1237)%30000+500,z=(k*2711)%30000+500,h=f(x,z);Hh.push(h);C.push(-(f(x-st,z)+f(x+st,z)+f(x,z-st)+f(x,z+st)-4*h)/(st*st));}
+  C.sort((a,b)=>a-b);Hh.sort((a,b)=>a-b);return C[Math.floor(C.length*.95)]/Math.max(1,Hh[Math.floor(Hh.length*.95)]-Hh[Math.floor(Hh.length*.05)]);};
+ const sp=sharp((x,z)=>P(x,z)),sf=sharp(fbmS);console.log('      crest sharpness: the peaks %s, a smooth fbm %s',sp.toExponential(2),sf.toExponential(2));
+ ok('the crests are sharper than a smooth noise of the same amplitude (1.5 times)',sp>1.5*sf,sf>1.5*sp);
+ let none=true;for(let k=0;k<400;k++){if(P(k*37,k*91,0)!==0||WRELIEF.peaks(0,k*37,k*91,{peak:0},RP,1,0)!==0){none=false;break;}}
+ ok('no peaks in a valley (peakness 0) or in a style without them (peak 0)',none,P(3700,9100,0)!==0);
+ let worst=0;for(let r=0;r<6;r++){const ux=Math.cos(r*1.1),uz=Math.sin(r*1.1);let p=P(5000,5000);for(let q=1;q<2000;q++){const v=P(5000+q*ux,5000+q*uz);worst=Math.max(worst,Math.abs(v-p));p=v;}}
+ console.log('      the steepest 1 m step in the peaks: %s m',worst.toFixed(2));ok('the peaks are continuous (no 1 m step over 2 m)',worst<2,false);
+ ok('a far chunk (minWave 700 m) skips the finer octaves',P(1777,2333,1,700)!==P(1777,2333,1,0),false);
+ const A=WRELIEF.init({ox:2000000,oz:3000000,seed:7}).peaks(0,1000,2000,SP,RP,1,0),B=WRELIEF.init({ox:2001000,oz:2998000,seed:7}).peaks(0,0,4000,SP,RP,1,0);
+ WRELIEF.init({ox:2000000,oz:3000000,seed:7});ok('two cuts of one place get the same peaks',Math.abs(A-B)<1e-9,false);}
 console.log(bad?bad+' FAILED':'all passed');process.exit(bad?1:0);

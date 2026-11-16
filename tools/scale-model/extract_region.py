@@ -19,7 +19,9 @@
 --no-synth         (optional) disable Option C sub-cell geomorphological and fluvial synthesis on the upsampled grid.
 --relief           (optional; openworld/SITES.json "relief": 1) core/world's relief (core/world/PLAN-RELIEF.md, P1): the
                    synthesis leaves out its ledges cut on the absolute height (the contour-line rings); region.json gains
-                   `relief`, and the page lays caprock benches and gives every overlay a land style of its own.
+                   `relief`, and the page lays caprock benches and gives every overlay a land style of its own. P6: it also
+                   leaves out the sub-cell families the page now draws (gullies, aretes, crags, karst spires, the humid
+                   roughness) and keeps those it does not (ring folds, yardangs, tepui scarps, kolks, palaeolake benches).
 --smooth           (optional; openworld/SITES.json "smooth": true) take out the model's linear artifacts (core/world/README.md,
                    "Smoothing"): the heights upsampled by the cubic B-spline (no overshoot, so no box clamp and none of
                    its axis streaks) and smoothed along their contours (core/world 40-world-smooth.js WSMOOTH.heights,
@@ -519,6 +521,12 @@ def synthesize_option_c_relief(D, elev, whas, wflag, bmap, biomes, omap, overlay
     # --relief (core/world/PLAN-RELIEF.md, P1): the ledges cut on the absolute height (frac = elev / step) ring every hill like
     # a contour map; the page's caprock benches (core/world 43-world-relief.js) take their place, so they are left out here
     L = 0.0 if relief else 1.0
+    # --relief, P6 (R8: one owner of the detail below 2 km): what the page now draws is left out here, so nothing is drawn
+    # twice: the gullies and their fine noise (43's erosion filter, P2), the aretes and crags (its peaks, P5), the karst
+    # spires (43b's towers, P4) and the humid roughness (41's). Kept, as the page has nothing for them yet: the ring-fold fins
+    # and joint towers (S2), the yardang flutes (S13), the tepui scarps (S2), the flood coulees' kolks (S14) and the
+    # palaeolake benches (which must be baked)
+    P6 = 0.0 if relief else 1.0
     gx = (np.arange(nx, dtype=np.float64) + i0) / su
     gy = (np.arange(ny, dtype=np.float64) + j0) / sv
     GY, GX = np.meshgrid(gy, gx, indexing='ij')
@@ -620,7 +628,7 @@ def synthesize_option_c_relief(D, elev, whas, wflag, bmap, biomes, omap, overlay
         polje_keep = _smoothstep(18.0, 65.0, slope_m_km) * _smoothstep(-1480.0, -1120.0, elev)
         spires = np.power(np.clip(r_fine, 0.0, 1.0), 2.2) * 72.0 + np.clip(n_fine, 0.0, 1.0) * 24.0
         dolines = -22.0 * np.power(np.clip(-n_meso, 0.0, 1.0), 2.5) * _smoothstep(-950.0, -650.0, elev)
-        dh += w_karst * (polje_keep * spires + dolines)
+        dh += P6 * w_karst * (polje_keep * spires + dolines)
 
     # 2. Ring-Fold Hogback & Joint-Pillar Tableland Synthesis (sw highlands)
     w_ring = fam_weight(fam_ids['ringfold'])
@@ -637,7 +645,7 @@ def synthesize_option_c_relief(D, elev, whas, wflag, bmap, biomes, omap, overlay
         step_m = 48.0
         frac = (elev / step_m) - np.floor(elev / step_m)
         ledge = (_smoothstep(0.78, 0.96, frac) - frac) * step_m * 0.32 * _smoothstep(35.0, 160.0, rel_local)
-        dh += w_bad * (gully_incision + L * ledge + 14.0 * n_fine)
+        dh += w_bad * (P6 * gully_incision + L * ledge + P6 * 14.0 * n_fine)
 
     # 4. Stepped Tableland, Mesa Caprock & Loess Yuan Synthesis (sedesert, w outer wall, tiers, the cut, crater drylands)
     w_tab = fam_weight(fam_ids['tableland'])
@@ -646,7 +654,7 @@ def synthesize_option_c_relief(D, elev, whas, wflag, bmap, biomes, omap, overlay
         frac = (elev / step_m) - np.floor(elev / step_m)
         ledge = (_smoothstep(0.80, 0.96, frac) - frac) * step_m * 0.35 * _smoothstep(45.0, 220.0, rel_local)
         yuan_gully = -24.0 * np.power(np.clip(1.0 - r_meso, 0.0, 1.0), 3.2) * _smoothstep(25.0, 95.0, slope_m_km)
-        dh += w_tab * (L * ledge + yuan_gully + 10.0 * n_fine)
+        dh += w_tab * (L * ledge + P6 * yuan_gully + P6 * 10.0 * n_fine)
 
     # 5. Kalut Megayardang Flutes & Deflated Erg Dunes (the bowl, the catch, e abysss)
     w_yard = fam_weight(fam_ids['yardang'])
@@ -665,7 +673,7 @@ def synthesize_option_c_relief(D, elev, whas, wflag, bmap, biomes, omap, overlay
         step_m = 55.0
         frac = (elev / step_m) - np.floor(elev / step_m)
         chasm_ledge = (_smoothstep(0.82, 0.97, frac) - frac) * step_m * 0.38 * _smoothstep(80.0, 350.0, rel_local)
-        dh += w_maar * (arete_crisp + L * chasm_ledge)
+        dh += w_maar * (P6 * arete_crisp + L * chasm_ledge)
 
     # 7. Volcanic Barranco Chutes & Flood-Basalt Lava Steps (throne/volcano, godthrone, godstep valley)
     w_volc = fam_weight(fam_ids['volcanic'])
@@ -674,7 +682,7 @@ def synthesize_option_c_relief(D, elev, whas, wflag, bmap, biomes, omap, overlay
         step_m = 36.0
         frac = (elev / step_m) - np.floor(elev / step_m)
         lava_step = (_smoothstep(0.76, 0.95, frac) - frac) * step_m * 0.30 * _smoothstep(120.0, 35.0, slope_m_km)
-        dh += w_volc * (barranco + L * lava_step + 12.0 * n_fine)
+        dh += w_volc * (P6 * barranco + L * lava_step + P6 * 12.0 * n_fine)
 
     # 8. Alpine Arête, Cirque & Permafrost Alas Synthesis (highlands, outer walls, rift rims, outlands)
     w_alp = fam_weight(fam_ids['alpine'])
@@ -682,7 +690,7 @@ def synthesize_option_c_relief(D, elev, whas, wflag, bmap, biomes, omap, overlay
         high_w = _smoothstep(2400.0, 4200.0, elev)
         arete = (r_meso * 0.65 + r_fine * 0.35 - 0.42) * 52.0 * high_w * _smoothstep(25.0, 110.0, slope_m_km)
         low_rough = 14.0 * n_meso * (1.0 - 0.5 * high_w)
-        dh += w_alp * (arete + low_rough)
+        dh += P6 * w_alp * (arete + low_rough)
 
     # 9. Tepui Escarpment, Arachnoid Fracture & Sky-Island Horst Synthesis (korona, arachnoids, rift, xanadu)
     w_tep = fam_weight(fam_ids['tepui_rift'])
@@ -695,12 +703,12 @@ def synthesize_option_c_relief(D, elev, whas, wflag, bmap, biomes, omap, overlay
     w_oid = fam_weight(fam_ids['oidong'])
     if w_oid is not None:
         wall_crag = (r_fine - 0.35) * 32.0 * _smoothstep(40.0, 130.0, slope_m_km)
-        dh += w_oid * wall_crag
+        dh += P6 * w_oid * wall_crag
 
     # 11. Humid Lowlands, Hyperjungle Micro-Tepuis & Scabland Basalt Benches
     w_hum = fam_weight(fam_ids['humid'] + fam_ids['scabland'])
     if w_hum is not None:
-        dh += w_hum * (12.0 * n_meso + 6.0 * n_fine) * _smoothstep(12.0, 65.0, slope_m_km)
+        dh += P6 * w_hum * (12.0 * n_meso + 6.0 * n_fine) * _smoothstep(12.0, 65.0, slope_m_km)
 
     # 12. Scabland Overlay (floodzone) & Breached Dam Courses (DATA.floods): sub-cell basalt coulee steps & dry falls
     floods0 = D.get('floods') or []
@@ -1496,9 +1504,9 @@ def main():
                           'note': 'core/world/README.md, "Smoothing": each river record keeps every drawn vertex; the page carves '
                                   'WSMOOTH.river through them unwarped, as the cut carved its trench'}
     if do_relief:   # the page reads it (41-world-fields.js, 43-world-relief.js): styles for every overlay, caprock benches
-        meta['relief'] = {'version': 1, 'phase': 1, 'by': 'core/world/43-world-relief.js', 'seed': 5391948,
-                          'note': 'core/world/PLAN-RELIEF.md: the cut leaves out its ledges on the absolute height; the page lays '
-                                  'caprock benches instead and gives every overlay a land style of its own'}
+        meta['relief'] = {'version': 1, 'phase': 6, 'by': 'core/world/43-world-relief.js', 'seed': 5391948,
+                          'note': 'core/world/PLAN-RELIEF.md: the cut leaves out its ledges on the absolute height (P1) and the '
+                                  'sub-cell families the page draws (P6: gullies, aretes, crags, karst spires, humid roughness)'}
     json.dump(meta, open(os.path.join(out, 'region.json'), 'w', encoding='utf-8', newline='\n'), separators=(',', ':'))
     print('region %s: box px %s, %d x %d px, polygon %d km2' % (reg['name'], [x0, y0, x1, y1], W, H, meta['region']['area_km2']))
     print('heights %d x %d cells (%.0f m/cell, su=%.2f, synth=%s); %d channels, %d vertices; %d water cells lowered to their spill height' % (

@@ -19,7 +19,8 @@
 //                              without records (stable at any LOD); styleName: the land style there; caprock 0..1; keep:
 //                              true where no record may stand; sites [{x, z, pinned}]
 //   WLAND.apply(h, x, z, minWave)  the ground h with the records near (x, z): the highest of h, a body's surface and its
-//                              apron; a body smaller than minWave / 2 is left out (a far chunk)
+//                              apron; a body under minWave / 4 across is left out (a far chunk: a kopje, not a mesa, which
+//                              the road router, reading the land at 4 km, must see)
 //   WLAND.at(x, z)             {S, top, wall} the record surface over (x, z), or null
 //   WLAND.list(x0, z0, x1, z1) the records whose middle lies in the box (placing their cells)
 //   WLAND.pins()               the pinned records
@@ -58,7 +59,7 @@ function footY(x,z,rx,rz){let m=O.ground(x,z);for(let a=0;a<8;a++)for(const k of
 // regions cut over one place agree): placed once, kept. Positions are the region's (local) metres
 function cellOf(i,j){const key=(i+32768)*65536+(j+32768);let C=CELLS.get(key);if(C)return C;C=[];CELLS.set(key,C);
  const bx=i*CELL-OX,bz=j*CELL-OZ,mx=bx+CELL/2,mz=bz+CELL/2,K=L.KINDS[O.styleName(mx,mz)];if(!K)return C;
- K.forEach((D,di)=>{const n=D.n||1;
+ K.forEach((D,di)=>{const n=D.n==null?1:D.n;
   for(let t=0;t<n;t++){const k=di*8+t;if(u01(i,j,k,0)>=D.p)continue;
    const big=D.kind==='butte'||D.kind==='dome'||D.kind==='tower',r=rng(D.r,i,j,k,1),inset=Math.min(CELL*.45,(big?r*1.6:r*3)+40);
    const x=bx+inset+(CELL-2*inset)*u01(i,j,k,2),z=bz+inset+(CELL-2*inset)*u01(i,j,k,3);
@@ -93,15 +94,22 @@ const smooth=(a,b,v)=>{let t=(v-a)/(b-a);t=t<0?0:t>1?1:t;return t*t*(3-2*t);};
 function raster(B){if(B._r)return B._r;const R=reach(B),cs=clamp(B.R/50,2,6),x0=Math.floor((B.x-R+OX)/cs)*cs-OX,z0=Math.floor((B.z-R+OZ)/cs)*cs-OZ;
  const nx=Math.ceil((B.x+R-x0)/cs)+1,nz=Math.ceil((B.z+R-z0)/cs)+1,top=new Float32Array(nx*nz),apr=new Float32Array(nx*nz),L1=[B],Ht=ht(B),W=Ht*TALUS_W+8;
  /* the foot first (one bed): outside it, no surface is asked for (the beds above stand inside it), only the apron */
- for(let j=0;j<nz;j++)for(let i=0;i<nx;i++){const x=x0+i*cs,z=z0+j*cs,o=j*nx+i,f=KSTACKS.foot(L1,x,z),s=f&&f.d<=cs?KSTACKS.surface(L1,x,z):null;top[o]=s?s.top:NaN;
+ for(let j=0;j<nz;j++)for(let i=0;i<nx;i++){const x=x0+i*cs,z=z0+j*cs,o=j*nx+i,f=KSTACKS.foot(L1,x,z),s=f&&f.d<=cs?KSTACKS.surface(L1,x,z):null;top[o]=s?s.top:LOW;
   if(!s)apr[o]=f&&f.d>0&&f.d<W?Ht*TALUS_H*(1-smooth(0,W,f.d)):0;}
+ /* THE WALL'S BATTER: a heightfield has no vertical; a wall drawn as a step between two samples broke the land's continuity
+    (49 m within 3 cm). No sample is let lie more than WALL x its distance under a neighbour (max-plus chamfer, both ways), so
+    a wall is a ramp of 1 in WALL (87 degrees) read bilinearly: off the rock it leans out over the ground (the max with h) */
+ const d1=WALL*cs,d2=WALL*cs*1.41421356;
+ for(let j=0;j<nz;j++)for(let i=0;i<nx;i++){const o=j*nx+i;let v=top[o];
+  if(i>0)v=Math.max(v,top[o-1]-d1);if(j>0){v=Math.max(v,top[o-nx]-d1);if(i>0)v=Math.max(v,top[o-nx-1]-d2);if(i<nx-1)v=Math.max(v,top[o-nx+1]-d2);}top[o]=v;}
+ for(let j=nz-1;j>=0;j--)for(let i=nx-1;i>=0;i--){const o=j*nx+i;let v=top[o];
+  if(i<nx-1)v=Math.max(v,top[o+1]-d1);if(j<nz-1){v=Math.max(v,top[o+nx]-d1);if(i<nx-1)v=Math.max(v,top[o+nx+1]-d2);if(i>0)v=Math.max(v,top[o+nx-1]-d2);}top[o]=v;}
  return B._r={x0,z0,cs,nx,nz,top,apr};}
+const LOW=-1e9,WALL=20;
 L.apply=function(h,x,z,minWave){if(!O)return h;const N=near(x,z);if(!N.length)return h;let out=h;
- for(const B of N){if(B.R*2<(minWave||0)*.5)continue;const r=raster(B),u=(x-r.x0)/r.cs,v=(z-r.z0)/r.cs;if(u<0||v<0||u>=r.nx-1||v>=r.nz-1)continue;
+ for(const B of N){if(B.R*2<(minWave==null?0:minWave)*.25)continue;   /* under a quarter of the asking wavelength across: a far chunk, a kopje */const r=raster(B),u=(x-r.x0)/r.cs,v=(z-r.z0)/r.cs;if(u<0||v<0||u>=r.nx-1||v>=r.nz-1)continue;
   const i=Math.floor(u),j=Math.floor(v),fu=u-i,fv=v-j,o=j*r.nx+i,T=r.top,A=r.apr;
-  const t00=T[o],t10=T[o+1],t01=T[o+r.nx],t11=T[o+r.nx+1];
-  if(t00===t00&&t10===t10&&t01===t01&&t11===t11){const t=(t00*(1-fu)+t10*fu)*(1-fv)+(t01*(1-fu)+t11*fu)*fv;if(t>out)out=t;}
-  else{const k=fv<.5?(fu<.5?o:o+1):(fu<.5?o+r.nx:o+r.nx+1);if(T[k]===T[k]&&T[k]>out)out=T[k];}   /* the rock's edge: the nearest sample */
+  const t=(T[o]*(1-fu)+T[o+1]*fu)*(1-fv)+(T[o+r.nx]*(1-fu)+T[o+r.nx+1]*fu)*fv;if(t>out)out=t;
   const a=(A[o]*(1-fu)+A[o+1]*fu)*(1-fv)+(A[o+r.nx]*(1-fu)+A[o+r.nx+1]*fu)*fv;if(h+a>out)out=h+a;}
  return out;};
 L.at=function(x,z){if(!O)return null;const N=near(x,z);if(!N.length)return null;const s=KSTACKS.surface(N,x,z);return s?{S:s.S,top:s.top,wall:s.wall}:null;};

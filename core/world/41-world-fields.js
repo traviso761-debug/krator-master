@@ -47,30 +47,30 @@ W.FIELDS=['wet','flow','upland','canyon','rim','rock','dune','oasis','slope','ab
 // hills/ridge scale the detail on the relief, terr the terraces (step m), dune the dune seas, gully the badland rills,
 // rough the small relief, rock the bare-rock share, wallK how far a channel's wall leans (m out per m down)
 const STYLES={
- desert:  {hills:1.0, ridge:.7, terr:.75,step:55,dune:1,  gully:.7, rough:1.0,rock:.25,wallK:.45},
- badland: {hills:1.1, ridge:1.1,terr:.55,step:30,dune:0,  gully:1.6,rough:1.2,rock:.55,wallK:.6},
- abyss:   {hills:.6,  ridge:.45,terr:.25,step:40,dune:.15,gully:.4, rough:.7, rock:.15,wallK:1.2},
- jungle:  {hills:.85, ridge:.4, terr:0,  step:40,dune:0,  gully:.5, rough:.8, rock:.05,wallK:1.8},
- highland:{hills:1.2, ridge:1.0,terr:.3, step:45,dune:0,  gully:.9, rough:1.1,rock:.35,wallK:.8},
- korona:  {hills:1.1, ridge:.9, terr:.65,step:80,dune:0,  gully:.5, rough:1.0,rock:.45,wallK:.5},
- volcanic:{hills:.9,  ridge:.8, terr:.1, step:40,dune:0,  gully:.8, rough:1.1,rock:.6, wallK:.8},
- dryland: {hills:.8,  ridge:.5, terr:.3, step:40,dune:.4, gully:.6, rough:.9, rock:.2, wallK:1.0},
- sea:     {hills:.5,  ridge:.3, terr:0,  step:40,dune:0,  gully:0,  rough:.5, rock:.05,wallK:2},
+ desert:  {hills:1.0, ridge:.7, terr:.75,step:55,dune:1,  gully:.7, rough:1.0,rock:.25,wallK:.45,peak:0},
+ badland: {hills:1.1, ridge:1.1,terr:.55,step:30,dune:0,  gully:1.6,rough:1.2,rock:.55,wallK:.6,peak:0.1},
+ abyss:   {hills:.6,  ridge:.45,terr:.25,step:40,dune:.15,gully:.4, rough:.7, rock:.15,wallK:1.2,peak:0},
+ jungle:  {hills:.85, ridge:.4, terr:0,  step:40,dune:0,  gully:.5, rough:.8, rock:.05,wallK:1.8,peak:0},
+ highland:{hills:1.2, ridge:1.0,terr:.3, step:45,dune:0,  gully:.9, rough:1.1,rock:.35,wallK:.8,peak:0.45},
+ korona:  {hills:1.1, ridge:.9, terr:.65,step:80,dune:0,  gully:.5, rough:1.0,rock:.45,wallK:.5,peak:0.35},
+ volcanic:{hills:.9,  ridge:.8, terr:.1, step:40,dune:0,  gully:.8, rough:1.1,rock:.6, wallK:.8,peak:0.55},
+ dryland: {hills:.8,  ridge:.5, terr:.3, step:40,dune:.4, gully:.6, rough:.9, rock:.2, wallK:1.0,peak:0},
+ sea:     {hills:.5,  ridge:.3, terr:0,  step:40,dune:0,  gully:0,  rough:.5, rock:.05,wallK:2,peak:0},
  // the Oidong Valley (biomes/oidong; settlements/longsong): a green high vale, its floor swelling gently, no terraces or dunes
- vale:    {hills:.8,  ridge:.8, terr:0,  step:40,dune:0,  gully:.35,rough:.7, rock:.3, wallK:.9},
+ vale:    {hills:.8,  ridge:.8, terr:0,  step:40,dune:0,  gully:.35,rough:.7, rock:.3, wallK:.9,peak:0},
  // the abyssal savannah's rims (biomes/abyssal-savannah; openworld/pinnacle): gold grass parkland, caprock benches, few dunes
- savanna: {hills:.9,  ridge:.6, terr:.45,step:40,dune:0,  gully:.6, rough:.9, rock:.2, wallK:.7},
+ savanna: {hills:.9,  ridge:.6, terr:.45,step:40,dune:0,  gully:.6, rough:.9, rock:.2, wallK:.7,peak:0},
  // karst towers and dissected carbonate over a flat floor (k-guilin, the NW Bay's tsingy; the Neo-Ozarks): no terraces or dunes, steep walls
- karst:   {hills:.6,  ridge:.4, terr:0,  step:40,dune:0,  gully:.4, rough:.8, rock:.4, wallK:1.4},
+ karst:   {hills:.6,  ridge:.4, terr:0,  step:40,dune:0,  gully:.4, rough:.8, rock:.4, wallK:1.4,peak:0},
  // the outer walls and the rift's rims (nwouterwall, copperglacier, riftrim, ne/se outer wall): high ground, sharp ridges, ice above
- alpine:  {hills:1.3, ridge:1.2,terr:.1, step:40,dune:0,  gully:.7, rough:1.2,rock:.5, wallK:.7},
+ alpine:  {hills:1.3, ridge:1.2,terr:.1, step:40,dune:0,  gully:.7, rough:1.2,rock:.5, wallK:.7,peak:1},
  // floodplains and deltas (swlowlands, nwlowlands, the Ancient's Valley): low relief, wide soft channel banks
- lowland: {hills:.6,  ridge:.3, terr:0,  step:40,dune:0,  gully:.4, rough:.6, rock:.05,wallK:1.6},
+ lowland: {hills:.6,  ridge:.3, terr:0,  step:40,dune:0,  gully:.4, rough:.6, rock:.05,wallK:1.6,peak:0},
  // chasms and trenches between walls (the Great Chasm, the Labyrinth, the Loom chasms, the Outland Gate): mesas, near-sheer walls
- chasm:   {hills:1.0, ridge:.9, terr:.6, step:60,dune:0,  gully:.8, rough:1.0,rock:.5, wallK:.35},
+ chasm:   {hills:1.0, ridge:.9, terr:.6, step:60,dune:0,  gully:.8, rough:1.0,rock:.5, wallK:.35,peak:0.3},
  // stepped lava and fault benches (godstep, greenstep, highrift's graben, Opal Valley's lake beds, the Mid Basin): broad tall terraces
- steps:   {hills:.7,  ridge:.5, terr:.9, step:120,dune:0, gully:.5, rough:.8, rock:.35,wallK:.6}};
-const SKEYS=['hills','ridge','terr','step','dune','gully','rough','rock','wallK'];
+ steps:   {hills:.7,  ridge:.5, terr:.9, step:120,dune:0, gully:.5, rough:.8, rock:.35,wallK:.6,peak:0.15}};
+const SKEYS=['hills','ridge','terr','step','dune','gully','rough','rock','wallK','peak'];   /* peak: relief P5's crests (43 WRELIEF.peaks) */
 // the overlay's name (lower case) -> [its style, its palette]. EVERY overlay the scale model can hand a region is here
 // (tools/scale-model/extract_region.py writes them; core/world/test-world-styles.js fails on a name without an entry).
 // There is no default: a name not here is reported, not drawn as desert (W.groundOf, W.unstyled)
@@ -180,7 +180,7 @@ let M,nx,ny,i0,j0,su,sv,cx,cy,X0,Y0,MW,MH,EL,WLV,WHAS,REL,CL,RN,TP,BI,MK,SL,SU,S
 let SID,KIT,STY,PALL,NB,CLCODE,CLGROUP;
 // a region with region.json `relief` (core/world/PLAN-RELIEF.md; 43-world-relief.js): terraces lie only on caprock
 // (WRELIEF.bench) instead of on the absolute height. Every overlay's style and palette are BIOME_GROUND's, relief or not
-let RELIEF=false,LANDF=false;
+let RELIEF=false,LANDF=false,PEAK=null;
 // the kits (47-world-kits.js) are read at init: which overlay each grows on
 let KITNAMES=[];W.KITS=KITNAMES;
 W.init=function(R){M=WORLD_DATA.meta;const Hd=M.heights,F=M.frame;
@@ -189,6 +189,12 @@ W.init=function(R){M=WORLD_DATA.meta;const Hd=M.heights,F=M.frame;
  EL=R.elev;WLV=R.wlev;WHAS=R.whas;CL=R.clim;RN=R.rain;TP=R.temp;BI=R.biome;MK=R.mask;SL=R.scarpL;SU=R.scarpU;SW=R.scarpW;
  // the relief: the range of heights over each cell's 3x3 neighbourhood (m): the detail scales with it
  REL=new Float32Array(nx*ny);
+ // the peakness (relief P5): how far each cell stands over the mean of the cells within 3 km (a box, rows then columns), as
+ // 0..1 from 40 to 400 m over it: summits and crests, not valley floors
+ PEAK=null;if(M.relief){const r=Math.max(1,Math.round(3000/(2000/su))),T=new Float32Array(nx*ny),A=new Float32Array(nx*ny);PEAK=new Float32Array(nx*ny);
+  for(let j=0;j<ny;j++)for(let i=0;i<nx;i++){let s=0,n=0;for(let k=-r;k<=r;k++){const q=i+k;if(q<0||q>=nx)continue;s+=EL[j*nx+q];n++;}T[j*nx+i]=s/n;}
+  for(let i=0;i<nx;i++)for(let j=0;j<ny;j++){let s=0,n=0;for(let k=-r;k<=r;k++){const q=j+k;if(q<0||q>=ny)continue;s+=T[q*nx+i];n++;}A[j*nx+i]=s/n;}
+  for(let k=0;k<nx*ny;k++)PEAK[k]=smooth(40,400,EL[k]-A[k]);}
  for(let j=0;j<ny;j++)for(let i=0;i<nx;i++){let lo=1e9,hi=-1e9;
   for(let b=-1;b<=1;b++)for(let a=-1;a<=1;a++){const v=EL[clamp(j+b,0,ny-1)*nx+clamp(i+a,0,nx-1)];if(v<lo)lo=v;if(v>hi)hi=v;}REL[j*nx+i]=hi-lo;}
  // the biome table: style and kit per overlay
@@ -456,7 +462,7 @@ function formH(x,z){const SC=scarpAt(x,z,SCR),b=SC.w>0?scarpOf(baseH(x,z),SC):ba
  const r=1-Math.abs(2*N2.fbm(x/1700,z/1700,3)-1);return h+(r*r-.35)*clamp(rel*.06,6,200)*S.ridge;}
 const LFK={k:0,d:1e9,hw:0,co:0,cut:0},LFS={k:0,d:1e9,hw:0,wet:0,bw:0};
 function buildLandforms(){LANDF=false;if(!RELIEF||typeof WLAND==='undefined'||typeof KSTACKS==='undefined')return;
- const TW=((WORLD_DATA.towns&&WORLD_DATA.towns.towns)||[]).map(t=>[t.x,t.z,(t.R||300)+(t.band||400)]);
+ const TW=((WORLD_DATA.towns&&WORLD_DATA.towns.towns)||[]).map(t=>[t.x,t.z,(t.R==null?300:t.R)+(t.band==null?400:t.band)]);
  WLAND.init({ox:cx*2000,oz:cy*2000,seed:M.relief.seed,ground:formH,sites:(M.sites||[]).map(s=>({x:s.x,z:s.z})),
   styleName:(x,z)=>{const b=W.biomeAt(x,z),g=b&&W.groundOf(b.name);return g?g.style:'';},
   caprock:(x,z)=>WRELIEF.caprock(x,z,styleAt(x,z),gridBil(REL,x,z)),
@@ -587,13 +593,15 @@ function H(x,z,minWave,P,nr,nt){minWave=minWave||0;
  if(RELIEF){if(S.gully>.01&&minWave<450){const e=30,hA=clamp(rel*.12,12,420)*S.hills,Lf=(px,pz)=>baseH(px,pz)+(N1.fbm(px/6000,pz/6000,4)-.5)*2*hA;
    h=WRELIEF.erode(h,x,z,(Lf(x+e,z)-Lf(x-e,z))/(2*e),(Lf(x,z+e)-Lf(x,z-e))/(2*e),S,rel,minWave);}}
  else if(S.gully>.01&&minWave<240){const g=1-Math.abs(2*N4.fbm(x/240,z/240,2)-1);h-=S.gully*(3+rel*.004)*Math.pow(g,6)*2.2;}
+ if(PEAK&&S.peak>.01&&minWave<1300)h=WRELIEF.peaks(h,x,z,S,rel,gridBil(PEAK,x,z),minWave);   /* relief P5: crests and summits on the high ground */
  if(minWave<90)h+=(N3.vn(x/90+11,z/90-7)-.5)*2*(1.2+rel*.0015)*S.rough;
- /* the landform records (43b-world-landforms.js, relief P4): the ground stands up into a butte, a kopje, an inselberg or a pinned rock, before
-    the channels cut (a channel cuts through what a record raised) */
- if(LANDF&&minWave<1200)h=WLAND.apply(h,x,z,minWave);
  // the channels: carve to the bed line (or the local ground less the depth, whichever is lower); the wall leans wallK
  let cd=1e9,cut=0,cw=0,co=0;
  if(minWave<400){carveAt(x,z,h,S.wallK,CH,SC);h-=CH.k;cd=CH.d;cut=CH.cut;cw=CH.hw;co=CH.co;}
+ /* the landform records (43b-world-landforms.js, relief P4): the ground stands up into a butte, a kopje, an inselberg or a pinned rock, after
+    the channels cut (a placed record keeps 150 m off a channel; a pinned one stands over it: the model's drainage line under Pinnacle Rock's
+    north rim cut a 250 m gorge through the mesa when it came after), before the small streams (traced round them) */
+ if(LANDF)h=WLAND.apply(h,x,z,minWave);   /* at every minWave: the road router reads the land at 4000 m and must see a mesa */
  let sd=1e9,sw=0,sbw=0;if(STHASH&&minWave<150){streamAt(x,z,h,S.wallK,STC,minWave);h-=STC.k;sd=STC.d;sw=STC.hw;sbw=STC.bw;}
  if(minWave<13)h+=((N5.vn(x/13,z/13)-.5)*1.1+(N5.vn(x/3.1+50,z/3.1)-.5)*.3)*(1-sbw);   /* not in a stream's bed (STC.bw): it stood through the water there */
  // a world's own shaping of its land (W.landHook: openworld/isle-demo's coast, reef and mangrove flats); none here
@@ -603,7 +611,10 @@ function H(x,z,minWave,P,nr,nt){minWave=minWave||0;
  if(!nt&&TOWNS.length){townAt(x,z);if(TW.w>0)h=lerp(h,TW.h,TW.w);}
  // the roads, last: the carriageway is level at the road's height whatever the detail did (a road stops outside a
  // town's footprint, and was routed over the land with the towns in it, so it meets the town's ground at its edge)
- let rw=0;if(!nr&&RHASH){roadAt(x,z,h,RD);if(RD.w>0){h=bound(h,RD);rw=RD.d<=RD.hw+1.5&&!RD.span?1:0;}}
+ let rw=0;if(!nr&&RHASH){roadAt(x,z,h,RD);if(RD.w>0){h=bound(h,RD);rw=RD.d<=RD.hw+1.5&&!RD.span?1:0;
+  /* a road's cut bank does not shave a landform record (Pinnacle Rock's north rim stood 116 m from a track 230 m below it,
+     and the bank took the rim down to the track): past the carriageway the rock stands again */
+  if(LANDF){const t=WLAND.apply(-1e9,x,z,minWave);if(t>h)h=lerp(h,t,smooth(RD.hw+1.5,RD.hw+8,RD.d));}}}
  if(P){P.base=b;P.rel=rel;P.cd=cd;P.cut=cut;P.cw=cw;P.co=co;P.sd=sd;P.sw=sw;P.road=rw;SKEYS.forEach(k=>P[k]=S[k]);}
  return h;}
 W.H=(x,z,minWave)=>H(x,z,minWave||0,null);

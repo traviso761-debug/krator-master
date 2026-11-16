@@ -5,6 +5,8 @@
 //               standing out as benches: WRELIEF.bench. It replaces 41's terraces on the absolute height (h / step), which
 //               ringed every hill like a contour map
 //   S3 erosion  (P2) gullies and spurs down every slope, branching: WRELIEF.erode, in place of 41's ridged-noise gullies
+//   S4 peaks    (P5) sharper crests and summits on the high ground: WRELIEF.peaks (a ridged multifractal where the land stands
+//               over its neighbourhood)
 // (S1, a land style and palette for every overlay, is 41's BIOME_GROUND: claude/world-biome-styles, for every region.)
 // A region opts in (openworld/SITES.json "relief": 1; region.json `relief`); 41 calls WRELIEF only then, so a region
 // without it keeps its land exactly.
@@ -92,5 +94,22 @@ R.erode=function(h,x,z,gx,gz,S,rel,minWave){
   out-=a*(gul*gul-.35);   /* .35: the profile's mean over the blended stripes (measured; .375 for pure ones) */
   const k=-a*gul*sn*6.283185307179586/lam;Gx+=k*nx;Gz+=k*nz;}   /* this octave's own slope, for the next to follow */
  return out;};
+// ---------------------------------------------------------------- S4: peaks (P5)
+// Sharper ridgelines and summits on the high ground: a ridged multifractal (Musgrave: each octave's ridge (1 - |2n - 1|)^2,
+// weighted by the octave before it, so the ridges stay sharp where they cross and smooth out on the slopes between) in
+// four octaves from 1.3 km to 160 m, its domain warped by 700 m (no straight crest), with the mean taken out, so the
+// land is not lifted, only creased. Its weight: the style's `peak` (alpine 1, volcanic .55, highland .45; 0 in the vales,
+// jungles and lowlands), times pk (0..1: how far the land stands over its 3 km neighbourhood, 41's PEAK grid: summits and
+// crests, not valley floors), its depth with the relief (18 % of it, at most 300 m). Value noise and products only: no
+// sin, cos or exp
+const POCT=[1300,650,325,162];const PMEAN=.56;   /* the weighted ridges' mean over their normaliser, measured (test-relief.js) */
+R.peaks=function(h,x,z,S,rel,pk,minWave){const w=(S.peak==null?0:S.peak)*pk;if(!(w>.01))return h;
+ const amp=w*clamp(rel*.18,0,300);if(amp<1)return h;
+ const X=x+OX,Z=z+OZ,wx=(fbm(X/2600,Z/2600,2,SEED^0x5045)-.5)*700,wz=(fbm(X/2600+19.3,Z/2600-7.1,2,SEED^0x5046)-.5)*700;
+ let sum=0,norm=0,wt=1,a=1;
+ for(let o=0;o<POCT.length;o++){norm+=a;if(POCT[o]<(minWave==null?0:minWave)){a*=.5;continue;}
+  const n=vn((X+wx)/POCT[o],(Z+wz)/POCT[o],SEED^(0x5050+o));let r=1-Math.abs(2*n-1);r*=r;r*=wt;sum+=r*a;wt=clamp(r*2,0,1);a*=.5;}
+ return h+amp*2*(sum/norm-PMEAN);};
+
 return R;})();
 if(typeof module!=='undefined')module.exports=WRELIEF;

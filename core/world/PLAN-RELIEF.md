@@ -259,6 +259,8 @@ Each one changes `WORLD.H`, so each turn:
 | **P5 Peaks** (S4) | Jaggedness, horns and arêtes on the high ground | Matters most in the far view, after the rest is tuned |
 | **P6 The cut hands over** (R8) | The cut's sub-cell families dropped under the flag; re-cut | Once P1 to P5 cover each family |
 | **P7 The kinds, by biome** (S6, S8 to S15) | Each one goes onto the record engine, in the order the regions being built need them. Today that is the Oidong and High Rift region first: volcanic (S9) for the High Rift's coulées and vents, faults (S10) for its gjá, small water (S12) for its tarns and sinter dams, geothermal (S15). Then karst (S8, k-guilin and nwbay), glacial (S11), dry and wind (S13), flood scour (S14), fluvial (S6) | Each is small on its own, since the shapes exist. The order follows where the open world goes next |
+| **P8 Rollout** | Relief and smoothing on for the next region: `xanadu-oidong-highrift` (its High Rift, Godstep and Opal Valley are `steps` overlays, still terraced on the height every 120 m without relief), re-cut and re-baked; then each region as it is built | Each region's sites and roads re-bake on the new land, one region at a time |
+| **P9 Godot's proof** | A golden-vector file for every relief module (WSMOOTH, WRELIEF's benches, erosion and peaks, WSTREAMS' trace and decode, WLAND's placement and rasters), checked by a node test, so a GDScript port can show it gives the same land bit for bit | Last: it fixes the numbers the earlier phases settled |
 
 ### Done so far
 
@@ -453,10 +455,13 @@ The High Rift's hillshade shows the rings plainly: concentric risers 200 to 250 
     the Garden's mesa and the Heart, ten fins, the Garden's pinnacles and the shrine's balanced rock (37 bodies).
   - **Kept off** the region's outside, the water, the channels and rivers (and 150 m beyond), the small streams, the
     towns and a site's ground (3.5 km round each).
-  - **In `H`:** after the erosion and before the channels cut. Each body's surface (KSTACKS.surface: its top, or its wall
+  - **In `H`:** after the erosion and the channels' cut (a pinned record stands over a channel: before it, the model's
+    drainage line under Pinnacle Rock's north rim cut a 250 m gorge through the mesa), before the small streams. Each body's surface (KSTACKS.surface: its top, or its wall
     where a bed tapers) and a talus apron round its foot (10 % of its height at the wall, out to 35 % of it) are
     rasterised once on a world-aligned grid (2 to 6 m) and read bilinearly: asked of the beds at every call, a weathered
-    butte cost `H` five to ten times over. A far chunk leaves out a body smaller than half its `minWave`.
+    butte cost `H` five to ten times over. No sample lies more than 20 x its distance under a neighbour (a max-plus chamfer
+    both ways), so a wall is a ramp of 87 degrees: a heightfield has no vertical, and a wall drawn as a step broke the land's
+    continuity (49 m within 3 cm). A far chunk leaves out a body smaller than half its `minWave`.
   - `WORLD.landforms(box)` and `WORLD.landformAt(x, z)` give the records.
 - The bakes and `landshade.py` read the engine and a region's pins through `core/world/world_data.py` (`LAND_JS`,
   `PINS`), so the streams flow round the rocks and the sites are planned on them.
@@ -470,8 +475,37 @@ The High Rift's hillshade shows the rings plainly: concentric risers 200 to 250 
   placed butte); oidong-highrift 417 buttes (the High Rift's caprock). `H` near the records 2.4 to 3.3 us once a body's
   raster is built; Pinnacle's rock builds its rasters in about 0.6 s, a placed butte in tens of milliseconds.
 - **Re-baked:** pinnacle `c07cb34f` (9 camps, 9 roads round the rock, every check ok); oidong-highrift `a4689533`.
+- **Found on the GPU, fixed:** a road's cut bank (41's `bound`) shaved Pinnacle Rock's north rim down to a track 230 m below
+  it: past the carriageway a record stands again. The road router reads the land at a 4 km wavelength, where records were
+  left out: a body is now left out only under a quarter of the asking wavelength across, so the router sees the mesa. The
+  probe's highway check counts a station by another stretch of its own road (a hairpin) or at its ends (a camp's levelled
+  pad) as a junction: there two grounds share the land.
 - **Left:** the planners building on a top (`KSITES` reading `WORLD.landforms` as flat ground with a rim: nothing is
   planned on a top yet); the records in core/tags and on the minimap; the masks' table (S16).
+
+**P5, peaks (2026-11-16).**
+- `WRELIEF.peaks`: a ridged multifractal (each octave's ridge (1 - |2n - 1|)^2 weighted by the octave before it, so
+  crests stay sharp where they cross and smooth out between), four octaves from 1.3 km to 160 m, its domain warped by
+  700 m, its mean taken out (the land is creased, not lifted). Value noise and products only.
+- Its weight: a new style key `peak` (alpine 1, volcanic .55, highland .45, korona .35, chasm .3, steps .15, badland .1;
+  0 in the vales, jungles, savannas, deserts and lowlands) times the peakness (41's `PEAK` grid, made at init: how far
+  each cell stands over the mean of the cells within 3 km, 0 at 40 m, 1 at 400 m), its depth 18 % of the relief (at most
+  300 m). In `H` after the erosion, before the records.
+- `test-relief.js`: the mean change 0.2 m against a 216 m amplitude; the crests five times as sharp as a smooth noise of
+  the same amplitude (the 95th percentile of the curvature over the height's range); none where the peakness or the style
+  says none; continuous; a far chunk skips the fine octaves; two cuts agree.
+- **Seen:** in these two regions only the High Rift (`steps`, .15) takes it, and its plateau stands little over its
+  neighbourhood: the change at the P0 spot is slight. The Siphon Pits and the Twins (volcanic) lie outside Oidong's
+  polygon; the alpine overlays are in no relief region yet.
+
+**P6, the cut hands over (2026-11-16; R8).**
+- Under `--relief`, `extract_region.py` leaves out the sub-cell families the page now draws: the badland, tableland and
+  volcanic gullies and their fine noise (P2's erosion filter), the alpine and maar aretes and Oidong's wall crags (P5's
+  peaks), the karst spires (P4's towers) and the humid roughness (41's). It keeps those the page has nothing for yet: the
+  ring-fold fins and joint towers (S2), the yardang flutes (S13), the tepui scarps (S2), the flood coulees' kolks (S14)
+  and the palaeolake benches (which must be baked). region.json's `relief` record says phase 6.
+- Re-cut both regions (`cut_site.py`, which re-bakes the streams), then the sites and resources: pinnacle `c07cb34f` (its
+  plan unchanged: 9 camps round the rock, 9 roads), oidong-highrift `c425cee9` (938 records, 15 bridges).
 
 ## 6. Risks
 
