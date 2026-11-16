@@ -166,7 +166,7 @@ The census types are: city 8,000, arcology 10,000, town 2,500, village 300, outp
 
 | Name | Px | People | Source | Working figure | Role | Needs |
 |---|---|---|---|---|---|---|
-| **Blakhed** | 441,1400 (the Blak Riba head; site settled) | Fellgang (Fowler and Ice-cutter kin), pays Dalab a toll | LORE l.270; tungang plan 1.3.3: "1,000-2,000", 150-300 households | **1,500** | the rim's market and meeting town: ice houses (for the basin and Nulab), the egg and honey store, the rope walk (the gorge stair), beast pens; the Travellers' Fair ground; **a Great Caravan stop** (XAN_TUNE) | grain, salt, metal |
+| **Blakhed** | 441,1400 (the Blak Riba head; site settled) | Fellgang (Fowler and Ice-cutter kin), pays Dalab a toll | LORE l.270; tungang plan 1.3.3: "1,000-2,000", 150-300 households | **5,000** (the owner, 2026-11-16: "upscale a bit to 5k"; its plan: `settlements/blakhed/PLAN.md`) | the rim's market and meeting town: ice houses (for the basin and Nulab), the egg and honey store, the rope walk (the gorge stair), beast pens; the Travellers' Fair ground; **a Great Caravan stop** (XAN_TUNE) | grain, salt, metal |
 | The Fowlers | 571,1397 | Fellgang village (riftrim station 8) | riftrim 6; "a tenth of Blakhed" | **150 (est.)** | eggs and young of the cliff flyers, wall honey, herbs; to the Hearth hold (~80 km) | grain |
 | The Ice-cutters | 470,1521 | Fellgang village (station 9) | riftrim 6 | **150 (est.)** | lake ice cut in an eight-week winter, carried down the south wall to "the hot floor (Cthonos' country)"; ice to Blakhed and the hot holds | grain, cloth, metal |
 | The drovers | 393,1338 | western Fellgangs | tungang plan 1.3.4 | **300 (est.)**, plus summer shielings | felt, hides, meat, wool, driven to Blakhed (157 km) and Dalab's basin; Ledge 89 km | grain, salt |
@@ -201,14 +201,14 @@ across all the lojes, the Kimr in the count.
 |---|---|---|---|
 | Dalab in the Rift (Ledge 10,000, Nulab 10,000, the skarn 400, posts 100; the basin) | 20,500 | 50,000 | **70,500** |
 | Tungang Union, all the lojes (Loj Twenny 2,000, the Hearth hold 2,000, the saltpeter works 150, G2 350; Loj Fower 1,500 and ~30 more lojes 14,000) | 4,500 | 15,500 | **20,000** |
-| Fellgangs (Wildcat, the gold camp, Blakhed, the Fowlers, the Ice-cutters, the drovers, pass-keepers and coppersmiths, the Travellers; the fells) | 3,750 | 3,000 | **6,750** |
+| Fellgangs (Wildcat, the gold camp, Blakhed, the Fowlers, the Ice-cutters, the drovers, pass-keepers and coppersmiths, the Travellers; the fells) | 7,250 | 3,000 | **10,250** |
 | Free Giants (Tallwalls, Tallhouse; Greenstep's terraces) | 2,650 | 3,000 | **5,650** |
 | Kimr (the great houses, the knob villages, the Hall of Heroes) | - | 6,000 | **6,000** |
-| **The West Rift** | **~31,400** | **~77,500** | **~109,000 (est.)** |
+| **The West Rift** | **~34,900** | **~77,500** | **~112,500 (est.)** |
 | *Outside the count:* Loj Nahn ~1,000 (sealed in the Pile, Lizardmen country); Dalab's heartland (Dalab 20,000, Shelf 10,000 by type) as the north gateway; the Shumari (Gemini 7,600 town) | | | |
 
-That is **almost a third of the Sultanate's ~350,000** (31 %). The basin's rural ratio moves it most: 1x gives ~79,000,
-the earlier 2x ~99,000, Gemini's 3.6x ~131,000. **What the owner's figures change in section 4:** the Union is large (20,000, about twice the
+That is **about a third of the Sultanate's ~350,000** (32 %). The basin's rural ratio moves it most: 1x gives ~82,500,
+2x ~102,500, Gemini's 3.6x ~134,500. **What the owner's figures change in section 4:** the Union is large (20,000, about twice the
 old working figure), so its grain by the Line is the Line's biggest southbound cargo: if a third of its bread is Dalab's grain,
 ~3 t a day (~1,200 t a year), which the basin's surplus must cover alongside the two cities and Blakhed. That makes the Union's
 grain the Realm's lever over it, as the lifts and tunnels are the Union's lever over the Realm. Ledge at 10,000 makes
