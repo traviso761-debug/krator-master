@@ -67,6 +67,10 @@
 - **Screes** (`targets/town/90n-lw-scree.js`, core/terrain KRUBBLE): a talus cone at each band's two ends against its
   buttress, heaps in the gaps on the ledges and at the wall's foot (19 heaps), the ledges' walked (`wall-scree`; the view
   "Screes at the east end of the bands").
+- **L0, the pin** (2026-11-17): Lāiṭwāl is `slaitwal0001` on the scale model (edit 5.1e12, 4ba66f57c, the plan's notes in
+  08447477d; its ground 1,430 m on the bench, the lake two cells south), and Opal Valley Mines' note names it Lāiṭwāl's works
+  village. `openworld/SITES.json` reads it from the model now (`"model": false` gone); the region's site square is the same
+  pixel, so the cut and the baked plan stand (`bake_sites.py --check`: fresh).
 
 ## Open
 
@@ -83,11 +87,6 @@
 - [ ] **Interiors near the Stair Foot only**: the bench's houses past 260 m are solid; the wall's fronts past the carved
       quarter are fronts on whole rock (by design: the quarter is what is walked).
 - [ ] No people (`core/charactermodels`).
-- [ ] **L0, the pin, is on another branch** (2026-11-17): the scale-model edits session made it `slaitwal0001` (model edit
-      5.1e12, commit 4ba66f57c on `claude/gemini-trade-reconcile`, with the plan's notes in 08447477d; its ground 1,430 m on the
-      bench, the lake two cells south), and Opal Valley Mines' note names it Lāiṭwāl's works village. Every id here is
-      `slaitwal0001` already (the economy, the open-world site); `openworld/SITES.json` keeps `"model": false` and its own px
-      until that branch merges here, then the flag goes and the region is re-cut.
 - [ ] **L0, the lode**: the `opal` node is built on `claude/resource-nodes-7ec053` (774f200b2); the `opal` geology family (a
       layer the node field places from) needs a geology rebake by the scale-model session; until then the Great Potch Line's
       field can only be placed by hand (owner nodes).

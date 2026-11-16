@@ -110,12 +110,12 @@ is the Glaziers'; the bench is the Sultan's.
 
 | Step | What | Test |
 |---|---|---|
-| **L0** | The pin: a scale-model edit through the scale-model session's queue (a `defSetts` pin and its key), and the Great Potch Line as a lode record (`kits/resources/data/lodes.json` needs an `opal` family first) | the pin's ground is the bench; the lode's field is under the wall |
+| **L0** | The pin: a scale-model edit through the scale-model session's queue (a `defSetts` pin and its key), and the Great Potch Line as a lode record (`kits/resources/data/lodes.json` needs an `opal` family first) (**the pin done 2026-11-17**: `slaitwal0001`, model edit 5.1e12; the lode waits on the `opal` geology family) | the pin's ground is the bench; the lode's field is under the wall |
 | **L1** | The town in `XAN_TUNE`: the settlement, its works, the field, the roads; the province's seat question settled (**done 2026-11-16**: `slaitwal0001` in `core/region/data/xan-tune.js`, the seat of P6; the Great Potch Line's adits on a field of veins, the glass shops' moonglass (a new good), the dugouts, the bench terraces; the Sultan's mines its works village over the lake by the ferry; the Fifth in opals from the assay house; opal and moonglass down by Kirstabal to Qiblai and Yuni's caravans; its grain up the same road. The id is the pin's, `slaitwal0001`) | `test-xan-economy.js`: fed, the Fifth, the field |
 | **L2** | The bench town on `core/city` with the Xanadu kit (a target on Xanadu's page, as Qiblai is) | its city tests; the GPU verify |
 | **L3** | The wall: the `gz-*` fronts and the hold's plan cut into a scarp on the page | the set's checks: walkable, no clipping, the voids inside the rock |
 | **L4** | Interiors for both halves (**done 2026-11-16**: the bench's houses round the Stair Foot with the Xanadu kit's interiors, the carved homes walked from their fronts) | the interiors' checks: `ix-bench`, `ix-glazier` |
-| **L5** | The site in the open world (**done 2026-11-16**: `slaitwal0001` in `openworld/SITES.json` (the pin's id: model edit 5.1e12 on `claude/gemini-trade-reconcile`; `model: false` until it merges here), a site of `openworld/xanadu-oidong-highrift`: its square in the cut, three farming villages and a ranch on the shore's bench, the plan baked; the town's own page stays this one) | the region's verify: its new check, Lāiṭwāl on its bench under the wall, the lake at its feet |
+| **L5** | The site in the open world (**done 2026-11-16**: `slaitwal0001` in `openworld/SITES.json` (the pin's id, model edit 5.1e12), a site of `openworld/xanadu-oidong-highrift`: its square in the cut, three farming villages and a ranch on the shore's bench, the plan baked; the town's own page stays this one) | the region's verify: its new check, Lāiṭwāl on its bench under the wall, the lake at its feet |
 
 ## 7. Questions for the owner
 
