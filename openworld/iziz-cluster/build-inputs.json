@@ -186,10 +186,10 @@
     "core/water/50-core-water-draw.js": "9b487271223b64c2935b3336667963139dddcc055b852ac4f0a1912b2a9dd7e0",
     "core/water/51-core-water-kinds.js": "549ea82cd960f7b78d0088c0a0059a1104eb360ccac82e916b48ec8cb29e0e57",
     "core/world/00-head.html": "f13d6e95835b879b2558b833c915dec3020683afff8a62962d2c7aaa68659c6e",
-    "core/world/41-world-fields.js": "9ea753913d5ab9c4147abc031ca2dd5e339dcda4aebb725c6fde58f71de0320a",
+    "core/world/41-world-fields.js": "95699f52f9f47549389acf07014406be3c726d337e6e83c9a5d44898e69f58b0",
     "core/world/42-world-roads.js": "8b9b8bf77763f7f8c1507f103352c821d1032021ec73218b96aa4a5783451277",
     "core/world/45-world-host.js": "4f67add1a87c01af548999122e1c4562345f8871418ea7a478eebfb8699323bc",
-    "core/world/48s-world-sites.js": "809f77293ddeed03d6e707f46019e83a0755aabbc3386c878b1045028ea50744",
+    "core/world/48s-world-sites.js": "90ac5ceae97a31f6f12b6a540ec26fc550e3e468936e2ff3bbf09c2732732e43",
     "core/world/49r-world-resources.js": "c06677b5dcd39f7269b5e15bd790ad7532c87c1a99f17ff70565c77373db7b24",
     "core/world/80-world-sky.js": "824f51c793e1835057f01241b306fc9e4cda0ee4d2fd1277010d0cb201852ad2",
     "core/world/81-world-terrain.js": "4c254a79afd5b964b616928abd1744e5ab58902ddac2519bbfefcb22976a128d",
@@ -202,8 +202,8 @@
     "core/world/88-world-towns.js": "e223a019a784cadc3f0a1c9891c0721e660498610064cde49a0850cae1152f67",
     "core/world/88s-world-sites.js": "b7322b6a70c4e26fe8af57f8a80640345b7c42ed50204bc0d473c2a8d56a251a",
     "core/world/89r-world-resources-map.js": "710c0886b885ee442c5426afc6f0896823a665d5111170ad66a71ebe4ec35563",
-    "core/world/90-world-camera.js": "a772ca7598b110af2c126df79b3e76add563a9e0ff7407905548669f71124a65",
-    "core/world/91-world-probe.js": "a8a92d9e9efa7d36f1e7572594fadb1239bf96c1bb01faf8ce65ee93f56f4ba8",
+    "core/world/90-world-camera.js": "6d7f41914cb24490fe659235e71444f4a6ed49aa2611ef403b5268a3315dad56",
+    "core/world/91-world-probe.js": "2695f35d07f8739e8f4672ea9921946c3f1ddf4267291981e7a62dd94fd7ca18",
     "core/world/93-world-propose.js": "df6242ce0b069c014d9e4250610a7db1479b647974f00d9c1dda0432fe0c6917",
     "core/world/98-world-start.js": "59237b5ce7ef4b79bdda9ee22ce90dd89629606639f920b70cf92e552f24fbf2",
     "core/world/99-tail.html": "5c1404e034c7ec0d2b8ac19a6c1a2c4786dbd3037cbb48efdc8cfe4820c14aea",
@@ -715,7 +715,7 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "openworld/iziz-cluster/dist/iziz-cluster.html": "fb12d335f2d0da92597572e5051ab5070a0a292d65ebe2ddca26127bd253fbd7",
+    "openworld/iziz-cluster/dist/iziz-cluster.html": "9c52ff5e0036b854e7d282d3fc02bc8798eff367e4af6893e33bf160621a6f7c",
     "openworld/iziz-cluster/dist/iziz-cluster.tex.abyssal-savannah.js": "1eb39f4b778a6bc8b25aefa0a150ceb8dac7bd338e60213fe7f1a68b10d3e390",
     "openworld/iziz-cluster/dist/iziz-cluster.tex.brtowns.js": "b12ca256d909e39fcbbb58164e9437b081de65a23b5651d3079814610dddc1c0",
     "openworld/iziz-cluster/dist/iziz-cluster.tex.eastabyss.js": "2c9de989f067e7da3195016b3a53efd7338695428cd54b2573cf52f7c6dd7b14",
@@ -725,7 +725,7 @@
     "openworld/iziz-cluster/dist/iziz-cluster.tex.kftex.js": "76bf85ce1437d8c1a34f4bb2aca0af4fce566d9a24caa3691055d1511a500101"
    },
    "outputs_raw": {
-    "openworld/iziz-cluster/dist/iziz-cluster.html": "fb12d335f2d0da92597572e5051ab5070a0a292d65ebe2ddca26127bd253fbd7",
+    "openworld/iziz-cluster/dist/iziz-cluster.html": "9c52ff5e0036b854e7d282d3fc02bc8798eff367e4af6893e33bf160621a6f7c",
     "openworld/iziz-cluster/dist/iziz-cluster.tex.abyssal-savannah.js": "1eb39f4b778a6bc8b25aefa0a150ceb8dac7bd338e60213fe7f1a68b10d3e390",
     "openworld/iziz-cluster/dist/iziz-cluster.tex.brtowns.js": "b12ca256d909e39fcbbb58164e9437b081de65a23b5651d3079814610dddc1c0",
     "openworld/iziz-cluster/dist/iziz-cluster.tex.eastabyss.js": "2c9de989f067e7da3195016b3a53efd7338695428cd54b2573cf52f7c6dd7b14",
