@@ -30,6 +30,8 @@ CORE = [('core/rand', '08-core-rand.js'), ('core/materials/record', '23-mat-reco
         ('core/materials/record', '25-matlib-host.js')]
 KIT_SKIP = ('00-head.html', '89-rows.js', '91t-fg-sheet.js', '96t-fg-views.js', '99-sheet-fg.js', '91z-gz-sheet.js', '96z-gz-views.js')
 LEAN = ('stone', 'turf', 'pole', 'wood', 'plate', 'rust', 'rope', 'cord')
+# tex='glazier': the families the Glazier set draws with (a town of theirs: settlements/lightwall)
+GLAZIER = ('wash', 'hewn', 'gilt', 'carpet', 'celadon', 'enamel', 'potch', 'carved', 'silk', 'plate', 'iron', 'stone', 'wood', 'rope', 'cord')
 
 HEAD = r'''
 /* the page's shell, as the kit's fragments ask for it (tungang_bundle.py). The engine's error hooks stay in here: window.onerror,
@@ -113,7 +115,7 @@ def pack(tex=True):
     P = json.load(open(pj, encoding='utf-8'))
     out = []
     for fam in sorted(P['families']):
-        if fam.startswith('f_') or (tex == 'lean' and fam not in LEAN):
+        if fam.startswith('f_') or (tex == 'lean' and fam not in LEAN) or (tex == 'glazier' and fam not in GLAZIER):
             continue
         e = P['families'][fam]
         f = {'lib': e['lib'], 'scale': e['scale'], 'metal': e['metal'], 'normalScale': e['normalScale'], 'specular': e.get('specular', 0.5),

@@ -19,7 +19,7 @@ function gzPlaque(num,x,y,z,ry,C,o){o=o||{};const w=(o.w==null?.3:o.w),h=(o.h==n
  if(!C.aband||o.keepGilt)for(const s of [-1,1]){box('gilt',0,s>0?h-.012:0,.006,w+.02,.014,.03,P('gilt'));box('gilt',s*(w/2),0,.006,.014,h,.03,P('gilt'));}
  const t=String(num);fgText(t,0,h*.35,.016,0,Math.min(h*.36,w*1.2/(t.length*.8+.2)),P('white'));});fgNote('plaques');}
 defBuilding({key:'gz-tea-hall',name:'The tea hall (the loj\'s meeting hall)',seed:9411,cut:true,w:16.6,d:21,h:13,front:{x:0,z:4},budget:42000,
- tags:{types:['civic'],wealth:'middle',style:'carved',role:'civic',job:'trading'},note:TG.gz.BOX['gz-tea-hall'].what,
+ tags:{culture:'glazier',types:['civic'],wealth:'middle',style:'carved',role:'civic',job:'trading'},note:TG.gz.BOX['gz-tea-hall'].what,
  build(o){const C=gzCx(o),k='gz-tea-hall',PL=TG.gz.plan(k,o),Hl=PL.hall,O=[3.95,2.6,1.3],W0=[16,13,9.6],H0=[4.4,3.4,3];
   /* the front: a tall first tier with the great door (five lobes, gilt) and four windows; the guest gallery's tier (its stair up
      from the first tier's east end, through a well in its roof); the bell loggia's tier under the gilt finial */
@@ -63,7 +63,7 @@ TG.gz.PLANS['gz-register-room']=function(o){const k='gz-register-room',v=o.v,rd=
  const S=gzRoom('fifth',1.6,R.z-rd/2-1-1.1,2.6,2.2,0,{finish:'hewn',use:'strongroom',h:2.2,rise:.3,doors:[{side:'s',at:0,w:.9}]});
  return {voids:[gzPass('door',0,-1.1,.4,1,0),R,gzPass('to-fifth',1.6,R.z-rd/2+.05,S.z+S.d/2-.05,.9,0),S],R,S,n:24+Math.floor(gzU(k,v,2)*24)};};
 defBuilding({key:'gz-register-room',name:'The Register of the Veins',seed:9412,cut:true,w:9.4,d:11.6,h:5.4,front:{x:0,z:1.8},budget:16000,
- tags:{types:['civic'],wealth:'middle',style:'carved',role:'civic',job:'scribing'},note:TG.gz.BOX['gz-register-room'].what,
+ tags:{culture:'glazier',types:['civic'],wealth:'middle',style:'carved',role:'civic',job:'scribing'},note:TG.gz.BOX['gz-register-room'].what,
  build(o){const C=gzCx(o),k='gz-register-room',PL=TG.gz.plan(k,o),R=PL.R,S=PL.S;
   gzTier({y:0,h:3.6,w:8.4,out:1.75,floor:true,rich:true,ops:[{t:'door',x:0,w:1,top:2.05,curtain:'orderBlue',lamp:'amber'},{t:'win',x:-2.9,w:.55,sill:1.1,top:2.1},{t:'win',x:2.9,w:.55,sill:1.1,top:2.1}]},C);
   /* the Register's great plaque on the front, by the door: the hold's own number */
@@ -92,7 +92,7 @@ TG.gz.PLANS['gz-monks-house']=function(o){const k='gz-monks-house',v=o.v,f=gzU(k
  const Cl=gzRoom('cell',-1.2*f,-7.7,2.8,2.4,0,{finish:'plaster',use:'cell',dado:'orderBlue',h:2.2,rise:.3,doors:[{side:'s',at:0,w:.8}]});
  return {voids:[gzPass('door',-1.2*f,-1.15,.4,1,0),Rr,gzPass('r-m',-3.2,-1.2*f+f*2.45,3.4*f-f*1.25,.8,0,{ax:'x'}),M,gzPass('r-c',-1.2*f,-5.25,-6.45,.8,0),Cl],f,Rr,M,Cl};};
 defBuilding({key:'gz-monks-house',name:'The herbalist-monks\' house',seed:9413,cut:true,w:10.4,d:13.4,h:6.4,front:{x:0,z:3},budget:16000,
- tags:{types:['religious'],wealth:'middle',style:'carved',role:'religious',job:'healing'},note:TG.gz.BOX['gz-monks-house'].what,
+ tags:{culture:'glazier',types:['religious'],wealth:'middle',style:'carved',role:'religious',job:'healing'},note:TG.gz.BOX['gz-monks-house'].what,
  build(o){const C=gzCx(o),k='gz-monks-house',PL=TG.gz.plan(k,o),f=PL.f,Rr=PL.Rr,M=PL.M,Cl=PL.Cl,blue={cols:['orderBlue','wash','saffron']};
   const T1=gzTier({y:0,h:3.3,w:9.6,out:2.5,floor:true,band:false,ops:[{t:'door',x:Rr.x,w:1,top:2,curtain:'orderBlue',lamp:'red'},{t:'win',x:Rr.x+f*2,w:.55,sill:1.1,top:2},{t:'win',x:-f*3.6,w:.55,sill:1.1,top:2}]},C);
   gzBand(-4.65,4.65,3.3-.62,gzFaceZ(2.5,2.88,0,.07)+.02,.38,C,blue);
@@ -118,7 +118,7 @@ defBuilding({key:'gz-monks-house',name:'The herbalist-monks\' house',seed:9413,c
 TG.gz.PLANS['gz-wheel-walk']=function(o){const k='gz-wheel-walk',v=o.v,n=8+Math.floor(gzU(k,v,1)*5);
  return {voids:[gzRoom('niche',0,-.3,10.6,1.4,0,{finish:'plaster',use:'niche',h:2.5,ceil:'flat',rise:0,noFloor:true})],n};};
 defBuilding({key:'gz-wheel-walk',name:'The wheel walk (click wheels along the ledge)',seed:9414,cut:true,w:12.4,d:4.2,h:4.2,front:{x:0,z:3},budget:16000,
- tags:{types:['religious','infrastructure'],style:'carved',role:'shrine',job:'worship'},note:TG.gz.BOX['gz-wheel-walk'].what,
+ tags:{culture:'glazier',types:['religious','infrastructure'],style:'carved',role:'shrine',job:'worship'},note:TG.gz.BOX['gz-wheel-walk'].what,
  build(o){const C=gzCx(o),k='gz-wheel-walk',PL=TG.gz.plan(k,o),n=PL.n,L=11.6,wc=gzCol('wash',C),tc=gzCol('timber',C);
   /* the ledge: flags from the face to its edge, a low whitewashed parapet on the edge with its gaps; the plinth in the niche */
   box('wash',0,-.3,1.1,L+.6,.35,3.6,gzCol('washOld',C));box('wash',0,0,-.45,10.4,.3,.9,wc);

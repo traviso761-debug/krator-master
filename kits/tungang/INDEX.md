@@ -29,8 +29,8 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `54-fg-stores.js` | 9 |  |
 | `56-fg-works.js` | 14 |  |
 | `60-fg-road.js` | 16 |  |
-| `62-gz-kit.js` | 26 |  |
-| `63-gz-homes.js` | 18 |  |
+| `62-gz-kit.js` | 27 |  |
+| `63-gz-homes.js` | 19 |  |
 | `65-gz-civic.js` | 16 |  |
 | `67-gz-works.js` | 18 |  |
 | `80-fg-host.js` | 10 |  |

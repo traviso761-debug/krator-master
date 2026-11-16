@@ -28,7 +28,7 @@ TG.gz.PLANS['gz-glass-shop']=function(o){const k='gz-glass-shop',v=o.v,f=gzU(k,v
  const S=gzRoom('store',3.3*f,-3.3,2.2,2.8,0,{finish:'hewn',use:'store',h:2.2,rise:.3,doors:[{side:f>0?'w':'e',at:0,w:.8}]});
  return {voids:[gzPass('door',0,-1.15,.4,1.2,0),R,gzPass('r-s',-3.3,-1.2*f+f*2.65,3.3*f-f*1.05,.8,0,{ax:'x'}),S],f,R,S};};
 defBuilding({key:'gz-glass-shop',name:'The moonglass workshop',seed:9421,cut:true,w:10.4,d:12,h:5.8,front:{x:0,z:3.4},budget:20000,
- tags:{types:['industry','shop'],wealth:'middle',style:'carved',role:'works',job:'lampmaking'},note:TG.gz.BOX['gz-glass-shop'].what,
+ tags:{culture:'glazier',types:['industry','shop'],wealth:'middle',style:'carved',role:'works',job:'lampmaking'},note:TG.gz.BOX['gz-glass-shop'].what,
  build(o){const C=gzCx(o),k='gz-glass-shop',PL=TG.gz.plan(k,o),f=PL.f,R=PL.R,S=PL.S;
   /* the shop front: three wide moonglass windows (the wares in them), the door with the work's amber lamp, a carved awning */
   gzTier({y:0,h:3.8,w:9.6,out:2.9,floor:true,ops:[{t:'door',x:0,w:1.2,top:2.1,lamp:'amber'},{t:'win',x:-3.2,w:1.5,sill:.8,top:2.6,lobes:5},{t:'win',x:3.2,w:1.5,sill:.8,top:2.6,lobes:5}]},C);
@@ -50,7 +50,7 @@ TG.gz.PLANS['gz-adit']=function(o){const k='gz-adit',v=o.v,x=(gzU(k,v,1)-.5)*1.2
  return {voids:[gzRoom('adit',x,-4.3,1.8,9.4,0,{finish:'hewn',use:'adit',h:2.05,ceil:'vault',rise:.3,doors:[{side:'s',at:0,w:1.8}],noFloor:true,join:true}),
   gzRoom('face',x+.4,-10.3,3,2.8,0,{finish:'hewn',use:'face',h:2.1,ceil:'vault',rise:.4,noFloor:true,join:true})],x,num:10+Math.floor(gzU(k,v,2)*40)};};
 defBuilding({key:'gz-adit',name:'An adit\'s mouth (the Register\'s plaque, the potch heap, the flume)',seed:9422,cut:true,w:8.6,d:18,h:5,front:{x:0,z:0},budget:12000,
- tags:{types:['industry'],style:'salvage',role:'works',job:'mining'},note:TG.gz.BOX['gz-adit'].what,
+ tags:{culture:'glazier',types:['industry'],style:'salvage',role:'works',job:'mining'},note:TG.gz.BOX['gz-adit'].what,
  build(o){const C=gzCx(o),k='gz-adit',PL=TG.gz.plan(k,o),x=PL.x,pc=gzCol('wash',C),tc=gzCol('timber',C);
   /* the plate-framed portal: Ancient white plate faced on two posts and a lintel, riveted; the plaque; the amber lamp, the white
      hooded lamp over it (the surface's danger: the edge, the dust) */
@@ -79,7 +79,7 @@ TG.gz.PLANS['gz-vein-gallery']=function(o){const k='gz-vein-gallery',v=o.v,s=gzU
  const F=gzRoom('face',x1-s*.3,-13.9,2.6,2.2,0,{finish:'hewn',use:'face',h:2,ceil:'vault',rise:.35,noFloor:true,join:true});
  return {voids:[A,B,Cc,F],s,x1,zt,segs:[[0,.4,0,zt],[0,zt,x1,zt],[x1,zt,x1,-13]],num:50+Math.floor(gzU(k,v,4)*40)};};
 defBuilding({key:'gz-vein-gallery',name:'A vein gallery (the working on a potch line)',seed:9423,cut:true,w:8,d:17,h:3.6,front:{x:0,z:1},budget:12000,
- tags:{types:['industry'],style:'carved',role:'works',job:'mining'},note:TG.gz.BOX['gz-vein-gallery'].what,
+ tags:{culture:'glazier',types:['industry'],style:'carved',role:'works',job:'mining'},note:TG.gz.BOX['gz-vein-gallery'].what,
  build(o){const C=gzCx(o),k='gz-vein-gallery',PL=TG.gz.plan(k,o);
   gzMouth(0,1.2,1.95,C,PL.num);fgSet('plaque',PL.num);box('wash',0,-.05,.5,3.4,.1,1,gzCol('washOld',C));gzLamp('amber',-.95,1.75,.3,C,{wall:true});
   /* each straight stretch: the wet floor, the potch line along one wall (a pale band at the contact), lamps, sets at the turns */
@@ -94,7 +94,7 @@ defBuilding({key:'gz-vein-gallery',name:'A vein gallery (the working on a potch 
 TG.gz.PLANS['gz-dark-adit']=function(o){const k='gz-dark-adit',v=o.v,x=(gzU(k,v,1)-.5)*1.4;
  return {voids:[gzRoom('adit',x,-4.1,1.8,9,0,{finish:'hewn',use:'adit',h:2,ceil:'vault',rise:.3,noFloor:true,join:true}),gzRoom('beds',x,-10.6,4.4,4.6,0,{finish:'hewn',use:'beds',h:2.2,ceil:'vault',rise:.45,doors:[{side:'s',at:0,w:1.8}],join:true})],x};};
 defBuilding({key:'gz-dark-adit',name:'An old adit turned to dark beds',seed:9424,cut:true,w:7,d:15,h:3.4,front:{x:0,z:1},budget:12000,
- tags:{types:['farm'],wealth:'poor',style:'carved',role:'works',job:'fungiculture'},note:TG.gz.BOX['gz-dark-adit'].what,
+ tags:{culture:'glazier',types:['farm'],wealth:'poor',style:'carved',role:'works',job:'fungiculture'},note:TG.gz.BOX['gz-dark-adit'].what,
  build(o){const C=gzCx(o),k='gz-dark-adit',PL=TG.gz.plan(k,o),x=PL.x,B=PL.byId.beds;
   /* the old mouth: its frame, a wax-cloth curtain to keep the dark in, the glow-cap lamp (the code: the poor) */
   gzMouth(x,1.5,1.95,C,null);W(x,0,.08,0,()=>{const cc=gzCol('timber',C).clone().multiplyScalar(.7);for(let i=0;i<4;i++)box('silk',-.56+i*.375,C.aband?.6:0,0,.36,C.aband?1.3:1.92,.03,cc);});
@@ -111,7 +111,7 @@ defBuilding({key:'gz-dark-adit',name:'An old adit turned to dark beds',seed:9424
 /* ---------------------------------------------------------------- the lotus pond */
 TG.gz.PLANS['gz-lotus-pond']=function(o){return {voids:[gzRoom('spout',(gzU('gz-lotus-pond',o.v,1)-.5)*4,-.35,.5,1.4,1.2,{h:.4,ceil:'flat',rise:0,noFloor:true})]};};
 defBuilding({key:'gz-lotus-pond',name:'The lotus pond (terraces for the opal water-lotus)',seed:9425,w:12.4,d:10.8,h:1.8,front:{x:0,z:9.6},budget:12000,
- tags:{types:['farm'],style:'built',role:'works',job:'farming'},note:TG.gz.BOX['gz-lotus-pond'].what,
+ tags:{culture:'glazier',types:['farm'],style:'built',role:'works',job:'farming'},note:TG.gz.BOX['gz-lotus-pond'].what,
  build(o){const C=gzCx(o),k='gz-lotus-pond',PL=TG.gz.plan(k,o),sx=PL.voids[0].x,kc=gzCol('wash',C),n=3;
   /* three basins stepping down from the rock toward the tarn, each kerbed in whitewashed stone, its water a little under the kerb */
   for(let i=0;i<n;i++){const z0=.2+i*3.1,z1=z0+3,top=1.4-i*.4,wl=top-.14,w=11.6-i*.6;
@@ -133,7 +133,7 @@ TG.gz.PLANS['gz-stair']=function(o){const n=gzU('gz-stair',o.v,1)<.5?2:3,V=[];
  for(let i=0;i<n;i++)V.push(gzRoom('pocket'+i,i===1?-.8:.8,-.15,.4,.5,3.4*i+1.2,{h:.4,ceil:'flat',rise:0,noFloor:true}));
  return {voids:V,n};};
 defBuilding({key:'gz-stair',name:'The stair up the scarp (switchbacks and ledges)',seed:9426,w:7.6,d:3.8,h:11.6,front:{x:0,z:3.4},budget:12000,
- tags:{types:['infrastructure'],style:'carved',role:'way'},note:TG.gz.BOX['gz-stair'].what,
+ tags:{culture:'glazier',types:['infrastructure'],style:'carved',role:'way'},note:TG.gz.BOX['gz-stair'].what,
  build(o){const C=gzCx(o),PL=TG.gz.plan('gz-stair',o),n=PL.n,wc=gzCol('wash',C),tc=gzCol('timber',C),rs=3.4;
   /* flight one: solid masonry from the ground, along +x at z 2.7, a parapet on its outer side; landing one on a masonry pier */
   svStair(-3,2.7,0,rs,PI/2,{style:'solid',mk:'wash',col:gzCol('washOld',C),w:1.1,riser:.19,going:.27});

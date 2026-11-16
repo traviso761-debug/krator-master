@@ -74,6 +74,17 @@ TG.gz={SCALE:.94,culture:'glazier',
  PLANS:{},LIGHTS:[]};
 /* ---------------------------------------------------------------- the builder's context, the draws, the colours */
 let GZ_COLLECT=0;   /* 84-gz-host.js sets it during a host draw: the lights are collected even when the draw is dry */
+/* THE FACADE DRAW (a site's `facade: true` in TG.gz.draw: a town's far wall, Laitwal's outer bands): only what stands at or in
+   front of the rock face is drawn, the front's tiers, doors, panes, lamps and what stands before it; everything behind the
+   face (the carved rooms' floors, linings, furniture, lamps, plaques) is dropped, and no furniture is asked of the catalog.
+   The test is the emitted piece's centre in the site's own frame (z < -.35: in the rock). The world gives such a site no
+   carved voids: its rock is whole behind the front */
+let GZ_FACADE=0;const gzFM=new THREE.Matrix4(),gzFV=new THREE.Vector3();
+function gzBehind(lm,geo){if(!CURREC)return false;if(lm)gzFV.setFromMatrixPosition(gzFM.copy(CM).multiply(lm));
+ else{if(!geo.boundingBox)geo.computeBoundingBox();geo.boundingBox.getCenter(gzFV).applyMatrix4(CM);}
+ const dx=gzFV.x-CURREC.x,dz=gzFV.z-CURREC.z,c=Math.cos(CURREC.ry),s=Math.sin(CURREC.ry);return dx*s+dz*c<-.35;}
+const gzEmit0=emit;
+emit=function(mk,geo,lm,col,uvm){if(GZ_FACADE&&CURREC&&gzBehind(lm,geo))return;return gzEmit0(mk,geo,lm,col,uvm);};
 function gzCx(o){o=o||{};const s=o.state!=null?o.state:(typeof FG_STATE!=='undefined'?FG_STATE:'kept'),st=s==='worn'||s==='abandoned'?s:'kept';
  return {st,worn:st!=='kept',aband:st==='abandoned',v:o.v|0,o,key:CURKEY};}
 function gzU(key,v,salt){const D=DEFS[key];return KRAND.unit(KRAND.hash(D?D.seed:0,v|0,salt|0));}
@@ -150,6 +161,7 @@ function gzDoor(x,top,w,zf,th,Yb,beta,C,o){o=o||{};const zo=gzFaceZ(zf,Yb+top*.5
 /* ---------------------------------------------------------------- lamps and lanterns */
 /* a light record (world frame) when the lamp burns; the halo the sheet shows */
 function gzLight(kind,x,y,z,C,o){o=o||{};const L=TG.gz.LAMP[kind]||TG.gz.LAMP.wax;if(C.aband&&!o.always)return null;
+ if(GZ_FACADE&&CURREC&&gzBehind(new THREE.Matrix4().makeTranslation(x,y,z),null))return null;
  const p=new THREE.Vector3(x,y,z).applyMatrix4(CM),r={id:(CURREC&&(CURREC.id||CURREC.tid)||CURKEY||'gz')+':'+kind+':'+TG.gz.LIGHTS.length,x:+p.x.toFixed(3),y:+p.y.toFixed(3),z:+p.z.toFixed(3),
   kind:L.kind,colour:L.hex,range:L.range*(C.worn?.8:1),intensity:L.intensity*(C.worn?.7:1),owner:CURREC?(CURREC.id||CURREC.tid||CURREC.key):null,on:true};
  if(!PLACE_DRY||GZ_COLLECT)TG.gz.LIGHTS.push(r);if(o.halo!==false)haloAt(x,y,z,L.hex,!!o.big);return r;}
@@ -191,7 +203,7 @@ function gzClick(x,y0,z,r,h,C,o){o=o||{};const keep=gzKeep(C,Math.round(x*17+z*3
  if(keep)fgNote('wheels');}
 /* ---------------------------------------------------------------- furniture */
 /* the catalog's pieces at the floor (y null: the floor finish's top, .05); its back to a wall as fgFurnBack / fgFurnSide */
-function gzFurn(key,x,y,z,ry,o,C){if(C&&C.aband&&!gzKeep(C,Math.round(x*31+z*17),.45))return null;return FURNISH(key,x,y==null?.05:y,z,ry==null?0:ry,o);}
+function gzFurn(key,x,y,z,ry,o,C){if(GZ_FACADE)return null;if(C&&C.aband&&!gzKeep(C,Math.round(x*31+z*17),.45))return null;return FURNISH(key,x,y==null?.05:y,z,ry==null?0:ry,o);}
 /* ---------------------------------------------------------------- the void plan: rooms, stairs, doorways */
 /* a rectangular room void; o.join: a stretch of a working that runs on into the next (a gallery's turns, an adit's face): the
    rock between rooms is not asked of it */
