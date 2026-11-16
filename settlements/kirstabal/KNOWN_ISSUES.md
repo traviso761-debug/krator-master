@@ -22,8 +22,15 @@ moored boat is the Sultan's pleasure barge; the capital's lake owes the same cra
 
 ## The page
 
-- **The flora** is the Vale of Xanadu's biome Xanadu's page vendors, a stand-in for the Rift floor's Af country (31-33 C):
-  `biomes/xanadu`'s `floor` station is the kit to bind when the page takes today's core/biome (as Qiblai's gardens do).
+- **The flora is the Rift floor's** (the owner, 2026-11-16: "implement rift climate"): the Rift kit (`biomes/rift`) on today's
+  core/biome, sealed in `gen/69k2-ks-flora-bundle.js` and zoned by the climate as its fields (`targets/town/90m-ks-flora.js`):
+  jungle along the lake and Keb Riwa, savannah inland, 4.2 km round the town. It draws with the kit's **procedural textures**:
+  its library pack inline (6.2 MB) would pass the page cap, and a second sidecar pack needs settlements/xanadu/build.py to take
+  a kit's extra packs (a change that stales Xanadu's and Qiblai's pages). The kit's own garden plants (xaPlant) stay the Vale's.
+  The ring villages past 4.2 km stand in grass and fields, without the Rift's trees. The grass is tinted by the same wetness
+  (89zk's `ksWet`: tawny inland, deeper green by the water). The far trees are the core's impostors: the capture renders them
+  dark (atlas means 3 to 50 of 255), so they take the Rift page's light (`impostorLook` gain 3.6, wrap 1); at 64 px a view the
+  thin-crowned species read as trunks with pale flecks past 1 km (not compared with the Rift's own page yet).
 - **The far field** (the scarp, the lip, the lake beyond 12 km) is the scale model at 2 km a pixel (`src/39k-ks-model.js`),
   smoothed: the scarp is a slope, not a cliff, and the cataract is white water down it, not a free fall. Seen from the town
   through the heat haze (24 km off) it reads as a thin white streak on a pale ridge. The open world (K6, core/world)

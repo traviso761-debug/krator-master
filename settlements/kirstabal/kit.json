@@ -4,10 +4,12 @@
  },
  "external": [
   "settlements/kirstabal/gen/69k-kcity-bundle.js",
+  "settlements/kirstabal/gen/69k2-ks-flora-bundle.js",
   "kits/xanadu/src/87k-xa-lake-trades.js"
  ],
  "scoped": [
-  "69k-kcity-bundle.js"
+  "69k-kcity-bundle.js",
+  "69k2-ks-flora-bundle.js"
  ],
  "pack": "kirstabal",
  "files": {
@@ -24,7 +26,9 @@
   "41-ks-town.js",
   "42-ks-ring.js",
   "69k-kcity-bundle.js",
+  "69k2-ks-flora-bundle.js",
   "89k0-ks-matlib.js",
+  "90m-ks-flora.js",
   "89zk-ks-site.js",
   "90k-ks-world.js",
   "90l-ks-build.js",

@@ -88,17 +88,49 @@ if '--bake-model' in sys.argv:
     sys.exit(0)
 
 
+# THE RIFT FLOOR'S FLORA (the owner, 2026-11-16: "implement rift climate"): today's core/biome and the Rift kit (biomes/rift, read in
+# place) sealed in one closure, as settlements/qiblai/build.py seals its gardens' kits, because Xanadu's page runs its own vendored
+# biome core (version 'xanadu-1', without BIO.kit, kin or impostors). The closure's BIO hides the page's; it hands its files a window
+# of its own (Object.create(window)) carrying that BIO; it exports KS_FLORA only (targets/town/90m-ks-flora.js binds the host and
+# builds). No texture pack: the Rift kit keeps its procedural textures here, as in the open world (its pack inline would pass the
+# page cap of 16 MB; KNOWN_ISSUES.md)
+FLORA_CORE = ['10-core-head.js', '20-core-kit.js', '30-core-foliage.js', '30s-core-season-flush.js', '31-core-dither.js',
+              '31b-core-leafset.js', '31j-core-joint.js', '32-core-variants.js', '33-core-fungoid.js', '33b-core-bamboo.js',
+              '34-core-impostor.js', '35-core-anim.js', '35b-core-anim-turn.js', '40-core-place.js']
+RIFT_JS = ['50-biome-rift-species.js', '52-biome-rift-library.js', '55-biome-rift-trees.js', '60-biome-rift-floor.js',
+           '65-biome-rift-dress.js', '70-biome-rift.js']
+
+
+def flora_bundle():
+    part = lambda rel: '/* ---- %s ---- */\n%s\n' % (rel, rd(rel))
+    boot = ('/* the bootstrap: THREE before the kit loads (its fragment 50 makes textures); the town binds its scene, ground and '
+            'climate later (90m-ks-flora.js) */\n'
+            'BIO.init({ THREE: THREE, scene: null, terrainH: function () { return 0; }, mask: function () { return 0; }, obstacles: [],\n'
+            '  ticks: function (fn) { var last = null; (window._frameHooks = window._frameHooks || []).push(function (now) { var t = now / 1000, '
+            'dt = last == null ? 0.016 : Math.min(0.1, t - last); last = t; fn(dt, t); }); },\n'
+            '  seed: 41630, origin: [[0, 0]], center: [0, 0], fields: {} });\n'
+            'var RIFT_LAKE = { hue: 0.32 };   /* the Lower Xanadu Lake: fresh, green-brown */\n')
+    return ('/* KS_FLORA: core/biome and the Rift kit in one closure (settlements/kirstabal/build.py). GENERATED: edit core/biome and biomes/rift. */\n'
+            'var KS_FLORA = (function (window) {\n' +
+            "Object.defineProperty(window, 'BIO', { get: function () { return BIO; } });   /* the closure's own BIO, on its own window */\n" +
+            ''.join(part('core/biome/' + f) for f in FLORA_CORE) + boot +
+            'var RIFT = (function () {\n' + ''.join(part('biomes/rift/src/' + f) for f in RIFT_JS) + '\nreturn RIFT;\n})();\n' +
+            'return { BIO: BIO, reseed: reseed, RIFT: RIFT };\n})(Object.create(window));\n')
+
+
 def write_gen():
     os.makedirs(GEN, exist_ok=True)
-    out = os.path.join(GEN, '69k-kcity-bundle.js')
-    new = kcity_bundle()
-    old = io.open(out, encoding='utf-8').read() if os.path.exists(out) else None
-    if old != new:
-        with io.open(out, 'w', encoding='utf-8', newline='\n') as fh:
-            fh.write(new)
+    for name, make in (('69k-kcity-bundle.js', kcity_bundle), ('69k2-ks-flora-bundle.js', flora_bundle)):
+        out = os.path.join(GEN, name)
+        new = make()
+        old = io.open(out, encoding='utf-8').read() if os.path.exists(out) else None
+        if old != new:
+            with io.open(out, 'w', encoding='utf-8', newline='\n') as fh:
+                fh.write(new)
 
 
-BSRC.note(*([SPACE] + ['core/city/' + f for f in CITY_JS] + ['core/hamlet/' + f for f in HAMLET_JS]))
+BSRC.note(*([SPACE] + ['core/city/' + f for f in CITY_JS] + ['core/hamlet/' + f for f in HAMLET_JS] +
+            ['core/biome/' + f for f in FLORA_CORE] + ['biomes/rift/src/' + f for f in RIFT_JS]))
 if not BSRC.LISTING:
     write_gen()
 

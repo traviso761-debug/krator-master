@@ -11,7 +11,7 @@ for(const f of FRAME_HOOKS_PRE)FRAME_HOOKS.push(f);
 // ---------------------------------------------------------------- the reach: the scarp and the cataract stand 15-25 km off
 camera.near=.8;camera.far=90000;camera.updateProjectionMatrix();
 // ---------------------------------------------------------------- the sky and its light (KratorSky, as Qiblai's and Erewhon's)
-const KS_SKY={hour:9.2,day:120,dens:1.1};
+const KS_SKY={hour:9.2,day:120,dens:1.6};   /* the Rift floor's air: about 1.98 atm, hot and wet (the Rift climate) */
 const ksSkyGroup=KratorSky.attach(scene,60000);ksSkyGroup.traverse(o=>{o.userData.probeSkip=true;});
 scene.fog.density=.000032;   /* the Rift floor's heat haze: the scarp's face clear at 15 km, the lip softened at 25 */
 const ksHemi=scene.children.find(o=>o.isHemisphereLight);
@@ -47,7 +47,7 @@ function ksPainter(B){const PX=4096/Math.max(B.x1-B.x0,B.z1-B.z0),W=Math.ceil((B
    bank=rv[0]<KS_GROUND.river.width/2+40&&y<rv[1]+6;if((y>-1.5&&y<3.2&&KS_GROUND.v(cx,cz)<90)||bank){P.mb.fillRect(P.gx(x),P.gz(z),step*PX+1,step*PX+1);}}};
  return P;}
 function ksPaintTown(P){const K=KS_PLAN;if(!K)return;const {ma,mb,t}=P;
- P.sandBands(4);
+ ksPaintClimate(P,10);P.sandBands(4);
  /* the town's made ground (the quarters inside the zone) a little dirt, the yards round every building dirt */
  ma.fillStyle='rgb(0,0,200)';P.poly(ma,K.zone);ma.fill();   /* packed earth: a hot town's ground, not a lawn */t.fillStyle='rgba(140,130,118,.25)';P.poly(t,K.zone);t.fill();
  ma.fillStyle='rgb(0,0,255)';for(const r of K.lots.concat(K.extra))if(r.kind!=='mole'&&r.kind!=='quay'&&r.kind!=='boat'&&r.kind!=='bridge'){P.rect(ma,r,r.w,r.d,1);ma.fill();}
@@ -59,17 +59,20 @@ function ksPaintTown(P){const K=KS_PLAN;if(!K)return;const {ma,mb,t}=P;
  /* the quays' apron and the bazaar square in flagstone */
  {const H=KS_GROUND.HARBOUR,c=[[H.u0-20,-2],[H.u1+20,-2],[H.u1+20,44],[H.u0-20,44]].map(([u,v])=>KS_GROUND.at(u,v));ma.fillStyle='rgb(0,255,0)';P.poly(ma,c);ma.fill();
   const B2=KS_TOWN.BAZAAR,s=[[B2[0]-32,B2[1]-34],[B2[0]+32,B2[1]-34],[B2[0]+32,B2[1]+30],[B2[0]-32,B2[1]+30]].map(([u,v])=>KS_GROUND.at(u,v));P.poly(ma,s);ma.fill();}}
-function ksPaintCountry(P){const K=KS_PLAN;P.sandBands(25);const {ma,mb}=P;
+/* the climate on the grass (the Rift floor: 89zk's ksWet): tawny savannah inland, a deeper green by the lake, Keb Riwa and the
+   scarp's foot, painted as cells on the tint */
+function ksPaintClimate(P,step){const B=P.B;for(let z=B.z0;z<B.z1;z+=step)for(let x=B.x0;x<B.x1;x+=step){const w=ksWet(x+step/2,z+step/2);
+ const k=Math.max(0,Math.min(1,(w-.36)/.4)),L=(a,b)=>Math.round(a+(b-a)*k);   /* .36 (inland) tawny, .76 and wetter a deep green */
+ P.t.fillStyle='rgba('+L(196,78)+','+L(164,100)+','+L(84,62)+','+(.8-.3*k).toFixed(3)+')';
+ P.t.fillRect(P.gx(x),P.gz(z),step*P.PX+1,step*P.PX+1);}}
+function ksPaintCountry(P){const K=KS_PLAN;ksPaintClimate(P,25);P.sandBands(25);const {ma,mb}=P;
  if(K){ma.fillStyle='rgba(0,0,120,1)';P.poly(ma,K.zone);ma.fill();for(const w of K.roads){ma.strokeStyle='rgb(0,0,255)';P.line(ma,w.pts,w.w);}}
  /* the ring's fields: strips round each farming village (and the ranch's paddocks), tilled, standing or fallow by their own hash,
     kept off the village's lanes and buildings, the water and the town */
- for(const V of KS_RINGV){if(!V.site||V.focus==='fishing')continue;const farm=V.focus==='farming',c=[V.site.x,V.site.z],R0=farm?160:200,R1=farm?900:1100,P0=[70,160];
-  for(let i=Math.floor((c[0]-R1)/P0[0]);i<=Math.ceil((c[0]+R1)/P0[0]);i++)for(let j=Math.floor((c[1]-R1)/P0[1]);j<=Math.ceil((c[1]+R1)/P0[1]);j++){
-   const x0=i*P0[0]+3,z0=j*P0[1]+3,cx=x0+P0[0]/2-3,cz=z0+P0[1]/2-3,r=Math.hypot(cx-c[0],cz-c[1]);if(r<R0||r>R1)continue;
-   if(KS_GROUND.h(cx,cz)<3||KS_GROUND.riverAt(cx,cz)[0]<130)continue;const u=KRAND.unit(KRAND.hash(41625,i,j));if(u<.18)continue;
-   if(farm&&u<.7){mb.fillStyle=u<.42?'rgb(0,255,0)':'rgb(0,150,0)';mb.fillRect(P.gx(x0),P.gz(z0),(P0[0]-6)*P.PX,(P0[1]-6)*P.PX);}
-   else{P.t.fillStyle=farm?'rgba(160,150,90,.45)':'rgba(120,128,90,.3)';P.t.fillRect(P.gx(x0),P.gz(z0),(P0[0]-6)*P.PX,(P0[1]-6)*P.PX);}}
-  ma.fillStyle='rgb(0,0,255)';for(const r of V.records||[]){P.rect(ma,r,r.w,r.d,2);ma.fill();}}}
+ for(const f of KS_FIELDS){const b=f.box,X=P.gx(b[0]),Z=P.gz(b[1]),W2=(b[2]-b[0])*P.PX,H2=(b[3]-b[1])*P.PX;   /* 89zk's records */
+  if(f.kind==='tilled'||f.kind==='crop'){mb.fillStyle=f.kind==='tilled'?'rgb(0,255,0)':'rgb(0,150,0)';mb.fillRect(X,Z,W2,H2);}
+  else{P.t.fillStyle=f.kind==='fallow'?'rgba(160,150,90,.45)':'rgba(120,128,90,.3)';P.t.fillRect(X,Z,W2,H2);}}
+ for(const V of KS_RINGV){ma.fillStyle='rgb(0,0,255)';for(const r of V.records||[]){P.rect(ma,r,r.w,r.d,2);ma.fill();}}}
 // ---------------------------------------------------------------- the ground's material: the sets in world metres, blended by the masks
 function ksGroundMat(P,key){const tex=new THREE.CanvasTexture(P.tint);tex.encoding=THREE.sRGBEncoding;tex.anisotropy=8;
  const mA=new THREE.CanvasTexture(P.a),mB=new THREE.CanvasTexture(P.b);mA.encoding=mB.encoding=THREE.LinearEncoding;
@@ -105,7 +108,7 @@ const KS_PT=ksPainter(KS_TB);ksPaintTown(KS_PT);
 const KS_PC=ksPainter(KS_CB);ksPaintCountry(KS_PC);
 groundM=ksGroundMesh(KS_TB,'terrain',ksGroundMat(KS_PT,'town'),null,0);
 /* Keb Riwa's last 4 km, its mouth and the bridge (the channel is 135 m: the country's 50 m cells would bridge it) */
-const KS_PR=ksPainter(KS_RB);KS_PR.sandBands(6);{const K=KS_PLAN;if(K)for(const w of K.roads){KS_PR.ma.strokeStyle='rgb(0,0,255)';KS_PR.line(KS_PR.ma,w.pts,w.w);}}
+const KS_PR=ksPainter(KS_RB);ksPaintClimate(KS_PR,10);KS_PR.sandBands(6);{const K=KS_PLAN;if(K)for(const w of K.roads){KS_PR.ma.strokeStyle='rgb(0,0,255)';KS_PR.line(KS_PR.ma,w.pts,w.w);}}
 const KS_RIVERG=ksGroundMesh(KS_RB,'terrain-river',ksGroundMat(KS_PR,'river'),null,0);
 const KS_COUNTRY=ksGroundMesh(KS_CB,'terrain-country',ksGroundMat(KS_PC,'country'),[KS_TB,KS_RB],8);   /* well under: its 50 m cells bridge the river's 5 m-deep channel */
 /* the far field, coloured by height and slope: the lake's bed, the Af floor, the forested scarp (Cfa, 1,100-1,500 mm), the bare

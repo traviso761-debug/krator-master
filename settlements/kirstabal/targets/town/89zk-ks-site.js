@@ -33,11 +33,27 @@ const KS_SPACE=KCITY.lib.KSPACE.create({cell:40});
 for(const p of KS_PLACE){const D=VERN.defs[p.key];if(D)KS_SPACE.insert(p,p.x,p.z,Math.hypot(D.fw||D.w,D.fd||D.d)/2+(p.kind==='ring'?2:8));}
 const KS_WAYS=KCITY.lib.KSPACE.create({cell:40});
 if(KS_PLAN)for(const w of KS_PLAN.ways.concat(KS_PLAN.roads))for(let i=1;i<w.pts.length;i++){const a=w.pts[i-1],b=w.pts[i];KS_WAYS.insert({a,b,w:w.w},(a[0]+b[0])/2,(a[1]+b[1])/2,Math.hypot(b[0]-a[0],b[1]-a[1])/2+w.w);}
+/* the ring's fields (records: the country's paint and the flora's mask read them): strips round each farming village and the
+   ranch's paddocks, tilled, standing or fallow by their own hash, kept off the water, Keb Riwa's banks and the villages */
+const KS_FIELDS=[];
+for(const V of KS_RINGV){if(!V.site||V.focus==='fishing')continue;const farm=V.focus==='farming',c=[V.site.x,V.site.z],R0=farm?160:200,R1=farm?900:1100,P0=[70,160];
+ for(let i=Math.floor((c[0]-R1)/P0[0]);i<=Math.ceil((c[0]+R1)/P0[0]);i++)for(let j=Math.floor((c[1]-R1)/P0[1]);j<=Math.ceil((c[1]+R1)/P0[1]);j++){
+  const x0=i*P0[0]+3,z0=j*P0[1]+3,cx=x0+P0[0]/2-3,cz=z0+P0[1]/2-3,r=Math.hypot(cx-c[0],cz-c[1]);if(r<R0||r>R1)continue;
+  if(KS_GROUND.h(cx,cz)<3||KS_GROUND.riverAt(cx,cz)[0]<130)continue;const u=KRAND.unit(KRAND.hash(41625,i,j));if(u<.18)continue;
+  KS_FIELDS.push({id:V.id+'.field.'+i+'.'+j,box:[x0,z0,x0+P0[0]-6,z0+P0[1]-6],kind:farm?(u<.42?'tilled':u<.7?'crop':'fallow'):'paddock'});}}
+const KS_FIELDX=KCITY.lib.KSPACE.create({cell:200});for(const f of KS_FIELDS)KS_FIELDX.insert(f,(f.box[0]+f.box[2])/2,(f.box[1]+f.box[3])/2,90);
+const ksFieldAt=(x,z)=>{for(const f of KS_FIELDX.query(x,z,1))if(x>f.box[0]&&x<f.box[2]&&z>f.box[1]&&z<f.box[3])return f;return null;};
+/* the Rift floor's wetness (the climate; the flora's `wet` field and the ground's tint read it): the apron's middling rain (.36)
+   made wetter by the lake's shore (to +.32 within 700 m), by Keb Riwa's banks (to +.38 within 420 m) and toward the scarp's foot
+   (to +.2 east of 2.2 km) */
+const ksSm=(a,b,t)=>{t=Math.max(0,Math.min(1,(t-a)/(b-a)));return t*t*(3-2*t);};
+const ksWet=(x,z)=>Math.max(0,Math.min(1,.36+.32*ksSm(700,40,KS_GROUND.v(x,z))+.38*ksSm(420,80,KS_GROUND.riverAt(x,z)[0])+.2*ksSm(2200,4200,x)));
 function ksBioMask(x,z){if(KS_GROUND.h(x,z)<1.2)return 0;
  for(const s of KS_WAYS.query(x,z,1))if(KCITY.lib.segDist([x,z],s.a,s.b)<s.w/2+2)return 0;
  for(const p of KS_SPACE.query(x,z,1)){const D=VERN.defs[p.key];if(Math.hypot(x-p.x,z-p.z)<Math.hypot(D.fw||D.w,D.fd||D.d)/2+(p.kind==='ring'?2:8))return 0;}   /* a clearing round every town building */
  const v=KS_GROUND.v(x,z),u=KS_GROUND.u(x,z);if(u>-760&&u<820&&v<60)return 0;   /* the beach, the quays and the quay street: open */
  if(u>-600&&u<700&&v>20&&v<780)return .05;   /* the town, its works quarter (the latex house, the tea factory, the fermentaries) and the monastery's ground */
+ const f=ksFieldAt(x,z);if(f)return f.kind==='tilled'||f.kind==='crop'?0:.2;   /* the fields: none in the tilled and standing, a few in the fallow and the paddocks */
  return 1;}
 if(typeof BIO!=='undefined'&&BIO.host){Object.assign(BIO.host,{mask:ksBioMask,origin:[[0,0],[-1200,1600],[1600,1400]],center:[200,400],
  fields:{wet:(x,z)=>Math.min(1,.7+Math.max(0,1-Math.abs(KS_GROUND.v(x,z))/250)*.25),salt:()=>0,upland:()=>0,flow:()=>0,mist:()=>0}});}

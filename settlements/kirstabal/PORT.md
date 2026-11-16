@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 34 (48%) | 0 (0%) | 0 (0%) | 20 (27%) | 17 (24%) |
+| KB | 54 (70%) | 0 (0%) | 0 (0%) | 23 (29%) | 1 (1%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -14,14 +14,15 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `src/39k-ks-model.js` | 17.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/40-ks-ground.js` | 6.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/41-ks-town.js` | 16.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 | records on core/city; its `box(` is core/city's oriented box (an OBB record), not a geometry call |
-| `src/42-ks-ring.js` | 3.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/41-ks-town.js` | 15.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 | records on core/city; its `box(` is core/city's oriented box (an OBB record), not a geometry call |
+| `src/42-ks-ring.js` | 5.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/89k0-ks-matlib.js` | 0.9 | [draw] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `targets/town/89z-rows.js` | 0.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `targets/town/89zk-ks-site.js` | 4.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `targets/town/90k-ks-world.js` | 15.0 | [web] | 13 | 4 | 0 | 0 | 2 | 2 | 4 | 0 | 0 | 0 | 0 |  |
+| `targets/town/89zk-ks-site.js` | 6.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `targets/town/90k-ks-world.js` | 15.2 | [web] | 13 | 4 | 0 | 0 | 2 | 2 | 4 | 0 | 0 | 0 | 0 |  |
 | `targets/town/90l-ks-build.js` | 4.5 | [web] | 6 | 0 | 0 | 0 | 2 | 2 | 0 | 0 | 0 | 0 | 0 |  |
-| `targets/town/91z-views.js` | 1.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `targets/town/90m-ks-flora.js` | 3.0 | [web] | 1 | 0 | 0 | 0 | 3 | 4 | 0 | 0 | 0 | 0 | 0 |  |
+| `targets/town/91z-views.js` | 2.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 
 ## Notes
 

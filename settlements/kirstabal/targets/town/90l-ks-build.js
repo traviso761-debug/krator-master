@@ -31,9 +31,9 @@ window._instances=KS_INST;
 const ksFr=new THREE.Frustum(),ksPm=new THREE.Matrix4();
 FRAME_HOOKS.push(()=>{camera.updateMatrixWorld();ksPm.multiplyMatrices(camera.projectionMatrix,camera.matrixWorldInverse);ksFr.setFromProjectionMatrix(ksPm);const P=camera.position;let shown=0;
  for(const e of KS_GROUPS){const d=P.distanceTo(e.sphere.center)-e.sphere.radius;const v=d<e.range&&ksFr.intersectsSphere(e.sphere);e.G.visible=v;if(v)shown++;}window._chunksShown=shown;});
-// the flora: the Vale of Xanadu biome Xanadu's page carries, over the records' mask (89zk), then baked; its LOD ticks with the chunks'
+// the page's own (vendored) biome: only the plants the kit's builders set in their gardens and courts (xaPlant), baked. The
+// country's flora is the Rift floor's (90m-ks-flora.js: the Rift kit on today's core/biome), not the Vale's (XANADU.build is not run)
 if(typeof BIO!=='undefined'&&BIO.host){BIO.setScene(scene);BIO.setSun([-.5,.76,.52]);
- try{window._biome=XANADU.build({R:2200,quality:.8,lakeHue:XANADU_LAKE.hue});}catch(e){reportErr('biome: '+(e&&e.stack||e));}
  try{window._bioBake=BIO.bake();}catch(e){reportErr('biome bake: '+e.message);}
  if(BIO.lodTick)FRAME_HOOKS.push(()=>BIO.lodTick(camera));}
 LABELS=new THREE.Group();LABELS.userData.probeSkip=true;scene.add(LABELS);

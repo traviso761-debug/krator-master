@@ -299,6 +299,10 @@ Following `README.md`, "CORE MODULES ARE NOT OPTIONAL":
   (the owner, 2026-11-16: "work on fishing villages"): boat sheds, fish racks and a quay at the shore, on the Xanadu row
   extended with fishing works (`KS_RING.fishingRow`). One lake hamlet, Jāl, is drawn on the town's own shore 3 km south-west.
   The boats wait for the lake craft.
+- **The Rift climate** (the owner, 2026-11-16: "implement rift climate"). The flora row above changed: the country grows the
+  Rift kit (`biomes/rift`) on today's core/biome, not the Vale's `biomes/xanadu`, zoned by one wetness field (jungle along
+  the lake and Keb Riwā and toward the scarp's foot, savannah inland) that also tints the grass, under the Rift's air
+  (`targets/town/90m-ks-flora.js`, `ksWet` in 89zk). The scarp's cloud forest and tea belt are still to come.
 
 ## 7. Questions for the owner
 
