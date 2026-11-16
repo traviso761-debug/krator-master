@@ -161,10 +161,15 @@ function build(o){const KR=K(),KM=M(),P=Object.assign({},PRESETS,o.opts||{}),G=o
     const gx=(at2(i+1,j,k)-at2(i-1,j,k))/(2*cell),gz=(at2(i,j+1,k)-at2(i,j-1,k))/(2*cellZ);
     FI[k]=clamp(B[k]/Math.max(Math.hypot(gx,gz),IS.gmin),-IS.zone,IS.zone);}
    C.FI=FI;C.IW=IW;C.islets=any;}}
- /* stamped islands (o.islands: sub-cell landforms {x, z, r, top: m over the level}): a circle whose outline wanders; a stack
-    (tall for its size) is cliff and rock, a low isle sand and rock; `shape` raises its dome */
- C.LF=(o.islands||[]).filter(L=>L&&isFinite(L.x)&&isFinite(L.z)&&L.r>0).map(L=>{const top=Math.max(1,L.top==null?10:L.top),stack=top/L.r>P.stamp.stack;
-  return{id:L.id,x:L.x,z:L.z,r:L.r,top,stack,cls:stack?[0,0,.35,.65,0]:[.65,0,.35,0,0]};});
+ /* stamped islands (o.islands: sub-cell landforms {id, x, z, r, rx, rz (the shore's half-axes east and south, r when
+    absent), top (m over the level), px, py (its scale-model pixel: the wobble's seed)}): the stamp of the region's own
+    44-world-landforms.js (Erewhon's branch, 98d15b9b9), so the isle is the Erewhon page's: an ellipse whose shore wobbles by
+    a few tenths of its radius, its phase from the record's place (KRAND); inside, the ground rises from the water to the
+    crest over the inner fifth; past the shore a bank falls under the water to the bed by 1.8 radii. A stack (tall for its
+    size) takes cliff and rock classes, a low isle sand and rock */
+ C.LF=(o.islands||[]).filter(L=>L&&isFinite(L.x)&&isFinite(L.z)&&L.r>0).map(L=>{const top=Math.max(1,L.top==null?10:L.top),rx=L.rx==null?L.r:L.rx,rz=L.rz==null?L.r:L.rz,stack=top/Math.max(rx,rz)>P.stamp.stack;
+  const s=KR.hash(0x1a4df0,Math.round((L.px==null?L.x/2000:L.px)*1000),Math.round((L.py==null?L.z/2000:L.py)*1000));
+  return{id:L.id,x:L.x,z:L.z,r:L.r,rx,rz,rmin:Math.min(rx,rz),top,water:L.water==null?null:L.water,stack,p1:(s&1023)/1023*6.2832,p2:((s>>>10)&1023)/1023*6.2832,reach:1.9*Math.max(rx,rz)*1.2,cls:stack?[0,0,.35,.65,0]:[.65,0,.35,0,0]};});
  /* BB: the bare land over the level (signed, m) on the same grid, wherever a warped read can land: `shape` carries the land
     with the coast (P.carry), reading it at the warped point */
  {const s=2,hx=Math.ceil(nx/s)+1,hz=Math.ceil(nz/s)+1,HA=new Float32Array(hx*hz),BB=new Float32Array(hx*hz),reach=P.band.land+C.warpMax,wide=Math.max(P.band.land,P.band.water)+C.warpMax+C.fineMax;
@@ -178,11 +183,12 @@ function build(o){const KR=K(),KM=M(),P=Object.assign({},PRESETS,o.opts||{}),G=o
 function at(C,x,z,minWave,out){out=out||{cls:new Float32Array(NC)};if(!out.cls)out.cls=new Float32Array(NC);
  const P=C.P,F0=bil(C,C.F,x,z);out.keep=0;out.wx=out.wz=out.bx=out.bz=0;out.F0=F0;out.lf=null;out.gc=0;
  const iw=C.IW?bil(C,C.IW,x,z):0,KR=root.KRAND,X=x+C.ox,Z=z+C.oz,y=.37;   /* the noise in the map's frame (frame: the region's offset) */
- // a stamped island near: its own field, r - d with a wandering outline
- let lf=null,lc=-1e9;
- if(C.LF.length)for(const L of C.LF){const d=Math.hypot(x-L.x,z-L.z);if(d>L.r*(1+P.stamp.edge)+P.band.water)continue;
-  const v=L.r-d+(KR.fbm(X/(L.r*.9),y+5,Z/(L.r*.9),2,C.seeds[4])-.5)*2*P.stamp.edge*L.r*smooth(0,L.r*.5,d);if(v>lc){lc=v;lf=L;}}
- if(!lf&&!(iw>0)&&(F0>P.band.land+C.warpMax+C.fineMax||F0<-(P.band.water+C.warpMax+C.fineMax))){out.c=out.c0=F0;out.band=0;return out;}
+ // a stamped island near (left out below a wavelength of twice its short half-axis, as the region's stamp): its field
+ let lf=null,lc=-1e9,lq=9;
+ if(C.LF.length)for(const L of C.LF){const dx=x-L.x,dz=z-L.z;if(Math.abs(dx)>L.reach||Math.abs(dz)>L.reach||(minWave||0)>=2*L.rmin)continue;
+  const q=stampQ(L,dx,dz),v=(1-q)*L.rmin;if(v>lc){lc=v;lf=L;lq=q;}}
+ out.lq=lq;
+ if(!lf&&!(iw>0)&&(F0>P.band.land+C.warpMax+C.fineMax||F0<-(P.band.water+C.warpMax+C.fineMax))){out.c=out.c0=out.cm=F0;out.band=0;return out;}
  const s=C.seeds,cls=out.cls;let wk=0,fk=0;
  for(let c=0;c<NC;c++){cls[c]=bil(C,C.K[c],x,z);wk+=cls[c]*P.warp.k[c];fk+=cls[c]*P.fine.k[c];}
  const kp=C.keep?clamp(C.keep(x,z),0,1):0;out.keep=kp;wk*=(1-kp)*(1-iw*(P.islet?P.islet.still:0));fk*=1-kp;
@@ -204,7 +210,8 @@ function at(C,x,z,minWave,out){out=out||{cls:new Float32Array(NC)};if(!out.cls)o
  // an islet: the land's own contour where it stands higher than the blurred field
  if(iw>0){const fi=bil(C,C.FI,x+wx,z+wz);if(fi>c)c+=(fi-c)*iw;}   /* read where the field is (the land is carried there too) */
  // a stamped island: its field where it stands higher, its classes near it
- if(lf&&lc>c){const t=smooth(0,300,lc-c);c=lc;out.lf=lf;out.lt=1-lc/lf.r;out.lw=t;for(let k=0;k<NC;k++)cls[k]+=(lf.cls[k]-cls[k])*t;}
+ out.cm=c;out.lf=lf;   /* cm: the coast's own field, which shapes the land; the stamp is raised over it in `shape` */
+ if(lf&&lc>c){const t=smooth(0,300,lc-c);c=lc;for(let k=0;k<NC;k++)cls[k]+=(lf.cls[k]-cls[k])*t;}
  /* c0: the field before the height term (its slope stays near 1: the mask is drawn on it); then high ground stays land */
  out.c0=c;if(C.HA){const H=C.HA,ha=bil(H,H.A,x,z);if(ha>P.high.h0)c+=(ha-P.high.h0)*P.high.k;}
  out.c=c;out.band=c<P.band.land&&c>-P.band.water?1:0;return out;}
@@ -227,9 +234,18 @@ function profile(k,c,hl,rise,plat){let y,w;
   default:y=-.15*smooth(0,5,d)-.85*smooth(0,350,d);w=1-smooth(350,900,d);}}               // marsh: mud flats
  PR[0]=y;PR[1]=w;return PR;}
 
+// ---------------------------------------------------------------- a stamped island (the region stamp's own maths)
+/* q: 1 on its wobbling shore, under 1 inside */
+function stampQ(L,dx,dz){const a=Math.atan2(dz,dx);return Math.hypot(dx/L.rx,dz/L.rz)/(1+.14*Math.sin(3*a+L.p1)+.07*Math.sin(5*a+L.p2));}
+/* the stamped height over the land's h: the crest over the inner fifth, the water on the shore, a bank to the bed by 1.8 */
+function stampH(L,q,h,lv){if(q>=1.8)return h;const w=L.water==null?lv:L.water,c=lv+L.top;   /* w: the record's own water (the region stamp's) */
+ const t=q<1?w+(c-w)*(1-smooth(.2,1,q)):w-(q-1)/.8*Math.max(3,w-h+2);return t>h?t:h;}
+
 const AT={cls:new Float32Array(NC)};
-function shape(C,x,z,h0,minWave){const A=at(C,x,z,minWave,AT);if(A.keep>=1)return h0;
- const P=C.P,lv=C.level,c=A.c;let h=h0;
+/* the coast's shaping, then a stamped island raised over it (also inside a kept place: a stamp is the map's own record) */
+function shape(C,x,z,h0,minWave){const A=at(C,x,z,minWave,AT),h=shapeCoast(C,A,x,z,h0);return A.lf?stampH(A.lf,A.lq,h,C.level):h;}
+function shapeCoast(C,A,x,z,h0){if(A.keep>=1)return h0;
+ const P=C.P,lv=C.level,c=A.cm;let h=h0;
  /* the raster's edge: outside it the coast does not apply, so the carry fades out over its last carry.edge m and every
     change over its last carry.rim m (iziz-cluster's lake: a 1.5 m step on its box's edge) */
  const eb=Math.min(x-C.x0,C.x0+C.nx*C.cell-x,z-C.z0,C.z0+C.nz*C.cellZ-z),er=smooth(0,P.carry.rim,eb);if(er<=0)return h0;
@@ -254,9 +270,6 @@ function shape(C,x,z,h0,minWave){const A=at(C,x,z,minWave,AT);if(A.keep>=1)retur
  else if(c>=0){const lam=1-smooth(P.band.lift,P.band.land,c),fl=lv+eps;if(h1<fl)h1+=(fl-h1)*lam;}
  else{const mu=1-smooth(P.band.water*.7,P.band.water,ad),ce=lv-eps;if(h1>ce)h1-=(h1-ce)*mu;}
  // a river's channel under the level near its mouth stays (an estuary), and a town's ground is its own
- /* a stamped island's dome: a stack's cliff to its crest within the outer fifth, a low isle's smooth rise; 0 at its water
-    line, so the sign rule holds; weighted where its field takes over from the coast's (lw), so nothing steps */
- if(A.lf&&A.lt<1){const L=A.lf,p=L.stack?smooth(1,.78,A.lt):smooth(1,.1,A.lt),hd=lv+L.top*p;if(hd>h1)h1+=(hd-h1)*A.lw;}
  if(C.CH&&h<lv+2){const ch=bil(C,C.CH,x,z);if(ch<450){const ex=(1-smooth(150,450,ch))*smooth(lv+2,lv-1,h);h1+=(h-h1)*ex;}}
  if(A.keep>0)h1+=(h0-h1)*A.keep;
  return er<1?h0+(h1-h0)*er:h1;}

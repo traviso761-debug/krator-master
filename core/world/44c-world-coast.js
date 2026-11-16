@@ -57,12 +57,13 @@ function guardAt(x,z){let k=0;for(let i=0;i<KEEPS.length;i++){const t=KEEPS[i],d
 const SAMPLE={bare:(x,z)=>W.Hbare(x,z,250),rock:rockAt,wet:wetAt,temp:(x,z)=>W.temp(x,z),chan:chanAt,keep:keepAt,guard:guardAt};
 /* the region's sub-cell landforms (region.json `landforms`, from the scale model's model/data/landforms.json): an island
    under a 2 km cell, stamped by the body whose water it stands in (its water_m within 15 m of the body's level, its point
-   in the body's mask) */
+   inside the body's raster; not its mask: the Pleasure Dome's isle stands 150 m off Erewhon's shore, where a 500 m texel
+   may read land). The record's ellipse (rx_m, rz_m) and pixel (the wobble's seed) go with it */
 function islandsOf(b){const G=b.mask,out=[];
  for(const L of (M.landforms||[])){if(L.kind!=='island'||!isFinite(L.x)||!isFinite(L.z))continue;
   if(L.water_m!=null&&Math.abs(L.water_m-b.level)>15)continue;
-  const i=Math.floor((L.x-G.x0)/G.cell),j=Math.floor((L.z-G.z0)/(G.cellZ==null?G.cell:G.cellZ));if(i<0||j<0||i>=G.nx||j>=G.nz||G.data[j*G.nx+i]<128)continue;
-  out.push({id:L.id,x:L.x,z:L.z,r:L.r_m,top:L.crest_m-b.level});}
+  if(L.x<G.x0||L.z<G.z0||L.x>G.x0+G.nx*G.cell||L.z>G.z0+G.nz*(G.cellZ==null?G.cell:G.cellZ))continue;
+  out.push({id:L.id,x:L.x,z:L.z,r:L.r_m,rx:L.rx_m,rz:L.rz_m,px:L.px,py:L.py,top:L.crest_m-b.level,water:L.water_m});}
  return out;}
 // ---------------------------------------------------------------- built at init
 const init0=W.init;
