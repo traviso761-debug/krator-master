@@ -349,7 +349,7 @@ The sheet's rule for the next membrane flyer: never decimate a membrane. The sam
 - **The wing is rubber.** 1% of edges stretch over 2.2 times in a flap and 3.8 in the fold. The longest edges stretch far more, along the seam where the sheet meets the arm. Weights are distance only.
 - **The fold is a first pass:** it folds, but not the way a bat stows a wing.
 - **Only the front of the wing is projected,** so the back shows the same picture.
-- **Nothing is wired:** a skinned path in `models_pack.py` and the runtime, the Godot import, and a gate (closure does not apply; stretch would be the measure).
+- **Nothing is wired:** a skinned path in `models_pack.py` and the runtime, the Godot import, and a gate (closure does not apply; stretch would be the measure). Wired for Tripo's rig on 2026-11-10 (section 14), but for Godot.
 
 
 ## 13. Hornet, millipede, elephant bug (2026-11-03)
@@ -382,3 +382,73 @@ own socket, not at one height, so the rings keep their whole shells.
 
 **The mantis strike** swung its raised forelegs up and back (the owner saw it): the swing's sign was wrong. It now drops them down and forward past the face, the tibia flicked open and
 snapped shut.
+
+**Tripo's rig, the same bat (2026-11-10).** The owner rigged a bat in Tripo's web app (the API wallet is separate and empty; the web app rigs a creature but animates only humanoids)
+and `rig/skin_tripo.py` gave it the same three clips as `skin_bat.py`, at the same angles (`skin-tripo.glb`, `skin-tripo.json`). It rests with its wings spread like ours: Tripo built it from
+the same reference views. Its skeleton is better than the hand-placed one: 82 bones, five finger chains a wing, legs, head, a fan for the tail membrane, about three weights a vertex. Read
+off the bind pose: the elbow is `bone_28` / `bone_13`, the fingers branch at the wrist (`bone_29` / `bone_14`), Tripo puts a spare bone mid-way down the upper arm, and the left shoulder
+chain comes named Spine_3 and Spine_4.
+
+| | Tripo's rig | Ours (`skin_bat.py`) |
+|---|---|---|
+| Membrane | holds as generated, nothing rebuilt | holds only once rebuilt as a sheet |
+| Body texture | clean | dark cracks where decimation crossed the atlas |
+| Triangles | 19,561 (over the kit's 14,000) | 13,366 |
+| 1% of edges stretch past: glide, flap, fold | 1.5, 2.8, 4.8 | 1.1, 2.2, 3.8 |
+
+Both folds are poor: the clip turns only each finger's first bone, so the membrane bunches rather than folds. Tripo's rig stretches more under the same angles, most likely because its
+weights fall off faster across the membrane. The way forward for membrane flyers: Tripo's mesh and skeleton, our clips (a fold that turns the whole finger chain), its triangles reduced,
+and a skinned path in `models_pack.py` and the runtime.
+
+
+## 14. The skinned path: Tripo's bat is the giant bat (2026-11-10)
+
+Built as section 12 proposed: the giant bat's model variant (`models/giant-bat.json`) is now Tripo's bat on Tripo's skeleton, one mesh, with our clips. The old rigid Meshy bat and its
+waiver row are gone. The procedural bat (variant 0) is unchanged.
+
+**The road.** `rig/skin_tripo.py` (Blender 4.5) takes the owner's download, reduces it to 13,000 triangles (decimation keeps the weights; Tripo's membrane, unlike Meshy's, survives
+it), writes the kit's clips and `skin-tripo.json` (each clip's edge stretch). `rig/pack_skinned.py` packs it: the same format 1 with nodes that rest turned (`r`, `s`), no rigid
+meshes, and `skin: {mesh, parts}`. The mesh is stored bound (the packer checks that the joint matrix times the inverse bind matrix is one matrix for every joint) with four bones
+a vertex (`j`, node indices; `w`, out of 255), so a bone's inverse is the inverse of its rest world matrix and nothing else needs storing. `parts` names the bones the runtime hands
+out (`head`, `body`, `legs`, `wingL`/`wingR`, `feet`). The packer turns the model to face +z (the head bones' vertices against the body's middle, to a quarter turn), makes names
+plain for three.js tracks (`tripo::Head_0` is `tripo_Head_0`), checks that what ends in L is on +x, drops tracks that never leave the rest pose, and measures the walk's speed from the
+planted feet. The runtime builds a `SkinnedMesh` on the node bones (inverses in the model's own frame, as the merged path's), bounded for the widest pose.
+
+**Clips.** The rig is upright with its wings spread in the plane of its body, so:
+
+- **The fold** turns each wing in its own plane: arm, forearm, each finger's first bone and the rest of its chain, and the membrane bones. Each side's eight angles were searched
+  for the least edge stretch with every finger tip held near the body's middle and above the feet (`FOLD`). 1% of edges stretch past 2.0 times (the first fold was 3.7).
+- **Tripo's two sides are rigged differently:** the right wing has two membrane chains on the spare upper-arm bone, the left one on the forearm and a thumb; the right leg has an extra
+  hip bone. The script maps each side by hand (`WING`, `LEGS`); the search found the left wing's membrane mapped wrong before it found a fold.
+- **Flight** pitches the body 84 degrees forward (the old bat flew at 83) and lifts the face 55; the wings beat about the body's long axis. Before this the clips beat the wings in their
+  own plane and the bat flew standing up.
+- **The walk** waddles on folded wings: each thigh turns about an axis square to its own leg, centred where the foot is under the hip (centred on the rest pose, a slanted leg's foot
+  sank through the stance), sweeps back at an even rate while down (duty 0.6) and swings forward lifted out to its side, landing only once it is forward. The body is raised 0.02 units
+  to stand on the perch's ground. The signs of the lift and knee are tried on the skinned mesh, since the claws reach past the last bone.
+
+**The gate** (`tests/test-models.js`) skins on the CPU (`tests/models-lib.js`: the skinned mesh is two parts on an identity node, `torso`, the faces wholly on the spine, and
+`skinLimbs`, the rest; `pose()` skins both). Closure watches the spine's faces, as a rigid model's trunk: the folded membrane shows its back faces wherever two layers cross,
+which is a fold, not a hole. The walk's slide is measured on the feet bones' vertices. Two new negatives: a hole cut in the bat's back is seen, and the wrong walk speed slides. The
+contract also checks that a skinned build has one skinned mesh on its skeleton. An animal's size for the big-animal limits is now its widest pose (`rest.extent`): the bat folds to
+4 m but spans 9, and the quetzalcoatlus's density waiver passes under it (removed). `rig/fit_anchors.js` puts what straps on (the saddle) on a vertex whose heaviest bone is on the spine,
+not the folded finger lying over the back.
+
+| | Tripo bat (skinned) | old Meshy bat (rigid) |
+|---|---|---|
+| Closure | 0.009 | 0.039 (waived) |
+| Walk slide | 1.0% of a stride | none measured |
+| Texture | 113 px/m (2048 colour, 512 normal, lossless) | 105 (waived), JPEG normals (waived) |
+| File | 2.36 MB, 13,000 triangles, 88 bones, 86 tracks | |
+| 1% of edges stretch past (perch, walk, glide, flap) | 2.0, 2.2, 1.8, 1.8 | |
+
+**Choices made without the owner.** The scale puts the spread wings 9 m across, the entry's `size.span`: on Tripo's proportions the bat then stands 5.6 m tall perched (the old one 4.3).
+The saddle rides the root bone (the hips), so it does not roll with the chest in the walk.
+
+**Not solved.**
+
+- **Stretch is not gated.** The membrane is still rubber at the fold's creases (p99 2.0, worst edges 7 times); the gate's closure does not see it. A stretch limit would need the bind
+  mesh in the file, which it has, and a limit nobody has chosen.
+- **The normal map is 512 px** to stay under 2.5 MB; Tripo's is 2048 and noisy, and a lossless map of it at 1024 is 2.3 MB on its own.
+- **No Godot import** for a skinned model yet. `GODOT-PLAN.md`'s fauna motion bake reads parts; a skinned model needs the bone tracks and the weights.
+- **The other pages that bundle the fauna runtime** were not rebuilt: `TODO.md`, "Ride along with the next all-builds rebuild".
+- **A membrane flyer next** (the quetzalcoatlus, the archaeopteryx) can take this road if Tripo rigs it; `skin_tripo.py`'s bone maps are this rig's alone.
