@@ -1,0 +1,28 @@
+{
+ "format": "krator-landforms",
+ "version": 1,
+ "landforms": [
+  {
+   "id": "lf_pleasure_dome_isle",
+   "kind": "island",
+   "px": 805.035,
+   "py": 1515.6935,
+   "r_m": 80.0,
+   "rx_m": 110.0,
+   "rz_m": 55.0,
+   "crest_m": -506.0,
+   "water_m": -520.0,
+   "note": "The Pleasure Dome of the Bay's island in Erehwon's bay: the Erewhon page's island (settlements/xanadu, target erewhon, ISLAND_C at 70,-613 m from the page's centre, which stands on Erehwon's pin 805,1516 unturned), about 220 x 110 m and 14 m over the lake, some 150 m off the world's shore (the owner, 2026-11-11: keep the page, move the record; it stays off the quays, about 0.6 km). No shoal: its rounded cell is the shore bench. Stamped at 1:1 by openworld/xanadu-oidong-highrift/src/44-world-landforms.js. edit_517 (first run as edit_512 on claude/openworld-sites, 2026-11-11)."
+  },
+  {
+   "id": "lf_west_stack",
+   "kind": "island",
+   "px": 784.4,
+   "py": 1491.6,
+   "r_m": 160.0,
+   "crest_m": -478.0,
+   "water_m": -520.0,
+   "note": "A basalt stack off the lake's west shore, 42 m over the water. Sub-cell; its cell's bed held as a shoal. edit_517, 2026-11-11."
+  }
+ ]
+}
