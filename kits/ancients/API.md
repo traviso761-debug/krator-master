@@ -435,7 +435,7 @@ ceilings are exceeded — see `KNOWN_ISSUES.md`.
 | `_api.typeStats()` | per `type/decay` key: `{tris, inst, meshes, cls, limit, over}` |
 | `_api.regOccupancy()` | per registered volume: how many sample points fall inside |
 | `_api.nanSweep()` | meshes with a non-finite vertex, instances placed at NaN |
-| `_api.setView(cx,cy,cz,tx,ty,tz)`, `_api.views()` | camera, preset names |
+| `_api.setView(cx,cy,cz,tx,ty,tz)` or `_api.setView('Name')`, `_api.views` | camera (a preset by name; an unknown name throws, listing the names), the preset names (a list, not a function, since 2026-11-15) |
 | `_api.BUDGET`, `_api.REG` | the budget table and the raw registry |
 
 ## Animation
