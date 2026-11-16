@@ -9,5 +9,8 @@ const FAMILIES=[
  {name:'Valley works',keys:['cy_granary','cy_threshing','cy_mill','cy_pen','cy_court','cy_smithy','cy_kiln','cy_dyehouse','cy_press','cy_loom_house']},
  {name:'Shrines and stones',keys:['cy_runner_shrine',{key:'cy_boundary_stone',o:{}},{key:'cy_milestone',o:{}},
   {key:'cy_milestone',o:{text:'Hām-Hau. Kām-Hau. Tōng-Hau. Sī-Hau.'}},{key:'cy_milestone',o:{text:'Tsēk-Gèl!'}}]},
- {name:'The Valley village (KHAMLET.platform)',keys:['cy_village_valley']}
+ {name:'The Valley village (KHAMLET.platform)',keys:['cy_village_valley']},
+ {name:'Peak houses and stores (Kam-Hau)',keys:['cy_stone_hut','cy_stone_house','cy_stone_store','cy_cliff_house',{key:'cy_round_room',o:{y:-1.76}},'cy_fold']},
+ {name:'The mine (emerald and turquoise)',keys:['cy_adit','cy_ore_bench','cy_sorting_shed','cy_tappers_camp','cy_wash']},
+ {name:'The Peak alcove village (KHAMLET.platform)',keys:['cy_village_peak']}
 ];

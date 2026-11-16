@@ -9,7 +9,8 @@
 //   cyTell(n, rx, rz, world)   the tell's outline: an n-gon, its radius varied by core/rand per corner
 //   cyVillage(spec)      KHAMLET.platform on the row with this kit's boxes -> its out (records, ladders, plaza, cells, error?)
 //   cy_village_valley    the sample village on the sheet: a tell of 48 x 40 m, 2.4 m high, sixty people
-const CY_DIMS={cy_shrine_room:{w:5,d:5,h:3.2},cy_hall:{w:5,d:5,h:3.4},cy_ladder:{w:.7,d:.4,h:4}};
+/* a sunk room's box is its walls' height (its record's floor is the yard less that height plus 0.6: the roof stands 0.84 m over the yard) */
+const CY_DIMS={cy_shrine_room:{w:5,d:5,h:3.2},cy_hall:{w:5,d:5,h:3.4},cy_round_room:{w:5.2,d:5.2,h:2.36},cy_ladder:{w:.7,d:.4,h:4}};
 function cyDims(k){if(CY_DIMS[k])return CY_DIMS[k];const D=DEFS[k];return D?{w:D.w,d:D.d,h:D.h}:null;}
 function cyTell(n,rx,rz,world){const pts=[];for(let i=0;i<n;i++){const a=i/n*TAU,f=1+(KRAND.hash(world>>>0,0x7e11,i)/4294967296-.5)*.08;pts.push([Math.cos(a)*rx*f,Math.sin(a)*rz*f]);}return pts;}
 function cyVillage(spec){return KHAMLET.platform(Object.assign({culture:CY_ROW_VALLEY,focus:'farming',dims:cyDims,ground:{ok:()=>true,h:()=>0}},spec));}
@@ -19,14 +20,9 @@ defBuilding({key:'cy_village_valley',name:'Valley village on its tell (KHAMLET.p
  build(o){o=o||{};const top=o.top==null?2.4:o.top,world=o.world==null?7:o.world,pts=cyTell(24,24,20,world);
   const V=cyVillage({id:o.id||'valley-1',world,popMax:o.pop==null?60:o.pop,link:{x:0,z:120},plinth:{pts,top,foot:0}});
   if(V.error){reportErr('cy_village_valley: '+V.error);return;}
-  /* the tell: an earth skirt round the outline, and its top with the sunk rooms cut out of it */
-  for(let i=0;i<pts.length;i++){const a=pts[i],b=pts[(i+1)%pts.length];plane4('render',[a[0],0,a[1]],[b[0],0,b[1]],[a[0],top,a[1]],.3,P('mudD'));}
-  const sh=new THREE.Shape(pts.map(p=>new THREE.Vector2(p[0],-p[1])));
+  /* the tell: an earth skirt round the outline, and its top cut round the sunk rooms (cyMound); the top is the yard's walk floor */
   const sunk=V.records.filter(r=>r.sunk);
-  for(const r of sunk){const c=Math.cos(r.ry),s=Math.sin(r.ry),hw=r.w/2,hd=r.d/2,cor=[[-hw,-hd],[hw,-hd],[hw,hd],[-hw,hd]].map(q=>[r.x+q[0]*c+q[1]*s,r.z-q[0]*s+q[1]*c]);
-   sh.holes.push(new THREE.Path(cor.map(p=>new THREE.Vector2(p[0],-p[1]))));}
-  const g=new THREE.ShapeGeometry(sh);g.rotateX(-PI/2);emit('floor',g,new THREE.Matrix4().makeTranslation(0,top-.01,0),P('mudL'));
-  svFloor(pts,top);
+  cyMound(pts,0,top,{holes:sunk.map(r=>({x:r.x,z:r.z,w:r.w,d:r.d,ry:r.ry})),walk:true});
   /* the rooms: which cells carry a room above, so the one below keeps its roof covered and the one above its floor open */
   const rooms=V.records.filter(r=>r.storey!=null),byCell={};
   for(const r of rooms)byCell[r.cell.join(':')+':'+r.storey]=r;

@@ -35,7 +35,7 @@ The page loads its texture pack beside it: serve `dist/` over HTTP, as `verify.p
   may overlap), `cyRing`, `cyRoof` (beams, reed mat, the earth slab with its hatch), `cyLadder`, the **ear door**
   (`cyEarHoles`, `cyEarDoor`: a doorway whose head steps up in two notches), the hearth, oven, platforms and bins, and
   `cyCarve` (the contour line raised on a face, one row or a word a row).
-- **`src/34-cy-rows.js`** (`[G data]`): the Valley's row for `core/hamlet` (`CY_ROW_VALLEY`), a DRAFT kept in the kit until C7
+- **`src/34-cy-rows.js`** (`[G data]`): the Valley's and the Peak's rows for `core/hamlet` (`CY_ROW_VALLEY`, `CY_ROW_PEAK`), a DRAFT kept in the kit until C7
   moves it to `core/hamlet/22-hamlet-coyote.js`: the houses, the works, and the platform fields (the cell, the store, the
   shrine room and council room as kivas sunk in the yard, two storeys). `tests/test-rows.js` lays it.
 - **`src/50-cy-valley.js`**: the Valley's Catalhoyuk rooms on one builder (`cyMainRoom`, `cyHouse`): `cy_room` (entered through
@@ -48,6 +48,11 @@ The page loads its texture pack beside it: serve `dist/` over HTTP, as `verify.p
 - **`src/56-cy-village.js`**: `cy_village_valley`, Catalhoyuk on its tell: `KHAMLET.platform` (core/hamlet) lays the rooms on the
   tell's grid, the sunk rooms in the yard, the ladders and the works at the foot; the fragment draws its records (the tell as
   an earth skirt and a top cut round the sunk rooms) and decides nothing about where a room goes.
+- **`src/54-cy-peak.js`**: the Peak (Kam-Hau): dry-stone `cy_stone_hut` and `cy_stone_house` (the stone ear door: a slab lintel
+  with two ear stones), the corbelled `cy_stone_store`, the alcove room `cy_cliff_house`, the sunk `cy_round_room` (cribbed
+  roof, bench ring, fire pit and deflector), the stone `cy_fold`; the mine: `cy_adit`, `cy_ore_bench` (emerald schist),
+  `cy_sorting_shed`, `cy_tappers_camp` (turquoise), `cy_wash`; and `cy_village_peak`, thirty people on a ledge under an
+  overhang, laid by `KHAMLET.platform`'s alcove mode on the draft Peak row, in a stand-in cliff of tuff (`cyMound`).
 - **`src/60-cy-stones.js`**: the milestone (`cy_milestone`), the boundary stone (`cy_boundary_stone`, a name a face) and the
   runner bird's shrine at a road's foot (`cy_runner_shrine`).
 - **`src/99-host-tz-cy.js`**: the probe's fields for `verify.py` (carvings, doors, the walk-reach audit, the fingerprint).
@@ -58,4 +63,5 @@ The page loads its texture pack beside it: serve `dist/` over HTTP, as `verify.p
 
 **C1** (the scaffold, the toolkit, the contour script, two Valley houses and the milestone) and **C2** (the Valley: four houses,
 the village's cells and sunk rooms, ten works, the shrine and the boundary stone, the village on its tell on `core/hamlet`):
-built and verified (`verify.py --assert`). C3 onward: `PLAN.md` section 9.
+and **C3** (the Peak: huts, store, the alcove room and round room, the fold, the mine's five works, the alcove village):
+built and verified (`verify.py --assert`). C4 onward: `PLAN.md` section 9.

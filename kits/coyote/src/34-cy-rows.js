@@ -20,5 +20,24 @@ const CY_ROW_VALLEY={
  platform:{room:'cy_cell', store:'cy_cell_store', kiva:'cy_shrine_room', greatKiva:'cy_hall', court:'cy_court', pen:'cy_pen',
   ladder:'cy_ladder', roomsPer:2, storeys:2, kivas:'plaza'}
 };
-/* the rows by tribe (Peak, Tiers and the herders' camp row come in C3 to C5) */
-const CY_ROWS={valley:CY_ROW_VALLEY};
+/* The Peak tribe (Kam-Hau, the miners and gem tappers): dry-stone rooms in the fog wall's alcoves (Mesa Verde's shape: the owner,
+   2026-11-16), the platform village's alcove mode; its kivas the round room (both in the alcove's yard); the mine works at the foot
+   or on the node a host passes (spec.resource: the emerald and turquoise nodes are owed by kits/resources). Its lone houses
+   (KHAMLET.village, a hamlet on open ground) are the stone hut and the stone house. */
+const CY_ROW_PEAK={
+ kit:'coyote', household:5, workShare:.5, slopeMax:.45,
+ religious:'cy_runner_shrine', civic:'cy_round_room', general:'cy_sorting_shed', food:'cy_stone_store', warehouse:'cy_stone_store',
+ services:{religious:1, civic:2, general:3, food:2, warehouse:2},
+ houses:{poor:[['cy_stone_hut',1,3]], middling:[['cy_stone_house',1,2]], head:[['cy_stone_house',1,1]], middlingShare:.3},
+ works:{
+  mine:[{key:'cy_adit',jobs:12,share:.4},{key:'cy_ore_bench',jobs:10,share:.3},{key:'cy_sorting_shed',jobs:5,share:.15},{key:'cy_wash',jobs:4,share:.15}],
+  quarry:[{key:'cy_ore_bench',jobs:8,share:.7},{key:'cy_sorting_shed',jobs:3,share:.3}],
+  ranch:[{key:'cy_fold',jobs:4,share:1}]
+ },
+ focusJobs:{mine:30, quarry:16, ranch:10}, reach:{mine:150, quarry:150, ranch:120},
+ pending:{},
+ platform:{room:'cy_cliff_house', store:'cy_cliff_house', kiva:'cy_round_room', greatKiva:'cy_round_room', court:'cy_court', pen:'cy_fold',
+  ladder:'cy_ladder', roomsPer:2, storeys:3, kivas:'plaza'}
+};
+/* the rows by tribe (the Tiers' and the herders' camp row come in C4 and C5) */
+const CY_ROWS={valley:CY_ROW_VALLEY, peak:CY_ROW_PEAK};

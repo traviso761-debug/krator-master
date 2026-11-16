@@ -21,3 +21,9 @@
 - [ ] **`check_assembly` baselines `MISSING KCITY.stance`** on the page (`tools/check_assembly_baseline.json`, as riftrim's Fowlers
   and Icecut stations do): `core/city/33-city-strategies.js` names `KCITY.stance` (in `core/city/15-city-ground.js`) only on a
   city tune's high-stance path, which `core/hamlet` never takes; the page reads 33 alone for `KCITY.prim`.
+- [ ] **No emerald or turquoise nodes in `kits/resources`** (the Outlands plan's kit addition, owed there): the Peak alcove
+  village passes its node by hand (`resource: {kind: 'emerald', ...}`); a host on the map takes the nearest node once they exist.
+- [ ] **Round walls are not walk blocks**: `cy_round_room`'s ring wall is a `sector()` and the corbelled store a `lathe()`, which
+  the engine's box reader does not read; a walker could pass through them. Their floors and roofs are walk floors.
+- [ ] **The Peak village's cliff is a stand-in** (`cyMound` ledge, back rock, overhang, ends, in `rock.tuff`): a host on the
+  map draws its own cliff (`KCARVE`) and passes the alcove's line, depth and heights.

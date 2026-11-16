@@ -27,7 +27,7 @@
 //   cyTarget(x,y,z,name)         a point the walk must reach from the front (verify.py walk-reach): the room's floor, the roof
 function cyRing(x0,z0,x1,z1,y0,h,o){o=o||{};const t=o.t==null?CY.WALL:o.t,e=t/2,H=o.holes||{},skip=o.skip||'';
  const side=(k,ax,az,bx,bz)=>{if(skip.indexOf(k)>=0)return;const hs=(H[k]||[]).map(q=>Object.assign({},q,{at:q.at+e}));
-  cyWall(ax,az,bx,bz,y0,h,Object.assign({},o,{holes:hs,inner:-1,trim:t}));};
+  cyWall(ax,az,bx,bz,y0,h,Object.assign({},o,{holes:hs,inner:o.plaster===false?0:-1,trim:t}));};
  side('s',x0-e,z1,x1+e,z1);side('e',x1,z1+e,x1,z0-e);side('n',x1+e,z0,x0-e,z0);side('w',x0,z0-e,x0,z1+e);}
 function cyTarget(x,y,z,name){if(PLACE_DRY||!CURREC)return;const p=new THREE.Vector3(x,y,z).applyMatrix4(CM);(CURREC.targets||(CURREC.targets=[])).push({x:p.x,y:p.y,z:p.z,name});}
 function cyWall(x0,z0,x1,z1,y0,h,o){o=o||{};const t=o.t==null?CY.WALL:o.t,soc=o.socle==null?CY.SOCLE:o.socle,mk=o.mk||'render',col=o.col==null?P('mud'):o.col;
@@ -63,7 +63,9 @@ function cyLadder(x,z,y0,y1,yaw,o){o=o||{};return svStair(x,z,y0,y1,yaw,{style:'
 function cyEarHoles(at,w,h,o){o=o||{};const ew=o.ear==null?Math.min(.26,w*.24):o.ear,eh=o.earH==null?.3:o.earH;
  return [{at,w,y:0,h},{at:at-w/2+ew/2,w:ew,y:h,h:eh},{at:at+w/2-ew/2,w:ew,y:h,h:eh}];}
 function cyEarDoor(x,z,yaw,w,h,o){o=o||{};const eh=o.earH==null?.3:o.earH,t=o.t==null?CY.WALL:o.t;
- W(x,0,z,yaw,()=>{box('timber',0,h+eh,0,w+.5,.14,t+.06,P('timber'));
+ /* o.stone: a dry-stone door (the Peak's): a slab lintel and two ear stones standing on its ends over the notches */
+ W(x,0,z,yaw,()=>{if(o.stone){box('slab',0,h+eh,0,w+.6,.22,t+.06,P('stone'));for(const s of [-1,1])box('slab',s*(w/2-.08),h+eh+.22,0,.16,.32,t*.6,P('stone'));}
+  else box('timber',0,h+eh,0,w+.5,.14,t+.06,P('timber'));
   box('stone',0,-.02,0,w+.12,.06,t+.1,P('stone'));
   if(o.leaf!==false)svLeaf(0,.04,t*.15,0,w-.04,h-.06,{mk:'wood',col:P('wood'),style:'plank',name:o.name||null});
   door(0,0,t/2,0,w,h);});}
@@ -117,3 +119,26 @@ function cyLoom(x,z,yaw,o){o=o||{};const w=o.w==null?1.4:o.w,h=o.h==null?2.0:o.h
   pole('timber',[-w/2-.05,h-.1,-.12],[w/2+.05,h-.1,-.12],.035,P('timber'),6);
   box('plain',0,h*.55,-.09,w-.15,h*.38,.01,o.col==null?new THREE.Color(.62,.42,.12):o.col);
   for(let i=0;i<9;i++){const xx=-w/2+.12+i*(w-.24)/8;box('plain',xx,.25,-.07,.006,h*.3,.006,P('bone'));sph('render',xx,.22,-.07,.05,P('mudD'),1,6);}});}
+// ---------------------------------------------------------------- ground made by hand (C3): a tell, a ledge, an overhang
+//   cyMound(pts,y0,y1,o)         a solid of the outline pts [[x,z]...] (concave allowed) from y0 to y1: its sides (o.mkSide,
+//                                o.colSide) and its top (o.mkTop, o.colTop), the top cut round o.holes (rects {x,z,w,d,ry}: the
+//                                rooms sunk into it, which a solid top would slice through); o.bottom draws the underside too
+//                                (an overhang seen from below). The top is a core/walk floor when o.walk (a ledge, a tell)
+function cyMound(pts,y0,y1,o){o=o||{};let ar=0;for(let i=0;i<pts.length;i++){const p=pts[i],q=pts[(i+1)%pts.length];ar+=p[0]*q[1]-q[0]*p[1];}
+ if(ar<0)pts=pts.slice().reverse();   /* the sides' normals face out for either winding */
+ const n=pts.length,pos=[],nor=[],idx=[];
+ for(let i=0;i<n;i++){const a=pts[i],b=pts[(i+1)%n],dx=b[0]-a[0],dz=b[1]-a[1],L=Math.hypot(dx,dz)||1,nx=dz/L,nz=-dx/L,s=pos.length/3;
+  pos.push(a[0],y0,a[1],b[0],y0,b[1],b[0],y1,b[1],a[0],y1,a[1]);for(let k=0;k<4;k++)nor.push(nx,0,nz);idx.push(s,s+2,s+1,s,s+3,s+2);}
+ emit(o.mkSide||'render',fixWind(mkGeo(pos,nor,null,idx)),null,o.colSide==null?P('mudD'):o.colSide);
+ const sh=new THREE.Shape(pts.map(p=>new THREE.Vector2(p[0],-p[1])));
+ /* a cut-out crossing the outline (a room sunk at a ledge's lip) breaks the triangulation: each corner outside is drawn back
+    toward the cut-out's middle until it lies 5 cm inside, so the top keeps a lip over the room's outer edge */
+ const inside=(x,z)=>{let c=false;for(let i=0,j=pts.length-1;i<pts.length;j=i++){const a=pts[i],b=pts[j];if((a[1]>z)!==(b[1]>z)&&x<(b[0]-a[0])*(z-a[1])/(b[1]-a[1])+a[0])c=!c;}return c;};
+ for(const r of o.holes||[]){const c=Math.cos(r.ry||0),s=Math.sin(r.ry||0),hw=r.w/2,hd=r.d/2;
+  const cor=[[-hw,-hd],[hw,-hd],[hw,hd],[-hw,hd]].map(q=>{let f=1,p=null;for(let k=0;k<24;k++){const g=f*(1-.05/Math.max(hw,hd));
+   p=[r.x+q[0]*g*c+q[1]*g*s,r.z-q[0]*g*s+q[1]*g*c];if(inside(p[0],p[1]))break;f*=.9;}return p;});
+  if(cor.every(p=>inside(p[0],p[1])))sh.holes.push(new THREE.Path(cor.map(p=>new THREE.Vector2(p[0],-p[1]))));}
+ const g=new THREE.ShapeGeometry(sh);g.rotateX(-PI/2);emit(o.mkTop||'floor',g,new THREE.Matrix4().makeTranslation(0,y1-.01,0),o.colTop==null?P('mudL'):o.colTop);
+ if(o.bottom){const g2=new THREE.ShapeGeometry(new THREE.Shape(pts.map(p=>new THREE.Vector2(p[0],p[1]))));g2.rotateX(PI/2);   /* turned down: (x, z) maps straight to (x, z) */
+  emit(o.mkSide||'render',g2,new THREE.Matrix4().makeTranslation(0,y0,0),o.colSide==null?P('mudD'):o.colSide);}
+ if(o.walk)svFloor(pts,y1);}

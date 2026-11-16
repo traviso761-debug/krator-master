@@ -133,6 +133,58 @@
    "roughLift": 0.15,
    "specular": 0.2
   },
+  "rock": {
+   "lib": "rock.tuff",
+   "scale": [
+    4.0,
+    4.0
+   ],
+   "tint": {
+    "keep": 0.4,
+    "mean": 0.62
+   },
+   "roughLift": 0.1,
+   "specular": 0.15
+  },
+  "schist": {
+   "lib": "rock.schist.emerald",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 0.7,
+    "mean": 0.55
+   },
+   "roughLift": 0.1,
+   "specular": 0.25
+  },
+  "gravel": {
+   "lib": "ground.gravel019",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 0.6,
+    "mean": 0.58
+   },
+   "roughLift": 0.1,
+   "specular": 0.12
+  },
+  "turq": {
+   "lib": "rock.turquoise.vein",
+   "scale": [
+    0.8,
+    0.8
+   ],
+   "tint": {
+    "keep": 0.85,
+    "mean": 0.6
+   },
+   "roughLift": 0.05,
+   "specular": 0.3
+  },
   "hide": {
    "lib": "hide.leather008",
    "scale": [

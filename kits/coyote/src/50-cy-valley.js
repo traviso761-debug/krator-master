@@ -25,7 +25,7 @@ function cyMainRoom(ox,o){o=o||{};const IW=o.IW==null?CY_ROOM.IW:o.IW,ID=o.ID==n
  const x0=ox-IW/2-t/2,x1=ox+IW/2+t/2,z0=-ID/2-t/2,z1=ID/2+t/2;
  const holes=Object.assign({},o.holes||{});
  if(o.door)holes.s=(holes.s||[]).concat(cyEarHoles(o.door.x-x0,.85,CY.DOOR_H));
- cyRing(x0,z0,x1,z1,0,Hh,{holes,skip:o.skip,socle:o.socle});
+ cyRing(x0,z0,x1,z1,0,Hh,{holes,skip:o.skip,socle:o.socle,mk:o.mk,plaster:o.plaster});
  /* the ladder from the floor up through the hatch, climbing north from beside the hearth; the hatch over its top */
  const zf=ID/2-.5,run=(Hh+.24-.06)/CY.LEAN,zt=zf-run,hole={x0:ox+.55,x1:ox+1.45,z0:zt-.08,z1:zt+1.0};
  const fl=o.floorHole?{x0:ox+.55,x1:ox+1.45,z0:zt-.08,z1:zt+1.0}:null;
@@ -42,7 +42,7 @@ function cyMainRoom(ox,o){o=o||{};const IW=o.IW==null?CY_ROOM.IW:o.IW,ID=o.ID==n
  cyLadder(ox+1.0,zf,.06,Hh+.24,PI);
  const top=cyRoof(x0-t/2,z0-t/2,x1+t/2,z1+t/2,Hh,{hole,flush:o.flush});
  if(!o.covered){cyHatchFrame(hole,top,'n');smokeAt(ox+1.0,top+.3,zt+.4,{r:.3,kind:'fire'});}
- if(o.door)cyEarDoor(o.door.x,z1,0,.85,CY.DOOR_H,{name:o.store?'the store door':'the room door'});
+ if(o.door)cyEarDoor(o.door.x,z1,0,.85,CY.DOOR_H,{name:o.store?'the store door':'the room door',stone:o.mk==='stone'});
  cyTarget(ox-.6,.06,-.2,o.store?'store floor':'room floor');if(!o.covered)cyTarget(ox-IW/2+.6,top,-ID/2+.4,'roof');
  return {top,x0,x1,z0,z1};}
 /* the outside ladder of a lone house: against the south face at x, from the ground to the roof's top */

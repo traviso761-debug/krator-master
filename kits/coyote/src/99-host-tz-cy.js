@@ -27,7 +27,7 @@
    return {doors:L.length,locked:KDOOR.list.length-L.length,bad};},
   reachAudit(){const L=KDOOR.list.filter(D=>!D.locked);for(const D of L)KDOOR.open(D,{by:'probe'});settle(40);const out=[];let n=0;
    for(const r of REG){if(r.parent||!r.targets||!r.targets.length)continue;n++;const s=front(r);if(!s){out.push({key:r.key,why:'no front'});continue;}
-    const b=r.bbox,box=[b.mn[0]-5,b.mx[0]+5,b.mn[2]-5,b.mx[2]+5],R=KWALK.reach([s],{ground:terrainH,box,cell:.2}),got=new Set(R.reached);
+    const b=r.bbox,box=[Math.min(b.mn[0]-5,s[0]-2),Math.max(b.mx[0]+5,s[0]+2),Math.min(b.mn[2]-5,s[2]-2),Math.max(b.mx[2]+5,s[2]+2)],R=   /* the flood's box holds its own start */KWALK.reach([s],{ground:terrainH,box,cell:.2}),got=new Set(R.reached);
     const miss=r.targets.filter(t=>!KWALK.floorsAt(t.x,t.z).some(f=>Math.abs(f[0]-t.y)<.35&&got.has(f[1])));
     if(miss.length)out.push({key:r.key,missed:miss.map(t=>t.name),reached:R.reached.length,unreached:R.unreached.length,capped:R.capped});}
    for(const D of L)KDOOR.close(D,{by:'probe'});settle(40);
