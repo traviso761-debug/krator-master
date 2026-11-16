@@ -388,13 +388,21 @@ records drawn from the scrap Xanadu set and the Qiblai kit (`XAK`, `kit_bundle.b
 - [ ] **The walkers are the kit's cylinder figures**, unanimated, with no walk cycle and no activity poses. An indoor
       resident is hidden, not drawn in the opened rooms. The arcology's storeys are a node at each unit's middle, not its
       rooms, and its fin heads reach the kora by a straight "bridge" edge. Posing 5,016 residents costs about 5 ms a frame.
-- [ ] **The economy has no money, clothes or butter yet** (T-econ-1, T-econ-2, 2026-11-16,
-      `settlements/theodiga/src/49-th-econ.js`). The makers make, the carters haul, the households and messes eat, the iron
-      tools wear and are bought again, and the caravans by the East Gate road bring tea and charcoal and take the scrap and
-      iron over. The books balance. The rarities pile up (their sale to the Devisers' factor house is not here), and the
-      Lamp Hall burns no butter. The yields are sized to the census (TH_ECON's diet and surplus), not to the fields' areas.
-      Milk runs a little short on the page over two days. The turn of an hour still costs a step up to about 0.2 s, from
-      errand routes the warm-up does not cover.
+- [ ] **The economy has no money yet** (T-econ-1 to T-econ-3, 2026-11-16, `settlements/theodiga/src/49-th-econ.js`). Core's
+      money waits on the owner: the Sultanate's currency (its name, unit and value in Talents) is not in the lore.
+      What runs:
+      - The makers make, the carters haul, the households and messes eat, and the books balance.
+      - The iron tools, the Lamp Hall's butter and the robes wear and are bought again.
+      - The caravans by the East Gate road bring tea, charcoal and garments and take the scrap and iron over; the
+        Devisers' rarities leave with them.
+
+      What is off:
+      - The yields are sized to the census (TH_ECON's diet and surplus), not to the fields' areas.
+      - On the page over two days milk and honey fall about a quarter. The households fill their deeper stores, and walking
+        costs hours the sizing does not see. A week on the page is untested; the abstract week holds.
+      - The robes wear and are bought, but are not drawn by their wear.
+      - The Devisers' mules (no port) are not drawn.
+      - The turn of an hour still costs a step up to about 0.2 s, from errand routes the warm-up does not cover.
 - [ ] **The Panel Row's kitchens cannot take a hearth** (`kits/interiors/sets/xanadu-scrap.js`, `xa_scrap_row` houses: a room
       2.2 m wide with the stair in it; no hearth fits at any seed from any culture). The town furnishes them as stores
       (`8zz2-th-town-rooms.js`, `AIK.townRekinded`). The set should widen the kitchen or move the stair.

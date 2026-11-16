@@ -29,12 +29,15 @@ function run(rates){const C={console};C.window=C;vm.createContext(C);for(const s
   TH_SIM.declare(SIM,{lots,fields,census:{byQuarter:byQ},arc:TH_ARC_PROGRAM,kora:{x0:-100,x1:280,zc:x=>-140*(1-Math.pow(x/320,2)),y:400},gx:1150,gz:0,hour:()=>H%24,day:()=>Math.floor(H/24),t:()=>H*200});
   const X=TH_ECON.declare(SIM,{fields,rates:RATES});
   SIM.level('theodiga','abstract');SIM.jump();
-  for(let m=0;m<DAYS*1440;m++){H+=1/60;SIM.step();}
+  for(let m=0;m<DAYS*1440;m++){H+=1/60;SIM.step();TH_ECON.tick(SIM,X);}
   const R=TH_ECON.report(SIM,X);
-  return {X:{warehouses:X.warehouses,carts:X.carts,makers:X.makers},R,carts:SIM.all('actor').filter(a=>a.driven).length};})()`,C);}
+  return {X:{warehouses:X.warehouses,carts:X.carts,makers:X.makers,keepers:X.keepers,robes:X.robes,lampDay:X.lampDay,rates:X.rates},R,carts:SIM.all('actor').filter(a=>a.driven).length};})()`,C);}
 const base=run();
 const town=base.R.town,F=['grain','pulse','tuber','milk','honey','bread'];
 console.log('a week: '+F.map(g=>g+' '+town[g].opening+' -> '+town[g].closing).join(', ')+'; tea in '+town.tea.imported+', charcoal in '+town.charcoal.imported+'; scrap '+town.scrap.made+', iron '+town.iron.made+' (used '+town.iron.consumed+'), rarities '+town.rarities.made+'; meals '+JSON.stringify(base.R.meals));
+console.log('the lamps: '+base.X.keepers+' keepers burn '+base.X.lampDay+' pats a day (churn batch '+base.X.rates.churn+' h); butter '+town.butter.opening+' -> '+town.butter.closing+
+ ' (made '+town.butter.made+', burnt '+town.butter.consumed+'); robes: '+base.X.robes+' worn, '+((base.R.worn||{}).robe||0)+' worn out, '+((base.R.bought||{}).robe||0)+' bought, garments '+
+ town.garments.opening+' -> '+town.garments.closing+' (in '+town.garments.imported+'); rarities '+town.rarities.made+' found, '+town.rarities.exported+' to the factor house ('+JSON.stringify(base.R.factor)+')');
 const CHECKS={
  'the books balance (opening + made + imported - consumed - spoiled - exported = closing)':X=>[X.R.ok===true&&Object.values(X.R.town).every(r=>Math.abs(r.residual)<=.5),X.R.ok?'every good':X.R.problems.join('; ')],
  'the town feeds itself (no food falls by a fifth over the week, nobody without a meal)':X=>{const bad=F.filter(g=>X.R.town[g].closing<.8*X.R.town[g].opening);const none=(X.R.meals&&X.R.meals.none)||0;
@@ -44,6 +47,10 @@ const CHECKS={
  /* (the tools wear only where people are posed: the page's walk, not the abstract level; the page checks them) */
  'the smelter turns scrap and charcoal to iron':X=>[X.R.town.iron.made>0&&X.R.town.charcoal.consumed>0,X.R.town.iron.made+' iron from '+X.R.town.charcoal.consumed+' charcoal'],
  'the Dome\'s fall runs down by what the yards took':X=>{const S=(X.R.sites||[]).find(s=>s.id==='th.site.dome-fall');return [!!S&&S.taken>0&&Math.abs(S.start-S.taken-S.amount)<1e-6&&S.taken===X.R.town.scrap.made,S?S.start+' - '+S.taken+' = '+S.amount:'no site'];},
+ 'the Lamp Hall burns its butter and the churns make it':X=>{const b=X.R.town.butter;return [X.X.keepers>0&&b.made>0&&b.consumed>0&&b.closing>0,X.X.keepers+' keepers, '+b.made+' pats churned, '+b.consumed+' burnt, '+b.closing+' left'];},
+ 'the town wears out its robes and buys new ones at the bazaar':X=>{const g=X.R.town.garments,w=(X.R.worn||{}).robe||0,b=(X.R.bought||{}).robe||0;
+   return [X.X.robes>0&&w>0&&b>0&&g.consumed===b,X.X.robes+' robes worn, '+w+' worn out, '+b+' bought ('+g.consumed+' garments)'];},
+ 'the Devisers send what the bore finds to their factor house':X=>{const r=X.R.town.rarities;return [r.made>0&&r.exported>0&&!!X.R.factor&&X.R.factor.sent===r.exported,r.made+' found, '+r.exported+' sent in '+(X.R.factor?X.R.factor.trips:0)+' consignments'];},
  'the carters and the warehouses are there':X=>[X.X.carts>0&&X.carts===X.X.carts&&X.X.warehouses>0,X.X.carts+' carters, '+X.X.warehouses+' warehouses']};
 for(const name of Object.keys(CHECKS)){const [pass,detail]=CHECKS[name](base);T.ok(name+' ('+detail+')',pass,detail);}
 /* the negatives: a fault each, the check must fail on it */
@@ -54,5 +61,10 @@ for(const name of Object.keys(CHECKS)){const [pass,detail]=CHECKS[name](base);T.
  const noRoad=run({road:Object.assign({},TUNE_ROAD,{minutes:1e7})});T.ok('negative: a road whose lots never arrive is caught',!CHECKS['the road brings what the town lacks (its tea, and the tea never runs out; the charcoal comes when it runs low)'](noRoad)[0],'tea '+noRoad.R.town.tea.imported);}
 {const cold=run({smelt:{in:{scrap:4,charcoal:1},out:{iron:1},hours:1e7}});T.ok('negative: a smelter that never finishes a batch is caught',!CHECKS['the smelter turns scrap and charcoal to iron'](cold)[0]);}
 {const X=JSON.parse(JSON.stringify(base));const S=X.R.sites.find(s=>s.id==='th.site.dome-fall');S.amount+=100;T.ok('negative: a fall that does not run down by the take is caught',!CHECKS['the Dome\'s fall runs down by what the yards took'](X)[0]);}
+/* one run with three faults: churns that never finish, robes that never wear, Devisers who never send */
+{const F=run({churn:{in:{milk:6},out:{butter:1},hours:1e7},robeLife:1e9,factor:{hour:99,keep:0}});
+ T.ok('negative: churns that never finish a batch are caught',!CHECKS['the Lamp Hall burns its butter and the churns make it'](F)[0]);
+ T.ok('negative: robes that never wear out are caught',!CHECKS['the town wears out its robes and buys new ones at the bazaar'](F)[0]);
+ T.ok('negative: Devisers who never send are caught',!CHECKS['the Devisers send what the bore finds to their factor house'](F)[0]);}
 {const X=JSON.parse(JSON.stringify(base));X.X.carts=0;T.ok('negative: a town without carters is caught',!CHECKS['the carters and the warehouses are there'](X)[0]);}
 T.done();

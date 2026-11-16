@@ -156,6 +156,7 @@ town, the ways down and the works below are `PLAN.md`.
 ## Next
 
 - Windows cut through the crest's and fins' shells; a Xanadu divan, rug and hanging for the deck's dress.
-- The caravans (the serai's trade), a walk cycle for the walkers, and indoor residents shown in the opened rooms. The census is
-  on `core/simulation`, walks, and feeds itself (T-sim-1, T-sim-2, T-econ-1, `PLAN.md`).
+- Money, once the owner names the Sultanate's currency. A walk cycle for the walkers, and indoor residents shown in the
+  opened rooms. The census is on `core/simulation`. It walks, feeds itself, and trades by the East Gate road. It burns the
+  Lamp Hall's butter, wears its robes out, and sends the Devisers' rarities away (T-sim-1 to T-econ-3, `PLAN.md`).
 - LORE 6.13 (on the branch that holds the faith): Theodiga as the Decree's shrine, the Order's delegation, the cascade.

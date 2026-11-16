@@ -39,7 +39,7 @@ function thWalkersDraw(gx,gz){if(typeof SIM==='undefined'||!SIM.all)return thWal
   cap=n+200;body=mk(bodyG,'bodies',cap);head=mk(headG,'heads',cap);dressed=0;};
  const m4=new THREE.Matrix4(),Q=new THREE.Quaternion(),Y=new THREE.Vector3(0,1,0),P=new THREE.Vector3(),ONE=new THREE.Vector3(1,1,1),ZERO=new THREE.Vector3(0,0,0);
  let last=Math.floor(SIM.minute());
- const frame=()=>{try{const now=Math.floor(SIM.minute());let n=0;while(last<now&&n++<30){last++;SIM.step();}if(last<now)last=now;
+ const frame=()=>{try{const now=Math.floor(SIM.minute());let n=0;while(last<now&&n++<30){last++;SIM.step();if(typeof TH_ECON!=='undefined')TH_ECON.tick(SIM);}if(last<now)last=now;
   A=SIM.all('actor');N=A.length;room(N);
   if(dressed<N){for(let i=dressed;i<N;i++)dress(A[i],i);dressed=N;body.instanceColor.needsUpdate=head.instanceColor.needsUpdate=true;}
   body.count=head.count=N;

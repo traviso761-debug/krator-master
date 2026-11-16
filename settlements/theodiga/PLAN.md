@@ -258,4 +258,30 @@ spring, sealed deep inside). Theodiga's end:
     - **On the page** (two days fast-forwarded): the caravan came, landed 3,000 tea and took 2,747 scrap; no meal went
       without; grain holds; the books balance. `test-th-econ.js` runs 14 checks.
     - **Next.** Money, clothes, the Lamp Hall's butter, the rarities' sale to the Devisers' factor house.
-12. **Later**: the Qiblai buildings' rooms (as Strongbow's), core/simulation's roles, the open world.
+12. **T-econ-3, what was still owed** (done 2026-11-16, relayed by the open-world session: "money, clothes, the Lamp Hall's
+    butter, the rarities' sale").
+    - **The butter.** Every sixth farmstead is a churn, which turns milk to butter in batches. The Lamp Hall's keepers tend
+      the butter lamps. Each holds a crock of butter that burns by the worked hour (core's tool wear, four pats for four
+      hours, about a keeper's day). Worn out, it is filled again at the Hall's store-room from the town's butter. The
+      churns are sized to the pats the keepers' schedules burn; the dairies are sized to the town's milk and the churns'.
+    - **The clothes.** Every resident wears a robe that lasts 240 days and keeps one. Worn out, a new one is bought at the
+      bazaar from the town's garments, which the East Gate road brings as it brings the tea. The warehouses open with a
+      month of them. The pilgrims and the caravaneers travel in their own.
+    - **The rarities' sale.** The bore's finds stay the Rare Devisers' licence, never sold in the town. The Devisers send
+      them to their factor house at Erehwon: with the road's port they leave with each caravan as its stay ends, apart
+      from its own cargo; without one, the Devisers' mules take them each morning. `TH_ECON.tick(SIM)` after each
+      `SIM.step` does it (core has no hook for a world's own flows), booked exported, so the books balance.
+    - **Fixed on the way.** A rerun of T-econ-2's page found 399 meals of nothing in two days, against that report's none.
+      They fell in a few big salvagers' houses whose one shopper works all day. A household now buys at two days left,
+      not one, and opens with two to four days of food. Now no meal goes without.
+    - **On the page** (two days fast-forwarded, everyone walking):
+      - two caravans came and took 4,660 scrap, and the Devisers' 17 rarities went with them;
+      - 104 pats were churned and 60 burnt;
+      - 41 robes wore out;
+      - no meal went without, and the books balance.
+
+      `test-th-econ.js` runs 20 checks: the butter, the robes and the consignments, each with a negative.
+    - **Not done: money.** Core's money (`77-sim-6-money.js`, M0 and M1 as the isle demo uses them) waits on the owner.
+      The lore gives each nation its own currency (LORE 6.2) and names the Talent and the Kautoan shells, not the
+      Sultanate's. Needed: its name, its unit, and its value in Talents.
+13. **Later**: the Qiblai buildings' rooms (as Strongbow's), core/simulation's roles, the open world.
