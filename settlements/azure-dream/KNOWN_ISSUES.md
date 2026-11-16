@@ -27,14 +27,11 @@ The page's first pass (2026-11-16, the owner: "build the page next"). What it do
 - [ ] **The sheets in `floors/` keep the first frame.** The page's layout was refitted to the 1:1 shore (the scarp's toe, PLAN.md
       section 1); the sheets still draw the plan's u (the precinct 120 m further up, the lower ward wider). Redraw them from
       `targets/isle/89zad`'s records when the layout settles.
-- [ ] **The summit's signal lamp cannot be seen from the monastery.** At 1:1 the isle's dome is convex: the ground 1.5-2.5 km
-      above the Hall stands about 69 m over the straight line from the Station Watch's lamp (+322 m) to the monastery's back
-      gate (+136 m), so the plan's "signal the monastery by lamp" (section 4e) does not work directly (`verify.py`'s
-      `signal-lamp` reports the shortfall). A relay would: a lamp about 14 m up at the Dream Road's first chorten, 1 km above the
-      back gate (+223 m), sees both within a few metres (probed over the region cut). That chorten is on neither page's near
-      ground. For the owner (PLAN.md Q15).
-- [ ] **The summit's page holds the Dream Road's last 800 m only** and one of its eight chortens (the one at the kora). The road's
-      other seven kilometres, the back gate and the Quiet Walk are on neither page. No far form of the summit is drawn from the
+- [ ] **The Dream Road is on the pages at its two ends only:** its first 1.5 km out of the back gate (the isle's page, with its
+      first chorten and the relay lamp) and its last 800 m (the summit's page, with the chorten at the kora). Its other six
+      chortens and the Quiet Walk are on neither page. The signal line (the Station Watch, the relay, the Hall's lantern roof:
+      AD_SIGNAL, src/89zaa) clears the 1:1 ground by a metre or two only, so a re-cut of the region can break it:
+      erify.py's signal-lamp and signal-relay say so. No far form of the summit is drawn from the
       cove yet (PLAN.md AD7), and the summit's page does not draw the monastery 9 km off.
 - [ ] **Not on the page:** the three fishing villages (`core/hamlet`), the bay isle's Threshold Light, the people asleep in the
       Hall, the textures owed (`core/materials/PROMPTS-NEEDED.md` section 56: the ceiling is a deep-blue lacquer with gold stars

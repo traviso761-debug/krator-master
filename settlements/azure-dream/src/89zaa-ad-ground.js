@@ -44,6 +44,8 @@ function adPut(key,u,v,ry,o,kind,id,pad){const c=AD_P(u,v),D=VERN.defs[key];if(!
  const q={key,x:c[0],z:c[1],ry,o:Object.assign({v:0},o||{}),kind,id:id||kind+':'+key+':'+u+','+v,h:D.h==null?10:D.h,w:D.fw==null?D.w:D.fw,d:D.fd==null?D.d:D.fd};
  if(pad&&q.o.y==null){const side=Math.abs(Math.sin(ry))>.5,hw=(side?q.d:q.w)/2+3,hd=(side?q.w:q.d)/2+3;q.pad=adPad('pad:'+q.id,q.x-hw,q.z-hd,q.x+hw,q.z+hd,null,6);q.o.y=q.pad.y;}
  AD_PLACE.push(q);return q;}
+const adAt=(key,x,z,ry,o,kind,id,pad)=>adPut(key,-z,x,ry,o,kind,id,pad);   /* by page x, z (x = v, z = -u) */
+const adPx=P=>[adWx(P[0])-AD.WX,adWz(P[1])-AD.WZ];   /* scale-model px to page metres */
 
 // a zigzag stair: n runs across a slope or a terrace's face, each a qb_terrace_stair along v centred on vc, turning on a landing
 // pad at each foot, from (uTop, yTop) down to yFoot, each run S m further down the slope (south) than the last
@@ -53,6 +55,24 @@ function adZigzag(id,uTop,vc,yTop,yFoot,n,S){const r=(yTop-yFoot)/n,L=qnStairPla
   const c=AD_P(R.u-3.6,R.v1);adPad('landing:'+id+':'+R.u.toFixed(1),c[0]-4.5,c[1]-6.2,c[0]+4.5,c[1]+6.2,R.y-R.r,2);}   /* the landing: under this run's foot and the next run's head */
  const h=AD_P(uTop+11,runs[0].v0-3.6),g=AD_P(uTop-1.5,runs[0].v0+3.6);adPad('landing:'+id+':head',h[0],h[1],g[0],g[1],yTop,1.5);   /* the head: from the edge above, over its face, to the first run */
  return{yTop,yFoot,rise:yTop-yFoot,r,len:L,n,runs,footU:uTop-S*n};}
+
+// ---------------------------------------------------------------- the Station's signal line (PLAN.md Q15)
+// At 1:1 the isle's dome hides the summit from the monastery, so the Station Watch's lamp (on the summit's page) is answered
+// by the relay lamp by the Dream Road's first chorten (on the isle's page), which the Hall of Dreaming's lantern roof sees. In
+// scale-model px and metres over the lake, the same on every page: each page places its own end against these and its verify
+// checks both sight lines over the 1:1 ground. The Dream Road runs straight from the monastery's back gate (the isle page's u
+// 484 on its axis) to the summit's crest; its first chorten 1 km up on the east side, the relay opposite it on the west.
+const AD_SIGNAL=(function(){const S=[845.05,1504.35],G=[846.075,1508.493-484/2000],dx=S[0]-G[0],dy=S[1]-G[1],L=Math.hypot(dx,dy),ux=dx/L,uy=dy/L,
+  px=-uy,py=ux,on=(s,off)=>[G[0]+(ux*s+px*off)/2000,G[1]+(uy*s+py*off)/2000];
+ return{summit:S,gate:G,len:L*2000,dir:[ux,uy],ry:Math.atan2(px,py),on,chorten:on(1000,9),relay:on(1000,-9),
+  watch:[845.05-76.2/2000,1504.35+13.8/2000,322.4],   /* the Station Watch's lamp: its tower's roof (89qc), the summit page's (-76.2, 13.8) */
+  hall:[846.075,1508.493-440.4/2000,133.5]};})();   /* the Hall of Dreaming's lantern roof (89qa: its head, 24.4 m behind its centre; the terrace +13) */
+// the relay lamp's height over the lake: its pad's level (adPut's rule: its footprint turned to the road, plus 3 m) and the lamp
+function adRelayY(){const x=adWx(AD_SIGNAL.relay[0])-AD.WX,z=adWz(AD_SIGNAL.relay[1])-AD.WZ,D=VERN.defs.qb_ad_relay_lamp,side=Math.abs(Math.sin(AD_SIGNAL.ry))>.5,
+ hw=(side?D.fd:D.fw)/2+3,hd=(side?D.fw:D.fd)/2+3;return adLevel(x-hw,z-hd,x+hw,z+hd)+AD_RELAY_LAMP_H;}
+// the least clearance of a sight line over the 1:1 ground (adBase: no page's pads), a and b [px, py, y]
+function adSight(a,b){const ax=adWx(a[0])-AD.WX,az=adWz(a[1])-AD.WZ,bx=adWx(b[0])-AD.WX,bz=adWz(b[1])-AD.WZ;let w=1e9;
+ for(let i=1;i<400;i++){const t=i/400;w=Math.min(w,a[2]+(b[2]-a[2])*t-adBase(ax+(bx-ax)*t,az+(bz-az)*t));}return w;}
 
 // ---------------------------------------------------------------- the flora's mask and fields (the Vale of Xanadu's biome, the page's own)
 // the isle's woods on the open slopes (1), the shore zone by the water (.8: the dawn redwoods, frost willows and reeds stand

@@ -26,6 +26,7 @@ This is a plan for the owner to approve. Nothing is built. The blueprint sheets 
 | 12. Textures | **"Yes new textures"**: three prompts in `core/materials/PROMPTS-NEEDED.md` section 56; felt and reed matting are already in the library |
 | 13. The people | **"300 people in monastery and 600 in villages"**: the isle holds 900, not 600 (section 3) |
 | 14. Building it | **"Build the page next"**: the page's first pass is built (README.md) |
+| 15. The Station Watch's signal | **"You can move the relay lamp"**: the relay lamp stands by the Dream Road's first chorten, answering the Watch and seen from the Hall's lantern roof (section 4e) |
 
 ## 0. What is settled, and what this plan proposes
 
@@ -319,7 +320,8 @@ From the gate up the axis:
 - **The High Kora** rings the summit at 260 m out (1.6 km round), with **sixteen wheel houses** (`qb_wheel_house`).
 - **The Summit Chorten** (`qb_chorten`, large) carries the isle's one gilt crown seen from every shore.
 - **The Wheel House of the Summit** holds the isle's great wheel.
-- **The Station Watch**: four monks keep the Station's passes and signal the monastery by lamp when it is due.
+- **The Station Watch**: four monks keep the Station's passes and signal the monastery by lamp when it is due, through the
+  **relay lamp** by the Dream Road's first chorten (the dome hides the summit from the monastery at 1:1; Q15).
 - **A Pilgrims' Shelter** for the festival.
 
 The faith walks its kora three times with eyes lowered (LORE 6.13). The Order walks it three times in two places:
@@ -605,12 +607,15 @@ isle's food bill, and a real demand for its dairy and hives.
 
 ## 13. Questions for the owner
 
-Questions 1 to 14 are answered (the table at the top; 10 by the Qiblai kit's session). One is open:
+Questions 1 to 15 are answered (the table at the top; 10 by the Qiblai kit's session).
 
 14. ~~**Building it.**~~ **Answered 2026-11-16: "build the page next"** (step AD6's first pass). The original question: Is the page the next step after the owner's answers, or does it wait until core/world has cut the
     isle on the new lake?
 
-15. **The Station Watch's signal.** At 1:1 the isle's dome is convex: from the Station Watch's lamp on the summit (+322 m) to
+15. ~~**The Station Watch's signal.**~~ **Answered 2026-11-16: "You can move the relay lamp".** The relay stands by the Dream Road's
+    first chorten after all, 1 km up from the back gate on the road's west side, its lamp 23 m up; the monastery's end is the Hall of
+    Dreaming's lantern roof (+133.5), not the back gate, which the terrace's cut hides (AD_SIGNAL, src/89zaa-ad-ground.js;
+    erify.py signal-lamp, signal-relay). The original question: At 1:1 the isle's dome is convex: from the Station Watch's lamp on the summit (+322 m) to
     the monastery's back gate (+136 m), the ground 1.5-2.5 km above the Hall stands about 69 m over the sight line, so the
     summit cannot signal the monastery directly. A relay lamp about 14 m up at the Dream Road's first chorten (1 km above the
     back gate, +223 m) sees both. Is the relay right (a small lamp tower at the first chorten, kept by the Watch), or should

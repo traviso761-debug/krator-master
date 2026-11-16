@@ -23,8 +23,13 @@ The summit's page (dist/azure-dream-summit.html, window.CITY_BUILD 'azure-dream-
                     chorten and the High Kora's wheel houses
   high-kora         sixteen wheel houses 240-256 m out, none crowding another, the Dream Road passing between two of them
   summit-crest      the Summit Chorten on the crest: over +250 m, and no lower than the kora's ground less 8 m
-  signal-lamp       the Station Watch's one signal lamp, the highest lamp on the page; its detail says whether it sees the
-                    monastery's back gate over the 1:1 ground (it does not: the dome's shoulder, KNOWN_ISSUES.md)
+  signal-lamp       the Station Watch's one signal lamp, the highest lamp on the page, where AD_SIGNAL (src/89zaa) says it is, and
+                    it sees the relay lamp on the isle's page over the 1:1 ground (PLAN.md Q15)
+
+The isle's page also takes:
+
+  signal-relay      the relay lamp by the Dream Road's first chorten, where AD_SIGNAL says it is; it sees the Station Watch's lamp
+                    on the summit and the Hall of Dreaming's lantern roof over the 1:1 ground
 
     KRATOR_GL=gpu python3 verify.py dist/azure-dream.html --assert --views "Overview,From the barge"
     KRATOR_GL=gpu python3 verify.py dist/azure-dream-summit.html --assert --views "Overview,On the High Kora"
@@ -49,13 +54,11 @@ if(window.CITY_BUILD==='azure-dream-summit'){const Z=window._azure||{},K=Z.byKin
  const ring=[];for(let a=0;a<16;a++){const t=a/16*2*Math.PI;ring.push(terrainH(260*Math.sin(t),260*Math.cos(t)));}
  const C=P.find(p=>p.id==='summit-chorten'),top=Math.max(...ring);
  R.push({name:'summit-crest',ok:!!C&&C.o.y>250&&C.o.y>=top-8,detail:'the Summit Chorten at +'+(C?C.o.y:0)+' m, the kora\'s ground '+Math.min(...ring).toFixed(1)+'-'+top.toFixed(1)+' m'});
- const LA=typeof AD_LAMPS!=='undefined'?AD_LAMPS:[],S=LA.filter(l=>l[3]==='signal');
- /* the signal's sight line to the monastery's back gate, over the 1:1 ground (adBase: the pads are this page's only) */
- let los='';if(S.length){const s=S[0],gx=adWx(846.075)-AD.WX,gz=adWz(1508.493-484/2000)-AD.WZ,gy=adBase(gx,gz)+6;let w=1e9;
-  for(let i=1;i<400;i++){const t=i/400,x=s[0]+(gx-s[0])*t,z=s[2]+(gz-s[2])*t;w=Math.min(w,s[1]+(gy-s[1])*t-adBase(x,z));}
-  los=w>0?'; it sees the monastery\'s back gate, '+w.toFixed(1)+' m clear':'; the dome\'s shoulder hides it from the monastery\'s back gate ('+(-w).toFixed(1)+' m short: KNOWN_ISSUES.md, the relay)';}
- R.push({name:'signal-lamp',ok:S.length===1&&S[0][1]>=Math.max(...LA.map(l=>l[1]))-.01,detail:S.length+' signal lamp(s) at +'+(S[0]?S[0][1].toFixed(1):'-')+' m, the highest of '+LA.length+los});}
-else"""
+ const LA=typeof AD_LAMPS!=='undefined'?AD_LAMPS:[],S=LA.filter(l=>l[3]==='signal'),Wt=AD_SIGNAL.watch,w=adPx(Wt);
+ /* the signal's sight line to the relay lamp by the Dream Road's first chorten (on the isle's page), over the 1:1 ground */
+ const s=S[0],off=s?Math.hypot(s[0]-w[0],s[2]-w[1],s[1]-Wt[2]):99,rel=[AD_SIGNAL.relay[0],AD_SIGNAL.relay[1],adRelayY()],sight=adSight(Wt,rel);
+ R.push({name:'signal-lamp',ok:S.length===1&&s[1]>=Math.max(...LA.map(l=>l[1]))-.01&&off<1&&sight>0,
+  detail:S.length+' signal lamp(s) at +'+(s?s[1].toFixed(1):'-')+' m, the highest of '+LA.length+', '+off.toFixed(2)+' m off AD_SIGNAL.watch; it sees the relay lamp (+'+rel[2].toFixed(1)+' m, '+(AD_SIGNAL.len/1000).toFixed(1)+' km road from the gate) with '+sight.toFixed(1)+' m to spare'});}else"""
 PAGE_JS = r"""
 {const Z=window._azure||{},K=Z.byKind||{},P=typeof AD_PLACE!=='undefined'?AD_PLACE:[],has=id=>P.some(p=>p.id===id);
  R.push({name:'azure-laid',ok:Z.placed>=120&&['hall-of-dreaming','great-monastery','mole','boathouse','jetty:0','jetty:1','jetty:2'].every(has),
@@ -74,6 +77,8 @@ PAGE_JS = r"""
  R.push({name:'hall-walk-in',ok:!!(WI&&WI.ok),detail:!WI?'window._adWalk missing (targets/isle/90ag-ad-walk.js)':WI.doors+' doors unlocked, '+AW.floors+' floors, '+AW.blocks+' blocks; shut, the walker '+(WI.shutIn.length?'GOT IN to '+WI.shutIn.join(', '):'stayed out')+'; '+WI.routes.map(r=>'from '+r.from+(r.miss.length?' MISSED '+r.miss.join(', '):' reached the kora and both sides')).join('; ')});
  const PW=typeof AD_POND_WATER!=='undefined'?AD_POND_WATER:[];
  R.push({name:'lotus-ponds',ok:PW.length===4&&PW.every(S=>S.level>0),detail:PW.length+' still ponds on core/water at '+PW.map(S=>S.level.toFixed(2)).join(', ')+' m'});
+ {const S=LA.filter(l=>l[3]==='signal'),s=S[0],r=adPx(AD_SIGNAL.relay),y=adRelayY(),off=s?Math.hypot(s[0]-r[0],s[2]-r[1],s[1]-y):99,me=[AD_SIGNAL.relay[0],AD_SIGNAL.relay[1],y],toW=adSight(me,AD_SIGNAL.watch),toH=adSight(me,AD_SIGNAL.hall),hy=AD_TERR.hall.y+13;
+  R.push({name:'signal-relay',ok:S.length===1&&off<1&&Math.abs(hy-AD_SIGNAL.hall[2])<1&&toW>0&&toH>0,detail:S.length+' relay lamp(s) at +'+(s?s[1].toFixed(1):'-')+' m, '+off.toFixed(2)+' m off AD_SIGNAL.relay; it sees the Station Watch\'s lamp with '+toW.toFixed(1)+' m to spare and the Hall\'s lantern roof (+'+hy.toFixed(1)+') with '+toH.toFixed(1)});}
  R.push({name:'lamps',ok:n('azure')===32&&n('gold')===1&&n('oil')>=4,detail:LA.length+' lamps: azure '+n('azure')+', gold '+n('gold')+', oil '+n('oil')+', clerestory panes '+n('pane')});}
 return R;}"""
 xv.ASSERT_JS = xv.ASSERT_JS.rstrip()[:-len('return R;}')] + SUMMIT_JS + PAGE_JS

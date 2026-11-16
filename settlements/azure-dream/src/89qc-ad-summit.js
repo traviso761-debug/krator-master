@@ -1,7 +1,8 @@
 // ================================================================= THE AZURE DREAM — the summit's own building
 // settlements/azure-dream/PLAN.md section 4e. The summit's other places are the Qiblai kit's (the Summit Chorten qb_chorten,
 // the great wheel qb_great_wheel, the High Kora's sixteen qb_wheel_house, the pilgrims' shelter qb_hostel); this is the one it
-// lacks. [G data] builder on the kit's contract (QB.def, seeds 34131-).
+// lacks, and the relay lamp on the shoulder that passes its signal down (on the isle's page). [G data] builder on the kit's
+// contract (QB.def, seeds 34131-).
 //   qb_ad_station_watch  the Station Watch: four monks keep the Station's passes and signal the monastery by lamp when it is
 //                        due. A blue-dressed cube of two storeys round a small court, a stair tower at its south-east corner
 //                        carrying a roof platform, and on it the signal lamp in a gilt cage (adLamp 'signal'), turned south
@@ -33,4 +34,26 @@ function buildAdStationWatch(G,o){reseed(34131);const W=22,D=22,P=.7,hs=[3.2,3.0
  vPst('vPostB',-W/2+2,top,-D/2+2,.12,7,xC(0x5a4632));qnFlags([-W/2+2,top+6.8,-D/2+2],[tx-tw/2+.3,ptop+.9,tz-tw/2+.3]);
  qnWheelDeer(0,P+2.6,D/2+.05,0,.6,g);
  xnFolk(0,P,2,3,4);}
+// ---------------------------------------------------------------- the relay lamp
+// qb_ad_relay_lamp: the Station's signal relayed. At 1:1 the isle's dome hides the summit from the monastery (PLAN.md Q15,
+// the owner: "you can move the relay lamp"), so the Watch's lamp is answered from a tower on the shoulder by the Dream Road's
+// first chorten, which sees both the summit and the Hall of Dreaming's lantern. A slender blue tower (5.2 m square, three
+// storeys and a stone drum), its roof platform carrying the lamp in a gilt cage (adLamp 'signal', AD_RELAY_LAMP_H over its
+// foot, on its origin: AD_SIGNAL, 89zaa, finds it from the record alone); the keeper's hut at its foot, its door to the road (+z)
+const AD_RELAY_LAMP_H=23;
+function buildAdRelayLamp(G,o){reseed(34132);const P=.6,tw=5.2,hs=[4.2,4.0,4.0,5.2],wash=xC(xPick(XPAL.wash)),blue=xC(AD_BLUE),band=xC(AD_BAND),stone=xC(xPick(QSTONE)),
+  g=xC(xPick(XPAL.gold)),red=xC(XPAL.red);
+ vnReg('The relay lamp',0,0,6,AD_RELAY_LAMP_H+1.5);
+ qnPlinth(0,1,12,13,P,0,stone);
+ const S=qnStack(0,P,0,tw,tw,0,hs,blue,'wash');qnWins(0,P,0,tw,tw,0,hs,S.k,{pitch:3,ww:.55,wh:.9,kind:'glass',trim:blue,back:true});
+ const top=qnRoof(0,S.y,0,S.w,S.d,0,blue,{band,parapet:.9});
+ const ly=AD_RELAY_LAMP_H-.45;   /* the cage round the lamp, its middle at AD_RELAY_LAMP_H over the foot */
+ vB('vStone',0,top,0,1.4,ly-.55-top,1.4,0,stone);
+ for(const [a,b] of[[-1,-1],[-1,1],[1,-1],[1,1]])vPst('vPostB',a*.55,ly-.55,b*.55,.05,1.4,g);
+ vB('xGoldB',0,ly+.85,0,1.3,.1,1.3,0,g);kput('xDomeT',[0,ly+.95,0],null,[.7,.45,.7],g);vBall('xGold',0,ly+1.4,0,.12,g);
+ vB('adAzureB',0,ly-.5,0,.6,.9,.6,0);adLamp(0,AD_RELAY_LAMP_H,0,'signal');
+ // the keeper's hut, its door to the road, the tower's door from it
+ const H=qnStack(0,P,4.6,7,4,0,[2.8],wash,'wash');qnRoof(0,H.y,4.6,H.w,H.d,0,blue,{band,parapet:.4});
+ qnDoor(0,P,6.6,0,1.1,2.1,{c:red,val:false,step:false});qnWheelDeer(0,P+2.5,6.62,0,.4,g);}
+QB.def({key:'qb_ad_relay_lamp',name:'The relay lamp',family:'The Azure Dream — the summit',tags:QTAG('civic',['religious']),w:12,d:14,h:25,fw:12,fd:13,nv:1,build:buildAdRelayLamp});
 QB.def({key:'qb_ad_station_watch',name:'The Station Watch',family:'The Azure Dream — the summit',tags:QTAG('civic',['religious']),w:26,d:26,h:18,fw:24,fd:24,nv:1,build:buildAdStationWatch});

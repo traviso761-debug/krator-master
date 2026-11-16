@@ -5,14 +5,14 @@
 // src/89zaa-ad-ground.js's.
 //   the summit     the Summit Chorten (qb_chorten, the large) on the crest, the isle's one gilt crown seen from every shore;
 //                  the great wheel's house (qb_great_wheel) north of it across a paved court; the Station Watch
-//                  (qb_ad_station_watch, 89qc) west, its signal lamp turned south to the monastery; the pilgrims' shelter
+//                  (qb_ad_station_watch, 89qc) west, its signal lamp answered by the relay lamp on the shoulder above the monastery
+//                  (AD_SIGNAL, 89zaa: the dome hides the monastery itself); the pilgrims' shelter
 //                  (qb_hostel) east, for the Station's festival
 //   the High Kora  a ring 260 m out (1.6 km round), sixteen wheel houses (qb_wheel_house) on its inner side, each open onto it;
 //                  the Dream Road meets it between two of them, its chorten (the eighth) beside the meeting
 //   the Dream Road from the monastery's back gate (the isle page's u 484 on its axis, 9 km down the isle) to the summit's court
 // Nothing here draws. [G data]: no THREE, no DOM.
 reseed(34151);
-const adAt=(key,x,z,ry,o,kind,id,pad)=>adPut(key,-z,x,ry,o,kind,id,pad);   /* by page x, z (the isle's u, v frame: x = v, z = -u) */
 // the Dream Road's line: toward the monastery's back gate (scale-model px 846.075, 1508.493 less the isle page's u 484)
 const AD_ROAD=(function(){const gx=adWx(846.075)-AD.WX,gz=adWz(1508.493-484/2000)-AD.WZ,L=Math.hypot(gx,gz),dx=gx/L,dz=gz/L,B=AD.BOX;
  const end=Math.min((B[2]-20)/Math.abs(dx),(B[3]-20)/Math.abs(dz));return{dx,dz,L,end,ang:Math.atan2(dx,dz),at:s=>[dx*s,dz*s]};})();

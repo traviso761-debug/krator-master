@@ -84,8 +84,15 @@ const AD_WALLS=[];
  for(const s of[-1,1])AD_WALLS.push({a:AD_P(484,s*8),b:AD_P(484,s*170),y:AD_TERR.hall.y,face:Math.PI});}
 for(const W of AD_WALLS){const L=Math.hypot(W.b[0]-W.a[0],W.b[1]-W.a[1]),m=[(W.a[0]+W.b[0])/2,(W.a[1]+W.b[1])/2];
  AD_PLACE.push({key:'qb_wall',x:m[0],z:m[1],ry:W.face,o:{v:1,len:L,y:W.y},kind:'wall',id:'wall:'+m[0].toFixed(0)+','+m[1].toFixed(0),h:5});}
+// the Dream Road: out of the back gate and straight up the isle to the summit (AD_SIGNAL, 89zaa), to the near ground's edge;
+// its first chorten 1 km up, and opposite it the relay lamp that answers the Station Watch (PLAN.md Q15)
+const AD_DREAM=(function(){const s1=(-AD.BOX[1]-30-484)/-AD_SIGNAL.dir[1];
+ const c=adPx(AD_SIGNAL.chorten),r=adPx(AD_SIGNAL.relay);
+ adAt('qb_chorten',c[0],c[1],AD_SIGNAL.ry+Math.PI,{v:1},'way','dream-road-chorten:1',true);
+ const R=adAt('qb_ad_relay_lamp',r[0],r[1],AD_SIGNAL.ry,{},'sacred','relay-lamp',true);
+ return{a:adPx(AD_SIGNAL.gate),b:adPx(AD_SIGNAL.on(s1,0)),len:s1,relay:R};})();
 // the ways (painted on the ground; 90ad): [kind, width, points (page)]
-const AD_WAYS=[['way',8,[AD_P(0,0),AD_P(AD_STAIR.footU,0)]],['wharf',6,[AD_P(4,-70),AD_P(4,300)]]];
+const AD_WAYS=[['way',8,[AD_P(0,0),AD_P(AD_STAIR.footU,0)]],['wharf',6,[AD_P(4,-70),AD_P(4,300)]],['way',5,[AD_DREAM.a,AD_DREAM.b]]];
 // the paved courts in the precinct (page boxes)
 const AD_PAVED=[[AD_P(168,-140),AD_P(222,140)],[AD_P(348,-30),AD_P(484,30)],[AD_P(284,-10),AD_P(348,10)]];
 window._adSite={pads:AD_PADS.length,places:AD_PLACE.length,terraces:Object.fromEntries(Object.entries(AD_TERR).map(([k,t])=>[k,t.y])),stair:{rise:+AD_STAIR.rise.toFixed(2),len:+AD_STAIR.len.toFixed(1),footU:+AD_STAIR.footU.toFixed(1)}};
