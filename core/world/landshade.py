@@ -6,7 +6,7 @@ over a box and drawn as a hillshade, with its terrace-band metric (core/world/PL
     python3 core/world/landshade.py <region> <out.png> --at <name> ...     # one of SPOTS below
     python3 core/world/landshade.py <region> <out.png> --bench             # time WORLD.H (us a call) as well
 
-<region> is openworld/<name> (or its data dir). --core reads 40-world-smooth.js, 41-world-fields.js and 43-world-relief.js from
+<region> is openworld/<name> (or its data dir). --core reads 40-world-smooth.js, 41-world-fields.js, 43-world-relief.js and 44-world-streams.js from
 another folder (a copy of an older core/world: the "before" of a change), else from core/world. Two regions or cores side by
 side: run it twice and join the images (--diff a.png b.png out.png).
 
@@ -52,7 +52,7 @@ def sample(region, box, step, core=None, bench=False):
     parts = ['"use strict";var window=globalThis;\n']
     for p in (os.path.join(ROOT, 'core', 'rand', '08-core-rand.js'), os.path.join(ROOT, 'core', 'terrain', '38-core-relief.js')):
         parts.append(open(p, encoding='utf-8').read())
-    for f in ('40-world-smooth.js', '43-world-relief.js'):
+    for f in ('40-world-smooth.js', '43-world-relief.js', '44-world-streams.js'):
         p = os.path.join(core, f)
         if os.path.isfile(p):
             parts.append(open(p, encoding='utf-8').read())

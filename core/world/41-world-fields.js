@@ -8,7 +8,7 @@
 //                              clim, rain, temp, biome, mask on the map grid
 //   WORLD.H(x,z,minWave)       the ground height. minWave (m) leaves out detail finer than it: a far terrain chunk
 //                              asks for less, so it is cheaper and does not alias
-//   WORLD.water(x,z)           the water surface there (the sea, a lake, a named river), or -1e9 where there is none
+//   WORLD.water(x,z)           the water surface there (the sea, a lake, a named river, a wet stream), or -1e9 where there is none
 //   WORLD.lakeWater / riverWater  its two parts (the water sheet treats a river's banks apart from a lake's shore)
 //   WORLD.waterBodies()        the scale model's water as bodies (the Ring Sea, each salt lake and highland lake): a
 //                              level, its cells, how salt it is, and a MASK over its cells and the ring round them, in
@@ -16,6 +16,10 @@
 //   WORLD.waterBodyAt(x,z)     the body whose cell holds (x,z) (its index), or -1
 //   WORLD.riverLines(step)     each named river as a line in metres, a point every `step` m down its carved bed, at its
 //                              water's height (riverWater), never climbing downstream: core/water's flow lines
+//   WORLD.streams()            a relief region's small streams (region.json `streams`, 44-world-streams.js) as the page
+//                              carves them: [{wet, end, pts: [[x, z, strength, bed]...]}]; WORLD.streamAt(x,z) the cut
+//                              there, WORLD.streamWater(x,z) a wet stream's water (WORLD.water takes it too), WORLD.flowAt
+//                              the surface core/world/bake_streams.py traces them on
 //   WORLD.at(x,z)              the whole sample at a point (one object, reused): height, slope, water, climate, the
 //                              biome blend, and the fields the kits read (wet, flow, upland, canyon, rim, rock, dune,
 //                              salt, cold, slope...). WORLD.FIELDS names them.
@@ -202,7 +206,7 @@ W.init=function(R){M=WORLD_DATA.meta;const Hd=M.heights,F=M.frame;
   const P=g?g.P:MISSING,o={};for(const k in P)o[k]=lin(P[k]);PALL[i]=o;});
  if(W.unstyled.length&&typeof reportErr==='function')reportErr('core/world: no ground style for the overlay(s) '+W.unstyled.join(', ')+' (add each to BIOME_GROUND in 41-world-fields.js)');
  CLCODE=M.classes.map(c=>c.code);CLGROUP=M.classes.map(c=>c.group);
- buildChannels();buildRoads();buildTowns();W.ready=true;};
+ buildChannels();buildStreams();buildRoads();buildTowns();W.ready=true;};
 W.px=x=>cx+x/2000;W.py=z=>cy+z/2000;W.fromPx=(px,py)=>[(px-cx)*2000,(py-cy)*2000];
 W.box=()=>{const F=M.frame.box_px;return[(F[0]-cx)*2000,(F[1]-cy)*2000,(F[2]-cx)*2000,(F[3]-cy)*2000];};
 
@@ -337,6 +341,78 @@ W.riverLines=function(step){step=step==null?40:step;const out=[];
 const chanS=acc=>Math.max(0,Math.log10(acc/M.drainage.min_accum));
 W.carveAt=(x,z)=>{const c=carveAt(x,z,baseH(x,z),.5,{});return c.d<1e9?Object.assign({},c):null;};
 
+// ---------------------------------------------------------------- the small streams (a relief region's: region.json `streams`)
+// core/world/PLAN-RELIEF.md, P3 (R6, S5): the streams below the model's 2 km, traced by core/world/bake_streams.py on the
+// land's large form (W.flowAt) and kept in region.json (44-world-streams.js says how they are encoded). Each line is
+// decoded, relaxed and curved (WSMOOTH.line, as the drainage is) and carved EXACT (no warp) after the channels: down to
+// its bed, which never rises (or the ground less its depth, whichever is lower), narrow, its walls leaning wallK, in a
+// swale of its own (stVW, stVD: tens of metres across, a few deep: alone, the bed read as a knife cut in the slope). A stream
+// is 1.5 m wide at its head and 8 m where its flow nears a channel's; a wet one (its catchment's mean rain over the bake's
+// threshold: the owner, 2026-11-15) holds water in its bed (streamWater), a dry one is a wadi. The hash's cells are 512 m
+// and a segment sits in every cell its reach (SREACH) touches, so a point reads a handful of segments (a flat grid over
+// the streams' box, not a Map: a Map keyed past the small integers made H twice as slow).
+const STCELL=512,SREACH=90,SDMAX=6;   /* m: the most a stream cuts under its bank to keep its bed falling; past it, it follows the ground */let STSEG=null,STHASH=null,STIDX=null;const STG={x0:0,z0:0,nx:0,nz:0};const STC={k:0,d:1e9,hw:0,wet:0};
+const stW=s=>.75+3.25*s,stD=s=>.6+1.9*s;   /* half-width and depth (m) from the strength */
+const stVW=s=>25+50*s,stVD=s=>1.2+3.3*s;    /* its valley: a swale this half-width and depth (m) under the bank, so a stream lies in a fold of the land, not a slot cut in it */
+function streamCurves(SR,each){const MD=SR.meander?{amp:SR.meander.amp,wave:SR.meander.wave,seed:KRAND.child(SR.meander.seed,'streams'),ox:cx*2000,oz:cy*2000}:null;
+ for(const L of SR.lines){const P=WSMOOTH.line(WSTREAMS.decode(L,SR),{step:SR.step==null?60:SR.step,relax:SR.relax==null?2:SR.relax,meander:MD});
+  let lo=1e9;for(const p of P){lo=Math.min(lo,p[3]);p[3]=lo;}each(L,P);}}
+function buildStreams(){STSEG=null;STHASH=null;STIDX=null;const SR=M.streams;W.streamCount=0;W.streamSegments=0;if(!SR||!SR.lines||!SR.lines.length)return;
+ if(typeof WSTREAMS==='undefined'||typeof WSMOOTH==='undefined')throw new Error('41-world-fields: region.json has streams: list 40-world-smooth.js and 44-world-streams.js before 41');
+ const parts=[];let n=0;
+ streamCurves(SR,(L,P)=>{const A=new Float32Array((P.length-1)*9);
+  for(let i=0;i<P.length-1;i++){const a=P[i],b=P[i+1],o=i*9;A[o]=a[0];A[o+1]=a[1];A[o+2]=b[0];A[o+3]=b[1];A[o+4]=a[2];A[o+5]=b[2];A[o+6]=a[3];A[o+7]=b[3];A[o+8]=L.w;}
+  parts.push(A);n+=P.length-1;});
+ STSEG=new Float32Array(n*9);let off=0;for(const A of parts){STSEG.set(A,off);off+=A.length;}
+ // the hash: a flat grid of STCELL cells over the segments' reach, each cell's segments a run of STIDX (STHASH[c] to STHASH[c + 1])
+ let gx0=1e9,gz0=1e9,gx1=-1e9,gz1=-1e9;
+ for(let s=0;s<n;s++){const o=s*9;gx0=Math.min(gx0,STSEG[o],STSEG[o+2]);gx1=Math.max(gx1,STSEG[o],STSEG[o+2]);gz0=Math.min(gz0,STSEG[o+1],STSEG[o+3]);gz1=Math.max(gz1,STSEG[o+1],STSEG[o+3]);}
+ STG.x0=Math.floor((gx0-SREACH)/STCELL);STG.z0=Math.floor((gz0-SREACH)/STCELL);STG.nx=Math.floor((gx1+SREACH)/STCELL)-STG.x0+1;STG.nz=Math.floor((gz1+SREACH)/STCELL)-STG.z0+1;
+ const cnt=new Int32Array(STG.nx*STG.nz+1),span=(s,f)=>{const o=s*9,x0=Math.min(STSEG[o],STSEG[o+2])-SREACH,x1=Math.max(STSEG[o],STSEG[o+2])+SREACH,z0=Math.min(STSEG[o+1],STSEG[o+3])-SREACH,z1=Math.max(STSEG[o+1],STSEG[o+3])+SREACH;
+  for(let iz=Math.floor(z0/STCELL);iz<=Math.floor(z1/STCELL);iz++)for(let ix=Math.floor(x0/STCELL);ix<=Math.floor(x1/STCELL);ix++)f((iz-STG.z0)*STG.nx+ix-STG.x0);};
+ for(let s=0;s<n;s++)span(s,c=>cnt[c+1]++);
+ for(let c=0;c<STG.nx*STG.nz;c++)cnt[c+1]+=cnt[c];
+ STIDX=new Int32Array(cnt[STG.nx*STG.nz]);const fill=cnt.slice();for(let s=0;s<n;s++)span(s,c=>{STIDX[fill[c]++]=s;});
+ STHASH=cnt;
+ W.streamCount=SR.lines.length;W.streamSegments=n;}
+// the cut at (x,z) on ground h: as carveAt, the deepest of the streams near the point. Fills C {k, d, hw, wet} (the
+// nearest stream's distance, half-width and whether it is wet, where none cuts)
+function streamAt(x,z,h,wallK,C){C.k=0;C.d=1e9;C.hw=0;C.wet=0;
+ const ix=Math.floor(x/STCELL)-STG.x0,iz=Math.floor(z/STCELL)-STG.z0;if(ix<0||iz<0||ix>=STG.nx||iz>=STG.nz)return C;
+ const c=iz*STG.nx+ix,e=STHASH[c+1];
+ for(let i=STHASH[c];i<e;i++){const o=STIDX[i]*9,ax=STSEG[o],az=STSEG[o+1],dx=STSEG[o+2]-ax,dz=STSEG[o+3]-az,l2=dx*dx+dz*dz;
+  let t=l2>0?((x-ax)*dx+(z-az)*dz)/l2:0;t=t<0?0:t>1?1:t;const ex=ax+dx*t-x,ez=az+dz*t-z,d=Math.sqrt(ex*ex+ez*ez);
+  if(d>SREACH)continue;
+  const s=lerp(STSEG[o+4],STSEG[o+5],t),hw=stW(s),depth=stD(s),bed=Math.max(lerp(STSEG[o+6],STSEG[o+7],t),h-depth-SDMAX);
+  const Dc=h-Math.min(h-depth,bed-depth*.5),outer=Math.min(SREACH-5,hw+2+Dc*wallK),vw=stVW(s);
+  const k=(d<outer?Dc*(1-smooth(hw,outer,d)):0)+(d<vw?stVD(s)*(1-smooth(0,vw,d)):0);
+  if(k>C.k||(C.k===0&&d<C.d)){if(k>C.k)C.k=k;C.d=d;C.hw=hw;C.wet=STSEG[o+8];}}
+ return C;}
+// a wet stream's water at (x,z): inside its bed, the carved ground at its centre line abreast of the point plus 60 % of
+// its depth; -1e9 elsewhere (a dry stream holds none)
+const STW={k:0,d:1e9,hw:0,wet:0};
+function streamWater(x,z){if(!STHASH)return -1e9;
+ const ix=Math.floor(x/STCELL)-STG.x0,iz=Math.floor(z/STCELL)-STG.z0;if(ix<0||iz<0||ix>=STG.nx||iz>=STG.nz)return -1e9;
+ const c=iz*STG.nx+ix,e=STHASH[c+1];let bd=1e9,px=0,pz=0,wd=0;
+ for(let i=STHASH[c];i<e;i++){const o=STIDX[i]*9;if(!STSEG[o+8])continue;
+  const ax=STSEG[o],az=STSEG[o+1],dx=STSEG[o+2]-ax,dz=STSEG[o+3]-az,l2=dx*dx+dz*dz;
+  let t=l2>0?((x-ax)*dx+(z-az)*dz)/l2:0;t=t<0?0:t>1?1:t;const qx=ax+dx*t,qz=az+dz*t,d=Math.hypot(qx-x,qz-z);
+  const s=lerp(STSEG[o+4],STSEG[o+5],t),hw=stW(s);
+  if(d<hw&&d<bd){bd=d;px=qx;pz=qz;wd=.6*stD(s);}}
+ return bd<1e9?H(px,pz,0,null,true)+wd:-1e9;}
+W.streamWater=streamWater;
+// the decoded streams: [{wet, end, pts: [[x, z, s, bed]...]}] (the curves the page carves; made again at each call, for a
+// probe or a test: the page keeps only its segments)
+W.streams=()=>{const out=[];if(M.streams&&M.streams.lines)streamCurves(M.streams,(L,P)=>out.push({wet:L.w,end:L.e,pts:P}));return out;};
+W.streamAt=(x,z)=>{if(!STHASH)return null;const c=streamAt(x,z,H(x,z,150,null,true,true),.5,STW);return c.d<1e9?Object.assign({},c):null;};
+// the flow surface at (x,z), for the streams' bake (core/world/bake_streams.py): out {h: the land as drawn down to 150 m
+// (its hills, ridges, benches, roughness and gullies, the channels carved; no streams, no finer detail), K: 0 land, 1 a
+// lake or the sea, 2 a channel or river's bed, 3 outside the region, rain: mm}. Traced on the land's large form alone, the
+// streams ran ruler-straight down the gentle slopes (D8's eight directions, parallel); on this they wander as it does
+const FP={};
+W.flowAt=function(x,z,out){out=out||{};out.h=H(x,z,150,FP,true,true);out.rain=W.rain(x,z);
+ out.K=!W.inside(x,z)?3:W.lakeWater(x,z)>out.h-.5?1:FP.cd<FP.cw+20?2:0;return out;};
+
 // ---------------------------------------------------------------- the escarpments: cliffs at 1:1
 // Where the extractor marks an escarpment (the eastern abyss's rim: scarpw.png), the scale model's smooth rise from the
 // floor's level L to the plateau's U is gathered into a cliff: a point's share t of the way up is sharpened round a
@@ -460,6 +536,7 @@ function H(x,z,minWave,P,nr,nt){minWave=minWave||0;
  // the channels: carve to the bed line (or the local ground less the depth, whichever is lower); the wall leans wallK
  let cd=1e9,cut=0,cw=0,co=0;
  if(minWave<400){carveAt(x,z,h,S.wallK,CH,SC);h-=CH.k;cd=CH.d;cut=CH.cut;cw=CH.hw;co=CH.co;}
+ let sd=1e9,sw=0;if(STHASH&&minWave<150){streamAt(x,z,h,S.wallK,STC);h-=STC.k;sd=STC.d;sw=STC.hw;}
  if(minWave<13)h+=(N5.vn(x/13,z/13)-.5)*1.1+(N5.vn(x/3.1+50,z/3.1)-.5)*.3;
  // a world's own shaping of its land (W.landHook: openworld/isle-demo's coast, reef and mangrove flats); none here
  if(W.landHook)h=W.landHook(x,z,h,minWave);
@@ -469,7 +546,7 @@ function H(x,z,minWave,P,nr,nt){minWave=minWave||0;
  // the roads, last: the carriageway is level at the road's height whatever the detail did (a road stops outside a
  // town's footprint, and was routed over the land with the towns in it, so it meets the town's ground at its edge)
  let rw=0;if(!nr&&RHASH){roadAt(x,z,h,RD);if(RD.w>0){h=bound(h,RD);rw=RD.d<=RD.hw+1.5&&!RD.span?1:0;}}
- if(P){P.base=b;P.rel=rel;P.cd=cd;P.cut=cut;P.cw=cw;P.co=co;P.road=rw;SKEYS.forEach(k=>P[k]=S[k]);}
+ if(P){P.base=b;P.rel=rel;P.cd=cd;P.cut=cut;P.cw=cw;P.co=co;P.sd=sd;P.sw=sw;P.road=rw;SKEYS.forEach(k=>P[k]=S[k]);}
  return h;}
 W.H=(x,z,minWave)=>H(x,z,minWave||0,null);
 W.Hbare=(x,z,minWave)=>H(x,z,minWave||0,null,true,true);   // the land alone: no roads, no towns
@@ -524,7 +601,7 @@ W.waterBodies=function(){if(BODIES)return BODIES;BODY=new Int32Array(nx*ny).fill
    mask:refineMask(cells,data,mnx,mnz,mi0,mj0,x0,z0,cw,ch,lv),
    box:[cellX(i0b-1)-cw/2,cellZ(j0b-1)-ch/2,cellX(i1b+1)+cw/2,cellZ(j1b+1)+ch/2]});}
  return BODIES;};
-W.water=(x,z)=>Math.max(W.lakeWater(x,z),riverWater(x,z));   // a river's water where it is above a lake's (it runs into the lake at its mouth)
+W.water=(x,z)=>Math.max(W.lakeWater(x,z),riverWater(x,z),streamWater(x,z));   // a river's water where it is above a lake's (it runs into the lake at its mouth)
 
 // ---------------------------------------------------------------- the whole sample
 // W.at samples the height and its slope itself; a terrain chunk, which has its heights on a grid already, keeps the
@@ -540,7 +617,8 @@ function fieldsFrom(x,z,h,tanS,PP,A){const slope=clamp(tanS*1.6,0,1),wl=W.water(
  A.x=x;A.z=z;A.h=h;A.water=wl;A.depth=wl-h;A.tanS=tanS;A.slope=slope;A.rain=rain;A.temp=temp;A.clim=code;A.group=grp;A.base=PP.base;A.rel=PP.rel;A.road=PP.road||0;
  // the channel: flow on its banks, canyon inside a cut deeper than 18 m, the rim a band outside the cut's lip
  const inCh=PP.cd<PP.co;
- const flow=PP.cd<1e8?1-smooth(PP.cw*.6,PP.cw+12+PP.cut*PP.wallK*.3,PP.cd):0;
+ const flow=Math.max(PP.cd<1e8?1-smooth(PP.cw*.6,PP.cw+12+PP.cut*PP.wallK*.3,PP.cd):0,
+  PP.sd<1e8?1-smooth(PP.sw*.6,PP.sw+6,PP.sd):0);   /* a small stream's bed and banks too (P3) */
  const can=inCh?smooth(12,40,PP.cut)*(1-smooth(PP.cw,PP.co*1.05,PP.cd)):0;
  const rim=PP.cd<1e8&&PP.cut>18?smooth(PP.co*.9,PP.co*1.1,PP.cd)*(1-smooth(PP.co*1.3,PP.co*1.3+120,PP.cd)):0;
  const nearW=wl>-1e8?smooth(40,0,h-wl):0;

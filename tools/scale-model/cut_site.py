@@ -128,6 +128,10 @@ def cut(region, dry=False):
     with open(rj, 'w', encoding='utf-8', newline='\n') as f:
         json.dump(M, f, ensure_ascii=False, indent=1)
     print('cut %s: %d sites, origin px %s, box px %s' % (region, len(M['sites']), M['frame']['origin_px'], M['frame']['box_px']))
+    if G.get('relief'):   # its small streams, traced on the land the page draws (core/world/bake_streams.py; PLAN-RELIEF.md P3)
+        r = subprocess.call([sys.executable, os.path.join(ROOT, 'core', 'world', 'bake_streams.py'), region])
+        if r:
+            sys.exit('cut_site: core/world/bake_streams.py failed (%d)' % r)
 
 
 def main():

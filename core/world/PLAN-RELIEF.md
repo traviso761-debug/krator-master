@@ -254,7 +254,7 @@ Each one changes `WORLD.H`, so each turn:
 | **P0 Evidence** | Hillshades at 25 m of the page's land at four test spots (the savannah rim's benches, the High Rift, the Oidong floor, the jungle). The band metric. The `H` bench | The baseline every later phase is measured against |
 | **P1 Styles + caprock benches** (S1, S2; R1, R2) | Every overlay styled; terraces only on caprock, with dip and folds | The biggest visible win, and small. It ends the contour lines on its own |
 | **P2 Erosion filter** (S3) | Gullies and spurs | Most of the "rugged" look, pointwise, low risk to sites |
-| **P3 Channels** (S5; R6) | Small streams at the cut, wet by rainfall, carved on the page with a profile by style. The loess tables between the canyons | Joins P2's gullies into drainage; needs a re-cut |
+| **P3 Channels** (S5; R6) | Small streams baked after the cut, wet by rainfall, carved on the page with a profile by style. The loess tables between the canyons | Joins P2's gullies into drainage; needs a re-bake (not a re-cut) |
 | **P4 The record engine + stacks** (R5, S7, S16) | The spatial hash of records, `WORLD.landforms`, the masks. Mesas, buttes, inselbergs, tors and kopjes. Pinnacle Rock's mesa pinned. The planners building on a mesa's top | Touches site placement, so it comes after the land is settled. Every later submodule rides on it |
 | **P5 Peaks** (S4) | Jaggedness, horns and arêtes on the high ground | Matters most in the far view, after the rest is tuned |
 | **P6 The cut hands over** (R8) | The cut's sub-cell families dropped under the flag; re-cut | Once P1 to P5 cover each family |
@@ -359,6 +359,68 @@ The High Rift's hillshade shows the rings plainly: concentric risers 200 to 250 
   them, and the gullies already lead toward them (both follow the same slope).
 - **Left from P1:** the page's old gully noise (`|2*fbm-1|^6` at 240 m) shows as worm-like ridges on the High Rift. The
   erosion filter replaces it.
+
+**P3, the small streams (2026-11-16).**
+- **Where they are traced.** Not at the cut, as section 3 planned: the cut's 500 m grid has none of the page's 6 km hills,
+  so a stream traced there ran straight over them. A bake after the cut, `core/world/bake_streams.py <region>`, runs the
+  region's land in node and traces on what the page draws down to 150 m (`WORLD.flowAt`: the hills, ridges, benches,
+  roughness and gullies, the channels carved). `cut_site.py` runs it after every relief cut. region.json keeps the result
+  (`streams`); a page decodes it and Godot reads it as data.
+- **The trace** (`44-world-streams.js`, `WSTREAMS.trace`, [G data]), on a 250 m grid:
+  - priority-flood with an epsilon (the heap breaks ties on the cell's index, so a port pops the same order), D8, rain-weighted
+    accumulation in the cut's own unit;
+  - a stream starts at 1/150 of a channel's flow: about 3 km² of catchment at 1,000 mm, 21 km² in a desert;
+  - **it starts only where the flow gathers**: a cell must carry twice any lateral neighbour's flow. D8 alone ran a
+    ruler-straight stream down every column of an even slope (the linear artifact again; the test's even slope: 118 lines
+    before, 0 after). Two passes of incision (the surface lowered along the blurred log-flow) let streams capture their side slopes;
+  - **a stream ends where it enters a depression** over 1.5 m deep (a pond or swamp the land holds) and starts again at its
+    outlet: across a filled flat D8 runs straight to the spill;
+  - it ends in a lake, a channel or river, a depression, the region's edge, or a line traced before it (a junction);
+  - **wet by rainfall** (the owner, 2026-11-15): wet where its catchment's mean rain is 450 mm or more;
+  - **the beds** come from the ground along the curve the page draws, the lowest so far from the head
+    (`WSTREAMS.rebed`). From the 250 m cells' fill they sat up to 40 m off the drawn curve.
+- **Encoding:** a line is its head's cell, a direction character a step, its bed's falls in dm and a strength character a
+  vertex. Pinnacle's 268 streams take 42 KB; Oidong's 4,151 take 1.1 MB (its page stays under its cap).
+- **On the page** (`41`, `buildStreams`, `streamAt`): each line relaxed six passes and curved (`WSMOOTH.line`, with a
+  seeded meander of 26 m between the cells), carved exact after the channels:
+  - a bed 1.5 to 8 m wide and 0.6 to 2.5 m deep with its strength, its walls leaning wallK;
+  - a swale under the bank, 25 to 75 m to each side and 1.2 to 4.5 m deep. Without it the bed read as a knife cut;
+  - never more than 6 m under its bank to keep its bed falling (past that it follows the ground).
+  - A wet stream holds water in its bed (`WORLD.streamWater`, inside `WORLD.water`), so the flora, the floor, the camera and
+    the ground's `wet` field see it; its bed and banks feed the `flow` field as a channel's do.
+  - The streams' hash is a flat grid of 512 m cells over their box: a `Map` keyed past the small integers made `H` twice as
+    slow.
+- `node core/world/test-streams.js`, each check with a negative:
+  - a valley gathers one trunk with its side streams;
+  - an even slope starts no stream (D8 alone: 118 parallel lines);
+  - every bed falls (a reversed line fails);
+  - every line ends at the edge, in a lake, or on a line traced before it;
+  - a depression ends the lines entering it and starts one at its outlet (with the rule off, a line runs across it);
+  - wet at 900 mm, dry at 250 mm;
+  - the trace is deterministic.
+- The probe (`91`): every bed falls and the ground is carved at 97 % of the stations every 300 m down a sample of the
+  streams. Negatives: the lines read backwards, the stations moved 150 m aside.
+- **Numbers:**
+
+  | Region | Streams | Wet | Ends: junction, channel, depression, lake, edge | Size |
+  |---|---|---|---|---|
+  | pinnacle | 268 | all | 104, 42, 70, 42, 10 | 42 KB |
+  | oidong-highrift | 4,151 | 1,116 | 1,937, 926, 1,037, 227, 24 | 1.1 MB |
+
+  Over every stream, the ground stands above its bed by 0 m at the median, 1.1 to 1.4 m at the 90th percentile, 2.5 to 7 m
+  at the 99th.
+- **Cost:** `WORLD.H` 0.2 to 0.4 µs slower where streams are densest (about 1.5 against 1.3 µs); Oidong's init builds its
+  868,000 segments in about half a second.
+- **Re-baked:**
+  - pinnacle: the plan is unchanged (`90ecf7fd`); good farmland 1,328 to 1,264 km²;
+  - oidong-highrift `296753e8`: 937 records, 15 bridges.
+- **Left for later:**
+  - **the water's surface:** a wet stream holds water (`WORLD.water`) but no ribbon is drawn. Thousands of streams as
+    `WATER.flow` meshes are too many at load: it wants ribbons built near the camera as the terrain streams;
+  - **the profile by style** (S5: the loess's box canyons, slot gorges, braided wadi floors, peat cuts) and the loess tables
+    between them;
+  - two regions over one ground (oidong-highrift and xanadu-oidong-highrift) trace their streams apart, so they can differ
+    near their edges.
 
 ## 6. Risks
 

@@ -5,7 +5,8 @@
 //  - the land is continuous: no step over a few centimetres anywhere on a sample of lines across the region;
 //  - nothing roots in the water unless its pass stands in the shallows, and nothing grows outside the polygon;
 //  - no NaN in any record or in the drawn terrain;
-//  - every named river (region.json rivers) has water in its channel at each station down to its mouth.
+//  - every named river (region.json rivers) has water in its channel at each station down to its mouth;
+//  - every small stream (a relief region's) falls to its mouth and is carved in the land.
 // Each check has a NEGATIVE: a broken input it must reject (a tile seeded by Math.random, a tree put in the sea, a step
 // put in the land, a tree put outside the polygon).
 window._api=(function(){
@@ -44,6 +45,18 @@ function rivers(waterF){waterF=waterF||WORLD.water;const R=WORLD_DATA.meta.river
   n++;let ok=false;for(let s=-500;s<=500&&!ok;s+=8){const px=x+nx*s,pz=z+nz*s;if(waterF(px,pz)>WORLD.H(px,pz)+.5)ok=true;}
   if(ok)wet++;else first=first||[Math.round(x),Math.round(z)];}}
  return{ok:R.length>0&&wet===n,detail:R.length+' rivers, '+n+' stations, '+wet+' with water in the channel'+(first?' (first dry at '+first+')':'')};}
+// the small streams (a relief region's, region.json `streams`; core/world/PLAN-RELIEF.md P3): every bed falls from head
+// to mouth (44-world-streams.js WSTREAMS.check), and at a station every 300 m down a sample of the streams the ground is
+// carved (WORLD.streamAt: a cut of 0.3 m or more where the line runs). rev: read each line backwards; off: move each
+// station that far sideways (the negatives)
+function streams(rev,off){const L=WORLD.streams?WORLD.streams():[];if(!L.length)return{ok:true,detail:'no streams in this region'};
+ const pick=L.filter((_,i)=>i%Math.max(1,Math.floor(L.length/300))===0),beds=pick.map(S=>rev?S.pts.slice().reverse():S.pts);
+ const prob=WSTREAMS.check(beds);let n=0,cut=0,first=null;
+ for(const S of pick){const P=S.pts;let acc=300;for(let i=1;i<P.length;i++){acc+=Math.hypot(P[i][0]-P[i-1][0],P[i][1]-P[i-1][1]);if(acc<300)continue;acc=0;
+  const a=P[i-1],b=P[i],l=Math.hypot(b[0]-a[0],b[1]-a[1])||1,x=b[0]-(b[1]-a[1])/l*(off||0),z=b[1]+(b[0]-a[0])/l*(off||0);
+  if(!WORLD.inside(x,z))continue;n++;const c=WORLD.streamAt(x,z);if(c&&c.k>=.3)cut++;else first=first||[Math.round(x),Math.round(z)];}}
+ return{ok:prob.length===0&&n>0&&cut>=.97*n,detail:L.length+' streams ('+L.filter(S=>S.wet).length+' wet), '+pick.length+' sampled: '+(prob.length?prob.length+' beds rising (first: '+prob[0]+')':'every bed falls')+
+  '; '+cut+' of '+n+' stations carved'+(first?' (first not at '+first+')':'')};}
 // highways: the ground under each road's centre line is the road's finished height (within 0.3 m) and no step of the
 // line is steeper than the ruling grade (+ 0.5 % for the rounding); eF: the road's height as the check reads it
 // A station within 12 m of another road is a junction (two carriageways share the ground there): counted, not judged
@@ -88,6 +101,7 @@ function hostChecks(){const out=[],P=HOST.camera.position,[tx,tz]=tileOf(P.x,P.z
   out.push(Object.assign({name:'trees keep their spacing, across tile edges'},spaced(T)));}
  let nan=0;for(const m of TERRAIN.meshes()){const a=m.geometry.attributes.position.array;for(let i=0;i<a.length;i++)if(!isFinite(a[i])){nan++;break;}}
  out.push(Object.assign({name:'the named rivers carry water to their mouths'},rivers()));
+ out.push(Object.assign({name:'the small streams fall to their mouths, carved in the land'},streams()));
  out.push(Object.assign({name:'the highways lie on the land and keep their grade'},highways()));
  out.push(Object.assign({name:'nothing grows on a highway or in a town'},clearOf(allRecs())));
  out.push({name:'no NaN in the drawn terrain',ok:nan===0&&TERRAIN.meshes().length>0,detail:TERRAIN.meshes().length+' chunks drawn, '+nan+' with NaN'});
@@ -106,6 +120,8 @@ function hostNegatives(){const out=[],P=HOST.camera.position,[tx,tz]=tileOf(P.x,
  {const T=FLORA.buildTile(tx,tz).slice(0,40);if(T.length){const a=T[0];T.push(Object.assign({},a,{x:a.x+.5,Ht:a.Ht-1}));}
   out.push(Object.assign({name:'negative: a tree put at the foot of another'},spaced(T)));}
  out.push(Object.assign({name:'negative: a river with its water taken away'},rivers((x,z)=>-1e9)));
+ if(WORLD.streams&&WORLD.streams().length){out.push(Object.assign({name:'negative: the streams read backwards'},streams(true,0)));
+  out.push(Object.assign({name:'negative: each stream station moved 150 m aside'},streams(false,150)));}
  out.push(Object.assign({name:'negative: a highway read 2 m high, rising 1 m a step'},highways(p=>p[2]+2+(Math.round(p[0])%2?1:0))));
  {const r=((WORLD_DATA.roads&&WORLD_DATA.roads.roads)||[])[0],T=WORLD.towns&&WORLD.towns[0],F=allRecs().slice(0,20),o=F[0]||{k:0,sp:0,x:0,y:0,z:0,Ht:5};
   if(r)F.push(Object.assign({},o,{x:r.pts[0][0],z:r.pts[0][1]}));if(T)F.push(Object.assign({},o,{x:T.x,z:T.z}));

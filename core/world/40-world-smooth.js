@@ -24,7 +24,8 @@
 //                                  (o: {width, name, ox, oz, step, meander: false to leave it out, seed, relax: passes
 //                                  of 1-2-1 over a traced river's vertices first, each moved at most cap m (400)})
 //   WSMOOTH.line(P, o)             a derived line (the D8 drainage network, which zigzags along rows and diagonals):
-//                                  its vertices relaxed (o.relax passes of 1-2-1, the ends kept) then curve()
+//                                  its vertices relaxed (o.relax passes of 1-2-1, the ends kept) then curve() (o.meander
+//                                  as curve()'s: the small streams, 44-world-streams.js)
 //
 // Determinism: curve(), river() and line() are +, -, *, /, sqrt and floor (KRAND's integer hash for the meander), so
 // a port gives the same points. heights() also takes Math.exp for its Gaussian weights; it runs at the cut, whose output
@@ -167,6 +168,6 @@ function relax(P,k,cap){let Q=P.map(p=>p.slice());
  for(let it=0;it<k&&Q.length>2;it++){const R=[Q[0]];for(let i=1;i<Q.length-1;i++){const r=Q[i].slice();r[0]=(Q[i-1][0]+2*Q[i][0]+Q[i+1][0])/4;r[1]=(Q[i-1][1]+2*Q[i][1]+Q[i+1][1])/4;R.push(r);}R.push(Q[Q.length-1]);Q=R;}
  if(cap!=null)for(let i=0;i<Q.length;i++){const dx=Q[i][0]-P[i][0],dz=Q[i][1]-P[i][1],d=Math.sqrt(dx*dx+dz*dz);if(d>cap){Q[i][0]=P[i][0]+dx*cap/d;Q[i][1]=P[i][1]+dz*cap/d;}}
  return Q;}
-S.line=function(P,o){o=o||{};return S.curve(relax(dedupe(P),o.relax==null?2:o.relax,null),{step:o.step==null?250:o.step});};
+S.line=function(P,o){o=o||{};return S.curve(relax(dedupe(P),o.relax==null?2:o.relax,null),{step:o.step==null?250:o.step,meander:o.meander||null});};
 return S;})();
 if(typeof module!=='undefined')module.exports=WSMOOTH;
