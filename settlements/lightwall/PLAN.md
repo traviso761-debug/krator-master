@@ -47,7 +47,7 @@ riser, water and warmth):
 
 | Half | People | Where | Buildings |
 |---|---|---|---|
-| **The Glaziers** (the eastern loj's main hold) | ~2,500 | **in the wall**: tiers of carved fronts from the bench's back (1,460 m) up the scarp's foot to ~2,600 m, facing south over the lake | the `gz-*` set: `gz-cell`, `gz-front`, `gz-house` poor to rich; `gz-stair`; `gz-adit` and `gz-vein-gallery` on the Great Potch Line; `gz-wheel-walk`; `gz-tea-hall`; `gz-register-room`; `gz-glass-shop`; `gz-monks-house`; `gz-dark-adit`; `gz-lotus-pond` |
+| **The Glaziers** (the eastern loj's main hold: the owner, 2026-11-16) | ~2,500 | **in the wall**: tiers of carved fronts from the bench's back (1,460 m) up the scarp's foot to ~2,600 m, facing south over the lake | the `gz-*` set: `gz-cell`, `gz-front`, `gz-house` poor to rich; `gz-stair`; `gz-adit` and `gz-vein-gallery` on the Great Potch Line; `gz-wheel-walk`; `gz-tea-hall`; `gz-register-room`; `gz-glass-shop`; `gz-monks-house`; `gz-dark-adit`; `gz-lotus-pond` |
 | **The Xanadui** | ~2,500 | **on the bench and the shore**: the factors, jewellers and cutters, the Sultan's assay and garrison, the caravanserai, the boatmen and lotus growers, the Decree's monastery | the Xanadu kit's: houses poor to rich, the bazaar, the caravanserai, the assay house and its strongroom, a small fort, a monastery with its wheels, the quays, the lakeshore terraces |
 
 The two halves meet at **the Stair Foot**, the bazaar where the Glaziers' main stair comes down to the bench. Opal and
@@ -79,7 +79,9 @@ is the Glaziers'; the bench is the Sultan's.
   field over 200 years (the owner's rule for every opal and gold lode, 2026-11-16).
   - Proposed: ~600 miners in shifts, about **300 kg of opal a year**, against the Sultan's mines' 180 kg with 850 people.
     The black opal is richer.
-  - The Fifth is paid in cut stones at the assay house (`kits/tungang` 1.4: "the Sultan's Fifth paid in cut stones").
+  - **The Glaziers pay the Sultan's Fifth in opals** (the owner, 2026-11-16), counted at the assay house on the bench
+    (`kits/tungang` 1.4: "the Sultan's Fifth paid in cut stones"). In the tune it is a road `share` of 0.2 on opal to the
+    Treasury, like the Sultan's mines'.
 - **The glass shop:** potch to **moonglass**, a new good; crystal opal to **lenses**, which the tune already has.
 - **The lake:** fish, lotus root and seed, opal mussels and their pearls (`biomes/opalvalley` section 4, the opal mussel),
   and the ferries.
@@ -89,8 +91,8 @@ is the Glaziers'; the bench is the Sultan's.
   - across the lake to the Sultan's mines;
   - over the north divide to Oidong's monks (pigment and seeing-mirrors out; tea and celadon in), by a high pass if the
     wall allows one: to check at 1:1.
-- **The houses:** the Rare Devisers and the Two Horns would want factors here (X2's merchant houses). The Golden Tears
-  would not: their gold is in Lizard country.
+- **The houses:** the Rare Devisers (main guild house at Theodiga, royally licensed in scrap and rare artifacts) and the
+  Two Horns would want factors here (X2's merchant houses). The Golden Tears would not: their gold is in Lizard country.
 
 ## 5. Core adoption (to write in full before the first fragment)
 
@@ -118,11 +120,13 @@ is the Glaziers'; the bench is the Sultan's.
 ## 7. Questions for the owner
 
 1. ~~**The name.**~~ **Answered 2026-11-16: keep *Lāiṭwāl*, "the Light Wall".**
-2. **The Glaziers' hold.** Is this town the eastern loj's main hold (with the upper hold at the riser left as its old
-   first loj, or dropped), or a second hold beside it? The Tungang plan's figure was 300-500 Glaziers; this makes them
-   ~2,500.
+2. ~~**The Glaziers' hold.**~~ **Answered 2026-11-16: Lāiṭwāl is the eastern loj's main hold.** About 2,500 Glaziers live
+   in the wall, where the Tungang plan (`kits/tungang/PLAN.md` 1.4.1) had proposed 300-500 at the upper riser. Still
+   open, *proposed*: the upper hold at the riser (x ~1060) stays as the loj's old first hold, a small working outpost on
+   the first terrace's tarns, where the crystal opal for the lenses is gathered.
 3. **The writ.** The bench is under 1,800 m, so inside the Sultan's writ by the valley plan. Is the town the Sultan's, with
    the Glaziers' wall governed by its own loj (the count wall), or something else?
-4. **The province's seat.** `PROPOSAL-XANADU.md` makes the Sultan's mines the seat of Ōpal-Bhālī. Does the seat move to
-   this town of 5,000?
-5. **The halves.** Half and half in people as well as in buildings, or another split?
+4. ~~**The province's seat.**~~ **Answered 2026-11-16: Lāiṭwāl is the seat of Ōpal-Bhālī** (P6), not the Sultan's mines.
+   The mines (`sjuarjbku0`) become one of its works villages across the lake. In `XAN_TUNE` (step L1) the province's
+   tithe roads and its dues go to Lāiṭwāl.
+5. ~~**The halves.**~~ **Answered 2026-11-16: half and half in people**, about 2,500 Glaziers and 2,500 Xanadui.

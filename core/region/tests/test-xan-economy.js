@@ -107,10 +107,10 @@ const scaleCheck=Bk=>XAN_TUNE.provinces.every(Pv=>{const m=(Bk['prov.'+Pv.id].ma
  T.neg('a countryside that made half its grain is caught',scaleCheck,Object.assign({},B,{'prov.p2':Object.assign({},B['prov.p2'],{made:{grain:(B['prov.p2'].made.grain||0)/2}})}),B);}
 // 14. the gateways at their staging towns: the Catch's salt lands at Strongbow and goes in by Kirstabal to Qiblai; Yuni's
 // at Thalaba and goes in by Phēr to the capital
-const stageCheck=Bk=>(Bk.sfgtxw10kr.imported.salt||0)>0&&(Bk.sl758m2396.imported.salt||0)>0&&(Bk.skm4jjo2vl.imported.salt||0)>0&&(Bk['lk.thalaba'].imported.salt||0)>0&&(Bk['xan.pher'].imported.salt||0)>0&&(Bk[E].imported.salt||0)>0;
+const stageCheck=Bk=>(Bk.sfgtxw10kr.imported.salt||0)>0&&(Bk.sl758m2396.imported.salt||0)>0&&(Bk.skm4jjo2vl.imported.salt||0)>0&&(Bk['xan.thalaba'].imported.salt||0)>0&&(Bk['xan.pher'].imported.salt||0)>0&&(Bk[E].imported.salt||0)>0;
 {const saltEaten=people.reduce((n,s)=>n+(B[s.id].eaten.salt||0),0),saltShort=people.reduce((n,s)=>n+(B[s.id].hungry.salt||0),0);
  T.ok('the gateways stage at Strongbow and Thalaba: the salt goes inward to Qiblai and the capital',stageCheck(B),
-  'salt into Strongbow '+t(B.sfgtxw10kr.imported.salt||0)+', Qiblai '+t(B.skm4jjo2vl.imported.salt||0)+', Thalaba '+t(B['lk.thalaba'].imported.salt||0)+', the capital '+t(B[E].imported.salt||0)+
+  'salt into Strongbow '+t(B.sfgtxw10kr.imported.salt||0)+', Qiblai '+t(B.skm4jjo2vl.imported.salt||0)+', Thalaba '+t(B['xan.thalaba'].imported.salt||0)+', the capital '+t(B[E].imported.salt||0)+
   '; the country '+(100*saltShort/Math.max(1,saltEaten+saltShort)).toFixed(1)+' % short of salt in its first year');
  T.neg('salt that never got past Strongbow is caught',stageCheck,Object.assign({},B,{skm4jjo2vl:Object.assign({},B.skm4jjo2vl,{imported:Object.assign({},B.skm4jjo2vl.imported,{salt:0})})}),B);}
 // ---- X2 (the owner, 2026-11-16): the lodes as fields of veins, the Geomancers' oil, the Brotherhood of the Two Horns,
@@ -142,10 +142,19 @@ const oilCheck=(Bk,Tr)=>{const made=Bk['geo.oilfield'].made.oil||0,lic=Object.ke
 //     landed at their house at Thalaba, and out by Yuni's caravans
 const landed=(r,leg)=>((Y.trade[r]||{}).landed||{})[leg]||{};
 const devCheck=(xp,L,O)=>(xp.made.sulfur||0)>50000&&(xp.made.wax||0)>20000&&(xp.made.rarities||0)>30&&(L.sulfur||0)>0&&(L.rarities||0)>0&&(O.rarities||0)>0;
-{const xp=B['exp.godshearth'],L=landed('expedition.godshearth','exp.godshearth>devisers.thalaba'),O=landed('trade.gate.yuni','lk.thalaba>gate.yuni');
+{const xp=B['exp.godshearth'],L=landed('expedition.godshearth','exp.godshearth>devisers.thalaba'),O=landed('trade.gate.yuni','xan.thalaba>gate.yuni');
  T.ok('the Rare Devisers\' Godshearth expedition: sulfur, wax and rarities from the vents in its season, home to their house at Thalaba, out by Yuni\'s caravans',devCheck(xp,L,O),
   'made sulfur '+t(xp.made.sulfur||0)+', wax '+t(xp.made.wax||0)+', rarities '+Math.round(xp.made.rarities||0)+'; landed at the house sulfur '+t(L.sulfur||0)+', rarities '+Math.round(L.rarities||0)+'; out to Yuni rarities '+Math.round(O.rarities||0)+', sulfur '+t(O.sulfur||0));
  T.neg('an expedition that brought nothing home is caught',x=>devCheck(xp,x,O),{},L);}
+// 18b. the Rare Devisers' royal licence (the owner, 2026-11-16: "their main guild house at Theodiga; they are royally licensed
+//      in the scrap and rare artifact trade"): every kilo of the Salvagers' scrap through their guild house, sold on to the
+//      smelter, which still makes Theodiga's iron; the Sultan's fee a tenth of the rarities
+const licCheck=(sc,sold,iron,fee,rar)=>sc>0&&sold>sc*.6&&iron>0&&Math.abs(fee/Math.max(1,rar)-XAN_TUNE.devisers.licence)<.04;
+{const sc=Object.values((Y.trade['devisers.scrap']||{}).tithed||{}).reduce((n,o)=>n+(o.scrap||0),0),sold=(landed('devisers.sell.theodiga','devisers.theodiga>s4zvgepuru').scrap||0),
+  iron=(B.s4zvgepuru.made.iron||0),C=(Y.cuts['expedition.godshearth']||{taken:{}}).taken,fee=C['xan.citadel:rarities']||0,rar=landed('expedition.godshearth','exp.godshearth>devisers.thalaba').rarities||0;
+ T.ok('the Rare Devisers\' royal licence: the Salvagers\' scrap through their guild house at Theodiga to the smelter; the Sultan\'s tenth of the rarities',licCheck(sc,sold,iron,fee,rar),
+  'scrap to the house '+t(sc)+', sold to the smelter '+t(sold)+', Theodiga\'s iron '+t(iron)+'; the fee '+fee.toFixed(1)+' of '+rar.toFixed(1)+' rarities');
+ T.neg('a house that kept the scrap is caught',x=>licCheck(sc,x,iron,fee,rar),0,sold);}
 // 19. the Golden Tears: their armed camp's ore from the Rift floor's lodes in the cool months only, home to their house and sold
 //     on to the Sultan's assay; their escort's share of Dalab's Great Caravan at the capital
 const tearsCheck=(c,L,A,esc)=>(c.made.goldore||0)>T_ORE*.5&&(L.goldore||0)>0&&A>0&&esc>0;

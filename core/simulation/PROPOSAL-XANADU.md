@@ -155,7 +155,7 @@ bearing is measured from the lake's centre at 810,1499.5, 0° east, 90° south).
 | 255° | 805,1482 | **Qōqō** (cocoa) | 1,800 | Cacao groves on the north shore |
 | 270° | 810,1483 | **Phēr** (fair) | 6,000 | The north shore's market town, across the lake from Erehwon: the north's hub and P7's seat |
 | 300° | 818,1485 | **Māuṭh** (mouth) | 1,500 | Fishing at the mouths of the north-shore rivers |
-| 330° | 825,1488 | **Thalaba** | 3,000 | The north-shore village grown into a town: the summer expeditions to Godshearth (sulfur, machine-wax, the vents) |
+| 330° | 825,1488 | ~~**Thalaba** (3,000)~~ **Ōlḍ-Thalaba** | 600 | **Changed at X2 (the owner, 2026-11-16):** Thalaba moved up to the mouth of Godshearth (840,1463, a town of 2,400; section 7, X2); a fishing village keeps its shore |
 | 345° | 834,1493 | **Ḍāiyar** (dyer) | 1,400 | The dyers: saffron yellow, agate-wood maroon |
 
 The islands:
@@ -380,7 +380,12 @@ Each step ends in a node test on the valley host, with a negative for each check
     - **Three merchant houses**, wary of one another, each a settlement beside its towns that sells back into them:
       - *The Brotherhood of the Two Horns*, the Twins' guides (`biomes/twins/PLAN.md` section 4). Their guild houses stand at Strongbow and at Stair, off the map, with factor houses in six towns. They take the Split Tally (4 %) on the Catch caravans and a 3 % margin where a factor stands. The Sultan's 5 % toll at the lift is cut beside them.
       - *The Golden Tears*, "a bit more militaristic, running expeditions into Lizard country to seek out unclaimed gold lodes". Their house is in the Gold March, with a factor in the capital. An armed camp of 120 works a field of short lodes on the Rift floor in the cool months. Its ore goes to the Sultan's assay, where the Fifth is taken of the gold. They also escort Dalab's Great Caravan, for 4 % of what it lands.
-      - *The Rare Devisers*, "whose specialty is running the expeditions to the Godshearth". Their house is at Thalaba, with a factor in the capital. Their camp works the vents in the expedition season. Its sulfur, wax and rarities go home to the house and out by Yuni's caravans.
+      - *The Rare Devisers*, "whose specialty is running the expeditions to the Godshearth". The owner added: "the rare devisers will have their main guild house at Theodiga; they are royally licensed in the scrap and rare artifact trade".
+        - Their guild house at Theodiga takes all the Salvagers' scrap and sells it on to the smelter.
+        - Their house at Thalaba sends the camp out. It works the vents in the expedition season; its sulfur, wax and rarities go home to that house and out by Yuni's caravans.
+        - The Sultan's licence fee is 10 % of the rarities.
+        - They also keep a factor in the capital.
+    - **Thalaba moved** (the owner: "we can move thalaba to the mouth of godshearth and put a new village on the lake in its place"). It moves from the lake's north shore (825,1488) to the bench where Godshearth's spillway gorge opens (840,1463, about 1,550 m), as a town of 2,400. It makes the vents' sulfur, its terraces grow half its grain, and it stays the Yuni caravans' staging town, 3-4 days up from Phēr. Ōlḍ-Thalaba, a fishing village of 600, takes its place on the shore and in the north-east market round. The map's pins are queued with the scale-model session.
     - The houses and the camp places are *proposed*. Beyond the owner's words there is no lore for the Tears or the Devisers yet, and the camps' pixels are approximate.
 - **X3. The gateways.**
   - The three gateway markets as off-map stores priced by PLAN-MONEY's M2 scarcity prices.
@@ -413,7 +418,7 @@ Each step ends in a node test on the valley host, with a negative for each check
 ## 8. What this does not do
 
 - It does not draw anything: the region's page draws its sites as it does now.
-- It does not move pins. The only map changes it relies on are already queued: Thalaba to 825,1488 (edit 7), and the 5.1e10 salt works, which the queue holds.
+- It does not move pins. The only map changes it relies on are already queued: Thalaba to 825,1488 (edit 7), and the 5.1e10 salt works, which the queue holds. **Superseded at X2:** Thalaba now goes to 840,1463, with Ōlḍ-Thalaba at 825,1488 and Lāiṭwāl at 1028,1653; all three are queued with the scale-model session.
 - It does not touch core/simulation's contract. The changes are in core/region's valley host (X1) and the tunes.
 
 ## 9. Open questions for the owner
