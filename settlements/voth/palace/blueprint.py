@@ -881,7 +881,7 @@ def draw_floor(F):
         dr.polygon([(X(u), Y(v)) for u, v in q[0]], fill=q[1], outline=(120, 120, 120))
         if len(q) > 2: dr.text((X(q[0][0][0]) + 6, Y(q[0][0][1]) + 4), q[2], font=f_rn, fill=(60, 60, 60))
     # the north arrow / axis note
-    dr.text((X(-ext) + 6, Y(ext) + 6), F.get('axisnote', 'u (main axis) ->   the entrance side at the left; v across, up on the sheet'), font=f_rn, fill=(90, 90, 90))
+    dr.text((X(cu - ext) + 6, Y(cv + ext) + 6), F.get('axisnote', 'u (main axis) ->   the entrance side at the left; v across, up on the sheet'), font=f_rn, fill=(90, 90, 90))
     for r in F['rooms']:
         if r['kind'] == 'garden' and r['u1'] - r['u0'] > 2 * Rr * 0.9: continue
         x0, x1, y0, y1 = X(r['u0']), X(r['u1']), Y(r['v1']), Y(r['v0'])
@@ -922,8 +922,10 @@ def draw_floor(F):
         dr.rectangle([X(u) - 7, Y(v) - 7, X(u) + 7, Y(v) + 7], fill=(255, 255, 255), outline=(0, 0, 0), width=2)
         dr.text((X(u) + 10 if u < 0 else X(u) - 72, Y(v) - 20), 'door', font=f_rn, fill=(0, 0, 0))
     # scale bar
-    bx, by = X(-ext) + 10, Y(-ext) - 12
-    dr.line([(bx, by), (bx + 50 * s, by)], fill=(0, 0, 0), width=3); dr.text((bx, by - 22), '50 m', font=f_rn, fill=(0, 0, 0))
+    # (2026-11-16) placed from the sheet's own centre (was X(-ext): off the page when the rect is not centred on 0),
+    # and 10 m long on a small sheet
+    bx, by = X(cu - ext) + 10, Y(cv - ext) - 12; bar = 50 if ext > 60 else 10
+    dr.line([(bx, by), (bx + bar * s, by)], fill=(0, 0, 0), width=3); dr.text((bx, by - 22), '%d m' % bar, font=f_rn, fill=(0, 0, 0))
     # legend
     lx = ox + PW + margin; ly = oy - 10
     dr.text((lx, ly), 'Key', font=f_lb, fill=(0, 0, 0)); ly += 30

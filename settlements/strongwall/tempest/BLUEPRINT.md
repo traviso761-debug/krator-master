@@ -124,12 +124,12 @@ u -63..-41, v -11..11. With the barbican and the towers the footprint is about 3
 | Who | People | Where |
 |---|---|---|
 | **The professed in the eight companies**: forty brothers each and a captain | 320 + 8 | the company halls over the stables (T2) |
-| **The chapter**: the Prior, the chant-master, the Song-singers who keep the hall and the drum day and night, the librarians, the old brothers back from the companies | ~70 | the great monastery's cells (M1, M2) |
+| **The chapter**: the Prior, the chant-master, the Song-singers who keep the hall and the drum day and night, the librarians, the old brothers back from the companies | ~65 | the great monastery's 49 cells (ten on M1, 39 on M2), the young singers two to a cell |
 | **The officers**: the Marshal, the Cellarer, the Infirmarer, the Master of Novices and the two masters of arms | 6 | at their work (T1, T2) |
 | **The Prismarch** and his secretary | 2 | the utse (U) |
 | **Novices** | 150 | the novices' court (T1, T2) |
 | **Lay brothers**: cooks, grooms, smiths, the bowyers and fletchers, the herdsmen | 50 | over the kitchens, the grooms' loft, the byres on the crest |
-| | **~606** | |
+| | **~601** | |
 
 **Horses** (*proposed*): 292 war horses in the north and south stables (stalls at 2.5 m, two rows in a 12 m range:
 the manifest's count) and 35 in the Gate Stable for the officers, couriers and the Prismarch; some 300 remounts on the crest by day
@@ -142,9 +142,9 @@ and in the walled paddock by night; the milking herd at the byres.
 | T0 | the crest | the House, the barbican, the Strongwall road and the caravan halt; the north and south sally tracks down the flanks; the Maydan and the horse-archery track; the remounts' paddock, the hay barns and ricks, the byres, the great tank, the near corner of the commons; the two middens; the barley terraces west and south, the threshing floors, the tea garden, the hives; the thorn brake where the Founder's Way comes out; the beacon line east and the relay west |
 | T1 | ground | the barbican, the Main Gate and its guards, the Sword Hall, the Marshal's Hall, the Gate Stable, the guest house; the stables of the north and south with their sally gates, hay sheds and garderobe turrets; the novices' court (school, refectory, the Little Armoury, the Hall of the Bow); the Great Refectory, the kitchens, the granary, the dairy; the Storm Tower (the west watch, its fuel store and stair), the smithy, the bowyers; the muster court over its great cistern, the lists, the archery range, the drill court; three corner stairs; in the inner ward the utse, the inner court with the oath stone, the monastery, the infirmary, the bath, the cistern, the Field of the Fallen, the Founder's Garden and Chorten, the Founder's Way; the 28 towers drawn grey as one entry |
 | T2 | upper | the gate chamber and the gilt pavilion, the Bow Loft, the Quiver House, the Marshal, the grooms, the guests; the eight company halls and the captains' stairs up to the wall walk; the novices' dormitories and the masters of arms; the lay brothers, the Cellarer, the stores; the Storm Tower's signal room and the west watch's barrack, the armourers, the bow-curing loft; the infirmary's upper ward; the wall walk round the outer curtain |
-| M1 | monastery, ground | the Gate of the Song, the Blade Room, the sacristy, the cloister court and the Wheel of the Storm, the cloister walks and the kora behind the hall, the porch, the Assembly Hall, the Shrine of the Storm, the Library of the Song, the scriptorium, the old brothers' cells, the chapter house, the treasury |
-| M2 | monastery, upper | the Drum of the Hours, the chapter's cells, the Prior, the chant-master, the daughter house's guests; the Masters' Gallery round the hall |
-| MR | monastery, top | the Protectors' Chapel and the Protector's Room; the lookout; the roofs; the gilt crown |
+| M1 | monastery, ground | the Gate of the Song, the porter's lodge, the Blade Room, the sacristy; the cloister court and the Wheel of the Storm; the kora ring (the cloister walks, the court's arms beside the hall, the passage behind it); the porch, the Assembly Hall, the Shrine of the Storm; the Library of the Song, the scriptorium, the tea kitchen; the old brothers' ten cells; the chapter house, the treasury, the store, the latrines |
+| M2 | monastery, upper | the Drum of the Hours; 39 cells drawn one by one (front ranges on a corridor, side ranges on the gallery over the cloister roof); the Prior, the chant-master, the daughter house's guests on the gallery over the kora; the Masters' Gallery round the hall's void |
+| MR | monastery, top | the Hall of Vigil round the light well under the gilt crown (the crown's pavilion is the hall's lantern); the Protectors' Chapel behind it, windowless; the lookout; the roofs with their stair heads, the prayer-flag masts and the incense altar (sang) |
 | U | the utse | U0 the inner gate, its keepers, the runners; U1 the War Room and the raid ledger; U2 the Hall of the Banner and the balcony; U3 the audience room, the Prismarch's cell, his secretary; U4 his chapel, the roof terrace, the beacon |
 
 ## Finishes and the dress (*proposed*)
@@ -206,6 +206,6 @@ The owner's concentric answer means the fourth size is **two curtains**, not a w
   Pasture: 600-odd horses and the milking herd want several hundred hectares; the West Arm (some 24 x 18 km) has them,
   so T0 draws only the commons' near corner.
 - The brow lookout (879,1618) and its relay are 14 km west, off T0; they are fort-asset watch posts, sited at 1:1.
-- The counts (eight companies of forty, the chapter of about 70, 292 + 35 stabled horses) are a starting point; the
+- The counts (eight companies of forty, the chapter of about 65, 292 + 35 stabled horses) are a starting point; the
   sim holds the House as one settlement of 600 (`xan.tempest`).
 - The manifest counts every room at its full area except the crest sheet's zones; it does not dress open grounds.

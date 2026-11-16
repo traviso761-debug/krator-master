@@ -221,71 +221,98 @@ FLOORS.append(dict(ENCL, id='T2', tier=1,
 
 # ------------------------------------------------------------------------------------------------ the great monastery
 MON = dict(R=30, rect=(-22, 34, -28, 28), axisnote='u -> west; the Gate of the Song east (left), from the inner court; v north, up')
+PART = (110, 110, 110)
+def cells_u(u0, u1, v0, v1, n):
+    """partition lines across a cell row that runs along u: n cells"""
+    return [([(u0 + (u1 - u0) * k / n, v0), (u0 + (u1 - u0) * k / n, v1)], PART, 1) for k in range(1, n)]
+def cells_v(u0, u1, v0, v1, n):
+    """partition lines across a cell row that runs along v"""
+    return [([(u0, v0 + (v1 - v0) * k / n), (u1, v0 + (v1 - v0) * k / n)], PART, 1) for k in range(1, n)]
+CROWN = ([(11.6, -3.84), (17.0, -3.84), (17.0, 3.84), (11.6, 3.84), (11.6, -3.84)], (190, 140, 20), 4)
+
 FLOORS.append(dict(MON, id='M1', tier=0,
   title='Sheet M1: the great monastery, ground floor (the kit\'s 52 m block, violet dress)',
-  sub='qb_monastery with o.v 6 (the violet spoke): four cell ranges of two storeys round a cloistered court, the gate tower in front, the assembly hall (24 x 17 m, three storeys) at the back of the court under the gilt crown; the court\'s piece is the Song drum. Here no blade passes the Gate of the Song: the brothers rack their swords and bows in the Blade Room. The hall stands in a kora: the cloister walks and the passage behind it.',
+  sub='qb_monastery with o.v 6 (the violet spoke): four cell ranges of two storeys round a cloistered court, the gate tower in front, the assembly hall (24 x 17 m, three storeys) at the back of the court under the gilt crown; the court\'s piece is the Song drum. No blade passes the Gate of the Song: the porter takes the brothers\' swords and bows into the Blade Room. The hall stands in a kora: the cloister walks, the court\'s arms either side of the hall and the passage behind it make one ring, walked three times with eyes lowered. The tea kitchen serves the hall at the morning assembly by the north kora. The old brothers\' cells (ten) are on the ground floor, off the south walk.',
+  lines=cells_u(-9.5, 25, -26, -19, 10),
   rooms=[
-    R(1, 'Gate of the Song', 'song_gate', -20.5, -12.5, -5, 5, 3, 'the porter; no blade past this door'),
-    R(2, 'Blade Room', 'blade_room', -20, -13, 5, 26, 2, 'each brother\'s sword and bow on its peg while he is in the cloister'),
-    R(3, 'Sacristy', 'sacristy', -20, -13, -26, -5, 2, 'the violet robes, the lamps, the hall\'s silks'),
-    R(4, 'Cloister Court', 'cloister_court', -13, 2.6, -16.8, 16.8, 3),
-    R(5, 'Wheel of the Storm (the Song drum)', 'song_drum', -9.2, -5.2, -2, 2, 4, 'turned day and night'),
-    R(6, 'Cloister Walk (north)', 'kora', -9.5, 25, 16.8, 19, 2, 'jali in every third bay, the prayer drums'),
-    R(7, 'Cloister Walk (south)', 'kora', -9.5, 25, -19, -16.8, 2),
-    R(8, 'Kora behind the Hall', 'kora', 22.8, 25, -16.8, 16.8, 2),
-    R(9, 'Porch of the Hall', 'porch', 2.6, 5.8, -6, 6, 3, 'the painted portico, a prayer-drum row either side'),
-    R(10, 'Assembly Hall (dukhang)', 'assembly', 5.8, 19, -12, 12, 4, 'two storeys high, lit by the skylight columns; the Prismarch\'s seat; the gilt crown over it'),
-    R(11, 'Shrine of the Storm', 'shrine', 19, 22.8, -12, 8, 4, 'the Damsel with her dulcimer, the eight-spoked wheel, the order\'s relic'),
-    box(12, 'Hall Stair', 'stair', MS_H, 2),
-    R(13, 'Library of the Song', 'song_library', -9.5, 12, 19, 26, 3, 'the Song in the sound-grid script; the order\'s books of war'),
-    R(14, 'Scriptorium of the Drums', 'scriptorium', 12, 25, 19, 26, 2, 'the Song written out for the prayer drums'),
-    R(15, 'Cells of the Old Brothers', 'cells', -9.5, 25, -26, -19, 1, 'on the ground floor: no stair for the old and the lame'),
-    R(16, 'Chapter House', 'chapter_house', 25, 32, -12, 12, 3, 'the daily chapter: faults confessed, the rota read, the companies\' captains heard'),
-    R(17, 'Treasury of the Order', 'treasury', 25, 32, 15.5, 26, 2, 'the grants of esteem, the order\'s silver'),
-    box(18, 'Back Stair', 'stair', MS_B, 1),
-    R(19, 'Lamp, Butter and Robe Store', 'store', 25, 32, -26, -12, 0),
-    box(20, 'Stair (north)', 'stair', MS_N, 1), box(21, 'Stair (south)', 'stair', MS_S, 1),
+    R(1, 'Gate of the Song', 'song_gate', -20.5, -12.5, -5, 5, 3, 'no blade past this door'),
+    R(2, 'Porter\'s Lodge', 'chamber', -20, -13, 5, 11, 2, 'the porter keeps the door and the Blade Room\'s key'),
+    R(3, 'Blade Room', 'blade_room', -20, -13, 11, 26, 2, 'each brother\'s sword and bow on its peg while he is in the cloister'),
+    R(4, 'Sacristy', 'sacristy', -20, -13, -26, -5, 2, 'the violet robes, the lamps, the hall\'s silks'),
+    R(5, 'Cloister Court', 'cloister_court', -13, 5.8, -16.8, 16.8, 3),
+    R(6, 'Wheel of the Storm (the Song drum)', 'song_drum', -9.2, -5.2, -2, 2, 4, 'turned day and night'),
+    R(7, 'Cloister Walk (north)', 'kora', -13, 25, 16.8, 19, 2, 'jali in every third bay, the prayer drums'),
+    R(8, 'Cloister Walk (south)', 'kora', -13, 25, -19, -16.8, 2),
+    R(9, 'Kora beside the Hall (north)', 'kora', 5.8, 22.8, 12, 16.8, 2, 'the court\'s arm along the hall: prayer drums on the hall\'s wall'),
+    R(10, 'Kora beside the Hall (south)', 'kora', 5.8, 22.8, -16.8, -12, 2),
+    R(11, 'Kora behind the Hall', 'kora', 22.8, 25, -16.8, 16.8, 2),
+    R(12, 'Porch of the Hall', 'porch', 2.6, 5.8, -6, 6, 3, 'the painted portico, a prayer-drum row either side'),
+    R(13, 'Assembly Hall (dukhang)', 'assembly', 5.8, 19, -12, 12, 4, 'two storeys high, lit from the light well under the crown; the Prismarch\'s seat'),
+    R(14, 'Shrine of the Storm', 'shrine', 19, 22.8, -12, 8, 4, 'the Damsel with her dulcimer, the eight-spoked wheel, the order\'s relic'),
+    box(15, 'Hall Stair', 'stair', MS_H, 2),
+    R(16, 'Library of the Song', 'song_library', -9.5, 9, 19, 26, 3, 'the Song in the sound-grid script; the order\'s books of war'),
+    R(17, 'Scriptorium of the Drums', 'scriptorium', 9, 17, 19, 26, 2, 'the Song written out for the prayer drums'),
+    R(18, 'Tea Kitchen', 'tea_kitchen', 17, 25, 19, 26, 1, 'the butter tea for the assembly, carried in by the north kora'),
+    R(19, 'Cells of the Old Brothers (ten)', 'cells', -9.5, 25, -26, -19, 1, 'no stair for the old and the lame'),
+    R(20, 'Chapter House', 'chapter_house', 25, 32, -12, 12, 3, 'the daily chapter: faults confessed, the rota read, the companies\' captains heard'),
+    R(21, 'Treasury of the Order', 'treasury', 25, 32, 15.5, 26, 2, 'the grants of esteem, the order\'s silver'),
+    box(22, 'Back Stair', 'stair', MS_B, 1),
+    R(23, 'Lamp, Butter and Robe Store', 'store', 25, 32, -20, -12, 0),
+    R(24, 'Latrines', 'latrine', 25, 32, -26, -20, 0, 'in the corner, over a shaft to the talus'),
+    box(25, 'Stair (north)', 'stair', MS_N, 1), box(26, 'Stair (south)', 'stair', MS_S, 1),
   ]))
 FLOORS.append(dict(MON, id='M2', tier=1,
   title='Sheet M2: the great monastery, upper floor (the cells; the hall\'s gallery)',
-  sub='The chapter\'s cells (*proposed*: some 80 professed, the order\'s officers, the Song-singers who keep the hall and the drum, the old brothers back from the companies) on the upper floor of the ranges, opening on a gallery over the cloister\'s roof. The back range holds the Prior, the chant-master and the guests of the daughter house. The hall\'s gallery is a storey above (5 m hall).',
+  sub='The chapter\'s cells on the upper floor of the ranges (*proposed*: 39 cells here and the ten old brothers\' below, the young Song-singers two to a cell: about 65 of the chapter). The side ranges\' cells are the range\'s full 7 m, a sleeping alcove behind, their doors on a gallery over the cloister\'s roof; the front ranges\' open on a corridor along the court. The back range holds the Prior, the chant-master and the guests of the daughter house, on a gallery over the kora behind the hall. The hall\'s gallery is a storey higher (the hall is 5 m), round the void, reached by the hall stair.',
+  lines=cells_u(-9.5, 25, 19, 26, 10) + cells_u(-9.5, 25, -26, -19, 10) + cells_v(-20, -15.4, 5, 26, 6) + cells_v(-20, -15.4, -26, -5, 6)
+        + cells_v(25, 32, 15.5, 26, 3) + cells_v(25, 32, -26, -12, 4),
   rooms=[
     R(1, 'Drum of the Hours', 'drum_room', -20.5, -12.5, -5, 5, 2, 'the gate tower\'s second storey: the hours beaten for the cloister'),
-    R(2, 'Cells', 'cells', -20, -13, 5, 26, 1),
-    R(3, 'Cells', 'cells', -20, -13, -26, -5, 1),
-    R(4, 'Cells of the Chapter (north)', 'cells', -9.5, 25, 19, 26, 1),
-    R(5, 'Cells of the Chapter (south)', 'cells', -9.5, 25, -26, -19, 1),
-    R(6, 'Gallery on the Cloister Roof', 'passage', -9.5, 25, 16.8, 19, 1),
-    R(7, 'Gallery on the Cloister Roof', 'passage', -9.5, 25, -19, -16.8, 1),
-    R(8, 'The Prior', 'chamber', 25, 32, -12, 0, 3, 'the Prismarch\'s deputy in the Song'),
-    R(9, 'The Chant-master', 'chamber', 25, 32, 0, 12, 2),
-    R(10, 'Guest Cells of the Daughter House', 'cells', 25, 32, -26, -12, 2, 'monks of Qiblai\'s violet monastery'),
-    R(11, 'Cells', 'cells', 25, 32, 15.5, 26, 1),
-    box(12, 'Back Stair', 'stair', MS_B, 1),
-    R(13, 'Masters\' Gallery (north)', 'gallery', 5.8, 19, 9, 12, 3),
-    R(14, 'Masters\' Gallery (south)', 'gallery', 5.8, 19, -12, -9, 3),
-    R(15, 'Masters\' Gallery (west)', 'gallery', 16, 19, -9, 9, 3),
-    R(16, 'Assembly Hall below', 'void', 5.8, 16, -9, 9, 4),
-    R(17, 'Shrine below (rises through)', 'void', 19, 22.8, -12, 8, 4),
-    box(18, 'Hall Stair', 'stair', MS_H, 2),
-    R(19, 'Cloister Court (open)', 'void', -13, 2.6, -16.8, 16.8, 3),
-    box(20, 'Stair (north)', 'stair', MS_N, 1), box(21, 'Stair (south)', 'stair', MS_S, 1),
+    R(2, 'Cells (front, north: six)', 'cells', -20, -15.4, 5, 26, 1),
+    R(3, 'Corridor', 'passage', -15.4, -13, 5, 26, 1),
+    R(4, 'Cells (front, south: six)', 'cells', -20, -15.4, -26, -5, 1),
+    R(5, 'Corridor', 'passage', -15.4, -13, -26, -5, 1),
+    R(6, 'Cells of the Chapter (north: ten)', 'cells', -9.5, 25, 19, 26, 1),
+    R(7, 'Cells of the Chapter (south: ten)', 'cells', -9.5, 25, -26, -19, 1),
+    R(8, 'Gallery on the Cloister Roof', 'passage', -13, 25, 16.8, 19, 1),
+    R(9, 'Gallery on the Cloister Roof', 'passage', -13, 25, -19, -16.8, 1),
+    R(10, 'Gallery over the Kora', 'passage', 22.8, 25, -16.8, 16.8, 1, 'behind the hall, to the back range'),
+    R(11, 'The Prior', 'chamber', 25, 32, -12, 0, 3, 'the Prismarch\'s deputy in the Song'),
+    R(12, 'The Chant-master', 'chamber', 25, 32, 0, 12, 2),
+    R(13, 'Guest Cells of the Daughter House (four)', 'cells', 25, 32, -26, -12, 2, 'monks of Qiblai\'s violet monastery'),
+    R(14, 'Cells (three)', 'cells', 25, 32, 15.5, 26, 1),
+    box(15, 'Back Stair', 'stair', MS_B, 1),
+    R(16, 'Masters\' Gallery (north)', 'gallery', 5.8, 19, 9, 12, 3, 'the masters sit here at the assembly, over the brothers'),
+    R(17, 'Masters\' Gallery (south)', 'gallery', 5.8, 19, -12, -9, 3),
+    R(18, 'Masters\' Gallery (west)', 'gallery', 16, 19, -9, 9, 3),
+    R(19, 'Assembly Hall below', 'void', 5.8, 16, -9, 9, 4),
+    R(20, 'Shrine below (rises through)', 'void', 19, 22.8, -12, 8, 4),
+    box(21, 'Hall Stair', 'stair', MS_H, 2),
+    R(22, 'Cloister Court (open)', 'void', -13, 5.8, -16.8, 16.8, 3),
+    box(23, 'Stair (north)', 'stair', MS_N, 1), box(24, 'Stair (south)', 'stair', MS_S, 1),
   ]))
 FLOORS.append(dict(MON, id='MR', tier=2,
   title='Sheet MR: the great monastery, the hall\'s third storey and the roofs',
-  sub='The Protectors\' Chapel (the gonkhang) on the hall\'s top storey: dark, its pillars hung with the arms of the order\'s dead, as the Tibetan protector chapels hang old weapons. Over it the hall\'s roof and the gilt crown with the wheel and deer (the monasteries\' holy crown, kits/qiblai PLAN.md section 4). The ranges\' flat roofs with gilt corners and the violet band; the gate tower\'s top storey is the cloister\'s lookout.',
-  outlines=[(11.6, 17.0, -3.84, 3.84, 'the gilt crown (on the hall roof)')],
+  sub='The hall\'s top storey is the Hall of Vigil round the light well, where the Song-singers keep the night under the gilt crown (gold outline): the crown\'s pavilion is the hall\'s lantern, lighting the assembly through the well. Behind it, windowless, the Protectors\' Chapel (the gonkhang), its pillars hung with the arms of the order\'s dead, as the Tibetan protector chapels hang old weapons. The ranges\' flat roofs (gilt corners, the violet band) are reached by the three stairs: prayer flags on their masts, the incense altar (sang) on the back range, the gate tower\'s top storey the cloister\'s lookout, banners and the deer on its roof.',
+  lines=[CROWN],
   rooms=[
-    R(1, 'Protectors\' Chapel (gonkhang)', 'protectors', 5.8, 19, -12, 12, 4),
-    R(2, 'The Protector\'s Room', 'protectors', 19, 22.8, -12, 8, 4, 'the inner room: the oldest blades'),
-    box(3, 'Hall Stair (head)', 'stair', MS_H, 2),
-    R(4, 'Lookout of the Song', 'watch', -20.5, -12.5, -5, 5, 1, 'the gate tower\'s third storey; banners and the deer on its roof'),
-    R(5, 'Roof (north range)', 'roof', -13, 25, 19, 26, 1),
-    R(6, 'Roof (south range)', 'roof', -13, 25, -26, -19, 1),
-    R(7, 'Roof (back range)', 'roof', 25, 32, -26, 26, 1),
-    R(8, 'Roof (front range)', 'roof', -20, -13, 5, 26, 1),
-    R(9, 'Roof (front range)', 'roof', -20, -13, -26, -5, 1),
-    R(10, 'Cloister Court (open)', 'void', -13, 2.6, -16.8, 16.8, 3),
+    R(1, 'Hall of Vigil', 'gallery', 5.8, 11.6, -12, 12, 4, 'the Song-singers\' night vigil round the light well'),
+    R(2, 'Light Well (under the crown)', 'void', 11.6, 17, -3.84, 3.84, 4, 'the crown\'s pavilion lights the hall two storeys below'),
+    R(3, 'Protectors\' Chapel (gonkhang)', 'protectors', 17, 22.8, -12, 8, 4, 'dark: the oldest blades, the arms of the fallen, the protector\'s image veiled'),
+    box(4, 'Hall Stair (head)', 'stair', MS_H, 2),
+    R(5, 'Lookout of the Song', 'watch', -20.5, -12.5, -5, 5, 1, 'the gate tower\'s third storey'),
+    R(6, 'Roof (north range)', 'roof', -9.5, 25, 19, 26, 1, 'prayer-flag masts'),
+    R(7, 'Roof (south range)', 'roof', -9.5, 25, -26, -19, 1),
+    R(8, 'Roof (back range)', 'roof', 25, 32, -26, 12, 1),
+    R(9, 'Roof (front range)', 'roof', -20, -13, 5, 26, 1),
+    R(10, 'Roof (front range)', 'roof', -20, -13, -26, -5, 1),
+    R(11, 'Incense Altar (sang)', 'sang', 26, 31, -3, 3, 2, 'juniper burned at dawn and before a sally'),
+    box(12, 'Back Stair (head)', 'stair', MS_B, 1), box(13, 'Stair (north, head)', 'stair', MS_N, 1), box(14, 'Stair (south, head)', 'stair', MS_S, 1),
+    R(15, 'Roof (back range)', 'roof', 25, 32, 15.5, 26, 1),
+    R(16, 'Cloister Court (open)', 'void', -13, 5.8, -16.8, 16.8, 3),
+    R(17, 'Hall of Vigil (north arm)', 'gallery', 11.6, 17, 3.84, 12, 4),
+    R(18, 'Hall of Vigil (south arm)', 'gallery', 11.6, 17, -12, -3.84, 4),
+    R(19, 'Landing', 'passage', 17, 19, 8, 12, 2, 'from the hall stair to the vigil and the chapel\'s door'),
   ]))
 
 # ------------------------------------------------------------------------------------------------ U the Prismarch's tower
@@ -357,6 +384,8 @@ def programs():
       'midden': lambda a, w, d, D: [], 'garderobe': lambda a, w, d, D: [],
       'towers': lambda a, w, d, D: [('xanadu_common_weapon_rack', N_TOWERS), ('xanadu_arms_arrow_bin', N_TOWERS), ('xanadu_common_bench', N_TOWERS)],
       'caravan_halt': lambda a, w, d, D: [('xanadu_trade_trough', 4), ('xanadu_trade_hayrack', 4), ('xanadu_common_bench', 4)],
+      'tea_kitchen': lambda a, w, d, D: [('xanadu_common_tea_copper', 2), ('xanadu_common_hearth', 1), ('xanadu_works_churn', 2), ('xanadu_common_workbench', 1), ('xanadu_common_jug', 12)],
+      'latrine': lambda a, w, d, D: [], 'sang': lambda a, w, d, D: [('xanadu_court_incense_burner', 1)],
       'lists': lambda a, w, d, D: [], 'bank': lambda a, w, d, D: [], 'field': lambda a, w, d, D: [], 'threshing': lambda a, w, d, D: [], 'cloister_court': lambda a, w, d, D: [],
       'roof': lambda a, w, d, D: [],
       'refectory': lambda a, w, d, D: [('xanadu_common_table', cs(a / 19)), ('xanadu_common_bench', cs(a / 9.5)), ('xanadu_common_reader_seat', 1), ('xanadu_common_bowl', cs(a / 4)), ('xanadu_common_jug', cs(a / 19))],
@@ -396,7 +425,7 @@ def programs():
     }
 
 OPEN = {'muster', 'lists', 'drill_court', 'archery', 'bank', 'yard', 'maydan', 'horse_park', 'field', 'threshing', 'cloister_court',
-        'fallen', 'founder', 'song_drum', 'roof', 'well', 'inner_court', 'porch', 'watch', 'hay', 'midden', 'garderobe', 'caravan_halt'}
+        'fallen', 'founder', 'song_drum', 'roof', 'well', 'inner_court', 'porch', 'watch', 'hay', 'midden', 'garderobe', 'caravan_halt', 'sang'}
 
 def keymap():
     m = LS.keymap()
@@ -454,7 +483,7 @@ def draw_section():
     rect(-12.5, 25, 5.2, 11.6, (238, 228, 242)); dr.text((X(-12.5) + 3, Y(11.6) - 22), 'side ranges', font=fs, fill=(110, 90, 120))
     dr.rectangle([X(-9.2), Y(9.4), X(-5.2), Y(5.2)], fill=(238, 220, 150), outline=(30, 30, 30)); dr.text((X(-12), Y(9.4) - 22), 'Song drum', font=fs, fill=(0, 0, 0))
     rect(2.6, 5.8, 5.8, 9.0, (236, 232, 218))
-    for h0, h1, nm in [(5.8, 14.8, 'Assembly Hall (2 storeys)'), (14.8, 18.4, "Protectors' Chapel")]:
+    for h0, h1, nm in [(5.8, 14.8, 'Assembly Hall (2 storeys)'), (14.8, 18.4, "Hall of Vigil; gonkhang")]:
         rect(5.8, 22.8, h0, h1, (200, 160, 210)); dr.text((X(5.8) + 3, Y(h1) + 2), nm, font=fs, fill=(0, 0, 0))
     dr.polygon([(X(11.6), Y(18.4)), (X(17.0), Y(18.4)), (X(16), Y(21)), (X(14.3), Y(22.5)), (X(12.6), Y(21))], fill=(238, 220, 150), outline=(120, 80, 0))
     dr.text((X(18), Y(22.5) - 22), 'the gilt crown', font=fs, fill=(120, 80, 0))

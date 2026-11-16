@@ -146,70 +146,82 @@ The eight companies of the professed (*proposed*: forty each, named for the eigh
 
 ## Sheet M1: the great monastery, ground floor (the kit's 52 m block, violet dress)
 
-qb_monastery with o.v 6 (the violet spoke): four cell ranges of two storeys round a cloistered court, the gate tower in front, the assembly hall (24 x 17 m, three storeys) at the back of the court under the gilt crown; the court's piece is the Song drum. Here no blade passes the Gate of the Song: the brothers rack their swords and bows in the Blade Room. The hall stands in a kora: the cloister walks and the passage behind it.
+qb_monastery with o.v 6 (the violet spoke): four cell ranges of two storeys round a cloistered court, the gate tower in front, the assembly hall (24 x 17 m, three storeys) at the back of the court under the gilt crown; the court's piece is the Song drum. No blade passes the Gate of the Song: the porter takes the brothers' swords and bows into the Blade Room. The hall stands in a kora: the cloister walks, the court's arms either side of the hall and the passage behind it make one ring, walked three times with eyes lowered. The tea kitchen serves the hall at the morning assembly by the north kora. The old brothers' cells (ten) are on the ground floor, off the south walk.
 
 | # | Room | Kind | Decor | m2 | Pieces |
 |---|---|---|---|---|---|
 | 1 | Gate of the Song | song gate | rich | 80 | xanadu_common_bench x2, xanadu_common_lamp x2, xanadu_common_planter x1, xanadu_court_art x1, xanadu_court_carpet x1, xanadu_court_hanging x1, xanadu_court_lamp x2, xanadu_court_tapestry x2, xanadu_court_wall_rug x1 |
-| 2 | Blade Room | blade room | fine | 147 | xanadu_arms_bow_rack x12 **NEW**, xanadu_common_art x2, xanadu_common_banner x1, xanadu_common_chair x1, xanadu_common_desk x1, xanadu_common_hanging x1, xanadu_common_lamp x3, xanadu_common_rug x2, xanadu_common_scroll x1, xanadu_common_weapon_rack x18 |
-| 3 | Sacristy | sacristy | fine | 147 | xanadu_common_art x2, xanadu_common_banner x1, xanadu_common_butter_lamp_rack x2, xanadu_common_chest x7, xanadu_common_hanging x1, xanadu_common_lamp x3, xanadu_common_rack x2, xanadu_common_rug x2, xanadu_common_scroll x1, xanadu_court_cabinet x7 |
-| 4 | Cloister Court | cloister court | rich | 524 |  |
-| 5 | Wheel of the Storm (the Song drum) | song drum | sumptuous | 15 | xanadu_common_butter_lamp_rack x1 |
-| 6 | Cloister Walk (north) | kora | fine | 75 | xanadu_common_art x4, xanadu_common_banner x2, xanadu_common_candle x8, xanadu_common_hanging x1, xanadu_common_lamp x2, xanadu_common_prayer_wheels x6, xanadu_common_rug x1, xanadu_common_scroll x1 |
-| 7 | Cloister Walk (south) | kora | fine | 75 | xanadu_common_art x4, xanadu_common_banner x2, xanadu_common_candle x8, xanadu_common_hanging x1, xanadu_common_lamp x2, xanadu_common_prayer_wheels x6, xanadu_common_rug x1, xanadu_common_scroll x1 |
-| 8 | Kora behind the Hall | kora | fine | 73 | xanadu_common_art x4, xanadu_common_banner x2, xanadu_common_candle x7, xanadu_common_hanging x1, xanadu_common_lamp x2, xanadu_common_prayer_wheels x6, xanadu_common_rug x1, xanadu_common_scroll x1 |
-| 9 | Porch of the Hall | porch | rich | 38 | xanadu_common_prayer_wheels x2 |
-| 10 | Assembly Hall (dukhang) | assembly | sumptuous | 316 | xanadu_common_candle x32, xanadu_common_meditation_cushion x40, xanadu_common_planter x4, xanadu_common_skylight_column x12, xanadu_court_altar x1, xanadu_court_art x3, xanadu_court_candelabra x4, xanadu_court_carpet x5, xanadu_court_fire x2, xanadu_court_frieze x5, xanadu_court_hanging x10, xanadu_court_incense_burner x4, xanadu_court_lamp x11, xanadu_court_painted_hanging x2, xanadu_court_statue x3, xanadu_court_tapestry x15, xanadu_court_throne x1 |
-| 11 | Shrine of the Storm | shrine | sumptuous | 76 | xanadu_common_butter_lamp_rack x2, xanadu_common_planter x2, xanadu_court_altar x1, xanadu_court_art x2, xanadu_court_candelabra x1, xanadu_court_carpet x1, xanadu_court_fire x1, xanadu_court_frieze x3, xanadu_court_hanging x1, xanadu_court_incense_burner x2, xanadu_court_lamp x3, xanadu_court_painted_hanging x2, xanadu_court_statue x3, xanadu_court_storm_banner x1 **NEW**, xanadu_court_tapestry x5 |
-| 12 | Hall Stair | stair | fine | 15 | xanadu_common_lamp x1 |
-| 13 | Library of the Song | song library | rich | 150 | xanadu_common_bookcase x4, xanadu_common_low_table x6, xanadu_common_meditation_cushion x13, xanadu_common_planter x1, xanadu_common_scroll_rack x19, xanadu_court_art x2, xanadu_court_carpet x2, xanadu_court_hanging x2, xanadu_court_lamp x4, xanadu_court_map_table x1, xanadu_court_statue x1, xanadu_court_tapestry x4, xanadu_court_wall_rug x2 |
-| 14 | Scriptorium of the Drums | scriptorium | fine | 91 | xanadu_common_art x1, xanadu_common_banner x1, xanadu_common_board x1, xanadu_common_bookcase x2, xanadu_common_chair x5, xanadu_common_desk x5, xanadu_common_hanging x1, xanadu_common_lamp x5, xanadu_common_rug x2, xanadu_common_scroll x1 |
-| 15 | Cells of the Old Brothers | cells | plain | 241 | xanadu_common_banner x1, xanadu_common_bed x17, xanadu_common_candle x17, xanadu_common_chest x17, xanadu_common_desk x17, xanadu_common_hanging x2, xanadu_common_lamp x4, xanadu_common_prayer_wheels x1 |
-| 16 | Chapter House | chapter house | rich | 168 | xanadu_common_meditation_cushion x67, xanadu_common_planter x1, xanadu_court_art x2, xanadu_court_carpet x2, xanadu_court_hanging x2, xanadu_court_lamp x4, xanadu_court_low_table x1, xanadu_court_statue x1, xanadu_court_tapestry x4, xanadu_court_throne x1, xanadu_court_wall_rug x2 |
-| 17 | Treasury of the Order | treasury | fine | 73 | xanadu_common_armour_stand x1, xanadu_common_art x1, xanadu_common_banner x1, xanadu_common_chair x1, xanadu_common_hanging x1, xanadu_common_lamp x2, xanadu_common_rug x1, xanadu_common_scroll x1, xanadu_court_cabinet x1, xanadu_court_strongbox x3, xanadu_court_table x1 |
-| 18 | Back Stair | stair | plain | 24 | xanadu_common_lamp x1 |
-| 19 | Lamp, Butter and Robe Store | store | bare | 98 | xanadu_common_ladder x1, xanadu_common_lamp x1, xanadu_common_store x4, xanadu_common_wall_shelves x2, xanadu_trade_bin x2 |
-| 20 | Stair (north) | stair | plain | 24 | xanadu_common_lamp x1 |
-| 21 | Stair (south) | stair | plain | 24 | xanadu_common_lamp x1 |
+| 2 | Porter's Lodge | chamber | fine | 42 | xanadu_common_art x1, xanadu_common_banner x1, xanadu_common_bed x1, xanadu_common_chair x2, xanadu_common_chest x1, xanadu_common_desk x1, xanadu_common_lamp x1, xanadu_common_rug x1, xanadu_common_screen x1, xanadu_common_scroll x1, xanadu_common_table x1 |
+| 3 | Blade Room | blade room | fine | 105 | xanadu_arms_bow_rack x9 **NEW**, xanadu_common_art x1, xanadu_common_banner x1, xanadu_common_chair x1, xanadu_common_desk x1, xanadu_common_hanging x1, xanadu_common_lamp x2, xanadu_common_rug x2, xanadu_common_scroll x1, xanadu_common_weapon_rack x13 |
+| 4 | Sacristy | sacristy | fine | 147 | xanadu_common_art x2, xanadu_common_banner x1, xanadu_common_butter_lamp_rack x2, xanadu_common_chest x7, xanadu_common_hanging x1, xanadu_common_lamp x3, xanadu_common_rack x2, xanadu_common_rug x2, xanadu_common_scroll x1, xanadu_court_cabinet x7 |
+| 5 | Cloister Court | cloister court | rich | 631 |  |
+| 6 | Wheel of the Storm (the Song drum) | song drum | sumptuous | 15 | xanadu_common_butter_lamp_rack x1 |
+| 7 | Cloister Walk (north) | kora | fine | 83 | xanadu_common_art x5, xanadu_common_banner x2, xanadu_common_candle x8, xanadu_common_hanging x1, xanadu_common_lamp x2, xanadu_common_prayer_wheels x7, xanadu_common_rug x1, xanadu_common_scroll x2 |
+| 8 | Cloister Walk (south) | kora | fine | 83 | xanadu_common_art x5, xanadu_common_banner x2, xanadu_common_candle x8, xanadu_common_hanging x1, xanadu_common_lamp x2, xanadu_common_prayer_wheels x7, xanadu_common_rug x1, xanadu_common_scroll x2 |
+| 9 | Kora beside the Hall (north) | kora | fine | 81 | xanadu_common_art x3, xanadu_common_banner x1, xanadu_common_candle x8, xanadu_common_hanging x1, xanadu_common_lamp x2, xanadu_common_prayer_wheels x7, xanadu_common_rug x1, xanadu_common_scroll x1 |
+| 10 | Kora beside the Hall (south) | kora | fine | 81 | xanadu_common_art x3, xanadu_common_banner x1, xanadu_common_candle x8, xanadu_common_hanging x1, xanadu_common_lamp x2, xanadu_common_prayer_wheels x7, xanadu_common_rug x1, xanadu_common_scroll x1 |
+| 11 | Kora behind the Hall | kora | fine | 73 | xanadu_common_art x4, xanadu_common_banner x2, xanadu_common_candle x7, xanadu_common_hanging x1, xanadu_common_lamp x2, xanadu_common_prayer_wheels x6, xanadu_common_rug x1, xanadu_common_scroll x1 |
+| 12 | Porch of the Hall | porch | rich | 38 | xanadu_common_prayer_wheels x2 |
+| 13 | Assembly Hall (dukhang) | assembly | sumptuous | 316 | xanadu_common_candle x32, xanadu_common_meditation_cushion x40, xanadu_common_planter x4, xanadu_common_skylight_column x12, xanadu_court_altar x1, xanadu_court_art x3, xanadu_court_candelabra x4, xanadu_court_carpet x5, xanadu_court_fire x2, xanadu_court_frieze x5, xanadu_court_hanging x10, xanadu_court_incense_burner x4, xanadu_court_lamp x11, xanadu_court_painted_hanging x2, xanadu_court_statue x3, xanadu_court_tapestry x15, xanadu_court_throne x1 |
+| 14 | Shrine of the Storm | shrine | sumptuous | 76 | xanadu_common_butter_lamp_rack x2, xanadu_common_planter x2, xanadu_court_altar x1, xanadu_court_art x2, xanadu_court_candelabra x1, xanadu_court_carpet x1, xanadu_court_fire x1, xanadu_court_frieze x3, xanadu_court_hanging x1, xanadu_court_incense_burner x2, xanadu_court_lamp x3, xanadu_court_painted_hanging x2, xanadu_court_statue x3, xanadu_court_storm_banner x1 **NEW**, xanadu_court_tapestry x5 |
+| 15 | Hall Stair | stair | fine | 15 | xanadu_common_lamp x1 |
+| 16 | Library of the Song | song library | rich | 129 | xanadu_common_bookcase x3, xanadu_common_low_table x5, xanadu_common_meditation_cushion x11, xanadu_common_planter x1, xanadu_common_scroll_rack x16, xanadu_court_art x2, xanadu_court_carpet x2, xanadu_court_hanging x1, xanadu_court_lamp x3, xanadu_court_map_table x1, xanadu_court_tapestry x3, xanadu_court_wall_rug x2 |
+| 17 | Scriptorium of the Drums | scriptorium | fine | 56 | xanadu_common_art x1, xanadu_common_banner x1, xanadu_common_board x1, xanadu_common_bookcase x1, xanadu_common_chair x3, xanadu_common_desk x3, xanadu_common_hanging x1, xanadu_common_lamp x3, xanadu_common_rug x1, xanadu_common_scroll x1 |
+| 18 | Tea Kitchen | tea kitchen | plain | 56 | xanadu_common_hearth x1, xanadu_common_jug x12, xanadu_common_lamp x1, xanadu_common_tea_copper x2, xanadu_common_workbench x1, xanadu_works_churn x2 |
+| 19 | Cells of the Old Brothers (ten) | cells | plain | 241 | xanadu_common_banner x1, xanadu_common_bed x17, xanadu_common_candle x17, xanadu_common_chest x17, xanadu_common_desk x17, xanadu_common_hanging x2, xanadu_common_lamp x4, xanadu_common_prayer_wheels x1 |
+| 20 | Chapter House | chapter house | rich | 168 | xanadu_common_meditation_cushion x67, xanadu_common_planter x1, xanadu_court_art x2, xanadu_court_carpet x2, xanadu_court_hanging x2, xanadu_court_lamp x4, xanadu_court_low_table x1, xanadu_court_statue x1, xanadu_court_tapestry x4, xanadu_court_throne x1, xanadu_court_wall_rug x2 |
+| 21 | Treasury of the Order | treasury | fine | 73 | xanadu_common_armour_stand x1, xanadu_common_art x1, xanadu_common_banner x1, xanadu_common_chair x1, xanadu_common_hanging x1, xanadu_common_lamp x2, xanadu_common_rug x1, xanadu_common_scroll x1, xanadu_court_cabinet x1, xanadu_court_strongbox x3, xanadu_court_table x1 |
+| 22 | Back Stair | stair | plain | 24 | xanadu_common_lamp x1 |
+| 23 | Lamp, Butter and Robe Store | store | bare | 56 | xanadu_common_ladder x1, xanadu_common_lamp x1, xanadu_common_store x2, xanadu_common_wall_shelves x1, xanadu_trade_bin x1 |
+| 24 | Latrines | latrine | bare | 42 | xanadu_common_lamp x1 |
+| 25 | Stair (north) | stair | plain | 24 | xanadu_common_lamp x1 |
+| 26 | Stair (south) | stair | plain | 24 | xanadu_common_lamp x1 |
 
 ## Sheet M2: the great monastery, upper floor (the cells; the hall's gallery)
 
-The chapter's cells (*proposed*: some 80 professed, the order's officers, the Song-singers who keep the hall and the drum, the old brothers back from the companies) on the upper floor of the ranges, opening on a gallery over the cloister's roof. The back range holds the Prior, the chant-master and the guests of the daughter house. The hall's gallery is a storey above (5 m hall).
+The chapter's cells on the upper floor of the ranges (*proposed*: 39 cells here and the ten old brothers' below, the young Song-singers two to a cell: about 65 of the chapter). The side ranges' cells are the range's full 7 m, a sleeping alcove behind, their doors on a gallery over the cloister's roof; the front ranges' open on a corridor along the court. The back range holds the Prior, the chant-master and the guests of the daughter house, on a gallery over the kora behind the hall. The hall's gallery is a storey higher (the hall is 5 m), round the void, reached by the hall stair.
 
 | # | Room | Kind | Decor | m2 | Pieces |
 |---|---|---|---|---|---|
 | 1 | Drum of the Hours | drum room | fine | 80 | xanadu_common_art x1, xanadu_common_banner x1, xanadu_common_bench x1, xanadu_common_hanging x1, xanadu_common_hour_drum x1 **NEW**, xanadu_common_lamp x2, xanadu_common_rug x1, xanadu_common_scroll x1, xanadu_common_water_clock x1 |
-| 2 | Cells | cells | plain | 147 | xanadu_common_banner x1, xanadu_common_bed x10, xanadu_common_candle x10, xanadu_common_chest x10, xanadu_common_desk x10, xanadu_common_hanging x1, xanadu_common_lamp x2, xanadu_common_prayer_wheels x1 |
-| 3 | Cells | cells | plain | 147 | xanadu_common_banner x1, xanadu_common_bed x10, xanadu_common_candle x10, xanadu_common_chest x10, xanadu_common_desk x10, xanadu_common_hanging x1, xanadu_common_lamp x2, xanadu_common_prayer_wheels x1 |
-| 4 | Cells of the Chapter (north) | cells | plain | 241 | xanadu_common_banner x1, xanadu_common_bed x17, xanadu_common_candle x17, xanadu_common_chest x17, xanadu_common_desk x17, xanadu_common_hanging x2, xanadu_common_lamp x4, xanadu_common_prayer_wheels x1 |
-| 5 | Cells of the Chapter (south) | cells | plain | 241 | xanadu_common_banner x1, xanadu_common_bed x17, xanadu_common_candle x17, xanadu_common_chest x17, xanadu_common_desk x17, xanadu_common_hanging x2, xanadu_common_lamp x4, xanadu_common_prayer_wheels x1 |
-| 8 | The Prior | chamber | rich | 84 | xanadu_common_bed x1, xanadu_common_chair x2, xanadu_common_chest x1, xanadu_common_desk x1, xanadu_common_planter x1, xanadu_common_screen x1, xanadu_common_table x1, xanadu_court_art x1, xanadu_court_carpet x1, xanadu_court_hanging x1, xanadu_court_lamp x2, xanadu_court_tapestry x2, xanadu_court_wall_rug x1 |
-| 9 | The Chant-master | chamber | fine | 84 | xanadu_common_art x1, xanadu_common_banner x1, xanadu_common_bed x1, xanadu_common_chair x2, xanadu_common_chest x1, xanadu_common_desk x1, xanadu_common_hanging x1, xanadu_common_lamp x2, xanadu_common_rug x1, xanadu_common_screen x1, xanadu_common_scroll x1, xanadu_common_table x1 |
-| 10 | Guest Cells of the Daughter House | cells | fine | 98 | xanadu_common_art x1, xanadu_common_banner x1, xanadu_common_bed x7, xanadu_common_candle x7, xanadu_common_chest x7, xanadu_common_desk x7, xanadu_common_hanging x1, xanadu_common_lamp x2, xanadu_common_prayer_wheels x1, xanadu_common_rug x2, xanadu_common_scroll x1 |
-| 11 | Cells | cells | plain | 73 | xanadu_common_bed x5, xanadu_common_candle x5, xanadu_common_chest x5, xanadu_common_desk x5, xanadu_common_hanging x1, xanadu_common_lamp x1, xanadu_common_prayer_wheels x1 |
-| 12 | Back Stair | stair | plain | 24 | xanadu_common_lamp x1 |
-| 13 | Masters' Gallery (north) | gallery | rich | 39 | xanadu_common_meditation_cushion x13, xanadu_common_planter x1, xanadu_court_art x1, xanadu_court_carpet x1, xanadu_court_hanging x1, xanadu_court_lamp x1, xanadu_court_painted_hanging x2, xanadu_court_tapestry x2, xanadu_court_wall_rug x1 |
-| 14 | Masters' Gallery (south) | gallery | rich | 39 | xanadu_common_meditation_cushion x13, xanadu_common_planter x1, xanadu_court_art x1, xanadu_court_carpet x1, xanadu_court_hanging x1, xanadu_court_lamp x1, xanadu_court_painted_hanging x2, xanadu_court_tapestry x2, xanadu_court_wall_rug x1 |
-| 15 | Masters' Gallery (west) | gallery | rich | 54 | xanadu_common_meditation_cushion x18, xanadu_common_planter x1, xanadu_court_art x1, xanadu_court_carpet x1, xanadu_court_hanging x1, xanadu_court_lamp x1, xanadu_court_painted_hanging x3, xanadu_court_tapestry x3, xanadu_court_wall_rug x1 |
-| 18 | Hall Stair | stair | fine | 15 | xanadu_common_lamp x1 |
-| 20 | Stair (north) | stair | plain | 24 | xanadu_common_lamp x1 |
-| 21 | Stair (south) | stair | plain | 24 | xanadu_common_lamp x1 |
+| 2 | Cells (front, north: six) | cells | plain | 96 | xanadu_common_banner x1, xanadu_common_bed x7, xanadu_common_candle x7, xanadu_common_chest x7, xanadu_common_desk x7, xanadu_common_hanging x1, xanadu_common_lamp x2, xanadu_common_prayer_wheels x1 |
+| 4 | Cells (front, south: six) | cells | plain | 96 | xanadu_common_banner x1, xanadu_common_bed x7, xanadu_common_candle x7, xanadu_common_chest x7, xanadu_common_desk x7, xanadu_common_hanging x1, xanadu_common_lamp x2, xanadu_common_prayer_wheels x1 |
+| 6 | Cells of the Chapter (north: ten) | cells | plain | 241 | xanadu_common_banner x1, xanadu_common_bed x17, xanadu_common_candle x17, xanadu_common_chest x17, xanadu_common_desk x17, xanadu_common_hanging x2, xanadu_common_lamp x4, xanadu_common_prayer_wheels x1 |
+| 7 | Cells of the Chapter (south: ten) | cells | plain | 241 | xanadu_common_banner x1, xanadu_common_bed x17, xanadu_common_candle x17, xanadu_common_chest x17, xanadu_common_desk x17, xanadu_common_hanging x2, xanadu_common_lamp x4, xanadu_common_prayer_wheels x1 |
+| 11 | The Prior | chamber | rich | 84 | xanadu_common_bed x1, xanadu_common_chair x2, xanadu_common_chest x1, xanadu_common_desk x1, xanadu_common_planter x1, xanadu_common_screen x1, xanadu_common_table x1, xanadu_court_art x1, xanadu_court_carpet x1, xanadu_court_hanging x1, xanadu_court_lamp x2, xanadu_court_tapestry x2, xanadu_court_wall_rug x1 |
+| 12 | The Chant-master | chamber | fine | 84 | xanadu_common_art x1, xanadu_common_banner x1, xanadu_common_bed x1, xanadu_common_chair x2, xanadu_common_chest x1, xanadu_common_desk x1, xanadu_common_hanging x1, xanadu_common_lamp x2, xanadu_common_rug x1, xanadu_common_screen x1, xanadu_common_scroll x1, xanadu_common_table x1 |
+| 13 | Guest Cells of the Daughter House (four) | cells | fine | 98 | xanadu_common_art x1, xanadu_common_banner x1, xanadu_common_bed x7, xanadu_common_candle x7, xanadu_common_chest x7, xanadu_common_desk x7, xanadu_common_hanging x1, xanadu_common_lamp x2, xanadu_common_prayer_wheels x1, xanadu_common_rug x2, xanadu_common_scroll x1 |
+| 14 | Cells (three) | cells | plain | 73 | xanadu_common_bed x5, xanadu_common_candle x5, xanadu_common_chest x5, xanadu_common_desk x5, xanadu_common_hanging x1, xanadu_common_lamp x1, xanadu_common_prayer_wheels x1 |
+| 15 | Back Stair | stair | plain | 24 | xanadu_common_lamp x1 |
+| 16 | Masters' Gallery (north) | gallery | rich | 39 | xanadu_common_meditation_cushion x13, xanadu_common_planter x1, xanadu_court_art x1, xanadu_court_carpet x1, xanadu_court_hanging x1, xanadu_court_lamp x1, xanadu_court_painted_hanging x2, xanadu_court_tapestry x2, xanadu_court_wall_rug x1 |
+| 17 | Masters' Gallery (south) | gallery | rich | 39 | xanadu_common_meditation_cushion x13, xanadu_common_planter x1, xanadu_court_art x1, xanadu_court_carpet x1, xanadu_court_hanging x1, xanadu_court_lamp x1, xanadu_court_painted_hanging x2, xanadu_court_tapestry x2, xanadu_court_wall_rug x1 |
+| 18 | Masters' Gallery (west) | gallery | rich | 54 | xanadu_common_meditation_cushion x18, xanadu_common_planter x1, xanadu_court_art x1, xanadu_court_carpet x1, xanadu_court_hanging x1, xanadu_court_lamp x1, xanadu_court_painted_hanging x3, xanadu_court_tapestry x3, xanadu_court_wall_rug x1 |
+| 21 | Hall Stair | stair | fine | 15 | xanadu_common_lamp x1 |
+| 23 | Stair (north) | stair | plain | 24 | xanadu_common_lamp x1 |
+| 24 | Stair (south) | stair | plain | 24 | xanadu_common_lamp x1 |
 
 ## Sheet MR: the great monastery, the hall's third storey and the roofs
 
-The Protectors' Chapel (the gonkhang) on the hall's top storey: dark, its pillars hung with the arms of the order's dead, as the Tibetan protector chapels hang old weapons. Over it the hall's roof and the gilt crown with the wheel and deer (the monasteries' holy crown, kits/qiblai PLAN.md section 4). The ranges' flat roofs with gilt corners and the violet band; the gate tower's top storey is the cloister's lookout.
+The hall's top storey is the Hall of Vigil round the light well, where the Song-singers keep the night under the gilt crown (gold outline): the crown's pavilion is the hall's lantern, lighting the assembly through the well. Behind it, windowless, the Protectors' Chapel (the gonkhang), its pillars hung with the arms of the order's dead, as the Tibetan protector chapels hang old weapons. The ranges' flat roofs (gilt corners, the violet band) are reached by the three stairs: prayer flags on their masts, the incense altar (sang) on the back range, the gate tower's top storey the cloister's lookout, banners and the deer on its roof.
 
 | # | Room | Kind | Decor | m2 | Pieces |
 |---|---|---|---|---|---|
-| 1 | Protectors' Chapel (gonkhang) | protectors | sumptuous | 316 | xanadu_common_candle x40, xanadu_common_planter x4, xanadu_court_altar x1, xanadu_court_art x3, xanadu_court_candelabra x4, xanadu_court_carpet x5, xanadu_court_fire x2, xanadu_court_frieze x5, xanadu_court_hanging x5, xanadu_court_incense_burner x2, xanadu_court_lamp x11, xanadu_court_painted_hanging x10, xanadu_court_protector_pillar x11 **NEW**, xanadu_court_statue x3, xanadu_court_tapestry x7 |
-| 2 | The Protector's Room | protectors | sumptuous | 76 | xanadu_common_candle x10, xanadu_common_planter x2, xanadu_court_altar x1, xanadu_court_art x2, xanadu_court_candelabra x1, xanadu_court_carpet x1, xanadu_court_fire x1, xanadu_court_frieze x3, xanadu_court_hanging x1, xanadu_court_incense_burner x2, xanadu_court_lamp x3, xanadu_court_painted_hanging x4, xanadu_court_protector_pillar x3 **NEW**, xanadu_court_statue x2, xanadu_court_tapestry x5 |
-| 3 | Hall Stair (head) | stair | fine | 15 | xanadu_common_lamp x1 |
-| 4 | Lookout of the Song | watch | plain | 80 | xanadu_common_bench x1 |
-| 5 | Roof (north range) | roof | plain | 266 |  |
-| 6 | Roof (south range) | roof | plain | 266 |  |
-| 7 | Roof (back range) | roof | plain | 364 |  |
-| 8 | Roof (front range) | roof | plain | 147 |  |
+| 1 | Hall of Vigil | gallery | sumptuous | 139 | xanadu_common_meditation_cushion x46, xanadu_common_planter x2, xanadu_court_art x2, xanadu_court_candelabra x2, xanadu_court_carpet x2, xanadu_court_fire x1, xanadu_court_frieze x4, xanadu_court_hanging x2, xanadu_court_lamp x5, xanadu_court_painted_hanging x9, xanadu_court_statue x2, xanadu_court_tapestry x6 |
+| 3 | Protectors' Chapel (gonkhang) | protectors | sumptuous | 116 | xanadu_common_candle x15, xanadu_common_planter x2, xanadu_court_altar x1, xanadu_court_art x2, xanadu_court_candelabra x1, xanadu_court_carpet x2, xanadu_court_fire x1, xanadu_court_frieze x4, xanadu_court_hanging x2, xanadu_court_incense_burner x2, xanadu_court_lamp x4, xanadu_court_painted_hanging x5, xanadu_court_protector_pillar x4 **NEW**, xanadu_court_statue x2, xanadu_court_tapestry x5 |
+| 4 | Hall Stair (head) | stair | fine | 15 | xanadu_common_lamp x1 |
+| 5 | Lookout of the Song | watch | plain | 80 | xanadu_common_bench x1 |
+| 6 | Roof (north range) | roof | plain | 241 |  |
+| 7 | Roof (south range) | roof | plain | 241 |  |
+| 8 | Roof (back range) | roof | plain | 266 |  |
 | 9 | Roof (front range) | roof | plain | 147 |  |
+| 10 | Roof (front range) | roof | plain | 147 |  |
+| 11 | Incense Altar (sang) | sang | fine | 30 | xanadu_court_incense_burner x1 |
+| 12 | Back Stair (head) | stair | plain | 24 | xanadu_common_lamp x1 |
+| 13 | Stair (north, head) | stair | plain | 24 | xanadu_common_lamp x1 |
+| 14 | Stair (south, head) | stair | plain | 24 | xanadu_common_lamp x1 |
+| 15 | Roof (back range) | roof | plain | 73 |  |
+| 17 | Hall of Vigil (north arm) | gallery | sumptuous | 44 | xanadu_common_meditation_cushion x15, xanadu_common_planter x2, xanadu_court_art x1, xanadu_court_candelabra x1, xanadu_court_carpet x1, xanadu_court_fire x1, xanadu_court_frieze x2, xanadu_court_hanging x1, xanadu_court_lamp x2, xanadu_court_painted_hanging x3, xanadu_court_statue x2, xanadu_court_tapestry x3 |
+| 18 | Hall of Vigil (south arm) | gallery | sumptuous | 44 | xanadu_common_meditation_cushion x15, xanadu_common_planter x2, xanadu_court_art x1, xanadu_court_candelabra x1, xanadu_court_carpet x1, xanadu_court_fire x1, xanadu_court_frieze x2, xanadu_court_hanging x1, xanadu_court_lamp x2, xanadu_court_painted_hanging x3, xanadu_court_statue x2, xanadu_court_tapestry x3 |
 
 ## Sheet U: the Prismarch's tower (the utse), its five floors side by side
 
@@ -239,88 +251,88 @@ The owner, 2026-11-16: the violet Prismarch lives here, in a tower between the w
 
 | Key | Count | Note |
 |---|---|---|
-| xanadu_common_bed | 675 |  |
-| xanadu_common_chest | 619 |  |
-| xanadu_common_lamp | 528 |  |
+| xanadu_common_bed | 670 |  |
+| xanadu_common_chest | 614 |  |
+| xanadu_common_lamp | 535 |  |
 | xanadu_common_armour_stand | 382 |  |
+| xanadu_common_meditation_cushion | 343 |  |
 | xanadu_trade_stall | 327 |  |
-| xanadu_common_weapon_rack | 295 |  |
-| xanadu_common_meditation_cushion | 269 |  |
+| xanadu_common_weapon_rack | 290 |  |
 | xanadu_common_bench | 264 |  |
 | xanadu_common_bowl | 258 |  |
-| xanadu_arms_bow_rack | 230 | strung horn-and-sinew recurve bows on wall pegs, a quiver hung under each, violet cords |
-| xanadu_common_hanging | 198 |  |
-| xanadu_common_candle | 196 |  |
+| xanadu_arms_bow_rack | 227 | strung horn-and-sinew recurve bows on wall pegs, a quiver hung under each, violet cords |
+| xanadu_common_hanging | 200 |  |
+| xanadu_common_candle | 171 |  |
 | xanadu_trade_hayrack | 139 |  |
-| xanadu_common_desk | 127 |  |
 | xanadu_arms_arrow_bin | 125 | a slatted bin of arrows in sheaves of thirty, fletched violet and white |
 | xanadu_arms_saddle_rack | 123 | saddles on wall pegs, bridles and the violet saddle-cloths below |
+| xanadu_common_rug | 122 |  |
 | xanadu_arms_bow_form | 121 | a composite bow lashed to its shaped wooden form to cure (a loft holds them in rows for a year) |
-| xanadu_common_rug | 120 |  |
+| xanadu_common_desk | 120 |  |
 | xanadu_works_sickbed | 120 |  |
-| xanadu_common_table | 108 |  |
+| xanadu_common_table | 109 |  |
 | xanadu_common_chair | 107 |  |
-| xanadu_common_wall_shelves | 100 |  |
-| xanadu_common_store | 100 |  |
-| xanadu_common_banner | 99 |  |
-| xanadu_trade_bin | 97 |  |
-| xanadu_court_lamp | 97 |  |
+| xanadu_common_banner | 102 |  |
+| xanadu_common_wall_shelves | 99 |  |
+| xanadu_common_store | 98 |  |
+| xanadu_trade_bin | 96 |  |
+| xanadu_court_lamp | 95 |  |
 | xanadu_trade_trough | 90 |  |
-| xanadu_court_tapestry | 81 |  |
-| xanadu_common_art | 73 |  |
+| xanadu_court_tapestry | 85 |  |
+| xanadu_common_art | 81 |  |
+| xanadu_common_jug | 66 |  |
 | xanadu_trade_bunk | 63 |  |
-| xanadu_common_low_table | 54 |  |
-| xanadu_common_jug | 54 |  |
+| xanadu_common_prayer_wheels | 57 |  |
+| xanadu_common_low_table | 53 |  |
 | xanadu_common_stool | 52 |  |
-| xanadu_court_hanging | 50 |  |
-| xanadu_common_planter | 49 |  |
+| xanadu_common_planter | 51 |  |
+| xanadu_court_hanging | 49 |  |
 | xanadu_court_carpet | 47 |  |
-| xanadu_common_workbench | 42 |  |
-| xanadu_common_scroll | 41 |  |
-| xanadu_common_prayer_wheels | 41 |  |
+| xanadu_common_scroll | 46 |  |
+| xanadu_common_workbench | 43 |  |
 | xanadu_common_bath_basin | 38 |  |
-| xanadu_court_art | 35 |  |
+| xanadu_court_art | 36 |  |
+| xanadu_court_painted_hanging | 33 |  |
 | xanadu_trade_locker | 32 |  |
 | xanadu_common_mounting_block | 31 | a stepped stone mounting block |
-| xanadu_court_painted_hanging | 27 |  |
+| xanadu_court_frieze | 25 |  |
+| xanadu_court_statue | 24 |  |
 | xanadu_training_training_dummy | 23 |  |
 | xanadu_court_chorten | 23 |  |
-| xanadu_court_statue | 22 |  |
 | xanadu_court_wall_rug | 22 |  |
 | xanadu_training_pell | 22 | a stout scarred post sunk in the sand for sword cuts |
-| xanadu_common_bookcase | 21 |  |
-| xanadu_common_scroll_rack | 21 |  |
-| xanadu_court_frieze | 21 |  |
+| xanadu_common_bookcase | 19 |  |
+| xanadu_common_scroll_rack | 18 |  |
 | xanadu_common_drying_rack | 16 |  |
+| xanadu_common_hearth | 15 |  |
 | xanadu_arms_fletching_bench | 15 | the fletcher's bench: shafts, a feather box, a glue pot on a brazier, a straightening iron |
-| xanadu_common_hearth | 14 |  |
 | xanadu_common_board | 14 |  |
-| xanadu_court_protector_pillar | 14 | a gonkhang pillar dressed with old swords, bows, lamellar coats and helmets bound in silk scarves |
 | xanadu_court_candelabra | 13 |  |
 | xanadu_trade_larder | 12 |  |
 | xanadu_common_skylight_column | 12 |  |
 | xanadu_common_fire | 11 |  |
-| xanadu_court_incense_burner | 11 |  |
 | xanadu_court_cabinet | 10 |  |
+| xanadu_court_incense_burner | 10 |  |
 | xanadu_training_archery_butt | 9 |  |
+| xanadu_works_churn | 9 |  |
+| xanadu_court_fire | 9 |  |
 | xanadu_common_butter_lamp_rack | 8 |  |
-| xanadu_court_fire | 8 |  |
 | xanadu_court_banner | 8 |  |
-| xanadu_works_churn | 7 |  |
+| xanadu_common_screen | 7 |  |
 | xanadu_common_rack | 7 |  |
-| xanadu_court_altar | 7 |  |
 | xanadu_court_table | 6 |  |
-| xanadu_common_screen | 6 |  |
 | xanadu_common_ladder | 6 |  |
+| xanadu_court_altar | 6 |  |
 | xanadu_common_alarm_gong | 5 | the great bronze alarm gong in a timber frame, its beater on a chain |
 | xanadu_court_jug | 5 |  |
+| xanadu_common_tea_copper | 5 |  |
 | xanadu_trade_anvil | 5 |  |
 | xanadu_trade_grindstone | 4 |  |
 | xanadu_court_divan | 4 |  |
 | xanadu_works_bread_oven | 4 |  |
 | xanadu_works_herb_bench | 4 |  |
 | xanadu_court_low_table | 4 |  |
-| xanadu_common_tea_copper | 3 |  |
+| xanadu_court_protector_pillar | 4 | a gonkhang pillar dressed with old swords, bows, lamellar coats and helmets bound in silk scarves |
 | xanadu_works_cheese_press | 3 |  |
 | xanadu_trade_forge | 3 |  |
 | xanadu_common_signal_mirror | 3 | a signal mirror on a tripod with a sighting vane and a shutter |
@@ -347,7 +359,7 @@ The owner, 2026-11-16: the violet Prismarch lives here, in a tower between the w
 
 - `xanadu_arms_arrow_bin`: a slatted bin of arrows in sheaves of thirty, fletched violet and white (x125)
 - `xanadu_arms_bow_form`: a composite bow lashed to its shaped wooden form to cure (a loft holds them in rows for a year) (x121)
-- `xanadu_arms_bow_rack`: strung horn-and-sinew recurve bows on wall pegs, a quiver hung under each, violet cords (x230)
+- `xanadu_arms_bow_rack`: strung horn-and-sinew recurve bows on wall pegs, a quiver hung under each, violet cords (x227)
 - `xanadu_arms_fletching_bench`: the fletcher's bench: shafts, a feather box, a glue pot on a brazier, a straightening iron (x15)
 - `xanadu_arms_saddle_rack`: saddles on wall pegs, bridles and the violet saddle-cloths below (x123)
 - `xanadu_common_alarm_gong`: the great bronze alarm gong in a timber frame, its beater on a chain (x5)
@@ -357,7 +369,7 @@ The owner, 2026-11-16: the violet Prismarch lives here, in a tower between the w
 - `xanadu_common_reader_seat`: the refectory reader's raised seat and lectern, where a monk sings the Song at meals (x1)
 - `xanadu_common_signal_mirror`: a signal mirror on a tripod with a sighting vane and a shutter (x3)
 - `xanadu_court_oath_stone`: the oath stone: a waist-high block with the wheel carved on its face, worn by hands (x1)
-- `xanadu_court_protector_pillar`: a gonkhang pillar dressed with old swords, bows, lamellar coats and helmets bound in silk scarves (x14)
+- `xanadu_court_protector_pillar`: a gonkhang pillar dressed with old swords, bows, lamellar coats and helmets bound in silk scarves (x4)
 - `xanadu_court_storm_banner`: the Violet Storm's banner on its lacquer stand: violet silk, the eight-spoked wheel struck through by lightning (x2)
 - `xanadu_training_horse_target`: a small square board on a post beside the riding track, for the mounted archer (x2)
 - `xanadu_training_pell`: a stout scarred post sunk in the sand for sword cuts (x22)
