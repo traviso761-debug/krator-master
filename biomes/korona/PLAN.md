@@ -64,3 +64,20 @@ is small); the fix in its `57` is owed to its next turn, since 9 build commands 
 **For the owner's eye:** the tepui's beds (KSTRATA's tepui over the kit's own banding: two banding systems, the kit's per tier and the
 recipe's per bed), the fog belt's height, the far field (the station's floor function carried 9 km with no tables on it), KGROUND's floor
 against the dithered one (`?kground=0`), the shadows (`?shadow=1`).
+
+---
+
+## Scale-Model 5.1 Geological Reconciliation & Showcase Station #7 (`2026-11-13`)
+
+### 1. Corona Plume-Tectonic Lithology & Resource Hygiene (`tepui` + `obsidian-pancake` + `contact-marble`)
+- **Summit Hoar-Tables vs. Deep Ring-Fault Trenches (`GEOLOGY-SANITY-CHECK.md` §3):** Korona is an active Venusian-type mantle-plume corona whose concentric ring horsts uplift ancient pre-impact **`tepui`** orthoquartzite and indurated arkose tables (`+1,500 to +4,100 m`), while active magmatic/hydrothermal degassing is strictly confined to the deep concentric ring-fault trenches (`-1,000 to -2,600 m`, `1.75–2.10 atm`).
+  - **Purge Summit `sulfur = 60`:** High quartzite hoar-table summits carry **zero fumarolic sulfur** (`sulfur = 0` on upland tables); native sulfur, geyserite sinter (`geyser` station `corona`, `1123, 517`), and acid-sulfate springs occur **only** along deep ring-fault trench floors.
+  - **5 Trench Viscous Pancake Domes (`obsidian-pancake`):** Five flat-topped Venusian-type silicic rhyolite/dacite pancake domes extrude along the eastern and southern ring-fault floor intersections (anchored at **`5.1 px (1179, 578)`**), bound to `KSTRATA` **`obsidian-pancake`** (`core/terrain/35-core-strata.js` — `2–6 m` flow-banded glassy obsidian carapace ledges with iridescent `irid: 1` sheen over frothy grey pumice and basal perlite breccia).
+  - **Trench-Wall Skarn & Evaporite Contacts:** Where plume ring-dikes cut buried intracrater carbonate lenses on lower trench walls (`KARST-SITES-5.1.md` Site #7), walls expose **`contact-marble`** skarn ribs above **`evaporite-strand`** endorheic salt-lake shorelines.
+
+### 2. Showcase Station #7 — `Korona Silkhead Gorge & Hoar-Table Rim`
+- **Canonical `5.1` Coordinates:** **`(1096, 526)`** (primary Silkhead Gorge overhang & `+3,620 m` hoar-table rim plunging toward the `-1,180 m` wet ring-trench) paired with **`(1179, 578)`** (viscous trench-floor pancake dome view).
+- **Elevation & Atmosphere:** **`+3,620 m`** summit rim (`0.99 atm`, `Dsc` / `Cwb` hoar-table mist & frost-tank pavement) dropping `4,800 m` across sheer tiered walls into the **`-1,180 m`** ring-fault trench (`1.86 atm`, `XA` / `Af` carnivorous-pitcher rainforest and steaming ring-fault vents).
+- **`KSTRATA` Binding:** **`tepui`** (pink-to-cream cross-bedded orthoquartzite cliff tiers with recessed dark siltstone/shale contour-carving ledges on the upper `3,000 m` wall) + **`contact-marble`** (recrystallized blue-white marble & epidote skarn selvages along the lower ring-fault dike contact) + **`obsidian-pancake`** (vitreous black flow-banded rhyolite dome carapace steaming on the trench floor at `1179, 578`).
+- **Camera Framing (`5.0 × 5.0 km` vertical relief cut):** Vertigo overhang camera tucked under a carved `KCARVE` lip at `+3,580 m` looking ESE along the curved corona ring-scarp: Hum whistle-script contour carvings (`culture: tepui`) etched into a continuous `tepui` bedding recess in the foreground, woven wild-silk basket spans and braided liana rope-ladders bridging a `180 m` gorge cleft, `ATMOS.fogBelt` cloud cascades spilling off the table lip, and `4.7 km` below in dense golden `1.86 atm` haze, a circular `obsidian-pancake` dome steaming beside black pitcher pools.
+- **Hydrology & Trade Tie-In:** Windward (`3,500–4,000 mm/yr`) cloud-water and frost-tank snowmelt plunge off the `tepui` rim as `600 m` free-falling mist-veils (`WATER.fall`) into endorheic trench lakes; winter-adapted hoar-table tribes and Hum-speaking cliff clans hoist rare trench-floor carnivore reagents, lichen stone-dyes, and knapped trench `obsidian-pancake` blades up silk-winch stations to trade with the **Painted Men** (`LORE.md §6.5`) and **Serai** caravans.

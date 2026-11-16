@@ -364,6 +364,14 @@ crust): **it agrees**, as `kits/resources/ROCK-PROPOSAL.md` says. Karst site 10 
 "low gain") is not taken: no station stands on a notch where the basement shows; the coulee's spring line at the basalt's base is a note for its
 next pass.
 
+### `evaporite-strand` Recipe & Showcase Station (`5.1`, 2026-11-13)
+- **`KSTRATA` Binding (`core/terrain/35-core-strata.js`):** Where drained palaeolake margins (`dam` west bed and `dam 2` east bed) expose stacked recession benches rather than loose silt alone, rock/crust cuts bind **`evaporite-strand`** (`0.4–1.5 m` crisp horizontal wave-cut aragonite and stromatolitic tufa benches alternating with specular selenite crusts, bright polygonal halite/borate laminations, and rose potash partings; `noRepeat: true`, `fx: {sheen: 1, regolith: .75, wash: 1.2}`), overlying flood-basalt basement (`arch-rift-basalt` / `outland-basalt`).
+- **Showcase Station: `N Semiarid Dam-Relic Salt Strandlines`**
+  - **Coordinates & Elevation (`5.1` `1821 × 1723`, `2 km/px`):** **`px (942, 452)`** (`-245 m` wave-cut strandline staircase on the western/northeastern recession apron of the `dam 2` east-lobe relic lake, `1.65 atm`, `0.75 g`, `BSk`/`BWk`; paired with west-lobe `dam` strandlines at `px 775, 424` below `Boatmurder` `766, 404`).
+  - **`KSTRATA` Stack:** Horizontal `evaporite-strand` (`dip: [0, 0, 0]`, `warp: [0.35, 0.1]` so bathtub strandlines hold `360°` dead-level continuity around the basin contour) over `40 m` lacustrine marl/silt and columnar flood-basalt footing.
+  - **Camera Framing:** Oblique bench overlook `+35 m` above the active brine pan looking ENE (`az 72°`, pitch `-5°`): 18+ concentric `0.4–1.5 m` white aragonite/tufa wave-cut steps and sparkling selenite risers curving away to the horizon, a heeled pre-breach barge hulk (`biomes/dambasins`) colonized by a dew-fed rust-vine garden, migrating crescent saxaul, step-cones graded by years-dry, spinning helicopter trumpets, and giant dandelion seed-clocks drifting across alkali dust plumes.
+  - **Hydrology & Trade Tie-In:** Marks the centuries-long evaporative recession of the trapped post-breach `dam 2` paleolake (`+850 m` breach sill down to the modern closed soda-brine balance). Ancient concrete water-gauge pylons mark the highstand above, while mule caravans harvest pure borate, trona, and rose potash from the lowest strandlines for export to **Glint**, **Serai** (`826, 478`), and **Jimjam**.
+
 ## Fauna (proposed 2026-11-11, awaiting the owner)
 
 Drawn by `kits/fauna` and tagged by biome (`biomes/README.md`, "A fauna kit"); placed by `FAUNALANDS` (`kits/fauna/fauna-lands.js`).

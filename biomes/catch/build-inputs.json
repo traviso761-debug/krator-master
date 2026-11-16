@@ -582,8 +582,8 @@
     "biomes/catch/src/99-host-take.js": "83309e183c5a53a03f4dee02059496763c82040309c3b4ba4b736fb0def7d9d2",
     "biomes/catch/src/99-tail.html": "65abfb642de580808a65c6ec8bf3bc2c410397558a5ac28e825accdb7c590d3b",
     "biomes/catch/stations/oasis/00-head.html": "a432d5448ef7e1aa6cfe810e24087e1107b07caacdac69236e352df5d4c582d2",
-    "biomes/catch/stations/oasis/45b-host-stage.js": "29df87b99871f91b562aecb1bfb6a4dca852928e9bbd259bb1c347f6bf484a63",
-    "biomes/catch/stations/oasis/station.json": "26cbb6390eabb0820d9e53d0a1c472f0e8c0282fef438278305b191473d1942c",
+    "biomes/catch/stations/oasis/45b-host-stage.js": "67fd8416ff8d98cb5ced748e9a2dbc8d26ffc084a09398c5b0ad1261d48114e4",
+    "biomes/catch/stations/oasis/station.json": "58334fb15decf031acde8d04c71be98906a2c4d5287eb285f137cd6af1293583",
     "biomes/catch/tex/bark0.albedo.webp": "3e71aae7540b5bf54d9894c221e1d6d5ef93a35c710cb334c14e26f2acb56507",
     "biomes/catch/tex/bark1.albedo.webp": "88bf998b68ca1295b67a62884c623d0e8e51e2eb989a4938346a5d887634d9f8",
     "biomes/catch/tex/brinelamp.albedo.webp": "eee09ba2f07472b414b947423d601ab0fba4683e311558febbbe3b334a6664e5",
@@ -737,10 +737,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/catch/dist/catch-oasis.html": "34d0a7bc584e9781fa809d5483b2c0815431a8353dd8a8fc11af349e0adff723"
+    "biomes/catch/dist/catch-oasis.html": "391a3cd3961034de664b7c6252a44242ad16c25843760353e1f9ab2750d992a2"
    },
    "outputs_raw": {
-    "biomes/catch/dist/catch-oasis.html": "34d0a7bc584e9781fa809d5483b2c0815431a8353dd8a8fc11af349e0adff723"
+    "biomes/catch/dist/catch-oasis.html": "391a3cd3961034de664b7c6252a44242ad16c25843760353e1f9ab2750d992a2"
    }
   }
  }

@@ -121,3 +121,8 @@ range plausibly runs across the border. Nothing here is built.
 | flyer | *flamingo* | shared (eastabyss) | the salt flats of the east bed and the brine edges | the eastern abyss's salt-lake bird, on the nearest salt to it |
 | grazer | *brine-flat-onager* | shared (eastabyss) | the east bed's salt steppe | |
 | everything else | the host's: `nsemiarid`'s (its Fauna section) on the west bed; Korona's (the hyperjungle's and sedesert's) on the east bed's Korona half | read by the host's tag | | an overlay owns no ground and no general fauna |
+
+## 6. `KSTRATA` Evaporite-Strand Binding & 5.1 Showcase Tie-In (`2026-11-13`)
+
+- **360° Concentric Strandline Stratigraphy (`evaporite-strand`):** In gullies, wave-cut risers, and deflated yardang flanks below the `700 m` (west `dam`) and `850 m` (east `dam 2`) slow-recession sills, `KBASIN`'s topographic steps pair directly with `KSTRATA`'s **`evaporite-strand`** recipe (`core/terrain/35-core-strata.js`: `0.4–1.5 m` white lacustrine aragonite & tufa benches, specular gypsum/selenite crusts, polygonal halite/borate pans, and rose potash partings, held near-horizontal with `dip: [0,0,0]`, `warp: [0.35, 0.1]`).
+- **Showcase Cross-Reference:** Shares the **`N Semiarid Dam-Relic Salt Strandlines`** geological showcase station (`5.1 px 942, 452`, `-245 m` on the `dam 2` east-lobe recession apron; west-lobe twin `px 775, 424` near `Boatmurder` `766, 404`) specified in `biomes/nsemiarid/PLAN.md` §11, grounding the third hulk population (*trapped below the sill*) on crisp aragonite/selenite strandline treads.

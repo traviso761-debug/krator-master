@@ -47,7 +47,9 @@
         Object.keys(E.recipes||{}).forEach(function(pid){ var Rc=E.recipes[pid], Pp=SIM.R.place[pid], Ws=Rc.site!=null && out.sites && out.sites[Rc.site];   /* a batch in hand: its take booked, its out not yet made */
           if(Ws && Rc.batch && Pp && Pp.order) Object.keys(Rc.batch.out).forEach(function(g){ Ws.wip+=Rc.batch.out[g]; }); }); });
     if(T) T.order.forEach(function(id){ var R=T.routes[id], sea=out.sea[id]={};
-      R.carriers.forEach(function(C){ if(C.to==null || !C.cargo.length) return; var key=R.stops[C.from].settlement+'>'+R.stops[C.to].settlement, o=sea[key]||(sea[key]={});
+      R.carriers.forEach(function(C){ if(C.orig!=null && C.cargo.length){   /* a road with halts (77-sim-6-trade.js): each load's leg is from where it was loaded to the stop it is for */
+          C.cargo.forEach(function(c){ var k2=R.stops[C.orig].settlement+'>'+R.stops[c.at!=null ? c.at : C.dest].settlement, o2=sea[k2]||(sea[k2]={}); o2[c.good]=(o2[c.good]||0)+c.n; }); return; }
+        if(C.to==null || !C.cargo.length) return; var key=R.stops[C.from].settlement+'>'+R.stops[C.to].settlement, o=sea[key]||(sea[key]={});
         C.cargo.forEach(function(c){ o[c.good]=(o[c.good]||0)+c.n; }); });
       out.routes[id]={ shipped:JSON.parse(JSON.stringify(R.shipped)), landed:JSON.parse(JSON.stringify(R.landed)) }; });
     if(SIM.MONEY && SIM.moneySnap) out.money=SIM.moneySnap();   /* money's accounts and books (77-sim-6-money.js), when a world keeps money */

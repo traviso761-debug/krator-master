@@ -6,7 +6,7 @@ Xanadu: the building kit of the southern Sultanate (Tibetan massing, Indian, Tur
 
 Docs: `API.md`, `DESIGN.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `PORT.md`, `README.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/erewhon.html`, `dist/xanadu.html`
+Built output (never open it; edit `src/` and rebuild): `dist/erewhon.html`, `dist/xanadu-scrap.html`, `dist/xanadu.html`
 
 Build: `cd settlements/xanadu && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
@@ -65,4 +65,5 @@ Each target adds its own fragments to `src/` and builds one output.
 | Target | Fragments | KB |
 |---|---|---|
 | `erewhon` | `83-er-data.js`, `84-er-geo.js`, `85-er-paint.js`, `86-bio-46-er-init.js`, `87-er-layout.js`, `88-er-place.js`, `89z-rows.js`, `90a-er-world.js`, `90b-er-build.js`, `91z-views.js`, `93-er-ui.js` | 318 |
+| `scrap` | `89z-rows.js`, `91z-views.js` | <1 |
 | `xanadu` | `89z-rows.js`, `90-xa-still.js`, `91z-views.js` | 3 |

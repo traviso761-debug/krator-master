@@ -142,7 +142,7 @@ const qcInBox=(B,x,z,m)=>x>B[0]-qcD(m,0)&&x<B[2]+qcD(m,0)&&z>B[1]-qcD(m,0)&&z<B[
 const qcFieldAt=(x,z)=>{for(const f of QC_FIELDS)if(qcInBox(f.box,x,z,2))return f;return null;};
 function qcBioMask(x,z){const B=QC_B;
  if(x>QC_RIVER.x-QC_RIVER.w/2-6&&x<QC_RIVER.x+QC_RIVER.w/2+6)return 0;                    // the water
- if(x<B.x0-30||x>B.x1+30||z<B.z0-30||z>B.z1+30){if(Math.abs(z)<9&&x>B.x1)return 0;if(Math.abs(x)<8&&z>B.z1)return 0;return qcFieldAt(x,z)?0:1;}
+ if(x<B.x0-30||x>B.x1+30||z<B.z0-30||z>B.z1+30){if(Math.abs(z)<9&&x>B.x1)return 0;if(typeof QC_OIL!=='undefined'&&QC_OIL.mask(x,z))return 0;   /* the oilfield and the mission (89zr) */if(Math.abs(x)<8&&z>B.z1)return 0;return qcFieldAt(x,z)?0:1;}
  if(x<B.x0||x>B.x1||z<B.z0||z>B.z1)return 0;                                                  // the walls' margin
  let blk=null;for(const b of qcBlocks.query(x,z,1))if(qcInBox(b.box,x,z,-1)){blk=b;break;}if(!blk)return 0;   // a way, a wall
  for(const p of qcSpace.query(x,z,1)){const D=VERN.defs[p.key],r=Math.hypot(D.fw||D.w,D.fd||D.d)/2+1.5;if(Math.hypot(x-p.x,z-p.z)<r)return 0;}

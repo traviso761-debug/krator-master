@@ -10,7 +10,7 @@ const HALO := preload("res://shaders/halo.gdshader")
 const MAX_LIGHTS := 32
 
 
-static func build(path: String, focus: Vector3) -> Node3D:
+static func build(path: String, focus: Vector3, pool := false) -> Node3D:
 	var root := Node3D.new()
 	root.name = "Lamps"
 	var report := {"route": "krator-lamps JSON", "file": path, "gaps": {}, "counts": {}}
@@ -46,6 +46,15 @@ static func build(path: String, focus: Vector3) -> Node3D:
 	mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	root.add_child(mmi)
 
+	if pool:   # a page whose lamps are lit by a pool that follows the eye (Qiblai's): krator/lamp_pool.gd, the same rule
+		var P := KratorLampPool.new()
+		P.name = "LampPool"
+		P.lamps = lamps
+		root.add_child(P)
+		report["counts"] = {"lamps": lamps.size(), "bulbs": lamps.filter(func(l): return str(l.get("kind", "lamp")) == "bulb").size(), "pool": KratorLampPool.COUNT}
+		report["gaps"]["lamp light"] = "the page's pool: the %d lit lamps nearest the eye are OmniLight3D, moved every %.1f s (krator/lamp_pool.gd), as the page's 90v" % [KratorLampPool.COUNT, KratorLampPool.INTERVAL]
+		root.set_meta("report", report)
+		return root
 	var lights := Node3D.new()
 	lights.name = "Lights"
 	lights.set_script(load("res://krator/atmos_lights.gd"))

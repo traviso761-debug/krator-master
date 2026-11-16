@@ -14,6 +14,13 @@ for(const W of QC_S.walls){const outer=W.kind==='outer',v=outer?0:1;
   QC_EXTRA.push({key:'qb_wall',x:mx,z:mz,ry:Math.atan2(nx,nz),o:{v,len:L,y:W.yIn==null?qcLevelAt(mx,mz):W.yIn},kind:'wall',retain:[W.yOut,W.yIn,W.thick+1.2,L],id:W.id+':'+mx.toFixed(0)+','+mz.toFixed(0),h:10});}
  for(const g of W.gates)QC_EXTRA.push({key:'qb_wall_gate',x:g.x,z:g.z,ry:g.ry,o:{v,y:g.yIn==null?qcLevelAt(g.x,g.z):g.yIn},kind:'gate',retain:[g.yOut,g.yIn,outer?16:9,outer?26:16],id:g.id,h:26});
  for(const t of W.towers){if(t.kind==='gate')continue;QC_EXTRA.push({key:'qb_wall_corner',x:t.x,z:t.z,ry:0,o:{v,y:W.yIn==null?qcLevelAt(t.x,t.z):W.yIn},kind:'tower',retain:[W.yOut,W.yIn,t.size+1,t.size+1],id:t.id,h:16});}}
+// ---------------------------------------------------------------- the terrace stairs (the owner, 2026-11-16: "make gates go both ways")
+// each gate's lower side: a qb_terrace_stair from its sill down to the ground outside (an inner ring's terrace below, the
+// country under the outer wall), out from the gate block's face along the avenue; its rise read where its foot lands
+for(const g of QC_EXTRA.filter(p=>p.kind==='gate')){const inner=g.o.v===1,D=inner?8:14,w=inner?6:8,gy=qcD(g.o.y,0),f0=D/2+.3;let rise=2;
+ for(let k=0;k<3;k++){const L=qnStairPlan(rise).len,e=loc(g.x,g.z,0,f0+L+1,g.ry);rise=Math.max(.2,gy-terrainH(e[0],e[1]));}
+ if(rise<.3)continue;const s=loc(g.x,g.z,0,f0,g.ry);
+ QC_EXTRA.push({key:'qb_terrace_stair',x:s[0],z:s[1],ry:g.ry,o:{v:0,rise,w,y:gy},kind:'stair',gate:g,id:g.id+':stair',h:4});}
 // ---------------------------------------------------------------- the kora: arcades along its inner side, a chorten at every crossing
 const QC_KORA=QC_S.ways.find(w=>w.kind==='kora');
 if(QC_KORA){const P=QC_KORA.pts,n=P.length,y=QC_KORA.level==null?qcLevelAt(P[0][0],P[0][1]):QC_KORA.level;
@@ -37,7 +44,8 @@ function qcBakeChunk(key,list){const G=new THREE.Group();G.name='chunk:'+key;sce
  for(const p of list){
   // the made ground's retaining face under a wall, a gate or a tower: ashlar from the lower terrace to the upper
   if(p.retain&&p.retain[0]!=null&&p.retain[1]!=null&&p.retain[1]-p.retain[0]>.2){TSTAT.cur='qc_retain/0';vB('qAshB',p.x,p.retain[0]-.5,p.z,p.retain[3],p.retain[1]-p.retain[0]+.5,p.retain[2],p.ry,xC(xPick(QSTONE)));}
-  TSTAT.cur=p.key+'/'+(p.o.v|0);const r0=REG.length;const g=VERN.place(G,p.key,p.x,p.z,p.ry,p.o);if(g)p.G=g;for(let i=r0;i<REG.length;i++)REG[i].type=p.key;
+  TSTAT.cur=p.key+'/'+(p.o.v|0);const r0=REG.length;if(p.kind==='lot'||p.kind==='monastery'||p.kind==='market'||p.kind==='caravanserai'){p.stacks=[];QB_SHELLREC.cur=p.stacks;}   /* a lot's (and the ranges' of a monastery, a gate market, the caravanserai) storey stacks: its interior's shell (kits/qiblai 89q5s, 90u) */
+  const g=VERN.place(G,p.key,p.x,p.z,p.ry,p.o);QB_SHELLREC.cur=null;if(g)p.G=g;for(let i=r0;i<REG.length;i++)REG[i].type=p.key;
   x0=Math.min(x0,p.x-60);x1=Math.max(x1,p.x+60);z0=Math.min(z0,p.z-60);z1=Math.max(z1,p.z+60);y0=Math.min(y0,qcD(p.o.y,0));y1=Math.max(y1,(qcD(p.o.y,0))+qcD(p.h,12));}
  TSTAT.cur=null;kbake(G);xaDoorsBind();QC_INST+=qcD(window._instances,0);for(const n in KIT.items)KIT.items[n].length=0;
  const e={G,key,sphere:new THREE.Sphere(new THREE.Vector3((x0+x1)/2,(y0+y1)/2,(z0+z1)/2),Math.hypot(x1-x0,y1-y0,z1-z0)/2+20),range:key==='landmark'||key==='walls'?1e9:2200,n:list.length};QC_GROUPS.push(e);return e;}

@@ -9,9 +9,18 @@ invariants and views are Xanadu's, and settlements/xanadu/verify.py runs it (on 
   people-by-ring        the residents by ring against kits/qiblai/PLAN.md section 3's table (clergy ~2,400, kora ~3,000, lay
                         ~6,000), within 15 % (reported as a budget until the owner calibrates it: settlements/qiblai/PLAN.md Q7d)
   xanadu-share          a third of the lay houses the Xanadu kit's (the owner, 2026-11-11), within 28-38 % (reported)
-  interiors-on-demand   the four walk-in rooms (targets/city/90t-qc-interiors.js: the Rainbow Temple's sanctum, the Hall of the
-                        Decree's council chamber, a monastery's assembly hall, a hostel dormitory), built and furnished on
-                        demand: buildAll() builds every one, each furnished with every programme met (IX.audit) and textured
+  interiors-on-demand   the great rooms (targets/city/90t-qc-interiors.js: the Rainbow Temple's sanctum, the Hall of the
+                        Decree's council chamber, every monastery's assembly hall, each whole one's gate hall, a hostel dormitory:
+                        19), built and furnished on demand: buildAll() builds every one, each furnished with every programme met
+                        (IX.audit) and textured
+  walk-in-rooms         a walker from the street (core/walk's reach, the rooms' doors opened) gets through each monastery's gate
+                        to its court, gate hall and assembly hall, up the Rainbow Temple's terraces to its sanctum, and into
+                        each other great room; every city gate both ways (from the city side and from the foot of its stair)
+  walk-in               the front doors (the owner, 2026-11-16: "unlock the front doors so I can walk in"): for a house of each of
+                        the 6 commonest built types, its drawn door shut blocks the doorway, open clears it, and a walker from the
+                        street reaches every floor and stair of it (core/walk's reach over 90u's walk records)
+  interiors-every-building  every lot building's ground storey (targets/city/90u-qc-lot-interiors.js): 85 % of the lots have a
+                        shell and a programme; the 8 commonest types plan, draw and furnish with no failure, every piece textured
 
     KRATOR_GL=gpu python3 verify.py dist/qiblai.html --assert --views "Overview,From the south gate"
 """
@@ -36,8 +45,25 @@ CITY_JS = r"""
  R.push({name:'people-by-ring',ok:!bad.length,budget:true,detail:Object.keys(T).map(k=>k+' '+(P[k]||0)+' / '+T[k]).join(', ')+'; total '+(P.total||0)+' / ~12,000'});
  const sh=Q.xanaduShare||0;R.push({name:'xanadu-share',ok:sh>=.28&&sh<=.38,budget:true,detail:(sh*100).toFixed(1)+' % of the lay houses the Xanadu kit\'s (the owner: 33 %)'});
  const I0=window._qiblaiIx,pre=I0?I0.built:0,I=I0&&I0.buildAll?I0.buildAll():I0,X=I&&I.tex;
- R.push({name:'interiors-on-demand',ok:!!(I&&I.rooms.length===4&&I.built===4&&I.byRoom.length===4&&I.byRoom.every(r=>r.ok&&r.pieces>0)&&!I.fails.length&&X&&X.meshes&&X.mapped===X.meshes),
-  detail:I?(I.rooms.length+' rooms ('+pre+' built before the check), '+I.pieces+' pieces, '+I.ms+' ms; '+I.byRoom.map(r=>r.room+' '+r.pieces).join(', ')+(I.fails.length?'; FAILS '+I.fails.join(' | '):'')+(X?'; textured '+X.mapped+'/'+X.meshes+(X.bare.length?' bare: '+X.bare.join(','):''):'')):'window._qiblaiIx missing (targets/city/90t-qc-interiors.js)'});}
+ R.push({name:'interiors-on-demand',ok:!!(I&&I.rooms.length>=100&&I.built===I.rooms.length&&I.byRoom.length>=60&&I.byRoom.every(r=>r.ok&&r.pieces>0)&&!I.fails.length&&X&&X.meshes&&X.mapped===X.meshes),
+  detail:I?(I.rooms.length+' rooms ('+pre+' built before the check), '+I.pieces+' pieces, '+I.ms+' ms; '+I.byRoom.map(r=>r.room+' '+r.pieces).join(', ')+(I.fails.length?'; FAILS '+I.fails.join(' | '):'')+(X?'; textured '+X.mapped+'/'+X.meshes+(X.bare.length?' bare: '+X.bare.join(','):''):'')):'window._qiblaiIx missing (targets/city/90t-qc-interiors.js)'});
+ const WR=I0&&I0.walkIn?I0.walkIn():null,wrb=WR&&WR.length?WR.filter(w=>!w.ok):[];
+ R.push({name:'walk-in-rooms',ok:!!(WR&&WR.length>=100&&!wrb.length),
+  detail:!WR?'window._qiblaiIx.walkIn missing (targets/city/90t-qc-interiors.js)':WR.error?WR.error:WR.length+' routes walked: the street through each monastery gate to its court and halls, each other room from its door'+
+   (wrb.length?'; FAIL '+wrb.map(w=>w.at+' missed '+w.miss.join(', ')).join(' | '):'')});
+ const OIL=window._qiblaiOil,nO=typeof QC_OIL!=='undefined'?QC_OIL.assets.length:0;
+ R.push({name:'oilfield-and-mission',ok:!!(OIL&&nO>50&&OIL.assets===nO&&!OIL.errors.length&&OIL.poles>=40&&OIL.lamps>=20),
+  detail:!OIL?'window._qiblaiOil missing (targets/city/90v-qc-oilfield.js)':OIL.assets+' / '+nO+' buildings (the Geomancers yard, wells and village, the Yuni mission), '+OIL.instances+' instances; the power line '+OIL.poles+' poles, '+OIL.lamps+' lamps'+(OIL.errors.length?'; ERRORS '+OIL.errors.slice(0,4).join(' | '):'')});
+ const FI=OIL&&OIL.buildInteriors?OIL.buildInteriors():null;
+ R.push({name:'oilfield-interiors',ok:!!(FI&&FI.built>=30&&FI.rooms>=60&&FI.pieces>=300&&FI.fails.length<=8),
+  detail:!FI?'buildInteriors missing (targets/city/90v-qc-oilfield.js)':FI.built+' interiors (kits/interiors sets locus and yuni-town, the mission school and bathhouse), '+FI.rooms+' rooms, '+FI.pieces+' pieces; '+FI.fails.length+' rooms short of a required piece (KNOWN_ISSUES.md)'});
+ const J0=window._qiblaiLix,J=J0&&J0.buildTypes?J0.buildTypes(8):J0,share=J?J.lots/Math.max(1,J.lots+J.noShell+J.noProgram):0;
+ R.push({name:'interiors-every-building',ok:!!(J&&share>=.85&&J.built>=6&&!J.fails.length&&J.tex.meshes&&J.tex.mapped===J.tex.meshes),
+  detail:J?(J.lots+' lots with an interior ('+(share*100).toFixed(0)+' %; '+J.noShell+' without a shell, '+J.noProgram+' without a programme), '+J.types+' types; the 8 commonest built in '+J.ms+' ms ('+JSON.stringify(J.byProgram)+'), textured '+J.tex.mapped+'/'+J.tex.meshes+(J.fails.length?'; FAILS '+J.fails.join(' | '):'')):'window._qiblaiLix missing (targets/city/90u-qc-lot-interiors.js)'});
+ const WI=J0&&J0.walkIn?J0.walkIn(6):null,wb=WI&&WI.length?WI.filter(w=>!w.ok):[];
+ R.push({name:'walk-in',ok:!!(WI&&WI.length>=4&&!wb.length),
+  detail:!WI?'window._qiblaiLix.walkIn missing (targets/city/90u-qc-lot-interiors.js)':WI.error?WI.error:WI.length+' houses walked into from the street ('+WI.map(w=>w.key+' '+w.floors+' floors').join(', ')+')'+
+   (wb.length?'; FAIL '+wb.map(w=>w.key+(w.shut?'':' door not blocking shut')+(w.open?'':' doorway blocked open')+(w.unreached.length?' unreached '+w.unreached.join(','):'')).join(' | '):'')});}
 return R;}"""
 xv.ASSERT_JS = xv.ASSERT_JS.rstrip()[:-len('return R;}')] + CITY_JS
 assert xv.ASSERT_JS.endswith('return R;}'), 'settlements/xanadu/verify.py ASSERT_JS no longer ends with return R;}'
@@ -59,5 +85,6 @@ if __name__ == '__main__':
     ap.add_argument("--eval", action="append")
     ap.add_argument("--size", default="1280x800")
     ap.add_argument("--no-cache", action="store_true")
+    ap.add_argument("--interiors", action="store_true")   # settlements/xanadu/verify.py reads it (the hollow-wall audit)
     a = ap.parse_args([os.path.abspath(x) if x.endswith('.html') and os.path.exists(x) else x for x in sys.argv[1:]])
     sys.exit(asyncio.run(xv.run(a)))
