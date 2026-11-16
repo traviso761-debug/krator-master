@@ -809,12 +809,12 @@
    "sha256": "506cedc7eae5860bb7a092f7ee751691a612d0759cdbf4ccccc5a3b5ba7ee7a2"
   },
   "kits/interiors/dist/interiors-sets.html": {
-   "bytes": 734495,
-   "sha256": "8db212b3feba89b8ce4783421ea28fda84b4ea837d8d9e6fa856be0dd636bdad"
+   "bytes": 766818,
+   "sha256": "0b9e5b01292be3193ff4b64c75c41d8af0f13e9f88d4b4040b23ce4858661a07"
   },
   "kits/interiors/dist/interiors-walk.html": {
-   "bytes": 10304748,
-   "sha256": "9b6b1a5d279f494fbc0c80dfacfd08f903d639151c719a43cc2e952c8831e3b7"
+   "bytes": 10334298,
+   "sha256": "0aba71dde659f91a6d60db569823b360f7860b6c0a962379e3da1da807d991ea"
   },
   "kits/interiors/dist/interiors.html": {
    "bytes": 261765,

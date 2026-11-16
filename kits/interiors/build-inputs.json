@@ -69,6 +69,7 @@
     "kits/interiors/sets/pylon.js": "7d717de045de30f674121ab20fe439b0956e3ed08b014999c4f53999c4def4a8",
     "kits/interiors/sets/reedlake.js": "f1f2d17524ea8eae67929e7ba6724cb6ce5c80426b451bf48856ee2265bb2da4",
     "kits/interiors/sets/talia.js": "9a8b73f219891cf9d3dbba81e24c5f5701e2edf98e12ca66215892506932f9d8",
+    "kits/interiors/sets/xanadu-scrap.js": "7fde9eed5bfba6bc672279d29967d949cd5ae2286135096714f3f0b17aaf1062",
     "kits/interiors/sets/yuni-town.js": "c6a538398f74838474c4e60ff81fd1e52988af3e69c844197d62fda7c5e3a2af",
     "kits/interiors/sets/yuni.js": "962f37ed925b44927b6a6630c6c4d688f7f5e9feea2e91338982dc80388fc6b4",
     "kits/interiors/sets/zeijani.js": "312a83ea72a7983153baa7da65d0bc116e1b28082d0c7514bb361076834ae14c",
@@ -112,7 +113,7 @@
     "core/atmos/placeholder": "93e72701f4f204e698b400c25d1989704d985203b33d5a076ec9e170c3bb9552",
     "core/catalog": "30a9e7a2a0ea642339cc1158c3060327682167fbeb74a8c68a584185e0c6d094",
     "kits/catalog": "10322ea778934242b7ce59b2a1b14f40befde097c5b9b80081f11fd0cb8a57ce",
-    "kits/interiors/sets": "8601faf52d9185f777a2302548cc31885baa8c99b62113b20e6535c3a46ca360",
+    "kits/interiors/sets": "fcd55be5cb3abad99a3efdfe00e40bfbd8f210c96e0d2d39488744280b7bd4e8",
     "kits/interiors/src": "fe72f6be1b5eb6012c769b91a5fc7c558f24144155f758942db210e347392bab",
     "kits/interiors/src-sets": "07ffc3d747d249f686768e05e4c7f7ed41986959a0650856faba817ca2a1c8d1",
     "kits/interiors/src-walk": "564a956690796ed907a5d3eb3844e366352d94de026d323a7aef1de9c9aa237c",
@@ -120,17 +121,17 @@
     "tools": "2d2fdaca850a104a2a2c553313ccb3ad18dc6bc48cb554c8c714fc1ca39607bf"
    },
    "outputs": {
-    "kits/interiors/build-manifest.json": "e27c7ef9366f339450b4b713274259e6835258b3e65ff48286e98a457164915a",
+    "kits/interiors/build-manifest.json": "04595ca78a7c6572bf1dd30c6cf6ce28a35f4bc3df49c4b0095df66310ccf31c",
     "kits/interiors/dist/interiors-core.js": "25ca64574c5bef2c4ff4ac376982823e17bc890850bbad473a3f56d668875cda",
-    "kits/interiors/dist/interiors-sets.html": "ea1f7b3440cb9501241a42a07c76f3341975aa3b877d69f45ba1889f2ff270d0",
-    "kits/interiors/dist/interiors-walk.html": "9b6b1a5d279f494fbc0c80dfacfd08f903d639151c719a43cc2e952c8831e3b7",
+    "kits/interiors/dist/interiors-sets.html": "0b9e5b01292be3193ff4b64c75c41d8af0f13e9f88d4b4040b23ce4858661a07",
+    "kits/interiors/dist/interiors-walk.html": "0aba71dde659f91a6d60db569823b360f7860b6c0a962379e3da1da807d991ea",
     "kits/interiors/dist/interiors.html": "a0ee049196d9800b59309a3ea156f9cc566e40a6494e4d6db3931d617b32d9b1"
    },
    "outputs_raw": {
-    "kits/interiors/build-manifest.json": "f9fc151619a6a6e58f5a4c79d99563a25566d16946a1f1f7c6a285492409f7f7",
+    "kits/interiors/build-manifest.json": "8b9ba9f3af06a58d2974129cfd38cb2567c01736f1bad84640a610b6f66d1566",
     "kits/interiors/dist/interiors-core.js": "25ca64574c5bef2c4ff4ac376982823e17bc890850bbad473a3f56d668875cda",
-    "kits/interiors/dist/interiors-sets.html": "ea1f7b3440cb9501241a42a07c76f3341975aa3b877d69f45ba1889f2ff270d0",
-    "kits/interiors/dist/interiors-walk.html": "9b6b1a5d279f494fbc0c80dfacfd08f903d639151c719a43cc2e952c8831e3b7",
+    "kits/interiors/dist/interiors-sets.html": "0b9e5b01292be3193ff4b64c75c41d8af0f13e9f88d4b4040b23ce4858661a07",
+    "kits/interiors/dist/interiors-walk.html": "0aba71dde659f91a6d60db569823b360f7860b6c0a962379e3da1da807d991ea",
     "kits/interiors/dist/interiors.html": "a0ee049196d9800b59309a3ea156f9cc566e40a6494e4d6db3931d617b32d9b1"
    }
   }
