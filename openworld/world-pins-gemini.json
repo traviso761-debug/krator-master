@@ -13780,8 +13780,8 @@
       "name": "Thalaba",
       "type": "village",
       "px": 825,
-      "py": 1481,
-      "notes": "",
+      "py": 1488,
+      "notes": "Lakeshore village on North Lake Xanadu mounting summer hunting, gathering & ruin expeditions into Godshearth.",
       "createdAt": "2026-11-13T05:25:53.287Z"
     },
     {
@@ -13883,6 +13883,51 @@
       "px": 911,
       "py": 1665,
       "notes": "Bonanza South Rift-scarp epithermal gold-mining village on lode:xanadu-gold above Strongwall & Qiblai."
+    },
+    {
+      "id": "sc3dsw9tjl",
+      "name": "Darling",
+      "type": "village",
+      "px": 1582,
+      "py": 1341,
+      "notes": "Yuni Mid-Basin caravan village (3164 km, 2682 km) linking Stalker Gate passes to Ostrukh-on-Water & Spindle Fan.",
+      "createdAt": "2026-11-15T23:15:00.000Z"
+    },
+    {
+      "id": "sz85a8i5js",
+      "name": "Ranger HQ",
+      "type": "outpost",
+      "px": 1420,
+      "py": 1242,
+      "notes": "Fortified Yuni Stalker-watch outpost (2840 km, 2484 km) supporting caravans through the Stalker Gate.",
+      "createdAt": "2026-11-15T23:15:00.000Z"
+    },
+    {
+      "id": "sbberbi1ny",
+      "name": "Quintagon",
+      "type": "ruined arcology",
+      "px": 1358,
+      "py": 945,
+      "notes": "Uninhabited ruined arcology (2716 km, 1890 km) above Sista Riba & Verge; Yuni Emirate's primary source of salvaged scrap metal, relics & high-tech parts.",
+      "createdAt": "2026-11-15T23:15:00.000Z"
+    },
+    {
+      "id": "sl9let4tz0",
+      "name": "Frost-Jaw Camp",
+      "type": "village",
+      "px": 624,
+      "py": 361,
+      "notes": "Western semi-nomadic Sasquatch winter camp in Frost-Jaw Vale.",
+      "createdAt": "2026-11-15T23:15:00.000Z"
+    },
+    {
+      "id": "sse7u0rvoj",
+      "name": "Hoar-Wind Camp",
+      "type": "village",
+      "px": 788,
+      "py": 332,
+      "notes": "Eastern semi-nomadic Sasquatch camp in Hoar-Wind Glen trading south toward Skywatch & Serai.",
+      "createdAt": "2026-11-15T23:15:00.000Z"
     }
   ],
   "net51_overrides": {
@@ -15681,13 +15726,13 @@
       "id": "shvo49k0y2",
       "name": "Thalaba",
       "x": 825,
-      "y": 1481,
+      "y": 1488,
       "type": "village",
       "population": 750,
       "polity": "Xanadu Sultanate",
-      "notes": "",
+      "notes": "Lakeshore village on North Lake Xanadu mounting summer hunting, gathering & ruin expeditions into Godshearth.",
       "px": 825,
-      "py": 1481
+      "py": 1488
     },
     {
       "id": "sgzl17vqfx",
@@ -16186,7 +16231,67 @@
       "notes": "Bonanza South Rift-scarp epithermal gold-mining village on lode:xanadu-gold above Strongwall & Qiblai.",
       "x": 911,
       "y": 1665
+    },
+    {
+      "id": "sc3dsw9tjl",
+      "name": "Darling",
+      "x": 1582,
+      "y": 1341,
+      "px": 1582,
+      "py": 1341,
+      "type": "village",
+      "population": 950,
+      "polity": "Yuni Emirate",
+      "notes": "Yuni Mid-Basin caravan village (3164 km, 2682 km) linking Stalker Gate passes to Ostrukh-on-Water & Spindle Fan."
+    },
+    {
+      "id": "sz85a8i5js",
+      "name": "Ranger HQ",
+      "x": 1420,
+      "y": 1242,
+      "px": 1420,
+      "py": 1242,
+      "type": "outpost",
+      "population": 450,
+      "polity": "Yuni Emirate",
+      "notes": "Fortified Yuni Stalker-watch outpost (2840 km, 2484 km) supporting caravans through the Stalker Gate."
+    },
+    {
+      "id": "sbberbi1ny",
+      "name": "Quintagon",
+      "x": 1358,
+      "y": 945,
+      "px": 1358,
+      "py": 945,
+      "type": "ruined arcology",
+      "population": 0,
+      "polity": "",
+      "notes": "Uninhabited ruined arcology (2716 km, 1890 km) above Sista Riba & Verge; Yuni Emirate's primary source of salvaged scrap metal, relics & high-tech parts."
+    },
+    {
+      "id": "sl9let4tz0",
+      "name": "Frost-Jaw Camp",
+      "x": 624,
+      "y": 361,
+      "px": 624,
+      "py": 361,
+      "type": "village",
+      "population": 500,
+      "polity": "Sasquatch Tribes",
+      "notes": "Western semi-nomadic Sasquatch winter camp in Frost-Jaw Vale."
+    },
+    {
+      "id": "sse7u0rvoj",
+      "name": "Hoar-Wind Camp",
+      "x": 788,
+      "y": 332,
+      "px": 788,
+      "py": 332,
+      "type": "village",
+      "population": 450,
+      "polity": "Sasquatch Tribes",
+      "notes": "Eastern semi-nomadic Sasquatch camp in Hoar-Wind Glen trading south toward Skywatch & Serai."
     }
   ],
-  "settlement_count": 169
+  "settlement_count": 174
 }

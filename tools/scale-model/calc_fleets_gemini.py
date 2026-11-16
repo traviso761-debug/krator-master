@@ -74,7 +74,7 @@ ISLAND_OR_EXTERIOR_NO_CARAVAN_POLS = {
 # Passive-host nomadic kraals: Scyvoi never push merchant caravans out to border towns — outsiders come to them!
 PASSIVE_HOST_NO_CARAVAN_POLS = {"Scyvoi"}
 
-UMBRELLA_GROUPS = {"Nomad Country", "Coyote Kingdom", "Korona Tribes", "Scyvoi", "Catch Oasis Stations"}
+UMBRELLA_GROUPS = {"Nomad Country", "Coyote Kingdom", "Korona Tribes", "Scyvoi", "Catch Oasis Stations", "Sasquatch Tribes"}
 
 UNIT_TONS = {"t": 1.0, "kg": 0.002}
 GOOD_TONS = {
@@ -83,7 +83,9 @@ GOOD_TONS = {
     "furniture": 0.25, "firearms": 0.08, "armor": 0.12, "weapons": 0.10,
     "goldwork": 0.03, "fine-ceramics": 0.15, "porcelain": 0.14,
     "almanacs": 0.04, "books": 0.05, "lenses": 0.03,
-    "rockets": 0.35, "arms": 0.50, "electrics": 0.18, "energy-cells": 0.08,
+    "rockets": 0.35, "mech-parts": 0.50, "electrics": 0.18, "energy-cells": 0.08,
+    "servomotors": 0.08, "power-relays": 0.10, "circuits": 0.03, "microchips": 0.01,
+    "processor-cores": 0.04, "ancient-sensors": 0.05, "archaeotech": 0.05,
     "cybernetics": 0.04, "genecraft": 0.03, "scrapgoods": 0.22, "relics": 0.05,
     "oversea-luxuries": 0.08, "frost-coral": 0.08, "ria-amber": 0.08,
 }
@@ -572,7 +574,7 @@ def extract_flows_from_model():
 
     cross_flows = []
     domestic_flows = []
-    MILITARY_GOODS = {"arms", "rockets", "firearms", "armor", "weapons"}
+    MILITARY_GOODS = {"mech-parts", "rockets", "firearms", "armor", "weapons", "gunpowder"}
 
     for g in gtm.GOODS:
         gid = g["id"]
@@ -600,9 +602,15 @@ def extract_flows_from_model():
                             ek = fast_eff(ms, mb, tier)
                             if not np.isfinite(ek):
                                 ws_d.append(0.0); continue
+                            if gid == "milk" and ek > 200.0:
+                                ws_d.append(0.0); continue
                             if gid == "food" and ek > 260.0:
                                 ws_d.append(0.0); continue
                             if gid == "timber" and ek > 260.0:
+                                ws_d.append(0.0); continue
+                            if gid == "eggs" and ek > 330.0:
+                                ws_d.append(0.0); continue
+                            if gid == "fruit" and ek > 430.0:
                                 ws_d.append(0.0); continue
                             if gid == "brick" and ek > 210.0:
                                 ws_d.append(0.0); continue
@@ -662,9 +670,9 @@ def extract_flows_from_model():
                         w_row.append(0.0); continue
                     if {s_pol, b_pol} == {"Order of Historians", "Vothic Kingdom"}:
                         w_row.append(0.0); continue
-                    if gid in ("rockets", "firearms") and b_pol in ("Coyote Kingdom", "Dilihan Province"):
+                    if gid in ("rockets", "firearms", "gunpowder") and b_pol in ("Coyote Kingdom", "Dilihan Province"):
                         w_row.append(0.0); continue
-                    if {s_pol, b_pol} == {"Yeti Kingdom", "Eternal State"}:
+                    if {s_pol, b_pol} == {"Yeti Kingdom", "Eternal State"} or {s_pol, b_pol} == {"Sasquatch Tribes", "Eternal State"}:
                         w_row.append(0.0); continue
                     if {s_pol, b_pol} == {"Ria Valley", "The Crook"}:
                         w_row.append(0.0); continue
@@ -687,7 +695,7 @@ def extract_flows_from_model():
                         w_row.append(0.0); continue
                     if s_pol in gtm.THRONE_COLONIAL_POLS and b_pol in ("Zeijani", "Andaru") and gid in MILITARY_GOODS:
                         w_row.append(0.0); continue
-                    if "Yeti Kingdom" in (s_pol, b_pol) and tier == "bulk":
+                    if (s_pol in ("Yeti Kingdom", "Sasquatch Tribes") or b_pol in ("Yeti Kingdom", "Sasquatch Tribes")) and tier == "bulk":
                         w_row.append(0.0); continue
                     if "Nomad Country" in (s_pol, b_pol):
                         if setts[s_sid]["name"] not in gtm.EASTERN_NOMAD_ALLOWED_PINS or setts[b_sid]["name"] not in gtm.EASTERN_NOMAD_ALLOWED_PINS:
@@ -695,9 +703,15 @@ def extract_flows_from_model():
                     eff_km = fast_eff(s_sid, b_sid, tier)
                     if not np.isfinite(eff_km):
                         w_row.append(0.0); continue
+                    if gid == "milk" and eff_km > 190.0:
+                        w_row.append(0.0); continue
                     if gid == "food" and eff_km > 240.0:
                         w_row.append(0.0); continue
-                    if gid == "timber" and eff_km > 250.0:
+                    if gid == "timber" and eff_km > 300.0:
+                        w_row.append(0.0); continue
+                    if gid == "eggs" and eff_km > 320.0:
+                        w_row.append(0.0); continue
+                    if gid == "fruit" and eff_km > 420.0:
                         w_row.append(0.0); continue
                     if gid == "peat" and eff_km > 480.0:
                         w_row.append(0.0); continue
