@@ -49,5 +49,10 @@ const NEG={
 for(const name of Object.keys(CHECKS)){const [pass,detail]=CHECKS[name](base);T.ok(name+' ('+detail+')',pass,detail);
  const F=run(NEG[name]);if(name==='each quarter\'s role is the census\'s')F.o.census.byQuarter.bazaar-=40;
  T.ok('negative: '+name+' is caught',!CHECKS[name](F)[0],CHECKS[name](F)[1]);}
+/* T-town-9: a worker goes to its own job (WORK pinned), not to the nearest place offering WORK */
+{const own=X=>{let bad=0,n=0;for(const a of actors(X.C)){if(!a.work)continue;n++;const P=X.C.SIM.choose(a,'WORK',10);if(!P||P.id!==a.work)bad++;}return [n>0&&bad===0,n+' workers, '+bad+' sent elsewhere'];};
+ const [p,d]=own(base);T.ok('every worker works its own job ('+d+')',p,d);
+ const F=run();for(const id in F.C.SIM.R.role){const R=F.C.SIM.R.role[id];if(R.prefers)delete R.prefers.WORK;}for(const a of actors(F.C))a.mem={};
+ T.ok('negative: workers sent to the nearest work are caught',!own(F)[0],own(F)[1]);}
 T.ok('the declaration reruns the same',JSON.stringify(run().C.SIM.all('actor').map(a=>[a.id,a.role,a.home,a.work]))===JSON.stringify(base.C.SIM.all('actor').map(a=>[a.id,a.role,a.home,a.work])));
 T.done();

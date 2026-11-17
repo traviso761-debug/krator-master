@@ -64,16 +64,18 @@ var TH_SIM=(function(){
    xa_scrap_granary:'granary',xa_scrap_silos:'granary',xa_scrap_farm:'farmstead',xa_scrap_pavilion:null}[k]||null;};
  function world(o){const census=o.census||{byQuarter:{}},acts=['SLEEP','EAT','WORK','PRAY','KORA','TRADE','SOCIALIZE','REST','IDLE'];
   const roles=[];
+  /* every role works its own job (T-town-9: WORK pinned to .work; without it core sends a worker to the nearest place offering
+     WORK, and on the page most salvagers worked the town's stores and fields, a few the arcology's studies) */
   /* the town's roles keep two schedules dealt in turn (core's `variants`): the day's, and the same an hour later, so the town
      does not turn from one activity to the next all in one minute (a rush hour's first routes are searched at that minute) */
   const later=S=>{const L=S.map(([h,a])=>[(h+1)%24,a]).sort((p,q)=>p[0]-q[0]);if(L[0][0]!==0)L.unshift([0,L[L.length-1][1]]);return L;};
   for(const q in QROLE){const n=census.byQuarter[q]|0;if(!n)continue;const R=QROLE[q];
    roles.push({id:R.id,org:R.org||'town',name:R.name,sched:SCHED[R.sched],variants:[SCHED[R.sched],later(SCHED[R.sched])],count:n,homes:['home:'+q],work:{kinds:R.work,act:'WORK',near:true},settlement:'theodiga',
-    prefers:{SLEEP:{pin:'home'},EAT:{pin:R.eat||'home'}}});}
+    prefers:{SLEEP:{pin:'home'},EAT:{pin:R.eat||'home'},WORK:{pin:'work'}}});}
   for(const R of AROLE)roles.push({id:R.id,org:R.org||'clergy',name:R.name,sched:SCHED[R.sched],count:R.homes.reduce((s,h)=>s+(AREA[h.slice(4)]|0),0),homes:R.homes,
-   work:{kinds:R.work,act:'WORK',near:true},settlement:'theodiga',prefers:{SLEEP:{pin:'home'},EAT:{pin:'home'}}});
+   work:{kinds:R.work,act:'WORK',near:true},settlement:'theodiga',prefers:{SLEEP:{pin:'home'},EAT:{pin:'home'},WORK:{pin:'work'}}});
   roles.push({id:'deviser',org:'devisers',name:'the Rare Devisers and their haulers at the bore',sched:SCHED.work,count:o.devisers==null?12:o.devisers,homes:['home:bore'],
-   work:{kinds:['bore'],act:'WORK'},settlement:'theodiga',prefers:{SLEEP:{pin:'home'},EAT:{pin:'home'}}});
+   work:{kinds:['bore'],act:'WORK'},settlement:'theodiga',prefers:{SLEEP:{pin:'home'},EAT:{pin:'home'},WORK:{pin:'work'}}});
   roles.push({id:'pilgrim',org:'pilgrims',name:'pilgrims to the Dome',sched:SCHED.pilgrim,count:o.pilgrims|0,homes:['hostel'],settlement:'theodiga',prefers:{SLEEP:{pin:'home'}}});
   return {activities:acts.map(id=>({id,indoor:/^(SLEEP|EAT|WORK|PRAY)$/.test(id)})),
    factions:[{id:'xanadu',name:'The Xanadu Sultanate'},{id:'decree',name:'The faith of the Decree',parent:'xanadu'},{id:'historians',name:'The Order of Historians'}],

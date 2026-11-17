@@ -52,11 +52,14 @@ var TH_ECON=(function(){
     yards' and the bore's rates (a worker-hour's lots); `field` the rate of a kind no one was dealt to; the tools' life (worked
     hours); the road's lots and minutes */
  /* (`surplus` 1.5: on the page the people walk to their work and lose part of the hours the abstract level counts; at 1.25
-    a week on the page ran the grain down to 0.6 days, at 1.5 the warehouses hold over nine days) */
- const TUNE={diet:{grain:.24,pulse:.14,tuber:.14,milk:.19,honey:.09,bread:.14,tea:.06},surplus:1.5,hours:9,field:3,yard:1.5,bore:.08,
+    a week on the page ran the grain down to 0.6 days. At 1.5 they held only while the salvagers worked the fields; with every
+    worker at its own job (T-town-9) the foods were made at 0.85 of their use, so 1.9) */
+ /* (yard 0.25: the yards make about what the town moves. At 1.5 their stores filled in two days and they waited on the carters,
+    who haul about 2,700 lots a day up the face; the Dome's fall, sized to their take, then lasted years, not the owner's year) */
+ const TUNE={diet:{grain:.24,pulse:.14,tuber:.14,milk:.19,honey:.09,bread:.14,tea:.06},surplus:1.9,hours:9,field:3,yard:.25,bore:.08,
   bake:{in:{grain:3},out:{bread:8},hours:2},smelt:{in:{scrap:4,charcoal:1},out:{iron:1},hours:3},toolLife:800,ironSurplus:1.6,
   churn:{in:{milk:6},out:{butter:1},hours:1},lamp:{hours:4,pats:4},robeLife:240,garmentDays:30,factor:{hour:7,keep:0},
-  cap:{field:600,farmstead:400,yard:2000,bore:200,'arc-kitchen':400,smelter:400,churn:300},startDays:3,storeDays:[2,4],carts:16,dome:60000,stockpile:{scrap:400,iron:20},
+  cap:{field:600,farmstead:400,yard:2000,bore:200,'arc-kitchen':400,smelter:400,churn:300},startDays:3,storeDays:[2,4],carts:16,dome:null,fallDays:365,stockpile:{scrap:400,iron:20},
   road:{minutes:600,tea:3000,charcoal:600,charStart:300,garments:400,cap:800,size:[2,6],per:2,mins:180,speed:1},
   items:{meals:2,perMeal:2,low:2,days:3,mins:15,cool:120,secPerMinute:18}};
  const TOOLED={field:1,yard:1,farmstead:1,bore:1};
@@ -84,7 +87,6 @@ var TH_ECON=(function(){
   /* the warehouses: the storehouses, granaries and serai */
   for(const P of mine)if(P.kind==='store'||P.kind==='granary'||P.kind==='serai'){SIM.store(P.id,{kind:'warehouse'});out.warehouses++;}
   /* the sites: the Dome's fall (the yards' scrap, running down) and the bore (no end) */
-  SIM.site({id:'th.site.dome-fall',settlement:s,kind:'dome-fall',goods:['scrap'],grade:'medium',amount:T.dome,regen:0,yield:1});
   SIM.site({id:'th.site.bore',settlement:s,kind:'bore',goods:['rarities'],grade:'rich',yield:1});
   const crop={};for(const F of o.fields||[]){const b=F.bucket||F.crop;crop['th.field.'+F.id]=FOODS.indexOf(b)>=0?b:'grain';}
   const mk=k=>{out.makers[k]=(out.makers[k]||0)+1;};
@@ -107,6 +109,12 @@ var TH_ECON=(function(){
   const kindOf=P=>P===smelter?'smelter':P.kind==='field'?'field:'+(crop[P.id]||'grain'):P.kind==='farmstead'?'farm:'+role[P.id]:P.kind;
   const workers={};let tooled=0;
   for(const a of SIM.all('actor')){const P=a.work&&SIM.R.place[a.work];if(P&&P.settlement===s){const k=kindOf(P);workers[k]=(workers[k]||0)+1;if(TOOLED[P.kind])tooled++;}}
+  /* THE DOME'S FALL (T-town-9, the owner 2026-11-16: it should last "about a year"): its fallen panels sized to the yards' take, the yards'
+     hands' worked hours a day (their schedules) at the yards' rate, over `fallDays`; on the page walking costs hours, so it lasts a little longer.
+     `dome` (a number) overrides it */
+  let yardDay=0;for(const a of SIM.all('actor')){const P=a.work&&SIM.R.place[a.work];if(P&&P.settlement===s&&P.kind==='yard'&&P!==smelter)yardDay+=workHours(SIM,a)*T.yard;}
+  const fall=T.dome!=null?T.dome:Math.max(1000,Math.round(yardDay*T.fallDays));out.fall={lots:fall,perDay:Math.round(yardDay),days:yardDay>0?Math.round(fall/yardDay):null};
+  SIM.site({id:'th.site.dome-fall',settlement:s,kind:'dome-fall',goods:['scrap'],grade:'medium',amount:fall,regen:0,yield:1});
   const D=T.diet,breadGrain=D.bread*T.bake.in.grain/T.bake.out.bread;
   const churnMilk=need0>0?lampDay*T.churn.in.milk/T.churn.out.butter/need0:0;
   const want={'field:grain':D.grain+breadGrain,'field:pulse':D.pulse,'field:tuber':D.tuber,'farm:milk':D.milk+churnMilk,'farm:honey':D.honey};

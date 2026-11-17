@@ -3651,7 +3651,7 @@
     "kits/ancients-interiors/src/37c-ai-kit-works.js": "76886865d1a882b3e847ec0588e1677c40d1800ba1183a05a693e0da8e1e21f1",
     "kits/ancients-interiors/src/38-ai-reception.js": "e9cab2cfd554f792fd488f6d40ed2f87b4d4a09b3a8d673518399bc49e9abc82",
     "kits/ancients-interiors/src/40-ai-audit.js": "76a5b594e455ad9d54a61f5adad6ac99ca0acbc9ba8547efdebc553cae8218d6",
-    "kits/ancients/KNOWN_ISSUES.md": "7fdd38eff5275975ffcbe4afec9c499b204f4d480e4036e6dcc48722a009f7d8",
+    "kits/ancients/KNOWN_ISSUES.md": "d50db374eb8718d99571885ce8b8c25031e6937d5e25e085b92521dd7c3fb59e",
     "kits/ancients/PORT.md": "d26daf4a320c4f6eb2a1dafd4f16d4ad660de9fdb4be9ab779c7e07c3f76df5f",
     "kits/ancients/build.py": "be1cb7d02c9434c421bd803a867e920fdb3245d07957f9e88d610e6ec4fd7d55",
     "kits/ancients/src/00-head.html": "0943bbc0cfb9e39df9a2d653ced3bd64adf319eda202c2a1574fa422dca301f4",
@@ -4074,9 +4074,9 @@
     "settlements/theodiga/src/44-th-dome-today.js": "4604cb35ff991395921a4f57d8c2a8522eb36d1c7d4adcc404fe58dc15cde0cd",
     "settlements/theodiga/src/45-th-life.js": "b7fc4b294bc2776c63141f179ae122e6a5c3203fb7657fda824d3c1a5ca3ccb0",
     "settlements/theodiga/src/46-th-town-rooms.js": "1971650f12408f0efe4d4b5d460af723d703e8c505b620f24771309368aadd8a",
-    "settlements/theodiga/src/47-th-sim.js": "0e90f44c44de9eb4149e1080e73a6a9ffd7cc5c7d1548ed01648a111c8762a6f",
+    "settlements/theodiga/src/47-th-sim.js": "188ca0f81b45a583e86b0ac314848a110202bcc82cd8f49e0108e05bf59a8d9e",
     "settlements/theodiga/src/48-th-walk.js": "1424e094aec41f58c1292dd8952721216e46f45a32de9ac78db0ea9fbe5c3842",
-    "settlements/theodiga/src/49-th-econ.js": "daaa3fffe985cdc26e5a3d27dcc68f68073714c409cf23f53450c3d67522f86d",
+    "settlements/theodiga/src/49-th-econ.js": "43e16c8aa604183d452e053acfde466f43e3b4e944a5a4f5539eb5a96f2d9257",
     "settlements/theodiga/src/49m-th-money.js": "de81a298df20db3bd4ba49709422d7bf5e8a4fad8b1eafba97952431b4e010dd",
     "settlements/theodiga/src/8ay1-th-town.js": "1af663c1bf544f894fccee91d4b5b9710a6ca9ec9c87038ab491804ebeb88705",
     "settlements/theodiga/src/8ay2-th-descent.js": "68d015259713681b8dc0bacdc4196261657cc89ad83f1049a13167cd8ce6ebc0",
@@ -4294,20 +4294,20 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "kits/ancients/build-manifest-theodiga-today.json": "c84a97cb601b659403d0d77589d54fc7dc55f32bbca034a49a25cb4cc1595a6f",
+    "kits/ancients/build-manifest-theodiga-today.json": "75a3a14c1e757e779d55018159206c95085f3078eec6869618916d3defca1abf",
     "kits/ancients/dist/ancients.tex.ancients.js": "c7ed83f8f8f6137f51a41f8e4e6d9d29f58231c89061aff467c3d4710a313883",
     "kits/ancients/dist/ancients.tex.qiblai.js": "1dac9ba8f546f8b073c0cfa461730db3b01d7d5408b0331bab83ad8f070e1e91",
     "kits/ancients/dist/ancients.tex.xanadu-2.js": "7503fe94ba1a6aef4913c3cad9745cf6d7167d1529833981c9a17e0bb342cf46",
     "kits/ancients/dist/ancients.tex.xanadu.js": "2f50bf4d1e032c7a6b33fa398ddffa2388623ef2713b7005f3a50991bc22f1a9",
-    "kits/ancients/dist/theodiga-today.html": "cd78eb244c248d86f632d21d7ed05b123201a8ef3429897a6bc1ca2bf967ce84"
+    "kits/ancients/dist/theodiga-today.html": "9afdaa406787faa9d5353a42b988aaa27b874b36d2b03b493d94dd8df2e8a4cc"
    },
    "outputs_raw": {
-    "kits/ancients/build-manifest-theodiga-today.json": "720f12b127397f1785a5416d8ba835c8054337be71ef09c428f0eb297dc4ef46",
+    "kits/ancients/build-manifest-theodiga-today.json": "c6750ef67e4a91035b3f13434df8dc9e0ee309e7e96043680b79444103121fde",
     "kits/ancients/dist/ancients.tex.ancients.js": "c7ed83f8f8f6137f51a41f8e4e6d9d29f58231c89061aff467c3d4710a313883",
     "kits/ancients/dist/ancients.tex.qiblai.js": "1dac9ba8f546f8b073c0cfa461730db3b01d7d5408b0331bab83ad8f070e1e91",
     "kits/ancients/dist/ancients.tex.xanadu-2.js": "7503fe94ba1a6aef4913c3cad9745cf6d7167d1529833981c9a17e0bb342cf46",
     "kits/ancients/dist/ancients.tex.xanadu.js": "2f50bf4d1e032c7a6b33fa398ddffa2388623ef2713b7005f3a50991bc22f1a9",
-    "kits/ancients/dist/theodiga-today.html": "cd78eb244c248d86f632d21d7ed05b123201a8ef3429897a6bc1ca2bf967ce84"
+    "kits/ancients/dist/theodiga-today.html": "9afdaa406787faa9d5353a42b988aaa27b874b36d2b03b493d94dd8df2e8a4cc"
    }
   }
  }

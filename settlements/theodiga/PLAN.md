@@ -330,4 +330,24 @@ spring, sealed deep inside). Theodiga's end:
     - **What it shows next:** the salvagers now work their full days, so the Dome's fall (60,000 lots) runs out in about
       a month. Its size and the yards' rate are the page's guesses (KNOWN_ISSUES).
     - `test-th-sim.js`: the salvagers eat at the yards' cookhouse (178 of 178 at noon), with a negative.
-15. **Later**: the Qiblai buildings' rooms (as Strongbow's), core/simulation's roles, the open world.
+15. **T-town-9, the Dome's fall lasts about a year** (done 2026-11-16; the owner: "About a year").
+    - **The fall is sized to the yards' take.** Each yard hand's worked hours a day (by schedule) times the yards' rate,
+      over `fallDays` (365): 994,625 lots on the page, 163,338 in the test town (`src/49-th-econ.js`; a number in `dome`
+      overrides it).
+    - **Workers now go to their own jobs.** Sizing it showed the yards took far less than their hands could. Most
+      salvagers worked at the town's stores and fields, and a few at the arcology's studies: core sends a worker to the
+      nearest place offering WORK unless the role pins WORK to its job, and Theodiga's roles pinned only SLEEP and EAT.
+      Every role now pins WORK (`src/47-th-sim.js`).
+    - **The rates, re-set on the page.** The foods lost the borrowed hands and were made at 0.85 of their use, so the
+      makers' surplus went from 1.5 to 1.9. The yards could make 12,000 to 16,000 lots a day, but their stores filled in
+      two days and they then made only what the carters haul up the face (about 2,700). Their rate is now 0.25 lots a
+      worker-hour, about what the town moves.
+    - **On the page** (nine days):
+      - the yards take a steady 2,176 lots a day and none sits full, so the fall lasts about fifteen months (a year at
+        the yards' scheduled hours; the walk down costs about a fifth of their day);
+      - no meal went without, and every money check passes;
+      - grain about 1.2 to 1.4 days, milk rising, bread and honey about 4 to 5 days.
+    - **Tests:** `test-th-sim.js` adds "every worker works its own job" (2,172 of 2,172), with a negative.
+      `test-th-econ.js` adds "the Dome's fall lasts about a year at the yards' take", whose negative is the old
+      60,000 lots.
+16. **Later**: the Qiblai buildings' rooms (as Strongbow's), core/simulation's roles, the open world.

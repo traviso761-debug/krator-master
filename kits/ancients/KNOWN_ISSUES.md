@@ -397,11 +397,13 @@ records drawn from the scrap Xanadu set and the Qiblai kit (`XAK`, `kit_bundle.b
       - Wages and prices are paid in quds.
 
       What is off:
-      - **The Dome's fall runs out in about a month on the page.** Since the salvagers eat at the yards (T-town-8) they
-        work their full days and take about 2,400 lots a day of its 60,000. The fall's size and the yards' rate are this
-        page's guesses, not the lore's.
+      - **The Dome's fall lasts about fifteen months on the page**, a year at the yards' scheduled hours (the owner
+        asked for "about a year"; T-town-9). The walk down the face costs about a fifth of their day.
+      - The yards' rate (0.25 lots a worker-hour) and the makers' surplus (1.9) are set by nine days on the page. They will
+        drift as the town changes; rerun the page's week after an economy change.
       - The yards' cookhouse serves the foods the warehouses hold most of (core's `economyMeal`), not the diet, so it
-        leans on the grain: about 1.4 days on the page, steady over nine days.
+        leans on the grain: about 1.2 to 1.4 days on the page. Honey is made at about 0.8 of its use, from 7.6 days down
+        to about 4.8 over nine days.
       - The poor tier's labourers who work the yards still walk home to eat.
       - The kitchens, churns and smelter are staffed by the census, not by their output, so their goods carry idle hours
         in their price: bread 15 quds against grain's 5, iron 1,088.
