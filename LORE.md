@@ -582,6 +582,9 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
     **Iridescent Order**: it keeps a house in Lāiṭwāl, the Light Wall, and its head monastery stands at the outlet of Lāiṭwāl's
     lake in Opal Valley, on the shelf below the sill where the lake spills over the lower riser (scale model px 1016,1655) [the
     owner, 2026-11-16 and 17; `settlements/iridescent/PLAN.md`].
+    The city is fed by the Orders' **temple estates**: about 128 villages and 30,000 people out to 30 km, each Order
+    holding the sector round its monastery's spoke, rice farms near the city, buffalo dairies and hives toward the
+    forest (milk and honey are the sacraments) [the owner, 2026-11-16: "Grow the estates"; `settlements/qiblai/WORLD.md`].
   - **Grēṭ-Āil, the Azure Dream's head monastery**, on the long isle's south shore facing Erehwon across the lake, in a
     cove at scale-model px 846,1508.7 [the owner, 2026-11-16; `settlements/azure-dream/PLAN.md`].
     - **The fishermonks** fish the lake from dugouts, by night with lamps, without qualm.

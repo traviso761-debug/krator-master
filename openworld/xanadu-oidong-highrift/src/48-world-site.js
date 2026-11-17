@@ -26,6 +26,35 @@ KHAMLET.CULTURES['xanadu-sulfur']=Object.assign({},KHAMLET.CULTURES.xanadu,{work
 if(typeof KTAGS!=='undefined')KTAGS.VOCAB.cultureAlias['xanadu-sulfur']={culture:'xanadu'};
 // bridges (core/world/42b-world-bridges.js; 2026-11-16, for Thalaba's Briḍj): every road and link this region lays is bridged
 // where it crosses a named river, in the Xanadu kit's stone, so the roads are laid over the rivers and the rivers run on under them
+/* the Qiblai temple estates' row (settlements/qiblai, Q7f): the Xanadu row with the Orders' foci. The estate's shrine is its
+   temple, the Order's steward keeps the Farmers' Guild hall; the dairy keeps the water buffalo (pens and the dairy), the
+   apiary rows of log and clay hives on stands (the kit has none: a pending box, drawn as a stand-in) */
+KHAMLET.CULTURES['qiblai-estate']=Object.assign({},KHAMLET.CULTURES.xanadu,{workShare:0.55,
+ services:{religious:1,civic:1,general:1,food:2,warehouse:2},
+ works:Object.assign({},KHAMLET.CULTURES.xanadu.works,{
+  dairy:[{key:'xa_farmhouse',jobs:8,share:0.35},{key:'xa_pens',jobs:3,share:0.25},{key:'xa_dairy',jobs:4,share:0.4}],
+  apiary:[{key:'xa_farmhouse',jobs:8,share:0.35},{key:'xa_apiary',jobs:3,share:0.65}]}),
+ focusJobs:Object.assign({},KHAMLET.CULTURES.xanadu.focusJobs,{farming:150,dairy:80,apiary:50}),   /* the estates' wet-rice and two crops a year: more hands than a valley village */
+ reach:Object.assign({},KHAMLET.CULTURES.xanadu.reach,{dairy:480,apiary:520}),
+ pending:Object.assign({},KHAMLET.CULTURES.xanadu.pending,{xa_apiary:{w:12,d:8,h:1.6,what:'an apiary: rows of log and clay hives on stands under a lean-to'}})});
+if(typeof KTAGS!=='undefined')KTAGS.VOCAB.cultureAlias['qiblai-estate']={culture:'xanadu'};
+var QIBLAI_ESTATES=(function(){
+ /* the owner, 2026-11-16 ("Grow the estates"): the ring out to the site's 30 km, about 30,000 people, so the estates feed the
+    city (kits/qiblai/PLAN.md section 8). Each Order holds the 45-degree sector round its spoke: seven rings of villages, one
+    near the city to four at the edge, sixteen a sector, 128 in all; the rice farms inside, the buffalo dairies and the hives
+    toward the forest's edge. farm-1 keeps the old first village's spot (north, 7 km), where the world's checks stand */
+ const ORD=['the Flashing Eye','the History Monks','the Beacon','Viridian Thought','the Turquoise monastery','the Azure Dream','the Violet Storm','the White Lily'],
+  COL=['Crimson','Saffron','Gold','Green','Turquoise','Blue','Violet','White'],
+  RINGS=[[7,['farming']],[10.5,['farming']],[14,['farming','farming']],[17.5,['farming','farming']],[21,['farming','dairy','farming']],
+   [24.5,['dairy','farming','apiary']],[27.5,['apiary','farming','apiary','dairy']]],
+  /* a village moved off its ring where its road would not lie on the land (the highways check: white-farming-9's lane
+     stood 0.8 m off the ground at 24.5 km, 2026-11-16) */
+  NUDGE={'white-farming-9':{km:23.5}},
+  POP={farming:300,dairy:240,apiary:180},WHAT={farming:'rice farm',dairy:'dairy',apiary:'hives'},out=[];
+ for(let i=0;i<8;i++){const n={};RINGS.forEach((R,k)=>{const c=R[1].length;R[1].forEach((f,j)=>{n[f]=(n[f]||0)+1;
+  const off=c===1?(k%2?10:0):((j+.5)/c-.5)*38,id=i===0&&k===0?'farm-1':COL[i].toLowerCase()+'-'+f+'-'+n[f];
+  out.push(Object.assign({id,focus:f,bearing:i*45+off,km:R[0],look:k>=5?5000:3000,pop:POP[f],name:'the '+COL[i]+' estates, '+WHAT[f]+' '+n[f]+' ('+ORD[i]+')'},NUDGE[id]));});});}
+ return out;})();
 var SITE_SPEC={region:'xanadu-oidong-highrift',world:1191569,bridges:{culture:'xanadu'},
  sites:{
   s57bkv9741:{culture:'xanadu',road:{r:1500,hw:3,join:true},hamlets:[
@@ -34,10 +63,12 @@ var SITE_SPEC={region:'xanadu-oidong-highrift',world:1191569,bridges:{culture:'x
    {id:'farm-1',focus:'farming',bearing:70,km:8,pop:300},{id:'farm-2',focus:'farming',bearing:110,km:9,pop:300},
    {id:'farm-3',focus:'farming',bearing:165,km:7,pop:300},{id:'farm-4',focus:'farming',bearing:215,km:7.5,pop:300},
    {id:'farm-5',focus:'farming',bearing:265,km:8.5,pop:300},{id:'ranch-1',focus:'ranch',bearing:190,km:14,pop:200}]},
-  skm4jjo2vl:{culture:'xanadu',road:{r:1500,hw:3,join:true},hamlets:[
-   {id:'farm-1',focus:'farming',bearing:0,km:7,pop:300},{id:'farm-2',focus:'farming',bearing:75,km:8,pop:300},
-   {id:'farm-3',focus:'farming',bearing:145,km:6.5,pop:300},{id:'farm-4',focus:'farming',bearing:215,km:7.5,pop:300},
-   {id:'farm-5',focus:'farming',bearing:290,km:8.5,pop:300},{id:'ranch-1',focus:'ranch',bearing:110,km:12,pop:200}]},
+  /* Qiblai's temple estates (settlements/qiblai/PLAN.md Q7f, kits/qiblai/PLAN.md section 8; 2026-11-16): the ring re-planned as the
+     great Orders' estates, three along each monastery's spoke (bearing i*45, the city's QSPOKE order: crimson, saffron,
+     gold, green, turquoise, blue, violet, white): the rice and grain farms nearest, the buffalo dairies next, the apiaries
+     farthest, at the forest's edge (the sacraments are milk and honey). Each owes its Order; farm-1 keeps its old spot
+     (north, 7 km), where the world's checks stand */
+  skm4jjo2vl:{culture:'qiblai-estate',road:{r:1500,hw:3,join:true},hamlets:QIBLAI_ESTATES},
   /* Lāiṭwāl, the Light Wall (settlements/lightwall/PLAN.md, step L5; its own page is the town, the wall and the bench): the
      north boundary fault's wall straight behind it, the great lake at its feet, so its villages stand east and west along
      the shore's bench terraces, the herders on the bench's western end */

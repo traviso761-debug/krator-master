@@ -264,7 +264,8 @@ merged in. Its sheet is a Xanadu page: the kit's buildings, the mixed street, th
 - **Pilgrims and the faith's offerings are Qiblai's export:** gold, books from the grammarians, wheels, incense.
 - **Salt is local:** rock salt within 30 km, since the move to the cataracts.
 
-This is the open world region's next re-plan when Qiblai's city goes on its ground.
+This is the open world region's next re-plan when Qiblai's city goes on its ground. **Done 2026-11-16** (the owner: "Grow the
+estates"): 128 temple-estate villages, 29,584 people, sixteen in each Order's sector (`settlements/qiblai/WORLD.md`).
 
 ## 9. Still open
 

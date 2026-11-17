@@ -6,6 +6,7 @@
   "kits/qiblai/src"
  ],
  "external": [
+  "settlements/verge/src/77-verge-rigs.js",
   "settlements/qiblai/gen/69q-kcity-bundle.js",
   "settlements/qiblai/gen/69r-flora-bundle.js",
   "settlements/qiblai/gen/69y-ykit-bundle.js"
@@ -13,7 +14,8 @@
  "scoped": [
   "69q-kcity-bundle.js",
   "69r-flora-bundle.js",
-  "69y-ykit-bundle.js"
+  "69y-ykit-bundle.js",
+  "77-verge-rigs.js"
  ],
  "pack": "qiblai",
  "packSide": true,
@@ -36,7 +38,9 @@
   "90t-qc-interiors.js",
   "89q5s-qb-shells.js",
   "90u-qc-lot-interiors.js",
-  "90v-qc-oilfield.js"
+  "90v-qc-oilfield.js",
+  "77-verge-rigs.js",
+  "91l-qc-life.js"
  ],
  "interiors": [
   "city"
