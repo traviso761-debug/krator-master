@@ -63,7 +63,10 @@ const marks=X=>MARKS.filter(id=>!X.lots.some(l=>l.id===id)&&!X.extra.some(l=>l.i
  T.neg('missing infill crop plots or outer earthen mound is caught',layoutOk,Object.assign({},K,{cropPlots:[]}),K);
  const tfOk=F=>F.length===3&&F.every(f=>f.farm&&!f.farm.error&&f.farm.parcels.length>=80);
  T.ok('the town\'s surrounding fields lay out round the outer earthen mound (south, west and north)',tfOk(TF),TF.map(f=>f.id.replace('nl.townfarm.','')+' '+(f.farm.error||f.farm.parcels.length)).join(', '));
- T.neg('a missing town field belt is caught',tfOk,TF.slice(0,2),TF);}
+ T.neg('a missing town field belt is caught',tfOk,TF.slice(0,2),TF);
+ const deadWays=X=>(X.ways||[]).filter(w=>(w.cls==='alley'||w.tag==='main (dead end)')&&(w.lots||0)===0&&!(X.ways||[]).some(v=>v.id!==w.id&&(v.lots||0)>0&&w.pts.some(p=>Math.hypot(p[0]-v.pts[0][0],p[1]-v.pts[0][1])<12)));
+ T.ok('no unbuilt dead-end alley or main stub remains as a path to nowhere',!deadWays(K).length,deadWays(K).length+' unbuilt stubs');
+ T.neg('an unbuilt blind alley to nowhere is caught',X=>!deadWays(X).length,Object.assign({},K,{ways:K.ways.concat([{id:'nl.bad.stub',cls:'alley',w:3,tag:'blind',lots:0,pts:[[0,-1350],[45,-1350]]}])}),K);}
 /* the ring */
 const ringOk=R=>R.every(v=>!v.error&&v.records.length>=10&&v.records.every(r=>NL_GROUND.h(r.x,r.z)>=NL_GROUND.LAKE+.5||r.landing||/jetty|boatshed|fishracks/.test(r.key)));
 T.ok('the near ring\'s eight villages lay out on dry ground (a fishing village\'s landing at the water)',RG.length===8&&ringOk(RG),RG.map(v=>v.id.replace('nl.ring.','')+' '+(v.error||v.records.length)).join(', '));

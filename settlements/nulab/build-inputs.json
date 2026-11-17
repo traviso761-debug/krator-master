@@ -279,8 +279,8 @@
     "settlements/dalab/tex/dTurf.normal.webp": "c1c79a1118a4e7417a5a91bebac2e6a5e7cec64bbc6047ad1cb8ae68d1f8b8ee",
     "settlements/dalab/tex/dTurf.rough.webp": "b82a4a1f4861ad1ab7113e7e532a2085d727a9bcbfa0d9a622a3a5c8d9555675",
     "settlements/dalab/tex/pack.json": "bfeb20c8fde2b8eec3edf52c08b22fbaf628281e695e3a2ef1b063bfa8946dcd",
-    "settlements/nulab/KNOWN_ISSUES.md": "deb10c24f58ab8e9cb233e1e63bf54c460601900b62c9ffe2c44e7024844fd72",
-    "settlements/nulab/PORT.md": "890fd45db0ed04a14adc3f57300c6df31be1d4d82e9308e910949f1e1a2bc329",
+    "settlements/nulab/KNOWN_ISSUES.md": "9f7e413f83c1e9f3fbde31350a830ab99938bf8323e5a87c7232a34b4dcd05fd",
+    "settlements/nulab/PORT.md": "77174339d9408a03b35b442c314ab15bfa045d0686fe11930544fb39e0b1900c",
     "settlements/nulab/build.py": "f10da4b1ff5a8b15928e2a44927927a6feed0ea5fde7841979ebae4b9bb4e2bb",
     "settlements/nulab/gen/69n-kcity-bundle.js": "0a31f3f64584f1b4fd82afe42a5fb57d980f5b4a061e50bd08356290220c1f43",
     "settlements/nulab/gen/69n2-nl-flora-bundle.js": "8a310eebf2c74486c671d90e0755bdb1e401ba7953237f70bab3e22dfc4eeb6e",
@@ -288,7 +288,7 @@
     "settlements/nulab/kit.json": "79d7dd9df02af4e3363db214565be59a95481b0b997d8a28c6221c9ac9a11ffb",
     "settlements/nulab/src/39n-nl-model.js": "3be7c0dcb75bef8700a472078a8fbeb1fb4f9d7210a6b79e039adbc61729565c",
     "settlements/nulab/src/40-nl-ground.js": "d2b18b0f869b8be57057a68bec87da97f655910a733973ce2059cd90fa8bb69d",
-    "settlements/nulab/src/41-nl-town.js": "8dcb16341bb1bcaba8da762c958d7967f943fc0171f8714d078adeb603f88ec4",
+    "settlements/nulab/src/41-nl-town.js": "d19e99cb8ebf84b724592215cfe738bc1b81973cadf6a7b9c69871439e314de9",
     "settlements/nulab/src/42-nl-ring.js": "7237aa062cd544b17bdf4a8d86d3692e0df238a483453f9272c25759f2f27440",
     "settlements/nulab/src/89n0-nl-matlib.js": "4c29e52dfa195e014d32a5de383b6d44f4af90706eeac2ebbd9b4819a1ea980b",
     "settlements/nulab/targets/town/89z-rows.js": "a8bda22f07edeefc0a4e4d828b1056cc7be988efe38cae94e3d897bcd058ac9b",
@@ -526,14 +526,14 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "settlements/nulab/build-manifest-town.json": "066b8d2c12c27dd400f58f6ed4fe98ca3b669447df1a620e1d76d43f59508d7d",
-    "settlements/nulab/dist/nulab.html": "ece3058f634324b34624c8f9050fe8edcd0cbb0362e11d6b912e5aabe3fcbcb3",
+    "settlements/nulab/build-manifest-town.json": "c7cba6510b4625cdff085fe7bb0260cfd0f3afcc99ae053f31d4d248faf76832",
+    "settlements/nulab/dist/nulab.html": "3f78ac684fa9f32c381e7e4d8dae19350276224b56808450ea551452b37d2168",
     "settlements/nulab/dist/xanadu.tex.xanadu-2.js": "be1d57f174e08cf71b5511aff65a313eec8edc29e057c48d027e9b60630f3ab5",
     "settlements/nulab/dist/xanadu.tex.xanadu.js": "3fe87059ee305d523fa5026dddfd91123354e88d5839097de9df44137500f2a4"
    },
    "outputs_raw": {
-    "settlements/nulab/build-manifest-town.json": "5c4d9735678a98226f854e79b8048aa9f379220d8caeb6a97dec6c17be43a97f",
-    "settlements/nulab/dist/nulab.html": "ece3058f634324b34624c8f9050fe8edcd0cbb0362e11d6b912e5aabe3fcbcb3",
+    "settlements/nulab/build-manifest-town.json": "f1f56d5a88ed13e6c493011f9d1d9f117e08a96ad19dd5be1bb58acaa1bb5c2d",
+    "settlements/nulab/dist/nulab.html": "3f78ac684fa9f32c381e7e4d8dae19350276224b56808450ea551452b37d2168",
     "settlements/nulab/dist/xanadu.tex.xanadu-2.js": "be1d57f174e08cf71b5511aff65a313eec8edc29e057c48d027e9b60630f3ab5",
     "settlements/nulab/dist/xanadu.tex.xanadu.js": "3fe87059ee305d523fa5026dddfd91123354e88d5839097de9df44137500f2a4"
    }

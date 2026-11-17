@@ -15,7 +15,7 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 
 | File | KB | Sections (line) |
 |---|---|---|
-| `test-nl-town.js` | 11 |  |
+| `test-nl-town.js` | 12 |  |
 
 ## src/
 
@@ -23,7 +23,7 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 |---|---|---|
 | `39n-nl-model.js` | 38 **big** |  |
 | `40-nl-ground.js` | 5 |  |
-| `41-nl-town.js` | 28 |  |
+| `41-nl-town.js` | 33 **big** |  |
 | `42-nl-ring.js` | 6 |  |
 | `89n0-nl-matlib.js` | 1 |  |
 

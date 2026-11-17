@@ -31,7 +31,7 @@ var NL_TOWN=(function(){
   nl_adit:{w:8,d:6,h:4,what:'a mine adit (a timbered mouth and its spoil)'},
   nl_line_station:{w:60,d:24,h:12,what:'the Line\'s station 5 (an Ancient station: KTRANSIT\'s line kind, step N6)'}};
  /* the town's infill crop plots (drawn by a Dalab builder in 90o-nl-build.js, not pending): dimensions for node and page */
- const PLOT_SIZES=[[38,28],[30,22],[22,16],[16,13],[11,11]];
+ const PLOT_SIZES=[[40,30],[32,24],[24,18],[18,13],[14,11]];
  const TOWN_CROPS=['helix bean','ashroot','giant lotus root','sea-linen flax','valley woad','mist greens'];
  const PEOPLE={dalab_hut_a:6,dalab_hut_b:5,dalab_hut_c:6,dalab_compound:14,dalab_rowhouse:12,dalab_tenement:10,dalab_noble_a:24,dalab_noble_b:30,
   dalab_noble_c:28,dalab_priest_house:6,dalab_priest_compound:36,dalab_barracks:160,dalab_shops:8,dalab_workshop:6,dalab_potter:6,dalab_weaver:6,
@@ -77,7 +77,7 @@ var NL_TOWN=(function(){
    industrial:[['dalab_smithy',0],['dalab_dyer',0],['dalab_earthyard',0],['dalab_warehouse',0]]},
   fallback:{manor:'rich',rich:'middle',middle:'poor',shop:'middle',tavern:'shop',industrial:'poor',poor:null},
   civic:[],civicSpacing:34,civicJitter:10,
-  voidMax:34,voidIters:16,voidBatch:12,sideSpacing:46,sideMax:170,alleyFrac:.38,blindMax:76,interiorDepth:12,interiorRounds:2,
+  voidMax:38,voidIters:16,voidBatch:12,sideSpacing:54,sideMax:165,alleyFrac:.04,blindMax:42,interiorDepth:19,interiorRounds:1,
   avenueSnap:36,ringGap:7,verge:5,mapHalf:half,plazaArt:{rich:[],middle:[],poor:[],commerce:[]}});
  const civicTown=[];
  for(let i=0;i<12;i++)civicTown.push({key:'dalab_well',v:0,near:'res'});
@@ -124,36 +124,95 @@ var NL_TOWN=(function(){
   const W=p=>spec.wealth([p[0]+OX,p[1]+OZ]);
   const rules={wealth:W,vacant:(p,rs)=>rs.chance(spec.vacant([p[0]+OX,p[1]+OZ])),
    near:Object.fromEntries(Object.entries(spec.near).map(([k,f])=>[k,c=>f([c.p[0]+OX,c.p[1]+OZ])]))};
-  const finish=[function(Ci){const P=Ci.plan,R=SL.R;let n=0;
+  const finish=[function(Ci){const P=Ci.plan,R=SL.R;
+   /* prune redundant unbuilt alleys/side rungs and trim dead-end tails past their last building before raster infill */
+   const pProj=(pts,q)=>{let best=1e9,bs=0,cum=0;for(let i=1;i<pts.length;i++){const a=pts[i-1],b=pts[i],dx=b[0]-a[0],dz=b[1]-a[1],L2=dx*dx+dz*dz,L=Math.sqrt(L2);
+     const t=L2>0?Math.max(0,Math.min(1,((q[0]-a[0])*dx+(q[1]-a[1])*dz)/L2)):0,cx=a[0]+dx*t,cz=a[1]+dz*t,d=Math.hypot(q[0]-cx,q[1]-cz);
+     if(d<best){best=d;bs=cum+t*L;}cum+=L;}return{d:best,s:bs,len:cum};};
+   const slicePts=(pts,s0,s1)=>{const out=[];let cum=0;for(let i=1;i<pts.length;i++){const a=pts[i-1],b=pts[i],L=Math.hypot(b[0]-a[0],b[1]-a[1]);if(L<1e-6)continue;
+     const n0=cum,n1=cum+L;if(n1>=s0&&n0<=s1){if(!out.length){const t=Math.max(0,Math.min(1,(s0-n0)/L));out.push([a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t]);}
+      if(n1<=s1)out.push([b[0],b[1]]);else{const t=Math.max(0,Math.min(1,(s1-n0)/L));out.push([a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t]);break;}}cum=n1;}
+    return out.length>=2?out:pts;};
+   const wBox=w=>{let x0=1e9,z0=1e9,x1=-1e9,z1=-1e9;for(const p of w.pts){if(p[0]<x0)x0=p[0];if(p[0]>x1)x1=p[0];if(p[1]<z0)z0=p[1];if(p[1]>z1)z1=p[1];}const m=w.w+5;return[x0-m,z0-m,x1+m,z1+m];};
+   const pruneWays=()=>{let pruned=0,trimmed=0;
+    const ws0=P.ways.filter(w=>w.died==null&&w.pts.length>=2),N0=ws0.length,boxes0=ws0.map(wBox),adj0=ws0.map(()=>[]),idxOf=new Map();
+    for(let i=0;i<N0;i++)idxOf.set(ws0[i].id,i);
+    for(let i=0;i<N0;i++){const u=ws0[i],bu=boxes0[i];
+     for(let j=i+1;j<N0;j++){const v=ws0[j],bv=boxes0[j];if(bu[2]<bv[0]||bv[2]<bu[0]||bu[3]<bv[1]||bv[3]<bu[1])continue;
+      const thr=(u.w+v.w)/2+3.8,u0=u.pts[0],u1=u.pts[u.pts.length-1],v0=v.pts[0],v1=v.pts[v.pts.length-1];
+      if(pProj(v.pts,u0).d<=thr||pProj(v.pts,u1).d<=thr||pProj(u.pts,v0).d<=thr||pProj(u.pts,v1).d<=thr){adj0[i].push(j);adj0[j].push(i);}}}
+    const lc=new Int32Array(N0);for(const l of P.lots)if(l.died==null&&idxOf.has(l.way))lc[idxOf.get(l.way)]++;
+    const dead=new Uint8Array(N0),vis=new Uint8Array(N0),q=new Int32Array(N0);
+    const connectedOk=skip=>{vis.fill(0);let qt=0;
+     for(let i=0;i<N0;i++)if(!dead[i]&&i!==skip&&ws0[i].born<=3){vis[i]=1;q[qt++]=i;}
+     for(let qh=0;qh<qt;qh++){const u=q[qh];for(const v of adj0[u])if(!dead[v]&&v!==skip&&!vis[v]){vis[v]=1;q[qt++]=v;}}
+     for(let i=0;i<N0;i++)if(!dead[i]&&i!==skip&&lc[i]>0&&!vis[i])return false;
+     return true;};
+    const order=[];
+    for(let i=0;i<N0;i++){const w=ws0[i];if(w.born>3&&lc[i]===0&&(w.cls==='alley'||w.cls==='side'||w.tag==='main (dead end)'))order.push(i);}
+    const rank=i=>ws0[i].cls==='alley'?0:ws0[i].cls==='side'?1:2;
+    order.sort((a,b)=>rank(a)-rank(b));
+    let chg=true;while(chg){chg=false;for(const i of order){if(dead[i])continue;if(connectedOk(i)){dead[i]=1;ws0[i].died='prune';pruned++;chg=true;}}}
+    /* trim dead-end tails (and long empty alley tails) past the last building or child branch they serve */
+    const ws=P.ways.filter(w=>w.died==null&&w.pts.length>=2),boxes=ws.map(wBox);
+    const touchesOther=(wi,pt,extra)=>{const w=ws[wi],bw=boxes[wi];for(let j=0;j<ws.length;j++){if(j===wi)continue;const v=ws[j],bv=boxes[j];
+      if(pt[0]<bv[0]-4||pt[0]>bv[2]+4||pt[1]<bv[1]-4||pt[1]>bv[3]+4)continue;
+      if(pProj(v.pts,pt).d<=(w.w+v.w)/2+(extra==null?3.8:extra))return true;}return false;};
+    for(let i=0;i<ws.length;i++){const w=ws[i];if(w.born<=3)continue;if(w.cls==='main'&&w.tag!=='main (dead end)')continue;
+     const L=pProj(w.pts,w.pts[0]).len;if(L<14)continue;
+     const c0=touchesOther(i,w.pts[0],3.8),c1=touchesOther(i,w.pts[w.pts.length-1],3.8);
+     let sMin=L,sMax=0,used=0;
+     for(const Lt of P.lots){if(Lt.died!=null||Lt.way!==w.id)continue;const pr=pProj(w.pts,[Lt.x,Lt.z]),hw=(Lt.w==null?10:Lt.w)/2+3;
+      sMin=Math.min(sMin,pr.s-hw);sMax=Math.max(sMax,pr.s+hw);used++;}
+     for(let j=0;j<ws.length;j++){if(j===i)continue;const v=ws[j],bv=boxes[j],bw=boxes[i];
+      if(bw[2]<bv[0]||bv[2]<bw[0]||bw[3]<bv[1]||bv[3]<bw[1])continue;
+      const thr=(w.w+v.w)/2+3.8;
+      for(const ep of [v.pts[0],v.pts[v.pts.length-1]]){const pr=pProj(w.pts,ep);if(pr.d<=thr&&pr.s>3.5&&pr.s<L-3.5){sMin=Math.min(sMin,pr.s-v.w/2-2.5);sMax=Math.max(sMax,pr.s+v.w/2+2.5);used++;}}}
+     if(!used)continue;
+     const emptyThr=w.cls==='alley'?18:36;
+     if(c0&&!c1&&L-sMax>5){w.pts=slicePts(w.pts,0,Math.max(10,Math.min(L,sMax)));trimmed++;}
+     else if(!c0&&c1&&sMin>5){w.pts=slicePts(w.pts,Math.max(0,Math.min(L-10,sMin)),L);trimmed++;}
+     else if(c0&&c1&&(w.cls==='alley'||w.cls==='side')){if(L-sMax>emptyThr&&L-sMax>=sMin){w.pts=slicePts(w.pts,0,Math.max(10,Math.min(L,sMax)));trimmed++;}
+      else if(sMin>emptyThr){w.pts=slicePts(w.pts,Math.max(0,Math.min(L-10,sMin)),L);trimmed++;}}}
+    return{pruned,trimmed};};
+   const pw1=pruneWays();
+   let n=0;
    for(const Lt of P.lots){if(Lt.died!=null||Lt.cls==='landmark'||!Lt.bo)continue;
     const D=dims(Lt.key,Lt.v)||{},hw=(D.w-1.2)/2,hd=(D.d-1.2)/2,B=Lt.bo;
     if(P.ways.some(w=>w.died==null&&w.pts.some(p=>{const dx=p[0]-B.c[0],dz=p[1]-B.c[1],m=w.w/2-.6;return Math.abs(dx*B.u[0]+dz*B.u[1])<hw+m&&Math.abs(dx*B.v[0]+dz*B.v[1])<hd+m;}))){Lt.died='finish';n++;}}
+   const pw2=n?pruneWays():{pruned:0,trimmed:0};
+   /* refresh street/alley cells on the raster so pruned ways free their block ground for infill crop plots */
+   const liveWays=P.ways.filter(w=>w.died==null&&w.pts.length>=2);
+   for(let k=0;k<R.occ.length;k++)if(R.occ[k]===OCC.STREET||R.occ[k]===OCC.ALLEY){R.occ[k]=OCC.FREE;R.own[k]=-1;}
+   for(const w of liveWays){const oc=w.cls==='alley'?OCC.ALLEY:OCC.STREET,rad=w.w/2+R.c*.55;
+    for(let i=1;i<w.pts.length;i++)R.eachNearSeg(w.pts[i-1],w.pts[i],rad,k=>{if(R.occ[k]===OCC.FREE){R.occ[k]=oc;R.own[k]=w.id;}});}
    /* infill crop plots in the empty lots and unbuilt block pockets inside the zone (the owner, 2026-11-16) */
-   const rs=KRAND.stream(KRAND.hash(spec.seed,901,7)),step=11,H=L.tune().rasterHalf-24,liveWays=P.ways.filter(w=>w.died==null);
-   const wayIdx=L.KSPACE.create({cell:60});
-   for(const w of liveWays)for(let i=1;i<w.pts.length;i++){const a=w.pts[i-1],b=w.pts[i];wayIdx.insert({a,b,w:w.w},(a[0]+b[0])/2,(a[1]+b[1])/2,Math.hypot(b[0]-a[0],b[1]-a[1])/2+w.w+24);}
-   const nearWayRy=(x,z)=>{let best=1e9,ry=0;for(const s of wayIdx.query(x,z,40)){const d=L.segDist([x,z],s.a,s.b);if(d<best){best=d;ry=Math.atan2(s.b[0]-s.a[0],s.b[1]-s.a[1]);}}return ry;};
-   const wayHit=(B,hw,hd)=>{for(const s of wayIdx.query(B.c[0],B.c[1],Math.hypot(hw,hd)+8))if(L.polySegDist(obbCorners(B),s.a,s.b)<s.w/2+.6)return true;return false;};
-   const cands=[];
-   for(let lz=-H;lz<=H;lz+=step)for(let lx=-H;lx<=H;lx+=step){const x=lx+(rs.next()-.5)*5,z=lz+(rs.next()-.5)*5;
-    if(R.at(x,z)!==OCC.FREE)continue;if(spec.skipCrop&&spec.skipCrop([x+OX,z+OZ]))continue;cands.push([x,z,rs.next()]);}
-   cands.sort((a,b)=>a[2]-b[2]);
-   for(const [x,z] of cands){const ry=nearWayRy(x,z);
-    for(const [pw,pd] of PLOT_SIZES){const check=box([x,z],ry,pw,pd,1.0);if(R.blockedRect(check,0))continue;
-     const B=box([x,z],ry,pw,pd,0);if(wayHit(B,pw/2,pd/2))continue;
-     const corners=obbCorners(B);if(corners.some(q=>h(q[0],q[1])<G.LAKE+1.6))continue;
-     R.stampPoly(obbCorners(box([x,z],ry,pw,pd,1.1)),OCC.HARD,-2);
+    const rs=KRAND.stream(KRAND.hash(spec.seed,901,7)),step=12,H=L.tune().rasterHalf-24;
+    const wayIdx=L.KSPACE.create({cell:60});
+    for(const w of liveWays)for(let i=1;i<w.pts.length;i++){const a=w.pts[i-1],b=w.pts[i];wayIdx.insert({a,b,w:w.w},(a[0]+b[0])/2,(a[1]+b[1])/2,Math.hypot(b[0]-a[0],b[1]-a[1])/2+w.w+24);}
+    const nearWayRy=(x,z)=>{let best=1e9,ry=0;for(const s of wayIdx.query(x,z,40)){const d=L.segDist([x,z],s.a,s.b);if(d<best){best=d;ry=Math.atan2(s.b[0]-s.a[0],s.b[1]-s.a[1]);}}return ry;};
+    const wayHit=(B,hw,hd)=>{for(const s of wayIdx.query(B.c[0],B.c[1],Math.hypot(hw,hd)+8))if(L.polySegDist(obbCorners(B),s.a,s.b)<s.w/2+1.0)return true;return false;};
+    const cands=[];
+    for(let lz=-H;lz<=H;lz+=step)for(let lx=-H;lx<=H;lx+=step){const x=lx+(rs.next()-.5)*6,z=lz+(rs.next()-.5)*6;
+     if(R.at(x,z)!==OCC.FREE)continue;if(spec.skipCrop&&spec.skipCrop([x+OX,z+OZ]))continue;cands.push([x,z,rs.next()]);}
+    cands.sort((a,b)=>a[2]-b[2]);
+    for(const [x,z] of cands){const ry=nearWayRy(x,z);
+     for(const [pw,pd] of PLOT_SIZES){const check=box([x,z],ry,pw,pd,1.3);if(R.blockedRect(check,0))continue;
+      const B=box([x,z],ry,pw,pd,0);if(wayHit(B,pw/2,pd/2))continue;
+      const corners=obbCorners(B);if(corners.some(q=>h(q[0],q[1])<G.LAKE+1.6))continue;
+      R.stampPoly(obbCorners(box([x,z],ry,pw,pd,1.6)),OCC.HARD,-2);
      const ci=Math.floor(rs.next()*TOWN_CROPS.length),fallow=rs.next()<.14;
      cropPlots.push({id:spec.prefix+'crop.'+cropPlots.length,key:'nl_cropplot',x:x+OX,z:z+OZ,y:h(x,z),ry,w:pw,d:pd,h:1.4,fw:pw,fd:pd,
       crop:TOWN_CROPS[ci],state:fallow?'fallow':'crop',quarter:spec.name,people:0,kind:'crop'});break;}}
-   notes.push(n+' pieces a street reached, dropped; '+cropPlots.length+' infill crop plots');}];
+   notes.push((pw1.pruned+pw2.pruned)+' empty ways pruned, '+(pw1.trimmed+pw2.trimmed)+' dead ends trimmed, '+n+' pieces dropped, '+cropPlots.length+' infill crop plots');}];
   const C=KCITY.create({name:spec.name,tune:spec.tune,seed:spec.seed,rand:'krand',index:{order:'insertion'},ground:{h},kit:{dims},rules,steps,finish});
   C.run();
   const PL=C.plan,fp=(k,v)=>{const D=o.dims(k,v)||{};return {fw:D.fw||D.w||0,fd:D.fd||D.d||0};};
   const lots=PL.lots.filter(Lt=>Lt.died==null&&Lt.bo&&Lt.key).map((Lt,n)=>({id:Lt.nlId?'nl.'+Lt.nlId:spec.prefix+n,key:Lt.key,v:Lt.v|0,cls:Lt.cls,civic:!!Lt.civic,
    x:Lt.x+OX,z:Lt.z+OZ,y:Lt.y==null?G.h(Lt.x+OX,Lt.z+OZ):Lt.y,ry:Lt.ry,w:Lt.w,d:Lt.d,h:Lt.h,fw:fp(Lt.key,Lt.v).fw,fd:fp(Lt.key,Lt.v).fd,
    people:PEOPLE[Lt.key]||0,wealth:Lt.wealth,name:Lt.name||null,quarter:spec.name}));
-  const ways=PL.ways.filter(w=>w.died==null).map(w=>({id:spec.prefix+'way.'+w.id,cls:w.cls,w:w.w,tag:w.tag||null,pts:w.pts.map(p=>[p[0]+OX,p[1]+OZ])}));
+  const lByWay=new Map();for(const Lt of PL.lots)if(Lt.died==null&&Lt.bo&&Lt.key&&Lt.way>=0)lByWay.set(Lt.way,(lByWay.get(Lt.way)||0)+1);
+  const ways=PL.ways.filter(w=>w.died==null).map(w=>({id:spec.prefix+'way.'+w.id,cls:w.cls,w:w.w,tag:w.tag||null,lots:lByWay.get(w.id)||0,pts:w.pts.map(p=>[p[0]+OX,p[1]+OZ])}));
   return {lots,ways,cropPlots,notes:(PL.notes||[]).concat(notes),instance:C};}
  const toward=(p,q)=>face([q[0]-p[0],q[1]-p[1]]);
  function make(o){const seed=o.seed==null?44300:o.seed,dd=(p,q)=>Math.hypot(p[0]-q[0],p[1]-q[1]);
@@ -199,7 +258,9 @@ var NL_TOWN=(function(){
   /* ---- the inner palisaded ring round the ceremonial mound and priests' precinct */
   const PRING={c:PRECINCT.c,r:PRECINCT.r,w:PRECINCT.w,h:PRECINCT.h,palisade:true,
    gates:[{a:0,tag:'the harbour gate',half:16},{a:-Math.PI/2,tag:'the north postern',half:11},{a:Math.PI/2,tag:'the south postern',half:11}]};
-  {const chain=[];const N=72;for(let k=0;k<=N;k++){const a=k/N*2*Math.PI;chain.push([PRING.c[0]+Math.cos(a)*PRING.r,PRING.c[1]+Math.sin(a)*PRING.r]);}
+  {const chain=[],inner=[];const N=72;for(let k=0;k<=N;k++){const a=k/N*2*Math.PI;chain.push([PRING.c[0]+Math.cos(a)*PRING.r,PRING.c[1]+Math.sin(a)*PRING.r]);
+    if(k<N&&k%2===0)inner.push([PRING.c[0]+Math.cos(a)*(PRING.r-4),PRING.c[1]+Math.sin(a)*(PRING.r-4)]);}
+   hardT.push(inner);
    const gpts=PRING.gates.map(g=>({p:[PRING.c[0]+Math.cos(g.a)*PRING.r,PRING.c[1]+Math.sin(g.a)*PRING.r],half:g.half,tag:g.tag}));
    PRING.runs=cutChain(chain,gpts);PRING.segs=[];for(const r of PRING.runs)for(let i=1;i<r.length;i++)PRING.segs.push([r[i-1],r[i]]);
    for(const q of segQuads(PRING.runs,PRING.w/2+3.5))hardT.push(q);
@@ -271,6 +332,8 @@ var NL_TOWN=(function(){
   put('jetty.works','nl_jetty',[5600,2460],face([-1,0]),{kind:'harbour',name:'The works\' jetty: the ore boats',y:G.LAKE+1.4});
   /* ---- the roads beyond the outer earthen mound's gates */
   const roads=[
+   {id:'nl.road.precinct.n',cls:'lane',w:4.2,tag:'the court walk',pts:[[-286,-1324],[-352,-1268],[-420,-1284],[-476,-1272]]},
+   {id:'nl.road.precinct.s',cls:'lane',w:4.2,tag:'the temple walk',pts:[[-286,-1376],[-355,-1434],[-432,-1442],[-474,-1445]]},
    {id:'nl.road.river',cls:'road',w:6,tag:'the river road',pts:[[560,-490],[920,-80],[1900,450],[3200,980],[4450,1520],[5380,1960]]},
    {id:'nl.road.line',cls:'road',w:6,tag:'the Line road',pts:[[540,-2210],[220,-2800],[-320,-3550],[-880,-4080],[lq[0]+40,lq[1]+60]]},
    {id:'nl.road.south',cls:'road',w:6,tag:'the iron road',pts:[[-525,-815],[-720,120],[-860,1800],[-820,3800],[-760,6000]]},
