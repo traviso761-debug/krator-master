@@ -6,9 +6,10 @@ const VIEWS=(function(){const V={},pg=id=>{const g=SW.P.gates.find(q=>q.id===id)
  V['Overview']=[SW.x+260,SW.pad+210,SW.z-330,SW.x,SW.pad+8,SW.z];
  V['The Qiblai Gate']=swEye(q[0]+18,q[1]-90,q[0],q[1],0,6);
  V['The inner ward']=swEye(inner[0]+14,inner[1]+16,kp[0],kp[1],0,10);
- {const cb=SW.P.buildings.find(b=>b.kind==='cistern'),cs=SW.toPage(cb.at[0],cb.at[1]),e=[cs[0]+(inner[0]-cs[0])*.2,cs[1]+(inner[1]-cs[1])*.2];   /* from the open court by the cistern, toward the inner gate */
-  V['The keep and its chapel']=swEye(e[0],e[1],kp[0],kp[1],0,22);}
- V['The gorge wall from the scarp']=[gold[0]-260,swGround(gold[0]-260,gold[1]+2600)+70,gold[1]+2600,gold[0],SW.pad+6,gold[1]];   /* the scarp climbs from about 2 km south of the pin (the model's next cell) */
+ {const I=SW.P.wards.find(w=>w.id==='inner').poly.map(p=>SW.toPage(p[0],p[1])),x0=Math.min(...I.map(p=>p[0])),z0=Math.min(...I.map(p=>p[1]));   /* the inner ward's far corner from the keep, 9 m in from its walls: the keep's 30 m and the chapel on it whole in the frame, the line to them clear */
+  const e=kp[0]>(x0+Math.max(...I.map(p=>p[0])))/2?[x0+9,z0+4]:[Math.max(...I.map(p=>p[0]))-9,z0+4];
+  V['The keep and its chapel']=swEye(e[0],e[1],kp[0],kp[1],0,18);}
+ V['The gorge wall across the slot']=swEye(gold[0]-60,gold[1]+290,gold[0]-5,gold[1],0,10);   /* from the slot's head 290 m south, 10 m below the pad: the gorge wall and the Gold Gate across it (the model has no gorge at 2 km a pixel; the scarp starts 2.2 km south) */
  V['The water gate']=swEye(water[0]-20,water[1]+60,water[0],water[1],0,4);
  V['Down the bench to the north']=[SW.x+40,SW.pad+60,SW.z+120,SW.x-200,SW.pad-120,SW.z-6000];
  V['Up the scarp to the gold']=[SW.x-120,SW.pad+90,SW.z-520,SW.x,SW.pad+1800,SW.z+9000];

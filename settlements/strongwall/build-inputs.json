@@ -219,7 +219,7 @@
     "settlements/strongwall/targets/fort/89zs-sw-site.js": "2a044b53b04b274c66373da5c79d0df02b995168966d4ca977fcfd97a8dc0b5b",
     "settlements/strongwall/targets/fort/90q-sw-world.js": "ad20c08dccef5e854e668c3783925507ba2ca45019f1735dbef31c554e2e8dd9",
     "settlements/strongwall/targets/fort/90r-sw-fort.js": "4b419316228120577bd7d2254cd7c8df9c83997699f1ee0e8007acd6ad34f72d",
-    "settlements/strongwall/targets/fort/91z-views.js": "a3411ebcdac519a4ca29af13a86d866f1f4d6f54ec70a36f7f442e454d2578a2",
+    "settlements/strongwall/targets/fort/91z-views.js": "98d2462d977bb9de9061a180642d210fbb99b10ac4671d98d34f5a2461caffcc",
     "settlements/xanadu/PORT.md": "6451aaac798d97eca5394d312cf25c25c7b066e3ef439960827a075ba186ab99",
     "settlements/xanadu/build.py": "b649a1e28d278d7898345b0f5baba53008cf1c3f359b67889d832b9407d0ed09",
     "settlements/xanadu/src/00-head.html": "d84d1b9dcb330ed808adb6f76edc7630736d3b91250ee188af2d532a3429434f",
@@ -436,14 +436,14 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "settlements/strongwall/build-manifest-fort.json": "21ec27576ae5c00eab5e9d2e36ba9097df3d901e2772fc1c4fb52ff485b6d59c",
-    "settlements/strongwall/dist/strongwall.html": "04ca08c90467f21663555a077cc227f4e1a74e0ee77fbb1335a76e5967374f9d",
+    "settlements/strongwall/build-manifest-fort.json": "872e6df48669ea1deb07999e5b65b9e602a244660f126e2b97b7ba3b8d658423",
+    "settlements/strongwall/dist/strongwall.html": "f50331b5dde601451f2880817d67f067bf7676398a27d3ca40e9fc22c59f9fbe",
     "settlements/strongwall/dist/xanadu.tex.xanadu-2.js": "be1d57f174e08cf71b5511aff65a313eec8edc29e057c48d027e9b60630f3ab5",
     "settlements/strongwall/dist/xanadu.tex.xanadu.js": "3fe87059ee305d523fa5026dddfd91123354e88d5839097de9df44137500f2a4"
    },
    "outputs_raw": {
-    "settlements/strongwall/build-manifest-fort.json": "4efd7922cc179a740ae33b50615b95cea70b90e84ac1a316945155a80de17b66",
-    "settlements/strongwall/dist/strongwall.html": "04ca08c90467f21663555a077cc227f4e1a74e0ee77fbb1335a76e5967374f9d",
+    "settlements/strongwall/build-manifest-fort.json": "29fdcc975b8c39d45e0ed2d2870a492d1138484f817a793958b720fbff64b864",
+    "settlements/strongwall/dist/strongwall.html": "f50331b5dde601451f2880817d67f067bf7676398a27d3ca40e9fc22c59f9fbe",
     "settlements/strongwall/dist/xanadu.tex.xanadu-2.js": "be1d57f174e08cf71b5511aff65a313eec8edc29e057c48d027e9b60630f3ab5",
     "settlements/strongwall/dist/xanadu.tex.xanadu.js": "3fe87059ee305d523fa5026dddfd91123354e88d5839097de9df44137500f2a4"
    }
