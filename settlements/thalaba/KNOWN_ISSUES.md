@@ -11,19 +11,18 @@
   (`tb_watchhouse`, 2026-11-16) stands on the town page by the expedition road at the gorge's mouth (z -10,150, 20 m west of the
   road); no toll house (the owner). The bridge and the ranch village of Briḍj are the region's (core/world's bridge, the
   hamlet row), not drawn on the town page, so the watch house stands alone there.
-- [ ] **Salphar's sulfur deposit is recorded but not stamped.** `lode:thalaba-sulfur` (px 841,1452, r 3 km) is in
-  `kits/resources/data/lodes.json` on the resource-nodes branch (claude/resource-nodes-7ec053, f568d34e9, 2026-11-16), not yet
-  stamped on `geology.json`: stamping changes the geology 13 build commands read (62 pages), so it rides with the next bake or
-  `--lodes` pass (logged in `kits/resources/KNOWN_ISSUES.md`). Until then a page that wants the node places it as an owner node,
-  `KRES.nodesIn(tile, {owner: [{id: 'lode:thalaba-sulfur', kind: 'sulfur', grade: 'medium', x, z}]})`. Salphar's `sulfur`
-  focus needs no node, so nothing waits on it.
+- [ ] **Salphar's sulfur deposit is stamped, not yet merged here.** `lode:thalaba-sulfur` (px 841,1452, r 3 km) is stamped on
+  `kits/resources/data/geology.json` on the resource-nodes branch (claude/resource-nodes-7ec053, 36f68df9c, 2026-11-16, the owner:
+  "Bake now"): the node field places Thalaba's sulfur nodes there itself (3 more in the ledger). It reaches this branch when that
+  branch merges. No page here uses the owner-node stand-in, so nothing is dropped then; Salphar's `sulfur` focus needs no node.
 - [x] ~~**The page's far land still has the old lake.**~~ Done 2026-11-16: claude/openworld-sites-24defd merged into this
   branch (112c0ce32) brought the re-made lake (scale model 5.1 edit 7 re-run, 5f659c054: Phēr at 843,1491), and the page was
   rebuilt on it (`gen/69u-tb-ground.js`); the region `xanadu-oidong-highrift` came already cut on it.
 - [ ] **The expedition road ends at the region's edge** (T6, 2026-11-16; the owner: "Grow the cut up the gorge"). The road is
   laid in the region (`openworld/xanadu-oidong-highrift`, `SITE_SPEC.ways`, core/world 48s's new opt-in road to a point): on from
-  Salphar up Godshearth's gorge toward the Spillway (`xanaduspill`, px 845,1422), 35.8 km at 8 % with a bridge, ending at the
-  cut's edge (px 842.8,1437.7, 32 km short). The open-world session folds a corridor up the gorge into the region's recut
+  Salphar up Godshearth's gorge, past the Spillway (`xanaduspill`, px 845,1422), to the Rare Devisers' camp at the hot lake's
+  outlet (px 839,1398, the owner's choice, `settlements/devisers-camp`): 35.8 km at 8 % with a bridge so far, ending at the
+  cut's edge (px 842.8,1437.7, 80 km short of the camp in a straight line). The open-world session folds a corridor up the gorge into the region's recut
   (after the scale model's Twins sculpt and Gemini's reshaping); a re-bake then carries the road to the station.
 - [ ] **The people are estimates.** `TB_PEOPLE` in `targets/town/89zt-tb-site.js` gives each building a household; the town
   holds about 2,500 against the plan's 2,400 (`verify.py` reports it as a budget).

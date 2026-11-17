@@ -20,6 +20,10 @@ What is settled, from the owner, the lore and the sim:
 - **Godshearth's own plan** (`biomes/godshearth/PLAN.md` section 5): "nobody lives in the caldera". A seasonal post would be an
   NPC settlement placed with `core/hamlet` or `core/camp`, "not built by this kit".
 
+**The owner's answers to this plan's questions (2026-11-16):**
+- **The site: the hot lake's outlet, px 839,1398** ("Yes, the outlet"). The tune's camp moves there
+  (`T.expedition.px` [839,1398], `km` 130), and Thalaba's expedition road in the open world now ends at the camp.
+
 Everything below that is not one of those is ***proposed***.
 
 ## 1. The site
@@ -39,7 +43,7 @@ That is the slump collar's bench (4,180-4,860 m, `biomes/godshearth/PLAN.md` sec
 
 The tune calls its camps' px approximate. This one looks like a placeholder.
 
-### Proposed: the lake's outlet, px 839,1398
+### The lake's outlet, px 839,1398 (**the owner's choice**, 2026-11-16)
 
 The floor was searched (2 km cells, x 826-860, y 1378-1412) for dry, flat ground off the hot lake's hot margins, near:
 - the road's way in;
@@ -173,7 +177,7 @@ Tents kit's tents round a seed store. Whether it is a settlement of its own is q
 
 | Step | What | Test |
 |---|---|---|
-| **C0** | **The records** (through the scale-model session's queue and the tune): the camp's pin (`model: false` in `SITES.json` until listed), `T.expedition.px` and `km`, the calendar's answer (question 5) | `test-xan-economy.js` unchanged but for the trains' road; `cut_site.py --dry` lists the camp |
+| **C0** (part done, 2026-11-16) | **The records** (through the scale-model session's queue and the tune): the camp's pin (**done** on claude/openworld-sites-24defd: `sdevcamp0001` in `SITES.json`, `model: false`, reach 6 km, and the corridors Thalaba-Spillway-camp, 10 km wide, for the region's recut; the pin queued with the scale-model session), `T.expedition.px` and `km` (**done**: [839,1398], 130 km), the calendar's answer (question 5) | `test-xan-economy.js` unchanged but for the trains' road; `cut_site.py --dry` lists the camp |
 | **C1** | **The camp's own pieces**, on the Xanadu kit's contract: the counting house and strongroom, the sulfur sheds, the wax store, the tower, the bathhouse, the shrine at the gate; a pieces sheet | the pieces sheet's GPU verify |
 | **C2** | **The ground and the water**: the floor round the outlet from the model; the hot lake's south shore, the outlet and the river's first reach on core/water | `on-the-model`, `water-on-core` |
 | **C3** | **The camp laid**: the stone core, the tent field (the Tents kit, `core/camp`), the tracks to the works | the camp's checks: everything on good ground, apart, the tents in their rows |
@@ -182,8 +186,7 @@ Tents kit's tents round a seed store. Whether it is a settlement of its own is q
 
 ## 7. Questions for the owner
 
-1. **The site:** the lake's outlet, px **839,1398** (proposed: on the floor, the river, the road's way in, 4 km from the lake),
-   or the tune's 828,1380 on the west bench?
+1. ~~**The site**~~ **Answered (the owner, 2026-11-16): the lake's outlet, px 839,1398** ("Yes, the outlet").
 2. **The name:** Kāmp, Ḍēbhāizarz' Kāmp, or another?
 3. **The winter:** is the camp kept through the winter by a few keepers (proposed 6-8), or left empty and locked?
 4. **The rarities:** what are Godshearth's rarities, and where do they come from? The lava tube's mouth (proposed), the sinter,

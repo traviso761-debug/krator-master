@@ -210,9 +210,10 @@ T.mission=['yuni.mission','Yuni\'s mission at the oil field (its cloister and lo
    licence (`licence`), sent to the generators of the large towns in the shares of `T.lit` (their avenues' lamps and the
    richest homes). Each generator burns its cut at `T.chain.dynamo`'s kWh a kg, and its town uses the power all year */
 T.lit={s57bkv9741:.43,s4zvgepuru:.15,sl758m2396:.1,sfgtxw10kr:.15,'xan.pher':.15,'march.e':.02};   /* the licence's split: the capital (the citadel and the avenues), Theodiga, Kirstabal, Strongbow (the gate), Phēr; the beacon fort over the Rift (the owner, 2026-11-16: "a refurbished Ancient high-intensity beacon ... connected to a generator", kept by the Yellow Monastery, the Order of the Beacon), its fiftieth from the capital's share */
-/* X2: the summer expedition from Thalaba to Godshearth's vents (Gemini's 218 km summer road; the camp's place is approximate,
-   north over the rim toward the Godthrone) */
-T.expedition={id:'exp.godshearth',name:'The Rare Devisers\' expedition camp at Godshearth (Thalaba\'s summer road)',faction:'devisers',home:'devisers.thalaba',px:[828,1380],km:200,people:150,make:{sulfur:90000,wax:40000,rarities:60}};
+/* X2: the summer expedition from Thalaba to Godshearth's vents. The camp stands at the hot lake's outlet, px 839,1398, where the
+   road comes up the spillway gorge onto the caldera floor (the owner, 2026-11-16: "Yes, the outlet"; settlements/devisers-camp/PLAN.md),
+   about 130 km from Thalaba by the gorge (was 828,1380 on the west bench, 200 km: approximate) */
+T.expedition={id:'exp.godshearth',name:'The Rare Devisers\' expedition camp at Godshearth (Thalaba\'s summer road)',faction:'devisers',home:'devisers.thalaba',px:[839,1398],km:130,people:150,make:{sulfur:90000,wax:40000,rarities:60}};
 /* X2 (the owner, 2026-11-16): two houses that compete with the Two Horns (*proposed*, no lore yet beyond the owner's words):
    THE GOLDEN TEARS, "a bit more militaristic, running expeditions into Lizard country to seek out unclaimed gold lodes": their
    house in the Gold March and a factor in the capital; an armed prospecting camp in the Rift floor working a field of short
@@ -629,7 +630,7 @@ T.valley=function(P,o){o=o||{};const K=o.scale==null?50:o.scale,yr=365,win=w=>{c
  R.find(r=>r.id==='oil.council').cut=[{at:'skm4jjo2vl',to:T.orderHouse.house[0],share:T.orderHouse.share,why:'the Order\'s eighth of the council\'s income'}];
  /* ---- X2: THE RARE DEVISERS: their guild house at Theodiga holds the royal licence in scrap and rare artifacts (the owner,
     2026-11-16): the Salvagers' scrap passes through it to the smelter. Their expeditions take Thalaba's summer road into
-    Godshearth (about 200 km from Thalaba's new place at the spillway's mouth): their camp works the vents in the expedition
+    Godshearth (about 130 km from Thalaba's new place at the spillway's mouth, up the gorge to the camp at the hot lake's outlet): their camp works the vents in the expedition
     season, its sulfur, wax and rarities home to their house at Thalaba, which sells them into the town's market (down by
     Phēr and the lake to the capital and out with the Great Caravan); the Sultan's share of the haul (`T.haul`) is taken
     where it lands. The Dalab mission's party goes the same way to the Grove (`T.dalab`) */
