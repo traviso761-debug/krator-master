@@ -58,4 +58,9 @@ var SITE_SPEC={region:'xanadu-oidong-highrift',world:1191569,bridges:{culture:'x
    {id:'salphar',name:'Salphar, the diggers\' hamlet',culture:'xanadu-sulfur',focus:'sulfur',bearing:4,km:20,look:2500,pop:160},
    {id:'bench-1',name:'the near Bēnch farms',focus:'farming',bearing:95,km:11,pop:220},
    {id:'bench-2',name:'the far Bēnch farms',focus:'farming',bearing:100,km:22,pop:220}]}},
+ /* the roads to a point (core/world 48s `ways`, 2026-11-16, the owner: "Grow the cut up the gorge"): Thalaba's expedition road
+    goes on from Salphar up Godshearth's gorge, past the Spillway (the gorge's station 4, xanaduspill, px 845,1422), to the Rare
+    Devisers' camp at the hot lake's outlet (px 839,1398: the owner, 2026-11-16, "Yes, the outlet"; settlements/devisers-camp);
+    the guide keeps it in the gorge past the Spillway. It ends at the cut's edge until the region's recut takes the corridor */
+ ways:[{id:'expedition',name:"the expedition road (to the Devisers' camp)",from:'shvo49k0y2',start:'salphar',to:{px:[839,1398]},guide:[[845,1422]],hw:2.5,via:4000}],
  links:[['s57bkv9741','skm4jjo2vl',{hw:4,r:2000}],['skm4jjo2vl','sq80bzd7ep',{hw:4,r:1500}]]};

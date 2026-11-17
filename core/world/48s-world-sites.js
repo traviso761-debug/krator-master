@@ -24,6 +24,8 @@
 //   ROAD {id: '<site>/road/<n>', from (a camp's id), to (the site's id), hw, pts: [[x, z, e]], length_m, maxGrade}
 //   LINK {id: '<site>/link/<site>', from, to, hw, pts, length_m, maxGrade, stops?: [STOP], gaps?: [{id, kind, at_m, why}]}
 //        (plan's `links`; STOP: stops(); a gap is a stop the road had no ground for)
+//   WAY  {id: '<site>/way/<id>', from, start?, name, to: {x, z, px?}, end: {x, z}, short?, hw, pts, length_m, maxGrade}
+//        (plan's `ways`, opt-in: a road from a site, or one of its villages, to a point; ways() below)
 // Every id begins with the site's id in the scale model, so an edit (core/edits) keeps its target when the plan is redone.
 var KSITES=(function(){'use strict';
 const SLOPE=.3,RINGS=[0,.3,.6,1],SPOKES=12,GRID=50;
@@ -108,7 +110,46 @@ function plan(spec,kit){const out={format:'krator-site-plan',version:1,region:sp
     length_m:Math.round(R.length_m),maxGrade:Math.round((R.maxGrade||0)*1e4)/1e4};
    if(o.stops){const St=stops(Lk,o.stops,kit,A.name,B.name);Lk.stops=St.stops;if(St.gaps.length)Lk.gaps=St.gaps;St.errors.forEach(e=>out.errors.push(e));}
    out.links.push(spec.bridges?bridged(Lk,spec,out,o.culture):Lk);}}
+ if(spec.ways&&typeof ROADS!=='undefined')ways(spec,out);
  out.hash=hash(out);return out;}
+/* THE ROADS TO A POINT (spec.ways, opt-in, 2026-11-16: Thalaba's expedition road up Godshearth's gorge to the Spillway, the
+   owner: "Grow the cut up the gorge"): [{id, from (a site), start? (one of its hamlets: the road goes on from that village's
+   lane end, so it shares the village's road as its trunk), to: {px: [x, y]} (the 5.1 canvas) | {x, z} (the region's frame),
+   name?, hw?, r? (the site's reach when it starts at the site, 900), via?, guide? ([[px, py]]: a line up a valley)}].
+   Routed as a kept link (keptRoute: in hops, never leaving the cut, bridged when the region asks) to the point itself; a point
+   outside the cut ends the road at the cut's edge, at the last point inside on the line toward it (the guide's, else the
+   straight one), 300 m back from where it leaves, until the cut grows. WAY {id: '<site>/way/<id>', from, start?, name, to:
+   {x, z, px?}, end: {x, z}, short: true when it ends at the cut's edge, short of its point, hw, pts, length_m, maxGrade}.
+   A region without `ways` plans exactly as before */
+function ways(spec,out){out.ways=[];const F=WORLD_DATA.meta.frame,PX=q=>[(q[0]-F.origin_px[0])*2000,(q[1]-F.origin_px[1])*2000];
+ for(const W of spec.ways){const id=W.from+'/way/'+W.id,S=out.sites.find(s=>s.id===W.from);
+  if(!S){out.errors.push(id+': no site '+W.from);continue;}
+  const H=W.start?(S.hamlets||[]).find(h=>h.id===W.from+'/hamlet/'+W.start):null;
+  if(W.start&&!H){out.errors.push(id+': no village '+W.start+' at '+W.from);continue;}
+  const A=H?{id:H.id,x:H.end.x,z:H.end.z}:{id:S.id,x:S.x,z:S.z},T=W.to.px?PX(W.to.px):[W.to.x,W.to.z];
+  /* the end: the point, or the last point inside the cut on the line toward it (100 m steps), 300 m back from the edge */
+  const line=(W.guide?W.guide.map(PX):[]).concat([T]);let E={x:T[0],z:T[1]},short=false;
+  if(!WORLD.inside(T[0],T[1])){let px=A.x,pz=A.z,trail=[[A.x,A.z]],left=false;
+   for(const q of line){const L=Math.hypot(q[0]-px,q[1]-pz),n=Math.max(1,Math.ceil(L/100));
+    for(let k=1;k<=n&&!left;k++){const x=px+(q[0]-px)*k/n,z=pz+(q[1]-pz)*k/n;if(!WORLD.inside(x,z)){left=true;break;}trail.push([x,z]);}
+    if(left)break;px=q[0];pz=q[1];}
+   const back=trail[Math.max(0,trail.length-1-3)];E={x:r2(back[0]),z:r2(back[1])};short=true;}
+  const B={id:id+'/end',x:E.x,z:E.z},o={r:H?0:(W.r==null?900:W.r),rB:0,via:W.via,guide:W.guide,keep:true,bridged:!!spec.bridges};
+  if(Math.hypot(B.x-A.x,B.z-A.z)<(o.r+200)){out.errors.push(id+": its end is within its start's reach");continue;}
+  const R=keptRoute(A,B,o);if(!R||!R.pts||R.pts.length<2){out.errors.push(id+': no route');continue;}
+  /* its ends pinned where they belong (the router's first and last points are its grid's): the village's lane end (from a
+     village) and the end point, each joined to the route at the ruling grade (7.5 %, as road() joins a gate), the router's
+     points within 1 m of them dropped */
+  const P0=R.pts.map(p=>[p[0],p[1],p[2]==null?HL(p[0],p[1]):p[2]]).filter(p=>Math.hypot(p[0]-A.x,p[1]-A.z)>1&&Math.hypot(p[0]-B.x,p[1]-B.z)>1);
+  const join=(at,q)=>{const d=Math.hypot(q[0]-at.x,q[1]-at.z),g=.075*d;return[at.x,at.z,q[2]+Math.max(-g,Math.min(g,HL(at.x,at.z)-q[2]))];};
+  const pts=(H?[join(A,P0[0])]:[]).concat(P0,[join(B,P0[P0.length-1])]);
+  const Wy={id,from:W.from,name:W.name||W.id,to:Object.assign({x:r2(T[0]),z:r2(T[1])},W.to.px?{px:W.to.px.slice()}:{}),end:{x:E.x,z:E.z},short,
+   hw:W.hw==null?R.hw:W.hw,pts:pts.map(p=>[r2(p[0]),r2(p[1]),r2(p[2])]),length_m:0,maxGrade:0};if(H)Wy.start=H.id;
+  const Q=spec.bridges?bridged(Wy,spec,out,W.culture):Wy;
+  /* its length and grade read off its own points as laid (bridged: the decks over the rivers), not the router's figures
+     (the hops' worst, before the joins, down into a river's channel where the bridge now carries it) */
+  let mg=0,len=0;for(let i=1;i<Q.pts.length;i++){const a=Q.pts[i-1],b=Q.pts[i],d=Math.hypot(b[0]-a[0],b[1]-a[1]);len+=d;if(d>1)mg=Math.max(mg,Math.abs(b[2]-a[2])/d);}
+  Q.length_m=Math.round(len);Q.maxGrade=Math.round(mg*1e4)/1e4;out.ways.push(Q);}}
 /* BRIDGES (42b-world-bridges.js, the owner 2026-11-11): a region that asks (SITE_SPEC.bridges: true or the planner's
    options) has every road and link it lays bridged where it crosses a named river: the road's heights over the water lifted
    to a deck (its `spans`), the bridges in the plan's `bridges` (BRIDGE records). Opt-in: the other regions' plans are
@@ -133,14 +174,15 @@ function netPath(id){const N=typeof WORLD_NET!=='undefined'&&WORLD_NET&&WORLD_NE
    and may leave a narrow cut (the Iziz cluster's corridors: 24 km off the line), so the link is routed in hops between
    points on the straight line every `via` m, and its fine pass may not leave the polygon (ROADS.route opts.avoid). The
    hops' lines are joined end to end; a hop's grade is held within it */
-function keptRoute(A,B,o){let n;const via=o.via==null?8000:o.via,r=o.r==null?2000:o.r,L=Math.hypot(B.x-A.x,B.z-A.z);n=Math.max(1,Math.round((L-2*r)/via));
- const W=[];for(let k=0;k<=n;k++){const t=(r+(L-2*r)*k/n)/L;W.push({x:A.x+(B.x-A.x)*t,z:A.z+(B.z-A.z)*t});}
+function keptRoute(A,B,o){let n;const via=o.via==null?8000:o.via,r=o.r==null?2000:o.r,L=Math.hypot(B.x-A.x,B.z-A.z),rB=o.rB==null?r:o.rB,
+  span=o.rB==null?L-2*r:L-r-o.rB;n=Math.max(1,Math.round(span/via));   /* o.rB: the far end's reach (a way's point, 0); absent, both ends r, as before */
+ const W=[];for(let k=0;k<=n;k++){const t=(r+span*k/n)/L;W.push({x:A.x+(B.x-A.x)*t,z:A.z+(B.z-A.z)*t});}
  const F0=WORLD_DATA.meta.frame,NP=o.guide?o.guide.map(q=>[(q[0]-F0.origin_px[0])*2000,(q[1]-F0.origin_px[1])*2000]):o.net?netPath(o.net):null;   /* `guide`: a line in 5.1 px given by the spec (up a valley the straight line would leave), `net`: a network route */
  if(NP){/* the network's line (`net`): its points inside the cut, oriented A to B, resampled every `via` m, the ends at the towns */
   const pts=NP.filter(q=>WORLD.inside(q[0],q[1]));if(pts.length>1){if(Math.hypot(pts[0][0]-A.x,pts[0][1]-A.z)>Math.hypot(pts[pts.length-1][0]-A.x,pts[pts.length-1][1]-A.z))pts.reverse();
    const c=[0];for(let i=1;i<pts.length;i++)c.push(c[i-1]+Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1]));const T=c[c.length-1];
    W.length=0;W.push({x:A.x,z:A.z});for(let d=via;d<T-via/2;d+=via){let i=1;while(i<c.length-1&&c[i]<d)i++;const t=(d-c[i-1])/((c[i]-c[i-1])||1);
-    const x=pts[i-1][0]+(pts[i][0]-pts[i-1][0])*t,z=pts[i-1][1]+(pts[i][1]-pts[i-1][1])*t;if(Math.hypot(x-A.x,z-A.z)>r&&Math.hypot(x-B.x,z-B.z)>r)W.push({x,z});}
+    const x=pts[i-1][0]+(pts[i][0]-pts[i-1][0])*t,z=pts[i-1][1]+(pts[i][1]-pts[i-1][1])*t;if(Math.hypot(x-A.x,z-A.z)>r&&Math.hypot(x-B.x,z-B.z)>rB)W.push({x,z});}
    W.push({x:B.x,z:B.z});n=W.length-1;}}   /* no point of the route inside the cut: the straight line, as before */
  /* nor run down a river's bed (a cell with a named river's channel at its middle or 80 m to any side: the road crosses a
     river in one step between two cells, on a causeway, but never lies along it, burying it) */
@@ -152,7 +194,7 @@ function keptRoute(A,B,o){let n;const via=o.via==null?8000:o.via,r=o.r==null?200
   /* a via point in a cul-de-sac (a terrace the next hop must leave the way the last one came: the map's line is coarser
      than the ground) makes the road run in and back out over itself, two levels on one spot that no ground can hold.
      Such a via point is dropped and its two hops routed as one, until no hop doubles back on the one before */
-  const V=[{name:A.id,x:A.x,z:A.z,r}].concat(W.slice(1,n).map((w,k)=>({name:A.id+'/via/'+(k+1),x:w.x,z:w.z,r:0}))).concat([{name:B.id,x:B.x,z:B.z,r}]);
+  const V=[{name:A.id,x:A.x,z:A.z,r}].concat(W.slice(1,n).map((w,k)=>({name:A.id+'/via/'+(k+1),x:w.x,z:w.z,r:0}))).concat([{name:B.id,x:B.x,z:B.z,r:rB}]);
   const hop=(a,b)=>{const R=ROADS.route(a,b,{avoid});return R&&R.pts&&R.pts.length>1?R:null;};
   const Hs=[];for(let k=0;k<V.length-1;k++){const R=hop(V[k],V[k+1]);if(!R)return null;Hs.push(R);}
   const doubles=(R1,R2,at)=>{const far=p=>Math.hypot(p[0]-at.x,p[1]-at.z)>300,P1=R1.pts.filter(far),P2=R2.pts.filter(far);
@@ -163,7 +205,7 @@ function keptRoute(A,B,o){let n;const via=o.via==null?8000:o.via,r=o.r==null?200
    out.pts.push(...P);out.length_m+=R.length_m;out.maxGrade=Math.max(out.maxGrade,R.maxGrade||0);if(out.hw==null)out.hw=R.hw;}
   return out;}
  for(let k=0;k<n;k++){const a=k?{name:A.id+'/via/'+k,x:W[k].x,z:W[k].z,r:0}:{name:A.id,x:A.x,z:A.z,r},
-   b=k<n-1?{name:A.id+'/via/'+(k+1),x:W[k+1].x,z:W[k+1].z,r:0}:{name:B.id,x:B.x,z:B.z,r};
+   b=k<n-1?{name:A.id+'/via/'+(k+1),x:W[k+1].x,z:W[k+1].z,r:0}:{name:B.id,x:B.x,z:B.z,r:rB};
   const R=ROADS.route(a,b,{avoid});if(!R||!R.pts||R.pts.length<2)return null;
   const P=out.pts.length?R.pts.filter((p,i)=>i>0||Math.hypot(p[0]-out.pts[out.pts.length-1][0],p[1]-out.pts[out.pts.length-1][1])>1):R.pts;
   out.pts.push(...P);out.length_m+=R.length_m;out.maxGrade=Math.max(out.maxGrade,R.maxGrade||0);if(out.hw==null)out.hw=R.hw;}
@@ -241,8 +283,12 @@ function check(P,opt){opt=opt||{};const problems=[],counts={sites:0,camps:0,reco
    for(const r of St.records){counts.records++;const B=boxPts(r.x,r.z,r.ry,r.w,r.d);
     if(!B.every(q=>(opt.groundOk||groundOk)(q[0],q[1])))problems.push(St.id+': off good ground');
     if(!B.every(q=>segDist(L.pts,q[0],q[1],1,L.pts.length-1)>L.hw+1))problems.push(St.id+': on the road');}}}
+ /* the ways (spec.ways): each starts at its village's lane end or within its site's reach, and ends at its end (the point, or the cut's edge) */
+ for(const Wy of P.ways||[]){counts.ways=(counts.ways==null?0:counts.ways)+1;const S=P.sites.find(s=>s.id===Wy.from),H=Wy.start&&S?(S.hamlets||[]).find(h=>h.id===Wy.start):null,a=Wy.pts[0],b=Wy.pts[Wy.pts.length-1];
+  if(!S||(H?Math.hypot(a[0]-H.end.x,a[1]-H.end.z)>50:Math.hypot(a[0]-S.x,a[1]-S.z)>4000))problems.push(Wy.id+': does not start at '+(H?'its village':'its town'));
+  if(Math.hypot(b[0]-Wy.end.x,b[1]-Wy.end.z)>50)problems.push(Wy.id+': does not reach its end');}
  /* the bridges (42b): every span has its bridge, every deck clears its water, the grade held, the piers on the ground */
- if(P.bridges&&typeof BRIDGES!=='undefined'){const all=P.sites.flatMap(S=>S.roads).concat(P.links||[]),K=BRIDGES.check(all,P.bridges);
+ if(P.bridges&&typeof BRIDGES!=='undefined'){const all=P.sites.flatMap(S=>S.roads).concat(P.links||[]).concat(P.ways||[]),K=BRIDGES.check(all,P.bridges);
   counts.bridges=K.counts.bridges;counts.spans=K.counts.spans;counts.piers=K.counts.piers;K.problems.forEach(q=>problems.push(q));}
  return{ok:!problems.length,problems,counts};}
 return{SLOPE,groundOk,discOk,siteFor,plan,hash,check,slopeAt};})();

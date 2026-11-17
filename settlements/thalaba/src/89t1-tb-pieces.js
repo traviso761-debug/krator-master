@@ -54,3 +54,26 @@ function buildTbCalcarone(G,o){reseed(34311+(o.v|0));const V=xV(o),R=5,stone=xC(
  // the spent ore thrown out beside it
  kput('xBoulder',[-R-1.2,0,-1.5],null,[1.3,.45,1.6],ash);}
 XA.def({key:'tb_calcarone',name:'Calcarone (a sulfur kiln)',family:'Thalaba',tags:{type:['industry'],wealth:'poor',lit:false,role:'kiln'},w:12,d:12,h:4.5,fw:11,fd:11,nv:3,build:buildTbCalcarone});
+
+// ---------------------------------------------------------------- the road warden's watch house at Briḍj (PLAN.md section 3: "the
+// road warden's watch house", no toll: the owner ruled the Sultan's share is taken in the town). 9 x 7 m, two storeys of whitewash
+// on a stone footing, one plain block (the interiors' hollow wrap matches it to the set's shell: src/89t2-tb-interiors.js), the
+// door to the front (+z) on the road, a timber gallery over it, the Sultan's banner, a hitching rail and the warden's bench
+function buildTbWatchhouse(G,o){reseed(34321+(o.v|0));const V=xV(o),W=9,D=7,H=5.6,Y0=.5,wash=xC(xPick(XPAL.wash)),stone=xC(xPick(XPAL.stone)),
+ tim=xC(xPick(XPAL.timber)),timD=xC(0x5a4632),maroon=xC(xPick(XPAL.maroon)),ochre=xC(xPick(XPAL.ochre)),lit=xLit();
+ vnReg('The road warden\'s watch house',0,0,6,H+2);
+ vB('vStone',0,0,0,W+.6,Y0,D+.6,0,stone);vB('xWashB',0,Y0,0,W,H,D,0,wash);
+ xnBand(0,Y0+H,0,W,D,0,.6,maroon);xnParapet(0,Y0+H+.6,0,W,D,0,.7,wash);
+ vnDoor(0,Y0,D/2,0,1.4,2.4,'vWood',tim,timD,false);
+ for(const x of[-2.8,2.8])xnTibWin(x,Y0+1.1,D/2,0,1.0,1.3,lit?'lit':'glass',ochre);
+ for(const s of[-1,1])xnTibWin(s*W/2,Y0+3.6,0,s*Math.PI/2,1.0,1.3,lit?'lit':'glass',ochre);
+ // the gallery over the door: a timber balcony on two brackets, its rail, the upper windows behind it
+ vB('vWood',0,Y0+2.9,D/2+.6,W-2,.18,1.2,0,timD);for(const x of[-3,3])vB('vWood',x,Y0+2.3,D/2+.3,.18,.6,.6,0,timD);
+ vB('vWood',0,Y0+3.08,D/2+1.15,W-2,.9,.08,0,tim);
+ for(const x of[-1.8,1.8])xnTibWin(x,Y0+3.5,D/2,0,1.1,1.4,lit?'lit':'glass',ochre);
+ xnFlagpole(W/2-.6,Y0+H+1.3,-D/2+.6,4,ochre);
+ // the hitching rail and the trough on the road side, the warden's bench by the door
+ vB('vWood',-W/2-1.5,1.0,D/2+2.4,4.2,.12,.12,0,timD);for(const x of[-W/2-3.4,-W/2+.4])vPst('vPost',x,0,D/2+2.4,.08,1.1,timD);
+ vB('vStone',-W/2-1.5,0,D/2+3.4,3,.6,.8,0,stone);vB('vWood',2.6,.4,D/2+.5,2.4,.1,.4,0,tim);
+ if(V!==1)xnFolk(1.5,0,D/2+2.5,2,2);}
+XA.def({key:'tb_watchhouse',name:'The road warden\'s watch house (Thalaba)',family:'Thalaba',tags:{type:['civic'],wealth:'civic',lit:true,role:'warden'},w:14,d:14,h:8,fw:12,fd:12,nv:3,build:buildTbWatchhouse});
