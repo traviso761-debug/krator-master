@@ -1032,6 +1032,10 @@
    "bytes": 2308647,
    "sha256": "ff55123b7c5b9407569f8adb584db31648458bd78f5662d35da7d081866e7c15"
   },
+  "settlements/gila/dist/gila.html": {
+   "bytes": 2828653,
+   "sha256": "aa5617e6b4c6c354a4fa15dcc98e3fc86deb27b73dfaaaa49309296423969258"
+  },
   "settlements/girder/girder-hero.html": {
    "bytes": 9885121,
    "sha256": "fdce4e77085e369698f7374d699e2689018bffd81a6bee37ef2233b5796cd3ed"

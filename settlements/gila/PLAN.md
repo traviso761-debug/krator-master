@@ -151,31 +151,34 @@ the bake house; the squared-spiral passage into the reliquary.
 
 ## 7. Steps
 
-| Step | What | Test |
-|---|---|---|
-| **G0** | this plan | |
-| **G1** | the build: `kits/lizardmen/build.py --settlement` (the kit's page with a settlement's src, gen and core files; without the flag the kit's page is byte-identical); Gila's `build.py` bakes the ground and seals core/city; the four new pieces | the kit's page unchanged (its hash); `tools/check_core_use.py settlements/gila` |
-| **G2** | the Lizardmen row in `core/hamlet` (opt-in subfolder), with its node test | `node core/hamlet/lizardmen/test-hamlet-lizardmen.js` |
-| **G3** | the page: the ground, the lake and the wells on core/water, the spiral on core/city, the buildings, the country, the reliquary and its ley line, the views; `verify.py` | the GPU verify: `gila-laid`, `on-the-model`, `people` (budget), `water-on-core`, `ley-aims`, `no-overlap`, `on-the-ground`, the kit's universals |
-| **G4** | the records for the sim (`GL_REC`) | the books balance: made + allotted in = need + allotted out, by good |
-| **G5** | the salt works on `KHAMLET.village` with the Lizardmen row | the hamlet's census and works |
-| **G6** | flora on the biome core (`biomes/rift`, XV); the open world when the region is cut | the region's verify |
+| Step | What | Test | Status |
+|---|---|---|---|
+| **G0** | this plan | | done (`bb130ce67`) |
+| **G1** | the build: `kits/lizardmen/build.py --settlement` (the kit's page with a settlement's src, gen and core files; without the flag the kit's page is byte-identical); Gila's `build.py` bakes the ground and seals core/city; the four new pieces | the kit's page unchanged (its hash); `tools/check_core_use.py settlements/gila` | done |
+| **G2** | the Lizardmen row in `core/hamlet` (opt-in subfolder), with its node test | `node core/hamlet/lizardmen/test-hamlet-lizardmen.js` | done |
+| **G3** | the page: the ground, the lake and the wells on core/water, the spiral on core/city, the buildings, the country, the reliquary and its ley line, the views; `verify.py` | the GPU verify: `gila-laid`, `on-the-model`, `people` (budget), `water-on-core`, `ley-aims`, `no-overlap`, `on-the-ground`, the kit's universals | done |
+| **G4** | the records for the sim (`GL_REC`) | the books balance: made + allotted in = need + allotted out, by good | done |
+| **G5** | the salt works on `KHAMLET.village` with the Lizardmen row | the hamlet's census and works | done |
+| **G6** | flora on the biome core (`biomes/rift`, XV); the open world when the region is cut | the region's verify | open (after `biomes/rift`) |
 
-## 8. Questions for the owner
+## 8. Questions for the owner (answered 2026-11-16: all six agreed as proposed)
 
 1. **Gila at its pin** (the spit's tip, 110 m over the lake, wells for water), or moved 22 km north to **Brant Beck's mouth**
-   (a perennial stream, the lake's north-east lobe)? *Proposed: the pin.*
-2. **Wells and a great tank** for the water, after Mohenjo-daro? *Proposed: yes.*
+   (a perennial stream, the lake's north-east lobe)? **Agreed:** the pin (`px 653,1485`).
+2. **Wells and a great tank** for the water, after Mohenjo-daro? **Agreed:** yes (`gl-well`, `gl-tank`).
 3. **The caste shares** (Tenders 25 %, Makers 22 %, Drovers 25 %, Line warriors 15 %, Interpreters 3 %, Bulwarks 10 %)?
-   *Proposed.*
+   **Agreed.**
 4. **The spiral street:** one rhombic squared spiral (75°/105°, each winding 1.25 times the last), every door facing in,
    the ley line the only straight way. Laid by Gila's own steps on core/city; may the city-layout workstream take it into
-   `core/city` as a generator (`KCITY.leiwen`) for Sauropolis and the other villages? *Proposed: yes, later.*
-5. **The west reliquary** on the spit's south shore, 3.5 km from the village? *Proposed.*
+   `core/city` as a generator (`KCITY.leiwen`) for Sauropolis and the other villages? **Agreed:** yes, later.
+5. **The west reliquary** on the spit's south shore, 3.5 km from the village? **Agreed.**
 6. **Salt out, bronze in:** Gila sends ~275 t of salt a year along the Coil and takes its copper and tin (or cast bronze)
-   from the east. *Proposed.*
+   from the east. **Agreed.**
 
 ## 9. Found on the way (for the sessions that own them; not changed here)
 
 - `LORE.md` 6.20 still gives the villages on the old canvas (Gila 381,1155): 5.1 is +272,+330 (WEST-RIFT-SCOPE question 15).
 - `lk-greathall` is "the Hall of Intention" in the kit's source since 2026-11-16; the kit's committed page is older.
+- `core/engine/36-def.js` `place(key, x, z, ry, o)` sets `y = terrainH(x, z)` when `o.y === undefined`, even for nested `place()` calls inside a builder (`CURREC != null`, e.g. `lz-farm` placing `frilled` and `burden` in local coordinates); harmless on flat `y = 0` kit sheets, worked around in `90g-gl-world.js` for Gila.
+- `core/terrain/43-core-ground.js` `kgTri` names a parameter `v1`, which clashes with r128's `cube_uv_reflection_fragment` `#define v1 0.276` when `KGROUND.hook` is attached to a `MeshStandardMaterial` on a scene with `scene.environment`; `MeshLambertMaterial` (as `biomes/abyssal-savannah` uses) avoids it.
+- `core/hamlet/test-hamlet.js` has an unrelated failure on `neouterwall: arrow shafts` (`WOOD_RULES` in `10-hamlet-wood.js`).
