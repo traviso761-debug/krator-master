@@ -128,6 +128,7 @@ CORE_OPT = os.path.join(CORE, 'opt')   # opt-in shared fragments: a build takes 
 # 88x-matlib-pack.js (tools/textures/matlib_pack.py); src/88y-xanadu-matlib.js binds it onto MAT (KMAT.bindMat)
 RECORD_FILES = ['23-mat-record.js', '25-matlib-host.js', '26-matlib-bind.js']
 MATLIB_PACK = '88x-matlib-pack.js'
+PICS_PACK = '88x1-pics-pack.js'           # the citadel hangings' pictures (citadel/materials.json), generated
 CORE_OPT_FILES = ['69a-world-uv.js']   # vWorldUV, the world-unit UV hook (core/README.md)
 
 
@@ -384,6 +385,11 @@ def build_one(target, do_checks):
     side = None if '--inline-packs' in sys.argv else {}
     bodies[MATLIB_PACK] = matlib_pack.fragment(HERE, 'xanadu', side=side)
     order = sorted(order + [MATLIB_PACK])
+    # the pictures on the citadel's hangings (2026-11-17; citadel/FURNISHING.md): their own pack, KMAT.pack('xanadu-pics'), on the
+    # two pages that draw the citadel, beside the page with Xanadu's own; the catalog's hangings read it (xanPic, the Xanadu culture)
+    if not KIT and target in ('xanadu', 'erewhon') and os.path.isfile(os.path.join(HERE, 'citadel', 'tex', 'pack.json')):
+        bodies[PICS_PACK] = matlib_pack.fragment(os.path.join(HERE, 'citadel'), 'xanadu-pics', side=side)
+        order = sorted(order + [PICS_PACK])
     # a kit with library families of its own (kit.json "pack": its name; its materials.json packed into its tex/ by
     # tools/textures/pack.py): KMAT.pack('<name>') inlined here, bound by the kit's own fragment (KMAT.bindMat), as Iziz's --kit
     _pd = os.path.join(ROOT, *KIT['packFrom'].split('/')) if KIT and KIT.get('packFrom') else (KIT['dir'] if KIT else None)   # "packFrom": a kit's pack another folder's build takes (the city of Qiblai takes kits/qiblai's)

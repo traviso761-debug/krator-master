@@ -541,6 +541,11 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
   - The palace sits on a plateau above a cliff; the prison is in a cliff.
   - The **Pleasure Dome of the Bay** is the Sultans' own extravagance, built for their feasts. It is not Ancient: no Ancient dome stood there. [the owner, Oct 2026]
   - **The Caves of Ice** are an Ancient construction, not a natural cave. Something deep inside keeps them unnaturally cold. The sacred river Alph. [the owner, Oct 2026]
+- **A domesticated glyptodont**: the Xanadui's slow, armoured pack and draught beast, domed shell and thick legs, carrying the
+  caravans' bales and water-jars; got from the **Kimr** (the Labyrinth's people, `biomes/labyrinth/PLAN.md`) in the distant past and bred tame since, a cousin of the
+  wild glyptodonts the Beast Riders' **Hardshell** tribe rides. Its name is still to be set. [the owner, 2026-11-17: "given the
+  painting, we can also canonically give the Xanadui a domesticated glyptodont, perhaps acquired from the Kimr in the distant past";
+  the painting is the envoys' tapestry of the shell-backed caravan in Erewhon's citadel, `patterns/easter/shell-caravan`]
 - **Origins:** the Xanadui likely descend from **Theodiga**, the Ancient dam arcology at the valley mouth that harnessed the cascade (§4). *Xanadu*, *Alph* and the *Caves of Ice* are Ancient names, taken from Coleridge's *Kubla Khan*. [the owner, Oct 2026]
 - **The faith: the Decree (*Ḍikrī*) and the Broken Wheel** [the owner, 2026-11-11; the detail is *proposed*:
   `kits/qiblai/PLAN.md` section 2a].
