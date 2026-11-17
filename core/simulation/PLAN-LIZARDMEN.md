@@ -35,7 +35,7 @@ LORE.md 6.20 carries the new names. The proposal, the survey and Gila's plan and
 | 5 | `openworld/SITES.json`: the site rows and two planned regions (`lizardmen-west`, `lizardmen-east`); the pins owed to the scale-model queue (below) | **done** |
 | 6 | The kit's rename: `lk-greathall` is the Hall of Intention (label already; the fragment's header and the README now say so, the page rebuilt) | **done** |
 | 7 | The kit's **works** the villages need (`kits/lizardmen/src/59w-lz-works.js`): `lz-mine`, `lz-weir` (both owed in its `KNOWN_ISSUES.md` and named by core/hamlet's Lizardmen row), `lz-placer`, `lz-cistern`, `lz-fungus`; the trades table carries miners and fishers now | **done** (GPU-verified, the engine fingerprint recorded) |
-| 8 | **Z4, the raids**: `core/camp` ventures with balance caps from Tuatara and Komodo against the Marches' forts, the Vale's southern villages and the Golden Tears' camp; the take to the plunder warehouse and the bone hall; Xanadu's side records the events | next |
+| 8 | **Z4, the raids** (`core/camp/55-camp-raid.js`, core/camp/PLAN.md 6.1's rules; `core/region/52-region-raid.js`, opt-in by `raids`; `LZ_TUNE.raids`): the war bands of Tuatara (150) and Komodo (120) against the Marches' three forts, the Marches' villages (`prov.p8`) and the Golden Tears' camp (`exp.rift-gold`), off-map records with XAN_TUNE's numbers in this run; the plunder and the dead home to the plunder warehouse and the bone hall; the Sultanate's events | **done** (`test-camp-raid.js` 11, `test-lz-raids.js` 8) |
 | 9 | **Z5, the joint run** with `XAN_TUNE` in one valley run (as `EAST_RIFT` joins Xanadu and Longsong): where the raids touch the Sultanate's ledger | after Z4 |
 | 10 | **The towns' pages** (Tuatara, Komodo, Iguana, the Tubes; Basilisk in its own session): not yet (the owner: "don't have to build them all yet"). A shared builder generalised from Gila's fragments was started and parked, untested, in the session notes folder (`lizardmen-settle/`, its README says how to revive it) | later |
 | 11 | Z3 (agents re-homed by the plan, the castes of the season's rebirths), Z6 (the Interpreters' weight) | later |
@@ -65,6 +65,26 @@ LORE.md 6.20 carries the new names. The proposal, the survey and Gila's plan and
 - **Gila held to `GL_REC`:** the same 3,000, works and needs. The second year makes 299 t of salt, sends 273 t (`GL_REC` 275 t) and takes 6 t of bronze. Negative: drifted records are caught.
 - Z2: every load rides the Coil (150 of 199 past other stops, 57 through the capital); a straight load is caught; the four gifts go home once round each way a year; memory debts are kept and settled; the relics are sunk.
 - `test-xan-economy`, `test-east-rift` and `test-catch` are unchanged: the Allotment is a part they do not load, inert without `allot`.
+
+## The raids (Z4)
+
+- **The rules** are core/camp's (`core/camp/PLAN.md` section 6.1), written as pure functions in `core/camp/55-camp-raid.js`:
+  - strength = warriors x arms x mounts x morale;
+  - defence = (people x militia + garrison x 3) x walls x (1 + allies);
+  - their ratio, jittered by a hash, picks repulsed, skirmish or success; a sack only when the target's standing is under 0.4;
+  - the caps per raid: 15 % of the movable stock, never the staples below fourteen days, at most 2 % of the people dead;
+  - the standing recovers 5 % a week.
+- **The war bands** (*proposed*): Tuatara 150 and Komodo 120 of the Line warriors and the Bulwarks, each the match of three
+  men (`arms` 3), on foot, two raids a season for the faction, a target left alone 120 days, a beaten band resting 45.
+- **The targets** (XAN_TUNE's numbers): the Marches' three watch forts (150 each behind walls), the Marches' villages (`prov.p8`,
+  the Vale's southern countryside) and the Golden Tears' camp (120 behind a palisade).
+- **What happens in two years:**
+  - 16 raids;
+  - **the forts repulse every assault** (ratio 0.4-0.5); Tuatara takes the villages' grain and tools and Komodo the Tears' camp (tools, arms, ore);
+  - no target below 0.92;
+  - the Sultanate makes 12 garrison grants and mounts 2 punitive expeditions (recorded, not yet marched);
+  - the plunder (the steel kept and never used) and the dead of both sides go home to the warehouse and the bone hall.
+- **In this run the targets are off-map records.** The joint run (Z5) raids the Sultanate's own settlements in their own books.
 
 ## The towns, when their pages are built (step 10)
 

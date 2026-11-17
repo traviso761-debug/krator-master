@@ -25,7 +25,10 @@ T.px=(px,py)=>({x:(px-1191)*2000,z:(py-1569)*2000});
 T.faction={id:'lizardmen',name:'The Lizardmen of the Rift floor'};
 T.goods={grain:{unit:'kg'},produce:{unit:'kg'},fish:{unit:'kg'},lakecake:{unit:'kg'},meat_hide:{unit:'kg'},salt:{unit:'kg'},
  evaporites:{unit:'kg'},copper:{unit:'kg'},tin:{unit:'kg'},bronze:{unit:'kg'},bronze_ware:{unit:'kg'},bone:{unit:'kg'},
- reed_lacquer:{unit:'kg'},relics:{unit:'kg'}};
+ reed_lacquer:{unit:'kg'},relics:{unit:'kg'},
+ /* Z4: what the raids carry home, in Xanadu's units (the joint run merges the two lists): the Vale's tools and arms (steel, kept
+    in the plunder warehouse and never used: DESIGN.md), its goldwork and the Golden Tears' ore (valuables) */
+ tools:{unit:'kg'},arms:{unit:'piece'},goldwork:{unit:'piece'},goldore:{unit:'kg'}};
 /* a person's year (kg). The town's is Gila's (GL_REC's needs over its 3,000: grain 700 t, produce 250, lakecake or fish 120,
    meat and hide 90, salt 25, bronze ware 6, bone 12, reed and lacquer 36); the warrens' a countryside's (less salt and
    bronze, more meat); the Tubes' a cavern's (its fungus beds count as produce: kits/crops pale-fungi, grown in the dark) */
@@ -44,9 +47,9 @@ T.places=[
   make:{grain:1500000,produce:1300000,fish:600000,meat_hide:450000,salt:115000,bone:48000},extra:{evaporites:12000/15000,bone:60000/15000},
   smiths:true,cast:true,why:'the jungle shore grows grain poorly; the sea\'s pans give the east\'s salt; the bronze hall casts what Tuatara and Komodo dig'},
  {id:'szv27b2reu',key:'tuatara',name:'Tuatara, on the volcanic savanna above the eastern sea',px:818,py:1554,people:3000,diet:{grain:233.33,produce:83.33,meat_hide:70,salt:8.333,bronze_ware:2},
-  make:{grain:1000000,produce:250000,meat_hide:210000,copper:70000},smiths:true,why:'the richest ground: copper 102 nodes, the savanna\'s grain; no perennial water, so no fish'},
+  make:{grain:1000000,produce:250000,meat_hide:210000,copper:70000},smiths:true,raider:true,why:'the richest ground: copper 102 nodes, the savanna\'s grain; no perennial water, so no fish'},
  {id:'spnqhezhiw',key:'komodo',name:'Komodo, at the eastern sea\'s far end',px:865,py:1617,people:3000,diet:'town',
-  make:{grain:600000,produce:250000,fish:240000,meat_hide:90000,tin:8000},smiths:true,why:'tin from the placers on its rivers; bamboo rice; little farmland'},
+  make:{grain:600000,produce:250000,fish:240000,meat_hide:90000,tin:8000},smiths:true,raider:true,why:'tin from the placers on its rivers; bamboo rice; little farmland'},
  {id:'sze26pgivd',key:'gila',name:'Gila, the salt village on its lake',px:653,py:1485,people:3000,gila:true,smiths:true,
   why:'GL_REC (settlements/gila/src/88-gl-records.js): the evaporites, the crest\'s fields, the lake\'s alga'},
  {id:'iguana',key:'iguana',name:'Iguana, the granary town on the Pile\'s plateau',px:713,py:1569,people:3000,diet:{grain:233.33,produce:83.33,meat_hide:70,salt:8.333,bronze_ware:2},
@@ -104,6 +107,7 @@ T.valley=function(o){o=o||{};const K=o.scale==null?10:o.scale,KB=o.bulk==null?20
   if(P.smiths){const need=(diet.bronze_ware||0)*n,crew=Math.max(k,Math.round(need/1000*6));   /* a smith reworks about 170 kg a year */
    works.push({id:P.key+'.smiths',kind:'smithy',name:'the smiths',crew,batch:T.chain.rework,cap:Math.ceil(need*60/yr)});}   /* they rework to sixty days of ware ahead, no more: the rest of the bronze is the plan's */
   if(P.cast)works.push({id:P.key+'.hall',kind:'bronze-hall',name:'the bronze and stone hall',crew:60,batch:T.chain.cast});
+  if(P.raider)works.push({id:P.key+'.plunder',kind:'warehouse',name:'the plunder warehouse (the steel of the Vale, kept and never used) and the yard of the bone hall',crew:10,out:[],rate:0});
   const start={};Object.keys(diet).forEach(g=>{start[g]=Math.ceil(n*diet[g]*D*days);});
   if(P.smiths)start.bronze=Math.ceil((diet.bronze_ware||0)*n*D*days);
   if(P.cast){start.copper=9*1000*days/30;start.tin=1000*days/30;}
@@ -116,6 +120,32 @@ T.valley=function(o){o=o||{};const K=o.scale==null?10:o.scale,KB=o.bulk==null?20
   S.filter(s=>s.cast).forEach(s=>{s.plan.make.bronze=bronze;s.plan.use.copper=bronze*.9;s.plan.use.tin=bronze*.1;delete s.cast;});
  const V={seed:20261117,scale:K,start:0,goods:T.goods,factions:[T.faction],relations:[],settlements:S,roads:[],transfers:[]};
  if(o.allot!==false&&o.allot!=null)V.allot=Object.assign({coil:T.coil},T.allot,o.allot===true?{}:o.allot);
+ if(o.raids)V.raids=T.raidSpec(o.raids===true?{}:o.raids);
  return V;};
+/* Z4, THE RAIDS (core/camp/PLAN.md section 6.1; core/region/52-region-raid.js). The lore: "raids reach as far as the Vale, for
+   livestock, tools and valuables" (LORE 6.20); Tuatara and Komodo are the raiding towns (PROPOSAL-LIZARDMEN section 1). A war
+   band of the Line warriors and the Bulwarks (castes 4 and 6, 2.4 and 3.8 m tall: `arms` 3, each the match of three men), on
+   foot. The targets and their numbers are XAN_TUNE's (core/region/data/xan-tune.js): the Marches' three watch forts (150 each,
+   their stores; walls 2.5), the Marches' countryside (prov.p8: the Vale's southern villages, their harvest), the Golden Tears'
+   armed camp on the Rift floor (exp.rift-gold: 120, a palisade). In the Lizardmen's run alone they are off-map records with
+   those stocks; in the joint run (core/region/data/lz-join.js, Z5) they are the Sultanate's own settlements, raided in their
+   own books. Each raid's take is capped (15 % of the movable stock, never the staples below fourteen days) and its dead (2 %
+   of the people); the dead of both sides go home to the bone hall (bone and hide: LORE 6.20, "butchered like animals") */
+T.raids={faction:'lizardmen',season:91.25,budget:2,kmDay:25,supplyDays:20,cooldown:120,fatigue:45,floorDays:14,
+ want:['tools','arms','goldwork','goldore','grain'],dead:{bone:20,meat_hide:35},
+ aid:{after:2,garrison:30,days:180},punitive:{after:4,window:365},
+ parties:[{id:'tuatara.warband',from:'tuatara',warriors:150,arms:3,mounts:1,morale:1.1,store:'tuatara.plunder'},
+  {id:'komodo.warband',from:'komodo',warriors:120,arms:3,mounts:1,morale:1.1,store:'komodo.plunder'}],
+ targets:[
+  {id:'march.w',name:'The west watch fort',faction:'xanadu',px:818,py:1531,people:150,garrison:120,militia:.2,walls:2.5,state:'kept',stock:{grain:10800,tools:40,arms:20}},
+  {id:'march.s',name:'The south watch fort',faction:'xanadu',px:843,py:1546,people:150,garrison:120,militia:.2,walls:2.5,state:'kept',stock:{grain:10800,tools:40,arms:20}},
+  {id:'march.e',name:'The beacon fort over the Rift',faction:'xanadu',px:853,py:1540,people:150,garrison:120,militia:.2,walls:2.5,state:'kept',stock:{grain:10800,tools:40,arms:20}},
+  {id:'prov.p8',name:'The Marches\' villages (the Vale\'s southern countryside)',faction:'xanadu',px:825,py:1541,people:3600,garrison:0,militia:.06,walls:1,stock:{grain:420000,tools:540}},
+  {id:'exp.rift-gold',name:'The Golden Tears\' armed prospecting camp',faction:'tears',px:850,py:1628,people:120,garrison:30,militia:.3,walls:1.6,stock:{grain:12000,tools:60,arms:40,goldore:900}}]};
+/* the spec the valley host takes: o.offMap (true unless the targets are settlements of the same valley), o.caps (false: the
+   negative), any field of T.raids to override */
+T.raidSpec=function(o){o=o||{};const R=JSON.parse(JSON.stringify(T.raids));Object.keys(o).forEach(k=>{if(k!=='offMap')R[k]=o[k];});
+ R.targets=R.targets.map(t=>{const p=T.px(t.px,t.py),q=Object.assign({},t,{x:p.x,z:p.z});delete q.px;delete q.py;if(o.offMap===false){delete q.stock;delete q.people;}return q;});
+ return R;};
 if(typeof module!=='undefined'&&module.exports)module.exports=T;
 return T;})();

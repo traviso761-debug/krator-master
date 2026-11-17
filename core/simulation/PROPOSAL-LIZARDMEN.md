@@ -138,7 +138,7 @@ weight"**.
 
 ## 4. On the sim (the build, in steps)
 
-**Built 2026-11-17: Z0, Z1 and Z2** (`core/region/data/lz-tune.js`, `core/region/51-region-allot.js`, `core/region/tests/test-lizardmen.js`); the order of the rest and what each step finished: `core/simulation/PLAN-LIZARDMEN.md`.
+**Built 2026-11-17: Z0, Z1, Z2 and Z4 (the raids)** (`core/region/data/lz-tune.js`, `core/region/51-region-allot.js`, `core/region/tests/test-lizardmen.js`); the order of the rest and what each step finished: `core/simulation/PLAN-LIZARDMEN.md`.
 
 The valley host (`core/region/50-region-valley.js`) already runs the Sultanate and Longsong at the abstract level. The
 Lizardmen go on the same host with a tune of their own and **one new mechanism**, the Allotment.
