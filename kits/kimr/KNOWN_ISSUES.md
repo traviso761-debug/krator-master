@@ -13,4 +13,7 @@
   newer, uncommitted work on it (`40-pueblo-rooms.js` and changes to 10-30). Merge that branch's later commits when they land.
 - [ ] **Every roof has a hatch** (core/pueblo gives each column one): a real pueblo's roofs have fewer. A kit-side thinning would break
   the plan's reach graph; ask the core/pueblo owner.
+- [ ] **In the sealed bundle (`KMK`) the hides hang still**: the engine's clock (`core/engine/93-anim.js`) is the kit page's own, so
+  no host ticks `ANIMU.uTime`; and the bundle renames the flutter's `uWind` to `uSvWind` (core/atmos's cloud shading declares a
+  `vec2 uWind` in every scene material: `kit_bundle.py` SUBST). A host that wants the flutter needs an `ANIMU` tick in the API.
 - [ ] **No walker**: the terraces and ladders are not `core/walk` strips yet.

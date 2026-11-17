@@ -72,8 +72,8 @@ if STATION:
 CORE_TERRAIN=['35-core-strata.js','37-core-stacks.js','38-core-relief.js','38c-core-landforms.js','43-core-ground.js','44-core-farfield.js','45-core-horizon.js']
 for f in CORE_TERRAIN: PATH.setdefault(f,J('core','terrain',f))
 for f in ['44-core-farfield-draw.js','45-core-horizon-shade.js']: PATH.setdefault(f,J('core','terrain','host',f))
-# the biome core from core/biome
-CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','31j-core-joint.js','32-core-variants.js','34-core-impostor.js',
+# the biome core from core/biome (31b: BIO.leafOn/leafQ, which 20-core-kit calls for a stem-held leaf; check_assembly asks for it)
+CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','31b-core-leafset.js','31j-core-joint.js','32-core-variants.js','34-core-impostor.js',
  '35-core-anim.js','39-core-lean.js','40-core-place.js','41-core-env.js','42-core-export.js','43-core-export-host.js','44-core-stage.js']
 for f in CORE_BIOME: PATH.setdefault(f,J('core','biome',f))
 PATH.setdefault('20-core-space.js',J('core','space','20-core-space.js'))
@@ -146,8 +146,19 @@ def model_heights(px,py,half=12):
     return {'n':n,'cell':2000,'x0':(i0-px)*2000,'z0':(j0-py)*2000,'h':h,'site':[px,py],'from':'scale model '+_pg.version()}
 _px,_py=SJ['site']
 VIRTUAL['44m-host-model.js']='// ==================== the scale model\'s heights round the station (build.py model_heights; tools/scale-model, build time)\nconst MODEL_H='+json.dumps(model_heights(_px,_py),separators=(',',':'))+';\n'
+# OTHER KITS a station asks for by name (station.json "kits"), each read in place and sealed in a closure of its own so its engine's globals
+# (MAT, KIT, REG, TAU, terrainH...) meet neither this page's nor the Ancients runtime's: "kimr", the Kimr's pueblos (kits/kimr/kit_bundle.py:
+# KMK; 86p-host-pueblo.js places SITE.pueblos). Station 1 never takes it: the Kimr keep away from the Hall
+STATION_KITS=SJ.get('kits',[])
+for k in STATION_KITS:
+    if k!='kimr': sys.exit('build.py: station.json asks for kit %r; this page knows "kimr"' % k)
+    sys.path.insert(0,J('kits','kimr'))
+    import kit_bundle as _kmk
+    _kjs,_kfs=_kmk.bundle()
+    VIRTUAL['85k-host-kimr-bundle.js']='// ==================== the Kimr kit, sealed (kits/kimr/kit_bundle.py, build time): '+', '.join(_kfs)+'\n'+_kjs
+    BSRC_EXTRA=[J(*f.split('/')) for f in _kfs]
 for f in VIRTUAL: PATH[f]=None
-BSRC.report([p for p in PATH.values() if p])
+BSRC.report([p for p in PATH.values() if p]+globals().get('BSRC_EXTRA',[]))
 frags=sorted(PATH)
 out=[]; bad=[]
 for f in frags:

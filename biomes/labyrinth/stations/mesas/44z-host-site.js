@@ -27,7 +27,13 @@ const SITE={key:'mesas',exportAt:[-1100,1300],blurb:"the outflow floor between t
   {kind:'spire',x:400,z:-1700,seed:7504,H:260,r:70,taper:.55,crown:.45,lean:.06},
   {kind:'mesa',x:-300,z:2000,seed:7505,tiers:[{h:140,r:200,e:1.5,ry:.2},{h:80,r:140,e:1.4,ry:.25}]},
   {kind:'spire',x:-2200,z:-1900,seed:7506,H:220,r:60,taper:.5,crown:.5},
-  {kind:'butte',x:-2100,z:2200,seed:7507,tiers:[{h:200,r:110,e:1.3,ry:.9},{h:90,r:70,e:1.2,ry:1.0}]}],
+  {kind:'butte',x:-2100,z:2200,seed:7507,tiers:[{h:200,r:110,e:1.3,ry:.9},{h:90,r:70,e:1.2,ry:1.0}]},
+  /* 7: the pueblo's knob (PLAN.md section 8, "a pueblo on a bench"): a low mesa, one bed 8.5 m over the floor (seated 4 m in), 58 x 50 m, its
+     long axis north-south under the house's width, clean-cut (no gullies), its top flat (flat: KSTACKS' roughness, 86p) */
+  {kind:'mesa',x:-700,z:250,seed:7508,tiers:[{h:12.5,r:26.9,e:1.16,ry:Math.PI/2}],weather:0,lobes:.04,flat:.1}],
+ /* THE KIMR (LORE.md 6.24, KIMR.md): a clan's pueblo on knob 7 (kits/kimr's km-house through KMK, 86p), its front to the east (the gate, the
+    east mesa), its ladders, round room and pen on the floor in front of the knob */
+ pueblos:[{knob:7,v:1,ry:Math.PI/2,back:2,name:'A Kimr pueblo on its knob'}],
  wetBase:.22,dryBase:.62,floraQ:.6,
  snowLine:[5200,5900],
  sky:{air:{pressure:1.25,humidity:.35},clouds:{cover:.2,cumulus:.2,cirrus:.3}},

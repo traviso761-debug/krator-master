@@ -47,7 +47,7 @@ Every build is a folder with `src/` fragments and a `build.py`. Open a build's `
 | [`kits/interiors`](kits/interiors/INDEX.md) | 22 | 246 | 32 | Interiors: ROOM() registration and an engine-neutral furniture placer (ported from Yuni) with a catalog adapter; building planner (storeys, partitions, stairs), walkers and a light budget; the building SETS (Highlands, Post-Apoc, Beast Rider, Locus, Abyss, Reed Lake, Yuni: every building's rooms as data, the residence rule checked); a verified demo, a sets sheet, and a walkable mockup of furnished rooms inside the real buildings. |
 | [`kits/islanders`](kits/islanders/INDEX.md) | 28 | 353 | 36 | The Islanders kit (catalog culture islander): the Ring Sea Islanders in two related styles. The WEST builds after the Indonesian rumah (long houses on piles under saddle roofs sagging into horns: gonjong spikes, Batak gables, Toraja prows; black palm thatch, red-black-white painted gables); KAUTOA, the old island kingdom of the EAST, after Sumba (spire towers over golden thatch skirts, woven facades, megalith tombs). Each: three poor (patched with scrap: corrugated iron, tin, tarps, tyres), three middle and three rich houses, a village hall, a ceremonial square, a school, farms, granaries, a turning windmill, a warehouse, a smithy, six shops, a fishing dock, a great dockyard, palisade or wall, gate, watch tower and barracks; Kautoa's palace of seven courts under a 44 m spire; carved posts, buffalo horns and the white island moon shared by both; farm stock from kits/fauna, placeholder crops, the shore and the Ring Sea; forked from the Scyvoi engine; a verified kit sheet. |
 | [`kits/iziz-vernacular`](kits/iziz-vernacular/INDEX.md) | 23 | 387 | 38 |  |
-| [`kits/kimr`](kits/kimr/INDEX.md) | 5 | 29 | 17 |  |
+| [`kits/kimr`](kits/kimr/INDEX.md) | 5 | 30 | 17 |  |
 | [`kits/lizardmen`](kits/lizardmen/INDEX.md) | 17 | 138 | 31 |  |
 | [`kits/locus`](kits/locus/INDEX.md) | 8 | 112 | 22 |  |
 | [`kits/mechs`](kits/mechs/INDEX.md) | 42 | 413 | 42 | Mechs: animated walking machines any world takes as one bundle (KratorMechs: a skinned rig, leg IK with planted feet, idle, walk and attack clips with fire and impact events, swinging banners and feathers) on the catalog core; seventeen Iziz walkers, from a hound-sized drone to a walking siege tower (the Castra in two variants); a verified kit sheet with a z-fighting audit. |
@@ -94,7 +94,7 @@ Every build is a folder with `src/` fragments and a `build.py`. Open a build's `
 | [`biomes/hyperjungle`](biomes/hyperjungle/INDEX.md) | 22 | 233 | 36 | Biome kit: see `biomes/README.md`. |
 | [`biomes/k-guilin`](biomes/k-guilin/INDEX.md) | 17 | 152 | 29 | Biome kit: see `biomes/README.md`. |
 | [`biomes/korona`](biomes/korona/INDEX.md) | 16 | 163 | 42 | Biome kit: see `biomes/README.md`. |
-| [`biomes/labyrinth`](biomes/labyrinth/INDEX.md) | 19 | 119 | 20 | Biome kit: see `biomes/README.md`. |
+| [`biomes/labyrinth`](biomes/labyrinth/INDEX.md) | 20 | 127 | 20 | Biome kit: see `biomes/README.md`. |
 | [`biomes/line`](biomes/line/INDEX.md) | 57 | 221 | 18 | Biome kit: see `biomes/README.md`. |
 | [`biomes/necanyons`](biomes/necanyons/INDEX.md) | 18 | 155 | 35 | Biome kit: see `biomes/README.md`. |
 | [`biomes/neouterwall`](biomes/neouterwall/INDEX.md) | 14 | 113 | 33 | Biome kit: see `biomes/README.md`. |

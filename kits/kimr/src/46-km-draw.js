@@ -134,7 +134,7 @@ function kmDung(D,S){W(D.x,D.y,D.z,D.ry,()=>{const n=Math.round(D.h/.11);for(let
 /* ---------------------------------------------------------------- registration and the whole house */
 function kmRegister(P,St,T,parent,at,ry,name){const r=KPUEBLO.register(P,T,{parent,culture:'kimr',at,ry,name,frag:KIT.frag});let n=r.count;
  const fx=(kind,nm,x,y,z,size,role,cls)=>{T.child(parent,{'class':cls||'fixture',kind,key:'km-'+kind,name:name+': '+nm,at:at(x,y,z),ry,size,tags:{culture:'kimr',part:kind,role},frag:KIT.frag});n++;};
- const R=St.rock;fx('rock','the rock (the plinth the blocks stand on)',(R.x0+R.x1)/2,-R.h,(R.z0+R.z1)/2,[R.x1-R.x0,R.z1-R.z0,R.h],'defence','part');
+ const R=St.rock;fx('rock',R.drawn===false?'the rock (the world\'s own: the knob or bench the blocks stand on)':'the rock (the plinth the blocks stand on)',(R.x0+R.x1)/2,-R.h,(R.z0+R.z1)/2,[R.x1-R.x0,R.z1-R.z0,R.h],'defence','part');
  St.entries.forEach(E=>fx('ladder','a long ladder up the rock (pulled up at night)',E.x,E.y0,E.z,[.7,.4,R.h+1.8],'way-in'));
  fx('round-room','the round room (under a glyptodont\'s shell)',St.round.x,St.round.y,St.round.z,[2*St.round.r,2*St.round.r,St.round.wall+1.9],'meeting','part');
  fx('pen','the pen (walled with mammoth bones)',(St.pen.x0+St.pen.x1)/2,St.pen.y,(St.pen.z0+St.pen.z1)/2,[St.pen.x1-St.pen.x0,St.pen.z1-St.pen.z0,1],'livestock','part');
@@ -146,7 +146,7 @@ function kmBuild(P,St,C){const S={boulders:0,stones:0,vigas:0,doors:0,windows:0,
  const R=St.rock,ox=St.off[0],oz=St.off[1];
  if(!PLACE_DRY&&CURREC&&CURREC.tid&&SVTAGS){const M=CM.clone(),at=(x,y,z)=>{const v=new THREE.Vector3(x+ox,y+R.h,z+oz).applyMatrix4(M);return [+v.x.toFixed(4),+v.y.toFixed(4),+v.z.toFixed(4)];};
   kmSet('registered',kmRegister(P,St,SVTAGS,CURREC.tid,at,CURREC.ry,CURREC.name));}
- W(ox,R.h,oz,0,()=>{kmRock(P,R,S);
+ W(ox,R.h,oz,0,()=>{if(R.drawn!==false)kmRock(P,R,S);   /* drawn false: the world's own rock (44-km-plan.js kmSite o.rock) */
   P.cells.forEach(c=>kmCell(P,c,S));
   P.rooms.forEach(r=>{if(r.face)kmDoor(P,r,S);});
   St.hands.forEach(Hd=>kmHands(P,Hd,S));
@@ -164,4 +164,4 @@ const KM_BOX=[0,1,2].map(v=>kmSite(KM.plan(v)).box).reduce((a,b)=>({w:Math.max(a
 defBuilding({key:'km-house',name:'Kimr: a clan\'s pueblo on its rock',seed:9801,cut:false,w:+(KM_BOX.w+.4).toFixed(2),d:+(KM_BOX.d+.4).toFixed(2),h:+(KM_BOX.h+.3).toFixed(2),budget:220000,
  tags:{types:['dwelling-multi'],wealth:'middle',style:'pueblo',role:'dwelling'},
  note:'the Kimr\'s raised pueblo (core/pueblo, a U round a yard open to the front) on a battered rock 7-10 m high: adobe blocks stepping up four storeys, the hero\'s rooms washed in kaolin under the Aurochs skull, no door at the ground, ladders with horn-capped poles, mammoth ribs in the parapets; below the rock the long ladders, the round room under a glyptodont\'s shell, the pen walled with mammoth bones, the dung walls. A matrilineal house: its rooms pass from mother to daughter (LORE.md 6.24)',
- build(o){const C=kmCx(o),P=o.plan||KM.plan(C.v);kmBuild(P,kmSite(P),C);}});
+ build(o){const C=kmCx(o),P=o.plan||KM.plan(C.v);kmBuild(P,kmSite(P,o),C);}});

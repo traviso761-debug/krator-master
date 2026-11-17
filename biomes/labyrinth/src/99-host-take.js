@@ -10,7 +10,10 @@ const recOf=re=>REG.find(r=>re.test(r.name));
 const stk=k=>STACKS.find(S=>S.key===k);
 const VIEWS=(function(){const V={},Y=LEVEL;
  if(!HALL){/* a station without the Hall: its views are data in its site (44z: SITE.views [{name, c:[x, dy, z], t:[x, dy, z]}], dy over the drawn ground or water) */
-  for(const v of SITE.views||[])V[v.name]=look(v.c[0],v.c[2],v.c[1],v.t[0],v.t[2],v.t[1]);return V;}
+  for(const v of SITE.views||[])V[v.name]=look(v.c[0],v.c[2],v.c[1],v.t[0],v.t[2],v.t[1]);
+  /* a pueblo (86p): from the floor in front of it and a little to its right, its ladders and its pen in the foreground, its knob and the blocks over them */
+  PUEBLOS.forEach(Q=>{const f=Q.toW(Q.St.pen.x1+28,Q.St.pen.z1+44),m=Q.toW(0,0);V[Q.name]=lookY(f[0],gh(f[0],f[1],6),f[1],m[0],Q.hy+4,m[1]);});
+  return V;}
 
  // the Hall from the south-east bank across the pond, the stacks behind it and the walls far off
  V['The Hall of Heroes']=lookY(950,Y+240,-420,-80,Y+170,40);   /* from the east-north-east, with the sun (north-north-east at 11:00 here) on the faces it sees; the stacks to the right */
@@ -58,6 +61,16 @@ const HCHK={
  // the hazards (89h): a rim answers "fall" within 6 m of the drop and not in the mesa's middle; the pond answers "drown"
  hazards(P){const kinds=p=>(typeof KHAZ==='undefined'?[]:KHAZ.at(p.x,p.z,0,p.y)).map(h=>h.kind),bad=P.filter(p=>kinds(p).includes(p.kind)!==p.want);
   return{ok:P.length>0&&!bad.length&&typeof KHAZ!=='undefined',detail:bad.length?bad.map(p=>p.what+': '+(p.want?'no ':'a ')+p.kind).join('; '):(window._hazards?window._hazards.n+' hazard records; ':'')+P.length+' probes answered'};},
+ /* a pueblo stands on its knob (86p): every block's corner on the knob's top (no more than 0.3 m over it, at most 1 m into it), the long
+    ladders' feet on the floor past the knob's foot (within 0.8 m of the ground), the round room and the pen off the knob, and no plant rooted
+    on its site. Q.lift moves the house up (the negative control) */
+ pueblo(L,P){const bad=[];let n=0;
+  L.forEach(Q=>{const y=Q.hy+(Q.lift||0),cs=Math.cos(Q.ry),sn=Math.sin(Q.ry),def=(x,z)=>[Q.G0[0]+x*cs+z*sn,Q.G0[1]-x*sn+z*cs],o=Q.St.off;
+   Q.P.cells.forEach(cl=>cl.pts.forEach(pt=>{const w=Q.toW(pt[0],pt[1]),t=KSTACKS.topAt([Q.S],w[0],w[1]);n++;if(!(t>-1e9)||y-t>.3||t-y>1)bad.push('block '+cl.id+(t>-1e9?' '+(y-t).toFixed(2)+' m off the top':' off the knob'));}));
+   Q.St.entries.forEach(E=>{const w=def(E.x+o[0],E.z+o[1]),g=terrainH(w[0],w[1]),fy=Q.y0+(Q.lift||0);n++;if(Math.abs(fy-g)>.8||rockFoot(w[0],w[1])<-.5)bad.push('ladder '+E.id+' foot '+(fy-g).toFixed(2)+' m off the floor');});
+   [[Q.St.round.x,Q.St.round.z,'the round room'],[(Q.St.pen.x0+Q.St.pen.x1)/2,(Q.St.pen.z0+Q.St.pen.z1)/2,'the pen']].forEach(r=>{const w=def(r[0]+o[0],r[1]+o[1]);n++;if(rockFoot(w[0],w[1])<1)bad.push(r[2]+' on the knob');});});
+  const pl=P.filter(p=>p[1]>-1e8&&keptOff(p[0],p[2]));if(pl.length)bad.push(pl.length+' plants rooted on the site (first '+pl[0].slice(0,3).map(v=>v|0)+')');
+  return{ok:L.length>0&&!bad.length,detail:bad.length?bad.slice(0,4).join('; '):L.length+' pueblo(s): '+n+' corners, ladder feet and parts checked'};},
  camerasOut(Cm){const bad=Cm.filter(c=>c.y<terrainH(c.x,c.z)+.5);return{ok:!bad.length,detail:bad.length?'under the ground: '+bad.map(c=>c.view).join(', '):Cm.length+' cameras above the ground'};}};
 /* the hazard probes: the Garden Stack's top, 2 m in from its rim and at its middle, and the pond's deep middle */
 /* a station's probes are data (44z: SITE.probes); {knob: i} stands for that knob's rim, 2 m in from its edge (a fall) and its top's middle (none) */
@@ -74,6 +87,7 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P
  add('nothing rooted on the rock',HCHK.offRock(P));
  add('the rivers never climb',HCHK.graded(RIVER.lines));
  if(GATE)add('every bridge\'s stack end is in its rock',HCHK.bridges(GATE.plan.bridges));
+ if(PUEBLOS.length)add('the Kimr pueblo stands on its knob, its ladders, round room and pen on the floor, no plant on its site',HCHK.pueblo(PUEBLOS,P));
  add('preset cameras above the ground',HCHK.camerasOut(Object.keys(VIEWS).map(k=>({view:k,x:VIEWS[k][0],y:VIEWS[k][1],z:VIEWS[k][2]}))));
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail});
@@ -83,6 +97,8 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  {const S=STACKS[0]||KNOBS[0];if(S)add('a plant inside a stack',HCHK.offRock([[S.x,S.y0+(STACKS[0]?LEVEL:0),S.z,'biome:x']]));}
  add('a river that climbs',HCHK.graded([[[0,0,10],[10,0,12]]]));
  if(GATE){const b=GATE.plan.bridges[0],bad=Object.assign({},b,{b:Object.assign({},b.b,{x:b.b.face[0]+b.b.n[0]*30,z:b.b.face[1]+b.b.n[1]*30})});add('a bridge end in the air',HCHK.bridges([bad].concat(GATE.plan.bridges.slice(1))));}
+ if(PUEBLOS.length){add('a pueblo floating 3 m over its knob',HCHK.pueblo(PUEBLOS.map(Q=>Object.assign({},Q,{lift:3})),[]));
+  const Q=PUEBLOS[0],m=Q.toW(0,0);add('a plant rooted in a pueblo\'s yard',HCHK.pueblo(PUEBLOS,[[m[0],Q.hy,m[1],'biome:x']]));}
  add('a camera under the ground',HCHK.camerasOut([{view:'under',x:300,y:terrainH(300,600)-20,z:600}]));
  return R;}
 KHOST.on(SKY.view,'view');

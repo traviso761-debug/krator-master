@@ -27,7 +27,7 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 |---|---|---|
 | `00-head.html` | 1 |  |
 | `44z-host-site.js` | 3 |  |
-| `45-host-stage.js` | 16 | the land (40); the fields (cached below) (109); the host binding (135) |
+| `45-host-stage.js` | 16 | the land (40); the fields (cached below) (114); the host binding (140) |
 | `50-biome-labyrinth-species.js` | 20 | palettes (sRGB; a full-colour library card carri (20); the trees (35); the small plants, tagged (60 and 65 place them;  (64); textures (procedural, greyscale: only a page wit (89); geometries (kit-local) (103); materials (BIO.libSwap gives each slot its libra (126); instanced items (157) |
 | `55-biome-labyrinth-trees.js` | 19 | the station profiles (PLAN.md section 8; the hos (16); the placement grid (28); the zones from the host's fields (52); keep-clear between trees (core/space) (74); the builders: (T, st, lv) with lv 2 near, 1 mid (92); impostors (the far trees) (147); the pass (171) |
 | `60-biome-labyrinth-floor.js` | 9 |  |
@@ -36,13 +36,14 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `84-host-ground.js` | 5 |  |
 | `85-host-far.js` | 3 |  |
 | `86-host-knobs.js` | 2 |  |
+| `86p-host-pueblo.js` | 5 |  |
 | `89-host-sky.js` | 1 |  |
 | `89a-host-atmos.js` | 2 |  |
 | `89g-host-gate.js` | 4 |  |
 | `89h-host-hazards.js` | 6 |  |
 | `89w-host-water.js` | 4 |  |
 | `89z-host-build.js` | 6 |  |
-| `99-host-take.js` | 12 |  |
+| `99-host-take.js` | 14 |  |
 | `99-tail.html` | <1 |  |
 
 ## stations/
