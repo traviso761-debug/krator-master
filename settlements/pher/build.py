@@ -45,17 +45,27 @@ def kcity_bundle():
             'return KCITY;\n})(Object.create(window));\n')
 
 
+# a core/biome fragment of buildlib.CORE_BIOME_MIN that Xanadu's page (its vendored src/86-bio-*) lacks, read from core
+# at every build under a name that sorts it after its 86-bio-30 foliage (the page's order is by file name); it only adds
+# to BIO at load (tools/check_assembly.py rule MINSET, item 26). 34-core-impostor is not taken: it calls BIO._newItem and
+# BIO.kitKey, which only the current core/biome/20-core-kit.js defines, not the page's older copy (KNOWN_ISSUES.md)
+BIO_MIN = {'86-bio-31b-core-leafset.js': 'core/biome/31b-core-leafset.js'}
+
+
 def write_gen():
     os.makedirs(GEN, exist_ok=True)
-    out = os.path.join(GEN, '69p-kcity-bundle.js')
-    new = kcity_bundle()
-    old = io.open(out, encoding='utf-8').read() if os.path.exists(out) else None
-    if old != new:
-        with io.open(out, 'w', encoding='utf-8', newline='\n') as fh:
-            fh.write(new)
+    outs = {'69p-kcity-bundle.js': kcity_bundle()}
+    for f, rel in BIO_MIN.items():
+        outs[f] = '/* %s, read from core at every build (settlements/pher/build.py BIO_MIN). GENERATED: edit core/biome. */\n%s' % (rel, rd(rel))
+    for f, new in outs.items():
+        out = os.path.join(GEN, f)
+        old = io.open(out, encoding='utf-8').read() if os.path.exists(out) else None
+        if old != new:
+            with io.open(out, 'w', encoding='utf-8', newline='\n') as fh:
+                fh.write(new)
 
 
-BSRC.note(*([SPACE] + ['core/city/' + f for f in CITY_JS]))
+BSRC.note(*([SPACE] + ['core/city/' + f for f in CITY_JS] + sorted(BIO_MIN.values())))
 if not BSRC.LISTING:
     write_gen()
 

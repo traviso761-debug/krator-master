@@ -7,7 +7,9 @@
 reseed(PH.SEED+1);const PH_T0=performance.now();
 for(const f of FRAME_HOOKS_PRE)FRAME_HOOKS.push(f);
 // ---------------------------------------------------------------- the sky and its light (KratorSky, as Qiblai's and Erewhon's)
-const PH_SKY={hour:9.2,day:120,dens:1.1};
+/* the page's day: ?day=N (the year's day), else a fair day (PH.FAIR.day); its weekday decides the fair (89zp phFairDay) */
+const PH_DAY=(function(){const v=Number(new URLSearchParams(location.search).get('day'));return isFinite(v)&&v>0?v:PH.FAIR.day;})(),PH_FAIR_TODAY=phFairDay(PH_DAY);
+const PH_SKY={hour:9.2,day:PH_DAY,dens:1.1};
 KratorSky.attach(scene,9000);scene.fog.density=.00016;
 const phHemi=scene.children.find(o=>o.isHemisphereLight);
 function phSkyTick(){KratorSky.update(camera.position,PH_SKY.hour,PH_SKY.day,PH_SKY.dens);const L=KratorSky.lighting();
