@@ -80,6 +80,10 @@
   land at the wall's foot (1,429 m), every cell over 200 within 8 km is land, and the lake's cells read 0. The node kind is
   `opal` (`kits/resources` 44t, `node-opal-low/medium/high`). Noted to that session: Opal Valley reads 230 almost everywhere,
   so the Line's peak hardly stands above it.
+- **The Great Potch Line on the page** (`targets/town/90o-lw-opal.js`, 2026-11-17): the Resources kit's opal nodes (sealed in `TG`
+  by `tungang_bundle.py` `res=True`) at the wall's foot, an outcrop beside each adit's mouth: 11 (4 high over the lode's peak,
+  3 medium, 4 low at the ends), registered in core/tags (`res-node`); every adit, dark adit and vein gallery of the wall (18)
+  takes the nearest by the kit's rule, 78 m at most (`opal-lode`; the view "Opal outcrops at an adit of the Great Potch Line").
 
 ## Open
 

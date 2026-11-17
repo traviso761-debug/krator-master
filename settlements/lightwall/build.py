@@ -54,7 +54,7 @@ def kcity_bundle():
 def tungang_bundle():
     sys.path.insert(0, os.path.join(ROOT, 'kits', 'tungang'))
     import tungang_bundle as tb
-    js, files = tb.bundle(tex='glazier', furniture=True, with_files=True, side=SIDE)   # the maps beside the page (the 16 MB cap)
+    js, files = tb.bundle(tex='glazier', furniture=True, with_files=True, side=SIDE, res=True)   # the maps beside the page (the 16 MB cap); res: the Resources kit's opal nodes (TG.res)
     BSRC.note(*files)
     return js
 

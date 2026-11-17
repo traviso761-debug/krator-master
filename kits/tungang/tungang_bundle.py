@@ -136,9 +136,31 @@ def pack(tex=True, side=None):
     return "KMAT.pack('tungang', {\n" + ',\n'.join(out) + '\n});\n'
 
 
-def bundle(tex=True, with_files=False, furniture=False, side=None):
+RES_FILES = ['42r-res-ore.js', '42s-res-ore-mined.js', '44r-res-nodes.js', '44t-res-nodes-gem.js']
+RES_SHIM = r'''
+/* ---- the Resources kit's nodes inside TG (tungang_bundle.py res=True; kits/resources/API.md): the material keys and palette
+   entries its node fragments draw with that this kit lacks map onto this kit's own (earth and sand on the stone) ---- */
+for(const [k,f] of [['earth','stone'],['sand','stone']])if(!MAT[k]&&MAT[f]){MAT[k]=MAT[f];TILE[k]=TILE[f];}
+for(const [k,v] of [['earth',[0x8a6a4a,0x7a5c40]],['stoneD',[0x5e5a54,0x56524c]],['woodD',[0x3a2a20,0x32241a]]])if(!SVPAL[k])SVPAL[k]=v;
+'''
+RES_HOST = r'''
+/* TG.res: the Resources kit's nodes for a host (tungang_bundle.py res=True). draw(nodes, o) places each node
+   {id, kind, grade, x, z, y?, ry?, v?} as its def node-<kind>-<grade>, dry (the host registers its records first), into one
+   group (o.scene, o.label); source and rate are the kit's nearest-node rule (kits/resources/API.md "The rule") */
+TG.res={ORE:RES_ORE,source:resSource,rate:resRate,
+ draw:function(nodes,o){o=o||{};const missing={};
+  const out=fgDrawInto(Object.assign({name:'res:nodes',label:'Resource nodes'},o),()=>(nodes||[]).map((n,i)=>{const key='node-'+n.kind+'-'+n.grade;
+   if(!DEFS[key]){missing[key]=(missing[key]==null?0:missing[key])+1;return null;}
+   const rec=place(key,n.x,n.z,n.ry==null?0:n.ry,{y:n.y==null?0:n.y,v:n.v==null?KRAND.hash(o.seed==null?7601:o.seed,i,0x3e1)%97:n.v});
+   if(rec){rec.id=n.id;rec.node=n;}return rec;}));
+  out.missing=missing;return out;}};
+'''
+
+
+def bundle(tex=True, with_files=False, furniture=False, side=None, res=False):
     """furniture=True seals the catalog's fellgang, generic and generic-goods pieces in (about 0.4 MB more: README.md, "For
-    another world"), so TG.fg.draw furnishes what it draws; off by default"""
+    another world"), so TG.fg.draw furnishes what it draws; off by default. res=True seals the Resources kit's ore rule and
+    node defs in (kits/resources/src, read in place: about 40 KB) as TG.res; off by default, so the bundle is as before"""
     fs = files()
     names = sorted(list(fs) + ['26-matlib-pack.js'])
     body = ''
@@ -147,9 +169,13 @@ def bundle(tex=True, with_files=False, furniture=False, side=None):
             body += '/* ---- kits/tungang/tex (generated: the library pack, materials.json) ---- */' + NL + pack(tex, side) + NL
         else:
             body += '/* ---- %s ---- */%s%s%s;%s' % (rel(fs[n]), NL, rd(fs[n]), NL, NL)
+    rfs = []
+    if res:
+        rfs = [os.path.join(ROOT, 'kits', 'resources', 'src', f) for f in RES_FILES]
+        body += RES_SHIM + ''.join('/* ---- %s ---- */%s%s%s;%s' % (rel(f), NL, rd(f), NL, NL) for f in rfs) + RES_HOST
     js = safe('/* TG: the Tungang kit in one closure (kits/tungang/tungang_bundle.py). GENERATED: edit kits/tungang/src or core/. */' + NL +
               'var TG = (function(){' + NL + HEAD + furn_text(furniture) + body + TAIL + '})();' + NL)
-    return (js, [rel(fs[n]) for n in names if n in fs] + ['kits/tungang/tex']) if with_files else js
+    return (js, [rel(fs[n]) for n in names if n in fs] + [rel(f) for f in rfs] + ['kits/tungang/tex']) if with_files else js
 
 
 if __name__ == '__main__':
