@@ -38,6 +38,15 @@ JS = [('core', 'rand', '08-core-rand.js'), ('core', 'terrain', '38-core-relief.j
       ('core', 'world', '48s-world-sites.js')]
 
 LANDFORMS_JS = '41l-world-landforms.js'   # opt-in: a region whose build.py lists it (script())
+# the coasts (core/world 44c on core/coast) are opt-in too: a region whose page does not take them (openworld/oidong-highrift)
+# is planned without them, or the plan is made on land the page never draws (2026-11-16: the coast's shaping lowered points
+# 838 m that the page leaves as they are, so the browser's plan and the bake differed)
+COAST_JS = '44c-world-coast.js'
+
+
+def takes(region, frag):
+    """the region's page lists `frag` (its build.py names it)"""
+    return frag in open(os.path.join(ROOT, 'openworld', region, 'build.py'), encoding='utf-8').read()
 
 
 def node():
@@ -78,6 +87,8 @@ def script(region):
             parts.append(WD.fragment(os.path.join(base, 'data'), 'var WORLD_KITS=[];\n', 'the region (core/world/bake_sites.py)',
                                      'openworld/%s/data, decoded by core/world/world_data.py' % region))
             continue
+        if j[-1] == COAST_JS and not takes(region, COAST_JS):
+            continue
         parts.append('\n// ---- %s\n' % '/'.join(j) + open(os.path.join(ROOT, *j), encoding='utf-8').read())
         # the sub-cell landforms (core/world/41l-world-landforms.js), only for a region whose page takes them (its build.py
         # lists the fragment): the plan is made on the same land the page stamps
@@ -109,6 +120,8 @@ def resources_script(region):
         if j is None:
             parts.append(WD.fragment(os.path.join(base, 'data'), 'var WORLD_KITS=[];\n', 'the region (core/world/bake_sites.py)',
                                      'openworld/%s/data, decoded by core/world/world_data.py' % region))
+            continue
+        if j[-1] == COAST_JS and not takes(region, COAST_JS):
             continue
         parts.append('\n// ---- %s\n' % '/'.join(j) + open(os.path.join(ROOT, *j), encoding='utf-8').read())
     parts.append(WD.geology_fragment(os.path.join(base, 'data')))

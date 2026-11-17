@@ -421,11 +421,13 @@ func _flora_uids(S: KratorWorldStream) -> void:
 
 
 # 2d. Strongbow's arcology (godot_case.py ARCOLOGY: kits/ancients' strongbow-today page, from its own branch, as the page
-#     draws it from afar): it opens under Strongbow's place with its meshes and materials, its anchor (the lip at the bay's
-#     centre) seated on the place's ground at the pin, and turned so the face looks down the scarp: the region's ground
-#     falls ahead of the face (west) and rises behind the lip. Negative: the page unturned (facing south) looks along the
-#     scarp, where the ground does not fall
-const LOOK := 700.0   # metres ahead of and behind the lip, inside the place's square
+#     draws it from afar) on the region's ground cut to its face (src/48-world-site.js OHR_CUT; tests/test_cut.py proves the
+#     cut drains): it opens under Strongbow's place with its meshes and materials, its anchor (the lip at the bay's centre)
+#     on the cut's lip level, turned to face west, and the ground stands just under the page: under its plateau within
+#     PLATEAU_TOL below the lip, under its floor within FLOOR_TOL below the floor (the lip less the face). Negative: the
+#     page unturned (facing south) puts the same points on uncut ground, hundreds of metres over its floor
+const PLATEAU_TOL := 25.0
+const FLOOR_TOL := 10.0
 func _arcology(S: KratorWorldStream) -> void:
 	var p := S.place("sfgtxw10kr")
 	var w := S.get_node_or_null("Places/Place_sfgtxw10kr")
@@ -441,23 +443,33 @@ func _arcology(S: KratorWorldStream) -> void:
 			mgaps.append(k)
 	var c: Dictionary = rep["counts"]
 	var at: Array = A["at"]
-	var seat := absf(float(at[1]) - _h(w, float(at[0]), float(at[2])))
-	var ahead := func(ry: float, d: float) -> float:   # the region's ground d metres ahead of the face (behind: d < 0), less the lip
-		var v := Basis(Vector3.UP, ry) * Vector3(0, 0, d)
-		return _h(w, float(at[0]) + v.x, float(at[2]) + v.z) - float(at[1])
+	var lip := float(at[1])
+	var fl := lip - float((A.get("cut", {}) as Dictionary).get("lip", 900))
+	# the region's ground under a point of the page's frame (u along the face, v ahead of the lip), the page turned by ry
+	var under := func(ry: float, u: float, v: float) -> float:
+		var q := Basis(Vector3.UP, ry) * Vector3(u, 0, v)
+		return _h(w, float(at[0]) + q.x, float(at[2]) + q.z)
 	var ry := float(A["ry"])
-	var front: float = ahead.call(ry, LOOK)
-	var back: float = ahead.call(ry, -LOOK)
+	var pl := [INF, -INF]
+	var fr := [INF, -INF]
+	for u in [-600.0, 0.0, 600.0]:
+		for v in [-100.0, -300.0, -600.0]:
+			var d: float = lip - under.call(ry, u, v)
+			pl = [minf(pl[0], d), maxf(pl[1], d)]
+		for v in [150.0, 300.0, 500.0]:
+			var d: float = fl - under.call(ry, u, v)
+			fr = [minf(fr[0], d), maxf(fr[1], d)]
 	var face := (a.transform.basis * Vector3(0, 0, 1)).normalized()
-	ok(int(c["items"]) + int(c["buckets"]) > 0 and mgaps.is_empty() and seat < 0.5 and face.dot(Vector3(-1, 0, 0)) > 0.999 and front < -20.0 and back > 0.0,
-		"Strongbow's arcology opens at its site (%s on %s): %d items, %d buckets, %d triangles, materials %s; its lip on the ground at the pin to %.2f m, its face turned west (%.3f), the ground %.0f m below the lip %d m ahead of the face and %.0f m above it %d m behind"
+	var good: bool = pl[0] >= 0.0 and pl[1] <= PLATEAU_TOL and fr[0] >= 0.0 and fr[1] <= FLOOR_TOL
+	ok(int(c["items"]) + int(c["buckets"]) > 0 and mgaps.is_empty() and face.dot(Vector3(-1, 0, 0)) > 0.999 and good,
+		"Strongbow's arcology stands at its site (%s on %s): %d items, %d buckets, %d triangles, materials %s; its lip at %.1f m, its face turned west (%.3f); the ground %.1f to %.1f m under its plateau and %.1f to %.1f m under its floor (%.1f m)"
 		% [A["page"], A.get("branch"), int(c["items"]), int(c["buckets"]), int(c["triangles"]), "resolved" if mgaps.is_empty() else "GAPS " + ", ".join(mgaps),
-		seat, face.dot(Vector3(-1, 0, 0)), -front, int(LOOK), back, int(LOOK)])
-	var f0: float = ahead.call(0.0, LOOK)
-	ok(not (f0 < -20.0), "negative: the page unturned faces south, along the scarp: the ground %d m ahead of it is %.0f m %s the lip" % [int(LOOK), absf(f0), "below" if f0 < 0 else "above"])
-	var fr: Dictionary = KData.read_json(S.dir + "/" + str(A["case"]) + "/world.json").get("frame", {})
-	print("     gap: the page's face is %.0f m tall and its foot stands at the lip less that; the region's ground %d m ahead of the face lies only %.0f m below the lip (the scale model's 2 km cells smooth the scarp), so the page's foot, its town and its floor stand inside the region's ground: owed, the region's ground carved to the page's face (GODOT-PLAN.md M7)"
-		% [float(fr.get("lip", 0)), int(LOOK), -front])
+		lip, face.dot(Vector3(-1, 0, 0)), pl[0], pl[1], fr[0], fr[1], fl])
+	var worst := 0.0
+	for u in [-600.0, 0.0, 600.0]:
+		for v in [150.0, 300.0, 500.0]:
+			worst = maxf(worst, absf(fl - under.call(0.0, u, v)))
+	ok(worst > FLOOR_TOL, "negative: the page unturned (facing south) puts its floor up to %.0f m off the ground under it" % worst)
 
 
 # 3. the roads join them: every link leaves its first site and reaches its second (within the site's reach of its pin),

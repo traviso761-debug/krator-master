@@ -62,7 +62,10 @@ Riders' `BR_CAMP`), hamlets (core/hamlet: a row's `kit` picks the drawing, `88s`
 through the isle demo's `IZV` bundle and its instancer) and roads, joined or not, and `links` between its towns (`keep`: routed in hops inside the polygon, off rivers' beds; `stops`: an inn every
 `every` m of road and a rest stop between, drawn as one-building villages; a stop with no ground is a `gap`). The bake
 reads the kits' declared boxes from their source (`ASSET`, `XA.def`, `VERN.def`); a new village kit adds its records
-there and an entry in `VK`.
+there and an entry in `VK`. The bake plans on the land the page draws: 41l and 44c (the coasts) only when the region's
+`build.py` lists them (2026-11-16: oidong-highrift takes no coast, and planning on coasts it never drew made the bake and
+the page's plan differ). A region's own shaping of its land that the plan must see (a `WORLD.landHook`) goes in its
+`src/48-world-site.js`, which the bake reads (oidong-highrift's OHR_CUT: Strongbow's face).
 
 **A town's own ground** (`openworld/PLAN-VOTH.md` section 3, Layer 2; Voth the first case, 2026-11-11). A settlement whose
 layout is keyed to its page's ground (its shore, its river) hands that ground to the world instead of being rebuilt on it:

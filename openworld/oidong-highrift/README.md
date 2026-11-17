@@ -82,7 +82,11 @@ SwiftShader the page's start fails on a shader.
 `keen-swanson-68a311`, built) through `tools/strongbow-export.js` (injected: `tools/harness.py export --root --inject`):
 what the page draws from 3.5 km, written about its anchor (the lip at the bay's centre). Strongbow's place in `index.json`
 gains `arcology` (its case, branch, commit, `at` and `ry`); `KratorWorldStream.open_place` seats it under the place, turned
-to face west. Owed: the region's ground carved to the page's 900 m face (here the model falls only ~60 m in 700 m).
+to face west. The region's ground is cut to the page's face (`src/48-world-site.js` OHR_CUT, in the sites' spec so the bake
+reads it too; the owner, 2026-11-16: "carve it", "make sure this doesn't result in water flowing uphill"): a pad under the
+page's plateau falling 1 % to the lip, the 900 m step behind the page's cliff, its floor and a gorge falling 0.4 % west to
+where the scarp meets it, only ever lowering and keeping off the rivers. `python3 tests/test_cut.py` proves it drains, each
+check with a negative.
 
 ## Fragments
 

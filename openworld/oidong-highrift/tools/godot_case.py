@@ -88,6 +88,13 @@ def export(out, box, before, sections=None):
     print('  ' + os.path.relpath(out, ROOT).replace(os.sep, '/') + ': ' + ' | '.join(t[:160] for t in tail), flush=True)
     if r.returncode:
         sys.exit('godot_case: the export of %s failed\n%s\n%s' % (out, r.stdout[-2000:], r.stderr[-2000:]))
+    for l in r.stdout.splitlines():   # what --before returned (harness.py prints it, cut at 300 characters)
+        if l.startswith('before: '):
+            try:
+                return json.loads(l[8:])
+            except ValueError:
+                return None
+    return None
 
 
 def grid_h(case, x, z):
@@ -115,8 +122,15 @@ def arcology(pl):
     p = next(q for q in pl if q['id'] == A['site'])
     x, z = p['pin']
     m = json.load(open(os.path.join(OUT, A['case'], 'meta.json'), encoding='utf-8'))
+    # the anchor on the lip's level: the region's cut (src/48-world-site.js OHR_CUT) gives it; without it, the ground at the pin
+    cp = os.path.join(OUT, p['case'], 'cut.json')
+    cut = json.load(open(cp, encoding='utf-8')) if os.path.isfile(cp) else None
+    if cut:   # the page's lip stands in front of the pin (OHR_CUT.spec.ahead), on the lip's level
+        x, lip, z = cut['at']
+    else:
+        lip = grid_h(p['case'], x, z)
     p['arcology'] = {'case': A['case'], 'page': A['page'], 'branch': m.get('branch'), 'commit': m.get('commit'),
-                     'at': [x, round(grid_h(p['case'], x, z), 3), z], 'ry': A['ry'],
+                     'at': [x, round(lip, 3), z], 'ry': A['ry'], 'cut': cut,
                      'note': "the case's meshes stand about the page's anchor (its world.json origin: the lip at the bay's centre); "
                              'a reader seats that anchor at `at` and turns the case by `ry` about +Y (the page faces +z, the site west)'}
 
@@ -162,11 +176,14 @@ def main():
             cx, cz = (b[0] + b[2]) / 2, (b[1] + b[3]) / 2
             off = PLACE * 0.75 if p['id'] in FULL_PLACES else MASS_CAM
             p['detail'] = 'full' if p['id'] in FULL_PLACES else 'massing'
-            before = ('(async()=>{window.WORLD_EXPORT.step=%d;CAM.setView(%.1f,%.1f,700,.78,-.3);return await _api.settle(240000);})()'
+            before = ('(async()=>{window.WORLD_EXPORT.step=%d;CAM.setView(%.1f,%.1f,700,.78,-.3);await _api.settle(240000);return OHR_CUT.info();})()'
                       % (PLACE_STEP, cx, cz + off))
             d = os.path.join(OUT, 'places', p['id'])
             shutil.rmtree(d, ignore_errors=True)
-            export(d, b, before)
+            cut = export(d, b, before)
+            if p['id'] == ARCOLOGY['site'] and cut:   # the cut's lip level, where the arcology's anchor stands (src/48-world-site.js)
+                with open(os.path.join(d, 'cut.json'), 'w', encoding='utf-8', newline='\n') as f:
+                    json.dump(cut, f, separators=(',', ':'))
     if only in (None, 'arcology'):
         A = ARCOLOGY
         page = os.path.join(A['root'], A['page'])
