@@ -171,6 +171,14 @@
     ],
     "harbour_wlev_m": 0.0
    }
+  },
+  {
+   "key": "springs",
+   "file": "springs.json"
+  },
+  {
+   "key": "domes",
+   "file": "domes.json"
   }
  ]
 }

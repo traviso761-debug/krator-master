@@ -1,0 +1,77 @@
+{
+ "build": "galvanic",
+ "note": "The Rift battery kit's adapter onto the material library (core/materials/PLAN.md; biomes/galvanic/PLAN.md section 15). The ground's KGROUND layers by family (84-host-ground.js): the strand's mud (ground.brown_mud_02, a stand-in for the owed ground.sulfide.oxidised), the iron terraces (ground.rust.terrace), the mounds' gossan caps (rock.gossan), the vitriol bloom (ground.efflorescence), the flooded strand's salt (ground.salt). Run python3 tools/textures/pack.py biomes/galvanic after any change, then python3 build.py.",
+ "size": 512,
+ "families": {
+  "ground.brown_mud_02": {
+   "lib": "ground.brown_mud_02",
+   "scale": [
+    2.6,
+    2.6
+   ],
+   "tint": {
+    "keep": 0.75,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.rust.terrace": {
+   "lib": "ground.rust.terrace",
+   "scale": [
+    2.4,
+    2.4
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "rock.gossan": {
+   "lib": "rock.gossan",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.efflorescence": {
+   "lib": "ground.efflorescence",
+   "scale": [
+    2.2,
+    2.2
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.salt": {
+   "lib": "ground.salt",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  }
+ }
+}

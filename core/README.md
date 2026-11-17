@@ -218,6 +218,7 @@ Godot (`biomes/GODOT.md`).
 | `47-core-therm.js` | the ground's temperature (global `KTHERM`, [G data], opt-in): vents as point or line records over the country's soil; `heatAt`, `bake`, `contour`, `snowMask`, `export`. Below |
 | `test-therm.js`, `golden-therm.json` | `node core/terrain/test-therm.js` (each check with a negative; `--write` rewrites the golden file) |
 | `ktherm.gd`, `ktherm_test.gd` | the GDScript twin (`class_name KTherm`) and its test on the golden file; copies in `godot/tests/terrain/` |
+| `kslab.gd`, `kslab_test.gd`, `golden-slab.json` | `KRELIEF.slab`'s GDScript twin (`class_name KSlab`): samples a `KRELIEF.slabExport` record; its test on the golden file `test-slab.js --write` writes; copies in `godot/tests/terrain/` |
 | `host/46-core-lava-gpu.js`, `host/46-core-lava-draw.js` | KLAVA's three.js halves: `KLAVA.gpu` (the step as render passes on float textures, ping-pong; `KLAVA.gpuCheck` against the CPU) and `KLAVA.surface` (the moving surface on core/atmos's lava chunk, its glow by temperature) |
 | `host/` | the three.js halves of 35, 44 and 45 (`35-core-strata-shade.js`, `44-core-farfield-draw.js`, `45-core-horizon-shade.js`: named to sort before a page's host fragment of the same number, and merging into the same global as the data half whichever loads first), listed by explicit path in a build.py (below) |
 
@@ -441,18 +442,24 @@ new file, opt-in, and node-tested with negatives. No page takes one yet, so no p
 - **`KRELIEF.slump`, `runout`, `gully`, `terraces`, `maar`, `relay`, `stepcut`, `KRELIEF.waters`** (`38c-core-landforms.js`,
   `test-landforms.js`; `LANDFORMS.md` has the table of parts and plans):
   - wouterwall's slump terraces, sturzstrom fields, loess gullies with box-canyon heads and yuan, liang and mao, and its terraced fields;
-  - Mid Basin's breached maars and relay benches;
+  - The Slabfields' breached maars and relay benches;
   - the Siphon Pits' sheer stepped graben and pits (no falloff; KFIELD's brushes stay smooth).
 
   *Adopting it:* list the file after `38-core-relief.js`, and put the records in `KRELIEF.apply` with the others. `KRELIEF.waters(rec,
   ground)` gives the ponds, lakes and spring pools.
+- **`KRELIEF.slab`, `KRELIEF.slabProfile`** (`38d-core-slab.js`, `test-slab.js`; `LANDFORMS.md`, "slab"; 2026-11-12): a tilted slab's
+  cliff as a row of spurs (each its own run, power, height, projection and nose), gullies cut back between them with scree cones at their
+  mouths, wandering ledges, fresh scars, a ragged crest and the ramp behind the rim. Its own file, so no page that takes `38c` moves.
+  - It serves the Slabfields' slabs (station 1 draws the Anvil on it); any tilted block or basalt escarpment.
+  - *Adopting it:* list it after `38-core-relief.js` (with or without `38c`), and put the record in `KRELIEF.apply` or call
+    `KRELIEF.shape(rec, x, z, g)`.
 - **`KSTRATA.vary`, `KSTRATA.drape`, `KSTRATA.loadVaried`** (`35c-core-strata-vary.js`, `test-strata-vary.js`; GDScript twin
   `kstrata_vary.gd`, golden `golden-strata-vary.json`, vendored to `godot/tests/terrain/`): a formation whose base varies from place to
   place. Contacts move by an offset of (x, z), which sums any of a constant, a plane, the stack's table noise, bumps or a grid. The
   stratigraphic height is remapped piecewise linearly between the moved contacts, so beds keep their place and thin or thicken with their
   formation. Where two contacts cross, the higher-numbered wins, and the formation between them pinches out. `KSTRATA.drape(S, k, ground,
   {box, step, th})` lays formation k's base `th` under the ground: a mantle following the land it fell on.
-  - It serves Mid Basin's interbedded loess and tuff and the W outer wall's loess.
+  - It serves the Slabfields' interbedded loess and tuff and the W outer wall's loess.
   - *Adopting it:* list it after `35-core-strata.js`, then `const V = KSTRATA.vary(S, {contacts: [{at: 2, by: KSTRATA.drape(S, 2, ground,
     {box, step: 16, th: 40})}]})`, and read `V.at` / `V.surface` where `S`'s were read.
   - **The shaders still draw the flat column** (`BIO.strata`, `strata.gdshaderinc`). A varied stack is the CPU's, for painters, plant passes

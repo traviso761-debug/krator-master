@@ -221,3 +221,18 @@ defBuilding({key:'node-nickel-high',seed:5942,...resNodeDef('nickel','high')});
 defBuilding({key:'node-marble-low',seed:5950,...resNodeDef('marble','low')});
 defBuilding({key:'node-marble-medium',seed:5951,...resNodeDef('marble','medium')});
 defBuilding({key:'node-marble-high',seed:5952,...resNodeDef('marble','high')});
+/* zinc (2026-11-12, the owner; biomes/galvanic/PLAN.md section 9): a sphalerite outcrop. Resinous brown-black blocks (massive
+   sphalerite), honey-yellow translucent grains in seams on their faces (more and bigger with the grade), a rust gossan cap where the
+   iron in it has oxidised, and a white crust of zinc vitriol (goslarite) blooming at the foot. The library's gossan where the page
+   packs it; the owed rock.sphalerite (core/materials/PROMPTS-NEEDED.md section 43) would carry the faces */
+RES_LOOK.zinc={vein:[0xc8962e,0xd8aa44,0xa87a26],lump:0x3a2a1c,pile:0xe8e6de,host:[0x5a3e26,0x6a4a2c]};
+function resZinc(S,rich){const L=RES_LOOK.zinc;
+ resOutcrop(S*.9,rich,(i,bw,bh,bd)=>{{const gk=resK('gossan','plain');box(gk,0,bh,0,bw*.9,.012,bd*.9,resC(gk,0x8a4a26));}
+  const nb=2+rich*3;for(let k=0;k<nb;k++){const side=k%2?1:-1,q=rr(.008,.016)*S*(1+rich*.3);box('plain',rr(-.38,.38)*bw,bh*rr(.15,.85),side*(bd/2+.008),q*1.3,q,.012,L.vein[k%3]);}},{col:i=>L.host[i%2]});
+ for(let i=0;i<3+rich*2;i++){const a=rr(0,TAU),r=rr(.45,.7)*S;ellip('plain',Math.cos(a)*r,0,Math.sin(a)*r,rr(.05,.1)*S,.008*S,rr(.04,.08)*S,L.pile,rr(0,TAU),8);}
+ resLoose(S,rich*5,[L.lump,L.vein[0],L.lump],'plain');}
+{const node1=resNode;resNode=function(kind,grade){const G=RES_ORE.grades[grade];if(kind==='zinc')return resZinc(G.size,G.rank);return node1(kind,grade);};}
+Object.assign(RES_NAME,{zinc:'Zinc ore (sphalerite)'});Object.assign(RES_H,{zinc:.62});
+defBuilding({key:'node-zinc-low',seed:5960,...resNodeDef('zinc','low')});
+defBuilding({key:'node-zinc-medium',seed:5961,...resNodeDef('zinc','medium')});
+defBuilding({key:'node-zinc-high',seed:5962,...resNodeDef('zinc','high')});
