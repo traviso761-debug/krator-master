@@ -44,6 +44,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/87c-xa-erewhon.js` | 24.0 | [draw] | 9 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/87k-xa-lake-trades.js` | 10.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/87k1-xa-lake-rooms.js` | 6.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | interior set data (kits/interiors sets shape), no three.js |
+| `src/87k2-xa-slate-wall.js` | 6.9 | [draw] | 4 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | the slate town wall's pieces and their two materials (opt-in: Kirstabal) |
 | `src/87s-xs-mat.js` | 3.9 | [draw] | 10 | 0 | 0 | 0 | 0 | 18 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/87t-xs-helpers.js` | 13.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/87u-xs-build.js` | 31.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |

@@ -7,26 +7,42 @@
 // named so. The caravanserai, the latex house, the tea factory and the fermentary are the kit's (kits/xanadu/src/87k-xa-lake-trades.js,
 // opt-in: read in place through kit.json).
 //
-// THE FRAME   the shore frame of 40-ks-ground.js: u along the shore (north-east positive), v inland (south-east). The town
-//             is the comb of PLAN.md section 3: the quay street along the shore (v 48), the Lamp Way inland from the harbour
-//             gate to the bazaar and on to the north gate, the works road at the south-west end, the monastery road;
-//             core/city's steps 6-12 do the rest (civic pieces by `near`, the lots, main and side streets, alleys).
-// THE WEALTH  rich on the lakefront either side of the harbour, poor in the works quarter (south-west) and at the inland edge.
+// THE FRAME   the shore frame of 40-ks-ground.js: u along the shore (north-east positive), v inland (south-east). Since
+//             2026-11-17 the town is a walled square after Chiang Mai (the owner): core/city's irregular square (KCITY.grid,
+//             core/city/37-city-grid.js), its inner street 660 m a side from 100 m behind the shore, the slate wall 16 m outside
+//             it with a bastion at each corner, the Lamp Way from the Lake Gate to the Scarp Gate, the Strongbow way from the
+//             Works Gate to the Strongbow Gate, a grid of main streets between that wanders, ends in T's and bends; core/city's
+//             steps 6-11 fill the blocks (civic pieces by `near`, the lots, side streets). Outside: the quay street, the
+//             harbour, the serai, the works and the monastery.
+// THE WEALTH  rich on the lakefront inside the wall either side of the Lake Gate, poor by the Works Gate and at the inland edge.
 //
 // KS_TOWN.make({dims, seed}) -> {lots, ways, extra, roads, census, notes}: dims(key, v) -> {w, d, h} the kit's boxes (VERN.defs on the
 // page; the test's table in node). Every record keyed by a stable id ('ks.town.' + n, 'ks.extra.<what>'), x z in the page's frame.
 var KS_TOWN=(function(){
  const G=KS_GROUND,at=(u,v)=>G.at(u,v),face=(d)=>Math.atan2(d[0],d[1]);   /* a piece's front toward d (x, z) */
  const UX=G.UX,VX=G.VX,NUX=[-UX[0],-UX[1]],NVX=[-VX[0],-VX[1]];
- /* the build zone, in the shore frame: 960 m along the shore, from the quay street to 440 m inland (the works, the latex house,
-    the monastery, the seat and the barracks stand beyond it). Tightened 2026-11-16 (the owner: "densify the settlement a bit
-    more, it looks too spread out"): it was 1.2 km by 640 m with half its frontage left vacant and no side-street lots */
- const ZONE=[[-420,30],[540,30],[540,440],[-420,440]];
+ /* THE WALLED SQUARE (the owner, 2026-11-17: "make the layout more square, with a wall made of slate similar to the thin brick
+    wall of chiang mai ... mostly square, but somewhat irregular, also like chiang mai"): core/city's irregular square
+    (KCITY.grid, core/city/37-city-grid.js) in the shore frame, its inner street 660 m a side from 100 m behind the shore, the
+    wall 16 m outside it, five grid cells a side, the two avenues on its second lines (the one from the Lake Gate meets the
+    harbour; the other runs from the Works Gate to the Strongbow Gate). The quay street, the harbour and the works stay outside
+    the wall. Was (2026-11-16) an open comb of streets on a 960 x 440 m zone */
+ const SQ={c:[0,430],half:330,cells:5,avenues:{u:2,v:2},wallGap:16,out:50,seed:41710};
+ const GATE_NAMES={'v-':'the Lake Gate','v+':'the Scarp Gate','u-':'the Works Gate','u+':'the Strongbow Gate'};
+ const LANDMARK_CELLS={bazaar:[2,2],temple:[1,2],horns:[2,1],seat:[3,3],generator:[1,0],barracks:[4,1]};   /* [i along the shore, j inland] */
+ let GRID=null;
+ const grid=()=>GRID||(GRID=KCITY.grid.plan({id:'ks.grid',seed:SQ.seed,c:G.at(SQ.c[0],SQ.c[1]),u:G.UX,v:G.VX,half:SQ.half,cells:SQ.cells,avenues:SQ.avenues,wallGap:SQ.wallGap,out:SQ.out}));
+ const cellUV=k=>{const C=grid().cells.find(c=>c.i===LANDMARK_CELLS[k][0]&&c.j===LANDMARK_CELLS[k][1]);return [G.u(C.c[0],C.c[1]),G.v(C.c[0],C.c[1])];};
+ /* the square's bounds in the shore frame (the flora's mask and the gardens' paint read it): the wall's box */
+ const ZONE=[[SQ.c[0]-SQ.half-SQ.wallGap,SQ.c[1]-SQ.half-SQ.wallGap],[SQ.c[0]+SQ.half+SQ.wallGap,SQ.c[1]-SQ.half-SQ.wallGap],
+  [SQ.c[0]+SQ.half+SQ.wallGap,SQ.c[1]+SQ.half+SQ.wallGap],[SQ.c[0]-SQ.half-SQ.wallGap,SQ.c[1]+SQ.half+SQ.wallGap]];
  /* the people a building holds (households of 5-7, servants in the rich houses, the garrison in its barracks, the monks in the
     daughter house); summed in census and held to PLAN.md's 3,000 by the test */
  const PEOPLE={xa_poor_a:6,xa_poor_b:12,xa_poor_c:4,xa_andean_poor:6,xa_mid_a:7,xa_mid_b:9,xa_mid_c:16,xa_house_turk_a:8,xa_rich_a:12,xa_rich_b:16,xa_rich_c:11,
   xa_house_turk_b:10,xa_shops:6,xa_shop_turk_a:8,xa_shop_turk_b:6,xa_teahouse:4,xa_workshop:5,xa_smithy:4,xa_warehouse:2,xa_bath:4,xa_temple:6,xa_granary:0,
   xa_barracks:80,xa_generator:4,xa_monastery:150,xa_serai:20,xa_latex_house:0,xa_tea_factory:4,xa_fermentary:2,xa_fish_racks:0,xa_boatshed:3,xa_quay:0,xa_lighthouse:2,xa_gate:12,xa_watch:4,xa_garden:0,xa_pens:0,xa_wall:0,xa_bridge:0,xa_barge:0};
+ /* the wall's records (core/city 25 KCITY.site.wall): a buttress every 90 m, the gates found within 40 m of the avenues' crossings */
+ const WALL_T={towerGap:90,clear:12,gateFind:40,thick:3.2,gateTower:5,gatePass:4};
  const tune=()=>({cell:2.5,rasterHalf:900,maxSlope:.22,exact:true,
   width:{avenue:10,main:7,side:5,alley:3,highway:9,lane:4},
   lot:{side:1.6,setback:1.4,rear:3,inset:1,step:3},
@@ -44,17 +60,21 @@ var KS_TOWN=(function(){
   civicSpacing:34,civicJitter:12,
   voidMax:40,voidIters:12,voidBatch:8,sideSpacing:46,sideMax:180,alleyFrac:.22,blindMax:80,interiorDepth:9,interiorRounds:2,
   avenueSnap:40,ringGap:8,verge:6,mapHalf:900,plazaArt:{rich:[],middle:[],poor:[],commerce:[]}});
- /* the landmarks the town places itself (step 1), in the shore frame: [id, key, v (variant), u, v, the way the front faces] */
- const BAZAAR=[-60,430],HARBOUR_GATE=[-60,48],NORTH_GATE=[700,236],WORKS=[-450,640];
- const LANDMARKS=[
-  ['seat','xa_rich_b',0,70,500,'bazaar'],          /* the governor of the Scarp's house: a hillside manor (the seat) */
-  ['barracks','xa_barracks',0,175,560,'bazaar'],   /* the garrison of about 80 */
-  ['generator','xa_generator',0,30,350,'lamp'],    /* the Sultan's licence lights the Lamp Way (T.lit) */
-  ['horns','xa_rich_c',0,-170,365,'bazaar'],       /* the Brotherhood of the Two Horns' factor house (horns.kirstabal), on the bazaar */
-  ['serai','xa_serai',0,566,352,'gate'],         /* the caravanserai by the north gate (kits/xanadu 87k, opt-in) */
-  ['tea','xa_tea_factory',0,-282,712,'lake'],      /* the tea factory: the withering lofts and the rolling shed */
+ /* the landmarks the town places itself (step 1): [id, key, v (variant), u, v, the way the front faces]. Inside the wall each
+    stands in its grid cell (LANDMARK_CELLS: the bazaar's square at the avenues' crossing, the temple of the Decree beside it
+    as Chiang Mai's great temple stands at its centre, the Two Horns' factor house on the bazaar, the governor's seat inland
+    of it, the generator by the Lamp Way, the barracks by the Strongbow Gate); outside, the serai by the Strongbow Gate and the
+    works by the Works Gate */
+ const WORKS=[-450,600];
+ const LANDMARKS=()=>{const c=cellUV;return [
+  ['seat','xa_rich_b',0,...c('seat'),'bazaar'],          /* the governor of the Scarp's house: a hillside manor (the seat) */
+  ['barracks','xa_barracks',0,...c('barracks'),'bazaar'],   /* the garrison of about 80 */
+  ['generator','xa_generator',0,...c('generator'),'lamp'],    /* the Sultan's licence lights the Lamp Way (T.lit) */
+  ['horns','xa_rich_c',0,...c('horns'),'bazaar'],       /* the Brotherhood of the Two Horns' factor house (horns.kirstabal), on the bazaar */
+  ['serai','xa_serai',0,400,420,'gate'],         /* the caravanserai outside the Strongbow Gate (kits/xanadu 87k, opt-in) */
+  ['tea','xa_tea_factory',0,-470,560,'lake'],      /* the tea factory: the withering lofts and the rolling shed */
   ['ferment.a','xa_fermentary',0,-538,500,'lake'],['ferment.b','xa_fermentary',1,-538,526,'lake'],   /* the cacao fermentaries */
-  ['temple','xa_temple',0,590,440,'gate']];   /* the gate temple of the Decree, inside the north gate */
+  ['temple','xa_temple',0,...c('temple'),'bazaar']];};   /* the temple of the Decree, beside the bazaar */
  /* the latex house (the White Monastery's; the owner, 2026-11-16): one kit piece (kits/xanadu 87k xa_latex_house: its walled
     court, the drying halls, the sealing room), its gate toward the works road; the box its court's ground is painted in */
  const LATEX={u0:-466,u1:-424,v0:621,v1:663,at:[-445,642]};
@@ -67,44 +87,64 @@ var KS_TOWN=(function(){
   /* the kit's boxes as core/city's plots: a plot at least 2 m wider and deeper than the building on it (the teahouse's and the
      temple's buildings fill their defs' plots, so a street on the raster could reach them) */
   const dims=(k,v)=>{const D=o.dims(k,v);return D?Object.assign({},D,{w:Math.max(D.w,(D.fw||0)+2),d:Math.max(D.d,(D.fd||0)+2)}):null;};
-  const xz=([uu,vv])=>at(uu,vv),notes=[];
-  const toward=(p,what)=>{const q=what==='bazaar'?BAZAAR:what==='gate'?NORTH_GATE:what==='lamp'?[-60,350]:what==='lake'?[p[0],-100]:BAZAAR;
+  const xz=([uu,vv])=>at(uu,vv),notes=[],uvOf=p=>[G.u(p[0],p[1]),G.v(p[0],p[1])];
+  const GR=grid(),BAZAAR=cellUV('bazaar'),gateUV=sd=>{const g=GR.gates.find(q=>q.side===sd);return uvOf([g.x,g.z]);};
+  const HARBOUR_GATE=gateUV('v-'),NORTH_GATE=gateUV('u+'),WORKS_GATE=gateUV('u-'),SCARP_GATE=gateUV('v+');
+  const avU=GR.ways.find(w=>w.role==='avenue'&&w.line==='v'),lampUV=uvOf(avU.pts[Math.floor(avU.pts.length/2)]);
+  const toward=(p,what)=>{const q=what==='bazaar'?BAZAAR:what==='gate'?NORTH_GATE:what==='lamp'?lampUV:what==='lake'?[p[0],-100]:BAZAAR;
    const a=xz(p),b=xz(q);return face([b[0]-a[0],b[1]-a[1]]);};
-  const zone=ZONE.map(xz);
+  const zone=GR.zone;
   const box=(c,ry,w,d,m)=>{const u=[Math.cos(ry),-Math.sin(ry)];return obb(c,u,w/2+(m||0),d/2+(m||0));};
   const steps=[
    {name:'the site and its ground',run(){const R=SL.R=new Raster(L.tune().rasterHalf,L.tune().cell);R.occ.fill(OCC.OUT);
     const P=L.plan();P.site=[{id:0,name:'Build zone',role:'zone',poly:zone}];P.zone=zone;
     const land=KCITY.site.zoneRaster(R,zone,{dry:1.2,maxSlope:L.tune().maxSlope,h:G.h});
-    SL.minSpacing=KCITY.site.minSpacing();SL.note(0,'the apron behind the quay street, '+land+' cells');}},
+    SL.minSpacing=KCITY.site.minSpacing();SL.note(0,'the walled square behind the quay street, '+land+' cells');}},
    {name:'landmarks',run(){const P=L.plan(),CG=L.cg();
     const fixed=(id,key,v,p,ry,role)=>{const D0=dims(key,v);if(!D0)return;const D=Object.assign({},D0,{w:Math.max(D0.w,D0.fw||0),d:Math.max(D0.d,D0.fd||0)}),c=xz(p),o=box(c,ry,D.w,D.d);   /* a piece wider than its plot (the temple) takes its footprint */
      const Lt={id:P.lots.length,cls:'landmark',role,key,v,slot:0,wealth:1,x:c[0],z:c[1],y:CG.pad(o),ry,w:D.w,d:D.d,h:D.h,lot:o,bo:o,way:-1,side:0,s:0,born:1,died:null,civic:true,ksId:id};
      P.lots.push(Lt);SL.hashLot(Lt);SL.register(Lt);P.landmarks.push(Lt);SL.R.stampPoly(obbCorners(box(c,ry,D.w,D.d,3)),OCC.HARD,Lt.id);};
-    for(const [id,key,v,uu,vv,tw] of LANDMARKS)fixed(id,key,v,[uu,vv],toward([uu,vv],tw),id.split('.')[0]);
+    for(const [id,key,v,uu,vv,tw] of LANDMARKS())if(id!=='bazaar')fixed(id,key,v,[uu,vv],toward([uu,vv],tw),id.split('.')[0]);
     fixed('latex','xa_latex_house',0,LATEX.at,face(NUX),'latex');
-    /* the bazaar square: kept open */
-    {const D=dims('xa_gate',0);if(D)SL.R.stampPoly(obbCorners(box(xz(NORTH_GATE),face(UX),D.w,D.d,4)),OCC.HARD,-1);}   /* the north gate (drawn with the town's own pieces) */
-    SL.R.stampPoly([[BAZAAR[0]-32,BAZAAR[1]-34],[BAZAAR[0]+32,BAZAAR[1]-34],[BAZAAR[0]+32,BAZAAR[1]+30],[BAZAAR[0]-32,BAZAAR[1]+30]].map(xz),OCC.HARD,-1);
-    SL.note(1,P.landmarks.length+' landmarks: the seat, the barracks, the generator, the Two Horns, the serai, the tea factory, the fermentaries, the latex house');}},
+    /* the bazaar square: kept open, in its cell at the avenues' crossing */
+    SL.R.stampPoly([[BAZAAR[0]-32,BAZAAR[1]-32],[BAZAAR[0]+32,BAZAAR[1]-32],[BAZAAR[0]+32,BAZAAR[1]+32],[BAZAAR[0]-32,BAZAAR[1]+32]].map(xz),OCC.HARD,-1);
+    SL.note(1,P.landmarks.length+' landmarks: the seat, the barracks, the generator, the Two Horns, the temple, the serai, the tea factory, the fermentaries, the latex house');}},
    {name:'districts',run(){SL.note(2,'the quarters are wealth, not districts');}},
    {name:'avenues',run(){
     SL.addWay('avenue',[[-610,48],[-300,48],[0,48],[300,48],[710,48]].map(xz),3,{tag:'the quay street'});
-    SL.addWay('avenue',[HARBOUR_GATE,[-60,200],[-60,396],[60,392],[230,366],[420,320],[560,280],[NORTH_GATE[0]+6,NORTH_GATE[1]]].map(xz),3,{tag:'the Lamp Way'});
-    SL.addWay('avenue',[[-560,48],[-560,250],[-555,440],[-520,470],[-300,450],[-96,432]].map(xz),3,{tag:'the works road'});
-    SL.addWay('main',[[-20,466],[120,600],[250,700],[310,790]].map(xz),3,{tag:'the monastery road'});
-    SL.note(3,'the quay street, the Lamp Way, the works road, the monastery road');}},
-   {name:'highways',run(){SL.note(4,'the Strongbow road leaves the north gate along the shore (KS_TOWN roads, not core/city\'s)');}},
-   {name:'the wall and its gates',run(){L.plan().gates=[];SL.note(5,'no wall: the town is open; its gate stands on the Strongbow road');}}
+    /* the irregular square's streets (KCITY.grid): its two avenues (the Lamp Way from the Lake Gate to the Scarp Gate, the
+       Strongbow way from the Works Gate to the Strongbow Gate), its grid of main streets, its inner street round the wall */
+    for(const w of GR.ways)SL.addWay(w.kind,w.pts,3,{tag:w.role==='avenue'?(w.line==='v'?'the Lamp Way':'the Strongbow way'):w.role==='ring'?'the inner street':'a grid street'});
+    /* outside the wall: the works road from the Works Gate past the tea factory to the latex house; the road on from the
+       Scarp Gate to the monastery */
+    const wOut=uvOf(GR.ways.find(w=>w.role==='avenue'&&w.line==='u').pts[0]),sOut=uvOf(avU.pts[avU.pts.length-1]);
+    SL.addWay('avenue',[wOut,[-420,wOut[1]+20],[-425,480],[-410,600]].map(xz),3,{tag:'the works road'});
+    SL.addWay('main',[sOut,[sOut[0]+90,sOut[1]+40],[250,810],[310,830]].map(xz),3,{tag:'the monastery road'});
+    SL.note(3,'the quay street, the square\'s avenues and '+GR.ways.filter(w=>w.role==='grid').length+' grid streets, the inner street, the works road, the monastery road');}},
+   {name:'highways',run(){SL.note(4,'the Strongbow road leaves the Strongbow Gate along the shore (KS_TOWN roads, not core/city\'s)');}},
+   /* THE WALL (core/city's wall records on the square's line): its gates where the avenues cross it, named by their sides;
+      a buttress every 90 m along each side, a bastion at each corner (KCITY.grid.wall keeps them: core/city's walk round the
+      whole line cut them off); stamped onto the raster so no lot or street takes its line */
+   {name:'the wall and its gates',run(){const P=L.plan(),T=WALL_T,ways=P.ways.filter(w=>w.cls==='avenue'&&w.tag!=='the quay street'&&w.tag!=='the works road');
+    const named=GR.gates.map(g=>({x:g.x,z:g.z,marker:g.side,name:GATE_NAMES[g.side]}));
+    const Wr=P.wallRec=KCITY.grid.wall(GR,ways,{towerGap:T.towerGap,clear:T.clear,gateFind:T.gateFind,named,side:1,health:2});   /* side by side: the corners kept */
+    Wr.nodes.forEach(n=>{n.gx=n.x;n.gz=n.z;if(n.kind==='gate'&&n.way)n.towerOff=((L.tune().width[n.way.cls]==null?10:L.tune().width[n.way.cls])+T.gatePass)/2+T.gateTower/2;});
+    Wr.corners=GR.corners;Wr.segs=KCITY.site.wallSegs(Wr.nodes.filter(n=>!n.skip));
+    KCITY.site.stampWall(Wr,{thick:T.thick,step:5,gateTower:T.gateTower});
+    for(const c of GR.corners)SL.R.eachNearSeg([c.x,c.z],[c.x,c.z],12,k=>{if(SL.R.occ[k]===OCC.FREE||SL.R.occ[k]===OCC.LOT)SL.R.occ[k]=OCC.OUT;});
+    P.gates=Wr.gates.map(g=>({p:[g.x,g.z],dir:g.name}));
+    SL.note(5,Wr.gates.length+' gates ('+Wr.gates.filter(g=>g.named).length+' named), '+Wr.nodes.filter(n=>n.kind==='tower'&&!n.skip).length+' buttresses, 4 corner bastions, '+Wr.segs.length+' runs');}}
   ].concat(KCITY.defaultSteps().slice(6).filter(st=>(o.skip||SKIP).indexOf(st.name)<0));
   const uv=p=>[G.u(p[0],p[1]),G.v(p[0],p[1])],dd=(p,q)=>Math.hypot(p[0]-q[0],p[1]-q[1]);
-  const wealthUV=([uu,vv])=>{let w=.5;if(vv<230&&Math.abs(uu-HARBOUR_GATE[0])>170)w=.84-vv/900;   /* the lakefront either side of the harbour */
-   if(vv>560||uu<-390)w=Math.min(w,.22);if(dd([uu,vv],WORKS)<170)w=.12;return Math.max(0,Math.min(1,w));};
+  /* the wealth: the lakefront inside the wall either side of the Lake Gate rich, the middle middling, the quarter by the Works
+     Gate and the inland edge poor */
+  const wealthUV=([uu,vv])=>{let w=.5;if(vv<250&&Math.abs(uu-HARBOUR_GATE[0])>60)w=.86-(vv-100)/700;
+   if(vv>600||uu<-200)w=Math.min(w,.22);if(dd([uu,vv],WORKS_GATE)<130)w=.12;return Math.max(0,Math.min(1,w));};
   const rules={
    wealth:p=>wealthUV(uv(p)),
-   vacant:(p,rs)=>{const q=uv(p);return rs.chance(q[1]>360?.1:q[1]<240?.03:.06);},   /* a little frontage left open: the yards and gardens are behind the houses */
-   near:{harbour:c=>dd(uv(c.p),[-60,70])+(uv(c.p)[1]>160?400:0),bazaar:c=>dd(uv(c.p),BAZAAR),works:c=>dd(uv(c.p),[-470,520]),
-    gate:c=>dd(uv(c.p),[620,260]),rich:c=>{const q=uv(c.p);return Math.abs(q[1]-150)+Math.abs(Math.abs(q[0]+60)-330)*.5;}}};
+   vacant:(p,rs)=>{const q=uv(p);return rs.chance(q[1]>580?.1:q[1]<240?.03:.06);},   /* a little frontage left open: the yards and gardens are behind the houses */
+   near:{harbour:c=>dd(uv(c.p),[HARBOUR_GATE[0],140])+(uv(c.p)[1]>260?400:0),bazaar:c=>dd(uv(c.p),BAZAAR),works:c=>dd(uv(c.p),[WORKS_GATE[0]+60,WORKS_GATE[1]]),
+    gate:c=>dd(uv(c.p),[NORTH_GATE[0]-60,NORTH_GATE[1]]),rich:c=>{const q=uv(c.p);return Math.abs(q[1]-160)+Math.abs(Math.abs(q[0]-HARBOUR_GATE[0])-180)*.5;}}};
   /* the finish: a civic piece is stamped HARD, but a main street routed on the 2.5 m raster can still graze or cross one
      (the exact-streets rule knocks out houses, not civic pieces); any civic piece a street reaches is dropped, and noted */
   const finish=[function(Ci){const P=Ci.plan;let n=0;
@@ -134,9 +174,9 @@ var KS_TOWN=(function(){
   for(let i=0;i<3;i++)put('boatshed.'+i,'xa_boatshed',0,[H.u0-46-i*20,-6],face(NVX),{y:Math.max(QY-.4,G.h(...xz([H.u0-46-i*20,4]))),kind:'boatshed'});
   put('barge','xa_barge',0,[H.u0+120,-70],face(UX),{y:0,kind:'boat'});   /* the Sultan's barge at its mooring (the kit's pleasure barge) */
   put('monastery','xa_monastery',0,MONASTERY,toward(MONASTERY,'bazaar'),{kind:'monastery'});
-  put('gate.north','xa_gate',0,NORTH_GATE,face(UX),{kind:'gate'});
   /* ---- the Strongbow road along the shore and the bridge over Keb Riwa's mouth (the owner, 2026-11-16: "bridge crosses it") */
-  const roadUV=[[NORTH_GATE[0]+20,NORTH_GATE[1]],[1400,232],[2600,230],[3800,228],[4905,230]],farUV=[[5165,230],[5600,330],[6400,560],[7600,800]];
+  const sbOut=uvOf(GR.ways.find(w=>w.role==='avenue'&&w.line==='u').pts.slice(-1)[0]);   /* the Strongbow way's end past the Strongbow Gate */
+  const roadUV=[sbOut,[sbOut[0]+120,sbOut[1]-30],[1400,232],[2600,230],[3800,228],[4905,230]],farUV=[[5165,230],[5600,330],[6400,560],[7600,800]];
   const BR={u0:4905,u1:5165,v:230},bd=dims('xa_bridge',0),span=bd?bd.d:20,nb=Math.ceil((BR.u1-BR.u0)/span);
   const deck=Math.max(G.h(...xz([BR.u0,BR.v])),G.h(...xz([BR.u1,BR.v])),G.riverAt(...xz([(BR.u0+BR.u1)/2,BR.v]))[1]+5);
   for(let i=0;i<nb;i++)put('bridge.'+i,'xa_bridge',0,[BR.u0+(i+.5)*(BR.u1-BR.u0)/nb,BR.v],face(UX),{y:deck,kind:'bridge'});
@@ -145,6 +185,11 @@ var KS_TOWN=(function(){
   for(const r of lots.concat(extra)){census.people+=r.people;census.byKey[r.key]=(census.byKey[r.key]||0)+1;}
   for(const r of lots)census.byCls[r.cls]=(census.byCls[r.cls]||0)+1;
   return {lots,ways,extra,moles:moleRecs,roads,bridge:Object.assign({deck,ry:face(UX)},BR,{a:xz([BR.u0,BR.v]),b:xz([BR.u1,BR.v])}),latex:LATEX,census,
-   notes:PL.notes||notes,zone,instance:C};}
- return {make,PEOPLE,ZONE,LANDMARKS,LATEX,MONASTERY,BAZAAR,HARBOUR_GATE,NORTH_GATE};
+   notes:PL.notes||notes,zone,instance:C,
+   /* the wall: its standing runs, its nodes (the gates named by their sides, the buttresses), the corner bastions */
+   wall:PL.wallRec?{segs:PL.wallRec.segs.map(g=>({ax:g.ax,az:g.az,bx:g.bx,bz:g.bz,health:g.health})),
+    nodes:PL.wallRec.nodes.filter(n=>!n.skip&&n.health>0&&n.kind!=='corner').map(n=>({kind:n.kind,x:n.gx,z:n.gz,ry:n.ry,name:n.name||null,named:!!n.named,way:n.way?n.way.cls:null})),
+    corners:GR.corners.map(c=>({id:c.id,x:c.x,z:c.z})),line:GR.wall}:null,
+   places:{bazaar:BAZAAR,lakeGate:HARBOUR_GATE,strongbowGate:NORTH_GATE,worksGate:WORKS_GATE,scarpGate:SCARP_GATE,centre:SQ.c,half:SQ.half+SQ.wallGap}};}
+ return {make,PEOPLE,ZONE,LANDMARKS,LATEX,MONASTERY,SQ,grid};
 })();

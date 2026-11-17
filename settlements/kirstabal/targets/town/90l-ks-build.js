@@ -12,7 +12,7 @@ if(KS_PLAN)for(const M of KS_PLAN.moles){const dx=M.b[0]-M.a[0],dz=M.b[1]-M.a[1]
  vB('xRubB',mx,bed,mz,L+M.w,M.top-bed,M.w+4,ry,xC(0x8a8070));}
 // ---------------------------------------------------------------- the build, chunk by chunk
 const KS_CHUNK=400,KS_CHUNKS={};
-for(const p of KS_PLACE){const k=p.kind==='ring'?'ring:'+p.village:(p.kind==='bridge'?'bridge':Math.floor(p.x/KS_CHUNK)+','+Math.floor(p.z/KS_CHUNK));(KS_CHUNKS[k]=KS_CHUNKS[k]||[]).push(p);}
+for(const p of KS_PLACE){const k=p.kind==='ring'?'ring:'+p.village:(p.kind==='bridge'?'bridge':(p.kind==='wall'?'wall:':'')+Math.floor(p.x/KS_CHUNK)+','+Math.floor(p.z/KS_CHUNK));(KS_CHUNKS[k]=KS_CHUNKS[k]||[]).push(p);}
 const KS_GROUPS=[];let KS_INST=0,KS_STANDINS=0;
 /* K5, the interiors (?interiors=1, Xanadu's mode: settlements/xanadu 89y): only the governor's house, the Two Horns' factor
    house, the serai, the tea factory and the latex house are drawn hollow and furnished (their items: kits/interiors/sets/xanadu.js
@@ -27,7 +27,7 @@ function ksBakeChunk(key,list){const G=new THREE.Group();G.name='chunk:'+key;sce
   if(g)p.G=g;for(let i=r0;i<REG.length;i++)REG[i].type=p.key;
   x0=Math.min(x0,p.x-60);x1=Math.max(x1,p.x+60);z0=Math.min(z0,p.z-60);z1=Math.max(z1,p.z+60);y0=Math.min(y0,p.o.y-ksD(p.o.drop,0));y1=Math.max(y1,p.o.y+ksD(p.h,12));}
  TSTAT.cur=null;kbake(G);xaDoorsBind();KS_INST+=ksD(window._instances,0);for(const n in KIT.items)KIT.items[n].length=0;
- const e={G,key,sphere:new THREE.Sphere(new THREE.Vector3((x0+x1)/2,(y0+y1)/2,(z0+z1)/2),Math.hypot(x1-x0,y1-y0,z1-z0)/2+20),range:key==='bridge'?9000:/^ring:/.test(key)?7000:2600,n:list.length};KS_GROUPS.push(e);return e;}
+ const e={G,key,sphere:new THREE.Sphere(new THREE.Vector3((x0+x1)/2,(y0+y1)/2,(z0+z1)/2),Math.hypot(x1-x0,y1-y0,z1-z0)/2+20),range:key==='bridge'||/^wall:/.test(key)?9000:/^ring:/.test(key)?7000:2600,n:list.length};KS_GROUPS.push(e);return e;}
 /* the mole's banks first (their own chunk: drawn with the harbour), then the records */
 {const G=new THREE.Group();G.name='chunk:mole';scene.add(G);kbake(G);for(const n in KIT.items)KIT.items[n].length=0;
  KS_GROUPS.push({G,key:'mole',sphere:new THREE.Sphere(new THREE.Vector3(-560,0,-80),520),range:6000,n:KS_PLAN?KS_PLAN.moles.length:0});}

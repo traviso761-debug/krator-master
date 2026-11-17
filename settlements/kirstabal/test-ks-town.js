@@ -52,11 +52,20 @@ const inLake=X=>X.lots.concat(X.extra).filter(L=>!WATERY.has(L.kind)&&KS_GROUND.
 const popOk=X=>Math.abs(X.census.people-3000)<=450;
 T.ok('the town holds about 3,000 (PLAN.md section 2; within 15 %)',popOk(K),K.census.people+' people in '+K.census.buildings+' buildings');
 T.neg('a town of 4,000 is caught',popOk,{census:{people:4000}},K);
-const marks=X=>['ks.seat','ks.barracks','ks.generator','ks.horns','ks.serai','ks.latex','ks.tea','ks.ferment.a','ks.extra.monastery','ks.extra.lighthouse','ks.extra.gate.north']
+const marks=X=>['ks.seat','ks.barracks','ks.generator','ks.horns','ks.serai','ks.latex','ks.tea','ks.ferment.a','ks.temple','ks.extra.monastery','ks.extra.lighthouse']
  .every(id=>X.lots.some(l=>l.id===id)||X.extra.some(l=>l.id===id))&&X.extra.filter(e=>e.kind==='quay').length>=8&&X.extra.filter(e=>e.kind==='mole').length>=10;
-T.ok('the landmarks stand: the seat, the barracks, the generator, the Two Horns, the serai, the latex house, the tea factory, the White Monastery\'s house, the lighthouse, the north gate; the quays and the mole',marks(K),
+T.ok('the landmarks stand: the seat, the barracks, the generator, the Two Horns, the serai, the latex house, the tea factory, the White Monastery\'s house, the temple, the lighthouse; the quays and the mole',marks(K),
  K.extra.filter(e=>e.kind==='quay').length+' quays, '+K.extra.filter(e=>e.kind==='mole').length+' mole pieces');
 T.neg('a town without its latex house is caught',marks,Object.assign({},K,{lots:K.lots.filter(l=>!/latex/.test(l.id))}),K);
+/* the walled square (the owner, 2026-11-17: like Chiang Mai): four named gates, four corner bastions, wall runs all round,
+   and every town lot inside the wall (only the serai and the works outside it) */
+const OUTSIDE=new Set(['ks.serai','ks.tea','ks.ferment.a','ks.ferment.b','ks.latex']);
+const walled=X=>{const W=X.wall;if(!W||W.nodes.filter(n=>n.kind==='gate'&&n.named).length!==4||W.corners.length!==4||W.segs.length<8)return false;
+ const L=W.line.slice(0,-1),inside=(x,z)=>{let c=false;for(let i=0,j=L.length-1;i<L.length;j=i++){const a=L[i],b=L[j];if((a[1]>z)!==(b[1]>z)&&x<(b[0]-a[0])*(z-a[1])/(b[1]-a[1])+a[0])c=!c;}return c;};
+ return X.lots.every(l=>OUTSIDE.has(l.id)||inside(l.x,l.z));};
+T.ok('the town is walled: four named gates, four corner bastions, its runs all round, every lot inside the wall',walled(K),
+ K.wall?K.wall.nodes.filter(n=>n.kind==='gate').map(n=>n.name).join(', ')+'; '+K.wall.segs.length+' runs, '+K.wall.nodes.filter(n=>n.kind==='tower').length+' buttresses':'no wall');
+T.neg('a house outside the wall is caught',walled,Object.assign({},K,{lots:K.lots.concat([Object.assign({},K.lots[5],{id:'outside',x:K.lots[5].x+3000})])}),K);
 /* the bridge spans Keb Riwa: its ends on dry ground, the river's line between them, the deck over the water */
 const spans=X=>{const B=X.bridge,G=KS_GROUND,mid=[(B.a[0]+B.b[0])/2,(B.a[1]+B.b[1])/2],rv=G.riverAt(mid[0],mid[1]);
  return G.h(B.a[0],B.a[1])>rv[1]+1&&G.h(B.b[0],B.b[1])>rv[1]+1&&rv[0]<G.river.width/2&&B.deck>rv[1]+3;};

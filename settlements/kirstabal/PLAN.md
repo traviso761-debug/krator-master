@@ -318,6 +318,16 @@ Following `README.md`, "CORE MODULES ARE NOT OPTIONAL":
   own gap (settlements/xanadu KNOWN_ISSUES.md: their items' plan doors are not cut, so the upper house and the konak stay
   sealed). The factor house has no counting rooms of its own yet (it is the kit's merchant's konak), and the governor's
   audience hall waits for a seat piece of its own.
+- **The walled square** (the owner, 2026-11-17: "make the layout more square, with a wall made of slate similar to the thin
+  brick wall of chiang mai ... mostly square, but somewhat irregular, also like chiang mai"). The town is now core/city's
+  irregular square (`KCITY.grid`, `core/city/37-city-grid.js`, new for this): an inner street 660 m a side, the wall 16 m
+  outside it with a bastion at each corner and a buttress about every 90 m, four gates (the Lake Gate on the harbour, the
+  Strongbow Gate, the Works Gate, the Scarp Gate) where the two avenues cross it, a grid of main streets that wanders, ends in
+  T's and bends, core/city's side streets in the blocks. The bazaar is at the avenues' crossing, the temple of the Decree
+  beside it (as Chiang Mai's great temple stands at its centre). Outside the wall: the quay street and the harbour, the serai,
+  the works and the monastery. About 490 buildings, 3,100 people. The wall is slate laid like Chiang Mai's thin bricks
+  (`kits/xanadu/src/87k2-xa-slate-wall.js`, opt-in), drawn in `brick.dark` tinted slate grey until a coursed-slate set
+  is made (`core/materials/PROMPTS-NEEDED.md` section 57). Chiang Mai's moat is left out (a lake town); the owner may want it.
 - **K6.** The site in the open world: `openworld/xanadu-oidong-highrift` (Kirstabal `sl758m2396` in `openworld/SITES.json` and the
   region's cut, by hand, inside the Xanadu polygon). The ring (Mil, Kanāl, Grēnz, Bāiyar) at the tune's places and the lake's
   nine on the shore round the lake, eight of them on a fishers' row in the region's site spec, planned on the world's ground

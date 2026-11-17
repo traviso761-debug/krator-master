@@ -41,6 +41,9 @@ moored boat is the Sultan's pleasure barge; the capital's lake owes the same cra
   sealed: 37 of 54 floors reached, every one of the serai's, the tea factory's and the latex house's. The fix is the kit's
   (kits/interiors/sets/xanadu.js or 69e6), not the town's. No view looks inside: a view in a room would stand in a solid
   block with the interiors off.
+- **The wall's stone is a stand-in**: `brick.dark` tinted slate grey (families `xSlate`, `xSlateD`) until a coursed-slate set
+  is made (`core/materials/PROMPTS-NEEDED.md` section 57). The curtain steps down the slope in runs of at most 14 m, each
+  set at the lowest ground under it, so its top steps rather than following the ground. No moat (Chiang Mai has one).
 - **Strongbow** is not drawn: its arcology is the Ancients kit's (`kits/ancients/targets/strongbow`), on its own page. The
   Strongbow road runs out over the bridge toward its foot.
 - **The town's ground is designed, not cut from the model**: the beach, the apron rising about 9 m a km and the harbour's

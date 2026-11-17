@@ -6,7 +6,8 @@
   "settlements/kirstabal/gen/69k-kcity-bundle.js",
   "settlements/kirstabal/gen/69k2-ks-flora-bundle.js",
   "kits/xanadu/src/87k-xa-lake-trades.js",
-  "kits/xanadu/src/87k1-xa-lake-rooms.js"
+  "kits/xanadu/src/87k1-xa-lake-rooms.js",
+  "kits/xanadu/src/87k2-xa-slate-wall.js"
  ],
  "scoped": [
   "69k-kcity-bundle.js",
@@ -26,6 +27,7 @@
   "40-ks-ground.js",
   "41-ks-town.js",
   "87k1-xa-lake-rooms.js",
+  "87k2-xa-slate-wall.js",
   "42-ks-ring.js",
   "69k-kcity-bundle.js",
   "69k2-ks-flora-bundle.js",
