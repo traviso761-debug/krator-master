@@ -488,6 +488,10 @@
    "bytes": 5594871,
    "sha256": "2070e73890fd736dc445569a60ea1998f37a653c66e87e1467f19b0d9dd6e53b"
   },
+  "biomes/swbay/dist/swbay-skarn.html": {
+   "bytes": 7180371,
+   "sha256": "5e0cca8c71af75106a7a6a4b1778adda93096c0ccbaadc3b5fe46acc59c71496"
+  },
   "biomes/swbay/dist/swbay.html": {
    "bytes": 8889448,
    "sha256": "b4f0b23be11874165bc4b585d9b2e0659b062b8cb3c0083d2881e3a849f5b793"

@@ -153,3 +153,24 @@ temple height; Yuni Valley, highlands, arctic.
 
 ## Geology & `KSTRATA` Notes (`5.1`, 2026-11-13)
 - **Bedrock split:** Outer/southern bay shores expose bedded warm-water **`carbonate-shelf`** (`2–5 m` cream coquina/oolite & recessed marl with diurnal libration-tide solution visors; non-tower coastal karst, `KARST-SITES-5.1.md` #9), while the steep Almua–Voth inner-wall coast (`5.1 px 718, 883` to `734, 998`) exposes **`contact-marble`** (`4–8 m` white/blue-veined marble with epidote-garnet-magnetite skarn selvages; see `PLAN.md`, *"Almua Skarn-Marble Harbour Cliffs"*).
+
+## Station 3: the Almua skarn-marble harbour cliffs (2026-11-16, `stations/skarn/`)
+Gemini 5.1's showcase station 3 (`openworld/GEOLOGY-STATIONS-5.1.md`; `PLAN.md`, "As built"). `python3 build.py --station skarn` writes
+`dist/swbay-skarn.html`; the bay's page is untouched (its bytes checked equal before and after).
+
+- **Where:** map 5.1 px 739.6,995, the nearest shore to the plan's 734,998 (which is 15 km inland on today's raster). The scale model is
+  read twice: `region.json` (godthrone's `tools/region.py`, read in place with `--kit biomes/swbay`) for the far country, and by hand
+  for the site (the shoreline rows 976-1000, the coast's bearing ~328, the Throne at 33 / 387 km).
+- **How the coast is made:** one shoreline polyline in coast coordinates (a along, b across), its signed distance baked on a 2 m lattice
+  over the cliffs and an 8 m one over the map; two profiles by inland distance (`shelfH`, `marbleH`) mixed by the marble's share along
+  the coast; the ground drawn on the same two lattices (the mask and the fields read their bilinear height and slope, so nothing roots
+  on a face the 2 m cells draw steep). The masonry is in `terrainH` (the walker and the probe stand on it) but not in the drawn ground.
+- **Lessons:** quarry steps cut into a 2 m axis-aligned ground at a diagonal read as a sawtooth of white dashes from 800 m with 5.5 m
+  treads and a 0.9 m lip; 8 m treads on a 2.6 m battered riser still drew a sawtooth of lit tread tops close up; 9 m treads on a 4 m riser are the compromise (a face mesh of its own, aligned to the face, is the real fix: KNOWN_ISSUES). A merged mesh for two separate structures needs
+  `probePoints` on each, or the registry's occupancy check finds both volumes empty. `KSTRATA`'s `lateral` takes `formations`, so the
+  shelf facies can replace only the marble's lower 75 m (the plan's interfingering), with the marble carrying on above.
+- **Verified (SwiftShader only, 2026-11-17):** `verify.py dist/swbay-skarn.html --assert --views "The quarry face"`: error panel
+  clean; every invariant passed (registered volumes 407, no NaN, budgets: 1.44M scene triangles, 108 calls at the plan's view), the
+  station's six checks (beds, profile, rooted trees, the spring, the plan's eye, the site) and their six negatives, the core card guard,
+  attach audit (0.10% float) and LOD-key checks with their negatives, the export profile (9 of 9 over the crown's box). Screenshots of
+  the plan's view and the quarry face looked at. The GPU verify is owed (KNOWN_ISSUES.md).
