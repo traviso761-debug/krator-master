@@ -21,7 +21,8 @@
    (`km / kmDay` days), resolves the assault (KCAMP.raidOutcome on its strength and the target's defence, a hash of the raid's
    id: no draws), takes within the caps (KCAMP.raidTake, KCAMP.raidDead), marches home and lands the plunder and the dead in its
    store. A target's standing falls with its losses and recovers each day (KCAMP.raidRecover); a fort's `state` goes damaged on a
-   success and ruined on a sack, and is repaired after a season. RECORDS by id: S.raids.raids [{id, party, from, target, turn,
+   success and ruined on a sack, and is repaired after a season. RECORDS by id: S.raids.expeditions [{id, faction, from, target, warriors, km, leave, arrive, back, band, before, take, dead, lost,
+   bands {party: {morale, next}}}], S.raids.raids [{id, party, from, target, turn,
    leave, arrive, back, warriors, band, ratio, before {stock, people, floor}, take, dead, lost, landed}], S.raids.events [{minute, kind, raid, target, faction,
    ...}], S.raids.targets {id: {standing, people, base, state, last, hits, aid}}; H.raidReport(). */
 KREGION.part('52-region-raid', function (H) {
@@ -54,6 +55,21 @@ H.raidInit = function (V, S) {
   var take = function (sett, g, n, book) { var got = 0; SIM.withEcon(sett, function () { got = SIM.economyTake(g, Math.floor(n)); if (got > 0) SIM.economyBook(book, g, got); }); return got; };
   var land = function (sett, g, n, store) { if (n <= 0) return; SIM.withEcon(sett, function () { var w = store && spec[sett].works.some(function (x) { return x.id === store; }) ? store : spec[sett].works[0].id;
     SIM.economyLand(g, n, w); SIM.economyBook('imported', g, n); }); };
+  /* a punitive expedition (core/camp/PLAN.md section 6.3, the natural brake): the polity's force marches on the raiding town
+     that set it off, under the same rules and caps (KCAMP.raidOutcome, raidTake, raidDead); without a force for that polity in
+     RV.punitive.forces it is only recorded, as before */
+  var PN0 = RV.punitive || {}; RS.expeditions = [];
+  var muster = function (faction, town, from, hits, minute) {   /* called when the polity has had enough; it marches when the war band is out */
+    var F = (PN0.forces || {})[faction];
+    if (!F || !spec[town]) { event('punitive', { faction: faction, against: RV.faction, from: from, raids: hits, marched: false }); return; }
+    var at = spec[F.from] ? { x: spec[F.from].x, z: spec[F.from].z } : { x: F.x, z: F.z }, km = Math.hypot(spec[town].x - at.x, spec[town].z - at.z) / 1000, days = km / D(F.kmDay, 20);
+    if (spec[F.from]) take(F.from, 'grain', F.warriors * 0.6 * days * 2, 'used');   /* its provisions, from home: 0.6 kg of grain a man a day */
+    var E = { id: 'punitive.' + RS.expeditions.length, faction: faction, from: F.from, target: town, warriors: F.warriors, arms: D(F.arms, 1), mounts: D(F.mounts, 1), morale: D(F.morale, 1),
+      km: +km.toFixed(1), days: days, called: minute, leave: null, arrive: Infinity, back: Infinity, band: null, take: {}, dead: 0, lost: 0, landed: false, raids: hits };
+    RS.expeditions.push(E);
+    event('punitive', { faction: faction, against: RV.faction, from: from, raids: hits, marched: true, expedition: E.id, target: town, warriors: E.warriors, km: E.km });
+  };
+  Object.keys(RS.parties).forEach(function (pid) { RS.parties[pid].morale0 = D(RS.parties[pid].morale, 1); });
   var every = D(RV.season, 91.25) * 1440, next = m0 + 60, ri = 0;
   var dayNext = m0 + 1440;
   SIM.stepHooks.push(function (minute) {
@@ -63,7 +79,9 @@ H.raidInit = function (V, S) {
         if (t.stock && t.base.stocks) Object.keys(t.base.stocks).forEach(function (g) { t.stock[g] = (t.stock[g] || 0) + (t.base.stocks[g] - (t.stock[g] || 0)) * t.restock; });
         var st = { people: t.people, base: t.base, stock: sum(stockOf(t)), recover: t.recover }; KCAMP.raidRecover(st, 1); t.people = st.people; t.standing = st.standing;
         if (t.state && t.state !== 'kept' && t.last != null && minute - t.last > D(RV.season, 91.25) * 1440) { t.state = t.state === 'ruined' ? 'damaged' : 'kept'; if (spec[id]) spec[id].state = t.state; event('repaired', { target: id, state: t.state }); }
-        if (t.aid && minute > t.aidUntil) { t.aid = 0; event('aid ends', { target: id }); } }); }
+        if (t.aid && minute > t.aidUntil) { t.aid = 0; event('aid ends', { target: id }); } });
+      /* a beaten band's morale comes back by a share a day */
+      Object.keys(RS.parties).forEach(function (pid) { var Pt = RS.parties[pid]; if (Pt.morale < Pt.morale0) Pt.morale = Math.min(Pt.morale0, Pt.morale + (Pt.morale0 - Pt.morale) * D(PN0.moraleBack, 0.02)); }); }
     /* the raiding turn: the faction spends its budget */
     if (minute >= next) { next += every; RS.turns++; var spent = 0;
       Object.keys(RS.parties).sort().forEach(function (pid) { var Pt = RS.parties[pid];
@@ -96,8 +114,39 @@ H.raidInit = function (V, S) {
       var A = RV.aid; if (A) { var recent = t.hits.filter(function (m) { return minute - m < 365 * 1440; }).length;
         if (recent >= A.after && !t.aid) { t.aid = A.garrison; t.aidUntil = minute + A.days * 1440; event('aid', { target: t.id, faction: t.faction, garrison: A.garrison, days: A.days }); } }
       var PN = RV.punitive; if (PN) { var hit = RS.events.filter(function (e) { return e.kind === 'assault' && e.faction === t.faction && minute - e.minute < PN.window * 1440; }).length;
-        if (hit >= PN.after && !RS.events.some(function (e) { return e.kind === 'punitive' && e.faction === t.faction && minute - e.minute < PN.window * 1440; })) event('punitive', { faction: t.faction, against: RV.faction, from: t.id, raids: hit }); }
+        if (hit >= PN.after && !RS.events.some(function (e) { return e.kind === 'punitive' && e.faction === t.faction && minute - e.minute < D(PN.cooldown, PN.window) * 1440; })) muster(t.faction, r.from, t.id, hit, minute); }
     });
+    /* an expedition waits at its muster for the town's war band to be out (its scouts watch for it; RV.punitive.wait days at
+       most, 0 by default: it marches at once) */
+    RS.expeditions.forEach(function (E) { if (E.leave != null) return;
+      var out = Object.keys(RS.parties).some(function (pid) { return RS.parties[pid].from === E.target && RS.raids.some(function (r) { return r.party === pid && !r.landed && minute >= r.leave; }); });
+      if (!out && minute - E.called < D(PN0.wait, 0) * 1440) return;
+      E.leave = minute; E.arrive = minute + Math.ceil(E.days * 1440); E.back = minute + Math.ceil(2 * E.days * 1440); E.bandOut = out;
+      event('punitive march', { expedition: E.id, faction: E.faction, target: E.target, bandOut: out, waited: Math.round((minute - E.called) / 1440) }); });
+    /* a punitive expedition reaches the raiders' town: the town's garrison and any war band at home stand against it */
+    RS.expeditions.forEach(function (E) { if (E.band || minute < E.arrive) return;
+      var Sd = spec[E.target], H0 = (PN0.home || {})[E.target] || {}, home = Object.keys(RS.parties).filter(function (pid) { var Pt = RS.parties[pid];
+        return Pt.from === E.target && !RS.raids.some(function (r) { return r.party === pid && !r.landed && minute >= r.leave; }); });
+      var gar = D(H0.garrison, 0) + home.reduce(function (n, pid) { var Pt = RS.parties[pid]; return n + Pt.warriors * D(Pt.arms, 1) / 3; }, 0);
+      var def = { people: Sd.people, militia: D(H0.militia, 0.05), garrison: gar, walls: D(H0.walls, 1), standing: 1 };
+      var out = KCAMP.raidOutcome({ warriors: E.warriors, arms: E.arms, mounts: E.mounts, morale: E.morale }, def, hash(E.id + '|' + E.target));
+      var st = {}; SIM.withEcon(E.target, function () { (PN0.want || want).forEach(function (g) { var k = SIM.stockOf(g); if (k > 0) st[g] = k; }); });
+      var fl = {}; Object.keys(Sd.eats || {}).forEach(function (g) { fl[g] = Sd.people * Sd.eats[g] * D(RV.floorDays, 14); });
+      E.before = { stock: Object.assign({}, st), people: Sd.people, floor: fl, defenders: home.slice(), garrison: Math.round(gar) };
+      var loot = KCAMP.raidTake(st, { take: out.take, want: PN0.want || want, floor: fl, cap: RV.caps === false ? false : undefined });
+      Object.keys(loot).forEach(function (g) { E.take[g] = take(E.target, g, loot[g], 'exported'); });
+      E.band = out.band; E.ratio = out.ratio; E.dead = KCAMP.raidDead(Sd.people, out.band, { cap: RV.caps === false ? false : undefined }); E.lost = Math.round(E.warriors * out.raidLoss);
+      /* the raiders pay: their bands' morale falls and they stay home to guard (a repulsed expedition costs them nothing) */
+      Object.keys(RS.parties).forEach(function (pid) { var Pt = RS.parties[pid]; if (Pt.from !== E.target || out.band === 'repulsed') return;
+        Pt.morale = Math.max(D(PN0.moraleFloor, 0.7) * Pt.morale0, Pt.morale * (out.band === 'skirmish' ? 0.93 : 0.82)); Pt.next = Math.max(Pt.next, minute + D(RV.fatigue, 45) * 1440);
+        (E.bands || (E.bands = {}))[pid] = { morale: +Pt.morale.toFixed(3), next: Pt.next }; });
+      /* the dead of both sides are the town's (the bone hall: LORE 6.20) */
+      Object.keys(RV.dead || {}).forEach(function (g) { land(E.target, g, (E.dead + E.lost) * RV.dead[g], null); });
+      event('punitive assault', { expedition: E.id, faction: E.faction, target: E.target, band: out.band, ratio: out.ratio, take: Object.assign({}, E.take), dead: E.dead, lost: E.lost, garrison: Math.round(gar), bandsHome: home.length }); });
+    /* the expedition home: what it took back lands in its own settlement (off the map, it was booked out at the town and is gone) */
+    RS.expeditions.forEach(function (E) { if (E.landed || !E.band || minute < E.back) return; E.landed = true;
+      if (spec[E.from]) Object.keys(E.take).forEach(function (g) { land(E.from, g, E.take[g], null); });
+      event('punitive home', { expedition: E.id, faction: E.faction, from: E.from, take: Object.assign({}, E.take), lost: E.lost }); });
     /* home: the plunder and the dead land in the party's store */
     RS.raids.forEach(function (r) { if (r.landed || !r.band || minute < r.back) return; r.landed = true; var Pt = RS.parties[r.party];
       Object.keys(r.take).forEach(function (g) { land(r.from, g, r.take[g], Pt.store); });

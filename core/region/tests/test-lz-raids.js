@@ -22,7 +22,8 @@ function run(days, o) {
 }
 const t = n => (n / 1000).toFixed(1) + ' t';
 const fedCheck = Bk => { const bad = []; Object.keys(Bk).forEach(s => { const x = Bk[s]; if (!x.people) return; Object.keys(x.eaten).concat(Object.keys(x.hungry)).forEach(g => { const e = x.eaten[g] || 0, h = x.hungry[g] || 0; if (h > (e + h) * .01 && bad.indexOf(s + ' ' + g) < 0) bad.push(s + ' ' + g); }); }); return { ok: !bad.length, bad }; };
-const t0 = Date.now(), Y = run(730, { allot: true, raids: true }), N = run(730, { allot: true, raids: { caps: false } });
+const t0 = Date.now(), Y = run(730, { allot: true, raids: true }), N = run(730, { allot: true, raids: { caps: false } }),
+  NF = run(730, { allot: true, raids: { punitive: Object.assign({}, LZ_TUNE.raids.punitive, { forces: {} }) } });
 console.log('two years of the Lizardmen with raids, and again with the caps off, in ' + ((Date.now() - t0) / 1000).toFixed(1) + ' s');
 const done = Y.R.raids.filter(r => r.band);
 
@@ -62,5 +63,24 @@ T.neg('Z4: with the caps off a target falls under 0.7', balanced, N.rep, Y.rep);
 {
   const f = fedCheck(Y.B), Z = run(91.25 * 2, { allot: true });
   T.ok('Z4: every place fed for two years with the raids out; a valley without `raids` declares none', f.ok && !Z.S.raids, f.bad.slice(0, 4).join('; ') || 'none short');
+}
+// 7. the punitive expeditions (the owner, 2026-11-17: "add punitive expeditions"): the Sultan's force marches from Strongwall on
+//    the raiding town that set it off, fights its garrison and any war band at home under the same caps, takes back, and costs
+//    the band morale and a season at home; without a force it is only recorded
+{
+  const X = Y.R.expeditions || [], won = X.filter(E => E.band && E.band !== 'repulsed');
+  const capsOK = X.filter(E => E.band).every(E => Object.keys(E.take).every(g => E.take[g] <= (E.before.stock[g] || 0) * 0.15 * 2 + 1 && (E.before.stock[g] || 0) - E.take[g] >= ((E.before.floor || {})[g] || 0) - 1) && E.dead <= E.before.people * 0.02 + 1e-9);
+  const paid = won.every(E => Object.keys(E.bands || {}).length > 0 && Object.values(E.bands).every(b => b.morale < 1.2 && b.next >= E.arrive + LZ_TUNE.raids.fatigue * 1440 - 1));
+  T.ok('punitive: ' + X.length + ' expeditions marched (' + X.map(E => E.faction + ' on ' + E.target + ': ' + E.band).join(', ') + '); within the caps; a won one cost the war band morale and a season at home',
+    X.length >= 1 && won.length >= 1 && capsOK && paid && X.every(E => E.from === 'sxan7r1sln' || E.from === 'tears.strongwall'),
+    won.map(E => E.id + ' took ' + JSON.stringify(E.take) + ', ' + E.dead + ' dead, band ' + JSON.stringify(E.bands)).join('; '));
+  T.neg('punitive: without a force the polity\'s answer is only recorded', R => (R.R.expeditions || []).length > 0, NF, Y);
+}
+// 8. the Lizardmen a tad stronger (the owner, 2026-11-17: "soup up the lizardmen's power just a tad"): the war bands 170 and 140
+//    at arms 3.4 and morale 1.2; a fort now and then fights it to a skirmish, but none falls
+{
+  const P = LZ_TUNE.raids.parties, forts = done.filter(r => /^march\./.test(r.target));
+  T.ok('stronger: the war bands ' + P.map(p => p.warriors + ' at ' + p.arms + ' x ' + p.morale).join(', ') + '; the forts ' + forts.filter(r => r.band === 'skirmish').length + ' skirmishes, ' + forts.filter(r => r.band === 'repulsed').length + ' repulsed, none taken',
+    P[0].warriors === 170 && P[1].warriors === 140 && P.every(p => p.arms === 3.4 && p.morale === 1.2) && forts.some(r => r.band === 'skirmish') && !forts.some(r => r.band === 'success' || r.band === 'sack'));
 }
 T.done();

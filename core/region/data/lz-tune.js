@@ -133,9 +133,25 @@ T.valley=function(o){o=o||{};const K=o.scale==null?10:o.scale,KB=o.bulk==null?20
    of the people); the dead of both sides go home to the bone hall (bone and hide: LORE 6.20, "butchered like animals") */
 T.raids={faction:'lizardmen',season:91.25,budget:2,kmDay:25,supplyDays:20,cooldown:120,fatigue:45,floorDays:14,
  want:['tools','arms','goldwork','goldore','grain'],dead:{bone:20,meat_hide:35},
- aid:{after:2,garrison:30,days:180},punitive:{after:4,window:365},
- parties:[{id:'tuatara.warband',from:'tuatara',warriors:150,arms:3,mounts:1,morale:1.1,store:'tuatara.plunder'},
-  {id:'komodo.warband',from:'komodo',warriors:120,arms:3,mounts:1,morale:1.1,store:'komodo.plunder'}],
+ aid:{after:2,garrison:30,days:180},
+ /* the punitive expeditions (core/camp/PLAN.md 6.3; the owner, 2026-11-17: "add punitive expeditions"): a polity raided four
+    times in a year sends a force, once a year at most, from its Gold March fort town Strongwall (912,1640) against the raiding
+    town that set it off. The Sultan's: 1,200 men (the ex-Izani legionaries and the hired Yuni riflemen of LORE 6.20: arms 1.6,
+    a horse troop); the Golden Tears': their 150 escort. The raiding towns stand behind their garrison of Line warriors and
+    Bulwarks at home (300 beyond the war band) and the spiral's maze (walls 1.3), and the war band if it is home. A won
+    expedition takes back within the same caps and costs the town's war band morale (to 0.82 of it; 0.93 on a skirmish) and
+    a season at home; the morale comes back 2 % a day. The dead of both sides go to the town's bone hall. `wait` (days) would
+    hold it at its muster until the war band is out; it is 0, since a raid two days from home is back before an army that marches
+    13 days from Strongwall arrives */
+ punitive:{after:4,window:365,cooldown:365,wait:0,moraleFloor:.7,moraleBack:.02,want:['tools','arms','goldwork','goldore','grain','bronze_ware'],
+  forces:{xanadu:{from:'sxan7r1sln',px:912,py:1640,warriors:1200,arms:1.6,mounts:1.1,morale:1,kmDay:20},
+   tears:{from:'tears.strongwall',px:912,py:1640,warriors:150,arms:1.6,mounts:1,morale:1.1,kmDay:20}},
+  home:{tuatara:{militia:.05,garrison:300,walls:1.3},komodo:{militia:.05,garrison:300,walls:1.3}}},
+ /* the owner, 2026-11-17: "soup up the lizardmen's power just a tad": the war bands a little bigger (150 to 170, 120 to 140), better
+    armed (3 to 3.4: their bronze ge and ji, lamellar) and fiercer (1.1 to 1.2). A fort still holds, but no longer every time:
+    a strong roll now and then makes it a skirmish */
+ parties:[{id:'tuatara.warband',from:'tuatara',warriors:170,arms:3.4,mounts:1,morale:1.2,store:'tuatara.plunder'},
+  {id:'komodo.warband',from:'komodo',warriors:140,arms:3.4,mounts:1,morale:1.2,store:'komodo.plunder'}],
  targets:[
   {id:'march.w',name:'The west watch fort',faction:'xanadu',px:818,py:1531,people:150,garrison:120,militia:.2,walls:2.5,state:'kept',stock:{grain:10800,tools:40,arms:20}},
   {id:'march.s',name:'The south watch fort',faction:'xanadu',px:843,py:1546,people:150,garrison:120,militia:.2,walls:2.5,state:'kept',stock:{grain:10800,tools:40,arms:20}},
@@ -145,6 +161,7 @@ T.raids={faction:'lizardmen',season:91.25,budget:2,kmDay:25,supplyDays:20,cooldo
 /* the spec the valley host takes: o.offMap (true unless the targets are settlements of the same valley), o.caps (false: the
    negative), any field of T.raids to override */
 T.raidSpec=function(o){o=o||{};const R=JSON.parse(JSON.stringify(T.raids));Object.keys(o).forEach(k=>{if(k!=='offMap')R[k]=o[k];});
+ if(R.punitive&&R.punitive.forces)Object.keys(R.punitive.forces).forEach(f=>{const F=R.punitive.forces[f],p=T.px(F.px,F.py);F.x=p.x;F.z=p.z;delete F.px;delete F.py;});
  R.targets=R.targets.map(t=>{const p=T.px(t.px,t.py),q=Object.assign({},t,{x:p.x,z:p.z});delete q.px;delete q.py;if(o.offMap===false){delete q.stock;delete q.people;}return q;});
  return R;};
 if(typeof module!=='undefined'&&module.exports)module.exports=T;

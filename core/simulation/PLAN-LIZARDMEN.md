@@ -84,6 +84,20 @@ LORE.md 6.20 carries the new names. The proposal, the survey and Gila's plan and
   - no target below 0.92;
   - the Sultanate makes 12 garrison grants and mounts 2 punitive expeditions (recorded, not yet marched);
   - the plunder (the steel kept and never used) and the dead of both sides go home to the warehouse and the bone hall.
+- **The punitive expeditions** (the owner, 2026-11-17: "add punitive expeditions"; core/camp/PLAN.md 6.3):
+  - a polity raided four times in a year sends a force, once a year at most, from Strongwall: the Sultan's 1,200 men, the Golden
+    Tears' 150;
+  - it marches on the raiding town that set it off, against its garrison of 300 Line warriors and Bulwarks behind the spiral's
+    maze, and its war band if it is home;
+  - under the same rules and caps, it takes back plunder, grain and bronze ware, and costs the town's war band morale (to 0.82 of
+    it, 0.93 on a skirmish; back 2 % a day) and a stay at home;
+  - the dead of both sides go to the town's bone hall.
+  - In two years the Sultan's force fights Tuatara to a skirmish each year; the raids go on.
+  - `wait` (hold the army until the war band is out) is in the code but off: a raid two days from home is back before an army 13
+    days away arrives.
+- **A tad stronger** (the owner, 2026-11-17: "soup up the lizardmen's power just a tad"): the war bands 150 and 120 became 170 and
+  140, arms 3 became 3.4, morale 1.1 became 1.2. A fort still never falls, but two of eight assaults on the forts are now
+  skirmishes.
 - **In this run the targets are off-map records.** The joint run (Z5, `test-lz-join.js`) raids the Sultanate's own settlements
   in their own books. It is the only run that touches Xanadu's numbers. `test-xan-economy`, `test-east-rift` and `test-catch` load
   neither the raids nor the Lizardmen, so their numbers do not move.

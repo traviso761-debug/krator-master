@@ -1,7 +1,8 @@
 // node core/region/tests/test-lz-join.js — the Xanadu Sultanate and the Lizardmen in one valley run (step Z5 of
 // core/simulation/PROPOSAL-LIZARDMEN.md; core/region/data/lz-join.js LZ_JOIN). The only links are the raids, and this is the
 // one run where they touch the Sultanate's ledger: the take leaves its forts', villages' and the Golden Tears' camp's own
-// warehouses. Two raiding seasons (about 100 days, a few minutes: the Sultanate is 380,000 people), and two short negatives.
+// warehouses. Three raiding seasons (215 days, a few minutes: the Sultanate is 380,000 people) and the Sultan's first punitive
+// expedition from Strongwall, and two short negatives.
 // test-xan-economy.js, test-east-rift.js and test-catch.js do not load the Lizardmen and are unchanged by them.
 const fs = require('fs'), path = require('path');
 const T = require('../../../tools/ktest.js')(__filename);
@@ -23,8 +24,8 @@ function run(days, o, edit) {
 }
 const t = n => (n / 1000).toFixed(1) + ' t';
 const fed = (Bk, ids) => { const bad = []; ids.forEach(s => { const x = Bk[s]; if (!x || !x.people) return; ['grain', 'meat_hide', 'fish', 'produce', 'salt'].forEach(g => { const e = x.eaten[g] || 0, h = x.hungry[g] || 0; if (h > (e + h) * .01) bad.push(s + ' ' + g); }); }); return { ok: !bad.length, bad }; };
-const t0 = Date.now(), Y = run(100, {}), LZ = new Set(LZ_TUNE.places.map(p => p.key));
-console.log('100 days of the Sultanate and the Lizardmen in one run in ' + ((Date.now() - t0) / 1000).toFixed(1) + ' s: ' + Y.S.order.length + ' settlements, ' + Math.round(Y.V.settlements.reduce((n, s) => n + s.people, 0)) + ' people');
+const t0 = Date.now(), Y = run(215, {}), LZ = new Set(LZ_TUNE.places.map(p => p.key));
+console.log('215 days of the Sultanate and the Lizardmen in one run in ' + ((Date.now() - t0) / 1000).toFixed(1) + ' s: ' + Y.S.order.length + ' settlements, ' + Math.round(Y.V.settlements.reduce((n, s) => n + s.people, 0)) + ' people');
 const done = Y.R.raids.filter(r => r.band), targets = LZ_TUNE.raids.targets.map(x => x.id);
 
 // 1. declared: the Sultanate's settlements and the Lizardmen's ten, the Lizardmen hostile to every faction, no problems
@@ -63,6 +64,14 @@ const inBooks = R => { const d = R.R ? R.R.raids.filter(r => r.band && Object.ke
 {
   const f = fed(Y.B, [...LZ]);
   T.ok('Z5: every Lizardman place fed in the joint run; the Allotment issued ' + Y.S.allot.loads.length + ' loads', f.ok && Y.S.allot.loads.length > 0, f.bad.join('; ') || 'none short');
+}
+// 7. the Sultan's punitive expedition, in its own books: it musters at Strongwall (its provisions used there), marches on the
+//    raiding town, and what it takes back lands at Strongwall; the town loses it from its own warehouses
+{
+  const X = (Y.R.expeditions || []).filter(E => E.from === 'sxan7r1sln' && E.landed), E = X[0] || {};
+  const landedOK = !!E.id && Object.keys(E.take).length > 0 && Object.keys(E.take).every(g => (Y.B.sxan7r1sln.imported[g] || 0) >= E.take[g] && (Y.B[E.target].exported[g] || 0) >= E.take[g]);
+  T.ok('Z5: the Sultan\'s punitive expedition from Strongwall on ' + (E.target || '?') + ' (' + (E.band || 'none') + '): what it took back (' + JSON.stringify(E.take || {}) + ') left the town\'s warehouses and landed at Strongwall', landedOK,
+    (Y.R.expeditions || []).map(x => x.id + ' ' + x.faction + ' ' + x.band + ' landed ' + x.landed).join('; ') || 'no expedition');
 }
 console.log('in ' + ((Date.now() - t0) / 1000).toFixed(1) + ' s');
 T.done();
