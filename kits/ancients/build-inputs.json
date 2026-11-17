@@ -3574,7 +3574,6 @@
     "core/atmos/89-atmos-0p-presets.js": "1b55a3fc68023876348af4fcca6c19eafb623657a906089694c89767ea47abc0",
     "core/atmos/89-atmos-a-waves.js": "77ab3264db6d412a82c8d7b2f0f1e643a1cc65537c3456248f9193b6621dbc98",
     "core/atmos/89-atmos-b-skylight.js": "fdd81ff12eb4e98d7d9bc07691b033a71cd2add1b8a0d23d7ffb6149d781c6d0",
-    "core/catalog/catalog.py": "5d4a79810193b831fc1c686c934990afd10ecb63b5a55d05e0f3d7dd4c84d88a",
     "core/catalog/files.json": "a400e7bf3e1197698d129db83964d883fd9ea2818173fe7df3c7d1b4a054d72f",
     "core/catalog/krator-furniture-core.js": "1c8bfa11d261b36895fd50645358e2c4ebe54febf67daeed700a38fbd6256fe9",
     "core/catalog/krator-furniture-kit.js": "5220ef8dd95dd5c33960ad1452f09f437379c2e26d40c9b480877b1a4e65f16b",
@@ -3640,7 +3639,6 @@
     "core/water/22-core-water-flow.js": "eab9b6ee42e8747dfd1082a1b6d76804b4659d5fd3a2b3d4bc1a566af13dbed7",
     "core/water/50-core-water-draw.js": "9b487271223b64c2935b3336667963139dddcc055b852ac4f0a1912b2a9dd7e0",
     "core/water/51-core-water-kinds.js": "e0c2edba19b476b4b46a4e08a63f0af695423d88b1da15b380795b2e4d07ead4",
-    "kits/ancients-interiors/kit_bundle.py": "19b56aadbfe51408c26a2b9f9c9e05d87fcf95230eae281390d5c24ced43bcdd",
     "kits/ancients-interiors/src/10-ai-core.js": "2519e6621613167d6fb83ecfbffb8ed6f2488586848124210ff423c35c672b60",
     "kits/ancients-interiors/src/20-ai-dress.js": "c75e021e10465e5ee7f962c0c720a7646314cb58cae582e035e2f7569e0635c7",
     "kits/ancients-interiors/src/30-ai-recipes.js": "d8c55b1f00ede36393bdbedb219310496aa6c75adb6eac75a16da262e71eb4c3",
@@ -3961,18 +3959,16 @@
     "kits/ancients/tex/whiteWorn.albedo.webp": "4db9cf78c28a472cb2ceb844ab8f5e3c863d0b1890e0f3698267a4d8fb1ff725",
     "kits/ancients/tex/whiteWorn.normal.webp": "6ecfa7ca0abf0adad1ad60dd5c21f15b887262643b000021d6dab37993d2b141",
     "kits/ancients/tex/whiteWorn.rough.webp": "1edab8491d7bb602ec78b43d1568da5923b08354b0790184767d6c005b2722e8",
-    "kits/catalog/furniture_bundle.py": "29163379638b541819175cf4a9a09c4ea1da7c5979730016b3eda80360ba0f03",
     "kits/catalog/krator-master-furniture-eastabyss.js": "c954ea72a5a724eda8543e81d2d49a6aed07bbc58e3e4ee7953c187e7a1fa5f1",
     "kits/catalog/krator-master-furniture-generic-goods.js": "1436ca9a4c6d8556cb1c6e1647150f5ec7f80c8ab0ded0ba54638805b6c750de",
     "kits/catalog/krator-master-furniture-generic.js": "990b05b8404c67ab960f6649babc8143c738ea600a04c0c22564296fa7786ea4",
     "kits/catalog/krator-master-furniture-scrap.js": "0ad3a75771ab03e7b22e7f558b601ac9e6208418e49275625d199bc44bde720c",
-    "kits/catalog/krator-master-furniture-xanadu.js": "97f4b20dccb7af296968bc885835037339a5174f151c1516b138c2adce5c803d",
+    "kits/catalog/krator-master-furniture-xanadu.js": "f8a06b00f61142a2a4ae7d4e85921bd862998d99765ea43c927371261d0e0b79",
     "kits/catalog/krator-master-furniture.js": "09773ee896c9a5a9acd256dcf385c62a9e40e49e74f2b0d424749f10ee1905c2",
     "kits/crops/src/10-crop-core.js": "5d90c0e985a2a6ee6939f269c80902f1424932db7e166ba920429252ccd5f64d",
     "kits/crops/src/20-crop-records.js": "daf082d84691e67c6944b786c5d2a76199c439ed0842fe18512e25c96ed0b715",
     "kits/crops/src/40-crop-query.js": "c4e1179691702ff13200d5b713c23e0f315ee99c61842a8735d671e63bfca439",
     "kits/interiors/adapters/runtime-adapter.js": "5958f459962e0bfd8dde8490ec1b0bca3697dd3c86f9697b1c083cfe5f206a57",
-    "kits/interiors/kit_bundle.py": "db49822a3654a99d91441d6a676a69136e825e0096fdc78ffc27cd3b7b9988e5",
     "kits/interiors/sets/noahs-regret.js": "8a03f4ee8cc7705cde0b04aa330fd21ebe5d64992dd3efea3e2477953ae68b62",
     "kits/interiors/sets/xanadu-scrap.js": "e5ddfc74b14dd067ca916886be52e54d5656e4341e5e580598ec941441bfbcc7",
     "kits/interiors/src/10-core.js": "4b940cf3cadd55615825e748e9179aa06ff8984be2d92dbefc3d085ae91e24e5",
@@ -4030,7 +4026,6 @@
     "kits/qiblai/tex/qRug.albedo.webp": "56e41a1240755f76a6893ab4e1149bad55a36b8e7934b00a1c585beff94b36f4",
     "kits/qiblai/tex/qRug.normal.webp": "cac8887946a83d673936ead4cc3079629334e6aed33d55d282824c4ae64dc45a",
     "kits/qiblai/tex/qRug.rough.webp": "fa6d89c542516a3cf513c09cb89408680a9fe02ca2e0f740749e2760d6e86e88",
-    "kits/xanadu/kit_bundle.py": "57cbffede3314f3e715e2fb99927fbd3923b4ed1d807274aefa8c5ab65b0342a",
     "kits/xanadu/src/70-xa-tex.js": "2efcc6922687bd9e374c03bdc8c3b75d5d2a1f06bf7da6656e4f95d0d32df02f",
     "kits/xanadu/src/71-xa-mat.js": "d08001da45495ca8d49b9df566d56c8c5b2567ee7d49b8e8b60c73deac436d41",
     "kits/xanadu/src/71c-xa-openings.js": "b018f238df3a253e4573734db17edf867545ecdb6978f8ef980b51c25abd8d1f",
@@ -4063,7 +4058,6 @@
     "kits/xanadu/src/87v-xs-poor.js": "ee041e3c2f6a66d9dccf5b45f60e79c5dc957ae1b94e91dc6f26022ca6547636",
     "kits/xanadu/src/88-xa-dress.js": "92b383aae14ae16df38e04863d52344e1ee1b66aa243a37b8936f7bb7251ae3f",
     "kits/xanadu/src/89-xa-trades.js": "ea68acaefb8da0b319ca98fb43f8aa400763eccf0e734051065c4facca8662af",
-    "kits/xanadu/xanadu.py": "6e7562ab022acc1e2aeadfa55a0222b7ed8a4994a4e70ff5e1982ddce617cf46",
     "settlements/isle-demo/src/58-isle-protos.js": "d36369e7f45d2423e857278cbc2505604f5cd611ddc6ba4043e57f01a6d3d0fc",
     "settlements/theodiga/src/40-th-town.js": "4b2a91022d6ec7327331eba231884c714d524bf29f8419fe03d3e27207955c92",
     "settlements/theodiga/src/41-th-descent.js": "a82d8f7083db02c5b279dc879514f179b38f60b1e2f52a568579c329474f9d9e",
@@ -4218,10 +4212,7 @@
     "settlements/xanadu/tex/xZel.albedo.webp": "97fa4a26d7fa438a84e673bdeeba8f95e731bdc63178299ba40c173a72f59d64",
     "settlements/xanadu/tex/xZel.normal.webp": "ed6303b74594d57b7503ca3d3b6ed1e018cd65f48224310c66265dbf5af02027",
     "settlements/xanadu/tex/xZel.rough.webp": "ac851819ff2a7cc5cc2ba114080d2125e068ab234ada8b3faf6b643d4cbcd4ee",
-    "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
-    "tools/buildlib.py": "24ec6d636869007e626446a0b8e9cc886fd595af0c9f95b78c4d4b272a18ec0e",
-    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47",
-    "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
+    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47"
    },
    "listings": {
     "core/catalog": "30a9e7a2a0ea642339cc1158c3060327682167fbeb74a8c68a584185e0c6d094",
@@ -4292,20 +4283,20 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "kits/ancients/build-manifest-theodiga-today.json": "5c949c7a61c98e24276c353f2c4a70145420dbf7763a3b05b73b93ba71829eff",
+    "kits/ancients/build-manifest-theodiga-today.json": "ba5816698b354ef97533ea102a9e01f97d3b84e099822da12fafa569aa4557c3",
     "kits/ancients/dist/ancients.tex.ancients.js": "c7ed83f8f8f6137f51a41f8e4e6d9d29f58231c89061aff467c3d4710a313883",
     "kits/ancients/dist/ancients.tex.qiblai.js": "1dac9ba8f546f8b073c0cfa461730db3b01d7d5408b0331bab83ad8f070e1e91",
     "kits/ancients/dist/ancients.tex.xanadu-2.js": "7503fe94ba1a6aef4913c3cad9745cf6d7167d1529833981c9a17e0bb342cf46",
     "kits/ancients/dist/ancients.tex.xanadu.js": "2f50bf4d1e032c7a6b33fa398ddffa2388623ef2713b7005f3a50991bc22f1a9",
-    "kits/ancients/dist/theodiga-today.html": "5d7ef23d39be40eb4097aa745b0e518dbee0b9d2440a6f620759a577b05baa4e"
+    "kits/ancients/dist/theodiga-today.html": "7af3cc4a88bed14e05fa9ddebb3cbf0d346f345a57508a66d06884779e2b54ca"
    },
    "outputs_raw": {
-    "kits/ancients/build-manifest-theodiga-today.json": "31c08a5970e8bcd095f435824b98a7eb834f5c4e7c4ff9f6e83ace1ccbcbd62f",
+    "kits/ancients/build-manifest-theodiga-today.json": "59cf170301a48d6774c0d6253dfaea73e8514a466158013a449d358b4f1ebfa8",
     "kits/ancients/dist/ancients.tex.ancients.js": "c7ed83f8f8f6137f51a41f8e4e6d9d29f58231c89061aff467c3d4710a313883",
     "kits/ancients/dist/ancients.tex.qiblai.js": "1dac9ba8f546f8b073c0cfa461730db3b01d7d5408b0331bab83ad8f070e1e91",
     "kits/ancients/dist/ancients.tex.xanadu-2.js": "7503fe94ba1a6aef4913c3cad9745cf6d7167d1529833981c9a17e0bb342cf46",
     "kits/ancients/dist/ancients.tex.xanadu.js": "2f50bf4d1e032c7a6b33fa398ddffa2388623ef2713b7005f3a50991bc22f1a9",
-    "kits/ancients/dist/theodiga-today.html": "5d7ef23d39be40eb4097aa745b0e518dbee0b9d2440a6f620759a577b05baa4e"
+    "kits/ancients/dist/theodiga-today.html": "7af3cc4a88bed14e05fa9ddebb3cbf0d346f345a57508a66d06884779e2b54ca"
    }
   }
  }

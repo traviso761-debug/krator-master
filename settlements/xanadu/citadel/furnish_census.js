@@ -53,7 +53,8 @@ for (const s of ['xanadu.js', 'xanadu-citadel.js']) run(fs.readFileSync(path.joi
    citadel room takes are reported, not failed (they are other sets' pieces) */
 const XSRC = fs.readFileSync(CAT + 'krator-master-furniture-xanadu.js', 'utf8'), XSEC = XSRC.slice(XSRC.indexOf("Erewhon's citadel: the Sultan's court"));
 const NEWKEYS = (XSEC.match(/key: '(xanadu_[a-z_]+)'/g) || []).map(s => s.slice(6, -1));
-const out = run(`const NEWKEYS = ${JSON.stringify(NEWKEYS)};
+const WHERE = has('--where') ? args[args.indexOf('--where') + 1] : null;
+const out = run(`const NEWKEYS = ${JSON.stringify(NEWKEYS)}, WHERE = ${JSON.stringify(WHERE)};
 (function () {
   const IX = KratorInteriors, HEM = ${HEM};
   /* the catalog adapter's four calls over the registry (adapters/catalog-adapter.js), built pieces measured once */
@@ -81,7 +82,7 @@ const out = run(`const NEWKEYS = ${JSON.stringify(NEWKEYS)};
   };
   const S1 = IX.sets.byName['xanadu-citadel'], S0 = IX.sets.byName['xanadu'];
   const items = S1.items.filter(function (it) { return !it.skip; }).concat([S0.byKey['xa_pleasure_dome']]);
-  const HUNG = ['banner', 'art'];
+  const HUNG = ['banner', 'art'], where = [];
   const res = [];
   for (const it of items) {
     const r = IX.sets.furnish(it, 0, 0, 0, C, { baseY: 0, seed: 0, prefix: it.key + '.' });
@@ -92,6 +93,7 @@ const out = run(`const NEWKEYS = ${JSON.stringify(NEWKEYS)};
       const audit = IX.audit(R, P, C), hems = [], floats = [];
       for (const p of P.placements) {
         keys[p.key] = (keys[p.key] || 0) + 1;
+        if (WHERE && p.key === WHERE) where.push({ room: R.id, x: Math.round(p.x * 100) / 100, z: Math.round(p.z * 100) / 100, ry: Math.round(p.ry * 1000) / 1000, poly: R.poly });
         const A = FURN_BY_KEY[p.key], m = measure(p.key, p.variant | 0), lo = p.y + m.lo - fy;
         if (A.anchor === 'wall' && HUNG.indexOf(A.type) >= 0 && (ceil - fy) >= m.hi - m.lo + HEM + 0.3 && lo < HEM - 1e-3) hems.push({ key: p.key, hem: Math.round(lo * 100) / 100 });
         if ((A.anchor || 'floor') === 'floor' && Math.abs(lo) > 0.02) floats.push({ key: p.key, lo: Math.round(lo * 100) / 100 });
@@ -149,9 +151,10 @@ const out = run(`const NEWKEYS = ${JSON.stringify(NEWKEYS)};
       if (hit) zf.push({ key: A.key, variant: v, at: [hit.p.x, hit.p.y, hit.p.z].map(function (x) { return Math.round(x * 1000) / 1000; }), why: hit.why, mine: NEWKEYS.indexOf(A.key) >= 0 });
     }
   }
-  return JSON.stringify({ res: res, zf: zf });
+  return JSON.stringify({ res: res, zf: zf, where: where });
 })()`, 'census.js');
 const OUT = JSON.parse(out), res = OUT.res;
+if (WHERE) for (const w of OUT.where) console.log('WHERE ' + WHERE + ' in ' + w.room + ' at ' + w.x + ', ' + w.z + ' ry ' + w.ry + ' poly ' + JSON.stringify(w.poly));
 let fails = 0, rooms = 0, pieces = 0;
 for (const B of res) {
   const n = B.rooms.reduce((a, r) => a + r.pieces, 0); pieces += n; rooms += B.rooms.length;

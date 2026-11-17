@@ -98,4 +98,19 @@ set items and the Pleasure Dome as the page does (KFURN's seed, the whole catalo
 the interiors audit on every room (inside, clear, reached), the **hem** of every wall hanging (its lowest drawn point at least
 1 m over its floor where the room is tall enough), every floor piece on its floor and every table piece on a host, every
 required piece placed, and the residence rule. The page's own verify (`settlements/xanadu/verify.py`, `KRATOR_GL=gpu`) is
-the proof of what is drawn.
+the proof of what is drawn. `--where <key>` prints where a piece stands (room, x, z, ry).
+
+**Verified 2026-11-17, on the GPU lanes (`KRATOR_GL=gpu`):** the catalog sheet (`kits/catalog verify.py --assert`, every
+page: declared sizes, anchors, tags, palette, shaders) passes; the interiors sets sheet (`kits/interiors verify.py --sets
+--assert --seeds 1`) passes every check (inside, height, overlap, doors, clearance, reach, required, determinism, residence,
+lights) and is deterministic; with three seeds every seed passes too, but the sheet's renderer dies on the reseed back to seed
+0 (it grows past 20 GB over the reseeds and the per-set shots: the sheet's, not the citadel's; run it with `--seeds 1`).
+Erewhon (`verify.py dist/erewhon.html --assert --interiors`) passes every check but `erewhon-island-is-the-landform` (the
+island measured 71 km from the scale model's landform: the open-world map's, not the furniture's), with shots in the Hall of
+Audience, the Divan, the Hall of Feasts, the baths, the Great Bedchamber, the day room, the bath, the Kiosk, the consorts' rooms,
+the cage and the musicians' hall.
+
+**The owner's corrections.** The Dome's Hall of Feasts is furnished on the rectangle inside its arcades, so its sides are open
+arches: a hanging there stood free with its back to the court (seen from the preset camera), so `xc_feast` takes no hanging,
+frieze or wall fountain (the palace's dining halls, `xc_dining`, do). The state bed is turned round (the owner, 2026-11-16:
+"rotate that bed 180"): its headboard is at the piece's front, toward the room, its foot to the wall.
