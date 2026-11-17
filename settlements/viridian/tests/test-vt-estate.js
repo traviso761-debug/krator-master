@@ -17,7 +17,7 @@ const load = f => vm.runInThisContext(fs.readFileSync(path.join(ROOT, f), 'utf8'
 load('core/rand/08-core-rand.js');
 load('core/terrain/38-core-relief.js');
 load('core/terrain/38c-core-landforms.js');
-['10-crop-core.js', '20-crop-records.js', '22-crop-material.js', '40-crop-query.js'].forEach(f => load('kits/crops/src/' + f));
+['10-crop-core.js', '20-crop-records.js', '22-crop-material.js', '24-crop-vale-wild.js', '40-crop-query.js'].forEach(f => load('kits/crops/src/' + f));
 load('settlements/viridian/src/40-vt-estate.js');
 const K = KRELIEF;
 
@@ -68,8 +68,15 @@ T.neg('a dry-garden crop in the wet gardens is caught', beds => rainFed(beds), [
 const shadeOk = beds => beds.every(b => VTE.SHADE.indexOf(b.crop) < 0 || b.shade);
 T.ok('the shade crops (ginseng, moon caps, brackets) stand only in the shade', shadeOk(B), B.filter(b => !shadeOk([b])).map(b => b.id).join(', '));
 T.neg('ginseng in an open bed is caught', beds => shadeOk(beds), [{ crop: 'valley-ginseng', shade: false }], [{ crop: 'valley-ginseng', shade: true }]);
-T.ok('the dry garden grows the plan\'s eight', ['monks-sage', 'saffron', 'juniper', 'umbel-seed', 'bench-garlic', 'cave-madder', 'sky-poppy', 'peyote'].every(c => B.some(b => b.place === 'dry-garden' && b.crop === c)),
+T.ok('the dry garden grows the plan\'s ten (the Vale\'s whorl olive and silverscrub among them)', ['monks-sage', 'saffron', 'juniper', 'umbel-seed', 'bench-garlic', 'cave-madder', 'sky-poppy', 'peyote', 'whorl-olive-leaf', 'silverscrub'].every(c => B.some(b => b.place === 'dry-garden' && b.crop === c)),
   B.filter(b => b.place === 'dry-garden').map(b => b.crop).join(','));
+/* the physic garden: eight beds of eight crops, the Vale's wild medicinal plants among them (the owner, question 5: "y";
+   kits/crops/src/24-crop-vale-wild.js). Without that fragment the wet ground's open beds had three crops */
+const distinct = (beds, place) => new Set(beds.filter(b => b.place === place).map(b => b.crop)).size;
+T.ok('the physic garden grows eight crops (' + B.filter(b => b.place === 'physic').map(b => b.crop).join(', ') + ')', distinct(B, 'physic') === 8, '');
+T.neg('a physic garden of three crops is caught', beds => distinct(beds, 'physic') >= 6,
+  ['bell-pod', 'camphor', 'circlelichen', 'bell-pod'].map(c => ({ place: 'physic', crop: c })),
+  ['ginkgo-leaf', 'frost-willow-bark', 'beard-moss', 'cloudpine-resin', 'bell-pod', 'camphor'].map(c => ({ place: 'physic', crop: c })));
 T.ok('the beds are deterministic', JSON.stringify(VTE.beds()) === JSON.stringify(B), '');
 console.log('  beds: ' + VTE.PLACES.map(p => p.id + ' [' + B.filter(b => b.place === p.id).map(b => b.crop).join(', ') + ']').join('; '));
 T.done();

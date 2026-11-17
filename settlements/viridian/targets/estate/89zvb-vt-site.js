@@ -1,9 +1,9 @@
 // ================================================================= VIRIDIAN — the estate's site: the bench, the works, the gardens
 // settlements/viridian/PLAN.md section 6 (the layout) at 1:1, a first pass. Page metres from the house's court, x east (up the
 // hollow; the plan's u), z south (the plan's -v). The ground is 89zva's. Where the owner's questions are open this takes the
-// plan's recommendation, *proposed* (section 12b): the house at 962,1562 (Q1), white wash with the green above (Q6, VT_DRESS);
-// no cloud hermitages (Q8) and no valley village (Q9), which the plan leaves to the owner; the dry garden's grange stands 6 km
-// off, beyond this page (V7).
+// plan's recommendation, *proposed* (section 12b): the house at 962,1562 (Q1). The owner's answers (2026-11-16): white wash
+// with the green above (Q6, VT_DRESS), the cloud hermitages (Q8). The dry garden's grange (6 km off) and the valley village
+// (10 km down the valley) stand beyond this page (V7).
 //   the bench    the head house on one level cut into the hollow's mouth: the great monastery (Qiblai's qb_monastery in the
 //                green spoke's dress, its assembly hall at the back, the gate toward the valley), the two teaching colleges, the
 //                Master's house, the refectory, the bath, the kora's chortens and wheel house
@@ -11,7 +11,7 @@
 //   the works    the tea works south of the way (the withering lofts on the windward edge, the rolling and firing hall, the
 //                packing house, the stores), the herb houses north of it (the drying house, the curing house, a store)
 //   above        the physic garden behind the bench, the camphor grove's shade house and log yard, the spring house, the
-//                High Garden's pluckers' shelter
+//                High Garden's pluckers' shelter, and on the scarp's face the three cloud hermitages
 // Nothing here draws. [G data]: no THREE, no DOM.
 reseed(34365);
 const VT_WEST=-Math.PI/2;   /* a front turned west, down the hollow toward the valley and Qiblai */
@@ -54,11 +54,15 @@ vtPut('qb_vt_shade',500,-70,VT_WEST,{},'herbs','shade-house');
 vtPut('qb_vt_log_yard',500,60,VT_WEST,{},'herbs','log-yard');
 vtPut('qb_vt_spring',900,0,VT_WEST,{},'estate','spring-house');
 vtPut('qb_vt_shelter',1900,0,VT_WEST,{},'estate','pluckers-shelter');
+// the cloud hermitages on the scarp's face, in the cloud bank at 1,450-1,530 m (the owner, 2026-11-16: question 8, "y"):
+// three cells on their ledges, each a little apart, their doors west toward the valley
+for(const [x,z,i] of[[3900,-300,0],[4060,10,1],[3960,300,2]])vtPut('qb_vt_hermitage',x,z,VT_WEST,{v:i},'estate','hermitage:'+i);
 // ---------------------------------------------------------------- the ways and the paved courts
 // [kind, width, points]: the road up from the valley's edge to the court, the way to the gate, the paths up to the physic
 // garden, the grove, the spring and on up through the High Garden
 const VT_WAYS=[['road',6,[[-1180,60],[-820,36],[-560,0]]],['way',5,[[-470,0],[-90,0]]],['path',3,[[180,0],[290,-10]]],
- ['path',3,[[370,-10],[620,0],[900,0],[1400,0],[1900,0]]]];
+ ['path',3,[[370,-10],[620,0],[900,0],[1400,0],[1900,0]]],['path',2,[[1900,0],[2600,0],[3300,-80],[3700,-120],[3900,-300]]],
+ ['path',2,[[3700,-120],[4060,10]]],['path',2,[[3700,-120],[3960,300]]]];
 const VT_PAVED=[[-470,-75,-400,75],[-40,-34,170,34],[-100,-20,-46,20]];   /* the buyers court; the bench's axis court, through the monastery to the bath; the gate's forecourt */
 // ---------------------------------------------------------------- the hedges, now every pad is cut; the flora's mask
 const VT_HEDGES=(function(){const H=vtHedges(),clear=p=>!VT_WAYS.some(([k,w,P])=>P.some((a,i)=>i+1<P.length&&vtSegD(p.x,p.z,a,P[i+1])<w/2+1.2));

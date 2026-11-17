@@ -9,6 +9,7 @@ The sheet (dist/viridian-sheet.html, step V3):
 The estate (dist/viridian.html, window.CITY_BUILD 'viridian', step V6's first pass):
 
   estate-laid     every place of the site placed (over 45), the great monastery in the green dress, the colleges, the tea works,
+                  the cloud hermitages,
                   the herb houses, the physic garden, the spring house and the pluckers' shelter among them
   bench-level     the head house's bench one level, every building on it standing at that level, the bench within 30 m of
                   the ground under it
@@ -36,7 +37,7 @@ PLANNED = ['qb_vt_wither', 'qb_vt_roll_fire', 'qb_vt_pack', 'qb_vt_tasting', 'qb
            'qb_vt_terrace_plot', 'qb_vt_physic']
 ESTATE_JS = r"""
 if(window.CITY_BUILD==='viridian'){const Z=window._viridian||{},K=Z.byKind||{},P=typeof VT_PLACE!=='undefined'?VT_PLACE:[],has=id=>P.some(p=>p.id===id);
- const ids=['great-monastery','college:north','college:south','master-house','wither:0','wither:1','roll-fire','pack','herb-drying','curing','still-room','tasting-room','caravanserai','physic-garden','shade-house','log-yard','spring-house','pluckers-shelter'],miss=ids.filter(i=>!has(i));
+ const ids=['great-monastery','college:north','college:south','master-house','wither:0','wither:1','roll-fire','pack','herb-drying','curing','still-room','tasting-room','caravanserai','physic-garden','shade-house','log-yard','spring-house','pluckers-shelter','hermitage:0','hermitage:1','hermitage:2'],miss=ids.filter(i=>!has(i));
  const mono=P.find(p=>p.id==='great-monastery');
  R.push({name:'estate-laid',ok:Z.placed>=45&&!miss.length&&!!mono&&mono.o.v===3,detail:Z.placed+' placed ('+JSON.stringify(K)+'), '+Z.chunks+' chunks, '+Z.pads+' pads, '+Z.retain+' retaining faces'+(miss.length?'; MISSING '+miss.join(', '):'')});
  const B=VT_BENCH,on=P.filter(p=>p.kind==='sacred'),off=on.filter(p=>Math.abs(p.o.y-B.y)>.01);let lo=1e9,hi=-1e9;

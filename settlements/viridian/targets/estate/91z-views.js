@@ -10,6 +10,7 @@ const VIEWS=(function(){const V={},vtBy=VT_BENCH.y,vtP=id=>VT_PLACE.find(p=>p.id
  {const p=vtP('roll-fire');V['The tea works']=[p.x-200,p.o.y+60,p.z+180,p.x,p.o.y,p.z];}
  {const p=vtP('physic-garden');V['The physic garden']=[p.x-90,p.o.y+40,p.z+70,p.x,p.o.y,p.z];}
  {const p=vtP('pluckers-shelter');V['The High Garden']=vtEye(p.x-40,60,p.x+380,-160,2);}
+ {const h=vtP('hermitage:1');V['The cloud hermitages']=[h.x-160,h.o.y+40,h.z+90,h.x,h.o.y+2,h.z];}
  V['Up to the scarp']=vtEye(180,-40,4000,0,4);   /* from behind the bench, east up the mist belt to the scarp's face */
  V['Toward Qiblai']=[0,vtBy+60,0,-10000,vtBy-400,4000];   /* west and south-west down the valley, the basin beyond */
  return V;})();

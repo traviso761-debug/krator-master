@@ -23,5 +23,5 @@ Each target adds its own fragments to `src/` and builds one output.
 
 | Target | Fragments | KB |
 |---|---|---|
-| `estate` | `89z-rows.js`, `89zva-vt-ground.js`, `89zvb-vt-site.js`, `90va-vt-world.js`, `90vb-vt-build.js`, `91z-views.js` | 32 |
+| `estate` | `89z-rows.js`, `89zva-vt-ground.js`, `89zvb-vt-site.js`, `90va-vt-world.js`, `90vb-vt-build.js`, `91z-views.js` | 33 |
 | `sheet` | `89z-rows.js`, `91z-views.js` | 1 |

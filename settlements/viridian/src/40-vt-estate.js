@@ -40,11 +40,12 @@ var VTE = (function () {
   var SHADE = ['valley-ginseng', 'moon-cap', 'rainbow-bracket'];
   // the places with beds: a programme of preferred crops (taken in turn where they fit), else a seeded pick by bucket
   var PLACES = [
-    { id: 'physic', ground: 'wet', beds: 8, buckets: ['reagent', 'herb', 'medicine', 'berry'], shade: false },
+    { id: 'physic', ground: 'wet', beds: 8, prefer: ['ginkgo-leaf', 'frost-willow-bark', 'beard-moss', 'cloudpine-resin', 'bell-pod', 'camphor', 'circlelichen', 'maple-syrup'],
+      buckets: ['reagent', 'herb', 'medicine', 'berry'], shade: false },
     { id: 'shade-house', ground: 'wet', beds: 2, prefer: ['valley-ginseng'], shade: true },
     { id: 'log-yard', ground: 'wet', beds: 6, prefer: ['moon-cap', 'rainbow-bracket'], shade: true },
     { id: 'low-bed', ground: 'low', beds: 4, prefer: ['rimdew', 'herbs', 'tobacco'], buckets: ['medicine', 'herb'], shade: false },
-    { id: 'dry-garden', ground: 'dry', beds: 10, prefer: ['monks-sage', 'saffron', 'juniper', 'umbel-seed', 'bench-garlic', 'cave-madder', 'sky-poppy', 'peyote'],
+    { id: 'dry-garden', ground: 'dry', beds: 10, prefer: ['monks-sage', 'saffron', 'juniper', 'umbel-seed', 'bench-garlic', 'cave-madder', 'sky-poppy', 'peyote', 'whorl-olive-leaf', 'silverscrub'],
       buckets: ['herb', 'spice', 'reagent', 'medicine'], shade: false }];
   var BED_SEED = 34361;
 

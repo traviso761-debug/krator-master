@@ -51,7 +51,7 @@ const VT_TEA=(function(){const P=[].concat(...VT_HEDGES.fine),vtN=P.length;if(!v
 // the flora: the Vale of Xanadu's biome over the page's mask (89zva: the forest and coppice on the open slopes, a shade tree
 // here and there in the tea), then baked; its LOD ticks with the chunks'
 if(typeof BIO!=='undefined'&&BIO.host){BIO.setScene(scene);BIO.setSun([-.5,.76,.52]);
- try{window._biome=XANADU.build({R:VT_SITE.bio.R,quality:1,lakeHue:XANADU_LAKE.hue});}catch(e){reportErr('biome: '+(e&&e.stack||e));}
+ try{window._biome=XANADU.build({R:VT_SITE.bio.R,quality:.55,lakeHue:XANADU_LAKE.hue})   /* .55: the estate's disc reaches the scarp's face, and the overview stays in its budget */;}catch(e){reportErr('biome: '+(e&&e.stack||e));}
  try{window._bioBake=BIO.bake();}catch(e){reportErr('biome bake: '+e.message);}
  if(BIO.lodTick)FRAME_HOOKS.push(()=>BIO.lodTick(camera));}
 LABELS=new THREE.Group();LABELS.userData.probeSkip=true;scene.add(LABELS);
