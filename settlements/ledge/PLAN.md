@@ -417,7 +417,7 @@ tune's Ledge records, and the gallery when it reaches `main`.
 
 ## 9. The plan as built (the Ledge session, 2026-11-16)
 
-Everything here is *proposed* unless section 0 fixes it; the layout (`src/30-ledge-layout.js`) is the one source of the numbers,
+Everything here is *proposed* unless section 0 or 9.11 (the owner's answers of 2026-11-17) fixes it; the layout (`src/30-ledge-layout.js`) is the one source of the numbers,
 `AREAS.md` and the sheets (`floors/`) are drawn from it, and `test-ledge.js` checks it.
 
 ### 9.1 The Ancients' target: replaced, not reused
@@ -538,15 +538,15 @@ Riftrim's station 1 should read `LEDGE.groundAt` (or its face record: the dresse
 to z 180, the lake 297) in place of its benched stand-in within 900 m of Ledge, and keep its flora off the dressed face and the decks.
 Not done here (riftrim's files are another session's).
 
-### 9.11 Questions for the owner (2026-11-16; the build took the first answer of each)
+### 9.11 Questions for the owner: settled (the owner, 2026-11-17: "A-D sounds good": each as built)
 
-- **A. The size.** The shell as built is 42 layers, 320-700 m along the face, 24-220 m out (the prow 340 m): **6.27 million m2**, ~90,000
+- **A. The size: settled, as built.** The shell is 42 layers, 320-700 m along the face, 24-220 m out (the prow 340 m): **6.27 million m2**, ~90,000
   people at the Ancients' peak. Keep it, or trim (a 500 m top would take it to about 4 million)?
-- **B. Loj Fower in the 10,000?** Built: yes (1,500 of the 10,000 live on the middle decks; Dalab 5,700, the Fellgangs 2,800). Or are
+- **B. Loj Fower in the 10,000: settled, yes.** Built: yes (1,500 of the 10,000 live on the middle decks; Dalab 5,700, the Fellgangs 2,800). Or are
   the 10,000 Dalab's and the Fellgangs', with the loj on top?
-- **C. The station's height.** Built: the middle decks at 932 m (layer 20), reached by a helix of ~25 turns (64 km of bore at 4 %). Or
+- **C. The station's height: settled, as built.** Built: the middle decks at 932 m (layer 20), reached by a helix of ~25 turns (64 km of bore at 4 %). Or
   should the Line come down the Geit Riba's gorge first (saving ~750 m of fall), or arrive higher in the face?
-- **D. The lifts.** Built: both great lifts run (cars 10 x 16 x 7 m, six beasts, ~40 t), four face cores of which one runs, the stairs in
+- **D. The lifts: settled, as built.** Built: both great lifts run (cars 10 x 16 x 7 m, six beasts, ~40 t), four face cores of which one runs, the stairs in
   the great shafts Loj Fower's. Right?
 
 ## Core adoption (written before the first fragment, 2026-11-16)

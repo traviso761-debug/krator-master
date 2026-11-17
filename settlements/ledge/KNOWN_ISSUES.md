@@ -21,7 +21,6 @@ What the first page does not do yet, and what it owes. `PLAN.md` section 9 is th
   face and the lift halls; `KCARVE` / `KCAVERN` (and `KKARST` for the cliff springs) come with the interiors.
 - **The Line's helix is a record**, checked for its grade and its length (64 km), not drawn.
 - **No night**: the lit windows and Loj Fower's green and red lamps are day colours; `NIGHT` is fixed false.
-- **The size** (6.27 million m2 at the Ancients' peak) waits on the owner (`PLAN.md` 9.11, question A).
 
 ## Baselined on purpose (2026-11-17)
 
