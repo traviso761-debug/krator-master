@@ -118,13 +118,17 @@ function capHit(name,def){const cap=def.cap!=null?def.cap:BIO.CAP;def.capHit=tru
 // its base) on the clump with neither "stems" nor "base" (centred on the twig, the image upside down). It reads what the pack
 // says of the image (plants, anchor: tools/textures/pack.py from check_cells.py); a pack written before that says nothing and
 // is never refused. Each slot is reported once. BIO.cardFaults lists them.
-BIO.cardFaults=[];const _cardSeen=new Set();
+BIO.cardFaults=[];BIO.cardMute=[];const _cardSeen=new Set();
 // a geometry whose uv spans less than nine tenths of the image either way is cut by the kit's own code (a cellUV, a bamboo spray)
 function uvCut(raw){const ud=raw.userData||(raw.userData={});if(ud._uvCut!=null)return ud._uvCut;const U=raw.attributes&&raw.attributes.uv;let r=false;
  if(U){let u0=1e9,u1=-1e9,v0=1e9,v1=-1e9;for(let i=0;i<U.count;i++){const u=U.getX(i),v=U.getY(i);if(u<u0)u0=u;if(u>u1)u1=u;if(v<v0)v0=v;if(v>v1)v1=v;}r=u1-u0<.9||v1-v0<.9;}
  return ud._uvCut=r;}
+// ONE PLANT CUT AS A SHEET (2026-11-15, the owner: ehighlands' beech "badly cut out"): the reverse of the whole sheet, a one-plant card
+// (plants 1) cut into a sheet's cells by BIO.geo.cells or "sheet": "geometry", so every card shows a ninth of the plant with straight edges.
 function cardWhy(raw,lc){if(!lc||!lc.lib||lc.plants==null)return null;
- const cb=raw.userData&&raw.userData.card,cut=!!(raw.userData&&raw.userData.cells)||lc.sheet==='geometry'||uvCut(raw),many=lc.plants>1;
+ const cells=!!(raw.userData&&raw.userData.cells)||lc.sheet==='geometry';
+ const cb=raw.userData&&raw.userData.card,cut=cells||uvCut(raw),many=lc.plants>1;
+ if(lc.plants===1&&cells&&!lc.cell&&!lc.stems)return 'is ONE plant (plants 1) cut into a sheet\'s cells (BIO.geo.cells or "sheet": "geometry"): every card shows a fragment of it with straight edges; draw it whole';
  if(many&&!lc.cell&&!lc.stems&&!cut)return 'draws its whole sheet of '+lc.plants+' plants on every card: give it a "cell" (or "stems" on a crown)';
  if(cb&&cb.kind!=='clump'&&cb.base&&!lc.base)return 'is a library plant on a '+(cb.once?'frond or ribbon (the texture once a segment)':'hanging card')+' with no "base": it floats or lies sideways';
  if(cb&&cb.kind==='clump'&&!cut&&!lc.stems&&!lc.base&&(many||lc.anchor==='bottom'))return 'is a crown on the clump with no "stems": its sprigs sit centred on the twig, the image upside down';
@@ -246,7 +250,11 @@ BIO.libSwap=function(kit,MAT){const out={};
   if(card){t.generateMipmaps=true;t.minFilter=T.LinearMipmapLinearFilter;t.magFilter=T.LinearFilter;if(!m.alphaTest)m.alphaTest=.4;
    if(L.cell){const c=L.cell;t.offset.set(c[0],c[1]);t.repeat.set(c[2]-c[0],c[3]-c[1]);}   /* one plant of a nine-plant sheet (unflipped: v runs down the sheet) */
    m.userData.libCard={slot,lib:L.lib,plants:L.plants==null?null:L.plants,anchor:L.anchor||null,cell:!!L.cell,sheet:L.sheet||null,
-    base:L.base||null,stems:L.stems||null,rise:L.rise==null?null:L.rise};}   /* what the image is and how the slot cuts it: the fit and the card guard read it */   /* the edge its plant attaches at: BIO.def turns a geometry that holds the plant by one end */
+    base:L.base||null,stems:L.stems||null,rise:L.rise==null?null:L.rise};
+   /* a pack that says nothing of the image (no "plants"): the card guard cannot judge the slot. tools/textures/pack.py has written plants
+      since 2026-10-27, so it is a build's own pack writer dropping the fields (ehighlands' did, 2026-11-15: its cells, bases and stems never
+      reached a page) or a pack.json from before. BIO.guardChecks reports these */
+   if(L.plants==null&&BIO.cardMute.indexOf(slot)<0)BIO.cardMute.push(slot);}   /* what the image is and how the slot cuts it: the fit and the card guard read it */   /* the edge its plant attaches at: BIO.def turns a geometry that holds the plant by one end */
   else m.userData.libScale=L.scale;
   m.map=t;m.needsUpdate=true;out[slot]=L.lib;};
  for(const k in MAT){const v=MAT[k];if(Array.isArray(v))v.forEach((m,i)=>one(m,k+i));
@@ -606,6 +614,9 @@ BIO.triDist=function(x,y,z,a,b,c){const abx=b.x-a.x,aby=b.y-a.y,abz=b.z-a.z,acx=
  const vb=d5*d2-d1*d6;if(vb<=0&&d2>=0&&d6<=0){const w=d2/((d2-d6)||1e-12);return to(a.x+acx*w,a.y+acy*w,a.z+acz*w);}
  const va=d3*d6-d5*d4;if(va<=0&&d4-d3>=0&&d5-d6>=0){const w=(d4-d3)/(((d4-d3)+(d5-d6))||1e-12);return to(b.x+(c.x-b.x)*w,b.y+(c.y-b.y)*w,b.z+(c.z-b.z)*w);}
  const dn=1/((va+vb+vc)||1e-12),v=vb*dn,w=vc*dn;return to(a.x+abx*v+acx*w,a.y+aby*v+acy*w,a.z+abz*v+acz*w);};
+// the distance from (x,y,z) to the segment a-b ({x,y,z})
+BIO.segDist=function(x,y,z,a,b){const dx=b.x-a.x,dy=b.y-a.y,dz=b.z-a.z,L=dx*dx+dy*dy+dz*dz;let t=L>0?((x-a.x)*dx+(y-a.y)*dy+(z-a.z)*dz)/L:0;t=t<0?0:t>1?1:t;
+ return Math.hypot(x-a.x-dx*t,y-a.y-dy*t,z-a.z-dz*t);};
 BIO.attachAudit=function(o){o=o||{};const T=BIO.host.THREE,scene=BIO.host.scene,KS=typeof KSPACE!=='undefined'?KSPACE:null;
  const out={samples:0,audited:0,floating:0,share:0,split:0,outrange:0,paired:0,lodShare:0,worst:[],byItem:{},note:null};
  if(!scene||!KS||!o.ground){out.note=!scene?'no scene':!KS?'no KSPACE (core/space) in the page':'no ground function';return out;}
@@ -624,11 +635,17 @@ BIO.attachAudit=function(o){o=o||{};const T=BIO.host.THREE,scene=BIO.host.scene,
   if(u.biome&&m.isInstancedMesh&&(k==='leaf'||k==='hang')){const d=defOf(m);if(!(d&&d.free))fol.push(m);}else if(k!=='far'&&k!=='impostor')str.push(m);});
  const M4=new T.Matrix4(),P=new T.Vector3(),Q=new T.Quaternion(),S3=new T.Vector3(),V=new T.Vector3(),A=new T.Vector3(),B=new T.Vector3(),smp=[];
  let N=0;for(const m of fol)N+=m.count;const st=Math.max(1,Math.ceil(N/Math.max(1,MAX)));let g=0;
+ /* A CROWN HELD BY ITS STEMS (2026-11-15, the owner: ehighlands' fir needles "not attached to their branches"): a clump whose slot gives
+    "stems" (BIO.geo.stemClump) has its sprigs' stem ends at its origin, so the origin must be on the twig: within o.stemTol (.15 m) of a
+    structure's surface, not a share of the card's size (.25 x size + .5 passed a 1 m sprig whose stem missed its twig by 60 cm). out.stemmed
+    counts them, out.stemFloat those that miss */
+ const STOL=o.stemTol==null?.15:+o.stemTol;out.stemmed=0;out.stemFloat=0;
  for(const m of fol){m.updateMatrixWorld();const df=defOf(m),stem=!!(df&&df.fit||df&&df.raw&&df.raw.userData.card&&df.raw.userData.card.kind!=='clump');
+  const lcS=df&&df.mat&&df.mat.userData&&df.mat.userData.libCard,twig=!!(df&&df.fit&&lcS&&lcS.stems&&df.raw&&df.raw.userData.card&&df.raw.userData.card.kind==='clump');
   for(let i=0;i<m.count;i++,g++){if(g%st)continue;m.getMatrixAt(i,M4);M4.premultiply(m.matrixWorld);M4.decompose(P,Q,S3);
   const x=P.x+off[0],y=P.y+off[1],z=P.z+off[2],s=Math.max(Math.abs(S3.x),Math.abs(S3.y),Math.abs(S3.z)),up=y-ground(x,z);out.samples++;
   if(!(up>=minUp)||up<=.75*s+PAD)continue;   /* low, or a card that reaches the ground: it stands on the ground */
-  smp.push({x,y,z,tol:(stem?KS0:K)*s+PAD,m,i,onLeaf:!!(df&&df.onLeaf)});}}
+  smp.push({x,y,z,tol:twig?STOL:(stem?KS0:K)*s+PAD,twig,m,i,onLeaf:!!(df&&df.onLeaf)});}}
  const cf=v=>Math.floor(v/CELL),key=(a,b)=>a*1048576+b,want=new Set();
  for(const p of smp){const r=Math.ceil(p.tol/CELL),cx=cf(p.x),cz=cf(p.z);for(let a=-r;a<=r;a++)for(let b=-r;b<=r;b++)want.add(key(cx+a,cz+b));}
  /* the samples are the index and each piece of structure updates the samples near it as it is met: a list of the points was 3.5 GB
@@ -643,11 +660,14 @@ BIO.attachAudit=function(o){o=o||{};const T=BIO.host.THREE,scene=BIO.host.scene,
  for(const p of smp){p.best=p.own=1e9;p.bl=p.ol=null;const f=lodOf(p.m,p.i,false);p.mr=f?f.mr:0;SP.insert(p,p.x,p.z,p.tol);}
  for(const m of str){const geo=m.geometry,pa=geo&&geo.attributes&&geo.attributes.position;if(!pa)continue;m.updateMatrixWorld();
   if(m.isInstancedMesh){if(!geo.boundingBox)geo.computeBoundingBox();const bb=geo.boundingBox,cx=(bb.min.x+bb.max.x)/2,cz=(bb.min.z+bb.max.z)/2,r0=Math.max(bb.max.x-bb.min.x,bb.max.z-bb.min.z)/2;
+   /* each instance its long axis, a segment with its radius, measured point to segment (2026-11-15: it was points CELL/4 = 2 m apart, so a
+      card between two missed the rod by up to a metre and a card past a rod's end could be held by the next point: three sessions'
+      reports, the Labyrinth's grass-tree blooms) */
    for(let i=0;i<m.count;i++){m.getMatrixAt(i,M4);M4.premultiply(m.matrixWorld);A.set(cx,bb.min.y,cz).applyMatrix4(M4);B.set(cx,bb.max.y,cz).applyMatrix4(M4);
     M4.decompose(P,Q,S3);const r=r0*Math.max(Math.abs(S3.x),Math.abs(S3.z));
     if(r<CELL/4&&!want.has(key(cf(A.x),cf(A.z)))&&!want.has(key(cf(B.x),cf(B.z)))&&A.distanceTo(B)<CELL)continue;
-    const n=Math.max(1,Math.ceil(A.distanceTo(B)/(CELL/4))),lod=lodOf(m,i,false);
-    for(let k=0;k<=n;k++){V.lerpVectors(A,B,k/n);add(V.x,V.y,V.z,r,lod);}}}
+    const lod=lodOf(m,i,false),hx=(B.x-A.x)/2,hz=(B.z-A.z)/2;SP.query(A.x+hx,A.z+hz,Math.hypot(hx,hz)+r,near);
+    for(const p of near)meet(p,BIO.segDist(p.x,p.y,p.z,A,B)-r,lod);}}
   else{   /* a bucket or a host mesh: every triangle whose box touches a wanted cell */
    const W=m.matrixWorld,id=W.equals(new T.Matrix4()),ix=geo.index,nt=Math.floor((ix?ix.count:pa.count)/3),Vt=[A,B,new T.Vector3()],vi=[0,0,0];
    for(let t=0;t<nt;t++){for(let k=0;k<3;k++){vi[k]=ix?ix.getX(t*3+k):t*3+k;Vt[k].fromBufferAttribute(pa,vi[k]);if(!id)Vt[k].applyMatrix4(W);}
@@ -662,8 +682,8 @@ BIO.attachAudit=function(o){o=o||{};const T=BIO.host.THREE,scene=BIO.host.scene,
    for(const p of near)if(p.onLeaf&&p.best>p.tol&&Math.hypot(p.x-P.x,p.z-P.z)<=h&&p.y-P.y>=yLo*sy&&p.y-P.y<=yHi*sy){p.best=p.tol;p.bl=lodOf(m,i,false);p.own=1e9;}}}
  const worst=[];
  for(const p of smp){const best=p.best,bl=p.own<=p.tol?p.ol:p.bl;
-  out.audited++;const nm=p.m.name||'?',bi=out.byItem[nm]||(out.byItem[nm]={n:0,floating:0,split:0,outrange:0});bi.n++;
-  if(best>p.tol){out.floating++;bi.floating++;worst.push({item:nm,at:[+p.x.toFixed(1),+p.y.toFixed(1),+p.z.toFixed(1)],d:best>1e8?null:+best.toFixed(2),tol:+p.tol.toFixed(2)});continue;}
+  out.audited++;const nm=p.m.name||'?',bi=out.byItem[nm]||(out.byItem[nm]={n:0,floating:0,split:0,outrange:0});bi.n++;if(p.twig)out.stemmed++;
+  if(best>p.tol){out.floating++;bi.floating++;if(p.twig)out.stemFloat++;worst.push({item:nm,at:[+p.x.toFixed(1),+p.y.toFixed(1),+p.z.toFixed(1)],d:best>1e8?null:+best.toFixed(2),tol:+p.tol.toFixed(2)});continue;}
   const fl=lodOf(p.m,p.i,false);
   if(fl||bl)out.paired++;
   if(fl&&bl){if(fl.mr!==bl.mr||!(holds(fl,bl)||holds(bl,fl))){out.split++;bi.split++;}else if(fl.range*RK>bl.range+1e-6){out.outrange++;bi.outrange++;}}
@@ -671,24 +691,53 @@ BIO.attachAudit=function(o){o=o||{};const T=BIO.host.THREE,scene=BIO.host.scene,
  worst.sort((a,b)=>(b.d==null?1e9:b.d/b.tol)-(a.d==null?1e9:a.d/a.tol));out.worst=worst.slice(0,8);
  out.share=out.audited?out.floating/out.audited:0;const held=out.audited-out.floating;out.lodShare=held?(out.split+out.outrange)/held:0;
  return out;};
+// INSIDE OUT (2026-11-15, the owner: "a transparency problem" at ehighlands' fumarole, station 3): a lathe written lip to foot wound
+// every face of the vent cones toward the ground, so from above the near flank was culled (seen through) and the far flank's unlit
+// underside drew as a flat black crescent. BIO.insideOut({ground}) reads every opaque, front-sided, non-instanced mesh drawn (o.meshes
+// instead: the negative control) and returns those whose area is mostly (o.share, .5) faces turned down (normal y < -.3) that stand above
+// the ground (a cave's roof or a carved overhang lies under the heightfield and is not counted): [{name, share, area}]. A mesh of more
+// than o.maxTris (200k) triangles is strided.
+BIO.insideOut=function(o){o=o||{};const T=BIO.host.THREE,scene=BIO.host.scene,ground=o.ground,SH=o.share==null?.5:+o.share,MT=o.maxTris==null?200000:o.maxTris,out=[];
+ if(!ground||!T)return out;const list=o.meshes||[];if(!o.meshes&&scene)scene.traverse(m=>{if(m.isMesh&&!m.isInstancedMesh&&m.visible)list.push(m);});
+ const A=new T.Vector3(),B=new T.Vector3(),C=new T.Vector3(),E=new T.Vector3(),F=new T.Vector3();
+ for(const m of list){const mt=m.material,u=m.userData||{},k=mt&&mt.userData&&mt.userData.bio&&mt.userData.bio.kind;
+  if(!mt||Array.isArray(mt)||mt.side!==T.FrontSide||mt.transparent||u.probeSkip||k==='leaf'||k==='hang'||k==='far'||k==='impostor')continue;
+  const g=m.geometry,pa=g&&g.attributes&&g.attributes.position;if(!pa)continue;m.updateMatrixWorld();const W=m.matrixWorld,ix=g.index,nt=Math.floor((ix?ix.count:pa.count)/3),st=Math.max(1,Math.ceil(nt/MT));
+  let tot=0,down=0;for(let t=0;t<nt;t+=st){const v=k=>ix?ix.getX(t*3+k):t*3+k;A.fromBufferAttribute(pa,v(0)).applyMatrix4(W);B.fromBufferAttribute(pa,v(1)).applyMatrix4(W);C.fromBufferAttribute(pa,v(2)).applyMatrix4(W);
+   E.subVectors(B,A);F.subVectors(C,A);E.cross(F);const a=E.length();if(!(a>0))continue;tot+=a;
+   if(E.y/a<-.3){const x=(A.x+B.x+C.x)/3,y=(A.y+B.y+C.y)/3,z=(A.z+B.z+C.z)/3;if(y>ground(x,z)+.05)down+=a;}}
+  const area=tot*st/2;if(area>2&&down/tot>SH)out.push({name:m.name||u.inspectLabel||m.type,share:+(down/tot).toFixed(2),area:+area.toFixed(1)});}
+ return out;};
 // The guards as the host's checks (core/host/95-host-probe.js appends them to every build's hostChecks and hostNegatives):
 // the card guard, the attachment audit and the tree's one LOD key, each with a negative control that must fail.
 // o.maxShare (.01): the share of audited cards that may float, or switch apart from their structure.
 BIO.guardChecks=function(o){o=o||{};const mx=o.maxShare==null?.01:+o.maxShare,R=[];
  R.push({name:'library cards cut and held right (core card guard)',ok:!BIO.cardFaults.length,
   detail:BIO.cardFaults.length?BIO.cardFaults.slice(0,6).map(f=>f.slot+' ('+f.lib+') on '+f.item+': '+f.why).join('; '):'no card the guard refuses'});
+ R.push({name:'library cards described by the page\'s pack (the card guard can judge them)',ok:!BIO.cardMute.length,
+  detail:BIO.cardMute.length?BIO.cardMute.length+' slot(s) whose pack says nothing of the image (no "plants"): '+BIO.cardMute.slice(0,8).join(', ')+
+   ': the build\'s pack writer drops the fields (use tools/textures/matlib_pack.py) or tex/pack.json predates them (rerun tools/textures/pack.py)':'every library card says what it is'});
+ if(o.ground){const io=BIO.insideOut(o);R.push({name:'no mesh drawn inside out (faces wound toward the ground)',ok:!io.length,
+  detail:io.length?io.slice(0,6).map(e=>e.name+' ('+Math.round(100*e.share)+'% of '+e.area+' m2 faces down above the ground)').join('; ')+': its profile or winding is reversed; from above it shows its unlit underside through a culled near side':'none'});}
  const a=BIO.attachAudit(o),fmt=x=>(100*x).toFixed(2)+'%',top=k=>Object.entries(a.byItem).filter(e=>e[1][k]).sort((x,y)=>y[1][k]-x[1][k]).slice(0,4).map(e=>e[0]+' '+e[1][k]+'/'+e[1].n).join(', ');
  if(a.note)R.push({name:'foliage held by its structure (core attach audit)',ok:true,detail:'not audited: '+a.note});
  else{R.push({name:'foliage held by its structure (core attach audit)',ok:a.share<=mx,
    detail:a.floating+' of '+a.audited+' cards above ground float ('+fmt(a.share)+', limit '+fmt(mx)+')'+(a.floating?': '+top('floating')+'; worst '+JSON.stringify(a.worst.slice(0,3)):'')});
+  if(a.stemmed)R.push({name:'crowns held by their stems sit on their twigs (core attach audit, stem within '+(o.stemTol==null?.15:o.stemTol)+' m)',ok:a.stemFloat/a.stemmed<=mx,
+   detail:a.stemFloat+' of '+a.stemmed+' stem-held clumps above ground miss every structure ('+fmt(a.stemFloat/a.stemmed)+', limit '+fmt(mx)+')'});
   R.push({name:'a tree\'s cards switch with their structure (one LOD key per tree)',ok:a.lodShare<=mx,
    detail:(a.paired?'':'no runtime LOD on these cards; ')+a.split+' in another chunk, '+a.outrange+' reaching past their structure, of '+(a.audited-a.floating)+' held ('+fmt(a.lodShare)+')'+(a.split+a.outrange?': '+top('split')+' '+top('outrange'):'')});}
  return R;};
 BIO.guardNegatives=function(o){o=o||{};const mx=o.maxShare==null?.01:+o.maxShare,R=[];
  const fake={userData:{card:{base:'top',once:true}}};
  R.push({name:'a library fern on a frond with no base',failed:!!cardWhy(fake,{lib:'card.fern',plants:1,anchor:'bottom'}),detail:'the card guard on a made-up slot'});
+ R.push({name:'a one-plant card cut into a sheet\'s cells',failed:!!cardWhy({userData:{card:{kind:'clump'},cells:true}},{lib:'card.broadleaf',plants:1,anchor:'center'}),detail:'the card guard on a made-up slot'});
+ {const T=BIO.host.THREE;if(T&&o.ground){const g=new T.PlaneGeometry(4,4);g.rotateX(Math.PI/2);const fk=new T.Mesh(g,new T.MeshLambertMaterial());fk.position.set(0,o.ground(0,0)+2,0);
+  R.push({name:'a made-up disc 2 m up, wound toward the ground',failed:BIO.insideOut({ground:o.ground,meshes:[fk]}).length===1,detail:'the inside-out probe'});}}
  const a=BIO.attachAudit(Object.assign({},o,{offset:[0,6,0]}));
  if(!a.note)R.push({name:'every card lifted 6 m off its branch',failed:a.share>mx,detail:a.floating+' of '+a.audited+' float'});
+ if(!a.note&&a.stemmed){const s=BIO.attachAudit(Object.assign({},o,{offset:[0,.4,0]}));
+  R.push({name:'every stem-held clump lifted 0.4 m off its twig',failed:s.stemFloat/Math.max(1,s.stemmed)>mx,detail:s.stemFloat+' of '+s.stemmed+' miss'});}
  const b=BIO.attachAudit(Object.assign({},o,{rangeK:4}));
  if(!b.note&&b.paired>0)R.push({name:'every card reaching four times its range',failed:b.lodShare>mx,detail:(b.split+b.outrange)+' of '+(b.audited-b.floating)+' switch apart'});
  return R;};

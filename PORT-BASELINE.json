@@ -169,28 +169,28 @@
    "sha256": "c1c9be7624a08b787b6fe1730f49bf373df0ea65adf431bce05ced0e36848031"
   },
   "biomes/ehighlands/dist/ehighlands-face.html": {
-   "bytes": 3614384,
-   "sha256": "851f8f2c38f30046df283f71fe1bbad0959821f148973dc36da71595cc403bb3"
+   "bytes": 3604394,
+   "sha256": "8e278f59d43c2c4f8c706805fcee870100fd662bec2276ab55093b8991691016"
   },
   "biomes/ehighlands/dist/ehighlands-lesser.html": {
-   "bytes": 2925724,
-   "sha256": "4d75b336510861b0cc8c7a3f57e7e811f09a9617b11d8de96373332be44a51b1"
+   "bytes": 2915370,
+   "sha256": "5bc6e82ad0bc31f8015a1592933c94b582b19e169799e84591bc182c4801e5bc"
   },
   "biomes/ehighlands/dist/ehighlands-mixed.html": {
-   "bytes": 4190181,
-   "sha256": "d6bd346da63deb18bc749692e742ad2ad0fb94d6ac85fb733f914448ea36493e"
+   "bytes": 4180605,
+   "sha256": "2eb253ff7f1d80ea765443b9d80d8d37e71b2a5f4d23246fb13730637d628c8f"
   },
   "biomes/ehighlands/dist/ehighlands-montane.html": {
-   "bytes": 3552619,
-   "sha256": "03a27d5ed8a858dbed01ad23b6875a0a582e4a00ed63fa3a6768d654c8f19843"
+   "bytes": 3542817,
+   "sha256": "51f97b3132a7f8154dcb6a03d9f9cf85ab5a2e52f0596f5e4d10414b92c8f583"
   },
   "biomes/ehighlands/dist/ehighlands-treeline.html": {
-   "bytes": 3884147,
-   "sha256": "ce4212fbbc6253f617ced64748e15e5d2c20f47ac47fc2c0bd5a618315b600de"
+   "bytes": 3874411,
+   "sha256": "f76ce529a46761757d300ad92d1d18f4795fe60767001f72f887ea77927f1205"
   },
   "biomes/ehighlands/dist/ehighlands.html": {
-   "bytes": 2885294,
-   "sha256": "02645fb7b527ab299df7871491b8acc79d60f67626c1cc703a4df6c5a5423671"
+   "bytes": 2874973,
+   "sha256": "b95cb2b002df09cc31b425795933c5bd68744200d33c4fcef976dcc877dde0b3"
   },
   "biomes/farside/dist/farside-cloud.html": {
    "bytes": 1203402,

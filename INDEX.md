@@ -78,7 +78,7 @@ Every build is a folder with `src/` fragments and a `build.py`. Open a build's `
 | [`biomes/dambasins`](biomes/dambasins/INDEX.md) | 12 | 80 | 21 | The dam basins, an overlay (biomes/dambasins/PLAN.md): the north basin's drained dam-lake beds, on the Ancient Port kit read in place (Hook's pattern) and core/terrain's KBASIN. Station 1 (targets/port): the old port on the 900 m line, ruined, dry, the bathtub ring under it and the fast-drain slope below, its moored hulks grounded, pitched and listed in their berths. Adapted copies of the kit's terrain and camera (the hooks belong upstream). Verified: build.py, verify.py --assert. |
 | [`biomes/eastabyss`](biomes/eastabyss/INDEX.md) | 18 | 229 | 72 | Biome kit: see `biomes/README.md`. |
 | [`biomes/ebadlands`](biomes/ebadlands/INDEX.md) | 19 | 252 | 55 | Biome kit: see `biomes/README.md`. |
-| [`biomes/ehighlands`](biomes/ehighlands/INDEX.md) | 20 | 197 | 50 | Biome kit: see `biomes/README.md`. |
+| [`biomes/ehighlands`](biomes/ehighlands/INDEX.md) | 20 | 206 | 51 | Biome kit: see `biomes/README.md`. |
 | [`biomes/farside`](biomes/farside/INDEX.md) | 18 | 132 | 25 | Biome kit: see `biomes/README.md`. |
 | [`biomes/firebliss`](biomes/firebliss/INDEX.md) | 18 | 113 | 16 | Biome kit: see `biomes/README.md`. |
 | [`biomes/galvanic`](biomes/galvanic/INDEX.md) | 17 | 86 | 13 | Biome kit: see `biomes/README.md`. |

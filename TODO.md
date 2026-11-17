@@ -109,6 +109,38 @@ runtime and bison table, and the `tools/` listing staleness (every build rebuilt
   k.overlay.indexOf(name)>=0:...`), then drop the shim in `openworld/iziz-cluster/src/47-world-kits.js` (`WORLD_KITS.findIndex`, which
   tries each name of a list). It moves every page that reads core/world (the isle demo's two city pages, Longsong, Pinnacle Rock and the
   open-world regions) without changing what they draw.
+
+- **The foliage guards' gaps closed** (2026-11-15, `core/biome/20-core-kit.js`, `tools/textures/check_cells.py`; the owner asked why
+  ehighlands' cut-up beech, unattached fir needles and black fumarole passed the guards). Committed on `claude/objective-gagarin-623fb5`;
+  only ehighlands' six pages are rebuilt on it. Every biome page takes them at its rebuild, and some will start failing their verify:
+  - *The card guard refuses ONE plant cut into cells* (`plants 1` with `BIO.geo.cells` or `"sheet": "geometry"`). Measured on rift
+    jungle and nhighlands montane: none. `check_cells.py` reports the same as `ONE CUT`: none outside ehighlands (fixed).
+  - *"Library cards described by the page's pack" fails a page whose pack has no `plants`* (`BIO.cardMute`): the card guard has been
+    judging none of those slots. Fifteen biome packs predate `plants` and will fail until `python3 tools/textures/pack.py <build>`
+    reruns (it needs the library sets: `git lfs pull --include="core/materials/library/..."`): catch, crater-drylands, eastabyss,
+    ebadlands, guilin, korona, necanyons, nsemiarid, nwouterwall, rift, sedesert (and its stations bowl, mantis, steppe), swbay,
+    swhighlands. nsemiarid and the Throne write their pages' packs with their own code, as ehighlands did: check they copy `cell`,
+    `base`, `stems`, `rise`, `plants`, `anchor`, `sheet` (or call `tools/textures/matlib_pack.py`). Once the packs say what each card
+    is, the card guard may refuse some of their slots for the first time.
+  - *The attach audit measures rods point to segment* (it sampled every 2 m): rift jungle 4 of 14,576 floating before and after;
+    nhighlands montane unchanged for centred cards. *Stem-held crowns must sit within 0.15 m of a structure*: nhighlands montane's
+    `lance` (card.prismgum, hanging, stems) has 151 of 207 stems more than 0.15 m off a twig, 35 more than 0.5 m (some with no
+    structure near at all), which takes that page from 0.32% to 1.45% floating, over the 1% limit: hang each lance clump from its
+    twig end as the ehighlands fir does (the clump's origin on the rod's axis).
+  - *`BIO.insideOut` fails a mesh wound toward the ground*: none on rift jungle or nhighlands montane; the ehighlands vent cones were it.
+  - *`check_cells.py` reads every geometry an expression names*: `BIO.geo.cells(BIO.geo.clump())` is a crown cut into cells, which it
+    read as `cells` alone, so it never asked such a crown for its stems (the fir's needles). Fourteen crowns of sprigs centred on their
+    twigs, written into `tools/check_cells_baseline.json` as known: ehighlands `laurel`, `epi`; nhighlands `birch`, `larch`, `maple`,
+    `needle`, `pinnate`, `small`; rift `broadcloud`, `croton`, `leaflet`, `lobeleaf`, `needle`, `spray`. Each wants its sprigs' stems
+    measured (by hand in `card-bases.json` where the automatic pick is wrong, as card.spruce's was) and `check_cells.py --fix`.
+  - *Two more gaps, proposed, not written* (2026-11-15, the geyser/Godthrone looks session, `claude/geyser-godthrone-looks-793e2e`, which
+    fixed both in its kits with station checks): (1) **albedo under soot**: the geyser Stills' sails (`biomes/hearths` 57, `ssail*`) were
+    tinted sRGB 0x161618 (0.8% linear albedo) on an unmapped Lambert and drew as solid black cut-outs; fail a lit baked item with no map
+    and no emissive whose instance colour x vertex colour is under ~0.02-0.03 linear luminance (negative: 0x161618). (2) **a packed
+    texture nothing samples**: Godthrone station 9 packs `rockColumns` (station.json "tex") but the vault's lamp ShaderMaterial had only
+    a flat uniform; fail a family the page's pack adds that no live material's map or uniform takes. Both belong beside
+    `BIO.insideOut` in `BIO.guardChecks`, each with its negative.
+
 - **core/tags: the culture `qiblai`** (2026-11-11, `kits/qiblai`): the Qiblai kit tags its buildings `culture:'qiblai'` (the owner's
   brief), which `core/tags/52-core-tags-vocab.js` does not list yet, so the kit's page counts it as an unknown value in `T.audit()`
   (counted, never thrown). Add `'qiblai': 'Qiblai'` to `CULTURE_NAMES` and `'qiblai'` to `NO_CATALOG` (it has no catalog culture file:
