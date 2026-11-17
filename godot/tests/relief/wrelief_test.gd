@@ -1,10 +1,129 @@
-# The Godot side of core/world/golden-relief.json (PLAN-RELIEF.md P9, P15): wrelief.gd run on the golden's own inputs (as
-# test-golden-relief.js makes them) and compared to 1e-6. From the Godot project, with wrelief.gd, this file and
-# golden-relief.json copied into res://tests/relief/ (godot/tests/relief/, as core/rand's are in godot/tests/rand/):
+# The Godot side of core/world/golden-relief.json (PLAN-RELIEF.md P9, P15): the relief's GDScript twins run on the golden's
+# own inputs (as test-golden-relief.js makes them) and compared to 1e-6, strings exactly: wsmooth.gd (curve, line,
+# heights), wrelief.gd (bench, erode, peaks, caprock), wstreams.gd (trace, decode), wland.gd on core/terrain's kstacks.gd
+# (records, land, fissures, cut). From the Godot project, with the twins and golden-relief.json copied into
+# res://tests/relief/ and kstacks.gd into res://tests/terrain/ (as core/rand's krand.gd is in godot/tests/rand/):
 #   godot --headless --path godot --script res://tests/relief/wrelief_test.gd      exits 0 when every value matches
 extends SceneTree
 
+const KRand := preload("../rand/krand.gd")
 const WRelief := preload("wrelief.gd")
+const WSmooth := preload("wsmooth.gd")
+const WStreams := preload("wstreams.gd")
+const WLand := preload("wland.gd")
+
+var worst := 0.0
+
+
+# the first difference between a and b ("" when none), numbers to 1e-6; the largest numeric difference into `worst`
+func diff(a, b, at: String) -> String:
+	var na: bool = a is int or a is float
+	var nb: bool = b is int or b is float
+	if na and nb:
+		var d := absf(float(a) - float(b))
+		worst = maxf(worst, d)
+		return "" if d <= 1e-6 else at + ": " + str(a) + " against " + str(b)
+	if a is Array and b is Array:
+		if a.size() != b.size():
+			return at + ": " + str(a.size()) + " values against " + str(b.size())
+		for i in a.size():
+			var r := diff(a[i], b[i], at + "[" + str(i) + "]")
+			if r != "":
+				return r
+		return ""
+	if a is Dictionary and b is Dictionary:
+		var ks := {}
+		for k in a.keys():
+			ks[k] = 1
+		for k in b.keys():
+			ks[k] = 1
+		for k in ks.keys():
+			var r := diff(a.get(k), b.get(k), at + "." + str(k))
+			if r != "":
+				return r
+		return ""
+	return "" if a == b else at + ": " + JSON.stringify(a) + " against " + JSON.stringify(b)
+
+
+static func ground(x: float, z: float) -> float:
+	return 100 + 0.01 * x + 20 * KRand.vnoise(x / 3000, z / 3000, 0.5, 3)
+
+
+func snapshot() -> Dictionary:
+	var G := {}
+	# WSMOOTH: a curve through a zigzag with its meander, a relaxed line, the contour smoothing of a staircase grid
+	var Z := [[0.0, 0.0, 1.0], [250.0, 0.0, 2.0], [500.0, 250.0, 3.0], [750.0, 250.0, 4.0], [1000.0, 500.0, 5.0], [1250.0, 500.0, 6.0]]
+	G.curve = WSmooth.curve(Z, {"step": 60.0, "meander": {"amp": 20.0, "wave": 150.0, "seed": KRand.child(7, "streams"), "ox": 1e6, "oz": 2e6}})
+	G.line = WSmooth.line(Z, {"step": 80.0, "relax": 4})
+	var hx := 24
+	var hy := 20
+	var HE := PackedFloat64Array()
+	HE.resize(hx * hy)
+	for j in hy:
+		for i in hx:
+			HE[j * hx + i] = 100 * floorf((i + 0.6 * j) / 4)
+	var Hs := WSmooth.heights(HE, hx, hy, {"px": 4.0, "cell": 500.0})
+	G.heights = []
+	for k in Hs.size():
+		if k % 7 == 0:
+			G.heights.append(Hs[k])
+	# WRELIEF: the benches, the erosion filter and the peaks at 300 points (a world-absolute frame)
+	WRelief.init(2000000.0, 3000000.0, 7)
+	var S := {"terr": 0.75, "step": 55.0, "gully": 1.0, "peak": 1.0}
+	G.bench = []
+	G.erode = []
+	G.peaks = []
+	G.caprock = []
+	for k in 300:
+		var x := float((k * 7919) % 40000)
+		var z := float((k * 104729) % 40000)
+		G.bench.append(WRelief.bench(500.0 + 0.05 * x, x, z, S, 600.0, 0.0))
+		G.erode.append(WRelief.erode(500.0, x, z, -0.15, 0.05, S, 800.0, 0.0))
+		G.peaks.append(WRelief.peaks(0.0, x, z, S, 1200.0, 0.8, 0.0))
+		G.caprock.append(WRelief.caprock(x, z, S, 600.0))
+	# WSTREAMS: the trace on a valley with a depression, its lines as region.json keeps them, their decode, the tarns
+	var nx := 60
+	var ny := 80
+	var cell := 250.0
+	var n := nx * ny
+	var E := PackedFloat32Array()
+	E.resize(n)
+	var K := PackedByteArray()
+	K.resize(n)
+	var RW := PackedFloat32Array()
+	RW.resize(n)
+	var RM := PackedFloat32Array()
+	RM.resize(n)
+	for j in ny:
+		for i in nx:
+			var c := j * nx + i
+			var d := WStreams.hypot(i - 30, j - 40)
+			E[c] = (ny - j) * cell * 0.015 + absi(i - 30) * cell * 0.03 + (KRand.vnoise(i / 3.7, j / 3.7, 0.5, 11) - 0.5) * 6 - (120 * (1 - d / 5) if d < 5 else 0.0)
+			RM[c] = 900.0
+			RW[c] = 900 * cell * cell / 1e6 / 16
+	var T := WStreams.trace({"nx": nx, "ny": ny, "cell": cell, "x0": 0.0, "z0": 0.0, "E": E, "K": K, "RW": RW, "RM": RM, "amin": 200.0, "chanMin": 3e4,
+		"wetMM": 450.0, "minLen": 1000.0, "incise": {"k": 8.0, "sigma": 1.5, "iters": 2}})
+	G.trace = {"lines": T.lines, "ponds": T.ponds, "cells": T.cells, "heads": T.heads}
+	G.decode = WStreams.decode(T.lines[0], {"cell": cell, "x0": 0.0, "z0": 0.0})
+	# WLAND: the records a savanna and the High Rift place, and the land with them at points
+	var gr := func(x, z): return ground(x, z)
+	WLand.reset()
+	WLand.init({"ox": 0.0, "oz": 0.0, "seed": 77, "ground": gr, "styleName": func(_x, _z): return "savanna", "overlay": func(_x, _z): return "",
+		"caprock": func(_x, _z): return 1.0, "keep": func(_x, _z): return false, "sites": []})
+	var A := WLand.list(0, 0, 12000, 12000)
+	G.records = A.map(func(B): return [B.id, B.x, B.z, 0.0 if B.get("top") == null else B.top, B.R])
+	G.land = []
+	for B in A.slice(0, 20):
+		G.land.append(WLand.apply(ground(B.x, B.z), B.x + B.R * 0.3, B.z, 0))
+	WLand.reset()
+	WLand.init({"ox": 0.0, "oz": 0.0, "seed": 77, "ground": gr, "styleName": func(_x, _z): return "steps", "overlay": func(_x, _z): return "high rift",
+		"caprock": func(_x, _z): return 0.0, "keep": func(_x, _z): return false, "sites": []})
+	var F := WLand.list(0, 0, 12000, 12000)
+	G.fissures = F.map(func(B): return [B.id, B.x, B.z, B.w, B.d])
+	G.cut = []
+	for B in F.slice(0, 20):
+		G.cut.append(WLand.apply(ground(B.x, B.z), B.x + 1, B.z, 0))
+	return G
 
 
 func _init() -> void:
@@ -13,38 +132,24 @@ func _init() -> void:
 		print("FAIL  no golden-relief.json beside the test")
 		quit(1)
 		return
-	var G: Dictionary = JSON.parse_string(f.get_as_text())
-	WRelief.init(2000000.0, 3000000.0, 7)
-	var S := {"terr": 0.75, "step": 55.0, "gully": 1.0, "peak": 1.0}
-	var got := {"bench": [], "erode": [], "peaks": [], "caprock": []}
-	for k in 300:
-		var x := float((k * 7919) % 40000)
-		var z := float((k * 104729) % 40000)
-		got["bench"].append(WRelief.bench(500.0 + 0.05 * x, x, z, S, 600.0, 0.0))
-		got["erode"].append(WRelief.erode(500.0, x, z, -0.15, 0.05, S, 800.0, 0.0))
-		got["peaks"].append(WRelief.peaks(0.0, x, z, S, 1200.0, 0.8, 0.0))
-		got["caprock"].append(WRelief.caprock(x, z, S, 600.0))
+	var GOLD: Dictionary = JSON.parse_string(f.get_as_text())
+	var t0 := Time.get_ticks_msec()
+	var G := snapshot()
 	var bad := 0
-	for key in ["bench", "erode", "peaks", "caprock"]:
-		var a: Array = got[key]
-		var b: Array = G[key]
-		var worst := 0.0
-		var at := -1
-		for i in a.size():
-			var d := absf(float(a[i]) - float(b[i]))
-			if d > worst:
-				worst = d
-				at = i
-		var ok := worst <= 1e-6 and a.size() == b.size()
-		if not ok:
+	for key in GOLD.keys():
+		worst = 0.0
+		var d := diff(G.get(key), GOLD[key], key)
+		if d != "":
 			bad += 1
-		print(("PASS  " if ok else "FAIL  ") + key + ": " + str(a.size()) + " values, the worst off by " + str(worst) + (" (at " + str(at) + ")" if not ok else ""))
+		print(("PASS  " if d == "" else "FAIL  ") + key + (": as the golden, the worst off by " + str(worst) if d == "" else ": " + d))
 	# the negative: a value nudged by 1e-5 is caught
-	var nudged: Array = got["peaks"].duplicate()
-	nudged[3] = float(nudged[3]) + 1e-5
-	var caught := absf(float(nudged[3]) - float(G["peaks"][3])) > 1e-6
+	var N: Dictionary = G.duplicate(true)
+	var caught := false
+	if N.get("peaks") is Array and N.peaks.size() > 3:
+		N.peaks[3] = float(N.peaks[3]) + 1e-5
+		caught = diff(N, GOLD, "") != "" and diff(G, GOLD, "") == ""
 	print(("PASS  " if caught else "FAIL  ") + "negative: a value nudged by 1e-5 is caught")
 	if not caught:
 		bad += 1
-	print("all passed" if bad == 0 else str(bad) + " FAILED")
+	print(("all passed" if bad == 0 else str(bad) + " FAILED") + " (" + str(Time.get_ticks_msec() - t0) + " ms)")
 	quit(0 if bad == 0 else 1)

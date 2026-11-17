@@ -605,8 +605,31 @@ as in JS). `core/world/wrelief_test.gd`, with the golden, is copied to `godot/te
     godot --headless --path godot --script res://tests/relief/wrelief_test.gd
 
 All 1,200 values (benches, erosion, peaks, caprock at 300 points) match the golden; the largest difference is 4.9e-7,
-the golden's own rounding to 1e-6. The negative (a value nudged by 1e-5) is caught. Still owed in GDScript: 40
-(WSMOOTH), 44 (WSTREAMS' decode and fans) and 43b (WLAND), against the same golden.
+the golden's own rounding to 1e-6. The negative (a value nudged by 1e-5) is caught.
+
+**P15's rest: every relief module's twin (2026-11-16, the owner: "Godot twins first").** The same test now runs every key
+of the golden, so the whole of P9's bar is met in Godot:
+- `core/world/wsmooth.gd` (40: the Gaussian, the contour smoothing with its B-spline and streamlines, the centripetal
+  Catmull-Rom curves with the meander, `river`, `line`);
+- `core/world/wstreams.gd` (44: the priority-flood heap on (key, index), D8, the incision, the convergence rule, the
+  depressions and tarns, the encoded lines, `decode`, `rebed`, `pond_rows`, `fans`, `fan_at`, `check`). The JS file's
+  Float32Arrays (E, RW, RM, the rain's accumulation) are PackedFloat32Array, so each sum rounds as in JS; `Math.round` is
+  `floor(x + 0.5)` and `Math.hypot` V8's own (max-scaled, compensated), so the last bits agree;
+- `core/terrain/kstacks.gd` (37's records and queries, the part the world takes: `foot_r`, `top_h`, `make` for mesas,
+  buttes (tiers, shoulder, weathering, columns), spires, fins and balanced rocks, `dome`, `tor`, `tower`, `at`,
+  `surface`, `foot`). Not ported: mound, arch, pillar (and a fallen one's fall), chimney (and its bore), the mesh,
+  `ledge`, `ring`, `wall`, `weather`;
+- `core/world/wland.gd` (43b: the placed and pinned records, the fissures, the master gja, the rasters with their batter
+  and apron as PackedFloat32Array, `apply`, `at`, `list`).
+
+    trace, decode            exact (strings and integers)
+    curve, line, heights     worst 5.0e-7          bench, erode, peaks, caprock   worst 5.0e-7
+    records, land            worst 5.0e-7          fissures, cut                  worst 4.9e-7
+
+(each worst is the golden's own rounding to 1e-6); the negative is caught; the run takes 27 s headless (the rasters). The
+copies in `godot/tests/relief/` and `godot/tests/terrain/kstacks.gd` are kept by `godot/tools/sync_core.py`. Not covered by
+the golden yet: the spires, fins and karst towers (no style in it places one), the master gja (no region box in it takes it
+in), a pinned record.
 
 ## 6. Risks
 

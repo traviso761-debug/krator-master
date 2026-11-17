@@ -11,7 +11,7 @@
 # hashes come out.
 extends RefCounted
 
-const KRand := preload("res://tests/rand/krand.gd")
+const KRand := preload("../rand/krand.gd")
 const M32 := 0xFFFFFFFF
 
 static var OX := 0.0
