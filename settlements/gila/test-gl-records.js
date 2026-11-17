@@ -33,9 +33,9 @@ T.neg('balance() catches a missing 30 t salt allotment and passes GL_REC',
 const straightJump = {
   castes: GL_REC.castes,
   goods: GL_REC.goods,
-  allotments: GL_REC.allotments.map(a => a.id === 'allot.gila.bronze.out.wet1' ? Object.assign({}, a, { via: ['sauropolis', 'gila'] }) : a)
+  allotments: GL_REC.allotments.map(a => a.id === 'allot.gila.bronze.out.wet1' ? Object.assign({}, a, { via: ['basilisk', 'gila'] }) : a)
 };
-T.neg('balance() catches a straight Sauropolis->Gila jump skipping Basilisk on the Coil',
+T.neg('balance() catches a straight Basilisk->Gila jump skipping Iguana on the Coil',
   r => GL_REC.balance(r).balanced, straightJump, GL_REC);
 
 T.done();

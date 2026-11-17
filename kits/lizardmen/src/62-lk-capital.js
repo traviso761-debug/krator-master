@@ -1,10 +1,10 @@
 // prefix: lk
-// ================================================================= THE CAPITAL, IN STONE: the warlord's seat
-// The same forms as the village, built all in stone for the capital of the warlord who united the tribes (LORE.md section
-// 6.17): the ribs, horns and tusks carved in polished basalt instead of bone, the skins basalt slab instead of hide, the
-// walls cyclopean polygonal masonry on polished plinths inlaid with bronze lines, leiwen bands and spiral eyes everywhere
-// (the more important the building, the more eyes), nested bronze portals on all of them. The warlord's great hall, a stone
-// rib house, stone cells, a stone nest, the Interpreters' college of three twisted towers, and the capital's gate.
+// ================================================================= THE CAPITAL, IN STONE: Basilisk (once Sauropolis)
+// The same forms as the village, built all in stone for Basilisk, the capital (the owner, 2026-11-17: "the lizard capital is now
+// renamed to Basilisk"; LORE.md section 6.20; no warlord: the Interpreters in concert): the ribs, horns and tusks carved in polished
+// basalt instead of bone, the skins basalt slab instead of hide, the walls cyclopean polygonal masonry on polished plinths inlaid with
+// bronze lines, leiwen bands and spiral eyes everywhere (the more important the building, the more eyes), nested bronze portals on all
+// of them. The Hall of Intention, a stone rib house, stone cells, a stone nest, the Interpreters' college of three twisted towers, the gate.
 // Frame: origin on the ground at the plot centre, +z the front.
 const LK_ST='cyclo',LK_PL='stoneP';
 /* a polished plinth with bronze inlay lines round its edge and a leiwen band on the front */

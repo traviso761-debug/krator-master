@@ -12,9 +12,9 @@
      GL_REC.balance()     pure check: for every good and every season, made + in === need + out, and no straight Coil load */
 var GL_REC = (function () {
   var SEASONS = ['wet1', 'wet2', 'dry1', 'dry2'];
-  /* Coil circuit order (PROPOSAL-LIZARDMEN section 3): Sauropolis -> Basilisk -> Gila -> Tubes (outward);
-     inward returns Tubes -> Gila -> Basilisk -> Sauropolis -> Tuatara -> Komodo -> Sauropolis */
-  var COIL = ['sauropolis', 'basilisk', 'gila', 'tubes', 'warrens-west', 'sauropolis', 'tuatara', 'komodo'];
+  /* Coil circuit order (PROPOSAL-LIZARDMEN section 3): Basilisk -> Iguana -> Gila -> Tubes (outward);
+     inward returns Tubes -> Gila -> Iguana -> Basilisk -> Tuatara -> Komodo -> Basilisk */
+  var COIL = ['basilisk', 'iguana', 'gila', 'tubes', 'warrens-west', 'basilisk', 'tuatara', 'komodo'];
 
   var site = {
     id: 'gila', pinId: 'sze26pgivd', px: [653, 1485], oldPx: [381, 1155],
@@ -90,7 +90,7 @@ var GL_REC = (function () {
       need: { wet1: 22, wet2: 24, dry1: 22, dry2: 22 }
     },
     bronze: {
-      unit: 't', weightDaysPerT: 48.0, note: 'cast bronze ingots and copper-tin alloy from Sauropolis (Tuatara copper + Komodo tin)',
+      unit: 't', weightDaysPerT: 48.0, note: 'cast bronze ingots and copper-tin alloy from Basilisk (Tuatara copper + Komodo tin)',
       made: { wet1: 0, wet2: 0, dry1: 0, dry2: 0 },
       need: { wet1: 1.5, wet2: 1.5, dry1: 1.5, dry2: 1.5 }
     },
@@ -111,39 +111,39 @@ var GL_REC = (function () {
     }
   };
 
-  /* Allotments (PROPOSAL-LIZARDMEN section 3 & 4): outward seasons ('wet1', 'dry1') run Sauropolis -> Basilisk -> Gila -> Tubes;
-     inward seasons ('wet2', 'dry2') run Tubes -> Gila -> Basilisk -> Sauropolis. Every multi-hop load names its intermediate
+  /* Allotments (PROPOSAL-LIZARDMEN section 3 & 4): outward seasons ('wet1', 'dry1') run Basilisk -> Iguana -> Gila -> Tubes;
+     inward seasons ('wet2', 'dry2') run Tubes -> Gila -> Iguana -> Basilisk. Every multi-hop load names its intermediate
      Coil stops in `via` (minimum 3 stops when sender and receiver are not adjacent on the Coil; even adjacent stops ride the
      season's Coil direction, never reversing against it).
      Annual totals at Gila:
-       salt:       made 300, need 25, allottedOut 275 (65 to tubes, 80 to warrens-west, 130 inward via basilisk to sauropolis/tuatara)
-       evaporites: made 40,  need 28, allottedOut 12  (inward via basilisk to sauropolis)
-       grain:      made 600, need 700, allottedIn 100 (outward from basilisk, 50 in wet1 + 50 in dry1)
-       bronze:     made 0,   need 6,   allottedIn 6   (outward from sauropolis via basilisk, 3 in wet1 + 3 in dry1)
-       bone:       made 24,  need 12,  allottedOut 12 (inward to sauropolis via basilisk, 6 in wet2 + 6 in dry2) */
+       salt:       made 300, need 25, allottedOut 275 (65 to tubes, 80 to warrens-west, 130 inward via iguana to basilisk/tuatara)
+       evaporites: made 40,  need 28, allottedOut 12  (inward via iguana to basilisk)
+       grain:      made 600, need 700, allottedIn 100 (outward from iguana, 50 in wet1 + 50 in dry1)
+       bronze:     made 0,   need 6,   allottedIn 6   (outward from basilisk via iguana, 3 in wet1 + 3 in dry1)
+       bone:       made 24,  need 12,  allottedOut 12 (inward to basilisk via iguana, 6 in wet2 + 6 in dry2) */
   var allotments = [
     { id: 'allot.gila.salt.out.wet1', season: 'wet1', dir: 'outward', good: 'salt', from: 'gila', to: 'tubes', qty: 30, by: 'drovers-sledge', via: ['gila', 'tubes'] },
     { id: 'allot.gila.salt.out.dry1a', season: 'dry1', dir: 'outward', good: 'salt', from: 'gila', to: 'tubes', qty: 35, by: 'drovers-sledge', via: ['gila', 'tubes'] },
     { id: 'allot.gila.salt.out.dry1b', season: 'dry1', dir: 'outward', good: 'salt', from: 'gila', to: 'warrens-west', qty: 80, by: 'drovers-sledge', via: ['gila', 'tubes', 'warrens-west'] },
-    { id: 'allot.gila.salt.in.wet2', season: 'wet2', dir: 'inward', good: 'salt', from: 'gila', to: 'basilisk', qty: 40, by: 'drovers-sledge', via: ['gila', 'basilisk'] },
-    { id: 'allot.gila.salt.in.dry2', season: 'dry2', dir: 'inward', good: 'salt', from: 'gila', to: 'tuatara', qty: 90, by: 'drovers-sledge', via: ['gila', 'basilisk', 'sauropolis', 'tuatara'] },
-    { id: 'allot.gila.evap.in.wet2', season: 'wet2', dir: 'inward', good: 'evaporites', from: 'gila', to: 'sauropolis', qty: 5, by: 'drovers-sledge', via: ['gila', 'basilisk', 'sauropolis'] },
-    { id: 'allot.gila.evap.in.dry2', season: 'dry2', dir: 'inward', good: 'evaporites', from: 'gila', to: 'sauropolis', qty: 7, by: 'drovers-sledge', via: ['gila', 'basilisk', 'sauropolis'] },
-    { id: 'allot.gila.grain.out.wet1', season: 'wet1', dir: 'outward', good: 'grain', from: 'basilisk', to: 'gila', qty: 50, by: 'drovers-sledge', via: ['sauropolis', 'basilisk', 'gila'] },
-    { id: 'allot.gila.grain.out.dry1', season: 'dry1', dir: 'outward', good: 'grain', from: 'basilisk', to: 'gila', qty: 50, by: 'drovers-sledge', via: ['sauropolis', 'basilisk', 'gila'] },
-    { id: 'allot.gila.bronze.out.wet1', season: 'wet1', dir: 'outward', good: 'bronze', from: 'sauropolis', to: 'gila', qty: 3, by: 'drovers-sledge', via: ['sauropolis', 'basilisk', 'gila'] },
-    { id: 'allot.gila.bronze.out.dry1', season: 'dry1', dir: 'outward', good: 'bronze', from: 'sauropolis', to: 'gila', qty: 3, by: 'drovers-sledge', via: ['sauropolis', 'basilisk', 'gila'] },
-    { id: 'allot.gila.bone.in.wet2', season: 'wet2', dir: 'inward', good: 'bone', from: 'gila', to: 'sauropolis', qty: 6, by: 'drovers-sledge', via: ['gila', 'basilisk', 'sauropolis'] },
-    { id: 'allot.gila.bone.in.dry2', season: 'dry2', dir: 'inward', good: 'bone', from: 'gila', to: 'sauropolis', qty: 6, by: 'drovers-sledge', via: ['gila', 'basilisk', 'sauropolis'] }
+    { id: 'allot.gila.salt.in.wet2', season: 'wet2', dir: 'inward', good: 'salt', from: 'gila', to: 'iguana', qty: 40, by: 'drovers-sledge', via: ['gila', 'iguana'] },
+    { id: 'allot.gila.salt.in.dry2', season: 'dry2', dir: 'inward', good: 'salt', from: 'gila', to: 'tuatara', qty: 90, by: 'drovers-sledge', via: ['gila', 'iguana', 'basilisk', 'tuatara'] },
+    { id: 'allot.gila.evap.in.wet2', season: 'wet2', dir: 'inward', good: 'evaporites', from: 'gila', to: 'basilisk', qty: 5, by: 'drovers-sledge', via: ['gila', 'iguana', 'basilisk'] },
+    { id: 'allot.gila.evap.in.dry2', season: 'dry2', dir: 'inward', good: 'evaporites', from: 'gila', to: 'basilisk', qty: 7, by: 'drovers-sledge', via: ['gila', 'iguana', 'basilisk'] },
+    { id: 'allot.gila.grain.out.wet1', season: 'wet1', dir: 'outward', good: 'grain', from: 'iguana', to: 'gila', qty: 50, by: 'drovers-sledge', via: ['basilisk', 'iguana', 'gila'] },
+    { id: 'allot.gila.grain.out.dry1', season: 'dry1', dir: 'outward', good: 'grain', from: 'iguana', to: 'gila', qty: 50, by: 'drovers-sledge', via: ['basilisk', 'iguana', 'gila'] },
+    { id: 'allot.gila.bronze.out.wet1', season: 'wet1', dir: 'outward', good: 'bronze', from: 'basilisk', to: 'gila', qty: 3, by: 'drovers-sledge', via: ['basilisk', 'iguana', 'gila'] },
+    { id: 'allot.gila.bronze.out.dry1', season: 'dry1', dir: 'outward', good: 'bronze', from: 'basilisk', to: 'gila', qty: 3, by: 'drovers-sledge', via: ['basilisk', 'iguana', 'gila'] },
+    { id: 'allot.gila.bone.in.wet2', season: 'wet2', dir: 'inward', good: 'bone', from: 'gila', to: 'basilisk', qty: 6, by: 'drovers-sledge', via: ['gila', 'iguana', 'basilisk'] },
+    { id: 'allot.gila.bone.in.dry2', season: 'dry2', dir: 'inward', good: 'bone', from: 'gila', to: 'basilisk', qty: 6, by: 'drovers-sledge', via: ['gila', 'iguana', 'basilisk'] }
   ];
 
   var gifts = [
     { id: 'gift.bell.west-3', kind: 'bronze', holder: 'gila', since: 'wet1', dir: 'outward', note: 'clapperless leiwen bell from the Hall of Intention, held one season before passing to the Tubes' },
-    { id: 'gift.crest.tubes-1', kind: 'bone', holder: 'gila', since: 'wet2', dir: 'inward', note: 'whorl-carved hexapod crest from the Tubes, passing inward to Basilisk and Sauropolis' }
+    { id: 'gift.crest.tubes-1', kind: 'bone', holder: 'gila', since: 'wet2', dir: 'inward', note: 'whorl-carved hexapod crest from the Tubes, passing inward to Iguana and Basilisk' }
   ];
 
   var debts = [
-    { id: 'debt.gila.sauropolis.coil-41', from: 'gila', to: 'sauropolis', kind: 'bone', coil: 41 },
+    { id: 'debt.gila.basilisk.coil-41', from: 'gila', to: 'basilisk', kind: 'bone', coil: 41 },
     { id: 'debt.tubes.gila.coil-41', from: 'tubes', to: 'gila', kind: 'bone', coil: 41 }
   ];
 
@@ -173,12 +173,12 @@ var GL_REC = (function () {
     }
     for (i = 0; i < R.allotments.length; i++) {
       var al = R.allotments[i];
-      if (!al.via || al.via.length < 2 || al.via[0] !== al.from && !(al.from === 'basilisk' && al.via.indexOf('basilisk') >= 0) || al.via[al.via.length - 1] !== al.to) {
+      if (!al.via || al.via.length < 2 || al.via[0] !== al.from && !(al.from === 'iguana' && al.via.indexOf('iguana') >= 0) || al.via[al.via.length - 1] !== al.to) {
         problems.push(al.id + ': bad via route');
       }
       if ((al.season === 'wet1' || al.season === 'dry1') && al.dir !== 'outward') problems.push(al.id + ': outward season carries ' + al.dir);
       if ((al.season === 'wet2' || al.season === 'dry2') && al.dir !== 'inward') problems.push(al.id + ': inward season carries ' + al.dir);
-      if ((al.from === 'sauropolis' && al.to === 'gila' || al.from === 'gila' && al.to === 'sauropolis' || al.from === 'gila' && al.to === 'tuatara') && al.via.length < 3) {
+      if ((al.from === 'basilisk' && al.to === 'gila' || al.from === 'gila' && al.to === 'basilisk' || al.from === 'gila' && al.to === 'tuatara') && al.via.length < 3) {
         problems.push(al.id + ': straight jump skips Coil stops');
       }
     }

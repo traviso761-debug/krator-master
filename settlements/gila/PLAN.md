@@ -1,5 +1,9 @@
 # Gila, the Lizardmen's salt village on its lake: a site plan (proposal, 2026-11-16)
 
+**The names (the owner, 2026-11-17):** *"the cube plateau village will be called iguana; the lizard capital is now renamed to
+Basilisk"*. So the capital (pin `slrodrkrls`, still "Sauropolis" on the scale model until its queue renames it) is
+**Basilisk**, and the plateau's granary town by the Pile (called Basilisk on 2026-11-16) is **Iguana**. This file uses the new names.
+
 The owner, 2026-11-16: *"also session to plan and build ... a lizardman village"*.
 
 What is settled, from the owner and the lore:
@@ -9,7 +13,7 @@ What is settled, from the owner and the lore:
 - **Gila** is one of the four villages the lore names (old canvas 381,1155; **5.1 px 653,1485**, pin `sze26pgivd`).
 - **Its size:** "the regional villages 3k" (the owner, 2026-11-16, `core/simulation/PROPOSAL-LIZARDMEN.md` question 1).
 - **Its economy:** autarkic, no money, a command economy run by the Interpreters (the Allotment), goods moved along the
-  Coil Rounds; Gila's evaporites and Sauropolis's sea pans are the country's two salt sources (the owner endorsed both,
+  Coil Rounds; Gila's evaporites and Basilisk's sea pans are the country's two salt sources (the owner endorsed both,
   PROPOSAL-LIZARDMEN questions 4-6). **One reliquary per cluster:** the west's is "by Gila's lake" (question 3).
 - The West Rift scope (`core/region/WEST-RIFT-SCOPE.md`): the Lizardmen are the barrier between the rifts, "barely any
   trade"; the West's strongest halite (205-254) lies inside their country, at Gila's lake.
@@ -65,7 +69,7 @@ Sources:
 | Farming | the survey's 30 km: 94 farm-equivalent km²; crops that fit: ashmillet, Bambara groundnut, sandpan fonio, frillpod, ballmelon, bell-date; fish 168 |
 
 **Its neighbours** (straight lines): **The Tubes** 153 km SSW (the western cluster's other place, ~1,000 Lizardmen in the
-Rift line's ruined cavern); the Pile 212 km SE; Sauropolis 315 km SE. Outside the country: Cthonos (ruin) 257 km, Xanadu's
+Rift line's ruined cavern); the Pile 212 km SE; Basilisk 315 km SE. Outside the country: Cthonos (ruin) 257 km, Xanadu's
 West watch fort 275 km, Erehwon 310 km; Nulab and Blakhed (the West Rift) 250-270 km west. No road or river joins any of them.
 
 **Why the pin, not Brant Beck's mouth** (*proposed*; question 1). The pin is the lore's and the model's, on the salt, 110 m
@@ -119,7 +123,7 @@ spit's contour so the arms run level and the cross arms climb.
 
 | Good | Made at Gila (a year) | Gila's own need | The Allotment |
 |---|---|---|---|
-| **salt** (halite from the pans) | ~300 t | ~25 t (3,000 at ~7.5 kg, and the bone hall's curing: hides, meat) | **~275 t out** along the Coil: the Tubes, the western warrens, Basilisk; the east has Sauropolis's pans (the polity's 45,000-65,000 need ~340-490 t) |
+| **salt** (halite from the pans) | ~300 t | ~25 t (3,000 at ~7.5 kg, and the bone hall's curing: hides, meat) | **~275 t out** along the Coil: the Tubes, the western warrens, Iguana; the east has Basilisk's pans (the polity's 45,000-65,000 need ~340-490 t) |
 | gypsum, potash, soda, saltpetre | small: plaster for the cells, glaze, the lacquer's mordants | most | a share out |
 | grain and pulse (ashmillet, Bambara groundnut, frillpod) | ~600 t from ~1,100 ha | ~700 t | **short: ~100 t in** in a dry year |
 | ballmelon, bell-date | ~250 t | ~250 t | |
@@ -170,7 +174,7 @@ the bake house; the squared-spiral passage into the reliquary.
    **Agreed.**
 4. **The spiral street:** one rhombic squared spiral (75°/105°, each winding 1.25 times the last), every door facing in,
    the ley line the only straight way. Laid by Gila's own steps on core/city; may the city-layout workstream take it into
-   `core/city` as a generator (`KCITY.leiwen`) for Sauropolis and the other villages? **Agreed:** yes, later.
+   `core/city` as a generator (`KCITY.leiwen`) for Basilisk and the other villages? **Agreed:** yes, later.
 5. **The west reliquary** on the spit's south shore, 3.5 km from the village? **Agreed.**
 6. **Salt out, bronze in:** Gila sends ~275 t of salt a year along the Coil and takes its copper and tin (or cast bronze)
    from the east. **Agreed.**
