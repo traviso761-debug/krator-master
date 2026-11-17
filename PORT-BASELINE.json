@@ -225,16 +225,16 @@
    "sha256": "5e66c00d17dbf64a67449e65c279a074adaba68f6c744c2829e1aff61a96862b"
   },
   "biomes/galvanic/dist/galvanic-deep.html": {
-   "bytes": 3342206,
-   "sha256": "50e20e387afcf329f07d66e9e2acea0fab91bb2de3ba11d1283e5d172794a953"
+   "bytes": 3342208,
+   "sha256": "3e66169e73efe9c6bbf85008387aaceb35418f007d72b9000950985eb7d09a30"
   },
   "biomes/galvanic/dist/galvanic-gossan.html": {
-   "bytes": 3342218,
-   "sha256": "02ee71adda3d56b4f906d188d555170bb155b03c81660744d36efd745b6bb110"
+   "bytes": 3342220,
+   "sha256": "54c5d31e4f94ae7d44f72bba5904a3efa2892ad07e7b8830f27a6888820fbd9a"
   },
   "biomes/galvanic/dist/galvanic.html": {
-   "bytes": 3341978,
-   "sha256": "d069b270ee56b684876b8a0139cbf7317a51a21909df988469dd18ff1b3e08d6"
+   "bytes": 3341980,
+   "sha256": "119a48a7b5db2571015938c01a5e1ecad1c28702c637fdeb3f378fa8b8a503cd"
   },
   "biomes/geyser/dist/geyser-basin.html": {
    "bytes": 1334372,

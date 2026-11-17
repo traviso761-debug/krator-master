@@ -71,8 +71,8 @@ const HCHK={
  // station 3: no battery life on the iron hat (its sulfides are leached: no couple)
  hat(P){const bad=P.filter(p=>/^biome:gv/.test(p[3])&&HAT_AT(p[0],p[2])>.5);return{ok:!bad.length,detail:bad.length?bad.length+' battery items on the iron hat (first '+bad[0][3]+')':'nothing of the battery\'s on the iron hat'};},
  // station 3: the seeps lie where the water table's swing reaches the surface (flooded 1-364 days a year on the slope)
- seeps(S){const bad=S.filter(m=>{const d=FLOOD_T(OVER(m.x,GROUND0(m.x,m.z),m.z));return d<=0||d>=365;});
-  return{ok:S.length>0&&!bad.length,detail:bad.length?bad.length+' seeps off the table\'s line (first at '+bad[0].x+','+bad[0].z+')':S.length+' seeps, each where the table reaches the surface ('+S.map(m=>FLOOD_T(OVER(m.x,GROUND0(m.x,m.z),m.z))).join(', ')+' days a year)'};},
+ seeps(S){const bad=S.filter(m=>{const d=FLOOD_T(OVER(m.x,terrainH(m.x,m.z),m.z));return d<=0||d>=365;});
+  return{ok:S.length>0&&!bad.length,detail:bad.length?bad.length+' seeps off the table\'s line (first at '+bad[0].x+','+bad[0].z+')':S.length+' seeps, each where the table reaches the surface ('+S.map(m=>FLOOD_T(OVER(m.x,terrainH(m.x,m.z),m.z))).join(', ')+' days a year)'};},
  // station 3: the self-potential, negative over the oxidised top, near zero far off (Sato and Mooney's anomaly)
  sp(top,far){return{ok:top<-.15&&top>-.8&&far>-.06,detail:'over the hat '+top.toFixed(3)+' V, 800 m off '+far.toFixed(3)+' V'};},
  // station 3: the table at the season's level (the flood's datum, as the sea on the strand)
