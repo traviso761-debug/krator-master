@@ -355,6 +355,7 @@ def rocks(prov, mask, P, regions, vents, VW, VH, OW, su, sv, cell_km, shift=(0, 
 
 LODESTONE_REGIONS = ('compass hills',)     # the Compass Hills' ore, magnetised by an Ancient installation (TRADE-GEMINI.md `magnets`)
 OPAL_REGIONS = ('opal valley',)            # biomes/opalvalley: the Rift Black Opal and the fire opal in the tuff
+OPAL_VALLEY = 150.0                        # the valley's byte: under its authored lodes (data/lodes.json)
 QUARTZ_REGIONS = ('high rift',)            # High Rift's quartz (TRADE-GEMINI.md `gems`)
 DIAMOND_REGIONS = ('korona / ne',)         # the Hoar-Table's quartzite conglomerate (K7): a paleoplacer on the tepui tables
 JADE_REGIONS = ('the crook',)              # the Crook's Verdigris Jade (TRADE-GEMINI.md `frost-coral`)
@@ -395,8 +396,10 @@ def mined(prov, mask, P, regions, E, rain, temp, VW, VH, su, sv, cell_km, shift=
     L['alabaster'] = 0.8 * f('gypsum') * (f('gypsum') >= 100)
     # bitumen: where the oil comes to the surface and sets (the richer oil ground), and the Ring Isles' seeps
     L['bitumen'] = np.maximum(0.75 * f('oil') * (f('oil') >= 80), 90.0 * R(TAR_REGIONS))
-    # opal: silica out of the ash in a dry land (the tuff, by the aridity), and Opal Valley itself
-    L['opal'] = np.maximum(0.6 * f('tuff') * arid, 230.0 * R(OPAL_REGIONS))
+    # opal: silica out of the ash in a dry land (the tuff, by the aridity), and Opal Valley itself at 150: well over the tuff
+    # anywhere else, under the valley's authored lodes (lode:great-potch-line at 235), so its richest field stands out (the
+    # Lightwall session's finding, the owner: "Lower and re-bake", 2026-11-16)
+    L['opal'] = np.maximum(0.6 * f('tuff') * arid, OPAL_VALLEY * R(OPAL_REGIONS))
     # diamonds and garnets: the paleoplacer conglomerate at the base of the tepui tables, where it crops out round their edges
     # (a quartzite cell beside one that is not); faint on the tables' tops and on other quartzite
     edge = Qz & ndimage.binary_dilation(~Qz & land, iterations=cells(4, cell_km))

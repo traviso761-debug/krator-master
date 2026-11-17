@@ -1013,8 +1013,8 @@
    "sha256": "bf855d052d7a0f64d405e0703d9544ab471ab3823fbf6458722a0f092af59c14"
   },
   "kits/resources/dist/resources.html": {
-   "bytes": 6019732,
-   "sha256": "2788635a07f9cd6978b0cb6f653dff52d22d6c6b05c5b31f5f9f56927b39c0df"
+   "bytes": 6019760,
+   "sha256": "665c7f6fdc828e89ce8d1deb5ac3ed5ce611e6953ab1e451edd53b8fd927e251"
   },
   "kits/resources/dist/resources.tex.resources.js": {
    "bytes": 12858392,
@@ -1046,11 +1046,11 @@
   },
   "openworld/isle-demo/dist/isle-demo.artifact.html": {
    "bytes": 8850254,
-   "sha256": "af872199d7ddfc42e94a7afc5d09fa65aa71be702f99c7ed70697b9cdef1282d"
+   "sha256": "b0c303b7c4e3c1e183810e8b8dc5a7761614dd79afbc8d38dc099059dc966258"
   },
   "openworld/isle-demo/dist/isle-demo.html": {
    "bytes": 8850512,
-   "sha256": "2a3789a3e85556d55b387e13bb7293d86cb2063a578b2bf5eb3c6bc2726b07b1"
+   "sha256": "0669d1636403aae34635aeb60d8140efdd97ddf83e8831b069682695579cb967"
   },
   "openworld/isle-demo/dist/isle-demo.tex.brtowns.js": {
    "bytes": 8136477,
@@ -1110,7 +1110,7 @@
   },
   "openworld/iziz-cluster/dist/iziz-cluster.html": {
    "bytes": 5896574,
-   "sha256": "473e67522ac29f9b2079d31dee649014abb12883091b4d3ae2e3eaeafd1dc1e7"
+   "sha256": "495182793bccaae25004a1f8cfce98ef1d362e91408af880b1b6177dcfd37c20"
   },
   "openworld/iziz-cluster/dist/iziz-cluster.tex.abyssal-savannah.js": {
    "bytes": 4373474,
@@ -1149,8 +1149,8 @@
    "sha256": "43e0dc8e7d2fb8a2fa2a6eeb2c8e7036806cee73e1fc250735abcef1f242b87a"
   },
   "openworld/oidong-highrift/dist/oidong-highrift.html": {
-   "bytes": 10436335,
-   "sha256": "8d8ca2e44f391d76aba1dc58b9eb01d66eee1285f86548ecfe02235789c955d0"
+   "bytes": 10436363,
+   "sha256": "d2c1c460b6895a1d607975876bd07003300265c8d17cba9121dfa14e98f23736"
   },
   "openworld/oidong-highrift/dist/oidong-highrift.tex.highrift.js": {
    "bytes": 643034,
@@ -1166,7 +1166,7 @@
   },
   "openworld/pinnacle/dist/pinnacle.html": {
    "bytes": 5856549,
-   "sha256": "a88fd567bd7f6e8310e9e47383390122ff922ed7e1ca4b69c51c4962db02c3e9"
+   "sha256": "375a497b5bc7a48de3b59cd710da364159cb9d981ab456ca2c34bcff5aa0928f"
   },
   "openworld/pinnacle/dist/pinnacle.tex.abyssal-savannah.js": {
    "bytes": 4373470,
@@ -1190,15 +1190,15 @@
   },
   "openworld/xanadu-lake-shore/dist/xanadu-lake-shore.html": {
    "bytes": 2577919,
-   "sha256": "e8fd161ac7cdc733e0cf127ee08cff00cc15709c58257a673369a78e6b25ded1"
+   "sha256": "0237a73849bffeccdc08852816e28606c6c35cf7231706efab755e956f267133"
   },
   "openworld/xanadu-north-shore/dist/xanadu-north-shore.html": {
    "bytes": 2710734,
-   "sha256": "dc3a14398dbb89b0d9fcdf2e02fe7161e9bc51e902a35911ccb937669811acbc"
+   "sha256": "f0249fd16ff5d832a182625753e803f32e361d0c4c18ba54418b0f90f30ba030"
   },
   "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.html": {
-   "bytes": 8874715,
-   "sha256": "a6bb620690cc7d43d2071b06242537dee1d2bb3970bb46dda71a8aee19f6bad9"
+   "bytes": 8874743,
+   "sha256": "5dd6344646a54395c88d779a34a56cf636886b104ddca80bc36197e560c91967"
   },
   "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.tex.oidong.js": {
    "bytes": 2002652,

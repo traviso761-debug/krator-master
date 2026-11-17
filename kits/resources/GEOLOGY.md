@@ -173,7 +173,7 @@ rebuild of what `tools/reach.py kits/resources/data/geology.json` lists.
 | quartz | 6000 | faint on the hard rocks (granite 30, quartzite 25, gneiss 10, impact 8, rift 10); 200 in High Rift | 10,861 |
 | alabaster | 4000 | 0.8 x gypsum where gypsum is 100+ (the massive bed at the ring's heart) | 594 |
 | bitumen | 6000 | 0.75 x oil where oil is 80+; 90 on the Ring Isles (Kautoa's tar-black seeps) | 3,319 |
-| opal | 6000 | 0.6 x tuff x aridity; 230 in Opal Valley | 953 |
+| opal | 6000 | 0.6 x tuff x aridity; 150 in Opal Valley (`OPAL_VALLEY`), under its authored lodes: the Great Potch Line stamps 235 (lowered from 230 so that lode stands out: the Lightwall session, the owner "Lower and re-bake", 2026-11-16) | 749 |
 | diamond | 8000 | 170 on the tepui tables' edges in Korona (the basal conglomerate where it crops out); 25 on any quartzite | 701 |
 | jade | 8000 | 150 within 4 km either side of the ultramafic province's edge (nephrite at the serpentinite contact); 200 in the Crook | 3,391 |
 | amber | 6000 | 0.35 x coal where coal is 140+ (the lignite beds); 120 in the Ria Valley, 90 in the East Abyss (swamp amber) | 10,103 |
