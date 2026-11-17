@@ -80,7 +80,7 @@
     "core/sockets/38-symbols.js": "ed5b3086d1034e1c289dd79bb816833cbcbcb11d0719f3a1eafc6c302de837b0",
     "core/space/20-core-space.js": "68068f0da30b9115d098604315be2364735b86833a6743ef4444e5e6adbe5780",
     "core/tags/50-core-tags.js": "5d506746c4b5142f76e932cbd798d4ba6926e3865919d7ecd6d39a16e4e5b882",
-    "core/tags/52-core-tags-vocab.js": "34470fd7966f7d0684585b0bc2082875d5de0ec2ed11d141f79f9612462584d3",
+    "core/tags/52-core-tags-vocab.js": "2de54032d27e2c74066df84e4bb9296fa8104f2a71c7a42875b5716ef252e3d3",
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
     "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
     "core/walk/20-core-walk.js": "66c2a5dfacc6e4ffc2cdc03dfa7d0f82ea991c312d5725d299e4e281fe148e03",
@@ -313,7 +313,7 @@
     "settlements/gila/tex/gYard.albedo.webp": "eacebfa19026925ef0038dcfc03f2e2fecfda160d7b94754d10e6595e50e506a",
     "settlements/gila/tex/pack.json": "6c886ecbc71745b23ae9dfd5bb7cfb8225984cac696d9afa45943c07ec394a14",
     "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47",
-    "tools/scale-model/model/data/h.png": "3cd1f6b28c30937e6c2858b8a321e073f13c33fd36c5209e636b4e7fd87dde7d"
+    "tools/scale-model/model/data/h.png": "67083806887a9178b7c85e4fdf58683a04b7178c3ba007832f1717c596efaa55"
    },
    "listings": {
     "core/atmos": "97ec173a1f39d031319dc7532a9d749cdd784c7203e140334b9c46e8ff85d5e6",
@@ -339,15 +339,15 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "settlements/gila/build-manifest.json": "f1d955a3db5ec3897f8f843387f0cb823c403ff7eb72096df6dab91fd94944d9",
-    "settlements/gila/dist/gila.html": "aa5617e6b4c6c354a4fa15dcc98e3fc86deb27b73dfaaaa49309296423969258",
+    "settlements/gila/build-manifest.json": "d619577e040df256ed37c66667d9d9e4eeb1308c7e66c271f0a9bab5e330bc5d",
+    "settlements/gila/dist/gila.html": "98daf87234282318e6fc85cfec3a1dfbeaf696c9db4fe4f22829a114d96bc3d0",
     "settlements/gila/dist/gila.tex.gila.js": "919618d0a91375853f7cc97980a8f1283bde336e3cf78d0b82ec7d012b1c8c8c",
     "settlements/gila/dist/gila.tex.lizardmen-2.js": "5b7e896c71d303d3a7093801e1b767f85387d218715feb1421305b0dd7d1ff9a",
     "settlements/gila/dist/gila.tex.lizardmen.js": "1675634214bee7f375018b367eb8b2b20c2a6c6a181b533fd532bee7b80759b8"
    },
    "outputs_raw": {
-    "settlements/gila/build-manifest.json": "f1d955a3db5ec3897f8f843387f0cb823c403ff7eb72096df6dab91fd94944d9",
-    "settlements/gila/dist/gila.html": "aa5617e6b4c6c354a4fa15dcc98e3fc86deb27b73dfaaaa49309296423969258",
+    "settlements/gila/build-manifest.json": "d619577e040df256ed37c66667d9d9e4eeb1308c7e66c271f0a9bab5e330bc5d",
+    "settlements/gila/dist/gila.html": "98daf87234282318e6fc85cfec3a1dfbeaf696c9db4fe4f22829a114d96bc3d0",
     "settlements/gila/dist/gila.tex.gila.js": "919618d0a91375853f7cc97980a8f1283bde336e3cf78d0b82ec7d012b1c8c8c",
     "settlements/gila/dist/gila.tex.lizardmen-2.js": "5b7e896c71d303d3a7093801e1b767f85387d218715feb1421305b0dd7d1ff9a",
     "settlements/gila/dist/gila.tex.lizardmen.js": "1675634214bee7f375018b367eb8b2b20c2a6c6a181b533fd532bee7b80759b8"
