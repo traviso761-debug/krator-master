@@ -4,7 +4,7 @@
 # krand.gd (gnoise, gfbm) and wrelief.gd's polynomial cos2pi and sin2pi. Checked against core/world/golden-relief.json
 # (mhills, merode, mgrain) by wrelief_test.gd, to 1e-6.
 #
-#   WMicro.init(ox, oz, seed)
+#   WMicro.init(ox, oz, seed, version = 1)   (2: T0, PLAN-MICRO.md: the masked target mean-compensated, the kernel covering everywhere)
 #   WMicro.amount(x, z, S, rel) / WMicro.hills(x, z, S, rel, min_wave) -> m
 #   WMicro.erode(h, x, z, gx, gz, S, rel, min_wave, G = []) -> h      (G, if two long, gets the slope it leaves)
 #   WMicro.grain(x, z, sl, gx, gz, S, min_wave) -> m
@@ -28,12 +28,14 @@ const FINE := 200.0
 static var OX := 0.0
 static var OZ := 0.0
 static var SEED := 0x4D4943
+static var V2 := false
 
 
-static func init(ox: float, oz: float, sd: int) -> void:
+static func init(ox: float, oz: float, sd: int, version: int = 1) -> void:
 	OX = ox
 	OZ = oz
 	SEED = sd & M32
+	V2 = version == 2
 
 
 static func _clamp(v: float, a: float, b: float) -> float:
@@ -117,11 +119,18 @@ static func erode(h: float, x: float, z: float, gx: float, gz: float, S: Diction
 				var i := ci + di
 				var j := cj + dj
 				var hh := KRand.hash_ints((SEED ^ 0x4D45) & M32, [o, i, j])
-				var px := (float(i) + KRand.unit(hh)) * lam
-				var pz := (float(j) + KRand.unit(KRand.mix32(hh ^ 0x9E3779B9))) * lam
+				var ju := KRand.unit(hh)
+				var jv := KRand.unit(KRand.mix32(hh ^ 0x9E3779B9))
+				if V2:
+					ju = 0.25 + 0.5 * ju
+					jv = 0.25 + 0.5 * jv
+				var px := (float(i) + ju) * lam
+				var pz := (float(j) + jv) * lam
 				var dx := (ax - px) / lam
 				var dz := (az - pz) / lam
 				var d2 := dx * dx + dz * dz
+				if V2:
+					d2 /= 1.5625
 				if d2 >= 1.0:
 					continue
 				var w := (1.0 - d2) * (1.0 - d2)
@@ -142,7 +151,7 @@ static func erode(h: float, x: float, z: float, gx: float, gz: float, S: Diction
 		var y := 1 - 2 * (2 * gul - gul * gul)
 		var mk := mask * fade * cov * fo
 		var yf := tgt + (y - tgt) * mk
-		out += a0 * 0.5 * (mk * (y - YMEAN) + fade * cov * fo * (1 - mask) * tgt)
+		out += a0 * 0.5 * (mk * (y - YMEAN) + fade * cov * fo * (1 - mask) * ((tgt - YMEAN) if V2 else tgt))   # v2: cov always 1 (min W .60); kept for v1
 		var wo := pow(GAIN, o)
 		cr += wo * mk * (2 * gul - 1)
 		cw += wo

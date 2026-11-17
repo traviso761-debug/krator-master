@@ -5,6 +5,8 @@ over a box and drawn as a hillshade, with its terrace-band metric (core/world/PL
     python3 core/world/landshade.py <region> <out.png> --box x0 z0 x1 z1 [--step 10] [--exag 2] [--core <dir>]
     python3 core/world/landshade.py <region> <out.png> --at <name> ...     # one of SPOTS below
     python3 core/world/landshade.py <region> <out.png> --bench             # time WORLD.H (us a call) as well
+    python3 core/world/landshade.py <region> --steepest [--box x0 z0 x1 z1]  # the 3 steepest 4 km windows (GRAPHICS-TERRAIN-PROPOSAL.md
+                                                                           # T0's audit): scan at 200 m, rank by p90-p10, texture() each at 10 m
 
 <region> is openworld/<name> (or its data dir). --core reads 40-world-smooth.js, 41-world-fields.js, 43-world-relief.js and 44-world-streams.js from
 another folder (a copy of an older core/world: the "before" of a change), else from core/world. Two regions or cores side by
@@ -196,6 +198,35 @@ def dem(city, win):
     return E[best[1]:best[1] + n, best[2]:best[2] + n], float(j['step'])
 
 
+def region_box(region):
+    """the region's extent (m) from region.json's region.points_m"""
+    data = region if os.path.isfile(os.path.join(region, 'region.json')) else os.path.join(region, 'data')
+    P = json.load(open(os.path.join(data, 'region.json'), encoding='utf-8'))['region']['points_m']
+    return [min(p[0] for p in P), min(p[1] for p in P), max(p[0] for p in P), max(p[1] for p in P)]
+
+
+def steepest(region, box, win=4000.0, coarse=200.0, fine=10.0, n=3):
+    """scan the box at coarse m, pick the n steepest non-overlapping win-m windows by p90-p10 of height, print texture() of each at fine m"""
+    E, _, _ = sample(region, box, coarse)
+    k = int(win / coarse)
+    cand = []
+    for r in range(0, E.shape[0] - k, max(1, k // 4)):
+        for q in range(0, E.shape[1] - k, max(1, k // 4)):
+            W = E[r:r + k + 1, q:q + k + 1]
+            cand.append((float(np.percentile(W, 90) - np.percentile(W, 10)), box[0] + q * coarse, box[1] + r * coarse))
+    cand.sort(reverse=True)
+    picked = []
+    for sp, x, z in cand:
+        if all(abs(x - X) >= win or abs(z - Z) >= win for _, X, Z in picked):
+            picked.append((sp, x, z))
+        if len(picked) == n:
+            break
+    for sp, x, z in picked:
+        b = [x, z, x + win, z + win]
+        F, _, info = sample(region, b, fine)
+        print('steepest %s: box %.0f %.0f %.0f %.0f, p90-p10 %.0f m, %s%s' % (os.path.basename(os.path.normpath(region)), *b, sp, info.get('biome'), texline(texture(F, fine))))
+
+
 def main():
     a = sys.argv[1:]
     if not a or a[0] in ('-h', '--help'):
@@ -211,6 +242,10 @@ def main():
         E, step = dem(a[1], float((opt('--win', 1) or [4000])[0]))
         Image.fromarray(fixed_shade(E, step)).save(a[2])
         print('landshade %s: the %s DEM, %d x %d at %g m%s' % (a[2], a[1], E.shape[1], E.shape[0], step, texline(texture(E, step))))
+        return
+    if '--steepest' in a:
+        region = a[0] if os.path.isdir(a[0]) else os.path.join(ROOT, 'openworld', a[0])
+        steepest(region, [float(v) for v in (opt('--box', 4) or region_box(region))])
         return
     region, out = a[0], a[1]
     box = opt('--box', 4)

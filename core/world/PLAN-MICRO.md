@@ -202,6 +202,18 @@ Slopes after: median 0.04-0.09, 99th percentile 0.19-0.20 (gentle country: the D
   pages GPU-verified; pinnacle's views 21, 22 and 26 at 15:30 against 11:30: the afternoon light shades the savannah's
   hills a little more, still subtle there (gentle country, as M4/M5's note says).
 
+## T0, version 2 (GRAPHICS-TERRAIN-PROPOSAL.md 3.1, 4; 2026-11-17)
+
+`WMICRO.init({..., version})`; 41 passes `version: 2` when a region's `relief.micro` is `2` (`false` still turns it off;
+anything else is version 1, today's land bit for bit). Version 2 changes `erode` only:
+- the masked target is mean-compensated (`(tgt - YMEAN)`, tgt still built from the raw stripes): v1's land sank by about a
+  fifth of the erosion's spread (`test-micro.js`: mean change -20.1 % of rms in v1, -3.4 % in v2);
+- the 3x3 kernel's points jitter in the cell's middle half (`.25 + .5 u`), radius 1.25, weight `(1 - d2)^2` on the scaled d2:
+  every spot is covered (least kernel weight 0.53 over 4 km, 0.68 over 2 km; v1's reach 0, an octave part-faded on 18 % of
+  the ground). `cov` is then always 1; its code path stays for v1.
+Twin: `wmicro.gd` (`init(..., version)`); goldens `mhills2`, `merode2`, `mgrain2`. No region is on version 2 yet: each moves
+when the all-builds rebuild re-bakes and GPU-verifies it. The audit: `landshade.py <region> --steepest`.
+
 ## Owed
 
 - **M2b's rest:** runevision's doubled-and-clamped normalisation of the stripes' phasor (ours adds 0.15 W).

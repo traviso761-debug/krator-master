@@ -27,6 +27,12 @@ function snapshot(){const G={};
  G.mhills=pts.map(([x,z])=>r6(WMICRO.hills(x,z,SM,600,0)));
  G.merode=pts.map(([x,z])=>{const g=[0,0,0],h=WMICRO.erode(500,x,z,-.08,.05,SM,600,0,g);return [r6(h),r6(g[0]),r6(g[1]),r6(g[2])];});
  G.mgrain=pts.map(([x,z])=>r6(WMICRO.grain(x,z,.3,.2,-.1,SM,0)));
+ // the same at version 2 (PLAN-MICRO.md T0: the target mean-compensated, the kernel covering everywhere)
+ WMICRO.init({ox:2000000,oz:3000000,seed:9,version:2});
+ G.mhills2=pts.map(([x,z])=>r6(WMICRO.hills(x,z,SM,600,0)));
+ G.merode2=pts.map(([x,z])=>{const g=[0,0,0],h=WMICRO.erode(500,x,z,-.08,.05,SM,600,0,g);return [r6(h),r6(g[0]),r6(g[1]),r6(g[2])];});
+ G.mgrain2=pts.map(([x,z])=>r6(WMICRO.grain(x,z,.3,.2,-.1,SM,0)));
+ WMICRO.init({ox:2000000,oz:3000000,seed:9});
  // WSTREAMS: the trace on a valley with a depression, its lines as region.json keeps them, their decode, the tarns
  {const nx=60,ny=80,cell=250,n=nx*ny,E=new Float32Array(n),K=new Uint8Array(n),RW=new Float32Array(n),RM=new Float32Array(n);
   for(let j=0;j<ny;j++)for(let i=0;i<nx;i++){const c=j*nx+i,d=Math.hypot(i-30,j-40);E[c]=(ny-j)*cell*.015+Math.abs(i-30)*cell*.03+(KRAND.vnoise(i/3.7,j/3.7,.5,11)-.5)*6-(d<5?120*(1-d/5):0);

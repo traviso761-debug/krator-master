@@ -206,7 +206,7 @@ W.init=function(R){M=WORLD_DATA.meta;const Hd=M.heights,F=M.frame;
  if(RELIEF){if(typeof WRELIEF==='undefined')throw new Error('41-world-fields: region.json asks for core/world relief: list 43-world-relief.js before 41');
   WRELIEF.init({ox:cx*2000,oz:cy*2000,seed:M.relief.seed});
   MICRO=typeof WMICRO!=='undefined'&&M.relief.micro!==false;   /* PLAN-MICRO.md: the micro-relief, where 43m-world-micro.js is listed */
-  if(MICRO)WMICRO.init({ox:cx*2000,oz:cy*2000,seed:M.relief.seed^0x4D4943});}
+  if(MICRO)WMICRO.init({ox:cx*2000,oz:cy*2000,seed:M.relief.seed^0x4D4943,version:M.relief.micro===2?2:1});}   /* relief.micro: 2 the T0 math (PLAN-MICRO.md), else 1; false off */
  /* an overlay with no entry is an error, not desert: listed in W.unstyled, reported on the page, failed by the probe
     (91: 'every biome overlay has its own ground style'); it is drawn on the desert's shape in MISSING's magenta, so it shows */
  W.unstyled=[];
