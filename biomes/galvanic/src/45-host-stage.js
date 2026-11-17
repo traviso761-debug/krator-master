@@ -72,7 +72,9 @@ function ribAt(x,z){if(!ORE)return 0;const q=ORE.F.at(x,z),w=ORE.w*(1+.25*n2(x,z
  return ORE.rib*along*across*(.65+.7*fbm(x*.02,z*.02,7.1,2));}
 // THE STREAMS: each a polyline frame, its spring's acid and the terraces' band from GALV_PHYS (the band starts where the pH crosses 2.8)
 const STREAMS=SITE.streams.map((S,i)=>{const F=polyFrame(S.pts),sT=GALV_PHYS.streamAtPH(S,2.8);
- const bed0=s=>{const p=F.point(s);return BASE_Y(p[0],p[1])-.45;};
+ // the bed: a hand under the strand; inside the Deep's rim (station 2) it follows the rim and the shelf down to the brine, so a stream that falls in runs
+ // on to the season's water's edge (the flow stops where its bed goes under the brine: 89w)
+ const bed0=s=>{const p=F.point(s),b=BASE_Y(p[0],p[1])-.45;if(!DP||Math.hypot(p[0]-DP.x,p[1]-DP.z)>DP.r*1.05)return b;return Math.min(b,land(p[0],p[1],true)-.45);};
  // the terraces: treads of ~20 m stepping down 0.12-0.2 m from sT to the dry season's shore (the wet season drowns the lowest)
  const T=[];{let s=Math.min(sT,F.L);let y=bed0(s)+.3;const W=8.5;
   while(s+20<F.L){const s1=s+18+4*Math.abs(Math.sin(s*.37+i));const yy=Math.min(y,bed0(s1)+.32);if(yy<SITE.sea-GALV_PHYS.SEA.amp+.1)break;T.push({s0:s,s1,y:yy,w:W});y=yy-.12-.06*Math.abs(Math.sin(s*.13+i*2));s=s1+2.5;}}

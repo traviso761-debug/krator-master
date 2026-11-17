@@ -108,7 +108,7 @@ var GALV_SITES={
  // page than on station 1's (r 820 m against 560: the model's vent is one record, its pit drawn as an ideal type), its floor 100 m under the sea, the hot
  // brine to the sea's level; a SHELF of the brine's own muds round its edge (the sea's mean -1.4 m to +1.0 m over 115 m), which the season's 1.2 m bares
  // and drowns (the bathtub ring); the galvanic chimneys (the owner's name, 2026-11-17: relict black smokers, PLAN.md section 4, item 1: the chimneys that stood when the vent was under the sea),
- // [x, z, height, radius at the foot], on the rim and in the shallows; the rim's mounds; a stream off the hills falling into the Deep; the sea past the
+ // [x, z, height, radius at the foot], on the rim and in the shallows; the rim's mounds; a stream off the hills and a brook off the rim's mound, each running down the shelf to the season's brine; the sea past the
  // south rim; the hills' foot along the north edge, the Rift's trees on it. The steam: a faint haze over the brine (~60 degC water in +36 degC air), thicker over the vent.
  deep:{key:'deep',name:'The Deep',station:2,px:[781,1577],world:[1562000,3154000],sky:{px:509,py:1247},R:1700,
   sea:-2600,atm:2.21,koppen:'XA',rain:1569,temp:{mean:36,warm:40,cold:32},soil:36,day:70,
@@ -117,8 +117,8 @@ var GALV_SITES={
   mounds:[[700,-700,55,11],[960,-260,70,14],[880,380,45,9],[-420,-1060,50,10],[-980,-560,40,8],[-150,-1120,60,12]],
   smokers:[[-848,-459,9,1.6],[-699,-639,6,1.1],[-586,-900,12,2.0],[-313,-925,5,.9],[-108,-921,4,.8],[62,-1033,10,1.7],[271,-1096,7,1.2],[397,-896,8,1.4],
    [506,-753,3.5,.7],[661,-788,11,1.9],[746,-580,6,1],[951,-459,9,1.5],[832,-237,5,.9],[893,-24,7,1.2],[737,148,3,.6],[721,336,6,1]],
-  streams:[{name:'The north stream',pts:[[-300,-1690],[-260,-1400],[-330,-1200],[-210,-1030],[-150,-972]],pH0:2.0,Q0:3,q:.03},
-   {name:'The rim brook',pts:[[1010,-300],[930,-330],[860,-300],[800,-280]],pH0:2.1,Q0:1,q:.01}],
+  streams:[{name:'The north stream',pts:[[-300,-1690],[-260,-1400],[-330,-1200],[-210,-1030],[-150,-972],[-110,-860]],pH0:2.0,Q0:3,q:.03},
+   {name:'The rim brook',pts:[[1010,-300],[930,-330],[860,-300],[800,-280],[690,-255]],pH0:2.1,Q0:1,q:.01}],
   vents:[{x:0,z:-150,T:62,reach:1100,decay:2.6}],steam:{cell:70,hot:44}},
  // STATION 3, THE GOSSAN HILLS (PLAN.md section 12; built 2026-11-17): the hills' slope 14 km north of the strand (5.1 px 780,1569: -2,173 m, 2.10 atm,
  // 1,051 mm, mean +33 degC, warmest +38, coldest +29, XV), a page of 3.6 km. Sato and Mooney's battery at a hill's scale: a massive sulfide lens striking
