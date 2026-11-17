@@ -139,7 +139,11 @@ def places(P):
     out = []
     for S in P['sites']:
         half = PLACE / 2
-        box = [S['x'] - half, S['z'] - half, S['x'] + half, S['z'] + half]
+        # out to the chunks' ground lattice (STEP), so a chunk's cells are wholly inside a place's square or wholly out, and
+        # the place's ground (PLACE_STEP, a divisor of STEP) meets the chunk's on the lattice's lines (world_stream.gd stitches
+        # the place's edge to the chunk's straight cell edges)
+        sn = lambda v, up: (math.ceil(v / STEP) if up else math.floor(v / STEP)) * STEP
+        box = [sn(S['x'] - half, False), sn(S['z'] - half, False), sn(S['x'] + half, True), sn(S['z'] + half, True)]
         out.append({'id': S['id'], 'name': S['name'], 'type': S.get('type'), 'pin': [S['x'], S['z']],
                     'detail': 'full' if S['id'] in FULL_PLACES else 'massing',
                     'box': box, 'case': 'places/' + S['id'], 'hamlets': [h['id'] for h in S.get('hamlets') or []]})

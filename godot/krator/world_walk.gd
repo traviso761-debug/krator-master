@@ -158,7 +158,10 @@ func _step_up(motion: Vector3) -> void:
 	if motion.length_squared() < 1e-6 or not walker.is_on_floor():
 		return
 	var t := walker.global_transform
-	if not walker.test_move(t, motion):
+	var col := KinematicCollision3D.new()
+	if not walker.test_move(t, motion, col):
+		return
+	if col.get_normal().dot(Vector3.UP) > cos(walker.floor_max_angle):   # a walkable slope ahead, not a step: move_and_slide climbs it
 		return
 	var up := Vector3(0, STEP, 0)
 	if walker.test_move(t, up):

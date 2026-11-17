@@ -211,6 +211,7 @@ func _build_place(id: String) -> Node3D:
 		return null
 	var w := KratorWorld.build(dir + "/" + str(p["case"]) + "/world.json")
 	w.name = "Place_" + id
+	stitches += _stitch(w)
 	if p.get("arcology") is Dictionary:
 		w.add_child(arcology(p, w))
 	if collide:
@@ -218,6 +219,58 @@ func _build_place(id: String) -> Node3D:
 		if w.get_node_or_null("Arcology"):
 			collide_case(w.get_node("Arcology"))
 	return w
+
+
+# a place's ground edge laid on the chunks' cell edges: the place's square stands on the chunk lattice (godot_case.py), so
+# along each edge every (lattice / place step)-th vertex is a lattice point the chunk samples too; the vertices between
+# are set on the straight line the chunk's cell edge draws between them, and the two grounds share one edge (no crack, no
+# step for a walker). Returns the vertices moved (0 when the place does not stand on the lattice: nothing is changed)
+var stitches := 0
+func _stitch(w: Node3D) -> int:
+	var mi := (w.get_meta("ground") if w.has_meta("ground") else null) as MeshInstance3D
+	if mi == null or not mi.has_meta("grid"):
+		return 0
+	var g: Dictionary = mi.get_meta("grid")
+	var nx: int = g["nx"]
+	var nz: int = g["nz"]
+	var lat := float(index["chunk"]["step"])
+	var r := int(roundf(lat / float(g["step"])))
+	var o: Array = w.get_meta("origin", [0.0, 0.0, 0.0])
+	var gx0: float = float(g["x0"]) + float(o[0])
+	var gz0: float = float(g["z0"]) + float(o[2])
+	if r < 2 or (nx - 1) % r != 0 or (nz - 1) % r != 0 or absf(fposmod(gx0, lat)) > 0.01 and absf(fposmod(gx0, lat) - lat) > 0.01:
+		return 0
+	var arr := mi.mesh.surface_get_arrays(0)
+	var V: PackedVector3Array = arr[Mesh.ARRAY_VERTEX]
+	var moved := 0
+	var top := []
+	var bot := []
+	for i in nx:
+		top.append(i)
+		bot.append((nz - 1) * nx + i)
+	var lef := []
+	var rig := []
+	for j in nz:
+		lef.append(j * nx)
+		rig.append(j * nx + nx - 1)
+	for idx in [top, bot, lef, rig]:   # the vertex indices along one edge, in order (no lambda: it would change a copy of V)
+		for k in (idx as Array).size():
+			if k % r == 0:
+				continue
+			var a: int = idx[k - k % r]
+			var b: int = idx[k - k % r + r]
+			var v: Vector3 = V[idx[k]]
+			v.y = lerpf(V[a].y, V[b].y, float(k % r) / r)
+			V[idx[k]] = v
+			moved += 1
+	arr[Mesh.ARRAY_VERTEX] = V
+	var mat := mi.mesh.surface_get_material(0)
+	var m := ArrayMesh.new()
+	m.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arr)
+	m.surface_set_material(0, mat)
+	mi.mesh = m
+	mi.set_meta("stitched", moved)
+	return moved
 
 
 # a built case into the tree (the main thread), seated at the stream's origin as it is now

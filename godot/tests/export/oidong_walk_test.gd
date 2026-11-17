@@ -82,7 +82,7 @@ func _walk(W: KratorWorldWalk, pts: Array, road: Array, plateau_from := -1) -> D
 	for k in 30:   # settle onto the ground
 		await physics_frame
 	W.drive(pts.slice(1), SPEED)
-	var m := {"under": 0.0, "over": 0.0, "over_plateau": 0.0, "off": 0.0, "jump": 0.0, "steps": 0, "reached": false, "rebases": W.stream.rebases}
+	var m := {"under": 0.0, "over": 0.0, "over_plateau": 0.0, "off": 0.0, "jump": 0.0, "steps": 0, "reached": false, "rebases": W.stream.rebases, "step_ups": W.step_ups}
 	var budget := int(_length(pts) / SPEED * 2.0 * 60.0) + 600
 	var last := W.region_xz()
 	var dt := 1.0 / Engine.physics_ticks_per_second
@@ -112,6 +112,7 @@ func _walk(W: KratorWorldWalk, pts: Array, road: Array, plateau_from := -1) -> D
 			m["reached"] = true
 			break
 	m["rebases"] = W.stream.rebases - int(m["rebases"])
+	m["step_ups"] = W.step_ups - int(m["step_ups"])
 	m["end"] = W.region_xz()
 	m["feet"] = W.feet_y()
 	return m
@@ -147,6 +148,21 @@ func _run() -> void:
 		and absf(float(m2["feet"]) - lip) <= 3.0,
 		"the last climb to Strongbow and over its plateau: there in %d steps; feet at most %.2f m under the ground, %.2f m over it on the road and %.2f m on the plateau, %.1f m off the road, %d rebases, the largest jump %.2f m; it stands %.0f m behind the lip with its feet at %.1f m (the lip %.1f m)"
 		% [m2["steps"], m2["under"], m2["over"], m2["over_plateau"], m2["off"], m2["rebases"], m2["jump"], float(m2["end"].x) - float(at[0]), m2["feet"], lip])
+	# the seam: Strongbow's square stands on the chunk lattice and its ground's edge is stitched to the chunk's cell edges,
+	# so the climb crosses into it without a step-up. Negative: the place's ground as exported (unstitched) leaves the
+	# chunk's straight cell edges between lattice points
+	var pw: Node3D = W.stream.places_open.get("sfgtxw10kr")
+	var dev := 0.0
+	if pw and pw.has_meta("ground"):
+		var gm: Dictionary = (pw.get_meta("ground") as Node3D).get_meta("grid")
+		var H: PackedFloat32Array = gm["h"]
+		var r := int(roundf(float(W.stream.index["chunk"]["step"]) / float(gm["step"])))
+		for k in int(gm["nx"]):
+			if k % r != 0 and k - k % r + r < int(gm["nx"]):
+				dev = maxf(dev, absf(H[k] - lerpf(H[k - k % r], H[k - k % r + r], float(k % r) / r)))
+	ok(W.stream.stitches > 0 and int(m2["step_ups"]) == 0,
+		"the seam closed: places' ground edges stitched to the chunk lattice (%d vertices), and the climb crossed into Strongbow's square with %d step-ups" % [W.stream.stitches, m2["step_ups"]])
+	ok(dev > 0.01, "negative: Strongbow's ground edge as exported leaves the chunk's cell edges by up to %.2f m between lattice points" % dev)
 	# the stream's loading ran off the main thread: cases built on the worker thread and attached by poll()
 	var ev: Array = W.stream.events
 	var bmax := 0.0
