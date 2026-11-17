@@ -17,5 +17,10 @@ const FAMILIES=[
   {key:'cy_tipi_m',o:{tribe:'sunset'}},{key:'cy_tipi_m',o:{v:1}},'cy_winter_base']},
  {name:'Herders pens and works',keys:['cy_ostrich_pen','cy_feather_rack','cy_saddle_rack','cy_egg_cache']},
  {name:'Herders camp in summer (KCAMP)',keys:['cy_camp_summer']},
- {name:'Herders camp in winter (KCAMP)',keys:['cy_camp_winter']}
+ {name:'Herders camp in winter (KCAMP)',keys:['cy_camp_winter']},
+ {name:'Tierhound ledge houses (Lok-Hau)',keys:['cy_ledge_poor','cy_ledge_mid','cy_ledge_rich','cy_stair_lane','cy_terrace_wall',{key:'cy_terrace_wall',o:{w:5.4,text:'Hau-Gèl Tsēk! Lōk-Hau Kām.'}}]},
+ {name:'Tierhound halls and stores',keys:['cy_spring_hall','cy_council','cy_treasury','cy_rock_facade',{key:'cy_rock_facade',o:{kind:'tomb',text:'Sī-Hau Gèl. Lōk Kām-Tōng.'}}]},
+ {name:'The lake towns',keys:['cy_lake_house','cy_fish_weir','cy_reed_boat']},
+ {name:'Howl and the road',keys:['cy_stage_house','cy_runners_post','cy_larder']},
+ {name:'The stepped street (KHAMLET.terrace)',keys:['cy_street_tier']}
 ];

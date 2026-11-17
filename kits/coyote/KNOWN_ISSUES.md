@@ -32,3 +32,19 @@
   it anywhere, not only at the door. Its floor is a walk floor; the door flap is a real `core/door` leaf.
 - [ ] **The camps' wind is the draft row's** (`[0.7071, 0.7071]`, as the Beast Riders' row has it): a host on the map passes the
   model's wind at the camp (`KCAMP.pitch` `wind`). The pens stand empty until the birds land in `kits/fauna`.
+- [ ] **The stepped street's hill is a stand-in** (`68-cy-street.js`: rock boxes, a fill under each band, the scarp behind the
+  top row, the canyon's flanks): a host on the map lays `KHAMLET.terrace` on its own slope (`slope {origin, up, width}`) and cuts
+  the ground to the rows' floors.
+- [ ] **The lowest row of the stepped street is mostly gardens**: `KHAMLET.terrace` fills from the top row down (the headman at the
+  top, the middling, then the poor), so the lowest row takes what is left; with seventy people on a 44 m wall that is one house.
+  The gardens are the terrace fields, so this reads; a host wanting a full lowest row passes a narrower slope.
+- [ ] **The landings' and the quay's masses are drawn past the box reader** (`cy_stair_lane`, the spring hall's stair, the lake
+  house's quay): a block there stops a walker a radius short of the flight's head, so only their tops are walk floors (`wkPad`).
+  A walker on the ground can pass into them from the side; nothing on the sheet sends one there.
+- [ ] **The treasury's tholos is a `lathe()`** (as the round room and the corbelled store are): its courses are not walk blocks;
+  the passage's walls and the door's wall are.
+- [ ] **The terrace gardens' plants are stand-ins** (green boxes on stakes): the crops come from `kits/crops` (`CROPS.at` at the
+  Tiers' climate) when the gardens get their models.
+- [ ] **Masuleh's rule at a city's size is not on `core/city` yet** (the owner, 2026-11-16: "both"): the rule and its test are
+  `core/hamlet/36-hamlet-terrace.js` and `test-hamlet-terrace.js`; Coyote Canyon's page wants the same on `core/city`, which is
+  the city session's to write (`core/city/PLAN.md`): this kit does not touch `core/city`.

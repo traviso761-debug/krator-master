@@ -20,8 +20,8 @@ const lay = (o) => KHAMLET.platform(Object.assign({ id: 'valley-1', world: 7, cu
   ground: { ok: () => true, h: () => 0 }, link: { x: 0, z: 120 }, plinth: { pts: tell(24, 20), top: 2.4, foot: 0 } }, o || {}));
 
 const keys = new Set();
-for (const R of Object.values(CY_ROWS)) { const Q = R.platform;
-  [R.religious, R.civic, R.general, R.food, R.warehouse, Q.room, Q.store, Q.kiva, Q.greatKiva, Q.court, Q.pen].forEach(k => keys.add(k));
+for (const R of Object.values(CY_ROWS)) { const Q = R.platform || {}, TQ = R.terrace || {}, TR = R.trade || {};
+  [R.religious, R.civic, R.general, R.food, R.warehouse, Q.room, Q.store, Q.kiva, Q.greatKiva, Q.court, Q.pen, TQ.stair, TQ.wall, TR.serai, TR.store].forEach(k => k && keys.add(k));
   Object.values(R.houses).forEach(v => Array.isArray(v) && v.forEach(h => keys.add(h[0])));
   Object.values(R.works).forEach(ws => ws.forEach(w => keys.add(w.key))); }
 const missing = [...keys].filter(k => !dims(k));
@@ -63,4 +63,15 @@ T.ok('a band of forty to seventy, every household in a dwelling, the racks and p
   cen.pop + ' people, ' + cen.households.length + ' households');
 const chief = camp.records.find(r => /@chief/.test(r.key));
 T.neg('the chief\'s tipi stands opposite the way in', c => { const r = c.records.find(q => /@chief/.test(q.key)); return r && r.z < c.hearth.z; }, { records: [Object.assign({}, chief, { z: chief.z + 99 })], hearth: camp.hearth }, camp);
+/* the Tierhounds' row on core/hamlet's terraced village (36-hamlet-terrace.js), as 68-cy-street.js lays the stepped street */
+const terr = d => KHAMLET.terrace({ id: 'tier-street', world: 5, culture: CY_ROW_TIER, focus: 'farming', popMax: 70, dims: d || dims,
+  slope: { origin: [0, 0], up: [0, -1], width: 44, foot: 0 }, link: { x: 0, z: 200 } });
+const TV = terr();
+T.ok('the Tier row lays a stepped street with no error and no pending key', !TV.error && !TV.pendingKeys.length && TV.site.rows >= 3 && TV.stairs.every(q => q.key === 'cy_stair_lane'),
+  TV.error || (TV.census.pop + ' people, ' + TV.site.rows + ' rows, ' + TV.records.length + ' records, ' + TV.stairs.length + ' stairs'));
+T.ok('the council and the runner shrine stand below the foot street, the headman in the top row',
+  ['civic', 'religious'].every(r => TV.records.filter(q => q.role === r).every(q => q.below)) && TV.records.find(q => q.tier === 'head').row === TV.site.rows - 1);
+const tallLedge = k => k === 'cy_ledge_poor' ? Object.assign({}, dims(k), { h: 3.6 }) : dims(k);
+T.neg('the ledge houses are one storey, so every house lays in a row (a taller one would stand at the foot)',
+  v => v.records.filter(q => q.role === 'house').every(q => q.row != null), terr(tallLedge), TV);
 T.done();

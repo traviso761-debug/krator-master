@@ -56,5 +56,24 @@ const CY_CAMP_HERDER={
  elderShare:.4, mountsPer:1, wind:[0.7071,0.7071], formation:'horseshoe'
 };
 if(typeof KCAMP!=='undefined'){KCAMP.CULTURES=KCAMP.CULTURES||{};KCAMP.CULTURES['coyote-herder']=CY_CAMP_HERDER;}
-/* the rows by tribe (the Tiers' row comes in C5) */
-const CY_ROWS={valley:CY_ROW_VALLEY, peak:CY_ROW_PEAK};
+/* The Tierhounds (Lok-Hau, the Kingdom of the Tiers): terrace villages down the canyon walls on core/hamlet's terraced layout
+   (36-hamlet-terrace.js, Masuleh's rule: the owner, 2026-11-16), lake towns. A row's piece is one storey (3.2 m to its roof's
+   top), a band 6 m deep: the ledge houses; the rest (the council megaron, the runner shrine at the road's foot, the larder, the
+   works) stands below the foot street. The gaps are terrace gardens; stair lanes every 20 m. The Howl's trade post takes the
+   stage house as its serai and the larder as its store (34-hamlet-trade.js). */
+const CY_ROW_TIER={
+ kit:'coyote', household:5, workShare:.45, slopeMax:.8,
+ religious:'cy_runner_shrine', civic:'cy_council', general:'cy_larder', food:'cy_larder', warehouse:'cy_larder',
+ services:{religious:1, civic:2, general:1, food:2, warehouse:2},
+ houses:{poor:[['cy_ledge_poor',1,3]], middling:[['cy_ledge_mid',1,2]], head:[['cy_ledge_rich',1,1]], middlingShare:.35},
+ works:{
+  farming:[{key:'cy_threshing',jobs:10,share:.4},{key:'cy_granary',jobs:4,share:.3},{key:'cy_press',jobs:6,share:.3}],
+  fishing:[{key:'cy_fish_weir',jobs:6,share:.6},{key:'cy_lake_house',jobs:4,share:.4}]
+ },
+ focusJobs:{farming:36, fishing:24}, reach:{farming:150, fishing:150},
+ pending:{},
+ terrace:{step:3.2, depth:6, stairW:2.4, landing:1.6, every:20, street:4, stair:'cy_stair_lane', wall:'cy_terrace_wall'},
+ trade:{serai:'cy_stage_house', store:'cy_larder'}
+};
+/* the rows by tribe */
+const CY_ROWS={valley:CY_ROW_VALLEY, peak:CY_ROW_PEAK, tier:CY_ROW_TIER};

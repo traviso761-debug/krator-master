@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 15 (16%) | 0 (0%) | 0 (0%) | 5 (5%) | 75 (79%) |
+| KB | 17 (13%) | 0 (0%) | 0 (0%) | 5 (4%) | 111 (83%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -15,7 +15,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/00-head.html` | 1.2 | [web] | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 | `src/26k-kit.js` | 3.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/32-cy-contour.js` | 4.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/34-cy-rows.js` | 4.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/34-cy-rows.js` | 6.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/40-cy-kit.js` | 14.9 | [draw] | 9 | 0 | 0 | 0 | 0 | 26 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/50-cy-valley.js` | 12.0 | [draw] | 1 | 0 | 0 | 0 | 0 | 8 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/52-cy-works.js` | 10.2 | [draw] | 10 | 0 | 0 | 0 | 0 | 26 | 0 | 0 | 0 | 0 | 0 |  |
@@ -23,7 +23,11 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/56-cy-village.js` | 4.5 | [draw] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/58-cy-herders.js` | 14.3 | [draw] | 13 | 0 | 0 | 0 | 0 | 22 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/60-cy-stones.js` | 4.6 | [draw] | 1 | 0 | 0 | 0 | 0 | 9 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/89-rows.js` | 2.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/62-cy-tiers.js` | 19.7 | [draw] | 5 | 0 | 0 | 0 | 0 | 50 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/64-cy-lake.js` | 5.1 | [draw] | 1 | 0 | 0 | 0 | 0 | 10 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/66-cy-howl.js` | 7.1 | [draw] | 2 | 0 | 0 | 0 | 0 | 17 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/68-cy-street.js` | 3.5 | [draw] | 0 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/89-rows.js` | 2.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/99-host-tz-cy.js` | 3.7 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the probe's fields for verify.py (window._api): host code |
 
 ## Notes

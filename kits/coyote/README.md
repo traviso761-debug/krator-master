@@ -20,7 +20,7 @@ The page loads its texture pack beside it: serve `dist/` over HTTP, as `verify.p
 
 ## How it is made
 
-- **Core read in place** beside the engine's folders: `core/camp` (10, 20, 30: the census and the pitch), `core/space`, `core/hamlet` (10 to 34) and `core/city/33-city-strategies.js`
+- **Core read in place** beside the engine's folders: `core/camp` (10, 20, 30: the census and the pitch), `core/space`, `core/hamlet` (10 to 36) and `core/city/33-city-strategies.js`
   (`KCITY.prim`, which core/hamlet reads): `build.py` `CORE_FILES`. Nothing under `core/city` is edited.
 - **The engine** is `core/engine`, read by path (`engine.py`): `defBuilding`, the buckets by material key, doors and glass
   (`36o-open.js`), ladders (`36s-stair.js`), the walk records. `build.py` started from `kits/tents/build.py` with the
@@ -35,7 +35,7 @@ The page loads its texture pack beside it: serve `dist/` over HTTP, as `verify.p
   may overlap), `cyRing`, `cyRoof` (beams, reed mat, the earth slab with its hatch), `cyLadder`, the **ear door**
   (`cyEarHoles`, `cyEarDoor`: a doorway whose head steps up in two notches), the hearth, oven, platforms and bins, and
   `cyCarve` (the contour line raised on a face, one row or a word a row).
-- **`src/34-cy-rows.js`** (`[G data]`): the Valley's and the Peak's rows for `core/hamlet` (`CY_ROW_VALLEY`, `CY_ROW_PEAK`) and the herders' camp row for `core/camp` (`CY_CAMP_HERDER`, registered as `coyote-herder`), a DRAFT kept in the kit until C7
+- **`src/34-cy-rows.js`** (`[G data]`): the Valley's and the Peak's rows for `core/hamlet` (`CY_ROW_VALLEY`, `CY_ROW_PEAK`, the Tierhounds' `CY_ROW_TIER` with its `terrace` fields) and the herders' camp row for `core/camp` (`CY_CAMP_HERDER`, registered as `coyote-herder`), a DRAFT kept in the kit until C7
   moves it to `core/hamlet/22-hamlet-coyote.js`: the houses, the works, and the platform fields (the cell, the store, the
   shrine room and council room as kivas sunk in the yard, two storeys). `tests/test-rows.js` lays it.
 - **`src/50-cy-valley.js`**: the Valley's Catalhoyuk rooms on one builder (`cyMainRoom`, `cyHouse`): `cy_room` (entered through
@@ -58,6 +58,20 @@ The page loads its texture pack beside it: serve `dist/` over HTTP, as `verify.p
   dew lining, a hide door flap; roles family, sleep, chief, council, shrine; v 1 the winter tipi on its stone base), the ostrich
   pen, the feather and saddle racks, the egg cache, the winter base; the summer and winter camps of a Sunrise band of about
   fifty pitched by `core/camp` (`KCAMP.census`, `KCAMP.pitch`, horseshoe) on the draft row `coyote-herder` (34-cy-rows.js).
+- **`src/62-cy-tiers.js`**: the Tierhounds (Lok-Hau), Masuleh's rule with ancient Indo-European touches: `cyLace` and
+  `cyLacedRing` (timber lacing, the beam ends showing), `cyMegaron` (the porch between the antae and its two posts, the cross
+  wall's ear door, the hall's round hearth and high seat, the smoke hole kerbed in the flat roof); the row pieces, one storey
+  (3.2 m to the roof's top) and a band (6 m) each: `cy_ledge_poor`, `_mid`, `_rich` (a small megaron), `cy_stair_lane` (a
+  flight to a landing flush with the row's roofs), `cy_terrace_wall` (the garden: its riser, the carved band, the channel; `o.w`
+  its width); `cy_spring_hall` (the king's megaron on the podium over the spring), `cy_treasury` (the tholos), `cy_council`
+  (a megaron with four posts and benches), `cy_rock_facade` (a Phrygian face: shrine or tomb).
+- **`src/64-cy-lake.js`**: the lake towns: `cy_lake_house` (two storeys on its quay, the boat store below), `cy_fish_weir`,
+  `cy_reed_boat`.
+- **`src/66-cy-howl.js`**: Howl and the road: `cy_stage_house` (the walled court of stalls, the gatehouse with the rooms over the
+  gate), `cy_runners_post` (the hut and the signal pole), `cy_larder`.
+- **`src/68-cy-street.js`**: `cy_street_tier`, the stepped street: `KHAMLET.terrace` (core/hamlet's terraced village, Masuleh's
+  rule: 36-hamlet-terrace.js) on the draft Tier row lays the ledge houses in rows up a test canyon wall, each row's roofs the
+  lane of the row above, the gardens in the gaps, the stair lanes between, the council, shrine, larders and works below.
 - **`src/60-cy-stones.js`**: the milestone (`cy_milestone`), the boundary stone (`cy_boundary_stone`, a name a face) and the
   runner bird's shrine at a road's foot (`cy_runner_shrine`).
 - **`src/99-host-tz-cy.js`**: the probe's fields for `verify.py` (carvings, doors, the walk-reach audit, the fingerprint).
@@ -69,5 +83,7 @@ The page loads its texture pack beside it: serve `dist/` over HTTP, as `verify.p
 **C1** (the scaffold, the toolkit, the contour script, two Valley houses and the milestone) and **C2** (the Valley: four houses,
 the village's cells and sunk rooms, ten works, the shrine and the boundary stone, the village on its tell on `core/hamlet`):
 **C3** (the Peak: huts, store, the alcove room and round room, the fold, the mine's five works, the alcove village) and
-**C4** (the herders: the tipi, the pens and racks, two camps on `core/camp`): built and verified (`verify.py --assert`). C5 onward:
+**C4** (the herders: the tipi, the pens and racks, two camps on `core/camp`) and **C5** (the Tierhounds: the ledge houses, stairs and
+gardens, the spring hall, treasury, council and rock facade, the lake house, weir and boat, Howl's stage house, runners' post and
+larder, the stepped street on `core/hamlet`'s new terraced village): built and verified (`verify.py --assert`). C6 onward:
 `PLAN.md` section 9.
