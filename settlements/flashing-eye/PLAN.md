@@ -34,7 +34,9 @@ Sources:
   Beacon and the capital**. Questions 4 and 6-13 are still open.
 - **The Beacon reaches the Eye through its Rim Post** (the owner, 2026-11-16: "Rim Post relay"). The Beacon session found that
   on the restored knoll the rim massif north-east of it (1,111 m at 857.9,1537.5) hides the Eye Post from the lamp (-95 m).
-  The Order of the Beacon's Rim Post at 856,1532 sees both: the lamp (+57 m) and the Eye (+68 m). So the line runs lamp,
+  The Order of the Beacon's Rim Post at 856,1532, the summit of the lake's middle volcano (1,578 m), sees both: the lamp
+  (+41 m) and the Eye Post (+42 m), measured on the scale-model session's restored knoll (d1c7d6682); if the middle volcano
+  is ever given a vent, the fallback post is its flank at 857,1535 (+17 m to the lamp, +12 m to the Eye). So the line runs lamp,
   Rim Post, Eye, Erehwon. Section 3's "+40 m" from the lamp was read on the lowered rim and no longer holds once the knoll is
   restored. The Beacon's layout carries the Rim Post (`claude/beacon-monastery-d509f5`, 8a4b5ae99).
 
