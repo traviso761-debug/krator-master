@@ -40,8 +40,9 @@ all-builds rebuild"). A page takes one through its kit.json `"external"` (`settl
 | File | What |
 |---|---|
 | `extra/88c-xa-caravanserai.js` | `xa_caravanserai` (the owner, 2026-11-16: "build xanadu one"): a 48 m court of two-storey battered ranges, the stables' arcade, a gate block with an open iwan, four corner towers, the fountain court; v0 wash and gold, v1 earth and plainer |
-| `extra/88d-xa-lakecraft.js` | the lake craft owed by `core/simulation/PROPOSAL-XANADU.md` 2a: `xa_dugout` (the cayuco; empty, with its fisher, beached), `xa_launch` (the lancha; under sail, furled), `xa_lake_barge` (the cargo barge; sail set, brailed) |
+| `extra/88d-xa-lakecraft.js` | vessels (core/tags class `vessel`, the Ring Sea's tags; 2026-11-17): the lake craft owed by `core/simulation/PROPOSAL-XANADU.md` 2a: `xa_dugout` (the cayuco; empty, with its fisher, beached), `xa_launch` (the lancha; under sail, furled), `xa_lake_barge` (the cargo barge; sail set, brailed) |
 | `extra/88e-xa-stall.js` | `xa_stall`: a trestle stall under a cloth awning, four trades (cloth, cacao and fruit, pots and baskets, fish and salt) |
+| `extra/88f-xa-harbour.js` | the lake harbour (2026-11-17, `settlements/kirstabal` takes it): `xa_harbour_quay` (a continuous 34 m quay: coursed ashlar, weed line, coping, bollards, rings, fenders, water stairs; a jib crane, a cargo stack or a tally shed), `xa_mole_run` (the breakwater, `o.len` long: a harbour quay face, a parapet, boulder armour), `xa_harbour_warehouse`, `xa_drydock` (flooded, 88d's cargo barge in it when the page has 88d), `xa_slip`, `xa_river_span` (a segmental arch bridge in 26 m pieces; v 1 the abutment), `xa_monastery_white` (the monastery under a lime-white paint filter) |
 | `extra/69dz-ix-xanadu-extra.js` | the interior set `xanadu-extra`: the caravanserai's five ranges (the common room, its kitchen and the stores below, the travellers' rooms above). It joins `kits/interiors/sets/xanadu.js` with the pieces |
 
 **Hollow walls and interiors** (2026-11-09). The kit's interior set is `kits/interiors/sets/xanadu.js` (one item per def:

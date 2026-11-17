@@ -1,7 +1,7 @@
-// ================================================================= XANADU — the lake harbour: the quay, the mole, the slip, the river bridge, the lake craft, the white dress
-// Opt-in (2026-11-17; settlements/kirstabal KNOWN_ISSUES.md, the stand-ins the town owed the kit; the owner: "make a real quay
-// model and fill the other stand-ins with a proper model"). Not in xanadu.py's FILES, so no page that takes the kit changes: a
-// world reads it in place by name (settlements/kirstabal/kit.json "external"); the kit's own sheet shows it (its folder). Each
+// ================================================================= XANADU — the lake harbour: the quay, the mole, the warehouse, the drydock, the slip, the river bridge, the white dress
+// OPT-IN until the kit's next all-builds rebuild (kits/xanadu/README.md, "Opt-in pieces"; 2026-11-17, settlements/kirstabal
+// KNOWN_ISSUES.md, the stand-ins the town owed the kit; the owner: "make a real quay model and fill the other stand-ins with a
+// proper model"): settlements/kirstabal takes it through its kit.json "external". Each
 // piece is drawn in its own frame, front +z, its deck or waterline at local y 0 unless noted, opening with its own reseed.
 // Seeds 34301-34399.
 //   xa_harbour_quay   a 34 m run of quay (the old xa_quay was a 24 m slab in a 34 m plot): a battered ashlar wall in courses,
@@ -15,18 +15,14 @@
 //                     solid abutment and its wing walls on -z
 //   xa_slip           the barge slip: a stone ramp into the lake (its head at y 0, -z), timber ways, a capstan, a work barge's
 //                     hull in frame on its cradle
-//   xa_work_barge     the lake's cargo barge (waterline y 0): a flat raked hull, a deckhouse aft, a mast and square sail,
-//                     cargo under tarps, sweeps and a steering oar
-//   xa_lake_boat      the fishing boat (waterline y 0): a double-ended hull, a raked mast and a lateen sail, nets and a basket
 //   xa_harbour_warehouse  the waterfront warehouse: a stone ground storey of arched loading bays, a lime-washed loft storey
 //                     (v 1: two), a hoist beam over the loft door, a tiled gable roof, the loading platform; v 2 a timber
 //                     arcade along its front
 //   xa_drydock        the graving dock (its rim at y 0, 2.4 m over the lake: the town sets it so): stepped side walls, the head
 //                     wall's stair, mitre gates at the lake end standing open with their balance beams, the pump house's
-//                     treadwheel, sheerlegs; drawn flooded with a work barge afloat in it under scaffolds (the lake's water is
-//                     one plane: a dry basin needs core/water to mask it)
-// The lake craft are vessels, as the Ring Sea's are (kits/ringsea/API.md): cls 'vessel', tags {type, propulsion, hull, wealth,
-// crew, role}.
+//                     treadwheel, sheerlegs; drawn flooded with a cargo barge (extra/88d's xa_lake_barge, when the page has
+//                     it) afloat in it under scaffolds (the lake's water is one plane: a dry basin needs core/water to mask it)
+// The lake craft are extra/88d-xa-lakecraft.js's (the dugout, the launch, the cargo barge), tagged as vessels there.
 //   xa_monastery_white  the monastery (77-xa-sacred) in the White Monastery's lime-white (Qiblai's white monastery, the owner,
 //                     2026-11-16): the same builder and seed under a paint filter, as the Palopo twins (88-xa-dress)
 
@@ -147,51 +143,6 @@ function buildXaSlip(G,o){reseed(34331+(o.v|0));const stone=xC(xPick(XPAL.stone)
  xhFolk(0,-10,3,3);}
 XA.def({key:'xa_slip',name:'Barge slip',family:'Dockyard',tags:{type:['industry'],wealth:'poor',lit:false},w:12,d:32,h:6,fw:11,fd:31,build:buildXaSlip});
 
-// ---------------------------------------------------------------- the lake craft
-const XH_SAIL=(function(){const g=new THREE.BufferGeometry(),A=[0,0,0],B=[1,0,0],C=[1.12,1,0];   /* a lateen's triangle, both faces */
- g.setAttribute('position',new THREE.Float32BufferAttribute(A.concat(B,C,A,C,B),3));g.setAttribute('uv',new THREE.Float32BufferAttribute([0,0,1,0,1,1,0,0,1,1,1,0],2));g.computeVertexNormals();return g;})();
-kdef('xhSailTri',XH_SAIL,MAT.tarp||MAT.cloth);
-// a hull along z, length L, beam B, its bottom at y b, its sheer at y t; a square-ended flat (barge) or double-ended (boat)
-function xhHull(L,B,b,t,c,band,pointed){const h=t-b;
- if(!pointed){vB('vWood',0,b,0,B,h,L-5,0,c);
-  for(const s of[-1,1]){const p=Math.atan2(h*.75,2.6);kput('vWood',[0,b+h*.62,s*(L/2-1.25)],qEuler(-s*p,0,0),[B,h*.7,2.9],c);   /* the raked ends */
-   vB('vWood',0,b+h*.2,s*(L/2-2.4),B-.1,h*.8,.3,0,c);}
-  for(const s of[-1,1]){vB('xPaint',s*(B/2+.02),t-.45,0,.06,.3,L-5.4,0,band);vB('vWood',s*(B/2-.12),t,0,.3,.22,L-4.6,0,c.clone().multiplyScalar(.8));}}
- else{const m=L*.55,e=(L-m)/2;vB('vWood',0,b,0,B,h,m,0,c);
-  for(const s of[-1,1]){for(const x of[-1,1])xnMember('vWood',[x*(B/2-.06),b+h/2,s*m/2],[x*.05,b+h/2+.15,s*(m/2+e)],h,.12,[0,1,0],c);
-   vPst('vPost',0,b,s*(m/2+e-.05),.08,h+.5,c.clone().multiplyScalar(.8));vB('vWood',0,b,s*(m/2+e*.45),B*.45,h*.55,e*.9,0,c);}
-  for(const x of[-1,1])vB('xPaint',x*(B/2+.02),t-.3,0,.05,.22,m-.2,0,band);}}
-function buildXaWorkBarge(G,o){reseed(34341+(o.v|0));const V=xV(o),L=24,B=6.4,tim=xC(xPick([0x6a5236,0x5a4632,0x7a5a3a])),band=xC(xPick([0x2a5aa8,0xc9442a,0x2f7a4a,0xe8a030])),lit=xLit();
- vnReg('Work barge',0,0,L/2,8);
- xhHull(L,B,-.7,1.1,tim,band,false);vB('vWood',0,1.0,0,B-.5,.12,L-5.4,0,tim.clone().multiplyScalar(1.15));   /* the deck */
- /* the deckhouse aft: plank walls, a door, a gable roof of tiles, a smoke pipe */
- const zh=-L/2+5.2;vB('vWood',0,1.1,zh,4.2,2.1,4,0,tim.clone().multiplyScalar(1.1));vnGableRoof(0,3.2,zh,4.8,4.6,1.2,0,'xGableT',xC(V===1?0x2f6a4a:0xb8563a),.4);
- vB('vDarkB',0,1.1,zh+2.02,.9,1.7,.06,0);vPst('vIron',1.3,3.2,zh-1,.1,1.4,xC(0x2a2826));
- /* the steering oar over the stern, its post */
- vPst('vPost',0,1.1,-L/2+2.4,.12,1.6,tim);xnMember('vWood',[0,2.5,-L/2+2.4],[0,-.6,-L/2-2],.16,.1,[1,0,0],tim);
- /* the mast, its yard and a square sail (v 2: furled on the yard) */
- const zm=1.5;vPst('vPost',0,1.1,zm,.16,10,tim);kput('vWood',[0,9.4,zm],null,[7,.16,.16],tim);
- if(V===2)kput('vTarpB',[0,9.1,zm],null,[6.6,.42,.42],xC(0xd8c8a0));else kput('vCloth',[0,6.4,zm+.1],null,[6.4,5.6,1],xC(0xe8dcc0));
- for(const s of[-1,1]){vBeam([0,10.8,zm],[s*(B/2-.2),1.2,zm+.6],.02,xC(0x3a3026),'vRope');vBeam([0,10.8,zm],[0,1.2,L/2-2.6],.02,xC(0x3a3026),'vRope');}
- /* the cargo: bales and sacks under a tarp forward, barrels amidships */
- vB('vClothB',0,1.1,6.4,4.8,1.2,5,0,xC(0xc8b898));vB('vTarpB',0,2.3,6.4,5,.5,5.2,0,xC(xPick([0x8a7a58,0x6a7a5a,0x9a8a68])));
- for(let k=0;k<4;k++)vnBarrel(-1.6+k*1.05,1.1,-2.4,.38,.95,xC(0x8a6a48));vnSacks(1.6,1.1,-1.2,5);
- for(const s of[-1,1])for(let k=0;k<2;k++)xnMember('vWood',[s*(B/2-.2),1.6,3-k*6],[s*(B/2+4.5),-.15,3.6-k*6],.12,.08,[0,0,1],tim);   /* the sweeps */
- if(lit)vBall('vBulb',0,4.4,zh,.12);
- xhFolk(0,0,3,2);}
-XA.def({key:'xa_work_barge',name:'Work barge',family:'Lake craft',cls:'vessel',tags:{type:['cargo','barge'],propulsion:['sail','sweep'],hull:'monohull',wealth:'common',crew:5,role:'carries the lake\u2019s cargo to the portage landing',lit:true},w:16,d:28,h:12,fw:7,fd:25,build:buildXaWorkBarge});
-function buildXaLakeBoat(G,o){reseed(34351+(o.v|0));const V=xV(o),L=9,B=2.3,tim=xC(xPick([0x6a5236,0x7a5a3a,0x5a4a3a])),band=xC(xPick([0x2a5aa8,0xc9442a,0xf4efe4,0x2f7a4a,0xe8a030]));
- vnReg('Lake boat',0,0,L/2,6);
- xhHull(L,B,-.45,.55,tim,band,true);vB('vWood',0,.3,0,B-.3,.08,L*.5,0,tim.clone().multiplyScalar(1.2));for(const z of[-1.2,1.2])vB('vWood',0,.4,z,B-.2,.08,.35,0,tim);
- /* the mast raked forward, the long yard, the lateen (v 2: lowered along the boat) */
- const zm=1.6;kput('vPost',[0,.3,zm],qEuler(.12,0,0),[.07,5,.07],tim);
- if(V===2){kput('vWood',[0,.9,0],qEuler(0,0,0),[.1,.1,8.4],tim);kput('vTarpB',[.25,.95,-.6],null,[.3,.3,6],xC(0xe8dcc0));}
- else{const p=[0,4.9,zm+.6],a=.62;xnMember('vWood',[0,p[1]-Math.sin(a)*4.8,p[2]+Math.cos(a)*4.8],[0,p[1]+Math.sin(a)*2.6,p[2]-Math.cos(a)*2.6],.08,.08,[1,0,0],tim);
-  kput('xhSailTri',[.05,.75,zm+3.3],qEuler(0,Math.PI/2,0),[6.4,5.6,1],xC(xPick([0xf0e6d0,0xe8dcc0,0xd8b890])));}
- vB('vClothB',-.4,.4,-2.6,1,.25,1.2,0,xC(0x9a8a68));vPst('vStave',.5,.4,-2.2,.3,.45,xC(0x8a6a48));   /* the nets, a basket */
- xhFolk(0,-.6,V===1?1:2,.6);}
-XA.def({key:'xa_lake_boat',name:'Lake boat',family:'Lake craft',cls:'vessel',tags:{type:['fishing'],propulsion:['sail','oar'],hull:'monohull',wealth:'poor',crew:2,role:'fishes the lake',lit:false},w:8,d:11,h:7,fw:3,fd:10,build:buildXaLakeBoat});
-
 // ---------------------------------------------------------------- the waterfront warehouse: its front (+z) to the quay
 // a round arch head of voussoirs over an opening w wide whose top is at y, in the face z (front +z)
 function xhArchHead(x,y,z,w,c){const R=w/2,N=9;for(let i=0;i<N;i++){const a=Math.PI*(i+.5)/N,p=[x+Math.cos(a)*(R+.25),y+Math.sin(a)*(R+.25)];
@@ -239,7 +190,7 @@ function buildXaDrydock(G,o){reseed(34371+(o.v|0));const L=48,B=14,T=4,WL=-2.4,s
   vB('vWood',lx-s*.1,.2,L/2-6.2,.4,.12,7.4,0,tim);   /* the gate's walk */
   xnMember('vWood',[lx,.6,L/2-2.8],[s*(B/2+T-.4),.9,L/2-10.5],.32,.32,[0,1,0],tim);}   /* the balance beam */
  /* the work barge afloat in the dock, scaffolds and shores along her */
- xnSub('xa_work_barge',0,WL,1,0,{v:2});
+ if(VERN.defs.xa_lake_barge)xnSub('xa_lake_barge',0,WL,1,0,{v:1});
  for(const s of[-1,1]){for(let k=0;k<6;k++){const z=-10+k*4;vPst('vPost',s*4.6,WL,z,.1,4.6,timD);}vB('vWood',s*4.6,WL+2.7,0,1,.1,21,0,tim);vB('vWood',s*4.6,WL+4.4,0,.1,.1,21,0,timD);
   for(let k=0;k<4;k++){const z=-8+k*5.5;xnMember('vWood',[s*(B/2-1.6),-1.6,z],[s*3.4,WL+1.8,z],.18,.18,[0,0,1],timD);}}
  /* the pump house on the east rim: a stone room, a tiled roof, its treadwheel; the sheerlegs over the head */

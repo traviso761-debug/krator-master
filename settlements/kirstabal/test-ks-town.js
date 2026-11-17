@@ -18,13 +18,15 @@ KCITY.lib={SL,plan:()=>PLAN,tune:()=>TUNE,KSPACE,Raster,OCC,obb,obbCorners,segDi
 if(fs.existsSync(path.join(__dirname,'src','42-ks-ring.js')))load('settlements/kirstabal/src/42-ks-ring.js');
 /* the kit's boxes, from its defs (XA.def({key, ..., w, d, h, fw, fd, ...})) */
 const DIMS={};
-for(const f of fs.readdirSync(path.join(ROOT,'kits','xanadu','src')).filter(f=>/\.js$/.test(f))){const s=fs.readFileSync(path.join(ROOT,'kits','xanadu','src',f),'utf8');
+/* the kit's src and its opt-in extra/ (88d's lake craft, 88f's harbour: settlements/kirstabal/kit.json "external") */
+const KITF=d=>fs.readdirSync(path.join(ROOT,'kits','xanadu',d)).filter(f=>/\.js$/.test(f)).map(f=>path.join(ROOT,'kits','xanadu',d,f));
+for(const F of KITF('src').concat(KITF('extra'))){const s=fs.readFileSync(F,'utf8');
  for(const m of s.matchAll(/key:'(xa_[a-z0-9_]+)'/g)){const seg=s.slice(m.index,m.index+900),g=k=>{const q=seg.match(new RegExp('[,{]'+k+':([0-9.]+)'));return q?+q[1]:null;};
   if(!DIMS[m[1]]&&g('w'))DIMS[m[1]]={w:g('w'),d:g('d'),h:g('h')||8,fw:g('fw')||g('w'),fd:g('fd')||g('d')};}
  /* the garden and water tiles name their key first (xaGardenDef('xa_parterre', ...), xaWaterDef('xa_rill', ...)): 8 m plots */
  for(const m of s.matchAll(/xa(?:Garden|Water)Def\('(xa_[a-z0-9_]+)'/g))if(!DIMS[m[1]])DIMS[m[1]]={w:8,d:8,h:5,fw:8,fd:8};}
 /* a twin def takes its base's box (XA.def({key:'xa_monastery_white', baseKey:'xa_monastery', w:D.w, ...})) */
-for(const f of fs.readdirSync(path.join(ROOT,'kits','xanadu','src')).filter(f=>/\.js$/.test(f)))for(const m of fs.readFileSync(path.join(ROOT,'kits','xanadu','src',f),'utf8').matchAll(/key:'(xa_[a-z0-9_]+)',baseKey:'(xa_[a-z0-9_]+)'/g))if(DIMS[m[2]])DIMS[m[1]]=DIMS[m[2]];
+for(const F of KITF('src').concat(KITF('extra')))for(const m of fs.readFileSync(F,'utf8').matchAll(/key:'(xa_[a-z0-9_]+)',baseKey:'(xa_[a-z0-9_]+)'/g))if(DIMS[m[2]])DIMS[m[1]]=DIMS[m[2]];
 const dims=(k,v)=>DIMS[k]?{key:k,v:v||0,w:DIMS[k].w,d:DIMS[k].d,h:DIMS[k].h,fw:DIMS[k].fw,fd:DIMS[k].fd}:null;
 const t0=Date.now(),K=KS_TOWN.make({dims}),ms=Date.now()-t0;
 module.exports={K,DIMS,dims};

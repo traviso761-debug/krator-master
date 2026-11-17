@@ -8,6 +8,8 @@
 //                   over benches, a lateen sail; v0 under sail, v1 the sail furled (moored)
 //   xa_lake_barge   the cargo barge: 18 m, a square sail on a stub mast, sweeps, the load (bales, sacks, jars, timber)
 // Painted in the lake towns' colours (the market boats' blues, reds and greens). Seeds 32960-32989.
+// Vessels (2026-11-17, the owner: "make sure boats are properly tagged as ships, see ring sea vessels"): cls 'vessel' and the
+// Ring Sea's tags (kits/ringsea/API.md; core/tags' vessel class: types, propulsion, hull, wealth, crew, role).
 // OPT-IN until the kit's next all-builds rebuild (kits/xanadu/README.md, "Opt-in pieces"): settlements/pher takes it.
 const XLAKE_PAINT=[0x2a5aa8,0xc9442a,0x2f7a4a,0xe8a030,0x1d8a8a,0x8a3aa8,0xf4efe4];
 function buildXaDugout(G,o){reseed(32961+(o.v|0));const V=xV(o),L=7,W=.9,c=xC(xPick(XLAKE_PAINT)),wood=xC(0x6a4a2a),beach=V===2,lean=beach?.08:0;
@@ -18,7 +20,7 @@ function buildXaDugout(G,o){reseed(32961+(o.v|0));const V=xV(o),L=7,W=.9,c=xC(xP
  const pad=beach?[0,.18,0]:[.55,.12,-.6];xnMember('vWood',[pad[0]-.2,pad[1],pad[2]-1.1],[pad[0]+.2,pad[1]+.1,pad[2]+1.1],.06,.04,[0,1,0],xC(0x8a6a48));   // the paddle
  if(V!==0)kput('xLeaf',[0,.18,2.2],null,[.5,.25,.8],xC(0x8a7a48));   // the net in the bow
  if(V===1){vB('xPaint',0,.12,-.4,.4,.2,.6,0,xC(0x7a8a90));xnFolk(0,.05,-2.2,1,.2);}}   // the catch; the fisher
-XA.def({key:'xa_dugout',name:'Dugout (cayuco)',family:'Lake craft',tags:{type:['industry'],wealth:'poor',lit:false},w:2,d:8,h:1.6,fw:1,fd:7,nv:3,build:buildXaDugout});
+XA.def({key:'xa_dugout',name:'Dugout (cayuco)',family:'Lake craft',cls:'vessel',tags:{type:['fishing'],propulsion:['paddles'],hull:'monohull',wealth:'poor',crew:1,role:'fishes the lake at dawn',lit:false},w:2,d:8,h:1.6,fw:1,fd:7,nv:3,build:buildXaDugout});
 function buildXaLaunch(G,o){reseed(32971+(o.v|0));const V=xV(o),L=13,W=3.2,c=xC(xPick(XLAKE_PAINT)),c2=xC(xPick(XLAKE_PAINT)),wood=xC(0xa87848),dark=xC(0x5a4632),cloth=xC(xPick(XPAL.cloth));
  vnReg('Launch',0,0,7,6);
  vB('xPaint',0,-.5,0,W,1.0,L*.86,0,c);for(const s of[-1,1])kput('xConeP',[0,-.2,s*L*.45],qEuler(s*Math.PI/2,0,0),[W*.7,1.6,.9],c);   // the hull, its bow and stern
@@ -31,7 +33,7 @@ function buildXaLaunch(G,o){reseed(32971+(o.v|0));const V=xV(o),L=13,W=3.2,c=xC(
  else{vB('xPaint',0,1.6,1.8,.4,.4,3.6,0,xC(0xf0e6d0));}   // furled along the yard
  vB('vWood',0,.4,-L*.42,.18,.9,.4,0,dark);   // the rudder
  xnFolk(0,.45,-1.5,V===0?6:2,1.2);}
-XA.def({key:'xa_launch',name:'Launch (lancha)',family:'Lake craft',tags:{type:['infrastructure'],wealth:'middle',lit:false},w:5,d:15,h:7.5,fw:3.2,fd:13,nv:2,build:buildXaLaunch});
+XA.def({key:'xa_launch',name:'Launch (lancha)',family:'Lake craft',cls:'vessel',tags:{type:['passenger','ferry'],propulsion:['sail'],hull:'monohull',wealth:'middle',crew:2,role:'the scheduled runs and the market rounds between the lake towns',lit:false},w:5,d:15,h:7.5,fw:3.2,fd:13,nv:2,build:buildXaLaunch});
 function buildXaLakeBarge(G,o){reseed(32981+(o.v|0));const V=xV(o),L=18,W=5,c=xC(xPick(XLAKE_PAINT)),wood=xC(0x8a6a48),dark=xC(0x4a3a28);
  vnReg('Cargo barge',0,0,10,8);
  vB('vWood',0,-.6,0,W,1.2,L*.9,0,wood);for(const s of[-1,1])vB('vWood',0,-.3,s*L*.47,W*.8,.9,1.4,0,wood);   // the flat hull, its blunt ends
@@ -45,4 +47,4 @@ function buildXaLakeBarge(G,o){reseed(32981+(o.v|0));const V=xV(o),L=18,W=5,c=xC
  vnSacks(1.2,.6,-4.5,5);for(let i=0;i<4;i++)vnBarrel(-1.4+i*.9,.6,5.5,.3,.8,xC(0xb8783a));
  for(let i=0;i<4;i++)vB('vWood',0,.7+i*.22,-7,3.6,.2,.3+(i%2)*.05,0,xC(0xa87848));
  xnFolk(0,.55,-6.5,3,1.5);}
-XA.def({key:'xa_lake_barge',name:'Cargo barge',family:'Lake craft',tags:{type:['industry','infrastructure'],wealth:'poor',lit:false},w:15,d:20,h:8,fw:5,fd:18,nv:2,build:buildXaLakeBarge});
+XA.def({key:'xa_lake_barge',name:'Cargo barge',family:'Lake craft',cls:'vessel',tags:{type:['cargo','barge'],propulsion:['sail','sweep'],hull:'monohull',wealth:'poor',crew:4,role:'carries the lake towns\u2019 cargo',lit:false},w:15,d:20,h:8,fw:5,fd:18,nv:2,build:buildXaLakeBarge});

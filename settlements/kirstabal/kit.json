@@ -8,7 +8,8 @@
   "kits/xanadu/src/87k-xa-lake-trades.js",
   "kits/xanadu/src/87k1-xa-lake-rooms.js",
   "kits/xanadu/src/87k2-xa-slate-wall.js",
-  "kits/xanadu/src/87k3-xa-harbour.js"
+  "kits/xanadu/extra/88d-xa-lakecraft.js",
+  "kits/xanadu/extra/88f-xa-harbour.js"
  ],
  "scoped": [
   "69k-kcity-bundle.js",
@@ -29,7 +30,8 @@
   "41-ks-town.js",
   "87k1-xa-lake-rooms.js",
   "87k2-xa-slate-wall.js",
-  "87k3-xa-harbour.js",
+  "88d-xa-lakecraft.js",
+  "88f-xa-harbour.js",
   "42-ks-ring.js",
   "69k-kcity-bundle.js",
   "69k2-ks-flora-bundle.js",

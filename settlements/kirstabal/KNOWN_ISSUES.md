@@ -6,10 +6,12 @@ Steps K0-K4 of `PLAN.md` (2026-11-16). What is owed, by whom.
 
 The caravanserai, the latex house, the tea factory, the fermentaries and the fishing villages' racks are the kit's own pieces
 (2026-11-16: `kits/xanadu/src/87k-xa-lake-trades.js`, opt-in: read in place through `kit.json`, so no other page changed;
-`TODO.md` "Ride along" folds it into the kit's FILES). Still owed: wind-catchers (the plan's heat), a barge-port slip, a mole piece (the mole is a rubble bank under quay pieces),
-a long bridge (Keb Riwa's 135 m crossing is a run of the kit's 20 m street bridges), a work barge and lake craft (the
-moored boat is the Sultan's pleasure barge; the capital's lake owes the same craft), and the White Monastery's white dress of
-`xa_monastery` (drawn in the kit's own colours).
+`TODO.md` "Ride along" folds it into the kit's FILES). The harbour's stand-ins are the kit's own pieces since 2026-11-17 (`kits/xanadu/extra/88f-xa-harbour.js`: the quay, the mole,
+the warehouses, the drydock, the slip, the stone arch bridge over Keb Riwa, the White Monastery's white dress; the lake craft
+are `extra/88d-xa-lakecraft.js`'s, tagged as vessels). Still owed: wind-catchers (the plan's heat). The drydock is drawn
+flooded with a barge afloat in it: the lake is one water plane, so a pumped-out basin needs core/water to mask the lake over
+it. The pieces' weed line is drawn 2.4 m under their deck, where the town sets the deck over the lake. The vessels' class is
+core/tags' new `vessel`; the other pages that inline core/tags rebuild with the next all-builds rebuild (TODO.md).
 
 ## core/hamlet
 

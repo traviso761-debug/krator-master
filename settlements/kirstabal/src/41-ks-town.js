@@ -62,7 +62,7 @@ var KS_TOWN=(function(){
     daughter house); summed in census and held to PLAN.md's 3,000 by the test */
  const PEOPLE={xa_poor_a:6,xa_poor_b:12,xa_poor_c:4,xa_andean_poor:6,xa_mid_a:7,xa_mid_b:9,xa_mid_c:16,xa_house_turk_a:8,xa_rich_a:12,xa_rich_b:16,xa_rich_c:11,
   xa_house_turk_b:10,xa_shops:6,xa_shop_turk_a:8,xa_shop_turk_b:6,xa_teahouse:4,xa_workshop:5,xa_smithy:4,xa_warehouse:2,xa_bath:4,xa_temple:6,xa_granary:0,
-  xa_barracks:80,xa_generator:4,xa_monastery:150,xa_monastery_white:150,xa_harbour_warehouse:3,xa_drydock:0,xa_slip:0,xa_work_barge:0,xa_lake_boat:0,xa_harbour_quay:0,xa_mole_run:0,xa_river_span:0,xa_serai:20,xa_latex_house:0,xa_tea_factory:4,xa_fermentary:2,xa_fish_racks:0,xa_boatshed:3,xa_quay:0,xa_lighthouse:2,xa_gate:12,xa_watch:4,xa_garden:0,xa_pens:0,xa_wall:0,xa_bridge:0,xa_barge:0};
+  xa_barracks:80,xa_generator:4,xa_monastery:150,xa_monastery_white:150,xa_harbour_warehouse:3,xa_drydock:0,xa_slip:0,xa_lake_barge:0,xa_launch:0,xa_dugout:0,xa_harbour_quay:0,xa_mole_run:0,xa_river_span:0,xa_serai:20,xa_latex_house:0,xa_tea_factory:4,xa_fermentary:2,xa_fish_racks:0,xa_boatshed:3,xa_quay:0,xa_lighthouse:2,xa_gate:12,xa_watch:4,xa_garden:0,xa_pens:0,xa_wall:0,xa_bridge:0,xa_barge:0};
  /* the wall's records (core/city 25 KCITY.site.wall): a buttress every 90 m, the gates found within 40 m of the avenues' crossings */
  const WALL_T={towerGap:90,clear:12,gateFind:40,thick:3.2,gateTower:5,gatePass:4};
  const tune=()=>({cell:2.5,rasterHalf:900,maxSlope:.22,exact:true,
@@ -214,7 +214,7 @@ var KS_TOWN=(function(){
    const r=Object.assign({id:'ks.extra.'+id,key,v,x:c[0],z:c[1],y:G.h(c[0],c[1]),ry,w:D.w,d:D.d,h:D.h,fw:D.fw||D.w,fd:D.fd||D.d,people:PEOPLE[key]||0,kind:'extra'},o2||{});extra.push(r);return r;};
   const H=G.HARBOUR,QY=1.7,MD=2.4;   /* QY the boat sheds' floor over the lake; MD the quays', the mole's and the drydock's deck (kits/xanadu 87k3: their weed line at 2.4 m under it) */
   /* the harbour (the owner, 2026-11-17: "make a real quay model and fill the other stand-ins with a proper model ... add some
-     proper harbor warehouses and a drydock to the waterfront"): the kit's harbour pieces (kits/xanadu/src/87k3-xa-harbour.js).
+     proper harbor warehouses and a drydock to the waterfront"): the kit's harbour pieces (kits/xanadu/extra/88f-xa-harbour.js) and lake craft (extra/88d-xa-lakecraft.js).
      The quays along the basin's shore, end to end and centred on it (their fronts to the water) */
   const Q=dims('xa_harbour_quay',0),qs=Q?Q.w:34,nq=Math.floor((H.u1-H.u0)/qs),q0=H.u0+(H.u1-H.u0-nq*qs)/2+qs/2;
   for(let i=0;i<nq;i++)put('quay.'+i,'xa_harbour_quay',i%3,[q0+i*qs,-4],face(NVX),{y:MD,kind:'quay'});
@@ -233,10 +233,13 @@ var KS_TOWN=(function(){
   [-235,-185,-135,15,65,115].forEach((uu,i)=>put('warehouse.'+i,'xa_harbour_warehouse',i%3,[uu,22],face(NVX),{kind:'warehouse'}));
   put('slip','xa_slip',0,[H.u0-125,-6],face(NVX),{y:G.h(...xz([H.u0-125,9]))+.05,kind:'slip'});
   put('drydock','xa_drydock',0,[H.u1+60,-24],face(NVX),{y:MD,kind:'drydock'});
-  /* the lake craft (vessels: kits/xanadu 87k3): work barges at the quays, fishing boats off the boat sheds, two under sail */
-  [[-150,'a'],[40,'b']].forEach(([uu,k],i)=>put('barge.'+k,'xa_work_barge',i,[uu,-13.5],face(UX),{y:0,kind:'boat'}));
-  for(let i=0;i<3;i++)put('boat.'+i,'xa_lake_boat',2,[H.u0-46-i*20,-24],face(NVX),{y:0,kind:'boat'});
-  put('boat.sail.a','xa_lake_boat',0,[-60,-480],face(UX),{y:0,kind:'boat'});put('boat.sail.b','xa_lake_boat',1,[420,-700],face(NUX),{y:0,kind:'boat'});
+  /* the lake craft (vessels: kits/xanadu/extra/88d): cargo barges at the quays (v 1: moored, the sail brailed), launches moored
+     off the boat sheds, dugouts drawn up by them, a launch under sail and two dugouts out fishing */
+  [[-150,'a'],[40,'b']].forEach(([uu,k])=>put('barge.'+k,'xa_lake_barge',1,[uu,-12],face(UX),{y:0,kind:'boat'}));
+  for(let i=0;i<2;i++)put('launch.'+i,'xa_launch',1,[H.u0-56-i*20,-26],face(NVX),{y:0,kind:'boat'});
+  for(let i=0;i<3;i++)put('dugout.'+i,'xa_dugout',0,[H.u0-44-i*20,-17],face(NVX),{y:0,kind:'boat'});
+  put('launch.sail','xa_launch',0,[-60,-480],face(UX),{y:0,kind:'boat'});
+  put('dugout.out.a','xa_dugout',1,[300,-520],face(NUX),{y:0,kind:'boat'});put('dugout.out.b','xa_dugout',1,[340,-560],face([-.3,-1]),{y:0,kind:'boat'});
   put('monastery','xa_monastery_white',0,MONASTERY,toward(MONASTERY,'bazaar'),{kind:'monastery'});
   /* the moat's bridges, one at each gate: the kit's street bridge, its deck level with the higher bank, across the moat and its
      slopes along the avenue */

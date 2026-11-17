@@ -21,7 +21,7 @@ const VIEWS=(function(){const V={};
  V['The tea factory and the fermentaries']=ksEye(-360,620,-300,712,6);
  {const B=KS_PLAN&&KS_PLAN.bridge;if(B){const a=ksAt(B.u0-70,B.v+150),c=[(B.a[0]+B.b[0])/2,(B.a[1]+B.b[1])/2];V['The bridge over Keb Riwa']=[a[0],terrainH(a[0],a[1])+25,a[1],c[0],B.deck-2,c[1]];}}   /* upstream of it, on the bank, the river under its spans */
  {const a=ksAt(KS_GROUND.HARBOUR.u1-110,KS_GROUND.HARBOUR.v0-14),L=KS_GROUND.fall.lip;V['The cataract from the mole']=[a[0],30,a[1],L[0],L[1]-900,L[2]];}   /* over the town's roofs, from above the mole beside the lighthouse */
- V['The White Monastery']=ksEye(260,740,330,840,0);
+ V['The White Monastery']=ksEye(410,930,330,840,14);   /* from beyond it on the rising ground, over its court (the walled square took the old eye, 2026-11-17) */
  {const R=KS_RINGV.find(v=>v.id==='ks.ring.mil');if(R&&R.site){const s=R.site;V['The ring village Mil']=[s.x+180,terrainH(s.x+180,s.z-220)+60,s.z-220,s.x,terrainH(s.x,s.z)+2,s.z];}}
  {const R=KS_RINGV.find(v=>v.id==='ll.hamlet.jal');if(R&&R.site){const s=R.site,L=R.shore||{x:s.x-100,z:s.z-100,ux:-1,uz:-1},c=[L.x+L.ux*140-L.uz*90,L.z+L.uz*140+L.ux*90];V['The fishing hamlet Jal']=[c[0],22,c[1],s.x,terrainH(s.x,s.z)+2,s.z];}}   /* from the water off its quay */
  {const a=ksAt(1400,-1400),b=ksAt(0,350);V['From the lake']=[a[0],12,a[1],b[0],10,b[1]];}
