@@ -31,7 +31,7 @@ Read from `tools/scale-model/model/data/h.png` (heights decoded as `smodel` does
 - **It is straight**: along the strike the edge holds 3,497-3,531 m for 3 km, the ground 1 km behind it 3,676-3,694 m, and 4 km out
   2,410-2,435 m at every sample. The target's 1,640 m straight front and its rounded ends fit inside.
 
-**The spot (*proposed*): the face's centre at 5.1 px 461.43,1160.39**, 1.5 km down the fall line from the pin, its front running
+**The spot (settled: the owner, 2026-11-17, "Yes, use it"): the face's centre at 5.1 px 461.43,1160.39**, 1.5 km down the fall line from the pin, its front running
 305-125 degrees (NW-SE) and facing 35 degrees:
 
 | | Height | Note |
@@ -60,7 +60,7 @@ north portal, 458,1159, 3,845 m); **the city hung down the cliff**; **the shelf 
 
 ## 4. Questions for the owner
 
-1. **The spot**: the face at 461.43,1160.39, facing 35 degrees, the station on the plateau and the town on the shelf below?
+1. ~~**The spot**~~: **settled** (2026-11-17): the face at 461.43,1160.39, facing 35 degrees, the station on the plateau and the town on the shelf below.
 2. **Use the target as it is** (its builder re-aimed and re-grounded, on its own page) **or redraw it from records** as Ledge was?
 3. **Rename the target** `kits/ancients/targets/ledge` to `shelf` (the kit's sheet and its view names), or leave the folder as is
    with this designation noted?
