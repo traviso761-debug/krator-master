@@ -33,6 +33,31 @@
       `chaparral`, `lush`, `fell`, `scree`, `snowbed`) were named in `materials.json` but never packed (that turn had no library images), so their
       KGROUND layers drew untextured. Re-packed (`pack.py`: every older file the same bytes); montane, foothills and alpine rebuilt and GPU-verified
       (`--assert --all-views`, `KRATOR_GL=gpu`); station 1 and the bogs name none of them and are unchanged.
+- [ ] **Station 6, the Tiguantin cloud-terraces (2026-11-16, cloud session, no GPU): what is owed and what is approximate** (`PLAN-STATIONS.md`,
+      "Showcase Station #6, as built"; branch `worktree-agent-a2e5b7deffd2170b1`).
+      - **The GPU verify is owed** (the owner's machine: `KRATOR_GL=gpu python3 verify.py dist/nhighlands-tiguantin.html --assert --all-views`). Here only
+        SwiftShader on a machine shared with other sessions (load ~30 on 4 cores): `verify.py --assert --size 960x600` (one view and the first): every station check and its negative passes (the column, the steps, the
+        tomb, the clear lip, the kin), the kit's invariants pass, core/ruins passes on both watched ruins (the terraces: 16,158 stones in 377 clusters,
+        none floating, none lying wrong; the cells: 548 stones), the attach audit 0.62%, 6.8 M triangles drawn at the first view, 8.6 M held. Two
+        failures were the load's (the library textures still decoding after 180 s, so the export profile did not run); one was real and is fixed (the
+        stream had no fall: the ledge raised 16 to 28 m). The 1280x800 screenshot timed out at 10 minutes under that load; 960x600 shots were taken.
+      - **The base's stage has no shaping hook**: `stations/tiguantin/44z-host-site.js` wraps the base's `baseH` (a hoisted function declaration in
+        `stations/montane/45-host-stage.js`) before the stage runs. The clean form is a `SITE.shape(x, z, h)` hook in the base's `baseH`, owed at the next
+        rebuild of stations 2-4 (it changes their pages' bytes, not their land).
+      - **The heights are real** (2,293-2,667 m), not station 1's page scale; nothing in the kit reads an absolute height but the sky's air and the fog.
+      - **Approximate**: the vault is a C.hall on the world's axes (rx 70 on x, rz 45 on z), not turned to the tube's ESE line (KCAVERN's hall has no yaw);
+        the tube's ends are rounded caps, not breakdown chokes; the paleosol is a plane (KSTRATA's formations), so it follows the terraces' bench at the
+        cliff's foot only inside the showcase stretch (the patch's s -420..440; elsewhere the NE wall's foot and the sheet's front read it ~2 m off);
+        the springs are a field (wet moss, ferns) and four cisterns, not running water; the fiamme are thin black partings, not lenses.
+      - **For the scale-model queue** (never edited here): `tube_lesser_06` / `cav_monks_archive` read `skylight_m: 0` and `depth_m: 65`; this station
+        opens a **16 m skylight** (`tiguantin-skylight`) over the vault's NE side where the gully has thinned the roof to ~9 m. The map could take
+        `skylight_m: 16` and a note that `depth_m` is the tube's run under the Lesser Throne's flank. The eastern highlands' station `lesser`
+        (`biomes/ehighlands/stations/lesser/46-host-land.js`) also opens a skylight on `tube_lesser_06` (r 11 m, on its flow's ESE flank): two pages draw
+        two holes in one tube, a question for the owner (one of them, or both as two skylights on the 38 km tube).
+      - **The renderer's memory**: the Throne's elfin trees on 11 m cells over the whole sheet were ~50,000 trees and the page died (an OOM kill under the
+        other sessions' load); they now grow within ~450 m of the showcase (`87-host-station-kin.js`).
+      - **The far country under the gully**: 82's KFAR lattice runs under the whole map 25 m below terrainH at its 110 m nodes; its cells stood over
+        the gully's floor as grey planes. `88t` drops its cells wholly inside the map's square (the ground covers them; the apron hides the edge).
 - [ ] **The crater wall's megabreccia (pair 7): the look to judge.** The crag pillars draw KSTRATA's `megabreccia` (swhighlands' `crest`) and the
       ground's steep faces KGROUND's `clast` blocks in the same rocks, where the geology bake puts this flank in the `impact` province
       (`kits/resources/ROCK-PROPOSAL.md`). The pillars use a crag-scale copy of the recipe (8 m blocks, `nhl-crag-breccia`); the steep's blocks take the

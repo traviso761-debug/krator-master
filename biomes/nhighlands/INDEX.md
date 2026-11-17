@@ -4,7 +4,7 @@
 
 Docs: `BIOME-API.md`, `BRIEF.md`, `HANDOFF-FLORA-REPORT.md`, `HANDOFF-FLORA.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `PERF.md`, `PLAN-STATIONS.md`, `PORT.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/nhighlands-alpine.html`, `dist/nhighlands-bogs.html`, `dist/nhighlands-foothills.html`, `dist/nhighlands-montane.html`, `dist/nhighlands.html`
+Built output (never open it; edit `src/` and rebuild): `dist/nhighlands-alpine.html`, `dist/nhighlands-bogs.html`, `dist/nhighlands-foothills.html`, `dist/nhighlands-montane.html`, `dist/nhighlands-tiguantin.html`, `dist/nhighlands.html`
 
 Build: `cd biomes/nhighlands && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
@@ -55,3 +55,4 @@ Each station builds one page (`build.py --station <name>`) from its own fragment
 | bogs | 45-host-stage.js, 62-biome-nhighlands-bog.js, 83-host-bog-ground.js, 88-host-build.js, 89-host-sky.js, 89w-host-water.js, 98-host-bog-take.js | 51 |
 | foothills | 44z-host-site.js, 62-biome-nhighlands-station.js, 83-host-station-ground.js, 87-host-station-kin.js, 98-host-station-take.js | 14 |
 | montane | 44z-host-site.js, 45-host-stage.js, 62-biome-nhighlands-station.js, 83-host-station-ground.js, 88-host-build.js, 89-host-sky.js, 98-host-station-take.js | 38 |
+| tiguantin | 44z-host-site.js, 62-biome-nhighlands-station.js, 83-host-station-ground.js, 87-host-station-kin.js, 88t-host-tiguantin.js, 89a-host-atmos.js, 89w2-host-cisterns.js, 98-host-station-take.js, 98z-host-floor.js | 66 |
