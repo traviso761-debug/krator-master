@@ -1,0 +1,61 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.293,
+    1.194
+   ],
+   "seam_before": [
+    1.982,
+    1.433
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0.6,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.85,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "wall",
+  "id": "wall.rubble.limewash",
+  "metal": 0,
+  "roughness": 0.85,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "wall.rubble.limewash.png",
+  "generator": "ChatGPT image generation through Codex, 2026-11-16 (~/.codex/generated_images/01a1e6fd-1888-7f33-985c-182bffe91b2d)",
+  "licence": "generated for this project by its owner",
+  "original_title": "exec-cd03f047-3837-491c-ac1f-9c8c7b8cf7ba.png",
+  "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '54. The Xanadui fort (kits/xanadu, the fort asset of settlements/strongwall/PLAN.md section 5, 2026-11-16)' (id wall.rubble.limewash)",
+  "sha1": "f5a575312860cd4a1233f2bc87c8f7c552d3cecc"
+ }
+}

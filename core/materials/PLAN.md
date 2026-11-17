@@ -571,6 +571,17 @@ mosaic and relief are greyscale (tinted), so these prompts take colours from the
 **Status (2026-10-05): Yuni has adopted the library** (`settlements/yuni/materials.json`; its `KNOWN_ISSUES.md`,
 "Material library"). The base rows below are covered by sets already in the library: `plaster.washes` by `plaster`
 (neutral, tinted), `tile.terracotta` by `roof.tile` (neutral pan tiles, tinted), `earth.banco`, `concrete.board`.
+**Delivered 2026-11-16 and processed, through Codex** (`tools/textures/batches/codex-2026-11-16.json`; images in
+`~/.codex/generated_images`, each matched to its prompt through its thread's log in `~/.codex/sessions/2026/11/16`): 22 new
+sets, **none wired yet** (each build wires its slot when its branch merges): the Qiblai rooms' `wall.mural.temple`,
+`ceiling.coffer.mandala` and `cloth.rug.temple`; Grēṭ-Āil's `ceiling.night.stars`, `wall.mural.dream` and `cloth.blanket.azure`;
+the fort's `wall.rubble.limewash`, `wood.gate.studded` and `wall.limewash.scorched`; the Ancient Transit's `ground.asphalt.lanes`,
+`ground.ballast.rail` and `metal.rail.rusted`; the resource nodes' `rock.magnetite`, `stone.nephrite` and `rock.amber.blueearth`;
+the Arch's `rock.hyaloclastite`, the Rift battery's `organic.reef.galvanic`, the Tiers' `ground.snow.ash`, Lightwall's
+`glass.moonglass`, the Tungang kit's `patterns/tungang/crew-mosaic` and `loj-banner.c`; and the Viridian estate's
+`foliage.tea.clipped` (its entry is on the Viridian branch). 26 more images that day were second takes of the 2026-11-12 sets,
+and two of `rock.megabreccia` and `ground.coral.rubble`: the owner kept the installed takes ("keep the installed 2026-11-12
+takes, merge them here"), so they were not processed. `card.leaf.photonic`'s second take came on black, not magenta.
 **Delivered 2026-11-03 and processed, demolition rubble** (`tools/textures/batches/metropolis-rubble-2026-11.json`, pasted by the owner):
 `ground.rubble.demolition` (3 m: broken concrete, brick, bent rebar and rusted flat bar over grey and red-brown gravel), the bed of `kits/metropolis`' ruin
 heaps (`core/terrain` `KRUBBLE`); for any collapsed building's rubble or demolition ground.

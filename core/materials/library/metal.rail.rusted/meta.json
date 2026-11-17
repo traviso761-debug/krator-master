@@ -1,0 +1,61 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.225,
+    1.283
+   ],
+   "seam_before": [
+    1.479,
+    1.185
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0.6,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.7,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "metal",
+  "id": "metal.rail.rusted",
+  "metal": 1,
+  "roughness": 0.7,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "metal.rail.rusted.png",
+  "generator": "ChatGPT image generation through Codex, 2026-11-16 (~/.codex/generated_images/01a1e6f7-ef26-7681-9c9f-bc0dfde22d2b)",
+  "licence": "generated for this project by its owner",
+  "original_title": "exec-b9b3600a-cefe-446a-97f6-b71e3ede55e8.png",
+  "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '46. The Ancient Transit kit (kits/ancient-transit, 2026-11-08)' (id metal.rail.rusted)",
+  "sha1": "bc136e5d0c768a5717c2eac8042c9bc2f4ed57e3"
+ }
+}
