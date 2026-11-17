@@ -705,4 +705,28 @@ check('Phēr\'s rim plain is raised: the stream\'s column falls to the wall\'s t
       sw is not None and sw.get('rim_lift_m') == 40.0 and 0.0 <= float(E[1489, 842]) <= 25.0
       and all(float(E[y_ + 1, 842]) < float(E[y_, 842]) for y_ in range(1480, 1491))
       and sw['bed_m'][11] > 15.0 and float(E[1490, 842]) < -200.0)
+# ---- 20. 5.1 edit 8 (edit_518.py: Gemini's reshape, its edit_517 of 2026-11-13, re-run 2026-11-17): Spider Lake crater &
+#          SW 9102 spillway, SE Tharn 108 km crater & cryo-tarn, Crookshore twin bays & Copper Tarn collar, n semiarid salt
+#          lakes, Ring Isles shoals & Port Goto, Firebliss domes (Gemini's checks, landforms read from their file)
+lfl20 = D['landforms']['landforms']
+lfs20 = {lf['id']: lf for lf in lfl20}
+check('edit_518 records all 8 landforms including Spider crater, SE Tharn crater, twin bays, and 3 Firebliss pancake domes',
+      {'lf_spider_crater', 'lf_se_tharn_crater', 'lf_crookshore_north_bay', 'lf_crookshore_south_bay',
+       'lf_copper_tarn_collar', 'lf_fb_dome_west', 'lf_fb_dome_great', 'lf_fb_dome_east'} <= set(lfs20)
+      and sum(1 for lf in lfl20 if lf.get('kind') == 'pancake_dome') == 3)
+r9102_20 = next(r for r in D['rivers'] if str(r['id']) == '9102')
+r9101_20 = next(r for r in D['rivers'] if str(r['id']) == '9101')
+check('Spider NW divide sealed (>= 1,850 m at 1252,175); 9102 exits SW through (1246,232) with strictly monotonic bed_m',
+      float(E[175, 1252]) >= 1850.0 and any(abs(p[0] - 1246.0) < 1.5 and abs(p[1] - 232.0) < 1.5 for p in r9102_20['px'])
+      and all(b2 < b1 for b1, b2 in zip(r9102_20['bed_m'], r9102_20['bed_m'][1:]))
+      and all(b2 <= b1 for b1, b2 in zip(r9101_20['bed_m'], r9101_20['bed_m'][1:])))
+check('SE Tharn 108 km crater (1375,1525) holds its 6,910 m cryo-fumarole tarn and fumarole vent',
+      bool(whas[1525, 1375]) and abs(float(wlev[1525, 1375]) - 6910.0) <= 2.0
+      and any(v.get('name') == 'Tharn Cryo-Fumarole Cauldron' and v.get('kind') == 'fumarole' for v in D['vents']))
+check('Crookshore twin secondary-ejecta bays (115,616 & 176,643) hold sea water at 0 m',
+      bool(whas[616, 114]) and bool(whas[645, 176]) and abs(float(wlev[616, 114])) <= 1.0)
+check('n semiarid closed dam-relic salt lakes are recorded as salt lake basins',
+      sum(1 for b in D['basins'] if b.get('kind') == 'salt lake' and 'Dam Relic' in b.get('name', '')) == 2)
+check('Port Goto (920,703) stands dry directly adjacent to Ring Sea harbor water at (920,704)',
+      (not whas[703, 920]) and bool(whas[704, 920]) and float(wlev[704, 920] - E[704, 920]) >= 5.0)
 print('%d checks passed' % ok)

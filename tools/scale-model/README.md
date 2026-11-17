@@ -905,6 +905,35 @@ and every raster (heights, water, the five temperatures, rain, class, zone) is c
 - **Left for later**: re-cutting `openworld/xanadu-oidong-highrift` on this model, the Erewhon page's world coordinates,
   and the stale basin record at 922.8,1527.7 (-759 m, outside the box).
 
+## 5.1 edit 8: `edit_518.py` (Gemini 2026-11-13; re-run here 2026-11-17): the geology reshaping
+
+Gemini's map reshaping for the 5.1 geology (`openworld/GEOLOGY-STATIONS-5.1.md`, the six KSTRATA 5.1 recipes), written
+as its own `edit_517.py` on `gemini/scale-model-517-reshape` (4a8b14e7f, off claude/integration-3 at 930e5c920) and
+re-run here as edit 8 after Erewhon's lake and Phēr's edits (the owner, 2026-11-17: "apply gemini's geology-based
+reshaping"). Unchanged but for its number and one fix: it read `DATA.landforms` as a bare list (the file did not exist
+on its base) and now reads and writes the `{format, version, landforms}` file. Six passes, each keeping settlement pins
+(1-px halo), biome station sites (2 px), vents and the edit 1-6 polygons fixed:
+
+1. **Spider Lake** (1289,213.5): a secondary ejecta crater (59 x 43 px ellipse) round the lake at 1,460 m, a NW
+   boulder-breccia rampart sealing the Ria divide (>= 1,850 m at 1252,175), a SW bedrock spillway for `9102` through
+   1246,232, and strictly falling beds on 9101, 9102, 9106 and 9109.
+2. **The SE Tharn crater** (1375,1525) on the SE outer wall: 108 km, floor 6,880 m, rim 7,950-11,400 m, a 24 km
+   cryo-fumarole tarn at 6,910 m, its vent ("Tharn Cryo-Fumarole Cauldron") and basin.
+3. **The Arch**: onshore flood-basalt horsts across SW Crookshore and NE Double Delta / N Ria, two drowned 24-26 km
+   ejecta bays in Crookshore (115,616 and 176,643), and the Copper Tarn's crater collar with a verdigris tint (147,1148).
+4. **The n semiarid dam-relic salt lakes** (~716,420 and ~872,442): wave-cut benches at +60, +140 and +230 m round
+   them, salt-lake basin records, and bright evaporite strandline rings.
+5. **The Ring Isles**: carbonate benches (+8 to +35 m) and turquoise shoals (-2 to -18 m) outside the tower-karst cores,
+   and Port Goto (920,703) dry with harbour water beside it at 920,704.
+6. **Firebliss**: three flat-topped obsidian pancake domes (18-22 km, 380-490 m relief) as landform records
+   (`kind: 'pancake_dome'`, which core/world's stamper does not know yet and skips); planar normal-fault footwall facets
+   along the Rift Rim's scarps; and the 2-cell neouterwall cauldron shore-apron alignment owed from f124d9ff5.
+
+40,891 height cells moved, 1,372 cells changed wet or dry, 13 landform records in all; the worst dry river climb 26.2 m
+(`r_lab_chaos_n`). Temperatures lapsed, rain, class and zone reclimated, the paint relit; `edit_518.crops.jpg` holds
+the before and after crops. `tests/test_smodel.py` section 20 holds Gemini's checks. With it, the two north-east outer wall
+station bases (garnet, vitreous) that failed before now pass: 290 checks, no failure.
+
 ## 5.1e11 (2026-11-15): Gemini's trade branch reconciled with the map (no raster change)
 
 The owner, 2026-11-15: "reconcile the map edits to your version of the map (don't lose the new polygons or
