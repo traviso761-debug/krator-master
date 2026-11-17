@@ -49,13 +49,20 @@ listed fails. `python3 tools/harness.py ratchet <pages>` reruns the universal as
 
 What a shader failure was (2026-11-11). r128's "THREE.WebGLProgram: shader error" names no material, and a burst of link
 failures with empty logs is also what a lost WebGL context or a driver under load gives a page with nothing wrong in it.
-Two records tell them apart; neither changes what passes or fails (tools/tests/test_gl_diagnosis.py has a case each):
+Two records tell them apart (tools/tests/test_gl_diagnosis.py has a case each):
   1. The context. From before the page loads (GL_HOOK_JS, window.__kgl), every canvas that takes a WebGL context is
      watched: each `webglcontextlost` and `webglcontextrestored` event is kept with its time and canvas, and each program
      as it fails to link with its time, canvas, three's SHADER_NAME and whether its log was empty. The line `gl-context`
-     (a report, never a failure) gives the count: "no WebGL context lost (1 canvas watched)", or "the WebGL context was
+     gives the count: "no WebGL context lost (1 canvas watched)", or "the WebGL context was
      lost 1 time and restored 1 time: canvas 1 (1280x800) lost at 41.2 s, canvas 1 restored at 42.2 s". Headless
      Chromium on software GL often loses the first context by itself as its GPU process starts; that is counted too.
+     The line is where a real loss shows (Chromium's "loseContext: context lost" console line is left out of
+     shader-errors, real loss or not: BUGS-2026-11-15.md T1): a loss the page did not ask for (WEBGL_lose_context,
+     forceContextLoss) and that is not that start-up loss (in the first 3 s, back within 2 s) makes it a WARN, and a
+     renderer still lost at the end of the run after one makes it a FAIL.
+  The `shader-programs` line: KHOOK.checkPrograms on the page's own renderers and scene (it read only the renderers a
+     KHOOK layer compiled on, so a page with no layer passed with programs that never linked: T2); on a page with no
+     KHOOK, the programs drawn now whose LINK_STATUS is false.
   2. The program. A failing `shader-errors` line ends, after " || ", with "programs that do not link now (N): ..." (each
      renderer.info.programs entry whose LINK_STATUS is false at the end of the run: its shader type, the start of its
      cache key, the materials and meshes that draw with it, found as KHOOK.checkPrograms finds them, and its log), or
@@ -1072,7 +1079,50 @@ PROGRAMS_JS = "()=>{" + FIND_JS + """
     if(pr.programs&&typeof pr.programs.forEach==='function') pr.programs.forEach((x)=>{ const h=by.get(x); if(h&&h!==rec) put(h.held,mn,4); }); } });
   by.forEach((rec)=>{ if(!rec.meshN&&rec.held.length){ out.heldN++; if(out.bad.length<8) out.bad.push(rec); return; } out.badN++; if(out.bad.length<8) out.bad.push(rec); }); }
  return out; }"""
+# KHOOK.checkPrograms on the page's own renderers and scene (T2, BUGS-2026-11-15.md): with no renderer it reads only
+# KHOOK.renderers, the ones a layer was compiled on, so a page whose materials carry no KHOOK layer passed with programs
+# that never linked. The renderers are found as PROGRAMS_JS finds them; each record once, however many renderers name it.
+# null when the page has no KHOOK (shader-programs then reads PROGRAMS_JS's LINK_STATUS sweep).
+KHOOK_PROGRAMS_JS = "()=>{" + FIND_JS + """
+ if(typeof KHOOK==='undefined'||!KHOOK||typeof KHOOK.checkPrograms!=='function') return null;
+ const {sc}=__kfind(); const rs=[];
+ const add=(r)=>{ try{ if(r&&r.info&&Array.isArray(r.info.programs)&&rs.indexOf(r)<0) rs.push(r); }catch(e){} };
+ try{ if(typeof renderer!=='undefined') add(renderer); }catch(e){}
+ add(window.renderer); add((window._api||{}).renderer);
+ try{ (KHOOK.renderers||[]).forEach(add); }catch(e){}
+ const seen=new Set(), out=[];
+ const take=(list)=>{ for(const r of (list||[])){ const k=r.kind==='anchor'?'a|'+r.layer+'|'+r.anchor:'p|'+r.name+'|'+r.key; if(seen.has(k)) continue; seen.add(k);
+   out.push(r.kind==='anchor'?r.layer+': '+r.anchor:'program '+r.name+': '+String(r.programLog||r.fragmentLog||r.vertexLog||'').replace(/\\s+/g,' ').slice(0,120)); } };
+ if(rs.length) for(const R of rs) take(KHOOK.checkPrograms(R,sc||null)); else take(KHOOK.checkPrograms());
+ return {bad:out, renderers:rs.length}; }"""
 LINK_ERR = re.compile(r"THREE\.WebGLProgram: shader error", re.I)
+# A context loss the page did not ask for in its first START_LOSS_MS, back within START_BACK_MS, is headless software GL
+# losing its first context by itself as its GPU process starts (T3): reported, not warned.
+START_LOSS_MS, START_BACK_MS = 3000, 2000
+
+
+def gl_context_verdict(P):
+    """(ok, prefix) for the `gl-context` line (T1). SHADER_IGNORE keeps Chromium's "loseContext: context lost" console line
+    out of shader-errors, for a real loss too, so this line is where a real loss shows: a loss the page did not ask for
+    (WEBGL_lose_context, forceContextLoss) warns, and fails when a renderer is still lost at the end (nothing draws)."""
+    if not P or not P.get("hooked"):
+        return True, ""
+    ev = P.get("ev") or []
+    real = []
+    for i, e in enumerate(ev):
+        if e["e"] != "lost" or e.get("asked"):
+            continue
+        back = next((x["t"] for x in ev[i + 1:] if x["e"] == "restored" and x["canvas"] == e["canvas"]), None)
+        if e["t"] < START_LOSS_MS and back is not None and back - e["t"] <= START_BACK_MS:
+            continue   # software GL's start-up loss
+        real.append(e)
+    if not real:
+        return True, ""
+    if P.get("lostNow"):
+        return False, "%s the page did not ask for, and a renderer still lost at the end: nothing draws. " % (
+            "a context loss" if len(real) == 1 else "%d context losses" % len(real))
+    return True, "WARN: %s the page did not ask for (a GPU reset or a driver fault; rerun with --no-cache). " % (
+        "a context loss" if len(real) == 1 else "%d context losses" % len(real))
 # A context loss explains a link failure on its canvas from LOSS_LEAD_S before the lost event (the GPU side is gone before
 # the page is told: links fail with empty logs) until LOSS_LAG_S after the context is restored.
 LOSS_LEAD_S, LOSS_LAG_S = 10.0, 1.0
@@ -1443,15 +1493,23 @@ class VerifyPage:
             P = None
         self.gl = P
         ctx, pre, post = gl_diagnosis(P, sh)
-        U.append(("gl-context", True, ctx))   # a report: it never fails, and says why shader-errors may have
+        cok, cpre = gl_context_verdict(P)
+        U.append(("gl-context", cok, cpre + ctx))   # says why shader-errors may have; a loss the page did not ask for warns (T1)
         U.append(("shader-errors", not sh, pre + "%d shader or WebGL errors in the console: %s" % (len(sh), " | ".join(t[:160] for t in sh[:3])) + post
                   if sh else "console clean of shader and WebGL errors (%d other errors or warnings)" % ncons))
         try:
-            bad = await pg.evaluate("() => typeof KHOOK === 'undefined' ? null : KHOOK.checkPrograms().map(r => r.kind === 'anchor' ? r.layer + ': ' + r.anchor : 'program ' + r.name + ': ' + (r.programLog || r.fragmentLog || r.vertexLog).slice(0, 120))")
+            K = await pg.evaluate(KHOOK_PROGRAMS_JS)
         except Exception:
-            bad = None
-        if bad is not None:
-            U.append(("shader-programs", not bad, "; ".join(bad[:3])[:300] if bad else "every program linked, no anchor missed (KHOOK.checkPrograms)"))
+            K = None
+        if K is not None:
+            bad = K["bad"]
+            U.append(("shader-programs", not bad, "; ".join(bad[:3])[:300] if bad else
+                      "every program linked, no anchor missed (KHOOK.checkPrograms on %d renderer%s and the scene)" % (K["renderers"], "" if K["renderers"] == 1 else "s")))
+        elif P and P.get("hooked") and P.get("renderers"):   # no KHOOK: the LINK_STATUS sweep of every program drawn now
+            n = P.get("badN", 0)
+            U.append(("shader-programs", not n, ("%d program%s drawn now did not link: %s" % (n, "" if n == 1 else "s", "; ".join(
+                      "%s on %s" % (b["name"], ", ".join(b["meshes"][:3]) or "no mesh named") for b in (P.get("bad") or []) if b["meshN"] or not b["held"])[:240]))
+                      if n else "every program drawn now linked (%d programs, renderer.info.programs; the page has no KHOOK)" % P.get("programs", 0)))
         U.append(("page-errors", not self.errs, "; ".join(self.errs[:3])[:300] if self.errs else "none"))
         if R:
             panel = R["panel"]
