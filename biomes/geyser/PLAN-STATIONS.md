@@ -247,7 +247,8 @@ page's air (water boils at ~119 degC).
 
 **What is where** (x east, z south, y over the Ring Sea; `stations/cove/45-host-stage.js` has the map):
 - **The cove**: an explosion crater ~720 m across, breached by the sea toward the south-south-east (bearing ~158), its bay -3 to -17 m: a crescent of rim
-  from the west horn round the north to the east horn (crest ~27-30 m), the hyperjungle plateau behind it at 32-40 m. The outer coast runs west-south-west to
+  from the west horn round the north to the east horn (crest ~55 m, falling ~0.14 m a metre down its back slope: the owner, 2026-11-17, "raise the
+  rim", so the cream bluffs read over the hyperjungle from the skiff), the jungle on the back slope and the plateau behind at 32-40 m. The outer coast runs west-south-west to
   east-north-east past the horns, its cliff the carbonate shelf's.
 - **The apron** at the tide line (+1.6 to +4.8 m): opaline geyserite flats (the kit's sinter), the Kettle Horn (a 24 m littoral cone geyser, every 65 min),
   the Bay Fountain (30 m, every 3 h, its steam a plume), the Sea Horn (16 m), three surf spouters, five boiling springs and funnels; 19 of the 22 run-off
@@ -274,8 +275,24 @@ page's air (water boils at ~119 degC).
 off), "The Bay Fountain erupting", "The Kettle Horn", "The Lime Stair into the surf", "The Lime Kettle and the notch", "The sulphur dike", "The bleached bluff
 (acid field)", "The scald line on the rim", "The cove from above". **Checks** (each with a negative): the crescent open to the sea; the springs into the Ring
 Sea and the Lime Stair; the beds bound (bluff points in the carbonate shelf, dike points in the tibasalt); the chimneys on the rib; a plume over every boil in
-the water; and the showcase's that hold here (the scald, the cycles, the rims, the Stair, the jungle, the tags, the cameras).
+the water; the pirates moored clear of the boils; and the showcase's that hold here (the scald, the cycles, the rims, the Stair, the jungle, the tags, the
+cameras), with the kit's new one on every page: the water boils at the air pressure.
 
-**Not built** (KNOWN_ISSUES.md, "Station 7"): the sulphur, alum and salt skiffs out of Port Goto anchored off the plume line (the spec's trade tie-in), the
-tide (the spec's 24 h libration tide: the sea stands at one level), the boiling point in the kit's thermal record (`GEYSER.at` reads 100 degC as boiling),
-the cove and its vent on the scale model (the scale-model queue).
+**The pirates (the owner, 2026-11-17: "these will be hykkoussoi pirates primarily").** The spec's sulphur, alum and salt boats out of Port Goto are mostly
+**Hykkousoi pirates** (LORE.md 6.16: Greek and Polynesian seafarers with rib-gills; the Islanders' lanong is the Ring Sea's other pirate raider). Four craft
+moored in the bay, bows into the sea breeze, each 72-121 m from the nearest boil (`45` COVE_SHIPS, drawn in `89w`): two **Hykkousoi Scroll-Sail Galleys**
+(the raiders, a tarp over the hold for the crusts), a **Hykkousoi Amphora Corbita** (a prize, her jars full of sulphur) and an **Islander Lanong**; each a
+registry record tagged culture, role `pirate`, trade `sulphur`. The vessels are `kits/ringsea`'s own builds, read in place through station.json
+`"ringsea"` (`build.py`: the kit sealed in a script of its own by `settlements/voth/ringsea.py`, as the Voth city and the isle demo take it). The kit has
+no Hykkousoi skiff: the galley (32 m) is its smallest Hykkousoi craft.
+
+**The boiling point follows the air (the owner, 2026-11-17), kit-wide.** `GEYSER.boilAt(atm)` (46: Antoine's fit for water, 100.0 degC at 1 atm, 119.4 at
+1.93, 118.9 at the showcase's 1.9, 121.0 at corona's 2.03, 99.4 at puna's 0.98, 101.9 at basin's 1.07, 88.0 at ice's 0.64): each page hands its air as
+the layout's `atm` (`AIR_ATM`, the same constant its sky takes: src/45 and 89, the field base's 45, 47 and 89, the cove's 45 and 89). The record's boiling
+water (a spring at temp 1, a geyser's vent and run-off, a mud pot, a fumarole's mouth) is that hot; `GEYSER.at` gains `boil` (0..1 of the air to the
+boiling point) and the records `atm` and `bp`; `heat` stays 0..1 of the air to 100 degC, the mats' Earth bands. Check "the water boils at the air
+pressure" (99, every page): the record's point against Clausius-Clapeyron's for the page's air within a degree, and every spring at the boil that hot;
+its negative a record that boils as at twice the air's pressure.
+
+**Not built** (KNOWN_ISSUES.md, "Station 7"): the tide (the spec's 24 h libration tide: the sea stands at one level), the pirates' trade and crews (the
+craft are moored set pieces), the cove and its vent on the scale model (the scale-model queue).

@@ -8,8 +8,8 @@ const COVE_CAM=(function(){const c=[CC[0]+UO[0]*225,CC[1]+UO[1]*225],t=covePt(-2
 // the breach
 const ringSamples=(lo,hi,d)=>{const o=[];for(let b=lo;b<=hi;b+=4){const p=covePt(b,d);if(stairK(p[0],p[1])>.05)continue;o.push({b,x:p[0],z:p[1],h:terrainH(p[0],p[1])});}return o;};
 const COVE_HCHK={
- crescent(rim,gap){const lowRim=rim.filter(s=>s.h<10),dryGap=gap.filter(s=>s.h>-.5);
-  return{ok:rim.length>=30&&gap.length>=12&&lowRim.length<=rim.length*.08&&!dryGap.length,detail:'rim '+(rim.length-lowRim.length)+'/'+rim.length+' samples over 10 m, breach '+(gap.length-dryGap.length)+'/'+gap.length+' under the sea'};},
+ crescent(rim,gap){const lowRim=rim.filter(s=>s.h<30),dryGap=gap.filter(s=>s.h>-.5);
+  return{ok:rim.length>=30&&gap.length>=12&&lowRim.length<=rim.length*.08&&!dryGap.length,detail:'rim '+(rim.length-lowRim.length)+'/'+rim.length+' samples over 30 m, breach '+(gap.length-dryGap.length)+'/'+gap.length+' under the sea'};},
  intoSea(R){const feet=R.filter(c=>{const p=c.P[c.P.length-1];return landH(p[0],p[1])<.6;}),stair=R.filter(c=>{const p=c.P[c.P.length-1];return terraceMask(p[0],p[1])>.5;});
   return{ok:feet.length>=8&&stair.length>=2,detail:feet.length+' outflows reach the Ring Sea, '+stair.length+' feed the Lime Stair (of '+R.length+' channels)'};},
  strata(cliff,dike){const badC=cliff.filter(p=>STRATA.at(p[0],p[1],p[2]).recipe!=='carbonate-shelf'),badD=dike.filter(p=>p.rock.at(p[0],p[1],p[2]).recipe!=='tibasalt');
@@ -17,6 +17,10 @@ const COVE_HCHK={
    cliff.length+' bluff points in the carbonate shelf ('+[...new Set(cliff.map(p=>STRATA.at(p[0],p[1],p[2]).kind))].join(', ')+'), '+dike.length+' dike points in the tibasalt'};},
  sulphur(C){const off=C.filter(c=>dikeAt(c.x,c.z).d>DIKE.w*.6||c.y<.5);
   return{ok:C.length>=8&&!off.length,detail:off.length?off.length+' chimneys off the rib':C.length+' sulphur chimneys on the dike\'s crest'};},
+ // the pirates' craft (45 COVE_SHIPS, 89w): mostly Hykkousoi, each moored over 3 m of water and 40 m or more from every boil
+ fleet(F){const near=F.filter(f=>BAY_VENTS.some(v=>Math.hypot(v.x-f.x,v.z-f.z)<40+f.L*.5)),dry=F.filter(f=>SEA-terrainH(f.x,f.z)<3),hyk=F.filter(f=>f.culture==='hykkousoi');
+  return{ok:F.length>=3&&hyk.length*2>F.length&&!near.length&&!dry.length,detail:near.length?near.length+' craft on a boil':dry.length?dry.length+' craft aground':
+   F.length+' craft moored clear of the boils, '+hyk.length+' Hykkousoi ('+F.map(f=>f.vessel).join(', ')+')'};},
  plumes(V){const dry=V.filter(v=>!(SEA-terrainH(v.x,v.z)>1)),bare=V.filter(v=>!v.plume);
   return{ok:V.length>=3&&!dry.length&&!bare.length,detail:dry.length?dry.length+' boils on dry ground':bare.length?bare.length+' boils with no plume':V.length+' boils in the bay, each with its plume ('+V.map(v=>v.plume.height.toFixed(0)+' m').join(', ')+')'};}};
 const coveCliffPts=()=>{const o=[];for(let b=-140;b<=95;b+=5)for(const d of[RS+45,RS+84,RC-6]){const p=covePt(b,d);if(stairK(p[0],p[1])>.05||dikeAt(p[0],p[1]).d<DIKE.w*2)continue;const y=terrainH(p[0],p[1]);if(y>1)o.push([p[0],y-.3,p[1]]);}return o;};
@@ -44,10 +48,12 @@ const STATION_TAKE={ownViews:true,build:'geyser-cove',title:'Krator biome — th
   add('the springs run into the Ring Sea and the Lime Stair',COVE_HCHK.intoSea(LAYOUT.runoff));
   add('the beds bound (KSTRATA carbonate-shelf bluffs and the tibasalt dike)',STRATA&&DIKE_ROCK?COVE_HCHK.strata(coveCliffPts(),coveDikePts(DIKE_ROCK)):{ok:false,detail:'no KSTRATA on the page'});
   add('sulphur chimneys crust the dike rib',COVE_HCHK.sulphur(C.chimneys));
+  add('the pirates moor clear of the boils',COVE_HCHK.fleet(typeof COVE_FLEET==='undefined'?[]:COVE_FLEET));
   add('steam plumes stand over the boiling bay',COVE_HCHK.plumes(C.vents));},
  negatives:(add,P)=>{const C=window._cove||{chimneys:[],vents:[]};
   add('a rim across the breach',COVE_HCHK.crescent(ringSamples(130,186,RC-14),ringSamples(-140,84,RC-14)));
   add('outflows that stop short of the sea',COVE_HCHK.intoSea(LAYOUT.runoff.map(c=>Object.assign({},c,{P:c.P.slice(0,1)}))));
   add('a dike read as limestone',STRATA?COVE_HCHK.strata(coveCliffPts(),coveDikePts(STRATA)):{ok:false,detail:'no KSTRATA'});
   add('a chimney 40 m off the dike',COVE_HCHK.sulphur(C.chimneys.concat([{x:DIKE.b[0]+40,z:DIKE.b[1],y:5}])));
+  add('a galley moored on a boil',COVE_HCHK.fleet((typeof COVE_FLEET==='undefined'?[]:COVE_FLEET).map((f,i)=>i?f:Object.assign({},f,{x:BAY_VENTS[0].x,z:BAY_VENTS[0].z}))));
   add('a boil on the bench',COVE_HCHK.plumes(C.vents.concat([Object.assign({},C.vents[0]||{plume:{height:1}},{x:covePt(-95,318)[0],z:covePt(-95,318)[1]})])));}};

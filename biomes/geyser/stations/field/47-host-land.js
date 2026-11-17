@@ -1,7 +1,7 @@
 // ================================================================= HOST — the field's land, water, fields and binding (stations 2-5)
 // The kit lays the station's thermal layout (STATION_SITE.thermal(), here: the kit is loaded) on the land; the ground is then that land plus the kit's
 // relief (GEYSER.relief: the mounds, the springs' bowls), as on the showcase. The run-off ends where the site says (sink), else where it runs out.
-const THERMAL=Object.assign({amb:SITE.amb==null?0:SITE.amb,ground:landH,sea:SEA,wind:WIND},SITE.thermal());
+const THERMAL=Object.assign({amb:SITE.amb==null?0:SITE.amb,ground:landH,sea:SEA,wind:WIND},SITE.thermal(),{atm:AIR_ATM});
 THERMAL.ground=landH;THERMAL.wind=WIND;THERMAL.sea=SEA;THERMAL.amb=SITE.amb==null?0:SITE.amb;
 THERMAL.sink=SITE.sink||((x,z)=>false);
 const LAYOUT=GEYSER.lay(THERMAL);
