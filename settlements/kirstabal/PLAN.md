@@ -330,6 +330,16 @@ Following `README.md`, "CORE MODULES ARE NOT OPTIONAL":
   is made (`core/materials/PROMPTS-NEEDED.md` section 57). The moat (the owner, 2026-11-17: "Yes, add a moat"): Chiang Mai's,
   16 m wide, its middle 15 m outside the wall, dug 3 m into the apron, its water 1.4 m under the banks (core/water, a flow a side),
   the kit's street bridges over it at the four gates; core/city's square gives its line and the bridges' places.
+  The garden squares (the owner, 2026-11-17: "strategically add some Xanadu kit garden tiles in groups that form even squares or
+  rectangles among the city grid instead of aimless pathways through unfilled squares ... maybe 10% of the city total"): seven
+  rectangles of the kit's 8 m garden tiles, squared to the shore frame inside their grid cells, 727 tiles, 10.1 % of the walled
+  zone. Each is a chahar bagh: the rills cross at its middle, a pool cap ends each arm, jet allees with cypresses flank the cross
+  in the big ones, a court stands at each quarter's middle, and parterres fill the rest. The Governor's garden fills the cell
+  beside the seat (11 x 13 tiles; the kiosk, the star court, the lily pond, the painted-vault pavilion). The garden of the Decree
+  faces the temple across the street (15 x 9). The Lake, East, West and Scarp gardens take half their cells (one quarter each),
+  and the Works garden (5 x 5) closes the share in the poor quarter by the Works Gate. Each is a core/city green (kind `garden`)
+  laid before the infill and stamped HARD, so the side streets and lots go round it. The four loose `xa_garden` plots of
+  2026-11-16 gave way to them. About 2,870 people (was 3,280 on the denser square).
 - **K6.** The site in the open world: `openworld/xanadu-oidong-highrift` (Kirstabal `sl758m2396` in `openworld/SITES.json` and the
   region's cut, by hand, inside the Xanadu polygon). The ring (Mil, Kanāl, Grēnz, Bāiyar) at the tune's places and the lake's
   nine on the shore round the lake, eight of them on a fishers' row in the region's site spec, planned on the world's ground

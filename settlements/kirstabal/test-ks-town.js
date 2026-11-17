@@ -20,7 +20,9 @@ if(fs.existsSync(path.join(__dirname,'src','42-ks-ring.js')))load('settlements/k
 const DIMS={};
 for(const f of fs.readdirSync(path.join(ROOT,'kits','xanadu','src')).filter(f=>/\.js$/.test(f))){const s=fs.readFileSync(path.join(ROOT,'kits','xanadu','src',f),'utf8');
  for(const m of s.matchAll(/key:'(xa_[a-z0-9_]+)'/g)){const seg=s.slice(m.index,m.index+900),g=k=>{const q=seg.match(new RegExp('[,{]'+k+':([0-9.]+)'));return q?+q[1]:null;};
-  if(!DIMS[m[1]]&&g('w'))DIMS[m[1]]={w:g('w'),d:g('d'),h:g('h')||8,fw:g('fw')||g('w'),fd:g('fd')||g('d')};}}
+  if(!DIMS[m[1]]&&g('w'))DIMS[m[1]]={w:g('w'),d:g('d'),h:g('h')||8,fw:g('fw')||g('w'),fd:g('fd')||g('d')};}
+ /* the garden and water tiles name their key first (xaGardenDef('xa_parterre', ...), xaWaterDef('xa_rill', ...)): 8 m plots */
+ for(const m of s.matchAll(/xa(?:Garden|Water)Def\('(xa_[a-z0-9_]+)'/g))if(!DIMS[m[1]])DIMS[m[1]]={w:8,d:8,h:5,fw:8,fd:8};}
 const dims=(k,v)=>DIMS[k]?{key:k,v:v||0,w:DIMS[k].w,d:DIMS[k].d,h:DIMS[k].h,fw:DIMS[k].fw,fd:DIMS[k].fd}:null;
 const t0=Date.now(),K=KS_TOWN.make({dims}),ms=Date.now()-t0;
 module.exports={K,DIMS,dims};
@@ -73,6 +75,24 @@ const moated=X=>{const M=X.moat;if(!M||M.bridges.length!==4)return false;const G
  return X.lots.concat(X.extra).every(r=>r.kind==='bridge'||!G.inMoat(r.x,r.z,2));};
 T.ok('the moat is dug all round, bridged at the four gates, nothing standing in it',moated(K),K.moat?K.moat.bridges.map(b=>b.side+' deck '+b.deck.toFixed(1)).join(', '):'no moat');
 T.neg('a house in the moat is caught',moated,Object.assign({},K,{lots:K.lots.concat([Object.assign({},K.lots[3],{id:'moat',x:K.moat.line[2][0],z:K.moat.line[2][1]})])}),K);
+/* the garden squares (the owner, 2026-11-17: "garden tiles in groups that form even squares or rectangles among the city grid
+   ... maybe 10% of the city total"): 9-12 % of the walled zone; each garden whole tiles, an odd count each way, squared to the
+   shore frame, the rills crossing at its middle; no street crosses one */
+const gardened=X=>{const G=KS_GROUND,uv=p=>[G.u(p[0],p[1]),G.v(p[0],p[1])],gs=X.gardens||[];if(gs.length<3)return 'too few: '+gs.length;
+ let A=0;for(let i=0;i<X.zone.length;i++){const p=X.zone[i],q=X.zone[(i+1)%X.zone.length];A+=(p[0]*q[1]-q[0]*p[1])/2;}A=Math.abs(A);
+ const tiles=X.extra.filter(r=>r.kind==='garden'),share=tiles.length*64/A;if(share<.09||share>.12)return 'share '+(100*share).toFixed(1)+' %';
+ for(const g of gs){const R=g.poly.map(uv),u0=Math.min(...R.map(p=>p[0])),u1=Math.max(...R.map(p=>p[0])),v0=Math.min(...R.map(p=>p[1])),v1=Math.max(...R.map(p=>p[1]));
+  if(g.nu%2!==1||g.nv%2!==1||Math.abs(u1-u0-g.nu*8)>.01||Math.abs(v1-v0-g.nv*8)>.01)return g.id+': not '+g.nu+' x '+g.nv+' whole tiles';
+  const T2=tiles.filter(r=>r.garden===g.id);if(T2.length!==g.nu*g.nv)return g.id+': '+T2.length+' tiles of '+g.nu*g.nv;
+  for(const r of T2){const q=uv([r.x,r.z]),fu=(q[0]-u0)/8-.5,fv=(q[1]-v0)/8-.5;if(Math.abs(fu-Math.round(fu))>.01||Math.abs(fv-Math.round(fv))>.01||fu<-.01||fv<-.01||fu>g.nu-.99||fv>g.nv-.99)return r.id+': off the garden’s grid';}
+  const mid=T2.find(r=>{const q=uv([r.x,r.z]);return Math.abs(q[0]-(u0+u1)/2)<.01&&Math.abs(q[1]-(v0+v1)/2)<.01;});if(!mid||mid.key!=='xa_rill_cross')return g.id+': no rill cross at its middle';
+  for(const w of X.ways){const m=w.w/2-.6;for(const p of w.pts){const q=uv(p),du=Math.max(u0-q[0],0,q[0]-u1),dv=Math.max(v0-q[1],0,q[1]-v1);if(Math.hypot(du,dv)<m)return w.id+' crosses '+g.id;}}}
+ return null;};
+{const r=gardened(K),S=K.extra.filter(e=>e.kind==='garden').length;
+ T.ok('the garden squares: about a tenth of the walled zone, each an odd number of whole tiles each way, the rills crossing at its middle, no street across one',!r,r||
+  K.gardens.map(g=>g.id+' '+g.nu+'x'+g.nv).join(', ')+'; '+S+' tiles, '+S*64+' m2');
+ const g=K.gardens[0],c=[(g.poly[0][0]+g.poly[2][0])/2,(g.poly[0][1]+g.poly[2][1])/2],bad=Object.assign({},K,{ways:K.ways.concat([{id:'through',cls:'side',w:5,pts:[[c[0]-60,c[1]],c,[c[0]+60,c[1]]]}])});
+ T.neg('a street laid across a garden is caught',X=>!gardened(X),bad,K);}
 /* the bridge spans Keb Riwa: its ends on dry ground, the river's line between them, the deck over the water */
 const spans=X=>{const B=X.bridge,G=KS_GROUND,mid=[(B.a[0]+B.b[0])/2,(B.a[1]+B.b[1])/2],rv=G.riverAt(mid[0],mid[1]);
  return G.h(B.a[0],B.a[1])>rv[1]+1&&G.h(B.b[0],B.b[1])>rv[1]+1&&rv[0]<G.river.width/2&&B.deck>rv[1]+3;};

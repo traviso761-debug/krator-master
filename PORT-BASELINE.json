@@ -1092,6 +1092,10 @@
    "bytes": 8995903,
    "sha256": "c55c2c62f88cd016aeecfc2b6b027e466f63afd1de992e1ad956f1e9b6599cf9"
   },
+  "settlements/kirstabal/dist/kirstabal.html": {
+   "bytes": 13840388,
+   "sha256": "d8954da5f15ce381ea3ffd5a7fc979e7d197531180496c795fc991f5f7771095"
+  },
   "settlements/locus/abyss-kit.html": {
    "bytes": 9091876,
    "sha256": "d162fc9f3f70a076588a42aeff14aa8a8e9283f13462897f508ec6c449ac4137"

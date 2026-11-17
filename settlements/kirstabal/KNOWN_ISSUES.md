@@ -46,6 +46,10 @@ moored boat is the Sultan's pleasure barge; the capital's lake owes the same cra
   set at the lowest ground under it, so its top steps rather than following the ground. The moat's water follows the apron's
   slope (it falls about 6 m from the inland side to the lake side) with no weirs drawn; its trench is drawn by the town's 6 m
   ground cells, so its slopes are coarse up close.
+- **The garden squares** (2026-11-17) meet their streets with no wall or hedge round them: the tiles' own paving is the edge.
+  Erewhon's garden wall is code in its target, not a kit piece, so a low garden wall would be a new piece for the kit. The
+  courts' own rills (the kiosk's, the star court's) run to the parterres beside them and stop, as in Erewhon's garden. The
+  blocks round the gardens keep core/city's wandering side streets.
 - **Strongbow** is not drawn: its arcology is the Ancients kit's (`kits/ancients/targets/strongbow`), on its own page. The
   Strongbow road runs out over the bridge toward its foot.
 - **The town's ground is designed, not cut from the model**: the beach, the apron rising about 9 m a km and the harbour's

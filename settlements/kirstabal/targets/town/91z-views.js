@@ -4,6 +4,9 @@ const ksAt=(u,v)=>KS_GROUND.at(u,v);
 function ksEye(u,v,tu,tv,dy){const P=ksAt(u,v),Q=ksAt(tu,tv);return[P[0],terrainH(P[0],P[1])+1.7+ksD(dy,0),P[1],Q[0],terrainH(Q[0],Q[1])+4,Q[1]];}
 const VIEWS=(function(){const V={};
  {const a=ksAt(60,-900),b=ksAt(60,300);V['Overview']=[a[0],420,a[1],b[0],0,b[1]];}
+ {const a=ksAt(0,250),b=ksAt(0,445);V['The town from above']=[a[0],1150,a[1],b[0],0,b[1]];}   /* the walled square nearly straight down: the blocks and the garden squares */
+ {const g=KS_PLAN&&(KS_PLAN.gardens||[]).find(q=>q.id==='governor');if(g){const a=ksAt(g.c[0]-g.nu*4-24,g.c[1]-g.nv*4-24),b=ksAt(g.c[0],g.c[1]);
+  V['The Governors garden']=[a[0],g.y+32,a[1],b[0],g.y,b[1]];}}   /* from over its lakeward corner, down its rills */
  V['The harbour']=ksEye(-60,60,-60,-160,4);
  {const a=ksAt(KS_GROUND.HARBOUR.u1-110,KS_GROUND.HARBOUR.v0-14),b=ksAt(-60,250);V['From the lighthouse']=[a[0],30,a[1],b[0],8,b[1]];}   /* beside the lantern, over the mole, toward the town */
  const PL=KS_PLAN&&KS_PLAN.places,LG=PL?PL.lakeGate:[-60,84],BZ=PL?PL.bazaar:[-60,430],SG=PL?PL.strongbowGate:[346,300];

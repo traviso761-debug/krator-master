@@ -30,6 +30,28 @@ var KS_TOWN=(function(){
  const SQ={c:[0,440],half:330,cells:5,avenues:{u:2,v:2},wallGap:16,out:50,seed:41710,moat:{gap:15,width:16}};   /* the moat: Chiang Mai's (the owner, 2026-11-17), 16 m wide, its middle 15 m outside the wall */
  const GATE_NAMES={'v-':'the Lake Gate','v+':'the Scarp Gate','u-':'the Works Gate','u+':'the Strongbow Gate'};
  const LANDMARK_CELLS={bazaar:[2,2],temple:[1,2],horns:[2,1],seat:[3,3],generator:[1,0],barracks:[4,1]};   /* [i along the shore, j inland] */
+ /* THE GARDEN SQUARES (the owner, 2026-11-17: "strategically add some Xanadu kit garden tiles in groups that form even squares or
+    rectangles among the city grid instead of aimless pathways through unfilled squares ... maybe 10% of the city total"): each a
+    rectangle of the kit's 8 m garden tiles squared to the shore frame inside one grid cell, a chahar bagh (the rills crossing at
+    its middle, a pool cap at each axis's end, a jet allee either side of the cross in the big ones, a court at each quarter's
+    middle, parterres between), reserved before core/city's infill so its side streets and lots go round it. In this order until
+    GARDEN_T.share of the zone is garden: [id, name, cell [i, j], 'full' or the cell's side it keeps to (u-, u+, v-, v+)] */
+ const GARDENS=[['governor','the Governor’s garden',[3,2],'full'],   /* beside the seat [3,3] */
+  ['decree','the garden of the Decree',[1,3],'v-'],                     /* across the street from the temple [1,2] */
+  ['lake','the Lake garden',[3,0],'v-'],['east','the East garden',[4,3],'u-'],['west','the West garden',[0,2],'u+'],
+  ['scarp','the Scarp garden',[2,4],'v-'],['works','the Works garden',[0,0],'u+'],['inland','the Inland garden',[4,4],'u-']];
+ const GARDEN_T={share:.10,tile:8,margin:1.5,min:5,aspect:1.8,half:.55};
+ const GARDEN_COURTS={grand:['xa_kiosk','xa_star_court','xa_lily_pond','xa_vault_pavilion'],
+  other:['xa_star_court','xa_lily_pond','xa_cactus_court','xa_brick_court','xa_plunge_pool','xa_kiosk','xa_pergola','xa_bath_pool']};
+ /* a garden's tiles on its nu x nv grid (both odd): [a, b, key, the direction its local +z runs: 'u+' 'u-' 'v+' 'v-'] */
+ function gardenTiles(nu,nv,courts){const cu=(nu-1)/2,cv=(nv-1)/2,out=[],qc=c=>Math.floor((c+1)/2);let q=0;
+  for(let a=0;a<nu;a++)for(let b=0;b<nv;b++){const du=a-cu,dv=b-cv;let key='xa_parterre',dir='u+';
+   if(!du&&!dv)key='xa_rill_cross';
+   else if(!dv){dir='u+';key=Math.abs(du)===cu?'xa_rill_pool':Math.abs(du)===2&&cu>=4?'xa_rill_jets':'xa_rill';if(Math.abs(du)===cu)dir=du<0?'u+':'u-';}   /* a cap's pool at its local -z: outward */
+   else if(!du){dir='v+';key=Math.abs(dv)===cv?'xa_rill_pool':Math.abs(dv)===2&&cv>=4?'xa_rill_jets':'xa_rill';if(Math.abs(dv)===cv)dir=dv<0?'v+':'v-';}
+   else if(cu>=3&&cv>=3&&Math.abs(du)===qc(cu)&&Math.abs(dv)===qc(cv))key=courts[(du<0?0:2)+(dv<0?0:1)];
+   out.push([a,b,key,dir]);}
+  return out;}
  let GRID=null;
  const grid=()=>GRID||(GRID=KCITY.grid.plan({id:'ks.grid',seed:SQ.seed,c:G.at(SQ.c[0],SQ.c[1]),u:G.UX,v:G.VX,half:SQ.half,cells:SQ.cells,avenues:SQ.avenues,wallGap:SQ.wallGap,out:SQ.out,moat:SQ.moat}));
  const cellUV=k=>{const C=grid().cells.find(c=>c.i===LANDMARK_CELLS[k][0]&&c.j===LANDMARK_CELLS[k][1]);return [G.u(C.c[0],C.c[1]),G.v(C.c[0],C.c[1])];};
@@ -54,9 +76,8 @@ var KS_TOWN=(function(){
    {key:'xa_teahouse',v:0,near:'harbour'},{key:'xa_watch',v:0,near:'harbour'},{key:'xa_bath',v:0,near:'bazaar'},{key:'xa_granary',v:0,near:'bazaar'},
    {key:'xa_granary',v:1,near:'bazaar'},{key:'xa_granary',v:0,near:'bazaar'},{key:'xa_shops',v:0,near:'bazaar'},{key:'xa_shops',v:0,near:'bazaar'},
    {key:'xa_shop_turk_a',v:0,near:'bazaar'},{key:'xa_shop_turk_a',v:1,near:'bazaar'},{key:'xa_workshop',v:0,near:'works'},
-   {key:'xa_workshop',v:0,near:'works'},{key:'xa_smithy',v:0,near:'works'},{key:'xa_warehouse',v:0,near:'works'},{key:'xa_garden',v:0,near:'rich'},
-   /* the town's gardens (the owner, 2026-11-16: "add some gardens and foliage"): two more on the lakefront's rich side, one by the bazaar */
-   {key:'xa_garden',v:0,near:'rich'},{key:'xa_garden',v:0,near:'rich'},{key:'xa_garden',v:0,near:'bazaar'}],
+   {key:'xa_workshop',v:0,near:'works'},{key:'xa_smithy',v:0,near:'works'},{key:'xa_warehouse',v:0,near:'works'}],
+   /* the four loose xa_garden plots (2026-11-16, "add some gardens and foliage") gave way to the garden squares (GARDENS, 2026-11-17) */
   civicSpacing:34,civicJitter:12,
   voidMax:40,voidIters:12,voidBatch:8,sideSpacing:46,sideMax:180,alleyFrac:.22,blindMax:80,interiorDepth:9,interiorRounds:2,
   avenueSnap:40,ringGap:8,verge:6,mapHalf:900,plazaArt:{rich:[],middle:[],poor:[],commerce:[]}});
@@ -94,7 +115,7 @@ var KS_TOWN=(function(){
   const avU=GR.ways.find(w=>w.role==='avenue'&&w.line==='v'),lampUV=uvOf(avU.pts[Math.floor(avU.pts.length/2)]);
   const toward=(p,what)=>{const q=what==='bazaar'?BAZAAR:what==='gate'?NORTH_GATE:what==='lamp'?lampUV:what==='lake'?[p[0],-100]:BAZAAR;
    const a=xz(p),b=xz(q);return face([b[0]-a[0],b[1]-a[1]]);};
-  const zone=GR.zone;
+  const zone=GR.zone,GARD=[];   /* the garden squares the step lays (their tiles are put with the town's own pieces) */
   const box=(c,ry,w,d,m)=>{const u=[Math.cos(ry),-Math.sin(ry)];return obb(c,u,w/2+(m||0),d/2+(m||0));};
   const steps=[
    {name:'the site and its ground',run(){const R=SL.R=new Raster(L.tune().rasterHalf,L.tune().cell);R.occ.fill(OCC.OUT);
@@ -134,7 +155,36 @@ var KS_TOWN=(function(){
     KCITY.site.stampWall(Wr,{thick:T.thick,step:5,gateTower:T.gateTower});
     for(const c of GR.corners)SL.R.eachNearSeg([c.x,c.z],[c.x,c.z],12,k=>{if(SL.R.occ[k]===OCC.FREE||SL.R.occ[k]===OCC.LOT)SL.R.occ[k]=OCC.OUT;});
     P.gates=Wr.gates.map(g=>({p:[g.x,g.z],dir:g.name}));
-    SL.note(5,Wr.gates.length+' gates ('+Wr.gates.filter(g=>g.named).length+' named), '+Wr.nodes.filter(n=>n.kind==='tower'&&!n.skip).length+' buttresses, 4 corner bastions, '+Wr.segs.length+' runs');}}
+    SL.note(5,Wr.gates.length+' gates ('+Wr.gates.filter(g=>g.named).length+' named), '+Wr.nodes.filter(n=>n.kind==='tower'&&!n.skip).length+' buttresses, 4 corner bastions, '+Wr.segs.length+' runs');}},
+   /* THE GARDEN SQUARES (GARDENS): the biggest rectangle of whole tiles, both counts odd, that fits its cell clear of every street,
+      the wall and the landmarks by GARDEN_T.margin; a half garden keeps to its side of the cell and takes at most GARDEN_T.half of
+      the cell's depth. Each a core/city green (kind 'garden') stamped HARD, so no street or lot is laid on it */
+   {name:'the garden squares',run(){const R=SL.R,T=GARDEN_T,S=T.tile;let zoneA=0;
+    for(let i=0;i<zone.length;i++){const p=zone[i],q=zone[(i+1)%zone.length];zoneA+=(p[0]*q[1]-q[0]*p[1])/2;}zoneA=Math.abs(zoneA);
+    const rect=(c,a,b,m)=>[[c[0]-a-m,c[1]-b-m],[c[0]+a+m,c[1]-b-m],[c[0]+a+m,c[1]+b+m],[c[0]-a-m,c[1]+b+m]].map(xz);
+    const clear=(c,a,b)=>{let ok=true;R.eachInPoly(rect(c,a,b,T.margin),k=>{if(ok&&R.occ[k]!==OCC.FREE)ok=false;});return ok;};
+    let area=0;
+    for(const [id,name,[ci,cj],side] of GARDENS){if(area>=T.share*zoneA)break;
+     const C=GR.cells.find(c=>c.i===ci&&c.j===cj);if(!C)continue;const P=C.poly.map(uvOf);
+     const u0=Math.min(...P.map(p=>p[0])),u1=Math.max(...P.map(p=>p[0])),v0=Math.min(...P.map(p=>p[1])),v1=Math.max(...P.map(p=>p[1])),cc=uvOf(C.c);
+     const ax=side==='full'?null:side[0],sg=side==='full'?0:side[1]==='+'?1:-1;
+     const cap=Math.max((T.share*zoneA-area)*1.15,T.min*T.min*S*S);   /* the last garden takes only what is left of the share */
+     const maxU=ax==='u'?(u1-u0)*T.half:u1-u0,maxV=ax==='v'?(v1-v0)*T.half:v1-v0,pairs=[];
+     for(let nu=T.min;nu*S<=maxU;nu+=2)for(let nv=T.min;nv*S<=maxV;nv+=2)if(Math.max(nu,nv)/Math.min(nu,nv)<=T.aspect&&nu*nv*S*S<=cap)pairs.push([nu,nv]);
+     pairs.sort((p,q)=>q[0]*q[1]-p[0]*p[1]||Math.abs(p[0]-p[1])-Math.abs(q[0]-q[1]));
+     let got=null;
+     for(const [nu,nv] of pairs){const a=nu*S/2,b=nv*S/2,cands=[];
+      if(!ax){for(let du=-12;du<=12;du+=2)for(let dv=-12;dv<=12;dv+=2)cands.push([cc[0]+du,cc[1]+dv]);cands.sort((p,q)=>Math.hypot(p[0]-cc[0],p[1]-cc[1])-Math.hypot(q[0]-cc[0],q[1]-cc[1]));}
+      else{const lo=ax==='u'?u0:v0,hi=ax==='u'?u1:v1,h=ax==='u'?a:b,mid=ax==='u'?cc[1]:cc[0];   /* from the side inward, then across */
+       for(let s=0;s<=(hi-lo)/2;s+=2){const w=sg>0?hi-h-s:lo+h+s;for(let d=0;d<=12;d+=2)for(const e of d?[d,-d]:[0])cands.push(ax==='u'?[w,mid+e]:[mid+e,w]);}}
+      for(const c of cands)if(clear(c,a,b)){got={c,nu,nv,a,b};break;}
+      if(got)break;}
+     if(!got){SL.note(5,name+': no room in cell '+ci+','+cj);continue;}
+     const poly=rect(got.c,got.a,got.b,0),Gn=SL.addGreen('garden',poly,5,wealthUV(got.c),'civic',obb(xz(got.c),UX,got.a,got.b));
+     R.stampPoly(rect(got.c,got.a,got.b,T.margin),OCC.HARD,-2-Gn.id);Gn.ksId=id;   /* with its margin: a lot's check shaves a little off its plot */
+    Gn.name=name;
+     area+=got.nu*got.nv*S*S;GARD.push({id,name,cell:[ci,cj],side,c:got.c,nu:got.nu,nv:got.nv,green:Gn.id});}
+    SL.note(5,GARD.length+' garden squares, '+Math.round(area)+' m2 ('+(100*area/zoneA).toFixed(1)+' % of the walled zone): '+GARD.map(g=>g.name+' '+g.nu+'x'+g.nv).join(', '));}}
   ].concat(KCITY.defaultSteps().slice(6).filter(st=>(o.skip||SKIP).indexOf(st.name)<0));
   const uv=p=>[G.u(p[0],p[1]),G.v(p[0],p[1])],dd=(p,q)=>Math.hypot(p[0]-q[0],p[1]-q[1]);
   /* the wealth: the lakefront inside the wall either side of the Lake Gate rich, the middle middling, the quarter by the Works
@@ -182,6 +232,18 @@ var KS_TOWN=(function(){
     for(let i=0;i<nm;i++){const t=-run/2+(i+.5)*run/nm,c=[b.x+b.dir[0]*t,b.z+b.dir[1]*t],r={id:'ks.extra.moatbridge.'+b.side+'.'+i,key:'xa_bridge',v:0,x:c[0],z:c[1],y:dk,
      ry:face(b.dir),w:bd2?bd2.w:10,d:bd2?bd2.d:20,h:bd2?bd2.h:4,fw:bd2?bd2.fw||bd2.w:10,fd:bd2?bd2.fd||bd2.d:20,people:0,kind:'bridge'};extra.push(r);}
     MB.push({side:b.side,x:b.x,z:b.z,deck:dk});}}
+  /* ---- the garden squares' tiles: each garden one level (its highest corner), every tile's footing down to its own lowest
+     corner, so the garden reads as one terrace; the courts by garden (the two grand ones the kiosk, star court, lily pond and
+     pavilion; the rest four of the others drawn from core/rand by the garden's id) */
+  const DIR={'u+':UX,'u-':NUX,'v+':VX,'v-':NVX},S=GARDEN_T.tile;
+  const gardens=GARD.map((g,gi)=>{const grand=g.nu>=11&&g.nv>=11,pool=GARDEN_COURTS.other.slice(),courts=grand?GARDEN_COURTS.grand.slice():[];
+   while(courts.length<4){const k=Math.floor(KRAND.unit(KRAND.hash(SQ.seed,7101,gi,courts.length))*pool.length);courts.push(pool.splice(k,1)[0]);}
+   const a=g.nu*S/2,b=g.nv*S/2,u0=g.c[0]-a,v0=g.c[1]-b,hs=[];
+   for(let i=0;i<=g.nu;i++)for(let j=0;j<=g.nv;j++)hs.push(G.h(...xz([u0+i*S,v0+j*S])));
+   const y=Math.max(...hs),hAt=(i,j)=>hs[i*(g.nv+1)+j],tiles=gardenTiles(g.nu,g.nv,courts);
+   for(const [i,j,key,dir] of tiles){const lo=Math.min(hAt(i,j),hAt(i+1,j),hAt(i,j+1),hAt(i+1,j+1));
+    put('garden.'+g.id+'.'+i+'.'+j,key,gi%3,[u0+(i+.5)*S,v0+(j+.5)*S],face(DIR[dir]),{y,drop:y-lo+.3,kind:'garden',garden:g.id});}
+   return Object.assign({},g,{y,tiles:tiles.length,courts,area:g.nu*g.nv*S*S,poly:[[u0,v0],[u0+2*a,v0],[u0+2*a,v0+2*b],[u0,v0+2*b]].map(xz)});});
   /* ---- the Strongbow road along the shore and the bridge over Keb Riwa's mouth (the owner, 2026-11-16: "bridge crosses it") */
   const sbOut=uvOf(GR.ways.find(w=>w.role==='avenue'&&w.line==='u').pts.slice(-1)[0]);   /* the Strongbow way's end past the Strongbow Gate */
   const roadUV=[sbOut,[sbOut[0]+120,sbOut[1]-30],[1400,232],[2600,230],[3800,228],[4905,230]],farUV=[[5165,230],[5600,330],[6400,560],[7600,800]];
@@ -198,7 +260,7 @@ var KS_TOWN=(function(){
    wall:PL.wallRec?{segs:PL.wallRec.segs.map(g=>({ax:g.ax,az:g.az,bx:g.bx,bz:g.bz,health:g.health})),
     nodes:PL.wallRec.nodes.filter(n=>!n.skip&&n.health>0&&n.kind!=='corner').map(n=>({kind:n.kind,x:n.gx,z:n.gz,ry:n.ry,name:n.name||null,named:!!n.named,way:n.way?n.way.cls:null})),
     corners:GR.corners.map(c=>({id:c.id,x:c.x,z:c.z})),line:GR.wall}:null,
-   moat:GR.moat?{line:GR.moat.line,width:GR.moat.width,bridges:MB}:null,
+   moat:GR.moat?{line:GR.moat.line,width:GR.moat.width,bridges:MB}:null,gardens,
    places:{bazaar:BAZAAR,lakeGate:HARBOUR_GATE,strongbowGate:NORTH_GATE,worksGate:WORKS_GATE,scarpGate:SCARP_GATE,centre:SQ.c,half:SQ.half+SQ.wallGap}};}
- return {make,PEOPLE,ZONE,LANDMARKS,LATEX,MONASTERY,SQ,grid};
+ return {make,PEOPLE,ZONE,LANDMARKS,LATEX,MONASTERY,SQ,grid,GARDENS,GARDEN_T,gardenTiles};
 })();
