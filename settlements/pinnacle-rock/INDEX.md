@@ -47,7 +47,7 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `58b-host-garden-plan.js` | 1 |  |
 | `86-pr-far.js` | 3 |  |
 | `87-pr-talus.js` | 2 |  |
-| `88-host-build.js` | 2 |  |
+| `88-host-build.js` | 4 |  |
 | `89-host-roosts.js` | 25 |  |
 | `89c-host-town.js` | 7 |  |
 | `89d-host-farms.js` | 11 |  |
