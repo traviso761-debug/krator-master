@@ -25,7 +25,7 @@ Started from `kits/tungang`'s build (Wildcat's scrap pueblo, on core/engine and 
 
 ## Next
 
-1. **The textures** (`core/materials/PROMPTS-NEEDED.md` section 55, and the library sets `KIMR.md` section 4 names): `materials.json`,
+1. **The textures** (`core/materials/PROMPTS-NEEDED.md` section 59, and the library sets `KIMR.md` section 4 names): `materials.json`,
    `tools/textures/pack.py kits/kimr`, the sheet on library maps.
 2. **A platform in core/pueblo**: the rock is this kit's record because `KPUEBLO` has no platform (its README expects one). When the
    owner of `core/pueblo` adds it, the rock moves there and `kmSite` keeps only the dress.

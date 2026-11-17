@@ -249,7 +249,7 @@
    "name": "tundra",
    "color": "#b2b2b2",
    "pct": 9.56,
-   "km2": 1200044
+   "km2": 1200308
   },
   {
    "code": "WS",
@@ -262,8 +262,8 @@
    "code": "EF",
    "name": "ice cap",
    "color": "#666666",
-   "pct": 6.16,
-   "km2": 773716
+   "pct": 6.17,
+   "km2": 773824
   },
   {
    "code": "HF",
@@ -277,42 +277,42 @@
    "name": "hot-summer Mediterranean",
    "color": "#ffff00",
    "pct": 5.55,
-   "km2": 696400
+   "km2": 696420
   },
   {
    "code": "BSk",
    "name": "cold steppe",
    "color": "#ffdc64",
    "pct": 3.54,
-   "km2": 444052
+   "km2": 444032
   },
   {
    "code": "Dsc",
    "name": "dry-summer subarctic",
    "color": "#963296",
    "pct": 3.36,
-   "km2": 422028
+   "km2": 421220
   },
   {
    "code": "Dfc",
    "name": "subarctic (boreal)",
    "color": "#007d7d",
    "pct": 3.25,
-   "km2": 407484
+   "km2": 407700
   },
   {
    "code": "BSh",
    "name": "hot steppe",
    "color": "#f5a500",
    "pct": 3.04,
-   "km2": 381584
+   "km2": 381800
   },
   {
    "code": "Dsb",
    "name": "dry-summer warm continental",
    "color": "#c800c8",
    "pct": 2.82,
-   "km2": 353348
+   "km2": 353428
   },
   {
    "code": "BWk",
@@ -347,7 +347,7 @@
    "name": "tropical savanna",
    "color": "#46aafa",
    "pct": 1.61,
-   "km2": 202112
+   "km2": 202296
   },
   {
    "code": "XA",
@@ -360,8 +360,8 @@
    "code": "BWh",
    "name": "hot desert",
    "color": "#ff0000",
-   "pct": 1.56,
-   "km2": 195220
+   "pct": 1.55,
+   "km2": 194984
   },
   {
    "code": "Cfb",
@@ -389,14 +389,14 @@
    "name": "abyssal savanna",
    "color": "#8a3ca8",
    "pct": 0.73,
-   "km2": 92172
+   "km2": 92228
   },
   {
    "code": "WH",
    "name": "highland lake",
    "color": "#5c9ea8",
    "pct": 0.5,
-   "km2": 62496
+   "km2": 62644
   },
   {
    "code": "WX",
@@ -417,14 +417,14 @@
    "name": "abyssal salt steppe",
    "color": "#b8542a",
    "pct": 0.28,
-   "km2": 34844
+   "km2": 34604
   },
   {
    "code": "Dsa",
    "name": "dry-summer hot continental",
    "color": "#ff00ff",
    "pct": 0.12,
-   "km2": 14756
+   "km2": 14768
   },
   {
    "code": "Dfa",

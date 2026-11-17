@@ -35,7 +35,7 @@
 
 ## Open
 
-- [ ] **The daub sheet is owed** (`patterns/fellgang/daub`, `core/materials/PROMPTS-NEEDED.md` section 54): the slogans are
+- [ ] **The daub sheet is owed** (`patterns/fellgang/daub`, `core/materials/PROMPTS-NEEDED.md` section 58): the slogans are
       block letters and the family marks six simple signs, all geometry in `'plain'` vertex colour (`40-fg-kit.js` `fgText`,
       `fgMark`). When the sheet comes, the marks (the wheel, the aurochs, handprints, tallies, the red X) go on as decals; the
       slogans' words stay the kit's own letters.
@@ -73,7 +73,7 @@
 - [ ] **Furniture triangles**: the two great houses hold 6,000 catalog pieces; they are drawn in 40 m chunks shown within 90 m
       of the camera (260 m while the section is open). A world calls `TG.fg.chunksTick(camera)`; a LOD of the pieces is owed.
 - [ ] **Wildcat: the Deeds and the slogans are geometry** (block letters, marks and tallies as thin boxes), as the Fellgang
-      set's slogans are, until the daub sheet is delivered (`core/materials/PROMPTS-NEEDED.md` section 54).
+      set's slogans are, until the daub sheet is delivered (`core/materials/PROMPTS-NEEDED.md` section 58).
 - [ ] **Wildcat's triangles.** The great house draws about 190k triangles (2,400 vigas, 440 salvage panels, 98 ladders) and its
       stockade about 870 stakes: fine on the sheet, heavy for a station far off. A LOD (the columns alone past ~400 m) is owed
       with `core/lod`.

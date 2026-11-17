@@ -1,4 +1,4 @@
-# The Firebliss Range: the plan (seed, 2026-11-09)
+# The Firebliss Range: the plan (seed, 2026-11-09; the patera and its domes, 2026-11-12: section 11)
 
 The Firebliss Range (`rmw8hj62nmugn`) is a volcanic arc on the Labyrinth's northern rim, in the far south-west of map 5.1,
 between the airless west edge and the Labyrinth. Along its spine stand five ice-capped volcanoes, at 5.4 to 6.7 km. Under them
@@ -352,6 +352,299 @@ The plan's questions:
 - **The range's own flora:** the four proposed in section 4, more, or none?
 - **Order:** after the Labyrinth, since station 3 and its strays lean on the Labyrinth's fauna, and after core amendment 1
   (geothermal surfaces).
+
+## 11. Amendment 2026-11-12: the Firebliss Patera and its pancake domes (the domes on the model; the patera held)
+
+Written on `claude/firebliss-patera-domes` (2026-11-12, the owner's decisions of that day) against the seed plan, while the
+four stations of section 7a were being built on another branch. Merged into main on 2026-11-16, where it met them: **the
+patera takes over the Great Firebliss Vale, the floor station 1 (`dist/firebliss.html`, site 183,1315) stands on.** The
+owner's call at the merge (2026-11-16): **domes only for now.** Scale model 5.1 edit 8 (`tools/scale-model/edit_518.py`,
+`PATERA_ON = False`) raises the five Firebliss domes and the five Korona domes (`biomes/korona/PLAN.md`, "Amendment
+2026-11-12") and records them under `DATA.domes`; the patera, the Holm, the heat low and the Tlahn Warra's new head are
+written in the same script but not run. **Open (the owner):** re-site the patera to another of the range's valleys, or
+rework station 1 as the patera's shore and run the edit with `PATERA_ON = True`. Until then, sections 11a, 11b and 11d-11h
+are a proposal, and the domes of 11c stand on the model without the lake that would feed them (their notes say so).
+
+### 11a. The Firebliss Patera (the owner, 2026-11-12)
+
+**The model is Io's Loki Patera.** Loki is a volcanic depression about 200 km across, its floor a lava lake under a thin
+black crust. On a regular cycle the crust founders and sinks. A resurfacing wave then sweeps the lake at one to two
+kilometres a day: two fronts start on one side, run round both sides of an island in the middle and meet on the far side
+(de Kleer et al. 2017, *Nature* 545: 199-202, from Europa's occultation of Io on 2015-03-08). From 1988 to 2000 the cycle
+was 540 ± 10 days (Rathbun et al. 2002, *Geophysical Research Letters*). It broke down after 2001. From 2013 it was periodic
+again at about 465-475 days (de Kleer et al. 2019, *Astronomical Journal*; Rathbun et al., EPSC-DPS 2019). Rathbun's team
+proposed a porosity gradient in the crust as the clock: the crust is foam when it forms, loses its gas as it ages, grows
+denser than the melt and sinks. *The brief gave the 470-day figure to de Kleer 2017; that paper is the waves; the shorter
+period is the 2019 work.*
+
+**Why Earth has none.** Earth's lava lakes are hundreds of metres across (Erta Ale, Nyiragongo, Kilauea's Halema'uma'u).
+Earth loses its heat through plates, not through a few long-lived vents, so no vent is fed hard and long enough to keep a
+lake tens of kilometres wide molten.
+
+**Why Krator has one.** Canon (`LORE.md` section 2) makes Krator an Io-like moon flexed by tides, at 2-5x Earth's heat flow,
+losing heat as a heat-pipe world does, through long-lived vents: "focused, not global". A patera is the purest form of such
+a vent. Firebliss is the place for it: an arc of five live volcanoes with the warmest valleys on the map under it.
+
+**Its size, honestly.** The patera has to fit Krator's heat budget.
+
+| Step | Number |
+|---|---|
+| Earth's heat flow | 47 TW over 5.10 x 10^14 m^2: 0.092 W/m^2 |
+| Krator's surface (radius 4,800 km, `LORE.md` section 2) | 4 pi r^2 = 2.90 x 10^14 m^2 |
+| Krator at Earth's flux | 26.7 TW |
+| Krator at 2-5x Earth's flux | **53-133 TW** |
+| The patera's lava as carved | 282 cells of 2 km: **1,128 km^2** (an oval 48 x 32 km, less the island's 88 km^2) |
+| Its crust's mean flux | 1-5 kW/m^2, central 3 (below) |
+| Its output | **1.1-5.6 TW, central 3.4 TW** |
+| Its share of the moon's | **2.5-6.4%** at the central flux (3.4 of 133 to 3.4 of 53) |
+
+Where 3 kW/m^2 comes from: crust a few weeks old has a surface at about 150-250 C, which radiates 1-3 kW/m^2 (sigma T^4).
+In air it also loses heat by convection, and in the rain ring by boiling off rain, so its mean flux is higher than a
+vacuum crust of the same age would give. 1 kW/m^2 is the floor (a year-old crust in a drought), 5 the roof (a lake just
+turned). A Loki-sized patera (about 31,000 km^2) at the same flux would give about 94 TW, 70-180% of Krator's whole budget,
+which is why **Krator's patera is 20-60 km across, not 200**. The carve takes the middle, 48 x 32 km.
+
+**Where:** it takes over the **Great Firebliss Vale** (`edit_512.py`, its numbers in the report):
+
+| | |
+|---|---|
+| Centre | 5.1 px **181,1317.5** (world km 362, 2,635); the Firebliss region is in the 5.1 expansion, so it has no old-canvas px |
+| Shape | an oval, semi-axes 12 x 8 px (**48 x 32 km**), its long axis 6 degrees north of east, down the old vale |
+| Crust | **2,240 m**, flat (the tarn stood at 2,280 m; air 1.21 atm by the model's 1.6 e^(-h/8 km)) |
+| Shore | the vale's walls stand straight out of the crust: lowest 2,740 m, median 3,607 m, up to 4.6 km on the north under Firebliss Mons. Where the vale ran out east (the Tlahn Warra's corridor) and south-west, a lip of 2,740 m is held, 500 m over the crust, eased back into the ground over 3-4 cells (71 cells raised, at most 441 m) |
+| Cut | up to 2,370 m where the oval bites into the vale's walls |
+
+Why the vale: it was the largest basin in the range (60 x 30 km, floor 2.2-2.4 km), it was already the warmest ground
+under the spine (the seed's reading of it as a geothermal basin now has its heat source), and its long axis lies along the
+arc, as a fissure-fed patera's would. It sits 64 km from Firebliss Mons, 92 km from Solfatara Glen and 99 km from West Bliss
+Cauldron, so the other three valleys keep their tarns.
+
+**The cycle (default taken, owner to confirm): once a year.** Three things set it:
+1. *The crust's clock.* The crust thickens as the square root of its age. Hon et al. (1994, *GSA Bulletin* 106: 351-370)
+   measured Kilauea's pahoehoe crust at t = 164.8 C^2 (t in hours, C in metres: C = 0.078 sqrt t). Carried out to a lake
+   (the fit is for hours to days, so this is an estimate): 0.4 m at a day, 2.1 m at a month, 3.8 m at 100 days, 6.8 m at
+   a year.
+2. *Air makes it founder sooner.* On Io, gas comes out of the lava into vacuum, so a new crust is a foam that floats for a
+   long time. Under 1.2 atm the bubbles are smaller and fewer, so the crust starts nearer the melt's density and sinks
+   sooner. The rain ring cools its top and thickens it faster again. Both shorten Io's 470-540 days. The physics allows
+   anything from a few months to a couple of years; it cannot say which.
+3. *The year locks it.* A clock that runs near a year and is cooled hardest in the wet season will be nudged into step
+   with the seasons, as a pendulum is by a small push in time with it. The turn comes **at the end of the rains**.
+
+**The owner's dial:**
+- **Once a year (default).** The turn is the region's calendar (1d).
+- **At the Double Dark** (every 91 days, `LORE.md` 6.14). Four Double Darks are 364 days, so a year-long cycle keeps step
+  with every fourth Double Dark: the people would reckon "the fourth dark" as the turn. A turn at every Double Dark is
+  possible only if the crust founders at about 2.8 m. The Week's and the Thirteen's pull on Krator is far too weak to
+  trigger it, so the link would be custom and calendar, not cause.
+- **Every two years:** a thicker crust (9-10 m) and a longer, safer window, but a rarer, more dreaded turn.
+
+**The turn itself.** The crust founders first at the west shore, beside the island. Two fronts start there and run east,
+one round each side of the Holm, at about a kilometre a day (Loki's 1-2 km a day; Krator's crust is cooler and
+stiffer, so the slow end), and meet on the east shore. Across 48 km that is **six to eight weeks**. Behind the fronts the
+lake is a field of foundering plates, red seams and fountaining spatter for a few days, then a new black skin. Ahead of
+them the old crust, a year old, cracks and tilts as the front reaches it. The lake's age therefore runs **from youngest in
+the west to oldest in the east**. The crust-readers' whole art is reading that gradient.
+
+**The crossing window (default taken, owner to confirm):**
+
+| Days after the turn begins | The crust | Crossing |
+|---|---|---|
+| 0-50 | the turn: fronts, foundering plates, open seams | none |
+| 50-120 | young crust, 2-3 m in the west and less in the east, steaming under rain, hot through a boot | the reckless and the hunted |
+| **120-300** | **the window**: 3.5-6 m, its top 40-70 C after rain, still warm and ringing hollow over gas pockets | caravans, pilgrims, the Holm's supply |
+| 300-365 | the old crust: thickest, but sagging and cracking at the west shore where the next turn will start; skylights open | smugglers only |
+
+### 11b. The Holm, and what the turn makes of the people
+
+**The island** (`edit_512.py`; the name is a working name): an oval **12 x 9 km** round **175.5,1315**, in the lake's
+west half, **88 km^2**, its top flat at **2,700 m** (460 m over the crust), its edge breaking off in one cell to no lower
+than 2,561 m. The turn never reaches it. The crossing to it is shortest from the west shore (about 7 km of crust) and
+longest from the east (about 30 km). The lava runs all the way round it.
+
+**What it is** is the owner's choice (section 9). All three fit the ground:
+- **a holy place:** the one ground the turn spares, where the turn is watched and the calendar kept;
+- **a fortress:** reached only in the window, and its approaches made of crust a garrison can read and an enemy cannot;
+- **a prison:** "left for the turn". A prisoner put on the Holm cannot leave until the window opens. A condemned one is
+  left on the crust itself, in the turn's path.
+
+**The drama the patera brings** (each a proposal for the kit and the open world):
+- **Crust-readers:** guides who judge the crust's age by its colour (glassy black and blue-sheened when young, dull and
+  grey-brown when old, red-rimmed where it is about to founder), by the sound under a staff (a ring over thick crust, a
+  dull knock over a gas pocket or a thin skin) and by the heat through a boot. Their art is the east-west age gradient.
+- **Caravans and pilgrims:** the crust is the short way between the vale's south-west arm (Yan Warra's head, the West
+  Bliss Cauldron) and the Tlahn Warra's corridor east. The long way is round the rim, over ice at 4.5 km or more. So the
+  window is a crossing season, and the shores keep its camps.
+- **Smugglers** cross out of season, on young or old crust, and the crust-readers who take them are the best paid and the
+  shortest lived.
+- **"Left for the turn"**: a punishment and a story.
+- **The turn as the calendar:** the region's year starts when the first seam opens at the west shore, which can be seen
+  from every rim at night.
+
+**Crossing as gameplay** (core/hazard, section 5):
+- **skylights:** holes through the crust onto the moving melt, steam-veiled, where an old plate has sunk at one edge;
+- **gas pockets:** blisters under the crust, a hollow knock, that break and breathe CO2 and SO2 into the hollow;
+- **young crust that looks safe and isn't:** a thin skin over a still-molten channel, glassy and inviting, the classic
+  death;
+- **rain on hot crust:** rain pooling on crust under 100 C, then a steam burst when it reaches a hot crack;
+- **the fronts** for anyone caught in the turn: a slow wall of tilting plates and red seams, outrun on foot, but not
+  across 20 km.
+
+### 11c. The pancake domes (the owner, 2026-11-12)
+
+**The model is Venus's pancake domes:** steep-sided, flat-topped domes of very stiff lava. They are commonly about 25 km
+across (a cluster of seven at the east edge of Alpha Regio), and some are over 30 km (one by Aine Corona is about 35 km).
+Venus's steep-sided domes as a class are commonly put at a few hundred metres to about a kilometre high (sources differ, and
+none found gives a figure for pancakes alone). Venus's 90-bar air keeps gas in the magma, so it oozes instead of exploding.
+**Krator's 1-2 atm does not do that.** The plan does not claim it.
+
+**Krator's route to a dome:** silicic magma that **degassed slowly** on a slow rise. Stiff, gas-poor rhyolite comes out as
+a dome on Earth too (Chaitén 2008, Cordón Caulle 2011-12, Mono Craters), often after a short explosive opening that leaves
+a pumice apron. The silicic magma comes from **bimodal volcanism**: a long-lived basalt heat source melts the crust round
+it into rhyolite, as in Iceland, Yellowstone and Afar. **In Firebliss the patera is that heat source.** Its basalt has
+cooked the arc's older andesitic crust for long enough to melt it, and Firebliss already lists obsidian.
+
+**Size:** 8-14 km across. That is bigger than Earth's biggest silicic lava body (Cerro Chao in Chile: a coulée about 14 km
+long, at least 26 km^3, its flow front 350-500 m; Self et al. 1994, *JGR* 99, read through secondary sources) and smaller than
+Venus's. **Height:** 400-550 m over their own ground. A stiff lava's thickness goes as its yield strength over (density x
+gravity), so at Krator's 0.75 g the same lava stands a third taller than on Earth.
+
+**The five** (`edit_512.py`; the names are working names; each 1-2 cells of wall, flat on top):
+
+| Dome | 5.1 px | Across | Ground | Top | Height | From the shore | What it is |
+|---|---|---|---|---|---|---|---|
+| **North Glass** | 175,1302 | 12 km | 5,133 m | 5,633 m | 500 m | its edge 11 km | on the north shoulder over the Holm: the lookout over the whole lake, the obvious stronghold |
+| **South Glass** | 175,1335 | 14 km | 4,503 m | 5,053 m | 550 m | 13 km | the largest; over the lake's south shore and the Labyrinth side |
+| **West Glass** | 157,1324 | 10 km | 4,819 m | 5,269 m | 450 m | 22 km | over the vale's south-west arm, where the caravans start their crossing |
+| **Ember Glass** | 201,1331 | 8 km | 4,679 m | 5,079 m | 400 m | 24 km | the smallest and youngest-looking (default taken: it still steams) over the Tlahn Warra's corridor |
+| **Gate Glass** | 211,1305 | 10 km | 5,396 m | 5,846 m | 450 m | 37 km | on the high ground north-east, over the corridor's head toward Firebliss Mons |
+
+They ring the lake at 11-37 km from its shore. Each is a natural fortress: glass cliffs 400-550 m high, one or two ways up
+where a flow lobe has slumped, a flat top with snow-melt pools. They are the **obsidian** of the range's trade (blades,
+mirrors, the Kimr's and the Fellgangs' points), with pumice on their aprons. Two of them make small upslope hollows where
+they dam a gully (South Glass 23 to 47 pit cells, Ember Glass 23 to 30: dome-dammed ponds, real on Earth too).
+
+### 11d. The heat low: the lake makes its own weather
+
+A few TW on one spot in 1.2 atm air makes a **heat low**. The crust's 3 kW/m^2 is ten to twenty times what the sun puts
+into the ground on a mean day. So:
+- **Surface wind blows toward the patera at all times,** strongest through the gaps in its walls (the Tlahn Warra's
+  corridor from the east, the vale's south-west arm). It is the range's other wind beside the north-west westerly: on the
+  lake shore it can blow against the westerly.
+- **A permanent storm column** stands over the lake, a pyrocumulus fed by the heat and by the steam boiled off the rain.
+  It is the landmark of the south-west, seen from the Labyrinth and from Copper Glacier. Its anvil drifts south-east with
+  the vents' plume (seed section 1).
+- **A ring of rain and lightning** falls round it, where the column's outflow comes down. On the model (`edit_512.py`):
+  **+900 mm a year at its peak, 8-24 km off the shore, nothing past 56 km**. Over the ring the mean rain goes from 647 to
+  1,191 mm over 3,970 cells. Most of the ring lies on the plateau at 4-5 km, where it falls as snow and feeds the ice. Only
+  on the patera's walls and in the vale's south-west arm does it fall as rain. The classes in the ring stay (ET, EF, Dfc,
+  Cfb: they are set by the cold, not the rain).
+- **Over the crust itself** rain hardly lands: it flashes to steam (the model holds 1,200 mm there, what falls and boils off).
+
+The model's wind raster (`wd`) is not touched: the inflow is the kit's weather, not the map's. If the owner wants the map's
+wind to show it, that is a later model edit.
+
+**The patera floor's own climate** (`edit_512.py`, default taken, owner to confirm): a heat island over the crust, mean 28 C,
+warm month 34, cold month 20, hottest afternoon 50 and coldest night +8. These are air temperatures a few metres over a crust
+whose own surface is at 40-250 C. It takes a new class **`L`, patera (lava-lake crust)**, colour `#5a1a0a`, appended to the
+model's classes so no other class's index moves.
+
+### 11e. Life ringing the shore
+
+From the crust outward:
+1. **The hot margin** (the shore's first few hundred metres, ground over 60 C): bare, the ember mats only.
+2. **The Hearths' heat-eaters** (`biomes/hearths/PLAN.md`, read in place): on ground at 25-60 C they are the forest, and
+   the stokers mark where the heat is moving. The shore is the Hearths' warm disc drawn as a ring 150 km round. A Krator
+   native lineage, not Earth's.
+3. **The rain ring:** native life and Earth life (the seed's valley-floor flora, the geyser kit's mats in the steaming
+   gullies, the Labyrinth's strays up the Tlahn Warra) where the rain falls as rain: on the walls and in the south-west arm.
+   Snow algae and the cold lineage where it falls as snow.
+4. **The domes:** glass, so almost nothing. Lichen on the pumice skin, snow-melt pools on the tops.
+
+The fauna kit owns the animals. New for it: scavengers that work the crust's edge for animals the gas pockets kill (the
+dead-bird sign of section 5, at a larger scale).
+
+### 11f. Ideas set aside
+
+- **A Loki-sized patera (200 km):** about 94 TW, 70-180% of Krator's whole heat budget, in one spot (1a). Too big.
+- **A lake under 20 km:** honest, but then the turn takes two weeks, the island shrinks to a hill, and the heat low is a
+  thunderstorm rather than a landmark. 48 x 32 km keeps every part of the brief.
+- **Lava as water on the map** (the model's lake raster): the page would paint a lava lake blue, give it lake rain and route
+  rivers into it. The crust is land at 2,240 m, its own class `L`, with a vent record for the page's glow and a basin record
+  for the lake.
+- **Venus's reason for the domes** (pressure suppresses explosion): wrong at 1-2 atm (1c). The domes are degassed magma,
+  each with a pumice apron from its explosive start.
+- **Domes on the patera's floor:** rhyolite rising through a basalt lake would mix or founder. The domes stand on the
+  shoulders, where the crust melted.
+- **The turn triggered by the Double Dark's tides:** the Week and the Thirteen pull on Krator far too weakly. The Double Dark
+  can be the turn's calendar (1a), not its cause.
+- **A permanent town on the shore:** the seed keeps the range a frontier, and the heat low's storms and the gas make the
+  shore a camp ground, not a home. The Holm is the one question (1b, section 9).
+
+### 11g. What the seed lost or changed
+
+- **The Great Firebliss Vale is gone.** Its tarn (60 cells at 2,280 m), its sinter, its Cfb floor and the seed's station 1
+  are under the crust. The seed's best outpost valley ("the largest valley and tarn; the best ground to grow on") is now the
+  patera: the largest danger and the largest sight in the range. The outposts (section 6) are the other three valleys and
+  the shore's benches.
+- **The Tlahn Warra** heads on the patera's east lip (199,1323) instead of the tarn, 306 km long instead of 326, fed by the
+  rain ring.
+- **The range's warmth has a cause.** The seed's "geothermal basins" are now the patera's outer warmth (the valleys are 64
+  to 99 km off: their own vents still heat them).
+- **The range is no longer empty of traffic.** Nobody lives here still, but the crossing season brings caravans, pilgrims,
+  crust-readers and smugglers, and the Holm may hold people (section 9).
+- **New hazards:** the crust, the turn, the heat low's storms and lightning (section 5).
+- **New resource:** obsidian and pumice from the domes, in quantity (section 3).
+- **Kept:** the five volcanoes, the plume, Solfatara Glen, East Bliss Vale, West Bliss Cauldron, the Fellgangs and the Kimr,
+  and every hazard of the seed.
+
+### 11h. The stations as the amendment proposed them (not built; main's built stations are section 7a)
+
+World km = 5.1 px x 2. The range lies in the 5.1 expansion (x under 272), where the old canvas has no ground, so each
+station's `station.json` gives its 5.1 px with `"canvas": "5.1 (1821x1723)"` (the model test reads it unshifted). Each page
+is the usual 5.2 km square.
+
+| Station | 5.1 px | Ground | What |
+|---|---|---|---|
+| 1 **The Crossing** | 170,1315 | the west shore at 2,740 m over the crust at 2,240 m; the Holm 7 km out | the patera from its west shore, where the turn starts and the crossing to the Holm is shortest: the crust in its age bands, a crossing camp on the bench, crust-readers' marks, the column overhead, the heat-eaters on the warm shore; skylights, gas pockets and young crust on the way out. The turn on the page's calendar (`?turn=` for its day) |
+| 2 **The Holm** | 175.5,1315 | a flat top at 2,700 m, 460 m over the crust | the island the turn never reaches: its cliffs, the crust all round, the fronts passing on both sides in the turn; what stands on it is the owner's answer (section 9) |
+| 3 **North Glass** | 175,1302 | a dome top at 5,633 m, its walls 500 m | the stronghold over the lake: obsidian cliffs, the pumice apron, a snow-melt pool on the top, the whole patera below, lightning in the storm season |
+| 4 **Solfatara Glen** | 238,1322 | the tarn at 2,119 m in a shallow glen | the fumarole field: sulphur chimneys, acid pools, mud pots, sulphur gatherers' tracks; the Tlahn Warra through it |
+| 5 **East Bliss Vale** | 284,1318 | the tarn at 1,960 m | the way in: the Weyt Warra's gorge up from the Labyrinth, a Kimr camp, strays from the Labyrinth at the water, the lahar marks in the gorge |
+| 6 **Firebliss Mons** | 206,1284 | the crater floor at 5,480 m, the rim at 6,380 m | fire and ice: the glaciated cone, the steaming crater breached south-east, fumarolic ice caves, the plume overhead, the patera's column 64 km south, thin air |
+
+Station 1 comes first: it holds the patera, its crossing, its people and its hazards at once. The seed's station 1 (the
+Great Firebliss Vale's tarn) is gone with the vale. A seventh station could be West Bliss Cauldron, or the Copper-Fissure
+Vent's lava, if the owner wants either.
+
+### 11i. The amendment's questions for the owner
+
+- **An old outpost?** Should one valley hold a ruined hunters' lodge a player could take over, registered as an abandoned
+  outpost?
+- **The volcanoes' activity:** which vents are live (steaming, puffing ash, lava) and which are quiet? The plan takes all
+  five as degassing and only the Copper-Fissure Vent as flowing.
+- **The two peoples:** do the Fellgangs and the Kimr have a truce here, a border, or a feud?
+- **Names:** the valleys and volcanoes keep Gemini's English names. Do they want Tungang or Kimr names too?
+- **Order:** after the Labyrinth, since station 5 and its strays lean on the Labyrinth's fauna. The core amendments can
+  go first: the open world and the other region kits want them too (section 8b).
+
+**The patera and its domes (2026-11-12):**
+- **The Holm:** a holy place, a fortress or a prison? Whose? (The plan settles nobody; the model carries no marker.) If it
+  is held, by whom: the Fellgangs, the Kimr, a third people, or an order that keeps the turn's calendar?
+- **The cycle:** once a year at the end of the rains (default), at every fourth Double Dark (the same year, reckoned by the
+  moons), or every two years?
+- **The crossing window** (days 120-300, default) and **the crust-readers:** which people are they?
+- **The patera floor's climate** (28 C mean, class `L`, default) and **the rain ring** (+900 mm, 8-56 km, default).
+- **Ember Glass still steaming** (the youngest dome, default): or are all five cold?
+- **The names:** Firebliss Patera, the Holm, the turn, and the five Glasses are working names. Tungang ones (the rivers'
+  tongue)? The Hum is Korona's, not this range's.
+- **The heat low on the map's wind:** leave the model's `wd` as it is (default), or a later edit to show the inflow?
+- **LORE.md** (proposed sentences, not written there): *"In the Firebliss Range, under the Great Firebliss Vale's old walls,
+  lies Krator's one lava lake that a caravan crosses: the Firebliss Patera, 48 km long, under a black crust that founders
+  and renews itself once a year, two fronts running round the island in its middle and meeting on the far shore. Its heat
+  makes its own weather, a storm column over the lake and a ring of rain and lightning round it, and the crust-readers who
+  guide the crossing judge the crust's age by its colour, its ring under a staff and its heat through a boot. Round it stand
+  the Glasses, flat-topped tables of obsidian-skinned rhyolite melted out of the range's crust by the lake's heat."*
 
 ## Sources
 

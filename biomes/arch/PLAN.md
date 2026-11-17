@@ -10,7 +10,7 @@ The owner asked for it on 2026-11-11: **"I do want earth plants here too where a
 here but fully explore all possibilities an exposed mid ocean ridge offers."** So the plan is broad first (sections 1-4
 take every lead and say what is kept and why) and narrows to stations after (sections 11-15).
 
-Status: **a proposal for the owner** (2026-11-11). Nothing on the scale model is changed; `LORE.md` is untouched (section
+Status: **a proposal for the owner** (2026-11-11). **Built so far** (2026-11-12): A1 (the chemistry and the meeting, `tests/test-arch-chem.js`), A3 and A4: all five stations, the confluence (`dist/arch.html`), the dome, the barrens, the sound and the coast (`dist/arch-<station>.html`), each `verify.py --assert` on software GL. Not yet: the fauna (A5), a `KLAVA` bake of the sound's flow, library cards for the Earth flora (`KNOWN_ISSUES.md`). Nothing on the scale model is changed; `LORE.md` is untouched (section
 10 holds proposed sentences only); `core/simulation` is untouched (the nickel and jade trade is a later sim pass). Every
 species' and place's name is a working name. Where the owner has not answered, the conservative default is taken and
 marked **"default taken, owner to confirm"**.
@@ -412,7 +412,7 @@ at px 294,588) across the sea to the south-east. No kit borders the Arch on land
 | Station | Site (5.1 px) | Height | Air | Rain | Mean (warm / cold) | Class | Lat |
 |---|---|---|---|---|---|---|---|
 | `confluence` (main page) | **324,180**, the dome's south-east foot, 8 km from the sound | 183 m | 1.56 | 1,788 mm | +27 (+32 / +23) | Am | 20.0 S |
-| `dome` | **318,178**, the dome's flank (summit 1,456 m at 314,168, 3 km NW) | 863 m | 1.44 | 1,616 mm | +24 (+28 / +19) | Am | 20.0 S |
+| `dome` | **318,178**, the dome's flank (summit 1,456 m at 314,168, ~21 km NNW) | 863 m | 1.44 | 1,616 mm | +24 (+28 / +19) | Am | 20.0 S |
 | `barrens` | **258,246**, the south-eastern horst's lee | 155 m | 1.57 | 1,427 mm | +27 (+32 / +22) | Aw | 21.6 S |
 | `sound` | **299,220**, the graben floor on the sound's shore | 7 m | 1.60 | 1,804 mm | +30 (+34 / +26) | Am | 21.0 S |
 | `coast` | **167,336**, the seamount island's south-west shore, the Surtseyan caldera 3 km off | 2 m | 1.60 | 1,710 mm | +28 (+33 / +23) | Am | 23.7 S |
@@ -564,12 +564,12 @@ no one on Krator has followed home (`LORE.md` 6.19). Proposals, each for the own
 | `core/tags` (`KTAGS`) | yes | every spring, curtain, plant and hazard registered before it is drawn |
 | `core/biome` | yes | the species contract, `BIO.fung` for the native caps and curtains' hems, variants, LOD, `BIO.kin` |
 | `core/biome` traps (`KTRAPS`) | yes | the pitchers and sundews carry trap records |
-| `core/space` (`KSPACE`) | yes | spacing curtains along a meeting line, keeping plants off the springs and flows |
-| `core/mask` (`KMASK`) | yes | placement masks from the data functions; never `getImageData` |
+| `core/space` (`KSPACE`) | on the page (the biome core's binding) | the kit's own placement does not call it yet: curtains are spaced by walking the meeting's line, plants by KRAND cells (as highrift's). Wanted when the stations grow obstacles |
+| `core/mask` (`KMASK`) | **no** | no canvas is read for placement at all: every plant asks the data functions (`ARCH.lifeAt`, `ARCH.earthOk`, the stage's `PH_AT`) directly |
 | `core/terrain` | yes | `KGROUND` kinds, `KSTRATA` (new recipes), `KRELIEF` (dome, graben), `KLAVA` (the fissure flow), `KTHERM` (the hot ground and vents), `KFAR`, `KHORIZON` |
 | `core/water` | yes | the springs' pools (`still`), the streams (`flow`), the meeting (`ext/55` confluence), the terraces (`ext/53`), looks (`ext/54`: the kit adds its looks to `WATER.LOOKS` from its own fragment), the sea (`open`) at the coast and the sound |
 | `core/water/geyser` | yes | `WATER.spring` for the springs' boils and the mud pots |
-| `core/atmos` | yes | the standard sky, the monsoon weather, the steam (particles), height fog in the graben |
+| `core/atmos` | yes | the standard sky, the monsoon weather, the steam (particles), height fog in the graben. The eternal flames are the kit's own cones (89b): core has no flame module but the brazier's (KNOWN_ISSUES.md) |
 | `core/host` (`KHOST`), `core/walk` | yes | the page, camera, probe, inspector, polygon tool |
 | `core/hazard` (`KHAZ`) | yes | the gas hollows, the flames, alkali and acid, heat, asbestos |
 | `core/shadow` | yes | the sun's shadows |

@@ -52,7 +52,7 @@ section 3) for the Line's side: tracks, timetables, car poses, car interiors, st
 
 **Confirmed again 2026-11-11** (the owner, after the seven stations): the shafts' raid reach of 15 km is right (17); the trains' speed
 (15 m/s kept) is fine (8); the Tungangs' stock is its own vehicles culture, `tungang` (10); and "write prompts for all textures": the
-Line's six owed sets are in `core/materials/PROMPTS-NEEDED.md` section 53 (the portal's turf reuses `ground.turf.native`).
+Line's six owed sets are in `core/materials/PROMPTS-NEEDED.md` section 57 (the portal's turf reuses `ground.turf.native`).
 
 ## Settled before this plan (quoted, not proposed)
 

@@ -94,6 +94,19 @@ ok('nwouterwall: a thin-air polar point grows the Thule crops, not the lowland o
 ok('nwouterwall: the High Country makes a plaid (larch red-brown, silverthorn yellow, birch-tar black)',
   C.canPlaid('nwouterwall') && ['brown', 'yellow', 'black'].every(k => C.palette('nwouterwall').colours.includes(k)) && C.palette('nwouterwall').sources.brown.includes('larch-bark:wild'),
   !C.palette('nwouterwall').colours.includes('purple'));
+// the hinge's own (the owner, 2026-11-12): the maar yam and fumewort grow in the Siphon Pits, the Mid Basin and the Loom-Chasms and nowhere else
+const HINGE = ['siphon-pits', 'midbasin', 'loom-chasms'], grownIn = id => bio.filter(b => how(C.forBiome(b), id) !== 'no');
+for (const id of ['maar-yam', 'fumewort'])
+  ok(id + ': grows in the three hinge biomes only, and is traded beyond', grownIn(id).join() === HINGE.join() && HINGE.every(b => how(C.forBiome(b), id) === 'wild'),
+    how(C.forBiome('swlowlands'), id) === 'no' && how(C.forBiome('swlowlands', { trade: [id] }), id) === 'trade' && how(C.at({ warmth: 'temperate', atm: 'standard', arid: 'subhumid' }), id) === 'no', grownIn(id).join());
 
+// the painted highlands (biomes/paintedhighlands/PLAN.md sections 4 and 9, 2026-11-11): the Painted Men's three colours from the beds (red with an iron
+// node, the teal clay, the lignite black: wild there, its own beds), so the plateau makes a plaid; its neighbour the cushion plateau has no teal
+{const P = C.palette('paintedhighlands', { nodes: ['iron', 'coal'] });
+ ok('paintedhighlands: the Painted Men\'s red, teal and black from the beds', ['red', 'teal', 'black'].every(k => P.colours.includes(k)) && C.canPlaid('paintedhighlands', { nodes: ['iron', 'coal'] })
+   && (P.sources.black || []).some(s => /^lignite-black/.test(s)) && (P.sources.teal || []).some(s => /^celadonite-teal/.test(s)),
+   !C.palette('ehighlands', { nodes: [] }).colours.includes('teal'));
+ ok('paintedhighlands: its own bulb and medicine are native, the juniper wild there', C.BY_ID['painted-camas'].home.includes('paintedhighlands') && C.isBucket(C.BY_ID.paintbrush, 'medicine') && C.BY_ID.juniper.home.includes('paintedhighlands'),
+   !C.BY_ID.murnong.home.includes('paintedhighlands'));}
 console.log(bad ? '\n' + bad + ' FAILED' : '\nall passed');
 process.exit(bad ? 1 : 0);

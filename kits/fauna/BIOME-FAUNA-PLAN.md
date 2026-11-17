@@ -31,6 +31,12 @@ crater drylands', the glacier Xanadu's yak and cloud leopard, the isle and coast
 
 **Not planned yet:** Korona, the scablands and tuff country (the biomes are not placed on the map).
 
+**The painted highlands (`biomes/paintedhighlands`, built 2026-11-11; proposal, owner to confirm).** The biome kit names where the fauna
+kit's animals live (`biomes/paintedhighlands/src/42-biome-painted-fauna.js`, `PAINTED_FAUNA`), sharing the eastern badlands' bighorn, condor and
+cougar, the north-west lowlands' swift pronghorn and the giant honeybee. Owed here, as new animals in this kit's style: a **plateau marmot**
+(the clay hills' burrows), a **painted lady** (a migrating butterfly in the bloom, from the jungle butterfly's builder recoloured), and the
+plateau's own grazer in place of the shared pronghorn; Korona's strays at the cliff town wait for Korona's row.
+
 **Count.** About 55 new animals across 17 biome rows (3 to 6 variants each). Land animals need a shared procedural quadruped builder
 (a body, neck and head, four jointed legs, a tail, coat or scale bands, horns and antlers as options) so they are variants of a few
 bodies, not 40 bespoke builds; birds and flyers reuse `faHiBird`; water animals need a swimmer builder (fish, ray, newt, crab).

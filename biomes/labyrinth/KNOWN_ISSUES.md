@@ -4,7 +4,7 @@
   (grass trees, banksias, she-oak) is gone: the mammoth steppe of PLAN.md section 3 on `core/biome`, one profile a station
   (`SITE.flora`). **Still open:**
   - the silver birch wears the summer row of `card.birch.dwarf` (round dwarf-birch leaves) and the wild melon's fruit is plain
-    colour, until `card.birch.silver` and `surface.melon.rind` are delivered (`core/materials/PROMPTS-NEEDED.md` section 57);
+    colour, until `card.birch.silver` and `surface.melon.rind` are delivered (`core/materials/PROMPTS-NEEDED.md` section 61);
   - the wild melon still has no name (PLAN.md section 3: TBD); the kit calls it "the sweet fall";
   - the birch and poplar crowns read thin from close by (a near crown is 30-60 cards); a fuller crown wants more twig spots, not
     bigger cards, to stay held;

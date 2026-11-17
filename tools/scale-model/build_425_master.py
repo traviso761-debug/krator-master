@@ -890,7 +890,7 @@ def main():
     En_exp = np.where(coastal_spike, np.minimum(En_exp, En_coast_blur), En_exp)
 
     # =========================================================================
-    # STEP 5B-SCARP: Southern Inner Wall Scarp (`biomes/clifflung/PLAN.md` §5 & §14.1)
+    # STEP 5B-SCARP: Southern Inner Wall Scarp (`biomes/clivobredos/PLAN.md` §5 & §14.1)
     # Strictly follow the natural curved contour geometry of `s highlands` (`En_exp`)
     # along its north-facing slope (`220 m <= E_s <= 3,250 m`, `gy_s > 0`), tightening
     # the existing elevation ramp through the 1.6-1.9 km cloud-forest bench to the
