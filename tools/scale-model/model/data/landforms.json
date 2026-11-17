@@ -157,6 +157,19 @@
    "diameter_km": 18.0,
    "relief_m": 380.0,
    "region": "Firebliss Range"
+  },
+  {
+   "id": "lf_viridian_bench",
+   "kind": "bench",
+   "px": 962.032,
+   "py": 1562,
+   "w_m": 208,
+   "l_m": 216,
+   "rotation": 0,
+   "level_m": 792,
+   "batter_deg": 33.7,
+   "skirt_m": 30,
+   "note": "Misṭ-Gārḍan's bench: cut into the scarp's hillside on the uphill (east) side, filled with batter slopes on the downhill (west) side, like a dzong's terrace. settlements/viridian/PLAN.md V1; core/world 41l's bench kind (d9c56527a)."
   }
  ]
 }
