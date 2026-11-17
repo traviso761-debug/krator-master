@@ -82,15 +82,25 @@ stone of the hammam; the kurna; the rack of peshtemals and pattens; the rehal; t
 chest; the stepped stand of gifts; the gilt-banded chest (two colours); the gilt birdcage; the palanquin; and three
 hangings: the Kubla Khan hanging (2:3, four designs), the great tapestry (3:2, four designs), the suzani (two).
 
-## Textures owed
+## The pictures (delivered 2026-11-17)
 
-`core/materials/PROMPTS-NEEDED.md` section 57: the four hangings and the four great tapestries of the poem
-(`patterns/xanadu/hanging-*`, `patterns/xanadu/tapestry-*`) and the suzani (`patterns/common/suzani-roundels`, `.b`).
-**Until they arrive the pictures are PAINTED STAND-INS**: canvas decals drawn by `xanKublaPaint` (the dome over the river
-Alph, the caves of ice, the damsel before Mount Abora, the chahar bagh with its rills) and the suzani's roundels. Each
-decal's key is its texture id and each picture keeps the image's aspect, so wiring a delivered image is one step: the
-catalog painting an image into a decal (a `core/catalog` addition, owed with the sets).
+The owner's Codex panels are in the library and on the walls: the four Kubla Khan hangings and four great tapestries
+(`patterns/xanadu/hanging-*`, `tapestry-*`), the two suzanis (`patterns/common/suzani-roundels`, `.b`), and three new pieces:
+- **the sultan's portrait** (`xanadu_court_sultan_portrait`): five turbaned sultans (with crescent staff, in triumph, pensive,
+  writing poetry, playing a sitar), in the audience and reception halls, the dining halls, the day rooms, the Divan, the halls,
+  the loggias and the Gifts;
+- **the envoy's hanging** (`xanadu_court_envoy_hanging`): the easter eggs, the Ancient Mariner, Butler's Erewhon, Caves of Qud and
+  Kenshi as Mughal miniatures, gifts from far lands, hung only in the Hall and Gallery of Gifts, the studies and the guest
+  apartments, so they turn up now and then;
+- **the envoy's tapestry** (`xanadu_court_envoy_tapestry`): the owner's own Kenshi panel, travellers crossing a desert of ruins (16:9).
+Each placement of a many-design piece draws its design from its seed, so a hall is not one picture repeated.
 
+How they reach the page: `settlements/xanadu/citadel/materials.json` packs them alone (`tools/textures/pack.py
+settlements/xanadu/citadel`, 27 families, 4.8 MB) as `KMAT.pack('xanadu-pics')`, and only the xanadu and erewhon pages take that
+pack (`settlements/xanadu/build.py`, `PICS_PACK`). A hanging's decal paints the packed picture at its own resolution
+(`xanPicPaint` in the Xanadu culture file); where the page has no pack (the catalog sheet, another world, node) it paints the
+stand-in (`xanKublaPaint`, `xanPicStandIn`). This is a stop-gap for image decals in the engine itself, owed in `core/catalog`.
+The earlier, non-Mughal takes (`patterns/easter/*.classic`) are in the library for Talia's art museum, not wired.
 ## Checks
 
 `node settlements/xanadu/citadel/furnish_census.js [--brief] [--assert] [--json f]` furnishes every room of the citadel's
