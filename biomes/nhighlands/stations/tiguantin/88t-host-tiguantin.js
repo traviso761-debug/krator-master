@@ -137,7 +137,7 @@ function STATION_FLOOR(x,z){const C=TIGX.C,g=terrainH(x,z);if(!C||!C.holeAt||Mat
   'c=mix(c,uSunC*max(dot(n,uSun),0.0)+uSky*(0.55+0.45*n.y),vG);'+
   'vec3 e=uEye-vW;float de=length(e);vec3 v=e/de;c+=uHead*vec3(0.95,0.95,1.0)*max(dot(n,v),0.0)*90.0/(de*de+30.0);'+
   (S?'vec3 base=strataColor(vW,n);':'vec3 base=vec3(0.06,0.055,0.055);')+
-  'base=mix(base,base*0.75+vec3(0.03,0.04,0.02),vG*smoothstep(0.55,0.85,n.y));'+
+  'base=mix(base,vec3(0.09,0.07,0.045),vG*smoothstep(0.55,0.85,n.y));'+   /* the well's rim ground: the camp's trodden earth (83's paint), not the rock's pale dust */
   'vec3 col=(base*(c*mix(vOcc,1.0,vG)+0.008))*1.8;col=col/(1.0+col*0.35);gl_FragColor=vec4(pow(col,vec3(1.0/2.2)),1.0);}';
  const caveM=new THREE.ShaderMaterial({uniforms:Object.assign({},SU,UC),vertexShader:vs,fragmentShader:fs,vertexColors:true,polygonOffset:true,polygonOffsetFactor:1,polygonOffsetUnits:2});
  caveM.userData.noHorizon=true;

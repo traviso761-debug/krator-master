@@ -36,11 +36,12 @@
 - [ ] **Station 6, the Tiguantin cloud-terraces (2026-11-16, cloud session, no GPU): what is owed and what is approximate** (`PLAN-STATIONS.md`,
       "Showcase Station #6, as built"; branch `worktree-agent-a2e5b7deffd2170b1`).
       - **The GPU verify is owed** (the owner's machine: `KRATOR_GL=gpu python3 verify.py dist/nhighlands-tiguantin.html --assert --all-views`). Here only
-        SwiftShader on a machine shared with other sessions (load ~30 on 4 cores): `verify.py --assert --size 960x600` (one view and the first): every station check and its negative passes (the column, the steps, the
-        tomb, the clear lip, the kin), the kit's invariants pass, core/ruins passes on both watched ruins (the terraces: 16,158 stones in 377 clusters,
-        none floating, none lying wrong; the cells: 548 stones), the attach audit 0.62%, 6.8 M triangles drawn at the first view, 8.6 M held. Two
-        failures were the load's (the library textures still decoding after 180 s, so the export profile did not run); one was real and is fixed (the
-        stream had no fall: the ledge raised 16 to 28 m). The 1280x800 screenshot timed out at 10 minutes under that load; 960x600 shots were taken.
+        SwiftShader on a machine shared with other sessions (load ~30 on 4 cores): `verify.py --assert --size 960x600` (the first view and "The skylight and the winches"): **every check passes, exit 0** (2026-11-17): every
+        station check and its negative (the column at the cliff's foot, the steps, the tomb, the clear lip, the kin), the kit's invariants (the stream
+        descends with its fall), the export profile over the gully's box (9 of 9 sections), core/ruins on both watched ruins (the terraces: 16,171 stones
+        in 377 clusters, none floating, none lying wrong; the cells: 548 stones), the attach audit 0.62%, 5,095 volumes none empty; 6.8 M triangles and
+        250-268 draw calls at the two views, 8.6 M held. Not run: `--all-views`, the GPU. Under the other sessions' load the 1280x800 screenshot timed
+        out at 10 minutes, so the shots are 960x600; two earlier runs failed only on the load (the library textures still decoding after 180 s).
       - **The base's stage has no shaping hook**: `stations/tiguantin/44z-host-site.js` wraps the base's `baseH` (a hoisted function declaration in
         `stations/montane/45-host-stage.js`) before the stage runs. The clean form is a `SITE.shape(x, z, h)` hook in the base's `baseH`, owed at the next
         rebuild of stations 2-4 (it changes their pages' bytes, not their land).

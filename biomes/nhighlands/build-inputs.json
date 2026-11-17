@@ -952,7 +952,7 @@
     "biomes/nhighlands/stations/tiguantin/62-biome-nhighlands-station.js": "5b42a2f33f606d56a9cf1aa85c2769ff9317092c5ff6cc84fb8ba5827a5dd6d0",
     "biomes/nhighlands/stations/tiguantin/83-host-station-ground.js": "cb6fe181c34fa433ffae9a460036fa7e8f04188fcea640e8bba837c0c8c47b78",
     "biomes/nhighlands/stations/tiguantin/87-host-station-kin.js": "e8daebd954427ab7a2ca525e6ea7d5f6fc46902d567c8ae856b7c76a2300cd71",
-    "biomes/nhighlands/stations/tiguantin/88t-host-tiguantin.js": "1d7cab224019df1bc7beaba2ce3d343d1d1fa58a6bb7779f7044dcc40275e4da",
+    "biomes/nhighlands/stations/tiguantin/88t-host-tiguantin.js": "1682227565397a7905193b8fa3c2b2c987200ef96b3e7b047790984dae86d918",
     "biomes/nhighlands/stations/tiguantin/89a-host-atmos.js": "a22542ae11033c514757e32a0c10dd5a519d6fdfc89c802b682a22de77db8c1b",
     "biomes/nhighlands/stations/tiguantin/89w2-host-cisterns.js": "4b40887fdaa6de7b84045714f595d21bc1bc212cf9fc75a25c6fe3df0b473cc4",
     "biomes/nhighlands/stations/tiguantin/98-host-station-take.js": "eb9f3c4ecf847a733634a08a88eb2b0c4cf083a9331835421a486d26c4b6e350",
@@ -1116,10 +1116,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/nhighlands/dist/nhighlands-tiguantin.html": "d89b5956fe8a3450d9a9ee4c0197d8877381c2f8bd7e3fb77b5c5b4b49a7e2a4"
+    "biomes/nhighlands/dist/nhighlands-tiguantin.html": "d3e7641f4d2528fff7813e2fb9087446c6840965af6e8cd362c5aa354ca90510"
    },
    "outputs_raw": {
-    "biomes/nhighlands/dist/nhighlands-tiguantin.html": "d89b5956fe8a3450d9a9ee4c0197d8877381c2f8bd7e3fb77b5c5b4b49a7e2a4"
+    "biomes/nhighlands/dist/nhighlands-tiguantin.html": "d3e7641f4d2528fff7813e2fb9087446c6840965af6e8cd362c5aa354ca90510"
    }
   }
  }
