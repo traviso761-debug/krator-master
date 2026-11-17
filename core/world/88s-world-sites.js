@@ -193,6 +193,11 @@ function update(){const P=camera.position;let nf=0;S.near=0;
   if(C.group)C.group.visible=want==='full';if(C.massG)C.massG.visible=want==='mass';if(want==='full'){nf++;split(C,P);}}
  S.full=nf;}
 HOST.TICKS.push(()=>update());
+/* every camp's pieces built once now, behind the loading curtain: each band pitches its own tents, so a flight past the
+   camps otherwise built a band's pieces the first time its camp came within FULL (a 0.5 s frame on the Arc 140T,
+   2026-11-16); a camp coming near now only places its instances */
+{const t1=performance.now();if(typeof isleProto==='function')for(const C of X){for(const r of C.recs)isleProto('cat',r.key,r.v,CACHE);for(const p of C.runs)isleProto('cat',p.key,p.v,CACHE);}
+ S.protoMs=Math.round(performance.now()-t1);}
 S.ms=Math.round(performance.now()-t0);
 /* ---------------------------------------------------------------- the checks verify.py reads (each with its negative)
    plan: the baked plan made again here, in the browser, on the page's own land: the same hash (a stale bake fails)

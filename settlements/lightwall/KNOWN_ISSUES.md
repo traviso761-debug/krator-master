@@ -67,6 +67,23 @@
 - **Screes** (`targets/town/90n-lw-scree.js`, core/terrain KRUBBLE): a talus cone at each band's two ends against its
   buttress, heaps in the gaps on the ledges and at the wall's foot (19 heaps), the ledges' walked (`wall-scree`; the view
   "Screes at the east end of the bands").
+- **L0, the pin** (2026-11-17): Lāiṭwāl is `slaitwal0001` on the scale model (edit 5.1e12, 4ba66f57c, the plan's notes in
+  08447477d; its ground 1,430 m on the bench, the lake two cells south), and Opal Valley Mines' note names it Lāiṭwāl's works
+  village. `openworld/SITES.json` reads it from the model now (`"model": false` gone); the region's site square is the same
+  pixel, so the cut and the baked plan stand (`bake_sites.py --check`: fresh).
+- **The carved quarter's rock streams in** (`targets/town/90m-lw-wall.js`): its about 8 s of meshing (KCAVERN.drawRock, 216
+  chunks, about 1 M triangles) runs after the page's first frame, by drawRock's own 64 m tiles, nearest the camera first, about
+  12 ms a frame. `window._hostPending` holds the page's ready for the verify harness until the last tile is drawn (a convention
+  of core/host's README; `tools/harness.py` `READY_JS` waits for it), so every check and view sees the whole rock.
+- **L0, the lode** (2026-11-17): the `opal` family is baked into `kits/resources/data/geology.json` and `lode:great-potch-line`
+  (px 1028,1652, r 8 km, peak 235) is stamped (36f68df9c on `claude/resource-nodes-7ec053`). The test holds: the peak lies on dry
+  land at the wall's foot (1,429 m), every cell over 200 within 8 km is land, and the lake's cells read 0. The node kind is
+  `opal` (`kits/resources` 44t, `node-opal-low/medium/high`). Re-baked on our note (f813b5fed, the owner: "Lower and re-bake"):
+  Opal Valley's opal is 150, the Line 235 at its peak (204 and 166 round it), all on land; the test holds.
+- **The Great Potch Line on the page** (`targets/town/90o-lw-opal.js`, 2026-11-17): the Resources kit's opal nodes (sealed in `TG`
+  by `tungang_bundle.py` `res=True`) at the wall's foot, an outcrop beside each adit's mouth: 11 (4 high over the lode's peak,
+  3 medium, 4 low at the ends), registered in core/tags (`res-node`); every adit, dark adit and vein gallery of the wall (18)
+  takes the nearest by the kit's rule, 78 m at most (`opal-lode`; the view "Opal outcrops at an adit of the Great Potch Line").
 
 ## Open
 
@@ -77,20 +94,9 @@
       (`KSTRATA` with `OPAL.STRATA`) and `KFAR` past a few km are owed; overhangs it cannot have.
 - [ ] **The ledges' lips are straight in plan**: the screes break the ledges' line, but the lip itself runs straight (the
       band's block and its face meet on one line). A lip that wanders wants the block's top and the face cut on one curve.
-- [ ] **The carved quarter costs about 8 s to mesh** (KCAVERN.drawRock: 216 chunks, about 1 M triangles, of a 30 s load).
-      Meshing it a few chunks a frame, nearest the camera first, needs a pending hook in core/host first: the page is ready
-      after its first frame (core/host 91), so the verify's shots could catch the rock half drawn.
 - [ ] **Interiors near the Stair Foot only**: the bench's houses past 260 m are solid; the wall's fronts past the carved
       quarter are fronts on whole rock (by design: the quarter is what is walked).
 - [ ] No people (`core/charactermodels`).
-- [ ] **L0, the pin, is on another branch** (2026-11-17): the scale-model edits session made it `slaitwal0001` (model edit
-      5.1e12, commit 4ba66f57c on `claude/gemini-trade-reconcile`, with the plan's notes in 08447477d; its ground 1,430 m on the
-      bench, the lake two cells south), and Opal Valley Mines' note names it Lāiṭwāl's works village. Every id here is
-      `slaitwal0001` already (the economy, the open-world site); `openworld/SITES.json` keeps `"model": false` and its own px
-      until that branch merges here, then the flag goes and the region is re-cut.
-- [ ] **L0, the lode**: the `opal` node is built on `claude/resource-nodes-7ec053` (774f200b2); the `opal` geology family (a
-      layer the node field places from) needs a geology rebake by the scale-model session; until then the Great Potch Line's
-      field can only be placed by hand (owner nodes).
 - [ ] **The town's page and its open-world site are two grounds**: the page shapes its ground from the site's numbers; the
       region's ground is the scale model's at 1 km cells. The page placed on `core/world` (as Longsong's) is owed.
 - [ ] **The Register's numbers are Latin digits** (the kit's: `kits/tungang/KNOWN_ISSUES.md`). Xanadui is English in Indic

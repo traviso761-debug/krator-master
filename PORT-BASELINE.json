@@ -37,16 +37,16 @@
    "sha256": "b325a6d45ecc5d6f67e7eaa73eb410a18596fd00972afae5cff0911cd19773e7"
   },
   "biomes/copperglacier/dist/copperglacier-icefield.html": {
-   "bytes": 5135671,
-   "sha256": "a7334ef5b4d036cf57542ba8eb6c7f81c260eac2335c52aaec6af37e22cff429"
+   "bytes": 5161558,
+   "sha256": "ccced9c06c263f9761db9e6f57d4188b58fabb3b9c0e5717cf1614cbbcaf53bd"
   },
   "biomes/copperglacier/dist/copperglacier-pass.html": {
-   "bytes": 5136413,
-   "sha256": "27db125a75584e98f171315204baa9ea103d176628496884f6c8fd435a41ed58"
+   "bytes": 5162300,
+   "sha256": "6bf605279353ac650e92d6a0859f74ded84190ba0fbe0083d795d5ad225b383d"
   },
   "biomes/copperglacier/dist/copperglacier.html": {
-   "bytes": 5136240,
-   "sha256": "bf8bc4bc0207130ac9a45c5dd012ff789ed5418329464c9b7a7f84373c852042"
+   "bytes": 5162202,
+   "sha256": "c6bbea0f53a985a09bd7aadae88186220ee443a52f06a50c02ba9a27ffc5a666"
   },
   "biomes/crater-drylands/dist/crater-drylands-edge.html": {
    "bytes": 9822977,
@@ -159,6 +159,38 @@
   "biomes/farside/dist/farside.html": {
    "bytes": 1178015,
    "sha256": "1e64384fd3e3a5a8d74cb691003b83f79a612811491c41d83b2287ba9f36be3a"
+  },
+  "biomes/firebliss/dist/firebliss-east.html": {
+   "bytes": 1865495,
+   "sha256": "c03a1dd9a6eaa0b4a54e69fc56ce3bed3bfda7803a7145ab9bbde1f302912306"
+  },
+  "biomes/firebliss/dist/firebliss-glen.html": {
+   "bytes": 1864670,
+   "sha256": "8678db584ad3f8d0129403489963e07ebb9e0347714609f06624a610b124032c"
+  },
+  "biomes/firebliss/dist/firebliss-mons.html": {
+   "bytes": 1864280,
+   "sha256": "8c1bccc1d848f1cf8ad096957c363f7de1e6fe35828291fb73ebbb7634da9145"
+  },
+  "biomes/firebliss/dist/firebliss.html": {
+   "bytes": 1866225,
+   "sha256": "e5aba94ad7c31601251545cd16345b576588170a09db19ecc598438db5c986f9"
+  },
+  "biomes/firebliss/dist/firebliss.tex.copperglacier.js": {
+   "bytes": 1487635,
+   "sha256": "0e4be2f869484b6344a901a2aa286c0447d428f3c36fbac575ae0aa9f297be7e"
+  },
+  "biomes/firebliss/dist/firebliss.tex.firebliss.js": {
+   "bytes": 7936776,
+   "sha256": "5e441c466565f82e6561ab74e17fb502a72bc2652ef209a8a6cf24ebdd458458"
+  },
+  "biomes/firebliss/dist/firebliss.tex.geyser.js": {
+   "bytes": 6640967,
+   "sha256": "eaa6826a79ef4d22cdad36d72fb0e98b0e8ba933ff5bc8c8afd3ece018bd5be7"
+  },
+  "biomes/firebliss/dist/firebliss.tex.throne.js": {
+   "bytes": 861878,
+   "sha256": "43a529de2448943b6bbfacaa24b1ea394a94587b12ff893cd1c75420902e3dc5"
   },
   "biomes/geyser/dist/geyser-basin.html": {
    "bytes": 1300468,
@@ -749,8 +781,12 @@
    "sha256": "f9888e656b4def755a89847855a3604facf9c2f4d856d5147666c656d3abf574"
   },
   "kits/ancients/dist/spire.html": {
-   "bytes": 2625089,
-   "sha256": "5c10729af1b28d251635884839ef4d96c7379d9496ca15bee12816c2e353066d"
+   "bytes": 331680,
+   "sha256": "2640e7a1f50a00cc7bc0e3f4313421905e97832f8e0071c43cbde9b5d63692ff"
+  },
+  "kits/ancients/dist/theodiga-today.html": {
+   "bytes": 3441136,
+   "sha256": "9afdaa406787faa9d5353a42b988aaa27b874b36d2b03b493d94dd8df2e8a4cc"
   },
   "kits/ancients/dist/theodiga.html": {
    "bytes": 2622707,
@@ -977,8 +1013,12 @@
    "sha256": "bf855d052d7a0f64d405e0703d9544ab471ab3823fbf6458722a0f092af59c14"
   },
   "kits/resources/dist/resources.html": {
-   "bytes": 5250600,
-   "sha256": "6ea46649bb724a490bf96d5c0c1726b92327fbff237aa35306dc4defa7f88045"
+   "bytes": 6019760,
+   "sha256": "665c7f6fdc828e89ce8d1deb5ac3ed5ce611e6953ab1e451edd53b8fd927e251"
+  },
+  "kits/resources/dist/resources.tex.resources.js": {
+   "bytes": 12858392,
+   "sha256": "770aa722e43f711684e28510521da1dc6dab9bc673fa5041bfe2eada5196310e"
   },
   "kits/ringsea/dist/ringsea.html": {
    "bytes": 5033320,
@@ -992,6 +1032,10 @@
    "bytes": 2528638,
    "sha256": "d3add636535274fd3f722369655b0025e5bf244eec089cc2e0b8e4f3ea9abd78"
   },
+  "kits/tungang/dist/tungang.html": {
+   "bytes": 1346055,
+   "sha256": "1bfd8796f0eee236883b6e51e669602b10d6cb0bfe358ae35c8bc3b57b5035df"
+  },
   "kits/yeti/dist/yeti.html": {
    "bytes": 1065402,
    "sha256": "c59a54aa67de7995f7412b7917e0af952f18a3f274103fe762859f17b10b47eb"
@@ -1001,12 +1045,100 @@
    "sha256": "a3843bca9538ce870335a22d6b7f4a30d2b69fd8cf7b372f928c62346733e1eb"
   },
   "openworld/isle-demo/dist/isle-demo.artifact.html": {
-   "bytes": 8194085,
-   "sha256": "d0e9a184f322ac60d824b726146560a01adb86654bf3df2060b73f0ffc3916c2"
+   "bytes": 8850254,
+   "sha256": "b0c303b7c4e3c1e183810e8b8dc5a7761614dd79afbc8d38dc099059dc966258"
   },
   "openworld/isle-demo/dist/isle-demo.html": {
-   "bytes": 8194343,
-   "sha256": "064269814a12e49a5cd4abefac5d4dbad556fe29e6ec0bb990858f501102b597"
+   "bytes": 8850512,
+   "sha256": "0669d1636403aae34635aeb60d8140efdd97ddf83e8831b069682695579cb967"
+  },
+  "openworld/isle-demo/dist/isle-demo.tex.brtowns.js": {
+   "bytes": 8136477,
+   "sha256": "2eb5c136bd57139376043468141dddd302ea18ddc16a8219ae972c9dbedf4a71"
+  },
+  "openworld/isle-demo/dist/isle-demo.tex.eastabyss.js": {
+   "bytes": 4656021,
+   "sha256": "419fd1d89cff71c282481dfb0e3b7e1ea7c15bc59e46270f8f4f6bd6759438f0"
+  },
+  "openworld/isle-demo/dist/isle-demo.tex.geyser.js": {
+   "bytes": 6640967,
+   "sha256": "e0b88e7b3ecd6d9514b9b9baff00640e267a5e9f08efc3d0f5b52c1eaa7932c0"
+  },
+  "openworld/isle-demo/dist/isle-demo.tex.islanders-2.js": {
+   "bytes": 14471298,
+   "sha256": "f06412c20018fa0ca2911ef9c848e7a713774c74d76e1c594833849f054f958d"
+  },
+  "openworld/isle-demo/dist/isle-demo.tex.islanders.js": {
+   "bytes": 14986271,
+   "sha256": "aa4042db151261b92c66d580894354d41995a0e12b3841b8388748f7809bc1ec"
+  },
+  "openworld/isle-demo/dist/isle-demo.tex.iziz-2.js": {
+   "bytes": 6782968,
+   "sha256": "86ffbf149919425bf3ca043d9ce3996592c5efe98bb2e9ec38384a74702f8d2d"
+  },
+  "openworld/isle-demo/dist/isle-demo.tex.iziz.js": {
+   "bytes": 14374368,
+   "sha256": "66b6632b8cc1e90330aeffc7d8a8538cec6b1983d1f7fe60647679fa4ec49edc"
+  },
+  "openworld/isle-demo/dist/isle-demo.tex.kftex.js": {
+   "bytes": 1760292,
+   "sha256": "28a5b98fc2211c4b463c8620b12025436528700f757565e5b7f4a5e34c10cea6"
+  },
+  "openworld/isle-demo/dist/isle-demo.tex.ringisles.js": {
+   "bytes": 6127712,
+   "sha256": "6bfde7561ad1021a4be7d8e426e1b88a072da1007778763b11d55c0c40e0682e"
+  },
+  "openworld/isle-demo/dist/isle-demo.tex.sedesert.js": {
+   "bytes": 2772295,
+   "sha256": "804cfa6e181c06b9687c7597286f622e42d52f185a2b8ede76f9a90bd41b18bf"
+  },
+  "openworld/isle-demo/dist/isle-demo.tex.swbay.js": {
+   "bytes": 3599492,
+   "sha256": "21ca1c1bc507f2e9441e92150f08614ca3607e1fe384575b3da05d62ce57b732"
+  },
+  "openworld/isle-demo/dist/isle-demo.tex.throne.js": {
+   "bytes": 1872539,
+   "sha256": "29c079af3b475e1e1cfc8a9189ab96bacb679fa91dbc8f9e45f6705a99313f56"
+  },
+  "openworld/isle-demo/dist/isle-demo.tex.ys-2.js": {
+   "bytes": 3582240,
+   "sha256": "75ac761951f33a9edf9e5f3ce3a4d8bcb8826ceea240c8fbacc91470391a5e21"
+  },
+  "openworld/isle-demo/dist/isle-demo.tex.ys.js": {
+   "bytes": 14309109,
+   "sha256": "e6efa558623b2fcf0bf9703025bc8547cc4d732ef30f81d54f4e3422aaef157c"
+  },
+  "openworld/iziz-cluster/dist/iziz-cluster.html": {
+   "bytes": 5896574,
+   "sha256": "495182793bccaae25004a1f8cfce98ef1d362e91408af880b1b6177dcfd37c20"
+  },
+  "openworld/iziz-cluster/dist/iziz-cluster.tex.abyssal-savannah.js": {
+   "bytes": 4373474,
+   "sha256": "820988d93ec0a6fef4d5a2638619c893a0c0d159955116dbfd6cf6670630b1b8"
+  },
+  "openworld/iziz-cluster/dist/iziz-cluster.tex.brtowns.js": {
+   "bytes": 8136480,
+   "sha256": "b12ca256d909e39fcbbb58164e9437b081de65a23b5651d3079814610dddc1c0"
+  },
+  "openworld/iziz-cluster/dist/iziz-cluster.tex.eastabyss.js": {
+   "bytes": 4656024,
+   "sha256": "2c9de989f067e7da3195016b3a53efd7338695428cd54b2573cf52f7c6dd7b14"
+  },
+  "openworld/iziz-cluster/dist/iziz-cluster.tex.hyperjungle.js": {
+   "bytes": 2580553,
+   "sha256": "7cd0c99e2a8908dc6d8fa0603901c1033eeb4bd0ef3e04dcc09798e11083613b"
+  },
+  "openworld/iziz-cluster/dist/iziz-cluster.tex.iziz-2.js": {
+   "bytes": 6782971,
+   "sha256": "7cfcacca121956792bc9c74a45c46eb500bcb54a06535fd6d90138b9152fe1d0"
+  },
+  "openworld/iziz-cluster/dist/iziz-cluster.tex.iziz.js": {
+   "bytes": 14374371,
+   "sha256": "ddc90397bbd0a649d0e4a592c42c3477043739b311c638d6587ab82467e62717"
+  },
+  "openworld/iziz-cluster/dist/iziz-cluster.tex.kftex.js": {
+   "bytes": 1760295,
+   "sha256": "0a30eedd3bcab6365e0692239477ef83ca61168167c28521107052043c53951b"
   },
   "openworld/little-demo/dist/little-demo.artifact.html": {
    "bytes": 5088461,
@@ -1016,9 +1148,69 @@
    "bytes": 5088719,
    "sha256": "43e0dc8e7d2fb8a2fa2a6eeb2c8e7036806cee73e1fc250735abcef1f242b87a"
   },
+  "openworld/oidong-highrift/dist/oidong-highrift.html": {
+   "bytes": 10436363,
+   "sha256": "d2c1c460b6895a1d607975876bd07003300265c8d17cba9121dfa14e98f23736"
+  },
+  "openworld/oidong-highrift/dist/oidong-highrift.tex.highrift.js": {
+   "bytes": 643034,
+   "sha256": "4479466cd7a0b4b44fb528bf6bbabefa766177537b05169bd84b7c04df5d460a"
+  },
+  "openworld/oidong-highrift/dist/oidong-highrift.tex.oidong.js": {
+   "bytes": 2002645,
+   "sha256": "e77e451ed26a6290e3b2b7d5178829b705319497eafae1126c2fd1f58ce793a0"
+  },
+  "openworld/oidong-highrift/dist/oidong-highrift.tex.xanadu.js": {
+   "bytes": 8513618,
+   "sha256": "735252f2a934d5a6a0f3c9be75c27750935fa59e8a7240a329512fb8e01c27c3"
+  },
   "openworld/pinnacle/dist/pinnacle.html": {
-   "bytes": 5290152,
-   "sha256": "e0395d260e160bfe4072b652248648d962489afea520f3948c87cdfaf4fb489f"
+   "bytes": 5856549,
+   "sha256": "375a497b5bc7a48de3b59cd710da364159cb9d981ab456ca2c34bcff5aa0928f"
+  },
+  "openworld/pinnacle/dist/pinnacle.tex.abyssal-savannah.js": {
+   "bytes": 4373470,
+   "sha256": "79098378216d55f9f51eb8b12deb98c79f8b2a65a2f0f6aed07d2f0572111fde"
+  },
+  "openworld/pinnacle/dist/pinnacle.tex.brtowns.js": {
+   "bytes": 8136476,
+   "sha256": "8b0a64a836ed9f8241276c635367d5868add677be8077d5f2a8a957ac15621fa"
+  },
+  "openworld/pinnacle/dist/pinnacle.tex.eastabyss.js": {
+   "bytes": 4656020,
+   "sha256": "adb215a74b951f5abfbe99995243b1852642413c63ff52cf206b1b3e6312892b"
+  },
+  "openworld/pinnacle/dist/pinnacle.tex.hyperjungle.js": {
+   "bytes": 2580549,
+   "sha256": "1f5ba93a7dd3ce84dcb0e4b85632cb0ba89bb525021d17a51d847fdcac1186de"
+  },
+  "openworld/pinnacle/dist/pinnacle.tex.kftex.js": {
+   "bytes": 1760291,
+   "sha256": "75223875a57f714df4f068e09e66292721bf3f11c05ee54ab9414a9e4daaa346"
+  },
+  "openworld/xanadu-lake-shore/dist/xanadu-lake-shore.html": {
+   "bytes": 2577919,
+   "sha256": "0237a73849bffeccdc08852816e28606c6c35cf7231706efab755e956f267133"
+  },
+  "openworld/xanadu-north-shore/dist/xanadu-north-shore.html": {
+   "bytes": 2710734,
+   "sha256": "f0249fd16ff5d832a182625753e803f32e361d0c4c18ba54418b0f90f30ba030"
+  },
+  "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.html": {
+   "bytes": 8874743,
+   "sha256": "5dd6344646a54395c88d779a34a56cf636886b104ddca80bc36197e560c91967"
+  },
+  "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.tex.oidong.js": {
+   "bytes": 2002652,
+   "sha256": "88510acf50c6f8c3830549722810e5183c685781ea2deaa2904e9297452e8086"
+  },
+  "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.tex.xanadu.js": {
+   "bytes": 8513625,
+   "sha256": "7216145e7a4349521c0a4ed9f2f4478f5a709cb771ad7fa4c30270d0df288196"
+  },
+  "openworld/xanadu-north-shore/dist/xanadu-north-shore.html": {
+   "bytes": 4734822,
+   "sha256": "a16bcb9f38d829b223a561cdc6b82673da869be711ac555e4d9ec890b26ba5c9"
   },
   "settlements/dalab/dist/dalab-set.html": {
    "bytes": 6603017,
@@ -1096,6 +1288,10 @@
    "bytes": 8995903,
    "sha256": "c55c2c62f88cd016aeecfc2b6b027e466f63afd1de992e1ad956f1e9b6599cf9"
   },
+  "settlements/lightwall/dist/lightwall.html": {
+   "bytes": 3849615,
+   "sha256": "919343fb05ff33e6ce7645ca62bc2cf8914eb28653e579be71ca92ca3557af64"
+  },
   "settlements/locus/abyss-kit.html": {
    "bytes": 9091876,
    "sha256": "d162fc9f3f70a076588a42aeff14aa8a8e9283f13462897f508ec6c449ac4137"
@@ -1127,6 +1323,10 @@
   "settlements/noahs-regret/dist/noahs-regret.html": {
    "bytes": 12117800,
    "sha256": "f94028859f190afb0fe0831d17582c9eb9390565be504b0250d88feb6e0bef86"
+  },
+  "settlements/pher/dist/pher.html": {
+   "bytes": 8924162,
+   "sha256": "6215940afde03649269882e1d81899a9b80b7a047c9274c67e54b12d00211333"
   },
   "settlements/pinnacle-rock/dist/pinnacle-rock.html": {
    "bytes": 4342913,

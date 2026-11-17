@@ -43,11 +43,11 @@ const QN_ORDER_BLUE=0x2e5a9c,QN_ORDER_BLUE2=0x1f3f78;
 const QSPOKE=[
  {name:'Crimson',wall:0xa8302a,trim:XPAL.saffron,band:0x5a1c1c,house:'the Order of the Flashing Eye'},   /* the owner, 2026-11-16 */
  {name:'Saffron',wall:0xd8862a,trim:QN_ORDER_BLUE,band:QN_ORDER_BLUE2,order:'the History Monks (the Order of Longsong)'},
- {name:'Gold',wall:0xd4b040,trim:XPAL.red,band:0x6e4a1a},
+ {name:'Gold',wall:0xd4b040,trim:XPAL.red,band:0x6e4a1a,house:'the Yellow Monastery, the Order of the Beacon (its head house the Ancient beacon fort over the Rift)'},   /* LORE 6.13, the owner 2026-11-16 */
  {name:'Green',wall:0x3f7a44,trim:XPAL.saffron,band:0x1f3f24,house:'the Order of Viridian Thought (the tea Order; its head monastery the tea estate on the scarp, px 962,1562)',tea:true},   /* the owner, 2026-11-16: its court grows tea (qnTeaTouches, 89q3) */
  {name:'Turquoise',wall:0x2a9a94,trim:XPAL.white,band:0x1a4a48},
  {name:'Blue',wall:0x2a4a9a,trim:XPAL.gold[0],band:0x1a2a5a,house:'the Order of the Azure Dream (its head monastery Gret-Ail, the monastery isle in the lake of Erewhon)'},   /* the owner, 2026-11-16 */
- {name:'Violet',wall:0x6a3a8a,trim:XPAL.saffron,band:0x3a1a4a},
+ {name:'Violet',wall:0x6a3a8a,trim:XPAL.saffron,band:0x3a1a4a,house:'the Order of the Violet Storm (sword and bow; its head house the House of the Tempest in the Gold March)'},   /* LORE 6.13, the owner 2026-11-16 */
  {name:'White',wall:0xeee8dc,trim:XPAL.red,band:0x6e2a2a,house:'the Order of the White Lily (medicine and healing; its house in the city is its head house, and a hospital)',hospital:true},   /* the owner, 2026-11-16: qnLilyTouches (89q3), its ranges the hospital's wards (QB_IX_HOSPITAL, 89q5s) */
 ];
 // spoke i's direction on the ground plan, [dx, dz] (north is -z, east +x), and its yaw (a face's +z toward it)
@@ -55,10 +55,14 @@ const qnSpokeDir=i=>{const b=i*Math.PI/4;return[Math.sin(b),-Math.cos(b)];};
 const qnSpokeYaw=i=>{const d=qnSpokeDir(i);return Math.atan2(d[0],d[1]);};
 // a spoke's banner: a tall pole, a gilt finial, a crossbar and a long cloth in the spoke's colour, its face turned toward the
 // spoke's monastery (the Rainbow Temple's); base at (x,y,z), h the pole's height
+let QB_BANNER_SINK=null;   /* a list the caller sets: each spoke banner's cloth in world space, drawn by the caller instead of the kit */
 function qnSpokeBanner(x,y,z,i,h,cw){cw=cw==null?3.2:cw;const ry=qnSpokeYaw(i),g=xC(xPick(XPAL.gold)),col=xC(QSPOKE[i].wall);
  vPst('vPostB',x,y,z,.16,h,xC(0x5a4632));kput('xConeG',[x,y+h,z],null,[.22,.7,.22],g);vBall('xGold',x,y+h+.75,z,.18,g);
  vB('vWood',x,y+h-.45,z,cw+.3,.16,.16,ry,xC(xPick(XPAL.dark)));
- const L=h*.58,p=loc(x,z,0,.14,ry);vB('vClothB',p[0],y+h-.55-L,p[1],cw,L,.06,ry,col);
+ const L=h*.58,p=loc(x,z,0,.14,ry);
+ if(QB_BANNER_SINK&&VERN.cur){const c=VERN.cur,s=c.o.scale==null?1:c.o.scale,w=loc(c.x,c.z,p[0]*s,p[1]*s,c.ry);   /* the cloth handed to the page, which waves it (settlements/qiblai 91l) */
+  QB_BANNER_SINK.push({x:w[0],y:(c.o.y==null?0:c.o.y)+(y+h-.55)*s,z:w[1],ry:c.ry+ry,w:cw*s,L:L*s,s,col:QSPOKE[i].wall,band:QSPOKE[i].band,order:!!QSPOKE[i].order});return;}
+ vB('vClothB',p[0],y+h-.55-L,p[1],cw,L,.06,ry,col);
  vB('vClothB',p[0],y+h-.55-L-.4,p[1],cw,.4,.07,ry,xC(QSPOKE[i].band));   /* a dark hem along the foot */
  for(let k=0;k<3;k++){const t=loc(x,z,(k-1)*cw/3,.14,ry);vB('vClothB',t[0],y+h-.55-L-1.6,t[1],cw/3-.15,1.2,.06,ry,col);}   /* three tails */
  if(QSPOKE[i].order){const q=loc(x,z,0,.19,ry),s=cw*.5;vB('vClothB',q[0],y+h-.55-L*.62,q[1],s+.16,s+.16,.04,ry,xC(XPAL.white));   /* the Order's device: a blue field in a white border */

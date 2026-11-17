@@ -118,7 +118,10 @@ minimap, O stocks; with the camera's W A S D, Q / E, F, G, Esc. A build's own `k
 `KHOST.on` tick subscribers as `fn(clock.dt, clock)`; the camera is placed and clamped; `sky.follow(camera)` and the view
 subscribers (a runtime LOD); the hidden layers are hidden; the draw; then the after subscribers and the panel. A subscriber
 that throws is reported once to `#errs` with its stack and skipped from then on; the rest run. `window._ready` is set right
-after the first frame, as the biome kits' loops did.
+after the first frame, as the biome kits' loops did. A page that builds on after that frame (meshes it streams a frame budget
+at a time: `settlements/lightwall`'s carved rock, 2026-11-17) raises `window._hostPending` while that work is queued and lowers
+it when it is done; the verify harness (`tools/harness.py` `READY_JS`) waits for it to be back to 0 after `_ready`. A page
+that never sets it is unchanged.
 
 **The `TICKS` shim's second argument is motion time.** The biome kits' loops passed `performance.now()/1000`: seconds
 since the page was opened, the build included. The host passes the clock's `t`, seconds of motion since its loop began,

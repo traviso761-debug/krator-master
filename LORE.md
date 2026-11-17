@@ -533,7 +533,9 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
 - Look: Tibetan massing with Indian, Turkish and Persian detail; Andean "cholet" paint. **No minarets, great prayer wheels instead.**
 - Rulers: the Sultan's Palace, the **Pleasure Dome**, the **Grand Vizier**.
 - **Money: the qud** (the owner, 2026-11-16: "Sultanate currency is the qud"), the coin the economy's Mint strikes from the
-  Treasury's gold; traders take the Izani Talent too (§6.2). Its coins and its rate in Talents are still to be set.
+  Treasury's gold; traders take the Izani Talent too (§6.2). Settled (the owner, 2026-11-16, agreeing Theodiga's money's proposal): a thin struck gold coin of about a gram, twenty to the Talent (0.05 Talents, the Kautoan shell's
+  worth, so a day's wage reads alike across the nations); a working day's wage about 54 quds (6 an hour, as the isles').
+  The sim keeps it in `settlements/theodiga/src/49m-th-money.js` (`TH_MONEY.TUNE`).
 - Guilds: Farmers, Miners, Goldsmiths ("the richest house in the valley"), Alchemists, Masons, Spicers.
 - Faith: temples, monasteries and a pilgrims' circuit of prayer wheels.
 - **Erewhon, Pearl of Xanadu** [Ed: city is half built rn as hill placement is broken and haven’t been able to spare a session for it].
@@ -574,8 +576,17 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
     runs the latex house", "takes a share and a small fee"]. The violet monastery is the **Order of the Violet Storm**, a
     martial order of sword and bow; its central monastery is **the House of the Tempest** on the West Arm in the Gold March,
     about 600 strong, and its house in Qiblai is the Tempest's daughter [the owner, 2026-11-16; `settlements/strongwall/PLAN.md`].
+    The Decree forbids its clergy war-making, and the Violet Storm keeps that law by keeping the Vale: it makes no war, and
+    its riders go out only to chase a raid [the owner, 2026-11-16: "they ride out to chase a raid";
+    `settlements/strongwall/tempest/BLUEPRINT.md`].
     The gold monastery is **the Yellow Monastery, the Order of the Beacon**, whose head house is the refurbished Ancient
-    beacon fort over the Rift [the owner, 2026-11-16; `settlements/beacon/PLAN.md`]. The turquoise monastery is not yet named.
+    beacon fort over the Rift [the owner, 2026-11-16; `settlements/beacon/PLAN.md`]. The turquoise (teal) monastery is the
+    **Iridescent Order**: it keeps a house in Lāiṭwāl, the Light Wall, and its head monastery stands at the outlet of Lāiṭwāl's
+    lake in Opal Valley, on the shelf below the sill where the lake spills over the lower riser (scale model px 1016,1655) [the
+    owner, 2026-11-16 and 17; `settlements/iridescent/PLAN.md`].
+    The city is fed by the Orders' **temple estates**: about 128 villages and 30,000 people out to 30 km, each Order
+    holding the sector round its monastery's spoke, rice farms near the city, buffalo dairies and hives toward the
+    forest (milk and honey are the sacraments) [the owner, 2026-11-16: "Grow the estates"; `settlements/qiblai/WORLD.md`].
   - **Grēṭ-Āil, the Azure Dream's head monastery**, on the long isle's south shore facing Erehwon across the lake, in a
     cove at scale-model px 846,1508.7 [the owner, 2026-11-16; `settlements/azure-dream/PLAN.md`].
     - **The fishermonks** fish the lake from dugouts, by night with lamps, without qualm.

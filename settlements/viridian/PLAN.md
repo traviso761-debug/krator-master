@@ -1,10 +1,16 @@
-# The Order of Viridian Thought: its head monastery and master tea and herb estate (plan, 2026-11-16)
+# Misṭ-Gārḍan: the Order of Viridian Thought's head monastery and master tea and herb estate (plan, 2026-11-16)
 
 The owner, 2026-11-16: *"can we find a site that's a great tea production site and place the head monastery of Qiblai's
 green monastery there, the Order of Viridian Thought?"* Later the same day: *"plan the Viridian Thought head monastery /
 master tea and medicinal herb farm"*.
 
-This is a plan for the owner to approve. Nothing is built. `SURVEY.md` holds the site survey and `survey_site.py` re-runs it.
+This is a plan for the owner to approve. Some of it is built (section 12a):
+- the Order's own buildings on a sheet (V3);
+- the estate's records (V4, the data side);
+- a first pass of the page at 1:1 (V6).
+
+The page takes the plan's recommended answer where a question is open, marked *proposed* (section 12b). `SURVEY.md` holds
+the site survey and `survey_site.py` re-runs it.
 Each item is marked by where it comes from:
 - **owner**: the owner's words;
 - *brief*: the Xanadu sim session's brief for this plan;
@@ -299,26 +305,29 @@ blocks**. As in Qiblai, the green is `QSPOKE[3]`'s.
 | `qb_row_poor`, `qb_row_mid` | the lay families' lines |
 | `qb_workshop` | the cooper, the basket maker, the potter of the tea jars |
 | `qb_meditation_garden` | the form under the physic garden (as the Azure Dream's lotus garden takes it) |
-| `qb_terrace_stair` | the stairs between the benches; it is on the kit's own branch (`claude/zealous-allen-0cd44d`), not yet on this one |
+| `qb_terrace_stair` | the stairs between the benches (from the kit's branch, now merged into this one) |
 
-**New**, prefix **`qb_vt_`** (*proposed*; sizes are estimates):
+**New**, prefix **`qb_vt_`**. These are built (V3): the lot is each def's `w` x `d`, and every one stays on it within 0.3 m
+(`tests/test-vt-records.js`):
 
-| Record | What | Size (m) | Budget (tris) |
+| Record | What | Lot (m) | Fragment |
 |---|---|---|---|
-| `qb_vt_wither` | a withering loft: three floors, louvred walls, the tray racks seen through them | 60 x 14, 12 high | 60k |
-| `qb_vt_roll_fire` | the rolling hall and the firing hall in one range: the tables, sixteen woks, the chimney range, the steaming room and presses | 40 x 32 | 80k |
-| `qb_vt_pack` | the sorting and packing house, with the winnowing yard | 30 x 16 | 30k |
-| `qb_vt_tasting` | the tasting room: a pavilion with a long table, the cups set out to the north light | 18 x 12 | 25k |
-| `qb_vt_drying` | the herb drying house: slatted racks round a white court (Kirstabal's `xa_latex_house` is the form) | 40 x 30 | 50k |
-| `qb_vt_still` | the still-room and dispensary: the stills, the camphor still, the syrup kitchen, the Bitter Room, the counter | 30 x 20 | 50k |
-| `qb_vt_curing` | the curing house: a half-sunk cube with root cellars | 20 x 14 | 20k |
-| `qb_vt_shade` | a lath shade house for the ginseng beds where the grove is thin | 24 x 12 | 10k |
-| `qb_vt_log_yard` | the log yard: stacked inoculated logs under a thatch roof on posts | 30 x 10 | 15k |
-| `qb_vt_spring` | the spring house and cistern: a cube over the spring, a stone tank, the head of the rills | 12 x 12 | 15k |
-| `qb_vt_grange` | the dry garden's grange: a lodge, a drying shed, a walled yard | 30 x 24 | 30k |
-| `qb_vt_shelter` | the High Garden's pluckers' shelter, with a shrine and a basket rack | 10 x 8 | 8k |
-| `qb_vt_hermitage` | a cloud hermitage cell on the face | 6 x 6 | 5k |
-| tea hedges, herb beds | flora on the terraces' treads, not buildings: the crops kit's records placed by `KRAND` (section 10) | | instanced |
+| `qb_vt_wither` (3 variants) | a withering loft: a wash ground storey, two timber storeys with louvres front and back, the tray racks seen through them, the roof lanterns; v1 shorter (40 m), v2 with the weighing yard under an awning | 62 x 28 | `89qv` |
+| `qb_vt_roll_fire` | the rolling hall (twenty tables behind tall windows) and the firing hall (a stove bench with sixteen woks, a chimney to each pair), the steaming room and the brick presses at the west end | 54 x 32 | `89qv` |
+| `qb_vt_pack` | the sorting and packing house, the winnowing yard, the sealed jars, the Order's chests | 31 x 18 | `89qv` |
+| `qb_vt_tasting` | the tasting room: an open pavilion with a gilt crown, the cupping table with its bowls, the grade jars | 19 x 15 | `89qv` |
+| `qb_vt_drying` | the herb drying house: two open rack halls round a white court, the mats, the closed store at the back | 41 x 31 | `89qv` |
+| `qb_vt_still` | the still-room and dispensary: the counter window and the drawers of simples, the stills' flue, the Bitter Room, the camphor still in its side yard | 33 x 25 | `89qv` |
+| `qb_vt_curing` | the curing house: a low cube over a sunk cellar, slit vents, a ramp to the cellar door | 21 x 24 | `89qv` |
+| `qb_vt_shade` | the lath shade house over two ginseng beds | 24.5 x 12.5 | `89qw` |
+| `qb_vt_log_yard` | the log yard: six cribs of logs under thatch, the caps and brackets, the soaking trough | 31 x 9 | `89qw` |
+| `qb_vt_spring` | the spring house and cistern, the rill's head, a chorten | 12 x 13 | `89qw` |
+| `qb_vt_grange` | the dry garden's grange: the walled yard, the lodge, the drying shed, two beds | 31 x 27 | `89qw` |
+| `qb_vt_shelter` | the High Garden's pluckers' shelter: the cube, the lean-to and the basket rack, a chorten and a flag pole | 10 x 8 | `89qw` |
+| `qb_vt_hermitage` (3 variants) | a cloud hermitage cell on its ledge, a flag pole | 6 x 6 | `89qw` |
+| `qb_vt_terrace_plot` (Low, High) | the sheet's sample of two tea treads, three hedge rows each, the rill, the riser (earth or stone) and the path's steps | 24.5 x 16 | `89qw` |
+| `qb_vt_physic` | the physic garden: eight beds either side of the axis rill, the nursery's cuttings beds, the pavilion at the head, the green-banded wall | 61 x 79 | `89qw` |
+| tea hedges, herb beds | not buildings: `VTE` (`src/40-vt-estate.js`) traces the hedges along the terraces' treads and picks every bed's crop from `kits/crops` (section 12a); the page draws them (V6) | | `40` |
 
 **Where they live.** The same arrangement the Azure Dream settled with the Qiblai kit's session (its PLAN.md section 6,
 commit 12cb1eb1a):
@@ -360,11 +369,17 @@ and the cupping table. They go into the Xanadu culture file through the catalog'
 
 ## 9. Textures
 
-The Xanadu pack and the Qiblai kit's pack cover the walls, roofs, gold and wood. Two surfaces may want sets of their own. They
-go to `core/materials/PROMPTS-NEEDED.md` only if the owner wants them (question 10):
-- **bamboo tray weave**, for the withering trays and the drying racks;
-- **tea-hedge foliage**, a clipped, glossy dark-green leaf mass for the hedges' tops, unless the crops kit's or the Oidong
-  kit's tea card serves.
+The Xanadu pack and the Qiblai kit's pack cover the walls, roofs, gold and wood. **Question 10 is settled (the owner,
+2026-11-16: "we can make new textures").** The library already holds most of what the estate needs, so only one set is
+generated:
+- **the trays and racks:** `fibre.cane`, the weathered bamboo basket weave, from the library;
+- **the terraces' soil:** `ground.terrace.field`, or `ground.redsoil` on the High Garden, from the library;
+- **the nursery's bush:** `card.crop.tea`, the crops kit's card, from the library;
+- **the clipped hedges:** `foliage.tea.clipped`, **owed**. It is a new generic id (any clipped evergreen hedge can take
+  it), and its prompt is in `core/materials/PROMPTS-NEEDED.md` section 57.
+
+They become families in `settlements/viridian/materials.json`, packed by `python3 tools/textures/pack.py settlements/viridian`,
+once the tea's set arrives. The library's three are wired then too, in one pack.
 
 ## 10. Core adoption (write in full before the first fragment)
 
@@ -403,7 +418,8 @@ build from its first commit (a new build), and its `build.py` and `verify.py` st
 1. **A good**: `herbs:{unit:'kg'}`, the dried simples (camphor and incense included, or `camphor` apart if the sim wants it).
    It has no single crop link: it is a basket of the section 5 records.
 2. **A calendar window**: `'herb-cut':[100,290]`, the leaves in summer and the roots in autumn.
-3. **`T.viridian`**: add `herbs:4000`. People are 440 (question 7), with the tea crew at 0.55 of them and the herb crew at 0.1.
+3. **`T.viridian`**: add `herbs:4000`. **People 440 (the owner: "440")**, with the tea crew at 0.55 of them and the herb crew
+   at 0.1.
    A second work, beside the tea:
 
    ```js
@@ -418,6 +434,11 @@ build from its first commit (a new build), and its `build.py` and `verify.py` st
    - `house('lily')(T.lilyHouse,{herbs:V2.herbs*.7/yr})`, so it buys its 70 % from Qiblai's market by want;
    - 300 people is a guess for the monks and the standing sick; the sim session sets it.
 6. **Kirstabal's share** (10 %): a want at the White Lily's daughter house, once the Kirstabal plan's house is in the sim.
+   The 70 / 10 / 20 % split is the owner's ("sure", 2026-11-16).
+6a. **The dream reagents to the Azure Dream** (the owner: "sure"). Bell-pod and moon caps, about 150 kg a year out of the 20 %
+   kept, go to Grēṭ-Āil's Hall of Dreaming. They ride the road to Qiblai with the herbs, then go on by Erehwon's barge. In the
+   tune that is a want of `herbs` at the Azure Dream's house (`lk.great-isle`, or its head house once the sim splits it),
+   about 150/yr, filled from Qiblai's market.
 7. **A check**, the next free number (25 if 24 is still the last): over a year, the hospital receives at least half the
    estate's herbs, with a negative where the road's herb share is 0.
 8. **Not proposed yet**: what the hospital gives back (the sick's working days, PROPOSAL-XANADU), and the master tea's
@@ -426,9 +447,14 @@ build from its first commit (a new build), and its `build.py` and `verify.py` st
 **The road's time.** The tune counts 135 km at 25 km a day, a 5-6 day road. Loaded up the basin's wall (1,400 m in 11 km)
 the climb may want 20 km a day for the up-leg. That is the sim session's call.
 
-**Food.** The estate eats the rural diet, and its grain comes up from Qiblai 2,670 m below. If the owner wants a valley
-village (question 9), a `core/hamlet` farming village on the valley floor (about 957,1561: 180-300 m, Cfa, 1,800-2,000 mm,
-where rice can be paddy) could feed part of it.
+**Food: the valley village** (the owner, question 9: "y").
+- The estate eats the rural diet. Most of its grain would come up from Qiblai, 2,670 m below.
+- The village is a `core/hamlet` farming village of about 150 people on the valley floor, at about 958,1561 (180-300 m, Cfa,
+  1,800-2,000 mm), where rice can be paddy. It feeds part of the estate.
+- In the tune it is a hamlet under `qb.viridian`. A work of `grain` sized to its fields (about 40 t a year, *est.*) goes up a
+  short road to the estate, 10 km and a day, which takes the estate's grain want down by as much. The Qiblai road keeps the
+  rest of the grain, the salt and the tools.
+- The village's pin is requested; its page is V7.
 
 ## 12. Steps
 
@@ -438,11 +464,131 @@ where rice can be paddy) could feed part of it.
 | **V1** | the map: the bench landform `lf_viridian_bench` (the house's bench, about 350 x 400 m at ~800-845 m, centre px 962,1562); pins for the dry garden's grange, the hermitages and the valley village if wanted; the road's line up the hollow | the scale-model session's queue | the pins' ground; core/world's stamp at 1:1 |
 | **V2** | the sim (section 11): herbs, the herb work, the White Lily's house, the people | the Xanadu sim session | its economy test and the new check |
 | **V3** | the new `qb_vt_*` records in `settlements/viridian/src/` on the Qiblai kit's helpers and `QSPOKE[3]`'s dress, seeds 34200-34399, on a sheet beside the green monastery, the cloister court with `qnTeaTouches`; built from `claude/zealous-allen-0cd44d` or after it merges | this settlement | the footprint test; the sheet's `verify.py --assert` |
-| **V4** | the terraces (`KRELIEF.terraces` per garden), the tea hedges and the herb beds placed from `kits/crops` by `KRAND`; a node test that every hedge stands on a tread, every bed's crop fits its ground (`CROPS.at`), and the same seeds give the same beds | this settlement | `node settlements/viridian/tests/test-estate.js` (`tools/ktest.js`, each check with its negative) |
+| **V4** | the terraces (`KRELIEF.terraces` per garden), the tea hedges and the herb beds placed from `kits/crops` by `KRAND`; a node test that every hedge stands on a tread, every bed's crop fits its ground (`CROPS.at`), and the same seeds give the same beds | this settlement | `node settlements/viridian/tests/test-vt-estate.js` (`tools/ktest.js`, each check with its negative) |
 | **V5** | the interiors: the factory, the still-room, the dispensary, the assembly hall; the new catalog pieces | this settlement; the catalog's owner | `core/walk` reach in node; the page's `--interiors` assert; `kits/catalog/verify.py --assert` |
 | **V6** | the page, `settlements/viridian`, started from Longsong: the hollow on core/world's ground, the bench, the terraces, the stream and rills on `core/water`, the mist on `core/atmos`, the plucking day on `core/sched`, people | this settlement | `verify.py --assert` on a GPU lane; `check_core_use` |
 | **V7** | the dry garden's grange and the hermitages as stations; the valley village (`core/hamlet`) if wanted | | the page's asserts |
 | **V8** | the open world's site in `xanadu-oidong-highrift`; the Godot export; the gallery (a new settlement goes to the gallery when it reaches `main`) | | the export test; the gallery's card |
+
+## 12a. Built so far (2026-11-16)
+
+The owner asked for the next steps where the open questions do not block them. Those are V3 and V4's data side. V1 waits on
+the site (question 1), V2 is the sim session's, and V5-V8 wait on the page (question 13).
+
+**V3, the records on a sheet.** `settlements/viridian` is a target on Xanadu's page, as the Azure Dream's and Kirstabal's
+are.
+- `dist/viridian-sheet.html` shows the fifteen `qb_vt_*` records (section 7) at every variant in three rows (the tea works,
+  the herbs, the estate), with Qiblai's green monastery beside them.
+- The records are written on the Qiblai kit's helpers, in `QSPOKE[3]`'s dress, with seeds 34201-34341.
+- `VT_DRESS` is the one switch for question 6: white wash on the working buildings (the recommendation), or green walls
+  throughout.
+- **Tested:** `tests/test-vt-records.js` builds every def at every variant headless (the Xanadu kit's bundle with the
+  Qiblai kit) and checks it stands on its lot within 0.3 m, that every seed is in the block and the dress is the green
+  spoke's. 8 checks pass, each negative failing its fault. `verify.py --assert` adds `viridian-laid` to Xanadu's
+  invariants.
+- **GPU verify:** it passes on the rtx lane (2026-11-16, the page of c4d2e0889). `viridian-laid` finds 20 builds and the
+  green monastery. The scene is 1.03M triangles of a 3M budget, 35 draw calls, 26,063 baked instances; the largest build is
+  the physic garden. The shaders, textures, geometry and eye checks are clean.
+
+**V4, the estate as records** (`src/40-vt-estate.js`, `VTE`, `[G data]`):
+- the three gardens as `KRELIEF.terraces` records: a 1.4 m rise, the Low Garden's earth risers (0.22 of a step) and the
+  High Garden's stone faces (0.15), each held to its polygon and height band;
+- **the hedge rows**: traced as contours of the step coordinate along each tread, three rows to a tread at 0.3, 0.56 and
+  0.82 of it, walked at 0.8 m. The terraces' wobble is read through `KRELIEF`'s own public `shape` and `at`, so nothing
+  in core/terrain is copied;
+- **the beds**: five places on three grounds (the physic garden, the shade house and the log yard on the wet ground, the
+  low bed, the dry garden), every crop from `kits/crops` (`CROPS.at`, `CROPS.pick` with seed 34361), all rain-fed, the
+  shade crops in the shade only;
+- **tested:** `tests/test-vt-estate.js`, 17 checks, on a stand-in ground with the cell's slopes and the hollow's flanks.
+  core/world's ground replaces it at V6.
+
+**What the beds came out as:**
+
+| Place | Crops |
+|---|---|
+| the physic garden | ginkgo leaf, frost-willow bark, beard moss, cloud-pine resin, bell-pod, camphor, circle lichen, paper-maple syrup (with the Vale's six as crop records, question 5; before them bell-pod, camphor and circle lichen) |
+| the shade house | valley ginseng |
+| the log yard | moon caps and rainbow brackets |
+| the low bed | rimdew, herbs (lemongrass, ginger, basil) and tobacco |
+| the dry garden | the plan's eight |
+
+**Found on the way:**
+- **The wet ground's open beds were thin in `kits/crops`**: only three crops fit there that are not shade crops. The owner
+  answered question 5 "y", and the Vale's six plants are records now (`kits/crops/src/24-crop-vale-wild.js`).
+- **Every prayer-flag rope is drawn half its length past its far end** (the Xanadu and Qiblai kits' `xnPennants`). It
+  draws its rope with `beam()`, which centres the geometry, but `vRope` (`kits/iziz-vernacular/src/69b-vern-mat.js`) is
+  a cylinder based at 0. The fix belongs to the kits' owners (`KNOWN_ISSUES.md`). The small records here stand their
+  flags on a pole instead.
+
+**V6, the page, a first pass** (the owner, 2026-11-16, by way of the openworld-sites session: "Have daughter sessions
+continue next step of build"; where a question is open, the plan's recommended answer, section 12b).
+
+`dist/viridian.html` is the second target of the same build (`targets/estate`), on Xanadu's page as the Azure Dream's is.
+
+- **The ground:**
+  - the scale model's cut round px 962,1562 (`region/`: 938-986 x 1538-1586, 500 m cells, `extract_region.py` on this
+    branch's model), through core/world's fields at 1:1. The site's cell is unchanged from the survey;
+  - the near ground is 8 m cells over 4 x 2.8 km; the fine ground is 2.5 m cells round the house and the Low Garden's
+    nearest treads, where every tread and riser reads; the far ground covers the whole cut.
+- **What the 1:1 ground is here:**
+  - a west-facing slope of about 17 %;
+  - the hollow centred about 100 m south of the court (768 m), its flanks rising to about 830 m;
+  - **core/world's own benches**: 25 m scarplets every 300-400 m (its detail style for this relief). The tea terraces ride
+    over them.
+- **The terraces** are the three gardens (`VTE.terraces`), each held to the heights its ground really has:
+  - the Low Garden's north flank 602-978 m and its south flank 643-965 m;
+  - the High Garden 1,009-1,221 m.
+- **The places**: 49 of the plan's buildings on 24 pads, with 411 retaining faces; with the cloud hermitages (question 8), 52 and
+  422.
+  - The head house's **bench** is one level at 792 m (the ground under it 763-817 m), 208 x 216 m. On it stand the great
+    monastery in the green dress (`qb_monastery` v3, the tea touches in its court), its gate facing west down the hollow,
+    the two colleges, the Master's house and the refectory in the green spoke, the bath, the wheel house and four kora
+    chortens.
+  - Below the bench: the Green Gate and its chortens; the buyers' court (the caravanserai, the tasting room, the hostel,
+    the still-room and dispensary); the tea works south of the way (two withering lofts, the rolling and firing hall, the
+    packing house, three stores); the herb houses north of it; the lay families' two lines.
+  - Above the bench: the physic garden, the shade house and the log yard, the spring house, and the pluckers' shelter in the
+    High Garden.
+- **The tea:**
+  - every row on every tread traced (`VTE.hedges`), 1.46 million dabs painted on the near ground;
+  - drawn whole on the fine ground as 149,461 clipped blocks, each on its tread.
+- **The flora** is the Vale of Xanadu's biome: forest on the open slopes, a shade tree here and there in the tea.
+- **The mist** is the sky's fog, thickened, so the scarp's top goes grey.
+- **Checked:** `verify.py` adds `estate-laid`, `bench-level`, `terraces-cut` and `tea-on-treads`; all four pass in the
+  in-app browser, and **the GPU verify passes on the rtx lane** (2026-11-16, the page of a7e376a92):
+  - every universal assert is clean;
+  - 15.9M of 16M triangles at the overview, 324 draw calls;
+  - the eye stands clear in all eight views.
+
+  The overview sits at the budget's edge, so the next pass thins the far tea or the flora (`KNOWN_ISSUES.md`).
+- **With the hermitages** (the near ground run to x 4,400 m) and the Vale's flora at 0.55 of its quality, the page passes again
+  on the rtx lane. It has 52 places, 15.1M of 16M triangles at the overview, and the eye is clear in six views, the cloud
+  hermitages among them.
+
+## 12b. The owner's answers, and what is still assumed
+
+**Answered (the owner, 2026-11-16):**
+
+| Question | The answer | Done |
+|---|---|---|
+| 4, the tea | "a pan-fired green master tea plus a pressed brick for the caravans to the basin" | as built: the works, the steaming room and the brick presses |
+| 5, the wild medicinal plants | "y": crop records | the Vale's six as `kits/crops` records: ginkgo leaf, cloud-pine resin, frost-willow bark, beard moss, whorl-olive leaf, silverscrub (`kits/crops/src/24-crop-vale-wild.js`, opt-in). The physic garden grows eight crops (was three) and the dry garden ten |
+| 6, the dress | "white with green dress" | as built (`VT_DRESS` 'wash') |
+| 7, the people | "440" | section 11; the tune is the sim session's |
+| 8, the cloud hermitages | "y" | three on the scarp's face at 1,445-1,493 m, with their path up from the High Garden (the near ground now runs to x 4,400 m) |
+| 9, the valley village | "y" | a `core/hamlet` farming village on the valley floor (section 11, the pin requested); its page is V7 |
+| 10, textures | "we can make new textures" | section 9: `foliage.tea.clipped` owed, the rest from the library |
+| 11, the White Lily's share | "sure": 70 / 10 / 20 %, and the dream reagents to the Azure Dream | section 11 |
+| 12, the name | "sure" | **Misṭ-Gārḍan** (the Mist Garden); the page is titled so |
+| 13, building it | "keep going and ask for reshape" | the page goes on; `lf_viridian_bench` and the four pins are asked of the scale-model session's queue (2026-11-16) |
+
+**Still open, the page assuming the plan's recommendation (*proposed*):**
+
+| Question | Taken |
+|---|---|
+| 1, the site | the house at 962,1562; the High Garden on 963,1561-1562 |
+| 2, the doctrine | not drawn; the lore stays proposed |
+| 3, the water | the spring house is drawn; the spring line and the stream are not water yet |
 
 ## 13. Questions for the owner
 
@@ -455,22 +601,24 @@ where rice can be paddy) could feed part of it.
 3. **The water.** The model has no stream within 15 km; the plan gives the hollow a spring line and a stream (2,300-2,900 mm
    falling on the scarp makes it sound). Is a spring-fed stream below the model's grid all right, or should the scale-model
    session add a stream to the model?
-4. **The tea.** A pan-fired green master tea, and a pressed brick for the basin's caravans? Or another kind: an oolong, a
+4. *(answered 2026-11-16: section 12b)* **The tea.** A pan-fired green master tea, and a pressed brick for the basin's caravans? Or another kind: an oolong, a
    black tea, or green only?
-5. **The wild medicinal plants.** The `xanadu` biome's medicinal plants (ginkgo, cloud pine, whorl olive, frost willow,
+5. *(answered 2026-11-16: section 12b)* **The wild medicinal plants.** The `xanadu` biome's medicinal plants (ginkgo, cloud pine, whorl olive, frost willow,
    silverscrub, beard tree) are not crop records. Make them `kits/crops` records so the estate can grow them (a crops-kit
    change and its test), or keep them gathered wild?
-6. **The dress.** White wash with the green on the sacred buildings' upper blocks (recommended, matching the Azure Dream's
+6. *(answered 2026-11-16: section 12b)* **The dress.** White wash with the green on the sacred buildings' upper blocks (recommended, matching the Azure Dream's
    question 11), or the green walls throughout?
-7. **The people.** 440 (400 plus 40 for the herbs: recommended), 400 with the tea down to about 35 t, or 400 with about 100
+7. *(answered 2026-11-16: section 12b)* **The people.** 440 (400 plus 40 for the herbs: recommended), 400 with the tea down to about 35 t, or 400 with about 100
    seasonal pluckers in the flush?
-8. **The cloud hermitages** on the face at about 1,500 m: in, or not?
-9. **A valley village** on the floor below the hollow (about 957,1561, rice and grain, 100-200 people) to feed the estate, or
+8. *(answered 2026-11-16: section 12b)* **The cloud hermitages** on the face at about 1,500 m: in, or not?
+9. *(answered 2026-11-16: section 12b)* **A valley village** on the floor below the hollow (about 957,1561, rice and grain, 100-200 people) to feed the estate, or
    all its grain from Qiblai?
-10. **Textures.** Ask for bamboo tray weave and tea-hedge foliage (section 9), or stay on the packs?
-11. **The White Lily's share.** 70 % of the herbs to the Qiblai hospital, 10 % to the Lily's house at Kirstabal and 20 % kept:
+10. ~~**Textures.**~~ **Settled (the owner, 2026-11-16): "we can make new textures".** One set is owed,
+    `foliage.tea.clipped` (`core/materials/PROMPTS-NEEDED.md` section 57); the trays, the soil and the nursery's bush come
+    from the library (section 9).
+11. *(answered 2026-11-16: section 12b)* **The White Lily's share.** 70 % of the herbs to the Qiblai hospital, 10 % to the Lily's house at Kirstabal and 20 % kept:
     right? And should the dream reagents (bell-pod, moon caps) also go to the Azure Dream's Hall of Dreaming?
-12. **A name** for the head house and its estate. A working name is *Misṭ-Gārḍan* (the Mist Garden), in the tune's spelling
+12. *(answered 2026-11-16: section 12b)* **A name** for the head house and its estate. A working name is *Misṭ-Gārḍan* (the Mist Garden), in the tune's spelling
     of Ṭī-Ṭeras and Gārḍan.
-13. **Building it.** Is the page the next step after the answers, or does it wait until core/world cuts the region on the
+13. *(answered 2026-11-16: section 12b)* **Building it.** Is the page the next step after the answers, or does it wait until core/world cuts the region on the
     scarp?

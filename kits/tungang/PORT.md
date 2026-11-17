@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 9 (4%) | 0 (0%) | 0 (0%) | 6 (3%) | 213 (93%) |
+| KB | 9 (4%) | 0 (0%) | 0 (0%) | 6 (3%) | 214 (93%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -30,7 +30,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/84-gz-host.js` | 8.0 | [draw] | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | the host API: a world's sites drawn dry into a group of their own; TG.gz.voids, carve and the checks are data |
 | `src/89-rows.js` | 3.7 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the sheet's rows (data) and its state, read from the URL (?state=worn) |
 | `src/91t-fg-sheet.js` | 8.9 | [draw] | 6 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/91z-gz-sheet.js` | 7.1 | [draw] | 2 | 0 | 0 | 0 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | the sheet's Glazier rock (KCAVERN carved from the plans) and the sample scarp, drawn through the host API |
+| `src/91z-gz-sheet.js` | 7.7 | [draw] | 2 | 0 | 0 | 0 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | the sheet's Glazier rock (KCAVERN carved from the plans) and the sample scarp, drawn through the host API |
 | `src/96t-fg-views.js` | 0.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/96z-gz-views.js` | 1.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/99-sheet-fg.js` | 1.2 | [web] | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |

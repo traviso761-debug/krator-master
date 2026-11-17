@@ -30,11 +30,14 @@ they need (`gen/69v-dalab-pack.js`, build.py `DALAB_FAMILIES`).
 | Fragment | What |
 |---|---|
 | `src/89t0-tb-matlib.js` | the town's ground keys (`tGrass`, `tDirt`, `tCobble`, `tField`) bound onto the Thalaba pack |
-| `src/89t1-tb-pieces.js` | Thalaba's own pieces on the Xanadu kit's contract (`XA.def`): `tb_devisers`, the Rare Devisers' house (the hall over the counting room, the strongroom, the sulfur shed and the wax store round the outfitting yard), and `tb_calcarone`, a sulfur kiln; seeds 34300-34399. They go upstream into `kits/xanadu` once the owner has seen them |
+| `src/89t2-tb-interiors.js` | the rooms of those pieces and of the mission's healers' hall, as a `kits/interiors` set (`IX.sets.add`, set `thalaba`), drawn hollow and furnished with `?interiors=1` |
+| `src/89t1-tb-pieces.js` | Thalaba's own pieces on the Xanadu kit's contract (`XA.def`): `tb_devisers`, the Rare Devisers' house (the hall over the counting room, the strongroom, the sulfur shed and the wax store round the outfitting yard), `tb_calcarone`, a sulfur kiln, and `tb_watchhouse`, the road warden's watch house at Briḍj; seeds 34300-34399. They go upstream into `kits/xanadu` once the owner has seen them |
 | `targets/pieces/` | the pieces sheet (`dist/thalaba-pieces.html`): Thalaba's two pieces and the Dalab mission's three, every variant |
 | `targets/town/89z-rows.js` | `window.CITY`, the title, no sheet rows |
 | `targets/town/89zt-tb-site.js` | the plan, as records: the model's ground (`tbModel`) with the town's work cut into it (`tbGround`: the Siṭēps' treads stepped into the riser's toe, the leat's cut, the springs' basins, the tank's steps); the ways (the Phēr road, the Bēnch road, the expedition road, the mule path south to Phēr, the contour and cross streets); the leat's falling line; the blocks; the core/city instance (its own steps: the raster, the ways clipped to it, then frontage-courts on the house blocks with the Xanadu kit's keys by wealth); the civic buildings round the square; the Dalab mission (the Dalab set's healers' hall, granaries and family compound); the fields, the Siṭēps on the riser below the leat; the flora's mask and climate; the people |
 | `targets/town/90q-tb-world.js` | the Krator sky and its light, the near ground in two meshes (the town at 10 m, the riser to the gorge's mouth at 20 m), each wearing a canvas painted from the plan's records (the terraces' banks traced as contour lines), the far land out to 40 km (one coarse mesh coloured by height, slope and the rivers; `lodSkip`) |
+| `targets/town/89zu-tb-people.js` | the people as data for core/simulation (`TBL`): every resident by household, the plan's shares of jobs drawn by a hash of (seed, household, person), the roles' days and weeks, the walk graph on the plan's ways, the places (houses, civic buildings, the square, the springs, the fields within 600 m of a way, two ways off the page) |
+| `targets/town/90t-tb-life.js` | the people drawn: core/simulation stepped once a world minute from core/host's clock, the nearest 900 within 650 m posed by `SIM.pose` as placeholder figures coloured by role (`window._life`) |
 | `targets/town/90r-tb-build.js` | every building, chunk by chunk (300 m), each baked into its own group and drawn while in view and range; the Dalab mission's yard wall; the Vale of Xanadu biome over the plan's mask |
 | `targets/town/90w-tb-water.js` | core/water: the leat a flow, the seven springs and the tank still water; the tank's steps and the springs' rims |
 | `targets/town/91z-views.js` | the views; the town as one budget |
@@ -59,5 +62,4 @@ Thalaba's road north crosses the Solṭ Siṭrīm by a 120 m arched bridge at th
 
 ## What is not here yet (`KNOWN_ISSUES.md`)
 
-The road warden's watch house at Briḍj, the stamp of Salphar's resource record, rooms for the Devisers' house and the mission, the
-life layer, the Godot export and the gallery.
+Salphar's resource record (stamped on the resource-nodes branch, 36f68df9c, not merged here yet), the expedition road's last 80 km to the Devisers' camp (T6: until the region's recut), the people's own bodies (core/charactermodels), the Godot export and the gallery.

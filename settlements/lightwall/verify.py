@@ -17,6 +17,9 @@ invariants and views are Xanadu's, and settlements/xanadu/verify.py runs it (on 
   ix-glazier          L4: from each carved home's front room a walker reaches its first carved room (core/walk: the front's
                       floor from the walked draw, the doorway, the cavern's floor); the carved rooms furnished
   bench-ground        the blocks' open ground is kitchen gardens, orchards and yards, not bare (the owner, 2026-11-16)
+  opal-lode           the Great Potch Line (L0): opal nodes (kits/resources, TG.res) at the wall's foot, registered and drawn,
+                      on dry ground, some of high grade; every adit, dark adit and vein gallery of the wall takes one by the
+                      kit's nearest-node rule (a mine, 400 m)
   wall-scree          the wall's screes (core/terrain KRUBBLE): a talus cone at each band's two ends and heaps in the gaps on
                       the ledges, each on its ground (the bench or the ledge), the ledges' heaps walkable (core/walk)
   opal-flora          the bench grows Opal Valley's middle terrace (biomes/opalvalley 'middlebed', sealed in LW_FLORA): its kin
@@ -61,6 +64,11 @@ TOWN_JS = r"""
  let n=0,bare=0,kinds={};for(const b of (typeof LW_BLOCKS!=='undefined'?LW_BLOCKS:[]))if(b.kind!=='field'){const xs=b.poly.map(p=>p[0]),zs=b.poly.map(p=>p[1]);
   for(let x=Math.min(...xs)+2;x<Math.max(...xs);x+=9)for(let z=Math.min(...zs)+2;z<Math.max(...zs);z+=9){const pl=lwPlot(x,z);if(pl==null)continue;n++;kinds[pl]=(kinds[pl]||0)+1;if(pl==='dooryard')bare++;}}
  R.push({name:'bench-ground',ok:n>500&&bare<n*.35&&(kinds.garden||0)>n*.15&&(kinds.orchard||0)>n*.15,detail:n+' samples of the blocks\' open ground: '+JSON.stringify(kinds)});
+ {const N=typeof LW_OPAL!=='undefined'?LW_OPAL:[],Lk=typeof LW_OPAL_LINKS!=='undefined'?LW_OPAL_LINKS:[],Dw=window._lightwallOpalDraw||{};
+  const reg=KTAGS.page?KTAGS.page.query({'class':'prop',kind:'res-node'}).length:0,wet=N.filter(n=>!(terrainH(n.x,n.z)>LW.LAKE+1)).length,unl=Lk.filter(w=>!w.link);
+  R.push({name:'opal-lode',ok:N.length>=8&&N.some(n=>n.grade==='high')&&reg===N.length&&Dw.recs===N.length&&!Object.keys(Dw.missing||{}).length&&!wet&&Lk.length>=10&&!unl.length,
+   detail:N.length+' opal nodes ('+JSON.stringify(N.reduce((a,n)=>{a[n.grade]=(a[n.grade]||0)+1;return a;},{}))+'), '+reg+' registered, '+(Dw.recs||0)+' drawn; on the water '+wet+'; '+(Lk.length-unl.length)+' of '+Lk.length+' workings take a node'
+    +(Lk.length?' (nearest '+Math.round(Math.max(...Lk.filter(w=>w.link).map(w=>w.link.dist)))+' m at most)':'')});}
  {const SC=typeof LW_SCREE!=='undefined'?LW_SCREE:[],off=SC.filter(H=>{const g=H.walk?null:terrainH(H.x,H.z);return g!=null&&Math.abs(g-H.y0)>.6;}),
    unwalked=SC.filter(H=>H.walk&&!KWALK.floorsAt(H.x,H.z).some(f=>f[1].tag==='lightwall:scree'));
   R.push({name:'wall-scree',ok:SC.length>=15&&SC.filter(H=>/end/.test(H.id)).length===2*LW.BANDS&&!off.length&&!unwalked.length,

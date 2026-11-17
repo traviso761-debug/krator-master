@@ -36,7 +36,15 @@ paths.update({f: os.path.join(VERN, f) for f in kxa.VERNACULAR + kxa.OPENINGS_VE
 paths.update(kxa.paths(kxa.CITADEL))   # Erewhon's citadel (2026-11-10, settlements/xanadu/KNOWN_ISSUES.md): its buildings on the sheet
 # the Golden Way (2026-11-10, src/78o-xa-golden-way.js): with the citadel, named here and not in xanadu.py, which Longsong's build reads
 paths.update(kxa.paths(['78o-xa-golden-way.js']))
-generative = [f for f in kxa.BUILDINGS if f != '86b-xa-plants.js'] + ['78n-xa-citadel.js']   # the plant shim draws no rnd() (Xanadu's DETERMINISTIC); 78l, 78m draw none
+# the Xanadui fort (2026-11-16, settlements/strongwall/PLAN.md section 5): its plan as data (80f, [G data]: XFORT) and its drawing (80g),
+# named here and not in xanadu.py, so XAK (Longsong, kits/construction) and Xanadu's own pages are unchanged; its damaged and ruined
+# states take core/terrain's rubble heaps (KRUBBLE) and core/ruins (KRUINS: targets/sheet/91u-xasheet-ruins.js watches them), read in place
+FORT = ['80f-xa-fort-data.js', '80g-xa-fort.js']
+paths.update(kxa.paths(FORT))
+paths.update({'37c-core-rubble.js': os.path.join(ROOT, 'core', 'terrain', '37c-core-rubble.js'),
+              '20-core-ruins.js': os.path.join(ROOT, 'core', 'ruins', '20-core-ruins.js'),
+              '21-core-ruins-host.js': os.path.join(ROOT, 'core', 'ruins', '21-core-ruins-host.js')})
+generative = [f for f in kxa.BUILDINGS if f != '86b-xa-plants.js'] + ['78n-xa-citadel.js', '80g-xa-fort.js']   # the plant shim draws no rnd() (Xanadu's DETERMINISTIC); 78l, 78m draw none
 
 
 def interiors_bundle():

@@ -8,6 +8,10 @@
 //   KS_GROUND.near(x, z)                    the town's ground as designed at 1:1: the beach, the apron rising inland, the
 //                                           harbour's dredged basin, Keb Riwa's channel; null beyond its reach
 //   KS_GROUND.h(x, z)                       the ground every builder and the camera read: near blended into the model
+//   KS_GROUND.base(x, z)                    h without the moat's trench (its banks' level)
+//   KS_GROUND.setMoat(M), inMoat(x, z, m), moatLevel(x, z), moat()
+//                                           the town wall's moat (core/city's KCITY.grid moat record, set by 41): its trench
+//                                           in h, a point in it (m metres to spare), its water's level, the record
 //   KS_GROUND.inland(x, z)                  metres inland of the shoreline (negative: the lake)
 //   KS_GROUND.u(x, z), v(x, z)              the shore frame: u along the shore (north-east positive), v inland (south-east)
 //   KS_GROUND.at(u, v)                      back to x, z
@@ -58,8 +62,19 @@ var KS_GROUND=(function(){
  /* Keb Riwa's channel, cut into whichever ground is there: its bed 3.5 m under its surface, banks 25 m wide */
  const carve=(x,z,y)=>{const rv=riverAt(x,z),half=RIVER.width/2;if(rv[0]>=half+25)return y;const k=sm(half+25,half-10,rv[0]);return Math.min(y,y*(1-k)+(rv[1]-3.5)*k);};
  const nearW=(x,z)=>Math.max(sm(BLEND[0],BLEND[1],Math.hypot(x,z)),sm(NORTH[0],NORTH[1],z),sm(EAST[0],EAST[1],x));   /* 1: the model's */
- function h(x,z){const r=Math.hypot(x,z),w=nearW(x,z);let y;
+ /* THE MOAT (the owner, 2026-11-17: Chiang Mai's, round the town wall): the town hands its line in (setMoat: core/city's
+    KCITY.grid moat record, {line (closed), width}); a trench 3 m under the ground it cuts, its sides sloping out over 6 m; the
+    water stands 1.4 m under the ground's line there (moatLevel). base(x, z) is the ground without the moat (its banks' level) */
+ let MOAT=null,MOAT_BOX=null;
+ const moatD=(x,z)=>{if(!MOAT||x<MOAT_BOX[0]||x>MOAT_BOX[1]||z<MOAT_BOX[2]||z>MOAT_BOX[3])return 1e9;let d=1e9;const L=MOAT.line;
+  for(let i=1;i<L.length;i++)d=Math.min(d,segD([x,z],L[i-1],L[i])[0]);return d;};
+ function setMoat(M){MOAT=M&&M.line?M:null;if(!MOAT)return;const m=MOAT.width/2+20;
+  MOAT_BOX=[Math.min(...M.line.map(p=>p[0]))-m,Math.max(...M.line.map(p=>p[0]))+m,Math.min(...M.line.map(p=>p[1]))-m,Math.max(...M.line.map(p=>p[1]))+m];}
+ function base(x,z){const r=Math.hypot(x,z),w=nearW(x,z);let y;
   if(w>=1)y=model(x,z);else{const n=near(x,z);y=w<=0?n:n*(1-w)+model(x,z)*w;}
   return r<RIVER_R?carve(x,z,y):y;}
- return {PX,CELL,toPx,fromPx,model,near,nearW,h,inland,u,v,at,S0,UX,VX,HARBOUR,river:RIVER,riverAt,fall:FALL,NEAR,BLEND};
+ function h(x,z){const y=base(x,z);if(!MOAT)return y;const d=moatD(x,z),half=MOAT.width/2;if(d>=half+6)return y;return y-3*sm(half+6,half-1,d);}
+ const inMoat=(x,z,m)=>!!MOAT&&moatD(x,z)<MOAT.width/2+(m==null?0:m);
+ const moatLevel=(x,z)=>base(x,z)-1.4;
+ return {PX,CELL,toPx,fromPx,model,near,nearW,h,base,inland,u,v,at,S0,UX,VX,HARBOUR,river:RIVER,riverAt,fall:FALL,NEAR,BLEND,setMoat,inMoat,moatLevel,moat:()=>MOAT};
 })();

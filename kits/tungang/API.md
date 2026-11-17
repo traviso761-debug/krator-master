@@ -11,7 +11,14 @@ js = tungang_bundle.bundle(furniture=True)   # and the catalog's fellgang, tunga
 js, files = tungang_bundle.bundle(with_files=True)   # and the repo-relative files it read, for --list-sources
 js = tungang_bundle.bundle(tex='glazier', side=side)   # the Glazier set's families; with side={} the maps go into side['tungang']
                                                          # for a file beside the host page (matlib_pack.write_sidecar: Laitwal)
+js = tungang_bundle.bundle(res=True)      # and the Resources kit's ore rule and node defs (kits/resources/src 42r, 42s, 44r,
+                                          # 44t, read in place: about 40 KB) as TG.res: draw(nodes, o), source, rate, ORE
 ```
+
+`TG.res.draw(nodes, {scene, label, seed})` places each `{id, kind, grade, x, z, y?, ry?, v?}` as `node-<kind>-<grade>` (dry, one
+group; `.recs`, `.missing`, `.tris`); `TG.res.source(works, nodes)` is the kit's nearest-node rule (`kits/resources/API.md`). The
+node fragments' keys this kit lacks (`earth`, `sand`; `stoneD`, `woodD` in the palette) map onto its own. Laitwal draws the Great
+Potch Line's opal with it (`settlements/lightwall/targets/town/90o-lw-opal.js`). Without `res` the bundle is byte for byte as before.
 
 The text defines one global, **`TG`**, and needs only a global `THREE` (r128). The engine (`core/engine`), `core/rand`,
 `core/materials/record` and the kit's fragments are sealed inside it, read in place at bundle time: a fix in the kit reaches
