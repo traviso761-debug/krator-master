@@ -864,6 +864,22 @@ dry on the new shore.
   Temperatures lapsed, paint relit; `DATA.landforms.vale_ring` marks it run. `tests/test_smodel.py` section 17 checks it.
   Re-cut after it: `openworld/xanadu-north-shore`, `openworld/xanadu-oidong-highrift`; the lake towns' pages (Erewhon,
   Kirstabal, Ōlḍ-Thalaba) refit to it in their own sessions. Written and first run in the Phēr plan's session.
+  **Rewritten the same day (v2), and run in its place** (on the data from before the first run), the owner: "can we
+  enhance the mountain profile by making the lake longer and thinner? ... the rougher terrain around the lake now to
+  continue and continue to slope upward to the edge of the vale ... clearly defined valleys that slope to the lake, but
+  will also have mountains that come closer to the lake"; asked, the south shore comes in, the lake reaches west, the
+  island stays (narrower), the edge is the lake basin's rim. Now: (1) a warp, column by column, pressing the lake north to
+  0.62 of its width (the north shore fixed, the south rim moved whole for 10 cells and eased back over 20; every raster
+  and record moved with it, Erehwon's pin to 841,1507.64: `SETT_MOVED` 5.1e14); (2) an arm west from px 816 to a tip at
+  792 (r613 and r753 end on it); (3) the basin rising from the shore to its rim's height, ribbed by a ridged field; (4)
+  the range 3.8 cells back, massifs 3-6.5 cells out with spurs to the shore; (5) every river's valley kept and 12 more
+  cut from the rim to the shore. The lake is 180 x 48 km (was 142 x 62); 8 km out the land stands ~850 m over the water,
+  28 km out ~980 m; no spill; every pin keeps its ground. `edit_517_vale_ring.report.json`; section 17 checks it.
+  The report keeps the warp's columns (`warp`; `Warp.from_report()`), since the lake it was built on is gone after the
+  edit: section 19 (edit_517's caldera lake) reads edit_517's shapes through it (each cell's old row, each old point's
+  new row) and takes the arm as the lake's own water. Under it, three of section 19's bounds give: the east volcano 16
+  cells back (15), the Alph's head within 3 cells of the pressed tip (2), the Vale 380 cells in its band (450: the
+  basin's east ridge takes its west edge).
 
 **5.1e12 (2026-11-16, records only)**: the owner, "we can move thalaba to the mouth of godshearth and put a new village
 on the lake in its place": Thalaba (`shvo49k0y2`) moves from 825,1481 to 840,1463, where Godshearth's spillway gorge

@@ -13,7 +13,8 @@ town's own:
   pher-basements   the hillsides' carved basements and their doors from the podium (P8): over 300 carved, over 20 doors
                    drawn, every door clear of the entry flights, the kit's doors and its house's own outside parts
   pher-ground      every building's floor on its ground: the floor no lower than the ground at its middle less its footing,
-                   no higher than the ground's highest corner plus a metre (the quays, sheds and bridges stand at the water)
+                   no higher than the ground's highest corner plus a metre (the quays, sheds and bridges stand at the water); a civic
+                   piece's footing reaches its lowest corner and its floor stands within 3 m of its highest (not sunk in the slope)
 
 The plan's own checks (no overlap, nothing on a street, in the lake or on the stream, the same twice) are the node test's:
 node settlements/pher/tests/test-pher-site.js.
@@ -38,7 +39,11 @@ CITY_JS = r"""
  const P=Q.people||{};R.push({name:'pher-people',ok:P.total>4500&&P.total<7500,budget:true,detail:(P.total||0)+' / ~6,000 '+JSON.stringify(P.byLevel||{})});
  let bad=0,first=null;for(const p of (typeof PH_PLACE!=='undefined'?PH_PLACE:[])){if(p.key==='xa_quay'||p.key==='xa_boatshed'||p.kind==='bridge')continue;
   const b=p.bo,c=Math.cos(p.ry),s=Math.sin(p.ry),hs=[[0,0],[-b.hw,-b.hd],[b.hw,-b.hd],[b.hw,b.hd],[-b.hw,b.hd]].map(q=>phH(p.x+q[0]*c+q[1]*s,p.z-q[0]*s+q[1]*c));
-  const lo=phH(p.x,p.z)-(p.drop||0)-.8,hi=Math.max.apply(null,hs)+1;if(!(p.o.y>=lo&&p.o.y<=hi)){bad++;first=first||(p.id+' '+p.key+' floor '+p.o.y.toFixed(1)+' ground '+hs[0].toFixed(1));}}
+  /* and a civic piece stands on its footing at its low corner and is not sunk in the slope at its high one (the caravanserai
+     on the fan's bank, 2026-11-17: no footing fitted, its floor at its middle's ground, 30 m of hill through it) */
+  const lo=phH(p.x,p.z)-(p.drop||0)-.8,hi=Math.max.apply(null,hs)+1,mn=Math.min.apply(null,hs),mx=Math.max.apply(null,hs);
+  const sunk=p.kind==='civic'&&p.key!=='xa_barge'&&(p.o.y-(p.o.drop||0)>mn+1||mx-p.o.y>3);
+  if(!(p.o.y>=lo&&p.o.y<=hi)||sunk){bad++;first=first||(p.id+' '+p.key+' floor '+p.o.y.toFixed(1)+' ground '+hs[0].toFixed(1));}}
  R.push({name:'pher-ground',ok:bad===0,detail:bad?bad+' off their ground, first '+first:'every floor on its ground (its footing under it)'});
  const BB=Q.basements||{};R.push({name:'pher-basements',ok:BB.carved>300&&BB.doors>20,detail:(BB.carved||0)+' basements carved, '+(BB.doors||0)+' doors from the podium drawn, dropped '+JSON.stringify(BB.dropped||{})+' (none before a stair, a kit door or architecture)'});
  const BS=Q.boatSpot?Q.boatSpot():[],wet=BS.filter(b=>!b.moored&&b.h>-1);

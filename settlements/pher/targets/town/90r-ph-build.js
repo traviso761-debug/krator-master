@@ -8,17 +8,20 @@ const PH_CHUNK=300,PH_CHUNKS={};
 for(const p of PH_PLACE){const k=p.kind==='civic'?'civic:'+p.level:p.kind==='stall'?(p.daily?'stall:daily':'stall:fair'):Math.floor(p.x/PH_CHUNK)+','+Math.floor(p.z/PH_CHUNK);(PH_CHUNKS[k]=PH_CHUNKS[k]||[]).push(p);}
 const PH_GROUPS=[];let PH_INST=0;const PH_FAILS=[];
 // a basement's door from the podium (89zp: core/city KCITY.hillside.basement, where the slope fits a whole storey under the
-// floor): in the footing's face at its middle, level with the ground there, a dark leaf in stone jambs under a timber
-// lintel, a step of stone before it and two small barred windows beside it; pushed out by the footing's batter at that
-// depth (kits/xanadu xnFooting: its base 0.15 of the drop wider each side), drawn in world metres into the chunk
+// floor): in the podium's face at its middle (the building's own footprint, fw x fd, not its plot), level with the ground
+// there, a dark leaf in stone jambs under a timber lintel, a step of stone before it and two small barred windows beside
+// it; set on the podium's battered face at the door's height (kits/xanadu xnFooting: an xBatS92 wedge, its base fw + 0.3
+// drop wide, 92 % of that at the top), drawn in world metres
 const PH_BDOOR={w:1.3,h:2.2},PH_BASE=[],PH_FLIGHTS=[];
-function phBasementDoor(p){const D=p.basement.door,a=D.ry,ox=Math.sin(a),oz=Math.cos(a),dep=p.o.y-D.y,push=.15*Math.max(0,p.o.drop)*(dep/Math.max(.1,p.o.drop))+.06;
+function phBasementDoor(p){const D=p.basement.door,a=D.ry,ox=Math.sin(a),oz=Math.cos(a),dep=p.o.y-D.y,dr=Math.max(.1,p.o.drop),F=p.basement.foot||{hw:p.bo.hw,hd:p.bo.hd};
+ /* core/city's door point is on the footprint's face (fw/2 out); the podium's face at the door's height stands out by its batter */
+ const ux=p.bo.u[0],uz=p.bo.u[1],half=Math.abs(ox*ux+oz*uz)>.7?F.hw:F.hd,face=(2*half+.3*dr)/2*(1-.08*Math.max(0,1-dep/dr)),push=face-half+.04;
  const x=D.x+ox*push,z=D.z+oz*push,y=D.y,W=PH_BDOOR.w,Hh=PH_BDOOR.h,dark=xC(0x2a2018),stone=xC(xPick(XPAL.stone)),wood=xC(0x6a4a30);
  vB('vStone',x,y,z,W,Hh,.1,a,dark);
  for(const s of[-1,1])vB('vStone',x+Math.cos(a)*s*(W/2+.18),y,z-Math.sin(a)*s*(W/2+.18),.36,Hh+.1,.22,a,stone);
  vB('vStone',x,y+Hh+.05,z,W+.9,.26,.3,a,wood);
  vB('vStone',x+ox*.55,y-.22,z+oz*.55,W+1.1,.24,1.0,a,stone);
- const half=Math.max(0,Math.min(p.bo.hw,p.bo.hd)-1.2);if(half>2.6)for(const s of[-1,1])vB('vStone',x+Math.cos(a)*s*2.6,y+1.25,z-Math.sin(a)*s*2.6,.55,.7,.1,a,dark);}
+ const span=Math.abs(ox*ux+oz*uz)>.7?F.hd:F.hw;if(span>3.6)for(const s of[-1,1])vB('vStone',x+Math.cos(a)*s*2.6,y+1.25,z-Math.sin(a)*s*2.6,.55,.7,.1,a,dark);}
 function phBakeChunk(key,list){const G=new THREE.Group();G.name='chunk:'+key;scene.add(G);let x0=1e9,z0=1e9,x1=-1e9,z1=-1e9,y0=1e9,y1=-1e9;
  for(const p of list){
   TSTAT.cur=p.key+'/'+(p.o.v|0);const r0=REG.length;let g=null;

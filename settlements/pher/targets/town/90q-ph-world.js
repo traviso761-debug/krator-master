@@ -28,7 +28,7 @@ const phCv=document.createElement('canvas');phCv.width=Math.ceil(PHG.W*PHG_PX);p
  // the ground's colour by place: lake bed, wet sand, the strand's sand, grass on the wall, the rim's tilled plain; darker on steep ground
  const col=(x,z)=>{const y=phH(x,z),e=6,s=Math.hypot(phH(x+e,z)-phH(x-e,z),phH(x,z+e)-phH(x,z-e))/(2*e),d=phShoreZ(x)-z;
   if(y<-.2)return[86,104,96];if(y<1.6)return[176,160,128];
-  const fan=Math.hypot(x-PH_CH[0],z-PH_CH[1])<PH.FAN.r*.92;
+  const fan=phFanR(x,z)<PH.FAN.r*.92;
   let c=d<0?(y<4?[176,160,128]:[100,112,72]):d<PH.SLOPE.strand*.8?[170,152,118]:fan?[160,146,112]:[96,116,66];   /* the headland and the point (land out in the lake): a beach at the water, grass on top; the delta's gravel and sand */
   if(!fan&&d>60&&d<PH.SLOPE.turn+200){const f=(Math.floor((x+4000)/34)+Math.floor((z+8000)/26))%4;if(f===0)c=[118,118,70];}   /* the milpa terraces between the alleys */
   const r=Math.min(1,Math.max(0,(s-.25)/.35));return[c[0]+(118-c[0])*r,c[1]+(108-c[1])*r,c[2]+(94-c[2])*r];};
@@ -87,9 +87,16 @@ function phGroundShader(g,m,cx,cz){const T3=THREE,sm=(a,b,x)=>{const t=Math.min(
  // round the town (the slope, the rim, the near ridges), 300 m to the lake's far shore and the mountains round it
  const lin=c=>Math.pow(c/255,2.2),colour=(y,s)=>y<0?[86,104,96]:s>.45?[118,112,98]:y<30?[164,150,118]:y<760?[92,112,62]:y<1250?[72,96,56]:y<1650?[104,110,72]:[128,118,98];
  const farMesh=(F,fc,inside,drop,name)=>{const fx=Math.round((F.x1-F.x0)/fc),fz=Math.round((F.z1-F.z0)/fc),fg=new THREE.PlaneGeometry(F.x1-F.x0,F.z1-F.z0,fx,fz);
-  const fp=fg.attributes.position,fcx=(F.x0+F.x1)/2,fcz=(F.z0+F.z1)/2,cols=new Float32Array(fp.count*3),e=fc*.5;
-  for(let i=0;i<fp.count;i++){const x=fp.getX(i)+fcx,z=-fp.getY(i)+fcz,y=phH(x,z)-(inside(x,z)?drop:0);fp.setZ(i,y);
-   const sl=Math.hypot(phH(x+e,z)-phH(x-e,z),phH(x,z+e)-phH(x,z-e))/(2*e),c=colour(y,sl);cols[i*3]=lin(c[0]);cols[i*3+1]=lin(c[1]);cols[i*3+2]=lin(c[2]);}
+  const fp=fg.attributes.position,fcx=(F.x0+F.x1)/2,fcz=(F.z0+F.z1)/2,cols=new Float32Array(fp.count*3),e=fc*.5,W=fx+1,Hs=new Float32Array(fp.count);
+  for(let i=0;i<fp.count;i++)Hs[i]=phH(fp.getX(i)+fcx,-fp.getY(i)+fcz);
+  /* under the finer mesh a vertex takes the lowest of its own and its eight neighbours' heights, less `drop`: a coarse
+     cell's plane bridges a hollow between vertices on its slopes (the delta under the far ground's 300 m cells stood 9-30 m
+     over the drawn terrain and through the caravanserai, 2026-11-17); every point of a cell is within a cell of each of its
+     corners, so the plane stays under the samples round it */
+  for(let i=0;i<fp.count;i++){const x=fp.getX(i)+fcx,z=-fp.getY(i)+fcz,h=Hs[i];let y=h;
+   if(inside(x,z)){const r=Math.floor(i/W),c0=i%W;for(let a=-1;a<=1;a++)for(let b=-1;b<=1;b++){const rr=r+a,cc=c0+b;if(rr>=0&&cc>=0&&cc<W&&rr*W+cc<fp.count)y=Math.min(y,Hs[rr*W+cc]);}y-=drop;}
+   fp.setZ(i,y);
+   const sl=Math.hypot(phH(x+e,z)-phH(x-e,z),phH(x,z+e)-phH(x,z-e))/(2*e),c=colour(h,sl);cols[i*3]=lin(c[0]);cols[i*3+1]=lin(c[1]);cols[i*3+2]=lin(c[2]);}
   fg.setAttribute('color',new THREE.BufferAttribute(cols,3));fg.computeVertexNormals();
   const M=new THREE.Mesh(fg,new THREE.MeshStandardMaterial({vertexColors:true,roughness:1,metalness:0}));M.rotation.x=-Math.PI/2;M.position.set(fcx,0,fcz);
   M.userData.probeSkip=true;M.name=name;scene.add(M);return M;};

@@ -25,9 +25,11 @@ drawn with the Xanadu kit on Xanadu's page, as Qiblai's city is.
   **The podiums and basements**: every building's record carries its footing's depth (`o.drop`), so the kit draws its
   rubble podium to the ground; the hillsides' houses carry their carved basement and, where the slope fits a whole storey,
   its door from the podium (`basement`, core/city `KCITY.hillside.basement`: never on the front, before a stair, a path or
-  another podium, or on ground that does not fit), which 90r draws in the podium's face after the entry flights, dropping
+  another podium, or on ground that does not fit; read on the kit's own footprint, `fw`/`fd`, not the plot), which 90r
+  sets into the podium's battered face at the door's height after the entry flights, dropping
   any door near a flight, a kit door or its house's own outside parts (`window._pher.basements`).
-  About 930 houses for about 5,400 people, and about 110 stalls on the fair ground (the kit's new `xa_stall`). The flora mask comes from the records.
+  The delta's fan reaches further west than east (`PH.FAN.west`), so the caravanserai, its mule yard and pens stand on its flat.
+  About 880 houses for about 5,100 people, and about 110 stalls on the fair ground (the kit's new `xa_stall`). The flora mask comes from the records.
   **The boats** (`PH_BOATS`, step P4): the launches and cargo barges at the quays, 30 dugouts on the beach, 48 out fishing,
   and the runs from the tune (the cross-lake run's six carriers, the two market rounds, the pilgrims' launch).
 - `targets/town/90q-ph-world.js` (`[web]`): the sky (the camera to 90 km), the painted ground with the library's sets over

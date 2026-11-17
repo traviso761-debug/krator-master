@@ -26,7 +26,8 @@ const XS = [path.join(ROOT, 'kits', 'xanadu', 'src'), path.join(ROOT, 'kits', 'x
 for (const f of [].concat(...XS.map(d => fs.readdirSync(d).filter(f => f.endsWith('.js')).map(f => path.join(d, f))))) {
   const s = fs.readFileSync(f, 'utf8'), re = /XA\.def\(\{/g; let m;
   while ((m = re.exec(s))) { const head = s.slice(m.index, m.index + 1500), k = /key:\s*'([^']+)'/.exec(head), b = /\bw:\s*([\d.]+),\s*d:\s*([\d.]+)(?:,\s*h:\s*([\d.]+))?/.exec(head);
-    if (k && b) PH_KIT_DIMS[k[1]] = { w: +b[1], d: +b[2], h: b[3] == null ? 8 : +b[3] }; }
+    const fb = /fw:\s*([\d.]+),\s*fd:\s*([\d.]+)/.exec(head);
+    if (k && b) PH_KIT_DIMS[k[1]] = { w: +b[1], d: +b[2], h: b[3] == null ? 8 : +b[3], fw: fb ? +fb[1] : null, fd: fb ? +fb[2] : null }; }
 }
 const SITE = 'settlements/pher/targets/town/89zp-ph-site.js';
 /* the far ground (gen/89zf-ph-far.js, written by build.py) when built: phH gives way to it past ~2.4 km of the cove */

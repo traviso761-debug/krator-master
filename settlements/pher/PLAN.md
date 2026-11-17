@@ -324,6 +324,22 @@ tune at step P1 (the tune's session):
   (`build.py` bakes the model round the lake into `gen/89zf-ph-far.js`; 90q's mid and far ground), ribbed by a ridged field
   on the page. The lake is ~60 km across, so its far shore's range stands low on the horizon; the range behind and along
   Phēr's shore stands 3-5 degrees up.
+  **The sixth round** (section 7, 22-25) rewrote it: the lake pressed to 0.62 of its width from the south (the north shore
+  fixed), an arm west to px 792, the basin's ground rising to its rim, ribbed, the massifs and spurs closer in, and 12
+  valleys more falling to the lake. 180 x 48 km (was 142 x 62); Erehwon's bench moved north with the south shore. Phēr's
+  far ground, its town bake and the north-shore region are refit to it. The island (Grēṭ-Āil) now stands ~8 km off the
+  cove: the pilgrims' launch lands on its shore and the cross-lake run to Erehwon bends round its west end (each run's leg
+  is cut where the water grows shallower than 20 m).
+- **P8, the delta's west side** (the owner: "caravanserai clips thru slope, probably needs flat ground"): the caravanserai
+  stood on the bank between the fan and the west spur, 52 m of ground under its 54 x 56 m and no footing (none fitted, and
+  the placement said nothing). The fan is now an ellipse stretched 1.6 times along the shore on its west side
+  (`PH.FAN.west`, `phFanR`), so the han, its mule yard and pens stand on the delta's flat (the han on a 6 m footing); the
+  west hillside gives up about 75 houses to it (about 5,100 people). The pilgrims' house moved from x 540 to 640 for the
+  same fault (25 m of the east spur's foot under it). A civic piece no footing fits is marked `unseated`, and the verify's
+  `pher-ground` now fails a civic piece whose footing misses its low corner or whose floor is sunk over 3 m at its high
+  one. And the page's far ground no longer shows through the town: its coarse cells (300 m, the mid ground's 40 m)
+  bridged the hollow of the delta 9-30 m over the drawn terrain (90q: under the finer mesh each vertex takes the lowest
+  of its neighbours' heights).
 - **P8, the town:** one core/city instance. The delta (the quays, the warehouses, the granaries, the fair ground and its
   stalls, the caravanserai and its mule yard, the strand street over the stream on a bridge); two hillsides on core/city's
   new `hillside` strategy (`core/city/37-city-hillside.js`): three paths up the town's spur and two up the west spur,
@@ -339,8 +355,10 @@ tune at step P1 (the tune's session):
   step, lintel and two small windows. Then ("basement doors shouldn't cut off stairs. if there is any question of an
   individual basement slipping into architecture or not aligning to the ground properly, chuck it from its podium"): no
   door on a house's front (its own door and steps), none before a stair, a path, an entry flight, a kit door or another
-  podium, none where the ground before it does not fit; a doubtful door is dropped, the podium kept. About 875 basements,
-  166 doors.
+  podium, none where the ground before it does not fit; a doubtful door is dropped, the podium kept. Then ("basement doors not aligned": the doors stood metres out from the podiums): core/city reads the
+  basement on the building's own footprint (the kit's `fw`/`fd`, not the plot's `w`/`d`, carried on `basement.foot`), and
+  90r sets the door into the podium's battered face at its height. About 560 basements, 151 doors (on the sixth round's
+  ground and the wider delta).
 - **P8, the road:** in 22 hairpin legs up the town's spur (5 %, none over 8 %), east of the gorge and west of the gully,
   no houses on it; at its top it is the Thalaba road's first guide point (px 843.60,1489.29), so the region's road runs on
   from it, crossing the Swīṭ Siṭrīm upstream on core/world's bridge.
@@ -393,6 +411,16 @@ back". Asked, the owner chose:
 20. ~~**The fair ground and the caravanserai.**~~ **On the stream's delta**, at the water.
 21. ~~**The town's centre.**~~ **A shelf on the spur**: the plaza, the temple and the heir's palace, the road arriving above.
 That is step P8 (section 6).
+
+**The sixth round (2026-11-17), on seeing the range:** "can we enhance the mountain profile by making the lake longer and
+thinner? and we're going to want the rougher terrain around the lake now to continue and continue to slope upward to the
+edge of the vale... it will have some clearly defined valleys that slope to the lake, but will also have mountains that
+come closer to the lake". Asked, the owner chose:
+22. ~~**Which shore comes in.**~~ **The south shore** (Erehwon moves with it; Phēr and the north shore stay).
+23. ~~**Which way it grows.**~~ **West.**
+24. ~~**The island.**~~ **Kept, narrower** (pressed with the lake).
+25. ~~**Where the rise ends.**~~ **The lake basin's rim.**
+That is `edit_517_vale_ring.py` v2 (section 6, P8 the lake).
 
 ## 8. Found on the way (for the sessions that own them; not changed here)
 

@@ -213,7 +213,11 @@ KCITY.hillside = {};
     /* each house's basement and its door from the podium, where the slope gives one (ctx.basement: its options, or false) */
     if (ctx.basement !== false) out.lots.forEach(function (L) {
       if (!L.bo || L.y == null) return;
-      var B = KCITY.hillside.basement(L.bo, h, L.y, Object.assign({}, ctx.basement || {}, { front: [Math.sin(L.ry), Math.cos(L.ry)] }));
+      /* the building's own footprint, where the kit gives one (fw x fd: the house and its podium; w x d is its plot with
+         its yard): the basement is under it and its door in the podium's face, not at the plot's edge */
+      var it = SL.dims(L.key, L.v || 0), fb = it && it.fw ? obb(L.bo.c, L.bo.u, it.fw / 2, it.fd / 2) : L.bo;
+      var B = KCITY.hillside.basement(fb, h, L.y, Object.assign({}, ctx.basement || {}, { front: [Math.sin(L.ry), Math.cos(L.ry)] }));
+      if (B) B.foot = { hw: fb.hw, hd: fb.hd };
       if (!B) return;
       if (B.door) { var why = H.doorClear(L, B.door, out.ways); if (why) { B.why = why; B.door = null; } }
       L.basement = B;

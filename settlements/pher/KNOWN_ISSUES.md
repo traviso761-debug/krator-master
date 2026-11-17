@@ -38,3 +38,7 @@
   slope) or an entry flight drawn at every raised door. The audit reports; it does not fail.
 - **The stair avenue's grade.** Lower Phēr's stair avenue climbs straight up the wall (about 12 %): a stepped street for
   people and pack animals. The carts take the switchbacks.
+- **town_view's headland checks.** `core/world/town_view.py pher` fails its island checks on `lf_pher_headland` and
+  `lf_pher_headland_tip`: both are joined to the town's own shore, so the rays toward the land find no waterline (None)
+  or a short one (the tip where it meets the headland). The shore, river and body checks pass; the region's verify checks
+  the headland its own way. Same before and after the sixth round's lake.

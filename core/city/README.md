@@ -153,6 +153,8 @@ A strategy lays the streets and lots of some blocks or ways, behind one interfac
   way; and each house's carved basement where its footing is a storey deep, with a door from the podium where one face's
   ground lies a whole storey under the floor and the ground before it fits (never on its front, never before a stair, a
   path or another podium: a doubtful door is dropped, the basement kept) (`KCITY.hillside.basement(bo, h, y, opt)`, on the lot as `L.basement`).
+  The basement is read on the building's own footprint where the kit's dims give one (`fw`/`fd`, the house inside its
+  plot's `w`/`d`), so the door point lies on the face the kit draws; `L.basement.foot` carries that box's half-sizes.
   Each scope from its own KRAND cell stream. `node core/city/test-hillside.js`. Phēr's town is on it.
 * (Verge's grown lanes and Iziz's lattice clusters are not strategies: Verge is on `alleys` (2026-10-15), and Iziz keeps
   its Ancient quarter its own.) The radial strategy (`34-city-radial.js`) is the toy's rings and spokes.

@@ -35,7 +35,7 @@
 
 var PH={SEED:84391,TURN:17*Math.PI/180,LAKE:0,FAIR:{days:[3,6],week:7,day:122},
  COVE:{x:40,depth:450,half:380},HEAD:{a:[-640,-120],b:[-330,1260],w:170,crest:[62,26]},POINT:{a:[620,-80],b:[760,330],w:110,crest:18},
- SLOPE:{strand:40,low:.21,turn:900,high:.1,top:6500,plain:.007},FAN:{r:340,k:.05},GORGE:{grade:.085,floor:5,wall:.75,channel:2.2},
+ SLOPE:{strand:40,low:.21,turn:900,high:.1,top:6500,plain:.007},FAN:{r:340,k:.05,west:1.6},GORGE:{grade:.085,floor:5,wall:.75,channel:2.2},
  SPURS:[{x:470,w:240,lift:16,drift:.05},{x:-470,w:210,lift:20,drift:-.02}],GULLY:{x:1060,w:50,depth:26,drift:.04},
  SHELF:{x:470,d:620,r:150,edge:90},FARBLEND:[3400,4600],STREET_D:36};
 const phSm=(a,b,x)=>{const t=Math.min(1,Math.max(0,(x-a)/(b-a)));return t*t*(3-2*t);};
@@ -48,6 +48,10 @@ const phStreamX=z=>PH.COVE.x+Math.max(0,-z-PH.COVE.depth)*.03;
 const phAt=(x,d)=>[x,phShoreZ(x)-d];
 // the cove's head (the fan's centre)
 const PH_CH=[PH.COVE.x,-PH.COVE.depth];
+// the fan's radius at a point: an ellipse stretched FAN.west times along the shore on the west side, so the delta's flat
+// reaches past the caravanserai, its mule yard and pens (the owner, 2026-11-17: "caravanserai clips thru slope, probably
+// needs flat ground"); the east side, the fair ground's, as it was
+const phFanR=(x,z)=>Math.hypot((x-PH_CH[0])/(x<PH_CH[0]?PH.FAN.west:1),z-PH_CH[1]);
 // the land's height at inland distance d, before the spurs, the fan, the shelf and the cuts
 function phProfile(d){if(d<0){const y=1.2-2.7*phSm(0,6,-d)-.18*(-d)-.0006*d*d;return y>-60?y:-60-300*(1-Math.exp((y+60)/300));}   /* the beach shelving into the water, the bowl falling fast, its floor easing toward ~360 m down */
  const S=PH.SLOPE;return 1.2+6*phSm(0,S.strand,d)+S.low*Math.max(0,Math.min(d,S.turn)-S.strand)+S.high*Math.max(0,Math.min(d,S.top)-S.turn)+S.plain*Math.max(0,d-S.top);}
@@ -60,7 +64,7 @@ const PH_SHELF_C=(function(){const p=phAt(PH.SHELF.x,PH.SHELF.d);return[p[0],p[1
 function phNear(x,z){const d=phShoreZ(x)-z;let y=phProfile(d);
  if(d>-30){y=phSpurs(x,d,y);
   // the delta: the slope's foot eased down to the fan round the cove's head
-  const r=Math.hypot(x-PH_CH[0],z-PH_CH[1]),wf=(1-phSm(PH.FAN.r*.65,PH.FAN.r,r))*phSm(-10,10,d);
+  const r=phFanR(x,z),wf=(1-phSm(PH.FAN.r*.65,PH.FAN.r,r))*phSm(-10,10,d);
   if(wf>0)y+=(Math.min(y,1.4+PH.FAN.k*Math.max(0,d))-y)*wf;
   // the shelf on the town's spur: flattened toward its middle's height
   const rs=Math.hypot(x-PH_SHELF_C[0],z-PH_SHELF_C[1]),ws=1-phSm(PH.SHELF.r,PH.SHELF.r+PH.SHELF.edge,rs);if(ws>0)y+=(PH_SHELF_C[2]-y)*ws*.92;
@@ -112,8 +116,8 @@ if(typeof VERN!=='undefined'){terrainH=phH;if(typeof KTAGS!=='undefined')KTAGS.p
 function phToWorld(x,z){const w=phWorldXZ(x,z);return[w[0],w[1],phH(x,z)+PH_WF.y0];}
 
 // ---------------------------------------------------------------- the kit: the Xanadu kit's defs (VERN.defs on the page)
-const phDims=(key,v)=>{const D=(typeof VERN!=='undefined'&&VERN.defs&&VERN.defs[key])||(typeof PH_KIT_DIMS!=='undefined'&&PH_KIT_DIMS[key]);
- return D?{key,v:v==null?0:v,w:D.w,d:D.d,h:D.h==null?8:D.h}:null;};
+const phDims=(key,v)=>{const D=(typeof VERN!=='undefined'&&VERN.defs&&VERN.defs[key])||(typeof PH_KIT_DIMS!=='undefined'&&PH_KIT_DIMS[key]);   /* fw x fd: the building's own footprint in its w x d plot */
+ return D?{key,v:v==null?0:v,w:D.w,d:D.d,h:D.h==null?8:D.h,fw:D.fw==null?null:D.fw,fd:D.fd==null?null:D.fd}:null;};
 // the pools: a quarter of the poor and middling houses are the Palopó shop-houses and cholets (the Andean set: the lake
 // towns of Atitlán); the strand's middling are shops and workshops as often as houses
 const PH_POOLS={
@@ -157,7 +161,8 @@ const PH_CIVIC=[
     toward the fair ground, the mule yard and pens beside it */
  ['xa_caravanserai',-232,'d266',Math.PI/2,'the caravanserai: the Thalaba road\'s and the fair\'s inn'],
  ['xa_corral',-302,'d272',0,'the mule yard'],['xa_pens',-302,'d244',0,'the mule pens'],
- ['xa_temple_ortakoy',540,'d76',0,'the pilgrims\' house of the Azure Dream, facing Grēṭ-Āil'],
+ /* the pilgrims' house: at 540 its 60 x 44 m stood on 25 m of the east spur's foot, past any footing; at 640 on 7 m */
+ ['xa_temple_ortakoy',640,'d62',0,'the pilgrims\' house of the Azure Dream, facing Grēṭ-Āil'],
  ['xa_teahouse',268,'d62',0,'the strand\'s teahouse'],['xa_bath',650,'d132',0,'the bath'],
  ['xa_rich_b',-430,'d150',0,'the Two Horns\' factor house'],
  /* the shelf on the town's spur (the owner, 2026-11-17): the plaza (PH_PLAZA), the temple of the Decree on its north
@@ -180,7 +185,7 @@ function phPlaceCivic(C,L,spec){const K=KCITY.lib,SLx=K.SL,PLAN_=K.plan(),out=[]
    if(pz==='head'||pz==='tip'){const R=PH.HEAD,t=pz==='head'?.15:.82;x=R.a[0]+(R.b[0]-R.a[0])*t;z=R.a[1]+(R.b[1]-R.a[1])*t;}}
   const q=L.P(x,z),u=[Math.cos(ry),-Math.sin(ry)],o=K.obb(q,u,D.w/2,D.d/2);
   const lot={id:PLAN_.lots.length,cls:'landmark',role:why,key,v,slot:0,wealth:1,x:q[0],z:q[1],y:0,ry,w:D.w,d:D.d,h:D.h,lot:o,bo:o,way:-1,side:0,s:0,born:1,died:null,civic:true,why};
-  const st=KCITY.stance(o,(a,b)=>L.h(a,b),{maxDrop:24});lot.y=st?st.y:L.h(q[0],q[1]);if(st)lot.drop=st.drop;
+  const st=KCITY.stance(o,(a,b)=>L.h(a,b),{maxDrop:24});lot.y=st?st.y:L.h(q[0],q[1]);if(st)lot.drop=st.drop;else lot.unseated=true;   /* no footing fits: the verify's pher-ground fails on it */
   if(key==='xa_quay'||key==='xa_boatshed')lot.y=1.2;   /* on the waterline: the quay's deck at the strand's foot */
   if(key==='xa_barge'){lot.y=PH.LAKE;delete lot.drop;}   /* afloat */
   PLAN_.lots.push(lot);SLx.hashLot(lot);SLx.register(lot);SLx.R.stampPoly(K.obbCorners(K.obb(q,u,D.w/2+3,D.d/2+3)),K.OCC.HARD,lot.id);out.push(lot);}
@@ -269,7 +274,7 @@ function phRun(){
   /* the podium: o.drop makes the kit grow its battered rubble footing down to the plot's low corner (kits/xanadu
      72-xa-helpers XA.def; the owner, 2026-11-17: "make the podium part of these builds"); the hillsides' houses carry their
      carved basement and, where the slope fits, its door from the podium (core/city KCITY.hillside.basement), in page metres */
-  const B=T.basement?{storeys:T.basement.storeys,depth:T.basement.depth,door:T.basement.door?Object.assign({},T.basement.door,{x:T.basement.door.x+L.o[0],z:T.basement.door.z+L.o[1]}):null}:null;
+  const B=T.basement?{storeys:T.basement.storeys,depth:T.basement.depth,foot:T.basement.foot||null,door:T.basement.door?Object.assign({},T.basement.door,{x:T.basement.door.x+L.o[0],z:T.basement.door.z+L.o[1]}):null}:null;
   PH_PLACE.push({id:lev+':'+T.id,level:lev,key:T.key,v:T.v|0,x:q[0],z:q[1],ry:T.ry,w:T.w,d:T.d,h:T.h,o:{v:T.v|0,y:T.y==null?phH(q[0],q[1]):T.y,drop:T.bridge?0:T.drop||0},
    kind:T.cls==='landmark'?(T.bridge?'bridge':'civic'):'house',why:T.why||T.role||null,court:T.court||null,bo:{c:q,u:T.bo.u,hw:T.bo.hw,hd:T.bo.hd},drop:T.drop||0,inland:d,basement:B});}
  // the fair's stalls on the fair ground (opt-in kits/xanadu/extra/88e-xa-stall.js): rows 18 m apart facing their aisles in
@@ -314,8 +319,14 @@ function phBoats(){const B={moored:[],out:[],runs:[]},S=KRAND.stream(KRAND.child
   if(h>-5)continue;if(B.out.some(o=>Math.hypot(o.x-x,o.z-z)<60))continue;
   B.out.push({id:'dugout:out:'+n,key:'xa_dugout',v:1,x,z,ry:S.next()*Math.PI*2,r:4+S.next()*14,w:(S.next()<.5?-1:1)*(.004+S.next()*.01)});n++;}
  // the runs: from a quay's front out of the cove and on to the page's edge; the boats spaced round the loop
- const run=(id,kind,why,pts,key,count)=>{const boats=[];for(let i=0;i<count;i++)boats.push({key,v:0,phase:(i+.5)/count});B.runs.push({id,kind,why,pts,boats,speed:PH.FLEET.speed});};
- run('lake.cross','cross','the cross-lake run to Erehwon: lake.cross, six carriers',[[190,at(190,30)],[130,420],[90,1300],[420,9000]],'xa_launch',PH.FLEET.cross);
+ /* each leg after the quay's is cut where the water grows shallower than 20 m (a landing 120 m short of it), so a run that
+    meets land (the island, Grēṭ-Āil, since the sixth round pressed the lake) ends at its shore, never on it */
+ const wet=(pts)=>{const o=[pts[0]];for(let i=1;i<pts.length;i++){const a=o[o.length-1],b=pts[i],L=Math.hypot(b[0]-a[0],b[1]-a[1]),n=Math.ceil(L/40);
+   for(let k=1;k<=n;k++){const t=k/n,x=a[0]+(b[0]-a[0])*t,z=a[1]+(b[1]-a[1])*t;
+    if(i>1&&phH(x,z)>-20){const u=Math.max(0,t-120/L);o.push([a[0]+(b[0]-a[0])*u,a[1]+(b[1]-a[1])*u]);return o;}}
+   o.push(b);}return o;};
+ const run=(id,kind,why,pts,key,count)=>{const boats=[];for(let i=0;i<count;i++)boats.push({key,v:0,phase:(i+.5)/count});B.runs.push({id,kind,why,pts:wet(pts),boats,speed:PH.FLEET.speed});};
+ run('lake.cross','cross','the cross-lake run to Erehwon: lake.cross, six carriers',[[190,at(190,30)],[130,420],[90,1300],[-2400,5200],[-9000,7600]],'xa_launch',PH.FLEET.cross);   /* round the island's west end */
  run('round.north-west','round','the north-west market round (Qōqō, Nēṭ, Malbari, Hāibh)',[[-150,at(-150,30)],[-110,520],[-120,1600],[-9000,1800]],'xa_lake_barge',PH.FLEET.rounds);
  run('round.north-east','round','the north-east market round (Māuṭh, Ōlḍ-Thalaba, Ḍāiyar)',[[-150,at(-150,30)],[-40,620],[700,1000],[9000,1100]],'xa_lake_barge',PH.FLEET.rounds);
  /* the fair's launches (T.loops fair-west, fair-east): on the fair's days the north shore's towns come in by launch, two each way */
@@ -356,7 +367,7 @@ function phBioMaskMake(){const S=KCITY.lib.KSPACE,B=S.create({cell:40}),W=S.crea
   if(Math.abs(x-phStreamX(z))<55&&d>PH.FAN.r*.6)return 1;                                       /* the stream's gorge */
   if(Math.abs(x-(U.x+U.drift*d))<45&&d>60)return 1;                                             /* the gully */
   if(phSeg(x,z,PH.HEAD.a,PH.HEAD.b)[0]<PH.HEAD.w)return .7;                                     /* the headland */
-  if(Math.hypot(x-PH_CH[0],z-PH_CH[1])<PH.FAN.r||d<PH.SLOPE.strand)return .06;                  /* the delta, the strand */
+  if(phFanR(x,z)<PH.FAN.r||d<PH.SLOPE.strand)return .06;                  /* the delta, the strand */
   if(d<4500)return .5;return .25;};}
 if(typeof BIO!=='undefined'&&BIO.host&&typeof VERN!=='undefined'&&!PH_ERR){
  Object.assign(BIO.host,{mask:phBioMaskMake(),origin:[[PH.COVE.x,-300],[PH.COVE.x+100,-2400],[PH_SHELF_C[0],PH_SHELF_C[1]]],center:[PH.COVE.x,-1400],

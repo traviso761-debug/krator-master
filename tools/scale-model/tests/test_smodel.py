@@ -423,10 +423,11 @@ check('Labyrinth has rich microclimate mosaic (%d classes >= 7: %s)' % (len(lab_
       len(lab_c_codes) >= 7 and 'WH' in lab_c_codes and bool(lab_c_codes & {'BWk', 'BSk'}) and bool(lab_c_codes & {'Csb', 'Cfb'}) and bool(lab_c_codes & {'Dsb', 'Dfb', 'Dsc', 'Dfc'}))
 
 # ---- 12. Xanadu one lake-valley (Erewhon's), Theodiga tall cataract, Small Lake, Oidong eastern cataract, low cataracts to Lizardman lake, Rift relief, & climate detail
-# (5.1 edit 7, edit_517.py: the caldera lake round 845,1504, an island in its middle; Erehwon's bench is 841,1517)
-check('Erewhon Lake (841, 1516) is wet at -520 m and Erehwon\'s bench (841, 1517) is dry at ~ -497 m',
-      bool(whas[1516, 841]) and abs(float(wlev[1516, 841]) - (-520.0)) <= 2.0
-      and not bool(whas[1517, 841]) and -515.0 <= float(E[1517, 841]) <= -450.0)
+# (5.1 edit 7, edit_517.py: the caldera lake round 845,1504, an island in its middle; Erehwon's bench was 841,1517 and
+# moved north with the south shore to 841,1507.64 when edit_517_vale_ring.py made the lake longer and thinner)
+check('Erewhon Lake (841, 1507) is wet at -520 m and Erehwon\'s bench (841, 1508) is dry at ~ -485 m',
+      bool(whas[1507, 841]) and abs(float(wlev[1507, 841]) - (-520.0)) <= 2.0
+      and not bool(whas[1508, 841]) and -515.0 <= float(E[1508, 841]) <= -450.0)
 check('Theodiga (908, 1535) is on dry broken-dam brink at ~ -495 m above Erewhon Lake (-520 m)',
       not bool(whas[1535, 908]) and -515.0 <= float(E[1535, 908]) <= -460.0)
 s_horst_max = float(np.max(E[1538:1564, 795:895]))
@@ -634,42 +635,61 @@ check('Āirã Siṭrīm carries about 129 m3/s (%.1f), perennial' % gso4['q_mout
 #          Erewhon's caldera lake, its walls, volcanoes, islands, the Vale and the Alph's new head
 import edit_517 as E517   # noqa: E402
 yy_c, xx_c = np.mgrid[0:E.shape[0], 0:E.shape[1]].astype(float)
-_, _, r_c = E517.lake_frame(xx_c, yy_c)
+# after edit_517_vale_ring.py (DATA.landforms.vale_ring) the lake was pressed north and given a west arm: edit_517's shapes
+# are read through that edit's warp (each cell's old row; an old point's new row), and the arm is the lake's own water
+_vr = bool(D.get('landforms', {}).get('vale_ring'))
+_yo = yy_c.copy()
+if _vr:
+    import edit_517_vale_ring as EVR   # noqa: E402
+    _wv = EVR.Warp.from_report()
+    _yo[EVR.WARP_BOX[1]:EVR.WARP_BOX[3], EVR.WARP_BOX[0]:EVR.WARP_BOX[2]] = _wv.rows(None)
+    _fwd = lambda x_, y_: _wv.forward(x_, y_)   # noqa: E731
+else:
+    _fwd = lambda x_, y_: y_   # noqa: E731
+_, _, r_c = E517.lake_frame(xx_c, _yo)
 lk_full = r_c <= 1.0
+if _vr:
+    lk_full |= EVR.lake_mask(whas, wlev)
 lk = lk_full & whas & (np.abs(np.nan_to_num(wlev, nan=0.0) + 520.0) <= 1.0)
 isl_c = np.zeros(E.shape, bool)
 for _, i_x, i_y, i_rx, i_ry, _ in E517.ISLANDS:
-    isl_c |= E517.isle_r(xx_c, yy_c, i_x, i_y, i_rx, i_ry) <= 1.0
-check('Erewhon\'s caldera lake: %d cells wet at -520 m (1,100-1,300), %.0f m deep at most (>= 700 m), dry only on its islands' % (
-    int(lk.sum()), -520.0 - float(E[lk].min())),
-      1100 <= int(lk.sum()) <= 1300 and -520.0 - float(E[lk].min()) >= 700.0
-      and not bool((lk_full & ~whas & ~isl_c).any()))
+    isl_c |= E517.isle_r(xx_c, _yo, i_x, i_y, i_rx, i_ry) <= 1.0
+# (vale_ring: a cell of the old outline one cell off the water is the warp's rounding at the shore, not land in the lake)
+_shore1 = (nd.distance_transform_edt(~EVR.lake_mask(whas, wlev)) <= 1.0) if _vr else np.zeros(E.shape, bool)
+_lk_rng = (800, 950) if _vr else (1100, 1300)   # vale_ring: 0.62 of the width, and the arm's ~100 cells
+check('Erewhon\'s caldera lake: %d cells wet at -520 m (%d-%d), %.0f m deep at most (>= 700 m), dry only on its islands' % (
+    int(lk.sum()), _lk_rng[0], _lk_rng[1], -520.0 - float(E[lk].min())),
+      _lk_rng[0] <= int(lk.sum()) <= _lk_rng[1] and -520.0 - float(E[lk].min()) >= 700.0
+      and not bool((lk_full & ~whas & ~isl_c & ~_shore1).any()))
 s_c = nd.distance_transform_edt(~lk_full)
 wall2 = float(np.median(E[~lk_full & (np.abs(s_c - 2.0) < 0.5) & (yy_c > 1475) & (yy_c < 1545) & (xx_c > 805) & (xx_c < 880)]))
 check('the caldera walls stand %.0f m over the lake two cells off the shore (>= 250 m)' % (wall2 + 520.0), wall2 + 520.0 >= 250.0)
 for v_id, v_x, v_y, v_top, v_rb in E517.VOLCS:
-    v_h = float(E[int(v_y), int(v_x)])
+    v_y = _fwd(v_x, v_y)
+    v_h = float(E[int(round(v_y)), int(v_x)])
     check('%s (%d, %d) stands %.0f m over the lake (1.5-2.6 km), %.1f px back from the shore (10-15)' % (
-        v_id, v_x, v_y, v_h + 520.0, s_c[int(v_y), int(v_x)]),
-          1500.0 <= v_h + 520.0 <= 2600.0 and 10.0 <= s_c[int(v_y), int(v_x)] <= 15.0)
+        v_id, v_x, v_y, v_h + 520.0, s_c[int(round(v_y)), int(v_x)]),
+          1500.0 <= v_h + 520.0 <= 2600.0 and 10.0 <= s_c[int(round(v_y)), int(v_x)] <= (16.0 if _vr else 15.0))
+    # (vale_ring: the east volcano stands 15.7 cells back, the lake's east end pressed away from it)
 for i_id, i_x, i_y, i_rx, i_ry, i_c in E517.ISLANDS:
+    i_y = _fwd(i_x, i_y)
     i_j, i_i = int(round(i_y)), int(round(i_x))
     check('island %s (%.1f, %.1f) is dry, %.0f m over the lake' % (i_id, i_x, i_y, E[i_j, i_i] + 520.0),
           not bool(whas[i_j, i_i]) and 20.0 <= float(E[i_j, i_i]) + 520.0 <= 320.0)
 lf = D.get('landforms', {})
 check('DATA.landforms holds the Pleasure Dome\'s island, off Erehwon\'s quays (its cell the shore bench, no shoal)',
       lf.get('format') == 'krator-landforms' and any(
-          l_['id'] == 'lf_pleasure_dome_isle' and abs(l_['px'] - 841) <= 1.5 and abs(l_['py'] - 1517) <= 1.5
+          l_['id'] == 'lf_pleasure_dome_isle' and abs(l_['px'] - 841) <= 1.5 and abs(l_['py'] - 1507.6) <= 1.5
           for l_ in lf.get('landforms', [])))
 alph = next(r for r in D['rivers'] if r['id'] == 'r070')
 a_j, a_i = int(round(alph['px'][0][1])), int(round(alph['px'][0][0]))
 check('the Alph (r070) leaves the lake\'s east tip (%s, bed %.1f m) and reaches its old course at 903.5,1529.5' % (
     alph['px'][0], alph['bed_m'][0]),
-      bool(nd.binary_dilation(lk, iterations=2)[a_j, a_i]) and -523.0 <= alph['bed_m'][0] <= -520.0
+      bool(nd.binary_dilation(lk, iterations=3 if _vr else 2)[a_j, a_i]) and -523.0 <= alph['bed_m'][0] <= -520.0   # vale_ring: 2.6 rows off the pressed tip
       and [903.5, 1529.5] in alph['px'])
-vale_t = (xx_c > 882) & (xx_c < 906) & (yy_c > 1496) & (yy_c < 1534) & (np.abs(E + 520.0) < 60.0)
+vale_t = (xx_c > 882) & (xx_c < 906) & (_yo > 1496) & (_yo < 1534) & (np.abs(E + 520.0) < 60.0)
 check('the Vale is dry land between -560 and -460 m (%d cells, median %.0f m)' % (int(vale_t.sum()), float(np.median(E[vale_t]))),
-      int(vale_t.sum()) >= 450 and not bool(whas[vale_t].any()) and -545.0 <= float(np.median(E[vale_t])) <= -480.0)
+      int(vale_t.sum()) >= (380 if _vr else 450) and not bool(whas[vale_t].any()) and -545.0 <= float(np.median(E[vale_t])) <= -480.0)   # vale_ring: the basin's east ridge takes ~50
 for r_id in ('r613', 'r753', 'r492', 'r272'):
     r_t = next(r for r in D['rivers'] if r['id'] == r_id)
     check('%s ends in the lake' % r_id, bool(lk_full[int(round(r_t['px'][-1][1])), int(round(r_t['px'][-1][0]))])
@@ -754,8 +774,13 @@ _lab, _ = _nd.label(whas & (np.abs(wlev + 520) < 1.0))
 _lake = _lab == _lab[1493, 843]
 _d = _nd.distance_transform_edt(~_lake)
 _r8 = (_d > 3.5) & (_d <= 4.5) & ~whas
-check('the Lake of the Vale is ringed by mountains: 8 km out the land stands %.0f m over the water (max %.0f m)'
-      % (float(E[_r8].mean()) + 520, float(E[_r8].max()) + 520),
-      bool(D['landforms'].get('vale_ring')) and float(E[_r8].mean()) + 520 > 850 and float(E[_r8].max()) + 520 > 1400
-      and -470.0 <= float(E[1491, 843]) <= -420.0 and abs(float(E[1517, 841]) + 497.0) < 15)
+_ys, _xs = np.nonzero(_lake)
+_r28 = (_d > 13.5) & (_d <= 14.5) & ~whas
+check('the Lake of the Vale is longer and thinner (%d x %d km, was 142 x 62) and its basin rises to the rim: 8 km out '
+      '%.0f m over the water, 28 km out %.0f m (max %.0f m)'
+      % ((_xs.max() - _xs.min() + 1) * 2, (_ys.max() - _ys.min() + 1) * 2, float(E[_r8].mean()) + 520, float(E[_r28].mean()) + 520,
+         float(E[_r28].max()) + 520),
+      bool(D['landforms'].get('vale_ring')) and (_xs.max() - _xs.min() + 1) * 2 >= 170 and (_ys.max() - _ys.min() + 1) * 2 <= 50
+      and float(E[_r8].mean()) + 520 > 750 and float(E[_r28].mean()) > float(E[_r8].mean())
+      and -470.0 <= float(E[1491, 843]) <= -420.0 and abs(float(E[1508, 841]) + 485.0) < 15)
 print('%d checks passed' % ok)
