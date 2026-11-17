@@ -18,11 +18,12 @@ KCITY.lib={SL,plan:()=>PLAN,tune:()=>TUNE,KSPACE,Raster,OCC,obb,obbCorners,segDi
 ['settlements/nulab/src/39n-nl-model.js','settlements/nulab/src/40-nl-ground.js','settlements/nulab/src/41-nl-town.js','settlements/nulab/src/42-nl-ring.js'].forEach(load);
 /* the Dalab set's boxes, from its defs (dDef({key:'dalab_x', ..., w:, d:, h:, build})), and the pending boxes */
 const DIMS={};
-for(const f of fs.readdirSync(path.join(ROOT,'settlements','dalab','src')).filter(f=>/^7.*dalab.*\.js$/.test(f))){const s=fs.readFileSync(path.join(ROOT,'settlements','dalab','src',f),'utf8');
- for(const m of s.matchAll(/dDef\(\{key:'(dalab_[a-z0-9_]+)'/g)){const seg=s.slice(m.index,m.index+700),g=k=>{const q=seg.match(new RegExp('[,{]'+k+':([0-9.]+)'));return q?+q[1]:null;};
-  if(!DIMS[m[1]]&&g('w'))DIMS[m[1]]={w:g('w'),d:g('d'),h:g('h')||8};}}
+for(const sub of ['src','opt'])for(const f of fs.readdirSync(path.join(ROOT,'settlements','dalab',sub)).filter(f=>/^7.*dalab.*\.js$/.test(f))){
+ const s=fs.readFileSync(path.join(ROOT,'settlements','dalab',sub,f),'utf8');
+ for(const m of s.matchAll(/dDef\(\{key:'((?:dalab|nl)_[a-z0-9_]+)'/g)){const seg=s.slice(m.index,m.index+700),g=k=>{const q=seg.match(new RegExp('[,{]'+k+':([0-9.]+)'));return q?+q[1]:null;};
+  if(!DIMS[m[1]]&&g('w'))DIMS[m[1]]={w:g('w'),d:g('d'),h:g('h')||8,fw:g('fw')||g('w'),fd:g('fd')||g('d')};}}
 for(const k in NL_TOWN.PENDING)DIMS[k]=NL_TOWN.PENDING[k];
-const dims=(k,v)=>DIMS[k]?{key:k,v:v||0,w:DIMS[k].w,d:DIMS[k].d,h:DIMS[k].h,fw:DIMS[k].w,fd:DIMS[k].d}:null;
+const dims=(k,v)=>DIMS[k]?{key:k,v:v||0,w:DIMS[k].w,d:DIMS[k].d,h:DIMS[k].h,fw:DIMS[k].fw||DIMS[k].w,fd:DIMS[k].fd||DIMS[k].d}:null;
 const t0=Date.now(),K=NL_TOWN.make({dims}),ms=Date.now()-t0;
 const t1=Date.now(),TF=NL_RING.townFarms({town:K}),RG=NL_RING.make({dims}),ms2=Date.now()-t1;
 module.exports={K,TF,RG,DIMS,dims};
@@ -51,10 +52,16 @@ const inWater=X=>X.lots.concat(X.extra).filter(L=>!WATERY.has(L.kind)&&(NL_GROUN
 const popOk=X=>Math.abs(X.census.people-20000)<=3000;
 T.ok('the town holds about 20,000 (the owner, 2026-11-16; within 15 %)',popOk(K),K.census.people+' people in '+K.census.buildings+' buildings');
 T.neg('a town of 10,000 is caught',popOk,{census:{people:10000}},K);
-const MARKS=['nl.mound','nl.priests','nl.temple','nl.healers','nl.vats','nl.court','nl.scribes','nl.barracks.a','nl.barracks.b','nl.tithebarn','nl.market','nl.inn','nl.works.foundry','nl.extra.ferry','nl.extra.line.station'];
+const MARKS=['nl.mound','nl.priests','nl.temple','nl.halls','nl.healers','nl.vats','nl.court','nl.scribes','nl.barracks.a','nl.barracks.b','nl.tithebarn','nl.market','nl.inn','nl.works.foundry','nl.extra.ferry','nl.extra.line.station'];
 const marks=X=>MARKS.filter(id=>!X.lots.some(l=>l.id===id)&&!X.extra.some(l=>l.id===id));
-{const m=marks(K);T.ok('the quarters\' great pieces stand: the mound, the priests, the gene-houses, the court, the garrison, the tithe barn, the market, the works, the ferry, the station\'s site',!m.length,m.length?'MISSING '+m.join(', '):MARKS.length+' pieces');
+{const m=marks(K);T.ok('the quarters\' great pieces stand: the mound, the priests, the daughter Halls, the gene-houses, the court, the garrison, the tithe barn, the market, the works, the ferry, the station\'s site',!m.length,m.length?'MISSING '+m.join(', '):MARKS.length+' pieces');
  T.neg('a town without its mound is caught',X=>!marks(X).length,Object.assign({},K,{lots:K.lots.filter(l=>l.id!=='nl.mound')}),K);}
+/* step N4: all harbour, copper-works, gene-house, daughter-Halls and tithe-barn pieces have builders (only station 5 waits on N6), and the three Dalab lake hulls ride deep water */
+{const n4Ok=X=>X.census.pending===1&&['dalabLakeFerry','dalabGrainBarge','dalabFishingBoat'].every(v=>(X.boats||[]).some(b=>b.vessel===v))&&
+  (X.boats||[]).every(b=>{const surf=b.river?NL_GROUND.riverAt(b.x,b.z)[1]:NL_GROUND.LAKE;return NL_GROUND.h(b.x,b.z)<surf-1.2;});
+ T.ok('step N4: every harbour, copper-works, gene-house, daughter-Halls and tithe-barn piece is defined (1 station stand-in left for N6), and all three Dalab lake hulls float in deep water',
+  n4Ok(K),'pending '+K.census.pending+', boats '+(K.boats||[]).length);
+ T.neg('a boat beached on dry land is caught',n4Ok,Object.assign({},K,{boats:(K.boats||[]).concat([{id:'dry',vessel:'dalabLakeFerry',x:0,z:-1350,ry:0}])}),K);}
 {const q=Object.keys(K.census.byQuarter);T.ok('both core/city instances laid houses (the town and the copper works)',(K.census.byQuarter.Nulab||0)>12000&&(K.census.byQuarter['the copper works']||0)>1000,JSON.stringify(K.census.byQuarter));}
 /* the coastal layout: palisaded mound set back, outer earthen mound, infill crop plots and surrounding town fields */
 {const layoutOk=X=>!!(X.rings&&X.rings.precinct&&X.rings.precinct.palisade&&X.rings.outer&&X.rings.outer.runs.length>=4&&X.rings.outer.gates.length>=4&&(X.cropPlots||[]).length>=40);

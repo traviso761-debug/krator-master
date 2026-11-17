@@ -37,14 +37,7 @@
     focusJobs: {farming: 100, fishing: 70, gene: 50, ranch: 50, lumber: 40, clay: 36, mine: 40},
     reach: {farming: 420, fishing: 260, gene: 360, ranch: 520, lumber: 400, clay: 300, mine: 400},
     landing: {key: 'nl_jetty', jobs: 3},
-    pending: {
-      'nl_genebeds': {w: 30, d: 22, h: 3, what: 'the gene beds: walled breeding beds under shade cloth, the vats\' shed'},
-      'nl_boatshed': {w: 16, d: 9, h: 5, what: 'a boat shed of timber and thatch on the shore'},
-      'nl_fishracks': {w: 16, d: 10, h: 3.5, what: 'fish racks and a smokehouse'},
-      'nl_jetty': {w: 8, d: 30, h: 1.6, what: 'a timber jetty on piles'},
-      'nl_charcoal': {w: 20, d: 16, h: 4, what: 'a charcoal yard: clamps, the cord stacks, a shed'},
-      'nl_adit': {w: 8, d: 6, h: 4, what: 'a mine adit (a timbered mouth and its spoil)'}
-    }
+    pending: {}
   };
   if (KHAMLET.FOCI.indexOf('gene') < 0) KHAMLET.FOCI.push('gene');
   KHAMLET.FOCUS_INFO = KHAMLET.FOCUS_INFO || {};

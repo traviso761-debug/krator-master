@@ -34,8 +34,14 @@ for(const F of NL_TOWNF)for(const r of (F.records||[])){const D=nlDims(r.key,0)|
 for(const V of NL_RINGV)for(const r of (V.records||[])){const D=nlDims(r.key,0)||{w:r.w,d:r.d,fw:r.w,fd:r.d};const q=Object.assign({},r,{fw:D.fw,fd:D.fd});
  const st=r.key==='nl_jetty'?{y:NL_GROUND.LAKE+1.4,drop:Math.max(0,NL_GROUND.LAKE+1.4-NL_GROUND.h(r.x,r.z))+.3}:nlStance(q);
  NL_PLACE.push({key:r.key,x:r.x,z:r.z,ry:r.ry,o:{v:nlV(r.key,r.id,0),y:st.y,drop:st.drop},kind:'ring',village:V.id,id:'ring:'+r.id,h:nlD(r.h,8),w:D.fw,d:D.fd,pending:!VERN.defs[r.key]});}
+/* the lake and river fleet: NL_PLAN.boats plus fishing skiffs off the ring fishing hamlets' jetties */
+const NL_BOATS=(NL_PLAN&&NL_PLAN.boats?NL_PLAN.boats.slice():[]);
+for(const V of NL_RINGV){if(V.focus!=='fishing')continue;const jt=(V.records||[]).find(r=>r.key==='nl_jetty');if(!jt)continue;
+ const fx=Math.sin(jt.ry),fz=Math.cos(jt.ry),px=fz,pz=-fx;
+ for(const s of[-1,1]){const bx=jt.x+fx*22+px*s*9,bz=jt.z+fz*22+pz*s*9;
+  if(NL_GROUND.h(bx,bz)<NL_GROUND.LAKE-.8)NL_BOATS.push({id:'ring:'+V.id+':skiff.'+(s<0?0:1),vessel:'dalabFishingBoat',x:bx,z:bz,ry:Math.atan2(fx,fz)-Math.PI/2+s*.2,name:'Fishing boat ('+V.id.replace('nl.ring.','')+')'});}}
 window._nulabPlan={err:NL_ERR?String(NL_ERR):null,place:NL_PLACE.length,lots:NL_PLAN?NL_PLAN.lots.length:0,extra:NL_PLAN?NL_PLAN.extra.length:0,
- cropPlots:NL_PLAN?(NL_PLAN.cropPlots||[]).length:0,townFarmParcels:NL_TOWNF.reduce((a,f)=>a+(f.farm&&f.farm.parcels?f.farm.parcels.length:0),0),
+ boats:NL_BOATS.length,cropPlots:NL_PLAN?(NL_PLAN.cropPlots||[]).length:0,townFarmParcels:NL_TOWNF.reduce((a,f)=>a+(f.farm&&f.farm.parcels?f.farm.parcels.length:0),0),
  people:NL_PLAN?NL_PLAN.census.people:0,byQuarter:NL_PLAN?NL_PLAN.census.byQuarter:{},ways:NL_PLAN?NL_PLAN.ways.length:0,
  ring:NL_RINGV.map(V=>({id:V.id,error:V.error||null,records:(V.records||[]).length,pop:V.census&&V.census.pop,parcels:V.farm&&V.farm.parcels?V.farm.parcels.length:0})),
  pin:{model:+NL_GROUND.model(NL_GROUND.PIN[0],NL_GROUND.PIN[1]).toFixed(1),drawn:+NL_GROUND.h(NL_GROUND.PIN[0],NL_GROUND.PIN[1]).toFixed(1)}};

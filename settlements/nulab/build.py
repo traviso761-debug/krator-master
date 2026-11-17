@@ -1,18 +1,18 @@
 #!/usr/bin/env python3
-"""Nulab, the Realm of Dalab's city on the West Rift's great lake (PLAN.md, step N3 with N2's ground and N5's near ring).
+"""Nulab, the Realm of Dalab's city on the West Rift's great lake (PLAN.md, steps N1-N5).
 
 The town is a target on Xanadu's page, as Kirstabal's and Thalaba's are: settlements/xanadu/build.py --kit takes this folder's
-kit.json, src/ and targets/. Its buildings are the Dalab set's (settlements/dalab/src, read in place through kit.json
-"external", as Thalaba reads three of them); Dalab's texture pack is trimmed to the families those pieces draw
-(DALAB_FAMILIES, gen/69n3-dalab-pack.js), because the whole pack (16.8 MB) would pass the page cap. core/space, core/city
-and core/hamlet (with the opt-in Dalab row, core/hamlet/dalab) are sealed in one closure (gen/69n-kcity-bundle.js), because
-Xanadu's page keeps core/space out of its global scope; core/biome and riftrim's veiled rim in another (gen/69n2-nl-flora-bundle.js),
-because the page runs its own vendored biome core. core/atmos, core/water and core/drawn come in through kit.json "files".
-Everything in gen/ is written here at every build, never edited by hand.
+kit.json, src/ and targets/. Its buildings are the Dalab set's (settlements/dalab/src and opt/75-dalab-lake-works.js, read in
+place through kit.json "external"); Dalab's 23 d* texture families are written as a sidecar script beside the page
+(dist/nulab.tex.dalab.js via SIDE, alongside kit.json "sidePacks": true), keeping dist/nulab.html well under the 16 MB page cap
+while binding all Dalab reliefs, checker tiles and murals. core/space, core/city and core/hamlet (with core/hamlet/dalab) are
+sealed in gen/69n-kcity-bundle.js; core/biome and riftrim's veiled rim in gen/69n2-nl-flora-bundle.js; and kits/ringsea's core
+with Dalab's three lake hulls (kits/ringsea/opt/90..92) in gen/69n4-nl-ringsea-bundle.js. Everything in gen/ is written here at
+every build, never edited by hand.
 
     python3 ../../tools/build.py settlements/nulab     # dist/nulab.html (a plain python3 build.py comes through it)
     python3 build.py --bake-model                     # rewrite src/39n-nl-model.js from the scale model
-    node test-nl-town.js                              # the town, the ring and the sim's records, without a browser
+    node test-nl-town.js                              # the town, the ring, the boats and the sim's records, without a browser
     KRATOR_GL=gpu python3 verify.py dist/nulab.html --assert --views "Overview,The mound"
 """
 import io, json, os, subprocess, sys
@@ -33,7 +33,9 @@ HAMLET_JS = ['10-hamlet-wood.js', '12-hamlet-gather.js', '14-hamlet-farmland.js'
              '20-hamlet-cultures.js', 'dalab/23-hamlet-dalab.js', '30-hamlet-village.js']
 SPACE = 'core/space/20-core-space.js'
 GEN = os.path.join(HERE, 'gen')
+DIST = os.path.join(HERE, 'dist')
 MODEL = os.path.join(HERE, 'src', '39n-nl-model.js')
+SIDE = None if '--inline-packs' in sys.argv else {}
 
 
 def rd(rel):
@@ -96,7 +98,6 @@ if '--bake-model' in sys.argv:
 # THE VEILED RIM'S FLORA (biomes/riftrim, RRIM.biome('w'): PLAN.md section 3, the shore zone of the great lake's basin): today's
 # core/biome and the rim kit sealed in one closure, as Kirstabal seals the Rift's, because Xanadu's page runs its own vendored
 # biome core. The closure's BIO hides the page's; it exports NL_FLORA only (targets/town/90p-nl-flora.js binds the host and builds).
-# No texture pack: the kit keeps its procedural textures here (KNOWN_ISSUES.md)
 FLORA_CORE = ['10-core-head.js', '20-core-kit.js', '30-core-foliage.js', '30s-core-season-flush.js', '31-core-dither.js',
               '31b-core-leafset.js', '31j-core-joint.js', '32-core-variants.js', '33-core-fungoid.js', '33b-core-bamboo.js',
               '34-core-impostor.js', '35-core-anim.js', '35b-core-anim-turn.js', '40-core-place.js']
@@ -119,26 +120,72 @@ def flora_bundle():
             'return { BIO: BIO, reseed: reseed, RRIM: RRIM };\n})(Object.create(window));\n')
 
 
-# Dalab's own surfaces the town's pieces draw (the rest of its keys are Xanadu's shared ones: wood, stone, plaster, which the
-# Xanadu pack textures): the rammed earth and the eroded banco of the peasants' walls, the rendered stone and the dressed
-# blocks of the nobles and priests, the turf roofs, the plain relief, the banners, and the priests' mural. The page cap (16 MB)
-# leaves out the chevron and tile reliefs, the harlequin checker and the other murals: those keys keep the Dalab set's own
-# canvas textures (69d), as on Thalaba's page (KNOWN_ISSUES.md)
-DALAB_FAMILIES = ('dRammed', 'dBancoE', 'dRender', 'dBlock', 'dTurf', 'dRelief', 'dBanner', 'dMural6')
+# DALAB'S THREE LAKE HULLS (kits/ringsea, sealed in their own closure as settlements/voth/ringsea.py seals Voth's ships):
+# dalabLakeFerry (90), dalabGrainBarge (91) and dalabFishingBoat (92), read live from kits/ringsea/src and kits/ringsea/opt.
+RS_KIT_FILES = ['kits/ringsea/src/10-core.js', 'kits/ringsea/src/12-stats.js', 'core/materials/20-textures.js',
+                'core/materials/22-materials.js', 'kits/ringsea/src/30-kit.js', 'kits/ringsea/src/40-rs-core.js',
+                'kits/ringsea/src/41-rs-tex.js', 'kits/ringsea/src/42-rs-hull.js', 'kits/ringsea/src/43-rs-rig.js',
+                'kits/ringsea/src/44-rs-parts.js']
+RS_VESSELS = ['kits/ringsea/opt/90-rs-dalab-ferry.js', 'kits/ringsea/opt/91-rs-dalab-barge.js', 'kits/ringsea/opt/92-rs-dalab-skiff.js']
+
+
+def ringsea_bundle():
+    h = rd('kits/ringsea/src/00-head.html')
+    head_js = h[h.rindex('<script>') + len('<script>'):].replace('</script>', '')
+    parts = [head_js] + ['/* ---- %s ---- */\n%s' % (rel, rd(rel)) for rel in RS_KIT_FILES + RS_VESSELS]
+    js = ('\n'.join(parts)
+          .replace("const ERRS=document.getElementById('errs');", '')
+          .replace("window.onerror=(m,s,l,c,e)=>reportErr((e&&e.stack)||(m+' @'+l+':'+c));", ''))
+    return ('/* NL_RINGSEA: kits/ringsea core and Dalab\'s three lake hulls in one closure (settlements/nulab/build.py, after voth/ringsea.py). GENERATED. */\n'
+            'var NL_RINGSEA = { keys: [], dims: {}, tags: {}, make: function () { return null; }, tick: function () {} };\n'
+            '(function () {\n'
+            '  var __own = { addEventListener: function () {}, onerror: null };\n'
+            '  var window = new Proxy(globalThis.window, { get: function (t, k) { if (k in __own) return __own[k]; var v = t[k]; '
+            'return typeof v === "function" && !/^[A-Z]/.test(String(k)) ? v.bind(t) : v; },\n'
+            '    set: function (t, k, v) { __own[k] = v; return true; }, has: function (t, k) { return k in __own || k in t; } });\n'
+            '  var scene = new THREE.Group(), renderer = { capabilities: { getMaxAnisotropy: function () { return 4; } } };\n'
+            '  var ERRS = { style: {}, textContent: "" };\n' +
+            js + '\n'
+            '  function reportErr(m) { if (typeof console !== "undefined") console.error("NL_RINGSEA: " + m); }\n'
+            '  var made = {};\n'
+            '  NL_RINGSEA.keys = RS.order.slice();\n'
+            '  RS.order.forEach(function (k) { var D = RS.defs[k]; NL_RINGSEA.dims[k] = { L: D.L, B: D.B, H: D.H, name: D.name }; NL_RINGSEA.tags[k] = D.tags || {}; });\n'
+            '  NL_RINGSEA.make = function (key) {\n'
+            '    var D = RS.defs[key]; if (!D) return null;\n'
+            '    if (!made[key]) {\n'
+            '      try {\n'
+            '        var r = D.build(), tris = 0, meshes = 0;\n'
+            '        r.group.traverse(function (o) { if (o.isMesh && o.geometry) { meshes++; var g = o.geometry; tris += (g.index ? g.index.count : g.attributes.position.count) / 3; } });\n'
+            '        made[key] = { group: r.group, deckY: r.deckY, tris: Math.round(tris), meshes: meshes };\n'
+            '      } catch (e) { reportErr(key + ": " + (e.stack || e)); made[key] = { error: String(e) }; }\n'
+            '    }\n'
+            '    var M = made[key]; if (!M.group) return null;\n'
+            '    var g = M.group.clone(); g.userData = { kind: "vessel", key: key, deckY: M.deckY };\n'
+            '    return { group: g, deckY: M.deckY, tris: M.tris, meshes: M.meshes };\n'
+            '  };\n'
+            '  NL_RINGSEA.tick = function (t) { RS_U.uTime.value = t; };\n'
+            '})();\n')
+
+
+# All 23 Dalab-specific d* texture families in settlements/dalab/tex/pack.json (the shared vernacular wood/stone/plaster keys
+# come from Xanadu's pack), written beside the page into dist/nulab.tex.dalab.js via SIDE so dist/nulab.html stays compact.
+_DALAB_PACK_JSON = json.load(io.open(os.path.join(ROOT, 'settlements', 'dalab', 'tex', 'pack.json'), encoding='utf-8'))
+DALAB_FAMILIES = tuple(sorted(k for k in _DALAB_PACK_JSON['families'] if k.startswith('d')))
 
 
 def dalab_pack():
     sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
     import matlib_pack
     d = os.path.join(ROOT, 'settlements', 'dalab')
-    fams = json.load(io.open(os.path.join(d, 'tex', 'pack.json'), encoding='utf-8'))['families']
-    return ('/* the Dalab pack, trimmed to the families Nulab\'s pieces draw (settlements/nulab/build.py DALAB_FAMILIES). GENERATED. */\n'
-            + matlib_pack.fragment(d, 'dalab', exclude=tuple(k for k in fams if k not in DALAB_FAMILIES)))
+    fams = _DALAB_PACK_JSON['families']
+    return ('/* the Dalab pack: all d* families, maps beside the page in nulab.tex.dalab.js (settlements/nulab/build.py). GENERATED. */\n'
+            + matlib_pack.fragment(d, 'dalab', exclude=tuple(k for k in fams if k not in DALAB_FAMILIES), side=SIDE))
 
 
 def write_gen():
     os.makedirs(GEN, exist_ok=True)
-    for name, make in (('69n-kcity-bundle.js', kcity_bundle), ('69n2-nl-flora-bundle.js', flora_bundle), ('69n3-dalab-pack.js', dalab_pack)):
+    for name, make in (('69n-kcity-bundle.js', kcity_bundle), ('69n2-nl-flora-bundle.js', flora_bundle),
+                       ('69n3-dalab-pack.js', dalab_pack), ('69n4-nl-ringsea-bundle.js', ringsea_bundle)):
         out = os.path.join(GEN, name)
         new = make()
         old = io.open(out, encoding='utf-8').read() if os.path.exists(out) else None
@@ -147,9 +194,12 @@ def write_gen():
                 fh.write(new)
 
 
+_dalab_webp = [p for f in DALAB_FAMILIES for p in [os.path.join('settlements', 'dalab', 'tex', '%s.%s.webp' % (f, m)).replace(os.sep, '/')
+                                                   for m in ('albedo', 'normal', 'rough')] if os.path.exists(os.path.join(ROOT, *p.split('/')))]
 BSRC.note(*([SPACE] + ['core/city/' + f for f in CITY_JS] + ['core/hamlet/' + f for f in HAMLET_JS] +
-            ['core/biome/' + f for f in FLORA_CORE] + ['biomes/riftrim/src/' + f for f in RIM_JS] + ['settlements/dalab/tex/pack.json'] +
-            ['settlements/dalab/tex/%s.%s.webp' % (f, m) for f in DALAB_FAMILIES for m in ('albedo', 'normal', 'rough')]))
+            ['core/biome/' + f for f in FLORA_CORE] + ['biomes/riftrim/src/' + f for f in RIM_JS] +
+            ['kits/ringsea/src/00-head.html'] + RS_KIT_FILES + RS_VESSELS +
+            ['settlements/dalab/tex/pack.json'] + _dalab_webp))
 if not BSRC.LISTING:
     write_gen()
 
@@ -161,4 +211,14 @@ _rc = subprocess.call([sys.executable, os.path.join(ROOT, 'settlements', 'xanadu
                       cwd=os.path.join(ROOT, 'settlements', 'xanadu'))
 if not _rc:
     BSRC.report()
+    if SIDE and not BSRC.LISTING:
+        sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
+        import matlib_pack
+        _page = os.path.join(DIST, 'nulab.html')
+        with io.open(_page, encoding='utf-8') as fh:
+            _html = fh.read()
+        if '<script src="nulab.tex.dalab.js">' not in _html:
+            _html = matlib_pack.write_sidecar(SIDE, _html, DIST, 'nulab.tex.js', prune=True)
+            with io.open(_page, 'w', encoding='utf-8', newline='\n') as fh:
+                fh.write(_html)
 sys.exit(_rc)

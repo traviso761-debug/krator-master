@@ -14,21 +14,6 @@
 var NL_TOWN=(function(){
  const G=NL_GROUND,face=d=>Math.atan2(d[0],d[1]);   /* a piece's front toward d (x, z) */
  const PENDING={
-  nl_boatshed:{w:16,d:9,h:5,what:'a boat shed of timber and thatch on the shore'},
-  nl_fishracks:{w:16,d:10,h:3.5,what:'fish racks and a smokehouse'},
-  nl_smokehouse:{w:14,d:10,h:6,what:'the smokehouse: earth walls, a turf roof, the vents'},
-  nl_slip:{w:14,d:40,h:6,what:'the shipwright\'s slip and its shed'},
-  nl_ferry:{w:12,d:26,h:4,what:'the ferry stage for the boats to Ledge\'s lifts'},
-  nl_jetty:{w:8,d:30,h:1.6,what:'a timber jetty on piles'},
-  nl_vats:{w:24,d:18,h:7,what:'the gene-houses\' vats: a stone hall over the breeding vats'},
-  nl_genebeds:{w:30,d:22,h:3,what:'the gene beds: walled breeding beds under shade cloth'},
-  nl_tithebarn:{w:44,d:24,h:11,what:'the tithe barn and counting house'},
-  nl_roastbed:{w:24,d:16,h:2.5,what:'an ore roasting bed'},
-  nl_smelter:{w:18,d:14,h:9,what:'a copper smelter: the furnace house and its bellows'},
-  nl_foundry:{w:30,d:22,h:10,what:'the bronze foundry: casting pits under a long roof'},
-  nl_charcoal:{w:20,d:16,h:4,what:'a charcoal yard: clamps, the cord stacks, a shed'},
-  nl_oreyard:{w:30,d:30,h:3,what:'the ore yard: the bins, the sorting floor'},
-  nl_adit:{w:8,d:6,h:4,what:'a mine adit (a timbered mouth and its spoil)'},
   nl_line_station:{w:60,d:24,h:12,what:'the Line\'s station 5 (an Ancient station: KTRANSIT\'s line kind, step N6)'}};
  /* the town's infill crop plots (drawn by a Dalab builder in 90o-nl-build.js, not pending): dimensions for node and page */
  const PLOT_SIZES=[[40,30],[32,24],[24,18],[18,13],[14,11]];
@@ -36,7 +21,7 @@ var NL_TOWN=(function(){
  const PEOPLE={dalab_hut_a:6,dalab_hut_b:5,dalab_hut_c:6,dalab_compound:14,dalab_rowhouse:12,dalab_tenement:10,dalab_noble_a:24,dalab_noble_b:30,
   dalab_noble_c:28,dalab_priest_house:6,dalab_priest_compound:36,dalab_barracks:160,dalab_shops:8,dalab_workshop:6,dalab_potter:6,dalab_weaver:6,
   dalab_dyer:4,dalab_smithy:5,dalab_tavern:6,dalab_inn:18,dalab_warehouse:2,dalab_scribes:4,dalab_bathhouse:3,dalab_healers:12,dalab_temple:6,
-  dalab_watchtower:3,dalab_gate:4,dalab_earthyard:3,nl_vats:6,nl_tithebarn:4,nl_boatshed:3,nl_smokehouse:2,nl_slip:4,nl_ferry:2,nl_line_station:0,
+  dalab_watchtower:3,dalab_gate:4,dalab_earthyard:3,nl_halls:18,nl_vats:6,nl_tithebarn:4,nl_boatshed:3,nl_smokehouse:2,nl_slip:4,nl_ferry:2,nl_line_station:0,
   nl_smelter:2,nl_foundry:3,nl_charcoal:2,nl_oreyard:1,nl_cropplot:0};
  const LAB=[Math.sin(7.7*Math.PI/180),-Math.cos(7.7*Math.PI/180)];
  /* ---- THE COASTAL TOWN: clustered by the bay round the harbour (z -1650..-1050, shore x ~820..900), its ceremonial mound set
@@ -223,13 +208,14 @@ var NL_TOWN=(function(){
   lm('priests','dalab_priest_compound',[-385,-1215],toward([-385,-1215],PLAZA),'precinct','The priests\' compound');
   lm('temple','dalab_temple',[-385,-1480],toward([-385,-1480],PLAZA),'precinct','The temple on the mound\'s ground');
   for(let i=0;i<4;i++)lm('priest.'+i,'dalab_priest_house',[-325+i*24,-1465],face([0,1]),'precinct','A priest\'s house',2);
-  /* 2. the gene-houses, in the south-west arc of the precinct */
-  lm('healers','dalab_healers',[-495,-1445],toward([-495,-1445],PLAZA),'gene','The healers\' hall');
-  lm('vats','nl_vats',[-548,-1440],face([1,0]),'gene','The gene-houses\' vats');
-  lm('seed.a','dalab_granaries',[-485,-1505],face([0,-1]),'gene','The seed store of the gene stock',2);
-  lm('seed.b','dalab_granaries',[-515,-1505],face([0,-1]),'gene','The seed store of the gene stock',2);
-  lm('beds.a','nl_genebeds',[-445,-1525],face([0,-1]),'gene','The gene beds',2);
-  lm('beds.b','nl_genebeds',[-500,-1545],face([0,-1]),'gene','The gene beds',2);
+  /* 2. the gene-houses, in the south-west arc of the precinct: the daughter house of the Halls of Reformation, healers, vats & beds */
+  lm('halls','nl_halls',[-485,-1425],toward([-485,-1425],PLAZA),'gene','The Daughter House of the Halls of Reformation',2);
+  lm('healers','dalab_healers',[-442,-1492],toward([-442,-1492],PLAZA),'gene','The healers\' hall',2);
+  lm('vats','nl_vats',[-545,-1435],face([1,0]),'gene','The gene-houses\' vats',2);
+  lm('seed.a','dalab_granaries',[-525,-1488],face([0,-1]),'gene','The seed store of the gene stock',2);
+  lm('seed.b','dalab_granaries',[-490,-1495],face([0,-1]),'gene','The seed store of the gene stock',2);
+  lm('beds.a','nl_genebeds',[-438,-1530],face([0,-1]),'gene','The gene beds',2);
+  lm('beds.b','nl_genebeds',[-485,-1534],face([0,-1]),'gene','The gene beds',2);
   /* 3. the Warden's court and the tithe, in the north-west arc of the precinct */
   lm('court','dalab_noble_c',[-500,-1245],toward([-500,-1245],PLAZA),'court','The Warden of the Lake\'s manor');
   lm('hall.a','dalab_noble_a',[-548,-1305],face([1,0]),'court','A noble\'s stone hall');
@@ -328,19 +314,42 @@ var NL_TOWN=(function(){
   for(let i=0;i<3;i++)put('line.clerks.'+i,'dalab_rowhouse',[lq[0]-30+i*30,lq[1]+150],face([0,-1]),{kind:'line'});
   for(let i=0;i<2;i++)put('line.hut.'+i,'dalab_hut_a',[lq[0]+60+i*20,lq[1]+160],face([0,-1]),{kind:'line'});
   put('line.warehouse','dalab_warehouse',[lq[0]+170,lq[1]+40],face([0,-1]),{kind:'line'});
-  put('ferry.river','nl_ferry',[5420,1980],face([1,0]),{kind:'harbour',name:'The river ferry at the outlet',y:G.LAKE+1.6});
-  put('jetty.works','nl_jetty',[5600,2460],face([-1,0]),{kind:'harbour',name:'The works\' jetty: the ore boats',y:G.LAKE+1.4});
+  put('ferry.river','nl_ferry',[5412,1980],face([1,0]),{kind:'harbour',name:'The river ferry at the outlet',y:G.LAKE+1.6});
+  put('jetty.works','nl_jetty',[5576,2460],face([-1,0]),{kind:'harbour',name:'The works\' jetty: the ore boats',y:G.LAKE+1.4});
+  /* ---- the lake and river fleet (step N4, kits/ringsea Dalab hulls: ferries, grain barges and fishing boats) */
+  const boats=[
+   {id:'nl.boat.barge.q0',vessel:'dalabGrainBarge',x:H.x0+20,z:-1530,ry:Math.PI/2,name:'Tithe grain barge loading at the quays'},
+   {id:'nl.boat.barge.q1',vessel:'dalabGrainBarge',x:H.x0+20,z:-1370,ry:-Math.PI/2,name:'Grain and bronze barge at the quays'},
+   {id:'nl.boat.ferry.st',vessel:'dalabLakeFerry',x:H.x0+38,z:H.z1-28,ry:.12,name:'Lake ferry to Ledge\'s lifts (at the stage)'},
+   {id:'nl.boat.skiff.q0',vessel:'dalabFishingBoat',x:H.x0+16,z:-1612,ry:Math.PI/2,name:'Harbour fishing boat'},
+   {id:'nl.boat.skiff.q1',vessel:'dalabFishingBoat',x:H.x0+16,z:-1455,ry:-Math.PI/2,name:'Harbour fishing boat'},
+   {id:'nl.boat.skiff.q2',vessel:'dalabFishingBoat',x:H.x0+16,z:-1285,ry:Math.PI/2,name:'Harbour fishing boat'},
+   {id:'nl.boat.skiff.q3',vessel:'dalabFishingBoat',x:H.x0+16,z:-1210,ry:-Math.PI/2,name:'Harbour fishing boat'},
+   {id:'nl.boat.ferry.out',vessel:'dalabLakeFerry',x:H.x1-55,z:-1140,ry:.25,name:'Lake ferry standing out of the harbour'},
+   {id:'nl.boat.ferry.ledge',vessel:'dalabLakeFerry',x:H.x1+290,z:-1540,ry:1.42,name:'Lake ferry bound north for Ledge\'s lifts'},
+   {id:'nl.boat.barge.bay0',vessel:'dalabGrainBarge',x:H.x1+190,z:-1260,ry:1.18,name:'Grain barge heading north up the bay'},
+   {id:'nl.boat.barge.bay1',vessel:'dalabGrainBarge',x:H.x1+380,z:-960,ry:2.15,name:'Copper barge from the Chimes Riba outlet'},
+   {id:'nl.boat.skiff.b0',vessel:'dalabFishingBoat',x:H.x0+115,z:-1580,ry:.6,name:'Fishing boat in the harbour basin'},
+   {id:'nl.boat.skiff.b1',vessel:'dalabFishingBoat',x:H.x0+150,z:-1395,ry:-.85,name:'Fishing boat in the harbour basin'},
+   {id:'nl.boat.skiff.b2',vessel:'dalabFishingBoat',x:H.x1+140,z:-1820,ry:1.1,name:'Fishing boat off the north boat sheds'},
+   {id:'nl.boat.skiff.b3',vessel:'dalabFishingBoat',x:H.x1+220,z:-1040,ry:-.4,name:'Fishing boat off the south fish racks'},
+   {id:'nl.boat.skiff.b4',vessel:'dalabFishingBoat',x:H.x1+160,z:-780,ry:.95,name:'Shelf fishing boat'},
+   {id:'nl.boat.ferry.riv',vessel:'dalabLakeFerry',x:5468,z:1985,ry:-Math.PI/2,river:true,name:'The outlet river ferry'},
+   {id:'nl.boat.barge.wks',vessel:'dalabGrainBarge',x:5545,z:2458,ry:Math.PI/2,river:true,name:'Ore and copper barge at the works\' jetty'},
+   {id:'nl.boat.barge.chi',vessel:'dalabGrainBarge',x:5500,z:2630,ry:-Math.PI/2,river:true,name:'Grain barge bound down the Chimes Riba'},
+   {id:'nl.boat.skiff.r0',vessel:'dalabFishingBoat',x:5495,z:2230,ry:Math.PI/2,river:true,name:'Chimes Riba river skiff'},
+   {id:'nl.boat.skiff.r1',vessel:'dalabFishingBoat',x:5512,z:2790,ry:-Math.PI/2,river:true,name:'Chimes Riba river skiff'}];
   /* ---- the roads beyond the outer earthen mound's gates */
   const roads=[
    {id:'nl.road.precinct.n',cls:'lane',w:4.2,tag:'the court walk',pts:[[-286,-1324],[-352,-1268],[-420,-1284],[-476,-1272]]},
-   {id:'nl.road.precinct.s',cls:'lane',w:4.2,tag:'the temple walk',pts:[[-286,-1376],[-355,-1434],[-432,-1442],[-474,-1445]]},
+   {id:'nl.road.precinct.s',cls:'lane',w:4.2,tag:'the temple walk',pts:[[-286,-1376],[-355,-1434],[-432,-1442],[-460,-1435]]},
    {id:'nl.road.river',cls:'road',w:6,tag:'the river road',pts:[[560,-490],[920,-80],[1900,450],[3200,980],[4450,1520],[5380,1960]]},
    {id:'nl.road.line',cls:'road',w:6,tag:'the Line road',pts:[[540,-2210],[220,-2800],[-320,-3550],[-880,-4080],[lq[0]+40,lq[1]+60]]},
    {id:'nl.road.south',cls:'road',w:6,tag:'the iron road',pts:[[-525,-815],[-720,120],[-860,1800],[-820,3800],[-760,6000]]},
    {id:'nl.road.kould',cls:'road',w:6,tag:'the Kould road',pts:[[-525,-1885],[-1550,-1720],[-2900,-1250],[-4400,-820],[-6000,-560]]}];
-  const census={buildings:lots.length+extra.length,people:0,byKey:{},byQuarter:{},pending:0,cropPlots:cropPlots.length};
+  const census={buildings:lots.length+extra.length,people:0,byKey:{},byQuarter:{},pending:0,cropPlots:cropPlots.length,boats:boats.length};
   for(const r of lots.concat(extra)){census.people+=r.people;census.byKey[r.key]=(census.byKey[r.key]||0)+1;const q=r.quarter||r.kind;census.byQuarter[q]=(census.byQuarter[q]||0)+r.people;if(PENDING[r.key])census.pending++;}
-  return {lots,ways,extra,cropPlots,rings:{precinct:PRING,outer:OM,granary:GR},moles,quays,roads,caravan:CARAVAN,plaza:PLAZA,market:MARKET,mound:MOUND,granary:GRANARY,census,
+  return {lots,ways,extra,cropPlots,boats,rings:{precinct:PRING,outer:OM,granary:GR},moles,quays,roads,caravan:CARAVAN,plaza:PLAZA,market:MARKET,mound:MOUND,granary:GRANARY,census,
    notes:{town:T.notes,works:Wk.notes},zones:{town:ZONE,works:WZONE,outer:OUTER_CHAIN},instances:[T.instance,Wk.instance],line:lq};}
  return {make,PEOPLE,PENDING,ZONE,WZONE,OUTER_CHAIN,LAB,SEA,MOUND,PLAZA,MARKET,GRANARY,CARAVAN,PRECINCT};
 })();

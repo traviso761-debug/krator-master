@@ -26,8 +26,8 @@ _spec.loader.exec_module(xv)   # its argparse block is under __main__: nothing r
 
 TOWN_JS = r"""
 {const K=window._nulab||{},B=K.byKind||{},E=K.earth||{},Q=K.byQuarter||{};
- R.push({name:'nulab-laid',ok:!K.err&&(K.lots||0)>1500&&(B.landmark||0)>=50&&(Q['the copper works']||0)>1000&&(K.mounds||0)>=6&&(K.cropPlots||0)>=80&&(K.townFarmParcels||0)>=600&&E.outerRuns>=4&&E.palisadePosts>=500&&E.quays>=10&&E.moles===2&&E.rings===3,
-  detail:K.err?('the town did not lay: '+K.err):((K.lots||0)+' lots, '+(K.cropPlots||0)+' infill crop plots, '+(K.townFarmParcels||0)+' town field parcels, '+(K.extra||0)+' extra ('+JSON.stringify(B)+'), '+(K.chunks||0)+' chunks, '+(K.mounds||0)+' turf mounds/runs; made ground '+JSON.stringify(E))});
+ R.push({name:'nulab-laid',ok:!K.err&&(K.lots||0)>1500&&(B.landmark||0)>=50&&(Q['the copper works']||0)>1000&&(K.mounds||0)>=6&&(K.cropPlots||0)>=80&&(K.townFarmParcels||0)>=600&&(K.boatsBuilt||0)>=20&&(K.standins||0)<=1&&E.outerRuns>=4&&E.palisadePosts>=500&&E.quays>=10&&E.moles===2&&E.rings===3,
+  detail:K.err?('the town did not lay: '+K.err):((K.lots||0)+' lots, '+(K.cropPlots||0)+' infill crop plots, '+(K.townFarmParcels||0)+' town field parcels, '+(K.boatsBuilt||0)+' Dalab vessels, '+(K.extra||0)+' extra ('+JSON.stringify(B)+'), '+(K.chunks||0)+' chunks, '+(K.mounds||0)+' turf mounds/runs; made ground '+JSON.stringify(E))});
  const P=K.pin||{};R.push({name:'on-the-model',ok:Math.abs((P.drawn||0)-(P.model||0))<3&&Math.abs((P.model||0)-344)<25,detail:'at the pin the model gives '+P.model+' m, the page draws '+P.drawn+' m (the cell: 344 m)'});
  const p=K.people||0;R.push({name:'people',ok:Math.abs(p-20000)<=3000,detail:p+' residents / 20,000 (the owner, 2026-11-16): '+JSON.stringify(Q)});
  const rg=K.ring||[];R.push({name:'ring-laid',ok:rg.length===8&&rg.every(v=>!v.error&&v.records>=10),detail:rg.map(v=>v.id.replace(/^nl.ring./,'')+' '+v.records+(v.parcels?' +'+v.parcels+' parcels':'')+(v.error?' ('+v.error+')':'')).join(', ')});

@@ -106,11 +106,29 @@ nlBake('made ground',[],()=>{const K=NL_PLAN;if(!K)return null;TSTAT.cur='nl_mad
 // ---------------------------------------------------------------- the build, chunk by chunk
 for(const k of Object.keys(NL_CHUNKS).sort())nlBake(k,NL_CHUNKS[k]);
 window._instances=NL_INST;
+/* ---- step N4: Dalab's lake and river hulls (NL_RINGSEA, riding core/water's open swell and the Chimes Riba's surface) */
+const NL_VESSELS=[];const NL_VESSEL_ROOT=new THREE.Group();NL_VESSEL_ROOT.name='vessels';scene.add(NL_VESSEL_ROOT);
+if(typeof NL_RINGSEA!=='undefined'&&NL_RINGSEA.make&&typeof NL_BOATS!=='undefined'){
+ const rH=(x,z)=>NL_GROUND.riverAt(x,z)[1];
+ for(const b of NL_BOATS){const v=NL_RINGSEA.make(b.vessel);if(!v||!v.group)continue;
+  const D=NL_RINGSEA.dims[b.vessel]||{L:16,B:5,H:10},tg=NL_RINGSEA.tags[b.vessel]||{};
+  TSTAT.cur=b.vessel+'/0';const tc=tcur();if(tc){tc.meshes+=nlD(v.meshes,1);tc.tris+=nlD(v.tris,0);}TSTAT.cur=null;
+  const hFn=b.river?rH:undefined,ySurf=b.river?rH(b.x,b.z):NL_GROUND.LAKE;
+  if(typeof WATER!=='undefined'&&WATER.ride)WATER.ride(v.group,D,b.x,b.z,b.ry,0,0,hFn);
+  else{v.group.position.set(b.x,ySurf,b.z);v.group.rotation.y=nlD(b.ry,0);}
+  NL_VESSEL_ROOT.add(v.group);v.group.updateMatrixWorld(true);
+  REG.push({name:b.name||D.name||b.vessel,key:b.vessel,type:b.vessel,cls:'prop',x:b.x,y:ySurf-1.5,z:b.z,r:Math.max(4,D.L*.55),h:D.H+2,
+   tags:{culture:'dalab',type:['infrastructure'],wealth:tg.wealth||'peasant'}});
+  NL_VESSELS.push({G:v.group,D,x:b.x,z:b.z,ry:nlD(b.ry,0),hFn});}
+ if(NL_VESSELS.length){let vt=0;FRAME_HOOKS.push(dt=>{vt+=Math.min(.1,nlD(dt,.016));NL_RINGSEA.tick(vt);
+   const P=camera.position;if(typeof WATER!=='undefined'&&WATER.ride){for(const v of NL_VESSELS){
+    const d2=(P.x-v.x)*(P.x-v.x)+(P.z-v.z)*(P.z-v.z);v.G.visible=d2<5500*5500;if(v.G.visible&&d2<2400*2400)WATER.ride(v.G,v.D,v.x,v.z,v.ry,vt,0,v.hFn);}}});}}
 {let nlNight=null;const nlNightTick=()=>{const on=KratorSky.lighting().dayF<.45;if(nlNight===on)return;nlNight=on;
   for(const m of NL_NIGHTM)m.visible=on;for(const m of NL_DAYM)m.visible=!on;};
  FRAME_HOOKS.push(nlNightTick);nlNightTick();}
-if(typeof DWIND!=='undefined'&&DWIND.length){FRAME_HOOKS.push(dt=>{for(const w of DWIND)w.grp.rotateZ(w.rate*nlD(dt,.016));});
- window.LOD_OPTIONS=Object.assign(window.LOD_OPTIONS||{},{skipUnder:()=>DWIND.map(w=>w.grp)});}
+{const nlSkip=()=>((typeof DWIND!=='undefined'?DWIND.map(w=>w.grp):[]).concat(NL_VESSELS.length?[NL_VESSEL_ROOT]:[]));
+ if(typeof DWIND!=='undefined'&&DWIND.length)FRAME_HOOKS.push(dt=>{for(const w of DWIND)w.grp.rotateZ(w.rate*nlD(dt,.016));});
+ window.LOD_OPTIONS=Object.assign(window.LOD_OPTIONS||{},{skipUnder:nlSkip});}
 const nlFr=new THREE.Frustum(),nlPm=new THREE.Matrix4();
 FRAME_HOOKS.push(()=>{camera.updateMatrixWorld();nlPm.multiplyMatrices(camera.projectionMatrix,camera.matrixWorldInverse);nlFr.setFromProjectionMatrix(nlPm);const P=camera.position;let shown=0;
  for(const e of NL_GROUPS){const d=P.distanceTo(e.sphere.center)-e.sphere.radius;const v=d<e.range&&nlFr.intersectsSphere(e.sphere);e.G.visible=v;if(v)shown++;}window._chunksShown=shown;});
@@ -119,5 +137,5 @@ if(typeof BIO!=='undefined'&&BIO.host){BIO.setScene(scene);BIO.setSun([-.5,.76,.
  if(BIO.lodTick)FRAME_HOOKS.push(()=>BIO.lodTick(camera));}
 LABELS=new THREE.Group();LABELS.userData.probeSkip=true;scene.add(LABELS);
 globalThis._registered=REG.length;window._chunks=NL_GROUPS.length;window._buildMs=Math.round(performance.now()-NL_B0);
-window._nulab=Object.assign(window._nulabPlan||{},{placed:NL_PLACE.length,chunks:NL_GROUPS.length,mounds:NL_MOUNDS,standins:NL_STANDINS,standinKeys:NL_STANDIN_KEYS,owed:NL_OWED,earth:NL_EARTH,water:window._nlWater||null,
+window._nulab=Object.assign(window._nulabPlan||{},{placed:NL_PLACE.length,boatsBuilt:NL_VESSELS.length,chunks:NL_GROUPS.length,mounds:NL_MOUNDS,standins:NL_STANDINS,standinKeys:NL_STANDIN_KEYS,owed:NL_OWED,earth:NL_EARTH,water:window._nlWater||null,
  byKind:NL_PLACE.reduce((a,p)=>{a[p.kind]=nlD(a[p.kind],0)+1;return a;},{})});

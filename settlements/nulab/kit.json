@@ -6,6 +6,7 @@
   "settlements/nulab/gen/69n-kcity-bundle.js",
   "settlements/nulab/gen/69n2-nl-flora-bundle.js",
   "settlements/nulab/gen/69n3-dalab-pack.js",
+  "settlements/nulab/gen/69n4-nl-ringsea-bundle.js",
   "settlements/dalab/src/69d-dalab-mat.js",
   "settlements/dalab/src/69e-dalab-helpers.js",
   "settlements/dalab/src/70-dalab-dwellings.js",
@@ -14,13 +15,16 @@
   "settlements/dalab/src/72-dalab-civic.js",
   "settlements/dalab/src/72b-dalab-marks.js",
   "settlements/dalab/src/73-dalab-sacred.js",
-  "settlements/dalab/src/74-dalab-ranch.js"
+  "settlements/dalab/src/74-dalab-ranch.js",
+  "settlements/dalab/opt/75-dalab-lake-works.js"
  ],
  "scoped": [
   "69n-kcity-bundle.js",
-  "69n2-nl-flora-bundle.js"
+  "69n2-nl-flora-bundle.js",
+  "69n4-nl-ringsea-bundle.js"
  ],
  "pack": "nulab",
+ "sidePacks": true,
  "files": {
   "town": [
    ["core/atmos", ["89-atmos-0-core.js", "89-atmos-0p-presets.js", "89-atmos-a-waves.js", "89-atmos-b-skylight.js"]],
@@ -36,6 +40,7 @@
   "69n-kcity-bundle.js",
   "69n2-nl-flora-bundle.js",
   "69n3-dalab-pack.js",
+  "69n4-nl-ringsea-bundle.js",
   "89n0-nl-matlib.js",
   "89zn-nl-site.js",
   "90n-nl-world.js",
