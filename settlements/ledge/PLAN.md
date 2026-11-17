@@ -422,7 +422,7 @@ Everything here is *proposed* unless section 0 or 9.11 (the owner's answers of 2
 
 ### 9.1 The Ancients' target: replaced, not reused
 
-`kits/ancients/targets/ledge` (`src/89i-ledge.js`) stays as it is, the kit's sheet of a cantilevered cliff city. Ledge's page
+`kits/ancients/targets/ledge` (`src/89i-ledge.js`) stays as it is, the kit's sheet of a cantilevered cliff city, and is **designated for Shelf** (the owner, 2026-11-17; `settlements/shelf/PLAN.md`). Ledge's page
 does **not** call `buildLedge`:
 - it decides everything itself: a 53 KB function of fixed numbers drawing from the kit's global stream (`reseed(9740)`), where
   CLAUDE.md wants records drawn by a builder that decides nothing, and placement on `KRAND` by id;
