@@ -78,8 +78,8 @@
 - **L0, the lode** (2026-11-17): the `opal` family is baked into `kits/resources/data/geology.json` and `lode:great-potch-line`
   (px 1028,1652, r 8 km, peak 235) is stamped (36f68df9c on `claude/resource-nodes-7ec053`). The test holds: the peak lies on dry
   land at the wall's foot (1,429 m), every cell over 200 within 8 km is land, and the lake's cells read 0. The node kind is
-  `opal` (`kits/resources` 44t, `node-opal-low/medium/high`). Noted to that session: Opal Valley reads 230 almost everywhere,
-  so the Line's peak hardly stands above it.
+  `opal` (`kits/resources` 44t, `node-opal-low/medium/high`). Re-baked on our note (f813b5fed, the owner: "Lower and re-bake"):
+  Opal Valley's opal is 150, the Line 235 at its peak (204 and 166 round it), all on land; the test holds.
 - **The Great Potch Line on the page** (`targets/town/90o-lw-opal.js`, 2026-11-17): the Resources kit's opal nodes (sealed in `TG`
   by `tungang_bundle.py` `res=True`) at the wall's foot, an outcrop beside each adit's mouth: 11 (4 high over the lode's peak,
   3 medium, 4 low at the ends), registered in core/tags (`res-node`); every adit, dark adit and vein gallery of the wall (18)
