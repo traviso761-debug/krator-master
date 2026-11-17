@@ -86,7 +86,9 @@ CORE_FILES = ['core/hamlet/10-hamlet-wood.js', 'core/hamlet/20-hamlet-cultures.j
               # the Glaziers' set: their culture id, opt-in (core/tags/glazier/README.md); the cavern the sheet carves their rock in
               # (KCAVERN), its draw and its rock cut (the cut-away opens every void over its own floor)
               'core/tags/glazier/52g-tags-glazier.js', 'core/terrain/39-core-cavern.js', 'core/terrain/host/39e-core-cavern-draw.js',
-              'core/terrain/host/39h-core-cavern-cut.js']
+              'core/terrain/host/39h-core-cavern-cut.js',
+              # its rock dressed in the library's rock face (KCAVERN.rockMaterial) through core/terrain's ground shader (KGROUND)
+              'core/terrain/43-core-ground.js', 'core/terrain/host/39i-core-cavern-rock.js']
 # the host shell from core/host (core/host/README.md): the camera, the frame loop and its clock (core/clock), the panel, the probe,
 # and the authoring tools (inspect, polygon, path). core/engine's 99-host-take.js (with 92-world.js) hands it the page.
 sys.path.insert(0, os.path.join(ROOT, 'core', 'host'))

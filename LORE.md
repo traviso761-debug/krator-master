@@ -575,7 +575,10 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
     martial order of sword and bow; its central monastery is **the House of the Tempest** on the West Arm in the Gold March,
     about 600 strong, and its house in Qiblai is the Tempest's daughter [the owner, 2026-11-16; `settlements/strongwall/PLAN.md`].
     The gold monastery is **the Yellow Monastery, the Order of the Beacon**, whose head house is the refurbished Ancient
-    beacon fort over the Rift [the owner, 2026-11-16; `settlements/beacon/PLAN.md`]. The turquoise monastery is not yet named.
+    beacon fort over the Rift [the owner, 2026-11-16; `settlements/beacon/PLAN.md`]. The turquoise (teal) monastery is the
+    **Iridescent Order**: it keeps a house in Lāiṭwāl, the Light Wall, and its head monastery stands at the outlet of Lāiṭwāl's
+    lake in Opal Valley, on the shelf below the sill where the lake spills over the lower riser (scale model px 1016,1655) [the
+    owner, 2026-11-16 and 17; `settlements/iridescent/PLAN.md`].
   - **Grēṭ-Āil, the Azure Dream's head monastery**, on the long isle's south shore facing Erehwon across the lake, in a
     cove at scale-model px 846,1508.7 [the owner, 2026-11-16; `settlements/azure-dream/PLAN.md`].
     - **The fishermonks** fish the lake from dugouts, by night with lamps, without qualm.

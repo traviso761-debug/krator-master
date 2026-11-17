@@ -24,6 +24,7 @@
   "straw": {"lib": "straw.bedding", "scale": [1.0, 1.0], "tint": {"keep": 0.45, "mean": 0.55}, "roughLift": 0.4, "specular": 0.08},
   "wash": {"lib": "plaster.white_stucco_02", "scale": [2.0, 2.0], "tint": {"keep": 0.45, "mean": 0.8}, "roughLift": 0.3, "specular": 0.12},
   "hewn": {"lib": "rock.basalt.flowbanded", "scale": [2.2, 2.2], "tint": {"keep": 0.6, "mean": 0.4}, "roughLift": 0.2, "specular": 0.2},
+  "rockface": {"lib": "rock.rock_face", "scale": [3, 3], "tint": {"keep": 0, "mean": 0.497, "colour": "#887e70"}, "metal": 0, "normalScale": 0.8, "breakup": {"mix": 0.45, "macro": 0.1, "cell": 6}},
   "gilt": {"lib": "metal.gold", "scale": [0.6, 0.6], "tint": {"keep": 0.85, "mean": 0.6}, "roughLift": 0.0, "specular": 0.8, "metal": 0.85},
   "carpet": {"lib": "cloth.rug.wool", "scale": [1.6, 1.6], "tint": {"keep": 0.7, "mean": 0.45}, "roughLift": 0.4, "specular": 0.08},
   "celadon": {"lib": "ceramic.celadon.crackle", "scale": [0.4, 0.4], "tint": {"keep": 0.7, "mean": 0.65}, "roughLift": 0.0, "specular": 0.6},

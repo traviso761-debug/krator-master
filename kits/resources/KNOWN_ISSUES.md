@@ -47,19 +47,17 @@
 - [x] **potash, soda and marble never drew their sets** (found 2026-11-16): they were packed (`materials.json`, `tex/`) but missing
       from `SV_LIB` (`26k-kit.js`), and the engine makes a material only for an `SV_LIB` key, so their nodes drew the fallback
       (vertex colours). Added to `SV_LIB` with the mined goods' sets; the resources page's look of those three changes.
-- [ ] **The mined goods' kinds have no geology layer** (2026-11-16, `42s-res-ore-mined.js`): the node field places none of the
-      eleven; they are owner nodes until a bake gives each a layer. `GEOLOGY.md`, "The mined goods' kinds", says which need a
-      layer of their own (zinc, peat, silica) and which a rule on existing layers; the bake is the scale-model session's.
-- [ ] **Five of the mined goods draw on vertex colours:** zinc (`rock.sphalerite`), lodestone (`rock.magnetite`), opal
+- [x] **The mined goods' layers are baked** (2026-11-16, the owner: "Bake now"): `--mined` on `data/geology.json`, the lodes
+      stamped after it, the reached builds rebuilt (`GEOLOGY.md`, "The mined goods' kinds").
+- [ ] **The ledger does not take the mined goods:** `tests/test-res.js` loads `42r` only, so `data/ledger.json` (and the
+      trade's `RES_LEDGER.tradeGoods`) leaves out the ten new kinds. Taking them means loading `42s` in the test and rewriting
+      the ledger: every polity's imports move, so it waits for the trade work.
+- [ ] **Four of the mined goods draw on vertex colours:** lodestone (`rock.magnetite`), opal
       (`rock.opal.matrix`), jade (`rock.serpentinite`, `stone.nephrite`) and amber (`rock.amber.blueearth`); prompts in
-      `core/materials/PROMPTS-NEEDED.md` sections 46, 51, 52 and 53.
+      `core/materials/PROMPTS-NEEDED.md` sections 46, 52 and 53.
 - [ ] **Building kits do not see the mined goods' kinds:** kits/islanders, kits/construction and the isle demo read `42r` and
-      `44r` in place, not `42s` and `44s`-`44u` (kept apart so their pages did not move). A works there that should take zinc or
+      `44r` in place, not `42s` and `44s`-`44u` (kept apart so their pages did not move). A works there that should take lodestone or
       peat needs those four fragments added to its build's list, and a rebuild.
 - [ ] **No trade link yet:** each kind names the Gemini good it feeds (`RES_ORE.kinds[k].good`), but `46r-res-ledger.js` and
       core/simulation do not read it; Gemini's model is on its own branch and docs.
-- [ ] **`lode:thalaba-sulfur` is recorded, not stamped** (2026-11-16, for the Thalaba session; the owner settled Thalaba's own
-      small sulfur node, 30 t a year): it is in `data/lodes.json` but not on `data/geology.json`. Stamping
-      (`python3 tools/scale-model/geology.py --lodes kits/resources/data/geology.json kits/resources/data/lodes.json`) changes the
-      geology every open-world region, Copper Glacier and Firebliss read (13 build commands, 62 pages: `tools/reach.py`), so it
-      rides with the next bake or the next all-builds rebuild. Until then Thalaba places it as an owner node.
+- [x] **`lode:thalaba-sulfur` stamped** (2026-11-16, with the mined goods' bake), and Lightwall's `lode:great-potch-line` (opal).
