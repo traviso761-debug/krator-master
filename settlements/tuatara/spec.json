@@ -1,0 +1,453 @@
+{
+ "_": "Proposed for Tuatara (kits/lizardmen/settle/towns_plan.py; settlements/tuatara/PLAN.md). Page frame: x east, z SOUTH, metres from the pin. GUIDE.md section 4 turns this into src/81-tu-spec.js (var LZV_SPEC). Keys starting with _ are the plan's notes, not the spec's.",
+ "_pin": {
+  "px": [
+   818,
+   1554
+  ],
+  "id": "szv27b2reu",
+  "model_m": -1703.9,
+  "build": {
+   "near": [
+    -4500,
+    4500,
+    -4500,
+    4500,
+    20
+   ],
+   "far": [
+    -30000,
+    30000,
+    -30000,
+    30000,
+    500
+   ]
+  }
+ },
+ "_census": {
+  "Tenders": 660,
+  "Makers": 600,
+  "Drovers": 840,
+  "Line warriors": 510,
+  "Interpreters": 90,
+  "Bulwarks": 300
+ },
+ "key": "tuatara",
+ "name": "Tuatara",
+ "seed": 8301,
+ "spiral": {
+  "axis": 15,
+  "windings": 5,
+  "depth0": 36,
+  "court": 46,
+  "street": 7,
+  "ratio": 1.25,
+  "mouthExtra": 18
+ },
+ "ley": {
+  "to": [
+   790,
+   1578
+  ],
+  "name": "the east reliquary",
+  "stone": 58
+ },
+ "court": {
+  "nest": "lz-nest"
+ },
+ "pools": {
+  "w0": [
+   [
+    "lz-warren",
+    1
+   ]
+  ],
+  "w1": [
+   [
+    "lz-warren",
+    4
+   ],
+   [
+    "lz-tower",
+    2
+   ]
+  ],
+  "w2": [
+   [
+    "lz-makers",
+    1
+   ]
+  ],
+  "w3": [
+   [
+    "lz-longhouse",
+    1
+   ]
+  ],
+  "w4": [
+   [
+    "lz-lodge",
+    1
+   ]
+  ]
+ },
+ "gaps": {
+  "w0": [
+   2.2,
+   4.2
+  ],
+  "w1": [
+   3.2,
+   6.2
+  ],
+  "w2": [
+   4.2,
+   8.2
+  ],
+  "w3": [
+   12.0,
+   20.0
+  ],
+  "w4": [
+   14.0,
+   24.0
+  ]
+ },
+ "wells": [
+  1,
+  2,
+  2,
+  2,
+  2
+ ],
+ "specials": [
+  [
+   "gl-tank",
+   0,
+   0,
+   0.52,
+   2.2
+  ],
+  [
+   "lz-seer",
+   0,
+   1,
+   0.45,
+   2.0
+  ],
+  [
+   "lz-medicine",
+   0,
+   2,
+   0.38,
+   1.8
+  ],
+  [
+   "lz-obelisk",
+   0,
+   3,
+   0.55,
+   2.0
+  ],
+  [
+   "lz-hall-bronze",
+   2,
+   0,
+   0.35,
+   2.0
+  ],
+  [
+   "lz-hall-reed",
+   2,
+   1,
+   0.62,
+   2.0
+  ],
+  [
+   "lz-hall-bone",
+   2,
+   2,
+   0.38,
+   2.0
+  ],
+  [
+   "lz-warehouse",
+   2,
+   3,
+   0.6,
+   2.0
+  ],
+  [
+   "lz-granary",
+   3,
+   0,
+   0.3,
+   2.2
+  ],
+  [
+   "lz-granary",
+   3,
+   1,
+   0.68,
+   2.2
+  ],
+  [
+   "lz-granary",
+   3,
+   2,
+   0.34,
+   2.2
+  ],
+  [
+   "lz-granary",
+   3,
+   3,
+   0.66,
+   2.2
+  ],
+  [
+   "lz-granary",
+   3,
+   0,
+   0.75,
+   2.2
+  ],
+  [
+   "lz-barracks",
+   4,
+   1,
+   0.35,
+   2.4
+  ],
+  [
+   "lz-barracks",
+   4,
+   3,
+   0.65,
+   2.4
+  ],
+  [
+   "lz-barracks",
+   4,
+   0,
+   0.5,
+   2.4
+  ]
+ ],
+ "mouth": {
+  "muster": true,
+  "tents": [
+   "lc-seer",
+   "lc-sail",
+   "lc-hide",
+   "lc-hide",
+   "lc-shield",
+   "lc-hide",
+   "lc-shield"
+  ]
+ },
+ "fields": {
+  "dir": [
+   0.0,
+   1.0
+  ],
+  "r0": 700,
+  "r1": 3300,
+  "w": 130,
+  "d": 84,
+  "half": 9,
+  "crops": [
+   "ashmillet",
+   "sandpan-fonio",
+   "bambara-groundnut",
+   "frillpod"
+  ],
+  "farms": 7,
+  "windmills": 3,
+  "maxSlope": 0.12,
+  "gaps": 22,
+  "circle": true
+ },
+ "hamlet": {
+  "id": "tuatara.diggings",
+  "focus": "mine",
+  "site": "the best copper node KRES gives",
+  "workers": 120,
+  "popMax": 210
+ },
+ "expect": {
+  "people": 3000,
+  "wells": 12,
+  "keys": [
+   "lz-nest",
+   "lz-ley",
+   "lz-muster",
+   "gl-tank",
+   "lz-cistern",
+   "lz-mine"
+  ],
+  "lake": false,
+  "hamlet": true
+ },
+ "look": {
+  "hour": 10.2,
+  "dens": 1.8,
+  "fog": 4e-05
+ },
+ "layers": [
+  "ground.savanna.litter",
+  "ground.dirt",
+  "ground.tilled",
+  "ground.ash"
+ ],
+ "_spiral": {
+  "axis_deg": 15.0,
+  "why": "the mouth (+e2) due north, toward the Sultanate's west watch fort (818,1531: 46 km) and the raiders' road; the arms then run 15 degrees off east, 63 degrees off the contour (the ground falls 5.3 % to the north-east)",
+  "winding_depths_m": [
+   36.0,
+   45.0,
+   56.3,
+   70.3,
+   87.9
+  ],
+  "outer_radius_m": 495.6,
+  "mouth": [
+   467.1,
+   -358.4
+  ]
+ },
+ "_ley": {
+  "unit": [
+   -0.7593,
+   0.6508
+  ],
+  "distM": 73756,
+  "bearing_deg": 229.4,
+  "stone": [
+   -44.0,
+   37.7
+  ]
+ },
+ "_muster": [
+  467.1,
+  -396.4
+ ],
+ "sites": [
+  {
+   "key": "lz-cistern",
+   "x": 245.4,
+   "z": -509.6,
+   "ry": 0,
+   "kind": "works",
+   "name": "a sunken brick cistern (the dry season)"
+  },
+  {
+   "key": "lz-cistern",
+   "x": 551.4,
+   "z": -125.9,
+   "ry": 0,
+   "kind": "works",
+   "name": "a sunken brick cistern (the dry season)"
+  },
+  {
+   "key": "lz-cistern",
+   "x": 442.2,
+   "z": 352.7,
+   "ry": 0,
+   "kind": "works",
+   "name": "a sunken brick cistern (the dry season)"
+  },
+  {
+   "key": "lz-cistern",
+   "x": 0.0,
+   "z": 565.6,
+   "ry": 0,
+   "kind": "works",
+   "name": "a sunken brick cistern (the dry season)"
+  },
+  {
+   "key": "lz-cistern",
+   "x": -442.2,
+   "z": 352.7,
+   "ry": 0,
+   "kind": "works",
+   "name": "a sunken brick cistern (the dry season)"
+  },
+  {
+   "key": "lz-cistern",
+   "x": -551.4,
+   "z": -125.9,
+   "ry": 0,
+   "kind": "works",
+   "name": "a sunken brick cistern (the dry season)"
+  },
+  {
+   "key": "lz-cistern",
+   "x": -245.4,
+   "z": -509.6,
+   "ry": 0,
+   "kind": "works",
+   "name": "a sunken brick cistern (the dry season)"
+  }
+ ],
+ "_resolve": [
+  {
+   "key": "lz-mine",
+   "kind": "copper",
+   "n": 5,
+   "r": 6000,
+   "why": "the copper diggings 2-6 km out: KRES.near(x, z, \"copper\", 6000) from kits/resources, nearest first, one mine a node, none inside 900 m"
+  }
+ ],
+ "views": [
+  {
+   "name": "Overview",
+   "at": [
+    0,
+    0
+   ],
+   "from": [
+    -700,
+    420,
+    900
+   ]
+  },
+  {
+   "name": "The nest hall",
+   "at": [
+    0,
+    0
+   ],
+   "from": [
+    60,
+    26,
+    70
+   ]
+  },
+  {
+   "name": "The mouth and the war camp",
+   "at": [
+    0,
+    -560
+   ],
+   "from": [
+    90,
+    30,
+    120
+   ]
+  },
+  {
+   "name": "The copper diggings",
+   "at": [
+    0,
+    0
+   ],
+   "from": [
+    300,
+    160,
+    300
+   ]
+  }
+ ],
+ "_hamlet_note": "site, link and resource come from the copper node KRES gives (GUIDE.md 4.3)"
+}
