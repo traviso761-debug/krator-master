@@ -241,15 +241,15 @@
    "code": "Cfa",
    "name": "humid subtropical",
    "color": "#c8ff50",
-   "pct": 9.66,
-   "km2": 1212772
+   "pct": 9.65,
+   "km2": 1211340
   },
   {
    "code": "ET",
    "name": "tundra",
    "color": "#b2b2b2",
    "pct": 9.56,
-   "km2": 1200032
+   "km2": 1200020
   },
   {
    "code": "WS",
@@ -277,7 +277,7 @@
    "name": "hot-summer Mediterranean",
    "color": "#ffff00",
    "pct": 5.6,
-   "km2": 702724
+   "km2": 702496
   },
   {
    "code": "BSk",
@@ -298,7 +298,7 @@
    "name": "subarctic (boreal)",
    "color": "#007d7d",
    "pct": 3.27,
-   "km2": 409872
+   "km2": 409952
   },
   {
    "code": "BSh",
@@ -312,7 +312,7 @@
    "name": "dry-summer warm continental",
    "color": "#c800c8",
    "pct": 2.81,
-   "km2": 352980
+   "km2": 352984
   },
   {
    "code": "BWk",
@@ -325,15 +325,15 @@
    "code": "Am",
    "name": "tropical monsoon",
    "color": "#0078ff",
-   "pct": 2.26,
-   "km2": 284132
+   "pct": 2.28,
+   "km2": 286120
   },
   {
    "code": "Dfb",
    "name": "warm-summer continental",
    "color": "#37c8ff",
-   "pct": 2.22,
-   "km2": 278256
+   "pct": 2.21,
+   "km2": 277528
   },
   {
    "code": "HT",
@@ -347,7 +347,7 @@
    "name": "tropical savanna",
    "color": "#46aafa",
    "pct": 1.62,
-   "km2": 203476
+   "km2": 203896
   },
   {
    "code": "XA",
@@ -367,22 +367,22 @@
    "code": "Cfb",
    "name": "oceanic",
    "color": "#64ff50",
-   "pct": 1.41,
-   "km2": 176404
+   "pct": 1.4,
+   "km2": 176276
   },
   {
    "code": "Af",
    "name": "tropical rainforest",
    "color": "#0000ff",
    "pct": 0.86,
-   "km2": 107732
+   "km2": 107720
   },
   {
    "code": "Csb",
    "name": "warm-summer Mediterranean",
    "color": "#c8c800",
    "pct": 0.73,
-   "km2": 91428
+   "km2": 91476
   },
   {
    "code": "XV",

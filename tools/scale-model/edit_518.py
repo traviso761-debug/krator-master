@@ -557,9 +557,13 @@ def main():
 
     # 3b. Onshore dark flood-basalt horst headlands on SW Crookshore & NE Double Delta / N Ria
     # Curvi-parallel horst harmonic aligned with The Arch's NE-SW spreading axis (center of curvature ~ [420, 560])
-    r_arch = np.hypot((xx - 430.0) * 0.92, (yy - 575.0) * 1.08)
-    horst_wave = np.tanh(2.6 * np.sin(2.0 * math.pi * r_arch / 17.0 + 0.35 * n3))  # crisp flat-topped stepcut blocks
-    horst_step = np.maximum(0.0, horst_wave)  # 0 in graben corridors, +1 on flat-topped horst blocks
+    # Re-run 2026-11-17 (the owner: "i don't like that diagonal artifact by crookshore"): Gemini's regular sine bands
+    # (concentric here, straight in the Double Delta) drew stripes; the blocks are now an irregular flat-topped field from
+    # their own generator (rng 5181, so every other pass's noise is unchanged), and the zones' edges fade over 10 px.
+    rng_h = np.random.default_rng(5181)
+    blk = nd.gaussian_filter(rng_h.standard_normal(sh), 5.5)
+    blk /= float(blk.std()) or 1.0
+    horst_step = np.maximum(0.0, np.tanh(2.4 * (blk - 0.2)))  # 0 in graben lows, +1 on flat-topped horst blocks
 
     # SW Crookshore onshore horst zone (covering coastal headlands 75..185 x 545..725 and upland rift shoulder 160..305 x 680..825)
     crook_zone = (
@@ -569,7 +573,7 @@ def main():
     )
     # Smooth taper at zone edges
     crook_dist_in = nd.distance_transform_edt(crook_zone)
-    crook_w = sstep(0.0, 4.5, crook_dist_in)
+    crook_w = sstep(0.0, 10.0, crook_dist_in)
     crook_lift = crook_w * horst_step * (210.0 + 165.0 * sstep(40.0, 900.0, Eo) + 22.0 * n3)
     En = np.where(crook_zone, En + crook_lift, En)
 
@@ -579,8 +583,8 @@ def main():
          | ((xx >= 645) & (xx <= 828) & (yy >= 185) & (yy <= 288) & (Eo > 120.0) & (Eo < 3800.0)))
         & ~whas2 & ~protect & ~riv_corr_all
     )
-    dd_wave = np.maximum(0.0, np.tanh(2.6 * np.sin(2.0 * math.pi * ((xx - 480.0) * 0.58 + (yy - 140.0) * 0.81) / 16.0 + 0.3 * n3)))
-    dd_w = sstep(0.0, 4.0, nd.distance_transform_edt(dd_zone))
+    dd_wave = horst_step
+    dd_w = sstep(0.0, 10.0, nd.distance_transform_edt(dd_zone))
     dd_lift = dd_w * dd_wave * (195.0 + 175.0 * sstep(30.0, 800.0, Eo) + 20.0 * n3)
     En = np.where(dd_zone, En + dd_lift, En)
     arch_horst_mask = ((crook_zone & (crook_lift > 70.0)) | (dd_zone & (dd_lift > 70.0)))
@@ -1075,6 +1079,7 @@ def render_crops(st0, st1, t0, t1, out_path):
         ('Pass 1: Spider Lake Crater, NW Rampart & SW 9102 Spillway', (1190, 1365, 135, 265)),
         ('Pass 2: SE Tharn 108 km Crater & Cryo-Fumarole Tarn (1375,1525)', (1315, 1435, 1465, 1585)),
         ('Pass 3a: Crookshore Basalt Horsts & Twin Ejecta Bays', (50, 210, 560, 720)),
+        ('Pass 3a: NE Double Delta / N Ria Basalt Horsts', (500, 830, 100, 290)),
         ('Pass 3b: Copper Tarn Collar & Verdigris Outwash (147,1148)', (105, 195, 1105, 1190)),
         ('Pass 4: n semiarid Dam-Relic Salt Lakes 360° Evaporite Rings', (665, 965, 390, 505)),
         ('Pass 5: Ring Isles Carbonate Terraces, Shoals & Port Goto', (875, 1035, 680, 840)),

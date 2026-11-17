@@ -910,8 +910,11 @@ and every raster (heights, water, the five temperatures, rain, class, zone) is c
 Gemini's map reshaping for the 5.1 geology (`openworld/GEOLOGY-STATIONS-5.1.md`, the six KSTRATA 5.1 recipes), written
 as its own `edit_517.py` on `gemini/scale-model-517-reshape` (4a8b14e7f, off claude/integration-3 at 930e5c920) and
 re-run here as edit 8 after Erewhon's lake and Phēr's edits (the owner, 2026-11-17: "apply gemini's geology-based
-reshaping"). Unchanged but for its number and one fix: it read `DATA.landforms` as a bare list (the file did not exist
-on its base) and now reads and writes the `{format, version, landforms}` file. Six passes, each keeping settlement pins
+reshaping"). Unchanged but for its number and two fixes: it read `DATA.landforms` as a bare list (the file did not exist
+on its base) and now reads and writes the `{format, version, landforms}` file; and the Arch's horsts were regular sine
+bands (concentric round Crookshore, straight diagonals in the Double Delta) that drew stripes across the land (the owner:
+"i don't like that diagonal artifact by crookshore"), so they are now an irregular flat-topped block field from their own
+generator (rng 5181, every other pass's noise unchanged), each zone's edges fading over 10 px instead of 4. Six passes, each keeping settlement pins
 (1-px halo), biome station sites (2 px), vents and the edit 1-6 polygons fixed:
 
 1. **Spider Lake** (1289,213.5): a secondary ejecta crater (59 x 43 px ellipse) round the lake at 1,460 m, a NW
@@ -929,7 +932,7 @@ on its base) and now reads and writes the `{format, version, landforms}` file. S
    (`kind: 'pancake_dome'`, which core/world's stamper does not know yet and skips); planar normal-fault footwall facets
    along the Rift Rim's scarps; and the 2-cell neouterwall cauldron shore-apron alignment owed from f124d9ff5.
 
-40,891 height cells moved, 1,372 cells changed wet or dry, 13 landform records in all; the worst dry river climb 26.2 m
+37,442 height cells moved, 1,372 cells changed wet or dry, 13 landform records in all; the worst dry river climb 26.2 m
 (`r_lab_chaos_n`). Temperatures lapsed, rain, class and zone reclimated, the paint relit; `edit_518.crops.jpg` holds
 the before and after crops. `tests/test_smodel.py` section 20 holds Gemini's checks. With it, the two north-east outer wall
 station bases (garnet, vitreous) that failed before now pass: 290 checks, no failure.
