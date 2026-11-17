@@ -164,37 +164,53 @@
    "bytes": 1178015,
    "sha256": "1e64384fd3e3a5a8d74cb691003b83f79a612811491c41d83b2287ba9f36be3a"
   },
+  "biomes/firebliss/dist/firebliss-east.html": {
+   "bytes": 1867514,
+   "sha256": "2e793120f6be0b39aba72772fbd7ad3660699254847011c0d80bcf5547c28341"
+  },
   "biomes/firebliss/dist/firebliss-glass.html": {
-   "bytes": 1958371,
-   "sha256": "ef28c822c04351c5392a1e02897e932ec7cf78219c2a1b966533cf84179c6373"
+   "bytes": 1961770,
+   "sha256": "ab8e0ba579c55a1152fd39c09e34911717dbe50e642fe655ba9e3a1b2b10b82b"
+  },
+  "biomes/firebliss/dist/firebliss-glen.html": {
+   "bytes": 1866688,
+   "sha256": "b92c4263ff8aee561d34f7a9e738f2d33ba39db5cfe0f750ce82f38e285c5cee"
+  },
+  "biomes/firebliss/dist/firebliss-mons.html": {
+   "bytes": 1866299,
+   "sha256": "6bd780fab6965e755eb21c3026f1f0943456c108e3314511989895717d873f23"
+  },
+  "biomes/firebliss/dist/firebliss.html": {
+   "bytes": 1868244,
+   "sha256": "b7a1c670203dd04f421188863a8b917585f3ea2e88f8412401cd0d392b08ad89"
   },
   "biomes/geyser/dist/geyser-basin.html": {
-   "bytes": 1300468,
-   "sha256": "a2e614fcbcb4de1828264c46e0e21abcaad79a27654911205fba8d6e7d2dcd5d"
+   "bytes": 1342680,
+   "sha256": "730a8c2341e1a66ee11eb8f2b2fdf90683f2fc3c5a4a0bbc87fad4c77ff67eaa"
   },
   "biomes/geyser/dist/geyser-corona.html": {
-   "bytes": 1432743,
-   "sha256": "6562304c9f48b6ea25eb27bcca95d0972f84c13b9de539ea59d56762ae759f8c"
+   "bytes": 1474955,
+   "sha256": "8c14793990ba7a2be20e24791e0b1d64a47c5af17c20e7e8d17edd58b66b0ba5"
   },
   "biomes/geyser/dist/geyser-cove.html": {
-   "bytes": 1495138,
-   "sha256": "8e463b72aea0bdc590e319000bea3697ffddb075605b55135e4da243a9d266a1"
+   "bytes": 1593386,
+   "sha256": "f533dc9b6b4870b190ff834ed2ff3d26b1ed6fafd9daef2162084d00b52bde05"
   },
   "biomes/geyser/dist/geyser-ice.html": {
-   "bytes": 1326723,
-   "sha256": "d37ec4682425e16e3e5511dd1d0faca0722d18dcea886c9b110583670543663a"
+   "bytes": 1368935,
+   "sha256": "a3db0066f3f777d0ba158bf9c583784152a4b0c5db6cd185a2681f26ae23be79"
   },
   "biomes/geyser/dist/geyser-puna.html": {
-   "bytes": 1299518,
-   "sha256": "baaf9ae60695af910915801a0fec30fb3e40a47523ef24ec5be29ea12801cbb4"
+   "bytes": 1341730,
+   "sha256": "ba9b029f82b9b32add984649ce4ae5d94dd5910386bed50d013b8d8395dbc2a4"
   },
   "biomes/geyser/dist/geyser-stills.html": {
-   "bytes": 1466631,
-   "sha256": "7c333c0400b63176858f145e2562a31df5e0d01c1b3d667b10344ccb3f108448"
+   "bytes": 1508124,
+   "sha256": "67c454f8bbe8db750ecbec777cbff3223519c9238527513d8905f96c8ab58b10"
   },
   "biomes/geyser/dist/geyser.html": {
-   "bytes": 1435970,
-   "sha256": "bde19b15dd720c9580493f15f8b4c3b8b6f0606f74ee388a7b8457d1b5a1dfb4"
+   "bytes": 1477463,
+   "sha256": "ff22f9d6230b15dadd300aa0209c02926f1c84a29be3ec1f625bc819bf83cd14"
   },
   "biomes/godthrone/dist/godthrone-blood.html": {
    "bytes": 3408108,
@@ -309,8 +325,8 @@
    "sha256": "2602892b38f330c6cce62d003e099a659d41c4eeaf8a66084e3f89af4f02325d"
   },
   "biomes/korona/dist/korona-silkhead.html": {
-   "bytes": 1738522,
-   "sha256": "44012e427c40b1cbf3ff716ad1e24fefe55ad674aca15bf62798f4b070773413"
+   "bytes": 1747585,
+   "sha256": "a955040c3f245442d63fc5ee429ef16852c772654a96d27e60b974e20dcba5a4"
   },
   "biomes/korona/dist/korona-trench.html": {
    "bytes": 1863910,
@@ -347,6 +363,10 @@
   "biomes/nhighlands/dist/nhighlands-montane.html": {
    "bytes": 8150503,
    "sha256": "ac8e496248f7d14cfe332e7418e1e3ef05b6533e853ba710a7d11744ae22e6e7"
+  },
+  "biomes/nhighlands/dist/nhighlands-tiguantin.html": {
+   "bytes": 10768601,
+   "sha256": "d2ef4ee871fff6019db2f8831c00bff6ba9d3e85604fcdd95c356ba2369a2ca4"
   },
   "biomes/nhighlands/dist/nhighlands.html": {
    "bytes": 8694255,

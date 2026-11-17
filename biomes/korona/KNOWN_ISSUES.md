@@ -177,10 +177,11 @@ Open items are `- [ ]`; `build.py` counts them. Close an item when the fix is in
 
 ## Open
 
-- [ ] **Station 7, Silkhead Gorge (2026-11-16, `stations/silkhead`, `dist/korona-silkhead.html`): the GPU verify is owed.** Built in a
-      cloud session with no GPU: `verify.py dist/korona-silkhead.html --assert` ran on SwiftShader only (the result is in the commit
-      message and `PLAN.md` section 3). Owed on the owner's machine: `KRATOR_GPU_LANE=auto python3 verify.py dist/korona-silkhead.html
-      --assert --views "Vertigo (under the lip at +3580 m)"`, the draw calls at each view, and the look (below).
+- [x] **Station 7, Silkhead Gorge (2026-11-16, `stations/silkhead`, `dist/korona-silkhead.html`): the GPU verify was owed** (closed 2026-11-17).
+      Added `"31b-core-leafset.js"` to `stations/silkhead/station.json` `"core"` (eliminating `check_assembly.py` `MISSING BIO.leafOn / BIO.leafQ`),
+      rebuilt through `tools/build.py`, and ran `KRATOR_GL=gpu` `verify.py dist/korona-silkhead.html --assert --all-views` on `rtx`: **all 12 views
+      pass, exit 0 `OK`** (130-153 draw calls, 3.49-4.14 M triangles drawn / 2.95 M BIO triangles, attach audit 0.91%, max samplers 13, export
+      profile 9/9).
 - [ ] **Station 7: the spec's heights are not the model's (for the scale-model queue; nothing edited here).** The spec puts the rim at
       +3,620 m over the trench at -1,180 m; today's model (5.1, `tools/scale-model/model/data`) has the table at **1,430-1,570 m** round
       1096,526 and the trench at -580 to -1,400 m within 12-16 km east (`NOTES.md`, "What the model says there today"). The page keeps the

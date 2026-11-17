@@ -82,9 +82,9 @@ against the dithered one (`?kground=0`), the shadows (`?shadow=1`).
 - **Camera Framing (`5.0 × 5.0 km` vertical relief cut):** Vertigo overhang camera tucked under a carved `KCARVE` lip at `+3,580 m` looking ESE along the curved corona ring-scarp: Hum whistle-script contour carvings (`culture: tepui`) etched into a continuous `tepui` bedding recess in the foreground, woven wild-silk basket spans and braided liana rope-ladders bridging a `180 m` gorge cleft, `ATMOS.fogBelt` cloud cascades spilling off the table lip, and `4.7 km` below in dense golden `1.86 atm` haze, a circular `obsidian-pancake` dome steaming beside black pitcher pools.
 - **Hydrology & Trade Tie-In:** Windward (`3,500–4,000 mm/yr`) cloud-water and frost-tank snowmelt plunge off the `tepui` rim as `600 m` free-falling mist-veils (`WATER.fall`) into endorheic trench lakes; winter-adapted hoar-table tribes and Hum-speaking cliff clans hoist rare trench-floor carnivore reagents, lichen stone-dyes, and knapped trench `obsidian-pancake` blades up silk-winch stations to trade with the **Painted Men** (`LORE.md §6.5`) and **Serai** caravans.
 
-### 3. Station 7 as built (`stations/silkhead`, `dist/korona-silkhead.html`; 2026-11-16)
+### 3. Station 7 as built (`stations/silkhead`, `dist/korona-silkhead.html`; 2026-11-16, GPU-verified 2026-11-17)
 
-`python3 build.py --station silkhead`. On station 1's host and `47` unchanged (no `src/` fragment moved: the six other pages are as before);
+`python3 tools/build.py biomes/korona --station silkhead` (station.json `"core"` includes `31b-core-leafset.js` and `45-core-span.js`; GPU `--assert --all-views` passes all 12 views at 130-153 draw calls, 3.49-4.14 M triangles drawn, 13 samplers). On station 1's host and `47` unchanged (no `src/` fragment moved: the six other pages are as before);
 the station's own `45` (the stage), `89-host-sky`, `89x-host-silkhead` (the lip, the veils, the spans, the dome's glass and steam, the
 hazards) and `99-host-take` (views, inspector, checks).
 

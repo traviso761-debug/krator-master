@@ -60,7 +60,7 @@ const SHADOW_ON=new URLSearchParams(location.search).get('shadow')!=='0'&&typeof
  /* the far trees: the Throne's octahedral impostors for the kin pines past their range (34-core-impostor.js; its gain the Throne's, as ringisles sets it) */
  if(BIO.impostorLook)BIO.impostorLook({gain:+(Q.get('impgain')||2.2),wrap:1});
  if(BIO.bakeImpostors){try{BIO.bakeImpostors(renderer,{wait:180});}catch(e){reportErr('impostors: '+e.stack);}}
- if(typeof GROUND_HZ!=='undefined'&&GROUND_HZ){try{window._horizon.mats=KHORIZON.shadeScene(scene,GROUND_HZ,{filter:m=>!m.userData.farField&&m!==MAT_GROUND});}catch(e){reportErr('horizon: '+e.stack);}}
+ if(typeof GROUND_HZ!=='undefined'&&GROUND_HZ){try{window._horizon.mats=KHORIZON.shadeScene(scene,GROUND_HZ,{filter:m=>!m.userData.farField&&m.material!==MAT_GROUND});}catch(e){reportErr('horizon: '+e.stack);}}
  if(AIR.snow&&ATMOS.snowOnScene){scene.traverse(o=>{const m=o.material;if(!o.isMesh||!m||m.userData.noSnow||!o.geometry.attributes.aN||!m.userData.bio||m.userData.bio.kind!=='leaf'||(m.userData.bio.opts||{}).aN)return;
   ATMOS.snowOn(m,{twoSided:m.side===THREE.DoubleSide,aN:false});m.userData.noSnow=true;});ATMOS.snowOnScene(scene);}   /* the lying snow on every lit material (89a) */
  /* THE SUN'S SHADOWS (core/shadow, KSHADOW): attached, OFF at load (?shadow=1 or the panel's switch); only the pines and the tree ferns cast, as Copper

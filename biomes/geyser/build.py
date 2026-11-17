@@ -182,7 +182,8 @@ RS_SRCS=[]
 if SJ.get('ringsea'):
     sys.path.insert(0,J('settlements','voth')); import ringsea as _rs
     _rs.VESSELS=list(SJ['ringsea'])
-    VIRTUAL['89v-host-ringsea.js']=_rs.ringsea_fragment().replace('</script','<\\/script').replace('<script','<\\x73cript')
+    # ringsea.py shadows window with a local Proxy (__own); bracket access keeps check_assembly from reading it as a page-level window.onerror clash
+    VIRTUAL['89v-host-ringsea.js']=_rs.ringsea_fragment().replace('window.onerror=',"window['onerror']=").replace('</script','<\\/script').replace('<script','<\\x73cript')
     RS_SRCS=[_rs._path(f) for f in sorted(_rs.KIT_FILES)+_rs.VESSELS]+[os.path.join(_rs.RS_SRC,'00-head.html'),J('settlements','voth','ringsea.py')]
 for f in VIRTUAL: PATH[f]=None
 frags=sorted(PATH)

@@ -33,15 +33,15 @@
       `chaparral`, `lush`, `fell`, `scree`, `snowbed`) were named in `materials.json` but never packed (that turn had no library images), so their
       KGROUND layers drew untextured. Re-packed (`pack.py`: every older file the same bytes); montane, foothills and alpine rebuilt and GPU-verified
       (`--assert --all-views`, `KRATOR_GL=gpu`); station 1 and the bogs name none of them and are unchanged.
-- [ ] **Station 6, the Tiguantin cloud-terraces (2026-11-16, cloud session, no GPU): what is owed and what is approximate** (`PLAN-STATIONS.md`,
+- [ ] **Station 6, the Tiguantin cloud-terraces (2026-11-16; GPU-verified 2026-11-17): what is approximate and for the scale-model queue** (`PLAN-STATIONS.md`,
       "Showcase Station #6, as built"; branch `worktree-agent-a2e5b7deffd2170b1`).
-      - **The GPU verify is owed** (the owner's machine: `KRATOR_GL=gpu python3 verify.py dist/nhighlands-tiguantin.html --assert --all-views`). Here only
-        SwiftShader on a machine shared with other sessions (load ~30 on 4 cores): `verify.py --assert --size 960x600` (the first view and "The skylight and the winches"): **every check passes, exit 0** (2026-11-17): every
-        station check and its negative (the column at the cliff's foot, the steps, the tomb, the clear lip, the kin), the kit's invariants (the stream
-        descends with its fall), the export profile over the gully's box (9 of 9 sections), core/ruins on both watched ruins (the terraces: 16,171 stones
-        in 377 clusters, none floating, none lying wrong; the cells: 548 stones), the attach audit 0.62%, 5,095 volumes none empty; 6.8 M triangles and
-        250-268 draw calls at the two views, 8.6 M held. Not run: `--all-views`, the GPU. Under the other sessions' load the 1280x800 screenshot timed
-        out at 10 minutes, so the shots are 960x600; two earlier runs failed only on the load (the library textures still decoding after 180 s).
+      - **GPU-verified 2026-11-17** (`KRATOR_GL=gpu` `verify.py dist/nhighlands-tiguantin.html --assert --all-views`, lane `rtx`): **all 16 views pass, exit 0 `OK`**
+        (179-275 draw calls, 6.79 M triangles drawn at the spur / 8.69 M scene triangles, max samplers 12, export profile 9/9 over the gully's box, core/ruins
+        16,171 terrace stones + 548 cell stones with 0 floating, attach audit 0.44%, 5,095 volumes none empty). Fixed on the way (`stations/tiguantin/88t-host-tiguantin.js`,
+        `98-host-station-take.js`): windlass posts/drums/ropes indexed `wd[2]` (`z = 0` bug had put them 130 m south of the winches); `PATCH` interior nodes
+        snapped to the stream ribbon's edge and to `holeR = SKY.r + 1.1` with `caveM` overlapping to `uHole.z + 1.35` (`polygonOffset`) so the stream bank and
+        the skylight collar have no sawtooth or rim sliver; `tibasalt` shade lifted and lip moss blended on `mS`; colons and apostrophes removed from view and
+        check names so Windows writes every screenshot cleanly.
       - **The base's stage has no shaping hook**: `stations/tiguantin/44z-host-site.js` wraps the base's `baseH` (a hoisted function declaration in
         `stations/montane/45-host-stage.js`) before the stage runs. The clean form is a `SITE.shape(x, z, h)` hook in the base's `baseH`, owed at the next
         rebuild of stations 2-4 (it changes their pages' bytes, not their land).

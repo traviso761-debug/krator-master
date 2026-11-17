@@ -925,7 +925,7 @@
   },
   "build.py --station tiguantin": {
    "inputs": {
-    "biomes/nhighlands/KNOWN_ISSUES.md": "5a1c4aad09b88da5728174366ed9f05757ff8ef9c234d0002e0cae43e21be28d",
+    "biomes/nhighlands/KNOWN_ISSUES.md": "478d95c8c150d306e97feb0e19a1aea94aff90bd3fba1902e2a448bfe046dab9",
     "biomes/nhighlands/PORT.md": "2b4b6db309e4077b1a01e2db8deca72bf79f36c3b11523440e9f5e57ce6e5971",
     "biomes/nhighlands/build.py": "189bfae5c6f7e3bbf9904a23c8eb0a22d88ca15d93044b54b6585b8a00f1412e",
     "biomes/nhighlands/src/00-head.html": "c84c27ad3018b81c3672e0b6afe14cb2948dcc0ca84242ce96ec5693dd473548",
@@ -952,10 +952,10 @@
     "biomes/nhighlands/stations/tiguantin/62-biome-nhighlands-station.js": "5b42a2f33f606d56a9cf1aa85c2769ff9317092c5ff6cc84fb8ba5827a5dd6d0",
     "biomes/nhighlands/stations/tiguantin/83-host-station-ground.js": "cb6fe181c34fa433ffae9a460036fa7e8f04188fcea640e8bba837c0c8c47b78",
     "biomes/nhighlands/stations/tiguantin/87-host-station-kin.js": "e8daebd954427ab7a2ca525e6ea7d5f6fc46902d567c8ae856b7c76a2300cd71",
-    "biomes/nhighlands/stations/tiguantin/88t-host-tiguantin.js": "1682227565397a7905193b8fa3c2b2c987200ef96b3e7b047790984dae86d918",
+    "biomes/nhighlands/stations/tiguantin/88t-host-tiguantin.js": "3b47771142c8c75ce380d74c006983008968c51b677e9a5766a56ac8df6c16ce",
     "biomes/nhighlands/stations/tiguantin/89a-host-atmos.js": "a22542ae11033c514757e32a0c10dd5a519d6fdfc89c802b682a22de77db8c1b",
     "biomes/nhighlands/stations/tiguantin/89w2-host-cisterns.js": "4b40887fdaa6de7b84045714f595d21bc1bc212cf9fc75a25c6fe3df0b473cc4",
-    "biomes/nhighlands/stations/tiguantin/98-host-station-take.js": "eb9f3c4ecf847a733634a08a88eb2b0c4cf083a9331835421a486d26c4b6e350",
+    "biomes/nhighlands/stations/tiguantin/98-host-station-take.js": "90052677444b9e578a66c48a7475f70c24c84b72b240a632cefd8028de47b91b",
     "biomes/nhighlands/stations/tiguantin/98z-host-floor.js": "c6f6b3cf24c3bd57261e58609ee7b282378aba6185d3b228bb3b9ebd57f1f18d",
     "biomes/nhighlands/stations/tiguantin/station.json": "cef37ed40aa8fedefe64bad19ee3486b532d10758d56f1c02bec8afd4c983894",
     "biomes/nhighlands/tex/beard.albedo.webp": "d16898ef9f7cc6ca821b6034709b64e0ed23312162dd0104827fe78f3326443c",
@@ -1116,10 +1116,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/nhighlands/dist/nhighlands-tiguantin.html": "d3e7641f4d2528fff7813e2fb9087446c6840965af6e8cd362c5aa354ca90510"
+    "biomes/nhighlands/dist/nhighlands-tiguantin.html": "d2ef4ee871fff6019db2f8831c00bff6ba9d3e85604fcdd95c356ba2369a2ca4"
    },
    "outputs_raw": {
-    "biomes/nhighlands/dist/nhighlands-tiguantin.html": "d3e7641f4d2528fff7813e2fb9087446c6840965af6e8cd362c5aa354ca90510"
+    "biomes/nhighlands/dist/nhighlands-tiguantin.html": "d2ef4ee871fff6019db2f8831c00bff6ba9d3e85604fcdd95c356ba2369a2ca4"
    }
   }
  }

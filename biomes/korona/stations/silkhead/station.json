@@ -10,7 +10,7 @@
   "89-atmos-3-particles.js": "../../core/atmos/89-atmos-3-particles.js",
   "89-atmos-fx-plumes.js": "../../core/atmos/fx/89-atmos-fx-plumes.js"
  },
- "core": ["45-core-span.js"],
+ "core": ["31b-core-leafset.js", "45-core-span.js"],
  "packs": {
   "ehigh": "../ehighlands"
  }

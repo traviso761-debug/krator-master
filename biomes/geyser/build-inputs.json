@@ -5,7 +5,7 @@
    "inputs": {
     "biomes/geyser/KNOWN_ISSUES.md": "58d75393aeb44a115892073e993208b31a760c5c308b39a11c2a888806de90ae",
     "biomes/geyser/PORT.md": "6c4538bc26429d035b2cfb4420b8b8aa124008daac3dd877c4b4e3153a5e71e9",
-    "biomes/geyser/build.py": "c8e9879f8a7ffe8c3f77b0d4e41693178fc3e0cdca410cf49eb51c3e9deabb2d",
+    "biomes/geyser/build.py": "1ff77769249d9fd4fa21720796144cd7a3ada2a42ff28da462b95d0188eddb68",
     "biomes/geyser/src/00-head.html": "55353d695cbab4e624f0509bee0da3b305a3654d34c8843fcbc0b138deac33a7",
     "biomes/geyser/src/45-host-stage.js": "cf175565dcf777372aa3d85122e7f40c2cd2e15898c9e8bf5d7cf9362cd2bd25",
     "biomes/geyser/src/46-biome-geyser-layout.js": "57571c8f24f4642e534568dcb03ed5815e7b55c81e52617096111c0453b5fc26",
@@ -17,9 +17,9 @@
     "biomes/geyser/src/65-biome-geyser-show.js": "51da29e888e594a37238a649d7a8a73cb176b3591d082c7dbaf783416b17ebc4",
     "biomes/geyser/src/70-biome-geyser.js": "d2df2010429fb93bb4bab6d94bf74f09448d3377e4423a36d3ec58de5462c916",
     "biomes/geyser/src/82-host-sky.js": "9c8aec839e26027555f04d85b0f6278e88f77ac7775140de292150ed1af8b288",
-    "biomes/geyser/src/84-host-ground.js": "a4b641e74f4df5e88cb0925fc5746a85bd2fc93392ab136fb58005bb9f47754e",
-    "biomes/geyser/src/85-host-far.js": "45aae84ea8e626e36b124a40844039dc25176abf6d73a06558677cac018df025",
-    "biomes/geyser/src/88-host-build.js": "33b3c4a1f310e13afd3d7fb48178bfa51ebb02443f7c7e0cd792158473dcd48d",
+    "biomes/geyser/src/84-host-ground.js": "ed2036f844e5add051420dbb45e4d301c1bfb50073aac32f89ab9377814e7ce8",
+    "biomes/geyser/src/85-host-far.js": "47635c1a332b0ee5b14a39c50f6f78c109cb715cea30d3e926b54259e162306e",
+    "biomes/geyser/src/88-host-build.js": "f9c4d58b9dbc145163c2901d4135315323615d164535c81c99bb049b398cdaf4",
     "biomes/geyser/src/89-host-sky.js": "e0ae08eac5b5267c7789597e4965193f6eef852709678c2925388bab3d906866",
     "biomes/geyser/src/89w-host-sea.js": "686bf028d79b2101a89eb96092c28c2fd23acf789ace1e9392545152cd6ba301",
     "biomes/geyser/src/89w-host-water.js": "27851acad8ea2f77f6e04a7b258866a76f031f7ee0189c4f7751d4b14febf236",
@@ -177,12 +177,12 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/geyser/dist/geyser.html": "97b5120eabaa936301b8faed7606b134cc22b6d660d5e82c98971f9fbea56319",
+    "biomes/geyser/dist/geyser.html": "ff22f9d6230b15dadd300aa0209c02926f1c84a29be3ec1f625bc819bf83cd14",
     "biomes/geyser/dist/geyser.tex.geyser.js": "b0361eb4a6edce2d616cd03823b5ea220ad22110af3def47736274d5ac9d28a3",
     "biomes/geyser/dist/geyser.tex.hyperjungle.js": "f14f25782e3159d60b4b2252c77237fb4983362457ada1540f04d666dbd54c61"
    },
    "outputs_raw": {
-    "biomes/geyser/dist/geyser.html": "97b5120eabaa936301b8faed7606b134cc22b6d660d5e82c98971f9fbea56319",
+    "biomes/geyser/dist/geyser.html": "ff22f9d6230b15dadd300aa0209c02926f1c84a29be3ec1f625bc819bf83cd14",
     "biomes/geyser/dist/geyser.tex.geyser.js": "b0361eb4a6edce2d616cd03823b5ea220ad22110af3def47736274d5ac9d28a3",
     "biomes/geyser/dist/geyser.tex.hyperjungle.js": "f14f25782e3159d60b4b2252c77237fb4983362457ada1540f04d666dbd54c61"
    }
@@ -191,7 +191,7 @@
    "inputs": {
     "biomes/geyser/KNOWN_ISSUES.md": "58d75393aeb44a115892073e993208b31a760c5c308b39a11c2a888806de90ae",
     "biomes/geyser/PORT.md": "6c4538bc26429d035b2cfb4420b8b8aa124008daac3dd877c4b4e3153a5e71e9",
-    "biomes/geyser/build.py": "c8e9879f8a7ffe8c3f77b0d4e41693178fc3e0cdca410cf49eb51c3e9deabb2d",
+    "biomes/geyser/build.py": "1ff77769249d9fd4fa21720796144cd7a3ada2a42ff28da462b95d0188eddb68",
     "biomes/geyser/src/00-head.html": "55353d695cbab4e624f0509bee0da3b305a3654d34c8843fcbc0b138deac33a7",
     "biomes/geyser/src/46-biome-geyser-layout.js": "57571c8f24f4642e534568dcb03ed5815e7b55c81e52617096111c0453b5fc26",
     "biomes/geyser/src/47-host-land.js": "9b631aabcd6a631f1cdcff5310a0ce7837ca9fac8f670a274c871013aea1ba7b",
@@ -202,7 +202,7 @@
     "biomes/geyser/src/65-biome-geyser-show.js": "51da29e888e594a37238a649d7a8a73cb176b3591d082c7dbaf783416b17ebc4",
     "biomes/geyser/src/70-biome-geyser.js": "d2df2010429fb93bb4bab6d94bf74f09448d3377e4423a36d3ec58de5462c916",
     "biomes/geyser/src/82-host-sky.js": "9c8aec839e26027555f04d85b0f6278e88f77ac7775140de292150ed1af8b288",
-    "biomes/geyser/src/84-host-ground.js": "a4b641e74f4df5e88cb0925fc5746a85bd2fc93392ab136fb58005bb9f47754e",
+    "biomes/geyser/src/84-host-ground.js": "ed2036f844e5add051420dbb45e4d301c1bfb50073aac32f89ab9377814e7ce8",
     "biomes/geyser/src/89zz-host-shadow.js": "073090fc31d9411e94fa338429a43a5e883e576dcded8262e3bbc18ad6d9f2c0",
     "biomes/geyser/src/99-host-take.js": "5e75ca53579e5b7960b38863655f25467aa568c0f19d46d288f5b0a1dd8d5936",
     "biomes/geyser/src/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
@@ -337,11 +337,11 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/geyser/dist/geyser-basin.html": "11435ae56d7e7d404160be73524be4f879c9909cf5ab9d35f80ca8c3a0fa623f",
+    "biomes/geyser/dist/geyser-basin.html": "730a8c2341e1a66ee11eb8f2b2fdf90683f2fc3c5a4a0bbc87fad4c77ff67eaa",
     "biomes/geyser/dist/geyser-basin.tex.geyser.js": "d0e4df750182c584b6a4dc9f574619cff845a5ca9363e742c9616f3221194461"
    },
    "outputs_raw": {
-    "biomes/geyser/dist/geyser-basin.html": "11435ae56d7e7d404160be73524be4f879c9909cf5ab9d35f80ca8c3a0fa623f",
+    "biomes/geyser/dist/geyser-basin.html": "730a8c2341e1a66ee11eb8f2b2fdf90683f2fc3c5a4a0bbc87fad4c77ff67eaa",
     "biomes/geyser/dist/geyser-basin.tex.geyser.js": "d0e4df750182c584b6a4dc9f574619cff845a5ca9363e742c9616f3221194461"
    }
   },
@@ -349,7 +349,7 @@
    "inputs": {
     "biomes/geyser/KNOWN_ISSUES.md": "58d75393aeb44a115892073e993208b31a760c5c308b39a11c2a888806de90ae",
     "biomes/geyser/PORT.md": "6c4538bc26429d035b2cfb4420b8b8aa124008daac3dd877c4b4e3153a5e71e9",
-    "biomes/geyser/build.py": "c8e9879f8a7ffe8c3f77b0d4e41693178fc3e0cdca410cf49eb51c3e9deabb2d",
+    "biomes/geyser/build.py": "1ff77769249d9fd4fa21720796144cd7a3ada2a42ff28da462b95d0188eddb68",
     "biomes/geyser/src/00-head.html": "55353d695cbab4e624f0509bee0da3b305a3654d34c8843fcbc0b138deac33a7",
     "biomes/geyser/src/46-biome-geyser-layout.js": "57571c8f24f4642e534568dcb03ed5815e7b55c81e52617096111c0453b5fc26",
     "biomes/geyser/src/47-host-land.js": "9b631aabcd6a631f1cdcff5310a0ce7837ca9fac8f670a274c871013aea1ba7b",
@@ -360,7 +360,7 @@
     "biomes/geyser/src/65-biome-geyser-show.js": "51da29e888e594a37238a649d7a8a73cb176b3591d082c7dbaf783416b17ebc4",
     "biomes/geyser/src/70-biome-geyser.js": "d2df2010429fb93bb4bab6d94bf74f09448d3377e4423a36d3ec58de5462c916",
     "biomes/geyser/src/82-host-sky.js": "9c8aec839e26027555f04d85b0f6278e88f77ac7775140de292150ed1af8b288",
-    "biomes/geyser/src/84-host-ground.js": "a4b641e74f4df5e88cb0925fc5746a85bd2fc93392ab136fb58005bb9f47754e",
+    "biomes/geyser/src/84-host-ground.js": "ed2036f844e5add051420dbb45e4d301c1bfb50073aac32f89ab9377814e7ce8",
     "biomes/geyser/src/89zz-host-shadow.js": "073090fc31d9411e94fa338429a43a5e883e576dcded8262e3bbc18ad6d9f2c0",
     "biomes/geyser/src/99-host-take.js": "5e75ca53579e5b7960b38863655f25467aa568c0f19d46d288f5b0a1dd8d5936",
     "biomes/geyser/src/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
@@ -528,12 +528,12 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/geyser/dist/geyser-corona.html": "202ee2f35933d85f709e7fd6a62ae26fb28ed79e01880805d1bfd137b86a3f37",
+    "biomes/geyser/dist/geyser-corona.html": "8c14793990ba7a2be20e24791e0b1d64a47c5af17c20e7e8d17edd58b66b0ba5",
     "biomes/geyser/dist/geyser-corona.tex.geyser.js": "de29eae9979541bd9c3924ade6031bd39e1cffa1fc3669048f09306eb79f0227",
     "biomes/geyser/dist/geyser-corona.tex.hyperjungle.js": "fb350b246be78e074a0bcd2c17b20f339516f5155d65af7a65486524f9c02552"
    },
    "outputs_raw": {
-    "biomes/geyser/dist/geyser-corona.html": "202ee2f35933d85f709e7fd6a62ae26fb28ed79e01880805d1bfd137b86a3f37",
+    "biomes/geyser/dist/geyser-corona.html": "8c14793990ba7a2be20e24791e0b1d64a47c5af17c20e7e8d17edd58b66b0ba5",
     "biomes/geyser/dist/geyser-corona.tex.geyser.js": "de29eae9979541bd9c3924ade6031bd39e1cffa1fc3669048f09306eb79f0227",
     "biomes/geyser/dist/geyser-corona.tex.hyperjungle.js": "fb350b246be78e074a0bcd2c17b20f339516f5155d65af7a65486524f9c02552"
    }
@@ -542,7 +542,7 @@
    "inputs": {
     "biomes/geyser/KNOWN_ISSUES.md": "58d75393aeb44a115892073e993208b31a760c5c308b39a11c2a888806de90ae",
     "biomes/geyser/PORT.md": "6c4538bc26429d035b2cfb4420b8b8aa124008daac3dd877c4b4e3153a5e71e9",
-    "biomes/geyser/build.py": "c8e9879f8a7ffe8c3f77b0d4e41693178fc3e0cdca410cf49eb51c3e9deabb2d",
+    "biomes/geyser/build.py": "1ff77769249d9fd4fa21720796144cd7a3ada2a42ff28da462b95d0188eddb68",
     "biomes/geyser/src/00-head.html": "55353d695cbab4e624f0509bee0da3b305a3654d34c8843fcbc0b138deac33a7",
     "biomes/geyser/src/46-biome-geyser-layout.js": "57571c8f24f4642e534568dcb03ed5815e7b55c81e52617096111c0453b5fc26",
     "biomes/geyser/src/47-host-land.js": "9b631aabcd6a631f1cdcff5310a0ce7837ca9fac8f670a274c871013aea1ba7b",
@@ -553,9 +553,9 @@
     "biomes/geyser/src/65-biome-geyser-show.js": "51da29e888e594a37238a649d7a8a73cb176b3591d082c7dbaf783416b17ebc4",
     "biomes/geyser/src/70-biome-geyser.js": "d2df2010429fb93bb4bab6d94bf74f09448d3377e4423a36d3ec58de5462c916",
     "biomes/geyser/src/82-host-sky.js": "9c8aec839e26027555f04d85b0f6278e88f77ac7775140de292150ed1af8b288",
-    "biomes/geyser/src/84-host-ground.js": "a4b641e74f4df5e88cb0925fc5746a85bd2fc93392ab136fb58005bb9f47754e",
-    "biomes/geyser/src/85-host-far.js": "45aae84ea8e626e36b124a40844039dc25176abf6d73a06558677cac018df025",
-    "biomes/geyser/src/88-host-build.js": "33b3c4a1f310e13afd3d7fb48178bfa51ebb02443f7c7e0cd792158473dcd48d",
+    "biomes/geyser/src/84-host-ground.js": "ed2036f844e5add051420dbb45e4d301c1bfb50073aac32f89ab9377814e7ce8",
+    "biomes/geyser/src/85-host-far.js": "47635c1a332b0ee5b14a39c50f6f78c109cb715cea30d3e926b54259e162306e",
+    "biomes/geyser/src/88-host-build.js": "f9c4d58b9dbc145163c2901d4135315323615d164535c81c99bb049b398cdaf4",
     "biomes/geyser/src/89w-host-water.js": "27851acad8ea2f77f6e04a7b258866a76f031f7ee0189c4f7751d4b14febf236",
     "biomes/geyser/src/89zz-host-shadow.js": "073090fc31d9411e94fa338429a43a5e883e576dcded8262e3bbc18ad6d9f2c0",
     "biomes/geyser/src/99-host-take.js": "5e75ca53579e5b7960b38863655f25467aa568c0f19d46d288f5b0a1dd8d5936",
@@ -734,12 +734,12 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/geyser/dist/geyser-cove.html": "8376145b8099a5534b2ce7ec767f5a29a3fb3df030d355876672edd64813458e",
+    "biomes/geyser/dist/geyser-cove.html": "f533dc9b6b4870b190ff834ed2ff3d26b1ed6fafd9daef2162084d00b52bde05",
     "biomes/geyser/dist/geyser-cove.tex.geyser.js": "15ae26a89faecf5276f015c7bc40d57dbc0264a0e893212a6ce37d1191ea761e",
     "biomes/geyser/dist/geyser-cove.tex.hyperjungle.js": "9e39c2a2347bfab066c32953bf4e51d186b56347c7bc193023a5d60d22fb646a"
    },
    "outputs_raw": {
-    "biomes/geyser/dist/geyser-cove.html": "8376145b8099a5534b2ce7ec767f5a29a3fb3df030d355876672edd64813458e",
+    "biomes/geyser/dist/geyser-cove.html": "f533dc9b6b4870b190ff834ed2ff3d26b1ed6fafd9daef2162084d00b52bde05",
     "biomes/geyser/dist/geyser-cove.tex.geyser.js": "15ae26a89faecf5276f015c7bc40d57dbc0264a0e893212a6ce37d1191ea761e",
     "biomes/geyser/dist/geyser-cove.tex.hyperjungle.js": "9e39c2a2347bfab066c32953bf4e51d186b56347c7bc193023a5d60d22fb646a"
    }
@@ -748,7 +748,7 @@
    "inputs": {
     "biomes/geyser/KNOWN_ISSUES.md": "58d75393aeb44a115892073e993208b31a760c5c308b39a11c2a888806de90ae",
     "biomes/geyser/PORT.md": "6c4538bc26429d035b2cfb4420b8b8aa124008daac3dd877c4b4e3153a5e71e9",
-    "biomes/geyser/build.py": "c8e9879f8a7ffe8c3f77b0d4e41693178fc3e0cdca410cf49eb51c3e9deabb2d",
+    "biomes/geyser/build.py": "1ff77769249d9fd4fa21720796144cd7a3ada2a42ff28da462b95d0188eddb68",
     "biomes/geyser/src/00-head.html": "55353d695cbab4e624f0509bee0da3b305a3654d34c8843fcbc0b138deac33a7",
     "biomes/geyser/src/46-biome-geyser-layout.js": "57571c8f24f4642e534568dcb03ed5815e7b55c81e52617096111c0453b5fc26",
     "biomes/geyser/src/47-host-land.js": "9b631aabcd6a631f1cdcff5310a0ce7837ca9fac8f670a274c871013aea1ba7b",
@@ -759,7 +759,7 @@
     "biomes/geyser/src/65-biome-geyser-show.js": "51da29e888e594a37238a649d7a8a73cb176b3591d082c7dbaf783416b17ebc4",
     "biomes/geyser/src/70-biome-geyser.js": "d2df2010429fb93bb4bab6d94bf74f09448d3377e4423a36d3ec58de5462c916",
     "biomes/geyser/src/82-host-sky.js": "9c8aec839e26027555f04d85b0f6278e88f77ac7775140de292150ed1af8b288",
-    "biomes/geyser/src/84-host-ground.js": "a4b641e74f4df5e88cb0925fc5746a85bd2fc93392ab136fb58005bb9f47754e",
+    "biomes/geyser/src/84-host-ground.js": "ed2036f844e5add051420dbb45e4d301c1bfb50073aac32f89ab9377814e7ce8",
     "biomes/geyser/src/89zz-host-shadow.js": "073090fc31d9411e94fa338429a43a5e883e576dcded8262e3bbc18ad6d9f2c0",
     "biomes/geyser/src/99-host-take.js": "5e75ca53579e5b7960b38863655f25467aa568c0f19d46d288f5b0a1dd8d5936",
     "biomes/geyser/src/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
@@ -893,11 +893,11 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/geyser/dist/geyser-ice.html": "f6eda0ab06cd46ab13c1b8fce5ad5399d63a1f2e87f4c0c0fd83a28d16bf77e2",
+    "biomes/geyser/dist/geyser-ice.html": "a3db0066f3f777d0ba158bf9c583784152a4b0c5db6cd185a2681f26ae23be79",
     "biomes/geyser/dist/geyser-ice.tex.geyser.js": "58ae666e3207f25ccb15ac649742e9b0221a320077fa8be3a6e872f6657fd57c"
    },
    "outputs_raw": {
-    "biomes/geyser/dist/geyser-ice.html": "f6eda0ab06cd46ab13c1b8fce5ad5399d63a1f2e87f4c0c0fd83a28d16bf77e2",
+    "biomes/geyser/dist/geyser-ice.html": "a3db0066f3f777d0ba158bf9c583784152a4b0c5db6cd185a2681f26ae23be79",
     "biomes/geyser/dist/geyser-ice.tex.geyser.js": "58ae666e3207f25ccb15ac649742e9b0221a320077fa8be3a6e872f6657fd57c"
    }
   },
@@ -905,7 +905,7 @@
    "inputs": {
     "biomes/geyser/KNOWN_ISSUES.md": "58d75393aeb44a115892073e993208b31a760c5c308b39a11c2a888806de90ae",
     "biomes/geyser/PORT.md": "6c4538bc26429d035b2cfb4420b8b8aa124008daac3dd877c4b4e3153a5e71e9",
-    "biomes/geyser/build.py": "c8e9879f8a7ffe8c3f77b0d4e41693178fc3e0cdca410cf49eb51c3e9deabb2d",
+    "biomes/geyser/build.py": "1ff77769249d9fd4fa21720796144cd7a3ada2a42ff28da462b95d0188eddb68",
     "biomes/geyser/src/00-head.html": "55353d695cbab4e624f0509bee0da3b305a3654d34c8843fcbc0b138deac33a7",
     "biomes/geyser/src/46-biome-geyser-layout.js": "57571c8f24f4642e534568dcb03ed5815e7b55c81e52617096111c0453b5fc26",
     "biomes/geyser/src/47-host-land.js": "9b631aabcd6a631f1cdcff5310a0ce7837ca9fac8f670a274c871013aea1ba7b",
@@ -916,7 +916,7 @@
     "biomes/geyser/src/65-biome-geyser-show.js": "51da29e888e594a37238a649d7a8a73cb176b3591d082c7dbaf783416b17ebc4",
     "biomes/geyser/src/70-biome-geyser.js": "d2df2010429fb93bb4bab6d94bf74f09448d3377e4423a36d3ec58de5462c916",
     "biomes/geyser/src/82-host-sky.js": "9c8aec839e26027555f04d85b0f6278e88f77ac7775140de292150ed1af8b288",
-    "biomes/geyser/src/84-host-ground.js": "a4b641e74f4df5e88cb0925fc5746a85bd2fc93392ab136fb58005bb9f47754e",
+    "biomes/geyser/src/84-host-ground.js": "ed2036f844e5add051420dbb45e4d301c1bfb50073aac32f89ab9377814e7ce8",
     "biomes/geyser/src/89zz-host-shadow.js": "073090fc31d9411e94fa338429a43a5e883e576dcded8262e3bbc18ad6d9f2c0",
     "biomes/geyser/src/99-host-take.js": "5e75ca53579e5b7960b38863655f25467aa568c0f19d46d288f5b0a1dd8d5936",
     "biomes/geyser/src/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
@@ -1048,11 +1048,11 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/geyser/dist/geyser-puna.html": "dc1dcc898b7a37a90993be8950d4562efbccb978ffcd64b9695308e9f61ac82e",
+    "biomes/geyser/dist/geyser-puna.html": "ba9b029f82b9b32add984649ce4ae5d94dd5910386bed50d013b8d8395dbc2a4",
     "biomes/geyser/dist/geyser-puna.tex.geyser.js": "04106dc6831f8441de4672e1fe62c74f1a39bb9904f2b3558fbacb4f513c0335"
    },
    "outputs_raw": {
-    "biomes/geyser/dist/geyser-puna.html": "dc1dcc898b7a37a90993be8950d4562efbccb978ffcd64b9695308e9f61ac82e",
+    "biomes/geyser/dist/geyser-puna.html": "ba9b029f82b9b32add984649ce4ae5d94dd5910386bed50d013b8d8395dbc2a4",
     "biomes/geyser/dist/geyser-puna.tex.geyser.js": "04106dc6831f8441de4672e1fe62c74f1a39bb9904f2b3558fbacb4f513c0335"
    }
   },
@@ -1060,7 +1060,7 @@
    "inputs": {
     "biomes/geyser/KNOWN_ISSUES.md": "58d75393aeb44a115892073e993208b31a760c5c308b39a11c2a888806de90ae",
     "biomes/geyser/PORT.md": "6c4538bc26429d035b2cfb4420b8b8aa124008daac3dd877c4b4e3153a5e71e9",
-    "biomes/geyser/build.py": "c8e9879f8a7ffe8c3f77b0d4e41693178fc3e0cdca410cf49eb51c3e9deabb2d",
+    "biomes/geyser/build.py": "1ff77769249d9fd4fa21720796144cd7a3ada2a42ff28da462b95d0188eddb68",
     "biomes/geyser/src/00-head.html": "55353d695cbab4e624f0509bee0da3b305a3654d34c8843fcbc0b138deac33a7",
     "biomes/geyser/src/45-host-stage.js": "cf175565dcf777372aa3d85122e7f40c2cd2e15898c9e8bf5d7cf9362cd2bd25",
     "biomes/geyser/src/46-biome-geyser-layout.js": "57571c8f24f4642e534568dcb03ed5815e7b55c81e52617096111c0453b5fc26",
@@ -1072,9 +1072,9 @@
     "biomes/geyser/src/65-biome-geyser-show.js": "51da29e888e594a37238a649d7a8a73cb176b3591d082c7dbaf783416b17ebc4",
     "biomes/geyser/src/70-biome-geyser.js": "d2df2010429fb93bb4bab6d94bf74f09448d3377e4423a36d3ec58de5462c916",
     "biomes/geyser/src/82-host-sky.js": "9c8aec839e26027555f04d85b0f6278e88f77ac7775140de292150ed1af8b288",
-    "biomes/geyser/src/84-host-ground.js": "a4b641e74f4df5e88cb0925fc5746a85bd2fc93392ab136fb58005bb9f47754e",
-    "biomes/geyser/src/85-host-far.js": "45aae84ea8e626e36b124a40844039dc25176abf6d73a06558677cac018df025",
-    "biomes/geyser/src/88-host-build.js": "33b3c4a1f310e13afd3d7fb48178bfa51ebb02443f7c7e0cd792158473dcd48d",
+    "biomes/geyser/src/84-host-ground.js": "ed2036f844e5add051420dbb45e4d301c1bfb50073aac32f89ab9377814e7ce8",
+    "biomes/geyser/src/85-host-far.js": "47635c1a332b0ee5b14a39c50f6f78c109cb715cea30d3e926b54259e162306e",
+    "biomes/geyser/src/88-host-build.js": "f9c4d58b9dbc145163c2901d4135315323615d164535c81c99bb049b398cdaf4",
     "biomes/geyser/src/89-host-sky.js": "e0ae08eac5b5267c7789597e4965193f6eef852709678c2925388bab3d906866",
     "biomes/geyser/src/89w-host-sea.js": "686bf028d79b2101a89eb96092c28c2fd23acf789ace1e9392545152cd6ba301",
     "biomes/geyser/src/89w-host-water.js": "27851acad8ea2f77f6e04a7b258866a76f031f7ee0189c4f7751d4b14febf236",
@@ -1238,12 +1238,12 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/geyser/dist/geyser-stills.html": "a75c76118fa0cd3291b80f630e4a36c0d7eac07144cbe80015652e547a8d7e08",
+    "biomes/geyser/dist/geyser-stills.html": "67c454f8bbe8db750ecbec777cbff3223519c9238527513d8905f96c8ab58b10",
     "biomes/geyser/dist/geyser-stills.tex.geyser.js": "628094a64deb010b625ab11a9b1d0ff1e33bfc36a67b0fc18f0ca6a8b6bc06e1",
     "biomes/geyser/dist/geyser-stills.tex.hyperjungle.js": "ca615113bf000de52df83c66023180e03fd8b794f2f0f1d90f7d5ffb48c96118"
    },
    "outputs_raw": {
-    "biomes/geyser/dist/geyser-stills.html": "a75c76118fa0cd3291b80f630e4a36c0d7eac07144cbe80015652e547a8d7e08",
+    "biomes/geyser/dist/geyser-stills.html": "67c454f8bbe8db750ecbec777cbff3223519c9238527513d8905f96c8ab58b10",
     "biomes/geyser/dist/geyser-stills.tex.geyser.js": "628094a64deb010b625ab11a9b1d0ff1e33bfc36a67b0fc18f0ca6a8b6bc06e1",
     "biomes/geyser/dist/geyser-stills.tex.hyperjungle.js": "ca615113bf000de52df83c66023180e03fd8b794f2f0f1d90f7d5ffb48c96118"
    }

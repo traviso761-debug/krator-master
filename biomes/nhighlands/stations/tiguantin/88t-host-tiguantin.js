@@ -58,16 +58,20 @@ function STATION_FLOOR(x,z){const C=TIGX.C,g=terrainH(x,z);if(!C||!C.holeAt||Mat
    g.setIndex(new THREE.BufferAttribute(new Uint32Array(keep),1));}
   // the patch's nodes: on its rim, on the coarse edges (the coarse vertices as drawn, lerped); inside, the ground's own height
   const NI=(I1-I0)*SUB+1,NJ=(J1-J0)*SUB+1,id=new Int32Array(NI*NJ).fill(-1),pos=[],uv=[],gl=[];
+  const holeR=SKY.r+1.1;   /* right at the shaft's rock lip, so the camp's textured ground comes up to the well */
   const node=(a,b)=>{const k=b*NI+a;if(id[k]>=0)return id[k];const fi=I0*SUB+a,fj=J0*SUB+b,ri=fi%SUB,rj=fj%SUB,ci=(fi-ri)/SUB,cj=(fj-rj)/SUB;let q=null;
    if(ri===0&&rj===0){if(!(S_(ci-1,cj-1)&&S_(ci,cj-1)&&S_(ci-1,cj)&&S_(ci,cj)))q=P3(vi(ci,cj));}
    else if(ri===0){if(S_(ci-1,cj)!==S_(ci,cj)){const A=P3(vi(ci,cj)),B=P3(vi(ci,cj+1)),f=rj/SUB;q=[mix(A[0],B[0],f),mix(A[1],B[1],f),mix(A[2],B[2],f)];}}
    else if(rj===0){if(S_(ci,cj-1)!==S_(ci,cj)){const A=P3(vi(ci,cj)),B=P3(vi(ci+1,cj)),f=ri/SUB;q=[mix(A[0],B[0],f),mix(A[1],B[1],f),mix(A[2],B[2],f)];}}
-   if(!q){const x=TERR.X0+fi*fc,z=TERR.Z0+fj*fc;q=[x,terrainH(x,z),z];}
+   if(!q){let x=TERR.X0+fi*fc,z=TERR.Z0+fj*fc;const half=fc*.58,ds=Math.hypot(x-SKY.x,z-SKY.z);
+    if(Math.abs(ds-holeR)<half&&ds>1){const sc=holeR/ds;x=SKY.x+(x-SKY.x)*sc;z=SKY.z+(z-SKY.z)*sc;}
+    else{const sr=streamNear(x,z);if(sr&&sr.d>=.5){const e=sr.w+3.85;if(Math.abs(sr.d-e)<half){const pa=STREAM.P[sr.i],pb=STREAM.P[sr.i+1],nx=pa[0]+(pb[0]-pa[0])*sr.f,nz=pa[1]+(pb[1]-pa[1])*sr.f,sc=e/sr.d;x=nx+(x-nx)*sc;z=nz+(z-nz)*sc;}}}
+    q=[x,terrainH(x,z),z];}
    id[k]=pos.length/3;pos.push(q[0],q[1],q[2]);uv.push((q[0]-TERR.X0)/SX,1-(q[2]-TERR.Z0)/(TERR.Z1-TERR.Z0));const w=STATION_GL(q[0],q[2]);gl.push(w[0],w[1],w[2]);return id[k];};
-  const holeR=SKY.r+SKY.rim,iG=[],iS=[];let hole=0;
+  const iG=[],iS=[];let hole=0;
   for(let cj=J0;cj<J1;cj++)for(let ci=I0;ci<I1;ci++){if(!sel[cj*N+ci])continue;
    for(let b=0;b<SUB;b++)for(let a=0;a<SUB;a++){const A=(ci-I0)*SUB+a,B=(cj-J0)*SUB+b,cx=TERR.X0+((ci*SUB+a)+.5)*fc,cz=TERR.Z0+((cj*SUB+b)+.5)*fc;
-    if(Math.hypot(cx-SKY.x,cz-SKY.z)<holeR){hole++;continue;}   /* the skylight's well: the cavern draws its ground (the same cells) */
+    if(Math.hypot(cx-SKY.x,cz-SKY.z)<holeR){hole++;continue;}   /* the skylight's well: the cavern draws its lip */
     const n00=node(A,B),n10=node(A+1,B),n01=node(A,B+1),n11=node(A+1,B+1);
     const y00=pos[n00*3+1],y10=pos[n10*3+1],y01=pos[n01*3+1],y11=pos[n11*3+1],sl=Math.max(Math.abs(y10-y00),Math.abs(y11-y01),Math.abs(y01-y00),Math.abs(y11-y10))/fc;
     const L=sl>1.05&&FIELD.spur(cx,cz)<.4?iS:iG;L.push(n00,n01,n10,n01,n11,n10);}}
@@ -76,9 +80,10 @@ function STATION_FLOOR(x,z){const C=TIGX.C,g=terrainH(x,z);if(!C||!C.holeAt||Mat
   const gG=new THREE.BufferGeometry();gG.setAttribute('position',P);gG.setAttribute('normal',NRM);gG.setAttribute('uv',UVA);gG.setAttribute('aGL',GLA);gG.setIndex(iG);gG.computeBoundingSphere();
   const mG=new THREE.Mesh(gG,GROUND.material);if(g.attributes.aKGAO&&KGROUND.cavityMesh)KGROUND.cavityMesh(mG);
   mG.userData.probeSkip=true;mG.userData.inspectLabel='The Tiguantin gully (ground, the near patch)';mG.receiveShadow=true;scene.add(mG);
-  // THE COLUMN on the steep: KSTRATA's colour on the ground's grain (the detail map's mean), a little wet sheen in the mist
-  const mS=new THREE.MeshStandardMaterial({color:0xffffff,roughness:.88,metalness:0});
-  if(S){mS.onBeforeCompile=sh=>{S.inject(sh);sh.fragmentShader=sh.fragmentShader.replace('#include <color_fragment>','#include <color_fragment>\n diffuseColor.rgb=strataColor(vSWP,vSWN);');};mS.customProgramCacheKey=()=>'tig-column';}
+  // THE COLUMN on the steep: KSTRATA's colour on the ground's grain, lifted slightly in the mist so the shaded tibasalt flows read, and mossed at the lip
+  const mS=new THREE.MeshStandardMaterial({color:0xffffff,roughness:.84,metalness:0});
+  if(S){mS.onBeforeCompile=sh=>{S.inject(sh);sh.fragmentShader=sh.fragmentShader.replace('#include <color_fragment>',
+   '#include <color_fragment>\n {vec3 sc=max(strataColor(vSWP,vSWN)*1.35+vec3(0.014,0.015,0.017),vec3(0.0));diffuseColor.rgb=mix(sc,vec3(0.055,0.085,0.038),smoothstep(0.42,0.72,clamp(vSWN.y,0.0,1.0))*0.85);}');};mS.customProgramCacheKey=()=>'tig-column';}
   else mS.color.set(0xb8a888);
   const gS2=new THREE.BufferGeometry();gS2.setAttribute('position',P);gS2.setAttribute('normal',NRM);gS2.setIndex(iS);gS2.computeBoundingSphere();
   const mC=new THREE.Mesh(gS2,mS);mC.userData.host=true;mC.userData.rock=true;mC.userData.probeSkip=true;
@@ -128,8 +133,8 @@ function STATION_FLOOR(x,z){const C=TIGX.C,g=terrainH(x,z);if(!C||!C.holeAt||Mat
  const fs=(S?S.parsFragment:'')+'\nuniform vec3 uHole;uniform vec3 uCell;uniform vec3 uLamps['+NL+'];uniform vec4 uOpen;uniform vec3 uSun;uniform vec3 uSunC;uniform vec3 uSky;uniform float uHead;uniform vec3 uEye;'+
   'varying vec3 vW;varying vec3 vN;varying float vOcc;varying float vG;'+
   'void main(){'+
-  /* THE SEAM: the near patch leaves out its cells whose centres are in the well; the cavern's ground draws only in those cells */
-  'if(vG>0.5){vec2 c0=(floor((vW.xz-uCell.xy)/uCell.z)+0.5)*uCell.z+uCell.xy;if(length(c0-uHole.xy)>=uHole.z)discard;}'+
+  /* THE SEAM: the near patch snaps its ring onto holeR; the cavern's ground tucks 1.35 m under it via polygonOffset so no corner cell shows sky */
+  'if(vG>0.5&&length(vW.xz-uHole.xy)>=uHole.z+1.35)discard;'+
   'vec3 n=normalize(vN);vec3 c=vec3(0.0);'+
   'for(int i=0;i<'+NL+';i++){vec3 l=uLamps[i]-vW;float d=length(l);c+=vec3(1.0,0.72,0.42)*max(dot(n,l/d)*0.8+0.2,0.0)*70.0/(d*d+40.0);}'+
   '{vec3 l=uOpen.xyz-vW;float d=length(l);float R=uOpen.w;c+=uSky*max(dot(n,l/d),0.0)*R*R/(d*d+R*R)*5.0*vOcc;}'+
@@ -223,10 +228,10 @@ function STATION_FLOOR(x,z){const C=TIGX.C,g=terrainH(x,z);if(!C||!C.holeAt||Mat
   WIN.forEach(w=>{const lat=[-w.s,w.c],A=[w.apex[0],w.top,w.apex[1]];
    [-1.6,1.6].forEach(o=>{const f=[w.foot[0]+lat[0]*o,0,w.foot[1]+lat[1]*o];f[1]=terrainH(f[0],f[2])-.4;beam(f,A,.13,TIM);});   /* the shear legs, footed in the ground */
    const back=[w.foot[0]+w.c*6.5,0,w.foot[1]+w.s*6.5];back[1]=terrainH(back[0],back[2])-.3;beam(back,A,.07,TIM);              /* the back stay to its stake */
-   const wd=[w.foot[0]+w.c*2.4,0,w.foot[1]+w.s*2.4];const gw=terrainH(wd[0],wd[1]);
-   [-1.1,1.1].forEach(o=>beam([wd[0]+lat[0]*o,gw-.3,wd[1]+lat[1]*o],[wd[0]+lat[0]*o,gw+1.1,wd[1]+lat[1]*o],.1,TIM));                   /* the windlass's posts */
-   beam([wd[0]-lat[0]*1.1,gw+.95,wd[1]-lat[1]*1.1],[wd[0]+lat[0]*1.1,gw+.95,wd[1]+lat[1]*1.1],.22,TIM);                                /* its drum */
-   beam([wd[0],gw+.95,wd[1]],A,.025,ROPE);beam([w.apex[0],w.ropeTo,w.apex[1]],A,.025,ROPE);});                                       /* the rope over the head, down to the cone */
+   const wd=[w.foot[0]+w.c*2.4,0,w.foot[1]+w.s*2.4];const gw=terrainH(wd[0],wd[2]);
+   [-1.1,1.1].forEach(o=>beam([wd[0]+lat[0]*o,gw-.3,wd[2]+lat[1]*o],[wd[0]+lat[0]*o,gw+1.1,wd[2]+lat[1]*o],.1,TIM));                   /* the windlass's posts */
+   beam([wd[0]-lat[0]*1.1,gw+.95,wd[2]-lat[1]*1.1],[wd[0]+lat[0]*1.1,gw+.95,wd[2]+lat[1]*1.1],.22,TIM);                                /* its drum */
+   beam([wd[0],gw+.95,wd[2]],A,.025,ROPE);beam([w.apex[0],w.ropeTo,w.apex[1]],A,.025,ROPE);});                                       /* the rope over the head, down to the cone */
   const put=(L,label,col)=>{const im=new THREE.InstancedMesh(cyl,new THREE.MeshStandardMaterial({color:col,roughness:.85}),L.length);
    L.forEach((b,i)=>{M4.compose(V3.set(b.a[0],b.a[1],b.a[2]),b.q,SC.set(b.r,b.len,b.r));im.setMatrixAt(i,M4);});im.instanceMatrix.needsUpdate=true;im.frustumCulled=false;im.userData.host=true;im.userData.inspectLabel=label;G3.add(im);};
   put(TIM,'A rope-winch of the History Monks (shear legs, back stay, windlass)',0x6a5034);put(ROPE,'A winch rope (down the skylight to the breakdown cone)',0xb8a47a);

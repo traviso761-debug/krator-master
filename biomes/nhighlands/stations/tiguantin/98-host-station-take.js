@@ -9,14 +9,14 @@ const STATION_VIEWS=function(add,G){const T=TIG,P=(s,t)=>T.xzOf(s,t),K0=SITE.kno
  // the plan's framing: from the spur's gully side, looking SSW across the gully to the half-exhumed terraces, the red line, the cliff, the sheet beyond
  {const c=P(-112,T.TS(-112)+96),t=P(30,T.TS(30)-60);add('Across the gully to the terraces',[c[0],G(c[0],c[1])+4,c[1],t[0],T.C(30)-5,t[1]]);}
  {const c=P(-60,T.TS(-60)-28),t=P(30,T.TS(30)-T.G);add('The terraces under the red line',[c[0],G(c[0],c[1])+1.7,c[1],t[0],T.C(30)+3,t[1]]);}
- {const c=P(-10,T.TS(-10)-T.G+3),t=P(60,T.TS(60)-T.G-2);add('The column at the cliff\'s foot',[c[0],G(c[0],c[1])+1.7,c[1],t[0],T.C(60)+8,t[1]]);}
+ {const c=P(-10,T.TS(-10)-T.G+3),t=P(60,T.TS(60)-T.G-2);add('The column at the cliff foot',[c[0],G(c[0],c[1])+1.7,c[1],t[0],T.C(60)+8,t[1]]);}
  {const S=T.SKY,a=Math.atan2(S.z-T.V.z,S.x-T.V.x),cx=S.x+Math.cos(a)*30,cz=S.z+Math.sin(a)*30;add('The skylight and the winches',[cx,G(cx,cz)+5,cz,S.x,G(S.x,S.z)-6,S.z]);}
  {const S=T.SKY;add('Down the skylight',[S.x+3,G(S.x,S.z)+14,S.z+2,S.x-1,T.V.floor+3,S.z-1]);}
  {const S=T.SKY,V=T.V,dx=V.x-S.x,dz=V.z-S.z,l=Math.hypot(dx,dz)||1,cx=S.x+dx/l*46,cz=S.z+dz/l*46,y=STATION_FLOOR(cx,cz);add('The archive vault (cav_monks_archive)',[cx,y+1.8,cz,S.x,T.V.floor+8,S.z]);}
  {const c=P(420,-420),t=P(260,-300);add('The cloud forest on the sheet',[c[0],G(c[0],c[1])+2,c[1],t[0],G(t[0],t[1])+8,t[1]]);}
- {const c=P(-1500,600),t=P(150,-60);add('Overview: the shoulder and the gully',[c[0],G(c[0],c[1])+260,c[1],t[0],G(t[0],t[1]),t[1]]);}
- {const c=P(-112,T.TS(-112)+96),t=P(260,-120);add('Dawn: the fog belt from the spur',[c[0],G(c[0],c[1])+6,c[1],t[0],G(t[0],t[1])+10,t[1]],'dawn');}
- if(STREAM.falls.length){const f=STREAM.falls[0],i=Math.min(STREAM.P.length-1,f+10),p=STREAM.P[i],q=STREAM.P[Math.max(0,f-1)];add('The stream\'s fall down the shoulder',[p[0],STREAM.level[i]+4,p[1],q[0],STREAM.level[Math.max(0,f-3)]+2,q[1]]);}};
+ {const c=P(-1500,600),t=P(150,-60);add('Overview of the shoulder and the gully',[c[0],G(c[0],c[1])+260,c[1],t[0],G(t[0],t[1]),t[1]]);}
+ {const c=P(-112,T.TS(-112)+96),t=P(260,-120);add('Dawn fog belt from the spur',[c[0],G(c[0],c[1])+6,c[1],t[0],G(t[0],t[1])+10,t[1]],'dawn');}
+ if(STREAM.falls.length){const f=STREAM.falls[0],i=Math.min(STREAM.P.length-1,f+10),p=STREAM.P[i],q=STREAM.P[Math.max(0,f-1)];add('The stream fall down the shoulder',[p[0],STREAM.level[i]+4,p[1],q[0],STREAM.level[Math.max(0,f-3)]+2,q[1]]);}};
 const STATION_CHK={
  placed(trees,keys){const miss=keys.filter(k=>!trees.some(T=>T.sp===NHL.KEY[k]));return{ok:!miss.length,detail:miss.length?'never placed: '+miss.join(', '):keys.map(k=>k+':'+trees.filter(T=>T.sp===NHL.KEY[k]).length).join(' ')};},
  // the column: the gully's foot is the paleosol's base, carbonate-shelf under it, the ignimbrite over it, the tibasalt at the sheet's top (KSTRATA's CPU twin)
@@ -39,16 +39,16 @@ const STATION_CHK={
  kin(K){const n=k=>(K&&K[k]?K[k].length:0);return{ok:n('elfin')>=50&&n('treefern')>=30,detail:'elfin '+n('elfin')+', tree ferns '+n('treefern')+', veil trees '+n('veil')};}};
 const STATION_CHECKS=function(){const R=[],add=(name,r)=>R.push({name,ok:r.ok,detail:r.detail}),neg=(name,r)=>R.push({name:'negative: '+name,ok:!r.ok,detail:(!r.ok?'fails as it must: ':'PASSED A BROKEN INPUT: ')+r.detail});
  const S=TIGX.S,K=typeof STATION_KIN!=='undefined'?STATION_KIN:null;
- add('the cloud forest\'s species are placed',STATION_CHK.placed(NHL.TREES,STATION_SPECIES));
- add('the gully\'s foot is the column\'s red paleosol line (KSTRATA)',STATION_CHK.column(S,0));
+ add('the cloud forest species are placed',STATION_CHK.placed(NHL.TREES,STATION_SPECIES));
+ add('the gully foot is the column red paleosol line (KSTRATA)',STATION_CHK.column(S,0));
  add('the terraces step down the SW flank',STATION_CHK.steps(terrainH));
  add('the archive vault is entombed but for its skylight (KCAVERN)',STATION_CHK.tomb(TIGX.C,TIG.SKY));
- add('nothing grows on the skylight\'s lip or the cliffs',STATION_CHK.clear(NHL.TREES));
- add('the Throne\'s cloud trees grow here (read in place)',STATION_CHK.kin(K));
+ add('nothing grows on the skylight lip or the cliffs',STATION_CHK.clear(NHL.TREES));
+ add('the Throne cloud trees grow here (read in place)',STATION_CHK.kin(K));
  neg('no fog laurel placed',STATION_CHK.placed(NHL.TREES.filter(T=>T.sp!==NHL.KEY.foglaurel),STATION_SPECIES));
  neg('the contact read 6 m high',STATION_CHK.column(S,6));
  neg('the flank as it was before the terraces',STATION_CHK.steps((x,z)=>{const s=TIG.sOf(x,z),dv=TIG.tOf(x,z)-TIG.TS(s);return TIG.ramp(s)-TIG.vd*Math.exp(-(dv*dv)/(TIG.wv*TIG.wv));}));
  neg('the skylight looked for 40 m off',STATION_CHK.tomb(TIGX.C,{x:TIG.SKY.x+40,z:TIG.SKY.z,r:TIG.SKY.r,rim:TIG.SKY.rim}));
- neg('a hemlock on the skylight\'s lip',STATION_CHK.clear([{x:TIG.SKY.x+TIG.SKY.r+4,z:TIG.SKY.z,lv:2}]));
+ neg('a hemlock on the skylight lip',STATION_CHK.clear([{x:TIG.SKY.x+TIG.SKY.r+4,z:TIG.SKY.z,lv:2}]));
  neg('no elfin trees',STATION_CHK.kin({treefern:K&&K.treefern}));
  return R;};

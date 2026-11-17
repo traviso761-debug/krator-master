@@ -55,7 +55,7 @@ const SITE={key:'glass',name:'South Glass (an obsidian pancake dome)',region:'So
   const pumice=Math.max(top*trough*.9,bw),glass=top*(1-pumice);
   return{glass,pumice,rock:Math.max(cliff,o.rock*(1-apron)*(1-top)),moraine:Math.max(o.moraine*(1-top),apron*.95),ash:o.ash*(1-top)*(1-apron)*(1-bw),
    snow:o.snow*(1-.6*top)*(1-.4*apron)*(1-bw),flat:o.flat*(1-top)*(1-apron)};},
- // the ground (84): the glass and pumice ride the ice and meadow slots (this station has neither), nine library layers
+ // the ground (84): the glass and pumice ride the ice and meadow slots (this station has neither), eight library layers (the wall's rock is 84s's MAT_WALL, so both materials stay under 16 texture units)
  groundAttr(a,A){a[9]=A('glass');a[1]=A('pumice');return a;},
  groundPaint(c,A){const L=(r,g,b,t)=>{c.r+=(r-c.r)*t;c.g+=(g-c.g)*t;c.b+=(b-c.b)*t;};
   L(.38,.37,.38,smooth(.3,.7,A('rock'))*.8);L(.27,.27,.29,A('moraine')*.6);L(.11,.11,.13,A('glass'));L(.8,.77,.71,A('pumice'));},
@@ -64,7 +64,6 @@ const SITE={key:'glass',name:'South Glass (an obsidian pancake dome)',region:'So
   L('stone.pumice','vMeadow*(1.0-vSnow)*(1.0-vRock)',{name:'pumice (the bench, the troughs of the top)'}),
   L('ground.cinder','vScree*(1.0-vSnow*0.8)*(1.0-vRock)',{tint:'vec3(0.62,0.62,0.68)',name:'autobreccia and perlite talus'}),
   L('stone.obsidian','vIce*(1.0-vSnow)*(1.0-vRock*0.7)',{name:'the glass carapace'}),
-  L('rock.basalt','vRock*(1.0-vSnow*0.6)',{tint:'_gP*1.5',name:'the wall (its beds: KSTRATA obsidian-pancake, 84s)'}),
   L('ground.snow','vSnow',{amt:.9,name:'snow'}),
   L('ground.sinter','vSinter*(1.0-vSnow)',{name:'sinter at the warm pool'}),
   L('ground.mat','vMat*(1.0-vSnow)',{name:'mats in the warm run-off'}),
@@ -77,10 +76,10 @@ const SITE={key:'glass',name:'South Glass (an obsidian pancake dome)',region:'So
  budget:{tris:16000000,calls:240},
  sky:{air:{humidity:.4},clouds:{cover:.3,cumulus:.35,cirrus:.4}},
  // the dome's own views (99: SITE.extraViews)
- extraViews(V,{look}){const k=GLASS.crest(124),c2=GLASS.crest(98,160),c3=GLASS.crest(118,0),cw=GLASS.crest(GLASS.SLUMP,0),f=GLASS.cracks()[2].foot,a=GLASS.angOf(f.b),ra=GLASS.foot(GLASS.SLUMP);
+ extraViews(V,{look}){const k=GLASS.crest(124),c2=GLASS.crest(122,230),c3=GLASS.crest(134,45),cw=GLASS.crest(GLASS.SLUMP,0),f=GLASS.cracks()[2].foot,a=GLASS.angOf(f.b),ra=GLASS.foot(GLASS.SLUMP);
   V['South Glass from the moat']=look(1150,1950,22,k.x,k.z,-40);
   V['Mons over the Glass (north-north-east)']=look(650,2350,22,650+3000*Math.sin(12*Math.PI/180),2350-3000*Math.cos(12*Math.PI/180),260);
-  V['On the carapace']=look(c2.x,c2.z,3,c3.x,c3.z,2);
+  V['On the carapace']=look(c2.x,c2.z,5,c3.x,c3.z,1);
   V['The steaming crack']=look(f.x+Math.cos(a)*120+Math.sin(a)*50,f.z+Math.sin(a)*120-Math.cos(a)*50,9,f.x,f.z,4);
   V['The way up']=look(ra.x+Math.cos(GLASS.angOf(ra.b))*160,ra.z+Math.sin(GLASS.angOf(ra.b))*160,6,cw.x,cw.z,0);},
  views:'glass'};

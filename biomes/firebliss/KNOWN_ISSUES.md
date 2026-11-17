@@ -48,10 +48,15 @@ Open items are `- [ ]`; build.py counts them.
   will set the real one.
 - [ ] **Shadows** are off at load (`?shadow=1`): only the kin pines and tree ferns cast. Not measured on this kit yet.
 
-## Station 8, South Glass (2026-11-16)
+## Station 8, South Glass (2026-11-16; GPU-verified 2026-11-17)
 
-- [ ] **The GPU verify is owed** (`KRATOR_GL=gpu python3 verify.py dist/firebliss-glass.html --assert --all-views` on the owner's machine). The
-  session that built it had no GPU: what ran on SwiftShader is in the commit message.
+- [x] **The GPU verify was owed** (closed 2026-11-17): `KRATOR_GL=gpu` `KRATOR_GPU_LANE=arc` `verify.py dist/firebliss-glass.html --assert --all-views`
+  passes all 14 views (`OK`: 29-32 draw calls, 16.30M triangles drawn / 14.11M BIO triangles, 103 volumes, export profile PASS). Fixed on the way for real
+  16-unit hardware (`Intel Arc 140T`): `stations/glass/84s-host-strata.js` splits cliff triangles (`aRock > 0.05`) onto a shared-attribute companion mesh
+  `MAT_WALL` carrying `rock.basalt` and `KSTRATA` `obsidian-pancake` (`S.inject`: 5 samplers), `44z-host-site.js` drops `rock.basalt` from `MAT_GROUND` so
+  both materials link at 15 samplers max, `src/89z-host-build.js` filters `KHORIZON.shadeScene` by `m.material !== MAT_GROUND`, and `V['On the carapace']`
+  moves to `GLASS.crest(122, 230)` inside the stage's carapace (bearing 98 landed at `z = -3162`, outside `GROUND`). Station 1 (`dist/firebliss.html`) also
+  passes `KRATOR_GL=gpu` `verify.py --assert` (45 draw calls, 14 samplers).
 - [ ] **The dome and the model** (2026-11-17). `model_site.py` reads the dome's record from the model's `DATA.domes` (scale model 5.1
   edit 8, `tools/scale-model/edit_518.py`, on `main`) when the model carries it, else `station.json`'s copy (this branch's model has no
   domes). With edit 8 the model's 37 dome cells are refilled from the land round them (a Laplace fill) and the page raises its own,

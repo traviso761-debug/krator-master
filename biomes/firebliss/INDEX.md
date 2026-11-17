@@ -51,6 +51,6 @@ Each station builds one page (`build.py --station <name>`) from its own fragment
 | Station | Fragments | KB |
 |---|---|---|
 | east | 44z-host-site.js | 5 |
-| glass | 44y-host-glass.js, 44z-host-site.js, 66-biome-firebliss-glass.js, 84s-host-strata.js | 27 |
+| glass | 44y-host-glass.js, 44z-host-site.js, 66-biome-firebliss-glass.js, 84s-host-strata.js | 29 |
 | glen | 44z-host-site.js | 4 |
 | mons | 44z-host-site.js | 3 |
