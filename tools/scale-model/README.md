@@ -834,8 +834,19 @@ dry on the new shore.
   - `tests/test_smodel.py` section 17 checks them. The open world stamps the landforms with `core/world/41l-world-landforms.js`
     (`openworld/xanadu-north-shore`).
   Written in the Phēr plan's session (claude/pher-plan-55d3f2, f7834e394) and re-run here after `edit_517_gorge.py`.
+- `edit_517_pher_rim.py` (after `edit_517_pher.py`; a raster edit; the owner, 2026-11-16, Phēr's question 17: "do (a)"):
+  Phēr's page (its ground in `openworld/xanadu-north-shore` since its step P7) has the caldera wall's top at 0 m and the
+  rim plain rising ~7 m a km inland; the model's plain behind the same stretch fell at the same rate but ~40 m lower, so
+  the Swīṭ Siṭrīm reached the town under the page's plain. Every dry plain cell north of the wall's top (rows 1485-1493
+  along columns 830-855) is raised by 40 m, full within 5 columns of the stream's 842 and two cells of the top, fading to
+  nothing 11 columns along and 8 cells (16 km) north: 166 cells, the stream's column now +10 m at the lip (was -30 m) and
+  still falling to the wall. The stream's bed is recomputed on it (edit_517_pher.stream), `r_pher_swit.rim_lift_m` set;
+  the temperatures lapsed and the paint relit as `edit_517_crease.py` does. `tests/test_smodel.py` section 17 checks it.
+  Regions over this ground re-cut after it: `openworld/xanadu-north-shore` (done in the Phēr plan's session) and
+  `openworld/xanadu-oidong-highrift` (its box holds it). Written and first run in the Phēr plan's session
+  (claude/pher-plan-55d3f2). Re-run here after `edit_517_pher.py`.
 - Run order from the pre-edit model (055bc43ce): `edit_517.py`, `edit_517_crease.py`, `edit_517_paint.py`,
-  `edit_517_alph.py`, `edit_517_gorge.py`, `edit_517_pher.py`.
+  `edit_517_alph.py`, `edit_517_gorge.py`, `edit_517_pher.py`, `edit_517_pher_rim.py`.
 
 **5.1e12 (2026-11-16, records only)**: the owner, "we can move thalaba to the mouth of godshearth and put a new village
 on the lake in its place": Thalaba (`shvo49k0y2`) moves from 825,1481 to 840,1463, where Godshearth's spillway gorge
