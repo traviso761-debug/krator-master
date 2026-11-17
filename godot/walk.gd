@@ -6,14 +6,21 @@
 #   godot --path godot res://walk.tscn -- --at=x,z           start at a point in the region's metres
 #
 # Keys: WASD or the arrows walk, Shift runs (x5), Q / E or a right drag turn, R rides the road from the nearest point
-# (40 m/s, toward Strongbow; R again stops), Esc stops riding. The panel says where you are, what the stream holds and
-# the frame rate.
+# (40 m/s, toward Strongbow; R again stops), Esc stops riding, , and . slow and speed the valley's clock. The panel says
+# where you are, what the stream holds, the valley's minute and its carriers in sight, and the frame rate.
+# M9 step 1: the valley's road traffic (krator/valley_traffic.gd) replayed from its week (sim.json) as carts on the roads.
 extends Node3D
 
 const CASE := "res://data/world-oidong-highrift/index.json"
 var W: KratorWorldWalk
 var hud: Label
 var _drag := false
+var traffic: KratorValleyTraffic
+var carts: MultiMeshInstance3D
+var minute := 6.0 * 60.0     # the valley's clock, sim minutes into its week (day 1, 06:00)
+var rate := 60.0             # sim minutes a real second
+var _shown := 0
+var _tt := 0.0
 
 
 func _ready() -> void:
@@ -40,6 +47,12 @@ func _ready() -> void:
 	W.cam.current = true
 	var at := _start()
 	W.start_at(at.x, at.y)
+	var sim = KData.read_json("res://data/world-oidong-highrift/sim.json")
+	if sim is Dictionary:
+		traffic = KratorValleyTraffic.make(W.stream.index, sim)
+		carts = MultiMeshInstance3D.new()
+		carts.name = "Carts"
+		W.stream.add_child(carts)
 	hud = Label.new()
 	hud.position = Vector2(12, 10)
 	var cl := CanvasLayer.new()
@@ -98,6 +111,10 @@ func _unhandled_input(ev: InputEvent) -> void:
 				W.drive(pts.slice(best), 40.0)
 		elif ev.keycode == KEY_ESCAPE:
 			W.driving = false
+		elif ev.keycode == KEY_COMMA:
+			rate = maxf(1.0, rate / 2.0)
+		elif ev.keycode == KEY_PERIOD:
+			rate = minf(3840.0, rate * 2.0)
 
 
 func _process(dt: float) -> void:
@@ -109,6 +126,12 @@ func _process(dt: float) -> void:
 		W.speed = 6.0
 	var p := W.region_xz()
 	var g := W.stream.height_at(p.x, p.y)
-	hud.text = "x %.0f  z %.0f  feet %.1f m (ground %.1f)\nchunks %d  places %s  rebases %d\n%d fps  %s\nWASD walk, Shift run, Q/E or right drag turn, R ride the road, Esc stop" % [
+	minute = fmod(minute + rate * dt, 10080.0)
+	_tt += dt
+	if traffic and _tt >= 0.1:   # the carts redrawn ten times a second, at the stream's origin as it is now
+		_tt = 0.0
+		_shown = traffic.draw(W.stream, carts, minute, p, 20000.0)
+	hud.text = "x %.0f  z %.0f  feet %.1f m (ground %.1f)\nchunks %d  places %s  rebases %d\nthe valley: day %d, %02d:%02d (x%d), %d carts in sight\n%d fps  %s\nWASD walk, Shift run, Q/E or right drag turn, R ride the road, Esc stop, , . the clock" % [
 		p.x, p.y, W.feet_y(), g, W.stream.chunks.size(), ", ".join(PackedStringArray(W.stream.places_open.keys())),
-		W.stream.rebases, Engine.get_frames_per_second(), "riding the road" if W.driving else ""]
+		W.stream.rebases, int(minute / 1440.0) + 1, int(fmod(minute, 1440.0) / 60.0), int(fmod(minute, 60.0)), int(rate), _shown,
+		Engine.get_frames_per_second(), "riding the road" if W.driving else ""]
