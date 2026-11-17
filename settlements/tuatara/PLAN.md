@@ -100,13 +100,13 @@ The miners are Makers and Drovers sent to the diggings by the Allotment; the cam
 
 ## 7. Steps
 
-| Step | What | Test |
-|---|---|---|
-| **T0** | this plan, `spec.json`, the sheets | `python3 kits/lizardmen/settle/towns_plan.py tuatara` |
-| T1 | S0 of the guide (once for all towns) | the kit's page and Gila's byte-identical; `test-lizardmen.js` unchanged |
-| T2 | `TU_REC` and the spec | `LZ_TUNE.checkTown(TU_REC).ok` in a node test with a negative |
-| T3 | the page | the guide's section 5, with `expect.keys` lz-nest, lz-ley, lz-muster, gl-tank, lz-cistern, lz-mine |
-| T4 | flora (`biomes/rift`, XV) | later, with the savanna species (Gila's G6) |
+| Step | What | Test | Status |
+|---|---|---|---|
+| **T0** | this plan, `spec.json`, the sheets | `python3 kits/lizardmen/settle/towns_plan.py tuatara` | done (`9fadd409f`) |
+| **T1** | S0 of the guide (once for all towns) | the kit's page and Gila's byte-identical; `test-lizardmen.js` unchanged | done (`3d73b8f57`) |
+| **T2** | `TU_REC` and the spec | `LZ_TUNE.checkTown(TU_REC).ok` in a node test with a negative | done (`test-tu-records.js`) |
+| **T3** | the page | the guide's section 5, with `expect.keys` lz-nest, lz-ley, lz-muster, gl-tank, lz-cistern, lz-mine | done (GPU-verified; owner review on section 8 pending) |
+| **T4** | flora (`biomes/rift`, XV) | later, with the savanna species (Gila's G6) | open |
 
 ## 8. Questions for the owner (answers *proposed*)
 

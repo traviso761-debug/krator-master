@@ -250,8 +250,11 @@ var LZV_SITE = (function () {
   /* the ground's paint at (x, z): [shore (salt crust, mud), field, yard, wet], each 0..1 */
   function zoneAt(x, z) {
     var y = groundH(x, z), above = y - LAKE_Y, wShore = S.lake ? 1 - sm(1.5, lzD(S.lake.band, 16), above) : 0, wTill = 0, i, bx;
-    (S.shoreBoxes || []).forEach(function (b) { if (x > b[0] && x < b[2] && z > b[1] && z < b[3]) wShore = Math.max(wShore, 0.9); });
-    for (i = 0; i < fields.length; i++) { bx = fields[i].box; if (x >= bx[0] - 12 && x <= bx[2] + 12 && z >= bx[1] - 12 && z <= bx[3] + 12) { wTill = fields[i].kind === 'fallow' ? 0.45 : 0.95; break; } }
+    (S.shoreBoxes || []).forEach(function (b) { var cx = (b[0] + b[2]) / 2, cz = (b[1] + b[3]) / 2, r = Math.max(b[2] - b[0], b[3] - b[1]) / 2, d = Math.hypot(x - cx, z - cz);
+      if (d < r) wShore = Math.max(wShore, 0.88 * (1 - sm(r * 0.35, r, d))); });
+    for (i = 0; i < fields.length; i++) { bx = fields[i].box; if (x >= bx[0] - 12 && x <= bx[2] + 12 && z >= bx[1] - 12 && z <= bx[3] + 12) {
+      var fx = Math.max(bx[0] - x, 0, x - bx[2]), fz = Math.max(bx[1] - z, 0, z - bx[3]), fe = 1 - sm(0, 12, Math.hypot(fx, fz));
+      wTill = Math.max(wTill, (fields[i].kind === 'fallow' ? 0.45 : 0.92) * fe); } }
     var wYard = 0, ab = toSkew(x, z), mx = Math.max(Math.abs(ab[0]), Math.abs(ab[1]));
     if (mx < outerR + 20) { wYard = 0.42 * (1 - sm(outerR - 60, outerR + 20, mx)); var ds = lineDist(x, z, spiralPts); if (ds < STREET_W + 22) wYard = Math.max(wYard, 0.88 * (1 - sm(STREET_W * 0.6, STREET_W + 22, ds))); }
     for (i = 0; i < countryWays.length; i++) { var dw = lineDist(x, z, countryWays[i].pts); if (dw < countryWays[i].w + 20) wYard = Math.max(wYard, 0.82 * (1 - sm(countryWays[i].w * 0.5, countryWays[i].w + 20, dw))); }

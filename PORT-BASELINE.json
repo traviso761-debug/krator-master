@@ -1480,6 +1480,10 @@
    "bytes": 2150014,
    "sha256": "d93360679be5127ae4ce0d3e73f563e10c5be1ae007e57603a432351487871b4"
   },
+  "settlements/tuatara/dist/tuatara.html": {
+   "bytes": 8291503,
+   "sha256": "2bf6c6e8486a8e33942c37dd772ee19adba3c1b07672451b00839b3f99f306ba"
+  },
   "settlements/verge/dist/verge.html": {
    "bytes": 3340526,
    "sha256": "a4daa0698fb4a550c3cd4491ee9ac7ff1a9df9109b111a4bea16ba5332be658d"

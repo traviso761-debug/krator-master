@@ -22,7 +22,7 @@ is the model: the same asserts, its expectations read from the town's spec (LZV_
 """
 import argparse, asyncio, json, os, sys
 
-ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 sys.path.insert(0, os.path.join(ROOT, 'tools'))
 import harness                                      # noqa: E402
 from harness import parse_views, verify_page        # noqa: E402

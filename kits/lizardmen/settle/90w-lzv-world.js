@@ -40,9 +40,9 @@
     }, { key: 'lzv-zones' });
     if (typeof KGROUND !== 'undefined') KGROUND.hook(mat, { key: 'lzv-near-' + S.key, at: '/*KGROUND*/', relief: { bump: 0.05, cavity: 0.55, mesh: 0.45, lambert: 1 }, tri: true,
       layers: [KGROUND.layer(S.key, LY.base || 'gBase', { w: '1.0', amt: 0.88, gain: 1.08, tint: 'diffuseColor.rgb*1.55', name: 'ground' }),
-        KGROUND.layer(S.key, LY.till || 'gTill', { w: 'vLzZone.y', amt: 0.92, gain: 1.05, name: 'tilled field' }),
+        KGROUND.layer(S.key, LY.till || 'gTill', { w: 'vLzZone.y', amt: 0.92, gain: 1.0, tint: 'diffuseColor.rgb*1.35', name: 'tilled field' }),
         KGROUND.layer(S.key, LY.yard || 'gYard', { w: 'vLzZone.z', amt: 0.9, gain: 1.05, name: 'beaten yard' }),
-        KGROUND.layer(S.key, LY.shore || 'gShore', { w: 'vLzZone.x', amt: 0.95, gain: 1.08, name: 'shore' })] });
+        KGROUND.layer(S.key, LY.shore || 'gShore', { w: 'vLzZone.x', amt: 0.92, gain: 1.0, tint: 'diffuseColor.rgb*1.3', name: 'shore' })] });
     var m = new THREE.Mesh(geo, mat); m.rotation.x = -Math.PI / 2; m.position.set(cx, 0, cz); m.receiveShadow = true;
     m.userData.isGround = true; m.userData.ground = true; m.userData.probeSkip = true; m.userData.inspectLabel = LOOK.label || S.name; m.name = 'terrain-near';
     if (typeof KGROUND !== 'undefined' && KGROUND.cavityMesh) KGROUND.cavityMesh(m);
