@@ -76,7 +76,7 @@ const GROUND=(function(){const N=SKEY==='arete'?620:560,NZ=SKEY==='arete'?1000:N
  g.setIndex(new THREE.BufferAttribute(idx,1));g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);if(KG_RELIEF)KGROUND.cavityMesh(m);m.receiveShadow=true;m.userData.probeSkip=true;m.userData.inspectLabel=SITE.title;scene.add(m);return m;})();
 // the places, as records the inspector and the export read
 REGISTER({name:SITE.title,x:0,z:0,y:terrainH(0,0)-40,r:600,h:200});
-if(SKEY==='polynya'){REGISTER({name:'The loess bluff (Ostrukh-on-Water\'s terraces, 138 m down to the lake)',x:L.xz(SITE.shore.d*.55,0)[0],z:L.xz(SITE.shore.d*.55,0)[1],y:SITE.lake.level-2,r:900,h:SITE.base-SITE.lake.level+30});
+if(SKEY==='polynya'){REGISTER({name:'The loess bluff (Ostrukh-on-Water\'s terraces, 75 m down to the lake)',x:L.xz(SITE.shore.d*.55,0)[0],z:L.xz(SITE.shore.d*.55,0)[1],y:SITE.lake.level-2,r:900,h:SITE.base-SITE.lake.level+30});
  REGISTER({name:'The beach (shingle, 0.3 m over the lake)',x:L.xz(SITE.shore.d-30,0)[0],z:L.xz(SITE.shore.d-30,0)[1],y:SITE.lake.level-3,r:700,h:12});}
 if(SKEY==='terraces')REGISTER({name:'The meltwater braids (from the Stalker glaciers)',x:0,z:L.zc(0),y:L.floorAt(0)-4,r:2600,h:20});
 if(SKEY==='scarp'){REGISTER({name:'The Ostrukh Wall (the central dividing fault, '+SITE.wall.h+' m)',x:L.RV.x,z:L.RV.z,y:SITE.wall.floor+L.off-20,r:1600,h:SITE.wall.h+300,tags:{hazard:{kind:'fall',danger:.9}}});

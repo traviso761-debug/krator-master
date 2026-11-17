@@ -277,32 +277,47 @@ trap plants), `38b`/`46` lava (no live lava), `39c-core-karst` (no soluble rock)
 
 ### 8.3 As built (2026-11-16): `dist/siphon-pits-polynya.html` (`build.py --station polynya`)
 
-**The survey** (scale model 5.1 `model/data` through `smodel/page.py`, as section 0): the pin of Ostrukh-on-Water (`sostrukhyuni01`, a
-village of the Yuni Emirate on the 5.0 pins) stands at **1,987.6 m** (1.248 atm by the air law), mean **+18 degC**, warm / cold month +30 / +4,
-record high / low +38 / -4, 439 mm, **Cwb**, wind 7.7 m/s; the plain round it is level within 10 m at 4 km and falls gently north-east. **Lake Ostrukh**
-is on the model: 56 water cells (**224 km2**) at **1,849.8 m**, its floor 1,835 m, centred on 1524.5,1462.5; its nearest cell is **14 km north-east**
-of the pin, the plain stepping down ~90 m in its last 2 km to it. The model's `Ostrukh Riba` flows **into** the lake (`r_mb_siphon_breach`,
-0.9 m3/s at its mouth, 1528,1459), not out of it.
+*Built first as the spec's frozen bay with a polynya 1.2 km from the old pin (e50e21e84); reworked the same day on the owner's three answers
+(below). The station's key and page keep the name `polynya`; its title is now "Ostrukh-on-Water Shore".*
 
-**What the spec said and what was built** (the model's numbers win, as in section 0):
-- **The lake's level** is the model's 1,850 m, not 2,090; **the pin** is the model's 1,988 m, not 2,090-2,115; the pressure 1.25 atm (law), not 1.31.
-  The terraces run from the beach (1,854 m) up the bluff to ~1,985 m: the spec's "+2,115 to +2,240" become "+4 to +135 over the lake".
-- **The shore is brought to the pin.** The page is an ideal type 5.2 km across, as the other stations: the lake's south-west bay is drawn 1.2 km
-  north-east of the pin (on the model the water is 14 km off). The direction is the model's (north-east), so the camera looks **north-east** over the
-  village to the polynya, not south-east; the Ostrukh Wall (1559,1457, ~90 km) is the shared sky's ridge at 72 degrees (east-north-east).
-- **The polynya** is KTHERM's (core/terrain 47): three fault springs on the bay's bed along the Tharn-foot fault (42, 40 and 34 degC at the vent,
-  reach 330-390 m), the lake's water 2 degC; the open water is the field's closed **7 degC contour** (`KTHERM.contourOf`), **962 m along the shore
-  and ~600 m out**, 0.47 km2; a `WATER.still` on it, and **`WATER.ice`** (core/water ext/54, opt-in by path in `station.json`) over the rest of the
-  bay in two pieces either side of it, white pack with hoar drifts (the station's own fragment, `stations/polynya/89wp-host-polynya.js`, so the
-  other four pages do not carry ext/54). `verify.py --assert` checks on a 40 m lattice that the ice lies only where the
-  field is under 8 degC and the water is open wherever it is over (negatives: ice over the vents, no polynya).
-- **The frost smoke**: core/atmos's height fog mist with a field (1 over the polynya, 0.2 over the ice, none on land), pooled under 30 m over the lake,
-  in a winter dawn window (rises 05:00, burns off by 12:30), and steam mouths on a 90 m lattice over the open water (`smokeGroups`).
-- **The dawn**: the page opens on the sky's day -91 (the southern winter solstice; day 0 is the spring equinox) at 08:36, the sun just up (`#day=` and
-  `#hour=` move it).
-- **The ground**: KSTRATA `loess` on the bluff's risers (the submerged `tibasalt-ponded` bench is under the ice and not drawn); `KRELIEF.terraces`
-  on the bluff (2.6 m treads), the beach in shingle (`ground.wadi.cobble`), the crops kits/crops gives Region 98 (station 1's pass:
-  frost oat, emmer, helix bean, maar yam), dwarf willow by the qanats (`KMASK.distance`), sedge.
+**The owner's answers (2026-11-16):**
+1. *"Scene become open water with frost smoke and shore ice only."* The bay is not frozen and there is no polynya cut: the lake is open, it steams in
+   frost smoke at the winter dawn, and the only ice is a fringe in the shallows along the beach. The climate stays the model's.
+2. *"Move pin."* The station stands at the moved pin, **1520,1465**, on the model's own lake shore; the page no longer brings the bay to the old pin
+   (1516,1471). The pin itself is moved on the scale model by the scale-model session (`KNOWN_ISSUES.md`, the queue); this kit does not edit it.
+3. *"Keep it as new station."* Station 14 is a new station; the four of the plan are unchanged. Gemini's note (station 1 moved onto
+   Ostrukh-on-Water, `PLAN-STATIONS.md` section 5) is closed: not done.
+
+**The survey** (scale model 5.1 `model/data` through `smodel/page.py`, as section 0). The moved pin **1520,1465**: **1,924.8 m** (1.258 atm by the air
+law), mean **+18 degC**, warm / cold month +30 / +4, record high / low +38 / -4, 439 mm, **Cwb**, wind 7.7 m/s. Its cell borders **Lake Ostrukh**:
+56 water cells (**224 km2**) at **1,849.8 m**, floor 1,835-1,847 m, centred on 1524.5,1462.5; the nearest water cell is 1521,1465, 2 km due east (and
+1521,1464 and 1521,1466 north-east and south-east); the cell west of the pin (1519,1466) stands at 1,959 m. So the shore runs north-south about 1 km
+east of the pin and the land falls ~110 m over 4 km from the plain to the water. The model's `Ostrukh Riba` flows **into** the lake
+(`r_mb_siphon_breach`, 0.9 m3/s at its mouth, 1528,1459), not out of it. (The old pin, 1516,1471: 1,987.6 m, 14 km from the nearest water.)
+
+**What was built** (the model's numbers win, as in section 0):
+- **The frame**: page metres from the pin at its record (1,925 m), `d` toward the lake (east), `a` along the shore (south). The waterline ~0.9 km
+  east of the pin (where the pin's cell meets the lake's), wobbling 100 m along the shore; the plain rising west at 12 m a km (the model's 1,959 m
+  2 km west). The camera looks **east** over the bay, the sun rising to its left (north-east) and the Ostrukh Wall (1559,1457, ~80 km, 78 degrees)
+  the shared sky's ridge beyond the lake.
+- **The lake's level** is the model's 1,850 m (not the spec's 2,090); **the pin** 1,925 m (not 2,090-2,115); 1.26 atm by the law (not 1.31). The
+  terraces run from the beach (1,854 m) up the bluff to ~1,918 m: the spec's "+2,115 to +2,240" become "+4 to +68 over the lake".
+- **The lake is open.** A `WATER.still` over the lake's part of the square; past the square the far field carries it flat at its level. The fault
+  springs (three vents on the bay's bed along the Tharn-foot fault, 42, 40 and 34 degC, KTHERM, core/terrain 47) warm the water over them.
+- **The frost smoke**: core/atmos's height fog mist with a field (thickest over the springs' warm water, thin over the ice, none on land), pooled under
+  30 m over the lake, in a winter dawn window (rises 05:00, burns off by 12:30), and steam mouths over the open water (`smokeGroups`: a 130 m lattice
+  over the warm water, a 400 m one over the rest).
+- **The shore ice**: only where the water is under 0.9 m deep (the edge jittered by a hash a 10 m step, so it is ragged) and the whole strip from the
+  waterline out is under 4 degC on KTHERM's field: a fringe 60-100 m wide along the beach, broken into five pieces by the leads the beach's hot springs
+  and the qanats' outflows (12 degC springwater, KTHERM vents of their own) keep open. `WATER.ice` (core/water ext/54, opt-in by `station.json`,
+  in the station's own fragment `stations/polynya/89wp-host-polynya.js`), thin and wet, a little hoar on it.
+- **The check** (`verify.py --assert`): on a 40 m lattice over the lake, no ice over 1.42 m of water or over 5 degC, every lake point the open bay or
+  that ice, at least 80% of it open; on each ice strip's midline the ice present (90%), shallow and cold; the lake at the model's level. Negatives:
+  the whole bay frozen over, no open water, no shore-ice record.
+- **The dawn**: the sky's day -91 (the southern winter solstice; day 0 is the spring equinox) at 08:36, the sun 3-4 degrees up (`#day=`, `#hour=`).
+- **The ground**: KSTRATA `loess` on the bluff's risers (the submerged `tibasalt-ponded` bench is under the water and not drawn); `KRELIEF.terraces`
+  on the bluff (2.6 m treads), the beach in shingle (`ground.wadi.cobble`), the crops kits/crops gives Region 98 (station 1's pass: frost oat, emmer,
+  helix bean, maar yam), dwarf willow by the qanats (`KMASK.distance`), sedge.
 - **The water's other parts**: three qanat mouths in the bluff, each a `WATER.flow` channel (1.6 m, cut into the treads) down the fall line to the
   beach; two hot springs (42 and 34 degC) breaking out on the beach as `WATER.spring` pools.
 - **Ostrukh-on-Water**: no settlement kit draws it (no `settlements/` build, no core/hamlet record; the Yuni kit's engine is forked per world, not a
@@ -310,14 +325,4 @@ of the pin, the plain stepping down ~90 m in its last 2 km to it. The model's `O
   the quay along the waterline, three slate-and-basalt granaries on the lowest treads, the wax-caravan staging yard, the three qanat mouths, and
   nine houses at the frame's two ends, all placeholders. The Ghaunt-Ox teams are kits/fauna's, on the treads round the lots.
 - **Not built:** the `Ostrukh Riba` outflow (15-25 m3/s in the spec) is outside the frame and contradicts the model's inflow; the spec's
-  "winter air -7 degC" is under the model's record low (-4).
-
-**The physics, for the owner** (open question): on the model the pin's cold month is +4 degC and its record low -4 degC. A 224 km2 lake under
-that climate would not freeze over: a lake ice cover needs weeks of mean air below 0 degC. The page draws the spec's ice (the polynya cannot
-exist without it) and keeps it to the bay, at the coldest dawn of the year, and says so here and in `KNOWN_ISSUES.md`. It holds if the basin's
-winters are colder than the model's 2 km cell says (cold air ponding in the graben off the Stalker and Tharn ice), or if the station moves up
-the model's lapse; otherwise the honest scene is open water with frost smoke and shore ice only.
-
-**Gemini's other note: station 1 moved onto Ostrukh-on-Water** (`PLAN-STATIONS.md` section 5). Not done: station 14 is built as a new station and
-the four stand as they were. Open question for the owner: keep both (station 1 the piedmont's braided meltwater 36 km north, station 14 the
-lake shore), or retire station 1's place and move its braids and farmsteads to the pin.
+  "winter air -7 degC" is under the model's record low (-4); the spec's polynya and drifted pack (answer 1).

@@ -1,57 +1,66 @@
 {
  "canvas": "5.1 (1821x1723)",
- "name": "Ostrukh-on-Water Geothermal Polynya (Gemini 5.1 showcase station 14): the loess bluff of the village's terraces stepping down to Lake Ostrukh's frozen south-west bay, a 900 m polynya kept open by sub-lacustrine fault springs, frost smoke at a winter dawn, qanat mouths, the waterfront's edge",
+ "name": "Ostrukh-on-Water Geothermal Shore (Gemini 5.1 showcase station 14): the village's loess terraces stepping down to Lake Ostrukh at the moved pin, open water steaming in a winter dawn's frost smoke over the fault springs' warm bay, a fringe of shore ice in the shallows, qanat mouths, the waterfront's edge",
  "out": "siphon-pits-polynya.html",
  "site": {
   "name": "polynya",
-  "title": "Ostrukh-on-Water Polynya",
-  "px": 1516,
-  "py": 1471,
-  "base": 1988.0,
-  "atm": 1.25,
+  "title": "Ostrukh-on-Water Shore",
+  "px": 1520,
+  "py": 1465,
+  "base": 1925.0,
+  "atm": 1.26,
   "mean": 18,
   "rain": 439,
   "cls": "Cwb",
-  "lat": -50.7,
+  "lat": -50.6,
   "warm": 30,
   "cold": 4,
   "high": 38,
   "low": -4,
-  "surveyed": "scale model 5.1, 2026-11-16 (PLAN.md section 8.3): h 1,987.6 m at the pin; atm = 1.6 exp(-h/8000); temperatures tm/tw/tc/th/tl; the lake's level from wl",
+  "surveyed": "scale model 5.1, 2026-11-16 (PLAN.md section 8.3): h 1,924.8 m at the moved pin 1520,1465 (the owner moved it from 1516,1471 onto the lake's shore); atm = 1.6 exp(-h/8000); temperatures tm/tw/tc/th/tl; the lake's level from wl",
   "lake": {
    "name": "Lake Ostrukh",
    "level": 1850.0,
    "km2": 224,
-   "px": [1524.5, 1462.5],
-   "near_px": [1521, 1466],
-   "near_km": 14.1,
-   "note": "the model's lake: 56 water cells (224 km2) at 1,849.8 m, its floor 1,835 m; its nearest cell 14 km north-east of the pin, the plain falling 140 m to it. The page brings its south-west shore to 1.2 km of the pin (an ideal type): PLAN.md section 8.3"
+   "px": [
+    1524.5,
+    1462.5
+   ],
+   "near_px": [
+    1521,
+    1465
+   ],
+   "near_km": 2.0,
+   "note": "the model's lake: 56 water cells (224 km2) at 1,849.8 m, its floor 1,835-1,847 m; the pin's cell (1,925 m) borders it, its nearest water cell 2 km east (1521,1465), so the shore is drawn ~0.9 km east of the pin, where the two cells meet"
   },
   "settlement": {
    "id": "sostrukhyuni01",
    "name": "Ostrukh-on-Water",
    "type": "village",
    "polity": "Yuni Emirate",
-   "note": "tools/scale-model/model/src/60-settlements.js (the 5.0 pins); openworld/populations-gemini.json: 300 now, 1,100 on screen. No settlement kit draws it: the page shows its edge as site records (placeholders)"
+   "note": "tools/scale-model/model/src/60-settlements.js (the 5.0 pins) has the pin at 1516,1471; the owner moved it to 1520,1465, on the lake's shore (2026-11-16: queued for the scale-model session, KNOWN_ISSUES.md). openworld/populations-gemini.json: 300 now, 1,100 on screen. No settlement kit draws it: the page shows its edge as site records (placeholders)"
   },
-  "lat_note": "the shared sky's site frame (ATMOS.siteAt on the old canvas px 1244,1141)"
+  "lat_note": "the shared sky's site frame (ATMOS.siteAt on the old canvas px 1248,1135)"
  },
  "water": [
   {
-   "kind": "ice",
-   "name": "Lake Ostrukh's bay ice",
+   "kind": "still",
+   "name": "Lake Ostrukh's bay (open, steaming)",
    "level": 1850.0
   },
   {
-   "kind": "still",
-   "name": "The polynya",
+   "kind": "ice",
+   "name": "The shore ice (a fringe in the shallows)",
    "level": 1850.0,
-   "width_m": 900
+   "depth_m": 0.9
   },
   {
    "kind": "spring",
    "name": "The fault springs",
-   "temp": [28, 42]
+   "temp": [
+    28,
+    42
+   ]
   },
   {
    "kind": "flow",
@@ -73,8 +82,8 @@
  },
  "wind": {
   "speed": 7.7,
-  "dir": 225,
-  "note": "mean from the model (wd); the dawn's drift of the frost smoke from the south-west (the cold air draining off the plain onto the lake)"
+  "dir": 255,
+  "note": "mean from the model (wd); the dawn's drift of the frost smoke off the land (the cold air draining from the plain east onto the lake)"
  },
  "core": {
   "48a-crop-core.js": "kits/crops/src/10-crop-core.js",

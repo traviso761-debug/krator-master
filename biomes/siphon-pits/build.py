@@ -14,7 +14,7 @@ with biomes/geyser's --list-sources hook (tools/build_sources.py).
 
   python3 build.py                     dist/siphon-pits.html: station 3, the Siphon Maar Floor (stations/pitfloor)
   python3 build.py --station <name>    dist/siphon-pits-<name>.html: terraces (1), scarp (2), arete (4), polynya (14: Gemini's 5.1 showcase,
-                                       Ostrukh-on-Water's geothermal polynya; PLAN.md section 8)
+                                       Ostrukh-on-Water's geothermal shore; PLAN.md section 8)
   python3 build.py --all               every page
 
 The core and the biome leaf never reference a host global except through

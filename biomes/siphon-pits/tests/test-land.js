@@ -30,7 +30,7 @@ for(const k of Object.keys(ST)){if(only&&k!==only)continue;
   ok(beach>LV&&beach<LV+5,'polynya: the beach\'s back at '+beach.toFixed(1)+' m, over the lake ('+LV+')');ok(lake<LV-8,'polynya: the bay\'s bed '+(LV-lake).toFixed(1)+' m under the level 800 m out');
   ok(L.water(...L.xz(sh+800,0))===LV,'polynya: the lake\'s water at its level');ok(!(L.water(0,0)>-1e8),'polynya: negative, the pin is dry');
   let q=0;for(const Q of L.QL){const p=Q.P[Q.P.length-1];if(L.land(p[0],p[1])<LV+3)q++;}ok(q===L.QL.length,'polynya: each qanat runs down to the beach ('+q+' of '+L.QL.length+')');
-  ok(hi-lo>140,'polynya: the bluff and the bay span '+(hi-lo).toFixed(0)+' m');}
+  ok(hi-lo>100,'polynya: the bluff and the bay span '+(hi-lo).toFixed(0)+' m');}
  if(k==='terraces'){let water=0;for(let x=-2000;x<=2000;x+=50){for(let z=-400;z<=200;z+=2)if(L.water(x,z)>-1e8){water++;break;}}ok(water>70,'terraces: a braid at '+water+' of 81 sections');}
 }
 console.log(fails?fails+' FAILED':'all passed');process.exit(fails?1:0);

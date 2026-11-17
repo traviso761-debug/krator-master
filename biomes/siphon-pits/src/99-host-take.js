@@ -12,13 +12,14 @@ function VIEWS0(){const S=SITE;
  if(SKEY==='pitfloor'){const G=S.geyser,c=S.camp;const V={'The grove under the deck':look(-380,-120,3,40,-160,12),'The vent well':look(G.x+90,G.z+70,3,G.x,G.z,10),'The walls and the galls':look(-L.edgeR+260,60,4,-L.edgeR-40,0,60),
   'The roper camp':look(c.x+150,c.z-110,6,c.x,c.z,2),'Up into the deck':look(100,300,2,0,-200,260),'Down from the rim':look(1950,700,320,0,0,300)};
   if(typeof GEODE!=='undefined'&&GEODE){const B=GEODE.block,fx=Math.cos(B.face),fz=Math.sin(B.face);V['The geode on the rim']=look(B.x+fx*9,B.z+fz*9,1.7,B.x,B.z,1.6);}return V;}
- if(SKEY==='polynya'){const LV=SITE.lake.level,P=POLYNYA&&!POLYNYA.missing?POLYNYA.c:L.xz(SITE.shore.d+SITE.polynya.d,SITE.polynya.a),V=SITE.lakeView,cam=L.xz(V.d,V.a),
-   ice=L.xz(L.shoreD(SITE.polynya.a-260)+160,SITE.polynya.a-260),q=L.xz(L.shoreD(10)+40,10),g0=L.at(SITE.granaries[1][0],SITE.granaries[1][1]),Q=L.QL[1].P,lake=L.xz(L.shoreD(-500)+420,-500),top=L.xz(SITE.shore.d*.45,-500);
-  return{'The polynya at dawn':[cam[0],gh(cam[0],cam[1],V.h),cam[1],P[0],LV+6,P[1]],
-   'The ice edge':[ice[0],LV+4,ice[1],P[0],LV+2,P[1]],
+ if(SKEY==='polynya'){const LV=SITE.lake.level,P=SHORE_ICE?SHORE_ICE.c:L.xz(SITE.shore.d+SITE.bay.d,SITE.bay.a),V=SITE.lakeView,cam=L.xz(V.d,V.a),
+   R=SHORE_ICE&&SHORE_ICE.runs.length?SHORE_ICE.runs.slice().sort((x,y)=>y.length-x.length)[0]:null,r0=R?R[Math.floor(R.length/2)]:null,
+   ice=r0?L.xz((r0.s+r0.edge)/2,r0.a):L.xz(SITE.shore.d+20,-300),q=L.xz(L.shoreD(10)+40,10),g0=L.at(SITE.granaries[1][0],SITE.granaries[1][1]),Q=L.QL[1].P,lake=L.xz(L.shoreD(-500)+420,-500),top=L.xz(SITE.shore.d*.45,-500);
+  return{'The bay at dawn':[cam[0],gh(cam[0],cam[1],V.h),cam[1],P[0],LV+6,P[1]],
+   'The shore ice':[ice[0],LV+2.2,ice[1],P[0],LV+2,P[1]],
    'The quay and the granaries':[q[0],LV+7,q[1],g0[0],gh(g0[0],g0[1],6),g0[1]],
    'A qanat mouth':look(Q[0][0]+(Q[3][0]-Q[0][0])*1.2+9,Q[0][1]+(Q[3][1]-Q[0][1])*1.2,3,Q[0][0],Q[0][1],1.6),
-   'The terraces from the ice':[lake[0],LV+9,lake[1],top[0],gh(top[0],top[1],0),top[1]],
+   'The terraces from the lake':[lake[0],LV+9,lake[1],top[0],gh(top[0],top[1],0),top[1]],
    'From afar':look(-2300,1700,420,P[0],P[1],0)};}
  if(SKEY==='arete'){const g0=SITE.gantry;return{'The knife-edge':look(-260,0,2.2,200,0,-1),'Down into the south pit':look(120,6,1.7,120,700,-400),'The gantry':look(g0.x+60,-30,4,g0.x,30,0),
   'The Arete from above':look(-900,-500,260,200,0,0),'From afar':look(-2300,-1600,400,0,0,0)};}
@@ -51,22 +52,25 @@ const HCHK={
  fauna(F){const need={terraces:'grazer',polynya:'grazer',scarp:'grazer',pitfloor:'grazer',arete:'predator'}[SKEY],n=F&&F.byRole?F.byRole[need]||0:0;
   return{ok:n>0&&!(F.missing&&F.missing.length),detail:n?n+' '+need+'s placed and registered ('+(F.keys||[]).join(', ')+'), '+F.drawn+' drawn':'no '+need};},
  sites(list){const need={terraces:'farmstead',polynya:'quay',scarp:'tollhouse',pitfloor:'camp',arete:'trail'}[SKEY],n=list.filter(s=>s.kind===need).length;return{ok:n>0,detail:n+' '+need+' site(s) of '+list.length};},
- // station 14: the ice and the open water follow the heat (KTHERM, 48): on a 40 m lattice over the lake, ice only where the field is under the polynya's
- // `open` degrees (1 degree of slack for the contour's 8 m lattice), open water wherever it is over; the polynya 600-1,400 m across (the spec's 900); the
- // lake at the model's level (1,850 m) under both
- polynya(ice,open,P){if(!P||P.missing)return{ok:false,detail:'no polynya (no closed '+SITE.polynya.open+' degC contour round its middle)'};
-  const LV=SITE.lake.level,t=SITE.polynya.open;let n=0,iceN=0,openN=0,warmIce=0,coldOpen=0,bare=0;const R=TERR.R*1.05;
-  for(let z=-R;z<=R;z+=40)for(let x=-R;x<=R;x+=40){if(terrainH(x,z)>LV-.5)continue;n++;const T=HEAT_AT(x,z),onIce=ice.some(I=>I.contains(x,z)),isOpen=open?open.contains(x,z):false;
-   if(onIce){iceN++;if(T>t+1)warmIce++;}if(isOpen)openN++;if(T>t+1&&!isOpen)coldOpen++;if(!onIce&&!isOpen&&T<t-1)bare++;}
-  const lv=waterH(P.c[0],P.c[1]),ok=!warmIce&&!coldOpen&&!bare&&iceN>0&&openN>0&&P.width>600&&P.width<1400&&Math.abs(lv-LV)<1e-6&&LV===1850;
-  return{ok,detail:n+' lake points: '+iceN+' ice, '+openN+' open; '+warmIce+' ice over '+(t+1)+' degC, '+coldOpen+' warm points not open, '+bare+' cold points neither; the polynya '+Math.round(P.width)+' m across, '+(P.area/1e6).toFixed(2)+' km2; the lake at '+lv+' m'};},
+ // station 14: the lake open, its ice only a fringe in the shallows (the owner, 2026-11-16). On a 40 m lattice over the lake: no ice where the water
+ // is deeper than the fringe's limit (its depth with the edge's jitter and a quarter metre of slack) or over its temperature limit (plus 1 degree),
+ // and every lake point either the open bay or that ice. On each ice strip's midline: ice present, shallow and cold. The lake at the model's level
+ shoreIce(ice,bay,SI){if(!SI)return{ok:false,detail:'no shore-ice record (48: SHORE_ICE)'};
+  const LV=SITE.lake.level,dMax=SI.depth*1.3+.25,tMax=SI.open+1;let n=0,openN=0,iceN=0,deep=0,warm=0,neither=0,mid=0,midIce=0;const R=TERR.R*1.05;
+  const look=(x,z,onIce)=>{const dp=SI.depthAt(x,z),T=HEAT_AT(x,z);if(onIce){if(dp>dMax)deep++;if(T>tMax)warm++;}};
+  for(let z=-R;z<=R;z+=40)for(let x=-R;x<=R;x+=40){if(terrainH(x,z)>LV-.5)continue;n++;const onIce=ice.some(I=>I.contains(x,z)),inBay=bay?bay.contains(x,z):false;
+   if(onIce)iceN++;else if(inBay)openN++;else neither++;look(x,z,onIce);}
+  for(const Rn of SI.runs)for(const r of Rn){const p=L.xz((r.s+r.edge)/2,r.a);if(Math.abs(p[0])>R||Math.abs(p[1])>R||terrainH(p[0],p[1])>LV-.05)continue;mid++;
+   const onIce=ice.some(I=>I.contains(p[0],p[1]));if(onIce)midIce++;look(p[0],p[1],onIce);}
+  const lv=waterH(SI.c[0],SI.c[1]),ok=!deep&&!warm&&!neither&&midIce>0&&midIce>=mid*.9&&openN>=n*.8&&Math.abs(lv-LV)<1e-6&&LV===1850;
+  return{ok,detail:n+' lake points: '+openN+' open, '+iceN+' ice, '+neither+' neither; '+midIce+' of '+mid+' midline points of the fringe iced; '+deep+' ice over '+dMax.toFixed(2)+' m of water, '+warm+' ice over '+tMax+' degC; '+SI.leads+' leads; the lake at '+lv+' m'};},
  camerasOut(C){const bad=C.filter(c=>c.y<terrainH(c.x,c.z)+.5);return{ok:!bad.length,detail:bad.length?'under the ground: '+bad.map(c=>c.view).join(', '):C.length+' cameras above the ground'};}};
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P=instPoints();
  add('the station\'s air agrees with the corrected plan (the air law, the page\'s fields)',HCHK.air(SITE,AIR_P,AIR_T));
  add('the station\'s own life placed',HCHK.placed(window._station));
  add('the tree rule (cap '+SIPHON.TREECAP[SKEY]+')',HCHK.trees(SKEY,SIPHON.TREES,P));
  if(SKEY==='pitfloor'){add('the felt off the hot ground (KTHERM)',HCHK.felt(P));add('the walk-in geode on the rim (S7)',HCHK.geode(typeof GEODE!=='undefined'?GEODE:null));}
- if(SKEY==='polynya')add('the ice and the polynya follow the fault springs\' heat (KTHERM)',HCHK.polynya(WATER.surfaces.filter(s=>s.kind==='ice'),WATER.surfaces.find(s=>s.kind==='still'&&/polynya/.test(s.name)),POLYNYA));
+ if(SKEY==='polynya')add('the lake open, its ice a fringe in the shallows (depth, KTHERM)',HCHK.shoreIce(WATER.surfaces.filter(s=>s.kind==='ice'),WATER.surfaces.find(s=>s.kind==='still'&&/^Lake Ostrukh/.test(s.name)),SHORE_ICE));
  add('nothing rooted under the water',HCHK.dry(P));
  add('the people\'s sites registered',HCHK.sites(SITES_PEOPLE));
  add('the station\'s hexapods (kits/fauna, by land)',HCHK.fauna(window._fauna));
@@ -80,8 +84,8 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  if(SIPHON.TREECAP[SKEY]!=null)add(SIPHON.TREECAP[SKEY]===0?'one tree on a treeless station':'one tree over the cap',HCHK.trees(SKEY,fake(SIPHON.TREECAP[SKEY]+1),[]));
  if(SIPHON.TREECAP[SKEY]===0)add('a tree item on a treeless station',HCHK.trees(SKEY,[],[[0,0,0,'biome:spfleece']]));
  if(SKEY==='pitfloor')add('no geode',HCHK.geode(null));
- if(SKEY==='polynya'){const I=WATER.surfaces.filter(s=>s.kind==='ice'),O=WATER.surfaces.find(s=>s.kind==='still'&&/polynya/.test(s.name));
-  add('ice laid over the vents',HCHK.polynya(I.concat([{contains:()=>true}]),O,POLYNYA));add('no polynya',HCHK.polynya(I,O,null));}
+ if(SKEY==='polynya'){const I=WATER.surfaces.filter(s=>s.kind==='ice'),O=WATER.surfaces.find(s=>s.kind==='still'&&/^Lake Ostrukh/.test(s.name));
+  add('the whole bay frozen over',HCHK.shoreIce(I.concat([{contains:()=>true}]),O,SHORE_ICE));add('no open water',HCHK.shoreIce(I,null,SHORE_ICE));add('no shore-ice record',HCHK.shoreIce(I,O,null));}
  if(SKEY==='pitfloor')add('felt on the vent',HCHK.felt([[SITE.geyser.x,0,SITE.geyser.z,'biome:spfelt']]));
  add('no site',HCHK.sites([]));
  add('no hexapods',HCHK.fauna({byRole:{},keys:[],drawn:0}));
@@ -93,7 +97,7 @@ KHOST.on(function lodTick(){camera.updateMatrixWorld();if(BIO.lodTick)BIO.lodTic
 const HINT={terraces:"Station 1 of Region 98 (scale model 5.1, px 1519,1453; 2,157 m, 1.22 atm, +15 degC mean, Cwb): the Ostrukh Terraces, the cold arable graben. The braided meltwater from the Stalker glaciers on its cobble bed, loess terraces stepping up both sides with the crops kits/crops gives the station, dwarf blue willow on the bars, farmstead sites (ideal type)",
  scarp:"Station 2 (px 1559,1457; 3,289 m, 1.06 atm, +4 degC, Dsc): the Scarp Pass, the Ostrukh Wall's ravine and scree fan with the caravan road switchbacking up it, the tollhouse site, beacon baskets, frost polygons on the plateau, cushion moss and lichen; no trees (ideal type)",
  pitfloor:"Station 3 (px 1687,1555; 2,277 m, 1.20 atm, +18 degC, Cfa): the Siphon Maar Floor, a maar 420 m deep in the sink, under the amber deck (to 2,580 m). Woolly siphon groves (the Throne's siphon as a kin, in machine-wax pelts) on the warm ground, siphon felt, suture galls at the walls' foot, the vent well's geyser and mud pots, the roper camp (ideal type)",
- polynya:"Station 14 (Gemini's 5.1 showcase; px 1516,1471, the pin of Ostrukh-on-Water; 1,988 m, 1.25 atm, +18 degC mean, Cwb): the geothermal polynya at a winter dawn. The village's loess terraces step 138 m down to Lake Ostrukh (1,850 m, the model's level), its bay frozen but for a polynya 900 m across over the fault springs, steaming; the qanats' mouths, hot springs on the beach, the quay, the granaries and the wax-caravan yard (placeholders). Ideal type: the shore brought to 1.2 km of the pin",
+ polynya:"Station 14 (Gemini's 5.1 showcase; px 1520,1465, Ostrukh-on-Water's pin as the owner moved it onto the shore; 1,925 m, 1.26 atm, +18 degC mean, Cwb): the geothermal shore at a winter dawn. The village's loess terraces step 75 m down to Lake Ostrukh (1,850 m, the model's level), open and steaming in frost smoke over the fault springs that warm the bay; a fringe of shore ice in the shallows, leads at the springs and the qanats' mouths; hot springs on the beach, the quay, the granaries and the wax-caravan yard (placeholders) (ideal type)",
  arete:"Station 4 (px 1678,1542; 4,269 m, 0.94 atm, -5 degC, ET): the Arete Way, a 6 m knife-edge of basalt between two 420 m pits, crossed on iron stanchions and chains in the blizzard (?weather=clear for a clear day); the rim gantry, the flensers' lairs under the rims; no trees (ideal type)"}[SKEY];
 KHOST.take({build:SKEY==='pitfloor'?'siphon-pits':'siphon-pits-'+SKEY,title:'Krator biome — Siphon Pits: '+SITE.title,hint:HINT,
  scene,camera,renderer,ground:terrainH,clear:1.8,registry:REG,regHas,views:VIEWS,ticks:TICKS,
