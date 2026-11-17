@@ -329,3 +329,11 @@ tepuis as records the open world places on the model's ring crests. The model's 
 ## Scale-Model 5.1 Geology & Coordinates Note (`2026-11-13`)
 - **Canvas Offset (`+272, +330` from `4.21/4.23` to `5.1`):** On the `1821 × 1723` `5.1` grid, Korona's wet ring-gorge showcase **Silkhead Gorge & Hoar-Table Rim** sits at **`(1096, 526)`** (`+3,620 m` `tepui` quartzite rim over `-1,180 m` trench), the geyser `corona` trench field at **`(1123, 517)`** (`-1,892 m`), and the eastern trench silicic dome cluster at **`(1179, 578)`** (`KSTRATA` **`obsidian-pancake`**).
 - **Sulfur & Skarn Partitioning:** Uplifted `tepui` quartzite summit tables carry `sulfur = 0`; hydrothermal sulfur, `obsidian-pancake` domes, **`contact-marble`** dike-wall skarns, and **`evaporite-strand`** salt-lake benches are strictly restricted to the deep concentric ring-fault trenches.
+- **What the model says there today (read 2026-11-16 from `tools/scale-model/model/data`, `smodel.page.heights`):** 1096,526 stands at
+  **1,427 m** on a table of 1,430-1,570 m (px 1088-1098 by 516-528, about 20 x 24 km); the trench lies east and south: -580 m 12 km east,
+  -1,387 m 16 km east, -2,400 m 28 km east, and -500 to -1,300 m 8-12 km south. The corona's centre (1086,519) is 24 km WNW. 1179,578 is
+  at **-86 m** in the outer moat, no dome on it: Korona's five domes are 5.1 edit 2 (`d6c00c3e0`, `edit_512.py`), which lives on
+  `claude/firebliss-patera-domes` and is not on this line's model (main's edit 2 is Godshearth's vents).
+- **Station 7, Silkhead Gorge (built 2026-11-16, `stations/silkhead`):** built to the spec's heights (rim +3,620 m, trench -1,180 m:
+  4,800 m of tiered wall) on the model's setting (the trench east and south of the table). Its dome is a small one of its own on the
+  trench floor below the rim. `PLAN.md` section 3 is the record of what was built; `KNOWN_ISSUES.md` the map change queued.
