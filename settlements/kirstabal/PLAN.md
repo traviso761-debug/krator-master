@@ -327,7 +327,9 @@ Following `README.md`, "CORE MODULES ARE NOT OPTIONAL":
   beside it (as Chiang Mai's great temple stands at its centre). Outside the wall: the quay street and the harbour, the serai,
   the works and the monastery. About 490 buildings, 3,100 people. The wall is slate laid like Chiang Mai's thin bricks
   (`kits/xanadu/src/87k2-xa-slate-wall.js`, opt-in), drawn in `brick.dark` tinted slate grey until a coursed-slate set
-  is made (`core/materials/PROMPTS-NEEDED.md` section 57). Chiang Mai's moat is left out (a lake town); the owner may want it.
+  is made (`core/materials/PROMPTS-NEEDED.md` section 57). The moat (the owner, 2026-11-17: "Yes, add a moat"): Chiang Mai's,
+  16 m wide, its middle 15 m outside the wall, dug 3 m into the apron, its water 1.4 m under the banks (core/water, a flow a side),
+  the kit's street bridges over it at the four gates; core/city's square gives its line and the bridges' places.
 - **K6.** The site in the open world: `openworld/xanadu-oidong-highrift` (Kirstabal `sl758m2396` in `openworld/SITES.json` and the
   region's cut, by hand, inside the Xanadu polygon). The ring (Mil, Kanāl, Grēnz, Bāiyar) at the tune's places and the lake's
   nine on the shore round the lake, eight of them on a fishers' row in the region's site spec, planned on the world's ground

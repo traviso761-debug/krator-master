@@ -66,6 +66,13 @@ const walled=X=>{const W=X.wall;if(!W||W.nodes.filter(n=>n.kind==='gate'&&n.name
 T.ok('the town is walled: four named gates, four corner bastions, its runs all round, every lot inside the wall',walled(K),
  K.wall?K.wall.nodes.filter(n=>n.kind==='gate').map(n=>n.name).join(', ')+'; '+K.wall.segs.length+' runs, '+K.wall.nodes.filter(n=>n.kind==='tower').length+' buttresses':'no wall');
 T.neg('a house outside the wall is caught',walled,Object.assign({},K,{lots:K.lots.concat([Object.assign({},K.lots[5],{id:'outside',x:K.lots[5].x+3000})])}),K);
+/* the moat (the owner, 2026-11-17): dug all round (the ground at its middle 2.5 m under its banks), bridged at the four gates,
+   no building standing in it but its bridges */
+const moated=X=>{const M=X.moat;if(!M||M.bridges.length!==4)return false;const G=KS_GROUND,L=M.line;
+ for(let i=1;i<L.length;i++){const p=[(L[i-1][0]+L[i][0])/2,(L[i-1][1]+L[i][1])/2];if(G.base(p[0],p[1])-G.h(p[0],p[1])<2.5)return false;}
+ return X.lots.concat(X.extra).every(r=>r.kind==='bridge'||!G.inMoat(r.x,r.z,2));};
+T.ok('the moat is dug all round, bridged at the four gates, nothing standing in it',moated(K),K.moat?K.moat.bridges.map(b=>b.side+' deck '+b.deck.toFixed(1)).join(', '):'no moat');
+T.neg('a house in the moat is caught',moated,Object.assign({},K,{lots:K.lots.concat([Object.assign({},K.lots[3],{id:'moat',x:K.moat.line[2][0],z:K.moat.line[2][1]})])}),K);
 /* the bridge spans Keb Riwa: its ends on dry ground, the river's line between them, the deck over the water */
 const spans=X=>{const B=X.bridge,G=KS_GROUND,mid=[(B.a[0]+B.b[0])/2,(B.a[1]+B.b[1])/2],rv=G.riverAt(mid[0],mid[1]);
  return G.h(B.a[0],B.a[1])>rv[1]+1&&G.h(B.b[0],B.b[1])>rv[1]+1&&rv[0]<G.river.width/2&&B.deck>rv[1]+3;};

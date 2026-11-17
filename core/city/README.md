@@ -247,13 +247,17 @@ seeded from core/rand by position, every id beginning with the spec's.
   bastions); `zone` the build zone, the wall drawn in by `zoneIn`. `KCITY.grid.wall(G, avenues, o)` lays core/city's wall
   records (`KCITY.site.wall`) side by side, corner to corner, because walked round the whole line at once the towers'
   spacing steps across the corners and cuts them off; each corner is a node of kind `corner`.
+- **The moat** (`moat: {gap, width}`, 2026-11-17, Kirstabal: Chiang Mai's). `moat.line` is the inner street moved out past the
+  wall by `gap` more, closed; `moat.bridges` where each avenue crosses its middle (`side`, the avenue's way out as `dir`).
+  The world digs it and draws its water; none unless asked for.
 
 The world lays `G.ways` in its avenue step (`SL.addWay(kind, pts, ...)`), the wall in step 5 (`KCITY.grid.wall`, then
 `wallSegs` and `stampWall` as any wall), its zone in step 0; core/city's steps 6-12 fill the blocks. Kirstabal
 (`settlements/kirstabal/src/41-ks-town.js`) is the first. `node core/city/test-grid.js` checks the plan the same twice and
 plain; the wall nearly square (corners within 10 degrees of right, sides within 12 %); the grid irregular (lines off their
 places, runs missing, runs bent); every crossing reached; only the avenues passing the wall, once at each end; the zone
-inside the wall; the cells; the wall's records keeping their corners. Each check has a negative.
+inside the wall; the cells; the wall's records keeping their corners; the moat outside the wall, clear of it, bridged once
+at each gate, and none unless asked. Each check has a negative.
 
 ## Tests
 

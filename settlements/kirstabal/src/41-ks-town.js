@@ -27,11 +27,11 @@ var KS_TOWN=(function(){
     wall 16 m outside it, five grid cells a side, the two avenues on its second lines (the one from the Lake Gate meets the
     harbour; the other runs from the Works Gate to the Strongbow Gate). The quay street, the harbour and the works stay outside
     the wall. Was (2026-11-16) an open comb of streets on a 960 x 440 m zone */
- const SQ={c:[0,430],half:330,cells:5,avenues:{u:2,v:2},wallGap:16,out:50,seed:41710};
+ const SQ={c:[0,440],half:330,cells:5,avenues:{u:2,v:2},wallGap:16,out:50,seed:41710,moat:{gap:15,width:16}};   /* the moat: Chiang Mai's (the owner, 2026-11-17), 16 m wide, its middle 15 m outside the wall */
  const GATE_NAMES={'v-':'the Lake Gate','v+':'the Scarp Gate','u-':'the Works Gate','u+':'the Strongbow Gate'};
  const LANDMARK_CELLS={bazaar:[2,2],temple:[1,2],horns:[2,1],seat:[3,3],generator:[1,0],barracks:[4,1]};   /* [i along the shore, j inland] */
  let GRID=null;
- const grid=()=>GRID||(GRID=KCITY.grid.plan({id:'ks.grid',seed:SQ.seed,c:G.at(SQ.c[0],SQ.c[1]),u:G.UX,v:G.VX,half:SQ.half,cells:SQ.cells,avenues:SQ.avenues,wallGap:SQ.wallGap,out:SQ.out}));
+ const grid=()=>GRID||(GRID=KCITY.grid.plan({id:'ks.grid',seed:SQ.seed,c:G.at(SQ.c[0],SQ.c[1]),u:G.UX,v:G.VX,half:SQ.half,cells:SQ.cells,avenues:SQ.avenues,wallGap:SQ.wallGap,out:SQ.out,moat:SQ.moat}));
  const cellUV=k=>{const C=grid().cells.find(c=>c.i===LANDMARK_CELLS[k][0]&&c.j===LANDMARK_CELLS[k][1]);return [G.u(C.c[0],C.c[1]),G.v(C.c[0],C.c[1])];};
  /* the square's bounds in the shore frame (the flora's mask and the gardens' paint read it): the wall's box */
  const ZONE=[[SQ.c[0]-SQ.half-SQ.wallGap,SQ.c[1]-SQ.half-SQ.wallGap],[SQ.c[0]+SQ.half+SQ.wallGap,SQ.c[1]-SQ.half-SQ.wallGap],
@@ -71,7 +71,7 @@ var KS_TOWN=(function(){
   ['barracks','xa_barracks',0,...c('barracks'),'bazaar'],   /* the garrison of about 80 */
   ['generator','xa_generator',0,...c('generator'),'lamp'],    /* the Sultan's licence lights the Lamp Way (T.lit) */
   ['horns','xa_rich_c',0,...c('horns'),'bazaar'],       /* the Brotherhood of the Two Horns' factor house (horns.kirstabal), on the bazaar */
-  ['serai','xa_serai',0,400,420,'gate'],         /* the caravanserai outside the Strongbow Gate (kits/xanadu 87k, opt-in) */
+  ['serai','xa_serai',0,420,430,'gate'],         /* the caravanserai outside the Strongbow Gate (kits/xanadu 87k, opt-in) */
   ['tea','xa_tea_factory',0,-470,560,'lake'],      /* the tea factory: the withering lofts and the rolling shed */
   ['ferment.a','xa_fermentary',0,-538,500,'lake'],['ferment.b','xa_fermentary',1,-538,526,'lake'],   /* the cacao fermentaries */
   ['temple','xa_temple',0,...c('temple'),'bazaar']];};   /* the temple of the Decree, beside the bazaar */
@@ -88,7 +88,8 @@ var KS_TOWN=(function(){
      temple's buildings fill their defs' plots, so a street on the raster could reach them) */
   const dims=(k,v)=>{const D=o.dims(k,v);return D?Object.assign({},D,{w:Math.max(D.w,(D.fw||0)+2),d:Math.max(D.d,(D.fd||0)+2)}):null;};
   const xz=([uu,vv])=>at(uu,vv),notes=[],uvOf=p=>[G.u(p[0],p[1]),G.v(p[0],p[1])];
-  const GR=grid(),BAZAAR=cellUV('bazaar'),gateUV=sd=>{const g=GR.gates.find(q=>q.side===sd);return uvOf([g.x,g.z]);};
+  const GR=grid();G.setMoat(GR.moat);   /* the moat's trench in the ground before anything reads it */
+  const BAZAAR=cellUV('bazaar'),gateUV=sd=>{const g=GR.gates.find(q=>q.side===sd);return uvOf([g.x,g.z]);};
   const HARBOUR_GATE=gateUV('v-'),NORTH_GATE=gateUV('u+'),WORKS_GATE=gateUV('u-'),SCARP_GATE=gateUV('v+');
   const avU=GR.ways.find(w=>w.role==='avenue'&&w.line==='v'),lampUV=uvOf(avU.pts[Math.floor(avU.pts.length/2)]);
   const toward=(p,what)=>{const q=what==='bazaar'?BAZAAR:what==='gate'?NORTH_GATE:what==='lamp'?lampUV:what==='lake'?[p[0],-100]:BAZAAR;
@@ -174,6 +175,13 @@ var KS_TOWN=(function(){
   for(let i=0;i<3;i++)put('boatshed.'+i,'xa_boatshed',0,[H.u0-46-i*20,-6],face(NVX),{y:Math.max(QY-.4,G.h(...xz([H.u0-46-i*20,4]))),kind:'boatshed'});
   put('barge','xa_barge',0,[H.u0+120,-70],face(UX),{y:0,kind:'boat'});   /* the Sultan's barge at its mooring (the kit's pleasure barge) */
   put('monastery','xa_monastery',0,MONASTERY,toward(MONASTERY,'bazaar'),{kind:'monastery'});
+  /* the moat's bridges, one at each gate: the kit's street bridge, its deck level with the higher bank, across the moat and its
+     slopes along the avenue */
+  const MB=[];if(GR.moat){const bd2=dims('xa_bridge',0),sp=bd2?bd2.d:20,run=GR.moat.width+10,nm=Math.max(1,Math.ceil(run/sp));
+   for(const b of GR.moat.bridges){const e0=[b.x-b.dir[0]*run/2,b.z-b.dir[1]*run/2],e1=[b.x+b.dir[0]*run/2,b.z+b.dir[1]*run/2],dk=Math.max(G.base(...e0),G.base(...e1))+.15;
+    for(let i=0;i<nm;i++){const t=-run/2+(i+.5)*run/nm,c=[b.x+b.dir[0]*t,b.z+b.dir[1]*t],r={id:'ks.extra.moatbridge.'+b.side+'.'+i,key:'xa_bridge',v:0,x:c[0],z:c[1],y:dk,
+     ry:face(b.dir),w:bd2?bd2.w:10,d:bd2?bd2.d:20,h:bd2?bd2.h:4,fw:bd2?bd2.fw||bd2.w:10,fd:bd2?bd2.fd||bd2.d:20,people:0,kind:'bridge'};extra.push(r);}
+    MB.push({side:b.side,x:b.x,z:b.z,deck:dk});}}
   /* ---- the Strongbow road along the shore and the bridge over Keb Riwa's mouth (the owner, 2026-11-16: "bridge crosses it") */
   const sbOut=uvOf(GR.ways.find(w=>w.role==='avenue'&&w.line==='u').pts.slice(-1)[0]);   /* the Strongbow way's end past the Strongbow Gate */
   const roadUV=[sbOut,[sbOut[0]+120,sbOut[1]-30],[1400,232],[2600,230],[3800,228],[4905,230]],farUV=[[5165,230],[5600,330],[6400,560],[7600,800]];
@@ -190,6 +198,7 @@ var KS_TOWN=(function(){
    wall:PL.wallRec?{segs:PL.wallRec.segs.map(g=>({ax:g.ax,az:g.az,bx:g.bx,bz:g.bz,health:g.health})),
     nodes:PL.wallRec.nodes.filter(n=>!n.skip&&n.health>0&&n.kind!=='corner').map(n=>({kind:n.kind,x:n.gx,z:n.gz,ry:n.ry,name:n.name||null,named:!!n.named,way:n.way?n.way.cls:null})),
     corners:GR.corners.map(c=>({id:c.id,x:c.x,z:c.z})),line:GR.wall}:null,
+   moat:GR.moat?{line:GR.moat.line,width:GR.moat.width,bridges:MB}:null,
    places:{bazaar:BAZAAR,lakeGate:HARBOUR_GATE,strongbowGate:NORTH_GATE,worksGate:WORKS_GATE,scarpGate:SCARP_GATE,centre:SQ.c,half:SQ.half+SQ.wallGap}};}
  return {make,PEOPLE,ZONE,LANDMARKS,LATEX,MONASTERY,SQ,grid};
 })();

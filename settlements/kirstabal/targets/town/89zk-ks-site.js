@@ -67,7 +67,7 @@ const ksWet=(x,z)=>Math.max(0,Math.min(1,.36+.32*ksSm(700,40,KS_GROUND.v(x,z))+.
 /* inside the town wall: the build zone core/city laid the town in (KS_PLAN.zone, the wall drawn in 6 m) */
 function ksInWall(x,z){const P=KS_PLAN&&KS_PLAN.zone;if(!P)return false;let c=false;
  for(let i=0,j=P.length-1;i<P.length;j=i++){const a=P[i],b=P[j];if((a[1]>z)!==(b[1]>z)&&x<(b[0]-a[0])*(z-a[1])/(b[1]-a[1])+a[0])c=!c;}return c;}
-function ksBioMask(x,z){if(KS_GROUND.h(x,z)<1.2)return 0;
+function ksBioMask(x,z){if(KS_GROUND.h(x,z)<1.2||KS_GROUND.inMoat(x,z,6))return 0;   /* the lake, the river, the moat and its banks */
  for(const s of KS_WAYS.query(x,z,1))if(KCITY.lib.segDist([x,z],s.a,s.b)<s.w/2+2)return 0;
  for(const p of KS_SPACE.query(x,z,1)){const D=VERN.defs[p.key];if(Math.hypot(x-p.x,z-p.z)<Math.hypot(D.fw||D.w,D.fd||D.d)/2+(p.kind==='ring'?2:8))return 0;}   /* a clearing round every town building */
  const v=KS_GROUND.v(x,z),u=KS_GROUND.u(x,z);if(u>-760&&u<820&&v<60)return 0;   /* the beach, the quays and the quay street: open */

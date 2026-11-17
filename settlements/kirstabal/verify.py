@@ -9,7 +9,8 @@ views are Xanadu's, and settlements/xanadu/verify.py runs it (on tools/harness.p
                      four corner bastions, its runs all round
   people             the town's residents against PLAN.md's 3,000, within 15 %
   ring-laid          Kirstabal's ring (its four villages) and the shore's fishing hamlet Jal, laid on core/hamlet with no error
-  water              the Lower Xanadu Lake (core/water open) and Keb Riwa (core/water flow, from the lip to the mouth) drawn
+  water              the Lower Xanadu Lake (core/water open), Keb Riwa (core/water flow, from the lip to the mouth) and the moat's
+                     four sides (core/water flow) drawn
 
     KRATOR_GL=gpu python3 verify.py dist/kirstabal.html --assert --views "Overview,The harbour"
 """
@@ -29,7 +30,7 @@ TOWN_JS = r"""
   detail:(B.wall||0)+' wall pieces: '+(Wl.names||[]).join(', ')+'; '+(Wl.corners||0)+' corner bastions, '+(Wl.towers||0)+' buttresses, '+(Wl.runs||0)+' runs'});
  const p=K.people||0;R.push({name:'people',ok:Math.abs(p-3000)<=450,detail:p+' residents / 3,000 (PLAN.md section 2)'});
  const rg=K.ring||[];R.push({name:'ring-laid',ok:rg.length===5&&rg.every(v=>!v.error&&v.records>=20),detail:rg.map(v=>v.id.replace(/^ks.ring.|^ll.hamlet./,'')+' '+v.records+(v.error?' ('+v.error+')':'')).join(', ')});
- const W=K.water||{};R.push({name:'water',ok:!!(W.lake&&W.river&&W.riverPts>=10),detail:'the lake '+(W.lake?'drawn':'missing')+', Keb Riwa '+(W.river?'drawn ('+W.riverPts+' points)':'missing')});}
+ const W=K.water||{};R.push({name:'water',ok:!!(W.lake&&W.river&&W.riverPts>=10&&W.moat===4),detail:'the lake '+(W.lake?'drawn':'missing')+', Keb Riwa '+(W.river?'drawn ('+W.riverPts+' points)':'missing')+', the moat '+(W.moat||0)+' of 4 sides'});}
 return R;}"""
 xv.ASSERT_JS = xv.ASSERT_JS.rstrip()[:-len('return R;}')] + TOWN_JS
 assert xv.ASSERT_JS.endswith('return R;}'), 'settlements/xanadu/verify.py ASSERT_JS no longer ends with return R;}'

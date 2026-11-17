@@ -83,7 +83,7 @@
     "core/city/31-city-steps-b.js": "eaf65024e7a94421fd48046eb148f30593f9a7c6b9972e919d2082740c98fc3b",
     "core/city/32-city-steps-c.js": "21e0395278d6a932a11bd8cd82e323ec75659392546af0fe93dee1df4789485f",
     "core/city/33-city-strategies.js": "e81fc5c2721cb9b75f28313c61fb215f18179f292b2a35880607c596c1d6afe9",
-    "core/city/37-city-grid.js": "223b52b87d3aa5af38ae7b86de94458ddb693a4c2dddd4115db6015f552e2a36",
+    "core/city/37-city-grid.js": "f1dd1cc2e1245f762acde7c1887f0cbf1cb395c2a1a6cb23ea6da77bb307b562",
     "core/city/40-city-kcity.js": "a4b5b225afc98c800c38abf6ee0b1f79156974eeccfc1c84fd669ded37fb09f5",
     "core/clock/20-core-clock.js": "27f205a2e908a21cb5d07f07431352d7a02a214baf543fc94cd545d7d588ddbe",
     "core/door/10-core-door.js": "00ceccdcc016793a0ce0fbfd52a03142670c9426edf316878c829ef9e7ac34ea",
@@ -261,17 +261,16 @@
     "settlements/kirstabal/KNOWN_ISSUES.md": "89afc3cc2f99906be616d85bf5323254602d9e870e9ab28cde915cf9383ca85c",
     "settlements/kirstabal/PORT.md": "90adcc505b8707e06cab6adf8158fffc3df6cd13d8fdab038292ca983f742c7a",
     "settlements/kirstabal/build.py": "a15605d20fab0fbc25c26d704149177e6725cfe700d8b9b79ab54e6f2082c00e",
-    "settlements/kirstabal/gen/69k-kcity-bundle.js": "7c8af4ee0e3a05eb08831e6b771a99a7bece7678195389d6f92d39a829e3b872",
     "settlements/kirstabal/gen/69k2-ks-flora-bundle.js": "61c015f689771b99ea523f295ad139403da8e09e7446ee63ff7b46fab1d320a0",
     "settlements/kirstabal/kit.json": "137dc546522082e9439f984c32ac6ad1ec69a2dcec6b310f18a91b463aa7d86b",
     "settlements/kirstabal/src/39k-ks-model.js": "0984961f081c7b01c9caa7a53ab9cf6acde942edead496665a23b4d30ffa6dfc",
-    "settlements/kirstabal/src/40-ks-ground.js": "539a24617b44c8400221c5a0b896a43ed6192ef5cc465c1b20a4c10097971de9",
-    "settlements/kirstabal/src/41-ks-town.js": "0fa0594b299cf880f34f3c51a41693ef7834fbe2e464110b39cb9e1c4c1ccb96",
+    "settlements/kirstabal/src/40-ks-ground.js": "c037fe6ae85ab25110222a17ee06ad3727e965a95a37396e4d7ea85129708113",
+    "settlements/kirstabal/src/41-ks-town.js": "fc778f0731a27e1269715337e99f9f12d750e2a4ca0f03e68316763d09fe3364",
     "settlements/kirstabal/src/42-ks-ring.js": "1cfd3fa8f26689c26a508dd2df6e9e53ce2a920789009d65312ee7a9cfe7247a",
     "settlements/kirstabal/src/89k0-ks-matlib.js": "f372be99b157c6a5d4ed963c623ed106af970db58f07cc83b31ddd7d67be3170",
     "settlements/kirstabal/targets/town/89z-rows.js": "603b008f2291bc875053ab79d9a06c11d92b2cc0cdaf3b07f29d67363668f0c1",
-    "settlements/kirstabal/targets/town/89zk-ks-site.js": "19dddda52e49e813ba4a06c280b77a5fbc9a687ee170e575f7a90fb0fea60c54",
-    "settlements/kirstabal/targets/town/90k-ks-world.js": "ee1241c047fbf1712d1e56fb13457e3a74f6a26fe172f25f137a207b90c0fe91",
+    "settlements/kirstabal/targets/town/89zk-ks-site.js": "a62eb60f9616034b9114b0f511d8b2d789bfd8bcd4fb8a3756292c27208e2482",
+    "settlements/kirstabal/targets/town/90k-ks-world.js": "777896c66392101b76a4fe031ac7b87387a4b2c95f85786dd28bea51ebace526",
     "settlements/kirstabal/targets/town/90l-ks-build.js": "7af5c9c3fc71fb75b6bfbcf993d207a0247b6378e7e7007b9ae00eef3660b766",
     "settlements/kirstabal/targets/town/90m-ks-flora.js": "3bb991022189d85d03f9e84502b188d38255a1ef841e49c938898c785ead88c8",
     "settlements/kirstabal/targets/town/91z-views.js": "c989c699d6f20eed24a9c46c5980f0528fb188357ffe7952ba2d94d8a4c041a7",
@@ -513,16 +512,18 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "settlements/kirstabal/build-manifest-town.json": "8e4a7f5becc4c3cb3126b8ae344124a639e6ffdbff1eaf00a8aef0ec938b8932",
-    "settlements/kirstabal/dist/kirstabal.html": "c5db1e14cfa22d4f279c97369ae8432d955c6c58d63e07a9b5060092294e5217",
+    "settlements/kirstabal/build-manifest-town.json": "9142c374f3fe6c81eef774e53112e76145275ef7f8c9f51ffcf2c09ad2de10f6",
+    "settlements/kirstabal/dist/kirstabal.html": "15cc7f64798c699798ce466fc1564b2c6da62a54db4ba3194f37d5cdc0b0bb59",
     "settlements/kirstabal/dist/xanadu.tex.xanadu-2.js": "be1d57f174e08cf71b5511aff65a313eec8edc29e057c48d027e9b60630f3ab5",
-    "settlements/kirstabal/dist/xanadu.tex.xanadu.js": "3fe87059ee305d523fa5026dddfd91123354e88d5839097de9df44137500f2a4"
+    "settlements/kirstabal/dist/xanadu.tex.xanadu.js": "3fe87059ee305d523fa5026dddfd91123354e88d5839097de9df44137500f2a4",
+    "settlements/kirstabal/gen/69k-kcity-bundle.js": "e7b0a652fe1151460c9805cc1877634f7d8a9fde8e794315dabc527358be798b"
    },
    "outputs_raw": {
-    "settlements/kirstabal/build-manifest-town.json": "17e5d492d33ad900f8e60d149d2cb454842da3deb81b76962461b56553384bbd",
-    "settlements/kirstabal/dist/kirstabal.html": "c5db1e14cfa22d4f279c97369ae8432d955c6c58d63e07a9b5060092294e5217",
+    "settlements/kirstabal/build-manifest-town.json": "6ce72f260e6b27becb817de7a6f4db9609fba0b6a2f4e4758befc74c260ff241",
+    "settlements/kirstabal/dist/kirstabal.html": "15cc7f64798c699798ce466fc1564b2c6da62a54db4ba3194f37d5cdc0b0bb59",
     "settlements/kirstabal/dist/xanadu.tex.xanadu-2.js": "be1d57f174e08cf71b5511aff65a313eec8edc29e057c48d027e9b60630f3ab5",
-    "settlements/kirstabal/dist/xanadu.tex.xanadu.js": "3fe87059ee305d523fa5026dddfd91123354e88d5839097de9df44137500f2a4"
+    "settlements/kirstabal/dist/xanadu.tex.xanadu.js": "3fe87059ee305d523fa5026dddfd91123354e88d5839097de9df44137500f2a4",
+    "settlements/kirstabal/gen/69k-kcity-bundle.js": "e7b0a652fe1151460c9805cc1877634f7d8a9fde8e794315dabc527358be798b"
    }
   }
  }

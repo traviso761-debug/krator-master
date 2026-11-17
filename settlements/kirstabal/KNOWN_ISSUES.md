@@ -43,7 +43,9 @@ moored boat is the Sultan's pleasure barge; the capital's lake owes the same cra
   block with the interiors off.
 - **The wall's stone is a stand-in**: `brick.dark` tinted slate grey (families `xSlate`, `xSlateD`) until a coursed-slate set
   is made (`core/materials/PROMPTS-NEEDED.md` section 57). The curtain steps down the slope in runs of at most 14 m, each
-  set at the lowest ground under it, so its top steps rather than following the ground. No moat (Chiang Mai has one).
+  set at the lowest ground under it, so its top steps rather than following the ground. The moat's water follows the apron's
+  slope (it falls about 6 m from the inland side to the lake side) with no weirs drawn; its trench is drawn by the town's 6 m
+  ground cells, so its slopes are coarse up close.
 - **Strongbow** is not drawn: its arcology is the Ancients kit's (`kits/ancients/targets/strongbow`), on its own page. The
   Strongbow road runs out over the bridge toward its foot.
 - **The town's ground is designed, not cut from the model**: the beach, the apron rising about 9 m a km and the harbour's

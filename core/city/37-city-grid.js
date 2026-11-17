@@ -16,14 +16,16 @@
 //            wander, as a fraction of the half-size), bow (0.02: each side's bow), drop (0.22: the chance an inner run is
 //            missing), bend (0.35: the chance an inner run bends, 0.06 of its length), avenues: {u: j, v: i} (the grid line
 //            each avenue runs on: the middle by default), wallGap (16: from the inner street's centre to the wall's line),
-//            out (60: how far the avenues run on past the wall), zoneIn (6: the build zone's edge, this far inside the wall)}
+//            out (60: how far the avenues run on past the wall), zoneIn (6: the build zone's edge, this far inside the wall),
+//            moat (null: none; {gap: from the wall's line to the moat's middle, width}: Chiang Mai's moat, 2026-11-17)}
 //     G     {id, frame: {c, u, v}, nodes: [[{id, i, j, x, z}]] (nodes[i][j], i along u), ring: [[x, z]] (the inner street,
 //            closed, counter-clockwise), wall: [[x, z]] (closed: the last point is the first), corners: [{id, x, z, at}] (the
 //            wall's four corners: the bastions; `at` its index in wall), zone: [[x, z]] (the build zone: the wall drawn in
 //            by zoneIn), ways: [{id, kind: 'avenue' | 'main', role: 'avenue' | 'ring' | 'grid', line: 'u' | 'v', index, pts}],
 //            gates: [{id, way, side: 'u-' | 'u+' | 'v-' | 'v+', x, z}] (where each avenue meets the wall), cells:
 //            [{id, i, j, poly, c: [x, z], merged: [cell ids]}] (a missing run joins two cells: both list each other),
-//            edges: {kept, dropped}}
+//            edges: {kept, dropped}, moat: {line: [[x, z]] (closed: its middle), width, bridges: [{id, way, side, x, z, dir}]
+//            (where each avenue crosses it, dir the avenue's way out)} or null}
 //   KCITY.grid.wall(G, ways, o)  core/city's wall records (KCITY.site.wall) on the square, side by side, so its corners stay
 //                                nodes (kind 'corner', the bastions); {line, nodes, gates} as KCITY.site.wall's
 //   KCITY.grid.inside(G, x, z)   inside the wall
@@ -161,7 +163,27 @@ KCITY.grid = (function () {
       var A = e.line === 'u' ? cellAt(e.a[0], e.index - 1) : cellAt(e.index - 1, e.a[1]), B = e.line === 'u' ? cellAt(e.a[0], e.index) : cellAt(e.index, e.a[1]);
       if (A && B) { A.merged.push(B.id); B.merged.push(A.id); }
     });
-    return { id: id, frame: F, nodes: N, ring: ring, wall: wall0.concat([wall0[0]]), corners: corners, zone: zone, ways: ways, gates: gates, cells: cellsOut,
+    /* the moat: the inner street moved out past the wall by spec.moat.gap, closed; a bridge where each avenue crosses its middle */
+    var moat = null;
+    if (spec.moat) {
+      var mg = spec.moat.gap == null ? 15 : spec.moat.gap, mw = spec.moat.width == null ? 16 : spec.moat.width;
+      var ml = offset(ring, gap + mg).map(function (p) { return [r2(p[0]), r2(p[1])]; }); ml = ml.concat([ml[0]]);
+      var bridges = [];
+      ways.forEach(function (w) {
+        if (w.role !== 'avenue') return;
+        for (var i = 1; i < w.pts.length; i++) for (var k = 1; k < ml.length; k++) {
+          var p = w.pts[i - 1], q = w.pts[i], r = ml[k - 1], s = ml[k], d1 = [q[0] - p[0], q[1] - p[1]], d2 = [s[0] - r[0], s[1] - r[1]], den = d1[0] * d2[1] - d1[1] * d2[0];
+          if (Math.abs(den) < 1e-9) continue;
+          var t = ((r[0] - p[0]) * d2[1] - (r[1] - p[1]) * d2[0]) / den, u = ((r[0] - p[0]) * d1[1] - (r[1] - p[1]) * d1[0]) / den;
+          if (t < 0 || t > 1 || u < 0 || u > 1) continue;
+          var x = p[0] + d1[0] * t, z = p[1] + d1[1] * t, L = Math.hypot(d1[0], d1[1]) || 1, out = i <= w.pts.length / 2 ? -1 : 1;
+          var g = gates.filter(function (q2) { return q2.way === w.id; }).sort(function (a2, b2) { return Math.hypot(a2.x - x, a2.z - z) - Math.hypot(b2.x - x, b2.z - z); })[0];
+          bridges.push({ id: id + '.bridge.' + (g ? g.side : bridges.length), way: w.id, side: g ? g.side : null, x: r2(x), z: r2(z), dir: [r2(out * d1[0] / L * 1e4) / 1e4, r2(out * d1[1] / L * 1e4) / 1e4] });
+        }
+      });
+      moat = { line: ml, width: mw, gap: mg, bridges: bridges };
+    }
+    return { id: id, frame: F, nodes: N, ring: ring, wall: wall0.concat([wall0[0]]), corners: corners, zone: zone, ways: ways, gates: gates, cells: cellsOut, moat: moat,
       edges: { kept: E.filter(function (e) { return !e.dropped; }).length, dropped: E.filter(function (e) { return e.dropped; }).length },
       spec: { half: [hu, hv], cells: [nu, nv], wallGap: gap, out: out, avenues: { u: ja, v: ia } } };
   }

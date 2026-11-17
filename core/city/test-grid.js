@@ -85,4 +85,11 @@ const keeps = W => G.corners.every(c => W.nodes.some(n => n.kind === 'corner' &&
   W.nodes.every((n, i) => !i || n.s >= W.nodes[i - 1].s);
 T.neg('the wall keeps its four corners as nodes, its four named gates, its nodes in order (the whole-line walk, which cuts the corners, is caught)', keeps,
   KCITY.site.wall(G.wall, avs, { towerGap: 90, clear: 12, gateFind: 40, named: G.gates.map(g => ({ x: g.x, z: g.z, marker: g.side, name: g.side })), side: 1, health: 2 }), WR);
+/* the moat: outside the wall all round, the four avenues bridged over it once each, nothing else crossing it */
+const GM = KCITY.grid.plan(Object.assign({}, SPEC, { moat: { gap: 15, width: 16 } }));
+const moatOk = g => !!g.moat && g.moat.line.every(p => !KCITY.grid.inside(g, p[0], p[1])) && g.moat.bridges.length === 4 && new Set(g.moat.bridges.map(b => b.side)).size === 4 &&
+  g.moat.line.every(p => { const L = g.wall; let d = Infinity; for (let i = 1; i < L.length; i++) { const a = L[i - 1], b = L[i], dx = b[0] - a[0], dz = b[1] - a[1], t = Math.max(0, Math.min(1, ((p[0] - a[0]) * dx + (p[1] - a[1]) * dz) / (dx * dx + dz * dz || 1))); d = Math.min(d, Math.hypot(p[0] - a[0] - dx * t, p[1] - a[1] - dz * t)); } return d > g.moat.width / 2; });
+const wet = JSON.parse(JSON.stringify(GM)); wet.moat.line = KCITY.grid.offset(wet.moat.line.slice(0, -1), -40); wet.moat.line.push(wet.moat.line[0]);
+T.neg('the moat runs outside the wall, clear of it, the four avenues bridged over it (a moat drawn inside the wall is caught)', moatOk, wet, GM);
+T.ok('no moat unless asked for', G.moat === null && JSON.stringify(Object.assign({}, GM, { moat: null })) === JSON.stringify(Object.assign({}, G, { moat: null })));
 T.done();

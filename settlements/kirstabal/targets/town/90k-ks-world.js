@@ -51,6 +51,8 @@ function ksPainter(B){const PX=4096/Math.max(B.x1-B.x0,B.z1-B.z0),W=Math.ceil((B
 const KS_EARTH=[[-620,20],[700,20],[700,860],[-620,860]].map(([u,v])=>KS_GROUND.at(u,v));
 function ksPaintTown(P){const K=KS_PLAN;if(!K)return;const {ma,mb,t}=P;
  ksPaintClimate(P,10);P.sandBands(4);
+ /* the moat's trench and banks: wet earth (the sand set, darkened), the water drawn over its middle */
+ {const M=KS_GROUND.moat();if(M){mb.fillStyle='rgb(255,0,0)';P.line(mb,M.line,M.width+12);t.strokeStyle='rgba(80,72,60,.45)';P.line(t,M.line,M.width+12);}}
  /* the town's made ground (the quarters inside the zone) a little dirt, the yards round every building dirt */
  ma.fillStyle='rgb(0,0,200)';P.poly(ma,KS_EARTH);ma.fill();   /* packed earth: a hot town's ground, not a lawn */t.fillStyle='rgba(140,130,118,.25)';P.poly(t,KS_EARTH);t.fill();
  /* the yards as garden plots (the owner, 2026-11-16: "Paint the yards as green garden plots"): every 3 m cell of the build zone
@@ -154,5 +156,14 @@ const KS_RIVER=(function(){const G=KS_GROUND,up=[[1000.5,1598],[999.5,1597.6],[9
   const D=WATER.drawFlow(F,{shallow:ksLinC(0x7a8a6c),deep:ksLinC(0x3a5a50),color:0xffffff,roughness:.14,metalness:.05,envMapIntensity:.45,step:20,across:6,margin:6,renderOrder:2});
   if(D&&D.mesh){D.mesh.userData.inspectLabel='Keb Riwa (r107: 780 m3/s; the cataract down the scarp)';D.mesh.userData.probeSkip=true;}return {F,D,pts};}
  catch(e){reportErr('Keb Riwa: '+(e&&e.stack||e));return null;}})();
+/* THE MOAT (the owner, 2026-11-17: Chiang Mai's): its water as four core/water flows, one a side, corner to corner, 1.4 m under
+   the ground's line (KS_GROUND.moatLevel: the trench is 3 m deep), slow and still-looking, the bridges over it at the gates */
+const KS_MOAT=(function(){const M=KS_GROUND.moat();if(!M)return null;const L=M.line,n=L.length-1,k=n/4,out=[];
+ for(let sd=0;sd<4;sd++){const pts=[];for(let i=sd*k;i<=(sd+1)*k;i++){const p=L[i%n];pts.push([p[0],p[1],KS_GROUND.moatLevel(p[0],p[1])]);}
+  try{const F=WATER.flow({name:'the moat',pts,width:pts.map(()=>M.width-1),speed:.15,densify:20});
+   const D=WATER.drawFlow(F,{shallow:ksLinC(0x6c7a5c),deep:ksLinC(0x34483e),color:0xffffff,roughness:.1,metalness:.05,envMapIntensity:.45,step:8,across:4,margin:2,renderOrder:2});
+   if(D&&D.mesh){D.mesh.userData.inspectLabel='The moat';D.mesh.userData.probeSkip=true;out.push(D);}}
+  catch(e){reportErr('the moat: '+(e&&e.stack||e));}}
+ return out;})();
 window._worldMs=Math.round(performance.now()-KS_T0);
-window._ksWater={lake:!!KS_LAKE,river:!!(KS_RIVER&&KS_RIVER.D),riverPts:KS_RIVER?KS_RIVER.pts.length:0};
+window._ksWater={lake:!!KS_LAKE,river:!!(KS_RIVER&&KS_RIVER.D),riverPts:KS_RIVER?KS_RIVER.pts.length:0,moat:KS_MOAT?KS_MOAT.length:0};
