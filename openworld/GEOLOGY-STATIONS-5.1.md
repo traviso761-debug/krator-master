@@ -80,3 +80,36 @@ KNOWN_ISSUES for the scale-model queue. Commit on your own branch and push it; o
 
 **State, 2026-11-16 evening:** no branch on origin carries any of the five yet. Stations 3, 11, 13 and 14 have no brief:
 write one from section 2 when they are wanted. The stations waiting on the reshaping get theirs once it is merged.
+
+## 4. State, 2026-11-17 (branch `ccr-a96f22b6-0hy616`; paused at the usage limit, resumes after 2026-11-23)
+
+The owner asked for stations 3, 4, 6, 11, 13 and 14, plus 7 and 8 on the domes already on the map (2026-11-16). Each was built
+in its own worktree in one cloud session (no GPU: every check ran on SwiftShader; **the GPU verify of every page below is
+owed**) and merged here.
+
+| # | Page | State |
+|---|---|---|
+| 3 | `biomes/swbay/dist/swbay-skarn.html` | **Done.** swbay gained stations (the bay's page byte-identical). Re-sited at exactly 734,998 with the land raised, as in nwbay (owner, 2026-11-17): fossil sea cliffs over raised platforms, the +34 m raised wave-cut bench; the Throne's plume NNE where the map puts it. 25 asserts pass. |
+| 4 | `biomes/geyser/dist/geyser-cove.html` (the kit's station 7) | **Built (1f6d37bf0, asserts pass); the rework is WIP.** The owner's answers (2026-11-17): raise the rim so the bluffs read over the hyperjungle; the kit's boiling point follows air pressure (about 119 °C at 1.93 atm), kit-wide; the Port Goto skiffs are mostly Hykkoussoi pirates (`kits/ringsea` vessels). The WIP commit has every geyser page rebuilt, **not verified**. |
+| 6 | `biomes/nhighlands/dist/nhighlands-tiguantin.html` | **WIP.** Built and committed (2aa8bc432) plus a last WIP commit; its final verify did not finish and it never reported. |
+| 7 | `biomes/korona` station 7 | **WIP.** Built (432d2e675, 0f20e2c5f); was moving onto edit 8's domes when it stopped; its official `--assert` verify did not run and it never reported. The worktree did not merge main. |
+| 8 | `biomes/firebliss` station 8, South Glass | **WIP.** Built (21f47763b) and re-read against DATA.domes (3e19f29a3); its screenshot and final verify did not finish and it never reported. The worktree did not merge main: check it stands on edit 8's dome once main is merged. |
+| 11 | `biomes/copperglacier/dist/copperglacier-azurite.html` | **Done** (asserts pass; the harness's universal asserts and shots cut off by restarts). `rock.azurite` owed (`core/materials/PROMPTS-NEEDED.md` section 58). |
+| 13 | - | **Blocked:** Labyrinth is plan-only on main; it was built on `claude/clever-wilson-6dc681`, which is not on origin. |
+| 14 | `biomes/siphon-pits/dist/siphon-pits-polynya.html` ("Ostrukh-on-Water Shore") | **Done**, with the owner's answers (2026-11-16): open water, frost smoke and shore ice only; at the moved pin 1520,1465 (the pin move and the Ostrukh Riba outflow queued for the scale model); a new station, the other four unchanged. Its last verify failed only `textures-decoded` under load 33-40: **rerun** `python3 verify.py dist/siphon-pits-polynya.html --assert` from `biomes/siphon-pits`. |
+
+**Owed on this branch:**
+- Merge `origin/main` (it has its own merge of `claude/siphon-pits-biome`, the six biome merges, and scale model edits 7 and 8); then
+  re-check stations 7 and 8 on edit 8's domes.
+- Finish 4, 6, 7, 8: rerun each station's `verify.py --assert` and screenshot, update its docs, then `tools/test_all.py --no-build`
+  (its runs here never finished: the restarts, and `core/region/tests/test-catch.js` timing out at 1800 s; the failures seen were all
+  outside these kits).
+- Rebuilds the Siphon Pits merge reaches (crops records): Longsong, ancientsvalley `--station terraces`, nwouterwall (default, taiga,
+  yeti), wouterwall.
+
+**The owner's open questions:**
+- Station 11: keep the ideal crater (2.2 km; the model's tarn is about 30 km), or move the station to the real breach (about 140,1137)? A resource rebake for the IOCG skarn round the tarn?
+- Station 3: none open. Station 14: none open.
+
+**Split off as cloud sessions, 2026-11-17** (off main): the galvanic kit's stations 2+ (`claude/galvanic-stations`) and the
+Slabfields' stations 2+ (`claude/slabfields-stations`).
