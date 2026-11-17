@@ -67,10 +67,13 @@
   xc('xc_reception', { require: [{ need: 'seats', types: ['seating'], roles: SEAT, n: 3 }, { need: 'tray table', types: ['table'], roles: ['low_table'], n: 1 }],
     optional: [{ types: ['seating'], max: 6 }, { types: ['table'], max: 3 }, hang(6), { types: ['brazier'], max: 4 }, ceil(2), lamps(4), { types: ['statue'], max: 2 },
       { types: ['fountain'], max: 1 }, { types: ['rug'], max: 4 }, { types: ['art'], max: 3 }, surf(6)], extra: 6 });
+  /* the Dome's Hall of Feasts is furnished on the rectangle inside its arcades (sets/xanadu.js): its sides are open arches, so it
+     takes no hanging, frieze or wall fountain (they would stand free in an arch, their backs to the court); the palace's dining
+     halls (xc_dining, real walls) take them */
   xc('xc_feast', { require: [{ need: 'the Great Divan', types: ['monument'], roles: ['great_divan'], n: 1 }, { need: 'the musicians', types: ['seating'], roles: ['musicians_dais'], n: 1 },
       { need: 'the caves of ice', types: ['table'], roles: ['sorbet_table'], n: 1 }, { need: 'dining couches', types: ['seating'], roles: ['dining_couch'], n: 6 },
       { need: 'tray tables', types: ['table'], roles: ['low_table'], n: 4 }],
-    optional: [{ types: ['seating'], max: 8 }, { types: ['table'], max: 2 }, { types: ['brazier'], max: 6 }, hang(8), ceil(3), lamps(6), { types: ['fountain'], max: 3 },
+    optional: [{ types: ['seating'], max: 8 }, { types: ['table'], max: 2 }, { types: ['brazier'], max: 6 }, ceil(3), lamps(6), { types: ['fountain'], max: 3 },
       { types: ['statue'], max: 4 }, { types: ['workstation'], max: 1 }, { types: ['rug'], max: 4 }, { types: ['planter'], max: 4 }, surf(12)], extra: 5 });
   xc('xc_dining', { require: [{ need: 'couches', types: ['seating'], roles: ['dining_couch', 'masnad'], n: 4 }, { need: 'tray tables', types: ['table'], roles: ['low_table'], n: 3 },
       { need: 'the caves of ice', types: ['table'], roles: ['sorbet_table'], n: 1 }],

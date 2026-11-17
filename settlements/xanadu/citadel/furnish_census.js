@@ -15,7 +15,8 @@
                HEM m over its floor in a room whose clear height allows it (the owner, 2026-11-16: "make sure wall hangings
                dont wind up near ground, this has been a recurring issue"), measured on the built piece
      float     every floor piece's lowest drawn point is on its floor (within 2 cm); every surface piece stands on a host
-     signature each room the plan names (FURNISHING.md) holds its signature pieces
+     required  every piece a room's kind requires is placed; the residence rule holds
+     zfight    no piece a citadel room takes has two parts with coplanar, same-facing, overlapping faces
    A page verify (settlements/xanadu verify.py, KRATOR_GL=gpu) is still the proof of what is drawn; this is the fast loop. */
 'use strict';
 const fs = require('fs'), vm = require('vm'), path = require('path');
@@ -48,7 +49,12 @@ run(fs.readdirSync(path.join(IXS, 'src')).filter(f => /\.js$/.test(f) && f < '50
 run(fs.readFileSync(path.join(IXS, 'adapters', 'runtime-adapter.js'), 'utf8'), 'runtime-adapter.js');
 for (const s of ['xanadu.js', 'xanadu-citadel.js']) run(fs.readFileSync(path.join(IXS, 'sets', s), 'utf8'), s);
 
-const out = run(`(function () {
+/* the pieces of the citadel section of the Xanadu culture file (2026-11-16): the zfight check fails on these; the older pieces a
+   citadel room takes are reported, not failed (they are other sets' pieces) */
+const XSRC = fs.readFileSync(CAT + 'krator-master-furniture-xanadu.js', 'utf8'), XSEC = XSRC.slice(XSRC.indexOf("Erewhon's citadel: the Sultan's court"));
+const NEWKEYS = (XSEC.match(/key: '(xanadu_[a-z_]+)'/g) || []).map(s => s.slice(6, -1));
+const out = run(`const NEWKEYS = ${JSON.stringify(NEWKEYS)};
+(function () {
   const IX = KratorInteriors, HEM = ${HEM};
   /* the catalog adapter's four calls over the registry (adapters/catalog-adapter.js), built pieces measured once */
   const meas = {};
@@ -97,9 +103,55 @@ const out = run(`(function () {
     }
     res.push(B);
   }
-  return JSON.stringify(res);
+  /* zfight: every piece a citadel room can take (rooms list an xc_ kind), every variant, built alone: two faces of different
+     parts that lie in one plane, face the same way and overlap would flicker (z-fighting). Faces back to back (a box on a box)
+     face opposite ways and are hidden, so they are not counted */
+  const zf = [];
+  const r2 = function (x) { return Math.round(x * 100) / 100; };
+  function mb(m) { const B = new THREE.Box3().setFromObject(m); return [r2(B.min.x), r2(B.min.y), r2(B.min.z), r2(B.max.x), r2(B.max.y), r2(B.max.z)].join(' '); }
+  function tris(g) {
+    const out = [], a = new THREE.Vector3(), b = new THREE.Vector3(), c = new THREE.Vector3();
+    let mi = 0;
+    g.updateMatrixWorld(true);
+    g.traverse(function (m) { if (!m.isMesh) return; const id = mi++, p = m.geometry.attributes.position, ix = m.geometry.index, n = ix ? ix.count : p.count;
+      for (let i = 0; i + 2 < n; i += 3) {
+        a.fromBufferAttribute(p, ix ? ix.getX(i) : i).applyMatrix4(m.matrixWorld); b.fromBufferAttribute(p, ix ? ix.getX(i + 1) : i + 1).applyMatrix4(m.matrixWorld);
+        c.fromBufferAttribute(p, ix ? ix.getX(i + 2) : i + 2).applyMatrix4(m.matrixWorld);
+        const nn = new THREE.Vector3().subVectors(b, a).cross(new THREE.Vector3().subVectors(c, a)), ar = nn.length() / 2; if (ar < 1e-5) continue; nn.normalize();
+        if (nn.y < -0.99 && Math.max(a.y, b.y, c.y) < 0.01) continue;   /* a face down on the floor is never seen */
+        out.push({ m: id, box: mb(m), n: nn, d: nn.dot(a), v: [a.clone(), b.clone(), c.clone()], ar: ar }); } });
+    return out;
+  }
+  function overlap2(A, B, n) {   /* triangles in one plane: project on its two widest axes, strict interior or proper crossing */
+    const ax = Math.abs(n.x) > Math.abs(n.y) && Math.abs(n.x) > Math.abs(n.z) ? ['y', 'z'] : Math.abs(n.y) > Math.abs(n.z) ? ['x', 'z'] : ['x', 'y'];
+    const P = A.v.map(function (q) { return [q[ax[0]], q[ax[1]]]; }), Q = B.v.map(function (q) { return [q[ax[0]], q[ax[1]]]; });
+    const cr = function (o, p, q) { return (p[0] - o[0]) * (q[1] - o[1]) - (p[1] - o[1]) * (q[0] - o[0]); }, E = 1e-6;
+    const inside = function (pt, T) { const s1 = cr(T[0], T[1], pt), s2 = cr(T[1], T[2], pt), s3 = cr(T[2], T[0], pt);
+      return (s1 > E && s2 > E && s3 > E) || (s1 < -E && s2 < -E && s3 < -E); };
+    const cen = function (T) { return [(T[0][0] + T[1][0] + T[2][0]) / 3, (T[0][1] + T[1][1] + T[2][1]) / 3]; };
+    if (inside(cen(P), Q) || inside(cen(Q), P)) return true;
+    for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) { const p1 = P[i], p2 = P[(i + 1) % 3], q1 = Q[j], q2 = Q[(j + 1) % 3];
+      const d1 = cr(p1, p2, q1), d2 = cr(p1, p2, q2), d3 = cr(q1, q2, p1), d4 = cr(q1, q2, p2);
+      if (((d1 > E && d2 < -E) || (d1 < -E && d2 > E)) && ((d3 > E && d4 < -E) || (d3 < -E && d4 > E))) return true; }
+    return false;
+  }
+  for (const A of FURNS) {
+    if (!A.rooms.some(function (r) { return /^xc_/.test(r); })) continue;
+    for (let v = 0; v < (A.variants || 1); v++) {
+      const g = buildFurn(A.key, 0, 0, 0, { variant: v, seed: 1, y: 0, wealth: 0.9 }); if (!g) continue;
+      const T = tris(g), buck = {}; INSTANCES.length = 0;
+      for (const t of T) { const k = [Math.round(t.n.x * 200), Math.round(t.n.y * 200), Math.round(t.n.z * 200), Math.round(t.d * 500)].join(','); (buck[k] = buck[k] || []).push(t); }
+      let hit = null;
+      for (const k in buck) { const L = buck[k]; if (L.length < 2) continue;
+        for (let i = 0; i < L.length && !hit; i++) for (let j = i + 1; j < L.length && !hit; j++)
+          if (L[i].m !== L[j].m && Math.abs(L[i].d - L[j].d) < 1e-3 && L[i].n.dot(L[j].n) > 0.9999 && overlap2(L[i], L[j], L[i].n)) hit = { p: L[i].v[0], why: 'n ' + [L[i].n.x, L[i].n.y, L[i].n.z].map(r2).join(',') + ' parts [' + L[i].box + '] [' + L[j].box + ']' };
+        if (hit) break; }
+      if (hit) zf.push({ key: A.key, variant: v, at: [hit.p.x, hit.p.y, hit.p.z].map(function (x) { return Math.round(x * 1000) / 1000; }), why: hit.why, mine: NEWKEYS.indexOf(A.key) >= 0 });
+    }
+  }
+  return JSON.stringify({ res: res, zf: zf });
 })()`, 'census.js');
-const res = JSON.parse(out);
+const OUT = JSON.parse(out), res = OUT.res;
 let fails = 0, rooms = 0, pieces = 0;
 for (const B of res) {
   const n = B.rooms.reduce((a, r) => a + r.pieces, 0); pieces += n; rooms += B.rooms.length;
@@ -115,6 +167,8 @@ for (const B of res) {
     for (const f of r.floats) console.log(`    FLOAT ${f.key} ${f.lo}`);
   }
 }
+console.log('\nzfight: ' + (OUT.zf.length ? OUT.zf.length + ' piece variants with coplanar overlapping faces' : 'no coplanar overlapping faces in any citadel piece'));
+for (const z of OUT.zf) { if (z.mine) fails++; console.log((z.mine ? '  ZFIGHT ' : '  (older piece, reported) ') + z.key + ' v' + z.variant + ' at ' + z.at.join(', ') + (z.mine ? '  ' + z.why : '')); }
 console.log(`\n${res.length} buildings, ${rooms} rooms, ${pieces} pieces; ${fails} check failures`);
 if (jsonOut) fs.writeFileSync(jsonOut, JSON.stringify(res, null, 1));
 if (has('--assert') && fails) process.exit(1);

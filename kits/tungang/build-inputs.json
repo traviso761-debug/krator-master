@@ -78,15 +78,15 @@
     "core/terrain/host/39h-core-cavern-cut.js": "e1c4c71c61abd891817635a16e8fd8b0684541321a5b622a0b0d8d486a9933f3",
     "core/walk/20-core-walk.js": "66c2a5dfacc6e4ffc2cdc03dfa7d0f82ea991c312d5725d299e4e281fe148e03",
     "core/walk/box/24-core-walk-box.js": "88b4370c232270dd428cf1ddbcd7fd5771a947cfd196e6c8a27e63d39f0c17bc",
-    "kits/catalog/furniture_bundle.py": "e9de2aa4a449de0baf2a1b00842dcd03a318fc966f9bbfe618a66bd36bf9ef3a",
+    "kits/catalog/furniture_bundle.py": "29163379638b541819175cf4a9a09c4ea1da7c5979730016b3eda80360ba0f03",
     "kits/catalog/krator-master-furniture-fellgang.js": "8dbcc3f21911f52c909717857db3f4a9ea7fe9e083f88a4c4c41530924e7e5bc",
     "kits/catalog/krator-master-furniture-generic-goods.js": "1436ca9a4c6d8556cb1c6e1647150f5ec7f80c8ab0ded0ba54638805b6c750de",
     "kits/catalog/krator-master-furniture-generic.js": "990b05b8404c67ab960f6649babc8143c738ea600a04c0c22564296fa7786ea4",
     "kits/catalog/krator-master-furniture-jobs.js": "598ea1c1eeeeb4c30206d397021a579b281399ba4bea85fdaf0060d6a433674d",
     "kits/catalog/krator-master-furniture-tungang.js": "a8483b2d1194a05a77ac4af0581ea88f978014d533d834fc7f5ba6a3ecfee67e",
-    "kits/catalog/krator-master-furniture-xanadu.js": "ee233580d36e2fe88283f00556b3b9aa1d2a913edc29e875042e1e821158999b",
+    "kits/catalog/krator-master-furniture-xanadu.js": "97f4b20dccb7af296968bc885835037339a5174f151c1516b138c2adce5c803d",
     "kits/tungang/KNOWN_ISSUES.md": "f1299bfbe2b0acf9419574b2b43cceefc52b2b4865d7fe99f98a7fb05723e6b1",
-    "kits/tungang/PORT.md": "980d10b0daa976c027402b7f9c5a44402741969e5c7d2b2c2105d4022c49e2f6",
+    "kits/tungang/PORT.md": "93f94b1b009ad27defe9dd5cead6cb1bf6d17e998ae5001b53b3f0f77924a4ef",
     "kits/tungang/build.py": "ebc21e7a617ed296242c8ed71211bb9fdce613cfdb93713a53ae43632aaabbad",
     "kits/tungang/src/00-head.html": "fba12988e841f1850990769e31c4ee6ca7a12a59ecf113ebd50bc39c76b8bc9b",
     "kits/tungang/src/26k-kit.js": "3ef74a7697796746fdfaacd4326bac762cc366cde82930b3164de5efe005c23f",
@@ -251,14 +251,14 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "kits/tungang/build-manifest.json": "24f77bfc8282e90a982af07e320a4e0ffb0f845064fad68573f4b4d52d4bca96",
-    "kits/tungang/dist/tungang.html": "240d9be5420afc2ec8a76005b4129852ddd2f422411bc6ec3acfe734a0d83087",
+    "kits/tungang/build-manifest.json": "eaf9ca9cb02a37cff806a37dd35ede6136567ed49f9a7453321ff8e7f49f9d69",
+    "kits/tungang/dist/tungang.html": "a667c8c95dc8d90189217d3ce14c9813cf689aaa262e8a237b695608f8fcfcb0",
     "kits/tungang/dist/tungang.tex.tungang-2.js": "addcd022d9d1ea8218f5c3727306acec0cda168ea76cb72957a1afbc79b07f10",
     "kits/tungang/dist/tungang.tex.tungang.js": "50b5b211ad4cee5eb48753cf36ca3ea465ec353902bbda93ec55914a98b41309"
    },
    "outputs_raw": {
-    "kits/tungang/build-manifest.json": "24f77bfc8282e90a982af07e320a4e0ffb0f845064fad68573f4b4d52d4bca96",
-    "kits/tungang/dist/tungang.html": "240d9be5420afc2ec8a76005b4129852ddd2f422411bc6ec3acfe734a0d83087",
+    "kits/tungang/build-manifest.json": "eaf9ca9cb02a37cff806a37dd35ede6136567ed49f9a7453321ff8e7f49f9d69",
+    "kits/tungang/dist/tungang.html": "a667c8c95dc8d90189217d3ce14c9813cf689aaa262e8a237b695608f8fcfcb0",
     "kits/tungang/dist/tungang.tex.tungang-2.js": "addcd022d9d1ea8218f5c3727306acec0cda168ea76cb72957a1afbc79b07f10",
     "kits/tungang/dist/tungang.tex.tungang.js": "50b5b211ad4cee5eb48753cf36ca3ea465ec353902bbda93ec55914a98b41309"
    }
