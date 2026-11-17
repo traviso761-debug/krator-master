@@ -8,7 +8,7 @@
     "biomes/galvanic/build.py": "f968e40c25440422bb882dfab67de00aba784f127d560f7cce5edaa6c5230814",
     "biomes/galvanic/src/00-head.html": "3ef3735937a749ea7af0b51828100f0b99c60419307de986c60b2f89c924096d",
     "biomes/galvanic/src/40-galvanic-cell.js": "c994d78fd9022497d74d8ea8f00745f8fcfadc31b29b3c3670ce223cf49d7773",
-    "biomes/galvanic/src/45-host-stage.js": "87585ecaffc647d17ad4480537a5c1bfde2c6150960f1cb7df6a098ab46b0008",
+    "biomes/galvanic/src/45-host-stage.js": "6a65b8bd5b199ada153884d0aa4bcdbc95ea66f96d18f8d4400c838cc3bd0cd8",
     "biomes/galvanic/src/48-host-therm.js": "a3ac830308de86c321ac602bf240cb7f18f71b95661add8aa7e440464be81cc1",
     "biomes/galvanic/src/50-galvanic-species.js": "4537cb03b264de0262450bcd9b1b89da9a1af7d3c266ff9388bfad6eb94b31fa",
     "biomes/galvanic/src/60-galvanic-place.js": "edcf8a6e1ba35b8731cc7fa4251223d25d876e9d3d551eb2c89747ff6324fb62",
@@ -23,7 +23,7 @@
     "biomes/galvanic/src/89u-host-steam.js": "08e7c973fa8dce79f5ff0940e8da8ba4d768254329ef98fee9615036ff8fed11",
     "biomes/galvanic/src/89w-host-water.js": "25687033150e324471c9cd01605dabebae6ecb434613268090bbd753a5ca1bfe",
     "biomes/galvanic/src/89z-host-build.js": "c57ddf132dfdd0b13f9c4c00dcfa13cd7c64edc4cfe1f0d4108964c15cad26f0",
-    "biomes/galvanic/src/99-host-take.js": "48ed2dc8571b828c161cc22b30aef28215ecbbebbce651abef03628feb454a28",
+    "biomes/galvanic/src/99-host-take.js": "a6fba2b822e7bed6b6bfe384475de4319207d8530b8db90f6b1f3c4dc5a31ffc",
     "biomes/galvanic/src/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
     "biomes/galvanic/tex/ground.brown_mud_02.albedo.webp": "0bf58aa2d5a87d5faba2d4d4e3af81f362f17fd8de894f1b1d034e10316f1eb9",
     "biomes/galvanic/tex/ground.efflorescence.albedo.webp": "5cacad9d2b56df0874940a2e2480a4dedc7683a04bb1237ac77666501a64feee",
@@ -144,10 +144,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/galvanic/dist/galvanic.html": "39c4a609d961d4569809db549275d7b271b7133665cbf05ae2983704c8261699"
+    "biomes/galvanic/dist/galvanic.html": "f51f9d40fa169e1ae3f2fea3d1d6d89e66cb8460358e50acfb731696832cdbf7"
    },
    "outputs_raw": {
-    "biomes/galvanic/dist/galvanic.html": "39c4a609d961d4569809db549275d7b271b7133665cbf05ae2983704c8261699"
+    "biomes/galvanic/dist/galvanic.html": "f51f9d40fa169e1ae3f2fea3d1d6d89e66cb8460358e50acfb731696832cdbf7"
    }
   },
   "build.py --station deep": {
@@ -157,7 +157,7 @@
     "biomes/galvanic/build.py": "f968e40c25440422bb882dfab67de00aba784f127d560f7cce5edaa6c5230814",
     "biomes/galvanic/src/00-head.html": "3ef3735937a749ea7af0b51828100f0b99c60419307de986c60b2f89c924096d",
     "biomes/galvanic/src/40-galvanic-cell.js": "c994d78fd9022497d74d8ea8f00745f8fcfadc31b29b3c3670ce223cf49d7773",
-    "biomes/galvanic/src/45-host-stage.js": "87585ecaffc647d17ad4480537a5c1bfde2c6150960f1cb7df6a098ab46b0008",
+    "biomes/galvanic/src/45-host-stage.js": "6a65b8bd5b199ada153884d0aa4bcdbc95ea66f96d18f8d4400c838cc3bd0cd8",
     "biomes/galvanic/src/48-host-therm.js": "a3ac830308de86c321ac602bf240cb7f18f71b95661add8aa7e440464be81cc1",
     "biomes/galvanic/src/50-galvanic-species.js": "4537cb03b264de0262450bcd9b1b89da9a1af7d3c266ff9388bfad6eb94b31fa",
     "biomes/galvanic/src/60-galvanic-place.js": "edcf8a6e1ba35b8731cc7fa4251223d25d876e9d3d551eb2c89747ff6324fb62",
@@ -172,7 +172,7 @@
     "biomes/galvanic/src/89u-host-steam.js": "08e7c973fa8dce79f5ff0940e8da8ba4d768254329ef98fee9615036ff8fed11",
     "biomes/galvanic/src/89w-host-water.js": "25687033150e324471c9cd01605dabebae6ecb434613268090bbd753a5ca1bfe",
     "biomes/galvanic/src/89z-host-build.js": "c57ddf132dfdd0b13f9c4c00dcfa13cd7c64edc4cfe1f0d4108964c15cad26f0",
-    "biomes/galvanic/src/99-host-take.js": "48ed2dc8571b828c161cc22b30aef28215ecbbebbce651abef03628feb454a28",
+    "biomes/galvanic/src/99-host-take.js": "a6fba2b822e7bed6b6bfe384475de4319207d8530b8db90f6b1f3c4dc5a31ffc",
     "biomes/galvanic/src/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
     "biomes/galvanic/stations/deep/44z-host-site.js": "97ad2afb60169e214ed7b40d03ba6149391cbd7b28dea49c306afa03192c2408",
     "biomes/galvanic/tex/ground.brown_mud_02.albedo.webp": "0bf58aa2d5a87d5faba2d4d4e3af81f362f17fd8de894f1b1d034e10316f1eb9",
@@ -295,10 +295,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/galvanic/dist/galvanic-deep.html": "e18b144ab70bdd04ee22ae72c678964d89337eedf8c6c325272534727895fa3a"
+    "biomes/galvanic/dist/galvanic-deep.html": "6e7695b08de19d779b9895d482892e5c6538eb9a512f0d1fe1e18497c087ac9a"
    },
    "outputs_raw": {
-    "biomes/galvanic/dist/galvanic-deep.html": "e18b144ab70bdd04ee22ae72c678964d89337eedf8c6c325272534727895fa3a"
+    "biomes/galvanic/dist/galvanic-deep.html": "6e7695b08de19d779b9895d482892e5c6538eb9a512f0d1fe1e18497c087ac9a"
    }
   },
   "build.py --station gossan": {
@@ -308,7 +308,7 @@
     "biomes/galvanic/build.py": "f968e40c25440422bb882dfab67de00aba784f127d560f7cce5edaa6c5230814",
     "biomes/galvanic/src/00-head.html": "3ef3735937a749ea7af0b51828100f0b99c60419307de986c60b2f89c924096d",
     "biomes/galvanic/src/40-galvanic-cell.js": "c994d78fd9022497d74d8ea8f00745f8fcfadc31b29b3c3670ce223cf49d7773",
-    "biomes/galvanic/src/45-host-stage.js": "87585ecaffc647d17ad4480537a5c1bfde2c6150960f1cb7df6a098ab46b0008",
+    "biomes/galvanic/src/45-host-stage.js": "6a65b8bd5b199ada153884d0aa4bcdbc95ea66f96d18f8d4400c838cc3bd0cd8",
     "biomes/galvanic/src/48-host-therm.js": "a3ac830308de86c321ac602bf240cb7f18f71b95661add8aa7e440464be81cc1",
     "biomes/galvanic/src/50-galvanic-species.js": "4537cb03b264de0262450bcd9b1b89da9a1af7d3c266ff9388bfad6eb94b31fa",
     "biomes/galvanic/src/60-galvanic-place.js": "edcf8a6e1ba35b8731cc7fa4251223d25d876e9d3d551eb2c89747ff6324fb62",
@@ -323,7 +323,7 @@
     "biomes/galvanic/src/89u-host-steam.js": "08e7c973fa8dce79f5ff0940e8da8ba4d768254329ef98fee9615036ff8fed11",
     "biomes/galvanic/src/89w-host-water.js": "25687033150e324471c9cd01605dabebae6ecb434613268090bbd753a5ca1bfe",
     "biomes/galvanic/src/89z-host-build.js": "c57ddf132dfdd0b13f9c4c00dcfa13cd7c64edc4cfe1f0d4108964c15cad26f0",
-    "biomes/galvanic/src/99-host-take.js": "48ed2dc8571b828c161cc22b30aef28215ecbbebbce651abef03628feb454a28",
+    "biomes/galvanic/src/99-host-take.js": "a6fba2b822e7bed6b6bfe384475de4319207d8530b8db90f6b1f3c4dc5a31ffc",
     "biomes/galvanic/src/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
     "biomes/galvanic/stations/gossan/44z-host-site.js": "753c2d539891b56258edff94a7c82f2173380c56a338e7912752fb95765d2428",
     "biomes/galvanic/tex/ground.brown_mud_02.albedo.webp": "0bf58aa2d5a87d5faba2d4d4e3af81f362f17fd8de894f1b1d034e10316f1eb9",
@@ -446,10 +446,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/galvanic/dist/galvanic-gossan.html": "1f4f49b390e35b553487564f03bb818f13c41a6e76efe78111d9848141bb4f25"
+    "biomes/galvanic/dist/galvanic-gossan.html": "b059c74073899539eede0df751d0a527c7d3d2b2d741de5c4a3c373e9cec6674"
    },
    "outputs_raw": {
-    "biomes/galvanic/dist/galvanic-gossan.html": "1f4f49b390e35b553487564f03bb818f13c41a6e76efe78111d9848141bb4f25"
+    "biomes/galvanic/dist/galvanic-gossan.html": "b059c74073899539eede0df751d0a527c7d3d2b2d741de5c4a3c373e9cec6674"
    }
   }
  }

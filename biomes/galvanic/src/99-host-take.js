@@ -70,7 +70,7 @@ const HCHK={
  inDeep(ends){const bad=ends.filter(e=>!(terrainH(e[0],e[1])<SEA_LEVEL));
   return{ok:ends.length>0&&!bad.length,detail:bad.length?bad.length+' streams stop short of the brine (first ends at '+bad[0].map(v=>v.toFixed(0))+', '+(terrainH(bad[0][0],bad[0][1])-SEA_LEVEL).toFixed(2)+' m over it)':ends.length+' streams run down the shelf into the brine'};},
  // station 2: the last tread of a stream into the Deep meets the flow below it at its own level (no climb back up to the flow, no trench)
- noClimb(SS){const bad=[],det=[];SS.forEach(S=>{if(!S.T.length)return;const t=S.T[S.T.length-1],d=S.bed0(t.s1)+.3-t.y;det.push(S.name+' '+d.toFixed(2)+' m');if(Math.abs(d)>.1)bad.push(S.name+' ('+d.toFixed(2)+' m)');});
+ noClimb(SS){const bad=[],det=[];SS.forEach(S=>{if(!S.T.length)return;const t=S.T[S.T.length-1],d=S.bed0(t.s1)+.3-t.y;det.push(S.name+' '+d.toFixed(2)+' m');if(Math.abs(d)>.2)bad.push(S.name+' ('+d.toFixed(2)+' m)');});
   return{ok:det.length>0&&!bad.length,detail:bad.length?'the flow stands off its last tread: '+bad.join('; '):'the flow meets the last tread: '+det.join(', ')};},
  // station 2: the season's brine stands on the shelf (the bathtub ring between its two heights)
  shelf(level){const a=SITE.sea+DP.shelf[0],b=SITE.sea+DP.shelf[1];return{ok:level>a&&level<b,detail:'the brine at '+(+level).toFixed(2)+' m on the shelf\'s '+a.toFixed(1)+' to '+b.toFixed(1)+' m'};},

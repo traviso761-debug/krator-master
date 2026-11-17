@@ -84,7 +84,7 @@ const STREAMS=SITE.streams.map((S,i)=>{const F=polyFrame(S.pts),sT=GALV_PHYS.str
   const intoDeep=inRim(F.L);
   while(s+20<F.L){const s1=s+18+4*Math.abs(Math.sin(s*.37+i));if(inRim(s1))break;const yy=Math.min(y,bed0(s1)+.32);if(yy<SITE.sea-GALV_PHYS.SEA.amp+.1)break;T.push({s0:s,s1,y:yy,w:W});y=yy-(intoDeep?.03:.12+.06*Math.abs(Math.sin(s*.13+i*2)));s=s1+(intoDeep?0:2.5);}   /* into the Deep: the treads abut (a 3 cm fall draws nothing, and the 2.5 m it was given read as dry ground between pools) */}
  const tread=s=>{for(const t of T)if(s>=t.s0-1.25&&s<=t.s1+1.25)return t;return null;};
- return Object.assign({},S,{i,F,sT,T,tread,bed0,w:6+2*i%3});});
+ return Object.assign({},S,{i,F,sT,T,tread,bed0,w:6+2*i%3,intoDeep});});
 // noCh: the land without the streams' channels (station 3's flood is the water table against the slope, not against a channel's bed: GROUND0)
 function land(x,z,noCh){
  let h=BASE_Y(x,z);
@@ -103,8 +103,11 @@ function land(x,z,noCh){
   if(DP.shelf){const k=smooth(.8,.86,d)*smooth(1.0,.97,d);if(k>0)h=mix(h,SITE.sea+lerp(DP.shelf[0],DP.shelf[1],clamp((d-.84)/.14,0,1))+.08*n2(x,z,.03,54),k);}}
  // the streams' channels: a shallow cut in the mud, wider and deeper in the hills; the terraces' treads and their low rims
  if(!noCh)for(const S of STREAMS){const q=S.F.at(x,z);if(q.d>40||q.s<=0&&q.d>8)continue;const hw=S.w/2,bed=S.bed0(q.s);
-  const t=S.tread(q.s);if(t){const rim=t.y+.18;h=mix(Math.min(h,rim+.05*n2(x,z,.2,60)),h,smooth(t.w/2+3,t.w/2+12,q.d));if(q.d<t.w/2)h=t.y-.55;continue;}
-  h=mix(Math.min(h,bed),h,smooth(hw,hw+8+4*(HILL?1:smooth(ST.z0,ST.z0-600,z)),q.d));}
+  /* through the Deep's rim (station 2) a stream into it cuts a gully 24 m across, its treads too: the ground's 6.7 m cells cannot draw a 6 m cut 4 m
+     deep, and their triangles bridged it over the water in patches (the owner's view, 2026-11-17) */
+  const gw=S.intoDeep&&Math.hypot(x-DP.x,z-DP.z)<DP.r*1.5?9:0;
+  const t=S.tread(q.s);if(t){const rim=t.y+.18;h=mix(Math.min(h,rim+.05*n2(x,z,.2,60)),h,smooth(t.w/2+3+gw,t.w/2+12+gw,q.d));if(q.d<t.w/2)h=t.y-.55;continue;}
+  h=mix(Math.min(h,bed),h,smooth(hw+gw,hw+gw+8+4*(HILL?1:smooth(ST.z0,ST.z0-600,z)),q.d));}
  return h;}
 // WATER LEVELS (the CPU twin of 89w): the sea at the season's level, the Deep's brine at the sea's, the streams a hand over their beds, the terraces' treads
 function water(x,z){const h=land(x,z);
