@@ -296,6 +296,8 @@ Following `README.md`, "CORE MODULES ARE NOT OPTIONAL":
   spread out"): the build zone from 1.2 km by 640 m to 960 by 440 m, the side streets' lots back in, little frontage left
   vacant (3 to 10 %, was 42 to 66 %): about 420 buildings on half the ground, twice as dense. Four public gardens, palms down
   the avenues and shade trees along the main streets, the Rift's trees and plants in the yards (a third of the country's).
+  The yards are painted as garden plots (the owner: "Paint the yards as green garden plots"): every bit of the zone not under a
+  building, its doorstep or a street, in 9 m plots, green garden or tilled beds, a few left beaten earth (about 18 ha).
 - **K3.** The harbour (quays, mole, lighthouse, boat sheds), the lake (core/water open), Keb Riwā from the lip down the
   scarp to its mouth (core/water flow) and the bridge on the Strongbow road. `core/coast` is not taken: the lake's shore
   near the town is designed ground, and the open world (K6) takes core/coast.
