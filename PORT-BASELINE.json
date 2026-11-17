@@ -781,8 +781,12 @@
    "sha256": "f9888e656b4def755a89847855a3604facf9c2f4d856d5147666c656d3abf574"
   },
   "kits/ancients/dist/spire.html": {
-   "bytes": 2625089,
-   "sha256": "5c10729af1b28d251635884839ef4d96c7379d9496ca15bee12816c2e353066d"
+   "bytes": 331680,
+   "sha256": "2640e7a1f50a00cc7bc0e3f4313421905e97832f8e0071c43cbde9b5d63692ff"
+  },
+  "kits/ancients/dist/theodiga-today.html": {
+   "bytes": 3441136,
+   "sha256": "9afdaa406787faa9d5353a42b988aaa27b874b36d2b03b493d94dd8df2e8a4cc"
   },
   "kits/ancients/dist/theodiga.html": {
    "bytes": 2622707,
