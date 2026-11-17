@@ -79,7 +79,11 @@ runtime and bison table, and the `tools/` listing staleness (every build rebuilt
   `FURN_HEM` (1.1 m) up when the ceiling allows (wall art's lower edge too), a piece may say `hung: 'top' | 'eye' | false`, and
   `mkDecal` shows a delivered picture (`FURN_DECAL_IMG` / `KF_DECALS`, a key that is a texture id) over its painted stand-in; eight
   culture cloths take `hung: 'top'`, `br_h_hung_hide`'s hide is 1.6-2.0 m, and the kit's painted hanging (a hide in a frame of two poles)
-  hangs instead of standing on the floor (the owner, 2026-11-17: "Raise it too"; every culture's `*_court_painted_hanging` moves). `python3 tools/reach.py core/catalog/krator-furniture-core.js`
+  hangs instead of standing on the floor (the owner, 2026-11-17: "Raise it too"; every culture's `*_court_painted_hanging` moves).
+  Hangings a kit places by hand take the same rule through the engine's new `FURNISH_WALL(key, x, floorY, z, ry, ceilY, o)`
+  (`core/engine/91f-furnish.js`; a stub in `settlements/isle-demo/bundles.py`): the Islanders palace, gallery and shrine banners and
+  painted hangings, `isFurnRoom`'s art and extras (the residence's banners), the Scyvoi chief's tapestries, the Lizardmen Interpreters'
+  scroll. Those three kits' pages move: `python3 core/engine/fingerprint.py` will say so for them, on purpose. Not built yet. `python3 tools/reach.py core/catalog/krator-furniture-core.js`
   reaches 66 build commands: none is rebuilt on the branch, so every catalog-taking page moves in the rebuild. Then
   `python3 core/furnish/fingerprint.py` and `python3 core/engine/fingerprint.py` (hung cloths in furnished rooms move on purpose: read
   which, do not re-baseline blind), `kits/catalog` and `kits/interiors` `verify.py --assert` on a lane with `KRATOR_GL=gpu`, the

@@ -77,5 +77,5 @@ defBuilding({key:'lz-tower',name:"Interpreters' house",seed:7005,caste:5,cut:tru
   for(let i=0;i<7;i++){const a=i*TAU/7;lzHorn(Math.cos(a)*w1*.42,h+.25,Math.sin(a)*w1*.42,Math.atan2(Math.cos(a),Math.sin(a)),2.8,.15,{curl:.5,lean:.35,mk:'ivory'});}
   lzNoCut(()=>lzPortal(0,.25,w0/2+.04,0,dh,{mk:'bronze',eye:true}));lzThreshold(0,w0/2+.3,0,dw);
   /* the seers keep little: one great basking dais, the desk, a scroll, the guardian, a lamp, a carpet */
-  FURNISH('lizardmen_court_bed',-1.6,.25,-1.8,0);FURNISH('lizardmen_court_desk',1.9,.25,-1.6,-PI/2);FURNISH('lizardmen_court_scroll',-2.6,.25,.6,PI/2);
+  FURNISH('lizardmen_court_bed',-1.6,.25,-1.8,0);FURNISH('lizardmen_court_desk',1.9,.25,-1.6,-PI/2);FURNISH_WALL('lizardmen_court_scroll',-2.6,.25,.6,PI/2,ceilY);
   FURNISH('lizardmen_court_statue',2.4,.25,1.6,-PI/2);FURNISH('lizardmen_court_candelabra',-.9,.25,2.2,0);FURNISH('lizardmen_court_carpet',.3,.25,.2,0);FURNISH_HANG('lizardmen_court_hanging',0,ceilY-.35,0,0);}});
