@@ -4,7 +4,8 @@
 The ground from tools/scale-model/model/data/h.png, decoded as smodel.page.heights does (lo -2,600 m, hi 27,000 m, 16 bits in
 R and G), sampled bilinear on the 2 km grid; Earth's curve with refraction (k 0.13); samples every 250 m. "Clear by" is the
 least clearance on the line, leaving out the last kilometre (the target's own cell). A negative figure is the height of the
-block. The layout (src/30-fe-layout.js) records what this prints; test-flashing-eye.js checks the records, not this script.
+block. It reads this branch's model, before the scale-model session restored the Beacon's knoll (d1c7d6682): for the Rim
+Post the layout takes the Beacon session's figures on the restored model instead. The layout (src/30-fe-layout.js) records what this prints; test-flashing-eye.js checks the records, not this script.
 
     python3 settlements/flashing-eye/tools/sights.py            # the table for the layout's eyes
     python3 settlements/flashing-eye/tools/sights.py --json     # the same as JSON

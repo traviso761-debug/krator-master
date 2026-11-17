@@ -160,7 +160,7 @@ const FE_LAYOUT = (function () {
       { id: 'erehwon', name: 'Erehwon', px: [841, 1517], km: 82.0, bearing: 283, clear: 63, must: true },
       { id: 'tears', name: 'the Golden Tears\' camp', px: [850, 1628], km: 213.2, bearing: 197, clear: 52, must: true },
       { id: 'azure', name: 'Grēṭ-Āil', px: [846, 1509], km: 77.8, bearing: 296, clear: 53, must: false },
-      { id: 'rimpost', name: 'the Beacon\'s Rim Post', px: [856, 1532], km: 51.4, bearing: 257, clear: 68, must: true },
+      { id: 'rimpost', name: 'the Beacon\'s Rim Post', px: [856, 1532], km: 51.4, bearing: 257, clear: 42, must: true, note: 'the Beacon session\'s figure on the restored knoll (d1c7d6682), not tools/sights.py\'s +68 on the model before it' },
       { id: 'g1', name: 'G1, the Brow post (+9 m from a 30 m tower: question 14)', px: [917, 1648], km: 254.4, bearing: 164, clear: -2, must: false, via: 'beacon' },
       { id: 'tempest', name: 'the House of the Tempest', px: [886, 1619], km: 186.3, bearing: 177, clear: -435, must: false, via: 'beacon' },
       { id: 'theodiga', name: 'Theodiga', px: [908, 1535], km: 56.9, bearing: 108, clear: -110, must: false }] }
@@ -171,15 +171,15 @@ const FE_LAYOUT = (function () {
      Beacon's own hops are its layout's (settlements/beacon/src/30-bc-layout.js); G1 to Qiblai is Strongwall's watch line */
   const line = {
     hops: [
-      { a: 'beacon', b: 'rimpost', clear: 60, src: 'tools/sights.py (the Rim Post at 12 m)' },
-      { a: 'rimpost', b: 'eye', clear: 68, src: 'the post at 12 m' },
+      { a: 'beacon', b: 'rimpost', clear: 41, src: 'the Beacon\'s layout: the Rim Post on the middle volcano\'s summit, measured on the restored knoll (d1c7d6682)' },
+      { a: 'rimpost', b: 'eye', clear: 42, src: 'the Beacon\'s layout (d1c7d6682); if that volcano is given a vent, its flank at 857,1535: +17 m to the lamp, +12 m to the Eye' },
       { a: 'eye', b: 'erehwon', clear: 63, src: 'the post at 12 m' },
       { a: 'eye', b: 'beacon', clear: 49, src: 'the post at 12 m (the day line)' },
       { a: 'beacon', b: 'g1', clear: 32, src: 'the Beacon\'s layout' },
       { a: 'g1', b: 'qiblai', clear: 36, src: 'PLAN.md section 2.4' },
       { a: 'eye', b: 'tears', clear: 52, src: 'the post at 12 m' }],
     must: [['beacon', 'erehwon'], ['eye', 'qiblai'], ['eye', 'beacon']],
-    note: 'the Beacon cannot see Erehwon (-646 m): the Eye is its relay to the capital. The Rim Post also sees G1 (+106 m) and the Tempest (+28 m): a second road to the south, for the Beacon\'s session'
+    note: 'the Beacon cannot see Erehwon (-646 m): the Eye is its relay to the capital. On the model before the knoll was restored the Rim Post also saw G1 (+106 m) and the Tempest (+28 m): to re-check on the restored model, for the Beacon\'s session'
   };
 
   /* water (section 2.5): roofs and paved courts at the rain, the cisterns under the courts */

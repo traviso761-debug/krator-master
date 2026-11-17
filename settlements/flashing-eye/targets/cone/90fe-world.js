@@ -47,7 +47,7 @@ function feGroundMat(masked,key){
   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vFeW;varying vec3 vFeN;')
    .replace('#include <beginnormal_vertex>','#include <beginnormal_vertex>\nvFeN=normalize((modelMatrix*vec4(objectNormal,0.0)).xyz);')
    .replace('#include <begin_vertex>','#include <begin_vertex>\nvFeW=(modelMatrix*vec4(transformed,1.0)).xyz;');
-  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying vec3 vFeW;varying vec3 vFeN;uniform sampler2D tGrass,tDirt,tCobble,tFlag,tAsh,tSco,tCin,tCol'+(masked?',tMask':'')+';uniform vec4 kA,kB,uBox;uniform vec3 uCr;\nvec3 feT(sampler2D t,vec2 p){return sRGBToLinear(texture2D(t,p)).rgb;}')
+  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying vec3 vFeW;varying vec3 vFeN;uniform sampler2D tGrass,tDirt,tCobble,tFlag,tAsh,tSco,tCin,tCol,tMask;uniform vec4 kA,kB,uBox;uniform vec3 uCr;\nvec3 feT(sampler2D t,vec2 p){return sRGBToLinear(texture2D(t,p)).rgb;}\nvec4 feM(vec2 p){return texture2D(tMask,p);}')   /* feM: the zone mask, linear data, not a colour (the coarse mesh never reads it) */
    .replace('#include <map_fragment>',['#include <map_fragment>','vec2 w=vFeW.xz;float y=vFeW.y;vec3 n=normalize(vFeN);float dc=length(w-uCr.xy);',
     'vec3 c=feT(tGrass,w*kA.x)*vec3(.68,.72,.56);',   /* an upland meadow at 1,700 m, not the lowland Af grass the set was made for */
     /* the cap's ash: rising with the height toward the rim, all of it within 250 m of the crater */
@@ -58,7 +58,7 @@ function feGroundMat(masked,key){
     'float dl=w.y+'+FE.L.band.lipK.toFixed(6)+'*w.x*w.x;float ta=smoothstep(10.0,30.0,dl)*smoothstep(150.0,105.0,dl)*smoothstep('+FE.L.band.halfLen.toFixed(1)+',' +(FE.L.band.halfLen-FE.L.band.taper).toFixed(1)+',abs(w.x))*smoothstep(0.99,0.9,n.y);c=mix(c,feT(tCin,w*kB.z),ta*0.85);',
     /* the faces: the colonnade, projected on the face (east-west and up) */
     'float st=smoothstep(0.62,0.42,n.y);vec2 fp=abs(n.x)>abs(n.z)?vec2(w.y,y):vec2(w.x,y);c=mix(c,feT(tCol,fp*kB.w),st);',
-    masked?'vec2 mu=(w-uBox.xy)/uBox.zw;if(mu.x>0.0&&mu.x<1.0&&mu.y>0.0&&mu.y<1.0){vec4 m=texture2D(tMask,vec2(mu.x,1.0-mu.y));c=mix(c,feT(tDirt,w*kA.y),m.b*(1.0-st));c=mix(c,feT(tCobble,w*kA.z),m.r*(1.0-st));c=mix(c,feT(tFlag,w*kA.w),m.g*(1.0-st));}':'',
+    masked?'vec2 mu=(w-uBox.xy)/uBox.zw;if(mu.x>0.0&&mu.x<1.0&&mu.y>0.0&&mu.y<1.0){vec4 m=feM(vec2(mu.x,1.0-mu.y));c=mix(c,feT(tDirt,w*kA.y),m.b*(1.0-st));c=mix(c,feT(tCobble,w*kA.z),m.r*(1.0-st));c=mix(c,feT(tFlag,w*kA.w),m.g*(1.0-st));}':'',
     'diffuseColor.rgb*=c;'].join('\n'));};
  mat.customProgramCacheKey=()=>'flashing-eye-ground-'+key;return mat;}
 // ---------------------------------------------------------------- the meshes: a plane of B's cells, its heights the ground's, lowered `sink` m where a

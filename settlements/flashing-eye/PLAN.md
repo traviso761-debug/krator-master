@@ -321,8 +321,10 @@ capital and the Beacon (section 3.2).
 - The rim also sees the lake's north side over the cone (Ālph-Hēḍ, Ōlḍ-Thalaba). The bench does not.
 - **Re-run for the layout** (`tools/sights.py`, 2026-11-16, the same method): the Lip Range's balcony (the Lip, the bench at
   1,660 m, 14 m up) sees the Beacon +46 m, Erehwon +40 m and the Tears' camp +54 m; the Eye Post at 12 m sees the Beacon +49 m,
-  Erehwon +63 m, the Tears' camp +52 m and the Beacon's Rim Post +68 m. **The Rim Post (856,1532, 12 m) also sees G1 by +106 m
-  and the Tempest by +28 m**: a second road south for the Beacon's line, for that session to weigh.
+  Erehwon +63 m and the Tears' camp +52 m. These are on this branch's model, before the scale-model session restored the
+  Beacon's knoll (d1c7d6682). For the Rim Post the layout takes the Beacon session's figures on the restored model (+41 m to
+  the lamp, +42 m to the Eye Post; section 0). On the model before it the Rim Post also saw G1 (+106 m) and the Tempest
+  (+28 m): worth re-checking on the restored model, for the Beacon's session.
 - **G1 is just in sight from a 30 m mirror tower.** That is the Eye Post's height question: 12 m (*proposed*) needs the
   Beacon to relay; a 30 m tower reaches G1 direct on the clearest days.
 - **The vent will change these figures**: the crater lowers the summit's middle, not the rim. Step F0 re-runs them.
