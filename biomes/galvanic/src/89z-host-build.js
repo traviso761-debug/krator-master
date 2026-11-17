@@ -9,7 +9,7 @@ const WATER_FN=WATER.fieldFns(WATER_F);
 /* the wet band's share of the water: 1 at the edge, gone by 24 m */
 const WET_SHORE=(x,z)=>smooth(24,1,WATER_FN.shore(x,z));
 /* the field contract (core/biome/README.md, "The environmental fields"): the kit's own fields mapped to BIO.ENV's names and units */
-const ENV=BIO.env({ground:terrainH,water:WATER_FN,wet:(x,z)=>FIELD.wet(x,z),rock:(x,z)=>FIELD.rock(x,z),bands:{upland:[SITE.sea,SITE.sea+150],flow:12}});
+const ENV=BIO.env({ground:terrainH,water:WATER_FN,wet:(x,z)=>FIELD.wet(x,z),rock:(x,z)=>FIELD.rock(x,z),bands:{upland:HILL?[HILL.y0-100,HILL.y0+250]:[SITE.sea,SITE.sea+150],flow:12}});
 if(new URLSearchParams(location.search).get('fields')!=='0'){const W0=FIELD.wet,F0=FIELD.flow;
  FIELD.wet=(x,z)=>{const s=WATER_FN.shore(x,z);if(s!==s)return W0(x,z);return clamp(Math.max(W0(x,z)*smooth(-1,3,s)+(1-smooth(-1,3,s)),.95*smooth(50,5,s)),0,1);};
  FIELD.flow=(x,z)=>{const d=WATER_FN.flow(x,z);return d==null||d!==d?F0(x,z):clamp(Math.max(F0(x,z)*smooth(-1,3,WATER_FN.shore(x,z)),smooth(26,4,d)),0,1);};}

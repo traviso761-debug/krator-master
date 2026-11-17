@@ -20,6 +20,27 @@ Rift floor's vents. The regions' polygons are in the artifact's database, not th
 - **Started from High Rift** (`biomes/highrift`): its stage, ground, far field, atmos and build fragments were the nearest finished frame (a Rift-family
   station kit with acid springs); each is marked "taken from biomes/highrift". The Rift's trees on the hills are read in place as riftrim reads them.
 
+## Stations 2 and 3, the Deep and the Gossan Hills (built 2026-11-17)
+
+- **One stage, three sites.** A station's folder holds one line (`stations/<name>/44z-host-site.js`: `STATION_KEY`); its site record
+  (`GALV_SITES.<name>`, `[G data]`) holds the shapes, and the stage, the ground, the water and the probe read each shape when the record has it (no
+  `deep`, no Deep; no `hills`, no hills; `base: 'hill'` for a slope in place of the strand). Station 1's page rebuilt to the same instances
+  (127,581), triangles (1,604,862) and checks after the change: its numbers did not move, only its bytes (the new code it carries unused).
+- **The flood's datum.** On the strand and at the Deep the flood is the sea's; on the hill it is the water table's (`DATUM`), read against the slope
+  without its channels (`GROUND0`, `CUT`): a stream's bed under the table is the stream's water, not a drowned cathode. Every check reads a record's
+  flood through `OVER(x, y, z)`, so the strand's numbers are what they were.
+- **The iron hat is dead ground.** A gossan is what is left when the sulfides have been leached: iron oxides, no couple. The life keeps off it
+  (`HAT_AT`, the placement's keep, a probe check with a negative); its pores run ~4.2. The battery lives on the line where the ore crosses the
+  table, and dies below it where the ore lies drowned (the seep stream's stumps): the plan's "the iron hat above, the reducing ore below, masts in
+  the seeps on the line between", drawn by the store's own rule.
+- **The geobattery's number** (`GALV_PHYS.emf`, `GALV_PHYS.sp`): pyrite at the gossan's pH 3 and the air's oxygen against a reducing depth at
+  -0.1 V gives 0.68 V; half of it on a pole at 30 m reads -0.34 V over the top and -0.03 V 300 m off, inside the field's -0.1 to -0.6 V.
+- **The chimneys** are the site's records, registered, seated on the lowest ground of their (tilted) foot and listed as obstacles before the
+  placement; the reefs and runners crowd their feet through `GALV.place`'s `o.spires`. Relict and geological, not a built ruin, so not on
+  `core/ruins` (which watches wreckage); the probe checks the seating itself, with a negative.
+- **A page with no trees fails a core negative**: the card audit's "every card lifted 6 m" cannot fail with no cards. The Deep's page took the hills'
+  foot on its north edge (and the Rift's trees on it) rather than leave the harness a check it cannot run.
+
 ## Lessons
 
 - A placement pass over a 5 km page at a 3 m cell put 530,000 crusts on the strand (28 M triangles): budget the cell before the first build; 6 m

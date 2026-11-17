@@ -1,12 +1,18 @@
 // ================================================================= HOST — stage: the Rift battery's station 1, the Gossan Strand (PLAN.md sections 5, 6 and 12; 2026-11-11)
 // The ideal-type host: the renderer, the light, the land drawn from its site record (40: GALV_SITES), the climate fields, the water's levels and the biome
-// core's binding. Started from biomes/highrift's stage (the same shape of page). A station's folder sets STATION_KEY (none yet); the default is the strand:
+// core's binding. Started from biomes/highrift's stage (the same shape of page). A station's folder sets STATION_KEY (stations/<name>/44z-host-site.js:
+// 'deep', 'gossan'); the default is the strand. Every shape below is read from the site record when it has one (no `deep`, no Deep), so one stage draws
+// the three stations:
 //   the strand  metal-rich sulfide mud at the terminal sea's level, falling ~3 m from the hills' foot to the sea floor (the model's 16 km compressed to ~4)
 //   the hills   the XV savannah's foot rising ~150 m along the north edge (the far field carries them on)
 //   the mounds  relict sulfide mounds of the vent field, gossan-capped, acid springs at their feet
 //   the Deep    the vent's crater, its floor 100 m under the sea, hot brine to the sea's level, a low rim
 //   the streams three acid streams from the mounds' springs to the sea, a shallow channel; past pH 2.8 their iron terraces (GALV_PHYS.stream)
 //   the sea     the eastern terminal sea at the season's level (GALV_PHYS.level: ?day=<0-364> on the URL; the site's day by default, the dry season's low)
+//   the shelf   (station 2) the brine's own muds round the Deep's edge, from the sea's mean -1.4 m to +1.0 m: the season bares and drowns a band of it
+//   the hill    (station 3, base 'hill') the hills' slope in place of the strand: steep above the line (the slope's foot), gentle below it
+//   the ore     (station 3) a sulfide lens striking down the hill: above the water table its gossan rib stands proud; below it a soft wet trough
+//   the table   (station 3) the water table, the flood's datum in place of the sea: its mean d0 m under the footslope, deepening up the hill
 const {TAU,clamp,lerp,mix,smooth,reseed,rng,rr,ri,pick,fbm,qEuler,qFacing,qUp}=BIO.fn;
 const ERRS=document.getElementById('errs');
 function reportErr(m){ERRS.style.display='block';ERRS.textContent+=m+'\n';}
@@ -18,7 +24,7 @@ function tick(fn){TICKS.push(fn);}
 const REG=[];function REGISTER(o){REG.push(o);BIO.record(o);}
 function regHas(r,x,y,z){const dx=x-r.x,dz=z-r.z;return dx*dx+dz*dz<=r.r*r.r&&y>=(r.y||0)-2&&y<=(r.y||0)+r.h+5;}
 const SKEY=typeof STATION_KEY!=='undefined'?STATION_KEY:'strand',SITE=GALV_SITES[SKEY];
-const STATION_REGION=SITE.name+' (the Rift battery, station 1; ideal type)';
+const STATION_REGION=SITE.name+' (the Rift battery, station '+(SITE.station==null?1:SITE.station)+'; ideal type)';
 const PQ=new URLSearchParams(location.search);
 // THE SEASON: the day of the year sets the sea's level (the falling shoreline) and the store jars' charge; the page's day is the site's unless ?day= says
 const DAY=PQ.has('day')?((+PQ.get('day'))%365+365)%365:SITE.day;
@@ -36,7 +42,7 @@ const sun=new THREE.DirectionalLight(0xfff4e4,1.25);sun.position.set(-900,1200,-
 const fill=new THREE.DirectionalLight(0xe8e0d8,.16);fill.position.set(700,300,900);scene.add(fill);
 
 // ---------------------------------------------------------------- the land
-const TERR={R:2600};
+const TERR={R:SITE.R==null?2600:SITE.R};
 const SNOW_LINE=[1e5,1e5];   /* no snow on the Rift's floor */
 const n2=(x,z,f,seed)=>fbm(x*f,z*f,seed,2)-.5;
 // a polyline's frame: the nearest point's arc length s, its signed offset a (+ to the right going downstream) and its distance d
@@ -45,42 +51,67 @@ function polyFrame(P){const seg=[];let S=0;for(let k=0;k+1<P.length;k++){const A
    if(!best||d<best.d)best={d,s:g.s0+t,a:px*g.uz-pz*g.ux};}return best;};
  const point=s=>{s=clamp(s,0,S);for(const g of seg)if(s<=g.s0+g.L+1e-9){const t=s-g.s0;return[g.A[0]+g.ux*t,g.A[1]+g.uz*t];}const g=seg[seg.length-1];return[g.B[0],g.B[1]];};
  return{seg,L:S,at,point};}
-const ST=SITE.strand,HL=SITE.hills,DP=SITE.deep;
+const ST=SITE.strand,HL=SITE.hills,DP=SITE.deep,HILL=SITE.hill||null,TB=SITE.table||null;
+const SWING=SITE.swing==null?GALV_PHYS.SEA.amp:SITE.swing;   /* the season's half-swing: the sea's (station 1, 2) or the water table's (station 3) */
 const MOUNDS=SITE.mounds.map((m,i)=>({i,x:m[0],z:m[1],r:m[2],h:m[3]}));
+const SEEPS=(SITE.seeps||[]).map((m,i)=>({i,x:m[0],z:m[1],r:m[2]}));
 // the strand's own height: a straight fall from the hills' foot to the sea floor, a hand of relief (the cracked mud, old beach lines)
 function strandY(x,z){return lerp(ST.y0,ST.y1,(z-ST.z0)/(ST.z1-ST.z0))+.12*n2(x,z,.004,11)+.05*n2(x,z,.03,12)+.06*Math.sin(z*.021+n2(x,z,.002,13)*6)*smooth(-600,400,z);}
+// THE HILL (station 3): the slope's profile without its relief: g1 a metre north of the line (z < zl), g2 south of it, the knee a softplus `bend` m wide
+function hillP(z){const H=HILL,u=z-H.zl,b=H.bend,sp=u/b>30?u:b*Math.log(1+Math.exp(u/b));return H.y0-H.g1*(u-sp)-H.g2*sp;}
+// its relief: broad swells, and shallow gullies down the steep part (fading over the footslope)
+function hillY(x,z){const up=smooth(HILL.zl+200,HILL.zl-300,z);return hillP(z)+5*n2(x,z,.0012,21)+1.2*n2(x,z,.006,22)+2.2*up*Math.sin(x*.009+n2(x,z,.002,23)*5)+.1*n2(x,z,.03,24);}
+const BASE_Y=HILL?hillY:strandY;
+// THE ORE (station 3): its outcrop as a polyline frame; the arc length where it crosses the line (the water table's foot), so the gossan rib stands above
+// it and the leached trough lies below
+const ORE=SITE.ore?(function(){const F=polyFrame(SITE.ore.pts);let sx=0;for(let s=0;s<=F.L;s+=2){if(F.point(s)[1]>=HILL.zl){sx=s;break;}}
+ return Object.assign({},SITE.ore,{F,sx});})():null;
+// the gossan rib's height over the slope at (x, z) (0 off it, and below the line)
+function ribAt(x,z){if(!ORE)return 0;const q=ORE.F.at(x,z),w=ORE.w*(1+.25*n2(x,z,.01,71));if(q.d>w)return 0;
+ const along=smooth(ORE.sx+10,ORE.sx-140,q.s)*smooth(-40,60,q.s),across=Math.pow(clamp(1-(q.d/w)*(q.d/w),0,1),.6);
+ return ORE.rib*along*across*(.65+.7*fbm(x*.02,z*.02,7.1,2));}
 // THE STREAMS: each a polyline frame, its spring's acid and the terraces' band from GALV_PHYS (the band starts where the pH crosses 2.8)
 const STREAMS=SITE.streams.map((S,i)=>{const F=polyFrame(S.pts),sT=GALV_PHYS.streamAtPH(S,2.8);
- const bed0=s=>{const p=F.point(s);return strandY(p[0],p[1])-.45;};
+ const bed0=s=>{const p=F.point(s);return BASE_Y(p[0],p[1])-.45;};
  // the terraces: treads of ~20 m stepping down 0.12-0.2 m from sT to the dry season's shore (the wet season drowns the lowest)
  const T=[];{let s=Math.min(sT,F.L);let y=bed0(s)+.3;const W=8.5;
   while(s+20<F.L){const s1=s+18+4*Math.abs(Math.sin(s*.37+i));const yy=Math.min(y,bed0(s1)+.32);if(yy<SITE.sea-GALV_PHYS.SEA.amp+.1)break;T.push({s0:s,s1,y:yy,w:W});y=yy-.12-.06*Math.abs(Math.sin(s*.13+i*2));s=s1+2.5;}}
  const tread=s=>{for(const t of T)if(s>=t.s0-1.25&&s<=t.s1+1.25)return t;return null;};
  return Object.assign({},S,{i,F,sT,T,tread,bed0,w:6+2*i%3});});
-function land(x,z){
- let h=strandY(x,z);
+// noCh: the land without the streams' channels (station 3's flood is the water table against the slope, not against a channel's bed: GROUND0)
+function land(x,z,noCh){
+ let h=BASE_Y(x,z);
  // the hills north: the XV savannah's foot, rising ~150 m over 1.25 km, gullies down to each stream's head
- {const u=ST.z0-z;if(u>-80){const k=smooth(-80,1250,u);h+=HL.h*Math.pow(k,1.35)+18*n2(x,z,.0018,21)*k+5*n2(x,z,.009,22)*k;}}
+ if(HL){const u=ST.z0-z;if(u>-80){const k=smooth(-80,1250,u);h+=HL.h*Math.pow(k,1.35)+18*n2(x,z,.0018,21)*k+5*n2(x,z,.009,22)*k;}}
+ // the ore (station 3): the gossan rib above the line; below it the leached ore's soft trough, where the seep stream runs
+ if(ORE){h+=ribAt(x,z);const q=ORE.F.at(x,z);if(q.d<ORE.w*1.4)h-=.9*smooth(ORE.sx-30,ORE.sx+60,q.s)*smooth(ORE.w*1.4,ORE.w*.4,q.d);}
  // the mounds: gossan-capped domes, their flanks steep, a flat cap, a moat of spring water at the foot
  for(const M of MOUNDS){const d=Math.hypot(x-M.x,z-M.z)/(M.r*(1+.18*n2(x,z,.012,30+M.i)));if(d<1.6){const dome=M.h*Math.pow(clamp(1-d*d,0,1),.55),cap=Math.min(dome,M.h*.86+.4*n2(x,z,.05,40+M.i));
    h+=cap+.8*smooth(1.6,1.05,d)*smooth(.95,1.05,d)-0.35*smooth(1.25,1.05,d)*smooth(.98,1.08,d);}}
  // THE DEEP: the crater, its floor 100 m under the sea; a rim of mud and mound rubble 3.5 m over the strand
- {const d=Math.hypot(x-DP.x,z-DP.z)/(DP.r*(1+.06*n2(x,z,.003,51)));
+ if(DP){const d=Math.hypot(x-DP.x,z-DP.z)/(DP.r*(1+.06*n2(x,z,.003,51)));
   if(d<1){const u=Math.pow(d,1.6);h=mix(DP.floor+8*n2(x,z,.01,52),SEA_LEVEL-1.5,smooth(.0,1,u))-24*smooth(.94,.72,d)*smooth(.25,.7,d);if(d>.9)h=mix(h,strandY(x,z)+DP.rim,smooth(.9,1,d));}
-  else h+=DP.rim*smooth(1.45,1.0,d)*(1+.25*n2(x,z,.02,53));}
+  else h+=DP.rim*smooth(1.45,1.0,d)*(1+.25*n2(x,z,.02,53));
+  /* the shelf (station 2): the brine's muds from the sea's mean +sh[0] to +sh[1] across d 0.84-0.98, the season's ring on it */
+  if(DP.shelf){const k=smooth(.8,.86,d)*smooth(1.0,.97,d);if(k>0)h=mix(h,SITE.sea+lerp(DP.shelf[0],DP.shelf[1],clamp((d-.84)/.14,0,1))+.08*n2(x,z,.03,54),k);}}
  // the streams' channels: a shallow cut in the mud, wider and deeper in the hills; the terraces' treads and their low rims
- for(const S of STREAMS){const q=S.F.at(x,z);if(q.d>40||q.s<=0&&q.d>8)continue;const hw=S.w/2,bed=S.bed0(q.s);
+ if(!noCh)for(const S of STREAMS){const q=S.F.at(x,z);if(q.d>40||q.s<=0&&q.d>8)continue;const hw=S.w/2,bed=S.bed0(q.s);
   const t=S.tread(q.s);if(t){const rim=t.y+.18;h=mix(Math.min(h,rim+.05*n2(x,z,.2,60)),h,smooth(t.w/2+3,t.w/2+12,q.d));if(q.d<t.w/2)h=t.y-.55;continue;}
-  h=mix(Math.min(h,bed),h,smooth(hw,hw+8+4*smooth(ST.z0,ST.z0-600,z),q.d));}
+  h=mix(Math.min(h,bed),h,smooth(hw,hw+8+4*(HILL?1:smooth(ST.z0,ST.z0-600,z)),q.d));}
  return h;}
 // WATER LEVELS (the CPU twin of 89w): the sea at the season's level, the Deep's brine at the sea's, the streams a hand over their beds, the terraces' treads
 function water(x,z){const h=land(x,z);
- {const d=Math.hypot(x-DP.x,z-DP.z);if(d<DP.r*.96)return SEA_LEVEL;}
- if(h<SEA_LEVEL&&z>ST.z0+600)return SEA_LEVEL;
+ if(DP){const d=Math.hypot(x-DP.x,z-DP.z);if(d<DP.r*.96)return SEA_LEVEL;}
+ if(SITE.shore!==false&&h<SEA_LEVEL&&z>ST.z0+600)return SEA_LEVEL;
  for(const S of STREAMS){const q=S.F.at(x,z);if(q.d>S.w)continue;const t=S.tread(q.s);if(t&&q.d<t.w/2)return t.y;if(!t&&q.d<S.w/2-.5){const y=S.bed0(q.s)+.3;if(y>SEA_LEVEL)return y;}}
  return -1e9;}
-const L={land,water,STREAMS,MOUNDS,strandY,farBase:SITE.sea,
- spine:[[0,0],[DP.x,DP.z],[-1500,-300],[1200,-200],[0,-1500],[-800,900],[800,1300]].concat(MOUNDS.map(m=>[m.x,m.z]))};
+// the LOD's spine (BIO.lodD: the life is placed near it): station 1's own; a later station's from its shapes (the Deep's rim every 15 degrees, the chimneys,
+// the mounds, the ore's outcrop, the seeps, the streams)
+const L={land,water,STREAMS,MOUNDS,strandY,farBase:HILL?HILL.y0:SITE.sea,
+ spine:SKEY==='strand'?[[0,0],[DP.x,DP.z],[-1500,-300],[1200,-200],[0,-1500],[-800,900],[800,1300]].concat(MOUNDS.map(m=>[m.x,m.z])):
+  [[0,0]].concat(DP?[[DP.x,DP.z]].concat(Array.from({length:24},(_,k)=>[DP.x+Math.cos(k/24*TAU)*DP.r*1.04,DP.z+Math.sin(k/24*TAU)*DP.r*1.04])):[],
+   MOUNDS.map(m=>[m.x,m.z]),(SITE.smokers||[]).map(c=>[c[0],c[1]]),HL?Array.from({length:9},(_,k)=>[(k-4)*TERR.R*.2,ST.z0-150]):[],ORE?ORE.pts:[],SEEPS.map(m=>[m.x,m.z]),
+   ...SITE.streams.map(S=>{const F=polyFrame(S.pts),o=[];for(let s=0;s<=F.L;s+=120)o.push(F.point(s));return o;}))};
 function landH(x,z){return L.land(x,z);}
 function floor0(x){return L.farBase;}
 const _tm={x:NaN,z:NaN,h:0};
@@ -89,15 +120,32 @@ function waterH(x,z){return L.water(x,z);}
 // THE ACID (GALV_PHYS.stream on each stream; the mounds' springs and their oxidising ring): the pH the ground's water has at a point, 6.5 where none
 // the strand itself is oxidising sulfide mud: its pores run at pH ~3.6 where the sea never lies long, rising to ~5.6 where the brine floods it (buffered)
 // and to 6.5 on the hills (the savannah's soil, past the ore)
-function PH_AT(x,z){const hill=smooth(ST.z0+40,ST.z0-160,z),fd=FLOOD_T(terrainH(x,z)-SITE.sea);let pH=mix(mix(3.6,5.6,smooth(40,160,fd)),6.5,hill);
+// station 3 (the hill): the savannah's soil is pH 6.5; the leached iron hat's pores run ~4.2 (acid, but its sulfides are gone: HAT_AT, no couple); the ore
+// under the table ~2.6 in its trough, the seeps 2.0
+function PH_AT(x,z){if(HILL)return PH_HILL(x,z);const hill=smooth(ST.z0+40,ST.z0-160,z),fd=FLOOD_AT(x,z);let pH=mix(mix(3.6,5.6,smooth(40,160,fd)),6.5,hill);
  for(const S of STREAMS){const q=S.F.at(x,z);if(q.d<S.w*2.5){const p=GALV_PHYS.stream(Object.assign({},S,{s:q.s})).pH;pH=Math.min(pH,mix(p,6.5,smooth(S.w*.5,S.w*2.5,q.d)));}}
  for(const M of MOUNDS){const d=Math.hypot(x-M.x,z-M.z);if(d<M.r*3)pH=Math.min(pH,mix(2.1,6.5,smooth(M.r*.9,M.r*3,d)));}
- {const d=Math.hypot(x-DP.x,z-DP.z);if(d<DP.r*1.4)pH=Math.min(pH,mix(4.2,6.5,smooth(DP.r,DP.r*1.4,d)));}   /* the Deep's brine: acid-ish, metal-laden */
+ if(DP){const d=Math.hypot(x-DP.x,z-DP.z);if(d<DP.r*1.4)pH=Math.min(pH,mix(4.2,6.5,smooth(DP.r,DP.r*1.4,d)));}   /* the Deep's brine: acid-ish, metal-laden */
  return pH;}
+function PH_HILL(x,z){let pH=6.5;
+ for(const S of STREAMS){const q=S.F.at(x,z);if(q.d<S.w*2.5){const p=GALV_PHYS.stream(Object.assign({},S,{s:q.s})).pH;pH=Math.min(pH,mix(p,6.5,smooth(S.w*.5,S.w*2.5,q.d)));}}
+ for(const M of SEEPS){const d=Math.hypot(x-M.x,z-M.z);if(d<120)pH=Math.min(pH,mix(2.0,6.5,smooth(M.r*2,120,d)));}
+ if(ORE){const q=ORE.F.at(x,z);if(q.d<ORE.w*4){const below=smooth(ORE.sx-30,ORE.sx+30,q.s);pH=Math.min(pH,mix(mix(ORE.pH+1.2,2.6,below),6.5,smooth(ORE.w*.7,ORE.w*(3-1.5*(1-below)),q.d)));}}
+ return pH;}
+// THE IRON HAT (station 3): 1 on the gossan above the line, where the sulfides are leached and no couple is left (the life keeps off it: 88)
+function HAT_AT(x,z){if(!ORE)return 0;const q=ORE.F.at(x,z);return smooth(ORE.w*1.15,ORE.w*.85,q.d)*smooth(ORE.sx-15,ORE.sx-45,q.s);}
 // how many days a year a height lies under the sea (the flood line the life keeps above: GALV_PHYS.store)
 /* floodDays depends on the height alone: a table at 1 cm over the swing (GALV_PHYS.floodDays, 365 steps, once) */
-const FLOOD_T=(function(){const A=GALV_PHYS.SEA.amp,t=[];for(let k=0;k<=Math.round(A*200);k++)t.push(GALV_PHYS.floodDays(-A+k/100));return y=>y<=-A?365:y>=A?0:t[Math.round((y+A)*100)];})();
-const FLOOD_AT=(x,z)=>FLOOD_T(terrainH(x,z)-SITE.sea);
+const FLOOD_T=(function(){const A=SWING,t=[];for(let k=0;k<=Math.round(A*200);k++)t.push(GALV_PHYS.floodDays(-A+k/100,{amp:A}));return y=>y<=-A?365:y>=A?0:t[Math.round((y+A)*100)];})();
+// THE FLOOD'S DATUM: the sea's mean (stations 1 and 2), or the water table's mean (station 3: under the slope's own relief, d0 m at the line, deepening
+// `rise` m a metre up the hill and `steep` m a metre past the knee); CUT: how far a stream's channel lies under the slope (station 3: a channel is the
+// stream's, not the table's: the flood is read on the slope; 0 on the strand); OVER(x, y, z): a height y's place against the datum, the flood's argument
+const TABLE_D=z=>{const u=Math.max(0,hillP(z)-hillP(HILL.zl));return TB.d0+TB.rise*u+TB.steep*Math.max(0,u-TB.knee);};
+const DATUM=HILL?(x,z)=>hillY(x,z)-TABLE_D(z):(x,z)=>SITE.sea;   /* the table does not rise into the gossan rib: the rib stands dry over it */
+const GROUND0=(x,z)=>land(x,z,true);
+const CUT=HILL?(x,z)=>Math.max(0,GROUND0(x,z)-terrainH(x,z)):(x,z)=>0;
+const OVER=(x,y,z)=>y-DATUM(x,z)+CUT(x,z);
+const FLOOD_AT=(x,z)=>FLOOD_T(OVER(x,terrainH(x,z),z));
 
 // ---------------------------------------------------------------- the climate fields (the field contract's units: core/biome/README.md)
 //   wet    the water's margins and the strand's damp low half; the hills dry
@@ -108,8 +156,8 @@ const FLOOD_AT=(x,z)=>FLOOD_T(terrainH(x,z)-SITE.sea);
 function fieldsAt(x,z,h,slope){
  const w=waterH(x,z),wd=w>-1e8?0:1;let near=0;
  for(let k=0;k<8&&wd;k++){const a=k/8*TAU;if(waterH(x+Math.cos(a)*20,z+Math.sin(a)*20)>-1e8){near=.8;break;}}
- const rock=clamp(Math.max(smooth(.45,.8,slope),smooth(.3,.55,slope)*.45),0,1),hill=smooth(ST.z0,ST.z0-400,z);
- const fl=FLOOD_T(h-SITE.sea)/365,low=smooth(SITE.sea+.9,SITE.sea-.2,h);
+ const rock=clamp(Math.max(smooth(.45,.8,slope),smooth(.3,.55,slope)*.45),0,1),hill=HILL?1:smooth(ST.z0,ST.z0-400,z);
+ const fl=FLOOD_T(OVER(x,h,z))/365,low=HILL?0:smooth(SITE.sea+.9,SITE.sea-.2,h);
  const wet=clamp(.25+.55*near+.3*low-.35*hill-.2*rock+.05*n2(x,z,.002,131),0,1);
  return{wet,flow:0,upland:hill,canyon:0,rim:0,rock,dune:0,oasis:0,slope,abyss:1,salt:clamp(low*(1-hill),0,1),cold:0,geo:0,barren:clamp(1-hill,0,1),fog:0,mist:0,flat:1-rock,
   acid:clamp((5-PH_AT(x,z))/3,0,1),flood:fl};}

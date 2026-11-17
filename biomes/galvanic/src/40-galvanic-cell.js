@@ -77,7 +77,14 @@ var GALV_PHYS=(function(){
  const tide=t=>pumpAt(t!=null&&typeof t==='object'?fr(t.phase+(NOD-Math.PI/2)/TAU):tidePhase(t));
  const pumpHour=day=>{const k=Math.ceil(day*SID+(NOD-Math.PI/2)/TAU),t=(k-(NOD-Math.PI/2)/TAU)/SID;return (t-day)*24;};
  const TIDE={SID,NOD,GAIN,mean:3/8};
- return{MIN,REF,SEA,TIDE,rest,cell,yield:yieldOf,acid,stream,streamAtPH,colourAt,season,level,floodDays,store,tide,tidePhase,pumpAt,pumpHour};})();
+ // THE GEOBATTERY (station 3, the gossan hills; Sato and Mooney 1960, quoted as the model, PLAN.md section 1): an ore body crossing the water table is
+ // a cell whose top, in oxygenated ground, is the cathode and whose depth, in reducing ground, is the anode; the ore is the wire. emf(o): the gap between
+ // the top's Eh (pyrite at the gossan's pH and the air's oxygen) and the depth's (o.ehDeep, default -0.1 V: reducing groundwater). sp(d, o): the
+ // self-potential a prospector reads on the surface at d metres from the ore's crest, a pole at the cathode's depth (o.depth, default 30 m) carrying
+ // half the gap (the rest is spent in the ore and the ground): negative over the top, falling off as depth / sqrt(depth^2 + d^2)
+ function emf(o){o=o||{};return Math.max(0,rest('pyrite',dflt(o.pH,3),dflt(o.o2,REF.o2))-dflt(o.ehDeep,-.1));}
+ function sp(d,o){o=o||{};const h=Math.max(1,dflt(o.depth,30));return -.5*emf(o)*h/Math.hypot(h,Math.max(0,d));}
+ return{MIN,REF,SEA,TIDE,rest,cell,yield:yieldOf,acid,stream,streamAtPH,colourAt,season,level,floodDays,store,tide,tidePhase,pumpAt,pumpHour,emf,sp};})();
 
 // THE STATION'S SITE (PLAN.md section 5; scale model 5.1, surveyed 2026-11-11 by tools/survey.py). An ideal type of 5.2 km (R 2600 m), page metres:
 // x east, z south, origin the page's centre. The page compresses the model's 16 km of strand to ~3 km; the heights are the model's (-2,600 m is the
@@ -95,4 +102,38 @@ var GALV_SITES={
   streams:[{name:'The west stream',pts:[[-1500,-690],[-1640,-200],[-1480,400],[-1600,1100],[-1500,1900],[-1560,2600]],pH0:1.9,Q0:4,q:.03},
    {name:'The middle stream',pts:[[150,-900],[0,-420],[-260,100],[-180,700],[-320,1400],[-260,2600]],pH0:2.0,Q0:6,q:.04},
    {name:'The mound brook',pts:[[800,180],[700,500],[820,900],[640,1500],[700,2600]],pH0:2.2,Q0:2,q:.02}],
-  vents:[{x:1500,z:1050,T:62,reach:700,decay:2.6}]}};
+  vents:[{x:1500,z:1050,T:62,reach:700,decay:2.6}]},
+ // STATION 2, THE DEEP (PLAN.md section 12; built 2026-11-17): the vent itself (5.1 px 801,1573), a page of 3.4 km on the crater. The crater larger on the
+ // page than on station 1's (r 820 m against 560: the model's vent is one record, its pit drawn as an ideal type), its floor 100 m under the sea, the hot
+ // brine to the sea's level; a SHELF of the brine's own muds round its edge (the sea's mean -1.4 m to +1.0 m over 115 m), which the season's 1.2 m bares
+ // and drowns (the bathtub ring); the relict black-smoker chimneys (PLAN.md section 4, item 1: the chimneys that stood when the vent was under the sea),
+ // [x, z, height, radius at the foot], on the rim and in the shallows; the rim's mounds; a stream off the hills falling into the Deep; the sea past the
+ // south rim; the hills' foot along the north edge, the Rift's trees on it. The steam: a faint haze over the brine (~60 degC water in +36 degC air), thicker over the vent.
+ deep:{key:'deep',name:'The Deep',station:2,px:[801,1573],world:[1602000,3146000],sky:{px:529,py:1243},R:1700,
+  sea:-2600,atm:2.21,koppen:'XV',rain:1051,temp:{mean:36,warm:40,cold:32},soil:36,day:70,
+  strand:{z0:-1450,y0:-2598.2,z1:1700,y1:-2600.9},hills:{z0:-1450,h:90},
+  deep:{x:0,z:-150,r:820,floor:-2700,rim:4.5,T:62,shelf:[-1.4,1.0]},
+  mounds:[[700,-700,55,11],[960,-260,70,14],[880,380,45,9],[-420,-1060,50,10],[-980,-560,40,8],[-150,-1120,60,12]],
+  smokers:[[-848,-459,9,1.6],[-699,-639,6,1.1],[-586,-900,12,2.0],[-313,-925,5,.9],[-108,-921,4,.8],[62,-1033,10,1.7],[271,-1096,7,1.2],[397,-896,8,1.4],
+   [506,-753,3.5,.7],[661,-788,11,1.9],[746,-580,6,1],[951,-459,9,1.5],[832,-237,5,.9],[893,-24,7,1.2],[737,148,3,.6],[721,336,6,1]],
+  streams:[{name:'The north stream',pts:[[-300,-1690],[-260,-1400],[-330,-1200],[-210,-1030],[-150,-972]],pH0:2.0,Q0:3,q:.03},
+   {name:'The rim brook',pts:[[1010,-300],[930,-330],[860,-300],[800,-280]],pH0:2.1,Q0:1,q:.01}],
+  vents:[{x:0,z:-150,T:62,reach:1100,decay:2.6}],steam:{cell:70,hot:44}},
+ // STATION 3, THE GOSSAN HILLS (PLAN.md section 12; built 2026-11-17): the hills' slope 10 km north of the vent (5.1 px 800,1568: -2,211 m, 2.11 atm,
+ // 769 mm, mean +34 degC, warmest +38, coldest +29, XV), a page of 3.6 km. Sato and Mooney's battery at a hill's scale: a massive sulfide lens striking
+ // down the hill (`ore`: its outcrop, its width, the gossan rib's height) crosses the water table at the slope's foot (`table`): above it the ore is
+ // oxidised to the iron hat, a rust-red rib standing proud of the slope; below it the ore lies in reducing water under the footslope; where it crosses,
+ // the seeps, and the acid streams run from them down the ore's trough. The water table (`table`): its mean lies `d0` m under the slope's foot
+ // (the line: 0.55 m, so the footslope lies flooded ~47 days a year, inside what a store jar bridges), deepening up the hill, and swings +-`swing` m
+ // with the season (default taken, owner to confirm: 1.2 m a year, the sea's own), so the seeps' wet band moves with the year as the strand's shore does.
+ // No sea on the page: the flood is the table's.
+ gossan:{key:'gossan',name:'The Gossan Hills',station:3,px:[800,1568],world:[1600000,3136000],sky:{px:528,py:1238},R:1800,base:'hill',
+  sea:-2600,atm:2.11,koppen:'XV',rain:769,temp:{mean:34,warm:38,cold:29},soil:34,day:70,swing:.6,
+  hill:{y0:-2240,zl:300,g1:.09,g2:.012,bend:160},strand:null,hills:null,deep:null,shore:false,
+  table:{d0:.55,rise:.01,steep:.25,knee:6},
+  ore:{pts:[[220,-1700],[150,-800],[60,0],[0,300],[-60,800],[-140,1700]],w:30,rib:8,depth:30,pH:3},
+  mounds:[],
+  seeps:[[-8,318,4],[22,314,3],[-30,311,2.5]],
+  streams:[{name:'The seep stream',pts:[[-6,330],[-30,560],[-60,800],[-96,1200],[-140,1700]],pH0:2.0,Q0:1.5,q:.015},
+   {name:'The footwall seep',pts:[[26,318],[150,520],[260,800],[380,1200],[470,1700]],pH0:2.3,Q0:.8,q:.01}],
+  vents:[]}};

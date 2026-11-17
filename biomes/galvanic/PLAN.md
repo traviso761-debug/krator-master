@@ -19,7 +19,7 @@ answered, the conservative default is taken and marked **default taken, owner to
 |---|---|
 | Folder | `biomes/galvanic/` (`src/`, `stations/`, `build.py`, `verify.py`, `tests/test-galvanic.js`, `materials.json`, `tex/`, `BIOME-API.md`, `PORT.md`, `INDEX.md`, `KNOWN_ISSUES.md`) |
 | Kind | **a band kit with its own station pages** (the Leucoxene's kind, section 0 of its plan, and High Rift's page frame): the battery's life (`GALV`: the species, the cell's physics, the placement) is one set of fragments any host can read in place; station 1 is this kit's own page because no host kit has the ground it needs (below) |
-| Pages | `dist/galvanic.html`, station 1, **the Gossan Strand** (section 12). Later stations: `python3 build.py --station <name>` -> `dist/galvanic-<name>.html` |
+| Pages | `dist/galvanic.html`, station 1, **the Gossan Strand**; `dist/galvanic-deep.html`, station 2, **the Deep**; `dist/galvanic-gossan.html`, station 3, **the Gossan Hills** (section 12; a station is `python3 build.py --station <name>`, its folder `stations/<name>/` naming its site record) |
 | Object | `GALV` on the `BIOME-API.md` contract: `GALV.SPECIES`, `GALV.build`, `GALV.place`; the `[G data]` physics `GALV_PHYS.cell`, `GALV_PHYS.yield`, `GALV_PHYS.acid`, `GALV_PHYS.stream`, `GALV_PHYS.season`, `GALV_PHYS.store` (section 3), pure functions with a node test |
 | Read in place | `biomes/rift` (the Rift's savannah trees on the hills past the poisoned ground: `BIO.kin`, riftrim's way; its strata recipe `rift` through `KSTRATA`); nothing copied |
 | Out of scope | the scale model (no edits); `core/simulation` (the vitriol and ochre trade is a later sim pass); `LORE.md` (section 10's sentences are for the owner's hand); the animals' models (`kits/fauna`, data first, section 8) |
@@ -364,11 +364,25 @@ Vertebrate-grade hexapods only, never insects.
    season (the sea at its lowest), the Deep in the south-east, five mounds with their springs, three acid streams to the
    sea with their terraces, the hills' foot and the Rift's trees on the north edge. Presets: the strand at noon, a stream's
    terraces, the Deep, the mounds, the shore, from the hills, the flood (the season's wet half, by the day).
-2. *(proposed)* **The Deep** (`--station deep`): down into the crater's rim at the brine's edge, the hot metal brine and its
-   muds, the reefs on the rim, the vent's steam; the black-smoker reef as relicts (section 4, item 1).
-3. *(proposed)* **The gossan hills** (`--station gossan`): an ore body crossing the water table on the hills, Sato and
-   Mooney's battery at a hill's scale: the iron hat above, the reducing ore below, masts in the seeps on the line between.
-4. *(proposed)* **Sauropolis's strand**: the same sea's western end beside the city (once the Lizardmen's use is settled).
+2. **The Deep** (`--station deep`, `dist/galvanic-deep.html`; built 2026-11-17): the vent itself (px 801,1573) on a 3.4 km page, the
+   crater drawn 1.6 km across, down at the brine's edge: the hot metal brine to the sea's level and its faint steam (thickest over the
+   vent, KTHERM's field), a shelf of the brine's own muds in bands round its edge (red-brown oxide, black sulfide, green silicate, pale
+   anhydrite) which the season bares and drowns (the bathtub ring), sixteen relict black-smoker chimneys 3-12 m tall dead on the rim and
+   in the shallows (section 4, item 1, as relicts), the reefs and runners crowding their feet, the rim's mounds, a stream off the hills'
+   foot laying its terraces before it falls into the Deep, the sea past the south rim. Presets: the brine's edge, the chimneys on the rim,
+   the bathtub ring, across the Deep, the north stream falls in, the flood line, the rim and the sea, from afar.
+3. **The Gossan Hills** (`--station gossan`, `dist/galvanic-gossan.html`; built 2026-11-17): the hills' slope 10 km north of the vent
+   (px 800,1568: -2,211 m, 2.11 atm, 769 mm, +34 degC), a 3.6 km page. Sato and Mooney's battery at a hill's scale: a sulfide lens
+   striking down the slope, its iron hat a rust-red gossan rib above the water table (leached: no couple left, nothing of the battery's
+   on it: the probe checks it), the seeps where it crosses the table at the slope's foot with the masts in their streams, the ore below
+   drowned under the footslope (its stream lined with stumps and dead reefs: the reducing ground), the footwall seep's stream alive and
+   terraced off the ore; the water table swinging with the season as the flood's datum (the store jars keep to its reach); the
+   self-potential a prospector would read, in the inspector (`GALV_PHYS.sp`, `GALV_PHYS.emf`). **Default taken, owner to confirm**: the
+   table's swing is the sea's 1.2 m a year and its mean lies 0.55 m under the footslope (so the footslope floods ~47 days a year). Presets:
+   the iron hat, the seeps on the line, the seep stream (the drowned ore), the footwall seep's terraces, the flood line, up the hill, down
+   the hill, from afar.
+4. *(proposed; not built: waits on question 5)* **Sauropolis's strand**: the same sea's western end beside the city (once the
+   Lizardmen's use is settled).
 
 ## 13. Core adoption (written before the first fragment, as `CLAUDE.md` asks)
 
@@ -426,6 +440,13 @@ strand), `ground.travertine.acid`, `rock.galena`.
 - **G5** (2026-11-12). The owner's answers (section 18): the tidal pump (`GALV_PHYS.tide`, the springs' daily rise, the probe's
   check against `ATMOS.libration`) and zinc in `kits/resources` (in place, every build it reaches rebuilt). Still to come: stations 2
   and 3; the wader in `kits/fauna`.
+- **G6** (2026-11-17). Stations 2 and 3 (section 12), each a page of the kit on the one stage: `GALV_SITES.deep` and `GALV_SITES.gossan`
+  (`[G data]`), the stage reading each shape from the record when it has one (a hill `base` for the strand, the ore and the water table as
+  the flood's datum, the Deep's shelf), the chimneys (`89c`) and the steam (`89u`) drawn for the sites that list them, `GALV.place` taking
+  `o.spires` and `o.world`; the probe's new checks each with a negative (the chimneys seated on their ground, the steam only off the hot
+  brine, the brine on the shelf; no life on the iron hat, the seeps on the table's line, the self-potential, the table at the season's
+  level); `GALV_PHYS.emf` and `GALV_PHYS.sp` with their node tests. Station 1 kept: the same instances, triangles and checks. Still to
+  come: station 4 (question 5), the wader in `kits/fauna`.
 
 ## 17. Sources (checked 2026-11-11)
 
