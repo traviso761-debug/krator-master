@@ -82,7 +82,7 @@ const STREAMS=SITE.streams.map((S,i)=>{const F=polyFrame(S.pts),sT=GALV_PHYS.str
   /* a stream that falls into the Deep: its treads follow its bed (3 cm steps), not the strand's sinking stair, so they meet the flow below them at its own level
      (sinking 0.12-0.18 m a tread they lay 0.7 m under the bed by the rim, in a trench, and the water climbed back up to the flow: the owner's view, 2026-11-17) */
   const intoDeep=inRim(F.L);
-  while(s+20<F.L){const s1=s+18+4*Math.abs(Math.sin(s*.37+i));if(inRim(s1))break;const yy=Math.min(y,bed0(s1)+.32);if(yy<SITE.sea-GALV_PHYS.SEA.amp+.1)break;T.push({s0:s,s1,y:yy,w:W});y=yy-(intoDeep?.03:.12+.06*Math.abs(Math.sin(s*.13+i*2)));s=s1+2.5;}}
+  while(s+20<F.L){const s1=s+18+4*Math.abs(Math.sin(s*.37+i));if(inRim(s1))break;const yy=Math.min(y,bed0(s1)+.32);if(yy<SITE.sea-GALV_PHYS.SEA.amp+.1)break;T.push({s0:s,s1,y:yy,w:W});y=yy-(intoDeep?.03:.12+.06*Math.abs(Math.sin(s*.13+i*2)));s=s1+(intoDeep?0:2.5);}   /* into the Deep: the treads abut (a 3 cm fall draws nothing, and the 2.5 m it was given read as dry ground between pools) */}
  const tread=s=>{for(const t of T)if(s>=t.s0-1.25&&s<=t.s1+1.25)return t;return null;};
  return Object.assign({},S,{i,F,sT,T,tread,bed0,w:6+2*i%3});});
 // noCh: the land without the streams' channels (station 3's flood is the water table against the slope, not against a channel's bed: GROUND0)
