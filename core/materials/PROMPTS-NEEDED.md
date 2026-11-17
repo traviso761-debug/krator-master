@@ -3,7 +3,7 @@
 Every texture or pattern sheet the owner still has to source or generate, each with its finished prompt. Paste a block
 as it is, one image per block. **Everything delivered lives in `PROMPTS-archived.md`** (checked against `core/materials/library/`, `patterns/` and each build's `materials.json` on `origin/main`, 2026-10-19); this file holds only what is still owed.
 
-**Count: 22 prompts** (+9 easter eggs for Erewhon's walls, section 58: the Ancient Mariner, Samuel Butler, Caves of Qud,
+**Count: 25 prompts** (+12 easter eggs for Erewhon's walls, section 58: the Ancient Mariner, Samuel Butler, Caves of Qud, Kenshi,
 2026-11-17; +10 for Erewhon's citadel, section 57: the hangings of Kubla Khan and the suzani, 2026-11-16. Before: 3,
 2026-11-16: the Tungang kit's `patterns/tungang/loj-banner`, `loj-banner.b` and `enamel-signs`. The
 owner's Codex batches delivered the rest: 22 new sets on 2026-11-16 (`PLAN.md`, "Delivered 2026-11-16"), and, merged here the same day
@@ -525,14 +525,15 @@ Square, 2048x2048. A flat, front-on decorative panel filling the whole frame edg
 The owner, 2026-11-17: "we can have an easter egg or two as well; give me 3 prompts for tapestries/painting related to the Rime
 of the Ancient Mariner, 3 related to the works of Samuel Butler, and 3 related to Caves of Qud", then: "can you put them in the
 same mughal/persian/orientalist style". Coleridge's other great poem beside Kubla Khan; Butler's Erewhon, which the city is named
-for; and a nod to Caves of Qud, told in motifs (salt marsh, a many-armed scholar, the great spindle of the ancients) and never its
-own characters, names or art. Every panel is drawn as the Kubla Khan hangings of section 57 are: a Persian-Mughal court miniature
+for; a nod to Caves of Qud, told in motifs (salt marsh, a many-armed scholar, the great spindle of the ancients), and three to
+Kenshi (the owner, 2026-11-17: "give me 3 more that are kenshi related"; the wanderer among giants' bones, the old machine-men,
+the shell-backed caravan), never either game's own characters, names or art. Every panel is drawn as the Kubla Khan hangings of section 57 are: a Persian-Mughal court miniature
 woven in silk and gold thread, flat and decorative, inside the same border of gold roundels on maroon and an inner border of
 turquoise vines, in the Xanadu palette (gold #d4af37, maroon #7a1a24, saffron #e89a2a, turquoise #1f9aa8, lapis #26449a, night
 blue #1a2444, ice #d8eef4, rose #c85a6a, cream #f2e6c8, peacock green #2a7a4a), so the easter eggs hang among them unremarked.
 All 2:3 portrait panels (1365x2048), the shape of the citadel's hanging (`xanadu_court_kubla_hanging`, the picture 1.5 x 2.25 m),
 so each can become a further design of it once the catalog can paint an image into a decal (section 57). Lands in
-`core/materials/patterns/easter/`. **9 prompts**, all full colour.
+`core/materials/patterns/easter/`. **12 prompts**, all full colour.
 
 `patterns/easter/mariner-albatross` (the Mariner: the albatross hung about his neck, the becalmed sea):
 ```
@@ -579,6 +580,20 @@ Portrait, 1365x2048. A flat, front-on decorative panel filling the whole frame e
 Portrait, 1365x2048. A flat, front-on decorative panel filling the whole frame edge to edge: one whole woven silk hanging, not tiling. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no watermark, no words, no logos. Panel: a Persian-Mughal court tapestry in silk and gold thread, stylised like a Mughal miniature, set in a strange far future: an impossibly tall, thin tower of dark metal of the ancients rising out of a rust-red jungle of stylised broad-leaved trees, up through curling Chinese-style clouds until it vanishes at the top of the panel, a line of tiny robed pilgrims winding along a path toward its foot, odd beasts among the trees, a large gold moon and a smaller second moon in a night-blue sky; a border of gold roundels on maroon around the whole, an inner border of turquoise vines. Original design, no characters or art from any existing game. Flat and decorative, no perspective, every line woven. Full colour: gold #d4af37, maroon #7a1a24, turquoise #1f9aa8, rust jungle #a04a2a, dark metal #2a2e36, night blue #1a2444, cream #f2e6c8 clouds.
 ```
 
+`patterns/easter/wanderer-bones` (a nod to Kenshi: the lone wanderer among the bones of giants):
+```
+Portrait, 1365x2048. A flat, front-on decorative panel filling the whole frame edge to edge: one whole woven silk hanging, not tiling. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no watermark, no words, no logos. Panel: a Persian-Mughal court tapestry in silk and gold thread, stylised like a Mughal miniature, set in a harsh far future: a lone ragged wanderer in a wide straw hat and patched robes, a long heavy curved blade across the shoulders, walking a vast pale desert drawn in decorative bands of dune; around and above the wanderer rise the colossal ribs, vertebrae and skull of some long-dead giant creature, and further off the broken stumps of enormous ancient towers; a pale sun and wheeling vultures; a border of gold roundels on maroon around the whole, an inner border of turquoise vines. Original design, no characters or art from any existing game. Flat and decorative, no perspective, every line woven. Full colour: gold #d4af37, maroon #7a1a24, turquoise #1f9aa8, desert sand #d8c08a, bone #e6dcc6, straw #c9a24a, cream #f2e6c8 sky.
+```
+
+`patterns/easter/skeleton-scholars` (a nod to Kenshi: the old machine-men at their ruined library):
+```
+Portrait, 1365x2048. A flat, front-on decorative panel filling the whole frame edge to edge: one whole woven silk hanging, not tiling. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no watermark, no words, no logos. Panel: a Persian-Mughal court tapestry in silk and gold thread, stylised like a Mughal miniature, set in a harsh far future: tall, gaunt, ancient mechanical men with bare skeletal frames of dull grey metal and round lamp-eyes, wearing patched scholars' robes, gathered in the half-ruined hall of a vast old library carved into a cliff, one reading a crumbling book, one mending another's arm at a small forge, one gazing up at a cracked star-chart on the ceiling; drifting dust in decorative curls, a dim red sun through a broken arch; sigils that are only ornament, not letters; a border of gold roundels on maroon around the whole, an inner border of turquoise vines. Original design, no characters or art from any existing game. Flat and decorative, no perspective, every line woven. Full colour: gold #d4af37, maroon #7a1a24, turquoise #1f9aa8, machine grey #6a6e72, lamp-eyes #e8a83a, robes #5a3a6a, cliff stone #a07a50, cream #f2e6c8.
+```
+
+`patterns/easter/shell-caravan` (a nod to Kenshi: the caravan of shell-backed beasts through the dust):
+```
+Portrait, 1365x2048. A flat, front-on decorative panel filling the whole frame edge to edge: one whole woven silk hanging, not tiling. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no watermark, no words, no logos. Panel: a Persian-Mughal court tapestry in silk and gold thread, stylised like a Mughal miniature, set in a harsh far future: a trading caravan winding down the panel in a long S-curve, huge slow pack-beasts with domed armoured shells and thick legs carrying bales and water-jars, hooded traders and guards with spears walking beside them, through a desert of giant pale fungi under an ochre dust storm drawn as rolling decorative scrolls; on a rock above, a long-necked, long-legged beaked predator watches them; a border of gold roundels on maroon around the whole, an inner border of turquoise vines. Original design, no characters or art from any existing game. Flat and decorative, no perspective, every line woven. Full colour: gold #d4af37, maroon #7a1a24, turquoise #1f9aa8, ochre dust #c4943a, shell #8a6a52, fungi #e6dcc6, saffron #e89a2a bales, cream #f2e6c8.
+```
 ## 43. The Tungang kit (`kits/tungang`, 2026-11-11)
 
 `kits/tungang/PLAN.md` section 7, agreed by the owner on 2026-11-11 ("agree with your suggestions"). The Line's biome
