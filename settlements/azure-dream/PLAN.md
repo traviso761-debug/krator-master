@@ -601,14 +601,14 @@ isle's food bill, and a real demand for its dairy and hives.
 | **AD2** (the records **done** 2026-11-16 on `claude/openworld-sites-24defd`, e25e691cd: `lk.great-isle` 304 at the cove's head, `lk.great-isle-west` 250, `-north` 200, `-east` 150 at the villages' pixels; test-xan-economy 70/70, every village fed) | the sim: `lk.great-isle` re-fitted to 900 (the monastery 300 and three villages); pilgrims as a flow; the isle's goods | the sim session | its economy test |
 | **AD3** (**done** with the page: `src/89qa-ad-hall.js`, `src/89qb-ad-wharf.js`) | the new records (section 6) in `settlements/azure-dream/src/` on the Qiblai kit's helpers and `QSPOKE[5]`'s dress, seeds 34000-34199, on a sheet beside the blue monastery; the reused records' blue dress | this settlement | the footprint test; the sheet's `verify.py --assert` |
 | **AD4** | the 22 catalog pieces in the Xanadu culture file | the catalog's owner | `kits/catalog/verify.py --assert` |
-| **AD5** (**begun** 2026-11-16: the Foot Gallery and its stair walked; every other building's ground storey planned, furnished and walked into on demand, `targets/isle/90ai-ad-interiors.js`; KNOWN_ISSUES.md) | the Hall as room data, its cot grid, the side rooms furnished; the reach audit in node first | | `core/walk` reach in node; the page's `--interiors` assert |
-| **AD6** (**first pass done** 2026-11-16, the owner: "build the page next"; the night on `core/sched` done the same day, `targets/isle/90ah-ad-night.js`; the orchards and bee walls; README.md, KNOWN_ISSUES.md) | the page, `settlements/azure-dream`: the cove, the wharf, the ward, the stair, the precinct on core/world's ground, the lake on `core/water`, the night on `core/atmos` and `core/sched` (the Lulling, the watches, the shutters, the blue window), people asleep | | `verify.py --assert` on the GPU lane; `check_core_use` |
+| **AD5** (**begun** 2026-11-16: the Foot Gallery and its stair walked; every other building's ground storey planned, furnished and walked into on demand, `targets/isle/90ai-ad-interiors.js`; the great monastery's assembly and gate halls, `90aj`; KNOWN_ISSUES.md) | the Hall as room data, its cot grid, the side rooms furnished; the reach audit in node first | | `core/walk` reach in node; the page's `--interiors` assert |
+| **AD6** (**first pass done** 2026-11-16, the owner: "build the page next"; the night on `core/sched` done the same day, `targets/isle/90ah-ad-night.js`, its wheels turning and the Station's passes from core/atmos's sky model (Q16); the orchards and bee walls; README.md, KNOWN_ISSUES.md) | the page, `settlements/azure-dream`: the cove, the wharf, the ward, the stair, the precinct on core/world's ground, the lake on `core/water`, the night on `core/atmos` and `core/sched` (the Lulling, the watches, the shutters, the blue window), people asleep | | `verify.py --assert` on the GPU lane; `check_core_use` |
 | **AD7** (the summit **first pass done** 2026-11-16: `dist/azure-dream-summit.html`, a second target on the same build; the three villages **first pass done** 2026-11-16, three more targets on core/hamlet, on the probed 1:1 shore, East End with the Order's meadow: KNOWN_ISSUES.md; the sheets redrawn from the pages, `export_records.py`) | the three villages (`core/hamlet`); the summit kora as a second station, with a far form from the cove | | the page's asserts (the summit's: `summit-laid`, `high-kora`, `summit-crest`, `signal-lamp`) |
 | **AD8** | the open world's site; the Godot export; the gallery (a new settlement goes to the gallery when it reaches `main`) | | the export test; the gallery's card |
 
 ## 13. Questions for the owner
 
-Questions 1 to 15 are answered (the table at the top; 10 by the Qiblai kit's session).
+Questions 1 to 15 are answered (the table at the top; 10 by the Qiblai kit's session). One is open:
 
 14. ~~**Building it.**~~ **Answered 2026-11-16: "build the page next"** (step AD6's first pass). The original question: Is the page the next step after the owner's answers, or does it wait until core/world has cut the
     isle on the new lake?
@@ -623,3 +623,9 @@ Questions 1 to 15 are answered (the table at the top; 10 by the Qiblai kit's ses
     the signal be something else (a runner, a drum, a bell)? The same shoulder hides the Summit Chorten from the cove (the
     scarp half a kilometre up stands over 100 m above that sight line), so "its gilt crown seen from every shore" is not checked
     yet for any shore; a far form from the cove (AD7) would show nothing there.
+
+16. **The Station's nights.** At 1:1 the isle lies at 59.5 S, and the Station's orbit is tilted 52 degrees, so it never crosses
+    overhead here: the night's best lit pass peaks at about 64-66.6 degrees (core/atmos's sky model). The page takes a Station's
+    night to be one whose best lit pass reaches 66.3 degrees: about 21 nights a year, clustered in runs of a few weeks as the
+    orbit turns (the first after the game's start is night 2, its pass at 20.5 h). Is that the festival, or should it be rarer
+    (66.5 degrees: 5 nights a year) or fixed by the calendar instead?

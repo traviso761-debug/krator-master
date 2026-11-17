@@ -19,14 +19,15 @@ The page's first pass (2026-11-16, the owner: "build the page next"). What it do
 - [ ] **Walking in: the ground storeys only.** The Hall of Dreaming is in `core/walk` (`targets/isle/90ag-ad-walk.js`), its Foot
       Gallery up a stair through a hatch at the east end (`hall-walk-in` reaches it). The other buildings' ground storeys
       (`targets/isle/90ai-ad-interiors.js`, Qiblai's lot-interiors host over this page's places: kits/interiors' plans, the
-      catalog's pieces) are built on demand and walked into through their drawn doors (`interiors`, `walk-in-rooms`). Not yet:
-      upper storeys, the great monastery's assembly and gate halls (Qiblai's 90t great rooms), the Order's own buildings that
+      catalog's pieces) are built on demand and walked into through their drawn doors (`interiors`, `walk-in-rooms`); the great
+      monastery's assembly hall and gate hall too, from the terrace through its gate (`90aj`, `great-rooms`). Not yet:
+      upper storeys, the Order's own buildings that
       have no storey stacks (the waking range, the cup house, the fishermonks' house), and the villages' houses.
-- [ ] **The night: the brake and the Station are stand-ins.** The Hall's night runs on `core/sched` (`targets/isle/90ah-ad-night.js`:
-      the Lulling, the door shut until dawn, the censers, three watches with a keeper's lamp on the walk, `night-schedule`). The
-      kit's prayer wheels do not turn, so their brake at the Lulling is a state the page carries, not a motion it shows. A
-      Station's night is chosen by `?station=1` and its pass fixed at 1.0-2.0 h: the page does not read core/atmos's sky state for
-      the Station's real passes yet.
+- [ ] **The Station's nights are a proposed rule.** The Hall's night runs on `core/sched` (`targets/isle/90ah-ad-night.js`), its
+      wheels turn and are braked at the Lulling, and the Station's passes come from core/atmos's sky model. At 59.5 S the
+      Station never stands overhead (its best passes peak near 66 degrees), so a Station's night is taken as one whose best lit
+      pass peaks at 66.3 degrees or more (`AD_STATION_PEAK`: about 21 nights a year here, clustered). PLAN.md Q16 asks the owner.
+      The page's own sky (KratorSky) does not draw the Station.
 - [ ] **The flora is the Vale of Xanadu's biome over a mask** (`89zaa`'s `adBioMask`: woods on the open slopes, the shore zone by
       the water, nothing on pads, ways or footprints), bound on `BIO.host` as Qiblai's city binds it. The page's fields make the
       isle wooded lowland throughout (the owner, 2026-11-16: "a lot more foliage on this island"): `upland` is height over 5 km, so
