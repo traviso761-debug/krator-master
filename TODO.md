@@ -104,6 +104,26 @@ runtime and bison table, and the `tools/` listing staleness (every build rebuilt
     read `KDRAWN.h` when the page lists `core/drawn/10-core-drawn.js` and registers its ground; cameras stand on it.
   - Already done before the survey closed (no row needed): `kits/fauna/src/90-sheet.js`'s `_texPending` is a getter (15ca3363);
     hyperjungle's harvest-wood phrases parse (`node core/hamlet/test-hamlet.js` passes).
+- **core/host's walker and pick underground** (2026-11-15, BUGS-2026-11-15.md C5-C8; branch `claude/host-walker-underground-main`):
+  `core/host/90-host-camera.js` and `93-host-inspect.js` are edited; rebuilt so far only the underground test page
+  (`core/host/underground`), the Hearths' camera station and Dhelv. `tools/reach.py core/host/90-host-camera.js` gives the rest (545
+  pages on 2026-11-15); each grows by about 7 KB. What it changes, so a verify that moves can be read:
+  - **F** stands on the floor under the eye (`KHOST.feet.under`: a KWALK floor at or below the camera, or the ground where it is not
+    over the head), no longer the highest floor at x, z. On a surface page the same answer unless the camera was under a raised floor.
+  - **The stand** no longer lifts a walker to a ground more than the walker's height over its feet (a roof: the surface over a tunnel,
+    a cellar under the terrain); with no floor under it, the ground as before.
+  - **The swept step**: a key step over 0.3 m is walked in 0.1 m samples against the walk blocks (`walker.sweep`; 0 turns it off).
+    Normal walking at 60 fps (0.15 m a frame) is not swept; a sprint or a slow frame stops at a wall instead of being pushed through.
+    `core/walk/frame/95-walk-frame-host.js`'s own sweep (riding, on `claude/clever-rhodes-cb3fec`) is then redundant and can go.
+  - **The pin**: the ground's hit stays the pin where the scene draws something near it (every surface page with a terrain mesh: no
+    change); where nothing is drawn there (a constant fallback ground, Loj Twenny's -60) or the camera is under the ground, the first
+    mesh under the pointer, on the floor under it, or no pin. `o.pickScene: false` keeps the old pick. A double-click now raycasts the
+    scene once (meshes only; instanced crowds over 2000 skipped).
+  - **The inspector** skips hits on hidden parents and on points a cut's clipping planes cut away (`C.drawn`; 99-host-section's
+    `KHOST.section.clipped` for its planes), and hits on rock KCAVERN's rock cut has opened (`KCAVERN.cut.discards` on the hit's
+    own floor).
+  - Leaving a walk (F off) puts the orbit's target 6 m over the floor under the walker, not over `ground()`.
+  Checks: `node core/host/test-feet.js`, `python3 core/host/underground/check.py` (the C5-C8 checks with their negatives).
 - **core/world: a kit on several biome overlays** (2026-11-11, the Iziz cluster's open-world region): `core/world/41-world-fields.js`
   matches a `WORLD_KITS` entry's `overlay` to one biome name (`k.overlay===name`). Let it take a list (`Array.isArray(k.overlay)?
   k.overlay.indexOf(name)>=0:...`), then drop the shim in `openworld/iziz-cluster/src/47-world-kits.js` (`WORLD_KITS.findIndex`, which

@@ -365,8 +365,8 @@
    "sha256": "c13e927428df6729ae01d466835044cad5a4da09098cb10e91deee850fb61b25"
   },
   "biomes/hearths/dist/hearths-camera.html": {
-   "bytes": 1380236,
-   "sha256": "2c9a30129b92ee194411df09cede65f884c99b5cef0a0d85c938c37eaf461773"
+   "bytes": 1388552,
+   "sha256": "f6468eb9f69b871a34a4c1d9ccfbf1daf3ff423e8bc12bcc5c566b8f144787fd"
   },
   "biomes/hearths/dist/hearths-crystals.html": {
    "bytes": 1323436,
@@ -1457,8 +1457,8 @@
    "sha256": "0e76ea1494937e483169b7dfe6b1b13a96d1dfc4cf401d1c2736559aa5f9b5e6"
   },
   "settlements/dhelv/dist/dhelv.html": {
-   "bytes": 2668520,
-   "sha256": "2cd72463cbdb6d44b0273ae57bfc70d9e7dc59671dc508573544dcf231a37a09"
+   "bytes": 2675515,
+   "sha256": "93d24831d31961e7ba54cbc3ae9e7327302581ece8eea756b37757bca5513d2f"
   },
   "settlements/girder/girder.html": {
    "bytes": 2022502,
