@@ -100,41 +100,144 @@ func update(at: Vector2, load_r: float, keep_r: float) -> Dictionary:
 	var unloaded := []
 	for id in _box:
 		var d := box_dist(_box[id], at.x, at.y)
-		if d <= load_r and not chunks.has(id):
-			var path := dir + "/" + _case(id) + "/world.json"
-			var w := KratorWorld.build(path)
-			w.name = "Chunk_" + id
-			w.set_meta("case_path", path)   # its world.json (the importer's "world" meta leaves the terrain out)
-			_hole(w, _box[id])
-			_seat(w)
-			add_child(w)
-			if collide:
-				collide_case(w)
-			chunks[id] = w
-			loaded.append(id)
-		elif d > keep_r and chunks.has(id):
-			var n: Node3D = chunks[id]
-			chunks.erase(id)
-			remove_child(n)
-			n.free()
-			unloaded.append(id)
+		if d <= load_r and not chunks.has(id) and not pending.has(id):
+			if threaded:
+				_enqueue("chunk", id)
+			else:
+				_attach("chunk", id, _build_chunk(id))
+				loaded.append(id)
+		elif d > keep_r:
+			if chunks.has(id):
+				var n: Node3D = chunks[id]
+				chunks.erase(id)
+				remove_child(n)
+				n.free()
+				unloaded.append(id)
+			_dequeue(id)
 	if auto_places:
 		var csz := float(index["chunk"]["size"])
 		for p in index.get("places", []):
 			var pid: String = p["id"]
 			var d := box_dist(p["box"], at.x, at.y)
-			if d <= load_r + csz and not places_open.has(pid):
-				places_open[pid] = open_place(pid)
-				loaded.append(pid)
-			elif d > keep_r + csz and places_open.has(pid):
-				var n: Node3D = places_open[pid]
-				places_open.erase(pid)
-				n.get_parent().remove_child(n)
-				n.free()
-				unloaded.append(pid)
+			if d <= load_r + csz and not places_open.has(pid) and not pending.has(pid):
+				if threaded:
+					_enqueue("place", pid)
+				else:
+					_attach("place", pid, _build_place(pid))
+					loaded.append(pid)
+			elif d > keep_r + csz:
+				if places_open.has(pid):
+					var n: Node3D = places_open[pid]
+					places_open.erase(pid)
+					n.get_parent().remove_child(n)
+					n.free()
+					unloaded.append(pid)
+				_dequeue(pid)
+	poll()
 	log.append({"step": step, "at": [at.x, at.y], "loaded": loaded, "unloaded": unloaded, "held": chunks.keys(), "origin": origin.duplicate()})
 	step += 1
 	return {"loaded": loaded, "unloaded": unloaded}
+
+
+# ---------------------------------------------------------------- loading off the main thread (M8)
+# threaded: update() queues the cases it wants and a worker thread (WorkerThreadPool) builds them one at a time, detached
+# from the tree (KratorWorld.build: the glTF, the materials, the ground and its holes, the collision shapes); poll(),
+# each frame, attaches a finished case on the main thread (seated at the stream's origin as it is then). One build at a
+# time, so the importer's static caches are never written by two threads. events: every attach, with the build's time
+# (off the main thread) and the attach's (on it: what the frame pays)
+var threaded := false
+var pending := {}        # id -> true: queued or building
+var events: Array = []   # [{id, kind, build_ms, attach_ms}]
+var _queue: Array = []   # [[kind, id]]
+var _task := -1
+var _job: Array = []
+var _built: Node3D = null
+var _build_ms := 0.0
+
+
+func _enqueue(kind: String, id: String) -> void:
+	pending[id] = true
+	_queue.append([kind, id])
+
+
+# no longer wanted: dropped from the queue (a case already building attaches, and a later update frees it)
+func _dequeue(id: String) -> void:
+	for i in range(_queue.size() - 1, -1, -1):
+		if _queue[i][1] == id:
+			_queue.remove_at(i)
+			pending.erase(id)
+
+
+func poll() -> void:
+	if _task >= 0 and WorkerThreadPool.is_task_completed(_task):
+		WorkerThreadPool.wait_for_task_completion(_task)
+		_task = -1
+		var t0 := Time.get_ticks_usec()
+		_attach(_job[0], _job[1], _built)
+		events.append({"id": _job[1], "kind": _job[0], "build_ms": _build_ms, "attach_ms": (Time.get_ticks_usec() - t0) / 1000.0})
+		_built = null
+	if _task < 0 and not _queue.is_empty():
+		_job = _queue.pop_front()
+		_task = WorkerThreadPool.add_task(_run_job, false, "krator stream: " + str(_job[1]))
+
+
+# true while a case is queued or building (a caller waiting for the stream to settle)
+func busy() -> bool:
+	return _task >= 0 or not _queue.is_empty()
+
+
+func _run_job() -> void:
+	var t0 := Time.get_ticks_usec()
+	_built = _build_chunk(_job[1]) if _job[0] == "chunk" else _build_place(_job[1])
+	_build_ms = (Time.get_ticks_usec() - t0) / 1000.0
+
+
+# a chunk's case, built detached (any thread): its ground holed under the places, its collision made
+func _build_chunk(id: String) -> Node3D:
+	var path := dir + "/" + _case(id) + "/world.json"
+	var w := KratorWorld.build(path)
+	w.name = "Chunk_" + id
+	w.set_meta("case_path", path)   # its world.json (the importer's "world" meta leaves the terrain out)
+	_hole(w, _box[id])
+	if collide:
+		collide_case(w)
+	return w
+
+
+# a place's case, built detached (any thread): with its page of its own (Strongbow's arcology) and their collision
+func _build_place(id: String) -> Node3D:
+	var p := place(id)
+	if p.is_empty():
+		return null
+	var w := KratorWorld.build(dir + "/" + str(p["case"]) + "/world.json")
+	w.name = "Place_" + id
+	if p.get("arcology") is Dictionary:
+		w.add_child(arcology(p, w))
+	if collide:
+		collide_case(w)
+		if w.get_node_or_null("Arcology"):
+			collide_case(w.get_node("Arcology"))
+	return w
+
+
+# a built case into the tree (the main thread), seated at the stream's origin as it is now
+func _attach(kind: String, id: String, w: Node3D) -> void:
+	pending.erase(id)
+	if w == null:
+		return
+	_seat(w)
+	if kind == "chunk":
+		if chunks.has(id):
+			w.free()
+			return
+		add_child(w)
+		chunks[id] = w
+	else:
+		if places_open.has(id):
+			w.free()
+			return
+		get_node("Places").add_child(w)
+		places_open[id] = w
 
 
 func _case(id: String) -> String:
@@ -176,19 +279,11 @@ func road(id: String) -> Dictionary:
 
 
 func open_place(id: String) -> Node3D:
-	var p := place(id)
-	if p.is_empty():
+	var w := _build_place(id)
+	if w == null:
 		return null
-	var w := KratorWorld.build(dir + "/" + str(p["case"]) + "/world.json")
-	w.name = "Place_" + id
 	_seat(w)
 	get_node("Places").add_child(w)
-	if p.get("arcology") is Dictionary:
-		w.add_child(arcology(p, w))
-	if collide:
-		collide_case(w)
-		if w.get_node_or_null("Arcology"):
-			collide_case(w.get_node("Arcology"))
 	return w
 
 

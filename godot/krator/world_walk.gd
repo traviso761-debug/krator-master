@@ -28,17 +28,22 @@ var route: Array = []           # [[x, z], ...] region metres
 var route_i := 0
 var steps := 0
 var step_ups := 0
+var phys_ms := 0.0               # the last physics frame's time in this script (the stream's update and poll included)
+var phys_max := 0.0
+var move_max := 0.0
+var move_ms := 0.0               # of it, the step-up and move_and_slide (the collision queries)
 var updates: Array = []         # [{ms, loaded, unloaded, step}]: every stream update that loaded or freed something, timed
 var _t := 0.0
 var _yaw := 0.0
 
 
-static func make(index_path: String, collide := true) -> KratorWorldWalk:
+static func make(index_path: String, collide := true, threaded := true) -> KratorWorldWalk:
 	var w := KratorWorldWalk.new()
 	w.name = "WorldWalk"
 	w.stream = KratorWorldStream.open(index_path)
 	w.stream.collide = collide
 	w.stream.auto_places = true
+	w.stream.threaded = threaded   # cases built on a worker thread, attached by poll() each frame
 	w.add_child(w.stream)
 	w.stream.rebased.connect(w._on_rebased)
 	w.walker = CharacterBody3D.new()
@@ -62,7 +67,10 @@ static func make(index_path: String, collide := true) -> KratorWorldWalk:
 
 func start_at(x: float, z: float) -> void:
 	stream.rebase(x, z)
+	var was := stream.threaded   # the first load round the walker in full, before it stands anywhere
+	stream.threaded = false
 	stream.update(Vector2(x, z), LOAD_R, KEEP_R)
+	stream.threaded = was
 	var h := stream.height_at(x, z)
 	walker.position = stream.local(x, (h if is_finite(h) else 0.0) + HEIGHT, z)
 	walker.velocity = Vector3.ZERO
@@ -93,6 +101,7 @@ func _on_rebased(delta: Vector3) -> void:
 func _physics_process(dt: float) -> void:
 	if stream == null:
 		return
+	var t_phys := Time.get_ticks_usec()
 	var dir := Vector3.ZERO
 	if driving:
 		var here: Array = stream.region(walker.position)
@@ -121,10 +130,13 @@ func _physics_process(dt: float) -> void:
 		walker.velocity.y = 0.0
 	else:
 		walker.velocity.y -= GRAVITY * dt
+	var t_move := Time.get_ticks_usec()
 	_step_up(Vector3(walker.velocity.x, 0, walker.velocity.z) * dt)
 	walker.move_and_slide()
+	move_ms = (Time.get_ticks_usec() - t_move) / 1000.0
 	if dir.length() > 0 and not interactive:
 		_yaw = atan2(dir.x, dir.z) + PI
+	stream.poll()   # attach what the worker finished
 	steps += 1
 	_t += dt
 	if _t >= UPDATE_EVERY:
@@ -135,6 +147,9 @@ func _physics_process(dt: float) -> void:
 		if (r["loaded"] as Array).size() + (r["unloaded"] as Array).size() > 0:
 			updates.append({"ms": ms, "loaded": r["loaded"], "unloaded": r["unloaded"], "step": steps})
 	_follow(false)
+	phys_ms = (Time.get_ticks_usec() - t_phys) / 1000.0
+	phys_max = maxf(phys_max, phys_ms)   # a caller timing frames reads and resets these (tests/perf/road_perf.gd)
+	move_max = maxf(move_max, move_ms)
 
 
 # a step up: blocked ahead but clear STEP higher, the walker rises onto it (a kerb, a door sill, the seam where a chunk's

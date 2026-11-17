@@ -147,8 +147,23 @@ func _run() -> void:
 		and absf(float(m2["feet"]) - lip) <= 3.0,
 		"the last climb to Strongbow and over its plateau: there in %d steps; feet at most %.2f m under the ground, %.2f m over it on the road and %.2f m on the plateau, %.1f m off the road, %d rebases, the largest jump %.2f m; it stands %.0f m behind the lip with its feet at %.1f m (the lip %.1f m)"
 		% [m2["steps"], m2["under"], m2["over"], m2["over_plateau"], m2["off"], m2["rebases"], m2["jump"], float(m2["end"].x) - float(at[0]), m2["feet"], lip])
+	# the stream's loading ran off the main thread: cases built on the worker thread and attached by poll()
+	var ev: Array = W.stream.events
+	var bmax := 0.0
+	var amax := 0.0
+	for e in ev:
+		bmax = maxf(bmax, float(e["build_ms"]))
+		amax = maxf(amax, float(e["attach_ms"]))
+	ok(ev.size() > 0, "loading off the main thread: %d cases built on the worker thread during the walk (the longest build %.0f ms, off the main thread), each attached in at most %.1f ms on it"
+		% [ev.size(), bmax, amax])
 	root.remove_child(W)
 	W.free()
+	var Sy := KratorWorldWalk.make(CASE, true, false)
+	root.add_child(Sy)
+	var my: Dictionary = await _walk(Sy, _slice(road, 1000.0, 1600.0), [])
+	ok(Sy.stream.events.is_empty(), "negative: a synchronous stream builds nothing on the worker thread (%d events)" % Sy.stream.events.size())
+	root.remove_child(Sy)
+	Sy.free()
 	# negative: the first stretch without collision
 	var N := KratorWorldWalk.make(CASE, false)
 	root.add_child(N)
