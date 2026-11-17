@@ -73,6 +73,20 @@ terrain splat texture and the placement input; (3) the minimap drawn from export
 **Taken by the second integration pass** (`claude/integration-2`, 2026-11-10 and 11; HANDOFF-REBUILD.md): the `dalab` sockets pack,
 water breakup on by default, the catalog's `tile` detail family, the Highlands great-building room kinds in `30-programs.js`, the fauna
 runtime and bison table, and the `tools/` listing staleness (every build rebuilt): all rebuilt and GPU-verified, items deleted.
+- **The catalog's hem rule and decal pictures** (2026-11-17, branch `claude/dreamy-turing-3902d7`, which also carries the unmerged
+  `claude/citadel-furnishing-cb5e01`; the owner: "make sure wall hangings dont wind up near ground, this has been a recurring issue",
+  and "fold into the all-build rebuild"). `core/catalog/krator-furniture-core.js`: `furnAnchorY` hangs a top-hung cloth with its hem
+  `FURN_HEM` (1.1 m) up when the ceiling allows (wall art's lower edge too), a piece may say `hung: 'top' | 'eye' | false`, and
+  `mkDecal` shows a delivered picture (`FURN_DECAL_IMG` / `KF_DECALS`, a key that is a texture id) over its painted stand-in; eight
+  culture cloths take `hung: 'top'` and `br_h_hung_hide`'s hide is 1.6-2.0 m. `python3 tools/reach.py core/catalog/krator-furniture-core.js`
+  reaches 66 build commands: none is rebuilt on the branch, so every catalog-taking page moves in the rebuild. Then
+  `python3 core/furnish/fingerprint.py` and `python3 core/engine/fingerprint.py` (hung cloths in furnished rooms move on purpose: read
+  which, do not re-baseline blind), `kits/catalog` and `kits/interiors` `verify.py --assert` on a lane with `KRATOR_GL=gpu`, the
+  hash baseline. Checked headless already: `node core/catalog/test-hangings.js` (every wall hanging of the catalog, 458 variants, hem
+  at least 1 m in a room tall enough), `node core/tags/test-tags.js`, `node core/furnish/test-furnish.js`, the citadel census.
+  The pictures: `kits/catalog/materials.json` "decals" lists the ten owed in `core/materials/PROMPTS-NEEDED.md` section 57; once one
+  is delivered, `python3 tools/textures/pack.py kits/catalog` packs it and Erewhon (`furniture_bundle.bundle(..., decals=True)`) and
+  the catalog's sheet show it (about 150 KB each inline).
 - **The Xanadu kit's opt-in pieces into `src/`** (2026-11-16, `kits/xanadu/README.md` "Opt-in pieces"): `extra/88c-xa-caravanserai.js`,
   `extra/88d-xa-lakecraft.js` and `extra/88e-xa-stall.js` into `kits/xanadu/src/`, `extra/69dz-ix-xanadu-extra.js`'s item into `kits/interiors/sets/xanadu.js`;
   the kit's sheet takes rows for them; `settlements/pher/kit.json` drops them from `"external"`. Every page of the kit (and `XAK`) changes.

@@ -19,6 +19,7 @@
      B.placements                              // every record placed since the batch began (kept after flush)
      KF.FURNS, KF.FURN_BY_KEY, KF.entryDims(A, v), KF.furnAnchorY(A, v, at), KF.lightsOf(key, v, seed, wealth)
      KF.has(key), KF.cultures()
+     KF.decalImages({ id: url }), KF.decalInfo()  delivered images for painted panels (mkDecal: a decal key that is a texture id)
    A record's x y z is the frame origin (the footprint centre on the floor), ry the heading,
    as the catalog's buildFurn takes them; anchorY (wall, ceiling, surface) is the caller's.
 
@@ -39,6 +40,11 @@ const KF_API = (function () {
      segments of cylinders, cones, domes, balls and rods: a settlement's furniture is about half the triangles) */
   API.setDetail = function (k) { _LOD = Math.max(0.25, Math.min(1, +k || 1)); return _LOD; };
   API.cultures = function () { return FURN_CULTURES.slice(); };
+  /* delivered images for painted panels (krator-furniture-core.js mkDecal): { '<texture id>': url }, registered before the
+     pieces that name them are built (furniture_bundle.py decals=True does it from the build's pack); decalInfo() says
+     which are registered, loaded, still loading or failed */
+  API.decalImages = function (tbl) { Object.assign(FURN_DECAL_IMG, tbl || {}); return Object.keys(FURN_DECAL_IMG); };
+  API.decalInfo = function () { return { images: Object.keys(FURN_DECAL_IMG), pending: _decalSt.pending, loaded: _decalSt.loaded.slice(), failed: _decalSt.failed.slice() }; };
 
   const _m = new THREE.Matrix4(), _n = new THREE.Matrix3(), _v = new THREE.Vector3(), _w = new THREE.Vector3();
   /* build one piece into a throw-away group: the core's mk* add to _target */

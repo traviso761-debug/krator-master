@@ -651,7 +651,8 @@ FURN({
    tall room drops toward the floor; settlements/xanadu/citadel/furnish_census.js fails any hanging whose lowest point is under
    1 m. The hangings' pictures are PAINTED STAND-INS (canvas decals) for the generated tapestries owed in
    core/materials/PROMPTS-NEEDED.md section 57; each decal key is its texture id, and each picture keeps the image's aspect
-   (2:3, 3:2, 1:1), so a delivered image replaces the painting unstretched once the catalog can paint an image into a decal
+   (2:3, 3:2, 1:1), so a delivered image replaces the painting unstretched: kits/catalog/materials.json "decals" lists all ten,
+   tools/textures/pack.py kits/catalog packs each once delivered, and core/catalog's mkDecal shows it on Erewhon and the sheet.
    The rooms lists name the citadel's room kinds (xc_*, kits/interiors/sets/xanadu-citadel.js), which take ONLY the pieces
    that list them (no aliases): the curation of every room is the rooms lists here and the table at the end of this section.
    ====================================================================== */
