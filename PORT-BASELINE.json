@@ -720,6 +720,14 @@
    "bytes": 5566103,
    "sha256": "da2f735c31f971e02bc6b73635da3a7ab7cca57bd44f59ca91ba998c99285a92"
   },
+  "biomes/slabfields/dist/slabfields-halves.html": {
+   "bytes": 5761291,
+   "sha256": "41005c7ffe6b167e29a478ad5da782bb5d9409c69e8794b01a474bbc8890cda7"
+  },
+  "biomes/slabfields/dist/slabfields-leaner.html": {
+   "bytes": 5771431,
+   "sha256": "ed6ecc27f7f9ed2e0ede1e4c0c569680789e8cbd108abac29327cc44cb8362fa"
+  },
   "biomes/slabfields/dist/slabfields.html": {
    "bytes": 5503483,
    "sha256": "ebcf43d499831ae7e069b01d33a96d435689fc2d52883213b0a69159f7c3544f"

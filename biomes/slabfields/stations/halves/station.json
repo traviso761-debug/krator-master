@@ -1,0 +1,21 @@
+{
+ "note": "Station 3, the Halves (PLAN.md section 13). kin: the Siphon Pits' cold ground's small life read in place (SIPHON.buildCold: cushion moss, orange rock lichen, scree sedge on the bench and the halves off the apron's rubble; PLAN.md section 9), with the one pack family its builder draws with (the sedge card). The Siphon Pits' 40 needs its build's inlined station table: 46-host-siphon-shim.js gives it an empty one (only the species, placement and build are read).",
+ "kin": {
+  "siphon-pits": [
+   [
+    "src/40-biome-siphon-sites.js",
+    "src/50-biome-siphon-species.js",
+    "src/60-biome-siphon-place.js",
+    "src/70-biome-siphon.js"
+   ],
+   "SIPHON",
+   [
+    "sedge"
+   ]
+  ]
+ },
+ "core": {
+  "38c-core-landforms.js": "core/terrain/38c-core-landforms.js"
+ },
+ "core_note": "KRELIEF.stepcut (core/terrain 38c) for the patera's wall and the pit chain"
+}
