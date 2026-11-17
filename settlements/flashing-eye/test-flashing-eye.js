@@ -80,9 +80,15 @@ T.ok('the bench is flat at its level behind the Lip', [-10, -60, -140].every(u =
 const signSafe = [];
 for (let u = -400; u <= 1400; u += 20) for (let v = -900; v <= 900; v += 50) {
   const m = model(u, v), y = g(u, v), lu = F.lipU(L, v), dc = Math.hypot(u - L.crater.centre[0], v);
-  if (dc > L.crater.r + 200 && ((u < lu - 1 && y < m - 1e-6) || (u > lu + 2 && y > m + 1e-6))) signSafe.push(u + ',' + v);
+  const precinct = u > -180 && Math.abs(v) < 130 && u < lu;
+  if (dc > L.crater.r + 200 && !precinct && ((u < lu - 1 && y < m - 1e-6) || (u > lu + 2 && y > m + 1e-6))) signSafe.push(u + ',' + v);
 }
-T.ok('the ground is sign-safe: behind the Lip it only rises, in front only falls', signSafe.length === 0, signSafe.slice(0, 5).join(' '));
+T.ok('the ground is sign-safe outside the precinct: behind the Lip it only rises, in front only falls', signSafe.length === 0, signSafe.slice(0, 5).join(' '));
+/* the cap as the region cut has it at 1:1: rising 0.2 m a m behind the Lip and 0.08 to the west, above the bench by its north wall */
+const steep = (u, v) => -16 - 0.2 * Math.min(u, 0) - 0.196 * Math.max(u, 0) - 0.08 * v;
+const level = S => { const bad = []; for (let u = -140; u <= -10; u += 10) for (let v = -85; v <= 85; v += 17) { const y = S(u, v); if (Math.abs(y) > 0.5) bad.push(u + ',' + v + ':' + y.toFixed(1)); } return bad; };
+T.ok('the precinct is level at the bench\'s height where the cap rises above it (cut and filled)', level((u, v) => F.ground(L, u, v, steep(u, v))).length === 0, level((u, v) => F.ground(L, u, v, steep(u, v))).slice(0, 4).join(' '));
+T.neg('a bench only filled, never cut, is caught', S => level(S).length === 0, (u, v) => Math.max(F.ground(L, u, v, steep(u, v)), steep(u, v)), (u, v) => F.ground(L, u, v, steep(u, v)));
 T.ok('the ground meets the model away from the band and the bench', [[-500, 0], [1400, 0], [300, 900], [-200, 600]].every(([u, v]) => Math.abs(g(u, v) - model(u, v)) < 0.5),
   [[-500, 0], [1400, 0], [300, 900], [-200, 600]].map(([u, v]) => (g(u, v) - model(u, v)).toFixed(2)).join(', '));
 const fl = F.ground(L, L.crater.centre[0], 0, model(L.crater.centre[0], 0)), rim = F.ground(L, L.crater.centre[0] + L.crater.r, 0, model(L.crater.centre[0] + L.crater.r, 0));

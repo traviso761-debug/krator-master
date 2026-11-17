@@ -192,7 +192,7 @@ const FE_LAYOUT = (function () {
   /* who lives here: the owner's 320 (section 2.1; the tune's xan.flashingeye) */
   const census = { prismarch: 10, chapter: 130, school: 30, novices: 50, lay: 60, foot: 40 };
   const benchGroups = ['prismarch', 'chapter', 'school', 'novices', 'lay'], footGroups = ['foot'];
-  const rota = { watch: 24, perWatch: 4, watches: 6, note: 'the Rim Watch: 24 of the chapter on rota, a week on the rim and three weeks down; four on the rim at a time (their bunks at the bench count, the hut\'s do not)' };
+  const rota = { watch: 24, perWatch: 4, watches: 6, note: 'the Rim Watch: 24 of the chapter in six watches of four, each keeping the rim a week in turn (the hut\'s four bunks hold one watch; 40-fe-watch.js), two awake at a time (their bunks at the bench count, the hut\'s do not)' };
 
   return { frame, crater, band, lipU, zones, walls, gates, links, parts, ways, sights, line, water, census, benchGroups, footGroups, rota };
 })();

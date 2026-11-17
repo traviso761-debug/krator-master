@@ -7,9 +7,10 @@
      FLASHING_EYE.area(L)              floor area by part (box x storeys), and the bench's total
      FLASHING_EYE.water(L)             {roof, paved, supply, need, store} m2 and m3 a year
      FLASHING_EYE.toPx(L, u, v)        a frame point on the scale model (px; u runs south, v east)
-     FLASHING_EYE.ground(L, u, v, m)   the page's ground (frame y) over the model's `m` there: the bench filled to its level, the
-                                       band's face, talus and apron cut in front of the Lip, the crater's rampart and bowl. Sign-
-                                       safe: behind the Lip it only raises, in front only lowers; it meets the model at its edges */
+     FLASHING_EYE.ground(L, u, v, m)   the page's ground (frame y) over the model's `m` there: the bench filled to its level (and
+                                       cut level inside the precinct), the band's face, talus and apron cut in front of the Lip,
+                                       the crater's rampart and bowl. Sign-safe outside the precinct: behind the Lip it only
+                                       raises, in front only lowers; it meets the model at its edges */
 const FLASHING_EYE = (function () {
   'use strict';
   const segDist = (p, a, b) => {
@@ -225,9 +226,11 @@ const FLASHING_EYE = (function () {
   function ground(L, u, v, m) {
     const B = L.band, C = L.crater, lu = lipU(L, v);
     let y = m;
-    /* the bench: filled up to its level behind the Lip (raise only), over the precinct and its skirt */
-    const wB = sm(-262, -150, u) * (1 - sm(160, 360, Math.abs(v)));
+    /* the bench: behind the Lip, filled up to its level over the precinct and a wide skirt (raise only), and inside the precinct
+       cut level too where the cap rises above it (its north and west walls retain the cut; a 25 m bank behind them) */
+    const wB = sm(-262, -150, u) * (1 - sm(160, 360, Math.abs(v))), wP = sm(-175, -150, u) * (1 - sm(100, 125, Math.abs(v)));
     if (u <= lu && y < 0) y += (0 - y) * wB;
+    if (u <= lu && y > 0) y += (0 - y) * wP;
     /* the band: in front of the Lip, the face, the talus leaning on it and the apron easing out (lower only) */
     if (u > lu) {
       const t = 1 - sm(B.halfLen - B.taper, B.halfLen, Math.abs(v));
@@ -241,9 +244,11 @@ const FLASHING_EYE = (function () {
     }
     /* the crater: a spatter rampart round the rim, the bowl inside it down to the floor */
     const dc = Math.hypot(u - C.centre[0], v - C.centre[1]);
+    /* the rampart's crest is a few metres inside the rim, so the rim's buildings stand on it; the bowl falls from 15 m inside */
     if (dc < C.r + 160) {
-      y += C.rimH * Math.exp(-Math.pow((dc - C.r) / 40, 2));
-      if (dc < C.r) { const crest = C.rimY + C.rimH, floor = C.rimY - C.depth, bowl = floor + (crest - floor) * Math.pow(dc / C.r, 2.4); if (bowl < y) y = bowl; }
+      y += C.rimH * Math.exp(-Math.pow((dc - (C.r - 5)) / 45, 2));
+      const ri = C.r - 15;
+      if (dc < ri) { const crest = m + C.rimH, floor = m - C.depth, bowl = floor + (crest - floor) * Math.pow(dc / ri, 2.4); if (bowl < y) y = bowl; }
     }
     return y;
   }
