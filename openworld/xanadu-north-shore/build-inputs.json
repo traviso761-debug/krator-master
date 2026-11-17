@@ -125,7 +125,7 @@
     "core/world/87-world-places.js": "c2e365d5edf628bb849a1c0e00453d4a6d0489fc2c2afd278d71df00d1471682",
     "core/world/88-world-towns.js": "59db64b6f6aa1c4a7c59f0e1f64ddb069161f182c30f9e7dfaad6914a59e0c25",
     "core/world/88b-world-bridges.js": "c1a01a3161ca2103f1663d00bebe25e709455949f2c4e62244eea75157783b56",
-    "core/world/88s-world-sites.js": "b7322b6a70c4e26fe8af57f8a80640345b7c42ed50204bc0d473c2a8d56a251a",
+    "core/world/88s-world-sites.js": "0b2d79c00ca854997e73d4b41205c75c4350b4e4439ef6b992fa8ac2899c7bb5",
     "core/world/89r-world-resources-map.js": "710c0886b885ee442c5426afc6f0896823a665d5111170ad66a71ebe4ec35563",
     "core/world/90-world-camera.js": "a772ca7598b110af2c126df79b3e76add563a9e0ff7407905548669f71124a65",
     "core/world/91-world-probe.js": "96c4cac77b8ddf0489c0625931823813d609fc051355f7ae3cbdf7e68b757f03",
@@ -146,10 +146,10 @@
     "kits/iziz-vernacular/src/69b-vern-mat.js": "706739ba81271b9c5962492c04c5f7fa3e500b5d0eafb1f0eef5d8d88abfdbba",
     "kits/iziz-vernacular/src/69c-vern-helpers.js": "29c11ba1c973f0ba8590e061d628ef88158a13cc87758501dcf36fd19c00ddd3",
     "kits/iziz-vernacular/src/69e5-iziz-openings.js": "0d0a1d42179bdde0ba115fd488dc6f8b67cfd6aa15350409170015fdd9e9fa79",
-    "kits/resources/data/geology.json": "2237276a4f84eb8c478cf33d5a5db613c1a8b9bd2617af4eae2ea2b8b100f157",
+    "kits/resources/data/geology.json": "7e5335350ce86065a19e02853ecf044df290d6e29a2a86dbff7943d59819650d",
     "kits/resources/src/42r-res-ore.js": "795b57d189506369e35b7e2b3de5795d940d8bff91bb51e6dedb7df3f2432a04",
     "kits/resources/src/45r-res-field.js": "ca8bf0860266e0eef84783236767da2b4758be920bd26e7aef63c1f8447440ab",
-    "kits/xanadu/kit_bundle.py": "8d9bd201e49f0d228018e503e491712bc17762656be0200babcd3e3ca399a4ef",
+    "kits/xanadu/kit_bundle.py": "57cbffede3314f3e715e2fb99927fbd3923b4ed1d807274aefa8c5ab65b0342a",
     "kits/xanadu/src/70-xa-tex.js": "2efcc6922687bd9e374c03bdc8c3b75d5d2a1f06bf7da6656e4f95d0d32df02f",
     "kits/xanadu/src/71-xa-mat.js": "d08001da45495ca8d49b9df566d56c8c5b2567ee7d49b8e8b60c73deac436d41",
     "kits/xanadu/src/71c-xa-openings.js": "b018f238df3a253e4573734db17edf867545ecdb6978f8ef980b51c25abd8d1f",
@@ -178,7 +178,7 @@
     "kits/xanadu/src/87c-xa-erewhon.js": "e19ce7c9662d187a11ac62c2edf8a435ac4cf75b9ca9224e68b351b149414cfc",
     "kits/xanadu/src/88-xa-dress.js": "92b383aae14ae16df38e04863d52344e1ee1b66aa243a37b8936f7bb7251ae3f",
     "kits/xanadu/src/89-xa-trades.js": "ea68acaefb8da0b319ca98fb43f8aa400763eccf0e734051065c4facca8662af",
-    "kits/xanadu/xanadu.py": "70917961388f43ea3d80944de7272efe73f5c263c4c005865be50932e5c4ebd4",
+    "kits/xanadu/xanadu.py": "6e7562ab022acc1e2aeadfa55a0222b7ed8a4994a4e70ff5e1982ddce617cf46",
     "openworld/xanadu-north-shore/PORT.md": "67a3101c71d93803dab4bffe38ec86e41cc8f2c6bd19beed3116b3d258dac3d5",
     "openworld/xanadu-north-shore/build.py": "fcd959bc47744c1792d4b2f007a9bda88d301b204eea0a93fc3f6b4729a87297",
     "openworld/xanadu-north-shore/data/biome.png": "953164d5d30f48aac67e0ed03f10781198cf71e3e5ebc37c57c18582d22e87da",
@@ -267,18 +267,18 @@
    },
    "listings": {
     "core/materials": "3342416a526793b328fa0871f795bdf98d2084292aa7bcb917fecc405076716c",
-    "kits/xanadu": "df175a486cebf570bba84ea57280fe5f95a927a91d99bf2027f4c983167ab286",
+    "kits/xanadu": "25f578ac1a833982cb6c6500e9dbc37febf0194959482d40192c7bfda9cd8754",
     "openworld/xanadu-north-shore/dist": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "openworld/xanadu-north-shore/src": "2e1ba23368a2fff2518618fbe4f054ed05e76da539336210bbf0ed8ef07b9296",
     "tools": "5d8cb54bfd5566913f21e3e094a6a85418e1354e6e39cf6138ec20bda1add512",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "openworld/xanadu-north-shore/dist/xanadu-north-shore.html": "68305db36d77ff5169a3c3e256335184571e55e610c717727f7bc90189de62d0",
+    "openworld/xanadu-north-shore/dist/xanadu-north-shore.html": "dc3a14398dbb89b0d9fcdf2e02fe7161e9bc51e902a35911ccb937669811acbc",
     "openworld/xanadu-north-shore/dist/xanadu-north-shore.tex.xanadu.js": "370454615bab77e228e914527a94236b18bb083467e3071143249c0b0f57dd68"
    },
    "outputs_raw": {
-    "openworld/xanadu-north-shore/dist/xanadu-north-shore.html": "68305db36d77ff5169a3c3e256335184571e55e610c717727f7bc90189de62d0",
+    "openworld/xanadu-north-shore/dist/xanadu-north-shore.html": "dc3a14398dbb89b0d9fcdf2e02fe7161e9bc51e902a35911ccb937669811acbc",
     "openworld/xanadu-north-shore/dist/xanadu-north-shore.tex.xanadu.js": "370454615bab77e228e914527a94236b18bb083467e3071143249c0b0f57dd68"
    }
   }

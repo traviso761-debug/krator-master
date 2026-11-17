@@ -56,9 +56,8 @@ here. All are dug by a mine.
 | jade | `jade` | `frost-coral` (Verdigris Jade) | a serpentinite contact, a stream below with water-rounded jade boulders, one sawn open |
 | amber | `amber` | `ria-amber`, `abyss-lac` (swamp amber) | a cut bank of blue-grey clay under lignite and sand, amber nodules in the face, the dug clay heaped |
 
-Their geology layers are written (`tools/scale-model/geology.py` `mined()`, the `--mined` pass) but not baked into
-`data/geology.json` yet, so the node field places none: they are owner nodes until the next bake (`GEOLOGY.md`, "The
-mined goods' kinds"). Building kits that read `42r` and `44r` in place do not see them unless they also read `42s` and `44s`-`44u`.
+Their geology layers are baked into `data/geology.json` (2026-11-16; `tools/scale-model/geology.py` `mined()`, the `--mined`
+pass), so the node field places them on a page that loads `42s` (`GEOLOGY.md`, "The mined goods' kinds"). Building kits that read `42r` and `44r` in place do not see them unless they also read `42s` and `44s`-`44u`.
 
 Each kind has a def per grade:
 - **Keys:** `node-<kind>-<grade>`, for example `node-coal-high` or `node-rare-earth-low`.

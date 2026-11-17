@@ -47,10 +47,11 @@
 - [x] **potash, soda and marble never drew their sets** (found 2026-11-16): they were packed (`materials.json`, `tex/`) but missing
       from `SV_LIB` (`26k-kit.js`), and the engine makes a material only for an `SV_LIB` key, so their nodes drew the fallback
       (vertex colours). Added to `SV_LIB` with the mined goods' sets; the resources page's look of those three changes.
-- [ ] **The mined goods' layers are written, not baked** (2026-11-16): `tools/scale-model/geology.py` `mined()` and its
-      `--mined` pass give the ten kinds their layers (`GEOLOGY.md`, "The mined goods' kinds"), but `data/geology.json` does not
-      carry them: baking them in reaches 13 build commands (62 pages), so it rides with the next bake, with
-      `lode:thalaba-sulfur` and the ledger's rerun. Until then the node field places none of them: owner nodes only.
+- [x] **The mined goods' layers are baked** (2026-11-16, the owner: "Bake now"): `--mined` on `data/geology.json`, the lodes
+      stamped after it, the reached builds rebuilt (`GEOLOGY.md`, "The mined goods' kinds").
+- [ ] **The ledger does not take the mined goods:** `tests/test-res.js` loads `42r` only, so `data/ledger.json` (and the
+      trade's `RES_LEDGER.tradeGoods`) leaves out the ten new kinds. Taking them means loading `42s` in the test and rewriting
+      the ledger: every polity's imports move, so it waits for the trade work.
 - [ ] **Four of the mined goods draw on vertex colours:** lodestone (`rock.magnetite`), opal
       (`rock.opal.matrix`), jade (`rock.serpentinite`, `stone.nephrite`) and amber (`rock.amber.blueearth`); prompts in
       `core/materials/PROMPTS-NEEDED.md` sections 46, 52 and 53.
@@ -59,8 +60,4 @@
       peat needs those four fragments added to its build's list, and a rebuild.
 - [ ] **No trade link yet:** each kind names the Gemini good it feeds (`RES_ORE.kinds[k].good`), but `46r-res-ledger.js` and
       core/simulation do not read it; Gemini's model is on its own branch and docs.
-- [ ] **`lode:thalaba-sulfur` is recorded, not stamped** (2026-11-16, for the Thalaba session; the owner settled Thalaba's own
-      small sulfur node, 30 t a year): it is in `data/lodes.json` but not on `data/geology.json`. Stamping
-      (`python3 tools/scale-model/geology.py --lodes kits/resources/data/geology.json kits/resources/data/lodes.json`) changes the
-      geology every open-world region, Copper Glacier and Firebliss read (13 build commands, 62 pages: `tools/reach.py`), so it
-      rides with the next bake or the next all-builds rebuild. Until then Thalaba places it as an owner node.
+- [x] **`lode:thalaba-sulfur` stamped** (2026-11-16, with the mined goods' bake), and Lightwall's `lode:great-potch-line` (opal).

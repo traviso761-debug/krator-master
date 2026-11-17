@@ -72,11 +72,11 @@
     "core/walk/box/24-core-walk-box.js": "88b4370c232270dd428cf1ddbcd7fd5771a947cfd196e6c8a27e63d39f0c17bc",
     "kits/catalog/furniture_bundle.py": "29163379638b541819175cf4a9a09c4ea1da7c5979730016b3eda80360ba0f03",
     "kits/catalog/krator-master-furniture-generic.js": "990b05b8404c67ab960f6649babc8143c738ea600a04c0c22564296fa7786ea4",
-    "kits/resources/KNOWN_ISSUES.md": "8b3ace7601cc4eb51160116a46d9845f1ce3742b946c8cbfad8f4a135be65e21",
+    "kits/resources/KNOWN_ISSUES.md": "f855969998d3b79a2386061143610ec51c52e16a2de1fca9487dbec1959fbb27",
     "kits/resources/PORT.md": "b00aa19091be0d56e59856e15e27dd3e506fffeee2c1446e19ed4f7c66f9bc7d",
     "kits/resources/build.py": "fc1f8139f4ff04af83adc8da9d7922fb40439f335ca9c5831ec662c2fb9bd595",
-    "kits/resources/data/geology.json": "2237276a4f84eb8c478cf33d5a5db613c1a8b9bd2617af4eae2ea2b8b100f157",
-    "kits/resources/data/ledger.json": "9b9e720845a0bbaf6e46aca8ca4cc6f350f71ba8a825dc888e69fb1e1481e713",
+    "kits/resources/data/geology.json": "7e5335350ce86065a19e02853ecf044df290d6e29a2a86dbff7943d59819650d",
+    "kits/resources/data/ledger.json": "a2ae9423cce09258c68b9f01ddaac87fd071ebdea41fd10346ae409bcbf760ab",
     "kits/resources/src/00-head.html": "6881b3d04acb3667ea877cc3480990284f27fc0f74e01197f1872ed461e906a7",
     "kits/resources/src/26k-kit.js": "203422a91f613399fb07951a5a4cfcbb6df97382d318c37cf85b83db575a2226",
     "kits/resources/src/42r-res-ore.js": "795b57d189506369e35b7e2b3de5795d940d8bff91bb51e6dedb7df3f2432a04",
@@ -182,13 +182,13 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "kits/resources/build-manifest.json": "47f6ddff794a2d959301fb65fa1a656471fa3709c8af916015a41231d9303640",
-    "kits/resources/dist/resources.html": "994dfc1df653147825ff3ebaeb81fdbec83a0e2c50e079059d06667d11b4a848",
+    "kits/resources/build-manifest.json": "83702d16ac422ccf2c1f2e7d5942cf73e5f18d3027563f8e02b6e9ff8e667b43",
+    "kits/resources/dist/resources.html": "2788635a07f9cd6978b0cb6f653dff52d22d6c6b05c5b31f5f9f56927b39c0df",
     "kits/resources/dist/resources.tex.resources.js": "770aa722e43f711684e28510521da1dc6dab9bc673fa5041bfe2eada5196310e"
    },
    "outputs_raw": {
-    "kits/resources/build-manifest.json": "47f6ddff794a2d959301fb65fa1a656471fa3709c8af916015a41231d9303640",
-    "kits/resources/dist/resources.html": "994dfc1df653147825ff3ebaeb81fdbec83a0e2c50e079059d06667d11b4a848",
+    "kits/resources/build-manifest.json": "83702d16ac422ccf2c1f2e7d5942cf73e5f18d3027563f8e02b6e9ff8e667b43",
+    "kits/resources/dist/resources.html": "2788635a07f9cd6978b0cb6f653dff52d22d6c6b05c5b31f5f9f56927b39c0df",
     "kits/resources/dist/resources.tex.resources.js": "770aa722e43f711684e28510521da1dc6dab9bc673fa5041bfe2eada5196310e"
    }
   }

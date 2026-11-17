@@ -148,25 +148,24 @@ airless.
 
 Water cells carry no family but water. The metals, coal and oil are zero on evaporite ground.
 
-### The mined goods' kinds (2026-11-16): their layers written, not baked yet
+### The mined goods' kinds (2026-11-16): baked in
 
-Ten node kinds came with Gemini's trade model (`src/42s-res-ore-mined.js`). Their layers are written in
-`tools/scale-model/geology.py` (`mined()`, called by the full bake and by the in-place pass below), but **`data/geology.json`
-does not carry them yet**: baking them in rewrites the geology 13 build commands read (62 pages: every open-world region,
-Copper Glacier, Firebliss; `tools/reach.py`), so it rides with the next bake (the owner, 2026-11-16). Until then the node
-field places none of them and they are **owner nodes** (`KRES.nodesIn(tile, {owner: [...]})`), as Opal Valley's diggings
-already carry `{kind: 'opal', grade}`.
+Ten node kinds came with Gemini's trade model (`src/42s-res-ore-mined.js`). Their layers come from `tools/scale-model/geology.py`
+`mined()`, which the full bake calls; on 2026-11-16 (the owner: "Bake now") they were added to `data/geology.json` in place
+by the pass below, every other byte, stat and key kept, and the authored lodes stamped after it (`data/lodes.json`: Thalaba's
+sulfur and Lightwall's Great Potch Line opal with them). The node field places them where a page loads `42s` (this kit's page);
+a page with only `42r` (the open-world regions, the hamlets) asks for its own kinds and never sees them.
 
 ```
-python3 tools/scale-model/geology.py --mined kits/resources/data/geology.json     tools/scale-model/model/src/51-region-store.js --model tools/scale-model/model/data
+python3 tools/scale-model/geology.py --mined kits/resources/data/geology.json tools/scale-model/model/src/51-region-store.js --model tools/scale-model/model/data
+python3 tools/scale-model/geology.py --lodes kits/resources/data/geology.json kits/resources/data/lodes.json
 ```
 
-The pass adds the ten layers, their `field.families` and their cells (`MINED_FIELD`), and keeps every other byte, stat and
-key (checked on a copy, 2026-11-16). Then: `node kits/resources/tests/test-res.js --ledger` (the ledger takes the new goods),
-the authored lodes that wait on these families (`data/lodes.json`; Lightwall's opal lode can then be stamped), and a rebuild of
-what `tools/reach.py kits/resources/data/geology.json` lists.
+After it: `node kits/resources/tests/test-res.js --ledger` (the ledger and the Godot golden tile; the test loads `42r` only, so
+the ledger does not take the new goods yet: KNOWN_ISSUES.md), `python3 godot/tools/sync_core.py` (the Godot test copy), and a
+rebuild of what `tools/reach.py kits/resources/data/geology.json` lists.
 
-| Kind | Cell (m) | The rule (bytes 0-255) | Nodes on the map (the field on a copy) |
+| Kind | Cell (m) | The rule (bytes 0-255) | Nodes on the map (the field) |
 |---|---|---|---|
 | lodestone | 6000 | 150 on the ultramafic province's exposed crests (stone 200+: the Arch's lightning-struck magnetite), 40 on the rest of it; 220 in the Compass Hills | 1,909 |
 | peat | 3000 | blanket bog 230 x wet (rain 700-1400 mm) x cool (mean 14 C down to 4 C, above -6 C) x flat; fen 160 on the wet floodplains (clay 200+, rain over 500 mm); none on evaporites, cliffs, airless ground | 8,646 |

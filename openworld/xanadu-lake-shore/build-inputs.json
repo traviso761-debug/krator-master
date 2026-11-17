@@ -146,7 +146,7 @@
     "kits/iziz-vernacular/src/69b-vern-mat.js": "706739ba81271b9c5962492c04c5f7fa3e500b5d0eafb1f0eef5d8d88abfdbba",
     "kits/iziz-vernacular/src/69c-vern-helpers.js": "29c11ba1c973f0ba8590e061d628ef88158a13cc87758501dcf36fd19c00ddd3",
     "kits/iziz-vernacular/src/69e5-iziz-openings.js": "0d0a1d42179bdde0ba115fd488dc6f8b67cfd6aa15350409170015fdd9e9fa79",
-    "kits/resources/data/geology.json": "2237276a4f84eb8c478cf33d5a5db613c1a8b9bd2617af4eae2ea2b8b100f157",
+    "kits/resources/data/geology.json": "7e5335350ce86065a19e02853ecf044df290d6e29a2a86dbff7943d59819650d",
     "kits/resources/src/42r-res-ore.js": "795b57d189506369e35b7e2b3de5795d940d8bff91bb51e6dedb7df3f2432a04",
     "kits/resources/src/45r-res-field.js": "ca8bf0860266e0eef84783236767da2b4758be920bd26e7aef63c1f8447440ab",
     "kits/xanadu/kit_bundle.py": "57cbffede3314f3e715e2fb99927fbd3923b4ed1d807274aefa8c5ab65b0342a",
@@ -274,11 +274,11 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "openworld/xanadu-lake-shore/dist/xanadu-lake-shore.html": "f1b5851de5a7cba9096614624e8f6cc32ef77b30864843f38bdfab2622239831",
+    "openworld/xanadu-lake-shore/dist/xanadu-lake-shore.html": "e8fd161ac7cdc733e0cf127ee08cff00cc15709c58257a673369a78e6b25ded1",
     "openworld/xanadu-lake-shore/dist/xanadu-lake-shore.tex.xanadu.js": "956a0b2414c8c6921a9aa281c3598d3c0062763ef65a54c66db73ff945ad20f6"
    },
    "outputs_raw": {
-    "openworld/xanadu-lake-shore/dist/xanadu-lake-shore.html": "f1b5851de5a7cba9096614624e8f6cc32ef77b30864843f38bdfab2622239831",
+    "openworld/xanadu-lake-shore/dist/xanadu-lake-shore.html": "e8fd161ac7cdc733e0cf127ee08cff00cc15709c58257a673369a78e6b25ded1",
     "openworld/xanadu-lake-shore/dist/xanadu-lake-shore.tex.xanadu.js": "956a0b2414c8c6921a9aa281c3598d3c0062763ef65a54c66db73ff945ad20f6"
    }
   }
