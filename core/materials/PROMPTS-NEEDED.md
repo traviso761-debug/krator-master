@@ -490,6 +490,7 @@ Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfec
 `rock.pseudotachylite.mirror` (the slump faults' glassy faces: station 4's mirror scarp, and the rim's inner face at station 1 when it is drawn; a KGROUND rock layer, roughness low):
 ```
 Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a natural fault surface of black pseudotachylite friction-melt glass, polished to a dull mirror by the fault's slip: smooth, very dark glassy black-brown (#14110f, #221c18), long straight parallel slickenside grooves and fine striations all running the same way across the whole image, a few thin pale grey host-rock gneiss slivers (#8a8780) and small angular clasts dragged out into streaks along the grooves, thin black glass veins branching into the grey host rock at one or two places, faint iridescent oily blue-green and bronze tints on the smoothest patches, a few small chips where the glass has spalled off showing grey rock under it; no lichen, no dirt.
+```
 
 ## 49. The Great Chasm (`biomes/greatchasm`, 2026-11-11)
 
@@ -614,6 +615,7 @@ Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfec
 `rock.amber.blueearth` (the amber node's cut bank: amber in its bed):
 ```
 Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a freshly cut face of "blue earth", the glauconitic clay sand that amber is dug from: damp blue-grey to green-grey clay (#5e6a6e, #6a7a80, #586468) with fine dark green glauconite grains, a few flakes of black lignite and wood (#2a2420), and rounded nodules of raw amber 1-4 cm embedded in it, their crusts dull ochre (#a8681e) and, where a nodule is broken, clear honey to cognac amber (#d88a1e, #e8a83a, #b8601a). Full colour: not tinted.
+```
 
 ## 54. The Xanadui fort (`kits/xanadu`, the fort asset of `settlements/strongwall/PLAN.md` section 5, 2026-11-16)
 

@@ -14,7 +14,7 @@
 const BEACON_LAYOUT = (function () {
   'use strict';
   const frame = {
-    px: [853, 1540], ground: 863, uBearing: 180, vBearing: 90, kmPerPx: 2,
+    px: [853, 1540], ground: 863, uBearing: 180, vBearing: 90, kmPerPx: 2, pin: 'sbeacon00001',
     note: 'the east shoulder of the tune pin (846,1540, the ravine head, 14 km west): the owner, 2026-11-16. The pin moves through the scale-model session (B0)'
   };
 
@@ -137,17 +137,16 @@ const BEACON_LAYOUT = (function () {
       { id: 'pin', name: 'the ravine (the tune pin)', px: [846, 1540], km: 14, bearing: 270, clear: 22, must: false },
       { id: 'komodo', name: 'Komodo', px: [865, 1617], km: 155, bearing: 171, clear: -555, must: false },
       { id: 'strongwall', name: 'Strongwall', px: [912, 1640], km: 232, bearing: 149, clear: -265, must: false, via: 'g1' },
-      /* the stations that moved with the edit 7 re-run (the tune, 2026-11-16), taken on a composite: today's model with the
-         shoulder (850-858 x 1534-1544) from the model before the re-run, as the scale-model session restores it
-         (provisional until that edit is merged: step B0) */
+      /* the stations that moved with the edit 7 re-run (the tune, 2026-11-16), taken on the model as edited (d1c7d6682:
+         the knoll restored in an oval round 854,1540, the pin sbeacon00001); the sights above re-run on it agree within 1 m */
       { id: 'march.s', name: 'the south watch fort (on the scarp at 843,1546)', px: [843, 1546], km: 23, bearing: 239, clear: 26, must: true, note: 'the owner, 2026-11-16: "Move to 843,1546" (it had been moved to 847,1549, -1,319 m under the scarp, hidden by 288 m); from there it sees Tuatara +35, the Rim Post +17, Komodo +46, the Tears\' camp +27' },
       { id: 'march.w', name: 'the west watch fort (moved)', px: [818, 1531], km: 72, bearing: 284, clear: -216, must: false },
-      { id: 'erehwon', name: 'Erehwon (moved to the new lake\'s south shore)', px: [841, 1517], km: 52, bearing: 332, clear: -468, must: false, via: 'eye' },
-      { id: 'eye', name: 'the Eye Post (the Order of the Flashing Eye, the relay to the capital)', px: [881, 1526], km: 63, bearing: 63, clear: -95, must: false, via: 'rimpost', note: 'the restored rim massif north-east of the knoll (1,111 m at 857.9,1537.5) stands in the line; a 40 m lamp still misses by 80 m' }],
+      { id: 'erehwon', name: 'Erehwon (moved to the new lake\'s south shore)', px: [841, 1517], km: 52, bearing: 332, clear: -615, must: false, via: 'eye' },
+      { id: 'eye', name: 'the Eye Post (the Order of the Flashing Eye, the relay to the capital)', px: [881, 1526], km: 63, bearing: 63, clear: -95, must: false, via: 'rimpost', note: 'the middle volcano\'s flank north-east of the knoll (1,118 m at 858.2,1537.4) stands in the line; the Rim Post on its summit carries it' }],
     /* relays: posts that carry the lamp's signals to a station it cannot see (the fort asset's watch post, XFORT.post()) */
     relays: [
-      { id: 'rimpost', name: 'the Rim Post (the order\'s relay to the Flashing Eye)', px: [856, 1532], h: 12, ground: 1578, km: 17, to: 'eye', seeLamp: 57, seeFar: 68,
-        note: 'the owner, 2026-11-16: "Rim Post relay" (the knoll restored in full). On the rim massif 17 km north-north-east of the lamp: a watch post with a mirror and a shuttered lamp, two keepers on the Lamp Watch\'s rota' }]
+      { id: 'rimpost', name: 'the Rim Post (the order\'s relay to the Flashing Eye)', px: [856, 1532], h: 12, ground: 1578, km: 17, to: 'eye', seeLamp: 41, seeFar: 42,
+        note: 'the owner, 2026-11-16: "Rim Post relay" (the knoll restored in full). On the summit of Erewhon lake\'s middle volcano, 17 km north-north-east of the lamp: a watch post with a mirror and a shuttered lamp, two keepers on the Lamp Watch\'s rota. If the volcano is given a vent, its flank at 857,1535 sees the lamp +17 and the Eye +12' }]
   };
 
   /* the power, from the tune (core/region/data/xan-tune.js: T.oil.kgYr 400,000, licence 0.2, T.lit['march.e'] 0.02,
