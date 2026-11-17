@@ -108,13 +108,13 @@ The miners are Makers and Drovers sent to the diggings by the Allotment; the cam
 | **T3** | the page | the guide's section 5, with `expect.keys` lz-nest, lz-ley, lz-muster, gl-tank, lz-cistern, lz-mine | done (GPU-verified; owner review on section 8 pending) |
 | **T4** | flora (`biomes/rift`, XV) | later, with the savanna species (Gila's G6) | open |
 
-## 8. Questions for the owner (answers *proposed*)
+## 8. Questions for the owner (answered 2026-11-17: all seven agreed as proposed)
 
-1. **Tuatara at its pin** (5.3 % slope, no water but wells and cisterns)? *Proposed:* yes.
+1. **Tuatara at its pin** (5.3 % slope, no water but wells and cisterns)? **Agreed:** yes (`px 818,1554`).
 2. **The mouth north**, toward the forts (the axis turned 63° off the contour)? Or along the contour (the mouth then opens
-   north-west)? *Proposed:* north.
-3. **The shares** (Tenders 22, Makers 20, Drovers 28, Line warriors 17, Interpreters 3, Bulwarks 10 %)? *Proposed:* yes.
-4. **Seven cisterns and a great tank** for the dry season? *Proposed:* yes.
-5. **The copper diggings on the resources kit's nodes**, five mine heads within 6 km, the camp on `core/hamlet`? *Proposed:* yes.
-6. **Gila's well and tank** taken by path now, moved into the kit when a third town uses them? *Proposed:* yes.
-7. **The war camp at the mouth** (five tents of the band's beside the Interpreters' and the sail tent)? *Proposed:* yes.
+   north-west)? **Agreed:** north (`axis: 15°`).
+3. **The shares** (Tenders 22, Makers 20, Drovers 28, Line warriors 17, Interpreters 3, Bulwarks 10 %)? **Agreed.**
+4. **Seven cisterns and a great tank** for the dry season? **Agreed.**
+5. **The copper diggings on the resources kit's nodes**, five mine heads within 6 km, the camp on `core/hamlet`? **Agreed.**
+6. **Gila's well and tank** taken by path now, moved into the kit at its next shared pass? **Agreed.**
+7. **The war camp at the mouth** (five tents of the band's beside the Interpreters' and the sail tent)? **Agreed.**

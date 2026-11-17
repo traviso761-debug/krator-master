@@ -87,13 +87,13 @@ A farming town: the most Drovers of any.
 
 ## 7. Steps
 
-| Step | What | Test |
-|---|---|---|
-| **I0** | this plan, `spec.json`, the sheets | `python3 kits/lizardmen/settle/towns_plan.py iguana` |
-| I1 | **the pin**: ask the scale-model queue for `iguana` at 713,1569 (`PLAN-LIZARDMEN.md`); the page can be built before it lands (`lzv.build` takes the pixel) | |
-| I2 | `IG_REC` and the spec | `checkTown` with a negative |
-| I3 | the page | the guide's section 5; `expect.keys` lz-nest, lz-ley, lz-muster, gl-tank, lz-granary, lz-lookout, lz-windmill |
-| I4 | flora | later |
+| Step | What | Test | Status |
+|---|---|---|---|
+| **I0** | this plan, `spec.json`, the sheets | `python3 kits/lizardmen/settle/towns_plan.py iguana` | done (`9fadd409f`) |
+| **I1** | **the pin**: ask the scale-model queue for `iguana` at 713,1569 (`PLAN-LIZARDMEN.md`); the page can be built before it lands (`lzv.build` takes the pixel) | | queued (`PLAN-LIZARDMEN.md`) |
+| **I2** | `IG_REC` and the spec | `checkTown` with a negative | done (`test-ig-records.js`) |
+| **I3** | the page | the guide's section 5; `expect.keys` lz-nest, lz-ley, lz-muster, gl-tank, lz-granary, lz-lookout, lz-windmill | done (GPU-verified; owner review on section 8 pending) |
+| **I4** | flora | later | open |
 
 ## 8. Questions for the owner (answers *proposed*)
 

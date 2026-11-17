@@ -1,0 +1,35 @@
+{
+ "what": "Iguana on the Lizardmen kit's page and kits/lizardmen/settle (settlements/iguana/build.py writes gen/ first)",
+ "key": "iguana",
+ "out": "iguana.html",
+ "gen": "gen",
+ "core": [
+  "core/drawn/10-core-drawn.js",
+  "core/space/20-core-space.js",
+  "core/water/20-core-water.js",
+  "core/water/21-core-water-shore.js",
+  "core/water/22-core-water-flow.js",
+  "core/water/50-core-water-draw.js",
+  "core/water/51-core-water-kinds.js",
+  "core/terrain/43-core-ground.js",
+  "core/hamlet/10-hamlet-wood.js",
+  "core/hamlet/12-hamlet-gather.js",
+  "core/hamlet/14-hamlet-farmland.js",
+  "core/hamlet/18-hamlet-names.js",
+  "core/hamlet/20-hamlet-cultures.js",
+  "core/hamlet/lizardmen/23-hamlet-lizardmen.js",
+  "core/hamlet/30-hamlet-village.js",
+  "kits/crops/src/10-crop-core.js",
+  "kits/crops/src/20-crop-records.js",
+  "kits/crops/src/22-crop-material.js",
+  "kits/crops/src/40-crop-query.js",
+  "settlements/gila/src/66-gl-works.js",
+  "kits/lizardmen/settle/82-lzv-site.js",
+  "core/region/data/lz-tune.js=85-lz-tune.js",
+  "kits/lizardmen/settle/90w-lzv-world.js",
+  "kits/lizardmen/settle/99-m-lzv-probe.js"
+ ],
+ "scoped": [
+  "69k-kcity-bundle.js"
+ ]
+}

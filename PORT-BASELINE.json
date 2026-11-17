@@ -1244,6 +1244,10 @@
    "bytes": 890087,
    "sha256": "c4a59a537b6331d763782da7440ac1b08ae3d38a1c2bfb2ece22f983fce8f7dd"
   },
+  "settlements/iguana/dist/iguana.html": {
+   "bytes": 3042682,
+   "sha256": "4a086996941edae08be567b6dc34dc75b9281acdc34229b20e3c9ad8dd7b58d4"
+  },
   "settlements/isle-demo/dist/isle-city.html": {
    "bytes": 6514900,
    "sha256": "b8f5395a9f8f7116fd42929e3de8db49b0df82a80bb0e74c0743fcb8c03f5f03"
