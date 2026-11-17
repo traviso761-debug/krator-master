@@ -21,7 +21,7 @@
 var XAN_TUNE=(function(){'use strict';
 const T={},D=1/365;
 T.px=(px,py)=>({x:(px-1191)*2000,z:(py-1569)*2000});
-T.goods={grain:{unit:'kg',crops:['vale-rice','emmer','basin-amaranth']},fish:{unit:'kg'},fruit:{unit:'kg'},dairy:{unit:'kg'},honey:{unit:'kg'},
+T.goods={grain:{unit:'kg',crops:['vale-rice','emmer','basin-amaranth']},fish:{unit:'kg'},fruit:{unit:'kg'},dairy:{unit:'kg'},honey:{unit:'kg'},fodder:{unit:'kg'},
  salt:{unit:'kg'},tea:{unit:'kg'},cacao:{unit:'kg'},cacaocake:{unit:'kg'},saffron:{unit:'kg'},opium:{unit:'kg',crop:'sky-poppy'},silk:{unit:'kg'},brocade:{unit:'kg'},
  timber:{unit:'kg'},charcoal:{unit:'kg'},copper:{unit:'kg'},goldore:{unit:'kg'},gold:{unit:'kg'},goldwork:{unit:'piece'},wheels:{unit:'wheel'},
  coin:{unit:'dinar'},opal:{unit:'kg'},moonglass:{unit:'kg'},scrap:{unit:'kg'},iron:{unit:'kg'},tools:{unit:'kg'},arms:{unit:'piece'},pearls:{unit:'kg'},wine:{unit:'kg'},oil:{unit:'kg'},
@@ -229,7 +229,13 @@ T.expedition={id:'exp.godshearth',name:'The Rare Devisers\' expedition camp at G
    (Qiblai's violet house is its daughter), a martial order of sword and bow on the West Arm, 600 strong, in the Gold
    March, its terraces two fifths of its grain and the rest from Strongwall */
 T.muskets={wage:12,men:{sxan7r1sln:30,'march.w':10,'march.s':10,'march.e':10},day:240};   /* wage: dinars a man a year (a dinar is 4 g of the Mint's gold) */
-T.tempest={id:'xan.tempest',name:'The House of the Tempest (the Order of the Violet Storm\'s central monastery, on the West Arm)',px:[886,1619],people:600,terraces:.4,km:80};
+T.tempest={id:'xan.tempest',name:'The House of the Tempest (the Order of the Violet Storm\'s central monastery, on the West Arm)',px:[886,1619],people:600,terraces:.4,km:80,
+ horses:{stabled:181,hay:8,barley:2,barleyDays:182,meadowCrew:60,barnDays:250}};
+/* the House's horses (the owner, 2026-11-16: "add fodder"; settlements/strongwall/tempest/BLUEPRINT.md, the duty rota): four
+   companies' war horses and the gate stable stabled at a time (181), the rest at grass with the remounts; hay kg a horse a day
+   from the crest's meadows, cut in the summer-pasture window and kept in the barns from one cut to the next: the tune's year
+   opens some 230 days before the window, so the barns start it with barnDays of hay (the year's cut refills them);
+   barley kg a stabled horse a day in the raiding season (barleyDays), up the Strongwall road with the grain */
 /* settlements/beacon/PLAN.md, B4 (the owner, 2026-11-16: the beacon fort "will become the head monastery of the Order of the
    Beacon"; ~300, the gold Prismarch there, Qiblai's gold house the daughter; the Sultan's watch fort above and the monastery
    below): the Yellow Monastery's head house stands beside the beacon fort (`fort`, wherever its px is), fed from the capital,
@@ -373,10 +379,14 @@ T.valley=function(P,o){o=o||{};const K=o.scale==null?50:o.scale,yr=365,win=w=>{c
   R.push({id:'road.'+id,from:'s57bkv9741',to:id,minutes:Math.round(Math.hypot(p.x-E.x,p.z-E.z)/1000/25*1440),cap:20000,want:40,goods:{s57bkv9741:['grain','salt','tea','tools','arms']}});});
  /* the House of the Tempest: the Order of the Violet Storm's monks of sword and bow (no powder), fed through Strongwall
     less what its terraces on the West Arm make */
- {const Tm=T.tempest,tc=Math.round(Tm.people*.3),terr=eatYr('fort',Tm.people)*Tm.terraces;
-  const s=town(Tm.id,Tm.name,Tm.px[0],Tm.px[1],Tm.people,'fort',[{id:'tp.terraces',kind:'terraces',name:'the monks\' terraces on the West Arm',crew:tc,out:['grain'],rate:rate(terr,tc,win('harvest')),season:'harvest'}],
+ {const Tm=T.tempest,tc=Math.round(Tm.people*.3),terr=eatYr('fort',Tm.people)*Tm.terraces,H=Tm.horses,
+   hayDay=H.stabled*H.hay,hayYr=hayDay*yr,barleyYr=H.stabled*H.barley*H.barleyDays;
+  const s=town(Tm.id,Tm.name,Tm.px[0],Tm.px[1],Tm.people,'fort',[{id:'tp.terraces',kind:'terraces',name:'the monks\' terraces on the West Arm',crew:tc,out:['grain'],rate:rate(terr,tc,win('harvest')),season:'harvest'},
+   {id:'tp.meadows',kind:'meadows',name:'the hay meadows on the crest',crew:H.meadowCrew,out:['fodder'],rate:rate(hayYr,H.meadowCrew,win('summer-pasture')),season:'summer-pasture'}],
    {parent:'sxan7r1sln',feeder:'sxan7r1sln',keepDays:30,state:'kept'});
-  delete s.eats.powder;s.start.arms=30;bump('sxan7r1sln',-terr);}   /* a year of arms in its armoury */
+  delete s.eats.powder;s.start.arms=30;bump('sxan7r1sln',-terr);   /* a year of arms in its armoury */
+  s.eats.fodder=hayDay/Tm.people;s.start.fodder=Math.round(hayDay*H.barnDays);   /* the stabled horses' hay, a share a head, the barns full at the start */
+  s.eats.grain+=barleyYr/yr/Tm.people;bump('sxan7r1sln',barleyYr);}   /* their barley, averaged over the year, from Strongwall with the grain */
  /* B4: the Order of the Beacon's head house beside the beacon fort (settlements/beacon/PLAN.md section 5): the fort diet
     less arms and powder, its terraces two fifths of its grain, the rest from the capital on the fort's road */
  {const Bc=T.beacon,F=S.find(q=>q.id===Bc.fort),tc=Math.round(Bc.people*.3),terr=eatYr('fort',Bc.people)*Bc.terraces;

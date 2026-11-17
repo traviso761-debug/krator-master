@@ -574,6 +574,9 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
     runs the latex house", "takes a share and a small fee"]. The violet monastery is the **Order of the Violet Storm**, a
     martial order of sword and bow; its central monastery is **the House of the Tempest** on the West Arm in the Gold March,
     about 600 strong, and its house in Qiblai is the Tempest's daughter [the owner, 2026-11-16; `settlements/strongwall/PLAN.md`].
+    The Decree forbids its clergy war-making, and the Violet Storm keeps that law by keeping the Vale: it makes no war, and
+    its riders go out only to chase a raid [the owner, 2026-11-16: "they ride out to chase a raid";
+    `settlements/strongwall/tempest/BLUEPRINT.md`].
     The gold monastery is **the Yellow Monastery, the Order of the Beacon**, whose head house is the refurbished Ancient
     beacon fort over the Rift [the owner, 2026-11-16; `settlements/beacon/PLAN.md`]. The turquoise (teal) monastery is the
     **Iridescent Order**: it keeps a house in Lāiṭwāl, the Light Wall, and its head monastery stands at the outlet of Lāiṭwāl's
