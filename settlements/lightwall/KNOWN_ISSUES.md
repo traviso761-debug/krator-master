@@ -75,6 +75,11 @@
   chunks, about 1 M triangles) runs after the page's first frame, by drawRock's own 64 m tiles, nearest the camera first, about
   12 ms a frame. `window._hostPending` holds the page's ready for the verify harness until the last tile is drawn (a convention
   of core/host's README; `tools/harness.py` `READY_JS` waits for it), so every check and view sees the whole rock.
+- **L0, the lode** (2026-11-17): the `opal` family is baked into `kits/resources/data/geology.json` and `lode:great-potch-line`
+  (px 1028,1652, r 8 km, peak 235) is stamped (36f68df9c on `claude/resource-nodes-7ec053`). The test holds: the peak lies on dry
+  land at the wall's foot (1,429 m), every cell over 200 within 8 km is land, and the lake's cells read 0. The node kind is
+  `opal` (`kits/resources` 44t, `node-opal-low/medium/high`). Noted to that session: Opal Valley reads 230 almost everywhere,
+  so the Line's peak hardly stands above it.
 
 ## Open
 
@@ -88,11 +93,6 @@
 - [ ] **Interiors near the Stair Foot only**: the bench's houses past 260 m are solid; the wall's fronts past the carved
       quarter are fronts on whole rock (by design: the quarter is what is walked).
 - [ ] No people (`core/charactermodels`).
-- [ ] **L0, the lode**: on `claude/resource-nodes-7ec053` the `opal` node is built (774f200b2) and the `opal` family is in
-      `tools/scale-model/geology.py` (4aa216676: 230 in Opal Valley, 0.6 x tuff x aridity elsewhere, 6 km cells), but not yet
-      baked into `kits/resources/data/geology.json`: the owner left it for the next bake (it reaches 62 pages;
-      `kits/resources/GEOLOGY.md`). Once that bake runs `geology.py --mined`, `lode:great-potch-line` goes into
-      `kits/resources/data/lodes.json` and is stamped. Until then the field can only be placed by hand (owner nodes).
 - [ ] **The town's page and its open-world site are two grounds**: the page shapes its ground from the site's numbers; the
       region's ground is the scale model's at 1 km cells. The page placed on `core/world` (as Longsong's) is owed.
 - [ ] **The Register's numbers are Latin digits** (the kit's: `kits/tungang/KNOWN_ISSUES.md`). Xanadui is English in Indic
