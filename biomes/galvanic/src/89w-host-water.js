@@ -29,11 +29,15 @@ if(DP){const BOX=[DP.x-DP.r-20,DP.z-DP.r-20,DP.x+DP.r+20,DP.z+DP.r+20];
  const D=WATER.draw(DW,WATER.lookDraw('brine','open',{surf:false,breakers:false,renderOrder:1,metalness:.05,envMapIntensity:.45,shallow:lin(WATER.lookHex('brine',.5)),deep:lin(WATER.lookHex('brine',0))}));
  WATER.withLook(DW,'brine');D.mesh.userData.inspectLabel='The Deep (hot metal brine, ~60 degC; its floor 100 m down)';W_OUT.deep=true;}
 // THE STREAMS: wine-red from the spring to where the pH crosses 2.8, then the terraces' orange; none under the sea
-STREAMS.forEach(S=>{const pts=[],step=8,end=S.T.length?S.T[0].s0:S.F.L;
- for(let s=0;s<=end+1e-6;s+=step){const p=S.F.point(Math.min(s,end)),y=S.bed0(Math.min(s,end))+.3;if(y<=SEA_LEVEL+.02)break;pts.push([p[0],p[1],y]);}
+// (station 2) A STREAM THAT FALLS INTO THE DEEP runs on past its last tread as a second flow, down the rim and the shelf to the season's brine (one surface:
+// its terraces stop at the rim, 45, since their falls there would be cascades metres tall, one unsorted transparent mesh)
+const INTO_DEEP=S=>{if(!DP)return false;const p=S.F.point(S.F.L);return Math.hypot(p[0]-DP.x,p[1]-DP.z)<DP.r*1.05;};
+STREAMS.forEach(S=>{const runs=[[0,S.T.length?S.T[0].s0:S.F.L]];if(S.T.length&&INTO_DEEP(S))runs.push([S.T[S.T.length-1].s1,S.F.L]);
+ runs.forEach(([a,end],ri)=>{const pts=[],step=8;
+ for(let s=a;s<=end+1e-6;s+=step){const p=S.F.point(Math.min(s,end)),y=S.bed0(Math.min(s,end))+.3;if(y<=SEA_LEVEL+.02)break;pts.push([p[0],p[1],y]);}
  if(pts.length>2){const F=WATER.flow({name:S.name,pts,width:S.w-.6,speed:.6,rapids:[.005,.02]});
   const Dr=WATER.drawFlow(F,WATER.lookDraw(GALV.LOOKS.acid,'flow',{shallow:lin(WATER.lookHex(GALV.LOOKS.acid,.8)),deep:lin(WATER.lookHex(GALV.LOOKS.acid,.2)),color:0xffffff,metalness:.05,envMapIntensity:.35,step:6,across:4,margin:.6,depthBias:2,renderOrder:2,pick:true}));
-  WATER.withLook(F,GALV.LOOKS.acid);Dr.mesh.userData.inspectLabel=S.name+' (pH '+S.pH0.toFixed(1)+' at the spring: wine-red)';W_OUT.flows++;}
+  WATER.withLook(F,GALV.LOOKS.acid);Dr.mesh.userData.inspectLabel=S.name+(ri?' (running down the rim into the Deep)':' (pH '+S.pH0.toFixed(1)+' at the spring: wine-red)');W_OUT.flows++;}});
  // the iron terraces: the stage's treads as WATER.terraces, each a shallow orange pool behind a rim of ochre
  const T=S.T.filter(t=>t.y>SEA_LEVEL+.02);
  if(T.length>1){const line=[];for(let s=T[0].s0;s<=T[T.length-1].s1+1e-6;s+=6)line.push(S.F.point(s));

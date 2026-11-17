@@ -77,7 +77,9 @@ const STREAMS=SITE.streams.map((S,i)=>{const F=polyFrame(S.pts),sT=GALV_PHYS.str
  const bed0=s=>{const p=F.point(s),b=BASE_Y(p[0],p[1])-.45;if(!DP||Math.hypot(p[0]-DP.x,p[1]-DP.z)>DP.r*1.05)return b;return Math.min(b,land(p[0],p[1],true)-.45);};
  // the terraces: treads of ~20 m stepping down 0.12-0.2 m from sT to the dry season's shore (the wet season drowns the lowest)
  const T=[];{let s=Math.min(sT,F.L);let y=bed0(s)+.3;const W=8.5;
-  while(s+20<F.L){const s1=s+18+4*Math.abs(Math.sin(s*.37+i));const yy=Math.min(y,bed0(s1)+.32);if(yy<SITE.sea-GALV_PHYS.SEA.amp+.1)break;T.push({s0:s,s1,y:yy,w:W});y=yy-.12-.06*Math.abs(Math.sin(s*.13+i*2));s=s1+2.5;}}
+  /* no tread inside the Deep's rim (station 2): its falls would be cascades metres tall down the rim and the shelf; the stream runs on there as a flow (89w) */
+  const inRim=s=>{if(!DP)return false;const p=F.point(s);return Math.hypot(p[0]-DP.x,p[1]-DP.z)<DP.r*1.05;};
+  while(s+20<F.L){const s1=s+18+4*Math.abs(Math.sin(s*.37+i));if(inRim(s1))break;const yy=Math.min(y,bed0(s1)+.32);if(yy<SITE.sea-GALV_PHYS.SEA.amp+.1)break;T.push({s0:s,s1,y:yy,w:W});y=yy-.12-.06*Math.abs(Math.sin(s*.13+i*2));s=s1+2.5;}}
  const tread=s=>{for(const t of T)if(s>=t.s0-1.25&&s<=t.s1+1.25)return t;return null;};
  return Object.assign({},S,{i,F,sT,T,tread,bed0,w:6+2*i%3});});
 // noCh: the land without the streams' channels (station 3's flood is the water table against the slope, not against a channel's bed: GROUND0)
