@@ -6,7 +6,7 @@
 //   scarp     the plateau's edge running away north and south, the Stalker Peaks far west over the graben
 //   pitfloor  the sink's shoulders all round (the plateau 1.5-2.5 km over the floor 8-16 km out): mostly hidden by the maar's own walls and the deck
 //   arete     the plateau's broken skyline, the swarm's other pits, the Stalker Peaks far north-west
-//   polynya   the Stalker Peaks west and north-west over the plain, the Ostrukh Wall's line east-north-east (~90 km: 72 degrees), Lake Ostrukh's far shore low
+//   polynya   the Stalker Peaks west and north-west over the plain, the Ostrukh Wall's line beyond the lake (~80 km: 78 degrees), Lake Ostrukh's far shore low east
 const RIDGES={
  terraces:[{"base":9.5,"amp":4.5,"cycles":40,"octaves":3,"seed":981,"peaks":30,"peakAmp":1.1,"win":[270,80,2.0],"floor":1.5,"dist":60000,"haze":.22,"snowH":2600,"forestH":0,"rock":[.5,.5,.55],"snow":[.94,.95,.97]},
   {"base":1.9,"amp":.35,"cycles":30,"octaves":2,"seed":982,"win":[100,70,1.6],"floor":.2,"dist":30000,"haze":.25,"snowH":2200,"forestH":0,"rock":[.36,.34,.34]}],
@@ -14,8 +14,8 @@ const RIDGES={
   {"base":9,"amp":4,"cycles":40,"octaves":3,"seed":984,"peaks":30,"peakAmp":1,"win":[280,60,2],"floor":1,"dist":90000,"haze":.3,"snowH":2500,"forestH":0,"rock":[.5,.5,.55],"snow":[.94,.95,.97]}],
  pitfloor:[{"base":2.0,"amp":.6,"cycles":36,"octaves":3,"seed":985,"floor":.4,"dist":14000,"haze":.3,"snowH":1500,"forestH":0,"rock":[.3,.28,.28]}],
  polynya:[{"base":9.0,"amp":4.5,"cycles":40,"octaves":3,"seed":988,"peaks":30,"peakAmp":1.1,"win":[275,80,2.0],"floor":1.4,"dist":60000,"haze":.24,"snowH":2600,"forestH":0,"rock":[.5,.5,.55],"snow":[.94,.95,.97]},
-  {"base":1.3,"amp":.3,"cycles":30,"octaves":2,"seed":989,"win":[72,60,1.6],"floor":.15,"dist":90000,"haze":.3,"snowH":2000,"forestH":0,"rock":[.36,.34,.34]},
-  {"base":.25,"amp":.12,"cycles":24,"octaves":2,"seed":990,"win":[45,70,1.5],"floor":.05,"dist":16000,"haze":.3,"snowH":0,"forestH":0,"rock":[.42,.4,.36]}],
+  {"base":1.3,"amp":.3,"cycles":30,"octaves":2,"seed":989,"win":[78,60,1.6],"floor":.15,"dist":80000,"haze":.3,"snowH":2000,"forestH":0,"rock":[.36,.34,.34]},
+  {"base":.25,"amp":.12,"cycles":24,"octaves":2,"seed":990,"win":[85,80,1.5],"floor":.05,"dist":16000,"haze":.3,"snowH":0,"forestH":0,"rock":[.42,.4,.36]}],
  arete:[{"base":.4,"amp":.5,"cycles":50,"octaves":3,"seed":986,"floor":-.1,"dist":12000,"haze":.25,"snowH":0,"forestH":0,"rock":[.32,.3,.32],"snow":[.92,.94,.96]},
   {"base":8,"amp":4,"cycles":40,"octaves":3,"seed":987,"peaks":30,"peakAmp":1,"win":[300,50,2],"floor":1,"dist":150000,"haze":.35,"snowH":1500,"forestH":0,"rock":[.5,.5,.55],"snow":[.94,.95,.97]}]}[SKEY];
 const SKY=ATMOS.skyBiome({renderer,camera,scene,sun:sun,site:SITE.sky,

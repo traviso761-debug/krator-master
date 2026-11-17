@@ -115,13 +115,13 @@ const L=(function(){const S=SITE;
    crestW:x=>{const e=(R,z)=>KRELIEF.at(R,x,z)?1:0;let a=0,b=0;for(let z=0;z>-80&&!e(P[0],z);z-=.25)a=z;for(let z=0;z<80&&!e(P[1],z);z+=.25)b=z;return b-a;},
    spine:[[0,0],[-500,0],[500,0],[0,-1250],[0,1250],[-1500,0],[1500,0]]};}
  if(SKEY==='polynya'){const B=S.base,LV=S.lake.level,n=S.toLake,u=[-n[1],n[0]],SH=S.shore,T=S.terr,BD=S.bed;
-  // the frame: d toward the lake (north-east), a along the shore (south-east); x, z back from them
+  // the frame: d toward the lake (east), a along the shore (south); x, z back from them
   const dOf=(x,z)=>x*n[0]+z*n[1],aOf=(x,z)=>x*u[0]+z*u[1],xz=(d,a)=>[d*n[0]+a*u[0],d*n[1]+a*u[1]];
   const shoreD=a=>SH.d+SH.amp[0]*Math.sin(a*.0011+.7)+SH.amp[1]*Math.sin(a*.0031+2.1);
-  // the plain: the pin's height at the pin (its noise taken back there), rising gently south-west as the model's does (2.5 m a km)
+  // the plain: the pin's height at the pin (its noise taken back there), rising west as the model's does (SH.plain: 12 m a km)
   const nz=(x,z)=>6*n2(x,z,.0012,51)+2*n2(x,z,.01,52),N0=nz(0,0);
-  function ground0(x,z){const d=dOf(x,z),a=aOf(x,z),s=shoreD(a);let g=B-.0025*d+nz(x,z)-N0;
-   g+=(LV+4-g)*smooth(SH.top,s-SH.beach,d);   /* the loess bluff, 138 m down to the beach's back */
+  function ground0(x,z){const d=dOf(x,z),a=aOf(x,z),s=shoreD(a);let g=B-SH.plain*d+nz(x,z)-N0;
+   g+=(LV+4-g)*smooth(SH.top,s-SH.beach,d);   /* the loess bluff, 75 m down to the beach's back */
    g+=-3.7*smooth(s-SH.beach,s,d);   /* the shingle beach to 0.3 m over the lake */
    g-=(BD.depth+.3)*smooth(s,s+BD.reach,d)+BD.fault.drop*smooth(s+BD.fault.d-40,s+BD.fault.d+40,d);   /* the bay's bed and the fault's step under it */
    if(d>s)g+=.8*n2(x,z,.004,53);return g;}
@@ -140,7 +140,7 @@ const L=(function(){const S=SITE;
   const at=(a,dIn)=>xz(shoreD(a)-dIn,a);
   const lots=S.granaries.map(g=>at(g[0],g[1]).concat([g[2]*2.2])).concat([at(S.yard.a,S.yard.d).concat([S.yard.r*1.2])]).concat(S.edge.map(e=>at(e[0],e[1]).concat([26])));
   return{land,water,ground0,TER,QL,qanatAt,SP,shoreD,dOf,aOf,xz,at,lots,level:LV,off:0,farBase:LV,
-   spine:[[0,0],xz(SH.d*.6,0),xz(SH.d+S.polynya.d,S.polynya.a),xz(SH.d*.5,-900),xz(SH.d*.5,900)].concat(lots.map(l=>[l[0],l[1]]))};}
+   spine:[[0,0],xz(SH.d*.6,0),xz(SH.d+S.bay.d,S.bay.a),xz(SH.d*.5,-900),xz(SH.d*.5,900)].concat(lots.map(l=>[l[0],l[1]]))};}
  throw new Error('no station '+SKEY);})();
 // THE GROUND AS DATA (core/terrain KFIELD): the land baked once on an 8 m lattice over the page's square (the Arete's knife-edge in a 0.5 m inset);
 // the page, its fields and the export read the field. Past the square the far field reads the land itself (landH)

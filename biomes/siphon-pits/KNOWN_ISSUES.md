@@ -33,24 +33,25 @@ Built 2026-11-11 in the cloud (station 14, 2026-11-16, too): every check ran on 
 - [ ] **The ground's detail mask is read raw** (`84-host-ground.js`, `uDetail`: a procedural grey multiplier, not a colour map, as
   highrift's): `tools/check_source.py`'s RAWTEX finding is baselined for it, the same as highrift's line.
 
-## Station 14, the Ostrukh-on-Water Polynya (2026-11-16, `PLAN.md` section 8.3)
+## Station 14, Ostrukh-on-Water Shore (2026-11-16, `PLAN.md` section 8.3; the page keeps the key `polynya`)
 
 - [ ] **The GPU verify is owed** (the owner's machine, `KRATOR_GL=gpu`): `verify.py dist/siphon-pits-polynya.html --assert` ran on SwiftShader only.
   The ground reads 17 texture units there (`window._units.final`, against SwiftShader's 32); on a 16-unit GPU lane the rain cover and the horizon
   give way as on station 1 (`85-host-far.js`), and the frost smoke's mist field and the ice's bake are two more samplers to count.
-- [ ] **The ice is the spec's, not the model's climate** (open question in `PLAN.md` 8.3): the pin's cold month is +4 degC and its record low -4 on
-  the model, too warm for a lake to freeze over. The page keeps the ice to the bay at the year's coldest dawn.
-- [ ] **The shore is brought to the pin** (an ideal type): on the model Lake Ostrukh's nearest water is 14 km north-east of the pin
-  (1521,1466). **For the scale-model queue:** move the pin `sostrukhyuni01` onto the lake's south-west shore (about 1520,1465, ~1,850-1,940 m), or
-  grow the lake's south-west bay to the pin, so "on fresh Lake Ostrukh" is true on the map; and the spec's `Ostrukh Riba` as the lake's
-  15-25 m3/s outflow, where the model has it flowing in at 0.9 m3/s (`r_mb_siphon_breach`, 1528,1459).
+- [ ] **For the scale-model queue** (this kit does not edit `tools/scale-model/`):
+  - **The owner moved the Ostrukh-on-Water pin** (`sostrukhyuni01`, 2026-11-16) from 1516,1471 (1,988 m, 14 km from the lake) to **1520,1465**
+    (1,924.8 m), the land cell on Lake Ostrukh's west shore whose eastern neighbour 1521,1465 is the lake (1,849.8 m). The station stands there.
+  - **The `Ostrukh Riba` as the lake's outflow**: the spec (Gemini's 5.1, `PLAN.md` 8.1) has it leaving fresh Lake Ostrukh at 15-25 m3/s; the model has
+    it flowing in at 0.9 m3/s (`r_mb_siphon_breach`, mouth 1528,1459).
+- [ ] **The shore is an ideal type**: the model's 2 km cells put the waterline somewhere between the pin's cell and the lake's; the page draws it 0.9 km
+  east of the pin with a 100 m wobble, the bluff's shape its own.
 - [ ] **The ice record has no `levelAt`**: core/water's `WATER.fields` (ext/60) reads `S.levelAt(0)` from every surface but a flow or a still, and
-  ext/54's `WATER.ice` makes none, so the page gives each ice record `I.levelAt = () => I.level` (`stations/polynya/89wp-host-polynya.js`). A core fix (ext/54 or ext/60)
-  would drop it; it was not made here because ext/54 is in other pages.
-- [ ] **The village is placeholders**: Ostrukh-on-Water (`sostrukhyuni01`, Yuni) has no settlement kit; its edge (the quay, the granaries, the
-  wax-caravan yard, the qanat mouths, nine houses) is site records tagged with its id and `culture: 'yuni'`, drawn as boxes and cones.
-- [ ] **The fault springs' bench** (`tibasalt-ponded` under the loess) lies under the ice and is not drawn; the page's KSTRATA is `loess` alone.
-- [ ] **The polynya's edge is the ice's flat edge**: no frazil, brash or pancake ice at the margin, no ice thickness seen from the open water.
+  ext/54's `WATER.ice` makes none, so the page gives each ice record `I.levelAt = () => I.level` (`stations/polynya/89wp-host-polynya.js`). A core fix
+  (ext/54 or ext/60) would drop it (root `TODO.md`).
+- [ ] **The village is placeholders**: Ostrukh-on-Water (Yuni) has no settlement kit; its edge (the quay, the granaries, the wax-caravan yard, the
+  qanat mouths, nine houses) is site records tagged with its id and `culture: 'yuni'`, drawn as boxes and cones.
+- [ ] **The fault springs' bench** (`tibasalt-ponded` under the loess) lies under the water and is not drawn; the page's KSTRATA is `loess` alone.
+- [ ] **The shore ice is a flat sheet**: no thickness seen at its edge, no pancakes or frazil drifting off it, no ice foot on the beach.
 
 ## Not done yet (`PLAN.md` section 7)
 

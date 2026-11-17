@@ -5,11 +5,13 @@ if(THERM&&ATMOS.snowBare){try{ATMOS.snowBare(THERM.snowMask({box:THERM_BOX,cell:
 const STEAM_GROUPS={};
 VENTS.forEach((v,i)=>{if(v.under)return;const L0=[],n=v.reach>=200?7:4;for(let k=0;k<n;k++){const a=k/n*TAU+.4*i,r=k?Math.min(v.reach*.2,6+5*(k%3)):0,x=v.x+Math.cos(a)*r,z=v.z+Math.sin(a)*r;
  L0.push([x,terrainH(x,z)+.4,z,'steam']);}STEAM_GROUPS['v'+i]={emitters:L0,n:v.reach>=200?20:12,k:.7};});
-// STATION 14: the frost smoke off the polynya: mouths on a 90 m lattice over the open water (KRAND-jittered by cell), in groups of eight
-if(SKEY==='polynya'&&POLYNYA&&!POLYNYA.missing){const P=POLYNYA.pts,b=[Math.min(...P.map(p=>p[0])),Math.min(...P.map(p=>p[1])),Math.max(...P.map(p=>p[0])),Math.max(...P.map(p=>p[1]))],g=90,M=[];
- for(let j=Math.floor(b[1]/g);j<=Math.ceil(b[3]/g);j++)for(let i=Math.floor(b[0]/g);i<=Math.ceil(b[2]/g);i++){const x=(i+KRAND.unit(KRAND.hash(9893,i,j,0)))*g,z=(j+KRAND.unit(KRAND.hash(9893,i,j,1)))*g;
-  if(POLYNYA.inside(x,z))M.push([x,SITE.lake.level+.3,z,'steam']);}
- for(let k=0;k*8<M.length;k++)STEAM_GROUPS['frost'+k]={emitters:M.slice(k*8,k*8+8),n:14,k:.8};
+// STATION 14: the frost smoke off the open lake: mouths on a 130 m lattice over the fault springs' warm water (over 5 degC) and a 400 m one over the
+// rest of the open bay (KRAND-jittered by cell; never on the shore ice), in groups of eight
+if(SKEY==='polynya'&&SHORE_ICE){const R=TERR.R*1.05,M=[],LV=SITE.lake.level,open=(x,z)=>terrainH(x,z)<LV-.5&&!SHORE_ICE.iceAt(x,z);
+ for(const[g,salt,warm]of[[130,0,true],[400,7,false]])for(let j=Math.floor(-R/g);j<=Math.ceil(R/g);j++)for(let i=Math.floor(-R/g);i<=Math.ceil(R/g);i++){
+  const x=(i+KRAND.unit(KRAND.hash(9893,i,j,salt)))*g,z=(j+KRAND.unit(KRAND.hash(9893,i,j,salt+1)))*g;if(Math.abs(x)>R||Math.abs(z)>R||!open(x,z))continue;
+  if((HEAT_AT(x,z)>5)===warm)M.push([x,LV+.3,z,'steam']);}
+ for(let k=0;k*8<M.length;k++)STEAM_GROUPS['frost'+k]={emitters:M.slice(k*8,k*8+8),n:12,k:.8};
  window._frostSmoke={mouths:M.length,groups:Math.ceil(M.length/8)};}
 // THE DECK'S LIGHT (station 3; the Arete's pits a little): under the lid the sky's fog colour is tinted amber and the sun dimmed, by how deep the eye is
 // under it. The mist has no colour of its own in core/atmos (its colour is the page's fog colour: sky/89-atmos-j-fog.js, cM = fc), so the page tints the
