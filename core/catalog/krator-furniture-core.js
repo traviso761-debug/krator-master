@@ -550,13 +550,14 @@ function FURN(o) {
    friezes and pennant strings near the top of the wall, and the cloths hung from a rod or hook (scrolls, banners,
    tapestries, wall rugs: the kit draws them from y 0, rod at the top) with their top there too, so in a room taller
    than the cloth they leave the floor; a low room keeps them down to the floor. Everything else on a wall stands on
-   the floor (the painted hanging stands on its own poles).
+   the floor. The painted hanging (a hide laced in a frame of two poles) stood on the floor until 2026-11-17; the owner asked
+   for it raised too, so its frame hangs like a cloth.
    THE HEM RULE (the owner, 2026-11-16: "make sure wall hangings dont wind up near ground, this has been a recurring
    issue"): a hung cloth's top is at 2.7 m OR high enough that its hem is FURN_HEM over the floor, whichever is higher,
    never above the ceiling less 0.15; wall art's lower edge is at least FURN_HEM up too. So a 2.4 m banner in a 4 m hall
    ends 1.1 m up (it ended 0.3 m up when every top-hung cloth stopped at 2.7 m); only a room too low for the cloth brings
    it nearer the floor. core/catalog/test-hems.js checks every hung piece of the catalog against it. */
-const FURN_WALL_HUNG = { art: 'eye', frieze: 'top', pennants: 'top', scroll: 'top', banner: 'top', tapestry: 'top', wall_rug: 'top' };
+const FURN_WALL_HUNG = { art: 'eye', frieze: 'top', pennants: 'top', scroll: 'top', banner: 'top', tapestry: 'top', wall_rug: 'top', painted_hanging: 'top' };
 const FURN_HEM = 1.1;
 /* A piece can say so itself: `hung: 'top'` (a cloth drawn from y 0 with its rod at the top, whatever its role: a culture
    file's sadu, felt or temple banner), `hung: 'eye'`, or `hung: false` (it stands on the floor although its role hangs) */

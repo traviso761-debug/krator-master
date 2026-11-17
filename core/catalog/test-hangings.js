@@ -23,10 +23,7 @@ const CAT = path.join(ROOT, 'kits', 'catalog') + path.sep;
 const LIST = process.argv.indexOf('--list') >= 0;
 const HEM = 1.0, CEILINGS = [2.6, 3.0, 3.5, 4.2, 5.0, 6.5];
 /* pieces that stand on the floor by design, not hung: key or role -> why. Keep this short and give each a reason */
-const STANDS = {
-  painted_hanging: 'a painted cloth on its own two poles, standing on the floor (krator-furniture-kit.js paintedHanging); ' +
-    'whether it should rise too is the owner\'s call (asked 2026-11-17)'
-};
+const STANDS = {};   /* none: the painted hanging on its poles was the one until the owner had it raised (2026-11-17) */
 
 /* a page-less context: a canvas that records drawImage and paints nothing, an Image that loads on demand */
 const draws = [];
