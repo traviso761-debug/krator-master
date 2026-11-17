@@ -139,7 +139,7 @@
     "kits/catalog/krator-master-furniture-generic.js": "990b05b8404c67ab960f6649babc8143c738ea600a04c0c22564296fa7786ea4",
     "kits/catalog/krator-master-furniture-iziz.js": "99d4c2fe482800faefb309920d6e10dcf00e7d6f1f8936a203b2d871e2f1dd6e",
     "kits/catalog/krator-master-furniture-scrap.js": "0ad3a75771ab03e7b22e7f558b601ac9e6208418e49275625d199bc44bde720c",
-    "kits/catalog/krator-master-furniture-xanadu.js": "49da3bad39a0aaf22f7f969a1c3636a45fe5812337bae56c623a09d99ef8b24c",
+    "kits/catalog/krator-master-furniture-xanadu.js": "b5b7896f2aa4715567c611244a23f23767a159c1ab01ed74d8b3415dcf5cc096",
     "kits/catalog/tex/abalone.albedo.webp": "0862814768d6644cb86159bc018f874eb8d17b3d037f59e50e5977d51e080ea1",
     "kits/catalog/tex/abaloneSoft.albedo.webp": "0862814768d6644cb86159bc018f874eb8d17b3d037f59e50e5977d51e080ea1",
     "kits/catalog/tex/ash.albedo.webp": "3432cd6a581584b157c3595d58468caf4eb114f8a184dde8d3afc1a7c931db4d",
@@ -287,7 +287,7 @@
     "settlements/kirstabal/tex/ksTilled.rough.webp": "5dd71f2fff3422c7ee380822a03d56eaffd540a18afbba4cd2da3644762b6d07",
     "settlements/kirstabal/tex/pack.json": "c35ff20f2a8720e3287faf36247e0aa90318632ddb62e950bebb82670f10b080",
     "settlements/xanadu/PORT.md": "6451aaac798d97eca5394d312cf25c25c7b066e3ef439960827a075ba186ab99",
-    "settlements/xanadu/build.py": "b649a1e28d278d7898345b0f5baba53008cf1c3f359b67889d832b9407d0ed09",
+    "settlements/xanadu/build.py": "697539e5dc445cf6958369a8ac6feaeab420a23e29f3cf5c77b513acfca3c636",
     "settlements/xanadu/src/00-head.html": "d84d1b9dcb330ed808adb6f76edc7630736d3b91250ee188af2d532a3429434f",
     "settlements/xanadu/src/10-core.js": "7c31cf7eb63a1666c0f1c8cd97fd810c1531d10e8d014c105f807a2ad521138b",
     "settlements/xanadu/src/12-stats.js": "67d17e87faa80d6e5503dd3dc0d53cb2b9e0d68ce77f256187968ee914f881bd",
@@ -496,14 +496,14 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "settlements/kirstabal/build-manifest-town.json": "145d462a562d5dd55807066f0616f8d513330d446728c6d29493ff52366ec166",
-    "settlements/kirstabal/dist/kirstabal.html": "79fcfec05dc6a548a00558199d292367765c6dcd0204e54e4ded1184e29a75fe",
+    "settlements/kirstabal/build-manifest-town.json": "e4c2618c89f0c2f83d8f622292d7473d1679bebacf7c7c10225d992a83681ed3",
+    "settlements/kirstabal/dist/kirstabal.html": "31d69ec7486df4486ba578b527cc5e77b132ac8fbe680a43f1c1b86857c144f7",
     "settlements/kirstabal/dist/xanadu.tex.xanadu-2.js": "be1d57f174e08cf71b5511aff65a313eec8edc29e057c48d027e9b60630f3ab5",
     "settlements/kirstabal/dist/xanadu.tex.xanadu.js": "3fe87059ee305d523fa5026dddfd91123354e88d5839097de9df44137500f2a4"
    },
    "outputs_raw": {
-    "settlements/kirstabal/build-manifest-town.json": "7b435d238cf880e6eeb9eaab120dee75cf94cb41e92e9bb0d53dd5a6e7cfd83f",
-    "settlements/kirstabal/dist/kirstabal.html": "79fcfec05dc6a548a00558199d292367765c6dcd0204e54e4ded1184e29a75fe",
+    "settlements/kirstabal/build-manifest-town.json": "dfcac66e309dcfd8e2dac41446083466e735c8550f0097e4db54238538cbf753",
+    "settlements/kirstabal/dist/kirstabal.html": "31d69ec7486df4486ba578b527cc5e77b132ac8fbe680a43f1c1b86857c144f7",
     "settlements/kirstabal/dist/xanadu.tex.xanadu-2.js": "be1d57f174e08cf71b5511aff65a313eec8edc29e057c48d027e9b60630f3ab5",
     "settlements/kirstabal/dist/xanadu.tex.xanadu.js": "3fe87059ee305d523fa5026dddfd91123354e88d5839097de9df44137500f2a4"
    }

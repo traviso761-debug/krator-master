@@ -191,7 +191,7 @@ KIT_MATLIB_PACK = '88x2-kit-matlib-pack.js'   # a kit's own library pack (kit.js
 
 # Fragments with no builder in them: helpers, materials, the scene, the shell.
 DETERMINISTIC = {
-    '23-mat-record.js', '25-matlib-host.js', '26-matlib-bind.js', '86-bio-00-matlib-pack.js', '88x-matlib-pack.js', '88y-xanadu-matlib.js',   # the material library (no rnd())
+    '23-mat-record.js', '25-matlib-host.js', '26-matlib-bind.js', '86-bio-00-matlib-pack.js', '88x-matlib-pack.js', '88x1-pics-pack.js', '88y-xanadu-matlib.js',   # the material library (no rnd())
     '09-lod.js', '97-lod-auto.js',                     # core/lod: the shared level of detail
     '69a-world-uv.js',                                 # core/materials/opt: the shared world-UV hook
     '00-head.html', '10-core.js', '12-stats.js', '20-textures.js', '22-materials.js',

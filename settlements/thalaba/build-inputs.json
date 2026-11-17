@@ -110,7 +110,7 @@
     "kits/catalog/krator-master-furniture-generic.js": "990b05b8404c67ab960f6649babc8143c738ea600a04c0c22564296fa7786ea4",
     "kits/catalog/krator-master-furniture-iziz.js": "99d4c2fe482800faefb309920d6e10dcf00e7d6f1f8936a203b2d871e2f1dd6e",
     "kits/catalog/krator-master-furniture-scrap.js": "0ad3a75771ab03e7b22e7f558b601ac9e6208418e49275625d199bc44bde720c",
-    "kits/catalog/krator-master-furniture-xanadu.js": "49da3bad39a0aaf22f7f969a1c3636a45fe5812337bae56c623a09d99ef8b24c",
+    "kits/catalog/krator-master-furniture-xanadu.js": "b5b7896f2aa4715567c611244a23f23767a159c1ab01ed74d8b3415dcf5cc096",
     "kits/catalog/tex/abalone.albedo.webp": "0862814768d6644cb86159bc018f874eb8d17b3d037f59e50e5977d51e080ea1",
     "kits/catalog/tex/abaloneSoft.albedo.webp": "0862814768d6644cb86159bc018f874eb8d17b3d037f59e50e5977d51e080ea1",
     "kits/catalog/tex/ash.albedo.webp": "3432cd6a581584b157c3595d58468caf4eb114f8a184dde8d3afc1a7c931db4d",
@@ -275,7 +275,7 @@
     "settlements/thalaba/tex/tGrass.normal.webp": "479ee52b020e53c460641c346c9af8e3ee0ef4c4c5d419c48d271417a15bd6ba",
     "settlements/thalaba/tex/tGrass.rough.webp": "3412bc5b5ab2bff1380d7e756088b8898c27ebb8916b1ae75ac1312bc0d166cf",
     "settlements/xanadu/PORT.md": "6451aaac798d97eca5394d312cf25c25c7b066e3ef439960827a075ba186ab99",
-    "settlements/xanadu/build.py": "b649a1e28d278d7898345b0f5baba53008cf1c3f359b67889d832b9407d0ed09",
+    "settlements/xanadu/build.py": "697539e5dc445cf6958369a8ac6feaeab420a23e29f3cf5c77b513acfca3c636",
     "settlements/xanadu/src/00-head.html": "d84d1b9dcb330ed808adb6f76edc7630736d3b91250ee188af2d532a3429434f",
     "settlements/xanadu/src/10-core.js": "7c31cf7eb63a1666c0f1c8cd97fd810c1531d10e8d014c105f807a2ad521138b",
     "settlements/xanadu/src/12-stats.js": "67d17e87faa80d6e5503dd3dc0d53cb2b9e0d68ce77f256187968ee914f881bd",
@@ -489,18 +489,18 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "settlements/thalaba/build-manifest-pieces.json": "c7462714f0605fb7436618b34ebd301778940118bff98da8a1b624d60c07b5ec",
-    "settlements/thalaba/build-manifest-town.json": "041ff5d1408b136cf168ecf6ff3884d7566d87ea8033f2a4c8a863e524cf8ffd",
-    "settlements/thalaba/dist/thalaba-pieces.html": "537d6fcda0e4a63577a25ae58010254103e0a7ccb6a33c5ae860167f489688ca",
-    "settlements/thalaba/dist/thalaba.html": "34cc776f5d50ed1877ebb87c8ae28597ca2a195c928c042c0c3f6dda4bd3b769",
+    "settlements/thalaba/build-manifest-pieces.json": "ff81ea81713a66be8aea51c395dad3bc0fff0a191b13b8cae50bbe1e26c9b81a",
+    "settlements/thalaba/build-manifest-town.json": "895bdf734eba364844030503258f3936c58eb8b42dad8874cebb66282953b995",
+    "settlements/thalaba/dist/thalaba-pieces.html": "ea373d2669444ee66dd94f664f37bdb7baa8d915a2c864dd38d448796562db31",
+    "settlements/thalaba/dist/thalaba.html": "8dab715a4d6b5d851e644e43d980b07c0e7b6618add9f80182417c0ab9fd4a8f",
     "settlements/thalaba/dist/xanadu.tex.xanadu-2.js": "be1d57f174e08cf71b5511aff65a313eec8edc29e057c48d027e9b60630f3ab5",
     "settlements/thalaba/dist/xanadu.tex.xanadu.js": "3fe87059ee305d523fa5026dddfd91123354e88d5839097de9df44137500f2a4"
    },
    "outputs_raw": {
-    "settlements/thalaba/build-manifest-pieces.json": "062aa94986b12bd3307c8c4ba552728da2505303eb8fe6b0347d2c2f6f50b1f1",
-    "settlements/thalaba/build-manifest-town.json": "dba1ba64929f865fdb9d32db8eb1225f422054561421d99192fafe6f035ccbf8",
-    "settlements/thalaba/dist/thalaba-pieces.html": "537d6fcda0e4a63577a25ae58010254103e0a7ccb6a33c5ae860167f489688ca",
-    "settlements/thalaba/dist/thalaba.html": "34cc776f5d50ed1877ebb87c8ae28597ca2a195c928c042c0c3f6dda4bd3b769",
+    "settlements/thalaba/build-manifest-pieces.json": "198662c95c297fcab2b60e6ee8af0f86c6698112bf93570d95a61085206620cc",
+    "settlements/thalaba/build-manifest-town.json": "fc59ea77720ffaefb0dc4a7fcfd076e22eed9772c4417ecff9de21a8cbbb8e72",
+    "settlements/thalaba/dist/thalaba-pieces.html": "ea373d2669444ee66dd94f664f37bdb7baa8d915a2c864dd38d448796562db31",
+    "settlements/thalaba/dist/thalaba.html": "8dab715a4d6b5d851e644e43d980b07c0e7b6618add9f80182417c0ab9fd4a8f",
     "settlements/thalaba/dist/xanadu.tex.xanadu-2.js": "be1d57f174e08cf71b5511aff65a313eec8edc29e057c48d027e9b60630f3ab5",
     "settlements/thalaba/dist/xanadu.tex.xanadu.js": "3fe87059ee305d523fa5026dddfd91123354e88d5839097de9df44137500f2a4"
    }
