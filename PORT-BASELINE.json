@@ -225,12 +225,12 @@
    "sha256": "5e66c00d17dbf64a67449e65c279a074adaba68f6c744c2829e1aff61a96862b"
   },
   "biomes/galvanic/dist/galvanic-deep.html": {
-   "bytes": 3342208,
-   "sha256": "3e66169e73efe9c6bbf85008387aaceb35418f007d72b9000950985eb7d09a30"
+   "bytes": 3342209,
+   "sha256": "cab6001372ecd450e1719930b175ec2f1593268fa4846c29e06cf2343a609850"
   },
   "biomes/galvanic/dist/galvanic-gossan.html": {
-   "bytes": 3342220,
-   "sha256": "54c5d31e4f94ae7d44f72bba5904a3efa2892ad07e7b8830f27a6888820fbd9a"
+   "bytes": 3342221,
+   "sha256": "22bcc641c3d8474e94b23ac7bd6c4c96cbc35b363a21cc4dda2f6ba80ae7686e"
   },
   "biomes/galvanic/dist/galvanic.html": {
    "bytes": 3341980,
