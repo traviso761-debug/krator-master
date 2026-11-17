@@ -46,7 +46,7 @@ FRAME_HOOKS.push(()=>{camera.updateMatrixWorld();adPm.multiplyMatrices(camera.pr
 // the flora: the Vale of Xanadu's biome over the page's mask (89zad: the isle's woods, the shore's redwoods and reeds), then
 // baked with the builders' own plants (the gardens' xaPlant), as Qiblai's city does; its LOD ticks with the chunks'
 if(typeof BIO!=='undefined'&&BIO.host){BIO.setScene(scene);BIO.setSun([-.5,.76,.52]);
- try{window._biome=XANADU.build({R:1150,quality:.8,lakeHue:XANADU_LAKE.hue});}catch(e){reportErr('biome: '+(e&&e.stack||e));}
+ try{window._biome=XANADU.build({R:AD_SITE.bio.R,quality:1,lakeHue:XANADU_LAKE.hue});}catch(e){reportErr('biome: '+(e&&e.stack||e));}
  try{window._bioBake=BIO.bake();}catch(e){reportErr('biome bake: '+e.message);}
  if(BIO.lodTick)FRAME_HOOKS.push(()=>BIO.lodTick(camera));}
 LABELS=new THREE.Group();LABELS.userData.probeSkip=true;scene.add(LABELS);
