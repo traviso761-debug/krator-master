@@ -3,7 +3,8 @@
 Every texture or pattern sheet the owner still has to source or generate, each with its finished prompt. Paste a block
 as it is, one image per block. **Everything delivered lives in `PROMPTS-archived.md`** (checked against `core/materials/library/`, `patterns/` and each build's `materials.json` on `origin/main`, 2026-10-19); this file holds only what is still owed.
 
-**Count: 13 prompts** (+10 for Erewhon's citadel, section 57: the hangings of Kubla Khan and the suzani, 2026-11-16. Before: 3,
+**Count: 22 prompts** (+9 easter eggs for Erewhon's walls, section 58: the Ancient Mariner, Samuel Butler, Caves of Qud,
+2026-11-17; +10 for Erewhon's citadel, section 57: the hangings of Kubla Khan and the suzani, 2026-11-16. Before: 3,
 2026-11-16: the Tungang kit's `patterns/tungang/loj-banner`, `loj-banner.b` and `enamel-signs`. The
 owner's Codex batches delivered the rest: 22 new sets on 2026-11-16 (`PLAN.md`, "Delivered 2026-11-16"), and, merged here the same day
 ("keep the installed 2026-11-12 takes, merge them here"), the 2026-11-12 batch's 63 sets from `claude/textures-2026-11-12`, whose
@@ -517,6 +518,61 @@ Square, 2048x2048. A flat, front-on decorative panel filling the whole frame edg
 `patterns/common/suzani-roundels.b` (the same, madder ground):
 ```
 Square, 2048x2048. A flat, front-on decorative panel filling the whole frame edge to edge: one whole embroidered hanging, not tiling. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no watermark, no words. Panel: a Central Asian suzani, hand embroidered in silk chain stitch on a deep madder red cotton ground: six large blossom roundels in two columns, each an ivory disc ringed with saffron petals and an indigo centre, curling green vines and smaller flowers between them, a border band of ivory and saffron rosettes on a green vine; visible stitches, slightly irregular hand work. Full colour: madder red #a01a2a ground, ivory #f2e6c8, saffron #e89a2a, indigo #26449a, green #2a7a4a.
+```
+
+## 58. Easter eggs for Erewhon's walls: the Ancient Mariner, Samuel Butler, Caves of Qud (2026-11-17)
+
+The owner, 2026-11-17: "we can have an easter egg or two as well; give me 3 prompts for tapestries/painting related to the Rime
+of the Ancient Mariner, 3 related to the works of Samuel Butler, and 3 related to Caves of Qud". Coleridge's other great poem
+beside Kubla Khan; Butler's Erewhon, which the city is named for; and a nod to Caves of Qud, told in motifs (salt marsh, a
+many-armed scholar, the great spindle of the ancients) and never its own characters, names or art. All 2:3 portrait panels
+(1365x2048), the shape of the citadel's hanging (`xanadu_court_kubla_hanging`, the picture 1.5 x 2.25 m), so each can become
+a further design of it, or a framed painting, once the catalog can paint an image into a decal (section 57). Lands in
+`core/materials/patterns/easter/`. **9 prompts**, all full colour.
+
+`patterns/easter/mariner-albatross` (the Mariner: the albatross hung about his neck, the becalmed sea):
+```
+Portrait, 1365x2048. A flat, front-on decorative panel filling the whole frame edge to edge: one whole painted canvas, not tiling. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective distortion of the panel itself, no watermark, no readable words. Panel: a romantic oil painting in the manner of an early nineteenth-century book illustration: an old gaunt sailor with a long grey beard stands at the rail of a becalmed wooden sailing ship, a dead white albatross hung around his neck on a cord, his shipmates slumped dead or dying on the deck behind him; the sails hang limp, the sea is glassy and flat to the horizon, a hot copper sun stands small and bloody in a white-hot sky, strange slimy creatures and coiling water-snakes glint green and gold on the still water below; a narrow gilt border. Full colour: copper sun #c4562a, white-hot sky #f0e6c8, glassy sea #5a8a8a, water-snakes #2f8a6a and #d4af37, weathered wood #6a4a32, the albatross #f2efe6.
+```
+
+`patterns/easter/mariner-spectre-ship` (Death and Life-in-Death at dice):
+```
+Portrait, 1365x2048. A flat, front-on decorative panel filling the whole frame edge to edge: one whole painted canvas, not tiling. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective distortion of the panel itself, no watermark, no readable words. Panel: a romantic oil painting in the manner of an early nineteenth-century book illustration: a skeletal phantom ship with ribs showing through its rotted hull and sails like gossamer, crossing the face of a huge setting sun so the sun shows through its bars like a prison grate; on its deck two figures cast dice: a skeleton, and a pale woman with red lips and yellow hair, white as leprosy, fully clothed in a flowing gown; below, the becalmed ship of the dying sailors in silhouette; the sea blood-red with the sunset, the first stars appearing; a narrow gilt border. Full colour: sunset red #b8322a, sun gold #e8a83a, night sky #1a2444, bone white #e6dcc6, the woman's hair #e0c050, sea #6a1a1a.
+```
+
+`patterns/easter/mariner-ice` (the ice was here, the ice was there):
+```
+Portrait, 1365x2048. A flat, front-on decorative panel filling the whole frame edge to edge: one whole painted canvas, not tiling. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective distortion of the panel itself, no watermark, no readable words. Panel: a romantic oil painting in the manner of an early nineteenth-century book illustration: a small wooden sailing ship caught among towering cliffs of emerald-green and white ice in a polar sea, mist and snow, the ice split and cracked around the hull; a great white albatross flies out of the fog toward the ship, the sailors on deck lifting their arms to greet it; a pale moon behind the mist; a narrow gilt border. Full colour: emerald ice #3a9a7a, white ice #e8f2f0, ice shadow #8cc4d8, fog #c8d4d8, dark sea #1e3a4a, ship's wood #5a3e2a, the albatross #f6f4ee.
+```
+
+`patterns/easter/erewhon-statues` (Butler's Erewhon: the ring of statues at the pass):
+```
+Portrait, 1365x2048. A flat, front-on decorative panel filling the whole frame edge to edge: one whole woven tapestry, not tiling. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective distortion of the panel itself, no watermark, no readable words. Panel: a woven tapestry in a Victorian arts-and-crafts manner: a high mountain pass under snowy peaks, and on the saddle a circle of colossal, grotesque, roughly carved stone statues with hollow mouths that moan as the wind blows through them, their faces stern and hideous; a lone young traveller in a nineteenth-century explorer's coat crouches small and terrified in the snow below them; clouds tearing past the peaks; beyond, far down, a green and fertile valley with a white town; a border of vines and small mountain flowers. Full colour: snow #eef0ec, granite statues #6a6e72, sky #6a8ab0, green valley #4a7a3a, the traveller's coat #7a4a2a, border #2f5a3a and #c9a24a.
+```
+
+`patterns/easter/erewhon-musical-banks` (Butler's Erewhon: the Musical Banks):
+```
+Portrait, 1365x2048. A flat, front-on decorative panel filling the whole frame edge to edge: one whole woven tapestry, not tiling. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective distortion of the panel itself, no watermark, no readable words. Panel: a woven tapestry in a Victorian arts-and-crafts manner, gently satirical: the interior of a grand Musical Bank, half cathedral and half bank, a vaulted hall with stained-glass windows and a great pipe organ, a choir of robed cashiers singing behind a long carved counter, an almost empty hall with a few well-dressed citizens politely receiving handfuls of strange coins that nobody spends, ordinary coins of the market lying neglected on the floor; a border of coins and musical notes as ornament, not writing. Full colour: stone #d8ccb0, stained glass #26449a, #a01a2a and #e8a83a, gold coins #d4af37, robes #5a3a6a, carved wood #6a4a32.
+```
+
+`patterns/easter/erewhon-machines` (Butler's Erewhon: the Book of the Machines, the museum of forbidden machines):
+```
+Portrait, 1365x2048. A flat, front-on decorative panel filling the whole frame edge to edge: one whole woven tapestry, not tiling. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective distortion of the panel itself, no watermark, no readable words. Panel: a woven tapestry in a Victorian arts-and-crafts manner: a museum of forbidden machines, broken watches, clocks, steam engines, looms and strange delicate brass mechanisms laid out in glass cases like fossils; above them a great genealogical tree in which simple machines grow branch by branch into ever more complex ones, the lever and the wheel at the roots, intricate clockwork beings at the crown, as though the machines were evolving like living species; a curator in a long coat points warily at a pocket watch; a border of gears and leaves. Full colour: brass #b08432, steel #6a6e72, glass #c8dce0, tree green #2a7a4a, walls #e8dcb8, border #7a1a24 and #d4af37.
+```
+
+`patterns/easter/salt-marsh-village` (a nod to Caves of Qud: the salt-marsh village):
+```
+Portrait, 1365x2048. A flat, front-on decorative panel filling the whole frame edge to edge: one whole woven tapestry, not tiling. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective distortion of the panel itself, no watermark, no words, no logos. Panel: a woven tapestry in a flat, stylised medieval manner set in a strange far future: a small village of round mud-brick huts on an island in a glittering salt marsh under a huge pale sky, farmers in hooded robes tending tall, blue-green water-vines in flooded plots, a two-headed goat grazing, a giant dragonfly overhead, the distant broken towers of a vanished high civilisation of chrome and glass on the horizon, salt pans shining white; a border of reeds and small marsh creatures. Original design, no characters or art from any existing game. Full colour: salt white #f0ece0, marsh water #4a8a8a, water-vines #2f8a6a, mud brick #a07a50, sky #d8e0d4, chrome ruins #8a9aa8, border #6a4a32.
+```
+
+`patterns/easter/mutant-scholar` (a nod to Caves of Qud: the many-armed scholar in the cave library):
+```
+Portrait, 1365x2048. A flat, front-on decorative panel filling the whole frame edge to edge: one whole woven tapestry, not tiling. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective distortion of the panel itself, no watermark, no words, no logos. Panel: a woven tapestry in a flat, stylised medieval manner set in a strange far future: a serene scholar with four arms and a ring of extra eyes across the brow, robed in saffron, seated cross-legged in a cave library lit by glowing fungus, holding four inscribed stone tablets at once, shelves of scrolls and strange relics carved into the rock, a small tame creature with too many legs curled at the scholar's feet; patterns of sigils that are only ornament, not letters; a border of mushrooms and crystals. Original design, no characters or art from any existing game. Full colour: saffron #e89a2a, cave rock #4a3e36, glowing fungus #7ad8a8, tablets #c8bca0, skin #8a6a52, border #2a4a5a and #d4af37.
+```
+
+`patterns/easter/rust-spindle` (a nod to Caves of Qud: the spindle of the ancients over the rust jungle):
+```
+Portrait, 1365x2048. A flat, front-on decorative panel filling the whole frame edge to edge: one whole woven tapestry, not tiling. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective distortion of the panel itself, no watermark, no words, no logos. Panel: a woven tapestry in a flat, stylised medieval manner set in a strange far future: an impossibly tall, thin tower of dark metal of the ancients rising out of a rust-red jungle of strange broad-leaved trees and up through the clouds until it vanishes, a line of tiny pilgrims winding along a path toward its foot, odd beasts among the trees, a pale moon and a second smaller moon in the sky; a border of red leaves and small mechanical relics. Original design, no characters or art from any existing game. Full colour: rust jungle #a04a2a, dark metal #2a2e36, clouds #e6e0d4, sky #6a8ab0, pilgrims' robes #e8dcc0, border #5a2a1a and #c9a24a.
 ```
 
 ## 43. The Tungang kit (`kits/tungang`, 2026-11-11)
