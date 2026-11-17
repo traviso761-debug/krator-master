@@ -8,7 +8,7 @@ const look=(cx,cz,dyc,tx,tz,dyt)=>[cx,gh(cx,cz,dyc),cz,tx,gh(tx,tz,dyt),tz];
 const nearJar=()=>{let b=null;for(const r of GALV.PLACED)if(r[0]==='jar'&&(!b||Math.hypot(r[1],r[3])<Math.hypot(b[1],b[3])))b=r;return b||['jar',0,0,0];};
 const treadMid=(S,k)=>{const t=S.T.length?S.T[Math.min(k,S.T.length-1)]:null;return S.F.point(t?(t.s0+t.s1)/2:S.F.L*.6);};
 const VIEWS=SKEY==='deep'?(function(){const C=SITE.smokers,j=nearJar(),N=STREAMS[0],ne=N.F.point(N.F.L-30);
- return{'The brine edge':look(-150,-985,1.8,100,-760,0),'The chimneys on the rim':look(-470,-985,3,-640,-860,5),'The bathtub ring':look(300,-845,2.5,450,-560,0),
+ return{'The brine edge':look(-150,-985,1.8,100,-760,0),'The chimneys on the rim':look(-660,-1010,3,-560,-860,6),'The bathtub ring':look(300,-845,2.5,450,-560,0),
   'Across the Deep':look(900,-300,18,-300,-200,0),'The north stream falls in':look(ne[0]+18,ne[1]-22,3,ne[0]-4,ne[1]+30,0),
   'The flood line (the store jars)':look(j[1]+5,j[3]-6,1.2,j[1]-4,j[3]+5,0),'The rim and the sea':look(700,330,8,200,1200,0),'From afar':look(-1500,-1700,300,0,-150,0)};})():
  SKEY==='gossan'?(function(){const hp=ORE.F.point(ORE.sx*.55),sx=ORE.F.point(ORE.sx),j=nearJar(),t0=treadMid(STREAMS[0],3),t1=treadMid(STREAMS[1],3);
@@ -145,5 +145,5 @@ KHOST.take({build:'galvanic'+(SKEY==='strand'?'':'-'+SKEY),title:'Krator biome â
  get totals(){const t=BIO.totals();return {tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},
  biome:()=>window._station,site:()=>SITE,placed:()=>GALV.PLACED,
  exportProfile:['registry','items','materials','textures','terrain','stage','atmos','water'],
- exportBox:[-200,-400,200,0],
+ exportBox:SITE.exportBox||[-200,-400,200,0],   /* a station's own (its life and its water), else the strand's */
  at:(x,z)=>{const o={h:terrainH(x,z),water:waterH(x,z),heat:HEAT_AT(x,z),pH:PH_AT(x,z),flood:FLOOD_AT(x,z)};FNAMES.forEach(n=>o[n]=+FIELD[n](x,z).toFixed(3));return o;}}});

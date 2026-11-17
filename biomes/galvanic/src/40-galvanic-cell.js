@@ -111,7 +111,7 @@ var GALV_SITES={
  // south rim; the hills' foot along the north edge, the Rift's trees on it. The steam: a faint haze over the brine (~60 degC water in +36 degC air), thicker over the vent.
  deep:{key:'deep',name:'The Deep',station:2,px:[801,1573],world:[1602000,3146000],sky:{px:529,py:1243},R:1700,
   sea:-2600,atm:2.21,koppen:'XV',rain:1051,temp:{mean:36,warm:40,cold:32},soil:36,day:70,
-  strand:{z0:-1450,y0:-2598.2,z1:1700,y1:-2600.9},hills:{z0:-1450,h:90},
+  strand:{z0:-1150,y0:-2598.0,z1:1700,y1:-2600.9},hills:{z0:-1150,h:90},exportBox:[-420,-1180,-20,-880],
   deep:{x:0,z:-150,r:820,floor:-2700,rim:4.5,T:62,shelf:[-1.4,1.0]},
   mounds:[[700,-700,55,11],[960,-260,70,14],[880,380,45,9],[-420,-1060,50,10],[-980,-560,40,8],[-150,-1120,60,12]],
   smokers:[[-848,-459,9,1.6],[-699,-639,6,1.1],[-586,-900,12,2.0],[-313,-925,5,.9],[-108,-921,4,.8],[62,-1033,10,1.7],[271,-1096,7,1.2],[397,-896,8,1.4],
@@ -129,7 +129,7 @@ var GALV_SITES={
  // No sea on the page: the flood is the table's.
  gossan:{key:'gossan',name:'The Gossan Hills',station:3,px:[800,1568],world:[1600000,3136000],sky:{px:528,py:1238},R:1800,base:'hill',
   sea:-2600,atm:2.11,koppen:'XV',rain:769,temp:{mean:34,warm:38,cold:29},soil:34,day:70,swing:.6,
-  hill:{y0:-2240,zl:300,g1:.09,g2:.012,bend:160},strand:null,hills:null,deep:null,shore:false,
+  hill:{y0:-2240,zl:300,g1:.09,g2:.012,bend:160},strand:null,hills:null,deep:null,shore:false,exportBox:[-160,260,160,620],
   table:{d0:.55,rise:.01,steep:.25,knee:6},
   ore:{pts:[[220,-1700],[150,-800],[60,0],[0,300],[-60,800],[-140,1700]],w:30,rib:8,depth:30,pH:3},
   mounds:[],

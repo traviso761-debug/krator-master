@@ -24,7 +24,7 @@ const CHIMNEYS=SITE.smokers?(function(){const W=4405,u=(i,k)=>KRAND.unit(KRAND.h
     const rust=smooth(.05,.6,t)*(.55+.45*Math.sin(a*2+i+t*7)),brk=Math.sin(a*4+t*13+i*2.3)>.82?1:0;
     C.copy(SUL).lerp(RUST,rust*(1-brk)).lerp(OCH,Math.max(0,Math.sin(a*6+t*21+i))*.35*t*(1-brk));
     if(t<.12)C.lerp(ANH,.25*(1-t/.12)*(.5+.5*Math.sin(a*5+i)));if(j>NR)C.copy(j===NR+2?SUL:BRASS);
-    col.push(C.r,C.g,C.b);}}
+    C.convertSRGBToLinear();col.push(C.r,C.g,C.b);}}   /* the palette is sRGB hex; vertex colours are linear */
   for(let j=0;j<NR+2;j++)for(let k=0;k<NS;k++){const a=b+j*NS+k,b2=b+j*NS+(k+1)%NS,c2=a+NS,d=b2+NS;idx.push(a,c2,b2,b2,c2,d);}});
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));
  g.setIndex(idx);g.computeVertexNormals();
