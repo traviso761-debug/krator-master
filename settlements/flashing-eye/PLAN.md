@@ -563,4 +563,17 @@ and Godot read one plan. It is a new build: it lists itself under every check in
 12. **A Xanadui name** for the house, as Grēṭ-Āil and Ṭī-Ṭeras have? *Proposed*: *Phlāśin-Āi* (the Flashing Eye), from
     the language's *ph* and *ś* (Phēr, peleśā). The owner's call.
 13. **Textures.** If the library has no columnar basalt or fresh volcanic ash, may the gap go in
-    `core/materials/PROMPTS-NEEDED.md` with a prompt?
+    `core/materials/PROMPTS-NEEDED.md` with a prompt? *Settled by the library* (2026-11-16): it has `rock.columnar`, `ground.ash`, `ground.scoria` and
+    `ground.cinder`; the page uses them and nothing is owed.
+
+Raised while building (2026-11-16; each built as *proposed*, so an answer changes data, not structure):
+
+14. **The Eye Post's height.** 12 m (*built*: the Beacon relays to G1) or 30 m, which reaches G1 direct on the clearest days
+    (+9 m)?
+15. **The Rim Watch's rota.** Section 1.2 says "four monks a watch, six watches" and section 2.1 "a week on the rim, three
+    weeks down". With the hut's four bunks only one watch fits on the rim, so the build has six watches of four, each a week
+    on the rim in turn (a week in six). Keep that, or a bigger hut and a week in four?
+16. **The bench at 1:1.** The region cut rises behind the Lip faster than the 2 km grid (+10 m at the north wall), so the
+    precinct is cut as well as filled, with a bank behind its north and west walls. Keep one level (*built*), or step the
+    north half up a terrace (as Longsong's)?
+17. **The seeds.** 34400-34599 for the Order's records (the block after Viridian's), to be confirmed by the Qiblai session.
