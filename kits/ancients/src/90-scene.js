@@ -36,7 +36,7 @@ const fill=new THREE.DirectionalLight(0xc0d0ff,.35);fill.position.set(800,400,-9
 // sky dome
 const skyMat=new THREE.ShaderMaterial({side:THREE.BackSide,fog:false,depthWrite:false,uniforms:{u_n:{value:0}},
  vertexShader:'varying vec3 vP;void main(){vP=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
- fragmentShader:'uniform float u_n;varying vec3 vP;void main(){float h=clamp(normalize(vP).y,-.05,1.);vec3 hz=mix(vec3(.86,.62,.42),vec3(.085,.075,.105),u_n);vec3 zen=mix(vec3(.36,.46,.66),vec3(.014,.018,.040),u_n);vec3 c=mix(hz,zen,pow(h,.55));gl_FragColor=vec4(c,1.);}'});
+ fragmentShader:'uniform float u_n;varying vec3 vP;void main(){float h=clamp(normalize(vP).y,-.05,1.);vec3 hz=mix(vec3(.86,.62,.42),vec3(.085,.075,.105),u_n);vec3 zen=mix(vec3(.36,.46,.66),vec3(.014,.018,.040),u_n);vec3 c=mix(hz,zen,pow(max(h,0.),.55));gl_FragColor=vec4(c,1.);}'});
 const sky=new THREE.Mesh(new THREE.SphereGeometry(9000,32,16),skyMat);sky.userData.probeSkip=true;scene.add(sky);
 // the gas giant, low in the north-east (Krator canon: altitude 25°, azimuth 66°)
 const giantTex=canvasTex(512,512,(g,w,h)=>{g.clearRect(0,0,w,h);const grd=g.createRadialGradient(256,256,0,256,256,256);

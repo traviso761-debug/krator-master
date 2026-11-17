@@ -22,7 +22,32 @@ opened from disk still has its textures; a script tag needs no server, unlike fe
 
 The sidecar sets window.KMAT_SIDE[key] (KMAT need not exist yet, so the pack fragment may sit in any closure). If the
 file is missing, the page says so on the console and runs on its procedural maps. Publish the .tex.<key>.js files with the page."""
-import base64, json, os
+import base64, json, os, sys
+
+_POINTER = b'version https://git-lfs'
+
+
+def _refuse_pointers(tex, names):
+    """Stop the build when a map it would pack is a Git LFS pointer (a checkout without `git lfs pull`): packed, it
+    gives a corrupt pack and black surfaces with no error (BUGS-2026-11-15.md K3). tools/build.py's audit hook refuses
+    the same read; this one also stops a plain `python3 build.py` and every host that packs another build's tex/."""
+    bad = []
+    for n in names:
+        p = os.path.join(tex, n)
+        try:
+            if os.path.getsize(p) <= 1024:
+                with open(p, 'rb') as fh:
+                    if fh.read(len(_POINTER)) == _POINTER:
+                        bad.append(p)
+        except OSError:
+            pass
+    if bad:
+        root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        rel = os.path.relpath(os.path.abspath(tex), root).replace(os.sep, '/')
+        sys.exit('matlib_pack: %d map(s) in %s are Git LFS pointers, not the files (a checkout without `git lfs pull`); '
+                 'a page built from them has black surfaces:\n  %s\nRun: git lfs pull --include="%s/*"'
+                 % (len(bad), rel, '\n  '.join([os.path.basename(b) for b in bad[:12]] +
+                                               (['... and %d more' % (len(bad) - 12)] if len(bad) > 12 else [])), rel))
 
 
 def _families(build_dir, exclude, own=False):
@@ -31,6 +56,8 @@ def _families(build_dir, exclude, own=False):
     if not os.path.isfile(pj):
         return None
     fams = json.load(open(pj, encoding='utf-8')).get('families', {})
+    _refuse_pointers(tex, [n for fam in sorted(fams) if fam not in exclude and (own or not fams[fam].get('own'))
+                           for n in sorted(fams[fam]['files'].values())])
     out = []
     for fam in sorted(fams):
         if fam in exclude:

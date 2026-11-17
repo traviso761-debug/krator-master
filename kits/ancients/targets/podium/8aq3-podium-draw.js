@@ -49,8 +49,6 @@ function snDraw(scene,gx,gz,P,K){KOFF=[gx,0,gz];
  // the dome's black underside: draw the dome first and let the ground cover it.
  if(typeof camera!=='undefined'&&camera.far<30000){camera.far=30000;camera.updateProjectionMatrix();}
  if(typeof sky!=='undefined')sky.renderOrder=-1;
- if(typeof skyMat!=='undefined'&&skyMat.fragmentShader.indexOf('pow(h,.55)')>=0){
-  skyMat.fragmentShader=skyMat.fragmentShader.replace('pow(h,.55)','pow(max(h,0.),.55)');skyMat.needsUpdate=true;}
  const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);
  const D=PODIUM.DIM,Y1=D.Y1,YT=D.YT,SH=D.SH,NS=D.NS,DT=TAU/NS,D2R=Math.PI/180;
  snTag(P,gx,gz,K);

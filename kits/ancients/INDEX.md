@@ -198,10 +198,10 @@ Each target adds its own fragments to `src/` and builds one output.
 | `lozenge` | `89d5-lozenge.js`, `89d6-lozenge-faces.js`, `89d7-lozenge-elevation.js`, `89d8-lozenge-ruin.js`, `89z-rows.js`, `91z-views.js` | 79 |
 | `monolith` | `89z-rows.js`, `91z-views.js` | 4 |
 | `plymouth` | `89z-rows.js`, `91z-views.js` | 6 |
-| `podium` | `89z-rows.js`, `8aq0-podium-plan.js`, `8aq1-podium-kept.js`, `8aq2-podium-skins.js`, `8aq3-podium-draw.js`, `91z-views.js` | 76 |
+| `podium` | `89z-rows.js`, `8aq0-podium-plan.js`, `8aq1-podium-kept.js`, `8aq2-podium-skins.js`, `8aq3-podium-draw.js`, `91z-views.js` | 75 |
 | `quintagon` | `89z-rows.js`, `91z-views.js` | 3 |
 | `ring` | `89z-rows.js`, `91z-views.js` | 10 |
-| `sanctum` | `89z-rows.js`, `8ar0-sanctum-plan.js`, `8ar3-sanctum-draw.js`, `91z-views.js` | 37 |
+| `sanctum` | `89z-rows.js`, `8ar0-sanctum-plan.js`, `8ar3-sanctum-draw.js`, `91z-views.js` | 36 |
 | `skyi` | `89z-rows.js`, `91z-views.js` | 4 |
 | `skyj` | `89z-rows.js`, `91z-views.js` | 3 |
 | `skyk` | `89z-rows.js`, `91z-views.js` | 2 |

@@ -1058,10 +1058,10 @@ volumes; the beam's `rotation.y` advances frame to frame. Details in
   planes merge and a head reads as an egg. The Eternian kit's head generator (its P2) replaces it.
 - **No ruined state, no interiors, no Godot export check yet.** The Sanctum is shown as built and as kept; the arches'
   halls have terraces and a back wall, no rooms.
-- **Kit-wide, fixed on this page only:** the sky shader is black below the horizon (`pow(h,.55)` with h < 0 in
-  `90-scene.js`), the dome is drawn after the ground with no depth write, and the far plane is 12 km, so a wide shot shows
-  a black band past 9 km. `coDraw` patches it for its own page; the shared fix (`max(h,0.)`, `sky.renderOrder=-1`)
-  would move every page's hash.
+- **Kit-wide, fixed on this page only:** the dome is drawn after the ground with no depth write, and the far plane is
+  12 km, so a wide shot shows a black band past 9 km. `coDraw` patches it for its own page (`sky.renderOrder=-1`, far
+  30 km). The sky shader's own black band below the horizon (`pow(h,.55)` with h < 0) is fixed kit-wide in `90-scene.js`
+  (`pow(max(h,0.),.55)`, 2026-11-15).
 
 ## Span's pieces (`--target span`)
 
