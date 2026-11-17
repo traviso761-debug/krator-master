@@ -18,9 +18,10 @@
 var KS_TOWN=(function(){
  const G=KS_GROUND,at=(u,v)=>G.at(u,v),face=(d)=>Math.atan2(d[0],d[1]);   /* a piece's front toward d (x, z) */
  const UX=G.UX,VX=G.VX,NUX=[-UX[0],-UX[1]],NVX=[-VX[0],-VX[1]];
- /* the build zone, in the shore frame: 1.2 km along the shore, from the quay street to 640 m inland (the works, the latex house
-    and the monastery stand beyond it) */
- const ZONE=[[-560,30],[660,30],[660,640],[-560,640]];
+ /* the build zone, in the shore frame: 960 m along the shore, from the quay street to 440 m inland (the works, the latex house,
+    the monastery, the seat and the barracks stand beyond it). Tightened 2026-11-16 (the owner: "densify the settlement a bit
+    more, it looks too spread out"): it was 1.2 km by 640 m with half its frontage left vacant and no side-street lots */
+ const ZONE=[[-420,30],[540,30],[540,440],[-420,440]];
  /* the people a building holds (households of 5-7, servants in the rich houses, the garrison in its barracks, the monks in the
     daughter house); summed in census and held to PLAN.md's 3,000 by the test */
  const PEOPLE={xa_poor_a:6,xa_poor_b:12,xa_poor_c:4,xa_andean_poor:6,xa_mid_a:7,xa_mid_b:9,xa_mid_c:16,xa_house_turk_a:8,xa_rich_a:12,xa_rich_b:16,xa_rich_c:11,
@@ -37,7 +38,9 @@ var KS_TOWN=(function(){
    {key:'xa_teahouse',v:0,near:'harbour'},{key:'xa_watch',v:0,near:'harbour'},{key:'xa_bath',v:0,near:'bazaar'},{key:'xa_granary',v:0,near:'bazaar'},
    {key:'xa_granary',v:1,near:'bazaar'},{key:'xa_granary',v:0,near:'bazaar'},{key:'xa_shops',v:0,near:'bazaar'},{key:'xa_shops',v:0,near:'bazaar'},
    {key:'xa_shop_turk_a',v:0,near:'bazaar'},{key:'xa_shop_turk_a',v:1,near:'bazaar'},{key:'xa_workshop',v:0,near:'works'},
-   {key:'xa_workshop',v:0,near:'works'},{key:'xa_smithy',v:0,near:'works'},{key:'xa_warehouse',v:0,near:'works'},{key:'xa_garden',v:0,near:'rich'}],
+   {key:'xa_workshop',v:0,near:'works'},{key:'xa_smithy',v:0,near:'works'},{key:'xa_warehouse',v:0,near:'works'},{key:'xa_garden',v:0,near:'rich'},
+   /* the town's gardens (the owner, 2026-11-16: "add some gardens and foliage"): two more on the lakefront's rich side, one by the bazaar */
+   {key:'xa_garden',v:0,near:'rich'},{key:'xa_garden',v:0,near:'rich'},{key:'xa_garden',v:0,near:'bazaar'}],
   civicSpacing:34,civicJitter:12,
   voidMax:40,voidIters:12,voidBatch:8,sideSpacing:46,sideMax:180,alleyFrac:.22,blindMax:80,interiorDepth:9,interiorRounds:2,
   avenueSnap:40,ringGap:8,verge:6,mapHalf:900,plazaArt:{rich:[],middle:[],poor:[],commerce:[]}});
@@ -56,9 +59,9 @@ var KS_TOWN=(function(){
     court, the drying halls, the sealing room), its gate toward the works road; the box its court's ground is painted in */
  const LATEX={u0:-466,u1:-424,v0:621,v1:663,at:[-445,642]};
  const MONASTERY=[330,840];   /* the White Monastery's daughter house, on the rising ground inland (toward the scarp) */
- /* core/city's steps the town leaves out: the side streets' lots and the alleys (a town of 3,000 keeps yards and gardens behind
-    its houses, as Strongbow's town does) */
- const SKIP=['side-street lots, alley entrances','alleys and alley lots'];
+ /* core/city's steps the town leaves out: the alleys (a town of 3,000 keeps yards and gardens behind its houses; its side
+    streets have lots since 2026-11-16) */
+ const SKIP=['alleys and alley lots'];
  function make(o){
   const L=KCITY.lib,SL=L.SL,OCC=L.OCC,Raster=L.Raster,obb=L.obb,obbCorners=L.obbCorners,seed=o.seed==null?41600:o.seed;
   /* the kit's boxes as core/city's plots: a plot at least 2 m wider and deeper than the building on it (the teahouse's and the
@@ -99,7 +102,7 @@ var KS_TOWN=(function(){
    if(vv>560||uu<-390)w=Math.min(w,.22);if(dd([uu,vv],WORKS)<170)w=.12;return Math.max(0,Math.min(1,w));};
   const rules={
    wealth:p=>wealthUV(uv(p)),
-   vacant:(p,rs)=>{const q=uv(p);return rs.chance(q[1]>480?.66:q[1]<240?.42:.56);},   /* yards and gardens behind and between the houses */
+   vacant:(p,rs)=>{const q=uv(p);return rs.chance(q[1]>360?.1:q[1]<240?.03:.06);},   /* a little frontage left open: the yards and gardens are behind the houses */
    near:{harbour:c=>dd(uv(c.p),[-60,70])+(uv(c.p)[1]>160?400:0),bazaar:c=>dd(uv(c.p),BAZAAR),works:c=>dd(uv(c.p),[-470,520]),
     gate:c=>dd(uv(c.p),[620,260]),rich:c=>{const q=uv(c.p);return Math.abs(q[1]-150)+Math.abs(Math.abs(q[0]+60)-330)*.5;}}};
   /* the finish: a civic piece is stamped HARD, but a main street routed on the 2.5 m raster can still graze or cross one

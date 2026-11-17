@@ -88,6 +88,9 @@ runtime and bison table, and the `tools/` listing staleness (every build rebuilt
   (`xa_quay`) and the racks' pending box; move them into the row itself (`core/hamlet/20-hamlet-cultures.js` reaches ten builds) and
   `kits/xanadu/src/87k-xa-lake-trades.js` into `xanadu.py` FILES (if every Xanadu page should have the lake's trades), then let
   Kirstabal pass the row by name.
+- **The lake's trades' interior set** (2026-11-16, `settlements/kirstabal` K5): `kits/xanadu/src/87k1-xa-lake-rooms.js` adds the set
+  `xanadu-lake` at run time; move it to `kits/interiors/sets/xanadu-lake.js` (the interiors sheet inlines every set, so it stales
+  `kits/interiors`'s sets page: rebuild and `verify.py --sets --assert` it) and let Kirstabal take it through kit.json "interiorSets".
 - **Any new file in `tools/` stales eight builds** (kits/catalog, crops, interiors, mechs, motor-vehicles, port; settlements/isle-demo,
   longsong record `tools/` as a listing input, likely Python's importer reading it): a rebuild clears it; worth a fix in `build_sources`.
 - **Switch on checks 22-31 everywhere** (the survey of 2026-11-11, CORE-IMPROVEMENTS.md items 22-31; landed opt-in on

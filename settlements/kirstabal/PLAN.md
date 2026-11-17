@@ -292,6 +292,12 @@ Following `README.md`, "CORE MODULES ARE NOT OPTIONAL":
 - **K2.** `settlements/kirstabal`: the town on core/city as a target on Xanadu's page, with only the Xanadu kit
   (`README.md`). About 440 buildings and 2,850 people. The caravanserai, the latex house, the tea factory and the fermentaries
   are new Xanadu kit pieces (`kits/xanadu/src/87k-xa-lake-trades.js`, opt-in, 2026-11-16).
+  Tightened the same day (the owner: "add some gardens and foliage and maybe densify the settlement a bit more? it looks too
+  spread out"): the build zone from 1.2 km by 640 m to 960 by 440 m, the side streets' lots back in, little frontage left
+  vacant (3 to 10 %, was 42 to 66 %): about 420 buildings on half the ground, twice as dense. Four public gardens, palms down
+  the avenues and shade trees along the main streets, the Rift's trees and plants in the yards (a third of the country's).
+  The yards are painted as garden plots (the owner: "Paint the yards as green garden plots"): every bit of the zone not under a
+  building, its doorstep or a street, in 9 m plots, green garden or tilled beds, a few left beaten earth (about 18 ha).
 - **K3.** The harbour (quays, mole, lighthouse, boat sheds), the lake (core/water open), Keb Riwā from the lip down the
   scarp to its mouth (core/water flow) and the bridge on the Strongbow road. `core/coast` is not taken: the lake's shore
   near the town is designed ground, and the open world (K6) takes core/coast.
@@ -303,6 +309,22 @@ Following `README.md`, "CORE MODULES ARE NOT OPTIONAL":
   Rift kit (`biomes/rift`) on today's core/biome, not the Vale's `biomes/xanadu`, zoned by one wetness field (jungle along
   the lake and Keb Riwā and toward the scarp's foot, savannah inland) that also tints the grass, under the Rift's air
   (`targets/town/90m-ks-flora.js`, `ksWet` in 89zk). The scarp's cloud forest and tea belt are still to come.
+- **K5.** The interiors, on Xanadu's own mode (`?interiors=1`: hollow walls, real doors, rooms furnished from the catalog's
+  Xanadu pieces, their floors and stairs in core/walk), turned on for the five buildings of this step only: the governor's
+  house and the Two Horns' factor house (the kit's own items), the serai, the tea factory and the latex house's sealing room
+  (new items, `kits/xanadu/src/87k1-xa-lake-rooms.js`, opt-in; the serai's ranges now have doors onto the court). Every open
+  door of the five gets a threshold in core/walk and, where the sill stands over the sloping ground, a flight of steps. The
+  serai, the tea factory and the latex house are reached throughout (`verify.py --interiors`); the two manors keep the kit's
+  own gap (settlements/xanadu KNOWN_ISSUES.md: their items' plan doors are not cut, so the upper house and the konak stay
+  sealed). The factor house has no counting rooms of its own yet (it is the kit's merchant's konak), and the governor's
+  audience hall waits for a seat piece of its own.
+- **K6.** The site in the open world: `openworld/xanadu-oidong-highrift` (Kirstabal `sl758m2396` in `openworld/SITES.json` and the
+  region's cut, by hand, inside the Xanadu polygon). The ring (Mil, Kanāl, Grēnz, Bāiyar) at the tune's places and the lake's
+  nine on the shore round the lake, eight of them on a fishers' row in the region's site spec, planned on the world's ground
+  (`core/world/bake_sites.py`); their roads to the town; the link to **Strongbow's foot** (5.3 km over Keb Riwā's mouth) and
+  the lake road to Qiblai (143 km). Strongbow's foot is a *proposed* point (`sstrongbowft`, px 991.14,1596.84, where this
+  page ends its Strongbow road) until Strongbow's session places its foot town. The town itself stays this page's; the
+  region does not draw it, and its ground is the model's at 1 km (KNOWN_ISSUES.md).
 
 ## 7. Questions for the owner
 

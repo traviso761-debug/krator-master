@@ -35,6 +35,12 @@ moored boat is the Sultan's pleasure barge; the capital's lake owes the same cra
   smoothed: the scarp is a slope, not a cliff, and the cataract is white water down it, not a free fall. Seen from the town
   through the heat haze (24 km off) it reads as a thin white streak on a pale ridge. The open world (K6, core/world)
   replaces it.
+- **The interiors (K5, `?interiors=1`)**: only the five K5 buildings are hollow and furnished. The governor's house
+  (`xa_rich_b`) and the Two Horns' factor house (`xa_rich_c`) keep the kit's own gap (settlements/xanadu KNOWN_ISSUES.md: their
+  items' plan doors are not cut by 69e6 `vaPlanDoors`, `planDoors` 0 here too), so the manor's upper house and the konak are
+  sealed: 37 of 54 floors reached, every one of the serai's, the tea factory's and the latex house's. The fix is the kit's
+  (kits/interiors/sets/xanadu.js or 69e6), not the town's. No view looks inside: a view in a room would stand in a solid
+  block with the interiors off.
 - **Strongbow** is not drawn: its arcology is the Ancients kit's (`kits/ancients/targets/strongbow`), on its own page. The
   Strongbow road runs out over the bridge toward its foot.
 - **The town's ground is designed, not cut from the model**: the beach, the apron rising about 9 m a km and the harbour's
@@ -43,5 +49,5 @@ moored boat is the Sultan's pleasure barge; the capital's lake owes the same cra
 
 ## Not done (later steps)
 
-Interiors (K5), the open world (K6), life and the sim's people on the page, the Laitwal road in the tune (the town is not
+Life and the sim's people on the page, the town drawn in the open world (the region plans its countryside only), the Laitwal road in the tune (the town is not
 in this branch's tune), the Council's fifth and the eight monasteries' eighths (Qiblai's side of the tune).

@@ -56,6 +56,20 @@ The second region of sites cut off the scale model into the open world (`openwor
     east and west, and a ranch at its western end. Opal Valley grows no kit yet, so they stand on bare ground. Its square was
     added to the cut by hand from a re-cut (the site's row, its polygon, its added area, its mask square); the re-cut's other
     changes (the model's drift since this region's cut: Longsong's move, the rivers) were left for the region's own re-cut.
+  - **Kirstabal** (`sl758m2396`, px 989,1600, added 2026-11-16: `settlements/kirstabal`, its step K6): the barge port at the
+    head of the Lower Xanadu Lake, reach 20 km; the town is its own page's (a target on Xanadu's page). Its ring stands at
+    the tune's places (`core/region/data/xan-tune.js` `T.ksRing`): Mil, Kanāl and Grēnz (farming) on the apron south of the
+    town and Bāiyar (ranch) beyond. The lake's nine (`T.lowerLake`) stand on the shore round the whole lake: eight fishing
+    villages on the fishers' row (`xanadu-fishing` in `src/48-world-site.js`: boat sheds, and fish racks as pending boxes
+    under `xh_fish_racks`: kits/xanadu's `xa_fish_racks` is opt-in and not in `XAK`, and the bake, which reads every kit file,
+    would size it while the page could not) and the Landing at the portage, 114 km west. Each is searched from the
+    model's lake cell nearest the tune's place, so it stands at the water. Two links: to **Strongbow's foot** (5.3 km over
+    Keb Riwā's mouth) and along the lake to Qiblai (143 km).
+  - **Strongbow's foot** (`sstrongbowft`, px 991.14,1596.84, `model: false`): *proposed* by `settlements/kirstabal` K6, the
+    bottom of Strongbow's lift where Kirstabal's page ends its Strongbow road (69 m over the lake). Strongbow's own session
+    places its foot town and replaces this point; nothing else is planned there. Kirstabal and the foot were added to the cut
+    by hand (`data/region.json`: two site rows, two polygon rows), as Lāiṭwāl was: both stand inside the Xanadu polygon, so
+    the mask did not change.
 - **The roads:**
   - **Village roads:** each village's lane end has a road to its town (`core/world` `ROADS`, the grade held to 8 %).
     They join the roads already laid where those are nearer than the town, so they share a trunk.
