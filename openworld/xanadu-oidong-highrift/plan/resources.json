@@ -305,9 +305,9 @@
    }
   },
   "farm": {
-   "mean": 0.144,
-   "good_km2": 43952,
-   "best_km2": 30736,
+   "mean": 0.141,
+   "good_km2": 43344,
+   "best_km2": 29696,
    "peak": {
     "score": 0.995,
     "x": 72000,
@@ -394,44 +394,44 @@
    "why": "the scale model's geology: gypsum prospectivity 185 on evaporite ground"
   },
   {
-   "id": "res-farm--344-56",
-   "kind": "farm",
-   "family": "farmland",
-   "x": -344000,
-   "z": 56000,
-   "score": 0.91,
-   "label": "Farmland: the best (91%, 769 mm, 14 °C)",
-   "why": "warm, watered, flat and deep-soiled (Cfb)"
-  },
-  {
    "id": "res-farm--232-48",
    "kind": "farm",
    "family": "farmland",
    "x": -232000,
    "z": 48000,
-   "score": 0.91,
-   "label": "Farmland: the best (91%, 957 mm, 12 °C)",
+   "score": 0.92,
+   "label": "Farmland: the best (92%, 957 mm, 12 °C)",
    "why": "warm, watered, flat and deep-soiled (Cfb)"
   },
   {
-   "id": "res-farm--720--176",
+   "id": "res-farm--568--104",
    "kind": "farm",
    "family": "farmland",
-   "x": -720000,
-   "z": -176000,
-   "score": 0.91,
-   "label": "Farmland: the best (91%, 957 mm, 21 °C)",
-   "why": "warm, watered, flat and deep-soiled (Csa)"
+   "x": -568000,
+   "z": -104000,
+   "score": 0.92,
+   "label": "Farmland: the best (92%, 769 mm, 25 °C)",
+   "why": "warm, watered, flat and deep-soiled (Cfa)"
   },
   {
-   "id": "res-farm--644--116",
+   "id": "res-farm--344-56",
    "kind": "farm",
    "family": "farmland",
-   "x": -644000,
-   "z": -116000,
-   "score": 0.9,
-   "label": "Farmland: the best (90%, 1067 mm, 25 °C)",
-   "why": "warm, watered, flat and deep-soiled (Cfa)"
+   "x": -344000,
+   "z": 56000,
+   "score": 0.92,
+   "label": "Farmland: the best (92%, 769 mm, 14 °C)",
+   "why": "warm, watered, flat and deep-soiled (Cfb)"
+  },
+  {
+   "id": "res-farm--724--176",
+   "kind": "farm",
+   "family": "farmland",
+   "x": -724000,
+   "z": -176000,
+   "score": 0.91,
+   "label": "Farmland: the best (91%, 973 mm, 21 °C)",
+   "why": "warm, watered, flat and deep-soiled (Csa)"
   },
   {
    "id": "res-unique-tin-88-98",

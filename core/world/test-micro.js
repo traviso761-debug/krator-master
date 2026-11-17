@@ -57,6 +57,14 @@ ok('the gullies run downslope: drainage alignment '+aE.toFixed(3)+' (a DEM .17-.
  const step=g=>{let w=0,p=null;for(let x=100;x<300;x+=.001){const v=g(x);if(p!=null)w=Math.max(w,Math.abs(v-p));p=v;}return w;};
  const a=step(f),b=step(turned);
  ok('the grain is continuous where the slope turns: the steepest 1 mm step '+a.toFixed(4)+' m (the coordinates turned instead: '+b.toFixed(3)+')',a<.01,b<.01);}
+// the crease (G[2], the ground's colour reads it): high where the gullies cut the ground down, low where they left a spur standing
+// (it correlates with the eroded-less-large height, negatively); the negative, the crease 2 km off (past every octave), hardly does
+{const pts=[];for(let i=0;i<1500;i++)pts.push([(i*97.3)%2400+50,(i*61.7)%2400+50]);
+ const cre=(x,z)=>{const G=[0,0,0],gx=(large(x+e,z)-large(x-e,z))/(2*e),gz=(large(x,z+e)-large(x,z-e))/(2*e);WMICRO.erode(large(x,z),x,z,gx,gz,S,600,0,G);return G[2];};
+ const corr=(A,B)=>{const n=A.length,ma=A.reduce((s,v)=>s+v,0)/n,mb=B.reduce((s,v)=>s+v,0)/n;let s=0,a=0,b=0;for(let i=0;i<n;i++){s+=(A[i]-ma)*(B[i]-mb);a+=(A[i]-ma)**2;b+=(B[i]-mb)**2;}return s/Math.sqrt(a*b);};
+ const D=pts.map(([x,z])=>eroded(x,z)-large(x,z)),C=pts.map(([x,z])=>cre(x,z)),C2=pts.map(([x,z])=>cre(x+1733,z+1291));
+ const r=corr(C,D),r2=corr(C2,D);
+ ok('the crease marks the gullies: it correlates '+r.toFixed(2)+' with the cut of the drainage (the crease 2 km off: '+r2.toFixed(2)+')',r<-.5&&Math.max(...C)<=1&&Math.min(...C)>=-1,r2<-.5);}
 // world-absolute: a frame moved by (dx, dz) reads the same land at the moved point
 {const a=WMICRO.erode(50,123,456,.07,.03,S,600,0)+WMICRO.hills(123,456,S,600,0);WMICRO.init({ox:1e6-4000,oz:2e6+2500,seed:7});
  const b=WMICRO.erode(50,4123,-2044,.07,.03,S,600,0)+WMICRO.hills(4123,-2044,S,600,0);WMICRO.init({ox:1e6,oz:2e6,seed:7});

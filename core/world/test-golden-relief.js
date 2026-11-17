@@ -25,7 +25,7 @@ function snapshot(){const G={};
  // WMICRO (PLAN-MICRO.md): the hills, the drainage (its height and the slope it leaves) and the grain at the same points
  WMICRO.init({ox:2000000,oz:3000000,seed:9});const SM={hill:40,gully:.8,rough:1};
  G.mhills=pts.map(([x,z])=>r6(WMICRO.hills(x,z,SM,600,0)));
- G.merode=pts.map(([x,z])=>{const g=[0,0],h=WMICRO.erode(500,x,z,-.08,.05,SM,600,0,g);return [r6(h),r6(g[0]),r6(g[1])];});
+ G.merode=pts.map(([x,z])=>{const g=[0,0,0],h=WMICRO.erode(500,x,z,-.08,.05,SM,600,0,g);return [r6(h),r6(g[0]),r6(g[1]),r6(g[2])];});
  G.mgrain=pts.map(([x,z])=>r6(WMICRO.grain(x,z,.3,.2,-.1,SM,0)));
  // WSTREAMS: the trace on a valley with a depression, its lines as region.json keeps them, their decode, the tarns
  {const nx=60,ny=80,cell=250,n=nx*ny,E=new Float32Array(n),K=new Uint8Array(n),RW=new Float32Array(n),RM=new Float32Array(n);

@@ -9,6 +9,13 @@ over a box and drawn as a hillshade, with its terrace-band metric (core/world/PL
 <region> is openworld/<name> (or its data dir). --core reads 40-world-smooth.js, 41-world-fields.js, 43-world-relief.js and 44-world-streams.js from
 another folder (a copy of an older core/world: the "before" of a change), else from core/world. Two regions or cores side by
 side: run it twice and join the images (--diff a.png b.png out.png).
+--texture also prints the micro-relief's measures (core/world/PLAN-MICRO.md M0): the band relief (RMS of a difference of
+Gaussians at 20-60, 60-180 and 180-540 m), the drainage alignment (cos^2 between the 60-540 m detail's gradient and the
+540 m slope, weighted by the detail's gradient: 0.5 for detail with no direction, lower where it runs downslope as a DEM's
+does (.17-.46), higher for contour terraces) and the slope at the grid step (p50, p90, p99). The box needs to be ~2 km or
+more (800 m is cropped off each side). --fixed draws the hillshade under a fixed light, unstretched, so two images compare.
+    python3 core/world/landshade.py --dem <city> <out.png> [--win 4000]   a World Menagerie DEM's steepest window
+                                                                           (host/WorldMenagerie/data/cities/<city>-osm.json), the same measures
 
 The band metric: over the sloped samples (> 3 %), for every step s from 20 to 100 m, the histogram of height mod s in 20 bins;
 its contrast is max / min, read only where the sloped ground spans five steps or more. A land terraced every s metres on its absolute height reads 2 or more at s; a land without
@@ -140,6 +147,55 @@ def rings(E, step_m, fine_m=30.0, broad_m=500.0, tile_m=500.0):
     return (ringed / tiles if tiles else 0.0), tiles
 
 
+def texture(E, step_m):
+    """the micro-relief's measures (PLAN-MICRO.md M0) over the box less 800 m each side"""
+    from scipy import ndimage
+    g = lambda s: ndimage.gaussian_filter(E, s / step_m, mode='nearest')
+    G20, G60, G180, G540 = g(20), g(60), g(180), g(540)
+    bz, bx = np.gradient(G540, step_m, step_m)
+    k = int(800 / step_m)
+    if 2 * k >= min(E.shape) - 4:
+        return None
+    c = lambda A: A[k:-k, k:-k]
+    rms = lambda A: float(np.sqrt(np.mean(c(A) ** 2)))
+    fz, fx = np.gradient(G60 - G540, step_m, step_m)
+    b2, W = bx * bx + bz * bz, fx * fx + fz * fz
+    C = (fx * bx + fz * bz) ** 2 / np.maximum(W * b2, 1e-30)
+    m = c(b2 > 0.03 ** 2)
+    al = float((c(W)[m] * c(C)[m]).sum() / max(c(W)[m].sum(), 1e-30)) if m.sum() > 100 else None
+    sz, sx = np.gradient(E, step_m, step_m)
+    S = c(np.hypot(sx, sz))
+    return {'slope540': float(np.mean(np.hypot(c(bx), c(bz)))), 'b20_60': rms(G20 - G60), 'b60_180': rms(G60 - G180), 'b180_540': rms(G180 - G540),
+            'align': al, 'slope': [float(np.percentile(S, q)) for q in (50, 90, 99)]}
+
+
+def texline(T):
+    if not T:
+        return '; texture: the box is too small (2 km or more)'
+    return '; texture: 20-60 / 60-180 / 180-540 m relief %.1f / %.1f / %.1f m, drainage alignment %s, slope p50/p90/p99 %.2f/%.2f/%.2f' % (
+        T['b20_60'], T['b60_180'], T['b180_540'], '-' if T['align'] is None else '%.2f' % T['align'], *T['slope'])
+
+
+def fixed_shade(E, step_m, exag=2.0):
+    gz, gx = np.gradient(E * exag, step_m, step_m)
+    L = np.array([-0.6, 0.55, -0.58]); L /= np.linalg.norm(L)
+    v = (-gx * L[0] + L[1] - gz * L[2]) / np.sqrt(gx * gx + gz * gz + 1)
+    return np.clip(v * 255, 0, 255).astype(np.uint8)
+
+
+def dem(city, win):
+    j = json.load(open(os.path.join(ROOT, 'host', 'WorldMenagerie', 'data', 'cities', city + '-osm.json'), encoding='utf-8'))['terrain']
+    E = np.array(j['h'], dtype=np.float64).reshape(j['nz'], j['nx']) / 10
+    n, best = int(win / j['step']), None
+    for r in np.linspace(0, j['nz'] - n, 5).astype(int):
+        for q in np.linspace(0, j['nx'] - n, 5).astype(int):
+            W = E[r:r + n, q:q + n]
+            sp = np.percentile(W, 90) - np.percentile(W, 10)
+            if (W <= 0.5).mean() < 0.05 and (best is None or sp > best[0]):
+                best = (sp, r, q)
+    return E[best[1]:best[1] + n, best[2]:best[2] + n], float(j['step'])
+
+
 def main():
     a = sys.argv[1:]
     if not a or a[0] in ('-h', '--help'):
@@ -151,6 +207,11 @@ def main():
         o.paste(ims[0], (0, 0)); o.paste(ims[1], (ims[0].width + 8, 0)); o.save(a[3])
         print('joined', a[3]); return
     opt = lambda k, n: a[a.index(k) + 1:a.index(k) + 1 + n] if k in a else None
+    if a[0] == '--dem':
+        E, step = dem(a[1], float((opt('--win', 1) or [4000])[0]))
+        Image.fromarray(fixed_shade(E, step)).save(a[2])
+        print('landshade %s: the %s DEM, %d x %d at %g m%s' % (a[2], a[1], E.shape[1], E.shape[0], step, texline(texture(E, step))))
+        return
     region, out = a[0], a[1]
     box = opt('--box', 4)
     if opt('--at', 1):
@@ -165,15 +226,18 @@ def main():
     if not os.path.isdir(region):
         region = os.path.join(ROOT, 'openworld', region)
     E, us, info = sample(region, box, step, core, '--bench' in a)
-    img = HS.shade(E, step, 315, exag)
-    lo, hi = np.percentile(img, 1), np.percentile(img, 99)
-    img = np.clip((img.astype(float) - lo) / max(hi - lo, 1) * 255, 0, 255).astype(np.uint8)
+    if '--fixed' in a:
+        img = fixed_shade(E, step, exag)
+    else:
+        img = HS.shade(E, step, 315, exag)
+        lo, hi = np.percentile(img, 1), np.percentile(img, 99)
+        img = np.clip((img.astype(float) - lo) / max(hi - lo, 1) * 255, 0, 255).astype(np.uint8)
     Image.fromarray(img).save(out)
     s, c = bands(E, step)
     tr, tn = rings(E, step)
     print('landshade %s: %d x %d at %g m, %.0f..%.0f m, %s (terraces %.2f); ringed tiles %.0f %% of %d; bands worst at %s m: %.2f%s' % (
         out, E.shape[1], E.shape[0], step, E.min(), E.max(), info.get('biome'), info.get('terr') or 0, tr * 100, tn, s, c,
-        '' if us is None else '; WORLD.H %.1f us a call' % us))
+        '' if us is None else '; WORLD.H %.1f us a call' % us) + (texline(texture(E, step)) if '--texture' in a else ''))
 
 
 if __name__ == '__main__':

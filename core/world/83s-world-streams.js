@@ -45,11 +45,13 @@ function check(sunk){if(!P.length)return{ok:true,detail:'no wet streams in this 
  const x=camera.position.x,z=camera.position.z,lines=[...drawn.values()].filter(Boolean).map(D=>D.line);let alt='';
  if(!lines.length){let b=0;for(let n=1;n<P.length;n++)if(dist(P[n],x,z)<dist(P[b],x,z))b=n;lines.push(WORLD.streamWaterLine(P[b],STEP));
   alt=' (none near the camera: the nearest piece, '+Math.round(dist(P[b],x,z))+' m off, read instead)';}
- let n=0,bad=0,first=null;
+ let n=0,bad=0,first=null,culv=0;
  for(const L of lines)for(let i=0;i<L.pts.length;i+=6){const p=L.pts[i],g=WORLD.H(p[0],p[1]),y=p[2]-(sunk?2:0);n++;
-  if(!(y>g-.8&&y<g+3)){bad++;first=first||[Math.round(p[0]),Math.round(p[1]),+(y-g).toFixed(2)];}}
+  if(!(y>g-.8&&y<g+3)){if(y<g&&WORLD.Hland){const gl=WORLD.Hland(p[0],p[1]);if(g>gl+.3&&y>gl-.8){culv++;continue;}}   /* under a road's fill (the ground with the roads over the land
+     without them, the water in the land's bed): a culvert (a track's level fill over the stream, 2026-11-17: pinnacle's band tracks cross wet streams on the micro-relief's land), counted, not a fault; never with the water standing over the road */
+   bad++;first=first||[Math.round(p[0]),Math.round(p[1]),+(y-g).toFixed(2)];}}
  return{ok:want.length===0&&n>0&&bad===0,detail:P.length+' pieces of wet stream, '+stats.drawn+' drawn near the camera'+(want.length?', '+want.length+' WITHIN '+NEAR+' m NOT DRAWN':'')+alt+
-  '; '+n+' points of their water, '+bad+' out of the bed'+(first?' (first at '+first[0]+','+first[1]+': '+first[2]+' m over the ground)':'')};}
+  '; '+n+' points of their water, '+bad+' out of the bed'+(first?' (first at '+first[0]+','+first[1]+': '+first[2]+' m over the ground)':'')+(culv?', '+culv+' under a road (culverts)':'')};}
 // THE TARNS (relief P7): each a core/water still surface at its level over its outline (WORLD.ponds), drawn within NEAR, dropped
 // past FAR, taken back out of WATER.surfaces as a stream's piece is; the ground over the level hides it past the shore
 const PO=WORLD.ponds?WORLD.ponds():[],pdrawn=new Map();stats.ponds=PO.length;stats.pondsDrawn=0;

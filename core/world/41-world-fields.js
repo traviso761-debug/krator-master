@@ -181,7 +181,7 @@ let M,nx,ny,i0,j0,su,sv,cx,cy,X0,Y0,MW,MH,EL,WLV,WHAS,REL,CL,RN,TP,BI,MK,SL,SU,S
 let SID,KIT,STY,PALL,NB,CLCODE,CLGROUP;
 // a region with region.json `relief` (core/world/PLAN-RELIEF.md; 43-world-relief.js): terraces lie only on caprock
 // (WRELIEF.bench) instead of on the absolute height. Every overlay's style and palette are BIOME_GROUND's, relief or not
-let RELIEF=false,LANDF=false,PEAK=null,MICRO=false;const MG=[0,0];
+let RELIEF=false,LANDF=false,PEAK=null,MICRO=false;const MG=[0,0,0];
 // the kits (47-world-kits.js) are read at init: which overlay each grows on
 let KITNAMES=[];W.KITS=KITNAMES;
 W.init=function(R){M=WORLD_DATA.meta;const Hd=M.heights,F=M.frame;
@@ -401,6 +401,16 @@ function buildStreams(){STSEG=null;STHASH=null;STIDX=null;STLN=[];STPC=null;cons
 // to a side, so a terrain chunk (which asks for detail down to 1.5 x its vertex spacing) has a vertex in it: a bed narrower
 // than the grid fell between its vertices, and the ground drawn between bank and bank stood through the water in
 // triangles and squares (the near chunks keep the bed's own width; a far one draws a wider flat bed the water lies on)
+/* PLAN-MICRO.md: a small stream's corridor, 0 at its bank to 1 from 40 m beyond it (the micro-relief's fine gullies fade in it, so
+   the course runs smooth under its baked bed). MICROFINE false (the streams' bake, reading the beds): 0 everywhere */
+let MICROFINE=true;W.setMicroFine=v=>{MICROFINE=!!v;};
+function streamCorridor(x,z){if(!MICROFINE)return 0;if(!STHASH)return 1;
+ const ix=Math.floor(x/STCELL)-STG.x0,iz=Math.floor(z/STCELL)-STG.z0;if(ix<0||iz<0||ix>=STG.nx||iz>=STG.nz)return 1;
+ const c=iz*STG.nx+ix,e=STHASH[c+1];let m=1;
+ for(let i=STHASH[c];i<e;i++){const o=STIDX[i]*9,ax=STSEG[o],az=STSEG[o+1],dx=STSEG[o+2]-ax,dz=STSEG[o+3]-az,l2=dx*dx+dz*dz;
+  let t=l2>0?((x-ax)*dx+(z-az)*dz)/l2:0;t=t<0?0:t>1?1:t;const ex=ax+dx*t-x,ez=az+dz*t-z,d=Math.sqrt(ex*ex+ez*ez);if(d>SREACH)continue;
+  const hw=stW(lerp(STSEG[o+4],STSEG[o+5],t));m=Math.min(m,smooth(hw,hw+40,d));}
+ return m;}
 function streamAt(x,z,h,S,C,minWave,extra){C.k=0;C.d=1e9;C.hw=0;C.wet=0;C.bw=0;const hwMin=.7*(minWave==null?0:minWave);S=S||SDEF;
  const ix=Math.floor(x/STCELL)-STG.x0,iz=Math.floor(z/STCELL)-STG.z0;if(ix<0||iz<0||ix>=STG.nx||iz>=STG.nz)return C;
  const c=iz*STG.nx+ix,e=STHASH[c+1];
@@ -621,7 +631,7 @@ function reliefMask(x,z){if(!WHASF){WHASF=new Float32Array(nx*ny);for(let k=0;k<
  return m;}
 W.reliefMask=(x,z)=>RELIEF?reliefMask(x,z):1;
 W.wetCell=(x,z)=>{if(!WHASF)reliefMask(0,0);return gridBil(WHASF,x,z);};   /* the model's wet cells, bilinear (the mask's water) */
-function H(x,z,minWave,P,nr,nt){minWave=minWave||0;MG[0]=MG[1]=0;
+function H(x,z,minWave,P,nr,nt){minWave=minWave||0;MG[0]=MG[1]=MG[2]=0;
  /* S: H's own copy of the style. styleAt fills one shared object, and WLAND's caprock and ground ask for it while filling a landform cell
     inside WLAND.apply below, so the stream carve and the grain after it read another place's style, and the land hung on which call
     filled the cell first (a stop planned on gentle ground read 43 % at the plan's check, 2026-11-17) */
@@ -644,7 +654,7 @@ function H(x,z,minWave,P,nr,nt){minWave=minWave||0;MG[0]=MG[1]=0;
     model and its hills, by central differences at 30 m), branching. Any other region's: ridged noise, which has no direction */
  if(RELIEF){if(S.gully>.01&&minWave<450){const e=30,hA=clamp(rel*.12,12,420)*S.hills,Lf=(px,pz)=>baseH(px,pz)+(N1.fbm(px/6000,pz/6000,4)-.5)*2*hA+(MICRO?rm*WMICRO.hills(px,pz,S,rel,minWave):0);
    if(rm>0){const gx=(Lf(x+e,z)-Lf(x-e,z))/(2*e),gz=(Lf(x,z+e)-Lf(x,z-e))/(2*e);
-    const he=MICRO?WMICRO.erode(h,x,z,gx,gz,S,rel,minWave,MG):WRELIEF.erode(h,x,z,gx,gz,S,rel,minWave,MG);   /* PLAN-MICRO.md M2: the drainage from 800 m to 25 m */
+    const he=MICRO?WMICRO.erode(h,x,z,gx,gz,S,rel,minWave,MG,minWave<100?streamCorridor(x,z):1):WRELIEF.erode(h,x,z,gx,gz,S,rel,minWave,MG);   /* PLAN-MICRO.md M2: the drainage from 800 m to 25 m */
     h+=rm*(he-h);}}}
  else if(S.gully>.01&&minWave<240){const g=1-Math.abs(2*N4.fbm(x/240,z/240,2)-1);h-=S.gully*(3+rel*.004)*Math.pow(g,6)*2.2;}
  if(PEAK&&S.peak>.01&&minWave<1300&&rm>0){const hp=WRELIEF.peaks(h,x,z,S,rel,gridBil(PEAK,x,z),minWave);h+=rm*(hp-h);}   /* relief P5: crests and summits on the high ground */
@@ -670,7 +680,7 @@ function H(x,z,minWave,P,nr,nt){minWave=minWave||0;MG[0]=MG[1]=0;
   /* a road's cut bank does not shave a landform record (Pinnacle Rock's north rim stood 116 m from a track 230 m below it,
      and the bank took the rim down to the track): past the carriageway the rock stands again */
   if(LANDF){const t=WLAND.apply(-1e9,x,z,minWave);if(t>h)h=lerp(h,t,smooth(RD.hw+1.5,RD.hw+8,RD.d));}}}
- if(P){P.base=b;P.rel=rel;P.cd=cd;P.cut=cut;P.cw=cw;P.co=co;P.sd=sd;P.sw=sw;P.road=rw;SKEYS.forEach(k=>P[k]=S[k]);}
+ if(P){P.base=b;P.rel=rel;P.crease=MG[2];P.lift=h-b;P.cd=cd;P.cut=cut;P.cw=cw;P.co=co;P.sd=sd;P.sw=sw;P.road=rw;SKEYS.forEach(k=>P[k]=S[k]);}
  return h;}
 W.H=(x,z,minWave)=>H(x,z,minWave||0,null);
 W.Hbare=(x,z,minWave)=>H(x,z,minWave||0,null,true,true);   // the land alone: no roads, no towns
@@ -734,11 +744,11 @@ const A={},PP={};
 W.at=function(x,z){const h=H(x,z,0,PP),e=4,hx=H(x+e,z,0,null)-h,hz=H(x,z+e,0,null)-h;
  return fieldsFrom(x,z,h,Math.hypot(hx,hz)/e,PP,A);};
 W.Hp=(x,z,minWave,P)=>H(x,z,minWave||0,P);
-W.PARTS=['base','rel','cd','cut','cw','co','road','dune','rock','wallK'];
+W.PARTS=['base','rel','cd','cut','cw','co','road','dune','rock','wallK','crease','lift'];   /* crease, lift: PLAN-MICRO.md M4 */
 W.fieldsFrom=(x,z,h,tanS,P,out)=>fieldsFrom(x,z,h,tanS,P,out||{});
 function fieldsFrom(x,z,h,tanS,PP,A){const slope=clamp(tanS*1.6,0,1),wl=W.water(x,z);
  const rain=W.rain(x,z),temp=W.temp(x,z),cc=mapNear(CL,x,z),code=CLCODE[cc]||'',grp=CLGROUP[cc]||'';
- A.x=x;A.z=z;A.h=h;A.water=wl;A.depth=wl-h;A.tanS=tanS;A.slope=slope;A.rain=rain;A.temp=temp;A.clim=code;A.group=grp;A.base=PP.base;A.rel=PP.rel;A.road=PP.road||0;
+ A.x=x;A.z=z;A.h=h;A.water=wl;A.depth=wl-h;A.tanS=tanS;A.slope=slope;A.rain=rain;A.temp=temp;A.clim=code;A.group=grp;A.base=PP.base;A.rel=PP.rel;A.road=PP.road||0;A.crease=PP.crease||0;A.lift=PP.lift||0;
  // the channel: flow on its banks, canyon inside a cut deeper than 18 m, the rim a band outside the cut's lip
  const inCh=PP.cd<PP.co;
  const flow=Math.max(PP.cd<1e8?1-smooth(PP.cw*.6,PP.cw+12+PP.cut*PP.wallK*.3,PP.cd):0,
@@ -777,10 +787,14 @@ W.ground=function(x,z,S,out){const B=blendAt(x,z,BLEND);GC[0]=GC[1]=GC[2]=0;
   mixc(_t,P.rock,S.rock*.55);
   const cg=S.canyon;if(cg>0){mixc(_t,P.gravel,cg*smooth(.2,.6,1-S.flow)*.8);}
   mixc(_t,P.silt,S.flow*.6);mixc(_t,P.damp,smooth(.6,.95,S.flow)*S.wet*.6);
+  /* PLAN-MICRO.md M4, the drainage in the colour (the Menagerie's DEMs show it): a gully's floor damper (its scrub and damp, by how
+     wet the land is), a spur's crest paler and drier */
+  const ce=S.crease||0;if(ce>0)mixc(_t,P.damp,ce*ce*(.15+.25*S.wet)*(1-S.rock*.6));else if(ce<0)mixc(_t,P.pale,ce*ce*.22*(1-S.rock*.5));
   GC[0]+=_t[0]*w;GC[1]+=_t[1]*w;GC[2]+=_t[2]*w;}
  if(S.salt>0)mixc(GC,lin(SALT),S.salt*smooth(.3,.1,S.slope)*.7);
  if(S.temp<2){const sn=smooth(2,-6,S.temp)*smooth(.75,.45,S.slope);mixc(GC,lin(S.temp<-14?ICE:SNOW),sn);}
- const k=1+n*.12;out[0]=GC[0]*k;out[1]=GC[1]*k;out[2]=GC[2]*k;
+ /* the light on the relief: a hollow a little darker, a crest and a knoll above the land's large form (lift) a little lighter */
+ const k=(1+n*.12)*(1-.07*(S.crease||0))*(1+.06*clamp((S.lift||0)/40,-1,1));out[0]=GC[0]*k;out[1]=GC[1]*k;out[2]=GC[2]*k;
  out[3]=clamp(S.rock*1.1-S.dune-S.salt,0,1)*(S.temp<-2?.4:1)*(1-(S.road||0));
  return out;};
 return W;})();

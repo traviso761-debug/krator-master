@@ -21,6 +21,9 @@ const DEPTH := 0.55
 const T0 := 0.15
 const KN := 0.06
 const SLCAP := 0.6
+const DETAIL := 1.5
+const YMEAN := -0.3
+const FINE := 200.0
 
 static var OX := 0.0
 static var OZ := 0.0
@@ -74,12 +77,14 @@ static func hills(x: float, z: float, S: Dictionary, rel: float, min_wave = null
 	return A * HK * _knee(KRand.gfbm(ax / HW, az / HW, o, (SEED ^ 0x4849) & M32) - T0)
 
 
-static func erode(h: float, x: float, z: float, gx: float, gz: float, S: Dictionary, rel: float, min_wave = null, G: Array = []) -> float:
+static func erode(h: float, x: float, z: float, gx: float, gz: float, S: Dictionary, rel: float, min_wave = null, G: Array = [], fine: float = 1.0) -> float:
 	var g: float = S.get("gully", 0.6)
 	if not (g > 0.01):
 		if G.size() >= 2:
 			G[0] = gx
 			G[1] = gz
+		if G.size() >= 3:
+			G[2] = 0.0
 		return h
 	var sl0 := minf(SLCAP, sqrt(gx * gx + gz * gz))
 	var dep := minf(0.75, DEPTH * g) * sl0 * (1 + _clamp(rel / 2000, 0, 0.5))
@@ -88,6 +93,10 @@ static func erode(h: float, x: float, z: float, gx: float, gz: float, S: Diction
 	var Gx := gx
 	var Gz := gz
 	var out := h
+	var cr := 0.0
+	var cw := 0.0
+	var tgt := 0.0
+	var mask := 1.0
 	for o in OCT.size():
 		var lam: float = OCT[o]
 		if min_wave != null and min_wave >= lam * 0.5:
@@ -127,14 +136,27 @@ static func erode(h: float, x: float, z: float, gx: float, gz: float, S: Diction
 		var sn := vy / m
 		var gul := (1.0 - t) * 0.5
 		var cov := _smooth(0.05, 0.6, W)
-		var a := dep * lam * fade * cov * pow(GAIN, o)
-		out -= a * (2 * gul - gul * gul - 0.65)
-		var k := -a * (1 - gul) * _clamp(3 * sn, -1, 1) * 6.283185307179586 / lam
+		# the stacked mask (runevision): the stripe's height y, faded toward the coarser octaves' target where they mask it
+		var fo := fine if lam <= FINE else 1.0
+		var a0 := dep * lam * pow(GAIN, o)
+		var y := 1 - 2 * (2 * gul - gul * gul)
+		var mk := mask * fade * cov * fo
+		var yf := tgt + (y - tgt) * mk
+		out += a0 * 0.5 * (mk * (y - YMEAN) + fade * cov * fo * (1 - mask) * tgt)
+		var wo := pow(GAIN, o)
+		cr += wo * mk * (2 * gul - 1)
+		cw += wo
+		var k := -a0 * mk * (1 - gul) * _clamp(3 * sn, -1, 1) * 6.283185307179586 / lam
 		Gx += k * nx
 		Gz += k * nz
+		tgt = yf
+		var mu := (1 - pow(1 - mask, DETAIL)) * _smooth(0, 0.7, absf(sn))
+		mask += (mu - mask) * cov
 	if G.size() >= 2:
 		G[0] = Gx
 		G[1] = Gz
+	if G.size() >= 3:
+		G[2] = cr / cw if cw > 0 else 0.0
 	return out
 
 

@@ -14,7 +14,11 @@
 //                                  (the model, its hills and these hills), each octave following the slope the coarser left,
 //                                  so the finest branch off the coarsest; floors flattened (profile 2g - g^2, a rounded
 //                                  trough, not a cusp); faded where no kernel point reaches (no circular seams). G (if
-//                                  given) gets the slope it leaves, for the grain
+//                                  given) gets the slope it leaves, for the grain, and (G[2], if three long) the crease: -1 a spur's crest
+//                                  to +1 a gully's floor, the octaves' stripes weighted 0.8^octave (the ground's colour shades by it).
+//                                  fine (0..1, default 1) scales the octaves of 200 m and under: 41 fades them in a small stream's corridor
+//                                  (its course runs smooth; the bake reads the beds with them off), so the bed never sits in a fine
+//                                  gully's trench under the next bump (pinnacle's water stood 3.35 m under its ground)
 //   WMICRO.grain(x, z, sl, S, minWave)  the ground's grain under 13 m, by the slope sl (m/m): smooth on the flats (it stood as
 //                                  sandpaper everywhere), rough on the steep, and stretched down the slope
 var WMICRO=(function(){'use strict';
@@ -38,12 +42,12 @@ M.hills=function(x,z,S,rel,minWave){if(minWave!=null&&minWave>=HW*.6)return 0;co
  const ax=x+OX,az=z+OZ,o=minWave!=null&&minWave>=HW*.3?1:2;   /* two octaves (1.6 km, 790 m): smooth forms; all the finer relief is the gullies', which run downhill */
  return A*HK*knee(KRAND.gfbm(ax/HW,az/HW,o,SEED^0x4849)-T0);};
 // ---------------------------------------------------------------- the fine gullies (the erosion filter continued)
-const OCT=[800,400,200,100,50,25],GAIN=.8,DEPTH=.55,SLCAP=.6;
-M.erode=function(h,x,z,gx,gz,S,rel,minWave,G){
- const g=S.gully==null?.6:S.gully;if(!(g>.01)){if(G){G[0]=gx;G[1]=gz;}return h;}
+const OCT=[800,400,200,100,50,25],GAIN=.8,DEPTH=.55,SLCAP=.6,DETAIL=1.5,YMEAN=-.3,FINE=200;
+M.erode=function(h,x,z,gx,gz,S,rel,minWave,G,fine){fine=fine==null?1:fine;
+ const g=S.gully==null?.6:S.gully;if(!(g>.01)){if(G){G[0]=gx;G[1]=gz;if(G.length>2)G[2]=0;}return h;}
  /* the depth goes with the INPUT slope (the large form's), as WRELIEF.erode's does: scaled by the running slope, each octave
     steepened the next until the finest stood at 65 degrees */
- const sl0=Math.min(SLCAP,Math.sqrt(gx*gx+gz*gz)),dep=Math.min(.75,DEPTH*g)*sl0*(1+clamp(rel/2000,0,.5)),ax=x+OX,az=z+OZ;let Gx=gx,Gz=gz,out=h;
+ const sl0=Math.min(SLCAP,Math.sqrt(gx*gx+gz*gz)),dep=Math.min(.75,DEPTH*g)*sl0*(1+clamp(rel/2000,0,.5)),ax=x+OX,az=z+OZ;let Gx=gx,Gz=gz,out=h,cr=0,cw=0,tgt=0,mask=1;
  for(let o=0;o<OCT.length;o++){const lam=OCT[o];if(minWave!=null&&minWave>=lam*.5)break;
   const sl=Math.sqrt(Gx*Gx+Gz*Gz),fade=smooth(.0005,.012,sl);if(fade<=0)break;
   const nx=-Gz/sl,nz=Gx/sl,ci=Math.floor(ax/lam),cj=Math.floor(az/lam);let vx=0,vy=0,W=0;
@@ -53,12 +57,21 @@ M.erode=function(h,x,z,gx,gz,S,rel,minWave,G){
    const w=(1-d2)*(1-d2),s=((ax-px)*nx+(az-pz)*nz)/lam;vx+=w*WRELIEF.cos2pi(s);vy+=w*WRELIEF.sin2pi(s);W+=w;}
   if(!(W>0))continue;
   const m=Math.sqrt(vx*vx+vy*vy)+.15*W,t=vx/m,sn=vy/m,gul=(1-t)*.5,cov=smooth(.05,.6,W);
-  const a=dep*lam*fade*cov*Math.pow(GAIN,o);
-  out-=a*(2*gul-gul*gul-.65);   /* the rounded trough: flat at its floor (g = 1), .65 its mean */
-  const k=-a*(1-gul)*clamp(3*sn,-1,1)*6.283185307179586/lam;Gx+=k*nx;Gz+=k*nz;}   /* d/ds of 2g - g^2 is (2 - 2g) dg/ds; the sine near its sign (runevision's
+  /* the stripe's height y: +1 a spur's crest, -1 a gully's floor (the rounded trough 2g - g^2: flat at the floor). RUNEVISION'S
+     STACKED MASK (PLAN-MICRO.md M2b): where the coarser octaves leave a crest or a floor (their stripes level), this octave's
+     gullies fade, not to nothing but to the coarser octaves' own faded height (the target): the crests stay crisp, the floors
+     clean, and the fine gullies keep to the flanks. mk: the mask x the fade on the flat x the kernel's coverage */
+  const fo=lam<=FINE?fine:1,a0=dep*lam*Math.pow(GAIN,o),y=1-2*(2*gul-gul*gul),mk=mask*fade*cov*fo,yf=tgt+(y-tgt)*mk;
+  out+=a0*.5*(mk*(y-YMEAN)+fade*cov*fo*(1-mask)*tgt);   /* the gully where the mask is open (less YMEAN, the stripe's mean: the land neither rises
+    nor sinks), the target where the coarser octaves mask it, and nothing where this octave is not (no kernel point, the flat): weighed
+    by (1 - mk) instead, a coverage hole dropped the target's height at once, a 2.9 m step */
+  const wo=Math.pow(GAIN,o);cr+=wo*mk*(2*gul-1);cw+=wo;   /* the crease: +1 a gully's floor, -1 a spur's crest (runevision's ridge map) */
+  const k=-a0*mk*(1-gul)*clamp(3*sn,-1,1)*6.283185307179586/lam;Gx+=k*nx;Gz+=k*nz;
+  tgt=yf;const mu=(1-Math.pow(1-mask,DETAIL))*smooth(0,.7,Math.abs(sn));mask+=(mu-mask)*cov;}   /* the next octave's target and mask: level stripes
+    (|sin| ~ 0: a crest, a floor) mask it; eased in by the kernel's coverage (where no point reaches, the octave is skipped: unblended, the mask jumped there) */   /* d/ds of 2g - g^2 is (2 - 2g) dg/ds; the sine near its sign (runevision's
     "straight gullies": the next octave branches off cleanly instead of curling round the stripe's crest), clamped not signed: a sign turns
     the next octave's stripes at once where the sine crosses 0, a 5 m step */
- if(G){G[0]=Gx;G[1]=Gz;}
+ if(G){G[0]=Gx;G[1]=Gz;if(G.length>2)G[2]=cw>0?cr/cw:0;}
  return out;};
 // ---------------------------------------------------------------- the grain
 // under 13 m: ~.07 m rms on the flat to ~.4 m on a 50 % slope; stretched down the slope (a rill runs downhill). The stretch is

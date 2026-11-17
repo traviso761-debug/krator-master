@@ -131,11 +131,11 @@
     "core/water/51-core-water-kinds.js": "549ea82cd960f7b78d0088c0a0059a1104eb360ccac82e916b48ec8cb29e0e57",
     "core/world/00-head.html": "f13d6e95835b879b2558b833c915dec3020683afff8a62962d2c7aaa68659c6e",
     "core/world/40-world-smooth.js": "e8c66b277bbf6c21e2c677b4506b5ef5a14448281fec08f2e7e4f487f137b116",
-    "core/world/41-world-fields.js": "6727b7428c5e1b2a18d18dd14eae8d8bb36ded84b13998076adf1e827cb2f755",
+    "core/world/41-world-fields.js": "d28c55fa408e1cc56755491d9341a7a5e8d6edb963820517be2fa3f0d6370663",
     "core/world/42-world-roads.js": "8b9b8bf77763f7f8c1507f103352c821d1032021ec73218b96aa4a5783451277",
     "core/world/43-world-relief.js": "18a974bb8797c1474a194e77e69fa469bae7873be4e994728e3c60a8cb375601",
     "core/world/43b-world-landforms.js": "2ba3c2a2f677f803ed556770a7dc920bb3c087b87c8ee99d80e7571208cfa981",
-    "core/world/43m-world-micro.js": "28e50b15d4e2f6859d869b138e76de089d0e91fa4bf07b694237515a119a4388",
+    "core/world/43m-world-micro.js": "ccee5ebb35b1cfb03ade2b9fa5e39db854e3763bd5ea9c523f88ba415779dc3e",
     "core/world/44-world-streams.js": "30dd78741a14355b6d9d40a03a439253d7316a89023fe84d59fb7a353fb9390d",
     "core/world/45-world-host.js": "4f67add1a87c01af548999122e1c4562345f8871418ea7a478eebfb8699323bc",
     "core/world/48s-world-sites.js": "90ac5ceae97a31f6f12b6a540ec26fc550e3e468936e2ff3bbf09c2732732e43",
@@ -143,7 +143,7 @@
     "core/world/80-world-sky.js": "824f51c793e1835057f01241b306fc9e4cda0ee4d2fd1277010d0cb201852ad2",
     "core/world/81-world-terrain.js": "4c254a79afd5b964b616928abd1744e5ab58902ddac2519bbfefcb22976a128d",
     "core/world/83-world-water.js": "5dcd8b2a4ad41fa8a288dd14277cfde482223c7eef6a512bf0be29e52644f3c5",
-    "core/world/83s-world-streams.js": "be73cfc7fc7092740616ba757879fe81c9406875246196112dc2f805c70b492f",
+    "core/world/83s-world-streams.js": "6e4fb86371e2bcc9789be65e8b6529c440968a6ce67f8cde3a3f0904d36826ac",
     "core/world/83w-world-seas.js": "4343db7a7c00a09c8e915de92033dccfcd483b5d57a068ff5be4ee2f2a504131",
     "core/world/84-world-nursery.js": "527af1608c8011b8bfc78d0c2ce84d256aa6745bad782f7deeaa0cf198942938",
     "core/world/85-world-flora.js": "c9f5d993402edd41f0596a26eb41377bbd1b78ed618cca69012ed737458a9bcd",
@@ -208,13 +208,13 @@
     "openworld/xanadu-oidong-highrift/data/elev.png": "1523cf4aaa4af1df63c192260de365ac55a1b220c24276d6103193a9cd4deacf",
     "openworld/xanadu-oidong-highrift/data/mask.png": "c2c9da88cafc15269caecf9c4257353d3bea761ed327a1ea5e3d678cbc08ea61",
     "openworld/xanadu-oidong-highrift/data/rain.png": "2b1a6c5219a67055a30aeffed892a47bde43f29255961a2e11aaf43f892bbffa",
-    "openworld/xanadu-oidong-highrift/data/region.json": "02428301a7da3b3bede9dd21dc1d34812d2fe5daf5fc90bc6a9236a145f49018",
+    "openworld/xanadu-oidong-highrift/data/region.json": "5f514876d27f8998b44b9b4925adfbda5c504e9d8f57ff7e95c2790369fc8853",
     "openworld/xanadu-oidong-highrift/data/scarpl.png": "38501915c83202e7bab4fedf14061dc35d673d36f41a3c7c5a528a2ce6c89f2c",
     "openworld/xanadu-oidong-highrift/data/scarpu.png": "0d0f9a0b077923c0fa727128f8b87a56307bdbc09ccfc27aff5172267acf869f",
     "openworld/xanadu-oidong-highrift/data/scarpw.png": "dcd59af91d0ccf56876593a3ea8e6915eaf37926a18d9d8e8701f11e7ad76694",
     "openworld/xanadu-oidong-highrift/data/temp.png": "5306c98cfa3e975fb83882e16ab74663b3628ced25f8f98a45dd4e563ccc96c1",
     "openworld/xanadu-oidong-highrift/data/wlev.png": "203e404929ff3579ed257adf5217d6857b890ef6abfa15d380b8812f652ab626",
-    "openworld/xanadu-oidong-highrift/plan/sites.json": "32f4ca5440ca7261c5849be3544695a78475ee682bad964b8220ebe636cc6a34",
+    "openworld/xanadu-oidong-highrift/plan/sites.json": "6978fe8364659c93f671b502768c4dede5ae2a39b23455d23470085bd34c564a",
     "openworld/xanadu-oidong-highrift/src/43-world-xoh.js": "516868f08a23ec2515291f2d565a15d58c97fd034799b8c354f906821f1fe0d4",
     "openworld/xanadu-oidong-highrift/src/46-world-config.js": "4ffbee4eced5186af028ff6db36659d23794049f2f38d77f8f0a712c8768af5e",
     "openworld/xanadu-oidong-highrift/src/47-world-kits.js": "bcc8bcc0c30847c0c9b1d4ef038a8420a8c65623ee6c0e419b7a03100caabf35",
@@ -295,12 +295,12 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.html": "044c7b115e73b4c0c70bfa8ef8266268f4b7107e4b751397ae9a3f7ca82b17ca",
+    "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.html": "41202b6b1d377ffa600a1ddca8347546bbb2dc25685bd76957214d57d44f741e",
     "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.tex.oidong.js": "88510acf50c6f8c3830549722810e5183c685781ea2deaa2904e9297452e8086",
     "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.tex.xanadu.js": "7216145e7a4349521c0a4ed9f2f4478f5a709cb771ad7fa4c30270d0df288196"
    },
    "outputs_raw": {
-    "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.html": "044c7b115e73b4c0c70bfa8ef8266268f4b7107e4b751397ae9a3f7ca82b17ca",
+    "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.html": "41202b6b1d377ffa600a1ddca8347546bbb2dc25685bd76957214d57d44f741e",
     "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.tex.oidong.js": "88510acf50c6f8c3830549722810e5183c685781ea2deaa2904e9297452e8086",
     "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.tex.xanadu.js": "7216145e7a4349521c0a4ed9f2f4478f5a709cb771ad7fa4c30270d0df288196"
    }

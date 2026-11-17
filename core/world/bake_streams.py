@@ -78,7 +78,7 @@ const SR={version:1,by:'core/world/44-world-streams.js (core/world/bake_streams.
 // the beds: the ground along the curve the page draws (41's streamCurves: WORLD.streams()), the lowest so far from the head,
 // read at each cell's own point of the curve (the curve's samples between two relaxed cells: ceil(chord / step))
 SR.lines=R.lines;WORLD_DATA.meta.streams=SR;
-const CV=WORLD.streams();
+const CV=WORLD.streams();if(WORLD.setMicroFine)WORLD.setMicroFine(false);   /* the beds under the page's stream corridor: the micro-relief's fine gullies off (PLAN-MICRO.md) */
 R.lines.forEach((L,t)=>{const P=CV[t].pts,V=WSMOOTH.line(WSTREAMS.decode(L,SR),{step:1e12,relax:SR.relax});
  let lo=1e9;const g=P.map(p=>lo=Math.min(lo,WORLD.Hbare(p[0],p[1],0)));
  const B=[g[0]];let idx=0;for(let k=0;k<V.length-1;k++){idx+=Math.max(1,Math.ceil(Math.hypot(V[k+1][0]-V[k][0],V[k+1][1]-V[k][1])/SR.step));B.push(g[Math.min(idx,g.length-1)]);}

@@ -142,17 +142,54 @@ Slopes after: median 0.04-0.09, 99th percentile 0.19-0.20 (gentle country: the D
 - **Shading.** Heightmap ambient occlusion (oriented by the light, reduced in valley bottoms: Cartographic Perspectives),
   curvature, Gaea's data maps (flow, occlusion, rock) as texture inputs.
 
+## M2b, M4, M5 (2026-11-17, the owner: "do next steps")
+
+- **M2b, runevision's stacked mask** (`WMICRO.erode`):
+  - Each octave's stripe height y (+1 a spur's crest, -1 a gully's floor) fades toward a target where the coarser octaves'
+    stripes lie level (their crests and floors). The target is the coarser octaves' own faded height. The mask is
+    `(1 - (1 - mask)^1.5) x smooth(0, .7, |sin|)`, eased in by the kernel's coverage.
+  - So the crests stay crisp, the floors clean, and the fine gullies keep to the flanks.
+  - The height term is `a0/2 (mk (y - mean) + fade cov (1 - mask) target)`. Weighed by (1 - mk) instead, a coverage hole
+    dropped the target's height at once: a 2.9 m step.
+  - Alignment 0.27 -> 0.24 (pinnacle rim) and 0.25 -> 0.22 (High Rift close). The test ground reads 0.177; slopes p99 0.24.
+  - The hillshade: the knife-edge creases are gone, the flanks are softer.
+- **M4, the drainage in the colour** (41's `W.ground`):
+  - `WMICRO.erode` returns the crease (G[2], -1 a crest to +1 a floor, the octaves weighted 0.8^octave). It reaches the
+    ground through the probe (`P.crease`, a new PART) with `P.lift` (the height over the land's large form).
+  - A gully's floor is mixed toward the palette's damp (more where the land is wet), a crest toward its pale. A hollow is
+    7 % darker, a knoll up to 6 % lighter by its lift.
+  - `test-micro.js`: the crease correlates -0.87 with the drainage's cut (2 km off: 0.25).
+- **A small stream's corridor:**
+  - The bake reads each bed as the lowest ground so far along its curve, at full detail. After a fine gully's dip the bed
+    stayed low, and over the next bump the page's carve (at most 6 m) left pinnacle's water 3.35 m under its ground.
+  - Now the octaves of 200 m and under fade in a small stream's corridor (`streamCorridor`: 0 at its bank, 1 from 40 m
+    beyond), and the bake reads the beds with them off (`WORLD.setMicroFine(false)`). The course runs smooth, as a real
+    one's does.
+  - `WMICRO.erode` takes the factor as `fine` (default 1).
+- **Culverts** (83s's check): the re-baked band tracks cross wet streams on the new land, and a track's level fill stands
+  over the water (pinnacle: 3.2 m on the carriageway, 2.1 m on its bank). A water point under the ground where the roads'
+  ground is over the land's (`H > Hland + 0.3`) and the water lies in the land's bed is counted as a culvert, not a fault.
+  The water standing over a road is still a fault.
+- **M5:** `landshade.py --texture` prints the band relief, the alignment and the slope percentiles; `--fixed` draws under a
+  fixed light; `--dem <city>` measures a World Menagerie DEM the same way.
+- **In the game** (pinnacle's views at 300 m and on the ground, on the GPU):
+  - On the gentle savannah the micro-relief barely shows. Its hills are tens of metres over a kilometre (as real gentle
+    country is), and the jungle's canopy hides its ground.
+  - The light is pinned at 45 degrees (`HOST.SUN_DIR`; the clock's hour does not move it yet). A build with the sun at 28
+    degrees changed these views little too.
+  - The module's effect is the drainage structure where the land has relief: the High Rift, the highland, alpine and
+    volcanic styles.
+
 ## Owed
 
-- **M2b, runevision's refinements:** the fade target and the stacked mask (crisp peaks and valley floors, fine gullies on the
-  steep), and the doubled-and-clamped normalisation.
-- **M4, the shading the Menagerie leans on** (81-world-terrain.js and the ground colour), the shape's other half:
-  - rock blended in by slope from 0.55 to 0.7 (talus at 0.8, cliff at 1.1);
-  - a cavity term (hollows darker, spurs lighter) from the chunk's own height grid;
-  - a ramp on height relative to the local relief;
-  - colour jitter at 2, 8, 30, 120 and 600 m, faded by `fwidth`;
+- **M2b's rest:** runevision's doubled-and-clamped normalisation of the stripes' phasor (ours adds 0.15 W).
+- **M4's rest** (the crease and the lift are done; the rock already comes in by slope, from a rise of 0.19 over a run of 1):
+  - talus and cliff classes at 0.8 and 1.1 of the slope;
+  - colour jitter at 2, 8, 30, 120 and 600 m, faded by `fwidth` (the ground has 37, 240 and 900 m and the shader's four
+    detail textures);
   - north-facing snow, and cloud shadow.
-- **M5:** `landshade.py --texture` (the band relief and the alignment), so a region's land can be judged by number.
+- **The owner's call:** how much relief each style carries (`hill`: savanna 28 m, highland 90 m...), and whether the light
+  follows the clock's hour (a lower sun in the morning and evening, as the Menagerie's pages are lit).
 - **M6:** the regions without relief (isle-demo, iziz-cluster) take it once they take relief.
 - A settlement on the map keeps its own ground through `townAt`. A road's carriageway is level whatever the micro-relief
   did; its banks cut the new hills, so a re-bake may move a road.
