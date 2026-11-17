@@ -52,11 +52,12 @@ Open items are `- [ ]`; build.py counts them.
 
 - [ ] **The GPU verify is owed** (`KRATOR_GL=gpu python3 verify.py dist/firebliss-glass.html --assert --all-views` on the owner's machine). The
   session that built it had no GPU: what ran on SwiftShader is in the commit message.
-- [ ] **The dome is not on this branch's model.** Scale model 5.1 edit 2 (`d6c00c3e0`, the patera and the ten domes) is only on
-  `origin/claude/firebliss-patera-domes`; the page raises South Glass on today's ground from edit 2's record (`44y`: middle 175,1335, 14 km, top
-  5,053 m). **For the scale-model queue:** when edit 2 (or Gemini's reshaping, which keeps a dome here) lands, `GLASS.bench` must read the model's
-  ground without the dome's cells (or take the model's dome and sharpen only its wall), else the dome is raised twice; and the moat's pit
-  (edit 2: 23 to 47 pit cells, a dome-dammed pond) would want a water level on the model if the owner wants a pond in the moat.
+- [ ] **The dome and the model** (2026-11-17). `model_site.py` reads the dome's record from the model's `DATA.domes` (scale model 5.1
+  edit 8, `tools/scale-model/edit_518.py`, on `main`) when the model carries it, else `station.json`'s copy (this branch's model has no
+  domes). With edit 8 the model's 37 dome cells are refilled from the land round them (a Laplace fill) and the page raises its own,
+  sharper dome once: tested on main's model outside the page (the page's ground within ~5 m of this branch's off the dome; the moat
+  unchanged). **Owed after the merge with main:** rebuild the page on edit 8's model and verify it. The moat's pit (a dome-dammed pond
+  in the patera plan) has no water level on the model: a map change for the scale-model queue if the owner wants a pond there.
 - [ ] **The spec's numbers are not the model's** (PLAN.md section 11.3): the spec's moat 2,890 m, top 3,290 m, 1.11-1.16 atm and Dfc/Cfb; here
   ~4,220 m, 5,053 m, 0.94 / 0.85 atm, ET. The wall is ~800 m to the moat (the spec's 380 m is its cliff part). The model was followed.
 - [ ] **A texture is a stand-in:** the wall takes `rock.basalt.flowbanded` under KSTRATA's beds (the gap `rock.rhyolite.flowbanded`, entered in

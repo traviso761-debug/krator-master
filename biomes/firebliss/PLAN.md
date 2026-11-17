@@ -384,8 +384,9 @@ The plan's questions:
 
 ### 11.3 Station 8 as built (2026-11-16)
 
-`python3 build.py --station glass` (`dist/firebliss-glass.html`, `stations/glass/`). Built on this branch's model, which does **not** carry the
-domes: scale model 5.1 edit 2 (`d6c00c3e0`, the Firebliss Patera and its domes) is only on `origin/claude/firebliss-patera-domes`, not merged
+`python3 build.py --station glass` (`dist/firebliss-glass.html`, `stations/glass/`). **The record** is the model's `DATA.domes` entry when the
+model carries the domes (scale model 5.1 edit 8, on `main`: `model_site.py` reads it and refills the dome's cells from the land round them, so
+the page draws the dome once), else `station.json`'s copy of the same numbers. The branch it was built on does **not** carry the domes: scale model 5.1 edit 2 (`d6c00c3e0`, the Firebliss Patera and its domes) is only on `origin/claude/firebliss-patera-domes`, not merged
 (its `edit_512.py` clashes by number with this branch's own edit 512, and it turns the Great Firebliss Vale, which stations 1 and 2 stand on, into
 the patera's lava lake). So the page raises **South Glass** itself on today's ground, with edit 2's record for it: its middle 175,1335, 14 km
 across, its top flat at **5,053 m** (`44y-host-glass.js`, `GLASS`). Where the spec and the model disagree the model wins:

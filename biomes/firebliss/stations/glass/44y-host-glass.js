@@ -1,9 +1,9 @@
 // ================================================================= HOST — the dome: STATION 8, SOUTH GLASS (PLAN.md section 11.2; 2026-11-16)
 // [G data] The shape of the pancake dome dome_fb_south (5.1 px 175,1335) as plain maths of (x, z): no THREE, no DOM, its noise from core/rand
-// (KRAND.fbm round the circle, baked once into tables by the angle), so a port draws the same dome. The numbers are scale model 5.1 edit 2's record
-// (tools/scale-model/edit_512.py on origin/claude/firebliss-patera-domes, d6c00c3e0: 14 km across, its top 5,053 m, flat to 72% of its radius on the
-// model's 2 km cells). Edit 2 is not on this branch's model, so the page raises the dome on today's ground (KNOWN_ISSUES.md: once the model carries
-// it, this reads the model's ground without the dome's cells, or drops its own rise). What 2 km cells cannot hold is the kit's (PLAN.md 1c, 11.2):
+// (KRAND.fbm round the circle, baked once into tables by the angle), so a port draws the same dome. The numbers are the model's record (scale model 5.1
+// edit 8, tools/scale-model/edit_518.py, DATA.domes: 14 km across, its top 5,053 m, flat to 72% of its radius on the model's 2 km cells), read by
+// model_site.py; on a model without the domes, station.json's copy of it. Either way the page raises the dome itself on the ground under it (the
+// model's cells there refilled from the land round it when the model carries the dome: the dome drawn once). What 2 km cells cannot hold is the kit's (PLAN.md 1c, 11.2):
 //   THE TOP      flat at 5,053 m, swelling 18 m to the middle; concentric pressure ridges (ogives, 3-7 m, ~70 m apart) in its outer 1.4 km
 //   THE CREST    6,350 m from the middle in lobes (the flow lobes) and flutes (~40 m apart); the lip rounded over ~10 m
 //   THE WALL     the glass carapace and the flow-banded core, ~65 degrees, 150-570 m high by the lobe (84s paints it: KSTRATA obsidian-pancake)
@@ -12,8 +12,11 @@
 //   THE CRACKS   radial cracks through the apron into the moat, 14 m wide and 4 m deep, steaming at their feet (44z: the thermal layout)
 //   THE BENCH    a dry pumice bench on the moat, 2.5 m high: the knapping camp's (44z)
 // Bearings are from north, clockwise, measured at the dome's middle; the page's frame is x east, z south. Needs KRAND; MODEL (45) at call time only.
-const GLASS=(function(){const M=FB_MODEL,C=[(175-M.px)*M.cell,(1335-M.py)*M.cell];
- const TOP=5053,RC=6350,G1=2.2,G2=.72,HC=360,LIP=10,K=6,TAU=Math.PI*2,N=16384;
+// THE RECORD is FB_MODEL.dome (model_site.py): the model's DATA.domes entry when the model carries the domes (scale model 5.1 edit 8; its cells
+// under the dome then refilled from the land round it, so the dome is drawn once, here), else station.json's copy. Its crest stands at 0.907 of
+// its radius (6,350 m of 7,000), its foot about where the record's edge is.
+const GLASS=(function(){const M=FB_MODEL,D=M.dome,C=[(D.px[0]-M.px)*M.cell,(D.px[1]-M.py)*M.cell];
+ const TOP=D.top_m,RC=Math.round(D.d_km*500*.907),G1=2.2,G2=.72,HC=360,LIP=10,K=6,TAU=Math.PI*2,N=16384;
  const sm=(a,b,v)=>{const t=Math.max(0,Math.min(1,(v-a)/(b-a)));return t*t*(3-2*t);};
  const rad=b=>b*Math.PI/180;
  /* a bearing to the angle atan2(z, x) of the page's frame, and back */

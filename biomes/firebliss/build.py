@@ -178,7 +178,7 @@ for i,k in enumerate(['throne','copperglacier','geyser']):
 sys.path.insert(0,HERE)
 import model_site as _ms
 _px,_py=SJ['site']
-VIRTUAL['44m-host-model.js']=_ms.fragment(_px,_py,SJ.get('key','vale'))
+VIRTUAL['44m-host-model.js']=_ms.fragment(_px,_py,SJ.get('key','vale'),SJ.get('dome'))   # a station on a dome (station 8): the model's record, its cells refilled
 # THE RESOURCE DATA round the site (kits/resources, read in place by Copper Glacier's res_site.js): the nodes in the square, as FB_RES
 _node=find_node()
 if not _node and not LISTING: sys.exit('build.py: node is needed to read the resource data (res_site.js)')
