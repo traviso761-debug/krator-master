@@ -7,7 +7,7 @@ import sys; sys.path.insert(0, os.path.join(ROOT, 'kits', 'tungang')); import tu
 js = tungang_bundle.bundle()              # tex=True: the library maps (about 11 MB of data URLs)
 js = tungang_bundle.bundle(tex='lean')    # eight families (stone, turf, pole, wood, plate, rust, rope, cord): about 4.4 MB
 js = tungang_bundle.bundle(tex=False)     # vertex colours only: about 200 KB
-js = tungang_bundle.bundle(furniture=True)   # and the catalog's fellgang, tungang, xanadu, generic and generic-goods pieces sealed in
+js = tungang_bundle.bundle(furniture=True)   # and the catalog's fellgang, tungang, xanadu, generic, generic-goods and jobs pieces sealed in
 js, files = tungang_bundle.bundle(with_files=True)   # and the repo-relative files it read, for --list-sources
 js = tungang_bundle.bundle(tex='glazier', side=side)   # the Glazier set's families; with side={} the maps go into side['tungang']
                                                          # for a file beside the host page (matlib_pack.write_sidecar: Laitwal)
@@ -42,7 +42,8 @@ never 0.5 m past it), centred on the record as before: the layout, the records a
 | `o.variant` | `'fowlers'` or `'icecut'`: overrides the meeting hall's variant |
 | `o.state` | `'kept'` (default) or `'worn'`; a record's own `r.state` wins |
 | `o.character` | `'stony'`, `'low'` or null: weights each building's massing family (default: `'low'` for an ice village, `'stony'` otherwise; null picks evenly). A record's own `r.character` wins |
-| `o.pegs`, `o.lost` | the rope wall's pegs (default as above) and its empty pegs (default one, by the hall's seed) |
+| `o.pegs`, `o.slats`, `o.lost` | the rope wall's pegs, the tally board's slats and the empty pegs (defaults as above; a record's own `r.pegs` / `r.slats` wins) |
+| `o.walk`, `o.doors`, `o.steps`, `o.furnish` | `o.walk`: record floors, walls and ladders into global `KWALK` / `KWALKBOX`; `o.doors`: register operable `KDOOR` plate doors into global `KDOOR` / `KDOORHOST` and flush their `InstancedMesh`es into the draw group; `o.steps`: build drystone threshold steps and `KWALK` strips where a door stands above sloped ground; `o.furnish === false`: skip catalog furniture for distant draws |
 
 Each record's def is placed at `x, z, ry` (the record's frame: the door on +z rotated by `ry`, as `KHAMLET.village` faces
 its records to their lanes), **seated as the stand-ins were**: the corners and centre of its box are measured on
@@ -85,7 +86,7 @@ above, an iron peg every 25 m with the family's mark, a ladder up the first 18 m
 Road and wall pieces: `{key, x, z, ry?, y?, v?, family?, face?, id?}`; `y` defaults to `o.ground(x, z)`; `face: true` draws a
 stub of rock behind a wall piece (the sheet's; a station's terrain is the face). Keys: `fg-lantern-post`, `fg-ice-tools` (by the Ice-cutters' stacks), `fg-wall-station`
 (v even: the lift cage; odd: the plate shelter), `fg-nest-ledge`, `fg-burial-ledge` (`family`: the mark and the rope's
-colour), `fg-halt`, `fg-wagon` (+z its back: the door and steps).
+colour), `fg-halt`, `fg-wagon` (+z its back: the door and steps), `fg-cairn` (v 0: the standing peace stone; v >= 1: a fell cairn), `fg-stone-sign`, `fg-fair-hurdle`, `fg-stair-hoist` (+z overhanging the pitch).
 
 ### `TG.fg.proto(key, o)` -> meshes
 
@@ -96,7 +97,7 @@ for measuring (verify.py checks the worn state this way).
 
 | | |
 |---|---|
-| `TG.fg.BOX` | the 14 keys' boxes `{w, d, h, form, what}` (the contract) |
+| `TG.fg.BOX` | the 24 keys' boxes `{w, d, h, form, what}` (the 14 village stand-in keys + 10 town-scale keys) |
 | `TG.fg.dims(key)` | `{w, d, h}` or null: the stand-ins' `FELLGANG.dims`, for `KHAMLET.village`'s `dims` |
 | `TG.fg.ROW` | `KHAMLET.CULTURES.fellgang` when the page has core/hamlet's opt-in row, else null |
 | `TG.fg.check` | `box(recs, tol, fill)` (never tol past, filling fill: {w .65, d .65, h .75}), `plinth(recs, ground)`, `rope(records, meshes, tol)`: the checks verify.py runs, each `{ok, ...}`, for a station's `--assert` |

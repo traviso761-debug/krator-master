@@ -135,3 +135,63 @@ defBuilding({key:'fg-ice-tools',name:'The ice-cutters\' tool rack',seed:9148,cls
   /* the tongs hung from the bar, a coil of rope */
   for(const x of [-.65,.75])for(const s of [-1,1]){beam('iron',[x,1.88,0],[x+s*.12,1.55,0],.012,ic,true,4);beam('iron',[x+s*.12,1.55,0],[x+s*.05,1.38,0],.012,ic,true,4);}
   ring('rope',-.2,1.6,-.12,.18,.035,P('rope'),0,PI/2,0,8);}});
+/* the Stairhead's gin wheel and lowering frame (settlements/blakhed PLAN.md section 5, step B2): +z overhangs the pitch */
+defBuilding({key:'fg-stair-hoist',name:'A stair hoist and gin wheel',seed:9161,cls:'infrastructure',cut:true,w:8.6,d:10.6,h:6.4,budget:4500,
+ tags:{types:['infrastructure'],style:'salvage',role:'hoist',job:'warehousing'},
+ note:'the Stairhead\'s lowering engine: a beast-walked capstan and Ancient cable drum in a kerbed track, braced bell-fir A-frame legs leaning over the pitch (+z), iron gin sheaf and hung cargo cradle',
+ build(o){const C=fgCx(o),pc=fgCol('pole',C),wc=fgCol('wood',C),col=fgCol('stone',C),sc=fgCol('stoneD',C),ic=P('iron');
+  fgPlinth(-3.9,3.9,-5.1,2.6,C,{top:.05});
+  /* circular drystone kerb of the beasts' track about (0, -1.3), counterweight cairn at the back, central capstan and sweep bars */
+  sector('stone',0,-1.3,3.35,3.85,0,TAU,0,.38,col,20);box('stone',0,0,-4.55,3.2,.95,.9,col);
+  pole('pole',[0,.05,-1.3],[0,2.75,-1.3],.18,pc,8);cyl('iron',0,.65,-1.3,.62,.95,ic,12);
+  for(let k=0;k<6;k++)ring('cable',0,.76+k*.13,-1.3,.65,.028,P('cable'),0,0,0,12);
+  for(const a of [0,PI/2]){W(0,1.25,-1.3,a+C.v*.2,()=>{beam('pole',[-3.95,0,0],[3.95,0,0],.075,pc,true,6);
+   for(const s of [-1,1])ring('iron',s*3.75,-.08,0,.1,.02,ic,0,PI/2,0,8);});}
+  /* braced bell-fir A-frame shear legs leaning out over +z, head beam, iron sheaf wheel and hung sledge load */
+  for(const sx of [-1,1]){const x0=sx*2.35,xh=sx*1.35;box('stoneD',x0,Math.min(-.3,C.lo),1.95,.95,.45-Math.min(-.3,C.lo),.95,sc);
+   beam('pole',[x0,.15,1.95],[xh,6.05,4.95],.13,pc,true,7);beam('pole',[sx*2.6,.15,-1.1],[xh,5.65,4.55],.095,pc,true,6);}
+  beam('pole',[-1.55,6.02,4.95],[1.55,6.02,4.95],.12,pc,true,7);beam('pole',[-2.1,3.2,3.45],[2.1,3.2,3.45],.08,pc,true,5);
+  WX(0,5.78,4.95,0,0,PI/2,()=>cyl('iron',0,0,0,.42,.12,ic,12));
+  cord('cable',[[0,1.35,-1.3],[0,6.12,4.95],[0,1.85,4.95]],.026,P('cable'));
+  W(0,1.25,4.95,0,()=>{box('wood',0,0,0,1.55,.1,1.15,wc);for(const sx of [-.68,.68])for(const sz of [-.48,.48])cord('rope',[[sx,.05,sz],[0,.62,0]],.014,P('rope'));
+   box('ice',0,.1,0,.95,.5,.68,P('ice'));box('straw',0,.6,0,1,.06,.72,P('sawdust'));});
+  fgSign('HOLD FAST',0,1.05,-4.08,PI,C,{ch:.13,kind:'rust',ink:'white'});fgSet('hoist',1);}});
+/* a 5 m hurdle section for the Fair's beast ring and drove lanes */
+defBuilding({key:'fg-fair-hurdle',name:'A Fair-ring hurdle',seed:9162,cls:'fixture',w:5,d:.9,h:1.4,budget:1100,
+ tags:{types:['infrastructure'],style:'salvage',role:'fence',job:'herding'},
+ note:'a 5 m section of the Fair\'s ring rails: three bell-fir posts wedged in drystone cairn-feet, three fir rails lashed with cord, iron tether rings and a family mark',
+ build(o){const C=fgCx(o),pc=fgCol('pole',C),col=fgCol('stone',C),ic=P('iron');
+  for(const x of [-2.32,0,2.32]){box('stone',x,Math.min(0,C.lo+.25),0,.52,.32-Math.min(0,C.lo+.25),.74,col);
+   pole('pole',[x,0,0],[x,1.34,0],.065,pc,6);}
+  for(const y of [.42,.82,1.2])pole('pole',[-2.48,y,.05],[2.48,y,.05],.042,pc,5);
+  for(const x of [-2.32,0,2.32])for(const y of [.42,1.2])fgLash([x-.06,y+.05,-.06],[x+.06,y-.05,.1]);
+  ring('iron',-1.15,.82,.1,.08,.016,ic,0,0,0,8);ring('iron',1.15,.82,.1,.08,.016,ic,0,0,0,8);
+  if(C.v%3===0){box('plate',0,.82,.09,.38,.34,.025,fgCol('plate',C));fgMark(C.v,0,.98,.11,0,.22);}
+  fgSet('hurdle',1);}});
+/* the peace stone (v 0) and the fell cairns (v >= 1) */
+defBuilding({key:'fg-cairn',name:'A cairn or peace stone',seed:9163,cls:'landmark',w:3.2,d:3.2,h:2.8,budget:2400,
+ tags:{types:['plaza'],style:'drystone',role:'cairn'},
+ note:'on the Market (v 0), the tall uncarved standing stone in its drystone kerb where a quarrel is sworn off for the market peace; on the fells and at the Fair, a stepped drystone cairn with a lashed mark plate and iron spike',
+ build(o){const C=fgCx(o),col=fgCol('stone',C),sc=fgCol('stoneD',C);
+  cyl('stone',0,Math.min(0,C.lo+.2),0,1.48,.28-Math.min(0,C.lo+.2),col,14);
+  sector('stoneD',0,0,1.18,1.5,0,TAU,.24,.52,sc,14);
+  if((C.v|0)===0){/* the Market's standing peace stone */
+   for(let k=0;k<3;k++)cyl('stone',0,.28+k*.22,0,1.12-k*.18,.24,col,12);
+   box('stoneD',0,.85,0,.86,1.88,.54,P('slate'),.14,.03);
+   for(const y of [1.35,2.05])ring('cable',0,y,0,.52,.018,P('cable'),0,PI/2,0,10);
+   fgSign('PEACE',0,1.48,.31,0,C,{ch:.12,kind:'plate'});fgSet('peace',1);}
+  else{/* a stepped drystone cairn */
+   for(let k=0;k<6;k++){const r=1.22-k*.15,y=.28+k*.33;cyl('stone',rr(-.04,.04),y,rr(-.04,.04),r,.35,k%2?col:sc,11);}
+   fgSpike([0,2.22,0],[0,1,.08],.52);
+   W(0,1.55,.82,0,()=>{box('plate',0,-.18,0,.56,.44,.03,fgCol('plate',C));fgMark(C.v,0,.04,.02,0,.32);});fgSet('cairn',1);}}});
+/* a road waystone with lashed salvage-plate fingerboards */
+defBuilding({key:'fg-stone-sign',name:'A road stone and fingerboard',seed:9164,cls:'fixture',w:1.5,d:1,h:2.3,budget:1300,
+ tags:{types:['infrastructure'],style:'salvage',role:'sign'},
+ note:'a drystone way-cairn and bell-fir post where the rim roads part: lashed salvage-plate arms with daubed road words and a lantern lobelia bell at the crown',
+ build(o){const C=fgCx(o),pc=fgCol('pole',C),col=fgCol('stone',C);
+  box('stone',0,Math.min(0,C.lo+.25),0,1.24,.42-Math.min(0,C.lo+.25),.82,col);
+  for(let k=0;k<5;k++){const a=k*TAU/5;ellip('stone',Math.cos(a)*.38,.44,Math.sin(a)*.26,.22,.14,.18,col,a,6);}
+  pole('pole',[0,.1,0],[0,2.18,0],.075,pc,7);
+  W(0,1.68,0,.18,()=>{box('plate',.14,0,.06,1.12,.26,.03,fgCol('plate',C));fgText(pick(['MARKET','STAIR','FAIR']),.12,.06,.08,0,.11,P('red'));fgLash([-.28,.24,-.06],[-.28,-.04,.09]);});
+  W(0,1.34,0,-PI/2+.25,()=>{box('rust',.12,0,.06,.78,.24,.03,fgCol('rust',C));fgText('HOLD',.1,.05,.08,0,.1,P('white'));});
+  sph('glow',0,2.22,0,.04,hc(0x7ab4ff),1.3,6);haloAt(0,2.22,0,0x7ab4ff,false);fgSet('sign',1);}});

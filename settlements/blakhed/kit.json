@@ -14,12 +14,14 @@
   "settlements/dalab/src/71-dalab-trade.js",
   "settlements/dalab/src/71c-dalab-town.js",
   "settlements/dalab/src/73-dalab-sacred.js",
-  "kits/xanadu/src/87k-xa-lake-trades.js"
+  "kits/xanadu/src/87k-xa-lake-trades.js",
+  "core/walk/box/24-core-walk-box.js"
  ],
  "scoped": [
   "69bk-kcity-bundle.js",
   "69bk2-tg-bundle.js",
-  "69bk4-bk-flora-bundle.js"
+  "69bk4-bk-flora-bundle.js",
+  "24-core-walk-box.js"
  ],
  "pack": "blakhed",
  "files": {
@@ -59,10 +61,12 @@
   "69bn-bk-town.js",
   "69bo-bk-ring.js",
   "89b0-bk-matlib.js",
+  "89b1-bk-interiors.js",
   "89zb-bk-site.js",
   "90b-bk-world.js",
   "90c-bk-build.js",
   "90d-bk-flora.js",
+  "24-core-walk-box.js",
   "89-atmos-0-core.js",
   "89-atmos-0p-presets.js",
   "89-atmos-a-waves.js",
@@ -80,8 +84,22 @@
   "91z-views.js",
   "89z-rows.js"
  ],
- "interiors": [],
- "furniture": [],
- "interiorSets": [],
+ "interiors": [
+  "town"
+ ],
+ "furniture": [
+  "xanadu",
+  "eastabyss",
+  "iziz",
+  "fellgang",
+  "generic",
+  "generic-goods",
+  "jobs",
+  "scrap"
+ ],
+ "furnitureTex": true,
+ "interiorSets": [
+  "xanadu"
+ ],
  "sidePacks": true
 }

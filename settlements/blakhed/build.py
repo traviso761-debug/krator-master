@@ -31,7 +31,7 @@ import buildlib                                   # noqa: E402
 buildlib.through_tools_build(__file__)            # item 25: build-inputs.json is always written
 import build_sources as BSRC                      # noqa: E402  (--list-sources: tools/dep_graph.py)
 CORE_TAKEN = ('core/rand', 'core/tags', 'core/host', 'core/city', 'core/space', 'core/hamlet', 'core/atmos', 'core/water',
-              'core/drawn', 'core/biome', 'core/materials')   # through Xanadu's build, kit.json and gen/
+              'core/drawn', 'core/biome', 'core/materials', 'core/door', 'core/furnish', 'core/walk', 'core/lod')   # through Xanadu's build, kit.json and gen/
 
 CITY_JS = ['10-city-core.js', '12-city-index.js', '15-city-ground.js', '20-city-plan.js', '25-city-site.js', '31-city-steps-b.js',
            '32-city-steps-c.js', '33-city-strategies.js', '40-city-kcity.js']
@@ -76,7 +76,7 @@ def kcity_bundle():
 def tg_bundle():
     sys.path.insert(0, os.path.join(ROOT, 'kits', 'tungang'))
     import tungang_bundle as tb
-    js, files = tb.bundle(tex=True, with_files=True, side=SIDE)   # the maps beside the page (the 16 MB cap)
+    js, files = tb.bundle(tex=True, furniture=True, with_files=True, side=SIDE)   # the maps beside the page (the 16 MB cap); catalog sealed in
     BSRC.note(*files)
     return js
 

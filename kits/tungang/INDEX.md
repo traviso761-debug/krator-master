@@ -20,7 +20,7 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 1 |  |
-| `26k-kit.js` | 7 |  |
+| `26k-kit.js` | 8 |  |
 | `37-wk-rec.js` | 3 |  |
 | `40-fg-kit.js` | 18 |  |
 | `42-fg-mass.js` | 21 |  |
@@ -28,14 +28,15 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `52-fg-civic.js` | 8 |  |
 | `54-fg-stores.js` | 9 |  |
 | `56-fg-works.js` | 14 |  |
-| `60-fg-road.js` | 16 |  |
+| `58-fg-town.js` | 29 |  |
+| `60-fg-road.js` | 22 |  |
 | `62-gz-kit.js` | 27 |  |
 | `63-gz-homes.js` | 19 |  |
 | `65-gz-civic.js` | 16 |  |
 | `67-gz-works.js` | 18 |  |
-| `80-fg-host.js` | 10 |  |
+| `80-fg-host.js` | 13 |  |
 | `84-gz-host.js` | 8 |  |
-| `89-rows.js` | 4 |  |
+| `89-rows.js` | 5 |  |
 | `91t-fg-sheet.js` | 9 |  |
 | `91z-gz-sheet.js` | 7 |  |
 | `96t-fg-views.js` | <1 |  |

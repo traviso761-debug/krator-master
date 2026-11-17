@@ -57,14 +57,15 @@ ASSERT_JS = r"""()=>{const A=window._api,R=[],S=window._fgSheet||{},C=TG.fg.chec
  const T=A.tags().audit;const scratch=KTAGS.create({build:'neg'});scratch.add({'class':'building',kind:'x',key:'x',name:'x',at:[0,0,0],ry:0,size:[1,1,1],tags:{culture:'nonesuch',types:['spaceport']}});const TN=scratch.audit();
  add('tags-vocabulary',{ok:T.unknown===0&&T.missingCulture===0&&T.missingTypes===0&&T.records>100,detail:T.records+' records ('+Object.entries(T.byClass).map(e=>e.join(' ')).join(', ')+'), unknown '+T.unknown+(T.unknown?' '+JSON.stringify(T.unknownValues)+JSON.stringify(T.unknownKeys):'')},
   {ok:TN.unknown===0,detail:'a record of culture nonesuch, type spaceport: unknown '+TN.unknown});
- /* the meeting hall's variants: the sheet's four and the sample village's */
+ /* the meeting hall's variants (the sheet's, the sample village's, and the town double hall holding both customs in one) */
  const fow=r=>!!r.fg&&r.fg.variant==='fowlers'&&r.fg.pegs>0&&r.fg.empty>=1&&r.fg.coils===r.fg.pegs-r.fg.empty&&!r.fg.slats,
-  ice=r=>!!r.fg&&r.fg.variant==='icecut'&&r.fg.slats>0&&r.fg.notches>=r.fg.slats*3&&!r.fg.pegs;
- const halls=top().filter(r=>r.key==='fg-meethall'),hf=halls.filter(r=>r.fg&&r.fg.variant==='fowlers'),hi=halls.filter(r=>r.fg&&r.fg.variant==='icecut');
+  ice=r=>!!r.fg&&r.fg.variant==='icecut'&&r.fg.slats>0&&r.fg.notches>=r.fg.slats*3&&!r.fg.pegs,
+  dbl=r=>!!r.fg&&r.fg.variant==='double'&&r.fg.pegs>0&&r.fg.empty>=1&&r.fg.coils===r.fg.pegs-r.fg.empty&&r.fg.slats>0&&r.fg.notches>=r.fg.slats*3;
+ const halls=top().filter(r=>r.key==='fg-meethall'),hf=halls.filter(r=>r.fg&&r.fg.variant==='fowlers'),hi=halls.filter(r=>r.fg&&r.fg.variant==='icecut'),hd=top().filter(r=>r.key==='fg-doublehall');
  const vh=(S.villageDraw&&S.villageDraw.recs||[]).filter(r=>r.key==='fg-meethall'),pop=S.village&&S.village.census?S.village.census.pop:0,hh=Math.max(6,Math.round((pop||140)/5));
- add('meethall-variants',{ok:hf.length===3&&hi.length===2&&hf.every(fow)&&hi.every(ice)&&vh.length===1&&fow(vh[0])&&vh[0].fg.pegs===hh,
-   detail:'rope wall: '+hf.map(r=>r.fg.pegs+' pegs, '+r.fg.coils+' coils, '+r.fg.empty+' empty').join('; ')+'; tally board: '+hi.map(r=>r.fg.slats+' slats, '+r.fg.notches+' notches').join('; ')+'; the sample village\'s hall: '+(vh[0]&&vh[0].fg?vh[0].fg.variant+', '+vh[0].fg.pegs+' pegs for '+hh+' households':'none')},
-  {ok:hi.length>0&&hi.every(fow),detail:'the tally board checked as a rope wall'});
+ add('meethall-variants',{ok:hf.length===3&&hi.length===2&&hd.length===3&&hf.every(fow)&&hi.every(ice)&&hd.every(dbl)&&vh.length===1&&fow(vh[0])&&vh[0].fg.pegs===hh,
+   detail:'rope wall: '+hf.map(r=>r.fg.pegs+' pegs, '+r.fg.coils+' coils, '+r.fg.empty+' empty').join('; ')+'; tally board: '+hi.map(r=>r.fg.slats+' slats, '+r.fg.notches+' notches').join('; ')+'; double hall: '+hd.map(r=>r.fg.pegs+' pegs & '+r.fg.slats+' slats').join('; ')+'; the sample village\'s hall: '+(vh[0]&&vh[0].fg?vh[0].fg.variant+', '+vh[0].fg.pegs+' pegs for '+hh+' households':'none')},
+  {ok:hi.length>0&&hi.every(dbl),detail:'the single tally-board hall checked as a double hall'});
  /* the sloped pad */
  const pad=S.pad&&S.pad.recs||[],pl=C.plinth(pad,FG_PAD.ground),lh=pad.find(r=>r.key==='fg-longhouse'),flatLh=top().find(r=>r.key==='fg-longhouse');
  const byreOk=lh&&lh.fg&&lh.fg.byre===-1&&flatLh&&flatLh.fg&&flatLh.fg.byre===1;

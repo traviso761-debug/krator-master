@@ -10,6 +10,12 @@ const VIEWS=(function(){const V={},T=BK_TOWN,Wm=T.frame.W;
  {const W0=T.WINTER;V['The Winterings']=bkEye(W0.c[0]+120,W0.c[1]-210,W0.c[0],W0.c[1],10,0);}
  {const b=T.BLOCKS.find(b=>b.use==='folds'),c=b.poly[0],d=b.poly[2];V['The Folds']=bkEye(c[0]-40,c[1]-40,(c[0]+d[0])/2,(c[1]+d[1])/2,8,0);}
  {const C=T.TEARS.c;V['The Golden Tears']=bkEye(C[0]+260,C[1]+120,C[0],C[1],18,0);}
+ if(BK_PLAN){const dh=BK_PLAN.records.find(r=>r.key==='fg-doublehall'),rec=dh&&typeof BK_TOWN_RECS!=='undefined'&&BK_TOWN_RECS[dh.id];
+  if(dh){const c=Math.cos(dh.ry),s=Math.sin(dh.ry),y=rec?rec.y:terrainH(dh.x,dh.z);
+   V['Inside the double hall']=[dh.x+8*c-1.4*s,y+1.75,dh.z-8*s-1.4*c,dh.x-7*c-.8*s,y+1.6,dh.z+7*s-.8*c];}
+  const sr=BK_PLAN.records.find(r=>r.key==='xa_serai');
+  if(sr){const c=Math.cos(sr.ry),s=Math.sin(sr.ry),y=bkD(sr.floorY,terrainH(sr.x,sr.z))+.35;
+   V['Inside the caravanserai court']=[sr.x+6*c+8*s,y+1.8,sr.z-6*s+8*c,sr.x-4*c-12*s,y+2.6,sr.z+4*s-12*c];}}
  {const C=T.CAIRN;V['The cairn hall']=bkEye(C[0]-30,C[1]+40,C[0],C[1],2,0);}
  if(BK_RINGS){const H=BK_RINGS.hoists[0],R=BK_GROUND.river,a=R.along(R.sLip-900,420);V['The Stairhead']=bkEye(a.x,a.z,H.x,H.z,30,0);
   const t=BK_TOLL[0];if(t)V['The toll post']=bkEye(t.x-70,t.z+50,t.x,t.z,6,4);

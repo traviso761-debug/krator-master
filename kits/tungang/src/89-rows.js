@@ -22,8 +22,13 @@ const FAMILIES=[
  {name:'Fellgang: the pens',keys:FG_SEEDS('fg-pens')},
  {name:'Fellgang: the ice house',keys:FG_SEEDS('fg-icehouse')},
  {name:'Fellgang: the sledge shed',keys:FG_SEEDS('fg-sledgeshed')},
+ {name:'Fellgang town: the double meeting hall (both customs in one)',keys:FG_SEEDS('fg-doublehall',3)},
+ {name:'Fellgang town: the halting house and the market hall',keys:[...FG_SEEDS('fg-halting-house',3),...FG_SEEDS('fg-markethall',2)]},
+ {name:'Fellgang town: the booths, the Fair stand and the raised granary',keys:[...FG_SEEDS('fg-booth',2),...FG_SEEDS('fg-fair-stand',2),...FG_SEEDS('fg-granary',3)]},
+ {name:'Fellgang town: the salvage-smithy and the tannery and felt house',keys:[...FG_SEEDS('fg-smithy',3),...FG_SEEDS('fg-tannery',3)]},
+ {name:'Fellgang town: the great ice house and the town rope-walk range',keys:[...FG_SEEDS('fg-great-icehouse',2),...FG_SEEDS('fg-ropewalk',2)]},
  {name:'Fellgang: the wall (stations, nest gear, a burial ledge)',keys:[{key:'fg-wall-station',o:{v:0}},{key:'fg-wall-station',o:{v:1}},{key:'fg-nest-ledge',o:{v:0}},{key:'fg-burial-ledge',o:{v:0}},{key:'fg-burial-ledge',o:{v:3}}]},
- {name:'Fellgang: the road (lantern posts, a halt, the Travellers\' wagons)',keys:[...FG_SEEDS('fg-lantern-post',3),{key:'fg-halt',o:{v:0}},{key:'fg-halt',o:{v:1}},...FG_SEEDS('fg-wagon',3),{key:'fg-ice-tools',o:{v:0}}]},
+ {name:'Fellgang: the road, the Fair and the Stairhead (lanterns, halts, wagons, cairns, signs, hurdles, a hoist)',keys:[...FG_SEEDS('fg-lantern-post',2),{key:'fg-halt',o:{v:0}},...FG_SEEDS('fg-wagon',2),{key:'fg-ice-tools',o:{v:0}},{key:'fg-cairn',o:{v:0}},{key:'fg-cairn',o:{v:2}},{key:'fg-stone-sign',o:{v:0}},{key:'fg-fair-hurdle',o:{v:0}},{key:'fg-stair-hoist',o:{v:0}}]},
  /* THE GLAZIERS (gz): poor to rich, three seeds a row; each row stands in a block of the scarp's rock carved from the defs' void
     plans (91z-gz-sheet.js), fronts toward the camera; C (the cut-away) opens the rock over every room's floor */
  {name:'Glazier: the cell (poor: one tier and a door)',keys:FG_SEEDS('gz-cell',3)},

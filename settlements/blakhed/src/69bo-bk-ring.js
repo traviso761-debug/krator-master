@@ -16,10 +16,10 @@ var BK_RING=(function(){
  /* the Fellgang row with the works it lacks (PLAN.md section 5: BK_ROW) */
  const ROW=()=>{const X=fg();return Object.assign({},X,{
   works:Object.assign({},X.works,{
-   farming:[{key:'fg-barn',jobs:6,share:.55},{key:'fg-smokehouse',jobs:3,share:.2},{key:'fg-pens',jobs:3,share:.25}],
+   farming:[{key:'fg-barn',jobs:6,share:.4},{key:'fg-granary',jobs:4,share:.2},{key:'fg-smokehouse',jobs:3,share:.18},{key:'fg-pens',jobs:3,share:.22}],
    ranch:[{key:'fg-pens',jobs:4,share:.6},{key:'fg-barn',jobs:4,share:.4}],
    quarry:[{key:'fg-sledgeshed',jobs:6,share:.6},{key:'fg-store',jobs:3,share:.4}],
-   stair:[{key:'fg-ropehouse',jobs:8,share:.45},{key:'fg-sledgeshed',jobs:6,share:.35},{key:'fg-store',jobs:4,share:.2}]}),
+   stair:[{key:'fg-ropehouse',jobs:8,share:.4},{key:'fg-sledgeshed',jobs:6,share:.3},{key:'fg-smithy',jobs:4,share:.15},{key:'fg-store',jobs:4,share:.15}]}),
   focusJobs:Object.assign({},X.focusJobs,{farming:60,ranch:45,quarry:40,stair:55}),
   reach:Object.assign({},X.reach,{farming:500,ranch:700,quarry:300,stair:200})});};
  const STEADINGS=[['bk.stead.upriver','Upbeck (the upper steading)',-4300,300,'farming'],['bk.stead.millrace','Millrace',-2300,260,'farming'],
@@ -52,7 +52,7 @@ var BK_RING=(function(){
      the edge where the loads are lowered past the first pitches */
   const S=[];let k=0;for(let s=R.sLip-260;s<=R.sLip+2400;s+=45,k++){const off=150+((k>>1)&1?70:0)+(k&1?35:0)*((k>>1)&1?-1:1);const a=R.along(s,off);S.push([a.x,a.z]);}
   out.stair={pts:S.map(p=>[p[0],p[1],G.h(p[0],p[1])]),w:2.6,name:'The gorge stair (a switchback beast path with roped pitches: PLAN.md question 3, proposed)'};
-  out.hoists=[0,1].map(i=>{const a=R.along(R.sLip+20+i*60,95+i*14);return{id:'bk.hoist.'+i,x:a.x,z:a.z,y:G.h(a.x,a.z),ry:Math.atan2(a.nx,a.nz),name:'A gin wheel over the falls\' first pitch (the Stairhead\'s hoist: the kit lacks one, page geometry)'};});
+  out.hoists=[0,1].map(i=>{const a=R.along(R.sLip+20+i*60,95+i*14);return{id:'bk.hoist.'+i,key:'fg-stair-hoist',set:'piece',x:a.x,z:a.z,y:G.h(a.x,a.z),ry:Math.atan2(a.nx,a.nz),v:i,quarter:'stairhead',name:'A gin wheel and lowering frame over the falls\' first pitch (fg-stair-hoist)'};});
   /* the toll post's pieces stay off the hamlet's buildings */
   const hr=out.stairhead.records||[];out.toll=out.toll.filter(t=>!hr.some(r=>Math.hypot(r.x-t.x,r.z-t.z)<Math.hypot(D0(r.w,10),D0(r.d,10))/2+16));
   // ---- the hamlets

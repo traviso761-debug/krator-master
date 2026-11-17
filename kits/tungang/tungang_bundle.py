@@ -71,7 +71,7 @@ function FURNISH(key, lx, ly, lz, lry, o) { if (!KratorFurniture.has(key)) retur
   var r = { key: key, x: p.x, y: p.y, z: p.z, ry: Math.atan2(e[8], e[10]) + (lry || 0), v: (o && o.v) | 0 }; FG_FURN_PENDING.push(r); return r; }
 function FURNISH_HANG(key, lx, topY, lz, lry, o) { var A = KratorFurniture.FURN_BY_KEY[key]; if (!A) return null; return FURNISH(key, lx, topY - KratorFurniture.entryDims(A, (o && o.v) | 0).h, lz, lry, o); }
 '''
-FURN_CULTURES = ['fellgang', 'tungang', 'xanadu', 'generic', 'generic-goods']
+FURN_CULTURES = ['fellgang', 'tungang', 'xanadu', 'generic', 'generic-goods', 'jobs']
 
 TAIL = r'''
 reportErr = function (m) { TG_ERRS.push(String(m).slice(0, 600)); if (globalThis.console) globalThis.console.error('TG: ' + m); };

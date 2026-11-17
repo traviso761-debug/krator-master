@@ -20,11 +20,12 @@ const BK_VILLAGES=BK_RINGS?BK_RINGS.steadings.concat([BK_RINGS.stairhead],BK_RIN
 const BK_TOLL=BK_RINGS?BK_RINGS.toll:[];
 
 // ---------------------------------------------------------------- core/tags: every building and piece before it is drawn
-{const reg=(r,name,culture,frag)=>{const D=typeof TG!=='undefined'&&TG.DEFS[r.key],B=bkDims(r.key)||{w:2,d:2,h:2};
-  KTAGS.page.add({'class':D&&D.cls==='fixture'||D&&D.cls==='prop'?'prop':'building',kind:r.key,key:r.key,name,at:[r.x,terrainH(r.x,r.z),r.z],ry:bkD(r.ry,0),size:[B.w,B.d,B.h],
+{const reg=(r,name,culture,frag)=>{const D=typeof TG!=='undefined'&&TG.DEFS[r.key],B=bkDims(r.key)||(D&&{w:D.w,d:D.d,h:D.h})||{w:2,d:2,h:2};
+  KTAGS.page.add({'class':D&&D.cls?D.cls:'building',kind:r.key,key:r.key,name,at:[r.x,terrainH(r.x,r.z),r.z],ry:bkD(r.ry,0),size:[B.w,B.d,B.h],
    tags:Object.assign({},D&&D.tags||{},{culture}),note:r.quarter||r.kind||'',frag});};
  if(BK_PLAN){for(const r of BK_PLAN.records)if(r.set==='fg')reg(r,'Blakhed: '+(r.name||(TG.DEFS[r.key]||{}).name||r.key),'fellgang','settlements/blakhed (core/city)');
-  for(const p of BK_PLAN.pieces)reg(p,'Blakhed: '+((TG.DEFS[p.key]||{}).name||p.key),'fellgang','settlements/blakhed (pieces)');}
+  for(const p of BK_PLAN.pieces)reg(p,'Blakhed: '+(p.name||(TG.DEFS[p.key]||{}).name||p.key),'fellgang','settlements/blakhed (pieces)');}
+ if(BK_RINGS)for(const h of BK_RINGS.hoists||[])reg(h,'The Stairhead: '+(h.name||(TG.DEFS[h.key]||{}).name||h.key),'fellgang','settlements/blakhed (stairhead)');
  for(const V of BK_VILLAGES)if(V.drawn)for(const r of V.records||[])reg(r,V.name+': '+((TG.DEFS[r.key]||{}).name||r.key),'fellgang','settlements/blakhed (core/hamlet)');}
 /* the Xanadu kit's and the Dalab set's pieces are registered by the page's own VERN.place (REG, taken into core/tags by 91t) */
 

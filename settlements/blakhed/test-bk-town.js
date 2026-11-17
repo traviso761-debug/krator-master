@@ -60,11 +60,13 @@ const tearsOk=X=>{const ks=X.records.filter(r=>r.quarter==='tears').map(r=>r.key
  return X.people.tears>=100&&X.people.tears<=200&&ks.length>=10&&['xa_serai','xa_rich_c','xa_temple','xa_barracks','xa_teahouse','xa_warehouse','xa_bath'].every(k=>ks.includes(k));};
 T.ok('the Golden Tears\' mission stands east of the Market: 100-200 people in the Xanadu kit\'s compound',tearsOk(P),P.people.tears+' people');
 T.neg('a Golden Tears mission without its caravanserai is caught',tearsOk,Object.assign({},P,{records:P.records.filter(r=>r.key!=='xa_serai')}),P);
-const quartersOk=(X,Rg)=>{const K={};for(const r of X.records)K[r.kind]=(K[r.kind]||0)+1;
- const halls=X.records.filter(r=>r.kind==='hall').map(r=>r.variant);
- return K.hall===2&&halls.includes('fowlers')&&halls.includes('icecut')&&K.head===1&&K.halting>=2&&K.icehouse===14&&K.ropewalk===12&&K.folds>=12&&K.fairpens>=10&&K.cairnhall===1&&Rg.toll.length===4&&Rg.hoists.length===2&&Rg.stair.pts.length>40;};
-T.ok('every quarter and outwork stands: both meeting halls (fowlers and icecut), the head\'s house, 14 ice houses, 12 rope houses, the Folds, the Fairfell, the cairn hall, Dalab\'s 4 toll pieces, 2 hoists and the gorge stair',quartersOk(P,R),
- 'toll '+R.toll.map(t=>t.key).join(', ')+'; stair '+R.stair.pts.length+' pts');
+const quartersOk=(X,Rg)=>{const K={},keys=new Set(X.records.map(r=>r.key)),pkeys=new Set(X.pieces.map(p=>p.key));for(const r of X.records)K[r.kind]=(K[r.kind]||0)+1;
+ const halls=X.records.filter(r=>r.kind==='hall');
+ const townKeys=['fg-doublehall','fg-markethall','fg-halting-house','fg-booth','fg-great-icehouse','fg-ropewalk','fg-smithy','fg-tannery','fg-granary','fg-fair-stand'];
+ const pieceKeys=['fg-cairn','fg-stone-sign','fg-fair-hurdle','fg-wagon','fg-halt','fg-lantern-post','fg-ice-tools'];
+ return halls.length===1&&halls[0].key==='fg-doublehall'&&halls[0].variant==='double'&&(K.markethall||0)>=2&&K.head===1&&(K.halting||0)>=3&&K.icehouse===12&&K.ropewalk===5&&(K.folds||0)>=12&&K.fairpens>=10&&K.fairstand===1&&(K.booth||0)>=10&&K.cairnhall===1&&townKeys.every(k=>keys.has(k))&&pieceKeys.every(k=>pkeys.has(k))&&Rg.toll.length===4&&Rg.hoists.length===2&&Rg.hoists.every(h=>h.key==='fg-stair-hoist')&&Rg.stair.pts.length>40;};
+T.ok('every quarter, town piece and outwork stands: the double meeting hall, market hall and booths, halting houses, 8 great + 4 small ice houses, 5 44-m rope-walk ranges, smithies, tanneries, granaries, Fair stand and hurdles, peace stone, Dalab\'s 4 toll pieces, 2 stair hoists and the gorge stair',quartersOk(P,R),
+ 'records '+P.records.length+', pieces '+P.pieces.length+'; toll '+R.toll.map(t=>t.key).join(', ')+'; stair '+R.stair.pts.length+' pts');
 T.neg('a missing toll post piece is caught',Rg=>quartersOk(P,Rg),Object.assign({},R,{toll:R.toll.slice(0,3)}),R);
 const villagesOk=Vs=>Vs.length===17&&Vs.filter(v=>v.kind==='steading').length===4&&Vs.filter(v=>v.kind==='hamlet').length===12&&
  Vs.every(v=>!v.error&&(v.records||[]).length>=20&&v.records.every(r=>{const n=BK_GROUND.river.near(r.x,r.z);return!n||n.d>n.w/2+10;}));

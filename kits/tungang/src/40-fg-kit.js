@@ -31,11 +31,12 @@ function fgCol(k,C){const c=P(k);if(C&&C.worn){const g=(c.r+c.g+c.b)/3;c.r=(c.r*
    stepped footing, on the flat one slab to -.5 (the stand-ins' lo). The cell with the footprint's lowest corner reaches C.lo. */
 function fgPlinth(x0,x1,z0,z1,C,o){o=o||{};const nx=Math.max(1,Math.min(5,Math.round((x1-x0)/4))),nz=Math.max(1,Math.min(3,Math.round((z1-z0)/4))),top=o.top==null?.06:o.top;
  const col=fgCol('stone',C);let mn=1e9;
- for(let i=0;i<nx;i++)for(let j=0;j<nz;j++){const a0=x0+(x1-x0)*i/nx,a1=x0+(x1-x0)*(i+1)/nx,b0=z0+(z1-z0)*j/nz,b1=z0+(z1-z0)*(j+1)/nz;
+ WKOFF++;try{for(let i=0;i<nx;i++)for(let j=0;j<nz;j++){const a0=x0+(x1-x0)*i/nx,a1=x0+(x1-x0)*(i+1)/nx,b0=z0+(z1-z0)*j/nz,b1=z0+(z1-z0)*(j+1)/nz;
   let g=Math.min(C.gl(a0,b0),C.gl(a1,b0),C.gl(a1,b1),C.gl(a0,b1),0)-.5;g=Math.max(g,C.lo);mn=Math.min(mn,g);
   box('stone',(a0+a1)/2,g,(b0+b1)/2,a1-a0+.02,top-g,b1-b0+.02,col);}
  /* the lowest cell reaches the stand-in's lo exactly (its corners and centre were what the host measured) */
- if(mn>C.lo+.001)box('stone',(x0+x1)/2,C.lo,(z0+z1)/2,Math.min(1.2,x1-x0),mn-C.lo+.02,Math.min(1.2,z1-z0),col);
+ if(mn>C.lo+.001)box('stone',(x0+x1)/2,C.lo,(z0+z1)/2,Math.min(1.2,x1-x0),mn-C.lo+.02,Math.min(1.2,z1-z0),col);}finally{WKOFF--;}
+ wkPad((x0+x1)/2,(z0+z1)/2,x1-x0,z1-z0,top);
  return mn;}
 /* ---------------------------------------------------------------- drystone walls */
 /* a wall from (x0,z0) to (x1,z1) of thickness th, from y0 to y1, with a through-band of darker stones every ~.9 m (the

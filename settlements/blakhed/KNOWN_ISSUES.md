@@ -1,20 +1,20 @@
 # Blakhed: known issues
 
-Steps B1-B5 (first pass) of `PLAN.md` (2026-11-16). What is owed, by whom.
+Steps **B1-B5** and **B6 (interiors)** of `PLAN.md` (2026-11-16). What is done and what remains owed.
 
-## The Tungang kit (`kits/tungang`, step B2)
+## Done in steps B2 and B6 (interiors)
 
-`PLAN.md` section 5 names the town-scale pieces the Fellgang set lacks today, kept out of the kit until the owner reviews this
-pass:
-- **A double meeting hall** holding both the Fowlers' rope wall and the Ice-cutters' tally board under one roof (the Market
-  stands two `fg-meethall` buildings facing across the square, one in each variant).
-- **A long rope walk** (~240 m; the page sets twelve 20 m `fg-ropehouse` sheds end to end along the bank).
-- **A great ice house** (the Icegarth sets out fourteen `fg-icehouse` barrows behind the six ice ponds).
-- **A market hall and booths, and the Fair's ring, pens and stalls** (the page draws the Market's and Fair's booths, the Fair
-  ring's post-and-rail fence and the judges' cairn as page geometry, with `fg-pens` for the fair pens).
-- **A halting house (inn), smithy, tannery/felt house and granary** (longhouses and stores stand in on the Market and in the
-  quarters).
-- **A stair hoist** (the Stairhead's two gin wheels and lowering frames over the first pitch are page geometry).
+- **Step B2 (town-scale Fellgang pieces in `kits/tungang`):** added `fg-doublehall` (both customs under one roof: rope wall +
+  tally board), `fg-halting-house` (inn), `fg-markethall`, `fg-booth`, `fg-ropewalk` (44 m range), `fg-great-icehouse` (5-tier
+  vaulted store), `fg-smithy`, `fg-tannery`, `fg-granary` (staddle piers), `fg-fair-stand`, `fg-stair-hoist`, `fg-fair-hurdle`,
+  `fg-cairn` (standing peace stone & fell cairn) and `fg-stone-sign`, and replaced all temporary Market, Fair and Stairhead
+  stand-ins in Blakhed with real `kits/tungang` records.
+- **Step B6 (interiors only):** town Fellgang buildings are furnished from the catalog (`tungang_bundle.bundle(furniture=True)`),
+  record their floors and walls on `KWALK` (`core/walk/box`), register operable `KDOOR` Ancient plate doors (`E` opens/closes),
+  build drystone threshold steps where doors stand above sloped ground, and expose `XA_CUT` cutaway units (`X` key). The Golden
+  Tears' Xanadui buildings (`xa_serai`, `xa_rich_c`, `xa_temple`, `xa_barracks`, `xa_bath`, `xa_warehouse`, `xa_mid_a`) are
+  hollowed, planned, furnished and walked on dressed-stone podiums and steps (`src/89b1-bk-interiors.js`, `targets/town/90c-bk-build.js`).
+  Dalab's four toll-post pieces at the Stairhead (`settlements/dalab/src`) have no `kits/interiors` set yet and stay solid.
 
 ## `core/hamlet` and `core/camp`
 
@@ -40,12 +40,14 @@ pass:
 
 - `sim/wr-blakhed.js` runs Blakhed, the Stairhead, Dalab's toll post, the Golden Tears' mission, the twelve hamlets and the
   four West Rift partner stops (Nulab, the drovers' salt, the Ice-cutters, the Fowlers) for a full year on
-  `core/region/50-region-valley.js`, and provides `WR_BLAKHED.joinXanadu` to replace `gate.dalab.blakhed` in `XAN_TUNE`'s
-  Annual Great Caravan without altering `core/region/data/xan-tune.js` (keeping `test-xan-economy.js` and `test-east-rift.js`
-  byte-identical until the full West Rift `WR_TUNE` lands in W1-W4).
+  `core/region/50-region-valley.js`, and provides `WR_BLAKHED.join` to replace `gate.dalab.blakhed` and `gate.dalab.nulab` in
+  `XAN_TUNE`'s Annual Great Caravan without altering `core/region/data/xan-tune.js` (keeping `test-xan-economy.js` and
+  `test-east-rift.js` byte-identical until the full West Rift `WR_TUNE` lands in W1-W4).
 
-## Not done (step B6)
+## Still owed (remaining B6 items, out of scope of interiors-only pass)
 
-Walk-in Fellgang interiors, citizens and beasts on `core/simulation` / `core/charactermodels` (Fellgang outfits are owed by the
-outfit sessions), winter snow / pond-cutting state on `core/clock`, `core/hazard` zones on the river and stair, and the Godot
-export.
+- [ ] **People and schedules (`core/simulation`, `core/charactermodels`):** citizen actors, Fair and Great Caravan crowds, and
+      herd beasts (Fellgang outfits are owed by the outfit sessions).
+- [ ] **Dalab interior set:** `kits/interiors` has no `dalab` set yet, so Dalab's four Stairhead toll-post buildings stay solid.
+- [ ] **Winter state, hazards and export:** snow / pond-cutting state on `core/clock`, `core/hazard` zones on the river and
+      gorge stair, and the Godot export (`core/export`).
