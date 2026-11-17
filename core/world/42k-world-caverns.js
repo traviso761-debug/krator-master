@@ -11,6 +11,8 @@
 //     depth (40: the floor under the ground, smoothed along the tube), grade (.08), ramp (.25: the floor up to a portal),
 //     open: [{kind: 'portal'|'skylight', at: 'start'|'end'|[px, py], name, r (a skylight's radius)}],
 //     halls: [{px, name, rx, rz, h, skylight: {r, name}}],
+//     join: {tube, at: 'end'|'start'}  (that end runs into another tube of the spec underground, a branch meeting its line: the end
+//            point moved onto the other tube's nearest station, its floor that station's floor, the grade held back from it),
 //     chokes: {every, p, w, h, len: [a, b]} (drawn by cell) | [{px, w, h, len}],
 //     skylights: {every, p, r: [a, b], maxCover} (drawn by cell, away from the openings and the halls)}]
 //
@@ -22,10 +24,11 @@
 //        sec: [{id, kind: 'run'|'choke', a, b (stations, inclusive: neighbours overlap a station, so the voids join), w, h, ledge}]
 //        open: [{id, kind, name, i (its station), at ([px, py] the spec's), holes: [[x, z, r], ...] (where the ground opens), rim,
 //               a, b (the stations whose cover is waived), shaft: {c: [x, z], y0, y1, r0, r1} (a skylight's)}]
-//        halls: [{id, name, i, c: [x, y, z], rx, rz, h}]}
+//        halls: [{id, name, i, c: [x, y, z], rx, rz, h}],
+//        join: {tube, at, i (its station there), j (the other tube's)} (only on a joined tube)}
 //   WTUBES.check(P, {ground, cover})  [{name, ok, detail}]: every tube meets the surface; each opening where the spec puts it and open
 //                                      there; the floor under the ground and the roof under it by the cover, everywhere but at the
-//                                      openings; the grade
+//                                      openings; the grade; each joined tube meets the other on its floor
 //   WTUBES.hash(P)                     a fingerprint of the records (determinism)
 //   WTUBES.floorAt(P, x, z, full)      the tube floor walked at (x, z) (the lowest of the voids there): {y, T, sec} | null; full:
 //                                      anywhere over the void and its walls (1.5 m past them), not only where it is walked
@@ -59,12 +62,21 @@ function drawnGround(H,o){o=o||{};const ds=nz(o.ds,2),mw=nz(o.minWave,3),cache=n
 function spanOf(S,k){const g=Array.isArray(S.seg)?S.seg[Math.min(k,S.seg.length-1)]:(S.seg||{});
  return {w:nz(g.w,D.w),h:nz(g.h,D.h),ledge:g.ledge===undefined?{v:.9,d:1.2}:g.ledge};}
 function same(a,b){return a.w===b.w&&a.h===b.h&&a.kind===b.kind&&JSON.stringify(a.ledge)===JSON.stringify(b.ledge);}
-function planTube(S,o,seed,cover){
+/* a joined end: the tube it runs into (planned already), that tube's station nearest the end, the end point moved onto it */
+function joinOf(S,V,byId){const J=S.join,U=byId?byId(J.tube):null;
+ if(!U)throw new Error('WTUBES.plan '+S.id+': it joins '+J.tube+', which is not in the spec');
+ const k=J.at==='start'?0:V.length-1,v=V[k];let j=0,bd=1e30;U.st.forEach((s,i)=>{const d=Math.hypot(s[0]-v[0],s[1]-v[1]);if(d<bd){bd=d;j=i;}});
+ /* r: the reach of the other tube's void round that station (its half-width, or its hall's radius), plus a margin: inside it the
+    two floors overlap, so the branch's is held level at the other's (the floor walked is the lowest of the voids there) */
+ let r=0;U.sec.forEach(s=>{if(s.a<=j&&j<=s.b)r=Math.max(r,s.w/2);});
+ U.halls.forEach(H=>{const R=Math.max(H.rx,H.rz);if(Math.hypot(U.st[H.i][0]-U.st[j][0],U.st[H.i][1]-U.st[j][1])<=R)r=Math.max(r,R);});
+ V[k]=[U.st[j][0],U.st[j][1]];return {tube:U.id,at:k?'end':'start',j,y:U.st[j][2],r:r+8};}
+function planTube(S,o,seed,cover,byId){
  if(!S||!S.id)throw new Error('WTUBES.plan: a tube needs an id');
  if(!S.px||S.px.length<2)throw new Error('WTUBES.plan '+S.id+': px needs two or more points');
  const G0=o.ground,ds=nz(S.ds,D.ds),depth=nz(S.depth,D.depth),grade=nz(S.grade,D.grade),ramp=nz(S.ramp,D.ramp);
  const tseed=KR.child(seed,'tubes/'+S.id),A=nz(S.meander,D.meander),WL=nz(S.wave,D.wave),mseed=KR.child(tseed,'meander');
- const V=S.px.map(p=>o.fromPx(p[0],p[1])),xs=[],vi=[0];
+ const V=S.px.map(p=>o.fromPx(p[0],p[1])),xs=[],vi=[0],J=S.join?joinOf(S,V,byId):null;
  // the stations: the spec's points kept, the spans between them meandering (lava tubes wind), tapered to nothing at each point;
  // 6 m apart within 350 m of a portal (the ramp follows the ground up to its mouth), ds elsewhere
  const mouths=(S.open||[]).filter(O=>O.kind!=='skylight').map(O=>O.at==='start'?V[0]:O.at==='end'?V[V.length-1]:Array.isArray(O.at)?o.fromPx(O.at[0],O.at[1]):null).filter(Boolean);
@@ -113,6 +125,9 @@ function planTube(S,o,seed,cover){
   f[i]=Math.min(gs-depth,Gm[i]-Math.max(hst[i],hh[i])-cover);}
  for(let i=1;i<n;i++)f[i]=Math.min(f[i],f[i-1]+grade*(cum[i]-cum[i-1]));
  for(let i=n-2;i>=0;i--)f[i]=Math.min(f[i],f[i+1]+grade*(cum[i+1]-cum[i]));
+ /* a joined end: its floor the other tube's floor there, the grade held back from it both ways (the two voids meet on one floor) */
+ const je=J?(J.at==='end'?n-1:0):-1;
+ if(J)for(let i=0;i<n;i++){const d=grade*Math.max(0,Math.abs(cum[i]-cum[je])-J.r);f[i]=Math.min(Math.max(f[i],J.y-d),J.y+d);}
  // the openings the spec names; the portals raise the floor to the ground at their mouth, up a ramp
  const specOpen=(S.open||[]).map((O,j)=>{const i=O.at==='start'?0:O.at==='end'?n-1:Array.isArray(O.at)?near(O.at):-1;
   if(i<0)throw new Error('WTUBES.plan '+S.id+': an opening needs at: start, end or [px, py]');
@@ -154,13 +169,19 @@ function planTube(S,o,seed,cover){
   open.push({id:q.id,kind:'skylight',name:q.name,i:q.i,at:q.at||null,holes:[[r3(c[0]),r3(c[1]),r3(r1+1.5)]],rim:3,a,b,
    shaft:{c:[r3(c[0]),r3(c[1])],y0:r3(y0),y1:r3(gtop+4),r0:r3(Math.max(r0,1.2)),r1:r3(r1)}});});
  open.sort((p,q)=>p.i-q.i||(p.id<q.id?-1:1));
- return {id:S.id,name:S.name||S.id,route:S.route||null,model:S.model||null,len:r3(len),depth,grade,ramp,
+ const rec={id:S.id,name:S.name||S.id,route:S.route||null,model:S.model||null,len:r3(len),depth,grade,ramp,
   st:xs.map((p,i)=>[r3(p[0]),r3(p[1]),r3(f[i]),r3(G[i])]),sec,open,
   halls:halls.map(H=>({id:S.id+':hall-'+H.j,name:H.spec.name||'',i:H.i,c:[r3(xs[H.i][0]),r3(f[H.i]),r3(xs[H.i][1])],rx:nz(H.spec.rx,30),rz:nz(H.spec.rz,20),h:nz(H.spec.h,16)}))};
+ if(J)rec.join={tube:J.tube,at:J.at,i:je,j:J.j};
+ return rec;
 }
+/* the tubes in the spec's order, each joined tube planned after the one it joins (a tube's records hang on that tube alone) */
 function plan(spec,o){if(!o||typeof o.ground!=='function'||typeof o.fromPx!=='function')throw new Error('WTUBES.plan: ground and fromPx required');
- const seed=nz(o.seed,1)>>>0,cover=nz(o.cover,D.cover),ids={};
- const P={format:'krator-world-tubes',version:1,seed,cover,square:D.square,tubes:(spec||[]).map(S=>{if(ids[S.id])throw new Error('WTUBES.plan: duplicate id '+S.id);ids[S.id]=1;return planTube(S,o,seed,cover);})};
+ const seed=nz(o.seed,1)>>>0,cover=nz(o.cover,D.cover),ids={},done={},busy={};
+ (spec||[]).forEach(S=>{if(S&&S.id){if(ids[S.id])throw new Error('WTUBES.plan: duplicate id '+S.id);ids[S.id]=S;}});
+ const get=id=>{if(done[id])return done[id];const S=ids[id];if(!S)return null;if(busy[id])throw new Error('WTUBES.plan: a ring of joins at '+id);
+  busy[id]=1;return done[id]=planTube(S,o,seed,cover,get);};
+ const P={format:'krator-world-tubes',version:1,seed,cover,square:D.square,tubes:(spec||[]).map(S=>S&&S.id?get(S.id):planTube(S,o,seed,cover,get))};
  ctx(P).ground=o.ground;return P;}
 function bind(P,o){ctx(P).ground=o.ground;return P;}
 
@@ -198,6 +219,13 @@ function check(P,o){o=o||{};const G0=o.ground||ctx(P).ground,cover=nz(o.cover,P.
  R.push({name:'every tube floor under the ground everywhere but at its openings',ok:!under.length,detail:under.length?L(under):nS+' points, the highest '+(-worstF).toFixed(1)+' m under the ground'});
  R.push({name:'every tube roof under the ground by the cover ('+cover+' m) but at its openings',ok:!cov.length,detail:cov.length?L(cov):'the thinnest '+(cover-worstR).toFixed(1)+' m of rock over the roof'});
  R.push({name:'every tube floor keeps its grade (the ramp only at a portal)',ok:!grd.length,detail:grd.length?L(grd):'held'});
+ /* a joined tube's end on the other tube's centreline and floor (the two voids one passage) */
+ const jn=[],jl=[];P.tubes.forEach(T=>{if(!T.join)return;const U=P.tubes.find(t=>t.id===T.join.tube),a=T.st[T.join.i],b=U&&U.st[T.join.j];
+  if(!a||!b){jn.push(T.id+': joins '+T.join.tube+', not in the plan');return;}
+  const dh=Math.hypot(a[0]-b[0],a[1]-b[1]),dy=a[2]-b[2];
+  if(dh>.5||Math.abs(dy)>.75)jn.push(T.id+' meets '+U.id+' '+dh.toFixed(1)+' m off its line, its floor '+dy.toFixed(2)+' m off');
+  else jl.push(T.id+' into '+U.id+' at its station '+T.join.j);});
+ R.push({name:'each joined tube meets the other on its floor',ok:!jn.length,detail:jn.length?L(jn):jl.length?jl.join('; '):'no joins'});
  return R;}
 function hash(P){let h=2166136261>>>0;const mix=v=>{v=Math.round(v*1000)|0;for(let k=0;k<4;k++){h^=(v>>>(k*8))&255;h=Math.imul(h,16777619);}};
  const str=s=>{for(let i=0;i<s.length;i++){h^=s.charCodeAt(i)&255;h=Math.imul(h,16777619);}};

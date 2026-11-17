@@ -115,6 +115,10 @@ listing core/terrain's `39-core-cavern.js` and `host/39e-core-cavern-draw.js`, `
   the roof and the cover (4 m) over it, its grade held (8 %), and raised up a 25 % ramp to the ground at each portal. Each opening
   carries its holes (circles where the ground opens) and the stations whose cover it waives. `WTUBES.check` reads it all against
   the ground as it is now, so a sculpt that lands under a tube shows up as a failed check, not a hole in a hill.
+- **Branches** (`join: {tube, at}`, 2026-11-16: the Strongbow feeder into A3 at the Hall of the Tally-Marks). A tube's end can run
+  into another tube underground: the end point moves onto the other tube's nearest station, the floor is held level at that
+  station's floor across the other's void (its half-width, or its hall's radius, plus 8 m: the walker treads the lowest floor
+  there) and graded away from it. The joined tube is planned first whatever the spec's order; a check holds the two on one floor.
 - **The ground as drawn.** The cavern is cut against `WTUBES.drawnGround(WORLD.H)`: 81's finest chunks exactly (H at 3 m detail on
   the 2 m lattice, each cell split on 81's diagonal). The terrain's finest chunks drop their triangles wholly inside a hole as they
   are built (88k watches `TERRAIN.meshes()`); the cavern meshes the ground inside each hole's rim and 88k draws it with the

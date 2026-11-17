@@ -118,6 +118,16 @@ const BEACON = (function () {
       return out;
     },
     'the lamp sees every place the order must reach, by 10 m or more': L => L.lamp.sights.filter(s => s.must && !(s.clear >= 10)).map(s => s.name + ' clear by ' + s.clear + ' m'),
+    'a station the lamp cannot see is reached through a relay or a station it sees': L => {
+      const out = [], sight = id => L.lamp.sights.find(s => s.id === id), relay = id => (L.lamp.relays == null ? [] : L.lamp.relays).find(r => r.id === id);
+      L.lamp.sights.filter(s => s.via != null).forEach(s => {
+        const r = relay(s.via), v = sight(s.via);
+        if (r) { if (!(r.seeLamp >= 10 && r.seeFar >= 10) || r.to !== s.id) out.push(s.name + ': its relay ' + r.id + ' does not see both ends by 10 m'); }
+        else if (v) { if (!(v.clear >= 10) && !v.via) out.push(s.name + ': its relay ' + v.id + ' is not seen'); }
+        else out.push(s.name + ': no relay ' + s.via);
+      });
+      return out;
+    },
     "the lamp's year fits the oil the tune sends": L => {
       const have = L.power.oilKgYr * L.power.kWhPerKg, need = L.lamp.kw * L.lamp.nightHours * 365;
       return need <= have ? [] : ['the lamp draws ' + Math.round(need) + ' kWh a year against ' + Math.round(have)];

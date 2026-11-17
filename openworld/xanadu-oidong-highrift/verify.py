@@ -27,8 +27,9 @@ The checks, each with a negative:
     - the ground opens at each portal and only there: a ray down at each portal's open ramp meets the tube, not the ground
       (the terrain's chunk opened); a ray down over each tube between the openings meets the ground; every chunk opened lies
       on a hole (negatives: the open probe at a mid-tube point, the closed probe at a portal);
-    - the walker (core/world 90's G, wrapped by 88k) enters the south feeder at its portal, walks it end to end on the floor
-      and comes out at the other portal; along it the drawn floor is under its feet and the rock over its head; steered into
+    - the walker (core/world 90's G, wrapped by 88k) enters the south feeder at its Strongbow portal, walks it end to end on
+      the floor, up through the gasp under the SE Twin and on into the Hall of the Tally-Marks, where the feeder joins A3, and
+      ends on A3's floor; along it the drawn floor is under its feet and the rock over its head; steered into
       the wall it is stopped (the negative steers it along the tube, and it goes);
     - the frame time at a portal and inside a tube (reported).
 """
@@ -112,25 +113,29 @@ TUBE_AT = TUBE_AT % TUBE_CUTS
 # 90's own CAM.update (with 88k's wrap) to 30 m outside the other end; samples of its eye every `every` metres
 TUBE_WALK = r"""(o)=>{const TB=_tubes,T=TB.plan.tubes.find(t=>t.id===o.tube),GD=TB.ground,p=HOST.camera.position;
  const st=T.st,n=st.length,dir=(a,b)=>{const dx=b[0]-a[0],dz=b[1]-a[1],l=Math.hypot(dx,dz);return [dx/l,dz/l];},d0=dir(st[1],st[0]),d1=dir(st[n-2],st[n-1]);
- const L=[[st[0][0]+d0[0]*30,st[0][1]+d0[1]*30]].concat(st.map(s=>[s[0],s[1]]),[[st[n-1][0]+d1[0]*30,st[n-1][1]+d1[1]*30]]);
+ const L=[[st[0][0]+d0[0]*30,st[0][1]+d0[1]*30]].concat(st.map(s=>[s[0],s[1]]),T.join?[]:[[st[n-1][0]+d1[0]*30,st[n-1][1]+d1[1]*30]]);
  const cum=[0];for(let i=1;i<L.length;i++)cum.push(cum[i-1]+Math.hypot(L[i][0]-L[i-1][0],L[i][1]-L[i-1][1]));const LEN=cum[cum.length-1];
  const at=s=>{let i=0;while(i<L.length-2&&cum[i+1]<s)i++;const u=Math.min(1,Math.max(0,(s-cum[i])/(cum[i+1]-cum[i])));return [L[i][0]+(L[i+1][0]-L[i][0])*u,L[i][1]+(L[i+1][1]-L[i][1])*u];};
+ const ps=T.open.filter(O=>O.kind==='portal').map(O=>cum[O.i+1]);
  let j=0;const proj=()=>{let bs=0,bd=1e30;for(let i=Math.max(0,j-3);i<Math.min(L.length-1,j+6);i++){const A=L[i],B=L[i+1],dx=B[0]-A[0],dz=B[1]-A[1],l2=dx*dx+dz*dz,u=Math.min(1,Math.max(0,((p.x-A[0])*dx+(p.z-A[1])*dz)/l2));
    const d=Math.hypot(p.x-A[0]-dx*u,p.z-A[1]-dz*u);if(d<bd){bd=d;bs=cum[i]+Math.sqrt(l2)*u;j=i;}}return {s:bs,off:bd};};
  const key=(c,dn)=>dispatchEvent(new KeyboardEvent(dn?'keydown':'keyup',{code:c}));
  CAM.setView(L[0][0],L[0][1],1.7,0,0);_api.settle(120000);CAM.st.walk=true;p.set(L[0][0],Math.max(TERRAIN.heightDrawn(L[0][0],L[0][1]),WORLD.water(L[0][0],L[0][1]))+1.7,L[0][1]);const w0=TB.stats().walk;key('KeyW',true);key('ShiftLeft',true);
  let steps=0,kinds='',maxDy=0,inRock=0,lastY=p.y,s=0,best=0,since=0,maxOff=0,next=0;const samples=[];
  try{while(steps<o.max){const q=proj();s=q.s;maxOff=Math.max(maxOff,q.off);if(s>=LEN-3)break;if(s>best+.5){best=s;since=0;}else if(++since>60)break;
-   /* near either end the terrain streams round the walker, as the frame loop would (the ground it steps onto is the drawn one) */
-   if((s<300||s>LEN-300)&&steps%15===0)_api.settle(20000);
+   /* near either end and each portal the terrain streams round the walker, as the frame loop would (the ground it steps onto is
+      the drawn one) */
+   if((s<300||s>LEN-300||ps.some(c=>Math.abs(c-s)<300))&&steps%15===0)_api.settle(20000);
    const t=at(s+8);CAM.st.yaw=Math.atan2(-(t[0]-p.x),-(t[1]-p.z));CAM.st.pitch=0;CAM.update(o.dt);steps++;
    const gy=GD(p.x,p.z),k=TB.stats().walk.last;if(k&&kinds.slice(-1)!==k[0])kinds+=k[0];maxDy=Math.max(maxDy,Math.abs(p.y-lastY));lastY=p.y;
    if(p.y-1.7<gy-2&&TB.voidAt(p.x,p.y,p.z)>=0)inRock++;
    if(s>=next){samples.push([p.x,p.y,p.z,p.y-1.7<gy-2?1:0]);next+=o.every;}}}
  finally{key('KeyW',false);key('ShiftLeft',false);}
  const gEnd=Math.max(TERRAIN.heightDrawn(p.x,p.z),WORLD.water(p.x,p.z)),w1=TB.stats().walk;CAM.st.walk=false;
+ /* a joined tube ends underground, on the other tube's floor */
+ const U=T.join?TB.plan.tubes.find(t=>t.id===T.join.tube):null,jy=U?U.st[T.join.j][2]:null;
  return {steps,km:+(s/1000).toFixed(2),of:+(LEN/1000).toFixed(2),done:s>=LEN-3,kinds,maxDy:+maxDy.toFixed(2),inRock,blocked:w1.blocked-w0.blocked,tubeSteps:w1.tube-w0.tube,
-  maxOff:+maxOff.toFixed(2),endOnGround:+(p.y-1.7-gEnd).toFixed(2),samples};}"""
+  maxOff:+maxOff.toFixed(2),endOnGround:+(p.y-1.7-gEnd).toFixed(2),joined:U?U.id:null,endOnJoin:jy==null?null:+(p.y-1.7-jy).toFixed(2),samples};}"""
 # at a sample of the walk: the tubes streamed round the eye, a ray down meets the drawn floor under the feet, a ray up the rock
 TUBE_DRAWN = r"""([x,y,z])=>{const p=HOST.camera.position;p.set(x,y,z);HOST.camera.updateMatrixWorld();_tubes.settle(120000);HOST.scene.updateMatrixWorld();
  const ms=TERRAIN.meshes().filter(m=>m.userData.tube),cast=(dy)=>{const rc=new THREE.Raycaster(new THREE.Vector3(x,y,z),new THREE.Vector3(0,dy,0),0,400);const h=rc.intersectObjects(ms,false)[0];return h?h.point.y:null;};
@@ -201,13 +206,14 @@ async def caverns(pg, V, a, fails):
     if say({'name': 'the closed probe at a portal', 'ok': not r['open'] and r['hit'] == 'terrain', 'detail': '%s at %.1f' % (r['hit'], r.get('y') or 0)}, 'portal'):
         fails.append('negative portal')
     await tube_views(pg, V, a, fails)
-    # the walker: the south feeder end to end
-    w = await pg.evaluate(TUBE_WALK, {'tube': 'A-feeder', 'dt': .1, 'max': 60000, 'every': 3000})
-    ok = w['done'] and w['kinds'][:1] == 'g' and 't' in w['kinds'] and w['kinds'][-1:] == 'g' and w['inRock'] == 0 and abs(w['endOnGround']) < .05
-    if say({'name': 'the walker enters the south feeder at its portal, walks it end to end and comes out at the other', 'ok': ok,
-            'detail': '%(km)s of %(of)s km in %(steps)d steps, ground/tube/ground "%(kinds)s", %(tubeSteps)d steps on the floor, '
+    # the walker: the south feeder end to end, from Strongbow's portal through the gasp under the SE Twin onto A3's floor in the Hall
+    w = await pg.evaluate(TUBE_WALK, {'tube': 'A-feeder', 'dt': .1, 'max': 90000, 'every': 3000})
+    ok = (w['done'] and w['kinds'] == 'gtgt' and w['inRock'] == 0 and w['joined'] == 'A3' and w['endOnJoin'] is not None
+          and abs(w['endOnJoin']) < .75)
+    if say({'name': 'the walker enters the south feeder at Strongbow, up through the gasp under the SE Twin and on into the Hall of the Tally-Marks on A3\'s floor', 'ok': ok,
+            'detail': '%(km)s of %(of)s km in %(steps)d steps, ground/tube "%(kinds)s", %(tubeSteps)d steps on the floor, '
                       '%(blocked)d stopped, %(inRock)d with the eye in rock, largest rise %(maxDy)s m, %(maxOff)s m off the line at most, '
-                      'its feet %(endOnGround)s m off the ground at the end' % w}):
+                      'its feet %(endOnJoin)s m off %(joined)s\'s floor at the end' % w}):
         fails.append('caverns: the walk')
     bad3, n3 = [], 0
     for sm in w['samples']:
