@@ -115,6 +115,11 @@ runtime and bison table, and the `tools/` listing staleness (every build rebuilt
   key. `biomes/arch/src/89w-host-water.js` works round it by extending the key itself; drop that once core has it. It moves every page that
   draws a flow (147 build commands, `python3 tools/reach.py core/water/51-core-water-kinds.js`).
 
+- **`kits/fauna/krator-fauna-xeno.js` line 26: `o.stock || 1`** (2026-11-16, the merge of `claude/siphon-pits-biome`; `check_source` ORNUM,
+  baselined at the merge): write `o.stock == null ? 1 : o.stock`. The file reaches 30 build commands and 109 pages (`python3 tools/reach.py
+  kits/fauna/krator-fauna-xeno.js`), so it rides along; then drop its key from `tools/check_source_baseline.json`.
+- **Rebuild `settlements/longsong`** (2026-11-16): its page is behind `kits/crops` since the merge of the Siphon Pits and the painted
+  highlands, and it can only be rebuilt where `core/charactermodels/dist/pieces/` is built (KCHAR PIECES MISSING in a cloud checkout).
 - **Opal Valley's strata recipes into `KSTRATA`'s own table** (2026-11-11, `biomes/opalvalley`): `opal-rhyolite` and `opal-firetuff` are
   data in `biomes/opalvalley/src/40-biome-opal-sites.js` (`OPAL_STRATA`), handed to `KSTRATA.add` by its ground; written into
   `core/terrain/35-core-strata.js`'s `RECIPES` they change every page that loads it, so they ride along. Then drop the kit's `KSTRATA.add`.

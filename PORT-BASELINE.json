@@ -37,24 +37,24 @@
    "sha256": "a28dd2ba4b418546004d59af7a242db904f1585d24310b99bf0c2864c882b97a"
   },
   "biomes/arch/dist/arch-barrens.html": {
-   "bytes": 2889340,
-   "sha256": "05928f1315ce9b53942f942282b656d8bf54ae8e85deda0dfa14a09d7a9b227a"
+   "bytes": 2889345,
+   "sha256": "cf9988382c0ff5db52357dd8c5128e354a7cb86bd632712925a8b44cf091f79f"
   },
   "biomes/arch/dist/arch-coast.html": {
-   "bytes": 2889343,
-   "sha256": "6323f4f74deaf8c853ff7f3f5e77e08cf1fbac0fe2bc975a968848672d57cbce"
+   "bytes": 2889348,
+   "sha256": "03db1283c2f8b16e7622e8fd9588cef8a061430a86e5db359f1851798c6cb860"
   },
   "biomes/arch/dist/arch-dome.html": {
-   "bytes": 2889331,
-   "sha256": "81c5413585b46d14e6e37cf14edc2de3527cb2ee5cc06222ae6cd2eefc6202aa"
+   "bytes": 2889336,
+   "sha256": "1adf879b3838bab4a7517777b8d878b6d9ed7fcbf967dc98e4b1fa90d976d0af"
   },
   "biomes/arch/dist/arch-sound.html": {
-   "bytes": 2889334,
-   "sha256": "36d6b6842890689c7e67168af2fe3940353203fc99f50960ea48f0946acf7389"
+   "bytes": 2889339,
+   "sha256": "64b169ec1405c9ce82aeb1c81c0a5331a761146bffc4b027f28d5b906ea9244c"
   },
   "biomes/arch/dist/arch.html": {
-   "bytes": 2889098,
-   "sha256": "ab7ea594c882a13108c3d070f93ff60345c51a98c892f60814d50266ab43e589"
+   "bytes": 2889103,
+   "sha256": "cd78e301e0bd5daedd16ef77037ab0e4d293431e1f06ca846d14197af40da251"
   },
   "biomes/catch/dist/catch-fan.html": {
    "bytes": 9655961,
@@ -553,24 +553,24 @@
    "sha256": "82c511eda4503757db08854b0dabec70beb15c553f572ef710831cbc660daf4d"
   },
   "biomes/opalvalley/dist/opalvalley-glacier.html": {
-   "bytes": 8544210,
-   "sha256": "7dee7902555ba6b11f324ba6f54487f7e3a8e1c063e4c88a4a1d327d20ab5894"
+   "bytes": 8570320,
+   "sha256": "bced03a4a937c038e14c7be8396ae81052f764bbf5163b2efb64a10df104f790"
   },
   "biomes/opalvalley/dist/opalvalley-lowerbed.html": {
-   "bytes": 6344910,
-   "sha256": "9e67cb266e1d3750d3b4790794f6acf98d3c3dd19dc06b186a4c273a8017b7e9"
+   "bytes": 6371020,
+   "sha256": "ce5ef4bc58f36355f02da1acfed7afed2b663e189801d1a9db736946d639ab30"
   },
   "biomes/opalvalley/dist/opalvalley-riftmouth.html": {
-   "bytes": 6928497,
-   "sha256": "94a0e883ab667aa23ed2602fc50fae9903747bfefcb5a72c6288deddb91d18fe"
+   "bytes": 6954607,
+   "sha256": "5156bfa65e8a11ef97004045d340b3c4817268a4ca2deff256fdcd0681654629"
   },
   "biomes/opalvalley/dist/opalvalley-upperbed.html": {
-   "bytes": 8502302,
-   "sha256": "c6de9e0467c2c4fb6663f2f25037610e2ce249f6e95cfb5f920c7c56a81bf57d"
+   "bytes": 8528412,
+   "sha256": "d06d408fd66186ae3c2802d7055324a44e29f6f12b22c8f6a070d5266cdfd669"
   },
   "biomes/opalvalley/dist/opalvalley.html": {
-   "bytes": 6370779,
-   "sha256": "16bfbe7e5fe5470c79301328f2a2f28fb9d058245fb810e65b305fca321fba2c"
+   "bytes": 6370771,
+   "sha256": "16eec4548121596b8eaa8f4f1f6b77fc3db1464756f64edf9c6de0953ef64143"
   },
   "biomes/outlands/dist/outlands.html": {
    "bytes": 1853240,

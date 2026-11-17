@@ -72,7 +72,7 @@ ARCHB.HARVEST={curtain:HV('none',[],false,'Nothing eats a curtain but the seam w
  pycnandra:HV('none',[],false,'Its latex is a quarter nickel: tapped and burnt, the richest nickel ore there is (agromining).'),costularia:HV('thatch',[],false,''),
  nepenthes:HV('none',['the pitchers\' fluid is drunk in need, filtered'],false,''),
  casuarina:HV('fuel (the best: hot and slow)',[],false,''),naupaka:HV('none',[],true,'Its leaves are a poultice.'),ipomoea:HV('none',[],true,''),coconut:HV('timber, thatch, coir',['coconuts'],false,''),
- ohia:HV('fuel, carving',[],false,'Its red flowers are the first colour on a new flow.'),uluhe:HV('thatch, mulch',[],false,''),mangrove:HV('timber (dense, rot-proof), tannin',[],false,'The bark is a tannin for nets and hides.')};
+ ohia:HV('fuel, carving',[],false,'Its red flowers are the first colour on a new flow.'),uluhe:HV('thatch (and mulch)',[],false,''),mangrove:HV('timber (dense, rot-proof), tannin',[],false,'The bark is a tannin for nets and hides.')};
 SPECIES.forEach(S=>{S.tags.harvest=ARCHB.HARVEST[S.key];});
 const byKey={};SPECIES.forEach(S=>byKey[S.key]=S);ARCHB.byKey=byKey;
 ARCHB.plantOfItem=it=>{for(const S of SPECIES)if(S.items.indexOf(it)>=0)return S;return null;};
