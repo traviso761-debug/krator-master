@@ -36,17 +36,21 @@
    "bytes": 9615500,
    "sha256": "b325a6d45ecc5d6f67e7eaa73eb410a18596fd00972afae5cff0911cd19773e7"
   },
+  "biomes/copperglacier/dist/copperglacier-azurite.html": {
+   "bytes": 5246663,
+   "sha256": "bf9e592af12cd496777a09553bf9a204484d771c3ff5baaec860755b8b7a96bd"
+  },
   "biomes/copperglacier/dist/copperglacier-icefield.html": {
-   "bytes": 5135671,
-   "sha256": "a7334ef5b4d036cf57542ba8eb6c7f81c260eac2335c52aaec6af37e22cff429"
+   "bytes": 5166525,
+   "sha256": "01b6d6f984260ea408996a026b35a1c643b92a5adec5a95a2ed1678d61e0b2fd"
   },
   "biomes/copperglacier/dist/copperglacier-pass.html": {
-   "bytes": 5136413,
-   "sha256": "27db125a75584e98f171315204baa9ea103d176628496884f6c8fd435a41ed58"
+   "bytes": 5167267,
+   "sha256": "b9a3e625347ced94a061d6cd8cc9b4b87ee276ab503f386a5a821a37588443db"
   },
   "biomes/copperglacier/dist/copperglacier.html": {
-   "bytes": 5136240,
-   "sha256": "bf8bc4bc0207130ac9a45c5dd012ff789ed5418329464c9b7a7f84373c852042"
+   "bytes": 5167094,
+   "sha256": "a83c1bb46bedea0270f6d152988f4dec34674e8e3e04cfafff589e43f9cf4241"
   },
   "biomes/crater-drylands/dist/crater-drylands-edge.html": {
    "bytes": 9822977,

@@ -10,7 +10,8 @@
   99-tail.html      closes <script>
 
   python3 build.py                     dist/copperglacier.html, station 1: Copper Tarn
-  python3 build.py --station <name>    dist/copperglacier-<name>.html: stations/<name>/ added to src/ (PLAN.md section 2): pass, icefield
+  python3 build.py --station <name>    dist/copperglacier-<name>.html: stations/<name>/ added to src/ (PLAN.md section 2): pass, icefield; azurite
+                                       (station 11, PLAN.md section 7.2)
 
 The core and the biome leaf never reference a host global except through
 BIO.host (see BIOME-API.md); build.py greps for the forbidden names so a
@@ -74,11 +75,16 @@ if STATION:
     for f in os.listdir(_sd):
         if re.match(r'\d',f): PATH[f]=os.path.join(_sd,f)
 # core/terrain, opt-in by name (core/README.md "terrain/"): 38 KRELIEF (the walls, the nunataks, the talus), 42 KFROST (patterned ground), 43 KGROUND,
-# 44 KFAR, 44g KGLACIER (the ice, lifted from the Throne 2026-11-03) and its drawing (host/44h), 45 KHORIZON. KSTRATA left out: gneiss and granite, no beds
-# (PLAN.md, Core adoption)
+# 44 KFAR, 44g KGLACIER (the ice, lifted from the Throne 2026-11-03) and its drawing (host/44h), 45 KHORIZON. KSTRATA only where a station asks (below):
+# stations 1-3 are gneiss and granite, no beds (PLAN.md, Core adoption)
 CORE_TERRAIN=['38-core-relief.js','42-core-frost.js','43-core-ground.js','44-core-farfield.js','44g-core-glacier.js','45-core-horizon.js']
 for f in CORE_TERRAIN: PATH.setdefault(f,J('core','terrain',f))
 for f in ['44-core-farfield-draw.js','44h-core-glacier-draw.js','45-core-horizon-shade.js']: PATH.setdefault(f,J('core','terrain','host',f))
+# KSTRATA for a station whose station.json asks for it ("strata": true; station 11, the azurite tarn: the ejecta collar and the marble walls, PLAN.md
+# section 7.2): the data half and its shader, the shader keyed to sort after the data ('-' < '.')
+if SJ.get('strata'):
+    PATH.setdefault('35-core-strata.js',J('core','terrain','35-core-strata.js'))
+    PATH.setdefault('35s-core-strata-shade.js',J('core','terrain','host','35-core-strata-shade.js'))
 # the biome core from core/biome: 31j a limb's joint (BIO.flareJoin, the frost coral's limbs), 34 the impostors (listed: no tree passes 7 m, so none is
 # baked), 35 the motion modes, 39 the lean, 41 the environmental fields
 CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','31j-core-joint.js','32-core-variants.js','34-core-impostor.js',
