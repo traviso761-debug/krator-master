@@ -24,19 +24,20 @@ for(const f of fs.readdirSync(path.join(ROOT,'settlements','dalab','src')).filte
 for(const k in NL_TOWN.PENDING)DIMS[k]=NL_TOWN.PENDING[k];
 const dims=(k,v)=>DIMS[k]?{key:k,v:v||0,w:DIMS[k].w,d:DIMS[k].d,h:DIMS[k].h,fw:DIMS[k].w,fd:DIMS[k].d}:null;
 const t0=Date.now(),K=NL_TOWN.make({dims}),ms=Date.now()-t0;
-const t1=Date.now(),RG=NL_RING.make({dims}),ms2=Date.now()-t1;
-module.exports={K,RG,DIMS,dims};
+const t1=Date.now(),TF=NL_RING.townFarms({town:K}),RG=NL_RING.make({dims}),ms2=Date.now()-t1;
+module.exports={K,TF,RG,DIMS,dims};
 if(require.main!==module)return;
-console.log('the town in '+ms+' ms: '+K.census.buildings+' buildings, '+K.census.people+' people, '+K.census.pending+' pending boxes; '+K.ways.length+' ways');
+console.log('the town in '+ms+' ms: '+K.census.buildings+' buildings, '+K.census.people+' people, '+K.census.cropPlots+' infill crop plots, '+K.census.pending+' pending boxes; '+K.ways.length+' ways');
 console.log('  by quarter: '+JSON.stringify(K.census.byQuarter));
 console.log('  notes: '+JSON.stringify(K.notes.town.slice(-6)));
+console.log('  town farms: '+TF.map(f=>f.id.replace('nl.townfarm.','')+' '+(f.farm.error||(f.farm.parcels.length+' parcels, '+f.farm.inCropHa+' ha in crop, '+f.records.length+' farmsteads'))).join('; '));
 console.log('the ring in '+ms2+' ms: '+RG.map(v=>v.id.replace('nl.ring.','')+' '+(v.error?'ERROR '+v.error:(v.census&&v.census.pop)+' people, '+v.records.length+' records'+(v.farm?', '+(v.farm.error||(v.farm.parcels.length+' parcels, '+v.farm.inCropHa+' ha in crop')):''))).join('; '));
 const box=L=>{const c=Math.cos(L.ry),s=Math.sin(L.ry);return {c:[L.x,L.z],u:[c,-s],v:[s,c],hw:(L.fw||L.w)/2,hd:(L.fd||L.d)/2};};
 const pen=(A,B)=>{let m=1e9;for(const ax of [A.u,A.v,B.u,B.v]){const pr=F=>Math.abs(F.u[0]*ax[0]+F.u[1]*ax[1])*F.hw+Math.abs(F.v[0]*ax[0]+F.v[1]*ax[1])*F.hd;
  const d=Math.abs((A.c[0]-B.c[0])*ax[0]+(A.c[1]-B.c[1])*ax[1]);m=Math.min(m,pr(A)+pr(B)-d);}return m;};
-const overlaps=X=>{const all=X.lots.concat(X.extra),B=all.map(box),out=[];
+const overlaps=X=>{const all=X.lots.concat(X.extra).concat(X.cropPlots||[]),B=all.map(box),out=[];
  for(let i=0;i<B.length;i++)for(let j=i+1;j<B.length;j++){if(Math.hypot(B[i].c[0]-B[j].c[0],B[i].c[1]-B[j].c[1])>110)continue;if(pen(B[i],B[j])>.3)out.push(all[i].id+'|'+all[j].id);}return out;};
-const onStreet=X=>{const out=[];for(const L of X.lots){if(L.cls==='landmark')continue;const B=box(L);
+const onStreet=X=>{const out=[];for(const L of X.lots.concat(X.cropPlots||[])){if(L.cls==='landmark')continue;const B=box(L);
  for(const w of X.ways){const m=w.w/2-.6;if(w.pts.some(p=>{const dx=p[0]-B.c[0],dz=p[1]-B.c[1];return Math.abs(dx*B.u[0]+dz*B.u[1])<B.hw+m&&Math.abs(dx*B.v[0]+dz*B.v[1])<B.hd+m;})){out.push(L.id+'@'+w.id);break;}}}return out;};
 const WATERY=new Set(['harbour']);
 const inWater=X=>X.lots.concat(X.extra).filter(L=>!WATERY.has(L.kind)&&(NL_GROUND.h(L.x,L.z)<NL_GROUND.LAKE+.6)).map(L=>L.id);
@@ -55,6 +56,14 @@ const marks=X=>MARKS.filter(id=>!X.lots.some(l=>l.id===id)&&!X.extra.some(l=>l.i
 {const m=marks(K);T.ok('the quarters\' great pieces stand: the mound, the priests, the gene-houses, the court, the garrison, the tithe barn, the market, the works, the ferry, the station\'s site',!m.length,m.length?'MISSING '+m.join(', '):MARKS.length+' pieces');
  T.neg('a town without its mound is caught',X=>!marks(X).length,Object.assign({},K,{lots:K.lots.filter(l=>l.id!=='nl.mound')}),K);}
 {const q=Object.keys(K.census.byQuarter);T.ok('both core/city instances laid houses (the town and the copper works)',(K.census.byQuarter.Nulab||0)>12000&&(K.census.byQuarter['the copper works']||0)>1000,JSON.stringify(K.census.byQuarter));}
+/* the coastal layout: palisaded mound set back, outer earthen mound, infill crop plots and surrounding town fields */
+{const layoutOk=X=>!!(X.rings&&X.rings.precinct&&X.rings.precinct.palisade&&X.rings.outer&&X.rings.outer.runs.length>=4&&X.rings.outer.gates.length>=4&&(X.cropPlots||[]).length>=40);
+ T.ok('the set-back palisaded mound, the outer earthen mound with its gates, and the infill crop plots stand',layoutOk(K),
+  'precinct palisade '+!!(K.rings.precinct&&K.rings.precinct.palisade)+', outer runs '+K.rings.outer.runs.length+' ('+K.rings.outer.gates.length+' gates), '+K.cropPlots.length+' infill crop plots');
+ T.neg('missing infill crop plots or outer earthen mound is caught',layoutOk,Object.assign({},K,{cropPlots:[]}),K);
+ const tfOk=F=>F.length===3&&F.every(f=>f.farm&&!f.farm.error&&f.farm.parcels.length>=80);
+ T.ok('the town\'s surrounding fields lay out round the outer earthen mound (south, west and north)',tfOk(TF),TF.map(f=>f.id.replace('nl.townfarm.','')+' '+(f.farm.error||f.farm.parcels.length)).join(', '));
+ T.neg('a missing town field belt is caught',tfOk,TF.slice(0,2),TF);}
 /* the ring */
 const ringOk=R=>R.every(v=>!v.error&&v.records.length>=10&&v.records.every(r=>NL_GROUND.h(r.x,r.z)>=NL_GROUND.LAKE+.5||r.landing||/jetty|boatshed|fishracks/.test(r.key)));
 T.ok('the near ring\'s eight villages lay out on dry ground (a fishing village\'s landing at the water)',RG.length===8&&ringOk(RG),RG.map(v=>v.id.replace('nl.ring.','')+' '+(v.error||v.records.length)).join(', '));

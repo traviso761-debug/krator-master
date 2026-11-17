@@ -40,7 +40,7 @@ written as the plan's recommended answers, marked proposed, and the owner took t
 
 | Q | Taken | What it moves if overturned |
 |---|---|---|
-| 1 | The town on the rise at the pin; the harbour on the bay shore below it; the copper works at the outlet | the whole layout (`src/41-nl-town.js`) |
+| 1 | Clustered by the bay round the harbour (the owner, 2026-11-16): the ceremonial mound set back from the sea inside its palisade; the town ~33 % denser between the palisade and the coast, surrounded by an outer earthen mound, with crop fields in among the empty lots and outside the rampart; the copper works at the outlet | the whole layout (`src/41-nl-town.js`, `src/42-nl-ring.js`) |
 | 2 | The viaduct fallen in the deep middle, its stubs standing in the shallows; the Nulab-Chimes tunnel worked by the Union to the first gap; a loj, **Loj Faiv**. Only the station's site is reserved here (a pending box); the station, the stubs and the loj are step N6 | the Line quarter's records |
 | 3 | 46,000 of the basin's 50,000 are Nulab's; 4,000 on the north shore pay their tithe to Ledge | the sim records' districts (`data/nulab-sim.js`) |
 | 5 | The rare earths lie unworked until the Union is licensed (no works drawn) | nothing drawn |

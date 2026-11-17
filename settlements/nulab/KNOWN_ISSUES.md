@@ -34,8 +34,8 @@ in `src/41-nl-town.js` and `core/hamlet/dalab/23-hamlet-dalab.js`; 62 placements
   procedural textures here because its library pack inline would pass the 16 MB page cap.
 - **Borrowed lowland species:** the veiled rim's planted cork oak, tier cedar, bay laurel and veil willow come through
   `biomes/riftrim`'s kin rows from `biomes/swlowlands`, which this bundle does not load yet; the kit's native mist frill, lobe
-  larch, frost frill, prism heath, sedge and crop rows grow within 4.2 km of the origin (`targets/town/90p-nl-flora.js`).
-  Ring villages beyond 4.2 km stand in painted grass and farmland parcels without `RRIM` trees.
+  larch, frost frill, prism heath, sedge and crop rows grow within 4.6 km of the coastal city centre (`targets/town/90p-nl-flora.js`).
+  Ring villages beyond 4.6 km stand in painted grass and farmland parcels without `RRIM` trees.
 
 ## `core/city`
 
