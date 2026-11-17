@@ -1288,6 +1288,10 @@
    "bytes": 8995903,
    "sha256": "c55c2c62f88cd016aeecfc2b6b027e466f63afd1de992e1ad956f1e9b6599cf9"
   },
+  "settlements/komodo/dist/komodo.html": {
+   "bytes": 8159349,
+   "sha256": "e7ebe9d6cd35bb6386bb77fcaf2b9b0c8014fe96f9f181416bf1055d94f9e0f9"
+  },
   "settlements/lightwall/dist/lightwall.html": {
    "bytes": 3849615,
    "sha256": "919343fb05ff33e6ce7645ca62bc2cf8914eb28653e579be71ca92ca3557af64"

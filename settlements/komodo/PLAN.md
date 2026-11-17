@@ -92,12 +92,12 @@ Gila's shares (the owner agreed them for Gila, 2026-11-16).
 
 ## 7. Steps
 
-| Step | What | Test |
-|---|---|---|
-| **K0** | this plan, `spec.json`, the sheets | `python3 kits/lizardmen/settle/towns_plan.py komodo` |
-| K1 | `KM_REC` and the spec | `checkTown` with a negative |
-| K2 | the page | the guide's section 5; `water-on-core` with the sea (`expect.lake`); `expect.keys` lz-nest, lz-ley, lz-muster, gl-tank, lz-weir, lz-placer |
-| K3 | flora (`biomes/rift`, XA jungle) | later |
+| Step | What | Test | Status |
+|---|---|---|---|
+| **K0** | this plan, `spec.json`, the sheets | `python3 kits/lizardmen/settle/towns_plan.py komodo` | done (`9fadd409f`) |
+| **K1** | `KM_REC` and the spec | `checkTown` with a negative | done (`test-km-records.js`) |
+| **K2** | the page | the guide's section 5; `water-on-core` with the sea (`expect.lake`); `expect.keys` lz-nest, lz-ley, lz-muster, gl-tank, lz-weir, lz-placer | done (GPU-verified; owner review on section 8 pending) |
+| **K3** | flora (`biomes/rift`, XA jungle) | later | open |
 
 **Watch:** the near grid is twice Gila's (18 x 9 km at 25 m: ~260,000 vertices). If the page is heavy, draw the placer
 camp's ground from the far grid and keep the near grid to the village (question 3).

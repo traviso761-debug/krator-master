@@ -92,14 +92,14 @@ A farming town: the most Drovers of any.
 | **I0** | this plan, `spec.json`, the sheets | `python3 kits/lizardmen/settle/towns_plan.py iguana` | done (`9fadd409f`) |
 | **I1** | **the pin**: ask the scale-model queue for `iguana` at 713,1569 (`PLAN-LIZARDMEN.md`); the page can be built before it lands (`lzv.build` takes the pixel) | | queued (`PLAN-LIZARDMEN.md`) |
 | **I2** | `IG_REC` and the spec | `checkTown` with a negative | done (`test-ig-records.js`) |
-| **I3** | the page | the guide's section 5; `expect.keys` lz-nest, lz-ley, lz-muster, gl-tank, lz-granary, lz-lookout, lz-windmill | done (GPU-verified; owner review on section 8 pending) |
+| **I3** | the page | the guide's section 5; `expect.keys` lz-nest, lz-ley, lz-muster, gl-tank, lz-granary, lz-lookout, lz-windmill | done (`45ac6ddd0`, GPU-verified; all five section 8 questions agreed 2026-11-17) |
 | **I4** | flora | later | open |
 
-## 8. Questions for the owner (answers *proposed*)
+## 8. Questions for the owner (answered 2026-11-17: all five agreed as proposed)
 
-1. **Iguana at 713,1569**, the flat farmland 14.6 km west of the Pile? *Proposed:* yes.
-2. **The mouth east, toward the Pile**, with three lookouts: the watch on Loj Nahn? *Proposed:* yes.
-3. **The Great Granary**: 27 halls in a squared spiral, after Mohenjo-daro's? *Proposed:* yes.
-4. **The shares** (Drovers 40 %)? *Proposed:* yes.
+1. **Iguana at 713,1569**, the flat farmland 14.6 km west of the Pile? **Agreed:** yes (`713,1569`).
+2. **The mouth east, toward the Pile**, with three lookouts: the watch on Loj Nahn? **Agreed:** yes.
+3. **The Great Granary**: 27 halls in a squared spiral, after Mohenjo-daro's? **Agreed:** yes.
+4. **The shares** (Drovers 40 %)? **Agreed:** yes.
 5. **The gleaners**: do Iguana's Lizardmen go into the Pile's lower levels for relics (the tune's 1.5 t), and does Loj Nahn
-   know? *Proposed:* yes, at night, and Loj Nahn hears them below.
+   know? **Agreed:** yes, at night, and Loj Nahn hears them below.
