@@ -1,0 +1,430 @@
+{
+ "_": "Proposed for the salt-lake village (name owed: Chuckwalla proposed) (kits/lizardmen/settle/towns_plan.py; settlements/saltlakes/PLAN.md). Page frame: x east, z SOUTH, metres from the pin. GUIDE.md section 4 turns this into src/81-ck-spec.js (var LZV_SPEC). Keys starting with _ are the plan's notes, not the spec's.",
+ "_pin": {
+  "px": [
+   691,
+   1521
+  ],
+  "id": null,
+  "model_m": -1632.5,
+  "build": {
+   "near": [
+    -4500,
+    4500,
+    -4500,
+    10500,
+    25
+   ],
+   "far": [
+    -30000,
+    30000,
+    -30000,
+    30000,
+    500
+   ]
+  }
+ },
+ "_census": {
+  "Tenders": 330,
+  "Makers": 390,
+  "Drovers": 390,
+  "Line warriors": 210,
+  "Interpreters": 30,
+  "Bulwarks": 150
+ },
+ "key": "saltlakes",
+ "name": "the salt-lake village (name owed: Chuckwalla proposed)",
+ "seed": 8701,
+ "spiral": {
+  "axis": 177.5,
+  "windings": 4,
+  "depth0": 32,
+  "court": 40,
+  "street": 7,
+  "ratio": 1.25,
+  "mouthExtra": 18
+ },
+ "ley": {
+  "to": [
+   651.9,
+   1486.7
+  ],
+  "name": "the west reliquary",
+  "stone": 50
+ },
+ "court": {
+  "nest": "lz-nest"
+ },
+ "pools": {
+  "w0": [
+   [
+    "lz-warren",
+    1
+   ]
+  ],
+  "w1": [
+   [
+    "lz-warren",
+    4
+   ],
+   [
+    "lz-tower",
+    1
+   ]
+  ],
+  "w2": [
+   [
+    "lz-makers",
+    1
+   ]
+  ],
+  "w3": [
+   [
+    "lz-longhouse",
+    2
+   ],
+   [
+    "lz-lodge",
+    1
+   ]
+  ]
+ },
+ "gaps": {
+  "w0": [
+   2.2,
+   4.2
+  ],
+  "w1": [
+   3.2,
+   6.2
+  ],
+  "w2": [
+   4.2,
+   8.2
+  ],
+  "w3": [
+   12.0,
+   20.0
+  ]
+ },
+ "wells": [
+  1,
+  2,
+  2,
+  2
+ ],
+ "specials": [
+  [
+   "gl-tank",
+   0,
+   0,
+   0.52,
+   2.2
+  ],
+  [
+   "lz-seer",
+   0,
+   1,
+   0.45,
+   2.0
+  ],
+  [
+   "lz-medicine",
+   0,
+   2,
+   0.38,
+   1.8
+  ],
+  [
+   "lz-obelisk",
+   0,
+   3,
+   0.55,
+   2.0
+  ],
+  [
+   "lz-hall-bronze",
+   2,
+   0,
+   0.35,
+   2.0
+  ],
+  [
+   "lz-hall-bone",
+   2,
+   2,
+   0.38,
+   2.0
+  ],
+  [
+   "gl-saltstore",
+   2,
+   1,
+   0.55,
+   2.0
+  ],
+  [
+   "gl-saltstore",
+   2,
+   3,
+   0.45,
+   2.0
+  ],
+  [
+   "lz-granary",
+   3,
+   0,
+   0.3,
+   2.2
+  ],
+  [
+   "lz-barracks",
+   3,
+   2,
+   0.5,
+   2.4
+  ]
+ ],
+ "mouth": {
+  "muster": true,
+  "tents": [
+   "lc-seer",
+   "lc-hide"
+  ]
+ },
+ "fields": {
+  "dir": [
+   0.0,
+   -1.0
+  ],
+  "r0": 700,
+  "r1": 3600,
+  "w": 120,
+  "d": 80,
+  "half": 6,
+  "crops": [
+   "ashmillet",
+   "sandpan-fonio",
+   "frillpod"
+  ],
+  "farms": 4,
+  "windmills": 2,
+  "maxSlope": 0.12,
+  "gaps": 24,
+  "circle": true
+ },
+ "lake": {
+  "name": "The salt lake under the Pile",
+  "level": -1706,
+  "band": 16,
+  "field": 0.06,
+  "label": "the salt lake (basins.json 692.5,1525.7: 32 km2, -1,706 m)"
+ },
+ "hamlet": {
+  "id": "saltlakes.pans",
+  "focus": "salt",
+  "site": [
+   2110.0,
+   6611.5
+  ],
+  "workers": 120,
+  "popMax": 210,
+  "link": [
+   -230.4,
+   329.0
+  ],
+  "resource": [
+   2234.7,
+   7002.0
+  ]
+ },
+ "expect": {
+  "people": 1500,
+  "wells": 10,
+  "keys": [
+   "lz-nest",
+   "lz-ley",
+   "lz-muster",
+   "gl-tank",
+   "lz-mine",
+   "gl-pans",
+   "gl-saltstore"
+  ],
+  "lake": true,
+  "hamlet": true
+ },
+ "look": {
+  "hour": 10.0,
+  "dens": 1.9,
+  "fog": 4e-05
+ },
+ "layers": [
+  "ground.salt",
+  "ground.savanna.litter",
+  "ground.dirt",
+  "ground.tilled"
+ ],
+ "_spiral": {
+  "axis_deg": 177.5,
+  "why": "the mouth (+e2) south-south-east, down the basin floor toward the salt lake and the pans",
+  "winding_depths_m": [
+   32.0,
+   40.0,
+   50.0,
+   62.5
+  ],
+  "outer_radius_m": 341.9,
+  "mouth": [
+   -230.4,
+   329.0
+  ]
+ },
+ "_ley": {
+  "unit": [
+   -0.7517,
+   -0.6595
+  ],
+  "distM": 104025,
+  "bearing_deg": 311.3,
+  "stone": [
+   -37.6,
+   -33.0
+  ]
+ },
+ "_muster": [
+  -218.9,
+  365.3
+ ],
+ "sites": [
+  {
+   "key": "lz-mine",
+   "x": 1300,
+   "z": 900,
+   "ry": 0,
+   "kind": "works",
+   "name": "a rock-salt quarry on the halite flat"
+  },
+  {
+   "key": "lz-mine",
+   "x": -900,
+   "z": 1400,
+   "ry": 0,
+   "kind": "works",
+   "name": "a rock-salt quarry on the halite flat"
+  },
+  {
+   "key": "lz-mine",
+   "x": 400,
+   "z": 2100,
+   "ry": 0,
+   "kind": "works",
+   "name": "a rock-salt quarry on the halite flat"
+  },
+  {
+   "key": "gl-pans",
+   "x": 2460.6,
+   "z": 6772.5,
+   "ry": 0,
+   "kind": "works",
+   "name": "a squared spiral of salt pans on the lake shore"
+  },
+  {
+   "key": "gl-pans",
+   "x": 2370.1,
+   "z": 6801.4,
+   "ry": 0,
+   "kind": "works",
+   "name": "a squared spiral of salt pans on the lake shore"
+  },
+  {
+   "key": "gl-pans",
+   "x": 2279.6,
+   "z": 6830.3,
+   "ry": 0,
+   "kind": "works",
+   "name": "a squared spiral of salt pans on the lake shore"
+  },
+  {
+   "key": "gl-pans",
+   "x": 2189.1,
+   "z": 6859.1,
+   "ry": 0,
+   "kind": "works",
+   "name": "a squared spiral of salt pans on the lake shore"
+  },
+  {
+   "key": "gl-pans",
+   "x": 2098.6,
+   "z": 6888.0,
+   "ry": 0,
+   "kind": "works",
+   "name": "a squared spiral of salt pans on the lake shore"
+  },
+  {
+   "key": "gl-pans",
+   "x": 2008.1,
+   "z": 6916.9,
+   "ry": 0,
+   "kind": "works",
+   "name": "a squared spiral of salt pans on the lake shore"
+  },
+  {
+   "key": "gl-pans",
+   "x": 1917.6,
+   "z": 6945.8,
+   "ry": 0,
+   "kind": "works",
+   "name": "a squared spiral of salt pans on the lake shore"
+  }
+ ],
+ "views": [
+  {
+   "name": "Overview",
+   "at": [
+    0,
+    0
+   ],
+   "from": [
+    -600,
+    380,
+    800
+   ]
+  },
+  {
+   "name": "The nest hall",
+   "at": [
+    0,
+    0
+   ],
+   "from": [
+    60,
+    26,
+    70
+   ]
+  },
+  {
+   "name": "The rock-salt quarries",
+   "at": [
+    1300,
+    900
+   ],
+   "from": [
+    -120,
+    60,
+    140
+   ]
+  },
+  {
+   "name": "The pans on the salt lake",
+   "at": [
+    0,
+    8000
+   ],
+   "from": [
+    -200,
+    90,
+    220
+   ]
+  }
+ ]
+}

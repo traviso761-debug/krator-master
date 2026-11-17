@@ -165,6 +165,34 @@ def specs():
         views=[dict(name='Overview', at=[0, 0], from_=[-800, 460, 900]), dict(name='The nest hall', at=[0, 0], from_=[60, 26, 70]),
                dict(name='The Great Granary', at=[-1250, 0], from_=[-160, 70, 160]), dict(name='The watch on the Pile', at=[2600, -400], from_=[-60, 30, 60])],
         sheet=6000, sheet_centre=[600, 0])
+    # ---- THE SALT LAKES (proposed 2026-11-17, a fifth town; name owed): rock salt on the halite flat, pans on the salt lake
+    S['saltlakes'] = dict(
+        key='saltlakes', name='the salt-lake village (name owed: Chuckwalla proposed)', prefix='ck', pin=[691, 1521], pinId=None, people=1500, seed=8701,
+        build=dict(near=[-4500, 4500, -4500, 10500, 25], far=[-30000, 30000, -30000, 30000, 500]),
+        shares={1: .22, 2: .26, 3: .26, 4: .14, 5: .02, 6: .10},
+        spiral=dict(axis=177.5, windings=4, depth0=32, court=40, street=7, ratio=1.25, mouthExtra=18),
+        why_axis='the mouth (+e2) south-south-east, down the basin floor toward the salt lake and the pans',
+        ley=dict(to=RELIQ_W, name='the west reliquary', stone=50),
+        court=dict(nest='lz-nest'),
+        pools=dict(w0=[['lz-warren', 1]], w1=[['lz-warren', 4], ['lz-tower', 1]], w2=[['lz-makers', 1]], w3=[['lz-longhouse', 2], ['lz-lodge', 1]]),
+        gaps=dict(w0=[2.2, 4.2], w1=[3.2, 6.2], w2=[4.2, 8.2], w3=[12.0, 20.0]),
+        wells=[1, 2, 2, 2],
+        specials=[['gl-tank', 0, 0, 0.52, 2.2], ['lz-seer', 0, 1, 0.45, 2.0], ['lz-medicine', 0, 2, 0.38, 1.8], ['lz-obelisk', 0, 3, 0.55, 2.0],
+                  ['lz-hall-bronze', 2, 0, 0.35, 2.0], ['lz-hall-bone', 2, 2, 0.38, 2.0], ['gl-saltstore', 2, 1, 0.55, 2.0], ['gl-saltstore', 2, 3, 0.45, 2.0],
+                  ['lz-granary', 3, 0, 0.30, 2.2], ['lz-barracks', 3, 2, 0.5, 2.4]],
+        mouth=dict(muster=True, tents=['lc-seer', 'lc-hide']),
+        fields=dict(dir=[0.0, -1.0], r0=700, r1=3600, w=120, d=80, half=6, crops=['ashmillet', 'sandpan-fonio', 'frillpod'],
+                    farms=4, windmills=2, maxSlope=0.12, gaps=24, circle=True),
+        quarries=[[1300, 900], [-900, 1400], [400, 2100]],
+        pans=dict(n=7, toward=[692.5, 1525.7], step=95),
+        hamlet=dict(id='saltlakes.pans', focus='salt', site='the salt lake\'s shore (towns_plan.py puts it by the pans)', workers=120, popMax=210),
+        expect=dict(people=1500, wells=10, keys=['lz-nest', 'lz-ley', 'lz-muster', 'gl-tank', 'lz-mine', 'gl-pans', 'gl-saltstore'], lake=True, hamlet=True),
+        lake=dict(name='The salt lake under the Pile', level=-1706, band=16, field=0.06, label='the salt lake (basins.json 692.5,1525.7: 32 km2, -1,706 m)'),
+        look=dict(hour=10.0, dens=1.9, fog=0.000040),
+        layers=['ground.salt', 'ground.savanna.litter', 'ground.dirt', 'ground.tilled'],
+        views=[dict(name='Overview', at=[0, 0], from_=[-600, 380, 800]), dict(name='The nest hall', at=[0, 0], from_=[60, 26, 70]),
+               dict(name='The rock-salt quarries', at=[1300, 900], from_=[-120, 60, 140]), dict(name='The pans on the salt lake', at=[0, 8000], from_=[-200, 90, 220])],
+        sheet=6500, sheet_centre=[0, 3500])
     # ---- THE TUBES: a cavern town in the Rift line's ruined station (core/city/cavern, not the surface builder)
     S['tubes'] = dict(
         key='tubes', name='the Tubes', prefix='tw', pin=[608, 1547], pinId='sa8xk6pimb', people=1000, seed=8601,
@@ -245,6 +273,23 @@ def lay(spec):
             out['sites'].append(dict(key='lz-granary', x=r1(g['at'][0] + x), z=r1(g['at'][1] + z), ry=0, kind='granary', name='a hall of the Great Granary'))
     for (x, z) in spec.get('lookouts', []):
         out['sites'].append(dict(key='lz-lookout', x=x, z=z, ry=r1(math.atan2(1, 0)), kind='lookout', name='a lookout on the Pile (the watch on Loj Nahn)'))
+    for (x, z) in spec.get('quarries', []):
+        out['sites'].append(dict(key='lz-mine', x=x, z=z, ry=0, kind='works', name='a rock-salt quarry on the halite flat'))
+    if spec.get('pans'):
+        # the pans along the salt lake's shore: march from the pin toward the lake's centre to the model's waterline, step
+        # back 150 m onto the flat, and lay them in a row across that line
+        pn = spec['pans']; u, _, _ = bearing_to(spec['pin'], pn['toward'])
+        t = 0.0
+        while t < 30000 and W(u[0] * t, u[1] * t) < 0.5: t += 25
+        t -= 150; px_ = (-u[1], u[0])
+        for i in range(pn['n']):
+            o = (i - (pn['n'] - 1) / 2) * pn['step']
+            out['sites'].append(dict(key='gl-pans', x=r1(u[0] * t + px_[0] * o), z=r1(u[1] * t + px_[1] * o), ry=0, kind='works', name='a squared spiral of salt pans on the lake shore'))
+        out['shore'] = [r1(u[0] * (t + 150)), r1(u[1] * (t + 150))]
+        hm = spec.get('hamlet')
+        if hm and isinstance(hm.get('site'), str):
+            hm = dict(hm); hm['site'] = [r1(u[0] * (t - 260)), r1(u[1] * (t - 260))]; hm['link'] = [r1(G['mouth'][0]), r1(G['mouth'][1])]
+            hm['resource'] = out['shore']; spec['hamlet'] = hm
     return out, H, W, G
 
 # ------------------------------------------------------------------------------------------------ the spec file
@@ -367,7 +412,9 @@ def sheet(spec, L, G, H, W):
     return F
 
 C_WIND = [(198, 222, 182), (214, 204, 232), (238, 214, 172), (222, 202, 178), (236, 188, 184), (220, 220, 220)]
-WIND_NOTE = {'tuatara': ['Tenders (warrens), the tank, the seer, the medicine hut', 'Tenders and Interpreters (towers)', 'Makers; the bronze, reed and bone halls, the warehouse',
+WIND_NOTE = {'saltlakes': ['Tenders (warrens), the tank, the seer, the medicine hut', 'Tenders and Interpreters (towers)', 'Makers (the salt workers); the bronze and bone halls, two salt stores',
+                           'Drovers (long houses: the haulers of the salt) and the lodges; a granary, a barracks'],
+             'tuatara': ['Tenders (warrens), the tank, the seer, the medicine hut', 'Tenders and Interpreters (towers)', 'Makers; the bronze, reed and bone halls, the warehouse',
                          'Drovers (long houses); five granaries', 'Line warriors and Bulwarks (lodges); three barracks: the raiders'],
              'komodo': ['Tenders (warrens), the tank, the seer, the medicine hut', 'Tenders and Interpreters (towers)', 'Makers; the halls, the warehouse',
                         'Drovers (long houses: the fishers and the rice); three granaries', 'Line warriors and Bulwarks (lodges); two barracks'],
@@ -469,6 +516,7 @@ def village(spec, L, G, H, W):
                     [((232, 216, 180), 'the hall'), ((238, 214, 172), 'cells'), ((190, 200, 170), 'fungus beds'), ((200, 196, 190), 'the station'), ((236, 188, 184), 'lodges'), ((0, 140, 70), 'the ley line')])
 
 SUBS = {
+  'saltlakes': 'Proposed (2026-11-17) to mend the country\'s thinnest margin, its salt: a closed basin floor at -1,630 m on the west Coil loop, half-way between Iguana and Gila (105 km from each), on the richest halite in the country (254), its salt lake (32 km2, -1,706 m) to the south-south-east. Dry savanna (1,051 mm, one wet season) where pans dry, as at Gila. The spiral\'s mouth down the basin toward the lake; the rock-salt quarries on the flat; the pans on the shore.',
   'tuatara': 'The copper town on the volcanic savanna, the raiders nearest the Sultanate: a ground falling 5.3 % to the north-east, no perennial water within 40 km (Neet Gill, a wadi, 10 km), so wells, seven sunken cisterns and a great tank. The spiral\'s mouth faces north, toward the forts, with the mustering ground and the war camp; the fields south; the copper diggings wherever kits/resources puts the nodes within 6 km.',
   'komodo': 'The tin town at the far end of the eastern sea: a bluff falling 11 % to the shore 1-2 km north, 4,000 mm of rain. The spiral\'s long arms along the contour, every block on a plinth, its mouth down to the shore and the weirs; the fields east along the shore bench; the placer camp on Kruk Warra 11.9 km east, inside a near grid run east to hold it.',
   'iguana': 'The capital\'s granary on the Pile\'s plateau: flat (0.3 %), 1,992 mm, prime farmland. The spiral wide and open, its mouth east toward the Pile (14.6 km) with three lookouts on the way: the watch on Loj Nahn. The Great Granary west, between the town and its fields; the fields to the west, the windmills on their edge.',
