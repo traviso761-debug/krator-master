@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """The station survey on scale model 5.1 (PLAN.md section 5): heights, water, classes, rain and temperatures round a point.
 
-    python3 biomes/galvanic/tools/survey.py [px py]        # default: the vent at 5.1 px 801,1573
+    python3 biomes/galvanic/tools/survey.py [px py]        # default: the strand at 5.1 px 780,1576 (moved 2026-11-17; the first survey's vent was 801,1573)
 
 Reads tools/scale-model/model/data through smodel/page.py (read only: nothing on the model is changed). Pressure 1.6 atm x e^(-h/8 km).
 """
@@ -18,7 +18,7 @@ C = page.raster(D, 'c')[..., 0]
 P = page.raster(D, 'p')[..., 0] / 255 * 4000
 TM = page.raster(D, 'tm')[..., 0].astype(float) - 90
 codes = [c['code'] for c in D['climate']['classes']]
-vx, vy = (float(sys.argv[1]), float(sys.argv[2])) if len(sys.argv) > 2 else (801, 1573)
+vx, vy = (float(sys.argv[1]), float(sys.argv[2])) if len(sys.argv) > 2 else (780, 1576)
 yy, xx = np.mgrid[0:E.shape[0], 0:E.shape[1]]
 d = np.hypot(xx - vx, yy - vy) * 2
 x, y = int(round(vx)), int(round(vy))

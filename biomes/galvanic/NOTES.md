@@ -41,6 +41,13 @@ Rift floor's vents. The regions' polygons are in the artifact's database, not th
 - **A page with no trees fails a core negative**: the card audit's "every card lifted 6 m" cannot fail with no cards. The Deep's page took the hills'
   foot on its north edge (and the Rift's trees on it) rather than leave the harness a check it cannot run.
 
+## The move (2026-11-17)
+
+- The owner moved the battery nearer Sauropolis: the stations now stand on the north strand at px 780,1576 (50 km from the city). Only the site records
+  changed (px, world, sky, the survey's climate); the pages are ideal types, so their shapes did not move. The model has no vent there
+  (`KNOWN_ISSUES.md`, for the scale-model queue). The owner's other answers the same day: the Lizardmen work the strand (nothing drawn yet; station 4
+  waits), and the relict black smokers are **galvanic chimneys** ("Chimney").
+
 ## Lessons
 
 - A placement pass over a 5 km page at a 3 m cell put 530,000 crusts on the strand (28 M triangles): budget the cell before the first build; 6 m

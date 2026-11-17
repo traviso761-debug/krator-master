@@ -1,4 +1,4 @@
-// ================================================================= HOST — the relict black-smoker chimneys (station 2, the Deep; PLAN.md section 4, item 1 and section 12)
+// ================================================================= HOST — the galvanic chimneys (the owner's name, 2026-11-17; "Chimney" for short): relict black smokers (station 2, the Deep; PLAN.md section 4, item 1 and section 12)
 // The chimneys that stood on the vent field while it lay under the sea: sulfide spires (pyrite, chalcopyrite, sphalerite, anhydrite) 3-12 m tall, their
 // flanges and their orifices, now dead and standing in the air on the Deep's rim and in its shallows, rusted where the air has had them, black where a face
 // has broken, a brassy chalcopyrite lining at the mouth. Mineral, not life: drawn here as the site's records (GALV_SITES.deep.smokers), each REGISTERED
@@ -9,7 +9,7 @@ const CHIMNEYS=SITE.smokers?(function(){const W=4405,u=(i,k)=>KRAND.unit(KRAND.h
  SITE.smokers.forEach((c,i)=>{const x=c[0],z=c[1],h=c[2],r=c[3],lean=.1*u(i,1),la=u(i,2)*TAU,tx=Math.sin(lean)*Math.cos(la),tz=Math.sin(lean)*Math.sin(la);
   // the foot: the lowest ground under the foot's disc (r x 1.25, rotated by the lean), sunk 0.3 m, so no edge of it hangs in the air
   let lo=terrainH(x,z);for(let k=0;k<12;k++){const a=k/12*TAU;for(const f of [.6,1.25]){lo=Math.min(lo,terrainH(x+Math.cos(a)*r*f,z+Math.sin(a)*r*f)-Math.abs(Math.cos(a-la))*r*f*Math.sin(lean));}}
-  const y0=lo-.3,rec={i,x,z,y0,h,r,lean,la,name:'A relict black-smoker chimney ('+h.toFixed(1)+' m: pyrite, chalcopyrite and sphalerite under a rust skin; dead since the sea fell)'};
+  const y0=lo-.3,rec={i,x,z,y0,h,r,lean,la,name:'A galvanic chimney ('+h.toFixed(1)+' m, a relict black smoker: pyrite, chalcopyrite and sphalerite under a rust skin; dead since the sea fell)'};
   REGISTER({name:rec.name,kind:'chimney',x,z,y:y0,r:r*1.6+h*Math.sin(lean),h:h+1,tags:{geology:{minerals:['pyrite','chalcopyrite','sphalerite','anhydrite'],relict:true,from:'the vent field under the sea'},
    hazard:{kind:'fall',danger:.15}}});
   OBSTACLES.push({x,z,r:r*1.3});out.push(rec);
@@ -29,6 +29,6 @@ const CHIMNEYS=SITE.smokers?(function(){const W=4405,u=(i,k)=>KRAND.unit(KRAND.h
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));
  g.setIndex(idx);g.computeVertexNormals();
  const m=new THREE.Mesh(g,new THREE.MeshStandardMaterial({vertexColors:true,roughness:.86,metalness:.05}));m.name='galvanic chimneys';
- m.userData.host=true;m.userData.inspectLabel='A relict black-smoker chimney';m.castShadow=m.receiveShadow=true;scene.add(m);
+ m.userData.host=true;m.userData.inspectLabel='A galvanic chimney (a relict black smoker)';m.castShadow=m.receiveShadow=true;scene.add(m);
  out.mesh=m;out.tris=idx.length/3;return out;})():null;
 window._chimneys=CHIMNEYS?{n:CHIMNEYS.length,tris:CHIMNEYS.tris}:null;

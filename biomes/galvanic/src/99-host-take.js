@@ -120,16 +120,16 @@ KHOST.on(function lodTick(){camera.updateMatrixWorld();if(BIO.lodTick)BIO.lodTic
 // THE REFLECTIONS SWITCH (core/water ext/58) on the sea, OFF at load: the button cycles off, probe, live (?mirror=probe|live asks at load)
 const MIRROR=WATER.mirrorSwitch&&BIG_DRAW?WATER.mirrorSwitch({THREE,renderer,scene,camera,sky:SKY,materials:[BIG_DRAW.mesh.material],
  level:BIGW.level,center:[0,1800],radius:2600,far:2400,hour:()=>ATMOS.clock?ATMOS.clock.hour:0}):null;window.MIRROR=MIRROR;
-const HINT=SKEY==='deep'?"Station 2 of the Rift battery, the Deep (scale model 5.1, px 801,1573: the vent itself, its crater 100 m under the eastern terminal sea; ideal type, the crater drawn 1.6 km across): "+
+const HINT=SKEY==='deep'?"Station 2 of the Rift battery, the Deep (scale model 5.1, px 781,1577: the eastern terminal sea's north strand 50 km from Sauropolis, the vent's crater 100 m under the sea; ideal type, the crater drawn 1.6 km across): "+
  "hot metal brine (~60 degC, the Atlantis II Deep's kind) to the sea's level, steaming faintly, thickest over the vent; round its edge a shelf of the brine's own muds in bands (red-brown oxide, black sulfide, green silicate, pale anhydrite at the top), "+
- "which the season bares and drowns (?day=0-364); the relict black-smoker chimneys of the old vent field standing dead on the rim and in the shallows, rusted, brass at the mouth; cell reefs crowding their feet, sulfur runners lacing the rubble, "+
+ "which the season bares and drowns (?day=0-364); the galvanic chimneys (relict black smokers of the old vent field) standing dead on the rim and in the shallows, rusted, brass at the mouth; cell reefs crowding their feet, sulfur runners lacing the rubble, "+
  "a stream off the hills laying its iron terraces before it falls into the Deep; the sea past the south rim. Day "+DAY+". Nothing glows.":
- SKEY==='gossan'?"Station 3 of the Rift battery, the Gossan Hills (scale model 5.1, px 800,1568: the hills 10 km north of the vent, -2,211 m, 2.11 atm, +34 degC; ideal type): "+
+ SKEY==='gossan'?"Station 3 of the Rift battery, the Gossan Hills (scale model 5.1, px 780,1569: the hills 14 km north of the strand, -2,173 m, 2.10 atm, +33 degC; ideal type): "+
  "Sato and Mooney's battery at a hill's scale. A sulfide lens strikes down the slope: above the water table it is oxidised to the iron hat, a rust-red gossan rib with no couple left in it and nothing of the battery's on it; "+
  "at the slope's foot, where it crosses the table, acid seeps (pH ~2) and the brass masts in them, on the line between the air and the reducing water; below, the ore lies drowned under the footslope, its stream lined with stumps and dead reefs; "+
  "the footwall seep's stream runs off the ore, alive, laying orange terraces. The table swings with the season (?day=0-364) and the store jars keep to its reach. The inspector reads the self-potential a prospector would. "+
  "The Rift's baobabs and dragon trees on the dry slope, past the acid and off the footslope's seasonal wet. Day "+DAY+". Nothing glows.":
- "Station 1 of the Rift battery (scale model 5.1, px 801,1573: the eastern terminal sea's north strand, -2,597 m, 2.21 atm, +36 degC; ideal type, the strand compressed): "+
+ "Station 1 of the Rift battery (scale model 5.1, px 780,1576: the eastern terminal sea's north strand 50 km from Sauropolis, -2,599 m, 2.21 atm, +36 degC; ideal type, the strand compressed): "+
  "metal-rich sulfide mud oxidising into its own acid, three wine-red streams laying orange iron terraces down to the brine sea, gossan-capped sulfide mounds with acid springs, "+
  "the vent's crater (the Deep) full of hot metal brine. The life lives on the current between pyrite and sphalerite: sulfur runners, wire crusts, brass masts, cell reefs, "+
  "store jars on the flood line. Day "+DAY+" (?day=0-364 moves the sea and the jars). Once a day, at the top of the giant's nod, the tidal pump opens the ore: the springs rise and the current swells to 1.6x (the inspector shows it). Nothing glows. The Rift's baobabs and dragon trees on the hills, past the acid.";

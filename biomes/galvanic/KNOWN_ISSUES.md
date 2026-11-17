@@ -25,7 +25,11 @@ Open items are `- [ ]`; `build.py` counts them.
 - [ ] **The water table on the Gossan Hills** swings the sea's 1.2 m a year and its mean lies 0.55 m under the footslope (~47 flooded days a year):
   numbers taken, not measured. The hill (-2,240 m at the slope's foot, 9% above it, 1.2% below) is an ideal type of the model's 10 km north of the
   vent (the model's own slope there is ~8%); the ore lens is the ideal type's (the page does not read `kits/resources`'s zinc and copper layers, which
-  favour the Rift). If the owner wants the lens on the map, it is a scale-model queue item (a zinc-copper body at px 800,1568).
+  favour the Rift). If the owner wants the lens on the map, it is a scale-model queue item (a zinc-copper body at px 780,1569).
+
+- [ ] **No vent on the model at the moved site** (the owner, 2026-11-17: the stations moved nearer Sauropolis, to px 780,1576): the Deep (station 2's
+  px 781,1577, its floor 100 m under the sea) is the ideal type's. For the scale-model queue: a small phreatomagmatic vent under the north strand at
+  about px 781,1577 (floor -2,700 m), as the first site's vent at px 801,1573 is. Not edited here (`tools/scale-model/` is read only).
 
 ## Owed
 
