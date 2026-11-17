@@ -4,7 +4,7 @@
 
 Docs: `BIOME-API.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `PLAN-FLORA.md`, `PLAN.md`, `PORT.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/swbay.html`
+Built output (never open it; edit `src/` and rebuild): `dist/swbay-skarn.html`, `dist/swbay.html`
 
 Build: `cd biomes/swbay && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
@@ -39,3 +39,11 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `89w-host-water.js` | 7 |  |
 | `99-host-take.js` | 10 | the inspector's words (45); the probe's budgets and the kit's own checks (ve (55); the page, handed to the host (88) |
 | `99-tail.html` | <1 |  |
+
+## stations/
+
+Each station builds one page (`build.py --station <name>`) from its own fragments, with `src/` or its `base` station.
+
+| Station | Fragments | KB |
+|---|---|---|
+| skarn | 45-host-stage.js, 45b-host-ground.js, 85-host-quarry.js, 88-host-build.js, 89a-host-atmos.js, 89s-host-sky.js, 89w-host-water.js, 99-host-take.js | 62 |

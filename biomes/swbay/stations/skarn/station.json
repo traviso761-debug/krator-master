@@ -1,0 +1,16 @@
+{
+ "what": "Showcase station 3 (openworld/GEOLOGY-STATIONS-5.1.md), the Almua skarn-marble harbour cliffs (PLAN.md, 'Showcase Station: Almua Skarn-Marble Harbour Cliffs'): the bay's src/ (the kit's species, floor and fauna) on this station's own stage, a quarried marble headland and a carbonate-shelf foreshore on the Almua-Voth coast at map 5.1 px 739.6,995 (the nearest shore to the plan's 734,998), the beds from core/terrain's KSTRATA (contact-marble tonguing into carbonate-shelf), the far country from the scale model (region.json)",
+ "core": {
+  "06b-core-kcolor.js": "core/shader/06b-core-kcolor.js",
+  "35-core-strata.js": "core/terrain/35-core-strata.js",
+  "35z-core-strata-shade.js": "core/terrain/host/35-core-strata-shade.js",
+  "45a5-host-region.js": "biomes/godthrone/src/45a5-host-region.js"
+ },
+ "drop": [
+  "85-host-tower.js",
+  "86-host-jetty.js",
+  "87-host-kin.js"
+ ],
+ "neigh": false,
+ "region": "region.json"
+}

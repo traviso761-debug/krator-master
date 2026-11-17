@@ -53,3 +53,32 @@ Dropped, and why:
 - **`KSTRATA` Stack:** Lower & inner-wall headland formation `contact-marble` (`-1,515 to -1,310 m`, `4–8 m` white and graphite-blue veined marble with `epidote`/`garnet`/`magnetite` skarn bands, `fx: {sheen: 1, joints: 1}`) laterally interfingering (`lateral`, `tongue: 6 m`) seaward/southward into `carbonate-shelf` (`-1,515 to -1,440 m`, cream coquina cap & tidal visor notch).
 - **Camera Framing:** Positioned at `+14 m` above the Ring Sea (`-1,485 m`) on a stepped ancient quarry mole looking NNW (`az 338°`, pitch `+4°`): foreground turquoise gin-clear karst spring outfall (`W.karstSpring`) spilling over a wave-notched `carbonate-shelf` visor; mid-ground sheer `180 m` quarry-stepped white-and-blue `contact-marble` sea cliffs streaked with dark green epidote and glinting black magnetite skarn seams, draped on upper ledges by gate baobabs, umbrella monkey puzzles, and prism gums; background Almua's marble breakwaters and the Throne's plume to the ENE.
 - **Hydrology & Trade Tie-In:** Short, steep karstic spring streams discharge calcium-saturated clear water straight off the Inner Wall contact into the sheltered deep-water sound; the stepped quarry benches supply dimension stone, statuary marble, and skarn iron/copper flux barged coastwise along the western Ring Sea between **Almua** (`718, 883`), **Voth** (`742, 1018`), **Tethis** (`733, 775`), and **Ys** (`789, 738`).
+
+### As built (2026-11-16): `stations/skarn/`, `python3 build.py --station skarn` -> `dist/swbay-skarn.html`
+
+The kit's first station (the mechanism is nwbay's: `stations/<name>/` fragments over `src/`, `station.json` for more core, `drop`,
+`neigh: false` and `region`; the bay's own page is byte-for-byte unchanged). It stands on **today's ground** (map 5.1 before Gemini's
+reshaping):
+
+- **The site.** The plan's px 734,998 is 260 m up (-1,240 m) and 15 km inland on today's raster; the station stands on the nearest
+  shore to it, the Almua-Voth coast at **px 739.6,995** (the coast runs NNW, az ~328, the Ring Sea to the ENE at -1,500.2 m). The far
+  country past ~2 km is the model's own relief (`stations/skarn/region.json`, 41 x 41 cells of 2 km, written by
+  `biomes/godthrone/tools/region.py skarn 739.6 995 --n 41 --kit biomes/swbay`). y 0 is the sea (the plan's -1,499 m datum).
+- **The coast.** A carbonate-shelf foreshore (3.8 m, its front undercut by the tide: the visor's lip over its notch) south-east of a
+  quarry cove; the marble headland north-west of it: a 34 m sea cliff to **the harbour bench (+34 m, -1,465 m)**, the main cliff to
+  200-226 m, **quarry-stepped** on the headland's south flank (15 m benches, 9 m treads), the crown ~26 m over it (**~240 m,
+  -1,260 m**), the plateau's savannah behind.
+- **The beds.** `KSTRATA`: `contact-marble` from -16 to 189 m (-1,515..-1,310 m) under the platform's `carbonate-shelf`; south-east of
+  the cove's mouth the lower 75 m are `carbonate-shelf` (-1,515..-1,440 m), tonguing in by 6 m (`lateral`). The magnetite selvages are
+  glossy and a little metallic (the ground's material: the plan's sheen), the epidote and garnet bands their own colours.
+- **The eye.** The plan's view opens the page: on the ancient quarry mole's head (marble courses stepped back in tiers, +12.3 m), the
+  eye at +14 m (-1,485 m), az 338, pitch +4. Left foreground the **karst spring** (`W.karstSpring`) on the shelf, its run over the
+  visor's lip and a 2.8 m curtain (`W.fall`) into the sound; across the harbour the quarried marble; an outer marble breakwater off
+  the headland's tip.
+- **The flora.** The kit's own passes by the station's fields (Csb: wet .36, the spring's ground soaked, upland by height), the canopy
+  ceiling at 78 m (`SWBAY_TEMPLE_H`); on the ledges the host puts the plan's trees (`SWBAY.treeAt`): monkey puzzles on the quarry's
+  upper treads, prism gums and gate baobabs on the crown's lip.
+- **Not as the plan says** (KNOWN_ISSUES.md): the Throne's plume is NNE on today's map (bearing 33, 387 km), outside the az-338 view
+  (drawn at its bearing and angular size; a view looks at it); Almua's breakwaters are 230 km up the coast, beyond the horizon (the
+  quarry's own breakwater stands in the view); the harbour bench at +34 m is drawn as the quarry's floor, not a raised wave-cut bench
+  (the owner, 2026-10-26: the Ring Sea's level has not changed).

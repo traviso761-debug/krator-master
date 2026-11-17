@@ -4,6 +4,25 @@ Read before changing anything here. `build.py` prints the open count.
 
 ## Open
 
+- [ ] **Showcase station 3, the skarn-marble harbour cliffs (`stations/skarn/`, 2026-11-16): the GPU verify is owed** on the owner's
+      machine (`verify.py dist/swbay-skarn.html --assert --all-views`). Only SwiftShader ran here (the list of what passed is in
+      `NOTES.md`, "Station 3"). Judge on the GPU: the marble's whites under ACES (they read near-white in software GL), the magnetite's
+      gloss, the quarry steps at 800 m (2 m axis-aligned ground cells on a diagonal face draw a sawtooth of lit tread tops: the treads were widened to 9 m on a 4 m battered riser, which softens it but does not end it; a quarry-face mesh aligned to the face, or a finer inset there, is owed), the spring's curtain.
+- [ ] **Station 3: what is approximate.** (1) THE SITE: the plan's px 734,998 is 15 km inland and 260 m up on today's raster; the page
+      stands on the nearest shore (px 739.6,995). (2) THE CLIFF: today's raster rises 0 to 260 m over 14 km there; the page sharpens
+      it into a 240 m cliff within ~150 m of the shore. Past ~2 km the ground eases onto the model's relief (a gentle dip inland of the
+      crown where the two meet). (3) THE HARBOUR BENCH at +34 m (-1,465 m) is drawn as the quarry's floor; a raised wave-cut bench would
+      mean a higher Ring Sea, which the owner ruled out (2026-10-26, swhighlands). Owner's question: keep it as the quarry floor, or
+      drop it to the tide? (4) THE THRONE'S PLUME is NNE (bearing 33, 387 km) on today's map, not ENE; drawn there at its angular size,
+      40 km out, outside the plan's az-338 view (the view "The Throne plume to the NNE" looks at it). (5) ALMUA'S BREAKWATERS are 230 km up
+      the coast: not drawn; the quarry's own outer breakwater stands in the view. (6) The marble's surface is the beds' colour times the
+      kit's `rock` grain (rock.rock035): a marble set from the library (`stone.marble.calacatta` for the faces, `stone.marble.ashlar` for
+      the mole) is owed through `materials.json` and `tools/textures/pack.py`, left out so the bay's page and pack did not move.
+- [ ] **Station 3: for the scale-model queue (do not edit the model here).** Steepen the Almua-Voth coast between px ~728,980 and
+      ~744,998 into a ~240 m cliff (the skarn-marble coast; today it rises 260 m over 14 km), so the plan's 734,998 is at its crown and
+      the station's shore agrees with the raster; and, if the owner wants the plan's spot exact, move the shore ~5 px west there.
+      Re-run `biomes/godthrone/tools/region.py skarn <px> <py> --n 41 --kit biomes/swbay` after the change.
+
 - [x] **The core attach audit: 16.6% of the foliage cards floated** (fixed 2026-11-08, the integration pass; `core/biome/README.md`, "What
       held means"). Every tree builder now runs with its own span log (`BIO.segs`: each `BIO.tube` span and `BIO.beam`, and the bole's top
       as a span for the leader's clumps, `treeTop`), and `clumpAt` brings each crown clump to the nearest span (`BIO.snapSeg`, `BIO.holdTo`):
