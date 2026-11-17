@@ -285,9 +285,36 @@ where they work and the scrap set's buildings, plus the Order's and the outcasts
    - `test-sb-walk.js` walks it in node. Each of its nine negatives stops the walker where it breaks the way: a door or gate left
      shut, a lift that does not move, a gangway or the plaza's steps taken away. On the page the walk runs once at load (a failure is
      an error the verify sees). The `walk up (u)` button replays it at eye height, with the doors opening and the cars riding.
-   - **Not yet**: the walls of the drums and terraces are not in the walk (only the walls the route passes through are), and a car's
-     shaft is not shut over its hole when the car is away.
-6. **SB4, life** on `core/simulation`.
+   - The drums' and terraces' walls and the shafts' holes, left out here, came with 5c and the WIP after it.
+5c. **The interiors** (2026-11-15/16, the owner: "build all walls solid ... then implement interiors for the arcology"):
+   `src/33-sb-rooms.js` (rooms, stairs, solid walls, doors, stairwells for every standing part; `test-sb-rooms.js`), the town's
+   buildings walked into with the scrap Xanadu set's interiors (`SB_ROOMS.town`, stoops on slopes; `test-sb-town-rooms.js`), the
+   town off the ruin's rubble heaps, `export-walk.js` and `godot/tests/strongbow/strongbow_walk_test.gd` (Recast: the town to T1, the
+   lip to the gatehouse's top, a house on a slope). The Nock's broken ends show their storeys laid open. README.md has the rest.
+6. **SB4, life** on `core/simulation` (2026-11-16, the owner: "continue next step of build"). The census (`src/20-sb-census.js`)
+   is the roles; the rooms and the town are the places; the walk and the rooms are the nav. In steps, each with its test:
+   - **SB4a, the world as data** (`src/34-sb-sim.js`, [G data]; `test-sb-sim.js`):
+     - the nav layer `pedestrian` (yWeight: storeys stack): the arcology's rooms (a node a room, a corridor ring or bar in nodes
+       a few metres apart, the core halls, the stair halls), its doors and stairs as edges, the neck flights, the lobby's stair;
+       the walk up's route, the terraces' decks as rings of nodes, the lifts as `lift` edges (their ride and a wait in the cost);
+       the town's streets resampled, each building's front door (its stoop's foot) joined to the nearest street node;
+     - the places: every arcology room a place of its kind's activities (bedroom and cottage SLEEP/EAT/REST, workshop CRAFT,
+       store, hall, shrine WORSHIP, mess and kitchen EAT, bunkroom for the garrison), the town's buildings by their key (houses
+       homes, arcades and bazaar TRADE, the bath, the guildhalls, the serai, the farms' fields FARM, the granaries), the lobby's
+       bazaar, the quarry, the lift heads (the capstan crews' WORK), the lip yard and the post; the ports: the valley road at
+       the lip yard and the road's end at the foot;
+     - the records: factions and orgs (the Sultanate: governor, garrison, customs, the townsfolk; the Salvagers' Guild; the
+       Merchants' Guild; the outcasts; the Order), a role per census trade with its schedule and its workplace kinds, the
+       households (5 a home, a third children, elders) to the census's numbers, the outcasts and the Order in their own parts;
+     - checks: `SIM.check` clean; every role's activities offered; every home and workplace on the nav's main body (the sealed
+       and cut-off parts off it, the outcasts' drums by their ropes only); a day jumped hour by hour puts each actor at its
+       scheduled place; negatives (a lift taken out cuts the upper Spine's commute; a door shut strands its room).
+   - **SB4b, the economy**: what the trades make and use (salvage from the quarry and the dead floors, hull crafts, the farms'
+     crops from `kits/crops`, the bazaar), the caravans by the valley road through the lip yard, the elevator's tolls; the
+     books balance (the isle demo's method).
+   - **SB4c, on the page**: the people drawn near the eye (the town and the foot presented, the Spine's storeys when the cutaway
+     or the walk shows them), the lift cars carrying their riders; the two settlements' levels (the arcology, the town).
+   - **SB4d, the export**: `SIM.export` with the walk's export, for Godot's walk test and the region.
 7. Placement in the open world: the region's job, from the records.
 
 ## 10. Answered (2026-11-11)
