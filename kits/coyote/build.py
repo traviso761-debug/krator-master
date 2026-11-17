@@ -104,7 +104,7 @@ _CAMP = os.path.join(ROOT, 'core', 'camp')
 _WATER = os.path.join(ROOT, 'core', 'water')
 _CITY = os.path.join(ROOT, 'core', 'city')
 CITY_JS = [os.path.join(_CITY, f) for f in ('10-city-core.js', '15-city-ground.js', '25-city-site.js', '33-city-strategies.js')]
-CORE_FILES = ([os.path.join(_CAMP, f) for f in ('10-camp-cultures.js', '20-camp-census.js', '30-camp-pitch.js')] +
+CORE_FILES = ([os.path.join(_CAMP, f) for f in ('10-camp-cultures.js', '11-camp-coyote.js', '20-camp-census.js', '30-camp-pitch.js')] +
               [os.path.join(ROOT, 'core', 'space', '20-core-space.js')] +
               [os.path.join(_WATER, f) for f in ('20-core-water.js', '22-core-water-flow.js', '50-core-water-draw.js', '51-core-water-kinds.js')] +
               [os.path.join(_HAMLET, f) for f in sorted(os.listdir(_HAMLET)) if re.match(r'\d\d-hamlet-.*\.js$', f) and f < '40'])

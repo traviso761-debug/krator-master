@@ -28,8 +28,8 @@
   map draws its own cliff (`KCARVE`) and passes the alcove's line, depth and heights.
 - [ ] **A tipi's cover is not a walk block** (a `lathe()`, which the engine's box reader does not read): a walker can pass through
   it anywhere, not only at the door. Its floor is a walk floor; the door flap is a real `core/door` leaf.
-- [ ] **The camps' wind is the draft row's** (`[0.7071, 0.7071]`, as the Beast Riders' row has it): a host on the map passes the
-  model's wind at the camp (`KCAMP.pitch` `wind`). The pens stand empty until the birds land in `kits/fauna`.
+- [ ] **The camps' wind on the sheet is `11-camp-coyote.js`'s fallback** (`[0.7071, 0.7071]`): a host on the map passes the
+  scale model's wind at the camp (`KCAMP.pitch` `wind`). The pens stand empty until the birds land in `kits/fauna`.
 - [ ] **The stepped street's hill is a stand-in** (`68-cy-street.js`: rock boxes, a fill under each band, the scarp behind the
   top row, the canyon's flanks): a host on the map lays `KHAMLET.terrace` on its own slope (`slope {origin, up, width}`) and cuts
   the ground to the rows' floors.

@@ -119,7 +119,7 @@ defBuilding({key:'cy_village_peak',name:'Peak alcove village (KHAMLET.platform)'
  tags:{types:['dwelling-multi'],wealth:'poor',style:'peak',role:'village'},w:106,d:62,h:22,budget:1600000,front:{x:0,z:20,yaw:0},
  note:'a Peak village of thirty in an alcove of the fog wall: dry-stone rooms on the ledge under the overhang, the round rooms sunk in its yard, a ladder up the ledge, the mine\'s works at the foot (its emerald node passed: the sheet stands on no map)',
  build(o){o=o||{};const floor=6,height=9,depth=20,line=cyAlcoveLine(90,22),world=o.world==null?9:o.world;
-  const V=KHAMLET.platform({id:o.id||'peak-1',world,culture:CY_ROW_PEAK,focus:'mine',popMax:o.pop==null?30:o.pop,dims:cyDims,
+  const V=KHAMLET.platform({id:o.id||'peak-1',world,culture:'coyote_peak',focus:'mine',popMax:o.pop==null?30:o.pop,dims:cyDims,
    ground:{ok:()=>true,h:()=>0},link:{x:0,z:120},resource:{kind:'emerald',x:30,z:62,workers:24},
    alcove:{line,depth,floor,height,foot:0,side:1}});
   if(V.error){reportErr('cy_village_peak: '+V.error);return;}

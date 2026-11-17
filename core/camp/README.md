@@ -14,7 +14,8 @@ kit's globals.
 
 | Fragment | What |
 |---|---|
-| `10-camp-cultures.js` | `KCAMP.CULTURES[culture]`: which of a kit's keys is a dwelling, a sleeping tent, the chief's, the council's, a workshop or a pen; household sizes; who works where; the wind (the pens go downwind); the default formation. One row so far: `beast-rider` |
+| `10-camp-cultures.js` | `KCAMP.CULTURES[culture]`: which of a kit's keys is a dwelling, a sleeping tent, the chief's, the council's, a workshop or a pen; household sizes; who works where; the wind (the pens go downwind); the default formation. One row here: `beast-rider` |
+| `11-camp-coyote.js` | `KCAMP.CULTURES['coyote-herder']` and `KCAMP.coyoteProgram(season)` (2026-11-16, `kits/coyote` C7): the Sunrise and Sunset goat-and-ostrich nomad bands (`cy_tipi_s/m/l` with `@chief`, `@council`, `@shrine` roles, `cy_feather_rack`, `cy_saddle_rack`, `cy_ostrich_pen`, `cy_fold`, `cy_egg_cache`; `horseshoe` default; `v: 0` summer, `v: 1` winter on stone rings), with declared fallback boxes in `pending`. Own fragment so pages listing only 10 do not move |
 | `20-camp-census.js` | `KCAMP.census({id, world, culture, program})` deals the program's dwellings to households and the work to the band's adults: `{pop, adults, children, elders, riders, mounts, households, people}`. `KCAMP.tentIds(id, program)` gives every tent and pen its id, `<band>:<key>:<i>`, the same at every site. `KCAMP.seedOf(world, id)` |
 | `30-camp-pitch.js` | `KCAMP.pitch({id, world, culture, program, site, dims(key, v), ground: {ok}, way, wind?, formation?, gap?, common?})` lays the camp out as records: the tents in a ring (or a horseshoe) round the hearth, doors in, the chief's pavilion opposite the way in and the trades by it; the pens downwind beyond the ring; the pasture beyond them; the hedge round it all with its two gates and the pasture's rails with one. `KCAMP.check(camp, ground)` counts overlaps, boxes off the ground and boxes outside the hedge. `KCAMP.box`, `KCAMP.overlaps`, `KCAMP.inPoly` |
 | `40-camp-work.js` | **Work camps** (PLAN.md 6.5, 2026-11-02): a crew from a fixed yard that migrates through a range of stands. `KCAMP.stands` (the range on a world grid, stable ids), `KCAMP.workCamp`, `workStart`, `workMove` (strike, march, pitch: the op log), `workNext` (the move rule), `workDue` (down to the seed trees), `workLeft` (a stand's timber: what its last visit took, regrown since), `workAt` (the camp at any hour), `workTree` (a tree's stump, sapling or standing state from what the sim took), `workYield` (what the range gives back a day for ever), `workReplay` (the state from the log). First consumer: the isle demo's lumber crew (`settlements/isle-demo` 47h, `openworld/isle-demo` 88h) |
@@ -32,11 +33,7 @@ closed loops with gate distances; the host cuts them into the kit's pieces with 
 `node core/camp/test-work.js`: the work camp, 10 checks with negatives: stable stand ids, five years of a crew always fed, every pitch at a stand grown back, no stand under its seed trees, the range sustainable, the camp at any hour, replay and determinism, the trees following what was taken.
 
 
-`node core/camp/test-camp.js`: 15 checks, each with a negative. They cover the census (40 to 70 people at 60 seeds,
-households in dwellings, every workshop staffed) and the pitch on the Raptor band's real program and the kit's
-declared boxes. The pitch checks are: no overlap, inside the hedge, the chief opposite the way in, the doors facing the
-hearth, the pens downwind, the pasture's hectares, a hole in the ground kept off, the horseshoe's mouth, ids stable
-across sites, and the same camp from the same input.
+`node core/camp/test-camp.js`: 18 checks, each with a negative. They cover the census and the pitch on both the Beast Riders' Raptor band (`kits/beast-riders`) and the Coyote herders (`11-camp-coyote.js`, `kits/coyote`): no overlap, inside the hedge, the chief opposite the way in, the doors facing the hearth, the pens downwind, the pasture's hectares, a hole in the ground kept off, the horseshoe's mouth, summer and winter variants, ids stable across sites, and the same camp from the same input.
 
 `node core/camp/test-camp-outlaw.js`: 13 checks with negatives: the Beast Riders' census and pitch unmoved by loading
 50, bands within their row's size at 200 seeds (crowded in a small program, tents empty in a big one), on a synthetic

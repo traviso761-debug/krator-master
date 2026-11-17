@@ -7,7 +7,7 @@ global.window = global;
 load('core/rand/08-core-rand.js');
 load('core/space/20-core-space.js');
 load('core/city/33-city-strategies.js');
-fs.readdirSync(__dirname).filter(f => /^\d\d-hamlet-.*\.js$/.test(f)).sort().filter(f => f !== '34-hamlet-trade.js').forEach(f => load('core/hamlet/' + f));
+fs.readdirSync(__dirname).filter(f => /^\d\d-hamlet-.*\.js$/.test(f)).sort().filter(f => f !== '34-hamlet-trade.js' && f !== '22-hamlet-coyote.js').forEach(f => load('core/hamlet/' + f));
 const H = KHAMLET;
 let bad = 0;
 const ok = (name, pass, neg, detail) => { const r = pass && neg; if (!r) bad++;
@@ -87,6 +87,45 @@ let threw = false, e1 = null, e2 = null;
 try { e1 = H.tradePost(tspec({ links: [LA, { x: LA.x + 10, z: LA.z }] })).error; e2 = H.tradePost(tspec({ cultures: ['yuni'] })).error; } catch (e) { threw = e; }
 ok('a given line divides it; links on one side, or one culture, give an error, not an exception', !PL.error && sidesOk(PL) && touches(PL, PL.market) && !threw && !!e1 && !!e2,
   !sidesOk(Object.assign({}, PL, { frame: P.frame, line: { pts: [[1700, 1300], [1800, 1300]] } })), PL.error || e1);
+
+// ---- 22-hamlet-coyote.js loaded: no existing village moves, and the sill post's Coyote half comes back in real cy_* keys
+const vOnly = () => JSON.stringify({ foci: H.FOCI, v: H.FOCI.map(f => H.hashOf(H.village(vspec(f, 'islander_east')))),
+  x: ['farming', 'ranch'].map(f => H.hashOf(H.village(vspec(f, 'xanadu')))) });
+const vBefore = vOnly();
+load('core/hamlet/22-hamlet-coyote.js');
+ok('loading 22-hamlet-coyote.js moves no existing village, and registers coyote, coyote_peak and coyote_tier',
+  vOnly() === vBefore && ['coyote', 'coyote_peak', 'coyote_tier'].every(k => H.CULTURES[k] && H.CULTURES[k].kit === 'coyote'),
+  H.hashOf(H.village(vspec('farming', 'xanadu', 9))) !== H.hashOf(H.village(vspec('farming', 'xanadu'))));
+
+const cySrc = fs.readdirSync(path.join(ROOT, 'kits', 'coyote', 'src')).filter(f => f.endsWith('.js'))
+  .map(f => fs.readFileSync(path.join(ROOT, 'kits', 'coyote', 'src', f), 'utf8')).join('\n');
+const cySize = { 'CY_CELL.W': 5.4, 'CY_CLIFF.W': 4.6 }, cyNum = s => cySize[s] != null ? cySize[s] : +s;
+const cyOvr = { cy_shrine_room: { w: 5, d: 5, h: 3.2 }, cy_hall: { w: 5, d: 5, h: 3.4 }, cy_round_room: { w: 5.2, d: 5.2, h: 2.36 }, cy_ladder: { w: 0.7, d: 0.4, h: 4 } };
+const cyDims = k => {
+  if (cyOvr[k]) return cyOvr[k];
+  const m = cySrc.match(new RegExp("key:'" + k + "'[\\s\\S]{0,600}?\\bw:([\\d.]+|CY_\\w+\\.W),d:([\\d.]+|CY_\\w+\\.W),h:([\\d.]+)"));
+  return m ? { w: cyNum(m[1]), d: cyNum(m[2]), h: +m[3] } : null;
+};
+const PC = H.tradePost(tspec({ dims: cyDims }));
+const PCnoDims = H.tradePost(tspec());
+const sideA = PC.records.filter(r => r.side === 'A'), sideB = PC.records.filter(r => r.side === 'B');
+ok('with 22 and kits/coyote dims, the Yuni half stays pending while every Coyote side record comes back in real cy_* keys',
+  !PC.error && overlaps(PC).length === 0 && sideA.length > 5 && sideB.length > 5 &&
+  sideA.every(r => r.key.indexOf('yuni-') === 0 && r.pending) &&
+  sideB.every(r => r.key.indexOf('cy_') === 0 && !r.pending) &&
+  sideB.some(r => r.role === 'religious' && r.key === 'cy_runner_shrine') &&
+  sideB.some(r => r.role === 'store' && r.key === 'cy_granary') &&
+  !PC.pendingKeys.some(k => k.indexOf('cy_') === 0 || k.indexOf('coyote-') === 0),
+  !PCnoDims.error && PCnoDims.records.filter(r => r.side === 'B').every(r => r.key.indexOf('cy_') === 0 && r.pending),
+  PC.error || ('B keys: ' + [...new Set(sideB.map(r => r.key))].join(', ')));
+const PH = H.tradePost(tspec({ holder: 1, cisterns: 'A', dims: cyDims }));
+const PT = H.tradePost(tspec({ cultures: ['yuni', 'coyote_tier'], holder: 1, cisterns: 'A', dims: cyDims }));
+ok('when the Coyote half holds the post, the serai is cy_stage_house (drawn, not pending) and Howl\'s row stores in cy_larder',
+  !PH.error && PH.serai.key === 'cy_stage_house' && !PH.serai.pending &&
+  !PT.error && PT.serai.key === 'cy_stage_house' && !PT.serai.pending &&
+  PT.records.some(r => r.side === 'B' && r.role === 'store' && r.key === 'cy_larder' && !r.pending),
+  PC.serai.key === 'yuni-serai' && PC.serai.pending,
+  PH.error || PT.error || (PH.serai.key + ', store ' + PT.records.find(r => r.side === 'B' && r.role === 'store').key));
 
 console.log(bad ? bad + ' FAILED' : 'all passed');
 process.exit(bad ? 1 : 0);

@@ -7,10 +7,10 @@
 // draws the records and the hill under them; it decides nothing about where a house goes.
 //   cyTierStreet(spec)   KHAMLET.terrace on the Tier row with this kit's boxes -> its out (records, stairs, lanes, rows, error?)
 //   cy_street_tier       the sample on the sheet: about seventy people up a wall 44 m wide, the foot facing +z
-function cyTierStreet(spec){return KHAMLET.terrace(Object.assign({culture:CY_ROW_TIER,focus:'farming',dims:cyDims},spec));}
+function cyTierStreet(spec){return KHAMLET.terrace(Object.assign({culture:'coyote_tier',focus:'farming',dims:cyDims},spec));}
 defBuilding({key:'cy_street_tier',name:'Tier stepped street (KHAMLET.terrace)',seed:9941,cls:'building',kind:'village',frag:'kits/coyote',
  tags:{types:['dwelling-multi'],wealth:'middle',style:'tier',role:'village'},w:62,d:58,h:16,budget:1500000,front:{x:6,z:29,yaw:0},
- note:'a Tierhound terrace village up a canyon wall, laid by core/hamlet (the terraced village on the kit\'s draft Tier row): the ledge houses in rows, each row\'s roofs the lane of the row above, the terrace gardens in the gaps, the stair lanes between; the council, the shrine, the larders and the works below the foot street',
+ note:'a Tierhound terrace village up a canyon wall, laid by core/hamlet (the terraced village on the coyote_tier row): the ledge houses in rows, each row\'s roofs the lane of the row above, the terrace gardens in the gaps, the stair lanes between; the council, the shrine, the larders and the works below the foot street',
  build(o){o=o||{};const Wd=o.width==null?44:o.width,world=o.world==null?5:o.world;
   const V=cyTierStreet({id:o.id||'tier-street',world,popMax:o.pop==null?70:o.pop,slope:{origin:[0,0],up:[0,-1],width:Wd,foot:0},link:{x:0,z:200}});
   if(V.error){reportErr('cy_street_tier: '+V.error);return;}

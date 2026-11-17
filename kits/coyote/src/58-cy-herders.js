@@ -107,9 +107,7 @@ defBuilding({key:'cy_egg_cache',name:'Ostrich egg cache (buried, marked)',seed:9
 /* the program: the chief's large tipi, the council's, the shrine, five family tipis and a large one for two households, two
    sleeping tipis for the young riders, the feather and saddle racks; the ostrich pen, the goat fold and the egg cache downwind.
    A program key is the def's key with the role after '@' (cy_tipi_l@chief); the camp row's kind() reads it */
-const CY_CAMP_PROGRAM=v=>({tents:[{key:'cy_tipi_l@chief',n:1,v},{key:'cy_tipi_l@council',n:1,v},{key:'cy_tipi_s@shrine',n:1,v},
-  {key:'cy_tipi_m',n:5,v},{key:'cy_tipi_l',n:1,v},{key:'cy_tipi_s',n:2,v},{key:'cy_feather_rack',n:1},{key:'cy_saddle_rack',n:1}],
- pens:[{key:'cy_ostrich_pen',n:1},{key:'cy_fold',n:1},{key:'cy_egg_cache',n:1}]});
+const CY_CAMP_PROGRAM=v=>KCAMP.coyoteProgram(v);
 function cyCampDims(k,v){const D=DEFS[String(k).split('@')[0]];return D?{w:D.w,d:D.d,h:D.h}:null;}
 function cyCamp(id,v){const P0=CY_CAMP_PROGRAM(v),ground={ok:()=>true};
  const camp=KCAMP.pitch({id,world:11,culture:'coyote-herder',program:P0,site:{x:0,z:0},dims:cyCampDims,ground,way:[0,1],formation:'horseshoe'});
@@ -120,7 +118,7 @@ for(const id of ['summer','winter']){const camp=CY_CAMPS[id],B=cyCampBox(camp);
  defBuilding({key:'cy_camp_'+id,seed:9811+(id==='summer'?0:1),name:'Herders camp ('+id+', KCAMP horseshoe)',cls:'building',kind:'camp',frag:'kits/coyote',
   tags:{types:['dwelling-multi'],wealth:'poor',style:'sunrise',role:'camp'},w:+B.w.toFixed(1),d:+B.d.toFixed(1),h:9,budget:1500000,
   front:{x:+camp.gate.x.toFixed(2),z:+camp.gate.z.toFixed(2),yaw:0},
-  note:'a Sunrise band (Tong-Hau) of about fifty, pitched by core/camp on the draft row coyote-herder: the chief\'s tipi opposite the way in, the council and the shrine by it, the families round, the racks by the way in, the ostrich pen, the fold and the egg cache downwind'+(id==='winter'?'; the winter camp: the tipis on their stone bases':''),
+  note:'a Sunrise band (Tong-Hau) of about fifty, pitched by core/camp on the coyote-herder row: the chief\'s tipi opposite the way in, the council and the shrine by it, the families round, the racks by the way in, the ostrich pen, the fold and the egg cache downwind'+(id==='winter'?'; the winter camp: the tipis on their stone bases':''),
   build(o){camp.records.forEach(r=>{const q=String(r.key).split('@'),role=q[1]||null;
     place(q[0],r.x,r.z,r.ry,{v:r.v|0,role:role||undefined,tribe:'sunrise',name:r.id});});
    cyHearth(camp.hearth.x,camp.hearth.z,{r:.6});

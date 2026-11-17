@@ -13,10 +13,10 @@
 const CY_DIMS={cy_shrine_room:{w:5,d:5,h:3.2},cy_hall:{w:5,d:5,h:3.4},cy_round_room:{w:5.2,d:5.2,h:2.36},cy_ladder:{w:.7,d:.4,h:4}};
 function cyDims(k){if(CY_DIMS[k])return CY_DIMS[k];const D=DEFS[k];return D?{w:D.w,d:D.d,h:D.h}:null;}
 function cyTell(n,rx,rz,world){const pts=[];for(let i=0;i<n;i++){const a=i/n*TAU,f=1+(KRAND.hash(world>>>0,0x7e11,i)/4294967296-.5)*.08;pts.push([Math.cos(a)*rx*f,Math.sin(a)*rz*f]);}return pts;}
-function cyVillage(spec){return KHAMLET.platform(Object.assign({culture:CY_ROW_VALLEY,focus:'farming',dims:cyDims,ground:{ok:()=>true,h:()=>0}},spec));}
+function cyVillage(spec){return KHAMLET.platform(Object.assign({culture:'coyote',focus:'farming',dims:cyDims,ground:{ok:()=>true,h:()=>0}},spec));}
 defBuilding({key:'cy_village_valley',name:'Valley village on its tell (KHAMLET.platform)',seed:9401,cls:'building',kind:'village',frag:'kits/coyote',
  tags:{types:['dwelling-multi'],wealth:'poor',style:'valley',role:'village'},w:84,d:76,h:9,budget:1600000,front:{x:0,z:21,yaw:0},
- note:'a Valley village of sixty on its tell, laid by core/hamlet (the platform village on the kit\'s draft row): rooms cell to cell, entered by the roofs; the shrine and the council room sunk in the yard; the works at the foot',
+ note:'a Valley village of sixty on its tell, laid by core/hamlet (the platform village on the coyote row): rooms cell to cell, entered by the roofs; the shrine and the council room sunk in the yard; the works at the foot',
  build(o){o=o||{};const top=o.top==null?2.4:o.top,world=o.world==null?7:o.world,pts=cyTell(24,24,20,world);
   const V=cyVillage({id:o.id||'valley-1',world,popMax:o.pop==null?60:o.pop,link:{x:0,z:120},plinth:{pts,top,foot:0}});
   if(V.error){reportErr('cy_village_valley: '+V.error);return;}

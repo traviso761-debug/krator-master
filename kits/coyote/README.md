@@ -21,8 +21,7 @@ The page loads its texture pack beside it: serve `dist/` over HTTP, as `verify.p
 
 ## How it is made
 
-- **Core read in place** beside the engine's folders: `core/camp` (10, 20, 30: the census and the pitch), `core/space`, `core/hamlet` (10 to 36) and `core/city/33-city-strategies.js`
-  (`KCITY.prim`, which core/hamlet reads): `build.py` `CORE_FILES`. Nothing under `core/city` is edited.
+- **Core read in place** beside the engine's folders: `core/camp` (10, 11, 20, 30: the census, the pitch and `coyote-herder`), `core/space`, `core/hamlet` (10 to 36, `22-hamlet-coyote.js` among them), `core/water` (flow) and `core/city` (`10`, `15`, `25`, `33` in `19-kcity-site.js`): `build.py` `CORE_FILES`. Nothing under `core/city` is edited.
 - **The engine** is `core/engine`, read by path (`engine.py`): `defBuilding`, the buckets by material key, doors and glass
   (`36o-open.js`), ladders (`36s-stair.js`), the walk records. `build.py` started from `kits/tents/build.py` with the
   new-build template's top lines (`tools/new_build/`).
@@ -36,9 +35,7 @@ The page loads its texture pack beside it: serve `dist/` over HTTP, as `verify.p
   may overlap), `cyRing`, `cyRoof` (beams, reed mat, the earth slab with its hatch), `cyLadder`, the **ear door**
   (`cyEarHoles`, `cyEarDoor`: a doorway whose head steps up in two notches), the hearth, oven, platforms and bins, and
   `cyCarve` (the contour line raised on a face, one row or a word a row).
-- **`src/34-cy-rows.js`** (`[G data]`): the Valley's and the Peak's rows for `core/hamlet` (`CY_ROW_VALLEY`, `CY_ROW_PEAK`, the Tierhounds' `CY_ROW_TIER` with its `terrace` fields) and the herders' camp row for `core/camp` (`CY_CAMP_HERDER`, registered as `coyote-herder`), a DRAFT kept in the kit until C7
-  moves it to `core/hamlet/22-hamlet-coyote.js`: the houses, the works, and the platform fields (the cell, the store, the
-  shrine room and council room as kivas sunk in the yard, two storeys). `tests/test-rows.js` lays it.
+- **`src/34-cy-rows.js`** (`[G data]`): binds the kit's local names (`CY_ROW_VALLEY`, `CY_ROW_PEAK`, `CY_ROW_TIER`, `CY_CAMP_HERDER`, `CY_ROWS`) onto `core/hamlet/22-hamlet-coyote.js` (`coyote`, `coyote_peak`, `coyote_tier`) and `core/camp/11-camp-coyote.js` (`coyote-herder`, `KCAMP.coyoteProgram`), landed in core at C7. `tests/test-rows.js` and `core/hamlet/test-hamlet-coyote.js` hold them.
 - **`src/50-cy-valley.js`**: the Valley's Catalhoyuk rooms on one builder (`cyMainRoom`, `cyHouse`): `cy_room` (entered through
   the roof, the ladder beside the hearth and oven, platforms north and east, bins west), `cy_house_poor`, `cy_house_mid` (two
   stores, the roof oven and screen), `cy_house_head` (the painted room: the running-bird frieze and the horn pillars; a loom
@@ -91,5 +88,6 @@ The page loads its texture pack beside it: serve `dist/` over HTTP, as `verify.p
 
 ## Status
 
-**C1** to **C6** built and verified (`verify.py --assert`): Valley, Peak, Herders, Tierhounds, shrines and stones, and the Gate
-on `KCITY.site.wall`, `core/water` and `core/ruins`. C7 onward: `PLAN.md` section 9.
+**C1** to **C7** built and verified (`verify.py --assert`): Valley, Peak, Herders, Tierhounds, shrines and stones, the Gate
+on `KCITY.site.wall`, `core/water` and `core/ruins`, and the culture rows landed in `core/hamlet/22-hamlet-coyote.js` and
+`core/camp/11-camp-coyote.js`. C8 onward: `PLAN.md` section 9.

@@ -7,7 +7,7 @@ const load = f => vm.runInThisContext(fs.readFileSync(path.join(ROOT, f), 'utf8'
 global.window = global;
 load('core/rand/08-core-rand.js'); load('core/space/20-core-space.js'); load('core/city/33-city-strategies.js');
 fs.readdirSync(path.join(ROOT, 'core', 'hamlet')).filter(f => /^\d\d-hamlet-.*\.js$/.test(f) && f < '40').sort().forEach(f => load('core/hamlet/' + f));
-['10-camp-cultures.js', '20-camp-census.js', '30-camp-pitch.js'].forEach(f => load('core/camp/' + f));
+['10-camp-cultures.js', '11-camp-coyote.js', '20-camp-census.js', '30-camp-pitch.js'].forEach(f => load('core/camp/' + f));
 load('kits/coyote/src/34-cy-rows.js');
 /* the boxes 50-cy-valley.js and 52-cy-works.js declare, and 56-cy-village.js's CY_DIMS for the sunk rooms and the ladder */
 const SRC = fs.readdirSync(path.join(ROOT, 'kits', 'coyote', 'src')).filter(f => /\.js$/.test(f)).map(f => fs.readFileSync(path.join(ROOT, 'kits', 'coyote', 'src', f), 'utf8')).join('\n');
@@ -52,8 +52,7 @@ T.neg('an alcove too shallow for thirty is refused', o => !peak(o).error, { alco
 const TIPI = { s: 2.2, m: 3.0, l: 3.8 };
 const campDims = k => { const b = String(k).split('@')[0], m = b.match(/^cy_tipi_([sml])$/); if (m) { const w = 2 * TIPI[m[1]] + 2; return { w, d: w, h: 7 }; }
   return { cy_feather_rack: { w: 5, d: 2.4, h: 2.4 }, cy_saddle_rack: { w: 5, d: 2.6, h: 1.8 }, cy_ostrich_pen: { w: 16, d: 12, h: 2.6 }, cy_fold: { w: 10, d: 8, h: 1.8 }, cy_egg_cache: { w: 2.6, d: 2.6, h: 1.6 } }[b] || null; };
-const SRC58 = fs.readFileSync(path.join(ROOT, 'kits', 'coyote', 'src', '58-cy-herders.js'), 'utf8');
-const prog = eval('(' + SRC58.match(/const CY_CAMP_PROGRAM=(v=>\(\{[\s\S]*?\}\));/)[1] + ')');   /* the program as the kit writes it */
+const prog = v => KCAMP.coyoteProgram(v);
 const pitch = (o) => { const P0 = prog(0); return KCAMP.pitch(Object.assign({ id: 'sunrise-summer', world: 11, culture: 'coyote-herder', program: P0, site: { x: 0, z: 0 },
   dims: campDims, ground: { ok: () => true }, way: [0, 1], formation: 'horseshoe' }, o || {})); };
 T.ok('the herders\' row is registered in core/camp', KCAMP.CULTURES['coyote-herder'] === CY_CAMP_HERDER && CY_CAMP_HERDER.kind('cy_tipi_l@chief') === 'chief' && CY_CAMP_HERDER.kind('cy_tipi_m') === 'dwelling');
