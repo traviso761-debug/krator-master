@@ -20,7 +20,7 @@ Writes godot/data/world-oidong-highrift/ from the built page (dist/oidong-highri
                  plan) and the route the test walks (Longsong to Strongbow)
 The sim's week is openworld/oidong-highrift/tools/export-sim.js (sim.json, golden.json in the same folder).
 Deterministic: the same page and plan write the same files (the exports' own dates aside)."""
-import json, math, os, subprocess, sys, shutil
+import base64, json, math, os, struct, subprocess, sys, shutil
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REGION_DIR = os.path.dirname(HERE)
@@ -36,6 +36,14 @@ PLACE, PLACE_STEP = 1600, 8             # metres: a place's square round its pin
 # houses in the High Rift grow none round their villages anyway, so they go in massing and the case stays small
 FULL_PLACES = ('sq80bzd7ep', 'sfgtxw10kr')   # Longsong, Strongbow (no buildings in the region: its flora and ground)
 MASS_CAM = 4600                               # metres: the camera's distance from a massing place's centre (past 88s FULL_V)
+# Strongbow's arcology (the owner, 2026-11-16: "Yes, far detail"): kits/ancients' strongbow-today page, built on
+# settlements/strongbow's own branch, exported from that branch's worktree (KRATOR_STRONGBOW, default the sibling worktree)
+# as what the page draws from 3.5 km (tools/strongbow-export.js: core/lod's drawn copies), into its own case. Its frame
+# faces +z, the site faces west: the place's `arcology` seats the page's anchor (the lip at the bay's centre) on the pin,
+# at the place's ground there, turned by RY about +Y (the page's +z to the region's -x)
+ARCOLOGY = {'site': 'sfgtxw10kr', 'page': 'kits/ancients/dist/strongbow-today.html', 'case': 'places/sfgtxw10kr-arcology',
+            'ry': -math.pi / 2, 'box': [-3000, -3000, 3000, 3000],
+            'root': os.environ.get('KRATOR_STRONGBOW') or os.path.normpath(os.path.join(ROOT, '..', 'keen-swanson-68a311'))}
 
 
 def plan():
@@ -80,6 +88,37 @@ def export(out, box, before, sections=None):
     print('  ' + os.path.relpath(out, ROOT).replace(os.sep, '/') + ': ' + ' | '.join(t[:160] for t in tail), flush=True)
     if r.returncode:
         sys.exit('godot_case: the export of %s failed\n%s\n%s' % (out, r.stdout[-2000:], r.stderr[-2000:]))
+
+
+def grid_h(case, x, z):
+    """the place's ground (its terrain grid, bilinear) at (x, z)"""
+    g = json.load(open(os.path.join(OUT, case, 'world.json'), encoding='utf-8'))['terrain']['grid']
+    H = struct.unpack('<%df' % g['heights']['n'], base64.b64decode(g['heights']['b64']))
+    fi, fj = (x - g['x0']) / g['step'], (z - g['z0']) / g['step']
+    i, j = min(int(fi), g['nx'] - 2), min(int(fj), g['nz'] - 2)
+    u, v = fi - i, fj - j
+    h = lambda a, b: H[b * g['nx'] + a]
+    return (h(i, j) * (1 - u) + h(i + 1, j) * u) * (1 - v) + (h(i, j + 1) * (1 - u) + h(i + 1, j + 1) * u) * v
+
+
+def git(root, *a):
+    r = subprocess.run(['git', '-C', root] + list(a), capture_output=True, text=True)
+    return r.stdout.strip() if r.returncode == 0 else None
+
+
+def arcology(pl):
+    """Strongbow's place gains `arcology`: its case and where it stands (after the places and the arcology's case exist)"""
+    A = ARCOLOGY
+    w = os.path.join(OUT, A['case'], 'world.json')
+    if not os.path.isfile(w):
+        return
+    p = next(q for q in pl if q['id'] == A['site'])
+    x, z = p['pin']
+    m = json.load(open(os.path.join(OUT, A['case'], 'meta.json'), encoding='utf-8'))
+    p['arcology'] = {'case': A['case'], 'page': A['page'], 'branch': m.get('branch'), 'commit': m.get('commit'),
+                     'at': [x, round(grid_h(p['case'], x, z), 3), z], 'ry': A['ry'],
+                     'note': "the case's meshes stand about the page's anchor (its world.json origin: the lip at the bay's centre); "
+                             'a reader seats that anchor at `at` and turns the case by `ry` about +Y (the page faces +z, the site west)'}
 
 
 def places(P):
@@ -128,6 +167,27 @@ def main():
             d = os.path.join(OUT, 'places', p['id'])
             shutil.rmtree(d, ignore_errors=True)
             export(d, b, before)
+    if only in (None, 'arcology'):
+        A = ARCOLOGY
+        page = os.path.join(A['root'], A['page'])
+        if not os.path.isfile(page):
+            sys.exit("godot_case: no Strongbow page at %s (KRATOR_STRONGBOW: its branch's worktree, built)" % page)
+        d = os.path.join(OUT, A['case'])
+        shutil.rmtree(d, ignore_errors=True)
+        cmd = [sys.executable, os.path.join(ROOT, 'tools', 'harness.py'), 'export', page, '--root', A['root'], '--out', d,
+               '--box=' + ','.join('%g' % v for v in A['box']), '--sections', 'items,buckets,materials,textures',
+               '--inject', os.path.join(ROOT, 'core', 'export', '10-core-export-scene.js'), '--inject', os.path.join(HERE, 'strongbow-export.js'),
+               '--before', '(async()=>{setView(0,1400,3500,0,450,0,false);await new Promise(r=>setTimeout(r,4000));return _sbExport;})()']
+        r = subprocess.run(cmd, cwd=ROOT, capture_output=True, text=True, encoding='utf-8', errors='replace')
+        print('  arcology: ' + ' | '.join(l[:160] for l in r.stdout.splitlines() if l.startswith(('exported', 'FAILED', 'wrote', 'OK'))), flush=True)
+        if r.returncode:
+            sys.exit("godot_case: the arcology's export failed\n%s\n%s" % (r.stdout[-2000:], r.stderr[-2000:]))
+        mp = os.path.join(d, 'meta.json')
+        m = json.load(open(mp, encoding='utf-8'))
+        m['branch'], m['commit'] = git(A['root'], 'rev-parse', '--abbrev-ref', 'HEAD'), git(A['root'], 'rev-parse', 'HEAD')
+        m['page'] = A['page']
+        with open(mp, 'w', encoding='utf-8', newline='\n') as f:
+            json.dump(m, f, separators=(',', ':'))
     if only in (None, 'chunks'):
         print('chunks (%d): %d m cells on the road %s, the ground every %d m and the registry' % (len(cells), CHUNK, L['id'], STEP), flush=True)
         for c in cells:
@@ -135,6 +195,7 @@ def main():
             d = os.path.join(OUT, 'chunks', cid(c))
             shutil.rmtree(d, ignore_errors=True)
             export(d, box, '(()=>{window.WORLD_EXPORT.step=%d;window.WORLD_EXPORT.water=false;return true;})()' % STEP, 'terrain,registry')
+    arcology(pl)
     idx = {'format': 'krator-world-stream', 'version': 1, 'region': P['region'], 'plan': P['hash'],
            'source': PAGE, 'by': 'openworld/oidong-highrift/tools/godot_case.py',
            'convention': 'metres, +Y up, x east, z south, the region\'s frame (openworld/oidong-highrift/data/region.json: '

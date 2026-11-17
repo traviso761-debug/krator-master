@@ -77,6 +77,13 @@ building 600 km out keeps its millimetres in Godot; the stream moves its own ori
 carry uids (each pool a core/tags item set in the `flora` part). The export needs the GPU (`KRATOR_GL=gpu`): under
 SwiftShader the page's start fails on a shader.
 
+**Strongbow's arcology** (the owner, 2026-11-16: "far detail"): `godot_case.py --only arcology` exports `kits/ancients`'
+`strongbow-today` page from `settlements/strongbow`'s branch's worktree (`KRATOR_STRONGBOW`, default the sibling
+`keen-swanson-68a311`, built) through `tools/strongbow-export.js` (injected: `tools/harness.py export --root --inject`):
+what the page draws from 3.5 km, written about its anchor (the lip at the bay's centre). Strongbow's place in `index.json`
+gains `arcology` (its case, branch, commit, `at` and `ry`); `KratorWorldStream.open_place` seats it under the place, turned
+to face west. Owed: the region's ground carved to the page's 900 m face (here the model falls only ~60 m in 700 m).
+
 ## Fragments
 
 | Fragment | Tag | What |

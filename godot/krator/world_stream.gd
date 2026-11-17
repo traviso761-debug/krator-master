@@ -6,7 +6,8 @@
 #                                flickers in and out at the edge); returns {loaded: [ids], unloaded: [ids]}
 #   height_at(x, z)              the ground under (x, z) from a loaded chunk (KData.height_at on its sampled grid), NAN
 #                                where no loaded chunk covers it
-#   open_place(id)               a place's case (a site at 1:1) as its own KratorWorld node, added under "Places"
+#   open_place(id)               a place's case (a site at 1:1) as its own KratorWorld node, added under "Places"; a place
+#                                with an `arcology` (Strongbow's page) gets it as a child "Arcology", seated and turned
 #   chunk_box(id), place(id), road(id)   the index's entries
 # The log (meta "log": [{step, at, loaded, unloaded, held}]) is what the test reads. Chunks are krator-world boxes too, so
 # a chunk is KratorWorld.build of its world.json; it holds the ground (terrain section) and the records standing in it.
@@ -155,4 +156,20 @@ func open_place(id: String) -> Node3D:
 	w.name = "Place_" + id
 	_seat(w)
 	get_node("Places").add_child(w)
+	if p.get("arcology") is Dictionary:
+		w.add_child(arcology(p, w))
 	return w
+
+
+# a place's page of its own (Strongbow's arcology, godot_case.py ARCOLOGY): its case is written about the page's anchor
+# (its origin), which stands at the place's `at`, the page turned by `ry` about +Y. Under the place's node, so it rides
+# the place's seat: its own transform is small (at less the place's origin, in doubles)
+func arcology(p: Dictionary, w: Node3D) -> Node3D:
+	var A: Dictionary = p["arcology"]
+	var a := KratorWorld.build(dir + "/" + str(A["case"]) + "/world.json")
+	a.name = "Arcology"
+	var o: Array = w.get_meta("origin", [0.0, 0.0, 0.0])
+	var at: Array = A["at"]
+	a.transform = Transform3D(Basis(Vector3.UP, float(A["ry"])), Vector3(float(at[0]) - o[0], float(at[1]) - o[1], float(at[2]) - o[2]))
+	a.set_meta("arcology", A)
+	return a

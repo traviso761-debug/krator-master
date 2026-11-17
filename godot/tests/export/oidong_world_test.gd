@@ -291,6 +291,7 @@ func _places(S: KratorWorldStream) -> void:
 			inst - floras, uids.size(), brec - bmiss, floras, "resolved" if mgaps.is_empty() else "GAPS " + ", ".join(mgaps)])
 	_precision(S)
 	_flora_uids(S)
+	_arcology(S)
 	# negative: a place's bucket records read against another place's registry do not resolve
 	var a: Dictionary = S.index["places"][0]
 	var b: Dictionary = S.index["places"][1]
@@ -417,6 +418,46 @@ func _flora_uids(S: KratorWorldStream) -> void:
 	ok(n > 0 and bad == 0 and edge == 0, "the flora's uids: %d plants in %d item sets (a pool each), %d uids recomputed here from position and case origin, %d within %.0f mm of a decimetre's rounding edge, %d otherwise wrong"
 		% [n, sets.size(), same, edge, EDGE_TOL * 1000.0, bad])
 	ok(neg > n * 0.99, "negative: the same uids from the positions without the case's origin: %d of %d differ" % [neg, n])
+
+
+# 2d. Strongbow's arcology (godot_case.py ARCOLOGY: kits/ancients' strongbow-today page, from its own branch, as the page
+#     draws it from afar): it opens under Strongbow's place with its meshes and materials, its anchor (the lip at the bay's
+#     centre) seated on the place's ground at the pin, and turned so the face looks down the scarp: the region's ground
+#     falls ahead of the face (west) and rises behind the lip. Negative: the page unturned (facing south) looks along the
+#     scarp, where the ground does not fall
+const LOOK := 700.0   # metres ahead of and behind the lip, inside the place's square
+func _arcology(S: KratorWorldStream) -> void:
+	var p := S.place("sfgtxw10kr")
+	var w := S.get_node_or_null("Places/Place_sfgtxw10kr")
+	var a: Node3D = w.get_node_or_null("Arcology") if w else null
+	if a == null or not (p.get("arcology") is Dictionary):
+		ok(false, "Strongbow's arcology: no Arcology node under its place (index: %s)" % str(p.has("arcology")))
+		return
+	var A: Dictionary = p["arcology"]
+	var rep: Dictionary = a.get_meta("report")
+	var mgaps := []
+	for k in rep["gaps"]:
+		if "material" in k or "hook" in k or "texture" in k or "load" in k:
+			mgaps.append(k)
+	var c: Dictionary = rep["counts"]
+	var at: Array = A["at"]
+	var seat := absf(float(at[1]) - _h(w, float(at[0]), float(at[2])))
+	var ahead := func(ry: float, d: float) -> float:   # the region's ground d metres ahead of the face (behind: d < 0), less the lip
+		var v := Basis(Vector3.UP, ry) * Vector3(0, 0, d)
+		return _h(w, float(at[0]) + v.x, float(at[2]) + v.z) - float(at[1])
+	var ry := float(A["ry"])
+	var front: float = ahead.call(ry, LOOK)
+	var back: float = ahead.call(ry, -LOOK)
+	var face := (a.transform.basis * Vector3(0, 0, 1)).normalized()
+	ok(int(c["items"]) + int(c["buckets"]) > 0 and mgaps.is_empty() and seat < 0.5 and face.dot(Vector3(-1, 0, 0)) > 0.999 and front < -20.0 and back > 0.0,
+		"Strongbow's arcology opens at its site (%s on %s): %d items, %d buckets, %d triangles, materials %s; its lip on the ground at the pin to %.2f m, its face turned west (%.3f), the ground %.0f m below the lip %d m ahead of the face and %.0f m above it %d m behind"
+		% [A["page"], A.get("branch"), int(c["items"]), int(c["buckets"]), int(c["triangles"]), "resolved" if mgaps.is_empty() else "GAPS " + ", ".join(mgaps),
+		seat, face.dot(Vector3(-1, 0, 0)), -front, int(LOOK), back, int(LOOK)])
+	var f0: float = ahead.call(0.0, LOOK)
+	ok(not (f0 < -20.0), "negative: the page unturned faces south, along the scarp: the ground %d m ahead of it is %.0f m %s the lip" % [int(LOOK), absf(f0), "below" if f0 < 0 else "above"])
+	var fr: Dictionary = KData.read_json(S.dir + "/" + str(A["case"]) + "/world.json").get("frame", {})
+	print("     gap: the page's face is %.0f m tall and its foot stands at the lip less that; the region's ground %d m ahead of the face lies only %.0f m below the lip (the scale model's 2 km cells smooth the scarp), so the page's foot, its town and its floor stand inside the region's ground: owed, the region's ground carved to the page's face (GODOT-PLAN.md M7)"
+		% [float(fr.get("lip", 0)), int(LOOK), -front])
 
 
 # 3. the roads join them: every link leaves its first site and reaches its second (within the site's reach of its pin),
