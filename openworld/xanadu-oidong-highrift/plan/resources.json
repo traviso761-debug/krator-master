@@ -305,13 +305,13 @@
    }
   },
   "farm": {
-   "mean": 0.139,
-   "good_km2": 41088,
-   "best_km2": 26304,
+   "mean": 0.144,
+   "good_km2": 43952,
+   "best_km2": 30736,
    "peak": {
-    "score": 0.987,
-    "x": 76000,
-    "z": 92000
+    "score": 0.995,
+    "x": 72000,
+    "z": 112000
    }
   },
   "placers": {
@@ -394,43 +394,43 @@
    "why": "the scale model's geology: gypsum prospectivity 185 on evaporite ground"
   },
   {
+   "id": "res-farm--344-56",
+   "kind": "farm",
+   "family": "farmland",
+   "x": -344000,
+   "z": 56000,
+   "score": 0.91,
+   "label": "Farmland: the best (91%, 769 mm, 14 °C)",
+   "why": "warm, watered, flat and deep-soiled (Cfb)"
+  },
+  {
    "id": "res-farm--232-48",
    "kind": "farm",
    "family": "farmland",
    "x": -232000,
    "z": 48000,
-   "score": 0.92,
-   "label": "Farmland: the best (92%, 957 mm, 12 °C)",
+   "score": 0.91,
+   "label": "Farmland: the best (91%, 957 mm, 12 °C)",
    "why": "warm, watered, flat and deep-soiled (Cfb)"
   },
   {
-   "id": "res-farm--360-56",
+   "id": "res-farm--720--176",
    "kind": "farm",
    "family": "farmland",
-   "x": -360000,
-   "z": 56000,
-   "score": 0.87,
-   "label": "Farmland: the best (87%, 737 mm, 13 °C)",
-   "why": "warm, watered, flat and deep-soiled (Cfb)"
+   "x": -720000,
+   "z": -176000,
+   "score": 0.91,
+   "label": "Farmland: the best (91%, 957 mm, 21 °C)",
+   "why": "warm, watered, flat and deep-soiled (Csa)"
   },
   {
-   "id": "res-farm--708--172",
+   "id": "res-farm--644--116",
    "kind": "farm",
    "family": "farmland",
-   "x": -708000,
-   "z": -172000,
-   "score": 0.87,
-   "label": "Farmland: the best (87%, 925 mm, 21 °C)",
-   "why": "warm, watered, flat and deep-soiled (Cfa)"
-  },
-  {
-   "id": "res-farm--548-36",
-   "kind": "farm",
-   "family": "farmland",
-   "x": -548000,
-   "z": 36000,
-   "score": 0.86,
-   "label": "Farmland: the best (86%, 1098 mm, 28 °C)",
+   "x": -644000,
+   "z": -116000,
+   "score": 0.9,
+   "label": "Farmland: the best (90%, 1067 mm, 25 °C)",
    "why": "warm, watered, flat and deep-soiled (Cfa)"
   },
   {

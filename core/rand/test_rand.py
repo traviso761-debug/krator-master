@@ -70,6 +70,31 @@ def fbm(x, y, z, o=3, seed=0):
     return a / s
 
 
+GX = [1.0, 0.923828125, 0.70703125, 0.3828125, 0.0, -0.3828125, -0.70703125, -0.923828125, -1.0, -0.923828125, -0.70703125, -0.3828125, 0.0, 0.3828125, 0.70703125, 0.923828125]
+GZ = [0.0, 0.3828125, 0.70703125, 0.923828125, 1.0, 0.923828125, 0.70703125, 0.3828125, 0.0, -0.3828125, -0.70703125, -0.923828125, -1.0, -0.923828125, -0.70703125, -0.3828125]
+
+
+def gnoise(x, z, seed=0):
+    i, j = math.floor(x), math.floor(z)
+    fx, fz = x - i, z - j
+    u = fx * fx * fx * (fx * (fx * 6 - 15) + 10); v = fz * fz * fz * (fz * (fz * 6 - 15) + 10)
+    k = hash3(seed, i, j, 0x6E) & 15; a = GX[k] * fx + GZ[k] * fz
+    k = hash3(seed, i + 1, j, 0x6E) & 15; b = GX[k] * (fx - 1) + GZ[k] * fz
+    k = hash3(seed, i, j + 1, 0x6E) & 15; c = GX[k] * fx + GZ[k] * (fz - 1)
+    k = hash3(seed, i + 1, j + 1, 0x6E) & 15; d = GX[k] * (fx - 1) + GZ[k] * (fz - 1)
+    p = a + (b - a) * u; q = c + (d - c) * u
+    return (p + (q - p) * v) * 1.4142135623730951
+
+
+def gfbm(x, z, o=3, seed=0):
+    a, f, s, X, Z = 0.0, 1.0, 0.0, x, z
+    for i in range(o):
+        a += gnoise(X, Z, (seed + i) & M32) / f; s += 1 / f
+        X, Z = (.8 * X - .6 * Z) * 2.03 + 17.3, (.6 * X + .8 * Z) * 2.03 - 9.1
+        f *= 2
+    return a / s
+
+
 def cell(seed, ix, iz):
     return hash3(seed, ix, iz, 0x51ED)
 
@@ -123,11 +148,12 @@ def vectors():
         H['one'].append(hash_(s, a)); H['two'].append(hash_(s, a, b)); H['three'].append(hash_(s, a, b, c))
     for k, a in H.items():
         out['hash'][k] = {'first': a[:8], 'sha256': sha(u32b(a))}
-    g = Stream(2024); N = {'h3': [], 'vnoise': [], 'fbm3': [], 'fbm5': []}
+    g = Stream(2024); N = {'h3': [], 'vnoise': [], 'fbm3': [], 'fbm5': [], 'gnoise': [], 'gfbm': []}
     for i in range(1000):
         x = g.range(-500, 500); y = g.range(-50, 50); z = g.range(-500, 500); s = i % 5
         N['h3'].append(h3(x, y, z, s)); N['vnoise'].append(vnoise(x, y, z, s))
         N['fbm3'].append(fbm(x, y, z, 3, s)); N['fbm5'].append(fbm(x * .01, y * .01, z * .01, 5, s))
+        N['gnoise'].append(gnoise(x * .1, z * .1, s)); N['gfbm'].append(gfbm(x * .01, z * .01, 4, s))
     for k, a in N.items():
         out['noise'][k] = {'first': a[:4], 'sha256': sha(f64b(a))}
     g = Stream(7); C = []

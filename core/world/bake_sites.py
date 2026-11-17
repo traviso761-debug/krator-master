@@ -26,7 +26,7 @@ DIMS_SOURCES = ([os.path.join(ROOT, 'kits', 'beast-riders', 'src', f) for f in
                 # the Iziz Vernacular's (core/hamlet's `iziz` row, 21-hamlet-iziz.js), as IZV.dims() gives them: its VERN.def records
                 + sorted(os.path.join(ROOT, 'kits', 'iziz-vernacular', 'src', f) for f in os.listdir(os.path.join(ROOT, 'kits', 'iziz-vernacular', 'src')) if f.endswith('.js')))
 JS = [('core', 'rand', '08-core-rand.js'), ('core', 'terrain', '38-core-relief.js'), None,
-      ('core', 'world', '40-world-smooth.js'), ('core', 'world', '43-world-relief.js'), ('core', 'world', '44-world-streams.js'), ('core', 'world', '41-world-fields.js'), ('core', 'world', '42-world-roads.js'), ('core', 'world', '42b-world-bridges.js'), ('core', 'space', '20-core-space.js'),
+      ('core', 'world', '40-world-smooth.js'), ('core', 'world', '43-world-relief.js'), ('core', 'world', '43m-world-micro.js'), ('core', 'world', '44-world-streams.js'), ('core', 'world', '41-world-fields.js'), ('core', 'world', '42-world-roads.js'), ('core', 'world', '42b-world-bridges.js'), ('core', 'space', '20-core-space.js'),
       ('core', 'camp', '10-camp-cultures.js'), ('core', 'camp', '20-camp-census.js'), ('core', 'camp', '30-camp-pitch.js'),
       ('kits', 'beast-riders', 'src', '79-br-camp.js'),
       ('core', 'city', '33-city-strategies.js'), ('core', 'hamlet', '10-hamlet-wood.js'), ('core', 'hamlet', '12-hamlet-gather.js'),

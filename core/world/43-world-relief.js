@@ -74,7 +74,8 @@ function cosPiW(w){const v=w*w;   /* cos(pi w) for w in [-1, 1], Taylor to w^14 
 function cos2pi(u){const x=u-Math.floor(u)-.5;return -cosPiW(2*x);}
 const sin2pi=u=>cos2pi(u-.25);
 R.cos2pi=cos2pi;R.sin2pi=sin2pi;
-R.erode=function(h,x,z,gx,gz,S,rel,minWave){
+R.erode=function(h,x,z,gx,gz,S,rel,minWave,G){   /* G: if given, the slope the octaves leave, [gx, gz] (43m-world-micro.js goes on from it) */
+ if(G){G[0]=gx;G[1]=gz;}
  const g=S.gully==null?.6:S.gully;if(!(g>.01))return h;
  /* a gully's depth goes with the slope it drains and its spacing: DEPTH x the large form's slope x the wavelength (a 15 %
     slope cuts ~24 m gullies 900 m apart at full strength), the relief adding a little where the land is broken */
@@ -93,6 +94,7 @@ R.erode=function(h,x,z,gx,gz,S,rel,minWave){
   const gul=(1-t)*.5,a=dep*lam*OCT[o][1]*fade;
   out-=a*(gul*gul-.35);   /* .35: the profile's mean over the blended stripes (measured; .375 for pure ones) */
   const k=-a*gul*sn*6.283185307179586/lam;Gx+=k*nx;Gz+=k*nz;}   /* this octave's own slope, for the next to follow */
+ if(G){G[0]=Gx;G[1]=Gz;}
  return out;};
 // ---------------------------------------------------------------- S4: peaks (P5)
 // Sharper ridgelines and summits on the high ground: a ridged multifractal (Musgrave: each octave's ridge (1 - |2n - 1|)^2,

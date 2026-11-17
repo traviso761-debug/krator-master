@@ -304,13 +304,13 @@
    }
   },
   "farm": {
-   "mean": 0.072,
-   "good_km2": 9392,
-   "best_km2": 5504,
+   "mean": 0.078,
+   "good_km2": 10608,
+   "best_km2": 7184,
    "peak": {
-    "score": 0.995,
-    "x": -158000,
-    "z": -18000
+    "score": 0.99,
+    "x": -202000,
+    "z": -26000
    }
   },
   "placers": {
@@ -373,44 +373,54 @@
    "why": "the scale model's geology: saltpeter prospectivity 200 on crystalline ground"
   },
   {
-   "id": "res-farm--494--86",
+   "id": "res-farm--470--74",
    "kind": "farm",
    "family": "farmland",
-   "x": -494000,
-   "z": -86000,
+   "x": -470000,
+   "z": -74000,
+   "score": 0.91,
+   "label": "Farmland: the best (91%, 973 mm, 12 °C)",
+   "why": "warm, watered, flat and deep-soiled (Cfb)"
+  },
+  {
+   "id": "res-farm--602--78",
+   "kind": "farm",
+   "family": "farmland",
+   "x": -602000,
+   "z": -78000,
+   "score": 0.87,
+   "label": "Farmland: the best (87%, 722 mm, 14 °C)",
+   "why": "warm, watered, flat and deep-soiled (Cfb)"
+  },
+  {
+   "id": "res-farm--566--78",
+   "kind": "farm",
+   "family": "farmland",
+   "x": -566000,
+   "z": -78000,
+   "score": 0.86,
+   "label": "Farmland: the best (86%, 753 mm, 13 °C)",
+   "why": "warm, watered, flat and deep-soiled (Cfb)"
+  },
+  {
+   "id": "res-farm--154--18",
+   "kind": "farm",
+   "family": "farmland",
+   "x": -154000,
+   "z": -18000,
    "score": 0.85,
-   "label": "Farmland: the best (85%, 847 mm, 12 °C)",
-   "why": "warm, watered, flat and deep-soiled (Cfb)"
+   "label": "Farmland: the best (85%, 1114 mm, 11 °C)",
+   "why": "warm, watered, flat and deep-soiled (Csa)"
   },
   {
-   "id": "res-farm--142--22",
-   "kind": "farm",
-   "family": "farmland",
-   "x": -142000,
-   "z": -22000,
-   "score": 0.83,
-   "label": "Farmland: the best (83%, 2227 mm, 11 °C)",
-   "why": "warm, watered, flat and deep-soiled (BSk)"
-  },
-  {
-   "id": "res-farm--422--50",
-   "kind": "farm",
-   "family": "farmland",
-   "x": -422000,
-   "z": -50000,
-   "score": 0.83,
-   "label": "Farmland: the best (83%, 816 mm, 11 °C)",
-   "why": "warm, watered, flat and deep-soiled (Cfb)"
-  },
-  {
-   "id": "res-farm--582--58",
-   "kind": "farm",
-   "family": "farmland",
-   "x": -582000,
-   "z": -58000,
-   "score": 0.82,
-   "label": "Farmland: the best (82%, 816 mm, 13 °C)",
-   "why": "warm, watered, flat and deep-soiled (Cfb)"
+   "id": "res-unique-tin--142--32",
+   "kind": "unique",
+   "family": "tin",
+   "x": -141633.2000000002,
+   "z": -32232.600000000093,
+   "score": 1010,
+   "label": "Placer tin (high grade, river r532)",
+   "why": "a tin placer the rivers carried down (mouth)"
   },
   {
    "id": "res-unique-tin--178--16",
@@ -420,16 +430,6 @@
    "z": -16150.899999999907,
    "score": 798,
    "label": "Placer tin (high grade, river r105)",
-   "why": "a tin placer the rivers carried down (flatten)"
-  },
-  {
-   "id": "res-unique-tin-334-98",
-   "kind": "unique",
-   "family": "tin",
-   "x": 333791.3999999999,
-   "z": 97955.79999999981,
-   "score": 791,
-   "label": "Placer tin (high grade, river r_hr_jokulhlaup)",
    "why": "a tin placer the rivers carried down (flatten)"
   },
   {

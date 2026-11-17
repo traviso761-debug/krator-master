@@ -79,7 +79,7 @@ ORDER = (
        ('core/materials/record', '23-mat-record.js'), ('core/materials/record', '24-tex-def.js'), ('core/materials/record', '25-matlib-host.js'),
        ('core/materials/record', '26-matlib-bind.js'),
        ('biomes/sedesert/src', '35-core-strata.js')]
-    + LDF('40-world-smooth.js', '43-world-relief.js', '44-world-streams.js') + [('core/terrain', '37-core-stacks.js')] + LDF('43b-world-landforms.js')   # relief P8: smoothed, relief, streams, landforms (SITES.json)
+    + LDF('40-world-smooth.js', '43-world-relief.js', '43m-world-micro.js', '44-world-streams.js') + [('core/terrain', '37-core-stacks.js')] + LDF('43b-world-landforms.js')   # relief P8: smoothed, relief, streams, landforms (SITES.json)
     + LDF('41-world-fields.js', '42-world-roads.js') + [('src', '43-world-xoh.js')]
     + LDF('45-world-host.js') + [('src', '46-world-config.js'), ('src', '47-world-kits.js'),
      ('biomes/hyperjungle/src', '41-hyperjungle-globals.js')]

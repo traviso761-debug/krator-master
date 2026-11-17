@@ -34,7 +34,7 @@ RELAX = 6             # the page's 1-2-1 passes over a line's cells before its c
 MEANDER = {'amp': 26.0, 'wave': 140.0}   # m: the page's wander between the relaxed cells (WSMOOTH.curve's meander, zero at each)
 INCISE = {'k': 8.0, 'sigma': 1.5, 'iters': 2}   # the trace's incision (44-world-streams.js): m per decade of flow, cells
 JS = [('core', 'rand', '08-core-rand.js'), ('core', 'terrain', '38-core-relief.js'), None,
-      ('core', 'world', '40-world-smooth.js'), ('core', 'world', '43-world-relief.js'), ('core', 'world', '44-world-streams.js'),
+      ('core', 'world', '40-world-smooth.js'), ('core', 'world', '43-world-relief.js'), ('core', 'world', '43m-world-micro.js'), ('core', 'world', '44-world-streams.js'),
       ('core', 'world', '41-world-fields.js')]
 
 

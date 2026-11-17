@@ -45,32 +45,33 @@ W.FIELDS=['wet','flow','upland','canyon','rim','rock','dune','oasis','slope','ab
 
 // ---------------------------------------------------------------- the styles: how each biome's land is shaped
 // hills/ridge scale the detail on the relief, terr the terraces (step m), dune the dune seas, gully the badland rills,
-// rough the small relief, rock the bare-rock share, wallK how far a channel's wall leans (m out per m down)
+// rough the small relief, rock the bare-rock share, wallK how far a channel's wall leans (m out per m down), hill the
+// micro-relief's hills (m of rise at full strength, 43m-world-micro.js)
 const STYLES={
- desert:  {hills:1.0, ridge:.7, terr:.75,step:55,dune:1,  gully:.7, rough:1.0,rock:.25,wallK:.45,peak:0,slot:0,box:0.15,peat:0},
- badland: {hills:1.1, ridge:1.1,terr:.55,step:30,dune:0,  gully:1.6,rough:1.2,rock:.55,wallK:.6,peak:0.1,slot:0.3,box:0.8,peat:0},
- abyss:   {hills:.6,  ridge:.45,terr:.25,step:40,dune:.15,gully:.4, rough:.7, rock:.15,wallK:1.2,peak:0,slot:0,box:0,peat:0},
- jungle:  {hills:.85, ridge:.4, terr:0,  step:40,dune:0,  gully:.5, rough:.8, rock:.05,wallK:1.8,peak:0,slot:0,box:0,peat:0},
- highland:{hills:1.2, ridge:1.0,terr:.3, step:45,dune:0,  gully:.9, rough:1.1,rock:.35,wallK:.8,peak:0.45,slot:0.15,box:0,peat:0.7},
- korona:  {hills:1.1, ridge:.9, terr:.65,step:80,dune:0,  gully:.5, rough:1.0,rock:.45,wallK:.5,peak:0.35,slot:0.7,box:0,peat:0.2},
- volcanic:{hills:.9,  ridge:.8, terr:.1, step:40,dune:0,  gully:.8, rough:1.1,rock:.6, wallK:.8,peak:0.55,slot:0.3,box:0,peat:0},
- dryland: {hills:.8,  ridge:.5, terr:.3, step:40,dune:.4, gully:.6, rough:.9, rock:.2, wallK:1.0,peak:0,slot:0,box:0.2,peat:0},
- sea:     {hills:.5,  ridge:.3, terr:0,  step:40,dune:0,  gully:0,  rough:.5, rock:.05,wallK:2,peak:0,slot:0,box:0,peat:0},
+ desert:  {hills:1.0, ridge:.7, terr:.75,step:55,dune:1,  gully:.7, rough:1.0,rock:.25,wallK:.45,peak:0,slot:0,box:0.15,peat:0,hill:30},
+ badland: {hills:1.1, ridge:1.1,terr:.55,step:30,dune:0,  gully:1.6,rough:1.2,rock:.55,wallK:.6,peak:0.1,slot:0.3,box:0.8,peat:0,hill:45},
+ abyss:   {hills:.6,  ridge:.45,terr:.25,step:40,dune:.15,gully:.4, rough:.7, rock:.15,wallK:1.2,peak:0,slot:0,box:0,peat:0,hill:25},
+ jungle:  {hills:.85, ridge:.4, terr:0,  step:40,dune:0,  gully:.5, rough:.8, rock:.05,wallK:1.8,peak:0,slot:0,box:0,peat:0,hill:40},
+ highland:{hills:1.2, ridge:1.0,terr:.3, step:45,dune:0,  gully:.9, rough:1.1,rock:.35,wallK:.8,peak:0.45,slot:0.15,box:0,peat:0.7,hill:90},
+ korona:  {hills:1.1, ridge:.9, terr:.65,step:80,dune:0,  gully:.5, rough:1.0,rock:.45,wallK:.5,peak:0.35,slot:0.7,box:0,peat:0.2,hill:60},
+ volcanic:{hills:.9,  ridge:.8, terr:.1, step:40,dune:0,  gully:.8, rough:1.1,rock:.6, wallK:.8,peak:0.55,slot:0.3,box:0,peat:0,hill:60},
+ dryland: {hills:.8,  ridge:.5, terr:.3, step:40,dune:.4, gully:.6, rough:.9, rock:.2, wallK:1.0,peak:0,slot:0,box:0.2,peat:0,hill:30},
+ sea:     {hills:.5,  ridge:.3, terr:0,  step:40,dune:0,  gully:0,  rough:.5, rock:.05,wallK:2,peak:0,slot:0,box:0,peat:0,hill:8},
  // the Oidong Valley (biomes/oidong; settlements/longsong): a green high vale, its floor swelling gently, no terraces or dunes
- vale:    {hills:.8,  ridge:.8, terr:0,  step:40,dune:0,  gully:.35,rough:.7, rock:.3, wallK:.9,peak:0,slot:0,box:0,peat:0.2},
+ vale:    {hills:.8,  ridge:.8, terr:0,  step:40,dune:0,  gully:.35,rough:.7, rock:.3, wallK:.9,peak:0,slot:0,box:0,peat:0.2,hill:35},
  // the abyssal savannah's rims (biomes/abyssal-savannah; openworld/pinnacle): gold grass parkland, caprock benches, few dunes
- savanna: {hills:.9,  ridge:.6, terr:.45,step:40,dune:0,  gully:.6, rough:.9, rock:.2, wallK:.7,peak:0,slot:0,box:0,peat:0},
+ savanna: {hills:.9,  ridge:.6, terr:.45,step:40,dune:0,  gully:.6, rough:.9, rock:.2, wallK:.7,peak:0,slot:0,box:0,peat:0,hill:28},
  // karst towers and dissected carbonate over a flat floor (k-guilin, the NW Bay's tsingy; the Neo-Ozarks): no terraces or dunes, steep walls
- karst:   {hills:.6,  ridge:.4, terr:0,  step:40,dune:0,  gully:.4, rough:.8, rock:.4, wallK:1.4,peak:0,slot:0.4,box:0,peat:0},
+ karst:   {hills:.6,  ridge:.4, terr:0,  step:40,dune:0,  gully:.4, rough:.8, rock:.4, wallK:1.4,peak:0,slot:0.4,box:0,peat:0,hill:60},
  // the outer walls and the rift's rims (nwouterwall, copperglacier, riftrim, ne/se outer wall): high ground, sharp ridges, ice above
- alpine:  {hills:1.3, ridge:1.2,terr:.1, step:40,dune:0,  gully:.7, rough:1.2,rock:.5, wallK:.7,peak:1,slot:0.3,box:0,peat:0.4},
+ alpine:  {hills:1.3, ridge:1.2,terr:.1, step:40,dune:0,  gully:.7, rough:1.2,rock:.5, wallK:.7,peak:1,slot:0.3,box:0,peat:0.4,hill:120},
  // floodplains and deltas (swlowlands, nwlowlands, the Ancient's Valley): low relief, wide soft channel banks
- lowland: {hills:.6,  ridge:.3, terr:0,  step:40,dune:0,  gully:.4, rough:.6, rock:.05,wallK:1.6,peak:0,slot:0,box:0,peat:0},
+ lowland: {hills:.6,  ridge:.3, terr:0,  step:40,dune:0,  gully:.4, rough:.6, rock:.05,wallK:1.6,peak:0,slot:0,box:0,peat:0,hill:12},
  // chasms and trenches between walls (the Great Chasm, the Labyrinth, the Loom chasms, the Outland Gate): mesas, near-sheer walls
- chasm:   {hills:1.0, ridge:.9, terr:.6, step:60,dune:0,  gully:.8, rough:1.0,rock:.5, wallK:.35,peak:0.3,slot:1,box:0,peat:0},
+ chasm:   {hills:1.0, ridge:.9, terr:.6, step:60,dune:0,  gully:.8, rough:1.0,rock:.5, wallK:.35,peak:0.3,slot:1,box:0,peat:0,hill:45},
  // stepped lava and fault benches (godstep, greenstep, highrift's graben, Opal Valley's lake beds, the Mid Basin): broad tall terraces
- steps:   {hills:.7,  ridge:.5, terr:.9, step:120,dune:0, gully:.5, rough:.8, rock:.35,wallK:.6,peak:0.15,slot:0.6,box:0,peat:0}};
-const SKEYS=['hills','ridge','terr','step','dune','gully','rough','rock','wallK','peak','slot','box','peat'];   /* slot, box, peat: relief P11's stream profiles (stProf) */   /* peak: relief P5's crests (43 WRELIEF.peaks) */
+ steps:   {hills:.7,  ridge:.5, terr:.9, step:120,dune:0, gully:.5, rough:.8, rock:.35,wallK:.6,peak:0.15,slot:0.6,box:0,peat:0,hill:35}};
+const SKEYS=['hills','ridge','terr','step','dune','gully','rough','rock','wallK','peak','slot','box','peat','hill'];   /* hill: the micro-relief's hills (m; 43m-world-micro.js, PLAN-MICRO.md) */   /* slot, box, peat: relief P11's stream profiles (stProf) */   /* peak: relief P5's crests (43 WRELIEF.peaks) */
 // the overlay's name (lower case) -> [its style, its palette]. EVERY overlay the scale model can hand a region is here
 // (tools/scale-model/extract_region.py writes them; core/world/test-world-styles.js fails on a name without an entry).
 // There is no default: a name not here is reported, not drawn as desert (W.groundOf, W.unstyled)
@@ -180,7 +181,7 @@ let M,nx,ny,i0,j0,su,sv,cx,cy,X0,Y0,MW,MH,EL,WLV,WHAS,REL,CL,RN,TP,BI,MK,SL,SU,S
 let SID,KIT,STY,PALL,NB,CLCODE,CLGROUP;
 // a region with region.json `relief` (core/world/PLAN-RELIEF.md; 43-world-relief.js): terraces lie only on caprock
 // (WRELIEF.bench) instead of on the absolute height. Every overlay's style and palette are BIOME_GROUND's, relief or not
-let RELIEF=false,LANDF=false,PEAK=null;
+let RELIEF=false,LANDF=false,PEAK=null,MICRO=false;const MG=[0,0];
 // the kits (47-world-kits.js) are read at init: which overlay each grows on
 let KITNAMES=[];W.KITS=KITNAMES;
 W.init=function(R){M=WORLD_DATA.meta;const Hd=M.heights,F=M.frame;
@@ -203,7 +204,9 @@ W.init=function(R){M=WORLD_DATA.meta;const Hd=M.heights,F=M.frame;
  SKEYS.forEach(k=>STY[k]=new Float32Array(NB));
  RELIEF=!!M.relief;
  if(RELIEF){if(typeof WRELIEF==='undefined')throw new Error('41-world-fields: region.json asks for core/world relief: list 43-world-relief.js before 41');
-  WRELIEF.init({ox:cx*2000,oz:cy*2000,seed:M.relief.seed});}
+  WRELIEF.init({ox:cx*2000,oz:cy*2000,seed:M.relief.seed});
+  MICRO=typeof WMICRO!=='undefined'&&M.relief.micro!==false;   /* PLAN-MICRO.md: the micro-relief, where 43m-world-micro.js is listed */
+  if(MICRO)WMICRO.init({ox:cx*2000,oz:cy*2000,seed:M.relief.seed^0x4D4943});}
  /* an overlay with no entry is an error, not desert: listed in W.unstyled, reported on the page, failed by the probe
     (91: 'every biome overlay has its own ground style'); it is drawn on the desert's shape in MISSING's magenta, so it shows */
  W.unstyled=[];
@@ -237,7 +240,7 @@ function blendAt(x,z,B){const wx=x+(NW.fbm(x/7000,z/7000,2)-.5)*2600,wz=z+(NW.fb
  const ids=[BI[o],BI[o+1],BI[o+MW],BI[o+MW+1]],ws=[(1-fu)*(1-fv),fu*(1-fv),(1-fu)*fv,fu*fv];
  B.n=0;for(let k=0;k<4;k++){let m=0;for(;m<B.n;m++)if(B.id[m]===ids[k])break;if(m===B.n){B.id[m]=ids[k];B.w[m]=0;B.n++;}B.w[m]+=ws[k];}
  return B;}
-const SBL={};SKEYS.forEach(k=>SBL[k]=0);
+const SBL={},HS={};SKEYS.forEach(k=>{SBL[k]=0;HS[k]=0;});
 function styleAt(x,z){const B=blendAt(x,z,BLEND);SKEYS.forEach(k=>{let s=0;for(let m=0;m<B.n;m++)s+=B.w[m]*STY[k][B.id[m]];SBL[k]=s;});return SBL;}
 W.style=(x,z)=>Object.assign({},styleAt(x,z));
 W.kitW=function(k,x,z){const B=blendAt(x,z,BLEND);let s=0;for(let m=0;m<B.n;m++)if(KIT[B.id[m]]===k)s+=B.w[m];return s;};
@@ -618,12 +621,16 @@ function reliefMask(x,z){if(!WHASF){WHASF=new Float32Array(nx*ny);for(let k=0;k<
  return m;}
 W.reliefMask=(x,z)=>RELIEF?reliefMask(x,z):1;
 W.wetCell=(x,z)=>{if(!WHASF)reliefMask(0,0);return gridBil(WHASF,x,z);};   /* the model's wet cells, bilinear (the mask's water) */
-function H(x,z,minWave,P,nr,nt){minWave=minWave||0;
- const SC=scarpAt(x,z,SCR),b=SC.w>0?scarpOf(baseH(x,z),SC):baseH(x,z),S=styleAt(x,z),rel=gridBil(REL,x,z);
+function H(x,z,minWave,P,nr,nt){minWave=minWave||0;MG[0]=MG[1]=0;
+ /* S: H's own copy of the style. styleAt fills one shared object, and WLAND's caprock and ground ask for it while filling a landform cell
+    inside WLAND.apply below, so the stream carve and the grain after it read another place's style, and the land hung on which call
+    filled the cell first (a stop planned on gentle ground read 43 % at the plan's check, 2026-11-17) */
+ const SC=scarpAt(x,z,SCR),b=SC.w>0?scarpOf(baseH(x,z),SC):baseH(x,z),S=Object.assign(HS,styleAt(x,z)),rel=gridBil(REL,x,z);
  let h=b+(N1.fbm(x/6000,z/6000,4)-.5)*2*clamp(rel*.12,12,420)*S.hills*(1-.75*SC.w);   // the cliff's band keeps its plateau and floor level
+ const rm=RELIEF?reliefMask(x,z):1;   /* relief P14: the relief's own parts fade under the model's water and through a town's band */
+ if(MICRO&&rm>0)h+=rm*(1-.75*SC.w)*WMICRO.hills(x,z,S,rel,minWave);   /* PLAN-MICRO.md M1: the hills a DEM shows, on a floor that drains */
  if(minWave<1700){const r=1-Math.abs(2*N2.fbm(x/1700,z/1700,3)-1);h+=(r*r-.35)*clamp(rel*.06,6,200)*S.ridge;}
  // terraces where the relief allows mesas: flat treads, risers a fraction of each step
- const rm=RELIEF?reliefMask(x,z):1;   /* relief P14: the relief's own parts fade under the model's water and through a town's band */
  if(RELIEF&&rm>0){const hb=WRELIEF.bench(h,x,z,S,rel,minWave);h+=rm*(hb-h);}
  else if(S.terr>.01&&minWave<600){const tm=S.terr*smooth(40,250,rel)*smooth(4200,1800,rel);
   if(tm>.01){const step=S.step*(.75+.5*N6.vn(x/9000,z/9000)),t=h/step,fl=Math.floor(t),f=t-fl,k=.14;
@@ -635,8 +642,10 @@ function H(x,z,minWave,P,nr,nt){minWave=minWave||0;
  if(minWave<420)h+=(N3.fbm(x/420,z/420,3)-.5)*2*(5+rel*.006)*S.rough;
  /* the gullies. A relief region's (43-world-relief.js, P2): the erosion filter, down the slope of the land's large form (the
     model and its hills, by central differences at 30 m), branching. Any other region's: ridged noise, which has no direction */
- if(RELIEF){if(S.gully>.01&&minWave<450){const e=30,hA=clamp(rel*.12,12,420)*S.hills,Lf=(px,pz)=>baseH(px,pz)+(N1.fbm(px/6000,pz/6000,4)-.5)*2*hA;
-   if(rm>0){const he=WRELIEF.erode(h,x,z,(Lf(x+e,z)-Lf(x-e,z))/(2*e),(Lf(x,z+e)-Lf(x,z-e))/(2*e),S,rel,minWave);h+=rm*(he-h);}}}
+ if(RELIEF){if(S.gully>.01&&minWave<450){const e=30,hA=clamp(rel*.12,12,420)*S.hills,Lf=(px,pz)=>baseH(px,pz)+(N1.fbm(px/6000,pz/6000,4)-.5)*2*hA+(MICRO?rm*WMICRO.hills(px,pz,S,rel,minWave):0);
+   if(rm>0){const gx=(Lf(x+e,z)-Lf(x-e,z))/(2*e),gz=(Lf(x,z+e)-Lf(x,z-e))/(2*e);
+    const he=MICRO?WMICRO.erode(h,x,z,gx,gz,S,rel,minWave,MG):WRELIEF.erode(h,x,z,gx,gz,S,rel,minWave,MG);   /* PLAN-MICRO.md M2: the drainage from 800 m to 25 m */
+    h+=rm*(he-h);}}}
  else if(S.gully>.01&&minWave<240){const g=1-Math.abs(2*N4.fbm(x/240,z/240,2)-1);h-=S.gully*(3+rel*.004)*Math.pow(g,6)*2.2;}
  if(PEAK&&S.peak>.01&&minWave<1300&&rm>0){const hp=WRELIEF.peaks(h,x,z,S,rel,gridBil(PEAK,x,z),minWave);h+=rm*(hp-h);}   /* relief P5: crests and summits on the high ground */
  if(minWave<90)h+=(N3.vn(x/90+11,z/90-7)-.5)*2*(1.2+rel*.0015)*S.rough;
@@ -649,7 +658,7 @@ function H(x,z,minWave,P,nr,nt){minWave=minWave||0;
  if(LANDF)h=WLAND.apply(h,x,z,minWave);   /* at every minWave: the road router reads the land at 4000 m and must see a mesa */
  let fr=0;if(FANS&&FANS.length&&minWave<600&&rm>0){fr=fanRise(x,z)*rm;h+=fr;}   /* relief P13: the alluvial fans, before the streams cut through them (a fanhead trench: fr more) */
  let sd=1e9,sw=0,sbw=0;if(STHASH&&minWave<150){streamAt(x,z,h,S,STC,minWave,fr);h-=STC.k;sd=STC.d;sw=STC.hw;sbw=STC.bw;}
- if(minWave<13)h+=((N5.vn(x/13,z/13)-.5)*1.1+(N5.vn(x/3.1+50,z/3.1)-.5)*.3)*(1-sbw);   /* not in a stream's bed (STC.bw): it stood through the water there */
+ if(minWave<13)h+=(MICRO?WMICRO.grain(x,z,Math.sqrt(MG[0]*MG[0]+MG[1]*MG[1]),MG[0],MG[1],S,minWave):(N5.vn(x/13,z/13)-.5)*1.1+(N5.vn(x/3.1+50,z/3.1)-.5)*.3)*(1-sbw);   /* PLAN-MICRO.md M3: by the slope (MG: the erosion's last slope) */   /* not in a stream's bed (STC.bw): it stood through the water there */
  // a world's own shaping of its land (W.landHook: openworld/isle-demo's coast, reef and mangrove flats); none here
  if(W.landHook)h=W.landHook(x,z,h,minWave);
  // the roads, last: the carriageway is level at the road's height whatever the detail did

@@ -5,7 +5,7 @@
 // move the land, and checked). The negative: one value nudged by 1e-5 is caught.
 const fs=require('fs'),path=require('path');
 global.window=global;
-for(const f of [['..','rand','08-core-rand.js'],['..','terrain','37-core-stacks.js'],['40-world-smooth.js'],['43-world-relief.js'],['44-world-streams.js'],['43b-world-landforms.js']])
+for(const f of [['..','rand','08-core-rand.js'],['..','terrain','37-core-stacks.js'],['40-world-smooth.js'],['43-world-relief.js'],['43m-world-micro.js'],['44-world-streams.js'],['43b-world-landforms.js']])
  eval(fs.readFileSync(path.join(__dirname,...f),'utf8'));
 const r6=v=>typeof v==='number'?Math.round(v*1e6)/1e6:v,R=a=>a.map(r6);
 function snapshot(){const G={};
@@ -22,6 +22,11 @@ function snapshot(){const G={};
  G.erode=pts.map(([x,z])=>r6(WRELIEF.erode(500,x,z,-.15,.05,S,800,0)));
  G.peaks=pts.map(([x,z])=>r6(WRELIEF.peaks(0,x,z,S,1200,.8,0)));
  G.caprock=pts.map(([x,z])=>r6(WRELIEF.caprock(x,z,S,600)));
+ // WMICRO (PLAN-MICRO.md): the hills, the drainage (its height and the slope it leaves) and the grain at the same points
+ WMICRO.init({ox:2000000,oz:3000000,seed:9});const SM={hill:40,gully:.8,rough:1};
+ G.mhills=pts.map(([x,z])=>r6(WMICRO.hills(x,z,SM,600,0)));
+ G.merode=pts.map(([x,z])=>{const g=[0,0],h=WMICRO.erode(500,x,z,-.08,.05,SM,600,0,g);return [r6(h),r6(g[0]),r6(g[1])];});
+ G.mgrain=pts.map(([x,z])=>r6(WMICRO.grain(x,z,.3,.2,-.1,SM,0)));
  // WSTREAMS: the trace on a valley with a depression, its lines as region.json keeps them, their decode, the tarns
  {const nx=60,ny=80,cell=250,n=nx*ny,E=new Float32Array(n),K=new Uint8Array(n),RW=new Float32Array(n),RM=new Float32Array(n);
   for(let j=0;j<ny;j++)for(let i=0;i<nx;i++){const c=j*nx+i,d=Math.hypot(i-30,j-40);E[c]=(ny-j)*cell*.015+Math.abs(i-30)*cell*.03+(KRAND.vnoise(i/3.7,j/3.7,.5,11)-.5)*6-(d<5?120*(1-d/5):0);

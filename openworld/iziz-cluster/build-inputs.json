@@ -171,7 +171,7 @@
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
     "core/materials/record/26-matlib-bind.js": "93c467f3805276f5aea2482da7fac2216db1e52d18d191c1925c8cd90446b54c",
     "core/ports/44-core-ports.js": "e40b1daf71281e0b7c14a0393bc3c3d9a09ee7cfef4258e71c336be9c543bc2b",
-    "core/rand/08-core-rand.js": "f315035a138a8818c87f55de56ae2dbf3a8d66ff3cc435d303332502d2f43ddf",
+    "core/rand/08-core-rand.js": "74a7f6ab96bc27a68097ac2cd81606460b1386fdb12c7506543ed967e78d5d7a",
     "core/shader/06-core-khook.js": "eb1a0436d3d5dbaab81c3e43de2b642c96d9c3b44331a8960801880e5e20c56d",
     "core/shader/06b-core-kcolor.js": "ededfc6b8a1a8aae5bf3c6ab40863478f9beb8e1aaf2acf4ba9da25ef6392115",
     "core/sockets/38-symbols.js": "cea0673f7b5bdc52886497f9a452fda756d4d17b0d2fd7e692bfcab5610822db",
@@ -186,7 +186,7 @@
     "core/water/50-core-water-draw.js": "9b487271223b64c2935b3336667963139dddcc055b852ac4f0a1912b2a9dd7e0",
     "core/water/51-core-water-kinds.js": "549ea82cd960f7b78d0088c0a0059a1104eb360ccac82e916b48ec8cb29e0e57",
     "core/world/00-head.html": "f13d6e95835b879b2558b833c915dec3020683afff8a62962d2c7aaa68659c6e",
-    "core/world/41-world-fields.js": "95699f52f9f47549389acf07014406be3c726d337e6e83c9a5d44898e69f58b0",
+    "core/world/41-world-fields.js": "6727b7428c5e1b2a18d18dd14eae8d8bb36ded84b13998076adf1e827cb2f755",
     "core/world/42-world-roads.js": "8b9b8bf77763f7f8c1507f103352c821d1032021ec73218b96aa4a5783451277",
     "core/world/45-world-host.js": "4f67add1a87c01af548999122e1c4562345f8871418ea7a478eebfb8699323bc",
     "core/world/48s-world-sites.js": "90ac5ceae97a31f6f12b6a540ec26fc550e3e468936e2ff3bbf09c2732732e43",
@@ -715,7 +715,7 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "openworld/iziz-cluster/dist/iziz-cluster.html": "9c52ff5e0036b854e7d282d3fc02bc8798eff367e4af6893e33bf160621a6f7c",
+    "openworld/iziz-cluster/dist/iziz-cluster.html": "e0575f2d55e6d8d4c9b9d81fda30208006a6d9dbb6a981e98ea3281670ae15e9",
     "openworld/iziz-cluster/dist/iziz-cluster.tex.abyssal-savannah.js": "1eb39f4b778a6bc8b25aefa0a150ceb8dac7bd338e60213fe7f1a68b10d3e390",
     "openworld/iziz-cluster/dist/iziz-cluster.tex.brtowns.js": "b12ca256d909e39fcbbb58164e9437b081de65a23b5651d3079814610dddc1c0",
     "openworld/iziz-cluster/dist/iziz-cluster.tex.eastabyss.js": "2c9de989f067e7da3195016b3a53efd7338695428cd54b2573cf52f7c6dd7b14",
@@ -725,7 +725,7 @@
     "openworld/iziz-cluster/dist/iziz-cluster.tex.kftex.js": "76bf85ce1437d8c1a34f4bb2aca0af4fce566d9a24caa3691055d1511a500101"
    },
    "outputs_raw": {
-    "openworld/iziz-cluster/dist/iziz-cluster.html": "9c52ff5e0036b854e7d282d3fc02bc8798eff367e4af6893e33bf160621a6f7c",
+    "openworld/iziz-cluster/dist/iziz-cluster.html": "e0575f2d55e6d8d4c9b9d81fda30208006a6d9dbb6a981e98ea3281670ae15e9",
     "openworld/iziz-cluster/dist/iziz-cluster.tex.abyssal-savannah.js": "1eb39f4b778a6bc8b25aefa0a150ceb8dac7bd338e60213fe7f1a68b10d3e390",
     "openworld/iziz-cluster/dist/iziz-cluster.tex.brtowns.js": "b12ca256d909e39fcbbb58164e9437b081de65a23b5651d3079814610dddc1c0",
     "openworld/iziz-cluster/dist/iziz-cluster.tex.eastabyss.js": "2c9de989f067e7da3195016b3a53efd7338695428cd54b2573cf52f7c6dd7b14",

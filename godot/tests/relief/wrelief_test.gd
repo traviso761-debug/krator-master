@@ -11,6 +11,7 @@ const WRelief := preload("wrelief.gd")
 const WSmooth := preload("wsmooth.gd")
 const WStreams := preload("wstreams.gd")
 const WLand := preload("wland.gd")
+const WMicro := preload("wmicro.gd")
 const KStacks := preload("../terrain/kstacks.gd")
 
 var worst := 0.0
@@ -82,6 +83,20 @@ func snapshot() -> Dictionary:
 		G.erode.append(WRelief.erode(500.0, x, z, -0.15, 0.05, S, 800.0, 0.0))
 		G.peaks.append(WRelief.peaks(0.0, x, z, S, 1200.0, 0.8, 0.0))
 		G.caprock.append(WRelief.caprock(x, z, S, 600.0))
+	# WMICRO (PLAN-MICRO.md): the hills, the drainage (its height and the slope it leaves) and the grain
+	WMicro.init(2000000.0, 3000000.0, 9)
+	var SM := {"hill": 40.0, "gully": 0.8, "rough": 1.0}
+	G.mhills = []
+	G.merode = []
+	G.mgrain = []
+	for k in 300:
+		var x := float((k * 7919) % 40000)
+		var z := float((k * 104729) % 40000)
+		G.mhills.append(WMicro.hills(x, z, SM, 600.0, 0.0))
+		var gm := [0.0, 0.0]
+		var hm := WMicro.erode(500.0, x, z, -0.08, 0.05, SM, 600.0, 0.0, gm)
+		G.merode.append([hm, gm[0], gm[1]])
+		G.mgrain.append(WMicro.grain(x, z, 0.3, 0.2, -0.1, SM, 0.0))
 	# WSTREAMS: the trace on a valley with a depression, its lines as region.json keeps them, their decode, the tarns
 	var nx := 60
 	var ny := 80

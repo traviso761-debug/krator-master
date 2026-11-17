@@ -52,7 +52,7 @@ def sample(region, box, step, core=None, bench=False):
     parts = ['"use strict";var window=globalThis;\n']
     for p in (os.path.join(ROOT, 'core', 'rand', '08-core-rand.js'), os.path.join(ROOT, 'core', 'terrain', '38-core-relief.js')):
         parts.append(open(p, encoding='utf-8').read())
-    for f in ('40-world-smooth.js', '43-world-relief.js', '44-world-streams.js'):
+    for f in ('40-world-smooth.js', '43-world-relief.js', '43m-world-micro.js', '44-world-streams.js'):
         p = os.path.join(core, f)
         if os.path.isfile(p):
             parts.append(open(p, encoding='utf-8').read())
