@@ -71,6 +71,8 @@
  "biomes/geyser/dist/geyser-corona.html: CLASH _shadow": 1,
  "biomes/geyser/dist/geyser-corona.html: MISSING BIO.leafOn": 1,
  "biomes/geyser/dist/geyser-corona.html: MISSING BIO.leafQ": 1,
+ "biomes/geyser/dist/geyser-cove.html: MISSING BIO.leafOn": 1,
+ "biomes/geyser/dist/geyser-cove.html: MISSING BIO.leafQ": 1,
  "biomes/geyser/dist/geyser-ice.html: CLASH _shadow": 1,
  "biomes/geyser/dist/geyser-ice.html: MISSING BIO.leafOn": 1,
  "biomes/geyser/dist/geyser-ice.html: MISSING BIO.leafQ": 1,

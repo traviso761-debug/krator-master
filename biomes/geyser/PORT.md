@@ -35,4 +35,10 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 
 ## Notes
 
-(none yet: the split lists and the overrides go here)
+(the split lists and the overrides go here)
+
+- **Station 7, the cove (`stations/cove/`, 2026-11-16; the audit reads `src/` only, so its rows are here):** `45-host-stage.js` [web] (the stage, overriding
+  src/45: the land, the Lime Stair, the creek and the thermal layout are plain functions and records, the [G data] half to split out with src/45's),
+  `80-host-cove-ground.js` [G shader] (the ground's paint per vertex and the KGROUND layers), `87-host-cove.js` [draw] (the chimneys, the breccia and the
+  bay's boils as BIO items, `WATER.geyser` records and `WATER.drawPlume`), `89-host-sky.js` [G native] (src/89 at the cove's place), `89w-host-sea.js`
+  [draw] (src/89w-host-sea with the cove's plume sources and steam), `98-host-cove-take.js` [web] (the views, words and checks).

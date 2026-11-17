@@ -4,7 +4,7 @@
 
 Docs: `BIOME-API.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `PLAN-STATIONS.md`, `PORT.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/geyser-basin.html`, `dist/geyser-corona.html`, `dist/geyser-ice.html`, `dist/geyser-puna.html`, `dist/geyser-stills.html`, `dist/geyser.html`
+Built output (never open it; edit `src/` and rebuild): `dist/geyser-basin.html`, `dist/geyser-corona.html`, `dist/geyser-cove.html`, `dist/geyser-ice.html`, `dist/geyser-puna.html`, `dist/geyser-stills.html`, `dist/geyser.html`
 
 Build: `cd biomes/geyser && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
@@ -48,6 +48,7 @@ Each station builds one page (`build.py --station <name>`) from its own fragment
 |---|---|---|
 | basin | 44s-host-site.js | 7 |
 | corona | 44s-host-site.js | 7 |
+| cove | 45-host-stage.js, 80-host-cove-ground.js, 87-host-cove.js, 89-host-sky.js, 89w-host-sea.js, 98-host-cove-take.js | 41 |
 | field | 45-host-stage.js, 47-host-land.js, 75-biome-geyserfield-flora.js, 85-host-far.js, 88-host-build.js, 89-host-sky.js, 89w-host-sea.js, 89w-host-water.js, 98-host-field-take.js | 30 |
 | ice | 44s-host-site.js, 87-host-ice.js | 9 |
 | puna | 44s-host-site.js | 6 |

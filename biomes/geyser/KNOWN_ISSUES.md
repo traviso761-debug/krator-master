@@ -123,3 +123,32 @@ EXPORT_PROFILE in verify.py leaves out: atmos (the page has no core/atmos export
 - [ ] **The stations still load the hyperjungle's `41` globals** (TAU, clamp, smooth, fbm...) though only corona grows it (`"nojungle"` drops the rest
   and its pack).
 - [ ] **No GPU look yet** at any of the four: the gravel's and ice's tints, the run-off ramps per station, the lodgepole's crown, the ice towers and caves.
+
+## Station 7, the Boiling Bay phreatic cove (2026-11-16; PLAN-STATIONS.md, "Station 7 as built")
+
+- [ ] **The GPU verify is owed** (`KRATOR_GL=gpu python3 tools/harness.py lock -- python3 verify.py dist/geyser-cove.html --assert --all-views`): the cloud
+  session ran on SwiftShader only, on a 4-core machine shared with other verifies (load 25-37): every invariant, the host's checks and their negatives
+  passed; two runs at 1280x800 stalled at their first screenshot (the harness's 25-minute watchdog) with the export profile starved (the library textures
+  still decoding after 180 s); the third, at 960x600 with the plumes at 8 steps, passed the export profile too and took its shots. The bay's five plumes
+  always stand (a spouter's steam never stops), so unlike the showcase's they are raymarched every frame: they take 8 steps (not 12), and `?bayplume=0` keeps
+  their records and draws none. Measure their cost on the GPU over the skiff's view, and the shadow: on SwiftShader the ground reads 16 of 16 texture units,
+  so KSHADOW skips itself.
+- [ ] **The look from the skiff (one SwiftShader shot, owner's call)**: the bay reads turquoise-milky with its plumes standing and the apron's sinter and mats
+  at the far shore, but the hyperjungle's hypertrees (60-100 m) behind the 30 m rim dwarf it, and the cream bluffs and visors barely show at this range. A
+  lower jungle on the rim's back slope (`jungleK`) or a higher rim would read more like the spec's "bluff top behind the scald line".
+- [ ] **The other geyser pages are stale against `core/terrain/35-core-strata.js`** (Gemini's six recipes, merged before this turn: their pages grow ~40 KB
+  rebuilt). Not rebuilt here (this turn's brief: the new station only); check_stale names them (with this turn's KNOWN_ISSUES/PORT/dist-listing changes).
+- [ ] **For the scale-model queue (never edited here):** the model has no vent and no cove at px 884,716 (the ground -1,494 m in a 2 km cell, the sea one
+  cell south-east). The station wants a geyser vent there (kind `geyser`, radius ~0.4 px) and, if the reshaping's Ring Sea pass reaches this shore, the cove
+  kept as a notch in the coast (its breach toward bearing ~158). Gemini's `edit_517` is not merged: the station stands on today's ground.
+- [ ] **The spec's skiffs are not drawn**: the Islander and Beast-Rider sulphur, alum and salt skiffs out of Port Goto anchored off the plume line. No boat
+  kit is read by this kit's pages; `kits/ringsea` (the Ring Sea watercraft) is the one to place them from, a station turn of its own.
+- [ ] **No tide**: the spec's 24 h libration tide flushes the littoral; the sea stands at one level (core/water's open surface has no tide yet).
+- [ ] **The boiling point**: the page's air is 1.93 atm (water boils at ~119 degC), but the kit's thermal record (`GEYSER.at`: heat 0..1 of the air's
+  temperature to 100 degC) and its mats' bands read Earth's 100 degC; the cove's 65-106 degC mixing is in the words, not the record. A kit change (all its
+  pages), not this station's.
+- [ ] **Approximate, by design**: the cove is an ideal type (an explosion crater 720 m across in a plateau at 32-40 m; the model's cell says only -1,494 m);
+  the outer coast's line, the dike's bearing and the vents' places are the station's. The sulphur chimneys are the kit's geyserite bead drawn tall and
+  yellow (one item: no chimney geometry of their own); the breccia blocks the same bead in tibasalt's colours.
+- [ ] **84's beach paint reads `shoreZ` (one shore a column)**, which the crescent's horns cross: the station repaints the beach by height at the water
+  (`80`), so 84's own sand is overwritten there. A two-sided shore in 84 would let the station drop it.

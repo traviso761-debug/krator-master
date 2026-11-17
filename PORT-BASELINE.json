@@ -172,6 +172,10 @@
    "bytes": 1432743,
    "sha256": "6562304c9f48b6ea25eb27bcca95d0972f84c13b9de539ea59d56762ae759f8c"
   },
+  "biomes/geyser/dist/geyser-cove.html": {
+   "bytes": 1495138,
+   "sha256": "8e463b72aea0bdc590e319000bea3697ffddb075605b55135e4da243a9d266a1"
+  },
   "biomes/geyser/dist/geyser-ice.html": {
    "bytes": 1326723,
    "sha256": "d37ec4682425e16e3e5511dd1d0faca0722d18dcea886c9b110583670543663a"
