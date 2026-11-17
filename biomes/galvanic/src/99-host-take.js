@@ -69,6 +69,9 @@ const HCHK={
  // station 2: a stream that falls into the Deep runs on to the season's brine (its line ends under the water, not on the dry shelf)
  inDeep(ends){const bad=ends.filter(e=>!(terrainH(e[0],e[1])<SEA_LEVEL));
   return{ok:ends.length>0&&!bad.length,detail:bad.length?bad.length+' streams stop short of the brine (first ends at '+bad[0].map(v=>v.toFixed(0))+', '+(terrainH(bad[0][0],bad[0][1])-SEA_LEVEL).toFixed(2)+' m over it)':ends.length+' streams run down the shelf into the brine'};},
+ // station 2: the last tread of a stream into the Deep meets the flow below it at its own level (no climb back up to the flow, no trench)
+ noClimb(SS){const bad=[],det=[];SS.forEach(S=>{if(!S.T.length)return;const t=S.T[S.T.length-1],d=S.bed0(t.s1)+.3-t.y;det.push(S.name+' '+d.toFixed(2)+' m');if(Math.abs(d)>.1)bad.push(S.name+' ('+d.toFixed(2)+' m)');});
+  return{ok:det.length>0&&!bad.length,detail:bad.length?'the flow stands off its last tread: '+bad.join('; '):'the flow meets the last tread: '+det.join(', ')};},
  // station 2: the season's brine stands on the shelf (the bathtub ring between its two heights)
  shelf(level){const a=SITE.sea+DP.shelf[0],b=SITE.sea+DP.shelf[1];return{ok:level>a&&level<b,detail:'the brine at '+(+level).toFixed(2)+' m on the shelf\'s '+a.toFixed(1)+' to '+b.toFixed(1)+' m'};},
  // station 3: no battery life on the iron hat (its sulfides are leached: no couple)
@@ -94,6 +97,7 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P
  else add('the water table at the level of its season',HCHK.table(window._water?window._water.table:NaN));
  if(SITE.smokers){add('the chimneys seated on their ground',HCHK.chimneys(CHIMNEYS));add('the steam only off the hot brine',HCHK.steam(GALV_STEAM?GALV_STEAM.plumes:null));
   add('the brine on the shelf in its season (the bathtub ring)',HCHK.shelf(SEA_LEVEL));
+  add('the terraces into the Deep meet their flow',HCHK.noClimb(STREAMS.filter(S=>{const p=S.F.point(S.F.L);return Math.hypot(p[0]-DP.x,p[1]-DP.z)<DP.r*1.05;})));
   add('the streams into the Deep reach its brine',HCHK.inDeep(STREAMS.map(S=>S.F.point(S.F.L)).filter(p=>Math.hypot(p[0]-DP.x,p[1]-DP.z)<DP.r*1.05)));}
  if(ORE){const hp=ORE.F.point(ORE.sx*.5),q=ORE.F.point(ORE.sx*.5);add('no battery life on the iron hat',HCHK.hat(P));add('the seeps on the line of the water table',HCHK.seeps(SEEPS));
   add('the self-potential over the ore (the geobattery)',HCHK.sp(SP_AT(hp[0],hp[1]),SP_AT(q[0]+800,q[1])));}
@@ -112,7 +116,7 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  if(SITE.shore!==false)add('the sea at the wrong season',HCHK.sea(SITE.sea+GALV_PHYS.level(DAY+180)));
  else add('the table at the wrong season',HCHK.table(GALV_PHYS.level(DAY+180,{amp:SWING})));
  if(SITE.smokers){const c=CHIMNEYS[0];add('a chimney 2 m in the air',HCHK.chimneys([Object.assign({},c,{y0:c.y0+2.3})]));
-  add('a steam column over the cold strand',HCHK.steam([[DP.x,SEA_LEVEL,DP.z-DP.r-500,'steam']]));add('the brine over the rim',HCHK.shelf(SITE.sea+DP.shelf[1]+2));add('a brook ending on the dry shelf',HCHK.inDeep([[800,-280]]));}
+  add('a steam column over the cold strand',HCHK.steam([[DP.x,SEA_LEVEL,DP.z-DP.r-500,'steam']]));add('the brine over the rim',HCHK.shelf(SITE.sea+DP.shelf[1]+2));add('a brook ending on the dry shelf',HCHK.inDeep([[800,-280]]));{const S=STREAMS[0];if(S.T.length)add('a last tread sunk 0.7 m under its flow',HCHK.noClimb([Object.assign({},S,{T:S.T.slice(0,-1).concat([Object.assign({},S.T[S.T.length-1],{y:S.T[S.T.length-1].y-.7})])})]));}}
  if(ORE){const hp=ORE.F.point(ORE.sx*.5);add('a crust on the iron hat',HCHK.hat([[hp[0],terrainH(hp[0],hp[1]),hp[1],'biome:gvcrust']]));
   {const p=ORE.F.point(Math.max(0,ORE.sx-260));add('a seep up the hill',HCHK.seeps([{x:p[0]+60,z:p[1],r:3}]));}
   add('a self-potential with no ore under it',HCHK.sp(GALV_PHYS.sp(0,{ehDeep:2}),0));}
