@@ -31,6 +31,14 @@ var step := 0
 var origin := [0.0, 0.0, 0.0]   # the stream's floating origin, the region's metres (doubles)
 var rebases := 0
 const REBASE := 4000.0
+# M8 (GODOT-PLAN.md, "walk the road"): a walkable stream. collide: every case's ground and buildings get static bodies;
+# auto_places: update() opens the places within its load radius plus a chunk (so a chunk is never loaded without the
+# places inside it) and frees them beyond its keep radius plus a chunk. A chunk's ground leaves out the cells wholly inside
+# a place's square, where the place's own finer ground stands (64 m cells would smear Strongbow's face over its page)
+var collide := false
+var auto_places := false
+var places_open := {}     # id -> Node3D
+signal rebased(delta: Vector3)   # what every node the stream holds moved by: a caller moves its own (the walker) the same
 
 
 static func open(path: String) -> KratorWorldStream:
@@ -75,12 +83,14 @@ func _seat(w: Node3D) -> void:
 
 
 func rebase(x: float, z: float) -> void:
+	var was: Array = origin.duplicate()
 	origin = [roundf(x), 0.0, roundf(z)]
 	for id in chunks:
 		_seat(chunks[id])
 	for p in get_node("Places").get_children():
 		_seat(p)
 	rebases += 1
+	rebased.emit(Vector3(was[0] - origin[0], was[1] - origin[1], was[2] - origin[2]))
 
 
 func update(at: Vector2, load_r: float, keep_r: float) -> Dictionary:
@@ -95,8 +105,11 @@ func update(at: Vector2, load_r: float, keep_r: float) -> Dictionary:
 			var w := KratorWorld.build(path)
 			w.name = "Chunk_" + id
 			w.set_meta("case_path", path)   # its world.json (the importer's "world" meta leaves the terrain out)
+			_hole(w, _box[id])
 			_seat(w)
 			add_child(w)
+			if collide:
+				collide_case(w)
 			chunks[id] = w
 			loaded.append(id)
 		elif d > keep_r and chunks.has(id):
@@ -105,6 +118,20 @@ func update(at: Vector2, load_r: float, keep_r: float) -> Dictionary:
 			remove_child(n)
 			n.free()
 			unloaded.append(id)
+	if auto_places:
+		var csz := float(index["chunk"]["size"])
+		for p in index.get("places", []):
+			var pid: String = p["id"]
+			var d := box_dist(p["box"], at.x, at.y)
+			if d <= load_r + csz and not places_open.has(pid):
+				places_open[pid] = open_place(pid)
+				loaded.append(pid)
+			elif d > keep_r + csz and places_open.has(pid):
+				var n: Node3D = places_open[pid]
+				places_open.erase(pid)
+				n.get_parent().remove_child(n)
+				n.free()
+				unloaded.append(pid)
 	log.append({"step": step, "at": [at.x, at.y], "loaded": loaded, "unloaded": unloaded, "held": chunks.keys(), "origin": origin.duplicate()})
 	step += 1
 	return {"loaded": loaded, "unloaded": unloaded}
@@ -158,7 +185,76 @@ func open_place(id: String) -> Node3D:
 	get_node("Places").add_child(w)
 	if p.get("arcology") is Dictionary:
 		w.add_child(arcology(p, w))
+	if collide:
+		collide_case(w)
+		if w.get_node_or_null("Arcology"):
+			collide_case(w.get_node("Arcology"))
 	return w
+
+
+# a chunk's ground without the cells wholly inside a place's square (the place's own ground stands there): its mesh
+# rebuilt from the importer's, the triangles whose three corners lie in a place box dropped. A cell half in, half out is
+# kept, so the two grounds overlap by up to a cell at a place's edge and never leave a gap
+func _hole(w: Node3D, cbox: Array) -> void:
+	var boxes := []
+	for p in index.get("places", []):
+		var b: Array = p["box"]
+		if float(b[0]) < float(cbox[2]) and float(b[2]) > float(cbox[0]) and float(b[1]) < float(cbox[3]) and float(b[3]) > float(cbox[1]):
+			boxes.append(b)
+	var mi := (w.get_meta("ground") if w.has_meta("ground") else null) as MeshInstance3D
+	if boxes.is_empty() or mi == null:
+		return
+	var o: Array = w.get_meta("origin", [0.0, 0.0, 0.0])
+	var arr := mi.mesh.surface_get_arrays(0)
+	var V: PackedVector3Array = arr[Mesh.ARRAY_VERTEX]
+	var I: PackedInt32Array = arr[Mesh.ARRAY_INDEX]
+	var inside := func(v: Vector3) -> bool:
+		var x: float = float(v.x) + float(o[0])
+		var z: float = float(v.z) + float(o[2])
+		for b in boxes:
+			if x >= float(b[0]) and x <= float(b[2]) and z >= float(b[1]) and z <= float(b[3]):
+				return true
+		return false
+	var keep := PackedInt32Array()
+	var dropped := 0
+	for t in range(0, I.size(), 3):
+		if inside.call(V[I[t]]) and inside.call(V[I[t + 1]]) and inside.call(V[I[t + 2]]):
+			dropped += 1
+			continue
+		keep.append(I[t]); keep.append(I[t + 1]); keep.append(I[t + 2])
+	if dropped == 0:
+		return
+	arr[Mesh.ARRAY_INDEX] = keep
+	var mat := mi.mesh.surface_get_material(0)
+	var m := ArrayMesh.new()
+	m.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arr)
+	m.surface_set_material(0, mat)
+	mi.mesh = m
+	mi.set_meta("holes", {"places": boxes.size(), "triangles_dropped": dropped})
+
+
+# static bodies for a case: its ground (the importer's ground mesh) and its buckets (the buildings' plain meshes) as
+# trimesh shapes; items (flora, massing boxes) are left without (GODOT-PLAN.md M8)
+static func collide_case(w: Node3D) -> void:
+	var meshes := []
+	var g = w.get_meta("ground") if w.has_meta("ground") else null   # (a page of its own, Strongbow's, has none)
+	if g is MeshInstance3D:
+		meshes.append(g)
+	var bk := w.get_node_or_null("Buckets")
+	if bk:
+		for b in bk.get_children():
+			if b is MeshInstance3D:
+				meshes.append(b)
+	for mi in meshes:
+		var shape: Shape3D = (mi as MeshInstance3D).mesh.create_trimesh_shape()
+		if shape == null:
+			continue
+		var body := StaticBody3D.new()
+		body.name = "Collision"
+		var cs := CollisionShape3D.new()
+		cs.shape = shape
+		body.add_child(cs)
+		(mi as MeshInstance3D).add_child(body)
 
 
 # a place's page of its own (Strongbow's arcology, godot_case.py ARCOLOGY): its case is written about the page's anchor

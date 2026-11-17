@@ -426,7 +426,7 @@ func _flora_uids(S: KratorWorldStream) -> void:
 #     on the cut's lip level, turned to face west, and the ground stands just under the page: under its plateau within
 #     PLATEAU_TOL below the lip, under its floor within FLOOR_TOL below the floor (the lip less the face). Negative: the
 #     page unturned (facing south) puts the same points on uncut ground, hundreds of metres over its floor
-const PLATEAU_TOL := 25.0
+const PLATEAU_TOL := 1.0   # Strongbow's top is the region's ground at the lip's level (the page draws no plateau of its own), falling 0.5 m to the lip
 const FLOOR_TOL := 10.0
 func _arcology(S: KratorWorldStream) -> void:
 	var p := S.place("sfgtxw10kr")

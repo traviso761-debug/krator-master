@@ -51,7 +51,10 @@ const Hc=grid((x,z)=>W.Hbare(x,z)),Hn=K.uncut(()=>grid((x,z)=>W.Hbare(x,z)));
 /* 1. the face */
 const at=(u,v)=>{const p=toXZ(u,v);return W.Hbare(p[0],p[1]);};
 out.face={lip:I.at[1],behind:at(0,-50),ahead:at(0,30),drop:at(0,-50)-at(0,30),floorAt200:at(0,200),pageFloor:I.floor,
- pin:W.Hbare(I.pin[0],I.pin[1]),pinV:K.local(I.pin[0],I.pin[1])[1]};
+ pin:W.Hbare(I.pin[0],I.pin[1]),pinV:K.local(I.pin[0],I.pin[1])[1],
+ /* the pad meets the page's plateau flush at its back edge and its sides (a walker steps on without a step) */
+ edges:[at(0,C.rec0-C.back+6),at(C.pageHalf-5,-800),at(-(C.pageHalf-5),-800)].map(h=>h-I.at[1]),
+ rims:[at(0,C.rec0-C.back-6),at(C.pageHalf+5,-800),at(-(C.pageHalf+5),-800)].map(h=>h-I.at[1])};
 /* 2. lowers only */
 let up=0,deep=0;for(let k=0;k<Hc.length;k++){if(Hc[k]>Hn[k]+1e-6)up++;deep=Math.max(deep,Hn[k]-Hc[k]);}
 out.lowers={higher:up,deepest:deep,cells:Hc.length,touched:wt.reduce((a,w)=>a+(w>0),0)};
@@ -62,7 +65,7 @@ const bed=[];let rise=0,end=null;for(let v=40;v<=C.maxV;v+=G){const h=at(0,v),n=
  if(bed.length>1&&h>bed[bed.length-2]+1e-6)rise++;}
 out.gorge={samples:bed.length,rises:rise,ends:end,top:bed[0],last:bed[bed.length-1]};
 /* negative 3: the pad tilted back from the lip */
-const pd=C.padDrop;C.padDrop=-pd;const Hb=grid((x,z)=>W.Hbare(x,z));C.padDrop=pd;
+const pd=C.padDrop;C.padDrop=-6;const Hb=grid((x,z)=>W.Hbare(x,z));C.padDrop=pd;
 out.negPits=pits(Hb);out.negHeld=held(Hb,core);
 /* 4. the water */
 const R=W.riverLines(40);let rp=0,moved=0,inCut=0;
@@ -106,6 +109,9 @@ def main():
        'the site stays on the top: its pin %.0f m behind the lip at %.1f m; the Sultanate\'s road (%.0f km) ends at %.1f m, none of it ahead of the lip'
        % (-f['pinV'], f['pin'], R['length_m'] / 1000, end[2]))
     ok(not top(f['ahead']), 'negative: the ground 30 m ahead of the lip (%.1f m) is not the top' % f['ahead'])
+    ok(all(-0.05 < e <= 0 for e in f['edges']) and all(abs(r) < 0.05 for r in f['rims']),
+       'Strongbow\'s top is level with the lip at its back edge and both sides: %s m inside, %s m outside (the page\'s yard and post stand on it)'
+       % (', '.join('%.2f' % e for e in f['edges']), ', '.join('%.2f' % r for r in f['rims'])))
     ok(L['higher'] == 0 and L['touched'] > 0, 'it only lowers: %d of %d cells touched, none higher than the land, the deepest cut %.0f m'
        % (L['touched'], L['cells'], L['deepest']))
     hc, hl, g = o['heldCut'], o['heldLand'], o['gorge']
@@ -114,7 +120,7 @@ def main():
        % (o['core'], hc['coreWet'], hc['coreMax'], hc['volume'], hl['volume'], hc['max'], hl['max'], o['pitsCut']['n'], o['pitsLand']['n'],
           g['top'], g['last'], g['samples'], g['ends'] or -1))
     nh = o['negHeld']
-    ok(nh['coreWet'] > 0, 'negative: the pad tilted back from the lip would hold water on %d of its cells, %.1f m deep at %s'
+    ok(nh['coreWet'] > 0, 'negative: the pad tilted back 6 m from the lip would hold water on %d of its cells, %.1f m deep at %s'
        % (nh['coreWet'], nh['coreMax'], nh['coreAt']))
     w = o['water']
     ok(w['riverPoints'] > 0 and w['moved'] == 0 and w['inCut'] == 0 and w['wetCells'] == 0,

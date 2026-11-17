@@ -89,8 +89,8 @@ var SITE_SPEC={region:'oidong-highrift',world:1311634,bridges:{culture:'order'},
    coast), here in the sites' spec so the bake (core/world/bake_sites.py), the page and the Godot export read one ground.
    In the page's frame turned to the site (OHR_CUT.ry: the page's +z, its front, to the region's west), its lip 150 m in
    front of the pin (the pin stays on the plateau), u along the face and v ahead of it from the lip:
-     behind the lip (the page's plateau, 1.7 km deep)  a pad 1 m under the lip's level, falling 1 % toward the lip (17 m):
-                                                      it drains over the edge, never back into the plateau
+     behind the lip (1.6 km, Strongbow's top: the page  the pad at the lip's level at its back and sides, 0.5 m under it
+     draws no plateau of its own there)                at the lip's middle: it drains over the edge, never back
      at the lip, 40 to 20 m behind the page's face    the step down, behind the page's own cliff
      ahead (the page's floor and town, 1.1 km)         1 m under the page's floor (the lip less 900 m), falling 0.4 % west,
                                                       and on as a gorge, narrowing to 450 m, whose bed falls the same until
@@ -102,7 +102,7 @@ var SITE_SPEC={region:'oidong-highrift',world:1311634,bridges:{culture:'order'},
    anchor stands (openworld/oidong-highrift/tools/godot_case.py). */
 var OHR_CUT=(function(){'use strict';
 const W=WORLD,C={site:'sfgtxw10kr',px:[1001,1596],ry:-Math.PI/2,ahead:150,lip:900,half:1150,sideB:600,gorgeHalf:450,gorgeB:300,town:1100,taper:2500,
- back:1700,backB:1000,rec0:-40,rec1:-20,padDrop:17,floorSlope:.004,maxV:14000,river:[500,900]};
+ back:1596,backB:1000,pageHalf:1100,rec0:-40,rec1:-20,padDrop:.5,floorSlope:.004,maxV:14000,river:[500,900]};
 const smooth=(a,b,x)=>{let t=(x-a)/(b-a);t=t<0?0:t>1?1:t;return t*t*(3-2*t);},lerp=(a,b,t)=>a+(b-a)*t;
 let P=null,LIPH=null,busy=false;
 /* the page's anchor (its lip at the bay's centre) stands C.ahead m in front of the pin, so the pin (the site's own point,
@@ -114,9 +114,18 @@ function frame(){if(P)return P;const p=W.fromPx(C.px[0],C.px[1]),c=Math.cos(C.ry
 /* region (x, z) to the page's frame about the pin: u along the face, v ahead of the lip */
 function local(x,z){const F=frame(),dx=x-F.x,dz=z-F.z;return [dx*F.c-dz*F.s,dx*F.s+dz*F.c];}
 const floorAt=v=>LIPH-C.lip-1-C.floorSlope*(v-C.rec1);
-function target(v){
- if(v<=C.rec0)return LIPH-1-C.padDrop*(1-Math.min(C.rec0-v,C.back)/C.back);
- if(v<C.rec1)return lerp(LIPH-1-C.padDrop,floorAt(C.rec1),smooth(0,1,(v-C.rec0)/(C.rec1-C.rec0)));
+/* the pad under the page's plateau: a shallow bowl, flush with the plateau (the lip's level) at its back and side edges, so
+   a walker steps from the region's ground onto the page's plateau without a step, falling to padDrop under it at the
+   lip's middle, so it drains forward over the edge (never back into the plateau) */
+/* the page draws no plateau of its own behind the lip (its plateau is its far ground, which the export leaves out:
+   godot/tests/export/oidong_walk_test.gd found the region's ground under every ray), so the region's ground is
+   Strongbow's top: the pad stands at the lip's level, where the page's yard and post stand, falling padDrop to the lip
+   to drain (0.5 m over 1.6 km) */
+const padAt=(u,v)=>C.rec0-v>=C.back||Math.abs(u)>=C.pageHalf?LIPH:
+ LIPH-C.padDrop*(1-(C.rec0-v)/C.back)*(1-smooth(C.pageHalf-300,C.pageHalf,Math.abs(u)));
+function target(u,v){
+ if(v<=C.rec0)return padAt(u,v);
+ if(v<C.rec1)return lerp(padAt(u,C.rec0),floorAt(C.rec1),smooth(0,1,(v-C.rec0)/(C.rec1-C.rec0)));
  return floorAt(v);}
 function weight(x,z){const L=local(x,z),u=Math.abs(L[0]),v=L[1];
  if(v<C.rec0-C.back-C.backB||v>C.maxV)return 0;
@@ -126,7 +135,7 @@ function weight(x,z){const L=local(x,z),u=Math.abs(L[0]),v=L[1];
  if(w<=0)return 0;
  const ch=W.carveAt(x,z);if(ch)w*=smooth(C.river[0],C.river[1],ch.d);
  return w;}
-function cut(x,z,h){if(busy)return h;frame();const w=weight(x,z);if(w<=0)return h;const T=target(local(x,z)[1]);return h>T?h-w*(h-T):h;}
+function cut(x,z,h){if(busy)return h;frame();const w=weight(x,z);if(w<=0)return h;const L=local(x,z),T=target(L[0],L[1]);return h>T?h-w*(h-T):h;}
 const prevLand=W.landHook;
 W.landHook=(x,z,h,mw)=>cut(x,z,prevLand?prevLand(x,z,h,mw):h);
 const prevClear=W.clearHook;
