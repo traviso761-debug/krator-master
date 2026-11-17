@@ -1,8 +1,8 @@
 // ================================================================= HOST — Krator's sky: the shared sky (core/atmos/sky) at the station's site
-// (station 3, the skarn-marble cliffs) As the bay's page (src/89s), sited at the station's px on map 5.1 (739.6, 995: the Almua-Voth coast),
+// (station 3, the skarn-marble cliffs) As the bay's page (src/89s), sited at the station's px on map 5.1 (734, 998: the plan's spot),
 // the air the plan gives (1.92 atm; Csb, the dry summer: less humid than the bay's jungle, few clouds); the page opens at 06:00 on game
 // start's day (#hour=, #day=, #time=run move it). The weather is the dry-summer coast's (core/atmos's selector; it starts clear); height
-// fog with a thin sea mist under the cliffs at dawn; no fog belt (the bay's rainforest slope is not here).
+// fog with a thin mist on the raised platforms at dawn; no fog belt (the bay's rainforest slope is not here).
 const SKY_DAY0=(()=>{const m=/[?&#]day=([^&#]*)/.exec(location.search+location.hash),d=m?+decodeURIComponent(m[1]):0;return isFinite(d)?d:0;})();
 const skyHostClock=()=>typeof KHOST!=='undefined'&&KHOST.host?KHOST.host.clock:null;
 const SKY_CLOCK={get hour(){const c=skyHostClock();return c?c.hour:ATMOS.SKY.viewHour;},get day(){const c=skyHostClock();return SKY_DAY0+(c?c.day||0:0);},

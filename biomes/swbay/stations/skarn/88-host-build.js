@@ -1,5 +1,5 @@
 // ================================================================= HOST — build (station 3, the skarn-marble cliffs)
-// The order the bay's page follows (src/88): the host's works first (85: the mole, the breakwater, the visor, the cut blocks fill OBSTACLES
+// The order the bay's page follows (src/88): the host's works first (85: the visor, the cut blocks fill OBSTACLES
 // and the registry), then the kit (SWBAY.build: its trees, floor and fauna by the fields of 45), then the trees the host puts on the
 // ledges (85 ledgeTrees, SWBAY.treeAt), one bake, the impostors, the terrain's horizon shadows.
 window._biome=null;
@@ -18,6 +18,7 @@ window._biome=null;
   window._horizon={ms:Math.round(performance.now()-t1),n:HZ.n};KHORIZON.shade(MAT_GROUND,HZ);
   window._horizon.mats=KHORIZON.shadeScene(scene,HZ,{filter:m=>!(m.userData&&m.userData.farField)});}catch(e){reportErr('horizon: '+e.stack);}}
  window._instances=b.inst;window._bakeCalls=b.calls;window._buildMs=Math.round(performance.now()-t0);
- REGISTER({name:'The Almua skarn-marble harbour cliffs (showcase station 3)',x:CENTER[0],z:CENTER[1],y:-60,r:TERR.R*1.42,h:420});
- REGISTER({name:'The marble headland (contact-marble, quarried)',key:'land.headland',kind:'landform',...(()=>{const p=xzOf(900,-120);return{x:p[0],z:p[1]};})(),y:-20,r:260,h:300});
- REGISTER({name:'The karst spring\'s outfall',key:'water.spring',kind:'water',x:SPRING.x,z:SPRING.z,y:-1,r:22,h:9});})();
+ REGISTER({name:'The Almua skarn-marble cliffs, raised (showcase station 3)',x:CENTER[0],z:CENTER[1],y:UO-120,r:TERR.R*1.42,h:420});
+ REGISTER({name:'The marble headland (contact-marble, a former sea cliff, quarried)',key:'land.headland',kind:'landform',...(()=>{const p=xzOf(900,-120);return{x:p[0],z:p[1]};})(),y:UO-45,r:260,h:160});
+ REGISTER({name:'A raised sea stack (the old tide\'s notch at its foot)',key:'land.stack',kind:'landform',ground:true,x:STACK.x,z:STACK.z,y:STACK.base-2,r:STACK.r1+1,h:STACK.h+4});
+ REGISTER({name:'The karst spring\'s outfall',key:'water.spring',kind:'water',x:SPRING.x,z:SPRING.z,y:Uat(SPRING.x,SPRING.z)-3,r:22,h:12});})();

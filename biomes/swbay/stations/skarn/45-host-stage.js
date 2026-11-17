@@ -1,21 +1,24 @@
 // ================================================================= HOST — stage: showcase station 3, the Almua skarn-marble harbour cliffs
 // (PLAN.md, "Showcase Station: Almua Skarn-Marble Harbour Cliffs"; openworld/GEOLOGY-STATIONS-5.1.md, row 3). The kit's own species,
 // floor and fauna (src/50-75) on this station's stage, which replaces the bay's ideal-type host (src/45, 85-89, 99).
-// THE SITE ON MAP 5.1 (today's ground, before Gemini's reshaping): the plan's spot, px 734,998, is 260 m up (-1,240 m) and 15 km
-// inland on today's raster; the nearest shore to it is the Almua-Voth coast at px ~739.6,995 (the Ring Sea at -1,500.2 m), running
-// NNW (az ~328) with the sea to the ENE. The page stands there (stations/skarn/region.json, biomes/godthrone/tools/region.py) and
-// draws the plan's coast on it: its 180 m quarried cliffs are a sharpening of the raster's 2 km cells (KNOWN_ISSUES.md: the map change
-// for the scale-model queue).
-// THE FRAME: x east, z SOUTH, y up, metres; the origin is the eye's mole head; y 0 IS THE SEA (the plan's -1,499 m datum, the model's
-// -1,500.2 m). Coast coordinates: a along the coast (NNW, +), b across it (+ inland, WSW).
-//   the SHELF FORESHORE   SE of a ~260: the carbonate shelf (KSTRATA carbonate-shelf) a few metres over the sea, its front cut under
-//                         by the tide into a visor (85-host-quarry.js draws the lip), the karst spring's pool on it spilling over
-//   the COVE              a 260-700: the quarry harbour, its walls rising NW from the shelf into the marble
-//   the HEADLAND          a 700-1100: the contact marble (KSTRATA contact-marble), a 34 m sea cliff to the harbour bench (-1,465 m),
-//                         then the main cliff to ~214 m, quarry-stepped on its south flank (the face the eye looks at), its crown
-//                         at ~240 m (-1,260 m) under the plateau's savannah
-//   the MOLE              the ancient quarry mole the eye stands on (+12.3 m, the eye at +14 m), and the outer breakwater off the
-//                         headland's tip (85-host-quarry.js); both are in terrainH (the walker and the probe stand on them), drawn as blocks
+// THE SITE ON MAP 5.1 (today's ground, before Gemini's reshaping): exactly the plan's px 734,998 (the owner, 2026-11-17: "move to exact
+// spot"), 260 m over the Ring Sea (-1,240 m) and ~13 km from its shore, on the gentle upland that falls north-east (4-5 degrees at the
+// steepest, ~16 m a km near the spot) to the Almua-Voth coast. THE LAND HAS RISEN (the owner: "terrain raising over time like in
+// nwbay", whose marine limestone stands hundreds of metres over today's sea): the plan's harbour cliffs are FORMER SEA CLIFFS, lifted
+// with the benches the sea cut at their feet. The page reads them off the map's own ground: the old shoreline's level U is the model's
+// height where the shoreline runs (stations/skarn/region.json, biomes/godthrone/tools/region.py), and every profile below is a height
+// over U; past ~1.9 km the ground is the model's.
+// THE FRAME: x east, z SOUTH, y up, metres, y 0 the Ring Sea (the plan's -1,499 m datum, the model's -1,500.2 m); the origin is the plan's
+// spot, where the eye stands on a raised sea stack. Coast coordinates: a along the old shore (NNW, +), b across it (+ inland, WSW).
+//   the RAISED PLATFORMS  seaward (ENE) of the old shoreline: T1, the wave-cut platform the eye's stack stands on, ~380 m wide; a fossil
+//                         cliff ~38 m down to T0; past ~1 km the model's ground on toward the sea
+//   the SHELF             SE of a ~260: the carbonate shelf (KSTRATA carbonate-shelf) 3.8 m over T1, its front the old tide's visor and
+//                         notch (85-host-quarry.js draws the lip), the karst spring's pool on it spilling over the visor onto T1
+//   the COVE              a 260-700: a fossil cove, its walls rising NW from the shelf into the marble
+//   the HEADLAND          a 700-1100: the contact marble, a fossil sea cliff 34 m to THE RAISED WAVE-CUT BENCH (+34 m over T1, its own
+//                         notch at its back), then the main cliff to ~85 m, quarry-stepped on its south flank (the face the eye looks
+//                         at), its crown ~10 m over that, easing back to the model's upland
+//   the STACK             a raised sea stack at the spot, 14 m over T1 (the plan's +14 m eye), its foot notched by the old tide
 const {TAU,clamp,lerp,mix,smooth}=BIO.fn;
 var SWBAY_BAY={hue:0.47};   /* the kit's bay colour (50 reads it before it loads): the sound's turquoise */
 var SWBAY_TEMPLE_H=78;      /* the canopy ceiling on this windward coast (50: every canopy height follows): prism gums 59-78 m, baobabs 33-54 m */
@@ -39,7 +42,7 @@ const fill=new THREE.DirectionalLight(0xb4ccd0,.28);fill.position.set(-900,400,-
 
 // ---------------------------------------------------------------- the frame and the coast
 const WORLD=73998;   /* this station's seed: every draw below is KRAND's, hashed from it */
-const SITE={px:739.6,py:995.0,plan:[734,998],seaAbs:-1500.19,datum:-1499};
+const SITE={px:734,py:998,plan:[734,998],seaAbs:-1500.19,datum:-1499};
 const NZ=(x,z,f,seed,oct)=>KRAND.fbm(x*f+.31,.57,z*f-.13,oct==null?3:oct,seed)-.5;
 const AZ_T=328*Math.PI/180,TV=[Math.sin(AZ_T),-Math.cos(AZ_T)],NV=[TV[1],-TV[0]];   /* along the coast (NNW) and across it (inland, WSW) */
 const xzOf=(a,b)=>[a*TV[0]+b*NV[0],a*TV[1]+b*NV[1]],aOf=(x,z)=>x*TV[0]+z*TV[1],bOf=(x,z)=>x*NV[0]+z*NV[1];
@@ -80,50 +83,61 @@ const marbleK=(x,z)=>smooth(250,470,aOf(x,z)+50*NZ(x,z,.003,11,2));
 const quarryK=a=>smooth(680,730,a)*smooth(930,875,a);
 const ALONG=(a,seed,f)=>KRAND.fbm(a*f+.17,seed*.013,.29,2,seed)-.5;   /* 1D noise along the coast */
 const QSTEP={rise:15,tread:9,lip:4};   /* a 15 m bench face, battered over 4 m (two cells of the 2 m ground: a sharper step drew a sawtooth on the diagonal face), a 9 m tread, 5 m of it flat */
-// the marble coast's profile at inland distance d: the deep sound, the 34 m sea cliff, the harbour bench, the main cliff (natural, or
-// stepped where the quarry is), the crown, the plateau. The cliff's top wanders 200-226 m, its crown 26 m over it
-function marbleH(d,a,x,z){
- if(d<0)return -2-26*smooth(0,22,-d)-22*smooth(40,500,-d);
- if(d<1.8)return -2+36*smooth(.2,1.8,d);
- const q=quarryK(a),wb=22+12*ALONG(a,21,.006)+20*q,d0=1.8+wb,top=213+14*ALONG(a,22,.004);
+// THE RAISED PLATFORMS seaward of the old shoreline (d < 0), as heights over U: T1 falling gently seaward, ragged, then a fossil cliff
+// ~38 m down to T0 at ~380 m out (its width wandering), then the model's own ground (rr: the model over U) from ~0.6 to 1.5 km out
+const T1W=a=>380+60*ALONG(a,26,.003);
+function platformH(d,a,x,z,rr){const s=-d,w=T1W(a);
+ const h=-.6*smooth(0,8,s)-.012*Math.max(0,s-8)-38*smooth(w-10,w+10,s)+.4*NZ(x,z,.06,27,2);
+ return mix(h,rr,smooth(600,1500,s));}
+// the marble's profile over U at inland distance d: the fossil sea cliff to THE RAISED BENCH (+34 m), the main cliff (natural, or stepped
+// where the quarry is) to ~85 m, the crown ~10 m over it, the model's upland behind (rr)
+function marbleH(d,a,x,z,rr){
+ if(d<0)return platformH(d,a,x,z,rr);
+ if(d<1.8)return -.6+34.6*smooth(.2,1.8,d);
+ const q=quarryK(a),wb=22+12*ALONG(a,21,.006)+20*q,d0=1.8+wb,top=85+8*ALONG(a,22,.004);
  if(d<d0)return 34+.015*(d-1.8)+.35*NZ(x,z,.21,23,2);
- const s=d-d0,run=20+8*ALONG(a,24,.008);
+ const s=d-d0,run=12+5*ALONG(a,24,.008);
  // natural: a near-vertical face, its lower third battered out
  const nat=s<run?34+(top-34)*smooth(0,1,Math.pow(s/run,.85)):top;
  // the quarry: QSTEP.rise m risers, QSTEP.tread m treads, the lip of each a QSTEP.lip m round
  const nst=Math.round((top-34)/QSTEP.rise),k=Math.floor(s/QSTEP.tread),f=s-k*QSTEP.tread,qh=k>=nst?top:34+QSTEP.rise*(k+smooth(QSTEP.tread-QSTEP.lip,QSTEP.tread,f));
  const qrun=nst*QSTEP.tread,face=mix(nat,Math.min(qh,top),q),s1=s-mix(run,qrun,q);
  if(s1<0)return face;
- return top+26*smooth(0,45,s1)+30*smooth(40,1600,s1)+10*NZ(x,z,.0025,25,3)*smooth(0,80,s1);}
-// the shelf's profile: a shallow bed, the notch floor under the visor, the shelf a few metres up, a low bluff, the rise inland
-function shelfH(d,a,x,z){
- if(d<0)return -.5-6*smooth(0,60,-d)-24*smooth(60,700,-d);
+ return mix(top+10*smooth(0,45,s1)+6*NZ(x,z,.0025,25,3)*smooth(0,80,s1),rr,smooth(150,1000,s1));}
+// the shelf's profile over U: the notch's floor under the visor, the shelf 3.8 m up, a low bluff, the model's upland behind
+function shelfH(d,a,x,z,rr){
+ if(d<0)return platformH(d,a,x,z,rr);
  if(d<1.4)return .35;
  const top=3.8+.15*ALONG(a,31,.02);
  if(d<1.9)return mix(.35,top,smooth(1.4,1.9,d));
- return top+.006*(d-1.9)+.45*NZ(x,z,.09,32,2)*smooth(2,8,d)+36*smooth(240,310,d)+150*smooth(450,2300,d)+14*NZ(x,z,.002,33,3)*smooth(200,500,d);}
-// the scale model's relief past the map (REGION, 45a5): the model's land as it is, its water cells as a sea floor 40 m down
+ return mix(top+.006*(d-1.9)+.45*NZ(x,z,.09,32,2)*smooth(2,8,d)+30*smooth(240,310,d),rr,smooth(400,1400,d));}
+// the scale model's relief (REGION, 45a5): the model's land as it is, its water cells as a sea floor 40 m down
 const SEA_FLOOR=-40;
 function regionY(x,z){if(typeof REGION==='undefined'||!REGION)return SEA_FLOOR;const y=REGION.y0+REGION.h(x,z)-SITE.seaAbs;return y>=2?y:mix(SEA_FLOOR,y,smooth(-1,2,y));}
-function localH(x,z){const d=SDF(x,z),a=aOf(x,z),m=marbleK(x,z);
- const h=m<=0?shelfH(d,a,x,z):m>=1?marbleH(d,a,x,z):mix(shelfH(d,a,x,z),marbleH(d,a,x,z),m);
- // past ~1.9 km from the station's middle the ground eases onto the model's (the far ring then carries it on: 45b)
+// U: the old shoreline's level where a point's shore runs (the model's height at the foot of the point's perpendicular to the shoreline)
+function Uat(x,z){const d=SDF(x,z);return regionY(x-NV[0]*d,z-NV[1]*d);}
+function localH(x,z){const d=SDF(x,z),a=aOf(x,z),m=marbleK(x,z),U=regionY(x-NV[0]*d,z-NV[1]*d),rr=regionY(x,z)-U;
+ const h=U+(m<=0?shelfH(d,a,x,z,rr):m>=1?marbleH(d,a,x,z,rr):mix(shelfH(d,a,x,z,rr),marbleH(d,a,x,z,rr),m));
+ // past ~1.9 km from the station's middle the ground is the model's (the far ring then carries it on: 45b)
  const r=Math.max(Math.abs(x-CENTER[0]),Math.abs(z-CENTER[1])),k=smooth(1900,2580,r);
  return k<=0?h:mix(h,regionY(x,z),k);}
 // THE KARST SPRING on the shelf (W.karstSpring, 89w): its pool 15 m in from the visor's lip at a 230, its bowl kept by the ground
 const SPRING=(function(){const a=232;let lo=0,hi=300;for(let i=0;i<40;i++){const b=(lo+hi)/2,p=xzOf(a,b);if(SDF(p[0],p[1])<15)lo=b;else hi=b;}
  const p=xzOf(a,(lo+hi)/2);let l0=0,l1=300;for(let i=0;i<40;i++){const b=(l0+l1)/2,q=xzOf(a,b);if(SDF(q[0],q[1])<.2)l0=b;else l1=b;}
  const lip=xzOf(a,(l0+l1)/2);return{x:p[0],z:p[1],r:6.5,y0:null,lip,dir:[-NV[0],-NV[1]]};})();
+// THE RAISED SEA STACK at the spot: 14 m over the platform, its top flat for the eye (the plan's +14 m), its foot notched by the old tide
+const STACK={x:0,z:0,r0:10.5,r1:13.5,h:14,base:null};
+// THE PLUNGE POOL at the foot of the spring's fall, on T1 (89w): a bowl the ground keeps for it (2.4 m out from the visor's lip)
+const POOL=(function(){const l=SPRING.lip,dir=SPRING.dir;return{x:l[0]+dir[0]*3.2,z:l[1]+dir[1]*3.2,r:4.2,y0:null};})();
 function groundH(x,z){let h=localH(x,z);const S=SPRING,d=Math.hypot(x-S.x,z-S.z);
  if(d<S.r*1.6){if(S.y0==null)S.y0=localH(S.x,S.z);h=Math.min(h,mix(S.y0-1.4,h,smooth(S.r*.85,S.r*1.6,d)));}
+ const dp=Math.hypot(x-POOL.x,z-POOL.z);if(dp<POOL.r*1.6){if(POOL.y0==null)POOL.y0=localH(POOL.x,POOL.z);h=Math.min(h,mix(POOL.y0-1,h,smooth(POOL.r*.8,POOL.r*1.6,dp)));}
+ const ds=Math.hypot(x-STACK.x,z-STACK.z);if(ds<STACK.r1+1.2){if(STACK.base==null)STACK.base=localH(STACK.x,STACK.z);
+  h=Math.max(h,STACK.base+STACK.h*smooth(STACK.r1,STACK.r0,ds+.8*NZ(x,z,.3,29,2)));}
  return h;}
-// THE MASONRY in terrainH (85-host-quarry.js draws it): the mole, from the SE shore out north to the eye; the outer breakwater off the
-// headland's tip. Each a stepped section: its tiers [half-width, top] from the crest down
-const MOLE=(function(){let lo=0,hi=400;const a=-145;for(let i=0;i<40;i++){const b=(lo+hi)/2,p=xzOf(a,b);if(SDF(p[0],p[1])<10)lo=b;else hi=b;}
- const r=xzOf(a,(lo+hi)/2);return{name:'The quarry mole',a:[r[0],r[1]],b:[0,0],tiers:[[6,12.3],[9.5,8.4],[13,4.5],[16.5,.9]],round:true};})();
-const BREAKWATER={name:'The outer breakwater',a:xzOf(975,-300),b:xzOf(790,-525),tiers:[[4,4.2],[7.5,1.3]],round:true};
-const MASONRY=[MOLE,BREAKWATER];
-MASONRY.forEach(M=>{const ex=M.b[0]-M.a[0],ez=M.b[1]-M.a[1];M.L=Math.hypot(ex,ez);M.u=[ex/M.L,ez/M.L];M.W=M.tiers[M.tiers.length-1][0];});
+// THE MASONRY in terrainH (85-host-quarry.js draws it): none on this station since the re-siting (2026-11-17: the quarry mole and the
+// outer breakwater stood in a sea the spot does not have); the mechanism stays for a later structure
+const MASONRY=[];
 function masonryAt(x,z){let best=-1e9,hit=null;for(const M of MASONRY){const px=x-M.a[0],pz=z-M.a[1],t=px*M.u[0]+pz*M.u[1];if(t<-M.W||t>M.L+M.W)continue;
   const c=t>M.L?Math.hypot(x-M.b[0],z-M.b[1]):Math.abs(px*M.u[1]-pz*M.u[0]);if(t<0||c>M.W)continue;
   for(const T of M.tiers)if(c<=T[0]){if(T[1]>best){best=T[1];hit=M;}break;}}
@@ -134,12 +148,12 @@ const waterH=()=>0;
 function slopeAt(x,z,r){r=r==null?1.5:r;return Math.max(Math.abs(groundH(x+r,z)-groundH(x-r,z)),Math.abs(groundH(x,z+r)-groundH(x,z-r)))/(2*r);}
 
 // ---------------------------------------------------------------- the climate fields the biome asks for (upland, wet, salt, flow)
-// Csb at 1.92 atm: a dry summer, the sea's air on the crown. upland by height (.2 at the sea, .57 on the crown at 240 m: the bay's savannah
-// up there, gate baobabs and monkey puzzles); wet .36 on the coast, more in the cove's shelter, the spring's ground soaked; salt in the spray
+// Csb at 1.92 atm: a dry summer. upland by height over the old shoreline (.2 on the platforms, ~.35 on the crown: the plan's ledges'
+// baobabs and puzzles are the host's, 85); wet .36, more in the cove's shelter, the spring's ground soaked; no salt (the sea is 13 km off)
 const springK=(x,z)=>smooth(46,8,Math.hypot(x-SPRING.x,z-SPRING.z));
 const FIELD={
- upland:(x,z)=>clamp(.2+groundH(x,z)/650,0,1),
+ upland:(x,z)=>clamp(.2+(groundH(x,z)-Uat(x,z))/650,0,1),
  wet:(x,z)=>{const a=aOf(x,z),cove=smooth(280,420,a)*smooth(760,640,a);return clamp(.36+.14*cove+.5*springK(x,z)+.08*NZ(x,z,.004,41,2),0,1);},
- salt:(x,z)=>{const h=groundH(x,z);return clamp(.4*smooth(9,1.5,h)*smooth(-2,4,h),0,1);},
+ salt:()=>0,
  flow:(x,z)=>{const S=SPRING,lx=S.lip[0]-S.x,lz=S.lip[1]-S.z,L=Math.hypot(lx,lz),t=clamp(((x-S.x)*lx+(z-S.z)*lz)/(L*L),0,1),d=Math.hypot(x-S.x-lx*t,z-S.z-lz*t);return smooth(9,2,d);}};
 
