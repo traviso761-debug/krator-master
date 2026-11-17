@@ -49,4 +49,25 @@ ok(new Set(lifts.map(e=>e.lift)).size===S.lifts.length,'every lift is a ride on 
 {const d=R.doors.find(q=>/gatehouse/.test(q.id)&&/yard/.test(q.id)),d2=R.doors.find(q=>/ramp\.order/.test(q.id)),B=bodies({lockDoors:[d.id,d2.id]}),m=main(B);
  const gh=R.rooms.filter(r=>r.part==='sb.lip.gatehouse'&&N.room[r.id]),off=gh.filter(r=>B(N.room[r.id])!==m).length;
  ok(off===gh.length,'negative: the gatehouse\'s two doors locked, none of its '+gh.length+' rooms is on the body ('+off+' off)');}
+// ---- the people: places, roles and households declared into core/simulation (SB_SIM.declare) ---------------------------------
+['core/clock/20-core-clock.js'].concat(fs.readdirSync(path.join(ROOT,'core','simulation')).filter(f=>/^77-sim-.*\.js$/.test(f)).sort().map(f=>'core/simulation/'+f)).forEach(loadF);
+const CLK={hour:6,day:0,t:0};SIM.init({seed:1647,hour:()=>CLK.hour,day:()=>CLK.day,t:()=>CLK.t,err:m=>{if(process.argv.includes('-v'))console.log('  sim: '+m);}});
+/* the nav as SIM's 'pedestrian' layer: a locked door's node and a barred stair left out; storeys apart (yWeight); a ride and a stair dearer */
+{const lockedN=new Set(N.nodes.filter(n=>n.locked).map(n=>n.id)),es=N.edges.filter(e=>!e.locked&&!lockedN.has(e.a)&&!lockedN.has(e.b));
+ SIM.nav.layer('pedestrian',{nodes:N.nodes.map(n=>({id:n.id,x:n.x,y:n.y,z:n.z,tag:n.tag})),edges:es,cost:{lift:3,stair:1.6,street:1,walk:1},yWeight:6});}
+const t1=Date.now(),D=SB_SIM.declare(SIM,{R,P,L,town:TOWN,placed:RT.placed,nav:N,census:SB_CENSUS});
+console.log('declared: '+D.places+' places, '+D.roles+' roles, '+D.pop.actors+' people in '+D.pop.beds+' beds ('+D.pop.bedsLeft+' left), '+(Date.now()-t1)+' ms');
+if(process.argv.includes('-v'))console.log('  beds by zone '+JSON.stringify(D.beds)+', town '+D.townBeds+'; places by kind '+JSON.stringify(D.byKind));
+ok(!D.problems.length,'every reference resolves (SIM.check'+(D.problems.length?': '+D.problems.slice(0,3).join('; '):'')+')');
+ok(!D.pop.homeless.length,'everyone housed ('+D.pop.actors+' people'+(D.pop.homeless.length?'; homeless roles: '+[...new Set(D.pop.homeless)].join(', '):'')+')');
+{const want=SB_CENSUS.people,tot=want.arcology.foot+want.arcology.lowerSpine+want.arcology.middleSpine+want.arcology.face+want.upperSpine+want.order+want.town;
+ ok(Math.abs(D.pop.actors-tot)<=tot*.03,'the census\'s people: '+D.pop.actors+' against '+tot+' (PLAN.md section 6)');}
+{const A=SIM.audit();ok(!A.unknownActivities.length,'every activity a schedule asks for is offered ('+(A.unknownActivities.slice(0,4).join('; ')||A.places+' places')+')');
+ const sh=A.capacity.filter(c=>c.activity!=='IDLE');ok(!sh.length,'no hour short of places for what the schedules ask'+(sh.length?' ('+sh.slice(0,4).map(c=>c.hour+'h '+c.activity+' short '+c.short+' of '+c.want).join(', ')+')':''));}
+/* every person's home and work on one body of the nav (no commute that cannot be walked) */
+{const B=bodies(),idx=SIM.nav.layers.pedestrian;let bad=0;const first=[];
+ for(const a of SIM.all('actor')){const H=SIM.R.place[a.home],Wp=a.work?SIM.R.place[a.work]:null;if(!Wp)continue;
+  const nh=SIM.nav.nearest('pedestrian',H.door.x,H.door.z,{y:H.door.y}),nw=SIM.nav.nearest('pedestrian',Wp.door.x,Wp.door.z,{y:Wp.door.y});
+  if(B(N.nodes[nh].id)!==B(N.nodes[nw].id)){bad++;if(first.length<3)first.push(a.id+' '+a.role+' '+a.home+' -> '+a.work);}}
+ ok(!bad,'every person can walk from home to work ('+(bad?bad+' cannot: '+first.join('; '):SIM.all('actor').filter(a=>a.work).length+' with work')+')');}
 console.log(fails?fails+' FAILED':'all passed');process.exit(fails?1:0);

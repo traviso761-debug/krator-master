@@ -158,4 +158,134 @@ var SB_SIM=(function(){
   for(const n of (O.stops||[])){let c=near(n.x,n.y,n.z,6,1,q=>q.tag!=='stop'&&q.tag!=='door');if(!c.length)c=near(n.x,n.y,n.z,22,1,q=>q.tag!=='stop'&&q.tag!=='door');for(const m of c.slice(0,2))edge(n,m,'walk',2);}
   if(O.walk&&O.walk.length&&o.town){const w0=O.walk[0],c=near(w0.x,w0.y,w0.z,80,6,n=>n.tag==='street');if(c[0])edge(w0,c[0],'street',6);}
   return O;}
- return {nav};})();
+
+ // ================================================================ 3-5. the places, the records, the people
+ // SB_SIM.declare(SIM, {R, P, L, town, placed, nav, census}) -> {places, roles, pop, problems}: after SIM.init and the nav layer.
+ // THE HOMES: every sleeping room (bedroom, cottage, bunkroom, crew) in a part with people, its beds a share of its zone's people
+ //   in the census (PLAN.md section 6: the foot 900 less the garrison, the lower Spine 1,400, the middle 800, the face 100; the
+ //   outcasts' 200 in the upper Spine's drums, the Order's 100 in its tower); the barracks' bunkrooms the garrison's 150; every
+ //   town building with people its people.
+ // THE WORK: a place kind a trade, from the census's `where` (the salvagers' yards, the quarry, the bazaar on the lobby's floor and
+ //   galleries, the guildhalls, the serai, the spine's workshop floors, the terraces' gardens, the barracks, the lift heads, the
+ //   girder bridges, the town's buildings by key, the farms' fields); the town's other crafts work at home.
+ // THE DAY: a schedule a sector (shifts for the garrison and the lift crews), children, elders and the households' keepers;
+ //   EAT and SLEEP at home, SOCIALIZE on the plaza, the lobby, the terraces, the serai, the town's inns and arcades (the
+ //   outcasts' on their own decks, the Order's on the Nock).
+ const ACT=['EAT','FARM','GUARD','IDLE','PLAY','REST','SLEEP','SOCIALIZE','TRADE','WORK','WORSHIP'];
+ const day=(w,o)=>{o=o||0;return [[0,'SLEEP'],[6+o,'EAT'],[7+o,w],[12+o,'EAT'],[13+o,w],[18+o,'SOCIALIZE'],[21+o,'SLEEP']];};
+ const shift=(w,h0)=>{const s=[];for(let h=0;h<24;h++){const k=(h-h0+24)%24;s.push(k<8?w:k<9?'EAT':k<16?'SLEEP':k<17?'EAT':'SOCIALIZE');}return s;};
+ function declare(SIM,o){const R=o.R,P=o.P,L=o.L,N=o.nav,C=o.census,T=o.town,PT={};for(const p of L.parts)PT[p.id]=p;
+  const at=id=>N.nodes.find(n=>n.id===id),byId=new Map(N.nodes.map(n=>[n.id,n]));
+  const roomNode=rm=>byId.get(N.room[rm.id]);
+  const out={places:0,byKind:{},problems:[]};
+  const place=(p)=>{const n=p.node;if(!n)return null;SIM.place(Object.assign({x:n.x,y:n.y,z:n.z,door:{x:n.x,y:n.y,z:n.z}},p,{node:undefined}));out.places++;out.byKind[p.kind]=(out.byKind[p.kind]||0)+1;return p;};
+  const zoneOf=part=>{const p=PT[part];if(!p)return part==='sb.crown'?'Z6':null;return p.zone==='Z0'||/^sb\.foot\./.test(part)?'foot':p.zone==='Z1'?'lowerSpine':p.zone==='Z2'?'middleSpine':p.zone==='Z3'?'outcasts':p.zone==='Z6'||p.zone==='Z5'?'order':p.zone==='Z7'?'face':p.zone==='Z9'?'lip':null;};
+  const SLEEPK=new Set(['bedroom','cottage','bunkroom','crew']);
+  // ---- the homes --------------------------------------------------------------------------------------------------------------
+  const homeRooms={};for(const rm of R.rooms){if(!SLEEPK.has(rm.kind)||!roomNode(rm))continue;const z=/barracks/.test(rm.part)?'barracks':zoneOf(rm.part);if(!z||z==='lip')continue;(homeRooms[z]=homeRooms[z]||[]).push(rm);}
+  const people={foot:C.people.arcology.foot-150,lowerSpine:C.people.arcology.lowerSpine,middleSpine:C.people.arcology.middleSpine,face:C.people.arcology.face,outcasts:C.people.upperSpine,order:C.people.order,barracks:150};
+  out.beds={};
+  for(const z in homeRooms){const rs=homeRooms[z].sort((a,b)=>a.id<b.id?-1:1),n=people[z]||0,k=rs.length;let left=n;out.beds[z]=0;
+   rs.forEach((rm,i)=>{const b=Math.floor(n*(i+1)/k)-Math.floor(n*i/k);if(b<=0)return;left-=b;out.beds[z]+=b;
+    place({id:'home:'+rm.id,kind:'home.'+z,name:rm.kind+' in '+rm.part,node:roomNode(rm),activities:{SLEEP:b,EAT:b,REST:b,WORK:b},indoor:true,access:'private',guests:{SOCIALIZE:30}});});}
+  /* the town: every building with people its home; its crafts at home */
+  out.townBeds=0;
+  for(const q of (o.placed||[])){const Lot=T.lots.find(l=>l.id===q.id);if(!Lot||!(Lot.people>0))continue;const fn=byId.get(N.front[q.id]);if(!fn)continue;
+   place({id:'home:'+q.id,kind:'home.town',name:q.item+' '+q.id,node:fn,activities:{SLEEP:Lot.people,EAT:Lot.people,REST:Lot.people,WORK:Lot.people},indoor:true,access:'private',guests:{SOCIALIZE:30}});out.townBeds+=Lot.people;}
+  // ---- the work ---------------------------------------------------------------------------------------------------------------
+  const roomsWhere=(f)=>R.rooms.filter(rm=>roomNode(rm)&&f(rm));
+  const workRooms=(kind,rooms,posts,act)=>{for(const rm of rooms)place({id:kind+':'+rm.id,kind,name:kind.slice(2)+' ('+rm.kind+')',node:roomNode(rm),activities:{[act||'WORK']:posts},indoor:true,access:'public'});};
+  const workAt=(kind,id,n,posts,act,o2)=>place(Object.assign({id:kind+':'+id,kind,name:kind.slice(2),node:n,activities:{[act||'WORK']:posts},r:8,wander:2},o2||{}));
+  /* the main body (the walk up's): an open place is put on it, never on a stray stub of street */
+  const MAIN=(()=>{const idx=new Map(N.nodes.map((n,i)=>[n.id,i])),par=N.nodes.map((_,i)=>i),fnd=i=>{while(par[i]!==i)i=par[i]=par[par[i]];return i;};
+   const lk=new Set(N.nodes.filter(n=>n.locked).map(n=>n.id));for(const e of N.edges){if(e.locked||lk.has(e.a)||lk.has(e.b))continue;par[fnd(idx.get(e.a))]=fnd(idx.get(e.b));}
+   const m=fnd(idx.get(N.walk[0].id));return new Set(N.nodes.filter((n,i)=>fnd(i)===m).map(n=>n.id));})();
+  const near=(x,y,z,f)=>{let best=null,bd=1e9;for(const n of N.nodes){if(f&&!f(n))continue;if((n.tag==='street'||n.tag==='ground')&&!MAIN.has(n.id))continue;const d=Math.hypot(n.x-x,(n.y-y)*4,n.z-z);if(d<bd){bd=d;best=n;}}return best;};
+  const W='w.';
+  workRooms(W+'yard',roomsWhere(rm=>/foot\.e\.(sheds|stores)/.test(rm.part)&&/workshop|store/.test(rm.kind)),4);
+  for(const q of L.parts.filter(p=>/^sb\.quiver\.p/.test(p.id)))workAt(W+'quarry',q.id,near(q.shape[1],0,q.shape[2],n=>n.tag==='street'),40);   /* by the quarry spoke (a street) */
+  {const T3=PT['sb.T3'];workAt(W+'liftface','T3',near(T3.shape[1]+T3.shape[3]-8,T3.y+1.6,T3.shape[2],n=>n.tag==='deck'),60);}
+  workRooms(W+'guild.salvage',roomsWhere(rm=>/foot\.e\.guild/.test(rm.part)&&!/corridor/.test(rm.kind)),3);
+  {const s=PT['sb.hall.serai'];if(s){const c=s.shape[0]==='box'?[(s.shape[1]+s.shape[2])/2,(s.shape[3]+s.shape[4])/2]:[s.shape[1],s.shape[2]];
+   workAt(W+'serai','serai',near(c[0],0,c[1],n=>n.tag==='ground'||n.tag==='walk'),90,'WORK',{});workAt('serai','serai',near(c[0],0,c[1],n=>n.tag==='ground'||n.tag==='walk'),120,'SOCIALIZE',{activities:{SOCIALIZE:120,EAT:80}});}}
+  {const w0=N.walk[2]||N.walk[0];workAt(W+'plaza','plaza',w0,70);workAt('plaza','plaza',w0,200,'SOCIALIZE',{activities:{SOCIALIZE:200,TRADE:60,PLAY:120},wander:6,r:14});}
+  /* where children play: the plaza, the terraces' decks, and the town's streets (a yard every so often along them) */
+  for(const n of [1,2,3]){const ns=N.nodes.filter(q=>q.id.indexOf('t:'+n+':deck')===0);ns.forEach((q,i)=>{if(i%9)return;workAt('play','T'+n+'.'+i,q,40,'PLAY',{wander:4});});}
+  {const st=N.nodes.filter(q=>q.tag==='street');st.forEach((q,i)=>{if(i%25)return;workAt('play','st'+i,q,40,'PLAY',{wander:4});});}
+  {const ring=N.nodes.filter(n=>(n.tag==='lobby'||(n.tag==='gallery'&&/gal\.0/.test(n.id)))&&MAIN.has(n.id));ring.forEach((n,i)=>{if(i%2)return;workAt(W+'bazaar','b'+i,n,8,'TRADE',{activities:{TRADE:30,WORK:4,SOCIALIZE:12,EAT:6}});});}
+  workRooms(W+'workshop.spine',roomsWhere(rm=>/^sb\.sp\.[56]\./.test(rm.part)&&rm.kind==='workshop'),5);
+  workRooms(W+'workshop.foot',roomsWhere(rm=>/foot\.e\.(shops|sheds)/.test(rm.part)&&rm.kind==='workshop'),4);
+  for(const n of [2,3]){const p=PT['sb.T'+n];for(let k=0;k<6;k++){const a=k/6*Math.PI*2;workAt(W+'garden','T'+n+'.'+k,near(p.shape[1]+(p.shape[3]-6)*Math.cos(a),p.y+1.6,p.shape[2]+(p.shape[3]-6)*Math.sin(a),q=>q.tag==='deck'),8,'FARM');}}
+  workRooms(W+'build.foot',roomsWhere(rm=>/foot\.back\.store/.test(rm.part)&&rm.kind==='store').slice(0,10),4);
+  workRooms(W+'barracks',roomsWhere(rm=>/barracks/.test(rm.part)&&/armoury|mess|bunkroom/.test(rm.kind)),6,'GUARD');
+  workRooms(W+'gov',roomsWhere(rm=>/foot\.w\.gov/.test(rm.part)&&!/corridor/.test(rm.kind)),2);
+  workRooms(W+'customs',roomsWhere(rm=>/foot\.w\.customs/.test(rm.part)&&!/corridor/.test(rm.kind)),2);
+  {let g=N.nodes.filter(n=>n.tag==='gallery'&&/gal\.1/.test(n.id)&&MAIN.has(n.id));if(!g.length)g=N.nodes.filter(n=>(n.tag==='gallery'||n.tag==='lobby')&&MAIN.has(n.id));g.forEach((n,i)=>{if(i%3)return;workAt(W+'scribe','s'+i,n,3);});}
+  /* the lift crews at every lift's stops (14 a lift at the foot of its run, a few at its head) */
+  for(const n of N.nodes.filter(q=>q.tag==='stop')){const top=/:0$/.test(n.id)?12:4;workAt(W+'lift',n.id,n,top);}
+  {const br=R.stairs.filter(s=>/apron\.bridge\./.test(s.id)&&!/\.0$/.test(s.id));br.forEach(s=>{const n=near(s.a[0],s.a[2],s.a[1],q=>MAIN.has(q.id));workAt(W+'bridge',s.id,n,3);});}   /* the girder bridges to the east galleries */
+  workRooms(W+'care.spine',roomsWhere(rm=>/^sb\.sp\.[56]\./.test(rm.part)&&rm.kind==='hall'&&!/\.core$/.test(rm.id)),3);
+  workRooms(W+'shrine',roomsWhere(rm=>rm.kind==='shrine'&&!/tower/.test(rm.part)),3,'WORSHIP');
+  /* the outcasts' and the Order's own */
+  workRooms(W+'outcast',roomsWhere(rm=>zoneOf(rm.part)==='outcasts'&&/store|kitchen|cottage/.test(rm.kind)),6);
+  workRooms(W+'order',roomsWhere(rm=>rm.part==='sb.tower.order'&&/hall|kitchen/.test(rm.kind)),4);
+  workRooms('order.shrine',roomsWhere(rm=>rm.part==='sb.tower.order'&&rm.kind==='shrine'),6,'WORSHIP');
+  {const nd=N.nodes.filter(n=>/g:sb\.room\.nock\.deck/.test(n.id));nd.forEach((n,i)=>{if(i%6)return;workAt('order.deck','n'+i,n,20,'SOCIALIZE',{access:'org',org:'order'});});}
+  for(const n of [4,5]){const p=PT['sb.T'+n];if(!p)continue;const ns=N.nodes.filter(q=>q.id.indexOf('t:'+n+':deck')===0);ns.forEach((q,i)=>{if(i%6)return;workAt('outcast.deck','T'+n+'.'+i,q,20,'SOCIALIZE');});}
+  /* the town: buildings by key (the census's keys), the farms' fields; inns and arcades for the evenings */
+  const lotsKey=k=>(o.placed||[]).filter(q=>q.key===k&&byId.get(N.front[q.id]));
+  const byKey=(kind,key,posts,act,o2)=>{for(const q of lotsKey(key))workAt(kind,q.id,byId.get(N.front[q.id]),posts,act,Object.assign({indoor:true},o2||{}));};
+  byKey(W+'silos','xa_scrap_silos',30);byKey(W+'inn','xa_scrap_court',8);byKey(W+'arcade','xa_scrap_bazaar',8,'TRADE',{activities:{TRADE:40,SOCIALIZE:20},indoor:false});
+  byKey(W+'granary','xa_scrap_granary',25);byKey(W+'tower','xa_scrap_tower',10,'GUARD');byKey(W+'guildhall','xa_scrap_guild_hall',40);byKey(W+'bath','xa_scrap_bath',10,'WORK',{activities:{WORK:10,SOCIALIZE:60}});
+  byKey('inn','xa_scrap_court',30,'SOCIALIZE',{activities:{SOCIALIZE:30,EAT:20}});byKey(W+'shrine.town','xa_scrap_shrine',4,'WORSHIP',{activities:{WORSHIP:40}});
+  for(const f of (T.fields||[])){const c=f.corners;if(!c||!c.length)continue;let x=0,z=0;for(const q of c){x+=q[0];z+=q[1];}x/=c.length;z/=c.length;workAt(W+'field',f.id,near(x,0,z,n=>n.tag==='street'),40,'FARM');}
+  /* the lip: the yard's stablemen and the post's toll keepers (they live in the town and ride the elevator up) */
+  {const y=N.nodes.filter(n=>n.tag==='yard');if(y.length)workAt(W+'lipyard','yard',y[Math.floor(y.length/2)],30);
+   const post=R.rooms.length&&N.walk[N.walk.length-4];if(post)workAt(W+'lippost','post',post,12,'GUARD');}
+  // ---- the records --------------------------------------------------------------------------------------------------------------
+  const roles=[],TR=new Map(C.trades.map(t=>[t.id,t]));
+  /* a trade's work kinds, in and out; a trade with none works at home */
+  const WK={cutter:[[W+'yard',W+'quarry'],[W+'quarry']],hauler:[[W+'yard',W+'lift']],glasspuller:[[W+'liftface']],guildclerk:[[W+'guild.salvage']],seraikeeper:[[W+'serai']],
+   porter:[[W+'plaza']],drover:[null,[W+'silos']],innkeeper:[null,[W+'inn']],lipyard:[null,[W+'lipyard']],stallkeeper:[[W+'bazaar']],changer:[[W+'bazaar']],merchant:[[W+'guildhall']],
+   shopkeeper:[null,[W+'arcade']],glazier:[[W+'workshop.spine']],panelwright:[[W+'workshop.spine']],bronzesmith:[[W+'workshop.foot']],cablemaker:[[W+'workshop.spine']],
+   smith:[[W+'workshop.spine']],weaver:[[W+'workshop.spine']],carpenter:[[W+'workshop.spine']],baker:[[W+'workshop.spine']],brewer:[[W+'workshop.spine']],butcher:[[W+'bazaar']],cook:[[W+'bazaar']],
+   gardener:[[W+'garden']],farmer:[null,[W+'field']],herder:[null,[W+'field']],fodder:[null,[W+'granary']],scrapbuilder:[[W+'build.foot']],mason:[[W+'build.foot']],
+   soldier:[[W+'barracks']],watch:[null,[W+'tower',W+'lippost']],governor:[[W+'gov']],customs:[[W+'customs']],lippost:[null,[W+'lippost']],scribe:[[W+'scribe']],
+   capstan:[[W+'lift']],bridgewarden:[[W+'bridge']],healer:[[W+'care.spine']],teacher:[[W+'care.spine']],priest:[[W+'shrine'],[W+'shrine.town']]};
+  const actOf=k=>/field|garden/.test(k)?'FARM':/barracks|tower|lippost/.test(k)?'GUARD':/bazaar|arcade/.test(k)?'TRADE':/shrine/.test(k)?'WORSHIP':'WORK';
+  const SOC=['plaza','serai','inn','w.bazaar','w.arcade','w.bath'];
+  const homesIn=['home.foot','home.lowerSpine','home.middleSpine','home.face'],homesOut=['home.town'];
+  const sectorOf=t=>t.sector;
+  for(const t of C.trades)for(const side of ['in','out']){const n=t[side]|0;if(!n)continue;const wk=(WK[t.id]||[])[side==='in'?0:1]||((WK[t.id]||[])[0]&&side==='out'?null:null);
+   const kinds=wk&&wk.length?wk:null,act=kinds?actOf(kinds[0]):'WORK',sec=sectorOf(t);
+   const sched=sec==='guard'&&t.id==='soldier'?null:day(act==='WORK'||act==='FARM'||act==='TRADE'||act==='WORSHIP'||act==='GUARD'?act:'WORK');
+   const R0={id:'sb.'+t.id+'.'+side,name:t.name+(side==='in'?' (the arcology)':' (the town)'),org:sec==='guard'&&t.id==='soldier'?'garrison':sec==='salvage'?'salvagers':sec==='trade'&&t.id==='merchant'?'merchants':'subjects',
+    count:n,homes:t.id==='soldier'?['home.barracks']:side==='in'?homesIn:homesOut,
+    sched:sched||shift('GUARD',6),variants:t.id==='soldier'||t.id==='capstan'?[0,8,16].map(h=>shift(t.id==='soldier'?'GUARD':'WORK',h)):[day(act,0),day(act,-1),day(act,1)],
+    prefers:Object.assign({SLEEP:{pin:'home'},EAT:{pin:'home'},REST:{pin:'home'},SOCIALIZE:{kinds:side==='in'?['plaza','serai','w.bazaar']:['inn','w.arcade','w.bath','plaza']}},kinds?{[act]:{pin:'work'}}:{WORK:{pin:'home'}})};
+   if(kinds)R0.work={kinds,act};roles.push(R0);}
+  /* the households: children, elders, the keepers of the homes (the census's shares), the outcasts, the Order */
+  const arcPeople=people.foot+people.lowerSpine+people.middleSpine+people.face,inW=C.trades.reduce((s,t)=>s+t.in,0)-150,outW=C.trades.reduce((s,t)=>s+t.out,0);
+  for(const [side,pp,w,homes,soc] of [['in',arcPeople,inW,homesIn,['plaza','serai','w.bazaar']],['out',C.people.town,outW,homesOut,['inn','w.arcade','plaza']]]){
+   const ch=Math.round(pp*C.people.children),el=Math.round(pp*C.people.elders),keep=Math.max(0,pp-w-ch-el);
+   roles.push({id:'sb.child.'+side,name:'children',org:'subjects',count:ch,homes,sched:[[0,'SLEEP'],[7,'EAT'],[8,'PLAY'],[12,'EAT'],[13,'PLAY'],[18,'EAT'],[19,'SLEEP']],speed:1.4,
+     prefers:{SLEEP:{pin:'home'},EAT:{pin:'home'},REST:{pin:'home'},PLAY:{kinds:['play','plaza']}}});
+   roles.push({id:'sb.elder.'+side,name:'elders',org:'subjects',count:el,homes,sched:[[0,'SLEEP'],[7,'EAT'],[8,'WORSHIP'],[10,'SOCIALIZE'],[12,'EAT'],[13,'REST'],[16,'SOCIALIZE'],[19,'EAT'],[20,'SLEEP']],speed:.8,
+     prefers:{SLEEP:{pin:'home'},EAT:{pin:'home'},REST:{pin:'home'},SOCIALIZE:{kinds:soc},WORSHIP:{kinds:[W+'shrine',W+'shrine.town']}}});
+   roles.push({id:'sb.keeper.'+side,name:'the households\' keepers',org:'subjects',count:keep,homes,sched:[[0,'SLEEP'],[6,'EAT'],[7,'WORK'],[9,'TRADE'],[11,'WORK'],[12,'EAT'],[13,'WORK'],[17,'SOCIALIZE'],[21,'SLEEP']],
+     prefers:{SLEEP:{pin:'home'},EAT:{pin:'home'},REST:{pin:'home'},WORK:{pin:'home'},TRADE:{kinds:side==='in'?[W+'bazaar']:[W+'arcade']},SOCIALIZE:{kinds:soc}}});}
+  roles.push({id:'sb.outcast',name:'the outcasts',org:'outcasts',count:people.outcasts,homes:['home.outcasts'],work:{kinds:[W+'outcast'],act:'WORK'},sched:day('WORK'),
+   prefers:{SLEEP:{pin:'home'},EAT:{pin:'home'},REST:{pin:'home'},WORK:{pin:'work'},SOCIALIZE:{kinds:['outcast.deck']}},_note:'the upper Spine, reached by their rope ways only (not walked): they keep to their drums and decks'});
+  roles.push({id:'sb.order',name:'the brothers and sisters of the Order',org:'order',count:people.order,homes:['home.order'],work:{kinds:[W+'order'],act:'WORK'},
+   sched:[[0,'SLEEP'],[5,'WORSHIP'],[7,'EAT'],[8,'WORK'],[12,'EAT'],[13,'WORK'],[17,'SOCIALIZE'],[19,'WORSHIP'],[21,'SLEEP']],
+   prefers:{SLEEP:{pin:'home'},EAT:{pin:'home'},REST:{pin:'home'},WORK:{pin:'work'},WORSHIP:{kinds:['order.shrine']},SOCIALIZE:{kinds:['order.deck']}}});
+  const WORLD={activities:ACT.map(id=>({id,indoor:id==='SLEEP'||id==='REST'})),
+   factions:[{id:'sultanate',name:'The Sultanate'},{id:'outcasts',name:'The outcasts'},{id:'order',name:'The Order'}],
+   orgs:[{id:'subjects',faction:'sultanate',name:'The Sultan\'s subjects'},{id:'garrison',faction:'sultanate',name:'The garrison'},{id:'salvagers',faction:'sultanate',name:'The Salvagers\' Guild'},
+    {id:'merchants',faction:'sultanate',name:'The Merchants\' Guild'},{id:'outcasts',faction:'outcasts',name:'The outcasts of the upper Spine'},{id:'order',faction:'order',name:'The Order'}],
+   relations:[{a:'sultanate',b:'order',stance:'wary'},{a:'sultanate',b:'outcasts',stance:'hostile'},{a:'outcasts',b:'sultanate',stance:'wary'}],roles};
+  SIM.load(WORLD);out.roles=roles.length;
+  out.pop=SIM.populate({prefix:'sb'});
+  out.problems=SIM.check();
+  return out;}
+ return {nav,declare,ACT};})();
