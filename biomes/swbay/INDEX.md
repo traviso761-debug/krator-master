@@ -46,4 +46,4 @@ Each station builds one page (`build.py --station <name>`) from its own fragment
 
 | Station | Fragments | KB |
 |---|---|---|
-| skarn | 45-host-stage.js, 45b-host-ground.js, 85-host-quarry.js, 88-host-build.js, 89a-host-atmos.js, 89s-host-sky.js, 89w-host-water.js, 99-host-take.js | 62 |
+| skarn | 45-host-stage.js, 45b-host-ground.js, 85-host-quarry.js, 88-host-build.js, 89a-host-atmos.js, 89s-host-sky.js, 89w-host-water.js, 99-host-take.js | 65 |

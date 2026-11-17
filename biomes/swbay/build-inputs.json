@@ -13,8 +13,8 @@
     "biomes/nwbay/tex/fernleaf.albedo.webp": "8b3cb6204b542abacb2833aad6bf3227b32688dc4e6a386e700854cb00e61cff",
     "biomes/nwbay/tex/moss.albedo.webp": "1cd5e9575f2e58608bc0c03849ad932e3beba419d8dbffc28bc4c03569659aaa",
     "biomes/nwbay/tex/pack.json": "396a7182a948a85d9cb21e86bd1a9750c9f8a158185252f261ae750260856887",
-    "biomes/swbay/KNOWN_ISSUES.md": "ba09b2f21c77d48ed766ec60f9187e387d1a71768c80255180b34f19841abf90",
-    "biomes/swbay/PORT.md": "570922b7549d0aa35c3259caf81c071eba6a73b6441a11f5c84c1a2821fae3f6",
+    "biomes/swbay/KNOWN_ISSUES.md": "cdd7b28597ed1b12597002107761e3367401d25e359cff8b23fd09bdf4022762",
+    "biomes/swbay/PORT.md": "a0b76f798e7e0f0d1ecf78762b33c9a35b92c5d0c0f626e28744c93312b7dcdf",
     "biomes/swbay/build.py": "86d20db6fdc52635518b43f890abeb0e420b42b82a76be58f15641159a0f00c2",
     "biomes/swbay/src/00-head.html": "c66b1bf104327e658c7a24c248b6631aa248f9477b1bb6ee85705d86207eabbf",
     "biomes/swbay/src/45-host-stage.js": "945626a05b73d928ff6f3a3495e55b645b322fdee360b5c7feb0cface8ac92a9",
@@ -174,8 +174,8 @@
   "build.py --station skarn": {
    "inputs": {
     "biomes/godthrone/src/45a5-host-region.js": "3251b595191c23bafaeb9c8c70e9ab88f2208dcaf030367be5882a9402b9740e",
-    "biomes/swbay/KNOWN_ISSUES.md": "ba09b2f21c77d48ed766ec60f9187e387d1a71768c80255180b34f19841abf90",
-    "biomes/swbay/PORT.md": "570922b7549d0aa35c3259caf81c071eba6a73b6441a11f5c84c1a2821fae3f6",
+    "biomes/swbay/KNOWN_ISSUES.md": "cdd7b28597ed1b12597002107761e3367401d25e359cff8b23fd09bdf4022762",
+    "biomes/swbay/PORT.md": "a0b76f798e7e0f0d1ecf78762b33c9a35b92c5d0c0f626e28744c93312b7dcdf",
     "biomes/swbay/build.py": "86d20db6fdc52635518b43f890abeb0e420b42b82a76be58f15641159a0f00c2",
     "biomes/swbay/src/00-head.html": "c66b1bf104327e658c7a24c248b6631aa248f9477b1bb6ee85705d86207eabbf",
     "biomes/swbay/src/50-biome-swbay-species.js": "153d864833b8189e553218e0a8354d42f25f09578ecdeb3df8cbe6a30ae94536",
@@ -187,16 +187,16 @@
     "biomes/swbay/src/75-biome-swbay-fauna.js": "1a5bcc366d0db0cc6b6841c0836069d934a2041495e8ba8bbc3b5d066a8d45d7",
     "biomes/swbay/src/89a-host-atmos.js": "d8e23c847d8f1b6b49194800623515ca5052c256a6eed4e956bc4941abd478e4",
     "biomes/swbay/src/99-tail.html": "65abfb642de580808a65c6ec8bf3bc2c410397558a5ac28e825accdb7c590d3b",
-    "biomes/swbay/stations/skarn/45-host-stage.js": "fdad2b5453e53b821da6d02265ea2ec83036b86a8f02e37a009302a26256b6a5",
-    "biomes/swbay/stations/skarn/45b-host-ground.js": "a1c6933decf7761187861b285a90c72c1a203a24a4c28a56fc0835820b8fe644",
-    "biomes/swbay/stations/skarn/85-host-quarry.js": "f7e1512c05ce9279d26012c6cd53ded6704201892457d3c46d20162177fdaeb3",
-    "biomes/swbay/stations/skarn/88-host-build.js": "a09737d79cbc6bf1895b60d1376504d915cf8605622ab03abd98fd489ec97e77",
+    "biomes/swbay/stations/skarn/45-host-stage.js": "daf71ac93835846bd71b9adb3fc08b2ea2a4effd33a086f5f29faf58176208d6",
+    "biomes/swbay/stations/skarn/45b-host-ground.js": "066997c7641206dd076cb558284ebe8411b9aa02ccdb62de4b23710e4d8fce6d",
+    "biomes/swbay/stations/skarn/85-host-quarry.js": "7911602b94231c3471237f7636461752d7a91a3226d6a474f66337b3502b4995",
+    "biomes/swbay/stations/skarn/88-host-build.js": "492fd1dd353e2ba997e37f4a16bb570fe040d5eca5a363536a11c9f352e436f5",
     "biomes/swbay/stations/skarn/89a-host-atmos.js": "9e57831b4399e560d20b3771018625f09c4d9116655b65e4fb455f94fa4d00e1",
-    "biomes/swbay/stations/skarn/89s-host-sky.js": "f42839a86ada75398c99cd28e60fead83c3c764a916dee2483d9a7c82ce03627",
-    "biomes/swbay/stations/skarn/89w-host-water.js": "cb7c6da426209601fadfae80bcaa9ee63906b5ffc797e62c9909e331fe302f64",
-    "biomes/swbay/stations/skarn/99-host-take.js": "9ebb6457458a73696739e4e06939f4ba8a78965c3b12886981c01450b41ccded",
-    "biomes/swbay/stations/skarn/region.json": "e337e9fa6640fd2b3dcea5b66af4d9152bae1176dd7083bc9498c77eb3a9eab0",
-    "biomes/swbay/stations/skarn/station.json": "72d891e36a731f037622f5a91c4a3f7c8f20cb3c9a9f386a842981ed12fa01ef",
+    "biomes/swbay/stations/skarn/89s-host-sky.js": "f11e39ca9f8b5c88c7f77993f5c122f872dfb00b0874783200a89b8f6d954c7e",
+    "biomes/swbay/stations/skarn/89w-host-water.js": "b8b2aa57578075ebaa50bf99c5dbbc11f0073bb81bf500cee9e7c8fc7aed5536",
+    "biomes/swbay/stations/skarn/99-host-take.js": "5c5222daf0053c7511eb9be7f9cce5a2643d64ebec64e7973fffcba4287ece23",
+    "biomes/swbay/stations/skarn/region.json": "a898d343a5acebd2e44ccccb1ee52171decc6a860a28bf704f5e88462e734243",
+    "biomes/swbay/stations/skarn/station.json": "735696fa1b5c29dab1c9e60f27eabf1a60649bd74aaf3d28cc3d0631c0ec1e25",
     "biomes/swbay/tex/bark0.albedo.webp": "398b718948721ff61f0474a3da76d944edb10bc5d0cc9316dd7c25ce08e6729b",
     "biomes/swbay/tex/bark1.albedo.webp": "9bdd4a46d46534f0ce9457cacf4ebc533681b43f7758f9b0fe169f8d71099341",
     "biomes/swbay/tex/bark2.albedo.webp": "ca51565539296a09ada58dc6b3d3070c9e045dae1ae8cf1c3e171483e54dce0e",
@@ -317,10 +317,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/swbay/dist/swbay-skarn.html": "5e0cca8c71af75106a7a6a4b1778adda93096c0ccbaadc3b5fe46acc59c71496"
+    "biomes/swbay/dist/swbay-skarn.html": "7528a250a84ee75c40e278d58e7055acee2b1f0c12c040acbb18ba305f3e0851"
    },
    "outputs_raw": {
-    "biomes/swbay/dist/swbay-skarn.html": "5e0cca8c71af75106a7a6a4b1778adda93096c0ccbaadc3b5fe46acc59c71496"
+    "biomes/swbay/dist/swbay-skarn.html": "7528a250a84ee75c40e278d58e7055acee2b1f0c12c040acbb18ba305f3e0851"
    }
   }
  }
