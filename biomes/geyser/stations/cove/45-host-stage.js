@@ -17,8 +17,8 @@
 //                   whose run-off falls straight into the surf
 //   THE BENCH       a raised wave-cut bench (+12.5 to +15 m: the spec's -1,486 m bench) over a 9 m bluff of carbonate-shelf limestone and marl
 //                   (KSTRATA's carbonate-shelf: the wave-notched visors), the acid field's bleached marl on it east of the dike
-//   THE RIM         the crater's inner wall up to its crest (~30 m), the scald line on its top: the kit's pandans and kanuka, dead snags where the
-//                   heat spread; the hyperjungle on the plateau behind (34-55 m)
+//   THE RIM         the crater's inner wall up to its crest (~55 m, the owner 2026-11-17: "raise the rim"), the scald line on its top: the kit's pandans and kanuka, dead snags where the
+//                   heat spread; the hyperjungle on its back slope and the plateau behind (32-40 m)
 //   THE DIKE        a black tibasalt dike rib (KSTRATA's tibasalt) from the rim north-east down across the bench and apron into the bay (an awash
 //                   reef), the fault trace the fluids rise along: native sulphur chimneys crust it (87), its fumaroles reek, the limestone either
 //                   side bleached and veined
@@ -51,7 +51,8 @@ const WIND=[.42,-.58];
 // ---------------------------------------------------------------- the land before the thermal ground
 const TERR={R:1400};
 const SEA=0;   // the Ring Sea (local): -1,500 m on the scale model
-const COVE={x:0,z:-10,RS:250,RC:360,crest:30,name:'The boiling cove (a phreatic explosion crater breached by the sea)'};
+const AIR_ATM=1.93;   // the spec's air (atm): the sky takes it (89) and the thermal record its boiling point (46: GEYSER.boilAt, ~119 degC)
+const COVE={x:0,z:-10,RS:250,RC:360,crest:56,name:'The boiling cove (a phreatic explosion crater breached by the sea)'};
 const CC=[COVE.x,COVE.z],RS=COVE.RS,RC=COVE.RC;
 const UO=(function(){const a=.38,b=.925,l=Math.hypot(a,b);return[a/l,b/l];})();   /* the breach: toward the sea, south-south-east (bearing ~158) */
 // a point by its bearing from the cove's centre (degrees clockwise from north) and distance
@@ -73,7 +74,7 @@ const bayH=d=>d<RS?-3-14*Math.max(0,1-(d/RS)*(d/RS)):-3;
 function crestAt(x,z,n,b){return Math.max(COVE.crest+5*(fbm(x*.006,z*.006,8821,2)-.5),b+3)*(.62+.38*smooth(.5,.05,n));}
 function rimProf(x,z,d,n,b){const ap=1.6+3.2*smooth(RS,RS+40,d)+.4*(fbm(x*.05,z*.05,8823,2)-.5),bench=12.5+2.5*smooth(RS+50,RS+82,d),cr=crestAt(x,z,n,b);
  let h=bayH(d);h=mix(h,ap,smooth(RS-6,RS+3,d));h=mix(h,bench,smooth(RS+40,RS+50,d));h=mix(h,cr,Math.pow(smooth(RS+80,RC,d),.8));
- return d<RC?h:Math.max(b,cr-(d-RC)*.22);}
+ return d<RC?h:Math.max(b,cr-(d-RC)*.14);}
 // THE DIKE: a tibasalt rib along the fault trace, bearing 50 from the rim (d 395) down across the bench and apron into the bay (d 225)
 const DIKE=(function(){const a=covePt(50,395),b=covePt(50,225);return{a,b,w:5.5,h:3.6,name:'The black dike (a tibasalt rib along the fault trace)'};})();
 function dikeAt(x,z){const a=DIKE.a,b=DIKE.b,vx=b[0]-a[0],vz=b[1]-a[1],l2=vx*vx+vz*vz;let t=((x-a[0])*vx+(z-a[1])*vz)/l2;const tc=clamp(t,0,1);
@@ -135,7 +136,7 @@ function creekAt(x,z){const L=CRH.H.get(Math.floor(x/CRH.C)*8192+Math.floor(z/CR
 // The periods are real and each a Yellowstone littoral or lake-shore geyser's of its kind; demo the page's compressed times. Placed by bearing and
 // distance from the cove's centre (covePt), on the apron (RS..RS+40), the bench (RS+50..RS+82) or the Stair's head.
 const _g=(o,b,d)=>{const p=covePt(b,d);return Object.assign(o,{x:Math.round(p[0]),z:Math.round(p[1])});};
-const THERMAL={seed:884,amb:33,ground:landH,sea:SEA,wind:WIND,
+const THERMAL={seed:884,amb:33,atm:AIR_ATM,ground:landH,sea:SEA,wind:WIND,
  geysers:[
   _g({key:'kettlehorn',name:'The Kettle Horn (a littoral cone geyser)',kind:'cone',H:24,period:3900,pre:60,dur:180,steam:300,off:620,demo:{period:120,pre:12,dur:22,steam:24,off:20},cone:{r:5,h:4.2},mound:{r:22,h:1.4}},-62,271),
   _g({key:'fountain',name:'The Bay Fountain (a fountain geyser at the tide line)',kind:'fountain',H:30,period:10800,pre:600,dur:900,steam:900,off:5400,demo:{period:200,pre:24,dur:36,steam:40,off:90},pool:7,mound:{r:26,h:1.2}},30,272),
@@ -172,6 +173,15 @@ const THERMAL={seed:884,amb:33,ground:landH,sea:SEA,wind:WIND,
 // the bay's boils (87 draws them: spouting domes, the steam plumes over them): vents in the bay's floor, the water over them at the boil
 const BAY_VENTS=[['eye','The Boiling Eye',-10,140,46],['throat','The Throat',32,185,40],['white','The White Boil',-55,195,34],['east','The east boil',72,175,30],['mouth','A boil in the mouth',150,120,22]]
  .map(v=>{const p=covePt(v[2],v[3]);return{key:v[0],name:v[1]+' (a vent in the bay: the sea boils over it)',x:Math.round(p[0]),z:Math.round(p[1]),H:v[4]};});
+// THE PIRATES' CRAFT (the owner, 2026-11-17: "these will be hykkoussoi pirates primarily"; LORE.md 6.16): the sulphur, alum and salt boats out of Port Goto
+// are mostly Hykkousoi pirates, moored in the bay clear of the boils (89w draws them: kits/ringsea's vessels, read in place through station.json "ringsea").
+// Two scroll-sail galleys (the raiders, a tarp over the hold for the crusts), an amphora corbita (the prize hold: sulphur in jars), and one Islander lanong
+// (the Islanders' pirate raider, LORE.md's Ring Sea Islanders). Bows into the sea breeze (from the south-south-west), as moored craft swing.
+const COVE_SHIPS=[['galleyA','hykGalley','hykkousoi','A Hykkousoi pirate galley (sulphur raiders out of Port Goto)',-41,37,.05],
+ ['galleyB','hykGalley','hykkousoi','A Hykkousoi pirate galley, its hold under a tarp',-145,-29,-.1],
+ ['corbita','hykCorbita','hykkousoi','A Hykkousoi corbita taken as a prize (her amphorae full of sulphur)',98,33,.12],
+ ['lanong','islanderLanong','islander','An Islander lanong (pirates too) at anchor',-56,129,-.06]]
+ .map(s=>({key:s[0],vessel:s[1],culture:s[2],name:s[3],x:s[4],z:s[5],yaw:Math.atan2(WIND[1],-WIND[0])+s[6]}));
 
 // ---------------------------------------------------------------- the station's ground (84 reads STATION_GROUND: its patches, paint and layers)
 // The fine meshes: the cove's floor at 2 m in three pieces round the Lime Stair at 0.8 m (none overlap; the 5 m map has holes under them)

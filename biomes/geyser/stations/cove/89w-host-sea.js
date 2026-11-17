@@ -31,6 +31,15 @@ const SEA_DRAW=WATER.draw(SEA_WATER,{transparent:true,renderOrder:1,roughness:.2
  shallow:new THREE.Color(.14,.32,.3).convertSRGBToLinear(),deep:new THREE.Color(.05,.17,.19).convertSRGBToLinear()});
 SEA_DRAW.mesh.userData.inspectLabel='The Ring Sea';
 window._sea={plumes:SEA_PLUME?SEA_PLUME.sources:0,feet:COVE_FEET.length};
+// THE PIRATES' CRAFT (45: COVE_SHIPS; kits/ringsea's vessels through the sealed bundle, 89v): each a registry record first (its culture and its trade
+// tagged), then a clone of its kit build moored on the sea's level, the sails' flutter on the page's clock
+const COVE_FLEET=(function(){const out=[];if(typeof RINGSEA==='undefined')return out;let t=0;
+ COVE_SHIPS.forEach(s=>{const D=RINGSEA.dims[s.vessel];if(!D)return;
+  REGISTER({name:s.name,vessel:s.vessel,ship:s.key,x:s.x,z:s.z,y:-4,r:D.L*.55,h:D.H+5,tags:{culture:s.culture,role:'pirate',trade:'sulphur'}});
+  const r=RINGSEA.make(s.vessel);if(!r)return;r.group.position.set(s.x,SEA,s.z);r.group.rotation.y=s.yaw;r.group.name=s.key;
+  r.group.traverse(o=>{if(o.isMesh)o.userData.inspectLabel=s.name;});scene.add(r.group);out.push({key:s.key,vessel:s.vessel,culture:s.culture,x:s.x,z:s.z,L:D.L,B:D.B});});
+ if(out.length)TICKS.push(dt=>{t+=dt;RINGSEA.tick(t);});return out;})();
+window._fleet=COVE_FLEET.map(s=>s.key+':'+s.vessel);
 // the steam off the hot water: over each boil (a wide ring of emitters) and each outflow's foot
 const BAY_STEAM=(function(){if(!ATMOS.smoke)return null;const E=[],U=(i,s)=>KRAND.unit(KRAND.hash(5307,i,s));
  ((window._cove&&window._cove.vents)||[]).forEach((v,i)=>{for(let k=0;k<9;k++){const a=U(i*16+k,1)*TAU,d=4+22*Math.sqrt(U(i*16+k,2));E.push([v.x+Math.cos(a)*d,SEA+.2,v.z+Math.sin(a)*d,'steam']);}});
