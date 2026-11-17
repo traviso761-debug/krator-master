@@ -37,6 +37,11 @@ ASSERT_JS = r"""()=>{const A=window._api;const R=[];const F=A.footprints();
  const D=A.doorsAudit();R.push({name:'doors-open-and-shut',ok:!D.bad.length&&D.doors>=1,detail:D.bad.length?D.bad.slice(0,10).join(', '):D.doors+' doors, '+D.locked+' locked'});
  const RA=A.reachAudit();R.push({name:'walk-reach',ok:!RA.bad.length&&RA.buildings>=2,detail:RA.bad.length?RA.bad.map(b=>b.key+' missed '+(b.missed||[b.why]).join('/')+' (reached '+b.reached+', unreached '+b.unreached+')').join(', '):RA.buildings+' buildings: every floor and roof reached from the front'});
  const C=A.carvings(),cb=C.filter(c=>!c.same||c.segs<4);R.push({name:'contour-text',ok:C.length>=4&&!cb.length,detail:cb.length?cb.map(c=>c.key+' '+c.text).join(', '):C.length+' carvings, each the line of its own text ('+C.map(c=>c.segs).join(' ')+' segments)'});
+ const GA=A.gateAudit();
+ R.push({name:'wall-closed',ok:!!(GA&&GA.wallClosed),detail:GA&&GA.found?GA.wallDetail:'no cy_gate_wall'});
+ R.push({name:'water-gate',ok:!!(GA&&GA.waterGate),detail:GA&&GA.found?GA.waterDetail:'no cy_gate_wall'});
+ R.push({name:'shrine-at-foot',ok:!!(GA&&GA.shrineAtFoot),detail:GA&&GA.found?GA.shrineDetail:'no cy_gate_wall'});
+ R.push({name:'no-golden-feathers',ok:!!(GA&&GA.noGoldenFeathers),detail:GA&&GA.found?GA.featherDetail:'no cy_gate_wall'});
  const f1=A.fingerprint(),f2=A.rebuild();R.push({name:'deterministic',ok:f1===f2,detail:f1+' then '+f2});
  const M=A.materials();R.push({name:'material-records',ok:!!(M&&M.records&&M.records.length>10),detail:M?M.records.length+' records, '+M.records.filter(r=>r.lib).length+' from the library':'none'});
  return R;}"""

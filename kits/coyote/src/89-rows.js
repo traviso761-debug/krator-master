@@ -7,8 +7,9 @@ const FAMILIES=[
  {name:'Valley houses (Ham-Hau)',keys:['cy_room','cy_house_poor','cy_house_mid','cy_house_head']},
  {name:'Village cells and sunk rooms',keys:['cy_cell','cy_cell_store',{key:'cy_shrine_room',o:{y:-2.6}},{key:'cy_hall',o:{y:-2.8}}]},
  {name:'Valley works',keys:['cy_granary','cy_threshing','cy_mill','cy_pen','cy_court','cy_smithy','cy_kiln','cy_dyehouse','cy_press','cy_loom_house']},
- {name:'Shrines and stones',keys:['cy_runner_shrine',{key:'cy_boundary_stone',o:{}},{key:'cy_milestone',o:{}},
-  {key:'cy_milestone',o:{text:'Hām-Hau. Kām-Hau. Tōng-Hau. Sī-Hau.'}},{key:'cy_milestone',o:{text:'Tsēk-Gèl!'}}]},
+ {name:'Shrines and stones',keys:['cy_runner_shrine','cy_phoenix_altar',{key:'cy_boundary_stone',o:{}},{key:'cy_milestone',o:{}},
+  {key:'cy_milestone',o:{text:'Hām-Hau. Kām-Hau. Tōng-Hau. Sī-Hau.'}},{key:'cy_milestone',o:{text:'Tsēk-Gèl!'}},
+  'cy_cairn','cy_shun_stone','cy_carved_band']},
  {name:'The Valley village (KHAMLET.platform)',keys:['cy_village_valley']},
  {name:'Peak houses and stores (Kam-Hau)',keys:['cy_stone_hut','cy_stone_house','cy_stone_store','cy_cliff_house',{key:'cy_round_room',o:{y:-1.76}},'cy_fold']},
  {name:'The mine (emerald and turquoise)',keys:['cy_adit','cy_ore_bench','cy_sorting_shed','cy_tappers_camp','cy_wash']},
@@ -22,5 +23,8 @@ const FAMILIES=[
  {name:'Tierhound halls and stores',keys:['cy_spring_hall','cy_council','cy_treasury','cy_rock_facade',{key:'cy_rock_facade',o:{kind:'tomb',text:'Sī-Hau Gèl. Lōk Kām-Tōng.'}}]},
  {name:'The lake towns',keys:['cy_lake_house','cy_fish_weir','cy_reed_boat']},
  {name:'Howl and the road',keys:['cy_stage_house','cy_runners_post','cy_larder']},
- {name:'The stepped street (KHAMLET.terrace)',keys:['cy_street_tier']}
+ {name:'The stepped street (KHAMLET.terrace)',keys:['cy_street_tier']},
+ {name:'The Gate wall and gates (Hattusa and Derbent)',keys:['cy_wall_run',{key:'cy_wall_run',o:{v:1,tags:{state:'ruined'}}},'cy_wall_tower',{key:'cy_wall_tower',o:{v:1,tags:{state:'ruined'}}},'cy_postern','cy_toll_gate','cy_water_gate']},
+ {name:'The Gate citadel and fodder pit',keys:['cy_citadel','cy_fodder_pit']},
+ {name:'The Gate long wall (KCITY wall and core water)',keys:['cy_gate_wall']}
 ];

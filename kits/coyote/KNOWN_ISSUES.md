@@ -18,9 +18,7 @@
   of the owner before it is written.
 - [ ] **On the sheet the sunk rooms stand in the ground** (`89-rows.js` places them 2.6 and 2.8 m down, as in the yard), so
   their painted interiors are hidden by the sheet's ground plane even in the cut-away; the village's are reached by the walk.
-- [ ] **`check_assembly` baselines `MISSING KCITY.stance`** on the page (`tools/check_assembly_baseline.json`, as riftrim's Fowlers
-  and Icecut stations do): `core/city/33-city-strategies.js` names `KCITY.stance` (in `core/city/15-city-ground.js`) only on a
-  city tune's high-stance path, which `core/hamlet` never takes; the page reads 33 alone for `KCITY.prim`.
+- [x] **`check_assembly` baselines `MISSING KCITY.stance`** on the page: resolved in C6 (`build.py` bundles `core/city`'s `10`, `15`, `25`, `33` in one closure `19-kcity-site.js`, as Verge does).
 - [x] **Emerald and turquoise nodes** are in `kits/resources` since 2026-11-16 (`node-emerald-*`, `node-turquoise-*`, the field's
   families from `geology.py --gems`). The sheet's Peak alcove village still passes its node by hand (`resource: {kind: 'emerald',
   ...}`): it stands on no map; a host on the map lets `KHAMLET.resourceFor` take the nearest node.
@@ -48,3 +46,6 @@
 - [ ] **Masuleh's rule at a city's size is not on `core/city` yet** (the owner, 2026-11-16: "both"): the rule and its test are
   `core/hamlet/36-hamlet-terrace.js` and `test-hamlet-terrace.js`; Coyote Canyon's page wants the same on `core/city`, which is
   the city session's to write (`core/city/PLAN.md`): this kit does not touch `core/city`.
+- [ ] **The Gate's scarps and river banks are sheet stand-ins** (`72-cy-gate-wall.js`: rock boxes at the ends, gravel strips along
+  the test channel): a host on the map (`biomes/outlandgate` station 1) lays `cyWallPlan` on its own `KRELIEF.gap` floor and
+  `WATER.flow` river.

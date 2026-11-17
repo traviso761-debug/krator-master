@@ -7,6 +7,8 @@
 //                  the ground at its front (KWALK.reach): the roof by the outside ladder, the room down the hatch. The flood
 //                  runs on a 0.2 m cell: a steep ladder is a stack of rungs (core/walk/box KWALKBOX.ladder) climbed by stepping
 //                  between neighbouring cells, and against a wall the walker's radius leaves too few 0.4 m cells to step between
+//   gateAudit()    C6: wall-closed (foot to foot, no gap between curtains and nodes), water-gate (core/water river passes
+//                  under cy_water_gate's culverts), shrine-at-foot (runner shrine at the road's foot), no-golden-feathers
 //   fingerprint()  a hash over the records, the carvings and the doors: two builds must match
 //   rebuild()      buildWorld() again, then the fingerprint
 (function(){
@@ -32,6 +34,30 @@
     if(miss.length)out.push({key:r.key,missed:miss.map(t=>t.name),reached:R.reached.length,unreached:R.unreached.length,capped:R.capped});}
    for(const D of L)KDOOR.close(D,{by:'probe'});settle(40);
    return {buildings:n,bad:out};},
+  gateAudit(){
+   const G=REG.find(r=>r.key==='cy_gate_wall'&&r.gateWall);
+   if(!G)return {found:false};
+   const W=G.gateWall,P=W.plan,gaps=[];
+   for(let i=0;i<P.segs.length;i++){
+    const A0=P.nodes[i],B0=P.nodes[i+1],S0=P.segs[i];
+    const dA=Math.hypot(S0.ax-A0.x,S0.az-A0.z)-A0.w/2,dB=Math.hypot(S0.bx-B0.x,S0.bz-B0.z)-B0.w/2;
+    if(dA>.05)gaps.push(S0.id+'->'+A0.id+' '+dA.toFixed(2));
+    if(dB>.05)gaps.push(S0.id+'->'+B0.id+' '+dB.toFixed(2));}
+   const wg=G.children.find(c=>c.key==='cy_water_gate'),wx=W.waterGateX[0],wz=W.waterGateX[1];
+   const hAt=typeof WATER!=='undefined'?WATER.heightAt(wx,wz,0):null,flAt=typeof WATER!=='undefined'?WATER.flowAt(wx,wz):[0,0,0,0];
+   const cul=wg&&wg.culverts;
+   const taboo=REG.filter(r=>r.key!=='cy_phoenix_altar'&&/golden[- ]?(?:bird[- ]?)?feather|phoenix[- ]?feather/i.test((r.name||'')+' '+(DEFS[r.key]&&DEFS[r.key].note||'')));
+   return {
+    found:true,
+    wallClosed:W.footDist[0]<=1&&W.footDist[1]<=1&&!gaps.length&&P.nodes.length>=5&&P.segs.length===P.nodes.length-1,
+    wallDetail:P.nodes.length+' nodes, '+P.segs.length+' runs, feet '+W.footDist.map(d=>d.toFixed(2)).join('/')+' m, gaps '+(gaps.join(', ')||'none'),
+    waterGate:!!(wg&&cul&&hAt!=null&&hAt>.3&&hAt<cul.crownY-1&&flAt[2]>.5),
+    waterDetail:wg&&hAt!=null?'Hau-Gel h '+hAt.toFixed(2)+' m under crown '+cul.crownY+' m, speed '+flAt[2].toFixed(2)+' m/s':'no flow under cy_water_gate',
+    shrineAtFoot:W.shrineDist<=10,
+    shrineDetail:'cy_runner_shrine '+W.shrineDist.toFixed(2)+' m from road foot',
+    noGoldenFeathers:!taboo.length,
+    featherDetail:taboo.length?taboo.map(r=>r.key).join(', '):'no golden-bird feathers in any record'
+   };},
   fingerprint:fp,
   rebuild(){buildWorld();return fp();}
  });

@@ -13,6 +13,7 @@ python3 tools/build.py kits/coyote                       # dist/coyote.html (+ d
 python3 kits/coyote/verify.py kits/coyote/dist/coyote.html --assert       # KRATOR_GL=gpu for a GPU lane
 node kits/coyote/tests/test-contour.js                   # the contour script
 node kits/coyote/tests/test-rows.js                      # the draft Coyote row on core/hamlet's platform village
+node kits/coyote/tests/test-wall.js                      # the Gate's long-wall planner on KCITY.site.wall
 python3 tools/textures/pack.py kits/coyote               # after a change to materials.json
 ```
 
@@ -72,18 +73,23 @@ The page loads its texture pack beside it: serve `dist/` over HTTP, as `verify.p
 - **`src/68-cy-street.js`**: `cy_street_tier`, the stepped street: `KHAMLET.terrace` (core/hamlet's terraced village, Masuleh's
   rule: 36-hamlet-terrace.js) on the draft Tier row lays the ledge houses in rows up a test canyon wall, each row's roofs the
   lane of the row above, the gardens in the gaps, the stair lanes between, the council, shrine, larders and works below.
-- **`src/60-cy-stones.js`**: the milestone (`cy_milestone`), the boundary stone (`cy_boundary_stone`, a name a face) and the
-  runner bird's shrine at a road's foot (`cy_runner_shrine`).
-- **`src/99-host-tz-cy.js`**: the probe's fields for `verify.py` (carvings, doors, the walk-reach audit, the fingerprint).
+- **`src/60-cy-stones.js`**: the milestone (`cy_milestone`), the boundary stone (`cy_boundary_stone`, a name a face), the
+  runner bird's shrine at a road's foot (`cy_runner_shrine`), the golden bird's cliff-ledge altar (`cy_phoenix_altar`, ash
+  altar and sun pillar, never a feather), the road cairn (`cy_cairn`), the keep-out ring's turned-away `cy_shun_stone` and
+  the scarp frieze `cy_carved_band`.
+- **`src/35-cy-wall-plan.js`** (`[G data]`): `cyWallPlan`, the Gate's long-wall planner on `core/city`'s `KCITY.site.wall` and
+  `wallSegs` (sealed in `19-kcity-site.js`, read in place): towers along the line, `cy_toll_gate` where a road crosses,
+  `cy_water_gate` where a river crosses, `cy_postern`, and slumped older stretches (`v: 1`). `tests/test-wall.js` holds it.
+- **`src/70-cy-gate.js`**, **`src/72-cy-gate-wall.js`**, **`src/91z-cy-world.js`**: the Gate after Hattusa and Derbent:
+  `cy_wall_run` and `cy_wall_tower` (whole and slumped `v: 1` watched by `core/ruins`), `cy_postern`, `cy_toll_gate`
+  (guardian coyote-head protomes, customs court, weighing floor and bronze balance scale, toll-keeper's room),
+  `cy_water_gate` (corbelled culverts and bronze-shod grilles), `cy_citadel`, `cy_fodder_pit`, and `cy_gate_wall` closing a
+  140 m test floor from scarp to scarp over a `core/water` river (`WATER.flow`).
+- **`src/99-host-tz-cy.js`**: the probe's fields for `verify.py` (carvings, doors, the walk-reach audit, the Gate audit, the fingerprint).
 - **Textures** from the library through `materials.json` and `tex/`; the brick is a stand-in until `brick.mud.coursed`
   arrives (`KNOWN_ISSUES.md`; `core/materials/PROMPTS-NEEDED.md` section 53).
 
 ## Status
 
-**C1** (the scaffold, the toolkit, the contour script, two Valley houses and the milestone) and **C2** (the Valley: four houses,
-the village's cells and sunk rooms, ten works, the shrine and the boundary stone, the village on its tell on `core/hamlet`):
-**C3** (the Peak: huts, store, the alcove room and round room, the fold, the mine's five works, the alcove village) and
-**C4** (the herders: the tipi, the pens and racks, two camps on `core/camp`) and **C5** (the Tierhounds: the ledge houses, stairs and
-gardens, the spring hall, treasury, council and rock facade, the lake house, weir and boat, Howl's stage house, runners' post and
-larder, the stepped street on `core/hamlet`'s new terraced village): built and verified (`verify.py --assert`). C6 onward:
-`PLAN.md` section 9.
+**C1** to **C6** built and verified (`verify.py --assert`): Valley, Peak, Herders, Tierhounds, shrines and stones, and the Gate
+on `KCITY.site.wall`, `core/water` and `core/ruins`. C7 onward: `PLAN.md` section 9.

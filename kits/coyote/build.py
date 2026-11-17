@@ -92,23 +92,27 @@ import engine as kengine   # the building-kit engine, read in place: MODULARITY-
 CORE_HOST = khost.SHELL + kengine.HOST   # the polygon tool and the one key map (core/host/92k-host-keys.js)
 # the engine's core folders (core/engine/engine.py CORE_DIRS: core/walk and its box reader among them, so 37-wk-rec.js registers the
 # boxes the houses draw); core/space, core/hamlet and core/camp join at C2 and C4 (PLAN.md section 9)
-CORE_DIRS = [os.path.join(ROOT, 'core', *d.split('/')) for d in ('shader', 'rand', 'materials/record', 'tags', 'furnish', 'atmos', 'door', 'walk', 'walk/box')]
+CORE_DIRS = [os.path.join(ROOT, 'core', *d.split('/')) for d in ('shader', 'rand', 'materials/record', 'tags', 'furnish', 'atmos', 'door', 'walk', 'walk/box', 'ruins')]
 assert set(kengine.CORE_DIRS) <= {'shader', 'rand', 'materials/record', 'tags', 'furnish', 'atmos', 'door', 'walk', 'walk/box'}, \
     'core/engine/engine.py CORE_DIRS grew: list the new folder here'
-# single core files the kit takes (C2): core/space (KSPACE, which core/hamlet files its footprints in), core/hamlet's villages up to
-# the platform and the trade post (10-34; 40-hamlet-felling.js is the biome kits' timber pass, not taken), and core/city's shared
-# primitives file that core/hamlet reads (33-city-strategies.js: KCITY.prim), READ IN PLACE: this kit edits nothing under core/city
+# single core files the kit takes (C2, C4, C6): core/space (KSPACE), core/hamlet's villages (10-36), core/camp's census and pitch
+# (10-30), core/water's flow drawing (C6: the test river under the water gate), and core/city's site wall + shared primitives
+# (10, 15, 25, 33) sealed in one closure (19-kcity-site.js, as settlements/verge/build.py does, so clamp/smooth/V stay local;
+# READ IN PLACE: this kit edits nothing under core/city)
 _HAMLET = os.path.join(ROOT, 'core', 'hamlet')
-# core/camp's census and pitch (C4: the herders' camps; 40-50 are the work camps, the Tents kit's mapping and the outlaws: not taken)
 _CAMP = os.path.join(ROOT, 'core', 'camp')
-CORE_FILES = [os.path.join(_CAMP, f) for f in ('10-camp-cultures.js', '20-camp-census.js', '30-camp-pitch.js')] + [os.path.join(ROOT, 'core', 'space', '20-core-space.js'),
-              os.path.join(ROOT, 'core', 'city', '33-city-strategies.js')] + \
-             [os.path.join(_HAMLET, f) for f in sorted(os.listdir(_HAMLET)) if re.match(r'\d\d-hamlet-.*\.js$', f) and f < '40']
+_WATER = os.path.join(ROOT, 'core', 'water')
+_CITY = os.path.join(ROOT, 'core', 'city')
+CITY_JS = [os.path.join(_CITY, f) for f in ('10-city-core.js', '15-city-ground.js', '25-city-site.js', '33-city-strategies.js')]
+CORE_FILES = ([os.path.join(_CAMP, f) for f in ('10-camp-cultures.js', '20-camp-census.js', '30-camp-pitch.js')] +
+              [os.path.join(ROOT, 'core', 'space', '20-core-space.js')] +
+              [os.path.join(_WATER, f) for f in ('20-core-water.js', '22-core-water-flow.js', '50-core-water-draw.js', '51-core-water-kinds.js')] +
+              [os.path.join(_HAMLET, f) for f in sorted(os.listdir(_HAMLET)) if re.match(r'\d\d-hamlet-.*\.js$', f) and f < '40'])
 VENDORED = {}
 # GENERATED fragments, never written to src/
 FURN_CULTURES = ['generic', 'generic-goods', 'jobs']   # the shared goods and the trades until the coyote culture file (C8)
-VIRTUAL = {'26-matlib-pack.js', '38-furniture-bundle.js'}
-BUNDLE_GLOBALS = ('KratorFurniture',)
+VIRTUAL = {'19-kcity-site.js', '26-matlib-pack.js', '38-furniture-bundle.js'}
+BUNDLE_GLOBALS = ('KCITY', 'KratorFurniture')
 
 
 # the library pack beside the page (<build>.tex.<key>.js); --inline-packs puts it back in the page (2026-10-14: the
@@ -144,10 +148,18 @@ def matlib_pack():
             "KMAT.pack('coyote', " + body + ');\n')
 
 
+def kcity_site():
+    body = ''.join('\n/* ---- %s ---- */\n%s\n' % (os.path.relpath(p, ROOT).replace(os.sep, '/'), open(p, encoding='utf-8').read()) for p in CITY_JS)
+    return ('/* KCITY: core/city site wall + shared primitives in one closure (kits/coyote/build.py). GENERATED: edit core/city. */\n'
+            'var KCITY = (function(){\n' + body +
+            '\nKCITY.lib = { V: V, plFrame: plFrame, resample: resample, plLen: plLen, segDist: segDist, ryFacing: ryFacing };\n'
+            'return KCITY;\n})();\n')
+
+
 def virtual_bodies():
     sys.path.insert(0, os.path.join(ROOT, 'kits', 'catalog'))
     import furniture_bundle
-    return {'26-matlib-pack.js': matlib_pack(), '38-furniture-bundle.js': furniture_bundle.bundle(FURN_CULTURES)}
+    return {'19-kcity-site.js': kcity_site(), '26-matlib-pack.js': matlib_pack(), '38-furniture-bundle.js': furniture_bundle.bundle(FURN_CULTURES)}
 
 
 RE_DECL = re.compile(r'^(?:const|let|var|function|class)\s+([A-Za-z_$][\w$]*)', re.M)
@@ -177,7 +189,7 @@ def main():
     files = sorted(list(paths) + list(vb))
     bodies = dict(vb)
     bodies.update({f: open(paths[f], encoding='utf-8', newline='').read() for f in files if f not in vb})
-    BSRC.report(paths, vendored=VENDORED.values())   # --list-sources: what the page is made of, then exit
+    BSRC.report(dict(paths, **{os.path.basename(p): p for p in CITY_JS}), vendored=VENDORED.values())   # --list-sources: what the page is made of, then exit
     is_core = lambda f: f in core and paths[f] == core[f]
     errs = []
     if '--no-checks' not in sys.argv:

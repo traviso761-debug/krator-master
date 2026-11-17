@@ -46,3 +46,79 @@ defBuilding({key:'cy_runner_shrine',name:'Runner bird shrine (at a road foot)',s
   pole('timber',[1.3,0,-1.2],[1.3,2.2,-1.2],.04,P('timber'),6);pole('timber',[1.05,2.05,-1.2],[1.55,2.05,-1.2],.025,P('timber'),5);
   for(let i=0;i<3;i++){const x=1.1+i*.2;box('plain',x,1.62,-1.2,.05,.42,.008,new THREE.Color(.42,.36,.3));box('plain',x,1.7,-1.19,.05,.03,.008,new THREE.Color(.9,.88,.82));}
   cyPlatform(-1.6,-1.0,-.7,-.4,.45);for(let i=0;i<2;i++)cyl('render',-1.38+i*.45,.45,-.7,.13,.07,P('ochre'),10);}});
+//   cy_phoenix_altar   the golden bird's cliff-ledge altar (PLAN.md sections 1, 3, 12): an ash altar under a sun pillar on a
+//                      stone ledge where the golden bird is fed; NEVER a golden feather (killing one or carrying its feathers is
+//                      taboo, verify.py no-golden-feathers)
+//   cy_cairn           a pass and road cairn of stacked dry-stone slabs, a carved pointer stone and a juniper way-pole
+//   cy_shun_stone      the keep-out ring's turned-away stone round Trickster's House (Outlands 6): canted, notched head, its
+//                      carved warning turned away from the road
+//   cy_carved_band     a dressed riser frieze block (o.w) carrying the contour script, laid along a scarp or podium by a host
+const CY_PHOENIX_TEXT='Yūt-Lōk. Hau-Kām.';
+defBuilding({key:'cy_phoenix_altar',name:'Phoenix altar (ash altar and sun pillar on a ledge)',seed:9304,cls:'building',kind:'shrine',frag:'kits/coyote',
+ tags:{types:['religious'],wealth:'poor',style:'tier',role:'shrine'},w:6.4,d:6.0,h:4.8,budget:26000,front:{x:0,z:3.0,yaw:0},
+ note:'the golden bird shrine: a dressed cliff ledge reached by steps, the ringed ash altar in its middle, the sun pillar with its bronze sun ring behind, and the feeding slab at the open lip (grain and meat bowls only, never a golden feather)',
+ build(o){o=o||{};const L=.8;
+  svNoWalk(()=>{box('rock',0,0,-.2,5.8,L-.12,5.0,P('rock'));box('slab',0,L-.12,-.2,5.6,.12,4.8,P('stone'));});
+  wkPad(0,-.2,5.6,4.8,L);
+  svStair(0,3.0,0,L,PI,{style:'solid',w:1.4,run:.8,mk:'stone',col:P('stone')});
+  /* low kerb along the west, north and north-east; south-east lip left open for the feeding slab where the bird alights */
+  cyWall(-2.65,-2.45,-2.65,2.05,L,.55,{mk:'stone',socle:0,inner:0,t:.28});
+  cyWall(-2.65,-2.45,2.65,-2.45,L,.55,{mk:'stone',socle:0,inner:0,t:.28});
+  cyWall(2.65,-2.45,2.65,-.1,L,.55,{mk:'stone',socle:0,inner:0,t:.28});
+  /* the feeding slab at the cliff lip: bowls of grain and meat, no feathers */
+  svNoWalk(()=>{box('slab',1.75,L,1.25,1.45,.24,1.1,P('stone'));
+   for(let i=0;i<2;i++)cyl('render',1.45+i*.55,L+.24,1.25,.16,.09,P('ochre'),10);});
+  /* the ringed ash altar */
+  svNoWalk(()=>{cyl('stone',0,L,-.15,.82,.68,P('stone'),18);cyl('slab',0,L+.62,-.15,.88,.1,P('stone'),18);
+   cyl('ash',0,L+.72,-.15,.68,.12,P('ash'),16);
+   for(let i=0;i<4;i++)sph('glow',rr(-.22,.22),L+.84,-.15+rr(-.22,.22),.055,new THREE.Color(1,.46,.12),.55,6);});
+  smokeAt(0,L+1.05,-.15,{r:.22,kind:'fire'});
+  /* the sun pillar and its bronze sun ring */
+  box('stone',0,L,-1.75,1.1,.28,.76,P('stone'));
+  box('slab',0,L+.28,-1.75,.72,2.75,.42,P('stone'));
+  box('slab',0,L+3.03,-1.75,.9,.16,.54,P('stone'));
+  svNoWalk(()=>{pole('bronze',[0,L+3.19,-1.75],[0,L+3.45,-1.75],.045,P('bronze'),8);
+   ring('bronze',0,L+3.72,-1.75,.32,.045,P('bronze'),0,PI/2,0,18);
+   cyl('bronze',0,L+3.64,-1.75,.11,.16,P('bronze'),12);});
+  const C=cyContour(o.text==null?CY_PHOENIX_TEXT:o.text);
+  if(CURREC)CURREC.carving={text:C.text,hash:C.hash,segs:cyCarve(C,0,L+.75,-1.54,.54,1.85,{lw:.022,wrap:true})};
+  cyTarget(-1.35,L+.06,.75,'the altar ledge');}});
+const CY_CAIRN_TEXT='Gèl-Lōk. Hau.';
+defBuilding({key:'cy_cairn',name:'Road cairn (stacked dry stone and pointer)',seed:9305,cls:'landmark',kind:'cairn',frag:'kits/coyote',
+ tags:{types:['infrastructure'],style:'peak',role:'cairn'},w:2.2,d:2.2,h:2.5,budget:12000,
+ note:'a dry-stone cairn at a pass or ford: tapered schist and tuff courses, a carved pointer slab at its head and a juniper way-pole',
+ build(o){o=o||{};const C=cyContour(o.text==null?CY_CAIRN_TEXT:o.text);
+  const tiers=[[.96,.26],[.82,.24],[.68,.22],[.55,.2],[.42,.18]];let y=0;
+  for(const [r,h] of tiers){cyl('stone',rr(-.03,.03),y,rr(-.03,.03),r,h,P('stone'),9,r*.92);y+=h*.92;}
+  box('slab',0,y,0,.44,.92,.16,P('stone'));box('slab',0,y+.92,0,.52,.1,.2,P('stone'));
+  const segs=cyCarve(C,0,y+.12,.08,.34,.68,{lw:.018,wrap:true});
+  pole('timber',[.36,.35,-.18],[.52,2.38,-.24],.035,P('timber'),6);
+  box('reed',.46,2.08,-.22,.28,.12,.02,P('reed'));
+  if(CURREC)CURREC.carving={text:C.text,hash:C.hash,segs};}});
+const CY_SHUN_TEXT='Tsēk! Sām-Hau!';
+defBuilding({key:'cy_shun_stone',name:'Shun stone (turned-away keep-out marker)',seed:9306,cls:'landmark',kind:'shun_stone',frag:'kits/coyote',
+ tags:{types:['infrastructure','religious'],style:'valley',role:'shun'},w:1.4,d:1.2,h:2.4,budget:12000,
+ note:'one of the keep-out ring stones round Trickster House: a canted slab with a cleft head and red warning bands, its carved face turned away from the approach',
+ build(o){o=o||{};const C=cyContour(o.text==null?CY_SHUN_TEXT:o.text);
+  box('stone',0,0,0,1.15,.22,.9,P('stone'));
+  for(let i=0;i<4;i++){const a=i/4*TAU+.4;box('rock',Math.cos(a)*.42,0,Math.sin(a)*.34,.28,.18,.24,P('rock'),a);}
+  WX(0,.18,0,0,-.09,.04,()=>{
+   box('slab',0,0,0,.64,1.62,.22,P('carve'));
+   /* cleft head: two horns of dark stone with a notch between, and two red ochre warning bands */
+   for(const s of [-1,1])box('slab',s*.19,1.62,0,.24,.34,.2,P('carve'));
+   for(const yy of [.34,1.38])box('plain',0,yy,0,.66,.07,.235,P('red'));
+   /* the carving and the bird mark stand on the -z face, turned away from the viewer at +z */
+   let segs=0;
+   W(0,0,0,PI,()=>{cyBird(0,1.15,.11,.42,P('ochre'));segs=cyCarve(C,0,.46,.11,.48,.52,{lw:.02,wrap:true});});
+   if(CURREC)CURREC.carving={text:C.text,hash:C.hash,segs};});}});
+const CY_BAND_TEXT='Lōk-Hau Hām-Gèl. Kām-Tōng.';
+defBuilding({key:'cy_carved_band',name:'Carved riser band (scarp frieze)',seed:9307,cls:'landmark',kind:'carving',frag:'kits/coyote',
+ tags:{types:['infrastructure'],style:'tier',role:'carving'},w:6.0,d:.6,h:1.2,budget:14000,
+ note:'a dressed frieze band carved with the Hum contour script (o.w, o.text), for laying along a canyon scarp, terrace riser or fort podium',
+ build(o){o=o||{};const w=o.w==null?6.0:o.w,C=cyContour(o.text==null?CY_BAND_TEXT:o.text);
+  box('stone',0,0,-.04,w,1.12,.38,P('stone'));
+  box('slab',0,0,.02,w,.14,.44,P('stone'));
+  box('slab',0,.98,.02,w,.14,.44,P('stone'));
+  box('slab',0,.14,.01,w,.84,.38,P('stone'));
+  const segs=cyCarve(C,0,.24,.2,w-.5,.62,{lw:.032});
+  if(CURREC)CURREC.carving={text:C.text,hash:C.hash,segs};}});
