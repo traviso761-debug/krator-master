@@ -76,7 +76,8 @@ const ringMat=new THREE.ShaderMaterial({fog:false,transparent:true,depthWrite:fa
   ' a*=1.0-0.55*smoothstep(0.40,0.46,t)*(1.0-smoothstep(0.46,0.52,t));',' vec3 c=uCol*(0.8+0.3*sin(t*21.0));',
   ' float up=max(vSky.y,0.0);',' c=mix(c,uHazeC,clamp(0.2+uHazeK*exp(-up/0.16),0.0,0.86));',' gl_FragColor=vec4(c,a);}'].join('\n')});
 const giantRing=new THREE.Mesh(new THREE.RingGeometry(GIANT_R*1.30,GIANT_R*2.12,256,1),ringMat);
-giantRing.quaternion.setFromUnitVectors(new THREE.Vector3(0,0,1),GIANT_AXIS.clone().multiplyScalar(Math.cos(.105)).addScaledVector(giantDir,-Math.sin(.105)).normalize());   // opened 6 degrees toward us: a plane exactly edge-on covers no pixelgiantRing.renderOrder=-9;giantRing.userData.probeSkip=true;giantRing.frustumCulled=false;scene.add(giantRing);
+giantRing.quaternion.setFromUnitVectors(new THREE.Vector3(0,0,1),GIANT_AXIS.clone().multiplyScalar(Math.cos(.105)).addScaledVector(giantDir,-Math.sin(.105)).normalize());   /* opened 6 degrees toward us: a plane exactly edge-on covers no pixel */
+giantRing.renderOrder=-9;giantRing.userData.probeSkip=true;giantRing.frustumCulled=false;scene.add(giantRing);
 HOST.TICKS.push(dt=>{GU.uSpin.value+=dt*0.006;});
 // every frame, before drawing: the dome, the giant and its rings stay centred on the camera
 // THE SUN on the dome where the light is (HOST.SUN_DIR, moved by the clock): a sprite of its disc and glow, the glow redder and
