@@ -8,6 +8,7 @@ const VIEWS=(function(){const V={};
  {const g=KS_PLAN&&(KS_PLAN.gardens||[]).find(q=>q.id==='governor');if(g){const a=ksAt(g.c[0]-g.nu*4-24,g.c[1]-g.nv*4-24),b=ksAt(g.c[0],g.c[1]);
   V['The Governors garden']=[a[0],g.y+32,a[1],b[0],g.y,b[1]];}}   /* from over its lakeward corner, down its rills */
  V['The harbour']=ksEye(-60,60,-60,-160,4);
+ {const a=ksAt(KS_GROUND.HARBOUR.u1+130,-90),b=ksAt(KS_GROUND.HARBOUR.u1+40,-10);V['The drydock and the warehouses']=[a[0],26,a[1],b[0],2,b[1]];}   /* from over the shallows east of the dock, back along the waterfront */
  {const a=ksAt(KS_GROUND.HARBOUR.u1-110,KS_GROUND.HARBOUR.v0-14),b=ksAt(-60,250);V['From the lighthouse']=[a[0],30,a[1],b[0],8,b[1]];}   /* beside the lantern, over the mole, toward the town */
  const PL=KS_PLAN&&KS_PLAN.places,LG=PL?PL.lakeGate:[-60,84],BZ=PL?PL.bazaar:[-60,430],SG=PL?PL.strongbowGate:[346,300];
  V['The Lamp Way']=ksEye(LG[0]+4,LG[1]+40,BZ[0],BZ[1]-40,0);

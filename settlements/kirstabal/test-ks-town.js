@@ -23,6 +23,8 @@ for(const f of fs.readdirSync(path.join(ROOT,'kits','xanadu','src')).filter(f=>/
   if(!DIMS[m[1]]&&g('w'))DIMS[m[1]]={w:g('w'),d:g('d'),h:g('h')||8,fw:g('fw')||g('w'),fd:g('fd')||g('d')};}
  /* the garden and water tiles name their key first (xaGardenDef('xa_parterre', ...), xaWaterDef('xa_rill', ...)): 8 m plots */
  for(const m of s.matchAll(/xa(?:Garden|Water)Def\('(xa_[a-z0-9_]+)'/g))if(!DIMS[m[1]])DIMS[m[1]]={w:8,d:8,h:5,fw:8,fd:8};}
+/* a twin def takes its base's box (XA.def({key:'xa_monastery_white', baseKey:'xa_monastery', w:D.w, ...})) */
+for(const f of fs.readdirSync(path.join(ROOT,'kits','xanadu','src')).filter(f=>/\.js$/.test(f)))for(const m of fs.readFileSync(path.join(ROOT,'kits','xanadu','src',f),'utf8').matchAll(/key:'(xa_[a-z0-9_]+)',baseKey:'(xa_[a-z0-9_]+)'/g))if(DIMS[m[2]])DIMS[m[1]]=DIMS[m[2]];
 const dims=(k,v)=>DIMS[k]?{key:k,v:v||0,w:DIMS[k].w,d:DIMS[k].d,h:DIMS[k].h,fw:DIMS[k].fw,fd:DIMS[k].fd}:null;
 const t0=Date.now(),K=KS_TOWN.make({dims}),ms=Date.now()-t0;
 module.exports={K,DIMS,dims};
@@ -35,14 +37,16 @@ const corners=o=>[[-1,-1],[1,-1],[1,1],[-1,1]].map(([a,b])=>[o.c[0]+a*o.hw*o.u[0
 const pen=(A,B)=>{let m=1e9;for(const ax of [A.u,A.v,B.u,B.v]){const pr=F=>Math.abs(F.u[0]*ax[0]+F.u[1]*ax[1])*F.hw+Math.abs(F.v[0]*ax[0]+F.v[1]*ax[1])*F.hd;
  const d=Math.abs((A.c[0]-B.c[0])*ax[0]+(A.c[1]-B.c[1])*ax[1]);m=Math.min(m,pr(A)+pr(B)-d);}return m;};
 const segD=(p,a,b)=>{const dx=b[0]-a[0],dz=b[1]-a[1],l=dx*dx+dz*dz||1,t=Math.max(0,Math.min(1,((p[0]-a[0])*dx+(p[1]-a[1])*dz)/l));return Math.hypot(p[0]-a[0]-t*dx,p[1]-a[1]-t*dz);};
-const RUNS=new Set(['quay','mole','wall','bridge']);   /* the pieces laid end to end in a run touch by design */
+const RUNS=new Set(['quay','mole','wall','bridge']);
+const ON_MOLE=(a,b)=>a.kind==='lighthouse'&&b.kind==='mole';   /* the lighthouse stands on the mole's head */   /* the pieces laid end to end in a run touch by design */
 const overlaps=X=>{const all=X.lots.concat(X.extra),B=all.map(box),out=[];
  for(let i=0;i<B.length;i++)for(let j=i+1;j<B.length;j++){if(Math.hypot(B[i].c[0]-B[j].c[0],B[i].c[1]-B[j].c[1])>90)continue;
-  if(RUNS.has(all[i].kind)&&all[i].kind===all[j].kind)continue;if(pen(B[i],B[j])>.3)out.push(all[i].id+'|'+all[j].id);}return out;};
+  if(RUNS.has(all[i].kind)&&all[i].kind===all[j].kind)continue;
+  if(ON_MOLE(all[i],all[j])||ON_MOLE(all[j],all[i]))continue;if(pen(B[i],B[j])>.3)out.push(all[i].id+'|'+all[j].id);}return out;};
 /* a street reaches a building when any point of its line (core/city resamples every 2 m) comes within half its carriageway
    (less 0.6 m) of the building's footprint */
 const onStreet=X=>{const out=[];for(const L of X.lots){if(L.cls==='landmark')continue;const B=box(L);
- for(const w of X.ways){const m=w.w/2-.6;if(w.pts.some(p=>{const dx=p[0]-B.c[0],dz=p[1]-B.c[1];return Math.abs(dx*B.u[0]+dz*B.u[1])<B.hw+m&&Math.abs(dx*B.v[0]+dz*B.v[1])<B.hd+m;})){out.push(L.id+'@'+w.id);break;}}}return out;};const WATERY=new Set(['quay','mole','lighthouse','boat','boatshed','bridge']);
+ for(const w of X.ways){const m=w.w/2-.6;if(w.pts.some(p=>{const dx=p[0]-B.c[0],dz=p[1]-B.c[1];return Math.abs(dx*B.u[0]+dz*B.u[1])<B.hw+m&&Math.abs(dx*B.v[0]+dz*B.v[1])<B.hd+m;})){out.push(L.id+'@'+w.id);break;}}}return out;};const WATERY=new Set(['quay','mole','lighthouse','boat','boatshed','bridge','slip','drydock']);
 const inLake=X=>X.lots.concat(X.extra).filter(L=>!WATERY.has(L.kind)&&KS_GROUND.h(L.x,L.z)<.8).map(L=>L.id);
 {const o=overlaps(K);T.ok('no two buildings overlap (the lots, the harbour, the compound, the serai, the monastery, the bridge)',!o.length,o.length+' pairs'+(o.length?': '+o.slice(0,4).join(', '):''));
  const bad=Object.assign({},K,{lots:K.lots.concat([Object.assign({},K.lots[0],{id:'copy'})])});T.neg('a building set on another is caught',X=>!overlaps(X).length,bad,K);}

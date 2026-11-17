@@ -62,7 +62,7 @@ var KS_TOWN=(function(){
     daughter house); summed in census and held to PLAN.md's 3,000 by the test */
  const PEOPLE={xa_poor_a:6,xa_poor_b:12,xa_poor_c:4,xa_andean_poor:6,xa_mid_a:7,xa_mid_b:9,xa_mid_c:16,xa_house_turk_a:8,xa_rich_a:12,xa_rich_b:16,xa_rich_c:11,
   xa_house_turk_b:10,xa_shops:6,xa_shop_turk_a:8,xa_shop_turk_b:6,xa_teahouse:4,xa_workshop:5,xa_smithy:4,xa_warehouse:2,xa_bath:4,xa_temple:6,xa_granary:0,
-  xa_barracks:80,xa_generator:4,xa_monastery:150,xa_serai:20,xa_latex_house:0,xa_tea_factory:4,xa_fermentary:2,xa_fish_racks:0,xa_boatshed:3,xa_quay:0,xa_lighthouse:2,xa_gate:12,xa_watch:4,xa_garden:0,xa_pens:0,xa_wall:0,xa_bridge:0,xa_barge:0};
+  xa_barracks:80,xa_generator:4,xa_monastery:150,xa_monastery_white:150,xa_harbour_warehouse:3,xa_drydock:0,xa_slip:0,xa_work_barge:0,xa_lake_boat:0,xa_harbour_quay:0,xa_mole_run:0,xa_river_span:0,xa_serai:20,xa_latex_house:0,xa_tea_factory:4,xa_fermentary:2,xa_fish_racks:0,xa_boatshed:3,xa_quay:0,xa_lighthouse:2,xa_gate:12,xa_watch:4,xa_garden:0,xa_pens:0,xa_wall:0,xa_bridge:0,xa_barge:0};
  /* the wall's records (core/city 25 KCITY.site.wall): a buttress every 90 m, the gates found within 40 m of the avenues' crossings */
  const WALL_T={towerGap:90,clear:12,gateFind:40,thick:3.2,gateTower:5,gatePass:4};
  const tune=()=>({cell:2.5,rasterHalf:900,maxSlope:.22,exact:true,
@@ -212,19 +212,32 @@ var KS_TOWN=(function(){
   /* ---- the town's own pieces (records, the page draws them as the lots) */
   const extra=[],put=(id,key,v,p,ry,o2)=>{const D=dims(key,v);if(!D)return null;const c=xz(p);
    const r=Object.assign({id:'ks.extra.'+id,key,v,x:c[0],z:c[1],y:G.h(c[0],c[1]),ry,w:D.w,d:D.d,h:D.h,fw:D.fw||D.w,fd:D.fd||D.d,people:PEOPLE[key]||0,kind:'extra'},o2||{});extra.push(r);return r;};
-  const H=G.HARBOUR,QY=1.7;   /* the quays' top, above the lake */
-  /* the quays along the harbour's shore (their fronts to the water), the mole out into the lake and along the basin's mouth */
-  const Q=dims('xa_quay',0),qs=Q?Q.w:34;
-  for(let uu=H.u0+qs/2,i=0;uu<=H.u1-qs/2+1;uu+=qs,i++)put('quay.'+i,'xa_quay',0,[uu,-4],face(NVX),{y:QY,kind:'quay'});
+  const H=G.HARBOUR,QY=1.7,MD=2.4;   /* QY the boat sheds' floor over the lake; MD the quays', the mole's and the drydock's deck (kits/xanadu 87k3: their weed line at 2.4 m under it) */
+  /* the harbour (the owner, 2026-11-17: "make a real quay model and fill the other stand-ins with a proper model ... add some
+     proper harbor warehouses and a drydock to the waterfront"): the kit's harbour pieces (kits/xanadu/src/87k3-xa-harbour.js).
+     The quays along the basin's shore, end to end and centred on it (their fronts to the water) */
+  const Q=dims('xa_harbour_quay',0),qs=Q?Q.w:34,nq=Math.floor((H.u1-H.u0)/qs),q0=H.u0+(H.u1-H.u0-nq*qs)/2+qs/2;
+  for(let i=0;i<nq;i++)put('quay.'+i,'xa_harbour_quay',i%3,[q0+i*qs,-4],face(NVX),{y:MD,kind:'quay'});
+  /* the mole out into the lake and along the basin's mouth, each leg in runs stretched to it (len); the first leg stops 8 m short
+     of the elbow and the second starts 8 m back past it, so the corner closes without the two crossing. Under it the rubble
+     bank, now its foundation under the water */
   const MOLE={a:[H.u0-14,8],b:[H.u0-14,H.v0-14],c:[H.u1-70,H.v0-14],w:16};   /* in the shore frame; the basin's mouth between c and the shore's end */
-  const moles=[[MOLE.a,MOLE.b],[MOLE.b,MOLE.c]],moleRecs=[];
-  for(const [a,b] of moles){const L2=dd(a,b),n=Math.max(1,Math.round(L2/qs)),A=xz(a),B=xz(b),ry=face([B[1]-A[1],-(B[0]-A[0])]);   /* front across the run */
-   moleRecs.push({id:'ks.extra.mole.'+moleRecs.length,a:A,b:B,w:MOLE.w,top:QY-.2,kind:'mole'});
-   for(let i=0;i<n;i++){const t=(i+.5)/n;put('mole.'+moleRecs.length+'.'+i,'xa_quay',1,[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t],ry,{y:QY,kind:'mole'});}}
-  put('lighthouse','xa_lighthouse',0,[MOLE.c[0],MOLE.c[1]],face(NVX),{y:QY,kind:'lighthouse'});
+  const moles=[[MOLE.a,[MOLE.b[0],MOLE.b[1]+MOLE.w/2]],[[MOLE.b[0]-MOLE.w/2,MOLE.b[1]],MOLE.c]],moleRecs=[];
+  for(const [a,b] of moles){const L2=dd(a,b),n=Math.max(1,Math.round(L2/qs)),A=xz(a),B=xz(b),ry=face([B[1]-A[1],-(B[0]-A[0])]);   /* front across the run: the lake */
+   moleRecs.push({id:'ks.extra.mole.'+moleRecs.length,a:A,b:B,w:MOLE.w,top:MD-6.4,kind:'mole'});
+   for(let i=0;i<n;i++){const t=(i+.5)/n;put('mole.'+moleRecs.length+'.'+i,'xa_mole_run',0,[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t],ry,{y:MD,kind:'mole',len:L2/n});}}
+  put('lighthouse','xa_lighthouse',0,[MOLE.c[0],MOLE.c[1]],face(NVX),{y:MD,kind:'lighthouse'});
   for(let i=0;i<3;i++)put('boatshed.'+i,'xa_boatshed',0,[H.u0-46-i*20,-6],face(NVX),{y:Math.max(QY-.4,G.h(...xz([H.u0-46-i*20,4]))),kind:'boatshed'});
-  put('barge','xa_barge',0,[H.u0+120,-70],face(UX),{y:0,kind:'boat'});   /* the Sultan's barge at its mooring (the kit's pleasure barge) */
-  put('monastery','xa_monastery',0,MONASTERY,toward(MONASTERY,'bazaar'),{kind:'monastery'});
+  /* the waterfront: the warehouses behind the quays, facing them (a gap for the way up from the Lake Gate); the slip west of the
+     boat sheds; the drydock east of the basin, built out into the shallows from the shore */
+  [-235,-185,-135,15,65,115].forEach((uu,i)=>put('warehouse.'+i,'xa_harbour_warehouse',i%3,[uu,22],face(NVX),{kind:'warehouse'}));
+  put('slip','xa_slip',0,[H.u0-125,-6],face(NVX),{y:G.h(...xz([H.u0-125,9]))+.05,kind:'slip'});
+  put('drydock','xa_drydock',0,[H.u1+60,-24],face(NVX),{y:MD,kind:'drydock'});
+  /* the lake craft (vessels: kits/xanadu 87k3): work barges at the quays, fishing boats off the boat sheds, two under sail */
+  [[-150,'a'],[40,'b']].forEach(([uu,k],i)=>put('barge.'+k,'xa_work_barge',i,[uu,-13.5],face(UX),{y:0,kind:'boat'}));
+  for(let i=0;i<3;i++)put('boat.'+i,'xa_lake_boat',2,[H.u0-46-i*20,-24],face(NVX),{y:0,kind:'boat'});
+  put('boat.sail.a','xa_lake_boat',0,[-60,-480],face(UX),{y:0,kind:'boat'});put('boat.sail.b','xa_lake_boat',1,[420,-700],face(NUX),{y:0,kind:'boat'});
+  put('monastery','xa_monastery_white',0,MONASTERY,toward(MONASTERY,'bazaar'),{kind:'monastery'});
   /* the moat's bridges, one at each gate: the kit's street bridge, its deck level with the higher bank, across the moat and its
      slopes along the avenue */
   const MB=[];if(GR.moat){const bd2=dims('xa_bridge',0),sp=bd2?bd2.d:20,run=GR.moat.width+10,nm=Math.max(1,Math.ceil(run/sp));
@@ -247,9 +260,12 @@ var KS_TOWN=(function(){
   /* ---- the Strongbow road along the shore and the bridge over Keb Riwa's mouth (the owner, 2026-11-16: "bridge crosses it") */
   const sbOut=uvOf(GR.ways.find(w=>w.role==='avenue'&&w.line==='u').pts.slice(-1)[0]);   /* the Strongbow way's end past the Strongbow Gate */
   const roadUV=[sbOut,[sbOut[0]+120,sbOut[1]-30],[1400,232],[2600,230],[3800,228],[4905,230]],farUV=[[5165,230],[5600,330],[6400,560],[7600,800]];
-  const BR={u0:4905,u1:5165,v:230},bd=dims('xa_bridge',0),span=bd?bd.d:20,nb=Math.ceil((BR.u1-BR.u0)/span);
+  /* the stone arch bridge (kits/xanadu 87k3 xa_river_span): 26 m pieces, a pier under each, an abutment at each end on the bank */
+  const BR={u0:4905,u1:5165,v:230},bd=dims('xa_river_span',0),span=bd?bd.d:26,nb=Math.max(1,Math.round((BR.u1-BR.u0)/span));
   const deck=Math.max(G.h(...xz([BR.u0,BR.v])),G.h(...xz([BR.u1,BR.v])),G.riverAt(...xz([(BR.u0+BR.u1)/2,BR.v]))[1]+5);
-  for(let i=0;i<nb;i++)put('bridge.'+i,'xa_bridge',0,[BR.u0+(i+.5)*(BR.u1-BR.u0)/nb,BR.v],face(UX),{y:deck,kind:'bridge'});
+  const bmid=(BR.u0+BR.u1)/2,bu=i=>bmid+(i-(nb-1)/2)*span;
+  for(let i=0;i<nb;i++)put('bridge.'+i,'xa_river_span',0,[bu(i),BR.v],face(UX),{y:deck,kind:'bridge'});
+  put('bridge.abut.a','xa_river_span',1,[bu(-1),BR.v],face(UX),{y:deck,kind:'bridge'});put('bridge.abut.b','xa_river_span',1,[bu(nb),BR.v],face(NUX),{y:deck,kind:'bridge'});
   const roads=[{id:'ks.road.strongbow',cls:'road',w:7,tag:'the Strongbow road',pts:roadUV.map(xz)},{id:'ks.road.strongbow.far',cls:'road',w:7,tag:'the Strongbow road (on to the foot)',pts:farUV.map(xz)}];
   const census={buildings:lots.length+extra.length,people:0,byKey:{},byCls:{}};
   for(const r of lots.concat(extra)){census.people+=r.people;census.byKey[r.key]=(census.byKey[r.key]||0)+1;}

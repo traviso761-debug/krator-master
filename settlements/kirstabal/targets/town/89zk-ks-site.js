@@ -19,9 +19,9 @@ const ksStance=(r)=>{if(r.fixedY!=null)return{y:r.fixedY,drop:0};const c=Math.co
 const KS_PLACE=[];
 if(KS_PLAN){
  for(const r of KS_PLAN.lots){const st=ksStance(r);KS_PLACE.push({key:r.key,x:r.x,z:r.z,ry:r.ry,o:{v:r.v,y:st.y,drop:st.drop},kind:r.cls==='landmark'?'landmark':r.civic?'civic':'lot',cls:r.cls,id:r.id,h:ksD(r.h,10),people:r.people});}
- const WET=new Set(['quay','mole','lighthouse','boat','bridge']);   /* on the water or over the river: their own level */
- for(const r of KS_PLAN.extra){const st=WET.has(r.kind)?{y:r.y,drop:r.kind==='boat'?0:Math.max(0,r.y-KS_GROUND.h(r.x,r.z))+.3}:r.kind==='garden'?{y:r.y,drop:r.drop}:ksStance(r);   /* a garden square: one level, its own footings (41) */
-  KS_PLACE.push({key:r.key,x:r.x,z:r.z,ry:r.ry,o:{v:r.v,y:st.y,drop:r.kind==='boat'||r.kind==='bridge'?0:st.drop},kind:r.kind,id:r.id,h:ksD(r.h,10),people:r.people});}
+ const WET=new Set(['quay','mole','lighthouse','boat','bridge','slip','drydock']);   /* on the water or over the river: their own level */
+ for(const r of KS_PLAN.extra){const st=WET.has(r.kind)?{y:r.y,drop:r.kind==='boat'||r.kind==='slip'||r.kind==='drydock'||r.kind==='mole'||r.kind==='quay'||r.kind==='bridge'?0:Math.max(0,r.y-KS_GROUND.h(r.x,r.z))+.3}:r.kind==='garden'?{y:r.y,drop:r.drop}:ksStance(r);   /* a garden square: one level, its own footings (41) */
+  KS_PLACE.push({key:r.key,x:r.x,z:r.z,ry:r.ry,o:{v:r.v,y:st.y,drop:r.kind==='boat'||r.kind==='bridge'?0:st.drop,len:r.len},kind:r.kind,id:r.id,h:ksD(r.h,10),people:r.people});}
  /* THE TOWN WALL (the owner, 2026-11-17: slate, after Chiang Mai's thin brick wall; kits/xanadu 87k2), on core/city's wall
     records (41 KS_TOWN wall): each run cut into pieces of at most 14 m (o.len), its outer face away from the town, its base at
     the lowest ground under it (the higher end's ground buries its foot); a gate at each gate node, square to its road; a
