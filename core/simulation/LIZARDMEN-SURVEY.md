@@ -1,12 +1,16 @@
 # Lizardmen settlements: survey for the economy scope (2026-11-16)
 
+**The names (the owner, 2026-11-17):** *"the cube plateau village will be called iguana; the lizard capital is now renamed to
+Basilisk"*. So the capital (pin `slrodrkrls`, still "Sauropolis" on the scale model until its queue renames it) is
+**Basilisk**, and the plateau's granary town by the Pile (called Basilisk on 2026-11-16) is **Iguana**. This file uses the new names.
+
 Facts only, gathered read-only from the `openworld-sites-24defd` worktree (branch `claude/openworld-sites-24defd`, HEAD d0dbf39b2).
 Coordinates are scale model 5.1 px (2 km a pixel). Numbers from the rasters were computed with the model's own decode
 (`tools/scale-model/model/src/20-decode.js`); resource nodes with `tools/scale-model/geology.py`'s own `lode_nodes()` on
 `kits/resources/data/geology.json` (the counts match `kits/resources/data/ledger.json`'s catchments to within 1-3 gold nodes).
 
 **Coordinate warning.** `LORE.md` §6.20 (l.824-826) and `biomes/rift/PLAN-STATIONS.md` (l.70-72) give the pins on the OLD
-4.23 canvas (Sauropolis 493,1266; Komodo 593,1287; Gila 381,1155; Tuatara 546,1224; the Pile 448,1237). Add +272,+330
+4.23 canvas (Basilisk 493,1266; Komodo 593,1287; Gila 381,1155; Tuatara 546,1224; the Pile 448,1237). Add +272,+330
 (`geology.py` LEGACY_SHIFT) to get 5.1. All numbers below are 5.1.
 
 ---
@@ -21,14 +25,14 @@ the default list (all created 2026-09-24). The word "lizard" does not occur in t
 
 | Name | id | type | px, py | notes | Lizardman? |
 |---|---|---|---|---|---|
-| **Sauropolis** | `slrodrkrls` | city | 765, 1596 | "" | yes: LORE 6.20 l.825 "city ... at the trough's deepest, -2,600 m" |
+| **Basilisk** | `slrodrkrls` | city | 765, 1596 | "" | yes: LORE 6.20 l.825 "city ... at the trough's deepest, -2,600 m" |
 | **Tuatara** | `szv27b2reu` | village | 818, 1554 | "" | yes: LORE l.826 |
 | **Komodo** | `spnqhezhiw` | village | 865, 1617 | "" | yes: LORE l.826 |
 | **Gila** | `sze26pgivd` | village | 653, 1485 | "" | yes: LORE l.826 |
 | Cube (= **the Pile**) | `slonhq0jgv` | ruined arcology | 720, 1567 | "" | in the polygon; held in its upper levels by the Tungangs' **Loj Nahn** (~1,000 people, LORE l.842-843); the Lizardmen surround it. Pin still named "Cube" (renamed the Pile 2026-11-11, LORE l.156) |
 | The Tubes | `sa8xk6pimb` | cavern | 608, 1547 | "" | in the polygon; LORE l.156 calls it a *proposed* Rift-line ruin ("a cavern: a station or a tunnel mouth"), not a Lizardman town. Gemini's model counts it as a Lizardman settlement (pop 500, "Lizardmen geothermal lava-tube cavern network") |
 
-Polity membership elsewhere: `kits/resources/data/ledger.json` puts Cube, Gila, Komodo, Sauropolis, The Tubes, Tuatara in
+Polity membership elsewhere: `kits/resources/data/ledger.json` puts Cube, Gila, Komodo, Basilisk, The Tubes, Tuatara in
 "Lizardmen" (area 140,640 km2). Gemini's files (`populations-gemini.json`, `trade-gemini.json`, `world-pins-gemini.json`) list
 5 (all but Cube). `openworld/trade-goods.json` lists the same 5 (`closed: true`).
 
@@ -36,12 +40,12 @@ Populations on record (all *estimated by type*, none from lore):
 
 | Pin | `world-pins-gemini.json` / `trade-goods.json` | `populations-gemini.json` cur / on-screen / sim-urban | Gemini note |
 |---|---|---|---|
-| Sauropolis | 8,000 | 8,000 / 33,400 / 50,100 | "Lizardmen Rift capital + geothermal marsh & subterranean clutch-galleries" |
+| Basilisk | 8,000 | 8,000 / 33,400 / 50,100 | "Lizardmen Rift capital + geothermal marsh & subterranean clutch-galleries" |
 | The Tubes | 500 | 500 / 2,000 / 3,600 | "Lizardmen geothermal lava-tube cavern network" |
 | Gila, Komodo, Tuatara | 300 each | 300 / 2,500 / 2,500 each | "1:1 on-screen village" |
 | polity total | 9,400 | nat_total **232,560** (urban 61,200 + rural 171,360, rural ratio 2.8) | rural: "Dispersed Rift geothermal marsh warrens, warm-spring pools & basking camps"; habitable 63,680 km2; maritime "Hostile / Closed (0 Trade)" |
 
-Note: Gemini's model (`world-pins-gemini.json`) has Sauropolis at 762,1596 and Komodo at 864,1618 (1-3 px off the model's pins).
+Note: Gemini's model (`world-pins-gemini.json`) has Basilisk at 762,1596 and Komodo at 864,1618 (1-3 px off the model's pins).
 
 ---
 
@@ -104,7 +108,7 @@ you pass through" (LORE l.884-886).
   5 gaps, 21 na.
 - **No customs of exchange are written anywhere.** The only lore on movement of goods is the plunder warehouse, the bone
   hall's stock feeding buildings, and the craft halls storing their own goods. Gemini's model labels the regime
-  `internal_autarky_hostile`: "Trades strictly internally among Sauropolis, Komodo, Gila, and Tuatara" (`trade-gemini.json`,
+  `internal_autarky_hostile`: "Trades strictly internally among Basilisk, Komodo, Gila, and Tuatara" (`trade-gemini.json`,
   polities.Lizardmen) - Gemini's assumption, not lore.
 - *Proposed* (not lore): oxblood lacquer's red from the terminal sea's battery-strand ochre; Makers cut vitriols; Tenders
   tend the oldest reefs (`biomes/galvanic/PLAN.md` l.329-343, open question 5 l.445).
@@ -158,7 +162,7 @@ value `lo`**: the real floor may be lower (galvanic's vent is -2,700 m by its ow
 
 | Pin | Elev | atm | Mean (warm/cold month; extremes) | Rain | Climate | Zone | Slope | Region polygons |
 |---|---|---|---|---|---|---|---|---|
-| Sauropolis | **-2,600 (a water cell: on the sea)** | 2.21 | 36 (40/32; 44/27) | 2,086 | XA hypertropic jungle | basin | 0 | The Rift, Lizardmen, `rift` (biome) |
+| Basilisk | **-2,600 (a water cell: on the sea)** | 2.21 | 36 (40/32; 44/27) | 2,086 | XA hypertropic jungle | basin | 0 | The Rift, Lizardmen, `rift` (biome) |
 | Tuatara | -1,704 | 1.98 | 29 (35/24; 40/18) | 1,020 | XV abyssal savanna | salt basin | 2.7% (1.5 deg) | same |
 | Komodo | -2,452 | 2.17 | 35 (39/31; 43/26) | **4,000 (model ceiling)** | XA | basin | 5.7% (3.3 deg) | same |
 | Gila | -1,614 | 1.96 | 29 (35/24; 40/18) | 1,051 | XV | salt basin | 6.1% (3.5 deg) | same |
@@ -167,7 +171,7 @@ value `lo`**: the real floor may be lower (galvanic's vent is -2,700 m by its ow
 
 | Pin | 5 km hi/lo | 15 km hi / lo | 30 km hi / lo | Classes within 15 km | within 30 km | Mean rain 30 km |
 |---|---|---|---|---|---|---|
-| Sauropolis | -2,599 / -2,600 | -2,511 / -2,600 | -1,527 / -2,600 | XA 100% | XA 100% | 2,675 |
+| Basilisk | -2,599 / -2,600 | -2,511 / -2,600 | -1,527 / -2,600 | XA 100% | XA 100% | 2,675 |
 | Tuatara | -1,608 / -1,846 | -1,106 / -2,194 | -302 / -2,322 | XV 98, Aw 2 | XV 73, XA 10, Aw 6, XS 4, Cfa 3, Csa 2, Af 1, Am 1 | 935 |
 | Komodo | -2,157 / -2,600 | -1,729 / -2,600 | **+1,188** / -2,600 | XA 100 | XA 66, Cfa 17, Af 14, Cfb 2 | 3,359 |
 | Gila | -1,385 / -1,810 | -1,357 / -2,231 | -166 / -2,542 | XV 69, XA 31 | XA 46, XV 42, Af 6, Cfa 4 | 1,405 |
@@ -178,21 +182,21 @@ value `lo`**: the real floor may be lower (galvanic's vent is -2,700 m by its ow
 
 | Body | Extent | Level | Class | Pins on it |
 |---|---|---|---|---|
-| **Eastern terminal sea** ("the Lizardman Rift Sea", `river-names-5.1.md` l.120) | 2,318 cells = **9,272 km2**, px 758-873 x 1579-1616 | -2,600 (floor value) | WX abyssal salt lake 83%, XA 16% | **Sauropolis** (its western end, in the water), **Komodo** (2 km, eastern end); Tuatara 54 km (nearest water at 815,1581) |
+| **Eastern terminal sea** ("the Lizardman Rift Sea", `river-names-5.1.md` l.120) | 2,318 cells = **9,272 km2**, px 758-873 x 1579-1616 | -2,600 (floor value) | WX abyssal salt lake 83%, XA 16% | **Basilisk** (its western end, in the water), **Komodo** (2 km, eastern end); Tuatara 54 km (nearest water at 815,1581) |
 | Western terminal sea | 7,368 cells = **29,472 km2**, px 508-699 x 1431-1580 | -2,600 | WX 88% | Cube 42 km (699,1567), The Tubes 15.6 km (614,1542) |
 | **Gila's lake** (basins.json: "salt lake", at 648.5,1483.7, 3,401 km2, spill -1,587 m, XA) | component 576 cells = 2,304 km2, px 636-677 x 1479-1512 | -1,723 | XV/XA | **Gila** (2 km) |
 
 Other lakes within 100 km (`model/data/basins.json`): Gila: salt lake 644.5,1475.6 (-1,752 m, 64 km2, 25 km), through
 lakes at 628.5,1461.6 (-1,615 m, 433 km2, 68 km), 614.4,1453.6 (-1,591 m, 578 km2, 100 km), 670.5,1457.6 (+2,383 m, 401 km2, 65 km).
 Cube: through lake 728.6,1529.7 (-1,304 m, 160 km2, 77 km), salt lakes 712.6,1523.7 (-1,080 m, 88 km), 692.5,1525.7 (-1,706 m, 99 km).
-The Tubes: through lake 574.4,1581.8 (+2,735 m, 850 km2, 97 km). Sauropolis, Tuatara, Komodo: none in basins.json (their sea
+The Tubes: through lake 574.4,1581.8 (+2,735 m, 850 km2, 97 km). Basilisk, Tuatara, Komodo: none in basins.json (their sea
 is the floor, not a basin record).
 
 **Rivers within 40 km** (`model/data/rivers.json`, distance to nearest polyline vertex; Q at mouth):
 
 | Pin | Rivers |
 |---|---|
-| Sauropolis | Tlahn Gill (r762, wadi, 7.6 m3/s, 22 km, lists Sauropolis) 8 km; Blek Beck (r249, perennial, 15.3 m3/s, 40 km) 14 km; Stuan Warra (r207, 22.3 m3/s, 102 km) 34 km; all to the -2,600 m sea |
+| Basilisk | Tlahn Gill (r762, wadi, 7.6 m3/s, 22 km, lists Basilisk) 8 km; Blek Beck (r249, perennial, 15.3 m3/s, 40 km) 14 km; Stuan Warra (r207, 22.3 m3/s, 102 km) 34 km; all to the -2,600 m sea |
 | Tuatara | Neet Gill (r754, wadi, 0.7 m3/s, 17 km, lists Tuatara, ends in a -2,255 m basin) 10 km. Nothing perennial within 40 km |
 | Komodo | Kruk Warra (r088, "Lizardmen river 4", 51.3 m3/s, 40 km, lists Komodo) 12 km; Leet Beck (r145, 32.6 m3/s) 17 km; Tyan Gill (wadi, 7.6) 25 km; **Nahr ash-Shalālāt** (Erehwon's lake outflow, **1,180 m3/s**, 134 km, -1,670 to -2,600 m: "descending a series of low cataracts from the Lower Xanadu Lake to the Lizardman Rift Sea") 38 km |
 | Gila | Brant Beck (r215, 20.2 m3/s, into Gila's lake) 23 km; Muckle Tkyoob Beck (r866, "Lizardmen river 5", 51.8 m3/s, into the -1,752 m lake) 31 km |
@@ -220,7 +224,7 @@ polity's ledger imports are coal and nickel).
 
 **Within 30 km**
 
-| Family | Sauropolis | Tuatara | Komodo | Gila | Cube | The Tubes |
+| Family | Basilisk | Tuatara | Komodo | Gila | Cube | The Tubes |
 |---|---|---|---|---|---|---|
 | iron | 59 (10/20/29) 5.1 | 92 (18/37/37) 3.7 | 46 (9/17/20) 3.7 | 33 (3/11/19) 2.5 | 74 (8/31/35) 3.2 | 79 (10/38/31) 3.2 |
 | copper | 56 (9/23/24) 2.1 | **102** (16/59/27) 2.5 | 62 (9/28/25) 5.0 | 32 (8/9/15) 3.4 | 96 (16/40/40) 1.4 | 87 (14/41/32) 3.4 |
@@ -237,7 +241,7 @@ polity's ledger imports are coal and nickel).
 | potash | - | - | - | 9 (3/4/2) 14.8 | - | - |
 | alkali (soda) | - | - | - | 5 (0/3/2) 13.0 | - | - |
 
-**Within 15 km**: Sauropolis iron 12, copper 15, gold 5, tin 4, silver 5, REE 6, oil 6; Tuatara iron 26, copper 32, gold 10,
+**Within 15 km**: Basilisk iron 12, copper 15, gold 5, tin 4, silver 5, REE 6, oil 6; Tuatara iron 26, copper 32, gold 10,
 tin 10, silver 12, REE 17, sulfur 11, oil 11, marble 5; Komodo iron 13, copper 15, gold 7, tin 6, silver 6, REE 9, oil 9; Gila
 iron 11, copper 8, gold 4, tin 3, silver 1, REE 4, oil 3, gypsum 1, potash 1, alkali 1; Cube iron 18, copper 27, gold 13, tin
 10, silver 12, REE 13, oil 18; The Tubes iron 25, copper 21, gold 8, tin 9, silver 8, REE 12, sulfur 13, oil 8, marble 8.
@@ -245,23 +249,23 @@ iron 11, copper 8, gold 4, tin 3, silver 1, REE 4, oil 3, gypsum 1, potash 1, al
 Layer bytes (prospectivity 0-255) max within 30 km: the rift floor gives iron 70, copper 120, gold 90, tin 50, silver 80,
 REE 190, oil 110 everywhere; Tuatara and The Tubes also reach the volcanic province (iron 210, copper 240, gold 140, silver
 150, sulfur 255, tuff 189, skarn 200, marble 63). Gila's evaporites: gypsum 215, halite 205, potash 140, alkali 129, saltpeter 40,
-limestone 134. Province at the pin: rift (Tuatara, Gila, Cube, Tubes); water (Sauropolis, Komodo). Cube is on Ancient-ruin
-ground (bit 128). Within 30 km: Sauropolis rift 58 / water 42; Tuatara rift 84 / volcanic 16; Komodo rift 69 / water 31;
+limestone 134. Province at the pin: rift (Tuatara, Gila, Cube, Tubes); water (Basilisk, Komodo). Cube is on Ancient-ruin
+ground (bit 128). Within 30 km: Basilisk rift 58 / water 42; Tuatara rift 84 / volcanic 16; Komodo rift 69 / water 31;
 Gila water 53 / rift 38 / evaporite 8; Cube rift 100; Tubes rift 72 / volcanic 15 / water 13.
 
-**Placers within 30 km** (river-carried gold and tin): Sauropolis gold medium 13.5 km, high 15.9, high 20.7; tin medium 13.5,
+**Placers within 30 km** (river-carried gold and tin): Basilisk gold medium 13.5 km, high 15.9, high 20.7; tin medium 13.5,
 low 15.9, high 20.7. Tuatara gold high + tin medium 13.4 km. Komodo gold high/med/med/med at 11.9/16.5/24.6/27.1 km, tin
 med/med/high/med same places. The Tubes gold high + tin medium 25.9 km. Gila and Cube: none.
 
-**Basics** (ledger.json, 30 km = `dayKm`): stone, wood, water true at all six; **salt false at Sauropolis, Tuatara, Komodo,
-Cube, The Tubes; true only at Gila** (audit failures "Lizardmen: Cube/Komodo/Sauropolis/The Tubes/Tuatara lacks salt within 30
-km"). But `openworld/RESOURCES-SETTLEMENTS.md` scores salt by the salt lake too: **Sauropolis 284 ("salt lake 1136 km2", second
+**Basics** (ledger.json, 30 km = `dayKm`): stone, wood, water true at all six; **salt false at Basilisk, Tuatara, Komodo,
+Cube, The Tubes; true only at Gila** (audit failures "Lizardmen: Cube/Komodo/Basilisk/The Tubes/Tuatara lacks salt within 30
+km"). But `openworld/RESOURCES-SETTLEMENTS.md` scores salt by the salt lake too: **Basilisk 284 ("salt lake 1136 km2", second
 best on the map, l.110)**, Komodo 29, others 0; nearest good rock salt: Gila 14 km (646,1484), Tuatara 102 km (869,1559), The
-Tubes 144 km (639,1482) (l.338-346). `trade-goods.json` gives Sauropolis salt supply 1,140 and Komodo 60. The two sources
+Tubes 144 km (639,1482) (l.338-346). `trade-goods.json` gives Basilisk salt supply 1,140 and Komodo 60. The two sources
 disagree because the geology's evaporite basins do not include the -2,600 m terminal seas.
 
 **Iron grade**: "Only low-grade iron" list includes Gila (max 70) and Komodo (RESOURCES-SETTLEMENTS l.372); "nearest good iron
-(100+)": Sauropolis 36 km (748,1590) (l.374).
+(100+)": Basilisk 36 km (748,1590) (l.374).
 
 **Polity totals** (ledger.json): nodes iron 4,389, copper 5,067, gold 2,300, tin 1,565, silver 2,071, REE 2,336, sulfur 2,804,
 saltpeter 570, oil 1,520, marble 304, gypsum 28, halite 24, potash 24, alkali 7, coal 0, nickel 0. Imports: coal, nickel.
@@ -277,14 +281,14 @@ at 850,1628 (37 km from Komodo).
 
 | Pin | Climate | Farm | Staples / high-value | Timber | Fish | Salt | Water |
 |---|---|---|---|---|---|---|---|
-| Sauropolis (reach 30) | XA 36 2086 mm 2.21 atm | 186 / 4 | Ashmillet, Bambara groundnut, Sandpan fonio / Tamarisk manna, Cacao, Clove | 1135 | 277 | 284 | 129 |
-| Tuatara (10) | XV 29 1019 mm 1.98 | 240 / 280 | same as Sauropolis + Flametip tanbark, Ghost-gum leaf | 165 | 0 | 0 | 59 |
+| Basilisk (reach 30) | XA 36 2086 mm 2.21 atm | 186 / 4 | Ashmillet, Bambara groundnut, Sandpan fonio / Tamarisk manna, Cacao, Clove | 1135 | 277 | 284 | 129 |
+| Tuatara (10) | XV 29 1019 mm 1.98 | 240 / 280 | same as Basilisk + Flametip tanbark, Ghost-gum leaf | 165 | 0 | 0 | 59 |
 | Komodo (10) | XA 35 4000 mm 2.17 | 26 / 16 | Bamboo rice / - | 179 | 17 | 29 | 86 |
 | Gila (10) | XV 29 1050 mm 1.96 | 52 / 48 | Ashmillet, Bambara groundnut, Sandpan fonio / Tamarisk manna, Cacao, Clove | 94 | 168 | 0 | 70 |
 | Cube (10) | Cfa 22 1756 mm 1.65 | 319 / 324 | Ashroot, Bamboo rice, Banana / Cacao, Clove, Coffee | 304 | 0 | 0 | 67 |
 | The Tubes (10) | Csa 21 925 mm 1.62 | 30 / 32 | Ashmillet, Ashroot, Bambara groundnut / Flametip tanbark, Ghost-gum leaf, Ironbark bark | 136 | 0 | 0 | 55 |
 
-"Sauropolis has 186 farm-eq km2 with 4 km2 over .5 (hot XA)" (RESOURCES-SETTLEMENTS l.422).
+"Basilisk has 186 farm-eq km2 with 4 km2 over .5 (hot XA)" (RESOURCES-SETTLEMENTS l.422).
 
 `kits/crops` run in node (`CROPS.at`, the kit's own code). Axis choice is mine: warmth `tropic` (the rift biome's jungle zone
 uses tropic; `hot` is "hot desert, geothermal ground", PLAN.md l.39-40), atm `dense` (1.3-2.0; the pins are 1.96-2.21, above
@@ -292,7 +296,7 @@ the band's top), aridity from rain.
 
 | Point | Fits (all `rain`) |
 |---|---|
-| Sauropolis / Komodo shore (tropic, dense, wet) | 24: rice, taro, shade-manioc, ashroot, breadfruit, banana, plantain, mahogany-nut, fern-egg, coconut, wineweed (alga), fan-palm-heart, fiddlehead, guava, ironplum, stinkbell, scalefruit, stack-fig, clove, coffee, cacao, kava, hyperbamboo, bamboo-rice |
+| Basilisk / Komodo shore (tropic, dense, wet) | 24: rice, taro, shade-manioc, ashroot, breadfruit, banana, plantain, mahogany-nut, fern-egg, coconut, wineweed (alga), fan-palm-heart, fiddlehead, guava, ironplum, stinkbell, scalefruit, stack-fig, clove, coffee, cacao, kava, hyperbamboo, bamboo-rice |
 | same, salt shore (`salt:true`) | adds wild-rice, kelp, sea-lettuce, sea-grapes, tidewort, brine-apple (30) |
 | Tuatara / Gila (tropic, dense, subhumid) | 54, incl. rice, ashmillet, sandpan-fonio, bambara, taro, sweet-potato, manioc, ashroot, stub-cone, breadfruit, banana, plantain, ballmelon, **frillpod**, pomegranate, lantern-fruit, bell-date, wadi-date, mesquite, carob, sugar-cane, coffee, cacao, kava, tobacco, tamarisk-manna, myrrh |
 | Cube plateau (subtropic, dense, humid) | 21: rice, helix-bean, sweet-potato, ashroot, acorn, wingnut, avocado, wineweed, fiddlehead, greens, persimmon, citron, ironplum, tamarillo, lantern-fruit, serviceberry, herbs, coffee, tea, tobacco, measuremelon |
@@ -324,23 +328,23 @@ Fauna: the rift biome defers fauna (`biomes/rift/NOTES.md` l.67 "Fauna deferred"
 
 **Between Lizardman pins (km, straight line)**
 
-| | Sauropolis | Tuatara | Komodo | Gila | Cube | The Tubes |
+| | Basilisk | Tuatara | Komodo | Gila | Cube | The Tubes |
 |---|---|---|---|---|---|---|
-| Sauropolis | - | 135 | 204 | 315 | 107 | 329 |
+| Basilisk | - | 135 | 204 | 315 | 107 | 329 |
 | Tuatara | 135 | - | 157 | 358 | 198 | 420 |
 | Komodo | 204 | 157 | - | 499 | 307 | 533 |
 | Gila | 315 | 358 | 499 | - | 212 | 153 |
 | Cube | 107 | 198 | 307 | 212 | - | 228 |
 | The Tubes | 329 | 420 | 533 | 153 | 228 | - |
 
-Two clusters: east (Sauropolis, Tuatara, Komodo, round the 9,272 km2 eastern sea) and west (Gila, The Tubes, round the
-29,472 km2 western sea and Gila's lake), the Pile's plateau between (107 km from Sauropolis, 212 from Gila).
+Two clusters: east (Basilisk, Tuatara, Komodo, round the 9,272 km2 eastern sea) and west (Gila, The Tubes, round the
+29,472 km2 western sea and Gila's lake), the Pile's plateau between (107 km from Basilisk, 212 from Gila).
 
 **Nearest non-Lizardman places** (km)
 
 | Pin | Nearest |
 |---|---|
-| Sauropolis | South watch fort 134, West watch fort 137, Erehwon 179, Golden Tears camp 182, Beacon fort 197, Thalaba 259, Strongwall 307, Theodiga 311, Qiblai 314 |
+| Basilisk | South watch fort 134, West watch fort 137, Erehwon 179, Golden Tears camp 182, Beacon fort 197, Thalaba 259, Strongwall 307, Theodiga 311, Qiblai 314 |
 | Tuatara | **South watch fort 17**, Beacon fort 63, **Erehwon 80**, West watch fort 85, Thalaba 147, Golden Tears camp 161, Theodiga 184, Qiblai 224, Strongwall 255 |
 | Komodo | **Golden Tears camp 37**, Strongwall 105, Qiblai 122, Xanadu gold mines (911,1665) 133, Beacon fort 159, South watch fort 174, Theodiga 185, Erehwon 235 |
 | Gila | Cthonos (ruin) 257, West watch fort 275, Erehwon 310, South watch fort 342, Thalaba 344, Pluton 362, Chimes 414, Tallwalls 434 |
@@ -355,7 +359,7 @@ Lizardmen's country (Chimes to the Pile) is underground" (`openworld/ANCIENT-NET
 across the Lizardmen's floor" (TRADE-SCOPE l.358). Gemini's routes skirt the country with a "Lizardman Raid Hazard" tag
 (TRADE-GEMINI.md l.283 on).
 
-**Water links**: no river joins two Lizardman pins. Sauropolis and Komodo share the eastern terminal sea (both ends of the
+**Water links**: no river joins two Lizardman pins. Basilisk and Komodo share the eastern terminal sea (both ends of the
 9,272 km2 water, 204 km apart by straight line); Tuatara drains by a wadi to a closed -2,255 m basin, 54 km from that sea.
 Gila's and The Tubes' rivers run to the western sea / Gila's lake. Erehwon's outflow (Nahr ash-Shalālāt, 1,180 m3/s) ends in the
 eastern sea 38 km from Komodo.

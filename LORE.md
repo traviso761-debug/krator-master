@@ -959,8 +959,10 @@ marked *proposed* is this session's and waits on the owner. Its placeholder entr
   hall's stock: hides for roofs, bone for building). Captives would be pointless anyway: their kin always know where they
   are, and as slaves they are listless.
 - **Where.** The Rift floor east of the great lake's basin: the "Lizardmen" region on the scale model (px ~293-610 by
-  1087-1345), round the Rift's terminal seas. On the model: **Sauropolis** (city, px 493,1266, at the trough's deepest,
-  -2,600 m), the villages **Komodo** (593,1287), **Gila** (381,1155) and **Tuatara** (546,1224). Too high for them to go
+  1087-1345), round the Rift's terminal seas. On the model: **Basilisk**, the capital (city, px 493,1266, at the trough's deepest,
+  -2,600 m; called Sauropolis until the owner renamed it, 2026-11-17), the villages **Komodo** (593,1287), **Gila** (381,1155) and **Tuatara** (546,1224),
+  and **Iguana**, the granary town on the Pile's plateau (the owner, 2026-11-17: "the cube plateau village will be called iguana";
+  *proposed* 5.1 px 713,1569). These are old-canvas pixels: 5.1 is +272,+330 (`core/simulation/PLAN-LIZARDMEN.md`). Too high for them to go
   comfortably: the rift rim, which is why the Tungangs and Dalab hold out there (§6.1). **The Pile**, the Ancients' hub in the
   Rift and the reward for whoever braves the Lizardmen (§4), lies deep in their country.
 - **The reliquaries.** They build great **cyclopean reliquaries** (the Xanadui call them temples), store strange

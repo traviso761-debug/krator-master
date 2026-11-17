@@ -44,9 +44,9 @@ The table is `LZ_TRADES` in `src/59-lz-trades.js` (checked by `tools/check_trade
 
 - [ ] bakers: a bake house or yam oven (the windmill makes flour, nothing bakes it).
 - [ ] brewers: a fermenting house for a spore or yam drink.
-- [ ] fishers: a small fishing weir or drying rack on the Rift's water.
+- [x] fishers: a small fishing weir or drying rack on the Rift's water. Done 2026-11-17: `lz-weir` (`src/59w-lz-works.js`).
 - [ ] orchardmen: an orchard of Rift fruit trees (the farm has greens, pods and yam only).
-- [ ] miners: a mine head (ore for the bronze hall).
+- [x] miners: a mine head (ore for the bronze hall). Done 2026-11-17: `lz-mine` and the placer floor `lz-placer` (`src/59w-lz-works.js`).
 - [ ] quarrymen and masons (partly, the bronze and stone hall cuts stone): a quarry.
 
 ## Doors, glass and the reachability audit (core/door, 2026-11-03)

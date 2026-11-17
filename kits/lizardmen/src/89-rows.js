@@ -5,6 +5,7 @@ const FAMILIES=[
  {name:'Dwellings, by caste',keys:['lz-warren','lz-makers','lz-longhouse','lz-lodge','lz-tower']},
  {name:'The nest hall',keys:['lz-nest']},
  {name:'Trades and food',keys:['lz-hall-bronze','lz-hall-reed','lz-hall-bone','lz-granary','lz-windmill','lz-farm']},
+ {name:'Works (mine, weir, placer, cistern, fungus beds)',keys:['lz-mine','lz-weir','lz-placer','lz-cistern','lz-fungus']},
  {name:'Military',keys:['lz-barracks','lz-muster','lz-lookout']},
  {name:'The camp',keys:['lc-hide','lc-shield','lc-seer','lc-sail']},
  {name:'Specialists and stores',keys:['lz-seer','lz-medicine','lz-warehouse']},

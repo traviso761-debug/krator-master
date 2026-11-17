@@ -1,0 +1,4 @@
+# generated at every build by build.py (the KCITY bundle and the ground)
+gen/
+shots/
+.syntax-*.js
