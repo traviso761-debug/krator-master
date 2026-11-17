@@ -187,7 +187,7 @@
     "kits/iziz-vernacular/src/74z-vern-trades.js": "8ff3ccda50c56e14f469753b70253b570c31666b09510f098ec6c45b686f4c9c",
     "kits/iziz-vernacular/vernacular.py": "dcae438a176751059c9a0a11431f7aa08ac8724894fa6b082a64389ba3534ad0",
     "kits/resources/src/42r-res-ore.js": "fff9ee3785b48b94adc9caf384d31b047e21eed3133f70a4ed5bf2d01f3830cc",
-    "kits/resources/src/44r-res-nodes.js": "9dff64ba02126039f38e1abe6e8d8ef62e78a520bdcb510bc8254b9693115c16",
+    "kits/resources/src/44r-res-nodes.js": "3bfb8ed6570e5a3be393dac0273d66fcf4b684efbbfbd4c7945a5d4ce8218f2f",
     "kits/xanadu/kit_bundle.py": "8d9bd201e49f0d228018e503e491712bc17762656be0200babcd3e3ca399a4ef",
     "kits/xanadu/src/70-xa-tex.js": "2efcc6922687bd9e374c03bdc8c3b75d5d2a1f06bf7da6656e4f95d0d32df02f",
     "kits/xanadu/src/71-xa-mat.js": "d08001da45495ca8d49b9df566d56c8c5b2567ee7d49b8e8b60c73deac436d41",
@@ -301,14 +301,14 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "kits/construction/dist/construction.html": "228f18759123ec46f28c39cd022e079d638bb767790772b672a0d3d51b104f13",
+    "kits/construction/dist/construction.html": "a255c22a2299185c2d1a47b5d03b69f15b780fd1f13891a6e1aee0f7afdb0b4f",
     "kits/construction/dist/construction.tex.construction.js": "7da0eac14adf0e12ec622c676cbf74f6d1bcd49552fec5d00f480f664143bdcf",
     "kits/construction/dist/construction.tex.islanders.js": "3c957f12243b7dd0790f5e970c307e017f5bddeaa7a6363fb387834e1881cd6b",
     "kits/construction/dist/construction.tex.iziz.js": "f0e484bf7e32aad2acca7621c41eb8c8eb4c3306c32b85ecc376ecff375710e3",
     "kits/construction/dist/construction.tex.xanadu.js": "f9f88f3553a52593ab87a0fa1f23e9eedbeb5dfb5ffbc66cfe17ddbad583f6b7"
    },
    "outputs_raw": {
-    "kits/construction/dist/construction.html": "228f18759123ec46f28c39cd022e079d638bb767790772b672a0d3d51b104f13",
+    "kits/construction/dist/construction.html": "a255c22a2299185c2d1a47b5d03b69f15b780fd1f13891a6e1aee0f7afdb0b4f",
     "kits/construction/dist/construction.tex.construction.js": "7da0eac14adf0e12ec622c676cbf74f6d1bcd49552fec5d00f480f664143bdcf",
     "kits/construction/dist/construction.tex.islanders.js": "3c957f12243b7dd0790f5e970c307e017f5bddeaa7a6363fb387834e1881cd6b",
     "kits/construction/dist/construction.tex.iziz.js": "f0e484bf7e32aad2acca7621c41eb8c8eb4c3306c32b85ecc376ecff375710e3",

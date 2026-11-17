@@ -223,7 +223,8 @@ defBuilding({key:'node-nickel-high',seed:5942,...resNodeDef('nickel','high')});
 defBuilding({key:'node-marble-low',seed:5950,...resNodeDef('marble','low')});
 defBuilding({key:'node-marble-medium',seed:5951,...resNodeDef('marble','medium')});
 defBuilding({key:'node-marble-high',seed:5952,...resNodeDef('marble','high')});
-/* the gems (2026-11-16, the owner: the Coyote Men's exports; kits/coyote). emerald, Muzo's: a low outcrop of dark green-black
+/* the gems (2026-11-16, the owner: the Coyote Men's exports; kits/coyote; seeds 6810-6822: 5960-5962 are zinc's on
+   claude/rift-battery-biome, 6710-6797 the mined goods' on claude/resource-nodes). emerald, Muzo's: a low outcrop of dark green-black
    schist and shale (the library's rock.schist.emerald, family 'schistem'), white calcite veins across its faces, the six-sided
    green crystals standing in them, more and larger with the grade; turquoise, Nishapur's: a pale bleached outcrop of altered
    rock (cream, buff) netted with blue-green veinlets (rock.turquoise.vein, family 'turq'), nodules where the veins swell, a
@@ -244,9 +245,9 @@ function resTurquoise(S,rich){const L=RES_LOOK.turquoise,mk=resK('turq','plain')
  resLoose(S,2+rich*5,[L.lump,L.pile,L.host[1]],rich?mk:'plain');}
 {const node1=resNode;resNode=function(kind,grade){const G=RES_ORE.grades[grade];if(kind==='emerald')return resEmerald(G.size,G.rank);if(kind==='turquoise')return resTurquoise(G.size,G.rank);return node1(kind,grade);};}
 Object.assign(RES_NAME,{emerald:'Emerald',turquoise:'Turquoise'});Object.assign(RES_H,{emerald:.55,turquoise:.55});
-defBuilding({key:'node-emerald-low',seed:5960,...resNodeDef('emerald','low')});
-defBuilding({key:'node-emerald-medium',seed:5961,...resNodeDef('emerald','medium')});
-defBuilding({key:'node-emerald-high',seed:5962,...resNodeDef('emerald','high')});
-defBuilding({key:'node-turquoise-low',seed:5970,...resNodeDef('turquoise','low')});
-defBuilding({key:'node-turquoise-medium',seed:5971,...resNodeDef('turquoise','medium')});
-defBuilding({key:'node-turquoise-high',seed:5972,...resNodeDef('turquoise','high')});
+defBuilding({key:'node-emerald-low',seed:6810,...resNodeDef('emerald','low')});
+defBuilding({key:'node-emerald-medium',seed:6811,...resNodeDef('emerald','medium')});
+defBuilding({key:'node-emerald-high',seed:6812,...resNodeDef('emerald','high')});
+defBuilding({key:'node-turquoise-low',seed:6820,...resNodeDef('turquoise','low')});
+defBuilding({key:'node-turquoise-medium',seed:6821,...resNodeDef('turquoise','medium')});
+defBuilding({key:'node-turquoise-high',seed:6822,...resNodeDef('turquoise','high')});
