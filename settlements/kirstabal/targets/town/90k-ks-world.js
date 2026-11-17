@@ -48,9 +48,11 @@ function ksPainter(B){const PX=4096/Math.max(B.x1-B.x0,B.z1-B.z0),W=Math.ceil((B
  return P;}
 /* the town's beaten ground: wider than the build zone (it was the zone until the town was tightened, 2026-11-16), so the
    gardens, the seat, the barracks and the edges of the town stand on dust, not on the lakeside's lawn */
-const KS_EARTH=[[-600,20],[700,20],[700,660],[-600,660]].map(([u,v])=>KS_GROUND.at(u,v));
+const KS_EARTH=[[-620,20],[700,20],[700,860],[-620,860]].map(([u,v])=>KS_GROUND.at(u,v));
 function ksPaintTown(P){const K=KS_PLAN;if(!K)return;const {ma,mb,t}=P;
  ksPaintClimate(P,10);P.sandBands(4);
+ /* the moat's trench and banks: wet earth (the sand set, darkened), the water drawn over its middle */
+ {const M=KS_GROUND.moat();if(M){mb.fillStyle='rgb(255,0,0)';P.line(mb,M.line,M.width+12);t.strokeStyle='rgba(80,72,60,.45)';P.line(t,M.line,M.width+12);}}
  /* the town's made ground (the quarters inside the zone) a little dirt, the yards round every building dirt */
  ma.fillStyle='rgb(0,0,200)';P.poly(ma,KS_EARTH);ma.fill();   /* packed earth: a hot town's ground, not a lawn */t.fillStyle='rgba(140,130,118,.25)';P.poly(t,KS_EARTH);t.fill();
  /* the yards as garden plots (the owner, 2026-11-16: "Paint the yards as green garden plots"): every 3 m cell of the build zone
@@ -60,7 +62,7 @@ function ksPaintTown(P){const K=KS_PLAN;if(!K)return;const {ma,mb,t}=P;
   const under=(x,z)=>{for(const s of KS_WAYS.query(x,z,1))if(KCITY.lib.segDist([x,z],s.a,s.b)<s.w/2+.8)return true;
    for(const p of KS_SPACE.query(x,z,1)){const D=VERN.defs[p.key];if(!D)continue;const dx=x-p.x,dz=z-p.z,c=Math.cos(p.ry),s=Math.sin(p.ry),lx=dx*c-dz*s,lz=dx*s+dz*c;
     if(Math.abs(lx)<(D.fw||D.w)/2+1.2&&Math.abs(lz)<(D.fd||D.d)/2+1.2)return true;}return false;};
-  for(let vv=Z[0][1];vv<Z[2][1];vv+=S)for(let uu=Z[0][0];uu<Z[1][0];uu+=S){const m=at(uu+S/2,vv+S/2);if(KS_GROUND.h(m[0],m[1])<1.4||under(m[0],m[1]))continue;
+  for(let vv=Z[0][1];vv<Z[2][1];vv+=S)for(let uu=Z[0][0];uu<Z[1][0];uu+=S){const m=at(uu+S/2,vv+S/2);if(KS_GROUND.h(m[0],m[1])<1.4||!ksInWall(m[0],m[1])||under(m[0],m[1]))continue;
    const k=KRAND.unit(KRAND.cell(41627,Math.floor(uu/9),Math.floor(vv/9)));if(k>=.85)continue;
    const q=[[uu,vv],[uu+S,vv],[uu+S,vv+S],[uu,vv+S]].map(([u,v])=>at(u,v));
    ma.fillStyle='rgb(0,0,0)';P.poly(ma,q);ma.fill();   /* not dirt: grass, or the tilled soil below */
@@ -77,7 +79,7 @@ function ksPaintTown(P){const K=KS_PLAN;if(!K)return;const {ma,mb,t}=P;
  for(const w of K.roads){ma.strokeStyle='rgb(0,0,255)';P.line(ma,w.pts,w.w);}
  /* the quays' apron and the bazaar square in flagstone */
  {const H=KS_GROUND.HARBOUR,c=[[H.u0-20,-2],[H.u1+20,-2],[H.u1+20,44],[H.u0-20,44]].map(([u,v])=>KS_GROUND.at(u,v));ma.fillStyle='rgb(0,255,0)';P.poly(ma,c);ma.fill();
-  const B2=KS_TOWN.BAZAAR,s=[[B2[0]-32,B2[1]-34],[B2[0]+32,B2[1]-34],[B2[0]+32,B2[1]+30],[B2[0]-32,B2[1]+30]].map(([u,v])=>KS_GROUND.at(u,v));P.poly(ma,s);ma.fill();}}
+  const B2=K.places.bazaar,s=[[B2[0]-32,B2[1]-32],[B2[0]+32,B2[1]-32],[B2[0]+32,B2[1]+32],[B2[0]-32,B2[1]+32]].map(([u,v])=>KS_GROUND.at(u,v));P.poly(ma,s);ma.fill();}}
 /* the climate on the grass (the Rift floor: 89zk's ksWet): tawny savannah inland, a deeper green by the lake, Keb Riwa and the
    scarp's foot, painted as cells on the tint */
 function ksPaintClimate(P,step){const B=P.B;for(let z=B.z0;z<B.z1;z+=step)for(let x=B.x0;x<B.x1;x+=step){const w=ksWet(x+step/2,z+step/2);
@@ -154,5 +156,14 @@ const KS_RIVER=(function(){const G=KS_GROUND,up=[[1000.5,1598],[999.5,1597.6],[9
   const D=WATER.drawFlow(F,{shallow:ksLinC(0x7a8a6c),deep:ksLinC(0x3a5a50),color:0xffffff,roughness:.14,metalness:.05,envMapIntensity:.45,step:20,across:6,margin:6,renderOrder:2});
   if(D&&D.mesh){D.mesh.userData.inspectLabel='Keb Riwa (r107: 780 m3/s; the cataract down the scarp)';D.mesh.userData.probeSkip=true;}return {F,D,pts};}
  catch(e){reportErr('Keb Riwa: '+(e&&e.stack||e));return null;}})();
+/* THE MOAT (the owner, 2026-11-17: Chiang Mai's): its water as four core/water flows, one a side, corner to corner, 1.4 m under
+   the ground's line (KS_GROUND.moatLevel: the trench is 3 m deep), slow and still-looking, the bridges over it at the gates */
+const KS_MOAT=(function(){const M=KS_GROUND.moat();if(!M)return null;const L=M.line,n=L.length-1,k=n/4,out=[];
+ for(let sd=0;sd<4;sd++){const pts=[];for(let i=sd*k;i<=(sd+1)*k;i++){const p=L[i%n];pts.push([p[0],p[1],KS_GROUND.moatLevel(p[0],p[1])]);}
+  try{const F=WATER.flow({name:'the moat',pts,width:pts.map(()=>M.width-1),speed:.15,densify:20});
+   const D=WATER.drawFlow(F,{shallow:ksLinC(0x6c7a5c),deep:ksLinC(0x34483e),color:0xffffff,roughness:.1,metalness:.05,envMapIntensity:.45,step:8,across:4,margin:2,renderOrder:2});
+   if(D&&D.mesh){D.mesh.userData.inspectLabel='The moat';D.mesh.userData.probeSkip=true;out.push(D);}}
+  catch(e){reportErr('the moat: '+(e&&e.stack||e));}}
+ return out;})();
 window._worldMs=Math.round(performance.now()-KS_T0);
-window._ksWater={lake:!!KS_LAKE,river:!!(KS_RIVER&&KS_RIVER.D),riverPts:KS_RIVER?KS_RIVER.pts.length:0};
+window._ksWater={lake:!!KS_LAKE,river:!!(KS_RIVER&&KS_RIVER.D),riverPts:KS_RIVER?KS_RIVER.pts.length:0,moat:KS_MOAT?KS_MOAT.length:0};

@@ -4,7 +4,7 @@
 // reads kits/catalog/krator-furniture-core.js and fails when a copied list no longer matches its source, so drift
 // is a failing test, not a silent fork.
 //
-//   KTAGS.VOCAB.classes, cultures, cultureNames, cultureAlias, types, wealth, wealthAlias, wealthOf(0..1), tiers,
+//   KTAGS.VOCAB.classes (vessel and vehicle since 2026-11-17), cultures, cultureNames, cultureAlias, types, wealth, wealthAlias, wealthOf(0..1), tiers,
 //               states, settings, jobs, koppen, doorStyles, lightKinds, keys (tag key -> its rule), prefix
 (function(){
  'use strict';
@@ -71,9 +71,17 @@
  function wealthOf(v){ return v < CATALOG_TIERS.poor[1] ? 'poor' : v < CATALOG_TIERS.court[0] ? 'middle' : 'rich'; }
 
  K.VOCAB = {
-   classes: ['building', 'part', 'fixture', 'furniture', 'prop', 'flora', 'life', 'landmark', 'infrastructure', 'feature'],
+   // vessel (2026-11-17, the owner: "make sure boats are properly tagged as ships, see ring sea vessels"): a ship or boat, its
+   // tags the Ring Sea's (kits/ringsea/API.md: types, propulsion, hull, wealth, crew, role). vehicle (the same day: "we should
+   // add a vehicle tag as well"): a land vehicle or a walker, its tags the Motor Vehicles kit's (kits/motor-vehicles/API.md:
+   // types, drive, seats, fuel)
+   classes: ['building', 'part', 'fixture', 'furniture', 'prop', 'flora', 'life', 'landmark', 'infrastructure', 'feature', 'vessel', 'vehicle'],
    cultures: CULTURES, noCatalog: NO_CATALOG, cultureNames: CULTURE_NAMES, cultureAlias: CULTURE_ALIAS,
-   types: CATALOG_TYPES.concat(['park', 'military', 'statue', 'plaza', 'fountain']),   // + Yuni's park; Iziz's military, statue, plaza, fountain
+   types: CATALOG_TYPES.concat(['park', 'military', 'statue', 'plaza', 'fountain'])   // + Yuni's park; Iziz's military, statue, plaza, fountain
+     // + a vessel's work (the Ring Sea's types by what the boat does; its hull form, a carrack or a junk, is not a type)
+     .concat(['cargo', 'fishing', 'passenger', 'pleasure', 'warship', 'ferry', 'barge', 'taxi', 'voyager', 'state'])
+     // + a vehicle's (the Motor Vehicles kit's types)
+     .concat(['vehicle', 'transport', 'survey', 'patrol']),
    // older spellings of a type, on input (Iziz's REG): one becomes one or more
    typeAlias: { 'market/shop': ['market', 'shop'], 'tavern/inn': ['tavern', 'inn'], 'single-family dwelling': ['dwelling-single'],
      'multi-family dwelling': ['dwelling-multi'] },
@@ -86,6 +94,9 @@
    settings: CATALOG_SETTINGS.concat(['room']),
    jobs: CATALOG_JOBS,
    sets: ['generic', 'scrap'],
+   propulsions: ['sail', 'oar', 'sweep', 'paddles', 'pole', 'tow', 'steam', 'engine'],   // a vessel's (kits/ringsea/API.md)
+   hulls: ['monohull', 'catamaran', 'trimaran', 'outrigger', 'raft'],
+   drives: ['wheeled', 'tracked', 'legged', 'drawn', 'rail', 'hover'],   // a vehicle's (kits/motor-vehicles/API.md; kits/mechs walk)
    // biomes/WORLD.md, plus Krator's X (abyssal) and H (hyperalpine). The biome kits (2026-10-12) add Cwb (shighlands)
    // and the scale model's own classes: XA (abyssal hypertropic jungle) and XV (abyssal savanna: geyser), HF (the
    // hyperalpine frost) and O (airless: ebadlands, the Throne's summit)
@@ -107,6 +118,10 @@
      style: 'free', room: 'free', biome: 'free', family: 'free', variant: 'free',
      role: 'free', quarter: 'free', part: 'free', finish: 'free', rock: 'free', level: 'free', district: 'free', destination: 'free', stalls: 'free', canopies: 'free',
      lit: 'bool', landmark: 'bool', market: 'bool', harvest: 'object',
+     // a vessel's (2026-11-17): how it moves, its hull, its crew (a number)
+     propulsion: 'propulsions', hull: 'hulls', crew: 'free',
+     // a vehicle's (2026-11-17): how it goes, its seats (a number), its fuel
+     drive: 'drives', seats: 'free', fuel: 'free',
      // flora and fauna (the biome kits, 2026-10-12): the climate band, aridity, abyssal, riparian; an animal's diet
      climate: 'climates', aridity: 'aridities', abyssal: 'bool', riparian: 'riparians', diet: 'free',
      // a kit's own trait on every species, free: crater-drylands' fire response (pyrophyte, seeder, resprouter...),
@@ -199,7 +214,7 @@
    navLayers: { walk: 1, avoid: 2 },
    // the order id's prefix per class; a fixture's per kind
    prefix: { building: 'bld', part: 'part', fixture: 'fix', furniture: 'furn', prop: 'prop', flora: 'flora', life: 'life',
-     landmark: 'site', infrastructure: 'infra', feature: 'feat' },
+     landmark: 'site', infrastructure: 'infra', feature: 'feat', vessel: 'ves', vehicle: 'veh' },
    fixturePrefix: { door: 'door', window: 'window', light: 'light' },
    // what test-tags.js compares with the catalog
    catalog: { cultures: CATALOG_CULTURES, types: CATALOG_TYPES, tiers: CATALOG_TIERS, jobs: CATALOG_JOBS, settings: CATALOG_SETTINGS }

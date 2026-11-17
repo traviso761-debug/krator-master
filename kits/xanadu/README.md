@@ -40,8 +40,9 @@ all-builds rebuild"). A page takes one through its kit.json `"external"` (`settl
 | File | What |
 |---|---|
 | `extra/88c-xa-caravanserai.js` | `xa_caravanserai` (the owner, 2026-11-16: "build xanadu one"): a 48 m court of two-storey battered ranges, the stables' arcade, a gate block with an open iwan, four corner towers, the fountain court; v0 wash and gold, v1 earth and plainer |
-| `extra/88d-xa-lakecraft.js` | the lake craft owed by `core/simulation/PROPOSAL-XANADU.md` 2a: `xa_dugout` (the cayuco; empty, with its fisher, beached), `xa_launch` (the lancha; under sail, furled), `xa_lake_barge` (the cargo barge; sail set, brailed) |
+| `extra/88d-xa-lakecraft.js` | vessels (core/tags class `vessel`, the Ring Sea's tags; 2026-11-17): the lake craft owed by `core/simulation/PROPOSAL-XANADU.md` 2a: `xa_dugout` (the cayuco; empty, with its fisher, beached), `xa_launch` (the lancha; under sail, furled), `xa_lake_barge` (the cargo barge; sail set, brailed) |
 | `extra/88e-xa-stall.js` | `xa_stall`: a trestle stall under a cloth awning, four trades (cloth, cacao and fruit, pots and baskets, fish and salt) |
+| `extra/88f-xa-harbour.js` | the lake harbour (2026-11-17, `settlements/kirstabal` takes it): `xa_harbour_quay` (a continuous 34 m quay: coursed ashlar, weed line, coping, bollards, rings, fenders, water stairs; a jib crane, a cargo stack or a tally shed), `xa_mole_run` (the breakwater, `o.len` long: a harbour quay face, a parapet, boulder armour), `xa_harbour_warehouse`, `xa_drydock` (flooded, 88d's cargo barge in it when the page has 88d), `xa_slip`, `xa_river_span` (a segmental arch bridge in 26 m pieces; v 1 the abutment), `xa_monastery_white` (the monastery under a lime-white paint filter), `xa_garden_wall` (a garden square's coped wall; v 1 a gate with an arched head), the wind-catchers (`<house>_badgir`: seven common houses with a badgir at the back corner, `XH_BADGIR`) |
 | `extra/69dz-ix-xanadu-extra.js` | the interior set `xanadu-extra`: the caravanserai's five ranges (the common room, its kitchen and the stores below, the travellers' rooms above). It joins `kits/interiors/sets/xanadu.js` with the pieces |
 
 **Hollow walls and interiors** (2026-11-09). The kit's interior set is `kits/interiors/sets/xanadu.js` (one item per def:
@@ -114,6 +115,12 @@ Its interiors are `87k1-xa-lake-rooms.js`, opt-in with it: the interior set `xan
 tea factory's ground storey, the latex house's sealing room; the fermentary and the fish racks skipped as open), added with
 `KratorInteriors.sets.add` when the page carries the interiors core, so Xanadu's `?interiors=1` mode hollows and furnishes
 them (Kirstabal, K5). It belongs in `kits/interiors/sets/` and moves there with the next rebuild of the interiors sheet.
+A third, `87k2-xa-slate-wall.js` (2026-11-17, Kirstabal's town wall after Chiang Mai's: the owner), is opt-in the same way:
+`xa_slate_wall` (a run of curtain, `o.len` long, merlons with stepped peaks and a loophole under each), `xa_slate_gate`
+(Tha Phae's: two tall stepped pillars either side of the road, the leaves open, `o.pass`), `xa_slate_bastion` (the corner
+bastion) and `xa_slate_tower` (the buttress at a turn), on the items `xSlateB` and `xSlateDB` (`MAT.xSlate`, `MAT.xSlateD`:
+a page binds a library family of those names; Kirstabal's is `brick.dark` tinted slate until `wall.slate.coursed` lands,
+`core/materials/PROMPTS-NEEDED.md` section 57). They draw along core/city's wall records (`KCITY.grid.wall`).
 
 **Footprints** (2026-11-10; the owner: "the garden pieces ... stick out way over what their footprint is supposed to be").
 A def's footprint is its `w x d`, its lot: the sheet spaces sites by it, Erewhon's garden grid and blocks set 8 m and 16 m
@@ -122,7 +129,7 @@ Everything a def draws stays on its lot, foliage included: a plant's crown is fi
 lot line (`xaRoom`, `72-xa-helpers.js`): the kit's own crowns (`xnTree`, `xnCypress`, the garden palm `xnXPPalm`) shrink to
 it, and `xaPlant` (`86b-xa-plants.js`) reads the crown the Vale biome is about to draw (its first three draws, replayed from a
 seed set on the biome's own stream) and scales the whole tree to fit, reporting an error if the biome ever draws past it.
-`node kits/xanadu/tests/test-footprints.js` (a `tools/test_all.py` step) seals the kit as `XAK`, builds every def and variant
+`node kits/xanadu/tests/test-footprints.js` (a `tools/test_all.py` step) seals the kit as `XAK` (with the opt-in `extra/88*.js` since 2026-11-17: the test wraps `kit_bundle.files`, so no sealed page changes; `--no-extra` leaves them out), builds every def and variant
 alone and measures every instance's box against its lot (0.25 m tolerance, townsfolk left out): a garden or water piece
 past it fails; any other def past it must be listed in the test's `KNOWN` with its overhang (`KNOWN_ISSUES.md`, "Defs past
 their lot") and must not grow.
