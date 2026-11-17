@@ -3,7 +3,7 @@
 `PLAN.md` holds the plan (H0-H6) and the owner's answers. Everything here is `[G data]`: no three.js, no DOM; Godot runs
 the same rules. Test: `node core/hamlet/test-hamlet.js` (each check has a negative; `--list` prints any wood phrase no
 rule takes); `test-hamlet-platform.js` and `test-hamlet-trade.js` hold 32 and 34, and prove that loading them moves no
-village.
+village; `test-hamlet-xanadu-row.js` holds the Xanadu row passed by name (below).
 
 | Fragment | What |
 |---|---|
@@ -34,6 +34,35 @@ ladder, roomsPer, storeys, kivas}` beside the village fields; `cells` gives each
 the two cultures, the two roads' links and the caravan's beasts. A culture with no row comes back `pending` (its keys
 `<name>-...`); a row adds `trade {serai, stall, market, cistern, store}` to name its own. `line.stones` are the boundary
 stones' points; `roads` the two roads out of the serai's gates.
+
+**The Xanadu row, passed by name** (opt-in, 2026-11-17; `xanadu/23-hamlet-xanadu-row.js`, `settlements/xanadu/BUILD-OUT.md`
+4b). `KHAMLET.xanaduRow(opts)` returns the shared `xanadu` row with fishing and the new foci; it registers no row and no
+focus, so a host that wants it lists the file after `20` and passes the row as `spec.culture` (no other page moves). It folds
+into `20-hamlet-cultures.js` at the next all-builds rebuild. `KHAMLET.XANADU_FOCI` lists its foci, `XANADU_FOCUS_INFO` their
+resource and keys:
+
+| Focus | Works (kit keys) |
+|---|---|
+| fishing | `xa_boatshed`, `xa_fish_racks`; the landing `xa_quay` (spec.landing); `shallows` adds `xa_fishponds`, `xa_mat_shed` |
+| orchard | `xa_farmhouse`, `xa_fermentary`, `xa_apiary` (the trees are land, as farming's fields: 14) |
+| tea | `xa_farmhouse`, `xa_tea_factory` |
+| saffron | `xa_farmhouse`, `xa_saffron_house` |
+| estate | `xa_farmhouse`, `xa_granary` (the tithe granary), `xa_apiary` |
+| placer | `xa_placer_sluice`, `xa_workshop` (the gold room), `xa_smithy` |
+| pottery (*proposed*) | `xa_kiln_yard`, `xa_workshop` |
+| quarry (*proposed*) | `xa_quarry_yard`, `xa_smithy` |
+| silk | `xa_farmhouse`, `xa_reeling_house`, `xa_watermill` (the paper mill), `xa_loom_house`, `xa_dye_works` |
+| mine | `xa_adit`, `xa_mine_head` (`mineHead`), `xa_workshop`, `xa_smithy` |
+| farming, ranch | the shared row's |
+| every focus | one `xa_wayside_shrine` among the works (`shrine`; share 0: one building, no focus jobs) |
+
+Options (each `x == null ? default : x`): `shrine` (true), `mineHead` (true), `shallows` (false), `camp` (false: a work camp,
+workShare .9, households of 4 in bunkhouses, the shrine its religious building). The keys the kit's src lacks (the twelve
+pieces of `kits/xanadu/extra/88g-xa-works.js`, and the adit) are `pending` with boxes, so a page without them draws
+stand-ins. **The switch:** `xanaduRow({shrine: false, mineHead: false})` lays the villages the shared row lays (farming,
+ranch, mine) and the ones Kirstabal's `fishingRow` lays; with `camp: true` it is `openworld/oidong-highrift`'s
+`xanadu-camp` row; the test proves the digests equal. Every row also carries `camp` (the overrides) for a later
+`KHAMLET.census` camp option.
 
 **Read in place, never copied:** `core/rand` (`KRAND`), `core/space` (`KSPACE`), `core/city/33-city-strategies.js`
 (`KCITY.prim`: `frontageRun`, `huntNear`). The resource rules are `kits/resources` (`42r-res-ore.js` for nodes,

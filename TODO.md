@@ -94,6 +94,14 @@ runtime and bison table, and the `tools/` listing staleness (every build rebuilt
   (`xa_quay`) and the racks' pending box; move them into the row itself (`core/hamlet/20-hamlet-cultures.js` reaches ten builds) and
   `kits/xanadu/src/87k-xa-lake-trades.js` into `xanadu.py` FILES (if every Xanadu page should have the lake's trades), then let
   Kirstabal pass the row by name.
+- **core/hamlet's Xanadu row passed by name folds into the row** (2026-11-17, `settlements/xanadu/BUILD-OUT.md` wave 0.2):
+  `core/hamlet/xanadu/23-hamlet-xanadu-row.js` (`KHAMLET.xanaduRow(opts)`: fishing as Kirstabal's `fishingRow` has it, the foci
+  orchard, tea, saffron, estate, placer, pottery and quarry, the wayside shrine, the mine head, the reeling house, `shallows`, the
+  `camp` overrides) folds into `20-hamlet-cultures.js` then, and the subfolder goes. This takes the fishing item above with it.
+  Decide whether the shared row takes the shrine and the mine head (they move every Xanadu village: the switch with them off moves
+  none, `node core/hamlet/test-hamlet-xanadu-row.js`); give `KHAMLET.census` the camp option from the row's `camp` and drop
+  `openworld/oidong-highrift`'s `xanadu-camp` row (the work-camp item below). Its new keys are pending until
+  `kits/xanadu/extra/88g-xa-works.js` is in the kit's `src/`.
 - **The lake's trades' interior set** (2026-11-16, `settlements/kirstabal` K5): `kits/xanadu/src/87k1-xa-lake-rooms.js` adds the set
   `xanadu-lake` at run time; move it to `kits/interiors/sets/xanadu-lake.js` (the interiors sheet inlines every set, so it stales
   `kits/interiors`'s sets page: rebuild and `verify.py --sets --assert` it) and let Kirstabal take it through kit.json "interiorSets".
@@ -154,6 +162,8 @@ runtime and bison table, and the `tools/` listing staleness (every build rebuilt
   `KHAMLET.CULTURES['xanadu-camp']` (the `xanadu` row with workShare .9, household 4, a cookhouse, store and tally house for
   services). Give `KHAMLET.census` a `camp` option (or a row's `camp` overrides, taken when `spec.camp`) and pass it through
   `core/world/48s-world-sites.js` from a hamlet's spec, then drop that row. core/hamlet reaches 56 pages (`tools/reach.py`).
+  The overrides exist since 2026-11-17 as `KHAMLET.xanaduRow().camp`, and `xanaduRow({camp: true})` is the row a region can pass
+  today (`core/hamlet/xanadu/`; with `shrine` and `mineHead` false it lays the Vein Camp unchanged).
 
 - **core/world: a kit on several biome overlays** (2026-11-11, the Iziz cluster's open-world region): `core/world/41-world-fields.js`
   matches a `WORLD_KITS` entry's `overlay` to one biome name (`k.overlay===name`). Let it take a list (`Array.isArray(k.overlay)?
