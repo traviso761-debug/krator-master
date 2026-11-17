@@ -567,6 +567,27 @@ Stages 0 and 1 are a few sessions. Nothing after stage 1 starts without its base
    version in `region.json` (`relief.micro: 2`): a region keeps today's land and its baked streams, roads and sites until
    its re-bake turns the version on. The T2 experiment's tiles run on version 2. Nothing is half-migrated in between.
 
+## 12b. The vertical stack: one place, every layer, in Godot, before the rebuild (owner, 2026-11-17)
+
+Stage 0's two branches (WMICRO version 2 with the ring; KGROUND's zero-weight guard) are merged into one test branch and
+shown together on one place in Godot, before anything goes project-wide.
+
+- **The place:** `openworld/oidong-highrift`, a High Rift tile: Godot already streams it (`krator/world_stream.gd`, M7) and
+  walks it (`walk.tscn`, M8), it has the steep windows of 3.2, and the relief bake runs on it.
+- **The switch:** a copy of its `region.json` with `relief.micro: 2` (a test copy; the committed one stays version 1),
+  its streams, sites and resources re-baked on it, and the Godot export taken from it.
+- **What is compared, version 1 against version 2, at the same three cameras (a High Rift flank, a valley floor, a
+  town's edge) and at 15:30:**
+  - the twin: `wrelief_test.gd` passes the v2 goldens in Godot 4.7.2;
+  - the land: `landshade.py --steepest` before and after (mean bias, band relief, alignment);
+  - the bake: tarns, junctions, site checks;
+  - the look: Godot shots (Forward+, on the RTX lane) side by side; one web shot of the same views for reference;
+  - the cost: `WORLD.H` µs a call; Godot chunk build time.
+- **KGROUND's guard** is checked on one build that takes it (a throne station), on the web, by its shader-programs and
+  shader-errors asserts and a before/after shot. Godot has no KGROUND map-layer twin to change.
+- **Pass:** v2's mean bias under 5 % of its amplitude, no seam or step at the town's band, the stream and site checks
+  ok, and the owner's eye on the Godot shots. Then the all-builds rebuild turns version 2 on everywhere.
+
 ## 13. Sources
 
 - Schott, Paris, Fournier, Guérin, Galin: [Large-scale terrain authoring through interactive erosion simulation](https://history.siggraph.org/learning/large-scale-terrain-authoring-through-interactive-erosion-simulation-by-schott-paris-fournier-guerin-and-galin) (TOG 2023); [code](https://github.com/H-Schott/StreamPowerErosion)
