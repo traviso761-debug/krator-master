@@ -46,8 +46,8 @@ A new kit, so it goes in the gallery when it first reaches `main` (`gallery/READ
 From the plans (owner's dates in brackets):
 
 - **Therians**: coyote-headed, digitigrade, upright, furred (a coyote's brush coat); stone and bronze age; never Izani
-  subjects (Outlands 6, 2026-10-26). The coyote head and coat exist in `core/charactermodels` (`mod_head_coyote`,
-  `coat: 'coyote'`, the `coyote_men` people in `data/peoples.json`); the digitigrade legs do not.
+  subjects (Outlands 6, 2026-10-26). The coyote head, tail, digitigrade legs and coat exist in `core/charactermodels` (`mod_head_coyote`,
+  `mod_tail_coyote`, `mod_legs_coyote`, `coat: 'coyote'`, the `coyote_men` people in `data/peoples.json`).
 - **The Hum**: they bark a dialect of the Hum and write it as **contour carvings** on milestones, boundary stones and the
   risers (Outlands 6; Tiers 6). The lexicon is `tools/scale-model/smodel/river_names.py` (`hum`): Hau coyote-hound,
   Gèl wadi, Kē stream, Hām river, Lōk step-bench, Chūng middle-tier, Sām deep-notch, Yūt howling-moon...
@@ -231,7 +231,7 @@ through them). *Proposed*:
   turquoise collar; no runner-bird feathers but on the priests (they are sacred), and never the golden bird's.
 - A `tribe` field on the `coyote_men` people (or one people per tribe) so `KCHAR.stranger` draws each tribe's dress.
 
-The digitigrade legs are the module's open item ("not built yet", `peoples.json`); the kit's doors and ladders assume them.
+The digitigrade legs (`mod_legs_coyote`, `core/charactermodels/tools/digitigrade.py`) are built alongside `mod_head_coyote` and `mod_tail_coyote` on `coyote_men` (`peoples.json`); the kit's doors and ladders match their stance.
 
 ## 9. Phases
 

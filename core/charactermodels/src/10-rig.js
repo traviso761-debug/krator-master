@@ -120,13 +120,20 @@ var KCHAR = (function(){
   function replacesHead(rec, kit){
     return modsOf(rec, kit).some(function(m){ return !!m.replaces_head; });
   }
+  function replacesFeet(rec, kit){
+    return modsOf(rec, kit).some(function(m){ return !!m.replaces_feet; });
+  }
   function arms(rec, kit){
     return modsOf(rec, kit).some(function(m){ return m.grants && m.grants.arms >= 4; }) ? 4 : 2;
   }
-  /* a torso item is made for two arms or four (kit item arms, 2 by default): a four-armed body wears only four-armed
-     tops, and the other way round */
+  /* a torso item is made for two arms or four (kit item arms, 2 by default); a digitigrade leg mod (replaces_feet:
+     tools/digitigrade.py) leaves off human boots and ankle-length human trousers while keeping kilts, skirts and loincloths */
   function fits(it, rec, kit){
-    return it.slot !== 'torso' || (it.arms == null ? 2 : it.arms) === arms(rec, kit);
+    if(it.slot === 'torso') return (it.arms == null ? 2 : it.arms) === arms(rec, kit);
+    if((it.slot === 'feet' || it.slot === 'legs') && replacesFeet(rec, kit)){
+      return it.slot === 'feet' ? !!it.digitigrade : !!(it.loose || it.digitigrade || (it.hides != null && it.hides < 900));
+    }
+    return true;
   }
   function takesHair(head){ return !!head && (head.style === 'bald' || head.style === 'base'); }
   function hairFor(kit, id, head, kind){
@@ -390,7 +397,7 @@ var KCHAR = (function(){
     return out;
   }
 
-  return { pose:pose, parts:parts, hidden:hidden, hiddenParts:hiddenParts, replacesHead:replacesHead, mods:modsOf, arms:arms, fits:fits, unbits:unbits, headOf:headOf, takesHair:takesHair, key:key,
+  return { pose:pose, parts:parts, hidden:hidden, hiddenParts:hiddenParts, replacesHead:replacesHead, replacesFeet:replacesFeet, mods:modsOf, arms:arms, fits:fits, unbits:unbits, headOf:headOf, takesHair:takesHair, key:key,
            random:random, blank:blank, fk:fk, morphWeights:morphWeights, morphJoints:morphJoints, stranger:stranger,
            along:along, crowd:crowd, colliders:colliders };
 })();

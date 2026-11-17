@@ -244,5 +244,38 @@ if(fs.existsSync(path.join(HERE, 'data', 'mpfb_giant', 'kit.json'))) (function()
      b + ': no people draws a tail or a lizard head');
 });
 
+// ---- Coyote Men digitigrade legs (tools/digitigrade.py): 8 Digi* joints appended after Tail8, morphs keep paws on ground,
+// replacesFeet filters out human boots & fitted trousers while keeping kilts/skirts/loincloths, and coyote_men strangers wear the triad
+['mpfb_male', 'mpfb_female'].forEach(function(b){
+  var k = JSON.parse(fs.readFileSync(path.join(HERE, 'data', b, 'kit.json'))), sk = JSON.parse(fs.readFileSync(path.join(HERE, 'data', b, 'skeleton.json')));
+  var dg = k.items.filter(function(it){ return it.id === 'mod_legs_coyote'; })[0];
+  ok(!!dg && dg.replaces_feet && dg.furred && dg.digitigrade && dg.hides > 5000, b + ': mod_legs_coyote entry present and hides lower leg skin');
+  var J = {}; sk.joints.forEach(function(j, i){ J[j.name] = i; });
+  ok(['LeftDigiThigh', 'LeftDigiShin', 'LeftDigiHock', 'LeftDigiPaw', 'RightDigiThigh', 'RightDigiShin', 'RightDigiHock', 'RightDigiPaw'].every(function(n){ return J[n] > J.Tail8; }),
+     b + ': all 8 Digi joints sit after Tail8');
+  var f0 = KCHAR.fk(sk, sk.joints.map(function(j){ return j.t; }));
+  ok(f0.P[J.LeftDigiShin][2] > f0.P[J.LeftDigiThigh][2] + 0.08 && f0.P[J.LeftDigiHock][2] < f0.P[J.LeftFoot][2] - 0.06 &&
+     f0.P[J.LeftDigiHock][1] > 0.20 && f0.P[J.LeftDigiPaw][1] > 0.02 && f0.P[J.LeftDigiPaw][1] < 0.045,
+     b + ': Digi rest chain forms canid Z-pose (stifle forward, hock high & back, paw ball near ground)');
+  var w = KCHAR.morphWeights({ morph:{ height:1 } }, k), mj = KCHAR.morphJoints(sk, k, w);
+  ok(mj.d[J.LeftDigiThigh][1] > 0.15 && Math.abs(mj.d[J.LeftDigiPaw][1]) < 0.025, b + ': height +1 lifts hip while keeping paw near ground');
+  var r = KCHAR.blank(k);
+  var boot = k.items.filter(function(it){ return it.slot === 'feet'; })[0];
+  var pants = k.items.filter(function(it){ return it.slot === 'legs' && !it.loose && it.hides > 2000; })[0];
+  var kilt = k.items.filter(function(it){ return it.slot === 'legs' && it.loose; })[0];
+  ok(!KCHAR.replacesFeet(r, k) && KCHAR.fits(boot, r, k) && KCHAR.fits(pants, r, k), b + ': human feet & pants fit without mod_legs_coyote');
+  r.mods = ['mod_legs_coyote']; r.armour.feet = boot.id; r.armour.legs = pants.id;
+  ok(KCHAR.replacesFeet(r, k) && !KCHAR.fits(boot, r, k) && !KCHAR.fits(pants, r, k) && KCHAR.fits(kilt, r, k) &&
+     KCHAR.parts(r, k).every(function(p){ return p.slot !== 'feet' && p.slot !== 'legs'; }) && KCHAR.hiddenParts(r, k)['Human.toenails'],
+     b + ': mod_legs_coyote rejects boots & fitted trousers, allows kilts, and hides toenails');
+  var P = peoples.filter(function(p){ return p.id === 'coyote_men'; })[0];
+  for(var s = 1; s <= 15; s++){
+    var st = KCHAR.stranger(s, k, P);
+    ok(JSON.stringify(st.mods) === '["mod_head_coyote","mod_tail_coyote","mod_legs_coyote"]' && st.armour.feet === null &&
+       (!st.armour.legs || KCHAR.fits(k.items.filter(function(it){ return it.id === st.armour.legs; })[0], st, k)),
+       b + ': coyote_men stranger seed ' + s + ' wears head+tail+digitigrade legs and no boots/pants');
+  }
+});
+
 console.log(fails ? fails + ' failed' : 'test-rig: all passed');
 process.exit(fails ? 1 : 0);

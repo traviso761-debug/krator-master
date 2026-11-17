@@ -219,6 +219,60 @@ CHECKS = r'''async () => {
       if (open < 0.05) NH.push(body + ': the jaw does not open (' + open.toFixed(3) + ' rad)');
       await fig.play('idle'); await k2.set(dressed);
     }
+    // Coyote Men digitigrade legs, tail & head (tools/digitigrade.py): rest-pose skinning identity & ground contact under
+    // neutral and heavy morphs, boots & toenails left off while kilt fits, elevated hock flexes/extends in walk & run,
+    // coils in crouch, and tail stays clear of the digitigrade leg segments
+    if (kit.items.some(it => it.id === 'mod_legs_coyote')) {
+      const NH = out.nonhuman;
+      const kilt = kit.items.find(it => it.slot === 'legs' && it.loose && it.cloth);
+      const boot = kit.items.find(it => it.slot === 'feet');
+      const cy = Object.assign(JSON.parse(JSON.stringify(dressed)), {
+        coat: 'coyote', hair_color: '#9a7a52', skin: '#6e5a4c', eye_color: '#c08a2a',
+        mods: ['mod_head_coyote', 'mod_tail_coyote', 'mod_legs_coyote']
+      });
+      if (kilt) cy.armour.legs = kilt.id;
+      if (boot) cy.armour.feet = boot.id;
+      await k2.set(cy); fig.play(null); await new Promise(r => setTimeout(r, 50));
+      if (JSON.stringify(shownKeys()) !== JSON.stringify(keys(cy))) NH.push(body + ' coyote shows ' + shownKeys());
+      if (boot && shownKeys().some(k => k === KCHAR.key(boot.glb))) NH.push(body + ' coyote: human boots drawn over paws');
+      if (shown().some(m => m.userData.srcMaterial === 'Human.toenails')) NH.push(body + ' coyote: human toenails drawn');
+      for (const [tag, mo] of [['coyote', {}], ['coyote heavy', heavy]]) {
+        await k2.set(Object.assign({}, cy, { morph: mo })); rest(tag);
+        const lm = shown().find(m => m.userData.srcMaterial === 'Mod.coyote_legs');
+        if (!lm) { NH.push(body + ' ' + tag + ': Mod.coyote_legs not shown'); continue; }
+        const P = lm.geometry.attributes.position.array, v = new THREE.Vector3();
+        let lowY = 1e9;
+        for (let i = 0; i < P.length; i += 3) { v.set(P[i], P[i + 1], P[i + 2]).applyMatrix4(lm.matrixWorld); if (v.y < lowY) lowY = v.y; }
+        const gnd = fig.group.getWorldPosition(new THREE.Vector3()).y;
+        if (Math.abs(lowY - gnd) > 0.008) NH.push(body + ' ' + tag + ': paw sole off ground by ' + ((lowY - gnd) * 1000).toFixed(1) + ' mm');
+      }
+      await k2.set(cy);
+      let idleHock = 0;
+      for (const c of ['idle', 'walk', 'run', 'ual_crouch']) {
+        if (!fig.clips[c]) continue;
+        await fig.play(c);
+        let hMin = 1e9, hMax = -1e9, angMin = 1e9, angMax = -1e9, pawBad = 0, tailBad = 0;
+        for (let k = 0; k < 75; k++) {
+          fig.update(1 / 30);
+          if (k < 15) continue;
+          const ds = fig.digiState();
+          if (!ds) { pawBad++; continue; }
+          ds.state.forEach((st, si) => {
+            hMin = Math.min(hMin, st.hockY); hMax = Math.max(hMax, st.hockY);
+            angMin = Math.min(angMin, st.hockAng); angMax = Math.max(angMax, st.hockAng);
+            if (st.pawY < 0.008 || (st.stance > 0.85 && Math.abs(st.pawY - ds.sides[si].pawH) > 0.025)) pawBad++;
+          });
+          const T = fig.tailState();
+          if (T && T.x.some(x => !isFinite(x.x + x.y + x.z))) tailBad++;
+        }
+        if (c === 'idle') idleHock = 0.5 * (hMin + hMax);
+        if (c !== 'ual_crouch' && hMin < 0.13) NH.push(body + ' coyote ' + c + ': hock dropped too low (' + hMin.toFixed(3) + ' m)');
+        if ((c === 'walk' || c === 'run') && (angMax - angMin) < 0.16) NH.push(body + ' coyote ' + c + ': hock angle barely flexes (' + (angMax - angMin).toFixed(3) + ' rad)');
+        if (c === 'ual_crouch' && idleHock > 0 && hMin > idleHock - 0.02) NH.push(body + ' coyote crouch: hock did not coil (' + hMin.toFixed(3) + ' vs ' + idleHock.toFixed(3) + ')');
+        if (pawBad || tailBad) NH.push(body + ' coyote ' + c + ': ' + pawBad + ' bad paw frames, ' + tailBad + ' bad tail frames');
+      }
+      await fig.play('idle'); await k2.set(dressed);
+    }
     // the fold: a court robe and skirt in a walk, every chain segment within 1.5 rad of its rest (the Verlet threw chain
     // tops sideways and Z-folded them: 60 to 90 segments past it; kchar_test.gd measures the same in Godot)
     const rb = kit.items.find(it => it.id.indexOf('noble_robe') >= 0 && it.cloth);

@@ -679,8 +679,10 @@
         var cur = KCHAR.mods(rec, kit);
         rec.mods = on.indexOf(m.id) >= 0 ? cur.filter(function(x){ return x.id !== m.id; }).map(function(x){ return x.id; })
                                           : cur.filter(function(x){ return x.group !== m.group; }).map(function(x){ return x.id; }).concat([m.id]);
-        var top = rec.armour.torso && kit.items.filter(function(it){ return it.id === rec.armour.torso; })[0];
-        if(top && !KCHAR.fits(top, rec, kit)) rec.armour.torso = null;
+        ['torso', 'legs', 'feet'].forEach(function(sl){
+          var w = rec.armour[sl] && kit.items.filter(function(it){ return it.id === rec.armour[sl]; })[0];
+          if(w && !KCHAR.fits(w, rec, kit)) rec.armour[sl] = null;
+        });
         apply(); buildPanel();
       });
       grid.appendChild(b);

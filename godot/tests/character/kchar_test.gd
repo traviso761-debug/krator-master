@@ -356,6 +356,7 @@ func _init() -> void:
 		fig._process(0.4)
 		ok(not q0.is_equal_approx(fig.skeleton.get_bone_pose_rotation(fig.skeleton.find_bone("LeftUpLeg"))), "walk moves the thigh")
 		_lizard(fig, rec)
+		_coyote(fig, rec)
 
 	# a Giant of Dalab (core/charactermodels/tools/giant.py): the man's body made big, a second pair of arms that no clip
 	# moves but the figure drives from the upper pair; two arms leaves them out
@@ -522,5 +523,82 @@ func _lizard(fig: KCharFigure, rec: Dictionary) -> void:
 		open = maxf(open, fig.skeleton.get_bone_pose_rotation(jb).angle_to(KChar._q(fig.skel["joints"][jb]["r"])))
 	ok(open > 0.05, "lizard: the jaw opens (%.3f rad)" % open)
 	print("kchar_test: the lizard checked (tail in idle, walk and crouch; jaw open %.2f rad)" % open)
+	fig.play("")
+	fig.apply(rec)
+
+
+# Coyote Men digitigrade legs, tail & head (core/charactermodels/tools/digitigrade.py; twin of verify.py's coyote check)
+func _coyote(fig: KCharFigure, rec: Dictionary) -> void:
+	var has_dg := false
+	for it in fig.kit["items"]:
+		if it["id"] == "mod_legs_coyote":
+			has_dg = true
+	if not has_dg or not FileAccess.file_exists(DIR + "/pieces/mpfb_male/mod_legs_coyote.glb"):
+		return
+	var r2 := rec.duplicate(true)
+	r2["coat"] = "coyote"
+	r2["hair_color"] = "#9a7a52"
+	r2["mods"] = ["mod_head_coyote", "mod_tail_coyote", "mod_legs_coyote"]
+	r2["armour"] = {"torso": "toigo_fisherman_sweater", "legs": "dalab_m_peasant_kilt", "feet": "culturalibre_hero_boots_1"}
+	fig.play("")
+	fig.apply(r2)
+	var shown := {}
+	for mi in fig.skeleton.get_children():
+		if mi is MeshInstance3D and mi.visible:
+			shown[mi.get_meta("part")["key"]] = true
+	ok(shown.has("mpfb_male/mod_legs_coyote") and shown.has("mpfb_male/dalab_m_peasant_kilt")
+		and not shown.has("mpfb_male/culturalibre_hero_boots_1"), "coyote: digitigrade legs and kilt drawn, human boots rejected (%s)" % [shown.keys()])
+	var toenails_hidden := false
+	for mi in fig.skeleton.get_children():
+		if mi is MeshInstance3D and mi.visible and mi.get_meta("part")["role"] == "base":
+			for s in mi.mesh.get_surface_count():
+				if mi.mesh.surface_get_name(s) == "Human.toenails" and mi.get_surface_override_material(s) == KCharFigure._nothing():
+					toenails_hidden = true
+	ok(toenails_hidden, "coyote: Human.toenails surface is hidden")
+	fig.rest_pose()
+	var worst := 0.0
+	for mi in fig.skeleton.get_children():
+		if mi is MeshInstance3D and mi.visible and mi.skin:
+			for k in mi.skin.get_bind_count():
+				var m: Transform3D = glob(fig.skeleton, mi.skin.get_bind_bone(k)) * mi.skin.get_bind_pose(k)
+				worst = maxf(worst, m.origin.length() + (m.basis.x - Vector3.RIGHT).length() + (m.basis.y - Vector3.UP).length())
+	ok(worst < 1e-3, "coyote: at rest all Digi* and body bones match their binds (worst %f)" % worst)
+	var idle_hock := 0.0
+	for c in ["idle", "walk", "run", "ual_crouch"]:
+		if not fig.player.has_animation(c):
+			continue
+		fig.play(c)
+		var h_min := 1e9
+		var h_max := -1e9
+		var ang_min := 1e9
+		var ang_max := -1e9
+		var paw_bad := 0
+		for f in 75:
+			fig._process(1.0 / 30.0)
+			if f < 15:
+				continue
+			var ds := fig.digi_state()
+			if ds.is_empty():
+				paw_bad += 1
+				continue
+			for si in 2:
+				var st: Dictionary = ds["state"][si]
+				var sd: Dictionary = ds["sides"][si]
+				h_min = minf(h_min, float(st["hock_y"]))
+				h_max = maxf(h_max, float(st["hock_y"]))
+				ang_min = minf(ang_min, float(st["hock_ang"]))
+				ang_max = maxf(ang_max, float(st["hock_ang"]))
+				if float(st["paw_y"]) < 0.008 or (float(st["stance"]) > 0.85 and absf(float(st["paw_y"]) - float(sd["paw_h"])) > 0.025):
+					paw_bad += 1
+		if c == "idle":
+			idle_hock = 0.5 * (h_min + h_max)
+		if c != "ual_crouch":
+			ok(h_min >= 0.13, "coyote %s: hock stays elevated (min %.3f m)" % [c, h_min])
+		if c == "walk" or c == "run":
+			ok(ang_max - ang_min >= 0.16, "coyote %s: hock flexes and extends dynamically (range %.3f rad)" % [c, ang_max - ang_min])
+		if c == "ual_crouch" and idle_hock > 0.0:
+			ok(h_min <= idle_hock - 0.02, "coyote crouch: hock coils lower (%.3f vs %.3f m)" % [h_min, idle_hock])
+		ok(paw_bad == 0, "coyote %s: paws stay planted in stance and above floor (%d bad)" % [c, paw_bad])
+	print("kchar_test: coyote digitigrade checked (idle hock %.2f m)" % idle_hock)
 	fig.play("")
 	fig.apply(rec)

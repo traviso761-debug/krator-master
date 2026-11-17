@@ -67799,8 +67799,7 @@
      0,
      0
     ]
-   ],
-   "made_by": "mods"
+   ]
   },
   {
    "id": "mod_tail",
@@ -128336,7 +128335,6 @@
    },
    "group": "tail",
    "kind": "therian",
-   "test": true,
    "tail": {
     "joints": [
      "Tail1",
@@ -128429,8 +128427,7 @@
      0.1208,
      0.1
     ]
-   ],
-   "made_by": "mods"
+   ]
   },
   {
    "id": "mod_tail_cat",
@@ -128910,6 +128907,62 @@
     "pad": 0.01
    },
    "made_by": "mods"
+  },
+  {
+   "id": "mod_legs_coyote",
+   "name": "Digitigrade legs (coyote)",
+   "slot": "mods",
+   "glb": "pieces/mpfb_female/mod_legs_coyote.glb",
+   "group": "legs",
+   "kind": "therian",
+   "hide": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAFAw/8A9D7t3/f//////////////////////////////////////////////////////////////////////////////////////////////8AAAAAAAAAAAAAAPD///////////////8PAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPz/////////////////////////////////////////////////////////////////////////////////////////////////////D/z/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////APwP/P////////////////////////////////////////////////////////////////////////////////////////////////8vAPz///////////////////////////////////8DAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAoDDwwD8Afr/3+/7//////////////////////////////////////////////////////////////////////////////////////////////////////z8AAAAAAAAAAAAAAPz///////////////8PAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA////////////////////////////////////////////////////////////////////////////////////////////////////////A/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8/AP8D////////////////////////////////////////////////////////////////////////////////////////////////////BwD/////////////////////////////////////AAAAAAAAAAAAAA==",
+   "hides": 5880,
+   "hide_parts": [
+    "Human.toenails"
+   ],
+   "replaces_feet": true,
+   "furred": true,
+   "fur": [
+    [
+     -1000.0,
+     1000.0,
+     "brush",
+     0,
+     0
+    ]
+   ],
+   "digitigrade": {
+    "sides": {
+     "Left": [
+      "LeftDigiThigh",
+      "LeftDigiShin",
+      "LeftDigiHock",
+      "LeftDigiPaw"
+     ],
+     "Right": [
+      "RightDigiThigh",
+      "RightDigiShin",
+      "RightDigiHock",
+      "RightDigiPaw"
+     ]
+    },
+    "radii": {
+     "thigh": [
+      0.0701,
+      0.0478
+     ],
+     "shin": [
+      0.0461,
+      0.0256
+     ],
+     "meta": [
+      0.0256,
+      0.0325
+     ]
+    },
+    "paw_ball_y": 0.0277,
+    "hock_y": 0.2322
+   }
   }
  ],
  "morph": {
@@ -129907,6 +129960,54 @@
      0.0,
      -0.04084,
      0.06231
+    ],
+    [
+     108,
+     -0.00779,
+     -0.06749,
+     0.00384
+    ],
+    [
+     109,
+     -0.0083,
+     -0.03983,
+     -0.00906
+    ],
+    [
+     110,
+     -0.00865,
+     -0.02095,
+     0.00168
+    ],
+    [
+     111,
+     -0.00889,
+     -0.00461,
+     -0.01099
+    ],
+    [
+     112,
+     0.00779,
+     -0.06749,
+     0.00384
+    ],
+    [
+     113,
+     0.0083,
+     -0.03983,
+     -0.00906
+    ],
+    [
+     114,
+     0.00865,
+     -0.02095,
+     0.00168
+    ],
+    [
+     115,
+     0.00889,
+     -0.00461,
+     -0.01099
     ]
    ],
    "1": [
@@ -130497,6 +130598,54 @@
      0.0,
      0.00374,
      -0.00326
+    ],
+    [
+     108,
+     0.00102,
+     0.00168,
+     0.00286
+    ],
+    [
+     109,
+     0.01045,
+     0.00024,
+     -0.0002
+    ],
+    [
+     110,
+     0.01688,
+     -0.00074,
+     -0.0033
+    ],
+    [
+     111,
+     0.02134,
+     -0.00159,
+     -0.0044
+    ],
+    [
+     112,
+     -0.00102,
+     0.00168,
+     0.00286
+    ],
+    [
+     113,
+     -0.01045,
+     0.00024,
+     -0.0002
+    ],
+    [
+     114,
+     -0.01688,
+     -0.00074,
+     -0.0033
+    ],
+    [
+     115,
+     -0.02134,
+     -0.00159,
+     -0.0044
     ]
    ],
    "2": [
@@ -130667,6 +130816,54 @@
      0.0,
      0.00335,
      -0.01486
+    ],
+    [
+     108,
+     0.01733,
+     -0.00263,
+     0.0
+    ],
+    [
+     109,
+     0.00929,
+     -0.00151,
+     -0.00031
+    ],
+    [
+     110,
+     0.00381,
+     -0.00075,
+     0.00027
+    ],
+    [
+     111,
+     0.0,
+     -9e-05,
+     -0.00014
+    ],
+    [
+     112,
+     -0.01733,
+     -0.00263,
+     0.0
+    ],
+    [
+     113,
+     -0.00929,
+     -0.00151,
+     -0.00031
+    ],
+    [
+     114,
+     -0.00381,
+     -0.00075,
+     0.00027
+    ],
+    [
+     115,
+     0.0,
+     -9e-05,
+     -0.00014
     ]
    ],
    "3": [
@@ -131527,6 +131724,54 @@
      0.0,
      -0.13511,
      0.20598
+    ],
+    [
+     108,
+     -0.0116,
+     -0.2294,
+     -0.00206
+    ],
+    [
+     109,
+     -0.01558,
+     -0.13203,
+     -0.02981
+    ],
+    [
+     110,
+     -0.01829,
+     -0.06559,
+     0.02007
+    ],
+    [
+     111,
+     -0.02017,
+     -0.00809,
+     -0.01617
+    ],
+    [
+     112,
+     0.0116,
+     -0.2294,
+     -0.00206
+    ],
+    [
+     113,
+     0.01558,
+     -0.13203,
+     -0.02981
+    ],
+    [
+     114,
+     0.01829,
+     -0.06559,
+     0.02007
+    ],
+    [
+     115,
+     0.02017,
+     -0.00809,
+     -0.01617
     ]
    ],
    "7": [
@@ -132117,6 +132362,54 @@
      0.0,
      0.2462,
      -0.38351
+    ],
+    [
+     108,
+     0.03039,
+     0.43368,
+     0.00085
+    ],
+    [
+     109,
+     0.04209,
+     0.24894,
+     0.0446
+    ],
+    [
+     110,
+     0.05008,
+     0.12288,
+     -0.05611
+    ],
+    [
+     111,
+     0.05562,
+     0.01378,
+     0.00843
+    ],
+    [
+     112,
+     -0.03039,
+     0.43368,
+     0.00085
+    ],
+    [
+     113,
+     -0.04209,
+     0.24894,
+     0.0446
+    ],
+    [
+     114,
+     -0.05008,
+     0.12288,
+     -0.05611
+    ],
+    [
+     115,
+     -0.05562,
+     0.01378,
+     0.00843
     ]
    ],
    "8": [
@@ -132689,6 +132982,54 @@
      0.0,
      0.00459,
      0.00752
+    ],
+    [
+     108,
+     0.00663,
+     0.00061,
+     0.0
+    ],
+    [
+     109,
+     0.00087,
+     0.00124,
+     -0.00506
+    ],
+    [
+     110,
+     -0.00305,
+     0.00168,
+     -0.00807
+    ],
+    [
+     111,
+     -0.00578,
+     0.00205,
+     -0.01061
+    ],
+    [
+     112,
+     -0.00663,
+     0.00061,
+     0.0
+    ],
+    [
+     113,
+     -0.00087,
+     0.00124,
+     -0.00506
+    ],
+    [
+     114,
+     0.00305,
+     0.00168,
+     -0.00807
+    ],
+    [
+     115,
+     0.00578,
+     0.00205,
+     -0.01061
     ]
    ],
    "9": [
@@ -133273,6 +133614,54 @@
      0.0,
      0.00876,
      -0.01628
+    ],
+    [
+     108,
+     -0.00462,
+     0.02226,
+     -0.00166
+    ],
+    [
+     109,
+     -0.00606,
+     0.0131,
+     -0.00114
+    ],
+    [
+     110,
+     -0.00705,
+     0.00684,
+     -0.00726
+    ],
+    [
+     111,
+     -0.00773,
+     0.00143,
+     -0.00484
+    ],
+    [
+     112,
+     0.00462,
+     0.02226,
+     -0.00166
+    ],
+    [
+     113,
+     0.00606,
+     0.0131,
+     -0.00114
+    ],
+    [
+     114,
+     0.00705,
+     0.00684,
+     -0.00726
+    ],
+    [
+     115,
+     0.00773,
+     0.00143,
+     -0.00484
     ]
    ],
    "14": [
@@ -133863,6 +134252,54 @@
      0.0,
      0.02363,
      -0.03589
+    ],
+    [
+     108,
+     0.00479,
+     0.03966,
+     0.00126
+    ],
+    [
+     109,
+     0.00659,
+     0.02234,
+     0.00601
+    ],
+    [
+     110,
+     0.00782,
+     0.01052,
+     -0.003
+    ],
+    [
+     111,
+     0.00867,
+     0.00029,
+     0.00336
+    ],
+    [
+     112,
+     -0.00479,
+     0.03966,
+     0.00126
+    ],
+    [
+     113,
+     -0.00659,
+     0.02234,
+     0.00601
+    ],
+    [
+     114,
+     -0.00782,
+     0.01052,
+     -0.003
+    ],
+    [
+     115,
+     -0.00867,
+     0.00029,
+     0.00336
     ]
    ],
    "15": [
@@ -134453,6 +134890,54 @@
      0.0,
      -0.0291,
      0.04367
+    ],
+    [
+     108,
+     -0.0063,
+     -0.04802,
+     -0.00097
+    ],
+    [
+     109,
+     -0.00916,
+     -0.02685,
+     -0.00644
+    ],
+    [
+     110,
+     -0.01111,
+     -0.0124,
+     0.0048
+    ],
+    [
+     111,
+     -0.01247,
+     0.00011,
+     -0.00281
+    ],
+    [
+     112,
+     0.0063,
+     -0.04802,
+     -0.00097
+    ],
+    [
+     113,
+     0.00916,
+     -0.02685,
+     -0.00644
+    ],
+    [
+     114,
+     0.01111,
+     -0.0124,
+     0.0048
+    ],
+    [
+     115,
+     0.01247,
+     0.00011,
+     -0.00281
     ]
    ],
    "16": [
@@ -135043,6 +135528,54 @@
      0.0,
      0.00442,
      -0.00643
+    ],
+    [
+     108,
+     0.00103,
+     0.00678,
+     -0.00013
+    ],
+    [
+     109,
+     0.00154,
+     0.00356,
+     0.00077
+    ],
+    [
+     110,
+     0.00189,
+     0.00136,
+     -0.00089
+    ],
+    [
+     111,
+     0.00213,
+     -0.00054,
+     0.0003
+    ],
+    [
+     112,
+     -0.00103,
+     0.00678,
+     -0.00013
+    ],
+    [
+     113,
+     -0.00154,
+     0.00356,
+     0.00077
+    ],
+    [
+     114,
+     -0.00189,
+     0.00136,
+     -0.00089
+    ],
+    [
+     115,
+     -0.00213,
+     -0.00054,
+     0.0003
     ]
    ],
    "60": [
@@ -135224,9 +135757,6 @@
    "Human.culturalibre_hair_17": "hair",
    "Human.o4saken_chinesebob01": "hair",
    "Human.culturalibre_hair_13": "hair",
-   "Mod.coyote_head": "coat",
-   "Mod.coyote_ears": "coat",
-   "Mod.coyote_lids": "coat",
    "Mod.tail": "skin",
    "Mod.head_lizard": "skin",
    "Mod.head_lizard_jaw": "skin",
@@ -135442,7 +135972,11 @@
    "Mod.tail_lion": "coat",
    "Mod.tail_rat": "skin",
    "Mod.tail_monkey": "coat",
-   "Mod.tail_bird": "coat"
+   "Mod.tail_bird": "coat",
+   "Mod.coyote_head": "coat",
+   "Mod.coyote_ears": "coat",
+   "Mod.coyote_lids": "coat",
+   "Mod.coyote_legs": "coat"
   },
   "gain": {
    "skin": 1.6561,

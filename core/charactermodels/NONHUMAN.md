@@ -129,16 +129,25 @@ whole cast. Godot: `kchar_shot.gd -- --lizard`.
 
 About **8 to 10 sessions** and the five textures, for plantigrade Lizardmen.
 
-**Digitigrade legs** (walking on the toes, the heel high) are the one thing that needs a new skeleton, and the lore does
-not ask for them. Three ways, cheapest first:
-1. **Keep them plantigrade** (a human leg under a reptile's skin, as most games' lizardfolk): no cost.
-2. **A digitigrade stance from the same skeleton**: a pass after the clip that lifts each heel and bends the knee more,
-   keeping the foot planted by a two-bone solve (the figure already rolls the feet onto their balls, `toesFlat`). The
-   leg's mesh stays human; reads as digitigrade from a distance. About 2 sessions, both runtimes.
-3. **A true digitigrade leg**: an extra joint between the shin and the foot (a long metatarsus), a leg mesh of its own
-   (a mod replacing the leg skin), and clips retargeted onto that chain from a digitigrade source (the Meshy library and
-   Quaternius have none: new clips, or made ones). It touches the retarget, the capsules, bodyFix, the grips and every
-   lower-body garment. 6 or more sessions, with risk.
+**Digitigrade legs & paws** (`tools/digitigrade.py`, kit item `mod_legs_coyote`, **built 2026-11-17** for the Coyote Men,
+`biomes/outlands/PLAN.md` section 6 and `kits/coyote/PLAN.md` section 8):
+- Eight joints `LeftDigiThigh`, `LeftDigiShin`, `LeftDigiHock`, `LeftDigiPaw` and `RightDigiThigh`..`RightDigiPaw` appended
+  to `data/mpfb_{male,female}/skeleton.json` after `Tail8` so no existing joint index moves. They are modelled and bound
+  in the standing canid Z-pose (stifle forward, calcaneus/hock elevated at ~28.5% of hip height, slanted metatarsus/pastern,
+  four-toed cushioned oval paw flat on `y = 0` with dark plantar pads and blunt horn claws), sampled at two SDF resolutions
+  (8.2 mm on thigh/gaskin/hock/pastern, 3.2 mm on ankle/toes) with seamless upper-thigh collar continuity into `Human.body`
+  and `brush` fur shells (`role: 'coat'`, `furred: true`).
+- `replaces_feet: true` (`KCHAR.replacesFeet`, `KChar.replaces_feet`) hides human lower-leg/foot skin and `Human.toenails`,
+  and `KCHAR.fits` / `KChar.fits` filters out human shoes/boots (`slot === 'feet'`) and fitted ankle-length trousers while
+  allowing loose kilts, skirts and loincloths. `coyote_men` in `data/peoples.json` equips `mod_head_coyote`,
+  `mod_tail_coyote` and `mod_legs_coyote`.
+- **Gait & capsules** (`digitigrade` in `50-figure.js`, `_digitigrade` in `kchar_figure.gd`): at rest (`!action`) the
+  bones keep their binds (`bone * inverseBind == Identity` to `< 1e-6`); while a clip plays, the pass reads the clip's
+  human leg tracks in skeleton space, applies a subtle grounded pelvis spring settle, plants the paw ball flat on the
+  floor during stance (lifting and plantar-drooping in swing), compresses the hock in mid-stance and crouch, extends it
+  briskly on late-stance push-off, and solves the forward stifle (`DigiThigh -> DigiShin -> DigiHock`) in closed form.
+  `legCaps`, `clothStep`, `tail` and `cantFor` swap to the six moving digitigrade leg capsules so skirts, kilts, robes
+  and the bushy coyote tail drape and collide against the true canid leg.
 
 ### Korona's therian tribes (LORE 6.18)
 
