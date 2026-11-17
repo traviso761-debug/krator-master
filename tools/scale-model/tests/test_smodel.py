@@ -740,4 +740,11 @@ check('the Swīṭ Siṭrīm runs downhill from the scarp\'s foot to the lake at
       and all(sw['bed_m'][i_ + 1] < sw['bed_m'][i_] for i_ in range(len(sw['bed_m']) - 1))
       and abs(sw['px'][-1][0] - 843) < 1.5 and abs(sw['px'][-1][1] - 1491.5) < 1.0
       and not any(bool(whas[int(y_), int(x_)]) for x_, y_ in sw['px'][:-1]))
+# edit_517_pher_rim.py (the owner, 2026-11-16, "do (a)"): the rim plain behind Phēr raised to the page's (its last plain
+# cell over the stream at +10 m, not -30 m), still falling to the wall, and the stream's bed on it over the town's head
+check('Phēr\'s rim plain is raised: the stream\'s column falls to the wall\'s top at %.0f m, its bed there %s m'
+      % (float(E[1489, 842]), sw and sw['bed_m'][12]),
+      sw is not None and sw.get('rim_lift_m') == 40.0 and 0.0 <= float(E[1489, 842]) <= 25.0
+      and all(float(E[y_ + 1, 842]) < float(E[y_, 842]) for y_ in range(1480, 1491))
+      and sw['bed_m'][11] > 15.0 and float(E[1490, 842]) < -200.0)
 print('%d checks passed' % ok)

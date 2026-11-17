@@ -3,9 +3,6 @@
 - **The town stands in the world as ground only.** Step P7: `openworld/xanadu-north-shore` takes the page's ground inside
   its footprint (R 3.9 km; `core/world/bake_towns.py pher`), its lake and its stream; the town's buildings are not drawn
   there yet (a town tile: `drawn: false`, as Voth's).
-- **The Swīṭ Siṭrīm is not joined to the model's stream.** In the world the town's stream runs down its ravine at its own
-  height (`core/world` 41t `over`) from a spring above the upper town; the model's `r_pher_swit` ends at the band, about
-  45 m under the rim plain, so it cannot run in (PLAN.md question 17).
 - **The biome core is Xanadu's older copy.** The page takes Xanadu's vendored `core/biome` (`settlements/xanadu/src/86-bio-*`)
   and, from core, `31b-core-leafset.js` (generated into `gen/` by `build.py`, `BIO_MIN`). `34-core-impostor.js` is not
   taken: it calls `BIO._newItem` and `BIO.kitKey`, which only the current `20-core-kit.js` defines; its MINSET finding

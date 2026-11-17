@@ -4,7 +4,7 @@ The fifth region of the open world (the owner, 2026-11-16, `settlements/pher/PLA
 the erewhon that also contains thalaba"*, *"have it reach east but don't take the long isle"*). It is step P2 of the Phēr
 plan: the ground Phēr's town (step P3, `settlements/pher`) will stand on, its farming ring and the road to Thalaba.
 
-On map 5.1 with edit 7 re-run (5f659c054) and Phēr's polish (`tools/scale-model/edit_517_pher.py`), at 1:1 on `core/world`:
+On map 5.1 with edit 7 re-run (5f659c054) and Phēr's polish (`tools/scale-model/edit_517_pher.py`, `edit_517_pher_rim.py`), at 1:1 on `core/world`:
 
 - **The cut** (`openworld/SITES.json`, region `xanadu-north-shore`; `tools/scale-model/cut_site.py`): px 808-884 by 1446-1514,
   500 m cells.

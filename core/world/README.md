@@ -78,7 +78,8 @@ layout is keyed to its page's ground (its shore, its river) hands that ground to
   height: 41t sets its water 0.6 m over the world's ground at each point (never climbing downstream), serves it in its
   channel (`riverWater`, its half-widths) and draws it as its own line (`riverLines`, or on down the link when joined).
   A join needs the model river's water at the cut over the stream's head: where it is not, `WTOWN.check` counts the link
-  a climb and fails (Phēr's stands unjoined: `settlements/pher/PLAN.md` question 17);
+  a climb and fails. A town's `linkOut` (default 300 m) moves the cut further out than R + band: Phēr's 2,300 m, where
+  the model's 2 km cells have not yet begun its stream's fall to the wall's lip;
 - a region's build puts `bake_towns.record(town, region_meta)` in `WORLD_DATA.towns` and lists `41t` (and `41l`) after
   `41`; 41 already takes the ground (`buildTowns`, `townAt`), 41t the water, river and body. A region that names its towns
   in `openworld/SITES.json` (its row's `"towns"`) has them in `core/world/bake_sites.py`'s plan too (`towns_data`), so the

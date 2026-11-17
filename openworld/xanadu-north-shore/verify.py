@@ -80,7 +80,7 @@ REGION = r"""(neg)=>{const R=[],M=WORLD_DATA.meta,bad=[],lines=[],O=M.frame.orig
  R.push({name:'the Swīṭ Siṭrīm runs downhill to the lake at Phēr',ok:!bad3.length,detail:bad3.length?bad3.slice(0,4).join('; '):l3.join('; ')});
  /* Phēr's own ground in the world (P7: core/world 41t WTOWN.check: the page's shore where the world's water meets its
     ground, the stream continuous into the model's, one lake). Its negatives are core/world/test-town-water.js's */
- if(typeof WTOWN!=='undefined'){const C=WTOWN.check()||[],c=C.find(q=>q.town==='Phēr');const ok=!!c&&c.ok,det=c?JSON.stringify({shore:c.shore,river:c.river&&{ok:c.river.ok},body:c.body&&{one:c.body.one}}).slice(0,400):'no town Phēr';
+ if(typeof WTOWN!=='undefined'){const C=WTOWN.check()||[],c=C.find(q=>q.town==='Phēr');const ok=!!c&&c.ok,det=c?JSON.stringify({shore:c.shore,river:c.river&&(c.river.ok?{ok:true}:{inTown:c.river.inTown,line:c.river.line}),body:c.body&&{one:c.body.one}}).slice(0,400):'no town Phēr';
   R.push({name:'Phēr stands in the world: its shore, its stream and its lake (WTOWN.check)',ok,detail:det});}
  /* the Thalaba road: the link up the Qol valley, about 105 km (the plan's trace), its hans on the way */
  const L=(WORLD_DATA.sites.links||[]).find(l=>l.id==='spher0north1/link/shvo49k0y2'),len=L?L.length_m*(neg==='road'?.65:1):0;

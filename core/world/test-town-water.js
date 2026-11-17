@@ -60,7 +60,7 @@ function town(opt) {
   for (let a = 0; a <= 360; a += 3) shore.push([+(Math.cos(a * Math.PI / 180) * shoreR).toFixed(1), +(Math.sin(a * Math.PI / 180) * shoreR).toFixed(1)]);
   // the shore points at the river's mouth (z > 380, |x| < 80) are the river's, not the lake's: skipped, as bake_towns.py skips them
   const skip = shore.map((p, k) => p[1] > 380 && Math.abs(p[0]) < 120 ? k : -1).filter(k => k >= 0);
-  return { name: opt.name || 'Testtown', x: opt.x || 0, z: opt.z || 0, rot: 0, centre: [0, 0], R: 800, band: 400, onWater: true, drawn: false, level: 0,
+  return { name: opt.name || 'Testtown', x: opt.x || 0, z: opt.z || 0, rot: 0, centre: [0, 0], R: 800, band: 400, onWater: true, drawn: false, level: 0, ...(opt.linkOut != null ? { linkOut: opt.linkOut } : {}),
     grid: { n, step, x0: -half, z0: -half, h0, s, h: Buffer.from(h.buffer).toString('base64') },
     water: opt.noWater ? undefined : { n, step, x0: -half, z0: -half, rle: rleEncode(w) },
     river: opt.over != null ? { name: 'Test brook', join: opt.join == null ? 'r029' : opt.join, over: opt.over, pts: [[452, 0, 6], [600, 0, 6], [700, 0, 6], [790, 0, 6]] }
@@ -163,6 +163,11 @@ ok('the river form is left to 41\'s named river (not stamped, not skipped); the 
     && !!J7 && J7.pts[J7.pts.length - 1][2] < L7.pts[L7.pts.length - 1][2] - 3 && c7.ok, true, L7 ? 'from ' + L7.ya.toFixed(1) + ' to ' + L7.pts[L7.pts.length - 1][2].toFixed(1) + '; ' + JSON.stringify(c7.river) : 'no link');
   world({ towns: [town({ over: true, hill: 200 })] }); const c8 = vm.runInThisContext('WTOWN').check({ step: 40 })[0];
   ok('negative: a stream whose head stands over the Turm water at the cut cannot join it (the link would climb)', true, !c8.ok && c8.river.line.climbs > 0, JSON.stringify(c8.river.line)); }
+
+{ world({ towns: [town({ linkOut: 900 })] }); const t9 = WORLD_DATA.meta.rivers[0], l9 = t9.line[t9.line.length - 1], L9 = vm.runInThisContext('WTOWN').list[0].link;
+  ok('the town linkOut moves the cut out (R + band + 900) and the link starts there (unwarped, within 80 m)', Math.abs(Math.hypot(l9[0], l9[1]) - 2100) < 1 && !!L9
+    && Math.abs(Math.hypot(L9.from[0], L9.from[1]) - 2100) < 80, Math.abs(Math.hypot(l9[0], l9[1]) - 1500) > 1,
+    Math.round(Math.hypot(l9[0], l9[1])) + ' m, the link from ' + (L9 ? Math.round(Math.hypot(L9.from[0], L9.from[1])) + ' m' : 'none')); }
 
 console.log(bad ? bad + ' FAILED' : 'all passed');
 process.exit(bad ? 1 : 0);

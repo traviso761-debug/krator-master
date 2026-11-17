@@ -299,7 +299,7 @@
   },
   "farm": {
    "mean": 0.332,
-   "good_km2": 1392,
+   "good_km2": 1376,
    "best_km2": 912,
    "peak": {
     "score": 0.985,
@@ -352,8 +352,8 @@
    "family": "farmland",
    "x": 0,
    "z": 16000,
-   "score": 0.71,
-   "label": "Farmland: the best (71%, 894 mm, 21 °C)",
+   "score": 0.69,
+   "label": "Farmland: good (69%, 894 mm, 21 °C)",
    "why": "warm, watered, flat and deep-soiled (Csa)"
   },
   {

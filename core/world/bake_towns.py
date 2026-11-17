@@ -57,17 +57,19 @@ TOWNS = {
     'pher': {
         'name': 'Phēr', 'site': 'spher0north1', 'pin_px': [843, 1491], 'page': 'settlements/pher', 'kind': 'closed',
         'js': ['settlements/pher/targets/town/89zp-ph-site.js'],
-        'ground': 'phH', 'frameFn': 'phWorldFrame', 'shoreFn': 'phShoreZ', 'streamFn': 'phStreamX', 'streamTo': 'PH.UP[1]-700',
+        'ground': 'phH', 'frameFn': 'phWorldFrame', 'shoreFn': 'phShoreZ', 'streamFn': 'phStreamX', 'streamTo': 'PH.UP[1]-1900',
         # R 3.9 km round the page point on the pin: the strand and the cove to the rim's upper town (the page's z +900 to
         # -6,500); the headland's tip (page z 1,260) in the band
         'frame': 4400, 'step': 10, 'R': 3900, 'band': 1000, 'level': 0,
-        # over: the stream comes down the wall over the lake (41t serves it at its own height). Not joined: the model's
-        # r_pher_swit reaches the band at about -38 m, some 45 m under the page's rim plain where the stream rises, so a
-        # link would climb (settlements/pher/PLAN.md question 17); the model's line is cut at the band
-        'river': {'name': 'Swīṭ Siṭrīm', 'join': None, 'over': True},
+        # the model's line starts its fall to the wall about a cell (2 km) before the lip: cut it 2.3 km past the band,
+        # upstream of that fall, where 41's water (about +17 m) stands over the town's stream at R (about +12 m)
+        'linkOut': 2300,
+        # over: the stream comes down the wall over the lake (41t serves it at its own height), joined to the model's
+        # r_pher_swit, whose plain edit_517_pher_rim.py raised to the page's (settlements/pher/PLAN.md question 17, "do (a)")
+        'river': {'name': 'Swīṭ Siṭrīm', 'join': 'r_pher_swit', 'over': True},
         'note': 'Phēr\'s ground (settlements/pher/PLAN.md step P7): the page\'s phH (the strand, the caldera wall, the rim; the cove, '
                 'the headland and the point; the stream\'s ravine) turned by the shore\'s bearing, the lake at its level, the stream '
-                'over the lake at its own height (not yet joined to the model\'s r_pher_swit: PLAN.md question 17)'},
+                'over the lake at its own height, joined to the model\'s r_pher_swit'},
 }
 
 # the closed towns' sampling (plain ES5 over the page's own globals): the ground, the water under the level, the stream,
@@ -282,7 +284,8 @@ def bake(key, check=False):
             'grid': {'n': n, 'step': step, 'x0': P.get('centre', [0, 0])[0] - half, 'z0': P.get('centre', [0, 0])[1] - half, 'h0': h0, 's': s, 'file': 'ground.png',
                      'encoding': '16-bit grey v: h = h0 + (v - 32768) * s; row j at z0 + j*step, column i at x0 + i*step'},
             'water': {'file': 'water.png', 'values': {'0': 'land', '1': 'the water polygon', '2': 'the river\'s channel', '3': 'a hollow under the level'}},
-            'R': T['R'], 'band': T['band'], 'level': T['level'], 'onWater': True, 'drawn': False,
+            'R': T['R'], 'band': T['band'], **({'linkOut': T['linkOut']} if T.get('linkOut') is not None else {}),
+            'level': T['level'], 'onWater': True, 'drawn': False,
             'river': {'name': T['river']['name'], 'join': T['river']['join'], **({'over': True} if T['river'].get('over') else {}), 'mouth_first': True, 'length_m': round(P['rlen'], 1),
                       'pts': river, 'note': '[x, z, half-width] in the frame, from the mouth upstream (the page\'s RIVER)'},
             'shore': {'step_m': 24, 'length_m': round(P['slen'], 1), 'pts': shore, 'skip': sorted(eedit + eriv),
@@ -349,6 +352,8 @@ def record(key, region, shore=True):
            'river': {k: meta['river'][k] for k in ('name', 'join', 'over', 'pts') if k in meta['river']}}
     if meta.get('y0') is not None:
         rec['y0'] = meta['y0']   # a fixed lift (41 buildTowns: t.y0): a closed town's page heights are over its water at 0
+    if meta.get('linkOut') is not None:
+        rec['linkOut'] = meta['linkOut']   # 41t: where the joined model river is cut, past R + band (default 300 m)
     if shore:
         rec['shore'] = meta['shore']['pts']
         rec['shoreSkip'] = meta['shore']['skip']

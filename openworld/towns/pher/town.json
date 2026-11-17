@@ -9,7 +9,7 @@
   1491
  ],
  "page": "settlements/pher",
- "note": "Phēr's ground (settlements/pher/PLAN.md step P7): the page's phH (the strand, the caldera wall, the rim; the cove, the headland and the point; the stream's ravine) turned by the shore's bearing, the lake at its level, the stream over the lake at its own height (not yet joined to the model's r_pher_swit: PLAN.md question 17)",
+ "note": "Phēr's ground (settlements/pher/PLAN.md step P7): the page's phH (the strand, the caldera wall, the rim; the cove, the headland and the point; the stream's ravine) turned by the shore's bearing, the lake at its level, the stream over the lake at its own height, joined to the model's r_pher_swit",
  "frame": {
   "units": "m",
   "x": "east",
@@ -42,15 +42,16 @@
  },
  "R": 3900,
  "band": 1000,
+ "linkOut": 2300,
  "level": 0,
  "onWater": true,
  "drawn": false,
  "river": {
   "name": "Swīṭ Siṭrīm",
-  "join": null,
+  "join": "r_pher_swit",
   "over": true,
   "mouth_first": true,
-  "length_m": 5152.3,
+  "length_m": 6352.9,
   "pts": [
    [
     40.0,
@@ -570,6 +571,126 @@
    [
     194.4,
     -5598.0,
+    5
+   ],
+   [
+    195.9,
+    -5648.0,
+    5
+   ],
+   [
+    197.4,
+    -5698.0,
+    5
+   ],
+   [
+    198.9,
+    -5748.0,
+    5
+   ],
+   [
+    200.4,
+    -5798.0,
+    5
+   ],
+   [
+    201.9,
+    -5848.0,
+    5
+   ],
+   [
+    203.4,
+    -5898.0,
+    5
+   ],
+   [
+    204.9,
+    -5948.0,
+    5
+   ],
+   [
+    206.4,
+    -5998.0,
+    5
+   ],
+   [
+    207.9,
+    -6048.0,
+    5
+   ],
+   [
+    209.4,
+    -6098.0,
+    5
+   ],
+   [
+    210.9,
+    -6148.0,
+    5
+   ],
+   [
+    212.4,
+    -6198.0,
+    5
+   ],
+   [
+    213.9,
+    -6248.0,
+    5
+   ],
+   [
+    215.4,
+    -6298.0,
+    5
+   ],
+   [
+    216.9,
+    -6348.0,
+    5
+   ],
+   [
+    218.4,
+    -6398.0,
+    5
+   ],
+   [
+    219.9,
+    -6448.0,
+    5
+   ],
+   [
+    221.4,
+    -6498.0,
+    5
+   ],
+   [
+    222.9,
+    -6548.0,
+    5
+   ],
+   [
+    224.4,
+    -6598.0,
+    5
+   ],
+   [
+    225.9,
+    -6648.0,
+    5
+   ],
+   [
+    227.4,
+    -6698.0,
+    5
+   ],
+   [
+    228.9,
+    -6748.0,
+    5
+   ],
+   [
+    230.4,
+    -6798.0,
     5
    ]
   ],
@@ -1997,7 +2118,7 @@
   "files": [
    "settlements/pher/targets/town/89zp-ph-site.js"
   ],
-  "hash": "32cf7d529155bc9c",
+  "hash": "f989722a0af34cff",
   "by": "core/world/bake_towns.py"
  }
 }

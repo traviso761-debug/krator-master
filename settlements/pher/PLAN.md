@@ -312,8 +312,9 @@ tune at step P1 (the tune's session):
 - **P7:** Phēr's ground in `openworld/xanadu-north-shore` (`SITES.json` `"towns": ["pher"]`): `core/world/bake_towns.py`'s
   new `closed` kind samples the page's `phH` through its world frame (`phWorldFrame`: turned by the shore's bearing, the
   lake at -520 m) into `openworld/towns/pher`; the region takes it with `41t`. The Swīṭ Siṭrīm runs at its own height
-  down its ravine (`41t`'s new `over` rivers: wet in its channel, drawn as its own line), not yet joined to the model's
-  line (question 17).
+  down its ravine (`41t`'s new `over` rivers: wet in its channel, drawn as its own line), joined to the model's line
+  once `edit_517_pher_rim.py` raised the plain behind the rim (question 17): 41t's link from 2.3 km past the band
+  (`linkOut`, where the model's 2 km cells have not yet started the stream's fall to the wall) to the town's stream at R.
 
 
 ## 7. Questions for the owner
@@ -341,18 +342,15 @@ tune at step P1 (the tune's session):
 13. ~~**The caravanserai.**~~ **A Xanadu one of its own** ("build xanadu one").
 14. ~~**The wall between the levels.**~~ **Houses line the lower switchbacks.**
 
-**Still open:**
-15. **The heir's own palace.** The seat uses the Grand Vizier's citadel design (walk-in). Should the heir have a palace
-    of its own design (a commission for the citadel's builders), or does this one stand?
-16. **The fair's days (P6).** The tune proposes days 3 and 6 of the lake's week (`T.fairDays`). Keep them? On those days the
-    fair ground fills with stalls and the launches of the north shore come in.
-17. **The Swīṭ Siṭrīm at the rim.** The model's stream (`r_pher_swit`) reaches Phēr's band at about -38 m, some 45 m
-    under the page's rim plain where the town's stream rises (the upper town stands on that plain): water cannot run up
-    into it, so the model's line now ends at the band and the town's stream rises at a spring above the upper town.
-    Which should give way? (a) a scale-model edit raising the land behind the rim (the plateau stands higher than the
-    caldera's lip, the stream crossing it in a shallow channel, as the page has it); (b) the page cuts a gorge through
-    the rim, which runs through the upper town and its fair ground; (c) leave it: the Swīṭ rises on the rim, and the
-    model's stream is another, ending in the hills behind (*proposed: (a)*).
+**Answered 2026-11-16 (fourth round):**
+15. ~~**The heir's own palace.**~~ **The Grand Vizier's design stands for now** ("can use grand vizier palace for now"):
+    a palace of the heir's own stays a later commission.
+16. ~~**The fair's days.**~~ **Days 3 and 6** of the lake's week ("fair on day 3 and 6"), as `PH.FAIR` has them.
+17. ~~**The Swīṭ Siṭrīm at the rim.**~~ **(a): the land behind the rim is raised** ("do (a)"). The model's rim plain stood
+    about 40 m under the page's along the whole stretch (both falling about 7 m a km toward the lake), so the model
+    river reached the town's band under the plain where the town's stream rises. `tools/scale-model/edit_517_pher_rim.py`
+    lifts the plain behind Phēr's stretch of the wall (about 40 m at the rim, fading out 16 km north and along the
+    shore) and the stream's bed with it; the town's stream is then joined to the model's (core/world 41t's link).
 
 ## 8. Found on the way (for the sessions that own them; not changed here)
 
