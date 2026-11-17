@@ -343,8 +343,8 @@ Following `README.md`, "CORE MODULES ARE NOT OPTIONAL":
   where a rill ends). The houses' wind-catchers (the plan's heat): badgir twins of seven common houses, about a quarter of them.
   The quarters outside the walls (the owner, 2026-11-17: "we can put a little bit of the housing (and empty buildable lots)
   outside the walls"): the Strongbow quarter along the road from the Strongbow Gate, the Works quarter by the works and the
-  Scarp quarter along the monastery road, a second core/city instance over them (no civic pieces), 63 lots, about 330 people
-  (a tenth of the town's 3,230), 13 of the house lots left empty and buildable, 5 with their materials piled (kits/construction).
+  Scarp quarter along the monastery road, a second core/city instance over them (no civic pieces), 65 lots, about 350 people
+  (a tenth of the town's 3,230), 17 of the house lots left empty and buildable, 6 with their materials piled (kits/construction).
 - **K6.** The site in the open world: `openworld/xanadu-oidong-highrift` (Kirstabal `sl758m2396` in `openworld/SITES.json` and the
   region's cut, by hand, inside the Xanadu polygon). The ring (Mil, Kanāl, Grēnz, Bāiyar) at the tune's places and the lake's
   nine on the shore round the lake, eight of them on a fishers' row in the region's site spec, planned on the world's ground
