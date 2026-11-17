@@ -54,5 +54,11 @@
    "water_m": -520.0,
    "note": "The low point east of Phēr's cove, closing it to about 1 km across. settlements/pher/PLAN.md section 1.2, edit_517_pher.py."
   }
- ]
+ ],
+ "vale_ring": {
+  "edit": "edit_517_vale_ring.py",
+  "seed": 51717,
+  "massifs": 17,
+  "note": "The mountains round the Lake of the Vale (the owner, 2026-11-17)."
+ }
 }

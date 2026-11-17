@@ -747,4 +747,15 @@ check('Phēr\'s rim plain is raised: the stream\'s column falls to the wall\'s t
       sw is not None and sw.get('rim_lift_m') == 40.0 and 0.0 <= float(E[1489, 842]) <= 25.0
       and all(float(E[y_ + 1, 842]) < float(E[y_, 842]) for y_ in range(1480, 1491))
       and sw['bed_m'][11] > 15.0 and float(E[1490, 842]) < -200.0)
+# edit_517_vale_ring.py (the owner, 2026-11-17, "like that kind of effect with the Lake of the Vale"; "Whole lake"): the
+# lake ringed by mountains, the land 8 km from the water about 1,000 m over it, peaks to ~1,600 m; the towns' ground kept
+from scipy import ndimage as _nd
+_lab, _ = _nd.label(whas & (np.abs(wlev + 520) < 1.0))
+_lake = _lab == _lab[1493, 843]
+_d = _nd.distance_transform_edt(~_lake)
+_r8 = (_d > 3.5) & (_d <= 4.5) & ~whas
+check('the Lake of the Vale is ringed by mountains: 8 km out the land stands %.0f m over the water (max %.0f m)'
+      % (float(E[_r8].mean()) + 520, float(E[_r8].max()) + 520),
+      bool(D['landforms'].get('vale_ring')) and float(E[_r8].mean()) + 520 > 850 and float(E[_r8].max()) + 520 > 1400
+      and -470.0 <= float(E[1491, 843]) <= -420.0 and abs(float(E[1517, 841]) + 497.0) < 15)
 print('%d checks passed' % ok)

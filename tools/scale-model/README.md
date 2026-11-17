@@ -829,7 +829,7 @@ dry on the new shore.
     (`openworld/xanadu-north-shore`).
   Written in the Phēr plan's session (claude/pher-plan-55d3f2, f7834e394) and re-run here after `edit_517_gorge.py`.
 - Run order from the pre-edit model (055bc43ce): `edit_517.py`, `edit_517_crease.py`, `edit_517_paint.py`,
-  `edit_517_alph.py`, `edit_517_gorge.py`, `edit_517_pher.py`, `edit_517_pher_rim.py`.
+  `edit_517_alph.py`, `edit_517_gorge.py`, `edit_517_pher.py`, `edit_517_pher_rim.py`, `edit_517_vale_ring.py`.
 - `edit_517_pher.py` (after the re-run, 5f659c054; records only, no raster change; the owner, 2026-11-16, for Phēr at
   843,1491: "give it a headland and cove; give it a small stream", "coined name"; `settlements/pher/PLAN.md`):
   - Phēr's headland: two `island` records from the shore's bend west of the town (840.65,1491.2 and its tip 841.05,1491.65).
@@ -851,6 +851,19 @@ dry on the new shore.
   Regions over this ground re-cut after it: `openworld/xanadu-north-shore` (done in the Phēr plan's session) and
   `openworld/xanadu-oidong-highrift` (its box holds it). Written and first run in the Phēr plan's session
   (claude/pher-plan-55d3f2).
+
+- `edit_517_vale_ring.py` (after `edit_517_pher_rim.py`; a raster edit; the owner, 2026-11-17: "something like that kind of
+  effect [Lake Atitlán, the World Menagerie] with the Lake of the Vale, but with the rise to the mountains not quite as
+  steep. they should be visible though, and come up the lake in places"; "Whole lake"): the lake (-520 m, ~140 x 60 km,
+  round its island) was ringed by a ~300 m wall and a plateau 500-600 m over the water. Procedurally from the lake's own
+  shape (SEED 51717): a range 10 km back from the water, 480-820 m over the ground, its height wandering round the ring;
+  17 massifs on it one every 20 km of the ring, 800-1,250 m over the ground; 12 of them with a spur running down to
+  the shore and ending 150-260 m over the water. Every pin and site on the lake (Erehwon, Ōlḍ-Thalaba, Phēr, Māuṭh,
+  Ḍāiyar, the Qol ford and head) keeps its ground and every river reaching the lake its valley; the water and the
+  island are untouched. 3,436 cells; 8 km out the land now stands ~1,000 m over the water (was ~500), peaks to ~1,600 m.
+  Temperatures lapsed, paint relit; `DATA.landforms.vale_ring` marks it run. `tests/test_smodel.py` section 17 checks it.
+  Re-cut after it: `openworld/xanadu-north-shore`, `openworld/xanadu-oidong-highrift`; the lake towns' pages (Erewhon,
+  Kirstabal, Ōlḍ-Thalaba) refit to it in their own sessions. Written and first run in the Phēr plan's session.
 
 **5.1e12 (2026-11-16, records only)**: the owner, "we can move thalaba to the mouth of godshearth and put a new village
 on the lake in its place": Thalaba (`shvo49k0y2`) moves from 825,1481 to 840,1463, where Godshearth's spillway gorge
