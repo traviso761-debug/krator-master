@@ -14,6 +14,7 @@ what is finished. Branch `claude/lizardmen-village-d3035c`; nothing pushed.
 |---|---|---|---|
 | **Basilisk**, the stone capital | `slrodrkrls` (765,1596) | ~15,000 | Sauropolis (the scale model still says so until its queue renames the pin) |
 | **Iguana**, the granary town on the Pile's plateau | none yet (*proposed* 713,1569) | ~3,000 | "Basilisk" in the proposal of 2026-11-16 |
+| **Skink**, the salt village by the salt lake north of the Pile's plateau | none yet (*proposed* 691,1521) | ~1,500 | the owner, 2026-11-17, to mend the country's salt (`settlements/skink/PLAN.md`); in `LZ_TUNE` |
 | Tuatara | `szv27b2reu` (818,1554) | ~3,000 | |
 | Komodo | `spnqhezhiw` (865,1617) | ~3,000 | |
 | Gila | `sze26pgivd` (653,1485) | ~3,000 | |
@@ -127,6 +128,7 @@ Each town is a `settlements/<name>` built on `kits/lizardmen/build.py --settleme
 - Rename the pin `slrodrkrls` "Sauropolis" to **Basilisk**; move it ashore at the sea's western end (it stands in the water at -2,600 m).
 - New pins:
   - **Iguana** (713,1569);
+  - **Skink** (691,1521);
   - the **east reliquary** (790,1578);
   - the **west reliquary** (651.9,1486.7).
 - The derived data (`geology.json` settlements, `ledger.json`, `rivers.json`'s "lists Sauropolis", the openworld census files) follow the model's next bake.

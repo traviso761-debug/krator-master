@@ -1,5 +1,5 @@
 {
- "_": "Proposed for the salt-lake village (name owed: Chuckwalla proposed) (kits/lizardmen/settle/towns_plan.py; settlements/saltlakes/PLAN.md). Page frame: x east, z SOUTH, metres from the pin. GUIDE.md section 4 turns this into src/81-ck-spec.js (var LZV_SPEC). Keys starting with _ are the plan's notes, not the spec's.",
+ "_": "Proposed for Skink (kits/lizardmen/settle/towns_plan.py; settlements/skink/PLAN.md). Page frame: x east, z SOUTH, metres from the pin. GUIDE.md section 4 turns this into src/81-sk-spec.js (var LZV_SPEC). Keys starting with _ are the plan's notes, not the spec's.",
  "_pin": {
   "px": [
    691,
@@ -32,8 +32,8 @@
   "Interpreters": 30,
   "Bulwarks": 150
  },
- "key": "saltlakes",
- "name": "the salt-lake village (name owed: Chuckwalla proposed)",
+ "key": "skink",
+ "name": "Skink",
  "seed": 8701,
  "spiral": {
   "axis": 177.5,
@@ -221,7 +221,7 @@
   "label": "the salt lake (basins.json 692.5,1525.7: 32 km2, -1,706 m)"
  },
  "hamlet": {
-  "id": "saltlakes.pans",
+  "id": "skink.pans",
   "focus": "salt",
   "site": [
    2110.0,

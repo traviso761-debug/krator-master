@@ -29,9 +29,9 @@ console.log('two years of the Lizardmen in '+((Date.now()-t0)/1000).toFixed(1)+'
 // 1. declared at the owner's numbers: Basilisk (the capital, once Sauropolis) 15,000; Tuatara, Komodo, Gila and Iguana 3,000; the
 //    Tubes 1,000; the warrens 30,000 in bulk; the two reliquaries; no problems
 {const P=k=>Y.V.settlements.find(s=>s.id===k)||{},pp=ks=>ks.reduce((n,k)=>n+(P(k).people||0),0);
- const good=Y.S.order.length===10&&!Y.S.problems.length&&P('basilisk').people===15000&&pp(['tuatara','komodo','gila','iguana'])===12000&&
+ const good=Y.S.order.length===11&&!Y.S.problems.length&&P('basilisk').people===15000&&pp(['tuatara','komodo','gila','iguana'])===12000&&P('skink').people===1500&&
   P('tubes').people===1000&&pp(['warrens-east','warrens-west'])===30000&&P('reliquary-west').people===0&&P('warrens-east').scale===200;
- T.ok('declared: Basilisk 15,000; Tuatara, Komodo, Gila, Iguana 3,000 each; the Tubes 1,000; the warrens 30,000 at 200 a head; two reliquaries; no problems',good,
+ T.ok('declared: Basilisk 15,000; Tuatara, Komodo, Gila, Iguana 3,000 each; Skink 1,500; the Tubes 1,000; the warrens 30,000 at 200 a head; two reliquaries; no problems',good,
   Y.S.order.length+' places; problems: '+(Y.S.problems.slice(0,3).join('; ')||'none'));}
 // 2. Z0's own test: each place on its own make for a season, on the stocked start, fed; the books balance
 {const Z=run(91,{allot:false});const f=fedCheck(Z.B);
@@ -65,13 +65,15 @@ T.ok('Z1: two years\' books balance, every place and good; the plan took what it
   'the capital short of grain '+(100*short(Dp)).toFixed(1)+'% with the rule, '+(100*short(Nd)).toFixed(1)+'% without');
  T.neg('Z1: a plan that never sends from below a reserve leaves the capital shorter',R=>short(R)<=short(Dp)+1e-9&&R.S.allot.loads.some(l=>l.deep),Nd,Dp);}
 // 7. GILA IS ITS RECORDS: the tune's Gila is GL_REC (people, each work's year, each good's need), and the second year's books
-//    come out near the village's own: salt made ~300 t and ~275 t sent, bronze ~6 t in
+//    come out near the village's own: salt made ~300 t, bronze ~6 t in. Since Skink (the owner, 2026-11-17) the plan asks Gila for
+//    less salt and Gila keeps the rest in reserve: Gila sends no more than GL_REC's 275 t, and Gila and Skink together at least that
 {const G=LZ_TUNE.fromGila(GL_REC),P=Y.V.settlements.find(s=>s.id==='gila'),yr=x=>Object.fromEntries(Object.entries(x).map(([g,n])=>[g,Math.round(n)]));
  const same=G.people===P.people&&P.people===3000&&JSON.stringify(yr(G.make))===JSON.stringify(yr(P.plan.make))&&
   Object.keys(G.eat).every(g=>Math.abs(P.eats[g]*365*P.people-GL_REC.seasons.reduce((n,s)=>n+GL_REC.goods[g].need[s],0)*1000)<1);
- const A=Y.M.B,B=Y.B,saltMade=diff(A,B,'gila','made','salt'),saltOut=diff(A,B,'gila','exported','salt'),bronzeIn=diff(A,B,'gila','imported','bronze');
- const books=Math.abs(saltMade-300000)<=15000&&Math.abs(saltOut-275000)<=275000*.2&&Math.abs(bronzeIn-6000)<=6000*.35;
- T.ok('Gila held to GL_REC: 3,000 by caste, its works and needs the village\'s own; the second year makes '+t(saltMade)+' of salt, sends '+t(saltOut)+' (GL_REC 275 t) and takes '+t(bronzeIn)+' of bronze (6 t)',same&&books,
+ const A=Y.M.B,B=Y.B,saltMade=diff(A,B,'gila','made','salt'),saltOut=diff(A,B,'gila','exported','salt'),bronzeIn=diff(A,B,'gila','imported','bronze'),
+  skOut=diff(A,B,'skink','exported','salt');
+ const books=Math.abs(saltMade-300000)<=15000&&saltOut<=275000*1.2&&saltOut+skOut>=275000*.8&&Math.abs(bronzeIn-6000)<=6000*.35;
+ T.ok('Gila held to GL_REC: 3,000 by caste, its works and needs the village\'s own; the second year makes '+t(saltMade)+' of salt, sends '+t(saltOut)+' (GL_REC 275 t; with Skink\'s '+t(skOut)+', '+t(saltOut+skOut)+') and takes '+t(bronzeIn)+' of bronze (6 t)',same&&books,
   'same records: '+same);
  const bad=Object.assign({},GL_REC,{castes:GL_REC.castes.map(c=>c.id==='tenders'?Object.assign({},c,{people:900}):c)});
  T.neg('Gila held to GL_REC: a tune built from records that drifted (900 Tenders) is not the village\'s',R=>LZ_TUNE.fromGila(R).people===P.people,bad,GL_REC);}

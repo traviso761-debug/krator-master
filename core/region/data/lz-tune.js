@@ -9,7 +9,8 @@
 //   LZ_TUNE.goods          every good and its unit (kg)
 //   LZ_TUNE.diet           a person's year by the kind of place (town, cavern, warren), kg
 //   LZ_TUNE.places         the towns, the countrysides (the warrens, in bulk) and the two reliquaries, with the owner's people
-//                          (section 6 of the proposal: Basilisk ~15,000; Tuatara, Komodo, Gila, Iguana ~3,000; the Tubes
+//                          (section 6 of the proposal: Basilisk ~15,000; Tuatara, Komodo, Gila, Iguana ~3,000; Skink, the
+//                          salt village, 1,500 (the owner, 2026-11-17: settlements/skink/PLAN.md); the Tubes
 //                          ~1,000; the warrens 20,000-40,000: 30,000 here, 18,000 east and 12,000 west) and what each makes
 //                          a year. GILA IS GL_REC (settlements/gila/src/88-gl-records.js): its people, works and needs are
 //                          read from the village's own records when they are loaded, so the two cannot drift (the test holds them)
@@ -55,6 +56,9 @@ T.places=[
  {id:'iguana',key:'iguana',name:'Iguana, the granary town on the Pile\'s plateau',px:713,py:1569,people:3000,diet:{grain:233.33,produce:83.33,meat_hide:70,salt:8.333,bronze_ware:2},
   make:{grain:2600000,produce:250000,meat_hide:210000,relics:1500},smiths:true,sink:'reliquary-east',
   why:'the owner, 2026-11-16: "on some prime farmland nearby" the Pile (proposed px 713,1569, -373 m, 0.6 % slope); the capital\'s granary; it keeps the watch on Loj Nahn and gleans the Pile\'s lower levels'},
+ {id:'skink',key:'skink',name:'Skink, the salt village under the Pile',px:691,py:1521,people:1500,diet:{grain:233.33,produce:83.33,meat_hide:50,salt:8.333,bronze_ware:2},
+  make:{grain:300000,produce:125000,meat_hide:75000,salt:300000},smiths:true,
+  why:'the owner, 2026-11-17: "yes add it, this will be the village of Skink": the country\'s salt was its thinnest margin (settlements/skink/PLAN.md section 1); the richest halite in the country (254) beside a salt lake, pans that dry in 1,051 mm, on the west loop between Iguana and Gila (proposed px 691,1521, no pin yet)'},
  {id:'sa8xk6pimb',key:'tubes',name:'The Tubes, the Rift line\'s ruined cavern',px:608,py:1547,people:1000,diet:'cavern',
   make:{produce:120000,fish:40000,meat_hide:20000,relics:3000},smiths:true,sink:'reliquary-west',
   why:'the owner, 2026-11-16: "both a ruin and a lizardman town of about 1000": fungus beds in the dark, the western sea\'s fish, relics from the ruined station'},
@@ -79,7 +83,7 @@ T.checkTown=function(R){const out={ok:true,problems:[]},bad=m=>{out.ok=false;out
 /* THE COIL (section 3, endorsed by the owner): two loops meeting at the capital. Every load rides its season's way round
    (outward in wet1 and dry1, inward in wet2 and dry2: GL_REC's seasons) and never goes straight; a load for the other loop
    rides in to the capital first, then out round the other loop */
-T.coil={hub:'basilisk',loops:{west:['basilisk','iguana','gila','reliquary-west','tubes','warrens-west'],
+T.coil={hub:'basilisk',loops:{west:['basilisk','iguana','skink','gila','reliquary-west','tubes','warrens-west'],
  east:['basilisk','reliquary-east','tuatara','komodo','warrens-east']},seasons:['wet1','wet2','dry1','dry2'],
  dir:{wet1:'outward',wet2:'inward',dry1:'outward',dry2:'inward'}};
 /* THE ALLOTMENT (core/region/51-region-allot.js): the Interpreters, "one mind remembering what all the others will do", plan
@@ -87,7 +91,7 @@ T.coil={hub:'basilisk',loops:{west:['basilisk','iguana','gila','reliquary-west',
    plan's to move; a place under it is sent to, the heaviest need first. A place whose need weighs less is told to send
    from below its reserve (down to `deep` of its stock) when a heavier one would still go short: no profit, no keep */
 T.allot={every:91.25,reserve:60,horizon:91.25,deep:.5,kmDay:20,hold:1,
- weight:{basilisk:3,iguana:2,gila:2,tuatara:2,komodo:2,tubes:2,'warrens-east':1,'warrens-west':1},
+ weight:{basilisk:3,iguana:2,skink:2,gila:2,tuatara:2,komodo:2,tubes:2,'warrens-east':1,'warrens-west':1},
  goods:['grain','produce','fish','meat_hide','salt','evaporites','copper','tin','bronze','bone'],
  sinks:{relics:true},
  /* Z2: the gifts that go round the Coil, bronze outward and bone inward, each held a while at every stop (the Kula ring as a

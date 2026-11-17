@@ -1,17 +1,18 @@
-# What the Lizardmen's economy runs short of, and a fifth village to mend it (proposal, 2026-11-17)
+# Skink, the Lizardmen's salt village: what the economy ran short of, and the village that mends it (2026-11-17)
 
 The owner, 2026-11-17: *"examine what if anything the lizard economy runs short of, and propose another village site to
-address it"*. Section 1 is the examination; sections 2-8 are the proposed village, planned like the other towns (a builder
-follows `kits/lizardmen/settle/GUIDE.md`). Everything here is *proposed*; the questions are in section 8.
+address it"*; then, of the proposal: *"yes add it, this will be the village of Skink"*. Section 1 is the examination;
+sections 2-8 are the village, planned like the other towns (a builder follows `kits/lizardmen/settle/GUIDE.md`). **Skink is
+in `LZ_TUNE`** (section 5); its page is not built. The owner's answers are in section 8; what else is open is *proposed*.
 
-Files: `spec.json` and `sheets/` (made by `python3 kits/lizardmen/settle/towns_plan.py saltlakes`), `stress-lz.js` (the runs
+Files: `spec.json` and `sheets/` (made by `python3 kits/lizardmen/settle/towns_plan.py skink`), `stress-lz.js` (the runs
 behind section 1).
 
 ## 1. What runs short
 
 **Method.** `LZ_TUNE` (`core/region/data/lz-tune.js`) run on the Allotment and the Coil Rounds for three years, as
 `core/region/tests/test-lizardmen.js` runs it for two, once as it stands and once with each source cut in turn
-(`node settlements/saltlakes/stress-lz.js <case>`). "Short" is a place eating under 99.5 % of a good it needs.
+(`node settlements/skink/stress-lz.js <case>`). "Short" is a place eating under 99.5 % of a good it needs.
 
 **As it stands, nobody goes short.** The test passes, and three years run clean. The margins are another matter:
 
@@ -83,17 +84,22 @@ The geology's halite (`kits/resources/data/geology.json`, its `halite` layer) is
 
 ## 5. What it lives on, and the tune
 
-A new row in `LZ_TUNE.places` (*proposed*; **not added**: the tune is the sim session's and the owner's):
+**Added to `LZ_TUNE`** (`core/region/data/lz-tune.js`, 2026-11-17, on the owner's yes): the place `skink` (1,500 people; a
+year's make grain 300 t, produce 125 t, meat and hide 75 t, **salt 300 t**; its own diet, no fish), `'skink'` in
+`T.coil.loops.west` between `'iguana'` and `'gila'`, and its Allotment weight 2. It makes 300 t of salt (~150 t quarried, ~150
+t from the pans), eats ~12 t, and the Allotment sends what the country asks round the Coil; its grain falls ~50 t short and
+comes from Iguana, 106 km down the loop.
 
-```js
-{id:'saltlakes',key:'saltlakes',name:'<the owner\'s name>, the salt village under the Pile',px:691,py:1521,people:1500,
- diet:{grain:233.33,produce:83.33,meat_hide:50,salt:8.333,bronze_ware:2},
- make:{grain:300000,produce:125000,meat_hide:75000,salt:300000},smiths:true,
- why:'the richest halite in the country (254) and a salt lake; pans dry in 1,051 mm'}
-```
-and `'saltlakes'` in `T.coil.loops.west` between `'iguana'` and `'gila'` (weight 2). This is exactly what section 1's runs
-added (`NEWV=1`). It makes 300 t of salt (~150 t quarried, ~150 t from the pans), eats ~12 t, and sends the rest round the
-Coil; its grain falls ~50 t short and comes from Iguana, 106 km down the loop.
+**What moved** (`node core/region/tests/test-lizardmen.js`, 17 of 17; `test-lz-raids.js` 8 of 8; `test-lz-join.js` 8 of 8; the
+three towns' records tests unchanged):
+- the country is **11 places, 59,500 people**; the two tests that counted ten now count eleven;
+- **Gila now sends 137 t of salt a year** (its records' plan says 275 t): Skink, beside it on the loop, sends 135 t, the two
+  together the 273 t the west took from Gila alone before. What neither is asked to send stays in their stores: the reserve
+  the country lacked. Gila's check now holds Gila to sending no more than its records' 275 t and Gila and Skink together to
+  at least that. **`GL_REC`'s allotments still describe the old plan** (275 t out): Gila's records are its page's, and are
+  left for that page's next pass;
+- the salt cuts of section 1 now leave the warrens **0.8-1.3 % short** (they were 17-76 %), and the salt in store grows
+  from ~300 t to ~700-800 t over three years under either cut.
 
 ## 6. Pieces and textures
 
@@ -104,19 +110,18 @@ No new piece: `lz-mine`, the kit's; `gl-well`, `gl-tank`, `gl-pans`, `gl-saltsto
 
 | Step | What | Test |
 |---|---|---|
-| **S0** | this plan, `spec.json`, the sheets, the runs | `node settlements/saltlakes/stress-lz.js gilaSalt` with and without `NEWV=1` |
-| S1 | the owner's yes and a name; the tune's row (section 5) and the Coil's | `test-lizardmen.js` passes, its counts updated where the new place is meant to move them |
+| **S0** | this plan, `spec.json`, the sheets, the runs (**done**) | `node settlements/skink/stress-lz.js gilaSalt` |
+| **S1** | the owner's yes and the name (Skink); the tune's row and the Coil's, section 5 (**done**) | `test-lizardmen.js` 17/17, `test-lz-raids.js`, `test-lz-join.js` |
 | S2 | the pin on the scale model's queue | |
 | S3 | the page, by the guide | the guide's section 5; `expect.keys` lz-nest, lz-ley, lz-muster, gl-tank, lz-mine, gl-pans, gl-saltstore |
 
-## 8. Questions for the owner (answers *proposed*)
+## 8. Questions for the owner
 
-1. **Salt is the country's weak point** (two months' stock; a bad year at either source starves the warrens of it). Mend it?
-   *Proposed:* yes.
-2. **A fifth village at 691,1521**, the richest halite and a salt lake, between Iguana and Gila on the west loop? *Proposed:* yes.
-3. **Its name.** The towns are lizards; a salt-gland lizard fits: **Chuckwalla** (*proposed*), or Uromastyx, or Moloch.
-4. **1,500 people, 300 t of salt a year** (half from rock salt, half from pans)? *Proposed:* yes.
-5. **Basilisk's pans** stay at 115 t (wet-season boiling floors) or fall back now that the salt-lake village carries the
+1. **Salt is the country's weak point**: mend it? **Answered** (2026-11-17): yes.
+2. **A fifth village at 691,1521**, between Iguana and Gila on the west loop? **Answered:** yes.
+3. **Its name**: **Skink** (the owner, 2026-11-17).
+4. **1,500 people, 300 t of salt a year**: **added** as proposed with the village.
+5. **Basilisk's pans** stay at 115 t (wet-season boiling floors) or fall back now that Skink carries the
    country? *Proposed:* they stay.
 6. **Tin**: a second source on a high-grade placer, rather than a sixth village: **Iguana's placer on Muckle Weyt Beck**
    (geology 700.6,1563.8, high tin, 27 km from Iguana: 8 t a year, a placer camp on `core/hamlet`), or the high placers on

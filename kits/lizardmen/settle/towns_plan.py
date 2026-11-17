@@ -165,9 +165,9 @@ def specs():
         views=[dict(name='Overview', at=[0, 0], from_=[-800, 460, 900]), dict(name='The nest hall', at=[0, 0], from_=[60, 26, 70]),
                dict(name='The Great Granary', at=[-1250, 0], from_=[-160, 70, 160]), dict(name='The watch on the Pile', at=[2600, -400], from_=[-60, 30, 60])],
         sheet=6000, sheet_centre=[600, 0])
-    # ---- THE SALT LAKES (proposed 2026-11-17, a fifth town; name owed): rock salt on the halite flat, pans on the salt lake
-    S['saltlakes'] = dict(
-        key='saltlakes', name='the salt-lake village (name owed: Chuckwalla proposed)', prefix='ck', pin=[691, 1521], pinId=None, people=1500, seed=8701,
+    # ---- SKINK (the owner, 2026-11-17: "this will be the village of Skink"), the salt village: rock salt on the halite flat, pans on the salt lake
+    S['skink'] = dict(
+        key='skink', name='Skink', prefix='sk', pin=[691, 1521], pinId=None, people=1500, seed=8701,
         build=dict(near=[-4500, 4500, -4500, 10500, 25], far=[-30000, 30000, -30000, 30000, 500]),
         shares={1: .22, 2: .26, 3: .26, 4: .14, 5: .02, 6: .10},
         spiral=dict(axis=177.5, windings=4, depth0=32, court=40, street=7, ratio=1.25, mouthExtra=18),
@@ -185,7 +185,7 @@ def specs():
                     farms=4, windmills=2, maxSlope=0.12, gaps=24, circle=True),
         quarries=[[1300, 900], [-900, 1400], [400, 2100]],
         pans=dict(n=7, toward=[692.5, 1525.7], step=95),
-        hamlet=dict(id='saltlakes.pans', focus='salt', site='the salt lake\'s shore (towns_plan.py puts it by the pans)', workers=120, popMax=210),
+        hamlet=dict(id='skink.pans', focus='salt', site='the salt lake\'s shore (towns_plan.py puts it by the pans)', workers=120, popMax=210),
         expect=dict(people=1500, wells=10, keys=['lz-nest', 'lz-ley', 'lz-muster', 'gl-tank', 'lz-mine', 'gl-pans', 'gl-saltstore'], lake=True, hamlet=True),
         lake=dict(name='The salt lake under the Pile', level=-1706, band=16, field=0.06, label='the salt lake (basins.json 692.5,1525.7: 32 km2, -1,706 m)'),
         look=dict(hour=10.0, dens=1.9, fog=0.000040),
@@ -412,7 +412,7 @@ def sheet(spec, L, G, H, W):
     return F
 
 C_WIND = [(198, 222, 182), (214, 204, 232), (238, 214, 172), (222, 202, 178), (236, 188, 184), (220, 220, 220)]
-WIND_NOTE = {'saltlakes': ['Tenders (warrens), the tank, the seer, the medicine hut', 'Tenders and Interpreters (towers)', 'Makers (the salt workers); the bronze and bone halls, two salt stores',
+WIND_NOTE = {'skink': ['Tenders (warrens), the tank, the seer, the medicine hut', 'Tenders and Interpreters (towers)', 'Makers (the salt workers); the bronze and bone halls, two salt stores',
                            'Drovers (long houses: the haulers of the salt) and the lodges; a granary, a barracks'],
              'tuatara': ['Tenders (warrens), the tank, the seer, the medicine hut', 'Tenders and Interpreters (towers)', 'Makers; the bronze, reed and bone halls, the warehouse',
                          'Drovers (long houses); five granaries', 'Line warriors and Bulwarks (lodges); three barracks: the raiders'],
@@ -516,7 +516,7 @@ def village(spec, L, G, H, W):
                     [((232, 216, 180), 'the hall'), ((238, 214, 172), 'cells'), ((190, 200, 170), 'fungus beds'), ((200, 196, 190), 'the station'), ((236, 188, 184), 'lodges'), ((0, 140, 70), 'the ley line')])
 
 SUBS = {
-  'saltlakes': 'Proposed (2026-11-17) to mend the country\'s thinnest margin, its salt: a closed basin floor at -1,630 m on the west Coil loop, half-way between Iguana and Gila (105 km from each), on the richest halite in the country (254), its salt lake (32 km2, -1,706 m) to the south-south-east. Dry savanna (1,051 mm, one wet season) where pans dry, as at Gila. The spiral\'s mouth down the basin toward the lake; the rock-salt quarries on the flat; the pans on the shore.',
+  'skink': 'Skink (the owner, 2026-11-17), proposed to mend the country\'s thinnest margin, its salt: a closed basin floor at -1,630 m on the west Coil loop, half-way between Iguana and Gila (105 km from each), on the richest halite in the country (254), its salt lake (32 km2, -1,706 m) to the south-south-east. Dry savanna (1,051 mm, one wet season) where pans dry, as at Gila. The spiral\'s mouth down the basin toward the lake; the rock-salt quarries on the flat; the pans on the shore.',
   'tuatara': 'The copper town on the volcanic savanna, the raiders nearest the Sultanate: a ground falling 5.3 % to the north-east, no perennial water within 40 km (Neet Gill, a wadi, 10 km), so wells, seven sunken cisterns and a great tank. The spiral\'s mouth faces north, toward the forts, with the mustering ground and the war camp; the fields south; the copper diggings wherever kits/resources puts the nodes within 6 km.',
   'komodo': 'The tin town at the far end of the eastern sea: a bluff falling 11 % to the shore 1-2 km north, 4,000 mm of rain. The spiral\'s long arms along the contour, every block on a plinth, its mouth down to the shore and the weirs; the fields east along the shore bench; the placer camp on Kruk Warra 11.9 km east, inside a near grid run east to hold it.',
   'iguana': 'The capital\'s granary on the Pile\'s plateau: flat (0.3 %), 1,992 mm, prime farmland. The spiral wide and open, its mouth east toward the Pile (14.6 km) with three lookouts on the way: the watch on Loj Nahn. The Great Granary west, between the town and its fields; the fields to the west, the windmills on their edge.',
