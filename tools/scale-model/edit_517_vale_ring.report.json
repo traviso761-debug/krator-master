@@ -287,28 +287,28 @@
    "tip_m": 219
   }
  ],
- "cells": 3436,
+ "cells": 3438,
  "max_lift_m": 1093,
  "rings": [
   {
    "px": 1,
    "km": 2,
    "before_m": -432,
-   "after_m": -255,
+   "after_m": -254,
    "max_after_m": 471
   },
   {
    "px": 2,
    "km": 4,
    "before_m": -241,
-   "after_m": 1,
+   "after_m": 2,
    "max_after_m": 756
   },
   {
    "px": 4,
    "km": 8,
    "before_m": -26,
-   "after_m": 477,
+   "after_m": 478,
    "max_after_m": 1071
   },
   {

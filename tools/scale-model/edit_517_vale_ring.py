@@ -23,7 +23,8 @@ round it, procedurally, from the lake's own shape:
   shoulder straight down to the shore, falling to TIP_M (150-260 m) over the water at the shoreline, so it ends in a
   steep promontory standing in the lake.
 - **What stays open**: the contributions take the larger of the dome and the spur (no stacking) and only ever raise the
-  ground. Every settlement and site on the lake keeps its ground (fading in from 1.5 to 3.5 cells), and every river
+  ground. Every settlement and site on the lake keeps its ground (fading in from 1.5 to 3.5 cells; Phēr's from 1 to 2, its
+  page climbing to meet the range behind it), and every river
   that reaches the lake keeps its valley (fading in from 0.8 to 2.5 cells of its course), so the Qol Siṭrīm's road and
   the Ālph's outlet stay low; the lake, every wet cell and the lake's islands are left alone.
 
@@ -52,6 +53,9 @@ SPUR_W_PX = 1.1
 CREST_PX = (5.0, 2.6)           # the range behind the shore: its crest's distance from the water and its half-width
 CREST_M = (480.0, 820.0)        # its height over the ground it stands on, varying along the ring
 PROTECT_PX = (1.5, 3.5)
+# Phēr's page holds its own ground 6 km inland (its footprint and band in the world) and climbs to meet the range: the
+# range may stand closer behind it (the owner, 2026-11-17: the mountains "should be visible")
+PROTECT = {'Phēr': (1.0, 2.0)}
 RIVER_PX = (0.8, 2.5)
 BOX = (780, 1440, 915, 1560)    # x0, y0, x1, y1: the cells looked at
 # the settlements and sites on the lake (scale model pins and openworld/SITES.json's north-shore sites)
@@ -164,8 +168,9 @@ def plan(E, whas, wlev, rivers):
             lift = np.maximum(lift, spur)
     # what stays open
     keep = np.ones_like(xx)
-    for _, kx, ky in KEEP:
-        keep *= smooth(PROTECT_PX[0], PROTECT_PX[1], np.hypot(xx - kx, yy - ky))
+    for nm, kx, ky in KEEP:
+        pr = PROTECT.get(nm, PROTECT_PX)
+        keep *= smooth(pr[0], pr[1], np.hypot(xx - kx, yy - ky))
     rd = np.full_like(xx, 1e9)
     for R in rivers:
         pts = R.get('px') or R.get('drawn_px') or []

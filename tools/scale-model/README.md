@@ -859,7 +859,7 @@ dry on the new shore.
   shape (SEED 51717): a range 10 km back from the water, 480-820 m over the ground, its height wandering round the ring;
   17 massifs on it one every 20 km of the ring, 800-1,250 m over the ground; 12 of them with a spur running down to
   the shore and ending 150-260 m over the water. Every pin and site on the lake (Erehwon, Ōlḍ-Thalaba, Phēr, Māuṭh,
-  Ḍāiyar, the Qol ford and head) keeps its ground and every river reaching the lake its valley; the water and the
+  Ḍāiyar, the Qol ford and head) keeps its ground (Phēr's within 2 cells: its page climbs to meet the range) and every river reaching the lake its valley; the water and the
   island are untouched. 3,436 cells; 8 km out the land now stands ~1,000 m over the water (was ~500), peaks to ~1,600 m.
   Temperatures lapsed, paint relit; `DATA.landforms.vale_ring` marks it run. `tests/test_smodel.py` section 17 checks it.
   Re-cut after it: `openworld/xanadu-north-shore`, `openworld/xanadu-oidong-highrift`; the lake towns' pages (Erewhon,

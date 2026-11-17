@@ -18,10 +18,18 @@
   launches run only on the fair's days (P6), but lake.cross's launch every two hours and the rounds' calls are not
   followed. Out of the page's ground (4.5 km) the boats are hidden.
 - **The fair's days** (P6): the page's day (`?day=N`, else day 122, a fair day) picks the weekday; on the fair's days
-  (`PH.FAIR.days`, the tune's proposed 3 and 6: question 16) the fair's stalls and launches are out; the daily market's two
+  (`PH.FAIR.days`, 3 and 6: the owner, question 16) the fair's stalls and launches are out; the daily market's two
   rows stand every day. No crowds are drawn beyond the stalls' own keepers.
 - **No interiors in the caravanserai's gate and towers.** Its five ranges have rooms (`xanadu-extra`); the gate block and
   the corner towers stay solid.
+- **The far shore's mountains stand low.** The Lake of the Vale is ~60 km across, so its far shore's range (1,300-1,700 m
+  over the water) stands under 2 degrees on the horizon from Phēr; the range behind the town and along its shore stands
+  3-5 degrees up. The far ground is the scale model's 2 km cells, ribbed on the page by a ridged field (`phRelief`); the
+  world's region has its own sub-cell relief, so the two backdrops are not the same shapes.
+- **The road's top is the Thalaba road's start.** The page draws the road to the region's first guide point
+  (`PH.THALABA_GUIDE`); the region's road on from it (over the Swīṭ Siṭrīm upstream) is drawn in the world only.
+- **The hillsides' houses are the kit's smallest (14-16 m).** Santa Cruz's are 8-10 m; the kit has none smaller, so the
+  alleys run about 35 m apart, not 20.
 - **Interiors: floors the walk cannot reach** (before the entry flights; the count after them: README.md). With `?interiors=1` the audit plans 1,156 buildings, 31,865 floors, and
   finds 3,527 floors unreached in 669 buildings (the shop rows' and workshops' ground floors, the shacks' entries). The
   likely cause is the slope: core/city's 'high' stance puts a house's floor at its plot's highest corner, so on the wall

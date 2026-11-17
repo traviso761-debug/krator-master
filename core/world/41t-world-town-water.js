@@ -126,6 +126,10 @@ W.init=function(R){const cuts=cutRivers();base.init(R);T.length=0;
   for(let i=1;i<=nr;i++){const r=lerp(rD,t.R,i/nr);P.push([t.x+Math.cos(aC)*r,t.z+Math.sin(aC)*r,0]);}   // the radius in to C
   const ya0=base.riverWater(A[0],A[1]),ya=ya0>-1e8?ya0:W.H(A[0],A[1])+2;
   const yEnd=rv.over?rv.C[3]:e.level,cum=cumOf(P),Lt=cum[cum.length-1];P.forEach((p,i)=>{p[2]=Math.max(yEnd,lerp(ya,yEnd,cum[i]/Lt));});
+  /* an over-level river (Phēr's) comes in off higher ground than a town on its water: in the band 41 eases the land to the
+     town's after the link's carve, so the link's water holds OVER_DEPTH over that eased ground (never over its start's,
+     never climbing) and falls to the town's stream at its end (a cascade into its gorge) */
+  if(rv.over){P.forEach(p=>{p[2]=Math.max(p[2],Math.min(ya,W.H(p[0],p[1])+OVER_DEPTH));});for(let i=1;i<P.length;i++)if(P[i][2]>P[i-1][2])P[i][2]=P[i-1][2];P[P.length-1][2]=yEnd;}
   const hw=Math.max(rv.pts.length?rv.pts[rv.pts.length-1][2]:20,(Mr&&Mr.width_m!=null?Mr.width_m:40)/2),pad=hw*3+60;
   let box=[1e18,1e18,-1e18,-1e18];for(const p of P){box=[Math.min(box[0],p[0]-pad),Math.min(box[1],p[1]-pad),Math.max(box[2],p[0]+pad),Math.max(box[3],p[1]+pad)];}
   e.link={pts:P,cum,hw,box,from:A,ya,len:Lt};rv.joined=rv.join;}

@@ -289,6 +289,7 @@ tune at step P1 (the tune's session):
 | **P5** | **Interiors** for the governor's house, the factor house, the inns | the interiors' checks |
 | **P6** | **The fair's days:** the launches' `transport` loops and the crowds climbing to the fair ground | the sim's market-week test |
 | **P7** | **The town in the region:** the page's ground and the world's met; Phēr's footprint on core/world in `openworld/xanadu-north-shore` | the region's verify, the town's |
+| **P8** | **Santa Cruz's pattern** (the fifth round): the mountains round the lake (`tools/scale-model/edit_517_vale_ring.py`); the town re-laid on core/city's `hillside` strategy (paths up the spurs, contour alleys, stairs, houses packed along them); the delta's fair ground and caravanserai; the shelf's plaza and palace; the road in hairpins up the spur, clear of the gorge, no houses on it, joined to the Thalaba road at its back | `core/city/test-hillside.js`; the town's test and GPU verify; the region's |
 
 **Done (2026-11-16, the owner: "do p0-3"):**
 - **P0:** `tools/scale-model/edit_517_pher.py` (the pin `spher0north1`, the headland, the east point, the Swīṭ Siṭrīm); `tests/test_smodel.py` section 17.
@@ -315,6 +316,34 @@ tune at step P1 (the tune's session):
   down its ravine (`41t`'s new `over` rivers: wet in its channel, drawn as its own line), joined to the model's line
   once `edit_517_pher_rim.py` raised the plain behind the rim (question 17): 41t's link from 2.3 km past the band
   (`linkOut`, where the model's 2 km cells have not yet started the stream's fall to the wall) to the town's stream at R.
+
+**Done (2026-11-17, the fifth round):**
+- **P8, the lake:** `tools/scale-model/edit_517_vale_ring.py`: a range round the whole Lake of the Vale, 10 km back from
+  the water, with 17 massifs on it and 12 spurs running down into the lake; the towns, sites and river valleys kept. 8 km
+  out the land stands ~1,000 m over the water (was ~500); peaks to ~1,600 m. Phēr's page draws it to the far shore
+  (`build.py` bakes the model round the lake into `gen/89zf-ph-far.js`; 90q's mid and far ground), ribbed by a ridged field
+  on the page. The lake is ~60 km across, so its far shore's range stands low on the horizon; the range behind and along
+  Phēr's shore stands 3-5 degrees up.
+- **P8, the town:** one core/city instance. The delta (the quays, the warehouses, the granaries, the fair ground and its
+  stalls, the caravanserai and its mule yard, the strand street over the stream on a bridge); two hillsides on core/city's
+  new `hillside` strategy (`core/city/37-city-hillside.js`): three paths up the town's spur and two up the west spur,
+  contour alleys off them, stairs down the fall line, the kit's smallest houses packed along both sides; the shelf on the
+  town's spur (the plaza, the temple, the heir's palace, its gate, garden court, watch and the guard's barracks). About
+  930 houses, ~5,400 people. The gorge is the stream's own (its bed a steady 8.5 %, 70-200 m deep), the gully east of the
+  town kept green.
+- **P8, the podiums and basements** (the owner, on seeing a house float: "we need to make the podium part of these
+  builds for sure"; "maybe even carve basements, and where the slope precisely fits, auxiliary entrances from the
+  podium"): every building on the slope stands on the kit's battered rubble footing down to its plot's low corner; a
+  house whose footing is a storey deep is carved a basement (core/city `KCITY.hillside.basement`), and where one face's
+  ground lies a whole storey or two under the floor along it, the basement opens there: a door in the podium with its
+  step, lintel and two small windows. Then ("basement doors shouldn't cut off stairs. if there is any question of an
+  individual basement slipping into architecture or not aligning to the ground properly, chuck it from its podium"): no
+  door on a house's front (its own door and steps), none before a stair, a path, an entry flight, a kit door or another
+  podium, none where the ground before it does not fit; a doubtful door is dropped, the podium kept. About 875 basements,
+  166 doors.
+- **P8, the road:** in 22 hairpin legs up the town's spur (5 %, none over 8 %), east of the gorge and west of the gully,
+  no houses on it; at its top it is the Thalaba road's first guide point (px 843.60,1489.29), so the region's road runs on
+  from it, crossing the Swīṭ Siṭrīm upstream on core/world's bridge.
 
 
 ## 7. Questions for the owner
@@ -351,6 +380,19 @@ tune at step P1 (the tune's session):
     river reached the town's band under the plain where the town's stream rises. `tools/scale-model/edit_517_pher_rim.py`
     lifts the plain behind Phēr's stretch of the wall (about 40 m at the rim, fading out 16 km north and along the
     shore) and the stream's bed with it; the town's stream is then joined to the model's (core/world 41t's link).
+
+**The fifth round (2026-11-17), on seeing the town:** "i dont think the switchbacks read as switchbacks- they also fall into
+the gully of that gorge there, and likely need a bridge or something. I don't think having the houses run along them
+works. i want something a bit more like santa cruz la laguna, but with dense alleys. hell, look at the lake atitlan model
+in the world menagerie. I'd like to give something like that kind of effect with the Lake of the Vale, but with the rise
+to the mountains not quite as steep. they should be visible though, and come up the lake in places"; "if you copy the
+layout btw, do it procedurally so we can generalize it to other villages"; "the switchback road does need to connect in
+back". Asked, the owner chose:
+18. ~~**How far the mountains go.**~~ **The whole lake** (a scale-model edit; the other lake towns refit in their sessions).
+19. ~~**Where the village pattern lives.**~~ **A core/city strategy** (`hillside`, beside `alleys` and `frontage-courts`).
+20. ~~**The fair ground and the caravanserai.**~~ **On the stream's delta**, at the water.
+21. ~~**The town's centre.**~~ **A shelf on the spur**: the plaza, the temple and the heir's palace, the road arriving above.
+That is step P8 (section 6).
 
 ## 8. Found on the way (for the sessions that own them; not changed here)
 

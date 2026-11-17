@@ -63,6 +63,7 @@
     "core/city/34-city-radial.js": "dee48e1249cfac5f299fcd35c2a62aaeccbb58434672a9c1721cceb075e88feb",
     "core/city/35-city-squares.js": "e73a096d0cfa6d5e3c11361bf52ddfa72bacde5ff15e537a554d2623b79c7b18",
     "core/city/36-city-covered.js": "704a859d1e428367e1ec7353fc60cecdf763a7c60866976349d327634fba2cb3",
+    "core/city/37-city-hillside.js": "c5756e9561566c2e6809459ed1868128269e97702348c5faa57ff7e3c2d84ded",
     "core/city/40-city-kcity.js": "a4b5b225afc98c800c38abf6ee0b1f79156974eeccfc1c84fd669ded37fb09f5",
     "core/clock/20-core-clock.js": "27f205a2e908a21cb5d07f07431352d7a02a214baf543fc94cd545d7d588ddbe",
     "core/door/10-core-door.js": "00ceccdcc016793a0ce0fbfd52a03142670c9426edf316878c829ef9e7ac34ea",
@@ -228,18 +229,18 @@
     "kits/xanadu/src/88-xa-dress.js": "92b383aae14ae16df38e04863d52344e1ee1b66aa243a37b8936f7bb7251ae3f",
     "kits/xanadu/src/89-xa-trades.js": "ea68acaefb8da0b319ca98fb43f8aa400763eccf0e734051065c4facca8662af",
     "kits/xanadu/xanadu.py": "6e7562ab022acc1e2aeadfa55a0222b7ed8a4994a4e70ff5e1982ddce617cf46",
-    "settlements/pher/KNOWN_ISSUES.md": "a8502b9946b290909ed109f26550a19df12deb9a7f7d9bbbecf5bc86033ebd2c",
+    "settlements/pher/KNOWN_ISSUES.md": "5a9b93e31ce2280c8973f4007dce0f2c8c667d90c7a0feb637d393d8354c670d",
     "settlements/pher/PORT.md": "3ba67894a92bdd05f971b9528cb3a448a0838f2e079aed9b9fa25ac6ecb07882",
-    "settlements/pher/build.py": "47cc879b3f7f52c168b63a95403450b0581635a9f6576ecc455560f76a6a7523",
-    "settlements/pher/gen/69p-kcity-bundle.js": "b1a74c3801af9238fd374b1eb8e9ad283a4cf3ab30994bfd2bd9cd95d1aab27a",
+    "settlements/pher/build.py": "d0e8424153c064d5af772661e59df65f7d40b5f399438cea55e915dd85b582c2",
     "settlements/pher/gen/86-bio-31b-core-leafset.js": "c2c41c6f3cc2cc35b44269bf97c5d8efa64ef3dbde448516a1d481f19e3f3ad1",
-    "settlements/pher/kit.json": "b0f494ab3507595a66be955297fd14b159f3380a2ed5a83d29379a77bb0ab271",
+    "settlements/pher/gen/89zf-ph-far.js": "5c19824b9bbf51a33bb809b07eca88aebed15df1b5900aee67efdf388eb9bc26",
+    "settlements/pher/kit.json": "3133699df2de83f9712c66daf2891991f17c1d107b20a8aea07f28f48ff32db2",
     "settlements/pher/targets/town/89z-rows.js": "0a9d6c43e18637b4e27499c385f00f2ea0ccb0579af737dd21b7cf18d9777f02",
-    "settlements/pher/targets/town/89zp-ph-site.js": "1bf992ecb16fcf1fce26c57e917585b0c6d4bd1d5850ebf97cee5ca8d3a6c08a",
-    "settlements/pher/targets/town/90q-ph-world.js": "2e7488030bfd90166d8493fd8ab98bf19ab405e399e0997cdc118ba146a99e0d",
-    "settlements/pher/targets/town/90r-ph-build.js": "836a456c34bc84b837c702e404c38cca6fa62fa3bc7fe355cd11b9a95a5bb993",
+    "settlements/pher/targets/town/89zp-ph-site.js": "2c3f241242ec5a78d6c6717b132361ba50ba4a9fae544b84591e8417ccf2522c",
+    "settlements/pher/targets/town/90q-ph-world.js": "867a22d309d149c8292379a0e5f23b4c4fa204a82a9a79dd821c5e184e9e1b8b",
+    "settlements/pher/targets/town/90r-ph-build.js": "5c43ed9c08c604c1a850de26991f5d72fd41b7cdf6f9714603630d9224dd4447",
     "settlements/pher/targets/town/90s-ph-boats.js": "062a8cb459a31c187c652b9b8adecf3c301528adf0179bb2c89eeae11462beb5",
-    "settlements/pher/targets/town/91z-views.js": "5ced2c14fe82b69753ce1cf17888e2cc0394251dafa04494cf4d29984619ff9a",
+    "settlements/pher/targets/town/91z-views.js": "a27690decaa4398f093734ed9f62dc3f18700a8a8f2440406caf0dfeae017a1d",
     "settlements/xanadu/PORT.md": "6451aaac798d97eca5394d312cf25c25c7b066e3ef439960827a075ba186ab99",
     "settlements/xanadu/build.py": "b649a1e28d278d7898345b0f5baba53008cf1c3f359b67889d832b9407d0ed09",
     "settlements/xanadu/src/00-head.html": "d84d1b9dcb330ed808adb6f76edc7630736d3b91250ee188af2d532a3429434f",
@@ -424,11 +425,12 @@
     "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
     "tools/buildlib.py": "24ec6d636869007e626446a0b8e9cc886fd595af0c9f95b78c4d4b272a18ec0e",
     "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47",
+    "tools/scale-model/model/data/h.png": "60102486430844db4cac9006424506f63b479d95f2abb0287d430b7052466e1b",
     "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
     "core/catalog": "30a9e7a2a0ea642339cc1158c3060327682167fbeb74a8c68a584185e0c6d094",
-    "core/city": "539662ff57b56bd8b3f692037b4fa24401ad07e42535b2025ad7964a5cbf097a",
+    "core/city": "483a47cfa5084dd63e3f358cde486f3bc5b765f4348d7a2271174400fce92963",
     "core/furnish": "09dc20b7272ccbab9dbdf81fa2c1eecb624e5d192d40370d2ae9c1443e6c81c7",
     "core/host": "d729ffbc0ed36e68e9036bd9c454abc6462a27b22a4bc16b88c38d836e6f4a37",
     "core/lod": "ce04505dcf0d6e6739a489ddb83f6692b9c08a79cfbe7ef33f6cf4585055624a",
@@ -442,6 +444,7 @@
     "kits/interiors/sets": "20b479b387697011a98034af93b628988b1696d1c5afca35dceae837aa1cc2b2",
     "kits/interiors/src": "fe72f6be1b5eb6012c769b91a5fc7c558f24144155f758942db210e347392bab",
     "kits/xanadu": "25f578ac1a833982cb6c6500e9dbc37febf0194959482d40192c7bfda9cd8754",
+    "settlements/pher": "2844f34ee9b49de6275762b09b0d60e5030637bf128dc91ff67660e2c4360bf6",
     "settlements/pher/targets": "50ac81f970325a3e011f2437818adde426e1278dee5670dd359edfca43a72d79",
     "settlements/pher/targets/town": "ff3eaef2bca963c979661a28a809b1b26a108257d2c10169a5c5b104c687ba5a",
     "settlements/xanadu/src": "4cd979a6dd0cce6ea10a40187f399cd486fd288a9f029bbf170e6ae2d83d0670",
@@ -450,19 +453,22 @@
     "settlements/xanadu/targets/scrap": "110dafb507a2d12553bf9fae67bff24f62ea606ee3c6843801219bd84ed1cdc4",
     "settlements/xanadu/targets/xanadu": "cb97764a5b46d2491c979e0a358d119b1e4ba420dc33c53a6fb81f995b773051",
     "tools": "5d8cb54bfd5566913f21e3e094a6a85418e1354e6e39cf6138ec20bda1add512",
+    "tools/_inputs": "1dc3332b767b1b60ea953e5dfdd81df90bf3449d9c313c945bbdb29e78f45ff8",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "settlements/pher/build-manifest-town.json": "d9b4118d4a1b89f9388d1e5b7a85737f04881f765efb8f1de9f2ec437c8a52e1",
-    "settlements/pher/dist/pher.html": "6215940afde03649269882e1d81899a9b80b7a047c9274c67e54b12d00211333",
+    "settlements/pher/build-manifest-town.json": "9205a02c58c63b58dae046e1126947cd9f29675c3515593c9e0d87ee568ef5dd",
+    "settlements/pher/dist/pher.html": "78b01cb1c22362a1eb0f8201b45de927ad7840b6f0c3682c0b26e4def03cf8fc",
     "settlements/pher/dist/xanadu.tex.xanadu-2.js": "be1d57f174e08cf71b5511aff65a313eec8edc29e057c48d027e9b60630f3ab5",
-    "settlements/pher/dist/xanadu.tex.xanadu.js": "3fe87059ee305d523fa5026dddfd91123354e88d5839097de9df44137500f2a4"
+    "settlements/pher/dist/xanadu.tex.xanadu.js": "3fe87059ee305d523fa5026dddfd91123354e88d5839097de9df44137500f2a4",
+    "settlements/pher/gen/69p-kcity-bundle.js": "8c40a71736f0b5772ad9212f246ecf5fd332e66ff18d7410c5c61beccf9a156a"
    },
    "outputs_raw": {
-    "settlements/pher/build-manifest-town.json": "edbe203d273621c6cb2ec908dd23da4eca91f91e8fdff34490bed8482b6a44d7",
-    "settlements/pher/dist/pher.html": "6215940afde03649269882e1d81899a9b80b7a047c9274c67e54b12d00211333",
+    "settlements/pher/build-manifest-town.json": "762a6bd12c7e6bf2b3e79f4f573f1225a1d2b4e502226767bbac410c7275e51b",
+    "settlements/pher/dist/pher.html": "78b01cb1c22362a1eb0f8201b45de927ad7840b6f0c3682c0b26e4def03cf8fc",
     "settlements/pher/dist/xanadu.tex.xanadu-2.js": "be1d57f174e08cf71b5511aff65a313eec8edc29e057c48d027e9b60630f3ab5",
-    "settlements/pher/dist/xanadu.tex.xanadu.js": "3fe87059ee305d523fa5026dddfd91123354e88d5839097de9df44137500f2a4"
+    "settlements/pher/dist/xanadu.tex.xanadu.js": "3fe87059ee305d523fa5026dddfd91123354e88d5839097de9df44137500f2a4",
+    "settlements/pher/gen/69p-kcity-bundle.js": "8c40a71736f0b5772ad9212f246ecf5fd332e66ff18d7410c5c61beccf9a156a"
    }
   }
  }

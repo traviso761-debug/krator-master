@@ -1021,8 +1021,8 @@
    "sha256": "e0395d260e160bfe4072b652248648d962489afea520f3948c87cdfaf4fb489f"
   },
   "openworld/xanadu-north-shore/dist/xanadu-north-shore.html": {
-   "bytes": 4734822,
-   "sha256": "a16bcb9f38d829b223a561cdc6b82673da869be711ac555e4d9ec890b26ba5c9"
+   "bytes": 4773516,
+   "sha256": "3b6a76b071e40c6ea6c72a6fec34957fe768842617cc456aa4ec0346a5d12a6f"
   },
   "settlements/dalab/dist/dalab-set.html": {
    "bytes": 6603017,
@@ -1129,8 +1129,8 @@
    "sha256": "f94028859f190afb0fe0831d17582c9eb9390565be504b0250d88feb6e0bef86"
   },
   "settlements/pher/dist/pher.html": {
-   "bytes": 8924162,
-   "sha256": "6215940afde03649269882e1d81899a9b80b7a047c9274c67e54b12d00211333"
+   "bytes": 9053230,
+   "sha256": "78b01cb1c22362a1eb0f8201b45de927ad7840b6f0c3682c0b26e4def03cf8fc"
   },
   "settlements/pinnacle-rock/dist/pinnacle-rock.html": {
    "bytes": 4342913,

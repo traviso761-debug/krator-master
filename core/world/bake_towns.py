@@ -56,10 +56,12 @@ TOWNS = {
     # y0: the lift) and `river` (the page's stream line) from the page's own fragment, run read-only in node
     'pher': {
         'name': 'Phēr', 'site': 'spher0north1', 'pin_px': [843, 1491], 'page': 'settlements/pher', 'kind': 'closed',
-        'js': ['settlements/pher/targets/town/89zp-ph-site.js'],
-        'ground': 'phH', 'frameFn': 'phWorldFrame', 'shoreFn': 'phShoreZ', 'streamFn': 'phStreamX', 'streamTo': 'PH.UP[1]-1900',
-        # R 3.9 km round the page point on the pin: the strand and the cove to the rim's upper town (the page's z +900 to
-        # -6,500); the headland's tip (page z 1,260) in the band
+        # the page's ground (89zp phH) takes core/rand (its far relief) and the far grid its build.py bakes from the scale model
+        # (gen/89zf-ph-far.js: build settlements/pher first in a fresh checkout)
+        'js': ['core/rand/08-core-rand.js', 'settlements/pher/gen/89zf-ph-far.js', 'settlements/pher/targets/town/89zp-ph-site.js'],
+        'ground': 'phH', 'frameFn': 'phWorldFrame', 'shoreFn': 'phShoreZ', 'streamFn': 'phStreamX', 'streamTo': '-7600',
+        # R 3.9 km round the page point on the pin: the delta, the town's spurs, the shelf and the road's hairpins toward the
+        # rim (P8); the headland's tip (page z 1,260) in the band
         'frame': 4400, 'step': 10, 'R': 3900, 'band': 1000, 'level': 0,
         # the model's line starts its fall to the wall about a cell (2 km) before the lip: cut it 2.3 km past the band,
         # upstream of that fall, where 41's water (about +17 m) stands over the town's stream at R (about +12 m)
@@ -67,9 +69,10 @@ TOWNS = {
         # over: the stream comes down the wall over the lake (41t serves it at its own height), joined to the model's
         # r_pher_swit, whose plain edit_517_pher_rim.py raised to the page's (settlements/pher/PLAN.md question 17, "do (a)")
         'river': {'name': 'Swīṭ Siṭrīm', 'join': 'r_pher_swit', 'over': True},
-        'note': 'Phēr\'s ground (settlements/pher/PLAN.md step P7): the page\'s phH (the strand, the caldera wall, the rim; the cove, '
-                'the headland and the point; the stream\'s ravine) turned by the shore\'s bearing, the lake at its level, the stream '
-                'over the lake at its own height, joined to the model\'s r_pher_swit'},
+        'note': 'Phēr\'s ground (settlements/pher/PLAN.md steps P7, P8): the page\'s phH (the strand and the delta, the town\'s spurs '
+                'and the shelf, the gorge and the gully, the slope rising to meet the range behind; the cove, the headland and the '
+                'point) turned by the shore\'s bearing, the lake at its level, the stream over the lake at its own height, joined '
+                'to the model\'s r_pher_swit'},
 }
 
 # the closed towns' sampling (plain ES5 over the page's own globals): the ground, the water under the level, the stream,

@@ -7,11 +7,24 @@ const phD=(v,d)=>v==null?d:v;
 const PH_CHUNK=300,PH_CHUNKS={};
 for(const p of PH_PLACE){const k=p.kind==='civic'?'civic:'+p.level:p.kind==='stall'?(p.daily?'stall:daily':'stall:fair'):Math.floor(p.x/PH_CHUNK)+','+Math.floor(p.z/PH_CHUNK);(PH_CHUNKS[k]=PH_CHUNKS[k]||[]).push(p);}
 const PH_GROUPS=[];let PH_INST=0;const PH_FAILS=[];
+// a basement's door from the podium (89zp: core/city KCITY.hillside.basement, where the slope fits a whole storey under the
+// floor): in the footing's face at its middle, level with the ground there, a dark leaf in stone jambs under a timber
+// lintel, a step of stone before it and two small barred windows beside it; pushed out by the footing's batter at that
+// depth (kits/xanadu xnFooting: its base 0.15 of the drop wider each side), drawn in world metres into the chunk
+const PH_BDOOR={w:1.3,h:2.2},PH_BASE=[],PH_FLIGHTS=[];
+function phBasementDoor(p){const D=p.basement.door,a=D.ry,ox=Math.sin(a),oz=Math.cos(a),dep=p.o.y-D.y,push=.15*Math.max(0,p.o.drop)*(dep/Math.max(.1,p.o.drop))+.06;
+ const x=D.x+ox*push,z=D.z+oz*push,y=D.y,W=PH_BDOOR.w,Hh=PH_BDOOR.h,dark=xC(0x2a2018),stone=xC(xPick(XPAL.stone)),wood=xC(0x6a4a30);
+ vB('vStone',x,y,z,W,Hh,.1,a,dark);
+ for(const s of[-1,1])vB('vStone',x+Math.cos(a)*s*(W/2+.18),y,z-Math.sin(a)*s*(W/2+.18),.36,Hh+.1,.22,a,stone);
+ vB('vStone',x,y+Hh+.05,z,W+.9,.26,.3,a,wood);
+ vB('vStone',x+ox*.55,y-.22,z+oz*.55,W+1.1,.24,1.0,a,stone);
+ const half=Math.max(0,Math.min(p.bo.hw,p.bo.hd)-1.2);if(half>2.6)for(const s of[-1,1])vB('vStone',x+Math.cos(a)*s*2.6,y+1.25,z-Math.sin(a)*s*2.6,.55,.7,.1,a,dark);}
 function phBakeChunk(key,list){const G=new THREE.Group();G.name='chunk:'+key;scene.add(G);let x0=1e9,z0=1e9,x1=-1e9,z1=-1e9,y0=1e9,y1=-1e9;
  for(const p of list){
   TSTAT.cur=p.key+'/'+(p.o.v|0);const r0=REG.length;let g=null;
   try{g=VERN.place(G,p.key,p.x,p.z,p.ry,p.o);}catch(e){PH_FAILS.push(p.key+': '+(e&&e.message||e));}
   if(g)p.G=g;else PH_FAILS.push(p.id+' '+p.key+': not placed');
+  p.reg=[r0,REG.length];if(g&&p.basement&&p.basement.door)PH_BASE.push(p);   /* its basement door waits for the flights (below) */
   for(let i=r0;i<REG.length;i++)REG[i].type=p.key;
   x0=Math.min(x0,p.x-60);x1=Math.max(x1,p.x+60);z0=Math.min(z0,p.z-60);z1=Math.max(z1,p.z+60);y0=Math.min(y0,phD(p.o.y,0)-phD(p.drop,0));y1=Math.max(y1,phD(p.o.y,0)+phD(p.h,12));}
  TSTAT.cur=null;kbake(G);xaDoorsBind();PH_INST+=phD(window._instances,0);for(const n in KIT.items)KIT.items[n].length=0;
@@ -44,11 +57,32 @@ const PH_FLIGHT_MIN=.3;
   const steps=Math.max(2,Math.round(rise/.17)),w=Math.max(1.2,(D.w==null?1:D.w)+.6);
   for(let k=0;k<steps;k++){const d=.3+(k+.5)*run/steps,h=rise*(steps-k)/steps;boxes.push([sx-ox*.3+ox*d,gy+h/2-.15,sz-oz*.3+oz*d,w,h+.3,run/steps+.02,D.yaw]);}
   if(typeof KWALK!=='undefined')KWALK.strip({a:[sx+ox*run,sz+oz*run,gy],b:[sx,sz,D.at[1]],w,name:'flight:'+D.id,tag:'pher.flight'});
+  PH_FLIGHTS.push({a:[sx-ox*.3,sz-oz*.3],b:[sx+ox*run,sz+oz*run],w});
   n++;if(rise>1.2)tall++;}
  if(boxes.length){const geo=new T3.BoxGeometry(1,1,1),M=new T3.InstancedMesh(geo,new T3.MeshStandardMaterial({color:0x9a8f80,roughness:.9}),boxes.length),m4=new T3.Matrix4(),q=new T3.Quaternion(),e=new T3.Euler();
   boxes.forEach((b,i)=>{q.setFromEuler(e.set(0,b[6],0));m4.compose(new T3.Vector3(b[0],b[1],b[2]),q,new T3.Vector3(b[3],b[4],b[5]));M.setMatrixAt(i,m4);});
   M.instanceMatrix.needsUpdate=true;M.name='entry flights';M.userData.probeSkip=true;scene.add(M);}
  window._pher.flights={n,tall,steps:boxes.length};})();
+// ---------------------------------------------------------------- the basements' doors, after the flights
+// The owner (2026-11-17): "basement doors shouldn't cut off stairs. if there is any question of an individual basement
+// slipping into architecture or not aligning to the ground properly, chuck it from its podium". core/city kept a door only
+// off its house's front, on ground that fits it, clear of other podiums and of stairs and paths; here the page drops it
+// too when the door and the 2.5 m before it (3.6 m wide) meet an entry flight, when a kit door (any house's) stands within
+// 3.5 m of it at its level or above, or when a registered part of its own house stands outside its plot near it (a stair,
+// a porch, a balcony's posts). The podium stays whole: only the door goes. The rest are drawn into one group.
+(function phBasements(){const why={flight:0,door:0,architecture:0};let drawn=0;
+ const inZone=(q,D,out)=>{const dx=q[0]-D.x,dz=q[1]-D.z,o=dx*out[0]+dz*out[1],l=dx*out[1]-dz*out[0];return o>-.6&&o<2.5&&Math.abs(l)<1.8;};
+ const G=new THREE.Group();G.name='basement doors';scene.add(G);
+ for(const p of PH_BASE){const D=p.basement.door,out=[Math.sin(D.ry),Math.cos(D.ry)];let bad=null;
+  for(const F of PH_FLIGHTS){if(bad)break;const L=Math.hypot(F.b[0]-F.a[0],F.b[1]-F.a[1])||1,n=Math.ceil(L/.4),ax=(F.b[0]-F.a[0])/L,az=(F.b[1]-F.a[1])/L;
+   for(let k=0;k<=n&&!bad;k++)for(const s of[-1,0,1]){const t=k*L/n,q=[F.a[0]+ax*t-az*s*F.w/2,F.a[1]+az*t+ax*s*F.w/2];if(inZone(q,D,out)){bad='flight';break;}}}
+  if(!bad&&typeof KDOOR!=='undefined'&&KDOOR.list)for(const K of KDOOR.list)if(Math.hypot(K.at[0]-D.x,K.at[2]-D.z)<3.5&&K.at[1]>D.y-.5){bad='door';break;}
+  if(!bad&&p.reg){const b=p.bo,v=[-b.u[1],b.u[0]];for(let i=p.reg[0];i<p.reg[1]&&!bad;i++){const R=REG[i],dx=R.x-b.c[0],dz=R.z-b.c[1],lu=dx*b.u[0]+dz*b.u[1],lv=dx*v[0]+dz*v[1];
+   if((Math.abs(lu)>b.hw+.3||Math.abs(lv)>b.hd+.3)&&Math.hypot(R.x-D.x,R.z-D.z)<4+(R.r||0))bad='architecture';}}
+  if(bad){why[bad]++;p.basement.door=null;p.basement.why=bad;continue;}
+  phBasementDoor(p);drawn++;}
+ kbake(G);for(const n in KIT.items)KIT.items[n].length=0;G.userData.probeSkip=false;
+ window._pher.basements={carved:PH_PLACE.filter(p=>p.basement).length,doors:drawn,dropped:why};})();
 LABELS=new THREE.Group();LABELS.userData.probeSkip=true;scene.add(LABELS);
 window._registered=REG.length;window._chunks=PH_GROUPS.length;window._buildMs=Math.round(performance.now()-PH_B0);
 Object.assign(window._pher,{day:PH_DAY,fairDay:PH_FAIR_TODAY,chunks:PH_GROUPS.length,fails:PH_FAILS.slice(0,20),failed:PH_FAILS.length,
