@@ -1,0 +1,3 @@
+# generated at every build by build.py (the region decoded: gen/39vt-world-data.js)
+gen/
+.syntax-*.js
