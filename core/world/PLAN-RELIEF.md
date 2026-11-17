@@ -615,21 +615,27 @@ of the golden, so the whole of P9's bar is met in Godot:
   depressions and tarns, the encoded lines, `decode`, `rebed`, `pond_rows`, `fans`, `fan_at`, `check`). The JS file's
   Float32Arrays (E, RW, RM, the rain's accumulation) are PackedFloat32Array, so each sum rounds as in JS; `Math.round` is
   `floor(x + 0.5)` and `Math.hypot` V8's own (max-scaled, compensated), so the last bits agree;
-- `core/terrain/kstacks.gd` (37's records and queries, the part the world takes: `foot_r`, `top_h`, `make` for mesas,
-  buttes (tiers, shoulder, weathering, columns), spires, fins and balanced rocks, `dome`, `tor`, `tower`, `at`,
-  `surface`, `foot`). Not ported: mound, arch, pillar (and a fallen one's fall), chimney (and its bore), the mesh,
-  `ledge`, `ring`, `wall`, `weather`;
+- `core/terrain/kstacks.gd`: the whole of 37 and 37b (every kind: mesa, butte (tiers, shoulder, weathering, columns),
+  spire, fin, balanced, plates, mound, dome, tor, arch, pillar, every chimney form and state with its bore, fall and ice;
+  tower; the layouts `row`, `cluster`, `mounds`, `pillars`; the queries `at`, `surface`, `top_at`, `foot`, `ledge`,
+  `ring`, `wall`, `bore`; the mesh with its gridded top, `hash`, `weather`, `contour`, `arch_round`). Its own golden,
+  `core/terrain/golden-stacks.json` (`node core/terrain/test-golden-stacks.js`: every kind's record, the queries at 24
+  points round each body, 33 meshes by their counts, `KSTACKS.hash`, index sum and samples, the layouts), passes in
+  `kstacks_test.gd` (54 s headless): every value within the golden's 1e-6 rounding, every mesh hash equal. Not ported:
+  `pillars` from `KRELIEF.joints` waits for `38-core-relief.js`'s twin (a joints object with a `blocks` Callable works);
 - `core/world/wland.gd` (43b: the placed and pinned records, the fissures, the master gja, the rasters with their batter
   and apron as PackedFloat32Array, `apply`, `at`, `list`).
 
     trace, decode            exact (strings and integers)
     curve, line, heights     worst 5.0e-7          bench, erode, peaks, caprock   worst 5.0e-7
     records, land            worst 5.0e-7          fissures, cut                  worst 4.9e-7
+    records2, land2          worst 5.0e-7          (the badland's 30 spires and 3 fins, the karst's 20 towers, 3 buttes)
+    pins, gja, pinned        worst 5.0e-7          (a pinned mesa, the master gja cut at 135 points)
 
-(each worst is the golden's own rounding to 1e-6); the negative is caught; the run takes 27 s headless (the rasters). The
-copies in `godot/tests/relief/` and `godot/tests/terrain/kstacks.gd` are kept by `godot/tools/sync_core.py`. Not covered by
-the golden yet: the spires, fins and karst towers (no style in it places one), the master gja (no region box in it takes it
-in), a pinned record.
+(each worst is the golden's own rounding to 1e-6); the negative is caught; the run takes 73 s headless (the rasters). The
+keys records2 to pinned were added to the golden with this pass (`--write`; every earlier key unchanged). The copies in
+`godot/tests/relief/` and `godot/tests/terrain/` are kept by `godot/tools/sync_core.py`; both tests are on
+`tools/test_all.py`'s nightly Godot list.
 
 ## 6. Risks
 

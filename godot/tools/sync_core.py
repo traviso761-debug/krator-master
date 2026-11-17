@@ -22,7 +22,7 @@ PAIRS += [(f"core/terrain/{f}", f"godot/tests/terrain/{f}") for f in ("kfield.gd
     "ktherm.gd", "ktherm_test.gd", "golden-therm.json",
     "klamina.gd", "klamina_test.gd", "golden-lamina.json",
     "kstrata_vary.gd", "kstrata_vary_test.gd", "golden-strata-vary.json",
-    "kstacks.gd")]   # KLava: 46-core-lava.js; KTherm: 47-core-therm.js; KLamina: 35b-core-lamina.js; KStrataVary: 35c-core-strata-vary.js
+    "kstacks.gd", "kstacks_test.gd", "golden-stacks.json")]   # KLava: 46-core-lava.js; KTherm: 47-core-therm.js; KLamina: 35b-core-lamina.js; KStrataVary: 35c-core-strata-vary.js
 # core/world's relief twins (core/world/PLAN-RELIEF.md P15): WRELIEF, WSMOOTH, WSTREAMS, WLAND (on kstacks.gd above) and their golden
 PAIRS += [(f"core/world/{f}", f"godot/tests/relief/{f}") for f in ("wrelief.gd", "wsmooth.gd", "wstreams.gd", "wland.gd", "wrelief_test.gd", "golden-relief.json")]
 # kits/resources' node field (KResField), its test and vectors, the geology it reads, and krand.gd beside it (it preloads it)

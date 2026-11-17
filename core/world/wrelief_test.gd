@@ -11,6 +11,7 @@ const WRelief := preload("wrelief.gd")
 const WSmooth := preload("wsmooth.gd")
 const WStreams := preload("wstreams.gd")
 const WLand := preload("wland.gd")
+const KStacks := preload("../terrain/kstacks.gd")
 
 var worst := 0.0
 
@@ -123,6 +124,37 @@ func snapshot() -> Dictionary:
 	G.cut = []
 	for B in F.slice(0, 20):
 		G.cut.append(WLand.apply(ground(B.x, B.z), B.x + 1, B.z, 0))
+	# the badland's spires and fins, the karst's towers
+	WLand.reset()
+	WLand.init({"ox": 0.0, "oz": 0.0, "seed": 78, "ground": gr, "styleName": func(x, _z): return "badland" if x < 6000 else "karst", "overlay": func(_x, _z): return "",
+		"caprock": func(_x, _z): return 1.0, "keep": func(_x, _z): return false, "sites": []})
+	var S2 := WLand.list(0, 0, 12000, 8000)
+	G.records2 = S2.map(func(B): return [B.id, B.x, B.z, 0.0 if B.get("top") == null else B.top, B.R])
+	G.land2 = []
+	for B in S2.slice(0, 24):
+		G.land2.append(WLand.apply(ground(B.x, B.z), B.x + B.R * 0.3, B.z, 0))
+	# a pinned mesa and the master gja, in a region whose box takes the gja in (its middle at local 6000, 6000)
+	WLand.reset()
+	WLand.pin(func(o): return [KStacks.make({"id": "pin:mesa", "kind": "mesa", "x": -4000.0, "z": 9000.0, "y0": o.ground.call(-4000.0, 9000.0) - 5, "seed": 9, "tiers": [{"h": 150.0, "r": 260.0}]})])
+	WLand.init({"ox": 1569 * 2000.0 - 6000, "oz": 1643 * 2000.0 - 6000, "seed": 79, "ground": gr, "styleName": func(_x, _z): return "none", "overlay": func(_x, _z): return "",
+		"caprock": func(_x, _z): return 0.0, "keep": func(_x, _z): return false, "sites": [{"x": -4000.0, "z": 9000.0, "pinned": 1}],
+		"inside": func(x, z): return x > -20000 and x < 32000 and z > -20000 and z < 32000})
+	G.pins = WLand.pins().map(func(B): return [B.id, B.x, B.z, B.R, B.bed if B.get("carve") else B.top])
+	G.gja = []
+	var a := 20 * PI / 180
+	var t := -10000
+	while t <= 10000:
+		var s := -420
+		while s <= 420:
+			var x := 6000 + sin(a) * t + cos(a) * s
+			var z := 6000 - cos(a) * t + sin(a) * s
+			G.gja.append(WLand.apply(ground(x, z), x, z, 0))
+			s += 60
+		t += 2500
+	G.pinned = []
+	for p in [[-4000.0, 9000.0], [-3900.0, 9100.0], [-4250.0, 8800.0], [-3600.0, 9000.0], [-4000.0, 9330.0]]:
+		var A2 = WLand.at(p[0], p[1])
+		G.pinned.append([WLand.apply(ground(p[0], p[1]), p[0], p[1], 0), null if A2 == null else (A2.cut if A2.get("cut") != null else A2.top)])
 	return G
 
 

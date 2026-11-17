@@ -36,7 +36,19 @@ function snapshot(){const G={};
   G.land=A.slice(0,20).map(B=>r6(WLAND.apply(ground(B.x,B.z),B.x+B.R*.3,B.z,0)));
   WLAND.reset();WLAND.init({ox:0,oz:0,seed:77,ground,styleName:()=>'steps',overlay:()=>'high rift',caprock:()=>0,keep:()=>false,sites:[]});
   const F=WLAND.list(0,0,12000,12000);G.fissures=F.map(B=>[B.id,r6(B.x),r6(B.z),r6(B.w),r6(B.d)]);
-  G.cut=F.slice(0,20).map(B=>r6(WLAND.apply(ground(B.x,B.z),B.x+1,B.z,0)));}
+  G.cut=F.slice(0,20).map(B=>r6(WLAND.apply(ground(B.x,B.z),B.x+1,B.z,0)));
+  // the badland's spires and fins, the karst's towers
+  WLAND.reset();WLAND.init({ox:0,oz:0,seed:78,ground,styleName:x=>x<6000?'badland':'karst',overlay:()=>'',caprock:()=>1,keep:()=>false,sites:[]});
+  const S2=WLAND.list(0,0,12000,8000);G.records2=S2.map(B=>[B.id,r6(B.x),r6(B.z),r6(B.top==null?0:B.top),r6(B.R)]);
+  G.land2=S2.slice(0,24).map(B=>r6(WLAND.apply(ground(B.x,B.z),B.x+B.R*.3,B.z,0)));
+  // a pinned mesa and the master gja, in a region whose box takes the gja in (its middle at local 6000, 6000)
+  WLAND.reset();WLAND.pin(o=>[KSTACKS.make({id:'pin:mesa',kind:'mesa',x:-4000,z:9000,y0:o.ground(-4000,9000)-5,seed:9,tiers:[{h:150,r:260}]})]);
+  WLAND.init({ox:1569*2000-6000,oz:1643*2000-6000,seed:79,ground,styleName:()=>'none',overlay:()=>'',caprock:()=>0,keep:()=>false,sites:[{x:-4000,z:9000,pinned:1}],
+   inside:(x,z)=>x>-20000&&x<32000&&z>-20000&&z<32000});
+  G.pins=WLAND.pins().map(B=>[B.id,r6(B.x),r6(B.z),r6(B.R),r6(B.carve?B.bed:B.top)]);
+  const gp=[];for(let t=-10000;t<=10000;t+=2500)for(let s=-420;s<=420;s+=60){const a=20*Math.PI/180;gp.push([6000+Math.sin(a)*t+Math.cos(a)*s,6000-Math.cos(a)*t+Math.sin(a)*s]);}
+  G.gja=gp.map(([x,z])=>r6(WLAND.apply(ground(x,z),x,z,0)));
+  G.pinned=[[-4000,9000],[-3900,9100],[-4250,8800],[-3600,9000],[-4000,9330]].map(([x,z])=>{const a=WLAND.at(x,z);return [r6(WLAND.apply(ground(x,z),x,z,0)),a?(a.cut!=null?r6(a.cut):r6(a.top)):null];});}
  return G;}
 const file=path.join(__dirname,'golden-relief.json'),G=snapshot();
 if(process.argv.includes('--write')){fs.writeFileSync(file,JSON.stringify(G,null,0)+'\n');console.log('wrote '+file);process.exit(0);}
