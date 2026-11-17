@@ -22,6 +22,7 @@ ATMOS.hook(()=>{NL_SKYC.position.set(0,0,0);nlSkyGroup.children.forEach((o,i)=>{
 ATMOS.skylight({renderer,sky:NL_SKYS,scene:NL_ENV,ground:()=>new THREE.Color(0x4a4a34)});
 // ---------------------------------------------------------------- the boxes: NL_TB frames the coastal city, its earthen mound and its three field belts
 const NL_TB={x0:-2000,x1:1150,z0:-3150,z1:550,cell:6},NL_RB={x0:4500,x1:6400,z0:-900,z1:6300,cell:10},
+ NL_LB={x0:-2050,x1:-1050,z0:-5650,z1:-3650,cell:6,sink:20},
  NL_CB={x0:-7000,x1:9000,z0:-6600,z1:8400,cell:40},NL_FB={x0:-70000,x1:70000,z0:-70000,z1:70000,cell:500};
 const nlIn=(B,x,z,m)=>x>B.x0+(m||0)&&x<B.x1-(m||0)&&z>B.z0+(m||0)&&z<B.z1-(m||0);
 function nlPainter(B){const PX=4096/Math.max(B.x1-B.x0,B.z1-B.z0),W=Math.ceil((B.x1-B.x0)*PX),H=Math.ceil((B.z1-B.z0)*PX);
@@ -65,6 +66,10 @@ function nlPaintRecords(P,detail){const K=NL_PLAN,{ma,mb,t}=P;
   P.box(ma,[K.plaza[0]-43,K.plaza[1]-29,K.plaza[0]+43,K.plaza[1]+29]);
   const M=K.market;P.box(ma,[M[0]-40,M[1]-40,M[0]+40,M[1]+40]);}
  {const q=K.quays;P.box(ma,[q.x-28,q.z0-10,q.x+q.w/2,q.z1+10]);}
+ if(typeof NL_LPLAN!=='undefined'&&NL_LPLAN){const L=NL_LPLAN;
+  ma.strokeStyle='rgb(0,0,245)';P.line(ma,[L.atS(1340,0),L.atS(L.portal.s+5,0)],76);
+  t.strokeStyle='rgba(128,118,104,.55)';P.line(t,[L.atS(1340,0),L.atS(L.portal.s+5,0)],76);
+  ma.strokeStyle='rgb(0,255,0)';P.line(ma,[L.atS(1364,8),L.atS(1516,8)],56);}
  for(const w of K.ways){ma.strokeStyle='rgb(255,0,0)';P.line(ma,w.pts,w.w+.6);t.strokeStyle=w.cls==='avenue'?'#8c8070':'#887c6c';P.line(t,w.pts,w.w+.6);}
  for(const w of K.roads){ma.strokeStyle='rgb(255,0,0)';P.line(ma,w.pts,w.w);}
  ma.strokeStyle='rgb(0,0,220)';
@@ -85,13 +90,20 @@ function nlGroundMat(P,key){const tex=new THREE.CanvasTexture(P.tint);tex.encodi
     'nc=mix(nc,sRGBToLinear(texture2D(tSand,nw*kT2.x)).rgb,nlB.r);nc=mix(nc,sRGBToLinear(texture2D(tTill,nw*kT2.y)).rgb,nlB.g);',
     'nc=mix(nc,sRGBToLinear(texture2D(tEarth,nw*kT.z)).rgb,nlA.r);nc=mix(nc,sRGBToLinear(texture2D(tFlag,nw*kT.w)).rgb,nlA.g);',
     'diffuseColor.rgb*=nc*nlT.rgb*4.6;','#endif'].join('\n'));};
- const off={town:[-2,-4],river:[-2,-4],country:[-1,-2]}[key]||[0,0];mat.polygonOffset=true;mat.polygonOffsetFactor=off[0];mat.polygonOffsetUnits=off[1];
+ const off={town:[-2,-4],river:[-2,-4],line:[-2,-4],country:[-1,-2]}[key]||[0,0];mat.polygonOffset=true;mat.polygonOffsetFactor=off[0];mat.polygonOffsetUnits=off[1];
  mat.customProgramCacheKey=()=>'nulab-ground-'+key;return mat;}
-function nlGroundMesh(B,name,mat,over,sink,colour){const nx=Math.round((B.x1-B.x0)/B.cell),nz=Math.round((B.z1-B.z0)/B.cell),W=B.x1-B.x0,Hh=B.z1-B.z0;
+function nlGroundMesh(B,name,mat,over,sink,colour,holeFn){const nx=Math.round((B.x1-B.x0)/B.cell),nz=Math.round((B.z1-B.z0)/B.cell),W=B.x1-B.x0,Hh=B.z1-B.z0;
  const geo=new THREE.PlaneGeometry(W,Hh,nx,nz),p=geo.attributes.position,uv=geo.attributes.uv,cx=(B.x0+B.x1)/2,cz=(B.z0+B.z1)/2,hs=new Float32Array(p.count);
- const col=colour?new Float32Array(p.count*3):null;
- for(let i=0;i<p.count;i++){const x=p.getX(i)+cx,z=-p.getY(i)+cz;let y=terrainH(x,z);if(over&&[].concat(over).some(O=>nlIn(O,x,z,B.cell)))y-=sink;p.setZ(i,y);hs[i]=y;
+ const col=colour?new Float32Array(p.count*3):null,ovList=over?[].concat(over):null;
+ for(let i=0;i<p.count;i++){const x=p.getX(i)+cx,z=-p.getY(i)+cz;let y=terrainH(x,z);
+  if(ovList){let ds=0;for(const O of ovList)if(nlIn(O,x,z,B.cell))ds=Math.max(ds,O.sink==null?sink:O.sink);y-=ds;}
+  p.setZ(i,y);hs[i]=y;
   uv.setXY(i,(x-B.x0)/W,1-(z-B.z0)/Hh);if(col){const c=colour(x,z,y);col[i*3]=c[0];col[i*3+1]=c[1];col[i*3+2]=c[2];}}
+ if(holeFn&&geo.index){const idx=geo.index.array,keep=[];
+  for(let t=0;t<idx.length;t+=3){const a=idx[t],b=idx[t+1],c=idx[t+2];
+   const ax=p.getX(a)+cx,az=-p.getY(a)+cz,bx=p.getX(b)+cx,bz=-p.getY(b)+cz,cx2=p.getX(c)+cx,cz2=-p.getY(c)+cz;
+   if(!holeFn(ax,az)&&!holeFn(bx,bz)&&!holeFn(cx2,cz2)&&!holeFn((ax+bx+cx2)/3,(az+bz+cz2)/3))keep.push(a,b,c);}
+  geo.setIndex(keep);}
  if(col)geo.setAttribute('color',new THREE.BufferAttribute(col,3));
  geo.computeVertexNormals();const m=new THREE.Mesh(geo,mat);m.rotation.x=-Math.PI/2;m.position.set(cx,0,cz);
  m.userData.isGround=true;m.userData.ground=true;m.userData.probeSkip=true;m.name=name;scene.add(m);
@@ -99,10 +111,12 @@ function nlGroundMesh(B,name,mat,over,sink,colour){const nx=Math.round((B.x1-B.x
  return m;}
 const NL_PT=nlPainter(NL_TB);NL_PT.climate(8);nlPaintRecords(NL_PT,true);
 const NL_PR=nlPainter(NL_RB);NL_PR.climate(10);nlPaintRecords(NL_PR,true);
+const NL_PL=nlPainter(NL_LB);NL_PL.climate(8);nlPaintRecords(NL_PL,true);
 const NL_PC=nlPainter(NL_CB);NL_PC.climate(40);nlPaintRecords(NL_PC,false);
 groundM=nlGroundMesh(NL_TB,'terrain',nlGroundMat(NL_PT,'town'),null,0);
 const NL_RIVERG=nlGroundMesh(NL_RB,'terrain-river',nlGroundMat(NL_PR,'river'),null,0);
-const NL_COUNTRY=nlGroundMesh(NL_CB,'terrain-country',nlGroundMat(NL_PC,'country'),[NL_TB,NL_RB],6);
+const NL_LINEG=nlGroundMesh(NL_LB,'terrain-line',nlGroundMat(NL_PL,'line'),null,0,null,typeof NL_LPLAN!=='undefined'&&NL_LPLAN?NL_LPLAN.portalHole:null);
+const NL_COUNTRY=nlGroundMesh(NL_CB,'terrain-country',nlGroundMat(NL_PC,'country'),[NL_TB,NL_RB,NL_LB],6);
 const nlLin=c=>{const k=new THREE.Color(c).convertSRGBToLinear();return[k.r,k.g,k.b];};
 const NL_FCOL={bed:nlLin(0x3c4436),plain:nlLin(0x8a8456),forest:nlLin(0x4e5c38),face:nlLin(0x7a7266),alpine:nlLin(0x7c7a5a),snow:nlLin(0xe8eaee)};
 const nlMixC=(a,b,t)=>[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,a[2]+(b[2]-a[2])*t];

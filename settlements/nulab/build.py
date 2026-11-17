@@ -25,7 +25,7 @@ if '--bake-model' not in sys.argv:
     buildlib.through_tools_build(__file__)        # item 25: build-inputs.json is always written
 import build_sources as BSRC                      # noqa: E402  (--list-sources: tools/dep_graph.py)
 CORE_TAKEN = ('core/rand', 'core/tags', 'core/host', 'core/city', 'core/space', 'core/hamlet', 'core/atmos', 'core/water',
-              'core/drawn', 'core/biome')   # through Xanadu's build, kit.json and gen/
+              'core/drawn', 'core/biome', 'core/ruins', 'core/terrain')   # through Xanadu's build, kit.json and gen/
 
 CITY_JS = ['10-city-core.js', '12-city-index.js', '15-city-ground.js', '20-city-plan.js', '25-city-site.js', '31-city-steps-b.js',
            '32-city-steps-c.js', '33-city-strategies.js', '40-city-kcity.js']
@@ -182,10 +182,71 @@ def dalab_pack():
             + matlib_pack.fragment(d, 'dalab', exclude=tuple(k for k in fams if k not in DALAB_FAMILIES), side=SIDE))
 
 
+# STEP N6: KTRANSIT + Rift Line (`line` kind in kits/ancient-transit/opt) + KratorTransitFurniture, and kits/tungang + opt/ (`tg` loj set)
+TR_OPT_FILES = ['kits/ancient-transit/opt/40b-tr-line-compat.js', 'kits/ancient-transit/opt/43c-tr-line.js',
+                'kits/ancient-transit/opt/56c-tr-draw-line.js']
+TG_OPT_FILES = ['kits/tungang/opt/44-tg-kit.js', 'kits/tungang/opt/46-tg-homes.js', 'kits/tungang/opt/48-tg-civic.js',
+                'kits/tungang/opt/56-tg-works.js', 'kits/tungang/opt/82-tg-host.js']
+
+
+def _safe_js(js):
+    return js.replace('</script', '<\\/script').replace('<script', '<\\x73cript')
+
+
+def transit_bundle_gen():
+    sys.path.insert(0, os.path.join(ROOT, 'kits', 'ancient-transit'))
+    sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
+    import transit_bundle, matlib_pack
+    pack_js = matlib_pack.fragment(os.path.join(ROOT, 'kits', 'ancient-transit'), 'ancient-transit', side=SIDE)
+    data_frags = transit_bundle.fragments(data_only=True)
+    draw_frags = [x for x in transit_bundle.fragments(data_only=False) if x not in data_frags]
+    body = [pack_js]
+    for name, path in data_frags:
+        with io.open(path, encoding='utf-8') as fh:
+            body.append('/* ---- kits/ancient-transit/src/%s ---- */\n%s' % (name, fh.read()))
+    for rel in TR_OPT_FILES[:2]:
+        body.append('/* ---- %s ---- */\n%s' % (rel, rd(rel)))
+    for name, path in draw_frags:
+        with io.open(path, encoding='utf-8') as fh:
+            body.append('/* ---- kits/ancient-transit/src/%s ---- */\n%s' % (name, fh.read()))
+    body.append('/* ---- %s ---- */\n%s' % (TR_OPT_FILES[2], rd(TR_OPT_FILES[2])))
+    furn_js = transit_bundle.furniture().replace('window.KTRANSIT', 'KTRANSIT').replace('window.KratorTransitFurniture', 'KratorTransitFurniture')
+    body.append(furn_js)
+    return _safe_js('/* KTRANSIT + Rift line kind + KratorTransitFurniture (settlements/nulab/build.py, step N6). GENERATED. */\n'
+                    'var NL_TRANSIT = (function () {\n'
+                    '  var KSPACE = KCITY.lib.KSPACE;\n' +
+                    '\n'.join(body) +
+                    '\n  return { KTRANSIT: KTRANSIT, KratorTransitFurniture: KratorTransitFurniture };\n'
+                    '})();\n'
+                    'var KTRANSIT = NL_TRANSIT.KTRANSIT, KratorTransitFurniture = NL_TRANSIT.KratorTransitFurniture;\n')
+
+
+def tungang_bundle_gen():
+    sys.path.insert(0, os.path.join(ROOT, 'kits', 'tungang'))
+    import tungang_bundle as tb
+    fs = tb.files()
+    for rel in TG_OPT_FILES:
+        fs[os.path.basename(rel)] = os.path.join(ROOT, *rel.split('/'))
+    names = sorted(list(fs) + ['26-matlib-pack.js'])
+    body = 'var _tgWin = window;\n'
+    for n in names:
+        if n == '26-matlib-pack.js':
+            body += '/* ---- kits/tungang/tex (lean sidecar pack) ---- */\n' + tb.pack(tex='lean', side=SIDE) + '\n'
+        else:
+            chunk = (tb.rd(fs[n])
+                     .replace('window.KMAT = KMAT', '_tgWin.KMAT = KMAT')
+                     .replace('window._texPending = 0', '_tgWin._texPending = 0')
+                     .replace('window.onerror=', '_tgWin.onerror='))
+            body += '/* ---- %s ---- */\n%s\n;\n' % (tb.rel(fs[n]), chunk)
+    return tb.safe('/* TG: kits/tungang + opt/ tg loj set in one closure (settlements/nulab/build.py, step N6). GENERATED. */\n'
+                   'var TG = (function(){\n' + tb.HEAD + tb.furn_text(True) + body + tb.TAIL + '})();\n')
+
+
 def write_gen():
     os.makedirs(GEN, exist_ok=True)
     for name, make in (('69n-kcity-bundle.js', kcity_bundle), ('69n2-nl-flora-bundle.js', flora_bundle),
-                       ('69n3-dalab-pack.js', dalab_pack), ('69n4-nl-ringsea-bundle.js', ringsea_bundle)):
+                       ('69n3-dalab-pack.js', dalab_pack), ('69n4-nl-ringsea-bundle.js', ringsea_bundle),
+                       ('69n5-nl-transit-bundle.js', transit_bundle_gen), ('69n6-nl-tungang-bundle.js', tungang_bundle_gen)):
         out = os.path.join(GEN, name)
         new = make()
         old = io.open(out, encoding='utf-8').read() if os.path.exists(out) else None
@@ -196,10 +257,18 @@ def write_gen():
 
 _dalab_webp = [p for f in DALAB_FAMILIES for p in [os.path.join('settlements', 'dalab', 'tex', '%s.%s.webp' % (f, m)).replace(os.sep, '/')
                                                    for m in ('albedo', 'normal', 'rough')] if os.path.exists(os.path.join(ROOT, *p.split('/')))]
+sys.path.insert(0, os.path.join(ROOT, 'kits', 'ancient-transit'))
+sys.path.insert(0, os.path.join(ROOT, 'kits', 'tungang'))
+import transit_bundle as _trb, tungang_bundle as _tgb   # noqa: E402
+_tr_srcs = ([os.path.relpath(p, ROOT).replace(os.sep, '/') for _, p in _trb.fragments(data_only=False)] +
+            [os.path.relpath(os.path.join(d, f), ROOT).replace(os.sep, '/') for d, f in _trb.files()] +
+            TR_OPT_FILES + ['kits/ancient-transit/transit_bundle.py', 'kits/ancient-transit/tex/pack.json'])
+_tg_srcs = ([_tgb.rel(p) for p in _tgb.files().values()] + TG_OPT_FILES +
+            ['kits/tungang/tungang_bundle.py', 'kits/tungang/tex/pack.json'])
 BSRC.note(*([SPACE] + ['core/city/' + f for f in CITY_JS] + ['core/hamlet/' + f for f in HAMLET_JS] +
             ['core/biome/' + f for f in FLORA_CORE] + ['biomes/riftrim/src/' + f for f in RIM_JS] +
             ['kits/ringsea/src/00-head.html'] + RS_KIT_FILES + RS_VESSELS +
-            ['settlements/dalab/tex/pack.json'] + _dalab_webp))
+            _tr_srcs + _tg_srcs + ['settlements/dalab/tex/pack.json'] + _dalab_webp))
 if not BSRC.LISTING:
     write_gen()
 

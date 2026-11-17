@@ -15,7 +15,7 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 
 | File | KB | Sections (line) |
 |---|---|---|
-| `test-nl-town.js` | 13 |  |
+| `test-nl-town.js` | 16 |  |
 
 ## src/
 
@@ -25,6 +25,7 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | `40-nl-ground.js` | 5 |  |
 | `41-nl-town.js` | 35 **big** |  |
 | `42-nl-ring.js` | 6 |  |
+| `43-nl-line.js` | 15 |  |
 | `89n0-nl-matlib.js` | 2 |  |
 
 ## targets/
@@ -33,4 +34,4 @@ Each target adds its own fragments to `src/` and builds one output.
 
 | Target | Fragments | KB |
 |---|---|---|
-| `town` | `89z-rows.js`, `89zn-nl-site.js`, `90n-nl-world.js`, `90o-nl-build.js`, `90p-nl-flora.js`, `91z-views.js` | 42 |
+| `town` | `89z-rows.js`, `89zn-nl-site.js`, `90n-nl-world.js`, `90o-nl-build.js`, `90p-nl-flora.js`, `90q-nl-line.js`, `91z-views.js` | 64 |

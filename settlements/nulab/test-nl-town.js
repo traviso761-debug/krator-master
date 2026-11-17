@@ -10,12 +10,14 @@ const ROOT=path.join(__dirname,'..','..');
 const T=require(path.join(ROOT,'tools','ktest.js'))(__filename);
 global.window=global;
 const load=f=>vm.runInThisContext(fs.readFileSync(path.join(ROOT,f),'utf8'),{filename:f});
-['core/rand/08-core-rand.js','core/space/20-core-space.js'].forEach(load);
+['core/rand/08-core-rand.js','core/space/20-core-space.js','core/ruins/20-core-ruins.js'].forEach(load);
 fs.readdirSync(path.join(ROOT,'core','city')).filter(f=>/^\d\d-city-.*\.js$/.test(f)&&!/host|squares|radial|covered/.test(f)).sort().forEach(f=>load('core/city/'+f));
 ['10-hamlet-wood.js','12-hamlet-gather.js','14-hamlet-farmland.js','16-hamlet-names.js','18-hamlet-names.js','20-hamlet-cultures.js','dalab/23-hamlet-dalab.js','30-hamlet-village.js'].forEach(f=>load('core/hamlet/'+f));
+['40-tr-records.js','41-tr-path.js','41b-tr-network.js','42-tr-highway.js','43-tr-rail.js','43b-tr-subway.js','44-tr-dress.js','44b-tr-war.js','44c-tr-quake.js'].forEach(f=>load('kits/ancient-transit/src/'+f));
+['40b-tr-line-compat.js','43c-tr-line.js'].forEach(f=>load('kits/ancient-transit/opt/'+f));
 /* the page's KCITY.lib (settlements/nulab/build.py's bundle names the same things from inside its closure) */
 KCITY.lib={SL,plan:()=>PLAN,tune:()=>TUNE,KSPACE,Raster,OCC,obb,obbCorners,segDist,polySegDist,resample,clamp,inPoly,cg:()=>CG};
-['settlements/nulab/src/39n-nl-model.js','settlements/nulab/src/40-nl-ground.js','settlements/nulab/src/41-nl-town.js','settlements/nulab/src/42-nl-ring.js'].forEach(load);
+['settlements/nulab/src/39n-nl-model.js','settlements/nulab/src/40-nl-ground.js','settlements/nulab/src/41-nl-town.js','settlements/nulab/src/42-nl-ring.js','settlements/nulab/src/43-nl-line.js'].forEach(load);
 /* the Dalab set's boxes, from its defs (dDef({key:'dalab_x', ..., w:, d:, h:, build})), and the pending boxes */
 const DIMS={};
 for(const sub of ['src','opt'])for(const f of fs.readdirSync(path.join(ROOT,'settlements','dalab',sub)).filter(f=>/^7.*dalab.*\.js$/.test(f))){
@@ -25,8 +27,8 @@ for(const sub of ['src','opt'])for(const f of fs.readdirSync(path.join(ROOT,'set
 for(const k in NL_TOWN.PENDING)DIMS[k]=NL_TOWN.PENDING[k];
 const dims=(k,v)=>DIMS[k]?{key:k,v:v||0,w:DIMS[k].w,d:DIMS[k].d,h:DIMS[k].h,fw:DIMS[k].fw||DIMS[k].w,fd:DIMS[k].fd||DIMS[k].d}:null;
 const t0=Date.now(),K=NL_TOWN.make({dims}),ms=Date.now()-t0;
-const t1=Date.now(),TF=NL_RING.townFarms({town:K}),RG=NL_RING.make({dims}),ms2=Date.now()-t1;
-module.exports={K,TF,RG,DIMS,dims};
+const t1=Date.now(),TF=NL_RING.townFarms({town:K}),RG=NL_RING.make({dims}),LN6=NL_LINE.make({ground:NL_GROUND,seed:44325}),ms2=Date.now()-t1;
+module.exports={K,TF,RG,LN6,DIMS,dims};
 if(require.main!==module)return;
 console.log('the town in '+ms+' ms: '+K.census.buildings+' buildings, '+K.census.people+' people, '+K.census.cropPlots+' infill crop plots, '+K.census.pending+' pending boxes; '+K.ways.length+' ways');
 console.log('  by quarter: '+JSON.stringify(K.census.byQuarter));
@@ -52,16 +54,42 @@ const inWater=X=>X.lots.concat(X.extra).filter(L=>!WATERY.has(L.kind)&&(NL_GROUN
 const popOk=X=>Math.abs(X.census.people-20000)<=3000;
 T.ok('the town holds about 20,000 (the owner, 2026-11-16; within 15 %)',popOk(K),K.census.people+' people in '+K.census.buildings+' buildings');
 T.neg('a town of 10,000 is caught',popOk,{census:{people:10000}},K);
-const MARKS=['nl.mound','nl.priests','nl.temple','nl.halls','nl.healers','nl.vats','nl.court','nl.scribes','nl.barracks.a','nl.barracks.b','nl.tithebarn','nl.market','nl.inn','nl.works.foundry','nl.extra.ferry','nl.extra.line.station'];
+const MARKS=['nl.mound','nl.priests','nl.temple','nl.halls','nl.healers','nl.vats','nl.court','nl.scribes','nl.barracks.a','nl.barracks.b','nl.tithebarn','nl.market','nl.inn','nl.works.foundry','nl.extra.ferry','nl.extra.line.factor'];
 const marks=X=>MARKS.filter(id=>!X.lots.some(l=>l.id===id)&&!X.extra.some(l=>l.id===id));
-{const m=marks(K);T.ok('the quarters\' great pieces stand: the mound, the priests, the daughter Halls, the gene-houses, the court, the garrison, the tithe barn, the market, the works, the ferry, the station\'s site',!m.length,m.length?'MISSING '+m.join(', '):MARKS.length+' pieces');
+{const m=marks(K);T.ok('the quarters\' great pieces stand: the mound, the priests, the daughter Halls, the gene-houses, the court, the garrison, the tithe barn, the market, the works, the ferry, the Line factor',!m.length,m.length?'MISSING '+m.join(', '):MARKS.length+' pieces');
  T.neg('a town without its mound is caught',X=>!marks(X).length,Object.assign({},K,{lots:K.lots.filter(l=>l.id!=='nl.mound')}),K);}
-/* step N4: all harbour, copper-works, gene-house, daughter-Halls and tithe-barn pieces have builders (only station 5 waits on N6), and the three Dalab lake hulls ride deep water */
-{const n4Ok=X=>X.census.pending===1&&['dalabLakeFerry','dalabGrainBarge','dalabFishingBoat'].every(v=>(X.boats||[]).some(b=>b.vessel===v))&&
+/* steps N4 + N6: zero pending stand-ins remain, and the three Dalab lake hulls ride deep water */
+{const n4Ok=X=>X.census.pending===0&&['dalabLakeFerry','dalabGrainBarge','dalabFishingBoat'].every(v=>(X.boats||[]).some(b=>b.vessel===v))&&
   (X.boats||[]).every(b=>{const surf=b.river?NL_GROUND.riverAt(b.x,b.z)[1]:NL_GROUND.LAKE;return NL_GROUND.h(b.x,b.z)<surf-1.2;});
- T.ok('step N4: every harbour, copper-works, gene-house, daughter-Halls and tithe-barn piece is defined (1 station stand-in left for N6), and all three Dalab lake hulls float in deep water',
+ T.ok('steps N4 + N6: zero pending stand-ins remain, and all three Dalab lake hulls float in deep water',
   n4Ok(K),'pending '+K.census.pending+', boats '+(K.boats||[]).length);
  T.neg('a boat beached on dry land is caught',n4Ok,Object.assign({},K,{boats:(K.boats||[]).concat([{id:'dry',vessel:'dalabLakeFerry',x:0,z:-1350,ry:0}])}),K);}
+/* step N6: Station 5, the lake viaducts (KRUINS), the Nulab-Chimes tunnel portal, and Loj Faiv (~150 Tungangs) */
+{const lineOk=L=>!!(L&&L.line&&L.line.stations.length===1&&L.line.stations[0].num===5&&
+  L.station5.y>NL_GROUND.LAKE+2.5&&L.line.condAt('t2',1900).state==='kept'&&L.line.condAt('t3',1900).state==='kept'&&
+  L.line.doors.length===1&&L.viaduct.piers.filter(p=>p.state==='stub'||p.state==='bare').length>=15&&
+  L.viaduct.spans.some(s=>s.state==='collapsed')&&L.highway.spans.some(s=>s.state==='collapsed')&&
+  Math.abs(L.loj.people-150)<=25&&['tg-loj-hall','tg-signal-box','tg-carriage-house','tg-dark-beds'].every(k=>L.loj.sites.some(s=>s.key===k)));
+ T.ok('step N6: Station 5 stands dry on the shore, inner tracks t2/t3 run kept into the Chimes portal, pier stubs and fallen spans line the lake, and Loj Faiv holds ~150 Tungangs',
+  lineOk(LN6),'Station '+LN6.line.stations[0].num+' at y='+LN6.station5.y.toFixed(1)+' m, stubs='+LN6.viaduct.piers.filter(p=>p.state==='stub'||p.state==='bare').length+', Loj Faiv='+LN6.loj.people+' in '+LN6.loj.sites.length+' carved sites');
+ T.neg('Station 5 sunk below lake level is caught',lineOk,Object.assign({},LN6,{station5:Object.assign({},LN6.station5,{y:NL_GROUND.LAKE-1})}),LN6);
+ /* KRUINS box verification on the Line viaduct's standing piers/spans, pier stubs and seated fallen spans */
+ const viaductPieces=(L,liftBad)=>{const P=[],g=L.terrainAt,V=L.viaduct;let injected=false;
+  V.piers.forEach(p=>{if(p.state==='none')return;
+   if(p.state==='fill'){const gy=g(p.x,p.z);P.push({b:[p.x-16,gy-.45,p.z-2,p.x+16,p.yTop+.2,p.z+2],g:gy,src:p.id});return;}
+   [-11.5,11.5].forEach(lat=>{const q=L.atS(p.s,lat),gy=g(q[0],q[1]),top=p.state==='stub'?gy+p.stub:p.yTop-.83;
+    P.push({b:[q[0]-1.7,gy-.48,q[1]-1.4,q[0]+1.7,top,q[1]+1.4],g:gy,src:p.id});});
+   if(p.state!=='stub')P.push({b:[p.x-16,p.yTop-.95,p.z-1.6,p.x+16,p.yTop,p.z+1.6],g:g(p.x,p.z),src:p.id+':cap'});});
+  V.spans.forEach(S=>{if(S.state==='gone')return;
+   if(S.state==='collapsed'&&S.fall){const bx=S.fall.box.slice();
+    if(liftBad&&!injected){bx[0]-=40;bx[3]-=40;bx[1]+=liftBad;bx[4]+=liftBad;injected=true;}
+    P.push({b:bx,g:S.fall.gUnder,src:S.id+':fall'});return;}
+   const x0=Math.min(S.x0,S.x1)-18,x1=Math.max(S.x0,S.x1)+18,z0=Math.min(S.z0,S.z1)-2,z1=Math.max(S.z0,S.z1)+2;
+   P.push({b:[x0,Math.min(S.y0,S.y1)-V.deck,z0,x1,Math.max(S.y0,S.y1)+.85,z1],g:g((x0+x1)/2,(z0+z1)/2),src:S.id});});
+  return P;};
+ const rv=KRUINS.verdict(KRUINS.analyse(viaductPieces(LN6,0)));
+ T.ok('core/ruins: every pier stub and fallen span of the lake viaduct is seated on the lakebed or shore (no floaters, no hovering/buried wrecks)',rv.ok,rv.detail);
+ T.neg('a fallen viaduct span hovering 1.8 m above the lakebed is caught by core/ruins',lift=>KRUINS.verdict(KRUINS.analyse(viaductPieces(LN6,lift))).ok,1.8,0);}
 {const q=Object.keys(K.census.byQuarter);T.ok('both core/city instances laid houses (the town and the copper works)',(K.census.byQuarter.Nulab||0)>12000&&(K.census.byQuarter['the copper works']||0)>1000,JSON.stringify(K.census.byQuarter));}
 /* the coastal layout: palisaded mound set back, outer earthen mound, infill crop plots and surrounding town fields */
 {const layoutOk=X=>!!(X.rings&&X.rings.precinct&&X.rings.precinct.palisade&&X.rings.outer&&X.rings.outer.runs.length>=4&&X.rings.outer.gates.length>=4&&(X.cropPlots||[]).length>=40);

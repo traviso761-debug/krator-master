@@ -4,9 +4,11 @@
 // outer earthen mound, the ceremonial mound set back inside its palisade, with infill crop plots in the empty lots), the town's
 // surrounding farmland belts are NL_RING.townFarms, and the near ring NL_RING.make (src/42-nl-ring.js: core/hamlet's Dalab row).
 // Records only: no drawing.
-terrainH=function(x,z){return NL_GROUND.h(x,z);};
-KTAGS.page=KTAGS.page||KTAGS.create({build:'nulab'});
 const nlD=(x,d)=>x==null?d:x;   /* a numeric default: 0 is a value */
+let NL_LPLAN=null;
+if(typeof NL_LINE!=='undefined')try{NL_LPLAN=NL_LINE.make({ground:NL_GROUND,seed:44325});}catch(e){reportErr('nulab: the Line quarter did not lay: '+(e&&e.stack||e));}
+terrainH=function(x,z){return NL_GROUND.h(x,z)+(NL_LPLAN?NL_LPLAN.carveH(x,z):0);};
+KTAGS.page=KTAGS.page||KTAGS.create({build:'nulab'});
 const nlDims=(key,v)=>{const D=VERN.defs[key];if(D)return{key,v:nlD(v,0),w:D.w,d:D.d,h:nlD(D.h,8),fw:D.fw||D.w,fd:D.fd||D.d};
  const P=NL_TOWN.PENDING[key];return P?{key,v:0,w:P.w,d:P.d,h:P.h,fw:P.w,fd:P.d,pending:true}:null;};
 let NL_PLAN=null,NL_ERR=null,NL_TOWNF=[],NL_RINGV=[];
@@ -15,7 +17,7 @@ try{NL_TOWNF=NL_RING.townFarms({town:NL_PLAN});}catch(e){reportErr('nulab: the t
 try{NL_RINGV=NL_RING.make({dims:nlDims});}catch(e){reportErr('nulab: the ring did not lay: '+(e&&e.stack||e));}
 /* the stance: a piece's base at the highest corner of its footprint on the ground, its footing (o.drop) to the lowest */
 const nlStance=(r)=>{const c=Math.cos(r.ry),sn=Math.sin(r.ry),hw=nlD(r.fw,r.w)/2,hd=nlD(r.fd,r.d)/2;let lo=1e9,hi=-1e9;
- for(const [a,b] of [[-1,-1],[1,-1],[1,1],[-1,1],[0,0]]){const x=r.x+a*hw*c+b*hd*sn,z=r.z-a*hw*sn+b*hd*c,y=NL_GROUND.h(x,z);lo=Math.min(lo,y);hi=Math.max(hi,y);}
+ for(const [a,b] of [[-1,-1],[1,-1],[1,1],[-1,1],[0,0]]){const x=r.x+a*hw*c+b*hd*sn,z=r.z-a*hw*sn+b*hd*c,y=terrainH(x,z);lo=Math.min(lo,y);hi=Math.max(hi,y);}
  return{y:hi+.05,drop:Math.max(0,hi-lo)+.3};};
 function nlHash(s){let h=2166136261;for(let i=0;i<s.length;i++)h=Math.imul(h^s.charCodeAt(i),16777619)>>>0;return h;}
 const nlV=(key,id,v)=>{const D=VERN.defs[key];const n=D&&D.nv>1?Math.min(D.nv,3):1;return v?v:nlHash(String(id)+key)%n;};
@@ -64,7 +66,8 @@ if(NL_PLAN){for(const w of NL_PLAN.ways.concat(NL_PLAN.roads))for(let i=1;i<w.pt
 for(const F of NL_TOWNF)if(F.farm&&F.farm.tracks)for(const tr of F.farm.tracks)for(let i=1;i<(tr.pts||[]).length;i++){const a=tr.pts[i-1],b=tr.pts[i];NL_WAYS.insert({a,b,w:nlD(tr.w,4)},(a[0]+b[0])/2,(a[1]+b[1])/2,Math.hypot(b[0]-a[0],b[1]-a[1])/2+6);}
 for(const V of NL_RINGV)for(const l of V.lanes||[])for(let i=1;i<(l.pts||[]).length;i++){const a=l.pts[i-1],b=l.pts[i];NL_WAYS.insert({a,b,w:nlD(l.w,4)},(a[0]+b[0])/2,(a[1]+b[1])/2,Math.hypot(b[0]-a[0],b[1]-a[1])/2+6);}
 const nlInPoly=(P,x,z)=>{let c=false;for(let i=0,j=P.length-1;i<P.length;j=i++){const a=P[i],b=P[j];if((a[1]>z)!==(b[1]>z)&&x<(b[0]-a[0])*(z-a[1])/(b[1]-a[1])+a[0])c=!c;}return c;};
-function nlBioMask(x,z){if(NL_GROUND.h(x,z)<NL_GROUND.LAKE+.8)return 0;if(NL_GROUND.riverAt(x,z)[0]<NL_GROUND.river.width/2+8)return 0;
+function nlBioMask(x,z){if(terrainH(x,z)<NL_GROUND.LAKE+.8)return 0;if(NL_GROUND.riverAt(x,z)[0]<NL_GROUND.river.width/2+8)return 0;
+ if(NL_LPLAN&&NL_LPLAN.line.path.near(x,z,80)){const pr=NL_LPLAN.line.path.project(x,z);if(pr.s>1320&&pr.s<2050&&pr.d<68)return 0;}
  for(const s of NL_WAYS.query(x,z,1))if(KCITY.lib.segDist([x,z],s.a,s.b)<s.w/2+2)return 0;
  for(const p of NL_SPACE.query(x,z,1))if(Math.hypot(x-p.x,z-p.z)<Math.hypot(nlD(p.w,10),nlD(p.d,10))/2+(p.kind==='ring'?3:5))return 0;
  if(x>NL_GROUND.HARBOUR.x0-60&&x<NL_GROUND.HARBOUR.x0+10&&z>-2300&&z<-600)return 0;

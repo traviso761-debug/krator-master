@@ -25,9 +25,11 @@ xv = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(xv)   # its argparse block is under __main__: nothing runs on import
 
 TOWN_JS = r"""
-{const K=window._nulab||{},B=K.byKind||{},E=K.earth||{},Q=K.byQuarter||{};
- R.push({name:'nulab-laid',ok:!K.err&&(K.lots||0)>1500&&(B.landmark||0)>=50&&(Q['the copper works']||0)>1000&&(K.mounds||0)>=6&&(K.cropPlots||0)>=80&&(K.townFarmParcels||0)>=600&&(K.boatsBuilt||0)>=20&&(K.standins||0)<=1&&E.outerRuns>=4&&E.palisadePosts>=500&&E.quays>=10&&E.moles===2&&E.rings===3,
+{const K=window._nulab||{},B=K.byKind||{},E=K.earth||{},Q=K.byQuarter||{},L=window._nlLine||{};
+ R.push({name:'nulab-laid',ok:!K.err&&(K.lots||0)>1500&&(B.landmark||0)>=50&&(Q['the copper works']||0)>1000&&(K.mounds||0)>=6&&(K.cropPlots||0)>=80&&(K.townFarmParcels||0)>=600&&(K.boatsBuilt||0)>=20&&(K.standins||0)===0&&E.outerRuns>=4&&E.palisadePosts>=500&&E.quays>=10&&E.moles===2&&E.rings===3,
   detail:K.err?('the town did not lay: '+K.err):((K.lots||0)+' lots, '+(K.cropPlots||0)+' infill crop plots, '+(K.townFarmParcels||0)+' town field parcels, '+(K.boatsBuilt||0)+' Dalab vessels, '+(K.extra||0)+' extra ('+JSON.stringify(B)+'), '+(K.chunks||0)+' chunks, '+(K.mounds||0)+' turf mounds/runs; made ground '+JSON.stringify(E))});
+ R.push({name:'line-laid',ok:!!(L.ok&&L.station5Bays===6&&L.viaductStubs>=15&&L.viaductFallen>=3&&L.hwFallen>=3&&L.loj&&L.loj.drawn===L.loj.sites&&L.loj.rimDrawn===3&&!(L.tgErrors||[]).length),
+  detail:L.ok?('Station 5 ('+L.station5Bays+' bays), Line viaduct ('+L.viaductSpans+' spans, '+L.viaductStubs+' stubs, '+L.viaductFallen+' fallen), highway viaduct ('+L.hwSpans+' spans, '+L.hwFallen+' fallen), Chimes portal s='+L.portalS+', Loj Faiv '+L.lojPeople+' Tungangs ('+(L.loj&&L.loj.drawn)+'/'+(L.loj&&L.loj.sites)+' carved rooms, '+(L.loj&&L.loj.lights)+' lamps, '+(L.loj&&L.loj.rimDrawn)+' rim sheds)'):'NL_LINE did not draw'});
  const P=K.pin||{};R.push({name:'on-the-model',ok:Math.abs((P.drawn||0)-(P.model||0))<3&&Math.abs((P.model||0)-344)<25,detail:'at the pin the model gives '+P.model+' m, the page draws '+P.drawn+' m (the cell: 344 m)'});
  const p=K.people||0;R.push({name:'people',ok:Math.abs(p-20000)<=3000,detail:p+' residents / 20,000 (the owner, 2026-11-16): '+JSON.stringify(Q)});
  const rg=K.ring||[];R.push({name:'ring-laid',ok:rg.length===8&&rg.every(v=>!v.error&&v.records>=10),detail:rg.map(v=>v.id.replace(/^nl.ring./,'')+' '+v.records+(v.parcels?' +'+v.parcels+' parcels':'')+(v.error?' ('+v.error+')':'')).join(', ')});

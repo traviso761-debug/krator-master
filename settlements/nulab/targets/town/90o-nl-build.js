@@ -126,7 +126,8 @@ if(typeof NL_RINGSEA!=='undefined'&&NL_RINGSEA.make&&typeof NL_BOATS!=='undefine
 {let nlNight=null;const nlNightTick=()=>{const on=KratorSky.lighting().dayF<.45;if(nlNight===on)return;nlNight=on;
   for(const m of NL_NIGHTM)m.visible=on;for(const m of NL_DAYM)m.visible=!on;};
  FRAME_HOOKS.push(nlNightTick);nlNightTick();}
-{const nlSkip=()=>((typeof DWIND!=='undefined'?DWIND.map(w=>w.grp):[]).concat(NL_VESSELS.length?[NL_VESSEL_ROOT]:[]));
+const NL_LOD_SKIP=[];
+{const nlSkip=()=>((typeof DWIND!=='undefined'?DWIND.map(w=>w.grp):[]).concat(NL_VESSELS.length?[NL_VESSEL_ROOT]:[]).concat(NL_LOD_SKIP));
  if(typeof DWIND!=='undefined'&&DWIND.length)FRAME_HOOKS.push(dt=>{for(const w of DWIND)w.grp.rotateZ(w.rate*nlD(dt,.016));});
  window.LOD_OPTIONS=Object.assign(window.LOD_OPTIONS||{},{skipUnder:nlSkip});}
 const nlFr=new THREE.Frustum(),nlPm=new THREE.Matrix4();

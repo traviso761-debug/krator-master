@@ -13,8 +13,7 @@
 // NL_TOWN.make({dims, seed}) -> {lots, ways, extra, cropPlots, townFarms, rings, moles, quays, roads, caravan, census, notes, zones}
 var NL_TOWN=(function(){
  const G=NL_GROUND,face=d=>Math.atan2(d[0],d[1]);   /* a piece's front toward d (x, z) */
- const PENDING={
-  nl_line_station:{w:60,d:24,h:12,what:'the Line\'s station 5 (an Ancient station: KTRANSIT\'s line kind, step N6)'}};
+ const PENDING={};   /* steps N4 + N6 defined every Dalab, Ring Sea, KTRANSIT and Tungang piece */
  /* the town's infill crop plots (drawn by a Dalab builder in 90o-nl-build.js, not pending): dimensions for node and page */
  const PLOT_SIZES=[[40,30],[32,24],[24,18],[18,13],[14,11]];
  const TOWN_CROPS=['helix bean','ashroot','giant lotus root','sea-linen flax','valley woad','mist greens'];
@@ -306,14 +305,13 @@ var NL_TOWN=(function(){
   for(let i=0;i<5;i++){const z=H.z1+85+i*28,x=G.shoreX(z)-22;put('fishracks.'+i,'nl_fishracks',[x,z],face([1,0]),{kind:'harbour'});}
   {const z=H.z1+240,x=G.shoreX(z)-24;put('smokehouse','nl_smokehouse',[x,z],face([1,0]),{kind:'harbour'});}
   {const z=H.z0-280,x=G.shoreX(z)-6;put('slip','nl_slip',[x,z],face([1,0]),{kind:'harbour',name:'The shipwright\'s slip'});}
-  /* 9. THE LINE QUARTER on the main south shore, north-northwest along the coast road */
-  const LQ=[-1450,-4520];let lq=LQ.slice();for(let k=0;k<60&&G.h(lq[0],lq[1])<G.LAKE+2.5;k++)lq[1]+=10;
-  put('line.station','nl_line_station',[lq[0],lq[1]+20],face([0,-1]),{kind:'line',name:'The Line\'s station 5 (its site; the station is step N6)'});
-  put('line.factor','dalab_noble_c',[lq[0]+90,lq[1]+90],face([0,-1]),{kind:'line',name:'The station factor\'s house'});
-  put('line.union','dalab_compound',[lq[0]-80,lq[1]+90],face([0,-1]),{kind:'line',name:'The Union\'s house'});
-  for(let i=0;i<3;i++)put('line.clerks.'+i,'dalab_rowhouse',[lq[0]-30+i*30,lq[1]+150],face([0,-1]),{kind:'line'});
-  for(let i=0;i<2;i++)put('line.hut.'+i,'dalab_hut_a',[lq[0]+60+i*20,lq[1]+160],face([0,-1]),{kind:'line'});
-  put('line.warehouse','dalab_warehouse',[lq[0]+170,lq[1]+40],face([0,-1]),{kind:'line'});
+  /* 9. THE LINE QUARTER on the main south shore beside Station 5 and Loj Faiv (step N6: 43-nl-line.js) */
+  const lq=[-1325,-4560],fLine=face([-1,0]);
+  put('line.factor','dalab_noble_c',[lq[0]+22,lq[1]-28],fLine,{kind:'line',name:'The station factor\'s house'});
+  put('line.union','dalab_compound',[lq[0]+24,lq[1]+26],fLine,{kind:'line',name:'The Union\'s house'});
+  for(let i=0;i<3;i++)put('line.clerks.'+i,'dalab_rowhouse',[lq[0]+72,lq[1]-34+i*28],fLine,{kind:'line'});
+  for(let i=0;i<2;i++)put('line.hut.'+i,'dalab_hut_a',[lq[0]+74,lq[1]+62+i*22],fLine,{kind:'line'});
+  put('line.warehouse','dalab_warehouse',[lq[0]+18,lq[1]-88],fLine,{kind:'line',name:'The Line freight warehouse'});
   put('ferry.river','nl_ferry',[5412,1980],face([1,0]),{kind:'harbour',name:'The river ferry at the outlet',y:G.LAKE+1.6});
   put('jetty.works','nl_jetty',[5576,2460],face([-1,0]),{kind:'harbour',name:'The works\' jetty: the ore boats',y:G.LAKE+1.4});
   /* ---- the lake and river fleet (step N4, kits/ringsea Dalab hulls: ferries, grain barges and fishing boats) */
@@ -334,6 +332,8 @@ var NL_TOWN=(function(){
    {id:'nl.boat.skiff.b2',vessel:'dalabFishingBoat',x:H.x1+140,z:-1820,ry:1.1,name:'Fishing boat off the north boat sheds'},
    {id:'nl.boat.skiff.b3',vessel:'dalabFishingBoat',x:H.x1+220,z:-1040,ry:-.4,name:'Fishing boat off the south fish racks'},
    {id:'nl.boat.skiff.b4',vessel:'dalabFishingBoat',x:H.x1+160,z:-780,ry:.95,name:'Shelf fishing boat'},
+   {id:'nl.boat.ferry.viad',vessel:'dalabLakeFerry',x:-1675,z:-5240,ry:2.92,name:'Lake ferry steering by the viaduct\'s pier stubs'},
+   {id:'nl.boat.barge.viad',vessel:'dalabGrainBarge',x:-1485,z:-5160,ry:-.22,name:'Union grain barge off Station 5'},
    {id:'nl.boat.ferry.riv',vessel:'dalabLakeFerry',x:5468,z:1985,ry:-Math.PI/2,river:true,name:'The outlet river ferry'},
    {id:'nl.boat.barge.wks',vessel:'dalabGrainBarge',x:5545,z:2458,ry:Math.PI/2,river:true,name:'Ore and copper barge at the works\' jetty'},
    {id:'nl.boat.barge.chi',vessel:'dalabGrainBarge',x:5500,z:2630,ry:-Math.PI/2,river:true,name:'Grain barge bound down the Chimes Riba'},
@@ -344,7 +344,7 @@ var NL_TOWN=(function(){
    {id:'nl.road.precinct.n',cls:'lane',w:4.2,tag:'the court walk',pts:[[-286,-1324],[-352,-1268],[-420,-1284],[-476,-1272]]},
    {id:'nl.road.precinct.s',cls:'lane',w:4.2,tag:'the temple walk',pts:[[-286,-1376],[-355,-1434],[-432,-1442],[-460,-1435]]},
    {id:'nl.road.river',cls:'road',w:6,tag:'the river road',pts:[[560,-490],[920,-80],[1900,450],[3200,980],[4450,1520],[5380,1960]]},
-   {id:'nl.road.line',cls:'road',w:6,tag:'the Line road',pts:[[540,-2210],[220,-2800],[-320,-3550],[-880,-4080],[lq[0]+40,lq[1]+60]]},
+   {id:'nl.road.line',cls:'road',w:6,tag:'the Line road',pts:[[540,-2210],[220,-2800],[-320,-3550],[-880,-4080],[-1290,-4480],[-1365,-4535]]},
    {id:'nl.road.south',cls:'road',w:6,tag:'the iron road',pts:[[-525,-815],[-720,120],[-860,1800],[-820,3800],[-760,6000]]},
    {id:'nl.road.kould',cls:'road',w:6,tag:'the Kould road',pts:[[-525,-1885],[-1550,-1720],[-2900,-1250],[-4400,-820],[-6000,-560]]}];
   const census={buildings:lots.length+extra.length,people:0,byKey:{},byQuarter:{},pending:0,cropPlots:cropPlots.length,boats:boats.length};

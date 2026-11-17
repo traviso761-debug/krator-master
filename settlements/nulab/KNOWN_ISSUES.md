@@ -1,11 +1,11 @@
 # Nulab: known issues
 
-Steps N1 (data), N2 (town-page ground), N3 (the town on `core/city`), N4 (the harbour, copper-works, gene-house, daughter-Halls and tithe-barn pieces, Dalab's sidecar texture pack, and the three Dalab lake hulls on `kits/ringsea`) and the near ring of N5 (`core/hamlet/dalab`) of `PLAN.md` (2026-11-16). What is still owed, and by whom.
+Steps N1 (data), N2 (town-page ground), N3 (the town on `core/city`), N4 (the harbour, copper-works, gene-house, daughter-Halls and tithe-barn pieces, Dalab's sidecar texture pack, and the three Dalab lake hulls on `kits/ringsea`), the near ring of N5 (`core/hamlet/dalab`), and N6 (Station 5, the lake viaducts under `KRUINS.watch`, the Nulab-Chimes tunnel portal and hoist shaft, and Loj Faiv on `kits/tungang`) of `PLAN.md` (2026-11-16). What is still owed, and by whom.
 
-## The Line's station 5 (step N6)
+## Opt-in kit subfolders (steps N4 and N6)
 
-- **One pending box remains** (`NL_TOWN.PENDING` in `src/41-nl-town.js`, counted by `verify.py` `pending`): `nl_line_station` (1), reserving station 5's site in the Line quarter on the main south shore until step N6 places `KTRANSIT`'s `line` station, the lake viaduct's fallen spans and pier stubs under `KRUINS.watch`, the Nulab-Chimes tunnel portal, and Loj Faiv on `kits/tungang`.
-- **Opt-in subfolders (`settlements/dalab/opt/75-dalab-lake-works.js`, `kits/ringsea/opt/90..92`):** the sixteen lake/works Dalab pieces and three Dalab Ring Sea hulls sit in `opt/` subfolders so `settlements/dalab`'s and `kits/ringsea`'s own sheets stay byte-identical until their next scheduled rebuild incorporates them into `src/`.
+- **Zero pending stand-in boxes remain** (`NL_TOWN.PENDING` is empty; `verify.py` `nulab-laid` asserts `standins === 0`).
+- **Opt-in subfolders (`settlements/dalab/opt/75-dalab-lake-works.js`, `kits/ringsea/opt/90..92`, `kits/ancient-transit/opt/`, `kits/tungang/opt/`):** the sixteen Dalab lake/works pieces, three Dalab Ring Sea hulls, the Rift Line `line` kind (`43c` / `56c`), and the Tungang `tg` carved-hold set (`44..82`, lifted from `claude/loj-twenny-059a5e`) sit in `opt/` subfolders so `dalab`'s, `ringsea`'s, `ancient-transit`'s, `tungang`'s and `lightwall`'s own pages stay byte-identical until the Line and Tungang branches merge into `src/`.
 
 ## Garden trees and flora
 
@@ -21,5 +21,4 @@ Steps N1 (data), N2 (town-page ground), N3 (the town on `core/city`), N4 (the ha
 
 - **N0 / N2 (open world):** no West Rift region exists in `openworld/SITES.json` yet; the town page reads scale model 5.1 directly (`src/39n-nl-model.js`, `src/40-nl-ground.js`) until the West Rift region is cut on `core/world`. The Chimes Riba's flat 299 m model bed is given a gentle 0.5 m/km fall below the outlet (`PLAN.md` section 11).
 - **N1 / W1-W6 (economy sim):** `data/nulab-sim.js` holds Nulab's and the basin's W1 records and food balance as plain data; the live `WR_TUNE` runner is `core/region/WEST-RIFT-SCOPE.md`'s step W1. Whether the basin's rural 50,000 rises to 75,000 with the town's 20,000 (`PLAN.md` section 0) waits on the owner.
-- **N6 (the Line):** station 5, the lake viaduct's stubs and fallen spans (`KRUINS.watch`), the tunnel portal toward Chimes, and Loj Faiv (`kits/tungang`).
-- **N7 (interiors and life):** a Dalab interiors set (`kits/interiors/sets`) and the scheduled castes, Giant patrols, harbour day and Great Caravan arrival on `core/simulation`.
+- **N7 (interiors and life):** a Dalab interiors set (`kits/interiors/sets`) and the scheduled castes, Giant patrols, harbour day, Line trains and Great Caravan arrival on `core/simulation`.

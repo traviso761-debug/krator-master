@@ -15,6 +15,9 @@ const VIEWS=(function(){const V={},K=NL_PLAN,MD=NL_TOWN.MOUND,PL=K?K.plaza:NL_TO
  V['From the bay']=[2150,NL_GROUND.LAKE+26,-1350,100,NL_GROUND.LAKE+24,-1350];
  {const R=NL_RINGV.find(v=>v.id==='nl.ring.beanfield');if(R&&R.site){const s=R.site;V['The ring village Beanfield']=[s.x+260,terrainH(s.x+260,s.z-300)+70,s.z-300,s.x,terrainH(s.x,s.z)+2,s.z];}}
  {const R=NL_RINGV.find(v=>v.id==='nl.ring.netshore');if(R&&R.site){const s=R.site;V['The fishing hamlet Net Shore']=[s.x+120,NL_GROUND.LAKE+30,s.z-260,s.x,terrainH(s.x,s.z)+2,s.z];}}
+ if(typeof NL_LPLAN!=='undefined'&&NL_LPLAN){const L=NL_LPLAN,c1=L.atS(740,150),t1=L.atS(1290,14),c2=L.atS(1735,2),t2=L.atS(L.portal.s,0);
+  V['Station 5 and the lake viaduct']=[c1[0],NL_GROUND.LAKE+54,c1[1],t1[0],NL_GROUND.LAKE+7,t1[1]];
+  V['Loj Faiv and the Chimes portal']=[c2[0],L.line.floorAt(1735)+4.2,c2[1],t2[0],L.line.floorAt(L.portal.s)+4.6,t2[1]];}
  V['Toward Ledge']=[MD[0],terrainH(MD[0],MD[1])+85,MD[1]-120,-12000,1500,-55000];
  return V;})();
 BUDGET.showcase={tris:40000000,calls:4000};BUDGET.cls.city=40000000;for(const k in TSTAT.by)BUDGET.type[k.split('/')[0]]='city';
