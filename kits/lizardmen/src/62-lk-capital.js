@@ -143,3 +143,18 @@ defBuilding({key:'lk-watchtower',name:'Stone watchtower',seed:7708,caste:4,cut:t
    for(let i=0;i<11;i++){const a=i*TAU/11;const r=w1/2+.25;lzHorn(Math.cos(a)*r,1.6,Math.sin(a)*r,Math.atan2(Math.cos(a),Math.sin(a)),1.6,.13,{curl:.5,lean:.3,mk:LK_PL,col:P('basaltD'),nt:7,ns:6});}});
   lzNoCut(()=>lzPortal(0,.3,w0/2+.04,0,dh,{mk:'bronze'}));lzThreshold(0,w0/2+.3,0,dw);
   FURNISH('lizardmen_common_rack',2.2,.3,-1.8,-PI/2);FURNISH('lizardmen_common_bed',-2,.3,-1.6,0);FURNISH('generic_trade_locker',-2.4,.3,1.4,PI/2);FURNISH('lizardmen_common_stool',.6,.3,.8,0);FURNISH('generic_water',1.8,.3,1.4,0);}});
+/* ---------------------------------------------------------------- the capital's Interpreters' house: the green-stone twisted tower */
+defBuilding({key:'lk-tower',name:"Stone Interpreters' house",seed:7709,caste:5,cut:true,w:11,d:11,h:21,budget:100000,
+ tags:{types:['dwelling-single','civic'],wealth:'rich',role:'dwelling'},
+ note:'the Interpreters\' house in stone for Basilisk (settlements/basilisk/PLAN.md section 7): nine courses of cyclopean basalt, each turned four degrees past the one below, spiral-eye oculi in verdigris bronze climbing it, a crown of seven horns; a 3.5 m door with nested bronze frames',
+ build(o){const h=18,n=9,w0=7.4,w1=4.6,ch=h/n,hollow=3;lzCutFloor(0);
+  lzNoCut(()=>lkPlinth(10,10,.25,{}));
+  const dh=lzDoorH(5),dw=dh*.62;
+  for(let i=0;i<hollow;i++){const t=i/(n-1),w=lerp(w0,w1,t),ry=i*.07;W(0,.25+i*ch,0,ry,()=>{const T=lzBatterRoom(w,w,0,ch+.02,LK_ST,P('basalt'),{lean:{front:.02,back:-.02,left:.03,right:-.01},front:i===0?[{s:w/2,w:dw,h:dh,door:true}]:[]});lzCourseRing(T.T,ch-.28,.3,1.1,LK_ST,P('basaltD'));});}
+  const ceilY=.25+hollow*ch,cw=lerp(w0,w1,(hollow-1)/(n-1))-.2;box(LK_ST,0,ceilY-.3,0,cw,.3,cw,P('basaltD'),(hollow-1)*.07);
+  lzTwist(0,0,h,n,w0,w1,.07,{mk:LK_ST,col:P('basalt'),start:hollow,each:(i,y,w,ry)=>{if(i===3||i===5||i===7){const k=i===5?-1:1;W(0,y+ch*.5,0,ry,()=>lzEye(k*w*.5+.03*k,0,0,k*PI/2,w*.18,{mk:'bronze'}));}
+   if(i===1)W(0,y+.3,0,ry,()=>{W(0,0,w/2+.01,0,()=>lzLeiwen(w*.8,ch*.6,{cell:.4,mk:'bronze',back:false}));});}});
+  for(let i=0;i<7;i++){const a=i*TAU/7;lzHorn(Math.cos(a)*w1*.42,h+.25,Math.sin(a)*w1*.42,Math.atan2(Math.cos(a),Math.sin(a)),2.8,.15,{curl:.5,lean:.35,mk:LK_PL,col:P('basaltD')});}
+  lzNoCut(()=>lzPortal(0,.25,w0/2+.04,0,dh,{mk:'bronze',eye:true}));lzThreshold(0,w0/2+.3,0,dw);
+  FURNISH('lizardmen_court_bed',-1.6,.25,-1.8,0);FURNISH('lizardmen_court_desk',1.9,.25,-1.6,-PI/2);FURNISH('lizardmen_court_scroll',-2.6,.25,.6,PI/2);
+  FURNISH('lizardmen_court_statue',2.4,.25,1.6,-PI/2);FURNISH('lizardmen_court_candelabra',-.9,.25,2.2,0);FURNISH('lizardmen_court_carpet',.3,.25,.2,0);FURNISH_HANG('lizardmen_court_hanging',0,ceilY-.35,0,0);}});

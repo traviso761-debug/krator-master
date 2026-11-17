@@ -861,8 +861,8 @@
    "sha256": "f4141e152cb4d4b42efb5c0ada187f549110aaf91bbfb02ace6c3fea21b03ada"
   },
   "kits/lizardmen/dist/lizardmen.html": {
-   "bytes": 1778810,
-   "sha256": "5f8cf6971d1bdbb80f8842d4506a8cf159082bfe6acccb3a5d49bc0f3776a14b"
+   "bytes": 1782552,
+   "sha256": "3e99480a5544064d3eec26c575419d05663f2a81494e27a9b9574c5d3985f9dc"
   },
   "kits/mechs/dist/mechs.html": {
    "bytes": 1715496,
@@ -1221,8 +1221,8 @@
    "sha256": "ff55123b7c5b9407569f8adb584db31648458bd78f5662d35da7d081866e7c15"
   },
   "settlements/gila/dist/gila.html": {
-   "bytes": 2841023,
-   "sha256": "7e6adde5359405f5f9638dcfe1f128c90690cfb92da240dd38173b257b1c0425"
+   "bytes": 2844758,
+   "sha256": "2243e848df1878ae304c7a3a436719c056171b84b9be3249e6214792e9a6c161"
   },
   "settlements/girder/girder-hero.html": {
    "bytes": 9885121,

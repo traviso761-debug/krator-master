@@ -461,7 +461,7 @@ var GL_SITE = (function () {
       plinths.push({
         key: key, x: rec.x, z: rec.z, ry: rec.ry, w: D.w, d: D.d,
         y0: +(fs.lo - 0.38).toFixed(3), y1: +(y + 0.005).toFixed(3),
-        stone: D.caste === 5 || D.caste === 'all' || key === 'lz-lodge' || key === 'gl-tank' || key === 'gl-well'
+        stone: key === 'lz-seer' || D.caste === 'all' || key === 'lz-lodge' || key === 'gl-tank' || key === 'gl-well'
       });
     }
     return rec;

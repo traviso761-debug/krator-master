@@ -50,7 +50,7 @@ const LZ_TRADES = [
   { trade: 'envoys and embassy staff', na: 'tabled until embassies have an in-game purpose' },
   { trade: 'ferrymen', na: 'landlocked and no waterways crossed by trade' },
   { trade: 'elephant bug handlers and station hands', na: 'no elephant bugs; their draught animals are the burden beast and hexapods' },
-  { trade: 'monks and lay brothers', keys: ['lk-college', 'lz-tower'], note: 'the Interpreters\' college and house: the nearest thing to a cloistered order' },
+  { trade: 'monks and lay brothers', keys: ['lk-college', 'lk-tower', 'lz-tower'], note: 'the Interpreters\' college and houses (stone in Basilisk, earth-and-brick in the villages): the nearest thing to a cloistered order' },
   { trade: 'palace and canton staffs', keys: ['lk-greathall'], note: 'the Hall of Intention (the Interpreters in concert)' }
 ];
 globalThis.LZ_TRADES = LZ_TRADES;

@@ -22,7 +22,7 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `31-alt-takes.js` | <1 |  |
 | `40-lz-kit.js` | 31 **big** |  |
 | `42-lz-dress.js` | 3 |  |
-| `50-lz-dwell.js` | 10 |  |
+| `50-lz-dwell.js` | 11 |  |
 | `52-lz-nest.js` | 5 |  |
 | `54-lz-trade.js` | 15 |  |
 | `55-lz-special.js` | 7 |  |
@@ -31,6 +31,7 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `57-lc-camp.js` | 10 |  |
 | `58-lz-monument.js` | 4 |  |
 | `59-lz-trades.js` | 6 | = (2) |
+| `59w-lz-works.js` | 11 |  |
 | `60-lz-reliquary.js` | 11 |  |
-| `62-lk-capital.js` | 18 |  |
+| `62-lk-capital.js` | 21 |  |
 | `89-rows.js` | 1 |  |
