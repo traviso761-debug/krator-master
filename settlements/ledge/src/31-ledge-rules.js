@@ -60,10 +60,12 @@ function overlap(a, b){
 // cliff's top recedes north a little and wanders (KRAND's noise, by position: a seed, never a stream)
 function faceZ(L, x){ var G = L.ground, a = Math.abs(x), t = Math.max(0, a - G.dressed);
   return -t * .12 - 30 * smooth(0, 300, t) * (R.KRAND.fbm(x / 500, 0, 3.1, 3, 4371) - .5) * 2; }
+/* the escarpment behind the bench: rising at G.escarp, easing onto the tableland's level (G.top) */
+function rise(G, back){ var e = Math.max(0, back - G.bench) * G.escarp, span = G.top - G.head; return span * (1 - Math.exp(-e / span)); }
 function lakeBed(L, z0, z){ var G = L.ground; return G.lake - Math.min(150, 6 + Math.max(0, z - z0) * .2); }
 function natural(L, x, z){
   var G = L.ground, a = Math.abs(x), fz = faceZ(L, x), d = z - fz, n = R.KRAND.fbm(x / 90, z / 90, 1.7, 3, 4372) - .5;
-  if (d <= 0){ var back = -d, h = G.head + Math.max(0, back - G.bench) * G.escarp + 40 * smooth(G.bench, G.bench + 900, back) * n;
+  if (d <= 0){ var back = -d, h = G.head + rise(G, back) + 40 * smooth(G.bench, G.bench + 900, back) * n;
     return h + 6 * smooth(0, 60, back) * n * smooth(G.dressed + 150, G.dressed + 250, a); }
   var foot = G.lake + 6, shore = fz + G.run + G.shore;
   if (d < G.run){ var p = d / G.run, prof = 1 - Math.pow(1 - p, 2.4) * (1 - p * .15);
@@ -73,7 +75,7 @@ function natural(L, x, z){
 }
 function dressed(L, x, z){
   var G = L.ground;
-  if (z <= 0){ var back = -z; return G.head + Math.max(0, back - G.bench) * G.escarp + 40 * smooth(G.bench, G.bench + 900, back) * (R.KRAND.fbm(x / 90, z / 90, 1.7, 3, 4372) - .5); }
+  if (z <= 0){ var back = -z; return G.head + rise(G, back) + 40 * smooth(G.bench, G.bench + 900, back) * (R.KRAND.fbm(x / 90, z / 90, 1.7, 3, 4372) - .5); }
   if (z <= G.quay) return G.apron;
   return lakeBed(L, G.quay, z);
 }

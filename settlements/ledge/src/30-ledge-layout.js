@@ -27,7 +27,7 @@ var L = {
     pin: [437, 1330], model: 'sxyznayzgc', riftrimDz: -603, note: 'PLAN.md 9.2' },
   world: 4370,
   // THE GROUND (LEDGE.groundAt): the head's bench, the dressed face, the apron and the lake (PLAN.md 9.2)
-  ground: { head: 1562, apron: 312, lake: 297, quay: 180, dressed: 750, bench: 700, escarp: .26, run: 380, shore: 40, page: 3000 },
+  ground: { head: 1562, top: 3480, apron: 312, lake: 297, quay: 180, dressed: 750, bench: 700, escarp: .26, run: 380, shore: 40, page: 3000, far: 12000 },
   // THE SHELL (PLAN.md 9.3): layers at y0 + pitch k; a layer's width along the face and its reach out of the rock grow with k
   stack: { n: 42, y0: 332, pitch: 30, slab: 5, storey: 4.5, storeys: 4, plenum: 7, w0: 320, w1: 700, r0: 24, r1: 196, rExp: 1.5,
     root: 20, gallery: 6, cover: .7, prow: { wing: 'c', k0: 26, add: 120 },
@@ -125,7 +125,7 @@ function B(id, name, key, x, z, o){
   o = o || {}; var f = DEF[key], ry = o.ry || 0, q = Math.abs(Math.sin(ry)) > .5, w = q ? f[1] : f[0], d = q ? f[0] : f[1];
   var by = o.by || (key.indexOf('fg-') === 0 ? 'fellgang' : 'dalab');
   return P(id, name, o.kind || 'building', ['box', x - w / 2, x + w / 2, z - d / 2, z + d / 2],
-    Object.assign({ key: key, ry: ry, by: by, h: FGH[key] || o.h || 10 }, o, { ry: ry, by: by }));
+    Object.assign({ key: key, ry: ry, by: by, h: FGH[key] != null ? FGH[key] : o.h != null ? o.h : 10 }, o, { ry: ry, by: by }));
 }
 // a row of buildings: keys cycled by index (no randomness), each centred in its cell, fronts toward +z (ry 0) or -z (ry PI)
 function row(prefix, name, keys, x0, x1, z, cell, o){
@@ -208,7 +208,7 @@ P('station_customs', 'Dalab\'s customs at the station', 'office', ['box', 150, 2
 var AY = G.apron, Z5 = { zone: 'Z5', y: AY };
 function z5(o){ return Object.assign({}, Z5, o || {}); }
 P('foot_lifthall', 'the foot lift hall (the great lifts\' feet, under the lowest deck)', 'lifthall', ['box', -150, 150, 1, 40],
-  z5({ key: 'anc:lifthall', h: 14, by: 'lojfower', state: 'kept', people: 0 }));
+  z5({ key: 'anc:lifthall', h: 15, by: 'lojfower', state: 'kept', people: 0 }));
 row('foot_dalab_1', 'the foot\'s Dalab quarter', ['dalab_rowhouse', 'dalab_tenement'], -560, -280, 40, 30, z5({ people: 70 }));
 row('foot_dalab_2', 'the foot\'s Dalab quarter', ['dalab_tenement', 'dalab_rowhouse'], -560, -280, 85, 30, z5({ people: 70, ry: Math.PI }));
 row('foot_dalab_3', 'the foot\'s Dalab quarter', ['dalab_rowhouse', 'dalab_hut_c', 'dalab_tenement'], -560, -280, 140, 30, z5({ people: 54 }));

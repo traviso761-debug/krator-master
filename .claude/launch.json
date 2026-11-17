@@ -2,6 +2,18 @@
   "version": "0.0.1",
   "configurations": [
     {
+      "name": "ledge-dist",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8893",
+        "--directory",
+        "settlements/ledge/dist"
+      ],
+      "port": 8893
+    },
+    {
       "name": "edit-queue",
       "runtimeExecutable": "python",
       "runtimeArgs": [
@@ -368,6 +380,12 @@
       ],
       "port": 8883,
       "autoPort": false
+    },
+    {
+      "name": "ledge-dist",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "8893", "--directory", "settlements/ledge/dist"],
+      "port": 8893
     }
   ]
 }
