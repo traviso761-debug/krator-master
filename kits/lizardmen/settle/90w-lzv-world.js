@@ -70,7 +70,7 @@
 
   /* the water on core/water */
   var water = (function () {
-    var out = { lake: null, wells: 0, tanks: 0, pans: 0, stills: [] };
+    var out = { lake: null, wells: 0, tanks: 0, cisterns: 0, pans: 0, stills: [] };
     if (S.lake) try {
       var Lk = WATER.open({ name: S.lake.name, level: G.lakeY, field: S.lake.field == null ? 0.08 : S.lake.field, bounds: [F.x0, F.z0, F.x1, F.z1], bed: G.groundH, bedBox: [N.x0, N.z0, N.x1, N.z1], bedCell: 24 });
       var Ld = WATER.draw(Lk, { renderOrder: 1, roughness: 0.1, metalness: 0.06, envMapIntensity: 0.45, surf: false, breakers: false, pick: true,
@@ -89,12 +89,13 @@
     G.sites.forEach(function (s) {
       if (s.key === 'gl-well') { var a = WATER.still({ name: 'Well water ' + out.wells, level: s.y + 0.72, poly: disc(s.x, s.z, 0.9, 16) }); fresh.push(a); out.stills.push(a); out.wells++; }
       else if (s.key === 'gl-tank') { var b = WATER.still({ name: 'The great tank of ' + S.name, level: s.y + 1.56, poly: rect(s.x, s.z, s.ry, 11.8, 6.8) }); fresh.push(b); out.stills.push(b); out.tanks++; }
+      else if (s.key === 'lz-cistern') { var cs = WATER.still({ name: 'Cistern water ' + out.cisterns, level: s.y + 0.78, poly: rect(s.x, s.z, s.ry, 6.8, 6.8) }); fresh.push(cs); out.stills.push(cs); out.cisterns++; }
       else if (s.key === 'gl-pans') { var c = WATER.still({ name: 'Pan brine ' + out.pans, level: s.y + 0.36, poly: rect(s.x, s.z, s.ry, 27.1, 27.1) }); brine.push(c); out.stills.push(c); out.pans++; } });
-    if (fresh.length) out.freshMesh = fan(fresh, { color: lin(0x234440), roughness: 0.06, metalness: 0.14, envMapIntensity: 0.5 }, 'water:fresh-still', 'Well water (the brick wells and the tank)');
+    if (fresh.length) out.freshMesh = fan(fresh, { color: lin(0x234440), roughness: 0.06, metalness: 0.14, envMapIntensity: 0.5 }, 'water:fresh-still', 'Well water (the brick wells, cisterns and the tank)');
     if (brine.length) out.brineMesh = fan(brine, { color: lin(0x9ca894), roughness: 0.08, metalness: 0.1, envMapIntensity: 0.45 }, 'water:brine-still', 'Brine in the clay pans');
     return out;
   })();
-  window._lzvWater = { lake: !!water.lake, wells: water.wells, tanks: water.tanks, pans: water.pans, stills: water.stills.length };
+  window._lzvWater = { lake: !!water.lake, wells: water.wells, tanks: water.tanks, cisterns: water.cisterns, pans: water.pans, stills: water.stills.length };
 
   /* SITES, and the plinths and steps inside buildWorld (a nested place keeps local y 0) */
   var place0 = place;

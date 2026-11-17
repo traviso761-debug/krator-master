@@ -164,8 +164,10 @@ def sources():
     paths.update({f: khost.path(f) for f in CORE_HOST})
     paths.update(psky.paths(psky.SKY))
     paths.update(kengine.paths())
-    if SETTLE:   # the core files the settlement adds (core/water, core/drawn, core/terrain's ground, ...), by repo path
-        paths.update({os.path.basename(p): os.path.join(ROOT, *p.split('/')) for p in SET_CFG.get('core', [])})
+    if SETTLE:   # the core files the settlement adds ("path" or "path=name" to sort at name), by repo path
+        for entry in SET_CFG.get('core', []):
+            p, _, nm = entry.partition('=')
+            paths[nm or os.path.basename(p)] = os.path.join(ROOT, *p.split('/'))
     core = dict(paths)
     gen_files = set()
     paths.update({f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()})   # a src/ copy overrides the core one

@@ -90,5 +90,11 @@ const coilOK=loads=>loads.every(L=>{const C=LZ_TUNE.coil,want=Y.H.allotRoute(C,L
 // 10. the relics go to the reliquaries: the Tubes' to the west's, Iguana's from the Pile to the east's
 {const B=Y.B;T.ok('Z2: the relics are sunk in the reliquaries: west '+t(B['reliquary-west'].imported.relics||0)+' from the Tubes, east '+t(B['reliquary-east'].imported.relics||0)+' from Iguana',
   (B['reliquary-west'].imported.relics||0)>0&&(B['reliquary-east'].imported.relics||0)>0);}
+// 11. checkTown holds a town's records to LZ_TUNE (people by caste, shares, works by good) and refuses drifted records
+{const goodRec={key:'tuatara',castes:[{caste:1,share:.22,people:660},{caste:2,share:.20,people:600},{caste:3,share:.28,people:840},{caste:4,share:.17,people:510},{caste:5,share:.03,people:90},{caste:6,share:.10,people:300}],
+  works:[{id:'tu.grain',good:'grain',yearT:1000},{id:'tu.produce',good:'produce',yearT:250},{id:'tu.meat',good:'meat_hide',yearT:210},{id:'tu.copper',good:'copper',yearT:70}]};
+ const badRec=Object.assign({},goodRec,{castes:goodRec.castes.map(c=>c.caste===1?{caste:1,share:.22,people:700}:c)});
+ T.ok('checkTown: accepts records matching LZ_TUNE people, shares and works',LZ_TUNE.checkTown(goodRec).ok);
+ T.neg('checkTown: refuses records whose caste total drifted from LZ_TUNE',R=>LZ_TUNE.checkTown(R).ok,badRec,goodRec);}
 console.log('in '+((Date.now()-t0)/1000).toFixed(1)+' s');
 T.done();

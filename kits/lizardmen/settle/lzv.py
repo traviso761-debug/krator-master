@@ -12,7 +12,7 @@ which writes the town's gen/ (never edited by hand, removed after the build, as 
   69k-kcity-bundle.js  core/city and core/space in one closure (the village's steps, 82-lzv-site.js, lay the spiral on it)
 then runs kits/lizardmen/build.py --settlement on the town's folder (its settlement.json, src/, gen/, tex/). Gila's own
 build.py is the model; Gila moves onto this at its next pass."""
-import base64, io, os, shutil, subprocess, sys
+import base64, io, json, os, shutil, subprocess, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(HERE)))   # kits/lizardmen/settle -> the repo (was two levels: kits/)
@@ -67,10 +67,18 @@ def ground_fragment(name, pin, near, far):
 def build(town_dir, pin, near, far):
     name = os.path.basename(town_dir)
     gen = os.path.join(town_dir, 'gen')
-    BSRC.note(*[os.path.join(ROOT, *p.split('/')) for p in ([SPACE, H_PNG] + ['core/city/' + f for f in CITY_JS])])
+    cfg_path = os.path.join(town_dir, 'settlement.json')
+    cfg = json.load(io.open(cfg_path, encoding='utf-8')) if os.path.isfile(cfg_path) else {}
+    uses_res = any(e.partition('=')[0].startswith('kits/resources/') for e in cfg.get('core', []))
+    geo_rel = 'kits/resources/data/geology.json'
+    noted = [SPACE, H_PNG] + ['core/city/' + f for f in CITY_JS] + ([geo_rel] if uses_res else [])
+    BSRC.note(*[os.path.join(ROOT, *p.split('/')) for p in noted])
     if not BSRC.LISTING:
         os.makedirs(gen, exist_ok=True)
-        for fn, text in (('69g-lzv-ground.js', ground_fragment(name, pin, near, far)), ('69k-kcity-bundle.js', kcity_bundle(name))):
+        gen_items = [('69g-lzv-ground.js', ground_fragment(name, pin, near, far)), ('69k-kcity-bundle.js', kcity_bundle(name))]
+        if uses_res:
+            gen_items.append(('45q-res-geodata.js', '/* RES_GEODATA from %s (kits/lizardmen/settle/lzv.py). GENERATED. */\nconst RES_GEODATA=%s;\n' % (geo_rel, rd(geo_rel).strip())))
+        for fn, text in gen_items:
             with io.open(os.path.join(gen, fn), 'w', encoding='utf-8', newline='\n') as fh:
                 fh.write(text)
     rc = 1

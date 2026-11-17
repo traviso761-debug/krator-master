@@ -175,7 +175,7 @@ var LZV_SITE = (function () {
       inward: !!o.inward, o: Object.assign({ y: +y.toFixed(3), v: v }, o.name ? { name: o.name } : {}) };
     sites.push(rec);
     if (D.cls !== 'life') plinths.push({ key: key, x: rec.x, z: rec.z, ry: rec.ry, w: D.w, d: D.d, y0: +(fs.lo - 0.38).toFixed(3), y1: +(y + 0.005).toFixed(3),
-      stone: D.caste === 5 || D.caste === 'all' || key === 'lz-lodge' || key === 'gl-tank' || key === 'gl-well' || key.indexOf('lk-') === 0 });
+      stone: key === 'lz-seer' || D.caste === 'all' || key === 'lz-lodge' || key === 'gl-tank' || key === 'gl-well' || key.indexOf('lk-') === 0 });
     return rec;
   }
   /* 6a. the court */
