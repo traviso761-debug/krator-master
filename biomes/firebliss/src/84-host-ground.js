@@ -29,6 +29,7 @@ const TEX_GROUND=BIO.canvasTex(1536,1536,(g,w,h)=>{const id=g.createImageData(w,
   t.copy(ROCK).lerp(ROCK2,clamp(.4+n*1.6,0,1));c.lerp(t,smooth(.25,.6,rock));
   c.lerp(DAMP,smooth(.3,.8,wet)*.5);
   c.lerp(ICE,ice);c.lerp(SNOW,snow);
+  if(SITE.groundPaint)SITE.groundPaint(c,A,n);   /* a station's own ground colours (station 8: the dome's glass and pumice) */
   const k=1+n*.07;d[i]=clamp(c.r*255*k,0,255);d[i+1]=clamp(c.g*255*k,0,255);d[i+2]=clamp(c.b*255*k,0,255);d[i+3]=255;}
  g.putImageData(id,0,0);});
 const TEX_DETAIL=BIO.canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
@@ -47,7 +48,7 @@ MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};
 const KG_RELIEF=GQ.get('relief')!=='0',KG_TRI=!!SITE.tri&&GQ.get('tri')!=='0';
 const L_=(fam,w,o)=>KGROUND.layer('firebliss',fam,Object.assign({w,amt:.85,gain:1.0},o));
 if(USE_KG)KGROUND.hook(MAT_GROUND,{key:'firebliss-'+SITE.key+'-ground'+(KG_RELIEF?'r':'')+(KG_TRI?'t':''),at:'/*KGROUND*/',
- ...(KG_RELIEF?{relief:{bump:.075,cavity:.8,mesh:1}}:{}),...(KG_TRI?{tri:{from:.35,to:.7}}:{}),layers:(ICY?[
+ ...(KG_RELIEF?{relief:{bump:.075,cavity:.8,mesh:1}}:{}),...(KG_TRI?{tri:{from:.35,to:.7}}:{}),layers:(SITE.groundLayers?SITE.groundLayers(L_):ICY?[
  L_('ground.ash','vAsh*(1.0-vScree)*(1.0-vSnow)*(1.0-vIce)',{name:'ash'}),
  L_('ground.cinder','vScree*(1.0-vSnow)*(1.0-vIce)',{name:'cinder and talus'}),
  L_('rock.basalt','vRock*(1.0-vSnow*0.7)*(1.0-vIce)',{tint:'_gP*1.5',name:'basaltic andesite'}),
@@ -66,7 +67,8 @@ if(USE_KG)KGROUND.hook(MAT_GROUND,{key:'firebliss-'+SITE.key+'-ground'+(KG_RELIE
  L_('ground.sulphur','vAcid',{name:'acid clay and sulphur'})])});
 const G_ATTR=(x,z,h)=>{const A=n=>FC.at(FC.a[n],x,z),th=thAt(x,z);
  const sinter=Math.max(th.sinter,th.dead*.6),mat=th.film>0?clamp(th.film*2.5,0,1)*smooth(28,40,th.T)*smooth(78,68,th.T):0;
- return[smooth(.3,.65,A('rock')),A('meadow')*(1-sinter)*(1-smooth(.1,.3,A('therm'))),A('floor'),A('ash'),A('moraine'),sinter,mat,th.acid,A('snow'),A('ice'),0,0];};
+ const a=[smooth(.3,.65,A('rock')),A('meadow')*(1-sinter)*(1-smooth(.1,.3,A('therm'))),A('floor'),A('ash'),A('moraine'),sinter,mat,th.acid,A('snow'),A('ice'),0,0];
+ return SITE.groundAttr?SITE.groundAttr(a,A,x,z,h):a;};   /* a station may carry its own fields in slots it does not use (no new attribute: the ground has 16) */
 // a grid of cells over [x0,z0,x1,z1] (nx x nz cells), its quads skipped where hole(cx,cz) says, a skirt dropped round its edge when asked
 function groundGrid(x0,z0,x1,z1,nx,nz,hole,skirt){const cx=(x1-x0)/nx,cz=(z1-z0)/nz,vx=nx+1,vz=nz+1,nv=vx*vz,ns=skirt?2*(nx+nz):0;
  const pos=new Float32Array((nv+ns*2)*3),uv=new Float32Array((nv+ns*2)*2),A=GA.map(()=>new Float32Array(nv+ns*2)),S=TERR.R*2.2;

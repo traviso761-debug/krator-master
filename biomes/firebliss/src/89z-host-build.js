@@ -15,7 +15,7 @@ if(new URLSearchParams(location.search).get('fields')!=='0'){const S0=FIELD.shor
  FIELD.wet=(x,z)=>clamp(Math.max(W0(x,z),.9*FIELD.shore(x,z)),0,1);}
 GROUND_MESHES.forEach(m=>{const a=m.geometry.attributes.aWet,p=m.geometry.attributes.position;for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i),w=waterH(x,z);
  a.setX(i,WET_SHORE(x,z)*(w>-1e8?smooth(2.5,.2,p.getY(i)-w):1)*(1-FC.at(FC.a.ice,x,z)));}a.needsUpdate=true;});
-window._biome=null;window._geyser=null;window._cold=null;window._hunt=null;window._nodes=[];
+window._biome=null;window._station=null;window._geyser=null;window._cold=null;window._hunt=null;window._nodes=[];
 const SHADOW_ON=new URLSearchParams(location.search).get('shadow')!=='0'&&typeof KSHADOW!=='undefined'&&!!KSHADOW.attach;   /* attached always, off at load: core/shadow's switch (its button, ?shadow=1) turns it on; ?shadow=0 none of it */
 (function(){
  const t0=performance.now();
@@ -32,6 +32,8 @@ const SHADOW_ON=new URLSearchParams(location.search).get('shadow')!=='0'&&typeof
  try{window._hunt=FIREBLISS.hunters(SITE);window._camp=FIREBLISS.CAMP||null;}catch(e){reportErr('hunters: '+e.stack);}
  const CLEAR=[];if(window._camp){const c=window._camp;CLEAR.push({x:c.hearth.x,z:c.hearth.z,r:c.R+7});OBSTACLES.push({x:c.hearth.x,z:c.hearth.z,r:c.R+5,y0:-1e4,y1:1e4});}
  (SITE.butchery||[]).forEach(B=>CLEAR.push({x:B.x,z:B.z,r:7}));
+ // ---- a station's own pieces (FIREBLISS.station, a station's fragment: station 8's spines, knapping floors and quarry), after the camp, its ground kept clear too
+ if(FIREBLISS.station){try{window._station=FIREBLISS.station(SITE,{clear:CLEAR,q});(window._station&&window._station.clear||[]).forEach(c=>CLEAR.push(c));}catch(e){reportErr('station: '+e.stack);}}
  // ---- Copper Glacier's passes (read in place): the cushions, lichen, moss, boulders and stones, the frost coral under the station's coral line. Off the
  // warm floor (its grass and groves are this kit's) and off hot ground; its fields are this page's (47: ice, moraine, snow, copper 0, flat, shore, ...)
  if(typeof COPPERG!=='undefined'&&Q.get('cold')!=='0'){COPPERG.SITE={coral:SITE.coral,coralK:SITE.coralK};

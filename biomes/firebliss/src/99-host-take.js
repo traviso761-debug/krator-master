@@ -40,7 +40,7 @@ function describe(hit){const p=hit.point,o=hit.object;
   (tg&&tg.harvest&&tg.harvest.note?'\n'+tg.harvest.note:'')+'\nground '+(heatAt(p.x,p.z)|0)+' degC · '+(1.6*Math.exp(-p.y/8000)).toFixed(2)+' atm'+(PLUME?' · ash fall '+(PLUME.P.deposit(p.x,p.z)*100|0)+'%':'')+
   hazardWords(p)+'\n'+p.x.toFixed(0)+', '+p.y.toFixed(0)+', '+p.z.toFixed(0)+'  range '+camera.position.distanceTo(p).toFixed(0)+' m';}
 const BUDGET={showcase:{tris:SITE.budget?SITE.budget.tris:20000000,calls:SITE.budget?SITE.budget.calls:260},cls:{pass:16000000,host:3000000},
- type:{['firebliss/'+SITE.key]:'pass','firebliss/kin':'pass','firebliss/floor':'pass','firebliss/hunters':'pass','firebliss/nodes':'pass',['copperglacier/'+SITE.key]:'pass',
+ type:{['firebliss/'+SITE.key]:'pass','firebliss/kin':'pass','firebliss/floor':'pass','firebliss/hunters':'pass','firebliss/nodes':'pass','firebliss/station':'pass',['copperglacier/'+SITE.key]:'pass',
   'geyser/sinter':'pass','geyser/trees':'pass','geyser/floor':'pass','geyser/show':'pass','host':'host'}};
 const instPoints=()=>{const o=[],m=new THREE.Matrix4(),p=new THREE.Vector3(),q=new THREE.Quaternion(),sc=new THREE.Vector3();
  scene.traverse(M=>{if(!M.isInstancedMesh||!M.userData.biome)return;for(let i=0;i<M.count;i++){M.getMatrixAt(i,m);m.decompose(p,q,sc);o.push([p.x,p.y,p.z,M.name,M.userData.kit||'']);}});return o;};
@@ -48,7 +48,7 @@ const ROOTED=/biome:(grass|fern|flower|fireweed|reed|ashgrass|cushion|mossmat|se
 const COLD=/biome:(cushion|copperflower)$/;
 const HCHK={
  // what this station must have (SITE.need: 'kit.stat' names, each over zero)
- placed(need){const S={firebliss:window._biome||{},cold:window._cold||{},hunt:window._hunt||{},geyser:window._geyser||{}};
+ placed(need){const S={firebliss:window._biome||{},cold:window._cold||{},hunt:window._hunt||{},geyser:window._geyser||{},station:window._station||{}};
   const val=k=>{const [a,b]=k.split('.');const v=S[a]&&S[a][b];return Array.isArray(v)?v.length:typeof v==='number'?v:v?1:0;};
   const zero=need.filter(k=>!(val(k)>0));return{ok:!zero.length&&need.length>0,detail:zero.length?'none: '+zero.join(', '):need.map(k=>k+' '+val(k)).join(', ')};},
  // nothing rooted under the water

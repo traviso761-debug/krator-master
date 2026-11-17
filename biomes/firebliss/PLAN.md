@@ -238,6 +238,7 @@ than a page, so each valley's page stands on its lake's shore.
 | 2 Solfatara Glen | `dist/firebliss-glen.html` | 234,1320.5 | where the Tlahn Warra reaches the lake (234,1321), 2 km from the plan's point | the lake (2,119.9 m) over the east half; the glen's floor 5-8 m over it, rising south-west; Cfb, 12.9 °C, 1,240 mm |
 | 3 East Bliss Vale | `dist/firebliss-east.html` | 285,1320.6 | the Weyt Warra's outlet (285,1320): the station is "the way in", up the gorge; the plan's point (282,1315) is the warmest shore, 12 km north-west | the lake (1,960 m) north-west; edit 3's carved outlet channel south down the middle (2 km wide on the cells); Cfa, 13.9 °C, 1,370 mm |
 | 4 Firebliss Mons | `dist/firebliss-mons.html` | 205,1282 | the plan's point | the crater floor (5,481-5,500 m) south and east, the inner wall north-west to 5,930 m; EF, -12.6 °C, 600 mm |
+| 8 South Glass (section 11.2) | `dist/firebliss-glass.html` | 177.9,1337.0 | 7.05 km from the dome's middle (175,1335) on a bearing of 125 degrees: a page on its middle would be all flat top, so the wall crosses this one | no dome on today's model (edit 2 is not merged): a ridge at ~4,560 m under it falling south-east to a basin at 4,180-4,300 m (the moat); the dome is the kit's, edit 2's record (section 11.3); ET, -7.7 °C (2.4 / -17.9), 584 mm |
 ## 8. Core adoption (written first, as the working rules ask)
 
 Start from `biomes/copperglacier` (the newest finished kit and the neighbour: its ice, frost and station frame) and the geyser
@@ -380,3 +381,33 @@ The plan's questions:
 - **`KSTRATA` Binding:** **`obsidian-pancake`** (`2–6 m` foliated vitreous black-and-mahogany obsidian ledges with specular `sheen: 0.92` and subtle `irid: 1` peacock-blue oxidation film, alternating with pale vesicular pumice and `perlitic` crumble seams) over bedded valley-wall **`outland-tuff`** and **`tibasalt`** floor flows.
 - **Camera Framing (`5.2 × 5.2 km` dome-margin cut):** Low-angle golden-hour camera at `+22 m` on the warm `KTHERM` sinter-moss moat looking NNE up the `380 m` circular wall of `dome_fb_south`: glittering black conchoidal `obsidian-pancake` spines and concentric pressure-ridge ogives catching specular rim-light, white steam ribbons curling from basal perlite-breccia radial cracks (snow melted bare along `KTHERM`), a **Kimr / Fellgang** seasonal knapping camp (`KCAMP`, Aurochs-horn cairns and flaked obsidian debitage fans) on a dry pumice bench in the foreground, and Firebliss Mons' ash plume (`KFAR.sprites`) rising on the NNE skyline.
 - **Hydrology & Trade Tie-In:** Snowmelt on the fractured glassy carapace infiltrates instantly and emerges warm (`35–68 °C`) at the basal `obsidian-pancake` / `outland-tuff` contact to feed Great Firebliss Vale (`Yan` / `Tlahn Warra` headwaters); **Kimr** mammoth-hunters from the Labyrinth and **Tungang / Fellgang** toolmakers quarry surgical-grade black and mahogany obsidian cores here — the premier non-metallic cutting commodity of the southwestern highland trade web.
+
+### 11.3 Station 8 as built (2026-11-16)
+
+`python3 build.py --station glass` (`dist/firebliss-glass.html`, `stations/glass/`). Built on this branch's model, which does **not** carry the
+domes: scale model 5.1 edit 2 (`d6c00c3e0`, the Firebliss Patera and its domes) is only on `origin/claude/firebliss-patera-domes`, not merged
+(its `edit_512.py` clashes by number with this branch's own edit 512, and it turns the Great Firebliss Vale, which stations 1 and 2 stand on, into
+the patera's lava lake). So the page raises **South Glass** itself on today's ground, with edit 2's record for it: its middle 175,1335, 14 km
+across, its top flat at **5,053 m** (`44y-host-glass.js`, `GLASS`). Where the spec and the model disagree the model wins:
+
+- **Heights and air.** The spec's moat at 2,890 m, top at 3,290 m and 1.11-1.16 atm are not this spot's. The ground here is 4,180-4,560 m (ET,
+  -7.7 °C, 584 mm), so the moat lies at ~4,210-4,250 m (0.94 atm) and the top at 5,053 m (0.85 atm). The wall is ~800 m from the moat to the
+  top on the page (edit 2's 550 m is over its median ground of 4,503 m; the moat on the south-east is lower): a ~65° glass wall of 190-420 m
+  (the lobe's) over an autobreccia apron at 36°. The spec's "380 m wall" is the cliff part.
+- **The framing.** The page stands on the south-east margin; the plan's camera "looking NNE up the wall with Mons' plume on the skyline" cannot
+  have both from one spot (a 14 km dome hides a 110° sector of sky from its moat), so it is two views: *South Glass from the moat* (north-west up
+  the wall) and *Mons over the Glass* (north-north-east along its east flank, Mons' plume in the sky past the crest's end). Golden hour is the
+  clock's (the page loads at 11:00, the owner's rule); the views hold at any hour.
+- **What is drawn.** The top with its swell, concentric pressure ridges (ogives) and pumice in their troughs, glass carapace (`stone.obsidian`,
+  low roughness: the sheen); obsidian spines along the crest and broken carapace blocks on the outer top; the wall painted with KSTRATA's
+  `obsidian-pancake` beds (`84s`: black and mahogany obsidian, rhyodacite, perlite, pumice partings; a gentle fold); the apron's glass and perlite
+  blocks; one slumped lobe (bearing 110°) as the way up, cairned, a horn cairn on its lip; four radial cracks through the apron steaming at their
+  feet (the geyser kit's fumaroles, one acid patch of altered perlite and sulphur, two warm pools at the basal contact with their mats and a
+  sinter apron), the ground warm along them (KTHERM; the snow bare in strips); two gas hollows in the moat; Copper Glacier's cold flora on the
+  moat, thicker on the warm ground; a **Kimr knapping camp** on a dry pumice bench (core/camp's `kimr-hunt`), five knapping floors round it
+  (flakes, blades, spent cores, hammerstones), two aurochs-horn cairns, the **quarry** at the apron's foot below the camp, the Kimr trail up from
+  the Labyrinth.
+- **Not drawn.** The spec's *outland-tuff* and *tibasalt* under the dome (the beds under the apron are covered; the moat is ash), the warm
+  springs' 35-68 °C as numbers (the geyser kit's pool temperatures stand for them), an obsidian resource node (`kits/resources` has no obsidian
+  kind yet: section 8, "obsidian (*proposed*)"), the other four Glasses (out of the far field's 14 km reach).
+

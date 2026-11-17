@@ -47,3 +47,25 @@ Open items are `- [ ]`; build.py counts them.
 - [ ] **The flood's period** is a page's (90 minutes), not the range's (a lahar every few years): it shows the front; the world clock
   will set the real one.
 - [ ] **Shadows** are off at load (`?shadow=1`): only the kin pines and tree ferns cast. Not measured on this kit yet.
+
+## Station 8, South Glass (2026-11-16)
+
+- [ ] **The GPU verify is owed** (`KRATOR_GL=gpu python3 verify.py dist/firebliss-glass.html --assert --all-views` on the owner's machine). The
+  session that built it had no GPU: what ran on SwiftShader is in the commit message.
+- [ ] **The dome is not on this branch's model.** Scale model 5.1 edit 2 (`d6c00c3e0`, the patera and the ten domes) is only on
+  `origin/claude/firebliss-patera-domes`; the page raises South Glass on today's ground from edit 2's record (`44y`: middle 175,1335, 14 km, top
+  5,053 m). **For the scale-model queue:** when edit 2 (or Gemini's reshaping, which keeps a dome here) lands, `GLASS.bench` must read the model's
+  ground without the dome's cells (or take the model's dome and sharpen only its wall), else the dome is raised twice; and the moat's pit
+  (edit 2: 23 to 47 pit cells, a dome-dammed pond) would want a water level on the model if the owner wants a pond in the moat.
+- [ ] **The spec's numbers are not the model's** (PLAN.md section 11.3): the spec's moat 2,890 m, top 3,290 m, 1.11-1.16 atm and Dfc/Cfb; here
+  ~4,220 m, 5,053 m, 0.94 / 0.85 atm, ET. The wall is ~800 m to the moat (the spec's 380 m is its cliff part). The model was followed.
+- [ ] **A texture is a stand-in:** the wall takes `rock.basalt.flowbanded` under KSTRATA's beds (the gap `rock.rhyolite.flowbanded`, entered in
+  `core/materials/PROMPTS-NEEDED.md` on the patera branch, not on this one); the carapace takes `stone.obsidian` (the kit's solids' set) as a
+  ground layer, the talus `ground.cinder` greyed.
+- [ ] **The two views stand for the spec's one** (PLAN.md section 11.3): Mons' plume and the wall cannot share one frame from the moat.
+  Golden hour is the clock's, not the load hour.
+- [ ] **The ground's slots.** The dome's glass and pumice ride the ground's ice and meadow attributes (`SITE.groundAttr`): the ground already has 16
+  vertex attributes, so a new one is not safe. A station with a tarn or ice that also wants them needs another way (a packed attribute).
+- [ ] **Not drawn:** the tuff and tibasalt under the dome, an obsidian resource node (no such kind in `kits/resources`), the other four Glasses
+  (past the far field).
+
