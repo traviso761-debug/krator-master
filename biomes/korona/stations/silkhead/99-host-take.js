@@ -112,7 +112,7 @@ KHOST.take({build:'korona',title:'Krator biome — Korona: Silkhead Gorge and th
  layers:{'hazards':KTAGS.hazardLayer(),'carnivores':{match:o=>{if(!(o.isInstancedMesh&&o.userData&&o.userData.biome))return false;const it=(o.name||'').replace(/^biome:/,''),P=KORONA.plantOfItem(it)||NECANYONS.plantOfItem(it);return !!(P&&P.tags.trap);}},
   'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'the rock':{match:o=>!!(o.userData&&o.userData.rock)},'silk and liana':{match:o=>!!(o.userData&&o.userData.silk)},'sky':{objects:()=>[SKY.mesh]}},
  exporters:{biome:()=>BIO.export(),layout:()=>Object.assign(NECANYONS.records(),{carvings:CARVINGS,pools:STAGE.pools,air:STAGE.air,lip:{c:LIP.c,n:LIP.n,floorY:LIP.floorY,top:LIP.top},
-  falls:SILK.falls,spans:SILK.spans,ladders:SILK.ladders,winch:SILK.winch,vents:SILK.vents})},
+  dome:{x:DOME.x,z:DOME.z,r:DOME.r,H:DOME.H,kind:DOME.kind,rock:DOME.rock,near:DOME.near},falls:SILK.falls,spans:SILK.spans,ladders:SILK.ladders,winch:SILK.winch,vents:SILK.vents})},
  budget:BUDGET,types:()=>BIO.stats,
  api:{hostChecks,hostNegatives,
   get totals(){const t=BIO.totals();return {tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},

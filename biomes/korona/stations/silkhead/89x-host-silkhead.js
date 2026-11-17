@@ -6,7 +6,7 @@
 //                  bench below (fit: true), the last into the trench lake; spray from core/atmos's particles at each foot
 //   THE SPANS      core/biome KSPAN (45-core-span.js): catenaries between the drawn rims of the spur and the Silkhead across the
 //                  gorge: two wild-silk basket spans, a braided liana ladder bridge, a liana ladder hung down the Silkhead's face to
-//                  the col, and a silk-winch on the spur's tip lowering its line to the bench 560 m down
+//                  the col, and a silk-winch on the spur's north flank lowering its line to the bench below
 //   THE DOME       its walls and top darkened to the glass (the lateral obsidian-pancake stack, 45, shades its beds); the steam over
 //                  its fissures and two ring-fault vents by the pools (core/atmos fx/89-atmos-fx-plumes.js)
 //   THE HAZARDS    core/hazard records: the drop at the ledge's edge and under each span, the heat and gas at the vents
@@ -24,7 +24,8 @@ const SILK=(function(){const out={falls:[],spans:[],ladders:[],winch:null,lip:nu
    sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying float vOcc;').replace('#include <map_fragment>',
     (ROCK_STRATA?'diffuseColor.rgb*=strataColor(vSWP,vSWN)':'diffuseColor.rgb*=vec3('+[base.r,base.g,base.b].map(v=>v.toFixed(4)).join(',')+')')+'*(0.3+0.7*vOcc);');};
   m.customProgramCacheKey=()=>'korona-silkhead-lip';
-  REGISTER({name:LIP.Q.name,key:'carve.alcove',kind:'alcove',x:LIP.c[0],z:LIP.c[1],y:LIP.floorY,r:LIP.Q.hw+2,h:LIP.top-LIP.floorY});
+  /* the volume round the hood: from its mouth at the ledge's edge back to the cap's face (the mesh's box centre is half way in) */
+  {const D=LIP.Q.depth;REGISTER({name:LIP.Q.name,key:'carve.alcove',kind:'alcove',x:LIP.c[0]-LIP.n[0]*D/2,z:LIP.c[1]-LIP.n[1]*D/2,y:LIP.floorY,r:Math.max(LIP.Q.hw,D/2)+LIP.Q.margin+2,h:LIP.top-LIP.floorY});}
   const M=KCARVE.mesh(m,{sun:SUN_POS,ao:true,gridNormals:true});
   M.forEach(me=>{me.userData.host=true;me.userData.rock=true;me.userData.inspectLabel=LIP.Q.name;scene.add(me);});out.lip={meshes:M.length,stats:LIP.Q.stats};_mark('lip');
   /* the drop at the ledge's edge, in front of the lip's mouth */
@@ -103,8 +104,8 @@ const SILK=(function(){const out={falls:[],spans:[],ladders:[],winch:null,lip:nu
  basketSpan('A wild-silk basket span (the low road: from the ledge to a peg on the Silkhead\'s face)',ledgeAnchor(SPUR,1010,true,8),faceAnchor(TOWER,1010,false,LEDGE_Y-14,.2),12,.7,.8,'ledge','face');
  ladderBridge('A braided liana ladder bridge (the cliff clans\' crossing)',rimAnchor(SPUR,760,true),rimAnchor(TOWER,760,false),20,.32);
  hangLadder('A liana ladder (down the Silkhead\'s face to the col, 600 m)',TOWER,720,false,COL_Y+.5,RIM_Y-.3);
- // THE SILK-WINCH on the spur's tip: a timber frame on the ledge, its jib out over the edge, the line down to the bench 560 m below
- {const b=topBedOfTier(SPUR,3),u=1500,a=Math.atan2(S0[1]+u*AX[1]-b.cz,S0[0]+u*AX[0]-b.cx),w=K.wall(SPUR,b,a,1),y=b.y+b.h,n=[w.nx,0,w.nz],up=[0,1,0],sd=[-w.nz,0,w.nx];
+ // THE SILK-WINCH on the spur's north flank by its tip (the lip has the tip): a timber frame on the ledge, its jib out over the edge, the line down to the bench 560 m below
+ {const b=topBedOfTier(SPUR,3),u=1380,a=Math.atan2(S0[1]+u*AX[1]-300*PP[1]-b.cz,S0[0]+u*AX[0]-300*PP[0]-b.cx),w=K.wall(SPUR,b,a,1),y=b.y+b.h,n=[w.nx,0,w.nz],up=[0,1,0],sd=[-w.nz,0,w.nx];
   const at=d=>[w.x-w.nx*d,y,w.z-w.nz*d],base=at(4),tip=[w.x+w.nx*3.2,y+5.6,w.z+w.nz*3.2];
   REGISTER({name:'A silk-winch station (the Hum\'s hoist: reagents, lichen dyes and obsidian blades come up from the trench)',key:'winch',kind:'winch',x:base[0],z:base[2],y,r:4.5,h:7,culture:'korona-tepui'});
   [[-1.4],[1.4]].forEach(([s])=>{const f=shift(base,sd.map(v=>v*s));box(geo.timber,shift(f,[0,2.6,0]),up,n,sd,5.2,.28,.28);});
@@ -113,9 +114,10 @@ const SILK=(function(){const out={falls:[],spans:[],ladders:[],winch:null,lip:nu
   {const j0=shift(base,[0,5.1,0]),d=[tip[0]-j0[0],tip[1]-j0[1],tip[2]-j0[2]],l=Math.hypot(...d);box(geo.timber,[(j0[0]+tip[0])/2,(j0[1]+tip[1])/2,(j0[2]+tip[2])/2],d,up,sd,l,.24,.24);}
   /* the line: straight down from the jib's sheave to the bench (the t2 top) under the spur's tip, a load half way */
   const fb=topBedOfTier(SPUR,2),foot=[tip[0],fb.y+fb.h,tip[2]],fy=terrainH(tip[0],tip[2]);
-  tube(geo.silk,[tip,[tip[0],(tip[1]+Math.max(fy,foot[1]))/2,tip[2]],[tip[0],Math.max(fy,foot[1])+.4,tip[2]]],.05,4);
-  box(geo.basket,[tip[0],(tip[1]+foot[1])/2+60,tip[2]],up,n,sd,1.4,1.1,1.1);
-  out.winch={at:base,jib:tip,lineFoot:[tip[0],Math.max(fy,foot[1]),tip[2]],groundBelowJib:fy,ledge:y};
+  /* to the ground under the jib, whatever it is (the bench, or the floor if the jib stands over the open drop) */
+  tube(geo.silk,[tip,[tip[0],(tip[1]+fy)/2,tip[2]],[tip[0],fy+.4,tip[2]]],.05,4);
+  box(geo.basket,[tip[0],Math.min(tip[1]-40,(tip[1]+fy)/2+60),tip[2]],up,n,sd,1.4,1.1,1.1);
+  out.winch={at:base,jib:tip,lineFoot:[tip[0],fy,tip[2]],groundBelowJib:fy,ledge:y,bench:foot[1]};
   hz({name:'The winch\'s edge (the jib over the drop)',key:'drop',x:tip[0],z:tip[2],y:fb.y+fb.h,r:6,h:y-fb.y-fb.h+6},'fall',1,{type:'cyl',r:6,h:y-fb.y-fb.h+6});}
  // the merged meshes
  const MATS={silk:new THREE.MeshStandardMaterial({color:0xe9e1c8,roughness:.75,metalness:0}),liana:new THREE.MeshStandardMaterial({color:0x5a5236,roughness:.9,metalness:0}),

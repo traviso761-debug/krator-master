@@ -187,10 +187,15 @@ Open items are `- [ ]`; `build.py` counts them. Close an item when the fix is in
       spec's 4,800 m. For the model: either raise the central table round 1096,526 (px 1088-1098 by 516-528) to about 3,600 m, which makes it
       the high cold country the hoar table's tribes live in, or keep the model and read the page as a vertical exaggeration of 2,050 m.
       The owner's call; the page does not change either way until the map does.
-- [ ] **Station 7: Korona's domes (scale model 5.1 edit 2, `d6c00c3e0`) are not on this line's model.** The brief said they were; they live
-      on `claude/firebliss-patera-domes`, unmerged (main's edit 2 is Godshearth's vents; `tools/scale-model/README.md`). 1179,578 reads -86 m
-      with no dome. The page's dome is its own, 1.3 km across and 150 m high on the trench floor below the rim (the spec's "4.7 km below"),
-      not the model's dome 4 (16 km, 196 km away). When the domes land, dome 4 wants its own station (or the far field's landmark).
+- [ ] **Station 7: Korona's domes are not on this line's model yet.** Built on the integration line, whose model has none (edit 2's
+      `d6c00c3e0` lives on `claude/firebliss-patera-domes`; 1179,578 reads -86 m here). `origin/main` now has them as **scale model 5.1 edit 8**
+      (`77f94b97d`, `tools/scale-model/edit_518.py`, `DATA.domes`): the same five Korona domes, 12-16 km across and 522-650 m high, the nearest
+      to this station dome 2 (NE trench, 1131,494, 95 km north-east), dome 4 (SE moat, 1179,578) 196 km south-east, and its 189 changed
+      cells all round the domes, none near 1096,526 (the station's ground is the same before and after). The page's dome is its own, 1.3 km
+      on the trench floor below the rim (the spec's "4.7 km below"), with the model records' kind and rock (`pancake_dome`,
+      `rhyolite_obsidian`) and `near` naming dome 2 (`45`, `DOME`; the layout export's `dome`). This branch was not merged with main here
+      (2026-11-17: 232 conflicted files between the integration line and main); when it is, nothing on the page moves. Dome 4 wants its own
+      station (16 km: the spec's "paired" view) or a far-field landmark the open world draws.
 - [ ] **Station 7: what is approximate.** (1) The fog belt is the only "cloud cascade": core/atmos draws no cloud spilling over a lip
       (a tablecloth cloud would be a core/atmos effect: none written). (2) The water between the veils on the benches is not drawn (each
       curtain lands in its plunge disc and the next leaves the bench's edge 24 m out); no stream runs in the gorge's col. (3) The dome's glass

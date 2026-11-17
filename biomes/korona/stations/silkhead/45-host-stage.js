@@ -66,7 +66,12 @@ const VEIL=(function(){const B=plan('tower',T0[0],T0[1],7103),b=B.beds[0],x=T0[0
  const px=x-PP[0]*900,pz=z-PP[1]*900,a=Math.atan2(pz-T0[1],px-T0[0]),R=KSTACKS.footR(b,a);
  return{a,foot:[T0[0]+Math.cos(a)*R,T0[1]+Math.sin(a)*R],n:[Math.cos(a),Math.sin(a)]};})();
 // THE TRENCH LAKE at the veils' foot (endorheic: the cascade's water stays in the trench), and THE BLACK PITCHER POOLS by the dome
-const DOME={x:820,z:420,r:640,H:150,name:'The obsidian pancake dome (a small one, 1.3 km: glass-skinned rhyolite on the trench floor)'};
+// THE DOME against the model's (scale model 5.1 edit 8, tools/scale-model/edit_518.report.json on main, DATA.domes): Korona's five domes are 12-16 km
+// across and 520-650 m high, the nearest to this station dome 2 (NE trench, 1131,494) 95 km to the north-east, dome 4 (SE moat, 1179,578)
+// 196 km south-east; none is on this page's ground. This one is the station's own, below the model's 2 km cell: the same kind and rock as the
+// model's records (pancake_dome, rhyolite_obsidian), its record naming the nearest of them (`near`)
+const DOME={x:820,z:420,r:640,H:150,kind:'pancake_dome',rock:'rhyolite_obsidian',near:{id:'dome_ko_ne_trench',px:[1131,494],km:95},
+ name:'The obsidian pancake dome (a small one, 1.3 km: glass-skinned rhyolite on the trench floor; the model\'s Korona domes are 12-16 km and 95 km off)'};
 const LAKE={x:VEIL.foot[0]+VEIL.n[0]*200,z:VEIL.foot[1]+VEIL.n[1]*200,r:230,bed:false,name:'The trench lake (the veils\' water, endorheic)'};
 const POOLS=(function(){const o=[LAKE];
  for(let i=0;i<9&&o.length<7;i++){const r=KRAND.stream(KRAND.hash(7301,i,7)),a=r.range(-.9,2.2),d=DOME.r*r.range(1.12,1.45),pr=r.range(22,48),x=DOME.x+Math.cos(a)*d,z=DOME.z+Math.sin(a)*d;
@@ -104,12 +109,12 @@ if(new URLSearchParams(location.search).get('reject')!=='0'){const _at=KSTACKS.a
   if(Math.abs(dx)>B.R||Math.abs(dz)>B.R)return false;return Math.hypot(dx,dz)<K.footR(b,Math.atan2(dz,dx))*1.03+30;};
  KSTACKS.at=function(list,x,z){let L=list;for(let i=0;i<list.length;i++){const B=list[i];if(OWN.has(B)&&!near(B,x,z)){L=list.filter(q=>!OWN.has(q)||near(q,x,z));break;}}return L.length?_at(L,x,z):null;};}
 const capBed=B=>B.beds[B.beds.length-1];
-// THE LIP (core/terrain KCARVE, 36-core-carve.js): an alcove carved through the spur's ledge near its tip, its hood the cap's rock run out over the
-// ledge to the drop, its mouth on the ledge's very edge to the south-south-east (a camera inside the ledge would see only the ledge: the eye has
+// THE LIP (core/terrain KCARVE, 36-core-carve.js): an alcove carved through the ledge at the spur's tip, its hood the cap's rock run out over the
+// ledge to the drop, its mouth on the ledge's very edge to the east-south-east, over the trench and the dome (a camera inside the ledge would see only the ledge: the eye has
 // to stand at the edge for the 4.7 km to open under it). The ledge's edge is found along the hood's axis (KSTACKS.at: where the ledge's top
 // ends); the void runs from the mouth back to 1.5 m short of the cap's face. The patch's ground: the hood's top (the cap's) behind its mouth,
 // nothing in front (the drop); its open foot (the grid's floor, 1.5 m under the void's) is inside the ledge's rock
-const LIP=(function(){const cb=capBed(SPUR),u=1350,s=200,px=S0[0]+u*AX[0]+s*PP[0],pz=S0[1]+u*AX[1]+s*PP[1],a=Math.atan2(pz-cb.cz,px-cb.cx);
+const LIP=(function(){const cb=capBed(SPUR),u=1700,s=0,px=S0[0]+u*AX[0]+s*PP[0],pz=S0[1]+u*AX[1]+s*PP[1],a=Math.atan2(pz-cb.cz,px-cb.cx);
  const w=KSTACKS.wall(SPUR,cb,a,0),n=[w.nx,w.nz],top=cb.y+cb.h,ledge=cb.y,flY=ledge-.2;
  let edge=0;for(let t=1;t<90;t+=.25){const q=KSTACKS.at(ROCK,w.x+n[0]*t,w.z+n[1]*t);if(!q||q.top<ledge-3){edge=t;break;}}
  const D=Math.max(8,edge-2.5-1.5),HW=12,H=9,c=[w.x+n[0]*(edge-2.5),w.z+n[1]*(edge-2.5)];
