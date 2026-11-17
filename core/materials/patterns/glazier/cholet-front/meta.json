@@ -1,0 +1,61 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.183,
+    2.727
+   ],
+   "seam_before": [
+    2.748,
+    4.105
+   ],
+   "source_size": [
+    2172,
+    724
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.15,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 0.3,
+   "pattern": false,
+   "rough": 0.8,
+   "rough_var": 0.1,
+   "seam_axes": "x",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "paint",
+  "id": "patterns/glazier/cholet-front",
+  "metal": 0,
+  "roughness": 0.8,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "patterns_glazier_cholet-front.png",
+  "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d13d-eb46-7580-9927-799af91e375b)",
+  "licence": "generated for this project by its owner",
+  "original_title": "exec-6714dad5-500e-485a-bee4-18f84a20833d.png",
+  "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '43. The Tungang kit (`kits/tungang`, 2026-11-11)' on claude/kind-cori-9c4452 (id patterns/glazier/cholet-front)",
+  "sha1": "c81a1b878e62cfb08e312353ebcfd86e89daee31"
+ }
+}

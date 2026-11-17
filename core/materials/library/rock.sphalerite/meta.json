@@ -1,0 +1,61 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.21,
+    1.198
+   ],
+   "seam_before": [
+    1.384,
+    1.52
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0.6,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.85,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "rock",
+  "id": "rock.sphalerite",
+  "metal": 0,
+  "roughness": 0.85,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "rock.sphalerite.png",
+  "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d138-6ca7-7813-902c-2d589414766f)",
+  "licence": "generated for this project by its owner",
+  "original_title": "exec-da7fe94d-2688-4aba-ae32-25b509908fd8.png",
+  "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '51. The Rift battery (`biomes/galvanic`, 2026-11-11)' on origin/main (id rock.sphalerite)",
+  "sha1": "84730384eacdf98a725703c53de5874b943b5a7b"
+ }
+}

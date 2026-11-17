@@ -1,0 +1,61 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.135,
+    1.191
+   ],
+   "seam_before": [
+    2.351,
+    2.924
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0.0,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.65,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "metal",
+  "id": "metal.plate.riveted.painted",
+  "metal": 0.3,
+  "roughness": 0.65,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "metal.plate.riveted.painted.png",
+  "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d13a-f5e6-74e3-8cbc-12854e404dc4)",
+  "licence": "generated for this project by its owner",
+  "original_title": "exec-73ed0e38-bfdf-4a9b-85c6-f59b02bee15a.png",
+  "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '41. The Rift line (`biomes/line`, the owner's go-ahead 2026-11-11)' on claude/awesome-varahamihira-66a852 (id metal.plate.riveted.painted)",
+  "sha1": "a3c17843eaa4ebfe06cfcdac56e48cd3e4588dbf"
+ }
+}
