@@ -1,0 +1,24 @@
+{
+ "targets": {
+  "fort": "strongwall.html"
+ },
+ "external": [
+  "settlements/strongwall/gen/69w-sw-ground.js",
+  "kits/xanadu/src/80f-xa-fort-data.js",
+  "kits/xanadu/src/80g-xa-fort.js",
+  "core/terrain/37c-core-rubble.js",
+  "core/ruins/20-core-ruins.js",
+  "core/ruins/21-core-ruins-host.js"
+ ],
+ "deterministic": [
+  "69w-sw-ground.js",
+  "80f-xa-fort-data.js",
+  "37c-core-rubble.js",
+  "20-core-ruins.js",
+  "21-core-ruins-host.js",
+  "89zs-sw-site.js",
+  "90q-sw-world.js",
+  "90r-sw-fort.js",
+  "91z-views.js"
+ ]
+}
