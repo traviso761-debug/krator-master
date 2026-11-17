@@ -104,7 +104,7 @@
     "kits/catalog/krator-master-furniture-generic.js": "990b05b8404c67ab960f6649babc8143c738ea600a04c0c22564296fa7786ea4",
     "kits/catalog/krator-master-furniture-iziz.js": "99d4c2fe482800faefb309920d6e10dcf00e7d6f1f8936a203b2d871e2f1dd6e",
     "kits/catalog/krator-master-furniture-scrap.js": "0ad3a75771ab03e7b22e7f558b601ac9e6208418e49275625d199bc44bde720c",
-    "kits/catalog/krator-master-furniture-xanadu.js": "f8a06b00f61142a2a4ae7d4e85921bd862998d99765ea43c927371261d0e0b79",
+    "kits/catalog/krator-master-furniture-xanadu.js": "49da3bad39a0aaf22f7f969a1c3636a45fe5812337bae56c623a09d99ef8b24c",
     "kits/catalog/tex/abalone.albedo.webp": "0862814768d6644cb86159bc018f874eb8d17b3d037f59e50e5977d51e080ea1",
     "kits/catalog/tex/abaloneSoft.albedo.webp": "0862814768d6644cb86159bc018f874eb8d17b3d037f59e50e5977d51e080ea1",
     "kits/catalog/tex/ash.albedo.webp": "3432cd6a581584b157c3595d58468caf4eb114f8a184dde8d3afc1a7c931db4d",
@@ -436,23 +436,23 @@
    },
    "outputs": {
     "settlements/xanadu/VENDOR.json": "ed46582fb92d0f1c1c13a0cb7b6fcf37196d84c1499934f72636be1ce164f158",
-    "settlements/xanadu/build-manifest-erewhon.json": "4bf64bd6d9b1ab80bf926b496b45f0fa70e55ab74867b4295d47bdc123ee67cd",
-    "settlements/xanadu/build-manifest-scrap.json": "756021acef8d8e93c26f57150a2b3a1a00ee3b45f42ddf71bd67ed924a1ed00b",
-    "settlements/xanadu/build-manifest-xanadu.json": "6664e4f02a48f95ac105f951f72faaf482f605235ff7c8ae04851197930db563",
-    "settlements/xanadu/dist/erewhon.html": "6fa6d2c17b8c227128fd1b17b0eec8f3fd3f8a61dbf433ad4cdfaee71732c3b9",
-    "settlements/xanadu/dist/xanadu-scrap.html": "734cbe1f9382c2fe92f13601fa4e933cdbf8cb8ffaef44537ce71d7580f84d3b",
-    "settlements/xanadu/dist/xanadu.html": "d4035fe4fcd30bc390ff98502be802ba480d6601ce7d62af32ff018262544c75",
+    "settlements/xanadu/build-manifest-erewhon.json": "53bd793a458b62a5d3fb45b4ed82f12fe286d59fa055bbf3b1823f545e87d886",
+    "settlements/xanadu/build-manifest-scrap.json": "2fe835e26026cd22ead2fcc17d44bf90e649a4dd4a6416f4d1f75bfa090e60dc",
+    "settlements/xanadu/build-manifest-xanadu.json": "0d4a9e455d0e6251d8abcfac424e6f44e876074b3396d3dd325ef4c9fa7c8ca6",
+    "settlements/xanadu/dist/erewhon.html": "24d4195fd3c8b143e53bef360a297de0575f67ca05fe774a2f2d15d856437c55",
+    "settlements/xanadu/dist/xanadu-scrap.html": "35ae445c013b41f67abd63aad049555f10af673522b823bbaa933a72005ba63c",
+    "settlements/xanadu/dist/xanadu.html": "e7f126b037dc04e3988847c990ae071283bbd8ace087be4994677d83662da281",
     "settlements/xanadu/dist/xanadu.tex.xanadu-2.js": "be1d57f174e08cf71b5511aff65a313eec8edc29e057c48d027e9b60630f3ab5",
     "settlements/xanadu/dist/xanadu.tex.xanadu.js": "3fe87059ee305d523fa5026dddfd91123354e88d5839097de9df44137500f2a4"
    },
    "outputs_raw": {
     "settlements/xanadu/VENDOR.json": "b1fad8bfd5cb2f141d50db7274657b16776136800f5366c81529c4243e605402",
-    "settlements/xanadu/build-manifest-erewhon.json": "ee95d3bcbf7c883161c5326c0d29d4521130bc64b1ec3f049f992f00af7ef747",
-    "settlements/xanadu/build-manifest-scrap.json": "9cb0253dfefa3a98b75697dd8feb40acaa20faee3692d5643185ddb46b85e71c",
-    "settlements/xanadu/build-manifest-xanadu.json": "237e24eb004f4af114f04247a7b7f5ec7ac6451de46a4041835f678dce217dfc",
-    "settlements/xanadu/dist/erewhon.html": "6fa6d2c17b8c227128fd1b17b0eec8f3fd3f8a61dbf433ad4cdfaee71732c3b9",
-    "settlements/xanadu/dist/xanadu-scrap.html": "734cbe1f9382c2fe92f13601fa4e933cdbf8cb8ffaef44537ce71d7580f84d3b",
-    "settlements/xanadu/dist/xanadu.html": "d4035fe4fcd30bc390ff98502be802ba480d6601ce7d62af32ff018262544c75",
+    "settlements/xanadu/build-manifest-erewhon.json": "987754eecdd5422744c751ebf6f5877b521c5aecf718c67fcf5e9bb5e9051c9d",
+    "settlements/xanadu/build-manifest-scrap.json": "60ceb43a27c0d6abcea8387d28a43ca677b2767ef51ba4160032bd1692a0b1db",
+    "settlements/xanadu/build-manifest-xanadu.json": "1bae16a56817f8a06bdd56d19cd8234b314e9d4bc5afade714ea6b725679c9bc",
+    "settlements/xanadu/dist/erewhon.html": "24d4195fd3c8b143e53bef360a297de0575f67ca05fe774a2f2d15d856437c55",
+    "settlements/xanadu/dist/xanadu-scrap.html": "35ae445c013b41f67abd63aad049555f10af673522b823bbaa933a72005ba63c",
+    "settlements/xanadu/dist/xanadu.html": "e7f126b037dc04e3988847c990ae071283bbd8ace087be4994677d83662da281",
     "settlements/xanadu/dist/xanadu.tex.xanadu-2.js": "be1d57f174e08cf71b5511aff65a313eec8edc29e057c48d027e9b60630f3ab5",
     "settlements/xanadu/dist/xanadu.tex.xanadu.js": "3fe87059ee305d523fa5026dddfd91123354e88d5839097de9df44137500f2a4"
    }
@@ -550,7 +550,7 @@
     "kits/catalog/krator-master-furniture-generic.js": "990b05b8404c67ab960f6649babc8143c738ea600a04c0c22564296fa7786ea4",
     "kits/catalog/krator-master-furniture-iziz.js": "99d4c2fe482800faefb309920d6e10dcf00e7d6f1f8936a203b2d871e2f1dd6e",
     "kits/catalog/krator-master-furniture-scrap.js": "0ad3a75771ab03e7b22e7f558b601ac9e6208418e49275625d199bc44bde720c",
-    "kits/catalog/krator-master-furniture-xanadu.js": "f8a06b00f61142a2a4ae7d4e85921bd862998d99765ea43c927371261d0e0b79",
+    "kits/catalog/krator-master-furniture-xanadu.js": "49da3bad39a0aaf22f7f969a1c3636a45fe5812337bae56c623a09d99ef8b24c",
     "kits/catalog/tex/abalone.albedo.webp": "0862814768d6644cb86159bc018f874eb8d17b3d037f59e50e5977d51e080ea1",
     "kits/catalog/tex/abaloneSoft.albedo.webp": "0862814768d6644cb86159bc018f874eb8d17b3d037f59e50e5977d51e080ea1",
     "kits/catalog/tex/ash.albedo.webp": "3432cd6a581584b157c3595d58468caf4eb114f8a184dde8d3afc1a7c931db4d",
@@ -877,15 +877,15 @@
    },
    "outputs": {
     "settlements/xanadu/VENDOR.json": "ed46582fb92d0f1c1c13a0cb7b6fcf37196d84c1499934f72636be1ce164f158",
-    "settlements/xanadu/build-manifest-erewhon.json": "4bf64bd6d9b1ab80bf926b496b45f0fa70e55ab74867b4295d47bdc123ee67cd",
-    "settlements/xanadu/dist/erewhon.html": "6fa6d2c17b8c227128fd1b17b0eec8f3fd3f8a61dbf433ad4cdfaee71732c3b9",
+    "settlements/xanadu/build-manifest-erewhon.json": "53bd793a458b62a5d3fb45b4ed82f12fe286d59fa055bbf3b1823f545e87d886",
+    "settlements/xanadu/dist/erewhon.html": "24d4195fd3c8b143e53bef360a297de0575f67ca05fe774a2f2d15d856437c55",
     "settlements/xanadu/dist/xanadu.tex.xanadu-2.js": "be1d57f174e08cf71b5511aff65a313eec8edc29e057c48d027e9b60630f3ab5",
     "settlements/xanadu/dist/xanadu.tex.xanadu.js": "3fe87059ee305d523fa5026dddfd91123354e88d5839097de9df44137500f2a4"
    },
    "outputs_raw": {
     "settlements/xanadu/VENDOR.json": "b1fad8bfd5cb2f141d50db7274657b16776136800f5366c81529c4243e605402",
-    "settlements/xanadu/build-manifest-erewhon.json": "ee95d3bcbf7c883161c5326c0d29d4521130bc64b1ec3f049f992f00af7ef747",
-    "settlements/xanadu/dist/erewhon.html": "6fa6d2c17b8c227128fd1b17b0eec8f3fd3f8a61dbf433ad4cdfaee71732c3b9",
+    "settlements/xanadu/build-manifest-erewhon.json": "987754eecdd5422744c751ebf6f5877b521c5aecf718c67fcf5e9bb5e9051c9d",
+    "settlements/xanadu/dist/erewhon.html": "24d4195fd3c8b143e53bef360a297de0575f67ca05fe774a2f2d15d856437c55",
     "settlements/xanadu/dist/xanadu.tex.xanadu-2.js": "be1d57f174e08cf71b5511aff65a313eec8edc29e057c48d027e9b60630f3ab5",
     "settlements/xanadu/dist/xanadu.tex.xanadu.js": "3fe87059ee305d523fa5026dddfd91123354e88d5839097de9df44137500f2a4"
    }
@@ -990,7 +990,7 @@
     "kits/catalog/krator-master-furniture-generic.js": "990b05b8404c67ab960f6649babc8143c738ea600a04c0c22564296fa7786ea4",
     "kits/catalog/krator-master-furniture-iziz.js": "99d4c2fe482800faefb309920d6e10dcf00e7d6f1f8936a203b2d871e2f1dd6e",
     "kits/catalog/krator-master-furniture-scrap.js": "0ad3a75771ab03e7b22e7f558b601ac9e6208418e49275625d199bc44bde720c",
-    "kits/catalog/krator-master-furniture-xanadu.js": "f8a06b00f61142a2a4ae7d4e85921bd862998d99765ea43c927371261d0e0b79",
+    "kits/catalog/krator-master-furniture-xanadu.js": "49da3bad39a0aaf22f7f969a1c3636a45fe5812337bae56c623a09d99ef8b24c",
     "kits/catalog/tex/abalone.albedo.webp": "0862814768d6644cb86159bc018f874eb8d17b3d037f59e50e5977d51e080ea1",
     "kits/catalog/tex/abaloneSoft.albedo.webp": "0862814768d6644cb86159bc018f874eb8d17b3d037f59e50e5977d51e080ea1",
     "kits/catalog/tex/ash.albedo.webp": "3432cd6a581584b157c3595d58468caf4eb114f8a184dde8d3afc1a7c931db4d",
@@ -1297,15 +1297,15 @@
    },
    "outputs": {
     "settlements/xanadu/VENDOR.json": "ed46582fb92d0f1c1c13a0cb7b6fcf37196d84c1499934f72636be1ce164f158",
-    "settlements/xanadu/build-manifest-scrap.json": "756021acef8d8e93c26f57150a2b3a1a00ee3b45f42ddf71bd67ed924a1ed00b",
-    "settlements/xanadu/dist/xanadu-scrap.html": "734cbe1f9382c2fe92f13601fa4e933cdbf8cb8ffaef44537ce71d7580f84d3b",
+    "settlements/xanadu/build-manifest-scrap.json": "2fe835e26026cd22ead2fcc17d44bf90e649a4dd4a6416f4d1f75bfa090e60dc",
+    "settlements/xanadu/dist/xanadu-scrap.html": "35ae445c013b41f67abd63aad049555f10af673522b823bbaa933a72005ba63c",
     "settlements/xanadu/dist/xanadu.tex.xanadu-2.js": "be1d57f174e08cf71b5511aff65a313eec8edc29e057c48d027e9b60630f3ab5",
     "settlements/xanadu/dist/xanadu.tex.xanadu.js": "3fe87059ee305d523fa5026dddfd91123354e88d5839097de9df44137500f2a4"
    },
    "outputs_raw": {
     "settlements/xanadu/VENDOR.json": "b1fad8bfd5cb2f141d50db7274657b16776136800f5366c81529c4243e605402",
-    "settlements/xanadu/build-manifest-scrap.json": "9cb0253dfefa3a98b75697dd8feb40acaa20faee3692d5643185ddb46b85e71c",
-    "settlements/xanadu/dist/xanadu-scrap.html": "734cbe1f9382c2fe92f13601fa4e933cdbf8cb8ffaef44537ce71d7580f84d3b",
+    "settlements/xanadu/build-manifest-scrap.json": "60ceb43a27c0d6abcea8387d28a43ca677b2767ef51ba4160032bd1692a0b1db",
+    "settlements/xanadu/dist/xanadu-scrap.html": "35ae445c013b41f67abd63aad049555f10af673522b823bbaa933a72005ba63c",
     "settlements/xanadu/dist/xanadu.tex.xanadu-2.js": "be1d57f174e08cf71b5511aff65a313eec8edc29e057c48d027e9b60630f3ab5",
     "settlements/xanadu/dist/xanadu.tex.xanadu.js": "3fe87059ee305d523fa5026dddfd91123354e88d5839097de9df44137500f2a4"
    }
@@ -1410,7 +1410,7 @@
     "kits/catalog/krator-master-furniture-generic.js": "990b05b8404c67ab960f6649babc8143c738ea600a04c0c22564296fa7786ea4",
     "kits/catalog/krator-master-furniture-iziz.js": "99d4c2fe482800faefb309920d6e10dcf00e7d6f1f8936a203b2d871e2f1dd6e",
     "kits/catalog/krator-master-furniture-scrap.js": "0ad3a75771ab03e7b22e7f558b601ac9e6208418e49275625d199bc44bde720c",
-    "kits/catalog/krator-master-furniture-xanadu.js": "f8a06b00f61142a2a4ae7d4e85921bd862998d99765ea43c927371261d0e0b79",
+    "kits/catalog/krator-master-furniture-xanadu.js": "49da3bad39a0aaf22f7f969a1c3636a45fe5812337bae56c623a09d99ef8b24c",
     "kits/catalog/tex/abalone.albedo.webp": "0862814768d6644cb86159bc018f874eb8d17b3d037f59e50e5977d51e080ea1",
     "kits/catalog/tex/abaloneSoft.albedo.webp": "0862814768d6644cb86159bc018f874eb8d17b3d037f59e50e5977d51e080ea1",
     "kits/catalog/tex/ash.albedo.webp": "3432cd6a581584b157c3595d58468caf4eb114f8a184dde8d3afc1a7c931db4d",
@@ -1734,15 +1734,15 @@
    },
    "outputs": {
     "settlements/xanadu/VENDOR.json": "ed46582fb92d0f1c1c13a0cb7b6fcf37196d84c1499934f72636be1ce164f158",
-    "settlements/xanadu/build-manifest-xanadu.json": "6664e4f02a48f95ac105f951f72faaf482f605235ff7c8ae04851197930db563",
-    "settlements/xanadu/dist/xanadu.html": "d4035fe4fcd30bc390ff98502be802ba480d6601ce7d62af32ff018262544c75",
+    "settlements/xanadu/build-manifest-xanadu.json": "0d4a9e455d0e6251d8abcfac424e6f44e876074b3396d3dd325ef4c9fa7c8ca6",
+    "settlements/xanadu/dist/xanadu.html": "e7f126b037dc04e3988847c990ae071283bbd8ace087be4994677d83662da281",
     "settlements/xanadu/dist/xanadu.tex.xanadu-2.js": "be1d57f174e08cf71b5511aff65a313eec8edc29e057c48d027e9b60630f3ab5",
     "settlements/xanadu/dist/xanadu.tex.xanadu.js": "3fe87059ee305d523fa5026dddfd91123354e88d5839097de9df44137500f2a4"
    },
    "outputs_raw": {
     "settlements/xanadu/VENDOR.json": "b1fad8bfd5cb2f141d50db7274657b16776136800f5366c81529c4243e605402",
-    "settlements/xanadu/build-manifest-xanadu.json": "237e24eb004f4af114f04247a7b7f5ec7ac6451de46a4041835f678dce217dfc",
-    "settlements/xanadu/dist/xanadu.html": "d4035fe4fcd30bc390ff98502be802ba480d6601ce7d62af32ff018262544c75",
+    "settlements/xanadu/build-manifest-xanadu.json": "1bae16a56817f8a06bdd56d19cd8234b314e9d4bc5afade714ea6b725679c9bc",
+    "settlements/xanadu/dist/xanadu.html": "e7f126b037dc04e3988847c990ae071283bbd8ace087be4994677d83662da281",
     "settlements/xanadu/dist/xanadu.tex.xanadu-2.js": "be1d57f174e08cf71b5511aff65a313eec8edc29e057c48d027e9b60630f3ab5",
     "settlements/xanadu/dist/xanadu.tex.xanadu.js": "3fe87059ee305d523fa5026dddfd91123354e88d5839097de9df44137500f2a4"
    }

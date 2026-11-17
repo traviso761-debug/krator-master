@@ -85,7 +85,7 @@
     "kits/catalog/krator-master-furniture-republican.js": "27ebabd5ad8d0eb0f63eee2f44695212592140c7003294bb8fa07afc3679a06e",
     "kits/catalog/krator-master-furniture-scrap.js": "0ad3a75771ab03e7b22e7f558b601ac9e6208418e49275625d199bc44bde720c",
     "kits/catalog/krator-master-furniture-scyvoi.js": "29528a7dc2861760eb6103d5a3dd20a4fc9cc47d2709aa96908620e94b6f4227",
-    "kits/catalog/krator-master-furniture-xanadu.js": "f8a06b00f61142a2a4ae7d4e85921bd862998d99765ea43c927371261d0e0b79",
+    "kits/catalog/krator-master-furniture-xanadu.js": "49da3bad39a0aaf22f7f969a1c3636a45fe5812337bae56c623a09d99ef8b24c",
     "kits/interiors/adapters/runtime-adapter.js": "5958f459962e0bfd8dde8490ec1b0bca3697dd3c86f9697b1c083cfe5f206a57",
     "kits/interiors/sets/tents.js": "74e6c3ba8174a5434495152af7c8ec550ccb646f5a9cbb593a1625f7e1ef566e",
     "kits/interiors/src/10-core.js": "4b940cf3cadd55615825e748e9179aa06ff8984be2d92dbefc3d085ae91e24e5",
@@ -293,14 +293,14 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "kits/tents/build-manifest.json": "408ad7b3cccf7c52c1d47174f34d11595428edb6b0835adb559daf0ce17eb8af",
-    "kits/tents/dist/tents.html": "e2d289393a6a43a11f3e3ec98a9e6c6003413b5bcb48fd4f0e088c38940ca662",
+    "kits/tents/build-manifest.json": "aaf939bcd43fecbcd0415dbc2c278557aa7993b4f272266c610aae5b5e8cc0a6",
+    "kits/tents/dist/tents.html": "56b045d6387c211066acb93d7b292af733baae1d406abab48a292c434ccea338",
     "kits/tents/dist/tents.tex.tents-2.js": "1ca77094c33eadde3154e2a71c0b188077946810fe964abe4bc9a0bd75a5a050",
     "kits/tents/dist/tents.tex.tents.js": "d4ee9ffdce465caf3fa6e94d95640eeaadd5e37e0495567489c9188e2a9c37e3"
    },
    "outputs_raw": {
-    "kits/tents/build-manifest.json": "408ad7b3cccf7c52c1d47174f34d11595428edb6b0835adb559daf0ce17eb8af",
-    "kits/tents/dist/tents.html": "e2d289393a6a43a11f3e3ec98a9e6c6003413b5bcb48fd4f0e088c38940ca662",
+    "kits/tents/build-manifest.json": "aaf939bcd43fecbcd0415dbc2c278557aa7993b4f272266c610aae5b5e8cc0a6",
+    "kits/tents/dist/tents.html": "56b045d6387c211066acb93d7b292af733baae1d406abab48a292c434ccea338",
     "kits/tents/dist/tents.tex.tents-2.js": "1ca77094c33eadde3154e2a71c0b188077946810fe964abe4bc9a0bd75a5a050",
     "kits/tents/dist/tents.tex.tents.js": "d4ee9ffdce465caf3fa6e94d95640eeaadd5e37e0495567489c9188e2a9c37e3"
    }

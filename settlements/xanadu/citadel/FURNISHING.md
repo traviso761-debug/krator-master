@@ -112,5 +112,5 @@ the cage and the musicians' hall.
 
 **The owner's corrections.** The Dome's Hall of Feasts is furnished on the rectangle inside its arcades, so its sides are open
 arches: a hanging there stood free with its back to the court (seen from the preset camera), so `xc_feast` takes no hanging,
-frieze or wall fountain (the palace's dining halls, `xc_dining`, do). The state bed is turned round (the owner, 2026-11-16:
-"rotate that bed 180"): its headboard is at the piece's front, toward the room, its foot to the wall.
+frieze or wall fountain (the palace's dining halls, `xc_dining`, do). The state bed stands as first placed, its headboard to the west
+wall (the owner turned it, then: "that headboard was right the first time").

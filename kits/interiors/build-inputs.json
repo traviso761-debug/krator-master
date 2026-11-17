@@ -45,7 +45,7 @@
     "kits/catalog/krator-master-furniture-talovolci.js": "fc3c2d0954bc12df8e9ecad9964cb8f7a53843e7048ed01919c22aa87ed5653b",
     "kits/catalog/krator-master-furniture-tungang.js": "a8483b2d1194a05a77ac4af0581ea88f978014d533d834fc7f5ba6a3ecfee67e",
     "kits/catalog/krator-master-furniture-voth.js": "ecaaa8edd850358e6e121d114954cc9427cc87b76f437d680842ec39dc26cf1e",
-    "kits/catalog/krator-master-furniture-xanadu.js": "f8a06b00f61142a2a4ae7d4e85921bd862998d99765ea43c927371261d0e0b79",
+    "kits/catalog/krator-master-furniture-xanadu.js": "49da3bad39a0aaf22f7f969a1c3636a45fe5812337bae56c623a09d99ef8b24c",
     "kits/catalog/krator-master-furniture-yuni-common.js": "83e51a44ed9323529bb3e2d312c1b5550523f6ff6bc44d0677b60cedc87b5cd7",
     "kits/catalog/krator-master-furniture-zeijani.js": "407280d6f0bf33842c9d8114d1435d795d7659fc800f8298adb2bdc75feebf2f",
     "kits/catalog/krator-master-furniture.js": "09773ee896c9a5a9acd256dcf385c62a9e40e49e74f2b0d424749f10ee1905c2",
@@ -122,17 +122,17 @@
     "tools": "5d8cb54bfd5566913f21e3e094a6a85418e1354e6e39cf6138ec20bda1add512"
    },
    "outputs": {
-    "kits/interiors/build-manifest.json": "392fc902b95587d265d9fbdb8bf47e32e256daf0f9b675ed020ec3dd9ea9a582",
+    "kits/interiors/build-manifest.json": "f29764935b14abe7213c1b5f31cfa41d0fa503da410188eb8c9d05de381aead7",
     "kits/interiors/dist/interiors-core.js": "bdcfa990b63bb7fa2d301476a27cafb3e207c43a1be60911bc1a8b86134572d7",
     "kits/interiors/dist/interiors-sets.html": "e763a3127a3fe90029cc0e15a4b1d9ff6458a02996d8c9d88ba9901a1edbe2e5",
-    "kits/interiors/dist/interiors-walk.html": "e849939c1edd7e689283d4105b0411e814a05962a499034c7206d3e12d29e326",
+    "kits/interiors/dist/interiors-walk.html": "84a24d729321296100131a3ea6862f13ba22eb35c84094f298cd73166319c4fe",
     "kits/interiors/dist/interiors.html": "e09cf4e5b991e77e13512df991639dd9368c830b7195c4749960e62b6f008160"
    },
    "outputs_raw": {
-    "kits/interiors/build-manifest.json": "88d9faf8e57a736073f9d4de554dbab77cb9898ff4311be7d22e372eb0174f5f",
+    "kits/interiors/build-manifest.json": "8d8ca4128d9d09ba660fc0478fe5f156cea6552ef20d80dc720ba4a7089ed7db",
     "kits/interiors/dist/interiors-core.js": "bdcfa990b63bb7fa2d301476a27cafb3e207c43a1be60911bc1a8b86134572d7",
     "kits/interiors/dist/interiors-sets.html": "e763a3127a3fe90029cc0e15a4b1d9ff6458a02996d8c9d88ba9901a1edbe2e5",
-    "kits/interiors/dist/interiors-walk.html": "e849939c1edd7e689283d4105b0411e814a05962a499034c7206d3e12d29e326",
+    "kits/interiors/dist/interiors-walk.html": "84a24d729321296100131a3ea6862f13ba22eb35c84094f298cd73166319c4fe",
     "kits/interiors/dist/interiors.html": "e09cf4e5b991e77e13512df991639dd9368c830b7195c4749960e62b6f008160"
    }
   }

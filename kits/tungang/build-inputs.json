@@ -79,7 +79,7 @@
     "kits/catalog/krator-master-furniture-generic.js": "990b05b8404c67ab960f6649babc8143c738ea600a04c0c22564296fa7786ea4",
     "kits/catalog/krator-master-furniture-jobs.js": "598ea1c1eeeeb4c30206d397021a579b281399ba4bea85fdaf0060d6a433674d",
     "kits/catalog/krator-master-furniture-tungang.js": "a8483b2d1194a05a77ac4af0581ea88f978014d533d834fc7f5ba6a3ecfee67e",
-    "kits/catalog/krator-master-furniture-xanadu.js": "f8a06b00f61142a2a4ae7d4e85921bd862998d99765ea43c927371261d0e0b79",
+    "kits/catalog/krator-master-furniture-xanadu.js": "49da3bad39a0aaf22f7f969a1c3636a45fe5812337bae56c623a09d99ef8b24c",
     "kits/tungang/KNOWN_ISSUES.md": "f1299bfbe2b0acf9419574b2b43cceefc52b2b4865d7fe99f98a7fb05723e6b1",
     "kits/tungang/PORT.md": "93f94b1b009ad27defe9dd5cead6cb1bf6d17e998ae5001b53b3f0f77924a4ef",
     "kits/tungang/build.py": "ebc21e7a617ed296242c8ed71211bb9fdce613cfdb93713a53ae43632aaabbad",
@@ -243,14 +243,14 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "kits/tungang/build-manifest.json": "09f4e0541be1ae29de3fc670701398be53c7084c7b4ced4cf81ef9c9550cd0c1",
-    "kits/tungang/dist/tungang.html": "256b83be33d94e1305dca444d66b5c476e1d8985cc5698cd403a05fa3277c1c2",
+    "kits/tungang/build-manifest.json": "e3714678b2ba3aa2d3d70efb2f63637434a33e69b718281364c3cbd703ed0339",
+    "kits/tungang/dist/tungang.html": "7da12b02db70cd58d2495c1f4b8273944848cc8da5c2fced192719e091e04346",
     "kits/tungang/dist/tungang.tex.tungang-2.js": "addcd022d9d1ea8218f5c3727306acec0cda168ea76cb72957a1afbc79b07f10",
     "kits/tungang/dist/tungang.tex.tungang.js": "50b5b211ad4cee5eb48753cf36ca3ea465ec353902bbda93ec55914a98b41309"
    },
    "outputs_raw": {
-    "kits/tungang/build-manifest.json": "09f4e0541be1ae29de3fc670701398be53c7084c7b4ced4cf81ef9c9550cd0c1",
-    "kits/tungang/dist/tungang.html": "256b83be33d94e1305dca444d66b5c476e1d8985cc5698cd403a05fa3277c1c2",
+    "kits/tungang/build-manifest.json": "e3714678b2ba3aa2d3d70efb2f63637434a33e69b718281364c3cbd703ed0339",
+    "kits/tungang/dist/tungang.html": "7da12b02db70cd58d2495c1f4b8273944848cc8da5c2fced192719e091e04346",
     "kits/tungang/dist/tungang.tex.tungang-2.js": "addcd022d9d1ea8218f5c3727306acec0cda168ea76cb72957a1afbc79b07f10",
     "kits/tungang/dist/tungang.tex.tungang.js": "50b5b211ad4cee5eb48753cf36ca3ea465ec353902bbda93ec55914a98b41309"
    }

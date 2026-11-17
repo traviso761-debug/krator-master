@@ -971,18 +971,17 @@ FURN({
   build: function (F) {
     /* a dais of white marble, the bed of state on gilt feet (as wide as it is long), its quilts of saffron brocade under a cover of
        rose silk, a bank of bolsters; four twisted gilt posts carry a baldachin with a white dome and a gold finial, the curtains of
-       pearl-white silk drawn back to the posts and tied with gold. TURNED ROUND (the owner, 2026-11-16: "rotate that bed 180"):
-       the headboard is at the FRONT (+z), toward the room, and the bed's foot stands to the wall */
+       pearl-white silk drawn back to the posts and tied with gold; the headboard at the back, to the wall */
     const gold = F.col('gold');
     F.box(0, 0, 0, 3.6, 0.22, 3.8, 0, F.col('marbleWhite'), 'stone');
     F.box(0, 0.22, 0, 3.2, 0.06, 3.4, 0, gold, 'gold');
     for (const sx of [-1, 1]) for (const sz of [-1, 1]) F.ball(sx * 1.35, 0.4, sz * 1.45, 0.14, gold, 'gold');
     F.box(0, 0.45, 0, 2.9, 0.3, 3.1, 0, F.col('lacquerRed'), 'lacquer');
-    F.pillow(0, 0.88, -0.1, 2.8, 0.26, 2.8, 0, F.col('clothSaffron'), 'cloth', { side: 0.5, puff: 0.35, round: 8 });
-    F.box(0, 0.9, -0.55, 2.84, 0.16, 1.9, 0, F.col('silkRose'), 'cloth');
-    F.bolster(0, 1.15, 1.2, 2.6, 0.22, 0, F.col('clothMaroon'), 'cloth');
-    for (const x of [-0.8, 0, 0.8]) F.pillow(x, 1.15, 0.85, 0.7, 0.2, 0.45, 0, F.col('clothGoldBand'), 'cloth', { side: 0.4, puff: 0.6, round: 4 });
-    F.box(0, 0.75, 1.55, 3.0, 1.6, 0.14, 0, gold, 'gold');
+    F.pillow(0, 0.88, 0.1, 2.8, 0.26, 2.8, 0, F.col('clothSaffron'), 'cloth', { side: 0.5, puff: 0.35, round: 8 });
+    F.box(0, 0.9, 0.55, 2.84, 0.16, 1.9, 0, F.col('silkRose'), 'cloth');
+    F.bolster(0, 1.15, -1.2, 2.6, 0.22, 0, F.col('clothMaroon'), 'cloth');
+    for (const x of [-0.8, 0, 0.8]) F.pillow(x, 1.15, -0.85, 0.7, 0.2, 0.45, 0, F.col('clothGoldBand'), 'cloth', { side: 0.4, puff: 0.6, round: 4 });
+    F.box(0, 0.75, -1.55, 3.0, 1.6, 0.14, 0, gold, 'gold');
     for (const sx of [-1, 1]) for (const sz of [-1, 1]) { F.cyl(sx * 1.6, 0.2, sz * 1.7, 0.09, 3.22, 0, gold, 'gold');
       F.box(sx * 1.45, 1.0, sz * 1.62, 0.28, 2.4, 0.05, 0, F.col('pearl'), 'cloth'); F.cyl(sx * 1.55, 1.6, sz * 1.65, 0.12, 0.08, 0, gold, 'gold'); }
     F.box(0, 3.42, 0, 3.5, 0.24, 3.7, 0, gold, 'gold');

@@ -789,8 +789,8 @@
    "sha256": "caeca149d7a9a2a567164e45cede8b1fa77957e97a552bea4b89c0f59fbf27bf"
   },
   "kits/catalog/dist/catalog.html": {
-   "bytes": 2289009,
-   "sha256": "98546b5ffb468fa94f178e0b84d138adcb9acb6fc654d24f89550e46dd35e3b0"
+   "bytes": 2288890,
+   "sha256": "6008f4610a7170fca9a2ed7703dae073f064155051162a85f502ff3c76e7f046"
   },
   "kits/crops/dist/crops.html": {
    "bytes": 2570483,
@@ -1293,8 +1293,8 @@
    "sha256": "efedacdf87fae06ae85cc20164498bb7001bc23494ee5f60dc5044d91ca97771"
   },
   "settlements/xanadu/dist/erewhon.html": {
-   "bytes": 9098276,
-   "sha256": "6fa6d2c17b8c227128fd1b17b0eec8f3fd3f8a61dbf433ad4cdfaee71732c3b9"
+   "bytes": 9098157,
+   "sha256": "24d4195fd3c8b143e53bef360a297de0575f67ca05fe774a2f2d15d856437c55"
   },
   "settlements/xanadu/dist/xanadu.html": {
    "bytes": 6262060,
