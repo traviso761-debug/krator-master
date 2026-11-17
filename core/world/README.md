@@ -32,6 +32,7 @@ page that reads it came out byte-identical after the move.
 | `90-world-camera.js` | [web] | the camera, the minimap (its overlays: Köppen, biome regions, a page's `MAP_LAYERS`), "Go to", the inspector, the polygon tool, `pick` |
 | `91-world-probe.js` | [web] | the camera, the probe and its checks (`_api.hostChecks`: order-free seeding, land continuous, nothing in water, spacing across tiles, roads, towns, no NaN) |
 | `93-world-propose.js` | [web] | "propose": place a new site on the ground or the minimap, name and type it, see its ground and resources (`WRES.assess`), keep it, export it or send it to the edit queue; `tools/scale-model/propose_site.py` takes it into `openworld/SITES.json` and the scale model |
+| `94-world-export.js` | [web] | the region through core/export (GODOT-PLAN.md M7, opt-in: a build lists it after core/export 07, 09, 10): the parts' registries (88s, 88b) as one page registry (ids `<part>:<id>`), the terrain (WORLD.H and WORLD.water on a grid `WORLD_EXPORT.step` apart), and the scene in the box as items and buckets (the villages' pieces, the bridges by their records, the flora round the camera; not the terrain, water, sky or beacons). `openworld/oidong-highrift/tools/godot_case.py` drives it (`tools/harness.py export --before`) |
 | `98-world-start.js`, `99-tail.html` | [web] | start-up and the page's tail |
 
 **Resources and proposals in a region's build:** list `('resgeo', 'geology')` (a generated fragment:
