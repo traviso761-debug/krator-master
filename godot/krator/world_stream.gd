@@ -10,8 +10,14 @@
 #   chunk_box(id), place(id), road(id)   the index's entries
 # The log (meta "log": [{step, at, loaded, unloaded, held}]) is what the test reads. Chunks are krator-world boxes too, so
 # a chunk is KratorWorld.build of its world.json; it holds the ground (terrain section) and the records standing in it.
-# Coordinates: the region's metres, as the page's. KratorWorld places vertices at those coordinates, so far from the
-# region's origin (the High Rift is 600 km out) a float32 vertex keeps ~6 cm: a floating origin is owed (the report says).
+# Coordinates: the region's metres, as the page's, in the index and in every argument here (doubles). A floating origin
+# (2026-11-16): each case is written about its own origin (core/export README, "origin"; KratorWorld's meta "origin"), and
+# the stream holds one of its own (`origin`, doubles), so a case's node stands at its origin less the stream's: every
+# vertex and transform Godot holds (float32) stays small near the camera, where 600 km out a float32 keeps ~6 cm.
+#   rebase(x, z)                 moves the stream's origin to (x, z) in whole metres and every case's node with it;
+#                                update() calls it when the camera is more than REBASE from the origin
+#   local(x, y, z) -> Vector3    a region point in the stream's frame (taken off in double precision)
+#   region(v) -> Array           a point in the stream's frame back in the region's metres, [x, y, z] in doubles
 class_name KratorWorldStream
 extends Node3D
 
@@ -21,6 +27,9 @@ var chunks := {}          # id -> Node3D, the loaded ones
 var _box := {}            # id -> [x0, z0, x1, z1]
 var log: Array = []
 var step := 0
+var origin := [0.0, 0.0, 0.0]   # the stream's floating origin, the region's metres (doubles)
+var rebases := 0
+const REBASE := 4000.0
 
 
 static func open(path: String) -> KratorWorldStream:
@@ -50,7 +59,32 @@ static func box_dist(b: Array, x: float, z: float) -> float:
 	return sqrt(dx * dx + dz * dz)
 
 
+func local(x: float, y: float, z: float) -> Vector3:
+	return Vector3(x - origin[0], y - origin[1], z - origin[2])
+
+
+func region(v: Vector3) -> Array:
+	return [float(v.x) + origin[0], float(v.y) + origin[1], float(v.z) + origin[2]]
+
+
+# a case's node at its origin less the stream's (KratorWorld's meta "origin")
+func _seat(w: Node3D) -> void:
+	var o: Array = w.get_meta("origin", [0.0, 0.0, 0.0])
+	w.position = Vector3(o[0] - origin[0], o[1] - origin[1], o[2] - origin[2])
+
+
+func rebase(x: float, z: float) -> void:
+	origin = [roundf(x), 0.0, roundf(z)]
+	for id in chunks:
+		_seat(chunks[id])
+	for p in get_node("Places").get_children():
+		_seat(p)
+	rebases += 1
+
+
 func update(at: Vector2, load_r: float, keep_r: float) -> Dictionary:
+	if absf(at.x - origin[0]) > REBASE or absf(at.y - origin[2]) > REBASE:
+		rebase(at.x, at.y)
 	var loaded := []
 	var unloaded := []
 	for id in _box:
@@ -60,6 +94,7 @@ func update(at: Vector2, load_r: float, keep_r: float) -> Dictionary:
 			var w := KratorWorld.build(path)
 			w.name = "Chunk_" + id
 			w.set_meta("case_path", path)   # its world.json (the importer's "world" meta leaves the terrain out)
+			_seat(w)
 			add_child(w)
 			chunks[id] = w
 			loaded.append(id)
@@ -69,7 +104,7 @@ func update(at: Vector2, load_r: float, keep_r: float) -> Dictionary:
 			remove_child(n)
 			n.free()
 			unloaded.append(id)
-	log.append({"step": step, "at": [at.x, at.y], "loaded": loaded, "unloaded": unloaded, "held": chunks.keys()})
+	log.append({"step": step, "at": [at.x, at.y], "loaded": loaded, "unloaded": unloaded, "held": chunks.keys(), "origin": origin.duplicate()})
 	step += 1
 	return {"loaded": loaded, "unloaded": unloaded}
 
@@ -93,7 +128,9 @@ func height_at(x: float, z: float) -> float:
 	var id := covering(x, z)
 	if id == "":
 		return NAN
-	return KData.height_at((chunks[id] as Node3D).get_meta("ground", null), x, z)
+	var w: Node3D = chunks[id]   # its ground's grid stands about the case's origin
+	var o: Array = w.get_meta("origin", [0.0, 0.0, 0.0])
+	return KData.height_at(w.get_meta("ground", null), x - o[0], z - o[2]) + o[1]
 
 
 func place(id: String) -> Dictionary:
@@ -116,5 +153,6 @@ func open_place(id: String) -> Node3D:
 		return null
 	var w := KratorWorld.build(dir + "/" + str(p["case"]) + "/world.json")
 	w.name = "Place_" + id
+	_seat(w)
 	get_node("Places").add_child(w)
 	return w

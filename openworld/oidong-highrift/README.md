@@ -63,7 +63,7 @@ On the GPU, set `KRATOR_GL=gpu`; a verify takes a harness lane itself. A fresh w
 two tools write `godot/data/world-oidong-highrift`, which `godot/tests/export/oidong_world_test.gd` reads:
 
 ```
-python3 tools/harness.py lock -- python3 openworld/oidong-highrift/tools/godot_case.py   # index.json, chunks/ (46), places/ (5): ~10 min
+KRATOR_GL=gpu python3 tools/harness.py lock -- python3 openworld/oidong-highrift/tools/godot_case.py   # index.json, chunks/ (46), places/ (5): ~10 min
 node openworld/oidong-highrift/tools/export-sim.js                                       # sim.json, golden.json: the valley's week
 godot --headless --path godot --script res://tests/export/oidong_world_test.gd           # the stream, the places, the roads, the books
 ```
@@ -71,6 +71,11 @@ godot --headless --path godot --script res://tests/export/oidong_world_test.gd  
 The places are each a 1.6 km square round a site's pin. Longsong's villages are in full (about 40 MB of glb, in LFS)
 and the Order's houses' in massing: the page draws a village in full within 4 km of the camera and its flora within
 2.5 km, and the High Rift's houses grow none round them. Rebake, rebuild and re-export after the plan moves.
+
+Each case is written about its own origin (the box's centre: a floating origin, core/export README "origin"), so a
+building 600 km out keeps its millimetres in Godot; the stream moves its own origin with the camera. The flora's plants
+carry uids (each pool a core/tags item set in the `flora` part). The export needs the GPU (`KRATOR_GL=gpu`): under
+SwiftShader the page's start fails on a shader.
 
 ## Fragments
 

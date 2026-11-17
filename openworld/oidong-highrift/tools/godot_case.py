@@ -107,6 +107,8 @@ def roads(P):
 
 
 def main():
+    if os.environ.get('KRATOR_GL') != 'gpu':   # under SwiftShader the page's start fails on a shader (CAM never made)
+        sys.exit('godot_case: set KRATOR_GL=gpu (the page needs the GPU; SwiftShader fails its start)')
     only = sys.argv[sys.argv.index('--only') + 1] if '--only' in sys.argv else None
     P = plan()
     L = link(P, *ROUTE)

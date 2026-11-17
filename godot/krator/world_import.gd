@@ -11,7 +11,8 @@
 #              when the world has one
 # Every material's hook is resolved against the shader library (krator/khooks.gd); a hook nothing answers is a gap.
 # Root meta: report (counts, ids, the sections' status, the export's own errors, the gaps), tags ({id: record}), stage,
-# ground (the terrain node), world (the JSON minus items and buckets).
+# ground (the terrain node), world (the JSON minus items and buckets), origin ([x, y, z] in doubles: the case's floating
+# origin, [0, 0, 0] without one; the node's children stand about it, so a caller puts the node at origin less its own).
 class_name KratorWorld
 extends RefCounted
 
@@ -29,6 +30,21 @@ static func build(path: String) -> Node3D:
 		report["gaps"]["format"] = "not a krator-world file"
 		return root
 	var dir := path.get_base_dir()
+	# a floating origin (core/export README, "origin"): the meshes are written about the case's origin, everything else in
+	# the page's frame. The ground is built about it too; the pieces built from page-frame numbers (the water, hazards,
+	# records, a field's mesh) go under PageFrame, at -origin (placed right, at float32's precision out there)
+	var org := [0.0, 0.0, 0.0]
+	if d.get("origin") is Array and (d["origin"] as Array).size() == 3:
+		org = [float(d["origin"][0]), float(d["origin"][1]), float(d["origin"][2])]
+	var has_org: bool = org[0] != 0.0 or org[1] != 0.0 or org[2] != 0.0
+	root.set_meta("origin", org)
+	var frame: Node3D = root
+	if has_org:
+		frame = Node3D.new()
+		frame.name = "PageFrame"
+		frame.position = Vector3(-org[0], -org[1], -org[2])
+		root.add_child(frame)
+	report["origin"] = org
 	report["sections"] = {}
 	for s in d["sections"]:
 		report["sections"][s] = d["sections"][s]["status"]
@@ -199,6 +215,8 @@ static func build(path: String) -> Node3D:
 			else:
 				g = KratorField.build(f, look, grid)
 				report["field"] = g.get_meta("krator")
+				if has_org:
+					report["gaps"]["field origin"] = "the field's mesh is built in the page's frame (under PageFrame): KratorField takes no origin yet"
 				if t.get("probes") is Dictionary:   # the page's own h at points off the lattice, against KField.h here
 					var mx := 0.0
 					var pts: Array = t["probes"]["points"]
@@ -206,7 +224,13 @@ static func build(path: String) -> Node3D:
 						mx = max(mx, abs(f.h(float(p[0]), float(p[1])) - float(p[2])))
 					report["terrain_probes"] = {"points": pts.size(), "max_abs_m": mx}
 		elif not grid.is_empty():
-			g = KData.ground(grid, look)
+			var gg := grid
+			if has_org:   # the grid about the origin: x0 and z0 less it in double precision, so the vertices stay small
+				gg = grid.duplicate()
+				gg["x0"] = float(grid["x0"]) - org[0]
+				gg["z0"] = float(grid["z0"]) - org[2]
+			g = KData.ground(gg, look)
+			g.position.y = -org[1]
 			report["gaps"]["field"] = "the terrain is the page's h sampled on a grid: the build bakes no core/terrain field"
 		if g != null:
 			var has_water: bool = d.get("water") is Dictionary and (d["water"].get("surfaces", []) as Array).size() > 0
@@ -218,7 +242,7 @@ static func build(path: String) -> Node3D:
 				report["ground_layers"] = ground_layers(g, ground_rec, tex, texrec)
 				if report["ground_layers"].has("gap"):
 					report["gaps"]["ground layers"] = report["ground_layers"]["gap"]
-			root.add_child(g)
+			(frame if t.get("field") is Dictionary else root).add_child(g)
 			root.set_meta("ground", g)
 	else:
 		report["gaps"]["terrain"] = "no terrain section"
@@ -228,7 +252,7 @@ static func build(path: String) -> Node3D:
 	if d.get("water") is Dictionary:
 		var atm = Engine.get_main_loop().root.get_node_or_null("Atmos") if Engine.get_main_loop() is SceneTree else null
 		var wn := KratorWater.build(d["water"], d.get("box"), atm)
-		root.add_child(wn)
+		frame.add_child(wn)
 		var wr: Dictionary = wn.get_meta("report")
 		wr["probes"] = KratorWater.check_probes(d["water"], wn.get_meta("surfaces", {}))
 		report["water"] = wr
@@ -244,7 +268,7 @@ static func build(path: String) -> Node3D:
 		report["atmos"] = a.get_meta("report")
 	if d.get("hazards") is Dictionary and d["hazards"].get("format") == "krator-hazard":
 		var hz := hazards(d["hazards"], by_id)
-		root.add_child(hz)
+		frame.add_child(hz)
 		report["hazards"] = hz.get_meta("report")
 		if int(report["hazards"]["unresolved"]) > 0:
 			report["gaps"]["hazard records"] = "%d hazards name no registry record" % report["hazards"]["unresolved"]
@@ -253,14 +277,14 @@ static func build(path: String) -> Node3D:
 		root.set_meta("stage", d["stage"])
 	# a city's buildings, fixtures and furniture slots as nodes (the KRATOR_EXPORT shape)
 	if d.get("fixtures") is Dictionary or d.get("furniture") is Dictionary or d.get("interiors") is Dictionary:
-		report["records"] = records(root, d, by_id)
+		report["records"] = records(frame, d, by_id)
 	var meta := {}
 	for k in d:
 		if not (k in ["items", "buckets", "textures", "stage", "registry", "terrain", "atmos", "water", "hazards"]):
 			meta[k] = d[k]
 	root.set_meta("world", meta)
 	KratorBiome.cell = KratorBiome.policy_cell(d["convention"])   # the export contract's LOD cell (convention.lod)
-	root.set_meta("krator", {"box": d["box"], "build": d["build"], "convention": d["convention"]})
+	root.set_meta("krator", {"box": d["box"], "build": d["build"], "convention": d["convention"], "origin": org})
 	report["counts"] = {"items": d["items"].size(), "instances": ids["instances"], "buckets": d["buckets"].size(), "triangles": tris,
 		"materials": d["materials"].size(), "textures": tc, "records": by_id.size(), "load_ms": Time.get_ticks_msec() - t0}
 	report["ids"] = ids

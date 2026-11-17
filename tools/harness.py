@@ -1858,13 +1858,17 @@ async def walk_main(argv):
 EXPORT_FILES = [os.path.join(ROOT, 'core', 'export', f) for f in ('07-core-export.js', '09-core-export-adapters.js')]
 STAGE_HOOK = os.path.join(ROOT, 'godot', 'tools', 'stage_hook.js')
 STAGE_JS = os.path.join(ROOT, 'core', 'biome', '44-core-stage.js')
-EXPORT_JS = """([opt, split]) => { const w = EXPORT.world(opt);
-  const chk = EXPORT.check(w, { uid: (typeof KTAGS !== 'undefined' && KTAGS) ? KTAGS.uid : null, profile: opt.profile || null });
+# the uid the check recomputes from an item's matrix: a case written about its own origin (core/export README, "origin")
+# has its translations less it, so the check adds it back
+KUID_JS = """const KUID = w => (typeof KTAGS === 'undefined' || !KTAGS) ? null : !w.origin ? KTAGS.uid
+  : (c, k, at) => KTAGS.uid(c, k, [at[0] + w.origin[0], at[1] + w.origin[1], at[2] + w.origin[2]]);"""
+EXPORT_JS = """([opt, split]) => { """ + KUID_JS + """ const w = EXPORT.world(opt);
+  const chk = EXPORT.check(w, { uid: KUID(w), profile: opt.profile || null });
   if (!split) return { world: w, check: chk };
   const g = EXPORT.glb(w);
   return { world: g.json, glb: EXPORT.pack(g.glb).b64, glbStats: g.stats, check: chk }; }"""
-PROFILE_JS = """([opt, profile]) => { const w = EXPORT.world(opt);
-  const chk = EXPORT.check(w, { uid: (typeof KTAGS !== 'undefined' && KTAGS) ? KTAGS.uid : null, profile });
+PROFILE_JS = """([opt, profile]) => { """ + KUID_JS + """ const w = EXPORT.world(opt);
+  const chk = EXPORT.check(w, { uid: KUID(w), profile });
   const sections = {}; for (const k in w.sections) sections[k] = w.sections[k].status;
   return { sections, errors: w.errors, stats: w.stats, check: chk }; }"""
 
