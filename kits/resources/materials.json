@@ -182,6 +182,24 @@
    ],
    "roughLift": 0.1,
    "specular": 0.25
+  },
+  "schistem": {
+   "lib": "rock.schist.emerald",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "roughLift": 0.1,
+   "specular": 0.25
+  },
+  "turq": {
+   "lib": "rock.turquoise.vein",
+   "scale": [
+    0.8,
+    0.8
+   ],
+   "roughLift": 0.05,
+   "specular": 0.3
   }
  }
 }

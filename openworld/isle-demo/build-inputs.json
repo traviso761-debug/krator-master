@@ -744,9 +744,9 @@
     "kits/iziz-vernacular/src/74b-vern-frontier.js": "a488d92600d611e571ca6a7e2b0e0dbcaeb697ce1ff9fa98889101c008f2d86b",
     "kits/iziz-vernacular/src/74z-vern-trades.js": "8ff3ccda50c56e14f469753b70253b570c31666b09510f098ec6c45b686f4c9c",
     "kits/iziz-vernacular/vernacular.py": "dcae438a176751059c9a0a11431f7aa08ac8724894fa6b082a64389ba3534ad0",
-    "kits/resources/src/42r-res-ore.js": "795b57d189506369e35b7e2b3de5795d940d8bff91bb51e6dedb7df3f2432a04",
+    "kits/resources/src/42r-res-ore.js": "fff9ee3785b48b94adc9caf384d31b047e21eed3133f70a4ed5bf2d01f3830cc",
     "kits/resources/src/43r-res-fields.js": "0a9325061c1d4526405b636391f26d9330012c3c6b36aa939e7ad461ec83a60f",
-    "kits/resources/src/44r-res-nodes.js": "e52c3cb3eace32606700aef4991b9032cdf0be9a21f56ffad90c657ca89359e3",
+    "kits/resources/src/44r-res-nodes.js": "9dff64ba02126039f38e1abe6e8d8ef62e78a520bdcb510bc8254b9693115c16",
     "kits/ringsea/src/00-head.html": "3c3bc4894f147593ea5e8a914e240098c44e6df322ae753a706d4c3933132d6e",
     "kits/ringsea/src/10-core.js": "7c31cf7eb63a1666c0f1c8cd97fd810c1531d10e8d014c105f807a2ad521138b",
     "kits/ringsea/src/12-stats.js": "67d17e87faa80d6e5503dd3dc0d53cb2b9e0d68ce77f256187968ee914f881bd",
@@ -1328,8 +1328,8 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "openworld/isle-demo/dist/isle-demo.artifact.html": "0d768e4d6bc62d4a4dfb9e85b8ce8481b996ce88462ad88ec251aa795a729cd5",
-    "openworld/isle-demo/dist/isle-demo.html": "5a1f2408cee5fc16c206ff69efe77dc7799c0c48fc25001c4e401b1b33a1d844",
+    "openworld/isle-demo/dist/isle-demo.artifact.html": "4df597b0a14ad754a7e2b422fb0832cc89d097ccbc7ca8396a5bdee63530e25e",
+    "openworld/isle-demo/dist/isle-demo.html": "9456223e76b89b3e97f814235ff95afb3466ebf13e1d4c8a25b952f86581b43f",
     "openworld/isle-demo/dist/isle-demo.tex.brtowns.js": "2eb5c136bd57139376043468141dddd302ea18ddc16a8219ae972c9dbedf4a71",
     "openworld/isle-demo/dist/isle-demo.tex.eastabyss.js": "419fd1d89cff71c282481dfb0e3b7e1ea7c15bc59e46270f8f4f6bd6759438f0",
     "openworld/isle-demo/dist/isle-demo.tex.geyser.js": "e0b88e7b3ecd6d9514b9b9baff00640e267a5e9f08efc3d0f5b52c1eaa7932c0",
@@ -1346,8 +1346,8 @@
     "openworld/isle-demo/dist/isle-demo.tex.ys.js": "e6efa558623b2fcf0bf9703025bc8547cc4d732ef30f81d54f4e3422aaef157c"
    },
    "outputs_raw": {
-    "openworld/isle-demo/dist/isle-demo.artifact.html": "0d768e4d6bc62d4a4dfb9e85b8ce8481b996ce88462ad88ec251aa795a729cd5",
-    "openworld/isle-demo/dist/isle-demo.html": "5a1f2408cee5fc16c206ff69efe77dc7799c0c48fc25001c4e401b1b33a1d844",
+    "openworld/isle-demo/dist/isle-demo.artifact.html": "4df597b0a14ad754a7e2b422fb0832cc89d097ccbc7ca8396a5bdee63530e25e",
+    "openworld/isle-demo/dist/isle-demo.html": "9456223e76b89b3e97f814235ff95afb3466ebf13e1d4c8a25b952f86581b43f",
     "openworld/isle-demo/dist/isle-demo.tex.brtowns.js": "2eb5c136bd57139376043468141dddd302ea18ddc16a8219ae972c9dbedf4a71",
     "openworld/isle-demo/dist/isle-demo.tex.eastabyss.js": "419fd1d89cff71c282481dfb0e3b7e1ea7c15bc59e46270f8f4f6bd6759438f0",
     "openworld/isle-demo/dist/isle-demo.tex.geyser.js": "e0b88e7b3ecd6d9514b9b9baff00640e267a5e9f08efc3d0f5b52c1eaa7932c0",

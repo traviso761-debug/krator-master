@@ -46,7 +46,8 @@ WORLD = 20261026            # the node field's world seed (KRAND.child(WORLD, 'r
 # of 2 x inset x cell with no neighbour reads). Rarer kinds take larger cells.
 FIELD = {'iron': 3000, 'copper': 4000, 'gold': 5000, 'tin': 4000, 'silver': 5000, 'rare-earth': 6000, 'coal': 3000,
          'sulfur': 2000, 'saltpeter': 4000, 'oil': 5000, 'gypsum': 2500, 'halite': 2500, 'potash': 2500, 'alkali': 2500,
-         'nickel': 5000, 'marble': 3000}   # nickel and marble: REBAKE-PLAN.md R3 (the owner, 2026-11-03)
+         'nickel': 5000, 'marble': 3000,   # nickel and marble: REBAKE-PLAN.md R3 (the owner, 2026-11-03)
+         'emerald': 8000, 'turquoise': 7000}   # the gems (the owner, 2026-11-16: the Coyote Men's exports, kits/coyote)
 INSET = 0.15
 NODE_FAMILIES = list(FIELD)
 LEDGER_FAMILIES = ['stone', 'clay', 'wood', 'water']
@@ -353,6 +354,68 @@ def model_vents(src, OW, shift):
     return [(v['px'][0] + shift[0], v['px'][1] + shift[1], v.get('radius', 3)) for v in D['vents']]
 
 
+def gems(prov, copper, saltpeter, stone, outl, cell_km):
+    """the gems (the owner, 2026-11-16: the Coyote Men's exports, biomes/outlands/PLAN.md sections 0 and 8, kits/coyote), from
+    the final provinces and layers, so the full bake and --gems (in place) give the same bytes:
+      turquoise  where copper ground weathers under a dry sky (Nishapur's, Sinai's): .9 x the copper byte x the aridity (the
+                 saltpeter byte less its evaporite part, as carbonate() reads it)
+      emerald    where a granite's pegmatites cut the gneiss and the walls' breccia (beryllium): 170 within 8 km of granite, at
+                 .45 of it unless a chromium source (bare mantle, the flood basalt) lies within 30 km (Kafubu, Itabira); and
+                 Muzo's kind, 130 in folded sedimentary ground (relief over 300 m) within 30 km of the evaporites' brines
+      both       raised to 170 in the Outlands' rugged ground (outl: the regions N and S Outlands), turquoise by the aridity there,
+                 whose gem hills the lore makes the Coyote Men's (emerald and turquoise their exports)
+    Ruggedness is read off the stone byte (60 + 195 x relief / 900 on hard ground). Zero on evaporite and water (the caller)."""
+    PI = PROVINCES.index
+    Gn, Gr, Im, Um, Ba, S = (prov == PI(k) for k in ('crystalline', 'granite', 'impact', 'ultramafic', 'basalt', 'sedimentary'))
+    arid = np.clip((saltpeter.astype(float) - 40.0 * (prov == PI('evaporite'))) / 200.0, 0, 1)
+    relief = np.clip((stone.astype(float) - 60.0) / 195.0, 0, 1) * 900.0
+    rugged = np.clip((relief - 200.0) / 600.0, 0, 1)
+    nearG = ndimage.binary_dilation(Gr, iterations=cells(8, cell_km))
+    nearCr = ndimage.binary_dilation(Um | Ba, iterations=cells(30, cell_km))
+    nearEv = ndimage.binary_dilation(prov == PI('evaporite'), iterations=cells(30, cell_km))
+    tq = np.maximum(0.9 * copper.astype(float) * arid, 170.0 * outl * rugged * (0.4 + 0.6 * arid))
+    em = np.maximum.reduce([170.0 * (Gn | Im) * nearG * (0.45 + 0.55 * nearCr), 130.0 * S * (relief > 300) * nearEv,
+                            170.0 * outl * rugged])
+    return {'emerald': em, 'turquoise': tq}
+
+
+def add_gems(argv):
+    """--gems: the emerald and turquoise layers (node kinds) added to a bake, in place, leaving every other byte as it was"""
+    path, src = argv[2], argv[3]
+    sh = [a.split('=', 1)[1] for a in argv if a.startswith('--shift=')] or [argv[k + 1] for k, a in enumerate(argv) if a == '--shift']
+    shift = tuple(float(v) for v in sh[0].split(',')) if sh else (0, 0)
+    data = json.load(open(path, encoding='utf-8'))
+    if 'emerald' in data['families']:
+        sys.exit(path + ' already has the gem layers')
+    g = data['grid']; VW, VH, OW = g['w'], g['h'], g['fullW']; su, sv = (VW - 1) / (OW - 1), (VH - 1) / (g['fullH'] - 1)
+    n = VW * VH
+    if src.endswith('.js'):
+        import re
+        regions = json.loads(re.search(r'const defRegs = (\[.*?\]);\n', open(src, encoding='utf-8').read(), re.S).group(1))
+    else:
+        regions = docs(src)
+    L = lambda k: unrle(data['layers'][k], n).reshape(VH, VW)
+    prov, mask = L('province') & 127, L('mask')
+    outl = np.zeros((VH, VW), bool)
+    for r in regions:
+        if r['name'].strip().lower() in ('n outlands', 's outlands') and len(r['points']) >= 3:
+            outl |= poly_mask(r['points'], VW, VH, su, sv, shift)
+    G = gems(prov, L('copper'), L('saltpeter'), L('stone'), outl, g['cell_km'])
+    land = (mask & 1) == 0
+    keep = land & (prov != PROVINCES.index('evaporite'))
+    for k in ('emerald', 'turquoise'):
+        a = np.clip(np.round(G[k] * keep), 0, 255).astype(np.uint8)
+        data['layers'][k] = rle(a)
+        data['stats']['mean'][k] = round(float(a[land].mean()), 2)
+        data['field']['cells'][k] = FIELD[k]
+    data['field']['families'] = data['field']['families'] + ['emerald', 'turquoise']
+    data['families'] = data['field']['families'] + [k for k in data['families'] if k not in data['field']['families']]
+    with open(path, 'w', encoding='utf-8', newline='\n') as fh:
+        json.dump(data, fh, separators=(',', ':'), sort_keys=True)
+    print('added the gems to %s: means %s, cells over 100: %s' % (path, {k: data['stats']['mean'][k] for k in ('emerald', 'turquoise')},
+          {k: int((unrle(data['layers'][k], n) > 100).sum()) for k in ('emerald', 'turquoise')}))
+
+
 def add_rocks(argv):
     """--rocks: the other rocks added to a bake that has the carbonate, in place, leaving every other byte as it was"""
     path, src = argv[2], argv[3]
@@ -433,6 +496,8 @@ def main(argv):
         return add_carbonate(argv)
     if '--rocks' in argv[1:2]:
         return add_rocks(argv)
+    if '--gems' in argv[1:2]:
+        return add_gems(argv)
     if len(argv) < 5:
         sys.exit(__doc__)
     page, regs_dir, setts_dir, out = argv[1:5]
@@ -628,6 +693,9 @@ def main(argv):
             g[k] = g[k] * hard
         a = np.clip(np.round(g[k] * land), 0, 255).astype(np.uint8)
         P[k] = a
+    G = gems(prov, P['copper'], P['saltpeter'], P['stone'], named({'n outlands', 's outlands'}), CELL_KM)
+    for k in G:
+        P[k] = np.clip(np.round(G[k] * land * (prov != PI('evaporite'))), 0, 255).astype(np.uint8)
     prov_b = prov | np.where(ruin & land, RUIN_BIT, 0).astype(np.uint8)
 
     # ---- the lode nodes of the placer families: the node field itself (45r-res-field.js), on the coarse mask
@@ -760,3 +828,4 @@ def main(argv):
 
 if __name__ == '__main__':
     main(sys.argv)
+

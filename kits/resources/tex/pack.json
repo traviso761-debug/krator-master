@@ -365,6 +365,36 @@
     "sourceMean": 0.5784
    }
   },
+  "schistem": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "schistem.albedo.webp",
+    "normalMap": "schistem.normal.webp",
+    "roughnessMap": "schistem.rough.webp"
+   },
+   "lib": "rock.schist.emerald",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.1,
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "e3364b237283d76996d2f9f89dd45a4ff830aced",
+    "normal": "1bdd19b36b2275e509311b1a5cf79a65c34a9f15",
+    "roughness": "027b16ffae594ae8dbb4c4753c4e16aa112fc6fe"
+   },
+   "specular": 0.25,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.40560296524646233,
+    "sourceMean": 0.4056
+   }
+  },
   "soda": {
    "breakup": null,
    "card": false,
@@ -487,6 +517,36 @@
     "keep": 0.0,
     "mean": 0.24779514693914673,
     "sourceMean": 0.2478
+   }
+  },
+  "turq": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "turq.albedo.webp",
+    "normalMap": "turq.normal.webp",
+    "roughnessMap": "turq.rough.webp"
+   },
+   "lib": "rock.turquoise.vein",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.05,
+   "scale": [
+    0.8,
+    0.8
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "21f8289d0b5ed7a35c44cbd576c98806070b76e4",
+    "normal": "a1103fa9df2c6054de3e60ad943bd042cc2eec91",
+    "roughness": "59adb5c23574f6f70964e9400c084f8e66d160ae"
+   },
+   "specular": 0.3,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.6635553574984681,
+    "sourceMean": 0.6636
    }
   }
  },

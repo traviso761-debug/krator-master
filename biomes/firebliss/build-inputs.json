@@ -229,7 +229,7 @@
     "core/water/ext/61-core-water-plume.js": "3b1eb79ddcc511cd6c09dc145253e116ed8377252c7d7811d2d9b3fa35faf18f",
     "core/water/geyser/52-core-water-geyser.js": "804a8b84e108965002396666c0647991ef073416f0206b02aeba81be3be19ac1",
     "core/water/geyser/52b-core-water-geyser-draw.js": "2e403145a06bf9b7a06fe4a5e6831d3ae0724a8eba1fbb21b4039ab2ae6cfd3e",
-    "kits/resources/data/geology.json": "ec832a80ef152e30adf99404f7ee90336a1d51a805c368cef51274acf112f1b8",
+    "kits/resources/data/geology.json": "13fd3247258a9a0913a7c0e838da61d27108c2c26677a3370eca2349bfa953a5",
     "kits/resources/src/45r-res-field.js": "ca8bf0860266e0eef84783236767da2b4758be920bd26e7aef63c1f8447440ab",
     "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
     "tools/buildlib.py": "24ec6d636869007e626446a0b8e9cc886fd595af0c9f95b78c4d4b272a18ec0e",
@@ -254,14 +254,14 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/firebliss/dist/firebliss.html": "d1b62365d5c1f069680526b78be82780479b53f7054511512e244e8fd3a35976",
+    "biomes/firebliss/dist/firebliss.html": "3ee61f38e419fb76601c26d1377cbf16d91a9c21e2f86b7d4167832cd2c0d236",
     "biomes/firebliss/dist/firebliss.tex.copperglacier.js": "0e4be2f869484b6344a901a2aa286c0447d428f3c36fbac575ae0aa9f297be7e",
     "biomes/firebliss/dist/firebliss.tex.firebliss.js": "5e441c466565f82e6561ab74e17fb502a72bc2652ef209a8a6cf24ebdd458458",
     "biomes/firebliss/dist/firebliss.tex.geyser.js": "eaa6826a79ef4d22cdad36d72fb0e98b0e8ba933ff5bc8c8afd3ece018bd5be7",
     "biomes/firebliss/dist/firebliss.tex.throne.js": "43a529de2448943b6bbfacaa24b1ea394a94587b12ff893cd1c75420902e3dc5"
    },
    "outputs_raw": {
-    "biomes/firebliss/dist/firebliss.html": "d1b62365d5c1f069680526b78be82780479b53f7054511512e244e8fd3a35976",
+    "biomes/firebliss/dist/firebliss.html": "3ee61f38e419fb76601c26d1377cbf16d91a9c21e2f86b7d4167832cd2c0d236",
     "biomes/firebliss/dist/firebliss.tex.copperglacier.js": "0e4be2f869484b6344a901a2aa286c0447d428f3c36fbac575ae0aa9f297be7e",
     "biomes/firebliss/dist/firebliss.tex.firebliss.js": "5e441c466565f82e6561ab74e17fb502a72bc2652ef209a8a6cf24ebdd458458",
     "biomes/firebliss/dist/firebliss.tex.geyser.js": "eaa6826a79ef4d22cdad36d72fb0e98b0e8ba933ff5bc8c8afd3ece018bd5be7",
@@ -498,7 +498,7 @@
     "core/water/ext/61-core-water-plume.js": "3b1eb79ddcc511cd6c09dc145253e116ed8377252c7d7811d2d9b3fa35faf18f",
     "core/water/geyser/52-core-water-geyser.js": "804a8b84e108965002396666c0647991ef073416f0206b02aeba81be3be19ac1",
     "core/water/geyser/52b-core-water-geyser-draw.js": "2e403145a06bf9b7a06fe4a5e6831d3ae0724a8eba1fbb21b4039ab2ae6cfd3e",
-    "kits/resources/data/geology.json": "ec832a80ef152e30adf99404f7ee90336a1d51a805c368cef51274acf112f1b8",
+    "kits/resources/data/geology.json": "13fd3247258a9a0913a7c0e838da61d27108c2c26677a3370eca2349bfa953a5",
     "kits/resources/src/45r-res-field.js": "ca8bf0860266e0eef84783236767da2b4758be920bd26e7aef63c1f8447440ab",
     "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
     "tools/buildlib.py": "24ec6d636869007e626446a0b8e9cc886fd595af0c9f95b78c4d4b272a18ec0e",
@@ -524,14 +524,14 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/firebliss/dist/firebliss-east.html": "b196d78c29e58f3793f1360b8be147edc1ac8d1e873b993a630c53cd69e00973",
+    "biomes/firebliss/dist/firebliss-east.html": "0978c6e60f51866344668a3e91fee846b8ec745b0f3790fca59afa85868a6571",
     "biomes/firebliss/dist/firebliss.tex.copperglacier.js": "0e4be2f869484b6344a901a2aa286c0447d428f3c36fbac575ae0aa9f297be7e",
     "biomes/firebliss/dist/firebliss.tex.firebliss.js": "5e441c466565f82e6561ab74e17fb502a72bc2652ef209a8a6cf24ebdd458458",
     "biomes/firebliss/dist/firebliss.tex.geyser.js": "eaa6826a79ef4d22cdad36d72fb0e98b0e8ba933ff5bc8c8afd3ece018bd5be7",
     "biomes/firebliss/dist/firebliss.tex.throne.js": "43a529de2448943b6bbfacaa24b1ea394a94587b12ff893cd1c75420902e3dc5"
    },
    "outputs_raw": {
-    "biomes/firebliss/dist/firebliss-east.html": "b196d78c29e58f3793f1360b8be147edc1ac8d1e873b993a630c53cd69e00973",
+    "biomes/firebliss/dist/firebliss-east.html": "0978c6e60f51866344668a3e91fee846b8ec745b0f3790fca59afa85868a6571",
     "biomes/firebliss/dist/firebliss.tex.copperglacier.js": "0e4be2f869484b6344a901a2aa286c0447d428f3c36fbac575ae0aa9f297be7e",
     "biomes/firebliss/dist/firebliss.tex.firebliss.js": "5e441c466565f82e6561ab74e17fb502a72bc2652ef209a8a6cf24ebdd458458",
     "biomes/firebliss/dist/firebliss.tex.geyser.js": "eaa6826a79ef4d22cdad36d72fb0e98b0e8ba933ff5bc8c8afd3ece018bd5be7",
@@ -768,7 +768,7 @@
     "core/water/ext/61-core-water-plume.js": "3b1eb79ddcc511cd6c09dc145253e116ed8377252c7d7811d2d9b3fa35faf18f",
     "core/water/geyser/52-core-water-geyser.js": "804a8b84e108965002396666c0647991ef073416f0206b02aeba81be3be19ac1",
     "core/water/geyser/52b-core-water-geyser-draw.js": "2e403145a06bf9b7a06fe4a5e6831d3ae0724a8eba1fbb21b4039ab2ae6cfd3e",
-    "kits/resources/data/geology.json": "ec832a80ef152e30adf99404f7ee90336a1d51a805c368cef51274acf112f1b8",
+    "kits/resources/data/geology.json": "13fd3247258a9a0913a7c0e838da61d27108c2c26677a3370eca2349bfa953a5",
     "kits/resources/src/45r-res-field.js": "ca8bf0860266e0eef84783236767da2b4758be920bd26e7aef63c1f8447440ab",
     "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
     "tools/buildlib.py": "24ec6d636869007e626446a0b8e9cc886fd595af0c9f95b78c4d4b272a18ec0e",
@@ -794,14 +794,14 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/firebliss/dist/firebliss-glen.html": "63dbd92f4f664edbb8de01e8c3a184bbd9e9041f9bf382e1f099376a8fb90018",
+    "biomes/firebliss/dist/firebliss-glen.html": "7b04efc6f3955f1d99e9c068313476cd70c3b59d0665aa2ea2e4cbb4f2657fa0",
     "biomes/firebliss/dist/firebliss.tex.copperglacier.js": "0e4be2f869484b6344a901a2aa286c0447d428f3c36fbac575ae0aa9f297be7e",
     "biomes/firebliss/dist/firebliss.tex.firebliss.js": "5e441c466565f82e6561ab74e17fb502a72bc2652ef209a8a6cf24ebdd458458",
     "biomes/firebliss/dist/firebliss.tex.geyser.js": "eaa6826a79ef4d22cdad36d72fb0e98b0e8ba933ff5bc8c8afd3ece018bd5be7",
     "biomes/firebliss/dist/firebliss.tex.throne.js": "43a529de2448943b6bbfacaa24b1ea394a94587b12ff893cd1c75420902e3dc5"
    },
    "outputs_raw": {
-    "biomes/firebliss/dist/firebliss-glen.html": "63dbd92f4f664edbb8de01e8c3a184bbd9e9041f9bf382e1f099376a8fb90018",
+    "biomes/firebliss/dist/firebliss-glen.html": "7b04efc6f3955f1d99e9c068313476cd70c3b59d0665aa2ea2e4cbb4f2657fa0",
     "biomes/firebliss/dist/firebliss.tex.copperglacier.js": "0e4be2f869484b6344a901a2aa286c0447d428f3c36fbac575ae0aa9f297be7e",
     "biomes/firebliss/dist/firebliss.tex.firebliss.js": "5e441c466565f82e6561ab74e17fb502a72bc2652ef209a8a6cf24ebdd458458",
     "biomes/firebliss/dist/firebliss.tex.geyser.js": "eaa6826a79ef4d22cdad36d72fb0e98b0e8ba933ff5bc8c8afd3ece018bd5be7",
@@ -1038,7 +1038,7 @@
     "core/water/ext/61-core-water-plume.js": "3b1eb79ddcc511cd6c09dc145253e116ed8377252c7d7811d2d9b3fa35faf18f",
     "core/water/geyser/52-core-water-geyser.js": "804a8b84e108965002396666c0647991ef073416f0206b02aeba81be3be19ac1",
     "core/water/geyser/52b-core-water-geyser-draw.js": "2e403145a06bf9b7a06fe4a5e6831d3ae0724a8eba1fbb21b4039ab2ae6cfd3e",
-    "kits/resources/data/geology.json": "ec832a80ef152e30adf99404f7ee90336a1d51a805c368cef51274acf112f1b8",
+    "kits/resources/data/geology.json": "13fd3247258a9a0913a7c0e838da61d27108c2c26677a3370eca2349bfa953a5",
     "kits/resources/src/45r-res-field.js": "ca8bf0860266e0eef84783236767da2b4758be920bd26e7aef63c1f8447440ab",
     "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
     "tools/buildlib.py": "24ec6d636869007e626446a0b8e9cc886fd595af0c9f95b78c4d4b272a18ec0e",
@@ -1064,14 +1064,14 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/firebliss/dist/firebliss-mons.html": "a23d3fdd15f3aa8d07148722bb90356690321e4e469d00bd26e945013e8f91cc",
+    "biomes/firebliss/dist/firebliss-mons.html": "a5ab421f53f3536972642f3f210c8ebbc852aa98d7f4d90253eea777ce50a514",
     "biomes/firebliss/dist/firebliss.tex.copperglacier.js": "0e4be2f869484b6344a901a2aa286c0447d428f3c36fbac575ae0aa9f297be7e",
     "biomes/firebliss/dist/firebliss.tex.firebliss.js": "5e441c466565f82e6561ab74e17fb502a72bc2652ef209a8a6cf24ebdd458458",
     "biomes/firebliss/dist/firebliss.tex.geyser.js": "eaa6826a79ef4d22cdad36d72fb0e98b0e8ba933ff5bc8c8afd3ece018bd5be7",
     "biomes/firebliss/dist/firebliss.tex.throne.js": "43a529de2448943b6bbfacaa24b1ea394a94587b12ff893cd1c75420902e3dc5"
    },
    "outputs_raw": {
-    "biomes/firebliss/dist/firebliss-mons.html": "a23d3fdd15f3aa8d07148722bb90356690321e4e469d00bd26e945013e8f91cc",
+    "biomes/firebliss/dist/firebliss-mons.html": "a5ab421f53f3536972642f3f210c8ebbc852aa98d7f4d90253eea777ce50a514",
     "biomes/firebliss/dist/firebliss.tex.copperglacier.js": "0e4be2f869484b6344a901a2aa286c0447d428f3c36fbac575ae0aa9f297be7e",
     "biomes/firebliss/dist/firebliss.tex.firebliss.js": "5e441c466565f82e6561ab74e17fb502a72bc2652ef209a8a6cf24ebdd458458",
     "biomes/firebliss/dist/firebliss.tex.geyser.js": "eaa6826a79ef4d22cdad36d72fb0e98b0e8ba933ff5bc8c8afd3ece018bd5be7",

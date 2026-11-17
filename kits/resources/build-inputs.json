@@ -75,16 +75,16 @@
     "kits/resources/KNOWN_ISSUES.md": "55ddc8535fa13338843ff1c0a9064f2369ace9e8e70732e375038600a229b5ed",
     "kits/resources/PORT.md": "5e98d12d17ee61dd04af7bd1fbf107343851ca51458fada022cdd2d11d7a12f9",
     "kits/resources/build.py": "fc1f8139f4ff04af83adc8da9d7922fb40439f335ca9c5831ec662c2fb9bd595",
-    "kits/resources/data/geology.json": "ec832a80ef152e30adf99404f7ee90336a1d51a805c368cef51274acf112f1b8",
-    "kits/resources/data/ledger.json": "9b9e720845a0bbaf6e46aca8ca4cc6f350f71ba8a825dc888e69fb1e1481e713",
+    "kits/resources/data/geology.json": "13fd3247258a9a0913a7c0e838da61d27108c2c26677a3370eca2349bfa953a5",
+    "kits/resources/data/ledger.json": "4ebddac59cb3c9dede957b1e2446c2d8198e3d27b47182b8173007501af22fe0",
     "kits/resources/src/00-head.html": "6881b3d04acb3667ea877cc3480990284f27fc0f74e01197f1872ed461e906a7",
-    "kits/resources/src/26k-kit.js": "92d4998c100ffc83c79c1383087faa9a4757ac583e0cd6188f7c84afa97f63bb",
-    "kits/resources/src/42r-res-ore.js": "795b57d189506369e35b7e2b3de5795d940d8bff91bb51e6dedb7df3f2432a04",
+    "kits/resources/src/26k-kit.js": "49a482e4128980212bcc9c087f3a8d78192408e3175223a468ece59561df4925",
+    "kits/resources/src/42r-res-ore.js": "fff9ee3785b48b94adc9caf384d31b047e21eed3133f70a4ed5bf2d01f3830cc",
     "kits/resources/src/43r-res-fields.js": "0a9325061c1d4526405b636391f26d9330012c3c6b36aa939e7ad461ec83a60f",
-    "kits/resources/src/44r-res-nodes.js": "e52c3cb3eace32606700aef4991b9032cdf0be9a21f56ffad90c657ca89359e3",
+    "kits/resources/src/44r-res-nodes.js": "9dff64ba02126039f38e1abe6e8d8ef62e78a520bdcb510bc8254b9693115c16",
     "kits/resources/src/45r-res-field.js": "ca8bf0860266e0eef84783236767da2b4758be920bd26e7aef63c1f8447440ab",
     "kits/resources/src/46r-res-ledger.js": "2f6286fd49a1e32e46a8e404c2696d057145acce14ab676cb26bc73fa5614fff",
-    "kits/resources/src/89-rows.js": "47a88164c34dcf75681c7b199da353d07d76bddcf2638e123630651637b36700",
+    "kits/resources/src/89-rows.js": "0b896530d3f51789ab89ac037a10afdba2feeab0b04e9641485326e2d94a123b",
     "kits/resources/src/98r-host-geomap.js": "138a75d08d5129ee1e1d2b61b64cc9233753a3c72a0f70ec9acdc9e9d76a0bbd",
     "kits/resources/tex/cassiterite.albedo.webp": "1be6480d761bb34f35466447607184b916396db6faab49a35542913176fce39f",
     "kits/resources/tex/cassiterite.normal.webp": "60e08f91c83fd972db1e01ada0b1cb4e62c023c40a5dae2bd6cb5af46579075f",
@@ -113,7 +113,7 @@
     "kits/resources/tex/marble.albedo.webp": "f88ff2532ebf45b3ef69cf7ddbdf527c872573e9195e3f67cd71cc24fb89399c",
     "kits/resources/tex/marble.normal.webp": "99d47681af06d8d553c755b4e586be606511a94aca3a8ba0bdebeaffd12614af",
     "kits/resources/tex/marble.rough.webp": "ab7bc8bdece6afc4c0a6793409c0884f77134823541b588b65c3e6e9ac17bda4",
-    "kits/resources/tex/pack.json": "81022afe0fb738dea79d697341d69af8590ef750e54622272819e840da577f7d",
+    "kits/resources/tex/pack.json": "3be33222ffde9a32c8dce7a5628acf7cd9e6852a42a8800cca2a549dc48f7a3a",
     "kits/resources/tex/pegmatite.albedo.webp": "757d5795557ba26012edb5e5a29e7795e36e65e2e4a36da29f3120da354540c0",
     "kits/resources/tex/pegmatite.normal.webp": "be457eb1d05fc752590367e57115964da0e1446a8c655d49336f4874e6bf88a7",
     "kits/resources/tex/pegmatite.rough.webp": "3da8196ec67087b0228caeecb3482df24622e5ac9fa6d512e6aa526056259843",
@@ -123,6 +123,9 @@
     "kits/resources/tex/quartz.albedo.webp": "6033a232c96cd1f8e2d490abb0312cc1390467491ad54831410fd6dee0cbbfa3",
     "kits/resources/tex/quartz.normal.webp": "efc2b32e62387000d33d4ed44650c7e6afb3878bcd40cd3a7d2e9cb7f610aca0",
     "kits/resources/tex/quartz.rough.webp": "1280b1dea94f07c7e9eddee0f76f93819f57fb7480d724f43d77e26509c593c3",
+    "kits/resources/tex/schistem.albedo.webp": "96fd337db97b348e5d9b6d702ee64cc14ebb2d6e79d138beeb7441f847d70fae",
+    "kits/resources/tex/schistem.normal.webp": "dc1dc6f7e4d344852f42923d98d69d9ae77f12ee5692e91ac3a349ff127ccaf4",
+    "kits/resources/tex/schistem.rough.webp": "a610a822c762518ed2487084763ac92b2f07b108b5fe8227a237d6d10db4e734",
     "kits/resources/tex/soda.albedo.webp": "b9fba38e3ac588fd662412990f384957e58e9656297748a0bf38cfbc78047091",
     "kits/resources/tex/soda.normal.webp": "d466f4d6f5feeb2d31039713cf6f3ce5fd90d3254e6a8c2482d569b5247f12f4",
     "kits/resources/tex/soda.rough.webp": "1d1e39789b33b9840f211f7361e2d7786b20354f11776392f39f2f25818d7cdb",
@@ -135,6 +138,9 @@
     "kits/resources/tex/tar.albedo.webp": "d1e0ae0d0bee8ad47bf40d697dad54602622e067ae39fe147791e4daf541dbb1",
     "kits/resources/tex/tar.normal.webp": "2dc51e975bc90af90f2af6e11447136dc6d586b0058fa78c33be73eb16c7d1dd",
     "kits/resources/tex/tar.rough.webp": "d8172f3cc411cc3e99a4a37d76d8caf51b64579907dfa058166efa02264471fd",
+    "kits/resources/tex/turq.albedo.webp": "6f6c8995c75eb449bb9fd1c4e02552e9c24e73d40e26872d549c8d06d751eda8",
+    "kits/resources/tex/turq.normal.webp": "6d5b80dab67a2a76e0b24b5782b0fcbd2f0bc13b578c37a865922b477f6be49c",
+    "kits/resources/tex/turq.rough.webp": "58286aef24abb5493ef106fff84c634ce4982a67ac9287dd55fd4c34971947cd",
     "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
     "tools/buildlib.py": "24ec6d636869007e626446a0b8e9cc886fd595af0c9f95b78c4d4b272a18ec0e",
     "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47",
@@ -160,14 +166,14 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "kits/resources/build-manifest.json": "2378d23a348608f5706a11dbb6df9b92446307a1a79015430baa062bfecb5bad",
-    "kits/resources/dist/resources.html": "24faad98a9f4cc549338586792b7a67e44e15648c26929fa01fee049ba483510",
-    "kits/resources/dist/resources.tex.resources.js": "71a4d5020e9e8fa48901bd901b654606f85d081fd2fbc187e79f75463e3c8224"
+    "kits/resources/build-manifest.json": "90431edc99e8e670f827151f593262052817da269969432ec3b513ea64020006",
+    "kits/resources/dist/resources.html": "b4be0ba70996ccc5501e42a70d5335b11e2e820c3036e1d7a9714ee071ee6bc4",
+    "kits/resources/dist/resources.tex.resources.js": "1b4d82ac82f554efe0496224da39b1ea3c4528d2e133fe489cd0dedc2915c582"
    },
    "outputs_raw": {
-    "kits/resources/build-manifest.json": "2378d23a348608f5706a11dbb6df9b92446307a1a79015430baa062bfecb5bad",
-    "kits/resources/dist/resources.html": "24faad98a9f4cc549338586792b7a67e44e15648c26929fa01fee049ba483510",
-    "kits/resources/dist/resources.tex.resources.js": "71a4d5020e9e8fa48901bd901b654606f85d081fd2fbc187e79f75463e3c8224"
+    "kits/resources/build-manifest.json": "90431edc99e8e670f827151f593262052817da269969432ec3b513ea64020006",
+    "kits/resources/dist/resources.html": "b4be0ba70996ccc5501e42a70d5335b11e2e820c3036e1d7a9714ee071ee6bc4",
+    "kits/resources/dist/resources.tex.resources.js": "1b4d82ac82f554efe0496224da39b1ea3c4528d2e133fe489cd0dedc2915c582"
    }
   }
  }
