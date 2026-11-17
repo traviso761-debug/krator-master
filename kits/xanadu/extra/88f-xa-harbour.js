@@ -23,6 +23,11 @@
 //                     treadwheel, sheerlegs; drawn flooded with a cargo barge (extra/88d's xa_lake_barge, when the page has
 //                     it) afloat in it under scaffolds (the lake's water is one plane: a dry basin needs core/water to mask it)
 // The lake craft are extra/88d-xa-lakecraft.js's (the dugout, the launch, the cargo barge), tagged as vessels there.
+//   xa_garden_wall    a garden square's low wall (o.len long, default 8): coped, a pier at each end; v 1 a gate where a rill axis
+//                     meets the edge: two taller piers and an arched head over the opening
+//   <house>_badgir    wind-catchers (the plan's heat: 31-33 C on the lake): twins of the common houses (XH_BADGIR) running the
+//                     same builder and seed, then a badgir at the back corner of the footprint: a shaft to over the roof, louvred
+//                     vents on its four faces, a capped top (as the Palopo twins, 88-xa-dress)
 //   xa_monastery_white  the monastery (77-xa-sacred) in the White Monastery's lime-white (Qiblai's white monastery, the owner,
 //                     2026-11-16): the same builder and seed under a paint filter, as the Palopo twins (88-xa-dress)
 
@@ -69,7 +74,7 @@ function buildXaHarbourQuay(G,o){reseed(34301+(o.v|0));const V=xV(o),L=34,F=5,st
 XA.def({key:'xa_harbour_quay',name:'Harbour quay',family:'Dockyard',tags:{type:['infrastructure','industry'],wealth:'poor',lit:true},w:34,d:14,h:9,fw:34,fd:11,build:buildXaHarbourQuay});
 
 // ---------------------------------------------------------------- the mole: o.len along x, the harbour's quay face at z = -8, the lake at +z
-function buildXaMoleRun(G,o){reseed(34311+(o.v|0));const L=o.len==null?34:o.len,stone=xC(xPick(XPAL.stone)),cope=stone.clone().multiplyScalar(1.14),tim=xC(0x5a4632),lit=xLit(),H=-8,P=4.6;
+function buildXaMoleRun(G,o){reseed(34311+(o.v|0));const L=o.len==null?34:o.len,stone=xC(xPick(XPAL.stone)),cope=stone.clone().multiplyScalar(1.14),tim=xC(0x5a4632),lit=xLit(),H=-7.45,P=4.4;
  vnReg('Mole',0,0,L/2,4);
  vB('vStone',0,-7,-.8,L,6.65,14.4,0,stone.clone().multiplyScalar(.78));         /* the body */
  xhCourses(0,L,H,-1,-7,-.35,stone,-2.4);vB('vStone',0,-.35,H+.45,L,.35,1.0,0,cope);
@@ -81,8 +86,8 @@ function buildXaMoleRun(G,o){reseed(34311+(o.v|0));const L=o.len==null?34:o.len,
  for(let x=-L/2+3;x<L/2-1;x+=6)vB('vDarkB',x,-.3,P+.02,.5,.22,.04,0);
  /* the lake face below it and its armour: boulders in three rows down into the water */
  vB('vStone',0,-7,P+1.6,L,6.65,.8,0,stone.clone().multiplyScalar(.7));
- for(let r=0;r<3;r++){const z=P+2.3+r*1.25,y=-1.0-r*1.1;for(let x=-L/2+.8+rr(0,.6);x<L/2-.4;x+=rr(1.4,2.1))
-  kput('xBoulder',[x,y,Math.min(z+rr(-.3,.3),7.6)],qEuler(rng()*3,rng()*3,0),[rr(.7,1.1),rr(.6,.9),rr(.7,1.0)],xC(xPick([0x8a8070,0x7a7266,0x948a78])).multiplyScalar(r>0?.8:1));}
+ for(let r=0;r<3;r++){const z=P+2.1+r*1.1,y=-1.0-r*1.1;for(let x=-L/2+1.2+rr(0,.5);x<L/2-1.2;x+=rr(1.4,2.1))
+  kput('xBoulder',[x,y,Math.min(z+rr(-.3,.3),6.85)],qEuler(rng()*3,rng()*3,0),[rr(.7,1.1),rr(.6,.9),rr(.7,1.0)],xC(xPick([0x8a8070,0x7a7266,0x948a78])).multiplyScalar(r>0?.8:1));}
  const nl=Math.max(1,Math.round(L/17));for(let k=0;k<nl;k++)xhLamp(-L/2+(k+.5)*L/nl,0,P-.6,lit);
  xhFolk(0,-2,Math.max(1,Math.round(L/12)),L/3);}
 XA.def({key:'xa_mole_run',name:'Mole',family:'Dockyard',tags:{type:['infrastructure'],wealth:'civic',lit:true},w:34,d:16,h:4,fw:34,fd:16,build:buildXaMoleRun});
@@ -116,7 +121,7 @@ function buildXaRiverSpan(G,o){reseed(34321);const V=(o.v|0)%2,W=8,L=26,T=1.6,ys
    vB('vStone',x,0,zm,.5,1.05,ll,0,stone);vB('vStone',x,1.05,zm,.64,.14,ll,0,cope);}}}
  else{/* the abutment and its wing walls (they flare back from the face at z = -T), the parapet ending on a pier-post */
   vB('vStone',0,-16,-(L/2-T)/2-T,W,16-.9,L/2-T,0,dark);
-  for(const s of[-1,1]){const p=loc(0,0,s*(W/2+1.6),-L/2+4.5,s*.32);vB('vStone',p[0],-12,p[1],.9,12+.95,7.6,s*.32,dark);vB('vStone',p[0],.05,p[1],1.04,.14,7.7,s*.32,cope);
+  for(const s of[-1,1]){const p=loc(0,0,s*(W/2+1.4),-L/2+4.6,s*.32);vB('vStone',p[0],-12,p[1],.9,12+.95,6.6,s*.32,dark);vB('vStone',p[0],.05,p[1],1.04,.14,6.7,s*.32,cope);
    const x=s*(W/2-.25);vB('vStone',x,0,(L/2-T)/2,.5,1.05,L/2+T,0,stone);vB('vStone',x,1.05,(L/2-T)/2,.64,.14,L/2+T,0,cope);
    vB('vStone',x,0,-T,.9,1.6,.9,0,stone);kput('xConeP',[x,1.6,-T],null,[.5,.5,.5],cope);}
   vB('vStone',0,-.9,-L/2+(L/2-T)/2,W,.9,L/2-T,0,stone);}
@@ -162,16 +167,16 @@ function buildXaHarbourWarehouse(G,o){reseed(34361+(o.v|0));const V=xV(o),W=30,D
   y+=H1;}
  /* the loft door and the hoist beam over it, the rope down to a bale on the platform */
  const xd=-W/2+2.6+2*5;vnDoor(xd,y-H1+.2,D/2-.2,0,1.8,2.4,'vWood',timD,tim,false);
- vB('vWood',xd,y+.3,D/2+.4,.4,.4,3.0,0,timD);xnMember('vWood',[xd,y-.8,D/2-.1],[xd,y+.2,D/2+1.4],.18,.18,[1,0,0],timD);vBall('vIron',xd,y+.15,D/2+1.75,.16,xC(0x2a2826));
- vBeam([xd,y+.1,D/2+1.75],[xd,1.9,D/2+1.75],.03,xC(0x3a3026),'vRope');vB('vClothB',xd,1.3,D/2+1.75,.9,.6,.7,0,xC(0xc8b898));
- vnGableRoof(0,y,0,W+1.2,D+1.4,3.6,Math.PI/2,'xGableT',tile,.7);
+ vB('vWood',xd,y+.3,D/2+.3,.4,.4,2.2,0,timD);xnMember('vWood',[xd,y-.8,D/2-.1],[xd,y+.2,D/2+1.1],.18,.18,[1,0,0],timD);vBall('vIron',xd,y+.15,D/2+1.3,.16,xC(0x2a2826));
+ vBeam([xd,y+.1,D/2+1.3],[xd,1.9,D/2+1.3],.03,xC(0x3a3026),'vRope');vB('vClothB',xd,1.3,D/2+1.3,.9,.6,.7,0,xC(0xc8b898));
+ vnGableRoof(0,y,0,W+1.2,D+1.4,3.6,0,'xGableT',tile,.7);
  /* the loading platform along the front, its steps; v 2 a timber arcade over it */
  vB('vWood',0,.5,D/2+1.4,W-1,.45,2.6,0,tim);for(let k=0;k<3;k++)vB('vStone',W/2-2.5,.5-(k+1)*.16,D/2+2.9+k*.36,2.4,.16,.36,0,stone);
  if(V===2){for(let k=0;k<7;k++)vPst('vPost',-W/2+1+k*(W-2)/6,.95,D/2+2.5,.16,3.2,timD);vnAwning(0,4.1,D/2,0,W-.6,3,tile);}
  vnSacks(-9,.95,D/2+1.4,6);for(let k=0;k<3;k++)vnBarrel(6+k*1.0,.95,D/2+1.6,.36,.9,xC(0x8a6a48));vnCrate(10.5,.95,D/2+1.4,1.1,.2);vnCrate(10.5,1.95,D/2+1.4,.9,.5);
  if(lit)for(const x of[-9,9])vBall('vBulb',x,3.8,D/2+.25,.12);
  xhFolk(0,D/2+4,3,6);}
-XA.def({key:'xa_harbour_warehouse',name:'Harbour warehouse',family:'Dockyard',tags:{type:['industry','market/shop'],wealth:'middle',job:'warehousing',lit:true},w:32,d:21,h:15,fw:31,fd:20,build:buildXaHarbourWarehouse});
+XA.def({key:'xa_harbour_warehouse',name:'Harbour warehouse',family:'Dockyard',tags:{type:['industry','market/shop'],wealth:'middle',job:'warehousing',lit:true},w:33,d:24,h:15,fw:31,fd:20,build:buildXaHarbourWarehouse});
 
 // ---------------------------------------------------------------- the drydock: 48 m along z, its gate at +z on the lake
 function buildXaDrydock(G,o){reseed(34371+(o.v|0));const L=48,B=14,T=4,WL=-2.4,stone=xC(xPick(XPAL.stone)),cope=stone.clone().multiplyScalar(1.14),dark=stone.clone().multiplyScalar(.7),
@@ -202,6 +207,29 @@ function buildXaDrydock(G,o){reseed(34371+(o.v|0));const L=48,B=14,T=4,WL=-2.4,s
  for(const s of[-1,1])xhLamp(s*(B/2+T-.6),0,0,lit);
  xhFolk(B/2+2,0,3,6);xhFolk(-B/2-2,-8,2,4);}
 XA.def({key:'xa_drydock',name:'Drydock',family:'Dockyard',tags:{type:['industry','infrastructure'],wealth:'civic',job:'shipwrighting',lit:true},w:23,d:49,h:10,fw:22,fd:48,build:buildXaDrydock});
+
+// ---------------------------------------------------------------- a garden square's wall: along x, its outside +z
+function buildXaGardenWall(G,o){reseed(34381+(o.v|0));const L=o.len==null?8:o.len,stone=xC(xPick(XPAL.stone)),wash=xC(xPick(XPAL.wash)),cope=stone.clone().multiplyScalar(1.15),gate=(o.v|0)===1;
+ vnReg(gate?'Garden gate':'Garden wall',0,0,L/2,gate?3.2:1.2);
+ const run=(x0,x1)=>{if(x1-x0<.05)return;vB('vPlaster',(x0+x1)/2,0,0,x1-x0,.95,.5,0,wash);vB('vStone',(x0+x1)/2,.95,0,x1-x0+.02,.14,.64,0,cope);};
+ const pier=(x,h)=>{vB('vStone',x,0,0,.7,h,.7,0,stone);vB('vStone',x,h,0,.84,.16,.84,0,cope);kput('xConeP',[x,h+.16,0],null,[.3,.4,.3],cope);};
+ if(!gate){run(-L/2,L/2);pier(-L/2+.35,1.3);pier(L/2-.35,1.3);}
+ else{const g=1.8;run(-L/2,-g/2-.35);run(g/2+.35,L/2);for(const s of[-1,1])pier(s*(g/2+.35),2.4);
+  vB('vStone',0,2.4,0,g+1.4,.5,.7,0,stone);xhArchHead(0,1.9,.35,g,cope);vB('vStone',0,2.9,0,g+1.6,.14,.84,0,cope);}}
+XA.def({key:'xa_garden_wall',name:'Garden wall',family:'Garden tiles',tags:{type:['infrastructure'],wealth:'civic',lit:false},w:9,d:1,h:3.2,fw:8,fd:.7,nv:2,build:buildXaGardenWall});
+
+// ---------------------------------------------------------------- the wind-catchers: badgir twins of the common houses
+const XH_BADGIR=['xa_poor_b','xa_mid_a','xa_mid_b','xa_rich_a','xa_rich_c','xa_house_turk_a','xa_house_turk_b'];
+function xhBadgir(x,z,top,ry){const wash=xC(xPick(XPAL.wash)),tim=xC(0x5a4632),W=2.2,V=1.9,yv=top-V-.6;
+ const P=(u,v)=>loc(x,z,u,v,ry),c=P(0,0);
+ vB('vPlaster',c[0],0,c[1],W,top-.4,W,ry,wash);                                        /* the shaft, from the ground to over the roof */
+ for(let k=0;k<4;k++){const a=ry+k*Math.PI/2,f=loc(c[0],c[1],0,W/2+.01,a);            /* the vents: three slots a face, louvred */
+  for(const u of[-.6,0,.6]){const q=loc(f[0],f[1],u,0,a);vB('vDarkB',q[0],yv,q[1],.42,V,.06,a);for(let j=0;j<5;j++)vB('vWood',q[0],yv+.2+j*.36,q[1],.46,.06,.1,a,tim);}}
+ vB('vPlaster',c[0],top-.4,c[1],W+.3,.25,W+.3,ry,wash);vB('vPlaster',c[0],top-.15,c[1],W-.2,.4,W-.2,ry,wash.clone().multiplyScalar(.96));   /* the cap */
+ for(const s of[[-1,-1],[-1,1],[1,-1],[1,1]]){const q=loc(c[0],c[1],s[0]*(W/2+.05),s[1]*(W/2+.05),ry);kput('xConeP',[q[0],top-.15,q[1]],null,[.16,.5,.16],wash);}}
+for(const k of XH_BADGIR){const D=VERN.defs[k];if(!D)continue;
+ XA.def({key:k+'_badgir',baseKey:k,name:D.name+' (wind-catcher)',family:D.family,tags:Object.assign({},D.tags),w:D.w,d:D.d,h:D.h+2,fw:D.fw,fd:D.fd,nv:D.nv,
+  build:function(G,o){D.build(G,o);reseed(34391+(o.v|0));const fw=D.fw||D.w*.9,fd=D.fd||D.d*.9;xhBadgir(fw/2-1.3,-fd/2+1.3,D.h+1.6,0);}});}
 
 // ---------------------------------------------------------------- the White Monastery's dress
 // the walls, the battered storeys and the red walls of the Tibetan great house go lime-white; the gilt, the dark window frames,

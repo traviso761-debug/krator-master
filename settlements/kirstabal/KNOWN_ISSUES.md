@@ -8,10 +8,16 @@ The caravanserai, the latex house, the tea factory, the fermentaries and the fis
 (2026-11-16: `kits/xanadu/src/87k-xa-lake-trades.js`, opt-in: read in place through `kit.json`, so no other page changed;
 `TODO.md` "Ride along" folds it into the kit's FILES). The harbour's stand-ins are the kit's own pieces since 2026-11-17 (`kits/xanadu/extra/88f-xa-harbour.js`: the quay, the mole,
 the warehouses, the drydock, the slip, the stone arch bridge over Keb Riwa, the White Monastery's white dress; the lake craft
-are `extra/88d-xa-lakecraft.js`'s, tagged as vessels). Still owed: wind-catchers (the plan's heat). The drydock is drawn
+are `extra/88d-xa-lakecraft.js`'s, tagged as vessels). The wind-catchers (the plan's heat) are badgir twins of seven common houses (88f `XH_BADGIR`, about a quarter of the town's
+houses). The drydock is drawn
 flooded with a barge afloat in it: the lake is one water plane, so a pumped-out basin needs core/water to mask the lake over
 it. The pieces' weed line is drawn 2.4 m under their deck, where the town sets the deck over the lake. The vessels' class is
 core/tags' new `vessel`; the other pages that inline core/tags rebuild with the next all-builds rebuild (TODO.md).
+
+The empty lots outside the walls are drawn with the Construction kit's site (`kits/construction/src/10-cons-site.js`, read in
+place: a cleared, staked plot, some with their materials piled), its plain palette (the kit's library pack is not carried, as
+the isle demo does not); the owner's "just the normal xanadu kit" is the town's buildings, and the site gear is no culture's.
+Nothing builds on them yet: the sim's builders (core/simulation 77, as the isle demo's 47b) would take them.
 
 ## core/hamlet
 
@@ -48,8 +54,7 @@ core/tags' new `vessel`; the other pages that inline core/tags rebuild with the 
   set at the lowest ground under it, so its top steps rather than following the ground. The moat's water follows the apron's
   slope (it falls about 6 m from the inland side to the lake side) with no weirs drawn; its trench is drawn by the town's 6 m
   ground cells, so its slopes are coarse up close.
-- **The garden squares** (2026-11-17) meet their streets with no wall or hedge round them: the tiles' own paving is the edge.
-  Erewhon's garden wall is code in its target, not a kit piece, so a low garden wall would be a new piece for the kit. The
+- **The garden squares** (2026-11-17) are walled (88f `xa_garden_wall`, a gate where a rill axis meets the edge). The
   courts' own rills (the kiosk's, the star court's) run to the parterres beside them and stop, as in Erewhon's garden. The
   blocks round the gardens keep core/city's wandering side streets.
 - **Strongbow** is not drawn: its arcology is the Ancients kit's (`kits/ancients/targets/strongbow`), on its own page. The

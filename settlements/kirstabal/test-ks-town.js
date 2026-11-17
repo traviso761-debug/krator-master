@@ -25,6 +25,8 @@ for(const F of KITF('src').concat(KITF('extra'))){const s=fs.readFileSync(F,'utf
   if(!DIMS[m[1]]&&g('w'))DIMS[m[1]]={w:g('w'),d:g('d'),h:g('h')||8,fw:g('fw')||g('w'),fd:g('fd')||g('d')};}
  /* the garden and water tiles name their key first (xaGardenDef('xa_parterre', ...), xaWaterDef('xa_rill', ...)): 8 m plots */
  for(const m of s.matchAll(/xa(?:Garden|Water)Def\('(xa_[a-z0-9_]+)'/g))if(!DIMS[m[1]])DIMS[m[1]]={w:8,d:8,h:5,fw:8,fd:8};}
+/* the wind-catcher twins (kits/xanadu/extra/88f XH_BADGIR): each its house's box */
+{const m=fs.readFileSync(path.join(ROOT,'kits','xanadu','extra','88f-xa-harbour.js'),'utf8').match(/const XH_BADGIR=\[([^\]]*)\]/);if(m)for(const k of m[1].match(/xa_[a-z0-9_]+/g))if(DIMS[k])DIMS[k+'_badgir']=Object.assign({},DIMS[k],{h:DIMS[k].h+2});}
 /* a twin def takes its base's box (XA.def({key:'xa_monastery_white', baseKey:'xa_monastery', w:D.w, ...})) */
 for(const F of KITF('src').concat(KITF('extra')))for(const m of fs.readFileSync(F,'utf8').matchAll(/key:'(xa_[a-z0-9_]+)',baseKey:'(xa_[a-z0-9_]+)'/g))if(DIMS[m[2]])DIMS[m[1]]=DIMS[m[2]];
 const dims=(k,v)=>DIMS[k]?{key:k,v:v||0,w:DIMS[k].w,d:DIMS[k].d,h:DIMS[k].h,fw:DIMS[k].fw,fd:DIMS[k].fd}:null;
@@ -39,7 +41,7 @@ const corners=o=>[[-1,-1],[1,-1],[1,1],[-1,1]].map(([a,b])=>[o.c[0]+a*o.hw*o.u[0
 const pen=(A,B)=>{let m=1e9;for(const ax of [A.u,A.v,B.u,B.v]){const pr=F=>Math.abs(F.u[0]*ax[0]+F.u[1]*ax[1])*F.hw+Math.abs(F.v[0]*ax[0]+F.v[1]*ax[1])*F.hd;
  const d=Math.abs((A.c[0]-B.c[0])*ax[0]+(A.c[1]-B.c[1])*ax[1]);m=Math.min(m,pr(A)+pr(B)-d);}return m;};
 const segD=(p,a,b)=>{const dx=b[0]-a[0],dz=b[1]-a[1],l=dx*dx+dz*dz||1,t=Math.max(0,Math.min(1,((p[0]-a[0])*dx+(p[1]-a[1])*dz)/l));return Math.hypot(p[0]-a[0]-t*dx,p[1]-a[1]-t*dz);};
-const RUNS=new Set(['quay','mole','wall','bridge']);
+const RUNS=new Set(['quay','mole','wall','bridge','gardenwall']);
 const ON_MOLE=(a,b)=>a.kind==='lighthouse'&&b.kind==='mole';   /* the lighthouse stands on the mole's head */   /* the pieces laid end to end in a run touch by design */
 const overlaps=X=>{const all=X.lots.concat(X.extra),B=all.map(box),out=[];
  for(let i=0;i<B.length;i++)for(let j=i+1;j<B.length;j++){if(Math.hypot(B[i].c[0]-B[j].c[0],B[i].c[1]-B[j].c[1])>90)continue;
@@ -70,7 +72,7 @@ T.neg('a town without its latex house is caught',marks,Object.assign({},K,{lots:
 const OUTSIDE=new Set(['ks.serai','ks.tea','ks.ferment.a','ks.ferment.b','ks.latex']);
 const walled=X=>{const W=X.wall;if(!W||W.nodes.filter(n=>n.kind==='gate'&&n.named).length!==4||W.corners.length!==4||W.segs.length<8)return false;
  const L=W.line.slice(0,-1),inside=(x,z)=>{let c=false;for(let i=0,j=L.length-1;i<L.length;j=i++){const a=L[i],b=L[j];if((a[1]>z)!==(b[1]>z)&&x<(b[0]-a[0])*(z-a[1])/(b[1]-a[1])+a[0])c=!c;}return c;};
- return X.lots.every(l=>OUTSIDE.has(l.id)||inside(l.x,l.z));};
+ return X.lots.every(l=>OUTSIDE.has(l.id)||l.district||inside(l.x,l.z));};   /* the quarters outside the walls (district) are checked below */
 T.ok('the town is walled: four named gates, four corner bastions, its runs all round, every lot inside the wall',walled(K),
  K.wall?K.wall.nodes.filter(n=>n.kind==='gate').map(n=>n.name).join(', ')+'; '+K.wall.segs.length+' runs, '+K.wall.nodes.filter(n=>n.kind==='tower').length+' buttresses':'no wall');
 T.neg('a house outside the wall is caught',walled,Object.assign({},K,{lots:K.lots.concat([Object.assign({},K.lots[5],{id:'outside',x:K.lots[5].x+3000})])}),K);
@@ -81,6 +83,21 @@ const moated=X=>{const M=X.moat;if(!M||M.bridges.length!==4)return false;const G
  return X.lots.concat(X.extra).every(r=>r.kind==='bridge'||!G.inMoat(r.x,r.z,2));};
 T.ok('the moat is dug all round, bridged at the four gates, nothing standing in it',moated(K),K.moat?K.moat.bridges.map(b=>b.side+' deck '+b.deck.toFixed(1)).join(', '):'no moat');
 T.neg('a house in the moat is caught',moated,Object.assign({},K,{lots:K.lots.concat([Object.assign({},K.lots[3],{id:'moat',x:K.moat.line[2][0],z:K.moat.line[2][1]})])}),K);
+/* the quarters outside the walls (the owner, 2026-11-17: "we can put a little bit of the housing (and empty buildable lots)
+   outside the walls"): every outside lot beyond the moat, in its quarter, by a gate; a little of the town's housing (5-20 % of
+   its people); some lots left empty (no one in them, a house planned), some of those with their materials piled */
+const outsideOk=X=>{const G=KS_GROUND,o=X.lots.filter(l=>l.district),all=X.census.people;if(!o.length)return 'no lots outside';
+ const W=X.wall.line.slice(0,-1),inW=(x,z)=>{let c=false;for(let i=0,j=W.length-1;i<W.length;j=i++){const a=W[i],b=W[j];if((a[1]>z)!==(b[1]>z)&&x<(b[0]-a[0])*(z-a[1])/(b[1]-a[1])+a[0])c=!c;}return c;};
+ for(const l of o){if(inW(l.x,l.z)||G.inMoat(l.x,l.z,4))return l.id+' inside the wall or in the moat';const Q=(X.outside||[]).find(q=>q.id===l.district);
+  const u=G.u(l.x,l.z),v=G.v(l.x,l.z);if(!Q||u<Q.rect[0]-1||u>Q.rect[2]+1||v<Q.rect[1]-1||v>Q.rect[3]+1)return l.id+' outside its quarter';
+  if(l.vacant&&l.people)return l.id+' empty but lived in';}
+ const op=o.reduce((a,l)=>a+l.people,0),vac=o.filter(l=>l.vacant).length;
+ if(op<.05*all||op>.2*all)return op+' of '+all+' people outside';if(vac<5)return 'only '+vac+' empty lots';if(!o.some(l=>l.vacant&&l.bill))return 'no empty lot with its materials';return null;};
+{const r=outsideOk(K),o=K.lots.filter(l=>l.district);
+ T.ok('the quarters outside the walls: beyond the moat in their quarters, a little of the housing, some lots empty and buildable',!r,r||
+  K.outside.map(q=>q.name+' '+q.lots+' lots ('+q.vacant+' empty)').join(', ')+'; '+o.reduce((a,l)=>a+l.people,0)+' people outside');
+ const l0=o.find(l=>!l.vacant),inner=K.lots.find(l=>!l.district&&l.cls==='middle'),bad=Object.assign({},K,{lots:K.lots.concat([Object.assign({},l0,{id:'in-the-moat',x:K.moat.line[3][0],z:K.moat.line[3][1]})])});
+ T.neg('an outside house in the moat is caught',X=>!outsideOk(X),bad,K);}
 /* the garden squares (the owner, 2026-11-17: "garden tiles in groups that form even squares or rectangles among the city grid
    ... maybe 10% of the city total"): 9-12 % of the walled zone; each garden whole tiles, an odd count each way, squared to the
    shore frame, the rills crossing at its middle; no street crosses one */

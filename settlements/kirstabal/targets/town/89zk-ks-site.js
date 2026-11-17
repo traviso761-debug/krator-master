@@ -16,9 +16,9 @@ const ksStance=(r)=>{if(r.fixedY!=null)return{y:r.fixedY,drop:0};const c=Math.co
  for(const [a,b] of [[-1,-1],[1,-1],[1,1],[-1,1],[0,0]]){const x=r.x+a*hw*c+b*hd*s,z=r.z-a*hw*s+b*hd*c,y=KS_GROUND.h(x,z);lo=Math.min(lo,y);hi=Math.max(hi,y);}
  return{y:hi+.05,drop:Math.max(0,hi-lo)+.3};};
 /* what 90l places: {key, x, z, ry, o: {v, y, drop}, h, kind, id} */
-const KS_PLACE=[];
+const KS_PLACE=[],KS_EMPTY=[];   /* KS_EMPTY: the empty buildable lots outside the walls (41 OUTSIDE_Q), drawn by 90l as building sites */
 if(KS_PLAN){
- for(const r of KS_PLAN.lots){const st=ksStance(r);KS_PLACE.push({key:r.key,x:r.x,z:r.z,ry:r.ry,o:{v:r.v,y:st.y,drop:st.drop},kind:r.cls==='landmark'?'landmark':r.civic?'civic':'lot',cls:r.cls,id:r.id,h:ksD(r.h,10),people:r.people});}
+ for(const r of KS_PLAN.lots){const st=ksStance(r);if(r.vacant){KS_EMPTY.push(Object.assign({},r,{y:st.y-.05}));continue;}KS_PLACE.push({key:r.key,x:r.x,z:r.z,ry:r.ry,o:{v:r.v,y:st.y,drop:st.drop},kind:r.cls==='landmark'?'landmark':r.civic?'civic':'lot',cls:r.cls,id:r.id,h:ksD(r.h,10),people:r.people});}
  const WET=new Set(['quay','mole','lighthouse','boat','bridge','slip','drydock']);   /* on the water or over the river: their own level */
  for(const r of KS_PLAN.extra){const st=WET.has(r.kind)?{y:r.y,drop:r.kind==='boat'||r.kind==='slip'||r.kind==='drydock'||r.kind==='mole'||r.kind==='quay'||r.kind==='bridge'?0:Math.max(0,r.y-KS_GROUND.h(r.x,r.z))+.3}:r.kind==='garden'?{y:r.y,drop:r.drop}:ksStance(r);   /* a garden square: one level, its own footings (41) */
   KS_PLACE.push({key:r.key,x:r.x,z:r.z,ry:r.ry,o:{v:r.v,y:st.y,drop:r.kind==='boat'||r.kind==='bridge'?0:st.drop,len:r.len},kind:r.kind,id:r.id,h:ksD(r.h,10),people:r.people});}

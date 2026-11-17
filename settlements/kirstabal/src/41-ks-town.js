@@ -40,6 +40,15 @@ var KS_TOWN=(function(){
   ['decree','the garden of the Decree',[1,3],'v-'],                     /* across the street from the temple [1,2] */
   ['lake','the Lake garden',[3,0],'v-'],['east','the East garden',[4,3],'u-'],['west','the West garden',[0,2],'u+'],
   ['scarp','the Scarp garden',[2,4],'v-'],['works','the Works garden',[0,0],'u+'],['inland','the Inland garden',[4,4],'u-']];
+ /* THE QUARTERS OUTSIDE THE WALLS (the owner, 2026-11-17: "we can put a little bit of the housing (and empty buildable lots)
+    outside the walls"): a second core/city instance over the open ground beyond three gates, its avenues the roads already
+    there, core/city's infill (no civic pieces) along them; a share of their house lots left empty, buildable (a cleared plot,
+    some with their materials piled: kits/construction). [id, name, [u0, v0, u1, v1] in the shore frame, wealth, the road it
+    grows along]. The Lake Gate has no room: the quay street runs past its moat */
+ const OUTSIDE_Q=[['strongbow','the Strongbow quarter',[400,290,600,410],.42,'strongbow'],
+  ['works','the Works quarter',[-540,330,-385,450],.12,'works'],
+  ['scarp','the Scarp quarter',[-170,815,110,885],.3,'monastery']];
+ const OUTSIDE_T={vacant:.2,far:.18,bill:.4,seed:41790,rasterHalf:1500};   /* the share of house lots left empty, more of them far from the gate; a share of those with their materials piled */
  const GARDEN_T={share:.10,tile:8,margin:1.5,min:5,aspect:1.8,half:.55};
  const GARDEN_COURTS={grand:['xa_kiosk','xa_star_court','xa_lily_pond','xa_vault_pavilion'],
   other:['xa_star_court','xa_lily_pond','xa_cactus_court','xa_brick_court','xa_plunge_pool','xa_kiosk','xa_pergola','xa_bath_pool']};
@@ -62,14 +71,16 @@ var KS_TOWN=(function(){
     daughter house); summed in census and held to PLAN.md's 3,000 by the test */
  const PEOPLE={xa_poor_a:6,xa_poor_b:12,xa_poor_c:4,xa_andean_poor:6,xa_mid_a:7,xa_mid_b:9,xa_mid_c:16,xa_house_turk_a:8,xa_rich_a:12,xa_rich_b:16,xa_rich_c:11,
   xa_house_turk_b:10,xa_shops:6,xa_shop_turk_a:8,xa_shop_turk_b:6,xa_teahouse:4,xa_workshop:5,xa_smithy:4,xa_warehouse:2,xa_bath:4,xa_temple:6,xa_granary:0,
-  xa_barracks:80,xa_generator:4,xa_monastery:150,xa_monastery_white:150,xa_harbour_warehouse:3,xa_drydock:0,xa_slip:0,xa_lake_barge:0,xa_launch:0,xa_dugout:0,xa_harbour_quay:0,xa_mole_run:0,xa_river_span:0,xa_serai:20,xa_latex_house:0,xa_tea_factory:4,xa_fermentary:2,xa_fish_racks:0,xa_boatshed:3,xa_quay:0,xa_lighthouse:2,xa_gate:12,xa_watch:4,xa_garden:0,xa_pens:0,xa_wall:0,xa_bridge:0,xa_barge:0};
+  xa_barracks:80,xa_generator:4,xa_monastery:150,xa_monastery_white:150,xa_harbour_warehouse:3,xa_drydock:0,xa_slip:0,xa_lake_barge:0,xa_launch:0,xa_dugout:0,xa_harbour_quay:0,xa_mole_run:0,xa_river_span:0,xa_garden_wall:0,xa_serai:20,xa_latex_house:0,xa_tea_factory:4,xa_fermentary:2,xa_fish_racks:0,xa_boatshed:3,xa_quay:0,xa_lighthouse:2,xa_gate:12,xa_watch:4,xa_garden:0,xa_pens:0,xa_wall:0,xa_bridge:0,xa_barge:0};
+ for(const k in Object.assign({},PEOPLE))PEOPLE[k+'_badgir']=PEOPLE[k];   /* a wind-catcher twin holds its house's people */
  /* the wall's records (core/city 25 KCITY.site.wall): a buttress every 90 m, the gates found within 40 m of the avenues' crossings */
  const WALL_T={towerGap:90,clear:12,gateFind:40,thick:3.2,gateTower:5,gatePass:4};
  const tune=()=>({cell:2.5,rasterHalf:900,maxSlope:.22,exact:true,
   width:{avenue:10,main:7,side:5,alley:3,highway:9,lane:4},
   lot:{side:1.6,setback:1.4,rear:3,inset:1,step:3},
-  classes:{manor:[['xa_rich_b',0]],rich:[['xa_rich_a',0],['xa_rich_c',0],['xa_house_turk_b',0],['xa_house_turk_b',1]],
-   middle:[['xa_mid_a',0],['xa_mid_b',0],['xa_house_turk_a',0]],   /* no tenements (xa_mid_c): a lake town of 3,000 */poor:[['xa_poor_a',0],['xa_poor_b',0],['xa_poor_c',0],['xa_andean_poor',0]],
+  /* the wind-catchers (kits/xanadu 88f, the plan's heat: 2026-11-17): a badgir twin beside most of the common houses */
+  classes:{manor:[['xa_rich_b',0]],rich:[['xa_rich_a',0],['xa_rich_a_badgir',0],['xa_rich_c_badgir',0],['xa_house_turk_b',0],['xa_house_turk_b_badgir',1]],
+   middle:[['xa_mid_a',0],['xa_mid_a_badgir',0],['xa_mid_b_badgir',0],['xa_house_turk_a',0],['xa_house_turk_a_badgir',0]],   /* no tenements (xa_mid_c): a lake town of 3,000 */poor:[['xa_poor_a',0],['xa_poor_b',0],['xa_poor_b_badgir',0],['xa_poor_c',0],['xa_andean_poor',0]],
    shop:[['xa_shops',0],['xa_shop_turk_a',0],['xa_shop_turk_b',1],['xa_teahouse',0]],tavern:[['xa_teahouse',0]],industrial:[['xa_workshop',0],['xa_smithy',0],['xa_warehouse',0]]},
   fallback:{manor:'rich',rich:'middle',middle:'poor',shop:'middle',tavern:'shop',industrial:'poor',poor:null},
   civic:[{key:'xa_warehouse',v:0,near:'harbour'},{key:'xa_warehouse',v:0,near:'harbour'},{key:'xa_warehouse',v:0,near:'harbour'},{key:'xa_warehouse',v:0,near:'harbour'},
@@ -259,6 +270,13 @@ var KS_TOWN=(function(){
    const y=Math.max(...hs),hAt=(i,j)=>hs[i*(g.nv+1)+j],tiles=gardenTiles(g.nu,g.nv,courts);
    for(const [i,j,key,dir] of tiles){const lo=Math.min(hAt(i,j),hAt(i+1,j),hAt(i,j+1),hAt(i+1,j+1));
     put('garden.'+g.id+'.'+i+'.'+j,key,gi%3,[u0+(i+.5)*S,v0+(j+.5)*S],face(DIR[dir]),{y,drop:y-lo+.3,kind:'garden',garden:g.id});}
+   /* its wall (kits/xanadu 88f xa_garden_wall): a run on every tile of each edge 0.8 m out, a gate where a rill axis ends,
+      the corner runs carried round the corner; one level with the garden, footed to the ground */
+   const WO=.8,sides=[[g.nu,'v',-1],[g.nu,'v',1],[g.nv,'u',-1],[g.nv,'u',1]];
+   for(const [n,ax,sg] of sides)for(let i=0;i<n;i++){const mid=(n-1)/2,end=i===0?-1:i===n-1?1:0,len=S+(end?WO*2:0)*(n===1?2:1),sh=end*WO;
+    const t=(i+.5)*S+sh,p=ax==='v'?[u0+t,g.c[1]+sg*(b+WO)]:[g.c[0]+sg*(a+WO),v0+t],out=ax==='v'?(sg<0?NVX:VX):(sg<0?NUX:UX);
+    const c=xz(p),lo=Math.min(...[-len/2,len/2].map(e=>G.h(...xz(ax==='v'?[p[0]+e,p[1]]:[p[0],p[1]+e]))));
+    put('garden.'+g.id+'.wall.'+ax+(sg<0?'-':'+')+'.'+i,'xa_garden_wall',i===mid?1:0,p,face(out),{y,drop:Math.max(0,y-lo)+.3,kind:'gardenwall',garden:g.id,len});}
    return Object.assign({},g,{y,tiles:tiles.length,courts,area:g.nu*g.nv*S*S,poly:[[u0,v0],[u0+2*a,v0],[u0+2*a,v0+2*b],[u0,v0+2*b]].map(xz)});});
   /* ---- the Strongbow road along the shore and the bridge over Keb Riwa's mouth (the owner, 2026-11-16: "bridge crosses it") */
   const sbOut=uvOf(GR.ways.find(w=>w.role==='avenue'&&w.line==='u').pts.slice(-1)[0]);   /* the Strongbow way's end past the Strongbow Gate */
@@ -270,16 +288,44 @@ var KS_TOWN=(function(){
   for(let i=0;i<nb;i++)put('bridge.'+i,'xa_river_span',0,[bu(i),BR.v],face(UX),{y:deck,kind:'bridge'});
   put('bridge.abut.a','xa_river_span',1,[bu(-1),BR.v],face(UX),{y:deck,kind:'bridge'});put('bridge.abut.b','xa_river_span',1,[bu(nb),BR.v],face(NUX),{y:deck,kind:'bridge'});
   const roads=[{id:'ks.road.strongbow',cls:'road',w:7,tag:'the Strongbow road',pts:roadUV.map(xz)},{id:'ks.road.strongbow.far',cls:'road',w:7,tag:'the Strongbow road (on to the foot)',pts:farUV.map(xz)}];
+  /* ---- THE QUARTERS OUTSIDE THE WALLS (OUTSIDE_Q): a second core/city instance. Its raster is open only in the quarters'
+     zones; the pieces already standing outside the wall (the serai, the works, the latex house, the monastery's house) are
+     stamped HARD on it; the roads the quarters grow along are its avenues (drawn already: not handed out again) */
+  const OQ=(function(){const T0=tune(),Lb=KCITY.lib,OCC2=Lb.OCC,uvb=([u0,v0,u1,v1])=>[[u0,v0],[u1,v0],[u1,v1],[u0,v1]].map(xz),
+   road={strongbow:roadUV.slice(0,3).map(xz),works:(PL.ways.find(w=>w.tag==='the works road')||{pts:[]}).pts,monastery:(PL.ways.find(w=>w.tag==='the monastery road')||{pts:[]}).pts};
+   const standing=PL.lots.filter(Lt=>Lt.died==null&&Lt.bo&&['serai','tea','ferment.a','ferment.b','latex'].indexOf(Lt.ksId)>=0).map(Lt=>Lt.bo).concat(
+    extra.filter(r=>r.kind==='monastery').map(r=>box([r.x,r.z],r.ry,r.fw,r.fd)));
+   const zoneOf=p=>{const q=uvOf(p);return OUTSIDE_Q.find(Q=>q[0]>=Q[2][0]&&q[0]<=Q[2][2]&&q[1]>=Q[2][1]&&q[1]<=Q[2][3]);};
+   const st=[
+    {name:'the site and its ground',run(){const R=SL.R=new Raster(OUTSIDE_T.rasterHalf,T0.cell);R.occ.fill(OCC2.OUT);const P=L.plan();
+     P.site=OUTSIDE_Q.map((Q,i)=>({id:i,name:Q[1],role:'zone',poly:uvb(Q[2])}));P.zone=uvb(OUTSIDE_Q[0][2]);
+     let land=0;for(const Q of OUTSIDE_Q)land+=KCITY.site.zoneRaster(R,uvb(Q[2]),{dry:1.2,maxSlope:T0.maxSlope,h:G.h});
+     SL.minSpacing=KCITY.site.minSpacing();SL.note(0,'the quarters outside the walls, '+land+' cells');}},
+    {name:'landmarks',run(){for(const B of standing)SL.R.stampPoly(obbCorners(Object.assign({},B,{hw:B.hw+4,hd:B.hd+4})),OCC2.HARD,-1);SL.note(1,standing.length+' pieces outside the wall kept clear');}},
+    {name:'districts',run(){SL.note(2,'three quarters by their gates');}},
+    {name:'avenues',run(){for(const k in road)if(road[k].length>1)SL.addWay('avenue',road[k],3,{tag:'('+k+' road)'});SL.note(3,'the roads the quarters grow along');}},
+    {name:'highways',run(){}},{name:'the wall and its gates',run(){}}
+   ].concat(KCITY.defaultSteps().slice(6).filter(x=>SKIP.indexOf(x.name)<0));
+   const C2=KCITY.create({name:'kirstabal-outside',tune:Object.assign({},T0,{civic:[],rasterHalf:OUTSIDE_T.rasterHalf}),seed:OUTSIDE_T.seed,rand:'krand',index:{order:'insertion'},ground:{h:G.h},kit:{dims},
+    rules:{wealth:p=>{const Q=zoneOf(p);return Q?Q[3]:.3;},vacant:(p,rs)=>rs.chance(.05)},steps:st});
+   C2.run();const P2=C2.plan,gateOf={strongbow:NORTH_GATE,works:WORKS_GATE,monastery:SCARP_GATE};
+   const out=P2.lots.filter(Lt=>Lt.died==null&&Lt.bo&&Lt.key).map((Lt,n)=>{const Q=zoneOf([Lt.x,Lt.z])||OUTSIDE_Q[0],g=gateOf[Q[4]],d=dd(uvOf([Lt.x,Lt.z]),g),
+     home=PEOPLE[Lt.key]>0&&['poor','middle','rich','manor'].indexOf(Lt.cls)>=0,u=KRAND.unit(KRAND.hash(OUTSIDE_T.seed,4127,n)),vac=home&&u<OUTSIDE_T.vacant+(d>160?OUTSIDE_T.far:0);
+     return {id:'ks.out.'+n,key:Lt.key,v:Lt.v|0,cls:Lt.cls,civic:false,x:Lt.x,z:Lt.z,y:Lt.y==null?G.h(Lt.x,Lt.z):Lt.y,ry:Lt.ry,w:Lt.w,d:Lt.d,h:Lt.h,fw:fp(Lt.key,Lt.v).fw,fd:fp(Lt.key,Lt.v).fd,
+      people:vac?0:PEOPLE[Lt.key]||0,wealth:Lt.wealth,district:Q[0],vacant:vac||undefined,bill:vac&&KRAND.unit(KRAND.hash(OUTSIDE_T.seed,4129,n))<OUTSIDE_T.bill||undefined};});
+   const ws=P2.ways.filter(w=>w.died==null&&!/^\(/.test(w.tag||'')).map(w=>({id:'ks.outway.'+w.id,cls:w.cls,w:w.w,tag:w.tag||null,pts:w.pts.map(p=>[p[0],p[1]])}));
+   return {lots:out,ways:ws,notes:P2.log||[]};})();
+  lots.push(...OQ.lots);ways.push(...OQ.ways);
   const census={buildings:lots.length+extra.length,people:0,byKey:{},byCls:{}};
   for(const r of lots.concat(extra)){census.people+=r.people;census.byKey[r.key]=(census.byKey[r.key]||0)+1;}
   for(const r of lots)census.byCls[r.cls]=(census.byCls[r.cls]||0)+1;
   return {lots,ways,extra,moles:moleRecs,roads,bridge:Object.assign({deck,ry:face(UX)},BR,{a:xz([BR.u0,BR.v]),b:xz([BR.u1,BR.v])}),latex:LATEX,census,
-   notes:PL.notes||notes,zone,instance:C,
+   notes:(PL.log||PL.notes||notes).concat(OQ.notes),zone,instance:C,outside:OUTSIDE_Q.map(Q=>({id:Q[0],name:Q[1],rect:Q[2],lots:OQ.lots.filter(l=>l.district===Q[0]).length,vacant:OQ.lots.filter(l=>l.district===Q[0]&&l.vacant).length})),
    /* the wall: its standing runs, its nodes (the gates named by their sides, the buttresses), the corner bastions */
    wall:PL.wallRec?{segs:PL.wallRec.segs.map(g=>({ax:g.ax,az:g.az,bx:g.bx,bz:g.bz,health:g.health})),
     nodes:PL.wallRec.nodes.filter(n=>!n.skip&&n.health>0&&n.kind!=='corner').map(n=>({kind:n.kind,x:n.gx,z:n.gz,ry:n.ry,name:n.name||null,named:!!n.named,way:n.way?n.way.cls:null})),
     corners:GR.corners.map(c=>({id:c.id,x:c.x,z:c.z})),line:GR.wall}:null,
    moat:GR.moat?{line:GR.moat.line,width:GR.moat.width,bridges:MB}:null,gardens,
    places:{bazaar:BAZAAR,lakeGate:HARBOUR_GATE,strongbowGate:NORTH_GATE,worksGate:WORKS_GATE,scarpGate:SCARP_GATE,centre:SQ.c,half:SQ.half+SQ.wallGap}};}
- return {make,PEOPLE,ZONE,LANDMARKS,LATEX,MONASTERY,SQ,grid,GARDENS,GARDEN_T,gardenTiles};
+ return {make,PEOPLE,ZONE,LANDMARKS,LATEX,MONASTERY,SQ,grid,GARDENS,GARDEN_T,gardenTiles,OUTSIDE_Q,OUTSIDE_T};
 })();

@@ -339,7 +339,12 @@ Following `README.md`, "CORE MODULES ARE NOT OPTIONAL":
   faces the temple across the street (15 x 9). The Lake, East, West and Scarp gardens take half their cells (one quarter each),
   and the Works garden (5 x 5) closes the share in the poor quarter by the Works Gate. Each is a core/city green (kind `garden`)
   laid before the infill and stamped HARD, so the side streets and lots go round it. The four loose `xa_garden` plots of
-  2026-11-16 gave way to them. About 2,870 people (was 3,280 on the denser square).
+  2026-11-16 gave way to them. About 2,870 people (was 3,280 on the denser square). Each is walled (a low coped wall, a gate
+  where a rill ends). The houses' wind-catchers (the plan's heat): badgir twins of seven common houses, about a quarter of them.
+  The quarters outside the walls (the owner, 2026-11-17: "we can put a little bit of the housing (and empty buildable lots)
+  outside the walls"): the Strongbow quarter along the road from the Strongbow Gate, the Works quarter by the works and the
+  Scarp quarter along the monastery road, a second core/city instance over them (no civic pieces), 63 lots, about 330 people
+  (a tenth of the town's 3,230), 13 of the house lots left empty and buildable, 5 with their materials piled (kits/construction).
 - **K6.** The site in the open world: `openworld/xanadu-oidong-highrift` (Kirstabal `sl758m2396` in `openworld/SITES.json` and the
   region's cut, by hand, inside the Xanadu polygon). The ring (Mil, Kanāl, Grēnz, Bāiyar) at the tune's places and the lake's
   nine on the shore round the lake, eight of them on a fishers' row in the region's site spec, planned on the world's ground
