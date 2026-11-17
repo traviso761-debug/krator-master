@@ -36,7 +36,7 @@ LORE.md 6.20 carries the new names. The proposal, the survey and Gila's plan and
 | 6 | The kit's rename: `lk-greathall` is the Hall of Intention (label already; the fragment's header and the README now say so, the page rebuilt) | **done** |
 | 7 | The kit's **works** the villages need (`kits/lizardmen/src/59w-lz-works.js`): `lz-mine`, `lz-weir` (both owed in its `KNOWN_ISSUES.md` and named by core/hamlet's Lizardmen row), `lz-placer`, `lz-cistern`, `lz-fungus`; the trades table carries miners and fishers now | **done** (GPU-verified, the engine fingerprint recorded) |
 | 8 | **Z4, the raids** (`core/camp/55-camp-raid.js`, core/camp/PLAN.md 6.1's rules; `core/region/52-region-raid.js`, opt-in by `raids`; `LZ_TUNE.raids`): the war bands of Tuatara (150) and Komodo (120) against the Marches' three forts, the Marches' villages (`prov.p8`) and the Golden Tears' camp (`exp.rift-gold`), off-map records with XAN_TUNE's numbers in this run; the plunder and the dead home to the plunder warehouse and the bone hall; the Sultanate's events | **done** (`test-camp-raid.js` 11, `test-lz-raids.js` 8) |
-| 9 | **Z5, the joint run** with `XAN_TUNE` in one valley run (as `EAST_RIFT` joins Xanadu and Longsong): where the raids touch the Sultanate's ledger | after Z4 |
+| 9 | **Z5, the joint run** (`core/region/data/lz-join.js` LZ_JOIN: XAN_TUNE and LZ_TUNE in one valley, as `EAST_RIFT` joins Longsong): the raids hit the Sultanate's own forts, villages and the Tears' camp in their own books | **done** (`test-lz-join.js` 8: in 100 days four raids, the forts repulsing two, the Marches' villages losing 117 t of grain and 120 kg of tools, the Tears' camp its arms; every raided place fed under the caps) |
 | 10 | **The towns' pages** (Tuatara, Komodo, Iguana, the Tubes; Basilisk in its own session): not yet (the owner: "don't have to build them all yet"). A shared builder generalised from Gila's fragments was started and parked, untested, in the session notes folder (`lizardmen-settle/`, its README says how to revive it) | later |
 | 11 | Z3 (agents re-homed by the plan, the castes of the season's rebirths), Z6 (the Interpreters' weight) | later |
 
@@ -84,7 +84,9 @@ LORE.md 6.20 carries the new names. The proposal, the survey and Gila's plan and
   - no target below 0.92;
   - the Sultanate makes 12 garrison grants and mounts 2 punitive expeditions (recorded, not yet marched);
   - the plunder (the steel kept and never used) and the dead of both sides go home to the warehouse and the bone hall.
-- **In this run the targets are off-map records.** The joint run (Z5) raids the Sultanate's own settlements in their own books.
+- **In this run the targets are off-map records.** The joint run (Z5, `test-lz-join.js`) raids the Sultanate's own settlements
+  in their own books. It is the only run that touches Xanadu's numbers. `test-xan-economy`, `test-east-rift` and `test-catch` load
+  neither the raids nor the Lizardmen, so their numbers do not move.
 
 ## The towns, when their pages are built (step 10)
 
