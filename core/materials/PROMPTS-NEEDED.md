@@ -3,7 +3,8 @@
 Every texture or pattern sheet the owner still has to source or generate, each with its finished prompt. Paste a block
 as it is, one image per block. **Everything delivered lives in `PROMPTS-archived.md`** (checked against `core/materials/library/`, `patterns/` and each build's `materials.json` on `origin/main`, 2026-10-19); this file holds only what is still owed.
 
-**Count: 3 prompts** (2026-11-16: the Tungang kit's `patterns/tungang/loj-banner`, `loj-banner.b` and `enamel-signs`. The
+**Count: 13 prompts** (+10 for Erewhon's citadel, section 57: the hangings of Kubla Khan and the suzani, 2026-11-16. Before: 3,
+2026-11-16: the Tungang kit's `patterns/tungang/loj-banner`, `loj-banner.b` and `enamel-signs`. The
 owner's Codex batches delivered the rest: 22 new sets on 2026-11-16 (`PLAN.md`, "Delivered 2026-11-16"), and, merged here the same day
 ("keep the installed 2026-11-12 takes, merge them here"), the 2026-11-12 batch's 63 sets from `claude/textures-2026-11-12`, whose
 entries are in `PROMPTS-archived.md`; every entry whose set is now in the library was taken off this list. None is wired yet: each
@@ -453,6 +454,70 @@ Order's blue, the Xanadu wash and `cloth.wool`. **3 prompts**, all full colour.
 
 | id | Prompt |
 |---|---|
+
+## 57. Erewhon's citadel: the hangings of Kubla Khan (`kits/catalog` culture `xanadu`, `settlements/xanadu/citadel/FURNISHING.md`, 2026-11-16)
+
+The owner, 2026-11-16: "feel free to ask for textures esp tapestries and wall-hangings inspired by kubla khan". The citadel's
+new hangings show the poem: four designs, each as a tall hanging (`xanadu_court_kubla_hanging`, the picture 1.5 x 2.25 m) and
+as a wide great tapestry (`xanadu_court_kubla_tapestry`, 3.9 x 2.6 m), and the harem's suzani (`xanadu_court_suzani`, 1.9 m
+square, two grounds). Each image keeps its panel's aspect: **portrait 2:3 (1365x2048) for the hangings, landscape 3:2
+(2048x1365) for the tapestries, square for the suzanis**; one whole panel each, not tiling, so process them as single panels
+(not `"pattern": true`). Until each arrives the piece draws a **painted stand-in** (a canvas decal: `xanKublaPaint` in
+`krator-master-furniture-xanadu.js`), whose decal key is the id below. Wiring needs the catalog to paint a delivered image into
+a decal (a `core/catalog` addition, owed with these sets). Generic enough to reuse: any Xanadu or Sultanate hall can hang them,
+and the suzani is any steppe or oasis people's. **10 prompts**, all full colour. Palette (the Xanadu culture's): gold #d4af37,
+maroon #7a1a24, saffron #e89a2a, turquoise #1f9aa8, lapis #26449a, night blue #1a2444, ice #d8eef4, rose #c85a6a, cream
+#f2e6c8, peacock green #2a7a4a.
+
+`patterns/xanadu/hanging-pleasure-dome` (the decree):
+```
+Portrait, 1365x2048. A flat, front-on decorative panel filling the whole frame edge to edge: one whole woven silk hanging, not tiling. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no watermark, no readable words. Panel: a Persian-Mughal court tapestry in silk and gold thread showing a stately pleasure-dome: a great white onion dome with a gold band and finial on a terraced palace, set in a walled garden girdled round with walls and towers, cypress and blossoming trees on the terraces; below it a sacred river winds in sinuous loops down the panel into a dark mouth of caverns at the foot; a gold sun disk above; a border of gold roundels on maroon around the whole, an inner border of turquoise vines. Stylised like a Mughal miniature, flat and decorative, no perspective, every line woven. Full colour: gold #d4af37, maroon #7a1a24, night blue #1a2444 sky, turquoise #1f9aa8 river, cream #f2e6c8 dome, peacock green #2a7a4a trees.
+```
+
+`patterns/xanadu/hanging-caves-of-ice` (a sunny pleasure-dome with caves of ice):
+```
+Portrait, 1365x2048. A flat, front-on decorative panel filling the whole frame edge to edge: one whole woven silk hanging, not tiling. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no watermark, no readable words. Panel: a Persian-Mughal court tapestry in silk and gold thread: a white and gold dome blazing in a large gold sun at the top, standing on a mountain of pale blue ice carved into three great arched cave mouths hung with icicles, deep blue shadows inside the caves, a fountain bursting from the central cave in a fan of white spray and falling back in sparkling drops; a border of gold roundels on maroon around the whole, an inner border of turquoise vines. Stylised like a Mughal miniature, flat and decorative. Full colour: gold #d4af37, maroon #7a1a24, ice #d8eef4, night blue #1a2444, turquoise #1f9aa8, cream #f2e6c8.
+```
+
+`patterns/xanadu/hanging-damsel-dulcimer` (the Abyssinian maid singing of Mount Abora):
+```
+Portrait, 1365x2048. A flat, front-on decorative panel filling the whole frame edge to edge: one whole woven silk hanging, not tiling. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no watermark, no readable words. Panel: a Persian-Mughal court tapestry in silk and gold thread: a young East African woman in flowing rose and saffron robes seated on a cushion in the foreground, playing a hammered dulcimer (a trapezoid santur with fine strings and two slender hammers) on her knees, her face turned up in song; behind her a tall purple mountain under a night sky scattered with gold stars, a gold crescent moon; flowers at her feet; a border of gold roundels on maroon around the whole, an inner border of turquoise vines. Stylised like a Mughal miniature, flat and decorative, dignified, fully clothed. Full colour: gold #d4af37, maroon #7a1a24, night blue #1a2444, rose #c85a6a, saffron #e89a2a, mountain violet #5a3a6a, turquoise #1f9aa8.
+```
+
+`patterns/xanadu/hanging-sinuous-rills` (gardens bright with sinuous rills):
+```
+Portrait, 1365x2048. A flat, front-on decorative panel filling the whole frame edge to edge: one whole woven silk hanging, not tiling. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no watermark, no readable words. Panel: a Persian garden carpet design woven as a silk hanging: a chahar bagh seen from above, four green garden quarters divided by straight turquoise water channels meeting at a central octagonal pool, each quarter crossed by narrow meandering rills, rows of dark cypresses and blossoming fruit trees, rose and saffron flowers scattered over the beds, small birds; a border of gold roundels on maroon around the whole, an inner border of turquoise vines. Flat and decorative, symmetrical. Full colour: gold #d4af37, maroon #7a1a24, peacock green #2a7a4a, turquoise #1f9aa8, rose #c85a6a, saffron #e89a2a, cream #f2e6c8.
+```
+
+`patterns/xanadu/tapestry-pleasure-dome` (the decree, the great tapestry):
+```
+Landscape, 2048x1365. A flat, front-on decorative panel filling the whole frame edge to edge: one whole woven tapestry, not tiling. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no watermark, no readable words. Panel: a wide Persian-Mughal court tapestry in silk and gold thread: a panorama of a stately pleasure-dome on its terraced palace at the centre, a great white onion dome with gold bands, encircled by miles of garden girdled with walls and towers, forests and sunny spots of greenery, blossoming incense-bearing trees; a sacred river runs in loops across the whole width from a fountain on the left, through the gardens and into caverns on the right where it sinks toward a dark sunless sea; mountains on the horizon; a border of gold roundels on maroon around the whole. Stylised like a Mughal miniature, flat and decorative. Full colour: gold #d4af37, maroon #7a1a24, night blue #1a2444, turquoise #1f9aa8, cream #f2e6c8, peacock green #2a7a4a.
+```
+
+`patterns/xanadu/tapestry-caves-of-ice` (the great tapestry):
+```
+Landscape, 2048x1365. A flat, front-on decorative panel filling the whole frame edge to edge: one whole woven tapestry, not tiling. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no watermark, no readable words. Panel: a wide Persian-Mughal court tapestry in silk and gold thread: a white and gold pleasure-dome in a blazing gold sun, its shadow floating on a stream; beneath it a long range of pale blue ice carved into arched caves hung with icicles; from a deep chasm on the left a mighty fountain bursts in a column of spray with rocks flung up like hail, and the river runs out of it across the panel; courtiers in tiny scale on the terraces; a border of gold roundels on maroon around the whole. Stylised like a Mughal miniature, flat and decorative. Full colour: gold #d4af37, maroon #7a1a24, ice #d8eef4, night blue #1a2444, turquoise #1f9aa8, cream #f2e6c8.
+```
+
+`patterns/xanadu/tapestry-damsel-dulcimer` (the great tapestry):
+```
+Landscape, 2048x1365. A flat, front-on decorative panel filling the whole frame edge to edge: one whole woven tapestry, not tiling. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no watermark, no readable words. Panel: a wide Persian-Mughal court tapestry in silk and gold thread: a young East African woman in rose and saffron robes seated on a carpet at the centre playing a hammered dulcimer (a trapezoid santur with two slender hammers), a circle of listening musicians with an oud, a frame drum and a reed flute, a white dome on the left and a tall purple mountain on the right under a night sky of gold stars; flowers and cypresses; a border of gold roundels on maroon around the whole. Stylised like a Mughal miniature, flat and decorative, dignified, fully clothed. Full colour: gold #d4af37, maroon #7a1a24, night blue #1a2444, rose #c85a6a, saffron #e89a2a, mountain violet #5a3a6a, turquoise #1f9aa8.
+```
+
+`patterns/xanadu/tapestry-sinuous-rills` (the great tapestry):
+```
+Landscape, 2048x1365. A flat, front-on decorative panel filling the whole frame edge to edge: one whole woven tapestry, not tiling. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no watermark, no readable words. Panel: a wide Persian garden carpet design woven as a tapestry: two chahar bagh gardens side by side seen from above, green quarters divided by straight turquoise channels with octagonal pools at their crossings, every bed crossed by narrow meandering rills, rows of dark cypresses and blossoming fruit trees, rose and saffron flowers, small birds and a pair of peacocks; a border of gold roundels on maroon around the whole. Flat and decorative, symmetrical. Full colour: gold #d4af37, maroon #7a1a24, peacock green #2a7a4a, turquoise #1f9aa8, rose #c85a6a, saffron #e89a2a, cream #f2e6c8.
+```
+
+`patterns/common/suzani-roundels` (an embroidered suzani, ivory ground):
+```
+Square, 2048x2048. A flat, front-on decorative panel filling the whole frame edge to edge: one whole embroidered hanging, not tiling. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no watermark, no words. Panel: a Central Asian suzani, hand embroidered in silk chain stitch on an ivory cotton ground: six large blossom roundels in two columns, each a red disc ringed with saffron petals and an indigo centre, curling green vines and smaller flowers between them, a border band of red and saffron rosettes on a green vine; visible stitches, slightly irregular hand work. Full colour: ivory #f2e6c8 ground, madder red #a01a2a, saffron #e89a2a, indigo #26449a, green #2a7a4a.
+```
+
+`patterns/common/suzani-roundels.b` (the same, madder ground):
+```
+Square, 2048x2048. A flat, front-on decorative panel filling the whole frame edge to edge: one whole embroidered hanging, not tiling. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no watermark, no words. Panel: a Central Asian suzani, hand embroidered in silk chain stitch on a deep madder red cotton ground: six large blossom roundels in two columns, each an ivory disc ringed with saffron petals and an indigo centre, curling green vines and smaller flowers between them, a border band of ivory and saffron rosettes on a green vine; visible stitches, slightly irregular hand work. Full colour: madder red #a01a2a ground, ivory #f2e6c8, saffron #e89a2a, indigo #26449a, green #2a7a4a.
+```
 
 ## 43. The Tungang kit (`kits/tungang`, 2026-11-11)
 
