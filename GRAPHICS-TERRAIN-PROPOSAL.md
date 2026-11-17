@@ -1,6 +1,8 @@
 # Krator terrain and graphics: a unified proposal
 
 **Written:** 2026-11-17, on `claude/exciting-curie-1c0022` (427ce3115). **Status:** a proposal; no code changed for it.
+The owner answered its three questions the same day (section 12): Godot is where it should look best, the stream bake
+may move to world tiles, and the relief is re-baked with the all-builds rebuild.
 
 It reconciles three inputs:
 - **G**: the consolidated "Graphics, Terrain Relief & Surface Overhaul" proposal (Gemini's audit and all-builds overhaul);
@@ -159,8 +161,9 @@ Scored with the same selector the reference DEMs were (the steepest 4 km window 
 3. **The ring.** Move the comment in `80-world-sky.js:79` into `/* */`.
 4. **Move the two audit scripts into `core/world`** as `landshade.py --steepest` and a `test-micro.js` check.
 
-Each of 1 and 2 changes every relief region's land. They go in one change: goldens, the GDScript twin, a re-bake of
-streams, sites and resources, the 8 reached pages rebuilt and verified.
+Each of 1 and 2 changes every relief region's land. They go in one change, behind a version (`relief.micro: 2` in
+`region.json`), with goldens for both versions and the GDScript twin. A region turns the version on at its re-bake, which
+the owner has put in the all-builds rebuild (section 12).
 
 **Not kept from G's list:** splitting the steering vector from the surface gradient (3.1: the fault it cures is not
 there), and the sliding knee threshold (untested, and it reopens the closed basins the floor was built to stop). Both can
@@ -232,7 +235,7 @@ changes. Six to ten steps.
 
 **World-absolute.** The stream bake today runs per region (`WORLD.box()`), so two regions over one place trace different
 streams. A residual that changes the land cannot do that: `H` must agree everywhere. Bake `D` on fixed world tiles (64 km
-with a halo), keyed by tile, and let a region take the tiles it covers.
+with a halo), keyed by tile, and let a region take the tiles it covers. (Agreed by the owner, section 12.)
 
 **Storage.** Unsigned 16-bit with a stated offset and scale: `D` is bounded (clamp at +-400 m), so a step of 0.0125 m.
 Not `R16F`: a half float steps 2 m near 3,000 m (C is right). About 160,000 cells per 100 km region; 150 to 300 KB as a
@@ -272,7 +275,8 @@ of this proposal's first pass.
 
 ## 5. Open-world lighting and shading
 
-Ordered by what it shows for what it costs. Every item names the module it takes.
+Ordered by what it shows for what it costs. Every item names the module it takes. The owner's answer (section 12) puts
+the main work of S3, S4 and S5 in Godot; the web page keeps the shared data and the cheap version listed there.
 
 ### S1. Far terrain shadows and sky visibility: take `KHORIZON` (revise G's layers 1 and 2)
 
@@ -528,27 +532,40 @@ the same frame, and its history is what a ratchet compares.
 
 | Stage | What | Exit |
 |---|---|---|
-| 0 | T0 fixes; A0's `KGROUND` fix in core; the ring | goldens, twins, re-bakes, the reached pages verified on the GPU |
-| 1 | The route harness (A1) on one open-world page and Ancient's Valley; samplers and video memory in the budgets | baselines recorded on the Arc and the RTX |
-| 2 | T1 ablation; then the T2 experiment on two tiles | T2's table passes, or the residual is shelved with the numbers |
-| 3 | Open-world light: S1 horizon, S2 shadows, S5 sky by the hour | the route holds its frame time; before and after at three hours |
-| 4 | S3 worker chunks and normal textures; S4 `KGROUND` near ground | measured chunk time and memory |
+| 0 | T0's fixes behind `relief.micro: 2` (goldens, twin, tests; no region re-baked); A0's `KGROUND` fix in core; the ring | the tests and goldens pass in node and Godot; the builds `KGROUND` reaches rebuilt and verified on the GPU |
+| 1 | The route harness (A1) on one open-world page, Ancient's Valley and the Godot walk scene; samplers and video memory in the budgets | baselines recorded on the Arc, the RTX and in Godot |
+| 2 | T1 ablation; the stream bake moved to world tiles; then the T2 experiment on two tiles | T2's table passes, or the residual is shelved with the numbers |
+| 3 | Open-world light, Godot first: S1 horizon data (both engines), the engine's shadows, the sky by the hour from core/atmos's twins. Web: `KHORIZON`, `KSHADOW` on, the dome and fog by the hour | the route holds its frame time; before and after at three hours in Godot |
+| 4 | Godot ground: S3 chunk normal textures, S4 layers in arrays | measured chunk time and memory |
 | 5 | M1 material slice in both engines | the table of bytes, memory, samplers and time; the owner picks the packing |
 | 6 | Ancient's Valley A0's rest, then A2 in order | each inside the budgets on the route |
-| 7 | Interiors I1 to I4 on one building | the sun-leak probe passes; the owner's eye |
-| 8 | Decide the all-builds rebuild from stages 2 to 7 | |
+| 7 | Interiors I1 to I4 on one building, the lights native in Godot | the sun-leak probe passes; the owner's eye |
+| 8 | The all-builds rebuild: every relief region re-baked on `relief.micro: 2` (and on `D` if T2 passed), the chosen packing, every page rebuilt and verified | `test_all.py --nightly` green on the web and in Godot |
 
 Stages 0 and 1 are a few sessions. Nothing after stage 1 starts without its baseline.
 
-## 12. Open questions for the owner
+## 12. The owner's answers (2026-11-17)
 
-1. **Where should the looks be best: the web pages or Godot?** `GODOT-PLAN.md` freezes lights, fog and day and night in
-   three.js. Stages 3 and 4 spend real work on the web page. If Godot is where the game is seen, they shrink to S1 (shared
-   data) and S2, and the rest is done once, natively.
-2. **May the stream bake move from per-region to per-world-tile?** T2 needs it; it also changes where today's small
-   streams run in overlapping regions.
-3. **Is a re-bake of every relief region acceptable for T0?** The mean fix moves the land by metres on slopes; roads and
-   stops may move.
+1. **Godot is where it should look best.** So the looks are built once, natively, in Godot, and the web page keeps the
+   shared data and the cheap version:
+
+   | Item | Godot | Web page |
+   |---|---|---|
+   | S1 horizon shadows and sky visibility | the terrain shader reads the two baked textures | the same textures through `KHORIZON` |
+   | S2 near shadows | the engine's directional shadow | `KSHADOW`'s one box, on |
+   | S3 per-pixel ground normals | built here first: the chunk's normal-and-crease texture, in the chunk thread that exists | vertex normals stay; the worker and the textures only if the owner later wants them |
+   | S4 layered near ground | `ground.gdshader`'s layers, moved to arrays | `KGROUND`'s two bug fixes only |
+   | S5 sky, fog and cloud shadow by the hour | core/atmos's generated twins | the dome's tint and the fog's colour follow the hour; nothing more |
+   | S6 colour from the land's shape | shared, per vertex | shared, per vertex |
+   | M2 to M6, interiors' lights, GI, SSAO, contact shadows | native | the cheap term or nothing |
+
+   Terrain (section 4), the material records and packing (M1), the room table and flags (I1, I2, I4) and the placement
+   records are shared data and are unchanged by this answer.
+2. **The stream bake may move to world tiles.** T2 is unblocked. The streams move with it: one trace per tile, so two
+   regions over one place agree.
+3. **The relief is re-baked as part of the all-builds rebuild**, not before it. So T0's two WMICRO fixes ship behind a
+   version in `region.json` (`relief.micro: 2`): a region keeps today's land and its baked streams, roads and sites until
+   its re-bake turns the version on. The T2 experiment's tiles run on version 2. Nothing is half-migrated in between.
 
 ## 13. Sources
 
