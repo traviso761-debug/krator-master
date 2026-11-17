@@ -1020,6 +1020,10 @@
    "bytes": 5290152,
    "sha256": "e0395d260e160bfe4072b652248648d962489afea520f3948c87cdfaf4fb489f"
   },
+  "settlements/blakhed/dist/blakhed.html": {
+   "bytes": 4993475,
+   "sha256": "8a25e4ad4042e1ec59c81532fb92d5922cf0705f3e5baead7f279122aec4e270"
+  },
   "settlements/dalab/dist/dalab-set.html": {
    "bytes": 6603017,
    "sha256": "728ddd8a8b8afb4ff307654bababe77d340f80271bd2db11eaab5fec954645eb"

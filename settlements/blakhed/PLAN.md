@@ -47,9 +47,22 @@ The owner's answers above are taken as settled. Every other question of section 
 | 13 | The Kradz winter at the western Hearth vent's caves, off the page | *proposed* |
 | 14 | **`settlements/blakhed/build.py` of its own**, a target on Xanadu's page as Thalaba, Kirstabal and Lāiṭwāl are, with the Tungang kit sealed in as `TG` (the Fellgang set) and the Dalab set read in place for the toll post | *proposed* |
 
+**The Golden Tears' mission** (the owner, 2026-11-16: "there should be a 100-200 person strong Golden Tears mission nearby;
+home away from home, such as it is, for Xanadui in the west rift"). The Golden Tears are the Xanadu merchant house that
+escorts Dalab's Great Caravan for 4 % of what it lands (`xan-tune.js` `T.tears`), so Blakhed, the caravan's western stop, is
+where their escort rests and their house keeps its western factor. *Proposed*:
+- **~150 people** (the escort's resting company, the factor's household, a priest of the Decree, cooks, grooms, a few
+  Xanadui merchants and wives), year round, more when the caravan is in;
+- **a walled compound of its own** about 1 km south-east of the Market, on the caravan road where it comes in from the east,
+  beside the Fairfell where the caravan camps: outside the town's market peace, under its own walls;
+- **in the Xanadu kit's buildings** (the page is Xanadu's, so its kit is at hand): the factor's house, a hall of the Decree,
+  the escort's barracks round a muster yard, a teahouse, stables and pens, a store, a bath, the households' houses;
+- in the sim records: `tears.blakhed`, a house of the Golden Tears (faction `xanadu`, org `tears`), beside `tears.strongwall`
+  and `tears.erehwon` (`sim/wr-blakhed.js`; XAN_TUNE is left alone until the West Rift's W3 joins it).
+
 **One finding of the town-scale survey (B1), taken by the build.** The model's Blak Riba runs **1.9 km north-west of the pin**
 (its vertex 440.2,1399.5); the town is to stand on its south bank. The build moves that one vertex about 1 km toward the pin
-(to 440.65,1399.68: inside its own 2 km cell, so within the model's resolution) and carves the channel into the model's ground
+(to 440.8,1399.8: inside its own 2 km cell, so within the model's resolution) and carves the channel into the model's ground
 (section 5). The river then passes ~0.6 km north-west of the Market. *Proposed*: for the scale-model session's pin batch.
 
 Sources read: `core/region/WEST-RIFT-SCOPE.md`; `LORE.md` 6.1 (l.236-284); `kits/tungang/PLAN.md` 1.3, 1.3.3, 1.3.4, 3.3,
@@ -399,7 +412,7 @@ Written first, as CLAUDE.md asks ("CORE MODULES ARE NOT OPTIONAL"), and settled 
 | `core/biome` + `biomes/riftrim` (rim `w`, the veiled rim of the W rift highland) | yes, sealed in `gen/69b4-bk-flora-bundle.js` | the country's flora over a mask made from the plan's records (never from pixels): the cloud belt's moor sponge, sedge and cotton grass, prism heath, bell firs and lobe larch where the fields allow, lantern lobelia along the lanes |
 | `core/materials/record` | yes | the town's ground sets (`materials.json`, `tex/`); the kit's own pack for the buildings |
 | `core/clock`, `core/sched`, `core/simulation`, `core/charactermodels`, `core/camp`, `core/hazard`, `core/walk`, interiors, `core/export` | not yet | the life, the people, the Winterings on `core/camp` (no Traveller row yet), the hazards, the interiors and the Godot export are later steps (B4-B6); `KNOWN_ISSUES.md` |
-| `core/region` | data only | Blakhed's records for the West Rift sim (`sim/wr-blakhed.js`, section 6): no tune runs them yet |
+| `core/region` | yes (`sim/wr-blakhed.js`) | Blakhed's economy on `50-region-valley.js` (`WR_BLAKHED.valley`) and its W3 join (`WR_BLAKHED.join`) replacing `gate.dalab.blakhed` and `gate.dalab.nulab` on `XAN_TUNE`'s Annual Great Caravan (`test-bk-economy.js`) |
 
 **What the kit lacks at town scale**, named for the Tungang kit (not written here): a **double meeting hall**, a **long rope
 walk** (the page lays a ~240 m walk of twelve `fg-ropehouse` sheds end to end), a **great ice house** (the page sets out
@@ -479,11 +492,11 @@ Its roads and others' records:
 | Step | What | Test |
 |---|---|---|
 | **B0** | **The records.** The owner's answers (section 8). Blakhed's pin (and the Stairhead's) in the scale-model session's queue, with the West Rift's pin batch (scope W0). A West Rift region in `openworld/SITES.json` with the stair as a corridor to Nulab | the model and `SITES.json` agree |
-| **B1** | **The ground.** `cut_site.py` for the region; the town's ground bicubic round the pin; the Blak Riba as a `core/water` flow; the leats and ice ponds; the falls and the stair cut in the face; **a town-scale survey** of the slope, the wind and the river's banks, which the 2 km model cannot give | the region's bake checks; nothing on a slope past the town's limit |
+| **B1** | **The ground** (*done, first pass*). The town's ground bicubic round the pin (`gen/69bk3-bk-model.js`, `src/69bm-bk-ground.js`); the Blak Riba as a `core/water` flow; the leats and six ice ponds; the falls and the stair (`openworld/` cut awaits B0) | `verify.py`: `on-the-model`, `water-on-core` |
 | **B2** | **The kit's town pieces**, asked of the Tungang kit (section 5's list), on the set's contract: the same frame, the plinth to the lowest corner, everything registered in `core/tags` | the kit's `verify.py --assert` and its box checks |
-| **B3** | **The town on `core/city`** with a Fellgang adapter (`TG.fg.dims`); the Market, the Icegarth, the Ropewalk, the Folds, the Fairfell, the Winterings and the houses as districts; a target on the Tungang kit's page, or a build of its own (question 14) | Voth's checks: exact footprint overlap, nothing on a street or in water; each building dry and on its plinth |
-| **B4** | **The outworks.** The Stairhead (a `core/hamlet` village and Dalab's toll house), the steadings, the shielings (summer), the ice ponds; the Winterings on `core/camp`'s new `traveller` row | `test-hamlet.js`; the camp's tests |
-| **B5** | **The sim.** Blakhed's record, roads and toll in `WR_TUNE` (W1, W4); the Great Caravan's stand-in replaced (W3) | the town fed in a year; the stair's grain arrives; the toll lands in Dalab's books; `test-east-rift.js` and `test-xan-economy.js` unchanged unless meant to move |
+| **B3** | **The town on `core/city`** (*done, first pass*: `src/69bn-bk-town.js`) with `TG.fg.dims`; the Market, the Icegarth, the Ropewalk, the Folds, the Fairfell, the Winterings, the cairn hall and the Golden Tears' compound on Xanadu's `--kit` host | `test-bk-town.js` (no overlap, off roads and water, 5,000 within 15 %); `verify.py`: `blakhed-laid`, `golden-tears` |
+| **B4** | **The outworks** (*done, first pass*: `src/69bo-bk-ring.js`). The Stairhead (`core/hamlet` and Dalab's toll post), the four steadings, the twelve hamlets of 3.2a (`core/camp` Traveller row still owed) | `test-bk-town.js`; `verify.py`: `villages`, `toll-post` |
+| **B5** | **The sim** (*done, first pass*: `sim/wr-blakhed.js`). Blakhed's valley spec, its four roads and Dalab's tenth toll in `dalab.blakhed` (W1, W4); `WR_BLAKHED.join` replacing `gate.dalab.blakhed` and `gate.dalab.nulab` on the Annual Great Caravan (W3) without altering `xan-tune.js` | `test-bk-economy.js`; `test-east-rift.js` and `test-xan-economy.js` unchanged |
 | **B6** | **Interiors and people.** The Fellgang interiors; the people on `core/simulation`; the Fair and the caravan as the year's two events | the interiors' checks; the sim's schedules |
 
 ## 8. Questions for the owner

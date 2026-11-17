@@ -1,0 +1,86 @@
+// node settlements/blakhed/test-bk-town.js — Blakhed's town (src/69bn-bk-town.js) on core/city and its steadings, Stairhead and
+// twelve hamlets (src/69bo-bk-ring.js) on core/hamlet, over the scale model's ground (gen/69bk3-bk-model.js, src/69bm-bk-ground.js)
+// with the Fellgang set's boxes (kits/tungang/src/26k-kit.js TG.fg.BOX): no two buildings overlap, none stands on a road or in
+// the water, the 5,000 (the town, the Stairhead, the steadings) hold within 15 %, the Golden Tears' mission holds 100-200, every
+// quarter and the toll post stand, every village lays out dry and under the slope cap, the river and leat fall all their length,
+// and the layout reruns the same. Each check with a negative (tools/ktest.js).
+'use strict';
+const fs=require('fs'),path=require('path'),vm=require('vm');
+const ROOT=path.join(__dirname,'..','..');
+const T=require(path.join(ROOT,'tools','ktest.js'))(__filename);
+global.window=global;
+global.atob=b=>Buffer.from(b,'base64').toString('binary');
+const load=f=>vm.runInThisContext(fs.readFileSync(path.join(ROOT,f),'utf8'),{filename:f});
+['core/rand/08-core-rand.js','core/space/20-core-space.js'].forEach(load);
+fs.readdirSync(path.join(ROOT,'core','city')).filter(f=>/^\d\d-city-.*\.js$/.test(f)&&!/host|squares|radial|covered/.test(f)).sort().forEach(f=>load('core/city/'+f));
+['10-hamlet-wood.js','12-hamlet-gather.js','14-hamlet-farmland.js','16-hamlet-names.js','18-hamlet-names.js','20-hamlet-cultures.js','fellgang/22-hamlet-fellgang.js','30-hamlet-village.js']
+ .forEach(f=>load('core/hamlet/'+f));
+KCITY.lib={SL,plan:()=>PLAN,tune:()=>TUNE,KSPACE,Raster,OCC};
+['settlements/blakhed/gen/69bk3-bk-model.js','settlements/blakhed/src/69bm-bk-ground.js','settlements/blakhed/src/69bn-bk-town.js','settlements/blakhed/src/69bo-bk-ring.js'].forEach(load);
+/* the Fellgang set's boxes from kits/tungang/src/26k-kit.js */
+const BOX={};
+{const s=fs.readFileSync(path.join(ROOT,'kits','tungang','src','26k-kit.js'),'utf8');
+ for(const m of s.matchAll(/'(fg-[a-z-]+)':\{w:([0-9.]+),d:([0-9.]+),h:([0-9.]+)/g))BOX[m[1]]={w:+m[2],d:+m[3],h:+m[4]};}
+const dims=k=>BOX[k]?{w:BOX[k].w,d:BOX[k].d,h:BOX[k].h}:(BK_TOWN.XDIMS[k]?{w:BK_TOWN.XDIMS[k][0],d:BK_TOWN.XDIMS[k][1],h:BK_TOWN.XDIMS[k][2]}:null);
+const t0=Date.now(),P=BK_TOWN.make({dims,seed:44120}),R=BK_RING.make({dims,world:44160}),ms=Date.now()-t0;
+module.exports={P,R,BOX,dims};
+if(require.main!==module)return;
+const V=R.steadings.concat([R.stairhead],R.hamlets);
+const popFive=P.people.town+(R.stairhead.census.pop||0)+R.steadings.reduce((n,v)=>n+(v.census.pop||0),0);
+console.log('Blakhed in '+ms+' ms: '+P.records.length+' town records, '+V.length+' villages, 5k count '+popFive+' (town '+P.people.town+', Stairhead '+R.stairhead.census.pop+', steadings '+R.steadings.reduce((n,v)=>n+(v.census.pop||0),0)+'), Golden Tears '+P.people.tears);
+
+const obb=L=>{const c=Math.cos(L.ry||0),s=Math.sin(L.ry||0);return{c:[L.x,L.z],u:[c,-s],v:[s,c],hw:L.w/2,hd:L.d/2};};
+const pen=(A,B)=>{let m=1e9;for(const ax of[A.u,A.v,B.u,B.v]){const pr=F=>Math.abs(F.u[0]*ax[0]+F.u[1]*ax[1])*F.hw+Math.abs(F.v[0]*ax[0]+F.v[1]*ax[1])*F.hd;
+ const d=Math.abs((A.c[0]-B.c[0])*ax[0]+(A.c[1]-B.c[1])*ax[1]);m=Math.min(m,pr(A)+pr(B)-d);}return m;};
+const RUNS=new Set(['ropewalk']);   /* the twelve rope houses stand end to end along the 240 m walk by design */
+const overlaps=recs=>{const B=recs.map(obb),out=[];
+ for(let i=0;i<B.length;i++)for(let j=i+1;j<B.length;j++){if(Math.hypot(B[i].c[0]-B[j].c[0],B[i].c[1]-B[j].c[1])>80)continue;
+  if(RUNS.has(recs[i].kind)&&recs[i].kind===recs[j].kind)continue;if(pen(B[i],B[j])>.35)out.push(recs[i].id+'|'+recs[j].id);}return out;};
+const onWay=X=>{const out=[];for(const L of X.records){const B=obb(L);
+ for(const w of X.ways){const m=(BK_TOWN.WIDTH[w.cls]||5)/2-.7;
+  for(let i=0;i+1<w.pts.length;i++){const a=w.pts[i],b=w.pts[i+1],Ln=Math.hypot(b[0]-a[0],b[1]-a[1])||1,st=Math.max(1,Math.ceil(Ln/2));let hit=false;
+   for(let k=0;k<=st;k++){const t=k/st,px=a[0]+(b[0]-a[0])*t-B.c[0],pz=a[1]+(b[1]-a[1])*t-B.c[1];if(Math.abs(px*B.u[0]+pz*B.u[1])<B.hw+m&&Math.abs(px*B.v[0]+pz*B.v[1])<B.hd+m){hit=true;break;}}
+   if(hit){out.push(L.id+'@'+w.id);break;}}if(out.length&&out[out.length-1].startsWith(L.id+'@'))break;}}return out;};
+const inWater=recs=>recs.filter(r=>{const n=BK_GROUND.river.near(r.x,r.z);if(n&&n.d<n.w/2+Math.hypot(r.w,r.d)/2)return true;
+ if(BK_GROUND.pondAt(r.x,r.z,Math.hypot(r.w,r.d)/2))return true;return BK_GROUND.leatD(r.x,r.z)<2+Math.min(r.w,r.d)/2;}).map(r=>r.id);
+
+{const o=overlaps(P.records);T.ok('no two town buildings overlap (the houses, the Market, the Icegarth, the Folds, the Fairfell, the Golden Tears)',!P.err&&!P.refused.length&&!o.length,
+  o.length+' pairs'+(P.refused.length?'; refused '+P.refused.join(', '):''));
+ T.neg('a building placed on top of another is caught',rs=>!overlaps(rs).length,P.records.concat([Object.assign({},P.records[0],{id:'dup'})]),P.records);}
+{const s=onWay(P);T.ok('no town building stands on a road or a lane',!s.length,s.length+' on a way'+(s.length?': '+s.slice(0,4).join(', '):''));
+ const w=P.ways[0],mid=[(w.pts[0][0]+w.pts[1][0])/2,(w.pts[0][1]+w.pts[1][1])/2];
+ T.neg('a house dropped on the drove road is caught',X=>!onWay(X).length,Object.assign({},P,{records:P.records.concat([Object.assign({},P.records[0],{id:'road-house',x:mid[0],z:mid[1]})])}),P);}
+{const wt=inWater(P.records);T.ok('no town building stands in the Blak Riba, the leat or an ice pond',!wt.length,wt.length+' wet');
+ const r0=BK_GROUND.river.along(BK_GROUND.river.sPin,0);
+ T.neg('a house in the Blak Riba is caught',rs=>!inWater(rs).length,P.records.concat([Object.assign({},P.records[0],{id:'wet',x:r0.x,z:r0.z})]),P.records);}
+const popOk=n=>Math.abs(n-5000)<=750;
+T.ok('the 5,000 (the town, the Stairhead and the four steadings: PLAN.md section 0) hold within 15 %',popOk(popFive),popFive+' people');
+T.neg('a town of 2,500 is caught',popOk,2500,popFive);
+const tearsOk=X=>{const ks=X.records.filter(r=>r.quarter==='tears').map(r=>r.key);
+ return X.people.tears>=100&&X.people.tears<=200&&ks.length>=10&&['xa_serai','xa_rich_c','xa_temple','xa_barracks','xa_teahouse','xa_warehouse','xa_bath'].every(k=>ks.includes(k));};
+T.ok('the Golden Tears\' mission stands east of the Market: 100-200 people in the Xanadu kit\'s compound',tearsOk(P),P.people.tears+' people');
+T.neg('a Golden Tears mission without its caravanserai is caught',tearsOk,Object.assign({},P,{records:P.records.filter(r=>r.key!=='xa_serai')}),P);
+const quartersOk=(X,Rg)=>{const K={};for(const r of X.records)K[r.kind]=(K[r.kind]||0)+1;
+ const halls=X.records.filter(r=>r.kind==='hall').map(r=>r.variant);
+ return K.hall===2&&halls.includes('fowlers')&&halls.includes('icecut')&&K.head===1&&K.halting>=2&&K.icehouse===14&&K.ropewalk===12&&K.folds>=12&&K.fairpens>=10&&K.cairnhall===1&&Rg.toll.length===4&&Rg.hoists.length===2&&Rg.stair.pts.length>40;};
+T.ok('every quarter and outwork stands: both meeting halls (fowlers and icecut), the head\'s house, 14 ice houses, 12 rope houses, the Folds, the Fairfell, the cairn hall, Dalab\'s 4 toll pieces, 2 hoists and the gorge stair',quartersOk(P,R),
+ 'toll '+R.toll.map(t=>t.key).join(', ')+'; stair '+R.stair.pts.length+' pts');
+T.neg('a missing toll post piece is caught',Rg=>quartersOk(P,Rg),Object.assign({},R,{toll:R.toll.slice(0,3)}),R);
+const villagesOk=Vs=>Vs.length===17&&Vs.filter(v=>v.kind==='steading').length===4&&Vs.filter(v=>v.kind==='hamlet').length===12&&
+ Vs.every(v=>!v.error&&(v.records||[]).length>=20&&v.records.every(r=>{const n=BK_GROUND.river.near(r.x,r.z);return!n||n.d>n.w/2+10;}));
+T.ok('all 17 core/hamlet villages (4 steadings, the Stairhead, 12 hamlets of PLAN.md 3.2a) lay out dry with 20+ records',villagesOk(V),
+ V.map(v=>v.id.replace(/^bk\.(h|stead)?\.?/,'')+' '+v.records.length).join(', '));
+T.neg('a hamlet with a building in the river is caught',villagesOk,
+ V.map((v,i)=>i?v:Object.assign({},v,{records:v.records.map((r,j)=>j?r:Object.assign({},r,{x:BK_GROUND.river.pts[10].x,z:BK_GROUND.river.pts[10].z}))})),V);
+const fallsOk=(rp,lt)=>{if(rp.length<100||lt.length<5)return false;
+ for(let i=1;i<rp.length;i++)if(!(rp[i].bed<rp[i-1].bed))return false;
+ for(let i=1;i<lt.length;i++)if(!(lt[i][2]<lt[i-1][2]))return false;
+ return Math.abs(BK_GROUND.h(0,0)-BK_GROUND.model(0,0))<3;};
+T.ok('the Blak Riba and the leat fall all their length, and at the pin the ground matches the scale model within 3 m',fallsOk(BK_GROUND.river.pts,BK_GROUND.leat),
+ 'pin '+BK_GROUND.h(0,0).toFixed(1)+' m vs model '+BK_GROUND.model(0,0).toFixed(1)+' m');
+T.neg('a rising river segment is caught',rp=>fallsOk(rp,BK_GROUND.leat),
+ BK_GROUND.river.pts.map((p,i)=>i===5?Object.assign({},p,{bed:BK_GROUND.river.pts[4].bed+1}):p),BK_GROUND.river.pts);
+const hash=X=>{let h=2166136261;const s=X.records.map(r=>r.key+r.x.toFixed(2)+r.z.toFixed(2)+(+r.ry).toFixed(3)).join();for(let i=0;i<s.length;i++)h=Math.imul(h^s.charCodeAt(i),16777619)>>>0;return h;};
+{const P2=BK_TOWN.make({dims,seed:44120});T.ok('the town layout reruns the same (core/rand streams)',hash(P2)===hash(P),hash(P).toString(16));
+ T.neg('a layout from another seed differs',X=>hash(X)===hash(P),BK_TOWN.make({dims,seed:99}),P);}
+T.done();

@@ -368,6 +368,21 @@
       ],
       "port": 8883,
       "autoPort": false
+    },
+    {
+      "name": "blakhed",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8891",
+        "--bind",
+        "127.0.0.1",
+        "--directory",
+        "settlements/blakhed/dist"
+      ],
+      "port": 8891,
+      "autoPort": false
     }
   ]
 }
