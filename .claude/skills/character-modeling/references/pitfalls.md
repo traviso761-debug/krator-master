@@ -86,6 +86,13 @@ area you are about to change.
   one lateral neighbour and draws it back to its own side. Weld the two edge columns on every row where the opening
   is shut (`tools/garments/types/headgear.py` `hood`, 2026-11-15). Narrowing the opening does not fix it. Check a
   hood from above (`shots.py` pitch 0.45 and 0.9), not only from the front at eye level, where the slit hides.
+  **Checked at build time since 2026-11-16:** `assemble_garment` runs `check_open_seams` (`tools/garments/core.py`,
+  Check #10) on every head piece and fails one whose open part has two or more rows ending a little short of closing
+  (over 1 mm, under a tenth of the row's length) with no closed row above them: an opening that never shuts before
+  the crown. A slot that tapers shut under a closed crown passes. A new hood, cowl, coif or veil either welds its edges where the
+  opening is shut, is built as a closed grid, or sets `slit_ok = True` on a slit cut on purpose. The check sees a
+  part's own grid: a gap between two separate parts (a cap that does not reach its cowl) still needs the shot from
+  above.
 - **Toes through boots, a disc at the heel** → a shaft plus a capped foot tube, the heel found by ray.
 - **Sleeves ballooning** (a straight shoulder-to-hand line leaves a bent arm) → loft along an elbow path; test against
   a torso-only collision set so the A-posed arms don't catch.

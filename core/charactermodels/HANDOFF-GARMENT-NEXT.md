@@ -100,6 +100,11 @@ shader hunks could not be measured apart from the chain hunks (they were written
 
 ## Rules that bit
 
+- A hood, cowl or coif is an open grid: where its face opening is shut, its two edge columns are welded
+  (`types/headgear.py` `hood`). `assemble_garment` fails a head piece whose open part ends a little short of closing on
+  two or more rows with no closed row above them (`check_open_seams`, Check #10, 2026-11-16; every culture's
+  builders pass it, 105 builder runs); `slit_ok = True` on a part allows a slit cut on
+  purpose. Shoot a new head piece from above (`shots.py` pitch 0.55) as well as from the front.
 - Every change to the push goes into both runtimes; `check_twin.py` fails the build when the literals drift.
 - Fragments pack many statements a line: no trailing `//` comments inside shader strings.
 - A dump rounded to a micron hides an ulp bug: dump full precision when two runs disagree.
