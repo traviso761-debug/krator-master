@@ -305,9 +305,9 @@
    }
   },
   "farm": {
-   "mean": 0.141,
-   "good_km2": 43344,
-   "best_km2": 29696,
+   "mean": 0.134,
+   "good_km2": 40640,
+   "best_km2": 28288,
    "peak": {
     "score": 0.995,
     "x": 72000,
@@ -394,16 +394,6 @@
    "why": "the scale model's geology: gypsum prospectivity 185 on evaporite ground"
   },
   {
-   "id": "res-farm--232-48",
-   "kind": "farm",
-   "family": "farmland",
-   "x": -232000,
-   "z": 48000,
-   "score": 0.92,
-   "label": "Farmland: the best (92%, 957 mm, 12 °C)",
-   "why": "warm, watered, flat and deep-soiled (Cfb)"
-  },
-  {
    "id": "res-farm--568--104",
    "kind": "farm",
    "family": "farmland",
@@ -412,6 +402,16 @@
    "score": 0.92,
    "label": "Farmland: the best (92%, 769 mm, 25 °C)",
    "why": "warm, watered, flat and deep-soiled (Cfa)"
+  },
+  {
+   "id": "res-farm--232-48",
+   "kind": "farm",
+   "family": "farmland",
+   "x": -232000,
+   "z": 48000,
+   "score": 0.92,
+   "label": "Farmland: the best (92%, 957 mm, 12 °C)",
+   "why": "warm, watered, flat and deep-soiled (Cfb)"
   },
   {
    "id": "res-farm--344-56",

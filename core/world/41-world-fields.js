@@ -48,29 +48,29 @@ W.FIELDS=['wet','flow','upland','canyon','rim','rock','dune','oasis','slope','ab
 // rough the small relief, rock the bare-rock share, wallK how far a channel's wall leans (m out per m down), hill the
 // micro-relief's hills (m of rise at full strength, 43m-world-micro.js)
 const STYLES={
- desert:  {hills:1.0, ridge:.7, terr:.75,step:55,dune:1,  gully:.7, rough:1.0,rock:.25,wallK:.45,peak:0,slot:0,box:0.15,peat:0,hill:30},
- badland: {hills:1.1, ridge:1.1,terr:.55,step:30,dune:0,  gully:1.6,rough:1.2,rock:.55,wallK:.6,peak:0.1,slot:0.3,box:0.8,peat:0,hill:45},
- abyss:   {hills:.6,  ridge:.45,terr:.25,step:40,dune:.15,gully:.4, rough:.7, rock:.15,wallK:1.2,peak:0,slot:0,box:0,peat:0,hill:25},
- jungle:  {hills:.85, ridge:.4, terr:0,  step:40,dune:0,  gully:.5, rough:.8, rock:.05,wallK:1.8,peak:0,slot:0,box:0,peat:0,hill:40},
- highland:{hills:1.2, ridge:1.0,terr:.3, step:45,dune:0,  gully:.9, rough:1.1,rock:.35,wallK:.8,peak:0.45,slot:0.15,box:0,peat:0.7,hill:90},
- korona:  {hills:1.1, ridge:.9, terr:.65,step:80,dune:0,  gully:.5, rough:1.0,rock:.45,wallK:.5,peak:0.35,slot:0.7,box:0,peat:0.2,hill:60},
- volcanic:{hills:.9,  ridge:.8, terr:.1, step:40,dune:0,  gully:.8, rough:1.1,rock:.6, wallK:.8,peak:0.55,slot:0.3,box:0,peat:0,hill:60},
- dryland: {hills:.8,  ridge:.5, terr:.3, step:40,dune:.4, gully:.6, rough:.9, rock:.2, wallK:1.0,peak:0,slot:0,box:0.2,peat:0,hill:30},
- sea:     {hills:.5,  ridge:.3, terr:0,  step:40,dune:0,  gully:0,  rough:.5, rock:.05,wallK:2,peak:0,slot:0,box:0,peat:0,hill:8},
+ desert:  {hills:1.0, ridge:.7, terr:.75,step:55,dune:1,  gully:.7, rough:1.0,rock:.25,wallK:.45,peak:0,slot:0,box:0.15,peat:0,hill:45},
+ badland: {hills:1.1, ridge:1.1,terr:.55,step:30,dune:0,  gully:1.6,rough:1.2,rock:.55,wallK:.6,peak:0.1,slot:0.3,box:0.8,peat:0,hill:65},
+ abyss:   {hills:.6,  ridge:.45,terr:.25,step:40,dune:.15,gully:.4, rough:.7, rock:.15,wallK:1.2,peak:0,slot:0,box:0,peat:0,hill:35},
+ jungle:  {hills:.85, ridge:.4, terr:0,  step:40,dune:0,  gully:.5, rough:.8, rock:.05,wallK:1.8,peak:0,slot:0,box:0,peat:0,hill:55},
+ highland:{hills:1.2, ridge:1.0,terr:.3, step:45,dune:0,  gully:.9, rough:1.1,rock:.35,wallK:.8,peak:0.45,slot:0.15,box:0,peat:0.7,hill:130},
+ korona:  {hills:1.1, ridge:.9, terr:.65,step:80,dune:0,  gully:.5, rough:1.0,rock:.45,wallK:.5,peak:0.35,slot:0.7,box:0,peat:0.2,hill:90},
+ volcanic:{hills:.9,  ridge:.8, terr:.1, step:40,dune:0,  gully:.8, rough:1.1,rock:.6, wallK:.8,peak:0.55,slot:0.3,box:0,peat:0,hill:90},
+ dryland: {hills:.8,  ridge:.5, terr:.3, step:40,dune:.4, gully:.6, rough:.9, rock:.2, wallK:1.0,peak:0,slot:0,box:0.2,peat:0,hill:45},
+ sea:     {hills:.5,  ridge:.3, terr:0,  step:40,dune:0,  gully:0,  rough:.5, rock:.05,wallK:2,peak:0,slot:0,box:0,peat:0,hill:10},
  // the Oidong Valley (biomes/oidong; settlements/longsong): a green high vale, its floor swelling gently, no terraces or dunes
- vale:    {hills:.8,  ridge:.8, terr:0,  step:40,dune:0,  gully:.35,rough:.7, rock:.3, wallK:.9,peak:0,slot:0,box:0,peat:0.2,hill:35},
+ vale:    {hills:.8,  ridge:.8, terr:0,  step:40,dune:0,  gully:.35,rough:.7, rock:.3, wallK:.9,peak:0,slot:0,box:0,peat:0.2,hill:50},
  // the abyssal savannah's rims (biomes/abyssal-savannah; openworld/pinnacle): gold grass parkland, caprock benches, few dunes
- savanna: {hills:.9,  ridge:.6, terr:.45,step:40,dune:0,  gully:.6, rough:.9, rock:.2, wallK:.7,peak:0,slot:0,box:0,peat:0,hill:28},
+ savanna: {hills:.9,  ridge:.6, terr:.45,step:40,dune:0,  gully:.6, rough:.9, rock:.2, wallK:.7,peak:0,slot:0,box:0,peat:0,hill:45},
  // karst towers and dissected carbonate over a flat floor (k-guilin, the NW Bay's tsingy; the Neo-Ozarks): no terraces or dunes, steep walls
- karst:   {hills:.6,  ridge:.4, terr:0,  step:40,dune:0,  gully:.4, rough:.8, rock:.4, wallK:1.4,peak:0,slot:0.4,box:0,peat:0,hill:60},
+ karst:   {hills:.6,  ridge:.4, terr:0,  step:40,dune:0,  gully:.4, rough:.8, rock:.4, wallK:1.4,peak:0,slot:0.4,box:0,peat:0,hill:85},
  // the outer walls and the rift's rims (nwouterwall, copperglacier, riftrim, ne/se outer wall): high ground, sharp ridges, ice above
- alpine:  {hills:1.3, ridge:1.2,terr:.1, step:40,dune:0,  gully:.7, rough:1.2,rock:.5, wallK:.7,peak:1,slot:0.3,box:0,peat:0.4,hill:120},
+ alpine:  {hills:1.3, ridge:1.2,terr:.1, step:40,dune:0,  gully:.7, rough:1.2,rock:.5, wallK:.7,peak:1,slot:0.3,box:0,peat:0.4,hill:170},
  // floodplains and deltas (swlowlands, nwlowlands, the Ancient's Valley): low relief, wide soft channel banks
- lowland: {hills:.6,  ridge:.3, terr:0,  step:40,dune:0,  gully:.4, rough:.6, rock:.05,wallK:1.6,peak:0,slot:0,box:0,peat:0,hill:12},
+ lowland: {hills:.6,  ridge:.3, terr:0,  step:40,dune:0,  gully:.4, rough:.6, rock:.05,wallK:1.6,peak:0,slot:0,box:0,peat:0,hill:18},
  // chasms and trenches between walls (the Great Chasm, the Labyrinth, the Loom chasms, the Outland Gate): mesas, near-sheer walls
- chasm:   {hills:1.0, ridge:.9, terr:.6, step:60,dune:0,  gully:.8, rough:1.0,rock:.5, wallK:.35,peak:0.3,slot:1,box:0,peat:0,hill:45},
+ chasm:   {hills:1.0, ridge:.9, terr:.6, step:60,dune:0,  gully:.8, rough:1.0,rock:.5, wallK:.35,peak:0.3,slot:1,box:0,peat:0,hill:65},
  // stepped lava and fault benches (godstep, greenstep, highrift's graben, Opal Valley's lake beds, the Mid Basin): broad tall terraces
- steps:   {hills:.7,  ridge:.5, terr:.9, step:120,dune:0, gully:.5, rough:.8, rock:.35,wallK:.6,peak:0.15,slot:0.6,box:0,peat:0,hill:35}};
+ steps:   {hills:.7,  ridge:.5, terr:.9, step:120,dune:0, gully:.5, rough:.8, rock:.35,wallK:.6,peak:0.15,slot:0.6,box:0,peat:0,hill:50}};
 const SKEYS=['hills','ridge','terr','step','dune','gully','rough','rock','wallK','peak','slot','box','peat','hill'];   /* hill: the micro-relief's hills (m; 43m-world-micro.js, PLAN-MICRO.md) */   /* slot, box, peat: relief P11's stream profiles (stProf) */   /* peak: relief P5's crests (43 WRELIEF.peaks) */
 // the overlay's name (lower case) -> [its style, its palette]. EVERY overlay the scale model can hand a region is here
 // (tools/scale-model/extract_region.py writes them; core/world/test-world-styles.js fails on a name without an entry).

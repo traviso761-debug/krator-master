@@ -304,9 +304,9 @@
    }
   },
   "farm": {
-   "mean": 0.077,
-   "good_km2": 10464,
-   "best_km2": 7008,
+   "mean": 0.073,
+   "good_km2": 10032,
+   "best_km2": 6784,
    "peak": {
     "score": 0.99,
     "x": -202000,
@@ -373,13 +373,23 @@
    "why": "the scale model's geology: saltpeter prospectivity 200 on crystalline ground"
   },
   {
-   "id": "res-farm--470--74",
+   "id": "res-farm--462--82",
    "kind": "farm",
    "family": "farmland",
-   "x": -470000,
-   "z": -74000,
-   "score": 0.93,
-   "label": "Farmland: the best (93%, 973 mm, 12 °C)",
+   "x": -462000,
+   "z": -82000,
+   "score": 0.92,
+   "label": "Farmland: the best (92%, 957 mm, 12 °C)",
+   "why": "warm, watered, flat and deep-soiled (Cfb)"
+  },
+  {
+   "id": "res-farm--494--70",
+   "kind": "farm",
+   "family": "farmland",
+   "x": -494000,
+   "z": -70000,
+   "score": 0.88,
+   "label": "Farmland: the best (88%, 941 mm, 12 °C)",
    "why": "warm, watered, flat and deep-soiled (Cfb)"
   },
   {
@@ -393,24 +403,14 @@
    "why": "warm, watered, flat and deep-soiled (Cfb)"
   },
   {
-   "id": "res-farm--606--78",
+   "id": "res-farm--166--34",
    "kind": "farm",
    "family": "farmland",
-   "x": -606000,
-   "z": -78000,
-   "score": 0.86,
-   "label": "Farmland: the best (86%, 722 mm, 14 °C)",
-   "why": "warm, watered, flat and deep-soiled (Cfb)"
-  },
-  {
-   "id": "res-farm--426--66",
-   "kind": "farm",
-   "family": "farmland",
-   "x": -426000,
-   "z": -66000,
+   "x": -166000,
+   "z": -34000,
    "score": 0.85,
-   "label": "Farmland: the best (85%, 800 mm, 11 °C)",
-   "why": "warm, watered, flat and deep-soiled (Cfb)"
+   "label": "Farmland: the best (85%, 910 mm, 11 °C)",
+   "why": "warm, watered, flat and deep-soiled (BSk)"
   },
   {
    "id": "res-unique-tin--142--32",
@@ -433,16 +433,6 @@
    "why": "a tin placer the rivers carried down (flatten)"
   },
   {
-   "id": "res-unique-gold--170--48",
-   "kind": "unique",
-   "family": "gold",
-   "x": -169562.1000000001,
-   "z": -48417,
-   "score": 603,
-   "label": "Placer gold (high grade, river r671)",
-   "why": "a gold placer the rivers carried down (flatten)"
-  },
-  {
    "id": "res-unique-gold--186--56",
    "kind": "unique",
    "family": "gold",
@@ -451,6 +441,16 @@
    "score": 561,
    "label": "Placer gold (high grade, river r559)",
    "why": "a gold placer the rivers carried down (mouth)"
+  },
+  {
+   "id": "res-unique-gold-365-5",
+   "kind": "unique",
+   "family": "gold",
+   "x": 365209.1000000001,
+   "z": 5044.100000000093,
+   "score": 560,
+   "label": "Placer gold (high grade, river r_hr_verdigris)",
+   "why": "a gold placer the rivers carried down (flatten)"
   },
   {
    "id": "res-unique-vent--418--102",

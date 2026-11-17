@@ -180,6 +180,28 @@ Slopes after: median 0.04-0.09, 99th percentile 0.19-0.20 (gentle country: the D
   - The module's effect is the drainage structure where the land has relief: the High Rift, the highland, alpine and
     volcanic styles.
 
+## Bigger hills, the sun on the clock (2026-11-17, the owner: "maybe some bigger hills per biome, and sun following the clock")
+
+- **`hill` by style, about 1.5 times:** lowland 18, sea 10, savanna, desert and dryland 45, vale and steps 50, abyss 35,
+  jungle 55, chasm and badland 65, karst 85, korona and volcanic 90, highland 130, alpine 170.
+  - Pinnacle rim's 180-540 m relief 2.7 -> 3.6 m, slope p99 0.18 -> 0.24.
+  - The stream trace: 95 tarns (72 before), 104 junctions.
+- **The sun follows the clock** (45's `sunAt`):
+  - Up in the east (+x) at 6, highest at noon (62 degrees, toward -z, where the pinned sun stood), down in the west at 18,
+    under the horizon at night. `HOST.SUN_DIR` is moved in place, every half world minute.
+  - The light's intensity and warmth follow it (warm and dim low, out under the horizon), and the sky's fill
+    (hemisphere 0.62 and fill 0.22 at most, 18 % at night). The flora's sun (`BIO.setSun`) and ATMOS's hour follow too.
+  - The sky's sun is no longer painted into the dome: it is a sprite on it (80's `SUNS`), redder and wider near the
+    horizon. The giant's lit side (`uSunDir`) follows it.
+  - The world opens at 15:30, not 11:30 (`HOUR0`; `?hour=` sets the hour, `?time=run` runs the day: 72 real minutes).
+    An afternoon's raking light shows the relief, as the Menagerie's pages are lit.
+  - A simple arc: core/atmos's sky model (`89-atmos-e-skymodel.js`, `sunGiant`: latitude, season, the giant) is the
+    astronomical one, for when the open world loads it.
+  - Not yet: the dome's colours are painted once (a day's, at every hour); only the sun, its sprite and the lights move.
+- **Checked:** the three relief regions re-baked (every site and stream check ok, every re-check the same); the 8 reached
+  pages GPU-verified; pinnacle's views 21, 22 and 26 at 15:30 against 11:30: the afternoon light shades the savannah's
+  hills a little more, still subtle there (gentle country, as M4/M5's note says).
+
 ## Owed
 
 - **M2b's rest:** runevision's doubled-and-clamped normalisation of the stripes' phasor (ours adds 0.15 W).
@@ -188,8 +210,6 @@ Slopes after: median 0.04-0.09, 99th percentile 0.19-0.20 (gentle country: the D
   - colour jitter at 2, 8, 30, 120 and 600 m, faded by `fwidth` (the ground has 37, 240 and 900 m and the shader's four
     detail textures);
   - north-facing snow, and cloud shadow.
-- **The owner's call:** how much relief each style carries (`hill`: savanna 28 m, highland 90 m...), and whether the light
-  follows the clock's hour (a lower sun in the morning and evening, as the Menagerie's pages are lit).
 - **M6:** the regions without relief (isle-demo, iziz-cluster) take it once they take relief.
 - A settlement on the map keeps its own ground through `townAt`. A road's carriageway is level whatever the micro-relief
   did; its banks cut the new hills, so a re-bake may move a road.

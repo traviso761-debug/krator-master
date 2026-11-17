@@ -14,14 +14,7 @@ const skyTex=BIO.canvasTex(4096,2048,(g,w,h)=>{
  grd.addColorStop(0.503,'#d2bfa4');grd.addColorStop(1.00,'#d2bfa4');   // below the horizon: the haze, as the fog is
  g.fillStyle=grd;g.fillRect(0,0,w,h);
  const wrapE=(x,y,rx,ry,f)=>{g.fillStyle=f;for(let k=-1;k<=1;k++){g.beginPath();g.ellipse(x+k*w,y,rx,ry,0,0,TAU);g.fill();}};
- // the sun at the azimuth and altitude the light uses (HOST.SUN_DIR); u = ((270-az)/360) mod 1 as the kit's dome maps it
- const S=HOST.SUN_DIR,az=(Math.atan2(S.x,-S.z)*180/Math.PI+360)%360,alt=Math.asin(S.y)*180/Math.PI;
- const SUNU=((270-az)/360%1+1)%1,sx=w*SUNU,sy=HZ-alt*DEG;
- {const gl=g.createRadialGradient(sx,sy,0,sx,sy,520);
-  gl.addColorStop(0,'rgba(255,250,236,.95)');gl.addColorStop(.05,'rgba(255,244,214,.5)');
-  gl.addColorStop(.2,'rgba(255,236,196,.16)');gl.addColorStop(1,'rgba(255,230,180,0)');
-  g.fillStyle=gl;for(let k=-1;k<=1;k++)g.fillRect(sx-520+k*w,sy-520,1040,1040);
-  wrapE(sx,sy,15,15,'rgba(255,253,244,1)');}
+ /* the sun is not painted here: it follows the clock (45's sunAt), drawn as a sprite on the dome (SUNS below) */
  for(let i=0;i<40;i++){const y=HZ-rr(28,70)*DEG,x=rng()*w,L=rr(200,700),a=rr(-.06,.06);
   g.save();g.translate(x,y);g.rotate(a);g.fillStyle='rgba(245,246,250,'+(.05+.1*rng()).toFixed(3)+')';
   for(let k=0;k<5;k++){g.beginPath();g.ellipse(rr(-L*.4,L*.4),rr(-6,6),L*rr(.3,.6),rr(2,6),0,0,TAU);g.fill();}g.restore();}
@@ -86,5 +79,16 @@ const giantRing=new THREE.Mesh(new THREE.RingGeometry(GIANT_R*1.30,GIANT_R*2.12,
 giantRing.quaternion.setFromUnitVectors(new THREE.Vector3(0,0,1),GIANT_AXIS.clone().multiplyScalar(Math.cos(.105)).addScaledVector(giantDir,-Math.sin(.105)).normalize());   // opened 6 degrees toward us: a plane exactly edge-on covers no pixelgiantRing.renderOrder=-9;giantRing.userData.probeSkip=true;giantRing.frustumCulled=false;scene.add(giantRing);
 HOST.TICKS.push(dt=>{GU.uSpin.value+=dt*0.006;});
 // every frame, before drawing: the dome, the giant and its rings stay centred on the camera
-function follow(){const P=camera.position;sky.position.copy(P);giant.position.copy(P).addScaledVector(giantDir,GIANT_DIST);giantRing.position.copy(giant.position);}
+// THE SUN on the dome where the light is (HOST.SUN_DIR, moved by the clock): a sprite of its disc and glow, the glow redder and
+// wider near the horizon, gone under it
+const sunTex=BIO.canvasTex(256,256,(g,w,h)=>{const gl=g.createRadialGradient(w/2,h/2,0,w/2,h/2,w/2);
+ gl.addColorStop(0,'rgba(255,253,244,1)');gl.addColorStop(.035,'rgba(255,253,244,1)');gl.addColorStop(.05,'rgba(255,244,214,.55)');
+ gl.addColorStop(.2,'rgba(255,236,196,.17)');gl.addColorStop(1,'rgba(255,230,180,0)');g.fillStyle=gl;g.fillRect(0,0,w,h);});
+const SUNS=new THREE.Sprite(new THREE.SpriteMaterial({map:sunTex,fog:false,depthWrite:false,transparent:true,blending:THREE.AdditiveBlending}));
+SUNS.renderOrder=-9;SUNS.frustumCulled=false;SUNS.userData.probeSkip=true;scene.add(SUNS);
+const SUN_D=DOME*.9,SUN_S=SUN_D*.22,_warm=new THREE.Color(1,.62,.38),_white=new THREE.Color(1,1,1);
+function follow(){const P=camera.position;sky.position.copy(P);giant.position.copy(P).addScaledVector(giantDir,GIANT_DIST);giantRing.position.copy(giant.position);
+ const S=HOST.SUN_DIR,up=S.y;GU.uSunDir.value.copy(S);
+ SUNS.position.copy(P).addScaledVector(S,SUN_D);SUNS.visible=up>-.05;SUNS.scale.setScalar(SUN_S*(1+.6*Math.max(0,1-up/.3)));
+ SUNS.material.color.copy(_warm).lerp(_white,Math.max(0,Math.min(1,up/.35)));SUNS.material.opacity=Math.max(0,Math.min(1,(up+.05)/.1));}
 return{follow,sky,giant};})();

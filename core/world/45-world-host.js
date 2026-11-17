@@ -31,9 +31,27 @@ const TICKS=[];
 // the world clock (core/clock: one world day is 72 real minutes, as every settlement runs), when the build lists
 // core/clock/20-core-clock.js: ?hour=H sets the hour, ?day=N the day, ?time=run starts it (held by default, as the
 // preview pages hold it). Stepped every frame with the real seconds; what counts days (the hamlets' felling) reads it.
-// The world's light is still pinned (the sun at HOST.SUN_DIR, ATMOS at 11.5): moving them to the hour is still to do.
+// The world opens at 15:30 (the owner, 2026-11-17: "sun following the clock"; an afternoon's raking light shows the land's
+// relief, as the World Menagerie's pages are lit, where a noon sun flattens it: core/world/PLAN-MICRO.md).
+const HOUR0=15.5;
 const CLOCK=(()=>{if(typeof KCLOCK==='undefined')return null;const q=new URLSearchParams(location.search),n=(k,d)=>q.has(k)&&isFinite(+q.get(k))?+q.get(k):d;
- const C=KCLOCK.make({hour:n('hour',11.5),day:n('day',0),running:q.get('time')==='run'});TICKS.push(dt=>C.step(dt));return C;})();
+ const C=KCLOCK.make({hour:n('hour',HOUR0),day:n('day',0),running:q.get('time')==='run'});TICKS.push(dt=>C.step(dt));return C;})();
+// THE SUN FOLLOWS THE CLOCK: up in the east (+x) at 6, highest at noon (SUN_MAX, toward the north, -z, where the pinned sun
+// stood), down in the west at 18, under the horizon at night. HOST.SUN_DIR is one vector, moved in place, so everything that
+// holds it (the sky's disc and the giant's lit side, 80) follows; the light, the sky's fill and the flora's sun (BIO.SUN)
+// are set here. A simple arc: core/atmos's sky model (89-atmos-e-skymodel.js) has the astronomical one, for when the open
+// world takes it
+const SUN_MAX=62*Math.PI/180,SUN_WARM=new THREE.Color(0xffb27a),SUN_NOON=new THREE.Color(0xfff2dc);
+let sunHour=NaN;
+function sunAt(h){const t=(h-6)/12,alt=SUN_MAX*Math.sin(Math.PI*t),az=Math.PI/2*(1-2*t),ca=Math.cos(alt);
+ SUN_DIR.set(Math.sin(az)*ca,Math.sin(alt),-Math.cos(az)*ca).normalize();sun.position.copy(SUN_DIR);
+ const up=SUN_DIR.y,day=Math.max(0,Math.min(1,(up+.04)/.2));
+ sun.intensity=1.55*day*day*(3-2*day);sun.color.copy(SUN_WARM).lerp(SUN_NOON,Math.max(0,Math.min(1,up/.45)));
+ const sky=.18+.82*Math.max(0,Math.min(1,(up+.12)/.36));hemi.intensity=.62*sky;fill.intensity=.22*sky;
+ if(typeof BIO!=="undefined"&&BIO.host&&BIO.setSun)BIO.setSun([SUN_DIR.x,Math.max(.02,SUN_DIR.y),SUN_DIR.z]);}
+const hourNow=()=>CLOCK?CLOCK.hour:HOUR0;
+sunAt(hourNow());sunHour=hourNow();
+TICKS.push(()=>{const h=hourNow();if(Math.abs(h-sunHour)>1/120){sunAt(h);sunHour=h;}});   /* every half a world minute */
 
 // ---------------------------------------------------------------- the field sources
 const SRC={mode:'world',profile:null,grid:null};
@@ -52,9 +70,9 @@ BIO.init({THREE,scene,terrainH,waterH,
  mask:(x,z)=>{if(SRC.mode==='nursery')return 1;const d=terrainH(x,z)-waterH(x,z);return d<.15?0:d<.7?(d-.15)/.55:1;},
  obstacles:[],ticks:fn=>TICKS.push(fn),seed:1,origin:[[0,0]],center:[0,0],fields,register:o=>{},
  err:m=>reportErr('biome: '+m)});
-BIO.setSun([SUN_DIR.x,SUN_DIR.y,SUN_DIR.z]);
+BIO.setSun([SUN_DIR.x,Math.max(.02,SUN_DIR.y),SUN_DIR.z]);
 
-return{renderer,scene,camera,sun,hemi,fill,HAZE,SUN_DIR,TICKS,SRC,clock:CLOCK,
+return{renderer,scene,camera,sun,hemi,fill,HAZE,SUN_DIR,TICKS,SRC,clock:CLOCK,hour:hourNow,sunAt,
  // the nursery: flat ground at the origin with a fixed profile; origin is the LOD spine the builders measure from
  nursery(profile,origin){SRC.mode='nursery';SRC.profile=profile;BIO.host.origin=[origin||[0,0]];BIO.host.center=origin||[0,0];lx=NaN;},
  world(){SRC.mode='world';SRC.profile=null;BIO.host.origin=[[0,0]];BIO.host.center=[0,0];lx=NaN;},
