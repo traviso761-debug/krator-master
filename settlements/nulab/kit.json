@@ -1,0 +1,60 @@
+{
+ "targets": {
+  "town": "nulab.html"
+ },
+ "external": [
+  "settlements/nulab/gen/69n-kcity-bundle.js",
+  "settlements/nulab/gen/69n2-nl-flora-bundle.js",
+  "settlements/nulab/gen/69n3-dalab-pack.js",
+  "settlements/dalab/src/69d-dalab-mat.js",
+  "settlements/dalab/src/69e-dalab-helpers.js",
+  "settlements/dalab/src/70-dalab-dwellings.js",
+  "settlements/dalab/src/71-dalab-trade.js",
+  "settlements/dalab/src/71c-dalab-town.js",
+  "settlements/dalab/src/72-dalab-civic.js",
+  "settlements/dalab/src/72b-dalab-marks.js",
+  "settlements/dalab/src/73-dalab-sacred.js",
+  "settlements/dalab/src/74-dalab-ranch.js"
+ ],
+ "scoped": [
+  "69n-kcity-bundle.js",
+  "69n2-nl-flora-bundle.js"
+ ],
+ "pack": "nulab",
+ "files": {
+  "town": [
+   ["core/atmos", ["89-atmos-0-core.js", "89-atmos-0p-presets.js", "89-atmos-a-waves.js", "89-atmos-b-skylight.js"]],
+   ["core/water", ["20-core-water.js", "21-core-water-shore.js", "22-core-water-flow.js", "50-core-water-draw.js", "51-core-water-kinds.js"]],
+   ["core/drawn", ["10-core-drawn.js"]]
+  ]
+ },
+ "deterministic": [
+  "39n-nl-model.js",
+  "40-nl-ground.js",
+  "41-nl-town.js",
+  "42-nl-ring.js",
+  "69n-kcity-bundle.js",
+  "69n2-nl-flora-bundle.js",
+  "69n3-dalab-pack.js",
+  "89n0-nl-matlib.js",
+  "89zn-nl-site.js",
+  "90n-nl-world.js",
+  "90o-nl-build.js",
+  "90p-nl-flora.js",
+  "89-atmos-0-core.js",
+  "89-atmos-0p-presets.js",
+  "89-atmos-a-waves.js",
+  "89-atmos-b-skylight.js",
+  "20-core-water.js",
+  "21-core-water-shore.js",
+  "22-core-water-flow.js",
+  "50-core-water-draw.js",
+  "51-core-water-kinds.js",
+  "10-core-drawn.js",
+  "69d-dalab-mat.js",
+  "69e-dalab-helpers.js"
+ ],
+ "interiors": [],
+ "furniture": [],
+ "interiorSets": []
+}
