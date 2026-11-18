@@ -74,7 +74,7 @@
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
     "core/materials/record/26-matlib-bind.js": "93c467f3805276f5aea2482da7fac2216db1e52d18d191c1925c8cd90446b54c",
     "core/rand/08-core-rand.js": "f315035a138a8818c87f55de56ae2dbf3a8d66ff3cc435d303332502d2f43ddf",
-    "core/region/data/lz-tune.js": "f93ef305be395e6c45f9667277d23bad84287584f5df109dfb40976607266b0d",
+    "core/region/data/lz-tune.js": "6444e44ab91d541828e4b57485cb9c050cc8dd9229b975a758a26e7a1d8f3a56",
     "core/shader/06-core-khook.js": "eb1a0436d3d5dbaab81c3e43de2b642c96d9c3b44331a8960801880e5e20c56d",
     "core/shader/06b-core-kcolor.js": "ededfc6b8a1a8aae5bf3c6ab40863478f9beb8e1aaf2acf4ba9da25ef6392115",
     "core/shader/07-core-kwarp.js": "b73f3511762ae1f45b4ad88f054baf11f76cf2c8f27726605758d9657f253e17",
@@ -347,15 +347,15 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "settlements/tuatara/build-manifest.json": "627baf3269a4d14f1adaa094cb1d8eaf9719a889349016d6d0d0803960ce240c",
-    "settlements/tuatara/dist/tuatara.html": "8a8383fda1a34882e9e982552fa05fdd7362aed0c76f6692dff878b2b68d85fc",
+    "settlements/tuatara/build-manifest.json": "12f892176c9adce7fdf19c18abd45be498e3046410ee339a82e41c27f4ec2832",
+    "settlements/tuatara/dist/tuatara.html": "e5fb2b44e22509433aff1f1a54168d3d707d9e4f4bba5dc01db7057c89b36f52",
     "settlements/tuatara/dist/tuatara.tex.lizardmen-2.js": "ed3ee667e519875f63d015a22bb2dc9dd1c8a10224ef1d27516e18a901dfdb71",
     "settlements/tuatara/dist/tuatara.tex.lizardmen.js": "e2bfa25ee65ad4cd640d7568efd3879b04bd2f1b58eddf2a41e61c32dd4e4e8b",
     "settlements/tuatara/dist/tuatara.tex.tuatara.js": "fd3975b96d7f733dbed859625b43c46bcbed4285a5a8179d973fd803490b9545"
    },
    "outputs_raw": {
-    "settlements/tuatara/build-manifest.json": "627baf3269a4d14f1adaa094cb1d8eaf9719a889349016d6d0d0803960ce240c",
-    "settlements/tuatara/dist/tuatara.html": "8a8383fda1a34882e9e982552fa05fdd7362aed0c76f6692dff878b2b68d85fc",
+    "settlements/tuatara/build-manifest.json": "12f892176c9adce7fdf19c18abd45be498e3046410ee339a82e41c27f4ec2832",
+    "settlements/tuatara/dist/tuatara.html": "e5fb2b44e22509433aff1f1a54168d3d707d9e4f4bba5dc01db7057c89b36f52",
     "settlements/tuatara/dist/tuatara.tex.lizardmen-2.js": "ed3ee667e519875f63d015a22bb2dc9dd1c8a10224ef1d27516e18a901dfdb71",
     "settlements/tuatara/dist/tuatara.tex.lizardmen.js": "e2bfa25ee65ad4cd640d7568efd3879b04bd2f1b58eddf2a41e61c32dd4e4e8b",
     "settlements/tuatara/dist/tuatara.tex.tuatara.js": "fd3975b96d7f733dbed859625b43c46bcbed4285a5a8179d973fd803490b9545"

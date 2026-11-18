@@ -27,11 +27,11 @@ const t0 = Date.now(), Y = run(100, {}), LZ = new Set(LZ_TUNE.places.map(p => p.
 console.log('100 days of the Sultanate and the Lizardmen in one run in ' + ((Date.now() - t0) / 1000).toFixed(1) + ' s: ' + Y.S.order.length + ' settlements, ' + Math.round(Y.V.settlements.reduce((n, s) => n + s.people, 0)) + ' people');
 const done = Y.R.raids.filter(r => r.band), targets = LZ_TUNE.raids.targets.map(x => x.id);
 
-// 1. declared: the Sultanate's settlements and the Lizardmen's eleven (Skink since 2026-11-17), the Lizardmen hostile to every faction, no problems
+// 1. declared: the Sultanate's settlements and the Lizardmen's seventeen (Skink + eight warrens, 2026-11-17), the Lizardmen hostile to every faction, no problems
 {
   const lz = Y.V.settlements.filter(s => LZ.has(s.id)), hostile = Y.V.factions.filter(f => f.id !== 'lizardmen').every(f => Y.V.relations.some(r => r.a === 'lizardmen' && r.b === f.id && r.stance === 'hostile'));
   T.ok('Z5: one valley: the Sultanate\'s ' + (Y.S.order.length - lz.length) + ' settlements and the Lizardmen\'s ' + lz.length + ', hostile to all, no road between them; no problems',
-    lz.length === 11 && hostile && !Y.V.roads.some(r => LZ.has(r.from) || LZ.has(r.to)) && !Y.S.problems.length, (Y.S.problems.slice(0, 3).join('; ') || 'none'));
+    lz.length === 17 && hostile && !Y.V.roads.some(r => LZ.has(r.from) || LZ.has(r.to)) && !Y.S.problems.length, (Y.S.problems.slice(0, 3).join('; ') || 'none'));
 }
 // 2. the books balance, both peoples
 T.ok('Z5: the books balance, every settlement of both', Y.ledger.ok, Y.ledger.ok ? 'all goods' : Y.ledger.problems.slice(0, 3).join('; '));

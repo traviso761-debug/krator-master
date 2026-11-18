@@ -74,7 +74,7 @@
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
     "core/materials/record/26-matlib-bind.js": "93c467f3805276f5aea2482da7fac2216db1e52d18d191c1925c8cd90446b54c",
     "core/rand/08-core-rand.js": "f315035a138a8818c87f55de56ae2dbf3a8d66ff3cc435d303332502d2f43ddf",
-    "core/region/data/lz-tune.js": "f93ef305be395e6c45f9667277d23bad84287584f5df109dfb40976607266b0d",
+    "core/region/data/lz-tune.js": "6444e44ab91d541828e4b57485cb9c050cc8dd9229b975a758a26e7a1d8f3a56",
     "core/shader/06-core-khook.js": "eb1a0436d3d5dbaab81c3e43de2b642c96d9c3b44331a8960801880e5e20c56d",
     "core/shader/06b-core-kcolor.js": "ededfc6b8a1a8aae5bf3c6ab40863478f9beb8e1aaf2acf4ba9da25ef6392115",
     "core/shader/07-core-kwarp.js": "b73f3511762ae1f45b4ad88f054baf11f76cf2c8f27726605758d9657f253e17",
@@ -348,15 +348,15 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "settlements/komodo/build-manifest.json": "226d25badced73ea831c819be3dc8e4db7e71aadb212f1617b79cac79a7d515a",
-    "settlements/komodo/dist/komodo.html": "780851862d5d0963f59df90c6891fe4a5b82ebb0182157469ce89860fc660ea5",
+    "settlements/komodo/build-manifest.json": "f7b277eda6642a213a667aa90b0e951a0c17b7b783e1da70e0d50db07809f314",
+    "settlements/komodo/dist/komodo.html": "9fcd95de6423eb3e2e7175470140beede963840132f8e8816375ea43d62b3d3d",
     "settlements/komodo/dist/komodo.tex.komodo.js": "9389eb0e9861af0a45ea7bcf3d8f3c83c8e096a8cdf0d07ec851a5b04514de47",
     "settlements/komodo/dist/komodo.tex.lizardmen-2.js": "43b2e0f455c3692a2471bf0ec966f12b1841b656a74731a25482b3761b7d9815",
     "settlements/komodo/dist/komodo.tex.lizardmen.js": "48c9b866029d5fe5132b7741ace4810842ebd15c9b0dd115908886857795efe1"
    },
    "outputs_raw": {
-    "settlements/komodo/build-manifest.json": "226d25badced73ea831c819be3dc8e4db7e71aadb212f1617b79cac79a7d515a",
-    "settlements/komodo/dist/komodo.html": "780851862d5d0963f59df90c6891fe4a5b82ebb0182157469ce89860fc660ea5",
+    "settlements/komodo/build-manifest.json": "f7b277eda6642a213a667aa90b0e951a0c17b7b783e1da70e0d50db07809f314",
+    "settlements/komodo/dist/komodo.html": "9fcd95de6423eb3e2e7175470140beede963840132f8e8816375ea43d62b3d3d",
     "settlements/komodo/dist/komodo.tex.komodo.js": "9389eb0e9861af0a45ea7bcf3d8f3c83c8e096a8cdf0d07ec851a5b04514de47",
     "settlements/komodo/dist/komodo.tex.lizardmen-2.js": "43b2e0f455c3692a2471bf0ec966f12b1841b656a74731a25482b3761b7d9815",
     "settlements/komodo/dist/komodo.tex.lizardmen.js": "48c9b866029d5fe5132b7741ace4810842ebd15c9b0dd115908886857795efe1"

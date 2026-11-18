@@ -26,12 +26,13 @@ const Y=run(731,{allot:true},null,366);   /* two years with the Allotment: the f
 console.log('two years of the Lizardmen in '+((Date.now()-t0)/1000).toFixed(1)+' s: '+Y.S.order.length+' places, '+Y.V.settlements.reduce((n,s)=>n+s.people,0)+' people, '+Y.S.allot.loads.length+' loads');
 
 // ---- Z0: the places
-// 1. declared at the owner's numbers: Basilisk (the capital, once Sauropolis) 15,000; Tuatara, Komodo, Gila and Iguana 3,000; the
-//    Tubes 1,000; the warrens 30,000 in bulk; the two reliquaries; no problems
-{const P=k=>Y.V.settlements.find(s=>s.id===k)||{},pp=ks=>ks.reduce((n,k)=>n+(P(k).people||0),0);
- const good=Y.S.order.length===11&&!Y.S.problems.length&&P('basilisk').people===15000&&pp(['tuatara','komodo','gila','iguana'])===12000&&P('skink').people===1500&&
-  P('tubes').people===1000&&pp(['warrens-east','warrens-west'])===30000&&P('reliquary-west').people===0&&P('warrens-east').scale===200;
- T.ok('declared: Basilisk 15,000; Tuatara, Komodo, Gila, Iguana 3,000 each; Skink 1,500; the Tubes 1,000; the warrens 30,000 at 200 a head; two reliquaries; no problems',good,
+// 1. declared at the owner's numbers: Basilisk (the capital, once Sauropolis) 15,000; Tuatara, Komodo, Gila and Iguana 3,000; Skink
+//    1,500; the Tubes 1,000; the eight warrens 30,000 in bulk (18,000 east, 12,000 west); the two reliquaries; no problems
+{const P=k=>Y.V.settlements.find(s=>s.id===k)||{},pp=ks=>ks.reduce((n,k)=>n+(P(k).people||0),0),
+  we=['warrens-e1','warrens-e2','warrens-e3','warrens-e4'],ww=['warrens-w1','warrens-w2','warrens-w3','warrens-w4'];
+ const good=Y.S.order.length===17&&!Y.S.problems.length&&P('basilisk').people===15000&&pp(['tuatara','komodo','gila','iguana'])===12000&&P('skink').people===1500&&
+  P('tubes').people===1000&&pp(we)===18000&&pp(ww)===12000&&P('reliquary-west').people===0&&we.concat(ww).every(k=>P(k).scale===200);
+ T.ok('declared: Basilisk 15,000; Tuatara, Komodo, Gila, Iguana 3,000 each; Skink 1,500; the Tubes 1,000; eight warrens 30,000 (18,000 east + 12,000 west) at 200 a head; two reliquaries; no problems',good,
   Y.S.order.length+' places; problems: '+(Y.S.problems.slice(0,3).join('; ')||'none'));}
 // 2. Z0's own test: each place on its own make for a season, on the stocked start, fed; the books balance
 {const Z=run(91,{allot:false});const f=fedCheck(Z.B);

@@ -44,10 +44,11 @@ section 7).
 
 ## 2. The Eight Warren Sub-Districts (replacing the two bulk centroids)
 
-In `LZ_TUNE` today, `warrens-east` (`18,000` at `805,1570`) and `warrens-west` (`12,000` at `630,1515` — **a wet cell in the middle
-of the Western Terminal Sea**) are single abstract bulk settlements. Splitting them into **eight dry geographic sub-districts** (four
-on the East Loop = `18,000`, four on the West Loop = `12,000`, mirroring Xanadu's `p1`–`p8` provinces) fixes the underwater
-centroid, keeps every actor on dry land, and anchors every minor village to its local seat:
+In `LZ_TUNE` (`core/region/data/lz-tune.js`, wired 2026-11-17), the two former abstract rows (`warrens-east` `18,000` at `805,1570`
+and `warrens-west` `12,000` at `630,1515` — **a wet cell in the middle of the Western Terminal Sea**) are replaced by **eight dry
+geographic sub-districts** (`warrens-e1..e4` on the East Loop = `18,000`, `warrens-w1..w4` on the West Loop = `12,000`, mirroring
+Xanadu's `p1`–`p8` provinces). This fixes the underwater centroid, keeps every actor on dry land, and anchors every minor village
+to its local seat:
 
 | Id | Sub-district (Coil loop) | Hub / Seat | Verified dry centroid (`5.1 px`, elev) | Total rural (`LZ_TUNE`) | Named rings + villages + halts | Bulk remainder | Primary ground & surplus |
 |---|---|---|---|---|---|---|---|

@@ -113,8 +113,8 @@ KIT = {
   'lz-hall-bronze': dict(w=19, d=13, name='Bronze and stone hall', holds=12),
   'lz-hall-bone': dict(w=19, d=14, name='Bone hall', holds=12),
   'lz-hall-reed': dict(w=19, d=13, name='Reed, weaving and lacquer hall', holds=12),
-  'lz-bakehouse': dict(w=17, d=13, name='Earth-oven and yam bakehouse'),
-  'lz-fermentery': dict(w=18, d=13, name='Spore and yam fermenting house'),
+  'lz-bakehouse': dict(w=17, d=16, name='Earth-oven and yam bakehouse'),
+  'lz-fermentery': dict(w=18, d=15, name='Spore and yam fermenting house'),
   'lz-granary':   dict(w=14, d=11, name='Granary'),
   'lz-warehouse': dict(w=17, d=13, name='Warehouse (the plunder)'),
   'lz-wayhalt':   dict(w=24, d=18, name='Coil Round staging halt'),
@@ -132,9 +132,10 @@ KIT = {
   'lz-circle':    dict(w=22, d=22, name='Stone circle'),
   'lz-weir':      dict(w=18, d=14, name='Fishing weir and drying racks'),
   'lz-lookout':   dict(w=9, d=9, name='Lookout'),
-  'gl-well':      dict(w=5, d=5, name='Brick well (Gila\'s piece)'),
+  'gl-well':      dict(w=6.5, d=6.5, name='Brick well (Gila\'s piece)'),
+  'gl-tank':      dict(w=22, d=17, name='The Great Tank of the First Turn'),
   'gl-pans':      dict(w=60, d=60, name='Salt pans (Gila\'s piece)'),
-  'gl-saltstore': dict(w=16, d=12, name='Salt store (Gila\'s piece)'),
+  'gl-saltstore': dict(w=16, d=13, name='Salt store (Gila\'s piece)'),
   # built capital works & vessels (kits/lizardmen 63-lk-works.js and 59w-lz-works.js, 2026-11-17)
   'lk-bronzehall': dict(w=45, d=27, name='Great Bronze Hall', holds=60),
   'lk-dockstore': dict(w=33, d=21, name='Stone dock store', holds=30),
@@ -522,8 +523,11 @@ def build():
     put('lz-stela-pair', (LD[0] * 4 + LD[1] * 16, LD[1] * 4 - LD[0] * 16), LA, 'precinct', role='mirrored chirality either side of the door')
     a0, a1, b0, b1 = pr
     put('lk-college', sk(a0 + 70, 40), 0.0, 'precinct', role='the college: its door east, toward the Hall')
-    put('lz-seer', sk(a0 + 70, 120), 0.0, 'precinct', role='the model of the country: the Allotment remembered')
+    put('lz-seer', sk(a0 + 70, 128), 0.0, 'precinct', role='the model of the country: the Allotment remembered')
     put('lz-stela-turned', sk(a0 + 70, -45), 0.0, 'precinct', role='texts whose meaning changed retroactively')
+    # the Great Tank of the First Turn, in corner_court(0) where the Great Coil begins
+    ft0, ft1, ft2, ft3 = corner_court(0)
+    put('gl-tank', sk((ft0 + ft1) / 2, (ft2 + ft3) / 2), math.pi / 2, 'first_turn', role='the Great Tank of the First Turn (after Mohenjo-daro): Interpreters and Drover convoy-leaders wash salt dust here')
     # thirteen Interpreters' towers in a little squared spiral round the college (13: odd)
     tw = []; cur = [0.0, 0.0]; step = 36.0; dirs = [(1, 0), (0, 1), (-1, 0), (0, -1)]; lens = [1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6]
     ac0, bc0 = a0 + 70, 40
@@ -573,8 +577,10 @@ def build():
                 towers.append((pa[0] + (pb[0] - pa[0]) * fr, pa[1] + (pb[1] - pa[1]) * fr, i)); break
             dd -= r['len']
     for k, (u, v, i) in enumerate(towers):
-        put('lk-watchtower', (u, v), 0.0, 'wall', role='watchtower %d' % (k + 1) + (' (off its spacing: the wall\'s flaw)' if k == 8 else ''), run=i)
-    # the Ley Slot: where the line crosses the east run
+        pa, pb = wall[i], wall[i + 1]
+        in_ang = math.atan2(-(pb[0] - pa[0]), pb[1] - pa[1])  # left of ccw wall run = inward toward the city
+        put('lk-watchtower', (u, v), in_ang, 'wall', role='watchtower %d' % (k + 1) + (' (off its spacing: the wall\'s flaw)' if k == 8 else ''), run=i)
+    # the Ley Slot: where the line crosses the east run (its 20 m wall wings sit flush in the east wall run)
     def cross(p0, d, a, b):
         ex, ev = b[0] - a[0], b[1] - a[1]
         den = d[0] * ev - d[1] * ex
@@ -587,7 +593,9 @@ def build():
         c = cross(LEY0, LD, wall[i], wall[i + 1])
         if c: slot = (c[0], i); break
     slot_t = slot[0]
-    put('lk-slot', (LD[0] * slot_t, LD[1] * slot_t), LA, 'wall', role='the Ley Slot: a Tender\'s 1.2 m wicket through the wall, on the line', run=slot[1])
+    pa_s, pb_s = wall[slot[1]], wall[slot[1] + 1]
+    slot_out_ang = math.atan2(pb_s[0] - pa_s[0], -(pb_s[1] - pa_s[1]))
+    put('lk-slot', (LD[0] * slot_t, LD[1] * slot_t), slot_out_ang, 'wall', role='the Ley Slot: a Tender\'s 1.2 m wicket through the wall, on the line', run=slot[1])
     plan['wall'] = dict(line=P(wall), runs=runs, height_walk=8.0, thickness=5.0, gate=P([gate_at])[0], gate_opening=r1(GW * SIN75),
                         slot_t=r1(slot_t), towers=13, length=r1(total), lk_wall_runs=int(total // 20),
                         rule='lk-wall runs of 20 m end to end; walls lean in on the outer face, out on the inner')
@@ -636,7 +644,8 @@ def build():
     put('lk-bronzehall', east(0.44, sb - 40 - 13.5), OUT_A, 'works', role="the bronze hall: Tuatara's copper and Komodo and Iguana's tin, nine to one; seven furnaces, outside the wall and by the water", caste=2)
     put('lk-charcoal', east(0.44, sb - 40 - 27 - 12 - 15), OUT_A, 'works', role='charcoal from the jungle, the ore heaps, the ingot store')
     for i in range(2):
-        put('lz-barge', east(0.56 + (i - 0.5) * 0.03, so - 25 + 6), EA, 'works', role='a reed barge loading Coil ingots and bay fish in the Lothal dock basin')
+        put('lz-barge', east(0.56 + (i - 0.5) * 0.024, so - 43 + (i - 0.5) * 14), EA, 'works', role='a reed barge loading Coil ingots and bay fish in the Lothal dock basin')
+    put('lz-barge', east(0.62, so + 45), EA + math.pi, 'works', role='a reed barge entering Tlahn Gill bay from the eastern sea')
     for i in range(3):
         f = 0.78 + 0.07 * i
         put('lz-weir', east(f, shore_off(f) + 10), OUT_A, 'works', role='fishing weir and drying racks, standing in the bay')
@@ -735,7 +744,7 @@ def export(plan):
         k = KIT[r['key']]
         e = dict(id='bs.%s.%d' % (r['where'], i), key=r['key'], cls=k.get('cls', 'building'),
                  at=[r1(r['at'][0]), r1(r['at'][1])],
-                 ry=round(math.pi / 2 - r['ang'], 4), where=r['where'])
+                 ry=round(r['ang'] + math.pi / 2, 4), where=r['where'])
         if k.get('tags'): e['tags'] = dict(k['tags'])
         if k.get('owed'): e['owed'] = k['owed'] if isinstance(k['owed'], str) else True
         for kk in ('caste', 'band', 'flaw', 'role', 'run', 'twist'):
