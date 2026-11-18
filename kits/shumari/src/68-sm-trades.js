@@ -50,3 +50,39 @@ const SM_TRADES=[
  {trade:'palace and canton staffs',defs:['sm_diwan_hall','sm_citadel_keep','sm_rim_pavilion'],note:'Grand Diwan council stewards, citadel keep wardens, and gorge-rim Sword pavilions'}
 ];
 globalThis.SM_TRADES=SM_TRADES;
+
+/* Footprint and metadata table for core/city, core/hamlet, and SMK.dims() (matches kits/islanders isDims contract) */
+function smDims(){
+ const out={};
+ if(typeof DEFS==='undefined')return out;
+ const fams=(typeof FAMILIES!=='undefined'&&Array.isArray(FAMILIES))?FAMILIES:[];
+ for(const k in DEFS){
+  const d=DEFS[k];
+  if(!d||(d.cls!=='building'&&d.kind!=='res-node'))continue;
+  const tags=d.tags||{};
+  out[k]={
+   cls:d.cls,
+   kind:d.kind||null,
+   name:d.name||k,
+   w:d.w,
+   d:d.d,
+   h:d.h,
+   fw:d.fw==null?+(d.w*.92).toFixed(2):d.fw,
+   fd:d.fd==null?+(d.d*.92).toFixed(2):d.fd,
+   giant:!!d.giant,
+   caste:d.caste||null,
+   vaultH:d.vaultH==null?0:d.vaultH,
+   style:tags.style||null,
+   wealth:tags.wealth||null,
+   types:tags.types||[],
+   role:tags.role||null,
+   job:tags.job||null,
+   cut:!!d.cut,
+   variants:d.variants==null?1:d.variants,
+   shore:k==='sm_lake_jetty'||fams.some(f=>f.shore&&f.keys.some(x=>(typeof x==='string'?x:x.key)===k))
+  };
+ }
+ return out;
+}
+globalThis.smDims=smDims;
+

@@ -64,44 +64,48 @@ function smDome(x,y0,z,D,o){
    cyl(fMk,0,.12,0,R+.04,Math.max(.20,collarH-.20),0xffffff,32,R+.03,true);
    cyl('chiselled',0,collarH-.08,0,R+.10,.10,P('travertine'),32,R+.05,false);
 
-   /* Hollow inward-facing stone soffit so visitors looking up from inside see a true pointed vault */
+   /* Hollow inward-facing stone soffit inset cleanly inside outer pointed shell so it never clips near apex */
    if(hollow){
     const profIn=[];
     const nIn=16;
+    const inH=shellH*.82;
     for(let j=0;j<=nIn;j++){
      const v=j/nIn;
-     const rOut=smDomeRadius(v,D);
-     const rIn=v===1?0:Math.max(.02,rOut-wallT);
-     profIn.push([rIn,collarH+v*(shellH-wallT*.8)]);
+     const rOut=smDomeRadius(v*.82,D);
+     const rIn=j===nIn?0:Math.max(.02,rOut-wallT-.16);
+     profIn.push([rIn,collarH+v*inH]);
     }
     lathe('travertine',0,0,profIn,28,P('travShade'),{inward:true});
     /* Interior bronze & gold apex rosette boss tucked cleanly inside inner vault soffit */
-    const apexY=collarH+shellH-wallT*1.8;
-    cyl('bronzeCast',0,apexY-.05,0,.20,.06,P('bronze'),16,null,false);
-    ring('gold',0,apexY-.05,0,.16,.02,P('gold'),0,0,0,16);
+    const apexY=collarH+inH-.08;
+    cyl('bronzeCast',0,apexY,0,.20,.06,P('bronze'),16,null,false);
+    ring('gold',0,apexY,0,.16,.02,P('gold'),0,0,0,16);
    }
 
+   const capFrac=SM_SM6?.965:.90;
    if(style==='spiral'){
-    /* 3D convex torsion gadroon dome (refs/02): sharp flute valleys + plump spiral ribs */
+    /* 3D convex torsion gadroon dome (refs/02): bold convex spiral ribs + deep shadowed valleys */
     const ribs=opt.ribs==null?22:opt.ribs;
     const turns=opt.turns==null?.45:opt.turns;
-    const nu=ribs*4,nv=26;
-    const ampBase=Math.min(.14,D*.018);
-    const cCrest=hc(SVPAL.domeStone[0]),cValley=hc(SVPAL.domeShade[1]);
+    const nu=ribs*4,nv=28;
+    const ampBase=SM_SM6?Math.min(.26,D*.034):Math.min(.14,D*.018);
+    const cCrest=hc(SVPAL.domeStone[2]),cValley=hc(SM_SM6?0x938672:SVPAL.domeShade[1]);
     psurf('travertine',(u,v)=>{
-     const vCl=.982*v;
+     const vCl=(SM_SM6?.988:.982)*v;
      const r0=smDomeRadius(vCl,D);
-     const taper=Math.sin(PI*Math.pow(vCl,.72));
+     const taper=Math.sin(PI*Math.pow(vCl,.70));
      const phase=(u+hand*turns*vCl)*ribs*PI;
-     const flute=Math.abs(Math.sin(phase));
-     const r=Math.max(.12,r0+ampBase*taper*(flute*1.15-.25));
+     const flute=SM_SM6?Math.pow(Math.abs(Math.sin(phase)),.74):Math.abs(Math.sin(phase));
+     const r=Math.max(.10,r0+ampBase*taper*(flute*1.22-.30));
      const ang=u*TAU;
      return [Math.cos(ang)*r,collarH+vCl*shellH,Math.sin(ang)*r];
     },nu,nv,0xffffff,{
+     flip:true,
      colf:(u,v)=>{
       const phase=(u+hand*turns*v)*ribs*PI;
-      const flute=Math.abs(Math.sin(phase));
-      const f=.76+.24*flute;
+      const raw=Math.abs(Math.sin(phase));
+      const flute=SM_SM6?Math.pow(raw,.78):raw;
+      const f=SM_SM6?(.60+.42*flute):(.76+.24*flute);
       return new THREE.Color(
        lerp(cValley.r,cCrest.r,flute)*f/.92,
        lerp(cValley.g,cCrest.g,flute)*f/.92,
@@ -109,61 +113,78 @@ function smDome(x,y0,z,D,o){
       );
      }
     });
-    /* Raised carved stone rib spines along each spiral crest, tucking cleanly into the smooth stone apex cap */
+    /* Raised carved stone rib spines along each spiral crest running right up to the necking ring */
     for(let k=0;k<ribs;k++){
      const u0=(k+.5)/ribs;
      tube('chiselled',t=>{
-      const v=.01+.90*t;
+      const v=.01+(capFrac-.015)*t;
       const r0=smDomeRadius(v,D);
-      const taper=Math.sin(PI*Math.pow(v,.72));
-      const r=r0+ampBase*taper*.92*(1-.35*t*t);
+      const taper=Math.sin(PI*Math.pow(v,.70));
+      const r=r0+ampBase*taper*.96*(1-.22*t*t);
       const ang=(u0+hand*turns*v)*TAU;
       return [Math.cos(ang)*r,collarH+v*shellH,Math.sin(ang)*r];
      },t=>{
-      const s=Math.sin(PI*Math.pow(.02+.92*t,.68));
-      const w=Math.max(.016,ampBase*.52*s);
-      return [w,w*.85];
-     },16,5,P('ashlar'));
+      const s=Math.sin(PI*Math.pow(.02+.94*t,.68));
+      const w=Math.max(.016,ampBase*.48*s);
+      return [w,w*.88];
+     },18,5,P('ashlar'));
     }
    }else{
     /* Pointed Mamluk carved geometric star-and-arabesque relief dome (refs/01, refs/03) */
     const profOut=[];
-    const nOut=22;
+    const nOut=24;
     for(let j=0;j<=nOut;j++){
      const v=j/nOut;
-     profOut.push([v===1?0:smDomeRadius(v,D),collarH+v*shellH]);
+     profOut.push([j===nOut?0:smDomeRadius(v,D),collarH+v*shellH]);
     }
     lathe('domeCarved',0,0,profOut,36,P('domeStone'));
-    /* Interlaced geometric relief straps forming Mamluk lozenge-and-star lattice over the carved shell */
-    const nStraps=16;
+    /* Interlaced geometric relief straps forming Mamluk lozenge-and-star lattice up to the necking collar */
+    const nStraps=SM_SM6?18:16;
     for(let k=0;k<nStraps;k++)for(const dir of [-1,1]){
      const u0=k/nStraps;
      tube('chiselled',t=>{
-      const v=.02+.89*t;
-      const r=smDomeRadius(v,D)+.022*(1-t);
-      const ang=(u0+dir*.25*v)*TAU;
+      const v=.015+(capFrac-.02)*t;
+      const r=smDomeRadius(v,D)+(SM_SM6?.034:.022)*(1-.55*t);
+      const ang=(u0+dir*.26*v)*TAU;
       return [Math.cos(ang)*r,collarH+v*shellH,Math.sin(ang)*r];
      },t=>{
-      const sc=.55+.45*(1-t);
-      return [.034*sc,.026*sc];
-     },14,4,P('ashlar'));
+      const sc=.52+.48*(1-t);
+      const rw=SM_SM6?.042:.034;
+      return [rw*sc,rw*.78*sc];
+     },16,4,P('ashlar'));
     }
-    /* Eight carved horizontal star-boss medallions around the mid-shoulder */
-    for(let k=0;k<8;k++){
-     const ang=k/8*TAU+PI/8;
-     const vM=.36;
-     const rM=smDomeRadius(vM,D)+.03;
+    if(SM_SM6){
+     /* Horizontal carved interlace rings & two tiers of Mamluk star-boss medallions (refs/01, refs/03) */
+     for(const vR of [.20,.48,.74]){
+      ring('chiselled',0,collarH+vR*shellH,0,smDomeRadius(vR,D)+.018,.024,P('travShade'),0,0,0,28);
+     }
+    }
+    const nBoss=SM_SM6?12:8;
+    for(let k=0;k<nBoss;k++){
+     const ang=k/nBoss*TAU+PI/nBoss;
+     const vM=.34;
+     const rM=smDomeRadius(vM,D)+.034;
      W(Math.cos(ang)*rM,collarH+vM*shellH,Math.sin(ang)*rM,PI*.5-ang,()=>{
-      ring('chiselled',0,0,0,.28,.028,P('ashlar'),0,PI*.5,0,12);
-      sph('travertine',0,0,.02,.10,P('travertine'),.5,8);
+      ring('chiselled',0,0,0,.28,.030,P('ashlar'),0,PI*.5,0,12);
+      sph('travertine',0,0,.02,.105,P('travertine'),.55,8);
      });
+     if(SM_SM6&&k%2===0){
+      const vU=.62,rU=smDomeRadius(vU,D)+.028;
+      W(Math.cos(ang)*rU,collarH+vU*shellH,Math.sin(ang)*rU,PI*.5-ang,()=>{
+       ring('chiselled',0,0,0,.19,.024,P('ashlar'),0,PI*.5,0,10);
+       sph('travertine',0,0,.015,.075,P('travertine'),.55,8);
+      });
+     }
     }
    }
 
-   /* Smooth carved Mamluk apex cap & necking collar (refs/01, refs/02) + cast-bronze 3-sphere jamur finial */
-   const capBaseY=collarH+.90*shellH;
-   const capBaseR=Math.max(.36,smDomeRadius(.90,D)+.05);
-   cyl('travertine',0,capBaseY,0,capBaseR,H-capBaseY+.04,P('domeStone'),24,.22,false);
+   /* Compact profiled stone necking collar right below the cast-bronze 3-sphere jamur finial (refs/01..03) */
+   const capBaseY=collarH+capFrac*shellH;
+   const capBaseR=Math.max(.24,smDomeRadius(capFrac,D)+.04);
+   if(SM_SM6){
+    ring('chiselled',0,capBaseY,0,capBaseR+.02,.034,P('travShade'),0,0,0,20);
+   }
+   cyl('travertine',0,capBaseY,0,capBaseR,H-capBaseY+.04,P('domeStone'),24,.18,false);
   });
   smJamur(0,H+.02,0,Math.max(1.25,D*.22));
  });
@@ -194,21 +215,23 @@ function smDrum(x,y0,z,span,o){
  const octR=domeD*.5+.26;
 
  W(x,y0,z,0,()=>{
+  const wallT=.38;
+  const rIn=Math.max(1.2,domeD*.5-wallT);
+  /* Base square-to-octagon curb apron sealing roof deck cutouts cleanly around the hollow drum throat */
+  const throat=rIn*.70;
+  svWell('chiselled',0,.01,0,span+.12,.16,span+.12,P('travShade'),{x0:-throat,x1:throat,z0:-throat,z1:throat},{walk:false});
+
   svNoWalk(()=>{
-   /* Zone 1: Octagonal core masonry + chamfered corner 3-tier stepped prismatic muqarnas ("Turkish triangles", refs/01..02) */
-   const wallT=.38;
-   const rIn=Math.max(1.2,domeD*.5-wallT);
-   /* Hollow octagonal stone ring: outer & inner faces cleanly oriented */
+   /* Zone 1: Octagonal core masonry + chamfered corner 4-tier stepped prismatic muqarnas ("Turkish triangles", refs/01..02) */
    for(let k=0;k<8;k++){
     const a=k*PI*.25;
-    const faceW=2*octR*Math.tan(PI/8)+.06;
-    const inW=2*rIn*Math.tan(PI/8)+.06;
+    const faceW=2*octR*Math.tan(PI/8)+.08;
+    const inW=2*rIn*Math.tan(PI/8)+.08;
     W(0,0,0,a,()=>{
      const nC=5,ch=transH/nC;
      for(let c=0;c<nC;c++){
       const m=smAblaqCourse(c+1);
       if(k%2===0){
-       /* Axial faces carry triplet lancets + 1-over-2 qamariyya roundels */
        if(c===0||c===nC-1){
         box(m.mk,0,c*ch,octR-.18,faceW,ch,.36,m.col);
        }else{
@@ -234,21 +257,26 @@ function smDrum(x,y0,z,span,o){
     });
    }
 
-   /* Four corner stepped prismatic Turkish-triangle shoulders bridging square chamber corners (hs, hs) to the octagon */
-   const nTier=3,th=transH/nTier;
+   /* Four corner stepped prismatic Turkish-triangle shoulders (guaranteed outward normals on all 4 corners) */
+   const nTier=4,th=(transH-.16)/nTier;
    for(const sx of [-1,1])for(const sz of [-1,1]){
+    const cYaw=Math.atan2(sx,sz);
     for(let t=0;t<nTier;t++){
      const frac=1-t/nTier;
-     const reach=lerp(octR*.74,hs-.06,frac);
+     const reach=lerp(octR*.72,hs-.14,frac);
+     const bw=lerp(.68,Math.max(.85,(hs-octR*.62)*1.35),frac);
      const mk=t%2===0?'basalt':'travertine';
      const col=t%2===0?P('basalt'):P('travertine');
-     const cPts=sx*sz>0
-      ?[[sx*octR*.42,sz*octR*.88],[sx*reach,sz*reach],[sx*octR*.88,sz*octR*.42]]
-      :[[sx*octR*.88,sz*octR*.42],[sx*reach,sz*reach],[sx*octR*.42,sz*octR*.88]];
-     prism(mk,cPts,t*th,(t+1)*th,col);
-     /* Stepped prismatic facet prisms along the diagonal chamfer */
-     const mx=sx*lerp(octR*.66,reach*.86,.55),mz=sz*lerp(octR*.66,reach*.86,.55);
-     box(t%2===0?'travertine':'basalt',mx,t*th,mz,.52,th*.92,.52,t%2===0?P('travertine'):P('basaltDark'),PI*.25);
+     /* Corner stepped block + diagonal prismatic facet */
+     box(mk,sx*(reach-bw*.30),.16+t*th,sz*(reach-bw*.30),bw*.62,th,bw*.62,col);
+     W(sx*lerp(octR*.68,reach*.82,.55),.16+t*th,sz*lerp(octR*.68,reach*.82,.55),cYaw,()=>{
+      box(t%2===0?'travertine':'basalt',0,0,0,bw*.72,th*.94,bw*.48,t%2===0?P('travertine'):P('basaltDark'));
+      if(t<nTier-1){
+       for(const side of [-1,1]){
+        box('chiselled',side*bw*.26,th*.15,bw*.16,bw*.28,th*.78,bw*.28,P('travShade'));
+       }
+      }
+     });
     }
    }
 

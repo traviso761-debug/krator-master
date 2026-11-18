@@ -7,6 +7,7 @@ defBuilding({
  key:'sm_cadet_cell',
  name:'Cadet probationer cell',
  seed:8201,
+ variants:2,
  cls:'building',
  cut:false,
  giant:false,
@@ -16,23 +17,24 @@ defBuilding({
  d:8.6,
  h:6.2,
  tags:{types:['dwelling-single'],wealth:'poor',style:SM_STYLES.cadet,role:'dwelling',lit:true},
- build(){
+ build(o){
+  const v=(o&&o.v)|0;
   smBindRec(DEFS.sm_cadet_cell);
   const plinthY=.42,wallH=3.05,roofY=plinthY+wallH;
   W(0,0,-.4,0,()=>{
-   smPlinth(5.8,6.2,plinthY,{ablaqQuoins:false});
+   smPlinth(5.8,6.2,plinthY,{ablaqQuoins:v===1});
    smHollowAblaq(5.4,5.8,plinthY,wallH,{
     t:.46,
     mode:'basalt',
     front:[
      {x:0,y:plinthY,w:1.38,h:2.20,kind:'door'},
-     {x:1.68,y:plinthY+1.15,w:.52,h:1.18,kind:'window',glassKind:'smoked',bars:true,jali:false}
+     {x:v?-1.68:1.68,y:plinthY+1.15,w:.52,h:1.18,kind:'window',glassKind:'smoked',bars:true,jali:false}
     ],
     back:[{x:-1.3,y:plinthY+1.25,w:.48,h:1.08,kind:'window',glassKind:'smoked',bars:true,jali:false}],
     left:[{x:0,y:plinthY+1.20,w:.52,h:1.12,kind:'window',glassKind:'smoked',bars:true,jali:false}],
     right:[{x:0,y:plinthY+1.20,w:.52,h:1.12,kind:'window',glassKind:'smoked',bars:true,jali:false}]
    });
-   smHumanDoor(0,plinthY,2.90,0,1.24,2.15,{mk:'timber',col:0x4a3323,style:'plank',name:'cadet-door'});
+   smHumanDoor(0,plinthY,2.90,0,1.24,2.15,{mk:v?'cedar':'timber',col:v?0x5c3d28:0x4a3323,style:'plank',name:'cadet-door'});
    /* Plain lime-pargeted basalt parapet without rich merlons */
    svWell('paving',0,roofY-.24,0,5.5,.24,5.9,P('paving'),null,{walk:false});
    svNoWalk(()=>{
@@ -42,7 +44,7 @@ defBuilding({
     box('basalt',-1.55,plinthY+.02,-1.65,1.65,.46,1.85,P('basaltDark'));
     box('kilim',-1.55,plinthY+.48,-1.65,1.55,.06,1.75,P('kilim'));
    });
-   smChimney(1.65,roofY,-1.75,1.85,{r:.30,smokeScale:.5});
+   smChimney(v?-1.65:1.65,roofY,-1.75,v?2.05:1.85,{r:.30,smokeScale:.5});
    FURNISH('generic_poor_straw_bed',-1.55,plinthY+.02,-1.65,0);
    FURNISH('generic_water',1.65,plinthY+.02,-1.85,0);
   });
@@ -155,7 +157,7 @@ defBuilding({
     }
     box('rubble',0,0,-1.45,2.85,2.35,.32,P('rubble'));
     box('rubble',1.38,0,0,.30,2.15,2.90,P('rubble'));
-    psurf('slate',(u,v)=>[lerp(-1.55,1.55,u),lerp(2.65,2.05,u),lerp(-1.65,1.65,v)],3,2,P('slate'));
+    psurf('slate',(u,v)=>[lerp(-1.55,1.55,u),lerp(2.65,2.05,u),lerp(-1.65,1.65,v)],3,2,P('slate'),{up:true});
     box('thatch',0,2.38,0,2.85,.12,3.10,P('thatch'));
    });
    FURNISH('generic_fuel',-.45,.02,-.65,0);
@@ -218,7 +220,7 @@ defBuilding({
    svNoWalk(()=>{
     /* Slatted winter fodder manger & water trough along north wall */
     box('timber',0,1.52,-2.35,4.2,.10,2.2,P('timber'));
-    psurf('thatch',(u,v)=>[lerp(-2.15,2.15,u),lerp(2.25,1.62,v),lerp(-3.55,-1.15,v)],3,2,P('thatch'));
+    psurf('thatch',(u,v)=>[lerp(-2.15,2.15,u),lerp(2.25,1.62,v),lerp(-3.55,-1.15,v)],3,2,P('thatch'),{up:true});
     box('basalt',-.85,.18,-2.75,1.8,.52,.64,P('basaltDark'));
     cone('thatch',.95,.18,-1.85,.78,1.35,P('thatch'),10);
    });
@@ -299,7 +301,7 @@ defBuilding({
     }
     box('cedar',0,uY+.92,4.72,8.1,.09,.09,P('cedar'));
     box('jali',0,uY+.08,4.72,7.9,.80,.03,P('travertine'));
-    psurf('slate',(u,v)=>[lerp(-4.4,4.4,u),lerp(roofY+.05,roofY-.38,v),lerp(3.1,4.95,v)],4,2,P('slate'));
+    psurf('slate',(u,v)=>[lerp(-4.4,4.4,u),lerp(roofY+.05,roofY-.38,v),lerp(3.1,4.95,v)],4,2,P('slate'),{up:true});
    });
    smParapet(8.7,6.5,roofY,{});
    smChimney(-2.85,roofY,-1.95,1.95,{r:.34});

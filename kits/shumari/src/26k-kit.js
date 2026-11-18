@@ -130,3 +130,6 @@ function smGiantValid(rec){
 
 /* Live registry populated during buildWorld() for verification and inspection */
 const SM_DOMES=[];
+/* Phase SM6 visual-bar ablation switch (?sm6=0 set in 90s-sm-ground.js reproduces pre-SM6 pass at identical poses) */
+let SM_SM6=true;
+

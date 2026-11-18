@@ -8,6 +8,7 @@ defBuilding({
  key:'sm_sword_villa',
  name:'Sword-officer domed villa',
  seed:8221,
+ variants:2,
  cls:'building',
  cut:true,
  giant:true,
@@ -17,7 +18,8 @@ defBuilding({
  d:16.8,
  h:17.8,
  tags:{types:['dwelling-single'],wealth:'rich',style:SM_STYLES.sword,role:'dwelling',lit:true},
- build(){
+ build(o){
+  const v=(o&&o.v)|0;
   smBindRec(DEFS.sm_sword_villa);
   const plinthY=1.05,wallH=5.80,roofY=plinthY+wallH;
   W(0,0,-.85,0,()=>{
@@ -48,11 +50,15 @@ defBuilding({
     skipFrontW:5.8
    });
    smPishtaq(0,plinthY,5.60,{
-    w:5.6,h:8.4,d:1.30,doorW:2.42,doorH:SM_GIANT_DOOR,giant:true,hollow:true,socketKind:'shield',doorName:'villa-pishtaq'
+    w:5.6,h:8.4,d:1.30,doorW:2.42,doorH:SM_GIANT_DOOR,giant:true,hollow:true,socketKind:v?'banner':'shield',doorName:'villa-pishtaq'
    });
    const drum=smDrum(0,roofY,0,8.2,{domeD:6.6,transH:1.95,clerH:1.42,hollow:true,windows:12});
-   smDome(0,drum.topY,0,drum.domeD,{style:'carved',h:5.42,hollow:true});
-   smChimney(4.15,roofY,-3.85,2.25,{r:.38});
+   if(v){
+    smDome(0,drum.topY,0,drum.domeD,{style:'spiral',hand:1,h:5.42,ribs:20,turns:.42,hollow:true});
+   }else{
+    smDome(0,drum.topY,0,drum.domeD,{style:'carved',h:5.42,hollow:true});
+   }
+   smChimney(v?-4.15:4.15,roofY,-3.85,2.25,{r:.38});
 
    /* Qa'a carpet, marble salsa fountain bowl & rear crimson-lacquer ancestor blade-niche */
    svNoWalk(()=>{

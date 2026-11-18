@@ -7,6 +7,7 @@ defBuilding({
  key:'sm_hearth_house',
  name:'Hearth-Commons family house',
  seed:8211,
+ variants:2,
  cls:'building',
  cut:true,
  giant:false,
@@ -16,15 +17,16 @@ defBuilding({
  d:11.6,
  h:10.2,
  tags:{types:['dwelling-single'],wealth:'middle',style:SM_STYLES.hearth,role:'dwelling',lit:true},
- build(){
+ build(o){
+  const v=(o&&o.v)|0;
   smBindRec(DEFS.sm_hearth_house);
   const plinthY=.62,gH=3.45,uY=plinthY+gH,uH=3.35,roofY=uY+uH;
   W(0,0,-.45,0,()=>{
    smPlinth(8.6,8.8,plinthY,{ablaqQuoins:true});
-   /* Ground floor dressed basalt with polychrome ablaq door surround */
+   /* Ground floor dressed basalt (or ablaq in v=1) with polychrome ablaq door surround */
    smHollowAblaq(8.0,8.2,plinthY,gH,{
     t:.48,
-    mode:'basalt',
+    mode:v?'ablaq':'basalt',
     front:[
      {x:-1.45,y:plinthY,w:1.45,h:2.35,kind:'door'},
      {x:1.75,y:plinthY+1.05,w:1.18,h:1.55,kind:'window',glassKind:'lit',bars:true}
@@ -36,7 +38,7 @@ defBuilding({
     left:[{x:.4,y:plinthY+1.15,w:1.08,h:1.45,kind:'window',glassKind:'lit'}],
     right:[{x:0,y:plinthY+1.15,w:1.08,h:1.45,kind:'window',glassKind:'lit'}]
    });
-   smHumanDoor(-1.45,plinthY,4.10,0,1.35,SM_HUMAN_DOOR,{mk:'lacquer',col:0xa83031,style:'banded',name:'hearth-front'});
+   smHumanDoor(-1.45,plinthY,4.10,0,1.35,SM_HUMAN_DOOR,{mk:v?'cedar':'lacquer',col:v?0x6e452b:0xa83031,style:'banded',name:'hearth-front'});
 
    /* Internal stone-and-cedar flight along -x wall climbing to 2nd floor well */
    const st=svStair(-2.55,1.85,plinthY,uY,PI,{w:1.15,run:3.65,mk:'cedar',col:P('cedar'),smk:'timber',scol:P('timber'),rail:'right'});
@@ -45,6 +47,7 @@ defBuilding({
    /* Upper storey with projecting crimson-lacquered mashrabiya winter bay */
    smHollowAblaq(8.0,8.2,uY,uH,{
     t:.46,
+    mode:v?'basalt':'ablaq',
     front:[
      {x:-1.85,y:uY+.95,w:1.05,h:1.55,kind:'window',glassKind:'lit'},
      {x:1.35,y:uY+.85,w:2.25,h:1.85,kind:'window',glassKind:'lit',jali:false}
@@ -58,7 +61,13 @@ defBuilding({
    });
    smLacquerBay(1.35,uY+.45,4.10,3.25,2.55,.92,{glassKind:'lit',solid:false});
    smParapet(8.2,8.4,roofY,{});
-   smChimney(2.45,roofY,-2.35,2.25,{r:.36});
+   smChimney(v?-2.45:2.45,roofY,-2.35,v?2.45:2.25,{r:.36});
+   if(v){
+    svNoWalk(()=>{
+     box('travertine',2.35,roofY,-2.15,1.35,1.45,1.15,P('travertine'));
+     box('lacquer',2.35,roofY+1.45,-2.10,1.48,.16,1.28,P('lacquer'));
+    });
+   }
 
    /* Interior thermal-mass basalt hearth & woven kilim carpet */
    svNoWalk(()=>{
@@ -176,6 +185,7 @@ defBuilding({
  key:'sm_terrace_house',
  name:'Canyon-ledge terrace house',
  seed:8213,
+ variants:2,
  cls:'building',
  cut:false,
  giant:false,
@@ -185,7 +195,8 @@ defBuilding({
  d:11.8,
  h:14.2,
  tags:{types:['dwelling-multi'],wealth:'middle',style:SM_STYLES.hearth,role:'dwelling',lit:true},
- build(){
+ build(o){
+  const v=(o&&o.v)|0;
   smBindRec(DEFS.sm_terrace_house);
   const plinthY=1.25,s1H=3.15,s2Y=plinthY+s1H,s2H=3.05,s3Y=s2Y+s2H,s3H=2.95,roofY=s3Y+s3H;
   W(0,0,-.65,0,()=>{
@@ -203,12 +214,14 @@ defBuilding({
     left:[{x:0,y:plinthY+1.15,w:.95,h:1.30,kind:'window',glassKind:'lit'}],
     right:[{x:0,y:plinthY+1.15,w:.95,h:1.30,kind:'window',glassKind:'lit'}]
    });
-   smHumanDoor(0,plinthY,3.90,0,1.32,SM_HUMAN_DOOR,{mk:'lacquer',col:0xa83031,style:'banded',name:'terrace-door'});
+   smHumanDoor(0,plinthY,3.90,0,1.32,SM_HUMAN_DOOR,{mk:v?'cedar':'lacquer',col:v?0x684228:0xa83031,style:'banded',name:'terrace-door'});
+   if(v)smSocket('shield',2.55,plinthY+2.45,3.92,0,{scale:.75});
 
    /* Storey 2: ablaq ashlar family level */
    svNoWalk(()=>box('paving',0,s2Y-.18,0,6.4,.18,7.6,P('paving')));
    smHollowAblaq(6.6,7.8,s2Y,s2H,{
     t:.46,
+    mode:v?'basalt':'ablaq',
     floor:false,
     front:[
      {x:-1.45,y:s2Y+.92,w:1.12,h:1.52,kind:'window',glassKind:'lit'},
@@ -234,7 +247,7 @@ defBuilding({
    });
    smLacquerBay(0,s3Y+.35,3.90,4.85,2.45,1.02,{glassKind:'lit',solid:true});
    smParapet(6.8,8.0,roofY,{});
-   smChimney(-1.95,roofY,-2.25,2.15,{r:.34});
+   smChimney(v?1.95:-1.95,roofY,-2.25,v?2.35:2.15,{r:.34});
   });
   svStair(0,5.55,0,plinthY,PI,{w:2.05,run:2.05,style:'solid',mk:'basalt',col:P('basalt')});
   smWalkTarget('approach',0,0,5.95,{outside:true});
@@ -247,6 +260,7 @@ defBuilding({
  key:'sm_shop_house',
  name:'Ablaq shop-house',
  seed:8214,
+ variants:2,
  cls:'building',
  cut:true,
  giant:false,
@@ -256,13 +270,15 @@ defBuilding({
  d:11.4,
  h:10.2,
  tags:{types:['shop','dwelling-single'],wealth:'middle',style:SM_STYLES.hearth,job:'trading',role:'dwelling',lit:true},
- build(){
+ build(o){
+  const v=(o&&o.v)|0;
   smBindRec(DEFS.sm_shop_house);
   const plinthY=.52,gH=3.55,uY=plinthY+gH,uH=3.25,roofY=uY+uH;
   W(-.55,0,-.45,0,()=>{
    smPlinth(8.8,8.6,plinthY,{ablaqQuoins:true});
    smHollowAblaq(8.2,8.0,plinthY,gH,{
     t:.48,
+    mode:v?'basalt':'ablaq',
     front:[
      {x:-1.45,y:plinthY,w:2.05,h:2.55,kind:'door'},
      {x:2.05,y:plinthY,w:1.38,h:2.30,kind:'door'}
@@ -282,9 +298,9 @@ defBuilding({
    door(-1.45,plinthY,4.02,0,1.92,2.42);
    smHumanDoor(2.05,plinthY,4.00,0,1.28,2.22,{mk:'lacquer',col:0xa83031,style:'banded',front:false,name:'house-door'});
 
-   /* Crimson awning & stone shop counter to the side of the entry walk */
+   /* Crimson or gold-ochre awning & stone shop counter to the side of the entry walk */
    svNoWalk(()=>{
-    psurf('kilim',(u,v)=>[lerp(-3.05,.15,u),lerp(plinthY+2.85,plinthY+2.32,v),lerp(4.05,5.05,v)],3,2,P('lacquer'));
+    psurf('kilim',(u,v)=>[lerp(-3.05,.15,u),lerp(plinthY+2.85,plinthY+2.32,v),lerp(4.05,5.05,v)],3,2,P(v?'gold':'lacquer'),{up:true});
     box('travertine',-2.65,plinthY+.02,1.65,1.25,.92,2.25,P('travertine'));
    });
 
@@ -307,7 +323,7 @@ defBuilding({
    smHumanDoor(4.10,uY,1.65,PI*.5,1.18,2.12,{mk:'cedar',style:'plank',front:false,name:'upper-family-door'});
    smLacquerBay(-1.35,uY+.40,4.00,3.15,2.40,.88,{glassKind:'lit'});
    smParapet(8.4,8.2,roofY,{});
-   smChimney(-2.55,roofY,-2.45,2.10,{r:.34});
+   smChimney(v?2.45:-2.55,roofY,-2.45,2.10,{r:.34});
 
    FURNISH('generic_spice_box',-2.65,plinthY+.94,1.65,PI*.5);
    FURNISH('generic_crate',-2.85,plinthY+.02,-2.45,0);

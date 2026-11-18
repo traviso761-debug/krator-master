@@ -232,11 +232,11 @@ defBuilding({
     psurf('rubble',(u,v)=>{
      const ang=u*PI;
      return [-Math.cos(ang)*4.45,plinthY+wallH+Math.sin(ang)*1.75,lerp(-4.2,4.2,v)];
-    },12,4,P('rubble'));
+    },12,4,P('rubble'),{flip:true});
     psurf('earth',(u,v)=>{
      const ang=.08+u*(PI-.16);
      return [-Math.cos(ang)*4.52,plinthY+wallH+.06+Math.sin(ang)*1.82,lerp(-4.0,4.0,v)];
-    },10,4,P('earth'));
+    },10,4,P('earth'),{flip:true});
     /* Front basalt headwall framing the barrel vault */
     W(0,plinthY+wallH,4.05,0,()=>smAblaqArch(8.6,1.85,.48,{openW:1.2,springY:.05,voussoirs:13}));
     for(const vz of [-2.0,2.0]){

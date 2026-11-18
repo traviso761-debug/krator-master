@@ -100,7 +100,7 @@ defBuilding({
      box('cedar',3.72,ly,0,.06,.08,7.2,P('cedar'));
      box('cedar',-3.72,ly,0,.06,.08,7.2,P('cedar'));
     }
-    psurf('slate',(u,v)=>[lerp(-4.2,4.2,u),loftY+loftH+(1-Math.abs(v-.5)*2)*.65,lerp(-4.1,4.1,v)],4,3,P('slate'));
+    psurf('slate',(u,v)=>[lerp(-4.2,4.2,u),loftY+loftH+(1-Math.abs(v-.5)*2)*.65,lerp(-4.1,4.1,v)],4,3,P('slate'),{up:true});
    });
    FURNISH('generic_cured_meat',1.65,plinthY+.02,2.45,0);
    FURNISH('generic_hanging_larder',2.45,plinthY+.02,-2.25,0);
@@ -303,6 +303,7 @@ defBuilding({
  key:'sm_bazaar_hall',
  name:'Qaysariyya vaulted stone bazaar hall',
  seed:8426,
+ variants:2,
  cls:'building',
  cut:true,
  giant:false,
@@ -312,13 +313,15 @@ defBuilding({
  d:12.6,
  h:9.6,
  tags:{types:['market','shop'],wealth:'middle',style:SM_STYLES.hearth,job:'trading',role:'trade',lit:true},
- build(){
+ build(o){
+  const v=(o&&o.v)|0;
   smBindRec(DEFS.sm_bazaar_hall);
   const plinthY=.48,wallH=4.05,roofY=plinthY+wallH;
   W(0,0,-.35,0,()=>{
    smPlinth(15.0,10.2,plinthY,{ablaqQuoins:true});
    smHollowAblaq(14.2,9.2,plinthY,wallH,{
     t:.48,
+    mode:v?'basalt':'ablaq',
     front:[
      {x:0,y:plinthY,w:1.65,h:2.55,kind:'door'},
      {x:-4.45,y:plinthY,w:2.35,h:2.75,kind:'arch'},
@@ -334,11 +337,14 @@ defBuilding({
    });
    smHumanDoor(0,plinthY,4.60,0,1.52,2.45,{mk:'lacquer',col:0xa83031,style:'banded',split:true,ajar:.95,name:'bazaar-door'});
    smParapet(14.4,9.4,roofY,{});
+   if(v){
+    smBathDome(0,roofY,0,3.8,1.55);
+   }
 
-   /* Crimson market awnings & interior stone merchant counters + muhtasib inspector desk */
+   /* Crimson or gold market awnings & interior stone merchant counters + muhtasib inspector desk */
    svNoWalk(()=>{
     for(const sx of [-4.45,4.45]){
-     psurf('kilim',(u,v)=>[sx+lerp(-1.45,1.45,u),lerp(plinthY+3.05,plinthY+2.45,v),lerp(4.62,5.65,v)],3,2,P('lacquer'));
+     psurf('kilim',(u,v2)=>[sx+lerp(-1.45,1.45,u),lerp(plinthY+3.05,plinthY+2.45,v2),lerp(4.62,5.65,v2)],3,2,P(v&&sx>0?'gold':'lacquer'),{up:true});
      box('travertine',sx,plinthY+.02,-2.45,2.65,.92,1.05,P('travertine'));
     }
    });
@@ -484,7 +490,7 @@ defBuilding({
        const beamW=Math.sin(v*PI)*.92;
        const side=(u-.5)*2;
        return [side*beamW,Math.abs(side)*.48+(Math.pow(Math.abs(v-.5)*2,2))*.24,z];
-      },6,8,P('tarred'));
+      },6,8,P('tarred'),{up:true});
       for(const tz of [-.85,0,.85])box('cedar',0,.36,tz,1.35,.06,.24,P('cedar'));
      });
      /* Cast-bronze & basalt mooring bollards along -z quay lip */

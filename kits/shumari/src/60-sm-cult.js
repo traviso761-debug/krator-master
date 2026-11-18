@@ -504,7 +504,7 @@ defBuilding({
      box('jali',0,.18,2.55,3.9,.86,.04,P('travertine'));
      box('jali',1.95,.18,0,.04,.86,5.1,P('travertine'));
      box('lacquer',0,kH+.18,0,4.7,.22,5.9,P('lacquer'));
-     psurf('slate',(u,v)=>[lerp(-2.55,2.55,u),kH+.40+(1-Math.abs(u-.5)*2)*.48,lerp(-3.15,3.15,v)],4,2,P('slate'));
+     psurf('slate',(u,v)=>[lerp(-2.55,2.55,u),kH+.40+(1-Math.abs(u-.5)*2)*.48,lerp(-3.15,3.15,v)],4,2,P('slate'),{up:true});
     });
    });
    FURNISH('generic_water',1.85,plinthY+.02,1.65,0);

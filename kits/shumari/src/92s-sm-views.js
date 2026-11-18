@@ -89,8 +89,8 @@
  }
  if(still&&jetty){
   VIEWS['Copper stills and lake jetty']=[
-   still.x-8.5,6.4,still.z+18.5,
-   (still.x+jetty.x)*.5,3.2,still.z-.5
+   still.x+12.5,6.8,still.z+17.5,
+   (still.x+jetty.x)*.5+1.2,2.8,still.z-.6
   ];
  }
  if(ROWS.length){

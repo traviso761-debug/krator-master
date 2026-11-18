@@ -290,7 +290,7 @@ defBuilding({
     beam('timber',[-.75,5.25,-.65],[.75,5.25,-.65],.18,P('timber'));
     ring('iron',0,5.05,-.65,.52,.05,P('iron'),0,0,PI*.5,14);
     /* Inclined grizzly screen & rubble ore bin */
-    psurf('iron',(u,v)=>[lerp(-1.2,1.2,u),lerp(1.85,.75,v),lerp(.45,2.55,v)],4,2,P('iron'));
+    psurf('iron',(u,v)=>[lerp(-1.2,1.2,u),lerp(1.85,.75,v),lerp(.45,2.55,v)],4,2,P('iron'),{up:true});
     box('rubble',0,0,2.85,2.8,.78,1.45,P('rubble'));
    });
    haloAt(0,2.25,-1.15,0xffa442,false);
@@ -485,8 +485,8 @@ defBuilding({
       box('timber',sx+.42,0,tz,.12,ty,.12,P('timber'));
      }
      /* Inclined sluice trough + water sheet + transverse wooden riffle bars */
-     psurf('cedar',(u,v)=>[sx+lerp(-.48,.48,u),lerp(1.75,.58,v),lerp(-3.05,2.45,v)],2,4,P('cedar'));
-     psurf('paving',(u,v)=>[sx+lerp(-.40,.40,u),lerp(1.81,.64,v),lerp(-3.02,2.42,v)],2,4,P('glass'));
+     psurf('cedar',(u,v)=>[sx+lerp(-.48,.48,u),lerp(1.75,.58,v),lerp(-3.05,2.45,v)],2,4,P('cedar'),{up:true});
+     psurf('paving',(u,v)=>[sx+lerp(-.40,.40,u),lerp(1.81,.64,v),lerp(-3.02,2.42,v)],2,4,P('glass'),{up:true});
      for(let r=0;r<9;r++){
       const f=(r+.5)/9;
       box('iron',sx,lerp(1.84,.67,f),lerp(-2.95,2.35,f),.82,.06,.05,P('iron'));

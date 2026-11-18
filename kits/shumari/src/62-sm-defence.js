@@ -47,7 +47,33 @@ defBuilding({
    svNoWalk(()=>{
     for(const sx of [-1,1])for(const sz of [-1,1]){
      const tx=sx*7.25,tz=sz*7.05,th=wallH+1.65;
-     cyl('basalt',tx,plinthY,tz,1.45,th,P('basaltDark'),8,1.32,false);
+     if(SM_SM6){
+      cyl('rubble',tx,plinthY,tz,1.62,.75,P('rubble'),8,1.46,false);
+      const nb=7,bh=(th-.75)/nb;
+      for(let b=0;b<nb;b++){
+       const r0=lerp(1.46,1.33,b/nb),r1=lerp(1.46,1.33,(b+1)/nb);
+       const isBand=b===2||b===5;
+       const mk=isBand?'chiselled':(b%2===0?'basalt':'rubble');
+       const col=isBand?P('travShade'):(b%2===0?P('basaltDark'):P('basalt'));
+       cyl(mk,tx,plinthY+.75+b*bh,tz,r0+(isBand?.02:0),bh,col,8,r1+(isBand?.02:0),false);
+      }
+      /* Outward splayed bastion arrow-slit loops + machicolated muqarnas corbel collar */
+      for(const ay of [plinthY+2.35,plinthY+4.95]){
+       for(const a of [Math.atan2(sz,sx),Math.atan2(0,sx),Math.atan2(sz,0)]){
+        W(tx+Math.cos(a)*1.39,ay,tz+Math.sin(a)*1.39,PI*.5-a,()=>{
+         box('travertine',0,0,0,.30,1.16,.10,P('travShade'));
+         box('basalt',0,.08,.04,.11,1.00,.08,P('basaltDark'));
+         svPane(0,.10,.05,0,.09,.96,{kind:'lit',solid:true});
+        });
+       }
+      }
+      for(let k=0;k<8;k++){
+       const a=k*PI*.25;
+       smMuqarnasRow(tx+Math.cos(a)*1.28,plinthY+th-.36,tz+Math.sin(a)*1.28,1.08,.36,.28,PI*.5-a,2);
+      }
+     }else{
+      cyl('basalt',tx,plinthY,tz,1.45,th,P('basaltDark'),8,1.32,false);
+     }
      cyl('travertine',tx,plinthY+th,tz,1.52,.22,P('travertine'),8,1.62,false);
      for(let k=0;k<8;k++){
       const a=k*PI*.25;
@@ -177,8 +203,28 @@ defBuilding({
   svNoWalk(()=>{
    for(const sx of [-1,1]){
     const tx=sx*6.25,tz=4.35,th=wallH+1.85;
-    cyl('basalt',tx,plinthY,tz,1.65,th*.55,P('basaltDark'),8,1.55,false);
-    cyl('travertine',tx,plinthY+th*.55,tz,1.55,th*.45,P('travertine'),8,1.50,false);
+    if(SM_SM6){
+     cyl('rubble',tx,plinthY,tz,1.80,.78,P('rubble'),8,1.65,false);
+     const nb=8,bh=(th-.78)/nb;
+     for(let b=0;b<nb;b++){
+      const m=smAblaqCourse(b);
+      const r0=lerp(1.65,1.50,b/nb),r1=lerp(1.65,1.50,(b+1)/nb);
+      cyl(m.mk,tx,plinthY+.78+b*bh,tz,r0+m.dz,bh,m.col,8,r1+m.dz,false);
+     }
+     for(const ay of [plinthY+2.55,plinthY+5.25]){
+      W(tx,ay,tz+1.56,0,()=>{
+       box('travertine',0,0,0,.32,1.18,.10,P('travShade'));
+       svPane(0,.10,.05,0,.10,.98,{kind:'lit',solid:true});
+      });
+     }
+     for(let k=0;k<8;k++){
+      const a=k*PI*.25;
+      smMuqarnasRow(tx+Math.cos(a)*1.40,plinthY+th-.38,tz+Math.sin(a)*1.40,1.16,.38,.28,PI*.5-a,2);
+     }
+    }else{
+     cyl('basalt',tx,plinthY,tz,1.65,th*.55,P('basaltDark'),8,1.55,false);
+     cyl('travertine',tx,plinthY+th*.55,tz,1.55,th*.45,P('travertine'),8,1.50,false);
+    }
     box('frieze_kattu',tx,plinthY+th-.65,tz+1.45,1.35,.34,.18,0xffffff);
     for(let k=0;k<8;k++){
      const a=k*PI*.25;
@@ -231,9 +277,9 @@ defBuilding({
    });
    smParapet(8.0,8.0,s1Y,{});
 
-   /* 2. Octagonal ablaq shaft + first muqarnas watch-balcony + fluted upper cylinder + bronze beacon pavilion (refs/02) */
+   /* 2. Octagonal ablaq shaft + first muqarnas watch-balcony + colonnetted upper cylinder + 2nd balcony + bronze beacon pavilion (refs/02) */
    svNoWalk(()=>{
-    /* Turkish-triangle base collar */
+    /* Octagonal ablaq tier 1 + muqarnas balcony corbels */
     for(let k=0;k<8;k++){
      const a=k*PI*.25,rOct=2.45,fw=2*rOct*Math.tan(PI/8)+.06;
      W(0,s1Y,0,a,()=>{
@@ -255,10 +301,40 @@ defBuilding({
       box('chiselled',0,.92,2.85,2.22,.08,.12,P('ashlar'));
      });
     }
-    /* Upper 12-faceted carved ashlar shaft + second muqarnas collar */
+    /* Upper 12-faceted carved ashlar shaft + slender engaged colonnettes + second muqarnas watch-balcony (refs/02) */
     cyl('domeCarved',0,s2Y+.18,0,1.95,s2H-.38,P('domeStone'),12,1.88,false);
-    cyl('frieze_kattu',0,topY-.65,0,1.94,.34,0xffffff,16,1.94,true);
-    cyl('travertine',0,topY-.20,0,2.38,.20,P('travertine'),8,2.48,false);
+    if(SM_SM6){
+     const colH=s2H-1.08;
+     for(let k=0;k<12;k++){
+      const a=k/12*TAU,cr=1.94;
+      const cx=Math.cos(a)*cr,cz=Math.sin(a)*cr;
+      box('bronzeCast',cx,s2Y+.22,cz,.16,.08,.16,P('bronze'));
+      cyl('travertine',cx,s2Y+.30,cz,.072,colH,P('travertine'),8,null,false);
+      cyl('chiselled',cx,s2Y+.30+colH,cz,.072,.16,P('ashlar'),8,.12,false);
+      if(k%2===0){
+       const aMid=(k+.5)/12*TAU;
+       W(0,s2Y+1.25,0,PI*.5-aMid,()=>{
+        box('jali',0,0,1.90,.52,1.45,.03,P('travertine'));
+        svPane(0,0,1.84,0,.48,1.40,{kind:'lit',solid:true});
+       });
+      }
+     }
+     for(let k=0;k<8;k++){
+      const a=k*PI*.25;
+      smMuqarnasRow(Math.cos(a)*1.86,topY-.56,Math.sin(a)*1.86,1.52,.38,.36,PI*.5-a,3);
+     }
+     cyl('travertine',0,topY-.18,0,2.42,.18,P('travertine'),8,2.50,false);
+     for(let k=0;k<8;k++){
+      const a=k*PI*.25;
+      W(0,topY,0,a,()=>{
+       box('jali',0,0,2.34,1.76,.74,.045,P('travertine'));
+       box('chiselled',0,.74,2.34,1.84,.07,.10,P('ashlar'));
+      });
+     }
+    }else{
+     cyl('frieze_kattu',0,topY-.65,0,1.94,.34,0xffffff,16,1.94,true);
+     cyl('travertine',0,topY-.20,0,2.38,.20,P('travertine'),8,2.48,false);
+    }
 
     /* Open 8-column bronze-and-travertine beacon mabkhara lantern with blazing gorge signal brazier */
     for(let k=0;k<8;k++){

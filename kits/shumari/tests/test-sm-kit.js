@@ -134,4 +134,46 @@ T.neg(
  'Regimental qubba - spiral'
 );
 
+/* 6. Host consumer manifest (shumari.py), smDims(), multi-variant defs, and sealed SMK closure bundle (kit_bundle.py) */
+const cp=require('child_process');
+const bundleMetaJson=cp.execFileSync('python3',['-c',[
+ 'import json, os, sys',
+ 'sys.path.insert(0, ' + JSON.stringify(HERE) + ')',
+ 'import shumari, kit_bundle',
+ 'js, files = kit_bundle.bundle("SMK", resources=True)',
+ 'open("/tmp/test_smk_bundle.js", "w", encoding="utf-8").write(js)',
+ 'print(json.dumps({"files": shumari.FILES, "dwell": shumari.set_files("dwellings"), "bundle_files": files, "bytes": len(js)}))'
+].join('; ')],{encoding:'utf8'});
+const bMeta=JSON.parse(bundleMetaJson);
+T.ok('shumari.py exports 17 foundation+building files and set_files subset',bMeta.files.length===17&&bMeta.dwell.length===10,'files='+bMeta.files.length+' dwell='+bMeta.dwell.length);
+const smkJs=fs.readFileSync('/tmp/test_smk_bundle.js','utf8');
+fs.unlinkSync('/tmp/test_smk_bundle.js');
+let smkSyntaxOk=false;
+try{
+ new vm.Script(smkJs,{filename:'SMK-bundle.js'});
+ smkSyntaxOk=true;
+}catch(_e){
+ smkSyntaxOk=false;
+}
+T.ok(
+ 'kit_bundle.py SMK closure parses cleanly with zero raw script tags and includes resources',
+ smkSyntaxOk&&!/<\/?script/i.test(smkJs)&&bMeta.bundle_files.some(f=>f.includes('kits/resources/src/44r-res-nodes.js')),
+ 'bytes='+bMeta.bytes
+);
+
+/* Verify multi-variant town-fabric defs declare variants >= 2 */
+const multiVarKeys=['sm_cadet_cell','sm_hearth_house','sm_terrace_house','sm_shop_house','sm_sword_villa','sm_bazaar_hall'];
+const foundMulti=new Set();
+for(const f of srcFiles){
+ const txt=fs.readFileSync(path.join(SRC,f),'utf8');
+ for(const m of txt.matchAll(/defBuilding\(\{[^}]*?\bkey\s*:\s*['"]([^'"]+)['"][^}]*?\bvariants\s*:\s*(\d+)/g)){
+  if(+m[2]>=2)foundMulti.add(m[1]);
+ }
+}
+T.ok(
+ 'core town-fabric dwellings and bazaar declare variants >= 2',
+ multiVarKeys.every(k=>foundMulti.has(k)),
+ [...foundMulti].join(',')
+);
+
 T.done();

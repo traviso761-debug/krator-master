@@ -11,7 +11,9 @@ if(MAT.lacquer){MAT.lacquer.roughness=.34;MAT.lacquer.metalness=.08;}
 if(MAT.basalt){MAT.basalt.roughness=.68;MAT.basalt.metalness=.05;}
 if(MAT.travertine){MAT.travertine.roughness=.76;}
 if(MAT.ironstone){MAT.ironstone.roughness=.74;}
-if(MAT.bronzeCast){MAT.bronzeCast.roughness=.42;MAT.bronzeCast.metalness=.68;}
-if(MAT.bronze){MAT.bronze.roughness=.36;MAT.bronze.metalness=.74;}
-if(MAT.gold){MAT.gold.roughness=.26;MAT.gold.metalness=.84;}
-if(MAT.iron){MAT.iron.roughness=.52;MAT.iron.metalness=.55;}
+if(MAT.bronzeCast){MAT.bronzeCast.roughness=SM_SM6?.38:.42;MAT.bronzeCast.metalness=SM_SM6?.26:.68;}
+if(MAT.bronze){MAT.bronze.roughness=SM_SM6?.32:.36;MAT.bronze.metalness=SM_SM6?.28:.74;}
+if(MAT.gold){MAT.gold.roughness=SM_SM6?.26:.26;MAT.gold.metalness=SM_SM6?.32:.84;}
+if(MAT.tracery){MAT.tracery.roughness=SM_SM6?.36:.45;MAT.tracery.metalness=SM_SM6?.26:.50;}
+if(MAT.iron){MAT.iron.roughness=SM_SM6?.48:.52;MAT.iron.metalness=SM_SM6?.30:.55;}
+

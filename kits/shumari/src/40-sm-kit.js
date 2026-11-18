@@ -41,7 +41,7 @@ function smSocket(kind,x,y,z,ry,o){
    }
   });
  });
- if(CURREC&&!PLACE_DRY){
+ if(CURREC){
   const p=new THREE.Vector3(x,y,z).applyMatrix4(CM);
   const e=CM.elements;
   const wry=Math.atan2(e[8],e[10])+(ry==null?0:ry);
@@ -50,13 +50,28 @@ function smSocket(kind,x,y,z,ry,o){
  }
 }
 
-/* Course material selector for horizontal ablaq ashlar: dark basalt, cream travertine, and periodic crimson ironstone */
+/* Course material selector for horizontal ablaq ashlar and highland coursed volcanic basalt */
 function smAblaqCourse(idx,mode){
- if(mode==='basalt'){return {mk:'basalt',col:P('basalt')};}
  const k=((idx%6)+6)%6;
- if(k===0||k===2||k===4)return {mk:'basalt',col:P('basalt')};
- if(k===3)return {mk:'ironstone',col:P('ironstone')};
- return {mk:'travertine',col:P('travertine')};
+ if(mode==='basalt'){
+  if(!SM_SM6)return {mk:'basalt',col:P('basalt'),dz:0};
+  if(k===5)return {mk:'chiselled',col:P('travShade'),dz:.018};
+  if(k===1||k===3)return {mk:'basalt',col:P('basaltDark'),dz:-.010};
+  if(k===2)return {mk:'rubble',col:P('rubble'),dz:.006};
+  return {mk:'basalt',col:P('basalt'),dz:0};
+ }
+ if(k===0||k===2||k===4)return {mk:'basalt',col:P('basalt'),dz:0};
+ if(k===3)return {mk:'ironstone',col:P('ironstone'),dz:.008};
+ return {mk:'travertine',col:P('travertine'),dz:.006};
+}
+
+const smWM=new THREE.Matrix4(),smWP=new THREE.Vector3(),smWQ=new THREE.Quaternion(),smWS=new THREE.Vector3();
+/* Register a structural wall pier directly on KWALKBOX without emitting opaque triangles across window cutouts */
+function smWalkPier(cx,y0,cz,w,h,d){
+ if((typeof WKOFF!=='undefined'&&WKOFF)||PLACE_DRY||typeof KWALK==='undefined'||typeof KWALKBOX==='undefined'||!CURREC||CURREC.cls!=='building')return;
+ smWM.compose(smWP.set(cx,y0+h*.5,cz),smWQ.identity(),smWS.set(w,h,d));
+ smWM.premultiply(CM);
+ KWALKBOX.add(KWALK,smWM.elements,{tag:'box:'+CURKEY});
 }
 
 /* Battered polygonal basalt flood/frost plinth (ishigaki slope + dressed corner quoins + walkable flagstone top slab) */
@@ -131,6 +146,44 @@ function smMuqarnasRow(x,y,z,w,h,d,ry,tiers){
  });
 }
 
+/* Concave arched Mamluk muqarnas semi-dome conch recessed inside a pishtaq portal iwan (refs/03) */
+function smMuqarnasConch(x,y,z,spanW,h,depth,tiers){
+ const nt=tiers==null?5:tiers;
+ const th=h/nt;
+ W(x,y,z,0,()=>{
+  svNoWalk(()=>{
+   /* Dark shadowed rear semi-dome backing shell inside the pointed iwan tympanum */
+   for(let t=0;t<nt;t++){
+    const u0=t/nt,uMid=(t+.5)/nt;
+    const wTier=Math.max(.42,spanW*Math.pow(Math.cos(u0*PI*.46),.78));
+    const dTier=depth*(.28+.68*Math.pow(uMid,.76));
+    const nc=Math.max(3,Math.round(wTier/.34));
+    const cw=wTier/nc;
+    box('basalt',0,t*th,.06,wTier*.96,th+.02,.14,P('basaltDark'));
+    for(let i=0;i<nc;i++){
+     const s=(i+.5)/nc;
+     const archCurve=Math.sin(s*PI);
+     const cx=-wTier*.5+s*wTier;
+     const cz=.10+dTier*(.25+.75*(1-archCurve*.62));
+     const cellD=Math.max(.18,cz-.04);
+     const isDark=(i+t)%2===0;
+     const isIron=!isDark&&t===nt-2&&(i===0||i===nc-1);
+     const mk=isIron?'ironstone':(isDark?'chiselled':'travertine');
+     const col=isIron?P('ironstone'):(isDark?P('basalt'):P('travertine'));
+     const yaw=(s-.5)*-.52;
+     box(mk,cx,t*th,cellD*.5+.04,cw*.88,th*.96,cellD,col,yaw);
+     /* Carved stalactite pendant drop under each projecting muqarnas cell */
+     if(t>0&&(i+t)%2===1){
+      box('chiselled',cx,t*th-.08*th,cellD*.78+.04,cw*.40,th*.44,.14,P('travShade'),yaw);
+     }
+    }
+   }
+   /* Apex scalloped Keystone conch boss under the pointed arch soffit */
+   sph('chiselled',0,h-.14,depth*.58,.18,P('travertine'),.65,10);
+  });
+ });
+}
+
 /* Pointed two-centred Mamluk ablaq voussoir arch filling rectangle [-w/2..w/2, 0..h] around a clear arched intrados */
 function smAblaqArch(w,h,t,o){
  const opt=o||{};
@@ -183,6 +236,19 @@ function smAblaqArch(w,h,t,o){
     box('basalt',sx*(w*.5-sideW*.5),0,0,sideW,Math.max(.1,h-topBand),t,P('basalt'));
    }
   }
+  /* Carved circular ablaq spandrel bosses (buqja medallions, refs/03) on monumental arches */
+  if(SM_SM6&&opt.medallions&&rise>=.95&&w-span>=.58){
+   const mX=half+(w*.5-half)*.48;
+   const mY=springY+rise*.68;
+   const mR=Math.min(.26,(w-span)*.22);
+   for(const sx of [-1,1]){
+    W(sx*mX,mY,t*.5+.01,0,()=>{
+     ring('travertine',0,0,0,mR,.034,P('travertine'),0,PI*.5,0,14);
+     WX(0,0,.008,0,PI*.5,0,()=>cyl('ironstone',0,0,0,mR*.72,.024,P('ironstone'),12,null,false));
+     sph('bronzeCast',0,0,.024,mR*.28,P('bronze'),.6,10);
+    });
+   }
+  }
  });
 }
 
@@ -206,28 +272,28 @@ function smDressWindow(op,t){
  const frameT=.09;
  W(op.x,op.y,0,0,()=>{
   svNoWalk(()=>{
-   box('travertine',0,0,0,w+.12,.10,t+.08,P('travShade'));
-   box('travertine',-w*.5+.04,.08,0,frameT,h-.16,t+.04,P('travertine'));
-   box('travertine',w*.5-.04,.08,0,frameT,h-.16,t+.04,P('travertine'));
+   box('travertine',0,0,0,w+.14,.11,t+.10,P('travShade'));
+   box('travertine',-w*.5+.04,.08,0,frameT,h-.16,t+.05,P('travertine'));
+   box('travertine',w*.5-.04,.08,0,frameT,h-.16,t+.05,P('travertine'));
    /* Joggled ablaq lintel */
-   const nL=5,lw=(w+.14)/nL;
+   const nL=5,lw=(w+.16)/nL;
    for(let i=0;i<nL;i++){
     const mk=i===2?'ironstone':(i%2===0?'basalt':'travertine');
     const col=i===2?P('ironstone'):(i%2===0?P('basalt'):P('travertine'));
-    box(mk,-(w+.14)*.5+(i+.5)*lw,h-.10,0,lw,.18,t+.06,col);
+    box(mk,-(w+.16)*.5+(i+.5)*lw,h-.10,0,lw,.19,t+.08,col);
    }
    if(op.jali!==false){
-    box('jali',0,.08,.04,w-.16,h-.18,.025,P('travertine'));
+    box('jali',0,.08,t*.30,w-.16,h-.18,.028,P('travertine'));
    }
    if(op.bars){
     const nb=Math.max(2,Math.round(w/.28));
     for(let i=1;i<nb;i++){
      const bx=-w*.5+i*(w/nb);
-     pole('bronze',[bx,.08,-.03],[bx,h-.10,-.03],.016,P('bronze'),6);
+     pole('bronze',[bx,.08,t*.18],[bx,h-.10,t*.18],.016,P('bronze'),6);
     }
    }
   });
-  svPane(0,.08,-.01,0,Math.max(.18,w-.16),Math.max(.22,h-.18),{
+  svPane(0,.08,.02,0,Math.max(.18,w-.16),Math.max(.22,h-.18),{
    kind:op.glassKind||'smoked',
    color:op.glassColor,
    solid:!!op.solid
@@ -250,6 +316,8 @@ function smAblaqWall(L,y0,h,opens,o){
  for(let c=0;c<nc;c++){
   const cy0=y0+c*ch,cy1=cy0+ch;
   const mat=smAblaqCourse(c+(opt.courseOff==null?0:opt.courseOff),opt.mode);
+  const segT=t+(mat.dz==null?0:mat.dz);
+  const segH=SM_SM6&&opt.mode==='basalt'?Math.max(.08,ch-.012):ch;
   let curX=xMin;
   for(const op of ops){
    const oy0=op.y,oy1=op.y+op.h;
@@ -257,18 +325,17 @@ function smAblaqWall(L,y0,h,opens,o){
    const ox0=Math.max(xMin,op.x-op.w*.5),ox1=Math.min(xMax,op.x+op.w*.5);
    if(ox0>curX+.02){
     const segW=ox0-curX;
-    /* Small course slices above/beside openings: keep wall collision accurate via tall pier blocks below, avoid 200 tiny blocks */
-    svNoWalk(()=>box(mat.mk,curX+segW*.5,cy0,0,segW,ch,t,mat.col));
+    svNoWalk(()=>box(mat.mk,curX+segW*.5,cy0,0,segW,segH,segT,mat.col));
    }
    curX=Math.max(curX,ox1);
   }
   if(xMax>curX+.02){
    const segW=xMax-curX;
-   svNoWalk(()=>box(mat.mk,curX+segW*.5,cy0,0,segW,ch,t,mat.col));
+   svNoWalk(()=>box(mat.mk,curX+segW*.5,cy0,0,segW,segH,segT,mat.col));
   }
  }
 
- /* Register clean full-height structural wall piers for KWALKBOX between full-height door openings */
+ /* Register clean full-height structural wall piers on KWALKBOX between full-height door openings (no opaque window-blocking mesh!) */
  const doorOps=ops.filter(op=>op.y<=y0+.45).sort((a,b)=>a.x-b.x);
  if(!opt.noWalk){
   let wx=xMin;
@@ -276,14 +343,13 @@ function smAblaqWall(L,y0,h,opens,o){
    const ox0=Math.max(xMin,op.x-op.w*.5),ox1=Math.min(xMax,op.x+op.w*.5);
    if(ox0>wx+.08){
     const pw=ox0-wx;
-    /* Thin invisible-inside basalt core pier so KWALKBOX gets one crisp wall block per pier */
-    box('basalt',wx+pw*.5,y0+.02,0,pw,Math.max(.85,h-.04),t*.78,P('basalt'));
+    smWalkPier(wx+pw*.5,y0+.02,0,pw,Math.max(.85,h-.04),t*.78);
    }
    wx=Math.max(wx,ox1);
   }
   if(xMax>wx+.08){
    const pw=xMax-wx;
-   box('basalt',wx+pw*.5,y0+.02,0,pw,Math.max(.85,h-.04),t*.78,P('basalt'));
+   smWalkPier(wx+pw*.5,y0+.02,0,pw,Math.max(.85,h-.04),t*.78);
   }
  }
 
@@ -507,13 +573,26 @@ function smPishtaq(x,y0,z,o){
      const m=smAblaqCourse(c);
      box(m.mk,px,c*ch,depth*.5,pylonW,ch,depth,m.col);
     }
-    /* Slender engaged corner colonnettes with bronze rings & carved capitals (refs/03) */
+    /* Slender engaged corner & jamb colonnettes with bronze rings & flared Mamluk bell capitals (refs/03) */
     const colX=sx*(totalW*.5-.08),colZ=depth-.06;
     box('basalt',colX,0,colZ,.26,.42,.26,P('basaltDark'));
     box('bronzeCast',colX,.42,colZ,.22,.09,.22,P('bronze'));
-    cyl('ashlar',colX,.51,colZ,.095,totalH-1.35,P('ashlar'),12,null,false);
-    box('bronzeCast',colX,totalH-.84,colZ,.22,.09,.22,P('bronze'));
-    box('travertine',colX,totalH-.75,colZ,.28,.24,.28,P('travertine'));
+    cyl('ashlar',colX,.51,colZ,.095,totalH-1.42,P('ashlar'),12,null,false);
+    box('bronzeCast',colX,totalH-.91,colZ,.20,.08,.20,P('bronze'));
+    if(SM_SM6){
+     cyl('chiselled',colX,totalH-.83,colZ,.095,.24,P('travertine'),10,.17,false);
+     box('chiselled',colX,totalH-.59,colZ,.30,.12,.30,P('travShade'));
+     const jX=sx*(nicheW*.5+.10),jTop=archSpringY-.14;
+     if(jTop>1.4){
+      box('basalt',jX,0,colZ-.04,.22,.34,.22,P('basaltDark'));
+      box('bronzeCast',jX,.34,colZ-.04,.18,.07,.18,P('bronze'));
+      cyl('travertine',jX,.41,colZ-.04,.082,jTop-.72,P('travertine'),10,null,false);
+      box('bronzeCast',jX,jTop-.31,colZ-.04,.18,.07,.18,P('bronze'));
+      cyl('chiselled',jX,jTop-.24,colZ-.04,.082,.20,P('travertine'),10,.15,false);
+     }
+    }else{
+     box('travertine',colX,totalH-.75,colZ,.28,.24,.28,P('travertine'));
+    }
    });
   }
 
@@ -553,14 +632,18 @@ function smPishtaq(x,y0,z,o){
     }
    }
 
-   /* Recessed rear head wall above arch spring + stepped prism muqarnas vault hood */
-   box('travertine',0,archSpringY,.10,nicheW,archTopY-archSpringY,.24,P('travShade'));
-   const hoodH=Math.max(.85,archTopY-archSpringY-.18);
-   smMuqarnasRow(0,archSpringY,0.18,nicheW-.08,hoodH,depth-.26,0,giant?4:3);
+   /* Recessed rear head wall above arch spring + concave muqarnas semi-dome hood */
+   box('travertine',0,archSpringY,.06,nicheW,archTopY-archSpringY,.18,P('travShade'));
+   const hoodH=Math.max(.85,archTopY-archSpringY-.16);
+   if(SM_SM6){
+    smMuqarnasConch(0,archSpringY,.08,nicheW-.18,hoodH,depth-.34,giant?5:4);
+   }else{
+    smMuqarnasRow(0,archSpringY,0.18,nicheW-.08,hoodH,depth-.26,0,giant?4:3);
+   }
 
    /* Outer pointed ablaq voussoir portal arch at the front plane of the iwan */
    W(0,archSpringY-.12,depth-.20,0,()=>{
-    smAblaqArch(nicheW+.36,archTopY-archSpringY+.42,.40,{openW:nicheW-.04,springY:.14,voussoirs:15});
+    smAblaqArch(nicheW+.36,archTopY-archSpringY+.42,.40,{openW:nicheW-.04,springY:.14,voussoirs:15,medallions:SM_SM6});
    });
 
    /* Soaring pishtaq crown: epigraphic frieze, muqarnas cornice, and stepped blade-shurafat cresting */
@@ -761,7 +844,14 @@ function smSabilGrille(x,y0,z,ry,w,h){
     box('bronzeCast',sx*(Wg*.5+.08),Hg-.06,.16,.24,.12,.24,P('bronze'));
    }
    W(0,Hg-.02,.14,0,()=>smAblaqArch(Wg+.44,.76,.34,{openW:Wg-.08,springY:.06,voussoirs:11}));
-   box('tracery',0,.88,.18,Wg-.06,Hg-.92,.04,P('bronze'));
+   if(SM_SM6){
+    const tl=TILE.tracery==null?1.2:TILE.tracery,hw=(Wg-.08)*.5;
+    psurf('tracery',(u,v)=>[lerp(-hw,hw,u),lerp(.88,Hg+.38,v),.18],1,1,P('bronze'),{
+     uvf:(u,v)=>[lerp(.365,.635,u)*tl,lerp(1-.668,1-.325,v)*tl]
+    });
+   }else{
+    box('tracery',0,.88,.18,Wg-.06,Hg-.92,.04,P('bronze'));
+   }
    cyl('bronze',0,.68,.46,.04,.16,P('bronze'),8,.03,false);
   });
   svPane(0,.90,.12,0,Wg-.12,Hg-.96,{kind:'smoked',solid:false});
@@ -774,7 +864,7 @@ function smBathDome(x,y0,z,D,h){
  const R=D*.5,H=h==null?D*.42:h;
  W(x,y0,z,0,()=>{
   svNoWalk(()=>{
-   cyl('chiselled',0,0,0,R+.12,.16,P('travShade'),24,R+.06,false);
+   cyl('chiselled',0,0,0,R+.14,.18,P('travShade'),24,R+.06,false);
    const prof=[];
    for(let i=0;i<=12;i++){
     const u=i/12;
@@ -790,12 +880,21 @@ function smBathDome(x,y0,z,D,h){
     for(let k=0;k<nJ;k++){
      const a=k/nJ*TAU+(ringF>.5?PI/nJ:0);
      W(Math.cos(a)*jr,jy,Math.sin(a)*jr,PI*.5-a,()=>{
-      ring('travertine',0,0,0,.11,.022,P('travertine'),0,PI*.5,0,10);
-      sph(gk,0,0,.02,.085,0xffffff,.9,8);
+      if(SM_SM6){
+       ring('chiselled',0,0,.01,.125,.030,P('travertine'),0,PI*.5,0,12);
+       ring('bronzeCast',0,0,.025,.095,.014,P('bronze'),0,PI*.5,0,10);
+      }else{
+       ring('travertine',0,0,0,.11,.022,P('travertine'),0,PI*.5,0,10);
+      }
+      sph(gk,0,0,.025,.082,0xffffff,.9,8);
      });
     }
    }
-   sph(gk,0,H+.02,0,.13,0xffffff,.9,10);
+   if(SM_SM6){
+    cyl('chiselled',0,H-.03,0,.22,.07,P('travertine'),14,.18,false);
+    ring('bronzeCast',0,H+.04,0,.145,.018,P('bronze'),0,0,0,12);
+   }
+   sph(gk,0,H+.03,0,.125,0xffffff,.9,10);
   });
  });
 }
