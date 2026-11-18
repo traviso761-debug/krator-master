@@ -48,14 +48,21 @@
     return r;
   }
   var LIZARD_START = /[?&#]lizard\b/.test(location.search + location.hash);
-  /* the Frogman test record (a frog's head on the body, tools/amphibian.py): frog green, no hair, bare above the
-     trousers. ?frog in the page's address starts each body with it */
-  var FROG = { mods:['mod_head_frog'], skin:'#5f8a36', eye_color:'#d6a22a', hair:null, beard:null };
+  /* the Frogman test record (a frog's head, webbed hands and webbed digitigrade legs, tools/amphibian.py,
+     tools/digitigrade.py): frog green, gold eyes, no hair, bare torso and loincloth/kilt so the patterned legs and
+     webbed feet show. ?frog in the page's address starts each body with it */
+  var FROG = { mods:['mod_head_frog', 'mod_legs_frog'], skin:'#5f8a36', eye_color:'#d6a22a', hair:null, beard:null };
   function frog(r, kit){
     if(!kit.items.some(function(it){ return it.id === 'mod_head_frog'; })) return r;
     ['skin2', 'skin3', 'pattern', 'pattern_amount'].forEach(function(k){ delete r[k]; });
     Object.keys(FROG).forEach(function(k){ r[k] = JSON.parse(JSON.stringify(FROG[k])); });
-    r.armour = Object.assign({}, r.armour, { head:null, torso:null });
+    r.mods = r.mods.filter(function(id){ return kit.items.some(function(it){ return it.id === id; }); });
+    r.armour = Object.assign({}, r.armour, { head:null, torso:null, feet:null });
+    var loin = kit.items.filter(function(it){ return it.id === 'voth_m_peasant_maxtlatl' || it.id === 'dalab_f_peasant_kilt'; })[0];
+    if(r.armour.legs){
+      var curL = kit.items.filter(function(it){ return it.id === r.armour.legs; })[0];
+      if(!curL || !KCHAR.fits(curL, r, kit)) r.armour.legs = loin ? loin.id : null;
+    }
     return r;
   }
   var FROG_START = /[?&#]frog\b/.test(location.search + location.hash);
@@ -673,7 +680,7 @@
     if(all.some(function(m){ return m.id === 'mod_head_frog'; })){
       var fg = document.createElement('button'); fg.className = 'chip'; fg.id = 'chip-frogman';
       fg.innerHTML = '<span>Frogman <small>test</small></span>';
-      fg.title = 'A frog\'s head, green skin, no hair (a test record, not a people)';
+      fg.title = 'A frog\'s head, webbed hands and digitigrade webbed legs, green skin, no hair (a test record, not a people)';
       fg.addEventListener('click', function(){ frog(rec, kit); apply(); buildPanel(); });
       grid.appendChild(fg);
     }

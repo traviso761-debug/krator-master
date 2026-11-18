@@ -93,10 +93,10 @@
     r.mods = pick ? pick.split(',') : (c.mods || []).slice();
     // the Lizardman test (tools/nonhuman.py): olive skin and amber eyes with the reptile head; the head leaves out the hair
     if(r.mods.indexOf('mod_head_lizard') >= 0){ r.skin = '#7d8a45'; r.eye_color = '#c89020'; if(!dress) r.armour.torso = null; }
-    if(r.mods.indexOf('mod_head_frog') >= 0){ r.skin = '#5f8a36'; r.eye_color = '#d6a22a'; }     // the Frogman test: a frog's green, gold eyes
+    if(r.mods.indexOf('mod_head_frog') >= 0){ r.skin = '#5f8a36'; r.eye_color = '#d6a22a'; if(!dress) r.armour.torso = null; }     // the Frogman test: a frog's green, gold eyes
     if(r.mods.indexOf('mod_head_coyote') >= 0){ r.coat = 'coyote'; r.skin = '#6e5a4c'; r.hair_color = '#9a7a52'; r.eye_color = '#c08a2a'; }
     if(KCHAR.replacesFeet(r, kit) && !dress){
-      var kilt = r.mods.indexOf('mod_legs_lizard') >= 0 && c.sex !== 'f' ? 'voth_m_peasant_maxtlatl'
+      var kilt = (r.mods.indexOf('mod_legs_lizard') >= 0 || r.mods.indexOf('mod_legs_frog') >= 0) && c.sex !== 'f' ? 'voth_m_peasant_maxtlatl'
                : c.sex === 'f' ? 'dalab_f_peasant_kilt' : 'dalab_m_peasant_kilt';
       if(kit.items.some(function(it){ return it.id === kilt; })) r.armour.legs = kilt;
       r.armour.feet = null;

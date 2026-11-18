@@ -252,6 +252,9 @@ if(fs.existsSync(path.join(HERE, 'data', 'mpfb_giant', 'kit.json'))) (function()
   var lzDg = k.items.filter(function(it){ return it.id === 'mod_legs_lizard'; })[0];
   ok(!!lzDg && lzDg.replaces_feet && lzDg.test && lzDg.digitigrade && lzDg.hides > 5000 && k.tint.roles['Mod.lizard_legs'] === 'skin',
      b + ': mod_legs_lizard entry present, marked test, role skin, and hides lower leg skin');
+  var fgDg = k.items.filter(function(it){ return it.id === 'mod_legs_frog'; })[0];
+  ok(!!fgDg && fgDg.replaces_feet && fgDg.test && fgDg.digitigrade && fgDg.pattern && fgDg.hides > 5000 && k.tint.roles['Mod.frog_legs'] === 'pattern',
+     b + ': mod_legs_frog entry present, marked test, role pattern, and hides lower leg skin');
   var J = {}; sk.joints.forEach(function(j, i){ J[j.name] = i; });
   ok(['LeftDigiThigh', 'LeftDigiShin', 'LeftDigiHock', 'LeftDigiPaw', 'RightDigiThigh', 'RightDigiShin', 'RightDigiHock', 'RightDigiPaw'].every(function(n){ return J[n] > J.Tail8; }),
      b + ': all 8 Digi joints sit after Tail8');
@@ -277,7 +280,11 @@ if(fs.existsSync(path.join(HERE, 'data', 'mpfb_giant', 'kit.json'))) (function()
   rLz.armour.feet = dgBoot.id;
   ok(KCHAR.parts(rLz, kWithDgBoot).some(function(p){ return p.slot === 'feet' && /_test_digi_boot$/.test(p.key); }),
      b + ': digitigrade character parts() draws digitigrade footwear');
-  ok(peoples.every(function(P){ for(var s = 1; s <= 15; s++){ var st = KCHAR.stranger(s, k, P); if((st.mods || []).indexOf('mod_legs_lizard') >= 0) return false; } return true; }),
+  var rFg = KCHAR.blank(k); rFg.mods = ['mod_head_frog', 'mod_legs_frog']; rFg.armour.feet = boot.id;
+  ok(KCHAR.replacesFeet(rFg, k) && !KCHAR.fits(boot, rFg, k) && KCHAR.fits(dgBoot, rFg, k) &&
+     KCHAR.parts(rFg, k).every(function(p){ return p.slot !== 'feet'; }),
+     b + ': frogman digitigrade character rejects plantigrade footwear and accepts digitigrade footwear');
+  ok(peoples.every(function(P){ for(var s = 1; s <= 15; s++){ var st = KCHAR.stranger(s, k, P); if((st.mods || []).some(function(m){ return m === 'mod_legs_lizard' || m === 'mod_legs_frog'; })) return false; } return true; }),
      b + ': no people draws mod_legs_lizard');
   if(b === 'mpfb_giant') return;
   var dg = k.items.filter(function(it){ return it.id === 'mod_legs_coyote'; })[0];

@@ -357,6 +357,7 @@ func _init() -> void:
 		ok(not q0.is_equal_approx(fig.skeleton.get_bone_pose_rotation(fig.skeleton.find_bone("LeftUpLeg"))), "walk moves the thigh")
 		_lizard(fig, rec)
 		_coyote(fig, rec)
+		_frog(fig, rec)
 
 	# a Giant of Dalab (core/charactermodels/tools/giant.py): the man's body made big, a second pair of arms that no clip
 	# moves but the figure drives from the upper pair; two arms leaves them out
@@ -628,5 +629,44 @@ func _coyote(fig: KCharFigure, rec: Dictionary) -> void:
 			ok(h_min <= idle_hock - 0.02, "coyote crouch: hock coils lower (%.3f vs %.3f m)" % [h_min, idle_hock])
 		ok(paw_bad == 0 and snap_bad == 0, "coyote %s: paws planted and hock smooth (%d paw, %d snap)" % [c, paw_bad, snap_bad])
 	print("kchar_test: coyote digitigrade checked (idle hock %.2f m)" % idle_hock)
+	fig.play("")
+	fig.apply(rec)
+
+
+func _frog(fig: KCharFigure, rec: Dictionary) -> void:
+	var has_fg := false
+	for it in fig.kit["items"]:
+		if it["id"] == "mod_legs_frog":
+			has_fg = FileAccess.file_exists(DIR + "/pieces/mpfb_male/mod_legs_frog.glb")
+	if not has_fg:
+		return
+	var r2 := rec.duplicate(true)
+	r2["skin"] = "#5f8a36"
+	r2["eye_color"] = "#d6a22a"
+	r2["hair"] = null
+	r2["beard"] = null
+	r2["mods"] = ["mod_head_frog", "mod_legs_frog"]
+	r2["armour"] = {"torso": null, "legs": "voth_m_peasant_maxtlatl", "feet": "culturalibre_hero_boots_1"}
+	fig.play("")
+	fig.apply(r2)
+	var shown := {}
+	var has_pat_mat := false
+	for mi in fig.skeleton.get_children():
+		if mi is MeshInstance3D and mi.visible:
+			shown[mi.get_meta("part")["key"]] = true
+			if mi.get_meta("part")["key"] == "mpfb_male/mod_legs_frog" and mi.get_surface_override_material(0) is ShaderMaterial:
+				has_pat_mat = true
+	ok(shown.has("mpfb_male/mod_head_frog") and shown.has("mpfb_male/mod_legs_frog") and has_pat_mat
+		and not shown.has("mpfb_male/culturalibre_hero_boots_1"),
+		"frog: head and patterned digitigrade webbed legs drawn, human boots rejected (%s)" % [shown.keys()])
+	fig.rest_pose()
+	var worst := 0.0
+	for mi in fig.skeleton.get_children():
+		if mi is MeshInstance3D and mi.visible and mi.skin:
+			for k in mi.skin.get_bind_count():
+				var m: Transform3D = glob(fig.skeleton, mi.skin.get_bind_bone(k)) * mi.skin.get_bind_pose(k)
+				worst = maxf(worst, m.origin.length() + (m.basis.x - Vector3.RIGHT).length() + (m.basis.y - Vector3.UP).length())
+	ok(worst < 1e-3, "frog: at rest all Digi* and body bones match their binds (worst %f)" % worst)
+	print("kchar_test: frog digitigrade checked")
 	fig.play("")
 	fig.apply(rec)

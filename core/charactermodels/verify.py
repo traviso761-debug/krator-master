@@ -289,6 +289,37 @@ CHECKS = r'''async () => {
       }
       await fig.play('idle'); await k2.set(dressed);
     }
+    // Frogmen digitigrade webbed legs & head (tools/amphibian.py, tools/digitigrade.py): pattern shader active on Mod.frog_legs,
+    // rest-pose skinning identity & ground contact, human boots & toenails omitted, and smooth digitigrade gait
+    if (kit.items.some(it => it.id === 'mod_legs_frog')) {
+      const NH = out.nonhuman;
+      const kilt = kit.items.find(it => it.slot === 'legs' && (it.id === 'voth_m_peasant_maxtlatl' || (it.loose && it.cloth)));
+      const boot = kit.items.find(it => it.slot === 'feet');
+      const fg = Object.assign(JSON.parse(JSON.stringify(dressed)), {
+        skin: '#5f8a36', eye_color: '#d6a22a', hair: null, beard: null,
+        mods: ['mod_head_frog', 'mod_legs_frog']
+      });
+      fg.armour.torso = null;
+      if (kilt) fg.armour.legs = kilt.id;
+      if (boot) fg.armour.feet = boot.id;
+      await k2.set(fg); fig.play(null); await new Promise(r => setTimeout(r, 50));
+      if (JSON.stringify(shownKeys()) !== JSON.stringify(keys(fg))) NH.push(body + ' frog shows ' + shownKeys());
+      if (boot && shownKeys().some(k => k === KCHAR.key(boot.glb))) NH.push(body + ' frog: human boots drawn over webbed feet');
+      if (shown().some(m => m.userData.srcMaterial === 'Human.toenails')) NH.push(body + ' frog: human toenails drawn');
+      const flm = shown().find(m => m.userData.srcMaterial === 'Mod.frog_legs');
+      if (!flm || !(flm.material.userData.kp && flm.material.userData.kp.kpOn.value > 0.5)) NH.push(body + ' frog: Mod.frog_legs missing or pattern shader off');
+      for (const [tag, mo] of [['frog', {}], ['frog heavy', heavy]]) {
+        await k2.set(Object.assign({}, fg, { morph: mo })); rest(tag);
+        const lm = shown().find(m => m.userData.srcMaterial === 'Mod.frog_legs');
+        if (!lm) continue;
+        const P = lm.geometry.attributes.position.array, v = new THREE.Vector3();
+        let lowY = 1e9;
+        for (let i = 0; i < P.length; i += 3) { v.set(P[i], P[i + 1], P[i + 2]).applyMatrix4(lm.matrixWorld); if (v.y < lowY) lowY = v.y; }
+        const gnd = fig.group.getWorldPosition(new THREE.Vector3()).y, sc = fig.inner.getWorldScale(new THREE.Vector3()).x;
+        if (Math.abs(lowY - gnd) > 0.008 * sc) NH.push(body + ' ' + tag + ': frog webbed sole off ground by ' + ((lowY - gnd) * 1000).toFixed(1) + ' mm');
+      }
+      await fig.play('idle'); await k2.set(dressed);
+    }
     // the fold: a court robe and skirt in a walk, every chain segment within 1.5 rad of its rest (the Verlet threw chain
     // tops sideways and Z-folded them: 60 to 90 segments past it; kchar_test.gd measures the same in Godot)
     const rb = kit.items.find(it => it.id.indexOf('noble_robe') >= 0 && it.cloth);

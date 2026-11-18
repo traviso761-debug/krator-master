@@ -83,7 +83,7 @@ paintings, 2026-10-27) for the Frogmen of the south-western highlands, Dalab's m
   scalloped deeper between, on the two fingers' joints by where each point lies across (`hand_webs`); a round pad under
   each fingertip. Its skin is the library's `skin.smooth`, moist and glossier, which the body wears under the head.
 - A test record as the Lizardman is: the Cosmetic Lab's "Frogman" chip (or `?frog`), the Animation Lab's Body mods menu
-  ("Frogman (test: head)").
+  ("Frogman (test: head, digitigrade legs)"), equipping `mod_head_frog` and `mod_legs_frog`.
 
 **Making them.** `python3 tools/nonhuman.py` puts both on the bodies as they stand, from the published pieces, with no
 Blender (they are made from the base GLB; their deltas from `base.morph.bin` and kit.json's joint rows). A whole rebuild
@@ -129,12 +129,12 @@ whole cast. Godot: `kchar_shot.gd -- --lizard`.
 
 About **8 to 10 sessions** and the five textures, for plantigrade Lizardmen.
 
-**Digitigrade legs, paws & saurian feet** (`tools/digitigrade.py`, kit items `mod_legs_coyote` and `mod_legs_lizard`,
-**built 2026-11-17** for the Coyote Men and Lizardmen):
+**Digitigrade legs, paws, saurian feet & webbed amphibian feet** (`tools/digitigrade.py`, kit items `mod_legs_coyote`,
+`mod_legs_lizard` and `mod_legs_frog`, **built 2026-11-17** for the Coyote Men, Lizardmen and Frogmen):
 - Eight joints `LeftDigiThigh`, `LeftDigiShin`, `LeftDigiHock`, `LeftDigiPaw` and `RightDigiThigh`..`RightDigiPaw` appended
   to `data/mpfb_{male,female,giant}/skeleton.json` after `Tail8` so no existing joint index moves. They are modelled and
   bound in a standing Z-pose (stifle forward, calcaneus/hock elevated at ~28.5% of hip height, slanted tarso-metatarsus,
-  sole flat on `y = 0`), sampled at two SDF resolutions (8.2 mm on thigh/crus/hock/pastern, 3.2 mm on ankle/digits) with
+  sole flat on `y = 0`), sampled at two SDF resolutions (8.2 mm on thigh/crus/hock/pastern, 2.8–3.4 mm on ankle/digits) with
   seamless upper-thigh collar continuity into `Human.body`:
   - `mod_legs_coyote` (`mpfb_male`, `mpfb_female`): four-toed cushioned oval canid paw with dark plantar pads, blunt horn
     claws (`Mod.coyote_claws`) and `brush` fur shells (`role: 'coat'`, `furred: true`).
@@ -142,6 +142,12 @@ About **8 to 10 sessions** and the five textures, for plantigrade Lizardmen.
     tarso-metatarsus with no mammal paw pad, three long wide-splayed articulated theropod digits (`±36.7°`) with dorsal
     transverse scute ridges, a backward-projecting medial hallux (Digit I), and large sickle-curved bone-to-horn talons
     (`Mod.lizard_claws`), tiled at `0.085 m` in `Mod.head_lizard`'s scale map (`role: 'skin'`) to match `skin_detail`.
+  - `mod_legs_frog` (`mpfb_male`, `mpfb_female`, `mpfb_giant`, `test: true`): rounded jumper thigh and plump gastrocnemius
+    calf tapering into an elongated smooth frog tarsus, four asymmetrically graded wide-splayed smooth digits (`~80°` span,
+    no claws) joined by taut concave-scalloped interdigital webbing membranes and ending in broad cushioned tree-frog /
+    bullfrog digital suction pads; textured in `Mod.head_frog`'s moist `skin.smooth` map with poison-dart `pattern_fields`
+    (`role: 'pattern'`, `COLOR_0` RGBA + `TEXCOORD_1` shade) so spots, net bands and marbling run continuously across the
+    thigh collar and cream `skin3` tints the inner leg, webs and plantar pads.
 - **Bidirectional footwear rule** (`replaces_feet: true`, `KCHAR.replacesFeet` / `KChar.replaces_feet`, `KCHAR.fits` /
   `KChar.fits`): digitigrade and non-digitigrade characters cannot equip each others' boots/footwear (`slot === 'feet'`
   requires `!!it.digitigrade === replacesFeet(rec, kit)`), and digitigrade leg mods hide human lower-leg/foot skin and

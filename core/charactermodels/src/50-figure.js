@@ -1066,8 +1066,11 @@ function KCharFigure(body, sliders, load){
     var i0 = m.userData.index0, g = m.geometry;
     if(!i0) return;
     if(!key){
-      g.setIndex(i0);
-      m.children.forEach(function(s){ if(s.userData.fur && s.userData.index0) s.geometry.setIndex(s.userData.index0); });
+      g.setIndex(Array.isArray(i0) ? i0 : new THREE.BufferAttribute(i0, 1));
+      m.children.forEach(function(s){
+        var si = s.userData.fur && s.userData.index0;
+        if(si) s.geometry.setIndex(Array.isArray(si) ? si : new THREE.BufferAttribute(si, 1));
+      });
       return;
     }
     var n = g.attributes.position.count, aw = m.userData.armW;

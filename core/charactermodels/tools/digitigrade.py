@@ -644,6 +644,195 @@ class LizardLegSculpt:
         return V, N, C, T
 
 
+class FrogLegSculpt:
+    """SDF + poison-dart pattern fields + webbed four-toed amphibian foot with bulbous digital pads (mod_legs_frog, LORE 6.22)."""
+
+    def __init__(self, sd, chain, BP, BT, BN, leg_mask):
+        self.sd = sd
+        self.sx = 1.0 if sd == 'Left' else -1.0
+        self.c = chain
+        self.H = chain['H']
+        self.s = self.H / H_REF
+        s = self.s
+        self.paw_skin_r = 0.145 * s
+        self.p_thigh = chain['DigiThigh']
+        self.p_shin = chain['DigiShin']
+        self.p_hock = chain['DigiHock']
+        self.p_paw = chain['DigiPaw']
+        knee_y = 0.542 * self.H
+        self.y_cut = self.p_thigh[1] - 0.24 * (self.p_thigh[1] - knee_y)
+        self.y_top = self.y_cut + 0.026 * s
+
+        side_sel = np.nonzero(leg_mask & (BP[:, 0] * self.sx > 0.004) & (BP[:, 1] > self.y_cut - 0.14 * s) & (BP[:, 1] < self.y_top + 0.06 * s))[0]
+        self.collar_P = BP[side_sel]
+        self.collar_N = BN[side_sel]
+        self.collar_tree = cKDTree(self.collar_P)
+
+        # Powerful jumping cruralis/semimembranosus thigh, plump gastrocnemius calf belly, and smooth elongated frog tarsus
+        self.p_ham_top = self.p_thigh + np.array([-0.006 * self.sx * s, -0.048 * s, -0.056 * s])
+        self.p_ham_low = self.p_shin + 0.30 * (self.p_hock - self.p_shin) + np.array([-0.004 * self.sx * s, 0.014 * s, -0.040 * s])
+        self.p_calf = self.p_shin + 0.34 * (self.p_hock - self.p_shin) + np.array([0.005 * self.sx * s, 0.004 * s, -0.022 * s])
+        self.p_calc = self.p_hock + np.array([0.0, 0.006 * s, -0.022 * s])
+        self.p_ach_up = self.p_shin + 0.48 * (self.p_hock - self.p_shin) + np.array([0.0, 0.0, -0.020 * s])
+
+        # Four asymmetrically graded amphibian toes (medial shortest -> 3rd longest -> lateral medium) fanned wide across ~80 deg,
+        # each ending in a broad, cushioned tree-frog / bullfrog digital suction pad (zero claws!)
+        self.toes = []
+        specs = [
+            (-0.015, 0.088, 0.0082, 0.0092, -0.74, (0.0126, 0.0078, 0.0138)),
+            (-0.005, 0.122, 0.0088, 0.0098, -0.24, (0.0142, 0.0084, 0.0154)),
+            ( 0.006, 0.152, 0.0094, 0.0105,  0.20, (0.0154, 0.0090, 0.0168)),
+            ( 0.016, 0.118, 0.0086, 0.0096,  0.66, (0.0138, 0.0082, 0.0150)),
+        ]
+        for lat, ln, wd, ht, ang, pad_r in specs:
+            lx = lat * self.sx * s
+            ca, sa = math.cos(ang * self.sx), math.sin(ang * self.sx)
+            a = np.array([self.p_paw[0] + lx, 0.0145 * s, self.p_paw[2] + 0.004 * s])
+            b = np.array([self.p_paw[0] + lx + sa * ln * s, 0.0088 * s, self.p_paw[2] + 0.004 * s + ca * ln * s])
+            fwd = np.array([sa, 0.0, ca])
+            side = np.array([ca, 0.0, -sa])
+            pr = tuple(x * s for x in pad_r)
+            self.toes.append((a, b, wd * s, ht * s, fwd, side, pr))
+
+        # Three taut scalloped interdigital web panels spanning 78% of each adjacent toe pair, stopping behind the bulbous pads
+        self.webs = []
+        for k in range(3):
+            a0, b0, _, _, _, _, _ = self.toes[k]
+            a1, b1, _, _, _, _, _ = self.toes[k + 1]
+            o_xz = 0.5 * (a0[[0, 2]] + a1[[0, 2]])
+            u_vec = (a0[[0, 2]] + 0.78 * (b0[[0, 2]] - a0[[0, 2]])) - o_xz
+            v_vec = (a1[[0, 2]] + 0.78 * (b1[[0, 2]] - a1[[0, 2]])) - o_xz
+            det = float(u_vec[0] * v_vec[1] - u_vec[1] * v_vec[0])
+            if abs(det) < 1e-9:
+                det = 1e-9 if det >= 0 else -1e-9
+            self.webs.append((o_xz, u_vec, v_vec, det))
+
+    def sdf(self, P):
+        s = self.s
+        # 1. Rounded powerful jumper thigh (cruralis + semimembranosus)
+        d = HD.round_cone(P, self.p_thigh + np.array([0.0, -0.02 * s, 0.010 * s]), self.p_shin, 0.085 * s, 0.052 * s)
+        d_ham = HD.round_cone(P, self.p_ham_top, self.p_ham_low, 0.072 * s, 0.036 * s)
+        d = HD.smin(d, d_ham, 0.034 * s)
+        d_stifle = HD.ellipsoid(P, self.p_shin + np.array([0.0, 0.004 * s, 0.012 * s]), (0.046 * s, 0.048 * s, 0.054 * s))
+        d = HD.smin(d, d_stifle, 0.020 * s)
+
+        # 2. Plump gastrocnemius calf belly tapering to a smooth amphibian ankle
+        d_crus = HD.round_cone(P, self.p_shin, self.p_hock, 0.050 * s, 0.022 * s)
+        d_gastroc = HD.ellipsoid(P, self.p_calf, (0.049 * s, 0.080 * s, 0.055 * s))
+        d_crus = HD.smin(d_crus, d_gastroc, 0.024 * s)
+        d_ach = HD.round_cone(P, self.p_ach_up, self.p_calc, 0.018 * s, 0.015 * s)
+        d_hock = HD.ellipsoid(P, self.p_calc, (0.020 * s, 0.022 * s, 0.023 * s))
+        d = HD.smin(d, d_crus, 0.022 * s)
+        d = HD.smin(d, d_ach, 0.014 * s)
+        d = HD.smin(d, d_hock, 0.014 * s)
+
+        # 3. Slender elongated astragalus-calcaneum tarsus flattening into the plantar fan
+        d_meta = HD.round_cone(P, self.p_hock, self.p_paw + np.array([0.0, -0.006 * s, 0.005 * s]), 0.0215 * s, 0.0165 * s)
+        d_tars = HD.ellipsoid(P, self.p_paw + np.array([0.0, -0.012 * s, 0.014 * s]), (0.023 * s, 0.0125 * s, 0.024 * s))
+        d_meta = HD.smin(d_meta, d_tars, 0.010 * s)
+        d = HD.smin(d, d_meta, 0.014 * s)
+
+        # 4. Four slender smooth digits + bulbous discoidal frog toe pads + taut scalloped webbing membranes
+        d_foot = np.full(len(P), 1e9)
+        for a, b, wd, ht, fwd, side, pr in self.toes:
+            ab = b - a
+            L2 = float(ab @ ab)
+            t = np.clip(((P - a) @ ab) / max(L2, 1e-12), 0.0, 1.0)
+            q = a + t[:, None] * ab
+            dp = P - q
+            knuckle = 1.0 + 0.08 * np.cos(2.0 * math.pi * 2.5 * t)
+            taper = 1.04 - 0.30 * t
+            r_w = wd * taper * knuckle
+            r_h = ht * taper * knuckle
+            dt = (np.sqrt((dp[:, 0] / r_w) ** 2 + (dp[:, 1] / r_h) ** 2 + (dp[:, 2] / r_w) ** 2) - 1.0) * np.minimum(r_w, r_h)
+            # Bulbous adhesive tree-frog / bullfrog toe pad oriented along the toe's forward/transverse frame
+            pc = b + fwd * (0.003 * s) + np.array([0.0, -0.0012 * s, 0.0])
+            qp = P - pc
+            px = (qp @ side) / pr[0]
+            py = qp[:, 1] / pr[1]
+            pz = (qp @ fwd) / pr[2]
+            k0 = np.sqrt(px * px + py * py + pz * pz)
+            k1 = np.sqrt((px / pr[0]) ** 2 + (py / pr[1]) ** 2 + (pz / pr[2]) ** 2)
+            d_pad = k0 * (k0 - 1.0) / np.maximum(k1, 1e-9)
+            dt = HD.smin(dt, d_pad, 0.0045 * s)
+            d_foot = HD.smin(d_foot, dt, 0.0035 * s)
+
+        for o_xz, u_vec, v_vec, det in self.webs:
+            qx = P[:, 0] - o_xz[0]
+            qz = P[:, 2] - o_xz[1]
+            u = (qx * v_vec[1] - qz * v_vec[0]) / det
+            v = (u_vec[0] * qz - u_vec[1] * qx) / det
+            uc = np.maximum(u, 0.0)
+            vc = np.maximum(v, 0.0)
+            r_sum = uc + vc
+            s_mid = 4.0 * uc * vc / np.maximum(r_sum * r_sum, 1e-8)
+            r_lim = 1.0 - 0.25 * s_mid
+            sc_uv = np.minimum(1.0, r_lim / np.maximum(r_sum, 1e-8))
+            uc *= sc_uv
+            vc *= sc_uv
+            rc = uc + vc
+            wx = o_xz[0] + uc * u_vec[0] + vc * v_vec[0]
+            wz = o_xz[1] + uc * u_vec[1] + vc * v_vec[1]
+            wy = (0.0125 - 0.0055 * rc - 0.0018 * s_mid) * s
+            rim = sm(r_lim - 0.14, r_lim, rc) * s_mid
+            w_th = (0.0029 + 0.0008 * rim) * s
+            dw = np.sqrt((P[:, 0] - wx) ** 2 + (P[:, 1] - wy) ** 2 + (P[:, 2] - wz) ** 2) - w_th
+            d_foot = HD.smin(d_foot, dw, 0.0038 * s)
+
+        d = HD.smin(d, d_foot, 0.0075 * s)
+
+        # Flatten plantar sole & toe pads cleanly onto ground y = 0.000
+        d = HD.smax(d, -P[:, 1], 0.0032 * s)
+
+        # 5. Seamless blend into Human.body upper thigh at y_cut .. y_top
+        blend = sm(self.y_cut - 0.085 * s, self.y_cut - 0.005 * s, P[:, 1])
+        hi = np.nonzero(blend > 1e-4)[0]
+        if len(hi):
+            _, idx = self.collar_tree.query(P[hi])
+            d_base_surf = ((P[hi] - self.collar_P[idx]) * self.collar_N[idx]).sum(1)
+            rim_tuck = (-0.0005 + 0.0018 * sm(self.y_cut + 0.002 * s, self.y_top - 0.006 * s, P[hi, 1])) * s
+            d[hi] = d[hi] * (1.0 - blend[hi]) + (d_base_surf + rim_tuck) * blend[hi]
+
+        d = HD.smax(d, P[:, 1] - self.y_top, 0.004 * s)
+        return d
+
+    def paint_frog(self, V, N, nb):
+        """Evaluate amphibian.pattern_fields(V) in body space (matching Human.body's body_mask across the collar seam),
+        plus pale cream share (A) on inner thigh, webbing & plantar toe pads, and fine shade (UV2.x)."""
+        import amphibian as AM
+        import reptile as RP
+        s = self.s
+        n = len(V)
+        pf = AM.pattern_fields(V)
+        u_y = np.clip((self.y_cut - V[:, 1]) / max(self.y_cut, 1e-6), 0.0, 1.0)
+        below_collar = sm(0.03, 0.18, u_y)
+
+        inner = np.clip(-N[:, 0] * self.sx, 0.0, 1.0)
+        down = np.clip(-N[:, 1], 0.0, 1.0)
+        pale = 0.32 * inner * (1.0 - sm(0.58, 0.85, u_y)) * below_collar
+        # Creamy pale plantar surface & bulbous toe pads + translucent-toned interdigital webs
+        sole_pale = sm(0.016 * s, 0.004 * s, V[:, 1]) * sm(0.05, 0.55, down)
+        pale = np.maximum(pale, 0.78 * sole_pale * below_collar)
+        for _, b, _, _, fwd, _, pr in self.toes:
+            pc = b + fwd * (0.003 * s)
+            dp_n = np.linalg.norm((V - pc) / (max(pr) * 1.35), axis=1)
+            pad_m = (1.0 - sm(0.65, 1.25, dp_n)) * (0.45 + 0.55 * down)
+            pale = np.maximum(pale, 0.68 * pad_m * below_collar)
+        for o_xz, u_vec, v_vec, det in self.webs:
+            qx = V[:, 0] - o_xz[0]
+            qz = V[:, 2] - o_xz[1]
+            u = (qx * v_vec[1] - qz * v_vec[0]) / det
+            v = (u_vec[0] * qz - u_vec[1] * qx) / det
+            in_web = (u > 0.06) & (v > 0.06) & ((u + v) < 1.02) & (V[:, 1] < 0.020 * s)
+            s_mid = np.where(in_web, 4.0 * np.maximum(u, 0.0) * np.maximum(v, 0.0) / np.maximum((u + v) ** 2, 1e-8), 0.0)
+            pale = np.maximum(pale, 0.48 * np.clip(s_mid, 0.0, 1.0) * below_collar)
+
+        shade = 1.0 + below_collar * ((0.94 + 0.12 * RP._noise(V, 0.008 * s, 17)) - 1.0)
+        pale_s, shade_s = HD.soften(nb, np.clip(pale, 0.0, 1.0), np.clip(shade, 0.0, 1.15), times=2)
+        C0 = np.concatenate([pf, np.clip(pale_s, 0.0, 1.0)[:, None]], axis=1)
+        return C0, np.clip(shade_s, 0.0, 1.15), np.zeros(n, dtype=float)
+
+
 def seg_proj(P, a, b):
     ab = b - a
     t = np.clip(((P - a) @ ab) / max(float(ab @ ab), 1e-12), 0.0, 1.0)
@@ -831,7 +1020,7 @@ def write_digi_glb(path, skin_names, J_skel, W_skel, byn, prims):
             'NORMAL': add(p['N'].astype(np.float32), 5126, 'VEC3', 34962),
             'TEXCOORD_0': add(p['U'].astype(np.float32), 5126, 'VEC2', 34962),
             'TEXCOORD_1': add(p['U2'].astype(np.float32), 5126, 'VEC2', 34962),
-            'COLOR_0': add(p['C'].astype(np.float32), 5126, 'VEC3', 34962),
+            'COLOR_0': add(p['C'].astype(np.float32), 5126, 'VEC4' if p['C'].shape[1] == 4 else 'VEC3', 34962),
             'JOINTS_0': add(p['J'].astype(np.uint16), 5123, 'VEC4', 34962),
             'WEIGHTS_0': add(p['W'].astype(np.float32), 5126, 'VEC4', 34962),
             '_VIDX': add(p['vid'].astype(np.float32).reshape(-1, 1), 5126, 'SCALAR', 34962),
@@ -924,6 +1113,36 @@ def lizard_scale_maps(pieces):
     return MD.scale_texture(MD.texture_mean(body_obj)), None, 0.55
 
 
+def frog_skin_maps(pieces):
+    """Extract the moist smooth skin albedo + normal map and roughness from mod_head_frog.glb so leg skin matches body & head 1:1."""
+    fpath = os.path.join(pieces, 'mod_head_frog.glb')
+    if os.path.exists(fpath):
+        fj, fb = G.read_glb(open(fpath, 'rb').read())
+        mat = next((m for m in fj.get('materials', []) if m.get('name') == 'Mod.head_frog'), None)
+        if mat:
+            pbr = mat.get('pbrMetallicRoughness', {})
+            rough = float(pbr.get('roughnessFactor', 0.38))
+            tex, nrm = None, None
+            if 'baseColorTexture' in pbr:
+                im = fj['images'][fj['textures'][pbr['baseColorTexture']['index']]['source']]
+                bv = fj['bufferViews'][im['bufferView']]
+                tex = (bytes(fb[bv['byteOffset']:bv['byteOffset'] + bv['byteLength']]), im.get('mimeType', 'image/jpeg'))
+            if 'normalTexture' in mat:
+                im = fj['images'][fj['textures'][mat['normalTexture']['index']]['source']]
+                bv = fj['bufferViews'][im['bufferView']]
+                nrm = (bytes(fb[bv['byteOffset']:bv['byteOffset'] + bv['byteLength']]), im.get('mimeType', 'image/jpeg'))
+            if tex:
+                return tex, nrm, rough
+    import amphibian as AM
+    import mods as MD
+    import reptile as RP
+    body_obj = MD.Body(os.path.join(pieces, 'base.glb'))
+    sm_pair = RP.scale_map(MD.texture_mean(body_obj), library=AM.LIBRARY)
+    if sm_pair:
+        return sm_pair[0], sm_pair[1], 0.38
+    return None, None, 0.38
+
+
 def refresh_base_gshapes(pieces, kit):
     """Update base.gshapes.bin alone so Godot's skin region hider includes all digitigrade hide bitsets."""
     glb = os.path.join(pieces, 'base.glb')
@@ -960,13 +1179,14 @@ def build_species_legs(
     species, body_name, pieces, kit, J, W, byn, chains, skin_names, BP, BT, BN, BVID, BJ, BW,
     base_skin_names, leg_mask, b_tree, d_base, d_joints_all, girth_info, hide_tris, hide_parts, digi_spec,
 ):
-    """Sculpt, skin, pack GLB + KMR1 + GSH1, and register kit entry for 'coyote' or 'lizard'."""
+    """Sculpt, skin, pack GLB + KMR1 + GSH1, and register kit entry for 'coyote', 'lizard', or 'frog'."""
     is_lizard = species == 'lizard'
-    mid = 'mod_legs_lizard' if is_lizard else 'mod_legs_coyote'
-    sculpt_cls = LizardLegSculpt if is_lizard else LegSculpt
+    is_frog = species == 'frog'
+    mid = 'mod_legs_' + species
+    sculpt_cls = FrogLegSculpt if is_frog else (LizardLegSculpt if is_lizard else LegSculpt)
     smap = {nm: i for i, nm in enumerate(skin_names)}
-    uv_tile = 0.085 if is_lizard else 1.0
-    lz_tex, lz_nrm, lz_rough = lizard_scale_maps(pieces) if is_lizard else (None, None, 0.88)
+    uv_tile = 0.25 if is_frog else (0.085 if is_lizard else 1.0)
+    sp_tex, sp_nrm, sp_rough = frog_skin_maps(pieces) if is_frog else (lizard_scale_maps(pieces) if is_lizard else (None, None, 0.88))
 
     leg_Vs, leg_Ts, leg_Us, leg_U2s, leg_Cs, leg_Ns, leg_Js, leg_Ws, leg_vids = [], [], [], [], [], [], [], [], []
     cl_Vs, cl_Ts, cl_Us, cl_U2s, cl_Cs, cl_Ns, cl_Js, cl_Ws, cl_vids = [], [], [], [], [], [], [], [], []
@@ -993,10 +1213,10 @@ def build_species_legs(
         g_paw = lambda P, f=f_paw, e=1.5e-4: (lambda g: g / np.maximum(np.linalg.norm(g, axis=1, keepdims=True), 1e-12))(
             np.stack([f(P + np.array(o)) - f(P - np.array(o)) for o in ((e, 0, 0), (0, e, 0), (0, 0, e))], 1)
         )
-        paw_wx = 0.125 if is_lizard else 0.065
-        paw_z0 = 0.100 if is_lizard else 0.055
-        paw_z1 = 0.180 if is_lizard else 0.115
-        paw_cell = (0.0034 if is_lizard else PAW_CELL) * s
+        paw_wx = 0.130 if is_frog else (0.125 if is_lizard else 0.065)
+        paw_z0 = 0.075 if is_frog else (0.100 if is_lizard else 0.055)
+        paw_z1 = 0.190 if is_frog else (0.180 if is_lizard else 0.115)
+        paw_cell = (0.0028 if is_frog else (0.0034 if is_lizard else PAW_CELL)) * s
         parts_spec = [
             (f_leg, g_leg, np.array([min(xs) - 0.14 * s, y_ankle_lo - 0.015 * s, min(zs) - 0.08 * s]),
              np.array([max(xs) + 0.14 * s, sc.y_top + 0.02 * s, max(zs) + 0.12 * s]), LEG_CELL * s, 0.0),
@@ -1005,7 +1225,10 @@ def build_species_legs(
         ]
         for f_fn, g_fn, lo, hi, cell, u_off in parts_spec:
             V0, T0, N0, nb0 = HD.mesh_field(f_fn, g_fn, lo, hi, cell, smooth=2)
-            C0, dens0, ln0 = HD.soften(nb0, *sc.paint(V0, N0), times=2)
+            if is_frog:
+                C0, dens0, ln0 = sc.paint_frog(V0, N0, nb0)
+            else:
+                C0, dens0, ln0 = HD.soften(nb0, *sc.paint(V0, N0), times=2)
 
             _, near_bi = b_tree.query(V0)
             J0, W0 = skin_leg(V0, sc, skin_names, BP, BJ, BW, base_skin_names, near_bi)
@@ -1023,7 +1246,7 @@ def build_species_legs(
             V_s, T_s, U_s, N_s, C_s, dens_s, ln_s, J_s, W_s, vid_s = HD.box_uv(
                 V0, T0, N0, C0, dens0, ln0, J0, W0, vids0
             )
-            if is_lizard:
+            if is_lizard or is_frog:
                 U_s = U_s / uv_tile
             else:
                 U_s[:, 0] += 200.0 * (k_sd + 1) + u_off
@@ -1038,43 +1261,43 @@ def build_species_legs(
             leg_Ws.append(W_s)
             leg_vids.append(vid_s)
 
-        cV, cN, cC, cT = sc.claws_mesh()
-        _, c_near_bi = b_tree.query(cV)
-        cJ = np.zeros((len(cV), 4), dtype=np.uint16)
-        cW = np.zeros((len(cV), 4), dtype=np.float32)
-        cJ[:, 0] = smap[sd + 'DigiPaw']
-        cW[:, 0] = 1.0
-        cvids = np.arange(vid_offset, vid_offset + len(cV), dtype=np.int32)
-        vid_offset += len(cV)
+        if not is_frog:
+            cV, cN, cC, cT = sc.claws_mesh()
+            _, c_near_bi = b_tree.query(cV)
+            cJ = np.zeros((len(cV), 4), dtype=np.uint16)
+            cW = np.zeros((len(cV), 4), dtype=np.float32)
+            cJ[:, 0] = smap[sd + 'DigiPaw']
+            cW[:, 0] = 1.0
+            cvids = np.arange(vid_offset, vid_offset + len(cV), dtype=np.int32)
+            vid_offset += len(cV)
 
-        u_P_list.append(cV)
-        u_N_list.append(cN)
-        u_J_list.append(cJ)
-        u_W_list.append(cW)
-        u_bvid_list.append(BVID[c_near_bi])
-        u_ycut_list.append(np.full(len(cV), sc.y_cut))
-        u_s_list.append(np.full(len(cV), s))
+            u_P_list.append(cV)
+            u_N_list.append(cN)
+            u_J_list.append(cJ)
+            u_W_list.append(cW)
+            u_bvid_list.append(BVID[c_near_bi])
+            u_ycut_list.append(np.full(len(cV), sc.y_cut))
+            u_s_list.append(np.full(len(cV), s))
 
-        cv_base = sum(len(x) for x in cl_Vs)
-        cl_Vs.append(cV)
-        cl_Ts.append(cT + cv_base)
-        cl_Us.append(np.full((len(cV), 2), [0.5, 1e4]))
-        cl_U2s.append(np.zeros((len(cV), 2)))
-        cl_Cs.append(cC)
-        cl_Ns.append(cN)
-        cl_Js.append(cJ)
-        cl_Ws.append(cW)
-        cl_vids.append(cvids)
+            cv_base = sum(len(x) for x in cl_Vs)
+            cl_Vs.append(cV)
+            cl_Ts.append(cT + cv_base)
+            cl_Us.append(np.full((len(cV), 2), [0.5, 1e4]))
+            cl_U2s.append(np.zeros((len(cV), 2)))
+            cl_Cs.append(cC)
+            cl_Ns.append(cN)
+            cl_Js.append(cJ)
+            cl_Ws.append(cW)
+            cl_vids.append(cvids)
 
-    leg_mat = 'Mod.lizard_legs' if is_lizard else 'Mod.coyote_legs'
-    claw_mat = 'Mod.lizard_claws' if is_lizard else 'Mod.coyote_claws'
+    leg_mat = 'Mod.%s_legs' % species
     prims = [
         {
             'mesh_name': mid,
             'mat': leg_mat,
-            'rough': lz_rough,
-            'tex': lz_tex,
-            'nrm': lz_nrm,
+            'rough': sp_rough,
+            'tex': sp_tex,
+            'nrm': sp_nrm,
             'V': np.concatenate(leg_Vs),
             'N': np.concatenate(leg_Ns),
             'U': np.concatenate(leg_Us),
@@ -1085,9 +1308,11 @@ def build_species_legs(
             'T': np.concatenate(leg_Ts),
             'vid': np.concatenate(leg_vids),
         },
-        {
+    ]
+    if cl_Vs:
+        prims.append({
             'mesh_name': mid + '_claws',
-            'mat': claw_mat,
+            'mat': 'Mod.%s_claws' % species,
             'rough': 0.30 if is_lizard else 0.32,
             'V': np.concatenate(cl_Vs),
             'N': np.concatenate(cl_Ns),
@@ -1098,8 +1323,7 @@ def build_species_legs(
             'W': np.concatenate(cl_Ws),
             'T': np.concatenate(cl_Ts),
             'vid': np.concatenate(cl_vids),
-        },
-    ]
+        })
 
     glb_path = os.path.join(pieces, mid + '.glb')
     write_digi_glb(glb_path, skin_names, J, W, byn, prims)
@@ -1125,19 +1349,23 @@ def build_species_legs(
 
     entry = {
         'id': mid,
-        'name': 'Digitigrade legs (lizard)' if is_lizard else 'Digitigrade legs (coyote)',
+        'name': 'Digitigrade legs (%s)' % species,
         'slot': 'mods',
         'glb': 'pieces/%s/%s.glb' % (body_name, mid),
         'group': 'legs',
-        'kind': 'genetic' if is_lizard else 'therian',
+        'kind': 'genetic' if (is_lizard or is_frog) else 'therian',
         'hide': HD.bits(kit['base_tris'], hide_tris),
         'hides': int(len(hide_tris)),
         'hide_parts': hide_parts,
         'replaces_feet': True,
         'digitigrade': digi_spec,
     }
-    if is_lizard:
+    if is_lizard or is_frog:
         entry['test'] = True
+        if is_frog:
+            fg_head = next((it for it in kit['items'] if it['id'] == 'mod_head_frog'), None)
+            if fg_head and 'pattern' in fg_head:
+                entry['pattern'] = json.loads(json.dumps(fg_head['pattern']))
     else:
         entry['furred'] = True
         entry['fur'] = [[-1000.0, 1000.0, 'brush', 0, 0]]
@@ -1148,7 +1376,9 @@ def build_species_legs(
     else:
         kit['items'].append(entry)
 
-    if is_lizard:
+    if is_frog:
+        kit['tint']['roles']['Mod.frog_legs'] = 'pattern'
+    elif is_lizard:
         kit['tint']['roles']['Mod.lizard_legs'] = 'skin'
     else:
         kit['tint']['roles']['Mod.coyote_legs'] = 'coat'
@@ -1157,15 +1387,17 @@ def build_species_legs(
             if it['id'] == 'mod_tail_coyote':
                 it.pop('test', None)
 
+    cl_v = len(prims[1]['V']) if len(prims) > 1 else 0
+    cl_t = len(prims[1]['T']) if len(prims) > 1 else 0
     print(
         '%-12s %s: %d + %d verts, %d + %d tris, hides %d base tris, joints %d..%d, max delta %.3f m'
         % (
             body_name,
             mid,
             len(prims[0]['V']),
-            len(prims[1]['V']),
+            cl_v,
             len(prims[0]['T']),
-            len(prims[1]['T']),
+            cl_t,
             len(hide_tris),
             len(J) - 8,
             len(J) - 1,
@@ -1174,7 +1406,7 @@ def build_species_legs(
     )
 
 
-def run(body_name, lizard_only=False):
+def run(body_name, lizard_only=False, frog_only=False):
     pieces = os.path.join(ROOT, 'pieces', body_name)
     data = os.path.join(ROOT, 'data', body_name)
     kp = os.path.join(data, 'kit.json')
@@ -1256,7 +1488,12 @@ def run(body_name, lizard_only=False):
         'hock_y': round(float(chains['Left']['DigiHock'][1]), 4),
     }
 
-    want_species = ['lizard'] if lizard_only else (['coyote', 'lizard'] if body_name in ('mpfb_male', 'mpfb_female') else ['lizard'])
+    if frog_only:
+        want_species = ['frog']
+    elif lizard_only:
+        want_species = ['lizard']
+    else:
+        want_species = ['coyote', 'lizard', 'frog'] if body_name in ('mpfb_male', 'mpfb_female') else ['lizard', 'frog']
     for sp_kind in want_species:
         build_species_legs(
             sp_kind, body_name, pieces, kit, J, W, byn, chains, skin_names, BP, BT, BN, BVID, BJ, BW,
@@ -1273,6 +1510,7 @@ def run(body_name, lizard_only=False):
 
 if __name__ == '__main__':
     lizard_only = '--lizard-only' in sys.argv[1:]
+    frog_only = '--frog-only' in sys.argv[1:]
     bodies = [x for x in sys.argv[1:] if x.startswith('mpfb_')] or ['mpfb_male', 'mpfb_female', 'mpfb_giant']
     for bd in bodies:
-        run(bd, lizard_only=lizard_only)
+        run(bd, lizard_only=lizard_only, frog_only=frog_only)
