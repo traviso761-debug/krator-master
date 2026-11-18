@@ -242,28 +242,28 @@
    "name": "humid subtropical",
    "color": "#c8ff50",
    "pct": 9.66,
-   "km2": 1212400
+   "km2": 1212584
   },
   {
    "code": "ET",
    "name": "tundra",
    "color": "#b2b2b2",
    "pct": 9.56,
-   "km2": 1200044
+   "km2": 1200308
   },
   {
    "code": "WS",
    "name": "sea / lake",
    "color": "#3b6fb0",
    "pct": 9.51,
-   "km2": 1193960
+   "km2": 1192952
   },
   {
    "code": "EF",
    "name": "ice cap",
    "color": "#666666",
-   "pct": 6.16,
-   "km2": 773716
+   "pct": 6.17,
+   "km2": 773824
   },
   {
    "code": "HF",
@@ -277,42 +277,42 @@
    "name": "hot-summer Mediterranean",
    "color": "#ffff00",
    "pct": 5.6,
-   "km2": 702960
+   "km2": 702940
   },
   {
    "code": "BSk",
    "name": "cold steppe",
    "color": "#ffdc64",
    "pct": 3.54,
-   "km2": 444052
+   "km2": 444032
   },
   {
    "code": "Dsc",
    "name": "dry-summer subarctic",
    "color": "#963296",
    "pct": 3.36,
-   "km2": 422028
+   "km2": 421220
   },
   {
    "code": "Dfc",
    "name": "subarctic (boreal)",
    "color": "#007d7d",
    "pct": 3.25,
-   "km2": 407528
+   "km2": 407744
   },
   {
    "code": "BSh",
    "name": "hot steppe",
    "color": "#f5a500",
    "pct": 3.04,
-   "km2": 381652
+   "km2": 381868
   },
   {
    "code": "Dsb",
    "name": "dry-summer warm continental",
    "color": "#c800c8",
    "pct": 2.81,
-   "km2": 353136
+   "km2": 353216
   },
   {
    "code": "BWk",
@@ -326,7 +326,7 @@
    "name": "tropical monsoon",
    "color": "#0078ff",
    "pct": 2.3,
-   "km2": 288844
+   "km2": 288856
   },
   {
    "code": "Dfb",
@@ -347,21 +347,21 @@
    "name": "tropical savanna",
    "color": "#46aafa",
    "pct": 1.62,
-   "km2": 203536
+   "km2": 202952
   },
   {
    "code": "XA",
    "name": "hypertropic jungle (abyssal, >1.85 atm)",
    "color": "#3d0070",
-   "pct": 1.61,
-   "km2": 201824
+   "pct": 1.62,
+   "km2": 203656
   },
   {
    "code": "BWh",
    "name": "hot desert",
    "color": "#ff0000",
-   "pct": 1.56,
-   "km2": 195220
+   "pct": 1.55,
+   "km2": 194984
   },
   {
    "code": "Cfb",
@@ -375,7 +375,7 @@
    "name": "tropical rainforest",
    "color": "#0000ff",
    "pct": 0.86,
-   "km2": 107940
+   "km2": 107728
   },
   {
    "code": "Csb",
@@ -389,14 +389,14 @@
    "name": "abyssal savanna",
    "color": "#8a3ca8",
    "pct": 0.73,
-   "km2": 92176
+   "km2": 92232
   },
   {
    "code": "WH",
    "name": "highland lake",
    "color": "#5c9ea8",
    "pct": 0.47,
-   "km2": 58408
+   "km2": 58556
   },
   {
    "code": "WX",
@@ -417,14 +417,14 @@
    "name": "abyssal salt steppe",
    "color": "#b8542a",
    "pct": 0.28,
-   "km2": 34844
+   "km2": 34604
   },
   {
    "code": "Dsa",
    "name": "dry-summer hot continental",
    "color": "#ff00ff",
    "pct": 0.12,
-   "km2": 14756
+   "km2": 14768
   },
   {
    "code": "Dfa",

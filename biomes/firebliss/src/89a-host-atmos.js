@@ -14,7 +14,7 @@ const AIR=(function(){const q=new URLSearchParams(location.search),out={hfog:fal
  if(q.get('hfog')!=='0'&&ATMOS.heightFog){ATMOS.heightFog({falloff:1/420,sun:.3,sky:.3});ATMOS.heightFogScene(scene);out.hfog=true;}
  if(ATMOS.rainCover){try{out.raincover=!!ATMOS.rainCover({renderer});}catch(e){reportErr('rain cover: '+e.stack);}}
  if(q.get('snow')!=='0'&&ATMOS.snowCover){ATMOS.snowCover({line:SITE.snowLine,lee:.45,base:0});out.snow=true;
-  if(SITE.iceAt&&ATMOS.snowBare){try{ATMOS.snowBare(THERM.snowMask({box:[-TERR.R*1.1,-TERR.R*1.1,TERR.R*1.1,TERR.R*1.1],cell:8,t0:SOIL+6,soft:4}));out.bare=true;}catch(e){reportErr('snow bare: '+e.stack);}}}
+  if((SITE.iceAt||SITE.snowBare)&&ATMOS.snowBare){try{ATMOS.snowBare(THERM.snowMask({box:[-TERR.R*1.1,-TERR.R*1.1,TERR.R*1.1,TERR.R*1.1],cell:8,t0:SOIL+6,soft:4}));out.bare=true;}catch(e){reportErr('snow bare: '+e.stack);}}}
  return out;})();
 // THE WEATHER (core/atmos/host/89-atmos-e-weatherhost.js): it starts clear; the Weather selector in the panel picks the rest
 ATMOS.bindWeather({climate:{cold:!SITE.tarn},sun,hemi:scene.children.find(o=>o.isHemisphereLight),grounds:GROUND_MESHES.map(m=>m.material).filter((m,i,a)=>a.indexOf(m)===i)});

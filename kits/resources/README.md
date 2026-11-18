@@ -35,6 +35,8 @@ python3 ../../tools/textures/pack.py kits/resources       # (from the repo root)
 | potash | `potash` | mine | a salt pan's crust broken open: a pit through the white halite skin into pink-red potash beds, the slabs stacked, ochre salt polygons round it |
 | alkali | `alkali_salts` | mine | a soda pan: peach plates of soda crust curling round a cut brine pit, white trona nodules heaped by it |
 | oil | `crude_oil` | derrick | a seep: black pools with a sheen in a tar-crusted stain, tar humps, bubbles |
+| emerald | `emerald` | mine | Muzo's: dark green-black schist (`rock.schist.emerald`) crossed by white calcite veins holding six-sided green crystals (2026-11-16) |
+| turquoise | `turquoise` | mine | Nishapur's: pale bleached altered rock netted with blue-green veinlets (`rock.turquoise.vein`), nodules where they swell (2026-11-16) |
 
 **The mined goods of Gemini's trade model** (2026-11-16, the owner: "build nodes for mineable resources from the Gemini trade
 docs, that do not already have one"): ten more kinds, in `42s-res-ore-mined.js` (the kinds, [G data]) and three drawing
@@ -104,8 +106,8 @@ veins, seams, pools and grains are vertex colours until their sets arrive (`core
   blades) and **rock salt** (`node-halite-*`, item `salt`: a pit cut in the pan's white crust, the blocks stacked). Fourteen in all,
 then two from the geology's new rocks (2026-11-03, `REBAKE-PLAN.md` R3): **nickel** (`node-nickel-*`, item `nickel_ore`: a dark norite outcrop
 with brassy sulphide, at the crater's melt-sheet margin and on bare mantle) and **marble** (`node-marble-*`, item `marble`, a
-quarry on the library's `rock.marble012`, where a pluton or a volcano cooked the limestone). Sixteen kinds, 48 defs; with the mined goods (2026-11-16, above),
-twenty-six kinds and 78 defs (27 and 81 once the rift battery's zinc merges).
+quarry on the library's `rock.marble012`, where a pluton or a volcano cooked the limestone). Sixteen kinds, 48 defs; then the **gems** (2026-11-16, the owner: the Coyote Men's exports, `kits/coyote`): **emerald**
+(`node-emerald-*`) and **turquoise** (`node-turquoise-*`), added to the bake in place (`geology.py --gems`): eighteen kinds, 54 defs; with the mined goods (2026-11-16, above), twenty-nine kinds and 87 defs.
 - **The geology** (`tools/scale-model/geology.py` -> `data/geology.json`): a province per scale-model cell (sedimentary,
   crystalline, volcanic, evaporite, rift; ruin ground as a flag) and one prospectivity byte per family per cell.
 - **The node field** (`45r-res-field.js`, `KRES.nodesIn(tile)`): one candidate per family per placement cell, by KRAND, kept

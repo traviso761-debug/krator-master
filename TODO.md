@@ -46,6 +46,8 @@ terrain splat texture and the placement input; (3) the minimap drawn from export
 ## With the next scale-model edit *(the owner, 2026-11-09)*
 
 - ~~**Reroute the Ostrukh Riba south into Lake Ostrukh.**~~ **Done in scale model 5.1 edit 4** (`tools/scale-model/edit_514.py`, 2026-11-10, re-run on the merged model 2026-11-11): a travertine sill at 2,050 m closes the flagship maar's north breach, and the river runs 262 km south into Lake Ostrukh (1,850 m), 0.9 m³/s of the model's runoff. Reed, Nazar and Mungo's plans were corrected with 5.1 edit 3 (`biomes/loom-chasms`, `biomes/godshearth`).
+- **Reroute the Ostrukh Riba south into Lake Ostrukh.** The owner agreed that the Slabfields' springs and Lake Ostrukh share one aquifer, fed by the Stalker Range's snow (`biomes/slabfields/PLAN.md`). Today the river runs north from the flagship pool (2,040 m) into Region 99 and ends at 334 m, although its note says it feeds the lake (1,850 m). A southern course needs a carve about 70-80 m deep; its highest point is 2,082 m at 1588,1392. Retrace the river downhill and fix its note. The scale-model edits session (`claude/dreamy-davinci-30f3c1`, edit 5.1.1 at f1d1501cf, artifact version 92) has the details. Held for the next map edit, not done alone.
+- **Reed, Nazar and Mungo:** the biome plans' coordinates for them add the canvas shift twice (Reed really stands at 1277,676). Correct the plans when the next edit lands.
 
 ## With the native-crop rule *(the owner, 2026-11-12; `openworld/TRADE-SCOPE.md` section 2.5)*
 
@@ -86,6 +88,9 @@ runtime and bison table, and the `tools/` listing staleness (every build rebuilt
   that inlines core/tags is behind it (`tools/check_stale_baseline.json` records them). The rebuild clears them. With it: the Ring Sea
   (`kits/ringsea`, its REG already says `cls:'vessel'`), the Motor Vehicles kit and the Mechs register through core/tags as
   `vessel` and `vehicle` (the vehicles' own `class:'motor vehicle'` tag is a core/tags problem key: drop it for the class).
+- **Register the `coyote` culture** (the owner, 2026-11-16, `kits/coyote/PLAN.md` sections 7 and 12): `'coyote': 'Coyote Men'` in
+  `core/tags/52-core-tags-vocab.js` `CULTURE_NAMES` (and `test-tags.js`'s digest), with the catalog's `coyote` culture file in
+  `FURN_CULTURES` once the kit's C8 has written it. Until then `kits/coyote`'s `tags-vocabulary` assert fails (its `KNOWN_ISSUES.md`).
 - **KSTRATA recipe `obsidian`** (`scoria` has since landed) (2026-11-09, `biomes/twins/PLAN.md` section 0.1): the Twins' plan names them for its coulees and
   spatter cones; `core/terrain/35-core-strata.js` has `tibasalt` as the nearest. Adding a recipe changes every page that inlines the file, so
   it waits here; station 1 draws its faces as `tibasalt` and its obsidian as items and a ground class until then.
@@ -200,6 +205,47 @@ runtime and bison table, and the `tools/` listing staleness (every build rebuilt
   `core/tags/glazier/52g-tags-glazier.js`, which only the Tungang kit loads. Move `'glazier': 'Glaziers'` into `CULTURE_NAMES` in
   `core/tags/52-core-tags-vocab.js` (and `NO_CATALOG` until a Glazier catalog culture file exists), delete `core/tags/glazier/`,
   and drop it from `kits/tungang/build.py`. It moves every page that takes core/tags.
+- **`WATER.drawFlow`'s program cache key leaves out its colours** (2026-11-12, found by `biomes/arch`): `core/water/51-core-water-kinds.js`
+  bakes `o.shallow` and `o.deep` into the fragment shader text but builds `customProgramCacheKey` from the common chunk and the flags only, so
+  every flow on a page after the first draws the first one's colours (three.js reuses the program). Add the two colours (and `o.color`) to the
+  key. `biomes/arch/src/89w-host-water.js` works round it by extending the key itself; drop that once core has it. It moves every page that
+  draws a flow (147 build commands, `python3 tools/reach.py core/water/51-core-water-kinds.js`).
+
+- **Owed from the merge of `ccr-a96f22b6-0hy616` into main (2026-11-18)**, each checked against this line before the merge (a
+  worktree at a4ac64ebc builds the same findings), so none is the merge's own; the ratcheted lints' new keys baselined with this entry:
+  - `check_assembly`: `settlements/thalaba` (both pages) and `settlements/pher` miss `buildlib.CORE_BIOME_MIN`'s `31b-core-leafset.js`
+    and `34-core-impostor.js` (both opted into `minset`) and clash on `window._registered` with core/host; `settlements/qiblai` clashes
+    on `window._materials` (two material libraries); `kits/ancients --target theodiga-today` clashes on `_projectFire` and `onerror`.
+    `settlements/lightwall`'s committed page (its build fails: below) clashes on `KMAT`, `KratorFurniture`, `ROOM`, `_registered`,
+    `_texPending`, `furnishRoom` and `onerror`.
+  - `check_stale`: `settlements/azure-dream` ("external fragment 20-core-walk.js clashes with a fragment already in the order"),
+    `settlements/lightwall` (BUILD RULES FAILED: `kits/qiblai/src/89q5s-qb-shells.js` is generative with no builder and no reseed(N);
+    list it in DETERMINISTIC or give it a builder), `settlements/longsong` (KCHAR pieces: build where core/charactermodels is built).
+  - `check_vendor`: `kits/tungang` drift in `37-wk-rec.js`. `check_views`: `kits/ancients` "The Pilgrims' Stair" (no apostrophe).
+  - `check_source`: 41 keys (`|| number` defaults in kits/fauna, kits/mechs, kits/catalog's hykkousoi and scyvoi files, core/audio,
+    core/coast, core/region; RAWTEX in swhighlands', abyssal-savannah's, greatchasm's and scablands' station stages, core/atmos fx).
+  - Not ratcheted, failing on this line before the merge: the dependency graph (`--list-sources` fails for azure-dream, kirstabal,
+    lightwall, pher, qiblai, thalaba), `tools/tests/test_bridges.py`, `openworld/outposts/tests/test-outposts.js` (eight places moved
+    since the cut: Flooded Tower, Mav's Refuge, Mungo, Pinnacle Rock, Reed, Shade, Verge, Jimjam).
+- **`kits/fauna/krator-fauna-xeno.js` line 26: `o.stock || 1`** (2026-11-16, the merge of `claude/siphon-pits-biome`; `check_source` ORNUM,
+  baselined at the merge): write `o.stock == null ? 1 : o.stock`. The file reaches 30 build commands and 109 pages (`python3 tools/reach.py
+  kits/fauna/krator-fauna-xeno.js`), so it rides along; then drop its key from `tools/check_source_baseline.json`.
+- **Rebuild `settlements/longsong`** (2026-11-16): its page is behind `kits/crops` since the merge of the Siphon Pits and the painted
+  highlands, and it can only be rebuilt where `core/charactermodels/dist/pieces/` is built (KCHAR PIECES MISSING in a cloud checkout).
+- **core/atmos: a mist colour of its own** (2026-11-11, biomes/siphon-pits; the owner: it rides the next all-biomes rebuild). The height fog's
+  mist takes the fog colour (`core/atmos/sky/89-atmos-j-fog.js`: `cM = fc`, in the shader text and its CPU twin). Add a uniform `atmFogMistC`,
+  compiled only on a page that asks for it (as the belt is) and set from a `mist.colour` in `heightFog` (`core/atmos/host/89-atmos-j-heightfog.js`), so the Siphon Pits' deck reads amber from below without
+  the page tinting the fog colour each frame. Then drop siphon-pits' per-frame tint (`src/89b-host-steam.js`, `deckView`) and give its lid
+  the mist colour, which also cures the pale-cream lid seen from the rim (its `KNOWN_ISSUES.md`). The chunk's text is in every biome
+  page, so it moves every biome page.
+
+- **kits/fauna: the Köppen vocabulary lacks Cwb and Dsc** (2026-11-11, biomes/siphon-pits): `FAUNA_VOCAB.koppen` in `kits/fauna/fauna-core.js`.
+  Region 98's hexapods (`krator-fauna-xeno.js`) carry their nearest classes (Cfb, Dfb) meanwhile. Add the two, then give the Ghaunt-Ox Cwb and
+  the Flenser-Hound Dsc. It moves every page that bundles kits/fauna.
+- **core/water: the ice record has no `levelAt`** (2026-11-16, biomes/siphon-pits station 14): `WATER.fields` (`ext/60`, `levelAt`) reads
+  `S.levelAt(0)` from every surface but a flow or a still, and `WATER.ice` (`ext/54`) makes none, so a page with ice and water fields throws
+  unless it adds one (siphon-pits' `stations/polynya/89wp-host-polynya.js` does). Give ext/54's ice `S.levelAt=()=>S.level` (or let ext/60 read `S.level`), then
+  drop the page's line. It moves every page that lists ext/54 or ext/60.
 
 - **`KSHADOW.units` counts what the GPU links** (2026-11-09, found by the Throne's fix): `core/shadow/host/12-core-shadow-host.js` counts
   declared samplers (some are never read and the GPU drops them), misses `scene.environment` on standard materials, and judges against the

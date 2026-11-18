@@ -1,8 +1,12 @@
 // prefix: res
-// ================================================================= THE MINED GOODS' NODES (1): the metal, lodestone (zinc is the rift battery branch's: 42s)
+// ================================================================= THE MINED GOODS' NODES (1): the metals: lodestone (zinc is 44r-res-nodes.js's)
 // The kinds are 42s-res-ore-mined.js (Gemini's trade model, 2026-11-16); drawn as 44r-res-nodes.js draws, with its helpers
 // (resOutcrop, resLoose, resK, resC) and the same def body (resNodeDef). Vertex colours where the library has no set yet:
-// rock.magnetite is owed (core/materials/PROMPTS-NEEDED.md section 53).
+// rock.sphalerite and rock.magnetite are owed (core/materials/PROMPTS-NEEDED.md sections 51 and 60).
+//   zinc        (merged into main 2026-11-18: main's own zinc node, 44r-res-nodes.js, the galvanic biome's, is the one drawn;
+//               this file's take, below in words only, was dropped so the kit has one zinc) the dark outcrop banded with resinous brown-black sphalerite (blackjack), honey-yellow where it is thin,
+//               a streak of galena beside it (they come out together), a pale blue-white calamine crust on the tops where
+//               the ore has weathered (smithsonite, hemimorphite)
 //   lodestone   a crest of rounded black magnetite boulders, iron filings bristling in tufts where the field is strongest,
 //               a fulgurite of fused glass across the big one where the lightning struck (the Arch, biomes/arch/PLAN.md
 //               section 1: Earth's lodestones are lightning-struck magnetite); the Compass Hills' ore is the same stone

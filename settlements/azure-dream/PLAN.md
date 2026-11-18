@@ -23,7 +23,7 @@ This is a plan for the owner to approve. Nothing is built. The blueprint sheets 
 | 8. The fishermonks | **"Fish without qualm; night fishing is fine"** |
 | 9. The names | **"Not fixed anywhere. Village names are fine"**: the turnings' names here stand for the Order; West End, North Shore, East End |
 | 11. The dress | **"White with blue dress"** |
-| 12. Textures | **"Yes new textures"**: three prompts in `core/materials/PROMPTS-NEEDED.md` section 56; felt and reed matting are already in the library |
+| 12. Textures | **"Yes new textures"**: three prompts in `core/materials/PROMPTS-NEEDED.md` section 62; felt and reed matting are already in the library |
 | 13. The people | **"300 people in monastery and 600 in villages"**: the isle holds 900, not 600 (section 3) |
 | 14. Building it | **"Build the page next"**: the page's first pass is built (README.md) |
 | 15. The Station Watch's signal | **"You can move the relay lamp"**: the relay lamp stands by the Dream Road's first chorten, answering the Watch and seen from the Hall's lantern roof (section 4e) |
@@ -522,7 +522,7 @@ monastery and to the Dream Road.
 
 The Xanadu pack (`settlements/xanadu/materials.json`) and the Qiblai kit's (`kits/qiblai/tex`) cover the walls, roofs,
 gold, wood and tile. The owner wants new sets for the Hall (2026-11-16: "yes new textures"). **Three prompts** are in
-`core/materials/PROMPTS-NEEDED.md` section 56, all full colour. They land as families in `settlements/azure-dream/materials.json`:
+`core/materials/PROMPTS-NEEDED.md` section 62, all full colour. They land as families in `settlements/azure-dream/materials.json`:
 
 | id | Family | For |
 |---|---|---|

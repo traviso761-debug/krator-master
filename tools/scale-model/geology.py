@@ -8,6 +8,7 @@ the same (kits/resources/PLACEMENT-RESEARCH.md, features 1 and 3; kits/resources
            tools/scale-model/model/src/60-settlements.js kits/resources/data/geology.json)
     python3 tools/scale-model/geology.py --carbonate <geology.json> <regions> [--shift dx,dy]
     python3 tools/scale-model/geology.py --rocks <geology.json> <regions> --vents <page.html | model data> [--shift dx,dy]
+    python3 tools/scale-model/geology.py --zinc <geology.json>
     python3 tools/scale-model/geology.py --mined <geology.json> <regions> --model <page.html | model data> [--shift dx,dy]
            (the mined goods' ten layers, kits/resources 42s: lodestone, peat, silica, quartz, alabaster, bitumen, opal,
            diamond, jade, amber; in place, every other byte kept)
@@ -17,6 +18,8 @@ the same (kits/resources/PLACEMENT-RESEARCH.md, features 1 and 3; kits/resources
 <settlements dir>  the artifact's `settlements` collection, the same way
 <out.json>         kits/resources/data/geology.json
 --preview <dir>    also write province.png and one PNG per family there (for the eye; not shipped)
+--zinc             add the zinc family (sphalerite: zinc_byte below) to a bake made before it, in place, from the layers the
+                   file already holds (province, mask, copper, skarn), leaving every other byte as it was (biomes/galvanic, 2026-11-12)
 --carbonate        add the carbonate province and the limestone layer to a bake made before them, in place, leaving every
                    other byte as it was: <regions> is a collection as above or a region store (model/src/51-region-store.js,
                    its default regions); --shift moves the regions' px onto the bake's canvas (-272,-330 takes 5.1's onto 4.23's)
@@ -49,7 +52,9 @@ WORLD = 20261026            # the node field's world seed (KRAND.child(WORLD, 'r
 # of 2 x inset x cell with no neighbour reads). Rarer kinds take larger cells.
 FIELD = {'iron': 3000, 'copper': 4000, 'gold': 5000, 'tin': 4000, 'silver': 5000, 'rare-earth': 6000, 'coal': 3000,
          'sulfur': 2000, 'saltpeter': 4000, 'oil': 5000, 'gypsum': 2500, 'halite': 2500, 'potash': 2500, 'alkali': 2500,
-         'nickel': 5000, 'marble': 3000}   # nickel and marble: REBAKE-PLAN.md R3 (the owner, 2026-11-03)
+         'nickel': 5000, 'marble': 3000,   # nickel and marble: REBAKE-PLAN.md R3 (the owner, 2026-11-03)
+         'zinc': 4000,   # zinc (sphalerite): the owner, 2026-11-12 (biomes/galvanic/PLAN.md section 9)
+         'emerald': 8000, 'turquoise': 7000}   # the gems (the owner, 2026-11-16: the Coyote Men's exports, kits/coyote)
 # the mined goods of Gemini's trade model (kits/resources 42s-res-ore-mined.js, 2026-11-16): rarer, so larger cells; mined()
 MINED_FIELD = {'lodestone': 6000, 'peat': 3000, 'silica': 4000, 'quartz': 6000, 'alabaster': 4000, 'bitumen': 6000,
                'opal': 6000, 'diamond': 8000, 'jade': 8000, 'amber': 6000}
@@ -481,6 +486,107 @@ def model_vents(src, OW, shift):
     return [(v['px'][0] + shift[0], v['px'][1] + shift[1], v.get('radius', 3)) for v in D['vents']]
 
 
+def zinc_byte(prov, copper, skarn):
+    """Zinc (sphalerite), 0..255 (biomes/galvanic/PLAN.md section 9; the owner, 2026-11-12). The higher of two: the ground's own
+    (volcanic 150: the vent fields' massive sulfide; rift 120: the rift floors' metal brines and muds, the Atlantis II Deep's kind;
+    carbonate 90: Mississippi Valley-type lead-zinc in the platforms; + half the skarn byte), and 0.8 x the copper byte where that
+    is over 100 (copper-zinc-iron massive sulfide, Rio Tinto's kind: zinc follows copper). None on the evaporites. Pure numpy
+    on the province and two layers, so a full bake and --zinc on a saved one give the same bytes."""
+    PI = PROVINCES.index
+    p = prov & 127
+    base = 150.0 * (p == PI('volcanic')) + 120.0 * (p == PI('rift')) + 90.0 * (p == PI('carbonate')) + 0.5 * skarn.astype(float)
+    cu = copper.astype(float)
+    z = np.maximum(base, 0.8 * cu * (cu > 100))
+    return np.clip(np.round(z * (p != PI('evaporite'))), 0, 255).astype(np.uint8)
+
+
+def add_zinc(argv):
+    """--zinc: the zinc family added to a bake made before it, in place (the field's families and cells, the layer, its mean)"""
+    path = argv[2]
+    data = json.load(open(path, encoding='utf-8'))
+    if 'zinc' in data['families']:
+        sys.exit(path + ' already has the zinc layer')
+    g = data['grid']; VW, VH = g['w'], g['h']; n = VW * VH
+    L = lambda k: unrle(data['layers'][k], n).reshape(VH, VW)
+    prov_b, mask = L('province'), L('mask')
+    land = (mask & 1) == 0
+    z = zinc_byte(prov_b, L('copper'), L('skarn')) * land
+    z = z.astype(np.uint8)
+    # the family list's order is the full bake's: the node kinds (FIELD's order, zinc last), then the ledger's and the rocks'
+    fam = data['families']; at = fam.index(data['field']['families'][-1]) + 1
+    data['families'] = fam[:at] + ['zinc'] + fam[at:]
+    data['field']['families'] = data['field']['families'] + ['zinc']
+    data['field']['cells']['zinc'] = FIELD['zinc']
+    data['layers']['zinc'] = rle(z)
+    data['stats']['mean']['zinc'] = round(float(z[land].mean()), 2)
+    assert (unrle(data['layers']['zinc'], n) == z.ravel()).all()
+    with open(path, 'w', encoding='utf-8', newline='\n') as fh:
+        json.dump(data, fh, separators=(',', ':'), sort_keys=True)
+    print('added zinc to %s: mean %s on land; cells over 100: %d of %d' % (path, data['stats']['mean']['zinc'], int((z[land] > 100).sum()), int(land.sum())))
+
+
+def gems(prov, copper, saltpeter, stone, outl, cell_km):
+    """the gems (the owner, 2026-11-16: the Coyote Men's exports, biomes/outlands/PLAN.md sections 0 and 8, kits/coyote), from
+    the final provinces and layers, so the full bake and --gems (in place) give the same bytes:
+      turquoise  where copper ground weathers under a dry sky (Nishapur's, Sinai's): .9 x the copper byte x the aridity (the
+                 saltpeter byte less its evaporite part, as carbonate() reads it)
+      emerald    where a granite's pegmatites cut the gneiss and the walls' breccia (beryllium): 170 within 8 km of granite, at
+                 .45 of it unless a chromium source (bare mantle, the flood basalt) lies within 30 km (Kafubu, Itabira); and
+                 Muzo's kind, 130 in folded sedimentary ground (relief over 300 m) within 30 km of the evaporites' brines
+      both       raised to 170 in the Outlands' rugged ground (outl: the regions N and S Outlands), turquoise by the aridity there,
+                 whose gem hills the lore makes the Coyote Men's (emerald and turquoise their exports)
+    Ruggedness is read off the stone byte (60 + 195 x relief / 900 on hard ground). Zero on evaporite and water (the caller)."""
+    PI = PROVINCES.index
+    Gn, Gr, Im, Um, Ba, S = (prov == PI(k) for k in ('crystalline', 'granite', 'impact', 'ultramafic', 'basalt', 'sedimentary'))
+    arid = np.clip((saltpeter.astype(float) - 40.0 * (prov == PI('evaporite'))) / 200.0, 0, 1)
+    relief = np.clip((stone.astype(float) - 60.0) / 195.0, 0, 1) * 900.0
+    rugged = np.clip((relief - 200.0) / 600.0, 0, 1)
+    nearG = ndimage.binary_dilation(Gr, iterations=cells(8, cell_km))
+    nearCr = ndimage.binary_dilation(Um | Ba, iterations=cells(30, cell_km))
+    nearEv = ndimage.binary_dilation(prov == PI('evaporite'), iterations=cells(30, cell_km))
+    tq = np.maximum(0.9 * copper.astype(float) * arid, 170.0 * outl * rugged * (0.4 + 0.6 * arid))
+    em = np.maximum.reduce([170.0 * (Gn | Im) * nearG * (0.45 + 0.55 * nearCr), 130.0 * S * (relief > 300) * nearEv,
+                            170.0 * outl * rugged])
+    return {'emerald': em, 'turquoise': tq}
+
+
+def add_gems(argv):
+    """--gems: the emerald and turquoise layers (node kinds) added to a bake, in place, leaving every other byte as it was"""
+    path, src = argv[2], argv[3]
+    sh = [a.split('=', 1)[1] for a in argv if a.startswith('--shift=')] or [argv[k + 1] for k, a in enumerate(argv) if a == '--shift']
+    shift = tuple(float(v) for v in sh[0].split(',')) if sh else (0, 0)
+    data = json.load(open(path, encoding='utf-8'))
+    if 'emerald' in data['families']:
+        sys.exit(path + ' already has the gem layers')
+    g = data['grid']; VW, VH, OW = g['w'], g['h'], g['fullW']; su, sv = (VW - 1) / (OW - 1), (VH - 1) / (g['fullH'] - 1)
+    n = VW * VH
+    if src.endswith('.js'):
+        import re
+        regions = json.loads(re.search(r'const defRegs = (\[.*?\]);\n', open(src, encoding='utf-8').read(), re.S).group(1))
+    else:
+        regions = docs(src)
+    L = lambda k: unrle(data['layers'][k], n).reshape(VH, VW)
+    prov, mask = L('province') & 127, L('mask')
+    outl = np.zeros((VH, VW), bool)
+    for r in regions:
+        if r['name'].strip().lower() in ('n outlands', 's outlands') and len(r['points']) >= 3:
+            outl |= poly_mask(r['points'], VW, VH, su, sv, shift)
+    G = gems(prov, L('copper'), L('saltpeter'), L('stone'), outl, g['cell_km'])
+    land = (mask & 1) == 0
+    keep = land & (prov != PROVINCES.index('evaporite'))
+    for k in ('emerald', 'turquoise'):
+        a = np.clip(np.round(G[k] * keep), 0, 255).astype(np.uint8)
+        data['layers'][k] = rle(a)
+        data['stats']['mean'][k] = round(float(a[land].mean()), 2)
+        data['field']['cells'][k] = FIELD[k]
+    data['field']['families'] = data['field']['families'] + ['emerald', 'turquoise']
+    data['families'] = data['field']['families'] + [k for k in data['families'] if k not in data['field']['families']]
+    with open(path, 'w', encoding='utf-8', newline='\n') as fh:
+        json.dump(data, fh, separators=(',', ':'), sort_keys=True)
+    print('added the gems to %s: means %s, cells over 100: %s' % (path, {k: data['stats']['mean'][k] for k in ('emerald', 'turquoise')},
+          {k: int((unrle(data['layers'][k], n) > 100).sum()) for k in ('emerald', 'turquoise')}))
+
+
 def add_rocks(argv):
     """--rocks: the other rocks added to a bake that has the carbonate, in place, leaving every other byte as it was"""
     path, src = argv[2], argv[3]
@@ -650,6 +756,10 @@ def main(argv):
         return add_rocks(argv)
     if '--mined' in argv[1:2]:
         return add_mined(argv)
+    if '--zinc' in argv[1:2]:
+        return add_zinc(argv)
+    if '--gems' in argv[1:2]:
+        return add_gems(argv)
     if len(argv) < 5:
         sys.exit(__doc__)
     page, regs_dir, setts_dir, out = argv[1:5]
@@ -825,6 +935,7 @@ def main(argv):
     margin = S & ndimage.binary_dilation(Cl | V, iterations=cells(12, CELL_KM))
     sk = P['skarn'].astype(float)
     g = {}
+    hard_cu = ~(prov == PI('evaporite'))
     g['copper'] = 210 * V + 120 * Rf + 50 * Cl + 10 * (S | Qz) + 120 * Ba + 0.6 * sk
     g['silver'] = 150 * V + 110 * (Gn | Gr) + 80 * (Rf | Im)
     g['gold'] = 140 * V + 110 * (Gn | Gr) + 90 * (Rf | Im)
@@ -836,6 +947,8 @@ def main(argv):
     g['oil'] = 0.9 * ndimage.uniform_filter(coal, cells(44, CELL_KM)) * (0.5 + 0.5 * (margin | (S & (relief > 200) & (relief < 1200)))) + 110 * Rf * low
     g['nickel'] = np.maximum(P['nickel'].astype(float), 180.0 * Um)
     g['marble'] = P['marble'].astype(float)
+    # zinc follows copper and the sulfide grounds (zinc_byte): taken from the copper byte as the bake writes it (land, off the evaporites)
+    g['zinc'] = zinc_byte(prov, np.clip(np.round(g['copper'] * land * hard_cu), 0, 255).astype(np.uint8), P['skarn']).astype(float)
     hardp = Cl | V | Rf | Ba | Qz | Um
     g['stone'] = np.maximum.reduce([60 + 195 * np.clip(relief / 900, 0, 1) * (hardp | (S & (relief > 200))),
                                     150.0 * (Ba | Gr), 120.0 * (prov == PI('carbonate'))])   # columnar basalt, granite, ashlar
@@ -847,6 +960,9 @@ def main(argv):
         P[k] = a
     # ---- the mined goods of Gemini's trade model (2026-11-16): from the final provinces, layers and climate (mined())
     P.update(mined(prov, mask, P, regions, E, rain, temp, VW, VH, su, sv, CELL_KM))
+    G = gems(prov, P['copper'], P['saltpeter'], P['stone'], named({'n outlands', 's outlands'}), CELL_KM)
+    for k in G:
+        P[k] = np.clip(np.round(G[k] * land * (prov != PI('evaporite'))), 0, 255).astype(np.uint8)
     prov_b = prov | np.where(ruin & land, RUIN_BIT, 0).astype(np.uint8)
 
     # ---- the owner's authored deposits (LODES_FILE), stamped before the lode nodes so the placers carry them
@@ -963,3 +1079,4 @@ def main(argv):
 
 if __name__ == '__main__':
     main(sys.argv)
+

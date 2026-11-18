@@ -6,6 +6,8 @@ what the map holds and the kit does not draw. The page as built stays station 1.
 Korona's pattern (`stations/<name>/`, `python3 build.py --station <name>`).
 
 **Status (2026-11-09):** all four stations are built: 5 (the bog country, `--station bogs`, pair 7) and 2-4 (`--station montane`, `foothills`, `alpine`). "Core adoption (pair 7)" at the end says what station 1 took; each station's "as built" section what it is.
+**2026-11-16:** Gemini's showcase station 6, the Tiguantin cloud-terraces and the entombed First Monastery tube, is built (`--station tiguantin`;
+"Showcase Station #6, as built" at the end).
 
 ## The ground (surveyed 2026-10-23)
 
@@ -161,3 +163,48 @@ bristlecone role is the kit's own foxtail pine, not ebadlands' bristlecone read 
   - **Cataclysmic Burial Caprock:** Overrun and sealed by a `15–40 m` sheet of Lesser Throne **`outland-tuff`** welded ignimbrite (`fiamme` vitric lenses + baked brick-red paleosol at the terrace contact) and **`tibasalt`** tube-forming pahoehoe flows that roofed over `tube_lesser_06` without collapsing its `22 m` basalt-arch vault (`cav_monks_archive`).
 - **Camera Framing (`4.8 × 4.8 km` Inner-Rim shoulder cut):** Mid-slope camera at `+28 m` on a moss-draped `megabreccia` spur looking SSW across a stream-breached gully in the `outland-tuff` ignimbrite sheet: half-exhumed `Tiguantin` stone cloud-terraces (`carbonate-shelf` ashlar walls emerging beneath a baked red paleosol line), a `16 m` wide skylight collapse (`KCARVE` / `KCAVERN`) into the columnar `tibasalt` roof of `tube_lesser_06` with History Monk rope-winches and brass survey lanterns descending into the dry archive vault, cloud-veil conifers and tree-ferns (`NHL` + Throne elfin kin) dripping in the `1.17 atm` mist, and Lesser Throne's parasitic cone looming in the upper haze.
 - **Hydrology & Trade Tie-In:** Orographic fog-drip and perched contact springs emerging along the impermeable `tibasalt` / baked-paleosol horizon feed stepped terrace cisterns before plunging down-gully toward the eastern Ring Sea trough; **History Monks** from **Longsong** (`LORE.md §6.15`) mount covert salvage expeditions here to recover pre-Cataclysm *First Monastery* brass-leaf chronicles and vellum rolls sealed inside `cav_monks_archive`, trading safe-conduct tolls with Beast-Rider and Painted-Men border guides.
+
+## Showcase Station #6, as built (2026-11-16; GPU-verified 2026-11-17): `python3 tools/build.py biomes/nhighlands --station tiguantin` -> `dist/nhighlands-tiguantin.html`
+
+`stations/tiguantin/`, on station 2's land (`base: montane`): its SITE and the land's own forms (`44z`), its forest and floor (`62`), the ground's paint and layers
+(`83`), the Throne's cloud-belt trees read in place (`87`, station.json "kin"), the near patch, the tube and the ruins (`88t`), the fog belt (`89a`), the cisterns'
+water (`89w2`), its views and checks (`98`) and the eye's floor in the vault (`98z`, godstep's rille's hand-over). station.json adds core/ruins and core/terrain's
+KCAVERN and its draw (`39`, `39e`).
+- **The site**: scale model 5.1 px 1138,858 (tube_lesser_06's line and cav_monks_archive), the Lesser Throne's cloud-belt shoulder; **real heights** (the ramp from
+  2,293 m at the NW corner to 2,667 m at the SE, +5.5%: the plan's bench window), 1.17 atm, the sky at its place. The base's stage has no shaping hook: `44z` wraps the
+  base's `baseH` (a hoisted function declaration) before the stage runs, so the stream, the fields and `terrainH` all see the shaped land (KNOWN_ISSUES.md: a
+  `SITE.shape` hook in the base is owed).
+- **The land**: an old valley (34 m deep, 100 m wide) down the shoulder, its SW flank the **Tiguantin terraces** (four 3 m risers and a bench 8 m wide at the contact);
+  **the sheet** of the Lesser Throne's burial, 36 m over the ramp upslope of a lobate front across the map (pahoehoe hummocks on its top); **the gully**, the stream's
+  re-cut of the old valley through it (the fill gone within 78 m of its axis; walls ~57 m of tuff and basalt over the bench); **the spur**, the Inner Wall's megabreccia
+  standing above the sheet on the NE side (the camera's), two humps; a carbonate ledge far down the shoulder the stream falls over. Every form a plain function of `TIG`
+  (44z), the noise only away from the gully, so the contacts stay planes.
+- **The column** (KSTRATA, `TIG.STACK`): megabreccia, `carbonate-shelf`, a page recipe `tig-paleosol` (the baked brick-red soil, 1.5 m), a page recipe `tig-ignimbrite`
+  (`outland-tuff` with `welded` raised and black `fiamme` partings, 22 m), `tibasalt` to the top; its contacts dip with the shoulder (beds rise .055 per metre to the SE),
+  placed so the paleosol's base is the bench at the cliff's foot all along the showcase stretch: the terraces' walls stand below a baked red paleosol line.
+- **The near patch** (`88t`): the gully's showcase stretch (s -420..440, t -310..270: 11,254 of the ground's 6.7 m cells) drawn at 1.67 m, its rim on the coarse cells'
+  own edges (the coarse ground's index loses those cells; no crack); its gentle faces on the ground's own material, its steep faces (slope over 1.05, not the spur) the
+  column in full (KSTRATA's shader on their own material). Outside it the steep reads the same contacts as plain colours (`STATION_STEEP`).
+- **The tube** (core/terrain KCAVERN, cell 1.5 m): `tube_lesser_06` (15 x 10 m, ESE as the model's px line) as a chain of 30 m tubes, 450 m of it, its floor in the tuff's
+  top; the vault `cav_monks_archive` (C.hall rx 70, rz 45, h 22: the lore's 140 x 90 x 22 m, its axes on x and z, not the tube's 28 degrees); the **skylight** a 16 m
+  collapse through its roof (C.shaft and a C.opening well whose cells the patch leaves to the cavern: godstep's seam); the fallen roof a breakdown cone (four C.monolith
+  tiers). Drawn by `KCAVERN.drawRock` with this page's cave light (godstep's rille: the skylight's sky and the sun's patch through it, the lanterns, the eye's lamp
+  underground), the rock coloured by the same column.
+- **The terraces**: four drystone walls of carbonate-shelf ashlar on the risers (0.5 m courses in a running bond, each stone's colour a bed of the shelf from KSTRATA's CPU
+  twin), fallen low in stretches and gapped to the footing (a slow noise along each wall), the fallen stones on the tread below seated by their rotated extents; four
+  cisterns kerbed in the same stone on the bench and the first tread (WATER.still), fed by the contact springs (a field: wet moss and lady ferns at the cliff's foot).
+  **KRUINS.watch** on the terraces (ground: terrainH) and on the First Monastery's cells (ground: the vault's floor from the cavern's sdf).
+- **The vault's floor**: the First Monastery's cells (fallen to their footings and waist-high walls, a doorway each onto the aisle), the archive's stone racks with brass-leaf
+  chronicles and vellum rolls (standing); the History Monks' **three rope-winches** on the skylight's lip (shear legs footed in the ground, a back stay, a windlass, the
+  rope over the head down to the cone) and their **brass survey lanterns** on the ropes, by the racks and the cells (the twelve lowest light the rock).
+- **The forest** (`62`, the kit's own species): shadow hemlock and silver fir veiled in beard lichen on the sheet (the cloud-veil conifers), spire spruce at its cold edge,
+  moss and shag maple under them, a few veil banyans; gnarled oak and fog laurel on the spur and the lip; rowan on the treads; alder and willow in the gully. **The Throne's
+  cloud-belt trees read in place** (`87`): elfin trees under the conifers and on the spur, tree ferns in the gully, at the springs and on the treads, a few veil trees, all
+  within ~450 m of the showcase (11 m cells over the whole sheet made ~50,000 elfin trees and the renderer died of memory). Nothing on the skylight's lip, the camp or
+  the cliffs.
+- **The air** (`89a`): ATMOS.fogBelt, the Lesser Throne's stratus deck off the Ring Sea's cauldron (2,390-2,570 m, windward NW); the height fog's dawn mist in the gully.
+- **Checks** (`98`, each with its negative): the species placed; the gully's foot is the column's paleosol line (KSTRATA's CPU twin at nine sections); the terraces step
+  (three or more treads 3 m apart at nine sections); the vault entombed but for its skylight (KCAVERN skyLeaks, the shaft open to the cone); nothing on the lip or the
+  cliffs; the Throne's trees grow. core/ruins' own check runs in every verify.
+- **Not done here**: the monks' camp beyond the winches (tents, the Beast-Rider and Painted-Men guides), the contact springs as running water (a field and the cisterns
+  only), the parasitic cone in the haze (the shared sky's far ridges only), the tube's choked ends (rounded caps), the season. The look is the owner's to judge, on the GPU.

@@ -14,8 +14,8 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 2 |  |
-| `10-crop-core.js` | 10 | the Crops kit: the axes, the buckets, the biomes (1) |
-| `20-crop-records.js` | 25 | the Crops kit: the records (plain data, [G data] (1) |
+| `10-crop-core.js` | 11 | the Crops kit: the axes, the buckets, the biomes (1) |
+| `20-crop-records.js` | 26 | the Crops kit: the records (plain data, [G data] (1) |
 | `22-crop-material.js` | 20 | the Crops kit: materials (fibre) and utility (dy (1) |
 | `24-crop-vale-wild.js` | 3 | the Crops kit: the Vale's wild medicinal plants  (1) |
 | `40-crop-query.js` | 7 | the Crops kit: the queries (pure functions on th (1) |

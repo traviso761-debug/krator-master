@@ -1,0 +1,20 @@
+{
+ "note": "Station 4, the Great Tread (PLAN.md section 9: 5.1 px 1310,490, by the dry Chung-Gel; 4,637 m on the high steps' first tread, Dsc). kin: the eastern badlands' Utah juniper (the risers' feet and ledges) and bristlecone pine (the high ledges), read in place (PLAN.md section 4, 'Read in place': the great tread and the high steps). core: core/terrain's landforms (KRELIEF.stepcut: the dry gorge) and core/camp's culture rows, census and pitch (the herders' summer camp), and core/biome's walkers (the flocks: BIO.walker), this station's alone so the other pages do not move.",
+ "kin": {
+  "ebadlands": [
+   [
+    "src/50-biome-ebadlands-species.js",
+    "src/55-biome-ebadlands-trees.js"
+   ],
+   "EBADLANDS",
+   "*"
+  ]
+ },
+ "core": {
+  "38c-core-landforms.js": "core/terrain/38c-core-landforms.js",
+  "10-camp-cultures.js": "core/camp/10-camp-cultures.js",
+  "20-camp-census.js": "core/camp/20-camp-census.js",
+  "30-camp-pitch.js": "core/camp/30-camp-pitch.js",
+  "36-core-walker.js": "core/biome/36-core-walker.js"
+ }
+}

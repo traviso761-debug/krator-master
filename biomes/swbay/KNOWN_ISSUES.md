@@ -4,6 +4,26 @@ Read before changing anything here. `build.py` prints the open count.
 
 ## Open
 
+- [ ] **Showcase station 3, the skarn-marble cliffs, raised (`stations/skarn/`, 2026-11-16, re-sited 2026-11-17): the GPU verify is
+      owed** on the owner's machine (`verify.py dist/swbay-skarn.html --assert --all-views`). Only SwiftShader ran here (the list of what
+      passed is in `NOTES.md`, "Station 3"). Judge on the GPU: the marble's whites under ACES (near-white in software GL), the magnetite's
+      gloss, the old waterlines' dark notch bands, the quarry steps (2 m axis-aligned ground cells on a diagonal face draw a sawtooth of lit
+      tread tops: 9 m treads on a 4 m battered riser soften it but do not end it; a quarry-face mesh aligned to the face, or a finer inset
+      there, is owed), the spring's curtain into its plunge pool.
+- [ ] **Station 3: what is approximate.** (1) THE HEIGHTS: at the exact spot (px 734,998, 260 m up, ~13 km inland) the plan's absolute
+      heights cannot hold (the bench at -1,465 m, the crown at -1,260 m, the eye at -1,485 m belong to a shore); they are drawn as heights
+      over the lifted old shoreline (U, the model's height where the shoreline runs, 255-270 m here). (2) THE RELIEF: the raster's relief
+      is ~100 m within 4 km of the spot and its slope gentle there (0.7%, 4-5 degrees on the ramp to the sea), so the cliffs are ~95 m over
+      the platform, not the plan's 180 m; the fossil cliff and the raised benches are a sharpening of the 2 km cells (the headland stands
+      up to ~90 m over the raster's surface within ~1 km NNW of the spot). (3) THE UPLIFT is a story on today's ground (the owner,
+      2026-11-17), not a model edit: the raster has no terraces. (4) ALMUA'S BREAKWATERS are 230 km up the coast: not drawn. (5) The
+      marble's surface is the beds' colour times the kit's `rock` grain (rock.rock035): a library marble (`stone.marble.calacatta`) is owed
+      through `materials.json` and `tools/textures/pack.py`, left out so the bay's page and pack did not move.
+- [ ] **Station 3: for the scale-model queue (do not edit the model here).** To match the page at px 734,998: a flight of raised marine
+      terraces on the upland's north-east-facing ramp (old shorelines running NNW, az ~328), the highest old shoreline through ~733.8,997.9
+      at ~260 m (-1,240 m), a fossil marble headland ~90 m over it about 0.5 px NNW of the spot, a ~38 m riser to a lower terrace ~0.2 px
+      north-east of the spot. Re-run `biomes/godthrone/tools/region.py skarn 734 998 --n 41 --kit biomes/swbay` after the change.
+
 - [x] **The core attach audit: 16.6% of the foliage cards floated** (fixed 2026-11-08, the integration pass; `core/biome/README.md`, "What
       held means"). Every tree builder now runs with its own span log (`BIO.segs`: each `BIO.tube` span and `BIO.beam`, and the bole's top
       as a span for the leader's clumps, `treeTop`), and `clumpAt` brings each crown clump to the nearest span (`BIO.snapSeg`, `BIO.holdTo`):

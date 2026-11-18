@@ -1,6 +1,6 @@
 {
  "build": "resources",
- "note": "The Resources kit's adapter onto the material library (core/materials/PLAN.md): the ore nodes' rock is the same boulder set the Islanders kit draws its stone with, so a node reads the same in either kit. The ore faces (coal, tar, efflor, malachite, quartz, cassiterite, galena, gossan, pegmatite) are library sets in full colour, no tint; the vertex colour only varies them. The nuggets are vertex colours. The ground is the Scyvoi kit's withered grass, a neutral backdrop. The sulfur crusts are the library's ground.sulphur, in full colour. potash and soda (2026-10-26, the Catch's two salts): the library's ochre salt polygons and soda crust, full colour. marble (2026-11-03, the quarry node): the library grey marble rock.marble012, full colour. The mined goods of Gemini's trade model (2026-11-16, 44s-44u): peat the bog's cut peat hag and its sphagnum top; qsand the park sand tinted toward white for the quartz-sand pit; druze the geode's crystal lining in the rock-crystal pockets; alabaster the library alabaster for its quarry; tepui the Korona tepui quartzite for the diamond conglomerate. Lodestone (magnetite), opal matrix, jade and amber have no set yet: vertex colours, prompts in core/materials/PROMPTS-NEEDED.md section 53.",
+ "note": "The Resources kit's adapter onto the material library (core/materials/PLAN.md): the ore nodes' rock is the same boulder set the Islanders kit draws its stone with, so a node reads the same in either kit. The ore faces (coal, tar, efflor, malachite, quartz, cassiterite, galena, gossan, pegmatite) are library sets in full colour, no tint; the vertex colour only varies them. The nuggets are vertex colours. The ground is the Scyvoi kit's withered grass, a neutral backdrop. The sulfur crusts are the library's ground.sulphur, in full colour. potash and soda (2026-10-26, the Catch's two salts): the library's ochre salt polygons and soda crust, full colour. marble (2026-11-03, the quarry node): the library grey marble rock.marble012, full colour. The mined goods of Gemini's trade model (2026-11-16, 44s-44u): peat the bog's cut peat hag and its sphagnum top; qsand the park sand tinted toward white for the quartz-sand pit; druze the geode's crystal lining in the rock-crystal pockets; alabaster the library alabaster for its quarry; tepui the Korona tepui quartzite for the diamond conglomerate. Zinc (sphalerite), lodestone (magnetite), opal matrix, jade and amber have no set yet: vertex colours, prompts in core/materials/PROMPTS-NEEDED.md section 60.",
  "size": 512,
  "families": {
   "stone": {
@@ -240,6 +240,24 @@
    ],
    "roughLift": 0.1,
    "specular": 0.2
+  },
+  "schistem": {
+   "lib": "rock.schist.emerald",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "roughLift": 0.1,
+   "specular": 0.25
+  },
+  "turq": {
+   "lib": "rock.turquoise.vein",
+   "scale": [
+    0.8,
+    0.8
+   ],
+   "roughLift": 0.05,
+   "specular": 0.3
   }
  }
 }

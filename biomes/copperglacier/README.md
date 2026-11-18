@@ -9,9 +9,10 @@ the life and the core adoption.
 | `dist/copperglacier.html` | `python3 build.py` | station 1, Copper Tarn: a valley glacier from the east calving into the tarn; the icefall, crevasses, lateral moraines, an ice cave at each margin, the meltwater stream and its plume, frost coral and cushions on the moraines |
 | `dist/copperglacier-pass.html` | `python3 build.py --station pass` | station 2, the copper slope over the pass: a hanging glacier, its terminal moraine and pond, the skarn's malachite and gossan, the four copper nodes the resource data places, copper flowers on the copper ground |
 | `dist/copperglacier-icefield.html` | `python3 build.py --station icefield` | station 3, the high icefield at 6.5 km: plateau ice, nunataks of gneiss, the ice cliff at its edge, crevasses, ice caves in the wind's moats |
+| `dist/copperglacier-azurite.html` | `python3 build.py --station azurite` | station 11 (Gemini's 5.1 showcase, `PLAN.md` section 7), the azurite tarn: the Copper Tarn in its secondary crater's ejecta collar (KSTRATA `secondary-ejecta`), the glacier calving into it under walls of contact marble (`contact-marble`) seamed with malachite and azurite, the outlet's braids through the western breach over green-pebbled bars; an ideal type (the model's tarn is 30 km across) |
 
 ```
-python3 build.py [--station pass|icefield]
+python3 build.py [--station pass|icefield|azurite]
 python3 verify.py dist/copperglacier.html --assert --all-views
 ```
 
@@ -20,7 +21,9 @@ Verified 2026-11-03 on the GPU (both lanes, the harness's queue): all three page
 ## How it is put together
 
 - **One stage for every station.** `src/45-host-stage.js` makes the land from a station's numbers in `44z-host-site.js`. A station replaces
-  only that fragment (`stations/<name>/44z-host-site.js`), and its `station.json` names its site on the 5.1 map.
+  only that fragment (`stations/<name>/44z-host-site.js`), and its `station.json` names its site on the 5.1 map. A station may add its own
+  terms through optional hooks in its SITE (`land`, `tarn.at`, a stream's `path`, `fields`, `rootClear`, `strata`, `layersOff`, `q`, `views2`, `checks`, `exportBox`):
+  station 11 uses them all, stations 1-3 none; `"strata": true` in `station.json` adds KSTRATA to its build.
 - **The glacier is `core/terrain`'s `KGLACIER`.** The data half (`44g-core-glacier.js`) gives the ice, the trough, the moraines, the pond
   basin, and the seracs, bergs, crevasses and caves as records. The drawing half (`host/44h-core-glacier-draw.js`) draws them. It was lifted
   from the Throne's glacier station on 2026-11-03, which draws through it too.

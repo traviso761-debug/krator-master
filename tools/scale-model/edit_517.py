@@ -498,7 +498,9 @@ def main(dry=False):
                       'profile_m_by_cells_back': {str(k): round(float(En[ey + k - 1, ex])) for k in range(1, 9)},
                       'lake_cell_north': bool(lake[ey - 1, ex]), 'old_pin_800_1503': {'wet': bool(whas2[1503, 800])}}
 
-    # settlements: every pin but Erehwon's unchanged
+    # settlements: every pin but Erehwon's unchanged (and the pins set on this edit's new shore after its first run:
+    # Phēr, 5.1e13; checked dry instead. Added when the line re-ran on main's model, 2026-11-18)
+    PINS_ON_NEW_SHORE = ('spher0north1',)
     s_src = open(os.path.join(SRC, '60-settlements.js'), encoding='utf-8').read()
     i0 = s_src.index('const defSetts = ') + len('const defSetts = ')
     setts, _ = json.JSONDecoder().raw_decode(s_src[i0:])
@@ -507,8 +509,10 @@ def main(dry=False):
         if y0 <= st['py'] < y1 and x0 <= st['px'] < x1:
             pins[st['name']] = {'px': [st['px'], st['py']], 'before_m': round(float(Eo[st['py'], st['px']])),
                                 'after_m': round(float(En[st['py'], st['px']])), 'wet_after': bool(whas2[st['py'], st['px']])}
-            if st['id'] not in ('s57bkv9741', THALABA_ID):
+            if st['id'] not in ('s57bkv9741', THALABA_ID) + PINS_ON_NEW_SHORE:
                 assert abs(En[st['py'], st['px']] - Eo[st['py'], st['px']]) < 0.5 and not whas2[st['py'], st['px']], st['name']
+            elif st['id'] in PINS_ON_NEW_SHORE:   # placed on this edit's shore after it first ran: dry on it
+                assert not whas2[st['py'], st['px']], st['name']
     rep['pins'] = pins
     # Old Thalaba (825,1488) is new with this edit's shore: it must stand dry on it
     pins['Old Thalaba'] = {'px': list(THALABA_NEW), 'after_m': round(float(En[THALABA_NEW[1], THALABA_NEW[0]])),

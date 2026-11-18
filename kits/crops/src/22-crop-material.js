@@ -26,8 +26,8 @@ R('annatto', 'Sunseed annatto', 'dye', [4, 4], [3, 4], {form: 'shrub', card: 'ca
 R('indigo', 'Jungle indigo', 'dye', [4, 4], [2, 4], {form: 'shrub', card: 'card.crop.indigo', colour: 'blue', home: ['hyperjungle']});
 R('woad', 'Valley woad', 'dye', [1, 3], [1, 3], {atm: [0, 2], card: 'card.crop.woad', colour: 'blue', home: ['ebadlands', 'nhighlands'], note: 'also Clan woad: the northern clans'});
 R('broom', 'Heath broom', 'dye', [0, 2], [1, 3], {atm: [0, 2], form: 'shrub', card: 'card.broom', colour: 'yellow', home: ['nhighlands']});
-R('lichen', 'Rosette lichen', 'dye', [0, 3], [1, 3], {atm: [0, 2], colour: 'brown', home: ['shighlands', 'sedesert', 'nwouterwall', 'wouterwall'], src: 'shighlands', note: 'a lichen dye (the colour is not named in the kits)'});
-R('rabbitbrush', 'Rabbitbrush flowers', 'dye', [2, 4], [0, 1], {form: 'shrub', colour: 'yellow', home: ['ebadlands'], src: 'ebadlands'});
+R('lichen', 'Rosette lichen', 'dye', [0, 3], [1, 3], {atm: [0, 2], colour: 'brown', home: ['shighlands', 'sedesert', 'nwouterwall', 'wouterwall', 'siphon-pits', 'midbasin', 'loom-chasms'], src: 'shighlands', note: 'a lichen dye (the colour is not named in the kits)'});
+R('rabbitbrush', 'Rabbitbrush flowers', 'dye', [2, 4], [0, 1], {form: 'shrub', colour: 'yellow', home: ['ebadlands', 'paintedhighlands'], src: 'ebadlands'});
 R('ghost-gum', 'Ghost-gum leaf', 'dye', [2, 4], [0, 2], {form: 'tree', card: 'card.ghostwood', colour: 'gold', home: ['nwlowlands']});
 R('alder-bark', 'Grey alder bark', 'dye', [1, 2], [3, 3], {form: 'tree', colour: 'red', also: [], home: ['nhighlands'], src: 'nhighlands', note: 'red and black'});
 R('bloodwood', 'Bloodwood sap', 'dye', [4, 4], [2, 4], {form: 'tree', colour: 'red', home: ['hyperjungle'], homeOnly: true, src: 'hyperjungle', stores: ['dried'], note: 'the red of the Screamers\' painted dots (LORE.md 6.6); the north hyperjungle\'s bloodwood (biomes/hyperjungle 57), tapped, not planted: Screamer Country\'s one export no other polity has (the owner, 2026-11-12; openworld/TRADE-GOODS.md)'});
@@ -48,6 +48,10 @@ R('falu-red', 'Falu red', 'dye', [0, 3], [1, 3], {atm: [0, 2], homeOnly: true, n
 R('verdigris', 'Verdigris and malachite', 'dye', [0, 5], [0, 4], {homeOnly: true, node: 'copper', colour: 'teal', home: ['eastabyss', 'swlowlands'], note: 'green; azurite blue'});
 R('sulfur-yellow', 'Sulfur yellow', 'dye', [0, 5], [0, 4], {homeOnly: true, node: 'sulfur', colour: 'yellow', home: ['geyser', 'ebadlands', 'throne']});
 R('tar-black', 'Tar black', 'dye', [0, 5], [0, 4], {homeOnly: true, node: 'oil', colour: 'black', home: ['ringisles']});
+/* the Painted Men's paint (biomes/paintedhighlands/PLAN.md sections 4 and 9, defaults taken 2026-11-11): black from the badland stack's own lignite
+   partings (a coal node), teal from the teal bed dug as a clay (celadonite: no node, pigment only); the red is the iron node's (falu-red, hill-terracotta) */
+R('lignite-black', 'Lignite black', 'dye', [0, 5], [0, 4], {homeOnly: true, node: 'coal', colour: 'black', home: ['paintedhighlands'], note: 'the badland beds\' lignite partings ground to a black paint: the Painted Men\'s black'});
+R('celadonite-teal', 'Celadonite teal', 'dye', [0, 5], [0, 4], {homeOnly: true, colour: 'teal', home: ['paintedhighlands'], note: 'a green-blue clay dug from the teal bed of the badland stack, pigment only: the Painted Men\'s teal'});
 R('flametip-tanbark', 'Flametip tanbark', 'dye', [4, 4], [2, 3], {form: 'tree', colour: 'brown', home: ['necanyons'], src: 'necanyons', note: 'the benches\' scrub tree: tans hides, dyes brown'});
 R('laterite-ochre', 'Laterite ochre', 'dye', [3, 5], [0, 3], {homeOnly: true, node: 'iron', colour: 'ochre', home: ['abyssal-savannah'], note: 'the red-yellow earth of the abyss rim, washed and burnt to a red; the abyssal people paint with it on umbrella gum'});
 R('slickrock-orchil', 'Slickrock orchil', 'dye', [4, 5], [0, 2], {homeOnly: true, colour: 'purple', home: ['necanyons'], note: 'the caps\' orange crust lichens, steeped in stale urine: a red-purple, as orchil is'});
@@ -83,6 +87,9 @@ R('chalice-grass', 'Chalice-rim grass', 'sheet', [1, 2], [3, 4], {homeOnly: true
 R('maple-syrup', 'Paper-maple syrup', 'sweetener', [1, 2], [3, 4], {form: 'tree', src: 'oidong', home: ['oidong'], stores: ['pressed']});
 R('peyote', 'Peyote buttons', 'reagent', [1, 2], [1, 2], {atm: [0, 2], src: 'oidong', home: ['oidong'], stores: ['dried'], hazard: 'the seeing: a day of visions', note: 'dried buttons from the gravel flats; the monks\' seeing reagent'});
 R('sky-poppy', 'Sky poppy', 'reagent', [0, 2], [2, 3], {also: ['dye', 'herb'], atm: [0, 2], colour: 'blue', src: 'oidong', home: ['oidong'], stores: ['dried'], hazard: 'the seed: sleep', note: 'the seed a sleeping draught and a reagent of the stillness rites; the leaves the vat of the Order\'s blue'});
+/* the hinge's own herb (with the maar yam, 20-crop-records.js): Region 98, the Mid Basin, the Loom-Chasms; homeOnly, traded beyond */
+R('fumewort', 'Fumewort', 'herb', [2, 3], [0, 2], {also: ['medicine', 'spice'], homeOnly: true, atm: [1, 2], src: 'siphon-pits', home: ['siphon-pits', 'midbasin', 'loom-chasms'],
+  stores: ['dried'], note: 'a low grey aromatic of the warm crust at the vents\' edges and the loess banks, smelling of lemon and struck flint; steeped against the altitude\'s headache, rubbed on meat'});
 R('snow-lotus', 'Snow lotus', 'herb', [0, 1], [2, 3], {atm: [0, 1], reach: 0, src: 'oidong', home: ['oidong'], stores: ['dried'], note: 'the valley\'s strongest medicine, for the heart and the breath; the whole plant dried'});
 R('valley-ginseng', 'Valley ginseng', 'herb', [1, 2], [3, 4], {also: ['reagent'], src: 'oidong', home: ['oidong'], stores: ['dried'], note: 'a tonic root dug after seven years'});
 R('monks-sage', 'Monk\'s sage', 'herb', [1, 2], [1, 2], {atm: [0, 2], also: ['fuel'], card: 'card.sage', src: 'oidong', home: ['oidong'], stores: ['dried'], note: 'a silver wormwood: incense and a bitter for the stomach'});
@@ -114,4 +121,4 @@ R('wallhemp', 'Wallhemp', 'cordage', [1, 2], [1, 3], {also: ['spinning', 'oil'],
 
 /* ---- the Cut (biomes/cut, PLAN.md section 7, 2026-10-26) */
 R('rankgrass', 'Rankgrass', 'thatch', [4, 5], [0, 1], {needs: 'salt', form: 'grass', card: 'card.rankgrass', src: 'cut', home: ['cut'], note: 'a salt grass seeding in straight lines along the field of the warp; grazing on the flats, salt-tolerant thatch'});
-R('circlelichen', 'Circle lichen', 'herb', [1, 2], [0, 4], {also: ['medicine', 'dye'], colour: 'orange', atm: [0, 2], form: 'lichen', src: 'cut', home: ['cut'], stores: ['dried'], note: 'perfect circles on the bare cut faces; scraped and steeped as an antiseptic wash (as Usnea); boiled, the orange circles dye wool yellow to orange (as Xanthoria)'});
+R('circlelichen', 'Circle lichen', 'herb', [1, 2], [0, 4], {also: ['medicine', 'dye'], colour: 'orange', atm: [0, 2], form: 'lichen', src: 'cut', home: ['cut', 'siphon-pits'], stores: ['dried'], note: 'perfect circles on the bare cut faces; scraped and steeped as an antiseptic wash (as Usnea); boiled, the orange circles dye wool yellow to orange (as Xanthoria)'});

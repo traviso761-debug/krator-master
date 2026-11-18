@@ -57,8 +57,8 @@ def joint_delta_fn(kit, J):
 def strip(kit, skel):
     """what an earlier run added: the tail joints, their morph rows, the two items and their roles"""
     J = skel['joints']
-    keep = [i for i, j in enumerate(J) if not j['name'].startswith('Tail')]
-    assert keep == list(range(len(keep))), 'the tail joints are not last'
+    keep = [i for i, j in enumerate(J) if not j['name'].startswith('Tail') and 'Digi' not in j['name']]
+    assert keep == list(range(len(keep))), 'the tail/digi joints are not last'
     gone = set(range(len(keep), len(J)))
     skel['joints'] = J[:len(keep)]
     mj = kit['morph']['morph_joints']
