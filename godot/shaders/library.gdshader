@@ -44,6 +44,7 @@ uniform bool has_albedo = true;
 uniform bool flip_v = false;
 uniform vec3 emission = vec3(0.0);
 uniform bool unlit = false;
+uniform float alpha_test : hint_range(0.0, 1.0) = 0.0;
 // hook 'triplanar' (lib/triplanar.gdshaderinc: the Iziz court finishes): the map projected from three sides in the mesh's own
 // frame, tri_per_m tiles per metre, times tri_gain (a detail set's 1 / mean^2.2; 1 where the set is the surface)
 uniform bool triplanar = false;
@@ -99,5 +100,14 @@ void fragment() {
 		float det = max(dot(T, T), dot(B, B));
 		float sc = det == 0.0 ? 0.0 : sign(dot(cross(q0, q1), N)) * inversesqrt(det);
 		NORMAL = normalize(T * (n.x * sc) - B * (n.y * sc) + N * n.z);
+	}
+	if (alpha_test > 0.0 && has_albedo) {
+		ALPHA = a.a;
+		ALPHA_SCISSOR_THRESHOLD = alpha_test;
+		ALPHA_ANTIALIASING_EDGE = 0.2;
+		ALPHA_TEXTURE_COORDINATE = uv * vec2(textureSize(albedo_tex, 0));
+	} else {
+		ALPHA = 1.0;
+		ALPHA_SCISSOR_THRESHOLD = 0.0;
 	}
 }

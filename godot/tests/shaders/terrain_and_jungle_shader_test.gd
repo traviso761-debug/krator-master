@@ -217,6 +217,54 @@ func _initialize() -> void:
 	ok(not (ao_inner >= ao_outer),
 		"negative: crown interior is never brighter in AO than outer crown tips")
 
+	# 6. library.gdshader alpha_test cutout & world_import.gd non-instanced Bucket sway guards
+	var lib_code := FileAccess.get_file_as_string("res://shaders/library.gdshader")
+	var rep_std := {}
+	var sm_cut := KratorWorld._standard(
+		{"id": "world:leafcard", "kind": "standard", "colour": "#447733", "alphaTest": 0.42},
+		{}, {}, true, rep_std) as ShaderMaterial
+	var sm_opq := KratorWorld._standard(
+		{"id": "world:wall", "kind": "standard", "colour": "#888888", "alphaTest": null},
+		{}, {}, false, rep_std) as ShaderMaterial
+	ok(sm_cut != null and sm_cut.shader == KratorKmat.LIB and is_equal_approx(float(sm_cut.get_shader_parameter("alpha_test")), 0.42)
+		and lib_code.find("ALPHA_SCISSOR_THRESHOLD") >= 0,
+		"KratorWorld._standard wires alphaTest=0.42 onto library.gdshader ALPHA_SCISSOR_THRESHOLD while keeping KratorKmat.LIB")
+	ok(sm_opq != null and sm_opq.shader == KratorKmat.LIB and is_equal_approx(float(sm_opq.get_shader_parameter("alpha_test")), 0.0),
+		"negative: opaque/null alphaTest records keep alpha_test=0.0 so city walls never discard fragments")
+
+	var mats_dict := {
+		"m_leaf": {
+			"id": "m_leaf", "kind": "leaf", "colour": "#ffffff", "map": null, "alphaTest": 0.42,
+			"options": {"swayA": 0.08, "aN": false, "irid": false},
+			"sway": {"c": 0.0, "w": [0.0, 1.0, 0.0], "a": 0.08, "axis": 0}
+		},
+		"m_hang": {
+			"id": "m_hang", "kind": "hang", "colour": "#557744", "map": null, "alphaTest": 0.0,
+			"options": {"swayA": 0.09},
+			"sway": {"c": 0.0, "w": [0.0, -1.0, 0.0], "a": 0.09, "axis": 0}
+		},
+		"m_bark": {
+			"id": "m_bark", "kind": "bark", "colour": "#665544", "map": null, "alphaTest": 0.0, "options": {}
+		}
+	}
+	var mcache := {}
+	var mids := {"materials_resolved": 0, "materials_missing": 0}
+	var mrep := {"gaps": {}}
+	var fol_inst := KratorWorld._mat("m_leaf", mats_dict, {}, {}, mcache, mids, mrep, true) as ShaderMaterial
+	var fol_buck := KratorWorld._mat("m_leaf", mats_dict, {}, {}, mcache, mids, mrep, false) as ShaderMaterial
+	var hang_inst := KratorWorld._mat("m_hang", mats_dict, {}, {}, mcache, mids, mrep, true) as ShaderMaterial
+	var hang_buck := KratorWorld._mat("m_hang", mats_dict, {}, {}, mcache, mids, mrep, false) as ShaderMaterial
+	var bark_buck := KratorWorld._mat("m_bark", mats_dict, {}, {}, mcache, mids, mrep, false) as ShaderMaterial
+	ok(fol_buck != null and fol_buck.shader == KratorBiome.FOLIAGE
+		and (fol_buck.get_shader_parameter("sway_w") as Vector3).length() < 1e-5
+		and is_equal_approx(float(fol_buck.get_shader_parameter("sway_c")), 0.55)
+		and hang_buck != null and is_equal_approx(float(hang_buck.get_shader_parameter("hang_a")), 0.0)
+		and bark_buck != null and bark_buck.shader == KratorBiome.BARK,
+		"non-instanced Buckets clamp foliage sway_w=(0,0,0) and hang_a=0.0 (avoiding world-Y sway amplification) and handle plain bark safely")
+	ok(fol_inst != null and (fol_inst.get_shader_parameter("sway_w") as Vector3).y > 0.9
+		and hang_inst != null and float(hang_inst.get_shader_parameter("hang_a")) > 0.05,
+		"negative: instanced tree crowns & hanging moss preserve height-proportional sway_w.y=1.0 and hang_a>0")
+
 	mi.free()
 	mi_b.free()
 	mi_exp.free()

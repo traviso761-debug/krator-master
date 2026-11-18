@@ -80,6 +80,86 @@ function origin_(ctx){const o=WORLD_EXPORT.origin;let O=null;
    its uid KTAGS.uid('flora', key, that position), as the biome kits' plants have theirs (core/biome 20). A plant's parts
    (trunk, crown) share its uid. A set stays registered once made (its count follows the pool) */
 let FREG=null;const FSETS=new Map();
+const BIO_SWAY={'1.0':[1,[0,0,0]],'1':[1,[0,0,0]],'0.0':[0,[0,0,0]],'0':[0,[0,0,0]],'(-position.y)':[0,[0,-1,0]],'(position.y)':[0,[0,1,0]],
+ '(position.x)':[0,[1,0,0]],'(-position.x)':[0,[-1,0,0]],'(position.z)':[0,[0,0,1]],'(-position.z)':[0,[0,-1,0]]};
+function plainBio(v,d){const dp=d==null?0:d;if(v==null||dp>4)return null;const t=typeof v;
+ if(t==='number'||t==='string'||t==='boolean')return v;if(t==='function')return undefined;
+ if(v.isColor)return'#'+v.getHexString();if(Array.isArray(v))return v.map(x=>plainBio(x,dp+1));
+ if(t==='object'&&Object.getPrototypeOf(v)===Object.prototype){const o={};for(const k in v){const x=plainBio(v[k],dp+1);if(x!==undefined)o[k]=x;}return o;}
+ return undefined;}
+function swayBio(o){if(!o||!('swayW' in o||'swayA' in o))return null;const e=String(o.swayW==null?'1.0':o.swayW).replace(/\s/g,''),k=BIO_SWAY[e],a=o.swayA==null?.06:+o.swayA,ax=o.axis==null?0:o.axis|0;
+ return k?{c:k[0],w:k[1],a,axis:ax}:{text:e,a,axis:ax};}
+/* Ensure multi-view or wide-box places keep full 3D flora across the entire box and promote ShaderMaterial impostors to real mid meshes */
+function prepareFloraBox(box){if(!box||typeof FLORA==='undefined'||!FLORA||!FLORA.pools||typeof NURSERY==='undefined'||!NURSERY)return;
+ const anchors=Array.isArray(WORLD_EXPORT.floraAnchors)&&WORLD_EXPORT.floraAnchors.length?WORLD_EXPORT.floraAnchors:null;
+ let hasImp=false;for(const p of FLORA.pools.values())if(p.n>0&&p.proto&&p.proto.impostor){hasImp=true;break;}
+ if(!anchors&&!hasImp)return;
+ const cx=(box[0]+box[2])/2,cz=(box[1]+box[3])/2;FLORA.residency({x:cx,z:cz},8000);
+ const A=anchors||[[HOST.camera.position.x,HOST.camera.position.z]];
+ const ox=Math.round(cx/1024)*1024,oz=Math.round(cz/1024)*1024,ORG=new THREE.Vector3(ox,0,oz);
+ const _m=new THREE.Matrix4(),_q=new THREE.Quaternion(),_p=new THREE.Vector3(),_s=new THREE.Vector3(),_Y=new THREE.Vector3(0,1,0);
+ const getPool=(key,proto)=>{let p=FLORA.pools.get(key);if(!p){p={key,proto,n:0,cap:0,arr:null,attr:null,meshes:[]};FLORA.pools.set(key,p);}return p;};
+ const ensureCap=(p,need)=>{if(need<=p.cap)return;let cap=Math.max(16,p.cap);while(cap<need)cap*=2;
+  for(const m of p.meshes){HOST.scene.remove(m);if(m.dispose)m.dispose();}p.meshes=[];
+  const old=p.arr;p.arr=new Float32Array(cap*16);if(old)p.arr.set(old);
+  p.attr=new THREE.InstancedBufferAttribute(p.arr,16);p.cap=cap;
+  const white=new THREE.InstancedBufferAttribute(new Float32Array(cap*3).fill(1),3);
+  for(const part of p.proto.parts){const m=new THREE.InstancedMesh(part.geo,part.mat,cap);
+   m.instanceMatrix=p.attr;m.instanceColor=white;m.frustumCulled=false;m.count=0;m.userData.flora=p.key;m.userData.inspectLabel='flora';HOST.scene.add(m);p.meshes.push(m);}};
+ for(const p of FLORA.pools.values())p.n=0;
+ const lim=(a,ht)=>Math.min(a[2],Math.max(a[1],a[0]*ht));
+ for(const t of FLORA.tiles.values())for(const r of t.recs){
+  if(r.x<box[0]-32||r.x>box[2]+32||r.z<box[1]-32||r.z>box[3]+32)continue;
+  let d=1e9;for(const a of A){const dd=Math.hypot(r.x-a[0],r.z-a[1]);if(dd<d)d=dd;}
+  const L=FLORA.KITS[r.k].lod;let lv=-1;
+  if(r.sap)lv=d<L.sapling[1]||anchors?2:-1;
+  else if(d<lim(L.hero,r.Ht))lv=2;
+  else if(d<lim(L.mid,r.Ht)||anchors)lv=1;
+  else if(r.far&&d<lim(L.far,r.Ht))lv=0;
+  if(lv<0)continue;
+  let key=r.k+'|'+r.sp+'|'+r.v+'|'+(r.sap?'s':lv);
+  let proto=NURSERY.protos.get(key)||NURSERY.get(key,{kit:FLORA.KITS[r.k].name,sp:r.sp,v:r.v,lv:r.sap?2:lv,sapling:r.sap},d);
+  if((!proto||proto.impostor)&&!r.sap){for(const alt of [1,2,0]){const k2=r.k+'|'+r.sp+'|'+r.v+'|'+alt,p2=NURSERY.protos.get(k2);if(p2&&!p2.impostor&&!p2.none&&p2.parts&&p2.parts.length){key=k2;proto=p2;break;}}}
+  if(!proto||proto.impostor||proto.none||!proto.parts||!proto.parts.length)continue;
+  const p=getPool(key,proto);ensureCap(p,p.n+1);
+  const sc=r.Ht/(proto.H==null?r.Ht:proto.H);_q.setFromAxisAngle(_Y,r.rot);_p.set(r.x-ORG.x,r.y,r.z-ORG.z);_s.set(sc,sc,sc);_m.compose(_p,_q,_s);
+  _m.toArray(p.arr,p.n*16);p.n++;}
+ if(NURSERY.queued&&NURSERY.queued()>0&&NURSERY.update)NURSERY.update(5000);
+ for(const p of FLORA.pools.values()){for(const m of p.meshes){m.count=p.n;m.visible=p.n>0;m.position.copy(ORG);m.updateMatrix();m.updateMatrixWorld(true);}
+  if(p.attr)p.attr.needsUpdate=true;}}
+function attrF32(a,n){if(!a)return null;if(a.isInterleavedBufferAttribute||!(a.array instanceof Float32Array)){
+  const f=new Float32Array(a.count*n);for(let i=0;i<a.count;i++)for(let k=0;k<n;k++)f[i*n+k]=a.getComponent?a.getComponent(i,k):a.array[i*a.itemSize+k];return f;}
+ return a.array.slice(0,a.count*n);}
+/* Enrich exported scene items & materials with prototype vertex colours, clump normals, M5 biome kinds, and slope-seated roots */
+function enrichScene(res,instForItem,matObjById){
+ const matById=new Map();
+ for(const r of (res.materials||[])){matById.set(r.id,r);const m=matObjById.get(r.id);if(!m)continue;
+  const ud=m.userData||{},b=ud.bio||(ud.kind&&ud.kind!=='plain'&&ud.kind!=='impostor'?{kind:ud.kind,key:null,opts:ud.opts||null}:null);
+  if(!b||!b.kind||b.kind==='plain')continue;
+  r.kind=b.kind;const o=b.opts||{};
+  if(b.kind==='leaf'){if(!(r.alphaTest>0))r.alphaTest=.42;const swA=o.swayA==null?.06:+o.swayA,merged=!ud.bio;
+   r.options={swayA:swA,axis:o.axis==null?0:o.axis|0,aN:false,irid:false};if(o.season)r.options.season=plainBio(o.season);
+   r.sway=merged?{c:0,w:[0,.05,0],a:swA,axis:0}:swayBio(o);}
+  else{const po=b.opts?plainBio(b.opts):null;r.options=po&&typeof po==='object'?po:{};r.sway=swayBio(b.opts);}}
+ const items=res.items||[];
+ for(let idx=0;idx<items.length;idx++){const it=items[idx],m=instForItem[idx];if(!m||!m.geometry)continue;
+  const g=m.geometry,mr=matById.get(it.material);
+  if(g.attributes.color&&!it.geometry.color){const csz=g.attributes.color.itemSize===4?4:3;it.geometry.color=E.pack(attrF32(g.attributes.color,csz));}
+  if(g.attributes.aN&&it.geometry.normal&&mr&&mr.kind==='leaf'){
+   const N=E.unpack(it.geometry.normal),AN=attrF32(g.attributes.aN,3);
+   if(N&&AN&&N.length===AN.length){for(let i=0;i<N.length;i+=3){const nx=N[i]*.3+AN[i]*.7,ny=N[i+1]*.3+AN[i+1]*.7,nz=N[i+2]*.3+AN[i+2]*.7,l=Math.hypot(nx,ny,nz);
+     if(l>1e-6){N[i]=nx/l;N[i+1]=ny/l;N[i+2]=nz/l;}}it.geometry.normal=E.pack(N);}}
+  if(it.kit==='flora'&&mr&&mr.kind!=='leaf'&&it.geometry.position){
+   const P=E.unpack(it.geometry.position),pk=m.userData&&m.userData.flora,pool=pk&&FLORA&&FLORA.pools?FLORA.pools.get(pk):null;
+   let yMax=pool&&pool.proto&&pool.proto.top?pool.proto.top:0;
+   if(!(yMax>0))for(let i=1;i<P.length;i+=3)if(P[i]>yMax)yMax=P[i];
+   if(yMax>=3.5){const rFoot=Math.max(3.2,yMax*.065);
+    for(let i=0;i<P.length;i+=3){let vx=P[i],vy=P[i+1],vz=P[i+2];const rxz=Math.hypot(vx,vz);
+     if(yMax>=18&&vy<4.5&&rxz>rFoot){const over=rxz-rFoot,rNew=rFoot+over/(1+over/6),sc=rNew/rxz;vx*=sc;vz*=sc;
+      const low=Math.max(0,Math.min(1,(4.5-vy)/4.5));vy-=low*(.65*(rNew-rFoot)+.8+.35*rFoot);}
+     else if(vy<=.22){vy-=Math.min(5.5,.5+.62*rxz);}
+     P[i]=vx;P[i+1]=vy;P[i+2]=vz;}
+    it.geometry.position=E.pack(P);}}}}
 function floraSets(){if(typeof FLORA==='undefined'||!FLORA||!FLORA.pools)return FSETS;
  if(!FREG)FREG=KTAGS.create({build:REGION+':flora'});
  for(const p of FLORA.pools.values()){if(FSETS.has(p.key)||!p.meshes.length)continue;
@@ -92,16 +172,23 @@ function floraSets(){if(typeof FLORA==='undefined'||!FLORA||!FLORA.pools)return 
     ry(i){const w=row(i);return Math.atan2(w.a[w.o+8],w.a[w.o+10]);}});
    FSETS.set(p.key,pre('flora',set.id));}catch(e){console.warn('core/world 94: flora pool '+p.key+': '+e.message);}}
  return FSETS;}
-const scene_=ctx=>ctx.memo('world-scene',()=>{const box=ctx.box||[-Infinity,-Infinity,Infinity,Infinity],K=byKey(),FS=floraSets();
- const ownerOf=m=>{for(let p=m;p;p=p.parent){const n=p.name||'';if(n.indexOf('bridge ')===0&&K.has(n.slice(7)))return K.get(n.slice(7));}return null;};
- return E.sceneReader({name:'world:'+REGION,source:'openworld/'+REGION,scene:HOST.scene,tags:KTAGS.page,owner:owners(box),ownerOf,origin:origin_(ctx),
+const scene_=ctx=>ctx.memo('world-scene',()=>{const box=ctx.box||[-Infinity,-Infinity,Infinity,Infinity];
+ if(ctx.box&&ctx.sections.indexOf('items')>=0)prepareFloraBox(ctx.box);
+ const K=byKey(),FS=floraSets(),instForItem=[],seenMats=[];let curInst=null;
+ const kitNameOf=m=>{curInst=m;return m.userData&&m.userData.flora?'flora/'+m.userData.flora+'/'+(m.material&&m.material.name||'')+(m.geometry?'#'+m.geometry.id:''):null;};
+ const ownerOf=m=>{if(curInst){instForItem.push(curInst);curInst=null;}for(let p=m;p;p=p.parent){const n=p.name||'';if(n.indexOf('bridge ')===0&&K.has(n.slice(7)))return K.get(n.slice(7));}return null;};
+ const res=E.sceneReader({name:'world:'+REGION,source:'openworld/'+REGION,scene:HOST.scene,tags:KTAGS.page,owner:owners(box),ownerOf,origin:origin_(ctx),
+  hooks:m=>{seenMats.push(m);return[];},
   /* a flora pool's part (85: userData.flora is the pool's key, kit|species|variant|level, shared by the plant's parts) */
-  kitOf:m=>m.userData&&m.userData.flora?'flora/'+m.userData.flora+'/'+(m.material&&m.material.name||'')+(m.geometry?'#'+m.geometry.id:''):null,
+  kitOf:kitNameOf,
   itemKit:kit=>kit&&kit.indexOf('flora/')===0?'flora':'world',
   itemSet:kit=>kit&&kit.indexOf('flora/')===0?FS.get(kit.split('/')[1])||null:null,
   skipInstanced:m=>hidden(m)?'hidden':beacon(m)?'a resource beacon (a map marker)':null,
   skipMesh:m=>m.userData&&m.userData.terrain?'the terrain (the terrain section)':m.userData&&m.userData.probeSkip?'water or sky (their sections)':
-   hidden(m)?'hidden':beacon(m)?'a resource beacon (a map marker)':null}).assemble(ctx);});
+   hidden(m)?'hidden':beacon(m)?'a resource beacon (a map marker)':null}).assemble(ctx);
+ const matObjById=new Map();
+ if(res.materials&&seenMats.length===res.materials.length)for(let i=0;i<seenMats.length;i++)matObjById.set(res.materials[i].id,seenMats[i]);
+ enrichScene(res,instForItem,matObjById);return res;});
 const by={by:'world'};
 E.register('items',ctx=>scene_(ctx).items,by);
 E.register('buckets',ctx=>scene_(ctx).buckets,by);

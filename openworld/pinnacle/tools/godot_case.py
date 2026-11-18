@@ -148,7 +148,9 @@ def main():
         for p in pl:
             steps_js = ';'.join('CAM.setView(%.1f,%.1f,320,.72,-.28);await _api.settle(180000)' % (vx, vz)
                                 for vx, vz in p['settle_views'])
-            before = '(async()=>{window.WORLD_EXPORT.step=%d;%s;return true;})()' % (PLACE_STEP, steps_js)
+            anchors_js = json.dumps(p['settle_views'], separators=(',', ':'))
+            before = '(async()=>{window.WORLD_EXPORT.step=%d;window.WORLD_EXPORT.floraAnchors=%s;%s;return true;})()' % (
+                PLACE_STEP, anchors_js, steps_js)
             d = os.path.join(out_dir, p['case'])
             shutil.rmtree(d, ignore_errors=True)
             export(d, p['box'], before, micro=micro)

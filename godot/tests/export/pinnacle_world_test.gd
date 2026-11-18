@@ -73,13 +73,8 @@ func _write_grid_case(case_dir: String, box: Array, step: float, build_name: Str
 	f.close()
 
 
-var _done := false
-
-
-func _process(_dt: float) -> bool:
-	if not _done:
-		quit(1)
-	return true
+func _initialize() -> void:
+	_run()
 
 
 func _build_synthetic_stream(out_dir: String, plan_dict: Dictionary) -> String:
@@ -129,7 +124,7 @@ func _boxes_overlap(a: Array, b: Array) -> bool:
 	return float(a[0]) < float(b[2]) and float(a[2]) > float(b[0]) and float(a[1]) < float(b[3]) and float(a[3]) > float(b[1])
 
 
-func _initialize() -> void:
+func _run() -> void:
 	# 1. Baked plan/sites.json & build.py export wiring
 	var plan_path := _repo_path("openworld/pinnacle/plan/sites.json")
 	var build_py := FileAccess.get_file_as_string(_repo_path("openworld/pinnacle/build.py"))
@@ -221,10 +216,136 @@ func _initialize() -> void:
 	ok(is_finite(feet0) and absf(feet0 - (gh0 + KratorWorldWalk.HEIGHT * 0.5)) < 1.0,
 		"KratorWorldWalk stands cleanly at Threehorn camp gate (feet %.1f m, ground %.1f m)" % [feet0, gh0])
 
+	# 5. _stitch interior vertex preservation & open-place height_at priority
+	var gm_pl: Dictionary = gpl.get_meta("grid")
+	var p_nx: int = gm_pl["nx"]
+	var p_nz: int = gm_pl["nz"]
+	var p_step := float(gm_pl["step"])
+	var p_x0 := float(gm_pl["x0"])
+	var p_z0 := float(gm_pl["z0"])
+	var p_h: PackedFloat32Array = gm_pl["h"]
+	var p_verts: PackedVector3Array = gpl.mesh.surface_get_arrays(0)[Mesh.ARRAY_VERTEX]
+	var max_int_err := 0.0
+	var int_checked := 0
+	for vi in p_verts.size():
+		var gi := int(roundf((p_verts[vi].x - p_x0) / p_step))
+		var gj := int(roundf((p_verts[vi].z - p_z0) / p_step))
+		if gi >= 1 and gi <= p_nx - 2 and gj >= 1 and gj <= p_nz - 2:
+			max_int_err = maxf(max_int_err, absf(p_verts[vi].y - p_h[gj * p_nx + gi]))
+			int_checked += 1
+	var naive_non_border := 0
+	for i in range(1, p_nx - 1):
+		var v_naive := p_verts[i]
+		var gj_naive := int(roundf((v_naive.z - p_z0) / p_step))
+		if gj_naive != 0:
+			naive_non_border += 1
+	ok(int_checked == (p_nx - 2) * (p_nz - 2) and max_int_err <= 1e-4,
+		"KratorWorldStream._stitch leaves all %d interior place vertices untouched (max err %.6f m)" % [int_checked, max_int_err])
+	ok(naive_non_border > 0,
+		"negative: naive row-0 indexing p_verts[i] on SurfaceTool ARRAY_VERTEX hits %d non-border interior vertices" % naive_non_border)
+	ok(S.place_covering(94.0, -689.0) == "staiytii0y" and S.place_covering(4500.0, -3200.0) == "",
+		"place_covering resolves (94, -689) to open place staiytii0y and negative (4500, -3200) to ''")
+
+	# 6. collide_case backface collision, foliage Bucket filtering, & _rescue_under_terrain
+	var gpl_col := gpl.get_node_or_null("Collision/CollisionShape3D") as CollisionShape3D
+	if gpl_col == null and gpl.get_node_or_null("Collision") != null:
+		gpl_col = gpl.get_node("Collision").get_child(0) as CollisionShape3D
+	var cshape := gpl_col.shape as ConcavePolygonShape3D if gpl_col != null else null
+	ok(cshape != null and cshape.backface_collision,
+		"collide_case enables ConcavePolygonShape3D.backface_collision on Terrain")
+	ok(not ConcavePolygonShape3D.new().backface_collision,
+		"negative: default ConcavePolygonShape3D has backface_collision=false")
+
+	var mock_w := Node3D.new()
+	var mock_bk := Node3D.new()
+	mock_bk.name = "Buckets"
+	mock_w.add_child(mock_bk)
+	var quad := QuadMesh.new()
+	var b_fol := MeshInstance3D.new()
+	b_fol.name = "bucket_0"
+	b_fol.mesh = quad
+	var sm_fol_b := ShaderMaterial.new()
+	sm_fol_b.shader = KratorBiome.FOLIAGE
+	b_fol.material_override = sm_fol_b
+	mock_bk.add_child(b_fol)
+	var b_cut := MeshInstance3D.new()
+	b_cut.name = "bucket_1"
+	b_cut.mesh = quad
+	var sm_cut_b := ShaderMaterial.new()
+	sm_cut_b.shader = KratorKmat.LIB
+	sm_cut_b.set_shader_parameter("alpha_test", 0.42)
+	b_cut.material_override = sm_cut_b
+	mock_bk.add_child(b_cut)
+	var b_solid := MeshInstance3D.new()
+	b_solid.name = "bucket_2"
+	b_solid.mesh = quad
+	var sm_sol_b := ShaderMaterial.new()
+	sm_sol_b.shader = KratorKmat.LIB
+	sm_sol_b.set_shader_parameter("alpha_test", 0.0)
+	b_solid.material_override = sm_sol_b
+	b_solid.set_meta("krator_record_ids", PackedStringArray(["sites:tent0"]))
+	mock_bk.add_child(b_solid)
+	KratorWorldStream.collide_case(mock_w)
+	ok(b_fol.get_node_or_null("Collision") == null and b_cut.get_node_or_null("Collision") == null
+		and b_solid.get_node_or_null("Collision") != null,
+		"collide_case skips foliage.gdshader and recordless cutout floor fern Buckets while colliding solid building Buckets")
+	mock_w.free()
+
+	# Let physics register WW's trimesh shapes, then verify under-terrain rescue at (94, -689)
+	WW.walk_at(94.0, -689.0)
+	for _k in 4:
+		await physics_frame
+	var gh_94 := WW.stream.height_at(94.0, -689.0)
+	WW.walker.position = WW.stream.local(94.0, gh_94 - 3.5, -689.0)
+	await physics_frame
+	ok(WW.floor_rescues >= 1 and absf(WW.feet_y() - gh_94) < 1.0,
+		"_rescue_under_terrain snaps walker placed 3.5 m under Terrain at (94, -689) back onto surface (rescues=%d, feet=%.1f, ground=%.1f)"
+		% [WW.floor_rescues, WW.feet_y(), gh_94])
+	var WW_nocoll := KratorWorldWalk.make(idx_path, false, false)
+	root.add_child(WW_nocoll)
+	WW_nocoll.start_at(94.0, -689.0)
+	WW_nocoll.walker.position = WW_nocoll.stream.local(94.0, gh_94 - 12.0, -689.0)
+	await physics_frame
+	ok(WW_nocoll.floor_rescues == 0 and WW_nocoll.feet_y() < gh_94 - 10.0,
+		"negative: collision-disabled walker (collide=false) is not rescued so uncollided negative walks still fall freely")
+	WW_nocoll.free()
+
+	# 7. KratorHostUI POIs, Free-Fly <-> Walk toggle, and telemetry coordinates
+	var pin_pt := Vector3(94.0, gh_94, -689.0)
+	var pois_with_pin := KratorHostUI.build_pois(WW.stream, pin_pt)
+	var pois_no_pin := KratorHostUI.build_pois(WW.stream, null)
+	var camp_pois := 0
+	var has_pin_poi := false
+	for p_item in pois_with_pin:
+		if str(p_item.get("kind", "")) == "camp":
+			camp_pois += 1
+		elif str(p_item.get("kind", "")) == "pin":
+			has_pin_poi = true
+	ok(camp_pois == 9 and has_pin_poi and pois_with_pin.size() >= 15,
+		"KratorHostUI.build_pois populates Overview, Route, Places, all %d Beast-Rider camps, and Active Pin (%d total POIs)"
+		% [camp_pois, pois_with_pin.size()])
+	ok(pois_no_pin.size() == pois_with_pin.size() - 1,
+		"negative: KratorHostUI.build_pois without an active pin omits the [Pin] entry (%d vs %d)" % [pois_no_pin.size(), pois_with_pin.size()])
+
+	var host_ui := KratorHostUI.new()
+	root.add_child(host_ui)
+	host_ui.refresh_pois(WW.stream, pin_pt)
+	WW.set_walk_mode(false)
+	host_ui.sync_state(WW, "pinnacle", 6.5 * 60.0, 60.0, false, true)
+	var coords_fly := KratorHostUI.format_coords(WW, false, pin_pt, 0)
+	var fly_ok := coords_fly.find("FREE FLY") >= 0 and coords_fly.find("Pin:") >= 0 and not host_ui.btn_fly_pin.disabled
+	WW.set_walk_mode(true, Vector2(-958.5, 155.9))
+	host_ui.sync_state(WW, "pinnacle", 6.5 * 60.0, 60.0, false, false)
+	var coords_walk := KratorHostUI.format_coords(WW, false, null, 0)
+	ok(fly_ok,
+		"KratorHostUI syncs Free-Fly mode, enables Pin actions, and formats live Cam/Look/Ground/Pin coordinates")
+	ok(coords_walk.find("WALK 3rd") >= 0 and coords_walk.find("Pin:") < 0 and host_ui.btn_fly_pin.disabled,
+		"negative: switching back to Walk mode without Pin disables Pin buttons and displays Walker coordinates")
+	host_ui.free()
+
 	WW.free()
 	S.free()
 	if idx_path != real_idx:
 		OS.execute("rm", ["-rf", tmp_dir])
-	_done = true
 	print("pinnacle world stream: %s" % ("all passed" if fails == 0 else "%d failed" % fails))
 	quit(0 if fails == 0 else 1)

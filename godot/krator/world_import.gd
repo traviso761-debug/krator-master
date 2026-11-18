@@ -394,7 +394,17 @@ static func _mat(id: Variant, mats: Dictionary, tex: Dictionary, texrec: Diction
 	elif rec.get("kind") in ["standard", "basic", "shader"]:
 		m = _standard(rec, tex, texrec, instanced, report)
 	else:
-		m = KratorBiome._material(rec, tex, texrec, true, report)
+		var bm := KratorBiome._material(rec, tex, texrec, instanced, report)
+		if not instanced and bm != null:
+			# Buckets bake world/case positions into VERTEX (e.g. y = -1320 m or +3400 m), so height-proportional swayW must not multiply VERTEX.y
+			if bm.shader == KratorBiome.FOLIAGE:
+				bm.set_shader_parameter("sway_w", Vector3.ZERO)
+				bm.set_shader_parameter("sway_c", 0.55)
+			elif bm.shader == KratorBiome.BARK:
+				var m_mode = bm.get_shader_parameter("mode")
+				if (m_mode is int or m_mode is float) and int(m_mode) == 5:
+					bm.set_shader_parameter("hang_a", 0.0)
+		m = bm
 	cache[key] = m
 	return m
 
@@ -443,6 +453,8 @@ static func _standard(rec: Dictionary, tex: Dictionary, texrec: Dictionary, inst
 	sm.set_shader_parameter("specular_k", clampf(float(rec.get("specular", 0.5)), 0.0, 1.0))
 	sm.set_shader_parameter("tint", bool(rec.get("tint", true)))
 	sm.set_shader_parameter("unlit", bool(rec.get("unlit", false)))
+	var at_val = rec.get("alphaTest")
+	sm.set_shader_parameter("alpha_test", clampf(float(at_val) if (at_val is int or at_val is float) else 0.0, 0.0, 1.0))
 	if rec.get("emissive") != null:
 		var e := KData.colour(rec["emissive"], false) * float(rec.get("emissiveIntensity", 1.0))
 		sm.set_shader_parameter("emission", Vector3(e.r, e.g, e.b))

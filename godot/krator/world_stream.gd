@@ -233,35 +233,53 @@ func _stitch(w: Node3D) -> int:
 	var g: Dictionary = mi.get_meta("grid")
 	var nx: int = g["nx"]
 	var nz: int = g["nz"]
+	var step := float(g["step"])
+	var x0 := float(g["x0"])
+	var z0 := float(g["z0"])
 	var lat := float(index["chunk"]["step"])
-	var r := int(roundf(lat / float(g["step"])))
+	var r := int(roundf(lat / step))
 	var o: Array = w.get_meta("origin", [0.0, 0.0, 0.0])
-	var gx0: float = float(g["x0"]) + float(o[0])
-	var gz0: float = float(g["z0"]) + float(o[2])
-	if r < 2 or (nx - 1) % r != 0 or (nz - 1) % r != 0 or absf(fposmod(gx0, lat)) > 0.01 and absf(fposmod(gx0, lat) - lat) > 0.01:
+	var gx0: float = x0 + float(o[0])
+	var gz0: float = z0 + float(o[2])
+	var x_off := absf(fposmod(gx0, lat)) > 0.01 and absf(fposmod(gx0, lat) - lat) > 0.01
+	var z_off := absf(fposmod(gz0, lat)) > 0.01 and absf(fposmod(gz0, lat) - lat) > 0.01
+	if r < 2 or (nx - 1) % r != 0 or (nz - 1) % r != 0 or x_off or z_off:
 		return 0
 	var arr := mi.mesh.surface_get_arrays(0)
 	var V: PackedVector3Array = arr[Mesh.ARRAY_VERTEX]
+	# KData._grid builds via SurfaceTool.add_index, which orders ARRAY_VERTEX by first-triangle encounter rather than j*nx+i;
+	# map each vertex back to its exact (i, j) grid coordinate so only true outer-border vertices are stitched
+	var v_at := PackedInt32Array()
+	v_at.resize(nx * nz)
+	v_at.fill(-1)
+	for vi in V.size():
+		var gi := int(roundf((V[vi].x - x0) / step))
+		var gj := int(roundf((V[vi].z - z0) / step))
+		if gi >= 0 and gi < nx and gj >= 0 and gj < nz:
+			v_at[gj * nx + gi] = vi
 	var moved := 0
 	var top := []
 	var bot := []
 	for i in nx:
-		top.append(i)
-		bot.append((nz - 1) * nx + i)
+		top.append(v_at[i])
+		bot.append(v_at[(nz - 1) * nx + i])
 	var lef := []
 	var rig := []
 	for j in nz:
-		lef.append(j * nx)
-		rig.append(j * nx + nx - 1)
-	for idx in [top, bot, lef, rig]:   # the vertex indices along one edge, in order (no lambda: it would change a copy of V)
-		for k in (idx as Array).size():
+		lef.append(v_at[j * nx])
+		rig.append(v_at[j * nx + nx - 1])
+	for idx in [top, bot, lef, rig]:
+		for k in idx.size():
 			if k % r == 0:
 				continue
-			var a: int = idx[k - k % r]
-			var b: int = idx[k - k % r + r]
-			var v: Vector3 = V[idx[k]]
-			v.y = lerpf(V[a].y, V[b].y, float(k % r) / r)
-			V[idx[k]] = v
+			var vk: int = idx[k]
+			var va: int = idx[k - k % r]
+			var vb: int = idx[k - k % r + r]
+			if vk < 0 or va < 0 or vb < 0:
+				continue
+			var v: Vector3 = V[vk]
+			v.y = lerpf(V[va].y, V[vb].y, float(k % r) / r)
+			V[vk] = v
 			moved += 1
 	arr[Mesh.ARRAY_VERTEX] = V
 	var mat := mi.mesh.surface_get_material(0)
@@ -308,7 +326,26 @@ func covering(x: float, z: float) -> String:
 	return ""
 
 
+func place_covering(x: float, z: float) -> String:
+	for pid in places_open:
+		var p := place(str(pid))
+		if p.get("box") is Array:
+			var b: Array = p["box"]
+			if x >= float(b[0]) and x <= float(b[2]) and z >= float(b[1]) and z <= float(b[3]):
+				return str(pid)
+	return ""
+
+
 func height_at(x: float, z: float) -> float:
+	var pid := place_covering(x, z)
+	if pid != "":
+		var pw: Node3D = places_open[pid]
+		var pg = pw.get_meta("ground", null) if pw.has_meta("ground") else null
+		if pg != null:
+			var po: Array = pw.get_meta("origin", [0.0, 0.0, 0.0])
+			var ph := KData.height_at(pg, x - float(po[0]), z - float(po[2])) + float(po[1])
+			if is_finite(ph):
+				return ph
 	var id := covering(x, z)
 	if id == "":
 		return NAN
@@ -381,28 +418,48 @@ func _hole(w: Node3D, cbox: Array) -> void:
 	mi.set_meta("holes", {"places": boxes.size(), "triangles_dropped": dropped})
 
 
-# static bodies for a case: its ground (the importer's ground mesh) and its buckets (the buildings' plain meshes) as
-# trimesh shapes; items (flora, massing boxes) are left without (GODOT-PLAN.md M8)
+static func _is_foliage_bucket(b: MeshInstance3D) -> bool:
+	var sm := b.material_override as ShaderMaterial
+	if sm == null:
+		return false
+	if sm.shader == KratorBiome.FOLIAGE:
+		return true
+	if sm.shader == KratorKmat.LIB:
+		var at_p = sm.get_shader_parameter("alpha_test")
+		if (at_p is int or at_p is float) and float(at_p) > 0.0:
+			var rids: PackedStringArray = b.get_meta("krator_record_ids", PackedStringArray())
+			return rids.is_empty()
+	return false
+
+
+# static bodies for a case: its ground (the importer's ground mesh, with backface collision so no fast step can tunnel)
+# and its solid buckets (the buildings' plain meshes; floor foliage cards are skipped) as trimesh shapes; items (flora,
+# massing boxes) are left without (GODOT-PLAN.md M8)
 static func collide_case(w: Node3D) -> void:
-	var meshes := []
 	var g = w.get_meta("ground") if w.has_meta("ground") else null   # (a page of its own, Strongbow's, has none)
-	if g is MeshInstance3D:
-		meshes.append(g)
+	if g is MeshInstance3D and (g as MeshInstance3D).mesh != null:
+		var gshape := (g as MeshInstance3D).mesh.create_trimesh_shape()
+		if gshape != null:
+			gshape.backface_collision = true
+			var gbody := StaticBody3D.new()
+			gbody.name = "Collision"
+			var gcs := CollisionShape3D.new()
+			gcs.shape = gshape
+			gbody.add_child(gcs)
+			(g as MeshInstance3D).add_child(gbody)
 	var bk := w.get_node_or_null("Buckets")
 	if bk:
 		for b in bk.get_children():
-			if b is MeshInstance3D:
-				meshes.append(b)
-	for mi in meshes:
-		var shape: Shape3D = (mi as MeshInstance3D).mesh.create_trimesh_shape()
-		if shape == null:
-			continue
-		var body := StaticBody3D.new()
-		body.name = "Collision"
-		var cs := CollisionShape3D.new()
-		cs.shape = shape
-		body.add_child(cs)
-		(mi as MeshInstance3D).add_child(body)
+			if b is MeshInstance3D and (b as MeshInstance3D).mesh != null and not _is_foliage_bucket(b as MeshInstance3D):
+				var shape: Shape3D = (b as MeshInstance3D).mesh.create_trimesh_shape()
+				if shape == null:
+					continue
+				var body := StaticBody3D.new()
+				body.name = "Collision"
+				var cs := CollisionShape3D.new()
+				cs.shape = shape
+				body.add_child(cs)
+				(b as MeshInstance3D).add_child(body)
 
 
 # a place's page of its own (Strongbow's arcology, godot_case.py ARCOLOGY): its case is written about the page's anchor
