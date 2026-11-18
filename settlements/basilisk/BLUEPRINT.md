@@ -23,19 +23,19 @@ The scale model's pin stands in the water (-2,600 m, the raster's floor). The ci
 
 ![B1](floors/B1.png)
 
-One squared spiral street, the Great Coil (black), winds out from the precinct through two windings, its corners 75 and 105 degrees, each winding 1.25 times the last; it has thirteen segments and ends at the one gate in the tongue's foot. Between its turns lie seven districts, each its own spiral (red) wound in to its nest hall, every door facing in, each district's mouth opening on the Coil toward the Hall; their chirality alternates, cw and ccw, and the seventh breaks the pairing. The wall follows the Coil's last winding. The ley line (green) is the one straight thing: from the Hall's door through the Ley Slot to the mole. 2327 buildings; 32605 housed.
+One squared spiral street, the Great Coil (black), winds out from the precinct through two windings, its corners 75 and 105 degrees, each winding 1.25 times the last; it has thirteen segments and ends at the one gate in the tongue's foot. Between its turns lie seven districts, each its own spiral (red) wound in to its nest hall, every door facing in, each district's mouth opening on the Coil toward the Hall; their chirality alternates, cw and ccw, and the seventh breaks the pairing. The wall follows the Coil's last winding. The ley line (green) is the one straight thing: from the Hall's door through the Ley Slot to the mole. 2275 buildings; 32566 housed.
 
 | # | Item | m2 | Note |
 |---|---|---|---|
 | 1 | The precinct of Intention, on the Mound | 112266 | the Hall of Intention (its axis the ley line), the Interpreters' college and its thirteen towers, the seer's hall, the Nest of Returns (B2) |
 | 2 | The court of the First Turn | 20744 | where the Great Coil begins; the great tank |
-| 3 | District 1 (cw, south) | 76759 | 1 winding, the first band 25 m; ~647 people; its own stone nest hall in its court; its mouth onto the Great Coil faces the Hall |
-| 4 | District 2 (ccw, east) | 92100 | 1 winding, the first band 28 m; ~1886 people; its own stone nest hall in its court; its mouth onto the Great Coil faces the Hall |
-| 5 | District 3 (cw, north) | 118115 | 1 winding, the first band 31 m; ~3086 people; its own stone nest hall in its court; its mouth onto the Great Coil faces the Hall |
-| 6 | District 4 (ccw, west) | 148223 | 1 winding, the first band 34 m; ~3427 people; its own stone nest hall in its court; its mouth onto the Great Coil faces the Hall |
-| 7 | District 5 (cw, south) | 182966 | 1 winding, the first band 38 m; ~3864 people; its own stone nest hall in its court; its mouth onto the Great Coil faces the Hall |
-| 8 | District 6 (ccw, east) | 222953 | 1 winding, the first band 41 m; ~5286 people; its own stone nest hall in its court; its mouth onto the Great Coil faces the Hall |
-| 9 | District 7 (cw, north) | 268868 | 1 winding, the first band 45 m; ~5934 people; its own stone nest hall in its court; its mouth onto the Great Coil faces the Hall; winds the same way as district 1: the seventh breaks the pairs (the city's flaw) |
+| 3 | District 1 (cw, south) | 76759 | 1 winding, the first band 25 m; ~649 people; its own stone nest hall in its court; its mouth onto the Great Coil faces the Hall |
+| 4 | District 2 (ccw, east) | 92100 | 1 winding, the first band 28 m; ~1856 people; its own stone nest hall in its court; its mouth onto the Great Coil faces the Hall |
+| 5 | District 3 (cw, north) | 118115 | 1 winding, the first band 31 m; ~3121 people; its own stone nest hall in its court; its mouth onto the Great Coil faces the Hall |
+| 6 | District 4 (ccw, west) | 148223 | 1 winding, the first band 34 m; ~3415 people; its own stone nest hall in its court; its mouth onto the Great Coil faces the Hall |
+| 7 | District 5 (cw, south) | 182966 | 1 winding, the first band 38 m; ~4142 people; its own stone nest hall in its court; its mouth onto the Great Coil faces the Hall |
+| 8 | District 6 (ccw, east) | 222953 | 1 winding, the first band 41 m; ~5255 people; its own stone nest hall in its court; its mouth onto the Great Coil faces the Hall |
+| 9 | District 7 (cw, north) | 268868 | 1 winding, the first band 45 m; ~5955 people; its own stone nest hall in its court; its mouth onto the Great Coil faces the Hall; winds the same way as district 1: the seventh breaks the pairs (the city's flaw) |
 | 10 | The gate quarter (the Coil's last band, run on into the tongue) | 321481 | the mustering ground in its court, the barracks, the seven granaries of the Allotment, the plunder warehouse, the bone hall; the garrison's lodges (B6) |
 | 11 | The works on the bay | 119973 | the dock after Lothal, its store, the bronze hall, the charcoal and ore yard; the weirs in the bay (B4) |
 | 12 | The reservoirs (x7) | 5199 | seven, after Dholavira, each 1.25 times the last; fed by the leat from Tlahn Gill (B7) |
@@ -54,104 +54,109 @@ The Mound stands 12 m over the sabkha, its sides battered, faced in polygonal ba
 | 4 | Bell rack (no clappers) | 32 | `lz-bells`: the Hall's bells, no clappers |
 | 5 | Stela pair | 48 | `lz-stela-pair`: mirrored chirality either side of the door |
 | 6 | Interpreters' college | 384 | `lk-college`: the college: its door east, toward the Hall |
-| 7 | Seer's hall | 194 | `lz-seer`: the model of the country: the Allotment remembered |
+| 7 | Seer's hall (x5) | 194 | `lz-seer`: the model of the country: the Allotment remembered |
 | 8 | Turned stelae | 81 | `lz-stela-turned`: texts whose meaning changed retroactively |
-| 9 | Stone nest hall | 2496 | `lk-nest`: the Nest of Returns: where the Interpreters are reborn |
-| 10 | Cistern | 144 | `lz-cistern`: the Mound cistern |
-| 11 | Medicine hut | 72 | `lz-medicine`: the Mound medicine lodge |
-| 12 | Stone Interpreters' house (x21) | 121 | `lk-tower`: an Interpreters' stone house |
-| 13 | Stone cell-warren (x9) | 504 | `lk-warren`: the Hall's Tenders |
-| 14 | Stone Allotment granary (x7) | 180 | `lk-granary`: Mound ration granary |
-| 15 | Reed, weaving and lacquer hall (x26) | 247 | `lz-hall-reed`: Mound Scribe and memory hall |
-| 16 | The Court of Intention | 7755 | before the Hall's door, along the line: the seven obelisks either side (the fifth twists the other way), the ley stone |
-| 17 | The court of the First Turn, the great tank | 20744 | the Great Coil begins at its north-east corner; a brick tank after Mohenjo-daro's Great Bath, its water a core/water still record |
+| 9 | Colossus of the Watcher | 144 | `lk-colossus-watcher`: 19 m Watcher colossus looming before the College |
+| 10 | Monument of the Fractured Coil | 196 | `lk-colossus-coil`: the 18 m Fractured Coil monument flanking the Court of Intention |
+| 11 | The Sheared Manifold | 168 | `lk-statue-manifold`: the Sheared Manifold on the Mound |
+| 12 | The Impossible Tusk-Frame | 144 | `lk-statue-paradox`: the Impossible Tusk-Frame beside the Nest of Returns |
+| 13 | Stone nest hall | 2496 | `lk-nest`: the Nest of Returns: where the Interpreters are reborn |
+| 14 | Cistern | 144 | `lz-cistern`: the Mound cistern |
+| 15 | Medicine hut | 72 | `lz-medicine`: the Mound medicine lodge |
+| 16 | Stone Interpreters' house (x24) | 121 | `lk-tower`: an Interpreters' stone house |
+| 17 | Stone cell-warren (x9) | 504 | `lk-warren`: the Hall's Tenders |
+| 18 | Stone Allotment granary (x7) | 180 | `lk-granary`: Mound ration granary |
+| 19 | Stepped seal and stela archive (x9) | 254 | `lk-archive`: Mound Scribe archive and memory hall |
+| 20 | Stepped brick terrace house (x5) | 251 | `lk-terrace`: Mound Scribe archive and memory hall |
+| 21 | Capital lacquer and craft hall (x4) | 293 | `lk-guildhall`: Mound Scribe archive and memory hall |
+| 22 | The Court of Intention | 7755 | before the Hall's door, along the line: the seven obelisks either side (the fifth twists the other way), the ley stone |
+| 23 | The court of the First Turn, the great tank | 20744 | the Great Coil begins at its north-east corner; a brick tank after Mohenjo-daro's Great Bath, its water a core/water still record |
 
 ## Sheet B3: a district spiral (district 5, its west half): its nest hall, its castes, its flaw
 
 ![B3](floors/B3.png)
 
-District 5, the south band of the second winding: its own rectangular leiwen (1 windings, the first band 38 m deep, each 1.25 times the last; corners 75 and 105 degrees), wound clockwise in to the stone nest hall in its long court. Every row fronts its band's inner edge, so every door faces the nest; the castes go from the nest outward in Gila's order: Tenders, Interpreters, Makers, Drovers, then the warriors' and Bulwarks' lodges. Wells (blue) stand in the yards behind each row. Housed: Tenders 1260, Interpreters 231, Makers 1120, Drovers 891, Line warriors 362.
+District 5, the south band of the second winding: its own rectangular leiwen (1 windings, the first band 38 m deep, each 1.25 times the last; corners 75 and 105 degrees), wound clockwise in to the stone nest hall in its long court. Every row fronts its band's inner edge, so every door faces the nest; the castes go from the nest outward in Gila's order: Tenders, Interpreters, Makers, Drovers, then the warriors' and Bulwarks' lodges. Wells (blue) stand in the yards behind each row. Housed: Tenders 1260, Interpreters 217, Makers 1102, Drovers 897, Line warriors 666.
 
 | # | Item | m2 | Note |
 |---|---|---|---|
 | 1 | Medicine hut | 72 | `lz-medicine` |
-| 2 | Cistern | 143 | `lz-cistern` |
+| 2 | Cistern | 144 | `lz-cistern` |
 | 3 | Twisted obelisk | 16 | `lz-obelisk` |
-| 4 | Bell rack (no clappers) | 32 | `lz-bells` |
+| 4 | Bell rack (no clappers) | 31 | `lz-bells` |
 | 5 | Stone nest hall | 2496 | `lk-nest` |
-| 6 | Stela pair | 49 | `lz-stela-pair` |
+| 6 | Stela pair | 48 | `lz-stela-pair` |
 | 7 | Reed, weaving and lacquer hall | 247 | `lz-hall-reed` |
-| 8 | Reed, weaving and lacquer hall | 247 | `lz-hall-reed` |
-| 9 | Earth-oven and yam bakehouse | 272 | `lz-bakehouse` |
-| 10 | Spore and yam fermenting house | 270 | `lz-fermentery` |
-| 11 | Stone Allotment granary | 180 | `lk-granary` |
-| 12 | Stone Allotment granary | 180 | `lk-granary` |
-| 13 | Cistern | 144 | `lz-cistern` |
-| 14 | Turned stelae | 80 | `lz-stela-turned` |
-| 15 | Stone Interpreters' house | 121 | `lk-tower` |
-| 16 | Stone Allotment granary | 180 | `lk-granary` |
-| 17 | Stone Makers' house | 120 | `lk-makers` |
-| 18 | Reed, weaving and lacquer hall | 247 | `lz-hall-reed` |
-| 19 | Cistern | 144 | `lz-cistern` |
-| 20 | Stone Interpreters' house | 121 | `lk-tower` |
-| 21 | Stone Allotment granary | 180 | `lk-granary` |
-| 22 | Stone Makers' house | 119 | `lk-makers` |
-| 23 | Reed, weaving and lacquer hall | 246 | `lz-hall-reed` |
-| 24 | Cistern | 144 | `lz-cistern` |
-| 25 | Stone Interpreters' house | 121 | `lk-tower` |
-| 26 | Stone Allotment granary | 180 | `lk-granary` |
-| 27 | Stone Makers' house | 119 | `lk-makers` |
-| 28 | Reed, weaving and lacquer hall | 247 | `lz-hall-reed` |
-| 29 | Cistern | 143 | `lz-cistern` |
-| 30 | Cistern | 144 | `lz-cistern` |
-| 31 | Stone Interpreters' house | 120 | `lk-tower` |
-| 32 | Stone Allotment granary | 180 | `lk-granary` |
-| 33 | Stone Makers' house | 119 | `lk-makers` |
-| 34 | Reed, weaving and lacquer hall | 247 | `lz-hall-reed` |
-| 35 | Cistern | 144 | `lz-cistern` |
-| 36 | Stone Interpreters' house | 121 | `lk-tower` |
-| 37 | Stone Allotment granary | 180 | `lk-granary` |
-| 38 | Stone Makers' house | 119 | `lk-makers` |
+| 8 | Capital lacquer and craft hall | 294 | `lk-guildhall` |
+| 9 | Twin Helices of Recurrence | 121 | `lk-statue-ouroboros` |
+| 10 | Earth-oven and yam bakehouse | 272 | `lz-bakehouse` |
+| 11 | Spore and yam fermenting house | 270 | `lz-fermentery` |
+| 12 | Colossus of the Watcher | 144 | `lk-colossus-watcher` |
+| 13 | Stone Allotment granary | 180 | `lk-granary` |
+| 14 | Three-dome kiln house | 223 | `lk-kilnhouse` |
+| 15 | Cistern | 144 | `lz-cistern` |
+| 16 | Turned stelae | 81 | `lz-stela-turned` |
+| 17 | Colossus of the Watcher | 144 | `lk-colossus-watcher` |
+| 18 | Stepped seal and stela archive | 254 | `lk-archive` |
+| 19 | Stepped brick terrace house | 252 | `lk-terrace` |
+| 20 | Stone Allotment granary | 180 | `lk-granary` |
+| 21 | Two-storey Drover townhouse | 180 | `lk-rowhouse` |
+| 22 | Twin Helices of Recurrence | 121 | `lk-statue-ouroboros` |
+| 23 | Reed, weaving and lacquer hall | 247 | `lz-hall-reed` |
+| 24 | Stone Interpreters' house | 120 | `lk-tower` |
+| 25 | Colossus of the Watcher | 144 | `lk-colossus-watcher` |
+| 26 | Stepped seal and stela archive | 255 | `lk-archive` |
+| 27 | Stepped brick terrace house | 251 | `lk-terrace` |
+| 28 | Stone Allotment granary | 180 | `lk-granary` |
+| 29 | Two-storey Drover townhouse | 179 | `lk-rowhouse` |
+| 30 | Twin Helices of Recurrence | 121 | `lk-statue-ouroboros` |
+| 31 | Reed, weaving and lacquer hall | 247 | `lz-hall-reed` |
+| 32 | Stone Interpreters' house | 120 | `lk-tower` |
+| 33 | Colossus of the Watcher | 144 | `lk-colossus-watcher` |
+| 34 | Stepped seal and stela archive | 255 | `lk-archive` |
+| 35 | Stepped brick terrace house | 252 | `lk-terrace` |
+| 36 | Stone Allotment granary | 180 | `lk-granary` |
+| 37 | Two-storey Drover townhouse | 180 | `lk-rowhouse` |
+| 38 | Twin Helices of Recurrence | 120 | `lk-statue-ouroboros` |
 | 39 | Reed, weaving and lacquer hall | 247 | `lz-hall-reed` |
-| 40 | Cistern | 144 | `lz-cistern` |
-| 41 | Stone Interpreters' house | 121 | `lk-tower` |
-| 42 | Stone Allotment granary | 180 | `lk-granary` |
-| 43 | Stone Makers' house | 119 | `lk-makers` |
-| 44 | Reed, weaving and lacquer hall | 247 | `lz-hall-reed` |
-| 45 | Cistern | 144 | `lz-cistern` |
+| 40 | Stone Interpreters' house | 121 | `lk-tower` |
+| 41 | Colossus of the Watcher | 143 | `lk-colossus-watcher` |
+| 42 | Stepped seal and stela archive | 255 | `lk-archive` |
+| 43 | Stepped brick terrace house | 252 | `lk-terrace` |
+| 44 | Stone Allotment granary | 179 | `lk-granary` |
+| 45 | Two-storey Drover townhouse | 180 | `lk-rowhouse` |
+| 46 | Twin Helices of Recurrence | 121 | `lk-statue-ouroboros` |
 | 52 | Stone Allotment granary | 180 | `lk-granary` |
-| 53 | Stone Makers' house | 119 | `lk-makers` |
-| 54 | Reed, weaving and lacquer hall | 247 | `lz-hall-reed` |
-| 55 | Cistern | 143 | `lz-cistern` |
+| 53 | Two-storey Drover townhouse | 180 | `lk-rowhouse` |
+| 54 | Twin Helices of Recurrence | 120 | `lk-statue-ouroboros` |
+| 55 | Reed, weaving and lacquer hall | 247 | `lz-hall-reed` |
 | 56 | Stone Interpreters' house | 121 | `lk-tower` |
-| 57 | Stone Allotment granary | 180 | `lk-granary` |
-| 58 | Stone Makers' house | 120 | `lk-makers` |
-| 59 | Reed, weaving and lacquer hall | 247 | `lz-hall-reed` |
-| 60 | Cistern | 144 | `lz-cistern` |
-| 61 | Stone Interpreters' house | 121 | `lk-tower` |
-| 62 | Stone Allotment granary | 179 | `lk-granary` |
-| 63 | Stone Makers' house | 120 | `lk-makers` |
-| 64 | Reed, weaving and lacquer hall | 247 | `lz-hall-reed` |
-| 65 | Cistern | 144 | `lz-cistern` |
-| 66 | Stone Interpreters' house | 120 | `lk-tower` |
-| 67 | Stone Interpreters' house | 121 | `lk-tower` |
-| 68 | Stone Allotment granary | 180 | `lk-granary` |
-| 69 | Stone Makers' house | 120 | `lk-makers` |
-| 70 | Reed, weaving and lacquer hall | 246 | `lz-hall-reed` |
-| 71 | Cistern | 144 | `lz-cistern` |
-| 72 | Stone Interpreters' house | 120 | `lk-tower` |
-| 73 | Stone Allotment granary | 180 | `lk-granary` |
-| 74 | Stone Makers' house | 120 | `lk-makers` |
-| 75 | Reed, weaving and lacquer hall | 247 | `lz-hall-reed` |
-| 76 | Cistern | 144 | `lz-cistern` |
-| 77 | Stone Interpreters' house | 121 | `lk-tower` |
-| 78 | Stone Allotment granary | 179 | `lk-granary` |
-| 79 | Stone Makers' house | 119 | `lk-makers` |
-| 80 | Reed, weaving and lacquer hall | 247 | `lz-hall-reed` |
-| 81 | Cistern | 144 | `lz-cistern` |
-| 82 | Stone Interpreters' house | 120 | `lk-tower` |
-| 89 | The flaw: one band fronted on its outer edge | 24063 | its doors face away from the nest: the district's one deliberate break, the Lie (DESIGN.md 2.2); chosen by the plan's own hash, kept in the manifest |
-| 90 | The district's mouth | 144 | its spiral street's outer end, on the Great Coil, facing the Hall |
+| 57 | Colossus of the Watcher | 144 | `lk-colossus-watcher` |
+| 58 | Stepped seal and stela archive | 255 | `lk-archive` |
+| 59 | Stepped brick terrace house | 252 | `lk-terrace` |
+| 60 | Stone Allotment granary | 179 | `lk-granary` |
+| 61 | Two-storey Drover townhouse | 180 | `lk-rowhouse` |
+| 62 | Twin Helices of Recurrence | 121 | `lk-statue-ouroboros` |
+| 63 | Reed, weaving and lacquer hall | 247 | `lz-hall-reed` |
+| 64 | Stone Interpreters' house | 120 | `lk-tower` |
+| 65 | Stepped seal and stela archive | 255 | `lk-archive` |
+| 66 | Stepped brick terrace house | 252 | `lk-terrace` |
+| 67 | Stone Allotment granary | 180 | `lk-granary` |
+| 68 | Two-storey Drover townhouse | 180 | `lk-rowhouse` |
+| 69 | Twin Helices of Recurrence | 121 | `lk-statue-ouroboros` |
+| 70 | Reed, weaving and lacquer hall | 247 | `lz-hall-reed` |
+| 71 | Stone Interpreters' house | 121 | `lk-tower` |
+| 72 | Colossus of the Watcher | 144 | `lk-colossus-watcher` |
+| 73 | Stepped seal and stela archive | 254 | `lk-archive` |
+| 74 | Stepped brick terrace house | 251 | `lk-terrace` |
+| 75 | Stone Allotment granary | 180 | `lk-granary` |
+| 76 | Two-storey Drover townhouse | 180 | `lk-rowhouse` |
+| 77 | Twin Helices of Recurrence | 121 | `lk-statue-ouroboros` |
+| 78 | Reed, weaving and lacquer hall | 247 | `lz-hall-reed` |
+| 79 | Stone Interpreters' house | 121 | `lk-tower` |
+| 80 | Colossus of the Watcher | 144 | `lk-colossus-watcher` |
+| 87 | The flaw: one band fronted on its outer edge | 24063 | its doors face away from the nest: the district's one deliberate break, the Lie (DESIGN.md 2.2); chosen by the plan's own hash, kept in the manifest |
+| 88 | The district's mouth | 144 | its spiral street's outer end, on the Great Coil, facing the Hall |
 
 ## Sheet B4: the works on the bay: the bronze hall, the dock after Lothal, the weirs
 

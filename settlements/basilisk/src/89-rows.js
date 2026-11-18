@@ -5,5 +5,6 @@ KIT.id = 'basilisk';
 KIT.title = 'Basilisk — the Lizardmen\'s stone capital';
 KIT.band = 'Basilisk at the eastern terminal sea';
 KIT.frag = 'settlements/basilisk';
+KIT.furnDetail = 0.45;
 const TITLE = KIT.title;
 const FAMILIES = [];

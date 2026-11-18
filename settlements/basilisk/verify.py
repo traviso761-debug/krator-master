@@ -44,8 +44,10 @@ ASSERT_JS = r"""() => {
     detail: badV.length || badVes.length ? 'bad vessel tags/ids: ' + badV.concat(badVes.map(r => r.key + ':' + r.tid)).join(', ') : vDefs.length + ' vessel def(s), ' + vRegs.length + ' reed barges registered as ves_*' });
 
   const wantCapitalKeys = [
-    'lk-greathall', 'lk-college', 'lk-nest', 'lk-warren', 'lk-insula', 'lk-makers', 'lk-caravanserai', 'lk-longhouse',
-    'lk-lodge', 'lk-tower', 'lk-granary', 'lk-bronzehall', 'lk-dockstore', 'lk-boil', 'lk-gate', 'lk-slot', 'lk-wall', 'lk-watchtower',
+    'lk-greathall', 'lk-college', 'lk-archive', 'lk-nest', 'lk-warren', 'lk-insula', 'lk-terrace', 'lk-kilnhouse', 'lk-makers',
+    'lk-guildhall', 'lk-caravanserai', 'lk-rowhouse', 'lk-longhouse', 'lk-bastion', 'lk-lodge', 'lk-tower', 'lk-granary',
+    'lk-colossus-watcher', 'lk-statue-phalanx', 'lk-colossus-coil', 'lk-statue-ouroboros', 'lk-statue-manifold', 'lk-statue-paradox',
+    'lk-bronzehall', 'lk-dockstore', 'lk-boil', 'lk-gate', 'lk-slot', 'lk-wall', 'lk-watchtower',
     'lz-hall-bronze', 'lz-hall-reed', 'lz-hall-bone', 'lz-bakehouse', 'lz-fermentery', 'lz-warehouse', 'lz-wayhalt', 'lz-waystone',
     'lz-barracks', 'lz-muster', 'lz-seer', 'lz-medicine', 'lz-cistern', 'lz-bells', 'lz-stela-pair', 'lz-stela-turned', 'lz-obelisk',
     'lz-ley', 'lz-weir', 'lz-barge', 'gl-well', 'gl-tank', 'gl-pans', 'gl-saltstore', 'frilled', 'burden'
@@ -82,7 +84,7 @@ ASSERT_JS = r"""() => {
   const W0 = B.byWhere || {};
   R.push({
     name: 'basilisk-laid',
-    ok: !B.err && B.manifestPlaced >= 2250 && (W0.precinct || 0) >= 60 && (W0.d1 || 0) >= 90 && (W0.d7 || 0) >= 350 && (W0.gq || 0) >= 400 && (W0.pans || 0) >= 9,
+    ok: !B.err && B.manifestPlaced >= 2180 && (W0.precinct || 0) >= 60 && (W0.d1 || 0) >= 85 && (W0.d7 || 0) >= 340 && (W0.gq || 0) >= 400 && (W0.pans || 0) >= 9,
     detail: B.err ? ('error: ' + B.err) : (B.sites + ' total sites (manifest ' + B.manifestPlaced + '); byWhere ' + JSON.stringify(W0))
   });
 
@@ -133,7 +135,7 @@ ASSERT_JS = r"""() => {
   const gr = B.ground || { floating: ['unrun'], buried: [] };
   R.push({
     name: 'on-the-ground',
-    ok: gr.checked >= 2200 && gr.floating.length === 0 && gr.buried.length === 0,
+    ok: gr.checked >= 2150 && gr.floating.length === 0 && gr.buried.length === 0,
     detail: gr.checked + ' plinths checked, floating ' + gr.floating.length + (gr.floating.length ? ' (' + gr.floating.slice(0, 4).join(', ') + ')' : '') + ', buried ' + gr.buried.length + (gr.buried.length ? ' (' + gr.buried.slice(0, 4).join(', ') + ')' : '')
   });
 

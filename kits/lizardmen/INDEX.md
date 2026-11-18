@@ -30,9 +30,12 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `56-sa-beasts.js` | 3 |  |
 | `57-lc-camp.js` | 10 |  |
 | `58-lz-monument.js` | 4 |  |
-| `59-lz-trades.js` | 7 | = (2) |
+| `59-lz-trades.js` | 8 | = (2) |
 | `59w-lz-works.js` | 35 **big** |  |
 | `60-lz-reliquary.js` | 11 |  |
-| `62-lk-capital.js` | 21 |  |
-| `63-lk-works.js` | 23 |  |
-| `89-rows.js` | 1 |  |
+| `62-lk-capital.js` | 24 |  |
+| `63-lk-works.js` | 27 |  |
+| `64-lk-variety.js` | 17 |  |
+| `65-lk-statuary.js` | 16 |  |
+| `89-rows.js` | 2 |  |
+| `91g-lz-interior-lod.js` | 8 |  |

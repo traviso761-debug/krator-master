@@ -24,35 +24,60 @@ defBuilding({key:'lk-greathall',name:"Hall of Intention",seed:7701,caste:'all',c
    FURNISH('lizardmen_court_throne',-L/2+2.2,.9,0,PI/2);FURNISH('lizardmen_court_hearth',-L/2+6.5,.4,0,0);FURNISH('lizardmen_court_carpet',-2,.4,0,PI/2);
    for(const s of [-1,1]){for(let i=0;i<3;i++)FURNISH('lizardmen_court_divan',-L/2+8+i*4.2,.4,s*(Wd/2-1.1),s>0?PI:0);FURNISH('lizardmen_court_candelabra',-L/2+4.4,.4,s*2.4,0);}
    for(const s of [-1,1])FURNISH('lizardmen_court_statue',-L/2+1.2,.4,s*3.6,PI/2);FURNISH_HANG('lizardmen_court_hanging',0,h*.6,0,0);FURNISH_HANG('lizardmen_court_hanging',-6,h*.55,0,0);FURNISH_HANG('lizardmen_court_hanging',6,h*.55,0,0);});}});
-/* ---------------------------------------------------------------- a stone rib house: the long house in basalt */
+/* ---------------------------------------------------------------- a stone rib house: the long house in basalt, brick, bone & lacquer (5 variants) */
 defBuilding({key:'lk-longhouse',name:'Stone rib house',seed:7702,caste:3,cut:true,w:22,d:11,h:10,budget:110000,
  tags:{types:['dwelling-multi'],wealth:'rich',role:'dwelling'},
- note:'the Drovers\' rib house for the capital: eleven ribs of polished basalt over a roof of basalt slab, polygonal walls leaning in and out on a bronze-inlaid plinth, a leiwen band under the eave, five spiral eyes, the Drovers\' door with a bronze frame',
- build(o){const L=18,Wd=7,wh=2.6,rh=5.2;lzCutFloor(.4);lzNoCut(()=>lkPlinth(L+2,Wd+2,.4,{leiwen:6}));
-  lzBatterRoom(L,Wd,.4,wh,LK_ST,P('basalt'),{lean:{front:.1,back:-.06,left:-.04,right:.09},front:[lzDoor(3,L/2),lzVent(3,2.5,wh*.6),lzVent(3,L-2.5,wh*.6)],back:[lzVent(3,L*.3,wh*.6),lzVent(3,L*.7,wh*.6)]});
-  lzRibRoof(L,Wd,wh+.45,wh+.4+rh,11,{mk:'basalt',col:P('basaltD'),over:.7,ribR:.15,ribMk:LK_PL,ribCol:P('basaltC'),past:.2,ext:.6,endMk:LK_ST,endCol:P('basalt'),leanEnds:{left:-.04,right:.09},y0:.4});
-  W(0,.4+wh-.5,Wd/2-.1*(wh-.5)+.05,0,()=>lzLeiwen(L*.8,.42,{cell:.26,mk:'bronze',back:'lacq'}));
-  lkEyes(5,L,.4+wh*.55,Wd/2-.1*wh*.55+.06,.3,1.2);
-  lzNoCut(()=>lzPortal(0,.4,Wd/2+.08,0,lzDoorH(3),{mk:'bronze'}));lzThreshold(0,Wd/2+.25,0,1.4);
-  lzFurnRoom(L-.8,Wd-.6,.4,'court',{beds:3,ceil:rh*.65,extra:[['generic_trade_hayrack',-L/2+1.5,1.2,PI/2],['lizardmen_court_cabinet',L/2-1.2,1.2,-PI/2]]});}});
-/* ---------------------------------------------------------------- stone cells: the warren in polygonal masonry */
+ note:'the Drovers\' rib house for the capital: five regional and material variants across basalt slab, baked Mohenjo-daro brick, oxblood shingle, jade scale and stepped flat roof terraces, on bronze-inlaid plinths with the Drovers\' 2.21 m portal',
+ build(o){const v=((o&&o.v)|0)%5,L=v===2?17.4:18,Wd=7,wh=v===2?3.5:2.6,rh=5.2;lzCutFloor(.4);lzNoCut(()=>lkPlinth(L+2,Wd+2,.4,{leiwen:6}));
+  const wMk=v===1||v===2?'brick':LK_ST,wCol=v===1||v===2?P('brick'):v===3?P('basaltD'):P('basalt');
+  lzBatterRoom(L,Wd,.4,wh,wMk,wCol,{lean:{front:.1,back:-.06,left:-.04,right:.09},
+   mkf:v===4?(s=>s==='left'||s==='right'?'brick':LK_ST):undefined,colf:v===4?(s=>s==='left'||s==='right'?P('brick'):P('basalt')):undefined,
+   front:[lzDoor(3,L/2),lzVent(3,2.5,wh*.6),lzVent(3,L-2.5,wh*.6)],back:[lzVent(3,L*.3,wh*.6),lzVent(3,L*.7,wh*.6)]});
+  if(v===2){
+   /* variant 2: flat-roofed Mohenjo-daro brick terrace longhouse with horn parapet & rooftop bone-and-mat shade pergola */
+   const T2={fl:[-L/2-.04*wh,Wd/2-.1*wh],fr:[L/2-.09*wh,Wd/2-.1*wh],br:[L/2-.09*wh,-Wd/2-.06*wh],bl:[-L/2-.04*wh,-Wd/2-.06*wh]};
+   lzSlab(T2,.4+wh,.34,LK_PL,P('basaltD'),.22);
+   lzNoCut(()=>{for(const x of lzSpan(-L/2+1.4,L/2-1.4,7))lzHorn(x,.4+wh+.34,Wd/2-.45,0,1.45,.11,{curl:.52,lean:.22,mk:'ivory'});
+    W(-3.6,.4+wh+.34,-.2,0,()=>{for(const sx of [-3.2,0,3.2])for(const sz of [-2.1,2.1])beam('bones',[sx,0,sz],[sx,2.1,sz*.92],.075,P('boneO'),true,6);
+     lzRibRoof(6.6,4.2,2.05,3.25,5,{mk:'matW',col:P('reedL'),over:.35,ribMk:'bones',ribCol:P('bone'),ribR:.09,past:.22,ext:.3,ends:false,drop:.15});});});
+  }else{
+   const rSpec=[
+    {mk:'basalt',col:P('basaltD'),n:11,ribMk:LK_PL,ribCol:P('basaltC'),endMk:LK_ST,endCol:P('basalt')},
+    {mk:'shingle',col:P('oxblood'),n:9,ribMk:'bones',ribCol:P('bone'),endMk:'brick',endCol:P('brick')},
+    null,
+    {mk:'scaleOlive',col:P('jade'),n:11,ribMk:'bronzeC',ribCol:P('verd'),endMk:'lacq',endCol:P('lacq')},
+    {mk:'hideW',col:P('hideD'),n:13,ribMk:'horn',ribCol:P('horn'),endMk:'brick',endCol:P('brick')}
+   ][v];
+   lzRibRoof(L,Wd,wh+.45,wh+.4+rh,rSpec.n,{mk:rSpec.mk,col:rSpec.col,over:.7,ribR:.15,ribMk:rSpec.ribMk,ribCol:rSpec.ribCol,past:v===1?.32:.2,ext:.6,endMk:rSpec.endMk,endCol:rSpec.endCol,leanEnds:{left:-.04,right:.09},y0:.4});
+   if(v===1||v===4)lzNoCut(()=>{for(const s of [-1,1])for(const k of [-1,1])lzHorn(s*(L/2+.45),wh+.4+rh-.35,k*.24,k>0?0:PI,2.2,.13,{curl:.68,lean:.28,mk:'ivory'});});
+  }
+  W(0,.4+wh-.5,Wd/2-.1*(wh-.5)+.05,0,()=>lzLeiwen(L*.76,.42,{cell:.26,mk:v===1||v===3?'lacqR':'bronze',back:'lacq'}));
+  lkEyes(v===3?7:5,L,.4+wh*.55,Wd/2-.1*wh*.55+.06,.28,1.3);
+  lzNoCut(()=>lzPortal(0,.4,Wd/2+.08,0,lzDoorH(3),{mk:v===4?'ivory':'bronze'}));lzThreshold(0,Wd/2+.25,0,1.4);
+  lzFurnRoom(L-.8,Wd-.6,.4,'court',{beds:3,ceil:v===2?2.9:rh*.65,extra:[['generic_trade_hayrack',-L/2+1.5,1.2,PI/2],['lizardmen_court_cabinet',L/2-1.2,1.2,-PI/2]]});}});
+/* ---------------------------------------------------------------- stone cells: the warren in polygonal masonry, brick & lacquer (5 variants) */
 defBuilding({key:'lk-warren',name:'Stone cell-warren',seed:7703,caste:1,cut:true,w:24,d:21,h:10.4,budget:130000,
  tags:{types:['dwelling-multi'],wealth:'rich',role:'dwelling'},
- note:'the Tenders\' cells for the capital: seven domes of fitted polygonal basalt in a whorl, buttressed by horns carved in polished basalt, bronze eyes on the crowns, the slit door framed in bronze; the largest cell opens',
- build(o){const rs=[1.25,1.5,1.9,2.3,2.9,3.55,4.4];let px=0,pz=0;const cells=[];
-  for(let i=0;i<rs.length;i++){const a=i*1.83+.6;if(i){px+=Math.cos(a)*(rs[i-1]+rs[i])*.9;pz+=Math.sin(a)*(rs[i-1]+rs[i])*.9;}cells.push([px,pz,rs[i]]);}
+ note:'the Tenders\' cells for the capital: seven domes in a whorl (chirality and masonry varying across polygonal basalt, baked Mohenjo-daro brick, dark polished stone and pale repaired courses), buttressed by stone, horn or ivory ribs, the 1.4 m slit door framed in bronze or oxblood lacquer',
+ build(o){const v=((o&&o.v)|0)%5,chir=v%2?-1:1,rs=[1.25,1.5,1.9,2.3,2.9,3.55,4.4];let px=0,pz=0;const cells=[];
+  for(let i=0;i<rs.length;i++){const a=i*1.83+.6;if(i){px+=chir*Math.cos(a)*(rs[i-1]+rs[i])*.9;pz+=Math.sin(a)*(rs[i-1]+rs[i])*.9;}cells.push([px,pz,rs[i]]);}
   const cx=cells.reduce((s,c)=>s+c[0],0)/cells.length,cz=cells.reduce((s,c)=>s+c[1],0)/cells.length;const big=cells[cells.length-1];const shz=-(big[1]-cz)+2.4;
-  lzCutFloor(0);lzNoCut(()=>box(LK_PL,0,0,shz-2,23,.2,20,P('basaltD')));
-  const cell=(x,z,r,o2)=>{const h=r*1.35;W(x,.2,z,0,()=>{lzDome(0,0,[[r,0],[r*1.03,h*.28],[r*.92,h*.58],[r*.6,h*.86],[r*.18,h*1.12],[r*.03,h*1.32],[0,h*1.34]],{mk:LK_ST,col:P('basalt'),seg:14,door:o2.door});
-   const n=o2.n||5;for(let i=0;i<n;i++){const a=i*TAU/n+(o2.a0||0),bx=Math.cos(a)*r*1.05,bz=Math.sin(a)*r*1.05;if(o2.door&&Math.abs(((a-PI/2)%TAU+TAU)%TAU)<.5)continue;lzHorn(bx,0,bz,Math.atan2(-bx,-bz),r*1.6,r*.24,{curl:.5,lean:-.25,mk:LK_PL,col:P('basaltD'),nt:8,ns:6});}
-   lzDomeEye([[r,0],[r*1.03,h*.28],[r*.92,h*.58],[r*.6,h*.86],[r*.18,h*1.12],[r*.03,h*1.32],[0,h*1.34]],h*.75,r*.16,{mk:'bronze'});
-   if(o2.door){const dh=o2.door,dw=dh*.62;lzPortal(0,0,r*1.02,0,dh,{mk:'bronze'});lzThreshold(0,r+.1,0,dw);}});};
+  lzCutFloor(0);lzNoCut(()=>box(v===1?'brick':LK_PL,0,0,shz-2,23,.2,20,P(v===1?'brick':'basaltD')));
+  const dMk=i=>v===1?'brick':v===2?(i%2?'brick':LK_ST):v===3?LK_PL:LK_ST;
+  const dCol=i=>v===1?P('brick'):v===2?(i%2?P('brick'):P('basalt')):v===3?P('basaltD'):v===4?P('basaltC'):P('basalt');
+  const hMk=v===1?'horn':v===2?'ivory':v===3?'bones':LK_PL;
+  const hCol=v===1?P('horn'):v===2?P('tusk'):v===3?P('boneO'):P('basaltD');
+  const cell=(x,z,r,idx,o2)=>{const h=r*1.35,cmk=dMk(idx),ccol=dCol(idx);W(x,.2,z,0,()=>{lzDome(0,0,[[r,0],[r*1.03,h*.28],[r*.92,h*.58],[r*.6,h*.86],[r*.18,h*1.12],[r*.03,h*1.32],[0,h*1.34]],{mk:cmk,col:ccol,seg:14,door:o2.door});
+   const n=o2.n||5;for(let i=0;i<n;i++){const a=i*TAU/n+(o2.a0||0),bx=Math.cos(a)*r*1.05,bz=Math.sin(a)*r*1.05;if(o2.door&&Math.abs(((a-PI/2)%TAU+TAU)%TAU)<.5)continue;lzHorn(bx,0,bz,Math.atan2(-bx,-bz),r*1.6,r*.24,{curl:.5,lean:-.25,mk:hMk,col:hCol,nt:8,ns:6});}
+   if(v===3)ring('bronzeC',0,h*.84,0,r*.58,.045,P('verd'),0,0,0,14);
+   lzDomeEye([[r,0],[r*1.03,h*.28],[r*.92,h*.58],[r*.6,h*.86],[r*.18,h*1.12],[r*.03,h*1.32],[0,h*1.34]],h*.75,r*.16,{mk:'bronze',glow:v===3&&!!o2.door});
+   if(o2.door){const dh=o2.door,dw=dh*.62;lzPortal(0,0,r*1.02,0,dh,{mk:v===1?'lacqR':'bronze'});lzThreshold(0,r+.1,0,dw);}});};
   for(let i=0;i<cells.length;i++){const c=cells[i],x=c[0]-cx,z=c[1]-cz+shz,last=i===cells.length-1;
-   cell(x,z,c[2],last?{n:7,a0:.3,door:lzDoorH(1)}:{n:i%2?5:7,a0:i*.7});
+   cell(x,z,c[2],i,last?{n:7,a0:.3,door:lzDoorH(1)}:{n:i%2?5:7,a0:i*.7});
    if(i>=cells.length-3){const r=c[2];FURNISH('lizardmen_court_bed',x-r*.42,.2,z-r*.3,0);
     if(last){FURNISH('lizardmen_court_bed',x+r*.42,.2,z-r*.3,0);FURNISH('lizardmen_court_desk',x+r*.4,.2,z+r*.35,-PI/2);FURNISH('lizardmen_court_hearth',x,.2,z-r*.62,0);FURNISH_HANG('lizardmen_court_hanging',x,.2+r*1.2,z,0);}
     else FURNISH(i%2?'lizardmen_court_jug':'lizardmen_court_scroll',x+r*.4,.2,z+r*.2,0);}
-   if(i){const p=cells[i-1];const mx=(p[0]+c[0])/2-cx,mz=(p[1]+c[1])/2-cz+shz;ellip(LK_ST,mx,.2,mz,Math.min(p[2],c[2])*.9,Math.min(p[2],c[2])*.5,Math.min(p[2],c[2])*.9,P('basalt'),0,10);}}}});
+   if(i){const p=cells[i-1];const mx=(p[0]+c[0])/2-cx,mz=(p[1]+c[1])/2-cz+shz;ellip(v===4?'lacq':dMk(i),mx,.2,mz,Math.min(p[2],c[2])*.9,Math.min(p[2],c[2])*.5,Math.min(p[2],c[2])*.9,v===4?P('lacq'):dCol(i),0,10);}}}});
 /* ---------------------------------------------------------------- the stone nest: the capital's nursery */
 defBuilding({key:'lk-nest',name:'Stone nest hall',seed:7704,caste:'all',cut:true,w:52,d:48,h:11,budget:170000,
  tags:{types:['religious','civic'],wealth:'rich',role:'nursery'},
@@ -143,18 +168,29 @@ defBuilding({key:'lk-watchtower',name:'Stone watchtower',seed:7708,caste:4,cut:t
    for(let i=0;i<11;i++){const a=i*TAU/11;const r=w1/2+.25;lzHorn(Math.cos(a)*r,1.6,Math.sin(a)*r,Math.atan2(Math.cos(a),Math.sin(a)),1.6,.13,{curl:.5,lean:.3,mk:LK_PL,col:P('basaltD'),nt:7,ns:6});}});
   lzNoCut(()=>lzPortal(0,.3,w0/2+.04,0,dh,{mk:'bronze'}));lzThreshold(0,w0/2+.3,0,dw);
   FURNISH('lizardmen_common_rack',2.2,.3,-1.8,-PI/2);FURNISH('lizardmen_common_bed',-2,.3,-1.6,0);FURNISH('generic_trade_locker',-2.4,.3,1.4,PI/2);FURNISH('lizardmen_common_stool',.6,.3,.8,0);FURNISH('generic_water',1.8,.3,1.4,0);}});
-/* ---------------------------------------------------------------- the capital's Interpreters' house: the green-stone twisted tower */
+/* ---------------------------------------------------------------- the capital's Interpreters' house: twisted towers in 5 heights & finishes */
 defBuilding({key:'lk-tower',name:"Stone Interpreters' house",seed:7709,caste:5,cut:true,w:11,d:11,h:21,budget:100000,
  tags:{types:['dwelling-single','civic'],wealth:'rich',role:'dwelling'},
- note:'the Interpreters\' house in stone for Basilisk (settlements/basilisk/PLAN.md section 7): nine courses of cyclopean basalt, each turned four degrees past the one below, spiral-eye oculi in verdigris bronze climbing it, a crown of seven horns; a 3.5 m door with nested bronze frames',
- build(o){const h=18,n=9,w0=7.4,w1=4.6,ch=h/n,hollow=3;lzCutFloor(0);
-  lzNoCut(()=>lkPlinth(10,10,.25,{}));
+ note:'the Interpreters\' house in stone for Basilisk: five heights, twist directions and material palettes (7, 9 or 11 courses across cyclopean basalt, baked Mohenjo-daro brick, oxblood lacquer bands, bone exoskeletons and verdigris bronze caps); a 3.5 m door with nested bronze frames',
+ build(o){const v=((o&&o.v)|0)%5;
+  const cfg=[[18,9,7.4,4.6,.07,3],[14.6,7,7.6,5.0,-.08,2],[19.0,11,7.2,4.3,.06,3],[16.6,9,7.4,4.7,-.07,3],[15.4,7,7.5,4.8,.085,2]][v];
+  const h=cfg[0],n=cfg[1],w0=cfg[2],w1=cfg[3],tw=cfg[4],hollow=cfg[5],ch=h/n;lzCutFloor(0);
+  lzNoCut(()=>lkPlinth(10,10,.25,{leiwen:v%2?5.2:0}));
   const dh=lzDoorH(5),dw=dh*.62;
-  for(let i=0;i<hollow;i++){const t=i/(n-1),w=lerp(w0,w1,t),ry=i*.07;W(0,.25+i*ch,0,ry,()=>{const T=lzBatterRoom(w,w,0,ch+.02,LK_ST,P('basalt'),{lean:{front:.02,back:-.02,left:.03,right:-.01},front:i===0?[{s:w/2,w:dw,h:dh,door:true}]:[]});lzCourseRing(T.T,ch-.28,.3,1.1,LK_ST,P('basaltD'));});}
-  const ceilY=.25+hollow*ch,cw=lerp(w0,w1,(hollow-1)/(n-1))-.2;box(LK_ST,0,ceilY-.3,0,cw,.3,cw,P('basaltD'),(hollow-1)*.07);
-  lzTwist(0,0,h,n,w0,w1,.07,{mk:LK_ST,col:P('basalt'),start:hollow,each:(i,y,w,ry)=>{if(i===3||i===5||i===7){const k=i===5?-1:1;W(0,y+ch*.5,0,ry,()=>lzEye(k*w*.5+.03*k,0,0,k*PI/2,w*.18,{mk:'bronze'}));}
-   if(i===1)W(0,y+.3,0,ry,()=>{W(0,0,w/2+.01,0,()=>lzLeiwen(w*.8,ch*.6,{cell:.4,mk:'bronze',back:false}));});}});
-  for(let i=0;i<7;i++){const a=i*TAU/7;lzHorn(Math.cos(a)*w1*.42,h+.25,Math.sin(a)*w1*.42,Math.atan2(Math.cos(a),Math.sin(a)),2.8,.15,{curl:.5,lean:.35,mk:LK_PL,col:P('basaltD')});}
-  lzNoCut(()=>lzPortal(0,.25,w0/2+.04,0,dh,{mk:'bronze',eye:true}));lzThreshold(0,w0/2+.3,0,dw);
+  for(let i=0;i<hollow;i++){const t=i/(n-1),w=lerp(w0,w1,t),ry=i*tw;W(0,.25+i*ch,0,ry,()=>{const T=lzBatterRoom(w,w,0,ch+.02,v===1&&i>0?'brick':LK_ST,P(v===1&&i>0?'brick':v===2?'basaltD':'basalt'),{lean:{front:.02,back:-.02,left:.03,right:-.01},front:i===0?[{s:w/2,w:dw,h:dh,door:true}]:[]});lzCourseRing(T.T,ch-.28,.3,1.1,LK_ST,P('basaltD'));});}
+  const ceilY=.25+hollow*ch,cw=lerp(w0,w1,(hollow-1)/(n-1))-.2;box(LK_ST,0,ceilY-.3,0,cw,.3,cw,P('basaltD'),(hollow-1)*tw);
+  const upMk=v===1?'brick':v===2?LK_PL:v===4?'lacq':LK_ST;
+  const upCol=v===1?P('brick'):v===2?P('basaltD'):v===4?P('lacq'):P('basalt');
+  lzTwist(0,.25,h,n,w0,w1,tw,{mk:upMk,col:upCol,start:hollow,each:(i,y,w,ry)=>{
+   if(v===1||v===4)W(0,y+ch-.12,0,ry,()=>box('lacqR',0,0,0,w+.16,.14,w+.16,P('oxblood')));
+   if(v===2&&i%2===0)W(0,y+ch-.1,0,ry,()=>box('bronzeC',0,0,0,w+.18,.12,w+.18,P('verd')));
+   if(i===hollow||i===hollow+2||i===n-2){const k=(i%2)?-1:1;W(0,y+ch*.5,0,ry,()=>lzEye(k*w*.5+.03*k,0,0,k*PI/2,w*.18,{mk:'bronze',glow:v===2&&i===n-2}));}
+   if(i===1)W(0,y+.3,0,ry,()=>{W(0,0,w/2+.01,0,()=>lzLeiwen(w*.8,ch*.6,{cell:.4,mk:v===4?'lacqR':'bronze',back:false}));});}});
+  if(v===3)for(let i=0;i<7;i++){const a=i*TAU/7,a1=a+tw*(n-hollow);beam('bones',[Math.cos(a)*(w0*.46),ceilY,Math.sin(a)*(w0*.46)],[Math.cos(a1)*(w1*.52),h+.25,Math.sin(a1)*(w1*.52)],.09,P('bone'),true,7);}
+  if(v===2){W(0,h+.25,0,(n-1)*tw,()=>{box('bronzeC',0,0,0,w1+.5,.32,w1+.5,P('verd'));box(LK_PL,0,.32,0,w1*.68,.65,w1*.68,P('basaltD'));for(const q of [0,PI/2,PI,-PI/2])W(0,.64,0,q,()=>lzEye(0,0,w1*.34+.03,0,.34,{mk:'bronze',glow:true}));});}
+  else{if(v===3)cone('scaleOlive',0,h+.22,0,w1*.56,1.45,P('jade'),7);
+   const nh=v===1?5:7,hMk2=v===1?'ivory':v===4?'bronzeC':LK_PL,hCol2=v===1?P('tusk'):v===4?P('verd'):P('basaltD');
+   for(let i=0;i<nh;i++){const a=i*TAU/nh;lzHorn(Math.cos(a)*w1*.42,h+.25,Math.sin(a)*w1*.42,Math.atan2(Math.cos(a),Math.sin(a)),v===1?2.9:2.5,.15,{curl:.5,lean:v===1?.22:.35,mk:hMk2,col:hCol2});}}
+  lzNoCut(()=>lzPortal(0,.25,w0/2+.04,0,dh,{mk:v===1||v===4?'lacqR':'bronze',eye:true}));lzThreshold(0,w0/2+.3,0,dw);
   FURNISH('lizardmen_court_bed',-1.6,.25,-1.8,0);FURNISH('lizardmen_court_desk',1.9,.25,-1.6,-PI/2);FURNISH('lizardmen_court_scroll',-2.6,.25,.6,PI/2);
   FURNISH('lizardmen_court_statue',2.4,.25,1.6,-PI/2);FURNISH('lizardmen_court_candelabra',-.9,.25,2.2,0);FURNISH('lizardmen_court_carpet',.3,.25,.2,0);FURNISH_HANG('lizardmen_court_hanging',0,ceilY-.35,0,0);}});

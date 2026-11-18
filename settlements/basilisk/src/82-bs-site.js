@@ -600,7 +600,8 @@ var BS_SITE = (function () {
     } else {
       y = fs.hi + 0.03;
     }
-    var v = bsD(o.v, KRAND.hash(SEED, KTAGS.str32(key), Math.round(x), Math.round(z)) % 3);
+    var vMod = key.indexOf('lk-') === 0 ? 5 : 3;
+    var v = bsD(o.v, KRAND.hash(SEED, KTAGS.str32(key), Math.round(x * 3), Math.round(z * 3)) % vMod);
     var rec = {
       key: key, x: +x.toFixed(2), z: +z.toFixed(2), y: +y.toFixed(3), ry: +ry.toFixed(5),
       w: D.w, d: D.d, h: D.h, kind: kind, where: o.where || kind, caste: o.caste || null,
@@ -740,21 +741,27 @@ var BS_SITE = (function () {
   var HOLDS = {
     'lk-warren': { total: 36, c: { 1: 36 } },
     'lk-insula': { total: 44, c: { 2: 44 } },
+    'lk-terrace': { total: 22, c: { 2: 22 } },
+    'lk-kilnhouse': { total: 16, c: { 2: 16 } },
     'lk-makers': { total: 10, c: { 2: 10 } },
     'lz-makers': { total: 10, c: { 2: 10 } },
     'lk-bronzehall': { total: 60, c: { 2: 60 } },
     'lk-dockstore': { total: 30, c: { 2: 12, 3: 18 } },
     'lk-boil': { total: 12, c: { 2: 12 } },
+    'lk-guildhall': { total: 14, c: { 2: 14 } },
     'lz-hall-bronze': { total: 12, c: { 2: 12 } },
     'lz-hall-reed': { total: 12, c: { 2: 12 } },
     'lz-hall-bone': { total: 12, c: { 2: 12 } },
     'lk-caravanserai': { total: 66, c: { 3: 66 } },
     'lk-longhouse': { total: 33, c: { 3: 33 } },
+    'lk-rowhouse': { total: 24, c: { 3: 24 } },
     'lz-longhouse': { total: 33, c: { 3: 33 } },
     'lk-lodge': { total: 38, c: { 4: 23, 6: 15 } },
+    'lk-bastion': { total: 34, c: { 4: 20, 6: 14 } },
     'lz-lodge': { total: 30, c: { 4: 18, 6: 12 } },
     'lz-barracks': { total: 30, c: { 4: 18, 6: 12 } },
     'lk-tower': { total: 7, c: { 5: 7 } },
+    'lk-archive': { total: 14, c: { 5: 14 } },
     'lz-tower': { total: 7, c: { 5: 7 } },
     'lk-college': { total: 39, c: { 5: 39 } },
     'lz-warren': { total: 28, c: { 1: 28 } }

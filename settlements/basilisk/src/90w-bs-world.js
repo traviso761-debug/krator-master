@@ -124,9 +124,9 @@
     if (typeof KGROUND !== 'undefined') {
       KGROUND.hook(mat, {
         key: name,
-        relief: { bump: 0.04, cavity: 0.35, mesh: 0.25, lambert: 1 },
+        relief: { bump: 0.045, cavity: 0.38, mesh: 0.28, lambert: 1 },
         tri: true,
-        layers: [KGROUND.layer('basilisk', 'gYard', { w: '1.0', amt: 0.72, gain: 1.05, tint: 'diffuseColor.rgb*1.32', name: name })]
+        layers: [KGROUND.layer('basilisk', 'gSalt', { w: '1.0', amt: 0.52, gain: 1.02, tint: 'diffuseColor.rgb*1.18', name: name })]
       });
     }
     var m = new THREE.Mesh(g, mat);
@@ -141,14 +141,14 @@
     return m;
   }
 
-  var bsCityTerraceMesh = makeTerraceObject(G.cityTerrace, 0x8a6d56, 0x464e48, 'terrace-city',
-    'The +5 m kiln-brick city platform of Basilisk (-2,595 m, battered basalt revetments)');
-  var bsMoundTerraceMesh = makeTerraceObject(G.moundTerrace, 0x545d56, 0x3b433d, 'terrace-mound',
-    'The +12 m polygonal-basalt Mound of Intention (-2,588 m)');
-  var bsMoleTerraceMesh = makeTerraceObject(G.moleTerrace, 0x58625a, 0x3c443e, 'terrace-mole',
-    'The 700 m cyclopean basalt ley mole (+1.5 m over the eastern sea, bearing 50.6 deg)');
-  var bsCourtPlazasMesh = makeTerraceObject(G.courtPlazas, 0x48524c, 0x343c38, 'terrace-courts',
-    'Dressed basalt paving of the eight district courts and the Court of the First Turn');
+  var bsCityTerraceMesh = makeTerraceObject(G.cityTerrace, 0x3b5e53, 0x263c35, 'terrace-city',
+    'The +5 m verdigris chlorite-stone city platform of Basilisk (-2,595 m, battered basalt revetments)');
+  var bsMoundTerraceMesh = makeTerraceObject(G.moundTerrace, 0x2f4f45, 0x1f352f, 'terrace-mound',
+    'The +12 m dark malachite-basalt Mound of Intention (-2,588 m)');
+  var bsMoleTerraceMesh = makeTerraceObject(G.moleTerrace, 0x38584e, 0x253a33, 'terrace-mole',
+    'The 700 m cyclopean verdigris-basalt ley mole (+1.5 m over the eastern sea, bearing 50.6 deg)');
+  var bsCourtPlazasMesh = makeTerraceObject(G.courtPlazas, 0x457062, 0x2b463d, 'terrace-courts',
+    'Dressed verdigris-stone flags of the eight district courts and the Court of the First Turn');
 
   /* 4. Far ground mesh (64 km square at 500 m, sunk inside NEAR) */
   var bsFarMesh = (function () {
@@ -349,11 +349,11 @@
     SB = null;
 
     var tblPlinth = KTAGS.table(), tblWall = KTAGS.table(), tblStreets = KTAGS.table();
-    var tblCivil = KTAGS.table(), tblFields = KTAGS.table();
+    var tblCivil = KTAGS.table(), tblFields = KTAGS.table(), tblStreetFurn = KTAGS.table();
     var i, k;
 
-    /* Helper: emit a paved stone ribbon along a polyline [[x, z], ...] at height yFn(x, z) */
-    function drawRibbon(pts, w, h, mk, col, kerbMk, kerbCol, yFn, tbl) {
+    /* Helper: emit a paved verdigris-stone ribbon along a polyline [[x, z], ...] with optional twin bronze sledge tracks */
+    function drawRibbon(pts, w, h, mk, col, kerbMk, kerbCol, yFn, tbl, tracks) {
       var pi, a, b, dx, dz, L, mx, mz, ry, ym;
       for (pi = 0; pi + 1 < pts.length; pi++) {
         a = pts[pi]; b = pts[pi + 1];
@@ -365,28 +365,31 @@
         W(mx, 0, mz, ry, function () {
           box(mk, 0, ym, 0, w, h, L + w * 0.4, col);
           if (kerbMk) {
-            box(kerbMk, -w / 2 + 0.22, ym + h, 0, 0.44, 0.24, L + w * 0.2, kerbCol);
-            box(kerbMk, w / 2 - 0.22, ym + h, 0, 0.44, 0.24, L + w * 0.2, kerbCol);
+            box(kerbMk, -w / 2 + 0.24, ym + h, 0, 0.48, 0.26, L + w * 0.2, kerbCol);
+            box(kerbMk, w / 2 - 0.24, ym + h, 0, 0.48, 0.26, L + w * 0.2, kerbCol);
+          }
+          if (tracks) {
+            box('bronzeC', -2.15, ym + h, 0, 0.24, 0.03, L + w * 0.1, hc(0x5a9c86));
+            box('bronzeC', 2.15, ym + h, 0, 0.24, 0.03, L + w * 0.1, hc(0x5a9c86));
           }
         });
-        if (tbl) tbl.push(mx, ym, mz, ry, w, L, h + 0.24);
+        if (tbl) tbl.push(mx, ym, mz, ry, w, L, h + 0.26);
       }
     }
 
     try {
-      /* 6a. Great Coil (14 m basalt avenue), Ley Way (9 m grey-green basalt + verdigris bronze sighting line) & 8 spiral streets */
-      drawRibbon(G.coilStreet, 14.0, 0.08, 'stoneP', hc(0x3f4742), 'basalt', hc(0x2f3632), function () { return G.platY - 0.02; }, tblStreets);
-      /* South Gate exterior sloped basalt causeway pavement (stepped flush along groundH) */
+      /* 6a. Great Coil (14 m verdigris-stone avenue + bronze runner tracks), Ley Way & 8 verdigris spiral streets */
+      drawRibbon(G.coilStreet, 14.0, 0.08, 'stoneP', hc(0x467667), 'bronzeC', hc(0x2e4e44), function () { return G.platY - 0.02; }, tblStreets, true);
+      /* South Gate exterior sloped verdigris-stone & bronze causeway pavement (continuous smooth psurf along groundH) */
       (function () {
-        var zA = G.gateXz[1] + 7.5, zB = G.gateXz[1] + 111.5, nR = 16, dzR = (zB - zA) / nR, ri2, zm, gyR;
-        for (ri2 = 0; ri2 < nR; ri2++) {
-          zm = zA + (ri2 + 0.5) * dzR;
-          gyR = G.groundH(G.gateXz[0], zm);
-          W(G.gateXz[0], 0, zm, 0, function () {
-            box('stoneP', 0, gyR - 0.12, 0, 14.2, 0.16, dzR + 0.3, hc(0x3f4742));
-            box('basalt', -7.1, gyR + 0.02, 0, 0.55, 0.22, dzR + 0.3, hc(0x2f3632));
-            box('basalt', 7.1, gyR + 0.02, 0, 0.55, 0.22, dzR + 0.3, hc(0x2f3632));
-          });
+        var gx = G.gateXz[0], zA = G.gateXz[1] + 7.2, zB = G.gateXz[1] + 112.0;
+        psurf('stoneP', function (u, v) {
+          var zz = zA + (zB - zA) * v;
+          return [gx - 7.1 + 14.2 * u, G.groundH(gx, zz) + 0.035, zz];
+        }, 2, 12, hc(0x467667), { flip: true });
+        for (var ks = -1; ks <= 1; ks += 2) {
+          beam('bronzeC', [gx + ks * 7.1, G.platY + 0.14, zA], [gx + ks * 7.5, G.sabkhaY + 0.14, zB], 0.28, hc(0x34584c), true, 6);
+          beam('bronzeC', [gx + ks * 2.15, G.platY + 0.05, zA], [gx + ks * 2.15, G.sabkhaY + 0.05, zB], 0.12, hc(0x5ea28b), true, 6);
         }
       })();
 
@@ -395,8 +398,8 @@
       var emitLeySpan = function (t0, t1, y0, w) {
         var L = t1 - t0, tm = (t0 + t1) / 2, mx = G.leyDir[0] * tm, mz = G.leyDir[1] * tm;
         W(mx, 0, mz, leyRy, function () {
-          box('stoneP', 0, y0, 0, w, 0.09, L, hc(0x637066));
-          box('bronzeC', 0, y0 + 0.09, 0, 0.18, 0.035, L, hc(0x4f8c74));
+          box('stoneP', 0, y0, 0, w, 0.09, L, hc(0x528878));
+          box('bronzeC', 0, y0 + 0.09, 0, 0.28, 0.04, L, hc(0x6ac0a6));
         });
         tblStreets.push(mx, y0, mz, leyRy, w, L, 0.14);
       };
@@ -416,15 +419,112 @@
         var mt = G.moleRange[1] + 2.5, mx = G.leyDir[0] * mt, mz = G.leyDir[1] * mt;
         W(mx, 0, mz, leyRy, function () {
           for (var st = 0; st < 7; st++) {
-            box('cyclo', 0, G.seaY - 0.35, st * 0.65, 7.4, (G.moleY - (G.seaY - 0.35)) * (1 - st / 7), 0.72, hc(0x465048));
+            box('cyclo', 0, G.seaY - 0.35, st * 0.65, 7.4, (G.moleY - (G.seaY - 0.35)) * (1 - st / 7), 0.72, hc(0x3a5c52));
           }
         });
       })();
 
-      /* Eight district & Gate Quarter spiral street kerbs */
+      /* Eight district & Gate Quarter verdigris-stone spiral streets with bronze-trimmed kerbs */
       G.districtStreets.forEach(function (ds) {
-        drawRibbon(ds.pts, 7.0, 0.06, 'brick', hc(0x7c5a46), 'stoneP', hc(0x464f49), function () { return G.platY - 0.01; }, null);
+        drawRibbon(ds.pts, 7.0, 0.07, 'stoneP', hc(0x3f6e60), 'bronzeC', hc(0x4c8272), function () { return G.platY - 0.01; }, tblStreets, false);
       });
+
+      /* 6a-2. Verdigris-stone & cast-bronze street furniture along the Great Coil and district spiral streets:
+               (0) Shang fangding bronze cauldrons on stone plinths, (1) battered verdigris-stone & bronze basking benches,
+               (2) twisted spiral-eye street pylons with clapperless chimes, (3) bronze-spouted monsoon curb troughs */
+      (function () {
+        var emitFurnPiece = function (fx, fz, fry, kindIdx) {
+          var fy = G.platY + 0.05;
+          W(fx, fy, fz, fry, function () {
+            if (kindIdx === 0) {
+              /* Cast-bronze Shang fangding street cauldron on a verdigris-stone pedestal */
+              box('stoneP', 0, 0, 0, 1.55, 0.34, 1.55, hc(0x36584d));
+              for (var lx = -1; lx <= 1; lx += 2) {
+                for (var lz = -1; lz <= 1; lz += 2) {
+                  cyl('bronzeC', lx * 0.46, 0.34, lz * 0.46, 0.11, 0.68, hc(0x78683c), 7);
+                }
+              }
+              box('bronzeC', 0, 0.96, 0, 1.28, 0.78, 1.12, hc(0x4b8a78));
+              box('lacq', 0, 1.16, 0, 1.32, 0.34, 1.16, hc(0x1a1612));
+              box('bronzeC', 0, 1.68, 0, 1.44, 0.12, 1.26, hc(0x7c6c40));
+              cone('bronzeC', -0.58, 1.8, 0, 0.09, 0.55, hc(0x4b8a78), 6);
+              cone('bronzeC', 0.58, 1.8, 0, 0.09, 0.55, hc(0x4b8a78), 6);
+              tblStreetFurn.push(fx, fy, fz, fry, 1.6, 1.6, 2.35);
+            } else if (kindIdx === 1) {
+              /* Battered verdigris-stone & cast-bronze caste basking bench */
+              box('cyclo', -1.25, 0, 0, 0.46, 0.58, 1.05, hc(0x2d4840));
+              box('cyclo', 1.25, 0, 0, 0.46, 0.66, 1.05, hc(0x2d4840));
+              box('stoneP', 0, 0.58, 0, 3.3, 0.2, 1.18, hc(0x467868));
+              box('bronzeC', 0, 0.78, -0.44, 3.34, 0.28, 0.14, hc(0x78683c));
+              box('bronzeC', 0, 0.66, 0.58, 3.26, 0.06, 0.05, hc(0x589c86));
+              cone('bronzeC', -1.58, 0.78, -0.44, 0.08, 0.62, hc(0x4c8a78), 6);
+              cone('bronzeC', 1.58, 0.78, -0.44, 0.08, 0.62, hc(0x4c8a78), 6);
+              tblStreetFurn.push(fx, fy, fz, fry, 3.4, 1.2, 1.4);
+            } else if (kindIdx === 2) {
+              /* Twisted verdigris-stone kerb pylon with bronze spiral-eye disc & clapperless street chimes */
+              for (var ci = 0; ci < 5; ci++) {
+                var cw = 0.92 - ci * 0.09;
+                box('stoneP', 0, ci * 0.64, 0, cw, 0.65, cw, hc(ci % 2 ? 0x385e52 : 0x487668), ci * 0.14);
+              }
+              box('bronzeC', 0, 3.2, 0, 0.86, 0.14, 0.86, hc(0x7c6c40));
+              cyl('bronzeC', 0, 3.34, 0, 0.44, 0.52, hc(0x4a8a78), 8);
+              box('jade', 0, 3.55, 0, 0.24, 0.24, 0.92, hc(0x6ad6be));
+              /* Outrigger bronze bar with 3 tiny clapperless bells */
+              box('bronzeC', 0.55, 2.95, 0, 0.95, 0.07, 0.07, hc(0x7c6c40));
+              for (var bi2 = 0; bi2 < 3; bi2++) {
+                cyl('bronzeC', 0.32 + bi2 * 0.26, 2.62, 0, 0.07, 0.3, hc(0x549682), 7);
+              }
+              tblStreetFurn.push(fx, fy, fz, fry, 1.4, 1.0, 3.9);
+            } else {
+              /* Polygonal verdigris-stone & bronze gargoyle curb trough */
+              box('cyclo', 0, 0, 0, 2.1, 0.74, 1.25, hc(0x35584d));
+              box('bronzeC', 0, 0.72, 0, 2.18, 0.09, 1.32, hc(0x78683c));
+              box('jade', 0, 0.66, 0, 1.76, 0.08, 0.92, hc(0x286862));
+              cyl('bronzeC', 0, 0.74, -0.52, 0.15, 0.72, hc(0x4a8a78), 7);
+              box('bronzeC', 0, 1.18, -0.22, 0.14, 0.12, 0.55, hc(0x7c6c40));
+              tblStreetFurn.push(fx, fy, fz, fry, 2.2, 1.35, 1.46);
+            }
+          });
+        };
+
+        var clearOfSites = function (px, pz) {
+          /* Skip ley corridor and any placed building footprint */
+          var lt = px * G.leyDir[0] + pz * G.leyDir[1];
+          var lp = Math.abs(px * G.leyPerp[0] + pz * G.leyPerp[1]);
+          if (lt > -10 && lp < 9.0) return false;
+          for (var si5 = 0; si5 < G.sites.length; si5++) {
+            var sb2 = G.sites[si5];
+            if (Math.abs(px - sb2.x) < sb2.w * 0.5 + 2.6 && Math.abs(pz - sb2.z) < sb2.d * 0.5 + 2.6) return false;
+          }
+          return true;
+        };
+
+        var walkRibbonFurn = function (pts, kerbOff, stepDist, seedBase) {
+          var segI, p0, p1, dx, dz, L, ux, uz, nx, nz, dCur, side, px, pz, kIdx;
+          var seqF = seedBase;
+          for (segI = 0; segI + 1 < pts.length; segI++) {
+            p0 = pts[segI]; p1 = pts[segI + 1];
+            dx = p1[0] - p0[0]; dz = p1[1] - p0[1]; L = Math.hypot(dx, dz);
+            if (L < stepDist * 0.9) continue;
+            ux = dx / L; uz = dz / L;
+            nx = -uz; nz = ux;
+            for (dCur = 22; dCur < L - 22; dCur += stepDist) {
+              seqF++;
+              side = (seqF % 2 === 0) ? 1 : -1;
+              px = p0[0] + ux * dCur + nx * side * kerbOff;
+              pz = p0[1] + uz * dCur + nz * side * kerbOff;
+              if (!clearOfSites(px, pz)) continue;
+              kIdx = (seqF * 3 + segI) & 3;
+              emitFurnPiece(px, pz, Math.atan2(-nx * side, -nz * side), kIdx);
+            }
+          }
+        };
+
+        walkRibbonFurn(G.coilStreet, 5.8, 30, 11);
+        G.districtStreets.forEach(function (ds, di) {
+          walkRibbonFurn(ds.pts, 2.85, 52, 101 + di * 17);
+        });
+      })();
 
       /* 6b. Continuous 8,170 m cyclopean perimeter wall curtain (+5 m platform up +8 m to +13 m walk + parapet & stone horns) */
       var wallObstacles = G.sites.filter(function (s) {
@@ -640,10 +740,16 @@
       }, tblWall);
       if (tblStreets.n > 0) SVTAGS.addSet({
         'class': 'infrastructure', kind: 'street-paving', key: 'bs-streets',
-        name: 'The Great Coil and Ley Way pavements', tags: { culture: 'lizardmen', types: ['infrastructure', 'civic'] },
-        note: 'dark basalt paving of the 14 m Great Coil and grey-green basalt + verdigris bronze sighting line of the 50.6 deg Ley Way',
+        name: 'Verdigris-stone avenues of the Great Coil, Ley Way and district spirals', tags: { culture: 'lizardmen', types: ['infrastructure', 'civic'] },
+        note: 'verdigris chlorite-stone flagstones, bronze-edged kerbs and twin cast-bronze sledge-runner tracks of Basilisk\'s avenues',
         frag: 'settlements/basilisk'
       }, tblStreets);
+      if (tblStreetFurn.n > 0) SVTAGS.addSet({
+        'class': 'prop', kind: 'street-furniture', key: 'bs-street-furniture',
+        name: 'Verdigris-stone and cast-bronze street furniture', tags: { culture: 'lizardmen', types: ['infrastructure', 'civic'] },
+        note: 'Shang fangding bronze cauldrons, battered verdigris-stone basking benches, spiral-eye kerb pylons with clapperless chimes, and bronze-spouted curb troughs',
+        frag: 'settlements/basilisk'
+      }, tblStreetFurn);
       if (tblCivil.n > 0) SVTAGS.addSet({
         'class': 'infrastructure', kind: 'hydraulic-works', key: 'bs-hydraulics',
         name: 'Lothal dock, Dholavira reservoirs, check dam and ore yard', tags: { culture: 'lizardmen', types: ['infrastructure', 'industry'] },
@@ -684,8 +790,13 @@
     var pn = G.sites.find(function (s) { return s.key === 'gl-pans'; }) || { x: -1400, z: -900, y: ys };
     var rv3 = G.reservoirs[2] || G.reservoirs[0];
     var mTipX = G.leyDir[0] * (G.moleRange[1] - 60), mTipZ = G.leyDir[1] * (G.moleRange[1] - 60);
+    var cwA = G.coilStreet[4] || [-200, -180], cwB = G.coilStreet[5] || [-200, 180];
+    var avDx = cwB[0] - cwA[0], avDz = cwB[1] - cwA[1], avL = Math.hypot(avDx, avDz) || 1;
+    var avEx = cwA[0] + avDx / avL * 48, avEz = cwA[1] + avDz / avL * 48;
+    var avTx = cwA[0] + avDx / avL * 195, avTz = cwA[1] + avDz / avL * 195;
     return {
       'Overview': safeEye(-1180, ym + 680, 1480, 20, yp, 40),
+      'Verdigris avenues and colossi': safeEye(avEx, yp + 12.0, avEz, avTx, yp + 5.5, avTz),
       'The Hall and Mound of Intention': safeEye(G.leyDir[0] * 68, ym + 15, G.leyDir[1] * 68, -G.leyDir[0] * 12, ym + 7, -G.leyDir[1] * 12),
       'The Great Tank of the First Turn': safeEye(tk.x + 28, tk.y + 16, tk.z + 26, tk.x, tk.y + 2.5, tk.z),
       'The South Gate and Coil mouth': safeEye(G.gateXz[0] - 24, ys + 24, G.gateXz[1] + 92, G.gateXz[0], yp + 6, G.gateXz[1] - 10),
