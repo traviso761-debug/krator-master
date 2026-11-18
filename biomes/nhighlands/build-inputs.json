@@ -182,7 +182,7 @@
   },
   "build.py --station alpine": {
    "inputs": {
-    "biomes/nhighlands/KNOWN_ISSUES.md": "d6ec071b0157f1bc69f3a73e948f3097514a60cae5e3777c2ac039cb61adff49",
+    "biomes/nhighlands/KNOWN_ISSUES.md": "587b561fdf33c0d6523bb3eefd07ab0f13131435a818cdd515d18e52d5353673",
     "biomes/nhighlands/PORT.md": "2b4b6db309e4077b1a01e2db8deca72bf79f36c3b11523440e9f5e57ce6e5971",
     "biomes/nhighlands/build.py": "189bfae5c6f7e3bbf9904a23c8eb0a22d88ca15d93044b54b6585b8a00f1412e",
     "biomes/nhighlands/src/00-head.html": "c84c27ad3018b81c3672e0b6afe14cb2948dcc0ca84242ce96ec5693dd473548",
@@ -209,6 +209,7 @@
     "biomes/nhighlands/stations/montane/88-host-build.js": "cd7a5451b26408633d7dd91c1d4d349e00cda40bea546f4b315826ed6df9eb7f",
     "biomes/nhighlands/stations/montane/89-host-sky.js": "8c3a2495e91e3d671b283b8e74f5565a1e34ccb53c5340f510db6e301370e783",
     "biomes/nhighlands/stations/montane/station.json": "f9fda597e1d7b545003a163e15e91a3e326d5f29e9e98ef85972b0da8467ac35",
+    "biomes/nhighlands/stations/tiguantin/station.json": "cef37ed40aa8fedefe64bad19ee3486b532d10758d56f1c02bec8afd4c983894",
     "biomes/nhighlands/tex/beard.albedo.webp": "d16898ef9f7cc6ca821b6034709b64e0ed23312162dd0104827fe78f3326443c",
     "biomes/nhighlands/tex/birch.albedo.webp": "5a37d5c20360c335ad667e31c3276b3e9325b6a5ce0116a231b97b59df544aec",
     "biomes/nhighlands/tex/blade.albedo.webp": "f2db0503865efdb3a957efe87ed03d760fda5d6cf9091044adcb7c1710ff58c2",
@@ -311,7 +312,6 @@
     "core/host/97-host-minimap.js": "24758908dc1f6be4fed09e0aa3a23270187ccd93ff41ada5974bf49b194fc162",
     "core/host/98-host-edit.js": "89038217cde180a076b33d41644bd95285837a9d63f09199bd944e507596997e",
     "core/host/99-host-cutaway.js": "c67cea97b1b18a2a8b3bbc329d5bb5df7fd007a4aee033b21d91fe75cd0ad300",
-    "core/host/host.py": "18f80becdd343f7375785bc5aabdda290761d34376d890ebff8fab0d91fb5288",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
     "core/minimap/88-core-minimap.js": "b6c7e9c662f079c8f97cfc9f6bac2fea115b660f9b417056da54c3bf3c1129a1",
@@ -325,7 +325,7 @@
     "core/tags/50-core-tags.js": "5d506746c4b5142f76e932cbd798d4ba6926e3865919d7ecd6d39a16e4e5b882",
     "core/tags/52-core-tags-vocab.js": "34470fd7966f7d0684585b0bc2082875d5de0ec2ed11d141f79f9612462584d3",
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
-    "core/terrain/35-core-strata.js": "411b14b18413498c532a9a3fab9893c5726630c8387098b3a1190d0817a505b1",
+    "core/terrain/35-core-strata.js": "65491b58b7258840a88c1ce17f0ba53d11536acd9bf2c6dacb9e1af00821c76c",
     "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
     "core/terrain/45-core-horizon.js": "e597aa2e3bbd3826d60908d43a3ecf65509b7c27467913d538fe1e0babb20b1e",
@@ -341,14 +341,12 @@
     "core/water/ext/57-core-water-audit.js": "6dd616a15a7804c615c4e1638b250cb709a85e1f219ae9ea03f8c4faa20374c1",
     "core/water/ext/58-core-water-mirror.js": "abf23c31ba18ba7f4890646bb539fa41652a3331977cc0c6ed6bcda9c646083f",
     "core/water/ext/60-core-water-fields.js": "8e877798226558edf744fccd1e6e92edf28bf059af5f087a10d733eaf5ecac2a",
-    "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
-    "tools/buildlib.py": "24ec6d636869007e626446a0b8e9cc886fd595af0c9f95b78c4d4b272a18ec0e",
-    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47",
-    "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
+    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47"
    },
    "listings": {
+    "biomes/nhighlands": "40a75295fba4d93c4e09fba395d5bc337024e22ed53d27d093753cdcc31e9c5f",
     "biomes/nhighlands/src": "b0cdcaa1484376afc84d0fc6cdc54cecc30bd9c0bdbe9d06d2cf1c49e65b119d",
-    "biomes/nhighlands/stations": "90754841be26580092522568623e0ffef883f4b384b43d68af6f8481cca48566",
+    "biomes/nhighlands/stations": "c587dbc2dd4fa2e936d19d4ec9ff62fbb707987e39efbb89e691a13e7c78fda1",
     "biomes/nhighlands/stations/alpine": "25fcfd1d88db975a7f078d6fcac8ae26b3be49b62d520aae7a07399ce07ff18b",
     "biomes/nhighlands/stations/montane": "711ede739def10167a8653b6a657c46f9f760116049ef4aab7b79e170ab035d4",
     "core/host": "d729ffbc0ed36e68e9036bd9c454abc6462a27b22a4bc16b88c38d836e6f4a37",
@@ -356,15 +354,15 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/nhighlands/dist/nhighlands-alpine.html": "bbe14de3fee3e561b1df92d79bf27e8bde26ab11a783bcdaf64e35a76c140c66"
+    "biomes/nhighlands/dist/nhighlands-alpine.html": "ee5938b2a3bc1c651392eba8fc94be003ec9aaa557745ac53a14fe2d1c761b3c"
    },
    "outputs_raw": {
-    "biomes/nhighlands/dist/nhighlands-alpine.html": "bbe14de3fee3e561b1df92d79bf27e8bde26ab11a783bcdaf64e35a76c140c66"
+    "biomes/nhighlands/dist/nhighlands-alpine.html": "ee5938b2a3bc1c651392eba8fc94be003ec9aaa557745ac53a14fe2d1c761b3c"
    }
   },
   "build.py --station bogs": {
    "inputs": {
-    "biomes/nhighlands/KNOWN_ISSUES.md": "d6ec071b0157f1bc69f3a73e948f3097514a60cae5e3777c2ac039cb61adff49",
+    "biomes/nhighlands/KNOWN_ISSUES.md": "587b561fdf33c0d6523bb3eefd07ab0f13131435a818cdd515d18e52d5353673",
     "biomes/nhighlands/PORT.md": "2b4b6db309e4077b1a01e2db8deca72bf79f36c3b11523440e9f5e57ce6e5971",
     "biomes/nhighlands/build.py": "189bfae5c6f7e3bbf9904a23c8eb0a22d88ca15d93044b54b6585b8a00f1412e",
     "biomes/nhighlands/src/00-head.html": "c84c27ad3018b81c3672e0b6afe14cb2948dcc0ca84242ce96ec5693dd473548",
@@ -390,6 +388,7 @@
     "biomes/nhighlands/stations/bogs/station.json": "cfc1f34fc3520a4e686e1059196008164d399b4a16ac59f249a77e3d952c8230",
     "biomes/nhighlands/stations/foothills/station.json": "3639aedae1cffd6af0649e97663fb63be0b7154a6db3ca60d6e4753e4ad7a916",
     "biomes/nhighlands/stations/montane/station.json": "f9fda597e1d7b545003a163e15e91a3e326d5f29e9e98ef85972b0da8467ac35",
+    "biomes/nhighlands/stations/tiguantin/station.json": "cef37ed40aa8fedefe64bad19ee3486b532d10758d56f1c02bec8afd4c983894",
     "biomes/nhighlands/tex/beard.albedo.webp": "d16898ef9f7cc6ca821b6034709b64e0ed23312162dd0104827fe78f3326443c",
     "biomes/nhighlands/tex/birch.albedo.webp": "5a37d5c20360c335ad667e31c3276b3e9325b6a5ce0116a231b97b59df544aec",
     "biomes/nhighlands/tex/blade.albedo.webp": "f2db0503865efdb3a957efe87ed03d760fda5d6cf9091044adcb7c1710ff58c2",
@@ -495,7 +494,6 @@
     "core/host/97-host-minimap.js": "24758908dc1f6be4fed09e0aa3a23270187ccd93ff41ada5974bf49b194fc162",
     "core/host/98-host-edit.js": "89038217cde180a076b33d41644bd95285837a9d63f09199bd944e507596997e",
     "core/host/99-host-cutaway.js": "c67cea97b1b18a2a8b3bbc329d5bb5df7fd007a4aee033b21d91fe75cd0ad300",
-    "core/host/host.py": "18f80becdd343f7375785bc5aabdda290761d34376d890ebff8fab0d91fb5288",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
     "core/minimap/88-core-minimap.js": "b6c7e9c662f079c8f97cfc9f6bac2fea115b660f9b417056da54c3bf3c1129a1",
@@ -509,7 +507,7 @@
     "core/tags/50-core-tags.js": "5d506746c4b5142f76e932cbd798d4ba6926e3865919d7ecd6d39a16e4e5b882",
     "core/tags/52-core-tags-vocab.js": "34470fd7966f7d0684585b0bc2082875d5de0ec2ed11d141f79f9612462584d3",
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
-    "core/terrain/35-core-strata.js": "411b14b18413498c532a9a3fab9893c5726630c8387098b3a1190d0817a505b1",
+    "core/terrain/35-core-strata.js": "65491b58b7258840a88c1ce17f0ba53d11536acd9bf2c6dacb9e1af00821c76c",
     "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
     "core/terrain/45-core-horizon.js": "e597aa2e3bbd3826d60908d43a3ecf65509b7c27467913d538fe1e0babb20b1e",
@@ -527,29 +525,26 @@
     "core/water/ext/57-core-water-audit.js": "6dd616a15a7804c615c4e1638b250cb709a85e1f219ae9ea03f8c4faa20374c1",
     "core/water/ext/58-core-water-mirror.js": "abf23c31ba18ba7f4890646bb539fa41652a3331977cc0c6ed6bcda9c646083f",
     "core/water/ext/60-core-water-fields.js": "8e877798226558edf744fccd1e6e92edf28bf059af5f087a10d733eaf5ecac2a",
-    "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
-    "tools/buildlib.py": "24ec6d636869007e626446a0b8e9cc886fd595af0c9f95b78c4d4b272a18ec0e",
-    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47",
-    "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
+    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47"
    },
    "listings": {
     "biomes/nhighlands/src": "b0cdcaa1484376afc84d0fc6cdc54cecc30bd9c0bdbe9d06d2cf1c49e65b119d",
-    "biomes/nhighlands/stations": "90754841be26580092522568623e0ffef883f4b384b43d68af6f8481cca48566",
+    "biomes/nhighlands/stations": "c587dbc2dd4fa2e936d19d4ec9ff62fbb707987e39efbb89e691a13e7c78fda1",
     "biomes/nhighlands/stations/bogs": "5b4164911bf451a84227d4db797c249ac5e91c8cb080b25d57fef547e0bda9b8",
     "core/host": "d729ffbc0ed36e68e9036bd9c454abc6462a27b22a4bc16b88c38d836e6f4a37",
     "tools": "5d8cb54bfd5566913f21e3e094a6a85418e1354e6e39cf6138ec20bda1add512",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/nhighlands/dist/nhighlands-bogs.html": "346894cf0a71616af8426c8b337462af5698d73972279ea7f53db80cd719c22a"
+    "biomes/nhighlands/dist/nhighlands-bogs.html": "55ad437ae000cfe60a83faa1837067152f89c5ba35694d938c3cd3d1d3ded1c3"
    },
    "outputs_raw": {
-    "biomes/nhighlands/dist/nhighlands-bogs.html": "346894cf0a71616af8426c8b337462af5698d73972279ea7f53db80cd719c22a"
+    "biomes/nhighlands/dist/nhighlands-bogs.html": "55ad437ae000cfe60a83faa1837067152f89c5ba35694d938c3cd3d1d3ded1c3"
    }
   },
   "build.py --station foothills": {
    "inputs": {
-    "biomes/nhighlands/KNOWN_ISSUES.md": "d6ec071b0157f1bc69f3a73e948f3097514a60cae5e3777c2ac039cb61adff49",
+    "biomes/nhighlands/KNOWN_ISSUES.md": "587b561fdf33c0d6523bb3eefd07ab0f13131435a818cdd515d18e52d5353673",
     "biomes/nhighlands/PORT.md": "2b4b6db309e4077b1a01e2db8deca72bf79f36c3b11523440e9f5e57ce6e5971",
     "biomes/nhighlands/build.py": "189bfae5c6f7e3bbf9904a23c8eb0a22d88ca15d93044b54b6585b8a00f1412e",
     "biomes/nhighlands/src/00-head.html": "c84c27ad3018b81c3672e0b6afe14cb2948dcc0ca84242ce96ec5693dd473548",
@@ -577,6 +572,7 @@
     "biomes/nhighlands/stations/montane/88-host-build.js": "cd7a5451b26408633d7dd91c1d4d349e00cda40bea546f4b315826ed6df9eb7f",
     "biomes/nhighlands/stations/montane/89-host-sky.js": "8c3a2495e91e3d671b283b8e74f5565a1e34ccb53c5340f510db6e301370e783",
     "biomes/nhighlands/stations/montane/station.json": "f9fda597e1d7b545003a163e15e91a3e326d5f29e9e98ef85972b0da8467ac35",
+    "biomes/nhighlands/stations/tiguantin/station.json": "cef37ed40aa8fedefe64bad19ee3486b532d10758d56f1c02bec8afd4c983894",
     "biomes/nhighlands/tex/beard.albedo.webp": "d16898ef9f7cc6ca821b6034709b64e0ed23312162dd0104827fe78f3326443c",
     "biomes/nhighlands/tex/birch.albedo.webp": "5a37d5c20360c335ad667e31c3276b3e9325b6a5ce0116a231b97b59df544aec",
     "biomes/nhighlands/tex/blade.albedo.webp": "f2db0503865efdb3a957efe87ed03d760fda5d6cf9091044adcb7c1710ff58c2",
@@ -694,7 +690,6 @@
     "core/host/97-host-minimap.js": "24758908dc1f6be4fed09e0aa3a23270187ccd93ff41ada5974bf49b194fc162",
     "core/host/98-host-edit.js": "89038217cde180a076b33d41644bd95285837a9d63f09199bd944e507596997e",
     "core/host/99-host-cutaway.js": "c67cea97b1b18a2a8b3bbc329d5bb5df7fd007a4aee033b21d91fe75cd0ad300",
-    "core/host/host.py": "18f80becdd343f7375785bc5aabdda290761d34376d890ebff8fab0d91fb5288",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
     "core/minimap/88-core-minimap.js": "b6c7e9c662f079c8f97cfc9f6bac2fea115b660f9b417056da54c3bf3c1129a1",
@@ -708,7 +703,7 @@
     "core/tags/50-core-tags.js": "5d506746c4b5142f76e932cbd798d4ba6926e3865919d7ecd6d39a16e4e5b882",
     "core/tags/52-core-tags-vocab.js": "34470fd7966f7d0684585b0bc2082875d5de0ec2ed11d141f79f9612462584d3",
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
-    "core/terrain/35-core-strata.js": "411b14b18413498c532a9a3fab9893c5726630c8387098b3a1190d0817a505b1",
+    "core/terrain/35-core-strata.js": "65491b58b7258840a88c1ce17f0ba53d11536acd9bf2c6dacb9e1af00821c76c",
     "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
     "core/terrain/45-core-horizon.js": "e597aa2e3bbd3826d60908d43a3ecf65509b7c27467913d538fe1e0babb20b1e",
@@ -724,14 +719,11 @@
     "core/water/ext/57-core-water-audit.js": "6dd616a15a7804c615c4e1638b250cb709a85e1f219ae9ea03f8c4faa20374c1",
     "core/water/ext/58-core-water-mirror.js": "abf23c31ba18ba7f4890646bb539fa41652a3331977cc0c6ed6bcda9c646083f",
     "core/water/ext/60-core-water-fields.js": "8e877798226558edf744fccd1e6e92edf28bf059af5f087a10d733eaf5ecac2a",
-    "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
-    "tools/buildlib.py": "24ec6d636869007e626446a0b8e9cc886fd595af0c9f95b78c4d4b272a18ec0e",
-    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47",
-    "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
+    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47"
    },
    "listings": {
     "biomes/nhighlands/src": "b0cdcaa1484376afc84d0fc6cdc54cecc30bd9c0bdbe9d06d2cf1c49e65b119d",
-    "biomes/nhighlands/stations": "90754841be26580092522568623e0ffef883f4b384b43d68af6f8481cca48566",
+    "biomes/nhighlands/stations": "c587dbc2dd4fa2e936d19d4ec9ff62fbb707987e39efbb89e691a13e7c78fda1",
     "biomes/nhighlands/stations/foothills": "9254123f1ec264905e431e8bbb210a0566b6fd055908a6e06eb159cf397430d6",
     "biomes/nhighlands/stations/montane": "711ede739def10167a8653b6a657c46f9f760116049ef4aab7b79e170ab035d4",
     "core/host": "d729ffbc0ed36e68e9036bd9c454abc6462a27b22a4bc16b88c38d836e6f4a37",
@@ -739,15 +731,15 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/nhighlands/dist/nhighlands-foothills.html": "c723df973a937834c92f5183c3133249b1fd28888578e784c7f6dec072e09497"
+    "biomes/nhighlands/dist/nhighlands-foothills.html": "75d93b9d46bf0a09b574f600db61cf0ee85d9e4d521d4f30eca31311d9ad5c5c"
    },
    "outputs_raw": {
-    "biomes/nhighlands/dist/nhighlands-foothills.html": "c723df973a937834c92f5183c3133249b1fd28888578e784c7f6dec072e09497"
+    "biomes/nhighlands/dist/nhighlands-foothills.html": "75d93b9d46bf0a09b574f600db61cf0ee85d9e4d521d4f30eca31311d9ad5c5c"
    }
   },
   "build.py --station montane": {
    "inputs": {
-    "biomes/nhighlands/KNOWN_ISSUES.md": "d6ec071b0157f1bc69f3a73e948f3097514a60cae5e3777c2ac039cb61adff49",
+    "biomes/nhighlands/KNOWN_ISSUES.md": "587b561fdf33c0d6523bb3eefd07ab0f13131435a818cdd515d18e52d5353673",
     "biomes/nhighlands/PORT.md": "2b4b6db309e4077b1a01e2db8deca72bf79f36c3b11523440e9f5e57ce6e5971",
     "biomes/nhighlands/build.py": "189bfae5c6f7e3bbf9904a23c8eb0a22d88ca15d93044b54b6585b8a00f1412e",
     "biomes/nhighlands/src/00-head.html": "c84c27ad3018b81c3672e0b6afe14cb2948dcc0ca84242ce96ec5693dd473548",
@@ -774,6 +766,7 @@
     "biomes/nhighlands/stations/montane/89-host-sky.js": "8c3a2495e91e3d671b283b8e74f5565a1e34ccb53c5340f510db6e301370e783",
     "biomes/nhighlands/stations/montane/98-host-station-take.js": "aad53483ca494a65a2b44e8ab63cd30a58c4fe5928e97a8ca1490e236173a696",
     "biomes/nhighlands/stations/montane/station.json": "f9fda597e1d7b545003a163e15e91a3e326d5f29e9e98ef85972b0da8467ac35",
+    "biomes/nhighlands/stations/tiguantin/station.json": "cef37ed40aa8fedefe64bad19ee3486b532d10758d56f1c02bec8afd4c983894",
     "biomes/nhighlands/tex/beard.albedo.webp": "d16898ef9f7cc6ca821b6034709b64e0ed23312162dd0104827fe78f3326443c",
     "biomes/nhighlands/tex/birch.albedo.webp": "5a37d5c20360c335ad667e31c3276b3e9325b6a5ce0116a231b97b59df544aec",
     "biomes/nhighlands/tex/blade.albedo.webp": "f2db0503865efdb3a957efe87ed03d760fda5d6cf9091044adcb7c1710ff58c2",
@@ -873,7 +866,6 @@
     "core/host/97-host-minimap.js": "24758908dc1f6be4fed09e0aa3a23270187ccd93ff41ada5974bf49b194fc162",
     "core/host/98-host-edit.js": "89038217cde180a076b33d41644bd95285837a9d63f09199bd944e507596997e",
     "core/host/99-host-cutaway.js": "c67cea97b1b18a2a8b3bbc329d5bb5df7fd007a4aee033b21d91fe75cd0ad300",
-    "core/host/host.py": "18f80becdd343f7375785bc5aabdda290761d34376d890ebff8fab0d91fb5288",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
     "core/minimap/88-core-minimap.js": "b6c7e9c662f079c8f97cfc9f6bac2fea115b660f9b417056da54c3bf3c1129a1",
@@ -887,7 +879,7 @@
     "core/tags/50-core-tags.js": "5d506746c4b5142f76e932cbd798d4ba6926e3865919d7ecd6d39a16e4e5b882",
     "core/tags/52-core-tags-vocab.js": "34470fd7966f7d0684585b0bc2082875d5de0ec2ed11d141f79f9612462584d3",
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
-    "core/terrain/35-core-strata.js": "411b14b18413498c532a9a3fab9893c5726630c8387098b3a1190d0817a505b1",
+    "core/terrain/35-core-strata.js": "65491b58b7258840a88c1ce17f0ba53d11536acd9bf2c6dacb9e1af00821c76c",
     "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
     "core/terrain/45-core-horizon.js": "e597aa2e3bbd3826d60908d43a3ecf65509b7c27467913d538fe1e0babb20b1e",
@@ -903,24 +895,21 @@
     "core/water/ext/57-core-water-audit.js": "6dd616a15a7804c615c4e1638b250cb709a85e1f219ae9ea03f8c4faa20374c1",
     "core/water/ext/58-core-water-mirror.js": "abf23c31ba18ba7f4890646bb539fa41652a3331977cc0c6ed6bcda9c646083f",
     "core/water/ext/60-core-water-fields.js": "8e877798226558edf744fccd1e6e92edf28bf059af5f087a10d733eaf5ecac2a",
-    "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
-    "tools/buildlib.py": "24ec6d636869007e626446a0b8e9cc886fd595af0c9f95b78c4d4b272a18ec0e",
-    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47",
-    "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
+    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47"
    },
    "listings": {
     "biomes/nhighlands/src": "b0cdcaa1484376afc84d0fc6cdc54cecc30bd9c0bdbe9d06d2cf1c49e65b119d",
-    "biomes/nhighlands/stations": "90754841be26580092522568623e0ffef883f4b384b43d68af6f8481cca48566",
+    "biomes/nhighlands/stations": "c587dbc2dd4fa2e936d19d4ec9ff62fbb707987e39efbb89e691a13e7c78fda1",
     "biomes/nhighlands/stations/montane": "711ede739def10167a8653b6a657c46f9f760116049ef4aab7b79e170ab035d4",
     "core/host": "d729ffbc0ed36e68e9036bd9c454abc6462a27b22a4bc16b88c38d836e6f4a37",
     "tools": "5d8cb54bfd5566913f21e3e094a6a85418e1354e6e39cf6138ec20bda1add512",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/nhighlands/dist/nhighlands-montane.html": "25553e9c2ff5b72f6b959eae4720fd51f94f4ea28e0e070d594b559f2b93a094"
+    "biomes/nhighlands/dist/nhighlands-montane.html": "305c804156d498c918bc3f858664b267068b3e4872ccc0728f53d49aaed863c2"
    },
    "outputs_raw": {
-    "biomes/nhighlands/dist/nhighlands-montane.html": "25553e9c2ff5b72f6b959eae4720fd51f94f4ea28e0e070d594b559f2b93a094"
+    "biomes/nhighlands/dist/nhighlands-montane.html": "305c804156d498c918bc3f858664b267068b3e4872ccc0728f53d49aaed863c2"
    }
   },
   "build.py --station tiguantin": {

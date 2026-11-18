@@ -4,7 +4,7 @@
   "build.py": {
    "inputs": {
     "biomes/oidong/src/50-biome-oidong-species.js": "8fb72d34cdcb21f2ba36eed2915dcca765d14947a8163ac616c9fb88956ca7b2",
-    "biomes/oidong/src/55-biome-oidong-trees.js": "0bfbf5317e3ce66bfaf06791240809f1250e59884942d5b031bb0d4d9b0d83a3",
+    "biomes/oidong/src/55-biome-oidong-trees.js": "16583d5760513b782c7415847a6781d5c158a2004d31def9db3ec8a6ae30c7ca",
     "biomes/oidong/src/60-biome-oidong-floor.js": "b6edfa252b83ec9616baa44113d6cb4e2e9c47ea802e6d634f77fa85098c4c64",
     "biomes/oidong/tex/bark.bamboo.albedo.webp": "1352096326f9e57dbde745c79dc14f9cce110db47b8f0afa1e2108731f6746a5",
     "biomes/oidong/tex/bark.carved.albedo.webp": "ea3bbde51d584b91a9cea12021e1cbc5a720e4e3d98873df767170a48600e6d2",
@@ -128,7 +128,7 @@
     "core/tags/50-core-tags.js": "5d506746c4b5142f76e932cbd798d4ba6926e3865919d7ecd6d39a16e4e5b882",
     "core/tags/52-core-tags-vocab.js": "34470fd7966f7d0684585b0bc2082875d5de0ec2ed11d141f79f9612462584d3",
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
-    "core/terrain/35-core-strata.js": "411b14b18413498c532a9a3fab9893c5726630c8387098b3a1190d0817a505b1",
+    "core/terrain/35-core-strata.js": "65491b58b7258840a88c1ce17f0ba53d11536acd9bf2c6dacb9e1af00821c76c",
     "core/terrain/37-core-stacks.js": "40693e354aa056827f163268033ef40cd761133fb29b4522395c46447fcfb320",
     "core/terrain/38-core-relief.js": "7b05a027e7258a2bb412cadbe67beb6bab878f88e6f18eeb5fdddf96fb9ae21f",
     "core/terrain/38d-core-slab.js": "5fdfea33927f5dc56ec7561f9fb7f27e4a4bbd4e578d88ba8146a8fb099d4a70",
@@ -153,22 +153,23 @@
     "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47"
    },
    "listings": {
+    "biomes/slabfields": "6fdecef50212fe839ef0f8fb9b32af14aa3684d3a6633e2919e2184f05ed667d",
     "biomes/slabfields/src": "54d85dc9dbb3837cd8de89052e79d6afc601c430de150b246aca3f69bf32fa84",
     "core/host": "d729ffbc0ed36e68e9036bd9c454abc6462a27b22a4bc16b88c38d836e6f4a37",
     "tools": "5d8cb54bfd5566913f21e3e094a6a85418e1354e6e39cf6138ec20bda1add512",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/slabfields/dist/slabfields.html": "ebcf43d499831ae7e069b01d33a96d435689fc2d52883213b0a69159f7c3544f"
+    "biomes/slabfields/dist/slabfields.html": "0d3000d74b5d64f32f34bc31a7debe8fad1f814df16ab7146a4c85a50a855bf0"
    },
    "outputs_raw": {
-    "biomes/slabfields/dist/slabfields.html": "ebcf43d499831ae7e069b01d33a96d435689fc2d52883213b0a69159f7c3544f"
+    "biomes/slabfields/dist/slabfields.html": "0d3000d74b5d64f32f34bc31a7debe8fad1f814df16ab7146a4c85a50a855bf0"
    }
   },
   "build.py --station halves": {
    "inputs": {
     "biomes/oidong/src/50-biome-oidong-species.js": "8fb72d34cdcb21f2ba36eed2915dcca765d14947a8163ac616c9fb88956ca7b2",
-    "biomes/oidong/src/55-biome-oidong-trees.js": "0bfbf5317e3ce66bfaf06791240809f1250e59884942d5b031bb0d4d9b0d83a3",
+    "biomes/oidong/src/55-biome-oidong-trees.js": "16583d5760513b782c7415847a6781d5c158a2004d31def9db3ec8a6ae30c7ca",
     "biomes/oidong/src/60-biome-oidong-floor.js": "b6edfa252b83ec9616baa44113d6cb4e2e9c47ea802e6d634f77fa85098c4c64",
     "biomes/oidong/tex/bark.bamboo.albedo.webp": "1352096326f9e57dbde745c79dc14f9cce110db47b8f0afa1e2108731f6746a5",
     "biomes/oidong/tex/bark.carved.albedo.webp": "ea3bbde51d584b91a9cea12021e1cbc5a720e4e3d98873df767170a48600e6d2",
@@ -192,10 +193,10 @@
     "biomes/oidong/tex/peyotecard.albedo.webp": "e9a2ea637a90b7e54286f2bba9153f2a1eec25749618c69fab86500c97170c1c",
     "biomes/oidong/tex/stone.granite.albedo.webp": "39369ad59d9c7dd49bee7c535c8dfb26a402f5f125dc86354a23759a6ead60d0",
     "biomes/oidong/tex/stone.marblecliff.albedo.webp": "17c3cf1a43ba95512db86e02f2f8e41e97764e56b22399fb9bda49d7cdc8b377",
-    "biomes/siphon-pits/src/40-biome-siphon-sites.js": "60214820f117fadcb98b91f56fa8ff816bf8eb6fa68b908ccc548879b20ae144",
-    "biomes/siphon-pits/src/50-biome-siphon-species.js": "b7d8e1e2e7d0f3624d4f4862b5a45f859459acafa008fd9ebc8a8277505c6bf3",
+    "biomes/siphon-pits/src/40-biome-siphon-sites.js": "9549e02485d93babc186393d053c1f78dff53a3057bb09fc1e79222d4c5f4e7f",
+    "biomes/siphon-pits/src/50-biome-siphon-species.js": "6d658aa0291c8fe1e4dfb0c873ea705d4d8ed6b3b0a5cccdf7f7346faeab1ca9",
     "biomes/siphon-pits/src/60-biome-siphon-place.js": "129796f26f3f29171bd2f22cbf09eac9655c83a8509e170c59929b221cc3dcb0",
-    "biomes/siphon-pits/src/70-biome-siphon.js": "a9fc6db7c348aa49316989ad8b69df181341577a2b805ee1866679c36d175ea2",
+    "biomes/siphon-pits/src/70-biome-siphon.js": "f67588cf011d8a96b76bf3c44e81afdee592e54e47543d73a6d815dc62f227ba",
     "biomes/siphon-pits/tex/pack.json": "52dfe73b54b67e125de9e3df847820c3d894b602675b43d38b264364471bf92c",
     "biomes/siphon-pits/tex/sedge.albedo.webp": "7b253bf55dd63240b4d81a91f1ec46658084d3bab7bf20f4ab8070731b24f0ea",
     "biomes/slabfields/KNOWN_ISSUES.md": "26bc122b2f33f8e6248539298a64e7718be85c8501856168e032917677bd324c",
@@ -303,7 +304,7 @@
     "core/tags/50-core-tags.js": "5d506746c4b5142f76e932cbd798d4ba6926e3865919d7ecd6d39a16e4e5b882",
     "core/tags/52-core-tags-vocab.js": "34470fd7966f7d0684585b0bc2082875d5de0ec2ed11d141f79f9612462584d3",
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
-    "core/terrain/35-core-strata.js": "411b14b18413498c532a9a3fab9893c5726630c8387098b3a1190d0817a505b1",
+    "core/terrain/35-core-strata.js": "65491b58b7258840a88c1ce17f0ba53d11536acd9bf2c6dacb9e1af00821c76c",
     "core/terrain/37-core-stacks.js": "40693e354aa056827f163268033ef40cd761133fb29b4522395c46447fcfb320",
     "core/terrain/38-core-relief.js": "7b05a027e7258a2bb412cadbe67beb6bab878f88e6f18eeb5fdddf96fb9ae21f",
     "core/terrain/38c-core-landforms.js": "3feab77294dd3adea9402c0ffd15cccfb3efe999a532763a753626fcc02bbc8f",
@@ -336,16 +337,16 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/slabfields/dist/slabfields-halves.html": "41005c7ffe6b167e29a478ad5da782bb5d9409c69e8794b01a474bbc8890cda7"
+    "biomes/slabfields/dist/slabfields-halves.html": "4fa6b9ee7833e3415cc0aeee406f6a84db258a03a3941da17438ed25046d60a0"
    },
    "outputs_raw": {
-    "biomes/slabfields/dist/slabfields-halves.html": "41005c7ffe6b167e29a478ad5da782bb5d9409c69e8794b01a474bbc8890cda7"
+    "biomes/slabfields/dist/slabfields-halves.html": "4fa6b9ee7833e3415cc0aeee406f6a84db258a03a3941da17438ed25046d60a0"
    }
   },
   "build.py --station leaner": {
    "inputs": {
     "biomes/oidong/src/50-biome-oidong-species.js": "8fb72d34cdcb21f2ba36eed2915dcca765d14947a8163ac616c9fb88956ca7b2",
-    "biomes/oidong/src/55-biome-oidong-trees.js": "0bfbf5317e3ce66bfaf06791240809f1250e59884942d5b031bb0d4d9b0d83a3",
+    "biomes/oidong/src/55-biome-oidong-trees.js": "16583d5760513b782c7415847a6781d5c158a2004d31def9db3ec8a6ae30c7ca",
     "biomes/oidong/src/60-biome-oidong-floor.js": "b6edfa252b83ec9616baa44113d6cb4e2e9c47ea802e6d634f77fa85098c4c64",
     "biomes/oidong/tex/bark.bamboo.albedo.webp": "1352096326f9e57dbde745c79dc14f9cce110db47b8f0afa1e2108731f6746a5",
     "biomes/oidong/tex/bark.carved.albedo.webp": "ea3bbde51d584b91a9cea12021e1cbc5a720e4e3d98873df767170a48600e6d2",
@@ -369,10 +370,10 @@
     "biomes/oidong/tex/peyotecard.albedo.webp": "e9a2ea637a90b7e54286f2bba9153f2a1eec25749618c69fab86500c97170c1c",
     "biomes/oidong/tex/stone.granite.albedo.webp": "39369ad59d9c7dd49bee7c535c8dfb26a402f5f125dc86354a23759a6ead60d0",
     "biomes/oidong/tex/stone.marblecliff.albedo.webp": "17c3cf1a43ba95512db86e02f2f8e41e97764e56b22399fb9bda49d7cdc8b377",
-    "biomes/siphon-pits/src/40-biome-siphon-sites.js": "60214820f117fadcb98b91f56fa8ff816bf8eb6fa68b908ccc548879b20ae144",
-    "biomes/siphon-pits/src/50-biome-siphon-species.js": "b7d8e1e2e7d0f3624d4f4862b5a45f859459acafa008fd9ebc8a8277505c6bf3",
+    "biomes/siphon-pits/src/40-biome-siphon-sites.js": "9549e02485d93babc186393d053c1f78dff53a3057bb09fc1e79222d4c5f4e7f",
+    "biomes/siphon-pits/src/50-biome-siphon-species.js": "6d658aa0291c8fe1e4dfb0c873ea705d4d8ed6b3b0a5cccdf7f7346faeab1ca9",
     "biomes/siphon-pits/src/60-biome-siphon-place.js": "129796f26f3f29171bd2f22cbf09eac9655c83a8509e170c59929b221cc3dcb0",
-    "biomes/siphon-pits/src/70-biome-siphon.js": "a9fc6db7c348aa49316989ad8b69df181341577a2b805ee1866679c36d175ea2",
+    "biomes/siphon-pits/src/70-biome-siphon.js": "f67588cf011d8a96b76bf3c44e81afdee592e54e47543d73a6d815dc62f227ba",
     "biomes/siphon-pits/tex/pack.json": "52dfe73b54b67e125de9e3df847820c3d894b602675b43d38b264364471bf92c",
     "biomes/siphon-pits/tex/sedge.albedo.webp": "7b253bf55dd63240b4d81a91f1ec46658084d3bab7bf20f4ab8070731b24f0ea",
     "biomes/slabfields/KNOWN_ISSUES.md": "26bc122b2f33f8e6248539298a64e7718be85c8501856168e032917677bd324c",
@@ -480,7 +481,7 @@
     "core/tags/50-core-tags.js": "5d506746c4b5142f76e932cbd798d4ba6926e3865919d7ecd6d39a16e4e5b882",
     "core/tags/52-core-tags-vocab.js": "34470fd7966f7d0684585b0bc2082875d5de0ec2ed11d141f79f9612462584d3",
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
-    "core/terrain/35-core-strata.js": "411b14b18413498c532a9a3fab9893c5726630c8387098b3a1190d0817a505b1",
+    "core/terrain/35-core-strata.js": "65491b58b7258840a88c1ce17f0ba53d11536acd9bf2c6dacb9e1af00821c76c",
     "core/terrain/37-core-stacks.js": "40693e354aa056827f163268033ef40cd761133fb29b4522395c46447fcfb320",
     "core/terrain/38-core-relief.js": "7b05a027e7258a2bb412cadbe67beb6bab878f88e6f18eeb5fdddf96fb9ae21f",
     "core/terrain/38c-core-landforms.js": "3feab77294dd3adea9402c0ffd15cccfb3efe999a532763a753626fcc02bbc8f",
@@ -513,10 +514,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/slabfields/dist/slabfields-leaner.html": "ed6ecc27f7f9ed2e0ede1e4c0c569680789e8cbd108abac29327cc44cb8362fa"
+    "biomes/slabfields/dist/slabfields-leaner.html": "7223c5d027c23e77a04a4f253263bc119ef864478e85eb111219163c84b2999e"
    },
    "outputs_raw": {
-    "biomes/slabfields/dist/slabfields-leaner.html": "ed6ecc27f7f9ed2e0ede1e4c0c569680789e8cbd108abac29327cc44cb8362fa"
+    "biomes/slabfields/dist/slabfields-leaner.html": "7223c5d027c23e77a04a4f253263bc119ef864478e85eb111219163c84b2999e"
    }
   }
  }

@@ -150,7 +150,7 @@
   "build.py --station azurite": {
    "inputs": {
     "biomes/copperglacier/KNOWN_ISSUES.md": "401e09e209108de4daa13ccdafdbceaee97a6ae038ebd5a81f55d1ee510edcaf",
-    "biomes/copperglacier/PORT.md": "be545a158c069c42c4c22fe6b6528d49affd5f8ce599f4e6d8a1f803197e7535",
+    "biomes/copperglacier/PORT.md": "320766f32b3d969efe6f19f09bcf27533eee14f3f5a94b1fa52779816485beda",
     "biomes/copperglacier/build.py": "c6fb25974ecbc74865e9c7f9f4b82e498a4c7f9c325f8b37423d8169e54830f3",
     "biomes/copperglacier/res_site.js": "00c1ca64db71f6fc6b174a3f341b38b7d40135f93b8fbc90177c7b5d30b34f47",
     "biomes/copperglacier/src/00-head.html": "caacc7d1159b6da86934f00c9e35f0b8c6f058e31134676f54695fd9c73dbb97",
@@ -280,7 +280,7 @@
     "core/water/ext/58-core-water-mirror.js": "abf23c31ba18ba7f4890646bb539fa41652a3331977cc0c6ed6bcda9c646083f",
     "core/water/ext/60-core-water-fields.js": "8e877798226558edf744fccd1e6e92edf28bf059af5f087a10d733eaf5ecac2a",
     "core/water/ext/61-core-water-plume.js": "3b1eb79ddcc511cd6c09dc145253e116ed8377252c7d7811d2d9b3fa35faf18f",
-    "kits/resources/data/geology.json": "2237276a4f84eb8c478cf33d5a5db613c1a8b9bd2617af4eae2ea2b8b100f157",
+    "kits/resources/data/geology.json": "060cff03971c1a52c51600f51c3fae519dad14a4e46f8518f25a4aaaecc3cefe",
     "kits/resources/src/45r-res-field.js": "ca8bf0860266e0eef84783236767da2b4758be920bd26e7aef63c1f8447440ab",
     "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47"
    },
@@ -292,10 +292,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/copperglacier/dist/copperglacier-azurite.html": "bf9e592af12cd496777a09553bf9a204484d771c3ff5baaec860755b8b7a96bd"
+    "biomes/copperglacier/dist/copperglacier-azurite.html": "2f26802c27b58d8280305981187e1e5aa0cf8939e11ffaeddfa480b4bc8549ff"
    },
    "outputs_raw": {
-    "biomes/copperglacier/dist/copperglacier-azurite.html": "bf9e592af12cd496777a09553bf9a204484d771c3ff5baaec860755b8b7a96bd"
+    "biomes/copperglacier/dist/copperglacier-azurite.html": "2f26802c27b58d8280305981187e1e5aa0cf8939e11ffaeddfa480b4bc8549ff"
    }
   },
   "build.py --station icefield": {

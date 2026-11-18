@@ -105,7 +105,7 @@
     "core/tags/50-core-tags.js": "5d506746c4b5142f76e932cbd798d4ba6926e3865919d7ecd6d39a16e4e5b882",
     "core/tags/52-core-tags-vocab.js": "34470fd7966f7d0684585b0bc2082875d5de0ec2ed11d141f79f9612462584d3",
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
-    "core/terrain/35-core-strata.js": "411b14b18413498c532a9a3fab9893c5726630c8387098b3a1190d0817a505b1",
+    "core/terrain/35-core-strata.js": "65491b58b7258840a88c1ce17f0ba53d11536acd9bf2c6dacb9e1af00821c76c",
     "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
     "core/terrain/45-core-horizon.js": "e597aa2e3bbd3826d60908d43a3ecf65509b7c27467913d538fe1e0babb20b1e",
@@ -130,16 +130,17 @@
     "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47"
    },
    "listings": {
+    "biomes/arch": "db791505248c15bab633cd571aed3119120d310248a8d1317e1d47230b139ce9",
     "biomes/arch/src": "b8f059bef70f03302c9fd9e2d81580084f57b2bfc5f2e3c99505ab49f88b94fc",
     "core/host": "d729ffbc0ed36e68e9036bd9c454abc6462a27b22a4bc16b88c38d836e6f4a37",
     "tools": "5d8cb54bfd5566913f21e3e094a6a85418e1354e6e39cf6138ec20bda1add512",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/arch/dist/arch.html": "cd78e301e0bd5daedd16ef77037ab0e4d293431e1f06ca846d14197af40da251"
+    "biomes/arch/dist/arch.html": "8ddcf3ce51978195dcd39e3739bca0ec5393f1b43460a361b4f6e68079ec7523"
    },
    "outputs_raw": {
-    "biomes/arch/dist/arch.html": "cd78e301e0bd5daedd16ef77037ab0e4d293431e1f06ca846d14197af40da251"
+    "biomes/arch/dist/arch.html": "8ddcf3ce51978195dcd39e3739bca0ec5393f1b43460a361b4f6e68079ec7523"
    }
   },
   "build.py --station barrens": {
@@ -247,7 +248,7 @@
     "core/tags/50-core-tags.js": "5d506746c4b5142f76e932cbd798d4ba6926e3865919d7ecd6d39a16e4e5b882",
     "core/tags/52-core-tags-vocab.js": "34470fd7966f7d0684585b0bc2082875d5de0ec2ed11d141f79f9612462584d3",
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
-    "core/terrain/35-core-strata.js": "411b14b18413498c532a9a3fab9893c5726630c8387098b3a1190d0817a505b1",
+    "core/terrain/35-core-strata.js": "65491b58b7258840a88c1ce17f0ba53d11536acd9bf2c6dacb9e1af00821c76c",
     "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
     "core/terrain/45-core-horizon.js": "e597aa2e3bbd3826d60908d43a3ecf65509b7c27467913d538fe1e0babb20b1e",
@@ -279,10 +280,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/arch/dist/arch-barrens.html": "cf9988382c0ff5db52357dd8c5128e354a7cb86bd632712925a8b44cf091f79f"
+    "biomes/arch/dist/arch-barrens.html": "e1fc15310ea2a00d522e456183a0050800f8646c4916bfb5055cf7a89daf5b12"
    },
    "outputs_raw": {
-    "biomes/arch/dist/arch-barrens.html": "cf9988382c0ff5db52357dd8c5128e354a7cb86bd632712925a8b44cf091f79f"
+    "biomes/arch/dist/arch-barrens.html": "e1fc15310ea2a00d522e456183a0050800f8646c4916bfb5055cf7a89daf5b12"
    }
   },
   "build.py --station coast": {
@@ -390,7 +391,7 @@
     "core/tags/50-core-tags.js": "5d506746c4b5142f76e932cbd798d4ba6926e3865919d7ecd6d39a16e4e5b882",
     "core/tags/52-core-tags-vocab.js": "34470fd7966f7d0684585b0bc2082875d5de0ec2ed11d141f79f9612462584d3",
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
-    "core/terrain/35-core-strata.js": "411b14b18413498c532a9a3fab9893c5726630c8387098b3a1190d0817a505b1",
+    "core/terrain/35-core-strata.js": "65491b58b7258840a88c1ce17f0ba53d11536acd9bf2c6dacb9e1af00821c76c",
     "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
     "core/terrain/45-core-horizon.js": "e597aa2e3bbd3826d60908d43a3ecf65509b7c27467913d538fe1e0babb20b1e",
@@ -422,10 +423,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/arch/dist/arch-coast.html": "03db1283c2f8b16e7622e8fd9588cef8a061430a86e5db359f1851798c6cb860"
+    "biomes/arch/dist/arch-coast.html": "4c313c505da41a49b93411810c08400bbea3c75ec499103c54d0eceaaef925dd"
    },
    "outputs_raw": {
-    "biomes/arch/dist/arch-coast.html": "03db1283c2f8b16e7622e8fd9588cef8a061430a86e5db359f1851798c6cb860"
+    "biomes/arch/dist/arch-coast.html": "4c313c505da41a49b93411810c08400bbea3c75ec499103c54d0eceaaef925dd"
    }
   },
   "build.py --station dome": {
@@ -533,7 +534,7 @@
     "core/tags/50-core-tags.js": "5d506746c4b5142f76e932cbd798d4ba6926e3865919d7ecd6d39a16e4e5b882",
     "core/tags/52-core-tags-vocab.js": "34470fd7966f7d0684585b0bc2082875d5de0ec2ed11d141f79f9612462584d3",
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
-    "core/terrain/35-core-strata.js": "411b14b18413498c532a9a3fab9893c5726630c8387098b3a1190d0817a505b1",
+    "core/terrain/35-core-strata.js": "65491b58b7258840a88c1ce17f0ba53d11536acd9bf2c6dacb9e1af00821c76c",
     "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
     "core/terrain/45-core-horizon.js": "e597aa2e3bbd3826d60908d43a3ecf65509b7c27467913d538fe1e0babb20b1e",
@@ -565,10 +566,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/arch/dist/arch-dome.html": "1adf879b3838bab4a7517777b8d878b6d9ed7fcbf967dc98e4b1fa90d976d0af"
+    "biomes/arch/dist/arch-dome.html": "126b2e3b3a7651c1e0bbf38feb3ace11bbc2039676b93c19e640a51700cc1820"
    },
    "outputs_raw": {
-    "biomes/arch/dist/arch-dome.html": "1adf879b3838bab4a7517777b8d878b6d9ed7fcbf967dc98e4b1fa90d976d0af"
+    "biomes/arch/dist/arch-dome.html": "126b2e3b3a7651c1e0bbf38feb3ace11bbc2039676b93c19e640a51700cc1820"
    }
   },
   "build.py --station sound": {
@@ -676,7 +677,7 @@
     "core/tags/50-core-tags.js": "5d506746c4b5142f76e932cbd798d4ba6926e3865919d7ecd6d39a16e4e5b882",
     "core/tags/52-core-tags-vocab.js": "34470fd7966f7d0684585b0bc2082875d5de0ec2ed11d141f79f9612462584d3",
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
-    "core/terrain/35-core-strata.js": "411b14b18413498c532a9a3fab9893c5726630c8387098b3a1190d0817a505b1",
+    "core/terrain/35-core-strata.js": "65491b58b7258840a88c1ce17f0ba53d11536acd9bf2c6dacb9e1af00821c76c",
     "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
     "core/terrain/45-core-horizon.js": "e597aa2e3bbd3826d60908d43a3ecf65509b7c27467913d538fe1e0babb20b1e",
@@ -708,10 +709,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/arch/dist/arch-sound.html": "64b169ec1405c9ce82aeb1c81c0a5331a761146bffc4b027f28d5b906ea9244c"
+    "biomes/arch/dist/arch-sound.html": "fadc8a9cb3b895c707d97f29e33672a7c47177fb7aae3c776809e0087fae2349"
    },
    "outputs_raw": {
-    "biomes/arch/dist/arch-sound.html": "64b169ec1405c9ce82aeb1c81c0a5331a761146bffc4b027f28d5b906ea9244c"
+    "biomes/arch/dist/arch-sound.html": "fadc8a9cb3b895c707d97f29e33672a7c47177fb7aae3c776809e0087fae2349"
    }
   }
  }
