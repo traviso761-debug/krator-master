@@ -70,6 +70,15 @@ var LZV_SPEC = (function () {
       name: 'Placer washing floor ' + (idx + 1) + ' on Kruk Warra (tin and gold gravel)'
     });
   });
+  sites.push(
+    { key: 'lz-orchard', x: 880, z: -220, ry: 0.18, kind: 'farm', name: 'Hypertropic shore-bench fruit and pod grove' },
+    { key: 'lz-orchard', x: 1460, z: 210, ry: -0.22, kind: 'farm', name: 'Upper shore-bench fruit and pod grove' },
+    { key: 'lz-quarry', x: -680, z: -620, ry: 0.72, kind: 'works', name: 'Bluff-foot basalt quarry (plinth and footing stone)' },
+    { key: 'lz-waystone', x: 402, z: -1080, ry: 3.1, kind: 'monument', name: 'Shore-weir road waystone and fish sledge' },
+    { key: 'lz-waystone', x: 2200, z: -502, ry: 1.75, kind: 'monument', name: 'East-bench Coil waystone and haul sledge' },
+    { key: 'lz-waystone', x: 5600, z: -1132, ry: 1.78, kind: 'monument', name: 'Middle-shore Coil waystone and tin sledge' },
+    { key: 'lz-waystone', x: 8800, z: -1732, ry: 1.78, kind: 'monument', name: 'Kruk Warra approach waystone and tin sledge' }
+  );
 
   return {
     key: 'komodo',
@@ -128,7 +137,9 @@ var LZV_SPEC = (function () {
       ['lz-hall-bone', 2, 2, 0.38, 2.0],
       ['lz-warehouse', 2, 3, 0.60, 2.0],
       ['lz-granary', 3, 0, 0.30, 2.2],
+      ['lz-bakehouse', 3, 1, 0.32, 2.2],
       ['lz-granary', 3, 2, 0.34, 2.2],
+      ['lz-fermentery', 3, 2, 0.72, 2.2],
       ['lz-granary', 3, 3, 0.66, 2.2],
       ['lz-barracks', 4, 1, 0.35, 2.4],
       ['lz-barracks', 4, 3, 0.65, 2.4]
@@ -172,7 +183,7 @@ var LZV_SPEC = (function () {
     expect: {
       people: 3000,
       wells: 12,
-      keys: ['lz-nest', 'lz-ley', 'lz-muster', 'gl-tank', 'lz-weir', 'lz-placer'],
+      keys: ['lz-nest', 'lz-ley', 'lz-muster', 'gl-tank', 'lz-weir', 'lz-placer', 'lz-bakehouse', 'lz-fermentery', 'lz-orchard', 'lz-quarry', 'lz-waystone'],
       lake: true,
       hamlet: true
     },

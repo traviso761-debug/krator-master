@@ -22,5 +22,5 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `80-tu-records.js` | 5 | Tuatara 80: the copper town's records for the si (1) |
-| `81-tu-spec.js` | 6 | Tuatara 81: the site specification for kits/liza (1) |
+| `81-tu-spec.js` | 7 | Tuatara 81: the site specification for kits/liza (1) |
 | `89-rows.js` | <1 | TUATARA: overrides the Lizardmen kit sheet's sho (1) |

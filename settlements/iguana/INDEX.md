@@ -22,6 +22,6 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `80-ig-records.js` | 5 | Iguana 80: the granary town's records for the si (1) |
-| `81-ig-spec.js` | 6 | Iguana 81: the site specification for kits/lizar (1) |
+| `81-ig-spec.js` | 7 | Iguana 81: the site specification for kits/lizar (1) |
 | `89-rows.js` | <1 | IGUANA: overrides the Lizardmen kit sheet's show (1) |
 | `90x-ig-river.js` | 1 | Iguana 90x: Muckle Weyt Beck (r202) on core/wate (1) |

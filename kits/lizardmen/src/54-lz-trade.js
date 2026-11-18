@@ -96,21 +96,37 @@ defBuilding({key:'lz-windmill',name:'Panemone windmill',seed:7205,caste:2,cut:fa
   /* the mill door and the grain outside */
   const dh=lzDoorH(2);W(0,0,0,PI/4,()=>lzPortal(0,0,3.14,0,dh,{mk:'lacq'}));
   FURNISH('generic_sack',3.4,0,3.0,.3,{setting:'outdoor'});FURNISH('generic_sack',2.8,0,3.8,1.1,{setting:'outdoor'});FURNISH('job_sheaf_rack',-4.6,0,-3.2,PI/4,{setting:'outdoor'});}});
-/* ---------------------------------------------------------------- the farm: placeholder crops, a frilled-lizard pen, a drystone wall */
-defBuilding({key:'lz-farm',name:'Farm',seed:7206,caste:3,cut:false,w:26,d:20,h:4,budget:90000,
- tags:{types:['industry'],wealth:'poor',role:'farm',job:'farming'},
- note:'the Drovers\' fields: rows of carrot frill greens and trumpet pods and a yam mound (PLACEHOLDER crops: the biome and fruit work owns them), a frilled-lizard pen walled in basalt, a burden beast at the plough',
+/* ---------------------------------------------------------------- the farm: Rift crops, a frilled-lizard pen, a drystone wall */
+defBuilding({key:'lz-farm',name:'Farm',seed:7206,caste:3,cut:false,w:26,d:20,h:4.4,budget:90000,
+ tags:{types:['industry','farm'],wealth:'poor',role:'farm',job:'farming'},
+ note:'the Drovers\' fields: ridged rows of carrot-frill greens, cane-trellised trumpet pods and Rift yam and ballmelon mounds, a three-rib reed field shelter, a frilled-lizard pen walled in basalt, and a burden beast at the bronze-shod plough',
  build(o){box('earthR',0,0,0,25,.08,19,P('earthP'));
-  /* the rows: ridged earth with the greens on it */
-  for(let r=0;r<7;r++){const z=-8+r*2.2;box('earth',-4,0,z,15,.3,.9,P('earth'));for(let i=0;i<17;i++){const x=-11.3+i*.9;const k=r%3;
-   if(k===0){for(let f=0;f<5;f++){const a=f*TAU/5+r;ellip('plain',x+Math.cos(a)*.18,.3,z+Math.sin(a)*.18,.08,.22,.05,P('moss'),a,5);}}
-   else if(k===1){cyl('plain',x,.3,z,.025,.9,P('moss'),4);for(let f=0;f<3;f++)cone('plain',x+rr(-.1,.1),.6+f*.2,z+rr(-.1,.1),.1,.22,P('spore'),6);}
-   else ellip('plain',x,.3,z,.3,.18,.3,P('moss'),0,6);}}
+  /* the rows: ridged earth with three Rift staple and produce crops in textured materials */
+  for(let r=0;r<7;r++){const z=-8+r*2.2;box('earth',-4,0,z,15,.28,.92,P(r%2?'earth':'earthP'));
+   const k=r%3;
+   if(k===1){for(let t=0;t<5;t++){const tx=-10.2+t*3.1;
+    beam('cane',[tx-.32,.2,z-.28],[tx,1.43,z],.035,P('cane'),true,5);
+    beam('cane',[tx+.32,.2,z+.28],[tx,1.43,z],.035,P('cane'),true,5);
+    beam('cane',[tx,.2,z+.32],[tx,1.43,z],.035,P('cane'),true,5);}
+    beam('cane',[-11.2,1.22,z],[3.2,1.22,z],.028,P('reedL'),true,5);}
+   for(let i=0;i<15;i++){const x=-10.8+i*0.97;
+    if(k===0){cyl('ivory',x,.24,z,.07,.14,P('tusk'),6);
+     for(let f=0;f<5;f++){const a=f*TAU/5+r*.4;
+      W(x+Math.cos(a)*.14,.32,z+Math.sin(a)*.14,a,()=>box('matW',0,.14,0,.09,.32,.22,P('jade'),0,.35));}}
+    else if(k===1){cyl('reed',x,.26,z,.03,.96,P('moss'),5);
+     for(let f=0;f<3;f++){const fa=f*2.1+i;
+      cone('lacqR',x+Math.cos(fa)*.12,.58+f*.2,z+Math.sin(fa)*.12,.085,.24,P(f===1?'oxblood':'cane'),6);}}
+    else{sph('earth',x,.28,z,.32,P('earth'),.55,7);
+     for(let f=0;f<3;f++){const a=f*TAU/3+i*.5;box('matW',x+Math.cos(a)*.22,.38,z+Math.sin(a)*.22,.24,.04,.18,P('moss'),a);}
+     if(i%2===0)sph('cane',x+.12,.38,z-.1,.16,P('reedL'),.82,7);}}}
+  /* Drovers' three-rib reed shade lean-to at the head of the rows */
+  W(-9.4,0,6.2,0,()=>{lzRibRoof(3.6,2.4,.95,2.55,3,{mk:'thatch',col:P('reedL'),over:.35,ribR:.08,past:.22,ext:.25,ends:false,drop:.2});
+   for(const sx of [-1.8,0,1.8])for(const sz of [-1.1,1.1])beam('bones',[sx,0,sz],[sx,.92,sz*.94],.06,P('boneO'),true,5);});
   /* the pen: a drystone wall round the frilled lizards, a gate of bone */
   const px=8,pz=-3;W(px,0,pz,0,()=>{for(const [x,z,ry,L] of [[0,3.5,0,7],[0,-3.5,0,7],[3.5,0,PI/2,7],[-3.5,0,PI/2,7]])W(x,0,z,ry,()=>{for(let i=0;i<Math.floor(L/.55);i++)box('basalt',-L/2+.3+i*.55,0,0,.52,.9+rr(-.15,.15),.5,P(pick(['basalt','basaltD'])),rr(-.1,.1));});
    for(const s of [-1,1])lzHorn(s*.7,.9,3.5,0,1.1,.07,{curl:.6,mk:'horn'});});
   for(const [x,z,ry] of [[px-1.5,pz-1,0],[px+1.2,pz+1.4,2.2],[px+.2,pz-2.2,4.1]])place('frilled',x,z,ry,{mode:'idle',activity:'REST'});
   /* the plough team at the end of the rows */
   place('burden',-4,8.2,PI/2,{mode:'idle',activity:'WORK'});W(-1,0,8.2,PI/2,()=>{beam('wood',[0,.2,0],[0,1.2,-1.6],.08,P('reedD'),true,6);box('bronzeC',0,0,0,.14,.6,.5,P('bronze'));});
-  FURNISH('generic_trade_trough',px+4.6,0,pz+2,PI/2,{setting:'outdoor'});FURNISH('generic_veg_basket',-10,0,9,0,{setting:'outdoor'});FURNISH('job_winnowing_mat',6,0,7,0,{setting:'outdoor'});
+  FURNISH('generic_trade_trough',px+4.6,0,pz+2,PI/2,{setting:'outdoor'});FURNISH('generic_veg_basket',-10,0,8.4,0,{setting:'outdoor'});FURNISH('generic_storage_jar',-8.6,.08,6.2,.4,{setting:'outdoor'});FURNISH('job_winnowing_mat',6,0,7,0,{setting:'outdoor'});
   door(px,0,pz+3.5,0,1.4);}});

@@ -55,8 +55,8 @@ ASSERT_JS = r"""() => {
     detail: T.records + ' records, unknown ' + T.unknown + (T.unknown ? ' ' + JSON.stringify(T.unknownValues) + JSON.stringify(T.unknownKeys) : '') });
   const wantVillageKeys = [
     'lz-nest', 'lz-warren', 'lz-makers', 'lz-longhouse', 'lz-lodge', 'lz-tower',
-    'lz-hall-bronze', 'lz-hall-reed', 'lz-hall-bone', 'lz-granary', 'lz-windmill', 'lz-farm',
-    'lz-barracks', 'lz-muster', 'lz-lookout', 'lz-seer', 'lz-medicine', 'lz-warehouse',
+    'lz-hall-bronze', 'lz-hall-reed', 'lz-hall-bone', 'lz-bakehouse', 'lz-fermentery', 'lz-granary', 'lz-windmill', 'lz-farm', 'lz-orchard',
+    'lz-quarry', 'lz-skimmer', 'lz-waystone', 'lz-barracks', 'lz-muster', 'lz-lookout', 'lz-seer', 'lz-medicine', 'lz-warehouse',
     'lz-stela-pair', 'lz-stela-turned', 'lz-obelisk', 'lz-circle', 'lz-ley', 'lz-bells', 'lz-reliquary',
     'gl-well', 'gl-tank', 'gl-pans', 'gl-saltstore', 'frilled', 'burden'
   ];

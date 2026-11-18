@@ -19,7 +19,16 @@ var LZV_SPEC = (function () {
   sites.push(
     { key: 'lz-lookout', x: 2600, z: -400, ry: 1.6, kind: 'lookout', name: 'Inner lookout toward the Pile (the watch on Loj Nahn)' },
     { key: 'lz-lookout', x: 3700, z: 300, ry: 1.6, kind: 'lookout', name: 'Middle lookout toward the Pile (the watch on Loj Nahn)' },
-    { key: 'lz-lookout', x: 4700, z: -200, ry: 1.6, kind: 'lookout', name: 'Outer lookout toward the Pile (the watch on Loj Nahn)' }
+    { key: 'lz-lookout', x: 4700, z: -200, ry: 1.6, kind: 'lookout', name: 'Outer lookout toward the Pile (the watch on Loj Nahn)' },
+    { key: 'lz-orchard', x: -1460, z: -195, ry: 0.15, kind: 'farm', name: 'North granary Rift fruit and pod grove' },
+    { key: 'lz-orchard', x: -1460, z: 195, ry: -0.15, kind: 'farm', name: 'South granary Rift fruit and pod grove' },
+    { key: 'lz-orchard', x: -2620, z: 1140, ry: 0.4, kind: 'farm', name: 'Hamlet plateau fruit and tuber grove' },
+    { key: 'lz-quarry', x: 1850, z: -160, ry: -1.45, kind: 'works', name: 'East-plateau basalt quarry' },
+    { key: 'lz-waystone', x: -840, z: 22, ry: -1.57, kind: 'monument', name: 'Granary-road Coil waystone and grain sledge' },
+    { key: 'lz-waystone', x: -1820, z: 480, ry: -2.15, kind: 'monument', name: 'West-hamlet Coil waystone and grain sledge' },
+    { key: 'lz-waystone', x: -2460, z: 980, ry: -2.2, kind: 'monument', name: 'Outer-hamlet Coil waystone' },
+    { key: 'lz-waystone', x: 1500, z: 98, ry: 1.95, kind: 'monument', name: 'Pile-watch road Coil waystone' },
+    { key: 'lz-waystone', x: 3150, z: -32, ry: 1.1, kind: 'monument', name: 'Middle-watch Coil waystone' }
   );
 
   /* Continuous river-bed trough along Muckle Weyt Beck (r202, 5.4 km NW) before KDRAWN registers nearH */
@@ -87,6 +96,9 @@ var LZV_SPEC = (function () {
       ['lz-hall-reed', 2, 1, 0.62, 2.0],
       ['lz-hall-bone', 2, 2, 0.38, 2.0],
       ['lz-warehouse', 2, 3, 0.60, 2.0],
+      ['lz-bakehouse', 3, 0, 0.32, 2.2],
+      ['lz-bakehouse', 3, 2, 0.36, 2.2],
+      ['lz-fermentery', 3, 3, 0.66, 2.2],
       ['lz-barracks', 4, 1, 0.35, 2.4]
     ],
     mouth: {
@@ -119,7 +131,7 @@ var LZV_SPEC = (function () {
     expect: {
       people: 3000,
       wells: 14,
-      keys: ['lz-nest', 'lz-ley', 'lz-muster', 'gl-tank', 'lz-granary', 'lz-lookout', 'lz-windmill'],
+      keys: ['lz-nest', 'lz-ley', 'lz-muster', 'gl-tank', 'lz-granary', 'lz-lookout', 'lz-windmill', 'lz-bakehouse', 'lz-fermentery', 'lz-orchard', 'lz-quarry', 'lz-waystone'],
       lake: false,
       hamlet: true
     },

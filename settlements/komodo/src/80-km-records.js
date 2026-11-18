@@ -35,8 +35,8 @@ var KM_REC = (function () {
 
   /* Exact annual makes held by LZ_TUNE.checkTown: grain 600 t, produce 250 t, fish 240 t, meat_hide 90 t, tin 8 t */
   var works = [
-    { id: 'km.works.grain', kind: 'farming', keys: ['lz-farm', 'lz-windmill', 'lz-granary'], caste: 3, workers: 210, good: 'grain', yearT: 600 },
-    { id: 'km.works.produce', kind: 'farming', keys: ['lz-farm'], caste: 3, workers: 95, good: 'produce', yearT: 250 },
+    { id: 'km.works.grain', kind: 'farming', keys: ['lz-farm', 'lz-windmill', 'lz-granary', 'lz-bakehouse'], caste: 3, workers: 210, good: 'grain', yearT: 600 },
+    { id: 'km.works.produce', kind: 'farming', keys: ['lz-farm', 'lz-orchard', 'lz-fermentery'], caste: 3, workers: 95, good: 'produce', yearT: 250 },
     { id: 'km.works.fish', kind: 'fishing', keys: ['lz-weir'], caste: 3, workers: 90, good: 'fish', yearT: 240 },
     { id: 'km.works.herds', kind: 'herding', keys: ['lz-farm', 'lz-hall-bone'], caste: 3, workers: 48, good: 'meat_hide', yearT: 90 },
     { id: 'km.works.tin', kind: 'placer', keys: ['lz-placer'], caste: 2, workers: 90, good: 'tin', yearT: 8 }

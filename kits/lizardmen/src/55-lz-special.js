@@ -36,7 +36,9 @@ defBuilding({key:'lz-medicine',name:'Medicine hut',seed:7302,caste:1,cut:true,w:
  build(o){const L=5.6,Wd=4.4,wh=1.4,rh=3.2;lzCutFloor(0);box('earthR',0,0,0,L+1,.12,Wd+1,P('earthP'));
   lzBatterRoom(L,Wd,.12,wh,'cane',P('cane'),{lean:{front:.05,back:-.09,left:.12,right:-.03},front:[lzDoor(1,L/2-.6),lzVent(1,L-1,.9)],back:[lzVent(1,L/2,.9)]});
   lzRibRoof(L,Wd,wh-.05,wh+rh,5,{mk:'hide',col:P('hideP'),over:.6,ribR:.12,past:.45,bend:1,ext:.4,endMk:'mat',leanEnds:{left:.12,right:-.03},y0:.12});
-  lzNoCut(()=>{for(let i=0;i<6;i++){const x=-L/2+.6+i*.85;beam('rope',[x,wh+.9,Wd/2+.45],[x,wh+.3,Wd/2+.5],.012,P('reedD'),true,4);ellip('plain',x,wh+.1,Wd/2+.5,.09,.22,.09,P(i%2?'moss':'spore'),0,6);}});
+  lzNoCut(()=>{for(let i=0;i<7;i++){const x=-L/2+.5+i*.76;beam('rope',[x,wh+.9,Wd/2+.45],[x,wh+.32,Wd/2+.5],.012,P('reedD'),true,4);
+   if(i%2===0){cyl('reed',x,wh+.04,Wd/2+.5,.085,.28,P('moss'),7);ring('rope',x,wh+.22,Wd/2+.5,.09,.015,P('reedD'),0,0,0,8);}
+   else{lathe('lacqR',x,Wd/2+.5,[[.03,wh+.04],[.11,wh+.1],[.09,wh+.24],[.04,wh+.32]],8,P('oxblood'),{});}}});
   lzThreshold(-.6,Wd/2+.15,0,.9);
   lzFurnRoom(L-.5,Wd-.5,.12,'common',{beds:1,ceil:rh*.7,extra:[['generic_medicine',1.4,-1.2,0],['generic_herb_bundles',.4,-1.4,0],['lizardmen_common_bowl',1.6,.4,0],['generic_storage_jar',-1.8,1.2,0]]});}});
 /* ---------------------------------------------------------------- the warehouse: the plunder kept and unused */

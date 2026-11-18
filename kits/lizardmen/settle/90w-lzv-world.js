@@ -103,7 +103,7 @@
   SITES.length = 0; G.sites.forEach(function (r) { SITES.push({ key: r.key, x: r.x, z: r.z, ry: r.ry, o: r.o }); });
   var prevBuild = buildWorld;
   buildWorld = function () {
-    var W0 = prevBuild(), PB = {}, keepT = GTARGET, keepSB = SB, tbl = KTAGS.table();
+    var W0 = prevBuild(), PB = {}, keepT = GTARGET, keepSB = SB, tbl = KTAGS.table(), tblF = KTAGS.table();
     GTARGET = PB; resetCM(); SB = null;
     try {
       G.plinths.forEach(function (pl) { var h = pl.y1 - pl.y0; if (h <= 0.02) return;
@@ -116,10 +116,69 @@
           (function (sx, sy, sz) { W(sx, 0, sz, fr.yaw, function () { box('stoneP', 0, g0 - 0.3, 0, 2.2, sy - (g0 - 0.3), 0.52, hc(0x465048)); }); })(sx, sy, sz);
           if (typeof KWALK !== 'undefined' && KWALK.poly) { var cs = Math.cos(fr.yaw), sn = Math.sin(fr.yaw);
             KWALK.poly({ pts: [[-1, -1], [1, -1], [1, 1], [-1, 1]].map(function (q) { return [sx + q[0] * 1.1 * cs + q[1] * 0.28 * sn, sz - q[0] * 1.1 * sn + q[1] * 0.28 * cs, sy]; }), name: 'step', tag: 'step:' + r.key }); } } });
+      /* 3D bunds, drystone corner markers, furrows and standing Rift crops across G.fields */
+      G.fields.forEach(function (f) {
+        var bx = f.box, cx = (bx[0] + bx[2]) / 2, cz = (bx[1] + bx[3]) / 2, fw = bx[2] - bx[0], fd = bx[3] - bx[1];
+        var nearS = G.sites.filter(function (s) { return Math.abs(s.x - cx) < fw / 2 + 24 && Math.abs(s.z - cz) < fd / 2 + 24; });
+        var clearAt = function (px, pz) {
+          for (var qi = 0; qi < nearS.length; qi++) {
+            if (Math.abs(px - nearS[qi].x) < nearS[qi].w / 2 + 3.5 && Math.abs(pz - nearS[qi].z) < nearS[qi].d / 2 + 3.5) return false;
+          }
+          return true;
+        };
+        var cr = f.crop || 'ashmillet', isWet = cr.indexOf('rice') >= 0 || cr === 'taro';
+        var isPod = cr === 'frillpod' || cr === 'bambara' || cr === 'helix-bean';
+        var isGrain = cr.indexOf('rice') >= 0 || cr === 'ashmillet' || cr === 'sandpan-fonio';
+        /* corner cairns or earthen paddy bunds */
+        [[-1, -1], [1, -1], [1, 1], [-1, 1]].forEach(function (c2) {
+          var kx = cx + c2[0] * (fw / 2 - 0.8), kz = cz + c2[1] * (fd / 2 - 0.8), ky = G.groundH(kx, kz);
+          if (clearAt(kx, kz)) box('cyclo', kx, ky - 0.25, kz, 0.72, 1.05, 0.72, hc(0x4e5850));
+        });
+        if (isWet) {
+          var bs;
+          for (bs = 0; bs < 4; bs++) {
+            var ux = bx[0] + (bs + 0.5) * fw / 4, uz = bx[1] + (bs + 0.5) * fd / 4;
+            if (clearAt(ux, bx[1] + 0.6)) box('earthR', ux, G.groundH(ux, bx[1] + 0.6) - 0.24, bx[1] + 0.6, fw / 4 - 0.3, 0.58, 0.68, hc(0x6e583e));
+            if (clearAt(ux, bx[3] - 0.6)) box('earthR', ux, G.groundH(ux, bx[3] - 0.6) - 0.24, bx[3] - 0.6, fw / 4 - 0.3, 0.58, 0.68, hc(0x6e583e));
+            if (clearAt(bx[0] + 0.6, uz)) box('earthR', bx[0] + 0.6, G.groundH(bx[0] + 0.6, uz) - 0.24, uz, 0.68, 0.58, fd / 4 - 0.3, hc(0x6e583e));
+            if (clearAt(bx[2] - 0.6, uz)) box('earthR', bx[2] - 0.6, G.groundH(bx[2] - 0.6, uz) - 0.24, uz, 0.68, 0.58, fd / 4 - 0.3, hc(0x6e583e));
+          }
+        }
+        var nR = 6, nS = 4, segL = (fw - 8) / nS - 1.1, ri, si, rz, sx, gy;
+        for (ri = 0; ri < nR; ri++) {
+          rz = bx[1] + 5.5 + ri * ((fd - 11) / Math.max(1, nR - 1));
+          for (si = 0; si < nS; si++) {
+            sx = bx[0] + 4 + (si + 0.5) * ((fw - 8) / nS);
+            if (!clearAt(sx, rz)) continue;
+            gy = G.groundH(sx, rz);
+            box('earth', sx, gy - 0.22, rz, segL, 0.42, 1.45, hc(isWet ? 0x4c3d2c : 0x624a34));
+            if (f.kind === 'crop') {
+              if (isGrain) {
+                var gh = cr.indexOf('rice') >= 0 ? 0.68 : 0.92;
+                box('thatch', sx, gy + 0.16, rz, segL * 0.94, gh, 0.85, hc(cr.indexOf('rice') >= 0 ? 0x768c3e : 0xb09248));
+                box('reed', sx, gy + 0.16 + gh * 0.92, rz, segL * 0.9, 0.18, 0.52, hc(0xc8aa58));
+              } else if (isPod) {
+                box('matW', sx, gy + 0.18, rz, segL * 0.92, 0.72, 0.68, hc(0x486e3c));
+                box('cane', sx, gy + 0.92, rz, segL * 0.92, 0.08, 0.12, hc(0xb89c62));
+              } else {
+                box('matW', sx, gy + 0.18, rz, segL * 0.92, 0.46, 1.12, hc(cr === 'taro' ? 0x3b6c4a : 0x526e38));
+                if (cr === 'ballmelon' && (ri + si) % 2 === 0) box('cane', sx, gy + 0.24, rz + 0.42, 0.44, 0.34, 0.44, hc(0xc69c46));
+              }
+            } else if (f.kind === 'tilled') {
+              box('matW', sx, gy + 0.18, rz, segL * 0.86, 0.18, 0.46, hc(0x5a7c3e));
+            } else if ((ri + si) % 2 === 0) {
+              box('reed', sx, gy + 0.16, rz, segL * 0.62, 0.22, 0.58, hc(0x9a8852));
+            }
+          }
+        }
+        tblF.push(cx, G.groundH(cx, cz), cz, 0, fw, fd, 1.1);
+      });
     } finally { SB = keepSB; GTARGET = keepT; }
     var pg = new THREE.Group(); pg.name = S.key + '-plinths'; flushBuckets(PB, pg, true); WORLD.add(pg);
     if (SVTAGS && tbl.n > 0) SVTAGS.addSet({ 'class': 'infrastructure', kind: 'terrace-plinth', key: 'lzv-plinth', name: 'Footing plinths', tags: { culture: 'lizardmen', types: ['infrastructure'] },
       note: 'basalt and rammed-earth footings seating ' + S.name + '\'s buildings on its ground', frag: 'settlements/' + S.key }, tbl);
+    if (SVTAGS && tblF.n > 0) SVTAGS.addSet({ 'class': 'infrastructure', kind: 'field-plot', key: 'lzv-field-plot', name: 'Bunded crop fields', tags: { culture: 'lizardmen', types: ['farm'] },
+      note: 'paddy bunds, basalt corner stones, furrows and standing Rift crops across ' + S.name + '\'s fields', frag: 'settlements/' + S.key }, tblF);
     return W0;
   };
 

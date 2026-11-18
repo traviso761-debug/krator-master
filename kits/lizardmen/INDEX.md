@@ -24,14 +24,14 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `42-lz-dress.js` | 3 |  |
 | `50-lz-dwell.js` | 11 |  |
 | `52-lz-nest.js` | 5 |  |
-| `54-lz-trade.js` | 15 |  |
+| `54-lz-trade.js` | 16 |  |
 | `55-lz-special.js` | 7 |  |
 | `56-lz-military.js` | 7 |  |
 | `56-sa-beasts.js` | 3 |  |
 | `57-lc-camp.js` | 10 |  |
 | `58-lz-monument.js` | 4 |  |
 | `59-lz-trades.js` | 6 | = (2) |
-| `59w-lz-works.js` | 11 |  |
+| `59w-lz-works.js` | 28 |  |
 | `60-lz-reliquary.js` | 11 |  |
 | `62-lk-capital.js` | 21 |  |
 | `89-rows.js` | 1 |  |

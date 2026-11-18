@@ -96,17 +96,16 @@ Gila's shares (the owner agreed them for Gila, 2026-11-16).
 |---|---|---|---|
 | **K0** | this plan, `spec.json`, the sheets | `python3 kits/lizardmen/settle/towns_plan.py komodo` | done (`9fadd409f`) |
 | **K1** | `KM_REC` and the spec | `checkTown` with a negative | done (`test-km-records.js`) |
-| **K2** | the page | the guide's section 5; `water-on-core` with the sea (`expect.lake`); `expect.keys` lz-nest, lz-ley, lz-muster, gl-tank, lz-weir, lz-placer | done (GPU-verified; owner review on section 8 pending) |
+| **K2** | the page | the guide's section 5; `water-on-core` with the sea (`expect.lake`); `expect.keys` lz-nest, lz-ley, lz-muster, gl-tank, lz-weir, lz-placer | done (`a7e1ff6c5`, GPU-verified; all five section 8 questions agreed 2026-11-17) |
 | **K3** | flora (`biomes/rift`, XA jungle) | later | open |
 
-**Watch:** the near grid is twice Gila's (18 x 9 km at 25 m: ~260,000 vertices). If the page is heavy, draw the placer
-camp's ground from the far grid and keep the near grid to the village (question 3).
+**Watch:** the near grid is twice Gila's (18 x 9 km at 25 m: ~260,000 vertices). Build and GPU verify run in ~1.3 s, so the placer camp stays directly on the page (question 3).
 
-## 8. Questions for the owner (answers *proposed*)
+## 8. Questions for the owner (answered 2026-11-17: all five agreed as proposed)
 
-1. **Komodo at its pin**, on the bluff over the sea? *Proposed:* yes.
-2. **The long arms along the contour, the mouth down to the shore**, every block on a plinth? *Proposed:* yes.
+1. **Komodo at its pin**, on the bluff over the sea? **Agreed:** yes (`865,1617`, `spnqhezhiw`).
+2. **The long arms along the contour, the mouth down to the shore**, every block on a plinth? **Agreed:** yes.
 3. **The placer camp on Kruk Warra on the page** (the near grid run 13.5 km east), or the camp a record only, drawn when the
-   open-world region is cut? *Proposed:* on the page.
-4. **Gila's shares** for Komodo? *Proposed:* yes.
-5. **Three weirs** for the tune's 240 t of fish? *Proposed:* yes.
+   open-world region is cut? **Agreed:** on the page.
+4. **Gila's shares** for Komodo? **Agreed:** yes.
+5. **Three weirs** for the tune's 240 t of fish? **Agreed:** yes.

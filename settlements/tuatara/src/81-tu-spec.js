@@ -58,8 +58,10 @@ var LZV_SPEC = (function () {
       ['lz-hall-bone', 2, 2, 0.38, 2.0],
       ['lz-warehouse', 2, 3, 0.60, 2.0],
       ['lz-granary', 3, 0, 0.30, 2.2],
+      ['lz-bakehouse', 3, 1, 0.28, 2.2],
       ['lz-granary', 3, 1, 0.68, 2.2],
       ['lz-granary', 3, 2, 0.34, 2.2],
+      ['lz-fermentery', 3, 2, 0.72, 2.2],
       ['lz-granary', 3, 3, 0.66, 2.2],
       ['lz-granary', 3, 0, 0.75, 2.2],
       ['lz-barracks', 4, 1, 0.35, 2.4],
@@ -87,7 +89,7 @@ var LZV_SPEC = (function () {
     expect: {
       people: 3000,
       wells: 12,
-      keys: ['lz-nest', 'lz-ley', 'lz-muster', 'gl-tank', 'lz-cistern', 'lz-mine'],
+      keys: ['lz-nest', 'lz-ley', 'lz-muster', 'gl-tank', 'lz-cistern', 'lz-mine', 'lz-bakehouse', 'lz-fermentery', 'lz-orchard', 'lz-quarry', 'lz-waystone'],
       lake: false,
       hamlet: true
     },
@@ -116,7 +118,14 @@ var LZV_SPEC = (function () {
       { key: 'lz-cistern', x: 0.0, z: 565.6, ry: 0, kind: 'works', name: 'Sunken brick cistern (dry season)' },
       { key: 'lz-cistern', x: -442.2, z: 352.7, ry: 0, kind: 'works', name: 'Sunken brick cistern (dry season)' },
       { key: 'lz-cistern', x: -551.4, z: -125.9, ry: 0, kind: 'works', name: 'Sunken brick cistern (dry season)' },
-      { key: 'lz-cistern', x: -245.4, z: -509.6, ry: 0, kind: 'works', name: 'Sunken brick cistern (dry season)' }
+      { key: 'lz-cistern', x: -245.4, z: -509.6, ry: 0, kind: 'works', name: 'Sunken brick cistern (dry season)' },
+      { key: 'lz-orchard', x: -215, z: 820, ry: -0.2, kind: 'farm', name: 'Savanna Rift pod and fruit grove' },
+      { key: 'lz-orchard', x: 215, z: 855, ry: 0.25, kind: 'farm', name: 'East-field Rift pod and fruit grove' },
+      { key: 'lz-quarry', x: -910, z: -1160, ry: 0.55, kind: 'works', name: 'Volcanic basalt quarry (plinth and cistern stone)' },
+      { key: 'lz-waystone', x: -310, z: -850, ry: -2.4, kind: 'monument', name: 'Diggings-road Coil waystone and ore sledge' },
+      { key: 'lz-waystone', x: -1080, z: -1380, ry: -2.35, kind: 'monument', name: 'Upper-diggings Coil waystone and ore sledge' },
+      { key: 'lz-waystone', x: 24, z: 980, ry: 0, kind: 'monument', name: 'South-field Coil waystone and grain sledge' },
+      { key: 'lz-waystone', x: 24, z: 2150, ry: 0.1, kind: 'monument', name: 'Outer-field Coil waystone' }
     ],
     shoreBoxes: [],
     ways: [],

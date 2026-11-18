@@ -37,8 +37,8 @@ var IG_REC = (function () {
 
   /* Exact annual makes held by LZ_TUNE.checkTown: grain 2,600 t, produce 250 t, meat_hide 210 t, relics 1.5 t */
   var works = [
-    { id: 'ig.works.grain', kind: 'farming', keys: ['lz-granary', 'lz-farm', 'lz-windmill'], caste: 3, workers: 680, good: 'grain', yearT: 2600 },
-    { id: 'ig.works.produce', kind: 'farming', keys: ['lz-farm'], caste: 3, workers: 110, good: 'produce', yearT: 250 },
+    { id: 'ig.works.grain', kind: 'farming', keys: ['lz-granary', 'lz-farm', 'lz-windmill', 'lz-bakehouse'], caste: 3, workers: 680, good: 'grain', yearT: 2600 },
+    { id: 'ig.works.produce', kind: 'farming', keys: ['lz-farm', 'lz-orchard', 'lz-fermentery'], caste: 3, workers: 110, good: 'produce', yearT: 250 },
     { id: 'ig.works.herds', kind: 'herding', keys: ['lz-farm', 'lz-hall-bone'], caste: 3, workers: 110, good: 'meat_hide', yearT: 210 },
     { id: 'ig.works.relics', kind: 'gleaning', keys: ['lz-warehouse', 'lz-lookout'], caste: 4, workers: 36, good: 'relics', yearT: 1.5 }
   ];

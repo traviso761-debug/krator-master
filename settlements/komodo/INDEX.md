@@ -22,6 +22,6 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `80-km-records.js` | 5 | Komodo 80: the tin and fishing town's records fo (1) |
-| `81-km-spec.js` | 7 | Komodo 81: the site specification for kits/lizar (1) |
+| `81-km-spec.js` | 8 | Komodo 81: the site specification for kits/lizar (1) |
 | `89-rows.js` | <1 | KOMODO: overrides the Lizardmen kit sheet's show (1) |
 | `90x-km-river.js` | 1 | Komodo 90x: Kruk Warra (r088) on core/water WATE (1) |

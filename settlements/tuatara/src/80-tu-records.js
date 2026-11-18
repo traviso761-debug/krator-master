@@ -36,8 +36,8 @@ var TU_REC = (function () {
 
   /* Exact annual makes held by LZ_TUNE.checkTown: grain 1,000 t, produce 250 t, meat_hide 210 t, copper 70 t */
   var works = [
-    { id: 'tu.works.grain', kind: 'farming', keys: ['lz-farm', 'lz-windmill', 'lz-granary'], caste: 3, workers: 420, good: 'grain', yearT: 1000 },
-    { id: 'tu.works.produce', kind: 'farming', keys: ['lz-farm'], caste: 3, workers: 110, good: 'produce', yearT: 250 },
+    { id: 'tu.works.grain', kind: 'farming', keys: ['lz-farm', 'lz-windmill', 'lz-granary', 'lz-bakehouse'], caste: 3, workers: 420, good: 'grain', yearT: 1000 },
+    { id: 'tu.works.produce', kind: 'farming', keys: ['lz-farm', 'lz-orchard', 'lz-fermentery'], caste: 3, workers: 110, good: 'produce', yearT: 250 },
     { id: 'tu.works.herds', kind: 'herding', keys: ['lz-farm', 'lz-hall-bone'], caste: 3, workers: 110, good: 'meat_hide', yearT: 210 },
     { id: 'tu.works.copper', kind: 'mining', keys: ['lz-mine'], caste: 2, workers: 120, good: 'copper', yearT: 70 }
   ];
