@@ -233,8 +233,21 @@ func _on_rebased(delta: Vector3) -> void:
 	cam.position += delta
 
 
+func _update_cam_near() -> void:
+	if cam == null:
+		return
+	if walk_mode:
+		cam.near = 0.2
+		return
+	var cr := cam_region()
+	var gh := stream.height_at(cr.x, cr.z) if stream != null else NAN
+	var agl := maxf(cr.y - gh, 0.0) if is_finite(gh) else absf(cr.y)
+	cam.near = clampf(0.2 + maxf(agl - 30.0, 0.0) * 0.0025, 0.2, 2.0)
+
+
 func _apply_fly_basis() -> void:
 	cam.basis = Basis(Vector3.UP, _yaw) * Basis(Vector3.RIGHT, _pitch)
+	_update_cam_near()
 
 
 func _rescue_under_terrain() -> void:
@@ -429,6 +442,7 @@ func dolly_wheel(hit_local: Variant, zoom_in: bool, fast := false) -> void:
 func _follow(snap: bool) -> void:
 	if not cam.is_inside_tree():
 		return
+	_update_cam_near()
 	if first_person:
 		cam.position = walker.position + Vector3(0.0, HEIGHT * 0.42, 0.0)
 		cam.basis = Basis(Vector3.UP, _yaw) * Basis(Vector3.RIGHT, _pitch)

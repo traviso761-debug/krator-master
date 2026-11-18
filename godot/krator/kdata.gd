@@ -312,7 +312,8 @@ static func _bind_terrain_surface(mat: ShaderMaterial, hf: Dictionary, nx: int, 
 	if hf.get("_origin") is Array and (hf["_origin"] as Array).size() == 3:
 		org = [float(hf["_origin"][0]), float(hf["_origin"][1]), float(hf["_origin"][2])]
 	mat.set_shader_parameter("case_origin", Vector3(org[0], org[1], org[2]))
-	mat.set_shader_parameter("detail_origin", Vector2(fposmod(org[0], 40000.0), fposmod(org[2], 40000.0)))
+	mat.set_shader_parameter("macro_origin", Vector2(fposmod(org[0], 32000.0), fposmod(org[2], 32000.0)))
+	mat.set_shader_parameter("detail_origin", Vector2(fposmod(org[0], 4000.0), fposmod(org[2], 4000.0)))
 	mat.set_shader_parameter("grid_step", step)
 	var n := nx * nz
 	var surf = hf.get("surface")

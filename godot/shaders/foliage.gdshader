@@ -27,6 +27,7 @@ uniform int sway_axis = 0;               // o.axis: which basis column sets the 
 uniform bool use_an = false;             // o.aN: the clump's own lighting normal (world space)
 uniform bool irid = false;               // o.irid: the prism gum's two colours
 uniform float back_light = 0.30;
+uniform bool srgb_vcol = false;          // true when GLTFDocument converted glTF COLOR_0 from linear to sRGB
 uniform vec4 sn_k = vec4(0.0);          // o.season: (drop, k, stagger, 0); 0: no season (lib/season.gdshaderinc)
 uniform vec3 sn_c = vec3(1.0);          // the dry colour (linear)
 uniform vec2 fl_k = vec2(0.0);          // o.season.flush: (k, stagger); 0: no flush
@@ -70,7 +71,8 @@ void fragment() {
 	}
 	vec2 tuv = UV * uv_repeat + uv_offset;   // three's uv transform (repeat, then offset), then its flipY
 	vec4 tx = has_tex ? texture(albedo_tex, vec2(tuv.x, flip_v ? 1.0 - tuv.y : tuv.y)) : vec4(1.0);
-	vec3 c = COLOR.rgb * colour;
+	vec3 vcol = srgb_vcol ? k_s2l(COLOR.rgb) : COLOR.rgb;
+	vec3 c = vcol * colour;
 	if (irid) {
 		vec3 V = normalize(CAMERA_POSITION_WORLD - v_wp);
 		vec3 N = normalize((INV_VIEW_MATRIX * vec4(NORMAL, 0.0)).xyz);
@@ -80,10 +82,10 @@ void fragment() {
 	float dry_k = 0.0;
 	if (sn_k.y > 0.0) {
 		dry_k = sn_dry_k(season_dry, sn_k, v_sn_h);
-		c = sn_tint(c, COLOR.rgb, sn_c, v_sn_h, dry_k);
+		c = sn_tint(c, vcol, sn_c, v_sn_h, dry_k);
 	}
 	if (fl_k.x > 0.0) {
-		c = sn_tint(c, COLOR.rgb, fl_c, v_sn_h, sn_flush_k(season_flush, fl_k, v_sn_h));
+		c = sn_tint(c, vcol, fl_c, v_sn_h, sn_flush_k(season_flush, fl_k, v_sn_h));
 	}
 	if (sn_k.x > 0.0 && sn_discard(v_sn_p, v_sn_h, sn_gone(season_dry, sn_k, v_sn_h))) {
 		discard;
@@ -91,8 +93,8 @@ void fragment() {
 	vec3 lin_leaf = k_tex(tx.rgb) * c;
 	ALBEDO = k_albedo(lin_leaf);
 	NORMAL = fol_vein_normal(NORMAL, fract(tuv), v_depth);
-	ROUGHNESS = mix(0.38, 0.68, dry_k);
-	SPECULAR = mix(0.38, 0.18, dry_k);
+	ROUGHNESS = mix(0.52, 0.72, dry_k);
+	SPECULAR = mix(0.22, 0.14, dry_k);
 	AO = fol_crown_ao(v_sn_p);
 	AO_LIGHT_AFFECT = 0.48;
 	// far cards keep more of their cut-out (three: diffuseColor.a *= 1 + clamp(d/650, 0, 1.1))

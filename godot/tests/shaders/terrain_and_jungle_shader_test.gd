@@ -152,8 +152,9 @@ func _initialize() -> void:
 	ok(rock_cliff > 0.70 and rock_ridge < 0.20,
 		"steep cliff face receives high rock weight (%.3f) for sedimentary strata vs gentle ridge (%.3f)" % [rock_cliff, rock_ridge])
 
-	# 3. Rebase & 40 km detail_origin precision / chunk-seam invariance check
+	# 3. Rebase & 4 km detail_origin + 32 km macro_origin precision / chunk-seam invariance check
 	var d_org: Vector2 = sm.get_shader_parameter("detail_origin")
+	var m_org: Vector2 = sm.get_shader_parameter("macro_origin")
 	# Two chunks separated by 16 km rebasing around x = 640,128 vs x = 656,128:
 	var grid_b := grid.duplicate()
 	grid_b["_origin"] = [656128.0, 12.0, -320064.0]
@@ -161,13 +162,13 @@ func _initialize() -> void:
 	var mi_b := KData.ground(grid_b, {}) as MeshInstance3D
 	var sm_b := mi_b.mesh.surface_get_material(0) as ShaderMaterial
 	var d_org_b: Vector2 = sm_b.get_shader_parameter("detail_origin")
-	# Check world point x_world = 640064.0:
-	# In chunk A: local_x = -64.0, v_detail_x = -64.0 + d_org.x
-	# In chunk B: local_x = -16064.0, v_detail_x = -16064.0 + d_org_b.x
-	var v_det_a := fposmod(-64.0 + d_org.x, 40000.0)
-	var v_det_b := fposmod(-16064.0 + d_org_b.x, 40000.0)
-	ok(absf(d_org.x) < 40000.0 and absf(d_org.y) < 40000.0 and absf(v_det_a - v_det_b) < 1e-3,
-		"40 km wrapped detail_origin stays small (%.1f, %.1f) 640 km out while keeping chunk-seam phase exact (diff %.6f m)" % [d_org.x, d_org.y, absf(v_det_a - v_det_b)])
+	var m_org_b: Vector2 = sm_b.get_shader_parameter("macro_origin")
+	var v_det_a := fposmod(-64.0 + d_org.x, 4000.0)
+	var v_det_b := fposmod(-16064.0 + d_org_b.x, 4000.0)
+	var v_mac_a := fposmod(-64.0 + m_org.x, 32000.0)
+	var v_mac_b := fposmod(-16064.0 + m_org_b.x, 32000.0)
+	ok(absf(d_org.x) < 4000.0 and absf(d_org.y) < 4000.0 and absf(v_det_a - v_det_b) < 1e-3 and absf(v_mac_a - v_mac_b) < 1e-3,
+		"4 km detail_origin (%.1f, %.1f) and 32 km macro_origin stay small 640 km out while keeping chunk-seam phase exact (diff %.6f m)" % [d_org.x, d_org.y, absf(v_det_a - v_det_b)])
 	# Negative: raw float32 at 16,777,216 m has ULP = 2.0 m (cannot resolve 0.25 m clasts!)
 	var huge_f32 := PackedFloat32Array([16777216.0, 16777216.25])
 	ok(huge_f32[0] == huge_f32[1],
@@ -217,7 +218,7 @@ func _initialize() -> void:
 	ok(not (ao_inner >= ao_outer),
 		"negative: crown interior is never brighter in AO than outer crown tips")
 
-	# 6. library.gdshader alpha_test cutout & world_import.gd non-instanced Bucket sway guards
+	# 6. library.gdshader alpha_test cutout, srgb_vcol GLTF COLOR_0 decode & world_import.gd Bucket sway guards
 	var lib_code := FileAccess.get_file_as_string("res://shaders/library.gdshader")
 	var rep_std := {}
 	var sm_cut := KratorWorld._standard(
@@ -250,11 +251,12 @@ func _initialize() -> void:
 	var mcache := {}
 	var mids := {"materials_resolved": 0, "materials_missing": 0}
 	var mrep := {"gaps": {}}
-	var fol_inst := KratorWorld._mat("m_leaf", mats_dict, {}, {}, mcache, mids, mrep, true) as ShaderMaterial
-	var fol_buck := KratorWorld._mat("m_leaf", mats_dict, {}, {}, mcache, mids, mrep, false) as ShaderMaterial
-	var hang_inst := KratorWorld._mat("m_hang", mats_dict, {}, {}, mcache, mids, mrep, true) as ShaderMaterial
-	var hang_buck := KratorWorld._mat("m_hang", mats_dict, {}, {}, mcache, mids, mrep, false) as ShaderMaterial
-	var bark_buck := KratorWorld._mat("m_bark", mats_dict, {}, {}, mcache, mids, mrep, false) as ShaderMaterial
+	var fol_inst := KratorWorld._mat("m_leaf", mats_dict, {}, {}, mcache, mids, mrep, true, false) as ShaderMaterial
+	var fol_vcol := KratorWorld._mat("m_leaf", mats_dict, {}, {}, mcache, mids, mrep, true, true) as ShaderMaterial
+	var fol_buck := KratorWorld._mat("m_leaf", mats_dict, {}, {}, mcache, mids, mrep, false, true) as ShaderMaterial
+	var hang_inst := KratorWorld._mat("m_hang", mats_dict, {}, {}, mcache, mids, mrep, true, false) as ShaderMaterial
+	var hang_buck := KratorWorld._mat("m_hang", mats_dict, {}, {}, mcache, mids, mrep, false, true) as ShaderMaterial
+	var bark_buck := KratorWorld._mat("m_bark", mats_dict, {}, {}, mcache, mids, mrep, false, true) as ShaderMaterial
 	ok(fol_buck != null and fol_buck.shader == KratorBiome.FOLIAGE
 		and (fol_buck.get_shader_parameter("sway_w") as Vector3).length() < 1e-5
 		and is_equal_approx(float(fol_buck.get_shader_parameter("sway_c")), 0.55)
@@ -264,7 +266,47 @@ func _initialize() -> void:
 	ok(fol_inst != null and (fol_inst.get_shader_parameter("sway_w") as Vector3).y > 0.9
 		and hang_inst != null and float(hang_inst.get_shader_parameter("hang_a")) > 0.05,
 		"negative: instanced tree crowns & hanging moss preserve height-proportional sway_w.y=1.0 and hang_a>0")
+	ok(fol_vcol != null and fol_vcol.get_shader_parameter("srgb_vcol") == true
+		and bark_buck != null and bark_buck.get_shader_parameter("srgb_vcol") == true,
+		"meshes with GLTF COLOR_0 vertex colors enable srgb_vcol=true on foliage and bark shaders to undo GLTFDocument sRGB lift")
+	ok(fol_inst != null and fol_inst.get_shader_parameter("srgb_vcol") != true,
+		"negative: standalone biome _COLOR instances without COLOR_0 keep srgb_vcol=false")
 
+	# 7. KratorWater.build clip_box + local_origin precision & clipping at -610 km
+	var river_pts := []
+	for s in 21:
+		var rx := -615000.0 + float(s) * 500.0
+		river_pts.append([rx, -76000.0, 990.0 - float(s) * 0.5, 0.001, 40.0, 1.5])
+	var w_sec := {
+		"format": "krator-water", "version": 1, "period": 600.0, "field": "none",
+		"presets": {"flow": {"step": 6.0, "across": 6, "margin": 1.5, "ripple": [[0.07, 3.1, 15.0], [0.05, 1.9, -55.0], [0.035, 1.15, 80.0], [0.02, 0.62, -20.0]], "phases": 150, "rapids": [0.015, 0.12], "rapidGain": 2.4, "edge": 1.6, "foam": [0.6, 0.45], "slopeWin": 24}},
+		"surfaces": [{
+			"id": "water:1", "kind": "flow", "name": "test river", "pts": river_pts,
+			"ribbon": {"step": 25.0, "across": 4, "margin": 2.0},
+			"look": {"shallow": "#6d9c92", "deep": "#1d3c48", "roughness": 0.14, "metal": 0.08, "transparent": true}
+		}],
+		"probes": []
+	}
+	var p_box := [-612672.0, -77824.0, -608192.0, -74176.0]
+	var p_org := [-610432.0, 0.0, -76000.0]
+	var wn_clip := KratorWater.build(w_sec, p_box, null, 2.0, {"clip_box": p_box, "local_origin": p_org})
+	var wn_raw := KratorWater.build(w_sec, p_box, null, 2.0, {})
+	var mi_wclip := wn_clip.get_child(0) as MeshInstance3D
+	var mi_wraw := wn_raw.get_child(0) as MeshInstance3D
+	var vw_clip: PackedVector3Array = mi_wclip.mesh.surface_get_arrays(0)[Mesh.ARRAY_VERTEX]
+	var vw_raw: PackedVector3Array = mi_wraw.mesh.surface_get_arrays(0)[Mesh.ARRAY_VERTEX]
+	var max_local_x := 0.0
+	for pv in vw_clip:
+		max_local_x = maxf(max_local_x, absf(pv.x))
+	var mat_wclip := mi_wclip.material_override as ShaderMaterial
+	ok(vw_clip.size() > 0 and vw_clip.size() < vw_raw.size() and max_local_x <= 2245.0
+		and mat_wclip.get_shader_parameter("use_flow_origin") == true,
+		"KratorWater clip_box + local_origin clips 10 km river ribbon (%d -> %d verts) to place box and centers vertices within %.1f m at -610 km" % [vw_raw.size(), vw_clip.size(), max_local_x])
+	ok(vw_raw.size() > vw_clip.size() and absf(vw_raw[0].x) > 600000.0,
+		"negative: unclipped water without local_origin spans outside place box at |x| = %.0f m" % absf(vw_raw[0].x))
+
+	wn_clip.free()
+	wn_raw.free()
 	mi.free()
 	mi_b.free()
 	mi_exp.free()

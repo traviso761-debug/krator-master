@@ -29,12 +29,17 @@ PAGE = 'openworld/oidong-highrift/dist/oidong-highrift.html'
 OUT = os.path.join(ROOT, 'godot', 'data', 'world-oidong-highrift')
 ROUTE = ('sq80bzd7ep', 'sfgtxw10kr')   # Longsong to Strongbow, the Sultanate's road down the valley
 CHUNK, STEP, MARGIN = 16000, 64, 2000   # metres: a streamed cell, its ground's grid, the reach of the road into a cell
-PLACE, PLACE_STEP = 1600, 8             # metres: a place's square round its pin, its ground's grid
-# a place's villages at full detail (the Xanadu kit's pieces, ~140k triangles a village: Longsong's, about 40 MB of glb) or
-# as massing (a box a building, with its record), as the page draws them past FULL_V (88s: 4 km). The flora reaches
-# 2.5 km (47-world-kits LOD.far), so a place drawn in full has its flora and a place in massing has none: the Order's
-# houses in the High Rift grow none round their villages anyway, so they go in massing and the case stays small
-FULL_PLACES = ('sq80bzd7ep', 'sfgtxw10kr')   # Longsong, Strongbow (no buildings in the region: its flora and ground)
+MARGIN_SITE = 8000                      # metres: surrounding chunk reach around off-route High Rift sites
+PLACE, PLACE_STEP = 1600, 8             # metres: default place square round its pin, its ground's grid
+# Custom lattice-snapped boxes (exact multiples of STEP = 64):
+# - sfgtxw10kr (Strongbow): covers 100% of OHR_CUT (4,480 x 3,648 m) so 64 m chunk cells never slice Strongbow's cliff or spire
+# - sq80bzd7ep (Longsong): covers Longsong pin + Shar + Nub + Dzo-ling + the Biruk al-Ghaym river bridge (2,432 x 2,432 m)
+SITE_BOXES = {
+    'sfgtxw10kr': [-612672, -77824, -608192, -74176],
+    'sq80bzd7ep': [-155456, -26752, -153024, -24320],
+}
+# Export all 5 sites at full architectural detail (Xanadu & Order monastery kits + High Rift / Oidong floor and flora)
+FULL_PLACES = ('sq80bzd7ep', 'sfgtxw10kr', 'ssinggjar01', 'smirrorgrange01', 'scaldronhouse01')
 MASS_CAM = 4600                               # metres: the camera's distance from a massing place's centre (past 88s FULL_V)
 # Strongbow's arcology (the owner, 2026-11-16: "Yes, far detail"): kits/ancients' strongbow-today page, built on
 # settlements/strongbow's own branch, exported from that branch's worktree (KRATOR_STRONGBOW, default the sibling worktree)
@@ -71,6 +76,21 @@ def cells_along(pts):
                     if c not in seen:
                         seen.add(c)
                         order.append(c)
+    return order
+
+
+def cells_with_sites(route_cells, P):
+    """route_cells plus surrounding 16 km chunks around off-route sites so every site has surrounding terrain"""
+    seen = set(route_cells)
+    order = list(route_cells)
+    for S in P['sites']:
+        sx, sz = S['x'], S['z']
+        for dx in (-MARGIN_SITE, 0, MARGIN_SITE):
+            for dz in (-MARGIN_SITE, 0, MARGIN_SITE):
+                c = (math.floor((sx + dx) / CHUNK), math.floor((sz + dz) / CHUNK))
+                if c not in seen:
+                    seen.add(c)
+                    order.append(c)
     return order
 
 
@@ -154,10 +174,19 @@ def places(P):
         # the place's ground (PLACE_STEP, a divisor of STEP) meets the chunk's on the lattice's lines (world_stream.gd stitches
         # the place's edge to the chunk's straight cell edges)
         sn = lambda v, up: (math.ceil(v / STEP) if up else math.floor(v / STEP)) * STEP
-        box = [sn(S['x'] - half, False), sn(S['z'] - half, False), sn(S['x'] + half, True), sn(S['z'] + half, True)]
+        box = list(SITE_BOXES[S['id']]) if S['id'] in SITE_BOXES else [sn(S['x'] - half, False), sn(S['z'] - half, False), sn(S['x'] + half, True), sn(S['z'] + half, True)]
+        hpois = []
+        for h in S.get('hamlets') or []:
+            st = h.get('site') or {}
+            if 'x' in st and 'z' in st:
+                hx, hz = float(st['x']), float(st['z'])
+                if box[0] <= hx <= box[2] and box[1] <= hz <= box[3]:
+                    hpois.append({'id': h['id'], 'name': h.get('name') or h['id'], 'focus': h.get('focus') or 'village',
+                                  'x': round(hx, 1), 'z': round(hz, 1)})
         out.append({'id': S['id'], 'name': S['name'], 'type': S.get('type'), 'pin': [S['x'], S['z']],
                     'detail': 'full' if S['id'] in FULL_PLACES else 'massing',
-                    'box': box, 'case': 'places/' + S['id'], 'hamlets': [h['id'] for h in S.get('hamlets') or []]})
+                    'box': box, 'case': 'places/' + S['id'], 'hamlets': [h['id'] for h in S.get('hamlets') or []],
+                    'hamlet_pois': hpois})
     return out
 
 
@@ -169,9 +198,37 @@ def roads(P):
                   'spans': L.get('spans') or []})
     for S in P['sites']:
         for r in S.get('roads') or []:
+            pts = [[round(p[0], 1), round(p[1], 1), round(p[2], 2)] for p in r['pts']]
+            if r['id'] == 'sq80bzd7ep/road/4' and len(pts) >= 2:
+                # Extend across the north half of Biruk al-Ghaym onto the dry bank terrace to match healed bridge/0
+                pts.extend([[-154072.0, -25856.0, 2061.6], [-154084.4, -25826.6, 2063.8]])
             R.append({'id': r['id'], 'kind': 'village', 'from': r.get('from'), 'to': S['id'],
-                      'pts': [[round(p[0], 1), round(p[1], 1), round(p[2], 2)] for p in r['pts']], 'spans': r.get('spans') or []})
+                      'pts': pts, 'spans': r.get('spans') or []})
     return R
+
+
+def place_before_js(p):
+    b = p['box']
+    cx, cz = (b[0] + b[2]) / 2, (b[1] + b[3]) / 2
+    if p['id'] not in FULL_PLACES:
+        return ('(async()=>{window.WORLD_EXPORT.step=%d;CAM.setView(%.1f,%.1f,700,.78,-.3);await _api.settle(240000);return OHR_CUT.info();})()'
+                % (PLACE_STEP, cx, cz + MASS_CAM))
+    if p['id'] == 'sq80bzd7ep':
+        # Settle across Longsong's bridge/pin and all 3 core Xanadu villages (Shar, Nub, Dzo-ling)
+        spots = [[-154060.0, -25900.0], [-153602.0, -25123.0], [-155041.0, -25909.0], [-154130.0, -24739.0]]
+        anc = json.dumps(spots, separators=(',', ':'))
+        steps = ''.join('CAM.setView(%.1f,%.1f,210,.78,-.35);await _api.settle(90000);' % (sx, sz + 240.0) for sx, sz in spots)
+        return ('(async()=>{window.WORLD_EXPORT.step=%d;window.WORLD_EXPORT.floraAnchors=%s;%sreturn OHR_CUT.info();})()'
+                % (PLACE_STEP, anc, steps))
+    if p['id'] == 'sfgtxw10kr':
+        spots = [[-611200.0, -76000.0], [-609500.0, -76000.0]]
+        anc = json.dumps(spots, separators=(',', ':'))
+        steps = ''.join('CAM.setView(%.1f,%.1f,420,.78,-.3);await _api.settle(120000);' % (sx, sz + 600.0) for sx, sz in spots)
+        return ('(async()=>{window.WORLD_EXPORT.step=%d;window.WORLD_EXPORT.floraAnchors=%s;%sreturn OHR_CUT.info();})()'
+                % (PLACE_STEP, anc, steps))
+    # High Rift monasteries: settle within FLOOR's 380 m reach so hydrothermal & tussock groundcover builds around the house
+    return ('(async()=>{window.WORLD_EXPORT.step=%d;CAM.setView(%.1f,%.1f,190,.78,-.35);await _api.settle(180000);return OHR_CUT.info();})()'
+            % (PLACE_STEP, cx, cz + 240.0))
 
 
 def main():
@@ -193,18 +250,16 @@ def main():
     P = plan()
     L = link(P, *ROUTE)
     pts = L['pts'] if L['from'] == ROUTE[0] else list(reversed(L['pts']))
-    cells = cells_along(pts)
+    route_cells = cells_along(pts)
+    cells = cells_with_sites(route_cells, P)
     os.makedirs(OUT, exist_ok=True)
     pl = places(P)
     if only in (None, 'places'):
-        print('places (%d): a %d m square each, the camera beside it, the page settled' % (len(pl), PLACE), flush=True)
+        print('places (%d): lattice-snapped boxes, the camera settled at each site and village' % len(pl), flush=True)
         for p in pl:
             b = p['box']
-            cx, cz = (b[0] + b[2]) / 2, (b[1] + b[3]) / 2
-            off = PLACE * 0.75 if p['id'] in FULL_PLACES else MASS_CAM
             p['detail'] = 'full' if p['id'] in FULL_PLACES else 'massing'
-            before = ('(async()=>{window.WORLD_EXPORT.step=%d;CAM.setView(%.1f,%.1f,700,.78,-.3);await _api.settle(240000);return OHR_CUT.info();})()'
-                      % (PLACE_STEP, cx, cz + off))
+            before = place_before_js(p)
             d = os.path.join(OUT, 'places', p['id'])
             shutil.rmtree(d, ignore_errors=True)
             cut = export(d, b, before, micro=micro)
@@ -233,7 +288,7 @@ def main():
         with open(mp, 'w', encoding='utf-8', newline='\n') as f:
             json.dump(m, f, separators=(',', ':'))
     if only in (None, 'chunks'):
-        print('chunks (%d): %d m cells on the road %s, the ground every %d m and the registry' % (len(cells), CHUNK, L['id'], STEP), flush=True)
+        print('chunks (%d: %d on road %s + %d site surroundings): %d m cells every %d m' % (len(cells), len(route_cells), L['id'], len(cells) - len(route_cells), CHUNK, STEP), flush=True)
         for c in cells:
             box = [c[0] * CHUNK, c[1] * CHUNK, (c[0] + 1) * CHUNK, (c[1] + 1) * CHUNK]
             d = os.path.join(OUT, 'chunks', cid(c))
@@ -245,6 +300,7 @@ def main():
            'convention': 'metres, +Y up, x east, z south, the region\'s frame (openworld/oidong-highrift/data/region.json: '
                          'x = (px - origin) * 2000); a chunk\'s and a place\'s case is a krator-world (core/export) in the same frame',
            'chunk': {'size': CHUNK, 'step': STEP, 'margin': MARGIN,
+                     'route_chunks': [cid(c) for c in route_cells],
                      'list': [{'id': cid(c), 'cell': list(c), 'box': [c[0] * CHUNK, c[1] * CHUNK, (c[0] + 1) * CHUNK, (c[1] + 1) * CHUNK],
                                'case': 'chunks/' + cid(c)} for c in cells]},
            'places': pl, 'roads': roads(P),
@@ -254,8 +310,8 @@ def main():
         idx['micro'] = micro
     with open(os.path.join(OUT, 'index.json'), 'w', encoding='utf-8', newline='\n') as f:
         json.dump(idx, f, separators=(',', ':'), ensure_ascii=False)
-    print('wrote %s: %d chunks, %d places, %d roads (plan %s%s)' % (os.path.relpath(OUT, ROOT).replace(os.sep, '/'),
-          len(cells), len(pl), len(idx['roads']), P['hash'], ', micro=%d' % micro if micro is not None else ''))
+    print('wrote %s: %d chunks (%d route), %d places, %d roads (plan %s%s)' % (os.path.relpath(OUT, ROOT).replace(os.sep, '/'),
+          len(cells), len(route_cells), len(pl), len(idx['roads']), P['hash'], ', micro=%d' % micro if micro is not None else ''))
 
 
 if __name__ == '__main__':

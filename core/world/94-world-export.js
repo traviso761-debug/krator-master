@@ -89,9 +89,11 @@ function plainBio(v,d){const dp=d==null?0:d;if(v==null||dp>4)return null;const t
  return undefined;}
 function swayBio(o){if(!o||!('swayW' in o||'swayA' in o))return null;const e=String(o.swayW==null?'1.0':o.swayW).replace(/\s/g,''),k=BIO_SWAY[e],a=o.swayA==null?.06:+o.swayA,ax=o.axis==null?0:o.axis|0;
  return k?{c:k[0],w:k[1],a,axis:ax}:{text:e,a,axis:ax};}
-/* Ensure multi-view or wide-box places keep full 3D flora across the entire box and promote ShaderMaterial impostors to real mid meshes */
+/* Ensure multi-view or wide-box places keep 3D flora around anchors and promote ShaderMaterial impostors to real mid meshes */
 function prepareFloraBox(box){if(!box||typeof FLORA==='undefined'||!FLORA||!FLORA.pools||typeof NURSERY==='undefined'||!NURSERY)return;
  const anchors=Array.isArray(WORLD_EXPORT.floraAnchors)&&WORLD_EXPORT.floraAnchors.length?WORLD_EXPORT.floraAnchors:null;
+ if(HOST&&HOST.scene)for(const m of HOST.scene.children)if(m&&m.userData&&m.userData.inspectLabel==='floor'){
+  if(m.position.x<=box[2]+128&&m.position.x+128>=box[0]&&m.position.z<=box[3]+128&&m.position.z+128>=box[1])m.visible=true;}
  let hasImp=false;for(const p of FLORA.pools.values())if(p.n>0&&p.proto&&p.proto.impostor){hasImp=true;break;}
  if(!anchors&&!hasImp)return;
  const cx=(box[0]+box[2])/2,cz=(box[1]+box[3])/2;FLORA.residency({x:cx,z:cz},8000);
@@ -112,10 +114,14 @@ function prepareFloraBox(box){if(!box||typeof FLORA==='undefined'||!FLORA||!FLOR
   if(r.x<box[0]-32||r.x>box[2]+32||r.z<box[1]-32||r.z>box[3]+32)continue;
   let d=1e9;for(const a of A){const dd=Math.hypot(r.x-a[0],r.z-a[1]);if(dd<d)d=dd;}
   const L=FLORA.KITS[r.k].lod;let lv=-1;
-  if(r.sap)lv=d<L.sapling[1]||anchors?2:-1;
-  else if(d<lim(L.hero,r.Ht))lv=2;
-  else if(d<lim(L.mid,r.Ht)||anchors)lv=1;
-  else if(r.far&&d<lim(L.far,r.Ht))lv=0;
+  const sapLim=anchors?Math.max(L.sapling[1],280):L.sapling[1];
+  const heroLim=anchors?Math.min(220,lim(L.hero,r.Ht)):lim(L.hero,r.Ht);
+  const midLim=anchors?Math.max(920,lim(L.mid,r.Ht)):lim(L.mid,r.Ht);
+  const farLim=anchors?Math.max(2600,lim(L.far,r.Ht)):lim(L.far,r.Ht);
+  if(r.sap)lv=d<sapLim?2:-1;
+  else if(d<heroLim)lv=2;
+  else if(d<midLim)lv=1;
+  else if((r.far||r.Ht>=14)&&d<farLim)lv=1;
   if(lv<0)continue;
   let key=r.k+'|'+r.sp+'|'+r.v+'|'+(r.sap?'s':lv);
   let proto=NURSERY.protos.get(key)||NURSERY.get(key,{kit:FLORA.KITS[r.k].name,sp:r.sp,v:r.v,lv:r.sap?2:lv,sapling:r.sap},d);
@@ -130,6 +136,65 @@ function prepareFloraBox(box){if(!box||typeof FLORA==='undefined'||!FLORA||!FLOR
 function attrF32(a,n){if(!a)return null;if(a.isInterleavedBufferAttribute||!(a.array instanceof Float32Array)){
   const f=new Float32Array(a.count*n);for(let i=0;i<a.count;i++)for(let k=0;k<n;k++)f[i*n+k]=a.getComponent?a.getComponent(i,k):a.array[i*a.itemSize+k];return f;}
  return a.array.slice(0,a.count*n);}
+/* Extend any bridge whose road abutment terminated inside riverWater onto the dry opposite bank before export */
+let _bridgesHealed=false;
+function healWetBridgeEnds(){if(_bridgesHealed)return;_bridgesHealed=true;
+ if(typeof window==='undefined'||!window._bridges||!Array.isArray(window._bridges.list)||typeof WORLD==='undefined'||!WORLD.riverWater)return;
+ const rw=(x,z)=>WORLD.riverWater(x,z),hb=(x,z)=>WORLD.Hbare?WORLD.Hbare(x,z):WORLD.H(x,z);
+ const STONE={xanadu:0xd9cfbd,order:0x9c9488,iziz:0xc8a074,default:0x8f8676},PARA={xanadu:0x7a3a2c,order:0x847b70,default:0x7d7466};
+ const DECK=1.2,SHOULDER=1.2,PARA_H=1.0,PARA_W=.5;
+ const boxG=new THREE.BoxGeometry(1,1,1),m4=new THREE.Matrix4(),q=new THREE.Quaternion(),eu=new THREE.Euler(0,0,0,'YXZ'),v3=new THREE.Vector3(),sc3=new THREE.Vector3();
+ const bpart=parts().find(T=>partOf(T)==='bridges');
+ for(const B of window._bridges.list){if(!B||!Array.isArray(B.abutments)||B.abutments.length<2||!Array.isArray(B.deck)||B.deck.length<2)continue;
+  let changed=false;
+  for(const end of [1,0]){const ab=B.abutments[end];if(!(rw(ab.x,ab.z)>-1e8))continue;
+   const D=B.deck,p0=end===1?D[D.length-1]:D[0],pIn=end===1?D[Math.max(0,D.length-3)]:D[Math.min(D.length-1,2)];
+   let ux=p0[0]-pIn[0],uz=p0[1]-pIn[1];const ul=Math.hypot(ux,uz);if(!(ul>.05))continue;ux/=ul;uz/=ul;
+   let sDry=-1;
+   for(let s=6;s<=180;s+=6){const tx=p0[0]+ux*s,tz=p0[1]+uz*s;if(!(rw(tx,tz)>-1e8)&&hb(tx,tz)>=B.water+1.2){sDry=s+10;break;}}
+   if(!(sDry>0))continue;
+   const xEnd=+(p0[0]+ux*sDry).toFixed(2),zEnd=+(p0[1]+uz*sDry).toFixed(2),yEnd=+Math.max(hb(xEnd,zEnd)+.3,B.water+B.clearance).toFixed(2);
+   const nSt=Math.max(2,Math.round(sDry/8)),add=[];
+   for(let k=1;k<=nSt;k++){const t=k/nSt,sx=+(p0[0]+ux*sDry*t).toFixed(2),sz=+(p0[1]+uz*sDry*t).toFixed(2);
+    const wy=rw(sx,sz),sy=+Math.max(p0[2]+(yEnd-p0[2])*t,wy>-1e8?wy+B.clearance:-1e9).toFixed(2);add.push([sx,sz,sy]);}
+   if(end===1)for(const pt of add)D.push(pt);else for(let k=add.length-1;k>=0;k--)D.unshift(add[k]);
+   B.abutments[end]={x:xEnd,z:zEnd,y:yEnd};
+   const pe=B.kind==='viaduct'?18:16;
+   for(let s=pe*.75;s<=sDry-10;s+=pe){const t=s/sDry,px=+(p0[0]+ux*s).toFixed(2),pz=+(p0[1]+uz*s).toFixed(2);
+    const py=+(p0[2]+(yEnd-p0[2])*t).toFixed(2);B.piers.push({x:px,z:pz,yTop:+(py-DECK).toFixed(2),yBase:+hb(px,pz).toFixed(2)});}
+   changed=true;}
+  if(!changed)continue;
+  let len=0;for(let i=1;i<B.deck.length;i++)len+=Math.hypot(B.deck[i][0]-B.deck[i-1][0],B.deck[i][1]-B.deck[i-1][1]);B.len=+len.toFixed(2);
+  const o=B.abutments[0],W=2*(B.hw+SHOULDER),D=B.deck,out=[];
+  const put=(x,y,z,yaw,pitch,sx,sy,sz,part)=>out.push([x-o.x,y,z-o.z,yaw,pitch,sx,sy,sz,part]);
+  for(let i=1;i<D.length;i++){const a=D[i-1],b=D[i],dx=b[0]-a[0],dz=b[1]-a[1],L=Math.hypot(dx,dz);if(L<.05)continue;
+   const yaw=Math.atan2(dx,dz),pitch=-Math.atan2(b[2]-a[2],L),mx=(a[0]+b[0])/2,mz=(a[1]+b[1])/2,my=(a[2]+b[2])/2,nx=dz/L,nz=-dx/L;
+   put(mx,my-DECK/2,mz,yaw,pitch,W,DECK,L+.05,'deck');
+   for(const sd of [-1,1])put(mx+nx*sd*(W/2-PARA_W/2),my+PARA_H/2,mz+nz*sd*(W/2-PARA_W/2),yaw,pitch,PARA_W,PARA_H,L+.05,'para');}
+  const along=p=>{let best=0,bd=1e18;for(let i=0;i<D.length;i++){const d=Math.hypot(D[i][0]-p.x,D[i][1]-p.z);if(d<bd){bd=d;best=i;}}return best;};
+  const sup=[{x:B.abutments[0].x,z:B.abutments[0].z,top:B.abutments[0].y-DECK,base:hb(B.abutments[0].x,B.abutments[0].z),i:0,abut:true}]
+   .concat(B.piers.map(p=>({x:p.x,z:p.z,top:p.yTop,base:p.yBase,i:along(p)})))
+   .concat([{x:B.abutments[1].x,z:B.abutments[1].z,top:B.abutments[1].y-DECK,base:hb(B.abutments[1].x,B.abutments[1].z),i:D.length-1,abut:true}]);
+  sup.sort((a,b)=>a.i-b.i);
+  const dirAt=i=>{const a=D[Math.max(0,i-1)],b=D[Math.min(D.length-1,i+1)];return Math.atan2(b[0]-a[0],b[1]-a[1]);};
+  for(const P of sup){const h=Math.max(.5,P.top-P.base+1.5),yaw=dirAt(P.i);put(P.x,P.base-1.5+h/2,P.z,yaw,0,W+.6,h,P.abut?4:3.2,'pier');}
+  if(B.kind!=='slab')for(let k=1;k<sup.length;k++){const A=sup[k-1],C=sup[k],span=Math.hypot(C.x-A.x,C.z-A.z);if(span<3)continue;
+   const yaw=Math.atan2(C.x-A.x,C.z-A.z),under=Math.min(A.top,C.top),spring=Math.max(A.base,C.base)+.5,rise=Math.min(span/2,under-spring-.4);
+   if(!(rise>.8))continue;const N=Math.max(6,Math.min(16,Math.round(span/2.5)));
+   for(let j=0;j<N;j++){const t0=j/N,t1=(j+1)/N,f=t=>[A.x+(C.x-A.x)*t,A.z+(C.z-A.z)*t,spring+rise*Math.sin(Math.PI*t)];
+    const p0=f(t0),p1=f(t1),L=Math.hypot(p1[0]-p0[0],p1[1]-p0[1],p1[2]-p0[2]);
+    put((p0[0]+p1[0])/2,(p0[2]+p1[2])/2,(p0[1]+p1[1])/2,yaw,-Math.atan2(p1[2]-p0[2],Math.hypot(p1[0]-p0[0],p1[1]-p0[1])),W,.9,L+.1,'arch');}}
+  const grp=HOST&&HOST.scene?HOST.scene.children.find(c=>c&&c.name==='bridge '+B.id):null;
+  const mid=D[Math.floor(D.length/2)],label=(B.kind==='slab'?'a slab bridge':B.kind==='arch'?'an arched bridge':B.kind==='viaduct'?'a viaduct':'a bridge of arches')+' ('+Math.round(B.len)+' m)';
+  if(grp){while(grp.children.length)grp.remove(grp.children[0]);
+   grp.position.set(o.x,0,o.z);grp.userData.inspectLabel=label;grp.visible=true;
+   const byP={};out.forEach(r=>(byP[r[8]]||(byP[r[8]]=[])).push(r));
+   const cu=B.culture&&STONE[B.culture]?B.culture:'default',mS=new THREE.MeshLambertMaterial({color:STONE[cu]}),mP=new THREE.MeshLambertMaterial({color:PARA[cu]||PARA.default});
+   for(const part in byP){const L=byP[part],im=new THREE.InstancedMesh(boxG,part==='para'?mP:mS,L.length);
+    L.forEach((r,i)=>{eu.set(r[4],r[3],0,'YXZ');q.setFromEuler(eu);im.setMatrixAt(i,m4.compose(v3.set(r[0],r[1],r[2]),q,sc3.set(r[5],r[6],r[7])));});
+    im.instanceMatrix.needsUpdate=true;im.name='bridge '+part;im.userData.inspectLabel=label;grp.add(im);}
+   grp.updateMatrix();grp.updateMatrixWorld(true);}
+  if(bpart){const rec=bpart.records.find(r=>r&&r.key===B.id);if(rec){rec.at=[mid[0],mid[2],mid[1]];rec.r=B.len/2+10;rec.name=label;}}}}
 /* Enrich exported scene items & materials with prototype vertex colours, clump normals, M5 biome kinds, and slope-seated roots */
 function enrichScene(res,instForItem,matObjById){
  const matById=new Map();
@@ -153,11 +218,14 @@ function enrichScene(res,instForItem,matObjById){
    const P=E.unpack(it.geometry.position),pk=m.userData&&m.userData.flora,pool=pk&&FLORA&&FLORA.pools?FLORA.pools.get(pk):null;
    let yMax=pool&&pool.proto&&pool.proto.top?pool.proto.top:0;
    if(!(yMax>0))for(let i=1;i<P.length;i+=3)if(P[i]>yMax)yMax=P[i];
-   if(yMax>=3.5){const rFoot=Math.max(3.2,yMax*.065);
-    for(let i=0;i<P.length;i+=3){let vx=P[i],vy=P[i+1],vz=P[i+2];const rxz=Math.hypot(vx,vz);
-     if(yMax>=18&&vy<4.5&&rxz>rFoot){const over=rxz-rFoot,rNew=rFoot+over/(1+over/6),sc=rNew/rxz;vx*=sc;vz*=sc;
-      const low=Math.max(0,Math.min(1,(4.5-vy)/4.5));vy-=low*(.65*(rNew-rFoot)+.8+.35*rFoot);}
-     else if(vy<=.22){vy-=Math.min(5.5,.5+.62*rxz);}
+   if(yMax>=1.8){
+    const yLo=Math.min(3,yMax*.35),yHi=Math.max(5.5,yMax*.14);let rTrunk=0;
+    for(let i=0;i<P.length;i+=3){const vy=P[i+1];if(vy>=yLo&&vy<=yHi){const rr=Math.hypot(P[i],P[i+2]);if(rr>rTrunk)rTrunk=rr;}}
+    const rButtress=Math.max(3.5,rTrunk*2.6,yMax*.13);
+    for(let i=0;i<P.length;i+=3){let vx=P[i],vy=P[i+1],vz=P[i+2];const vy0=vy,rxz=Math.hypot(vx,vz);
+     if(rxz>rButtress&&vy0<3.6){const t=Math.max(0,Math.min(1,(3.6-vy0)/3.6));vy-=t*Math.min(8,.75*(rxz-rButtress));}
+     if(vy0<=.32){const w=1-Math.max(0,vy0)/.32,drop=Math.min(12,.85+.92*rxz),flare=rxz>.04?1+Math.min(.22,drop*.028)*w:1;
+      vx*=flare;vz*=flare;vy-=drop*w;}
      P[i]=vx;P[i+1]=vy;P[i+2]=vz;}
     it.geometry.position=E.pack(P);}}}}
 function floraSets(){if(typeof FLORA==='undefined'||!FLORA||!FLORA.pools)return FSETS;
@@ -173,11 +241,16 @@ function floraSets(){if(typeof FLORA==='undefined'||!FLORA||!FLORA.pools)return 
    FSETS.set(p.key,pre('flora',set.id));}catch(e){console.warn('core/world 94: flora pool '+p.key+': '+e.message);}}
  return FSETS;}
 const scene_=ctx=>ctx.memo('world-scene',()=>{const box=ctx.box||[-Infinity,-Infinity,Infinity,Infinity];
+ healWetBridgeEnds();
  if(ctx.box&&ctx.sections.indexOf('items')>=0)prepareFloraBox(ctx.box);
- const K=byKey(),FS=floraSets(),instForItem=[],seenMats=[];let curInst=null;
- const kitNameOf=m=>{curInst=m;return m.userData&&m.userData.flora?'flora/'+m.userData.flora+'/'+(m.material&&m.material.name||'')+(m.geometry?'#'+m.geometry.id:''):null;};
- const ownerOf=m=>{if(curInst){instForItem.push(curInst);curInst=null;}for(let p=m;p;p=p.parent){const n=p.name||'';if(n.indexOf('bridge ')===0&&K.has(n.slice(7)))return K.get(n.slice(7));}return null;};
- const res=E.sceneReader({name:'world:'+REGION,source:'openworld/'+REGION,scene:HOST.scene,tags:KTAGS.page,owner:owners(box),ownerOf,origin:origin_(ctx),
+ const K=byKey(),FS=floraSets(),instForItem=[],seenMats=[];let lastInst=null;
+ const matKeys=()=>{const mk=new Map();let n=0;HOST.scene.traverse(m=>{if(!m||!m.isMesh)return;
+  const ms=Array.isArray(m.material)?m.material:[m.material];
+  for(const mt of ms){if(!mt||mk.has(mt))continue;const ud=mt.userData||{},b=ud.bio||(ud.kind&&ud.kind!=='plain'&&ud.kind!=='impostor'?{kind:ud.kind,key:null,opts:ud.opts||null}:null);
+   if(b&&b.kind&&b.kind!=='plain')mk.set(mt,'bio_'+b.kind+'_'+(b.key||mt.name||'')+'_'+(n++));}});return mk;};
+ const kitNameOf=m=>m.userData&&m.userData.flora?'flora/'+m.userData.flora+'/'+(m.material&&m.material.name||'')+(m.geometry?'#'+m.geometry.id:''):null;
+ const ownerOf=m=>{if(m!==lastInst){instForItem.push(m);lastInst=m;}for(let p=m;p;p=p.parent){const n=p.name||'';if(n.indexOf('bridge ')===0&&K.has(n.slice(7)))return K.get(n.slice(7));}return null;};
+ const res=E.sceneReader({name:'world:'+REGION,source:'openworld/'+REGION,scene:HOST.scene,tags:KTAGS.page,owner:owners(box),ownerOf,matKeys,origin:origin_(ctx),
   hooks:m=>{seenMats.push(m);return[];},
   /* a flora pool's part (85: userData.flora is the pool's key, kit|species|variant|level, shared by the plant's parts) */
   kitOf:kitNameOf,
@@ -194,6 +267,31 @@ E.register('items',ctx=>scene_(ctx).items,by);
 E.register('buckets',ctx=>scene_(ctx).buckets,by);
 E.register('materials',ctx=>scene_(ctx).materials,by);
 E.register('textures',ctx=>scene_(ctx).textures,by);
+/* Include streamed small creeks (83s STREAMW) and tarns (WORLD.ponds) overlapping a finite box in core/export's water section */
+const _world0=E.world;
+E.world=function(opt){
+ healWetBridgeEnds();
+ const wantWater=!(opt&&Array.isArray(opt.sections)&&opt.sections.indexOf('water')<0)&&WORLD_EXPORT.water!==false;
+ const b=opt&&Array.isArray(opt.box)&&opt.box.length===4?opt.box:null;
+ let baseLen=-1;
+ if(wantWater&&b&&typeof WATER!=='undefined'&&WATER&&Array.isArray(WATER.surfaces)&&typeof WORLD!=='undefined'&&WORLD){
+  baseLen=WATER.surfaces.length;
+  if(typeof WORLD.streamPieces==='function'&&typeof WORLD.streamWaterLine==='function'){
+   const SP=WORLD.streamPieces();
+   for(let n=0;n<SP.length;n++){const p=SP[n];
+    if(p.x+p.r<b[0]||p.x-p.r>b[2]||p.z+p.r<b[1]||p.z-p.r>b[3])continue;
+    const L=WORLD.streamWaterLine(p,8);if(!L||!L.pts||L.pts.length<2)continue;
+    const F=WATER.flow({name:'stream '+p.line+'.'+n,pts:L.pts,width:L.w,speed:L.v,rapids:[.06,.3]});
+    F.ribbonOpt={step:8,across:4,margin:1};
+    F.look={shallow:'#557f74',deep:'#1f3a3e',roughness:.16,metal:.06,transparent:true};}}
+  if(typeof WORLD.ponds==='function'){
+   const PO=WORLD.ponds();
+   for(let k=0;k<PO.length;k++){const p=PO[k];
+    if(p.x+p.r<b[0]||p.x-p.r>b[2]||p.z+p.r<b[1]||p.z-p.r>b[3])continue;
+    const S=WATER.still({name:'tarn '+p.id,level:p.level,poly:p.poly});
+    S.look={colour:'#2c4f52',roughness:.1,metal:.08,transparent:false};}}}
+ try{return _world0.apply(E,arguments);}
+ finally{if(baseLen>=0)WATER.surfaces.length=baseLen;}};
 /* ---------------------------------------------------------------- the ground */
 const l2s8=c=>{c=c<=0?0:c>=1?1:c;const s=c<.0031308?c*12.92:1.055*Math.pow(c,1/2.4)-.055;return Math.max(0,Math.min(255,Math.round(s*255)));};
 const u8=c=>Math.max(0,Math.min(255,Math.round((c<=0?0:c>=1?1:c)*255)));

@@ -32,6 +32,7 @@ uniform float gloss_k = 0.0;
 uniform vec3 emissive = vec3(0.0);
 uniform vec2 night_k = vec2(0.0);           // hang: emissive intensity by day and by night
 uniform float hang_a = 0.05;
+uniform bool srgb_vcol = false;             // true when GLTFDocument converted glTF COLOR_0 from linear to sRGB
 
 varying vec3 v_wp;
 varying vec3 v_wn;
@@ -65,7 +66,8 @@ void fragment() {
 	if (klod_drop(v_lod, FRAGCOORD.xy)) {
 		discard;
 	}
-	vec3 c = tx_lin * COLOR.rgb * colour;
+	vec3 vcol = srgb_vcol ? k_s2l(COLOR.rgb) : COLOR.rgb;
+	vec3 c = tx_lin * vcol * colour;
 	vec3 to_cam = CAMERA_POSITION_WORLD - v_wp;
 	float depth = length(to_cam);
 	vec3 V = to_cam / max(depth, 1e-4);
@@ -78,7 +80,7 @@ void fragment() {
 		vec4 d = has_tex ? texture(data_tex, uv) : vec4(gloss_mean, 0.0, 0.0, 1.0);
 		float bl = d.r / gloss_mean;
 		float bm = d.g;
-		c = colour * mix(COLOR.rgb, gloss_alt, bm) * bl * gloss_gain;
+		c = colour * mix(vcol, gloss_alt, bm) * bl * gloss_gain;
 		bar.y = mix(0.46, 0.84, bm);
 		EMISSION = gloss_k * bark_sun_spec(N, V, atm_sun_dir) * vec3(1.0, 0.93, 0.8) * (1.0 - bm * 0.8) * bl * atm_light;
 	} else if (mode == 3 && UV.y > 0.5) {   // RIFT.farMat

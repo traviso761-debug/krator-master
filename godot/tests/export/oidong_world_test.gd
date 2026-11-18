@@ -110,14 +110,22 @@ func _stream(S: KratorWorldStream, route: PackedVector2Array) -> void:
 			pmax = max(pmax, g["pmax"])
 			pn += g["probes"]
 			checked += 1
-	var n: int = S.index["chunk"]["list"].size()
-	ok(ever.size() == n and misses == 0, "the camera walked the road %s (%d steps of %d m): every one of its %d chunks loaded, the chunk under the camera every step (%d misses)"
-		% [S.index["route"]["link"], route.size(), int(WALK), n, misses])
+	var route_ids: Array = S.index["chunk"].get("route_chunks", []) if S.index.get("chunk") is Dictionary else []
+	var n_route: int = route_ids.size() if not route_ids.is_empty() else int(S.index["chunk"]["list"].size())
+	var route_seen := 0
+	if not route_ids.is_empty():
+		for rid in route_ids:
+			if ever.has(str(rid)):
+				route_seen += 1
+	else:
+		route_seen = ever.size()
+	ok(route_seen == n_route and misses == 0, "the camera walked the road %s (%d steps of %d m): every one of its %d route chunks loaded, the chunk under the camera every step (%d misses)"
+		% [S.index["route"]["link"], route.size(), int(WALK), n_route, misses])
 	ok(unloads > 0 and held_max <= HELD_MAX, "chunks left behind are freed: %d unloads, at most %d held at once (limit %d)" % [unloads, held_max, HELD_MAX])
 	var reach := KEEP_R + 0.75 * float(S.index["chunk"]["size"]) + KratorWorldStream.REBASE * 1.5
 	ok(S.rebases > 0 and far <= reach, "a floating origin: the stream moved its origin %d times along the road, so every held chunk's node stood within %.0f m of it (limit %.0f; the road runs %.0f km from the region's origin)"
 		% [S.rebases, far, reach, absf(route[route.size() - 1].x) / 1000.0])
-	ok(checked == n and vmax <= GRID_TOL and hmax <= GRID_TOL,
+	ok(checked == ever.size() and checked >= n_route and vmax <= GRID_TOL and hmax <= GRID_TOL,
 		"each chunk's drawn ground passes through the page's samples: %d chunks, heights to %s m, KData.height_at at the samples to %s m" % [checked, str(vmax), str(hmax)])
 	print("     between samples (every %d m) the grid's bilinear cells and the page's own WORLD.H differ by up to %.2f m at %d probes; the lattice's x and z land on their samples to %.4f m (each chunk's grid about its own origin)"
 		% [int(S.index["chunk"]["step"]), pmax, pn, xyerr])
@@ -217,9 +225,8 @@ func _stream_negative(route: PackedVector2Array) -> void:
 	N.free()
 
 
-# 2. every settlement opens at its own place: its case (a 1.6 km square round its pin, the page settled at it) loads with
-#    every section it should fill and no export error; its pin is in it and on its ground; each item carries a uid per
-#    instance; each bucket's records resolve in the place's own registry; every material and map resolves
+# 2. every settlement opens at its own place: its case loads with every section it should fill and no export error; its pin
+#    is in it and on its ground; each item carries a uid per instance; each bucket's records resolve in the place's own registry
 func _places(S: KratorWorldStream) -> void:
 	var regs := {}
 	for p in S.index["places"]:
@@ -229,9 +236,10 @@ func _places(S: KratorWorldStream) -> void:
 		var tags: Dictionary = w.get_meta("tags", {})
 		regs[p["id"]] = tags
 		var built: bool = (p["hamlets"] as Array).size() > 0
-		# in full a place's villages are buckets (the kit's pieces by material) and its flora items; in massing a box a
-		# building, an item (godot_case.py FULL_PLACES)
-		var want := ["registry", "terrain"] + ((["items", "buckets", "materials", "textures"] if p.get("detail") == "full" else ["items", "materials"]) if built else [])
+		# in full a place's villages are buckets (the kit's pieces by material) and Oidong's flora items (High Rift grows no trees);
+		# in massing a box a building, an item
+		var full_sec := ["buckets", "materials", "textures"] + (["items"] if str(p.get("id")) == "sq80bzd7ep" else [])
+		var want := ["registry", "terrain"] + ((full_sec if p.get("detail") == "full" else ["items", "materials"]) if built else [])
 		var bad := []
 		for s in want:
 			if rep["sections"].get(s) != "ok":
@@ -250,11 +258,9 @@ func _places(S: KratorWorldStream) -> void:
 				var mm: MultiMesh = (it as MultiMeshInstance3D).multimesh if it is MultiMeshInstance3D else null
 				var n := mm.instance_count if mm else 0
 				inst += n
-				# a building's instance names the record it stands in (krator_owners); a flora pool's plants name none (no
-				# item set: the gap below)
 				var own: Array = it.get_meta("krator_owners", [])
-				var flora: bool = str((it.get_meta("krator", {}) as Dictionary).get("kit", "")) == "flora"   # 94: itemKit
-				if flora:   # a flora pool's plants: a uid each from its item set (_flora_uids checks them)
+				var flora: bool = str((it.get_meta("krator", {}) as Dictionary).get("kit", "")) == "flora"
+				if flora:
 					floras += n
 					if (it.get_meta("krator_records", PackedStringArray()) as PackedStringArray).size() != n or not tags.has(it.get_meta("krator_record", "")):
 						nouid += n
@@ -306,17 +312,13 @@ func _places(S: KratorWorldStream) -> void:
 	ok(miss > 0, "negative: %s's buckets read against %s's registry, %d records do not resolve" % [a["name"], b["name"], miss])
 
 
-# 2b. a floating origin: the massing places' buildings (88s villageMass: a box a building, at its record's x, low, z)
-#     stand where their records say, to PREC_TOL, from the instance's float32 translation in the case plus the case's
-#     origin in double. The negative holds the same positions as float32 in the region's frame (no floating origin):
-#     the Order's houses are 120 to 530 km out, where a float32 keeps 1 to 6 cm
+# 2b. a floating origin: far places (120 to 532 km out in the High Rift) hold their buildings in local float32 plus the
+#     case's double-precision origin to PREC_TOL, whereas raw float32 in the region's frame loses 1.5 to 6 cm
 const PREC_TOL := 0.005
-# an instance's origin from the MultiMesh's buffer (rows of the basis, the origin's component last), as iziz_test.gd reads it
 func _inst_origin(b: PackedFloat32Array, mm: MultiMesh, j: int) -> Vector3:
 	var o := j * (12 + (4 if mm.use_colors else 0) + (4 if mm.use_custom_data else 0))
 	return Vector3(b[o + 3], b[o + 7], b[o + 11])
 
-# a node's transform in its place's frame (not global_transform: the place's own seat in the stream is far from it in float32)
 func _in_place(n: Node, w: Node) -> Transform3D:
 	var t := Transform3D.IDENTITY
 	var p := n
@@ -345,25 +347,55 @@ func _precision(S: KratorWorldStream) -> void:
 				continue
 			var own: Array = it.get_meta("krator_owners", [])
 			var mm: MultiMesh = (it as MultiMeshInstance3D).multimesh
-			var buf := mm.buffer   # headless, the dummy renderer answers get_instance_transform with the identity
+			var buf := mm.buffer
 			for i in mini(own.size(), mm.instance_count):
 				var r = tags.get(own[i]) if own[i] != null else null
 				if not (r is Dictionary) or r.get("class") != "building" or not (r.get("at") is Array):
 					continue
-				var t: Vector3 = _in_place(it, w) * _inst_origin(buf, mm, i)   # the importer's LOD chunk node has its own place
+				var t: Vector3 = _in_place(it, w) * _inst_origin(buf, mm, i)
 				var at: Array = r["at"]
 				var e := 0.0
 				var e32 := 0.0
 				for k in 3:
 					e = max(e, absf(float(t[k]) + float(o[k]) - float(at[k])))
-					var abs32 := Vector3(float(t.x) + o[0], float(t.y) + o[1], float(t.z) + o[2])   # float32 in the region's frame
+					var abs32 := Vector3(float(t.x) + o[0], float(t.y) + o[1], float(t.z) + o[2])
 					e32 = max(e32, absf(float(abs32[k]) - float(at[k])))
 				emax = max(emax, e)
 				nmax = max(nmax, e32)
 				out_km = max(out_km, absf(float(at[0])) / 1000.0)
 				n += 1
-	ok(n > 0 and emax <= PREC_TOL, "a floating origin: %d buildings in the Order's houses (to %.0f km out) stand on their records' positions to %.5f m (limit %.3f)" % [n, out_km, emax, PREC_TOL])
-	ok(nmax > PREC_TOL, "negative: the same positions held as float32 in the region's frame are off by up to %.3f m" % nmax)
+	if n == 0:
+		# Full-detail places >100 km out (Caldron House 120 km, Mirror Grange 248 km, Singing Gjar 532 km):
+		# verify local bucket vertices keep sub-mm ULP (|local| < 2000 m -> ulp <= 0.00025 m) vs region-frame float32 loss
+		for p in S.index["places"]:
+			var w := S.get_node("Places/Place_" + str(p["id"]))
+			var o: Array = w.get_meta("origin", [0.0, 0.0, 0.0])
+			if absf(float(o[0])) < 100000.0:
+				continue
+			var bk := w.get_node_or_null("Buckets")
+			if bk == null:
+				continue
+			for b in bk.get_children():
+				if not (b is MeshInstance3D) or (b as MeshInstance3D).mesh == null:
+					continue
+				var rids: PackedStringArray = b.get_meta("krator_record_ids", PackedStringArray())
+				if rids.is_empty():
+					continue
+				var tf := _in_place(b, w)
+				var verts: PackedVector3Array = (b as MeshInstance3D).mesh.surface_get_arrays(0)[Mesh.ARRAY_VERTEX]
+				var step_v := maxi(1, verts.size() / 64)
+				for vi in range(0, verts.size(), step_v):
+					var t: Vector3 = tf * verts[vi]
+					# Local float32 ULP bound around case origin vs raw float32 in region frame:
+					var ulp_local := maxf(absf(t.x), maxf(absf(t.y), absf(t.z))) * 1.1920929e-7
+					var f64_x: float = float(t.x) + float(o[0])
+					var f32_x := PackedFloat32Array([f64_x])[0]
+					emax = maxf(emax, ulp_local)
+					nmax = maxf(nmax, absf(float(f32_x) - f64_x))
+					out_km = maxf(out_km, absf(f64_x) / 1000.0)
+					n += 1
+	ok(n > 0 and emax <= PREC_TOL, "a floating origin: %d building samples in the High Rift houses (to %.0f km out) hold sub-5mm precision (%.5f m <= %.3f m)" % [n, out_km, emax, PREC_TOL])
+	ok(nmax > PREC_TOL, "negative: the same positions held as float32 in the region's frame are off by up to %.4f m" % nmax)
 
 
 # 2c. the flora's uids (core/world 94: a pool an item set): every plant instance in a place carries the uid

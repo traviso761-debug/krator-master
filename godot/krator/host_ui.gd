@@ -602,7 +602,8 @@ static func build_pois(stream: KratorWorldStream, pin_reg = null) -> Array:
 				"walk": true
 			})
 
-	# 3. Every Place (both Overlook & Walk views, plus Arcology view when present)
+	# 3. Every Place (both Overlook & Walk views, plus Arcology view & inner Villages/Monasteries when present)
+	var seen_pts: Array = []
 	for p in pls:
 		var pid := str(p.get("id", ""))
 		var pname := str(p.get("name", pid))
@@ -614,7 +615,7 @@ static func build_pois(stream: KratorWorldStream, pin_reg = null) -> Array:
 			py = 0.0
 		var pbox: Array = p.get("box", [px - 800.0, pz - 800.0, px + 800.0, pz + 800.0])
 		var pspan := maxf(float(pbox[2]) - float(pbox[0]), float(pbox[3]) - float(pbox[1]))
-		var dist := clampf(pspan * 0.28, 260.0, 1100.0)
+		var dist := clampf(pspan * 0.26, 260.0, 720.0)
 		if p.get("arcology") is Dictionary:
 			var arc_at: Array = p["arcology"]["at"]
 			var ax := float(arc_at[0])
@@ -623,8 +624,15 @@ static func build_pois(stream: KratorWorldStream, pin_reg = null) -> Array:
 			list.append({
 				"label": "[Arcology] %s Overlook" % pname,
 				"kind": "arcology",
-				"eye": Vector3(ax - 950.0, ay + 420.0, az + 650.0),
-				"target": Vector3(ax + 120.0, ay + 60.0, az),
+				"eye": Vector3(ax - 1550.0, ay - 80.0, az + 420.0),
+				"target": Vector3(ax + 40.0, ay - 260.0, az),
+				"walk": false
+			})
+			list.append({
+				"label": "[Arcology] %s Canyon Floor" % pname,
+				"kind": "arcology",
+				"eye": Vector3(ax - 1150.0, ay - 460.0, az - 180.0),
+				"target": Vector3(ax + 40.0, ay - 220.0, az),
 				"walk": false
 			})
 			list.append({
@@ -635,23 +643,72 @@ static func build_pois(stream: KratorWorldStream, pin_reg = null) -> Array:
 				"walk": true
 			})
 		else:
-			list.append({
-				"label": "[Overlook] %s (%s)" % [pname, pid],
-				"kind": "place_overlook",
-				"eye": Vector3(px + dist * 0.55, py + dist * 0.48, pz + dist * 0.75),
-				"target": Vector3(px, py + 12.0, pz),
-				"walk": false
-			})
-			list.append({
-				"label": "[Walk] %s (%s)" % [pname, pid],
-				"kind": "place_walk",
-				"eye": Vector3(px, py + 2.0, pz + 9.0),
-				"target": Vector3(px, py, pz),
-				"walk": true
-			})
+			var hpois: Array = p.get("hamlet_pois", [])
+			var on_pin := false
+			for hp in hpois:
+				if hp is Dictionary and Vector2(float(hp.get("x", px)), float(hp.get("z", pz))).distance_to(Vector2(px, pz)) < 250.0:
+					on_pin = true
+					break
+			if not hpois.is_empty() and not on_pin:
+				# Site pin is an unbuilt central plateau (e.g. Longsong): frame the primary built village & river crossing!
+				var h0: Dictionary = hpois[0]
+				var hx := float(h0.get("x", px))
+				var hz := float(h0.get("z", pz))
+				var hy := stream.height_at(hx, hz)
+				if not is_finite(hy):
+					hy = py
+				list.append({
+					"label": "[Overlook] %s (%s)" % [pname, pid],
+					"kind": "place_overlook",
+					"eye": Vector3(hx - 430.0, hy + 215.0, hz - 540.0),
+					"target": Vector3(hx - 40.0, hy + 10.0, hz),
+					"walk": false
+				})
+				list.append({
+					"label": "[Walk] %s — %s" % [pname, str(h0.get("name", pid))],
+					"kind": "place_walk",
+					"eye": Vector3(hx, hy + 2.0, hz + 10.0),
+					"target": Vector3(hx, hy, hz),
+					"walk": true
+				})
+			else:
+				list.append({
+					"label": "[Overlook] %s (%s)" % [pname, pid],
+					"kind": "place_overlook",
+					"eye": Vector3(px + dist * 0.48, py + dist * 0.42, pz + dist * 0.68),
+					"target": Vector3(px, py + 12.0, pz),
+					"walk": false
+				})
+				list.append({
+					"label": "[Walk] %s (%s)" % [pname, pid],
+					"kind": "place_walk",
+					"eye": Vector3(px, py + 2.0, pz + 9.0),
+					"target": Vector3(px, py, pz),
+					"walk": true
+				})
+			for hp in hpois:
+				if not (hp is Dictionary):
+					continue
+				var vx := float(hp.get("x", px))
+				var vz := float(hp.get("z", pz))
+				seen_pts.append(Vector2(vx, vz))
+				if on_pin and Vector2(vx, vz).distance_to(Vector2(px, pz)) < 80.0:
+					continue
+				var vy := stream.height_at(vx, vz)
+				if not is_finite(vy):
+					vy = py
+				var focus_str := str(hp.get("focus", "village"))
+				var vtag := "Monastery" if focus_str == "monastery" else "Village"
+				var vname := str(hp.get("name", hp.get("id", vtag)))
+				list.append({
+					"label": "[%s] %s" % [vtag, vname],
+					"kind": "village",
+					"eye": Vector3(vx + 165.0, vy + 105.0, vz + 215.0),
+					"target": Vector3(vx, vy + 8.0, vz),
+					"walk": false
+				})
 
 	# 4. Camp & Village POIs from roads (e.g. all 9 Beast-Rider camps in Pinnacle, village approaches in High Rift)
-	var seen_pts: Array = []
 	for rd in I.get("roads", []):
 		var rkind := str(rd.get("kind", ""))
 		if not (rkind in ["camp", "village", "hamlet"]):

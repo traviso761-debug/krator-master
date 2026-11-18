@@ -130,7 +130,8 @@ static func build(path: String) -> Node3D:
 		node.name = "item_%d" % k
 		items.add_child(node)
 		var n: int = node.multimesh.instance_count
-		node.material_override = _mat(it["material"], mats, tex, texrec, mat_cache, ids, report, true)
+		var has_vcol: bool = node.multimesh.mesh != null and node.multimesh.mesh.get_surface_count() > 0 and (int(node.multimesh.mesh.surface_get_format(0)) & Mesh.ARRAY_FORMAT_COLOR) != 0
+		node.material_override = _mat(it["material"], mats, tex, texrec, mat_cache, ids, report, true, has_vcol)
 		node.visible = bool(it.get("visible", true))
 		if it.get("owners") is Array and (it["owners"] as Array).size() == n:   # a city's: per instance the record it stands in
 			node.set_meta("krator_owners", it["owners"])
@@ -178,7 +179,8 @@ static func build(path: String) -> Node3D:
 		node.owner = null
 		node.name = "bucket_%d" % k
 		buckets.add_child(node)
-		node.material_override = _mat(b["material"], mats, tex, texrec, mat_cache, ids, report, false)
+		var has_vcol: bool = node.mesh != null and node.mesh.get_surface_count() > 0 and (int(node.mesh.surface_get_format(0)) & Mesh.ARRAY_FORMAT_COLOR) != 0
+		node.material_override = _mat(b["material"], mats, tex, texrec, mat_cache, ids, report, false, has_vcol)
 		_lod(node, b, report)
 		if b.get("lod") is Dictionary and _lod_shader(node):
 			node.set_meta("krator_rows", [{"item": k, "id": b["id"], "from": 0, "count": 1, "range": float(b["lod"]["range"])}])
@@ -251,8 +253,13 @@ static func build(path: String) -> Node3D:
 	# and the page's own heights at the probes against KWater here
 	if d.get("water") is Dictionary:
 		var atm = Engine.get_main_loop().root.get_node_or_null("Atmos") if Engine.get_main_loop() is SceneTree else null
-		var wn := KratorWater.build(d["water"], d.get("box"), atm)
-		frame.add_child(wn)
+		var w_opts := {}
+		var w_parent: Node3D = frame
+		if has_org and d.get("box") is Array and (d["box"] as Array).size() == 4:
+			w_opts = {"clip_box": d["box"], "local_origin": org}
+			w_parent = root
+		var wn := KratorWater.build(d["water"], d.get("box"), atm, 2.0, w_opts)
+		w_parent.add_child(wn)
 		var wr: Dictionary = wn.get_meta("report")
 		wr["probes"] = KratorWater.check_probes(d["water"], wn.get_meta("surfaces", {}))
 		report["water"] = wr
@@ -377,8 +384,8 @@ static func ground_layers(g: Node3D, rec: Dictionary, tex: Dictionary, texrec: D
 # a material by id, built once (KratorBiome._material: the foliage and bark shaders, the kits' kinds; a city's three.js
 # material records, kind 'standard' or 'basic', on the library shader: _standard). instanced: the mesh is a MultiMesh
 # (a world-uv record tiles an instance by its scale, a plain mesh keeps its uv)
-static func _mat(id: Variant, mats: Dictionary, tex: Dictionary, texrec: Dictionary, cache: Dictionary, ids: Dictionary, report: Dictionary, instanced := true) -> Material:
-	var key := "%s|%s" % [id, instanced]
+static func _mat(id: Variant, mats: Dictionary, tex: Dictionary, texrec: Dictionary, cache: Dictionary, ids: Dictionary, report: Dictionary, instanced := true, has_vcol := false) -> Material:
+	var key := "%s|%s|%s" % [id, instanced, has_vcol]
 	if cache.has(key):
 		ids["materials_resolved"] += 1
 		return cache[key]
@@ -395,15 +402,18 @@ static func _mat(id: Variant, mats: Dictionary, tex: Dictionary, texrec: Diction
 		m = _standard(rec, tex, texrec, instanced, report)
 	else:
 		var bm := KratorBiome._material(rec, tex, texrec, instanced, report)
-		if not instanced and bm != null:
-			# Buckets bake world/case positions into VERTEX (e.g. y = -1320 m or +3400 m), so height-proportional swayW must not multiply VERTEX.y
-			if bm.shader == KratorBiome.FOLIAGE:
-				bm.set_shader_parameter("sway_w", Vector3.ZERO)
-				bm.set_shader_parameter("sway_c", 0.55)
-			elif bm.shader == KratorBiome.BARK:
-				var m_mode = bm.get_shader_parameter("mode")
-				if (m_mode is int or m_mode is float) and int(m_mode) == 5:
-					bm.set_shader_parameter("hang_a", 0.0)
+		if bm != null:
+			if has_vcol and (bm.shader == KratorBiome.FOLIAGE or bm.shader == KratorBiome.BARK):
+				bm.set_shader_parameter("srgb_vcol", true)
+			if not instanced:
+				# Buckets bake world/case positions into VERTEX (e.g. y = -1320 m or +3400 m), so height-proportional swayW must not multiply VERTEX.y
+				if bm.shader == KratorBiome.FOLIAGE:
+					bm.set_shader_parameter("sway_w", Vector3.ZERO)
+					bm.set_shader_parameter("sway_c", 0.55)
+				elif bm.shader == KratorBiome.BARK:
+					var m_mode = bm.get_shader_parameter("mode")
+					if (m_mode is int or m_mode is float) and int(m_mode) == 5:
+						bm.set_shader_parameter("hang_a", 0.0)
 		m = bm
 	cache[key] = m
 	return m
