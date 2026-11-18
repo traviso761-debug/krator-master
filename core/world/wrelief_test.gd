@@ -97,6 +97,20 @@ func snapshot() -> Dictionary:
 		var hm := WMicro.erode(500.0, x, z, -0.08, 0.05, SM, 600.0, 0.0, gm)
 		G.merode.append([hm, gm[0], gm[1], gm[2]])
 		G.mgrain.append(WMicro.grain(x, z, 0.3, 0.2, -0.1, SM, 0.0))
+	# the same at version 2 (PLAN-MICRO.md T0): mhills2, merode2, mgrain2
+	WMicro.init(2000000.0, 3000000.0, 9, 2)
+	G.mhills2 = []
+	G.merode2 = []
+	G.mgrain2 = []
+	for k in 300:
+		var x := float((k * 7919) % 40000)
+		var z := float((k * 104729) % 40000)
+		G.mhills2.append(WMicro.hills(x, z, SM, 600.0, 0.0))
+		var gm := [0.0, 0.0, 0.0]
+		var hm := WMicro.erode(500.0, x, z, -0.08, 0.05, SM, 600.0, 0.0, gm)
+		G.merode2.append([hm, gm[0], gm[1], gm[2]])
+		G.mgrain2.append(WMicro.grain(x, z, 0.3, 0.2, -0.1, SM, 0.0))
+	WMicro.init(2000000.0, 3000000.0, 9)
 	# WSTREAMS: the trace on a valley with a depression, its lines as region.json keeps them, their decode, the tarns
 	var nx := 60
 	var ny := 80

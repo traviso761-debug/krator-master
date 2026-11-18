@@ -7,9 +7,17 @@
 const fs=require('fs'),path=require('path');
 global.window=global;
 for(const f of [['..','rand','08-core-rand.js'],['40-world-smooth.js'],['43-world-relief.js'],['43m-world-micro.js']])eval(fs.readFileSync(path.join(__dirname,...f),'utf8'));
-let bad=0;const ok=(name,pass,neg)=>{const r=!!pass&&!neg;if(!r)bad++;console.log((r?'PASS  ':'FAIL  ')+name+(neg?' (its negative passed)':''));};
-WRELIEF.init({ox:0,oz:0,seed:5});WMICRO.init({ox:1e6,oz:2e6,seed:7});
-const S={hill:40,gully:.8,rough:1};
+let bad=0,V=1;const ok=(name,pass,neg)=>{const r=!!pass&&!neg;if(!r)bad++;console.log((r?'PASS  ':'FAIL  ')+'v'+V+' '+name+(neg?' (its negative passed)':''));};
+// every check on both versions (PLAN-MICRO.md T0): 1 today's land, 2 the target mean-compensated and the kernel covering everywhere
+// the kernel's least total weight on a 5 m grid over 2 km, octave o (the jitter and radius as 43m-world-micro.js's erode draws them)
+function minW(ver,o,seed){const lam=[800,400,200,100,50,25][o];let lo=1e9;
+ for(let z=0;z<2000;z+=5)for(let x=0;x<2000;x+=5){const ax=x+1e6,az=z+2e6,ci=Math.floor(ax/lam),cj=Math.floor(az/lam);let W=0;
+  for(let dj=-1;dj<=1;dj++)for(let di=-1;di<=1;di++){const i=ci+di,j=cj+dj,hh=KRAND.hash(seed^0x4D45,o,i,j),ju=KRAND.unit(hh),jv=KRAND.unit(KRAND.mix32(hh^0x9E3779B9));
+   const px=(i+(ver===2?.25+.5*ju:ju))*lam,pz=(j+(ver===2?.25+.5*jv:jv))*lam,dx=(ax-px)/lam,dz=(az-pz)/lam;let d2=dx*dx+dz*dz;if(ver===2)d2/=1.5625;if(d2<1)W+=(1-d2)*(1-d2);}
+  if(W<lo)lo=W;}return lo;}
+const REPORT={},S={hill:40,gully:.8,rough:1};
+for(V of [1,2]){
+WRELIEF.init({ox:0,oz:0,seed:5});WMICRO.init({ox:1e6,oz:2e6,seed:7,version:V});
 // the hills: continuous, never under the floor, the floor over half the ground (so it joins up and drains)
 {let worst=0,p=null,neg=0,floor=0,n=0;for(let x=0;x<3000;x+=.25){const v=WMICRO.hills(x,0,S,600,0);if(p!=null)worst=Math.max(worst,Math.abs(v-p));p=v;}
  let top=0;for(let i=0;i<200;i++)for(let j=0;j<200;j++){const v=WMICRO.hills(i*150,j*150,S,600,0);if(v<0)neg++;if(v<1e-9)floor++;top=Math.max(top,v);n++;}
@@ -39,7 +47,12 @@ ok('the gullies run downslope: drainage alignment '+aE.toFixed(3)+' (a DEM .17-.
   r<.06&&p99<.9,seam(g)<.06);}
 // level: the gullies take out as much as they leave (mean change over 3 km a small share of its spread)
 {let s=0,s2=0,m=0;for(let j=0;j<120;j++)for(let i=0;i<120;i++){const x=i*25+3,z=j*25+5,d=eroded(x,z)-large(x,z);s+=d;s2+=d*d;m++;}
- const mean=s/m,rms=Math.sqrt(s2/m);ok('the ground neither rises nor sinks: mean change '+mean.toFixed(2)+' m against a spread of '+rms.toFixed(2)+' m',Math.abs(mean)<.25*rms&&rms>1,false);}
+ const mean=s/m,rms=Math.sqrt(s2/m);REPORT[V]={mean,rms};
+ ok('the ground neither rises nor sinks: mean change '+mean.toFixed(2)+' m against a spread of '+rms.toFixed(2)+' m ('+(100*mean/rms).toFixed(1)+' %; v2 within 5 %, v1 25 %)',Math.abs(mean)<(V===2?.05:.25)*rms&&rms>1,false);}
+// the kernel covers the ground: v2's least weight over .5 (cov 1 everywhere); its negative, v1 (holes: an octave part-faded)
+{const w=[0,3,5].map(o=>minW(V,o,(7^0x4D45)>>>0)),w1=V===2?[REPORT[1].minW]:w,lo=Math.min(...w);REPORT[V].minW=lo;
+ if(V===2)ok('the kernel covers the ground: least weight '+lo.toFixed(3)+' (v1: '+Math.min(...w1).toFixed(3)+')',lo>.5,Math.min(...w1)>.5);
+ else ok('the kernel leaves holes (v1, kept as it is): least weight '+lo.toFixed(3),lo<.5,false);}
 // a far chunk: minWave over every octave's half wavelength leaves the ground as it was; over the hills', no hills
 {const G=[0,0],h0=WMICRO.erode(100,500,500,.1,.02,S,600,450,G);
  ok('a far chunk skips what it cannot show (erode at minWave 450: '+h0+', hills at 1000: '+WMICRO.hills(500,500,S,600,1000)+')',h0===100&&WMICRO.hills(500,500,S,600,1000)===0,WMICRO.erode(100,500,500,.1,.02,S,600,0)===100);}
@@ -66,9 +79,13 @@ ok('the gullies run downslope: drainage alignment '+aE.toFixed(3)+' (a DEM .17-.
  const r=corr(C,D),r2=corr(C2,D);
  ok('the crease marks the gullies: it correlates '+r.toFixed(2)+' with the cut of the drainage (the crease 2 km off: '+r2.toFixed(2)+')',r<-.5&&Math.max(...C)<=1&&Math.min(...C)>=-1,r2<-.5);}
 // world-absolute: a frame moved by (dx, dz) reads the same land at the moved point
-{const a=WMICRO.erode(50,123,456,.07,.03,S,600,0)+WMICRO.hills(123,456,S,600,0);WMICRO.init({ox:1e6-4000,oz:2e6+2500,seed:7});
- const b=WMICRO.erode(50,4123,-2044,.07,.03,S,600,0)+WMICRO.hills(4123,-2044,S,600,0);WMICRO.init({ox:1e6,oz:2e6,seed:7});
+{const a=WMICRO.erode(50,123,456,.07,.03,S,600,0)+WMICRO.hills(123,456,S,600,0);WMICRO.init({ox:1e6-4000,oz:2e6+2500,seed:7,version:V});
+ const b=WMICRO.erode(50,4123,-2044,.07,.03,S,600,0)+WMICRO.hills(4123,-2044,S,600,0);WMICRO.init({ox:1e6,oz:2e6,seed:7,version:V});
  ok('world-absolute: two frames over one place agree ('+a.toFixed(6)+', '+b.toFixed(6)+')',Math.abs(a-b)<1e-9,Math.abs(a-WMICRO.erode(50,123,456,.07,.03,S,600,0))<1e-9&&WMICRO.hills(123,456,S,600,0)!==0&&false);}
 ok('deterministic',eroded(321,654)===eroded(321,654)&&WMICRO.hills(9,9,S,600,0)===WMICRO.hills(9,9,S,600,0),false);
+}
+V=2;WMICRO.init({ox:1e6,oz:2e6,seed:7,version:1});const e1=WMICRO.erode(500,321,654,.08,.01,S,600,0);WMICRO.init({ox:1e6,oz:2e6,seed:7,version:2});
+ok('version 2 moves the land (erode at one point: v1 '+e1.toFixed(4)+', v2 '+WMICRO.erode(500,321,654,.08,.01,S,600,0).toFixed(4)+')',e1!==WMICRO.erode(500,321,654,.08,.01,S,600,0),false);
+console.log('mean bias (mean / rms): v1 '+(100*REPORT[1].mean/REPORT[1].rms).toFixed(1)+' %, v2 '+(100*REPORT[2].mean/REPORT[2].rms).toFixed(1)+' %; least kernel weight v1 '+REPORT[1].minW.toFixed(3)+', v2 '+REPORT[2].minW.toFixed(3));
 console.log(bad?bad+' FAILED':'all passed');
 process.exit(bad?1:0);

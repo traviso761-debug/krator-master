@@ -5,7 +5,8 @@
 // floors, sharp spurs). The World Menagerie's terrain builds read real DEMs for this (core/world/PLAN-MICRO.md M0: their
 // 180-540 m relief is 20-46 m, their detail runs downslope, cos^2 .17-.46); here it is made pointwise, world-absolute
 // (two regions over one place agree), from the land style:
-//   WMICRO.init({ox, oz, seed})
+//   WMICRO.init({ox, oz, seed, version})  version 1 (default: today's land, bit-identical) or 2 (T0, PLAN-MICRO.md: the masked
+//                                  target mean-compensated, the 3x3 kernel's jitter and radius widened so it covers everywhere)
 //   WMICRO.hills(x, z, S, rel, minWave)   the hills' rise (m, never negative: hills on a floor that drains) over the land's large form: gradient noise
 //                                  (KRAND.gfbm: no lattice lines) of S.hill metres, its wavelength 1.6 and 0.8 km (smooth: everything finer is the gullies'), the amount
 //                                  wandering over 9 km (some country rolls more, some less) and with the model's relief
@@ -23,8 +24,8 @@
 //                                  sandpaper everywhere), rough on the steep, and stretched down the slope
 var WMICRO=(function(){'use strict';
 const M={version:1};
-let OX=0,OZ=0,SEED=0x4D4943;
-M.init=function(o){o=o||{};OX=o.ox||0;OZ=o.oz||0;SEED=(o.seed==null?0x4D4943:o.seed)>>>0;return M;};
+let OX=0,OZ=0,SEED=0x4D4943,V2=false;
+M.init=function(o){o=o||{};OX=o.ox||0;OZ=o.oz||0;SEED=(o.seed==null?0x4D4943:o.seed)>>>0;M.version=o.version===2?2:1;V2=M.version===2;return M;};
 const clamp=(v,a,b)=>v<a?a:v>b?b:v;
 const smooth=(a,b,v)=>{let t=(v-a)/(b-a);t=t<0?0:t>1?1:t;return t*t*(3-2*t);};
 // ---------------------------------------------------------------- the hills
@@ -52,8 +53,9 @@ M.erode=function(h,x,z,gx,gz,S,rel,minWave,G,fine){fine=fine==null?1:fine;
   const sl=Math.sqrt(Gx*Gx+Gz*Gz),fade=smooth(.0005,.012,sl);if(fade<=0)break;
   const nx=-Gz/sl,nz=Gx/sl,ci=Math.floor(ax/lam),cj=Math.floor(az/lam);let vx=0,vy=0,W=0;
   for(let dj=-1;dj<=1;dj++)for(let di=-1;di<=1;di++){const i=ci+di,j=cj+dj,hh=KRAND.hash(SEED^0x4D45,o,i,j);
-   const px=(i+KRAND.unit(hh))*lam,pz=(j+KRAND.unit(KRAND.mix32(hh^0x9E3779B9)))*lam;
-   const dx=(ax-px)/lam,dz=(az-pz)/lam,d2=dx*dx+dz*dz;if(d2>=1)continue;
+   const ju=KRAND.unit(hh),jv=KRAND.unit(KRAND.mix32(hh^0x9E3779B9)),px=(i+(V2?.25+.5*ju:ju))*lam,pz=(j+(V2?.25+.5*jv:jv))*lam;
+   const dx=(ax-px)/lam,dz=(az-pz)/lam;let d2=dx*dx+dz*dz;if(V2)d2/=1.5625;if(d2>=1)continue;   /* v2: points kept in the cell's middle half, radius 1.25:
+    every spot has a point's weight over .5 (v1's jitter over the whole cell, radius 1, left holes: an octave part-faded on 18 % of the ground) */
    const w=(1-d2)*(1-d2),s=((ax-px)*nx+(az-pz)*nz)/lam;vx+=w*WRELIEF.cos2pi(s);vy+=w*WRELIEF.sin2pi(s);W+=w;}
   if(!(W>0))continue;
   const m=Math.sqrt(vx*vx+vy*vy)+.15*W,t=vx/m,sn=vy/m,gul=(1-t)*.5,cov=smooth(.05,.6,W);
@@ -62,9 +64,10 @@ M.erode=function(h,x,z,gx,gz,S,rel,minWave,G,fine){fine=fine==null?1:fine;
      gullies fade, not to nothing but to the coarser octaves' own faded height (the target): the crests stay crisp, the floors
      clean, and the fine gullies keep to the flanks. mk: the mask x the fade on the flat x the kernel's coverage */
   const fo=lam<=FINE?fine:1,a0=dep*lam*Math.pow(GAIN,o),y=1-2*(2*gul-gul*gul),mk=mask*fade*cov*fo,yf=tgt+(y-tgt)*mk;
-  out+=a0*.5*(mk*(y-YMEAN)+fade*cov*fo*(1-mask)*tgt);   /* the gully where the mask is open (less YMEAN, the stripe's mean: the land neither rises
+  out+=a0*.5*(mk*(y-YMEAN)+fade*cov*fo*(1-mask)*(V2?tgt-YMEAN:tgt));   /* the gully where the mask is open (less YMEAN, the stripe's mean: the land neither rises
     nor sinks), the target where the coarser octaves mask it, and nothing where this octave is not (no kernel point, the flat): weighed
-    by (1 - mk) instead, a coverage hole dropped the target's height at once, a 2.9 m step */
+    by (1 - mk) instead, a coverage hole dropped the target's height at once, a 2.9 m step. v1 leaves the target's mean (YMEAN) in, so
+    the masked ground sank ~23 % of the amplitude; v2 takes it out. In v2 cov is always 1 (min W .60): the path is kept for v1 */
   const wo=Math.pow(GAIN,o);cr+=wo*mk*(2*gul-1);cw+=wo;   /* the crease: +1 a gully's floor, -1 a spur's crest (runevision's ridge map) */
   const k=-a0*mk*(1-gul)*clamp(3*sn,-1,1)*6.283185307179586/lam;Gx+=k*nx;Gz+=k*nz;
   tgt=yf;const mu=(1-Math.pow(1-mask,DETAIL))*smooth(0,.7,Math.abs(sn));mask+=(mu-mask)*cov;}   /* the next octave's target and mask: level stripes
