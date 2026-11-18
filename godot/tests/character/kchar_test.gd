@@ -573,6 +573,8 @@ func _coyote(fig: KCharFigure, rec: Dictionary) -> void:
 		var ang_min := 1e9
 		var ang_max := -1e9
 		var paw_bad := 0
+		var snap_bad := 0
+		var prev_hz := [null, null]
 		for f in 75:
 			fig._process(1.0 / 30.0)
 			if f < 15:
@@ -588,8 +590,12 @@ func _coyote(fig: KCharFigure, rec: Dictionary) -> void:
 				h_max = maxf(h_max, float(st["hock_y"]))
 				ang_min = minf(ang_min, float(st["hock_ang"]))
 				ang_max = maxf(ang_max, float(st["hock_ang"]))
-				if float(st["paw_y"]) < 0.008 or (float(st["stance"]) > 0.85 and absf(float(st["paw_y"]) - float(sd["paw_h"])) > 0.025):
+				if float(st["paw_y"]) < 0.008 or (float(st["stance"]) > 0.96 and absf(float(st["paw_y"]) - float(sd["paw_h"])) > 0.025):
 					paw_bad += 1
+				var hz := float(st["hock_fwd"])
+				if hz > -0.04 or (c == "walk" and prev_hz[si] != null and absf(hz - float(prev_hz[si])) > 0.045):
+					snap_bad += 1
+				prev_hz[si] = hz
 		if c == "idle":
 			idle_hock = 0.5 * (h_min + h_max)
 		if c != "ual_crouch":
@@ -598,7 +604,7 @@ func _coyote(fig: KCharFigure, rec: Dictionary) -> void:
 			ok(ang_max - ang_min >= 0.16, "coyote %s: hock flexes and extends dynamically (range %.3f rad)" % [c, ang_max - ang_min])
 		if c == "ual_crouch" and idle_hock > 0.0:
 			ok(h_min <= idle_hock - 0.02, "coyote crouch: hock coils lower (%.3f vs %.3f m)" % [h_min, idle_hock])
-		ok(paw_bad == 0, "coyote %s: paws stay planted in stance and above floor (%d bad)" % [c, paw_bad])
+		ok(paw_bad == 0 and snap_bad == 0, "coyote %s: paws planted and hock smooth (%d paw, %d snap)" % [c, paw_bad, snap_bad])
 	print("kchar_test: coyote digitigrade checked (idle hock %.2f m)" % idle_hock)
 	fig.play("")
 	fig.apply(rec)

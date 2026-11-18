@@ -251,7 +251,8 @@ CHECKS = r'''async () => {
       for (const c of ['idle', 'walk', 'run', 'ual_crouch']) {
         if (!fig.clips[c]) continue;
         await fig.play(c);
-        let hMin = 1e9, hMax = -1e9, angMin = 1e9, angMax = -1e9, pawBad = 0, tailBad = 0;
+        let hMin = 1e9, hMax = -1e9, angMin = 1e9, angMax = -1e9, pawBad = 0, tailBad = 0, snapBad = 0;
+        const prevHz = [null, null];
         for (let k = 0; k < 75; k++) {
           fig.update(1 / 30);
           if (k < 15) continue;
@@ -260,7 +261,10 @@ CHECKS = r'''async () => {
           ds.state.forEach((st, si) => {
             hMin = Math.min(hMin, st.hockY); hMax = Math.max(hMax, st.hockY);
             angMin = Math.min(angMin, st.hockAng); angMax = Math.max(angMax, st.hockAng);
-            if (st.pawY < 0.008 || (st.stance > 0.85 && Math.abs(st.pawY - ds.sides[si].pawH) > 0.025)) pawBad++;
+            if (st.pawY < 0.008 || (st.stance > 0.96 && Math.abs(st.pawY - ds.sides[si].pawH) > 0.025)) pawBad++;
+            const hz = st.hockFwd;
+            if (hz > -0.04 || (c === 'walk' && prevHz[si] !== null && Math.abs(hz - prevHz[si]) > 0.045)) snapBad++;
+            prevHz[si] = hz;
           });
           const T = fig.tailState();
           if (T && T.x.some(x => !isFinite(x.x + x.y + x.z))) tailBad++;
@@ -269,7 +273,7 @@ CHECKS = r'''async () => {
         if (c !== 'ual_crouch' && hMin < 0.13) NH.push(body + ' coyote ' + c + ': hock dropped too low (' + hMin.toFixed(3) + ' m)');
         if ((c === 'walk' || c === 'run') && (angMax - angMin) < 0.16) NH.push(body + ' coyote ' + c + ': hock angle barely flexes (' + (angMax - angMin).toFixed(3) + ' rad)');
         if (c === 'ual_crouch' && idleHock > 0 && hMin > idleHock - 0.02) NH.push(body + ' coyote crouch: hock did not coil (' + hMin.toFixed(3) + ' vs ' + idleHock.toFixed(3) + ')');
-        if (pawBad || tailBad) NH.push(body + ' coyote ' + c + ': ' + pawBad + ' bad paw frames, ' + tailBad + ' bad tail frames');
+        if (pawBad || tailBad || snapBad) NH.push(body + ' coyote ' + c + ': ' + pawBad + ' bad paw, ' + tailBad + ' bad tail, ' + snapBad + ' hock snap frames');
       }
       await fig.play('idle'); await k2.set(dressed);
     }

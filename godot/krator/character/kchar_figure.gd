@@ -3338,8 +3338,8 @@ func _digi_setup(it) -> void:
 		"morph": null,
 		"hip_drop": 0.0,
 		"state": [
-			{"stance": 1.0, "hock_y": 0.0, "paw_y": 0.0, "hock_ang": 0.0, "stifle_ang": 0.0},
-			{"stance": 1.0, "hock_y": 0.0, "paw_y": 0.0, "hock_ang": 0.0, "stifle_ang": 0.0},
+			{"stance": 1.0, "hock_y": 0.0, "paw_y": 0.0, "hock_ang": 0.0, "stifle_ang": 0.0, "hock_fwd": -0.15, "uh": null},
+			{"stance": 1.0, "hock_y": 0.0, "paw_y": 0.0, "hock_ang": 0.0, "stifle_ang": 0.0, "hock_fwd": -0.15, "uh": null},
 		],
 	}
 
@@ -3397,14 +3397,27 @@ func _digitigrade(dt: float) -> void:
 	_digi_rest()
 	if _clip == "" or player == null or not player.is_playing():
 		_dg["hip_drop"] = 0.0
+		for st_r in _dg["state"]:
+			st_r["uh"] = null
 		for i in _dg["all"]:
 			skeleton.set_bone_pose_rotation(i, KChar._q(skel["joints"][i]["r"]))
 			skeleton.set_bone_pose_position(i, morph["t"][i])
 		return
 	var floor_y := float(_dg["floor_y"])
 	var hip_rest_h := float(_dg["hip_rest_h"])
+	var hq := _gp(_hips).basis.get_rotation_quaternion()
+	var q_hd := hq * skeleton.get_bone_global_rest(_hips).basis.get_rotation_quaternion().inverse()
+	var hip_up_y := (q_hd * Vector3(0, 1, 0)).y
+	var pelv_up := smoothstep(0.25, 0.65, hip_up_y)
+	var hip_s := q_hd * Vector3(1, 0, 0)
+	hip_s.y = 0.0
+	if hip_s.length_squared() < 1e-4:
+		hip_s = Vector3.UP.cross(q_hd * Vector3(0, 0, 1))
+		hip_s.y = 0.0
+	hip_s = hip_s.normalized() if hip_s.length_squared() >= 1e-6 else Vector3(1, 0, 0)
 	var st_max := 0.0
 	var load_max := 0.0
+	var reach_max := 0.0
 	var st_arr := [0.0, 0.0]
 	var up_arr := [0.0, 0.0]
 	var clear_arr := [0.0, 0.0]
@@ -3413,10 +3426,9 @@ func _digitigrade(dt: float) -> void:
 		var h_c := _gp(s["up"]).origin
 		var a_c := _gp(s["foot"]).origin
 		var b_c := _gp(s["toe"]).origin
-		var leg_dir := (a_c - h_c).normalized()
-		var up_w := smoothstep(0.15, 0.55, -leg_dir.y)
+		var up_w := pelv_up
 		var clear_h := minf(maxf(0.0, (a_c.y - floor_y) - float(s["ank_h"])), maxf(0.0, (b_c.y - floor_y) - float(s["ball_h"])))
-		var stance := 1.0 - smoothstep(0.012, 0.085, clear_h)
+		var stance := 1.0 - smoothstep(0.010, 0.110, clear_h)
 		var st := stance * up_w
 		st_arr[idx] = st
 		up_arr[idx] = up_w
@@ -3424,12 +3436,12 @@ func _digitigrade(dt: float) -> void:
 		st_max = maxf(st_max, st)
 		var fore_aft := Vector2(a_c.x - h_c.x, a_c.z - h_c.z).length()
 		load_max = maxf(load_max, st * (1.0 - clampf((fore_aft - 0.06) / 0.22, 0.0, 1.0)))
-	var want_drop := st_max * (0.018 + 0.016 * load_max) * (hip_rest_h / 0.95)
+		reach_max = maxf(reach_max, st * clampf((fore_aft - 0.20) / 0.24, 0.0, 1.0))
+	var want_drop := st_max * (0.018 + 0.014 * load_max + 0.024 * reach_max) * (hip_rest_h / 0.95)
 	var k_drop := 1.0 - exp(-dt / 0.06) if dt > 0.0 else 1.0
 	_dg["hip_drop"] = float(_dg["hip_drop"]) + (want_drop - float(_dg["hip_drop"])) * k_drop
 	if float(_dg["hip_drop"]) > 1e-5:
 		skeleton.set_bone_pose_position(_hips, skeleton.get_bone_pose_position(_hips) - Vector3(0.0, float(_dg["hip_drop"]), 0.0))
-	var hq := _gp(_hips).basis.get_rotation_quaternion()
 	for idx in 2:
 		var s: Dictionary = _dg["sides"][idx]
 		var st: float = st_arr[idx]
@@ -3439,38 +3451,51 @@ func _digitigrade(dt: float) -> void:
 		var k_c := _gp(s["leg"]).origin
 		var a_c := _gp(s["foot"]).origin
 		var b_c := _gp(s["toe"]).origin
-		var fwd3 := b_c - a_c
-		fwd3 = fwd3.normalized() if fwd3.length_squared() > 1e-8 else Vector3(0, 0, 1)
-		var fwd := Vector3(fwd3.x, 0.0, fwd3.z)
-		if fwd.length_squared() < 1e-6:
-			fwd = hq * Vector3(0, 0, 1)
-			fwd.y = 0.0
-			if fwd.length_squared() < 1e-6:
-				fwd = Vector3(0, 0, 1)
-		fwd = fwd.normalized()
-		var side := Vector3.UP.cross(fwd).normalized()
+		var q_fd := _gp(s["foot"]).basis.get_rotation_quaternion() * skeleton.get_bone_global_rest(s["foot"]).basis.get_rotation_quaternion().inverse()
+		var foot_s3 := q_fd * Vector3(1, 0, 0)
+		var foot_s := Vector3(foot_s3.x, 0.0, foot_s3.z)
+		var side_len := foot_s.length()
+		var side := hip_s
+		if side_len > 0.2:
+			foot_s /= side_len
+			var align := clampf((foot_s.dot(hip_s) - 0.1) / 0.4, 0.0, 1.0)
+			side = hip_s.lerp(foot_s, 0.65 * align).normalized()
+		var fwd := side.cross(Vector3.UP).normalized()
+		var shin_d := a_c - k_c
+		shin_d = shin_d.normalized() if shin_d.length_squared() > 1e-8 else Vector3.DOWN
+		var fwd3 := shin_d.cross(foot_s3)
+		fwd3 = fwd3.normalized() if fwd3.length_squared() > 1e-8 else fwd
 
 		var paw := a_c.lerp(b_c, 0.38)
-		var swing_lift := (1.0 - st) * up_w * 0.026 * sin(PI * clampf(clear_h / 0.14, 0.0, 1.0))
-		paw.y = lerpf(paw.y + swing_lift, floor_y + float(s["paw_h"]), st)
-		if up_w > 0.2:
-			paw.y = maxf(paw.y, floor_y + float(s["paw_h"]) * up_w)
+		var fore := (paw - h_p).dot(fwd)
+		paw -= fwd * (0.18 * fore * up_w)
+		var eff_clear := clear_h if clear_h <= 0.16 else 0.16 + 0.45 * (clear_h - 0.16)
+		var swing_lift := (1.0 - st) * up_w * 0.022 * sin(PI * clampf(clear_h / 0.15, 0.0, 1.0))
+		var paw_y_up := floor_y + float(s["paw_h"]) + eff_clear + swing_lift
+		paw.y = lerpf(paw.y, paw_y_up, up_w)
 
 		var stride := (paw - h_p).dot(fwd) / 0.32
 		var crouch := clampf((0.86 * hip_rest_h - (h_p.y - floor_y)) / maxf(0.28 * hip_rest_h, 1e-4), 0.0, 1.0)
 		var mid_load := 1.0 - minf(1.0, absf(stride))
-		var push_off := clampf(-stride, 0.0, 1.15)
+		var push_off := clampf(-stride, 0.0, 1.0)
+		var high_kick := clampf((clear_h - 0.16) / 0.4, 0.0, 1.0)
 		var theta0 := float(s["theta0"])
-		var th_stance := theta0 - 0.16 * mid_load + 0.28 * push_off - 0.30 * crouch
-		var th_swing := theta0 - 0.27 - 0.18 * crouch
-		var theta := clampf(lerpf(th_swing, th_stance, st), 0.52, 1.32)
+		var th_stance := theta0 - 0.14 * mid_load + 0.12 * push_off - 0.30 * crouch
+		var th_swing := theta0 - 0.22 * (1.0 - 0.45 * push_off) - 0.22 * high_kick - 0.18 * crouch
+		var theta := clampf(lerpf(th_swing, th_stance, st), 0.38, 1.22)
 
 		var u_h := (-fwd * cos(theta) + Vector3.UP * sin(theta) - side * (0.04 * float(s["sx"]))).normalized()
-		var shin_d := a_c - k_c
-		shin_d = shin_d.normalized() if shin_d.length_squared() > 1e-8 else Vector3.DOWN
 		var u_hc := -fwd3 * cos(theta0) - shin_d * sin(theta0)
 		u_hc = u_hc.normalized() if u_hc.length_squared() > 1e-8 else u_h
 		u_h = u_h.lerp(u_hc, 1.0 - up_w).normalized()
+
+		var st_d: Dictionary = _dg["state"][idx]
+		if dt > 0.0 and st_d["uh"] != null:
+			var sm: Vector3 = (st_d["uh"] as Vector3).lerp(u_h, 1.0 - exp(-dt / 0.045)).normalized()
+			st_d["uh"] = sm
+			u_h = sm
+		else:
+			st_d["uh"] = u_h
 
 		var l1 := float(s["l1"])
 		var l2 := float(s["l2"])
@@ -3508,7 +3533,7 @@ func _digitigrade(dt: float) -> void:
 			hock = h_p + ax * d_cl
 		var cos_a := clampf((l1 * l1 + d_cl * d_cl - l2 * l2) / (2.0 * l1 * d_cl), -1.0, 1.0)
 		var sin_a := sqrt(maxf(0.0, 1.0 - cos_a * cos_a))
-		var pole := (k_c - h_p) + fwd3 * 0.35
+		var pole := (k_c - h_p) + (fwd if up_w > 0.25 else fwd3) * 0.35
 		pole -= ax * pole.dot(ax)
 		if pole.length_squared() < 1e-8:
 			pole = fwd - ax * fwd.dot(ax)
@@ -3539,12 +3564,12 @@ func _digitigrade(dt: float) -> void:
 		var u0 := (knee - h_p).normalized()
 		var u1 := (hock - knee).normalized()
 		var u2 := (paw - hock).normalized()
-		var st_d: Dictionary = _dg["state"][idx]
 		st_d["stance"] = st
 		st_d["hock_y"] = hock.y - floor_y
 		st_d["paw_y"] = paw.y - floor_y
 		st_d["hock_ang"] = acos(clampf(-u1.dot(u2), -1.0, 1.0))
 		st_d["stifle_ang"] = acos(clampf(-u0.dot(u1), -1.0, 1.0))
+		st_d["hock_fwd"] = (hock - paw).dot(fwd)
 
 
 func digi_state() -> Dictionary:

@@ -2994,7 +2994,7 @@ function KCharFigure(body, sliders, load){
      the floor during stance (lifting and flexing it in swing), compresses the hock in mid-stance and crouch, snaps it
      open at late-stance push-off, and solves the forward stifle (DigiThigh -> DigiShin -> DigiHock) in closed form ---- */
   var DG = null, dgInv = new THREE.Matrix4(), dgInvQ = Q(), dgHq = Q(), dgQp = Q(), dgQs = Q(), dgWt = Q(), dgWs = Q(), dgWh = Q(), dgWp = Q(),
-      dgH = V(), dgK = V(), dgA = V(), dgB = V(), dgPaw = V(), dgHock = V(), dgKnee = V(), dgFwd = V(), dgFwd3 = V(), dgSide = V(),
+      dgH = V(), dgK = V(), dgA = V(), dgB = V(), dgPaw = V(), dgHock = V(), dgKnee = V(), dgFwd = V(), dgFwd3 = V(), dgSide = V(), dgHipS = V(),
       dgShinD = V(), dgUh = V(), dgUhC = V(), dgDir = V(), dgAx = V(), dgPole = V(), dgHinge = V(), dgTmp = V(), dgUp = new THREE.Vector3(0, 1, 0), dgM = new THREE.Matrix4();
   function digiSetup(it){
     if(DG) DG.all.forEach(function(i){ bones[i].quaternion.fromArray(J[i].r); bones[i].position.fromArray(self.pose.t[i]); });
@@ -3022,7 +3022,7 @@ function KCharFigure(body, sliders, load){
       var hm = p2.clone().sub(p3);
       s.theta0 = Math.atan2(hm.y, Math.max(1e-4, -hm.z));
     });
-    DG = { spec:spec, sides:sides, all:all, pose:null, hipDrop:0, state:sides.map(function(){ return { stance:1, hockY:0, pawY:0, hockAng:0 }; }) };
+    DG = { spec:spec, sides:sides, all:all, pose:null, hipDrop:0, state:sides.map(function(){ return { stance:1, hockY:0, pawY:0, hockAng:0, stifleAng:0, hockFwd:-0.15, uh:null }; }) };
   }
   function digiRest(){
     if(DG.pose === self.pose) return;
@@ -3063,37 +3063,48 @@ function KCharFigure(body, sliders, load){
     digiRest();
     if(!self.action){
       DG.hipDrop = 0;
+      DG.state.forEach(function(st){ st.uh = null; });
       DG.all.forEach(function(i){ bones[i].quaternion.fromArray(J[i].r); bones[i].position.fromArray(self.pose.t[i]); });
       return;
     }
     self.group.updateMatrixWorld(true);
     dgInv.copy(self.inner.matrixWorld).invert();
     self.inner.getWorldQuaternion(dgInvQ).invert();
-    var floorY = DG.floorY, stMax = 0, loadMax = 0, stArr = [0, 0], upArr = [0, 0], clearArr = [0, 0];
+    bones[byName.Hips].getWorldQuaternion(dgHq).premultiply(dgInvQ);
+    dgQp.copy(dgHq).multiply(dgQs.copy(pRest[byName.Hips]).invert());
+    var hipUpY = dgTmp.set(0, 1, 0).applyQuaternion(dgQp).y;
+    var pelvUp = THREE.MathUtils.smoothstep(hipUpY, 0.25, 0.65);
+    dgHipS.set(1, 0, 0).applyQuaternion(dgQp); dgHipS.y = 0;
+    if(dgHipS.lengthSq() < 1e-4){
+      dgTmp.set(0, 0, 1).applyQuaternion(dgQp);
+      dgHipS.crossVectors(dgUp, dgTmp); dgHipS.y = 0;
+    }
+    if(dgHipS.lengthSq() < 1e-6) dgHipS.set(1, 0, 0); else dgHipS.normalize();
+    var floorY = DG.floorY, stMax = 0, loadMax = 0, reachMax = 0, stArr = [0, 0], upArr = [0, 0], clearArr = [0, 0];
     DG.sides.forEach(function(s, idx){
       bones[s.up].getWorldPosition(dgH).applyMatrix4(dgInv);
       bones[s.foot].getWorldPosition(dgA).applyMatrix4(dgInv);
       bones[s.toe].getWorldPosition(dgB).applyMatrix4(dgInv);
-      dgDir.subVectors(dgA, dgH).normalize();
-      var upW = THREE.MathUtils.smoothstep(-dgDir.y, 0.15, 0.55);
+      var upW = pelvUp;
       var clearH = Math.min(Math.max(0, (dgA.y - floorY) - s.ankH), Math.max(0, (dgB.y - floorY) - s.ballH));
-      var stance = 1 - THREE.MathUtils.smoothstep(clearH, 0.012, 0.085);
+      var stance = 1 - THREE.MathUtils.smoothstep(clearH, 0.010, 0.110);
       var st = stance * upW;
       stArr[idx] = st; upArr[idx] = upW; clearArr[idx] = clearH;
       if(st > stMax) stMax = st;
       var foreAft = Math.hypot(dgA.x - dgH.x, dgA.z - dgH.z);
       var load = st * (1 - THREE.MathUtils.clamp((foreAft - 0.06) / 0.22, 0, 1));
+      var reach = st * THREE.MathUtils.clamp((foreAft - 0.20) / 0.24, 0, 1);
       if(load > loadMax) loadMax = load;
+      if(reach > reachMax) reachMax = reach;
     });
-    // subtle elastic pelvis settle on grounded stance so the leg keeps athletic Z-flex room and absorbs weight on strike
-    var wantDrop = stMax * (0.018 + 0.016 * loadMax) * (DG.hipRestH / 0.95);
+    // subtle elastic pelvis settle on grounded stance and full stride reach so the leg keeps Z-flex room at push-off
+    var wantDrop = stMax * (0.018 + 0.014 * loadMax + 0.024 * reachMax) * (DG.hipRestH / 0.95);
     var kDrop = dt > 0 ? 1 - Math.exp(-dt / 0.06) : 1;
     DG.hipDrop += (wantDrop - DG.hipDrop) * kDrop;
     if(DG.hipDrop > 1e-5){
       self.hips.position.y -= DG.hipDrop;
       self.hips.updateMatrixWorld(true);
     }
-    bones[byName.Hips].getWorldQuaternion(dgHq).premultiply(dgInvQ);
     DG.sides.forEach(function(s, idx){
       var st = stArr[idx], upW = upArr[idx], clearH = clearArr[idx];
       bones[s.up].getWorldPosition(dgH).applyMatrix4(dgInv);
@@ -3101,37 +3112,54 @@ function KCharFigure(body, sliders, load){
       bones[s.foot].getWorldPosition(dgA).applyMatrix4(dgInv);
       bones[s.toe].getWorldPosition(dgB).applyMatrix4(dgInv);
 
-      dgFwd3.subVectors(dgB, dgA);
-      if(dgFwd3.lengthSq() < 1e-8) dgFwd3.set(0, 0, 1); else dgFwd3.normalize();
-      dgFwd.set(dgFwd3.x, 0, dgFwd3.z);
-      if(dgFwd.lengthSq() < 1e-6){
-        dgFwd.set(0, 0, 1).applyQuaternion(dgHq); dgFwd.y = 0;
-        if(dgFwd.lengthSq() < 1e-6) dgFwd.set(0, 0, 1);
-      }
-      dgFwd.normalize();
-      dgSide.crossVectors(dgUp, dgFwd).normalize();   // +left in figure frame when facing +z
+      // Transverse ankle hinge axis from bind-delta orientation: immune to plantarflexion past vertical at toe-off
+      bones[s.foot].getWorldQuaternion(dgQs).premultiply(dgInvQ).multiply(dgWt.copy(pRest[s.foot]).invert());
+      dgTmp.set(1, 0, 0).applyQuaternion(dgQs); dgTmp.y = 0;
+      var sideLen = dgTmp.length();
+      if(sideLen > 0.2){
+        dgTmp.divideScalar(sideLen);
+        var align = THREE.MathUtils.clamp((dgTmp.dot(dgHipS) - 0.1) / 0.4, 0, 1);
+        dgSide.copy(dgHipS).lerp(dgTmp, 0.65 * align).normalize();
+      } else dgSide.copy(dgHipS);
+      dgFwd.crossVectors(dgSide, dgUp).normalize();
 
-      // Paw ball target: under the arch/ball in stance, briskly picked up in mid-swing, never below floor
+      dgShinD.subVectors(dgA, dgK);
+      if(dgShinD.lengthSq() < 1e-8) dgShinD.set(0, -1, 0); else dgShinD.normalize();
+      dgTmp.set(1, 0, 0).applyQuaternion(dgQs);
+      dgFwd3.crossVectors(dgShinD, dgTmp);
+      if(dgFwd3.lengthSq() < 1e-8) dgFwd3.copy(dgFwd); else dgFwd3.normalize();
+
+      // Paw ball target: continuous clearance lift off floorY + pawH with sprint high-kick taper
       dgPaw.lerpVectors(dgA, dgB, 0.38);
-      var swingLift = (1 - st) * upW * 0.026 * Math.sin(Math.PI * THREE.MathUtils.clamp(clearH / 0.14, 0, 1));
-      dgPaw.y = THREE.MathUtils.lerp(dgPaw.y + swingLift, floorY + s.pawH, st);
-      if(upW > 0.2) dgPaw.y = Math.max(dgPaw.y, floorY + s.pawH * upW);
+      var fore = dgTmp.subVectors(dgPaw, dgH).dot(dgFwd);
+      dgPaw.addScaledVector(dgFwd, -0.18 * fore * upW);
+      var effClear = clearH <= 0.16 ? clearH : 0.16 + 0.45 * (clearH - 0.16);
+      var swingLift = (1 - st) * upW * 0.022 * Math.sin(Math.PI * THREE.MathUtils.clamp(clearH / 0.15, 0, 1));
+      var pawYUp = floorY + s.pawH + effClear + swingLift;
+      dgPaw.y = THREE.MathUtils.lerp(dgPaw.y, pawYUp, upW);
 
-      // Hock pastern pitch: compress in mid-stance & crouch, brisk extension on late-stance push-off, compact fold in swing
+      // Hock pastern pitch: compress in mid-stance & crouch, smooth extension on push-off, gradual fold through swing & sprint
       var stride = dgTmp.subVectors(dgPaw, dgH).dot(dgFwd) / 0.32;
       var crouch = THREE.MathUtils.clamp((0.86 * DG.hipRestH - (dgH.y - floorY)) / Math.max(0.28 * DG.hipRestH, 1e-4), 0, 1);
       var midLoad = 1 - Math.min(1, Math.abs(stride));
-      var pushOff = THREE.MathUtils.clamp(-stride, 0, 1.15);
-      var thStance = s.theta0 - 0.16 * midLoad + 0.28 * pushOff - 0.30 * crouch;
-      var thSwing = s.theta0 - 0.27 - 0.18 * crouch;
-      var theta = THREE.MathUtils.clamp(THREE.MathUtils.lerp(thSwing, thStance, st), 0.52, 1.32);
+      var pushOff = THREE.MathUtils.clamp(-stride, 0, 1.0);
+      var highKick = THREE.MathUtils.clamp((clearH - 0.16) / 0.4, 0, 1);
+      var thStance = s.theta0 - 0.14 * midLoad + 0.12 * pushOff - 0.30 * crouch;
+      var thSwing = s.theta0 - 0.22 * (1 - 0.45 * pushOff) - 0.22 * highKick - 0.18 * crouch;
+      var theta = THREE.MathUtils.clamp(THREE.MathUtils.lerp(thSwing, thStance, st), 0.38, 1.22);
 
       dgUh.copy(dgFwd).multiplyScalar(-Math.cos(theta)).addScaledVector(dgUp, Math.sin(theta)).addScaledVector(dgSide, -0.04 * s.sx).normalize();
-      dgShinD.subVectors(dgA, dgK);
-      if(dgShinD.lengthSq() < 1e-8) dgShinD.set(0, -1, 0); else dgShinD.normalize();
       dgUhC.copy(dgFwd3).multiplyScalar(-Math.cos(s.theta0)).addScaledVector(dgShinD, -Math.sin(s.theta0));
       if(dgUhC.lengthSq() < 1e-8) dgUhC.copy(dgUh); else dgUhC.normalize();
       dgUh.lerp(dgUhC, 1 - upW).normalize();
+
+      var stD = DG.state[idx];
+      if(dt > 0 && stD.uh){
+        stD.uh.lerp(dgUh, 1 - Math.exp(-dt / 0.045)).normalize();
+        dgUh.copy(stD.uh);
+      } else {
+        stD.uh = (stD.uh || V()).copy(dgUh);
+      }
 
       // Closed-form spherical reachability clamp around dgPaw: keeps |dgPaw - dgHock| == s.l3 AND |dgHock - dgH| <= maxR
       var maxR = s.l1 + s.l2 - 0.010, minR = Math.abs(s.l1 - s.l2) + 0.025;
@@ -3166,7 +3194,7 @@ function KCharFigure(body, sliders, load){
       if(Math.abs(dCl - dHH) > 1e-5) dgHock.copy(dgH).addScaledVector(dgAx, dCl);
       var cosA = THREE.MathUtils.clamp((s.l1 * s.l1 + dCl * dCl - s.l2 * s.l2) / (2 * s.l1 * dCl), -1, 1);
       var sinA = Math.sqrt(Math.max(0, 1 - cosA * cosA));
-      dgPole.subVectors(dgK, dgH).addScaledVector(dgFwd3, 0.35);
+      dgPole.subVectors(dgK, dgH).addScaledVector(upW > 0.25 ? dgFwd : dgFwd3, 0.35);
       dgPole.addScaledVector(dgAx, -dgPole.dot(dgAx));
       if(dgPole.lengthSq() < 1e-8){ dgPole.copy(dgFwd).addScaledVector(dgAx, -dgFwd.dot(dgAx)); }
       if(dgPole.lengthSq() < 1e-8) dgPole.set(0, 0, 1);
@@ -3212,6 +3240,7 @@ function KCharFigure(body, sliders, load){
       DG.state[idx].pawY = dgPaw.y - floorY;
       DG.state[idx].hockAng = Math.acos(THREE.MathUtils.clamp(-u1.dot(u2), -1, 1));
       DG.state[idx].stifleAng = Math.acos(THREE.MathUtils.clamp(-u0.dot(u1), -1, 1));
+      DG.state[idx].hockFwd = dgTmp.subVectors(dgHock, dgPaw).dot(dgFwd);
     });
   }
   this.digiState = function(){ return DG; };
