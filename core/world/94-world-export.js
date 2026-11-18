@@ -47,7 +47,7 @@ const PAGE={build:REGION,
  get(id){const q=PAGE.part(id);if(!q)return null;const r=q.T.get(q.id);if(!r)return null;const o={};for(const k in r)o[k]=r[k];o.id=pre(q.p,r.id);if(r.parent!=null)o.parent=pre(q.p,r.parent);return o;},
  isSet(id){const q=PAGE.part(id);return!!(q&&q.T.isSet&&q.T.isSet(q.id));},
  uidOf(s,i){const q=PAGE.part(typeof s==='string'?s:s.id);return q?q.T.uidOf(q.id,i):null;}};
-if(!KTAGS.page)KTAGS.page=PAGE;
+KTAGS.page=PAGE;
 /* the owner of a mesh's triangle or instance: the smallest site record whose footprint holds it (the villages' buildings,
    tents, pens; their size [w, d] turned by ry) */
 function owners(box){const vols=[];
