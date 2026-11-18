@@ -242,7 +242,7 @@
    "name": "humid subtropical",
    "color": "#c8ff50",
    "pct": 9.66,
-   "km2": 1212400
+   "km2": 1212584
   },
   {
    "code": "ET",
@@ -256,7 +256,7 @@
    "name": "sea / lake",
    "color": "#3b6fb0",
    "pct": 9.51,
-   "km2": 1193960
+   "km2": 1192952
   },
   {
    "code": "EF",
@@ -277,7 +277,7 @@
    "name": "hot-summer Mediterranean",
    "color": "#ffff00",
    "pct": 5.6,
-   "km2": 702980
+   "km2": 702940
   },
   {
    "code": "BSk",
@@ -326,7 +326,7 @@
    "name": "tropical monsoon",
    "color": "#0078ff",
    "pct": 2.3,
-   "km2": 288844
+   "km2": 288856
   },
   {
    "code": "Dfb",
@@ -347,14 +347,14 @@
    "name": "tropical savanna",
    "color": "#46aafa",
    "pct": 1.62,
-   "km2": 203720
+   "km2": 202952
   },
   {
    "code": "XA",
    "name": "hypertropic jungle (abyssal, >1.85 atm)",
    "color": "#3d0070",
-   "pct": 1.61,
-   "km2": 201824
+   "pct": 1.62,
+   "km2": 203656
   },
   {
    "code": "BWh",
@@ -375,7 +375,7 @@
    "name": "tropical rainforest",
    "color": "#0000ff",
    "pct": 0.86,
-   "km2": 107940
+   "km2": 107728
   },
   {
    "code": "Csb",

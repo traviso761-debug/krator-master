@@ -167,5 +167,6 @@
 {"at_px": [646.5, 654.5], "level_m": 2880, "km2": 16, "depth_m": 179, "kind": "through lake", "climate": "Cfa"},
 {"at_px": [846.0, 1500.0], "depth_m": 937, "kind": "through lake", "climate": "Cfa", "spill_m": -522, "name": "Erewhon's lake", "notes": "A caldera lake (edit_517, 2026-11-11): its outlet the Alph (r070)."},
 {"at_px": [1601.5, 1388.6], "level_m": 1997, "km2": 64, "spill_m": 2073, "climate": "BSk", "kind": "lake", "surplus_m3s": 0.0, "depth_m": 90, "name": "The Leaner's Patera", "region": "rmvmidbasin101", "source": "spring"},
-{"at_px": [1722.0, 1374.0], "level_m": 3102, "km2": 84, "spill_m": 3260, "climate": "Dsc", "kind": "lake", "surplus_m3s": 0.0, "depth_m": 40, "name": "The Halves' Patera", "region": "rmvmidbasin101", "source": "spring"}
+{"at_px": [1722.0, 1374.0], "level_m": 3102, "km2": 84, "spill_m": 3260, "climate": "Dsc", "kind": "lake", "surplus_m3s": 0.0, "depth_m": 40, "name": "The Halves' Patera", "region": "rmvmidbasin101", "source": "spring"},
+{"at_px": [742.13, 1016.55], "level_m": -1500, "km2": 21, "depth_m": 52, "kind": "through lake", "climate": "XA", "spill_m": -1500, "name": "Voth's lake", "notes": "Voth's page's water (edit_513, 2026-11-11): the bay, the narrows and the lake, at sea level, brackish, open to the Ring Sea by its strait; the Turm (r029) in at the bay's south-east corner. km2 is the page's water (20 cells on the model)."}
 ]

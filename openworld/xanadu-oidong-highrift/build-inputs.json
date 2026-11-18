@@ -291,7 +291,7 @@
     "settlements/xanadu/tex/xWash.normal.webp": "57841d092925afa12258b073ca2acf360c9446d3889ed704cb95360cab61f56b",
     "settlements/xanadu/tex/xWash.rough.webp": "f35064c19cfa76777eefc2a14a1a56420c5adffa9f9e1d69e951550674808ad7",
     "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47",
-    "tools/scale-model/model/data/landforms.json": "bd87f93a281a7311da333c83e057fed30710b83bca01494ae418532d0443f965"
+    "tools/scale-model/model/data/landforms.json": "768d8f5287c94411fcaf7d4099ac42a635db3846d1459350d341a697e75b63ff"
    },
    "listings": {
     "core/materials": "3342416a526793b328fa0871f795bdf98d2084292aa7bcb917fecc405076716c",
