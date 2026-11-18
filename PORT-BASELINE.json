@@ -592,6 +592,10 @@
    "bytes": 5800265,
    "sha256": "787e91a5bff37af00929b525d7f9165d10701216da733b79b868f78f98278e1b"
   },
+  "biomes/rheolith/dist/rheolith.html": {
+   "bytes": 2651130,
+   "sha256": "b8c992767f811e1bd32f8de07f4574d609cbe0069adc9d8692473174997d56f1"
+  },
   "biomes/rift/dist/rift-highland.html": {
    "bytes": 7554190,
    "sha256": "8ec52cc2da1329360bd3be2376cc2d50a458a004abe0fe05999e83e0aa2aa16e"
