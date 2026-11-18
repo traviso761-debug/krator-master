@@ -6458,7 +6458,21 @@
   "lz-barge": {
    "w": 5.4,
    "d": 21,
-   "name": "Reed barge (eleven ribs)"
+   "name": "Reed barge (eleven ribs)",
+   "cls": "vessel",
+   "tags": {
+    "types": [
+     "cargo",
+     "barge",
+     "ferry"
+    ],
+    "propulsion": "paddles",
+    "hull": "raft",
+    "wealth": "middle",
+    "crew": 6,
+    "role": "barge",
+    "job": "shipwrighting"
+   }
   },
   "lk-dock": {
    "w": 36,
@@ -6495,6 +6509,7 @@
   {
    "id": "bs.d1.0",
    "key": "lz-medicine",
+   "cls": "building",
    "at": [
     153.3,
     -274.9
@@ -6506,6 +6521,7 @@
   {
    "id": "bs.d1.1",
    "key": "lz-cistern",
+   "cls": "building",
    "at": [
     171.8,
     -274.9
@@ -6517,6 +6533,7 @@
   {
    "id": "bs.d1.2",
    "key": "lz-obelisk",
+   "cls": "building",
    "at": [
     187.8,
     -274.9
@@ -6528,6 +6545,7 @@
   {
    "id": "bs.d1.3",
    "key": "lz-bells",
+   "cls": "building",
    "at": [
     201.8,
     -274.9
@@ -6539,6 +6557,7 @@
   {
    "id": "bs.d1.4",
    "key": "lk-nest",
+   "cls": "building",
    "at": [
     239.8,
     -274.9
@@ -6550,6 +6569,7 @@
   {
    "id": "bs.d1.5",
    "key": "lz-stela-pair",
+   "cls": "building",
    "at": [
     277.3,
     -274.9
@@ -6561,6 +6581,7 @@
   {
    "id": "bs.d1.6",
    "key": "lz-hall-reed",
+   "cls": "building",
    "at": [
     298.3,
     -274.9
@@ -6572,6 +6593,7 @@
   {
    "id": "bs.d1.7",
    "key": "lz-cistern",
+   "cls": "building",
    "at": [
     321.8,
     -274.9
@@ -6583,6 +6605,7 @@
   {
    "id": "bs.d1.8",
    "key": "lz-stela-turned",
+   "cls": "building",
    "at": [
     340.3,
     -274.9
@@ -6594,6 +6617,7 @@
   {
    "id": "bs.d1.9",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     56.2,
     -328.3
@@ -6606,6 +6630,7 @@
   {
    "id": "bs.d1.10",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     83.7,
     -328.3
@@ -6618,6 +6643,7 @@
   {
    "id": "bs.d1.11",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     111.2,
     -328.3
@@ -6630,6 +6656,7 @@
   {
    "id": "bs.d1.12",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     138.7,
     -328.3
@@ -6642,6 +6669,7 @@
   {
    "id": "bs.d1.13",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     166.2,
     -328.3
@@ -6654,6 +6682,7 @@
   {
    "id": "bs.d1.14",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     197.2,
     -328.3
@@ -6666,6 +6695,7 @@
   {
    "id": "bs.d1.15",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     224.7,
     -328.3
@@ -6678,6 +6708,7 @@
   {
    "id": "bs.d1.16",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     245.7,
     -323.3
@@ -6690,6 +6721,7 @@
   {
    "id": "bs.d1.17",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     260.2,
     -323.3
@@ -6702,6 +6734,7 @@
   {
    "id": "bs.d1.18",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     274.7,
     -323.3
@@ -6714,6 +6747,7 @@
   {
    "id": "bs.d1.19",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     289.2,
     -323.3
@@ -6726,6 +6760,7 @@
   {
    "id": "bs.d1.20",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     303.7,
     -323.3
@@ -6738,6 +6773,7 @@
   {
    "id": "bs.d1.21",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     322.2,
     -322.8
@@ -6750,6 +6786,7 @@
   {
    "id": "bs.d1.22",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     337.7,
     -322.8
@@ -6762,6 +6799,7 @@
   {
    "id": "bs.d1.23",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     353.2,
     -322.8
@@ -6774,6 +6812,7 @@
   {
    "id": "bs.d1.24",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     368.7,
     -322.8
@@ -6786,6 +6825,7 @@
   {
    "id": "bs.d1.25",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     384.2,
     -322.8
@@ -6798,6 +6838,7 @@
   {
    "id": "bs.d1.26",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     403.2,
     -322.8
@@ -6810,6 +6851,7 @@
   {
    "id": "bs.d1.27",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     418.7,
     -322.8
@@ -6822,6 +6864,7 @@
   {
    "id": "bs.d1.28",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     434.2,
     -322.8
@@ -6834,6 +6877,7 @@
   {
    "id": "bs.d1.29",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     449.7,
     -322.8
@@ -6846,6 +6890,7 @@
   {
    "id": "bs.d1.30",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     465.2,
     -322.8
@@ -6858,6 +6903,7 @@
   {
    "id": "bs.d1.31",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     120.5,
     -342.8
@@ -6869,6 +6915,7 @@
   {
    "id": "bs.d1.32",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     196.1,
     -342.8
@@ -6880,6 +6927,7 @@
   {
    "id": "bs.d1.33",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     271.6,
     -342.8
@@ -6891,6 +6939,7 @@
   {
    "id": "bs.d1.34",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     347.2,
     -342.8
@@ -6902,6 +6951,7 @@
   {
    "id": "bs.d1.35",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     422.8,
     -342.8
@@ -6913,6 +6963,7 @@
   {
    "id": "bs.d1.36",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     499.5,
     -291.7
@@ -6925,6 +6976,7 @@
   {
    "id": "bs.d1.37",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     495.5,
     -276.7
@@ -6937,6 +6989,7 @@
   {
    "id": "bs.d1.38",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     491.5,
     -261.7
@@ -6949,6 +7002,7 @@
   {
    "id": "bs.d1.39",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     487.5,
     -246.8
@@ -6961,6 +7015,7 @@
   {
    "id": "bs.d1.40",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -18.9,
     -182.7
@@ -6974,6 +7029,7 @@
   {
    "id": "bs.d1.41",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     0.1,
     -182.7
@@ -6987,6 +7043,7 @@
   {
    "id": "bs.d1.42",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     15.6,
     -182.7
@@ -7000,6 +7057,7 @@
   {
    "id": "bs.d1.43",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     31.1,
     -182.7
@@ -7013,6 +7071,7 @@
   {
    "id": "bs.d1.44",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     51.6,
     -183.2
@@ -7026,6 +7085,7 @@
   {
    "id": "bs.d1.45",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     77.1,
     -183.2
@@ -7039,6 +7099,7 @@
   {
    "id": "bs.d1.46",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     102.6,
     -183.2
@@ -7052,6 +7113,7 @@
   {
    "id": "bs.d1.47",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     128.1,
     -183.2
@@ -7065,6 +7127,7 @@
   {
    "id": "bs.d1.48",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     153.6,
     -183.2
@@ -7078,6 +7141,7 @@
   {
    "id": "bs.d1.49",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     179.1,
     -188.2
@@ -7091,6 +7155,7 @@
   {
    "id": "bs.d1.50",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     197.6,
     -188.2
@@ -7104,6 +7169,7 @@
   {
    "id": "bs.d1.51",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     216.1,
     -188.2
@@ -7117,6 +7183,7 @@
   {
    "id": "bs.d1.52",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     234.6,
     -188.2
@@ -7130,6 +7197,7 @@
   {
    "id": "bs.d1.53",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     253.1,
     -188.2
@@ -7143,6 +7211,7 @@
   {
    "id": "bs.d1.54",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     57.9,
     -207.7
@@ -7154,6 +7223,7 @@
   {
    "id": "bs.d1.55",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     138.8,
     -207.7
@@ -7165,6 +7235,7 @@
   {
    "id": "bs.d1.56",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     219.6,
     -207.7
@@ -7176,6 +7247,7 @@
   {
    "id": "bs.d1.57",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     300.5,
     -207.7
@@ -7187,6 +7259,7 @@
   {
    "id": "bs.d1.58",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     381.3,
     -207.7
@@ -7198,6 +7271,7 @@
   {
    "id": "bs.d1.59",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -49.1,
     -284.4
@@ -7209,6 +7283,7 @@
   {
    "id": "bs.d2.60",
    "key": "lz-medicine",
+   "cls": "building",
    "at": [
     274.5,
     297.0
@@ -7220,6 +7295,7 @@
   {
    "id": "bs.d2.61",
    "key": "lz-cistern",
+   "cls": "building",
    "at": [
     279.3,
     279.2
@@ -7231,6 +7307,7 @@
   {
    "id": "bs.d2.62",
    "key": "lz-obelisk",
+   "cls": "building",
    "at": [
     283.4,
     263.7
@@ -7242,6 +7319,7 @@
   {
    "id": "bs.d2.63",
    "key": "lz-stela-pair",
+   "cls": "building",
    "at": [
     306.6,
     177.3
@@ -7253,6 +7331,7 @@
   {
    "id": "bs.d2.64",
    "key": "lz-hall-bronze",
+   "cls": "building",
    "at": [
     312.0,
     157.0
@@ -7264,6 +7343,7 @@
   {
    "id": "bs.d2.65",
    "key": "lz-cistern",
+   "cls": "building",
    "at": [
     318.1,
     134.3
@@ -7275,6 +7355,7 @@
   {
    "id": "bs.d2.66",
    "key": "lz-stela-turned",
+   "cls": "building",
    "at": [
     322.9,
     116.4
@@ -7286,6 +7367,7 @@
   {
    "id": "bs.d2.67",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     183.4,
     430.5
@@ -7298,6 +7380,7 @@
   {
    "id": "bs.d2.68",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     190.6,
     403.9
@@ -7310,6 +7393,7 @@
   {
    "id": "bs.d2.69",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     197.7,
     377.3
@@ -7322,6 +7406,7 @@
   {
    "id": "bs.d2.70",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     204.8,
     350.8
@@ -7334,6 +7419,7 @@
   {
    "id": "bs.d2.71",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     211.9,
     324.2
@@ -7346,6 +7432,7 @@
   {
    "id": "bs.d2.72",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     219.9,
     294.3
@@ -7358,6 +7445,7 @@
   {
    "id": "bs.d2.73",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     227.1,
     267.7
@@ -7370,6 +7458,7 @@
   {
    "id": "bs.d2.74",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     234.2,
     241.1
@@ -7382,6 +7471,7 @@
   {
    "id": "bs.d2.75",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     244.4,
     222.1
@@ -7394,6 +7484,7 @@
   {
    "id": "bs.d2.76",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     254.4,
     185.0
@@ -7406,6 +7497,7 @@
   {
    "id": "bs.d2.77",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     258.2,
     170.9
@@ -7418,6 +7510,7 @@
   {
    "id": "bs.d2.78",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     261.9,
     156.9
@@ -7430,6 +7523,7 @@
   {
    "id": "bs.d2.79",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     265.7,
     142.9
@@ -7442,6 +7536,7 @@
   {
    "id": "bs.d2.80",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     270.3,
     125.6
@@ -7454,6 +7549,7 @@
   {
    "id": "bs.d2.81",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     274.7,
     111.2
@@ -7466,6 +7562,7 @@
   {
    "id": "bs.d2.82",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     278.7,
     96.2
@@ -7478,6 +7575,7 @@
   {
    "id": "bs.d2.83",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     282.7,
     81.2
@@ -7490,6 +7588,7 @@
   {
    "id": "bs.d2.84",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     286.7,
     66.3
@@ -7502,6 +7601,7 @@
   {
    "id": "bs.d2.85",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     290.7,
     51.3
@@ -7514,6 +7614,7 @@
   {
    "id": "bs.d2.86",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     295.7,
     33.0
@@ -7526,6 +7627,7 @@
   {
    "id": "bs.d2.87",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     299.7,
     18.0
@@ -7538,6 +7640,7 @@
   {
    "id": "bs.d2.88",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     303.7,
     3.0
@@ -7550,6 +7653,7 @@
   {
    "id": "bs.d2.89",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     307.7,
     -12.0
@@ -7562,6 +7666,7 @@
   {
    "id": "bs.d2.90",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     311.7,
     -26.9
@@ -7574,6 +7679,7 @@
   {
    "id": "bs.d2.91",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     180.4,
     370.6
@@ -7585,6 +7691,7 @@
   {
    "id": "bs.d2.92",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     202.9,
     286.8
@@ -7596,6 +7703,7 @@
   {
    "id": "bs.d2.93",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     225.3,
     203.0
@@ -7607,6 +7715,7 @@
   {
    "id": "bs.d2.94",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     247.8,
     119.2
@@ -7618,6 +7727,7 @@
   {
    "id": "bs.d2.95",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     270.2,
     35.4
@@ -7629,6 +7739,7 @@
   {
    "id": "bs.d2.96",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     361.3,
     -91.9
@@ -7642,6 +7753,7 @@
   {
    "id": "bs.d2.97",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     376.8,
     -91.9
@@ -7655,6 +7767,7 @@
   {
    "id": "bs.d2.98",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     392.3,
     -91.9
@@ -7668,6 +7781,7 @@
   {
    "id": "bs.d2.99",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     407.8,
     -91.9
@@ -7681,6 +7795,7 @@
   {
    "id": "bs.d2.100",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     298.9,
     474.4
@@ -7693,6 +7808,7 @@
   {
    "id": "bs.d2.101",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     303.9,
     456.1
@@ -7705,6 +7821,7 @@
   {
    "id": "bs.d2.102",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     307.9,
     441.1
@@ -7717,6 +7834,7 @@
   {
    "id": "bs.d2.103",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     311.9,
     426.1
@@ -7729,6 +7847,7 @@
   {
    "id": "bs.d2.104",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     315.9,
     411.2
@@ -7741,6 +7860,7 @@
   {
    "id": "bs.d2.105",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     319.9,
     396.2
@@ -7753,6 +7873,7 @@
   {
    "id": "bs.d2.106",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     326.6,
     373.1
@@ -7765,6 +7886,7 @@
   {
    "id": "bs.d2.107",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     333.2,
     348.5
@@ -7777,6 +7899,7 @@
   {
    "id": "bs.d2.108",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     339.8,
     323.9
@@ -7789,6 +7912,7 @@
   {
    "id": "bs.d2.109",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     355.7,
     264.5
@@ -7801,6 +7925,7 @@
   {
    "id": "bs.d2.110",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     362.3,
     239.8
@@ -7813,6 +7938,7 @@
   {
    "id": "bs.d2.111",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     373.8,
     216.5
@@ -7825,6 +7951,7 @@
   {
    "id": "bs.d2.112",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     378.5,
     198.6
@@ -7837,6 +7964,7 @@
   {
    "id": "bs.d2.113",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     383.3,
     180.8
@@ -7849,6 +7977,7 @@
   {
    "id": "bs.d2.114",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     388.1,
     162.9
@@ -7861,6 +7990,7 @@
   {
    "id": "bs.d2.115",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     392.9,
     145.0
@@ -7873,6 +8003,7 @@
   {
    "id": "bs.d2.116",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     347.1,
     408.1
@@ -7884,6 +8015,7 @@
   {
    "id": "bs.d2.117",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     367.6,
     331.5
@@ -7895,6 +8027,7 @@
   {
    "id": "bs.d2.118",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     388.1,
     254.9
@@ -7906,6 +8039,7 @@
   {
    "id": "bs.d2.119",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     408.7,
     178.3
@@ -7917,6 +8051,7 @@
   {
    "id": "bs.d2.120",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     429.2,
     101.7
@@ -7928,6 +8063,7 @@
   {
    "id": "bs.d2.121",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     449.7,
     25.1
@@ -7939,6 +8075,7 @@
   {
    "id": "bs.d2.122",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     196.8,
     534.4
@@ -7950,6 +8087,7 @@
   {
    "id": "bs.d3.123",
    "key": "lz-medicine",
+   "cls": "building",
    "at": [
     -430.5,
     413.0
@@ -7961,6 +8099,7 @@
   {
    "id": "bs.d3.124",
    "key": "lz-cistern",
+   "cls": "building",
    "at": [
     -412.0,
     413.0
@@ -7972,6 +8111,7 @@
   {
    "id": "bs.d3.125",
    "key": "lz-obelisk",
+   "cls": "building",
    "at": [
     -396.0,
     413.0
@@ -7983,6 +8123,7 @@
   {
    "id": "bs.d3.126",
    "key": "lz-bells",
+   "cls": "building",
    "at": [
     -382.0,
     413.0
@@ -7994,6 +8135,7 @@
   {
    "id": "bs.d3.127",
    "key": "lk-nest",
+   "cls": "building",
    "at": [
     -344.0,
     413.0
@@ -8005,6 +8147,7 @@
   {
    "id": "bs.d3.128",
    "key": "lz-stela-pair",
+   "cls": "building",
    "at": [
     -306.5,
     413.0
@@ -8016,6 +8159,7 @@
   {
    "id": "bs.d3.129",
    "key": "lz-hall-reed",
+   "cls": "building",
    "at": [
     -285.5,
     413.0
@@ -8027,6 +8171,7 @@
   {
    "id": "bs.d3.130",
    "key": "lz-cistern",
+   "cls": "building",
    "at": [
     -262.0,
     413.0
@@ -8038,6 +8183,7 @@
   {
    "id": "bs.d3.131",
    "key": "lz-stela-turned",
+   "cls": "building",
    "at": [
     -243.5,
     413.0
@@ -8049,6 +8195,7 @@
   {
    "id": "bs.d3.132",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     -615.7,
     343.0
@@ -8062,6 +8209,7 @@
   {
    "id": "bs.d3.133",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     -588.2,
     343.0
@@ -8075,6 +8223,7 @@
   {
    "id": "bs.d3.134",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     -560.7,
     343.0
@@ -8088,6 +8237,7 @@
   {
    "id": "bs.d3.135",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     -533.2,
     343.0
@@ -8101,6 +8251,7 @@
   {
    "id": "bs.d3.136",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     -505.7,
     343.0
@@ -8114,6 +8265,7 @@
   {
    "id": "bs.d3.137",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     -474.7,
     343.0
@@ -8127,6 +8279,7 @@
   {
    "id": "bs.d3.138",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     -447.2,
     343.0
@@ -8140,6 +8293,7 @@
   {
    "id": "bs.d3.139",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     -419.7,
     343.0
@@ -8153,6 +8307,7 @@
   {
    "id": "bs.d3.140",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     -392.2,
     343.0
@@ -8166,6 +8321,7 @@
   {
    "id": "bs.d3.141",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     -364.7,
     343.0
@@ -8179,6 +8335,7 @@
   {
    "id": "bs.d3.142",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     -340.2,
     338.0
@@ -8192,6 +8349,7 @@
   {
    "id": "bs.d3.143",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     -325.7,
     338.0
@@ -8205,6 +8363,7 @@
   {
    "id": "bs.d3.144",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     -311.2,
     338.0
@@ -8218,6 +8377,7 @@
   {
    "id": "bs.d3.145",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     -296.7,
     338.0
@@ -8231,6 +8391,7 @@
   {
    "id": "bs.d3.146",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     -282.2,
     338.0
@@ -8244,6 +8405,7 @@
   {
    "id": "bs.d3.147",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     -264.2,
     338.0
@@ -8257,6 +8419,7 @@
   {
    "id": "bs.d3.148",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     -249.7,
     338.0
@@ -8270,6 +8433,7 @@
   {
    "id": "bs.d3.149",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -234.7,
     337.5
@@ -8283,6 +8447,7 @@
   {
    "id": "bs.d3.150",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -219.2,
     337.5
@@ -8296,6 +8461,7 @@
   {
    "id": "bs.d3.151",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -203.7,
     337.5
@@ -8309,6 +8475,7 @@
   {
    "id": "bs.d3.152",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -188.2,
     337.5
@@ -8322,6 +8489,7 @@
   {
    "id": "bs.d3.153",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -172.7,
     337.5
@@ -8335,6 +8503,7 @@
   {
    "id": "bs.d3.154",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -153.7,
     337.5
@@ -8348,6 +8517,7 @@
   {
    "id": "bs.d3.155",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -138.2,
     337.5
@@ -8361,6 +8531,7 @@
   {
    "id": "bs.d3.156",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -122.7,
     337.5
@@ -8374,6 +8545,7 @@
   {
    "id": "bs.d3.157",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -107.2,
     337.5
@@ -8387,6 +8559,7 @@
   {
    "id": "bs.d3.158",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -91.7,
     337.5
@@ -8400,6 +8573,7 @@
   {
    "id": "bs.d3.159",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -72.7,
     337.5
@@ -8413,6 +8587,7 @@
   {
    "id": "bs.d3.160",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -57.2,
     337.5
@@ -8426,6 +8601,7 @@
   {
    "id": "bs.d3.161",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -41.7,
     337.5
@@ -8439,6 +8615,7 @@
   {
    "id": "bs.d3.162",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -26.2,
     337.5
@@ -8452,6 +8629,7 @@
   {
    "id": "bs.d3.163",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -10.7,
     337.5
@@ -8465,6 +8643,7 @@
   {
    "id": "bs.d3.164",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -564.9,
     365.6
@@ -8476,6 +8655,7 @@
   {
    "id": "bs.d3.165",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -483.3,
     365.6
@@ -8487,6 +8667,7 @@
   {
    "id": "bs.d3.166",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -401.6,
     365.6
@@ -8498,6 +8679,7 @@
   {
    "id": "bs.d3.167",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -319.9,
     365.6
@@ -8509,6 +8691,7 @@
   {
    "id": "bs.d3.168",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -238.3,
     365.6
@@ -8520,6 +8703,7 @@
   {
    "id": "bs.d3.169",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -156.6,
     365.6
@@ -8531,6 +8715,7 @@
   {
    "id": "bs.d3.170",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -74.9,
     365.6
@@ -8542,6 +8727,7 @@
   {
    "id": "bs.d3.171",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     16.6,
     396.2
@@ -8554,6 +8740,7 @@
   {
    "id": "bs.d3.172",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     12.6,
     411.2
@@ -8566,6 +8753,7 @@
   {
    "id": "bs.d3.173",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     8.6,
     426.1
@@ -8578,6 +8766,7 @@
   {
    "id": "bs.d3.174",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     4.6,
     441.1
@@ -8590,6 +8779,7 @@
   {
    "id": "bs.d3.175",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     0.6,
     456.1
@@ -8602,6 +8792,7 @@
   {
    "id": "bs.d3.176",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     41.4,
     423.2
@@ -8613,6 +8804,7 @@
   {
    "id": "bs.d3.177",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -698.8,
     484.5
@@ -8625,6 +8817,7 @@
   {
    "id": "bs.d3.178",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -683.3,
     484.5
@@ -8637,6 +8830,7 @@
   {
    "id": "bs.d3.179",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -667.8,
     484.5
@@ -8649,6 +8843,7 @@
   {
    "id": "bs.d3.180",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -652.3,
     484.5
@@ -8661,6 +8856,7 @@
   {
    "id": "bs.d3.181",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -636.8,
     484.5
@@ -8673,6 +8869,7 @@
   {
    "id": "bs.d3.182",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     -612.8,
     485.0
@@ -8685,6 +8882,7 @@
   {
    "id": "bs.d3.183",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     -587.3,
     485.0
@@ -8697,6 +8895,7 @@
   {
    "id": "bs.d3.184",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     -561.8,
     485.0
@@ -8709,6 +8908,7 @@
   {
    "id": "bs.d3.185",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     -536.3,
     485.0
@@ -8721,6 +8921,7 @@
   {
    "id": "bs.d3.186",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     -510.8,
     485.0
@@ -8733,6 +8934,7 @@
   {
    "id": "bs.d3.187",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     -481.8,
     485.0
@@ -8745,6 +8947,7 @@
   {
    "id": "bs.d3.188",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -459.8,
     490.0
@@ -8757,6 +8960,7 @@
   {
    "id": "bs.d3.189",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -441.3,
     490.0
@@ -8769,6 +8973,7 @@
   {
    "id": "bs.d3.190",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -422.8,
     490.0
@@ -8781,6 +8986,7 @@
   {
    "id": "bs.d3.191",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -404.3,
     490.0
@@ -8793,6 +8999,7 @@
   {
    "id": "bs.d3.192",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -385.8,
     490.0
@@ -8805,6 +9012,7 @@
   {
    "id": "bs.d3.193",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -363.8,
     490.0
@@ -8817,6 +9025,7 @@
   {
    "id": "bs.d3.194",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -345.3,
     490.0
@@ -8829,6 +9038,7 @@
   {
    "id": "bs.d3.195",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -638.8,
     518.4
@@ -8840,6 +9050,7 @@
   {
    "id": "bs.d3.196",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -552.5,
     518.4
@@ -8851,6 +9062,7 @@
   {
    "id": "bs.d3.197",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -466.1,
     518.4
@@ -8862,6 +9074,7 @@
   {
    "id": "bs.d3.198",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -379.7,
     518.4
@@ -8873,6 +9086,7 @@
   {
    "id": "bs.d3.199",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -293.3,
     518.4
@@ -8884,6 +9098,7 @@
   {
    "id": "bs.d3.200",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -207.0,
     518.4
@@ -8895,6 +9110,7 @@
   {
    "id": "bs.d3.201",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -120.6,
     518.4
@@ -8906,6 +9122,7 @@
   {
    "id": "bs.d3.202",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -747.2,
     401.4
@@ -8917,6 +9134,7 @@
   {
    "id": "bs.d4.203",
    "key": "lz-medicine",
+   "cls": "building",
    "at": [
     -467.5,
     -140.8
@@ -8928,6 +9146,7 @@
   {
    "id": "bs.d4.204",
    "key": "lz-cistern",
+   "cls": "building",
    "at": [
     -462.7,
     -158.7
@@ -8939,6 +9158,7 @@
   {
    "id": "bs.d4.205",
    "key": "lz-obelisk",
+   "cls": "building",
    "at": [
     -458.6,
     -174.1
@@ -8950,6 +9170,7 @@
   {
    "id": "bs.d4.206",
    "key": "lz-bells",
+   "cls": "building",
    "at": [
     -455.0,
     -187.7
@@ -8961,6 +9182,7 @@
   {
    "id": "bs.d4.207",
    "key": "lk-nest",
+   "cls": "building",
    "at": [
     -445.1,
     -224.4
@@ -8972,6 +9194,7 @@
   {
    "id": "bs.d4.208",
    "key": "lz-stela-pair",
+   "cls": "building",
    "at": [
     -435.4,
     -260.6
@@ -8983,6 +9206,7 @@
   {
    "id": "bs.d4.209",
    "key": "lz-hall-bone",
+   "cls": "building",
    "at": [
     -430.0,
     -280.9
@@ -8994,6 +9218,7 @@
   {
    "id": "bs.d4.210",
    "key": "lz-cistern",
+   "cls": "building",
    "at": [
     -423.9,
     -303.6
@@ -9005,6 +9230,7 @@
   {
    "id": "bs.d4.211",
    "key": "lz-stela-turned",
+   "cls": "building",
    "at": [
     -419.1,
     -321.4
@@ -9016,6 +9242,7 @@
   {
    "id": "bs.d4.212",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     -597.7,
     189.7
@@ -9028,6 +9255,7 @@
   {
    "id": "bs.d4.213",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     -570.2,
     189.7
@@ -9040,6 +9268,7 @@
   {
    "id": "bs.d4.214",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     -542.7,
     189.7
@@ -9052,6 +9281,7 @@
   {
    "id": "bs.d4.215",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     -631.3,
     145.9
@@ -9064,6 +9294,7 @@
   {
    "id": "bs.d4.216",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     -624.2,
     119.3
@@ -9076,6 +9307,7 @@
   {
    "id": "bs.d4.217",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     -616.2,
     89.4
@@ -9088,6 +9320,7 @@
   {
    "id": "bs.d4.218",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     -609.1,
     62.8
@@ -9100,6 +9333,7 @@
   {
    "id": "bs.d4.219",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     -602.0,
     36.2
@@ -9112,6 +9346,7 @@
   {
    "id": "bs.d4.220",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     -594.8,
     9.7
@@ -9124,6 +9359,7 @@
   {
    "id": "bs.d4.221",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     -587.7,
     -16.9
@@ -9136,6 +9372,7 @@
   {
    "id": "bs.d4.222",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     -579.7,
     -46.8
@@ -9148,6 +9385,7 @@
   {
    "id": "bs.d4.223",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     -572.6,
     -73.4
@@ -9160,6 +9398,7 @@
   {
    "id": "bs.d4.224",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     -565.5,
     -100.0
@@ -9172,6 +9411,7 @@
   {
    "id": "bs.d4.225",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     -558.3,
     -126.5
@@ -9184,6 +9424,7 @@
   {
    "id": "bs.d4.226",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     -548.1,
     -145.5
@@ -9196,6 +9437,7 @@
   {
    "id": "bs.d4.227",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     -544.3,
     -159.5
@@ -9208,6 +9450,7 @@
   {
    "id": "bs.d4.228",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     -540.6,
     -173.5
@@ -9220,6 +9463,7 @@
   {
    "id": "bs.d4.229",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     -536.8,
     -187.5
@@ -9232,6 +9476,7 @@
   {
    "id": "bs.d4.230",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     -533.1,
     -201.5
@@ -9244,6 +9489,7 @@
   {
    "id": "bs.d4.231",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     -528.4,
     -218.9
@@ -9256,6 +9502,7 @@
   {
    "id": "bs.d4.232",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     -524.7,
     -232.9
@@ -9268,6 +9515,7 @@
   {
    "id": "bs.d4.233",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     -520.9,
     -246.9
@@ -9280,6 +9528,7 @@
   {
    "id": "bs.d4.234",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     -517.1,
     -261.0
@@ -9292,6 +9541,7 @@
   {
    "id": "bs.d4.235",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     -513.4,
     -275.0
@@ -9304,6 +9554,7 @@
   {
    "id": "bs.d4.236",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -508.1,
     -292.7
@@ -9316,6 +9567,7 @@
   {
    "id": "bs.d4.237",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -504.1,
     -307.7
@@ -9328,6 +9580,7 @@
   {
    "id": "bs.d4.238",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -500.1,
     -322.6
@@ -9340,6 +9593,7 @@
   {
    "id": "bs.d4.239",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -496.1,
     -337.6
@@ -9352,6 +9606,7 @@
   {
    "id": "bs.d4.240",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -492.1,
     -352.6
@@ -9364,6 +9619,7 @@
   {
    "id": "bs.d4.241",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -487.2,
     -370.9
@@ -9376,6 +9632,7 @@
   {
    "id": "bs.d4.242",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -483.1,
     -385.9
@@ -9388,6 +9645,7 @@
   {
    "id": "bs.d4.243",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -479.1,
     -400.9
@@ -9400,6 +9658,7 @@
   {
    "id": "bs.d4.244",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -475.1,
     -415.9
@@ -9412,6 +9671,7 @@
   {
    "id": "bs.d4.245",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -471.1,
     -430.8
@@ -9424,6 +9684,7 @@
   {
    "id": "bs.d4.246",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -466.2,
     -449.2
@@ -9436,6 +9697,7 @@
   {
    "id": "bs.d4.247",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -462.2,
     -464.1
@@ -9448,6 +9710,7 @@
   {
    "id": "bs.d4.248",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -458.2,
     -479.1
@@ -9460,6 +9723,7 @@
   {
    "id": "bs.d4.249",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -454.2,
     -494.1
@@ -9472,6 +9736,7 @@
   {
    "id": "bs.d4.250",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -450.1,
     -509.1
@@ -9484,6 +9749,7 @@
   {
    "id": "bs.d4.251",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -445.2,
     -527.4
@@ -9496,6 +9762,7 @@
   {
    "id": "bs.d4.252",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -441.2,
     -542.4
@@ -9508,6 +9775,7 @@
   {
    "id": "bs.d4.253",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -437.2,
     -557.4
@@ -9520,6 +9788,7 @@
   {
    "id": "bs.d4.254",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -433.2,
     -572.3
@@ -9532,6 +9801,7 @@
   {
    "id": "bs.d4.255",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -429.2,
     -587.3
@@ -9544,6 +9814,7 @@
   {
    "id": "bs.d4.256",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -424.3,
     -605.7
@@ -9556,6 +9827,7 @@
   {
    "id": "bs.d4.257",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -420.3,
     -620.6
@@ -9568,6 +9840,7 @@
   {
    "id": "bs.d4.258",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -416.2,
     -635.6
@@ -9580,6 +9853,7 @@
   {
    "id": "bs.d4.259",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -380.0,
     -663.5
@@ -9592,6 +9866,7 @@
   {
    "id": "bs.d4.260",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -364.5,
     -663.5
@@ -9604,6 +9879,7 @@
   {
    "id": "bs.d4.261",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -345.5,
     -663.5
@@ -9616,6 +9892,7 @@
   {
    "id": "bs.d4.262",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -330.0,
     -663.5
@@ -9628,6 +9905,7 @@
   {
    "id": "bs.d4.263",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -314.5,
     -663.5
@@ -9640,6 +9918,7 @@
   {
    "id": "bs.d4.264",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -299.0,
     -663.5
@@ -9652,6 +9931,7 @@
   {
    "id": "bs.d4.265",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -283.5,
     -663.5
@@ -9664,6 +9944,7 @@
   {
    "id": "bs.d4.266",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -264.5,
     -663.5
@@ -9676,6 +9957,7 @@
   {
    "id": "bs.d4.267",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -311.5,
     -682.1
@@ -9687,6 +9969,7 @@
   {
    "id": "bs.d4.268",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -456.9,
     192.6
@@ -9699,6 +9982,7 @@
   {
    "id": "bs.d4.269",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -452.8,
     177.7
@@ -9711,6 +9995,7 @@
   {
    "id": "bs.d4.270",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -448.8,
     162.7
@@ -9723,6 +10008,7 @@
   {
    "id": "bs.d4.271",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     -443.0,
     143.0
@@ -9735,6 +10021,7 @@
   {
    "id": "bs.d4.272",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     -436.4,
     118.4
@@ -9747,6 +10034,7 @@
   {
    "id": "bs.d4.273",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     -429.8,
     93.8
@@ -9759,6 +10047,7 @@
   {
    "id": "bs.d4.274",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     -423.2,
     69.1
@@ -9771,6 +10060,7 @@
   {
    "id": "bs.d4.275",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     -416.6,
     44.5
@@ -9783,6 +10073,7 @@
   {
    "id": "bs.d4.276",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     -409.1,
     16.5
@@ -9795,6 +10086,7 @@
   {
    "id": "bs.d4.277",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     -402.5,
     -8.1
@@ -9807,6 +10099,7 @@
   {
    "id": "bs.d4.278",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     -395.9,
     -32.8
@@ -9819,6 +10112,7 @@
   {
    "id": "bs.d4.279",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     -389.3,
     -57.4
@@ -9831,6 +10125,7 @@
   {
    "id": "bs.d4.280",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -378.8,
     -77.4
@@ -9843,6 +10138,7 @@
   {
    "id": "bs.d4.281",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -374.0,
     -95.2
@@ -9855,6 +10151,7 @@
   {
    "id": "bs.d4.282",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -369.2,
     -113.1
@@ -9867,6 +10164,7 @@
   {
    "id": "bs.d4.283",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -364.5,
     -131.0
@@ -9879,6 +10177,7 @@
   {
    "id": "bs.d4.284",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -359.7,
     -148.8
@@ -9891,6 +10190,7 @@
   {
    "id": "bs.d4.285",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -354.0,
     -170.1
@@ -9903,6 +10203,7 @@
   {
    "id": "bs.d4.286",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -349.2,
     -188.0
@@ -9915,6 +10216,7 @@
   {
    "id": "bs.d4.287",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -344.4,
     -205.8
@@ -9927,6 +10229,7 @@
   {
    "id": "bs.d4.288",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -339.6,
     -223.7
@@ -9939,6 +10242,7 @@
   {
    "id": "bs.d4.289",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -415.1,
     117.7
@@ -9950,6 +10254,7 @@
   {
    "id": "bs.d4.290",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -392.3,
     32.5
@@ -9961,6 +10266,7 @@
   {
    "id": "bs.d4.291",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -369.5,
     -52.7
@@ -9972,6 +10278,7 @@
   {
    "id": "bs.d4.292",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -346.6,
     -137.9
@@ -9983,6 +10290,7 @@
   {
    "id": "bs.d4.293",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -323.8,
     -223.1
@@ -9994,6 +10302,7 @@
   {
    "id": "bs.d4.294",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -301.0,
     -308.3
@@ -10005,6 +10314,7 @@
   {
    "id": "bs.d4.295",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -278.2,
     -393.5
@@ -10016,6 +10326,7 @@
   {
    "id": "bs.d4.296",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -255.3,
     -478.8
@@ -10027,6 +10338,7 @@
   {
    "id": "bs.d4.297",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -232.5,
     -564.0
@@ -10038,6 +10350,7 @@
   {
    "id": "bs.d4.298",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -604.4,
     219.9
@@ -10049,6 +10362,7 @@
   {
    "id": "bs.d4.299",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -541.7,
     219.9
@@ -10060,6 +10374,7 @@
   {
    "id": "bs.d5.300",
    "key": "lz-medicine",
+   "cls": "building",
    "at": [
     299.0,
     -567.4
@@ -10071,6 +10386,7 @@
   {
    "id": "bs.d5.301",
    "key": "lz-cistern",
+   "cls": "building",
    "at": [
     317.5,
     -567.4
@@ -10082,6 +10398,7 @@
   {
    "id": "bs.d5.302",
    "key": "lz-obelisk",
+   "cls": "building",
    "at": [
     333.5,
     -567.4
@@ -10093,6 +10410,7 @@
   {
    "id": "bs.d5.303",
    "key": "lz-bells",
+   "cls": "building",
    "at": [
     347.5,
     -567.4
@@ -10104,6 +10422,7 @@
   {
    "id": "bs.d5.304",
    "key": "lk-nest",
+   "cls": "building",
    "at": [
     385.5,
     -567.4
@@ -10115,6 +10434,7 @@
   {
    "id": "bs.d5.305",
    "key": "lz-stela-pair",
+   "cls": "building",
    "at": [
     423.0,
     -567.4
@@ -10126,6 +10446,7 @@
   {
    "id": "bs.d5.306",
    "key": "lz-hall-reed",
+   "cls": "building",
    "at": [
     444.0,
     -567.4
@@ -10137,6 +10458,7 @@
   {
    "id": "bs.d5.307",
    "key": "lz-bakehouse",
+   "cls": "building",
    "at": [
     470.0,
     -567.4
@@ -10148,6 +10470,7 @@
   {
    "id": "bs.d5.308",
    "key": "lz-cistern",
+   "cls": "building",
    "at": [
     492.5,
     -567.4
@@ -10159,6 +10482,7 @@
   {
    "id": "bs.d5.309",
    "key": "lz-stela-turned",
+   "cls": "building",
    "at": [
     511.0,
     -567.4
@@ -10170,6 +10494,7 @@
   {
    "id": "bs.d5.310",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     901.7,
     -577.0
@@ -10182,6 +10507,7 @@
   {
    "id": "bs.d5.311",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     894.6,
     -550.4
@@ -10194,6 +10520,7 @@
   {
    "id": "bs.d5.312",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     -79.4,
     -498.3
@@ -10206,6 +10533,7 @@
   {
    "id": "bs.d5.313",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     -51.9,
     -498.3
@@ -10218,6 +10546,7 @@
   {
    "id": "bs.d5.314",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     -24.4,
     -498.3
@@ -10230,6 +10559,7 @@
   {
    "id": "bs.d5.315",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     6.6,
     -498.3
@@ -10242,6 +10572,7 @@
   {
    "id": "bs.d5.316",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     34.1,
     -498.3
@@ -10254,6 +10585,7 @@
   {
    "id": "bs.d5.317",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     61.6,
     -498.3
@@ -10266,6 +10598,7 @@
   {
    "id": "bs.d5.318",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     89.1,
     -498.3
@@ -10278,6 +10611,7 @@
   {
    "id": "bs.d5.319",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     116.6,
     -498.3
@@ -10290,6 +10624,7 @@
   {
    "id": "bs.d5.320",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     147.6,
     -498.3
@@ -10302,6 +10637,7 @@
   {
    "id": "bs.d5.321",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     175.1,
     -498.3
@@ -10314,6 +10650,7 @@
   {
    "id": "bs.d5.322",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     202.6,
     -498.3
@@ -10326,6 +10663,7 @@
   {
    "id": "bs.d5.323",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     230.1,
     -498.3
@@ -10338,6 +10676,7 @@
   {
    "id": "bs.d5.324",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     257.6,
     -498.3
@@ -10350,6 +10689,7 @@
   {
    "id": "bs.d5.325",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     288.6,
     -498.3
@@ -10362,6 +10702,7 @@
   {
    "id": "bs.d5.326",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     316.1,
     -498.3
@@ -10374,6 +10715,7 @@
   {
    "id": "bs.d5.327",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     343.6,
     -498.3
@@ -10386,6 +10728,7 @@
   {
    "id": "bs.d5.328",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     371.1,
     -498.3
@@ -10398,6 +10741,7 @@
   {
    "id": "bs.d5.329",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     398.6,
     -498.3
@@ -10410,6 +10754,7 @@
   {
    "id": "bs.d5.330",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     429.6,
     -498.3
@@ -10422,6 +10767,7 @@
   {
    "id": "bs.d5.331",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     457.1,
     -498.3
@@ -10434,6 +10780,7 @@
   {
    "id": "bs.d5.332",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     478.1,
     -503.3
@@ -10446,6 +10793,7 @@
   {
    "id": "bs.d5.333",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     492.6,
     -503.3
@@ -10458,6 +10806,7 @@
   {
    "id": "bs.d5.334",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     507.1,
     -503.3
@@ -10470,6 +10819,7 @@
   {
    "id": "bs.d5.335",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     521.6,
     -503.3
@@ -10482,6 +10832,7 @@
   {
    "id": "bs.d5.336",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     536.1,
     -503.3
@@ -10494,6 +10845,7 @@
   {
    "id": "bs.d5.337",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     554.1,
     -503.3
@@ -10506,6 +10858,7 @@
   {
    "id": "bs.d5.338",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     568.6,
     -503.3
@@ -10518,6 +10871,7 @@
   {
    "id": "bs.d5.339",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     583.1,
     -503.3
@@ -10530,6 +10884,7 @@
   {
    "id": "bs.d5.340",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     597.6,
     -503.3
@@ -10542,6 +10897,7 @@
   {
    "id": "bs.d5.341",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     612.1,
     -503.3
@@ -10554,6 +10910,7 @@
   {
    "id": "bs.d5.342",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     630.1,
     -503.3
@@ -10566,6 +10923,7 @@
   {
    "id": "bs.d5.343",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     644.6,
     -503.3
@@ -10578,6 +10936,7 @@
   {
    "id": "bs.d5.344",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     659.1,
     -503.3
@@ -10590,6 +10949,7 @@
   {
    "id": "bs.d5.345",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     673.6,
     -503.3
@@ -10602,6 +10962,7 @@
   {
    "id": "bs.d5.346",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     688.1,
     -503.3
@@ -10614,6 +10975,7 @@
   {
    "id": "bs.d5.347",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     706.6,
     -503.8
@@ -10626,6 +10988,7 @@
   {
    "id": "bs.d5.348",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     722.1,
     -503.8
@@ -10638,6 +11001,7 @@
   {
    "id": "bs.d5.349",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     737.6,
     -503.8
@@ -10650,6 +11014,7 @@
   {
    "id": "bs.d5.350",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     753.1,
     -503.8
@@ -10662,6 +11027,7 @@
   {
    "id": "bs.d5.351",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     768.6,
     -503.8
@@ -10674,6 +11040,7 @@
   {
    "id": "bs.d5.352",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     787.6,
     -503.8
@@ -10686,6 +11053,7 @@
   {
    "id": "bs.d5.353",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     803.1,
     -503.8
@@ -10698,6 +11066,7 @@
   {
    "id": "bs.d5.354",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     818.6,
     -503.8
@@ -10710,6 +11079,7 @@
   {
    "id": "bs.d5.355",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     834.1,
     -503.8
@@ -10722,6 +11092,7 @@
   {
    "id": "bs.d5.356",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -86.2,
     -620.8
@@ -10734,6 +11105,7 @@
   {
    "id": "bs.d5.357",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -91.2,
     -602.4
@@ -10746,6 +11118,7 @@
   {
    "id": "bs.d5.358",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -95.2,
     -587.5
@@ -10758,6 +11131,7 @@
   {
    "id": "bs.d5.359",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -99.2,
     -572.5
@@ -10770,6 +11144,7 @@
   {
    "id": "bs.d5.360",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -103.2,
     -557.5
@@ -10782,6 +11157,7 @@
   {
    "id": "bs.d5.361",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -107.2,
     -542.5
@@ -10794,6 +11170,7 @@
   {
    "id": "bs.d5.362",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -50.1,
     -648.5
@@ -10806,6 +11183,7 @@
   {
    "id": "bs.d5.363",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -34.6,
     -648.5
@@ -10818,6 +11196,7 @@
   {
    "id": "bs.d5.364",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -19.1,
     -648.5
@@ -10830,6 +11209,7 @@
   {
    "id": "bs.d5.365",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -3.6,
     -648.5
@@ -10842,6 +11222,7 @@
   {
    "id": "bs.d5.366",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     11.9,
     -648.5
@@ -10854,6 +11235,7 @@
   {
    "id": "bs.d5.367",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     30.9,
     -648.5
@@ -10866,6 +11248,7 @@
   {
    "id": "bs.d5.368",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     46.4,
     -648.5
@@ -10878,6 +11261,7 @@
   {
    "id": "bs.d5.369",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     61.9,
     -648.5
@@ -10890,6 +11274,7 @@
   {
    "id": "bs.d5.370",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     77.4,
     -648.5
@@ -10902,6 +11287,7 @@
   {
    "id": "bs.d5.371",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     92.9,
     -648.5
@@ -10914,6 +11300,7 @@
   {
    "id": "bs.d5.372",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     111.9,
     -648.5
@@ -10926,6 +11313,7 @@
   {
    "id": "bs.d5.373",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     127.4,
     -648.5
@@ -10938,6 +11326,7 @@
   {
    "id": "bs.d5.374",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     142.9,
     -648.5
@@ -10950,6 +11339,7 @@
   {
    "id": "bs.d5.375",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     158.4,
     -648.5
@@ -10962,6 +11352,7 @@
   {
    "id": "bs.d5.376",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     173.9,
     -648.5
@@ -10974,6 +11365,7 @@
   {
    "id": "bs.d5.377",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     192.9,
     -648.5
@@ -10986,6 +11378,7 @@
   {
    "id": "bs.d5.378",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     208.4,
     -648.5
@@ -10998,6 +11391,7 @@
   {
    "id": "bs.d5.379",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     223.9,
     -648.5
@@ -11010,6 +11404,7 @@
   {
    "id": "bs.d5.380",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     239.4,
     -648.5
@@ -11022,6 +11417,7 @@
   {
    "id": "bs.d5.381",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     254.9,
     -648.5
@@ -11034,6 +11430,7 @@
   {
    "id": "bs.d5.382",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     273.9,
     -648.5
@@ -11046,6 +11443,7 @@
   {
    "id": "bs.d5.383",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     289.4,
     -648.5
@@ -11058,6 +11456,7 @@
   {
    "id": "bs.d5.384",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     304.9,
     -648.5
@@ -11070,6 +11469,7 @@
   {
    "id": "bs.d5.385",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     320.4,
     -648.5
@@ -11082,6 +11482,7 @@
   {
    "id": "bs.d5.386",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     335.9,
     -648.5
@@ -11094,6 +11495,7 @@
   {
    "id": "bs.d5.387",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     354.9,
     -648.5
@@ -11106,6 +11508,7 @@
   {
    "id": "bs.d5.388",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     370.4,
     -648.5
@@ -11118,6 +11521,7 @@
   {
    "id": "bs.d5.389",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     385.9,
     -648.5
@@ -11130,6 +11534,7 @@
   {
    "id": "bs.d5.390",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     401.4,
     -648.5
@@ -11142,6 +11547,7 @@
   {
    "id": "bs.d5.391",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     416.9,
     -648.5
@@ -11154,6 +11560,7 @@
   {
    "id": "bs.d5.392",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     435.9,
     -648.5
@@ -11166,6 +11573,7 @@
   {
    "id": "bs.d5.393",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     451.4,
     -648.5
@@ -11178,6 +11586,7 @@
   {
    "id": "bs.d5.394",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     466.9,
     -648.5
@@ -11190,6 +11599,7 @@
   {
    "id": "bs.d5.395",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     482.4,
     -648.5
@@ -11202,6 +11612,7 @@
   {
    "id": "bs.d5.396",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     497.9,
     -648.5
@@ -11214,6 +11625,7 @@
   {
    "id": "bs.d5.397",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     516.9,
     -648.5
@@ -11226,6 +11638,7 @@
   {
    "id": "bs.d5.398",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     532.4,
     -648.5
@@ -11238,6 +11651,7 @@
   {
    "id": "bs.d5.399",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     547.9,
     -648.5
@@ -11250,6 +11664,7 @@
   {
    "id": "bs.d5.400",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     563.4,
     -648.5
@@ -11262,6 +11677,7 @@
   {
    "id": "bs.d5.401",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     583.9,
     -649.0
@@ -11274,6 +11690,7 @@
   {
    "id": "bs.d5.402",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     609.4,
     -649.0
@@ -11286,6 +11703,7 @@
   {
    "id": "bs.d5.403",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     634.9,
     -649.0
@@ -11298,6 +11716,7 @@
   {
    "id": "bs.d5.404",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     660.4,
     -649.0
@@ -11310,6 +11729,7 @@
   {
    "id": "bs.d5.405",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     685.9,
     -649.0
@@ -11322,6 +11742,7 @@
   {
    "id": "bs.d5.406",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     714.9,
     -649.0
@@ -11334,6 +11755,7 @@
   {
    "id": "bs.d5.407",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     740.4,
     -649.0
@@ -11346,6 +11768,7 @@
   {
    "id": "bs.d5.408",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     765.9,
     -649.0
@@ -11358,6 +11781,7 @@
   {
    "id": "bs.d5.409",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     791.4,
     -649.0
@@ -11370,6 +11794,7 @@
   {
    "id": "bs.d5.410",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     816.9,
     -649.0
@@ -11382,6 +11807,7 @@
   {
    "id": "bs.d5.411",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     845.9,
     -649.0
@@ -11394,6 +11820,7 @@
   {
    "id": "bs.d5.412",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     871.4,
     -649.0
@@ -11406,6 +11833,7 @@
   {
    "id": "bs.d5.413",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     896.9,
     -649.0
@@ -11418,6 +11846,7 @@
   {
    "id": "bs.d5.414",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     27.6,
     -668.2
@@ -11429,6 +11858,7 @@
   {
    "id": "bs.d5.415",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     110.8,
     -668.2
@@ -11440,6 +11870,7 @@
   {
    "id": "bs.d5.416",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     193.9,
     -668.2
@@ -11451,6 +11882,7 @@
   {
    "id": "bs.d5.417",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     277.0,
     -668.2
@@ -11462,6 +11894,7 @@
   {
    "id": "bs.d5.418",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     360.1,
     -668.2
@@ -11473,6 +11906,7 @@
   {
    "id": "bs.d5.419",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     443.2,
     -668.2
@@ -11484,6 +11918,7 @@
   {
    "id": "bs.d5.420",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     526.4,
     -668.2
@@ -11495,6 +11930,7 @@
   {
    "id": "bs.d5.421",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     609.5,
     -668.2
@@ -11506,6 +11942,7 @@
   {
    "id": "bs.d5.422",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     692.6,
     -668.2
@@ -11517,6 +11954,7 @@
   {
    "id": "bs.d5.423",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     775.7,
     -668.2
@@ -11528,6 +11966,7 @@
   {
    "id": "bs.d5.424",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     858.8,
     -668.2
@@ -11539,6 +11978,7 @@
   {
    "id": "bs.d5.425",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     948.1,
     -614.5
@@ -11551,6 +11991,7 @@
   {
    "id": "bs.d5.426",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     943.4,
     -596.7
@@ -11563,6 +12004,7 @@
   {
    "id": "bs.d5.427",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     938.6,
     -578.8
@@ -11575,6 +12017,7 @@
   {
    "id": "bs.d5.428",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     933.8,
     -560.9
@@ -11587,6 +12030,7 @@
   {
    "id": "bs.d5.429",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     929.0,
     -543.1
@@ -11599,6 +12043,7 @@
   {
    "id": "bs.d5.430",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     923.3,
     -521.8
@@ -11611,6 +12056,7 @@
   {
    "id": "bs.d5.431",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     918.5,
     -503.9
@@ -11623,6 +12069,7 @@
   {
    "id": "bs.d5.432",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     950.4,
     -559.1
@@ -11634,6 +12081,7 @@
   {
    "id": "bs.d5.433",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -144.4,
     -448.1
@@ -11647,6 +12095,7 @@
   {
    "id": "bs.d5.434",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -125.9,
     -448.1
@@ -11660,6 +12109,7 @@
   {
    "id": "bs.d5.435",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -107.4,
     -448.1
@@ -11673,6 +12123,7 @@
   {
    "id": "bs.d5.436",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -85.4,
     -448.1
@@ -11686,6 +12137,7 @@
   {
    "id": "bs.d5.437",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -66.9,
     -448.1
@@ -11699,6 +12151,7 @@
   {
    "id": "bs.d5.438",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -48.4,
     -448.1
@@ -11712,6 +12165,7 @@
   {
    "id": "bs.d5.439",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -29.9,
     -448.1
@@ -11725,6 +12179,7 @@
   {
    "id": "bs.d5.440",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -63.5,
     -467.1
@@ -11736,6 +12191,7 @@
   {
    "id": "bs.d5.441",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     23.0,
     -467.1
@@ -11747,6 +12203,7 @@
   {
    "id": "bs.d5.442",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     109.5,
     -467.1
@@ -11758,6 +12215,7 @@
   {
    "id": "bs.d5.443",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     196.0,
     -467.1
@@ -11769,6 +12227,7 @@
   {
    "id": "bs.d5.444",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     282.5,
     -467.1
@@ -11780,6 +12239,7 @@
   {
    "id": "bs.d5.445",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     369.0,
     -467.1
@@ -11791,6 +12251,7 @@
   {
    "id": "bs.d5.446",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     455.6,
     -467.1
@@ -11802,6 +12263,7 @@
   {
    "id": "bs.d5.447",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     542.1,
     -467.1
@@ -11813,6 +12275,7 @@
   {
    "id": "bs.d5.448",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     628.6,
     -467.1
@@ -11824,6 +12287,7 @@
   {
    "id": "bs.d5.449",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     715.1,
     -467.1
@@ -11835,6 +12299,7 @@
   {
    "id": "bs.d5.450",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     801.6,
     -467.1
@@ -11846,6 +12311,7 @@
   {
    "id": "bs.d5.451",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -158.3,
     -608.7
@@ -11857,6 +12323,7 @@
   {
    "id": "bs.d5.452",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -175.4,
     -544.9
@@ -11868,6 +12335,7 @@
   {
    "id": "bs.d6.453",
    "key": "lz-medicine",
+   "cls": "building",
    "at": [
     577.5,
     361.3
@@ -11879,6 +12347,7 @@
   {
    "id": "bs.d6.454",
    "key": "lz-cistern",
+   "cls": "building",
    "at": [
     582.3,
     343.4
@@ -11890,6 +12359,7 @@
   {
    "id": "bs.d6.455",
    "key": "lz-obelisk",
+   "cls": "building",
    "at": [
     586.4,
     327.9
@@ -11901,6 +12371,7 @@
   {
    "id": "bs.d6.456",
    "key": "lz-bells",
+   "cls": "building",
    "at": [
     590.0,
     314.4
@@ -11912,6 +12383,7 @@
   {
    "id": "bs.d6.457",
    "key": "lk-nest",
+   "cls": "building",
    "at": [
     599.9,
     277.7
@@ -11923,6 +12395,7 @@
   {
    "id": "bs.d6.458",
    "key": "lz-stela-pair",
+   "cls": "building",
    "at": [
     609.6,
     241.5
@@ -11934,6 +12407,7 @@
   {
    "id": "bs.d6.459",
    "key": "lz-hall-bronze",
+   "cls": "building",
    "at": [
     615.0,
     221.2
@@ -11945,6 +12419,7 @@
   {
    "id": "bs.d6.460",
    "key": "lz-fermentery",
+   "cls": "building",
    "at": [
     621.9,
     195.6
@@ -11956,6 +12431,7 @@
   {
    "id": "bs.d6.461",
    "key": "lz-cistern",
+   "cls": "building",
    "at": [
     627.8,
     173.4
@@ -11967,6 +12443,7 @@
   {
    "id": "bs.d6.462",
    "key": "lz-stela-turned",
+   "cls": "building",
    "at": [
     632.6,
     155.5
@@ -11978,6 +12455,7 @@
   {
    "id": "bs.d6.463",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     415.5,
     759.5
@@ -11990,6 +12468,7 @@
   {
    "id": "bs.d6.464",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     422.6,
     732.9
@@ -12002,6 +12481,7 @@
   {
    "id": "bs.d6.465",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     429.7,
     706.3
@@ -12014,6 +12494,7 @@
   {
    "id": "bs.d6.466",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     436.8,
     679.8
@@ -12026,6 +12507,7 @@
   {
    "id": "bs.d6.467",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     444.0,
     653.2
@@ -12038,6 +12520,7 @@
   {
    "id": "bs.d6.468",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     452.0,
     623.3
@@ -12050,6 +12533,7 @@
   {
    "id": "bs.d6.469",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     459.1,
     596.7
@@ -12062,6 +12546,7 @@
   {
    "id": "bs.d6.470",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     466.2,
     570.1
@@ -12074,6 +12559,7 @@
   {
    "id": "bs.d6.471",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     473.3,
     543.6
@@ -12086,6 +12572,7 @@
   {
    "id": "bs.d6.472",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     480.4,
     517.0
@@ -12098,6 +12585,7 @@
   {
    "id": "bs.d6.473",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     488.5,
     487.1
@@ -12110,6 +12598,7 @@
   {
    "id": "bs.d6.474",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     495.6,
     460.5
@@ -12122,6 +12611,7 @@
   {
    "id": "bs.d6.475",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     513.6,
     393.4
@@ -12134,6 +12624,7 @@
   {
    "id": "bs.d6.476",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     520.7,
     366.8
@@ -12146,6 +12637,7 @@
   {
    "id": "bs.d6.477",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     527.8,
     340.2
@@ -12158,6 +12650,7 @@
   {
    "id": "bs.d6.478",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     535.8,
     310.3
@@ -12170,6 +12663,7 @@
   {
    "id": "bs.d6.479",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     543.0,
     283.7
@@ -12182,6 +12676,7 @@
   {
    "id": "bs.d6.480",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     550.1,
     257.2
@@ -12194,6 +12689,7 @@
   {
    "id": "bs.d6.481",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     557.2,
     230.6
@@ -12206,6 +12702,7 @@
   {
    "id": "bs.d6.482",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     564.3,
     204.0
@@ -12218,6 +12715,7 @@
   {
    "id": "bs.d6.483",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     572.3,
     174.1
@@ -12230,6 +12728,7 @@
   {
    "id": "bs.d6.484",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     579.4,
     147.5
@@ -12242,6 +12741,7 @@
   {
    "id": "bs.d6.485",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     586.6,
     121.0
@@ -12254,6 +12754,7 @@
   {
    "id": "bs.d6.486",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     593.7,
     94.4
@@ -12266,6 +12767,7 @@
   {
    "id": "bs.d6.487",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     600.8,
     67.8
@@ -12278,6 +12780,7 @@
   {
    "id": "bs.d6.488",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     608.8,
     37.9
@@ -12290,6 +12793,7 @@
   {
    "id": "bs.d6.489",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     615.9,
     11.3
@@ -12302,6 +12806,7 @@
   {
    "id": "bs.d6.490",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     623.1,
     -15.2
@@ -12314,6 +12819,7 @@
   {
    "id": "bs.d6.491",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     630.2,
     -41.8
@@ -12326,6 +12832,7 @@
   {
    "id": "bs.d6.492",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     637.3,
     -68.3
@@ -12338,6 +12845,7 @@
   {
    "id": "bs.d6.493",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     645.3,
     -98.3
@@ -12350,6 +12858,7 @@
   {
    "id": "bs.d6.494",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     652.4,
     -124.9
@@ -12362,6 +12871,7 @@
   {
    "id": "bs.d6.495",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     659.6,
     -151.4
@@ -12374,6 +12884,7 @@
   {
    "id": "bs.d6.496",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     669.8,
     -170.4
@@ -12386,6 +12897,7 @@
   {
    "id": "bs.d6.497",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     673.6,
     -184.4
@@ -12398,6 +12910,7 @@
   {
    "id": "bs.d6.498",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     677.3,
     -198.4
@@ -12410,6 +12923,7 @@
   {
    "id": "bs.d6.499",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     681.1,
     -212.4
@@ -12422,6 +12936,7 @@
   {
    "id": "bs.d6.500",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     684.8,
     -226.4
@@ -12434,6 +12949,7 @@
   {
    "id": "bs.d6.501",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     689.5,
     -243.8
@@ -12446,6 +12962,7 @@
   {
    "id": "bs.d6.502",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     693.2,
     -257.8
@@ -12458,6 +12975,7 @@
   {
    "id": "bs.d6.503",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     730.4,
     -289.7
@@ -12470,6 +12988,7 @@
   {
    "id": "bs.d6.504",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     744.9,
     -289.7
@@ -12482,6 +13001,7 @@
   {
    "id": "bs.d6.505",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     759.4,
     -289.7
@@ -12494,6 +13014,7 @@
   {
    "id": "bs.d6.506",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     777.4,
     -289.7
@@ -12506,6 +13027,7 @@
   {
    "id": "bs.d6.507",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     528.4,
     796.9
@@ -12518,6 +13040,7 @@
   {
    "id": "bs.d6.508",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     532.2,
     782.9
@@ -12530,6 +13053,7 @@
   {
    "id": "bs.d6.509",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     536.0,
     768.9
@@ -12542,6 +13066,7 @@
   {
    "id": "bs.d6.510",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     539.7,
     754.8
@@ -12554,6 +13079,7 @@
   {
    "id": "bs.d6.511",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     544.4,
     737.5
@@ -12566,6 +13092,7 @@
   {
    "id": "bs.d6.512",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     548.1,
     723.5
@@ -12578,6 +13105,7 @@
   {
    "id": "bs.d6.513",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     551.9,
     709.4
@@ -12590,6 +13118,7 @@
   {
    "id": "bs.d6.514",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     555.6,
     695.4
@@ -12602,6 +13131,7 @@
   {
    "id": "bs.d6.515",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     559.4,
     681.4
@@ -12614,6 +13144,7 @@
   {
    "id": "bs.d6.516",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     564.0,
     664.1
@@ -12626,6 +13157,7 @@
   {
    "id": "bs.d6.517",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     567.8,
     650.0
@@ -12638,6 +13170,7 @@
   {
    "id": "bs.d6.518",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     571.5,
     636.0
@@ -12650,6 +13183,7 @@
   {
    "id": "bs.d6.519",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     574.9,
     621.4
@@ -12662,6 +13196,7 @@
   {
    "id": "bs.d6.520",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     579.0,
     606.4
@@ -12674,6 +13209,7 @@
   {
    "id": "bs.d6.521",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     583.0,
     591.5
@@ -12686,6 +13222,7 @@
   {
    "id": "bs.d6.522",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     587.0,
     576.5
@@ -12698,6 +13235,7 @@
   {
    "id": "bs.d6.523",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     591.0,
     561.5
@@ -12710,6 +13248,7 @@
   {
    "id": "bs.d6.524",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     595.9,
     543.2
@@ -12722,6 +13261,7 @@
   {
    "id": "bs.d6.525",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     599.9,
     528.2
@@ -12734,6 +13274,7 @@
   {
    "id": "bs.d6.526",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     611.7,
     484.3
@@ -12746,6 +13287,7 @@
   {
    "id": "bs.d6.527",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     615.7,
     469.3
@@ -12758,6 +13300,7 @@
   {
    "id": "bs.d6.528",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     619.7,
     454.3
@@ -12770,6 +13313,7 @@
   {
    "id": "bs.d6.529",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     624.6,
     436.0
@@ -12782,6 +13326,7 @@
   {
    "id": "bs.d6.530",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     628.6,
     421.0
@@ -12794,6 +13339,7 @@
   {
    "id": "bs.d6.531",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     632.7,
     406.0
@@ -12806,6 +13352,7 @@
   {
    "id": "bs.d6.532",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     636.7,
     391.0
@@ -12818,6 +13365,7 @@
   {
    "id": "bs.d6.533",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     640.7,
     376.1
@@ -12830,6 +13378,7 @@
   {
    "id": "bs.d6.534",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     645.6,
     357.7
@@ -12842,6 +13391,7 @@
   {
    "id": "bs.d6.535",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     649.6,
     342.8
@@ -12854,6 +13404,7 @@
   {
    "id": "bs.d6.536",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     653.6,
     327.8
@@ -12866,6 +13417,7 @@
   {
    "id": "bs.d6.537",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     657.6,
     312.8
@@ -12878,6 +13430,7 @@
   {
    "id": "bs.d6.538",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     661.6,
     297.8
@@ -12890,6 +13443,7 @@
   {
    "id": "bs.d6.539",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     666.6,
     279.5
@@ -12902,6 +13456,7 @@
   {
    "id": "bs.d6.540",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     670.6,
     264.5
@@ -12914,6 +13469,7 @@
   {
    "id": "bs.d6.541",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     674.6,
     249.5
@@ -12926,6 +13482,7 @@
   {
    "id": "bs.d6.542",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     678.6,
     234.6
@@ -12938,6 +13495,7 @@
   {
    "id": "bs.d6.543",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     682.6,
     219.6
@@ -12950,6 +13508,7 @@
   {
    "id": "bs.d6.544",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     687.5,
     201.2
@@ -12962,6 +13521,7 @@
   {
    "id": "bs.d6.545",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     691.5,
     186.3
@@ -12974,6 +13534,7 @@
   {
    "id": "bs.d6.546",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     695.6,
     171.3
@@ -12986,6 +13547,7 @@
   {
    "id": "bs.d6.547",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     699.6,
     156.3
@@ -12998,6 +13560,7 @@
   {
    "id": "bs.d6.548",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     703.6,
     141.4
@@ -13010,6 +13573,7 @@
   {
    "id": "bs.d6.549",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     708.5,
     123.0
@@ -13022,6 +13586,7 @@
   {
    "id": "bs.d6.550",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     712.5,
     108.0
@@ -13034,6 +13599,7 @@
   {
    "id": "bs.d6.551",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     716.5,
     93.1
@@ -13046,6 +13612,7 @@
   {
    "id": "bs.d6.552",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     720.5,
     78.1
@@ -13058,6 +13625,7 @@
   {
    "id": "bs.d6.553",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     724.5,
     63.1
@@ -13070,6 +13638,7 @@
   {
    "id": "bs.d6.554",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     729.5,
     44.8
@@ -13082,6 +13651,7 @@
   {
    "id": "bs.d6.555",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     733.5,
     29.8
@@ -13094,6 +13664,7 @@
   {
    "id": "bs.d6.556",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     737.5,
     14.8
@@ -13106,6 +13677,7 @@
   {
    "id": "bs.d6.557",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     741.5,
     -0.2
@@ -13118,6 +13690,7 @@
   {
    "id": "bs.d6.558",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     745.5,
     -15.1
@@ -13130,6 +13703,7 @@
   {
    "id": "bs.d6.559",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     750.4,
     -33.5
@@ -13142,6 +13716,7 @@
   {
    "id": "bs.d6.560",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     754.4,
     -48.4
@@ -13154,6 +13729,7 @@
   {
    "id": "bs.d6.561",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     758.4,
     -63.4
@@ -13166,6 +13742,7 @@
   {
    "id": "bs.d6.562",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     762.5,
     -78.4
@@ -13178,6 +13755,7 @@
   {
    "id": "bs.d6.563",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     766.5,
     -93.4
@@ -13190,6 +13768,7 @@
   {
    "id": "bs.d6.564",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     771.4,
     -111.7
@@ -13202,6 +13781,7 @@
   {
    "id": "bs.d6.565",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     775.4,
     -126.7
@@ -13214,6 +13794,7 @@
   {
    "id": "bs.d6.566",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     779.4,
     -141.7
@@ -13226,6 +13807,7 @@
   {
    "id": "bs.d6.567",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     783.4,
     -156.6
@@ -13238,6 +13820,7 @@
   {
    "id": "bs.d6.568",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     787.4,
     -171.6
@@ -13250,6 +13833,7 @@
   {
    "id": "bs.d6.569",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     792.3,
     -190.0
@@ -13262,6 +13846,7 @@
   {
    "id": "bs.d6.570",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     796.4,
     -204.9
@@ -13274,6 +13859,7 @@
   {
    "id": "bs.d6.571",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     800.4,
     -219.9
@@ -13286,6 +13872,7 @@
   {
    "id": "bs.d6.572",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     804.4,
     -234.9
@@ -13298,6 +13885,7 @@
   {
    "id": "bs.d6.573",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     808.4,
     -249.8
@@ -13310,6 +13898,7 @@
   {
    "id": "bs.d6.574",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     566.6,
     723.4
@@ -13321,6 +13910,7 @@
   {
    "id": "bs.d6.575",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     588.9,
     640.2
@@ -13332,6 +13922,7 @@
   {
    "id": "bs.d6.576",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     611.2,
     557.0
@@ -13343,6 +13934,7 @@
   {
    "id": "bs.d6.577",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     633.5,
     473.8
@@ -13354,6 +13946,7 @@
   {
    "id": "bs.d6.578",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     655.8,
     390.6
@@ -13365,6 +13958,7 @@
   {
    "id": "bs.d6.579",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     678.0,
     307.4
@@ -13376,6 +13970,7 @@
   {
    "id": "bs.d6.580",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     700.3,
     224.2
@@ -13387,6 +13982,7 @@
   {
    "id": "bs.d6.581",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     722.6,
     141.1
@@ -13398,6 +13994,7 @@
   {
    "id": "bs.d6.582",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     744.9,
     57.9
@@ -13409,6 +14006,7 @@
   {
    "id": "bs.d6.583",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     767.2,
     -25.3
@@ -13420,6 +14018,7 @@
   {
    "id": "bs.d6.584",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     789.5,
     -108.5
@@ -13431,6 +14030,7 @@
   {
    "id": "bs.d6.585",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     811.8,
     -191.7
@@ -13442,6 +14042,7 @@
   {
    "id": "bs.d6.586",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     398.8,
     824.0
@@ -13454,6 +14055,7 @@
   {
    "id": "bs.d6.587",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     414.3,
     824.0
@@ -13466,6 +14068,7 @@
   {
    "id": "bs.d6.588",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     429.8,
     824.0
@@ -13478,6 +14081,7 @@
   {
    "id": "bs.d6.589",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     445.3,
     824.0
@@ -13490,6 +14094,7 @@
   {
    "id": "bs.d6.590",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     460.8,
     824.0
@@ -13502,6 +14107,7 @@
   {
    "id": "bs.d6.591",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     479.8,
     824.0
@@ -13514,6 +14120,7 @@
   {
    "id": "bs.d6.592",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     436.5,
     844.6
@@ -13525,6 +14132,7 @@
   {
    "id": "bs.d6.593",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     375.0,
     792.9
@@ -13537,6 +14145,7 @@
   {
    "id": "bs.d6.594",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     379.0,
     777.9
@@ -13549,6 +14158,7 @@
   {
    "id": "bs.d6.595",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     383.0,
     762.9
@@ -13561,6 +14171,7 @@
   {
    "id": "bs.d6.596",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     387.0,
     748.0
@@ -13573,6 +14184,7 @@
   {
    "id": "bs.d6.597",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     391.9,
     729.6
@@ -13585,6 +14197,7 @@
   {
    "id": "bs.d6.598",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     395.9,
     714.6
@@ -13597,6 +14210,7 @@
   {
    "id": "bs.d6.599",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     399.9,
     699.7
@@ -13609,6 +14223,7 @@
   {
    "id": "bs.d6.600",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     404.0,
     684.7
@@ -13621,6 +14236,7 @@
   {
    "id": "bs.d6.601",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     408.0,
     669.7
@@ -13633,6 +14249,7 @@
   {
    "id": "bs.d6.602",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     412.9,
     651.4
@@ -13645,6 +14262,7 @@
   {
    "id": "bs.d6.603",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     416.9,
     636.4
@@ -13657,6 +14275,7 @@
   {
    "id": "bs.d6.604",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     420.9,
     621.4
@@ -13669,6 +14288,7 @@
   {
    "id": "bs.d6.605",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     424.9,
     606.5
@@ -13681,6 +14301,7 @@
   {
    "id": "bs.d6.606",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     428.9,
     591.5
@@ -13693,6 +14314,7 @@
   {
    "id": "bs.d6.607",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     433.9,
     573.1
@@ -13705,6 +14327,7 @@
   {
    "id": "bs.d6.608",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     437.9,
     558.2
@@ -13717,6 +14340,7 @@
   {
    "id": "bs.d6.609",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     441.9,
     543.2
@@ -13729,6 +14353,7 @@
   {
    "id": "bs.d6.610",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     445.9,
     528.2
@@ -13741,6 +14366,7 @@
   {
    "id": "bs.d6.611",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     449.9,
     513.3
@@ -13753,6 +14379,7 @@
   {
    "id": "bs.d6.612",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     454.8,
     494.9
@@ -13765,6 +14392,7 @@
   {
    "id": "bs.d6.613",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     459.6,
     475.0
@@ -13777,6 +14405,7 @@
   {
    "id": "bs.d6.614",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     466.2,
     450.3
@@ -13789,6 +14418,7 @@
   {
    "id": "bs.d6.615",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     472.8,
     425.7
@@ -13801,6 +14431,7 @@
   {
    "id": "bs.d6.616",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     487.2,
     372.1
@@ -13813,6 +14444,7 @@
   {
    "id": "bs.d6.617",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     493.8,
     347.5
@@ -13825,6 +14457,7 @@
   {
    "id": "bs.d6.618",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     501.3,
     319.5
@@ -13837,6 +14470,7 @@
   {
    "id": "bs.d6.619",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     507.9,
     294.8
@@ -13849,6 +14483,7 @@
   {
    "id": "bs.d6.620",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     514.5,
     270.2
@@ -13861,6 +14496,7 @@
   {
    "id": "bs.d6.621",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     521.1,
     245.6
@@ -13873,6 +14509,7 @@
   {
    "id": "bs.d6.622",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     527.7,
     220.9
@@ -13885,6 +14522,7 @@
   {
    "id": "bs.d6.623",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     535.2,
     192.9
@@ -13897,6 +14535,7 @@
   {
    "id": "bs.d6.624",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     541.8,
     168.3
@@ -13909,6 +14548,7 @@
   {
    "id": "bs.d6.625",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     548.4,
     143.7
@@ -13921,6 +14561,7 @@
   {
    "id": "bs.d6.626",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     555.0,
     119.0
@@ -13933,6 +14574,7 @@
   {
    "id": "bs.d6.627",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     561.6,
     94.4
@@ -13945,6 +14587,7 @@
   {
    "id": "bs.d6.628",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     569.1,
     66.4
@@ -13957,6 +14600,7 @@
   {
    "id": "bs.d6.629",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     575.7,
     41.8
@@ -13969,6 +14613,7 @@
   {
    "id": "bs.d6.630",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     582.3,
     17.1
@@ -13981,6 +14626,7 @@
   {
    "id": "bs.d6.631",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     588.9,
     -7.5
@@ -13993,6 +14639,7 @@
   {
    "id": "bs.d6.632",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     595.5,
     -32.1
@@ -14005,6 +14652,7 @@
   {
    "id": "bs.d6.633",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     597.3,
     -58.1
@@ -14017,6 +14665,7 @@
   {
    "id": "bs.d6.634",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     602.1,
     -75.9
@@ -14029,6 +14678,7 @@
   {
    "id": "bs.d6.635",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     606.9,
     -93.8
@@ -14041,6 +14691,7 @@
   {
    "id": "bs.d6.636",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     611.7,
     -111.7
@@ -14053,6 +14704,7 @@
   {
    "id": "bs.d6.637",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     616.4,
     -129.5
@@ -14065,6 +14717,7 @@
   {
    "id": "bs.d6.638",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     622.1,
     -150.8
@@ -14077,6 +14730,7 @@
   {
    "id": "bs.d6.639",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     626.9,
     -168.7
@@ -14089,6 +14743,7 @@
   {
    "id": "bs.d6.640",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     631.7,
     -186.5
@@ -14101,6 +14756,7 @@
   {
    "id": "bs.d6.641",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     636.5,
     -204.4
@@ -14113,6 +14769,7 @@
   {
    "id": "bs.d6.642",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     641.3,
     -222.3
@@ -14125,6 +14782,7 @@
   {
    "id": "bs.d6.643",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     647.0,
     -243.5
@@ -14137,6 +14795,7 @@
   {
    "id": "bs.d6.644",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     651.8,
     -261.4
@@ -14149,6 +14808,7 @@
   {
    "id": "bs.d6.645",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     656.6,
     -279.3
@@ -14161,6 +14821,7 @@
   {
    "id": "bs.d6.646",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     661.3,
     -297.1
@@ -14173,6 +14834,7 @@
   {
    "id": "bs.d6.647",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     369.7,
     723.5
@@ -14184,6 +14846,7 @@
   {
    "id": "bs.d6.648",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     392.7,
     637.4
@@ -14195,6 +14858,7 @@
   {
    "id": "bs.d6.649",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     415.8,
     551.3
@@ -14206,6 +14870,7 @@
   {
    "id": "bs.d6.650",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     438.9,
     465.2
@@ -14217,6 +14882,7 @@
   {
    "id": "bs.d6.651",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     485.0,
     293.0
@@ -14228,6 +14894,7 @@
   {
    "id": "bs.d6.652",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     508.1,
     206.9
@@ -14239,6 +14906,7 @@
   {
    "id": "bs.d6.653",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     531.2,
     120.7
@@ -14250,6 +14918,7 @@
   {
    "id": "bs.d6.654",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     554.3,
     34.6
@@ -14261,6 +14930,7 @@
   {
    "id": "bs.d6.655",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     577.3,
     -51.5
@@ -14272,6 +14942,7 @@
   {
    "id": "bs.d6.656",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     600.4,
     -137.6
@@ -14283,6 +14954,7 @@
   {
    "id": "bs.d6.657",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     623.5,
     -223.7
@@ -14294,6 +14966,7 @@
   {
    "id": "bs.d6.658",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     715.6,
     -346.9
@@ -14307,6 +14980,7 @@
   {
    "id": "bs.d6.659",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     737.6,
     -346.9
@@ -14320,6 +14994,7 @@
   {
    "id": "bs.d6.660",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     756.1,
     -346.9
@@ -14333,6 +15008,7 @@
   {
    "id": "bs.d6.661",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     774.6,
     -346.9
@@ -14346,6 +15022,7 @@
   {
    "id": "bs.d6.662",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     793.1,
     -346.9
@@ -14359,6 +15036,7 @@
   {
    "id": "bs.d6.663",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     811.6,
     -346.9
@@ -14372,6 +15050,7 @@
   {
    "id": "bs.d6.664",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     833.6,
     -346.9
@@ -14385,6 +15064,7 @@
   {
    "id": "bs.d6.665",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     771.2,
     -326.8
@@ -14396,6 +15076,7 @@
   {
    "id": "bs.d6.666",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     607.2,
     766.1
@@ -14407,6 +15088,7 @@
   {
    "id": "bs.d6.667",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     629.4,
     683.1
@@ -14418,6 +15100,7 @@
   {
    "id": "bs.d6.668",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     651.7,
     600.1
@@ -14429,6 +15112,7 @@
   {
    "id": "bs.d6.669",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     673.9,
     517.1
@@ -14440,6 +15124,7 @@
   {
    "id": "bs.d6.670",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     696.2,
     434.1
@@ -14451,6 +15136,7 @@
   {
    "id": "bs.d6.671",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     718.4,
     351.1
@@ -14462,6 +15148,7 @@
   {
    "id": "bs.d6.672",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     740.6,
     268.1
@@ -14473,6 +15160,7 @@
   {
    "id": "bs.d6.673",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     762.9,
     185.1
@@ -14484,6 +15172,7 @@
   {
    "id": "bs.d6.674",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     785.1,
     102.1
@@ -14495,6 +15184,7 @@
   {
    "id": "bs.d6.675",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     807.4,
     19.1
@@ -14506,6 +15196,7 @@
   {
    "id": "bs.d6.676",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     829.6,
     -63.9
@@ -14517,6 +15208,7 @@
   {
    "id": "bs.d6.677",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     851.8,
     -146.9
@@ -14528,6 +15220,7 @@
   {
    "id": "bs.d6.678",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     874.1,
     -229.9
@@ -14539,6 +15232,7 @@
   {
    "id": "bs.d6.679",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     384.9,
     897.8
@@ -14550,6 +15244,7 @@
   {
    "id": "bs.d6.680",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     454.7,
     897.8
@@ -14561,6 +15256,7 @@
   {
    "id": "bs.d7.681",
    "key": "lz-medicine",
+   "cls": "building",
    "at": [
     -587.2,
     740.0
@@ -14572,6 +15268,7 @@
   {
    "id": "bs.d7.682",
    "key": "lz-cistern",
+   "cls": "building",
    "at": [
     -568.7,
     740.0
@@ -14583,6 +15280,7 @@
   {
    "id": "bs.d7.683",
    "key": "lz-obelisk",
+   "cls": "building",
    "at": [
     -552.7,
     740.0
@@ -14594,6 +15292,7 @@
   {
    "id": "bs.d7.684",
    "key": "lz-bells",
+   "cls": "building",
    "at": [
     -538.7,
     740.0
@@ -14605,6 +15304,7 @@
   {
    "id": "bs.d7.685",
    "key": "lk-nest",
+   "cls": "building",
    "at": [
     -500.7,
     740.0
@@ -14616,6 +15316,7 @@
   {
    "id": "bs.d7.686",
    "key": "lz-stela-pair",
+   "cls": "building",
    "at": [
     -463.2,
     740.0
@@ -14627,6 +15328,7 @@
   {
    "id": "bs.d7.687",
    "key": "lz-hall-reed",
+   "cls": "building",
    "at": [
     -442.2,
     740.0
@@ -14638,6 +15340,7 @@
   {
    "id": "bs.d7.688",
    "key": "lz-bakehouse",
+   "cls": "building",
    "at": [
     -416.2,
     740.0
@@ -14649,6 +15352,7 @@
   {
    "id": "bs.d7.689",
    "key": "lz-cistern",
+   "cls": "building",
    "at": [
     -393.7,
     740.0
@@ -14660,6 +15364,7 @@
   {
    "id": "bs.d7.690",
    "key": "lz-stela-turned",
+   "cls": "building",
    "at": [
     -375.2,
     740.0
@@ -14671,6 +15376,7 @@
   {
    "id": "bs.d7.691",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     -1074.4,
     686.6
@@ -14683,6 +15389,7 @@
   {
    "id": "bs.d7.692",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     -1046.9,
     686.6
@@ -14695,6 +15402,7 @@
   {
    "id": "bs.d7.693",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     -1019.4,
     686.6
@@ -14707,6 +15415,7 @@
   {
    "id": "bs.d7.694",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     -991.9,
     686.6
@@ -14719,6 +15428,7 @@
   {
    "id": "bs.d7.695",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     -964.4,
     686.6
@@ -14731,6 +15441,7 @@
   {
    "id": "bs.d7.696",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     -933.4,
     686.6
@@ -14743,6 +15454,7 @@
   {
    "id": "bs.d7.697",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     -905.9,
     686.6
@@ -14755,6 +15467,7 @@
   {
    "id": "bs.d7.698",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     -878.4,
     686.6
@@ -14767,6 +15480,7 @@
   {
    "id": "bs.d7.699",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     -850.9,
     686.6
@@ -14779,6 +15493,7 @@
   {
    "id": "bs.d7.700",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     -823.4,
     686.6
@@ -14791,6 +15506,7 @@
   {
    "id": "bs.d7.701",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     -792.4,
     686.6
@@ -14803,6 +15519,7 @@
   {
    "id": "bs.d7.702",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     -764.9,
     686.6
@@ -14815,6 +15532,7 @@
   {
    "id": "bs.d7.703",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     -737.4,
     686.6
@@ -14827,6 +15545,7 @@
   {
    "id": "bs.d7.704",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     -709.9,
     686.6
@@ -14839,6 +15558,7 @@
   {
    "id": "bs.d7.705",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     -682.4,
     686.6
@@ -14851,6 +15571,7 @@
   {
    "id": "bs.d7.706",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     -651.4,
     686.6
@@ -14863,6 +15584,7 @@
   {
    "id": "bs.d7.707",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     -623.9,
     686.6
@@ -14875,6 +15597,7 @@
   {
    "id": "bs.d7.708",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     -596.4,
     686.6
@@ -14887,6 +15610,7 @@
   {
    "id": "bs.d7.709",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     -568.9,
     686.6
@@ -14899,6 +15623,7 @@
   {
    "id": "bs.d7.710",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     -541.4,
     686.6
@@ -14911,6 +15636,7 @@
   {
    "id": "bs.d7.711",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     -510.4,
     686.6
@@ -14923,6 +15649,7 @@
   {
    "id": "bs.d7.712",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     -482.9,
     686.6
@@ -14935,6 +15662,7 @@
   {
    "id": "bs.d7.713",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     -455.4,
     686.6
@@ -14947,6 +15675,7 @@
   {
    "id": "bs.d7.714",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     -427.9,
     686.6
@@ -14959,6 +15688,7 @@
   {
    "id": "bs.d7.715",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     -400.4,
     686.6
@@ -14971,6 +15701,7 @@
   {
    "id": "bs.d7.716",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     -369.4,
     686.6
@@ -14983,6 +15714,7 @@
   {
    "id": "bs.d7.717",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     -341.9,
     686.6
@@ -14995,6 +15727,7 @@
   {
    "id": "bs.d7.718",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     -314.4,
     686.6
@@ -15007,6 +15740,7 @@
   {
    "id": "bs.d7.719",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     -286.9,
     686.6
@@ -15019,6 +15753,7 @@
   {
    "id": "bs.d7.720",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     -259.4,
     686.6
@@ -15031,6 +15766,7 @@
   {
    "id": "bs.d7.721",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     -228.4,
     686.6
@@ -15043,6 +15779,7 @@
   {
    "id": "bs.d7.722",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     -200.9,
     686.6
@@ -15055,6 +15792,7 @@
   {
    "id": "bs.d7.723",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     -173.4,
     686.6
@@ -15067,6 +15805,7 @@
   {
    "id": "bs.d7.724",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     -145.9,
     686.6
@@ -15079,6 +15818,7 @@
   {
    "id": "bs.d7.725",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     -118.4,
     686.6
@@ -15091,6 +15831,7 @@
   {
    "id": "bs.d7.726",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     -87.4,
     686.6
@@ -15103,6 +15844,7 @@
   {
    "id": "bs.d7.727",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     -59.9,
     686.6
@@ -15115,6 +15857,7 @@
   {
    "id": "bs.d7.728",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     -38.9,
     691.6
@@ -15127,6 +15870,7 @@
   {
    "id": "bs.d7.729",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     -24.4,
     691.6
@@ -15139,6 +15883,7 @@
   {
    "id": "bs.d7.730",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     -9.9,
     691.6
@@ -15151,6 +15896,7 @@
   {
    "id": "bs.d7.731",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     4.6,
     691.6
@@ -15163,6 +15909,7 @@
   {
    "id": "bs.d7.732",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     19.1,
     691.6
@@ -15175,6 +15922,7 @@
   {
    "id": "bs.d7.733",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     37.1,
     691.6
@@ -15187,6 +15935,7 @@
   {
    "id": "bs.d7.734",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     51.6,
     691.6
@@ -15199,6 +15948,7 @@
   {
    "id": "bs.d7.735",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     66.1,
     691.6
@@ -15211,6 +15961,7 @@
   {
    "id": "bs.d7.736",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     80.6,
     691.6
@@ -15223,6 +15974,7 @@
   {
    "id": "bs.d7.737",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     95.1,
     691.6
@@ -15235,6 +15987,7 @@
   {
    "id": "bs.d7.738",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     113.1,
     691.6
@@ -15247,6 +16000,7 @@
   {
    "id": "bs.d7.739",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     127.6,
     691.6
@@ -15259,6 +16013,7 @@
   {
    "id": "bs.d7.740",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     142.1,
     691.6
@@ -15271,6 +16026,7 @@
   {
    "id": "bs.d7.741",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     174.0,
     722.9
@@ -15283,6 +16039,7 @@
   {
    "id": "bs.d7.742",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     170.2,
     736.9
@@ -15295,6 +16052,7 @@
   {
    "id": "bs.d7.743",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     165.5,
     754.3
@@ -15307,6 +16065,7 @@
   {
    "id": "bs.d7.744",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     161.8,
     768.3
@@ -15319,6 +16078,7 @@
   {
    "id": "bs.d7.745",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     -1137.3,
     806.8
@@ -15331,6 +16091,7 @@
   {
    "id": "bs.d7.746",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     -1122.8,
     806.8
@@ -15343,6 +16104,7 @@
   {
    "id": "bs.d7.747",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     -1108.3,
     806.8
@@ -15355,6 +16117,7 @@
   {
    "id": "bs.d7.748",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     -1090.3,
     806.8
@@ -15367,6 +16130,7 @@
   {
    "id": "bs.d7.749",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     -1075.8,
     806.8
@@ -15379,6 +16143,7 @@
   {
    "id": "bs.d7.750",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     -1061.3,
     806.8
@@ -15391,6 +16156,7 @@
   {
    "id": "bs.d7.751",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     -1046.8,
     806.8
@@ -15403,6 +16169,7 @@
   {
    "id": "bs.d7.752",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     -1032.3,
     806.8
@@ -15415,6 +16182,7 @@
   {
    "id": "bs.d7.753",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     -1014.3,
     806.8
@@ -15427,6 +16195,7 @@
   {
    "id": "bs.d7.754",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -999.3,
     806.3
@@ -15439,6 +16208,7 @@
   {
    "id": "bs.d7.755",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -983.8,
     806.3
@@ -15451,6 +16221,7 @@
   {
    "id": "bs.d7.756",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -968.3,
     806.3
@@ -15463,6 +16234,7 @@
   {
    "id": "bs.d7.757",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -952.8,
     806.3
@@ -15475,6 +16247,7 @@
   {
    "id": "bs.d7.758",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -937.3,
     806.3
@@ -15487,6 +16260,7 @@
   {
    "id": "bs.d7.759",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -918.3,
     806.3
@@ -15499,6 +16273,7 @@
   {
    "id": "bs.d7.760",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -902.8,
     806.3
@@ -15511,6 +16286,7 @@
   {
    "id": "bs.d7.761",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -887.3,
     806.3
@@ -15523,6 +16299,7 @@
   {
    "id": "bs.d7.762",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -871.8,
     806.3
@@ -15535,6 +16312,7 @@
   {
    "id": "bs.d7.763",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -856.3,
     806.3
@@ -15547,6 +16325,7 @@
   {
    "id": "bs.d7.764",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -837.3,
     806.3
@@ -15559,6 +16338,7 @@
   {
    "id": "bs.d7.765",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -821.8,
     806.3
@@ -15571,6 +16351,7 @@
   {
    "id": "bs.d7.766",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -806.3,
     806.3
@@ -15583,6 +16364,7 @@
   {
    "id": "bs.d7.767",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -790.8,
     806.3
@@ -15595,6 +16377,7 @@
   {
    "id": "bs.d7.768",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -775.3,
     806.3
@@ -15607,6 +16390,7 @@
   {
    "id": "bs.d7.769",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -756.3,
     806.3
@@ -15619,6 +16403,7 @@
   {
    "id": "bs.d7.770",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -740.8,
     806.3
@@ -15631,6 +16416,7 @@
   {
    "id": "bs.d7.771",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -725.3,
     806.3
@@ -15643,6 +16429,7 @@
   {
    "id": "bs.d7.772",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -709.8,
     806.3
@@ -15655,6 +16442,7 @@
   {
    "id": "bs.d7.773",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -694.3,
     806.3
@@ -15667,6 +16455,7 @@
   {
    "id": "bs.d7.774",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -675.3,
     806.3
@@ -15679,6 +16468,7 @@
   {
    "id": "bs.d7.775",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -659.8,
     806.3
@@ -15691,6 +16481,7 @@
   {
    "id": "bs.d7.776",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -644.3,
     806.3
@@ -15703,6 +16494,7 @@
   {
    "id": "bs.d7.777",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -628.8,
     806.3
@@ -15715,6 +16507,7 @@
   {
    "id": "bs.d7.778",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -613.3,
     806.3
@@ -15727,6 +16520,7 @@
   {
    "id": "bs.d7.779",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -594.3,
     806.3
@@ -15739,6 +16533,7 @@
   {
    "id": "bs.d7.780",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -578.8,
     806.3
@@ -15751,6 +16546,7 @@
   {
    "id": "bs.d7.781",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -563.3,
     806.3
@@ -15763,6 +16559,7 @@
   {
    "id": "bs.d7.782",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -547.8,
     806.3
@@ -15775,6 +16572,7 @@
   {
    "id": "bs.d7.783",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -532.3,
     806.3
@@ -15787,6 +16585,7 @@
   {
    "id": "bs.d7.784",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -513.3,
     806.3
@@ -15799,6 +16598,7 @@
   {
    "id": "bs.d7.785",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -497.8,
     806.3
@@ -15811,6 +16611,7 @@
   {
    "id": "bs.d7.786",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -482.3,
     806.3
@@ -15823,6 +16624,7 @@
   {
    "id": "bs.d7.787",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -466.8,
     806.3
@@ -15835,6 +16637,7 @@
   {
    "id": "bs.d7.788",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -451.3,
     806.3
@@ -15847,6 +16650,7 @@
   {
    "id": "bs.d7.789",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -432.3,
     806.3
@@ -15859,6 +16663,7 @@
   {
    "id": "bs.d7.790",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -416.8,
     806.3
@@ -15871,6 +16676,7 @@
   {
    "id": "bs.d7.791",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -401.3,
     806.3
@@ -15883,6 +16689,7 @@
   {
    "id": "bs.d7.792",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -385.8,
     806.3
@@ -15895,6 +16702,7 @@
   {
    "id": "bs.d7.793",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -370.3,
     806.3
@@ -15907,6 +16715,7 @@
   {
    "id": "bs.d7.794",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -351.3,
     806.3
@@ -15919,6 +16728,7 @@
   {
    "id": "bs.d7.795",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -335.8,
     806.3
@@ -15931,6 +16741,7 @@
   {
    "id": "bs.d7.796",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -320.3,
     806.3
@@ -15943,6 +16754,7 @@
   {
    "id": "bs.d7.797",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -304.8,
     806.3
@@ -15955,6 +16767,7 @@
   {
    "id": "bs.d7.798",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -289.3,
     806.3
@@ -15967,6 +16780,7 @@
   {
    "id": "bs.d7.799",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -270.3,
     806.3
@@ -15979,6 +16793,7 @@
   {
    "id": "bs.d7.800",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -254.8,
     806.3
@@ -15991,6 +16806,7 @@
   {
    "id": "bs.d7.801",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -239.3,
     806.3
@@ -16003,6 +16819,7 @@
   {
    "id": "bs.d7.802",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -223.8,
     806.3
@@ -16015,6 +16832,7 @@
   {
    "id": "bs.d7.803",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -208.3,
     806.3
@@ -16027,6 +16845,7 @@
   {
    "id": "bs.d7.804",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -189.3,
     806.3
@@ -16039,6 +16858,7 @@
   {
    "id": "bs.d7.805",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -173.8,
     806.3
@@ -16051,6 +16871,7 @@
   {
    "id": "bs.d7.806",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -158.3,
     806.3
@@ -16063,6 +16884,7 @@
   {
    "id": "bs.d7.807",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -142.8,
     806.3
@@ -16075,6 +16897,7 @@
   {
    "id": "bs.d7.808",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -127.3,
     806.3
@@ -16087,6 +16910,7 @@
   {
    "id": "bs.d7.809",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -108.3,
     806.3
@@ -16099,6 +16923,7 @@
   {
    "id": "bs.d7.810",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -92.8,
     806.3
@@ -16111,6 +16936,7 @@
   {
    "id": "bs.d7.811",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -77.3,
     806.3
@@ -16123,6 +16949,7 @@
   {
    "id": "bs.d7.812",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -61.8,
     806.3
@@ -16135,6 +16962,7 @@
   {
    "id": "bs.d7.813",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -46.3,
     806.3
@@ -16147,6 +16975,7 @@
   {
    "id": "bs.d7.814",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -27.3,
     806.3
@@ -16159,6 +16988,7 @@
   {
    "id": "bs.d7.815",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -11.8,
     806.3
@@ -16171,6 +17001,7 @@
   {
    "id": "bs.d7.816",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     3.7,
     806.3
@@ -16183,6 +17014,7 @@
   {
    "id": "bs.d7.817",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     19.2,
     806.3
@@ -16195,6 +17027,7 @@
   {
    "id": "bs.d7.818",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     34.7,
     806.3
@@ -16207,6 +17040,7 @@
   {
    "id": "bs.d7.819",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     53.7,
     806.3
@@ -16219,6 +17053,7 @@
   {
    "id": "bs.d7.820",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     69.2,
     806.3
@@ -16231,6 +17066,7 @@
   {
    "id": "bs.d7.821",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     84.7,
     806.3
@@ -16243,6 +17079,7 @@
   {
    "id": "bs.d7.822",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     100.2,
     806.3
@@ -16255,6 +17092,7 @@
   {
    "id": "bs.d7.823",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     115.7,
     806.3
@@ -16267,6 +17105,7 @@
   {
    "id": "bs.d7.824",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -1074.1,
     827.9
@@ -16278,6 +17117,7 @@
   {
    "id": "bs.d7.825",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -988.3,
     827.9
@@ -16289,6 +17129,7 @@
   {
    "id": "bs.d7.826",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -902.5,
     827.9
@@ -16300,6 +17141,7 @@
   {
    "id": "bs.d7.827",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -816.7,
     827.9
@@ -16311,6 +17153,7 @@
   {
    "id": "bs.d7.828",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -730.9,
     827.9
@@ -16322,6 +17165,7 @@
   {
    "id": "bs.d7.829",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -645.1,
     827.9
@@ -16333,6 +17177,7 @@
   {
    "id": "bs.d7.830",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -559.3,
     827.9
@@ -16344,6 +17189,7 @@
   {
    "id": "bs.d7.831",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -473.4,
     827.9
@@ -16355,6 +17201,7 @@
   {
    "id": "bs.d7.832",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -387.6,
     827.9
@@ -16366,6 +17213,7 @@
   {
    "id": "bs.d7.833",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -301.8,
     827.9
@@ -16377,6 +17225,7 @@
   {
    "id": "bs.d7.834",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -216.0,
     827.9
@@ -16388,6 +17237,7 @@
   {
    "id": "bs.d7.835",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -130.2,
     827.9
@@ -16399,6 +17249,7 @@
   {
    "id": "bs.d7.836",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -44.4,
     827.9
@@ -16410,6 +17261,7 @@
   {
    "id": "bs.d7.837",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     41.4,
     827.9
@@ -16421,6 +17273,7 @@
   {
    "id": "bs.d7.838",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -1135.4,
     681.0
@@ -16433,6 +17286,7 @@
   {
    "id": "bs.d7.839",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -1139.4,
     695.9
@@ -16445,6 +17299,7 @@
   {
    "id": "bs.d7.840",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -1143.4,
     710.9
@@ -16457,6 +17312,7 @@
   {
    "id": "bs.d7.841",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -1147.5,
     725.9
@@ -16469,6 +17325,7 @@
   {
    "id": "bs.d7.842",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -1151.5,
     740.8
@@ -16481,6 +17338,7 @@
   {
    "id": "bs.d7.843",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -1156.4,
     759.2
@@ -16493,6 +17351,7 @@
   {
    "id": "bs.d7.844",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -1160.4,
     774.2
@@ -16505,6 +17364,7 @@
   {
    "id": "bs.d7.845",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -1173.8,
     731.3
@@ -16516,6 +17376,7 @@
   {
    "id": "bs.d7.846",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -1088.8,
     627.0
@@ -16529,6 +17390,7 @@
   {
    "id": "bs.d7.847",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -1073.3,
     627.0
@@ -16542,6 +17404,7 @@
   {
    "id": "bs.d7.848",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -1057.8,
     627.0
@@ -16555,6 +17418,7 @@
   {
    "id": "bs.d7.849",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -1038.8,
     627.0
@@ -16568,6 +17432,7 @@
   {
    "id": "bs.d7.850",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -1023.3,
     627.0
@@ -16581,6 +17446,7 @@
   {
    "id": "bs.d7.851",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -1007.8,
     627.0
@@ -16594,6 +17460,7 @@
   {
    "id": "bs.d7.852",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -992.3,
     627.0
@@ -16607,6 +17474,7 @@
   {
    "id": "bs.d7.853",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -976.8,
     627.0
@@ -16620,6 +17488,7 @@
   {
    "id": "bs.d7.854",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -957.8,
     627.0
@@ -16633,6 +17502,7 @@
   {
    "id": "bs.d7.855",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -942.3,
     627.0
@@ -16646,6 +17516,7 @@
   {
    "id": "bs.d7.856",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -926.8,
     627.0
@@ -16659,6 +17530,7 @@
   {
    "id": "bs.d7.857",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -911.3,
     627.0
@@ -16672,6 +17544,7 @@
   {
    "id": "bs.d7.858",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -895.8,
     627.0
@@ -16685,6 +17558,7 @@
   {
    "id": "bs.d7.859",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -876.8,
     627.0
@@ -16698,6 +17572,7 @@
   {
    "id": "bs.d7.860",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -861.3,
     627.0
@@ -16711,6 +17586,7 @@
   {
    "id": "bs.d7.861",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     -840.8,
     627.5
@@ -16724,6 +17600,7 @@
   {
    "id": "bs.d7.862",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     -815.3,
     627.5
@@ -16737,6 +17614,7 @@
   {
    "id": "bs.d7.863",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     -789.8,
     627.5
@@ -16750,6 +17628,7 @@
   {
    "id": "bs.d7.864",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     -764.3,
     627.5
@@ -16763,6 +17642,7 @@
   {
    "id": "bs.d7.865",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     -738.8,
     627.5
@@ -16776,6 +17656,7 @@
   {
    "id": "bs.d7.866",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     -709.8,
     627.5
@@ -16789,6 +17670,7 @@
   {
    "id": "bs.d7.867",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     -684.3,
     627.5
@@ -16802,6 +17684,7 @@
   {
    "id": "bs.d7.868",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     -658.8,
     627.5
@@ -16815,6 +17698,7 @@
   {
    "id": "bs.d7.869",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     -633.3,
     627.5
@@ -16828,6 +17712,7 @@
   {
    "id": "bs.d7.870",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     -607.8,
     627.5
@@ -16841,6 +17726,7 @@
   {
    "id": "bs.d7.871",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     -578.8,
     627.5
@@ -16854,6 +17740,7 @@
   {
    "id": "bs.d7.872",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     -553.3,
     627.5
@@ -16867,6 +17754,7 @@
   {
    "id": "bs.d7.873",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     -527.8,
     627.5
@@ -16880,6 +17768,7 @@
   {
    "id": "bs.d7.874",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     -502.3,
     627.5
@@ -16893,6 +17782,7 @@
   {
    "id": "bs.d7.875",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     -476.8,
     627.5
@@ -16906,6 +17796,7 @@
   {
    "id": "bs.d7.876",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     -447.8,
     627.5
@@ -16919,6 +17810,7 @@
   {
    "id": "bs.d7.877",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     -422.3,
     627.5
@@ -16932,6 +17824,7 @@
   {
    "id": "bs.d7.878",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     -396.8,
     627.5
@@ -16945,6 +17838,7 @@
   {
    "id": "bs.d7.879",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     -371.3,
     627.5
@@ -16958,6 +17852,7 @@
   {
    "id": "bs.d7.880",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     -345.8,
     627.5
@@ -16971,6 +17866,7 @@
   {
    "id": "bs.d7.881",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     -316.8,
     627.5
@@ -16984,6 +17880,7 @@
   {
    "id": "bs.d7.882",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     -291.3,
     627.5
@@ -16997,6 +17894,7 @@
   {
    "id": "bs.d7.883",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     -265.8,
     627.5
@@ -17010,6 +17908,7 @@
   {
    "id": "bs.d7.884",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -243.8,
     632.5
@@ -17023,6 +17922,7 @@
   {
    "id": "bs.d7.885",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -225.3,
     632.5
@@ -17036,6 +17936,7 @@
   {
    "id": "bs.d7.886",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -206.8,
     632.5
@@ -17049,6 +17950,7 @@
   {
    "id": "bs.d7.887",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -188.3,
     632.5
@@ -17062,6 +17964,7 @@
   {
    "id": "bs.d7.888",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -169.8,
     632.5
@@ -17075,6 +17978,7 @@
   {
    "id": "bs.d7.889",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -147.8,
     632.5
@@ -17088,6 +17992,7 @@
   {
    "id": "bs.d7.890",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -129.3,
     632.5
@@ -17101,6 +18006,7 @@
   {
    "id": "bs.d7.891",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -110.8,
     632.5
@@ -17114,6 +18020,7 @@
   {
    "id": "bs.d7.892",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -92.3,
     632.5
@@ -17127,6 +18034,7 @@
   {
    "id": "bs.d7.893",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -73.8,
     632.5
@@ -17140,6 +18048,7 @@
   {
    "id": "bs.d7.894",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -51.8,
     632.5
@@ -17153,6 +18062,7 @@
   {
    "id": "bs.d7.895",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -33.3,
     632.5
@@ -17166,6 +18076,7 @@
   {
    "id": "bs.d7.896",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -14.8,
     632.5
@@ -17179,6 +18090,7 @@
   {
    "id": "bs.d7.897",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     3.7,
     632.5
@@ -17192,6 +18104,7 @@
   {
    "id": "bs.d7.898",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     22.2,
     632.5
@@ -17205,6 +18118,7 @@
   {
    "id": "bs.d7.899",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     44.2,
     632.5
@@ -17218,6 +18132,7 @@
   {
    "id": "bs.d7.900",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     62.7,
     632.5
@@ -17231,6 +18146,7 @@
   {
    "id": "bs.d7.901",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     81.2,
     632.5
@@ -17244,6 +18160,7 @@
   {
    "id": "bs.d7.902",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     99.7,
     632.5
@@ -17257,6 +18174,7 @@
   {
    "id": "bs.d7.903",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     118.2,
     632.5
@@ -17270,6 +18188,7 @@
   {
    "id": "bs.d7.904",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     140.2,
     632.5
@@ -17283,6 +18202,7 @@
   {
    "id": "bs.d7.905",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     158.7,
     632.5
@@ -17296,6 +18216,7 @@
   {
    "id": "bs.d7.906",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     177.2,
     632.5
@@ -17309,6 +18230,7 @@
   {
    "id": "bs.d7.907",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -1024.6,
     653.7
@@ -17320,6 +18242,7 @@
   {
    "id": "bs.d7.908",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -936.0,
     653.7
@@ -17331,6 +18254,7 @@
   {
    "id": "bs.d7.909",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -847.3,
     653.7
@@ -17342,6 +18266,7 @@
   {
    "id": "bs.d7.910",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -758.7,
     653.7
@@ -17353,6 +18278,7 @@
   {
    "id": "bs.d7.911",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -670.0,
     653.7
@@ -17364,6 +18290,7 @@
   {
    "id": "bs.d7.912",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -581.4,
     653.7
@@ -17375,6 +18302,7 @@
   {
    "id": "bs.d7.913",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -492.7,
     653.7
@@ -17386,6 +18314,7 @@
   {
    "id": "bs.d7.914",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -404.1,
     653.7
@@ -17397,6 +18326,7 @@
   {
    "id": "bs.d7.915",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -315.4,
     653.7
@@ -17408,6 +18338,7 @@
   {
    "id": "bs.d7.916",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -226.8,
     653.7
@@ -17419,6 +18350,7 @@
   {
    "id": "bs.d7.917",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -138.1,
     653.7
@@ -17430,6 +18362,7 @@
   {
    "id": "bs.d7.918",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -49.5,
     653.7
@@ -17441,6 +18374,7 @@
   {
    "id": "bs.d7.919",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     39.2,
     653.7
@@ -17452,6 +18386,7 @@
   {
    "id": "bs.d7.920",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     127.8,
     653.7
@@ -17463,6 +18398,7 @@
   {
    "id": "bs.d7.921",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     239.3,
     749.9
@@ -17474,6 +18410,7 @@
   {
    "id": "bs.d7.922",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -1136.0,
     882.2
@@ -17485,6 +18422,7 @@
   {
    "id": "bs.d7.923",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -1049.9,
     882.2
@@ -17496,6 +18434,7 @@
   {
    "id": "bs.d7.924",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -963.8,
     882.2
@@ -17507,6 +18446,7 @@
   {
    "id": "bs.d7.925",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -877.8,
     882.2
@@ -17518,6 +18458,7 @@
   {
    "id": "bs.d7.926",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -791.7,
     882.2
@@ -17529,6 +18470,7 @@
   {
    "id": "bs.d7.927",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -705.6,
     882.2
@@ -17540,6 +18482,7 @@
   {
    "id": "bs.d7.928",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -619.5,
     882.2
@@ -17551,6 +18494,7 @@
   {
    "id": "bs.d7.929",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -533.4,
     882.2
@@ -17562,6 +18506,7 @@
   {
    "id": "bs.d7.930",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -447.3,
     882.2
@@ -17573,6 +18518,7 @@
   {
    "id": "bs.d7.931",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -361.3,
     882.2
@@ -17584,6 +18530,7 @@
   {
    "id": "bs.d7.932",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -275.2,
     882.2
@@ -17595,6 +18542,7 @@
   {
    "id": "bs.d7.933",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -189.1,
     882.2
@@ -17606,6 +18554,7 @@
   {
    "id": "bs.d7.934",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -103.0,
     882.2
@@ -17617,6 +18566,7 @@
   {
    "id": "bs.d7.935",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -16.9,
     882.2
@@ -17628,6 +18578,7 @@
   {
    "id": "bs.d7.936",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     69.2,
     882.2
@@ -17639,6 +18590,7 @@
   {
    "id": "bs.d7.937",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -1223.1,
     693.2
@@ -17650,6 +18602,7 @@
   {
    "id": "bs.d7.938",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -1242.2,
     764.3
@@ -17661,6 +18614,7 @@
   {
    "id": "bs.gq.939",
    "key": "lk-granary",
+   "cls": "building",
    "at": [
     -824.6,
     -144.0
@@ -17672,6 +18626,7 @@
   {
    "id": "bs.gq.940",
    "key": "lk-granary",
+   "cls": "building",
    "at": [
     -818.7,
     -166.2
@@ -17683,6 +18638,7 @@
   {
    "id": "bs.gq.941",
    "key": "lk-granary",
+   "cls": "building",
    "at": [
     -812.7,
     -188.4
@@ -17694,6 +18650,7 @@
   {
    "id": "bs.gq.942",
    "key": "lz-warehouse",
+   "cls": "building",
    "at": [
     -806.5,
     -211.6
@@ -17705,6 +18662,7 @@
   {
    "id": "bs.gq.943",
    "key": "lz-barracks",
+   "cls": "building",
    "at": [
     -799.5,
     -237.7
@@ -17716,6 +18674,7 @@
   {
    "id": "bs.gq.944",
    "key": "lz-muster",
+   "cls": "building",
    "at": [
     -791.6,
     -267.2
@@ -17727,6 +18686,7 @@
   {
    "id": "bs.gq.945",
    "key": "lz-barracks",
+   "cls": "building",
    "at": [
     -783.8,
     -296.6
@@ -17738,6 +18698,7 @@
   {
    "id": "bs.gq.946",
    "key": "lz-hall-bone",
+   "cls": "building",
    "at": [
     -776.5,
     -323.7
@@ -17749,6 +18710,7 @@
   {
    "id": "bs.gq.947",
    "key": "lk-granary",
+   "cls": "building",
    "at": [
     -770.0,
     -347.8
@@ -17760,6 +18722,7 @@
   {
    "id": "bs.gq.948",
    "key": "lk-granary",
+   "cls": "building",
    "at": [
     -764.1,
     -370.0
@@ -17771,6 +18734,7 @@
   {
    "id": "bs.gq.949",
    "key": "lk-granary",
+   "cls": "building",
    "at": [
     -758.1,
     -392.3
@@ -17782,6 +18746,7 @@
   {
    "id": "bs.gq.950",
    "key": "lk-granary",
+   "cls": "building",
    "at": [
     -752.2,
     -414.5
@@ -17793,6 +18758,7 @@
   {
    "id": "bs.gq.951",
    "key": "lz-cistern",
+   "cls": "building",
    "at": [
     -746.6,
     -435.2
@@ -17804,6 +18770,7 @@
   {
    "id": "bs.gq.952",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -1015.5,
     383.0
@@ -17816,6 +18783,7 @@
   {
    "id": "bs.gq.953",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -1011.5,
     368.1
@@ -17828,6 +18796,7 @@
   {
    "id": "bs.gq.954",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -1007.4,
     353.1
@@ -17840,6 +18809,7 @@
   {
    "id": "bs.gq.955",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -1003.4,
     338.1
@@ -17852,6 +18822,7 @@
   {
    "id": "bs.gq.956",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -999.4,
     323.1
@@ -17864,6 +18835,7 @@
   {
    "id": "bs.gq.957",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -994.5,
     304.8
@@ -17876,6 +18848,7 @@
   {
    "id": "bs.gq.958",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -990.5,
     289.8
@@ -17888,6 +18861,7 @@
   {
    "id": "bs.gq.959",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -986.5,
     274.8
@@ -17900,6 +18874,7 @@
   {
    "id": "bs.gq.960",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -982.5,
     259.9
@@ -17912,6 +18887,7 @@
   {
    "id": "bs.gq.961",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -978.5,
     244.9
@@ -17924,6 +18900,7 @@
   {
    "id": "bs.gq.962",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -973.5,
     226.5
@@ -17936,6 +18913,7 @@
   {
    "id": "bs.gq.963",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -969.5,
     211.6
@@ -17948,6 +18926,7 @@
   {
    "id": "bs.gq.964",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -965.5,
     196.6
@@ -17960,6 +18939,7 @@
   {
    "id": "bs.gq.965",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -961.5,
     181.6
@@ -17972,6 +18952,7 @@
   {
    "id": "bs.gq.966",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -957.5,
     166.7
@@ -17984,6 +18965,7 @@
   {
    "id": "bs.gq.967",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -952.6,
     148.3
@@ -17996,6 +18978,7 @@
   {
    "id": "bs.gq.968",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -948.6,
     133.3
@@ -18008,6 +18991,7 @@
   {
    "id": "bs.gq.969",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -944.5,
     118.4
@@ -18020,6 +19004,7 @@
   {
    "id": "bs.gq.970",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -940.5,
     103.4
@@ -18032,6 +19017,7 @@
   {
    "id": "bs.gq.971",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -936.5,
     88.4
@@ -18044,6 +19030,7 @@
   {
    "id": "bs.gq.972",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -931.6,
     70.1
@@ -18056,6 +19043,7 @@
   {
    "id": "bs.gq.973",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -927.6,
     55.1
@@ -18068,6 +19056,7 @@
   {
    "id": "bs.gq.974",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -923.6,
     40.1
@@ -18080,6 +19069,7 @@
   {
    "id": "bs.gq.975",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -919.6,
     25.2
@@ -18092,6 +19082,7 @@
   {
    "id": "bs.gq.976",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -915.6,
     10.2
@@ -18104,6 +19095,7 @@
   {
    "id": "bs.gq.977",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -910.6,
     -8.2
@@ -18116,6 +19108,7 @@
   {
    "id": "bs.gq.978",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -906.6,
     -23.1
@@ -18128,6 +19121,7 @@
   {
    "id": "bs.gq.979",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -902.6,
     -38.1
@@ -18140,6 +19134,7 @@
   {
    "id": "bs.gq.980",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -898.6,
     -53.1
@@ -18152,6 +19147,7 @@
   {
    "id": "bs.gq.981",
    "key": "lk-makers",
+   "cls": "building",
    "at": [
     -894.6,
     -68.1
@@ -18164,6 +19160,7 @@
   {
    "id": "bs.gq.982",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     -888.9,
     -91.4
@@ -18176,6 +19173,7 @@
   {
    "id": "bs.gq.983",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     -882.3,
     -116.0
@@ -18188,6 +19186,7 @@
   {
    "id": "bs.gq.984",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     -875.7,
     -140.6
@@ -18200,6 +19199,7 @@
   {
    "id": "bs.gq.985",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     -869.1,
     -165.3
@@ -18212,6 +19212,7 @@
   {
    "id": "bs.gq.986",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     -862.5,
     -189.9
@@ -18224,6 +19225,7 @@
   {
    "id": "bs.gq.987",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     -855.0,
     -217.9
@@ -18236,6 +19238,7 @@
   {
    "id": "bs.gq.988",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     -848.4,
     -242.5
@@ -18248,6 +19251,7 @@
   {
    "id": "bs.gq.989",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     -841.8,
     -267.2
@@ -18260,6 +19264,7 @@
   {
    "id": "bs.gq.990",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     -835.2,
     -291.8
@@ -18272,6 +19277,7 @@
   {
    "id": "bs.gq.991",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     -828.6,
     -316.4
@@ -18284,6 +19290,7 @@
   {
    "id": "bs.gq.992",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     -821.1,
     -344.4
@@ -18296,6 +19303,7 @@
   {
    "id": "bs.gq.993",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     -814.5,
     -369.1
@@ -18308,6 +19316,7 @@
   {
    "id": "bs.gq.994",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     -807.9,
     -393.7
@@ -18320,6 +19329,7 @@
   {
    "id": "bs.gq.995",
    "key": "lk-longhouse",
+   "cls": "building",
    "at": [
     -801.3,
     -418.3
@@ -18332,6 +19342,7 @@
   {
    "id": "bs.gq.996",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -800.4,
     -440.9
@@ -18344,6 +19355,7 @@
   {
    "id": "bs.gq.997",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -795.6,
     -458.7
@@ -18356,6 +19368,7 @@
   {
    "id": "bs.gq.998",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -790.8,
     -476.6
@@ -18368,6 +19381,7 @@
   {
    "id": "bs.gq.999",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -786.0,
     -494.5
@@ -18380,6 +19394,7 @@
   {
    "id": "bs.gq.1000",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -781.2,
     -512.4
@@ -18392,6 +19407,7 @@
   {
    "id": "bs.gq.1001",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -775.5,
     -533.6
@@ -18404,6 +19420,7 @@
   {
    "id": "bs.gq.1002",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -770.8,
     -551.5
@@ -18416,6 +19433,7 @@
   {
    "id": "bs.gq.1003",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -766.0,
     -569.3
@@ -18428,6 +19446,7 @@
   {
    "id": "bs.gq.1004",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -761.2,
     -587.2
@@ -18440,6 +19459,7 @@
   {
    "id": "bs.gq.1005",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -756.4,
     -605.1
@@ -18452,6 +19472,7 @@
   {
    "id": "bs.gq.1006",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -750.7,
     -626.3
@@ -18464,6 +19485,7 @@
   {
    "id": "bs.gq.1007",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -745.9,
     -644.2
@@ -18476,6 +19498,7 @@
   {
    "id": "bs.gq.1008",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -741.1,
     -662.1
@@ -18488,6 +19511,7 @@
   {
    "id": "bs.gq.1009",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -736.3,
     -679.9
@@ -18500,6 +19524,7 @@
   {
    "id": "bs.gq.1010",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -731.5,
     -697.8
@@ -18512,6 +19537,7 @@
   {
    "id": "bs.gq.1011",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -725.9,
     -719.1
@@ -18524,6 +19550,7 @@
   {
    "id": "bs.gq.1012",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -721.1,
     -736.9
@@ -18536,6 +19563,7 @@
   {
    "id": "bs.gq.1013",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -716.3,
     -754.8
@@ -18548,6 +19576,7 @@
   {
    "id": "bs.gq.1014",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -711.5,
     -772.7
@@ -18560,6 +19589,7 @@
   {
    "id": "bs.gq.1015",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -706.7,
     -790.5
@@ -18572,6 +19602,7 @@
   {
    "id": "bs.gq.1016",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -701.0,
     -811.8
@@ -18584,6 +19615,7 @@
   {
    "id": "bs.gq.1017",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -696.2,
     -829.7
@@ -18596,6 +19628,7 @@
   {
    "id": "bs.gq.1018",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -691.4,
     -847.5
@@ -18608,6 +19641,7 @@
   {
    "id": "bs.gq.1019",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -686.6,
     -865.4
@@ -18620,6 +19654,7 @@
   {
    "id": "bs.gq.1020",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -681.9,
     -883.3
@@ -18632,6 +19667,7 @@
   {
    "id": "bs.gq.1021",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -676.2,
     -904.5
@@ -18644,6 +19680,7 @@
   {
    "id": "bs.gq.1022",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -671.4,
     -922.4
@@ -18656,6 +19693,7 @@
   {
    "id": "bs.gq.1023",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -666.6,
     -940.3
@@ -18668,6 +19706,7 @@
   {
    "id": "bs.gq.1024",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -661.8,
     -958.1
@@ -18680,6 +19719,7 @@
   {
    "id": "bs.gq.1025",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -1017.6,
     313.3
@@ -18691,6 +19731,7 @@
   {
    "id": "bs.gq.1026",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -994.4,
     226.8
@@ -18702,6 +19743,7 @@
   {
    "id": "bs.gq.1027",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -971.2,
     140.3
@@ -18713,6 +19755,7 @@
   {
    "id": "bs.gq.1028",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -948.0,
     53.8
@@ -18724,6 +19767,7 @@
   {
    "id": "bs.gq.1029",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -924.8,
     -32.7
@@ -18735,6 +19779,7 @@
   {
    "id": "bs.gq.1030",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -901.7,
     -119.2
@@ -18746,6 +19791,7 @@
   {
    "id": "bs.gq.1031",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -878.5,
     -205.7
@@ -18757,6 +19803,7 @@
   {
    "id": "bs.gq.1032",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -855.3,
     -292.2
@@ -18768,6 +19815,7 @@
   {
    "id": "bs.gq.1033",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -832.1,
     -378.7
@@ -18779,6 +19827,7 @@
   {
    "id": "bs.gq.1034",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -809.0,
     -465.2
@@ -18790,6 +19839,7 @@
   {
    "id": "bs.gq.1035",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -785.8,
     -551.6
@@ -18801,6 +19851,7 @@
   {
    "id": "bs.gq.1036",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -762.6,
     -638.1
@@ -18812,6 +19863,7 @@
   {
    "id": "bs.gq.1037",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -739.4,
     -724.6
@@ -18823,6 +19875,7 @@
   {
    "id": "bs.gq.1038",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -716.3,
     -811.1
@@ -18834,6 +19887,7 @@
   {
    "id": "bs.gq.1039",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -693.1,
     -897.6
@@ -18845,6 +19899,7 @@
   {
    "id": "bs.gq.1040",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -614.2,
     -1007.1
@@ -18857,6 +19912,7 @@
   {
    "id": "bs.gq.1041",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -592.2,
     -1007.1
@@ -18869,6 +19925,7 @@
   {
    "id": "bs.gq.1042",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -573.7,
     -1007.1
@@ -18881,6 +19938,7 @@
   {
    "id": "bs.gq.1043",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -899.2,
     416.9
@@ -18893,6 +19951,7 @@
   {
    "id": "bs.gq.1044",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -894.4,
     399.1
@@ -18905,6 +19964,7 @@
   {
    "id": "bs.gq.1045",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -889.6,
     381.2
@@ -18917,6 +19977,7 @@
   {
    "id": "bs.gq.1046",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -883.9,
     360.0
@@ -18929,6 +19990,7 @@
   {
    "id": "bs.gq.1047",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -879.1,
     342.1
@@ -18941,6 +20003,7 @@
   {
    "id": "bs.gq.1048",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -874.3,
     324.2
@@ -18953,6 +20016,7 @@
   {
    "id": "bs.gq.1049",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -869.5,
     306.3
@@ -18965,6 +20029,7 @@
   {
    "id": "bs.gq.1050",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -864.7,
     288.5
@@ -18977,6 +20042,7 @@
   {
    "id": "bs.gq.1051",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -859.0,
     267.2
@@ -18989,6 +20055,7 @@
   {
    "id": "bs.gq.1052",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -854.3,
     249.4
@@ -19001,6 +20068,7 @@
   {
    "id": "bs.gq.1053",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -849.5,
     231.5
@@ -19013,6 +20081,7 @@
   {
    "id": "bs.gq.1054",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -844.7,
     213.6
@@ -19025,6 +20094,7 @@
   {
    "id": "bs.gq.1055",
    "key": "lk-lodge",
+   "cls": "building",
    "at": [
     -839.9,
     195.8
@@ -19037,6 +20107,7 @@
   {
    "id": "bs.gq.1056",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -859.4,
     344.1
@@ -19048,6 +20119,7 @@
   {
    "id": "bs.gq.1057",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -837.1,
     260.9
@@ -19059,6 +20131,7 @@
   {
    "id": "bs.gq.1058",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -814.8,
     177.6
@@ -19070,6 +20143,7 @@
   {
    "id": "bs.gq.1059",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -792.5,
     94.4
@@ -19081,6 +20155,7 @@
   {
    "id": "bs.gq.1060",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -770.2,
     11.2
@@ -19092,6 +20167,7 @@
   {
    "id": "bs.gq.1061",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -747.9,
     -72.0
@@ -19103,6 +20179,7 @@
   {
    "id": "bs.gq.1062",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -725.7,
     -155.2
@@ -19114,6 +20191,7 @@
   {
    "id": "bs.gq.1063",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -703.4,
     -238.4
@@ -19125,6 +20203,7 @@
   {
    "id": "bs.gq.1064",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -681.1,
     -321.6
@@ -19136,6 +20215,7 @@
   {
    "id": "bs.gq.1065",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -658.8,
     -404.8
@@ -19147,6 +20227,7 @@
   {
    "id": "bs.gq.1066",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -636.5,
     -488.0
@@ -19158,6 +20239,7 @@
   {
    "id": "bs.gq.1067",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -614.2,
     -571.2
@@ -19169,6 +20251,7 @@
   {
    "id": "bs.gq.1068",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -591.9,
     -654.4
@@ -19180,6 +20263,7 @@
   {
    "id": "bs.gq.1069",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -569.6,
     -737.6
@@ -19191,6 +20275,7 @@
   {
    "id": "bs.gq.1070",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -547.3,
     -820.8
@@ -19202,6 +20287,7 @@
   {
    "id": "bs.gq.1071",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -525.0,
     -904.0
@@ -19213,6 +20299,7 @@
   {
    "id": "bs.gq.1072",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -1002.9,
     472.4
@@ -19224,6 +20311,7 @@
   {
    "id": "bs.gq.1073",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -1080.2,
     344.6
@@ -19235,6 +20323,7 @@
   {
    "id": "bs.gq.1074",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -1057.2,
     258.7
@@ -19246,6 +20335,7 @@
   {
    "id": "bs.gq.1075",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -1034.2,
     172.9
@@ -19257,6 +20347,7 @@
   {
    "id": "bs.gq.1076",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -1011.2,
     87.1
@@ -19268,6 +20359,7 @@
   {
    "id": "bs.gq.1077",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -988.3,
     1.3
@@ -19279,6 +20371,7 @@
   {
    "id": "bs.gq.1078",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -965.3,
     -84.5
@@ -19290,6 +20383,7 @@
   {
    "id": "bs.gq.1079",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -942.3,
     -170.3
@@ -19301,6 +20395,7 @@
   {
    "id": "bs.gq.1080",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -919.3,
     -256.2
@@ -19312,6 +20407,7 @@
   {
    "id": "bs.gq.1081",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -896.3,
     -342.0
@@ -19323,6 +20419,7 @@
   {
    "id": "bs.gq.1082",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -873.3,
     -427.8
@@ -19334,6 +20431,7 @@
   {
    "id": "bs.gq.1083",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -850.3,
     -513.6
@@ -19345,6 +20443,7 @@
   {
    "id": "bs.gq.1084",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -827.3,
     -599.4
@@ -19356,6 +20455,7 @@
   {
    "id": "bs.gq.1085",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -804.3,
     -685.2
@@ -19367,6 +20467,7 @@
   {
    "id": "bs.gq.1086",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -781.3,
     -771.0
@@ -19378,6 +20479,7 @@
   {
    "id": "bs.gq.1087",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -758.3,
     -856.9
@@ -19389,6 +20491,7 @@
   {
    "id": "bs.gq.1088",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -735.3,
     -942.7
@@ -19400,6 +20503,7 @@
   {
    "id": "bs.gq.1089",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -559.6,
     -1079.5
@@ -19411,6 +20515,7 @@
   {
    "id": "bs.gq.1090",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -811.8,
     393.1
@@ -19422,6 +20527,7 @@
   {
    "id": "bs.gq.1091",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -789.4,
     309.3
@@ -19433,6 +20539,7 @@
   {
    "id": "bs.gq.1092",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -766.9,
     225.5
@@ -19444,6 +20551,7 @@
   {
    "id": "bs.gq.1093",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -744.5,
     141.7
@@ -19455,6 +20563,7 @@
   {
    "id": "bs.gq.1094",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -722.0,
     57.9
@@ -19466,6 +20575,7 @@
   {
    "id": "bs.gq.1095",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -699.6,
     -26.0
@@ -19477,6 +20587,7 @@
   {
    "id": "bs.gq.1096",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -677.1,
     -109.8
@@ -19488,6 +20599,7 @@
   {
    "id": "bs.gq.1097",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -654.7,
     -193.6
@@ -19499,6 +20611,7 @@
   {
    "id": "bs.gq.1098",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -632.2,
     -277.4
@@ -19510,6 +20623,7 @@
   {
    "id": "bs.gq.1099",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -609.7,
     -361.2
@@ -19521,6 +20635,7 @@
   {
    "id": "bs.gq.1100",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -587.3,
     -445.0
@@ -19532,6 +20647,7 @@
   {
    "id": "bs.gq.1101",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -564.8,
     -528.8
@@ -19543,6 +20659,7 @@
   {
    "id": "bs.gq.1102",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -542.4,
     -612.6
@@ -19554,6 +20671,7 @@
   {
    "id": "bs.gq.1103",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -519.9,
     -696.4
@@ -19565,6 +20683,7 @@
   {
    "id": "bs.gq.1104",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -497.5,
     -780.2
@@ -19576,6 +20695,7 @@
   {
    "id": "bs.gq.1105",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -475.0,
     -864.0
@@ -19587,6 +20707,7 @@
   {
    "id": "bs.gq.1106",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -452.6,
     -947.8
@@ -19598,6 +20719,7 @@
   {
    "id": "bs.gq.1107",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -1047.1,
     493.8
@@ -19609,6 +20731,7 @@
   {
    "id": "bs.gq.1108",
    "key": "gl-well",
+   "cls": "building",
    "at": [
     -969.4,
     493.8
@@ -19620,6 +20743,7 @@
   {
    "id": "bs.precinct.1109",
    "key": "lk-greathall",
+   "cls": "building",
    "at": [
     -11.6,
     -9.5
@@ -19631,6 +20755,7 @@
   {
    "id": "bs.precinct.1110",
    "key": "lz-obelisk",
+   "cls": "building",
    "at": [
     -0.1,
     28.4
@@ -19643,6 +20768,7 @@
   {
    "id": "bs.precinct.1111",
    "key": "lz-obelisk",
+   "cls": "building",
    "at": [
     40.2,
     4.6
@@ -19655,6 +20781,7 @@
   {
    "id": "bs.precinct.1112",
    "key": "lz-obelisk",
+   "cls": "building",
    "at": [
     24.6,
     48.8
@@ -19667,6 +20794,7 @@
   {
    "id": "bs.precinct.1113",
    "key": "lz-obelisk",
+   "cls": "building",
    "at": [
     64.9,
     24.9
@@ -19679,6 +20807,7 @@
   {
    "id": "bs.precinct.1114",
    "key": "lz-obelisk",
+   "cls": "building",
    "at": [
     49.3,
     69.1
@@ -19691,6 +20820,7 @@
   {
    "id": "bs.precinct.1115",
    "key": "lz-obelisk",
+   "cls": "building",
    "at": [
     89.7,
     45.3
@@ -19703,6 +20833,7 @@
   {
    "id": "bs.precinct.1116",
    "key": "lz-obelisk",
+   "cls": "building",
    "at": [
     74.1,
     89.4
@@ -19715,6 +20846,7 @@
   {
    "id": "bs.precinct.1117",
    "key": "lz-ley",
+   "cls": "building",
    "at": [
     44.8,
     36.8
@@ -19726,6 +20858,7 @@
   {
    "id": "bs.precinct.1118",
    "key": "lz-bells",
+   "cls": "building",
    "at": [
     -7.1,
     14.9
@@ -19737,6 +20870,7 @@
   {
    "id": "bs.precinct.1119",
    "key": "lz-stela-pair",
+   "cls": "building",
    "at": [
     13.3,
     -9.8
@@ -19748,6 +20882,7 @@
   {
    "id": "bs.precinct.1120",
    "key": "lk-college",
+   "cls": "building",
    "at": [
     -277.7,
     38.6
@@ -19759,6 +20894,7 @@
   {
    "id": "bs.precinct.1121",
    "key": "lz-seer",
+   "cls": "building",
    "at": [
     -298.4,
     115.9
@@ -19770,6 +20906,7 @@
   {
    "id": "bs.precinct.1122",
    "key": "lz-stela-turned",
+   "cls": "building",
    "at": [
     -255.7,
     -43.5
@@ -19781,6 +20918,7 @@
   {
    "id": "bs.precinct.1123",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     -178.4,
     3.9
@@ -19793,6 +20931,7 @@
   {
    "id": "bs.precinct.1124",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     -187.7,
     38.6
@@ -19805,6 +20944,7 @@
   {
    "id": "bs.precinct.1125",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     -197.0,
     73.4
@@ -19817,6 +20957,7 @@
   {
    "id": "bs.precinct.1126",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     -206.3,
     108.2
@@ -19829,6 +20970,7 @@
   {
    "id": "bs.precinct.1127",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     -251.3,
     108.2
@@ -19841,6 +20983,7 @@
   {
    "id": "bs.precinct.1128",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     -296.3,
     108.2
@@ -19853,6 +20996,7 @@
   {
    "id": "bs.precinct.1129",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     -341.3,
     108.2
@@ -19865,6 +21009,7 @@
   {
    "id": "bs.precinct.1130",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     -304.1,
     -30.9
@@ -19877,6 +21022,7 @@
   {
    "id": "bs.precinct.1131",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     -259.1,
     -30.9
@@ -19889,6 +21035,7 @@
   {
    "id": "bs.precinct.1132",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     -214.1,
     -30.9
@@ -19901,6 +21048,7 @@
   {
    "id": "bs.precinct.1133",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     -169.1,
     -30.9
@@ -19913,6 +21061,7 @@
   {
    "id": "bs.precinct.1134",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     -124.1,
     -30.9
@@ -19925,6 +21074,7 @@
   {
    "id": "bs.precinct.1135",
    "key": "lk-tower",
+   "cls": "building",
    "at": [
     -133.4,
     3.9
@@ -19937,6 +21087,7 @@
   {
    "id": "bs.precinct.1136",
    "key": "lk-nest",
+   "cls": "building",
    "at": [
     79.1,
     201.2
@@ -19948,6 +21099,7 @@
   {
    "id": "bs.precinct.1137",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     -79.1,
     -115.1
@@ -19960,6 +21112,7 @@
   {
    "id": "bs.precinct.1138",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     -35.1,
     -115.1
@@ -19972,6 +21125,7 @@
   {
    "id": "bs.precinct.1139",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     8.9,
     -115.1
@@ -19984,6 +21138,7 @@
   {
    "id": "bs.precinct.1140",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     52.9,
     -115.1
@@ -19996,6 +21151,7 @@
   {
    "id": "bs.precinct.1141",
    "key": "lk-warren",
+   "cls": "building",
    "at": [
     96.9,
     -115.1
@@ -20008,6 +21164,7 @@
   {
    "id": "bs.wall.1142",
    "key": "lk-gate",
+   "cls": "building",
    "at": [
     -387.5,
     -1149.1
@@ -20019,6 +21176,7 @@
   {
    "id": "bs.wall.1143",
    "key": "lk-watchtower",
+   "cls": "building",
    "at": [
     -425.4,
     -868.6
@@ -20031,6 +21189,7 @@
   {
    "id": "bs.wall.1144",
    "key": "lk-watchtower",
+   "cls": "building",
    "at": [
     39.2,
     -742.9
@@ -20043,6 +21202,7 @@
   {
    "id": "bs.wall.1145",
    "key": "lk-watchtower",
+   "cls": "building",
    "at": [
     667.7,
     -742.9
@@ -20055,6 +21215,7 @@
   {
    "id": "bs.wall.1146",
    "key": "lk-watchtower",
+   "cls": "building",
    "at": [
     1004.8,
     -519.3
@@ -20067,6 +21228,7 @@
   {
    "id": "bs.wall.1147",
    "key": "lk-watchtower",
+   "cls": "building",
    "at": [
     842.1,
     87.7
@@ -20079,6 +21241,7 @@
   {
    "id": "bs.wall.1148",
    "key": "lk-watchtower",
+   "cls": "building",
    "at": [
     679.4,
     694.8
@@ -20091,6 +21254,7 @@
   {
    "id": "bs.wall.1149",
    "key": "lk-watchtower",
+   "cls": "building",
    "at": [
     235.1,
     934.7
@@ -20103,6 +21267,7 @@
   {
    "id": "bs.wall.1150",
    "key": "lk-watchtower",
+   "cls": "building",
    "at": [
     -393.4,
     934.7
@@ -20115,6 +21280,7 @@
   {
    "id": "bs.wall.1151",
    "key": "lk-watchtower",
+   "cls": "building",
    "at": [
     -1216.7,
     934.7
@@ -20127,6 +21293,7 @@
   {
    "id": "bs.wall.1152",
    "key": "lk-watchtower",
+   "cls": "building",
    "at": [
     -1242.1,
     621.4
@@ -20139,6 +21306,7 @@
   {
    "id": "bs.wall.1153",
    "key": "lk-watchtower",
+   "cls": "building",
    "at": [
     -1079.4,
     14.3
@@ -20151,6 +21319,7 @@
   {
    "id": "bs.wall.1154",
    "key": "lk-watchtower",
+   "cls": "building",
    "at": [
     -916.8,
     -592.7
@@ -20163,6 +21332,7 @@
   {
    "id": "bs.wall.1155",
    "key": "lk-watchtower",
+   "cls": "building",
    "at": [
     -715.2,
     -1149.1
@@ -20175,6 +21345,7 @@
   {
    "id": "bs.wall.1156",
    "key": "lk-slot",
+   "cls": "building",
    "at": [
     709.3,
     583.5
@@ -20187,6 +21358,7 @@
   {
    "id": "bs.ley.1157",
    "key": "lz-obelisk",
+   "cls": "building",
    "at": [
     165.9,
     152.0
@@ -20198,6 +21370,7 @@
   {
    "id": "bs.ley.1158",
    "key": "lz-obelisk",
+   "cls": "building",
    "at": [
     399.1,
     343.9
@@ -20209,6 +21382,7 @@
   {
    "id": "bs.ley.1159",
    "key": "lz-obelisk",
+   "cls": "building",
    "at": [
     690.6,
     583.7
@@ -20220,6 +21394,7 @@
   {
    "id": "bs.ley.1160",
    "key": "lz-stela-pair",
+   "cls": "building",
    "at": [
     1892.0,
     1556.5
@@ -20231,39 +21406,82 @@
   {
    "id": "bs.ley.1161",
    "key": "lz-barge",
+   "cls": "vessel",
    "at": [
     1875.0,
     1526.9
    ],
    "ry": 0.8824,
    "where": "ley",
+   "tags": {
+    "types": [
+     "cargo",
+     "barge",
+     "ferry"
+    ],
+    "propulsion": "paddles",
+    "hull": "raft",
+    "wealth": "middle",
+    "crew": 6,
+    "role": "barge",
+    "job": "shipwrighting"
+   },
    "role": "a reed barge moored to the mole"
   },
   {
    "id": "bs.ley.1162",
    "key": "lz-barge",
+   "cls": "vessel",
    "at": [
     1851.8,
     1507.8
    ],
    "ry": 0.8824,
    "where": "ley",
+   "tags": {
+    "types": [
+     "cargo",
+     "barge",
+     "ferry"
+    ],
+    "propulsion": "paddles",
+    "hull": "raft",
+    "wealth": "middle",
+    "crew": 6,
+    "role": "barge",
+    "job": "shipwrighting"
+   },
    "role": "a reed barge moored to the mole"
   },
   {
    "id": "bs.ley.1163",
    "key": "lz-barge",
+   "cls": "vessel",
    "at": [
     1828.6,
     1488.8
    ],
    "ry": 0.8824,
    "where": "ley",
+   "tags": {
+    "types": [
+     "cargo",
+     "barge",
+     "ferry"
+    ],
+    "propulsion": "paddles",
+    "hull": "raft",
+    "wealth": "middle",
+    "crew": 6,
+    "role": "barge",
+    "job": "shipwrighting"
+   },
    "role": "a reed barge moored to the mole"
   },
   {
    "id": "bs.works.1164",
    "key": "lk-dock",
+   "cls": "building",
    "at": [
     1761.5,
     450.7
@@ -20276,6 +21494,7 @@
   {
    "id": "bs.works.1165",
    "key": "lk-dockstore",
+   "cls": "building",
    "at": [
     1722.4,
     440.2
@@ -20288,6 +21507,7 @@
   {
    "id": "bs.works.1166",
    "key": "lz-warehouse",
+   "cls": "building",
    "at": [
     1696.3,
     433.2
@@ -20299,6 +21519,7 @@
   {
    "id": "bs.works.1167",
    "key": "lk-bronzehall",
+   "cls": "building",
    "at": [
     1752.2,
     232.5
@@ -20311,6 +21532,7 @@
   {
    "id": "bs.works.1168",
    "key": "lk-charcoal",
+   "cls": "building",
    "at": [
     1713.0,
     222.0
@@ -20323,28 +21545,57 @@
   {
    "id": "bs.works.1169",
    "key": "lz-barge",
+   "cls": "vessel",
    "at": [
     1791.4,
     431.8
    ],
    "ry": -0.2618,
    "where": "works",
+   "tags": {
+    "types": [
+     "cargo",
+     "barge",
+     "ferry"
+    ],
+    "propulsion": "paddles",
+    "hull": "raft",
+    "wealth": "middle",
+    "crew": 6,
+    "role": "barge",
+    "job": "shipwrighting"
+   },
    "role": "a reed barge loading Coil ingots and bay fish in the Lothal dock basin"
   },
   {
    "id": "bs.works.1170",
    "key": "lz-barge",
+   "cls": "vessel",
    "at": [
     1777.9,
     482.1
    ],
    "ry": -0.2618,
    "where": "works",
+   "tags": {
+    "types": [
+     "cargo",
+     "barge",
+     "ferry"
+    ],
+    "propulsion": "paddles",
+    "hull": "raft",
+    "wealth": "middle",
+    "crew": 6,
+    "role": "barge",
+    "job": "shipwrighting"
+   },
    "role": "a reed barge loading Coil ingots and bay fish in the Lothal dock basin"
   },
   {
    "id": "bs.works.1171",
    "key": "lz-weir",
+   "cls": "building",
    "at": [
     1631.7,
     811.5
@@ -20356,6 +21607,7 @@
   {
    "id": "bs.works.1172",
    "key": "lz-weir",
+   "cls": "building",
    "at": [
     1551.9,
     916.0
@@ -20367,6 +21619,7 @@
   {
    "id": "bs.works.1173",
    "key": "lz-weir",
+   "cls": "building",
    "at": [
     1467.3,
     1019.2
@@ -20378,6 +21631,7 @@
   {
    "id": "bs.pans.1174",
    "key": "gl-pans",
+   "cls": "building",
    "at": [
     -1486.0,
     1054.7
@@ -20389,6 +21643,7 @@
   {
    "id": "bs.pans.1175",
    "key": "gl-pans",
+   "cls": "building",
    "at": [
     -1582.0,
     1064.7
@@ -20400,6 +21655,7 @@
   {
    "id": "bs.pans.1176",
    "key": "gl-pans",
+   "cls": "building",
    "at": [
     -1678.0,
     1054.7
@@ -20411,6 +21667,7 @@
   {
    "id": "bs.pans.1177",
    "key": "lk-boil",
+   "cls": "building",
    "at": [
     -1516.0,
     964.7
@@ -20423,6 +21680,7 @@
   {
    "id": "bs.pans.1178",
    "key": "lk-boil",
+   "cls": "building",
    "at": [
     -1666.0,
     964.7
@@ -20435,6 +21693,7 @@
   {
    "id": "bs.pans.1179",
    "key": "gl-saltstore",
+   "cls": "building",
    "at": [
     -1386.0,
     974.7
@@ -20446,6 +21705,7 @@
   {
    "id": "bs.gate_road.1180",
    "key": "lz-wayhalt",
+   "cls": "building",
    "at": [
     -433.5,
     -1339.1
@@ -20457,6 +21717,7 @@
   {
    "id": "bs.gate_road.1181",
    "key": "lz-waystone",
+   "cls": "building",
    "at": [
     -482.5,
     -1459.1
@@ -20468,6 +21729,7 @@
   {
    "id": "bs.gate_road.1182",
    "key": "lz-waystone",
+   "cls": "building",
    "at": [
     -452.5,
     -1414.1
@@ -20479,6 +21741,7 @@
   {
    "id": "bs.gate_road.1183",
    "key": "lz-waystone",
+   "cls": "building",
    "at": [
     -312.5,
     -1459.1

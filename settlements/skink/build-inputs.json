@@ -119,9 +119,9 @@
     "kits/fauna/tex/shag.albedo.webp": "e95592f2e261707203869787b102058e58a7d7a2a3f23be0e63bba4fd27679e7",
     "kits/fauna/tex/skin.albedo.webp": "3ab6d925ecf817078b66c17122eac5f79f81dbe515bc78b54ff110a2f83137d6",
     "kits/fauna/tex/sleek.albedo.webp": "d84a1e76db9bf4b0ff418232509e815ff3bc3c6b02647924f9ec8be952401f0e",
-    "kits/lizardmen/PORT.md": "5544300c93c29c97ee5be43400fec6115b96036c6c7e7a0079af55284d905137",
+    "kits/lizardmen/PORT.md": "8f8ab47cd984793a54c5c4aa8f92569e48f42be3c0287ecb42f01028d3fd2de8",
     "kits/lizardmen/build.py": "9f852e5c92ad5250cb855398596f6d6fa189fe1bd23773b6923cdc46c791cc60",
-    "kits/lizardmen/settle/82-lzv-site.js": "146f24deb13c6dd4fc59f41fbbdc32e138d8e03e9f47673250d469793df76106",
+    "kits/lizardmen/settle/82-lzv-site.js": "ed6ae9578f6981ee5ae397c101c86e4a0851e9341ce15e8524ec654fdcabcfc6",
     "kits/lizardmen/settle/90w-lzv-world.js": "2b2a5f6619d630e2e5e26a374c2d37e183e40c11528ba197d9eb6f7e53bccdc3",
     "kits/lizardmen/settle/99-m-lzv-probe.js": "7b7752a25e12f8114d79faa21fa4d916c1a58bb4761d62b166ddaf100d603967",
     "kits/lizardmen/src/00-head.html": "72032d6ccd6efe1a3b6edd5792e68f4a829c4333b8dfa6ec8fae546f99aaef9f",
@@ -142,7 +142,7 @@
     "kits/lizardmen/src/60-lz-reliquary.js": "dc7ab8b013c9bc5766b6a12a686bc2706a77cffa57ed9071bc42e3cb7443388c",
     "kits/lizardmen/src/62-lk-capital.js": "e80308da9ca85491501680d8500fe62bb1b88353e7d1b99019d253e64df009dc",
     "kits/lizardmen/src/63-lk-works.js": "5083c84a72574ad669e91ce8ef1b393d1e3a368e8e59e559c1f73260d6bbe156",
-    "kits/lizardmen/src/89-rows.js": "b870b59aecba5c288f20158664de0f96842ccfbb599fa788446763d29d296545",
+    "kits/lizardmen/src/89-rows.js": "760656a5d24c95eb67d98c5440e2d460b9408153388ad5670cbb22fb20453528",
     "kits/lizardmen/tex/basalt.albedo.webp": "cecb04c3bf107ee4eae1ac472ca60c735a9b8c6e13b89ab812fcdb1f8c1fc47c",
     "kits/lizardmen/tex/basalt.normal.webp": "bdac85db0bb29277a9ad3e0d1681758ca23f3ed9fbe728975eb54a3fb6df5a77",
     "kits/lizardmen/tex/basalt.rough.webp": "984de484e1e2a2e3e7ae2e7d704b6cb4b4f990d5f6c5189814259b388ba92d98",
@@ -347,15 +347,15 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "settlements/skink/build-manifest.json": "3f111ac3471fb074ac5dc210c53064775dce817fdbca8163576368f72333eaf1",
-    "settlements/skink/dist/skink.html": "9b896f0e92a83c227e82167c74eca42acad87ad199195dad410942f1c1507d09",
+    "settlements/skink/build-manifest.json": "41a79a7811001a883886f01b709cbfef6c3ab7086d27d56458ed9288e7d476e7",
+    "settlements/skink/dist/skink.html": "7a8654be980f7ab3cd6cf69bf863acc25edb16963fc092aad69bc177acbb64f3",
     "settlements/skink/dist/skink.tex.lizardmen-2.js": "31c1a0c14fca0d47fa032b7855d9e732714503fcba0dbc6373218750009f8cc9",
     "settlements/skink/dist/skink.tex.lizardmen.js": "e46dc599517bad665d6e46fa54c8619d76d56f7e10052f0d6b386e4c9d6bd221",
     "settlements/skink/dist/skink.tex.skink.js": "441e917e7569f76c546043774a53a6a3944a6057e61a0d1f4d4a0b036c5233bf"
    },
    "outputs_raw": {
-    "settlements/skink/build-manifest.json": "3f111ac3471fb074ac5dc210c53064775dce817fdbca8163576368f72333eaf1",
-    "settlements/skink/dist/skink.html": "9b896f0e92a83c227e82167c74eca42acad87ad199195dad410942f1c1507d09",
+    "settlements/skink/build-manifest.json": "41a79a7811001a883886f01b709cbfef6c3ab7086d27d56458ed9288e7d476e7",
+    "settlements/skink/dist/skink.html": "7a8654be980f7ab3cd6cf69bf863acc25edb16963fc092aad69bc177acbb64f3",
     "settlements/skink/dist/skink.tex.lizardmen-2.js": "31c1a0c14fca0d47fa032b7855d9e732714503fcba0dbc6373218750009f8cc9",
     "settlements/skink/dist/skink.tex.lizardmen.js": "e46dc599517bad665d6e46fa54c8619d76d56f7e10052f0d6b386e4c9d6bd221",
     "settlements/skink/dist/skink.tex.skink.js": "441e917e7569f76c546043774a53a6a3944a6057e61a0d1f4d4a0b036c5233bf"

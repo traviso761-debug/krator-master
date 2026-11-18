@@ -43,6 +43,8 @@ ASSERT_JS = r"""() => {
   R.push({ name: 'no-nan', ok: A.nanSweep() === 0, detail: 'nan meshes: ' + A.nanSweep() });
   const bad = Object.keys(A.DEFS).filter(k => A.DEFS[k].cls === 'building' && !(A.DEFS[k].tags.types || []).length);
   R.push({ name: 'buildings-typed', ok: !bad.length, detail: bad.length ? bad.join(', ') : 'every building def has culture and types' });
+  const vDefs = Object.keys(A.DEFS).filter(k => A.DEFS[k].cls === 'vessel'), badV = vDefs.filter(k => { const tg = A.DEFS[k].tags || {}; return !(tg.types && tg.types.length && tg.propulsion && tg.hull && tg.wealth && tg.crew && tg.role); }), vRecs = A.REG.filter(r => r.cls === 'vessel' && (!r.tid || r.tid.indexOf('ves_') !== 0));
+  R.push({ name: 'vessels-tagged', ok: vDefs.length > 0 && !badV.length && !vRecs.length, detail: badV.length || vRecs.length ? 'bad vessel tags/ids: ' + badV.concat(vRecs.map(r => r.key + ':' + r.tid)).join(', ') : vDefs.length + ' vessel def(s), ' + A.REG.filter(r => r.cls === 'vessel').length + ' placed as ves_*' });
   const T = A.tags().audit;
   R.push({ name: 'tags-vocabulary', ok: T.unknown === 0 && T.missingCulture === 0 && T.missingTypes === 0, detail: T.records + ' records, unknown ' + T.unknown + (T.unknown ? ' ' + JSON.stringify(T.unknownValues) + JSON.stringify(T.unknownKeys) : '') });
   const heavy = F.filter(f => f.tris > (f.budget || 120000));

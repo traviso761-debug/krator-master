@@ -288,7 +288,9 @@ def grouped(rs, n, note, decor, fill):
             extra.append((r['fp'], fill(r), (40, 40, 40))); continue
         cnt = sum(1 for q in rs if q['key'] == k)
         first[k] = n
-        rooms.append(PR(n, L.KIT[k]['name'] + (' (x%d)' % cnt if cnt > 1 else ''), 'hall', r['fp'], decor(r), note(r), fill=fill(r))); n += 1
+        rkind = L.KIT[k].get('cls', 'hall')
+        if rkind == 'building': rkind = 'hall'
+        rooms.append(PR(n, L.KIT[k]['name'] + (' (x%d)' % cnt if cnt > 1 else ''), rkind, r['fp'], decor(r), note(r), fill=fill(r))); n += 1
     return rooms, extra, n
 
 def clip_poly(pts, box):

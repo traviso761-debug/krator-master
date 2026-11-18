@@ -180,7 +180,13 @@ paths, max grade `<= 20.5 %`) yields **two complete physical circuits**, **`24` 
 | **West Loop 4a** *(Primary: Narrows Barge)* | **Gila** (`653,1485`) -> **The Tubes** (`608,1547`) | **82 km land + 66 km water** | `6.2 %` | **5.5 d** | Land `68 km` via `lz.v.west-shore` (`642,1495`) to `lz.v.narrows-ne` (`645,1518`), **`66 km` `lz-barge` ferry** to `lz.v.narrows-sw` (`615,1536`), land `26 km` to `The Tubes` |
 | **West Loop 4b & 5** *(South Return Apron)* | **The Tubes** (`608,1547`) -> **Iguana** (`713,1569`) -> **Basilisk** | **248 km** *(to Iguana)* | `20.2 %` | 12.5 d | `lz.v.tkyoob-ford` (`624,1554`) -> `lz.v.kopa-forks` (`618,1562`) -> `halt.w8` (`642,1566`) -> `halt.w9` (`661,1572`) -> `halt.w10` (`681,1580`) -> `lz.v.tyan-bench` (`698,1586`) -> `Iguana` |
 
-### 5.2 Paddled Reed-Barge Water Runs (`lz-barge`, `45 km/day` in calm terminal-sea air, no sails)
+### 5.2 Paddled Reed-Barge Water Runs (`lz-barge`, `core/tags` `class: 'vessel'`, `45 km/day` in calm terminal-sea air, no sails)
+
+> **Vessel tag requirement (the owner, 2026-11-17):** Every barge and boat across Lizardman settlements and open-world cuts (`lz-barge`
+> in `kits/lizardmen/src/59w-lz-works.js`, `kits/lizardmen/settle/82-lzv-site.js`, `settlements/komodo`, and `basilisk_plan.json`)
+> registers in `core/tags` as **`class: 'vessel'`** (`ves_*`) with Ring Sea vessel vocabulary (`types: ['cargo', 'barge', 'ferry']`,
+> `propulsion: 'paddles'`, `hull: 'raft'`, `wealth: 'middle'`, `crew: 6`, `role: 'barge'`), riding along with the repo-wide `vessel`
+> / `vehicle` rollout in the next all-builds rebuild (`TODO.md`).
 
 1. **The Straight Ley Relic Run** (`Basilisk ley mole` -> `reliquary-east`, **`60.6 km` at `50.6°`**, `1.3 days`): **the sole straight
    transport route in the Lizardman country** (`basilisk/PLAN.md` q.8), carrying Iguana's Pile relics across the sea.
@@ -212,21 +218,20 @@ Pile's plateau):
 
 ---
 
-## 7. Questions for the Owner
+## 7. Questions for the Owner (answered 2026-11-17: all five agreed, with `class: 'vessel'` enforced on all barges & boats)
 
 1. **Splitting the `30,000` warrens into 8 dry sub-districts (section 2):** Replace the two abstract centroids (`warrens-west` at
    `630,1515` currently sits in `-2,600 m` water of the Western Terminal Sea!) with the 8 geographic warren sub-districts (`E1`–`E4`
-   = `18,000`, `W1`–`W4` = `12,000`) when Z3 / openworld lands? *Proposed:* yes.
+   = `18,000`, `W1`–`W4` = `12,000`) when Z3 / openworld lands? **Agreed:** yes.
 2. **Western Sea Narrows reed-barge ferry (`66 km`, `lz.v.narrows-ne` <-> `lz.v.narrows-sw`):** The Western Terminal Sea cuts
    between Gila (`653,1485`) and The Tubes (`608,1547`), making a pure land walk `464 km` back around Iguana. Use paddled
-   `lz-barge`s across the `66 km` narrows on the West Coil, with the `248 km` Southern Return Apron (`W4`) closing the loop back to
-   Iguana? *Proposed:* yes.
+   `lz-barge`s (`class: 'vessel'`) across the `66 km` narrows on the West Coil, with the `248 km` Southern Return Apron (`W4`)
+   closing the loop back to Iguana? **Agreed:** yes.
 3. **Cataract-Foot (`864,1594`, `520` people):** A Lizardman drift-timber and giant-weir village where Xanadu's `1,180 m³/s` Nahr
    ash-Shalālāt plunges into the Eastern Terminal Sea (catching Vale timber washed down the cataracts without trading with humans)?
-   *Proposed:* yes.
+   **Agreed:** yes.
 4. **Naming minor warrens & river villages:** Keep English/Tungang geographic working names (`Blek-Mouth`, `Garth-Placer`,
-   `Pimp-Ford`, as *"the Tubes"* and *"Muckle Weyt Beck"* do) since Lizardman speech is non-human tonal hissing, or coin a hissed
-   syllabic transliteration for Lizardman countryside places? *Proposed:* English/Tungang geographic names on human maps.
+   `Pimp-Ford`, as *"the Tubes"* and *"Muckle Weyt Beck"* do) since Lizardman speech is non-human tonal hissing? **Agreed:** yes.
 5. **Region assignment of Iguana & Skink in `openworld/SITES.json`:** Keep `Iguana` + `Skink` on the `lizardmen-west` cut (since
-   both sit on `LZ_TUNE.coil.loops.west`), with a `10 km` scarp corridor joining Iguana to `Basilisk`? *Proposed:* yes (`Iguana`
-   listed with `"also": ["lizardmen-east"]`, like Thalaba in Xanadu).
+   both sit on `LZ_TUNE.coil.loops.west`), with a `10 km` scarp corridor joining Iguana to `Basilisk` (`"also": ["lizardmen-east"]`)?
+   **Agreed:** yes.

@@ -140,7 +140,8 @@ KIT = {
   'lk-dockstore': dict(w=33, d=21, name='Stone dock store', holds=30),
   'lk-boil':      dict(w=27, d=15, name='Salt boiling floor', holds=12),
   'lk-slot':      dict(w=20, d=12, name='Ley Slot wall wicket'),
-  'lz-barge':     dict(w=5.4, d=21, name='Reed barge (eleven ribs)'),
+  'lz-barge':     dict(w=5.4, d=21, name='Reed barge (eleven ribs)', cls='vessel',
+                       tags=dict(types=['cargo', 'barge', 'ferry'], propulsion='paddles', hull='raft', wealth='middle', crew=6, role='barge', job='shipwrighting')),
   # site-scale civil basins & earthworks (stamped onto KDRAWN + WATER.still when the page builds)
   'lk-dock':      dict(w=36, d=175, name='The dock (after Lothal)', owed=True),
   'lk-mole':      dict(w=9, d=700, name='The ley mole', owed=True),
@@ -732,8 +733,10 @@ def export(plan):
     j['placed'] = []
     for i, r in enumerate(plan['placed']):
         k = KIT[r['key']]
-        e = dict(id='bs.%s.%d' % (r['where'], i), key=r['key'], at=[r1(r['at'][0]), r1(r['at'][1])],
+        e = dict(id='bs.%s.%d' % (r['where'], i), key=r['key'], cls=k.get('cls', 'building'),
+                 at=[r1(r['at'][0]), r1(r['at'][1])],
                  ry=round(math.pi / 2 - r['ang'], 4), where=r['where'])
+        if k.get('tags'): e['tags'] = dict(k['tags'])
         if k.get('owed'): e['owed'] = k['owed'] if isinstance(k['owed'], str) else True
         for kk in ('caste', 'band', 'flaw', 'role', 'run', 'twist'):
             if r.get(kk) is not None and r.get(kk) is not False: e[kk] = r[kk]

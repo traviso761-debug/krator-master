@@ -165,16 +165,16 @@ var LZV_SITE = (function () {
     return { lo: lo, hi: hi }; }
   function addSite(key, x, z, ry, kind, o) {
     var D = DEFS[key]; if (!D) return null; o = o || {};
-    if (S.lake && groundH(x, z) < LAKE_Y + 0.5 && !o.wet) { overlapSkips++; return null; }
+    if (S.lake && groundH(x, z) < LAKE_Y + 0.5 && !o.wet && D.cls !== 'vessel') { overlapSkips++; return null; }
     var R = obbOf(x, z, ry, D.w, D.d, 0);
     if (!o.allowOverlap && space.some(x, z, Math.hypot(D.w, D.d) / 2 + 36, function (it) { return KHAMLET.overlap(R, it.R, lzD(o.pad, 0.4)); })) { overlapSkips++; return null; }
     space.insert({ R: R, key: key, kind: kind }, x, z, Math.hypot(D.w, D.d) / 2);
-    var fs = footStats(x, z, ry, D.w, D.d), y = D.cls === 'life' ? groundH(x, z) : fs.hi + 0.03;
+    var fs = footStats(x, z, ry, D.w, D.d), y = D.cls === 'vessel' ? (S.lake ? LAKE_Y - 0.14 : fs.lo) : D.cls === 'life' ? groundH(x, z) : fs.hi + 0.03;
     var v = lzD(o.v, KRAND.hash(SEED, KTAGS.str32(key), Math.round(x), Math.round(z)) % 3);
     var rec = { key: key, x: +x.toFixed(2), z: +z.toFixed(2), y: +y.toFixed(3), ry: +ry.toFixed(5), w: D.w, d: D.d, h: D.h, kind: kind, footLo: +fs.lo.toFixed(3), footHi: +fs.hi.toFixed(3),
       inward: !!o.inward, o: Object.assign({ y: +y.toFixed(3), v: v }, o.name ? { name: o.name } : {}) };
     sites.push(rec);
-    if (D.cls !== 'life') plinths.push({ key: key, x: rec.x, z: rec.z, ry: rec.ry, w: D.w, d: D.d, y0: +(fs.lo - 0.38).toFixed(3), y1: +(y + 0.005).toFixed(3),
+    if (D.cls !== 'life' && D.cls !== 'vessel') plinths.push({ key: key, x: rec.x, z: rec.z, ry: rec.ry, w: D.w, d: D.d, y0: +(fs.lo - 0.38).toFixed(3), y1: +(y + 0.005).toFixed(3),
       stone: key === 'lz-seer' || D.caste === 'all' || key === 'lz-lodge' || key === 'gl-tank' || key === 'gl-well' || key.indexOf('lk-') === 0 });
     return rec;
   }

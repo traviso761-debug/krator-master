@@ -258,29 +258,32 @@ All **nine** architectural & vessel defs owed in Claude's draft are now built an
 
 ---
 
-## 8. Questions for the owner
+## 8. Questions for the owner (answered 2026-11-17: all agreed, with the `vessel` tag rule on all barges & boats)
 
 1. **The site (`5.1 px 766.6,1597.25`):** Move `slrodrkrls` (`765,1596`, in the sea) `4.1 km` SE onto the sabkha peninsula between
-   the south shore and Tlahn Gill's bay? *Proposed:* `766.6,1597.25`.
+   the south shore and Tlahn Gill's bay? **Agreed:** `766.6,1597.25`.
 2. **Platforms over the sabkha:** Sea at `-2,600.5 m`, districts on **`5 m` brick platforms**, Precinct of Intention on a **`12 m`
-   polygonal-basalt Mound** (Mohenjo-daro), storm culverts feeding `lz-cistern`s and the perimeter swale? *Proposed:* yes.
+   polygonal-basalt Mound** (Mohenjo-daro), storm culverts feeding `lz-cistern`s and the perimeter swale? **Agreed:** yes.
 3. **The Great Coil & seven districts (`d1`–`d7` + Gate Quarter):** Two windings (`2.4 x 2.1 km`), districts growing outward by
-   `1.25x` (`726` in `d1` to `3,587` in `d7`) with the seven ward specializations in section 4.4? *Proposed:* yes.
+   `1.25x` (`726` in `d1` to `3,587` in `d7`) with the seven ward specializations in section 4.4? **Agreed:** yes.
 4. **Caste shares (`25 / 25 / 20 / 15 / 5 / 10 %`):** More Interpreters (`750`) and Makers (`3,750`), fewer Drovers (`3,000`)?
-   *Proposed:* yes.
+   **Agreed:** yes.
 5. **The Hall of Intention on the `50.6°` ley line** and **the Nest of Returns** on the Mound for Interpreters' rebirths?
-   *Proposed:* yes.
+   **Agreed:** yes.
 6. **Strict one-gate rule & the Ley Slot (`lk-slot`):** Every land and dock load enters by the South Gate (`lk-gate`); only
-   Tenders pass through the `1.4 m` `lk-slot` wicket to carry relics to the `700 m` ley mole? *Proposed:* yes.
-7. **Paddled reed barges (`lz-barge`, 11 bone ribs, zero sails)** and **Lothal dock (`lk-dock`, `lk-dockstore`):** Relics travel
-   straight along the `50.6°` ley line across the sea (the one load that does not go round), while bulk tin and fish ride along
-   the shore to the Lothal dock? *Proposed:* yes.
+   Tenders pass through the `1.4 m` `lk-slot` wicket to carry relics to the `700 m` ley mole? **Agreed:** yes.
+7. **Paddled reed barges (`lz-barge`, 11 bone ribs, zero sails)** and **Lothal dock (`lk-dock`, `lk-dockstore`):** **Agreed:** yes,
+   with the owner's rule (`2026-11-17`: *"barges and boats need to take the vessels tag which will be fully implemented in next all
+   build rebuild"*): `lz-barge` (`kits/lizardmen/src/59w-lz-works.js`, `basilisk_plan.json`, `82-lzv-site.js`) carries `core/tags`
+   `class: 'vessel'` (`ves_*`) with Ring Sea vessel tags (`types: ['cargo', 'barge', 'ferry']`, `propulsion: 'paddles'`,
+   `hull: 'raft'`, `wealth: 'middle'`, `crew: 6`, `role: 'barge'`), enforced by `verify.py` (`vessels-tagged`) and riding along
+   with the repo-wide `vessel`/`vehicle` rebuild in `TODO.md`.
 8. **Water after Dholavira:** Check dam on Tlahn Gill, `2.1 km` leat, and seven cascading reservoirs outside the south wall?
-   *Proposed:* yes.
+   **Agreed:** yes.
 9. **The four deliberate flaws:** `d7` winding cw like `d1`, one outward-facing `flaw_band` per district, the 9th watchtower off
-   spacing, and the 5th Court obelisk twisting counter-clockwise? *Proposed:* yes.
+   spacing, and the 5th Court obelisk twisting counter-clockwise? **Agreed:** yes.
 10. **Salt scaled back (`55 t/yr`, answered 2026-11-17):** Scaled back from `115 t` (7 pan-spirals, 3 boiling floors) to **`55 t/yr`**
-    (3 `gl-pans` spirals, 2 `lk-boil` wet-season boiling floors) in `LZ_TUNE` and `basilisk_plan.json`. **Done.**
+    (3 `gl-pans` spirals, 2 `lk-boil` wet-season boiling floors) in `LZ_TUNE` and `basilisk_plan.json`. **Agreed & done.**
 
 ---
 

@@ -81,11 +81,16 @@ runtime and bison table, and the `tools/` listing staleness (every build rebuilt
   `extra/88d-xa-lakecraft.js`, `extra/88e-xa-stall.js` and `extra/88f-xa-harbour.js` (2026-11-17, Kirstabal's harbour) into `kits/xanadu/src/`, `extra/69dz-ix-xanadu-extra.js`'s item into `kits/interiors/sets/xanadu.js`;
   the kit's sheet takes rows for them; `settlements/pher/kit.json` drops them from `"external"`. Every page of the kit (and `XAK`) changes.
 - **core/tags' `vessel` and `vehicle` classes** (2026-11-17, the owner: "make sure boats are properly tagged as ships, see ring sea
-  vessels", "we should add a vehicle tag as well"; ride along by the owner's choice): `core/tags/52-core-tags-vocab.js` has them (ids
-  `ves_`, `veh_`; keys `propulsion`, `hull`, `crew`, `drive`, `seats`, `fuel`; the vessels' and vehicles' types), but every page
+  vessels", "we should add a vehicle tag as well", "barges and boats need to take the vessels tag which will be fully implemented in
+  next all build rebuild"; ride along by the owner's choice): `core/tags/52-core-tags-vocab.js` has them (ids
+  `ves_`, `veh_`; keys `propulsion`, `hull`, `crew`, `drive`, `seats`, `fuel`; the vessels' and vehicles' types), and
+  `kits/lizardmen`'s `lz-barge` (`settlements/komodo`, `settlements/basilisk/basilisk_plan.json`) already registers as
+  `class: 'vessel'` (`ves_*`), but every older page
   that inlines core/tags is behind it (`tools/check_stale_baseline.json` records them). The rebuild clears them. With it: the Ring Sea
-  (`kits/ringsea`, its REG already says `cls:'vessel'`), the Motor Vehicles kit and the Mechs register through core/tags as
-  `vessel` and `vehicle` (the vehicles' own `class:'motor vehicle'` tag is a core/tags problem key: drop it for the class).
+  (`kits/ringsea`, its REG already says `cls:'vessel'`), Xanadu's lake craft (`extra/88d-xa-lakecraft.js` / `88f-xa-harbour.js`),
+  `core/engine`'s walkable deck/stair hooks (`36s-stair.js` / `37-wk-rec.js` for `cls === 'vessel'`), the Motor Vehicles kit and the
+  Mechs register through core/tags as `vessel` and `vehicle` (the vehicles' own `class:'motor vehicle'` tag is a core/tags problem key:
+  drop it for the class).
 - **KSTRATA recipe `obsidian`** (`scoria` has since landed) (2026-11-09, `biomes/twins/PLAN.md` section 0.1): the Twins' plan names them for its coulees and
   spatter cones; `core/terrain/35-core-strata.js` has `tibasalt` as the nearest. Adding a recipe changes every page that inlines the file, so
   it waits here; station 1 draws its faces as `tibasalt` and its obsidian as items and a ground class until then.

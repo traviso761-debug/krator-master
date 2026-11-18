@@ -57,6 +57,10 @@ var LZV_SPEC = (function () {
   var sites = weirXs.map(function (wx) {
     return { key: 'lz-weir', x: wx, z: weirZ, ry: 0, kind: 'works', name: 'Fishing weir and drying racks', wet: true };
   });
+  sites.push(
+    { key: 'lz-barge', x: -130, z: weirZ - 26, ry: -1.35, kind: 'vessel', name: 'Paddled reed barge (coastal tin and dried-fish carrier)' },
+    { key: 'lz-barge', x: 250, z: weirZ - 28, ry: 1.45, kind: 'vessel', name: 'Paddled reed barge (bay weir tender)' }
+  );
 
   var campSite = [placerAt[0] - 250, placerAt[1] + 200];
   var placerOffsetsZ = [-95, 0, 95];
@@ -183,7 +187,7 @@ var LZV_SPEC = (function () {
     expect: {
       people: 3000,
       wells: 12,
-      keys: ['lz-nest', 'lz-ley', 'lz-muster', 'gl-tank', 'lz-weir', 'lz-placer', 'lz-bakehouse', 'lz-fermentery', 'lz-orchard', 'lz-quarry', 'lz-waystone'],
+      keys: ['lz-nest', 'lz-ley', 'lz-muster', 'gl-tank', 'lz-weir', 'lz-barge', 'lz-placer', 'lz-bakehouse', 'lz-fermentery', 'lz-orchard', 'lz-quarry', 'lz-waystone'],
       lake: true,
       hamlet: true
     },
