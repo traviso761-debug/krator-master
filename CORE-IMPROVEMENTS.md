@@ -976,6 +976,49 @@ request here. Each names the check, where it lives, and the negative control tha
   the tunnel; a 0.15 m wall at 2 fps stops the walker; a pick on a cavern page with no `o.pick` lands on a floor, not -60 m.
   It moves 408 pages: ride along.
 
+## Survey of 2026-11-17: eight biome sessions and their merge (check requests)
+
+The coordinator of the eight biome sessions of 2026-11-11/12 (the painted highlands, the Cliff Lungs, the Siphon Pits, Opal
+Valley, the Rift battery, the Arch, the Firebliss patera and domes, the Slabfields) read their transcripts and branches for
+pitfalls after merging them into `main` (2026-11-16) and publishing the gallery. The story is the skill's 5y
+(`references/stories-rounds.md`). Each lesson two or more sessions hit, or one that recurred after a rule meant to stop it, is a
+check request here, with its negative control.
+
+- **53. A per-instance attribute the shader reads must be declared** (three kits: the Arch's maquis, High Rift's tussock and
+  heath, Opal Valley's tussock drew black). In `core/biome`'s leaf hook: list the attributes the composed shader reads and throw
+  at build (or in `BIO.attachAudit`) when an item's def does not declare one (`attrs:['aN']`). Negative: the tussock without
+  `attrs` fails; with it, passes.
+- **54. Wood tags parse at build, not in core/hamlet's test** (the Rift battery, the Arch's "thatch, mulch", the painted
+  highlands' crops, and 5w's hyperjungle). A biome `build.py` step (or `check_core_use`) runs `KHAMLET.woodUse` over its
+  species' `harvest.wood` and fails on an unknown phrase. Negative: "thatch, mulch" fails; "thatch (and mulch)" passes.
+- **55. Numbers chosen on a branch** (both model sessions: edit numbers 512/513 and the reconcile key `5.1e3` taken on main; both
+  added a `test_smodel` "section 15"; three kits took PROMPTS-NEEDED 43, 44 and 46 twice; item 50 still unbuilt). Name a model
+  edit by its subject (`edit_slabfields.py`) and give it its number in `tools/scale-model/README.md` at the merge; a lint in
+  test_all that fails two scripts or two `test_smodel` sections claiming one number, and two `regMerged` keys alike; build item
+  50. Negative: two `edit_513.py` reports, or two `5.1e3` keys, fail.
+- **56. Main's known failures, written down** (four sessions and the coordinator each re-proved the same failures in a clean
+  worktree). The nightly on main writes `tools/known_failures.json` (step, first failing sha); `test_all.py` prints a failing
+  step on that list as KNOWN and fails only on a new step or a new message in a known one. Negative: a fresh failure in a
+  known file still fails.
+- **57. `test_all` resumes** (three sessions and the coordinator ran past 50 minutes in the isle demo's tests). `--from <step>`
+  and a progress file, so a killed run continues; `--list` names the steps. Negative: a step whose inputs changed since its
+  pass runs again.
+- **58. A station does not open under the giant's eclipse** (the Cliff Lungs at 08:30, the Siphon Pits at 11:00). core/host
+  asserts `!ATMOS.sunHidden` at the page's load hour and site, and the verify warns on a preset under the eclipse unless its name
+  says night or eclipse. Negative: the Siphon Pits' terraces at 11:00 fail.
+- **59. `test_smodel.py` collects its failures** (the coordinator: a known neouterwall failure on main hid every check of edits 7
+  and 8). `check()` records and continues; the script exits 1 at the end with the list. Negative: with the neouterwall failure
+  present, the domes' checks still run and print.
+- **60. The gallery refuses pointers and plans its publish** (the coordinator: an LFS pointer page was refused at publish; every
+  in-place batch was refused over 256 MiB). `split_site.py` fails on any site file that is an LFS pointer, and writes each
+  part's publish plan: departing paths nulled in the first call, uploads under 60 MB a call, given the live file list.
+  Negative: a pointer `girder.html` in a part fails the split.
+- **61. Model edits: the moved mask and the stations** (both model sessions and the coordinator). The edit template
+  (`edit_511.py`'s pattern) takes `moved = En != Eo` on decoded heights, compares JPEG maps through the same encodes beyond
+  16 px, has `--dry-run` and a refuse-twice marker, and lists every built station (`biomes/*/stations/*/station.json` with a
+  site, and each build's `model_site` window) whose window the edit touches, failing unless the edit names it as allowed.
+  Negative: the patera with `PATERA_ON = True` fails on Firebliss station 1.
+
 ## Order of work this suggests
 
 1. **Now, tools only, no page moves** (an afternoon or two each):

@@ -27,4 +27,4 @@ The page's first pass (2026-11-16, the owner: "build the page next"). What it do
       `89zad`'s records when the layout settles.
 - [ ] **Not on the page:** the three fishing villages (`core/hamlet`), the summit and the High Kora (8 km up the isle: a station of
       its own), the Dream Road, the bay isle's Threshold Light, the people asleep in the Hall, the textures owed
-      (`core/materials/PROMPTS-NEEDED.md` section 56: the ceiling is a deep-blue lacquer with gold stars until then).
+      (`core/materials/PROMPTS-NEEDED.md` section 61: the ceiling is a deep-blue lacquer with gold stars until then).

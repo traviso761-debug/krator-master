@@ -455,13 +455,12 @@ check('Xanadu (rmvkkmitffbjk) has fine-scale Rift microclimate mosaic (%d classe
 fb_reg = next((r for r in R if r.get('id') == 'rmw8hj62nmugn'), None)
 mask_fb_test = G.poly(fb_reg['points'], 1.0, 1.0, (D['fullH'], D['fullW'])) > 0.5
 fb_c_codes = {codes_test[int(k)] for k in c_grid_full[mask_fb_test]}
-fb_vents = [v for v in D.get('vents', []) if v.get('region') == 'Firebliss Range']
+fb_vents = [v for v in D.get('vents', []) if v.get('region') == 'Firebliss Range' and v.get('kind') == 'stratovolcano']
 check('Firebliss Range (rmw8hj62nmugn) has 5 volcanic vents (%d) and sheltered temperate geothermal valleys (classes: %s)' % (
     len(fb_vents), sorted(fb_c_codes)),
     len(fb_vents) == 5 and 'WH' in fb_c_codes and bool(fb_c_codes & {'Cfa', 'Cfb', 'Csb'}) and 'EF' in fb_c_codes)
 for fb_lk_nm, fb_x, fb_y, fb_wl in [
     ('West Bliss Cauldron Tarn', 126, 1344, 2640.0),
-    ('Great Firebliss Vale Lake', 184, 1318, 2280.0),
     ('Solfatara Glen Tarn', 238, 1322, 2120.0),
     ('East Bliss Vale Tarn', 284, 1318, 1960.0),
 ]:
@@ -740,4 +739,40 @@ check('the Swīṭ Siṭrīm runs downhill from the scarp\'s foot to the lake at
       and all(sw['bed_m'][i_ + 1] < sw['bed_m'][i_] for i_ in range(len(sw['bed_m']) - 1))
       and abs(sw['px'][-1][0] - 843) < 1.5 and abs(sw['px'][-1][1] - 1491.5) < 1.0
       and not any(bool(whas[int(y_), int(x_)]) for x_, y_ in sw['px'][:-1]))
+
+# ---- 15b. 5.1 edit 9 (edit_519.py; edit 7, edit_517.py, on main until the 2026-11-18 merge, 2026-11-12): the Slabfields (was Mid Basin): the slabs, the paterae, the springs
+import re as _re   # noqa: E402
+slab_src = open(os.path.join(TOOL, 'model', 'src', '51-region-store.js'), encoding='utf-8').read()
+check('rmvmidbasin101 is named The Slabfields in the page\'s defaults, with its reconcile',
+      '"id": "rmvmidbasin101", "name": "The Slabfields"' in slab_src and 'krator.regMerged.5.1e7' in slab_src)
+for sl_x, sl_y, sl_lo, sl_name in ((1662, 1373, 4800, 'the Anvil'), (1715, 1364, 4300, 'the Halves (north-west)'),
+                                   (1729, 1380, 4500, 'the Halves (south-east)'), (1599, 1396, 3000, 'the Leaner'),
+                                   (1690, 1414, 5100, 'the Backstop')):
+    sl_win = E[sl_y - 3:sl_y + 4, sl_x - 3:sl_x + 4]
+    check('%s stands over %d m near %d,%d (max %.0f m)' % (sl_name, sl_lo, sl_x, sl_y, sl_win.max()), float(sl_win.max()) >= sl_lo)
+an_col = [float(E[y, 1662]) for y in range(1368, 1385)]
+check('the Anvil: a cliff on the north, a ramp falling south (%s)' % [round(v) for v in an_col],
+      max(an_col[i + 1] - an_col[i] for i in range(4)) > 800 and all(b <= a + 5 for a, b in zip(an_col[4:12], an_col[5:13])))
+for pa_x, pa_y, pa_lev, pa_nm in ((1601.5, 1388.6, 1997, 'the Leaner\'s Patera'), (1722.0, 1374.0, 3102, 'the Halves\' Patera')):
+    pa_m = np.hypot(xx_b - pa_x, yy_b - pa_y) <= 1.5
+    check('%s holds a closed spring lake at %d m' % (pa_nm, pa_lev),
+          bool(whas[pa_m].all()) and float(np.abs(wlev[pa_m] - pa_lev).max()) <= 2.0
+          and any(b.get('name') == pa_nm[0].upper() + pa_nm[1:] and b['level_m'] == pa_lev for b in D['basins']))
+spr_ids = {r['id'] for r in D.get('springs', [])}
+check('the Slabfields\' eight springs are in DATA.springs', len([i for i in spr_ids if i.startswith('spr_slab_')]) == 8)
+# ---- 15c. 5.1 edit 8 (edit_518.py, 2026-11-16): the pancake domes in Firebliss and round Korona; the patera written and
+#          held (PATERA_ON = False: the owner, 2026-11-16, main's Firebliss station 1 stands on the vale it would take)
+check('the Firebliss Patera is held: no patera vent, the Great Firebliss Vale\'s tarn still at 184,1318',
+      not any(v.get('kind') == 'patera' for v in D['vents']) and bool(whas[1318, 184]))
+domes_t = D.get('domes', [])
+check('ten pancake domes: five in Firebliss, five in Korona', len(domes_t) == 10
+      and sum(d['region'] == 'Firebliss Range' for d in domes_t) == 5 and sum(d['region'] == 'Korona / NE' for d in domes_t) == 5)
+for d in domes_t:
+    dcx, dcy, dR = d['px'][0], d['px'][1], d['d_km'] / 4.0
+    dr = np.hypot(xx_b - dcx, yy_b - dcy) / dR
+    top_cells = E[dr < 0.6]
+    check('dome %s: flat top at %d m (spread %.0f m) and %.0f m over the ground 1.5 radii out' % (
+        d['id'], d['top_m'], float(top_cells.max() - top_cells.min()), d['top_m'] - float(np.median(E[(dr > 1.4) & (dr < 1.7)]))),
+        float(top_cells.max() - top_cells.min()) <= 2.0 and abs(float(top_cells.max()) - d['top_m']) <= 2.0
+        and d['top_m'] - float(np.median(E[(dr > 1.4) & (dr < 1.7)])) >= 300.0)
 print('%d checks passed' % ok)

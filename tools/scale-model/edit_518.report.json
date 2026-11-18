@@ -1,0 +1,251 @@
+{
+ "edit": "5.1 edit 8",
+ "date": "2026-11-16",
+ "patera": "held (the owner, 2026-11-16)",
+ "domes": [
+  {
+   "id": "dome_fb_north",
+   "name": "North Glass",
+   "region": "Firebliss Range",
+   "px": [
+    175.0,
+    1302.0
+   ],
+   "d_km": 12.0,
+   "base_m": 5133,
+   "top_m": 5633,
+   "h_m": 500,
+   "cells": 25,
+   "wall_m_max": 1071,
+   "kind": "pancake_dome",
+   "rock": "rhyolite_obsidian",
+   "pit_cells_before_after": [
+    109,
+    106
+   ]
+  },
+  {
+   "id": "dome_fb_west",
+   "name": "West Glass",
+   "region": "Firebliss Range",
+   "px": [
+    157.0,
+    1324.0
+   ],
+   "d_km": 10.0,
+   "base_m": 4819,
+   "top_m": 5269,
+   "h_m": 450,
+   "cells": 21,
+   "wall_m_max": 529,
+   "kind": "pancake_dome",
+   "rock": "rhyolite_obsidian",
+   "pit_cells_before_after": [
+    157,
+    157
+   ]
+  },
+  {
+   "id": "dome_fb_south",
+   "name": "South Glass",
+   "region": "Firebliss Range",
+   "px": [
+    175.0,
+    1335.0
+   ],
+   "d_km": 14.0,
+   "base_m": 4503,
+   "top_m": 5053,
+   "h_m": 550,
+   "cells": 37,
+   "wall_m_max": 637,
+   "kind": "pancake_dome",
+   "rock": "rhyolite_obsidian",
+   "pit_cells_before_after": [
+    23,
+    23
+   ]
+  },
+  {
+   "id": "dome_fb_southeast",
+   "name": "Ember Glass",
+   "region": "Firebliss Range",
+   "px": [
+    201.0,
+    1331.0
+   ],
+   "d_km": 8.0,
+   "base_m": 4679,
+   "top_m": 5079,
+   "h_m": 400,
+   "cells": 9,
+   "wall_m_max": 538,
+   "kind": "pancake_dome",
+   "rock": "rhyolite_obsidian",
+   "pit_cells_before_after": [
+    15,
+    15
+   ]
+  },
+  {
+   "id": "dome_fb_east",
+   "name": "Gate Glass",
+   "region": "Firebliss Range",
+   "px": [
+    211.0,
+    1305.0
+   ],
+   "d_km": 10.0,
+   "base_m": 5396,
+   "top_m": 5846,
+   "h_m": 450,
+   "cells": 21,
+   "wall_m_max": 452,
+   "kind": "pancake_dome",
+   "rock": "rhyolite_obsidian",
+   "pit_cells_before_after": [
+    27,
+    27
+   ]
+  },
+  {
+   "id": "dome_ko_nw_trench",
+   "name": "Korona dome 1 (NW trench)",
+   "region": "Korona / NE",
+   "px": [
+    1007.0,
+    490.0
+   ],
+   "d_km": 14.0,
+   "base_m": -1492,
+   "top_m": -892,
+   "h_m": 600,
+   "cells": 37,
+   "wall_m_max": 446,
+   "kind": "pancake_dome",
+   "rock": "rhyolite_obsidian",
+   "pit_cells_before_after": [
+    24,
+    34
+   ]
+  },
+  {
+   "id": "dome_ko_ne_trench",
+   "name": "Korona dome 2 (NE trench)",
+   "region": "Korona / NE",
+   "px": [
+    1131.0,
+    494.0
+   ],
+   "d_km": 12.0,
+   "base_m": -901,
+   "top_m": -379,
+   "h_m": 522,
+   "cells": 25,
+   "wall_m_max": 1030,
+   "kind": "pancake_dome",
+   "rock": "rhyolite_obsidian",
+   "pit_cells_before_after": [
+    25,
+    25
+   ]
+  },
+  {
+   "id": "dome_ko_s_trench",
+   "name": "Korona dome 3 (S trench)",
+   "region": "Korona / NE",
+   "px": [
+    1038.0,
+    581.0
+   ],
+   "d_km": 16.0,
+   "base_m": -852,
+   "top_m": -202,
+   "h_m": 650,
+   "cells": 45,
+   "wall_m_max": 844,
+   "kind": "pancake_dome",
+   "rock": "rhyolite_obsidian",
+   "pit_cells_before_after": [
+    34,
+    44
+   ]
+  },
+  {
+   "id": "dome_ko_se_moat",
+   "name": "Korona dome 4 (SE moat)",
+   "region": "Korona / NE",
+   "px": [
+    1179.0,
+    578.0
+   ],
+   "d_km": 16.0,
+   "base_m": -103,
+   "top_m": 547,
+   "h_m": 650,
+   "cells": 45,
+   "wall_m_max": 681,
+   "kind": "pancake_dome",
+   "rock": "rhyolite_obsidian",
+   "pit_cells_before_after": [
+    67,
+    57
+   ]
+  },
+  {
+   "id": "dome_ko_n_trench",
+   "name": "Korona dome 5 (N trench)",
+   "region": "Korona / NE",
+   "px": [
+    1071.0,
+    430.0
+   ],
+   "d_km": 14.0,
+   "base_m": -297,
+   "top_m": 303,
+   "h_m": 600,
+   "cells": 37,
+   "wall_m_max": 622,
+   "kind": "pancake_dome",
+   "rock": "rhyolite_obsidian",
+   "pit_cells_before_after": [
+    55,
+    53
+   ]
+  }
+ ],
+ "reclimate": {
+  "cells": 720,
+  "class_changed": 170,
+  "rain_mean_before_mm": 599.0,
+  "rain_mean_after_mm": 636.0,
+  "classes_now": {
+   "Aw": 83,
+   "BWh": 30,
+   "BSh": 222,
+   "Csa": 5,
+   "Dfc": 2,
+   "ET": 197,
+   "EF": 102,
+   "XV": 51,
+   "XS": 28
+  }
+ },
+ "cells_changed": {
+  "tm": 298,
+  "tw": 298,
+  "tc": 298,
+  "th": 298,
+  "tl": 298,
+  "p": 649,
+  "c": 170,
+  "z": 19,
+  "h": 302,
+  "wl": 0,
+  "h_in_firebliss_korona_other": [
+   113,
+   189,
+   0
+  ]
+ }
+}

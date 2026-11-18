@@ -49,6 +49,10 @@ CROPS.BIOMES = {
   necanyons:   {atm: 2, atmNote: '?', zones: {floor: {warmth: [4, 4], arid: [3, 4]}, seep: {warmth: [4, 4], arid: [3, 4], wet: true}, bench: {warmth: [4, 4], arid: [2, 3]}, cap: {warmth: [4, 5], arid: [0, 1]}}},
   hyperjungle: {atm: 2, zones: {forest: {warmth: [4, 4], arid: [3, 4]}, savanna: {warmth: [4, 4], arid: [1, 2]}}},
   nhighlands:  {atm: 1, atmNote: '?', zones: {low: {warmth: [2, 2], arid: [3, 3]}, high: {warmth: [0, 1], arid: [2, 3]}}},
+  /* the painted highlands (biomes/paintedhighlands/PLAN.md section 4, 2026-11-11): the plateau's cold steppe at 3-3.5 km and its high half (231 mm),
+     the lower plateau (455 mm), the washes and the canyon floor on the melt, the cliff towns' ledge gardens (800 mm, Cfa). 1.0-1.24 atm */
+  paintedhighlands: {atm: 1, zones: {steppe: {warmth: [2, 2], arid: [0, 0]}, high: {warmth: [1, 1], arid: [0, 0]}, lower: {warmth: [2, 2], arid: [1, 1]},
+                wash: {warmth: [2, 2], arid: [0, 1], wet: true}, ledge: {warmth: [3, 3], arid: [2, 2]}}},
   nwbay:       {atm: 2, atmNote: '?', zones: {shore: {warmth: [3, 4], arid: [2, 3]}, wetland: {warmth: [3, 4], arid: [3, 4], wet: true}}},
   nwlowlands:  {atm: 1, atmNote: '?', zones: {strip: {warmth: [4, 4], arid: [4, 4]}, plain: {warmth: [3, 3], arid: [2, 3]}, hills: {warmth: [2, 3], arid: [1, 2]}}},
   rift:        {atm: 1, atmNote: '?', zones: {lake: {warmth: [3, 4], arid: [0, 1], wet: true, salt: true}, jungle: {warmth: [4, 4], arid: [3, 4]}, crest: {warmth: [3, 3], arid: [1, 2]}, savanna: {warmth: [4, 4], arid: [1, 2]}}},

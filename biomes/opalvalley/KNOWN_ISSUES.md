@@ -3,7 +3,7 @@
 First pass, 2026-11-11; the open issues worked 2026-11-12. Built in the cloud: checked under software GL (SwiftShader) only. The GPU look
 pass is owed.
 
-## Stand-ins (procedural, until a library set comes: `core/materials/PROMPTS-NEEDED.md` section 54)
+## Stand-ins (procedural, until a library set comes: `core/materials/PROMPTS-NEEDED.md` section 53)
 
 - [ ] **The opaline sinter's play-of-colour** is the ground shader's sheen (`src/84-host-ground.js`, `aOp`, `?sheen=`) over the
   library's plain `ground.sinter`: a **procedural stand-in** for `ground.sinter.opaline` (owed).

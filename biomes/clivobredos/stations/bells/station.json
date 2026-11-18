@@ -1,0 +1,22 @@
+{
+ "note": "Station 2, THE BELLS (PLAN.md section 11 item 2; 5.1 px 790,1024: 529 m, 1.50 atm, +19 degC, 2,039 mm, Af; the foot). src/ with this station's numbers (44), its views (98) and the hyperjungle's leaves READ IN PLACE (the canopy the bells stand in: biomes/hyperjungle/src, and the core/biome fragments that kit needs). 42-host-fn.js is dropped: the hyperjungle's 41 declares the same helpers from the same BIO.fn. The southern highlands are not on this page (the face above is in the cloud).",
+ "drop": ["42-host-fn.js"],
+ "shigh": false,
+ "jungle": true,
+ "reads": {
+  "41a-hyperjungle-globals.js": "biomes/hyperjungle/src/41-hyperjungle-globals.js",
+  "50-biome-hyperjungle-species.js": "biomes/hyperjungle/src/50-biome-hyperjungle-species.js",
+  "52-biome-hyperjungle-library.js": "biomes/hyperjungle/src/52-biome-hyperjungle-library.js",
+  "54-biome-hyperjungle-lands.js": "biomes/hyperjungle/src/54-biome-hyperjungle-lands.js",
+  "55-biome-hyperjungle-trees.js": "biomes/hyperjungle/src/55-biome-hyperjungle-trees.js",
+  "58-biome-hyperjungle-fauna.js": "biomes/hyperjungle/src/58-biome-hyperjungle-fauna.js",
+  "60-biome-hyperjungle-floor.js": "biomes/hyperjungle/src/60-biome-hyperjungle-floor.js",
+  "65-biome-hyperjungle-dress.js": "biomes/hyperjungle/src/65-biome-hyperjungle-dress.js",
+  "70-biome-hyperjungle.js": "biomes/hyperjungle/src/70-biome-hyperjungle.js",
+  "32-core-variants.js": "core/biome/32-core-variants.js",
+  "33-core-fungoid.js": "core/biome/33-core-fungoid.js",
+  "36-core-walker.js": "core/biome/36-core-walker.js",
+  "38-core-fire.js": "core/biome/38-core-fire.js",
+  "44-core-stage.js": "core/biome/44-core-stage.js"
+ }
+}
