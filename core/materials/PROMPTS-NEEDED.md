@@ -676,6 +676,30 @@ The pancake domes' walls: flow-banded rhyolite and obsidian (`biomes/firebliss/P
 |---|---|
 | `rock.rhyolite.flowbanded` | A cliff face of flow-banded rhyolite lava: thin wavy bands of black glassy obsidian (#141416, #22222a) alternating with dull pink-grey and ash-grey devitrified rhyolite (#8a7a78, #a09490, #6e6a6c), the bands folded and stretched as a stiff lava flowed, with small white spherulites (#d8d4cc) strung along a few grey bands and conchoidal fracture surfaces catching a faint sheen on the black ones. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. |
 
+## 57. The Shumari kit and Shumar stations (`kits/shumari`, `biomes/shighlands` `--station shumar`, 2026-11-17)
+
+For `kits/shumari/PLAN.md` (§7) and `biomes/shighlands/PLAN-STATIONS.md` ("Shumar: the western dry-plateau stations"). The kit draws library stand-ins until these land (`stone.stucco.yeseria` for the carved dome, per-course `stone.basalt.polished` + `stone.travertine` for *ablaq*, `patterns/common/jali-diamond` for the blade grille, `card.broadleaf` for the twist-apricot sprig). **3 surface/cut-out prompts + 1 optional flora card:**
+
+`stone.dome.mamluk` (carved stone Mamluk dome relief, `refs/01-mamluk-carved-dome-ablaq.png`; tintable, 1.8 m a tile):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: dressed pale highland limestone and volcanic tuff carved in deep crisp Mamluk Cairo dome relief: an interlocking geometric star-and-polygon strapwork lattice (eight- and twelve-pointed stars) filled with tight chiselled split-palmette and arabesque scrollwork, recessed background pockets ~15 mm deep with fine tooth-chisel marks, weathered mortar hairlines following the ashlar blocks underneath. Keep colours natural warm stone grey-buff (#c8beaa to #9e9482, recesses #6e6658) and even, so the texture can be tinted without looking stained.
+```
+
+`masonry.ablaq.basalt` (highland *ablaq* banded ashlar, `refs/01` and `refs/03`; full colour, 2.4 m a tile):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: monumental Mamluk ablaq ashlar masonry built of highland stone in strict horizontal courses (six courses per tile): alternating courses of finely dressed charcoal-black vesicular basalt (#2c2e34 to #3d4048) and warm cream highland travertine limestone (#d8cdb6 to #c4b79e), separated every third course by a narrow dressed band of deep oxide-crimson ironstone (#7c2b28), tight lime mortar joints (#aba292), subtle chisel tooling and slight frost-spalled arrises. Full colour, do not mute.
+```
+
+`stone.jali.blade` (pierced Mamluk/Shumari stone window grille, `refs/02`; cut-out on magenta, 1.2 m a tile):
+```
+Flat cut-out pattern sheet, square, 2048x2048, on a solid flat bright magenta background (#ff00ff) filling every pierced opening cleanly with crisp hard edges and zero anti-aliased pink halo; no magenta, pink or purple anywhere on the stone. Flat, even, shadowless lighting. The left edge must continue into the right edge and the top into the bottom. Material: a pierced carved dark-grey basalt stone window screen (mashrabiya / jali) in angular Mamluk geometric lattice: interlocking octagons, sharp notched-blade chevrons and six-pointed stars with bevelled chiselled stone bars (#46484e to #5c5e66), framing clean geometric apertures (#ff00ff). No text, no border, no watermark.
+```
+
+`card.apricot.whorl` (optional, for `biomes/shighlands` `--station shumar`'s `whorlapricot`; 3x3 sprig sheet on magenta):
+```
+Flat sheet of nine separate botanical twig cut-outs arranged in a clean 3x3 grid with generous margin between cells, square, 2048x2048, on a solid flat bright magenta background (#ff00ff); no magenta, pink or purple in the subject (blossoms warm ivory-white #f6efe4 with golden-amber stamens #c88a28 and deep rust-red sepals #8e2e24, never pink). Flat, even, shadowless lighting. Subject: nine sprigs of a highland wild apricot tree whose leaves and blossoms grow in tight five-ranked spiral whorls around dark reddish-brown woody twigs: six sprigs with crisp ovate serrated green-bronze leaves (#587038 to #7c8840) and small ivory five-petalled stone-fruit blossoms, three sprigs bearing small ripe golden-ochre apricots (#d88c32) nestled in leaf whorls. No text, no border, no watermark.
+```
+
 ## Gaps with no prompt yet
 
 Owed, but a prompt waits on something first; listed so they are not lost.
@@ -689,3 +713,8 @@ Owed, but a prompt waits on something first; listed so they are not lost.
   generator will not keep those letterforms, so the band is a bake from the chart's paths (a PNG or a `TEX.def`, not a
   generated image), cut into the lintel's stone (`stone.soapstone` or `stone.corbel.slab`, already in the library). No
   clan's name is fixed in the kit yet; the bake needs the names.
+- **The Shumari kit's `Šumaru-kattu` frieze band** (`kits/shumari/PLAN.md` §7): epigraphic drum collars and bronze regimental
+  muster-plates in the 28-letter Blade-and-Hook alphabet (`lore/tongues-of-krator.html` lines 5103-5325, exact SVG glyph paths,
+  golden breath-thorns and crimson caste-bars). Baked deterministically from the SVG glyph paths in SM4 (as Yeti's lintel band
+  above), never AI-generated, once the regimental *ṭuppu* mottoes/names are fixed.
+

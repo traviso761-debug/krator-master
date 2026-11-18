@@ -79,7 +79,7 @@
     "biomes/shighlands/tex/leaf.groundsel.albedo.webp": "e3bc858ea9cd50347f2b3921d2ece3561bd2ac82503220a857a17ed1629c434e",
     "biomes/shighlands/tex/leaf.moss.albedo.webp": "4b40a1264b3e63c39662a0f5958c759b523e1a2941702029e03b7a24ab216eb1",
     "biomes/shighlands/tex/leaf.small.albedo.webp": "f84da6784d649faaa8228c2fcd082c2afbb03daf24f8c38aeb37b81389ec7b2e",
-    "biomes/shighlands/tex/pack.json": "d03e9e84d53084a1b1a8b4c66786768eda2b1e8a484a6c4c56f050da307bebf4",
+    "biomes/shighlands/tex/pack.json": "d250aadae7e3e993ce04eb7c3f4bc5681ca581d7abc74d231cd59b0b303ede84",
     "biomes/swlowlands/src/50-biome-swlowlands-species.js": "07d71056e969086b5f5866a1b517e2845de19d81b8b1de02f4588af1aee38f65",
     "biomes/swlowlands/src/52-biome-swlowlands-library.js": "e59d37bd8ae5902227982186b674bc0f785cf248d60835ef5bf629306e9f6278",
     "biomes/swlowlands/src/55-biome-swlowlands-trees.js": "09f26c68456db4077a8e3b80228195842621107be34af23d4fbbc87df2a4c5ff",
@@ -143,7 +143,6 @@
     "core/host/97-host-minimap.js": "24758908dc1f6be4fed09e0aa3a23270187ccd93ff41ada5974bf49b194fc162",
     "core/host/98-host-edit.js": "89038217cde180a076b33d41644bd95285837a9d63f09199bd944e507596997e",
     "core/host/99-host-cutaway.js": "c67cea97b1b18a2a8b3bbc329d5bb5df7fd007a4aee033b21d91fe75cd0ad300",
-    "core/host/host.py": "18f80becdd343f7375785bc5aabdda290761d34376d890ebff8fab0d91fb5288",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
     "core/minimap/88-core-minimap.js": "b6c7e9c662f079c8f97cfc9f6bac2fea115b660f9b417056da54c3bf3c1129a1",
@@ -177,11 +176,10 @@
     "core/water/ext/57-core-water-audit.js": "6dd616a15a7804c615c4e1638b250cb709a85e1f219ae9ea03f8c4faa20374c1",
     "core/water/ext/58-core-water-mirror.js": "abf23c31ba18ba7f4890646bb539fa41652a3331977cc0c6ed6bcda9c646083f",
     "core/water/ext/60-core-water-fields.js": "8e877798226558edf744fccd1e6e92edf28bf059af5f087a10d733eaf5ecac2a",
-    "tools/buildlib.py": "24ec6d636869007e626446a0b8e9cc886fd595af0c9f95b78c4d4b272a18ec0e",
-    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47",
-    "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
+    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47"
    },
    "listings": {
+    "biomes/riftrim": "25f6f55db457c53d14053d725aa030186f1534beb20154bf4783b6d5e576927d",
     "biomes/riftrim/src": "3092de973855f2b53de0bde9a3943848d1776fc420995dadfa41ab1bbfdaa8d4",
     "biomes/riftrim/stations/ledge": "106683fa43910ad4cc432f0b49b66a8c5fbcb1449e4cd289fd1b00eab3089e32",
     "core/host": "d729ffbc0ed36e68e9036bd9c454abc6462a27b22a4bc16b88c38d836e6f4a37",
@@ -1354,7 +1352,7 @@
     "biomes/shighlands/src/55-biome-shigh-trees.js": "999f1d9b52432ae4c735b866681e14901bc029673d91deb05eafd4fb90f34cbc",
     "biomes/shighlands/tex/bark.scars.albedo.webp": "a02728fc371f3f52f5a6f227237b2c50bbfac87234f8de955872d4fa6b4a91d3",
     "biomes/shighlands/tex/fern.albedo.webp": "5c7a491e98a57ca7b39aa256dfe701e43c49a517fdf02738288b3458f1eead2c",
-    "biomes/shighlands/tex/pack.json": "d03e9e84d53084a1b1a8b4c66786768eda2b1e8a484a6c4c56f050da307bebf4",
+    "biomes/shighlands/tex/pack.json": "d250aadae7e3e993ce04eb7c3f4bc5681ca581d7abc74d231cd59b0b303ede84",
     "core/atmos/89-atmos-0-core.js": "d7207293ab01d6a6e3cf3440fd6f83febaddabff7f0e753c10284fa11ec881be",
     "core/atmos/89-atmos-0p-presets.js": "1b55a3fc68023876348af4fcca6c19eafb623657a906089694c89767ea47abc0",
     "core/atmos/89-atmos-3-particles.js": "ed08034d9740cf17939d83d56750b7e7b6746cff370e002fd99cdd9525e1d9a4",
@@ -1408,7 +1406,6 @@
     "core/host/97-host-minimap.js": "24758908dc1f6be4fed09e0aa3a23270187ccd93ff41ada5974bf49b194fc162",
     "core/host/98-host-edit.js": "89038217cde180a076b33d41644bd95285837a9d63f09199bd944e507596997e",
     "core/host/99-host-cutaway.js": "c67cea97b1b18a2a8b3bbc329d5bb5df7fd007a4aee033b21d91fe75cd0ad300",
-    "core/host/host.py": "18f80becdd343f7375785bc5aabdda290761d34376d890ebff8fab0d91fb5288",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
     "core/minimap/88-core-minimap.js": "b6c7e9c662f079c8f97cfc9f6bac2fea115b660f9b417056da54c3bf3c1129a1",
@@ -1442,9 +1439,7 @@
     "core/water/ext/57-core-water-audit.js": "6dd616a15a7804c615c4e1638b250cb709a85e1f219ae9ea03f8c4faa20374c1",
     "core/water/ext/58-core-water-mirror.js": "abf23c31ba18ba7f4890646bb539fa41652a3331977cc0c6ed6bcda9c646083f",
     "core/water/ext/60-core-water-fields.js": "8e877798226558edf744fccd1e6e92edf28bf059af5f087a10d733eaf5ecac2a",
-    "tools/buildlib.py": "24ec6d636869007e626446a0b8e9cc886fd595af0c9f95b78c4d4b272a18ec0e",
-    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47",
-    "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
+    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47"
    },
    "listings": {
     "biomes/riftrim/src": "3092de973855f2b53de0bde9a3943848d1776fc420995dadfa41ab1bbfdaa8d4",
@@ -1538,7 +1533,7 @@
     "biomes/shighlands/tex/leaf.groundsel.albedo.webp": "e3bc858ea9cd50347f2b3921d2ece3561bd2ac82503220a857a17ed1629c434e",
     "biomes/shighlands/tex/leaf.moss.albedo.webp": "4b40a1264b3e63c39662a0f5958c759b523e1a2941702029e03b7a24ab216eb1",
     "biomes/shighlands/tex/leaf.small.albedo.webp": "f84da6784d649faaa8228c2fcd082c2afbb03daf24f8c38aeb37b81389ec7b2e",
-    "biomes/shighlands/tex/pack.json": "d03e9e84d53084a1b1a8b4c66786768eda2b1e8a484a6c4c56f050da307bebf4",
+    "biomes/shighlands/tex/pack.json": "d250aadae7e3e993ce04eb7c3f4bc5681ca581d7abc74d231cd59b0b303ede84",
     "biomes/swlowlands/src/50-biome-swlowlands-species.js": "07d71056e969086b5f5866a1b517e2845de19d81b8b1de02f4588af1aee38f65",
     "biomes/swlowlands/src/52-biome-swlowlands-library.js": "e59d37bd8ae5902227982186b674bc0f785cf248d60835ef5bf629306e9f6278",
     "biomes/swlowlands/src/55-biome-swlowlands-trees.js": "09f26c68456db4077a8e3b80228195842621107be34af23d4fbbc87df2a4c5ff",
@@ -1602,7 +1597,6 @@
     "core/host/97-host-minimap.js": "24758908dc1f6be4fed09e0aa3a23270187ccd93ff41ada5974bf49b194fc162",
     "core/host/98-host-edit.js": "89038217cde180a076b33d41644bd95285837a9d63f09199bd944e507596997e",
     "core/host/99-host-cutaway.js": "c67cea97b1b18a2a8b3bbc329d5bb5df7fd007a4aee033b21d91fe75cd0ad300",
-    "core/host/host.py": "18f80becdd343f7375785bc5aabdda290761d34376d890ebff8fab0d91fb5288",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
     "core/minimap/88-core-minimap.js": "b6c7e9c662f079c8f97cfc9f6bac2fea115b660f9b417056da54c3bf3c1129a1",
@@ -1636,9 +1630,7 @@
     "core/water/ext/57-core-water-audit.js": "6dd616a15a7804c615c4e1638b250cb709a85e1f219ae9ea03f8c4faa20374c1",
     "core/water/ext/58-core-water-mirror.js": "abf23c31ba18ba7f4890646bb539fa41652a3331977cc0c6ed6bcda9c646083f",
     "core/water/ext/60-core-water-fields.js": "8e877798226558edf744fccd1e6e92edf28bf059af5f087a10d733eaf5ecac2a",
-    "tools/buildlib.py": "24ec6d636869007e626446a0b8e9cc886fd595af0c9f95b78c4d4b272a18ec0e",
-    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47",
-    "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
+    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47"
    },
    "listings": {
     "biomes/riftrim/src": "3092de973855f2b53de0bde9a3943848d1776fc420995dadfa41ab1bbfdaa8d4",

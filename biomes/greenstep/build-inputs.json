@@ -59,7 +59,7 @@
     "biomes/shighlands/tex/leaf.moss.albedo.webp": "4b40a1264b3e63c39662a0f5958c759b523e1a2941702029e03b7a24ab216eb1",
     "biomes/shighlands/tex/leaf.small.albedo.webp": "f84da6784d649faaa8228c2fcd082c2afbb03daf24f8c38aeb37b81389ec7b2e",
     "biomes/shighlands/tex/lichen.albedo.webp": "286c559bbce9fe04e39e09cf38ba3feecdcb8a417f4294364aaaaa91fee61a48",
-    "biomes/shighlands/tex/pack.json": "d03e9e84d53084a1b1a8b4c66786768eda2b1e8a484a6c4c56f050da307bebf4",
+    "biomes/shighlands/tex/pack.json": "d250aadae7e3e993ce04eb7c3f4bc5681ca581d7abc74d231cd59b0b303ede84",
     "biomes/shighlands/tex/stone.granite.albedo.webp": "f2dbf24afdca38e4ce8b14f97e00930084e3171501be78b2217c71567a80732d",
     "biomes/shighlands/tex/strap.albedo.webp": "da1d7d120e2e628d8f7129f06aab568e84aaa6172635a028dbaa98cebc08dc49",
     "biomes/shighlands/tex/tussock.albedo.webp": "bbb76561f49a715339d83450aa33342b9b9bd4cef875562b740d06767fd42cf2",
@@ -167,7 +167,6 @@
     "core/host/97-host-minimap.js": "24758908dc1f6be4fed09e0aa3a23270187ccd93ff41ada5974bf49b194fc162",
     "core/host/98-host-edit.js": "89038217cde180a076b33d41644bd95285837a9d63f09199bd944e507596997e",
     "core/host/99-host-cutaway.js": "c67cea97b1b18a2a8b3bbc329d5bb5df7fd007a4aee033b21d91fe75cd0ad300",
-    "core/host/host.py": "18f80becdd343f7375785bc5aabdda290761d34376d890ebff8fab0d91fb5288",
     "core/mask/25-core-mask.js": "04f96f584ace3a7fd3e9bb262b02b1264b6352d8460c2af3ae9ee0a4fe31e3c2",
     "core/mask/27-core-mask-distance.js": "9fdda02f2f944468c96ad1d8dfb8b785cc6f4c4803e45c2b8117572c9ae4b85c",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
@@ -203,11 +202,10 @@
     "core/water/ext/57-core-water-audit.js": "6dd616a15a7804c615c4e1638b250cb709a85e1f219ae9ea03f8c4faa20374c1",
     "core/water/ext/58-core-water-mirror.js": "abf23c31ba18ba7f4890646bb539fa41652a3331977cc0c6ed6bcda9c646083f",
     "core/water/ext/60-core-water-fields.js": "8e877798226558edf744fccd1e6e92edf28bf059af5f087a10d733eaf5ecac2a",
-    "tools/buildlib.py": "24ec6d636869007e626446a0b8e9cc886fd595af0c9f95b78c4d4b272a18ec0e",
-    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47",
-    "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
+    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47"
    },
    "listings": {
+    "biomes/greenstep": "6fdecef50212fe839ef0f8fb9b32af14aa3684d3a6633e2919e2184f05ed667d",
     "biomes/greenstep/src": "d56f07d62560b7921ecc31f21a4e58d79eab5654bdbf0367bde10d5d9eb63160",
     "biomes/greenstep/stations/tallwalls": "106683fa43910ad4cc432f0b49b66a8c5fbcb1449e4cd289fd1b00eab3089e32",
     "core/host": "d729ffbc0ed36e68e9036bd9c454abc6462a27b22a4bc16b88c38d836e6f4a37",
@@ -279,7 +277,7 @@
     "biomes/shighlands/tex/leaf.moss.albedo.webp": "4b40a1264b3e63c39662a0f5958c759b523e1a2941702029e03b7a24ab216eb1",
     "biomes/shighlands/tex/leaf.small.albedo.webp": "f84da6784d649faaa8228c2fcd082c2afbb03daf24f8c38aeb37b81389ec7b2e",
     "biomes/shighlands/tex/lichen.albedo.webp": "286c559bbce9fe04e39e09cf38ba3feecdcb8a417f4294364aaaaa91fee61a48",
-    "biomes/shighlands/tex/pack.json": "d03e9e84d53084a1b1a8b4c66786768eda2b1e8a484a6c4c56f050da307bebf4",
+    "biomes/shighlands/tex/pack.json": "d250aadae7e3e993ce04eb7c3f4bc5681ca581d7abc74d231cd59b0b303ede84",
     "biomes/shighlands/tex/stone.granite.albedo.webp": "f2dbf24afdca38e4ce8b14f97e00930084e3171501be78b2217c71567a80732d",
     "biomes/shighlands/tex/strap.albedo.webp": "da1d7d120e2e628d8f7129f06aab568e84aaa6172635a028dbaa98cebc08dc49",
     "biomes/shighlands/tex/tussock.albedo.webp": "bbb76561f49a715339d83450aa33342b9b9bd4cef875562b740d06767fd42cf2",
@@ -336,7 +334,6 @@
     "core/host/97-host-minimap.js": "24758908dc1f6be4fed09e0aa3a23270187ccd93ff41ada5974bf49b194fc162",
     "core/host/98-host-edit.js": "89038217cde180a076b33d41644bd95285837a9d63f09199bd944e507596997e",
     "core/host/99-host-cutaway.js": "c67cea97b1b18a2a8b3bbc329d5bb5df7fd007a4aee033b21d91fe75cd0ad300",
-    "core/host/host.py": "18f80becdd343f7375785bc5aabdda290761d34376d890ebff8fab0d91fb5288",
     "core/mask/25-core-mask.js": "04f96f584ace3a7fd3e9bb262b02b1264b6352d8460c2af3ae9ee0a4fe31e3c2",
     "core/mask/27-core-mask-distance.js": "9fdda02f2f944468c96ad1d8dfb8b785cc6f4c4803e45c2b8117572c9ae4b85c",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
@@ -374,9 +371,7 @@
     "core/water/ext/57-core-water-audit.js": "6dd616a15a7804c615c4e1638b250cb709a85e1f219ae9ea03f8c4faa20374c1",
     "core/water/ext/58-core-water-mirror.js": "abf23c31ba18ba7f4890646bb539fa41652a3331977cc0c6ed6bcda9c646083f",
     "core/water/ext/60-core-water-fields.js": "8e877798226558edf744fccd1e6e92edf28bf059af5f087a10d733eaf5ecac2a",
-    "tools/buildlib.py": "24ec6d636869007e626446a0b8e9cc886fd595af0c9f95b78c4d4b272a18ec0e",
-    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47",
-    "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
+    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47"
    },
    "listings": {
     "biomes/greenstep/src": "d56f07d62560b7921ecc31f21a4e58d79eab5654bdbf0367bde10d5d9eb63160",
@@ -450,7 +445,7 @@
     "biomes/shighlands/tex/leaf.moss.albedo.webp": "4b40a1264b3e63c39662a0f5958c759b523e1a2941702029e03b7a24ab216eb1",
     "biomes/shighlands/tex/leaf.small.albedo.webp": "f84da6784d649faaa8228c2fcd082c2afbb03daf24f8c38aeb37b81389ec7b2e",
     "biomes/shighlands/tex/lichen.albedo.webp": "286c559bbce9fe04e39e09cf38ba3feecdcb8a417f4294364aaaaa91fee61a48",
-    "biomes/shighlands/tex/pack.json": "d03e9e84d53084a1b1a8b4c66786768eda2b1e8a484a6c4c56f050da307bebf4",
+    "biomes/shighlands/tex/pack.json": "d250aadae7e3e993ce04eb7c3f4bc5681ca581d7abc74d231cd59b0b303ede84",
     "biomes/shighlands/tex/stone.granite.albedo.webp": "f2dbf24afdca38e4ce8b14f97e00930084e3171501be78b2217c71567a80732d",
     "biomes/shighlands/tex/strap.albedo.webp": "da1d7d120e2e628d8f7129f06aab568e84aaa6172635a028dbaa98cebc08dc49",
     "biomes/shighlands/tex/tussock.albedo.webp": "bbb76561f49a715339d83450aa33342b9b9bd4cef875562b740d06767fd42cf2",
@@ -558,7 +553,6 @@
     "core/host/97-host-minimap.js": "24758908dc1f6be4fed09e0aa3a23270187ccd93ff41ada5974bf49b194fc162",
     "core/host/98-host-edit.js": "89038217cde180a076b33d41644bd95285837a9d63f09199bd944e507596997e",
     "core/host/99-host-cutaway.js": "c67cea97b1b18a2a8b3bbc329d5bb5df7fd007a4aee033b21d91fe75cd0ad300",
-    "core/host/host.py": "18f80becdd343f7375785bc5aabdda290761d34376d890ebff8fab0d91fb5288",
     "core/mask/25-core-mask.js": "04f96f584ace3a7fd3e9bb262b02b1264b6352d8460c2af3ae9ee0a4fe31e3c2",
     "core/mask/27-core-mask-distance.js": "9fdda02f2f944468c96ad1d8dfb8b785cc6f4c4803e45c2b8117572c9ae4b85c",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
@@ -594,9 +588,7 @@
     "core/water/ext/57-core-water-audit.js": "6dd616a15a7804c615c4e1638b250cb709a85e1f219ae9ea03f8c4faa20374c1",
     "core/water/ext/58-core-water-mirror.js": "abf23c31ba18ba7f4890646bb539fa41652a3331977cc0c6ed6bcda9c646083f",
     "core/water/ext/60-core-water-fields.js": "8e877798226558edf744fccd1e6e92edf28bf059af5f087a10d733eaf5ecac2a",
-    "tools/buildlib.py": "24ec6d636869007e626446a0b8e9cc886fd595af0c9f95b78c4d4b272a18ec0e",
-    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47",
-    "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
+    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47"
    },
    "listings": {
     "biomes/greenstep/src": "d56f07d62560b7921ecc31f21a4e58d79eab5654bdbf0367bde10d5d9eb63160",
@@ -671,7 +663,7 @@
     "biomes/shighlands/tex/leaf.moss.albedo.webp": "4b40a1264b3e63c39662a0f5958c759b523e1a2941702029e03b7a24ab216eb1",
     "biomes/shighlands/tex/leaf.small.albedo.webp": "f84da6784d649faaa8228c2fcd082c2afbb03daf24f8c38aeb37b81389ec7b2e",
     "biomes/shighlands/tex/lichen.albedo.webp": "286c559bbce9fe04e39e09cf38ba3feecdcb8a417f4294364aaaaa91fee61a48",
-    "biomes/shighlands/tex/pack.json": "d03e9e84d53084a1b1a8b4c66786768eda2b1e8a484a6c4c56f050da307bebf4",
+    "biomes/shighlands/tex/pack.json": "d250aadae7e3e993ce04eb7c3f4bc5681ca581d7abc74d231cd59b0b303ede84",
     "biomes/shighlands/tex/stone.granite.albedo.webp": "f2dbf24afdca38e4ce8b14f97e00930084e3171501be78b2217c71567a80732d",
     "biomes/shighlands/tex/strap.albedo.webp": "da1d7d120e2e628d8f7129f06aab568e84aaa6172635a028dbaa98cebc08dc49",
     "biomes/shighlands/tex/tussock.albedo.webp": "bbb76561f49a715339d83450aa33342b9b9bd4cef875562b740d06767fd42cf2",
@@ -728,7 +720,6 @@
     "core/host/97-host-minimap.js": "24758908dc1f6be4fed09e0aa3a23270187ccd93ff41ada5974bf49b194fc162",
     "core/host/98-host-edit.js": "89038217cde180a076b33d41644bd95285837a9d63f09199bd944e507596997e",
     "core/host/99-host-cutaway.js": "c67cea97b1b18a2a8b3bbc329d5bb5df7fd007a4aee033b21d91fe75cd0ad300",
-    "core/host/host.py": "18f80becdd343f7375785bc5aabdda290761d34376d890ebff8fab0d91fb5288",
     "core/mask/25-core-mask.js": "04f96f584ace3a7fd3e9bb262b02b1264b6352d8460c2af3ae9ee0a4fe31e3c2",
     "core/mask/27-core-mask-distance.js": "9fdda02f2f944468c96ad1d8dfb8b785cc6f4c4803e45c2b8117572c9ae4b85c",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
@@ -767,9 +758,7 @@
     "core/water/ext/60-core-water-fields.js": "8e877798226558edf744fccd1e6e92edf28bf059af5f087a10d733eaf5ecac2a",
     "core/water/geyser/52-core-water-geyser.js": "804a8b84e108965002396666c0647991ef073416f0206b02aeba81be3be19ac1",
     "core/water/geyser/52b-core-water-geyser-draw.js": "2e403145a06bf9b7a06fe4a5e6831d3ae0724a8eba1fbb21b4039ab2ae6cfd3e",
-    "tools/buildlib.py": "24ec6d636869007e626446a0b8e9cc886fd595af0c9f95b78c4d4b272a18ec0e",
-    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47",
-    "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
+    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47"
    },
    "listings": {
     "biomes/greenstep/src": "d56f07d62560b7921ecc31f21a4e58d79eab5654bdbf0367bde10d5d9eb63160",
@@ -843,7 +832,7 @@
     "biomes/shighlands/tex/leaf.moss.albedo.webp": "4b40a1264b3e63c39662a0f5958c759b523e1a2941702029e03b7a24ab216eb1",
     "biomes/shighlands/tex/leaf.small.albedo.webp": "f84da6784d649faaa8228c2fcd082c2afbb03daf24f8c38aeb37b81389ec7b2e",
     "biomes/shighlands/tex/lichen.albedo.webp": "286c559bbce9fe04e39e09cf38ba3feecdcb8a417f4294364aaaaa91fee61a48",
-    "biomes/shighlands/tex/pack.json": "d03e9e84d53084a1b1a8b4c66786768eda2b1e8a484a6c4c56f050da307bebf4",
+    "biomes/shighlands/tex/pack.json": "d250aadae7e3e993ce04eb7c3f4bc5681ca581d7abc74d231cd59b0b303ede84",
     "biomes/shighlands/tex/stone.granite.albedo.webp": "f2dbf24afdca38e4ce8b14f97e00930084e3171501be78b2217c71567a80732d",
     "biomes/shighlands/tex/strap.albedo.webp": "da1d7d120e2e628d8f7129f06aab568e84aaa6172635a028dbaa98cebc08dc49",
     "biomes/shighlands/tex/tussock.albedo.webp": "bbb76561f49a715339d83450aa33342b9b9bd4cef875562b740d06767fd42cf2",
@@ -951,7 +940,6 @@
     "core/host/97-host-minimap.js": "24758908dc1f6be4fed09e0aa3a23270187ccd93ff41ada5974bf49b194fc162",
     "core/host/98-host-edit.js": "89038217cde180a076b33d41644bd95285837a9d63f09199bd944e507596997e",
     "core/host/99-host-cutaway.js": "c67cea97b1b18a2a8b3bbc329d5bb5df7fd007a4aee033b21d91fe75cd0ad300",
-    "core/host/host.py": "18f80becdd343f7375785bc5aabdda290761d34376d890ebff8fab0d91fb5288",
     "core/mask/25-core-mask.js": "04f96f584ace3a7fd3e9bb262b02b1264b6352d8460c2af3ae9ee0a4fe31e3c2",
     "core/mask/27-core-mask-distance.js": "9fdda02f2f944468c96ad1d8dfb8b785cc6f4c4803e45c2b8117572c9ae4b85c",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
@@ -987,9 +975,7 @@
     "core/water/ext/57-core-water-audit.js": "6dd616a15a7804c615c4e1638b250cb709a85e1f219ae9ea03f8c4faa20374c1",
     "core/water/ext/58-core-water-mirror.js": "abf23c31ba18ba7f4890646bb539fa41652a3331977cc0c6ed6bcda9c646083f",
     "core/water/ext/60-core-water-fields.js": "8e877798226558edf744fccd1e6e92edf28bf059af5f087a10d733eaf5ecac2a",
-    "tools/buildlib.py": "24ec6d636869007e626446a0b8e9cc886fd595af0c9f95b78c4d4b272a18ec0e",
-    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47",
-    "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
+    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47"
    },
    "listings": {
     "biomes/greenstep/src": "d56f07d62560b7921ecc31f21a4e58d79eab5654bdbf0367bde10d5d9eb63160",
@@ -1063,7 +1049,7 @@
     "biomes/shighlands/tex/leaf.moss.albedo.webp": "4b40a1264b3e63c39662a0f5958c759b523e1a2941702029e03b7a24ab216eb1",
     "biomes/shighlands/tex/leaf.small.albedo.webp": "f84da6784d649faaa8228c2fcd082c2afbb03daf24f8c38aeb37b81389ec7b2e",
     "biomes/shighlands/tex/lichen.albedo.webp": "286c559bbce9fe04e39e09cf38ba3feecdcb8a417f4294364aaaaa91fee61a48",
-    "biomes/shighlands/tex/pack.json": "d03e9e84d53084a1b1a8b4c66786768eda2b1e8a484a6c4c56f050da307bebf4",
+    "biomes/shighlands/tex/pack.json": "d250aadae7e3e993ce04eb7c3f4bc5681ca581d7abc74d231cd59b0b303ede84",
     "biomes/shighlands/tex/stone.granite.albedo.webp": "f2dbf24afdca38e4ce8b14f97e00930084e3171501be78b2217c71567a80732d",
     "biomes/shighlands/tex/strap.albedo.webp": "da1d7d120e2e628d8f7129f06aab568e84aaa6172635a028dbaa98cebc08dc49",
     "biomes/shighlands/tex/tussock.albedo.webp": "bbb76561f49a715339d83450aa33342b9b9bd4cef875562b740d06767fd42cf2",
@@ -1171,7 +1157,6 @@
     "core/host/97-host-minimap.js": "24758908dc1f6be4fed09e0aa3a23270187ccd93ff41ada5974bf49b194fc162",
     "core/host/98-host-edit.js": "89038217cde180a076b33d41644bd95285837a9d63f09199bd944e507596997e",
     "core/host/99-host-cutaway.js": "c67cea97b1b18a2a8b3bbc329d5bb5df7fd007a4aee033b21d91fe75cd0ad300",
-    "core/host/host.py": "18f80becdd343f7375785bc5aabdda290761d34376d890ebff8fab0d91fb5288",
     "core/mask/25-core-mask.js": "04f96f584ace3a7fd3e9bb262b02b1264b6352d8460c2af3ae9ee0a4fe31e3c2",
     "core/mask/27-core-mask-distance.js": "9fdda02f2f944468c96ad1d8dfb8b785cc6f4c4803e45c2b8117572c9ae4b85c",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
@@ -1209,9 +1194,7 @@
     "core/water/ext/57-core-water-audit.js": "6dd616a15a7804c615c4e1638b250cb709a85e1f219ae9ea03f8c4faa20374c1",
     "core/water/ext/58-core-water-mirror.js": "abf23c31ba18ba7f4890646bb539fa41652a3331977cc0c6ed6bcda9c646083f",
     "core/water/ext/60-core-water-fields.js": "8e877798226558edf744fccd1e6e92edf28bf059af5f087a10d733eaf5ecac2a",
-    "tools/buildlib.py": "24ec6d636869007e626446a0b8e9cc886fd595af0c9f95b78c4d4b272a18ec0e",
-    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47",
-    "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
+    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47"
    },
    "listings": {
     "biomes/greenstep/src": "d56f07d62560b7921ecc31f21a4e58d79eab5654bdbf0367bde10d5d9eb63160",
@@ -1285,7 +1268,7 @@
     "biomes/shighlands/tex/leaf.moss.albedo.webp": "4b40a1264b3e63c39662a0f5958c759b523e1a2941702029e03b7a24ab216eb1",
     "biomes/shighlands/tex/leaf.small.albedo.webp": "f84da6784d649faaa8228c2fcd082c2afbb03daf24f8c38aeb37b81389ec7b2e",
     "biomes/shighlands/tex/lichen.albedo.webp": "286c559bbce9fe04e39e09cf38ba3feecdcb8a417f4294364aaaaa91fee61a48",
-    "biomes/shighlands/tex/pack.json": "d03e9e84d53084a1b1a8b4c66786768eda2b1e8a484a6c4c56f050da307bebf4",
+    "biomes/shighlands/tex/pack.json": "d250aadae7e3e993ce04eb7c3f4bc5681ca581d7abc74d231cd59b0b303ede84",
     "biomes/shighlands/tex/stone.granite.albedo.webp": "f2dbf24afdca38e4ce8b14f97e00930084e3171501be78b2217c71567a80732d",
     "biomes/shighlands/tex/strap.albedo.webp": "da1d7d120e2e628d8f7129f06aab568e84aaa6172635a028dbaa98cebc08dc49",
     "biomes/shighlands/tex/tussock.albedo.webp": "bbb76561f49a715339d83450aa33342b9b9bd4cef875562b740d06767fd42cf2",
@@ -1393,7 +1376,6 @@
     "core/host/97-host-minimap.js": "24758908dc1f6be4fed09e0aa3a23270187ccd93ff41ada5974bf49b194fc162",
     "core/host/98-host-edit.js": "89038217cde180a076b33d41644bd95285837a9d63f09199bd944e507596997e",
     "core/host/99-host-cutaway.js": "c67cea97b1b18a2a8b3bbc329d5bb5df7fd007a4aee033b21d91fe75cd0ad300",
-    "core/host/host.py": "18f80becdd343f7375785bc5aabdda290761d34376d890ebff8fab0d91fb5288",
     "core/mask/25-core-mask.js": "04f96f584ace3a7fd3e9bb262b02b1264b6352d8460c2af3ae9ee0a4fe31e3c2",
     "core/mask/27-core-mask-distance.js": "9fdda02f2f944468c96ad1d8dfb8b785cc6f4c4803e45c2b8117572c9ae4b85c",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
@@ -1429,9 +1411,7 @@
     "core/water/ext/57-core-water-audit.js": "6dd616a15a7804c615c4e1638b250cb709a85e1f219ae9ea03f8c4faa20374c1",
     "core/water/ext/58-core-water-mirror.js": "abf23c31ba18ba7f4890646bb539fa41652a3331977cc0c6ed6bcda9c646083f",
     "core/water/ext/60-core-water-fields.js": "8e877798226558edf744fccd1e6e92edf28bf059af5f087a10d733eaf5ecac2a",
-    "tools/buildlib.py": "24ec6d636869007e626446a0b8e9cc886fd595af0c9f95b78c4d4b272a18ec0e",
-    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47",
-    "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
+    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47"
    },
    "listings": {
     "biomes/greenstep/src": "d56f07d62560b7921ecc31f21a4e58d79eab5654bdbf0367bde10d5d9eb63160",

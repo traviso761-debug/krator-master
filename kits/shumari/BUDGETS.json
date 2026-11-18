@@ -1,0 +1,12 @@
+{
+ "what": "Shumari building kit sheet ceilings (kits/shumari/PLAN.md).",
+ "pages": {
+  "shumari.html": {
+   "bytes": 16777216,
+   "tris": 2200000,
+   "calls": 200,
+   "why": "Shumari kit sheet ceiling covering fluted Mamluk domes, ablaq ashlar monuments, and catalog furnishings.",
+   "raised": "2026-11-18"
+  }
+ }
+}
