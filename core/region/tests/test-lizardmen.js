@@ -47,13 +47,13 @@ T.ok('Z1: two years\' books balance, every place and good; the plan took what it
 {const f=fedCheck(Y.B);T.ok('Z1: every place fed for two years: grain, produce, meat, fish, salt and bronze ware all under 1 % short',f.ok,f.bad.slice(0,5).join('; ')||'none short');
  const D=run(365,{allot:{moves:false}});
  T.neg('Z1: a plan that reckons and moves nothing leaves the towns without salt and the capital without grain',Bk=>fedCheck(Bk).ok,D.B,Y.B);}
-// 5. the salt and the bronze: salt lands at every place that makes none; the hall casts from Tuatara's copper and Komodo's tin,
+// 5. the salt and the bronze: salt lands at every place that makes none; the hall casts from Tuatara's copper and Komodo and Iguana's tin,
 //    and its bronze reaches every smithy
 {const B=Y.B,noSalt=Object.keys(B).filter(s=>B[s].people&&!(B[s].made.salt>0)&&!(B[s].imported.salt>0));
  const cast=B.basilisk.made.bronze||0,plan=Y.V.settlements.find(s=>s.id==='basilisk').plan.make.bronze*2,
   noBronze=Object.keys(B).filter(s=>s!=='basilisk'&&B[s].people&&!(B[s].imported.bronze>0));
  const good=!noSalt.length&&cast>=plan*.8&&(B.basilisk.imported.copper||0)>0&&(B.basilisk.imported.tin||0)>0&&!noBronze.length;
- T.ok('Z1: salt reaches every place that makes none; the hall casts its plan from Tuatara\'s copper and Komodo\'s tin; bronze reaches every smithy',good,
+ T.ok('Z1: salt reaches every place that makes none; the hall casts its plan from Tuatara\'s copper and Komodo and Iguana\'s tin; bronze reaches every smithy',good,
   'no salt: '+(noSalt.join(', ')||'none')+'; cast '+t(cast)+' of '+t(plan)+'; copper in '+t(B.basilisk.imported.copper||0)+', tin in '+t(B.basilisk.imported.tin||0)+'; no bronze: '+(noBronze.join(', ')||'none'));}
 // 6. the command, not the market: when Iguana's harvest fails, the plan feeds the capital (its need weighs most) from below the
 //    warrens' reserve; without that rule the capital goes short

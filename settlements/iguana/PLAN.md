@@ -8,8 +8,9 @@ What is settled:
 - **Iguana** (the owner's name, 2026-11-17; "Basilisk" in the proposal of 2026-11-16) is **the capital's granary on the
   Pile's plateau**, ~3,000 people. **It has no pin yet**: *proposed* **5.1 px 713,1569** (`PLAN-LIZARDMEN.md`, owed to the
   scale-model queue).
-- In `LZ_TUNE` it makes a year **grain 2,600 t, produce 250 t, meat and hide 210 t, relics 1.5 t** (gleaned from the Pile's
-  lower levels); its relics go to **the east reliquary**.
+- In `LZ_TUNE` it makes a year **grain 2,600 t, produce 250 t, meat and hide 210 t, tin 8 t, relics 1.5 t** (cassiterite washed
+  from **Muckle Weyt Beck** `r202` per `settlements/skink/PLAN.md` question 6; relics gleaned from the Pile's lower levels); its
+  tin goes to Basilisk's bronze hall and its relics to **the east reliquary**.
 - **The Pile** (Cube) is 14.6 km east, its upper levels held by the Tungangs of **Loj Nahn** (~1,000), whom the Lizardmen
   surround but have never pressed (`LORE.md` 6.1, 6.20).
 
@@ -24,8 +25,8 @@ As Gila's, on the shared builder (`kits/lizardmen/settle`), with:
 | the ground | the model baked round the pin, `core/drawn`, `KGROUND` | near 10 x 10 km at 20 m (the fields reach 4.4 km), far 60 km; layers `ground.grass.lush`, `ground.dirt`, `ground.tilled`, `ground.terrace.field` |
 | the village | `core/city` through `82-lzv-site.js` | one rhombic squared spiral, five windings, wide and open |
 | water | `core/water` | the wells and the great tank (`WATER.still`); **Muckle Weyt Beck** (r202, perennial, 22 m³/s) 5.4 km off as `WATER.flow` if the near grid holds it |
-| the outwork | `core/hamlet`, Lizardmen row, focus `farming` | a farming hamlet 3.3 km west-south-west |
-| the economy | `core/region` (`LZ_TUNE`, `checkTown`) | `IG_REC` held to the tune |
+| the outwork | `core/hamlet`, Lizardmen row, foci `farming` and `mine` | a farming hamlet 3.3 km WSW (`iguana.farm`) and a tin placer camp (`iguana.placer`) + three `lz-placer` washing floors beside Muckle Weyt Beck (`r202`) 5.1 km NW |
+| the economy | `core/region` (`LZ_TUNE`, `checkTown`), `kits/resources` (`KRES`) | `IG_REC` held to the tune; `res:placer-tin:r202:5` resolved via `KRES.near` |
 | crops | `kits/crops` | rice, helix-bean, sweet-potato, ashroot (the survey's Cube-plateau list) |
 
 ## 2. The site
@@ -75,10 +76,11 @@ A farming town: the most Drovers of any.
 | grain | **2,600** | the fields west | ~700 | **~1,900 t out**: the capital's grain, and Gila's dry years |
 | produce | 250 | the fields | ~250 | |
 | meat and hide | 210 | the herds | ~210 | |
+| tin | **8** | the placer camp and `lz-placer` sluices on Muckle Weyt Beck (`r202`) | | **8 t out** to Basilisk's bronze hall (backs Komodo's 8 t) |
 | relics | **1.5** | the gleaners in the Pile's lower levels | | to **the east reliquary** |
-| salt, bronze | none | | ~25, ~6 | in: Gila's salt, Basilisk's bronze |
+| salt, bronze | none | | ~25, ~6 | in: Skink and Gila's salt, Basilisk's bronze |
 
-`IG_REC.works` must make exactly grain 2,600, produce 250, meat_hide 210, relics 1.5 (`LZ_TUNE.checkTown`).
+`IG_REC.works` must make exactly grain 2,600, produce 250, meat_hide 210, tin 8, relics 1.5 (`LZ_TUNE.checkTown`).
 
 ## 6. Pieces and textures
 

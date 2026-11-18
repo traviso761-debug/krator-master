@@ -36,7 +36,7 @@ T.goods={grain:{unit:'kg'},produce:{unit:'kg'},fish:{unit:'kg'},lakecake:{unit:'
 T.diet={town:{grain:233.33,produce:83.33,fish:40,meat_hide:30,salt:8.333,bronze_ware:2},
  cavern:{grain:150,produce:120,fish:40,meat_hide:20,salt:8.333,bronze_ware:2},
  warren:{grain:220,produce:80,meat_hide:40,salt:6,bronze_ware:.5}};
-/* the bronze hall's batch (Basilisk: Tuatara's copper and Komodo's tin, nine to one); every town's smiths rework the
+/* the bronze hall's batch (Basilisk: Tuatara's copper and Komodo and Iguana's tin, nine to one); every town's smiths rework the
    allotted bronze into tools, lamellae and clapperless bells, a kilo for a kilo */
 T.chain={cast:{in:{copper:9,tin:1},out:{bronze:10},hours:30},rework:{in:{bronze:1},out:{bronze_ware:1},hours:10}};
 /* THE PLACES. id (the map's pin where it has one), name, px, py, people, diet (a kind, or its own), make: {good: kg a year
@@ -46,7 +46,7 @@ T.chain={cast:{in:{copper:9,tin:1},out:{bronze:10},hours:30},rework:{in:{bronze:
 T.places=[
  {id:'slrodrkrls',key:'basilisk',name:'Basilisk, the stone capital at the eastern sea',px:765,py:1596,people:15000,diet:'town',
   make:{grain:1500000,produce:1300000,fish:600000,meat_hide:450000,salt:115000,bone:48000},extra:{evaporites:12000/15000,bone:60000/15000},
-  smiths:true,cast:true,why:'the jungle shore grows grain poorly; the sea\'s pans give the east\'s salt; the bronze hall casts what Tuatara and Komodo dig'},
+  smiths:true,cast:true,why:'the jungle shore grows grain poorly; the sea\'s pans give the east\'s salt; the bronze hall casts what Tuatara, Komodo and Iguana dig'},
  {id:'szv27b2reu',key:'tuatara',name:'Tuatara, on the volcanic savanna above the eastern sea',px:818,py:1554,people:3000,diet:{grain:233.33,produce:83.33,meat_hide:70,salt:8.333,bronze_ware:2},
   make:{grain:1000000,produce:250000,meat_hide:210000,copper:70000},smiths:true,raider:true,why:'the richest ground: copper 102 nodes, the savanna\'s grain; no perennial water, so no fish'},
  {id:'spnqhezhiw',key:'komodo',name:'Komodo, at the eastern sea\'s far end',px:865,py:1617,people:3000,diet:'town',
@@ -54,8 +54,8 @@ T.places=[
  {id:'sze26pgivd',key:'gila',name:'Gila, the salt village on its lake',px:653,py:1485,people:3000,gila:true,smiths:true,
   why:'GL_REC (settlements/gila/src/88-gl-records.js): the evaporites, the crest\'s fields, the lake\'s alga'},
  {id:'iguana',key:'iguana',name:'Iguana, the granary town on the Pile\'s plateau',px:713,py:1569,people:3000,diet:{grain:233.33,produce:83.33,meat_hide:70,salt:8.333,bronze_ware:2},
-  make:{grain:2600000,produce:250000,meat_hide:210000,relics:1500},smiths:true,sink:'reliquary-east',
-  why:'the owner, 2026-11-16: "on some prime farmland nearby" the Pile (proposed px 713,1569, -373 m, 0.6 % slope); the capital\'s granary; it keeps the watch on Loj Nahn and gleans the Pile\'s lower levels'},
+  make:{grain:2600000,produce:250000,meat_hide:210000,tin:8000,relics:1500},smiths:true,sink:'reliquary-east',
+  why:'the owner, 2026-11-16: "on some prime farmland nearby" the Pile (proposed px 713,1569, -373 m, 0.6 % slope); 2026-11-17: "and add the proposed tin site near iguana" (8 t on Muckle Weyt Beck r202, settlements/skink/PLAN.md question 6); the capital\'s granary; it keeps the watch on Loj Nahn and gleans the Pile\'s lower levels'},
  {id:'skink',key:'skink',name:'Skink, the salt village under the Pile',px:691,py:1521,people:1500,diet:{grain:233.33,produce:83.33,meat_hide:50,salt:8.333,bronze_ware:2},
   make:{grain:300000,produce:125000,meat_hide:75000,salt:300000},smiths:true,
   why:'the owner, 2026-11-17: "yes add it, this will be the village of Skink": the country\'s salt was its thinnest margin (settlements/skink/PLAN.md section 1); the richest halite in the country (254) beside a salt lake, pans that dry in 1,051 mm, on the west loop between Iguana and Gila (proposed px 691,1521, no pin yet)'},

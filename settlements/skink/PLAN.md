@@ -113,7 +113,7 @@ No new piece: `lz-mine`, the kit's; `gl-well`, `gl-tank`, `gl-pans`, `gl-saltsto
 | **S0** | this plan, `spec.json`, the sheets, the runs | `node settlements/skink/stress-lz.js gilaSalt` | done (`ea38addc4`) |
 | **S1** | the owner's yes and the name (Skink); the tune's row and the Coil's, section 5 | `test-lizardmen.js` 17/17, `test-lz-raids.js`, `test-lz-join.js` | done (`e08d51c75`) |
 | **S2** | the pin on the scale model's queue | | queued (`PLAN-LIZARDMEN.md`) |
-| **S3** | `SK_REC`, the spec and the page, by the guide | `test-sk-records.js`; the guide's section 5; `expect.keys` lz-nest, lz-ley, lz-muster, gl-tank, lz-mine, gl-pans, gl-saltstore | done (GPU-verified; section 8 questions 5-6 open) |
+| **S3** | `SK_REC`, the spec and the page, by the guide | `test-sk-records.js`; the guide's section 5; `expect.keys` lz-nest, lz-ley, lz-muster, gl-tank, lz-mine, gl-pans, gl-saltstore | done (`2c412cde8`, GPU-verified; section 8 question 6 answered and added at Iguana) |
 
 ## 8. Questions for the owner
 
@@ -125,5 +125,6 @@ No new piece: `lz-mine`, the kit's; `gl-well`, `gl-tank`, `gl-pans`, `gl-saltsto
    country? *Proposed:* they stay.
 6. **Tin**: a second source on a high-grade placer, rather than a sixth village: **Iguana's placer on Muckle Weyt Beck**
    (geology 700.6,1563.8, high tin, 27 km from Iguana: 8 t a year, a placer camp on `core/hamlet`), or the high placers on
-   Basilisk's south shore (790.7,1603.8 and 791.4,1610.1). *Proposed:* Iguana's (the run in section 1 used it). Iguana's page
-   and records then take a tin works.
+   Basilisk's south shore (790.7,1603.8 and 791.4,1610.1). **Answered** (2026-11-17: *"and add the proposed tin site near iguana"*):
+   added `tin: 8000` (`8 t/yr`) to Iguana in `LZ_TUNE` and `IG_REC`, with the `iguana.placer` camp (`core/hamlet`, `focus: 'mine'`)
+   and three `lz-placer` washing floors along Muckle Weyt Beck (`r202`) on Iguana's page.

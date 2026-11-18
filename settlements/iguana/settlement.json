@@ -19,6 +19,8 @@
   "core/hamlet/20-hamlet-cultures.js",
   "core/hamlet/lizardmen/23-hamlet-lizardmen.js",
   "core/hamlet/30-hamlet-village.js",
+  "kits/resources/src/42r-res-ore.js",
+  "kits/resources/src/45r-res-field.js",
   "kits/crops/src/10-crop-core.js",
   "kits/crops/src/20-crop-records.js",
   "kits/crops/src/22-crop-material.js",

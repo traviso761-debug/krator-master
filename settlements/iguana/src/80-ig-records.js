@@ -5,7 +5,7 @@
      IG_REC.site       proposed pin 5.1 px 713,1569 (-373 m, 0.3 % slope), 14.6 km west of the Pile (Loj Nahn)
      IG_REC.castes     the six castes summing to 3,000 (Drovers 40 %, shares summing to 1.0)
      IG_REC.crops      Iguana's four plateau crops in kits/crops (rice, helix-bean, sweet-potato, ashroot)
-     IG_REC.works      the four goods LZ_TUNE's Iguana makes a year (grain 2,600 t, produce 250 t, meat_hide 210 t, relics 1.5 t) */
+     IG_REC.works      the five goods LZ_TUNE's Iguana makes a year (grain 2,600 t, produce 250 t, meat_hide 210 t, tin 8 t, relics 1.5 t) */
 var IG_REC = (function () {
   var SEASONS = ['wet1', 'wet2', 'dry1', 'dry2'];
 
@@ -16,7 +16,8 @@ var IG_REC = (function () {
     pileWatch: { target: 'Loj Nahn (the Pile)', distKm: 14.6, bearingDeg: 74, lookouts: 3 },
     reliquary: { id: 'reliquary-east', px: [790, 1578], distM: 155048, bearingDeg: 96.7 },
     greatGranary: { halls: 27, at: [-1250, 0], capacityT: 2700 },
-    outwork: { id: 'iguana.farm', focus: 'farming', culture: 'lizardmen', at: [-3000, 1400] }
+    outwork: { id: 'iguana.farm', focus: 'farming', culture: 'lizardmen', at: [-3000, 1400] },
+    tinPlacer: { id: 'iguana.placer', focus: 'mine', culture: 'lizardmen', river: 'r202', riverName: 'Muckle Weyt Beck', geoNode: 'res:placer-tin:r202:5', geoPx: [700.6, 1563.8], at: [-4460, -2320], sluicesAt: [-4786, -2422] }
   };
 
   var castes = [
@@ -35,11 +36,12 @@ var IG_REC = (function () {
     { id: 'ashroot', role: 'tuber', zone: 'west-plateau-fields' }
   ];
 
-  /* Exact annual makes held by LZ_TUNE.checkTown: grain 2,600 t, produce 250 t, meat_hide 210 t, relics 1.5 t */
+  /* Exact annual makes held by LZ_TUNE.checkTown: grain 2,600 t, produce 250 t, meat_hide 210 t, tin 8 t, relics 1.5 t */
   var works = [
-    { id: 'ig.works.grain', kind: 'farming', keys: ['lz-granary', 'lz-farm', 'lz-windmill', 'lz-bakehouse'], caste: 3, workers: 680, good: 'grain', yearT: 2600 },
+    { id: 'ig.works.grain', kind: 'farming', keys: ['lz-granary', 'lz-farm', 'lz-windmill', 'lz-bakehouse'], caste: 3, workers: 640, good: 'grain', yearT: 2600 },
     { id: 'ig.works.produce', kind: 'farming', keys: ['lz-farm', 'lz-orchard', 'lz-fermentery'], caste: 3, workers: 110, good: 'produce', yearT: 250 },
     { id: 'ig.works.herds', kind: 'herding', keys: ['lz-farm', 'lz-hall-bone'], caste: 3, workers: 110, good: 'meat_hide', yearT: 210 },
+    { id: 'ig.works.tin', kind: 'placer', keys: ['lz-placer', 'lz-mine'], caste: 2, workers: 56, good: 'tin', yearT: 8 },
     { id: 'ig.works.relics', kind: 'gleaning', keys: ['lz-warehouse', 'lz-lookout'], caste: 4, workers: 36, good: 'relics', yearT: 1.5 }
   ];
 
@@ -54,8 +56,9 @@ var IG_REC = (function () {
     grain: { unit: 't', yearMadeT: 2600, yearNeedT: 700, allotOutT: 1900, to: ['basilisk', 'gila'] },
     produce: { unit: 't', yearMadeT: 250, yearNeedT: 250, allotOutT: 0 },
     meat_hide: { unit: 't', yearMadeT: 210, yearNeedT: 210, allotOutT: 0 },
+    tin: { unit: 't', yearMadeT: 8, yearNeedT: 0, allotOutT: 8, to: ['basilisk'] },
     relics: { unit: 't', yearMadeT: 1.5, yearNeedT: 0, allotOutT: 1.5, sink: 'reliquary-east' },
-    salt: { unit: 't', yearMadeT: 0, yearNeedT: 25, allotInT: 25, from: ['gila'] },
+    salt: { unit: 't', yearMadeT: 0, yearNeedT: 25, allotInT: 25, from: ['skink', 'gila'] },
     bronze: { unit: 't', yearMadeT: 0, yearNeedT: 6, allotInT: 6, from: ['basilisk'] }
   };
 

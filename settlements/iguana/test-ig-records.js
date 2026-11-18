@@ -12,7 +12,7 @@ const LZ_TUNE = require(path.join(ROOT, 'core/region/data/lz-tune.js'));
 const IG_REC = require(path.join(__dirname, 'src/80-ig-records.js'));
 
 const chk = LZ_TUNE.checkTown(IG_REC);
-T.ok('IG_REC holds to LZ_TUNE: 3,000 by caste (Drovers 40 %), grain 2,600 t, produce 250 t, meat_hide 210 t, relics 1.5 t',
+T.ok('IG_REC holds to LZ_TUNE: 3,000 by caste (Drovers 40 %), grain 2,600 t, produce 250 t, meat_hide 210 t, tin 8 t, relics 1.5 t',
   chk.ok, chk.problems.join('; ') || 'ok');
 
 const missingCrops = IG_REC.crops.filter(c => !CROPS.BY_ID[c.id]).map(c => c.id);
@@ -25,6 +25,12 @@ const badCaste = Object.assign({}, IG_REC, {
 });
 T.neg('LZ_TUNE.checkTown refuses IG_REC when Drovers drift from 1,200 to 1,000',
   r => LZ_TUNE.checkTown(r).ok, badCaste, IG_REC);
+
+const badTin = Object.assign({}, IG_REC, {
+  works: IG_REC.works.map(w => w.good === 'tin' ? Object.assign({}, w, { yearT: 12 }) : w)
+});
+T.neg('LZ_TUNE.checkTown refuses IG_REC when Muckle Weyt Beck tin drifts from 8 t to 12 t',
+  r => LZ_TUNE.checkTown(r).ok, badTin, IG_REC);
 
 const badRelics = Object.assign({}, IG_REC, {
   works: IG_REC.works.map(w => w.good === 'relics' ? Object.assign({}, w, { yearT: 3.0 }) : w)

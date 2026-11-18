@@ -74,7 +74,7 @@
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
     "core/materials/record/26-matlib-bind.js": "93c467f3805276f5aea2482da7fac2216db1e52d18d191c1925c8cd90446b54c",
     "core/rand/08-core-rand.js": "f315035a138a8818c87f55de56ae2dbf3a8d66ff3cc435d303332502d2f43ddf",
-    "core/region/data/lz-tune.js": "b52a5fed330c99b0ae17440dda2deada917fc533b475fe1a6b62bdf3bd605d1a",
+    "core/region/data/lz-tune.js": "61b96de96ec062d48a35a2e3b6dfb28d5b62c8c5644fe50bf41ea91fcbc924cc",
     "core/shader/06-core-khook.js": "eb1a0436d3d5dbaab81c3e43de2b642c96d9c3b44331a8960801880e5e20c56d",
     "core/shader/06b-core-kcolor.js": "ededfc6b8a1a8aae5bf3c6ab40863478f9beb8e1aaf2acf4ba9da25ef6392115",
     "core/shader/07-core-kwarp.js": "b73f3511762ae1f45b4ad88f054baf11f76cf2c8f27726605758d9657f253e17",
@@ -346,15 +346,15 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "settlements/skink/build-manifest.json": "fc10d32d5b858b336bf6931e5625c22fcf752127a5341b3ae0f0b89f3922a705",
-    "settlements/skink/dist/skink.html": "12dbeb1f015535d3f462f508720249c73e3f623a2145bb5b26d204719947ac97",
+    "settlements/skink/build-manifest.json": "f672d2dccef373e33fee64d5f4a391242b9c0c64ff218dec8ee60b175c071962",
+    "settlements/skink/dist/skink.html": "c8bb4c158e958a02b3f26dcd59655637ae9b556079a26ccd8b835f0cb29f9a87",
     "settlements/skink/dist/skink.tex.lizardmen-2.js": "31c1a0c14fca0d47fa032b7855d9e732714503fcba0dbc6373218750009f8cc9",
     "settlements/skink/dist/skink.tex.lizardmen.js": "e46dc599517bad665d6e46fa54c8619d76d56f7e10052f0d6b386e4c9d6bd221",
     "settlements/skink/dist/skink.tex.skink.js": "441e917e7569f76c546043774a53a6a3944a6057e61a0d1f4d4a0b036c5233bf"
    },
    "outputs_raw": {
-    "settlements/skink/build-manifest.json": "fc10d32d5b858b336bf6931e5625c22fcf752127a5341b3ae0f0b89f3922a705",
-    "settlements/skink/dist/skink.html": "12dbeb1f015535d3f462f508720249c73e3f623a2145bb5b26d204719947ac97",
+    "settlements/skink/build-manifest.json": "f672d2dccef373e33fee64d5f4a391242b9c0c64ff218dec8ee60b175c071962",
+    "settlements/skink/dist/skink.html": "c8bb4c158e958a02b3f26dcd59655637ae9b556079a26ccd8b835f0cb29f9a87",
     "settlements/skink/dist/skink.tex.lizardmen-2.js": "31c1a0c14fca0d47fa032b7855d9e732714503fcba0dbc6373218750009f8cc9",
     "settlements/skink/dist/skink.tex.lizardmen.js": "e46dc599517bad665d6e46fa54c8619d76d56f7e10052f0d6b386e4c9d6bd221",
     "settlements/skink/dist/skink.tex.skink.js": "441e917e7569f76c546043774a53a6a3944a6057e61a0d1f4d4a0b036c5233bf"

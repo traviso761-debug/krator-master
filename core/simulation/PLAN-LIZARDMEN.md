@@ -46,11 +46,12 @@ LORE.md 6.20 carries the new names. The proposal, the survey and Gila's plan and
 - **Frame:** Xanadu's (`XAN_TUNE.px`: metres from px 1191,1569), so Z5 can join the East Rift.
 - **Places:** the ten above. The towns at 10 people an actor, the warrens at 200 (as Xanadu's countrysides).
 - **What each makes a year** (t; *proposed*, from PROPOSAL-LIZARDMEN section 2 and the survey's resources):
-  - Basilisk: grain 1,500, produce 1,300, fish 600, meat and hide 450, salt 115 from the sea's pans, bone 48; **the bronze hall** casts Tuatara's copper and Komodo's tin, nine to one.
+  - Basilisk: grain 1,500, produce 1,300, fish 600, meat and hide 450, salt 115 from the sea's pans, bone 48; **the bronze hall** casts Tuatara's copper and Komodo and Iguana's tin, nine to one.
   - Tuatara: grain 1,000, copper 70.
   - Komodo: grain 600, fish 240, tin 8.
   - Gila: **its own records** (salt 300, evaporites 40, grain 600, lakecake 120, ...).
-  - Iguana: grain 2,600 (the capital's granary); relics gleaned from the Pile's lower levels.
+  - Skink: salt 300, grain 300, produce 125, meat and hide 75 (1,500 people, `settlements/skink/PLAN.md`).
+  - Iguana: grain 2,600 (the capital's granary), tin 8 (from Muckle Weyt Beck's placers, `r202`), relics 1.5 gleaned from the Pile's lower levels.
   - The Tubes: fungus beds (produce) 120, fish 40, relics from the ruined station.
   - The warrens: their own grain, produce and meat, a little over.
 - **Diet** (kg a year): the town's is Gila's (grain 233, produce 83, fish or lakecake 40, meat and hide 30, salt 8.3, bronze ware 2); a cavern's and a warren's their own.

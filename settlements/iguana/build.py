@@ -8,7 +8,7 @@ Built on kits/lizardmen/settle/lzv.py and kits/lizardmen/build.py --settlement, 
 
 The modules the page takes (tools/check_core_use.py reads this list): core/rand, core/tags, core/host, core/atmos, core/door,
 core/walk and core/furnish through the kit's build; core/engine; core/city and core/space (the bundle); core/water, core/drawn,
-core/terrain (KGROUND), core/hamlet (with core/hamlet/lizardmen), core/region (LZ_TUNE) and kits/crops through
+core/terrain (KGROUND), core/hamlet (with core/hamlet/lizardmen), core/region (LZ_TUNE), kits/resources (KRES) and kits/crops through
 settlement.json "core".
 
     python3 tools/build.py settlements/iguana

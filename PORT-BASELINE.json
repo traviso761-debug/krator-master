@@ -1245,8 +1245,8 @@
    "sha256": "c4a59a537b6331d763782da7440ac1b08ae3d38a1c2bfb2ece22f983fce8f7dd"
   },
   "settlements/iguana/dist/iguana.html": {
-   "bytes": 3068574,
-   "sha256": "3b625b2ed89bee370cba44717b5e073c5bf7439e7d6f5348b0e3d701ee0bd41f"
+   "bytes": 8168948,
+   "sha256": "37b3f1ddb3cdcfd1c1ef0e78badec414e9e321a42806676b1681729ff18da38f"
   },
   "settlements/isle-demo/dist/isle-city.html": {
    "bytes": 6514900,
@@ -1289,8 +1289,8 @@
    "sha256": "c55c2c62f88cd016aeecfc2b6b027e466f63afd1de992e1ad956f1e9b6599cf9"
   },
   "settlements/komodo/dist/komodo.html": {
-   "bytes": 8185047,
-   "sha256": "6cd6098300c56e7206d51a22862344dd31b950f3171a52cdc42553f53dff230d"
+   "bytes": 8185201,
+   "sha256": "aa1a69db411ddebc0acefaeb323aadcf5e346afd7cba50f769309af7db0fe884"
   },
   "settlements/lightwall/dist/lightwall.html": {
    "bytes": 3849615,
@@ -1485,16 +1485,16 @@
    "sha256": "e79eac17d4701fe350c741e0dcd4ba8a7dedbad8132a155abd2f7b5cfd000fc3"
   },
   "settlements/skink/dist/skink.html": {
-   "bytes": 8066070,
-   "sha256": "12dbeb1f015535d3f462f508720249c73e3f623a2145bb5b26d204719947ac97"
+   "bytes": 8066224,
+   "sha256": "c8bb4c158e958a02b3f26dcd59655637ae9b556079a26ccd8b835f0cb29f9a87"
   },
   "settlements/span/dist/span.html": {
    "bytes": 2150014,
    "sha256": "d93360679be5127ae4ce0d3e73f563e10c5be1ae007e57603a432351487871b4"
   },
   "settlements/tuatara/dist/tuatara.html": {
-   "bytes": 8317162,
-   "sha256": "661f044b7cd62e7dcafcb4b7234cef6f953ba0f379edf1d3923aec4842829009"
+   "bytes": 8317316,
+   "sha256": "438e3632fa7a126797a921bb2b6924edfbbd81dc92b2038c24bef5167dcc9d98"
   },
   "settlements/verge/dist/verge.html": {
    "bytes": 3340526,
