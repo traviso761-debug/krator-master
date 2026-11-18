@@ -108,7 +108,25 @@ E.register('buckets',ctx=>scene_(ctx).buckets,by);
 E.register('materials',ctx=>scene_(ctx).materials,by);
 E.register('textures',ctx=>scene_(ctx).textures,by);
 /* ---------------------------------------------------------------- the ground */
+const l2s8=c=>{c=c<=0?0:c>=1?1:c;const s=c<.0031308?c*12.92:1.055*Math.pow(c,1/2.4)-.055;return Math.max(0,Math.min(255,Math.round(s*255)));};
+const u8=c=>Math.max(0,Math.min(255,Math.round((c<=0?0:c>=1?1:c)*255)));
+const ROAD_LIN=[.3712,.3278,.2582];   /* 0xa49a8a in linear RGB, matching 81-world-terrain.js uRoad */
 E.register('terrain',ctx=>{if(!ctx.box)return null;origin_(ctx);const st=WORLD_EXPORT.step==null?32:+WORLD_EXPORT.step;
- return E.terrain(ctx.box,{h:(x,z)=>WORLD.H(x,z),water:WORLD_EXPORT.water===false?null:(x,z)=>WORLD.water(x,z),step:st,probes:WORLD_EXPORT.probes==null?16:+WORLD_EXPORT.probes});},by);
+ const t=E.terrain(ctx.box,{h:(x,z)=>WORLD.H(x,z),water:WORLD_EXPORT.water===false?null:(x,z)=>WORLD.water(x,z),step:st,probes:WORLD_EXPORT.probes==null?16:+WORLD_EXPORT.probes});
+ if(t&&t.grid&&WORLD_EXPORT.surface!==false&&typeof WORLD.Hp==='function'&&typeof WORLD.ground==='function'){
+  const G=t.grid,nx=G.nx,nz=G.nz,n=nx*nz,ar=new Uint8Array(n*4),nc=new Uint8Array(n*4),e=Math.min(4,st*.25),_P={},_F={},_C=[0,0,0,0];
+  const hasRd=typeof WORLD.roadCover==='function',rdW=Math.max(st,6);
+  for(let j=0;j<nz;j++)for(let i=0;i<nx;i++){const x=G.x0+i*st,z=G.z0+j*st,o=(j*nx+i)*4;
+   const h=WORLD.Hp(x,z,0,_P),hx=(WORLD.H(x+e,z)-WORLD.H(x-e,z))/(2*e),hz=(WORLD.H(x,z+e)-WORLD.H(x,z-e))/(2*e),nl=Math.hypot(hx,1,hz);
+   const F=WORLD.fieldsFrom(x,z,h,Math.hypot(hx,hz),_P,_F);WORLD.ground(x,z,F,_C);
+   const rd=hasRd?WORLD.roadCover(x,z,rdW):0;
+   const r=_C[0]+(ROAD_LIN[0]-_C[0])*rd,g=_C[1]+(ROAD_LIN[1]-_C[1])*rd,b=_C[2]+(ROAD_LIN[2]-_C[2])*rd,rk=_C[3]*(1-rd);
+   ar[o]=l2s8(r);ar[o+1]=l2s8(g);ar[o+2]=l2s8(b);ar[o+3]=u8(rk);
+   const ce=F.crease==null?0:F.crease,cav=1-.42*Math.max(0,ce)-.28*(F.canyon==null?0:F.canyon)+.08*Math.max(0,-ce);
+   const nearW=F.water>-1e8?Math.max(0,Math.min(1,(6-(h-F.water))/6.5)):0,wet=Math.max((F.flow==null?0:F.flow)*.85,nearW,((F.wet==null?0:F.wet)-.35)*.45)*(1-rd*.7);
+   nc[o]=u8((-hx/nl)*.5+.5);nc[o+1]=u8((-hz/nl)*.5+.5);nc[o+2]=u8(Math.max(.25,Math.min(1,cav)));nc[o+3]=u8(wet);}
+  G.surface={albedoRock:E.pack(ar),normalCav:E.pack(nc),
+   note:'RGBA8 on the grid: albedoRock=(sRGB WORLD.ground + road, linear rock weight); normalCav=(sub-grid normal nx/nz*0.5+0.5, crease/canyon cavity AO, bank/flow wetness)'};}
+ return t;},by);
 window._worldExport={registries:()=>parts().map(T=>({build:T.build,records:T.records.length}))};
 })();

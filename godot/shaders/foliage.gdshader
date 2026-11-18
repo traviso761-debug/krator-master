@@ -5,7 +5,7 @@
 //   INSTANCE_CUSTOM = (oct(aN).x, oct(aN).y, c2.g, c2.b)
 // Colours are linear: read COLOR as it is (no source_color on it). The texture is sRGB: source_color.
 shader_type spatial;
-render_mode cull_disabled, diffuse_lambert, specular_disabled, skip_vertex_transform;
+render_mode cull_disabled, diffuse_burley, specular_schlick_ggx, skip_vertex_transform;
 
 #include "res://shaders/atmos.gdshaderinc"
 #include "res://shaders/kcolour.gdshaderinc"
@@ -77,8 +77,10 @@ void fragment() {
 		c = mix(v_c2 * colour, c, fol_irid(N, V, atm_sun_dir, v_wp, atm_time));
 	}
 	// the season (three: after the ground tint, before the alpha test): the dry colour, the flush colour, the cards gone
+	float dry_k = 0.0;
 	if (sn_k.y > 0.0) {
-		c = sn_tint(c, COLOR.rgb, sn_c, v_sn_h, sn_dry_k(season_dry, sn_k, v_sn_h));
+		dry_k = sn_dry_k(season_dry, sn_k, v_sn_h);
+		c = sn_tint(c, COLOR.rgb, sn_c, v_sn_h, dry_k);
 	}
 	if (fl_k.x > 0.0) {
 		c = sn_tint(c, COLOR.rgb, fl_c, v_sn_h, sn_flush_k(season_flush, fl_k, v_sn_h));
@@ -86,7 +88,13 @@ void fragment() {
 	if (sn_k.x > 0.0 && sn_discard(v_sn_p, v_sn_h, sn_gone(season_dry, sn_k, v_sn_h))) {
 		discard;
 	}
-	ALBEDO = k_albedo(k_tex(tx.rgb) * c);
+	vec3 lin_leaf = k_tex(tx.rgb) * c;
+	ALBEDO = k_albedo(lin_leaf);
+	NORMAL = fol_vein_normal(NORMAL, fract(tuv), v_depth);
+	ROUGHNESS = mix(0.38, 0.68, dry_k);
+	SPECULAR = mix(0.38, 0.18, dry_k);
+	AO = fol_crown_ao(v_sn_p);
+	AO_LIGHT_AFFECT = 0.48;
 	// far cards keep more of their cut-out (three: diffuseColor.a *= 1 + clamp(d/650, 0, 1.1))
 	ALPHA = fol_far_alpha(tx.a, v_depth);
 	ALPHA_SCISSOR_THRESHOLD = alpha_test;
@@ -94,5 +102,5 @@ void fragment() {
 	// twig strokes at full strength into the distance; with coverage they thin and soften as the page's do
 	ALPHA_ANTIALIASING_EDGE = 0.25;
 	ALPHA_TEXTURE_COORDINATE = tuv * vec2(textureSize(albedo_tex, 0));
-	BACKLIGHT = vec3(back_light);
+	BACKLIGHT = fol_transmittance(lin_leaf, back_light);
 }

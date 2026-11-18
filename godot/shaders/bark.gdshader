@@ -7,7 +7,7 @@
 //   mode 4 'far', pack gloss (swlowlands' impostors): uv.x is the trunk's gloss, a sun highlight
 //   mode 5 'hang' (nhighlands' bulbs and pods): swing on their threads; glow by night
 shader_type spatial;
-render_mode cull_disabled, diffuse_lambert, specular_disabled;
+render_mode cull_disabled, diffuse_burley, specular_schlick_ggx;
 
 #include "res://shaders/atmos.gdshaderinc"
 #include "res://shaders/kcolour.gdshaderinc"
@@ -36,8 +36,10 @@ uniform float hang_a = 0.05;
 varying vec3 v_wp;
 varying vec3 v_wn;
 varying float v_lod;
+varying float v_local_y;
 
 void vertex() {
+	v_local_y = VERTEX.y;
 	if (mode == 5) {   // 50-biome-nhighlands-species.js: the bulbs sway on their threads (local, before the instance matrix)
 		VERTEX = bark_hang(VERTEX, MODEL_MATRIX[3].xyz, atm_time, hang_a);
 	}
@@ -50,15 +52,26 @@ void vertex() {
 }
 
 void fragment() {
-	if (klod_drop(v_lod, FRAGCOORD.xy)) {
-		discard;
-	}
 	vec2 tuv = UV * uv_repeat + uv_offset;   // three's uv transform (repeat, then offset), then its flipY
 	vec2 uv = vec2(tuv.x, flip_v ? 1.0 - tuv.y : tuv.y);
 	vec4 tx = has_tex ? texture(albedo_tex, uv) : vec4(1.0);
-	vec3 c = k_tex(tx.rgb) * COLOR.rgb * colour;
-	vec3 V = normalize(CAMERA_POSITION_WORLD - v_wp);
-	vec3 N = normalize(v_wn);
+	vec3 tx_lin = k_tex(tx.rgb);
+	float luma = dot(tx_lin, vec3(0.2126, 0.7152, 0.0722));
+	// GLSL ES 3.00: evaluate derivatives in uniform control flow BEFORE klod_drop's discard
+	vec3 dpdx = dFdx(v_wp);
+	vec3 dpdy = dFdy(v_wp);
+	float dlx = dFdx(luma);
+	float dly = dFdy(luma);
+	if (klod_drop(v_lod, FRAGCOORD.xy)) {
+		discard;
+	}
+	vec3 c = tx_lin * COLOR.rgb * colour;
+	vec3 to_cam = CAMERA_POSITION_WORLD - v_wp;
+	float depth = length(to_cam);
+	vec3 V = to_cam / max(depth, 1e-4);
+	bool is_impostor = (mode == 3 || mode == 4);
+	vec3 N = bark_furrow_normal(normalize(v_wn), dpdx, dpdy, dlx, dly, depth, has_tex && !is_impostor && mode != 5);
+	vec3 bar = bark_ao_rough(luma, v_local_y, is_impostor || mode == 5);
 	if (mode == 1) {
 		c *= bark_irid(N, V, v_wp, atm_time, irid_a, irid_b);
 	} else if (mode == 2) {
@@ -66,6 +79,7 @@ void fragment() {
 		float bl = d.r / gloss_mean;
 		float bm = d.g;
 		c = colour * mix(COLOR.rgb, gloss_alt, bm) * bl * gloss_gain;
+		bar.y = mix(0.46, 0.84, bm);
 		EMISSION = gloss_k * bark_sun_spec(N, V, atm_sun_dir) * vec3(1.0, 0.93, 0.8) * (1.0 - bm * 0.8) * bl * atm_light;
 	} else if (mode == 3 && UV.y > 0.5) {   // RIFT.farMat
 		c = mix(c, bark_c2_unpack(UV.x), bark_far_k(N, V, atm_sun_dir, v_wp, atm_time, UV.y));
@@ -74,7 +88,13 @@ void fragment() {
 	} else if (mode == 5) {
 		EMISSION = emissive * mix(night_k.x, night_k.y, atm_night);
 	}
+	c *= bar.z;
 	ALBEDO = k_albedo(c);
+	NORMAL = normalize((VIEW_MATRIX * vec4(FRONT_FACING ? N : -N, 0.0)).xyz);
+	ROUGHNESS = bar.y;
+	SPECULAR = is_impostor ? 0.14 : 0.28;
+	AO = bar.x;
+	AO_LIGHT_AFFECT = is_impostor ? 0.0 : 0.52;
 	if (alpha_test > 0.0) {
 		ALPHA = tx.a;
 		ALPHA_SCISSOR_THRESHOLD = alpha_test;

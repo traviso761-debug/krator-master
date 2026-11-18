@@ -94,14 +94,18 @@ const BIOME_GROUND={'sedesert':['desert','desert'],'e badlands':['badland','badl
  'ne outer wall':['alpine','neouterwall'],'se outer wall':['alpine','seouterwall'],
  'rift rim n':['alpine','rimN'],'rift rim s':['alpine','rimS'],'w rift highland':['alpine','rimW'],
  'painted highlands':['badland','painted'],'yuni valley':['korona','necanyons'],'rift':['savanna','rift'],'high rift':['steps','highrift'],
- 'xanadu':['vale','xanadu'],'the catch':['desert','catch'],'region 99':['chasm','loom'],
+ 'xanadu':['vale','xanadu'],'the catch':['desert','catch'],'region 99':['chasm','loom'],'loom chasms':['chasm','loom'],
  'n outlands':['dryland','outlands'],'s outlands':['dryland','outlands'],'tiers':['dryland','outlands'],'stalker gate':['dryland','outlands'],
  'stalker range':['highland','outlands'],'mid basin':['steps','midbasin'],'outland gate':['chasm','outlandgate'],
  'great chasm':['chasm','greatchasm'],'labyrinth':['chasm','labyrinth'],'greenstep':['steps','greenstep'],'opal valley':['steps','opalvalley'],
- // no kit yet, the closest style: the Crook's shore (farside's coast, as its parent the Crook); the Neo-Ozarks, a dissected dolomite
- // tableland with porphyry knobs (karst; the model's dolomite and porphyry), and Spider Lake on its shore (spiderlake is a plan with no
- // colours); the Silent Vales, fog-cool montane valleys (vale; the model's greens)
- 'crookshore':['savanna','farside'],'neo-ozarks':['karst','ozarks'],'spider lake':['karst','ozarks'],'silent vale':['vale','silentvale'],
+ // no kit yet, the closest style: the Crook's shore and headlands (farside), the Ria's mouth and basins (nwlowlands, nsemiarid, silentvale,
+ // ancientsvalley, necanyons), the Dome shield volcano (firebliss), Tharn Hills (nwouterwall), the Neo-Ozarks and Silent Vales
+ 'crookshore':['savanna','farside'],'crookwash':['savanna','farside'],'crookhead':['highland','farside'],'battered isle':['savanna','farside'],
+ 'drownlands':['lowland','nwlowlands'],'delta':['lowland','nwlowlands'],'scoured hills':['dryland','nsemiarid'],'arcflow':['steps','nsemiarid'],
+ 'heartland':['vale','silentvale'],'moleshelf':['dryland','nsemiarid'],'weeping valley':['lowland','ancientsvalley'],
+ 'compass hills':['highland','necanyons'],'red river':['lowland','necanyons'],'carnelian pass':['dryland','outlands'],
+ 'the dome':['volcanic','firebliss'],'tharn hills':['highland','nwouterwall'],
+ 'neo-ozarks':['karst','ozarks'],'spider lake':['karst','ozarks'],'silent vale':['vale','silentvale'],
  // the water overlays: the Ring Sea's beds and shores
  'nwern ocean':['sea','sea'],'bay of voth':['sea','sea'],'lake of shim':['sea','sea']};
 // the ground palettes (sRGB), from the kits' own ground painters where a kit exists (sedesert, eastabyss: 45-host-stage)
@@ -205,8 +209,10 @@ W.init=function(R){M=WORLD_DATA.meta;const Hd=M.heights,F=M.frame;
  RELIEF=!!M.relief;
  if(RELIEF){if(typeof WRELIEF==='undefined')throw new Error('41-world-fields: region.json asks for core/world relief: list 43-world-relief.js before 41');
   WRELIEF.init({ox:cx*2000,oz:cy*2000,seed:M.relief.seed});
-  MICRO=typeof WMICRO!=='undefined'&&M.relief.micro!==false;   /* PLAN-MICRO.md: the micro-relief, where 43m-world-micro.js is listed */
-  if(MICRO)WMICRO.init({ox:cx*2000,oz:cy*2000,seed:M.relief.seed^0x4D4943,version:M.relief.micro===2?2:1});}   /* relief.micro: 2 the T0 math (PLAN-MICRO.md), else 1; false off */
+  const mc=typeof KRATOR_MICRO!=='undefined'&&KRATOR_MICRO!=null?KRATOR_MICRO:M.relief.micro;
+  MICRO=typeof WMICRO!=='undefined'&&mc!==false&&mc!==0&&mc!=='0'&&mc!=='false';   /* PLAN-MICRO.md: the micro-relief, where 43m-world-micro.js is listed; KRATOR_MICRO overrides relief.micro for A/B trials */
+  if(MICRO)WMICRO.init({ox:cx*2000,oz:cy*2000,seed:M.relief.seed^0x4D4943,version:mc===2||mc==='2'?2:1});}   /* relief.micro: 2 the T0 math (PLAN-MICRO.md), else 1; false/0 off */
+ W.microVersion=()=>MICRO?WMICRO.version:0;
  /* an overlay with no entry is an error, not desert: listed in W.unstyled, reported on the page, failed by the probe
     (91: 'every biome overlay has its own ground style'); it is drawn on the desert's shape in MISSING's magenta, so it shows */
  W.unstyled=[];

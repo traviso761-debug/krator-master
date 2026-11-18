@@ -78,9 +78,20 @@ def cid(c):
     return 'c%+04d%+04d' % c
 
 
-def export(out, box, before, sections=None):
+def parse_micro(argv):
+    for i, a in enumerate(argv):
+        if a.startswith('--micro='):
+            return int(a.split('=', 1)[1])
+        if a == '--micro' and i + 1 < len(argv):
+            return int(argv[i + 1])
+    return None
+
+
+def export(out, box, before, sections=None, micro=None):
     cmd = [sys.executable, os.path.join(ROOT, 'tools', 'harness.py'), 'export', PAGE, '--out', out,
            '--box=' + ','.join('%g' % v for v in box), '--before', before]
+    if micro is not None:
+        cmd += ['--query', '?micro=%d' % micro]
     if sections:
         cmd += ['--sections', sections]
     r = subprocess.run(cmd, cwd=ROOT, capture_output=True, text=True, encoding='utf-8', errors='replace')
@@ -164,9 +175,21 @@ def roads(P):
 
 
 def main():
-    if os.environ.get('KRATOR_GL') != 'gpu':   # under SwiftShader the page's start fails on a shader (CAM never made)
+    global OUT
+    argv = sys.argv[1:]
+    only = argv[argv.index('--only') + 1] if '--only' in argv else None
+    for i, a in enumerate(argv):
+        if a == '--index-only':
+            only = 'index'
+        elif a.startswith('--only='):
+            only = a.split('=', 1)[1]
+        elif a.startswith('--out='):
+            OUT = os.path.abspath(a.split('=', 1)[1])
+        elif a == '--out' and i + 1 < len(argv):
+            OUT = os.path.abspath(argv[i + 1])
+    micro = parse_micro(argv)
+    if only != 'index' and os.environ.get('KRATOR_GL') != 'gpu':   # under SwiftShader the page's start fails on a shader (CAM never made)
         sys.exit('godot_case: set KRATOR_GL=gpu (the page needs the GPU; SwiftShader fails its start)')
-    only = sys.argv[sys.argv.index('--only') + 1] if '--only' in sys.argv else None
     P = plan()
     L = link(P, *ROUTE)
     pts = L['pts'] if L['from'] == ROUTE[0] else list(reversed(L['pts']))
@@ -184,7 +207,7 @@ def main():
                       % (PLACE_STEP, cx, cz + off))
             d = os.path.join(OUT, 'places', p['id'])
             shutil.rmtree(d, ignore_errors=True)
-            cut = export(d, b, before)
+            cut = export(d, b, before, micro=micro)
             if p['id'] == ARCOLOGY['site'] and cut:   # the cut's lip level, where the arcology's anchor stands (src/48-world-site.js)
                 with open(os.path.join(d, 'cut.json'), 'w', encoding='utf-8', newline='\n') as f:
                     json.dump(cut, f, separators=(',', ':'))
@@ -215,7 +238,7 @@ def main():
             box = [c[0] * CHUNK, c[1] * CHUNK, (c[0] + 1) * CHUNK, (c[1] + 1) * CHUNK]
             d = os.path.join(OUT, 'chunks', cid(c))
             shutil.rmtree(d, ignore_errors=True)
-            export(d, box, '(()=>{window.WORLD_EXPORT.step=%d;window.WORLD_EXPORT.water=false;return true;})()' % STEP, 'terrain,registry')
+            export(d, box, '(()=>{window.WORLD_EXPORT.step=%d;window.WORLD_EXPORT.water=false;return true;})()' % STEP, 'terrain,registry', micro=micro)
     arcology(pl)
     idx = {'format': 'krator-world-stream', 'version': 1, 'region': P['region'], 'plan': P['hash'],
            'source': PAGE, 'by': 'openworld/oidong-highrift/tools/godot_case.py',
@@ -227,10 +250,12 @@ def main():
            'places': pl, 'roads': roads(P),
            'route': {'link': L['id'], 'from': ROUTE[0], 'to': ROUTE[1], 'km': round(L['length_m'] / 1000, 2)},
            'sim': {'sim': 'sim.json', 'golden': 'golden.json', 'by': 'openworld/oidong-highrift/tools/export-sim.js'}}
+    if micro is not None:
+        idx['micro'] = micro
     with open(os.path.join(OUT, 'index.json'), 'w', encoding='utf-8', newline='\n') as f:
         json.dump(idx, f, separators=(',', ':'), ensure_ascii=False)
-    print('wrote %s: %d chunks, %d places, %d roads (plan %s)' % (os.path.relpath(OUT, ROOT).replace(os.sep, '/'),
-          len(cells), len(pl), len(idx['roads']), P['hash']))
+    print('wrote %s: %d chunks, %d places, %d roads (plan %s%s)' % (os.path.relpath(OUT, ROOT).replace(os.sep, '/'),
+          len(cells), len(pl), len(idx['roads']), P['hash'], ', micro=%d' % micro if micro is not None else ''))
 
 
 if __name__ == '__main__':

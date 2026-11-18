@@ -224,9 +224,9 @@ static func build(path: String) -> Node3D:
 						mx = max(mx, abs(f.h(float(p[0]), float(p[1])) - float(p[2])))
 					report["terrain_probes"] = {"points": pts.size(), "max_abs_m": mx}
 		elif not grid.is_empty():
-			var gg := grid
+			var gg := grid.duplicate()
+			gg["_origin"] = org
 			if has_org:   # the grid about the origin: x0 and z0 less it in double precision, so the vertices stay small
-				gg = grid.duplicate()
 				gg["x0"] = float(grid["x0"]) - org[0]
 				gg["z0"] = float(grid["z0"]) - org[2]
 			g = KData.ground(gg, look)
@@ -530,6 +530,7 @@ static func records(root: Node3D, d: Dictionary, by_id: Dictionary) -> Dictionar
 	# the yard, a NavigationLink3D per door, stair and ladder link), plus a Marker3D per link (Links/Link_<id>, meta
 	# krator the link, krator_kind its kind) at the threshold
 	var I = d.get("interiors")
+	var room_defs := []
 	if I is Dictionary and I.get("buildings") is Array:
 		out["interiors"] = 0
 		out["rooms"] = 0
@@ -542,14 +543,43 @@ static func records(root: Node3D, d: Dictionary, by_id: Dictionary) -> Dictionar
 			if p == null:
 				out["interiors_unparented"] += 1
 				continue
+			var b_xf: Transform3D = (p as Node3D).transform
+			var b_inv: Transform3D = b_xf.affine_inverse()
+			var bid := str(B.get("id", ""))
 			var it := {"frame": "building-local", "rooms": [], "walls": B.get("walls", []), "nav": {"nodes": [], "edges": []}}
 			if B.get("yard") is Dictionary:
 				it["yard"] = B["yard"]
+			var local_rooms := []
 			for S in B.get("storeys", []):
+				var sh := float(S.get("h", 3.0))
 				for r in S.get("rooms", []):
 					var rr: Dictionary = (r as Dictionary).duplicate()
 					rr["lvl"] = int(S.get("k", 0))
 					it["rooms"].append(rr)
+					var y0 := float(r.get("y", 0.0))
+					var rh := float(r.get("h", sh))
+					var rpoly: Array = r.get("poly", [])
+					var cx := 0.0
+					var cz := 0.0
+					if not rpoly.is_empty():
+						for pt in rpoly:
+							cx += float(pt[0])
+							cz += float(pt[1])
+						cx /= float(rpoly.size())
+						cz /= float(rpoly.size())
+					var rdef := {
+						"id": "%s:%s" % [bid, str(r.get("id", ""))],
+						"building": bid,
+						"poly": rpoly,
+						"y0": y0 - 0.15,
+						"y1": y0 + rh + 0.15,
+						"inv_xf": b_inv,
+						"center": b_xf * Vector3(cx, y0 + rh * 0.5, cz),
+						"portals": [],
+						"doors": []
+					}
+					local_rooms.append(rdef)
+					room_defs.append(rdef)
 			var L := Node3D.new()
 			L.name = "Links"
 			for l in B.get("links", []):
@@ -563,6 +593,22 @@ static func records(root: Node3D, d: Dictionary, by_id: Dictionary) -> Dictionar
 				L.add_child(m)
 				var fa: Array = l.get("from", at)
 				var ta: Array = l.get("to", at)
+				var wf := b_xf * Vector3(float(fa[0]), float(fa[1]) + 0.5, float(fa[2]))
+				var wt := b_xf * Vector3(float(ta[0]), float(ta[1]) + 0.5, float(ta[2]))
+				var wa := b_xf * Vector3(float(at[0]), float(at[1]) + 0.5, float(at[2]))
+				var ra := KratorLampPool.room_at(local_rooms, wf)
+				var rb := KratorLampPool.room_at(local_rooms, wt)
+				if ra != "" and rb != "" and ra != rb:
+					for rd in local_rooms:
+						if rd["id"] == ra and not (rb in rd["portals"]):
+							(rd["portals"] as Array).append(rb)
+						elif rd["id"] == rb and not (ra in rd["portals"]):
+							(rd["portals"] as Array).append(ra)
+				elif ra != "" or rb != "":
+					var rin := ra if ra != "" else rb
+					for rd in local_rooms:
+						if rd["id"] == rin:
+							(rd["doors"] as Array).append(wa)
 				if Vector3(fa[0], fa[1], fa[2]).distance_to(Vector3(ta[0], ta[1], ta[2])) < 0.05:
 					continue   # an interior door between two rooms whose floors meet: the regions join by their edges
 				it["nav"]["nodes"].append({"id": lid + ".a", "x": fa[0], "y": fa[1], "z": fa[2]})
@@ -578,6 +624,35 @@ static func records(root: Node3D, d: Dictionary, by_id: Dictionary) -> Dictionar
 		for k in irep["gaps"]:
 			if k != "wall openings":   # solid boxes: every build's walls, known (records_import.gd)
 				out["interiors_gap_" + str(k)] = irep["gaps"][k]
+	if not room_defs.is_empty():
+		R.set_meta("rooms", room_defs)
+		root.set_meta("rooms", room_defs)
+		var indoor_lamps := []
+		if F is Dictionary:
+			for r in F.get("records", []):
+				var kd := str(r.get("kind", ""))
+				if kd in ["light", "lamp", "bulb", "hearth", "lantern"]:
+					var a: Array = r.get("at", [0, 0, 0])
+					var wp := Vector3(float(a[0]), float(a[1]), float(a[2]))
+					var rid := KratorLampPool.room_at(room_defs, wp)
+					indoor_lamps.append({
+						"id": str(r.get("id", "")),
+						"kind": "bulb" if rid != "" else "lamp",
+						"room": rid,
+						"at": [wp.x, wp.y, wp.z],
+						"color": str(r.get("color", "#ffd49a")),
+						"radius": float(r.get("radius", 9.0 if rid != "" else 20.0)),
+						"amp": float(r.get("amp", 1.0)),
+						"hours": r.get("hours", [0.0, 24.0] if rid != "" else [17.2, 30.8])
+					})
+		if not indoor_lamps.is_empty():
+			var pool := KratorLampPool.new()
+			pool.name = "InteriorLampPool"
+			pool.lamps = indoor_lamps
+			pool.rooms = room_defs
+			pool.hero_shadows = 1
+			R.add_child(pool)
+			out["interior_lamps"] = indoor_lamps.size()
 	var U = d.get("furniture")
 	if U is Dictionary:
 		var pieces := {}

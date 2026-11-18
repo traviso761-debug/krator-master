@@ -32,6 +32,9 @@ async function start(){
   const ok=await fetch(u,{method:'HEAD'}).then(r=>r.ok).catch(()=>false)||await fetch(u+'.0.txt',{method:'HEAD'}).then(r=>r.ok).catch(()=>false);
   if(!ok){const keep=T.filter(t=>!t.tile);if(keep.length)WORLD_DATA.towns.towns=keep;else WORLD_DATA.towns=null;
    console.warn('town tiles cannot be fetched here: the world runs without its tiled towns');}}
+ if(typeof window.KRATOR_MICRO==='undefined'&&typeof location!=='undefined'&&location.search){
+  const qm=new URLSearchParams(location.search).get('micro');
+  if(qm!=null)window.KRATOR_MICRO=qm==='0'||qm==='false'?false:qm==='2'?2:1;}
  WORLD.init(R);
  msg('laying out the land');for(const f of LATE)f();
  CAM.paintBase(R);

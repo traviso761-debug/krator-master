@@ -86,6 +86,21 @@ ok('deterministic',eroded(321,654)===eroded(321,654)&&WMICRO.hills(9,9,S,600,0)=
 }
 V=2;WMICRO.init({ox:1e6,oz:2e6,seed:7,version:1});const e1=WMICRO.erode(500,321,654,.08,.01,S,600,0);WMICRO.init({ox:1e6,oz:2e6,seed:7,version:2});
 ok('version 2 moves the land (erode at one point: v1 '+e1.toFixed(4)+', v2 '+WMICRO.erode(500,321,654,.08,.01,S,600,0).toFixed(4)+')',e1!==WMICRO.erode(500,321,654,.08,.01,S,600,0),false);
+{const fs=require('fs'),path=require('path');
+ global.WORLD_KITS=[];
+ global.WORLD_DATA={meta:{heights:{grid:[4,4],origin_cell:[0,0],su:1,sv:1,lo:0,hi:1000},frame:{origin_px:[100,100],box_px:[98,98,102,102],size_px:[4,4]},
+  rain:{scale_mm:10},temp:{offset:0},pressure:{atm0:1,scale_m:8500},drainage:{lines:[]},settlements:[],relief:{seed:12345},biomes:[{name:'oidong valley',colour:'#88aa66'}],classes:[{code:'Cfb',group:'C',color:'#66aa66'}]}};
+ eval(fs.readFileSync(path.join(__dirname,'..','terrain','38-core-relief.js'),'utf8'));
+ eval(fs.readFileSync(path.join(__dirname,'41-world-fields.js'),'utf8'));
+ const R={elev:new Float32Array(16).fill(420),wlev:new Float32Array(16),whas:new Uint8Array(16),clim:new Uint8Array(16),rain:new Uint8Array(16).fill(100),
+  temp:new Uint8Array(16).fill(15),biome:new Uint8Array(16),mask:new Uint8Array(16).fill(255),scarpL:new Float32Array(16),scarpU:new Float32Array(16),scarpW:new Float32Array(16)};
+ for(let i=0;i<16;i++)R.elev[i]=400+i*18;
+ delete global.KRATOR_MICRO;WORLD.init(R);const h1=WORLD.H(321,654),mv1=WORLD.microVersion();
+ global.KRATOR_MICRO=2;WORLD.init(R);const h2=WORLD.H(321,654),mv2=WORLD.microVersion();
+ global.KRATOR_MICRO=false;WORLD.init(R);const h0=WORLD.H(321,654),mv0=WORLD.microVersion();
+ delete global.KRATOR_MICRO;
+ ok('KRATOR_MICRO switches WORLD.init cleanly without touching region.json (default v'+mv1+', =2 -> v'+mv2+', =false -> '+mv0+')',
+  mv1===1&&mv2===2&&mv0===0&&h1!==h2&&h2!==h0,mv1===mv2||h1===h2);}
 console.log('mean bias (mean / rms): v1 '+(100*REPORT[1].mean/REPORT[1].rms).toFixed(1)+' %, v2 '+(100*REPORT[2].mean/REPORT[2].rms).toFixed(1)+' %; least kernel weight v1 '+REPORT[1].minW.toFixed(3)+', v2 '+REPORT[2].minW.toFixed(3));
 console.log(bad?bad+' FAILED':'all passed');
 process.exit(bad?1:0);
