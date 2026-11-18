@@ -12,7 +12,7 @@ class_name KChar
 extends RefCounted
 
 const KRand := preload("res://tests/rand/krand.gd")
-const SLOTS := ["feet", "legs", "torso", "hair", "beard", "head"]
+const SLOTS := ["feet", "legs", "torso", "hair", "beard", "head", "back", "implant", "gloves"]
 const RACES := ["african", "asian", "caucasian"]
 const AGE := [-0.6, 0.9]
 
@@ -53,8 +53,8 @@ static func item(rec: Dictionary, kit: Dictionary, slot: String) -> Variant:
 	var id = rec.get(slot) if slot == "hair" or slot == "beard" else rec.get("armour", {}).get(slot)
 	if id == null:
 		return null
-	# an animal head in place of the human one wears no hair, beard or headgear (KCHAR.replacesHead)
-	if (slot == "hair" or slot == "beard" or slot == "head") and replaces_head(rec, kit):
+	# an animal head in place of the human one wears no hair, beard, headgear or head implant (KCHAR.replacesHead)
+	if (slot == "hair" or slot == "beard" or slot == "head" or slot == "implant") and replaces_head(rec, kit):
 		return null
 	for it in kit["items"]:
 		if it["id"] == id and it["slot"] == slot and fits(it, rec, kit):
@@ -83,6 +83,14 @@ static func replaces_head(rec: Dictionary, kit: Dictionary) -> bool:
 	return false
 
 
+# a worn mod replaces the lower legs and feet with digitigrade paws (kit item replaces_feet: tools/digitigrade.py)
+static func replaces_feet(rec: Dictionary, kit: Dictionary) -> bool:
+	for m in mods(rec, kit):
+		if m.get("replaces_feet", false):
+			return true
+	return false
+
+
 static func arms(rec: Dictionary, kit: Dictionary) -> int:
 	for m in mods(rec, kit):
 		if int(m.get("grants", {}).get("arms", 2)) >= 4:
@@ -90,9 +98,18 @@ static func arms(rec: Dictionary, kit: Dictionary) -> int:
 	return 2
 
 
-# a torso item is made for two arms or four (kit item arms, 2 by default)
+# a torso item is made for two arms or four (kit item arms, 2 by default); digitigrade and non-digitigrade characters
+# cannot equip each others' boots/footwear (slot "feet", kit item digitigrade vs replaces_feet); digitigrade legs also
+# leave off fitted ankle-length trousers while keeping kilts, skirts and loincloths (KCHAR.fits)
 static func fits(it: Dictionary, rec: Dictionary, kit: Dictionary) -> bool:
-	return it["slot"] != "torso" or int(it.get("arms", 2)) == arms(rec, kit)
+	if it["slot"] == "torso":
+		return int(it.get("arms", 2)) == arms(rec, kit)
+	if it["slot"] == "feet":
+		return bool(it.get("digitigrade", false)) == replaces_feet(rec, kit)
+	if it["slot"] == "legs" and replaces_feet(rec, kit):
+		var h = it.get("hides")
+		return bool(it.get("loose", false)) or bool(it.get("digitigrade", false)) or (h != null and int(h) < 900)
+	return true
 
 
 static func parts(rec: Dictionary, kit: Dictionary) -> Array:
@@ -159,8 +176,10 @@ static func hidden_parts(rec: Dictionary, kit: Dictionary) -> Dictionary:
 
 
 static func blank(kit: Dictionary) -> Dictionary:
-	return {"body": kit["body"], "hair": null, "beard": null, "armour": {"torso": null, "legs": null, "feet": null, "head": null},
-		"sliders": {}, "morph": {}, "ancestry": null, "skin": null, "hair_color": null, "eye_color": null, "people": null, "dye": {}}
+	return {"body": kit["body"], "hair": null, "beard": null,
+		"armour": {"torso": null, "legs": null, "feet": null, "head": null, "back": null, "implant": null, "gloves": null},
+		"sliders": {}, "morph": {}, "ancestry": null, "skin": null, "hair_color": null, "eye_color": null, "people": null,
+		"dye": {}, "facepaint": null, "makeup": null}
 
 
 static func morph_weights(rec: Dictionary, kit: Dictionary) -> PackedFloat64Array:
@@ -293,12 +312,13 @@ static func stranger(sd: int, kit: Dictionary, people = null, spread := 0.45) ->
 					ok = true
 			rec["armour"][slot] = want if ok else null
 			continue
-		if slot == "head":                 # headgear only comes with a people's outfit
-			rec["armour"]["head"] = null
+		if slot == "head" or slot == "back" or slot == "implant" or slot == "gloves":
+			rec["armour"][slot] = null
 			continue
+		var sex := String(kit["body"]).trim_prefix("mpfb_")
 		var have := []
 		for it in kit["items"]:            # a culture's own clothes go only to its people's strangers
-			if it["slot"] == slot and (it.get("culture") == null or it.get("culture") == P.get("id")) and fits(it, rec, kit):
+			if it["slot"] == slot and (it.get("culture") == null or it.get("culture") == P.get("id")) and (slot != "hair" or it.get("gender") == null or it.get("gender") == sex) and fits(it, rec, kit):
 				have.append(it)
 		if slot == "hair" and styles != null:
 			var pref := []
@@ -311,6 +331,13 @@ static func stranger(sd: int, kit: Dictionary, people = null, spread := 0.45) ->
 		var id = null
 		if have.size() and r.next() < odds:
 			id = have[int(floor(r.next() * have.size()))]["id"]
+		if outfit != null and outfit.has(slot):
+			var ow = outfit.get(slot)
+			var ok2 := false
+			for it in kit["items"]:
+				if ow != null and it["id"] == ow and it["slot"] == slot and fits(it, rec, kit):
+					ok2 = true
+			id = ow if ok2 else null
 		if slot == "hair" or slot == "beard":
 			rec[slot] = id
 		else:

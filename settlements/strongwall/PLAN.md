@@ -13,7 +13,7 @@ build a Xanadui fort asset as well"*.
 - **The beacon fort over the Rift** is "a refurbished Ancient high-intensity beacon that has been moved there by Xanadu
   and connected to a generator".
 - The garrison and the ore trains ride **horses and donkeys**.
-- "I'm open to new texture proposals": three are proposed (`core/materials/PROMPTS-NEEDED.md` section 60).
+- "I'm open to new texture proposals": three are proposed (`core/materials/PROMPTS-NEEDED.md` section 61).
 - **The opal goes to Strongbow first**, as it is closer.
 - **The watch posts go on the map**, with English names.
 - The musketeers are **"all of the above"**: Izani, Yuni and free companies of the Crater.
@@ -442,7 +442,7 @@ beacon that has been moved there by Xanadu and connected to a generator". The re
 - In the `ruined` state the lamp head lies on its plinth's talus, a wreck seated by its extents (`core/ruins`). In
   `damaged` it stands, dark.
 
-### 5.8 New textures (proposed; `core/materials/PROMPTS-NEEDED.md` section 60)
+### 5.8 New textures (proposed; `core/materials/PROMPTS-NEEDED.md` section 61)
 
 The owner, 2026-11-16: "I'm open to new texture proposals".
 
@@ -469,7 +469,7 @@ The rest is the library already in the Xanadu pack: `stone.cut`, `earth.rammed`,
 | Streets and lots | **not `core/city`**: a fort is one building record with its own plan (section 5.2), not a street grid. The Golden Tears' compound and the bench's hamlets go on `core/hamlet` | |
 | Doors, walks, interiors | `core/door` (`KDOOR`), `core/walk` (the wall walks and stairs), `kits/interiors` (`sets/xanadu.js`, one item per new def), furnished from `kits/catalog` (`xanadu`, `eastabyss`, `generic`) through `core/furnish` | |
 | Ruins | `core/ruins` (`KRUINS.watch`) on every damaged and ruined fort | |
-| Surfaces | `core/materials` through the Xanadu pack (`kits/xanadu/materials.json`) | three new sets proposed (section 5.8; `PROMPTS-NEEDED.md` section 60), wired at F2 when delivered |
+| Surfaces | `core/materials` through the Xanadu pack (`kits/xanadu/materials.json`) | three new sets proposed (section 5.8; `PROMPTS-NEEDED.md` section 61), wired at F2 when delivered |
 | The building engine | the Xanadu kit's own (`VERN.def` on the Vernacular and the Ancients core); `core/engine` is not the Xanadu lineage's | |
 | People and time | `core/charactermodels` (the Xanadui soldiers' dress), `core/simulation`, `core/sched` (the watch rota, the beacon post's rota, the assay's batches) | |
 | The economy | `core/region` (`XAN_TUNE`, `test-xan-economy.js`) | |
@@ -512,7 +512,7 @@ The rest is the library already in the Xanadu pack: `stone.cut`, `earth.rammed`,
    moved there by Xanadu and connected to a generator** (section 5.7).
 8. ~~**Mounts.**~~ **Answered 2026-11-16: horses and donkeys.**
 9. ~~**Textures.**~~ **Answered 2026-11-16: "open to new texture proposals".** Three are proposed (section 5.8;
-   `PROMPTS-NEEDED.md` section 60).
+   `PROMPTS-NEEDED.md` section 61).
 10. ~~**The opal.**~~ **Answered 2026-11-16: to Strongbow first, as it is closer** (W1).
 11. ~~**The watch line.**~~ **Answered 2026-11-16: on the map** (section 1's six posts; W0).
 12. ~~**The hired musketeers.**~~ **Answered 2026-11-16: all of the above** (Izani, Yuni and free companies of the

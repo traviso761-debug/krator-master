@@ -67,7 +67,7 @@ them all out.
    - the lamp code (question 6, on ways and doors, rooms in wax light), the count wall and the click-ribs (7), the
      carriage houses (8), the Big Meeting (10), shine for rank (11), the 0.94 scale (12);
    - the core extensions (question 14), each planned with its module's owner, and the eight owed textures (question
-     16), now in `core/materials/PROMPTS-NEEDED.md` section 58.
+     16), now in `core/materials/PROMPTS-NEEDED.md` section 59.
    Written into `LORE.md` where they are lore.
 
 ## The owner's answers, round 4 (2026-11-11)
@@ -1330,7 +1330,7 @@ station); `metal.ancient`, `metal.ancient.white` (plate, Fellgang armour), `meta
 `ceramic.celadon.crackle` (Glazier tea), `paper.parchment` (sailwort); patterns `port/hazard` (the Line's stripes),
 `ancients/glyph-band`, `xanadu/*` (lozenge, zigzag, star, sun-emblem), `order/*` (prayer-wheel, mani-stone, book-spines).
 
-**Owed** (agreed 2026-11-11; the paste-ready prompts are in `core/materials/PROMPTS-NEEDED.md` section 58, ten blocks for
+**Owed** (agreed 2026-11-11; the paste-ready prompts are in `core/materials/PROMPTS-NEEDED.md` section 59, ten blocks for
 these eight sets, the banner in three variants):
 
 | Id | What | Why no library set does it |

@@ -529,6 +529,7 @@
     "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47"
    },
    "listings": {
+    "biomes/riftrim": "25f6f55db457c53d14053d725aa030186f1534beb20154bf4783b6d5e576927d",
     "biomes/riftrim/src": "3092de973855f2b53de0bde9a3943848d1776fc420995dadfa41ab1bbfdaa8d4",
     "biomes/riftrim/stations/fowlers": "5b4a1e1a3cf3e01c310bcb5902e9fd89629de7afc98bc18dd86e390fa0e2a764",
     "core/host": "d729ffbc0ed36e68e9036bd9c454abc6462a27b22a4bc16b88c38d836e6f4a37",

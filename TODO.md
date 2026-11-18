@@ -78,6 +78,9 @@ runtime and bison table, and the `tools/` listing staleness (every build rebuilt
 - **The Xanadu kit's opt-in pieces into `src/`** (2026-11-16, `kits/xanadu/README.md` "Opt-in pieces"): `extra/88c-xa-caravanserai.js`,
   `extra/88d-xa-lakecraft.js` and `extra/88e-xa-stall.js` into `kits/xanadu/src/`, `extra/69dz-ix-xanadu-extra.js`'s item into `kits/interiors/sets/xanadu.js`;
   the kit's sheet takes rows for them; `settlements/pher/kit.json` drops them from `"external"`. Every page of the kit (and `XAK`) changes.
+- **Register the `coyote` culture** (the owner, 2026-11-16, `kits/coyote/PLAN.md` sections 7 and 12): `'coyote': 'Coyote Men'` in
+  `core/tags/52-core-tags-vocab.js` `CULTURE_NAMES` (and `test-tags.js`'s digest), with the catalog's `coyote` culture file in
+  `FURN_CULTURES` once the kit's C8 has written it. Until then `kits/coyote`'s `tags-vocabulary` assert fails (its `KNOWN_ISSUES.md`).
 - **KSTRATA recipe `obsidian`** (`scoria` has since landed) (2026-11-09, `biomes/twins/PLAN.md` section 0.1): the Twins' plan names them for its coulees and
   spatter cones; `core/terrain/35-core-strata.js` has `tibasalt` as the nearest. Adding a recipe changes every page that inlines the file, so
   it waits here; station 1 draws its faces as `tibasalt` and its obsidian as items and a ground class until then.

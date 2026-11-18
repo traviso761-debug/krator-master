@@ -20,6 +20,7 @@
     "core/atmos/89-atmos-d-clouddeck.js": "70751e6c85e4dd65ffbb6648873be56fdb604130df4507e8e6afb020384b4dc8",
     "core/atmos/placeholder/81-sky.js": "ad22fb31cdfbbd20cb1f8ad919e4720e7db54094e4e778c46e7bd8ce7780e6ab",
     "core/camp/10-camp-cultures.js": "0b44db1832a3f38730b608e83124b9974b766e8bcada92eaec15ed93ae26ce23",
+    "core/camp/11-camp-coyote.js": "8abeee20eb5074d1da9275b296e425b1ea371687a44b95bd6b2bb99557013714",
     "core/camp/20-camp-census.js": "876c824a632c370175ed6641f376dd629ab05a20004a2595675651fcf40ab7cd",
     "core/camp/30-camp-pitch.js": "7d23327345d7cd61eb48d6f581057ab5fd2a15d7e1e7e932e393b7d77f17d7f4",
     "core/camp/40-camp-work.js": "7ad27f8dfce3e617a02fa61384b1237241601b9dec8b78dce7ef719f3a3bedc7",
@@ -271,7 +272,7 @@
    "listings": {
     "core/atmos": "97ec173a1f39d031319dc7532a9d749cdd784c7203e140334b9c46e8ff85d5e6",
     "core/atmos/placeholder": "93e72701f4f204e698b400c25d1989704d985203b33d5a076ec9e170c3bb9552",
-    "core/camp": "542fbed15078e547b01bf5b63599108142149d3d4b03ef78cf9127c4d1f03370",
+    "core/camp": "dffb160740d7ba5fdfee33dd056723f18c18459c54776bba6e2fb99130d6ad81",
     "core/catalog": "30a9e7a2a0ea642339cc1158c3060327682167fbeb74a8c68a584185e0c6d094",
     "core/door": "606c86cebee6cecd509a1319eb00f4f3b96202499526068992bd052a85bdca4a",
     "core/engine": "68c10fa5029a8ccb1f86b5138b48a7b71fec613998c3eab75790c04acc07b282",
@@ -293,14 +294,14 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "kits/tents/build-manifest.json": "2b48f391ba23aa3231d5449cbda32167537040258680115f5584474d3c61d0ac",
-    "kits/tents/dist/tents.html": "99f747d6a75f04c365495ea847d2ebf9f9cee74a5bad2bf505302838e89d0a5f",
+    "kits/tents/build-manifest.json": "8427ae3c55a859ca3d0bddf37920d53d66946e3dc2f67a87ad21b1b0be47a3ff",
+    "kits/tents/dist/tents.html": "4ea0b40fc570efc9216532f07bc62aed0bed24a8bf10581bef14eb254732c3b2",
     "kits/tents/dist/tents.tex.tents-2.js": "1ca77094c33eadde3154e2a71c0b188077946810fe964abe4bc9a0bd75a5a050",
     "kits/tents/dist/tents.tex.tents.js": "d4ee9ffdce465caf3fa6e94d95640eeaadd5e37e0495567489c9188e2a9c37e3"
    },
    "outputs_raw": {
-    "kits/tents/build-manifest.json": "2b48f391ba23aa3231d5449cbda32167537040258680115f5584474d3c61d0ac",
-    "kits/tents/dist/tents.html": "99f747d6a75f04c365495ea847d2ebf9f9cee74a5bad2bf505302838e89d0a5f",
+    "kits/tents/build-manifest.json": "8427ae3c55a859ca3d0bddf37920d53d66946e3dc2f67a87ad21b1b0be47a3ff",
+    "kits/tents/dist/tents.html": "4ea0b40fc570efc9216532f07bc62aed0bed24a8bf10581bef14eb254732c3b2",
     "kits/tents/dist/tents.tex.tents-2.js": "1ca77094c33eadde3154e2a71c0b188077946810fe964abe4bc9a0bd75a5a050",
     "kits/tents/dist/tents.tex.tents.js": "d4ee9ffdce465caf3fa6e94d95640eeaadd5e37e0495567489c9188e2a9c37e3"
    }
