@@ -7,6 +7,8 @@
 //   o.streams        [{F (polyFrame: at, point, L), w, tread(s) -> {y, w} | null, bed0(s), name}]: masts in the water, reefs on the terraces
 //   o.mounds         [{x, z, r, h}]: the runners radiate from their feet
 //   o.deep           {x, z, r}: reefs round the rim
+//   o.spires         [{x, z, r, h}] (station 2: the relict chimneys): reefs crowd their feet, runners lace their rubble
+//   o.world          the placement's own key for KRAND (a station's: 'galvanic/deep'); station 1's is 'galvanic/strand'
 //   o.keep(x, z)     0 where the host keeps the ground bare (the hills past the acid)
 // Reads the fields rock and slope (BIO.field). Writes GALV.PLACED: [kind, x, y, z, live] for every mast, reef and jar (the probe's invariants).
 (function(){const {TAU,clamp,smooth,reseed,rng,rr,ri,qEuler}=BIO.fn,C=GALV.C,PAL=GALV.PAL;
@@ -16,7 +18,7 @@ const LIVE_DAYS=60;   /* the store's capacity (GALV_PHYS.store): no living skin 
 GALV.PLACED=[];
 GALV.place=function(R,q,o){o=o||{};q=q==null?1:q;R=R==null?2500:R;
  const st={crusts:0,crustsDead:0,runners:0,runnerSegs:0,masts:0,mastsDead:0,reefs:0,reefsDead:0,jars:0,jarsSpent:0},P=GALV.PLACED;P.length=0;
- const seed=KRAND.child(1000043,'galvanic/strand'),keep=o.keep||(()=>1),ph=o.ph||(()=>6.5),flood=o.flood||(()=>0),store=o.store||(()=>({alive:true,charge:1}));
+ const seed=KRAND.child(1000043,o.world||'galvanic/strand'),keep=o.keep||(()=>1),ph=o.ph||(()=>6.5),flood=o.flood||(()=>0),store=o.store||(()=>({alive:true,charge:1}));
  const rock=(x,z)=>BIO.field('rock',x,z),Lv=BIO.LOD(),c0=BIO.center();
  const acidK=(x,z)=>smooth(4.6,3.4,ph(x,z));   /* 0 where the water is past pH 4.6 (the minerals passivate: GALV_PHYS.cell), 1 under 3.4 */
  const live=(x,z)=>flood(x,z)<=LIVE_DAYS;
@@ -70,6 +72,11 @@ GALV.place=function(R,q,o){o=o||{};q=q==null?1:q;R=R==null?2500:R;
   for(let k=0;k<n;k++){const s=rr(t.s0,t.s1),p=S.F.point(s);if(BIO.lodD(p[0],p[1])>Lv.mid)continue;const off=(rng()<.5?-1:1)*rr(0,t.w/2+1.5);
    const g=S.F.seg.find(g=>s>=g.s0&&s<=g.s0+g.L)||S.F.seg[0];reef(p[0]+g.uz*off,p[1]-g.ux*off,rr(.8,2.6),'terrace');}});});
  (o.mounds||[]).forEach((M,mi)=>{reseed(KRAND.hash(seed,mi,2,0x7f));const n=Math.round(ri(3,9)*q);for(let k=0;k<n;k++){const a=rr(0,TAU),d=M.r*rr(1.02,1.2);reef(M.x+Math.cos(a)*d,M.z+Math.sin(a)*d,1.8,'moat');}});
+ (o.spires||[]).forEach(C=>SPACE.insert({x:C.x,z:C.z,s:C.r},C.x,C.z,C.r));   /* the chimneys' feet: no reef inside one */
  if(o.deep){const D=o.deep;reseed(KRAND.hash(seed,0,3,0x80));const n=Math.round(60*q);for(let k=0;k<n;k++){const a=rr(0,TAU),d=D.r*rr(.97,1.08),x=D.x+Math.cos(a)*d,z=D.z+Math.sin(a)*d;if(BIO.lodD(x,z)<Lv.mid)reef(x,z,3,'deep');}}
+ // THE RELICT CHIMNEYS (station 2): the chimney's sulfide wall is a cathode standing in the air, so reefs crowd its foot and runners run to it
+ (o.spires||[]).forEach((C,ci)=>{reseed(KRAND.hash(seed,ci,4,0x81));if(BIO.lodD(C.x,C.z)>Lv.mid)return;const n=Math.round(ri(3,7)*q);
+  for(let k=0;k<n;k++){const a=rr(0,TAU),d=C.r*rr(1.15,2.4);reef(C.x+Math.cos(a)*d,C.z+Math.sin(a)*d,1.4,'chimney');}
+  const m=Math.round(ri(4,9)*q);for(let k=0;k<m;k++){const a=k/m*TAU+rr(-.3,.3),x=C.x+Math.cos(a)*C.r*rr(1.3,2),z=C.z+Math.sin(a)*C.r*rr(1.3,2);lay(x,z,a+rr(-.4,.4),ri(4,14),rr(.012,.026),inBand(x,z));}});
  return st;};
 })();

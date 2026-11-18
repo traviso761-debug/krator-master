@@ -19,7 +19,7 @@ answered, the conservative default is taken and marked **default taken, owner to
 |---|---|
 | Folder | `biomes/galvanic/` (`src/`, `stations/`, `build.py`, `verify.py`, `tests/test-galvanic.js`, `materials.json`, `tex/`, `BIOME-API.md`, `PORT.md`, `INDEX.md`, `KNOWN_ISSUES.md`) |
 | Kind | **a band kit with its own station pages** (the Leucoxene's kind, section 0 of its plan, and High Rift's page frame): the battery's life (`GALV`: the species, the cell's physics, the placement) is one set of fragments any host can read in place; station 1 is this kit's own page because no host kit has the ground it needs (below) |
-| Pages | `dist/galvanic.html`, station 1, **the Gossan Strand** (section 12). Later stations: `python3 build.py --station <name>` -> `dist/galvanic-<name>.html` |
+| Pages | `dist/galvanic.html`, station 1, **the Gossan Strand**; `dist/galvanic-deep.html`, station 2, **the Deep**; `dist/galvanic-gossan.html`, station 3, **the Gossan Hills** (section 12; a station is `python3 build.py --station <name>`, its folder `stations/<name>/` naming its site record) |
 | Object | `GALV` on the `BIOME-API.md` contract: `GALV.SPECIES`, `GALV.build`, `GALV.place`; the `[G data]` physics `GALV_PHYS.cell`, `GALV_PHYS.yield`, `GALV_PHYS.acid`, `GALV_PHYS.stream`, `GALV_PHYS.season`, `GALV_PHYS.store` (section 3), pure functions with a node test |
 | Read in place | `biomes/rift` (the Rift's savannah trees on the hills past the poisoned ground: `BIO.kin`, riftrim's way; its strata recipe `rift` through `KSTRATA`); nothing copied |
 | Out of scope | the scale model (no edits); `core/simulation` (the vitriol and ochre trade is a later sim pass); `LORE.md` (section 10's sentences are for the owner's hand); the animals' models (`kits/fauna`, data first, section 8) |
@@ -244,7 +244,14 @@ so 5.1 px 435-887 by 1384-1644).
 stands within 10 m of the sea's level** within 24 km of the water: the model's flat strand, which is where a metre of
 sea level makes kilometres of shore.
 
-**Station 1's site: the vent at px 801,1573 and the strand on its west.** The vent's crater floor is -2,700 m,
+**Moved (the owner, 2026-11-17: nearer Sauropolis).** The stations now stand on the same sea's north strand at **px 780,1576**, 50 km from
+Sauropolis (85 km at the first site) and 88 km from Tuatara: -2,599 m, 2.21 atm, **1,537 mm, mean +36 degC, warmest +40, coldest +32**, the strand rows
+1572-1580 (18 km from the hills' foot to the sea), XA on the strand and XV on its northern edge and the hills (`tools/survey.py`, default now this
+point). Station 1's page centre is px 780.2,1576.4 (world 1,560,400, 3,152,800; sky 508.2,1246.4); station 2's px 781,1577; station 3's px 780,1569
+(-2,173 m, 2.10 atm, 1,051 mm, +33 degC, XV). **The model has no vent there**: the Deep is the ideal type's (a scale-model queue item,
+`KNOWN_ISSUES.md`). The first survey follows as it was.
+
+**Station 1's first site (2026-11-11, moved): the vent at px 801,1573 and the strand on its west.** The vent's crater floor is -2,700 m,
 **100 m below the sea**: the model's heights stop at -2,600 m, so its pit exists only as the vent record; on the
 ground it is a crater below sea level beside the shore, the Krator twin of the Red Sea's **Atlantis II Deep** (hot metal
 brine over sphalerite, chalcopyrite and pyrite muds). Round it:
@@ -336,7 +343,8 @@ Vertebrate-grade hexapods only, never insects.
   lives on the poisoned ground. *Proposed* (section 10): the Lizardmen's **oxblood lacquer** takes its red from the strand's
   ochre, and their Makers cut the vitriols; a caste of Tenders tends the oldest reefs as the reliquaries are tended. On the
   page: nothing that says who comes here, only cut faces on two mounds and a cleared scrape on the terraces (owner to
-  confirm before anything is drawn: not drawn on station 1).
+  confirm before anything is drawn: not drawn on station 1). **The owner, 2026-11-17: the Lizardmen do work the strand**; the signs of their
+  work are still not drawn on stations 1-3, and station 4 waits.
 
 ## 10. Lore (proposed, for the owner's hand; `LORE.md` untouched)
 
@@ -360,15 +368,29 @@ Vertebrate-grade hexapods only, never insects.
 
 ## 12. Stations
 
-1. **The Gossan Strand** (`dist/galvanic.html`; built 2026-11-11): the strand west of the vent at px 801,1573 in the dry
+1. **The Gossan Strand** (`dist/galvanic.html`; built 2026-11-11): the north strand at px 780,1576 (moved from the vent at px 801,1573, 2026-11-17) in the dry
    season (the sea at its lowest), the Deep in the south-east, five mounds with their springs, three acid streams to the
    sea with their terraces, the hills' foot and the Rift's trees on the north edge. Presets: the strand at noon, a stream's
    terraces, the Deep, the mounds, the shore, from the hills, the flood (the season's wet half, by the day).
-2. *(proposed)* **The Deep** (`--station deep`): down into the crater's rim at the brine's edge, the hot metal brine and its
-   muds, the reefs on the rim, the vent's steam; the black-smoker reef as relicts (section 4, item 1).
-3. *(proposed)* **The gossan hills** (`--station gossan`): an ore body crossing the water table on the hills, Sato and
-   Mooney's battery at a hill's scale: the iron hat above, the reducing ore below, masts in the seeps on the line between.
-4. *(proposed)* **Sauropolis's strand**: the same sea's western end beside the city (once the Lizardmen's use is settled).
+2. **The Deep** (`--station deep`, `dist/galvanic-deep.html`; built 2026-11-17): the strand's Deep (px 781,1577) on a 3.4 km page, the
+   crater drawn 1.6 km across, down at the brine's edge: the hot metal brine to the sea's level and its faint steam (thickest over the
+   vent, KTHERM's field), a shelf of the brine's own muds in bands round its edge (red-brown oxide, black sulfide, green silicate, pale
+   anhydrite) which the season bares and drowns (the bathtub ring), sixteen galvanic chimneys (relict black smokers) 3-12 m tall dead on the rim and
+   in the shallows (section 4, item 1, as relicts), the reefs and runners crowding their feet, the rim's mounds, a stream off the hills'
+   foot laying its terraces before it falls into the Deep, the sea past the south rim. Presets: the brine's edge, the chimneys on the rim,
+   the bathtub ring, across the Deep, the north stream falls in, the flood line, the rim and the sea, from afar.
+3. **The Gossan Hills** (`--station gossan`, `dist/galvanic-gossan.html`; built 2026-11-17): the hills' slope 10 km north of the vent
+   (px 780,1569: -2,173 m, 2.10 atm, 1,051 mm, +33 degC; first built at px 800,1568), a 3.6 km page. Sato and Mooney's battery at a hill's scale: a sulfide lens
+   striking down the slope, its iron hat a rust-red gossan rib above the water table (leached: no couple left, nothing of the battery's
+   on it: the probe checks it), the seeps where it crosses the table at the slope's foot with the masts in their streams, the ore below
+   drowned under the footslope (its stream lined with stumps and dead reefs: the reducing ground), the footwall seep's stream alive and
+   terraced off the ore; the water table swinging with the season as the flood's datum (the store jars keep to its reach); the
+   self-potential a prospector would read, in the inspector (`GALV_PHYS.sp`, `GALV_PHYS.emf`). **Default taken, owner to confirm**: the
+   table's swing is the sea's 1.2 m a year and its mean lies 0.55 m under the footslope (so the footslope floods ~47 days a year). Presets:
+   the iron hat, the seeps on the line, the seep stream (the drowned ore), the footwall seep's terraces, the flood line, up the hill, down
+   the hill, from afar.
+4. *(proposed; not built: waits on question 5)* **Sauropolis's strand**: the same sea's western end beside the city (once the
+   Lizardmen's use is settled).
 
 ## 13. Core adoption (written before the first fragment, as `CLAUDE.md` asks)
 
@@ -426,6 +448,13 @@ strand), `ground.travertine.acid`, `rock.galena`.
 - **G5** (2026-11-12). The owner's answers (section 18): the tidal pump (`GALV_PHYS.tide`, the springs' daily rise, the probe's
   check against `ATMOS.libration`) and zinc in `kits/resources` (in place, every build it reaches rebuilt). Still to come: stations 2
   and 3; the wader in `kits/fauna`.
+- **G6** (2026-11-17). Stations 2 and 3 (section 12), each a page of the kit on the one stage: `GALV_SITES.deep` and `GALV_SITES.gossan`
+  (`[G data]`), the stage reading each shape from the record when it has one (a hill `base` for the strand, the ore and the water table as
+  the flood's datum, the Deep's shelf), the chimneys (`89c`) and the steam (`89u`) drawn for the sites that list them, `GALV.place` taking
+  `o.spires` and `o.world`; the probe's new checks each with a negative (the chimneys seated on their ground, the steam only off the hot
+  brine, the brine on the shelf; no life on the iron hat, the seeps on the table's line, the self-potential, the table at the season's
+  level); `GALV_PHYS.emf` and `GALV_PHYS.sp` with their node tests. Station 1 kept: the same instances, triangles and checks. Still to
+  come: station 4 (question 5), the wader in `kits/fauna`.
 
 ## 17. Sources (checked 2026-11-11)
 
@@ -447,9 +476,9 @@ strand), `ground.travertine.acid`, `rock.galena`.
 
 1. ~~**The tide**~~ **Answered (2026-11-12): yes**, a daily tidal pump (section 3, built).
 2. ~~**The kit's form**~~ **Answered (2026-11-12): its own kit**, as built.
-3. **The site**: the vent at px 801,1573 on the eastern terminal sea (as built), or nearer Sauropolis?
+3. ~~**The site**~~ **Answered (2026-11-17): nearer Sauropolis.** Moved to the north strand at px 780,1576, 50 km from the city (85 km before), where the strand runs 18 km from the XV hills' foot to the sea (section 5, "Moved"). Every station moved with it.
 4. ~~**Zinc**~~ **Answered (2026-11-12): build it** (section 9: added in place, the weights as proposed).
-5. **The Lizardmen**: **nothing drawn** (the owner, 2026-11-12). Whether they work the strand (the ochre for their oxblood lacquer, the vitriols) stays a lore question (section 10).
+5. ~~**The Lizardmen**~~ **Answered (2026-11-17): they work the strand.** Section 9's people and section 10's sentences stand as the owner's answer (`LORE.md` still untouched: the sentences are for the owner's hand). Nothing of their work is drawn yet; station 4 (Sauropolis's strand) waits (the owner: not yet).
 6. ~~**The season's swing**~~ **Answered (2026-11-12): 1.2 m a year**, as built.
-7. **Names**: the kit, the five species, the wader; from which tongue (the Lizardmen's spiral script has no spoken names)?
+7. **Names**: the kit, the five species, the wader; from which tongue (the Lizardmen's spiral script has no spoken names)? **In part (2026-11-17)**: the relict black smokers are **galvanic chimneys**, "Chimney" for short (station 2).
 8. **The gallery**: a new biome kit's page; publish it at the merge to `main`, as the rule says?

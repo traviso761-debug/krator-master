@@ -83,7 +83,19 @@ const near=(a,b,t)=>Math.abs(a-b)<=t;
  const c0=G.cell({}),c1=G.cell({pump:1}),cm=G.cell({pump:.375});
  ok('at the top of the nod the current swells 1.6x ('+(c1.i/c0.i).toFixed(3)+'), 1.225x on the day\'s mean',Math.abs(c1.i/c0.i-1.6)<1e-9&&Math.abs(cm.i/c0.i-1.225)<1e-9,Math.abs(c1.i/c0.i-1)<1e-9);
  ok('no pump, the cell as before (pump 0 = no option)',G.cell({pump:0}).i===c0.i&&c0.i===G.cell({}).i,G.cell({pump:0}).i!==c0.i);}
+// ---- the geobattery (station 3; Sato and Mooney): an ore body across the water table; hundreds of millivolts, negative over its top
+{const e=G.emf({}),s0=G.sp(0,{}),s300=G.sp(300,{}),dry=G.emf({ehDeep:G.rest('pyrite',3,G.REF.o2)});
+ ok('the gap from the gossan\'s pyrite (pH 3) to the reducing depth: '+e.toFixed(3)+' V (0.5-0.9)',e>.5&&e<.9,e<.1);
+ ok('the self-potential over the top: '+s0.toFixed(3)+' V (the field\'s -0.1 to -0.6 V), negative',s0<-.1&&s0>-.6,s0>0);
+ ok('...and 300 m off it '+s300.toFixed(3)+' V: a tenth of the peak or less',Math.abs(s300)<=Math.abs(s0)/9.9,Math.abs(s300)>Math.abs(s0)/2);
+ ok('no reducing depth (the same Eh top and bottom): no battery, no anomaly',dry===0&&G.sp(0,{ehDeep:G.rest('pyrite',3,G.REF.o2)})===0,dry>0);
+ ok('a deeper top gives a broader, not a stronger, anomaly',near(G.sp(0,{depth:80}),s0,1e-12)&&Math.abs(G.sp(300,{depth:80}))>Math.abs(s300),Math.abs(G.sp(300,{depth:80}))<Math.abs(s300));}
 // ---- the site record: plain data, the numbers the survey gave
-{const S=GALV_SITES.strand;ok('the site is the survey\'s: 2.21 atm, +36 degC, 1,051 mm, the sea at -2,600 m, the Deep\'s floor 100 m under it',S.atm===2.21&&S.temp.mean===36&&S.rain===1051&&S.sea===-2600&&S.deep.floor===S.sea-100,S.deep.floor===S.sea);
+{const S=GALV_SITES.strand;ok('the site is the survey\'s (moved nearer Sauropolis, px 780,1576): 2.21 atm, +36 degC, 1,537 mm, the sea at -2,600 m, the Deep\'s floor 100 m under it',S.atm===2.21&&S.temp.mean===36&&S.rain===1537&&S.px[0]===780.2&&S.sea===-2600&&S.deep.floor===S.sea-100,S.deep.floor===S.sea);
+ {const D=GALV_SITES.deep;ok('station 2 (the Deep) is the vent\'s own numbers, its shelf straddling the season\'s swing (the bathtub ring), its chimneys 3-12 m',
+   D.atm===S.atm&&D.sea===S.sea&&D.deep.floor===D.sea-100&&D.deep.shelf[0]<-G.SEA.amp&&D.deep.shelf[1]>G.SEA.amp&&D.smokers.every(c=>c[2]>=3&&c[2]<=12),D.deep.shelf[1]<G.SEA.amp);
+  const Gs=GALV_SITES.gossan,fd=G.floodDays(Gs.table.d0,{amp:Gs.swing});
+  ok('station 3 (the Gossan Hills) is the survey\'s at px 780,1569 (2.10 atm, 1,051 mm, +33 degC); the footslope floods '+fd+' days a year, inside what a jar bridges (1-60)',
+   Gs.atm===2.10&&Gs.rain===1051&&Gs.temp.mean===33&&fd>0&&fd<=60,fd===0||fd>60||Gs.atm===S.atm);}
  ok('the record is JSON (no functions: Godot reads it)',JSON.stringify(GALV_SITES)===JSON.stringify(JSON.parse(JSON.stringify(GALV_SITES))),false);}
 console.log((bad?'FAILED ':'OK ')+(n-bad)+' of '+n);process.exit(bad?1:0);

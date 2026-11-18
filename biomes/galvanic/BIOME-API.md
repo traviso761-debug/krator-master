@@ -2,7 +2,8 @@
 
 The kit on the biome core's contract (`core/biome/README.md`), registered as `BIO.kit('galvanic')`, its object `GALV`. A host reads its fragments in
 place (the pooled-folder rule: name them in its `build.py`): `src/40-galvanic-cell.js` (`[G data]`), `src/50-galvanic-species.js`,
-`src/60-galvanic-place.js`, `src/70-galvanic.js`. Its own page is station 1 (`dist/galvanic.html`, `PLAN.md` section 12).
+`src/60-galvanic-place.js`, `src/70-galvanic.js`. Its own pages are station 1 (`dist/galvanic.html`), station 2, the Deep
+(`dist/galvanic-deep.html`) and station 3, the Gossan Hills (`dist/galvanic-gossan.html`) (`PLAN.md` section 12).
 
 ## The physics (`GALV_PHYS`, also `GALV.PHYS`; `[G data]`, `tests/test-galvanic.js`)
 
@@ -15,10 +16,11 @@ place (the pooled-folder rule: name them in its `build.py`): `src/40-galvanic-ce
 | `stream({pH0, Q0, q, s})`, `streamAtPH(stream, pH)` | down a stream at s m: `{pH, Q, terrace (0..1: the ochre's band, pH 2.8-4), colour (hex), acid}`; where it crosses a pH |
 | `level(day, {amp, low})`, `season(day)` | the terminal sea against its mean (m): lowest day 70, highest ~252, a 1.2 m swing (default taken); `{level, wet, o2At(y)}` |
 | `floodDays(y)`, `store(y, {cap, fill, day})` | the days a year a height lies under the sea; the store jar there: `{alive, charge, floodDays, min}` |
-
 | `tide(t)`, `tidePhase(t)`, `pumpAt(u)`, `pumpHour(day)`, `TIDE` | the daily tidal pump (the owner, 2026-11-12), 0..1: t a clock in world days or `ATMOS.libration(t)`'s record (the same phase the Gills' breath reads); peak at the top of the giant's nod, mean 3/8; `cell({pump})` swells the current by 0.6 x it; `pumpHour(day)` the hour of the peak |
+| `emf({pH, o2, ehDeep})`, `sp(d, {pH, o2, ehDeep, depth})` | the geobattery (station 3): an ore body across the water table, the gap (V) from its top's Eh (pyrite at the gossan's pH) to its reducing depth (default -0.1 V); the self-potential on the surface d m from its crest (V: -0.34 at the top by default, a pole at `depth` m carrying half the gap) |
 
-`GALV_SITES.strand` is the station's record (JSON: the survey's numbers, the strand, the Deep, the mounds, the streams).
+`GALV_SITES.strand`, `GALV_SITES.deep` and `GALV_SITES.gossan` are the stations' records (JSON: the survey's numbers and each page's shapes: the strand or
+the hill, the Deep and its shelf, the chimneys, the mounds, the ore, the water table, the seeps, the streams).
 
 ## The species (`GALV.SPECIES`, `GALV.byKey`, `GALV.plantOfItem(item)`)
 
@@ -29,13 +31,15 @@ place (the pooled-folder rule: name them in its `build.py`): `src/40-galvanic-ce
 ## Placing it
 
 ```
-GALV.build({R, quality, ph(x,z), flood(x,z), store(x,z), streams, mounds, deep, keep(x,z)})   // -> counts; GALV.PLACED: [kind, x, y, z, live, why]
+GALV.build({R, quality, ph(x,z), flood(x,z), store(x,z), streams, mounds, deep, spires, world, keep(x,z)})   // -> counts; GALV.PLACED: [kind, x, y, z, live, why]
 ```
 
 - `ph` the pH of the ground's water (the life keeps under 4.6, where the minerals still carry current); `flood` the days a year under the sea (living
   skins only where it is 60 or fewer: the store's capacity); `store(x, z)` the jar's state on the page's day (`GALV_PHYS.store`).
 - `streams` `[{F: {at(x,z) -> {d, s, a}, point(s), L, seg}, w, T: [{s0, s1, y, w}], tread(s), bed0(s), name}]`: masts stand in the water, reefs on
-  the treads; `mounds` `[{x, z, r, h}]`: runners radiate from their feet, reefs ring their moats; `deep` `{x, z, r}`: reefs round its rim.
+  the treads; `mounds` `[{x, z, r, h}]`: runners radiate from their feet, reefs ring their moats; `deep` `{x, z, r}`: reefs round its rim; `spires` `[{x, z, r, h}]` (the
+  relict chimneys): reefs crowd their feet, runners lace their rubble; `world` the placement's KRAND key (default `'galvanic/strand'`: station 1's).
+- `flood` is the host's: on the strand and at the Deep the sea's, on the hill the water table's (station 3, read on the slope without its channels).
 - Every cell is `KRAND.cell(seed, ix, iz)` or `KRAND.hash(seed, i, k, salt)`; reefs keep clear of each other through `KSPACE`.
 - The host draws the ground, the water and the acid (`GALV.LOOKS.acid`, `GALV.LOOKS.ochre`: `core/water` looks as data, set by the page's
   `89w-host-water.js`).
