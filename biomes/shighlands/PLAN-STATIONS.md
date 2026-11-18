@@ -152,14 +152,15 @@ right-handed spiral-fluted stone domes (`kits/shumari/PLAN.md` §2). No trees on
   `ground.steppe`, `ground.puna`, `ground.gravel019`, `ground.fellfield.fines`, `bark.juniper`, `bark.rope`, `bark.silver` / `bark.alder.lichen`
   (helix poplar), `bark.gnarled` / `wood.gnarled` (twist-apricot), `needle.pine`, `needle.juniper`, `card.sage`, `card.ichu`,
   `card.rosette.snail`, `surface.cushion`.
-- **Optional texture prompt** (`core/materials/PROMPTS-NEEDED.md` §57): `card.apricot.whorl` (blossom-and-leaf sprig sheet for `whorlapricot`;
+- **Optional texture prompt** (`core/materials/PROMPTS-NEEDED.md` §59): `card.apricot.whorl` (blossom-and-leaf sprig sheet for `whorlapricot`;
   stand-in: `card.broadleaf` / `card.sage` tinted) if a dedicated stone-fruit blossom card is wanted.
-- **Crops (`kits/crops`):** `shighlands` gains a `shumar` zone record (`warmth`/`pressure`/`aridity` matching 3,300 m `Dsb` rainfed + canyon-irrigated:
-  `dustmillet`, `frostoat`, `dust-lentil`, `helix-bean`, `frostroot`, `snowpotato`, `apricot`, `stonepine`, `juniper`, `ichu`, `wallhemp`, `flax`,
+- **Crops & plateau census (`kits/crops`, `core/simulation/PROPOSAL-SHUMAR.md`, `settlements/shumar/BUILD-OUT.md`):** `shighlands` gains `shumar` and `ordeal` zone records (`warmth`/`pressure`/`aridity` matching 3,300 m `Dsb` rainfed + canyon-irrigated:
+  `emmer`, `dustmillet`, `frostoat`, `dust-lentil`, `helix-bean`, `frostroot`, `snowpotato`, `apricot`, `canyon-grape`, `stonepine`, `juniper`, `ichu`, `wallhemp`, `flax`,
   `woad`, `cave-madder`, `larch-bark`, `birch-tar`).
 
 ### Order
 
-H3 `stations/shumar` (`--station shumar`, verified, read in place by `kits/shumari`'s `93b-bio-` band); H4 `stations/ordeal` (`--station ordeal`,
-verified); H5 `kits/crops` `shighlands` `shumar` zone + `node kits/crops/tests/test-crops.js`.
+H3 `stations/shumar` (`--station shumar`, built & verified, read in place by `kits/shumari`'s `93b-bio-` band); H4 `stations/ordeal` (`--station ordeal`,
+built & verified); H5 `kits/crops` `shighlands` `shumar`/`ordeal` zones + `node kits/crops/tests/test-crops.js` (`SM-Sim-1`).
+
 

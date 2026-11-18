@@ -38,7 +38,7 @@ every Voth census trade accounted for, real openings on `core/door`, walkable fl
 | Registry | `SM.def` (`defBuilding`, one def per building, tags `culture: 'shumari'`, `tier`, `caste`, `giant`, `role`, `job`), registered in `core/tags` before any geometry is drawn |
 | Scale rule | Human baseline `1.0x`; Free Giant (`Gēdu-šu`) clearance constant `SM_GIANT_DOOR = 4.4` m (minimum clear `4.2` m) and `SM_GIANT_VAULT = 5.2` m (minimum `5.0` m) on every def with `giant: true` (`tier: 'rich'` / `caste: 'sword'`, and all `role: 'civic' \| 'sacred' \| 'defence'`) |
 | Biome | `biomes/shighlands` (`--station shumar`) read in place through a `93b-bio-` band (`ropepine`, `coiljuniper`, `helixpoplar`, `whorlapricot`, `spiralsage`, `ichu` and `swirl tussock`) |
-| Out of scope here | Shumar's capital city page (`settlements/shumar/` or `settlements/qappu/`, its own plan on `core/city` once pinned in `60-settlements.js`), Tallhouse at the NW foot (`px 683,1184`), Greenstep's Talovolci (`kits/` of its own), and Shumari/Giant character outfits (`core/charactermodels`) |
+| Out of scope here | Shumar's capital, regional seats, canyon villages, mines, forts and hamlet rings — now scoped in `core/simulation/PROPOSAL-SHUMAR.md` (`SHUMAR_TUNE`) and `settlements/shumar/BUILD-OUT.md`; Tallhouse at the NW foot (`px 683,1184`); Greenstep's Talovolci (`kits/` of its own); and Shumari/Giant character outfits (`core/charactermodels`) |
 
 It is a new kit, so it goes in the gallery when it first reaches `main` (`gallery/README.md`).
 
@@ -337,7 +337,7 @@ Written before code per `CLAUDE.md` ("CORE MODULES ARE NOT OPTIONAL"; checked by
   `roof.thatch.neutral` (upland cots), `patterns/common/jali-diamond`, `patterns/common/frieze-star-maroon`,
   `patterns/common/kilim-star`, `patterns/common/kilim-banded-brown`.
 
-### Queued in `core/materials/PROMPTS-NEEDED.md` (§57)
+### Queued in `core/materials/PROMPTS-NEEDED.md` (§59)
 
 1. **`stone.dome.mamluk`** — carved highland travertine/tuff dome surface in raised Mamluk geometric 8- and 12-pointed star
    and floral-interlace relief (`refs/01`, `refs/03`; tintable; stand-in: `stone.stucco.yeseria`).
@@ -362,7 +362,7 @@ Written before code per `CLAUDE.md` ("CORE MODULES ARE NOT OPTIONAL"; checked by
 
 | Phase | Scope | Done when |
 |---|---|---|
-| **SM0** | Plans (`biomes/shighlands/PLAN-STATIONS.md` Stations 4-5 + `kits/shumari/PLAN.md`), `refs/01..03`, prompts in `PROMPTS-NEEDED.md` §57 | Owner approves plan & station split |
+| **SM0** | Plans (`biomes/shighlands/PLAN-STATIONS.md` Stations 4-5 + `kits/shumari/PLAN.md`), `refs/01..03`, prompts in `PROMPTS-NEEDED.md` §59 | Owner approves plan & station split |
 | **SM1** | **Biome stations H3-H4:** `biomes/shighlands` `--station shumar` (3,308 m `Dsb` gorge, `helixpoplar`, `whorlapricot`, `spiralsage`) and `--station ordeal` (4,426 m `ET` ramp, `thornwhorl`); `kits/crops` `shumar` zone | `python3 tools/build.py biomes/shighlands` + `--station shumar` + `--station ordeal`, `verify.py --assert`, `test-crops.js` pass |
 | **SM2** | **Scaffold & Mamluk dome toolkit:** `kits/shumari/` from `tools/new_build/`, `tools/checks_optin.json` entries, `materials.json` + `pack.py`, `40-sm-kit.js` (*ablaq*, battered *ishigaki* plinth, *pishtaq*, *shurafat* parapet, compound Giant/human stair) and `41-sm-dome.js` (pointed spiral-fluted & carved domes, Turkish-triangle/*muqarnas* transition, *qamariyya* oculi, bronze *jamur*); first worked piece `sm_regiment_qubba` end-to-end | `sm_regiment_qubba` (`#spiral` and `#carved`) builds, `verify.py --assert` (`giant-clearance`, `openings`, `walk`) and `check_core_use.py` pass |
 | **SM3** | **Dwellings (`50-53`) & the gorge-rim street (`56`):** all 13 dwellings (`-ko`, `-ra`, `-šu` human + `Gēdu-šu` Giant), mass heaters/chimneys, crimson-lacquer galleries, and `sm_gorge_street` ensemble | Both acceptance views framed; walker (`F`) climbs compound stairs and enters unlocked human and Giant doors |
