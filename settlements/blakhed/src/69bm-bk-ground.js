@@ -57,23 +57,25 @@ var BK_GROUND=(function(){
  let sPin=0,dPin=1e9;for(const r of R){const d=Math.hypot(r.x,r.z);if(d<dPin){dPin=d;sPin=r.s;}}
  let sLip=R[R.length-1].s;for(let i=0;i<R.length;i++){const r=R[i];if(r.s<sPin+12000)continue;const j=R.findIndex(q=>q.s>=r.s+200);if(j<0)break;
   if((r.bed-R[j].bed)/200>.12){sLip=r.s;break;}}
- /* the river's ground: the channel (its bed to the banks, a parabola), the banks kept 0.6 m over the water out to 30 m, the valley
-    eased toward a gentle side out to 400 m (never raised but at the banks) */
- function riverCut(x,z,h){const n=near(x,z);if(!n)return h;const hw=n.w/2,top=n.surf+.6;
-  if(n.d<hw){const u=n.d/hw;return n.bed+(top-n.bed)*u*u;}
-  const side=top+(n.d-hw)*.06,v=sm(hw+400,hw,n.d);let y=h+(Math.min(h,side)-h)*v;if(n.d<hw+30)y=Math.max(y,top+(n.d-hw)*.02);return y;}
+ /* the river's ground: a wide flat-bottomed wet trough (bed out to .75*hw, staying below surf out to hw+4 so 10-12 m terrain cells
+    never bridge dry triangles across diagonal bends), rising to banks kept 0.55 m over the water at hw+14..36 m, valley eased to 400 m */
+ function riverCut(x,z,h){const n=near(x,z);if(!n)return h;const hw=n.w/2,top=n.surf+.55,wWet=hw+4,wBank=hw+14;
+  if(n.d<=hw*.7)return n.bed;
+  if(n.d<wWet){const u=(n.d-hw*.7)/(wWet-hw*.7);return n.bed+(n.surf-.38-n.bed)*u*u;}
+  if(n.d<wBank){const t=sm(wWet,wBank,n.d);return(n.surf-.38)*(1-t)+top*t;}
+  const side=top+(n.d-wBank)*.06,v=sm(wBank+400,wBank,n.d);let y=h+(Math.min(h,side)-h)*v;if(n.d<wBank+24)y=Math.max(y,top+(n.d-wBank)*.02);return y;}
 
  // ---------------------------------------------------------------- the ice ponds and the leat (PLAN.md section 3; question 5, proposed)
- /* the ponds on the right bank (the town's side) 1.1-1.9 km below the river's nearest point to the town, 70-160 m back from the
+ /* the ponds on the right bank (the town's side) 0.58-1.06 km below the river's nearest point to the town, 80-150 m back from the
     water; each a rectangle along the river, dug to a level 0.6 m under its lowest corner */
  const PONDS=[];{const gr=(x,z)=>riverCut(x,z,model(x,z));
-  for(let k=0;k<6;k++){const s=sPin+1100+(k>>1)*300,off=85+(k&1)*70,F=along(s,off),w=110,d=52,ry=Math.atan2(F.tx,F.tz);
+  for(let k=0;k<6;k++){const s=sPin+580+(k>>1)*240,off=82+(k&1)*66,F=along(s,off),w=104,d=48,ry=Math.atan2(F.tx,F.tz);
    const c=[[-1,-1],[1,-1],[1,1],[-1,1]].map(([a,b])=>gr(F.x+F.tx*a*w/2+F.nx*b*d/2,F.z+F.tz*a*w/2+F.nz*b*d/2));
    PONDS.push({id:'bk.pond.'+(k+1),x:F.x,z:F.z,tx:F.tx,tz:F.tz,nx:F.nx,nz:F.nz,ry,w,d,level:Math.min(...c,gr(F.x,F.z))-.6});}}
  const pondAt=(x,z,m)=>{for(const p of PONDS){const dx=x-p.x,dz=z-p.z,u=Math.abs(dx*p.tx+dz*p.tz)-p.w/2,v=Math.abs(dx*p.nx+dz*p.nz)-p.d/2;if(Math.max(u,v)<(m||0))return{p,e:Math.max(u,v)};}return null;};
- /* the leat: off the river 450 m above the first pond, 40 m in from the water, down along the bank to the ponds' head, in its cut;
+ /* the leat: off the river 360 m above the first pond, 40 m in from the water, down along the bank to the ponds' head, in its cut;
     each point a little lower than the last and 0.55 m under the ground */
- const LEAT=(function(){const out=[];let yl=1e9;for(let s=sPin+650;s<=sPin+1100;s+=15){const off=s<sPin+700?14+(s-sPin-650)*.52:40,F=along(s,off);
+ const LEAT=(function(){const out=[];let yl=1e9;for(let s=sPin+220;s<=sPin+580;s+=15){const off=s<sPin+270?14+(s-sPin-220)*.52:40,F=along(s,off);
    const g=riverCut(F.x,F.z,model(F.x,F.z));yl=Math.min(yl-.04,g-.55);out.push([F.x,F.z,yl]);}
   const P0=PONDS[0];out.push([P0.x-P0.tx*P0.w/2,P0.z-P0.tz*P0.w/2,Math.min(yl-.05,P0.level+.4)]);return out;})();
  function segD(x,z,a,b){const dx=b[0]-a[0],dz=b[1]-a[1],L2=Math.max(1e-9,dx*dx+dz*dz),t=Math.max(0,Math.min(1,((x-a[0])*dx+(z-a[1])*dz)/L2));return Math.hypot(x-a[0]-t*dx,z-a[1]-t*dz);}

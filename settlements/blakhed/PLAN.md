@@ -60,6 +60,20 @@ where their escort rests and their house keeps its western factor. *Proposed*:
 - in the sim records: `tears.blakhed`, a house of the Golden Tears (faction `xanadu`, org `tears`), beside `tears.strongwall`
   and `tears.erehwon` (`sim/wr-blakhed.js`; XAN_TUNE is left alone until the West Rift's W3 joins it).
 
+**Town form, Traveller Winterings, and Dalab's mission** (the owner, 2026-11-17: less spread out with a clearly defined center
+loosely clustered around the Marketplace; an authentic Irish Traveller / Romani campground; and a 100-150 person Dalab mission
+near the center of town):
+- **Compact radial-concentric town (~720 x 580 m):** irregular organic polygon blocks and crooked ring/spoke lanes loosely
+  clustered around a flagged 92 x 72 m Marketplace (median house ~195 m from the Peace Stone), with the Ropewalk, Icegarth,
+  Fairfell, Winterings, Cairn Hall and Golden Tears pulled into close visual reach;
+- **Dalab's mission (~134 people):** a low rammed-earth walled compound ~185 m ESE of the Peace Stone on the inner-to-middle
+  ring by the Caravan Road, holding Dalab's resident factor, clerks, genepriest, caravan brokers and guards in 13 Dalab
+  buildings (`dalab.blakhed` raised to 160 across mission + Stairhead toll post);
+- **The Winterings (~454 Travellers in 7 extended-family circles):** pitched through `core/camp` (`KCAMP.pitch`,
+  `culture: 'traveller'`) in circular and horseshoe greens around iron-tripod campfires (`fg-camp-hearth`), with painted
+  spoked bow-top vardos (`fg-wagon`), arched canvas bender tents (`fg-bender`), tinsmith/coppersmith pitches and washing lines
+  (`fg-tinsmith`), and hurdle-fenced pony paddocks.
+
 **One finding of the town-scale survey (B1), taken by the build.** The model's Blak Riba runs **1.9 km north-west of the pin**
 (its vertex 440.2,1399.5); the town is to stand on its south bank. The build moves that one vertex about 1 km toward the pin
 (to 440.8,1399.8: inside its own 2 km cell, so within the model's resolution) and carves the channel into the model's ground
@@ -406,13 +420,14 @@ Written first, as CLAUDE.md asks ("CORE MODULES ARE NOT OPTIONAL"), and settled 
 | `core/city` (with `core/space`) | yes, sealed in `gen/69b-kcity-bundle.js` | **the town**: one instance (`rand: 'krand'`, insertion order, `TUNE.exact`); its own steps lay the raster, the roads (the drove road, the stair road, the ice road, the fair lane) and the lanes; the **frontage-courts** strategy fills the house blocks with the Fellgang keys (`kit.dims` from `TG.fg.dims`, `TUNE.classes` the Fellgang keys). The Market, the Icegarth, the Ropewalk, the Folds, the Fairfell, the Winterings and the cairn hall's knoll are the plan's records, placed by the town's site step, never by a builder |
 | `core/hamlet` + `core/hamlet/fellgang` | yes, in the same closure | **the four steadings** (focus `farming` / `ranch`), **the Stairhead** (the row's own focus `stair`), **the twelve hamlets** of the network (records for the open world; those within the page's country drawn). The Fellgang row has works for `fowling` and `ice` only: the page extends it locally (`BK_ROW`: farming, ranch, quarry and stair works from the kit's keys), as Kirstabal extends the Xanadu row, so no other world's villages move |
 | `kits/tungang` (the Fellgang set) | yes, sealed as `TG` (`tungang_bundle.bundle(tex=True, furniture=True, side=...)`, the maps beside the page) | every Fellgang building and road piece: `TG.fg.draw` (seated by the kit: floor at the highest corner, plinth to the lowest; `walk`, `doors`, `steps` and catalog `furniture` on in the town), `TG.fg.pieces` (lantern posts, halts, wagons, ice tools, Fair hurdles, peace stone, cairns, road signs, Stairhead hoists) |
-| the Dalab set (`settlements/dalab/src` 69d, 69e, 70, 71, 71c, 73, read in place as Thalaba does) | yes | **Dalab's toll post** at the Stairhead: the watch tower, the toll store (warehouse), the genepriest's house, the toll-men's compound; Dalab's pack trimmed to its families |
+| the Dalab set (`settlements/dalab/src` 69d, 69e, 70, 71, 71c, 73, read in place as Thalaba does) | yes | **Dalab's mission** near the Marketplace (~134 people in 13 buildings within a low rammed-earth compound) and **Dalab's toll post** at the Stairhead; Dalab's pack trimmed to its 21 used families |
+| `core/camp` (`KCAMP`) | yes, sealed in `gen/69b-kcity-bundle.js` | **The Winterings**: 7 extended-family Traveller circles and horseshoes (`culture: 'traveller'`) pitched round central campfires (`fg-camp-hearth`) with vardos (`fg-wagon`), bender tents (`fg-bender`), tinsmiths and clotheslines (`fg-tinsmith`), and pony paddocks |
 | `core/water` (+ `core/atmos` for its clock and waves) | yes | the **Blak Riba** a `flow` from 8 km above the town down the falls to their foot (white on the falls), the **leats** off it, the **ice ponds** `still` |
 | `core/drawn` | yes | every ground mesh registered (`KDRAWN.grid`), so the eye check measures the drawn ground |
 | `core/biome` + `biomes/riftrim` (rim `w`, the veiled rim of the W rift highland) | yes, sealed in `gen/69bk4-bk-flora-bundle.js` | the country's flora over a mask made from the plan's records (never from pixels): the cloud belt's moor sponge, sedge and cotton grass, prism heath, bell firs and lobe larch where the fields allow, lantern lobelia along the lanes |
 | `core/materials/record` | yes | the town's ground sets (`materials.json`, `tex/`); the kit's own pack for the buildings |
 | `core/walk`, `core/door`, `core/furnish`, `kits/interiors`, `kits/catalog` | yes (step B6, interiors) | every town Fellgang building furnished from the catalog, its boxes recorded on `KWALK`, its Ancient plate doors operable (`KDOOR`/`KDOORHOST`), drystone threshold steps on slopes, and `XA_CUT` cutaway (`X`); the Golden Tears' Xanadui buildings hollowed, planned, furnished and walked (`89b1-bk-interiors.js`, `89y-xa-interiors.js`) |
-| `core/clock`, `core/sched`, `core/simulation`, `core/charactermodels`, `core/camp`, `core/hazard`, `core/export` | not yet | the people and citizen schedules, the Winterings on `core/camp` (no Traveller row yet), the hazards and the Godot export remain open (`KNOWN_ISSUES.md`) |
+| `core/clock`, `core/sched`, `core/simulation`, `core/charactermodels`, `core/hazard`, `core/export` | not yet | the people and citizen schedules, the hazards and the Godot export remain open (`KNOWN_ISSUES.md`) |
 | `core/region` | yes (`sim/wr-blakhed.js`) | Blakhed's economy on `50-region-valley.js` (`WR_BLAKHED.valley`) and its W3 join (`WR_BLAKHED.join`) replacing `gate.dalab.blakhed` and `gate.dalab.nulab` on `XAN_TUNE`'s Annual Great Caravan (`test-bk-economy.js`) |
 
 **Town-scale pieces added to `kits/tungang` (step B2, `src/58-fg-town.js` and `src/60-fg-road.js`):** `fg-doublehall` (holding

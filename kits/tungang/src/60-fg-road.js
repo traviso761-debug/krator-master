@@ -94,32 +94,135 @@ defBuilding({key:'fg-halt',name:'A Travellers\' halt',seed:9146,cut:true,w:4.2,d
   fgHearth(.6,1.05,C,{r:.38});fgFurn('fellgang_poor_hide_sacks',hw-.3,0,.3,0);
   /* the lantern on its pole by the road (a lobelia in a can) */
   pole('pole',[hw+.15,0,1.25],[hw+.15,1.9,1.25],.04,pc,5);W(hw+.15,1.62,1.25,0,()=>{box('tin',0,0,0,.2,.24,.2,fgCol('tin',C));sph('glow',0,.12,0,.04,hc(0x7ab4ff),1.3,6);haloAt(0,.12,0,0x7ab4ff,false);});}});
-/* the Travellers' wagon: +z is its back (the door and the steps), -z its front (the drawbar) */
-defBuilding({key:'fg-wagon',name:'A Travellers\' wagon',seed:9147,cut:true,w:2.6,d:6,h:3.3,budget:2600,
+/* the Travellers' vardo wagon: +z is its back (the Dutch door and steps), -z its front (the shafts and forecarriage) */
+defBuilding({key:'fg-wagon',name:'A Travellers\' vardo wagon',seed:9147,cut:true,w:2.6,d:6,h:3.3,budget:4500,
  tags:{types:['dwelling-single'],style:'salvage',role:'dwelling'},
- note:'the Travellers\' rolling home: a barrel-top covered sledge-wagon of bright painted boards, plate runners faced with tyres, a stove pipe, steps at the back',
- build(o){const C=fgCx(o),pc=fgCol('pole',C),L=4.2,bw=2.2,y0=.62,yw=1.85,R=bw/2;
-  const cols=[[0xa8321e,0x2e6a4a],[0x2e5a8a,0xc8902e],[0x3a7a4a,0xa8321e]][C.v%3].map(c=>C.worn?hc(c).clone().multiplyScalar(.7):hc(c));
-  /* the runners: white plate faced with strips of tyre, curled up at the front; cross-bearers; the drawbar */
-  for(const s of [-1,1]){const x=s*(bw/2-.15);box('plate',x,.06,.1,.1,.18,5.2,fgCol('plate',C));box('tyre',x,0,.1,.14,.06,5.2,P('tyre'));beam('plate',[x,.15,-2.5],[x,.55,-2.85],.12,fgCol('plate',C),false);
-   pole('pole',[x,.06,-2.6],[x*.2,.4,-2.95],.05,pc,5);}
-  for(const z of [-1.8,-.6,.6,1.8])box('wood',0,.24,z,bw,.12,.16,fgCol('wood',C));box('wood',0,.36,0,bw,.26,L,fgCol('wood',C));
-  /* the body: painted boards, the colours in bands, a scalloped trim under the barrel top, the family's mark */
-  for(let k=0;k<5;k++){const y=y0+k*(yw-y0)/5;for(const s of [-1,1])box('wood',s*(bw/2-.03),y,0,.06,(yw-y0)/5-.015,L,k%2?cols[1]:cols[0]);}
-  box('wood',0,y0,-L/2+.03,bw,yw-y0,.06,cols[0]);
-  for(let k=0;k<14;k++)for(const s of [-1,1])box('plain',s*(bw/2+.005),yw-.12,-L/2+.15+k*(L-.3)/13,.012,.1,.12,P('ochre'));
-  for(const s of [-1,1])fgMark(C.v,s*(bw/2+.01),1.1,0,s*PI/2,.5,0xe8e2d4);
-  /* the barrel top: curved boards on hoops of bent fir, painted */
-  psurf('wood',(u,v)=>{const a=PI*u;return [Math.cos(a)*R,yw+Math.sin(a)*R*.95,-L/2+L*v];},10,4,cols[1]);
-  for(let k=0;k<=4;k++){const z=-L/2+.05+k*(L-.1)/4,P0=[];for(let i=0;i<=8;i++){const a=PI*i/8;P0.push([Math.cos(a)*(R+.03),yw+Math.sin(a)*(R*.95+.03),z]);}cord('pole',P0,.035,pc);}
-  /* the back: a painted plate door, the steps down; the gable boards at both ends */
-  W(0,0,L/2-.03,0,()=>{box('wood',-.7,y0,0,.6,yw-y0,.06,cols[0]);box('wood',.7,y0,0,.6,yw-y0,.06,cols[0]);});
-  svLeaf(0,y0,L/2,0,.8,1.2,{mk:'paint',col:cols[1],t:.05,name:'the wagon door'});door(0,y0,L/2,0,.8,1.2);
-  poly('wood',[[-R,yw,L/2-.03],[R,yw,L/2-.03],[0,yw+R*.95,L/2-.03]],cols[0],true);poly('wood',[[-R,yw,-L/2+.03],[R,yw,-L/2+.03],[0,yw+R*.95,-L/2+.03]],cols[0],true);
-  for(let k=0;k<3;k++)box('wood',0,.15+k*.17,L/2+.2+(2-k)*.22,.7,.05,.24,fgCol('wood',C));for(const s of [-1,1])beam('wood',[s*.36,.06,L/2+.85],[s*.36,y0,L/2+.08],.04,fgCol('wood',C));
-  /* the stove pipe through the roof, a stove inside, the bed across the front */
-  cyl('iron',-.55,1.2,-1.1,.07,2.05,P('iron'),8);cone('iron',-.55,3.22,-1.1,.14,.08,P('iron'),8);smokeAt(-.55,3.3,-1.1,{r:.15});
-  fgFurn('fellgang_poor_fur_bed',0,y0,-L/2+.6,0);fgFurn('fellgang_common_chest',.6,y0,.9,-PI/2);box('iron',-.55,y0,-1.1,.4,.55,.4,P('iron'));}});
+ note:'the Travellers\' rolling home (Irish Traveller / Romani bow-top and ledge vardo): ornate painted panels and gilded scroll-trim, spoked wheels with winter runner-skis slung beneath, shuttered lace-curtained windows, stove pipe, Dutch door and steps at +z',
+ build(o){const C=fgCx(o),wc=fgCol('wood',C),ic=P('iron'),L=4.16,bw=2.18,w0=1.74,y0=.74,yw=1.9,R=bw/2;
+  const pal=[[0xa8281e,0x246444,0xd8a230],[0x24528a,0xd09628,0xe8e0cc],[0x2c683e,0xb23020,0xd8a434],
+   [0x7a2434,0xe2dac4,0xc8902e],[0x246868,0xd09428,0xa82c1e],[0x263e78,0xa82a22,0xe8e2d4]][C.v%6];
+  const cols=pal.map(c=>C.worn?hc(c).clone().multiplyScalar(.72):hc(c)),canv=C.worn?hc(0xbcae94):hc([0xebe3ce,0xdfd4bc,0x3a6448,0x8c2c22][C.v%4]);
+  /* spoked vardo wheels (large rear r .48 at z .92, smaller turning front r .36 at z -1.32), axletrees, pan-box and slung winter runners */
+  const wheel=(wx,wy,wz,r,ns)=>{WX(wx,wy,wz,0,0,PI/2,()=>{cyl('wood',0,0,0,.09,.16,cols[0],8);cyl('iron',0,0,0,.05,.2,ic,8);});
+   ring('tyre',wx,wy,wz,r,.028,P('tyre'),0,0,PI/2,11);ring('paint',wx,wy,wz,r-.038,.026,cols[2],0,0,PI/2,11);
+   for(let k=0;k<ns;k++){const a=k*TAU/ns+C.v*.13;beam('paint',[wx,wy,wz],[wx,wy+Math.cos(a)*(r-.04),wz+Math.sin(a)*(r-.04)],.018,cols[2],false,4);}};
+  for(const s of [-1,1]){wheel(s*1.12,.48,.92,.48,10);wheel(s*1.05,.36,-1.32,.36,8);
+   /* winter sledge-skis: shod under the wheels on every 3rd wagon, slung beneath the pan-box on the rest */
+   if(C.v%3===2){box('plate',s*1.08,.03,-.15,.14,.05,3.4,fgCol('plate',C));beam('plate',[s*1.08,.05,-1.85],[s*1.08,.28,-2.18],.08,fgCol('plate',C),false);}
+   else beam('plate',[s*.66,.46,-.2],[s*.66,.46,1.15],.07,fgCol('plate',C),false);}
+  beam('iron',[-1.16,.48,.92],[1.16,.48,.92],.038,ic,true,6);beam('iron',[-1.08,.36,-1.32],[1.08,.36,-1.32],.035,ic,true,6);
+  box('wood',0,.58,.92,w0,.16,.2,cols[0]);box('wood',0,.5,-1.32,w0*.9,.22,.22,cols[1]);cyl('iron',0,.42,-1.32,.22,.08,ic,10);
+  /* undercarriage pan-box, hanging tin bucket/kettle at the rear, and front shafts propped on a wooden trestle */
+  box('wood',0,.44,.18,1.08,.24,1.35,cols[1]);cyl('tin',.52,.26,1.68,.13,.24,fgCol('tin',C),8);
+  for(const s of [-1,1]){beam('pole',[s*.46,.54,-1.52],[s*.42,.36,-2.88],.042,cols[0],true,5);pole('pole',[s*.42,0,-2.62],[s*.42,.36,-2.62],.03,wc,4);}
+  pole('pole',[-.48,.35,-2.62],[.48,.35,-2.62],.03,wc,4);
+  /* lower waist and outward-flaring side ledges (Reading/bow-top vardo framing), chamfered ribs and gold bead-moulding */
+  box('wood',0,y0-.12,0,w0,.12,L,wc);box('wood',0,y0-.02,0,bw,.08,L+.08,cols[0]);
+  for(let k=0;k<5;k++){const y=y0+.06+k*(yw-y0-.06)/5,h0=(yw-y0-.06)/5-.014;
+   for(const s of [-1,1])box('paint',s*(bw/2-.03),y,0,.055,h0,L,k===2?cols[1]:cols[0]);}
+  for(let k=0;k<7;k++){const z=-L/2+.22+k*(L-.44)/6;for(const s of [-1,1])box('paint',s*(bw/2+.008),y0+.06,z,.024,yw-y0-.1,.05,cols[2]);}
+  for(const y of [y0+.04,yw-.05])for(const s of [-1,1])box('paint',s*(bw/2+.01),y,0,.03,.045,L+.06,cols[2]);
+  /* scalloped eaves fascia and side windows with painted shutters and cream lace curtains */
+  for(let k=0;k<14;k++)for(const s of [-1,1])box('paint',s*(bw/2+.016),yw-.13,-L/2+.16+k*(L-.32)/13,.016,.09,.12,cols[2]);
+  for(const s of [-1,1])W(s*(bw/2+.015),y0+.42,-.18,s*PI/2,()=>{box('plain',0,0,0,.64,.56,.03,hc(0x22201c));
+   for(const lx of [-.15,.15])box('plain',lx,.04,.018,.24,.46,.012,hc(0xf0ead8));
+   box('paint',0,.28,.024,.7,.05,.03,cols[2]);box('paint',0,-.28,.024,.72,.05,.04,cols[2]);
+   for(const sg of [-1,1])box('paint',sg*.46,0,.028,.24,.54,.025,cols[1],sg*.22);});
+  box('paint',0,y0,-L/2+.03,bw,yw-y0,.06,cols[0]);W(0,y0+.52,-L/2-.01,PI,()=>{box('paint',0,0,0,.92,.52,.03,cols[1]);fgMark(C.v,0,.18,.02,0,.38,pal[2]);});
+  /* arched bow-top roof (painted canvas or boarded tilt on bent fir hoops) and carved front/rear crownboards */
+  psurf('wood',(u,v)=>{const a=PI*u;return [Math.cos(a)*R,yw+Math.sin(a)*R*.92,-L/2-.12+(L+.24)*v];},12,4,C.v%2?canv:cols[1]);
+  for(let k=0;k<=3;k++){const z=-L/2+k*L/3,P0=[];for(let i=0;i<=6;i++){const a=PI*i/6;P0.push([Math.cos(a)*(R+.028),yw+Math.sin(a)*(R*.92+.028),z]);}cord('pole',P0,.032,cols[2]);}
+  for(const sz of [-1,1]){const z=sz*(L/2-.03);poly('paint',[[-R,yw,z],[R,yw,z],[0,yw+R*.92,z]],cols[0],true);
+   for(let k=-3;k<=3;k++){const a=k*.26;beam('paint',[0,yw+.12,z+sz*.05],[Math.sin(a)*.78,yw+.12+Math.cos(a)*.68,z+sz*.05],.02,cols[2],false,4);}}
+  /* rear (+z) Dutch door, carved porch brackets, detachable steps and hanging brass/tin road lantern */
+  W(0,0,L/2-.03,0,()=>{box('paint',-.71,y0,0,.62,yw-y0,.06,cols[0]);box('paint',.71,y0,0,.62,yw-y0,.06,cols[0]);
+   for(const s of [-1,1])box('paint',s*.48,yw-.18,.08,.12,.22,.22,cols[2]);});
+  svLeaf(0,y0,L/2,0,.78,1.16,{mk:'paint',col:cols[1],t:.05,name:'the vardo door'});door(0,y0,L/2,0,.78,1.16);
+  for(let k=0;k<4;k++)box('wood',0,.14+k*.16,L/2+.16+(3-k)*.19,.72,.045,.21,wc);
+  for(const s of [-1,1])beam('paint',[s*.37,.05,L/2+.8],[s*.37,y0,L/2+.08],.038,cols[2],true,4);
+  W(.68,yw-.18,L/2+.14,0,()=>{box('tin',0,0,0,.16,.22,.16,hc(0xc89a38));sph('glow',0,.08,0,.04,hc(0xffb858),1.3,6);haloAt(0,.08,0,0xffb04a,false);});
+  /* interior queen-bed at the front, painted chest, parlor stove and chimney with rain-cap */
+  cyl('iron',-.56,y0+.48,-1.08,.065,2.0,ic,8);cone('iron',-.56,3.22,-1.08,.14,.08,ic,8);smokeAt(-.56,3.28,-1.08,{r:.15});
+  fgFurn('fellgang_poor_fur_bed',0,y0,-L/2+.62,0);fgFurn('fellgang_common_chest',.58,y0,.88,-PI/2);box('iron',-.56,y0,-1.08,.38,.52,.38,ic);}});
+/* Traditional Irish Traveller / Romanichal bender tent (+z open flap): bent hazel/fir hoops under patched canvas, tarp and hide */
+defBuilding({key:'fg-bender',name:'A Travellers\' bender tent',seed:9165,cut:true,w:4.4,d:3.6,h:2.2,budget:2800,
+ tags:{types:['dwelling-single'],style:'salvage',role:'dwelling'},
+ note:'an Irish Traveller / Romani bender tent pitched beside a family\'s vardos: bent fir and willow hoops lashed into a rounded dome-tunnel, covered in patched canvas, oilcloth and hide weighted with stones at the skirt, stove pipe and fur beds within',
+ build(o){const C=fgCx(o),pc=fgCol('pole',C),col=fgCol('stone',C),ic=P('iron'),rx=2.04,hy=1.96,L=3.1;
+  const base=hc([0xd8ccb2,0xba9258,0x586650,0x4c5c6a][C.v%4]),pat=hc([0x8e5236,0xc89638,0x6e604c,0xdcd2bc][(C.v+1)%4]);
+  if(C.worn){base.multiplyScalar(.76);pat.multiplyScalar(.74);}
+  /* five bent fir/hazel hoop arches and five longitudinal stringers lashed at their crossings */
+  for(let k=0;k<5;k++){const z=-1.52+k*(L/4),s=k===0||k===4?.86:1,P0=[];
+   for(let i=0;i<=10;i++){const a=PI*i/10;P0.push([Math.cos(a)*rx*s,Math.sin(a)*hy*(k===0?.84:1),z]);}cord('pole',P0,.032,pc);}
+  for(const a of [.38,.82,1.57,2.32,2.76]){const x=Math.cos(a)*rx,y=Math.sin(a)*hy;pole('pole',[x*.86,y*.86,-1.52],[x*.86,y*.86,1.58],.024,pc,5);}
+  /* curved patched canvas/oilcloth shell, back dome closure, stitched patches and stone-weighted skirt */
+  psurf('hideW',(u,v)=>{const a=.08+u*(PI-.16),z=-1.52+v*L,s=1-.12*Math.pow(2*v-1,4);return [Math.cos(a)*rx*s,Math.sin(a)*hy*s,z];},12,6,base);
+  psurf('hideW',(u,v)=>{const a=PI*u,r=v;return [Math.cos(a)*rx*.86*r,Math.sin(a)*hy*.84*r,-1.52-.18*(1-r)];},10,3,pat);
+  for(let k=0;k<4;k++){const a=.45+k*.68,z=-.95+(k%2)*.95,ca=Math.cos(a),sa=Math.sin(a);
+   W(ca*(rx+.02),sa*(hy+.02),z,0,()=>box('hideW',0,0,0,.62,.48,.025,k%2?pat:P('hide'),0,(a-PI/2)*.85));}
+  for(let k=0;k<14;k++){const a=.35+k*(TAU-.7)/13,x=Math.cos(a)*(rx+.08),z=Math.sin(a)*1.66-.04;if(z>1.35&&Math.abs(x)<.85)continue;
+   ellip('stone',x,.09,z,.19,.11,.16,col,a,6);}
+  /* arched +z entrance with tied-back canvas flaps, interior woven carpet & beds, stove pipe and milk churn */
+  for(const s of [-1,1]){poly('hideW',[[s*rx*.86,0,1.56],[s*.62,0,1.64],[s*.78,1.52,1.54]],pat,true);
+   fgLash([s*.72,1.05,1.58],[s*1.58,.95,1.42]);}
+  box('paint',0,.02,-.1,1.65,.025,2.2,hc([0x962e22,0x2c5a78,0xc48c2c][C.v%3]));
+  for(const s of [-1,1])fgFurn('fellgang_poor_fur_bed',s*1.05,0,-.28,PI/2,{v:s>0?1:0});
+  fgFurn('fellgang_common_chest',0,0,-1.05,0);
+  box('iron',-.82,0,.55,.36,.42,.36,ic);cyl('iron',-.82,.42,.55,.055,1.68,ic,8);cone('iron',-.82,2.1,.55,.12,.07,ic,8);smokeAt(-.82,2.16,.55,{r:.13});
+  cyl('tin',1.18,0,1.55,.16,.48,fgCol('tin',C),8);cyl('tin',1.18,.48,1.55,.1,.12,fgCol('tin',C),8);fgSet('bender',1);}});
+/* Communal Traveller family campfire: stone-kerbed peat hearth, iron tripod trammel & cauldron kettle, stools, churns and logs */
+defBuilding({key:'fg-camp-hearth',name:'A Travellers\' campfire and tripod kettle',seed:9166,cls:'fixture',w:4.6,d:4.6,h:2.2,budget:2400,
+ tags:{types:['plaza'],style:'salvage',role:'lamp',light:'flame'},
+ note:'the heart of each Traveller family circle (atching tan): a stone-kerbed turf fire under a three-legged iron trammel tripod with hung cauldron pot, ringed by split-log benches, three-legged stools, milk churns and a lantern stake',
+ build(o){const C=fgCx(o),pc=fgCol('pole',C),wc=fgCol('wood',C),ic=P('iron'),tc=fgCol('tin',C);
+  fgHearth(0,0,C,{r:.68});
+  /* forged three-legged iron tripod (trammel) over the fire, chain and suspended black cauldron kettle */
+  for(let k=0;k<3;k++){const a=k*TAU/3+.28;beam('iron',[Math.cos(a)*.88,0,Math.sin(a)*.88],[0,2.04,0],.028,ic,true,5);}
+  ring('iron',0,1.98,0,.07,.016,ic,0,0,0,8);cord('iron',[[0,1.98,0],[0,1.02,0]],.014,ic);
+  lathe('iron',0,0,[[.06,.62],[.26,.68],[.3,.86],[.24,1.0]],10,ic);ring('iron',0,1.0,0,.25,.014,ic,0,PI/2,0,10);
+  /* split-log benches, stools, upturned barrel table with tin mugs, milk churns, firewood stack and camp lantern */
+  for(const [a,L] of [[.85,1.55],[2.45,1.5],[-2.15,1.45]]){const x=Math.cos(a)*1.78,z=Math.sin(a)*1.78;
+   W(x,0,z,-a+PI/2,()=>{box('wood',0,.36,0,L,.09,.36,wc);for(const sx of [-L*.36,L*.36])cyl('pole',sx,0,0,.09,.36,pc,6);});}
+  for(const a of [-.35,1.65,-1.25]){const x=Math.cos(a)*1.52,z=Math.sin(a)*1.52;
+   cyl('wood',x,.38,z,.19,.05,wc,8);for(let k=0;k<3;k++){const b=k*TAU/3;pole('pole',[x+Math.cos(b)*.15,0,z+Math.sin(b)*.15],[x+Math.cos(b)*.09,.38,z+Math.sin(b)*.09],.022,pc,4);}}
+  cyl('wood',1.68,0,.22,.32,.66,wc,10);ring('iron',1.68,.18,.22,.33,.015,ic,0,0,0,10);ring('iron',1.68,.52,.22,.33,.015,ic,0,0,0,10);
+  cyl('tin',1.62,.66,.16,.09,.18,hc(0xb87838),8);cyl('tin',1.78,.66,.32,.045,.1,tc,6);
+  cyl('tin',-1.78,0,.98,.17,.52,tc,8);cyl('tin',-1.78,.52,.98,.11,.12,tc,8);
+  for(let r=0;r<3;r++)for(let k=0;k<3-r;k++)WX(-1.35+k*.22+r*.11,.09+r*.16,-1.68,0,.3,PI/2,()=>cyl('pole',0,0,0,.085,.88,pc,6));
+  pole('pole',[1.42,0,-1.52],[1.42,2.08,-1.52],.038,pc,5);
+  W(1.42,1.8,-1.52,0,()=>{box('tin',0,0,0,.18,.24,.18,tc);sph('glow',0,.1,0,.04,hc(0xffb454),1.3,6);haloAt(0,.1,0,0xffa844,false);});
+  fgSet('campHearth',1);}});
+/* Traveller tinsmith / coppersmith work pitch and washing line (+z front) */
+defBuilding({key:'fg-tinsmith',name:'A Travellers\' tinsmith pitch and clothesline',seed:9167,cut:true,w:6.2,d:4.6,h:2.9,budget:3600,
+ tags:{types:['industry','shop'],wealth:'middle',style:'salvage',role:'works',job:'smithing'},
+ note:'the Travellers\' famous road trade (tinsmithing, copper-mending and salvage) beside a family\'s washing line: canvas fly on poles, stump anvil, charcoal brazier, gleaming copper and tin kettles, churns and pans, and bright clothes and shawls strung to dry',
+ build(o){const C=fgCx(o),pc=fgCol('pole',C),wc=fgCol('wood',C),ic=P('iron'),tc=fgCol('tin',C),cop=hc(0xb86e38);
+  const flyC=C.worn?hc(0x9e927c):hc([0xdcd0b6,0xc49658,0x586854][C.v%3]);
+  /* slanted canvas fly over the tinsmith's pitch (-x half), guyed to stakes */
+  for(const x of [-2.78,.48]){pole('pole',[x,0,1.52],[x,2.72,1.52],.055,pc,6);pole('pole',[x,0,-1.82],[x,1.78,-1.82],.055,pc,6);}
+  pole('pole',[-2.88,2.7,1.52],[.58,2.7,1.52],.048,pc,6);pole('pole',[-2.88,1.76,-1.82],[.58,1.76,-1.82],.045,pc,6);
+  fgSlab('hideW',[-2.86,2.74,1.58],[.56,2.74,1.58],[-2.86,1.74,-1.92],.03,flyC);
+  for(const [px,py,pz,sx,sz] of [[-2.82,2.68,1.52,-3.02,2.14],[-2.82,1.76,-1.82,-3.02,-2.16],[.52,2.68,1.52,.82,2.14]]){
+   fgLash([px,py,pz],[sx,.08,sz]);pole('pole',[sx,0,sz],[sx,.28,sz],.025,wc,4);}
+  /* timber-stump anvil, charcoal brazier with glowing coals, bellows, and workbench laden with copper & tin ware */
+  cyl('pole',-.85,0,.18,.3,.58,pc,8);box('iron',-.85,.58,.18,.56,.22,.26,ic);beam('iron',[-.57,.72,.18],[-.35,.74,.18],.055,ic,true,5,.012);
+  cyl('stoneD',-1.95,0,-.35,.44,.56,fgCol('stoneD',C),10);cyl('iron',-1.95,.52,-.35,.36,.18,ic,10);
+  if(!C.worn){ellip('glow',-1.95,.69,-.35,.22,.05,.2,hc(0xff621c),0,6);haloAt(-1.95,.82,-.35,0xff6a20,false);smokeAt(-1.95,.95,-.35,{r:.18});}
+  box('wood',-1.15,.74,-1.22,2.45,.06,.68,wc);for(const sx of [-1.05,1.05])for(const sz of [-.24,.24])box('wood',-1.15+sx,0,-1.22+sz,.08,.74,.08,wc);
+  for(let k=0;k<6;k++){const x=-2.15+k*.38,cu=k%2===0;cyl('tin',x,.8,-1.22,.11+(k%3)*.02,.18+(k%2)*.08,cu?cop:tc,8);}
+  for(let k=0;k<3;k++)cyl('tin',-2.45+k*.42,0,1.05,.16,.48,k===1?cop:tc,8);
+  for(let k=0;k<3;k++)box(k%2?'plate':'tin',.22,0,-.95+k*.24,.04,.85,.62,fgCol(k%2?'plate':'tin',C),.1);
+  /* taut Traveller washing line (+x half) between notched fir poles with bright clothes, shawls and blankets */
+  pole('pole',[.72,0,1.35],[.72,2.52,1.35],.05,pc,6);pole('pole',[2.88,0,-1.25],[2.88,2.46,-1.25],.05,pc,6);
+  pole('pole',[2.88,0,1.45],[2.88,2.42,1.45],.05,pc,6);
+  cord('rope',[[.72,2.38,1.35],[1.8,2.24,.05],[2.88,2.34,-1.25]],.012,P('rope'));
+  cord('rope',[[.72,2.34,1.35],[1.8,2.22,1.4],[2.88,2.3,1.45]],.012,P('rope'));
+  const wash=[[0xb42e22,.52,.82],[0xe6dec8,.46,.72],[0x265888,.56,.88],[0xd49828,.48,.76],[0x2e6e48,.58,.92]];
+  for(let k=0;k<5;k++){const t=(k+.5)/5,x=.72+(2.88-.72)*t,z=1.35+(-1.25-1.35)*t,y=2.32-.12*Math.sin(PI*t),w=wash[k];
+   W(x,y-w[2]/2,z,-.72,()=>box('flag',0,0,0,w[1],w[2],.018,C.worn?hc(w[0]).clone().multiplyScalar(.75):hc(w[0]),0,.06*(k%2?1:-1)));}
+  for(let k=0;k<3;k++){const t=(k+.5)/3,x=.72+(2.88-.72)*t,z=1.35+(1.45-1.35)*t,w=wash[(k+2)%5];
+   W(x,2.24-w[2]*.45,z,.05,()=>box('flag',0,0,0,w[1]*1.1,w[2]*.85,.018,C.worn?hc(w[0]).clone().multiplyScalar(.75):hc(w[0])));}
+  fgFurn('fellgang_poor_hide_sacks',1.55,0,-.85,.4);fgSet('tinsmith',1);}});
 /* the Ice-cutters' tools by their stacks (PLAN.md 3.3.1: the cutters' saws, pike poles and tongs): an A-frame rack of fir */
 defBuilding({key:'fg-ice-tools',name:'The ice-cutters\' tool rack',seed:9148,cls:'prop',w:1.8,d:.9,h:2.4,budget:1600,
  tags:{style:'salvage',role:'tools',job:'quarrying'},
@@ -195,3 +298,40 @@ defBuilding({key:'fg-stone-sign',name:'A road stone and fingerboard',seed:9164,c
   W(0,1.68,0,.18,()=>{box('plate',.14,0,.06,1.12,.26,.03,fgCol('plate',C));fgText(pick(['MARKET','STAIR','FAIR']),.12,.06,.08,0,.11,P('red'));fgLash([-.28,.24,-.06],[-.28,-.04,.09]);});
   W(0,1.34,0,-PI/2+.25,()=>{box('rust',.12,0,.06,.78,.24,.03,fgCol('rust',C));fgText('HOLD',.1,.05,.08,0,.1,P('white'));});
   sph('glow',0,2.22,0,.04,hc(0x7ab4ff),1.3,6);haloAt(0,2.22,0,0x7ab4ff,false);fgSet('sign',1);}});
+/* Market sanctuary boundary stone: marks Blakhed's sworn zone of truce and hospitality round the Marketplace */
+defBuilding({key:'fg-truce-post',name:'A Market truce and hospitality stone',seed:9169,cls:'landmark',w:2.2,d:2.2,h:3.5,budget:2800,
+ tags:{types:['plaza'],style:'drystone',role:'cairn',light:'flame'},
+ note:'a tall battered rim-slate boundary monolith marking the Marketplace\'s sworn zone of truce and hospitality: stepped drystone kerb, braided Ancient cable Peace Bands, lashed truce tablet (TRUCE / NO BLADE / GUEST), carved stone hospitality water-and-salt basin with hung tin dipper, weapon-binding rail, lantern-lobelia sanctuary cresset, and a warm peat brazier at gate posts',
+ build(o){const C=fgCx(o),col=fgCol('stone',C),sc=fgCol('stoneD',C),ic=P('iron'),tc=fgCol('tin',C),pc=fgCol('pole',C);
+  const gate=(C.v|0)%2===0,words=['TRUCE','PEACE','NO BLADE','GUEST'][(C.v|0)%4];
+  /* stepped circular drystone sanctuary plinth reaching C.lo, rimmed with wedged kerb cobbles */
+  cyl('stone',0,Math.min(0,C.lo+.2),0,1.02,.28-Math.min(0,C.lo+.2),col,12);
+  sector('stoneD',0,0,.74,1.04,0,TAU,.24,.5,sc,12);
+  cyl('stone',0,.28,0,.76,.26,col,10);cyl('stoneD',0,.54,0,.58,.2,sc,10);
+  /* tall tapered monolith of dark rim slate, bound with braided cable and twin painted white/ochre Sanctuary Rings */
+  for(let k=0;k<4;k++){const t=k/4,w=.62-.12*t,d=.46-.08*t;box('stoneD',0,.72+k*.56,0,w,.58,d,P('slate'),(k%2?.02:-.02));}
+  box('stoneD',0,2.94,0,.56,.16,.44,sc);
+  for(const [y,c] of [[1.32,P('white')],[2.38,P('ochre')]]){box('paint',0,y,0,.61,.075,.45,c);ring('cable',0,y+.09,0,.38,.018,P('cable'),0,0,0,10);}
+  /* front (+z) lashed white Ancient-plate Truce Tablet and painted clan peace-ring */
+  const motto=words==='NO BLADE'?'HOLD':words;
+  W(0,1.62,.24,0,()=>{box('plate',0,0,0,.76,.56,.035,fgCol('plate',C));
+   fgText(words==='NO BLADE'?'NO WAR':words,0,.3,.02,0,.1,P('red'));
+   fgMark(C.v,0,.14,.02,0,.22,0xc8902e);
+   for(const sx of [-.32,.32])fgSpike([sx,.22,.02],[sx*.3,.2,1],.14);});
+  /* +x side: carved stone hospitality water/salt basin on a corbel bracket with a tin dipper hung on cord */
+  box('stone',.42,.88,0,.44,.22,.42,col);sector('stoneD',.48,0,.12,.22,0,TAU,1.08,1.22,sc,10);
+  cyl('plain',.48,1.14,0,.13,.03,hc(0x4c7484),8);
+  cord('cord',[[.32,1.52,.14],[.54,1.02,.18]],.009,P('rope'));cyl('tin',.54,.92,.18,.048,.1,tc,7);
+  /* -x side: iron peace-cord bar and hung coils for binding weapons at the Sanctuary line */
+  beam('iron',[-.28,1.42,-.14],[-.48,1.42,-.14],.022,ic,true,4);beam('iron',[-.28,1.42,.14],[-.48,1.42,.14],.022,ic,true,4);
+  pole('iron',[-.48,1.42,-.18],[-.48,1.42,.18],.02,ic,5);
+  for(const z of [-.08,.08])ring('rope',-.48,1.32,z,.11,.026,P('rope'),0,0,PI/2,8);
+  /* crown iron sanctuary cresset and salvage-plate hood holding glowing lantern lobelia */
+  pole('iron',[0,3.08,0],[0,3.36,0],.03,ic,5);
+  W(0,3.18,0,0,()=>{box('tin',0,0,0,.28,.22,.28,tc);fgSlab('plate',[-.24,.24,.24],[.24,.24,.24],[-.24,.24,-.24],.028,fgCol('plate',C));
+   sph('glow',0,.1,0,.055,hc(0x7ab4ff),1.4,6);haloAt(0,.12,0,0x7ab4ff,false);});
+  /* gate posts (even v) keep a low iron peat-fire hospitality brazier burning on the kerb */
+  if(gate&&!C.worn){cyl('iron',-.52,.52,.52,.22,.24,ic,8);
+   for(let k=0;k<3;k++){const a=k*TAU/3;pole('iron',[-.52+Math.cos(a)*.18,.26,.52+Math.sin(a)*.18],[-.52+Math.cos(a)*.15,.54,.52+Math.sin(a)*.15],.018,ic,4);}
+   ellip('glow',-.52,.76,.52,.15,.05,.14,hc(0xff6820),0,5);haloAt(-.52,.86,.52,0xff8a30,false);}
+  void pc;void motto;fgSet('trucePost',1);}});

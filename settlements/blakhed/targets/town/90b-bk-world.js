@@ -48,23 +48,52 @@ function bkPaint(P){const G=BK_GROUND,T=BK_TOWN,E=P.E;
  for(const f of BK_FIELDS){if(!P.inE(f.c[0],f.c[1],80))continue;const v=(bkHash(f.id)%15)-7;
   P.g.fillStyle=f.kind==='crop'?'rgb('+(132+v)+','+(126+v)+',86)':f.kind==='tilled'?'rgb('+(104+v)+','+(90+v)+','+(74+v)+')':f.kind==='fallow'?'rgb('+(116+v)+','+(115+v)+','+(94+v)+')':'rgb('+(110+v)+','+(122+v)+',86)';
   P.poly(P.g,f.poly);if(f.kind!=='meadow'){P.a.fillStyle=f.kind==='crop'?'rgb(0,200,0)':f.kind==='tilled'?'rgb(0,255,0)':'rgb(0,110,0)';P.poly(P.a,f.poly);}}
- // the town's blocks (garths: dirt and turf), the quarters' made ground, the Market's flags
- for(const b of T.BLOCKS){if(b.use==='market'){P.g.fillStyle=BK_COL.flag;P.poly(P.g,b.poly);P.a.fillStyle='rgb(255,0,0)';P.poly(P.a,b.poly);continue;}
-  P.g.fillStyle=b.use==='folds'||b.use==='yard'?BK_COL.yard:'#6a6656';P.poly(P.g,b.poly);
-  if(b.use==='folds'||b.use==='yard'){P.b.fillStyle='rgb(0,220,0)';P.poly(P.b,b.poly);}else{P.a.fillStyle='rgb(0,0,120)';P.poly(P.a,b.poly);}}
- for(const q of T.QUARTERS){const yard=q.id==='winterings'||q.id==='fairfell'||q.id==='tears';P.g.fillStyle=yard?BK_COL.yard:BK_COL.dirt;P.poly(P.g,q.poly);
+ // the town's blocks (garths: dirt and turf round the inner and middle rings; outer lobes feather organically from the plots),
+ // the Market's ceremonial flagstone sanctuary & border, Dalab's paved court, the Travellers' circular greens, and the Fair's oval meadow
+ for(const b of T.BLOCKS){if(b.use==='market'){
+   const Wm=T.frame.W,sPoly=[Wm(-40.6,-30.6),Wm(40.6,-30.6),Wm(40.6,30.6),Wm(-40.6,30.6)];
+   P.g.fillStyle='#787268';P.poly(P.g,sPoly);P.a.fillStyle='rgb(255,0,0)';P.poly(P.a,sPoly);
+   /* warm dressed-flagstone sanctuary inner court + central Peace Ring round (0, 0) + cardinal processional walks */
+   P.g.strokeStyle='#867e72';P.line(P.g,[Wm(-40.2,0),Wm(40.2,0)],7.6);P.line(P.g,[Wm(0,-30.2),Wm(0,30.2)],7.6);
+   P.g.fillStyle='#888072';P.disc(P.g,0,0,9.2);P.g.fillStyle='#6e675c';P.disc(P.g,0,0,6.6);
+   continue;}
+  if(b.use==='dalab'){P.g.fillStyle='#786d5c';P.poly(P.g,b.poly);P.a.fillStyle='rgb(190,0,150)';P.poly(P.a,b.poly);continue;}
+  if(b.j>=3&&b.use==='houses')continue;
+  P.g.fillStyle=b.use==='folds'||b.use==='yard'?BK_COL.yard:'#686554';P.poly(P.g,b.poly);
+  if(b.use==='folds'||b.use==='yard'){P.b.fillStyle='rgb(0,190,0)';P.poly(P.b,b.poly);}else{P.a.fillStyle=b.j<=1?'rgb(0,0,130)':'rgb(0,0,85)';P.poly(P.a,b.poly);}}
+ for(const q of T.QUARTERS){if(q.id==='dalab'||q.id==='winterings'||q.id==='fairfell')continue;
+  const yard=q.id==='tears';P.g.fillStyle=yard?BK_COL.yard:BK_COL.dirt;P.poly(P.g,q.poly);
   if(yard){P.b.fillStyle='rgb(0,170,0)';P.poly(P.b,q.poly);}else{P.a.fillStyle='rgb(0,0,200)';P.poly(P.a,q.poly);}}
- // the Fair's ring: beaten earth inside the rails
- {const F=T.FAIR,Q=[];for(let k=0;k<48;k++){const a=k/48*Math.PI*2;Q.push([F.c[0]+Math.cos(a)*F.rx,F.c[1]+Math.sin(a)*F.rz]);}P.g.fillStyle=BK_COL.dirt;P.poly(P.g,Q);P.a.fillStyle='rgb(0,0,255)';P.poly(P.a,Q);}
- // every building's apron (made ground round its plot), the villages' too
- const apron=(r,m)=>{const rw=bkD(r.w,10)+m,rd=bkD(r.d,10)+m;P.g.fillStyle=BK_COL.dirt;P.box(P.g,r.x,r.z,rw,rd,r.ry);P.a.fillStyle='rgb(0,0,160)';P.box(P.a,r.x,r.z,rw,rd,r.ry);};
+ if(BK_PLAN&&BK_PLAN.camps){
+  /* organic grassy halting greens round each Traveller family circle, worn circular wagon-wheel ruts, ash fire patches and pony paddocks */
+  for(const cp of BK_PLAN.camps){P.g.fillStyle=BK_COL.meadow;P.disc(P.g,cp.x,cp.z,cp.R+24);
+   if(cp.paddock)P.disc(P.g,cp.paddock.x,cp.paddock.z,16);}
+  for(const cp of BK_PLAN.camps){
+   const R0=cp.R+2.6,Q=[];for(let k=0;k<=28;k++){const a=k/28*Math.PI*2;Q.push([cp.x+Math.cos(a)*R0,cp.z+Math.sin(a)*R0]);}
+   P.g.strokeStyle=BK_COL.ruts;P.line(P.g,Q,6.5);P.b.strokeStyle='rgb(0,140,220)';P.line(P.b,Q,6.5);
+   P.g.fillStyle=BK_COL.dirt;P.disc(P.g,cp.x,cp.z,5.6);P.a.fillStyle='rgb(0,0,220)';P.disc(P.a,cp.x,cp.z,5.6);
+   const mth=[cp.x+cp.way[0]*(cp.R+9),cp.z+cp.way[1]*(cp.R+9)];P.g.strokeStyle=BK_COL.ruts;P.line(P.g,[[cp.x+cp.way[0]*4,cp.z+cp.way[1]*4],mth],4.5);P.b.strokeStyle='rgb(0,0,220)';P.line(P.b,[[cp.x+cp.way[0]*4,cp.z+cp.way[1]*4],mth],4.5);
+   if(cp.paddock){const pd=cp.paddock;P.g.fillStyle=BK_COL.yard;P.box(P.g,pd.x,pd.z,pd.w,pd.d,pd.ry);P.b.fillStyle='rgb(0,210,0)';P.box(P.b,pd.x,pd.z,pd.w,pd.d,pd.ry);}}}
+ // the Fair's ground: soft trodden oval apron round the beast ring, booths and pens (no hard rectangular box)
+ {const F=T.FAIR,Q=[],Q2=[];for(let k=0;k<48;k++){const a=k/48*Math.PI*2;Q.push([F.c[0]+Math.cos(a)*F.rx,F.c[1]+Math.sin(a)*F.rz]);
+   Q2.push([F.c[0]+10+Math.cos(a)*(F.rx+92),F.c[1]+18+Math.sin(a)*(F.rz+78)]);}
+  P.g.fillStyle=BK_COL.yard;P.poly(P.g,Q2);P.b.fillStyle='rgb(0,130,0)';P.poly(P.b,Q2);
+  P.g.fillStyle=BK_COL.dirt;P.poly(P.g,Q);P.a.fillStyle='rgb(0,0,255)';P.poly(P.a,Q);}
+ // every building's apron (made ground round its plot, plus a soft circular garth halo so outer houses feather organically into the fell)
+ const apron=(r,m)=>{const rw=bkD(r.w,10)+m,rd=bkD(r.d,10)+m;
+  if(r.quarter==='houses'){P.g.fillStyle='#686454';P.disc(P.g,r.x,r.z,Math.max(rw,rd)*.78+3);P.a.fillStyle='rgb(0,0,80)';P.disc(P.a,r.x,r.z,Math.max(rw,rd)*.72+2);}
+  P.g.fillStyle=BK_COL.dirt;P.box(P.g,r.x,r.z,rw,rd,r.ry);P.a.fillStyle='rgb(0,0,150)';P.box(P.a,r.x,r.z,rw,rd,r.ry);};
  if(BK_PLAN)for(const r of BK_PLAN.records)if(P.inE(r.x,r.z,40))apron(r,r.kind==='icehouse'?10:4);
  for(const V of BK_VILLAGES)for(const r of V.records||[])if(P.inE(r.x,r.z,40))apron(r,4);
  for(const t of BK_TOLL)if(P.inE(t.x,t.z,60)){const D=VERN.defs[t.key];if(D)apron({x:t.x,z:t.z,w:D.w,d:D.d,ry:t.ry},6);}
  // the villages' lanes
- for(const V of BK_VILLAGES)for(const l of V.lanes||[]){const pts=l.pts||l;if(!Array.isArray(pts)||pts.length<2||!Array.isArray(pts[0]))continue;P.g.strokeStyle=BK_COL.ruts;P.line(P.g,pts,3.5);P.b.strokeStyle='rgb(0,0,200)';P.line(P.b,pts,3.5);}
- // the roads and lanes at their widths, the stair
- for(const w of T.WAYS){const wd=T.WIDTH[w.cls]||5;P.g.strokeStyle=BK_COL.ruts;P.line(P.g,w.pts,wd);P.b.strokeStyle='rgb(0,0,255)';P.line(P.b,w.pts,wd);}
+ for(const V of BK_VILLAGES)for(const l of V.lanes||[]){const pts=l.pts||l;if(!Array.isArray(pts)||pts.length<2||!Array.isArray(pts[0]))continue;
+  P.g.strokeStyle=BK_COL.dirt;P.line(P.g,pts,5.2);P.a.strokeStyle='rgb(0,0,120)';P.line(P.a,pts,5.2);
+  P.g.strokeStyle=BK_COL.ruts;P.line(P.g,pts,3.4);P.b.strokeStyle='rgb(0,0,210)';P.line(P.b,pts,3.4);}
+ // the roads and lanes at their widths (soft dusty earth shoulder under an isotropic gravelly-earth beaten crown), the stair
+ for(const w of T.WAYS){const wd=T.WIDTH[w.cls]||5;
+  P.g.strokeStyle=BK_COL.dirt;P.line(P.g,w.pts,wd+2.6);P.a.strokeStyle='rgb(0,0,130)';P.line(P.a,w.pts,wd+2.6);
+  P.g.strokeStyle=BK_COL.ruts;P.line(P.g,w.pts,wd);P.b.strokeStyle='rgb(0,0,245)';P.line(P.b,w.pts,wd);}
  if(BK_RINGS){P.g.strokeStyle=BK_COL.ruts;P.line(P.g,BK_RINGS.stair.pts,BK_RINGS.stair.w+1);P.b.strokeStyle='rgb(0,0,255)';P.line(P.b,BK_RINGS.stair.pts,BK_RINGS.stair.w+1);}
  // the river's shingle banks, the leat's, the ponds' rims
  {const R=G.river.pts,Q=R.map(p=>[p.x,p.z]);P.g.strokeStyle=BK_COL.shingle;P.line(P.g,Q,R[0].w+10);P.c.strokeStyle='rgb(255,0,0)';P.line(P.c,Q,R[0].w+10);}
@@ -86,9 +115,10 @@ function bkGroundMat(P,key){const T=c=>{const t=new THREE.CanvasTexture(c);t.enc
     'vec3 bc=sRGBToLinear(texture2D(tTurf,bw*kA.x)).rgb;bc=mix(bc,sRGBToLinear(texture2D(tPeat,bw*kB.x)).rgb,mB.r);',
     'bc=mix(bc,sRGBToLinear(texture2D(tTill,bw*kA.w)).rgb,mA.g);bc=mix(bc,sRGBToLinear(texture2D(tDirt,bw*kA.y)).rgb,mA.b);',
     'bc=mix(bc,sRGBToLinear(texture2D(tYard,bw*kB.y)).rgb,mB.g);bc=mix(bc,sRGBToLinear(texture2D(tShin,bw*kB.w)).rgb,mC.r);',
-    'bc=mix(bc,sRGBToLinear(texture2D(tRuts,bw*kB.z)).rgb,mB.b);bc=mix(bc,sRGBToLinear(texture2D(tFlag,bw*kA.z)).rgb,mA.r);',
+    'vec3 bkRd=mix(sRGBToLinear(texture2D(tRuts,bw*kB.z)).rgb,sRGBToLinear(texture2D(tRuts,mat2(0.8,-0.6,0.6,0.8)*bw*(kB.z*0.41)+vec2(0.37,0.71))).rgb,0.45);',
+    'bc=mix(bc,bkRd,mB.b);bc=mix(bc,sRGBToLinear(texture2D(tFlag,bw*kA.z)).rgb,mA.r);',
     'diffuseColor.rgb*=bc*bkT.rgb*4.6;','#endif'].join('\n'));};
- mat.polygonOffset=true;mat.polygonOffsetFactor=key==='country'?-1:-2;mat.polygonOffsetUnits=key==='country'?-2:-4;
+ if(key==='country'){mat.polygonOffset=true;mat.polygonOffsetFactor=1;mat.polygonOffsetUnits=2;}
  mat.customProgramCacheKey=()=>'blakhed-ground-'+key;return mat;}
 // ---------------------------------------------------------------- the meshes: a plane of the extent's cells, its heights the ground's, sunk
 // `sink` m where a finer extent lies over it (a full cell inside), registered with core/drawn
@@ -96,7 +126,10 @@ const bkIn=(E,x,z,m)=>x>E.x0+m&&x<E.x1-m&&z>E.z0+m&&z<E.z1-m;
 function bkGroundMesh(E,name,mat,over,sink,colour){const nx=Math.round((E.x1-E.x0)/E.cell),nz=Math.round((E.z1-E.z0)/E.cell),W=E.x1-E.x0,Hh=E.z1-E.z0;
  const geo=new THREE.PlaneGeometry(W,Hh,nx,nz),p=geo.attributes.position,uv=geo.attributes.uv,cx=(E.x0+E.x1)/2,cz=(E.z0+E.z1)/2,hs=new Float32Array(p.count);
  const col=colour?new Float32Array(p.count*3):null;
- for(let i=0;i<p.count;i++){const x=p.getX(i)+cx,z=-p.getY(i)+cz;let y=terrainH(x,z);if(over&&over.some(O=>bkIn(O,x,z,E.cell)))y-=sink;p.setZ(i,y);hs[i]=y;
+ for(let i=0;i<p.count;i++){const x=p.getX(i)+cx,z=-p.getY(i)+cz;let y=terrainH(x,z);
+  /* on coarse country/far meshes (>= 25 m cells), keep straddling cells down at the riverbed so triangles never bridge dry over the water */
+  if(E.cell>=25){const rn=BK_GROUND.river.near(x,z);if(rn&&rn.d<E.cell*.9+rn.w*.5)y=Math.min(y,rn.bed);}
+  if(over&&over.some(O=>bkIn(O,x,z,E.cell)))y-=sink;p.setZ(i,y);hs[i]=y;
   uv.setXY(i,(x-E.x0)/W,1-(z-E.z0)/Hh);if(col){const c=colour(x,z,y);col[i*3]=c[0];col[i*3+1]=c[1];col[i*3+2]=c[2];}}
  if(col)geo.setAttribute('color',new THREE.BufferAttribute(col,3));
  geo.computeVertexNormals();const m=new THREE.Mesh(geo,mat);m.rotation.x=-Math.PI/2;m.position.set(cx,0,cz);m.receiveShadow=true;
@@ -126,16 +159,17 @@ ATMOS.init({THREE,scene,camera,hour:()=>BK_SKY.hour,onFrame:fn=>FRAME_HOOKS.push
  err:m=>console.warn(m),viewH:()=>innerHeight,pixelRatio:()=>renderer.getPixelRatio()});
 const bkLinC=c=>new THREE.Color(c).convertSRGBToLinear();
 const BKWATER=(function(){const out={flows:[],stills:[]};
- /* the Blak Riba: every 4th point of the line (100 m), its surface, its width; white where it falls (the falls: 12 % and more) */
- try{const R=BK_GROUND.river.pts,P=[],Wd=[];for(let i=0;i<R.length;i+=4){P.push([R[i].x,R[i].z,R[i].surf]);Wd.push(R[i].w);}
-  const L=R[R.length-1];if(P[P.length-1][0]!==L.x){P.push([L.x,L.z,L.surf]);Wd.push(L.w);}
-  const S=WATER.flow({name:'The Blak Riba',pts:P,width:Wd,speed:2.2,rapids:[.02,.1],densify:40});
-  const D=WATER.drawFlow(S,{shallow:bkLinC(0x6a7a72),deep:bkLinC(0x2e4448),color:0xffffff,roughness:.14,metalness:.05,envMapIntensity:.45,step:20,across:6,margin:4,renderOrder:2});
+ /* the Blak Riba: every 25 m Catmull-Rom point of the line so bends and bed knees never clip into the banks; white where it falls */
+ try{const R=BK_GROUND.river.pts,P=[],Wd=[];for(let i=0;i<R.length;i++){P.push([R[i].x,R[i].z,R[i].surf]);Wd.push(R[i].w+6);}
+  const S=WATER.flow({name:'The Blak Riba',pts:P,width:Wd,speed:2.2,rapids:[.02,.1],densify:25});
+  const D=WATER.drawFlow(S,{shallow:bkLinC(0x6a7a72),deep:bkLinC(0x2e4448),color:0xffffff,roughness:.14,metalness:.05,envMapIntensity:.45,step:16,across:6,margin:4,renderOrder:2});
+  if(D.mesh.material){D.mesh.material.polygonOffset=true;D.mesh.material.polygonOffsetFactor=-1;D.mesh.material.polygonOffsetUnits=-2;}
   D.mesh.userData.inspectLabel='The Blak Riba (r116: ~31 m3/s past the town, 40 at the falls; the falls 3,070 m to 1,230 m)';D.mesh.userData.probeSkip=true;out.flows.push({S,D,n:P.length});}
  catch(e){reportErr('the Blak Riba: '+(e&&e.stack||e));}
  /* the leat to the ice ponds */
- try{const S=WATER.flow({name:'The Icegarth\'s leat',pts:BK_GROUND.leat.map(p=>[p[0],p[1],p[2]+.35]),width:1.8,speed:.6});
-  const D=WATER.drawFlow(S,{shallow:bkLinC(0x6a7a6e),deep:bkLinC(0x3a4a46),color:0xffffff,roughness:.12,metalness:.05,envMapIntensity:.45,step:4,across:2,margin:.1});
+ try{const S=WATER.flow({name:'The Icegarth\'s leat',pts:BK_GROUND.leat.map(p=>[p[0],p[1],p[2]+.4]),width:2.0,speed:.6});
+  const D=WATER.drawFlow(S,{shallow:bkLinC(0x6a7a6e),deep:bkLinC(0x3a4a46),color:0xffffff,roughness:.12,metalness:.05,envMapIntensity:.45,step:4,across:2,margin:.2});
+  if(D.mesh.material){D.mesh.material.polygonOffset=true;D.mesh.material.polygonOffsetFactor=-1;D.mesh.material.polygonOffsetUnits=-2;}
   D.mesh.userData.inspectLabel=S.name;D.mesh.userData.probeSkip=true;out.flows.push({S,D,n:BK_GROUND.leat.length});}
  catch(e){reportErr('the leat: '+(e&&e.stack||e));}
  /* the ice ponds: still water, one mesh */

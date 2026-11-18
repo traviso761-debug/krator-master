@@ -1,6 +1,6 @@
 {
  "build": "blakhed",
- "note": "Blakhed's ground (settlements/blakhed/targets/town/90b-bk-world.js samples their maps in world metres, blended by a zone mask painted from the town's records; no kit piece draws them). The buildings are the Tungang kit's Fellgang set on its own pack (beside the page). Reused sets, none new: bkTurf (ground.turf.native, the bench's Dsb meadow), bkDirt (ground.dirt, the garths and made ground), bkFlag (paving.flagstone, the Market and the Icegarth's aprons), bkTilled (ground.tilled, the in-field), bkPeat (ground.peat.black, the moor and the peat banks), bkYard (ground.stable.yard, the folds, the fair pens and the Winterings), bkRuts (ground.road.ruts, the roads and lanes), bkShingle (ground.shingle, the river's banks and bars); keep 1: the sets' own colours.",
+ "note": "Blakhed's ground (settlements/blakhed/targets/town/90b-bk-world.js samples their maps in world metres, blended by a zone mask painted from the town's records; no kit piece draws them). The buildings are the Tungang kit's Fellgang set on its own pack (beside the page). Reused sets, none new: bkTurf (ground.turf.native, the bench's Dsb meadow), bkDirt (ground.dirt, the garths and made ground), bkFlag (paving.flagstone, the Market and the Icegarth's aprons), bkTilled (ground.tilled, the in-field), bkPeat (ground.peat.black, the moor and the peat banks), bkYard (ground.stable.yard, the folds, the fair pens and the Winterings), bkRuts (ground.gravelly_sand, isotropic compacted gravelly earth for the roads and lanes), bkShingle (ground.shingle, the river's banks and bars); keep 1: the sets' own colours.",
  "size": 512,
  "families": {
   "bkTurf": {"lib": "ground.turf.native", "scale": [3, 3], "tint": {"keep": 1, "mean": 0.5}, "metal": 0, "roughLift": 0.1},
@@ -9,7 +9,7 @@
   "bkTilled": {"lib": "ground.tilled", "scale": [4, 4], "tint": {"keep": 1, "mean": 0.5}, "metal": 0, "roughLift": 0.1},
   "bkPeat": {"lib": "ground.peat.black", "scale": [4, 4], "tint": {"keep": 1, "mean": 0.5}, "metal": 0, "roughLift": 0.1},
   "bkYard": {"lib": "ground.stable.yard", "scale": [3, 3], "tint": {"keep": 1, "mean": 0.5}, "metal": 0, "roughLift": 0.1},
-  "bkRuts": {"lib": "ground.road.ruts", "scale": [4, 4], "tint": {"keep": 1, "mean": 0.5}, "metal": 0, "roughLift": 0.1},
+  "bkRuts": {"lib": "ground.gravelly_sand", "scale": [3.5, 3.5], "tint": {"keep": 1, "mean": 0.5}, "metal": 0, "roughLift": 0.1},
   "bkShingle": {"lib": "ground.shingle", "scale": [3, 3], "tint": {"keep": 1, "mean": 0.5}, "metal": 0, "roughLift": 0.1}
  }
 }

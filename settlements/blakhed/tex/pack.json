@@ -99,26 +99,26 @@
     "normalMap": "bkRuts.normal.webp",
     "roughnessMap": "bkRuts.rough.webp"
    },
-   "lib": "ground.road.ruts",
+   "lib": "ground.gravelly_sand",
    "metal": 0,
    "normalScale": 1.0,
    "roughLift": 0.1,
    "scale": [
-    4,
-    4
+    3.5,
+    3.5
    ],
    "size": 512,
    "source": {
-    "albedo": "c04cb5a199bf17b59104765d263114e0623422fc",
-    "normal": "bb2cc30f8173168830ac088e598ca20a1a9eaa6f",
-    "roughness": "ea1c9c0d8139d0c61bbfe2294864d99fd191acf8"
+    "albedo": "95a9809cda5b4f21c1e0f807e09daf9ebf26c643",
+    "normal": "69cbcac85ee346d080e0e750fcadc1be8f50c6c9",
+    "roughness": "8666f3c3af4145b2e3fae6ab68b844e1c2900321"
    },
    "specular": 0.5,
    "tint": {
     "contrast": 1.0,
     "keep": 1.0,
     "mean": 0.5,
-    "sourceMean": 0.437
+    "sourceMean": 0.453
    }
   },
   "bkShingle": {

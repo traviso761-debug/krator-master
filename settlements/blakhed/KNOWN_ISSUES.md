@@ -18,12 +18,9 @@ Steps **B1-B5** and **B6 (interiors)** of `PLAN.md` (2026-11-16). What is done a
 
 ## `core/hamlet` and `core/camp`
 
-- **The Fellgang row's works (`BK_ROW`):** `core/hamlet/fellgang/22-hamlet-fellgang.js` defines works for `fowling` and `ice`
-  only. `src/69bo-bk-ring.js` extends the row locally (`farming`, `ranch`, `quarry` and `stair`) and passes the extended row
-  object to `KHAMLET.village`, as Kirstabal does, so no other build moves. Moving those foci into `22-hamlet-fellgang.js`
-  rides along with the next all-builds rebuild.
-- **The Winterings (`core/camp`):** `core/camp` has no `traveller` or `fellgang` row yet (`core/camp/PLAN.md`). The Travellers'
-  winter quarter places `fg-wagon` and `fg-halt` records in family rows (`src/69bn-bk-town.js`) drawn through `TG.fg.pieces`.
+- **The Fellgang row's works (`core/hamlet/fellgang/22-hamlet-fellgang.js`):** defines `fowling` and `ice` (preserving riftrim stations 8 & 9 bit-for-bit) alongside `farming`, `ranch`, `quarry`, `stair`, `copper`, `gold` and `pass`. `src/69bo-bk-ring.js` adds `fg-dugout-icehouse` to Blakhed's `ice` focus only so station 9's digest never moves.
+- **The Winterings (`core/camp/fellgang/52-camp-fellgang.js`):** shared opt-in `traveller`, `traveller-kradz` and `fellgang-band` rows on `core/camp` (`KCAMP.census`, `KCAMP.pitch`, `KCAMP.outlawCamp`). Blakhed pitches seven extended-family circles and horseshoes of `fg-wagon` vardos, `fg-bender` bender tents, `fg-camp-hearth` tripod campfires, `fg-tinsmith` pitches/clotheslines and hurdle pony paddocks.
+- **Dalab's mission and toll post (`settlements/dalab/src`):** Dalab's 13-building mission near the Market centre (~134 people) and four-piece toll post at the Stairhead draw on dressed-stone podiums (`KWALK` aprons and entry steps), while `kits/interiors` has no `dalab` set yet, so the Dalab buildings themselves stay solid.
 
 ## The scale model and the open world (step B0)
 
@@ -36,18 +33,14 @@ Steps **B1-B5** and **B6 (interiors)** of `PLAN.md` (2026-11-16). What is done a
   downstream vs moving the town, the stair's beast-path + hoist form, the Chimes Riba crossing to the north rim (off the page),
   naming the rim's herd beasts (pens and folds are drawn empty), and whether a Giant guard stands at Dalab's toll post.
 
-## The economy (`sim/wr-blakhed.js`, step B5)
+## The economy & regional politics (`core/region/data/wr-tune.js` + `sim/wr-blakhed.js`)
 
-- `sim/wr-blakhed.js` runs Blakhed, the Stairhead, Dalab's toll post, the Golden Tears' mission, the twelve hamlets and the
-  four West Rift partner stops (Nulab, the drovers' salt, the Ice-cutters, the Fowlers) for a full year on
-  `core/region/50-region-valley.js`, and provides `WR_BLAKHED.join` to replace `gate.dalab.blakhed` and `gate.dalab.nulab` in
-  `XAN_TUNE`'s Annual Great Caravan without altering `core/region/data/xan-tune.js` (keeping `test-xan-economy.js` and
-  `test-east-rift.js` byte-identical until the full West Rift `WR_TUNE` lands in W1-W4).
+- `core/region/data/wr-tune.js` (`WR_TUNE`) wires all **12,250 Fellgangs** across 25 settlements, seasonal mining camps and mobile clans (`wr.blakhed`, `wr.stairhead`, 12 `bk.h.*` hamlets, `wr.fells`, `wr.fowlers`, `wr.icecutters`, `wr.drovers`, `wr.passkeepers`, `wr.coppersmiths`, `wr.goldcamp`, `wr.wildcat`, `wr.barricade`, `wr.travellers`, `wr.kradz`) alongside 12 West Rift neighbours (`wr.nulab`, `wr.basin`, `dalab.ledge`, `dalab.skarn`, `dalab.shelf`, `dalab.blakhed`, `tg.fower`, `tg.twenny`, `tg.hearth`, `tg.saltpeter`, `tears.blakhed`, `gate.kimr`), Wildcat's zero-sum road raids (`Rd.raids` in `50-region-valley.js`) and Autumn Fair truce window, the W5 Tungang Union strike proof, Rising 8 (`wr.rising.nulab`), and the W3 Great Caravan join (`node core/region/tests/test-wr-fellgangs.js`, `node settlements/blakhed/test-bk-economy.js`).
 
-## Still owed (remaining B6 items, out of scope of interiors-only pass)
+## Presented citizens (`src/78-bk-sim.js` + `targets/town/90e-bk-life.js`) & remaining items
 
-- [ ] **People and schedules (`core/simulation`, `core/charactermodels`):** citizen actors, Fair and Great Caravan crowds, and
-      herd beasts (Fellgang outfits are owed by the outfit sessions).
-- [ ] **Dalab interior set:** `kits/interiors` has no `dalab` set yet, so Dalab's four Stairhead toll-post buildings stay solid.
+- **Done (`B6` simulation):** 311 live citizens and pack-sledges on `core/simulation` (`SIM.pose`, `77-sim-6-needs.js`, `77-sim-6-govern.js` dugout/barrow ice-keeping, weekly Double Meeting in `fg-doublehall`, and Market Truce enforcement inside the 16 `fg-truce-post` stones), rendered in six multi-part instanced cultural silhouettes (`fellgang`, `traveller`, `kradz`, `wildcat`, `mission`, `sledge`).
+- [ ] **MPFB garment meshes (`core/charactermodels`):** Blender + MPFB2 fitted GLB garments for Fellgangs, Travellers and Wildcat when the character-kit session runs.
+- [ ] **Dalab interior set:** `kits/interiors` has no `dalab` set yet, so Dalab's mission and Stairhead toll-post buildings stay solid.
 - [ ] **Winter state, hazards and export:** snow / pond-cutting state on `core/clock`, `core/hazard` zones on the river and
       gorge stair, and the Godot export (`core/export`).

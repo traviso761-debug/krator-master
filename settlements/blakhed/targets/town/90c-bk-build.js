@@ -60,7 +60,7 @@ function bkSeatXa(p){const D=VERN.defs[p.key]||{w:10,d:10},w=bkD(D.fw,D.w)+.3,d=
  return{D,y:hi,lo,w:bkD(D.w,10),d:bkD(D.d,10),fw:bkD(D.fw,bkD(D.w,10)),fd:bkD(D.fd,bkD(D.d,10))};}
 function bkPodiumXa(p,S){const ry=bkD(p.ry,0),f=[Math.sin(ry),Math.cos(ry)],u=[Math.cos(ry),-Math.sin(ry)];
  if(S.y-S.lo>.2){TSTAT.cur='bk_podium/0';vB('vStone',p.x,S.lo-.4,p.z,S.w+.3,S.y-S.lo+.4,S.d+.3,ry,bkStone);vB('vStone',p.x,S.y-.24,p.z,S.w+.5,.24,S.d+.5,ry,xC(0x948e82));}
- if(typeof KWALK!=='undefined'&&p.set==='xa'){
+ if(typeof KWALK!=='undefined'&&(p.set==='xa'||p.set==='dalab')){
   const fw=S.w+.3,Q=[[-fw/2,-S.d/2-.15],[fw/2,-S.d/2-.15],[fw/2,S.d/2+.3],[-fw/2,S.d/2+.3]].map(([sx,tz])=>[p.x+u[0]*sx+f[0]*tz,p.z+u[1]*sx+f[1]*tz,S.y]);
   KWALK.poly({pts:Q,name:p.id+'.apron',tag:'blakhed:podium:'+p.id});
   if(p.key==='xa_serai'){const cw=19.8,CQ=[[-cw,-cw],[cw,-cw],[cw,cw],[-cw,cw]].map(([sx,tz])=>[p.x+u[0]*sx+f[0]*tz,p.z+u[1]*sx+f[1]*tz,S.y+.35]);
@@ -71,29 +71,76 @@ function bkPodiumXa(p,S){const ry=bkD(p.ry,0),f=[Math.sin(ry),Math.cos(ry)],u=[M
    for(let i=0;i<n;i++){const t=(i+.5)/n,cx=fx0+(fx1-fx0)*t,cz=fz0+(fz1-fz0)*t,top=y0+(S.y-y0)*(i+1)/n,gb=Math.min(terrainH(cx,cz),y0+(S.y-y0)*i/n)-.35;
     if(top>gb+.04)vB('vStone',cx,gb,cz,2.4,top-gb,go+.03,ry,bkStone);}
    KWALK.strip({a:[fx0,fz0,y0],b:[fx1,fz1,S.y],w:2.4,name:p.id+'.steps',tag:'blakhed:steps:'+p.id});
-   const st={id:p.id,key:p.key,n,x0:fx0,z0:fz0,y0,x1:fx1,z1:fz1,y1:S.y};p.stair=st;BK_XA_STAIRS.push(st);}}}
+   const st={id:p.id,key:p.key,n,x0:fx0,z0:fz0,y0,x1:fx1,z1:fz1,y1:S.y};p.stair=st;if(p.set==='xa')BK_XA_STAIRS.push(st);}}}
 function bkBake(name,list,extra,range,ixOn){const G=new THREE.Group();G.name='chunk:'+name;scene.add(G);
  if(typeof XAF!=='undefined'){XAF.interiors=!!ixOn;VERN.interiors=!!ixOn;}
  for(const p of list){const S=bkSeatXa(p);bkPodiumXa(p,S);
   TSTAT.cur=p.key+'/0';const r0=REG.length,o={v:0,y:S.y};const g=VERN.place(G,p.key,p.x,p.z,bkD(p.ry,0),o);
   if(g){p.G=g;p.floorY=S.y;p.ix=!!(ixOn&&g.userData&&g.userData.interior);}
-  for(let i=r0;i<REG.length;i++){REG[i].type=p.key;if(p.name&&i===r0)REG[i].name=p.name;}}
+  for(let i=r0;i<REG.length;i++){REG[i].type=p.key;if(p.name&&i===r0)REG[i].name=p.name;
+   /* keep only the compound's primary temple/caravanserai as a permanent skyline landmark label; sibling buildings fade past 320 m */
+   if(REG[i].tags&&p.key!=='dalab_temple'&&p.key!=='xa_serai'){REG[i].tags=Object.assign({},REG[i].tags);delete REG[i].tags.role;delete REG[i].tags.landmark;}}}
  if(extra)extra();TSTAT.cur=null;kbake(G);if(typeof xaDoorsBind==='function')xaDoorsBind();BK_INST+=bkD(window._instances,0);for(const n in KIT.items)KIT.items[n].length=0;
  const pts=list.length?list:[{x:extra&&extra.at?extra.at[0]:0,z:extra&&extra.at?extra.at[1]:0}];
  BK_GROUPS.push({G,sphere:bkSphere(pts,90),range:bkD(range,3000),name,n:list.length});BK_VGROUPS.push(G);return G;}
 function bkRails(P,step,h,closed){const Q=closed?P.concat([P[0]]):P;for(let i=0;i+1<Q.length;i++){const a=Q[i],b=Q[i+1],L=Math.hypot(b[0]-a[0],b[1]-a[1]),n=Math.max(1,Math.round(L/step)),ry=Math.atan2(b[0]-a[0],b[1]-a[1])+Math.PI/2;
   for(let k=0;k<n;k++){const t=(k+.5)/n,x=a[0]+(b[0]-a[0])*t,z=a[1]+(b[1]-a[1])*t,y=terrainH(x,z);vB('vWood',x,y-.3,z,.16,h+.3,.16,0,bkWood);
    for(const hh of[h*.45,h*.9])vB('vWood',x,y+hh,z,L/n+.1,.09,.07,ry,bkWood);}}}
-const BK_PAGE={steps:0,wall:0};
+const BK_PAGE={steps:0,wall:0,dalabWall:0,truceKerb:0};
 // the Golden Tears' compound: its Xanadu pieces (with hollow interiors when BK_IX_ON) and its rammed-earth wall with east gate
 const BK_TEARS_LIST=BK_PLAN?BK_PLAN.records.filter(r=>r.quarter==='tears'):[];
+const BK_DALAB_LIST=BK_PLAN?BK_PLAN.records.filter(r=>r.quarter==='dalab'):[];
 if(BK_PLAN){const T=BK_TOWN.TEARS;
  bkBake('the Golden Tears',BK_TEARS_LIST,()=>{TSTAT.cur='bk_tears_wall/0';const cs=Math.cos(T.ry),sn=Math.sin(T.ry),at=(lx,lz)=>[T.c[0]+lx*cs+lz*sn,T.c[1]-lx*sn+lz*cs],hw=T.w/2-4,hd=T.d/2-4;
   const C=[at(-hw,-hd),at(hw,-hd),at(hw,hd),at(-hw,hd)];
   for(let i=0;i<4;i++){const a=C[i],b=C[(i+1)%4],L=Math.hypot(b[0]-a[0],b[1]-a[1]),ry=Math.atan2(b[0]-a[0],b[1]-a[1])+Math.PI/2,n=Math.ceil(L/8);
    for(let k=0;k<n;k++){const t=(k+.5)/n;if(i===1&&Math.abs(t-.5)<.06)continue;
     const x=a[0]+(b[0]-a[0])*t,z=a[1]+(b[1]-a[1])*t;vB('xEarthB',x,terrainH(x,z)-.4,z,L/n+.05,3.6,.7,ry,xC(0xb8a27e));BK_PAGE.wall++;}}
-  REG.push({name:'The Golden Tears\' compound wall (rammed earth: page geometry)',key:'bk_tears_wall',type:'bk_tears_wall',cls:'building',x:T.c[0],y:terrainH(T.c[0],T.c[1]),z:T.c[1],r:T.w/2,h:3.6});},3200,BK_IX_ON);}
+  REG.push({name:'The Golden Tears',key:'bk_tears_wall',type:'bk_tears_wall',cls:'building',x:T.c[0],y:terrainH(T.c[0],T.c[1]),z:T.c[1],r:T.w/2,h:8,tags:{landmark:true}});},3200,BK_IX_ON);
+ /* Dalab's mission near the centre of town (~134 people): its 13 Dalab pieces and a low rammed-earth compound wall with relief gate piers */
+ const D=BK_TOWN.DALAB;
+ bkBake('the Dalab mission',BK_DALAB_LIST,()=>{TSTAT.cur='bk_dalab_wall/0';const Q=D.poly,ec=dCol(DPAL.earth),ed=dCol(DPAL.earthDark),sc=dCol(DPAL.stone);
+  for(let i=0;i<Q.length;i++){const a=Q[i],b=Q[(i+1)%Q.length],dx=b[0]-a[0],dz=b[1]-a[1],L=Math.hypot(dx,dz),ry=Math.atan2(dx,dz)+Math.PI/2,n=Math.max(3,Math.ceil(L/7.5));
+   const hasGate=i===3||i===2;
+   for(let k=0;k<n;k++){const t=(k+.5)/n,x=a[0]+dx*t,z=a[1]+dz*t,y=terrainH(x,z);
+    if(hasGate&&Math.abs(t-.5)<.11){if(Math.abs(Math.abs(t-.5)-.08)<.04){vB('vStone',x,y-.35,z,1.5,3.4,1.3,ry,sc);dnReliefBand(x,y+.5,z,ry,1.1,2.2,sc);dnBannerPole(x,y,z,ry,5.8,dCol(i===3?DPAL.red:DPAL.turq));}continue;}
+    vB('dEarth',x,y-.35,z,L/n+.06,2.4,.75,ry,ec);vB('dEarth',x,y+1.98,z,L/n+.1,.22,.88,ry,ed);BK_PAGE.dalabWall++;}}
+  REG.push({name:'The Dalab mission compound wall (rammed earth and relief gate piers: page geometry)',key:'bk_dalab_wall',type:'bk_dalab_wall',cls:'building',x:D.c[0],y:terrainH(D.c[0],D.c[1]),z:D.c[1],r:64,h:3.4});},3200,false);
+ /* The Market Sanctuary Perimeter & Peace Ring: low dressed-stone boundary kerb linking the 16 fg-truce-post monoliths, dark-slate
+    Truce Threshold lintels across all four road gates, and the central circular Peace Ring with council benches & Truce Bell frame */
+ {const Wm=BK_TOWN.frame.W,U=BK_TOWN.frame.U,N=BK_TOWN.frame.N,yawU=Math.atan2(U[0],U[1]),yawN=Math.atan2(N[0],N[1]);
+  const cDark=xC(0x46484c),cCap=xC(0x948e82),cIron=xC(0x363432);
+  const mkTruce=()=>{TSTAT.cur='bk_market_truce/0';
+   const corners=[[-40.2,-30.2],[40.2,-30.2],[40.2,30.2],[-40.2,30.2]];
+   for(let s=0;s<4;s++){const c0=corners[s],c1=corners[(s+1)%4],a=Wm(c0[0],c0[1]),b=Wm(c1[0],c1[1]);
+    const dx=b[0]-a[0],dz=b[1]-a[1],L=Math.hypot(dx,dz),ry=Math.atan2(dx,dz)+Math.PI/2,n=Math.ceil(L/3.2);
+    for(let k=0;k<n;k++){const t=(k+.5)/n,mu=c0[0]+(c1[0]-c0[0])*t,mv=c0[1]+(c1[1]-c0[1])*t;
+     /* leave the 10.8 m Sanctuary Gate mouths open, and pave them with flush dark-slate Truce Threshold sills */
+     if((s%2===0&&Math.abs(mu)<5.8)||(s%2===1&&Math.abs(mv)<5.8))continue;
+     if(Math.hypot(Math.abs(mu)-40.2,Math.abs(mv)-30.2)<1.4||((s%2===0)&&(Math.abs(Math.abs(mu)-22.5)<1.3)))continue;
+     const x=a[0]+dx*t,z=a[1]+dz*t,y=terrainH(x,z);
+     vB('vStone',x,y-.28,z,L/n+.05,.62,.62,ry,bkStone);vB('vStone',x,y+.34,z,L/n+.08,.1,.74,ry,cCap);BK_PAGE.truceKerb++;}}
+   /* flush dark-slate Truce Threshold sills across all four cardinal Sanctuary Gateways */
+   for(const [gu,gv,ry] of [[-40.2,0,yawU],[40.2,0,yawU],[0,-30.2,yawN],[0,30.2,yawN]]){
+    const p=Wm(gu,gv),y=terrainH(p[0],p[1]);vB('vStone',p[0],y-.18,p[1],9.2,.25,1.55,ry+Math.PI/2,cDark);
+    vB('vStone',p[0],y+.07,p[1],8.8,.03,.28,ry+Math.PI/2,cCap);}
+   /* Central Peace Sanctuary Ring (r = 7.4 m) with four cardinal passages, curved stone-and-plank guest benches, and Truce Bell frame */
+   const nr=36,R=7.4;for(let k=0;k<nr;k++){const ang=(k+.5)/nr*Math.PI*2,cu=Math.cos(ang),sv=Math.sin(ang);
+    if(Math.abs(cu)<.22||Math.abs(sv)<.22)continue;
+    const p=Wm(cu*R,sv*R),p2=Wm(Math.cos(ang+.08)*R,Math.sin(ang+.08)*R),ry=Math.atan2(p2[0]-p[0],p2[1]-p[1])+Math.PI/2,y=terrainH(p[0],p[1]);
+    vB('vStone',p[0],y-.25,p[1],1.28,.72,.58,ry,bkStone);vB('vStone',p[0],y+.47,p[1],1.34,.09,.68,ry,cCap);
+    if(k%2===0){const bp=Wm(cu*(R-1.05),sv*(R-1.05)),by=terrainH(bp[0],bp[1]);
+     vB('vStone',bp[0],by-.2,bp[1],1.05,.56,.44,ry,cDark);vB('vWood',bp[0],by+.36,bp[1],1.18,.07,.5,ry,bkWood);}
+    BK_PAGE.truceKerb++;}
+   /* Truce Bell & Oath-Frame on the west side of the Peace Ring: twin fir posts, carved lintel and hung bronze/iron truce bell */
+   const bf=Wm(-4.4,-2.6),by=terrainH(bf[0],bf[1]);
+   vB('vStone',bf[0],by-.25,bf[1],2.1,.52,1.25,yawN,bkStone);
+   for(const s of[-.76,.76]){const pp=Wm(-4.4+s,-2.6);vPst('vPost',pp[0],by+.26,pp[1],.1,2.85,bkWood);}
+   vB('vWood',bf[0],by+2.95,bf[1],2.1,.16,.2,yawN,bkWood);vB('vWood',bf[0],by+3.11,bf[1],2.35,.1,.32,yawN,cCap);
+   vPst('vIron',bf[0],by+2.25,bf[1],.28,.48,xC(0xa67c38));vPst('vIron',bf[0],by+2.18,bf[1],.36,.12,xC(0xb88c42));
+   vPst('vIron',bf[0],by+2.72,bf[1],.04,.25,cIron);
+   REG.push({name:'The Market Truce Ring',key:'bk_market_truce',type:'bk_market_truce',cls:'building',x:0,y:terrainH(0,0),z:0,r:10,h:6,tags:{landmark:true}});};
+  mkTruce.at=[0,0];bkBake('the Market truce ring',[],mkTruce,2800,false);}}
 // Dalab's toll post at the Stairhead and the gorge stair's steps and rails (the hoists are TG.fg.pieces above)
 if(BK_RINGS){bkBake('Dalab\'s toll post and the stair',BK_TOLL,()=>{
   TSTAT.cur='bk_stair/0';const S=BK_RINGS.stair.pts;
@@ -101,9 +148,6 @@ if(BK_RINGS){bkBake('Dalab\'s toll post and the stair',BK_TOLL,()=>{
    for(let k=0;k<n;k++){const t=(k+.5)/n,x=a[0]+(b[0]-a[0])*t,z=a[1]+(b[1]-a[1])*t;vB('vStone',x,terrainH(x,z)-.35,z,BK_RINGS.stair.w,.5,1.2,ry,bkStone);BK_PAGE.steps++;}}
   bkRails(S.map(p=>[p[0]+1.6,p[1]]),4,1.1,false);
   REG.push({name:BK_RINGS.stair.name,key:'bk_stair',type:'bk_stair',cls:'infrastructure',x:S[0][0],y:S[0][2],z:S[0][1],r:30,h:2});},3600,false);}
-// the Winterings' communal fire ring
-{const c=BK_TOWN.WINTER.c;const fn=()=>{TSTAT.cur='bk_fire/0';for(let k=0;k<14;k++){const a=k/14*Math.PI*2;vB('vStone',c[0]+Math.cos(a)*3,terrainH(c[0],c[1])-.1,c[1]+Math.sin(a)*3,.7,.45,.5,a,bkStone);}
- REG.push({name:'The Travellers\' fire ring in the Winterings',key:'bk_fire_ring',type:'bk_fire_ring',cls:'landmark',x:c[0],y:terrainH(c[0],c[1]),z:c[1],r:4,h:.5});};fn.at=c;bkBake('the Winterings fire ring',[],fn,2600,false);}
 if(BK_IX_ON){
  if(typeof XAF!=='undefined'){XAF.interiors=true;VERN.interiors=true;}
  if(typeof xaIxWalk==='function'&&typeof XAF!=='undefined'&&XAF.interiors)xaIxWalk();
@@ -114,12 +158,12 @@ window.LOD_OPTIONS={classify:o=>o.userData&&o.userData.fgChunk?'fg':null,classes
 const bkFr=new THREE.Frustum(),bkPm=new THREE.Matrix4();
 FRAME_HOOKS.push(()=>{camera.updateMatrixWorld();bkPm.multiplyMatrices(camera.projectionMatrix,camera.matrixWorldInverse);bkFr.setFromProjectionMatrix(bkPm);const P=camera.position;let shown=0;
  for(const e of BK_GROUPS){const d=P.distanceTo(e.sphere.center)-e.sphere.radius;const v=d<e.range&&bkFr.intersectsSphere(e.sphere);e.G.visible=v;if(v)shown++;}window._chunksShown=shown;});
-LABELS=new THREE.Group();LABELS.userData.probeSkip=true;scene.add(LABELS);
 window._registered=REG.length;window._chunks=BK_GROUPS.length;window._buildMs=Math.round(performance.now()-BK_B0);
 window._bkInteriors={on:BK_IX_ON,fgFurn:BK_DRAW.furniture,fgDoors:BK_DRAW.doors,fgStairs:BK_DRAW.stairs.length,xaStairs:BK_XA_STAIRS.length,
  cutUnits:(typeof XA_CUT!=='undefined'?XA_CUT.length:0)+(typeof XAF!=='undefined'&&XAF.interiors&&typeof xafUnits==='function'?xafUnits(XAF,VERN.defs).length:0),
  xa:window._interiors||null,tearsIx:BK_TEARS_LIST.filter(p=>p.ix).length};
 window._blakhed=Object.assign(window._blakhedPlan||{},{drawn:BK_DRAW.recs,draws:BK_DRAW.draws,tris:BK_DRAW.tris,missing:BK_DRAW.missing,halls:BK_DRAW.halls,pieces:BK_DRAW.pieces||0,hoists:BK_DRAW.hoists,
  lights:BK_DRAW.lights.length,errors:BK_DRAW.errors.concat((TG.errors||[]).slice(0,5)),chunks:BK_GROUPS.length,page:BK_PAGE,interiors:window._bkInteriors,
- tears:BK_TEARS_LIST.map(r=>r.key),toll:BK_TOLL.map(t=>t.key),
+ dalab:BK_DALAB_LIST.map(r=>r.key),tears:BK_TEARS_LIST.map(r=>r.key),toll:BK_TOLL.map(t=>t.key),
+ ddims:BK_PLAN?Object.keys(BK_TOWN.DDIMS).map(k=>{const D=VERN.defs[k],X=BK_TOWN.DDIMS[k];return D?[k,Math.abs(D.w-X[0])<.01&&Math.abs(D.d-X[1])<.01]:[k,false];}):[],
  xdims:BK_PLAN?Object.keys(BK_TOWN.XDIMS).map(k=>{const D=VERN.defs[k],X=BK_TOWN.XDIMS[k];return D?[k,Math.abs(D.w-X[0])<.01&&Math.abs(D.d-X[1])<.01]:[k,false];}):[]});

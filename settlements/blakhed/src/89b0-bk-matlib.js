@@ -5,3 +5,5 @@
 // town's ground shader samples their maps in world metres (targets/town/90b-bk-world.js). ?mat=proc binds nothing.
 for(const k of['bkTurf','bkDirt','bkFlag','bkTilled','bkPeat','bkYard','bkRuts','bkShingle']){MAT[k]=new THREE.MeshStandardMaterial({map:MAT.stone.map,color:0xffffff,roughness:.95,metalness:0,side:DS});vWorldUV(MAT[k],1/3);}
 const BK_MATLIB=(typeof KMAT!=='undefined'&&KMAT.bindMat)?KMAT.bindMat('blakhed',MAT):{};
+/* Dalab's mission and toll post surfaces (gen/69bk5-dalab-pack.js), bound onto Dalab's MAT keys as Thalaba's 89t0 binds them */
+const BK_DALAB_MATLIB=(typeof KMAT!=='undefined'&&KMAT.bindMat&&KMAT.packed&&KMAT.packed('dalab','dRammed'))?KMAT.bindMat('dalab',MAT,{tile:KMAT.ANCIENT_TILES}):{};

@@ -22,14 +22,14 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `00-head.html` | 1 |  |
 | `26k-kit.js` | 8 |  |
 | `37-wk-rec.js` | 3 |  |
-| `40-fg-kit.js` | 18 |  |
-| `42-fg-mass.js` | 21 |  |
+| `40-fg-kit.js` | 19 |  |
+| `42-fg-mass.js` | 22 |  |
 | `50-fg-dwell.js` | 10 |  |
 | `52-fg-civic.js` | 8 |  |
 | `54-fg-stores.js` | 9 |  |
 | `56-fg-works.js` | 14 |  |
-| `58-fg-town.js` | 29 |  |
-| `60-fg-road.js` | 22 |  |
+| `58-fg-town.js` | 36 **big** |  |
+| `60-fg-road.js` | 36 **big** |  |
 | `62-gz-kit.js` | 27 |  |
 | `63-gz-homes.js` | 19 |  |
 | `65-gz-civic.js` | 16 |  |

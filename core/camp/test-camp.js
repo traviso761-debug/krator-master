@@ -100,5 +100,28 @@ ok('a tent is the same record at every site (its id is the band\'s and the progr
 ok('the same band at the same site pitches the same camp', JSON.stringify(KCAMP.pitch(base)) === JSON.stringify(P),
   JSON.stringify(KCAMP.pitch(Object.assign({}, base, { gap: 3 }))) !== JSON.stringify(P));
 
+// ---- opt-in Traveller and Kradz rows (core/camp/fellgang/52-camp-fellgang.js)
+{
+  load('core/camp/fellgang/52-camp-fellgang.js');
+  const tdims = k => KCAMP.CULTURES.traveller.pending[k] || null;
+  const tProg = { tents: [{ key: 'fg-wagon', n: 8 }, { key: 'fg-bender', n: 3 }, { key: 'fg-halt', n: 1 }, { key: 'fg-tinsmith', n: 1 }], pens: [{ key: 'fg-pens', n: 1 }] };
+  const tc = KCAMP.census({ id: 'tr.connors', world: 44120, culture: 'traveller', program: tProg });
+  const tp = KCAMP.pitch({ id: 'tr.connors', world: 44120, culture: 'traveller', program: tProg, site: { x: 0, z: 0 }, dims: tdims, way: [0, 1] });
+  ok('a Traveller vardo circle deals one household per wagon, staffs smiths and herders, and pitches with zero overlaps',
+    tc.households.length === 8 && tc.people.filter(p => p.role === 'smith').length === 2 && tc.people.filter(p => p.role === 'herder').length === 2 &&
+    tp.short.length === 0 && KCAMP.check(tp).overlaps === 0,
+    KCAMP.CULTURES.traveller.kind('fg-unknown') === null && !tdims('fg-unknown'),
+    tc.pop + ' Travellers, ' + tp.records.length + ' records');
+  const kProg = { tents: [{ key: 'fg-wagon', n: 5 }, { key: 'fg-halt', n: 3 }, { key: 'fg-ropehouse', n: 1 }, { key: 'fg-store', n: 1 }], pens: [{ key: 'fg-pens', n: 1 }] };
+  const kdims = k => KCAMP.CULTURES['traveller-kradz'].pending[k] || null;
+  const kc = KCAMP.census({ id: 'kr.vent', world: 44120, culture: 'traveller-kradz', program: kProg });
+  const kp = KCAMP.pitch({ id: 'kr.vent', world: 44120, culture: 'traveller-kradz', program: kProg, site: { x: 200, z: -100 }, dims: kdims, way: [1, 0] });
+  ok('the Kradz dark-clan row staffs shaft riggers and factors and pitches cleanly',
+    kc.people.filter(p => p.role === 'rigger').length === 3 && kc.people.filter(p => p.role === 'factor').length === 2 &&
+    kp.short.length === 0 && KCAMP.check(kp).overlaps === 0,
+    kc.pop !== tc.pop,
+    kc.pop + ' Kradz');
+}
+
 console.log(bad ? bad + ' FAILED' : 'all passed');
 process.exit(bad ? 1 : 0);

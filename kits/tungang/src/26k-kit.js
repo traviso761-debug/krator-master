@@ -77,4 +77,5 @@ const TG={version:1,SCALE:.94,sets:{fg:'fellgang',tg:'tungang',gz:'glazier'},fg:
   'fg-smithy':{w:11,d:8,h:5,form:'house',what:'a salvage-smithy (stone forge, bellows, anvil, shoeing bay and cable rack)'},
   'fg-tannery':{w:13,d:8.5,h:4.8,form:'house',what:'a tannery and felt house (soaking pits, boiling vat, fulling board and hide frames)'},
   'fg-granary':{w:11,d:7.5,h:5.2,form:'house',what:'a raised granary on staddle piers (grain bins and sacks kept off the damp turf)'},
-  'fg-fair-stand':{w:8,d:6,h:4.6,form:'shed',what:'the Fair judges\' stand (raised drystone dais, beast tally board and canopy)'}}}};
+  'fg-fair-stand':{w:8,d:6,h:4.6,form:'shed',what:'the Fair judges\' stand (raised drystone dais, beast tally board and canopy)'},
+  'fg-dugout-icehouse':{w:11,d:13,h:3.8,form:'barrow',what:'a dugout ice-house (earth-bermed sunken drystone pit cellar, stone trench ramp, storm bulkhead and low turf A-frame roof)'}}}};

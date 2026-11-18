@@ -275,16 +275,16 @@
     "kits/qiblai/tex/qRug.albedo.webp": "56e41a1240755f76a6893ab4e1149bad55a36b8e7934b00a1c585beff94b36f4",
     "kits/qiblai/tex/qRug.normal.webp": "cac8887946a83d673936ead4cc3079629334e6aed33d55d282824c4ae64dc45a",
     "kits/qiblai/tex/qRug.rough.webp": "fa6d89c542516a3cf513c09cb89408680a9fe02ca2e0f740749e2760d6e86e88",
-    "kits/tungang/src/26k-kit.js": "739831b42e7d74fd3f8a64df47ee65c59e29a348afa5eb231b6ab2139fbb4321",
+    "kits/tungang/src/26k-kit.js": "f0208d65bfe4f66f30467e807ec2913b1c4c3b5bdd174dcded952e25f0f38404",
     "kits/tungang/src/37-wk-rec.js": "5865af0f2547579f57c8b4ba96e775b8a24da73101dd8699710027a56a6d9ec6",
-    "kits/tungang/src/40-fg-kit.js": "c2452b02a4250659312999fc367b2be4065080b3b9524e409cfb3d1ba5d487a2",
-    "kits/tungang/src/42-fg-mass.js": "9f8afab43289c36515b62ff8922d26f98ff612fc5737d506de96b1bf9b6fd59b",
+    "kits/tungang/src/40-fg-kit.js": "dbdd4da138e94183e697c40ed73fd607f5deeb752b74d71fc32589014d1a1ae0",
+    "kits/tungang/src/42-fg-mass.js": "c0dc3539ce18b4dc5d26f8eb566562f07d95c48542098ca62d41af57d3206d2c",
     "kits/tungang/src/50-fg-dwell.js": "f1c450d279138cb3e7cb024a590a3a4d20ad82e45c858ab5dee4c37f560c03ef",
     "kits/tungang/src/52-fg-civic.js": "098cc6d064efaeb885c570a76b48ab2efd1cebe6058276112f0d2c1406ba60f5",
     "kits/tungang/src/54-fg-stores.js": "1e7dd9f1339e158f12b8180dcef8e968b83fe6a8148f2cf366c2180c1c6be6bc",
-    "kits/tungang/src/56-fg-works.js": "8e63b3da7f9347112fd521c859db0261caea503e30c0aa8b6bb42d790f880274",
-    "kits/tungang/src/58-fg-town.js": "faaa373ce22d3b9b488ef93c7cbb28b8a086febd0b18f2f29dc73adf8dbef94e",
-    "kits/tungang/src/60-fg-road.js": "d0dd3bdc1f3a560f300fa0d5ed3d8b71a8976915c287cb4c1c7afdd3b1628ce7",
+    "kits/tungang/src/56-fg-works.js": "abac9aa163931d2e9cfe088b86458dfc00df6b1557bc3348f19a7f5b0f516396",
+    "kits/tungang/src/58-fg-town.js": "86fc8b343137440b362690af43719d6f5da5551431b3ea7aee0a0e3fe1677b78",
+    "kits/tungang/src/60-fg-road.js": "042f0971c60b3cd4b9c4c01320f4dfd1971219e0e8397f096d53be4de373a33f",
     "kits/tungang/src/62-gz-kit.js": "1abf8a9e4a76cadc01051bcee9d9563e86952276d6d239d7402210e278ce03cf",
     "kits/tungang/src/63-gz-homes.js": "b5c7844acee1700d14742b53e930ffef8f99d5e82971710f68725d133beb4f47",
     "kits/tungang/src/65-gz-civic.js": "9a6967fe761753893dde00e9948a5bda196aee88594c006380c6b1ba0c897e6b",
@@ -371,6 +371,7 @@
     "settlements/lightwall/build.py": "8a502af7e853481393045dbe103da7c7aa9590e1eaed01e32b040d7be93e5a1e",
     "settlements/lightwall/gen/69l-kcity-bundle.js": "dee358526ba945c91dc606c08106d7d5ea51a6b65138b1d7a026b67dbe57fd68",
     "settlements/lightwall/gen/69r-lw-flora-bundle.js": "61b4bbe09cb58f9cbb836699d650cb6338ef0eefa2c53c4739372dbfa08fd468",
+    "settlements/lightwall/gen/69t-tungang-bundle.js": "8dc8ce21c8a3e34cb772960c41cb534881167b9a481aa5eaafa00f9bf28d3110",
     "settlements/lightwall/kit.json": "ef34a941367a3e860929cee778fb6fba64f8549230014ea66873957f84b76e1b",
     "settlements/lightwall/targets/town/89z-rows.js": "7c076401a4eff346fd4d369f556c09275af88ca113646f25a4bb93bfaf0bbae1",
     "settlements/lightwall/targets/town/89zl-lw-site.js": "fee9f1d8bf8d3d3dea2342d0c21f7cd5e26ceac29b27cf0370937a3d19582f59",
@@ -595,26 +596,24 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "settlements/lightwall/build-manifest-town.json": "b6428bb8c7c892ec9863bf492f70b9fa589b5edb6454c54bbc30d0d9952505a9",
-    "settlements/lightwall/dist/lightwall.html": "1bd67aa8654a515d5bfb5f18b540c3f045e319cde178926a91feaec32d957007",
+    "settlements/lightwall/build-manifest-town.json": "fa4054e4ae1dfac60d6946f652571af9460305224e77a14dfdb1ebc57528bd7b",
+    "settlements/lightwall/dist/lightwall.html": "56321a18f98f7f1d752b6065beb128594bb2ff86aaff9760f6a425830fcedabc",
     "settlements/lightwall/dist/lightwall.tex.tungang.js": "84f142c4d0b19ef095a3857f14e2e1daa0e96ca579255c1ed7f5979db231adcb",
     "settlements/lightwall/dist/xanadu.tex.catalog-furniture.js": "96204b61191d8c47daa8e438ecd84bdcbc975dd6e16c2a6ad9051123fe67d776",
     "settlements/lightwall/dist/xanadu.tex.qiblai.js": "31374323647466f5f1977771cb8ef28d561e19c7b87bf62359247faa1d783dcf",
     "settlements/lightwall/dist/xanadu.tex.xanadu-2.js": "be1d57f174e08cf71b5511aff65a313eec8edc29e057c48d027e9b60630f3ab5",
     "settlements/lightwall/dist/xanadu.tex.xanadu-bio.js": "fe6f7b16daac89762c664e0d42111428bc72a506d4eaf8b1470e76ff0a0afd16",
-    "settlements/lightwall/dist/xanadu.tex.xanadu.js": "3fe87059ee305d523fa5026dddfd91123354e88d5839097de9df44137500f2a4",
-    "settlements/lightwall/gen/69t-tungang-bundle.js": "c9326cf6739c949d3b7df442f3b2cc22c63f8a2ed94454c1f7d42b9e32fa6b60"
+    "settlements/lightwall/dist/xanadu.tex.xanadu.js": "3fe87059ee305d523fa5026dddfd91123354e88d5839097de9df44137500f2a4"
    },
    "outputs_raw": {
-    "settlements/lightwall/build-manifest-town.json": "7dd96e16b6e660866e8432bec6286f55add391fe838475078adb9566c60691cf",
-    "settlements/lightwall/dist/lightwall.html": "1bd67aa8654a515d5bfb5f18b540c3f045e319cde178926a91feaec32d957007",
+    "settlements/lightwall/build-manifest-town.json": "c18469ab4cc543dc6105cd8cd4d4160e8cba6d2fc9ed852a2628a15cccc9174b",
+    "settlements/lightwall/dist/lightwall.html": "56321a18f98f7f1d752b6065beb128594bb2ff86aaff9760f6a425830fcedabc",
     "settlements/lightwall/dist/lightwall.tex.tungang.js": "84f142c4d0b19ef095a3857f14e2e1daa0e96ca579255c1ed7f5979db231adcb",
     "settlements/lightwall/dist/xanadu.tex.catalog-furniture.js": "96204b61191d8c47daa8e438ecd84bdcbc975dd6e16c2a6ad9051123fe67d776",
     "settlements/lightwall/dist/xanadu.tex.qiblai.js": "31374323647466f5f1977771cb8ef28d561e19c7b87bf62359247faa1d783dcf",
     "settlements/lightwall/dist/xanadu.tex.xanadu-2.js": "be1d57f174e08cf71b5511aff65a313eec8edc29e057c48d027e9b60630f3ab5",
     "settlements/lightwall/dist/xanadu.tex.xanadu-bio.js": "fe6f7b16daac89762c664e0d42111428bc72a506d4eaf8b1470e76ff0a0afd16",
-    "settlements/lightwall/dist/xanadu.tex.xanadu.js": "3fe87059ee305d523fa5026dddfd91123354e88d5839097de9df44137500f2a4",
-    "settlements/lightwall/gen/69t-tungang-bundle.js": "c9326cf6739c949d3b7df442f3b2cc22c63f8a2ed94454c1f7d42b9e32fa6b60"
+    "settlements/lightwall/dist/xanadu.tex.xanadu.js": "3fe87059ee305d523fa5026dddfd91123354e88d5839097de9df44137500f2a4"
    }
   }
  }

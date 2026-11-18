@@ -993,8 +993,8 @@
    "sha256": "d3add636535274fd3f722369655b0025e5bf244eec089cc2e0b8e4f3ea9abd78"
   },
   "kits/tungang/dist/tungang.html": {
-   "bytes": 1345195,
-   "sha256": "db7a6583aee0c023803168e14f624110774f48825e92e3de8c6318871912b0ec"
+   "bytes": 1371540,
+   "sha256": "a8a3e79594c6a20bd8169fe2fb5de09390994f1178e408c882aad903f964e407"
   },
   "kits/yeti/dist/yeti.html": {
    "bytes": 1065402,
@@ -1025,8 +1025,8 @@
    "sha256": "e0395d260e160bfe4072b652248648d962489afea520f3948c87cdfaf4fb489f"
   },
   "settlements/blakhed/dist/blakhed.html": {
-   "bytes": 4388406,
-   "sha256": "9f4da670c89057399df348cb273bd479efa7a0c66a2318724bcba554e701dc29"
+   "bytes": 4749787,
+   "sha256": "8b27e0699bcbfb14affc56384fe3d7460a71621c09d51d59b150a008ca20fa1d"
   },
   "settlements/dalab/dist/dalab-set.html": {
    "bytes": 6603017,
@@ -1101,8 +1101,8 @@
    "sha256": "c55c2c62f88cd016aeecfc2b6b027e466f63afd1de992e1ad956f1e9b6599cf9"
   },
   "settlements/lightwall/dist/lightwall.html": {
-   "bytes": 3859787,
-   "sha256": "1bd67aa8654a515d5bfb5f18b540c3f045e319cde178926a91feaec32d957007"
+   "bytes": 3883882,
+   "sha256": "56321a18f98f7f1d752b6065beb128594bb2ff86aaff9760f6a425830fcedabc"
   },
   "settlements/locus/abyss-kit.html": {
    "bytes": 9091876,

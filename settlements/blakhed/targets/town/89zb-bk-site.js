@@ -36,8 +36,8 @@ const BK_TOLL=BK_RINGS?BK_RINGS.toll:[];
 const BK_FIELDS=[];
 {const T=BK_TOWN,F=T.frame,G=BK_GROUND,quarters=T.QUARTERS,B=T.BLOCKS;
  const inPoly=(P,x,z)=>{let c=false;for(let i=0,j=P.length-1;i<P.length;j=i++){const a=P[i],b=P[j];if((a[1]>z)!==(b[1]>z)&&x<(b[0]-a[0])*(z-a[1])/(b[1]-a[1])+a[0])c=!c;}return c;};
- const zoneU=[-700,700],zoneV=[-420,620];
- for(let i=-28;i<28;i++)for(let j=-24;j<40;j++){const u=i*124+62,v=j*44+22;if(u>zoneU[0]-60&&u<zoneU[1]+60&&v>zoneV[0]-40&&v<zoneV[1]+40)continue;
+ const zoneU=[-410,410],zoneV=[-330,380];
+ for(let i=-28;i<28;i++)for(let j=-24;j<40;j++){const u=i*124+62,v=j*44+22;if(u>zoneU[0]-40&&u<zoneU[1]+40&&v>zoneV[0]-30&&v<zoneV[1]+30)continue;
   const [x,z]=F.W(u,v);if(Math.hypot(x,z)>3200||Math.abs(x)>2900||Math.abs(z)>2900)continue;
   const n=G.river.near(x,z);if(n&&n.d<n.w/2+70)continue;if(!n||n.d>900)continue;
   if(quarters.some(q=>inPoly(q.poly,x,z))||B.some(b=>inPoly(b.poly,x,z)))continue;
@@ -80,11 +80,12 @@ const BK_FIELDS_FN={
  cold:bkCold,barren:()=>0,fog:(x,z)=>Math.max(0,Math.min(.6,1-Math.hypot(x-bkLip.x,z-bkLip.z)/3500)),snow:()=>0,farm:(x,z)=>bkFieldAt(x,z)?1:0};
 
 // ---------------------------------------------------------------- the people (PLAN.md section 0, question 1)
-const BK_POP=(function(){const P={town:0,stairhead:0,steadings:0,hamlets:0,tears:0,toll:0,travellers:0};
- if(BK_PLAN){P.town=BK_PLAN.people.town;P.tears=BK_PLAN.people.tears;P.travellers=BK_PLAN.people.travellers;}
+const BK_POP=(function(){const P={town:0,stairhead:0,steadings:0,hamlets:0,dalab:0,tears:0,toll:0,travellers:0};
+ if(BK_PLAN){P.town=BK_PLAN.people.town;P.dalab=BK_PLAN.people.dalab;P.tears=BK_PLAN.people.tears;P.travellers=BK_PLAN.people.travellers;}
  for(const V of BK_VILLAGES){const n=V.census&&V.census.pop||0;if(V.kind==='steading')P.steadings+=n;else if(V.kind==='stairhead')P.stairhead+=n;else P.hamlets+=n;}
  for(const t of BK_TOLL)P.toll+=t.people||0;P.five=P.town+P.stairhead+P.steadings;return P;})();
 window._blakhedPlan={err:BK_ERR,records:BK_PLAN?BK_PLAN.records.length:0,pieces:BK_PLAN?BK_PLAN.pieces.length:0,refused:BK_PLAN?BK_PLAN.refused:[],
+ camps:BK_PLAN&&BK_PLAN.camps?BK_PLAN.camps.length:0,
  byQuarter:BK_PLAN?BK_PLAN.records.reduce((a,r)=>{a[r.quarter]=(a[r.quarter]||0)+1;return a;},{}):{},
  villages:BK_VILLAGES.map(V=>({id:V.id,kind:V.kind,focus:V.focus,records:(V.records||[]).length,pop:V.census&&V.census.pop||0,error:V.error||null,drawn:!!V.drawn})),
  toll:BK_TOLL.length,fields:BK_FIELDS.length,people:BK_POP,ponds:BK_GROUND.ponds.length,

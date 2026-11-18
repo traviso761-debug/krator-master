@@ -13,15 +13,10 @@
 var BK_RING=(function(){
  const G=BK_GROUND,R=G.river,D0=(x,d)=>x==null?d:x;
  const fg=()=>KHAMLET.CULTURES.fellgang;
- /* the Fellgang row with the works it lacks (PLAN.md section 5: BK_ROW) */
+ /* the Fellgang row from core/hamlet/fellgang/22-hamlet-fellgang.js, adding dugout ice-houses on Blakhed's bench ice ponds */
  const ROW=()=>{const X=fg();return Object.assign({},X,{
   works:Object.assign({},X.works,{
-   farming:[{key:'fg-barn',jobs:6,share:.4},{key:'fg-granary',jobs:4,share:.2},{key:'fg-smokehouse',jobs:3,share:.18},{key:'fg-pens',jobs:3,share:.22}],
-   ranch:[{key:'fg-pens',jobs:4,share:.6},{key:'fg-barn',jobs:4,share:.4}],
-   quarry:[{key:'fg-sledgeshed',jobs:6,share:.6},{key:'fg-store',jobs:3,share:.4}],
-   stair:[{key:'fg-ropehouse',jobs:8,share:.4},{key:'fg-sledgeshed',jobs:6,share:.3},{key:'fg-smithy',jobs:4,share:.15},{key:'fg-store',jobs:4,share:.15}]}),
-  focusJobs:Object.assign({},X.focusJobs,{farming:60,ranch:45,quarry:40,stair:55}),
-  reach:Object.assign({},X.reach,{farming:500,ranch:700,quarry:300,stair:200})});};
+   ice:[{key:'fg-icehouse',jobs:6,share:.55},{key:'fg-dugout-icehouse',jobs:5,share:.25},{key:'fg-sledgeshed',jobs:4,share:.2}]})});};
  const STEADINGS=[['bk.stead.upriver','Upbeck (the upper steading)',-4300,300,'farming'],['bk.stead.millrace','Millrace',-2300,260,'farming'],
   ['bk.stead.lowbeck','Lowbeck',3200,320,'ranch'],['bk.stead.benchend','Benchend',5600,280,'farming']];
  const HAMLETS=[['bk.h.highgarth','Highgarth',439,1392,'farming'],['bk.h.beckfoot','Beckfoot',443,1393,'farming'],['bk.h.pondhead','Pondhead',451,1397,'ice'],

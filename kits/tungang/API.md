@@ -83,10 +83,10 @@ above, an iron peg every 25 m with the family's mark, a ladder up the first 18 m
 
 ### `TG.fg.pieces(list, o)` -> meshes
 
-Road and wall pieces: `{key, x, z, ry?, y?, v?, family?, face?, id?}`; `y` defaults to `o.ground(x, z)`; `face: true` draws a
+Road, Traveller camp and wall pieces: `{key, x, z, ry?, y?, v?, family?, face?, id?}`; `y` defaults to `o.ground(x, z)`; `face: true` draws a
 stub of rock behind a wall piece (the sheet's; a station's terrain is the face). Keys: `fg-lantern-post`, `fg-ice-tools` (by the Ice-cutters' stacks), `fg-wall-station`
 (v even: the lift cage; odd: the plate shelter), `fg-nest-ledge`, `fg-burial-ledge` (`family`: the mark and the rope's
-colour), `fg-halt`, `fg-wagon` (+z its back: the door and steps), `fg-cairn` (v 0: the standing peace stone; v >= 1: a fell cairn), `fg-stone-sign`, `fg-fair-hurdle`, `fg-stair-hoist` (+z overhanging the pitch).
+colour), `fg-halt`, `fg-wagon` (spoked bow-top/ledge vardo with winter runner-skis; +z its back Dutch door and steps), `fg-bender` (Irish Traveller / Romani arched bender tent, +z entrance), `fg-camp-hearth` (stone-kerbed campfire, iron tripod trammel & cauldron kettle, stools and churns), `fg-tinsmith` (tinsmith/coppersmith canvas pitch and clothesline, +z front), `fg-cairn` (v 0: the standing peace stone; v >= 1: a fell cairn), `fg-truce-post` (Market truce and hospitality boundary stone; even v carries a lit peat brazier), `fg-stone-sign`, `fg-fair-hurdle`, `fg-stair-hoist` (+z overhanging the pitch).
 
 ### `TG.fg.proto(key, o)` -> meshes
 
@@ -97,7 +97,7 @@ for measuring (verify.py checks the worn state this way).
 
 | | |
 |---|---|
-| `TG.fg.BOX` | the 24 keys' boxes `{w, d, h, form, what}` (the 14 village stand-in keys + 10 town-scale keys) |
+| `TG.fg.BOX` | the 25 keys' boxes `{w, d, h, form, what}` (the 14 village stand-in keys + 11 town-scale keys) |
 | `TG.fg.dims(key)` | `{w, d, h}` or null: the stand-ins' `FELLGANG.dims`, for `KHAMLET.village`'s `dims` |
 | `TG.fg.ROW` | `KHAMLET.CULTURES.fellgang` when the page has core/hamlet's opt-in row, else null |
 | `TG.fg.check` | `box(recs, tol, fill)` (never tol past, filling fill: {w .65, d .65, h .75}), `plinth(recs, ground)`, `rope(records, meshes, tol)`: the checks verify.py runs, each `{ok, ...}`, for a station's `--assert` |

@@ -100,6 +100,7 @@ defBuilding({key:'fg-markethall',name:'The market hall',seed:9153,cut:true,w:20,
   const nb=5;for(let i=0;i<=nb;i++){const x=-hw+.45+i*(B.w-.9)/nb;for(const sz of [-1,1])box('stone',x,0,sz*(hd-.42),.82,wh,.82,col);}
   for(const sx of [-1,1]){const x=sx*(hw-.38);fgWall(x,-hd+.8,x,-1.45,.7,0,wh,C,col);fgWall(x,1.45,x,hd-.8,.7,0,wh,C,col);box('stoneD',x,2.25,0,.76,.28,3.4,sc);fgWall(x,-1.45,x,1.45,.7,2.53,wh,C,col);}
   const T=fgTurfRoof(hw+.12,hd+.1,wh-.05,rise,'halfhip','x',C,{look});
+  for(const sx of [-1,1]){const x=sx*(hw-.38);fgGableSlab('stone','x',x,.7,-hd+.08,hd-.08,wh-.04,z=>T.Y(x-.35,z)-.08,z=>T.Y(x+.35,z)-.08,col,12);}
   /* tie-beams, king-posts and purlins inside */
   for(let i=1;i<nb;i++){const x=-hw+.45+i*(B.w-.9)/nb,yr=T.Y(x,0)-.34;pole('pole',[x,wh-.08,-hd+.5],[x,wh-.08,hd-.5],.1,pc,6);pole('pole',[x,wh-.04,0],[x,yr,0],.08,pc,5);
    for(const sz of [-1,1])pole('pole',[x,wh-.05,sz*(hd-.55)],[x,yr,0],.06,pc,5);}
@@ -303,3 +304,76 @@ defBuilding({key:'fg-fair-stand',name:'The Fair judges\' stand',seed:9160,cut:tr
   W(hw-1.15,yd+.85,-hd+.66,0,()=>{box('rust',0,0,0,.9,.85,.04,hc(0x3a3430));for(let r=0;r<3;r++)quad('plain',0,.18+r*.24,.025,.68,.02,P('white'));});
   for(const sx of [-1,1])fgMark(C.v+(sx>0?1:0),sx*(hw-.9),yd*.45,hd+.05,0,.32);
   fgSign('ALL HANDS',0,yf-.46,hd-.2,0,C,{ch:.14});fgNote('dais',1);}});
+
+defBuilding({key:'fg-dugout-icehouse',name:'A dugout ice-house',seed:9168,cut:true,w:11,d:13,h:3.8,budget:6800,
+ tags:{types:['industry'],wealth:'middle',style:'drystone',role:'works',job:'warehousing'},
+ note:'an earth-bermed dugout ice-cellar sunk into a banked pit: battered drystone retaining walls, stone-revetted entrance trench with timber slide chute and sloped storm-cellar doors, low turf A-frame roof lashed with hold-down cables, frost-vent stack, and slatted timber ice-cribs packed with pond and lake ice in sawdust',
+ build(o){const C=fgCx(o),B=fgFillBox(TG.fg.BOX['fg-dugout-icehouse'],C,[.86,.96],[.86,.96],[.84,.97]),hw=B.w/2,hd=B.d/2,H=B.h;
+  const yb=1.42,rid=H-.22,pw=hw-1.55,z0=-hd+1.55,z1=hd-2.85,zm=(z0+z1)/2,ph=(z1-z0)/2;
+  const col=fgCol('stone',C),sc=fgCol('stoneD',C),wc=fgCol('wood',C),pc=fgCol('pole',C),ic=P('iron'),look=fgTurfLook(C),tc=fgTurfCol(C,look);
+  /* full flagged stone cold-pit floor and foundation skirt reaching C.lo */
+  fgPlinth(-pw-.45,pw+.45,z0-.45,hd-.12,C,{top:.06});
+  {let lo=1e9,cx=0,cz=0;for(const sx of [-1,1])for(const sz of [-1,1]){const g=C.gl(sx*hw*.82,sz*hd*.82);if(g<lo){lo=g;cx=sx;cz=sz;}}
+   box('stone',cx*hw*.72,C.lo,cz*hd*.72,1.3,-C.lo+.06,1.3,col);}
+  /* sculpted horseshoe earth-and-turf excavation spoil berm banking up around the sides (-x, +x), rear (-z) and front shoulders */
+  const sPow=(c,p)=>(c<0?-1:1)*Math.pow(Math.abs(c),p),a0=PI/2+.26,a1=PI/2+TAU-.26;
+  const bermPt=(u,v)=>{const a=a0+(a1-a0)*u,ca=Math.cos(a),sa=Math.sin(a);
+   const ox=sPow(ca,.72)*hw,oz=sPow(sa,.72)*hd;
+   const ix=Math.max(-pw-.12,Math.min(pw+.12,ca*(pw*1.38))),iz=Math.max(z0-.12,Math.min(z1+.18,zm+sa*(ph*1.38)));
+   return [ox+(ix-ox)*v,yb*Math.sin(v*PI/2),oz+(iz-oz)*v];};
+  psurf('turf',bermPt,28,5,tc,{up:true});
+  psurf('turf',(u,v)=>{const p=bermPt(u,0);return [p[0],v*(Math.min(0,C.gl(p[0],p[2]))-.48),p[2]];},28,1,fgCol('turf',C));
+  for(let k=0;k<8;k++){const a=a0+.2+k*(a1-a0-.4)/7,p=bermPt((a-a0)/(a1-a0),.35+(k%3)*.18);
+   ellip('stone',p[0],p[1]-.04,p[2],.26,.15,.22,k%2?col:sc,a,6);}
+  /* sunken drystone pit lining walls (x = +-pw, z = z0, and front bulkhead at z1) + meltwater drainage trench in the floor */
+  fgWall(-pw,z0,pw,z0,.6,0,yb+.06,C,col);
+  for(const sx of [-1,1])fgWall(sx*pw,z0+.3,sx*pw,z1,.6,0,yb+.06,C,col);
+  fgWall(-pw-.2,z1,-.66,z1,.65,0,yb+.08,C,col);fgWall(.66,z1,pw+.2,z1,.65,0,yb+.08,C,col);
+  box('stoneD',0,1.88,z1,1.85,.3,0.72,sc);
+  box('stoneD',0,.02,zm,.34,.06,z1-z0-.8,hc(0x2e3438));
+  for(let z=z0+.8;z<z1-.5;z+=.65)box('iron',0,.07,z,.38,.02,.05,ic);
+  /* low steep turf A-frame roof springing directly off the 1.42 m earth berms along z, with flush drystone gables and hold-down cables */
+  W(0,0,zm,0,()=>{const ea=ph+.24,eb=pw+.28,T=fgTurfRoof(ea,eb,yb-.04,rid-yb,'gable','z',C,{look});
+   const nr=Math.max(3,Math.round(2*ph/2.1));
+   for(let i=0;i<=nr;i++){const z=-ph+.25+i*(2*ph-.5)/nr;for(const sx of [-1,1])pole('pole',[sx*(pw-.15),yb-.06,z],[0,rid-.34,z],.06,pc,5);}
+   pole('pole',[0,rid-.32,-ea+.15],[0,rid-.32,ea-.15],.095,pc,6);
+   fgGableSlab('stone','z',-ph,0.6,-pw-.05,pw+.05,yb-.04,bx=>T.Y(-ph-.3,bx)-.08,bx=>T.Y(-ph+.3,bx)-.08,col,4);
+   fgGableSlab('stone','z',ph,0.65,-pw-.05,pw+.05,Math.max(yb-.04,2.14),bx=>T.Y(ph-.32,bx)-.08,bx=>T.Y(ph+.32,bx)-.08,col,4);
+   for(const sx of [-1,1])fgGableSlab('stone','z',ph,0.65,sx>.0?.66:-pw-.05,sx>.0?pw+.05:-.66,yb-.04,bx=>Math.min(2.18,T.Y(ph-.32,bx)-.08),bx=>Math.min(2.18,T.Y(ph+.32,bx)-.08),col,2);
+   /* gale hold-down cables lashed over the turf ridge and anchored to boulder deadmen on the berms */
+   for(const z of [-ph*.55,0,ph*.55]){const P0=[];for(let k=0;k<=8;k++){const x=-eb+2*eb*k/8;P0.push([x,T.Y(z,x)+.04,z]);}
+    cord('cable',P0,.016,P('cable'));for(const sx of [-1,1])ellip('stone',sx*(eb+.18),yb-.08,z,.22,.16,.19,sc,0,6);}
+   /* rear timber frost-vent chimney stack with rusted salvage-plate snow hood */
+   const vz=-ph+.85,vy=T.Y(vz,0);box('wood',0,vy-.25,vz,.46,.58,.46,wc);
+   fgSlab('rust',[-.36,vy+.36,vz+.34],[.36,vy+.36,vz+.34],[-.36,vy+.28,vz-.34],.035,fgCol('rust',C));});
+  /* stone-revetted entrance trench at +z, sloped storm-cellar bulkhead flaps propped open, timber ice-slide and hoist beam */
+  for(const sx of [-1,1]){const xw=sx*1.38;
+   fgGableSlab('stone','x',xw,.52,z1+.15,hd-.18,.04,bz=>yb-(bz-z1)/(hd-z1)*.82,bz=>yb-(bz-z1)/(hd-z1)*.82,col,3);
+   /* open sloped storm-cellar plank flap resting against the trench cheek on an iron stay */
+   W(sx*1.08,yb-.22,(z1+hd-.45)/2,0,()=>{box('wood',0,0,0,.82,.05,hd-z1-.75,wc,0,-sx*1.08);
+    for(const dz of [-.55,.55])box('iron',0,.03,dz,.78,.025,.06,ic,0,-sx*1.08);});
+   pole('pole',[sx*1.28,.06,z1+.35],[sx*1.28,2.62,z1+.35],.085,pc,6);}
+  pole('pole',[-1.42,2.58,z1+.35],[1.42,2.58,z1+.35],.09,pc,6);
+  beam('pole',[0,2.58,z1-.15],[0,2.58,z1+1.15],.075,pc,6);ring('iron',0,2.44,z1+.98,.11,.022,ic,0,0,0,8);
+  cord('rope',[[0,2.42,z1+.98],[0,1.25,z1+.98]],.014,P('rope'));
+  box('wood',-.52,.12,(z1+hd-.28)/2,.58,.06,hd-z1-.45,wc,0,.04);
+  for(const sx of [-.26,.26])box('wood',-.52+sx,.17,(z1+hd-.28)/2,.05,.09,hd-z1-.45,wc);
+  fgDoor(0,z1,1.22,1.84,C,{th:.65,name:'the dugout ice-house door'});
+  fgSign('DUG ICE',0,2.34,z1+.36,0,C,{ch:.13,kind:'plate'});
+  /* interior: slatted timber ice-crib bins packed with three tiers of pond & lake ice in sawdust, plus cold-larder hooks & tools */
+  let nb=0;const cz0=z0+.55,cz1=z1-1.65;
+  for(const sx of [-1,1]){const bx=sx*(pw*.52);
+   for(let z=cz0;z<=cz1+.05;z+=1.35)pole('pole',[sx*.58,.06,z],[sx*.58,1.95,z],.045,pc,5);
+   for(const y of [.45,.98,1.52])box('wood',sx*.58,y,(cz0+cz1)/2,.04,.1,cz1-cz0,wc);
+   for(let tier=0;tier<3;tier++){const y=.08+tier*.58;
+    for(let z=cz0+.38;z<=cz1-.32;z+=.78){box('ice',bx,y,z,pw-.88,.5,.68,P('ice'),rr(-.025,.025));nb++;
+     box('straw',bx,y+.5,z,pw-.84,.055,.72,P('sawdust'));
+     if(tier===2)box('straw',bx,y+.55,z,pw-.82,.07,.74,P('snow'));}}}
+  /* cold-vestibule crossbeam with hung meat/butter crocks, ice saw, tongs and lobelia cold-lamp */
+  pole('pole',[-pw+.2,1.88,z1-.95],[pw-.2,1.88,z1-.95],.05,pc,5);
+  for(const x of [-1.45,-.85,.95,1.5]){cord('cord',[[x,1.88,z1-.95],[x,1.52,z1-.95]],.009,P('rope'));
+   ellip('hide',x,1.34,z1-.95,.12,.22,.1,hc(0x6e4e36),0,5);}
+  fgFurn('generic_crock',pw-.55,.06,z1-.78,0);fgFurn('generic_barrel',-pw+.6,.06,z1-.82,0);
+  box('iron',-.92,.45,z1-.42,.03,1.15,.18,ic,0,.1);
+  sph('glow',.88,1.72,z1-.42,.04,hc(0x7ab4ff),1.2,6);haloAt(.88,1.72,z1-.42,0x7ab4ff,false);
+  fgNote('blocks',nb);}});

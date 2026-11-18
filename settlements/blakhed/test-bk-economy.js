@@ -23,6 +23,7 @@ function loadHost(){
  const H={TUNE:{sim:{}}};KREGION.use(H);
  runFile('core/region/50-region-valley.js');
  runFile('core/region/data/xan-tune.js');
+ runFile('core/region/data/wr-tune.js');
  runFile('settlements/blakhed/sim/wr-blakhed.js');
  return H;}
 loadHost();

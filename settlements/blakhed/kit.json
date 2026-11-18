@@ -50,6 +50,27 @@
     [
      "10-core-drawn.js"
     ]
+   ],
+   [
+    "core/simulation",
+    [
+     "77-sim-0-core.js",
+     "77-sim-1-world.js",
+     "77-sim-2-places.js",
+     "77-sim-3-actors.js",
+     "77-sim-4-nav.js",
+     "77-sim-5-motion.js",
+     "77-sim-5r-routes.js",
+     "77-sim-6-economy.js",
+     "77-sim-6-govern.js",
+     "77-sim-6-items.js",
+     "77-sim-6-needs.js",
+     "77-sim-6-season.js",
+     "77-sim-7-ledger.js",
+     "77-sim-7-lod.js",
+     "77-sim-7-stocks.js",
+     "77-sim-8-export.js"
+    ]
    ]
   ]
  },
@@ -60,12 +81,30 @@
   "69bm-bk-ground.js",
   "69bn-bk-town.js",
   "69bo-bk-ring.js",
+  "77-sim-0-core.js",
+  "77-sim-1-world.js",
+  "77-sim-2-places.js",
+  "77-sim-3-actors.js",
+  "77-sim-4-nav.js",
+  "77-sim-5-motion.js",
+  "77-sim-5r-routes.js",
+  "77-sim-6-economy.js",
+  "77-sim-6-govern.js",
+  "77-sim-6-items.js",
+  "77-sim-6-needs.js",
+  "77-sim-6-season.js",
+  "77-sim-7-ledger.js",
+  "77-sim-7-lod.js",
+  "77-sim-7-stocks.js",
+  "77-sim-8-export.js",
+  "78-bk-sim.js",
   "89b0-bk-matlib.js",
   "89b1-bk-interiors.js",
   "89zb-bk-site.js",
   "90b-bk-world.js",
   "90c-bk-build.js",
   "90d-bk-flora.js",
+  "90e-bk-life.js",
   "24-core-walk-box.js",
   "89-atmos-0-core.js",
   "89-atmos-0p-presets.js",

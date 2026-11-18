@@ -30,13 +30,14 @@ sys.path.insert(0, os.path.join(ROOT, 'tools'))
 import buildlib                                   # noqa: E402
 buildlib.through_tools_build(__file__)            # item 25: build-inputs.json is always written
 import build_sources as BSRC                      # noqa: E402  (--list-sources: tools/dep_graph.py)
-CORE_TAKEN = ('core/rand', 'core/tags', 'core/host', 'core/city', 'core/space', 'core/hamlet', 'core/atmos', 'core/water',
-              'core/drawn', 'core/biome', 'core/materials', 'core/door', 'core/furnish', 'core/walk', 'core/lod')   # through Xanadu's build, kit.json and gen/
+CORE_TAKEN = ('core/rand', 'core/tags', 'core/host', 'core/city', 'core/space', 'core/hamlet', 'core/camp', 'core/clock', 'core/simulation',
+              'core/atmos', 'core/water', 'core/drawn', 'core/biome', 'core/materials', 'core/door', 'core/furnish', 'core/walk', 'core/lod')   # through Xanadu's build, kit.json and gen/
 
 CITY_JS = ['10-city-core.js', '12-city-index.js', '15-city-ground.js', '20-city-plan.js', '25-city-site.js', '31-city-steps-b.js',
            '32-city-steps-c.js', '33-city-strategies.js', '40-city-kcity.js']
 HAMLET_JS = ['10-hamlet-wood.js', '12-hamlet-gather.js', '14-hamlet-farmland.js', '16-hamlet-names.js', '18-hamlet-names.js',
              '20-hamlet-cultures.js', 'fellgang/22-hamlet-fellgang.js', '30-hamlet-village.js']
+CAMP_JS = ['10-camp-cultures.js', '20-camp-census.js', '30-camp-pitch.js', 'fellgang/52-camp-fellgang.js']
 SPACE = 'core/space/20-core-space.js'
 GEN = os.path.join(HERE, 'gen')
 DIST = os.path.join(HERE, 'dist')
@@ -58,19 +59,21 @@ def rd(rel):
 
 
 def kcity_bundle():
-    """core/space, core/city and core/hamlet (with the Fellgang row) in one closure (settlements/kirstabal/build.py's): the closure
-    hands them a window of their own, so KSPACE stays inside; KCITY.lib names what the town's own site steps use."""
+    """core/space, core/city, core/hamlet (with the Fellgang row) and core/camp in one closure (settlements/kirstabal/build.py's):
+    the closure hands them a window of their own, so KSPACE stays inside; KCITY.lib names what the town's site steps use."""
     body = '\n/* ---- %s ---- */\n%s\nvar KSPACE = window.KSPACE;\n' % (SPACE, rd(SPACE))
     for f in CITY_JS:
         body += '\n/* ---- core/city/%s ---- */\n%s\n' % (f, rd('core/city/' + f))
     for f in HAMLET_JS:
         body += '\n/* ---- core/hamlet/%s ---- */\n%s\n' % (f, rd('core/hamlet/' + f))
-    return ('/* KCITY, KHAMLET: core/space, core/city and core/hamlet in one closure (settlements/blakhed/build.py). '
-            'GENERATED: edit core/city, core/hamlet. */\n'
+    for f in CAMP_JS:
+        body += '\n/* ---- core/camp/%s ---- */\n%s\n' % (f, rd('core/camp/' + f))
+    return ('/* KCITY, KHAMLET, KCAMP: core/space, core/city, core/hamlet and core/camp in one closure (settlements/blakhed/build.py). '
+            'GENERATED: edit core/city, core/hamlet, core/camp. */\n'
             'var BK_CORE = (function(window){\n' + body +
             '\nKCITY.lib = { SL: SL, plan: function () { return PLAN; }, tune: function () { return TUNE; }, KSPACE: KSPACE, Raster: Raster, OCC: OCC };\n'
-            'return { KCITY: KCITY, KHAMLET: KHAMLET };\n})(Object.create(window));\n'
-            'var KCITY = BK_CORE.KCITY, KHAMLET = BK_CORE.KHAMLET;\n')
+            'return { KCITY: KCITY, KHAMLET: KHAMLET, KCAMP: KCAMP };\n})(Object.create(window));\n'
+            'var KCITY = BK_CORE.KCITY, KHAMLET = BK_CORE.KHAMLET, KCAMP = BK_CORE.KCAMP;\n')
 
 
 def tg_bundle():
@@ -140,9 +143,11 @@ def flora_bundle():
             'return { BIO: BIO, reseed: reseed, RRIM: RRIM };\n})(Object.create(window));\n')
 
 
-# the toll post's pieces (the Dalab set's, read in place: kit.json "external") draw in Xanadu's shared keys and in Dalab's own:
-# only those Dalab's pack must bring (Thalaba's DALAB_FAMILIES and the watch tower's)
-DALAB_FAMILIES = ('dRammed', 'dRelief', 'dReliefCh', 'dRender', 'dBanner')
+# Dalab's mission near the Market and its toll post at the Stairhead (the Dalab set's fragments, read in place: kit.json "external")
+# draw in Xanadu's shared keys and in Dalab's own: pack the mission's and toll post's Dalab families
+DALAB_FAMILIES = ('dRammed', 'dBancoE', 'dBlock', 'dRelief', 'dReliefCh', 'dReliefRd', 'dReliefTq', 'dRender', 'dRenderR',
+                  'dChecker', 'dDecoPanel', 'dDecoPanelB', 'dBanner', 'dMural', 'dMural1', 'dMural2', 'dMural3',
+                  'dMural4', 'dMural5', 'dMural6', 'dMural7')
 
 
 def dalab_pack():
@@ -168,7 +173,7 @@ def write_gen():
 
 
 BSRC.note(*([SPACE, H_PNG, RIVERS, 'kits/tungang/tungang_bundle.py', 'settlements/dalab/tex/pack.json'] +
-            ['core/city/' + f for f in CITY_JS] + ['core/hamlet/' + f for f in HAMLET_JS] +
+            ['core/city/' + f for f in CITY_JS] + ['core/hamlet/' + f for f in HAMLET_JS] + ['core/camp/' + f for f in CAMP_JS] +
             ['core/biome/' + f for f in FLORA_CORE] + ['biomes/riftrim/src/' + f for f in RRIM_JS]))
 if not BSRC.LISTING:
     write_gen()

@@ -35,16 +35,23 @@ TOWN_JS = r"""
 if(typeof BK_PLAN!=="undefined"){const Q=window._blakhed||{},P=BK_PLAN||{records:[],pieces:[]},K={},keys=new Set(P.records.map(r=>r.key)),pkeys=new Set(P.pieces.map(p=>p.key));
  for(const r of P.records)K[r.kind]=(K[r.kind]||0)+1;
  const fg=P.records.filter(r=>r.set==='fg').length+(Q.villages||[]).filter(v=>v.drawn).reduce((n,v)=>n+v.records,0);
- const need={hall:1,markethall:2,head:1,icehouse:12,ropewalk:5,cairnhall:1,halting:3,fairstand:1,booth:10},short=Object.keys(need).filter(k=>(K[k]||0)<need[k]);
- const townKeys=['fg-doublehall','fg-markethall','fg-halting-house','fg-booth','fg-great-icehouse','fg-ropewalk','fg-smithy','fg-tannery','fg-granary','fg-fair-stand'];
- const pieceKeys=['fg-cairn','fg-stone-sign','fg-fair-hurdle','fg-wagon','fg-halt','fg-lantern-post','fg-ice-tools'];
- const dh=(Q.halls||[])[0];
- R.push({name:'blakhed-laid',ok:!Q.err&&P.records.length>=900&&!short.length&&townKeys.every(k=>keys.has(k))&&pieceKeys.every(k=>pkeys.has(k))&&!(Q.refused||[]).length&&(K.folds||0)>=12&&(K.fairpens||0)>=10&&Q.drawn===fg&&!Object.keys(Q.missing||{}).length&&!(Q.errors||[]).length&&!!(dh&&dh.variant==='double'&&dh.pegs===72&&dh.slats===48),
-  detail:Q.err?('the site did not lay: '+Q.err):(P.records.length+' records ('+JSON.stringify(K)+'), '+Q.drawn+' / '+fg+' Fellgang drawn in '+Q.draws+' draws, '+Q.tris+' triangles, '+Q.pieces+' pieces'+(short.length?'; SHORT '+short.join(', '):'')+((Q.refused||[]).length?'; REFUSED '+Q.refused.join('; '):'')+(Object.keys(Q.missing||{}).length?'; MISSING '+JSON.stringify(Q.missing):'')+((Q.errors||[]).length?'; ERRORS '+Q.errors.join('; '):'')+'; double hall '+JSON.stringify(dh))});
+ const need={hall:1,markethall:2,head:1,icehouse:12,dugout:5,ropewalk:5,cairnhall:1,halting:3,fairstand:1,booth:14},short=Object.keys(need).filter(k=>(K[k]||0)<need[k]);
+ const townKeys=['fg-doublehall','fg-markethall','fg-halting-house','fg-booth','fg-great-icehouse','fg-dugout-icehouse','fg-ropewalk','fg-smithy','fg-tannery','fg-granary','fg-fair-stand'];
+ const pieceKeys=['fg-cairn','fg-truce-post','fg-stone-sign','fg-fair-hurdle','fg-wagon','fg-bender','fg-camp-hearth','fg-tinsmith','fg-halt','fg-lantern-post','fg-ice-tools'];
+ const truceN=P.pieces.filter(p=>p.key==='fg-truce-post'&&p.quarter==='market').length;
+ const dh=(Q.halls||[])[0],hsD=P.records.filter(r=>r.quarter==='houses').map(r=>Math.hypot(r.x,r.z)).sort((a,b)=>a-b),medD=hsD.length?hsD[hsD.length>>1]:1e9;
+ R.push({name:'blakhed-laid',ok:!Q.err&&P.records.length>=880&&medD<245&&!short.length&&truceN>=16&&((Q.page||{}).truceKerb||0)>20&&townKeys.every(k=>keys.has(k))&&pieceKeys.every(k=>pkeys.has(k))&&!(Q.refused||[]).length&&(K.folds||0)>=10&&(K.fairpens||0)>=10&&Q.drawn===fg&&!Object.keys(Q.missing||{}).length&&!(Q.errors||[]).length&&!!(dh&&dh.variant==='double'&&dh.pegs===72&&dh.slats===48),
+  detail:Q.err?('the site did not lay: '+Q.err):(P.records.length+' records (median house '+Math.round(medD)+' m from Peace Stone; '+JSON.stringify(K)+'), '+Q.drawn+' / '+fg+' Fellgang drawn in '+Q.draws+' draws, '+Q.tris+' triangles, '+Q.pieces+' pieces'+(short.length?'; SHORT '+short.join(', '):'')+((Q.refused||[]).length?'; REFUSED '+Q.refused.join('; '):'')+(Object.keys(Q.missing||{}).length?'; MISSING '+JSON.stringify(Q.missing):'')+((Q.errors||[]).length?'; ERRORS '+Q.errors.join('; '):'')+'; double hall '+JSON.stringify(dh))});
  const pp=Q.people||{};R.push({name:'people',ok:Math.abs((pp.five||0)-5000)<=.15*5000,
-  detail:'the 5,000: the town '+pp.town+', the Stairhead '+pp.stairhead+', the steadings '+pp.steadings+' = '+pp.five+'; beside them the hamlets '+pp.hamlets+', the Golden Tears '+pp.tears+', Dalab\'s toll post '+pp.toll+', the Travellers in the Winterings '+pp.travellers});
+  detail:'the 5,000: the town '+pp.town+', the Stairhead '+pp.stairhead+', the steadings '+pp.steadings+' = '+pp.five+'; beside them the hamlets '+pp.hamlets+', Dalab\'s mission '+pp.dalab+', the Golden Tears '+pp.tears+', Dalab\'s toll post '+pp.toll+', the Travellers in the Winterings '+pp.travellers});
  const V=Q.villages||[];R.push({name:'villages',ok:V.length===17&&V.every(v=>!v.error&&v.records>=20)&&V.filter(v=>v.kind==='steading').length===4&&V.filter(v=>v.kind==='hamlet').length===12,
   detail:V.map(v=>v.id.replace(/^bk\.(h|stead)?\.?/,'')+' '+v.records+(v.error?' ('+v.error+')':'')).join(', ')});
+ const dk=Q.dalab||[],dd=Q.ddims||[],dsRec=P.records.filter(r=>r.quarter==='dalab'),dDist=dsRec.length?dsRec.reduce((s,r)=>s+Math.hypot(r.x,r.z),0)/dsRec.length:1e9;
+ R.push({name:'dalab-mission',ok:dk.length>=12&&dDist<260&&['dalab_temple','dalab_priest_house','dalab_noble_c','dalab_scribes','dalab_inn','dalab_warehouse','dalab_shops','dalab_rowhouse','dalab_tenement','dalab_compound','dalab_well','dalab_watchtower'].every(k=>dk.includes(k))&&pp.dalab>=100&&pp.dalab<=150&&dd.length>0&&dd.every(d=>d[1])&&(Q.page||{}).dalabWall>10,
+  detail:dk.length+' Dalab pieces ('+Math.round(dDist)+' m from the Market), '+pp.dalab+' people, wall '+(Q.page||{}).dalabWall+' bays'});
+ const wp=P.pieces.filter(p=>p.quarter==='winterings');
+ R.push({name:'travellers-camp',ok:(Q.camps||0)>=7&&pp.travellers>=400&&pp.travellers<=650&&wp.filter(p=>p.key==='fg-wagon').length>=45&&wp.filter(p=>p.key==='fg-bender').length>=14&&wp.filter(p=>p.key==='fg-camp-hearth').length>=7&&wp.some(p=>p.key==='fg-tinsmith'),
+  detail:(Q.camps||0)+' family circles on core/camp, '+pp.travellers+' Travellers, '+wp.filter(p=>p.key==='fg-wagon').length+' vardos, '+wp.filter(p=>p.key==='fg-bender').length+' bender tents, '+wp.filter(p=>p.key==='fg-camp-hearth').length+' tripod campfires'});
  const tk=Q.tears||[],xd=Q.xdims||[];R.push({name:'golden-tears',ok:tk.length>=10&&['xa_serai','xa_rich_c','xa_temple','xa_barracks'].every(k=>tk.includes(k))&&pp.tears>=100&&pp.tears<=200&&xd.length>0&&xd.every(d=>d[1])&&(Q.page||{}).wall>20,
   detail:tk.length+' pieces ('+tk.join(', ')+'), '+pp.tears+' people, the plots against VERN.defs '+JSON.stringify(xd)+', the wall '+(Q.page||{}).wall+' bays'});
  R.push({name:'toll-post',ok:(Q.toll||[]).length===4&&Q.hoists===2&&(Q.page||{}).steps>200,detail:'Dalab\'s pieces '+(Q.toll||[]).join(', ')+'; '+Q.hoists+' fg-stair-hoists; '+JSON.stringify(Q.page)});
@@ -85,7 +92,14 @@ if(typeof BK_PLAN!=="undefined"){const Q=window._blakhed||{},P=BK_PLAN||{records
  for(let i=1;i<RP.length;i++)if(!(RP[i].bed<RP[i-1].bed))falls=false;for(let i=1;i<L.length;i++)if(!(L[i][2]<L[i-1][2]))lf=false;
  R.push({name:'water-on-core',ok:W.flows===2&&W.stills===6&&falls&&lf&&typeof WATER!=='undefined'&&!!WATER.at,
   detail:(W.flows||0)+' flows (the Blak Riba '+W.riverPts+' points, its bed '+(falls?'falling all its length':'NOT falling all its length')+'; the leat '+(lf?'falling':'NOT falling')+'), '+(W.stills||0)+' ice ponds'});
- const fl=window._bkFlora||{};R.push({name:'fell-flora',ok:!!fl.ok,detail:'the Rift Rim kit (rim w) '+(fl.ok?'grown':'NOT grown')+' in '+fl.ms+' ms, '+(fl.tiles||0)+' mask tiles; '+JSON.stringify(fl.build||{}).slice(0,200)});}
+ const fl=window._bkFlora||{};R.push({name:'fell-flora',ok:!!fl.ok,detail:'the Rift Rim kit (rim w) '+(fl.ok?'grown':'NOT grown')+' in '+fl.ms+' ms, '+(fl.tiles||0)+' mask tiles; '+JSON.stringify(fl.build||{}).slice(0,200)});
+ /* Phase F4: presented citizen simulation (BK_SIM + BK_LIFE) — live citizens, outfits, Double Meeting, Market Truce & ice-keeping */
+ {const L=typeof BK_LIFE!=='undefined'?BK_LIFE:{on:false};
+  if(L.on&&typeof L.run==='function'&&typeof BK_SIM!=='undefined'){L.run(15);BK_SIM.callDoubleMeeting(60);L.syncSummary();}
+  const S=window._bkSim||{},dh=S.doubleHall||{};
+  const meshN=L.buckets?Object.values(L.buckets).filter(b=>b.mesh&&b.mesh.parent).length:0;
+  R.push({name:'bk-sim',ok:!!(L.on&&S.on&&!(S.problems||[]).length&&(S.actors||0)>=280&&(S.places||0)>=800&&(S.shown||0)>=60&&meshN===6&&(S.truceChecked||0)>0&&(dh.ropeSide||0)>30&&(dh.tallySide||0)>30&&(S.happy||0)>=60),
+   detail:L.on?(S.actors+' citizens & sledges across '+meshN+' outfit meshes ('+S.shown+' outdoors, '+S.moving+' walking, '+S.indoors+' indoors, '+S.inTruce+' inside Market Truce), Double Meeting '+dh.ropeSide+'/'+dh.tallySide+', happiness '+S.happy+((S.problems||[]).length?'; PROBLEMS '+S.problems.join('; '):'')):('BK_LIFE off: '+(L.reason||'unknown'))});}}
 return R;}"""
 xv.ASSERT_JS = xv.ASSERT_JS.rstrip()[:-len('return R;}')] + TOWN_JS
 assert xv.ASSERT_JS.endswith('return R;}'), 'settlements/xanadu/verify.py ASSERT_JS no longer ends with return R;}'

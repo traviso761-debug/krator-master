@@ -16,16 +16,17 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | File | KB | Sections (line) |
 |---|---|---|
 | `test-bk-economy.js` | 9 |  |
-| `test-bk-town.js` | 10 |  |
+| `test-bk-town.js` | 16 |  |
 
 ## src/
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `69bm-bk-ground.js` | 9 |  |
-| `69bn-bk-town.js` | 23 |  |
-| `69bo-bk-ring.js` | 7 |  |
-| `89b0-bk-matlib.js` | <1 |  |
+| `69bn-bk-town.js` | 38 **big** |  |
+| `69bo-bk-ring.js` | 6 |  |
+| `78-bk-sim.js` | 33 **big** |  |
+| `89b0-bk-matlib.js` | 1 |  |
 | `89b1-bk-interiors.js` | 2 |  |
 
 ## targets/
@@ -34,4 +35,4 @@ Each target adds its own fragments to `src/` and builds one output.
 
 | Target | Fragments | KB |
 |---|---|---|
-| `town` | `89z-rows.js`, `89zb-bk-site.js`, `90b-bk-world.js`, `90c-bk-build.js`, `90d-bk-flora.js`, `91z-views.js` | 45 |
+| `town` | `89z-rows.js`, `89zb-bk-site.js`, `90b-bk-world.js`, `90c-bk-build.js`, `90d-bk-flora.js`, `90e-bk-life.js`, `91z-views.js` | 66 |
