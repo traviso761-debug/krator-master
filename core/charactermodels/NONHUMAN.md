@@ -138,9 +138,10 @@ About **8 to 10 sessions** and the five textures, for plantigrade Lizardmen.
   seamless upper-thigh collar continuity into `Human.body`:
   - `mod_legs_coyote` (`mpfb_male`, `mpfb_female`): four-toed cushioned oval canid paw with dark plantar pads, blunt horn
     claws (`Mod.coyote_claws`) and `brush` fur shells (`role: 'coat'`, `furred: true`).
-  - `mod_legs_lizard` (`mpfb_male`, `mpfb_female`, `mpfb_giant`, `test: true`): muscular saurian thigh/crus, transverse
-    anterior tarsal scute plates, splayed three-toed reptilian foot with medial hallux spur and recurved dark talons
-    (`Mod.lizard_claws`), scaled in `Mod.head_lizard`'s scale map (`role: 'skin'`) so the thigh collar matches `skin_detail`.
+  - `mod_legs_lizard` (`mpfb_male`, `mpfb_female`, `mpfb_giant`, `test: true`): muscular saurian thigh/crus, lean scuted
+    tarso-metatarsus with no mammal paw pad, three long wide-splayed articulated theropod digits (`±36.7°`) with dorsal
+    transverse scute ridges, a backward-projecting medial hallux (Digit I), and large sickle-curved bone-to-horn talons
+    (`Mod.lizard_claws`), tiled at `0.085 m` in `Mod.head_lizard`'s scale map (`role: 'skin'`) to match `skin_detail`.
 - **Bidirectional footwear rule** (`replaces_feet: true`, `KCHAR.replacesFeet` / `KChar.replaces_feet`, `KCHAR.fits` /
   `KChar.fits`): digitigrade and non-digitigrade characters cannot equip each others' boots/footwear (`slot === 'feet'`
   requires `!!it.digitigrade === replacesFeet(rec, kit)`), and digitigrade leg mods hide human lower-leg/foot skin and
