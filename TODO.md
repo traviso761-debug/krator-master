@@ -185,6 +185,20 @@ runtime and bison table, and the `tools/` listing staleness (every build rebuilt
   key. `biomes/arch/src/89w-host-water.js` works round it by extending the key itself; drop that once core has it. It moves every page that
   draws a flow (147 build commands, `python3 tools/reach.py core/water/51-core-water-kinds.js`).
 
+- **Owed from the merge of `ccr-a96f22b6-0hy616` into main (2026-11-18)**, each checked against this line before the merge (a
+  worktree at a4ac64ebc builds the same findings), so none is the merge's own; the ratcheted lints' new keys baselined with this entry:
+  - `check_assembly`: `settlements/thalaba` (both pages) and `settlements/pher` miss `buildlib.CORE_BIOME_MIN`'s `31b-core-leafset.js`
+    and `34-core-impostor.js` (both opted into `minset`) and clash on `window._registered` with core/host; `settlements/qiblai` clashes
+    on `window._materials` (two material libraries); `kits/ancients --target theodiga-today` clashes on `_projectFire` and `onerror`.
+  - `check_stale`: `settlements/azure-dream` ("external fragment 20-core-walk.js clashes with a fragment already in the order"),
+    `settlements/lightwall` (BUILD RULES FAILED: `kits/qiblai/src/89q5s-qb-shells.js` is generative with no builder and no reseed(N);
+    list it in DETERMINISTIC or give it a builder), `settlements/longsong` (KCHAR pieces: build where core/charactermodels is built).
+  - `check_vendor`: `kits/tungang` drift in `37-wk-rec.js`. `check_views`: `kits/ancients` "The Pilgrims' Stair" (no apostrophe).
+  - `check_source`: 41 keys (`|| number` defaults in kits/fauna, kits/mechs, kits/catalog's hykkousoi and scyvoi files, core/audio,
+    core/coast, core/region; RAWTEX in swhighlands', abyssal-savannah's, greatchasm's and scablands' station stages, core/atmos fx).
+  - Not ratcheted, failing on this line before the merge: the dependency graph (`--list-sources` fails for azure-dream, kirstabal,
+    lightwall, pher, qiblai, thalaba), `tools/tests/test_bridges.py`, `openworld/outposts/tests/test-outposts.js` (eight places moved
+    since the cut: Flooded Tower, Mav's Refuge, Mungo, Pinnacle Rock, Reed, Shade, Verge, Jimjam).
 - **`kits/fauna/krator-fauna-xeno.js` line 26: `o.stock || 1`** (2026-11-16, the merge of `claude/siphon-pits-biome`; `check_source` ORNUM,
   baselined at the merge): write `o.stock == null ? 1 : o.stock`. The file reaches 30 build commands and 109 pages (`python3 tools/reach.py
   kits/fauna/krator-fauna-xeno.js`), so it rides along; then drop its key from `tools/check_source_baseline.json`.
