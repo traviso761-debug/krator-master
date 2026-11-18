@@ -48,7 +48,7 @@ async function start(){
 let last=performance.now(),fpsN=0,fpsT=performance.now(),fps=0,lastDraw=null;
 const camera=HOST.camera,renderer=HOST.renderer,scene=HOST.scene;
 // one step of the streaming; big=true while the curtain is down
-function pump(big){TERRAIN.update(big?60:5);FLORA.residency(camera.position,big?40:3);NURSERY.update(big?120:7);FLOOR.update(big?40:2);SEAS.update(big?60:3);}
+function pump(big){TERRAIN.update(big?60:5);FLORA.residency(camera.position,big?40:3);NURSERY.update(big?120:7);FLOOR.update(big?40:2);SEAS.update(big?60:3);if(typeof STREAMW!=='undefined'&&STREAMW)STREAMW.update(big?60:3);}   /* the small streams' water (83s), where a build draws it */
 START.pump=pump;
 function frame(){requestAnimationFrame(frame);
  const now=performance.now(),dt=Math.min(.1,(now-last)/1000);last=now;START.frames++;

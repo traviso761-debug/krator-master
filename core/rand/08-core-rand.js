@@ -15,6 +15,10 @@
 //                                  sin-based h3 (which a GDScript port cannot reproduce). Floats are floored.
 //   KRAND.vnoise(x,y,z, seed)      value noise in [0,1]: the lineages' vnoise (smoothstep trilinear) on h3 above
 //   KRAND.fbm(x,y,z, octaves, seed)  the lineages' fbm (octaves default 3, frequency x2.03, amplitude 1/f)
+//   KRAND.gnoise(x, z, seed)       gradient noise in about -1..1 (2026-11-17, core/world/PLAN-MICRO.md): 0 at every lattice
+//                                  point, its gradient one of 16 fixed directions picked by the hash, a quintic fade. No
+//                                  lattice lines (value noise's smoothstep shows its grid under a raking light)
+//   KRAND.gfbm(x, z, octaves, seed)  its fbm: each octave turned 36.87 degrees and offset, frequency x2.03, amplitude halved
 //   KRAND.cell(seed, ix, iz)       a seed for one placement cell, so a tile built alone draws what it draws in a
 //                                  full build (biomes/WORLD.md: placement seeded by cell)
 //   KRAND.child(seed, name)        a seed for a named sub-stream ('trees', 'rubble'...), no collisions to manage
@@ -43,6 +47,19 @@
     var a=a0+(a1-a0)*u,b=b0+(b1-b0)*u,c=c0+(c1-c0)*u,d=d0+(d1-d0)*u;
     var e=a+(b-a)*v,f=c+(d-c)*v;return e+(f-e)*w;}
   function fbm(x,y,z,o,seed){o=o||3;var a=0,f=1,s=0;for(var i=0;i<o;i++){a+=vnoise(x*f,y*f,z*f,seed)/f;s+=1/f;f*=2.03;}return a/s;}
+  // gradient noise: the table is cos and sin of k pi/8 rounded to 1/1024ths: exact binary fractions, which every engine's parser reads to the same bits
+  var GX=[1.0, 0.923828125, 0.70703125, 0.3828125, 0.0, -0.3828125, -0.70703125, -0.923828125, -1.0, -0.923828125, -0.70703125, -0.3828125, 0.0, 0.3828125, 0.70703125, 0.923828125],
+      GZ=[0.0, 0.3828125, 0.70703125, 0.923828125, 1.0, 0.923828125, 0.70703125, 0.3828125, 0.0, -0.3828125, -0.70703125, -0.923828125, -1.0, -0.923828125, -0.70703125, -0.3828125];
+  function gnoise(x,z,seed){seed=seed||0;var i=Math.floor(x),j=Math.floor(z),fx=x-i,fz=z-j;
+    var u=fx*fx*fx*(fx*(fx*6-15)+10),v=fz*fz*fz*(fz*(fz*6-15)+10);
+    var k=hash3(seed,i,j,0x6E)&15,a=GX[k]*fx+GZ[k]*fz;
+    k=hash3(seed,i+1,j,0x6E)&15;var b=GX[k]*(fx-1)+GZ[k]*fz;
+    k=hash3(seed,i,j+1,0x6E)&15;var c=GX[k]*fx+GZ[k]*(fz-1);
+    k=hash3(seed,i+1,j+1,0x6E)&15;var d=GX[k]*(fx-1)+GZ[k]*(fz-1);
+    var p=a+(b-a)*u,q=c+(d-c)*u;return (p+(q-p)*v)*1.4142135623730951;}
+  function gfbm(x,z,o,seed){o=o==null?3:o;seed=seed==null?0:seed;var a=0,f=1,s=0,X=x,Z=z;
+    for(var i=0;i<o;i++){a+=gnoise(X,Z,(seed+i)>>>0)/f;s+=1/f;var nx=(.8*X-.6*Z)*2.03+17.3,nz=(.6*X+.8*Z)*2.03-9.1;X=nx;Z=nz;f*=2;}
+    return a/s;}
   function cell(seed,ix,iz){return hash3(seed,ix,iz,0x51ED);}
   function child(seed,name){var h=0x811C9DC5;name=String(name);   // FNV-1a over UTF-16 code units, then mixed with the seed
     for(var i=0;i<name.length;i++)h=imul(h^name.charCodeAt(i),0x01000193);
@@ -58,5 +75,5 @@
       chance:function(p){return next()<p;},
       state:function(){return s>>>0;},setState:function(v){s=v>>>0;}};
   }
-  root.KRAND={version:1,stream:stream,hash:hash,unit:unit,h3:h3,vnoise:vnoise,fbm:fbm,cell:cell,child:child,mix32:mix32};
+  root.KRAND={version:1,stream:stream,hash:hash,unit:unit,h3:h3,vnoise:vnoise,fbm:fbm,gnoise:gnoise,gfbm:gfbm,cell:cell,child:child,mix32:mix32};
 })(typeof window!=='undefined'?window:globalThis);

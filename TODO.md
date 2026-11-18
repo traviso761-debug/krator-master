@@ -136,6 +136,13 @@ runtime and bison table, and the `tools/` listing staleness (every build rebuilt
   builds. At the next all-builds rebuild, take a town's water into 41 itself: `buildTowns` reads `drawn`, `water`, `river`;
   `W.water` calls the wrapped `riverWater` (today it calls 41's local one, so 41t replaces `W.water` too); the joined river's cut
   happens in `buildChannels`. `node core/world/test-town-water.js` must pass unchanged.
+- **core/water: the flow's foam without blocks** (2026-11-16, the owner: "work on blocky ripple pattern; core update will be
+  applied more broadly at next all-builds rebuild"). COMMITTED on `claude/exciting-curie-1c0022` (relief P3): `drawFlow`'s
+  breakup is gradient noise (`wtrBreak`, twin `WATER.breakNoise`), and the ribbon shades by the slope over 24 m (`slopeV`,
+  `PRESETS.flow.slopeWin`). Rebuilt and GPU-verified so far only in the eight pages `core/world/41` reaches (the open-world
+  regions, Longsong, the isle demo's two city pages); every other page that draws core/water (`tools/reach.py
+  core/water/51-core-water-kinds.js`: 149 build commands) is stale until the next all-builds rebuild takes it. Port both to the
+  Godot twin (`KWater.ribbon`'s slope, the breakup in its flow shader).
 - **core/hamlet: a work camp** (2026-11-11, the oidong-highrift region's Vein Camp; the owner: "mostly miners"). A camp's people
   are nearly all at work (no families), so `openworld/oidong-highrift/src/48-world-site.js` defines a row of its own,
   `KHAMLET.CULTURES['xanadu-camp']` (the `xanadu` row with workShare .9, household 4, a cookhouse, store and tally house for
