@@ -31,14 +31,20 @@
   start.mpfb_giant = { body:'mpfb_giant', hair:'short04', beard:null, armour:{ torso:'giant_dalab_m_harness4', legs:'voth_m_peasant_maxtlatl', feet:'dalab_m_noble_sandals', head:null },
                        sliders:{}, morph:{ muscle:0.7, weight:0.25 }, ancestry:null, skin:'#6a8a4c', hair_color:'#1a1712', eye_color:'#6e5a2e',
                        people:'giants', mods:['mod_arms_flesh'], dye:{ legs:'#b8443a' } };
-  /* the Lizardman test record (a spike, tools/nonhuman.py; LORE 6.20): a tail and a reptile's head on the body, olive
-     skin and amber eyes, no hair, bare above the trousers so the tail shows. Not a people: no stranger is drawn with
-     it. ?lizard in the page's address starts each body with it; the Body mods section has a chip for it */
-  var LIZARD = { mods:['mod_tail', 'mod_head_lizard'], skin:'#7d8a45', eye_color:'#c89020', hair:null, beard:null };
+  /* the Lizardman test record (a spike, tools/nonhuman.py, tools/digitigrade.py; LORE 6.20): a tail, reptile head and
+     saurian digitigrade legs on the body, olive skin and amber eyes, no hair, bare torso and loincloth/kilt so the tail
+     and scaled hocks show. Not a people: no stranger is drawn with it. ?lizard starts each body with it */
+  var LIZARD = { mods:['mod_tail', 'mod_head_lizard', 'mod_legs_lizard'], skin:'#7d8a45', eye_color:'#c89020', hair:null, beard:null };
   function lizard(r, kit){
     if(!kit.items.some(function(it){ return it.id === 'mod_head_lizard'; })) return r;
     Object.keys(LIZARD).forEach(function(k){ r[k] = JSON.parse(JSON.stringify(LIZARD[k])); });
-    r.armour = Object.assign({}, r.armour, { head:null, torso:null });
+    r.mods = r.mods.filter(function(id){ return kit.items.some(function(it){ return it.id === id; }); });
+    r.armour = Object.assign({}, r.armour, { head:null, torso:null, feet:null });
+    var loin = kit.items.filter(function(it){ return it.id === 'voth_m_peasant_maxtlatl' || it.id === 'dalab_f_peasant_kilt'; })[0];
+    if(r.armour.legs){
+      var curL = kit.items.filter(function(it){ return it.id === r.armour.legs; })[0];
+      if(!curL || !KCHAR.fits(curL, r, kit)) r.armour.legs = loin ? loin.id : null;
+    }
     return r;
   }
   var LIZARD_START = /[?&#]lizard\b/.test(location.search + location.hash);

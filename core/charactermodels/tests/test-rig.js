@@ -244,30 +244,51 @@ if(fs.existsSync(path.join(HERE, 'data', 'mpfb_giant', 'kit.json'))) (function()
      b + ': no people draws a tail or a lizard head');
 });
 
-// ---- Coyote Men digitigrade legs (tools/digitigrade.py): 8 Digi* joints appended after Tail8, morphs keep paws on ground,
-// replacesFeet filters out human boots & fitted trousers while keeping kilts/skirts/loincloths, and coyote_men strangers wear the triad
-['mpfb_male', 'mpfb_female'].forEach(function(b){
+// ---- Coyote Men & Lizardmen digitigrade legs (tools/digitigrade.py): 8 Digi* joints appended after Tail8 on every
+// MakeHuman body, morphs keep paws/feet on ground, bidirectional footwear rule prevents digitigrade and non-digitigrade
+// characters from equipping each others' boots/footwear, and coyote_men strangers wear the triad
+['mpfb_male', 'mpfb_female', 'mpfb_giant'].forEach(function(b){
   var k = JSON.parse(fs.readFileSync(path.join(HERE, 'data', b, 'kit.json'))), sk = JSON.parse(fs.readFileSync(path.join(HERE, 'data', b, 'skeleton.json')));
-  var dg = k.items.filter(function(it){ return it.id === 'mod_legs_coyote'; })[0];
-  ok(!!dg && dg.replaces_feet && dg.furred && dg.digitigrade && dg.hides > 5000, b + ': mod_legs_coyote entry present and hides lower leg skin');
+  var lzDg = k.items.filter(function(it){ return it.id === 'mod_legs_lizard'; })[0];
+  ok(!!lzDg && lzDg.replaces_feet && lzDg.test && lzDg.digitigrade && lzDg.hides > 5000 && k.tint.roles['Mod.lizard_legs'] === 'skin',
+     b + ': mod_legs_lizard entry present, marked test, role skin, and hides lower leg skin');
   var J = {}; sk.joints.forEach(function(j, i){ J[j.name] = i; });
   ok(['LeftDigiThigh', 'LeftDigiShin', 'LeftDigiHock', 'LeftDigiPaw', 'RightDigiThigh', 'RightDigiShin', 'RightDigiHock', 'RightDigiPaw'].every(function(n){ return J[n] > J.Tail8; }),
      b + ': all 8 Digi joints sit after Tail8');
   var f0 = KCHAR.fk(sk, sk.joints.map(function(j){ return j.t; }));
   ok(f0.P[J.LeftDigiShin][2] > f0.P[J.LeftDigiThigh][2] + 0.08 && f0.P[J.LeftDigiHock][2] < f0.P[J.LeftFoot][2] - 0.06 &&
      f0.P[J.LeftDigiHock][1] > 0.20 && f0.P[J.LeftDigiPaw][1] > 0.02 && f0.P[J.LeftDigiPaw][1] < 0.045,
-     b + ': Digi rest chain forms canid Z-pose (stifle forward, hock high & back, paw ball near ground)');
+     b + ': Digi rest chain forms Z-pose (stifle forward, hock high & back, foot ball near ground)');
   var w = KCHAR.morphWeights({ morph:{ height:1 } }, k), mj = KCHAR.morphJoints(sk, k, w);
-  ok(mj.d[J.LeftDigiThigh][1] > 0.15 && Math.abs(mj.d[J.LeftDigiPaw][1]) < 0.025, b + ': height +1 lifts hip while keeping paw near ground');
+  ok(mj.d[J.LeftDigiThigh][1] > 0.15 && Math.abs(mj.d[J.LeftDigiPaw][1]) < 0.025, b + ': height +1 lifts hip while keeping foot near ground');
+  var boot = k.items.filter(function(it){ return it.slot === 'feet' && !it.digitigrade; })[0];
+  var dgBoot = { id:'_test_digi_boot', slot:'feet', glb:'pieces/' + b + '/_test_digi_boot.glb', digitigrade:true };
+  var rPl = KCHAR.blank(k);
+  ok(!KCHAR.replacesFeet(rPl, k) && KCHAR.fits(boot, rPl, k) && !KCHAR.fits(dgBoot, rPl, k),
+     b + ': non-digitigrade character fits plantigrade footwear and rejects digitigrade footwear');
+  var kWithDgBoot = Object.assign({}, k, { items:k.items.concat([dgBoot]) });
+  rPl.armour.feet = dgBoot.id;
+  ok(KCHAR.parts(rPl, kWithDgBoot).every(function(p){ return p.slot !== 'feet'; }),
+     b + ': non-digitigrade character parts() omits digitigrade footwear');
+  var rLz = KCHAR.blank(k); rLz.mods = ['mod_tail', 'mod_head_lizard', 'mod_legs_lizard']; rLz.armour.feet = boot.id;
+  ok(KCHAR.replacesFeet(rLz, k) && !KCHAR.fits(boot, rLz, k) && KCHAR.fits(dgBoot, rLz, k) &&
+     KCHAR.parts(rLz, k).every(function(p){ return p.slot !== 'feet'; }),
+     b + ': lizardman digitigrade character rejects plantigrade footwear and accepts digitigrade footwear');
+  rLz.armour.feet = dgBoot.id;
+  ok(KCHAR.parts(rLz, kWithDgBoot).some(function(p){ return p.slot === 'feet' && /_test_digi_boot$/.test(p.key); }),
+     b + ': digitigrade character parts() draws digitigrade footwear');
+  ok(peoples.every(function(P){ for(var s = 1; s <= 15; s++){ var st = KCHAR.stranger(s, k, P); if((st.mods || []).indexOf('mod_legs_lizard') >= 0) return false; } return true; }),
+     b + ': no people draws mod_legs_lizard');
+  if(b === 'mpfb_giant') return;
+  var dg = k.items.filter(function(it){ return it.id === 'mod_legs_coyote'; })[0];
+  ok(!!dg && dg.replaces_feet && dg.furred && dg.digitigrade && dg.hides > 5000, b + ': mod_legs_coyote entry present and hides lower leg skin');
   var r = KCHAR.blank(k);
-  var boot = k.items.filter(function(it){ return it.slot === 'feet'; })[0];
   var pants = k.items.filter(function(it){ return it.slot === 'legs' && !it.loose && it.hides > 2000; })[0];
   var kilt = k.items.filter(function(it){ return it.slot === 'legs' && it.loose; })[0];
-  ok(!KCHAR.replacesFeet(r, k) && KCHAR.fits(boot, r, k) && KCHAR.fits(pants, r, k), b + ': human feet & pants fit without mod_legs_coyote');
   r.mods = ['mod_legs_coyote']; r.armour.feet = boot.id; r.armour.legs = pants.id;
-  ok(KCHAR.replacesFeet(r, k) && !KCHAR.fits(boot, r, k) && !KCHAR.fits(pants, r, k) && KCHAR.fits(kilt, r, k) &&
+  ok(KCHAR.replacesFeet(r, k) && !KCHAR.fits(boot, r, k) && KCHAR.fits(dgBoot, r, k) && !KCHAR.fits(pants, r, k) && KCHAR.fits(kilt, r, k) &&
      KCHAR.parts(r, k).every(function(p){ return p.slot !== 'feet' && p.slot !== 'legs'; }) && KCHAR.hiddenParts(r, k)['Human.toenails'],
-     b + ': mod_legs_coyote rejects boots & fitted trousers, allows kilts, and hides toenails');
+     b + ': mod_legs_coyote rejects plantigrade boots & fitted trousers, accepts digitigrade boots & kilts, and hides toenails');
   var P = peoples.filter(function(p){ return p.id === 'coyote_men'; })[0];
   for(var s = 1; s <= 15; s++){
     var st = KCHAR.stranger(s, k, P);

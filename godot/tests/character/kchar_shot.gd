@@ -86,9 +86,9 @@ func _lizards() -> void:
 		fig.position = Vector3((i - 1.5) * 1.3, 0, 0)
 		root.add_child(fig)
 		var rec := KChar.blank(fig.kit)
-		rec["armour"]["legs"] = "cortu_cargo_pants"
+		rec["armour"]["legs"] = "dalab_f_peasant_kilt" if plan[i][0] == "mpfb_female" else "voth_m_peasant_maxtlatl"
 		rec["morph"] = {"height": plan[i][1]}
-		rec["mods"] = ["mod_tail", "mod_head_lizard"]
+		rec["mods"] = ["mod_tail", "mod_head_lizard", "mod_legs_lizard"]
 		rec["skin"] = "#7d8a45"
 		rec["eye_color"] = "#c89020"
 		fig.apply(rec)

@@ -450,8 +450,15 @@ func _lizard(fig: KCharFigure, rec: Dictionary) -> void:
 			tl = it["tail"]
 	if tl.is_empty():
 		return
+	var has_lz_legs := false
+	for it in fig.kit["items"]:
+		if it["id"] == "mod_legs_lizard":
+			has_lz_legs = FileAccess.file_exists(DIR + "/pieces/mpfb_male/mod_legs_lizard.glb")
 	var r2 := rec.duplicate(true)
-	r2["mods"] = ["mod_tail", "mod_head_lizard"]
+	r2["mods"] = ["mod_tail", "mod_head_lizard", "mod_legs_lizard"] if has_lz_legs else ["mod_tail", "mod_head_lizard"]
+	if has_lz_legs:
+		r2["armour"]["legs"] = "voth_m_peasant_maxtlatl"
+		r2["armour"]["feet"] = "culturalibre_hero_boots_1"
 	if r2.get("hair") == null:
 		r2["hair"] = "short02"
 	fig.play("")
@@ -464,7 +471,13 @@ func _lizard(fig: KCharFigure, rec: Dictionary) -> void:
 	for p in KChar.parts(r2, fig.kit):
 		want[p["key"]] = true
 	ok(shown.keys().size() == want.keys().size() and shown.has("mpfb_male/mod_tail") and shown.has("mpfb_male/mod_head_lizard")
-		and not shown.has("mpfb_male/short02"), "lizard: tail and head drawn, the hair not (%s)" % [shown.keys()])
+		and (not has_lz_legs or (shown.has("mpfb_male/mod_legs_lizard") and not shown.has("mpfb_male/culturalibre_hero_boots_1")))
+		and not shown.has("mpfb_male/short02"), "lizard: tail, head and digitigrade legs drawn, hair and human boots not (%s)" % [shown.keys()])
+	var fake_dg_boot := {"id": "test_dg_boot", "slot": "feet", "digitigrade": true}
+	var fake_pl_boot := {"id": "test_pl_boot", "slot": "feet"}
+	ok(not KChar.fits(fake_dg_boot, rec, fig.kit) and KChar.fits(fake_pl_boot, rec, fig.kit)
+		and (not has_lz_legs or (KChar.fits(fake_dg_boot, r2, fig.kit) and not KChar.fits(fake_pl_boot, r2, fig.kit))),
+		"footwear: digitigrade and non-digitigrade characters reject each others' boots")
 	var nothing := 0
 	for mi in fig.skeleton.get_children():
 		if mi is MeshInstance3D and mi.visible and mi.get_meta("part")["role"] == "base":
@@ -479,7 +492,7 @@ func _lizard(fig: KCharFigure, rec: Dictionary) -> void:
 			for k in mi.skin.get_bind_count():
 				var m: Transform3D = glob(fig.skeleton, mi.skin.get_bind_bone(k)) * mi.skin.get_bind_pose(k)
 				worst = maxf(worst, m.origin.length() + (m.basis.x - Vector3.RIGHT).length() + (m.basis.y - Vector3.UP).length())
-	ok(worst < 1e-3, "lizard: at rest the tail's and head's bones are at their binds (worst %f)" % worst)
+	ok(worst < 1e-3, "lizard: at rest the tail's, head's and digitigrade legs' bones are at their binds (worst %f)" % worst)
 	var legs := []
 	for cp in fig._caps:
 		var nm := fig.skeleton.get_bone_name(cp["a"])
@@ -496,6 +509,16 @@ func _lizard(fig: KCharFigure, rec: Dictionary) -> void:
 			fig._process(1.0 / 30.0)
 			var st := fig.tail_state()
 			var floor_y := -fig.skeleton.position.y / fig.size
+			var segs := []
+			if not fig.digi_state().is_empty():
+				for di in 6:
+					var ds := fig._digi_seg(di)
+					if not ds.is_empty():
+						segs.append(ds)
+			else:
+				for cp in legs:
+					var e := fig._cap_ends(cp)
+					segs.append({"a": e[0], "b": e[1], "ra": cp["ra"], "rb": cp["rb"]})
 			for i in st["x"].size():
 				var x: Vector3 = st["x"][i]
 				if not x.is_finite():
@@ -506,12 +529,11 @@ func _lizard(fig: KCharFigure, rec: Dictionary) -> void:
 				lag = maxf(lag, (x - st["tw"][i]).length())
 				if x.y < floor_y - 0.001:
 					low += 1
-				for cp in legs:
-					var e := fig._cap_ends(cp)
-					var ab: Vector3 = e[1] - e[0]
-					var t := clampf((x - e[0]).dot(ab) / ab.length_squared(), 0.0, 1.0)
+				for cp in segs:
+					var ab: Vector3 = (cp["b"] as Vector3) - (cp["a"] as Vector3)
+					var t := clampf((x - (cp["a"] as Vector3)).dot(ab) / maxf(1e-12, ab.length_squared()), 0.0, 1.0)
 					var rr := float(cp["ra"]) + (float(cp["rb"]) - float(cp["ra"])) * t + float(rad[mini(i, rad.size() - 1)])
-					deep = maxf(deep, rr - x.distance_to(e[0] + ab * t))
+					deep = maxf(deep, rr - x.distance_to((cp["a"] as Vector3) + ab * t))
 		ok(bad == 0 and low == 0, "lizard %s: tail points finite and above the floor (%d, %d)" % [c, bad, low])
 		ok(deep < 0.005, "lizard %s: the tail keeps out of the legs (%.3f m in)" % [c, deep])
 		if c == "walk":

@@ -165,11 +165,16 @@ CHECKS = r'''async () => {
     // tail's points stay finite, out of the thighs and shins (their radius less 5 mm) and above the floor, and lag behind
     // the hips; the jaw opens now and then
     if (kit.items.some(it => it.id === 'mod_tail')) {
-      const lz = Object.assign(JSON.parse(JSON.stringify(dressed)), { mods: ['mod_tail', 'mod_head_lizard'] });
+      const hasLzLegs = kit.items.some(it => it.id === 'mod_legs_lizard');
+      const lzMods = hasLzLegs ? ['mod_tail', 'mod_head_lizard', 'mod_legs_lizard'] : ['mod_tail', 'mod_head_lizard'];
+      const lz = Object.assign(JSON.parse(JSON.stringify(dressed)), { mods: lzMods });
+      const lzKilt = kit.items.find(it => it.slot === 'legs' && (it.id === 'voth_m_peasant_maxtlatl' || (it.loose && it.cloth)));
+      if (hasLzLegs && lzKilt) lz.armour.legs = lzKilt.id;
       const NH = out.nonhuman, tl = kit.items.find(it => it.id === 'mod_tail').tail;
       await k2.set(lz); fig.play(null); await new Promise(r => setTimeout(r, 50));
       if (JSON.stringify(shownKeys()) !== JSON.stringify(keys(lz))) NH.push(body + ' lizard shows ' + shownKeys());
       if (shownKeys().some(k => k === KCHAR.key(kit.items.find(i => i.id === dressed.hair).glb))) NH.push(body + ' lizard: the hair is drawn');
+      if (hasLzLegs && dressed.armour && dressed.armour.feet && shownKeys().some(k => k.endsWith('/' + dressed.armour.feet))) NH.push(body + ' lizard: human boots drawn over saurian feet');
       if (!(skin().geometry.index.count < out.hide.find(h => h[0] === body)[1])) NH.push(body + ' lizard: the head skin is not left out');
       for (const [tag, mo] of [['lizard', {}], ['lizard heavy', heavy]]) {
         await k2.set(Object.assign({}, lz, { morph: mo })); rest(tag);
@@ -196,16 +201,23 @@ CHECKS = r'''async () => {
         for (let k = 0; k < 90; k++) {
           fig.update(1 / 30);
           const T = fig.tailState(), sc = fig.inner.getWorldScale(new THREE.Vector3()).x, floor = fig.group.getWorldPosition(new THREE.Vector3()).y;
+          const dsNow = fig.digiState();
+          const segs = dsNow ? dsNow.sides.flatMap(sd => {
+            const rad = dsNow.spec.radii || {}, gk = dsNow.girthK == null ? 1 : dsNow.girthK;
+            return [[sd.dt, sd.ds, rad.thigh || [0.08, 0.055]], [sd.ds, sd.dh, rad.shin || [0.052, 0.03]], [sd.dh, sd.dp, rad.meta || [0.03, 0.038]]].map(p => ({
+              a: fig.bones[p[0]].getWorldPosition(new THREE.Vector3()), b: fig.bones[p[1]].getWorldPosition(new THREE.Vector3()),
+              ra: p[2][0] * gk, rb: p[2][1] * gk
+            }));
+          }) : legs.map(cp => ({ a: fig.bones[cp.a].getWorldPosition(new THREE.Vector3()), b: fig.bones[cp.b].getWorldPosition(new THREE.Vector3()), ra: cp.ra || cp.r, rb: cp.rb || cp.r }));
           T.x.forEach((x, i) => {
             if (!isFinite(x.x + x.y + x.z)) { bad++; return; }
             if (i === 0) return;
             lag = Math.max(lag, x.distanceTo(T.tw[i]));
             if (x.y < floor - 0.001) low++;
-            legs.forEach(cp => {
-              const a = fig.bones[cp.a].getWorldPosition(new THREE.Vector3()), b = fig.bones[cp.b].getWorldPosition(new THREE.Vector3());
-              const ab = b.clone().sub(a), t = Math.max(0, Math.min(1, x.clone().sub(a).dot(ab) / ab.lengthSq()));
-              const r = ((cp.ra || cp.r) + ((cp.rb || cp.r) - (cp.ra || cp.r)) * t + tl.radius[Math.min(i, tl.radius.length - 1)]) * sc;
-              deep = Math.max(deep, r - x.distanceTo(a.clone().addScaledVector(ab, t)));
+            segs.forEach(cp => {
+              const ab = cp.b.clone().sub(cp.a), t = Math.max(0, Math.min(1, x.clone().sub(cp.a).dot(ab) / Math.max(1e-12, ab.lengthSq())));
+              const r = (cp.ra + (cp.rb - cp.ra) * t + tl.radius[Math.min(i, tl.radius.length - 1)]) * sc;
+              deep = Math.max(deep, r - x.distanceTo(cp.a.clone().addScaledVector(ab, t)));
             });
           });
         }

@@ -129,25 +129,32 @@ whole cast. Godot: `kchar_shot.gd -- --lizard`.
 
 About **8 to 10 sessions** and the five textures, for plantigrade Lizardmen.
 
-**Digitigrade legs & paws** (`tools/digitigrade.py`, kit item `mod_legs_coyote`, **built 2026-11-17** for the Coyote Men,
-`biomes/outlands/PLAN.md` section 6 and `kits/coyote/PLAN.md` section 8):
+**Digitigrade legs, paws & saurian feet** (`tools/digitigrade.py`, kit items `mod_legs_coyote` and `mod_legs_lizard`,
+**built 2026-11-17** for the Coyote Men and Lizardmen):
 - Eight joints `LeftDigiThigh`, `LeftDigiShin`, `LeftDigiHock`, `LeftDigiPaw` and `RightDigiThigh`..`RightDigiPaw` appended
-  to `data/mpfb_{male,female}/skeleton.json` after `Tail8` so no existing joint index moves. They are modelled and bound
-  in the standing canid Z-pose (stifle forward, calcaneus/hock elevated at ~28.5% of hip height, slanted metatarsus/pastern,
-  four-toed cushioned oval paw flat on `y = 0` with dark plantar pads and blunt horn claws), sampled at two SDF resolutions
-  (8.2 mm on thigh/gaskin/hock/pastern, 3.2 mm on ankle/toes) with seamless upper-thigh collar continuity into `Human.body`
-  and `brush` fur shells (`role: 'coat'`, `furred: true`).
-- `replaces_feet: true` (`KCHAR.replacesFeet`, `KChar.replaces_feet`) hides human lower-leg/foot skin and `Human.toenails`,
-  and `KCHAR.fits` / `KChar.fits` filters out human shoes/boots (`slot === 'feet'`) and fitted ankle-length trousers while
-  allowing loose kilts, skirts and loincloths. `coyote_men` in `data/peoples.json` equips `mod_head_coyote`,
-  `mod_tail_coyote` and `mod_legs_coyote`.
+  to `data/mpfb_{male,female,giant}/skeleton.json` after `Tail8` so no existing joint index moves. They are modelled and
+  bound in a standing Z-pose (stifle forward, calcaneus/hock elevated at ~28.5% of hip height, slanted tarso-metatarsus,
+  sole flat on `y = 0`), sampled at two SDF resolutions (8.2 mm on thigh/crus/hock/pastern, 3.2 mm on ankle/digits) with
+  seamless upper-thigh collar continuity into `Human.body`:
+  - `mod_legs_coyote` (`mpfb_male`, `mpfb_female`): four-toed cushioned oval canid paw with dark plantar pads, blunt horn
+    claws (`Mod.coyote_claws`) and `brush` fur shells (`role: 'coat'`, `furred: true`).
+  - `mod_legs_lizard` (`mpfb_male`, `mpfb_female`, `mpfb_giant`, `test: true`): muscular saurian thigh/crus, transverse
+    anterior tarsal scute plates, splayed three-toed reptilian foot with medial hallux spur and recurved dark talons
+    (`Mod.lizard_claws`), scaled in `Mod.head_lizard`'s scale map (`role: 'skin'`) so the thigh collar matches `skin_detail`.
+- **Bidirectional footwear rule** (`replaces_feet: true`, `KCHAR.replacesFeet` / `KChar.replaces_feet`, `KCHAR.fits` /
+  `KChar.fits`): digitigrade and non-digitigrade characters cannot equip each others' boots/footwear (`slot === 'feet'`
+  requires `!!it.digitigrade === replacesFeet(rec, kit)`), and digitigrade leg mods hide human lower-leg/foot skin and
+  `Human.toenails` while rejecting fitted ankle-length human trousers and keeping loose kilts, skirts and loincloths.
+  `coyote_men` in `data/peoples.json` equips `mod_head_coyote`, `mod_tail_coyote` and `mod_legs_coyote`; the Lizardman
+  test preset (`?lizard`, Cosmetic Lab's "Lizardman" chip, Animation Lab's Body mods menu, `kchar_shot.gd -- --lizard`)
+  equips `mod_tail`, `mod_head_lizard` and `mod_legs_lizard`.
 - **Gait & capsules** (`digitigrade` in `50-figure.js`, `_digitigrade` in `kchar_figure.gd`): at rest (`!action`) the
   bones keep their binds (`bone * inverseBind == Identity` to `< 1e-6`); while a clip plays, the pass reads the clip's
-  human leg tracks in skeleton space, applies a subtle grounded pelvis spring settle, plants the paw ball flat on the
-  floor during stance (lifting and plantar-drooping in swing), compresses the hock in mid-stance and crouch, extends it
-  briskly on late-stance push-off, and solves the forward stifle (`DigiThigh -> DigiShin -> DigiHock`) in closed form.
-  `legCaps`, `clothStep`, `tail` and `cantFor` swap to the six moving digitigrade leg capsules so skirts, kilts, robes
-  and the bushy coyote tail drape and collide against the true canid leg.
+  human leg tracks in skeleton space, derives horizontal foot heading from the ankle's bind-delta transverse hinge axis
+  (immune to plantarflexion past vertical at toe-off), applies grounded pelvis settle, drives paw clearance continuously
+  off the floor, compresses the hock in mid-stance and crouch, extends it smoothly on push-off, and solves the forward
+  stifle (`DigiThigh -> DigiShin -> DigiHock`) in closed form. `legCaps`, `clothStep`, `tail` and `cantFor` swap to the
+  six moving digitigrade leg capsules so skirts, kilts, robes and tails drape and collide against the digitigrade leg.
 
 ### Korona's therian tribes (LORE 6.18)
 

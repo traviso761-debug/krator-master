@@ -98,14 +98,15 @@ static func arms(rec: Dictionary, kit: Dictionary) -> int:
 	return 2
 
 
-# a torso item is made for two arms or four (kit item arms, 2 by default); digitigrade paws leave off human boots and
-# fitted ankle-length trousers while keeping kilts, skirts and loincloths (KCHAR.fits)
+# a torso item is made for two arms or four (kit item arms, 2 by default); digitigrade and non-digitigrade characters
+# cannot equip each others' boots/footwear (slot "feet", kit item digitigrade vs replaces_feet); digitigrade legs also
+# leave off fitted ankle-length trousers while keeping kilts, skirts and loincloths (KCHAR.fits)
 static func fits(it: Dictionary, rec: Dictionary, kit: Dictionary) -> bool:
 	if it["slot"] == "torso":
 		return int(it.get("arms", 2)) == arms(rec, kit)
-	if (it["slot"] == "feet" or it["slot"] == "legs") and replaces_feet(rec, kit):
-		if it["slot"] == "feet":
-			return bool(it.get("digitigrade", false))
+	if it["slot"] == "feet":
+		return bool(it.get("digitigrade", false)) == replaces_feet(rec, kit)
+	if it["slot"] == "legs" and replaces_feet(rec, kit):
 		var h = it.get("hides")
 		return bool(it.get("loose", false)) or bool(it.get("digitigrade", false)) or (h != null and int(h) < 900)
 	return true

@@ -56,9 +56,9 @@
     "core/catalog/krator-furniture-core.js": "1c8bfa11d261b36895fd50645358e2c4ebe54febf67daeed700a38fbd6256fe9",
     "core/catalog/krator-furniture-kit.js": "5220ef8dd95dd5c33960ad1452f09f437379c2e26d40c9b480877b1a4e65f16b",
     "core/catalog/krator-furniture-runtime.js": "5bd95301145e7adfb6528e85de8d2fb39206b0cf558409718dbd85db437e57c9",
-    "core/charactermodels/data/mpfb_female/kit.json": "30b1b04a746efa4a628c535a397b52d08eca36145b0d979004abf35aaf369909",
+    "core/charactermodels/data/mpfb_female/kit.json": "d17891891d2f2629486495ea8dc4bcfaf4a062aac17f81f7d9a1b6328d14a831",
     "core/charactermodels/data/mpfb_female/skeleton.json": "8dee36897ec673f74ccefed100289233f5056ca2875c84d191e0377296671307",
-    "core/charactermodels/data/mpfb_male/kit.json": "7d42abbf6b2350b8031a4c507f39f29500850d31c9785bd1b63cda7e4211b5a8",
+    "core/charactermodels/data/mpfb_male/kit.json": "7c1c3f530a2b8726e4bab8d0a2fed23fd5f78492f92d672936467196379075ed",
     "core/charactermodels/data/mpfb_male/skeleton.json": "7f95131c641e25feb5a45bbecff9564408612689dc43aea473c667a5dcf0e216",
     "core/charactermodels/data/peoples.json": "ad7ae0d4f2bc9919c7324b65d9c894d30b0bfa68e8dd53213e4b1c995f66640b",
     "core/charactermodels/data/posture.json": "fbcfb44b1722b2fa335c23099d398073dc999266f8e373f06ec055501c3f57cf",
@@ -228,7 +228,7 @@
     "core/charactermodels/dist/pieces/mpfb_male/xan_m_vizier_kavuk.txt": "76feb4f807b314c555ad4bf4e669ea61963954e92746763255930a9bdb68546e",
     "core/charactermodels/dist/pieces/mpfb_male/xan_m_vizier_robe.txt": "c99c9fea235289ceb5a1571031550d6ed8d48a22cfb979e325a767c91c14d918",
     "core/charactermodels/dist/pieces/mpfb_male/xan_m_vizier_slippers.txt": "28ddbc06842f378636311f00a0366636d8ad08623c828a65d42fa969309e784b",
-    "core/charactermodels/src/10-rig.js": "c8d07d5cc2602b5ffad29d924c69fdc34e41f7752087630569d4b5bfa4b5feb0",
+    "core/charactermodels/src/10-rig.js": "1105bb5714479d1db2f9a4fac7f221a0247eff3671ae01e87405ef7d3eeed79a",
     "core/charactermodels/src/50-figure.js": "c786a98e051283ff947385a16660ddb6374d7915da333495b8b42cad217a1f9c",
     "core/charactermodels/src/60-crowd.js": "48e7aa304bd1ba22df0e660d1d05f6ce3e567c96b1f7646e65d39184a92f339b",
     "core/charactermodels/tools/vendor/GLTFLoader.r128.js": "5c15967ba830918a9caea6338712c994c354bccd4edc4569bde411c3ec06a3e6",
@@ -755,14 +755,14 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "settlements/longsong/dist/longsong.html": "81d64e9ec004169d81968e8d130f06e8cb97896f04fd013c90f1ac626f0c6c0e",
+    "settlements/longsong/dist/longsong.html": "eadee4d1aa3b17ffdf5e3137b227a4e0ae8341ebbdb71c881796d393b0844f21",
     "settlements/longsong/dist/longsong.tex.longsong-2.js": "81c204f5c6d5744d8a7d3c6be658aab37ac68088baccb1ac5bb39b7667deacd5",
     "settlements/longsong/dist/longsong.tex.longsong.js": "33596b44e155b7f214bd82a5c0ed5ecd3273fbac46bbdb015d73206522c9a605",
     "settlements/longsong/dist/longsong.tex.oidong.js": "e14667b94439abb336d0b2db7edee5ed5ab76b2d03aa2fe9a1d3e9f6e53a88b0",
     "settlements/longsong/dist/longsong.tex.xanadu.js": "ab86b56cf863dd8b19fbabdef7c70d83302cff8c1fc3f4caff86f367f7f7f945"
    },
    "outputs_raw": {
-    "settlements/longsong/dist/longsong.html": "81d64e9ec004169d81968e8d130f06e8cb97896f04fd013c90f1ac626f0c6c0e",
+    "settlements/longsong/dist/longsong.html": "eadee4d1aa3b17ffdf5e3137b227a4e0ae8341ebbdb71c881796d393b0844f21",
     "settlements/longsong/dist/longsong.tex.longsong-2.js": "81c204f5c6d5744d8a7d3c6be658aab37ac68088baccb1ac5bb39b7667deacd5",
     "settlements/longsong/dist/longsong.tex.longsong.js": "33596b44e155b7f214bd82a5c0ed5ecd3273fbac46bbdb015d73206522c9a605",
     "settlements/longsong/dist/longsong.tex.oidong.js": "e14667b94439abb336d0b2db7edee5ed5ab76b2d03aa2fe9a1d3e9f6e53a88b0",

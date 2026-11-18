@@ -126,12 +126,14 @@ var KCHAR = (function(){
   function arms(rec, kit){
     return modsOf(rec, kit).some(function(m){ return m.grants && m.grants.arms >= 4; }) ? 4 : 2;
   }
-  /* a torso item is made for two arms or four (kit item arms, 2 by default); a digitigrade leg mod (replaces_feet:
-     tools/digitigrade.py) leaves off human boots and ankle-length human trousers while keeping kilts, skirts and loincloths */
+  /* a torso item is made for two arms or four (kit item arms, 2 by default); digitigrade and non-digitigrade characters
+     cannot equip each others' boots/footwear (slot 'feet', kit item digitigrade vs replacesFeet); a digitigrade leg mod
+     also leaves off fitted ankle-length human trousers while keeping kilts, skirts and loincloths */
   function fits(it, rec, kit){
     if(it.slot === 'torso') return (it.arms == null ? 2 : it.arms) === arms(rec, kit);
-    if((it.slot === 'feet' || it.slot === 'legs') && replacesFeet(rec, kit)){
-      return it.slot === 'feet' ? !!it.digitigrade : !!(it.loose || it.digitigrade || (it.hides != null && it.hides < 900));
+    if(it.slot === 'feet') return !!it.digitigrade === replacesFeet(rec, kit);
+    if(it.slot === 'legs' && replacesFeet(rec, kit)){
+      return !!(it.loose || it.digitigrade || (it.hides != null && it.hides < 900));
     }
     return true;
   }
