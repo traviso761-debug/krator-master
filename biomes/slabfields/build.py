@@ -11,7 +11,7 @@
   99-tail.html      closes <script>
 
   python3 build.py                     dist/slabfields.html, the Anvil's Foot (station 1)
-  python3 build.py --station <name>    dist/slabfields-<name>.html: stations/<name>/ added to src/ (PLAN.md section 13; none yet)
+  python3 build.py --station <name>    dist/slabfields-<name>.html: stations/<name>/ added to src/ (PLAN.md section 13: leaner, halves)
   python3 build.py --all               every page
 
 The core and the biome leaf never reference a host global except through

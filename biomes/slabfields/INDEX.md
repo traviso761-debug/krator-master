@@ -4,7 +4,7 @@
 
 Docs: `BIOME-API.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `PLAN.md`, `PORT.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/slabfields.html`
+Built output (never open it; edit `src/` and rebuild): `dist/slabfields-halves.html`, `dist/slabfields-leaner.html`, `dist/slabfields.html`
 
 Build: `cd biomes/slabfields && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
@@ -42,3 +42,12 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `89z-host-build.js` | 5 |  |
 | `99-host-take.js` | 7 |  |
 | `99-tail.html` | <1 |  |
+
+## stations/
+
+Each station builds one page (`build.py --station <name>`) from its own fragments, with `src/` or its `base` station.
+
+| Station | Fragments | KB |
+|---|---|---|
+| halves | 40h-biome-slab-halves.js, 44z-host-site.js, 45-host-stage.js, 46-host-siphon-shim.js, 84-host-ground.js, 85-host-far.js, 86-host-blocks.js, 88-host-place.js, 89w-host-water.js, 99-host-take.js | 55 |
+| leaner | 40l-biome-slab-leaner.js, 44z-host-site.js, 45-host-stage.js, 46-host-siphon-shim.js, 84-host-ground.js, 85-host-far.js, 86-host-blocks.js, 88-host-place.js, 89w-host-water.js, 99-host-take.js | 65 |

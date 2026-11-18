@@ -115,6 +115,8 @@
  "biomes/shighlands/src/84-host-ground.js: RAWTEX": 4,
  "biomes/siphon-pits/src/84-host-ground.js: RAWTEX": 1,
  "biomes/slabfields/src/84-host-ground.js: RAWTEX": 1,
+ "biomes/slabfields/stations/halves/84-host-ground.js: RAWTEX": 1,
+ "biomes/slabfields/stations/leaner/84-host-ground.js: RAWTEX": 1,
  "biomes/swbay/src/45-host-stage.js: RAWTEX": 2,
  "biomes/swbay/src/55-biome-swbay-trees.js: ORNUM": 6,
  "biomes/swbay/src/65-biome-swbay-dress.js: ORNUM": 12,

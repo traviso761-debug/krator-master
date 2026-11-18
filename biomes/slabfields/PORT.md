@@ -32,4 +32,8 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 
 ## Notes
 
-(none yet: the split lists and the overrides go here)
+- Stations 2 and 3 (`stations/leaner`, `stations/halves`, 2026-11-17) follow station 1's split, each fragment in its own folder replacing src/'s of
+  the same name: `40l` / `40h` the site record ([G data]: plain numbers, no THREE, no DOM), `44z` the station key ([G data]), `45-host-stage.js` the
+  land, the blocks, the fields and the binding ([web], as src/'s: the land functions are plain maths and could move to a [G data] fragment, a split
+  owed), `46-host-siphon-shim.js` the Siphon Pits' empty station table ([G data]), `84` the ground ([G shader]), `85` the far field ([web]), `86` the
+  blocks ([draw]), `88` the placement ([G data]), `89w` the water on core/water ([draw]), `99` the views and checks ([draw], as src/'s).

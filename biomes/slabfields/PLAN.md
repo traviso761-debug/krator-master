@@ -22,7 +22,9 @@ The owner's briefs (all kept):
   micro edit that carves them (edit 3 of 5.1, `tools/scale-model/edit_513.py`).
 
 **Status.** A plan, the model edit, and **station 1 built** (2026-11-12): the Anvil's Foot, `dist/slabfields.html` (`python3 build.py`;
-`NOTES.md` has its numbers, `KNOWN_ISSUES.md` what it owes). Stations 2-5 are not built. The region's id `rmvmidbasin101` is **kept**: ids are stable
+`NOTES.md` has its numbers, `KNOWN_ISSUES.md` what it owes), and **station 2 built** (2026-11-17): the Leaner,
+`dist/slabfields-leaner.html` (`python3 build.py --station leaner`), and **station 3 built** (2026-11-17): the Halves,
+`dist/slabfields-halves.html` (`--station halves`; the landform only: the outlaws are not drawn). Stations 4 and 5 are not built. The region's id `rmvmidbasin101` is **kept**: ids are stable
 keys, and the model's own code (`build_425_master.py`'s protected SE complex, `51-region-store.js`'s reconciles, the
 river's id `r_mb_siphon_breach`) names it in places a rename would have to chase for no gain. Only the name changed.
 `LORE.md` is untouched: section 17 proposes its sentences. Marks used below: **default taken, owner to confirm** where
@@ -470,6 +472,21 @@ the last collapse's apron (3.6 km, H/L 0.46: one lobe of the many the model's 26
 blocks (7 field-sized, `KSTACKS`); nine seeps on the spring line at the toe and their brook; void fern, seep reed, bench bunchgrass and
 block lichen (the kit's own Earth stand-ins: `KNOWN_ISSUES.md`), Oidong's cushions read in place on the dry bench; the cliff (`fall`),
 the rockfall belt (`crush`) and the night's CO2 in the toe's hollows and the blocks' voids (`gas`, pooled) as hazard records.
+
+**Station 2 as built** (2026-11-17; `stations/leaner/`, NOTES.md): px 1601,1392, the Leaner's cliff across the page's south-east (`KRELIEF.slab`,
+1,250 m over the corridor, crest 3,355 m) with its ramp falling 6.7 degrees SSE, six open tension cracks behind the lip and six ponds on the ramp,
+each drifted to the low end of its tilted basin; an older apron spilling over the patera's rim as a fan; the patera (`KRELIEF.stepcut`: a sheer wall
+and a bench) brought to 1.6 km from the cliff (the model's 4 km: the page's compression), its shelf with three strandlines tilted toward the ENE,
+seven live warm springs and four dead ones, the warm lake on `WATER.open` at 1,997 m; the corridor road along the apron's toe, down the spill and
+along the shelf; the kit's own life off the slab and the Siphon Pits' cushion moss, rock lichen and scree sedge read in place on it. Not drawn:
+cracked walls (no ruin placed), the moving springs at the ramp's foot (off the page), the outlaws (`KNOWN_ISSUES.md`).
+
+**Station 3 as built** (2026-11-17; `stations/halves/`, NOTES.md): px 1722,1376, the page on the patera's south floor and wall: the patera at the
+model's size (`KRELIEF.stepcut`, three steps, 200 m) with its floor of old lava crust and the warm pool on `WATER.open` at 3,102 m, five warm
+springs on its south shore; the south-east half's north cliff (1,550 m, crest 4,875 m) and its torn west end across the page's south-east, its
+apron run out to the patera's wall with blocks on it; the north-west half 6-15 km north across the water (the far field), its torn end facing
+back; two pits of the chain on the bench south-west of the wall (`KRELIEF.stepcut`), a seep and pooled CO2 on each floor. The halves and the pits
+brought close (the model's 10-15 km and 8 km). Not drawn: the outlaws' seat (section 12; core/camp's amendment 4).
 
 ## 14. Core adoption (written first, as the working rules ask)
 
