@@ -4205,11 +4205,11 @@
      "yield": 5.5
     },
     "sulfur": {
-     "low": 96,
-     "medium": 78,
+     "low": 98,
+     "medium": 79,
      "high": 16,
-     "n": 190,
-     "yield": 158
+     "n": 193,
+     "yield": 160
     },
     "saltpeter": {
      "low": 427,
@@ -7783,7 +7783,7 @@
   "silver": 22848,
   "rare-earth": 17299,
   "coal": 23174,
-  "sulfur": 28875,
+  "sulfur": 28878,
   "saltpeter": 56223,
   "oil": 8456,
   "gypsum": 1079,

@@ -650,3 +650,22 @@ stand-ins, each listed in `KNOWN_ISSUES.md`.
   Ecology and Evolution* 3.
 - Hosgormez, H. et al. (2008), the Chimaera seep's gas, *Geofluids* 8.
 - Le Guern, F. et al. (1982), the Dieng CO2 disaster of 1979, *JVGR* 12.
+
+---
+
+## 17. Landward Structural Extensions (`Crookshore` & `Double Delta`), `KSTRATA` Bindings & Showcase Station #15 (`2026-11-13`)
+
+Where The Arch's NW–SE tidal dilational band (`sections 1–2`) propagates onto the Western Ocean's continental/crater margins at both ends of the island chain, the same normal-fault horst-and-graben mechanics and mantle-detachment shear zones step onshore across two paired coastal provinces while leaving the offshore island stations (`confluence`, `dome`, `barrens`, `sound`, `coast`) 100% unchanged:
+
+### 17.1 Onshore Rift-Shoulder Provinces & `KSTRATA` Recipes (`core/terrain/35-core-strata.js`)
+1. **SW Onshore Terminus — `Crookshore` (`rmvcrookshore`, `X <= 156, Y = 470..712`):**
+   - **Tectonic & Impact Overprint:** The Arch's bounding horst faults come ashore along the windward western coast in en-echelon blue-black flood/rift-shoulder tholeiite headlands (**`arch-rift-basalt`**: `3–7 m` `colonnade` and hackly `entablature` tiers separated by brick-red baked `bolus` paleosols, with basal slickensided waxy green `serpentinite` shear coves), scalloped by two overlapping `18–26 km` radial secondary impact embayments (**`secondary-ejecta`**: `3–9 m` chaotic angular megablock breccia and glassy impact-melt ledges) at **`(89, 605)`** and **`(82, 678)`**.
+2. **NE Onshore Terminus — `Double Delta` (`rmvdoubledelta`, `X = 470..775, Y <= 176`, anchored at `518, 152`):**
+   - **Horst-Divided Twin Estuaries:** Where the northern outer-slope trunk rivers (`9101` *Ria River* / `9102` *Hām-Tsēk* Western Ocean distributary belt) meet the NE onshore horst of The Arch's dilational band at **`(518, 152)`**, a tilted **`arch-rift-basalt`** horst ridge splits the sediment plume into twin tide- and wave-reworked deltas (`Double Delta`), flanking brackish mangrove/reed channels with `40–90 m` columnar basalt gate-stacks.
+
+### 17.2 Showcase Station #15 — `Crookshore Twin Ejecta Bays & Sea-Stack Horsts`
+- **Canonical `5.1` Coordinates:** **`(89, 605)` & `(82, 678)`** (twin scalloped secondary-ejecta bays) with **`(95, 545)`** (northern basalt sea-stack horst headland & serpentinite shear cove; paired structurally at the NE end of The Arch with **`(518, 152)`** `Double Delta` basalt horst-gate).
+- **Elevation & Atmosphere:** **`0 m`** Western Ocean datum rising across `35–180 m` wave-battered sea cliffs and coastal benches (**`1.58–1.60 atm`**, `Cfb` / `Csb` high-energy westerlies surf coast exposed to Farside seamount swell).
+- **`KSTRATA` Binding:** **`arch-rift-basalt`** (`3–7 m` dark blue-black columnar basalt `colonnade` & `entablature` sea stacks, vivid brick-red baked `bolus` interbeds notched into sea caves, and dark green slickensided `serpentinite` fault-footwall ramps in the shear coves) juxtaposed across a sharp unconformity against **`secondary-ejecta`** (`3–9 m` chaotic polymictic boulder breccia & dark impact-melt headland collars framing the twin crescent bays at `89, 605` and `82, 678`).
+- **Camera Framing (`5.2 × 5.2 km` headland-and-bay cut):** Dramatic cliff-brow camera at `+68 m` on the central `secondary-ejecta` promontory between the twin bays looking NNW toward `(95, 545)`: ranks of `50–110 m` hexagonal `arch-rift-basalt` sea-stack horsts standing offshore in heavy `1.60 atm` white surf (`WATER.open` shore breakers + spray fog), a brick-red `bolus` sea-arch and waxy green `serpentinite` pebble cove with nephrite cobble bars and milky-blue Type-II seep pools in the foreground cleft, wind-sheared coastal araucarias and nickel-hoarder scrub gripping red lateritic cliff tops, and the volcanic steam plumes of The Arch's outer seamounts on the NNE sea horizon.
+- **Hydrology & Trade Tie-In:** Short fault-guided coastal cascades plunge directly off the `arch-rift-basalt` horst benches into the sheltered lee of the twin ejecta bays — providing the **only tsunami-baffled careening and watering coves** on the otherwise harborless `Crookshore` coast for **Farside / Farport** jade-and-nickel-leaf gatherers and the elusive **over-sea traders** (`LORE.md §6.19`) making landfall south of The Arch's axial sound.

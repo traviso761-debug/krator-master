@@ -63,6 +63,11 @@ LDF = lambda *fs: [('ld', f) for f in fs]
 CORE_BIOME = ['10-core-head.js', '20-core-kit.js', '30-core-foliage.js', '30s-core-season-flush.js', '31b-core-leafset.js', '31j-core-joint.js',
               '32-core-variants.js', '33-core-fungoid.js', '34-core-impostor.js', '35-core-anim.js', '36-core-walker.js', '38-core-fire.js',
               '39-core-lean.js']
+# the region's resources (core/world/world_data.py: the geology cropped to the box; kits/resources' field, read in place)
+import importlib.util as _ilu   # noqa: E402
+_wds = _ilu.spec_from_file_location('core_world_data', os.path.join(ROOT, 'core', 'world', 'world_data.py'))
+_WD = _ilu.module_from_spec(_wds); _wds.loader.exec_module(_WD)
+RES_FRAGS = _WD.RES_FRAGS
 ORDER = (
     LDF('00-head.html') + [('gen', '05-world-data.js'),
      ('core/shader', '06-core-khook.js'), ('core/shader', '06b-core-kcolor.js'),
@@ -73,11 +78,12 @@ ORDER = (
        ('core/atmos', '89-atmos-0-core.js'), ('core/atmos', '89-atmos-0p-presets.js'), ('core/atmos', '89-atmos-a-waves.js'),
        ('core/atmos', '89-atmos-b-skylight.js'), ('core/atmos', '89-atmos-8-export.js'),
        ('core/water', '20-core-water.js'), ('core/water', '21-core-water-shore.js'), ('core/water', '22-core-water-flow.js'),
-       ('core/water', '50-core-water-draw.js'), ('core/water', '51-core-water-kinds.js'),
+       ('core/water', '50-core-water-draw.js'), ('core/water', '51-core-water-kinds.js'), ('core/water/farbed', '53-core-water-farbed.js'),
        ('core/materials/record', '23-mat-record.js'), ('core/materials/record', '24-tex-def.js'), ('core/materials/record', '25-matlib-host.js'),
        ('core/materials/record', '26-matlib-bind.js'),
        ('biomes/sedesert/src', '35-core-strata.js')]
-    + LDF('41-world-fields.js', '42-world-roads.js')
+    + [('core/mask', '25-core-mask.js'), ('core/mask', '27-core-mask-distance.js'), ('core/coast', '30-core-coast.js')]   # core/coast (KCOAST): the natural coasts; core/mask's distance under it
+    + LDF('41-world-fields.js', '42-world-roads.js', '44c-world-coast.js')
     + LDF('45-world-host.js') + [('src', '46-world-config.js'), ('src', '47-world-kits.js'),
      ('biomes/hyperjungle/src', '41-hyperjungle-globals.js')]
     + [('pack', k) for k in PACK_KITS]
@@ -89,8 +95,11 @@ ORDER = (
        ('kits/beast-riders/src', '79-br-camp.js'), ('ld', '48s-world-sites.js'), ('src', '48-world-site.js'),
        ('src', '49-world-absav.js')]   # the savannah kit as the world reads it (its own trees and the eastern abyss's)
     + LDF('80-world-sky.js', '81-world-terrain.js', '83-world-water.js', '83w-world-seas.js', '84-world-nursery.js',
-          '85-world-flora.js', '86-world-floor.js', '87-world-places.js', '88-world-towns.js', '88s-world-sites.js')
-    + LDF('90-world-camera.js', '91-world-probe.js', '98-world-start.js', '99-tail.html')
+          '84i-world-impostors.js',   # the hyperjungle's far level as octahedral impostors (47-world-kits.js: impostor)
+          '85-world-flora.js', '85p-world-pregrow.js',   # every prototype grown at load: no first-use stalls in flight
+          '86-world-floor.js', '87-world-places.js', '88-world-towns.js', '88s-world-sites.js')
+    + [('resgeo', 'geology')] + RES_FRAGS + [('ld', '49r-world-resources.js'), ('ld', '89r-world-resources-map.js')]   # the resources: census, layers, markers
+    + LDF('90-world-camera.js', '91-world-probe.js', '93-world-propose.js', '98-world-start.js', '99-tail.html')   # 93: proposing a site
 )
 HEAD = [('<title>Krator Little Demo</title>', '<title>Krator: Pinnacle Rock</title>'),
         ("<b>Little Demo</b> · the scale model's eastern desert at 1:1", "<b>Pinnacle Rock</b> · the hyperjungle's edge round the rock at 1:1")]
@@ -121,6 +130,9 @@ def data_fragment():
 def main():
     out, bad = [], []
     for where, f in ORDER:
+        if where == 'resgeo':   # the region's geology (core/world/world_data.py geology_fragment: kits/resources' data cropped to the box)
+            out.append(_WD.geology_fragment(DATA))
+            continue
         if where == 'gen':
             out.append(data_fragment())
             continue

@@ -72,7 +72,9 @@ function xcPlan(it,o){o=o||{};const S=window._citadel,R=it.rooms,out={walls:0,do
   const L=e.u1-e.u0,n=Math.floor((L-2)/4.2);if(n<1)continue;
   for(let i=0;i<n;i++){const u=e.u0+L*(i+.5)/n,px=e.axis==='z'?u:e.c-e.side*.7,pz=e.axis==='z'?e.c-e.side*.7:u;
    if(across(px,pz,r.y,r.y+r.h,r))continue;if((ops.get(keyOf(e.axis,e.c))||[]).some(q=>q.u1>u-1.6&&q.u0<u+1.6&&q.y0<r.y+r.h&&q.y1>r.y))continue;
-   const ww=r.h>5?1.6:1.2,sill=r.y+(r.h>5?1.4:1.0),top=Math.min(r.y+r.h-.9,sill+(r.h>5?3.0:1.7)),P=Math.min(ww*.9,r.y+r.h-.25-top)/.86;if(P<.35)continue;
+   /* clear of a cross wall meeting this line (another room's or a court's corner): one ran through a window (2026-11-12) */
+   const ww=r.h>5?1.6:1.2;if(edges.some(f=>f.axis!==e.axis&&f.r!==r&&!f.rail&&Math.abs(f.c-u)<ww/2+.75&&f.u0<=e.c+.05&&f.u1>=e.c-.05&&f.r.y<r.y+r.h-.3&&f.r.y+Math.max(f.r.h,1)>r.y+.3))continue;
+   const sill=r.y+(r.h>5?1.4:1.0),top=Math.min(r.y+r.h-.9,sill+(r.h>5?3.0:1.7)),P=Math.min(ww*.9,r.y+r.h-.25-top)/.86;if(P<.35)continue;
    wins.push({e,u,ww,sill,top,P,style:st(r)});addOp(e.axis,e.c,{u0:u-ww/2,u1:u+ww/2,y0:sill,y1:top+P});}}
  // ---- the core walls: per line, the rooms' edges as rectangles in (u, y), less the openings; thickness by the outer side
  const lines=new Map();for(const e of edges){if(isCourt(e.r)||e.rail)continue;const r=e.r,k=keyOf(e.axis,e.c);
@@ -102,16 +104,28 @@ function xcPlan(it,o){o=o||{};const S=window._citadel,R=it.rooms,out={walls:0,do
   const dadoTop=r.y+1.15,y1=r.y+H,bandY=y1-.32;
   const full=(u0,u1,ya,yb)=>{skin(e,s.dado,s.dadoC,Math.max(ya,r.y),Math.min(yb,dadoTop),u0,u1,off);skin(e,s.up,s.upC,Math.max(ya,dadoTop),Math.min(yb,s.band?bandY:y1),u0,u1,off);
    if(s.band)skin(e,s.band,s.bandC,Math.max(ya,bandY),Math.min(yb,y1),u0,u1,off+.02);};
-  let u=e.u0;for(const q of O){const a=Math.max(e.u0,q.u0),b=Math.min(e.u1,q.u1);if(a>u)full(u,a,r.y,y1);if(b>a){full(a,b,r.y,q.y0);full(a,b,q.y1,y1);}u=Math.max(u,b);}
-  if(u<e.u1)full(u,e.u1,r.y,y1);}
+  /* per column between the openings' edges, the skin in the gaps between every opening over it: a court's face has windows
+     storey over storey at one u, and taking them one at a time drew each one's column over the other (the owner, 2026-11-12) */
+  const Us=[...new Set([e.u0,e.u1].concat(...O.map(q=>[q.u0,q.u1])).map(v=>Math.min(e.u1,Math.max(e.u0,v))))].sort((a,b)=>a-b);
+  for(let i=0;i+1<Us.length;i++){const a=Us[i],b=Us[i+1];if(b-a<.04)continue;const m=(a+b)/2;let yc=r.y;
+   for(const q of O.filter(q=>q.u0<m&&q.u1>m).sort((p,q)=>p.y0-q.y0)){if(q.y0>yc)full(a,b,yc,q.y0);yc=Math.max(yc,q.y1);}
+   if(yc<y1)full(a,b,yc,y1);}}
  // ---- the outer faces: a dado and a band at each floor on every outside edge (o.ext)
  if(ext.dado)for(const e of edges){const r=e.r;if(isCourt(r)||e.rail)continue;const px=e.axis==='z'?(e.u0+e.u1)/2:e.c-e.side*.7,pz=e.axis==='z'?e.c-e.side*.7:(e.u0+e.u1)/2;
-  if(across(px,pz,r.y,r.y+r.h,r))continue;const off=-(TE/2+.03),O=(ops.get(keyOf(e.axis,e.c))||[]).filter(q=>q.u1>e.u0&&q.u0<e.u1&&q.y0<r.y+1.4);
+  if(across(px,pz,r.y,r.y+r.h,r))continue;
+  /* a court across: its own skin lies on this face at the same offset (two tiles in one plane flickered; the owner, 2026-11-12) */
+  if(R.some(q=>{if(!isCourt(q))return false;const b=B.get(q);return px>b[0]&&px<b[1]&&pz>b[2]&&pz<b[3]&&Math.abs(q.y-r.y)<1.2;}))continue;
+  const off=-(TE/2+.03),O=(ops.get(keyOf(e.axis,e.c))||[]).filter(q=>q.u1>e.u0&&q.u0<e.u1&&q.y0<r.y+1.4);
   let u=e.u0;const ya=r.y<1.2?0:r.y-SL,yb=r.y<1.2?1.4:r.y;for(const q of O.sort((a,b)=>a.u0-b.u0)){if(q.u0>u)skin(e,ext.dado,ext.dadoC,ya,yb,u,q.u0,off);u=Math.max(u,q.u1);}if(u<e.u1)skin(e,ext.dado,ext.dadoC,ya,yb,u,e.u1,off);
   if(ext.band&&!R.some(q=>q.y>r.y+1&&Math.abs(q.y-(r.y+r.h+SL))<.6&&(()=>{const b=B.get(q);return e.axis==='z'?Math.abs(b[2]-e.c)<.05||Math.abs(b[3]-e.c)<.05:Math.abs(b[0]-e.c)<.05||Math.abs(b[1]-e.c)<.05;})()))
    skin(e,ext.band,ext.bandC,r.y+r.h,r.y+r.h+SL+.25,e.u0-TE/2,e.u1+TE/2,off-.02);}
  // ---- the openings drawn: arch heads, rings, leaves, thresholds; the windows' jali and glass
  for(const D of doors){const d=D.d,ry=D.axis==='z'?0:Math.PI/2,x=D.axis==='z'?D.u:D.c,z=D.axis==='z'?D.c:D.u,t=(D.other&&!isCourt(D.other)&&D.d.to!=='street')?TP:TE;S.doors++;out.doors++;
+  /* steps on the lower side of a door over a sill: a dar's rooms stand 0.45 m over its court and the street, and no door had
+     one (a walk audit, 2026-11-12: every dar sealed). Risers of 0.3 m or less, treads 0.32 m, a little wider than the door */
+  {const yo=D.other?D.other.y:0,rise=D.y-yo,lo=Math.abs(rise);if(lo>.28&&lo<1.6){const sg=(rise>0?-1:1)*D.side,n=Math.ceil(lo/.3)-1,base=Math.min(D.y,yo),off0=t/2+.16;
+    for(let k=1;k<=n;k++){const h=lo*(n+1-k)/(n+1),o=off0+(k-1)*.32,px2=D.axis==='z'?x:x+sg*o,pz2=D.axis==='z'?z+sg*o:z;
+     vB('vStone',px2,base-.02,pz2,D.axis==='z'?D.w+.3:.32,h+.02,D.axis==='z'?.32:D.w+.3,0,xC(XPAL.stone[0]));}S.doorSteps=(S.doorSteps||0)+n;}}
   if(d.head){const a=D.axis==='z'?[D.u-D.w/2,D.c]:[D.c,D.u-D.w/2],b=D.axis==='z'?[D.u+D.w/2,D.c]:[D.c,D.u+D.w/2];void a;void b;continue;}
   const H=D.style.head;xmArchHead(H[0],x,D.y+D.s,z,ry,D.w,D.P,t+.12,H[1],H[2],H[1]==='Yes'?XM_C.ochre:null);
   if(typeof KWALK!=='undefined'){const n=D.axis==='z'?[0,1]:[1,0];KWALK.strip({a:xcW(x-n[0]*1.1,z-n[1]*1.1,D.y),b:xcW(x+n[0]*1.1,z+n[1]*1.1,D.y),w:Math.max(.6,D.w-.2),name:'citadel door',tag:'interior:xa-citadel'});}
@@ -183,8 +197,11 @@ function xcCeiling(r,bx,s,holes){const S=window._citadel,y=r.y+r.h,W=bx[1]-bx[0]
  else if(r.ceil==='muq'){vB('xmGilt',(bx[0]+bx[1])/2,y-.05,(bx[2]+bx[3])/2,W,.05,D,0,null);
   for(const [x,z,ry,L] of[[(bx[0]+bx[1])/2,bx[2]+.18,0,W-.4],[(bx[0]+bx[1])/2,bx[3]-.18,Math.PI,W-.4],[bx[0]+.18,(bx[2]+bx[3])/2,Math.PI/2,D-.4],[bx[1]-.18,(bx[2]+bx[3])/2,-Math.PI/2,D-.4]])
    S.cells+=xmMuqCornice(x,y-.05,z,ry,L,{tiers:2,item:'xmCell',alt:'xmCellG'});}
- else{const n=Math.max(1,Math.round(Math.max(W,D)/1.4)),along=W>=D;vB(s.rank>0?'xmGilt':'xWashB',(bx[0]+bx[1])/2,y-.04,(bx[2]+bx[3])/2,W,.04,D,0,s.rank>0?null:xC(XPAL.wash[0]));
-  for(let i=1;i<n;i++){const u=i/n;if(along)vB('xPaint',bx[0]+W*u,y-.26,(bx[2]+bx[3])/2,.16,.22,D,0,xC(s.rank>0?0x7a2a2a:0x6a4a30));else vB('xPaint',(bx[0]+bx[1])/2,y-.26,bx[2]+D*u,W,.22,.16,0,xC(s.rank>0?0x7a2a2a:0x6a4a30));}}}
+ /* the flat ceiling and its beams cut round the wells as the slab is (they ran across a flight's opening; the owner, 2026-11-12) */
+ else{const n=Math.max(1,Math.round(Math.max(W,D)/1.4)),along=W>=D,bc=xC(s.rank>0?0x7a2a2a:0x6a4a30);
+  xcRectFill([bx[0],bx[1],bx[2],bx[3]],holes,(x0,x1,z0,z1)=>vB(s.rank>0?'xmGilt':'xWashB',(x0+x1)/2,y-.04,(z0+z1)/2,x1-x0,.04,z1-z0,0,s.rank>0?null:xC(XPAL.wash[0])));
+  for(let i=1;i<n;i++){const u=i/n,R=along?[bx[0]+W*u-.08,bx[0]+W*u+.08,bx[2],bx[3]]:[bx[0],bx[1],bx[2]+D*u-.08,bx[2]+D*u+.08];
+   xcRectFill(R,holes,(x0,x1,z0,z1)=>vB('xPaint',(x0+x1)/2,y-.26,(z0+z1)/2,x1-x0,.22,z1-z0,0,bc));}}}
 // a parapet of pointed merlons (xArcS caps) or a jali balustrade along a roof's edge, from a to b at y
 function xcParapet(a,b,y,kind,c){const dx=b[0]-a[0],dz=b[1]-a[1],L=Math.hypot(dx,dz);if(L<.5)return;const ry=Math.atan2(-dz,dx),m=[(a[0]+b[0])/2,(a[1]+b[1])/2];
  if(kind==='jali'){xmBalustrade(a,b,y,{});return;}
@@ -202,7 +219,7 @@ function buildXaCitPalace(G,o){reseed(33001);const it=xcItem('xa_cit_palace'),C=
  // (the blueprint's curtain walk: in Erewhon the palace stands with its back to the wall at the citadel's north tip, which is
  // narrower than the curtain), so the sides stop at a square pier behind the last rooms
  const cw=C.curtain[0]/2,cd=C.curtain[1]/2,CH=11,sand=xC(0xc0644a);
- xnXECurtain([-cw+3,cd],[-41.2,cd],CH,sand,1);xnXECurtain([-36.8,cd],[-7.5,cd],CH,sand,1);xnXECurtain([7.5,cd],[cw-3,cd],CH,sand,1);
+ xnXECurtain([-cw+3,cd],[-41.2,cd],CH,sand,1);xnXECurtain([-36.8,cd],[-7.45,cd],CH,sand,1);xnXECurtain([7.45,cd],[cw-3,cd],CH,sand,1);
  xnXECurtain([-cw,-39.5],[-cw,cd-3],CH,sand,1);xnXECurtain([cw,cd-3],[cw,-39.5],CH,sand,1);
  for(const sx of[-1,1]){xnXETower(sx*cw,0,cd,3.6,CH+2,sand,tile);xnChhatri(sx*cw,CH+4.4,cd,1.3,2.6,xC(XPAL.white),tile,8);vB('xmSand',sx*cw,0,-39.25,3,CH+1,1.5,0,sand);}   // the back piers 3 x 1.5 (were 4 x 3 at -40.5): in Erewhon they stand inside the citadel wall's 3.4 m, not through it (2026-11-10)
  xcParapet([-cw,-38.6],[cw,-38.6],C.rangeTop,'white');
@@ -214,7 +231,7 @@ function buildXaCitPalace(G,o){reseed(33001);const it=xcItem('xa_cit_palace'),C=
  if(it)xcPlan(it,{ext:{core:'xmMarW',coreC:null,dado:'xmSand',dadoC:null,band:'xmSand',bandC:XM_C.red},partC:xC(0xeadfcf)});
  // the gate iwan through the front: the tallest portal of the citadel, its muqarnas hood in turquoise
  xmIwan(0,0,49,0,9,C.FL+12.5,3.8,{fw:15,fh:C.FL+15.5,t:1.2,mat:'Haft',tiers:6,cell:1.0,star:2.2,back:false});
- for(const s of[-1,1])vB('xmMarW',s*6.75,0,46.4,1.5,C.FL+15.5,5.2,0,null);vB('xmMarW',0,C.FL+12.5,46.4,12,3,5.2,0,null);
+ for(const s of[-1,1])vB('xmMarW',s*6.72,0,46.375,1.5,C.FL+15.5,5.15,0,null);   /* 3 cm inside the iwan's piers and the curtain's ends: their faces had shared planes (2026-11-12) */vB('xmMarW',0,C.FL+12.5,46.4,12,3,5.2,0,null);
  for(const s of[-1,1]){vPst('xColS',s*7.6,C.FL+15.5,49.2,.5,2.4,xC(XPAL.white));kput('xBulbT',[s*7.6,C.FL+17.9,49.2],null,[.8,1.1,.8],tile);vBall('xGold',s*7.6,C.FL+19.1,49.2,.14,XM_C.gold);}
  xnRoundel(0,C.FL+14.4,49.7,0,2.0);for(const s of[-1,1])xnFlagpole(s*5,C.FL+15.7,47,4.5,xC(XPAL.saffron));
  xnGiltRoof(0,C.FL+15.5,46.2,7,4.4,0,{frame:1.4,over:.8});
@@ -242,7 +259,8 @@ function buildXaCitVizier(G,o){reseed(33011);const it=xcItem('xa_cit_vizier'),C=
  const cobalt=xC(0x1c2fb8),turq=xC(0x36c0c8),lemon=xC(0xf0d040);
  vnReg("Vizier's palace",0,-18,24,12);vnReg("Vizier's palace — the Divan",-8,-27,10,6,{part:'divan'});vnReg("Vizier's palace — pool garden",0,28,20,3,{part:'garden'});
  // the house: Majorelle cobalt outside on a zellige dado, turquoise bands at the floors
- if(it)xcPlan(it,{ext:{core:'xPaint',coreC:cobalt,dado:'xmZel',band:'xPaint',bandC:turq},partC:xC(0xeadfcf)});
+ /* the cobalt on the textured lime-wash, not the flat paint (the owner, 2026-11-12: "vizier palace wall needs texture") */
+ if(it)xcPlan(it,{ext:{core:'xWashB',coreC:cobalt,dado:'xmZel',band:'xPaint',bandC:turq},partC:xC(0xeadfcf)});
  // the loggias' front: the three arches of the garden face, a pishtaq rising over the middle one (the Eram pavilion's)
  xmIwan(0,0,10.6,0,6,C.U+2.2,.05,{fw:11,fh:C.top+3.2,t:.6,mat:'Haft',tiers:4,cell:.9,back:false});
  xcParapetRect(-22.3,22.3,-46.3,10.3,C.top,'white');
@@ -250,8 +268,8 @@ function buildXaCitVizier(G,o){reseed(33011);const it=xcItem('xa_cit_vizier'),C=
  // the upper loggia's rail on the garden
  xmBalustrade([-22,10.2],[-3.2,10.2],C.U,{rail:'xmMarW'});xmBalustrade([3.2,10.2],[22,10.2],C.U,{rail:'xmMarW'});
  // the pool garden: its wall with a tiled coping, the gate, the beds of marigolds, cypresses and palms
- for(const s of[-1,1]){vB('xPaint',s*22.3,0,28,.6,2.8,36,0,cobalt);vB('xmZel',s*22.3,2.8,28,.9,.2,36.2,0,null);vB('xPaint',s*12.6,0,46.3,19.4,2.8,.6,0,cobalt);vB('xmZel',s*12.6,2.8,46.3,19.6,.2,.9,0,null);}
- xmArchHead('horseshoe',0,2.2,46.3,0,3,2.4,.8,'Zel','Gold');vB('xPaint',0,2.2+2.4,46.3,3.4,.4,.8,0,cobalt);
+ for(const s of[-1,1]){vB('xWashB',s*22.3,0,28,.6,2.8,36,0,cobalt);vB('xmZel',s*22.3,2.8,28,.9,.2,36.2,0,null);vB('xWashB',s*12.6,0,46.3,19.4,2.8,.6,0,cobalt);vB('xmZel',s*12.6,2.8,46.3,19.6,.2,.9,0,null);}
+ xmArchHead('horseshoe',0,2.2,46.3,0,3,2.4,.8,'Zel','Gold');vB('xWashB',0,2.2+2.4,46.3,3.4,.4,.8,0,cobalt);
  for(const s of[-1,1]){xnXMBed(s*11,28,8,22,0,.05);for(let k=0;k<6;k++)xnCypress(s*5,14+k*4.8,7,.05);xnXMPalm(s*18,18,6,.05);xnXMPalm(s*18,38,6.5,.05);}
  if(lit)for(const s of[-1,1])vnLampPost(s*4,.05,44,3.4);
  void lemon;vnFolk(0,24,4,3);}
@@ -293,7 +311,9 @@ function buildXaCitTemple(G,o){reseed(33071);const it=xcItem('xa_cit_temple'),FL
  if(it)xcPlan(it,{ext:{core:'xmMarW',coreC:null,dado:'xmSand',band:'xmSand',bandC:XM_C.red},partC:xC(0xeadfcf)});
  // the great iwan on the porch's front, the hall's drum and dome, minarets at the corners
  xmIwan(0,0,26.6,0,7,FL+11,3.6,{fw:13,fh:FL+14,t:1,mat:'Haft',tiers:5,cell:.95,star:2.0,back:false});
- for(const s of[-1,1])vB('xmMarW',s*5.25,0,24.3,2.5,FL+14,4.6,0,null);vB('xmMarW',0,FL+11,24.3,8,3,4.6,0,null);
+ /* the pylons and the block over the iwan stand 10 cm behind its face (z 26.5): flush at 26.6 they fought its mosaic
+    frame (the owner, 2026-11-12: "z fight on entrance here") */
+ for(const s of[-1,1])vB('xmMarW',s*5.25,0,24.2,2.5,FL+14,4.6,0,null);vB('xmMarW',0,FL+11,24.2,8,3,4.6,0,null);
  const y=FL+11+.35;xcParapetRect(-20.3,20.3,-16.3,14.3,y,'white');xcParapetRect(-30.3,30.3,-22.3,22.3,FL+6.35,'white');
  xnDome(0,y,-1,9.2,'T',{drum:3.2,drumItem:'xDrumM',drumC:null,c:tile,fin:2.6});
  for(const sx of[-1,1])for(const sz of[-1,1]){const x=sx*29,z=sz*21;vPst('xColS',x,0,z,1.1,FL+16,xC(XPAL.white));vB('xmSand',x,FL+6.3,z,2.6,.5,2.6,0,XM_C.red);

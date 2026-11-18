@@ -6,7 +6,8 @@
     python3 tools/scale-model/cut_site.py --list            # the regions and sites in openworld/SITES.json
 
 openworld/SITES.json names each region's sites by their ids in the model's settlement list (model/src/60-settlements.js,
-the 5.1 canvas) and the model regions (by id) that join the cut. Each site becomes a square of its reach_km half-size round
+the 5.1 canvas) and the model regions (by id) that join the cut. A site the model does not list yet is a SITES.json row
+with "model": false and its own px, py (an outpost the owner placed before the model takes it). Each site becomes a square of its reach_km half-size round
 its pixel (2 km a pixel), each named region its own polygon, and each corridor ({from, to, width_km: 10} in the region's\n`corridors`) a strip from one site's pixel to another's, so the roads between sites have ground. The cut is their union:
   - the first polygon is written as the cut's named region into source/regions.json (with the model's regions, so the
     biome overlays are the model's own), with kind 'tool' so it is never read as a biome;
@@ -32,6 +33,12 @@ def load():
     return json.load(open(SITES, encoding='utf-8'))
 
 
+def reach(row, region):
+    """a site's reach in one region: its row's `reach_km_by` for that region (a site two regions list, each its own square),
+    else its `reach_km`"""
+    return (row.get('reach_km_by') or {}).get(region, row['reach_km'])
+
+
 def square(px, py, reach_km):
     r = reach_km * 1000.0 / M_PER_PX
     return [[px - r, py - r], [px + r, py - r], [px + r, py + r], [px - r, py + r]]
@@ -41,13 +48,19 @@ def polygons(S, region):
     """the cut's polygons: [{name, map_px, kind: 'site'|'region', ref}] in SITES.json's order (sites, then regions)"""
     G = S['regions'][region]
     sett = {s['id']: s for s in XR.load_model_defaults('settlements')}
+    # a site not on the model's list yet (SITES.json row with "model": false and its own px, py): planned before the model
+    # takes it, so a region can hold an outpost the owner has placed but the scale model does not show
+    for sid in G['sites']:
+        row = S['sites'].get(sid, {})
+        if sid not in sett and row.get('model') is False and row.get('px') is not None:
+            sett[sid] = {'id': sid, 'name': row['name'], 'type': row.get('type', 'outpost'), 'px': row['px'], 'py': row['py']}
     regs = {r['id']: r for r in XR.load_model_defaults('regions')}
     out = []
     for sid in G['sites']:
         if sid not in sett:
             sys.exit('cut_site: site %s is not in the model\'s settlement list (model/src/60-settlements.js)' % sid)
         s, row = sett[sid], S['sites'][sid]
-        out.append({'name': 'site %s (%s)' % (s['name'], sid), 'map_px': square(s['px'], s['py'], row['reach_km']),
+        out.append({'name': 'site %s (%s)' % (s['name'], sid), 'map_px': square(s['px'], s['py'], reach(row, region)),
                     'kind': 'site', 'ref': sid})
     for rid in G.get('polygons', []):
         if rid not in regs:
@@ -111,7 +124,7 @@ def cut(region, dry=False):
         s, row = sett[sid], S['sites'][sid]
         M['sites'].append({'id': sid, 'name': s['name'], 'type': s['type'], 'culture': row.get('culture'),
                            'px': s['px'], 'py': s['py'], 'x': (s['px'] - cx) * M_PER_PX, 'z': (s['py'] - cy) * M_PER_PX,
-                           'reach_km': row['reach_km'], 'page': row.get('page')})
+                           'reach_km': reach(row, region), 'page': row.get('page')})
     M['cut'] = {'by': 'tools/scale-model/cut_site.py', 'sites_json': 'openworld/SITES.json', 'region': region,
                 'map': S['map'], 'polygons': [{'name': p['name'], 'kind': p['kind'], 'ref': p['ref']} for p in P]}
     with open(rj, 'w', encoding='utf-8', newline='\n') as f:

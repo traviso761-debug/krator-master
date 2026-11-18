@@ -278,7 +278,9 @@ B[8]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,hT=H*rr(.45,.6),ph=rr(0,TA
  const white=rng()<.3;
  for(let k=0;k<nB;k++){const a=a0+k/nB*TAU+rr(-.3,.3),pts=treeGrow({x:o.x,y:o.y,z:o.z},dirOf(a,rr(.15,.5)),T.crownR*rr(.7,1.1),rb*.4,.08,5,-.08,.2);
   if(!limbOk(pts))continue;if(lv===2)limb(S,pts,st,{seg:5});else BIO.beam('rod',P3(pts[0]),P3(pts[5]),rb*.35,.08,rodCol(S.bark[0]));
-  for(let i=1;i<=5;i++){const p=pts[i];clumpAt('broad',p.x+rr(-.6,.6),p.y+rr(0,.6),p.z+rr(-.6,.6),rr(1.6,2.4),.45,hc,T.x,cy,T.z,T.crownR,H*.2,null);st.clumps++;
+  /* below the near level the bough is one straight rod (pts[0] to pts[5]): its clumps and racemes hang on that rod's line,
+     not on the curve it stands for, or they float up to a couple of metres off it (the attach audit, 2026-11-12) */
+  for(let i=1;i<=5;i++){const p=lv===2?pts[i]:{x:lerp(pts[0].x,pts[5].x,i/5),y:lerp(pts[0].y,pts[5].y,i/5),z:lerp(pts[0].z,pts[5].z,i/5),r:pts[i].r};clumpAt('broad',p.x+rr(-.6,.6),p.y+rr(0,.6),p.z+rr(-.6,.6),rr(1.6,2.4),.45,hc,T.x,cy,T.z,T.crownR,H*.2,null);st.clumps++;
    const m=lv===2?ri(3,6):lv===1?2:1;for(let r=0;r<m;r++){const col=white?C(pick(PAL.ivory)):vary(C(pick(S.leaf)),.02,.06,.05);
     /* held to its limb (BIO.holdTo, the attach audit: they hung up to 1.3 m off it); the same draws, so nothing moves but the raceme. Its card cell is kept (the owner) */
     BIO.put('raceme',BIO.holdTo([p.x,p.y,p.z],[p.x+rr(-1.3,1.3),p.y+rr(-.2,.4),p.z+rr(-1.3,1.3)],p.r+.35),qEuler(0,rr(0,TAU),0),[rr(.5,.8),rr(1.1,2.6),1],bright(col,1.15),{c2:bright(C(white?0xe8e0f8:pick(PAL.irid.wisteria)),1.05)});st.racemes++;}}}

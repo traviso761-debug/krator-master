@@ -9,6 +9,9 @@ the same (kits/resources/PLACEMENT-RESEARCH.md, features 1 and 3; kits/resources
     python3 tools/scale-model/geology.py --carbonate <geology.json> <regions> [--shift dx,dy]
     python3 tools/scale-model/geology.py --rocks <geology.json> <regions> --vents <page.html | model data> [--shift dx,dy]
     python3 tools/scale-model/geology.py --zinc <geology.json>
+    python3 tools/scale-model/geology.py --mined <geology.json> <regions> --model <page.html | model data> [--shift dx,dy]
+           (the mined goods' ten layers, kits/resources 42s: lodestone, peat, silica, quartz, alabaster, bitumen, opal,
+           diamond, jade, amber; in place, every other byte kept)
 
 <page.html>        the scale model page as saved (Artifact read); its DATA object holds the rasters
 <regions dir>      the artifact's `regions` collection (a folder of one JSON per document, or one JSON list)
@@ -51,6 +54,11 @@ FIELD = {'iron': 3000, 'copper': 4000, 'gold': 5000, 'tin': 4000, 'silver': 5000
          'sulfur': 2000, 'saltpeter': 4000, 'oil': 5000, 'gypsum': 2500, 'halite': 2500, 'potash': 2500, 'alkali': 2500,
          'nickel': 5000, 'marble': 3000,   # nickel and marble: REBAKE-PLAN.md R3 (the owner, 2026-11-03)
          'zinc': 4000}   # zinc (sphalerite): the owner, 2026-11-12 (biomes/galvanic/PLAN.md section 9)
+# the mined goods of Gemini's trade model (kits/resources 42s-res-ore-mined.js, 2026-11-16): rarer, so larger cells; mined()
+MINED_FIELD = {'lodestone': 6000, 'peat': 3000, 'silica': 4000, 'quartz': 6000, 'alabaster': 4000, 'bitumen': 6000,
+               'opal': 6000, 'diamond': 8000, 'jade': 8000, 'amber': 6000}
+FIELD.update(MINED_FIELD)
+MINED_FAMILIES = list(MINED_FIELD)
 INSET = 0.15
 NODE_FAMILIES = list(FIELD)
 LEDGER_FAMILIES = ['stone', 'clay', 'wood', 'water']
@@ -349,6 +357,126 @@ def rocks(prov, mask, P, regions, vents, VW, VH, OW, su, sv, cell_km, shift=(0, 
     return {k: np.clip(np.round(v * land), 0, 255).astype(np.uint8) for k, v in L.items()}, out
 
 
+LODESTONE_REGIONS = ('compass hills',)     # the Compass Hills' ore, magnetised by an Ancient installation (TRADE-GEMINI.md `magnets`)
+OPAL_REGIONS = ('opal valley',)            # biomes/opalvalley: the Rift Black Opal and the fire opal in the tuff
+OPAL_VALLEY = 150.0                        # the valley's byte: under its authored lodes (data/lodes.json)
+QUARTZ_REGIONS = ('high rift',)            # High Rift's quartz (TRADE-GEMINI.md `gems`)
+DIAMOND_REGIONS = ('korona / ne',)         # the Hoar-Table's quartzite conglomerate (K7): a paleoplacer on the tepui tables
+JADE_REGIONS = ('the crook',)              # the Crook's Verdigris Jade (TRADE-GEMINI.md `frost-coral`)
+AMBER_REGIONS = ('ria valley',)            # the Ria Valley's river amber (TRADE-GEMINI.md `ria-amber`)
+SWAMP_AMBER_REGIONS = ('e abyss', 'e abysss')   # the East Abyss's cordaite swamp amber (TRADE-GEMINI.md `abyss-lac`)
+TAR_REGIONS = ('east ring isles', 'west ring isles')   # the Ring Isles' tar-black seeps (Kautoa, Valapo, Bipo)
+
+
+def mined(prov, mask, P, regions, E, rain, temp, VW, VH, su, sv, cell_km, shift=(0, 0)):
+    """the mined goods' layers (kits/resources 42s-res-ore-mined.js; GEOLOGY.md "The mined goods' kinds"), from the final
+    provinces (prov without the ruin bit), the bake's layers P (iron, oil, coal, gypsum, tuff, glass, saltpeter, stone,
+    clay) and the climate on the bake's grid (E m, rain mm, temp C). Returns {family: uint8 layer}"""
+    land = (mask & 1) == 0; cliff = (mask & 2) > 0; airless = (mask & 4) > 0
+    PI = PROVINCES.index
+    Gn, Gr, Im, Qz, Um, V, Rf, Ev = (prov == PI(k) for k in ('crystalline', 'granite', 'impact', 'quartzite', 'ultramafic',
+                                                             'volcanic', 'rift', 'evaporite'))
+    S = prov == PI('sedimentary')
+    R = lambda names, kinds=None: region_mask(regions, names, kinds, VW, VH, su, sv, shift)
+    f = lambda k: P[k].astype(float)
+    relief = ndimage.maximum_filter(E, cells(20, cell_km)) - ndimage.minimum_filter(E, cells(20, cell_km))
+    flat = 1 - np.clip(relief / 800.0, 0, 1)
+    arid = np.clip((f('saltpeter') - 40.0 * Ev) / 200.0, 0, 1)
+    shore = land & ndimage.binary_dilation(~land, iterations=cells(4, cell_km))
+    L = {}
+    # lodestone: magnetite on bare mantle, strongest on its exposed crests (the Arch's lightning-struck lodestones), and the
+    # Compass Hills' magnetised ore; nowhere else (a lodestone is rare: the iron ore elsewhere is the iron node's)
+    L['lodestone'] = np.maximum.reduce([150.0 * (Um & (f('stone') >= 200)), 40.0 * Um, 220.0 * R(LODESTONE_REGIONS)])
+    # peat: blanket bog where it is wet, cool and flat; fen peat on the wet floodplains (the clay's)
+    blanket = 230.0 * np.clip((rain - 700.0) / 700.0, 0, 1) * np.clip((14.0 - temp) / 10.0, 0, 1) * (temp > -6) * flat
+    fen = 160.0 * (f('clay') >= 200) * np.clip((rain - 500.0) / 500.0, 0, 1) * flat
+    L['peat'] = np.maximum(blanket, fen) * ~Ev * ~cliff * ~airless
+    # quartz sand: the quartzite tables weathered to sand, the low sand coasts of the hard rocks, the Ancients' melt-glass cullet
+    L['silica'] = np.maximum.reduce([170.0 * Qz * flat, 150.0 * shore * (S | Qz | Gr | Gn) * (E < 500), 0.8 * f('glass')])
+    # rock crystal: vein quartz in the granites and quartzites, less in the gneiss, the walls' breccia and the rift; High Rift
+    # (faint everywhere it can be: clear crystal is rare; only High Rift is rich)
+    L['quartz'] = np.maximum(30.0 * Gr + 25.0 * Qz + 10.0 * Gn + 8.0 * Im + 10.0 * Rf, 200.0 * R(QUARTZ_REGIONS))
+    # alabaster: gypsum's massive bed, at the heart of the rim's ring
+    L['alabaster'] = 0.8 * f('gypsum') * (f('gypsum') >= 100)
+    # bitumen: where the oil comes to the surface and sets (the richer oil ground), and the Ring Isles' seeps
+    L['bitumen'] = np.maximum(0.75 * f('oil') * (f('oil') >= 80), 90.0 * R(TAR_REGIONS))
+    # opal: silica out of the ash in a dry land (the tuff, by the aridity), and Opal Valley itself at 150: well over the tuff
+    # anywhere else, under the valley's authored lodes (lode:great-potch-line at 235), so its richest field stands out (the
+    # Lightwall session's finding, the owner: "Lower and re-bake", 2026-11-16)
+    L['opal'] = np.maximum(0.6 * f('tuff') * arid, OPAL_VALLEY * R(OPAL_REGIONS))
+    # diamonds and garnets: the paleoplacer conglomerate at the base of the tepui tables, where it crops out round their edges
+    # (a quartzite cell beside one that is not); faint on the tables' tops and on other quartzite
+    edge = Qz & ndimage.binary_dilation(~Qz & land, iterations=cells(4, cell_km))
+    L['diamond'] = np.maximum(170.0 * edge * R(DIAMOND_REGIONS), 25.0 * Qz)
+    # jade: nephrite where the serpentinite meets the old shell (the ultramafic's edges, both sides), and the Crook
+    c = cells(4, cell_km)
+    contact = ndimage.binary_dilation(Um, iterations=c) & ~ndimage.binary_erosion(Um, iterations=c)
+    L['jade'] = np.maximum(150.0 * contact, 200.0 * R(JADE_REGIONS))
+    # amber: fossil resin in the coal measures (the lignite beds), the Ria Valley's river amber, the East Abyss's swamp amber
+    L['amber'] = np.maximum.reduce([0.35 * f('coal') * (f('coal') >= 140), 120.0 * R(AMBER_REGIONS),
+                                    90.0 * R(SWAMP_AMBER_REGIONS)])
+    return {k: np.clip(np.round(v * land), 0, 255).astype(np.uint8) for k, v in L.items()}
+
+
+def model_climate(src, VW, VH):
+    """E (m), rain (mm) and the mean temperature (C) of a page or the model's data folder, on a bake's grid (as main samples
+    them: the height grid every k-th cell, the climate rasters at each cell's centre)"""
+    D = load_page(src)
+    lo, hi, OW, OH = D['lo'], D['hi'], D['fullW'], D['fullH']
+    h = raster(D, 'h')
+    E = lo + ((h[..., 0].astype(np.int32) << 8) | h[..., 1]) / 65535 * (hi - lo)
+    k = max(1, int(round((E.shape[1] - 1) / (VW - 1))))
+    E = E[::k, ::k]
+    if E.shape != (VH, VW):
+        sys.exit('the model\'s grid %s does not take the bake\'s %s' % (E.shape, (VH, VW)))
+    su, sv = (VW - 1) / (OW - 1), (VH - 1) / (OH - 1)
+    jj, ii = np.mgrid[0:VH, 0:VW]
+    pj = np.clip(np.round(jj / sv).astype(int), 0, OH - 1); pi = np.clip(np.round(ii / su).astype(int), 0, OW - 1)
+    rain = np.array(Image.open(io.BytesIO(base64.b64decode(D['p']))).convert('L')).astype(float)[pj, pi] / 255 * 4000
+    temp = np.array(Image.open(io.BytesIO(base64.b64decode(D['tm']))).convert('L')).astype(float)[pj, pi] - 90
+    return E, rain, temp
+
+
+def add_mined(argv):
+    """--mined: the mined goods' layers added to a bake, in place, leaving every other byte as it was. <geology.json>
+    <regions> --model <page.html | model data folder> [--shift dx,dy]. The node field takes each as a family
+    (data.field.families, its cell in MINED_FIELD)"""
+    path, src = argv[2], argv[3]
+    sh = [a.split('=', 1)[1] for a in argv if a.startswith('--shift=')] or [argv[k + 1] for k, a in enumerate(argv) if a == '--shift']
+    shift = tuple(float(v) for v in sh[0].split(',')) if sh else (0, 0)
+    msrc = [argv[k + 1] for k, a in enumerate(argv) if a == '--model']
+    if not msrc:
+        sys.exit('--mined needs --model <page.html | model data folder>')
+    data = json.load(open(path, encoding='utf-8'))
+    if 'impactite' not in data['families']:
+        sys.exit(path + ' has no rock layers: run --rocks first')
+    if any(k in data['families'] for k in MINED_FAMILIES):
+        sys.exit(path + ' already has the mined goods\' layers')
+    g = data['grid']; VW, VH, OW = g['w'], g['h'], g['fullW']; su, sv = (VW - 1) / (OW - 1), (VH - 1) / (g['fullH'] - 1)
+    n = VW * VH
+    if src.endswith('.js'):
+        import re
+        regions = json.loads(re.search(r'const defRegs = (\[.*?\]);\r?\n', open(src, encoding='utf-8').read(), re.S).group(1))
+    else:
+        regions = docs(src)
+    Lr = lambda k: unrle(data['layers'][k], n).reshape(VH, VW)
+    prov_b, mask = Lr('province'), Lr('mask')
+    P = {k: Lr(k) for k in ('iron', 'oil', 'coal', 'gypsum', 'tuff', 'glass', 'saltpeter', 'stone', 'clay')}
+    E, rain, temp = model_climate(msrc[0], VW, VH)
+    layers = mined(prov_b & 127, mask, P, regions, E, rain, temp, VW, VH, su, sv, g['cell_km'], shift)
+    land = (mask & 1) == 0
+    data['families'] = data['families'] + MINED_FAMILIES
+    data['field']['families'] = data['field']['families'] + MINED_FAMILIES
+    data['field']['cells'] = dict(data['field']['cells'], **MINED_FIELD)
+    for k in MINED_FAMILIES:
+        data['layers'][k] = rle(layers[k])
+        data['stats']['mean'][k] = round(float(layers[k][land].mean()), 2)
+    with open(path, 'w', encoding='utf-8', newline='\n') as fh:
+        json.dump(data, fh, separators=(',', ':'), sort_keys=True)
+    print('added the mined goods to %s: means %s' % (path, {k: data['stats']['mean'][k] for k in MINED_FAMILIES}))
+    print('land cells over 100:', {k: int((layers[k][land] > 100).sum()) for k in MINED_FAMILIES})
+
+
 def model_vents(src, OW, shift):
     """the vents [(px, py, radius)] of a page or a model data folder, moved by shift onto the bake's canvas"""
     sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -471,13 +599,102 @@ def add_carbonate(argv):
                                                             data['stats']['mean']['limestone']))
 
 
+LODES_FILE = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
+                          'kits', 'resources', 'data', 'lodes.json')
+
+
+def stamp_lodes(layers, land, lodes, su, sv, cell_km):
+    """Authored deposits on the family layers (2-D uint8 arrays, changed in place). Each lode is {id, family, px, py
+    (5.1 canvas px), r_km, peak (0-255), why}: inside r_km of its pixel a land cell's byte for that family is raised to
+    peak * sqrt(1 - (d / r)^2), never lowered, so stamping twice changes nothing. Returns the families touched."""
+    touched = set()
+    for L in lodes:
+        fam = L['family']
+        if fam not in layers:
+            sys.exit('lode %s: no layer %r' % (L['id'], fam))
+        a = layers[fam]; VH, VW = a.shape; touched.add(fam)
+        ci, cj, r = L['px'] * su, L['py'] * sv, L['r_km'] / cell_km
+        for j in range(max(0, int(cj - r) - 1), min(VH, int(cj + r) + 2)):
+            for i in range(max(0, int(ci - r) - 1), min(VW, int(ci + r) + 2)):
+                d = ((i - ci) ** 2 + (j - cj) ** 2) ** 0.5
+                if d > r or not land[j, i]:
+                    continue
+                v = int(round(L['peak'] * max(0.0, 1 - (d / r) ** 2) ** 0.5))
+                if v > a[j, i]:
+                    a[j, i] = v
+    return touched
+
+
+def lode_nodes(a, mask, fam, anchor, OW, OH, su, sv):
+    """The lode nodes of a placer family from its layer a: the node field itself (45r-res-field.js), on the coarse mask."""
+    VH, VW = a.shape
+    Cm = FIELD[fam]; A0, A1 = anchor
+    i0, j0 = int(math.floor(-A0 / Cm)), int(math.floor(-A1 / Cm))
+    i1, j1 = int(math.ceil((OW * 2000 - A0) / Cm)), int(math.ceil((OH * 2000 - A1) / Cm))
+    iz, ix = np.mgrid[j0:j1, i0:i1]
+    base = k_child(WORLD, 'res:' + fam)
+    s = k_cell(base, ix, iz)
+    fx, fz = k_unit(k_hash(s, 2)), k_unit(k_hash(s, 3))
+    x = A0 + (ix + INSET + (1 - 2 * INSET) * fx) * Cm; z = A1 + (iz + INSET + (1 - 2 * INSET) * fz) * Cm
+    ci = np.floor(x / 2000.0 * su + 0.5).astype(int); cj = np.floor(z / 2000.0 * sv + 0.5).astype(int)
+    ok = (ci >= 0) & (ci < VW) & (cj >= 0) & (cj < VH)
+    ci, cj = np.clip(ci, 0, VW - 1), np.clip(cj, 0, VH - 1)
+    p = a[cj, ci].astype(int)
+    keep = ok & (np.floor(k_unit(k_hash(s, 1)) * 255) < p) & ((mask[cj, ci] & 3) == 0)
+    g = k_unit(k_hash(s, 4)); q = g * (1.15 - 0.5 * p / 255.0)
+    yld = np.where(q < 0.15, 2.0, np.where(q < 0.55, 1.0, 0.5))
+    return x[keep], z[keep], yld[keep], ix[keep], iz[keep]
+
+
+def lode_digest(nodes):
+    """{count, sha1} of a family's lode nodes, as kits/resources/tests/test-res.js hashes the JS field's."""
+    x, z, y, ix, iz = nodes
+    order = np.lexsort((ix, iz))
+    txt = ';'.join('%d,%d,%g' % (ix[k], iz[k], y[k]) for k in order)
+    return {'count': int(len(x)), 'sha1': hashlib.sha1(txt.encode()).hexdigest()[:16]}
+
+
+def add_lodes(argv):
+    """--lodes: authored deposits (kits/resources/data/lodes.json) stamped on a bake, in place (stamp_lodes); a full bake
+    stamps them itself, before its lode nodes. The owner's deposits the scale model's geology does not give (the first:
+    Xanadu's gold, 2026-11-12, openworld/TRADE-GOODS.md) live there, not in hand-edited layers. A placer family's lode
+    digest (stats.lodes) is recomputed from the stamped layer; its placers down the rivers are not (they need the bake's
+    rivers): an authored lode's placers come with the next full bake."""
+    path, src = argv[2], argv[3]
+    data = json.load(open(path, encoding='utf-8'))
+    lodes = json.load(open(src, encoding='utf-8'))['lodes']
+    g = data['grid']; VW, VH = g['w'], g['h']; su, sv = (VW - 1) / (g['fullW'] - 1), (VH - 1) / (g['fullH'] - 1)
+    n = VW * VH
+    mask = unrle(data['layers']['mask'], n).reshape(VH, VW)
+    land = (mask & 1) == 0
+    layers = {L['family']: unrle(data['layers'][L['family']], n).reshape(VH, VW).copy()
+              for L in lodes if L['family'] in data['layers']}
+    touched = stamp_lodes(layers, land, lodes, su, sv, g['cell_km'])
+    for fam in sorted(touched):
+        a = layers[fam]
+        data['layers'][fam] = rle(a.reshape(-1))
+        data['stats']['mean'][fam] = round(float(a[land].mean()), 2)
+        if fam in PLACER_FAMILIES:
+            data['stats']['lodes'][fam] = lode_digest(lode_nodes(a, mask, fam, data['field']['anchor'],
+                                                                 g['fullW'], g['fullH'], su, sv))
+    data['lodes'] = lodes
+    with open(path, 'w', encoding='utf-8', newline='\n') as fh:
+        json.dump(data, fh, separators=(',', ':'), sort_keys=True)
+    print('stamped %d lode(s) on %s: %s; lodes %s' % (len(lodes), path, ', '.join(L['id'] for L in lodes),
+                                                      json.dumps({f: data['stats']['lodes'][f] for f in touched if f in PLACER_FAMILIES})))
+
+
 def main(argv):
+    if '--lodes' in argv[1:2]:
+        return add_lodes(argv)
     if '--carbonate' in argv[1:2]:
         return add_carbonate(argv)
     if '--rocks' in argv[1:2]:
         return add_rocks(argv)
     if '--zinc' in argv[1:2]:
         return add_zinc(argv)
+    if '--mined' in argv[1:2]:
+        return add_mined(argv)
     if len(argv) < 5:
         sys.exit(__doc__)
     page, regs_dir, setts_dir, out = argv[1:5]
@@ -676,33 +893,17 @@ def main(argv):
             g[k] = g[k] * hard
         a = np.clip(np.round(g[k] * land), 0, 255).astype(np.uint8)
         P[k] = a
+    # ---- the mined goods of Gemini's trade model (2026-11-16): from the final provinces, layers and climate (mined())
+    P.update(mined(prov, mask, P, regions, E, rain, temp, VW, VH, su, sv, CELL_KM))
     prov_b = prov | np.where(ruin & land, RUIN_BIT, 0).astype(np.uint8)
 
-    # ---- the lode nodes of the placer families: the node field itself (45r-res-field.js), on the coarse mask
-    def lode_nodes(fam):
-        Cm = FIELD[fam]; A0, A1 = ANCHOR
-        i0, j0 = int(math.floor(-A0 / Cm)), int(math.floor(-A1 / Cm))
-        i1, j1 = int(math.ceil((OW * 2000 - A0) / Cm)), int(math.ceil((OH * 2000 - A1) / Cm))
-        iz, ix = np.mgrid[j0:j1, i0:i1]
-        base = k_child(WORLD, 'res:' + fam)
-        s = k_cell(base, ix, iz)
-        fx, fz = k_unit(k_hash(s, 2)), k_unit(k_hash(s, 3))
-        x = A0 + (ix + INSET + (1 - 2 * INSET) * fx) * Cm; z = A1 + (iz + INSET + (1 - 2 * INSET) * fz) * Cm
-        ci = np.floor(x / 2000.0 * su + 0.5).astype(int); cj = np.floor(z / 2000.0 * sv + 0.5).astype(int)
-        ok = (ci >= 0) & (ci < VW) & (cj >= 0) & (cj < VH)
-        ci, cj = np.clip(ci, 0, VW - 1), np.clip(cj, 0, VH - 1)
-        p = P[fam][cj, ci].astype(int)
-        keep = ok & (np.floor(k_unit(k_hash(s, 1)) * 255) < p) & ((mask[cj, ci] & 3) == 0)
-        g = k_unit(k_hash(s, 4)); q = g * (1.15 - 0.5 * p / 255.0)
-        yld = np.where(q < 0.15, 2.0, np.where(q < 0.55, 1.0, 0.5))
-        return x[keep], z[keep], yld[keep], ix[keep], iz[keep]
+    # ---- the owner's authored deposits (LODES_FILE), stamped before the lode nodes so the placers carry them
+    authored = json.load(open(LODES_FILE, encoding='utf-8'))['lodes'] if os.path.isfile(LODES_FILE) else []
+    stamp_lodes(P, land, authored, su, sv, CELL_KM)
 
-    lodes = {fam: lode_nodes(fam) for fam in PLACER_FAMILIES}
-    digest = {}
-    for fam, (x, z, y, ix, iz) in lodes.items():
-        order = np.lexsort((ix, iz))
-        txt = ';'.join('%d,%d,%g' % (ix[k], iz[k], y[k]) for k in order)
-        digest[fam] = {'count': int(len(x)), 'sha1': hashlib.sha1(txt.encode()).hexdigest()[:16]}
+    # ---- the lode nodes of the placer families: the node field itself (45r-res-field.js), on the coarse mask
+    lodes = {fam: lode_nodes(P[fam], mask, fam, ANCHOR, OW, OH, su, sv) for fam in PLACER_FAMILIES}
+    digest = {fam: lode_digest(lodes[fam]) for fam in PLACER_FAMILIES}
 
     # ---- the placers: carried down the rivers from the lodes, dropped where the gradient flattens
     rivers = D['rivers']; by_id = {r['id']: r for r in rivers}
@@ -787,6 +988,8 @@ def main(argv):
             'families': FAMILIES, 'ledgerFamilies': LEDGER_FAMILIES, 'rockFamilies': ROCK_FAMILIES,
             'layers': {'province': rle(prov_b), 'mask': rle(mask), **{k: rle(P[k]) for k in FAMILIES}},
             'placers': placers, 'basins': basins_out, 'polities': polities, 'settlements': settl, 'stats': stats}
+    if authored:
+        data['lodes'] = authored
     # the round trip, so a reader that decodes the format gets these bytes
     n = VW * VH
     assert (unrle(data['layers']['iron'], n) == P['iron'].ravel()).all()

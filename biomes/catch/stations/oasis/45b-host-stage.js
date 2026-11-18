@@ -10,15 +10,18 @@
 //                  the Hill), no buildings drawn
 //   THE HILL       Stair's site (kits/ancients targets/hill: 111 garden terraces climbing ~560 m of slope): the slope east
 //                  of the spring, rising from ~1,000 m to ~1,560 m in a kilometre, left EMPTY here (a site record)
-//   THE PORTAL     the Ancients' tunnel's southern mouth at the Hill's foot (north-east), open, with the divers' camp on
-//                  its apron and their spoil; the seal is a rubble plug deep inside, not drawn (the owner, 2026-10-26).
+//   THE PORTAL     the Stair mouth of the Theodiga tunnel (the Ancients' dead bore from Theodiga under the Twins and the
+//                  southern wall, openworld/ANCIENT-NETWORK.md rift.bowl.theodiga-stair; no trains run in it; kept by the
+//                  owner 2026-11-16, the northern tunnel from Arcbeam is dropped) at the Hill's foot (north-east), open,
+//                  with the divers' camp on its apron and their spoil; the seal is a rubble plug deep inside, not drawn
+//                  (the owner, 2026-10-26).
 //                  A placeholder frame until the Stair build draws the portal from kits/ancients
 // THE MAP (x east, z south, y up, real metres; R 3000): the west ridge (~1.4-1.7 km) on the west, the hollow's floor in
 // the middle running north to south (the crossing's line), the Hill's slope and the east ridge behind it.
 const TERR={R:3000};
 const WIND=(function(){const w=[-.45,.9],l=Math.hypot(w[0],w[1]);return[w[0]/l,w[1]/l];})();   /* down the hollow, from the north */
 const HILL={x0:250,x1:1350,rise:560};   /* the Hill's slope: x from its foot to its summit deck, and its rise */
-const PORTAL={x:330,z:-760,face:Math.PI,w:11,h:9,name:'The tunnel\'s southern portal (the Ancients\' road from Arcbeam, sealed halfway since the Cataclysm)'};
+const PORTAL={x:330,z:-760,face:Math.PI,w:11,h:9,name:'The Theodiga tunnel\'s Stair mouth (the Ancients\' dead bore from Theodiga, sealed deep inside since the Cataclysm)'};
 // the land without the water's hollow: the trough falling south, the west ridge, the Hill's slope and the east ridge
 function landH(x,z){let h=1000-.012*z+6*(nz(x,z,.002,3,61)-.5);
  const wr=smooth(-500,-2300,x+180*(nz(x,z,.0009,2,62)-.5)*2);h+=wr*(520+260*ridgeN(x,z,.0007,3,63))+wr*40*(nz(x,z,.006,2,64)-.5);
@@ -79,7 +82,7 @@ const FC=BOUND.FC,FIELD=BOUND.FIELD;
 // ---------------------------------------------------------------- the camps: the caravans' fire rings and the divers'
 [[60,-20],[150,90],[190,-60],[90,180],[230,60]].forEach((p,k)=>fireRing(p[0],p[1],'A caravan\'s fire ring (Stair\'s campground)',k));
 [[PORTAL.x-40,PORTAL.z+10],[PORTAL.x-55,PORTAL.z-14]].forEach((p,k)=>fireRing(p[0],p[1],'The arcology divers\' fire ring (at the portal)',10+k));
-SPOIL.forEach((S,k)=>REGISTER({name:'The divers\' spoil (rubble and dross out of the tunnel\'s southern half)',key:'camp.spoil',x:S.x,z:S.z,y:landAt0(S.x,S.z)-1,r:S.r,h:S.h+3}));
+SPOIL.forEach((S,k)=>REGISTER({name:'The divers\' spoil (rubble and dross out of the Theodiga tunnel)',key:'camp.spoil',x:S.x,z:S.z,y:landAt0(S.x,S.z)-1,r:S.r,h:S.h+3}));
 // THE PORTAL (a placeholder: the Stair build draws it from kits/ancients): a concrete frame in the Hill's foot, a dark mouth
 const PORTAL_MESH=(function(){const g=new THREE.Group(),y=landAt0(PORTAL.x-20,PORTAL.z),W=PORTAL.w,H=PORTAL.h,mat=new THREE.MeshLambertMaterial({color:0xb8b0a2}),dark=new THREE.MeshBasicMaterial({color:0x080706});
  const box=(w,h,d,x,yy,z,m)=>{const b=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m||mat);b.position.set(x,yy,z);g.add(b);return b;};
@@ -93,7 +96,7 @@ BIO.record({name:'Stair: the Hill arcology\'s site (kits/ancients targets/hill; 
 // ---------------------------------------------------------------- the station's say: STAGE
 const STAGE={
  key:'oasis',name:'The Catch: Stair\'s oasis',title:'Krator biome — the Catch: Stair\'s oasis',seed:29,hour:13,
- hint:'The Catch, station 2: Stair\'s spring in a hollow through the interior hills (~1,000 m): the pool and its seeps, Euphrates poplars, salt cedars and reeds, the eastern desert\'s palms and mesquite, the caravans\' campground, the Hill\'s empty slope (Stair\'s site) and the tunnel\'s southern portal with the divers\' camp',
+ hint:'The Catch, station 2: Stair\'s spring in a hollow through the interior hills (~1,000 m): the pool and its seeps, Euphrates poplars, salt cedars and reeds, the eastern desert\'s palms and mesquite, the caravans\' campground, the Hill\'s empty slope (Stair\'s site) and the Theodiga tunnel\'s Stair mouth with the divers\' camp',
  site:{px:834,py:1112},air:{pressure:1.43,humidity:.18},clouds:{cover:.05},fogDensity:0.00016,fogH:{y0:990,H:90,k:.8},siteH:1000,
  ridges:[
   {dist:220000,base:-1.81,amp:8.82,cycles:30,octaves:6,peaks:18,peakAmp:2.4,seed:51,rock:[0.41,0.36,0.32],hz:0.68},
@@ -121,7 +124,7 @@ STAGE.views=function(gh,nearTree){const P=POOL,live=nearTree(0,P.x-60,P.z+40),ta
   'Stair\'s spring from the Hill\'s foot':[HILL.x0+80,gh(HILL.x0+80,P.z+60)+12,P.z+60,P.x,P.lv+2,P.z],
   'The pool and its reeds':viewAt(gh,P.x+48,P.z-40,9,P.x,P.z,0),
   'The caravans\' campground':viewAt(gh,CAMP.x+170,CAMP.z+170,6,CAMP.x,CAMP.z,1),
-  'The tunnel\'s southern portal and the divers\' camp':viewAt(gh,PORTAL.x-110,PORTAL.z+60,5,PORTAL.x,PORTAL.z,5),
+  'The Theodiga tunnel\'s mouth and the divers\' camp':viewAt(gh,PORTAL.x-110,PORTAL.z+60,5,PORTAL.x,PORTAL.z,5),
   'The Hill\'s slope (Stair\'s site, left empty)':viewAt(gh,-300,300,20,(HILL.x0+HILL.x1)/2,0,120),
   'Seeps and the salt crust':viewAt(gh,SEEP2.x+170,SEEP2.z+40,16,CRUST.x-40,CRUST.z,0),
   'From the west ridge':viewAt(gh,-1900,-200,8,0,200,0),

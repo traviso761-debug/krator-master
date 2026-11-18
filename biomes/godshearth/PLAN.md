@@ -412,3 +412,6 @@ The modules this kit takes (`README.md`, "CORE MODULES ARE NOT OPTIONAL"), with 
 - 2026-11-09 pass: a priority flood for closed hollows over 780-1000 x 1280-1500 and a carve-and-fill search for the brine
   lake's site; `biomes/godthrone/stations/` (no `blood` station built); `HEARTH.work`'s code
   (`biomes/hearths/src/50-biome-hearths-species.js`, rebuild worktree); Lhasa's normals as the climate's Earth analogue.
+
+## Scale-Model 5.1 Evolved Dome Strata Note (`2026-11-13`)
+- **Intracaldera Silicic Coulées & Cryptodomes (`obsidian-pancake`):** While Godshearth's outer caldera ring walls expose `tibasalt` and `outland-tuff`, late-stage evolved rhyodacite/trachyte resurgent domes and glassy obsidian coulées along the caldera ring-fracture (`844, 1394` margin) bind to `KSTRATA` **`obsidian-pancake`** (`core/terrain/35-core-strata.js` — `2–6 m` flow-banded vitreous obsidian carapace over pumice and perlite breccia), supplying Nazarite glass-blade quarries alongside the `KTHERM` Hearth vents.

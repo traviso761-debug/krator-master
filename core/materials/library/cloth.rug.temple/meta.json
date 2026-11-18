@@ -1,0 +1,61 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.034,
+    0.995
+   ],
+   "seam_before": [
+    1.371,
+    1.058
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.0,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.9,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "cloth",
+  "id": "cloth.rug.temple",
+  "metal": 0,
+  "roughness": 0.9,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "cloth.rug.temple.png",
+  "generator": "ChatGPT image generation through Codex, 2026-11-16 (~/.codex/generated_images/01a1e6fc-2c5f-7750-94d9-def038ce7357)",
+  "licence": "generated for this project by its owner",
+  "original_title": "exec-ec765ada-b717-422c-99b1-a825d727a9e5.png",
+  "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '43. The Qiblai kit (kits/qiblai, 2026-11-11)' (id cloth.rug.temple)",
+  "sha1": "e64a4e826ef19f1f67d52a19ac0b0d70f14be1e8"
+ }
+}

@@ -1,0 +1,60 @@
+{
+ "targets": {
+  "town": "kirstabal.html"
+ },
+ "external": [
+  "settlements/kirstabal/gen/69k-kcity-bundle.js",
+  "settlements/kirstabal/gen/69k2-ks-flora-bundle.js",
+  "kits/xanadu/src/87k-xa-lake-trades.js",
+  "kits/xanadu/src/87k1-xa-lake-rooms.js",
+  "kits/xanadu/src/87k2-xa-slate-wall.js",
+  "kits/xanadu/extra/88d-xa-lakecraft.js",
+  "kits/xanadu/extra/88f-xa-harbour.js",
+  "kits/construction/src/10-cons-site.js"
+ ],
+ "scoped": [
+  "69k-kcity-bundle.js",
+  "69k2-ks-flora-bundle.js"
+ ],
+ "pack": "kirstabal",
+ "files": {
+  "town": [
+   ["core/atmos", ["89-atmos-0-core.js", "89-atmos-0p-presets.js", "89-atmos-a-waves.js", "89-atmos-b-skylight.js"]],
+   ["core/water", ["20-core-water.js", "21-core-water-shore.js", "22-core-water-flow.js", "50-core-water-draw.js", "51-core-water-kinds.js"]],
+   ["core/water/ext", ["56-core-water-breakup.js"]],
+   ["core/drawn", ["10-core-drawn.js"]]
+  ]
+ },
+ "deterministic": [
+  "39k-ks-model.js",
+  "40-ks-ground.js",
+  "41-ks-town.js",
+  "87k1-xa-lake-rooms.js",
+  "87k2-xa-slate-wall.js",
+  "88d-xa-lakecraft.js",
+  "88f-xa-harbour.js",
+  "10-cons-site.js",
+  "42-ks-ring.js",
+  "69k-kcity-bundle.js",
+  "69k2-ks-flora-bundle.js",
+  "89k0-ks-matlib.js",
+  "90m-ks-flora.js",
+  "89zk-ks-site.js",
+  "90k-ks-world.js",
+  "90l-ks-build.js",
+  "89-atmos-0-core.js",
+  "89-atmos-0p-presets.js",
+  "89-atmos-a-waves.js",
+  "89-atmos-b-skylight.js",
+  "20-core-water.js",
+  "21-core-water-shore.js",
+  "22-core-water-flow.js",
+  "50-core-water-draw.js",
+  "51-core-water-kinds.js",
+  "56-core-water-breakup.js",
+  "10-core-drawn.js"
+ ],
+ "interiors": [],
+ "furniture": [],
+ "interiorSets": []
+}

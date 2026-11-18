@@ -123,3 +123,17 @@ From the library:
   porphyry province.
 - The shadows' cost on each page (KNOWN_ISSUES.md).
 - Every station's look: the tarn's turquoise, the verdigris stain's strength, the frost coral's shape.
+
+---
+
+## 7. Scale-Model 5.1 IOCG Skarn & Secondary-Crater Reconciliation + Showcase Station #11 (`2026-11-13`)
+
+### 7.1 IOCG / Hydrothermal Cu-Skarn & Radial Secondary Crater (`0%` Subduction Porphyry)
+- **Why the Crook Carries Copper Without Subduction (`GEOLOGY-SANITY-CHECK.md` §2):** Krator has no plate-subduction arcs, so classical calc-alkaline copper-porphyry provinces do not form here. Instead, Copper Glacier's rich verdigris mineralization arises from **Iron-Oxide-Copper-Gold (IOCG) & hydrothermal contact-skarn veins** (`chalcopyrite → malachite / azurite / chrysocolla + magnetite gossan`) where western Rift-shoulder mafic intrusions cut carbonate-bearing basement lenses (**`contact-marble`**, peaking around the glacial copper skarn ridge at `5.1 px 320, 1248`).
+- **Copper Tarn as a Glaciated Radial Secondary Impact Crater (`5.1 px 148, 1148` / `147, 1143`):** The circular cirque cradling **Copper Tarn** (`+2,380–2,385 m`) is an ancient **radial secondary impact crater** excavated by a primary Krator megablock into the western outer-slope basement, preserving an upturned, frost-shattered **`secondary-ejecta`** boulder-breccia collar (`core/terrain/35-core-strata.js`) breached on its western lip by **`9105` (*Kopa-Tarn Warra*)**.
+
+### 7.2 Showcase Station #11 — `Copper Glacier Azurite Tarn & Verdigris Outwash`
+- **Canonical `5.1` Coordinates:** **`(148, 1148)`** (**Copper Tarn** cirque floor & glacier snout at **`+2,380–2,385 m`**, `1.20 atm`, `ET` / `EF` alpine glacial basin; paired up-glacier with the high Cu-skarn nunatak rib at **`(320, 1248)`**).
+- **`KSTRATA` Binding:** **`secondary-ejecta`** (`3–9 m` chaotic angular megablock breccia, dark impact-melt matrix, and radial hummocky ejecta rim framing the tarn's circular collar) + **`contact-marble`** (`4–8 m` recrystallized white-and-blue marble with dark magnetite-epidote skarn selvages and bright green/blue malachite-azurite oxidation seams exposed at the glacier's plucked headwall) + `rift-basement` banded gneiss moraine boulders.
+- **Camera Framing (`5.2 × 5.2 km` glacial-collar cut):** Low moraine-crest camera at `+19 m` above the western `secondary-ejecta` breach looking ENE across the vivid milky-turquoise/azurite waters of **Copper Tarn** (`WATER.open` copper-flour tint): a `45 m` calving glacier snout streaked with `ice.glacier.verdigris` copper-sulfate bands and medial gossan moraines plunging into the tarn, `contact-marble` malachite-stained headwall cliffs gleaming beneath hanging seracs, braided green-pebble outwash bars feeding **`9105` (*Kopa-Tarn Warra*)** in the foreground, and `frost coral` cushions + copper-tolerant metallophyte spikes (`card.flowerspike`) colonizing the damp skarn gravel.
+- **Hydrology & Trade Tie-In:** Glacial abrasion grinds malachite, azurite, and native-copper nuggets off the `contact-marble` skarn wall directly into Copper Tarn and concentrates placer native copper and chrysocolla gravel bars down `9105` (*Kopa-Tarn Warra*); seasonal **Fellgang** and **Dalab** prospectors pan native-copper float on the outwash braidplain and pack high-grade azurite pigment and malachite smelting ore south toward the **Ledge** road and **Firebliss** passes.

@@ -1,0 +1,61 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.082,
+    1.138
+   ],
+   "seam_before": [
+    1.039,
+    2.085
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.0,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.85,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "wall",
+  "id": "wall.mural.dream",
+  "metal": 0,
+  "roughness": 0.85,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "wall.mural.dream.png",
+  "generator": "ChatGPT image generation through Codex, 2026-11-16 (~/.codex/generated_images/01a1e6fd-9bc1-71e1-b07d-fca93850adcc)",
+  "licence": "generated for this project by its owner",
+  "original_title": "exec-b0ec64c7-601a-4b0f-8fda-e3005cd25861.png",
+  "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '56. Gr\u00c4\u201c\u00e1\u00b9\u00ad-\u00c4\u20acil, the Azure Dream's Hall of Dreaming (settlements/azure-dream, 2026-11-16)' (id wall.mural.dream)",
+  "sha1": "d0bf24b662e765806888c43f93bff86e5d7015d4"
+ }
+}

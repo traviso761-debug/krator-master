@@ -795,7 +795,7 @@ def manifest_for(room):
     items = program(kind if kind != 'library' or 'Map' not in room['name'] else 'library', a, w, d, D)
     if 'Map' in room['name'] and kind == 'library': items.append(('voth_court_map_table', 2))
     if 'Cold' in room['name'] and kind == 'larder': items.append(('voth_common_ice_box', 2))
-    if kind not in ('void', 'gallery_void', 'stair', 'passage', 'cistern', 'pit', 'lantern', 'garden', 'court', 'drill', 'boathouse'):
+    if kind not in ('void', 'gallery_void', 'stair', 'passage', 'cistern', 'pit', 'lantern', 'garden', 'court', 'drill', 'boathouse') and kind not in OPEN_KINDS:
         items += dressing(a, per, D)
     # merge duplicates; a tier 0 zone is drawn as one room where the planner will cut rooms round corridors and
     # courts, so a quarter of its floor is furnished (the census sets the real numbers: 150 household, the garrison)
@@ -809,6 +809,7 @@ def manifest_for(room):
 
 KEYMAP = {}
 EXTRA_PROGRAMS = {}   # another culture's room kinds: kind -> function(a, w, d, D) -> [(key, n)]
+OPEN_KINDS = set()    # opt-in (the House of the Tempest, 2026-11-16): a blueprint's own open-air kinds (a muster court, fields), never dressed
 
 # ------------------------------------------------------------------------------------------------ drawing
 DECOR_FILL = {0: (226, 226, 222), 1: (236, 232, 218), 2: (224, 236, 214), 3: (212, 226, 176), 4: (238, 220, 150)}
@@ -880,7 +881,7 @@ def draw_floor(F):
         dr.polygon([(X(u), Y(v)) for u, v in q[0]], fill=q[1], outline=(120, 120, 120))
         if len(q) > 2: dr.text((X(q[0][0][0]) + 6, Y(q[0][0][1]) + 4), q[2], font=f_rn, fill=(60, 60, 60))
     # the north arrow / axis note
-    dr.text((X(-ext) + 6, Y(ext) + 6), F.get('axisnote', 'u (main axis) ->   the entrance side at the left; v across, up on the sheet'), font=f_rn, fill=(90, 90, 90))
+    dr.text((X(cu - ext) + 6, Y(cv + ext) + 6), F.get('axisnote', 'u (main axis) ->   the entrance side at the left; v across, up on the sheet'), font=f_rn, fill=(90, 90, 90))
     for r in F['rooms']:
         if r['kind'] == 'garden' and r['u1'] - r['u0'] > 2 * Rr * 0.9: continue
         x0, x1, y0, y1 = X(r['u0']), X(r['u1']), Y(r['v1']), Y(r['v0'])
@@ -921,8 +922,10 @@ def draw_floor(F):
         dr.rectangle([X(u) - 7, Y(v) - 7, X(u) + 7, Y(v) + 7], fill=(255, 255, 255), outline=(0, 0, 0), width=2)
         dr.text((X(u) + 10 if u < 0 else X(u) - 72, Y(v) - 20), 'door', font=f_rn, fill=(0, 0, 0))
     # scale bar
-    bx, by = X(-ext) + 10, Y(-ext) - 12
-    dr.line([(bx, by), (bx + 50 * s, by)], fill=(0, 0, 0), width=3); dr.text((bx, by - 22), '50 m', font=f_rn, fill=(0, 0, 0))
+    # (2026-11-16) placed from the sheet's own centre (was X(-ext): off the page when the rect is not centred on 0),
+    # and 10 m long on a small sheet
+    bx, by = X(cu - ext) + 10, Y(cv - ext) - 12; bar = 50 if ext > 60 else 10
+    dr.line([(bx, by), (bx + bar * s, by)], fill=(0, 0, 0), width=3); dr.text((bx, by - 22), '%d m' % bar, font=f_rn, fill=(0, 0, 0))
     # legend
     lx = ox + PW + margin; ly = oy - 10
     dr.text((lx, ly), 'Key', font=f_lb, fill=(0, 0, 0)); ly += 30

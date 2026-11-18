@@ -46,7 +46,7 @@ const WCHK={
  falls(L,name){let up=0,worst=0;for(let i=1;i<L.length;i++){const d=L[i]-L[i-1];if(d>1e-6){up++;worst=Math.max(worst,d);}}
   return{ok:L.length>2&&!up,detail:name+': '+L.length+' points, '+(up?up+' rise downstream (worst '+worst.toFixed(2)+' m)':'falling all the way, '+L[0].toFixed(2)+' to '+L[L.length-1].toFixed(2)+' m')};},
  canal(C,intakeY){const L=C.leat.map(p=>p[3]).concat(C.tail.map(p=>p[3])),r=WCHK.falls(L,'the leat and the tail race');
-  const ok=r.ok&&C.y0<=intakeY&&C.tail[C.tail.length-1][3]>=C.yP-.01;return{ok,detail:r.detail+'; intake '+C.y0.toFixed(2)+' under the stream\'s '+intakeY.toFixed(2)+'; into the Mirror at '+C.yP};},
+  const ok=r.ok&&C.y0<=intakeY&&C.tail[C.tail.length-1][3]>=C.yP-.01;return{ok,detail:r.detail+'; intake '+C.y0.toFixed(2)+' under the level of '+(C.from||'the stream')+', '+intakeY.toFixed(2)+'; into the Mirror at '+C.yP};},
  wheels(W){const bad=W.filter(w=>w.dist>.5||w.y-w.r>w.water||w.y-w.r<w.water-.8);
   return{ok:W.length>0&&!bad.length,detail:W.length+' wheels'+(bad.length?'; not in the canal\'s water: '+bad.map(w=>w.id).join(', '):', each on the canal\'s line with its lowest paddles 0.45 m in its water')};},
  banks(){let bad=0,n=0;for(const R of STREAM){const P=R.pts;for(let i=2;i<P.length-2;i+=3){if(Math.abs(P[i][0])>TERR.R-60||Math.abs(P[i][1])>TERR.R-60||LS.inGrounds(P[i][0],P[i][1],30))continue;
@@ -54,7 +54,7 @@ const WCHK={
    for(const s of [-1,1])if(terrainH(P[i][0]+nx*hw*s,P[i][1]+nz*hw*s)<P[i][2]-.05){bad++;break;}}}
   return{ok:n>20&&bad/n<.05,detail:n+' sections: the banks over the water in '+(n-bad)+(bad?' ('+bad+' low)':'')};}};
 function waterChecks(add){const R=STREAM[0];add('the stream only falls downstream',WCHK.falls(R.pts.map(p=>p[2]),'the stream'));
- add('the canal falls from the stream to the Mirror',WCHK.canal(CANAL,streamNear(CANAL.leat[0][0],CANAL.leat[0][1]).y));
+ add('the canal falls from '+CANAL.from+' to the Mirror',WCHK.canal(CANAL,CANAL.intakeY));
  add('the mills\' wheels stand in the canal\'s water',WCHK.wheels(FARMDRAW.wheels));
  add('the stream\'s banks stand over its water',WCHK.banks());}
 function waterNegatives(add){add('a stream that rises downstream (the model\'s own levels)',WCHK.falls(STREAM[0].model,'the model\'s levels'));

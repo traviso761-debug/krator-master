@@ -1,0 +1,61 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.235,
+    1.238
+   ],
+   "seam_before": [
+    1.414,
+    1.198
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0.0,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.9,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "ground",
+  "id": "ground.komatiite.pavement",
+  "metal": 0,
+  "roughness": 0.9,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "ground.komatiite.pavement.png",
+  "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d137-ba28-7c10-8575-9e09ad6c1276)",
+  "licence": "generated for this project by its owner",
+  "original_title": "exec-49b419e3-075f-429e-baf5-63a51b57a1c3.png",
+  "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '49. The Great Chasm (`biomes/greatchasm`, 2026-11-11)' on origin/main (id ground.komatiite.pavement)",
+  "sha1": "92e0c434ab3a0bced279069c93f8191ecb6584da"
+ }
+}

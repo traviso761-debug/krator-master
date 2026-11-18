@@ -73,9 +73,9 @@ def pack_fragment(kit):
     return _mp.fragment(os.path.join(ROOT, 'biomes', kit), kit, exclude=PACK_EXCL[kit], side=SIDE)
 LDF = lambda *fs: [('ld', f) for f in fs]
 # the city page's [G data] half, as settlements/isle-demo/build.py lists it (CITY_DATA_JS)
-ISLE_DATA_JS = ['15-isle-tune.js', '20-isle-ground.js', '30-isle-programme.js', '32-isle-city.js', '33-isle-spurs.js', '34-isle-census.js',
-                '40-isle-sim.js', '41-isle-nav.js', '42-isle-people.js', '43-isle-items.js', '44-isle-economy.js', '45-isle-sim-checks.js',
-                '46-isle-stocks.js', '47-isle-trade.js', '47b-isle-build.js', '47c-isle-crime.js', '47f-isle-found.js', '47h-isle-hamlets.js', '47k-isle-colony.js', '47x-isle-expeditions.js', '47y-isle-houses.js', '47n-isle-herders.js', '47m-isle-money.js', '47u-isle-unrest.js', '47r-isle-refugees.js', '48-isle-week.js', '49-isle-govern.js', '50-isle-export.js']
+ISLE_DATA_JS = ['15-isle-tune.js', '20-isle-ground.js', '30-isle-programme.js', '32-isle-city.js', '33-isle-spurs.js', '34-isle-census.js', 'core/region/00-region-core.js', '39-isle-region.js',
+                'core/region/40-region-sim.js', 'core/region/41-region-nav.js', 'core/region/42-region-people.js', 'core/region/43-region-items.js', 'core/region/44-region-economy.js', 'core/region/45-region-sim-checks.js',
+                'core/region/46-region-stocks.js', '47-isle-trade.js', 'core/region/47b-region-build.js', 'core/region/47c-region-crime.js', 'core/region/47f-region-found.js', 'core/region/47h-region-hamlets.js', '47k-isle-colony.js', '47x-isle-expeditions.js', '47y-isle-houses.js', 'core/region/47n-region-herders.js', 'core/region/47m-region-money.js', 'core/region/47u-region-unrest.js', 'core/region/47r-region-refugees.js', 'core/region/48-region-week.js', 'core/region/49-region-govern.js', '50-isle-export.js']
 def _isle_build():
     """settlements/isle-demo/build.py as a module (its data fragments: dims, trades, site), loaded once"""
     import importlib.util
@@ -83,6 +83,11 @@ def _isle_build():
         spec = importlib.util.spec_from_file_location('_isle_city_build', os.path.join(ROOT, 'settlements', 'isle-demo', 'build.py'))
         m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m); globals()['_isle_city_build'] = m
     return globals()['_isle_city_build']
+# the region's resources (core/world/world_data.py: the geology cropped to the box; kits/resources' field, read in place)
+import importlib.util as _ilu   # noqa: E402
+_wds = _ilu.spec_from_file_location('core_world_data', os.path.join(ROOT, 'core', 'world', 'world_data.py'))
+_WD = _ilu.module_from_spec(_wds); _wds.loader.exec_module(_WD)
+RES_FRAGS = _WD.RES_FRAGS
 ORDER = (
     LDF('00-head.html') + [('gen', '05-world-data.js'),
      ('core/shader', '06-core-khook.js'), ('core/shader', '06b-core-kcolor.js'),
@@ -94,12 +99,14 @@ ORDER = (
      ('core/atmos', '89-atmos-0-core.js'), ('core/atmos', '89-atmos-0p-presets.js'), ('core/atmos', '89-atmos-a-waves.js'),
      ('core/atmos', '89-atmos-b-skylight.js'), ('core/atmos', '89-atmos-8-export.js'),
      ('core/water', '20-core-water.js'), ('core/water', '21-core-water-shore.js'), ('core/water', '22-core-water-flow.js'),
-     ('core/water', '50-core-water-draw.js'), ('core/water', '51-core-water-kinds.js'), ('core/water/ext', '56-core-water-breakup.js'),
+     ('core/water', '50-core-water-draw.js'), ('core/water', '51-core-water-kinds.js'), ('core/water/farbed', '53-core-water-farbed.js'),
+     ('core/water/ext', '56-core-water-breakup.js'),
      ('core/water/geyser', '52-core-water-geyser.js'), ('core/water/geyser', '52b-core-water-geyser-draw.js'),
      ('core/materials/record', '23-mat-record.js'), ('core/materials/record', '24-tex-def.js'), ('core/materials/record', '25-matlib-host.js'),
      ('core/materials/record', '26-matlib-bind.js'),
      ('biomes/sedesert/src', '35-core-strata.js')]
-    + LDF('41-world-fields.js', '42-world-roads.js') + [('src', '43-world-isles.js')]
+    + [('core/mask', '25-core-mask.js'), ('core/mask', '27-core-mask-distance.js'), ('core/coast', '30-core-coast.js')]   # core/coast (KCOAST): the natural coasts; core/mask's distance under it
+    + LDF('41-world-fields.js', '42-world-roads.js') + [('src', '43-world-isles.js')] + LDF('44c-world-coast.js')
     + LDF('45-world-host.js') + [('src', '46-world-config.js'), ('src', '47-world-kits.js'),
      ('biomes/hyperjungle/src', '41-hyperjungle-globals.js')]
     + [('pack', k) for k in PACK_KITS]
@@ -125,13 +132,14 @@ ORDER = (
     + [('core/simulation', f) for f in sorted(os.listdir(os.path.join(ROOT, 'core', 'simulation'))) if re.match(r'77-sim-.*\.js$', f)]
     + [('core/export', '07-core-export.js'), ('core/export', '09-core-export-adapters.js'), ('core/export', '10-core-export-scene.js'),
        ('core/biome', '44-core-stage.js')]
-    + [('settlements/isle-demo/src', f) for f in ISLE_DATA_JS] + [('src', '48p-world-colony.js'), ('src', '48t-world-towns.js'), ('src', '48r-world-roads.js'), ('src', '48f-world-found.js'), ('src', '48x-world-expeditions.js'), ('src', '48n-world-herders.js')]
+    + [(os.path.dirname(f) if '/' in f else 'settlements/isle-demo/src', os.path.basename(f)) for f in ISLE_DATA_JS] + [('src', '48p-world-colony.js'), ('src', '48t-world-towns.js'), ('src', '48r-world-roads.js'), ('src', '48f-world-found.js'), ('src', '48x-world-expeditions.js'), ('src', '48n-world-herders.js')]
     + LDF('80-world-sky.js', '81-world-terrain.js', '83-world-water.js', '83w-world-seas.js', '84-world-nursery.js',
           '85-world-flora.js', '86-world-floor.js', '87-world-places.js', '88-world-towns.js')
     + [('core/city', '54-city-host-construct.js'), ('kits/construction/src', '10-cons-site.js')]   # the empty lots' works (settlements/isle-demo 60): a building site and a piece going up
     + [('src', '88h-world-hamlets.js'), ('isledraw', '60-isle-draw.js'), ('isleexport', '62-isle-export-scene.js'), ('src', '88a-world-atlas.js'), ('src', '88t-world-towns.js'), ('src', '88k-world-camps.js'), ('src', '88p-world-colony.js'),
        ('settlements/isle-demo/src', '59-isle-citizens.js'), ('src', '88c-world-life.js'), ('src', '89-world-geysers.js')]
-    + LDF('90-world-camera.js', '91-world-probe.js', '98-world-start.js', '99-tail.html')
+    + [('resgeo', 'geology')] + RES_FRAGS + [('ld', '49r-world-resources.js'), ('ld', '89r-world-resources-map.js')]   # the resources: census, layers, markers
+    + LDF('90-world-camera.js', '91-world-probe.js', '93-world-propose.js', '98-world-start.js', '99-tail.html')   # 93: proposing a site
 )
 # the page's own words in the world's head (core/world/00-head.html) (its title and caption), replaced: each must be found exactly once
 HEAD = [('<title>Krator Little Demo</title>', '<title>Krator Isle Demo</title>'),
@@ -166,6 +174,9 @@ def data_fragment():
 def main():
     out, bad = [], []
     for where, f in ORDER:
+        if where == 'resgeo':   # the region's geology (core/world/world_data.py geology_fragment: kits/resources' data cropped to the box)
+            out.append(_WD.geology_fragment(DATA))
+            continue
         if where == 'gen':
             out.append(data_fragment())
             continue

@@ -112,9 +112,9 @@
     "kits/lizardmen/src/56-sa-beasts.js": "6cd873cd3ef4688ca36b63526e2ce79422b80a74311629dd1b9888f0b5fb5229",
     "kits/lizardmen/src/57-lc-camp.js": "b91667c6075281f2dac024d1d2078f864907ec092d1425e5212e135a7e0bf024",
     "kits/lizardmen/src/58-lz-monument.js": "ad8858304a4d88038f6032d54f3bb6ebd9570cd75944160a3d6ebdb1333a40cb",
-    "kits/lizardmen/src/59-lz-trades.js": "fc065e99d6e6765a68f4b69ca8b55a2d042dfeed299fc330b140cb9b779b2230",
+    "kits/lizardmen/src/59-lz-trades.js": "2c5c89eb879f0b632d4f6bcc23f379588cd136d35bc9f3d306af35648048eb81",
     "kits/lizardmen/src/60-lz-reliquary.js": "dc7ab8b013c9bc5766b6a12a686bc2706a77cffa57ed9071bc42e3cb7443388c",
-    "kits/lizardmen/src/62-lk-capital.js": "e575b5a21a4bc8bff963e76243c8d563b94df6114725a69de454549622ed0000",
+    "kits/lizardmen/src/62-lk-capital.js": "6cbbe2d29b343da91f0557a33a8522363ecb6c2b3dd2f9f94f981ae28584c646",
     "kits/lizardmen/src/89-rows.js": "48f24a374e0a3d8ad3c6eea23089ccdbf344908ecc3b3503c7bf5fedb93ac5b2",
     "kits/lizardmen/tex/basalt.albedo.webp": "cecb04c3bf107ee4eae1ac472ca60c735a9b8c6e13b89ab812fcdb1f8c1fc47c",
     "kits/lizardmen/tex/basalt.normal.webp": "bdac85db0bb29277a9ad3e0d1681758ca23f3ed9fbe728975eb54a3fb6df5a77",
@@ -302,14 +302,14 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "kits/lizardmen/build-manifest.json": "b5a28d4940b30547248297190c6924359de54f1b332e1044923a9f666074e0f7",
-    "kits/lizardmen/dist/lizardmen.html": "d2695afd48ccda0c324383a988468502948dc0a73d573bfbfbeca46811ea1e76",
+    "kits/lizardmen/build-manifest.json": "ace9053b956aee78a9af2c406f0a02e82e2b95db048921113cc3f2dfe0b49472",
+    "kits/lizardmen/dist/lizardmen.html": "b71a533c50bba5cc972542b2da1cd9e935d9ceaf39c228190959a11f94ba2f15",
     "kits/lizardmen/dist/lizardmen.tex.lizardmen-2.js": "5efd77b529bc5b2d6280a0a72433f0e11ccbbcba9411b5537dab61ef44b771e2",
     "kits/lizardmen/dist/lizardmen.tex.lizardmen.js": "0d8e4a8ad1a1bcf22091cc72194f20ca35b618a5370595a8aa2e72e85b11c260"
    },
    "outputs_raw": {
-    "kits/lizardmen/build-manifest.json": "b5a28d4940b30547248297190c6924359de54f1b332e1044923a9f666074e0f7",
-    "kits/lizardmen/dist/lizardmen.html": "d2695afd48ccda0c324383a988468502948dc0a73d573bfbfbeca46811ea1e76",
+    "kits/lizardmen/build-manifest.json": "ace9053b956aee78a9af2c406f0a02e82e2b95db048921113cc3f2dfe0b49472",
+    "kits/lizardmen/dist/lizardmen.html": "b71a533c50bba5cc972542b2da1cd9e935d9ceaf39c228190959a11f94ba2f15",
     "kits/lizardmen/dist/lizardmen.tex.lizardmen-2.js": "5efd77b529bc5b2d6280a0a72433f0e11ccbbcba9411b5537dab61ef44b771e2",
     "kits/lizardmen/dist/lizardmen.tex.lizardmen.js": "0d8e4a8ad1a1bcf22091cc72194f20ca35b618a5370595a8aa2e72e85b11c260"
    }

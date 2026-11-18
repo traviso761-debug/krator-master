@@ -1,321 +1,626 @@
 {
  "edit": "5.1 edit 7",
- "date": "2026-11-12",
- "region": "rmvmidbasin101",
- "cells": {
-  "polygon": 42226,
-  "own": 39343,
-  "shared": 2883
- },
- "slabs": [
-  {
-   "id": "slab_anvil",
-   "name": "The Anvil",
-   "centre_px": [
-    1662.0,
-    1376.0
-   ],
-   "strike_deg_from_E": 8.0,
-   "cliff_faces": "N",
-   "length_km": 40.0,
-   "width_km": 18.0,
-   "plain_m": 3287,
-   "height_over_plain_m": 2200.0,
-   "crest_m": 5356,
-   "toe_m": 3401,
-   "cliff_foot_m": 3372,
-   "ramp_dip_deg": 7.0,
-   "cells": 180,
-   "apron_cells": 66,
-   "apron_km2": 264,
-   "crest_atm": 0.82,
-   "plain_atm": 1.06,
-   "note": "the tallest: a lone slab on the middle bench, cliff north over the bench edge, ramp south to the upper step"
-  },
-  {
-   "id": "slab_halves_n",
-   "name": "The Halves (north-west)",
-   "centre_px": [
-    1715.0,
-    1366.0
-   ],
-   "strike_deg_from_E": 0.0,
-   "cliff_faces": "N",
-   "length_km": 14.0,
-   "width_km": 10.0,
-   "plain_m": 3234,
-   "height_over_plain_m": 1600.0,
-   "crest_m": 4674,
-   "toe_m": 3394,
-   "cliff_foot_m": 3210,
-   "ramp_dip_deg": 9.1,
-   "cells": 36,
-   "apron_cells": 18,
-   "apron_km2": 72,
-   "crest_atm": 0.89,
-   "plain_atm": 1.07,
-   "note": "the split slab's west half: one slab cut by a NW-SE fault, the halves slid 42 km apart along it"
-  },
-  {
-   "id": "slab_halves_se",
-   "name": "The Halves (south-east)",
-   "centre_px": [
-    1729.0,
-    1382.0
-   ],
-   "strike_deg_from_E": 0.0,
-   "cliff_faces": "N",
-   "length_km": 14.0,
-   "width_km": 10.0,
-   "plain_m": 3435,
-   "height_over_plain_m": 1600.0,
-   "crest_m": 4875,
-   "toe_m": 3595,
-   "cliff_foot_m": 3382,
-   "ramp_dip_deg": 9.1,
-   "cells": 36,
-   "apron_cells": 18,
-   "apron_km2": 72,
-   "crest_atm": 0.87,
-   "plain_atm": 1.04,
-   "note": "the split slab's east half, its cliff the same cut as its twin's"
-  },
-  {
-   "id": "slab_leaner",
-   "name": "The Leaner",
-   "centre_px": [
-    1600.0,
-    1397.0
-   ],
-   "strike_deg_from_E": 30.0,
-   "cliff_faces": "NNW",
-   "length_km": 30.0,
-   "width_km": 12.0,
-   "plain_m": 2110,
-   "height_over_plain_m": 1400.0,
-   "crest_m": 3355,
-   "toe_m": 2230,
-   "cliff_foot_m": 2190,
-   "ramp_dip_deg": 6.7,
-   "cells": 94,
-   "apron_cells": 29,
-   "apron_km2": 116,
-   "crest_atm": 1.05,
-   "plain_atm": 1.23,
-   "note": "the still-tilting slab: a sill inflating under its cliff end lifts it, the ramp steepening; its patera at the cliff's west foot by the road"
-  },
-  {
-   "id": "slab_backstop",
-   "name": "The Backstop",
-   "centre_px": [
-    1690.0,
-    1411.0
-   ],
-   "strike_deg_from_E": 0.0,
-   "cliff_faces": "S",
-   "length_km": 28.0,
-   "width_km": 12.0,
-   "plain_m": 4367,
-   "height_over_plain_m": 1200.0,
-   "crest_m": 5370,
-   "toe_m": 4367,
-   "cliff_foot_m": 4396,
-   "ramp_dip_deg": 5.7,
-   "cells": 85,
-   "apron_cells": 24,
-   "apron_km2": 96,
-   "crest_atm": 0.82,
-   "plain_atm": 0.93,
-   "note": "a back-thrust: its cliff faces south, toward the load, the ramp falling north to the upper step's edge"
-  }
- ],
- "paterae": [
-  {
-   "id": "patera_leaner",
-   "name": "The Leaner's Patera",
-   "centre_px": [
-    1601.5,
-    1388.6
-   ],
-   "across_km": 10.0,
-   "rim_m": 2087,
-   "floor_m": 1907,
-   "lake_cells": 16,
-   "lake_km2": 64,
-   "level_m": 1997,
-   "spill_m": 2073,
-   "closed": true,
-   "shore_min_m": 2012
-  },
-  {
-   "id": "patera_halves",
-   "name": "The Halves' Patera",
-   "centre_px": [
-    1722.0,
-    1374.0
-   ],
-   "across_km": 12.0,
-   "rim_m": 3312,
-   "floor_m": 3062,
-   "lake_cells": 21,
-   "lake_km2": 84,
-   "level_m": 3102,
-   "spill_m": 3260,
-   "closed": true,
-   "shore_min_m": 3180
-  }
- ],
- "moved_cells": 641,
- "raised_m_max": 2079,
- "cut_m_max": 249,
- "reclimate": {
-  "cells": 891,
-  "class_changed": 219,
-  "rain_mean_before_mm": 177.0,
-  "rain_mean_after_mm": 177.0,
-  "classes_now": {
-   "BSk": 205,
-   "Dsa": 3,
-   "Dsb": 20,
-   "Dsc": 360,
-   "Dfc": 53,
-   "ET": 247,
-   "EF": 3
-  }
- },
- "lake_paint_rgb": [
-  140,
-  166,
-  136
- ],
- "springs": [
-  {
-   "id": "spr_slab_siphon_breach",
-   "px": [
-    1584.0,
-    1348.0
-   ],
-   "ground_m": 2029,
-   "kind": "maar"
-  },
-  {
-   "id": "spr_slab_caldron",
-   "px": [
-    1626.0,
-    1366.0
-   ],
-   "ground_m": 2174,
-   "kind": "maar"
-  },
-  {
-   "id": "spr_slab_east_central",
-   "px": [
-    1696.0,
-    1372.0
-   ],
-   "ground_m": 2280,
-   "kind": "maar"
-  },
-  {
-   "id": "spr_slab_warp_head",
-   "px": [
-    1702.0,
-    1340.0
-   ],
-   "ground_m": 1616,
-   "kind": "chasm head"
-  },
-  {
-   "id": "spr_slab_leaner_patera",
-   "px": [
-    1601.5,
-    1388.6
-   ],
-   "ground_m": 1907,
-   "kind": "patera"
-  },
-  {
-   "id": "spr_slab_halves_patera",
-   "px": [
-    1722.0,
-    1374.0
-   ],
-   "ground_m": 3062,
-   "kind": "patera"
-  },
-  {
-   "id": "spr_slab_anvil_apron",
-   "px": [
-    1662.0,
-    1366.0
-   ],
-   "ground_m": 3123,
-   "kind": "apron toe"
-  },
-  {
-   "id": "spr_slab_leaner_ramp",
-   "px": [
-    1604.0,
-    1401.5
-   ],
-   "ground_m": 2106,
-   "kind": "contact"
-  }
- ],
- "cells_changed": {
-  "p": 278,
-  "c": 256,
-  "z": 111,
-  "tm": 437,
-  "th": 437,
-  "tl": 437,
-  "tw": 437,
-  "tc": 437
- },
- "jpeg_outside": {
-  "st": {
-   "same_as_untouched_reencoded": true,
-   "codec_drift_max": 5,
-   "codec_drift_mean": 0.001,
-   "changed_px_in_region": 1441
-  },
-  "t": {
-   "same_as_untouched_reencoded": true,
-   "codec_drift_max": 6,
-   "codec_drift_mean": 0.002,
-   "changed_px_in_region": 1417
-  },
-  "rt": {
-   "same_as_untouched_reencoded": true,
-   "codec_drift_max": 17,
-   "codec_drift_mean": 0.09,
-   "changed_px_in_region": 1061
-  },
-  "ct": {
-   "same_as_untouched_reencoded": true,
-   "codec_drift_max": 64,
-   "codec_drift_mean": 1.056,
-   "changed_px_in_region": 12159
-  }
- },
- "survey_after": {
-  "h_p1_5_25_50_75_95_99": [
-   916,
-   1494,
-   2022,
-   2138,
-   2882,
-   4694,
-   8445
+ "date": "2026-11-11",
+ "old_lake": {
+  "cells": 2197,
+  "km2": 8788,
+  "bed_m": [
+   -2209,
+   -720
   ],
-  "atm_p5_50_95": [
-   0.89,
-   1.22,
-   1.33
+  "raster_spill_m": -487.6
+ },
+ "horst": {
+  "cells_lowered": 3400,
+  "max_lowered_m": 2060,
+  "rim_max_m_before_after": [
+   2939,
+   929
   ]
  },
- "records": {
-  "region_name_was": "Mid Basin",
-  "region_name_now": "The Slabfields"
+ "volcanoes": [
+  {
+   "id": "volc_erewhon_west",
+   "px": [
+    829.425,
+    1526.038
+   ],
+   "summit_m": 1325,
+   "over_lake_m": 1845,
+   "base_px": 5.5,
+   "from_shore_px": 11.2,
+   "from_shore_km": 22.4,
+   "from_erehwon_px": 14.7
+  },
+  {
+   "id": "volc_erewhon_middle",
+   "px": [
+    855.76,
+    1531.527
+   ],
+   "summit_m": 1457,
+   "over_lake_m": 1977,
+   "base_px": 5.5,
+   "from_shore_px": 13.0,
+   "from_shore_km": 26.0,
+   "from_erehwon_px": 20.7
+  },
+  {
+   "id": "volc_erewhon_east",
+   "px": [
+    880.894,
+    1526.199
+   ],
+   "summit_m": 1627,
+   "over_lake_m": 2147,
+   "base_px": 5.5,
+   "from_shore_px": 12.2,
+   "from_shore_km": 24.4,
+   "from_erehwon_px": 40.9
+  }
+ ],
+ "vale": {
+  "floor_cells": 628,
+  "river_bed_m": [
+   -522.2,
+   -546.0
+  ],
+  "breach_bed_m": [
+   -548.0,
+   -568.0
+  ],
+  "floor_m": {
+   "p5": -538,
+   "median": -523,
+   "p95": -495
+  },
+  "floor_near_lake_m": -505,
+  "floor_near_theodiga_m": -534,
+  "fill_m_max": 1519
+ },
+ "pits": {
+  "before_cells": 723,
+  "after_cells": 195,
+  "new_cells": 0,
+  "filled_cells": 242,
+  "filled_max_m": 598.1,
+  "filled_at": [
+   [
+    805,
+    1477
+   ],
+   [
+    806,
+    1477
+   ],
+   [
+    807,
+    1477
+   ],
+   [
+    808,
+    1477
+   ],
+   [
+    801,
+    1478
+   ],
+   [
+    802,
+    1478
+   ],
+   [
+    803,
+    1478
+   ],
+   [
+    804,
+    1478
+   ],
+   [
+    805,
+    1478
+   ],
+   [
+    806,
+    1478
+   ],
+   [
+    807,
+    1478
+   ],
+   [
+    799,
+    1479
+   ],
+   [
+    800,
+    1479
+   ],
+   [
+    801,
+    1479
+   ],
+   [
+    802,
+    1479
+   ],
+   [
+    803,
+    1479
+   ],
+   [
+    804,
+    1479
+   ],
+   [
+    805,
+    1479
+   ],
+   [
+    796,
+    1480
+   ],
+   [
+    797,
+    1480
+   ]
+  ],
+  "river_cells_recut": 28
+ },
+ "spill": {
+  "level_m": -520.0,
+  "spill_m": -522.17,
+  "through_outlet": true,
+  "spill_with_outlet_blocked_m": -491.6,
+  "closed_otherwise": true,
+  "lake_surface_cells_in_a_pit": 0
+ },
+ "lake": {
+  "centre_px": [
+   845.0,
+   1504.0
+  ],
+  "axis_deg": 15.0,
+  "cells": 1175,
+  "km2": 4700,
+  "x": [
+   811,
+   881
+  ],
+  "y": [
+   1488,
+   1518
+  ],
+  "length_km": 144.5,
+  "width_km": 55.2,
+  "level_m": -520.0,
+  "bed_m": [
+   -1457,
+   -533
+  ],
+  "depth_max_m": 937,
+  "shore_min_m": -519,
+  "wall_m_at_2_px": -237,
+  "wall_m_at_3_px": -20
+ },
+ "islands": [
+  {
+   "id": "isle_erewhon_long",
+   "px": [
+    845.0,
+    1504.0
+   ],
+   "cells": 145,
+   "crest_m": -220,
+   "over_lake_m": 300,
+   "from_erehwon_km": 27.2
+  },
+  {
+   "id": "isle_erewhon_bay",
+   "px": [
+    844.139,
+    1511.505
+   ],
+   "cells": 2,
+   "crest_m": -470,
+   "over_lake_m": 50,
+   "from_erehwon_km": 12.7
+  },
+  {
+   "id": "isle_erewhon_west",
+   "px": [
+    831,
+    1499
+   ],
+   "cells": 1,
+   "crest_m": -420,
+   "over_lake_m": 100,
+   "from_erehwon_km": 41.2
+  },
+  {
+   "id": "isle_erewhon_east",
+   "px": [
+    864,
+    1503
+   ],
+   "cells": 1,
+   "crest_m": -475,
+   "over_lake_m": 45,
+   "from_erehwon_km": 53.9
+  }
+ ],
+ "erehwon": {
+  "px": [
+   841,
+   1517
+  ],
+  "ground_m": -497,
+  "profile_m_by_cells_back": {
+   "1": -497,
+   "2": -463,
+   "3": -394,
+   "4": -322,
+   "5": -293,
+   "6": -191,
+   "7": -3,
+   "8": 201
+  },
+  "lake_cell_north": true,
+  "old_pin_800_1503": {
+   "wet": false
+  }
+ },
+ "pins": {
+  "Erehwon": {
+   "px": [
+    841,
+    1517
+   ],
+   "before_m": 778,
+   "after_m": -497,
+   "wet_after": false
+  },
+  "Theodiga": {
+   "px": [
+    908,
+    1535
+   ],
+   "before_m": -495,
+   "after_m": -495,
+   "wet_after": false
+  },
+  "Tuatara": {
+   "px": [
+    818,
+    1554
+   ],
+   "before_m": -1704,
+   "after_m": -1704,
+   "wet_after": false
+  },
+  "Ōlḍ-Thalaba": {
+   "px": [
+    860,
+    1496
+   ],
+   "before_m": -1656,
+   "after_m": -500,
+   "wet_after": false
+  },
+  "Old Thalaba": {
+   "px": [
+    860,
+    1496
+   ],
+   "after_m": -500,
+   "wet_after": false
+  }
+ },
+ "temperatures": {
+  "vale_C": {
+   "tm": 25.0,
+   "th": 36.0,
+   "tl": 11.0,
+   "tw": 32.0,
+   "tc": 18.0
+  },
+  "lake_C": {
+   "tm": 39.0,
+   "th": 47.0,
+   "tl": 30.0,
+   "tw": 43.0,
+   "tc": 35.0
+  },
+  "rim_C_at_volcano_summits": {
+   "volc_erewhon_west": 14.0,
+   "volc_erewhon_middle": 13.0,
+   "volc_erewhon_east": 13.0
+  }
+ },
+ "reclimate": {
+  "cells": 5963,
+  "class_changed": 3918,
+  "rain_mean_before_mm": 1227.0,
+  "rain_mean_after_mm": 922.0,
+  "classes_now": {
+   "Af": 4,
+   "Am": 13,
+   "Aw": 356,
+   "BSh": 17,
+   "Csa": 1646,
+   "Csb": 114,
+   "Cfa": 2064,
+   "Cfb": 1712,
+   "Dfb": 18,
+   "Dfc": 18,
+   "XV": 1
+  }
+ },
+ "vale_climate": {
+  "rain_mm_median": 792,
+  "classes": {
+   "Cfa": 452,
+   "Aw": 8
+  }
+ },
+ "volcano_classes": {
+  "Cfb": 210,
+  "Csa": 57,
+  "Cfa": 9,
+  "Csb": 6,
+  "Aw": 2
+ },
+ "lake_paint_rgb_st": [
+  46,
+  129,
+  134
+ ],
+ "lake_paint_rgb_t": [
+  82,
+  133,
+  121
+ ],
+ "rivers": {
+  "r613": {
+   "was": {
+    "n": 15,
+    "last": [
+     792.7,
+     1483.7
+    ],
+    "to": {
+     "lake_m": -717,
+     "at_px": [
+      792.7,
+      1485.7
+     ]
+    }
+   },
+   "now": {
+    "n": 26,
+    "last": [
+     811.0,
+     1492.0
+    ],
+    "to": {
+     "lake_m": -520,
+     "at_px": [
+      811.0,
+      1492.0
+     ]
+    },
+    "mouth_m": -592.0
+   }
+  },
+  "r753": {
+   "was": {
+    "n": 2,
+    "last": [
+     794.7,
+     1483.7
+    ],
+    "to": {
+     "lake_m": -717,
+     "at_px": [
+      794.7,
+      1485.7
+     ]
+    }
+   },
+   "now": {
+    "n": 12,
+    "last": [
+     811.0,
+     1492.0
+    ],
+    "to": {
+     "lake_m": -520,
+     "at_px": [
+      811.0,
+      1492.0
+     ]
+    },
+    "mouth_m": -592.0
+   }
+  },
+  "r492": {
+   "was": {
+    "n": 18,
+    "last": [
+     812.7,
+     1483.7
+    ],
+    "to": {
+     "lake_m": -717,
+     "at_px": [
+      812.7,
+      1485.7
+     ]
+    }
+   },
+   "now": {
+    "n": 22,
+    "last": [
+     813.0,
+     1491.0
+    ],
+    "to": {
+     "lake_m": -520,
+     "at_px": [
+      813.0,
+      1491.0
+     ]
+    },
+    "mouth_m": -585.1
+   }
+  },
+  "r272": {
+   "was": {
+    "n": 11,
+    "last": [
+     822.7,
+     1483.7
+    ],
+    "to": {
+     "lake_m": -717,
+     "at_px": [
+      822.7,
+      1485.7
+     ]
+    }
+   },
+   "now": {
+    "n": 14,
+    "last": [
+     824.0,
+     1489.0
+    ],
+    "to": {
+     "lake_m": -520,
+     "at_px": [
+      824.0,
+      1489.0
+     ]
+    },
+    "mouth_m": -579.0
+   }
+  },
+  "r488": {
+   "was": {
+    "n": 11,
+    "last": [
+     880.8,
+     1495.7
+    ],
+    "to": {
+     "lake_m": -717,
+     "at_px": [
+      878.8,
+      1497.7
+     ]
+    }
+   },
+   "now": {
+    "n": 17,
+    "last": [
+     881.0,
+     1506.0
+    ],
+    "to": {
+     "lake_m": -520,
+     "at_px": [
+      881.0,
+      1506.0
+     ]
+    },
+    "mouth_m": -578.8
+   }
+  },
+  "r616": {
+   "was": {
+    "n": 17,
+    "last": [
+     906.8,
+     1515.7
+    ],
+    "to": {
+     "lake_m": -717,
+     "at_px": [
+      904.8,
+      1517.7
+     ]
+    }
+   },
+   "now": {
+    "n": 23,
+    "last": [
+     898.22,
+     1523.52
+    ],
+    "to": {
+     "river": "r070",
+     "name": "Ālph",
+     "at_px": [
+      898.22,
+      1523.52
+     ]
+    },
+    "mouth_m": -541.9
+   }
+  },
+  "r070": {
+   "was": {
+    "n": 14,
+    "first": [
+     903.5,
+     1529.5
+    ],
+    "length_km": 59
+   },
+   "now": {
+    "n": 31,
+    "first": [
+     876.88,
+     1511.67
+    ],
+    "length_km": 127.2,
+    "source_m": -522.9,
+    "head_cells": 44
+   }
+  }
+ },
+ "basin": {
+  "at_px": [
+   846.0,
+   1500.0
+  ],
+  "depth_m": 937,
+  "kind": "through lake",
+  "climate": "Cfa",
+  "spill_m": -522,
+  "name": "Erewhon's lake",
+  "notes": "A caldera lake (edit_517, 2026-11-11): its outlet the Alph (r070)."
+ },
+ "cells_changed": {
+  "tm": 5444,
+  "tw": 5431,
+  "tc": 5444,
+  "th": 5352,
+  "tl": 5441,
+  "p": 6258,
+  "c": 4425,
+  "z": 2467,
+  "h": 6711
+ },
+ "box": {
+  "y": [
+   1464,
+   1556
+  ],
+  "x": [
+   758,
+   918
+  ]
  }
 }

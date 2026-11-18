@@ -13,7 +13,7 @@
     "biomes/xanadu/src/46-host-ground.js": "2473e61f69d0e642a6684cfa1346ebf6272455f4065ce8403477e574678e686e",
     "biomes/xanadu/src/50-biome-xanadu-species.js": "e237bfed92c0ece4dd6714d4653eee967ffe4d48fe7c2f09d42c70c4f95ae3a3",
     "biomes/xanadu/src/52-biome-xanadu-library.js": "e52d416ba9cf038b170e6e076287c2c86b86250b942ef609ff60b09253091a2c",
-    "biomes/xanadu/src/55-biome-xanadu-trees.js": "e507c1948f00b1305d9e9af9f1e544426f6565fd7ff739cfbfc06b54602cdc38",
+    "biomes/xanadu/src/55-biome-xanadu-trees.js": "a248be9fd79ac984c1f666a22df6a3c8a1ae7a8205ac4aca286dc0ec41b6c2ab",
     "biomes/xanadu/src/60-biome-xanadu-floor.js": "3b5031785b448cd2c118ac933d4493b908fbe3e41c91482c72523cb99c886386",
     "biomes/xanadu/src/65-biome-xanadu-dress.js": "9d26b71661f92c2186232382c4d5656175ce167f36372a8822a86e1976abf74e",
     "biomes/xanadu/src/70-biome-xanadu.js": "f1f73c701008c3708b5cf2c641143569b3b56a5d1472b96f3aa3e881816271d2",
@@ -177,10 +177,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/xanadu/dist/xanadu.html": "7d874fca0bb9602ee2bb1238eb26c3ceb44a653bbcf5c8445b99a7b374a1b47a"
+    "biomes/xanadu/dist/xanadu.html": "64e45627369ce58ba3ee9af2b97572b97be1030dd7c29575f5d97e3bf2e39e26"
    },
    "outputs_raw": {
-    "biomes/xanadu/dist/xanadu.html": "7d874fca0bb9602ee2bb1238eb26c3ceb44a653bbcf5c8445b99a7b374a1b47a"
+    "biomes/xanadu/dist/xanadu.html": "64e45627369ce58ba3ee9af2b97572b97be1030dd7c29575f5d97e3bf2e39e26"
    }
   },
   "build.py --station cloud": {
@@ -203,7 +203,7 @@
     "biomes/xanadu/src/46-host-ground.js": "2473e61f69d0e642a6684cfa1346ebf6272455f4065ce8403477e574678e686e",
     "biomes/xanadu/src/50-biome-xanadu-species.js": "e237bfed92c0ece4dd6714d4653eee967ffe4d48fe7c2f09d42c70c4f95ae3a3",
     "biomes/xanadu/src/52-biome-xanadu-library.js": "e52d416ba9cf038b170e6e076287c2c86b86250b942ef609ff60b09253091a2c",
-    "biomes/xanadu/src/55-biome-xanadu-trees.js": "e507c1948f00b1305d9e9af9f1e544426f6565fd7ff739cfbfc06b54602cdc38",
+    "biomes/xanadu/src/55-biome-xanadu-trees.js": "a248be9fd79ac984c1f666a22df6a3c8a1ae7a8205ac4aca286dc0ec41b6c2ab",
     "biomes/xanadu/src/60-biome-xanadu-floor.js": "3b5031785b448cd2c118ac933d4493b908fbe3e41c91482c72523cb99c886386",
     "biomes/xanadu/src/65-biome-xanadu-dress.js": "9d26b71661f92c2186232382c4d5656175ce167f36372a8822a86e1976abf74e",
     "biomes/xanadu/src/70-biome-xanadu.js": "f1f73c701008c3708b5cf2c641143569b3b56a5d1472b96f3aa3e881816271d2",
@@ -371,10 +371,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/xanadu/dist/xanadu-cloud.html": "c3f9076cf95846edb9476fd9ce7cf5312121c05603544edbccb33cc1589b0263"
+    "biomes/xanadu/dist/xanadu-cloud.html": "ae428f56f658d0d7b600d6dce1493ec4b034b74bfc87f7bfd074ffefd3137157"
    },
    "outputs_raw": {
-    "biomes/xanadu/dist/xanadu-cloud.html": "c3f9076cf95846edb9476fd9ce7cf5312121c05603544edbccb33cc1589b0263"
+    "biomes/xanadu/dist/xanadu-cloud.html": "ae428f56f658d0d7b600d6dce1493ec4b034b74bfc87f7bfd074ffefd3137157"
    }
   },
   "build.py --station descent": {
@@ -389,7 +389,7 @@
     "biomes/xanadu/src/46-host-ground.js": "2473e61f69d0e642a6684cfa1346ebf6272455f4065ce8403477e574678e686e",
     "biomes/xanadu/src/50-biome-xanadu-species.js": "e237bfed92c0ece4dd6714d4653eee967ffe4d48fe7c2f09d42c70c4f95ae3a3",
     "biomes/xanadu/src/52-biome-xanadu-library.js": "e52d416ba9cf038b170e6e076287c2c86b86250b942ef609ff60b09253091a2c",
-    "biomes/xanadu/src/55-biome-xanadu-trees.js": "e507c1948f00b1305d9e9af9f1e544426f6565fd7ff739cfbfc06b54602cdc38",
+    "biomes/xanadu/src/55-biome-xanadu-trees.js": "a248be9fd79ac984c1f666a22df6a3c8a1ae7a8205ac4aca286dc0ec41b6c2ab",
     "biomes/xanadu/src/60-biome-xanadu-floor.js": "3b5031785b448cd2c118ac933d4493b908fbe3e41c91482c72523cb99c886386",
     "biomes/xanadu/src/65-biome-xanadu-dress.js": "9d26b71661f92c2186232382c4d5656175ce167f36372a8822a86e1976abf74e",
     "biomes/xanadu/src/70-biome-xanadu.js": "f1f73c701008c3708b5cf2c641143569b3b56a5d1472b96f3aa3e881816271d2",
@@ -557,10 +557,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/xanadu/dist/xanadu-descent.html": "bb77c39f44012d2e0788d09b9bfbd06d3bdf79d76dd0f94078fd5987cb3c7f42"
+    "biomes/xanadu/dist/xanadu-descent.html": "9157bd4ec5cd53229dd4dc36ace48ca08c3ad811260623cedd4f1540290e1663"
    },
    "outputs_raw": {
-    "biomes/xanadu/dist/xanadu-descent.html": "bb77c39f44012d2e0788d09b9bfbd06d3bdf79d76dd0f94078fd5987cb3c7f42"
+    "biomes/xanadu/dist/xanadu-descent.html": "9157bd4ec5cd53229dd4dc36ace48ca08c3ad811260623cedd4f1540290e1663"
    }
   },
   "build.py --station floor": {
@@ -609,7 +609,7 @@
     "biomes/xanadu/src/46-host-ground.js": "2473e61f69d0e642a6684cfa1346ebf6272455f4065ce8403477e574678e686e",
     "biomes/xanadu/src/50-biome-xanadu-species.js": "e237bfed92c0ece4dd6714d4653eee967ffe4d48fe7c2f09d42c70c4f95ae3a3",
     "biomes/xanadu/src/52-biome-xanadu-library.js": "e52d416ba9cf038b170e6e076287c2c86b86250b942ef609ff60b09253091a2c",
-    "biomes/xanadu/src/55-biome-xanadu-trees.js": "e507c1948f00b1305d9e9af9f1e544426f6565fd7ff739cfbfc06b54602cdc38",
+    "biomes/xanadu/src/55-biome-xanadu-trees.js": "a248be9fd79ac984c1f666a22df6a3c8a1ae7a8205ac4aca286dc0ec41b6c2ab",
     "biomes/xanadu/src/60-biome-xanadu-floor.js": "3b5031785b448cd2c118ac933d4493b908fbe3e41c91482c72523cb99c886386",
     "biomes/xanadu/src/65-biome-xanadu-dress.js": "9d26b71661f92c2186232382c4d5656175ce167f36372a8822a86e1976abf74e",
     "biomes/xanadu/src/70-biome-xanadu.js": "f1f73c701008c3708b5cf2c641143569b3b56a5d1472b96f3aa3e881816271d2",
@@ -776,10 +776,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/xanadu/dist/xanadu-floor.html": "170b921b116ed8e67bd3e047c6ba03970e0da9fb22cc875d141191dc417ae89c"
+    "biomes/xanadu/dist/xanadu-floor.html": "3d3ba175e75fdb8989f8764d2e55879dba40d85b51aae2d54828ae2126cf9629"
    },
    "outputs_raw": {
-    "biomes/xanadu/dist/xanadu-floor.html": "170b921b116ed8e67bd3e047c6ba03970e0da9fb22cc875d141191dc417ae89c"
+    "biomes/xanadu/dist/xanadu-floor.html": "3d3ba175e75fdb8989f8764d2e55879dba40d85b51aae2d54828ae2126cf9629"
    }
   },
   "build.py --station gills": {
@@ -800,7 +800,7 @@
     "biomes/xanadu/src/46-host-ground.js": "2473e61f69d0e642a6684cfa1346ebf6272455f4065ce8403477e574678e686e",
     "biomes/xanadu/src/50-biome-xanadu-species.js": "e237bfed92c0ece4dd6714d4653eee967ffe4d48fe7c2f09d42c70c4f95ae3a3",
     "biomes/xanadu/src/52-biome-xanadu-library.js": "e52d416ba9cf038b170e6e076287c2c86b86250b942ef609ff60b09253091a2c",
-    "biomes/xanadu/src/55-biome-xanadu-trees.js": "e507c1948f00b1305d9e9af9f1e544426f6565fd7ff739cfbfc06b54602cdc38",
+    "biomes/xanadu/src/55-biome-xanadu-trees.js": "a248be9fd79ac984c1f666a22df6a3c8a1ae7a8205ac4aca286dc0ec41b6c2ab",
     "biomes/xanadu/src/60-biome-xanadu-floor.js": "3b5031785b448cd2c118ac933d4493b908fbe3e41c91482c72523cb99c886386",
     "biomes/xanadu/src/65-biome-xanadu-dress.js": "9d26b71661f92c2186232382c4d5656175ce167f36372a8822a86e1976abf74e",
     "biomes/xanadu/src/70-biome-xanadu.js": "f1f73c701008c3708b5cf2c641143569b3b56a5d1472b96f3aa3e881816271d2",
@@ -976,10 +976,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/xanadu/dist/xanadu-gills.html": "3be3e34c15a19bc755091074deb6f2a1e3190571256a31e020230c27c1c7a654"
+    "biomes/xanadu/dist/xanadu-gills.html": "0ff5a5c1527790329f7c35b70d9aee557fad842d6257b122e8407be8c76af71c"
    },
    "outputs_raw": {
-    "biomes/xanadu/dist/xanadu-gills.html": "3be3e34c15a19bc755091074deb6f2a1e3190571256a31e020230c27c1c7a654"
+    "biomes/xanadu/dist/xanadu-gills.html": "0ff5a5c1527790329f7c35b70d9aee557fad842d6257b122e8407be8c76af71c"
    }
   },
   "build.py --station ranges": {
@@ -994,7 +994,7 @@
     "biomes/xanadu/src/46-host-ground.js": "2473e61f69d0e642a6684cfa1346ebf6272455f4065ce8403477e574678e686e",
     "biomes/xanadu/src/50-biome-xanadu-species.js": "e237bfed92c0ece4dd6714d4653eee967ffe4d48fe7c2f09d42c70c4f95ae3a3",
     "biomes/xanadu/src/52-biome-xanadu-library.js": "e52d416ba9cf038b170e6e076287c2c86b86250b942ef609ff60b09253091a2c",
-    "biomes/xanadu/src/55-biome-xanadu-trees.js": "e507c1948f00b1305d9e9af9f1e544426f6565fd7ff739cfbfc06b54602cdc38",
+    "biomes/xanadu/src/55-biome-xanadu-trees.js": "a248be9fd79ac984c1f666a22df6a3c8a1ae7a8205ac4aca286dc0ec41b6c2ab",
     "biomes/xanadu/src/60-biome-xanadu-floor.js": "3b5031785b448cd2c118ac933d4493b908fbe3e41c91482c72523cb99c886386",
     "biomes/xanadu/src/65-biome-xanadu-dress.js": "9d26b71661f92c2186232382c4d5656175ce167f36372a8822a86e1976abf74e",
     "biomes/xanadu/src/70-biome-xanadu.js": "f1f73c701008c3708b5cf2c641143569b3b56a5d1472b96f3aa3e881816271d2",
@@ -1161,10 +1161,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/xanadu/dist/xanadu-ranges.html": "efc56226ca348837b0e53424b81b13b3c1b1084b75bad110272d6c69c36810a3"
+    "biomes/xanadu/dist/xanadu-ranges.html": "1a484bf129c0cbe894ad5cde03c71ef65c5c3fd96311a454a0ef4fdad51552ad"
    },
    "outputs_raw": {
-    "biomes/xanadu/dist/xanadu-ranges.html": "efc56226ca348837b0e53424b81b13b3c1b1084b75bad110272d6c69c36810a3"
+    "biomes/xanadu/dist/xanadu-ranges.html": "1a484bf129c0cbe894ad5cde03c71ef65c5c3fd96311a454a0ef4fdad51552ad"
    }
   }
  }

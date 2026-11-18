@@ -1,0 +1,61 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.133,
+    0.788
+   ],
+   "seam_before": [
+    2.595,
+    1.915
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0.0,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.45,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "organic",
+  "id": "organic.comb.bee",
+  "metal": 0,
+  "roughness": 0.45,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "organic.comb.bee.png",
+  "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d135-922a-7d82-8bba-b27cccc9926c)",
+  "licence": "generated for this project by its owner",
+  "original_title": "exec-93f19757-28f6-4379-93a1-ff989fe2ff97.png",
+  "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '40. The hyperjungle's lands and the savannah rims (`biomes/hyperjungle` stations `savage` and `north`, `biomes/abyssal-savannah` stations `serim`, `erim` and `north`; J2-J6, 2026-11-08)' on origin/main (id organic.comb.bee)",
+  "sha1": "7a09c7e872f71e07fdd989f118e3d62da94ba641"
+ }
+}

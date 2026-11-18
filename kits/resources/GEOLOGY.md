@@ -70,6 +70,14 @@ python3 tools/scale-model/geology.py --zinc kits/resources/data/geology.json
 python3 tools/scale-model/geology.py --carbonate kits/resources/data/geology.json tools/scale-model/model/src/51-region-store.js --shift=-272,-330
 python3 tools/scale-model/geology.py --rocks kits/resources/data/geology.json tools/scale-model/model/src/51-region-store.js --vents tools/scale-model/model/data --shift=-272,-330
 ```
+
+**Authored deposits.** The owner's lodes that the model's geology does not give live in `data/lodes.json`
+(`krator-lodes`: `{id, family, px, py, r_km, peak, why}`, 5.1 px). They are stamped on the bake in place:
+- the command is `python3 tools/scale-model/geology.py --lodes kits/resources/data/geology.json kits/resources/data/lodes.json`;
+- each land cell within `r_km` is raised to `peak * sqrt(1 - (d/r)^2)` and never lowered, so a second run changes nothing;
+- **run it after every re-bake.**
+
+The first lode is Xanadu's gold field (2026-11-12, `openworld/TRADE-GOODS.md`).
 ## The format (`krator-geology`, version 1)
 
 One JSON object. The browser, node and Godot read the same integers; nothing is interpolated.
@@ -150,6 +158,38 @@ airless.
 | glass | the Ancients' seven blast basins in Ancient's Valley: 180 on the melt floor, 255 on the vitrified rim (to 1.5 radii) |
 
 Water cells carry no family but water. The metals, coal and oil are zero on evaporite ground.
+
+### The mined goods' kinds (2026-11-16): baked in
+
+Ten node kinds came with Gemini's trade model (`src/42s-res-ore-mined.js`). Their layers come from `tools/scale-model/geology.py`
+`mined()`, which the full bake calls; on 2026-11-16 (the owner: "Bake now") they were added to `data/geology.json` in place
+by the pass below, every other byte, stat and key kept, and the authored lodes stamped after it (`data/lodes.json`: Thalaba's
+sulfur and Lightwall's Great Potch Line opal with them). The node field places them where a page loads `42s` (this kit's page);
+a page with only `42r` (the open-world regions, the hamlets) asks for its own kinds and never sees them.
+
+```
+python3 tools/scale-model/geology.py --mined kits/resources/data/geology.json tools/scale-model/model/src/51-region-store.js --model tools/scale-model/model/data
+python3 tools/scale-model/geology.py --lodes kits/resources/data/geology.json kits/resources/data/lodes.json
+```
+
+After it: `node kits/resources/tests/test-res.js --ledger` (the ledger and the Godot golden tile; the test loads `42r` only, so
+the ledger does not take the new goods yet: KNOWN_ISSUES.md), `python3 godot/tools/sync_core.py` (the Godot test copy), and a
+rebuild of what `tools/reach.py kits/resources/data/geology.json` lists.
+
+| Kind | Cell (m) | The rule (bytes 0-255) | Nodes on the map (the field) |
+|---|---|---|---|
+| lodestone | 6000 | 150 on the ultramafic province's exposed crests (stone 200+: the Arch's lightning-struck magnetite), 40 on the rest of it; 220 in the Compass Hills | 1,909 |
+| peat | 3000 | blanket bog 230 x wet (rain 700-1400 mm) x cool (mean 14 C down to 4 C, above -6 C) x flat; fen 160 on the wet floodplains (clay 200+, rain over 500 mm); none on evaporites, cliffs, airless ground | 8,646 |
+| silica | 4000 | 170 x flat on the quartzite tables; 150 on the low (under 500 m) sand coasts of sedimentary, quartzite, granite and gneiss; 0.8 x the Ancients' melt glass | 6,090 |
+| quartz | 6000 | faint on the hard rocks (granite 30, quartzite 25, gneiss 10, impact 8, rift 10); 200 in High Rift | 10,861 |
+| alabaster | 4000 | 0.8 x gypsum where gypsum is 100+ (the massive bed at the ring's heart) | 594 |
+| bitumen | 6000 | 0.75 x oil where oil is 80+; 90 on the Ring Isles (Kautoa's tar-black seeps) | 3,319 |
+| opal | 6000 | 0.6 x tuff x aridity; 150 in Opal Valley (`OPAL_VALLEY`), under its authored lodes: the Great Potch Line stamps 235 (lowered from 230 so that lode stands out: the Lightwall session, the owner "Lower and re-bake", 2026-11-16) | 749 |
+| diamond | 8000 | 170 on the tepui tables' edges in Korona (the basal conglomerate where it crops out); 25 on any quartzite | 701 |
+| jade | 8000 | 150 within 4 km either side of the ultramafic province's edge (nephrite at the serpentinite contact); 200 in the Crook | 3,391 |
+| amber | 6000 | 0.35 x coal where coal is 140+ (the lignite beds); 120 in the Ria Valley, 90 in the East Abyss (swamp amber) | 10,103 |
+
+For scale on the same map: marble 4,031 nodes, nickel 10,006, sulfur 70,861.
 
 ### The evaporite rings (feature 3)
 

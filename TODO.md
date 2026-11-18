@@ -49,14 +49,64 @@ terrain splat texture and the placement input; (3) the minimap drawn from export
 - **Reroute the Ostrukh Riba south into Lake Ostrukh.** The owner agreed that the Slabfields' springs and Lake Ostrukh share one aquifer, fed by the Stalker Range's snow (`biomes/slabfields/PLAN.md`). Today the river runs north from the flagship pool (2,040 m) into Region 99 and ends at 334 m, although its note says it feeds the lake (1,850 m). A southern course needs a carve about 70-80 m deep; its highest point is 2,082 m at 1588,1392. Retrace the river downhill and fix its note. The scale-model edits session (`claude/dreamy-davinci-30f3c1`, edit 5.1.1 at f1d1501cf, artifact version 92) has the details. Held for the next map edit, not done alone.
 - **Reed, Nazar and Mungo:** the biome plans' coordinates for them add the canvas shift twice (Reed really stands at 1277,676). Correct the plans when the next edit lands.
 
+## With the native-crop rule *(the owner, 2026-11-12; `openworld/TRADE-SCOPE.md` section 2.5)*
+
+- **Rework the isle demo's crops.** Under the native-crop rule cacao is the Vale's, so the Ring Isles can no longer grow
+  it (indigo, annatto and tobacco stay: the isles are in their homes). Change all of it to a crop native to the isles
+  (clove, coffee, kava, sugar cane) or to cacao bought in:
+  - Nephtos's cacao plantings (`settlements/isle-demo/src/15-isle-tune.js:663`);
+  - **Kautoa's own cacao plantation and export** (`settlements/isle-demo/PLAN.md:515`, `:990`; `README.md:174`) and the
+    advantage table;
+  - the cacao in the traders' buy lists (`15-isle-tune.js:335`, `:346`). The stocks proof and `test-sim.js` move on
+  purpose and are re-baselined. Do it when the rule lands in `kits/crops`, not before.
+
+## Lacquerware for Xanadu and the Eternians *(the owner, 2026-11-12; `openworld/TRADE-SCOPE.md` section 7.6)*
+
+- **Both make lacquerware; nothing builds it yet.** It needs:
+  - a lacquer source in `kits/crops`: a lacquer tree native to the Vale and to the NW lowlands, or one each; the abyss's
+    `abyss-lac` is an insect lac and stays the abyss's;
+  - the lacquer workshop in `kits/xanadu` and in the Eternian kit;
+  - the goods row and the recipe (sap to lacquer to lacquerware) in the sim's culture tables (`core/simulation`).
+
+  `biomes/twins/PLAN.md:90` already has Xanadui lacquerware as caravan cargo.
+
 ## Ride along with the next all-builds rebuild
 
 **Taken by the second integration pass** (`claude/integration-2`, 2026-11-10 and 11; HANDOFF-REBUILD.md): the `dalab` sockets pack,
 water breakup on by default, the catalog's `tile` detail family, the Highlands great-building room kinds in `30-programs.js`, the fauna
 runtime and bison table, and the `tools/` listing staleness (every build rebuilt): all rebuilt and GPU-verified, items deleted.
+- **core/terrain's ground shader under an environment map** (2026-11-17, found on the Glaziers' sheet): `43-core-ground.js` names
+  `kgTri`'s and the hex sampler's locals `v1 v2 v3` and `r1 r2 r3`, which three r128's `cube_uv_reflection_fragment` `#define`s as
+  numbers whenever the scene or the material has an environment map (a skylight): the fragment fails ("'0.276' : syntax error").
+  Rename them (`kgV1`..., `kgR1`...) and drop the `#undef` guard in `core/terrain/host/39i-core-cavern-rock.js`; 199 builds read it.
+- **The Xanadu kit's opt-in pieces into `src/`** (2026-11-16, `kits/xanadu/README.md` "Opt-in pieces"): `extra/88c-xa-caravanserai.js`,
+  `extra/88d-xa-lakecraft.js`, `extra/88e-xa-stall.js` and `extra/88f-xa-harbour.js` (2026-11-17, Kirstabal's harbour) into `kits/xanadu/src/`, `extra/69dz-ix-xanadu-extra.js`'s item into `kits/interiors/sets/xanadu.js`;
+  the kit's sheet takes rows for them; `settlements/pher/kit.json` drops them from `"external"`. Every page of the kit (and `XAK`) changes.
+- **core/tags' `vessel` and `vehicle` classes** (2026-11-17, the owner: "make sure boats are properly tagged as ships, see ring sea
+  vessels", "we should add a vehicle tag as well"; ride along by the owner's choice): `core/tags/52-core-tags-vocab.js` has them (ids
+  `ves_`, `veh_`; keys `propulsion`, `hull`, `crew`, `drive`, `seats`, `fuel`; the vessels' and vehicles' types), but every page
+  that inlines core/tags is behind it (`tools/check_stale_baseline.json` records them). The rebuild clears them. With it: the Ring Sea
+  (`kits/ringsea`, its REG already says `cls:'vessel'`), the Motor Vehicles kit and the Mechs register through core/tags as
+  `vessel` and `vehicle` (the vehicles' own `class:'motor vehicle'` tag is a core/tags problem key: drop it for the class).
 - **KSTRATA recipe `obsidian`** (`scoria` has since landed) (2026-11-09, `biomes/twins/PLAN.md` section 0.1): the Twins' plan names them for its coulees and
   spatter cones; `core/terrain/35-core-strata.js` has `tibasalt` as the nearest. Adding a recipe changes every page that inlines the file, so
   it waits here; station 1 draws its faces as `tibasalt` and its obsidian as items and a ground class until then.
+- **core/hamlet's Xanadu row: its fishing works** (2026-11-16, `settlements/kirstabal`): `KS_RING.fishingRow` (`src/42-ks-ring.js`) passes
+  `KHAMLET.CULTURES.xanadu` with `works.fishing` (`xa_boatshed`, `xa_fish_racks`), `focusJobs.fishing` 90, `reach.fishing` 260, `landing`
+  (`xa_quay`) and the racks' pending box; move them into the row itself (`core/hamlet/20-hamlet-cultures.js` reaches ten builds) and
+  `kits/xanadu/src/87k-xa-lake-trades.js` into `xanadu.py` FILES (if every Xanadu page should have the lake's trades), then let
+  Kirstabal pass the row by name.
+- **core/hamlet's Xanadu row passed by name folds into the row** (2026-11-17, `settlements/xanadu/BUILD-OUT.md` wave 0.2):
+  `core/hamlet/xanadu/23-hamlet-xanadu-row.js` (`KHAMLET.xanaduRow(opts)`: fishing as Kirstabal's `fishingRow` has it, the foci
+  orchard, tea, saffron, estate, placer, pottery and quarry, the wayside shrine, the mine head, the reeling house, `shallows`, the
+  `camp` overrides) folds into `20-hamlet-cultures.js` then, and the subfolder goes. This takes the fishing item above with it.
+  Decide whether the shared row takes the shrine and the mine head (they move every Xanadu village: the switch with them off moves
+  none, `node core/hamlet/test-hamlet-xanadu-row.js`); give `KHAMLET.census` the camp option from the row's `camp` and drop
+  `openworld/oidong-highrift`'s `xanadu-camp` row (the work-camp item below). Its new keys are pending until
+  `kits/xanadu/extra/88g-xa-works.js` is in the kit's `src/`.
+- **The lake's trades' interior set** (2026-11-16, `settlements/kirstabal` K5): `kits/xanadu/src/87k1-xa-lake-rooms.js` adds the set
+  `xanadu-lake` at run time; move it to `kits/interiors/sets/xanadu-lake.js` (the interiors sheet inlines every set, so it stales
+  `kits/interiors`'s sets page: rebuild and `verify.py --sets --assert` it) and let Kirstabal take it through kit.json "interiorSets".
 - **Any new file in `tools/` stales eight builds** (kits/catalog, crops, interiors, mechs, motor-vehicles, port; settlements/isle-demo,
   longsong record `tools/` as a listing input, likely Python's importer reading it): a rebuild clears it; worth a fix in `build_sources`.
 - **Switch on checks 22-31 everywhere** (the survey of 2026-11-11, CORE-IMPROVEMENTS.md items 22-31; landed opt-in on
@@ -104,6 +154,19 @@ runtime and bison table, and the `tools/` listing staleness (every build rebuilt
     read `KDRAWN.h` when the page lists `core/drawn/10-core-drawn.js` and registers its ground; cameras stand on it.
   - Already done before the survey closed (no row needed): `kits/fauna/src/90-sheet.js`'s `_texPending` is a getter (15ca3363);
     hyperjungle's harvest-wood phrases parse (`node core/hamlet/test-hamlet.js` passes).
+- **core/world: fold 41t into 41** (2026-11-11, PLAN-VOTH V2): `core/world/41t-world-town-water.js` wraps WORLD's water calls
+  (`lakeWater`, `riverWater`, `water`, `waterBodies`, `waterBodyAt`, `riverLines`) and `init` from outside, because 41 reaches eight
+  builds. At the next all-builds rebuild, take a town's water into 41 itself: `buildTowns` reads `drawn`, `water`, `river`;
+  `W.water` calls the wrapped `riverWater` (today it calls 41's local one, so 41t replaces `W.water` too); the joined river's cut
+  happens in `buildChannels`. `node core/world/test-town-water.js` must pass unchanged.
+- **core/hamlet: a work camp** (2026-11-11, the oidong-highrift region's Vein Camp; the owner: "mostly miners"). A camp's people
+  are nearly all at work (no families), so `openworld/oidong-highrift/src/48-world-site.js` defines a row of its own,
+  `KHAMLET.CULTURES['xanadu-camp']` (the `xanadu` row with workShare .9, household 4, a cookhouse, store and tally house for
+  services). Give `KHAMLET.census` a `camp` option (or a row's `camp` overrides, taken when `spec.camp`) and pass it through
+  `core/world/48s-world-sites.js` from a hamlet's spec, then drop that row. core/hamlet reaches 56 pages (`tools/reach.py`).
+  The overrides exist since 2026-11-17 as `KHAMLET.xanaduRow().camp`, and `xanaduRow({camp: true})` is the row a region can pass
+  today (`core/hamlet/xanadu/`; with `shrine` and `mineHead` false it lays the Vein Camp unchanged).
+
 - **core/world: a kit on several biome overlays** (2026-11-11, the Iziz cluster's open-world region): `core/world/41-world-fields.js`
   matches a `WORLD_KITS` entry's `overlay` to one biome name (`k.overlay===name`). Let it take a list (`Array.isArray(k.overlay)?
   k.overlay.indexOf(name)>=0:...`), then drop the shim in `openworld/iziz-cluster/src/47-world-kits.js` (`WORLD_KITS.findIndex`, which
@@ -120,9 +183,6 @@ runtime and bison table, and the `tools/` listing staleness (every build rebuilt
   kits/fauna/krator-fauna-xeno.js`), so it rides along; then drop its key from `tools/check_source_baseline.json`.
 - **Rebuild `settlements/longsong`** (2026-11-16): its page is behind `kits/crops` since the merge of the Siphon Pits and the painted
   highlands, and it can only be rebuilt where `core/charactermodels/dist/pieces/` is built (KCHAR PIECES MISSING in a cloud checkout).
-- **Opal Valley's strata recipes into `KSTRATA`'s own table** (2026-11-11, `biomes/opalvalley`): `opal-rhyolite` and `opal-firetuff` are
-  data in `biomes/opalvalley/src/40-biome-opal-sites.js` (`OPAL_STRATA`), handed to `KSTRATA.add` by its ground; written into
-  `core/terrain/35-core-strata.js`'s `RECIPES` they change every page that loads it, so they ride along. Then drop the kit's `KSTRATA.add`.
 - **core/atmos: a mist colour of its own** (2026-11-11, biomes/siphon-pits; the owner: it rides the next all-biomes rebuild). The height fog's
   mist takes the fog colour (`core/atmos/sky/89-atmos-j-fog.js`: `cM = fc`, in the shader text and its CPU twin). Add a uniform `atmFogMistC`,
   compiled only on a page that asks for it (as the belt is) and set from a `mist.colour` in `heightFog` (`core/atmos/host/89-atmos-j-heightfog.js`), so the Siphon Pits' deck reads amber from below without
@@ -133,6 +193,36 @@ runtime and bison table, and the `tools/` listing staleness (every build rebuilt
 - **kits/fauna: the Köppen vocabulary lacks Cwb and Dsc** (2026-11-11, biomes/siphon-pits): `FAUNA_VOCAB.koppen` in `kits/fauna/fauna-core.js`.
   Region 98's hexapods (`krator-fauna-xeno.js`) carry their nearest classes (Cfb, Dfb) meanwhile. Add the two, then give the Ghaunt-Ox Cwb and
   the Flenser-Hound Dsc. It moves every page that bundles kits/fauna.
+- **core/world: a `xanadu` style** (2026-11-11, the owner: "Xanadu should be lush where moisture allows"). `41-world-fields.js`
+  `BIOME_STYLE` has no entry for the 'xanadu' overlay, so it takes `desert`: the red sandstone palette and desert shaping (terraces .75
+  at 55 m steps). Add a `xanadu` style and palette (green by wetness, as `openworld/xanadu-oidong-highrift/src/43-world-xoh.js`'s
+  `WORLD.ground` wrapper does now; shaping nearer `highland`), then drop that wrapper. The shaping changes `WORLD.H`, so the region's
+  `plan/sites.json` re-bakes. Same reach as the item above.
+- **Fewer shader programs: key a hook's program on what its text holds, and pass its numbers as uniforms** (2026-11-11, the
+  Xanadu load-time pass; measured on Erewhon, RTX 5060: 97 programs, about 58 ms each to compile under ANGLE/D3D11, the
+  largest single load cost). Three places compile one program per value of a number written into the shader's text:
+  - `core/biome/30-core-foliage.js` `leafMat` keys its program on the species (`'biofol|'+BIO.kitKey(key)`), though
+    `foliageHook`'s text varies only with `aN`, `irid`, `axis`, `swayW` and `swayA`. Erewhon's vendored copy keys on those
+    options already (`settlements/xanadu/src/86-bio-30-core-foliage.js`, its KNOWN_ISSUES): 97 to 91 programs there, the
+    same text.
+  - `core/materials/record/25-matlib-host.js` `KMAT.libKey`: one program per specular and breakup value (`|lib0.3|bu0.45_0.1_5`);
+    about 30 of Erewhon's 49 Standard programs differ only in these.
+  - `core/materials/opt/69a-world-uv.js`: one program per world-UV scale (`vUv=uv*_sw*0.5000`), about 15 more.
+  Writing the numbers as uniforms (set per material in `onBeforeCompile`) and keying on the text alone would compile each kind
+  once. The first is behaviour-identical; the uniforms change no value either, but every page that reads these files changes
+  bytes (`tools/reach.py`: 558 and 151 pages), so it rides with the next all-builds rebuild.
+
+- **core/tags: the culture `qiblai`** (2026-11-11, `kits/qiblai`): the Qiblai kit tags its buildings `culture:'qiblai'` (the owner's
+  brief), which `core/tags/52-core-tags-vocab.js` does not list yet, so the kit's page counts it as an unknown value in `T.audit()`
+  (counted, never thrown). Add `'qiblai': 'Qiblai'` to `CULTURE_NAMES` and `'qiblai'` to `NO_CATALOG` (it has no catalog culture file:
+  its interiors take the Xanadu pieces), as Pylon and Talia were added on 2026-11-03. It moves every page that takes core/tags.
+- **Opal Valley's strata recipes into `KSTRATA`'s own table** (2026-11-11, `biomes/opalvalley`): `opal-rhyolite` and `opal-firetuff` are
+  data in `biomes/opalvalley/src/40-biome-opal-sites.js` (`OPAL_STRATA`), handed to `KSTRATA.add` by its ground; written into
+  `core/terrain/35-core-strata.js`'s `RECIPES` they change every page that loads it, so they ride along. Then drop the kit's `KSTRATA.add`.
+- **The culture id `glazier` into the core vocabulary** (2026-11-16, the Glaziers' set in `kits/tungang`): it is added opt-in by
+  `core/tags/glazier/52g-tags-glazier.js`, which only the Tungang kit loads. Move `'glazier': 'Glaziers'` into `CULTURE_NAMES` in
+  `core/tags/52-core-tags-vocab.js` (and `NO_CATALOG` until a Glazier catalog culture file exists), delete `core/tags/glazier/`,
+  and drop it from `kits/tungang/build.py`. It moves every page that takes core/tags.
 
 - **`KSHADOW.units` counts what the GPU links** (2026-11-09, found by the Throne's fix): `core/shadow/host/12-core-shadow-host.js` counts
   declared samplers (some are never read and the GPU drops them), misses `scene.environment` on standard materials, and judges against the
@@ -311,6 +401,23 @@ loads each build's `tex/` pack, which is WebP. What is left:
 
 ## Features
 
+- **Open-world terrain: terraces only where they belong, roughness that follows the ground** *(the owner, 2026-11-12:
+  "a lot of the terrain seems to follow simple contour lines and produces a terracing effect we don't usually want";
+  parked for later)*. The cause is not mainly the scale model's 2 km pixels but the mesa pass in
+  `core/world/41-world-fields.js` `H()` (the `S.terr` block, about line 326): it snaps the height to fixed 30-80 m steps
+  at 25-75 % strength in the desert, badland, korona, savanna, highland, dryland and abyss styles wherever the relief is
+  40-4,200 m, so every hillside there gets flat treads along its contours. The plan:
+  - terraces only on bare, flat-bedded rock: gate the pass by a rock or strata mask (the style's `rock`, `KSTRATA` where a
+    region has it) times patch noise, and let each step's level wander with position so treads do not follow contours;
+  - roughness that answers slope, rock and drainage: stronger on steep and rocky ground, ridged erosion detail running
+    downslope (rills down a face, not round bumps), calm on floodplains and farmland; every wavelength under 2 km, so the
+    scale model cannot see it (the `rough` passes at 420, 90 and 13 m read only the style and the local relief today);
+  - the scale model's own staircases are the other half, already built: `WSMOOTH` (`core/world/40-world-smooth.js`) on
+    `claude/exciting-curie-1c0022`, opt-in per region (Pinnacle and Oidong-High Rift so far). It changes the river carve
+    in `41`, not `H()`'s detail lines, so the two merge cleanly; turn it on for the other regions once it is merged;
+  - a node test with a negative (a contour-terraced slope fails it), then rebuild and GPU-verify every page `41` reaches
+    (`python3 tools/reach.py core/world/41-world-fields.js`: the open-world regions, Longsong, Pinnacle Rock, the
+    isle-demo settlement pages).
 - **Revisit taxes when the economy is more fleshed out** *(the owner, 2026-11-03)*. For now money is taxed only by an
   excise on imports and exports (core/simulation/PLAN-MONEY.md, M5). Wage, sales, land or poll taxes, tolls on the roads
   and harbour dues wait until wages, prices and the player's towns run: decide then which each nation levies, and who

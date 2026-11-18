@@ -44,3 +44,20 @@
       Owed: a pale bedded gypsum crust with selenite (`ground.gypsum.crust`) and a cut rock-salt face (`rock.halite.cut`);
       their prompts are in `core/materials/PROMPTS-NEEDED.md`, section 32 (2026-10-26).
       2026-11-08: that section is pruned and its number reused; both sets are in `core/materials/library` now: what is owed is wiring them.
+- [x] **potash, soda and marble never drew their sets** (found 2026-11-16): they were packed (`materials.json`, `tex/`) but missing
+      from `SV_LIB` (`26k-kit.js`), and the engine makes a material only for an `SV_LIB` key, so their nodes drew the fallback
+      (vertex colours). Added to `SV_LIB` with the mined goods' sets; the resources page's look of those three changes.
+- [x] **The mined goods' layers are baked** (2026-11-16, the owner: "Bake now"): `--mined` on `data/geology.json`, the lodes
+      stamped after it, the reached builds rebuilt (`GEOLOGY.md`, "The mined goods' kinds").
+- [ ] **The ledger does not take the mined goods:** `tests/test-res.js` loads `42r` only, so `data/ledger.json` (and the
+      trade's `RES_LEDGER.tradeGoods`) leaves out the ten new kinds. Taking them means loading `42s` in the test and rewriting
+      the ledger: every polity's imports move, so it waits for the trade work.
+- [ ] **Four of the mined goods draw on vertex colours:** lodestone (`rock.magnetite`), opal
+      (`rock.opal.matrix`), jade (`rock.serpentinite`, `stone.nephrite`) and amber (`rock.amber.blueearth`); prompts in
+      `core/materials/PROMPTS-NEEDED.md` sections 46, 52 and 53.
+- [ ] **Building kits do not see the mined goods' kinds:** kits/islanders, kits/construction and the isle demo read `42r` and
+      `44r` in place, not `42s` and `44s`-`44u` (kept apart so their pages did not move). A works there that should take lodestone or
+      peat needs those four fragments added to its build's list, and a rebuild.
+- [ ] **No trade link yet:** each kind names the Gemini good it feeds (`RES_ORE.kinds[k].good`), but `46r-res-ledger.js` and
+      core/simulation do not read it; Gemini's model is on its own branch and docs.
+- [x] **`lode:thalaba-sulfur` stamped** (2026-11-16, with the mined goods' bake), and Lightwall's `lode:great-potch-line` (opal).

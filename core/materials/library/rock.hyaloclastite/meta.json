@@ -1,0 +1,61 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    0.789,
+    1.074
+   ],
+   "seam_before": [
+    3.152,
+    3.355
+   ],
+   "source_size": [
+    1536,
+    1024
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0.0,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.85,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "rock",
+  "id": "rock.hyaloclastite",
+  "metal": 0,
+  "roughness": 0.85,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "rock.hyaloclastite.png",
+  "generator": "ChatGPT image generation through Codex, 2026-11-16 (~/.codex/generated_images/01a1e6fb-31c5-7f11-a07b-4af11ad6ec94)",
+  "licence": "generated for this project by its owner",
+  "original_title": "exec-e0874376-4faf-42ba-af17-a96409cdbefb.png",
+  "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '52. The Arch (biomes/arch, 2026-11-11)' (id rock.hyaloclastite)",
+  "sha1": "e69d9fb788b243331d87b5e75c0c7d5192570f83"
+ }
+}

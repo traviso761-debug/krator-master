@@ -4245,7 +4245,7 @@
 1035
 ],
 [
-1366,
+1266,
 1063
 ],
 [
@@ -4793,44 +4793,20 @@
 340
 ],
 [
-530,
-327
+524,
+333
 ],
 [
-556,
-302
+704,
+332
 ],
 [
-631,
-286
+932,
+340
 ],
 [
-692,
-285
-],
-[
-743,
-256
-],
-[
-826,
-276
-],
-[
-913,
-285
-],
-[
-938,
-322
-],
-[
-938,
-351
-],
-[
-901,
-383
+933,
+357
 ],
 [
 894,
@@ -6105,20 +6081,20 @@
 1195
 ],
 [
-669,
-1206
+647,
+1212
 ],
 [
-688,
-1189
+695,
+1203
 ],
 [
-722,
-1158
+762,
+1152
 ],
 [
-773,
-1130
+793,
+1133
 ],
 [
 814,
@@ -7161,7 +7137,7 @@
 },
 {
 "id": "rmvkaq9fftvpp",
-"name": "e inner wall",
+"name": "e highlands",
 "color": "#7c8a5e",
 "points": [
 [
@@ -7905,10 +7881,6 @@
 "color": "#3f8fb5",
 "points": [
 [
-1195,
-1428
-],
-[
 1256,
 1483
 ],
@@ -7921,8 +7893,20 @@
 1393
 ],
 [
-1478,
-1149
+1476,
+1193
+],
+[
+1444,
+1176
+],
+[
+1444,
+1160
+],
+[
+1445,
+1153
 ],
 [
 1395,
@@ -7943,6 +7927,10 @@
 [
 1203,
 1347
+],
+[
+1195,
+1428
 ]
 ],
 "notes": "",
@@ -9609,7 +9597,7 @@
 },
 {
 "id": "rmvraoas90co7",
-"name": "Region 99",
+"name": "Loom Chasms",
 "color": "#e0e0e0",
 "points": [
 [
@@ -9793,88 +9781,96 @@
 "color": "#8a9e8c",
 "points": [
 [
-1355,
-1093
-],
-[
 1407,
 1111
 ],
 [
-1468,
-1118
+1355,
+1093
 ],
 [
-1492,
-1133
-],
-[
-1504,
-1173
-],
-[
-1499,
-1205
-],
-[
-1488,
-1239
-],
-[
-1489,
-1277
-],
-[
-1504,
-1332
-],
-[
-1516,
-1380
-],
-[
-1538,
-1380
-],
-[
-1554,
-1392
-],
-[
-1519,
-1411
-],
-[
-1491,
-1422
-],
-[
-1469,
-1418
-],
-[
-1439,
-1393
-],
-[
-1425,
-1357
-],
-[
-1404,
-1289
-],
-[
-1362,
-1241
+1333,
+1140
 ],
 [
 1347,
 1183
 ],
 [
-1333,
-1140
+1362,
+1241
+],
+[
+1404,
+1289
+],
+[
+1425,
+1357
+],
+[
+1439,
+1393
+],
+[
+1469,
+1418
+],
+[
+1491,
+1422
+],
+[
+1519,
+1411
+],
+[
+1554,
+1392
+],
+[
+1538,
+1380
+],
+[
+1516,
+1380
+],
+[
+1504,
+1332
+],
+[
+1489,
+1277
+],
+[
+1488,
+1239
+],
+[
+1499,
+1205
+],
+[
+1502,
+1188
+],
+[
+1482,
+1196
+],
+[
+1444,
+1176
+],
+[
+1444,
+1160
+],
+[
+1452,
+1116
 ]
 ],
 "notes": "Multi-branch meandering mountain and highland pass network connecting the Yuni Emirate, Stalker Range (Hub 01), Loom-Chasms, Mid Basin, and Siphon Pits around Lake Vapora.",
@@ -10535,8 +10531,8 @@
 "notes": "Venusian Volcano-Tectonic Arachnoid Network & The Web-Cleaver Gorge: concentric ring-dike cauldrons and radial extensional fracture canyons straddling northern, eastern, and SW Korona and the southern Ria Valley rim. Cleaved by a dramatic 1,200–1,850 m-deep sinuous canyon carrying the Highland Lake river through northern Korona down into the Ria River.",
 "points": [
 [
-845,
-185
+891,
+182
 ],
 [
 1060,
@@ -10684,7 +10680,7 @@
 "name": "copper glacier",
 "color": "#2eb899",
 "kind": "biome",
-"notes": "Copper Glacier & Crook–Rift Glacial Pass: a high-altitude alpine cryosphere in the southern Crook where glaciers grind through copper-porphyry, malachite, and azurite veins, tinting the banded ice verdigris-emerald and feeding the turquoise Copper Tarn (+2,380 m). A glaciated alpine pass extends east-southeast across the western rim to connect The Crook directly with the northwestern head of The Rift.",
+"notes": "Copper Glacier & Crook–Rift Glacial Pass: a high-altitude alpine cryosphere in the southern Crook where glaciers grind through copper-porphyry, malachite, and azurite veins, tinting the banded ice verdigris-emerald and feeding the turquoise Copper Tarn (+2,380 m). A glaciated alpine pass extends east-southeast across the western rim to connect The Crook directly with the northwestern head of The Rift. Trimmed 2026-11-09 (scale model 5.1 edit 3) to the Firebliss Range's north edge: the range's cones and valleys are Firebliss's.",
 "points": [
 [
 52,
@@ -10707,16 +10703,32 @@
 1268
 ],
 [
-235,
-1265
+307,
+1268
 ],
 [
-195,
-1345
+305,
+1263
+],
+[
+234,
+1237
+],
+[
+211,
+1256
+],
+[
+155,
+1269
+],
+[
+92,
+1237
 ],
 [
 48,
-1345
+1255
 ]
 ]
 },
@@ -12150,9 +12162,1551 @@
 1256
 ]
 ],
-"notes": "",
+"notes": "A glaciovolcanic arc on the Labyrinth's northern rim: five ice-capped stratovolcanoes (Mount Pyre 6,650 m, Cinder-Crown, Firebliss Mons, Brimstone Spire, Copper-Fissure Vent) on a 4-5 km plateau of tundra and ice, and under the spine four warm valleys with geothermal lakes (West Bliss Cauldron 2,640 m, Great Firebliss Vale 2,280 m, Solfatara Glen 2,120 m, East Bliss Vale 1,960 m; Cfb, Cfa at East Bliss), drained south-east by the Yan, Tlahn and Weyt Warra into the Labyrinth. The vents' plume blows SE over the Labyrinth. Nobody lives here; Fellgang and Kimr bands pass through semi-regularly (the owner, 2026-11-09). biomes/firebliss/PLAN.md.",
 "kind": "biome",
 "createdAt": "2026-11-08T23:50:22.079Z"
+},
+{
+"id": "rmwstalkerpks",
+"name": "Stalker Peaks",
+"color": "#6f7f8f",
+"points": [
+[
+1283,
+1284
+],
+[
+1248,
+1313
+],
+[
+1274,
+1352
+],
+[
+1258,
+1371
+],
+[
+1312,
+1485
+],
+[
+1317,
+1490
+],
+[
+1395,
+1515
+],
+[
+1401,
+1514
+],
+[
+1407,
+1507
+],
+[
+1420,
+1405
+],
+[
+1294,
+1286
+]
+],
+"notes": "East of the Catch: the ranges from its eastern wall (7-11 km) to Hub 01's high valley (~4.4-6 km; Hub 01, the ruined arcology run by a mad AI, at 1344,1409) and the 12-15 km peaks round it (1287,1293; 1321,1481; 1397,1505; 1411,1409). The Stalkers' country; no caravan takes its passes. biomes/catch/PLAN.md section 6c; scale model 5.1 edit 5 (2026-11-11).",
+"kind": "geographic",
+"createdAt": "2026-11-11T00:00:00.000Z"
+},
+{
+"id": "rmwek559wleuj",
+"name": "Hookfleet",
+"color": "#7c8a5e",
+"points": [
+[
+849,
+902
+],
+[
+848,
+923
+],
+[
+882,
+929
+],
+[
+888,
+892
+],
+[
+880,
+883
+],
+[
+855,
+891
+]
+],
+"notes": "",
+"kind": "political",
+"createdAt": "2026-11-13T05:50:03.764Z"
+},
+{
+"id": "rmwek6u4ztszp",
+"name": "Frogmen",
+"color": "#5da05c",
+"points": [
+[
+554,
+990
+],
+[
+581,
+1025
+],
+[
+625,
+1044
+],
+[
+644,
+1074
+],
+[
+659,
+1074
+],
+[
+678,
+1049
+],
+[
+671,
+1022
+],
+[
+653,
+1010
+],
+[
+656,
+977
+],
+[
+637,
+985
+],
+[
+629,
+1001
+],
+[
+615,
+1003
+],
+[
+599,
+992
+],
+[
+584,
+973
+],
+[
+583,
+942
+],
+[
+580,
+898
+],
+[
+556,
+888
+],
+[
+546,
+908
+],
+[
+550,
+979
+]
+],
+"notes": "",
+"kind": "political",
+"createdAt": "2026-11-13T05:51:22.643Z"
+},
+{
+"id": "rmwelk4p0dng5",
+"name": "Tiguantin",
+"color": "#d9c14a",
+"points": [
+[
+1087,
+918
+],
+[
+1119,
+936
+],
+[
+1124,
+902
+],
+[
+1143,
+885
+],
+[
+1193,
+881
+],
+[
+1157,
+856
+],
+[
+1142,
+817
+],
+[
+1119,
+810
+],
+[
+1099,
+802
+],
+[
+1089,
+837
+],
+[
+1089,
+862
+],
+[
+1096,
+891
+],
+[
+1086,
+914
+]
+],
+"notes": "",
+"kind": "political",
+"createdAt": "2026-11-13T06:29:42.468Z"
+},
+{
+"id": "rmwelppnigssz",
+"name": "Jabal Shiekdom",
+"color": "#5da05c",
+"points": [
+[
+1164,
+1111
+],
+[
+1211,
+1105
+],
+[
+1284,
+1145
+],
+[
+1278,
+1167
+],
+[
+1235,
+1188
+],
+[
+1182,
+1193
+],
+[
+1168,
+1184
+],
+[
+1141,
+1143
+]
+],
+"notes": "",
+"kind": "political",
+"createdAt": "2026-11-13T06:34:02.910Z"
+},
+{
+"id": "rmwelrhij6khp",
+"name": "Kimr",
+"color": "#c95a6a",
+"points": [
+[
+374,
+1449
+],
+[
+398,
+1487
+],
+[
+387,
+1565
+],
+[
+307,
+1619
+],
+[
+255,
+1588
+],
+[
+220,
+1539
+],
+[
+188,
+1484
+],
+[
+191,
+1435
+],
+[
+208,
+1382
+],
+[
+284,
+1348
+],
+[
+349,
+1379
+],
+[
+394,
+1448
+]
+],
+"notes": "",
+"kind": "political",
+"createdAt": "2026-11-13T06:35:25.675Z"
+},
+{
+"id": "rmwet8ethscuf",
+"name": "crookwash",
+"color": "#8a6fc9",
+"points": [
+[
+184,
+740
+],
+[
+197,
+823
+],
+[
+180,
+829
+],
+[
+165,
+835
+],
+[
+163,
+861
+],
+[
+157,
+938
+],
+[
+135,
+986
+],
+[
+121,
+995
+],
+[
+62,
+984
+],
+[
+45,
+953
+],
+[
+35,
+887
+],
+[
+43,
+828
+],
+[
+33,
+743
+],
+[
+49,
+731
+],
+[
+62,
+747
+],
+[
+128,
+761
+]
+],
+"notes": "",
+"kind": "biome",
+"createdAt": "2026-11-13T10:04:32.645Z"
+},
+{
+"id": "rmwetaguz7zhe",
+"name": "copper glacier",
+"color": "#8a6fc9",
+"points": [
+[
+334,
+1215
+],
+[
+305,
+1261
+],
+[
+242,
+1235
+],
+[
+206,
+1258
+],
+[
+153,
+1266
+],
+[
+97,
+1237
+],
+[
+43,
+1209
+],
+[
+112,
+1172
+],
+[
+130,
+1133
+],
+[
+189,
+1121
+],
+[
+239,
+1177
+],
+[
+290,
+1206
+]
+],
+"notes": "",
+"kind": "biome",
+"createdAt": "2026-11-13T10:06:08.603Z"
+},
+{
+"id": "rmwetb495tgzt",
+"name": "crookhead",
+"color": "#c95a6a",
+"points": [
+[
+77,
+1191
+],
+[
+36,
+1088
+],
+[
+45,
+992
+],
+[
+146,
+1001
+],
+[
+179,
+1096
+],
+[
+178,
+1122
+],
+[
+129,
+1129
+],
+[
+113,
+1174
+]
+],
+"notes": "",
+"kind": "biome",
+"createdAt": "2026-11-13T10:06:38.921Z"
+},
+{
+"id": "rmwete7oza9d9",
+"name": "drownlands",
+"color": "#3f8fb5",
+"points": [
+[
+77,
+631
+],
+[
+107,
+638
+],
+[
+167,
+607
+],
+[
+215,
+469
+],
+[
+199,
+373
+],
+[
+141,
+368
+],
+[
+128,
+332
+],
+[
+72,
+353
+],
+[
+22,
+457
+],
+[
+37,
+549
+],
+[
+70,
+567
+]
+],
+"notes": "",
+"kind": "biome",
+"createdAt": "2026-11-13T10:09:03.347Z"
+},
+{
+"id": "rmwetfxp9qgeu",
+"name": "the arch",
+"color": "#8a6fc9",
+"points": [
+[
+201,
+276
+],
+[
+130,
+280
+],
+[
+104,
+258
+],
+[
+150,
+139
+],
+[
+262,
+157
+],
+[
+430,
+87
+],
+[
+475,
+78
+],
+[
+493,
+116
+],
+[
+508,
+161
+],
+[
+507,
+197
+],
+[
+396,
+231
+],
+[
+269,
+318
+],
+[
+222,
+314
+],
+[
+212,
+289
+]
+],
+"notes": "",
+"kind": "biome",
+"createdAt": "2026-11-13T10:10:23.709Z"
+},
+{
+"id": "rmwetgzft4x9d",
+"name": "battered isle",
+"color": "#c95a6a",
+"points": [
+[
+429,
+253
+],
+[
+448,
+231
+],
+[
+502,
+222
+],
+[
+504,
+251
+],
+[
+481,
+285
+],
+[
+434,
+272
+]
+],
+"notes": "",
+"kind": "biome",
+"createdAt": "2026-11-13T10:11:12.617Z"
+},
+{
+"id": "rmwetizlzivnz",
+"name": "Scoured hills",
+"color": "#c9b08a",
+"points": [
+[
+470,
+331
+],
+[
+510,
+337
+],
+[
+560,
+300
+],
+[
+652,
+283
+],
+[
+666,
+252
+],
+[
+600,
+215
+],
+[
+542,
+204
+],
+[
+516,
+203
+],
+[
+492,
+272
+],
+[
+469,
+311
+]
+],
+"notes": "",
+"kind": "biome",
+"createdAt": "2026-11-13T10:12:46.151Z"
+},
+{
+"id": "rmwetlrvemher",
+"name": "ria valley",
+"color": "#6fb5a8",
+"points": [
+[
+525,
+204
+],
+[
+498,
+162
+],
+[
+543,
+128
+],
+[
+591,
+137
+],
+[
+643,
+174
+],
+[
+726,
+146
+],
+[
+833,
+135
+],
+[
+965,
+122
+],
+[
+1052,
+88
+],
+[
+1158,
+54
+],
+[
+1275,
+39
+],
+[
+1369,
+49
+],
+[
+1428,
+114
+],
+[
+1351,
+168
+],
+[
+1289,
+149
+],
+[
+1228,
+188
+],
+[
+1086,
+189
+],
+[
+994,
+212
+],
+[
+917,
+181
+],
+[
+889,
+193
+],
+[
+880,
+259
+],
+[
+833,
+271
+],
+[
+748,
+259
+],
+[
+667,
+288
+],
+[
+574,
+258
+]
+],
+"notes": "",
+"kind": "geographic",
+"createdAt": "2026-11-13T10:14:56.091Z"
+},
+{
+"id": "rmwetn7jqgm9g",
+"name": "Arcflow",
+"color": "#e0e0e0",
+"points": [
+[
+503,
+139
+],
+[
+485,
+89
+],
+[
+411,
+3
+],
+[
+582,
+1
+],
+[
+619,
+32
+],
+[
+683,
+60
+],
+[
+773,
+46
+],
+[
+852,
+71
+],
+[
+907,
+107
+],
+[
+887,
+132
+],
+[
+729,
+146
+],
+[
+644,
+169
+],
+[
+604,
+168
+],
+[
+576,
+199
+],
+[
+537,
+208
+],
+[
+495,
+157
+]
+],
+"notes": "",
+"kind": "biome",
+"createdAt": "2026-11-13T10:16:03.062Z"
+},
+{
+"id": "rmwetrk5macdn",
+"name": "heartland",
+"color": "#7c8a5e",
+"points": [
+[
+578,
+207
+],
+[
+605,
+171
+],
+[
+655,
+167
+],
+[
+715,
+150
+],
+[
+796,
+140
+],
+[
+879,
+135
+],
+[
+915,
+161
+],
+[
+928,
+182
+],
+[
+912,
+199
+],
+[
+886,
+200
+],
+[
+871,
+287
+],
+[
+758,
+258
+],
+[
+684,
+279
+],
+[
+655,
+282
+],
+[
+664,
+251
+],
+[
+586,
+211
+]
+],
+"notes": "",
+"kind": "biome",
+"createdAt": "2026-11-13T10:19:26.027Z"
+},
+{
+"id": "rmwetvx15q1m4",
+"name": "moleshelf",
+"color": "#c9803c",
+"points": [
+[
+797,
+53
+],
+[
+805,
+27
+],
+[
+850,
+17
+],
+[
+895,
+40
+],
+[
+961,
+44
+],
+[
+1023,
+12
+],
+[
+1082,
+19
+],
+[
+1126,
+61
+],
+[
+1068,
+100
+],
+[
+963,
+128
+],
+[
+898,
+123
+],
+[
+909,
+110
+],
+[
+849,
+65
+]
+],
+"notes": "",
+"kind": "biome",
+"createdAt": "2026-11-13T10:22:49.337Z"
+},
+{
+"id": "rmwetzg8idewz",
+"name": "weeping valley",
+"color": "#d9c14a",
+"points": [
+[
+925,
+186
+],
+[
+996,
+208
+],
+[
+1109,
+188
+],
+[
+1121,
+152
+],
+[
+1107,
+143
+],
+[
+1099,
+112
+],
+[
+1080,
+95
+],
+[
+1051,
+106
+],
+[
+976,
+126
+],
+[
+886,
+133
+],
+[
+888,
+141
+],
+[
+915,
+161
+]
+],
+"notes": "",
+"kind": "biome",
+"createdAt": "2026-11-13T10:25:34.194Z"
+},
+{
+"id": "rmweu2qb4nyia",
+"name": "red river",
+"color": "#5da05c",
+"points": [
+[
+1118,
+149
+],
+[
+1086,
+99
+],
+[
+1127,
+61
+],
+[
+1195,
+41
+],
+[
+1307,
+28
+],
+[
+1346,
+54
+],
+[
+1342,
+107
+],
+[
+1312,
+116
+],
+[
+1260,
+134
+],
+[
+1200,
+121
+],
+[
+1136,
+155
+]
+],
+"notes": "",
+"kind": "biome",
+"createdAt": "2026-11-13T10:28:07.216Z"
+},
+{
+"id": "rmweu4kpowzji",
+"name": "compass hills",
+"color": "#3f8fb5",
+"points": [
+[
+1102,
+185
+],
+[
+1018,
+192
+],
+[
+977,
+212
+],
+[
+991,
+246
+],
+[
+1054,
+290
+],
+[
+1116,
+271
+],
+[
+1139,
+230
+]
+],
+"notes": "",
+"kind": "biome",
+"createdAt": "2026-11-13T10:29:33.276Z"
+},
+{
+"id": "rmweu6x20bj70",
+"name": "Carnelian Pass",
+"color": "#8a6fc9",
+"points": [
+[
+1082,
+18
+],
+[
+1115,
+2
+],
+[
+1315,
+2
+],
+[
+1361,
+2
+],
+[
+1360,
+42
+],
+[
+1290,
+38
+],
+[
+1251,
+37
+],
+[
+1129,
+61
+]
+],
+"notes": "",
+"kind": "biome",
+"createdAt": "2026-11-13T10:31:22.584Z"
+},
+{
+"id": "rmweubdnyts8y",
+"name": "the dome",
+"color": "#c95a6a",
+"points": [
+[
+1312,
+115
+],
+[
+1298,
+136
+],
+[
+1301,
+156
+],
+[
+1312,
+176
+],
+[
+1349,
+194
+],
+[
+1380,
+183
+],
+[
+1403,
+155
+],
+[
+1400,
+125
+],
+[
+1382,
+109
+],
+[
+1356,
+100
+],
+[
+1330,
+107
+]
+],
+"notes": "",
+"kind": "biome",
+"createdAt": "2026-11-13T10:34:50.734Z"
+},
+{
+"id": "rmweud6jurkfl",
+"name": "tharn hills",
+"color": "#c9b08a",
+"points": [
+[
+1382,
+188
+],
+[
+1422,
+234
+],
+[
+1464,
+192
+],
+[
+1508,
+187
+],
+[
+1542,
+105
+],
+[
+1544,
+50
+],
+[
+1496,
+6
+],
+[
+1430,
+3
+],
+[
+1365,
+5
+],
+[
+1351,
+52
+],
+[
+1343,
+95
+],
+[
+1386,
+109
+],
+[
+1404,
+132
+],
+[
+1404,
+153
+],
+[
+1384,
+180
+]
+],
+"notes": "",
+"kind": "biome",
+"createdAt": "2026-11-13T10:36:14.826Z"
+},
+{
+"id": "rmwgux56yzw8l",
+"name": "Delta",
+"color": "#c9b08a",
+"points": [
+[
+493,
+166
+],
+[
+507,
+198
+],
+[
+569,
+215
+],
+[
+606,
+175
+],
+[
+621,
+154
+],
+[
+628,
+136
+],
+[
+620,
+130
+],
+[
+600,
+115
+],
+[
+566,
+107
+],
+[
+548,
+119
+],
+[
+512,
+126
+],
+[
+497,
+151
+]
+],
+"notes": "",
+"kind": "biome",
+"createdAt": "2026-11-14T20:27:18.538Z"
+},
+{
+"id": "rmwgv03cawwvm",
+"name": "Tharn Uplands",
+"color": "#c9b08a",
+"points": [
+[
+1437,
+240
+],
+[
+1465,
+197
+],
+[
+1512,
+186
+],
+[
+1533,
+128
+],
+[
+1544,
+57
+],
+[
+1496,
+5
+],
+[
+1814,
+2
+],
+[
+1820,
+565
+],
+[
+1803,
+569
+],
+[
+1568,
+388
+],
+[
+1431,
+244
+]
+],
+"notes": "",
+"kind": "biome",
+"createdAt": "2026-11-14T20:29:36.106Z"
+},
+{
+"id": "rmwgv3ot4jv87",
+"name": "NW outer wall",
+"color": "#c9b08a",
+"points": [
+[
+525,
+329
+],
+[
+521,
+319
+],
+[
+530,
+293
+],
+[
+604,
+271
+],
+[
+676,
+263
+],
+[
+736,
+241
+],
+[
+817,
+261
+],
+[
+878,
+259
+],
+[
+863,
+335
+],
+[
+520,
+332
+]
+],
+"notes": "",
+"kind": "biome",
+"createdAt": "2026-11-14T20:32:23.896Z"
+},
+{
+"id": "r_gem_andaru",
+"name": "Andaru",
+"color": "#d4845a",
+"points": [
+[
+876,
+812
+],
+[
+908,
+812
+],
+[
+912,
+864
+],
+[
+880,
+866
+],
+[
+872,
+838
+]
+],
+"notes": "Throne vent-shoulder & ash-nomad kin of Zeijani (Ṣunu-Ašru & Šadū-Qarnu); raid colonizers, export fungal goods & Ranj. From Gemini's trade model (openworld/world-pins-gemini.json, 2026-11-14).",
+"kind": "political",
+"createdAt": "2026-11-13T08:00:00.000Z"
 },
 {
 "id": "cut-xanadu-oidong-highrift",
@@ -12160,20 +13714,20 @@
 "kind": "tool",
 "points": [
 [
-785.0,
-1488.0
+790.0,
+1501.0
 ],
 [
-815.0,
-1488.0
+820.0,
+1501.0
 ],
 [
-815.0,
-1518.0
+820.0,
+1531.0
 ],
 [
-785.0,
-1518.0
+790.0,
+1531.0
 ]
 ],
 "notes": "openworld/SITES.json xanadu-oidong-highrift: site Erehwon (s57bkv9741) (tools/scale-model/cut_site.py)"
