@@ -12,7 +12,7 @@ const LZ_TUNE = require(path.join(ROOT, 'core/region/data/lz-tune.js'));
 const TU_REC = require(path.join(__dirname, 'src/80-tu-records.js'));
 
 const chk = LZ_TUNE.checkTown(TU_REC);
-T.ok('TU_REC holds to LZ_TUNE: 3,000 by caste, shares 1.0, grain 1,000 t, produce 250 t, meat_hide 210 t, copper 70 t',
+T.ok('TU_REC holds to LZ_TUNE: 3,000 by caste, shares 1.0, grain 1,000 t, produce 250 t, meat_hide 210 t, copper 98 t',
   chk.ok, chk.problems.join('; ') || 'ok');
 
 const missingCrops = TU_REC.crops.filter(c => !CROPS.BY_ID[c.id]).map(c => c.id);

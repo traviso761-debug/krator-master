@@ -36,9 +36,9 @@ var IG_REC = (function () {
     { id: 'ashroot', role: 'tuber', zone: 'west-plateau-fields' }
   ];
 
-  /* Exact annual makes held by LZ_TUNE.checkTown: grain 2,600 t, produce 250 t, meat_hide 210 t, tin 8 t, relics 1.5 t */
+  /* Exact annual makes held by LZ_TUNE.checkTown: grain 3,500 t, produce 250 t, meat_hide 210 t, tin 8 t, relics 1.5 t */
   var works = [
-    { id: 'ig.works.grain', kind: 'farming', keys: ['lz-granary', 'lz-farm', 'lz-windmill', 'lz-bakehouse'], caste: 3, workers: 640, good: 'grain', yearT: 2600 },
+    { id: 'ig.works.grain', kind: 'farming', keys: ['lz-granary', 'lz-farm', 'lz-windmill', 'lz-bakehouse'], caste: 3, workers: 780, good: 'grain', yearT: 3500 },
     { id: 'ig.works.produce', kind: 'farming', keys: ['lz-farm', 'lz-orchard', 'lz-fermentery'], caste: 3, workers: 110, good: 'produce', yearT: 250 },
     { id: 'ig.works.herds', kind: 'herding', keys: ['lz-farm', 'lz-hall-bone'], caste: 3, workers: 110, good: 'meat_hide', yearT: 210 },
     { id: 'ig.works.tin', kind: 'placer', keys: ['lz-placer', 'lz-mine'], caste: 2, workers: 56, good: 'tin', yearT: 8 },
@@ -53,7 +53,7 @@ var IG_REC = (function () {
   ];
 
   var goods = {
-    grain: { unit: 't', yearMadeT: 2600, yearNeedT: 700, allotOutT: 1900, to: ['basilisk', 'gila'] },
+    grain: { unit: 't', yearMadeT: 3500, yearNeedT: 700, allotOutT: 2800, to: ['basilisk', 'gila'] },
     produce: { unit: 't', yearMadeT: 250, yearNeedT: 250, allotOutT: 0 },
     meat_hide: { unit: 't', yearMadeT: 210, yearNeedT: 210, allotOutT: 0 },
     tin: { unit: 't', yearMadeT: 8, yearNeedT: 0, allotOutT: 8, to: ['basilisk'] },

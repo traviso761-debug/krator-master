@@ -12,7 +12,7 @@ settlement.json, src/, gen/ and tex/. This script writes gen/ first, never edite
                         far   a 64 km square at 500 m (the eastern terminal sea, Tlahn Gill's fan, the Rift walls), metres
                       x east, z south, metres from the pin (2 km a pixel); y is the model's height in metres
   69k-kcity-bundle.js core/city and core/space in one closure, as settlements/gila/build.py seals them
-  81p-bs-plan.js      BS_PLAN from basilisk_plan.json (1,186 deterministic placements, district spirals, wall, water, ley)
+  81p-bs-plan.js      BS_PLAN from basilisk_plan.json (2,327 deterministic placements, district spirals, wall, water, ley)
 
     python3 tools/build.py settlements/basilisk
     KRATOR_GL=gpu python3 settlements/basilisk/verify.py settlements/basilisk/dist/basilisk.html --assert --all-views

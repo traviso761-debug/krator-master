@@ -22,7 +22,7 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `80-bs-records.js` | 6 | Basilisk 80: the stone capital's records for the (1) |
-| `82-bs-site.js` | 40 **big** | Basilisk 82: the stone capital's site, platforms (1) |
+| `82-bs-site.js` | 41 **big** | Basilisk 82: the stone capital's site, platforms (1) |
 | `89-rows.js` | <1 | Basilisk 89: overrides the Lizardmen kit sheet's (1) |
-| `90w-bs-world.js` | 36 **big** | Basilisk 90: the stone capital's world — KGROUND (1) |
+| `90w-bs-world.js` | 37 **big** | Basilisk 90: the stone capital's world — KGROUND (1) |
 | `99-m-bs-probe.js` | 4 | Basilisk 99-m: host camera range, inspector enri (1) |

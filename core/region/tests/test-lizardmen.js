@@ -26,13 +26,13 @@ const Y=run(731,{allot:true},null,366);   /* two years with the Allotment: the f
 console.log('two years of the Lizardmen in '+((Date.now()-t0)/1000).toFixed(1)+' s: '+Y.S.order.length+' places, '+Y.V.settlements.reduce((n,s)=>n+s.people,0)+' people, '+Y.S.allot.loads.length+' loads');
 
 // ---- Z0: the places
-// 1. declared at the owner's numbers: Basilisk (the capital, once Sauropolis) 15,000; Tuatara, Komodo, Gila and Iguana 3,000; Skink
+// 1. declared at the owner's numbers: Basilisk (the capital, once Sauropolis) 30,000 (raised 2026-11-17); Tuatara, Komodo, Gila and Iguana 3,000; Skink
 //    1,500; the Tubes 1,000; the eight warrens 30,000 in bulk (18,000 east, 12,000 west); the two reliquaries; no problems
 {const P=k=>Y.V.settlements.find(s=>s.id===k)||{},pp=ks=>ks.reduce((n,k)=>n+(P(k).people||0),0),
   we=['warrens-e1','warrens-e2','warrens-e3','warrens-e4'],ww=['warrens-w1','warrens-w2','warrens-w3','warrens-w4'];
- const good=Y.S.order.length===17&&!Y.S.problems.length&&P('basilisk').people===15000&&pp(['tuatara','komodo','gila','iguana'])===12000&&P('skink').people===1500&&
+ const good=Y.S.order.length===17&&!Y.S.problems.length&&P('basilisk').people===30000&&pp(['tuatara','komodo','gila','iguana'])===12000&&P('skink').people===1500&&
   P('tubes').people===1000&&pp(we)===18000&&pp(ww)===12000&&P('reliquary-west').people===0&&we.concat(ww).every(k=>P(k).scale===200);
- T.ok('declared: Basilisk 15,000; Tuatara, Komodo, Gila, Iguana 3,000 each; Skink 1,500; the Tubes 1,000; eight warrens 30,000 (18,000 east + 12,000 west) at 200 a head; two reliquaries; no problems',good,
+ T.ok('declared: Basilisk 30,000; Tuatara, Komodo, Gila, Iguana 3,000 each; Skink 1,500; the Tubes 1,000; eight warrens 30,000 (18,000 east + 12,000 west) at 200 a head; two reliquaries; no problems',good,
   Y.S.order.length+' places; problems: '+(Y.S.problems.slice(0,3).join('; ')||'none'));}
 // 2. Z0's own test: each place on its own make for a season, on the stocked start, fed; the books balance
 {const Z=run(91,{allot:false});const f=fedCheck(Z.B);
@@ -95,7 +95,7 @@ const coilOK=loads=>loads.every(L=>{const C=LZ_TUNE.coil,want=Y.H.allotRoute(C,L
   (B['reliquary-west'].imported.relics||0)>0&&(B['reliquary-east'].imported.relics||0)>0);}
 // 11. checkTown holds a town's records to LZ_TUNE (people by caste, shares, works by good) and refuses drifted records
 {const goodRec={key:'tuatara',castes:[{caste:1,share:.22,people:660},{caste:2,share:.20,people:600},{caste:3,share:.28,people:840},{caste:4,share:.17,people:510},{caste:5,share:.03,people:90},{caste:6,share:.10,people:300}],
-  works:[{id:'tu.grain',good:'grain',yearT:1000},{id:'tu.produce',good:'produce',yearT:250},{id:'tu.meat',good:'meat_hide',yearT:210},{id:'tu.copper',good:'copper',yearT:70}]};
+  works:[{id:'tu.grain',good:'grain',yearT:1000},{id:'tu.produce',good:'produce',yearT:250},{id:'tu.meat',good:'meat_hide',yearT:210},{id:'tu.copper',good:'copper',yearT:98}]};
  const badRec=Object.assign({},goodRec,{castes:goodRec.castes.map(c=>c.caste===1?{caste:1,share:.22,people:700}:c)});
  T.ok('checkTown: accepts records matching LZ_TUNE people, shares and works',LZ_TUNE.checkTown(goodRec).ok);
  T.neg('checkTown: refuses records whose caste total drifted from LZ_TUNE',R=>LZ_TUNE.checkTown(R).ok,badRec,goodRec);}

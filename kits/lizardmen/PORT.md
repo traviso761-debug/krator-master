@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 19 (9%) | 0 (0%) | 0 (0%) | 1 (1%) | 176 (90%) |
+| KB | 19 (9%) | 0 (0%) | 0 (0%) | 1 (1%) | 182 (90%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -29,8 +29,8 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/59w-lz-works.js` | 35.2 | [draw] | 0 | 0 | 0 | 0 | 0 | 78 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/60-lz-reliquary.js` | 10.7 | [draw] | 7 | 2 | 0 | 0 | 0 | 12 | 2 | 0 | 0 | 0 | 0 | split: the antechamber's dust (a Points layer on a frame hook) and the shimmer material hook are browser side; in Godot a GPU particle and a .gdshader |
 | `src/62-lk-capital.js` | 20.6 | [draw] | 0 | 0 | 0 | 0 | 0 | 12 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/63-lk-works.js` | 16.4 | [draw] | 0 | 0 | 0 | 0 | 0 | 33 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/89-rows.js` | 1.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/63-lk-works.js` | 22.6 | [draw] | 0 | 0 | 0 | 0 | 0 | 39 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/89-rows.js` | 1.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 
 ## Notes
 

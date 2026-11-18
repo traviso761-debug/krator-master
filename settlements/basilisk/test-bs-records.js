@@ -13,7 +13,7 @@ const BS_REC = require(path.join(__dirname, 'src/80-bs-records.js'));
 const PLAN = JSON.parse(fs.readFileSync(path.join(__dirname, 'basilisk_plan.json'), 'utf8'));
 
 const chk = LZ_TUNE.checkTown(BS_REC);
-T.ok('BS_REC holds to LZ_TUNE: 15,000 by caste (25/25/20/15/5/10 %), grain 1,500 t, produce 1,300 t, fish 600 t, meat_hide 450 t, salt 55 t, bone 48 t',
+T.ok('BS_REC holds to LZ_TUNE: 30,000 by caste (25/25/20/15/5/10 %), grain 2,800 t, produce 2,550 t, fish 1,200 t, meat_hide 900 t, salt 85 t, bone 96 t',
   chk.ok, chk.problems.join('; ') || 'ok');
 
 const missingCrops = BS_REC.crops.filter(c => !CROPS.BY_ID[c.id]).map(c => c.id);
@@ -22,14 +22,14 @@ T.ok('every crop Basilisk grows exists in kits/crops',
   missingCrops.length ? 'missing: ' + missingCrops.join(', ') : BS_REC.crops.map(c => c.id).join(', '));
 
 const barges = PLAN.placed.filter(r => r.key === 'lz-barge');
-T.ok('basilisk_plan.json houses >= 15,000 residents and tags all reed barges as cls vessel',
-  PLAN.census.total_housed >= 15000 && barges.length >= 5 && barges.every(b => b.cls === 'vessel' && b.tags && b.tags.propulsion === 'paddles'),
+T.ok('basilisk_plan.json houses >= 30,000 residents and tags all reed barges as cls vessel',
+  PLAN.census.total_housed >= 30000 && barges.length >= 6 && barges.every(b => b.cls === 'vessel' && b.tags && b.tags.propulsion === 'paddles'),
   'housed ' + PLAN.census.total_housed + ', barges ' + barges.length);
 
 const badCaste = Object.assign({}, BS_REC, {
-  castes: BS_REC.castes.map(c => c.caste === 5 ? Object.assign({}, c, { people: 900 }) : c)
+  castes: BS_REC.castes.map(c => c.caste === 5 ? Object.assign({}, c, { people: 1900 }) : c)
 });
-T.neg('LZ_TUNE.checkTown refuses BS_REC when Interpreters drift from 750 to 900',
+T.neg('LZ_TUNE.checkTown refuses BS_REC when Interpreters drift from 1,500 to 1,900',
   r => LZ_TUNE.checkTown(r).ok, badCaste, BS_REC);
 
 const badSalt = Object.assign({}, BS_REC, {

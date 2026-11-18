@@ -147,6 +147,8 @@
     'The +12 m polygonal-basalt Mound of Intention (-2,588 m)');
   var bsMoleTerraceMesh = makeTerraceObject(G.moleTerrace, 0x58625a, 0x3c443e, 'terrace-mole',
     'The 700 m cyclopean basalt ley mole (+1.5 m over the eastern sea, bearing 50.6 deg)');
+  var bsCourtPlazasMesh = makeTerraceObject(G.courtPlazas, 0x48524c, 0x343c38, 'terrace-courts',
+    'Dressed basalt paving of the eight district courts and the Court of the First Turn');
 
   /* 4. Far ground mesh (64 km square at 500 m, sunk inside NEAR) */
   var bsFarMesh = (function () {
@@ -374,14 +376,21 @@
     try {
       /* 6a. Great Coil (14 m basalt avenue), Ley Way (9 m grey-green basalt + verdigris bronze sighting line) & 8 spiral streets */
       drawRibbon(G.coilStreet, 14.0, 0.08, 'stoneP', hc(0x3f4742), 'basalt', hc(0x2f3632), function () { return G.platY - 0.02; }, tblStreets);
-      /* South Gate exterior sloped basalt causeway pavement */
-      WX(G.gateXz[0], (G.platY + G.sabkhaY) / 2 + 0.04, G.gateXz[1] + 59.25, -Math.atan2(5.0, 105.5), 0, 0, function () {
-        box('stoneP', 0, -0.08, 0, 14.2, 0.16, 105.6, hc(0x3f4742));
-        box('basalt', -7.1, 0.04, 0, 0.55, 0.26, 105.6, hc(0x2f3632));
-        box('basalt', 7.1, 0.04, 0, 0.55, 0.26, 105.6, hc(0x2f3632));
-      });
+      /* South Gate exterior sloped basalt causeway pavement (stepped flush along groundH) */
+      (function () {
+        var zA = G.gateXz[1] + 7.5, zB = G.gateXz[1] + 111.5, nR = 16, dzR = (zB - zA) / nR, ri2, zm, gyR;
+        for (ri2 = 0; ri2 < nR; ri2++) {
+          zm = zA + (ri2 + 0.5) * dzR;
+          gyR = G.groundH(G.gateXz[0], zm);
+          W(G.gateXz[0], 0, zm, 0, function () {
+            box('stoneP', 0, gyR - 0.12, 0, 14.2, 0.16, dzR + 0.3, hc(0x3f4742));
+            box('basalt', -7.1, gyR + 0.02, 0, 0.55, 0.22, dzR + 0.3, hc(0x2f3632));
+            box('basalt', 7.1, gyR + 0.02, 0, 0.55, 0.22, dzR + 0.3, hc(0x2f3632));
+          });
+        }
+      })();
 
-      /* Straight 50.6 deg Ley Way + bronze sighting strip from Hall of Intention (t=6) all the way to the mole tip (t=mole1) */
+      /* Straight 50.6 deg Ley Way + bronze sighting strip from Hall of Intention (t=8) all the way to the mole tip (t=mole1) */
       var leyRy = Math.atan2(G.leyDir[0], G.leyDir[1]);
       var emitLeySpan = function (t0, t1, y0, w) {
         var L = t1 - t0, tm = (t0 + t1) / 2, mx = G.leyDir[0] * tm, mz = G.leyDir[1] * tm;
@@ -391,9 +400,16 @@
         });
         tblStreets.push(mx, y0, mz, leyRy, w, L, 0.14);
       };
-      emitLeySpan(8, 126, G.moundY - 0.01, 8.6);
-      emitLeySpan(154, G.slotT - 8, G.platY - 0.01, 9.0);
-      emitLeySpan(G.slotT + 38, G.shoreT - 34, G.sabkhaY + 0.06, 7.6);
+      emitLeySpan(8, G.moundLeyEdgeT - 1.5, G.moundY - 0.01, 8.6);
+      emitLeySpan(G.moundLeyEdgeT + 26.5, G.slotT - 8, G.platY - 0.01, 9.0);
+      (function () {
+        var ta = G.slotT + 38, tb = G.shoreT - 34, nS = 18, ds = (tb - ta) / nS, si4, tMid, gx2, gz2;
+        for (si4 = 0; si4 < nS; si4++) {
+          tMid = ta + (si4 + 0.5) * ds;
+          gx2 = G.leyDir[0] * tMid; gz2 = G.leyDir[1] * tMid;
+          emitLeySpan(ta + si4 * ds, ta + (si4 + 1) * ds, G.groundH(gx2, gz2) + 0.03, 7.6);
+        }
+      })();
       emitLeySpan(G.shoreT - 34, G.moleRange[1], G.moleY - 0.01, 7.2);
       /* Barge stair at the seaward tip of the 700 m ley mole */
       (function () {
@@ -613,13 +629,13 @@
       if (tblPlinth.n > 0) SVTAGS.addSet({
         'class': 'infrastructure', kind: 'terrace-plinth', key: 'bs-plinth',
         name: 'Stone and brick building footings', tags: { culture: 'lizardmen', types: ['infrastructure'] },
-        note: 'basalt and baked-brick footings seating Basilisk\'s 1,184 buildings on the platforms and sabkha',
+        note: 'basalt and baked-brick footings seating Basilisk\'s 2,300+ buildings on the platforms and sabkha',
         frag: 'settlements/basilisk'
       }, tblPlinth);
       if (tblWall.n > 0) SVTAGS.addSet({
         'class': 'infrastructure', kind: 'city-wall', key: 'bs-wall-curtain',
         name: 'Cyclopean perimeter wall of Basilisk', tags: { culture: 'lizardmen', types: ['military', 'infrastructure'] },
-        note: '8,170 m battered cyclopean basalt wall rising 8 m above the +5 m platform (+13 m over sabkha) with horned parapet',
+        note: 'battered cyclopean basalt wall rising 8 m above the +5 m platform (+13 m over sabkha) with horned parapet',
         frag: 'settlements/basilisk'
       }, tblWall);
       if (tblStreets.n > 0) SVTAGS.addSet({
@@ -669,12 +685,12 @@
     var rv3 = G.reservoirs[2] || G.reservoirs[0];
     var mTipX = G.leyDir[0] * (G.moleRange[1] - 60), mTipZ = G.leyDir[1] * (G.moleRange[1] - 60);
     return {
-      'Overview': safeEye(-1650, ym + 980, 2150, 80, yp, 40),
-      'The Hall and Mound of Intention': safeEye(G.leyDir[0] * 76, ym + 16, G.leyDir[1] * 76, -G.leyDir[0] * 12, ym + 7, -G.leyDir[1] * 12),
+      'Overview': safeEye(-1180, ym + 680, 1480, 20, yp, 40),
+      'The Hall and Mound of Intention': safeEye(G.leyDir[0] * 68, ym + 15, G.leyDir[1] * 68, -G.leyDir[0] * 12, ym + 7, -G.leyDir[1] * 12),
       'The Great Tank of the First Turn': safeEye(tk.x + 28, tk.y + 16, tk.z + 26, tk.x, tk.y + 2.5, tk.z),
       'The South Gate and Coil mouth': safeEye(G.gateXz[0] - 24, ys + 24, G.gateXz[1] + 92, G.gateXz[0], yp + 6, G.gateXz[1] - 10),
       'The Lothal dock and Bronze Hall': safeEye(G.dock.x + 175, ys + 86, G.dock.z + 235, (G.dock.x + bh.x) / 2 - 20, ys + 5, (G.dock.z + bh.z) / 2 - 10),
-      'The Ley Slot and sea mole': safeEye(G.slotXz[0] - G.leyDir[0] * 55 + G.leyPerp[0] * 52, yp + 26, G.slotXz[1] - G.leyDir[1] * 55 + G.leyPerp[1] * 52, mTipX * 0.55, G.moleY + 1, mTipZ * 0.55),
+      'The Ley Slot and sea mole': safeEye(G.slotXz[0] + G.leyDir[0] * 55 + G.leyPerp[0] * 42, ys + 34, G.slotXz[1] + G.leyDir[1] * 55 + G.leyPerp[1] * 42, G.slotXz[0] + G.leyDir[0] * 420, G.moleY, G.slotXz[1] + G.leyDir[1] * 420),
       'The Dholavira reservoirs': safeEye(rv3.cx - 175, ys + 74, rv3.cz + 185, rv3.cx + 80, rv3.level, rv3.cz - 15),
       'The scaled-back salt strand': safeEye(pn.x - 115, ys + 48, pn.z + 145, pn.x + 55, ys + 2, pn.z + 10)
     };
@@ -682,6 +698,6 @@
 
   window._bsMeshes = {
     near: bsNearMesh, far: bsFarMesh,
-    cityTerrace: bsCityTerraceMesh, moundTerrace: bsMoundTerraceMesh, moleTerrace: bsMoleTerraceMesh
+    cityTerrace: bsCityTerraceMesh, moundTerrace: bsMoundTerraceMesh, moleTerrace: bsMoleTerraceMesh, courtPlazas: bsCourtPlazasMesh
   };
 })();

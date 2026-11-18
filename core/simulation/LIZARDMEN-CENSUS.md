@@ -5,7 +5,7 @@ the xanadu census"*.
 
 Modeled directly on `core/simulation/PROPOSAL-XANADU.md` and `settlements/xanadu/BUILD-OUT.md`, this document scopes every level
 of settlement and transport inside the **Lizardmen political polygon (`rmufwmqdl9qjf`)** on scale model **5.1** (`2 km/px`),
-reconciling `LZ_TUNE` (`core/region/data/lz-tune.js`, `59,500` Lizardmen) with the actual raster heights (`h.png`), water mask,
+reconciling `LZ_TUNE` (`core/region/data/lz-tune.js`, `74,500` Lizardmen) with the actual raster heights (`h.png`), water mask,
 rivers (`rivers.json`), and mineral/placer nodes (`kits/resources/data/geology.json`). Every proposed coordinate below has been
 verified dry (`wet = false`) and low-slope on `h.png`. Everything not fixed by the owner or `LZ_TUNE` is *proposed* (questions in
 section 7).
@@ -30,15 +30,15 @@ section 7).
 
 ### 1.2 Reconciling the numbers (`LZ_TUNE` vs Gemini vs Lore)
 
-| Tier | `LZ_TUNE` (`59,500` total) | How this census distributes them on the map |
+| Tier | `LZ_TUNE` (`74,500` total) | How this census distributes them on the map |
 |---|---|---|
-| **1. Capital (`1`)** | **15,000** (`Basilisk`) | `settlements/basilisk` (`766.6,1597.25`): 7 stone districts + Mound + Gate Quarter (`15,337` beds) |
+| **1. Capital (`1`)** | **30,000** (`Basilisk`) | `settlements/basilisk` (`766.6,1597.25`): 7 densely packed stone districts + Mound + Gate Quarter (`32,605` beds across `2,327` placements) |
 | **2. Towns & villages (`6`)** | **14,500** (`Tuatara`, `Komodo`, `Gila`, `Iguana` `3,000` each; `Skink` `1,500`; `The Tubes` `1,000`) | 5 built & GPU-verified (`gila`, `tuatara`, `iguana`, `komodo`, `skink`); `tubes` on hold. Each town's page already includes 1–2 immediate outworks |
 | **3. Town hinterland rings (`29` hamlets)** | **~5,280** *(drawn from the `30,000` warrens, as Xanadu draws `pherRing` / `ksRing` from `prov.rural`)* | `KHAMLET.village` (`core/hamlet/lizardmen`, `120–240` each) within `3–18 km` of the 7 seats (section 3; 5 already built on town pages) |
 | **4. Named minor settlements & works (`26` sites)** | **~7,420** *(drawn from the `30,000` warrens)* | Shore fishing villages, river-mouth placer camps, savanna cistern warrens, ferry slips, and frontier raid camps (`150–550` each, section 4) |
 | **5. Coil Round staging halts (`24` halts)** | **~720** *(~30 Drovers/Tenders per halt)* | `lz-wayhalt` stations spaced every `~20–25 km` (one day's sledge march) on dry land corridors (section 5) |
 | **6. Dispersed bulk warrens (8 sub-districts)** | **~16,580** remaining in bulk (`30,000 - 13,420`) | Never drawn singly (seeded camera sample on openworld cuts, as Xanadu Wave 8); replaces the single water-bound centroid `warrens-west` (`630,1515` stands in `-2,600 m` sea water!) with 8 dry sub-districts (section 2) |
-| **Total Lizardmen** | **59,500** (`~0.66 / km²` habitable below `+100 m`) | Plus **~1,000 Tungangs** in **Loj Nahn** (`slonhq0jgv`, `720,1567`, upper Pile) and **120 seasonal Xanadui** at `exp.rift-gold` (`850,1628`) |
+| **Total Lizardmen** | **74,500** (`~0.83 / km²` habitable below `+100 m`) | Plus **~1,000 Tungangs** in **Loj Nahn** (`slonhq0jgv`, `720,1567`, upper Pile) and **120 seasonal Xanadui** at `exp.rift-gold` (`850,1628`) |
 
 ---
 

@@ -7,7 +7,7 @@
       and its 2.1 km leat into nearH, and registers nearH, farH, the +5 m brick city platform, the +12 m polygonal-basalt Mound
       of Intention and the 700 m basalt ley mole in KDRAWN so terrainH and KDRAWN agree to 0 mm everywhere.
    3. Registers the Great Coil, Ley Way and eight spiral districts on KCITY.create, lays the southern paddy apron ring hamlet on
-      KHAMLET.village ('lizardmen', focus 'farming'), seats all 1,184 manifest buildings & vessels through KSPACE with zero
+      KHAMLET.village ('lizardmen', focus 'farming'), seats all 2,325 manifest buildings & vessels through KSPACE with zero
       overlaps (lz-barge floating on WATER.open / dock still water as cls 'vessel'), and lays bunded bamboo-rice & taro paddies. */
 var BS_SITE = (function () {
   var SEED = 79010;
@@ -406,13 +406,9 @@ var BS_SITE = (function () {
     return mesh;
   })();
 
-  /* Mound of Intention (+12 m = -2,588 m, +7 m above the +5 m platform), with Ley Way & College ramps */
-  var moundTerrace = (function () {
-    var mesh = buildTerraceMesh(moundPoly, function () { return MOUND_Y; }, 2.2, function () { return PLAT_Y - 0.2; });
-    /* Processional Ley Way ramp climbing onto the Mound (from t = 152 m at PLAT_Y up to t = 118 m at MOUND_Y) */
-    var pL = function (t, w) { return [leyDir[0] * t + leyPerp[0] * w, leyDir[1] * t + leyPerp[1] * w]; };
-    /* Find where the ley ray crosses moundPoly */
-    var tEdge = 128, i, a, b, ex, ez, den, tt, ss;
+  /* Mound of Intention (+12 m = -2,588 m, +7 m above the +5 m platform), with Ley Way ramp */
+  var moundLeyEdgeT = (function () {
+    var tEdge = 96, i, a, b, ex, ez, den, tt, ss;
     for (i = 0; i < moundPoly.length; i++) {
       a = moundPoly[i]; b = moundPoly[(i + 1) % moundPoly.length];
       ex = b[0] - a[0]; ez = b[1] - a[1];
@@ -422,6 +418,12 @@ var BS_SITE = (function () {
       ss = (a[0] * leyDir[1] - a[1] * leyDir[0]) / den;
       if (tt > 0 && ss >= 0 && ss <= 1) { tEdge = tt; break; }
     }
+    return tEdge;
+  })();
+  var moundTerrace = (function () {
+    var mesh = buildTerraceMesh(moundPoly, function () { return MOUND_Y; }, 2.2, function () { return PLAT_Y - 0.2; });
+    var pL = function (t, w) { return [leyDir[0] * t + leyPerp[0] * w, leyDir[1] * t + leyPerp[1] * w]; };
+    var tEdge = moundLeyEdgeT;
     var m0L = pL(tEdge - 1, 5.2), m0R = pL(tEdge - 1, -5.2);
     var m1L = pL(tEdge + 26, 5.2), m1R = pL(tEdge + 26, -5.2);
     var mb0L = pL(tEdge - 1, 7.2), mb0R = pL(tEdge - 1, -7.2);
@@ -482,6 +484,18 @@ var BS_SITE = (function () {
   }
   var allDistricts = BS_PLAN.districts.concat([BS_PLAN.gate_quarter]);
   var districtStreets = allDistricts.map(function (d) { return { id: d.id, pts: uvList(d.street), centre: uv2xz(d.centre), axis: uvList(d.court_axis) }; });
+  /* Dressed-basalt paving slabs for the 8 district/gate central courts + the Court of the First Turn (+2.2 cm above PLAT_Y) */
+  var courtPlazas = (function () {
+    var polys = allDistricts.map(function (d) { return uvList(d.court); }).concat([firstTurnPoly]);
+    var pos = [], idx = [], pi, m, base, k;
+    for (pi = 0; pi < polys.length; pi++) {
+      m = buildTerraceMesh(polys[pi], function () { return PLAT_Y + 0.022; }, 0.35, function () { return PLAT_Y - 0.06; });
+      base = pos.length / 3;
+      for (k = 0; k < m.pos.length; k++) pos.push(m.pos[k]);
+      for (k = 0; k < m.idx.length; k++) idx.push(base + m.idx[k]);
+    }
+    return { pos: pos, idx: idx };
+  })();
   var cityPlan = null, cityErr = null;
   try {
     var L = KCITY.lib, TUNE = {
@@ -534,12 +548,12 @@ var BS_SITE = (function () {
   if (typeof KHAMLET !== 'undefined' && KHAMLET.village) {
     paddyHamlet = KHAMLET.village({
       id: 'basilisk.paddy', world: SEED + 17, culture: 'lizardmen', focus: 'farming',
-      site: { x: -340, z: 2460 }, link: { x: gateXz[0], z: gateXz[1] + 120 },
-      resource: { x: -180, z: 2620, workers: 55 }, popMax: 175,
+      site: { x: -320, z: 1480 }, link: { x: gateXz[0], z: gateXz[1] + 120 },
+      resource: { x: -180, z: 1640, workers: 55 }, popMax: 175,
       dims: function (k) { return kitDims(k, 0); },
       ground: {
         ok: function (x, z) {
-          if (x < N.x0 + 140 || x > N.x1 - 140 || z < gateXz[1] + 380 || z > N.z1 - 140) return false;
+          if (x < N.x0 + 140 || x > N.x1 - 140 || z < gateXz[1] + 280 || z > N.z1 - 140) return false;
           if (groundH(x, z) < SEA_Y + 0.35) return false;
           return slopeAt(x, z, 12) <= 0.16;
         }
@@ -589,7 +603,8 @@ var BS_SITE = (function () {
     var v = bsD(o.v, KRAND.hash(SEED, KTAGS.str32(key), Math.round(x), Math.round(z)) % 3);
     var rec = {
       key: key, x: +x.toFixed(2), z: +z.toFixed(2), y: +y.toFixed(3), ry: +ry.toFixed(5),
-      w: D.w, d: D.d, h: D.h, kind: kind, where: o.where || kind, caste: o.caste || null, flaw: !!o.flaw,
+      w: D.w, d: D.d, h: D.h, kind: kind, where: o.where || kind, caste: o.caste || null,
+      band: o.band == null ? null : o.band, flaw: !!o.flaw,
       footLo: +fs.lo.toFixed(3), footHi: +fs.hi.toFixed(3),
       o: Object.assign({ y: +y.toFixed(3), v: v }, o.name ? { name: o.name } : {})
     };
@@ -604,13 +619,13 @@ var BS_SITE = (function () {
     return rec;
   }
 
-  /* 5a. Place all 1,184 non-owed manifest records from BS_PLAN */
+  /* 5a. Place all 2,325 non-owed manifest records from BS_PLAN */
   var manifestPlaced = 0;
   BS_PLAN.placed.forEach(function (r) {
     if (r.owed) return;
     var xz = uv2xz(r.at);
     var got = addSite(r.key, xz[0], xz[1], r.ry, r.where, {
-      where: r.where, caste: r.caste, flaw: !!r.flaw, name: r.role, pad: 0.03
+      where: r.where, caste: r.caste, band: r.band == null ? null : r.band, flaw: !!r.flaw, name: r.role, pad: 0.03
     });
     if (got) manifestPlaced++;
   });
@@ -644,32 +659,31 @@ var BS_SITE = (function () {
     addSite('gl-well', paddyHamlet.site.x + 14, paddyHamlet.site.z - 10, 0, 'hamlet', { where: 'hamlet', pad: 0.25 });
   }
 
-  /* 5d. Bunded bamboo-rice, rice, taro & shade-manioc paddies on the southern & south-western alluvial apron */
+  /* 5d. Bunded bamboo-rice, rice, taro & shade-manioc paddies wrapping the southern & western alluvial apron */
   var fields = [];
   (function buildFields() {
     var crops = ['bamboo-rice', 'taro', 'rice', 'shade-manioc'];
     var zones = [
-      { x0: -2550, x1: -850, z0: 1580, z1: 2950 },
-      { x0: -680, x1: 1280, z0: 2050, z1: 3380 },
-      { x0: -2880, x1: -1820, z0: 180, z1: 1380 }
+      { x0: -2150, x1: 950, z0: 960, z1: 2450 },
+      { x0: -2350, x1: -1060, z0: -480, z1: 960 }
     ];
-    var pw = 136, pd = 92, zi, zbox, x, z, h;
+    var pw = 116, pd = 82, zi, zbox, x, z, h;
     for (zi = 0; zi < zones.length; zi++) {
       zbox = zones[zi];
-      for (z = zbox.z0; z + pd < zbox.z1; z += pd + 14) {
-        for (x = zbox.x0; x + pw < zbox.x1; x += pw + 14) {
+      for (z = zbox.z0; z + pd < zbox.z1; z += pd + 10) {
+        for (x = zbox.x0; x + pw < zbox.x1; x += pw + 10) {
           var cx = x + pw / 2, cz = z + pd / 2;
-          if (sdPoly(wallPoly, cx, cz) > -140) continue;
+          if (sdPoly(wallPoly, cx, cz) > -110) continue;
           if (groundH(cx, cz) < SEA_Y + 0.35 || slopeAt(cx, cz, 16) > 0.12) continue;
-          var nearRes = reservoirs.some(function (r) { return sdPoly(r.outer, cx, cz) > -75; });
-          if (nearRes || lineDist(cx, cz, leatPts) < 55) continue;
-          if (space.some(cx, cz, Math.hypot(pw, pd) / 2 + 18, function () { return true; })) continue;
+          var nearRes = reservoirs.some(function (r) { return sdPoly(r.outer, cx, cz) > -68; });
+          if (nearRes || lineDist(cx, cz, leatPts) < 50) continue;
+          if (space.some(cx, cz, Math.hypot(pw, pd) / 2 + 16, function () { return true; })) continue;
           h = KRAND.hash(SEED, 307, Math.round(cx), Math.round(cz)) % 100;
-          if (h < 18) continue;
+          if (h < 14) continue;
           fields.push({
             id: 'bs.field.' + fields.length, at: [cx, cz],
             box: [cx - pw * 0.45, cz - pd * 0.45, cx + pw * 0.45, cz + pd * 0.45],
-            kind: h < 74 ? 'crop' : h < 92 ? 'tilled' : 'fallow',
+            kind: h < 76 ? 'crop' : h < 93 ? 'tilled' : 'fallow',
             crop: crops[h % crops.length]
           });
         }
@@ -724,7 +738,8 @@ var BS_SITE = (function () {
 
   /* ---------------------------------------------------------------- 6. Census, inward-door check, overlap check & zoneAt */
   var HOLDS = {
-    'lk-warren': { total: 28, c: { 1: 28 } },
+    'lk-warren': { total: 36, c: { 1: 36 } },
+    'lk-insula': { total: 44, c: { 2: 44 } },
     'lk-makers': { total: 10, c: { 2: 10 } },
     'lz-makers': { total: 10, c: { 2: 10 } },
     'lk-bronzehall': { total: 60, c: { 2: 60 } },
@@ -733,10 +748,12 @@ var BS_SITE = (function () {
     'lz-hall-bronze': { total: 12, c: { 2: 12 } },
     'lz-hall-reed': { total: 12, c: { 2: 12 } },
     'lz-hall-bone': { total: 12, c: { 2: 12 } },
+    'lk-caravanserai': { total: 66, c: { 3: 66 } },
     'lk-longhouse': { total: 33, c: { 3: 33 } },
     'lz-longhouse': { total: 33, c: { 3: 33 } },
-    'lk-lodge': { total: 30, c: { 4: 18, 6: 12 } },
+    'lk-lodge': { total: 38, c: { 4: 23, 6: 15 } },
     'lz-lodge': { total: 30, c: { 4: 18, 6: 12 } },
+    'lz-barracks': { total: 30, c: { 4: 18, 6: 12 } },
     'lk-tower': { total: 7, c: { 5: 7 } },
     'lz-tower': { total: 7, c: { 5: 7 } },
     'lk-college': { total: 39, c: { 5: 39 } },
@@ -757,7 +774,7 @@ var BS_SITE = (function () {
       people.total += hd.total;
       for (var ck in hd.c) people.byCaste[ck] += hd.c[ck];
     }
-    if (distAxisById[r.where] && r.caste) {
+    if (distAxisById[r.where] && r.caste && r.band !== null) {
       var ax = distAxisById[r.where], a = ax[0], b = ax[1];
       var dx = b[0] - a[0], dz = b[1] - a[1], l2 = Math.max(1, dx * dx + dz * dz);
       var t = Math.max(0, Math.min(1, ((r.x - a[0]) * dx + (r.z - a[1]) * dz) / l2));
@@ -841,10 +858,12 @@ var BS_SITE = (function () {
     moleRange: [mole0, mole1],
     leyDir: leyDir,
     leyPerp: leyPerp,
+    moundLeyEdgeT: +moundLeyEdgeT.toFixed(2),
     moundPoly: moundPoly,
     coilStreet: coilStreet,
     firstTurnPoly: firstTurnPoly,
     districtStreets: districtStreets,
+    courtPlazas: courtPlazas,
     cityTerrace: cityTerrace,
     moundTerrace: moundTerrace,
     moleTerrace: moleTerrace,

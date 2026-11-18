@@ -11,24 +11,28 @@ What is settled, from the owner and the lore:
 - **The Lizardmen** (`LORE.md` 6.20; `kits/lizardmen/DESIGN.md`, agreed 2026-10-15/16): they never trade or treat, take no
   captives, build in squared spirals with walls that lean wrong and triangular doors sized by caste, use bronze and never iron,
   hang no banners and beat no drums, and keep no warlord: the Interpreters act in concert.
-- **About 15,000 people** (the owner, 2026-11-16: *"basilisk will be about 15k"*; `core/simulation/PROPOSAL-LIZARDMEN.md` q.1).
-- **Its economy in `LZ_TUNE`** (`core/region/data/lz-tune.js`): the Great Bronze Hall (`lk-bronzehall`, casting Tuatara's `70 t`
-  copper and Komodo + Iguana's `16 t` tin capacity nine-to-one), **wet-season salt scaled back from `115 t` to `55 t/yr`** (the
-  owner, 2026-11-17: *"scale them back"*, now that Skink's `300 t` and Gila's `300 t` carry the country), the `600 t` bay
-  fishery, the `~2,000 t` of grain it imports from Iguana and the warrens, and the central hub where both Coil loops meet.
+- **30,000 people, densely packed** (the owner, 2026-11-17: *"there's so much empty space.... it should feel more densely populated.
+  may need to both turn up the pop numbers (30k?) and pack the bulldings more closely"*; raised from `15,000` to `30,000` inside a
+  tightened `~180 ha` walled footprint with `1.3 m` party-wall spacing, double-row deep spiral bands, triple-row district courts, and
+  two-storey `lk-insula` & `lk-caravanserai` urban blocks).
+- **Its economy in `LZ_TUNE`** (`core/region/data/lz-tune.js`): the twin Great Bronze Halls (`2 x lk-bronzehall`, casting Tuatara's
+  `98 t` copper and Komodo + Iguana's `16 t` tin capacity nine-to-one), **wet-season salt scaled back to `85 t/yr`** (`2.8 kg/head`,
+  importing `165 t/yr` from Skink's `300 t` and Gila's `300 t`), the `1,200 t` bay fishery (`5 x lz-weir` + `7 x lz-barge`), the
+  `~4,200 t` of grain it imports from Iguana (`3,500 t`) and the warrens (`8,720 t`), and the central hub where both Coil loops meet.
 - **Its look is the kit's complete green-stone set** (`kits/lizardmen/src/62-lk-capital.js` and `63-lk-works.js`): the Hall of
   Intention (`lk-greathall`), the Interpreters' college (`lk-college`) and stone houses (`lk-tower`), stone cell-warrens
-  (`lk-warren`), stone Makers' carapace houses (`lk-makers`), stone rib houses (`lk-longhouse`), stone warriors' tusk lodges
-  (`lk-lodge`), stone Allotment granaries (`lk-granary`), stone nest halls (`lk-nest`), the Great Bronze Hall (`lk-bronzehall`),
-  the Lothal podium dock store (`lk-dockstore`), the wet-season salt boiling floors (`lk-boil`), the South Gate (`lk-gate`), the
-  Ley Slot wall wicket (`lk-slot`), the `20 m` cyclopean wall runs (`lk-wall`), and the twisted watchtowers (`lk-watchtower`).
+  (`lk-warren`), two-storey Makers' courtyard insulae (`lk-insula`) and carapace houses (`lk-makers`), two-storey Drovers' sledge
+  courts (`lk-caravanserai`) and stone rib houses (`lk-longhouse`), stone warriors' tusk lodges (`lk-lodge`), stone Allotment
+  granaries (`lk-granary`), stone nest halls (`lk-nest`), the Great Bronze Hall (`lk-bronzehall`), the Lothal podium dock store
+  (`lk-dockstore`), the wet-season salt boiling floors (`lk-boil`), the South Gate (`lk-gate`), the Ley Slot wall wicket (`lk-slot`),
+  the `20 m` cyclopean wall runs (`lk-wall`), and the twisted watchtowers (`lk-watchtower`).
 - **One reliquary per cluster** (the owner, 2026-11-16): the east's on the sea's north strand, *proposed* at `5.1 px 790,1578`
   (`60.6 km` at `50.6°` across the water).
 
 Everything else here is *proposed*. The owner's questions are in section 9.
 
 Files:
-- `basilisk_layout.py` lays the city out as deterministic data and writes **`basilisk_plan.json`** (`1,184` placements, `15,337`
+- `basilisk_layout.py` lays the city out as deterministic data and writes **`basilisk_plan.json`** (`2,327` placements, `32,605`
   housed across the precinct, seven districts, gate quarter, works, scaled-back pans and gate roadhead).
 - `basilisk_blueprint.py` draws the nine sheets in `floors/` (`B0`–`B7` and `section.png`) and writes `BLUEPRINT.md` from the
   same numbers via `settlements/voth/palace/blueprint.py`.
@@ -212,16 +216,16 @@ its own civic task in the capital's economy:
 
 When step B4 writes `settlements/basilisk/src/80-bs-records.js` (`BS_REC`, `[G data]`), `LZ_TUNE.checkTown(BS_REC)` holds:
 
-| Good | `BS_REC.works` (`t/yr`) | Annual need (`15,000`, `town` diet) | Net Allotment / Coil role |Built works on the page |
+| Good | `BS_REC.works` (`t/yr`) | Annual need (`30,000`, `town` diet) | Net Allotment / Coil role | Built works on the page |
 |---|---|---|---|---|
-| `grain` | **1,500** | 3,500 | **`-2,000 t` in** from Iguana & warrens -> stored in 7 `lk-granary` halls | southern/western `bamboo-rice` paddies, `lz-bakehouse`s |
-| `produce` | **1,300** | 1,250 | **`+50 t` buffer** | `taro` & `shade-manioc` fields, `lz-fermentery` |
-| `fish` | **600** | 600 | self-sufficient (`40 kg/head`) | 3 `lz-weir`s in bay + `lz-barge` net crews |
-| `meat_hide` | **450** | 450 | self-sufficient (`30 kg/head`) | sabkha-margin hexapod & frilled herds, `lz-hall-bone` |
-| `salt` | **55** *(scaled back from 115)* | 125 | **`-70 t` in** from Skink & Gila; `55 t` local wet-season curing & east-loop buffer | 3 `gl-pans`, 2 `lk-boil`, `gl-saltstore` |
-| `bone` | **48** | 60 (`extra` 12 + base) | **`-12 t` in** along the inward Coil + raid dead | Gate Quarter & `d4` `lz-hall-bone` |
-| `evaporites` | 0 | 12 (`extra`) | **`-12 t` in** from Gila's lake | `lk-bronzehall` fluxes & `d1` lacquer mordants |
-| `bronze` *(cast)* | **~73.1** (capacity `77.8`) | 30 (`smiths` rework -> `30 t` `bronze_ware`) | **`+43.1 t` out** to every town & warren smithy (`70 t` copper from Tuatara + `7.3 t` of `16 t` tin from Komodo & Iguana) | `lk-bronzehall` (bay) + `d2`/`d6` `lz-hall-bronze` |
+| `grain` | **2,800** | 7,000 | **`-4,200 t` in** from Iguana (`3,500 t`) & warrens -> stored in `lk-granary` halls | southern/western `bamboo-rice` paddies, `lz-bakehouse`s |
+| `produce` | **2,550** | 2,500 | **`+50 t` buffer** | `taro` & `shade-manioc` fields, `lz-fermentery` |
+| `fish` | **1,200** | 1,200 | self-sufficient (`40 kg/head`) | 5 `lz-weir`s in bay + 7 `lz-barge` net crews |
+| `meat_hide` | **900** | 900 | self-sufficient (`30 kg/head`) | sabkha-margin hexapod & frilled herds, `lz-hall-bone` |
+| `salt` | **85** *(scaled back)* | 250 | **`-165 t` in** from Skink & Gila; `85 t` local wet-season curing & east-loop buffer | 3 `gl-pans`, 3 `lk-boil`, 2 `gl-saltstore` |
+| `bone` | **96** | 108 (`extra`) | **`-12 t` in** along the inward Coil + raid dead | Gate Quarter & `d4` `lz-hall-bone` |
+| `evaporites` | 0 | 16 (`extra`) | **`-16 t` in** from Gila's lake | `lk-bronzehall` fluxes & `d1` lacquer mordants |
+| `bronze` *(cast)* | **~103** (capacity `108.9`) | 60 (`smiths` rework -> `60 t` `bronze_ware`) | **`+43 t` out** to every town & warren smithy (`98 t` copper from Tuatara + `10.9 t` of `16 t` tin from Komodo & Iguana) | 2 `lk-bronzehall` (bay) + `d2`/`d6` `lz-hall-bronze` |
 
 ---
 
@@ -239,6 +243,8 @@ All **nine** architectural & vessel defs owed in Claude's draft are now built an
 | `lk-dockstore` | **built** (this pass) | `63-lk-works.js` (`7714`) | 13-pier Lothal ventilated dock warehouse with quay ramp & horned bronze crane (`33 x 21 x 11.8 m`, `cut: true`) |
 | `lk-boil` | **built** (this pass) | `63-lk-works.js` (`7715`) | 7-rib open basalt canopy over 5 brick brine-boiling hearths (`27 x 15 x 7.6 m`) |
 | `lk-slot` | **built** (this pass) | `63-lk-works.js` (`7716`) | `20 m` cyclopean wall run pierced by the `1.4 m` Tender ley wicket (`20 x 12 x 11.5 m`) |
+| `lk-insula` | **built** (density pass) | `63-lk-works.js` (`7717`) | Two-storey colonnaded green-stone Makers' courtyard insula (`26 x 22 x 11.4 m`, `cut: true`) |
+| `lk-caravanserai` | **built** (density pass) | `63-lk-works.js` (`7718`) | Two-storey battered green-stone Drovers' sledge court (`28 x 22 x 11.0 m`, `cut: true`) |
 | `lz-barge` | **built** (this pass) | `59w-lz-works.js` (`7222`) | `cls: 'vessel'` (`paddles`, `raft`, `crew: 6`): 11-rib bundled-reed barge (`5.4 x 21 x 3.8 m`) |
 | `lz-wayhalt` | **built** (this pass) | `59w-lz-works.js` (`7223`) | `20 km` Coil Round staging halt, beast trough & tally store (`24 x 18 x 8.6 m`, `cut: true`) |
 | `lk-dock`, `lk-mole`, `lk-reservoir`, `lk-checkdam`, `lk-charcoal` | **site stamps** (step B3) | page terrain / `WATER` | Ground-and-water landforms graded directly into `KDRAWN` + `KGROUND` + `WATER.still` on Basilisk's page (not discrete building boxes) |

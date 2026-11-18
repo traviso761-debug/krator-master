@@ -34,5 +34,5 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `59w-lz-works.js` | 35 **big** |  |
 | `60-lz-reliquary.js` | 11 |  |
 | `62-lk-capital.js` | 21 |  |
-| `63-lk-works.js` | 16 |  |
+| `63-lk-works.js` | 23 |  |
 | `89-rows.js` | 1 |  |

@@ -173,3 +173,74 @@ defBuilding({key:'lk-slot',name:'Ley Slot wall wicket',seed:7716,caste:1,cut:fal
   W(0,PB+dh+1.15,2.1-.08*(dh+1.15)+.05,0,()=>lzLeiwen(3.8,.68,{cell:.24,mk:'bronze',back:'lacq'}));
   lzEye(0,PB+5.4,2.1-.08*5.4+.07,0,.62,{mk:'bronze',glow:true});
   door(0,PB,2.2,0,dw,dh);}});
+
+/* ---------------------------------------------------------------- two-storey stone Makers' courtyard insula (caste 2, holds 40) */
+defBuilding({key:'lk-insula',name:"Stone Makers' courtyard insula",seed:7717,caste:2,cut:true,w:26,d:22,h:11.4,budget:140000,
+ tags:{types:['dwelling-multi','industry'],wealth:'rich',role:'dwelling'},
+ note:'a two-storey green-stone Mohenjo-daro courtyard block for Basilisk\'s 30,000-resident wards: four battered cyclopean basalt and brick workshop ranges enclosing a paved lacquer and kiln court, three brick flue stacks, an exterior stone stair to the upper gallery, and a bronze-framed 1.76 m Makers\' portal',
+ build(o){const y0=.35,dh=lzDoorH(2),dw=dh*.62;lzCutFloor(y0);
+  lzNoCut(()=>lkPlinth(24.8,20.8,y0,{leiwen:11.0}));
+  /* paved inner workshop court */
+  box('stoneP',0,y0-.08,0,22.8,.12,18.8,P('basaltD'));
+  /* rear two-storey kiln & lacquer hall (22.4 x 6.4 m, wh 5.2 m + 9-rib basalt carapace) */
+  W(0,0,-6.0,0,()=>{
+   const T=lzBatterRoom(22.4,6.4,y0,5.2,LK_ST,P('basalt'),{lean:{front:.06,back:-.05,left:.08,right:-.04},
+    front:[lzDoor(2,11.2),lzVent(2,4.2,1.2),lzVent(2,18.2,1.2),lzVent(2,6.5,3.4),lzVent(2,15.9,3.4)],
+    back:[lzVent(2,5.0,3.4),lzVent(2,11.2,3.4),lzVent(2,17.4,3.4)]});
+   lzCourseRing(T.T,2.45,.24,1.0,LK_PL,P('basaltC'));
+   lzRibRoof(22.4,6.4,y0+5.15,y0+9.6,9,{mk:'basalt',col:P('basaltD'),over:.55,ribR:.15,ribMk:LK_PL,ribCol:P('basaltC'),past:.34,bend:.98,ext:.45,endMk:LK_ST,endCol:P('basalt'),leanEnds:{left:.08,right:-.04},y0});
+   for(const sx of [-6.8,0,6.8]){cyl('brick',sx,y0+5.2,-2.4,.28,4.6,P('brick'),8);cyl('bronzeC',sx,y0+9.65,-2.4,.34,.2,P('verd'),8);}
+   FURNISH('lizardmen_common_workbench',-6.4,y0,-.8,0);FURNISH('generic_trade_lathe',6.2,y0,-.8,PI);
+   FURNISH('lizardmen_court_cabinet',-2.2,y0,-1.8,0);FURNISH('lizardmen_common_bed',2.6,y0,-1.6,0);});
+  /* left and right two-storey stone carapace wings (5.4 x 11.4 m) */
+  for(const s of [-1,1])W(s*8.5,0,2.8,s>0?-PI/2:PI/2,()=>{
+   lzBatterRoom(11.4,5.4,y0,4.2,LK_ST,P('basalt'),{lean:{front:.06,back:-.04,left:.07,right:-.03},
+    front:[lzDoor(2,5.7),lzVent(2,2.4,2.6),lzVent(2,9.0,2.6)]});
+   lzRibRoof(11.4,5.4,y0+4.15,y0+7.8,7,{mk:'basalt',col:P('basaltD'),over:.5,ribR:.14,ribMk:LK_PL,ribCol:P('basaltC'),past:.28,bend:.96,ext:.4,endMk:'brick',endCol:P('brick'),y0});});
+  /* front street range & Makers' bronze portal (+z) */
+  lzNoCut(()=>{
+   W(0,0,7.9,0,()=>{
+    const Tf=lzBatterRoom(11.6,3.4,y0,3.1,'brick',P('brick'),{lean:{front:.07,back:-.04,left:0,right:0},
+     front:[{s:5.8,w:dw,h:dh,door:true},lzVent(2,2.2,1.3),lzVent(2,9.4,1.3)],
+     back:[{s:5.8,w:dw,h:dh,door:true}]});
+    lzSlab(Tf.T,y0+3.1,.32,'basalt',P('basaltD'),.12);
+    W(0,y0+dh+.45,1.7-.07*(dh+.45)+.05,0,()=>lzLeiwen(4.8,.78,{cell:.26,mk:'bronze',back:'lacq'}));
+    lkEyes(5,9.2,y0+2.35,1.7-.07*2.0+.06,.22,2.1);
+    lzPortal(0,y0,1.76,0,dh,{mk:'bronze'});lzThreshold(0,1.95,0,dw);});
+   /* exterior basalt stair in the court & brick dipping vat */
+   W(-4.4,y0,1.8,0,()=>{for(let i=0;i<8;i++){const t=(i+1)/8;box(LK_PL,0,0,-1.8+t*3.2,1.15,t*2.65,.42,P('basaltD'));}});
+   W(2.4,y0,2.2,0,()=>{box('brick',0,0,0,2.6,.72,2.2,P('brick'));box('jade',0,.58,0,2.1,.08,1.7,P('turq'));});});
+  FURNISH('generic_storage_jar',-2.2,y0,4.2,.3,{setting:'outdoor'});FURNISH('generic_crate',3.4,y0,4.6,-.4,{setting:'outdoor'});
+  door(0,y0,9.6,0,dw,dh);}});
+
+/* ---------------------------------------------------------------- stone Drovers' sledge court / caravanserai (caste 3, holds 66) */
+defBuilding({key:'lk-caravanserai',name:"Stone Drovers' sledge court",seed:7718,caste:3,cut:true,w:28,d:22,h:11.0,budget:145000,
+ tags:{types:['dwelling-multi','infrastructure'],wealth:'rich',role:'dwelling',job:'warehousing'},
+ note:'Basilisk\'s high-density Drovers\' courtyard compound: twin two-storey stone rib-vaulted longhouses flanking a paved sledge yard, a rear cyclopean ration store, a battered front gate-wall with horned piers and the 2.21 m Drovers\' bronze portal, and a loaded Coil sledge in the yard',
+ build(o){const y0=.35,dh=lzDoorH(3),dw=dh*.62;lzCutFloor(y0);
+  lzNoCut(()=>lkPlinth(26.8,20.8,y0,{leiwen:12.0}));
+  box('stoneP',0,y0-.08,0,25.0,.12,19.0,P('basaltD'));
+  /* twin two-storey stone rib-vaulted Drover halls on -x and +x (18.4 x 6.8 m each, 9 basalt ribs) */
+  for(const s of [-1,1])W(s*9.1,0,-.4,s>0?-PI/2:PI/2,()=>{
+   const T=lzBatterRoom(18.4,6.8,y0,4.5,LK_ST,P('basalt'),{lean:{front:.07,back:-.05,left:.09,right:-.04},
+    front:[lzDoor(3,5.2),lzDoor(3,13.2),lzVent(3,9.2,2.8),lzVent(3,3.0,2.8),lzVent(3,15.4,2.8)],
+    back:[lzVent(3,4.6,2.8),lzVent(3,9.2,2.8),lzVent(3,13.8,2.8)]});
+   lzCourseRing(T.T,2.15,.24,1.0,LK_PL,P('basaltC'));
+   lzRibRoof(18.4,6.8,y0+4.45,y0+9.2,9,{mk:'basalt',col:P('basaltD'),over:.6,ribR:.15,ribMk:LK_PL,ribCol:P('basaltC'),past:.34,bend:.98,ext:.46,endMk:LK_ST,endCol:P('basalt'),leanEnds:{left:.09,right:-.04},y0});
+   if(s<0){FURNISH('lizardmen_common_bed',-5.8,y0,-1.6,0);FURNISH('lizardmen_common_bed',5.8,y0,-1.6,0);FURNISH('lizardmen_common_table',0,y0,-.8,0);}
+   else{FURNISH('lizardmen_common_bed',-5.6,y0,-1.6,0);FURNISH('lizardmen_common_chest',0,y0,-1.9,0);FURNISH('generic_sack',5.4,y0,-1.4,.4);}});
+  /* rear cyclopean ration & harness range + front horned gate-wall */
+  lzNoCut(()=>{
+   W(0,0,-7.4,0,()=>{
+    const Tr=lzBatterRoom(11.4,4.2,y0,3.6,LK_ST,P('basaltD'),{lean:{front:.06,back:-.05,left:0,right:0},front:[lzDoor(3,5.7),lzVent(3,2.2,1.6),lzVent(3,9.2,1.6)]});
+    lzSlab(Tr.T,y0+3.6,.34,'basalt',P('basaltD'),.14);});
+   W(0,0,7.8,0,()=>{
+    const Tg=lzBatterRoom(11.4,3.2,y0,3.8,LK_ST,P('basalt'),{lean:{front:.08,back:-.04,left:0,right:0},
+     front:[{s:5.7,w:dw,h:dh,door:true}],back:[{s:5.7,w:dw,h:dh,door:true}]});
+    lzSlab(Tg.T,y0+3.8,.36,'basalt',P('basaltD'),.14);
+    for(const s of [-1,1])lzHorn(s*4.6,y0+4.15,0,s>0?-PI/2:PI/2,2.4,.15,{curl:.55,lean:.22,mk:LK_PL,col:P('basaltD')});
+    W(0,y0+dh+.42,1.6-.08*(dh+.42)+.05,0,()=>lzLeiwen(4.6,.76,{cell:.26,mk:'bronze',back:'lacq'}));
+    lzPortal(0,y0,1.66,0,dh,{mk:'bronze',eye:true});lzThreshold(0,1.88,0,dw);});
+   lwSledge(-1.6,1.2,.22,'goods');
+   box(LK_ST,2.8,y0,-1.8,1.4,.68,3.6,P('basalt'));box('jade',2.8,y0+.56,-1.8,1.02,.08,3.1,P('turq'));});
+  door(0,y0,9.4,0,dw,dh);}});

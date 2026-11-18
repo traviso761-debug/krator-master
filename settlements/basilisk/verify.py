@@ -44,8 +44,8 @@ ASSERT_JS = r"""() => {
     detail: badV.length || badVes.length ? 'bad vessel tags/ids: ' + badV.concat(badVes.map(r => r.key + ':' + r.tid)).join(', ') : vDefs.length + ' vessel def(s), ' + vRegs.length + ' reed barges registered as ves_*' });
 
   const wantCapitalKeys = [
-    'lk-greathall', 'lk-college', 'lk-nest', 'lk-warren', 'lk-makers', 'lk-longhouse', 'lk-lodge', 'lk-tower', 'lk-granary',
-    'lk-bronzehall', 'lk-dockstore', 'lk-boil', 'lk-gate', 'lk-slot', 'lk-wall', 'lk-watchtower',
+    'lk-greathall', 'lk-college', 'lk-nest', 'lk-warren', 'lk-insula', 'lk-makers', 'lk-caravanserai', 'lk-longhouse',
+    'lk-lodge', 'lk-tower', 'lk-granary', 'lk-bronzehall', 'lk-dockstore', 'lk-boil', 'lk-gate', 'lk-slot', 'lk-wall', 'lk-watchtower',
     'lz-hall-bronze', 'lz-hall-reed', 'lz-hall-bone', 'lz-bakehouse', 'lz-fermentery', 'lz-warehouse', 'lz-wayhalt', 'lz-waystone',
     'lz-barracks', 'lz-muster', 'lz-seer', 'lz-medicine', 'lz-cistern', 'lz-bells', 'lz-stela-pair', 'lz-stela-turned', 'lz-obelisk',
     'lz-ley', 'lz-weir', 'lz-barge', 'gl-well', 'gl-tank', 'gl-pans', 'gl-saltstore', 'frilled', 'burden'
@@ -82,12 +82,12 @@ ASSERT_JS = r"""() => {
   const W0 = B.byWhere || {};
   R.push({
     name: 'basilisk-laid',
-    ok: !B.err && B.manifestPlaced >= 1180 && (W0.precinct || 0) >= 30 && (W0.d1 || 0) >= 30 && (W0.d7 || 0) >= 150 && (W0.gq || 0) >= 100 && (W0.pans || 0) === 6,
+    ok: !B.err && B.manifestPlaced >= 2250 && (W0.precinct || 0) >= 60 && (W0.d1 || 0) >= 90 && (W0.d7 || 0) >= 350 && (W0.gq || 0) >= 400 && (W0.pans || 0) >= 9,
     detail: B.err ? ('error: ' + B.err) : (B.sites + ' total sites (manifest ' + B.manifestPlaced + '); byWhere ' + JSON.stringify(W0))
   });
 
   const P = B.pin || {};
-  const cmp = KDRAWN.compare(terrainH, [[0, 0], [320, -240], [-1850, 200], [1850, 300], [-300, 2400]]);
+  const cmp = KDRAWN.compare(terrainH, [[0, 0], [220, -160], [-1850, 200], [1850, 300], [-300, 1800]]);
   R.push({
     name: 'on-the-model',
     ok: Math.abs((P.model || 0) - (-2600)) < 1.5 && Math.abs((P.mound || 0) - (-2588)) < 0.25 && Math.abs((P.sabkha || 0) - (-2600)) < 1.5 && cmp.max < 0.001,
@@ -98,15 +98,15 @@ ASSERT_JS = r"""() => {
   const allCastes = [1, 2, 3, 4, 5, 6].every(c => (bc[c] || 0) > 0);
   R.push({
     name: 'people',
-    ok: Math.abs((pp.city || 0) - 15000) <= 0.1 * 15000 && allCastes,
+    ok: Math.abs((pp.city || 0) - 30000) <= 0.15 * 30000 && allCastes,
     budget: true,
-    detail: 'city ' + pp.city + ' / 15,000 (+ paddy hamlet ' + pp.hamlet + ' = ' + pp.total + '); by caste ' + JSON.stringify(bc)
+    detail: 'city ' + pp.city + ' / 30,000 (+ paddy hamlet ' + pp.hamlet + ' = ' + pp.total + '); by caste ' + JSON.stringify(bc)
   });
 
   const W = B.water || {};
   R.push({
     name: 'water-on-core',
-    ok: !!(W.sea && W.dock === 1 && W.reservoirs === 7 && W.tanks === 1 && W.wells >= 220 && W.pans === 3 && W.flows >= 2),
+    ok: !!(W.sea && W.dock === 1 && W.reservoirs === 7 && W.tanks === 1 && W.wells >= 135 && W.pans === 3 && W.flows >= 2),
     detail: 'sea ' + (W.sea ? 'open at -2600.5 m' : 'MISSING') + ', dock ' + W.dock + ', reservoirs ' + W.reservoirs + ', tank ' + W.tanks + ', cisterns ' + W.cisterns + ', wells ' + W.wells + ', pans ' + W.pans + ', flows ' + W.flows
   });
 
@@ -133,7 +133,7 @@ ASSERT_JS = r"""() => {
   const gr = B.ground || { floating: ['unrun'], buried: [] };
   R.push({
     name: 'on-the-ground',
-    ok: gr.checked >= 1100 && gr.floating.length === 0 && gr.buried.length === 0,
+    ok: gr.checked >= 2200 && gr.floating.length === 0 && gr.buried.length === 0,
     detail: gr.checked + ' plinths checked, floating ' + gr.floating.length + (gr.floating.length ? ' (' + gr.floating.slice(0, 4).join(', ') + ')' : '') + ', buried ' + gr.buried.length + (gr.buried.length ? ' (' + gr.buried.slice(0, 4).join(', ') + ')' : '')
   });
 
@@ -148,7 +148,7 @@ ASSERT_JS = r"""() => {
   R.push({
     name: 'records-held',
     ok: !!rc.ok,
-    detail: rc.ok ? 'BS_REC matches LZ_TUNE (15,000 by caste, 55 t scaled-back salt, 1,500 t grain, 600 t fish)' : (rc.problems || []).join('; ')
+    detail: rc.ok ? 'BS_REC matches LZ_TUNE (30,000 by caste, 85 t salt, 2,800 t grain, 1,200 t fish)' : (rc.problems || []).join('; ')
   });
 
   return R;

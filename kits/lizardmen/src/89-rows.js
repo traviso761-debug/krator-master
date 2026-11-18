@@ -10,7 +10,7 @@ const FAMILIES=[
  {name:'The camp',keys:['lc-hide','lc-shield','lc-seer','lc-sail']},
  {name:'Specialists and stores',keys:['lz-seer','lz-medicine','lz-warehouse']},
  {name:'Monuments',keys:['lz-stela-pair','lz-stela-turned','lz-obelisk','lz-circle','lz-ley','lz-bells']},
- {name:'The capital, in stone',keys:['lk-gate','lk-slot','lk-wall','lk-watchtower','lk-greathall','lk-college','lk-tower','lk-warren','lk-makers','lk-longhouse','lk-lodge','lk-granary','lk-nest']},
+ {name:'The capital, in stone',keys:['lk-gate','lk-slot','lk-wall','lk-watchtower','lk-greathall','lk-college','lk-tower','lk-warren','lk-makers','lk-insula','lk-longhouse','lk-caravanserai','lk-lodge','lk-granary','lk-nest']},
  {name:'The capital works',keys:['lk-bronzehall','lk-dockstore','lk-boil']},
  {name:'Vessels',keys:['lz-barge']},
  {name:'Beasts',keys:['frilled','burden']},

@@ -34,12 +34,12 @@ var TU_REC = (function () {
     { id: 'frillpod', role: 'vegetable', zone: 'south-savanna-fields' }
   ];
 
-  /* Exact annual makes held by LZ_TUNE.checkTown: grain 1,000 t, produce 250 t, meat_hide 210 t, copper 70 t */
+  /* Exact annual makes held by LZ_TUNE.checkTown: grain 1,000 t, produce 250 t, meat_hide 210 t, copper 98 t */
   var works = [
     { id: 'tu.works.grain', kind: 'farming', keys: ['lz-farm', 'lz-windmill', 'lz-granary', 'lz-bakehouse'], caste: 3, workers: 420, good: 'grain', yearT: 1000 },
     { id: 'tu.works.produce', kind: 'farming', keys: ['lz-farm', 'lz-orchard', 'lz-fermentery'], caste: 3, workers: 110, good: 'produce', yearT: 250 },
     { id: 'tu.works.herds', kind: 'herding', keys: ['lz-farm', 'lz-hall-bone'], caste: 3, workers: 110, good: 'meat_hide', yearT: 210 },
-    { id: 'tu.works.copper', kind: 'mining', keys: ['lz-mine'], caste: 2, workers: 120, good: 'copper', yearT: 70 }
+    { id: 'tu.works.copper', kind: 'mining', keys: ['lz-mine'], caste: 2, workers: 165, good: 'copper', yearT: 98 }
   ];
 
   var crafts = [
@@ -59,7 +59,7 @@ var TU_REC = (function () {
     grain: { unit: 't', yearMadeT: 1000, yearNeedT: 700, allotOutT: 300, to: ['basilisk', 'warrens-east'] },
     produce: { unit: 't', yearMadeT: 250, yearNeedT: 250, allotOutT: 0 },
     meat_hide: { unit: 't', yearMadeT: 210, yearNeedT: 210, allotOutT: 0 },
-    copper: { unit: 't', yearMadeT: 70, yearNeedT: 0, allotOutT: 70, to: ['basilisk'] },
+    copper: { unit: 't', yearMadeT: 98, yearNeedT: 0, allotOutT: 98, to: ['basilisk'] },
     salt: { unit: 't', yearMadeT: 0, yearNeedT: 25, allotInT: 25, from: ['basilisk', 'gila'] },
     bronze: { unit: 't', yearMadeT: 0, yearNeedT: 6, allotInT: 6, from: ['basilisk'] }
   };
