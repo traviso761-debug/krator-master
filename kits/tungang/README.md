@@ -63,6 +63,17 @@ chimney (a hood along the ridge or a stone stack at a gable), the door's offset,
 | `fg-pens` | 14 x 12 x 1.4 | drystone pens under a turf coping, a footing under each run; a gate of rusted plate and stakes on two posts; a corrugated lean-to against the back wall; a trough |
 | `fg-icehouse` | 12 x 9 x 4.5 | a turf barrow over a stone vault; its front dented back for a drystone facade faced with plate, the plate door, a flagged apron; the reckoning chalked in fives on a plate by the door; inside (the cut-away) the blocks in tiers, sawdust between, snow on top; saw, pike pole, tongs |
 | `fg-sledgeshed` | 16 x 7 x 4.2 | an open shed; sledges of painted boards on fir runners faced with tyre strips, two racked on end, one on trestles half painted; paint pots on a bench |
+| `fg-doublehall` | 28 x 11 x 7.4 | the town's double meeting hall: both customs under one roof — the Fowlers' rope wall at the west end and the Ice-cutters' tally board at the east, four hearths in a kerbed trench down the middle, twin plate doors |
+| `fg-halting-house` | 18 x 9.5 x 5.8 | a Fellgang inn on the Market: two-hearth common hall with feast boards, ale bar and stew pot, partitioned bunk bay and tack store |
+| `fg-markethall` | 20 x 10.5 x 6.2 | drystone piers under a half-hipped turf roof, iron weigh-beam hung in the middle, salt heaps and four plate-topped reckoning counters |
+| `fg-booth` | 10 x 4 x 3.4 | three market or fair stalls under a sloped awning of hide and lashed plate, salt, cheese, bread and felt bolts |
+| `fg-ropewalk` | 44 x 5.5 x 4.4 | a town rope-walk range: head jack-house, wheeled traveller car on fir rails, four strand runs, peat-heated tar kettle and family pegs |
+| `fg-great-icehouse` | 20 x 13 x 5.8 | a town-scale banked turf vault with buttressed airlock entrance, hoist beam, loading chute and five tiers of pond and lake ice |
+| `fg-smithy` | 11 x 8 x 5 | a settled Traveller salvage-smithy: raised stone forge and scrap hood, twin hide bellows, steel-block anvil, quench trough and plate/cable racks |
+| `fg-tannery` | 13 x 8.5 x 4.8 | a tannery and felt house: three stone soaking pits, boiling cauldron under a louvred turf ridge, fulling board, felt bolts and hide frames |
+| `fg-granary` | 11 x 7.5 x 5.2 | a drystone-and-timber granary lifted on mushroom-capped staddle piers with detached stone steps and four grain bins |
+| `fg-fair-stand` | 8 x 6 x 4.6 | the Fair judges' raised drystone dais, beast tally slate, rulebook, war drum and turf canopy |
+| `fg-dugout-icehouse` | 11 x 13 x 3.8 | an earth-bermed dugout ice-cellar: sunken drystone pit walls, stone-revetted entrance trench with timber slide chute and sloped storm-cellar flaps, low turf A-frame roof lashed with hold-down cables, frost-vent stack and slatted timber ice-cribs |
 
 **The road and the wall** (the records that are not buildings; `src/60-fg-road.js`):
 
@@ -75,7 +86,15 @@ chimney (a hood along the ridge or a stone stack at a gable), the door's offset,
 | `fg-burial-ledge` | a drystone kerb on a ledge, the dead wrapped in hide and bound with cord, a little cairn at the head, the family's rope coiled beside, a slate with the name |
 | `fg-halt` | the Travellers' halting place (the Fellgangs who live on the road: the owner, 2026-11-11): A-frames of fir, hide down the back slope, plate at the windward end, fur beds, a fire before it, a lantern on its pole |
 | `fg-ice-tools` | the Ice-cutters' tools by their stacks: an A-frame rack of fir, two long ice saws, pike poles with iron hooks, block tongs, a coil of rope |
-| `fg-wagon` | the Travellers' rolling home: a barrel-top sledge-wagon of bright painted boards with a scalloped trim and the family's mark, plate runners faced with tyres, a drawbar, a stove pipe, a painted door and steps at the back |
+| `fg-wagon` | the Travellers' rolling home: an ornate painted bow-top / Reading vardo on spoked iron-tyred wheels (with winter runner-skis), carved crownboards, brass bead-moulding, shuttered lace-curtained windows, propped front shafts, hanging brass lantern and kettle, Dutch rear door and steps |
+| `fg-bender` | the Travellers' bender tent: arched bell-fir and hazel hoops under patched canvas, oilcloth and hide weighted at the skirt with cobbles, tied-back flaps, woven rug, fur beds, chest, stovepipe and milk churn |
+| `fg-camp-hearth` | the Travellers' shared camp hearth: a stone-kerbed turf fire under a three-legged iron trammel tripod with hung cauldron kettle, split-log benches, three-legged stools, barrel table, milk churns and woodpile |
+| `fg-tinsmith` | the Travellers' work pitch and washing line: slanted canvas fly, stump anvil, glowing charcoal brazier, workbench of copper and tin ware, and a taut clothesline hung with bright shawls, shirts and blankets |
+| `fg-stair-hoist` | the Stairhead's lowering engine: a beast-walked capstan and cable drum in a kerbed track, braced bell-fir A-frame shear legs leaning over the pitch (+z), iron gin sheaf and hung cargo cradle |
+| `fg-fair-hurdle` | a 5 m hurdle section for the Fair's beast ring: bell-fir posts in drystone cairn-feet, lashed fir rails, tether rings and family marks |
+| `fg-cairn` | v 0: the standing peace stone in its drystone kerb on the Market; v >= 1: a stepped drystone cairn with lashed mark plate and iron spike |
+| `fg-truce-post` | a tall battered rim-slate boundary monolith marking the Marketplace's sworn zone of truce and hospitality: braided cable Peace Bands, lashed truce tablet, carved stone hospitality water-and-salt basin with tin dipper, weapon-binding rail, lobelia cresset and warm peat brazier |
+| `fg-stone-sign` | a drystone way-cairn and fir post with lashed salvage-plate fingerboards and a lantern lobelia bell |
 
 **States.** `kept` and `worn` (`?state=worn`, or the State select on the panel, which reloads): worn greys the colours,
 patches the turf with dead brown, slumps the ridge, stands doors ajar, drops stones at the walls' foot, puts out the fires.

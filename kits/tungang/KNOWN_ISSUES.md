@@ -1,5 +1,16 @@
 # kits/tungang: known issues and the running note
 
+## Done (2026-11-16, town-scale Fellgang pieces & host walk/doors/steps: `settlements/blakhed` step B2 & B6)
+
+- **10 town-scale Fellgang buildings** (`src/58-fg-town.js`, `TG.fg.BOX` 14 -> 24 keys, seeds 9151-9160): `fg-doublehall` (both
+  customs under one roof: rope wall + tally board), `fg-halting-house` (inn), `fg-markethall`, `fg-booth`, `fg-ropewalk` (44 m
+  range), `fg-great-icehouse` (5-tier vaulted store), `fg-smithy`, `fg-tannery`, `fg-granary` (staddle piers) and `fg-fair-stand`.
+- **4 road, Fair and Stairhead pieces** (`src/60-fg-road.js`, seeds 9161-9164): `fg-stair-hoist`, `fg-fair-hurdle`, `fg-cairn`
+  (peace stone & fell cairn) and `fg-stone-sign`.
+- **Host walk, operable doors and threshold steps** (`src/80-fg-host.js`, `tungang_bundle.py`): `TG.fg.draw` opt-in `o.walk`
+  (`KWALK`/`KWALKBOX`), `o.doors` (`KDOOR`/`KDOORHOST` instanced plate leaves), `o.steps` (drystone threshold flights on slopes),
+  `o.furnish === false` skip, and `'jobs'` added to `tungang_bundle.py` `FURN_CULTURES`.
+
 ## Done (2026-11-16, the Glazier set: `PLAN.md` sections 1.4, 3.4)
 
 - **The owner's choices (2026-11-16):** build the Glaziers on the Fellgang foundation here, not on the Tungang set (which is on
@@ -89,7 +100,7 @@
 - [ ] **Gallery.** The kit is a new build: it goes into the Krator Worlds gallery when it first reaches `main`.
 - [ ] **Not yet built** from `PLAN.md` 3.3: the bands (`fg-war-camp`, `fg-raid-cache`); Wildcat's scrap pueblo (`fg-wc-*`) is the
       wildcat-pueblo session's (the owner, 2026-11-11: a pueblo builder and ONE Chaco-sized great house for 1-2k people at most, maybe one or two small hamlets), not this branch's;
-      the fells (`fg-shieling`, `fg-cairn`, `fg-stone-sign`); the Tungang (`tg`) set is on Loj Twenny's branch.
+      the fells (`fg-shieling`); the Tungang (`tg`) set is on Loj Twenny's branch.
 - [ ] **The Glazier catalog culture file is owed** (`kits/catalog/krator-master-furniture-glazier.js`, `PLAN.md` section 4): the
       twelve `glazier_*` pieces are drawn in the kit (`gzLantern`, `gzBrass`, `gzClick`, `gzTeaBoard`, `gzCarpet`, `gzMaskRack`,
       `gzSeat`, `gzPlaque`, `gzUrn`, `gzGlassBench`, the timetable's gilt frame), not placed through core/furnish; a culture file

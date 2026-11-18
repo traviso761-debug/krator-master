@@ -95,13 +95,24 @@ function fgRange(R,C){const hw=R.w/2,hd=R.d/2,th=R.th==null?.7:R.th,wh=R.wh,plan
   if(form!=='mono'&&form!=='twin'&&ar>.3)pole('pole',T.P3(-ar,rid-.38,0),T.P3(ar,rid-.38,0),.09,pc,6);
   const half=(ax==='x'?hd:hw)-th*.6,n=Math.max(2,Math.round(2*ea/2.6));for(let i=1;i<n;i++){const a=-ea+2*ea*i/n,ft=fr(a);if(ft<.35)continue;
    for(const s of [-1,1]){const yt=T.Y(a,0)-.36,yb=form==='mono'?T.Y(a,s*half)-.36:wh;pole('pole',T.P3(a,yb,s*half),T.P3(a,yt,form==='mono'?-s*half*.0:0),.055,pc,5);}}}
- /* the gables: drystone courses (or painted timber) under the roof's line at the two ends */
- if(R.gables!==false&&form!=='hip'&&form!=='black'&&form!=='mono'){const gt=.55,ha=(ax==='x'?hw:hd)-gt/2,hb=(ax==='x'?hd:hw)-.05,n=Math.max(4,Math.round(R.rise/.24));
-  for(const se of [-1,1]){const timber=R.gables==='timber'&&se>0,mk=timber?'wood':'stone',gc=timber?(R.paint?hc(R.paint):fgCol('wood',C)):fgCol('stone',C);
-   for(let k=0;k<n;k++){const y0k=wh+(rid-wh)*k/n,y1k=wh+(rid-wh)*(k+1)/n+.01;let run=null;
-    for(let b=-hb;b<=hb+1e-6;b+=.1){const okb=T.Y(se*ha,b)-.3>=y1k;if(okb&&run==null)run=b;if((!okb||b+.1>hb)&&run!=null){const b1=okb?b:b-.1;if(b1-run>.08){const p=T.P3(se*ha,y0k,(run+b1)/2);
-       if(ax==='x')box(mk,p[0],y0k,p[2],gt,y1k-y0k,b1-run+.1,gc);else box(mk,p[0],y0k,p[2],b1-run+.1,y1k-y0k,gt,gc);}run=null;}}}
-   if(timber){const yb=T.Y(se*ha,0);for(const s of [-1,1]){const p0=T.P3(se*(ha+gt/2+.03),wh,s*hb),p1=T.P3(se*(ha+gt/2+.03),yb-.05,0);beam('paint',p0,p1,.09,P('white'),false);}}}}
+ /* the gables & wall-head seals: continuous sloped masonry (or painted timber) tucked up into the turf roof's 0.26 m thickness so
+    no daylight leaks between wall and roof on gable, halfhip, bow, twin or mono roofs */
+ {const col0=fgCol('stone',C);
+  if(plan==='bow'){const bul=R.bulge==null?hd*.16:R.bulge,zfB=x=>hd-th/2-bul*(x/hw)*(x/hw),nb=6;
+   for(const s of [-1,1])for(let k=0;k<nb;k++){const xa=-hw+2*hw*k/nb,xb=-hw+2*hw*(k+1)/nb,za=s*zfB(xa),zb=s*zfB(xb);
+    const ya=T.Y(xa,s*(zfB(xa)+th*.35))-.08,yb=T.Y(xb,s*(zfB(xb)+th*.35))-.08;
+    if(Math.max(ya,yb)>wh+.01){const dx=xb-xa,dz=zb-za,L=Math.hypot(dx,dz);
+     W((xa+xb)/2,0,(za+zb)/2,Math.atan2(dx,dz)-PI/2,()=>fgGableSlab('stone','z',0,th,-L/2,L/2,wh-.04,u=>ya+(yb-ya)*((u+L/2)/L),u=>ya+(yb-ya)*((u+L/2)/L),col0,2));}}}
+  else if(plan==='rect'&&form!=='black'){const bMid=ax==='x'?hd-th/2:hw-th/2,aHalf=ax==='x'?hw:hd,sAx=ax==='x'?'z':'x';
+   for(const s of [-1,1]){if((ax==='x'&&((s>0&&R.openF)||(s<0&&false)))||(ax==='z'&&((s<0&&R.openL)||(s>0&&R.openR))))continue;
+    const yn=a=>T.Y(a,s*bMid-th/2)-.08,yp=a=>T.Y(a,s*bMid+th/2)-.08;
+    if(Math.max(yn(0),yp(0))>wh+.01)fgGableSlab('stone',sAx,s*bMid,th,-aHalf+.03,aHalf-.03,wh-.04,yn,yp,col0,form==='halfhip'?6:2);}}
+  if(R.gables!==false&&form!=='hip'&&form!=='black'){const gt=th,ha=(ax==='x'?hw:hd)-gt/2;
+   const bul=plan==='bow'?(R.bulge==null?hd*.16:R.bulge):0,hb=(ax==='x'?hd:hw)-bul-.03;
+   for(const se of [-1,1]){const timber=R.gables==='timber'&&se>0,mk=timber?'wood':'stone',gc=timber?(R.paint?hc(R.paint):fgCol('wood',C)):col0;
+    const aNeg=se*ha-gt/2,aPos=se*ha+gt/2;
+    fgGableSlab(mk,ax,se*ha,gt,-hb,hb,wh-.04,b=>T.Y(aNeg,b)-.08,b=>T.Y(aPos,b)-.08,gc,form==='twin'?8:(form==='mono'?2:4));
+    if(timber){const yb=T.Y(se*ha,0);for(const s of [-1,1]){const p0=T.P3(se*(ha+gt/2+.03),wh,s*hb),p1=T.P3(se*(ha+gt/2+.03),yb-.05,0);beam('paint',p0,p1,.09,P('white'),false);}}}}}
  /* the doors (plate on cable hinges) */
  const zf=hd-th/2;(R.doors||[]).forEach((d,i)=>fgDoor(d[0],R.plan==='bow'?zf:zf,d[1],d[2],C,{th,rust:R.rust,name:i?'a door':'the house door'}));
  /* small windows: visor glass in the wall's thickness */
@@ -116,7 +127,8 @@ function fgRopes(S,C){const n=Math.max(3,Math.round(2*S.ea/1.1)),sc=fgCol('stone
 function fgOutshot(side,cx,ow,od,zc,C,o){o=o||{};const x=cx,Cx=Object.assign({},C,{gl:(a,b)=>C.gl(a+cx,b+zc)});W(x,0,zc,0,()=>{const th=.5,col=fgCol('stone',C),wh=1.55;fgPlinth(-ow/2,ow/2,-od/2,od/2,Cx);
  fgWall(-ow/2,-od/2+th/2,ow/2,-od/2+th/2,th,0,wh,C,col);fgWall(side*(ow/2-th/2),-od/2+th,side*(ow/2-th/2),od/2-th,th,0,wh,C,col);
  fgFront(-ow/2,ow/2,od/2-th/2,th,wh,C,o.door?[[-.4,.4,1.5]]:null,col);
- fgTurfRoof(od/2+.1,ow/2+.1,wh-.05,.85,'mono','z',C,{look:o.look,flipB:side<0});
+ const T=fgTurfRoof(od/2+.1,ow/2+.1,wh-.05,.85,'mono','z',C,{look:o.look,flipB:side<0});
+ for(const sz of [-1,1])fgGableSlab('stone','z',sz*(od/2-th/2),th,-ow/2+.03,ow/2-.03,wh-.04,bx=>T.Y(sz*(od/2-th),bx)-.08,bx=>T.Y(sz*od/2,bx)-.08,col,2);
  if(o.door)svLeaf(0,0,od/2-th/2+.13,0,.8,1.5,{mk:'rust',col:0xc8b8a8,t:.05,name:'the outshot door'});
  for(let k=0;k<5;k++)box('stoneD',(fgU(C,400+k)-.5)*(ow-1.4),0,-od/2+.8+k*.2,.4,.26,.4,P('peat'));});}
 /* a corbelled beehive cell of radius r, height h at (x, z): a stone cone, a turf cap, a low plate door toward +z */

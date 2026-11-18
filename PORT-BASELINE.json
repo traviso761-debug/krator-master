@@ -1033,8 +1033,8 @@
    "sha256": "d3add636535274fd3f722369655b0025e5bf244eec089cc2e0b8e4f3ea9abd78"
   },
   "kits/tungang/dist/tungang.html": {
-   "bytes": 1346055,
-   "sha256": "1bfd8796f0eee236883b6e51e669602b10d6cb0bfe358ae35c8bc3b57b5035df"
+   "bytes": 1414636,
+   "sha256": "a2536e7a8d3cc1725b2d273b88d84832305019b1601ed5f94677c24c91a61a1f"
   },
   "kits/yeti/dist/yeti.html": {
    "bytes": 1065402,
@@ -1193,8 +1193,8 @@
    "sha256": "0237a73849bffeccdc08852816e28606c6c35cf7231706efab755e956f267133"
   },
   "openworld/xanadu-north-shore/dist/xanadu-north-shore.html": {
-   "bytes": 2710734,
-   "sha256": "f0249fd16ff5d832a182625753e803f32e361d0c4c18ba54418b0f90f30ba030"
+   "bytes": 4734822,
+   "sha256": "a16bcb9f38d829b223a561cdc6b82673da869be711ac555e4d9ec890b26ba5c9"
   },
   "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.html": {
    "bytes": 8874743,
@@ -1208,9 +1208,9 @@
    "bytes": 8513625,
    "sha256": "7216145e7a4349521c0a4ed9f2f4478f5a709cb771ad7fa4c30270d0df288196"
   },
-  "openworld/xanadu-north-shore/dist/xanadu-north-shore.html": {
-   "bytes": 4734822,
-   "sha256": "a16bcb9f38d829b223a561cdc6b82673da869be711ac555e4d9ec890b26ba5c9"
+  "settlements/blakhed/dist/blakhed.html": {
+   "bytes": 4751775,
+   "sha256": "a1c7cbc2c77a6627a6903ff3afdea5ee986a3ee012f25891afced74d54799ab3"
   },
   "settlements/dalab/dist/dalab-set.html": {
    "bytes": 6603017,
@@ -1285,8 +1285,8 @@
    "sha256": "c55c2c62f88cd016aeecfc2b6b027e466f63afd1de992e1ad956f1e9b6599cf9"
   },
   "settlements/lightwall/dist/lightwall.html": {
-   "bytes": 3849615,
-   "sha256": "919343fb05ff33e6ce7645ca62bc2cf8914eb28653e579be71ca92ca3557af64"
+   "bytes": 3936503,
+   "sha256": "cd537a1172cb9c0443f498fd171c86745fe5da34666efeeb932173da90e11171"
   },
   "settlements/locus/abyss-kit.html": {
    "bytes": 9091876,
@@ -1319,6 +1319,10 @@
   "settlements/noahs-regret/dist/noahs-regret.html": {
    "bytes": 12117800,
    "sha256": "f94028859f190afb0fe0831d17582c9eb9390565be504b0250d88feb6e0bef86"
+  },
+  "settlements/nulab/dist/nulab.html": {
+   "bytes": 5707317,
+   "sha256": "9257ada7ff9fcc427412c29e180fbd1040236f21f320aa3e9b7b61c7c72f644a"
   },
   "settlements/pher/dist/pher.html": {
    "bytes": 8924162,
