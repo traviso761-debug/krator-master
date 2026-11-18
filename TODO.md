@@ -193,6 +193,8 @@ runtime and bison table, and the `tools/` listing staleness (every build rebuilt
   - `check_assembly`: `settlements/thalaba` (both pages) and `settlements/pher` miss `buildlib.CORE_BIOME_MIN`'s `31b-core-leafset.js`
     and `34-core-impostor.js` (both opted into `minset`) and clash on `window._registered` with core/host; `settlements/qiblai` clashes
     on `window._materials` (two material libraries); `kits/ancients --target theodiga-today` clashes on `_projectFire` and `onerror`.
+    `settlements/lightwall`'s committed page (its build fails: below) clashes on `KMAT`, `KratorFurniture`, `ROOM`, `_registered`,
+    `_texPending`, `furnishRoom` and `onerror`.
   - `check_stale`: `settlements/azure-dream` ("external fragment 20-core-walk.js clashes with a fragment already in the order"),
     `settlements/lightwall` (BUILD RULES FAILED: `kits/qiblai/src/89q5s-qb-shells.js` is generative with no builder and no reseed(N);
     list it in DETERMINISTIC or give it a builder), `settlements/longsong` (KCHAR pieces: build where core/charactermodels is built).

@@ -59,10 +59,10 @@
     "core/hamlet/14-hamlet-farmland.js": "d189bd8e2807d8db514350048ea2d57b6c7278770abfb404b0dd53a621d3147d",
     "core/hamlet/16-hamlet-names.js": "9d4595863162e0acfffb5c872f24805799a442aed6a12e993dfa00a13ef05761",
     "core/hamlet/18-hamlet-names.js": "b2e48d484302f55da25dba22d82045f9d68eb73dbb422dcce269b3a51be8ba6a",
-    "core/hamlet/20-hamlet-cultures.js": "d8d26d6aa0fb3a549e7190349832736bdb26f2fa1abfa9486853e2c11370d624",
+    "core/hamlet/20-hamlet-cultures.js": "67cc2e37e31b160e9d738498a7c4ece7b18a2c3ac6274558d3e6508321093528",
     "core/hamlet/21-hamlet-iziz.js": "3390b1b8bb1d4076af14dd0800c56afdef381aa37f7d2f83fa6f7fa9d0744327",
     "core/hamlet/22-hamlet-coyote.js": "35b10164022775c86238e2a945dde761823f640b2e72a13ce8ae6b75ec782760",
-    "core/hamlet/30-hamlet-village.js": "ba9c7b372a6c576298cea48f3448cbf13a4c4b722a1ed5b422c4b8a10da1f015",
+    "core/hamlet/30-hamlet-village.js": "a415dc035fd1fbf069b5ede7ed7736f472d9af701f7a2cd6576954fccc412c10",
     "core/hamlet/32-hamlet-platform.js": "69d589cdb85825b13008063aded4c7903205e4dc5b8da61d1aa1ef4f4fff7e77",
     "core/hamlet/34-hamlet-trade.js": "d8742fadcaed6825570c03a3760046e68f4ea2265bceac3636856b9d25be0143",
     "core/hamlet/36-hamlet-terrace.js": "e1eb874818da4f8270b25f3b3aa1ba7b40579bb0cdd8b42ec5db65dab5f7fd5e",
@@ -234,13 +234,13 @@
     "core/door": "606c86cebee6cecd509a1319eb00f4f3b96202499526068992bd052a85bdca4a",
     "core/engine": "68c10fa5029a8ccb1f86b5138b48a7b71fec613998c3eab75790c04acc07b282",
     "core/furnish": "09dc20b7272ccbab9dbdf81fa2c1eecb624e5d192d40370d2ae9c1443e6c81c7",
-    "core/hamlet": "c8f8182f40ce26790563237361334c2f69baef476eaedd6b72a17061b436cbf7",
+    "core/hamlet": "e70bc8671cabfe18494a90c9881b4861f4c97bb6fb7c28e69c44fda3cb689718",
     "core/host": "d729ffbc0ed36e68e9036bd9c454abc6462a27b22a4bc16b88c38d836e6f4a37",
     "core/materials/record": "8e06a3bce5495768ed1649aeffaff73f18e5e50f4fadc7abe22bf892274992d8",
     "core/rand": "2174a8e3e509270343eb7e2c6e69ec9c0a221daa415e05d960123007b253bc77",
     "core/ruins": "ece82a2f3942938edfabb988114454450cc179556609b5ea9af7783375bb1766",
     "core/shader": "096503afdb3e218ae4dee6db5ba7786d7fca4b7a58dc1de35a6a961152b2b8db",
-    "core/tags": "cd6f040d0e4dc63956ba50d287f27cda97e471bfd15ee98f2638981d4f9e1127",
+    "core/tags": "38b4880d922aa900d485404bd0eb7ae88d7fe16181d58b2e1c5f62c5c8aa9910",
     "core/walk": "c6769307f01d663d946e7a69638ff7e4fee9c46e1ff5bc8acc98125dd4bb4619",
     "core/walk/box": "640d3e2f0368a531fc4c1f0be0fdca8de1f41b5e2f176112f6212377ea41494d",
     "kits/catalog": "10322ea778934242b7ce59b2a1b14f40befde097c5b9b80081f11fd0cb8a57ce",
@@ -249,13 +249,13 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "kits/coyote/build-manifest.json": "fdd8004ced33b0306ee783a6ed5029da7b298662c200c3775c159dfae637c90c",
-    "kits/coyote/dist/coyote.html": "25f5e76db116337a6615a89d430224b02c14962827a5f35e8f398160c4c7da84",
+    "kits/coyote/build-manifest.json": "ba2a845ffc75179df3481f825aabd278b53b5efe1f16322c4a0e517d71f04f2b",
+    "kits/coyote/dist/coyote.html": "696058c89871c2833612507306f6f5107087a2f57bd85c7d3d114ae82aa23f87",
     "kits/coyote/dist/coyote.tex.coyote.js": "f8eb27112521ccb4377e27cfaf4f30a45a6a1288062b20bd0d4c6169fe2d4e99"
    },
    "outputs_raw": {
-    "kits/coyote/build-manifest.json": "fdd8004ced33b0306ee783a6ed5029da7b298662c200c3775c159dfae637c90c",
-    "kits/coyote/dist/coyote.html": "25f5e76db116337a6615a89d430224b02c14962827a5f35e8f398160c4c7da84",
+    "kits/coyote/build-manifest.json": "ba2a845ffc75179df3481f825aabd278b53b5efe1f16322c4a0e517d71f04f2b",
+    "kits/coyote/dist/coyote.html": "696058c89871c2833612507306f6f5107087a2f57bd85c7d3d114ae82aa23f87",
     "kits/coyote/dist/coyote.tex.coyote.js": "f8eb27112521ccb4377e27cfaf4f30a45a6a1288062b20bd0d4c6169fe2d4e99"
    }
   }
