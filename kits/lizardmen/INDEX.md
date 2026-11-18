@@ -37,5 +37,6 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `63-lk-works.js` | 27 |  |
 | `64-lk-variety.js` | 17 |  |
 | `65-lk-statuary.js` | 52 **big** | A. REPRESENTATIVE OF THE LIZARDMEN (175); B. REPRESENTATIVE OF THE COIL (367); C. STRANGE THINGS ONLY THEY COULD UNDERSTAND (496) |
+| `66-lk-planters.js` | 12 |  |
 | `89-rows.js` | 2 |  |
 | `91g-lz-interior-lod.js` | 8 |  |

@@ -23,19 +23,19 @@ The scale model's pin stands in the water (-2,600 m, the raster's floor). The ci
 
 ![B1](floors/B1.png)
 
-One squared spiral street, the Great Coil (black), winds out from the precinct through two windings, its corners 75 and 105 degrees, each winding 1.25 times the last; it has thirteen segments and ends at the one gate in the tongue's foot. Between its turns lie seven districts, each its own spiral (red) wound in to its nest hall, every door facing in, each district's mouth opening on the Coil toward the Hall; their chirality alternates, cw and ccw, and the seventh breaks the pairing. The wall follows the Coil's last winding. The ley line (green) is the one straight thing: from the Hall's door through the Ley Slot to the mole. 2289 buildings; 32873 housed.
+One squared spiral street, the Great Coil (black), winds out from the precinct through two windings, its corners 75 and 105 degrees, each winding 1.25 times the last; it has thirteen segments and ends at the one gate in the tongue's foot. Between its turns lie seven districts, each its own spiral (red) wound in to its nest hall, every door facing in, each district's mouth opening on the Coil toward the Hall; their chirality alternates, cw and ccw, and the seventh breaks the pairing. The wall follows the Coil's last winding. The ley line (green) is the one straight thing: from the Hall's door through the Ley Slot to the mole. 2312 buildings; 32871 housed.
 
 | # | Item | m2 | Note |
 |---|---|---|---|
 | 1 | The precinct of Intention, on the Mound | 112266 | the Hall of Intention (its axis the ley line), the Interpreters' college and its thirteen towers, the seer's hall, the Nest of Returns (B2) |
 | 2 | The court of the First Turn | 20744 | where the Great Coil begins; the great tank |
-| 3 | District 1 (cw, south) | 76759 | 1 winding, the first band 25 m; ~659 people; its own stone nest hall in its court; its mouth onto the Great Coil faces the Hall |
-| 4 | District 2 (ccw, east) | 92100 | 1 winding, the first band 28 m; ~1869 people; its own stone nest hall in its court; its mouth onto the Great Coil faces the Hall |
-| 5 | District 3 (cw, north) | 118115 | 1 winding, the first band 31 m; ~3075 people; its own stone nest hall in its court; its mouth onto the Great Coil faces the Hall |
-| 6 | District 4 (ccw, west) | 148223 | 1 winding, the first band 34 m; ~3491 people; its own stone nest hall in its court; its mouth onto the Great Coil faces the Hall |
-| 7 | District 5 (cw, south) | 182966 | 1 winding, the first band 38 m; ~4210 people; its own stone nest hall in its court; its mouth onto the Great Coil faces the Hall |
-| 8 | District 6 (ccw, east) | 222953 | 1 winding, the first band 41 m; ~5210 people; its own stone nest hall in its court; its mouth onto the Great Coil faces the Hall |
-| 9 | District 7 (cw, north) | 268868 | 1 winding, the first band 45 m; ~5887 people; its own stone nest hall in its court; its mouth onto the Great Coil faces the Hall; winds the same way as district 1: the seventh breaks the pairs (the city's flaw) |
+| 3 | District 1 (cw, south) | 76759 | 1 winding, the first band 25 m; ~648 people; its own stone nest hall in its court; its mouth onto the Great Coil faces the Hall |
+| 4 | District 2 (ccw, east) | 92100 | 1 winding, the first band 28 m; ~1921 people; its own stone nest hall in its court; its mouth onto the Great Coil faces the Hall |
+| 5 | District 3 (cw, north) | 118115 | 1 winding, the first band 31 m; ~3076 people; its own stone nest hall in its court; its mouth onto the Great Coil faces the Hall |
+| 6 | District 4 (ccw, west) | 148223 | 1 winding, the first band 34 m; ~3474 people; its own stone nest hall in its court; its mouth onto the Great Coil faces the Hall |
+| 7 | District 5 (cw, south) | 182966 | 1 winding, the first band 38 m; ~4177 people; its own stone nest hall in its court; its mouth onto the Great Coil faces the Hall |
+| 8 | District 6 (ccw, east) | 222953 | 1 winding, the first band 41 m; ~5222 people; its own stone nest hall in its court; its mouth onto the Great Coil faces the Hall |
+| 9 | District 7 (cw, north) | 268868 | 1 winding, the first band 45 m; ~5921 people; its own stone nest hall in its court; its mouth onto the Great Coil faces the Hall; winds the same way as district 1: the seventh breaks the pairs (the city's flaw) |
 | 10 | The gate quarter (the Coil's last band, run on into the tongue) | 321481 | the mustering ground in its court, the barracks, the seven granaries of the Allotment, the plunder warehouse, the bone hall; the garrison's lodges (B6) |
 | 11 | The works on the bay | 119973 | the dock after Lothal, its store, the bronze hall, the charcoal and ore yard; the weirs in the bay (B4) |
 | 12 | The reservoirs (x7) | 5199 | seven, after Dholavira, each 1.25 times the last; fed by the leat from Tlahn Gill (B7) |
@@ -54,109 +54,115 @@ The Mound stands 12 m over the sabkha, its sides battered, faced in polygonal ba
 | 4 | Bell rack (no clappers) | 32 | `lz-bells`: the Hall's bells, no clappers |
 | 5 | Stela pair | 48 | `lz-stela-pair`: mirrored chirality either side of the door |
 | 6 | Interpreters' college | 384 | `lk-college`: the college: its door east, toward the Hall |
-| 7 | Seer's hall (x5) | 194 | `lz-seer`: the model of the country: the Allotment remembered |
+| 7 | Seer's hall (x4) | 194 | `lz-seer`: the model of the country: the Allotment remembered |
 | 8 | Turned stelae | 81 | `lz-stela-turned`: texts whose meaning changed retroactively |
 | 9 | The Silent Concert | 169 | `lk-statue-conclave`: The Silent Concert: five hunched Interpreters before the College |
 | 10 | The Bound Retroactive Stele | 100 | `lk-statue-chronicle`: The Bound Retroactive Stele chained beside the turned stelae |
 | 11 | Monument of the Fractured Coil | 196 | `lk-colossus-coil`: the 18 m Fractured Coil monument flanking the Court of Intention |
 | 12 | The Astrolabe of Recurrence | 168 | `lk-statue-gyre`: The Astrolabe of Recurrence on the Mound |
 | 13 | The Husk and the Return | 121 | `lk-statue-rebirth`: The Husk and the Return beside the Nest of Returns |
-| 14 | Stone nest hall | 2496 | `lk-nest`: the Nest of Returns: where the Interpreters are reborn |
-| 15 | Cistern | 144 | `lz-cistern`: the Mound cistern |
-| 16 | Medicine hut | 72 | `lz-medicine`: the Mound medicine lodge |
-| 17 | Stone Interpreters' house (x24) | 121 | `lk-tower`: an Interpreters' stone house |
-| 18 | Stone cell-warren (x9) | 504 | `lk-warren`: the Hall's Tenders |
-| 19 | Stone Allotment granary (x7) | 180 | `lk-granary`: Mound ration granary |
-| 20 | Stepped seal and stela archive (x9) | 254 | `lk-archive`: Mound Scribe archive and memory hall |
-| 21 | Capital lacquer and craft hall (x4) | 293 | `lk-guildhall`: Mound Scribe archive and memory hall |
-| 22 | Stepped brick terrace house (x4) | 252 | `lk-terrace`: Mound Scribe archive and memory hall |
-| 23 | The Court of Intention | 7755 | before the Hall's door, along the line: the seven obelisks either side (the fifth twists the other way), the ley stone |
-| 24 | The court of the First Turn, the great tank | 20744 | the Great Coil begins at its north-east corner; a brick tank after Mohenjo-daro's Great Bath, its water a core/water still record |
+| 14 | Leiwen Rift Shrubbery | 120 | `lk-shrubbery-coil`: Leiwen Rift shrubbery parterre between the College and Seer Hall |
+| 15 | Spiral Rift-Fern Planter | 64 | `lk-planter-helix`: Spiral Rift-fern planter flanking the Hall of Intention |
+| 16 | Bronze Fangding Rift Urn | 36 | `lk-planter-urn`: Bronze fangding Rift-tree urn on the Mound terrace |
+| 17 | Stone nest hall | 2496 | `lk-nest`: the Nest of Returns: where the Interpreters are reborn |
+| 18 | Cistern | 144 | `lz-cistern`: the Mound cistern |
+| 19 | Medicine hut | 72 | `lz-medicine`: the Mound medicine lodge |
+| 20 | Stone Interpreters' house (x24) | 121 | `lk-tower`: an Interpreters' stone house |
+| 21 | Stone cell-warren (x9) | 504 | `lk-warren`: the Hall's Tenders |
+| 22 | Stone Allotment granary (x7) | 180 | `lk-granary`: Mound ration granary |
+| 23 | Stepped seal and stela archive (x9) | 254 | `lk-archive`: Mound Scribe archive and memory hall |
+| 24 | Capital lacquer and craft hall (x4) | 293 | `lk-guildhall`: Mound Scribe archive and memory hall |
+| 25 | Stepped brick terrace house (x4) | 252 | `lk-terrace`: Mound Scribe archive and memory hall |
+| 26 | The Court of Intention | 7755 | before the Hall's door, along the line: the seven obelisks either side (the fifth twists the other way), the ley stone |
+| 27 | The court of the First Turn, the great tank | 20744 | the Great Coil begins at its north-east corner; a brick tank after Mohenjo-daro's Great Bath, its water a core/water still record |
 
 ## Sheet B3: a district spiral (district 5, its west half): its nest hall, its castes, its flaw
 
 ![B3](floors/B3.png)
 
-District 5, the south band of the second winding: its own rectangular leiwen (1 windings, the first band 38 m deep, each 1.25 times the last; corners 75 and 105 degrees), wound clockwise in to the stone nest hall in its long court. Every row fronts its band's inner edge, so every door faces the nest; the castes go from the nest outward in Gila's order: Tenders, Interpreters, Makers, Drovers, then the warriors' and Bulwarks' lodges. Wells (blue) stand in the yards behind each row. Housed: Tenders 1260, Interpreters 210, Makers 1110, Drovers 888, Line warriors 742.
+District 5, the south band of the second winding: its own rectangular leiwen (1 windings, the first band 38 m deep, each 1.25 times the last; corners 75 and 105 degrees), wound clockwise in to the stone nest hall in its long court. Every row fronts its band's inner edge, so every door faces the nest; the castes go from the nest outward in Gila's order: Tenders, Interpreters, Makers, Drovers, then the warriors' and Bulwarks' lodges. Wells (blue) stand in the yards behind each row. Housed: Tenders 1260, Interpreters 217, Makers 1138, Drovers 930, Line warriors 632.
 
 | # | Item | m2 | Note |
 |---|---|---|---|
-| 1 | Medicine hut | 71 | `lz-medicine` |
-| 2 | Cistern | 143 | `lz-cistern` |
-| 3 | Twisted obelisk | 15 | `lz-obelisk` |
-| 4 | Bell rack (no clappers) | 32 | `lz-bells` |
-| 5 | Stone nest hall | 2495 | `lk-nest` |
-| 6 | Stela pair | 49 | `lz-stela-pair` |
+| 1 | Medicine hut | 72 | `lz-medicine` |
+| 2 | Cistern | 144 | `lz-cistern` |
+| 3 | Twisted obelisk | 16 | `lz-obelisk` |
+| 4 | Bell rack (no clappers) | 31 | `lz-bells` |
+| 5 | Stone nest hall | 2496 | `lk-nest` |
+| 6 | Stela pair | 48 | `lz-stela-pair` |
 | 7 | Reed, weaving and lacquer hall | 247 | `lz-hall-reed` |
 | 8 | Capital lacquer and craft hall | 294 | `lk-guildhall` |
 | 9 | The Sheared Manifold | 169 | `lk-statue-manifold` |
-| 10 | Earth-oven and yam bakehouse | 272 | `lz-bakehouse` |
-| 11 | Spore and yam fermenting house | 270 | `lz-fermentery` |
-| 12 | The Impossible Tusk-Frame | 144 | `lk-statue-paradox` |
-| 13 | Stone Allotment granary | 180 | `lk-granary` |
-| 14 | Three-dome kiln house | 223 | `lk-kilnhouse` |
-| 15 | Cistern | 144 | `lz-cistern` |
-| 16 | Turned stelae | 81 | `lz-stela-turned` |
-| 17 | The Impossible Tusk-Frame | 144 | `lk-statue-paradox` |
-| 18 | Stepped seal and stela archive | 254 | `lk-archive` |
-| 19 | Stepped brick terrace house | 252 | `lk-terrace` |
-| 20 | Stone Allotment granary | 180 | `lk-granary` |
-| 21 | Two-storey Drover townhouse | 180 | `lk-rowhouse` |
-| 22 | Three-dome kiln house | 223 | `lk-kilnhouse` |
-| 23 | Reed, weaving and lacquer hall | 247 | `lz-hall-reed` |
-| 24 | Stone Interpreters' house | 121 | `lk-tower` |
-| 25 | The Sheared Manifold | 169 | `lk-statue-manifold` |
-| 26 | The Impossible Tusk-Frame | 144 | `lk-statue-paradox` |
-| 27 | Stepped seal and stela archive | 255 | `lk-archive` |
-| 28 | Stepped brick terrace house | 251 | `lk-terrace` |
-| 29 | Stone Allotment granary | 180 | `lk-granary` |
-| 30 | Stone Allotment granary | 180 | `lk-granary` |
-| 31 | Two-storey Drover townhouse | 180 | `lk-rowhouse` |
-| 32 | Three-dome kiln house | 224 | `lk-kilnhouse` |
-| 33 | Reed, weaving and lacquer hall | 247 | `lz-hall-reed` |
-| 34 | Stone Interpreters' house | 121 | `lk-tower` |
-| 35 | The Sheared Manifold | 169 | `lk-statue-manifold` |
-| 36 | The Impossible Tusk-Frame | 143 | `lk-statue-paradox` |
-| 37 | Stepped seal and stela archive | 255 | `lk-archive` |
-| 38 | Stepped brick terrace house | 252 | `lk-terrace` |
-| 39 | Stone Allotment granary | 180 | `lk-granary` |
-| 40 | Two-storey Drover townhouse | 180 | `lk-rowhouse` |
-| 41 | Three-dome kiln house | 224 | `lk-kilnhouse` |
-| 42 | Reed, weaving and lacquer hall | 247 | `lz-hall-reed` |
-| 43 | Stone Interpreters' house | 120 | `lk-tower` |
-| 44 | The Sheared Manifold | 169 | `lk-statue-manifold` |
-| 45 | The Impossible Tusk-Frame | 144 | `lk-statue-paradox` |
-| 52 | Stone Interpreters' house | 121 | `lk-tower` |
-| 53 | The Sheared Manifold | 169 | `lk-statue-manifold` |
-| 54 | The Impossible Tusk-Frame | 144 | `lk-statue-paradox` |
-| 55 | Stepped seal and stela archive | 255 | `lk-archive` |
-| 56 | Stepped brick terrace house | 252 | `lk-terrace` |
-| 57 | Stone Allotment granary | 180 | `lk-granary` |
-| 58 | Two-storey Drover townhouse | 180 | `lk-rowhouse` |
-| 59 | Three-dome kiln house | 224 | `lk-kilnhouse` |
-| 60 | Reed, weaving and lacquer hall | 247 | `lz-hall-reed` |
-| 61 | Stone Interpreters' house | 121 | `lk-tower` |
-| 62 | The Sheared Manifold | 169 | `lk-statue-manifold` |
-| 63 | The Impossible Tusk-Frame | 144 | `lk-statue-paradox` |
-| 64 | Stepped seal and stela archive | 255 | `lk-archive` |
-| 65 | Stepped brick terrace house | 252 | `lk-terrace` |
-| 66 | Stone Allotment granary | 180 | `lk-granary` |
-| 67 | Two-storey Drover townhouse | 180 | `lk-rowhouse` |
+| 10 | Spiral Rift-Fern Planter | 64 | `lk-planter-helix` |
+| 11 | Earth-oven and yam bakehouse | 272 | `lz-bakehouse` |
+| 12 | Spore and yam fermenting house | 270 | `lz-fermentery` |
+| 13 | The Impossible Tusk-Frame | 144 | `lk-statue-paradox` |
+| 14 | Stone Allotment granary | 180 | `lk-granary` |
+| 15 | Three-dome kiln house | 224 | `lk-kilnhouse` |
+| 16 | Cistern | 144 | `lz-cistern` |
+| 17 | Turned stelae | 81 | `lz-stela-turned` |
+| 18 | The Impossible Tusk-Frame | 144 | `lk-statue-paradox` |
+| 19 | Stepped seal and stela archive | 254 | `lk-archive` |
+| 20 | Stepped brick terrace house | 252 | `lk-terrace` |
+| 21 | Spiral Rift-Fern Planter | 64 | `lk-planter-helix` |
+| 22 | Stone Allotment granary | 180 | `lk-granary` |
+| 23 | Two-storey Drover townhouse | 180 | `lk-rowhouse` |
+| 24 | Three-dome kiln house | 224 | `lk-kilnhouse` |
+| 25 | Reed, weaving and lacquer hall | 246 | `lz-hall-reed` |
+| 26 | Stone Interpreters' house | 121 | `lk-tower` |
+| 27 | The Sheared Manifold | 169 | `lk-statue-manifold` |
+| 28 | The Impossible Tusk-Frame | 144 | `lk-statue-paradox` |
+| 29 | Stepped seal and stela archive | 255 | `lk-archive` |
+| 30 | Stepped brick terrace house | 252 | `lk-terrace` |
+| 31 | Stepped seal and stela archive | 255 | `lk-archive` |
+| 32 | Stepped brick terrace house | 252 | `lk-terrace` |
+| 33 | Spiral Rift-Fern Planter | 64 | `lk-planter-helix` |
+| 34 | Stone Allotment granary | 179 | `lk-granary` |
+| 35 | Two-storey Drover townhouse | 180 | `lk-rowhouse` |
+| 36 | Three-dome kiln house | 224 | `lk-kilnhouse` |
+| 37 | Reed, weaving and lacquer hall | 247 | `lz-hall-reed` |
+| 38 | Stone Interpreters' house | 121 | `lk-tower` |
+| 39 | The Sheared Manifold | 169 | `lk-statue-manifold` |
+| 40 | The Impossible Tusk-Frame | 144 | `lk-statue-paradox` |
+| 41 | Stepped seal and stela archive | 255 | `lk-archive` |
+| 42 | Stepped brick terrace house | 252 | `lk-terrace` |
+| 43 | Spiral Rift-Fern Planter | 64 | `lk-planter-helix` |
+| 44 | Stone Allotment granary | 180 | `lk-granary` |
+| 45 | Two-storey Drover townhouse | 180 | `lk-rowhouse` |
+| 46 | Three-dome kiln house | 224 | `lk-kilnhouse` |
+| 47 | Reed, weaving and lacquer hall | 247 | `lz-hall-reed` |
+| 54 | Stone Allotment granary | 180 | `lk-granary` |
+| 55 | Two-storey Drover townhouse | 180 | `lk-rowhouse` |
+| 56 | Three-dome kiln house | 223 | `lk-kilnhouse` |
+| 57 | Reed, weaving and lacquer hall | 246 | `lz-hall-reed` |
+| 58 | Stone Interpreters' house | 121 | `lk-tower` |
+| 59 | The Sheared Manifold | 168 | `lk-statue-manifold` |
+| 60 | The Impossible Tusk-Frame | 143 | `lk-statue-paradox` |
+| 61 | Stepped seal and stela archive | 254 | `lk-archive` |
+| 62 | Stepped brick terrace house | 252 | `lk-terrace` |
+| 63 | Spiral Rift-Fern Planter | 64 | `lk-planter-helix` |
+| 64 | Stone Allotment granary | 179 | `lk-granary` |
+| 65 | Two-storey Drover townhouse | 180 | `lk-rowhouse` |
+| 66 | Three-dome kiln house | 223 | `lk-kilnhouse` |
+| 67 | Two-storey Drover townhouse | 179 | `lk-rowhouse` |
 | 68 | Three-dome kiln house | 224 | `lk-kilnhouse` |
 | 69 | Reed, weaving and lacquer hall | 247 | `lz-hall-reed` |
 | 70 | Stone Interpreters' house | 121 | `lk-tower` |
-| 71 | The Sheared Manifold | 169 | `lk-statue-manifold` |
+| 71 | The Sheared Manifold | 168 | `lk-statue-manifold` |
 | 72 | The Impossible Tusk-Frame | 144 | `lk-statue-paradox` |
-| 73 | Stepped seal and stela archive | 254 | `lk-archive` |
-| 74 | Stepped brick terrace house | 252 | `lk-terrace` |
-| 75 | Stone Allotment granary | 180 | `lk-granary` |
-| 76 | Two-storey Drover townhouse | 180 | `lk-rowhouse` |
-| 77 | Three-dome kiln house | 224 | `lk-kilnhouse` |
-| 78 | Reed, weaving and lacquer hall | 247 | `lz-hall-reed` |
-| 79 | Stone Interpreters' house | 120 | `lk-tower` |
-| 80 | The Sheared Manifold | 169 | `lk-statue-manifold` |
-| 87 | The flaw: one band fronted on its outer edge | 24063 | its doors face away from the nest: the district's one deliberate break, the Lie (DESIGN.md 2.2); chosen by the plan's own hash, kept in the manifest |
-| 88 | The district's mouth | 144 | its spiral street's outer end, on the Great Coil, facing the Hall |
+| 73 | Stepped seal and stela archive | 255 | `lk-archive` |
+| 74 | Stepped brick terrace house | 251 | `lk-terrace` |
+| 75 | Spiral Rift-Fern Planter | 64 | `lk-planter-helix` |
+| 76 | Stone Allotment granary | 180 | `lk-granary` |
+| 77 | Two-storey Drover townhouse | 180 | `lk-rowhouse` |
+| 78 | Three-dome kiln house | 224 | `lk-kilnhouse` |
+| 79 | Reed, weaving and lacquer hall | 247 | `lz-hall-reed` |
+| 80 | Stone Interpreters' house | 121 | `lk-tower` |
+| 81 | The Sheared Manifold | 169 | `lk-statue-manifold` |
+| 82 | The Impossible Tusk-Frame | 144 | `lk-statue-paradox` |
+| 83 | Stepped seal and stela archive | 254 | `lk-archive` |
+| 90 | The flaw: one band fronted on its outer edge | 24063 | its doors face away from the nest: the district's one deliberate break, the Lie (DESIGN.md 2.2); chosen by the plan's own hash, kept in the manifest |
+| 91 | The district's mouth | 144 | its spiral street's outer end, on the Great Coil, facing the Hall |
 
 ## Sheet B4: the works on the bay: the bronze hall, the dock after Lothal, the weirs
 

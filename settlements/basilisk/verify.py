@@ -49,6 +49,7 @@ ASSERT_JS = r"""() => {
     'lk-colossus-watcher', 'lk-statue-phalanx', 'lk-statue-conclave', 'lk-statue-rebirth',
     'lk-colossus-coil', 'lk-statue-ouroboros', 'lk-statue-gyre', 'lk-statue-chronicle',
     'lk-statue-manifold', 'lk-statue-paradox', 'lk-statue-tesseract', 'lk-statue-chorus',
+    'lk-planter-helix', 'lk-shrubbery-coil', 'lk-planter-urn',
     'lk-bronzehall', 'lk-dockstore', 'lk-boil', 'lk-gate', 'lk-slot', 'lk-wall', 'lk-watchtower',
     'lz-hall-bronze', 'lz-hall-reed', 'lz-hall-bone', 'lz-bakehouse', 'lz-fermentery', 'lz-warehouse', 'lz-wayhalt', 'lz-waystone',
     'lz-barracks', 'lz-muster', 'lz-seer', 'lz-medicine', 'lz-cistern', 'lz-bells', 'lz-stela-pair', 'lz-stela-turned', 'lz-obelisk',

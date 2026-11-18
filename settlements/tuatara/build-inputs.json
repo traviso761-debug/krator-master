@@ -119,7 +119,7 @@
     "kits/fauna/tex/shag.albedo.webp": "e95592f2e261707203869787b102058e58a7d7a2a3f23be0e63bba4fd27679e7",
     "kits/fauna/tex/skin.albedo.webp": "3ab6d925ecf817078b66c17122eac5f79f81dbe515bc78b54ff110a2f83137d6",
     "kits/fauna/tex/sleek.albedo.webp": "d84a1e76db9bf4b0ff418232509e815ff3bc3c6b02647924f9ec8be952401f0e",
-    "kits/lizardmen/PORT.md": "7c11cdba8ec171f92d81ae1a45d82fd4181ef0669bfff3b3f2033dc31d208fab",
+    "kits/lizardmen/PORT.md": "343edc7cda74b37702dbcfdcb04d0824669660ef9c368236418b7afe6341bcd0",
     "kits/lizardmen/build.py": "9f852e5c92ad5250cb855398596f6d6fa189fe1bd23773b6923cdc46c791cc60",
     "kits/lizardmen/settle/82-lzv-site.js": "ed6ae9578f6981ee5ae397c101c86e4a0851e9341ce15e8524ec654fdcabcfc6",
     "kits/lizardmen/settle/90w-lzv-world.js": "2b2a5f6619d630e2e5e26a374c2d37e183e40c11528ba197d9eb6f7e53bccdc3",
@@ -144,7 +144,8 @@
     "kits/lizardmen/src/63-lk-works.js": "19ee880cdcbf1b0fb9e222dceeb772e4989449f01a9ec82d775cded89895eb22",
     "kits/lizardmen/src/64-lk-variety.js": "329739bca324458c44cc9c0a6182ae132a9e93d5751ade0365857a097c0ba47f",
     "kits/lizardmen/src/65-lk-statuary.js": "868980267cc8e80be73ebc477749d6c4f77488e45f68e10b208b0872d37fdc08",
-    "kits/lizardmen/src/89-rows.js": "917b9126051cc92ba10b8cf498d9b05fa250254e7d869e073539faf2023edd9d",
+    "kits/lizardmen/src/66-lk-planters.js": "a1d8f79d92921f0abe423a7744f600247ed723155b60b7965f0baa6918861631",
+    "kits/lizardmen/src/89-rows.js": "5af80de4779df8ea052d3635953aeb65bb32d3d52803c50580c0761cf5d09e57",
     "kits/lizardmen/src/91g-lz-interior-lod.js": "82d70d97635bf3a06b076d27095f5e14516c1370c5220f5bd20f1f2a730d0728",
     "kits/lizardmen/tex/basalt.albedo.webp": "cecb04c3bf107ee4eae1ac472ca60c735a9b8c6e13b89ab812fcdb1f8c1fc47c",
     "kits/lizardmen/tex/basalt.normal.webp": "bdac85db0bb29277a9ad3e0d1681758ca23f3ed9fbe728975eb54a3fb6df5a77",
@@ -342,7 +343,7 @@
     "kits/catalog": "10322ea778934242b7ce59b2a1b14f40befde097c5b9b80081f11fd0cb8a57ce",
     "kits/fauna": "15ddf75514bc2fb08858cc3e94a1fff2bf1cafb60c1014a7cdc4463763fb2e5c",
     "kits/lizardmen/settle": "4cb06e8505b63c93a3822f612d39f0dcd806673ba4658cf8fdf37156aba4db78",
-    "kits/lizardmen/src": "59abf2e6a77472dba9fd201fd402b28c08911bbcd0b5668a25e1b916a7f3c44b",
+    "kits/lizardmen/src": "1f2afb7e2c9b0fb34b61cc419045cdf2e113e77f7a7303cd5c326b78e246da3c",
     "settlements/tuatara": "5681d771bbc14388aebe9f16ee8c1bc7e8cc84b45c983531ff8aeb59314cbe49",
     "settlements/tuatara/src": "9801ef80510ea6dba4a7e5193c6f77f91ca70f0b5ce863d898e12c54fabf15d5",
     "tools": "5d8cb54bfd5566913f21e3e094a6a85418e1354e6e39cf6138ec20bda1add512",
@@ -350,15 +351,15 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "settlements/tuatara/build-manifest.json": "5ce01b30b07c0d63f82d24691b562871340f51b50097e49f2450080947a43c78",
-    "settlements/tuatara/dist/tuatara.html": "a46965cb69a79663cf20109e582643e35486889828599b0eddb9236b78743bdb",
+    "settlements/tuatara/build-manifest.json": "6efc93764466803f02981a5a57eb2b509237ff4c5963db2ec9810082d3c04558",
+    "settlements/tuatara/dist/tuatara.html": "e9d1ee9f522cd64d7c009a1ec93a3ef738fef07accf30cd787ef93e0cb22e32c",
     "settlements/tuatara/dist/tuatara.tex.lizardmen-2.js": "ed3ee667e519875f63d015a22bb2dc9dd1c8a10224ef1d27516e18a901dfdb71",
     "settlements/tuatara/dist/tuatara.tex.lizardmen.js": "e2bfa25ee65ad4cd640d7568efd3879b04bd2f1b58eddf2a41e61c32dd4e4e8b",
     "settlements/tuatara/dist/tuatara.tex.tuatara.js": "fd3975b96d7f733dbed859625b43c46bcbed4285a5a8179d973fd803490b9545"
    },
    "outputs_raw": {
-    "settlements/tuatara/build-manifest.json": "5ce01b30b07c0d63f82d24691b562871340f51b50097e49f2450080947a43c78",
-    "settlements/tuatara/dist/tuatara.html": "a46965cb69a79663cf20109e582643e35486889828599b0eddb9236b78743bdb",
+    "settlements/tuatara/build-manifest.json": "6efc93764466803f02981a5a57eb2b509237ff4c5963db2ec9810082d3c04558",
+    "settlements/tuatara/dist/tuatara.html": "e9d1ee9f522cd64d7c009a1ec93a3ef738fef07accf30cd787ef93e0cb22e32c",
     "settlements/tuatara/dist/tuatara.tex.lizardmen-2.js": "ed3ee667e519875f63d015a22bb2dc9dd1c8a10224ef1d27516e18a901dfdb71",
     "settlements/tuatara/dist/tuatara.tex.lizardmen.js": "e2bfa25ee65ad4cd640d7568efd3879b04bd2f1b58eddf2a41e61c32dd4e4e8b",
     "settlements/tuatara/dist/tuatara.tex.tuatara.js": "fd3975b96d7f733dbed859625b43c46bcbed4285a5a8179d973fd803490b9545"

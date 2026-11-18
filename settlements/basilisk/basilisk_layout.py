@@ -128,6 +128,10 @@ KIT = {
   'lk-statue-paradox':   dict(w=12, d=12, name='The Impossible Tusk-Frame'),
   'lk-statue-tesseract': dict(w=13, d=13, name='The Hyper-Rhombic Cage'),
   'lk-statue-chorus':    dict(w=12, d=12, name='The Thirteen Witnesses'),
+  # spiral Rift-plant planters & leiwen shrubberies (66-lk-planters.js, 2026-11-18)
+  'lk-planter-helix':    dict(w=8, d=8, name='Spiral Rift-Fern Planter'),
+  'lk-shrubbery-coil':   dict(w=12, d=10, name='Leiwen Rift Shrubbery'),
+  'lk-planter-urn':      dict(w=6, d=6, name='Bronze Fangding Rift Urn'),
   'lz-makers':    dict(w=11, d=9, name="Makers' quarters", holds=10, caste=2),
   'lz-tower':     dict(w=11, d=11, name="Interpreters' house", holds=7, caste=5),
   'lz-lodge':     dict(w=14, d=20, name="Warriors' lodge", holds=30, caste=4),
@@ -564,6 +568,9 @@ def build():
     try_put('lk-colossus-coil', sk(28, -46), LA, 'precinct', role='the 18 m Fractured Coil monument flanking the Court of Intention')
     try_put('lk-statue-gyre', sk(-32, 68), LA, 'precinct', role='The Astrolabe of Recurrence on the Mound')
     try_put('lk-statue-rebirth', sk(a1 - 88, b1 - 86), math.pi, 'precinct', role='The Husk and the Return beside the Nest of Returns')
+    try_put('lk-shrubbery-coil', sk(a0 + 62, 62), 0.0, 'precinct', role='Leiwen Rift shrubbery parterre between the College and Seer Hall')
+    try_put('lk-planter-helix', sk(16, -24), LA, 'precinct', role='Spiral Rift-fern planter flanking the Hall of Intention')
+    try_put('lk-planter-urn', sk(-18, 34), LA, 'precinct', role='Bronze fangding Rift-tree urn on the Mound terrace')
     try_put('lk-nest', sk(a1 - 52, b1 - 48), math.pi, 'precinct', role='the Nest of Returns: where the Interpreters are reborn')
     try_put('lz-cistern', sk(a1 - 52, b1 - 92), math.pi, 'precinct', role='the Mound cistern')
     try_put('lz-medicine', sk(a1 - 88, b1 - 48), 0.0, 'precinct', role='the Mound medicine lodge')
@@ -613,6 +620,9 @@ def build():
     try_put('lk-statue-ouroboros', sk(cac + 24, cbc - 14), math.pi, 'first_turn', role='Twin Helices of Recurrence overlooking the Great Tank')
     try_put('lz-bells', sk(cac - 20, cbc - 12), 0.0, 'first_turn', role='First Turn bells')
     try_put('lz-stela-pair', sk(cac + 20, cbc + 12), math.pi, 'first_turn', role='First Turn stela pair')
+    try_put('lk-shrubbery-coil', sk(cac - 22, cbc - 2), 0.0, 'first_turn', role='Leiwen Rift shrubbery beside the Great Tank')
+    try_put('lk-planter-helix', sk(cac + 22, cbc + 2), math.pi, 'first_turn', role='Spiral Rift-fern planter overlooking the Great Tank')
+    try_put('lk-planter-urn', sk(cac - 10, cbc + 16), -math.pi / 2, 'first_turn', role='Bronze fangding Rift urn at the Tank stair')
     ring0 = [('lk-colossus-watcher', None), ('lk-archive', 5), ('lk-warren', 1), ('lk-statue-chorus', None), ('lk-guildhall', None), ('lz-cistern', None), ('lk-terrace', 2), ('lk-statue-tesseract', None), ('lk-tower', 5), ('lk-granary', None), ('lk-insula', 2), ('lk-statue-phalanx', None)]
     ri0 = 0
     for (sa0, sb0), (sa1, sb1), c_ang in [
@@ -719,7 +729,8 @@ def build():
             'lk-colossus-coil', 'lk-statue-ouroboros', 'lk-statue-gyre', 'lk-statue-chronicle',
             'lk-statue-manifold', 'lk-statue-paradox', 'lk-statue-tesseract', 'lk-statue-chorus'
         ]
-        infill_civic = ['lk-guildhall', 'lk-granary', '__statue__', 'lz-bakehouse', 'lz-fermentery', 'lz-warehouse', 'lz-medicine', 'lz-cistern', 'lz-hall-bronze', 'lz-hall-reed', 'lz-hall-bone']
+        all_planters = ['lk-planter-helix', 'lk-shrubbery-coil', 'lk-planter-urn']
+        infill_civic = ['lk-guildhall', 'lk-granary', '__statue__', '__planter__', 'lz-bakehouse', 'lz-fermentery', 'lz-warehouse', 'lz-medicine', 'lz-cistern', 'lz-hall-bronze', 'lz-hall-reed', 'lz-hall-bone']
         for bi, bd in enumerate(d['bands']):
             p0, p1 = bd['outer'] if bi == flaw else bd['inner']
             L = math.hypot(p1[0] - p0[0], p1[1] - p0[1])
@@ -751,7 +762,9 @@ def build():
                             key = fit_keys[h_pick % len(fit_keys)]; c_use = cand_c; break
                     if key is None:
                         alt_civ = [
-                            (all_statues[(h_pick >> 3) % len(all_statues)] if ck == '__statue__' else ck)
+                            (all_statues[(h_pick >> 3) % len(all_statues)] if ck == '__statue__'
+                             else (all_planters[(h_pick >> 4) % len(all_planters)] if (h_pick & 3) == 0 else 'lk-granary') if ck == '__planter__'
+                             else ck)
                             for ck in infill_civic
                         ]
                         alt_civ = [ck for ck in alt_civ if KIT[ck]['d'] <= avail_d]
@@ -846,10 +859,12 @@ def build():
         st_main = STATUE_CYCLE[(d['j'] * 2) % len(STATUE_CYCLE)]
         st_alt = STATUE_CYCLE[(d['j'] * 2 + 1) % len(STATUE_CYCLE)]
         st_mouth = STATUE_CYCLE[(d['j'] * 3 + 4) % len(STATUE_CYCLE)]
-        extra_food = [(st_main, 9), ('lz-bakehouse', 5), ('lz-fermentery', 4), (st_alt, 7), ('lk-granary', 4), ('lk-kilnhouse', 3)]
+        p_court = ['lk-shrubbery-coil', 'lk-planter-helix', 'lk-planter-urn'][d['j'] % 3]
+        p_flank = ['lk-planter-urn', 'lk-shrubbery-coil', 'lk-planter-helix'][(d['j'] + 1) % 3]
+        extra_food = [(st_main, 9), (p_court, 6), ('lz-bakehouse', 5), ('lz-fermentery', 4), (st_alt, 7), ('lk-granary', 4), ('lk-kilnhouse', 3)]
         court_items(d, [('lz-medicine', 2), ('lz-cistern', 6), ('lz-obelisk', 3), ('lz-bells', 8), ('lk-nest', 10),
                         ('lz-stela-pair', 7), (hall, 6), ('lk-guildhall', 5)] + extra_food + [('lz-cistern', 4), ('lz-stela-turned', 2)],
-                    [(st_alt, None), ('lk-archive', 5), ('lk-terrace', 2), ('lk-granary', None), ('lk-rowhouse', 3), ('lk-kilnhouse', 2), (hall, None), ('lk-tower', 5), ('lz-bakehouse', None), (st_main, None)])
+                    [(st_alt, None), ('lk-archive', 5), ('lk-terrace', 2), (p_flank, None), ('lk-granary', None), ('lk-rowhouse', 3), ('lk-kilnhouse', 2), (hall, None), ('lk-tower', 5), ('lz-bakehouse', None), (st_main, None)])
         # Sentinel colossus by the district's mouth onto the Great Coil
         mx, mv = d['mouth']
         for m_off in ((-14, 14), (14, -14), (-14, -14), (14, 14)):
@@ -945,6 +960,8 @@ def build():
     try_put('lk-colossus-watcher', (gu + 22, gv - 24), -math.pi / 2, 'gate_road', role='east South Gate Watcher colossus looming over the causeway')
     try_put('lk-statue-phalanx', (gu + 26, gv - 122), math.pi, 'gate_road', role='Six-Caste Phalanx at the foot of the South Gate ramp')
     try_put('lk-statue-chorus', (gu - 26, gv - 122), 0.0, 'gate_road', role='The Thirteen Witnesses watching the South Gate approach')
+    try_put('lk-planter-urn', (gu - 18, gv - 68), 0.0, 'gate_road', role='west South Gate bronze fangding Rift planter')
+    try_put('lk-planter-urn', (gu + 18, gv - 68), math.pi, 'gate_road', role='east South Gate bronze fangding Rift planter')
     try_put('lz-wayhalt', (gu - 42, gv - 165), 0.0, 'gate_road', role='west Coil Round roadhead halt outside the South Gate')
     try_put('lz-wayhalt', (gu + 42, gv - 165), math.pi, 'gate_road', role='east Coil Round roadhead halt outside the South Gate')
     try_put('lk-caravanserai', (gu - 46, gv - 210), 0.0, 'gate_road', caste=3, role='convoy drovers\' stone sledge court at the South Gate roadhead')

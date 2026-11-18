@@ -475,7 +475,7 @@
                 cyl('bronzeC', 0.32 + bi2 * 0.26, 2.62, 0, 0.07, 0.3, hc(0x549682), 7);
               }
               tblStreetFurn.push(fx, fy, fz, fry, 1.4, 1.0, 3.9);
-            } else {
+            } else if (kindIdx === 3) {
               /* Polygonal verdigris-stone & bronze gargoyle curb trough */
               box('cyclo', 0, 0, 0, 2.1, 0.74, 1.25, hc(0x35584d));
               box('bronzeC', 0, 0.72, 0, 2.18, 0.09, 1.32, hc(0x78683c));
@@ -483,6 +483,50 @@
               cyl('bronzeC', 0, 0.74, -0.52, 0.15, 0.72, hc(0x4a8a78), 7);
               box('bronzeC', 0, 1.18, -0.22, 0.14, 0.12, 0.55, hc(0x7c6c40));
               tblStreetFurn.push(fx, fy, fz, fry, 2.2, 1.35, 1.46);
+            } else if (kindIdx === 4) {
+              /* Twisted verdigris-stone & cast-bronze street planter overflowing with coiled Rift fiddleheads & purple Vain fans */
+              box('cyclo', 0, 0, 0, 2.45, 0.34, 2.45, hc(0x2d4840));
+              box('stoneP', 0, 0.34, 0, 2.12, 0.56, 2.12, hc(0x3e6a5c), 0.18);
+              box('bronzeC', 0, 0.88, 0, 2.26, 0.12, 2.26, hc(0x7c6c40), 0.18);
+              box('earth', 0, 0.94, 0, 1.92, 0.08, 1.92, hc(0x4e3c2a), 0.18);
+              /* Coiled Rift fiddlehead fern croziers + purple Vain fan-fronds + central spiral cycad */
+              for (var fi4 = 0; fi4 < 5; fi4++) {
+                var fa4 = fi4 * 1.2566 + 0.3;
+                W(Math.cos(fa4) * 0.52, 0.98, Math.sin(fa4) * 0.52, -fa4 + Math.PI / 2, function () {
+                  tube('matW', function (t) {
+                    if (t < 0.6) { var u4 = t / 0.6; return [0, 1.85 * u4, 0.72 * u4 * u4]; }
+                    var u5 = (t - 0.6) / 0.4, a5 = u5 * Math.PI * 2.6, r5 = 0.32 * (1 - 0.68 * u5);
+                    return [0, 1.76 + Math.sin(a5) * r5, 0.96 - Math.cos(a5) * r5];
+                  }, function (t) { var q4 = 0.088 * (1 - 0.58 * t) + 0.015; return [q4, q4]; }, 12, 5, hc(fi4 % 2 ? 0x287c68 : 0x428838), { caps: true });
+                });
+                WX(Math.cos(fa4 + 0.62) * 0.68, 1.02, Math.sin(fa4 + 0.62) * 0.68, -(fa4 + 0.62) + Math.PI / 2, 0.52, 0, function () {
+                  box('matW', 0, 0.42, 0, 0.86, 0.84, 0.05, hc(0x8856b6));
+                });
+              }
+              cyl('wood', 0, 0.98, 0, 0.16, 1.65, hc(0x523c28), 6, 0.11);
+              ellip('matW', 0, 2.58, 0, 1.05, 0.44, 1.05, hc(0x76ad3a), 0.4, 8);
+              cone('lacqR', 0, 2.92, 0, 0.18, 0.62, hc(0xd8427a), 7);
+              tblStreetFurn.push(fx, fy, fz, fry, 2.5, 2.5, 3.55);
+            } else {
+              /* Low squared-spiral (leiwen) verdigris-kerb Rift shrubbery bed along the avenue margin */
+              box('stoneP', 0, 0, 0, 4.1, 0.30, 1.86, hc(0x325248));
+              box('bronzeC', 0, 0.28, 0, 4.18, 0.07, 1.94, hc(0x78683c));
+              box('earth', 0, 0.30, 0, 3.84, 0.06, 1.62, hc(0x4e3c2a));
+              /* Raised inner spiral kerb step */
+              box('cyclo', -0.52, 0.34, 0.06, 2.2, 0.34, 1.06, hc(0x3e6a5c));
+              box('bronzeC', -0.52, 0.66, 0.06, 2.28, 0.06, 1.14, hc(0x52927e));
+              /* Sculpted teal, chartreuse & violet Rift cushion-shrubbery pillows + phyllotaxis rosette */
+              ellip('matW', 1.08, 0.68, -0.08, 0.92, 0.56, 0.72, hc(0x247a66), 0.2, 8);
+              ellip('matW', -1.12, 0.96, 0.10, 0.78, 0.52, 0.60, hc(0x8654b4), -0.3, 8);
+              ellip('matW', -0.18, 1.04, 0.04, 0.84, 0.58, 0.64, hc(0x6fa438), 0.5, 8);
+              for (var ri5 = 0; ri5 < 7; ri5++) {
+                var ra5 = ri5 * 2.39996;
+                WX(-0.22, 1.42, 0.04, ra5, 0.46, 0, function () {
+                  box('matW', 0, 0, 0.56, 0.16, 0.04, 1.10, hc(0x82b63e));
+                });
+              }
+              cone('lacqR', 1.12, 1.08, -0.08, 0.18, 0.54, hc(0xc83a68), 7);
+              tblStreetFurn.push(fx, fy, fz, fry, 4.2, 1.95, 2.25);
             }
           });
         };
@@ -514,7 +558,7 @@
               px = p0[0] + ux * dCur + nx * side * kerbOff;
               pz = p0[1] + uz * dCur + nz * side * kerbOff;
               if (!clearOfSites(px, pz)) continue;
-              kIdx = (seqF * 3 + segI) & 3;
+              kIdx = [4, 1, 2, 5, 0, 3, 2, 1][(seqF * 5 + segI) & 7];
               emitFurnPiece(px, pz, Math.atan2(-nx * side, -nz * side), kIdx);
             }
           }
@@ -746,8 +790,8 @@
       }, tblStreets);
       if (tblStreetFurn.n > 0) SVTAGS.addSet({
         'class': 'prop', kind: 'street-furniture', key: 'bs-street-furniture',
-        name: 'Verdigris-stone and cast-bronze street furniture', tags: { culture: 'lizardmen', types: ['infrastructure', 'civic'] },
-        note: 'Shang fangding bronze cauldrons, battered verdigris-stone basking benches, spiral-eye kerb pylons with clapperless chimes, and bronze-spouted curb troughs',
+        name: 'Verdigris-stone street furniture and spiral Rift planters', tags: { culture: 'lizardmen', types: ['infrastructure', 'civic', 'park'] },
+        note: 'Shang fangding bronze cauldrons, battered verdigris-stone basking benches, spiral-eye kerb pylons, curb troughs, twisted Rift-fern planters and low leiwen shrubbery beds',
         frag: 'settlements/basilisk'
       }, tblStreetFurn);
       if (tblCivil.n > 0) SVTAGS.addSet({
