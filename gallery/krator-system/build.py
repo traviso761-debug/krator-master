@@ -10,7 +10,7 @@ import numpy as np
 from PIL import Image
 HERE = os.path.dirname(os.path.abspath(__file__))
 os.chdir(HERE)
-p = json.load(open('pics.json'))
+p = json.load(open('pics.json', encoding='utf-8'))
 
 
 def globe_from(path, centre_u, centre_lat=0.0, N=260):
@@ -34,10 +34,10 @@ def globe_from(path, centre_u, centre_lat=0.0, N=260):
     return 'data:image/png;base64,' + base64.b64encode(b.getvalue()).decode()
 
 
-# Krator's globe: from the owner's illustrative atlas (not the canonical map), only when asked (--globe <atlas.png>)
+# Krator's fallback globe thumbnail: from an equirectangular atlas when asked (--globe <atlas.png>)
 if '--globe' in sys.argv:
-    p['krator'] = globe_from(sys.argv[sys.argv.index('--globe') + 1], 0.61, -28.0)
-    json.dump(p, open('pics.json', 'w'))
+    p['krator'] = globe_from(sys.argv[sys.argv.index('--globe') + 1], 0.35, -31.0)
+    open('pics.json', 'w', encoding='utf-8', newline='\n').write(json.dumps(p))
 
 t = open('template.html', encoding='utf-8').read()
 CSS = """
@@ -60,7 +60,7 @@ select { font: 13px/1 var(--body); background: var(--panel); color: var(--ink); 
 .krator .globe { width: 150px; height: 150px; }
 """
 if '.orr-cta' not in t:
-    t = t.replace('@media (max-width: 760px)', CSS + '@media (max-width: 760px)', 1)
+    t = t.replace('@media (max-width: 840px)', CSS + '@media (max-width: 840px)', 1)
 BLOCK = """    <div class="orr-cta"><button id="orr-btn" type="button" aria-controls="orrery" aria-expanded="false">Show the system in motion</button><span class="note">A top-down model, seen from above Krator's north pole.</span></div>
     <div id="orrery" hidden>
       <div class="bar">
@@ -76,11 +76,6 @@ BLOCK = """    <div class="orr-cta"><button id="orr-btn" type="button" aria-cont
 """
 if 'orr-btn' not in t:
     t = t.replace('    <p class="note">Distances are drawn to scale', BLOCK + '    <p class="note">Distances are drawn to scale', 1)
-KR_OLD = '    <div><div class="eyebrow">You are here</div><h2 id="k-h">Krator</h2></div>'
-KR_NEW = ('    <div style="display:grid;gap:12px;justify-items:start"><div><div class="eyebrow">You are here</div><h2 id="k-h">Krator</h2></div>'
-          '<img class="globe" data-body="krator" src="{{krator}}" alt="Krator, its crater and the Throne at the centre, the Ring Sea round it, seas to the west" width="150" height="150">'
-          '<span class="note" style="font-size:12px">An illustrative map, not the canonical world map</span></div>')
-t = t.replace(KR_OLD, KR_NEW, 1)
 t = t.replace('{{krator}}', p['krator'])
 # the cards (the same text as before), each globe tagged for the orrery
 M = json.load(open('cards.json', encoding='utf-8'))
@@ -95,8 +90,16 @@ for key, name, kind, desc, rows in json.load(open('planets.json', encoding='utf-
     dl = ''.join(f'<dt>{a}</dt><dd>{b}</dd>' for a, b in rows)
     pc.append(f'<article class="card"><header><img data-body="{key}" src="{p[key]}" alt="{html.escape(name)}, an impression" width="112" height="112"><div><h3>{name}</h3><span class="tag">{kind}</span></div></header><p>{html.escape(desc)}</p><dl>{dl}</dl></article>')
 t = t.replace('{{planets}}', '\n      '.join(pc))
-maps = json.load(open('maps.json'))
-t = t.rstrip() + '\n<script>window.ORR_MAPS=' + json.dumps(maps) + ';</script>\n' + open('orrery3d.js', encoding='utf-8').read()
+maps = json.load(open('maps.json', encoding='utf-8'))
+baked_raw = open('krator_baked.json', encoding='utf-8').read().strip()
+widget_js = open('krator_globe_widget.js', encoding='utf-8').read()
+t = (
+    t.rstrip()
+    + '\n<script>window.KRATOR_BAKED=' + baked_raw + ';</script>\n'
+    + '<script>\n' + widget_js + '\n</script>\n'
+    + '<script>window.ORR_MAPS=' + json.dumps(maps) + ';</script>\n'
+    + open('orrery3d.js', encoding='utf-8').read()
+)
 t = t.replace('A top-down model, seen from above Krator\'s north pole.', 'A 3D model you can turn: every moon at its real period, lit by the sun.')
 os.makedirs('dist', exist_ok=True)
 open(os.path.join('dist', 'krator-system.html'), 'w', encoding='utf-8', newline='\n').write(t)
