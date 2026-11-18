@@ -29,6 +29,7 @@ Every build is a folder with `src/` fragments and a `build.py`. Open a build's `
 | [`settlements/reedlake`](settlements/reedlake/INDEX.md) | 39 | 363 | 34 | Reed Lake: a floating reed-lake village and its kit. |
 | [`settlements/screamers`](settlements/screamers/INDEX.md) | 77 | 576 | 63 | Hexahedron: the Screamers' tribal village in and under a ruined arcology, forked from the Ancients kit. |
 | [`settlements/shade`](settlements/shade/INDEX.md) | 19 | 164 | 28 | Shade: the Eastern Nomads' sunken basin in the eastern high desert (falls, pool, carved face, switchback, slot canyon) on the sedesert biome kit: rock-cut and pueblo buildings, cliff dwellings round the rim, alcoves and an undercut behind the falls, the life layer's data and walkable grid. |
+| [`settlements/skink`](settlements/skink/INDEX.md) | 5 | 16 | 6 |  |
 | [`settlements/span`](settlements/span/INDEX.md) | 11 | 116 | 49 |  |
 | [`settlements/thalaba`](settlements/thalaba/INDEX.md) | 3 | 14 | 8 |  |
 | [`settlements/tuatara`](settlements/tuatara/INDEX.md) | 4 | 15 | 7 |  |

@@ -1484,6 +1484,10 @@
    "bytes": 5103214,
    "sha256": "e79eac17d4701fe350c741e0dcd4ba8a7dedbad8132a155abd2f7b5cfd000fc3"
   },
+  "settlements/skink/dist/skink.html": {
+   "bytes": 8066070,
+   "sha256": "12dbeb1f015535d3f462f508720249c73e3f623a2145bb5b26d204719947ac97"
+  },
   "settlements/span/dist/span.html": {
    "bytes": 2150014,
    "sha256": "d93360679be5127ae4ce0d3e73f563e10c5be1ae007e57603a432351487871b4"

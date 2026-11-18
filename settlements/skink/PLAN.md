@@ -108,12 +108,12 @@ No new piece: `lz-mine`, the kit's; `gl-well`, `gl-tank`, `gl-pans`, `gl-saltsto
 
 ## 7. Steps
 
-| Step | What | Test |
-|---|---|---|
-| **S0** | this plan, `spec.json`, the sheets, the runs (**done**) | `node settlements/skink/stress-lz.js gilaSalt` |
-| **S1** | the owner's yes and the name (Skink); the tune's row and the Coil's, section 5 (**done**) | `test-lizardmen.js` 17/17, `test-lz-raids.js`, `test-lz-join.js` |
-| S2 | the pin on the scale model's queue | |
-| S3 | the page, by the guide | the guide's section 5; `expect.keys` lz-nest, lz-ley, lz-muster, gl-tank, lz-mine, gl-pans, gl-saltstore |
+| Step | What | Test | Status |
+|---|---|---|---|
+| **S0** | this plan, `spec.json`, the sheets, the runs | `node settlements/skink/stress-lz.js gilaSalt` | done (`ea38addc4`) |
+| **S1** | the owner's yes and the name (Skink); the tune's row and the Coil's, section 5 | `test-lizardmen.js` 17/17, `test-lz-raids.js`, `test-lz-join.js` | done (`e08d51c75`) |
+| **S2** | the pin on the scale model's queue | | queued (`PLAN-LIZARDMEN.md`) |
+| **S3** | `SK_REC`, the spec and the page, by the guide | `test-sk-records.js`; the guide's section 5; `expect.keys` lz-nest, lz-ley, lz-muster, gl-tank, lz-mine, gl-pans, gl-saltstore | done (GPU-verified; section 8 questions 5-6 open) |
 
 ## 8. Questions for the owner
 
