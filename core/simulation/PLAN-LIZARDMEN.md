@@ -46,7 +46,7 @@ LORE.md 6.20 carries the new names. The proposal, the survey and Gila's plan and
 - **Frame:** Xanadu's (`XAN_TUNE.px`: metres from px 1191,1569), so Z5 can join the East Rift.
 - **Places:** the ten above. The towns at 10 people an actor, the warrens at 200 (as Xanadu's countrysides).
 - **What each makes a year** (t; *proposed*, from PROPOSAL-LIZARDMEN section 2 and the survey's resources):
-  - Basilisk: grain 1,500, produce 1,300, fish 600, meat and hide 450, salt 115 from the sea's pans, bone 48; **the bronze hall** casts Tuatara's copper and Komodo and Iguana's tin, nine to one.
+  - Basilisk: grain 1,500, produce 1,300, fish 600, meat and hide 450, salt 55 from the strand's wet-season boiling floors (scaled back from 115 t by the owner, 2026-11-17, now that Skink carries the country), bone 48; **the bronze hall** casts Tuatara's copper and Komodo and Iguana's tin, nine to one.
   - Tuatara: grain 1,000, copper 70.
   - Komodo: grain 600, fish 240, tin 8.
   - Gila: **its own records** (salt 300, evaporites 40, grain 600, lakecake 120, ...).
@@ -106,7 +106,10 @@ Each town is a `settlements/<name>` built on `kits/lizardmen/build.py --settleme
 | **Iguana** | -373 m (*proposed* pin), 23 °C, ~1,990 mm, Af, flat (0.6 %): the plateau's prime farmland, 15 km west of the Pile | the spiral wide and open among the fields, the granaries many; a watch on Loj Nahn toward the Pile (lookouts) | none beyond the kit (granaries, farms, windmills, lookouts) |
 | **the Tubes** | -77 m at the pin, 1.62 atm, Csa/Aw 21 °C; Tkyoob Warra 19 km | a cavern town: the Rift line's ruined station (`core/terrain` cavern, `core/ruins` for the station's wreck) with the spiral wound into the tube, fungus beds in the dark (`kits/crops` pale fungi, `works: dark-beds`) | **fungus beds**, the ruined station (Ancient: a `kits/ancient-transit` subway station in ruin) |
 
-## Basilisk, the capital (a plan section; built later in its own session)
+## Basilisk, the capital, and the Lizardman polygon census (`settlements/basilisk/PLAN.md`, `core/simulation/LIZARDMEN-CENSUS.md`)
+
+- **Elaborated capital plan & blueprint:** `settlements/basilisk/PLAN.md`, `basilisk_layout.py` (`basilisk_plan.json`, 1,184 placements, 15,337 housed), and `BLUEPRINT.md` (`floors/B0..B7.png`, `section.png`); all stone dwellings and capital works (`lk-makers`, `lk-lodge`, `lk-granary`, `lk-bronzehall`, `lk-dockstore`, `lk-boil`, `lk-slot`, plus `lz-barge` and `lz-wayhalt`) are now built and GPU-verified in `kits/lizardmen`.
+- **Polygon census, hamlets & Coil road network:** `core/simulation/LIZARDMEN-CENSUS.md` scopes the `176,596 km²` Lizardmen polygon (`rmufwmqdl9qjf`) into 8 dry warren sub-districts (fixing `warrens-west`'s water-cell centroid), 29 town-ring hamlets, 26 named minor villages/works, 24 `lz-wayhalt` staging posts, and the full Coil land + reed-barge transport network.
 
 - **The site:** the model's pin (765,1596) stands **in the water**, at the western end of the eastern terminal sea, at the raster's floor (-2,600 m). The capital wants a pin on the shore: *proposed*, the nearest dry ground at the sea's western end (the scale-model queue, below).
 - **Climate:** XA hypertropic jungle, 36 °C, 2,086 mm, 2.21 atm. Tlahn Gill (8 km) and Blek Beck (14 km).

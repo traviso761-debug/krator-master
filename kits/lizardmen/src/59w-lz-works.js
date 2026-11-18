@@ -431,3 +431,107 @@ defBuilding({key: 'lz-waystone', name: 'Coil waystone and haul sledge', seed: 72
     });
     lwSledge(1.65, 0.2, 0.18, 'cargo');
   }});
+
+defBuilding({key: 'lz-barge', name: 'Reed barge (eleven ribs)', seed: 7222, cls: 'vessel', caste: 3, cut: false, w: 5.4, d: 21, h: 3.8, budget: 75000,
+  tags: {types: ['cargo', 'barge', 'ferry'], propulsion: 'paddles', hull: 'raft', wealth: 'middle', crew: 6, role: 'barge', job: 'shipwrighting'},
+  front: {x: 0, z: 10.5, yaw: 0},
+  note: 'the Lizardmen\'s terminal-sea and river reed barge (settlements/basilisk/PLAN.md question 8): three tapered reed-bundle hulls waterproofed below in black lacquer and bound inside eleven curved bone ribs (odd), upturned horn prows with bronze spiral eyes, six side paddles and a stern sweep (never a sail: a sail is too near a banner), carrying Coil jars and a bronze-bound relic chest',
+  build(o) {
+    /* three bundled-reed hulls (central main hull + two side sponsons) coated with black lacquer at the waterline */
+    for (const [sx, rMid, Lh] of [[0, 0.72, 18.4], [-1.22, 0.52, 16.6], [1.22, 0.52, 16.6]]) {
+      tube('reed', t => {
+        const u = t * 2 - 1, lift = Math.pow(Math.abs(u), 3.2) * 1.15;
+        return [sx * (1 - 0.38 * Math.pow(Math.abs(u), 2.4)), 0.42 + lift, u * (Lh / 2)];
+      }, t => {
+        const u = Math.abs(t * 2 - 1), r = rMid * (1 - 0.72 * Math.pow(u, 2.2)) + 0.08;
+        return [r, r * 0.78];
+      }, 18, 8, P('reed'), {caps: true});
+      box('lacq', sx * 0.92, 0.14, 0, rMid * 1.35, 0.24, Lh * 0.72, P('lacq'));
+    }
+    /* eleven external bone ribs (odd: 11) clasping the three reed bundles and crossing low at the gunwales */
+    for (const z of lzSpan(-6.8, 6.8, 11)) {
+      const k = 1 - 0.32 * Math.pow(Math.abs(z) / 7.2, 2);
+      tube('bones', t => {
+        const u = t * 2 - 1;
+        return [u * 1.82 * k, 0.28 + 0.72 * Math.pow(Math.abs(u), 1.8), z];
+      }, () => [0.065, 0.065], 9, 6, P('boneO'), {caps: true});
+      ring('rope', 0, 0.68, z, 0.16, 0.025, P('reedD'), 0, 0, PI / 2, 8);
+    }
+    /* upturned horn stem (+z) and sternpost (-z) with bronze spiral eyes */
+    lzHorn(0, 1.35, 8.8, PI, 2.15, 0.18, {curl: 0.65, lean: 0.18, mk: 'horn'});
+    lzHorn(0, 1.25, -8.8, 0, 1.85, 0.16, {curl: 0.58, lean: 0.15, mk: 'horn'});
+    for (const s of [-1, 1]) lzEye(s * 0.48, 1.18, 7.6, s * PI / 2, 0.22, {mk: 'bronze'});
+    /* midship cane cargo deck, bronze-bound relic chest and lashed Allotment jars/sacks */
+    box('cane', 0, 0.86, 0, 2.85, 0.1, 10.6, P('cane'));
+    W(0, 0.96, 1.4, 0, () => {
+      box('lacqR', 0, 0, 0, 1.15, 0.68, 1.65, P('oxblood'));
+      box('bronzeC', 0, 0.66, 0, 1.2, 0.08, 1.7, P('bronze'));
+      W(0, 0.34, 0.84, 0, () => lzLeiwen(0.92, 0.36, {cell: 0.16, mk: 'bronze', back: false, t: 0.02, proud: 0.015}));
+    });
+    FURNISH('generic_storage_jar', -0.65, 0.96, -1.2, 0.2, {setting: 'outdoor'});
+    FURNISH('generic_storage_jar', 0.62, 0.96, -1.4, -0.5, {setting: 'outdoor'});
+    FURNISH('generic_sack', -0.55, 0.96, -3.1, 0.4, {setting: 'outdoor'});
+    FURNISH('generic_basket', 0.58, 0.96, -2.9, -0.3, {setting: 'outdoor'});
+    /* seven paddles (odd: six side paddles + one long stern steering sweep; no mast or sail) */
+    for (const z of [-3.6, 0, 3.6]) for (const s of [-1, 1]) {
+      beam('wood', [s * 1.45, 1.05, z], [s * 2.48, 0.22, z - 0.55], 0.035, P('reedD'), true, 5);
+      W(s * 2.42, 0.26, z - 0.52, 0, () => box('lacq', 0, 0, 0, 0.06, 0.28, 0.62, P('lacq')));
+    }
+    beam('wood', [0.25, 1.12, -6.2], [0.65, 0.18, -9.8], 0.045, P('reedD'), true, 6);
+    box('lacq', 0.65, 0.22, -9.85, 0.07, 0.34, 0.85, P('lacq'));
+  }});
+
+defBuilding({key: 'lz-wayhalt', name: 'Coil Round staging halt', seed: 7223, caste: 3, cut: true, w: 24, d: 18, h: 8.6, budget: 95000,
+  tags: {types: ['infrastructure', 'civic'], wealth: 'middle', role: 'station', job: 'warehousing'},
+  note: 'a twenty-kilometre day-march staging post on the Lizardmen\'s Coil road network: a battered brick-and-basalt Allotment tally and ration storehouse, a five-rib burden-beast unyoking shed with a stone watering trough, a parked cargo sledge and a seven-course twisted Coil distance cairn',
+  build(o) {
+    lzCutFloor(0.16);
+    box('earthR', 0, 0, 0, 22.8, 0.08, 16.8, P('earthP'));
+    box('stoneP', -5.2, 0.08, -1.2, 10.6, 0.08, 9.6, P('basaltD'));
+    /* enclosed Allotment tally & ration storehouse on -x */
+    const L = 9.4, Wd = 7.8, wh = 2.35, dh = lzDoorH(3), dw = dh * 0.62;
+    W(-5.2, 0, -1.2, 0, () => {
+      lzBatterRoom(L, Wd, 0.16, wh, 'basalt', P('basalt'), {
+        lean: {front: 0.07, back: -0.05, left: 0.09, right: -0.04},
+        mkf: s => s === 'front' ? 'brick' : 'basalt', colf: s => s === 'front' ? P('brick') : P('basalt'),
+        front: [{s: L / 2, w: dw, h: dh, door: true}, lzVent(3, 1.5, 1.4)],
+        back: [lzVent(3, 2.2, 1.4), lzVent(3, L - 2.2, 1.4)]
+      });
+      lzRibRoof(L, Wd, wh + 0.15, wh + 4.9, 7, {mk: 'thatch', col: P('reed'), over: 0.6, ribR: 0.13, past: 0.25, bend: 0.95, ext: 0.5, endMk: 'reed', endCol: P('reedD'), leanEnds: {left: 0.09, right: -0.04}, y0: 0.16});
+      W(2.4, 0.45, Wd / 2 - 0.07 * 0.3 + 0.05, 0, () => lzLeiwen(2.2, 0.95, {cell: 0.3, mk: 'bronze', back: 'lacq'}));
+      lzNoCut(() => lzPortal(0, 0.16, Wd / 2 + 0.06, 0, dh, {mk: 'lacqR'}));
+      lzThreshold(0, Wd / 2 + 0.22, 0, dw);
+      FURNISH('lizardmen_common_desk', -2.8, 0.16, -2.1, 0);
+      FURNISH('lizardmen_common_board', -2.8, 0.16, -3.1, 0);
+      FURNISH('lizardmen_common_bed', 2.4, 0.16, -2.2, PI / 2);
+      FURNISH('lizardmen_common_chest', 0.2, 0.16, -2.6, 0);
+      FURNISH('generic_storage_jar', -3.4, 0.16, 1.8, 0.3);
+      FURNISH('generic_sack', 3.1, 0.16, 1.9, -0.4);
+    });
+    /* five-rib open burden-beast unyoking pavilion and stone watering trough on +x */
+    lzNoCut(() => {
+      W(5.8, 0.08, -1.4, 0, () => {
+        for (const x of lzSpan(-3.8, 3.8, 5)) {
+          for (const s of [-1, 1]) beam('bones', [x, 0, s * 2.8], [x, 2.35, s * 2.65], 0.085, P('boneO'), true, 6);
+          lzArchRib(x, -3.1, 3.1, 4.2, {r: 0.11, mk: 'bones', past: 0.22});
+        }
+        box('matW', 0, 2.85, 0, 8.4, 0.07, 5.8, P('reedL'));
+        /* stone watering trough with dark water surface */
+        box('cyclo', 0, 0, -1.8, 5.6, 0.68, 1.15, P('basaltD'));
+        box('jade', 0, 0.58, -1.8, 5.1, 0.06, 0.78, P('turq'));
+        FURNISH('generic_basket', -2.6, 0, 1.6, 0.2, {setting: 'outdoor'});
+        FURNISH('lizardmen_common_jug', 2.6, 0, 1.7, -0.4, {setting: 'outdoor'});
+      });
+      lwSledge(5.6, 5.2, -0.22, 'grain');
+      /* seven-course twisted Coil distance cairn at the road edge (-x/+z) */
+      W(-9.2, 0.08, 5.6, 0, () => {
+        box('stoneP', 0, 0, 0, 2.1, 0.24, 2.1, P('basaltD'));
+        lzTwist(0, 0.24, 3.9, 7, 1.18, 0.56, 0.08, {
+          mk: 'cyclo', col: P('basalt'),
+          each: (i, y, w, ry) => {
+            if (i === 5) W(0, y + 0.2, 0, ry, () => lzEye(0, 0, w / 2 + 0.02, 0, w * 0.32, {mk: 'bronze', glow: true}));
+          }
+        });
+      });
+    });
+  }});

@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 17 (10%) | 0 (0%) | 0 (0%) | 1 (1%) | 153 (89%) |
+| KB | 18 (9%) | 0 (0%) | 0 (0%) | 1 (1%) | 176 (90%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -25,11 +25,12 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/56-sa-beasts.js` | 2.8 | [draw] | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/57-lc-camp.js` | 10.2 | [draw] | 0 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 | the camp's tents: geometry only |
 | `src/58-lz-monument.js` | 4.2 | [draw] | 0 | 0 | 0 | 0 | 0 | 7 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/59-lz-trades.js` | 6.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the Voth census table: no three.js, no geometry, no DOM |
-| `src/59w-lz-works.js` | 28.4 | [draw] | 0 | 0 | 0 | 0 | 0 | 64 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/59-lz-trades.js` | 7.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the Voth census table: no three.js, no geometry, no DOM |
+| `src/59w-lz-works.js` | 35.2 | [draw] | 0 | 0 | 0 | 0 | 0 | 78 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/60-lz-reliquary.js` | 10.7 | [draw] | 7 | 2 | 0 | 0 | 0 | 12 | 2 | 0 | 0 | 0 | 0 | split: the antechamber's dust (a Points layer on a frame hook) and the shimmer material hook are browser side; in Godot a GPU particle and a .gdshader |
 | `src/62-lk-capital.js` | 20.6 | [draw] | 0 | 0 | 0 | 0 | 0 | 12 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/89-rows.js` | 1.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/63-lk-works.js` | 16.4 | [draw] | 0 | 0 | 0 | 0 | 0 | 33 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/89-rows.js` | 1.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 
 ## Notes
 

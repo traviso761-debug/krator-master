@@ -122,7 +122,8 @@ No new piece: `lz-mine`, the kit's; `gl-well`, `gl-tank`, `gl-pans`, `gl-saltsto
 3. **Its name**: **Skink** (the owner, 2026-11-17).
 4. **1,500 people, 300 t of salt a year**: **added** as proposed with the village.
 5. **Basilisk's pans** stay at 115 t (wet-season boiling floors) or fall back now that Skink carries the
-   country? *Proposed:* they stay.
+   country? **Answered** (2026-11-17: *"scale them back"*): scaled back by more than half from `115 t` to **`55 t/yr`** in `LZ_TUNE`
+   and `settlements/basilisk` (three strand pan-spirals and two wet-season boiling floors for the bay fishery and cross-Coil buffer).
 6. **Tin**: a second source on a high-grade placer, rather than a sixth village: **Iguana's placer on Muckle Weyt Beck**
    (geology 700.6,1563.8, high tin, 27 km from Iguana: 8 t a year, a placer camp on `core/hamlet`), or the high placers on
    Basilisk's south shore (790.7,1603.8 and 791.4,1610.1). **Answered** (2026-11-17: *"and add the proposed tin site near iguana"*):

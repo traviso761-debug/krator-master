@@ -103,14 +103,22 @@ KIT = {
   'lk-gate':      dict(w=22, d=12, name='Capital gate'),
   'lk-wall':      dict(w=22, d=17, name='Capital wall (a 20 m run)'),
   'lk-watchtower': dict(w=12, d=12, name='Stone watchtower'),
-  'lz-makers':    dict(w=11, d=9, name="Makers' quarters", holds=10, caste=2, owed='lk-makers'),
-  'lz-tower':     dict(w=11, d=11, name="Interpreters' house", holds=7, caste=5, owed='lk-tower'),
-  'lz-lodge':     dict(w=14, d=20, name="Warriors' lodge", holds=30, caste=4, owed='lk-lodge'),
+  'lk-makers':    dict(w=12, d=10, name="Stone Makers' house", holds=10, caste=2),
+  'lk-tower':     dict(w=11, d=11, name="Stone Interpreters' house", holds=7, caste=5),
+  'lk-lodge':     dict(w=15, d=21, name="Stone warriors' lodge", holds=30, caste=4),
+  'lk-granary':   dict(w=15, d=12, name='Stone Allotment granary'),
+  'lz-makers':    dict(w=11, d=9, name="Makers' quarters", holds=10, caste=2),
+  'lz-tower':     dict(w=11, d=11, name="Interpreters' house", holds=7, caste=5),
+  'lz-lodge':     dict(w=14, d=20, name="Warriors' lodge", holds=30, caste=4),
   'lz-hall-bronze': dict(w=19, d=13, name='Bronze and stone hall', holds=12),
   'lz-hall-bone': dict(w=19, d=14, name='Bone hall', holds=12),
   'lz-hall-reed': dict(w=19, d=13, name='Reed, weaving and lacquer hall', holds=12),
-  'lz-granary':   dict(w=14, d=11, name='Granary', owed='lk-granary'),
+  'lz-bakehouse': dict(w=17, d=13, name='Earth-oven and yam bakehouse'),
+  'lz-fermentery': dict(w=18, d=13, name='Spore and yam fermenting house'),
+  'lz-granary':   dict(w=14, d=11, name='Granary'),
   'lz-warehouse': dict(w=17, d=13, name='Warehouse (the plunder)'),
+  'lz-wayhalt':   dict(w=24, d=18, name='Coil Round staging halt'),
+  'lz-waystone':  dict(w=8, d=7, name='Coil waystone and haul sledge'),
   'lz-barracks':  dict(w=21, d=14, name='Barracks'),
   'lz-muster':    dict(w=24, d=38, name='Mustering ground'),
   'lz-seer':      dict(w=15, d=13, name="Seer's hall"),
@@ -122,24 +130,25 @@ KIT = {
   'lz-obelisk':   dict(w=4, d=4, name='Twisted obelisk'),
   'lz-ley':       dict(w=6, d=22, name='Ley line shrine'),
   'lz-circle':    dict(w=22, d=22, name='Stone circle'),
-  'lz-weir':      dict(w=24, d=16, name='Fishing weir and drying racks'),
+  'lz-weir':      dict(w=18, d=14, name='Fishing weir and drying racks'),
   'lz-lookout':   dict(w=9, d=9, name='Lookout'),
   'gl-well':      dict(w=5, d=5, name='Brick well (Gila\'s piece)'),
   'gl-pans':      dict(w=60, d=60, name='Salt pans (Gila\'s piece)'),
   'gl-saltstore': dict(w=16, d=12, name='Salt store (Gila\'s piece)'),
-  # owed outright (PLAN.md section 7): no fallback in the kit
-  'lk-bronzehall': dict(w=45, d=27, name='The bronze hall', holds=60, owed=True),
+  # built capital works & vessels (kits/lizardmen 63-lk-works.js and 59w-lz-works.js, 2026-11-17)
+  'lk-bronzehall': dict(w=45, d=27, name='Great Bronze Hall', holds=60),
+  'lk-dockstore': dict(w=33, d=21, name='Stone dock store', holds=30),
+  'lk-boil':      dict(w=27, d=15, name='Salt boiling floor', holds=12),
+  'lk-slot':      dict(w=20, d=12, name='Ley Slot wall wicket'),
+  'lz-barge':     dict(w=5.4, d=21, name='Reed barge (eleven ribs)'),
+  # site-scale civil basins & earthworks (stamped onto KDRAWN + WATER.still when the page builds)
   'lk-dock':      dict(w=36, d=175, name='The dock (after Lothal)', owed=True),
-  'lk-dockstore': dict(w=33, d=21, name='The dock store on its podium', holds=30, owed=True),
-  'lk-boil':      dict(w=27, d=15, name='Salt boiling floor', holds=12, owed=True),
-  'lk-slot':      dict(w=6, d=10, name='The Ley Slot', owed=True),
   'lk-mole':      dict(w=9, d=700, name='The ley mole', owed=True),
   'lk-reservoir': dict(w=1, d=1, name='Reservoir (after Dholavira)', owed=True),
   'lk-checkdam':  dict(w=1, d=1, name='Check dam and leat', owed=True),
   'lk-charcoal':  dict(w=40, d=30, name='Charcoal and ore yard', owed=True),
-  'lz-barge':     dict(w=5, d=21, name='Reed barge (eleven ribs)', owed=True),
 }
-HOUSE = {1: 'lk-warren', 2: 'lz-makers', 3: 'lk-longhouse', 4: 'lz-lodge', 5: 'lz-tower', 6: 'lz-lodge'}
+HOUSE = {1: 'lk-warren', 2: 'lk-makers', 3: 'lk-longhouse', 4: 'lk-lodge', 5: 'lk-tower', 6: 'lk-lodge'}
 CASTE_NAME = {1: 'Tenders', 2: 'Makers', 3: 'Drovers', 4: 'Line warriors', 5: 'Interpreters', 6: 'Bulwarks'}
 CASTE_H = {1: 1.22, 2: 1.53, 3: 1.92, 4: 2.41, 5: 3.03, 6: 3.80}
 
@@ -476,15 +485,26 @@ def build():
                     put('gl-well', at, 0.0, d['id'], role='yard'); wells += 1
         d['placed_people'] = got; d['short'] = {c: max(0, rem[c]) for c in rem}; d['wells'] = wells
 
+    DIST_ROLES = [
+        ('The Cord and Lacquer Ward', 'oxblood and black battery-strand lacquer, waterproofed reed cordage'),
+        ('The Bell and Inlay Ward', 'clapperless bells, nested bronze portal frames, caste ornaments'),
+        ('The Scribe and Mat Ward', 'spiral-script stela carving, reed screens, College attendants'),
+        ('The Salt-Strand and Tanners Ward', 'boiling-floor salt crews, bay fish-curing, hide tanning'),
+        ('The Leat and Gardeners Ward', 'keepers of the seven Dholavira reservoirs, bakehouses, southern taro gardens'),
+        ('The Bay and Smelters Ward', 'Great Bronze Hall furnace crews, Lothal dockers, reed-bargewrights'),
+        ('The Shore-Road and Masons Ward', 'Shore-Road sledge drovers, burden-beast yards, cyclopean wall masons'),
+    ]
     order = [1, 5, 2, 3, 4]
     for d in dists:
+        d['ward_name'], d['ward_focus'] = DIST_ROLES[d['j']]
         hall = ['lz-hall-reed', 'lz-hall-bronze', 'lz-hall-reed', 'lz-hall-bone', 'lz-hall-reed', 'lz-hall-bronze', 'lz-hall-reed'][d['j']]
+        extra_food = [('lz-bakehouse', 3)] if d['j'] in (4, 6) else ([('lz-fermentery', 3)] if d['j'] == 5 else [])
         court_items(d, [('lz-medicine', 2), ('lz-cistern', 6), ('lz-obelisk', 3), ('lz-bells', 8), ('lk-nest', 10),
-                        ('lz-stela-pair', 7), (hall, 5), ('lz-cistern', 4), ('lz-stela-turned', 1)])
+                        ('lz-stela-pair', 7), (hall, 5)] + extra_food + [('lz-cistern', 4), ('lz-stela-turned', 1)])
         fill(d, order, HOUSE)
-    court_items(gq, [('lz-granary', 3), ('lz-granary', 3), ('lz-granary', 3), ('lz-warehouse', 6), ('lz-barracks', 8), ('lz-muster', 10),
-                     ('lz-barracks', 8), ('lz-hall-bone', 7), ('lz-granary', 3), ('lz-granary', 3), ('lz-granary', 3), ('lz-granary', 2), ('lz-cistern', 4)])
-    fill(gq, [2, 3, 4], {2: 'lz-makers', 3: 'lk-longhouse', 4: 'lz-lodge'})
+    court_items(gq, [('lk-granary', 3), ('lk-granary', 3), ('lk-granary', 3), ('lz-warehouse', 6), ('lz-barracks', 8), ('lz-muster', 10),
+                     ('lz-barracks', 8), ('lz-hall-bone', 7), ('lk-granary', 3), ('lk-granary', 3), ('lk-granary', 3), ('lk-granary', 2), ('lz-cistern', 4)])
+    fill(gq, [2, 3, 4], {2: 'lk-makers', 3: 'lk-longhouse', 4: 'lk-lodge'})
     # the gate quarter's granaries: seven (odd), the Allotment's reserve, in its corner court at the gate end
     plan['districts'] = dists; plan['gate_quarter'] = gq
 
@@ -513,7 +533,7 @@ def build():
             tw.append((ac0 + cur[0] * step * 1.25, bc0 + cur[1] * step))
     tw = [p for p in tw if a0 + 8 < p[0] < a1 - 8 and b0 + 8 < p[1] < b1 - 8][:13]
     for i, (a, b) in enumerate(tw):
-        put('lz-tower', sk(a, b), 0.0, 'precinct', caste=5, role='an Interpreters\' house')
+        put('lk-tower', sk(a, b), 0.0, 'precinct', caste=5, role='an Interpreters\' stone house')
     put('lk-nest', sk(a1 - 70, b1 - 60), math.pi, 'precinct', role='the Nest of Returns: where the Interpreters are reborn')
     for i in range(5):
         put('lk-warren', sk(-110 + i * 44, b0 + 22), math.pi / 2, 'precinct', caste=1, role='the Hall\'s Tenders')
@@ -612,21 +632,24 @@ def build():
     # the works cluster on the bank by the dock: the warehouse behind the store, the bronze hall and its yard to the south
     put('lz-warehouse', east(0.56, so - 25 - 36 - 12 - 21 - 10 - 6.5), OUT_A, 'works', role="the dock's warehouse")
     sb = shore_off(0.44)
-    put('lk-bronzehall', east(0.44, sb - 40 - 13.5), OUT_A, 'works', role="the bronze hall: Tuatara's copper and Komodo's tin, nine to one; seven furnaces, outside the wall and by the water", caste=2)
+    put('lk-bronzehall', east(0.44, sb - 40 - 13.5), OUT_A, 'works', role="the bronze hall: Tuatara's copper and Komodo and Iguana's tin, nine to one; seven furnaces, outside the wall and by the water", caste=2)
     put('lk-charcoal', east(0.44, sb - 40 - 27 - 12 - 15), OUT_A, 'works', role='charcoal from the jungle, the ore heaps, the ingot store')
+    for i in range(2):
+        put('lz-barge', east(0.56 + (i - 0.5) * 0.03, so - 25 + 6), EA, 'works', role='a reed barge loading Coil ingots and bay fish in the Lothal dock basin')
     for i in range(3):
         f = 0.78 + 0.07 * i
         put('lz-weir', east(f, shore_off(f) + 10), OUT_A, 'works', role='fishing weir and drying racks, standing in the bay')
     plan['works'] = dict(shore_off_at_dock=so, east_run=P([se, ne]))
-    # ---- the salt: the pans on the strand west of the city, the boiling floors and the store
+    # ---- the salt: scaled back (the owner, 2026-11-17: 55 t/yr now that Skink carries the country) to three pan-spirals
+    # on the strand west of the city, two wet-season boiling floors (lk-boil) and the salt store
     nw = wall[5]                                    # the north-west corner
     pans = []
-    for i in range(7):
-        c = (nw[0] - 160 - i * 92, nw[1] + 120 + (i % 2) * 10)
+    for i in range(3):
+        c = (nw[0] - 160 - i * 96, nw[1] + 120 + (i % 2) * 10)
         if f_w(c[0], c[1] + 40) >= 0.5: c = (c[0], c[1] - 40)
         pans.append(c); put('gl-pans', c, 0.0, 'pans', role='a squared spiral of salt pans, the brine let in at its outer end')
-    for i in range(3):
-        put('lk-boil', (nw[0] - 210 - i * 160, nw[1] + 30), -math.pi / 2, 'pans', role='a salt boiling floor (brine boiled in pottery over jungle charcoal)', caste=2)
+    for i in range(2):
+        put('lk-boil', (nw[0] - 190 - i * 150, nw[1] + 30), -math.pi / 2, 'pans', role='a salt boiling floor (brine boiled in crusted bronze pans over jungle charcoal; scaled back to 55 t/yr)', caste=2)
     put('gl-saltstore', (nw[0] - 60, nw[1] + 40), -math.pi / 2, 'pans', role='the salt store')
 
     # ---- water: the leat from a check dam on Tlahn Gill to seven reservoirs (after Dholavira), each 1.25 times the last
@@ -655,6 +678,11 @@ def build():
     # every road leaves from the one gate: out 300 m south of the tongue's foot, then each its own way (the north road
     # goes round the sea's west end: nothing goes straight but the ley line)
     gu, gv = gate_at; g0 = [(gu, gv - 20), (gu, gv - 300)]
+    put('lz-wayhalt', (gu - 46, gv - 190), 0.0, 'gate_road', role='the Coil Round roadhead halt outside the South Gate: unyoking shed and tally store where the three trunk roads part')
+    for sx, sy, ang, nm in [(-95, -310, math.pi, 'west-loop mile-0 waystone (Iguana road)'),
+                            (-65, -265, 2.35, 'east-loop north-shore mile-0 waystone (Tuatara road)'),
+                            (75, -310, 0.0, 'east-loop south-shore mile-0 waystone (Komodo road)')]:
+        put('lz-waystone', (gu + sx, gv + sy), ang, 'gate_road', role=nm)
     plan['country'] = dict(
         fields=[P(rect_sk(-2600, -900, -2900, -1500)), P(rect_sk(-700, 1300, -3600, -2000)), P(rect_sk(-5200, -2900, -1400, 400))],
         roads=[dict(name='the Iguana road (west, up to the Pile\'s plateau; Iguana ~120 km as the crow flies)', pts=P(g0 + [(-3200, -1750), (-6200, -1300), (-9000, -600)])),

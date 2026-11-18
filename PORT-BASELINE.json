@@ -861,8 +861,8 @@
    "sha256": "f4141e152cb4d4b42efb5c0ada187f549110aaf91bbfb02ace6c3fea21b03ada"
   },
   "kits/lizardmen/dist/lizardmen.html": {
-   "bytes": 1802427,
-   "sha256": "7d68527eb6df5fd4b9d4978000100d535b69a847f7a516cfa96912f3e8271339"
+   "bytes": 1827174,
+   "sha256": "ffab8046d3613270684ba62bef0b80e06372ea530aaf63ad6b550e4965d52a3a"
   },
   "kits/mechs/dist/mechs.html": {
    "bytes": 1715496,
@@ -1221,8 +1221,8 @@
    "sha256": "ff55123b7c5b9407569f8adb584db31648458bd78f5662d35da7d081866e7c15"
   },
   "settlements/gila/dist/gila.html": {
-   "bytes": 2869309,
-   "sha256": "74fbf3801443950b5fea955dbfec2ed26592e0e2ba551a0a7872fd7468a8fe49"
+   "bytes": 2893909,
+   "sha256": "0af5886000a4d7c011a8a8acfa8d3926c45cf9a23e415ed8e39ca2b023827997"
   },
   "settlements/girder/girder-hero.html": {
    "bytes": 9885121,
@@ -1245,8 +1245,8 @@
    "sha256": "c4a59a537b6331d763782da7440ac1b08ae3d38a1c2bfb2ece22f983fce8f7dd"
   },
   "settlements/iguana/dist/iguana.html": {
-   "bytes": 8168948,
-   "sha256": "37b3f1ddb3cdcfd1c1ef0e78badec414e9e321a42806676b1681729ff18da38f"
+   "bytes": 8193650,
+   "sha256": "825e3e5a6dbfaf03c5f9124125f41cb5fd3eac67d4894093d9226b995512b889"
   },
   "settlements/isle-demo/dist/isle-city.html": {
    "bytes": 6514900,
@@ -1289,8 +1289,8 @@
    "sha256": "c55c2c62f88cd016aeecfc2b6b027e466f63afd1de992e1ad956f1e9b6599cf9"
   },
   "settlements/komodo/dist/komodo.html": {
-   "bytes": 8185201,
-   "sha256": "aa1a69db411ddebc0acefaeb323aadcf5e346afd7cba50f769309af7db0fe884"
+   "bytes": 8209903,
+   "sha256": "0495a9a417e229a07f1193223003b376f8f93576a0d2fcf86e62c2c26dd88003"
   },
   "settlements/lightwall/dist/lightwall.html": {
    "bytes": 3849615,
@@ -1485,16 +1485,16 @@
    "sha256": "e79eac17d4701fe350c741e0dcd4ba8a7dedbad8132a155abd2f7b5cfd000fc3"
   },
   "settlements/skink/dist/skink.html": {
-   "bytes": 8066224,
-   "sha256": "c8bb4c158e958a02b3f26dcd59655637ae9b556079a26ccd8b835f0cb29f9a87"
+   "bytes": 8090926,
+   "sha256": "9b896f0e92a83c227e82167c74eca42acad87ad199195dad410942f1c1507d09"
   },
   "settlements/span/dist/span.html": {
    "bytes": 2150014,
    "sha256": "d93360679be5127ae4ce0d3e73f563e10c5be1ae007e57603a432351487871b4"
   },
   "settlements/tuatara/dist/tuatara.html": {
-   "bytes": 8317316,
-   "sha256": "438e3632fa7a126797a921bb2b6924edfbbd81dc92b2038c24bef5167dcc9d98"
+   "bytes": 8342018,
+   "sha256": "fd5d60b7f29ad68d769c3357e011baad866a4dc91803ec3d8905e1985ddf3a1c"
   },
   "settlements/verge/dist/verge.html": {
    "bytes": 3340526,

@@ -45,8 +45,8 @@ T.chain={cast:{in:{copper:9,tin:1},out:{bronze:10},hours:30},rework:{in:{bronze:
    section 2; LIZARDMEN-SURVEY section 4): */
 T.places=[
  {id:'slrodrkrls',key:'basilisk',name:'Basilisk, the stone capital at the eastern sea',px:765,py:1596,people:15000,diet:'town',
-  make:{grain:1500000,produce:1300000,fish:600000,meat_hide:450000,salt:115000,bone:48000},extra:{evaporites:12000/15000,bone:60000/15000},
-  smiths:true,cast:true,why:'the jungle shore grows grain poorly; the sea\'s pans give the east\'s salt; the bronze hall casts what Tuatara, Komodo and Iguana dig'},
+  make:{grain:1500000,produce:1300000,fish:600000,meat_hide:450000,salt:55000,bone:48000},extra:{evaporites:12000/15000,bone:60000/15000},
+  smiths:true,cast:true,why:'the jungle shore grows grain poorly; the strand\'s boiling floors keep 55 t of wet-season salt (scaled back from 115 t, the owner 2026-11-17, now that Skink carries the country); the bronze hall casts what Tuatara, Komodo and Iguana dig'},
  {id:'szv27b2reu',key:'tuatara',name:'Tuatara, on the volcanic savanna above the eastern sea',px:818,py:1554,people:3000,diet:{grain:233.33,produce:83.33,meat_hide:70,salt:8.333,bronze_ware:2},
   make:{grain:1000000,produce:250000,meat_hide:210000,copper:70000},smiths:true,raider:true,why:'the richest ground: copper 102 nodes, the savanna\'s grain; no perennial water, so no fish'},
  {id:'spnqhezhiw',key:'komodo',name:'Komodo, at the eastern sea\'s far end',px:865,py:1617,people:3000,diet:'town',

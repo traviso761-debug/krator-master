@@ -52,7 +52,7 @@ def PR(n, name, kind, pts, decor, note='', fill=None, at=None, area=None):
 def bldg_fill(r):
     if r['key'] == 'gl-well': return C_WELL
     c = r.get('caste')
-    if c and r['key'] in ('lk-warren', 'lz-makers', 'lk-longhouse', 'lz-lodge', 'lz-tower'): return C_CASTE[c]
+    if c and r['key'] in ('lk-warren', 'lk-makers', 'lz-makers', 'lk-longhouse', 'lk-lodge', 'lz-lodge', 'lk-tower', 'lz-tower'): return C_CASTE[c]
     return C_CIVIC
 
 def water_cells(plan_f, u0, u1, v0, v1, step):
@@ -206,7 +206,7 @@ def sheets(p, f_w):
     rooms, extra, n = grouped(wr, 1, lambda r: '`%s`%s: %s' % (r['key'], ' (owed)' if L.KIT[r['key']].get('owed') else '', r.get('role', '')), lambda r: 2,
                               lambda r: C_WATER if r['key'] == 'lk-dock' else (150, 130, 100))
     S.append(dict(id='B4', R=400, rect=R4, title='Sheet B4: the works on the bay: the bronze hall, the dock after Lothal, the weirs',
-        sub='Outside the east wall, between it and the bay where Tlahn Gill comes in. The bronze hall casts the east\'s bronze, Tuatara\'s copper and Komodo\'s tin nine to one (LZ_TUNE\'s chain: ~78 t a year from 70 t of copper and 8 t of tin), at seven furnaces fed with charcoal from the jungle shore; its ingots go out along the Coil as the outward gift. The dock is a brick basin after Lothal\'s, its sluice to the north, its store on a podium beside it: the reed barges (eleven ribs, owed to the kit) bring the Coil\'s loads by water and go out along the ley line. Every load still goes round to the one gate: there is no door in the east wall but the Ley Slot. Fish (LZ_TUNE: 600 t) from the weirs standing in the bay.',
+        sub='Outside the east wall, between it and the bay where Tlahn Gill comes in. The Great Bronze Hall (lk-bronzehall) casts the country\'s bronze from Tuatara\'s copper (70 t) and Komodo and Iguana\'s tin (16 t capacity, nine to one: ~78 t capacity, ~73 t cast to plan), at seven furnaces fed with charcoal from the jungle shore; its ingots go out along the Coil as the outward gift. The dock is a brick basin after Lothal\'s, its sluice to the north, its stone store (lk-dockstore) on a ventilated podium beside it: the eleven-rib reed barges (lz-barge) bring the Coil\'s loads by water and carry relics straight out along the ley line. Every bulk load still marches round to the South Gate: there is no door in the east wall but the Ley Slot (lk-slot). Fish (LZ_TUNE: 600 t) from the weirs standing in the bay.',
         rooms=rooms, fills=fills, overfills=extra + [(r['fp'], bldg_fill(r)) for r in placed if r['where'] != 'works' and inside(r['fp'], R4)],
         lines=shore + wall_line + ley_line + coil + dstreets, axisnote=AXIS, bar=50,
         key=[(C_SEA, 'the bay (the model\'s mask)'), ((150, 130, 100), 'the works'), (C_WALL, 'the east wall'), (C_LEY, 'the ley line')]))
@@ -263,7 +263,7 @@ def sheets(p, f_w):
     dm = p['water']['check_dam']
     rooms.append(PR(n, 'The check dam on Tlahn Gill', 'works', [(dm[0] - 30, dm[1] - 8), (dm[0] + 30, dm[1] - 8), (dm[0] + 30, dm[1] + 8), (dm[0] - 30, dm[1] + 8)], 1, 'a basalt weir across the wadi; the leat (blue) fills the chain in the wet season, each reservoir spilling to the next', fill=C_CIVIC)); n += 1
     S.append(dict(id='B7', R=1600, rect=R7, title='Sheet B7: the water and the salt',
-        sub='Fresh water after Dholavira, the Indus city on a salt flat that caught its seasonal streams: a check dam on Tlahn Gill (a wadi, dry half the year) and a leat to seven reservoirs outside the south wall, each 1.25 times the last; a cistern in every district court, a brick well in every yard (the rain is ~1,850-2,086 mm). The salt (LZ_TUNE: 115 t a year, the east\'s only source) from seven squared spirals of pans on the strand west of the city, the brine boiled down in pottery over charcoal on three floors in the wet season, and the salt store by the north-west corner.',
+        sub='Fresh water after Dholavira, the Indus city on a salt flat that caught its seasonal streams: a check dam on Tlahn Gill (a wadi, dry half the year) and a leat to seven reservoirs outside the south wall, each 1.25 times the last; a cistern in every district court, a brick well in every yard (the rain is ~1,850-2,086 mm). The salt (LZ_TUNE: 55 t a year, scaled back from 115 t now that Skink carries the country) comes from three squared spirals of pans on the strand west of the city, two wet-season boiling floors (lk-boil: crusted bronze pans over jungle charcoal) and the salt store by the north-west corner.',
         rooms=rooms, fills=fills, overfills=extra + [(r['fp'], bldg_fill(r)) for r in placed if r['where'] not in ('pans',) and inside(r['fp'], R7)],
         lines=shore + coil + wall_line + [(p['water']['leat'], (40, 110, 210), 4)] + [(p['site']['rivers']['r762']['pts'], (40, 110, 210), 3)],
         axisnote=AXIS, bar=200, key=[(C_SEA, 'the sea'), (C_WATER, 'reservoirs'), (C_PANS, 'salt pans'), (C_BAND, 'the city\'s bands')]))

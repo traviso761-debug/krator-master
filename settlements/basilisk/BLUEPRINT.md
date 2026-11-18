@@ -23,7 +23,7 @@ The scale model's pin stands in the water (-2,600 m, the raster's floor). The ci
 
 ![B1](floors/B1.png)
 
-One squared spiral street, the Great Coil (black), winds out from the precinct through two windings, its corners 75 and 105 degrees, each winding 1.25 times the last; it has thirteen segments and ends at the one gate in the tongue's foot. Between its turns lie seven districts, each its own spiral (red) wound in to its nest hall, every door facing in, each district's mouth opening on the Coil toward the Hall; their chirality alternates, cw and ccw, and the seventh breaks the pairing. The wall follows the Coil's last winding. The ley line (green) is the one straight thing: from the Hall's door through the Ley Slot to the mole. 1180 buildings; 15349 housed.
+One squared spiral street, the Great Coil (black), winds out from the precinct through two windings, its corners 75 and 105 degrees, each winding 1.25 times the last; it has thirteen segments and ends at the one gate in the tongue's foot. Between its turns lie seven districts, each its own spiral (red) wound in to its nest hall, every door facing in, each district's mouth opening on the Coil toward the Hall; their chirality alternates, cw and ccw, and the seventh breaks the pairing. The wall follows the Coil's last winding. The ley line (green) is the one straight thing: from the Hall's door through the Ley Slot to the mole. 1184 buildings; 15337 housed.
 
 | # | Item | m2 | Note |
 |---|---|---|---|
@@ -37,7 +37,7 @@ One squared spiral street, the Great Coil (black), winds out from the precinct t
 | 8 | District 6 (ccw, east) | 442859 | 2 windings, the first band 36 m; ~3185 people; its own stone nest hall in its court; its mouth onto the Great Coil faces the Hall |
 | 9 | District 7 (cw, north) | 533708 | 2 windings, the first band 39 m; ~3587 people; its own stone nest hall in its court; its mouth onto the Great Coil faces the Hall; winds the same way as district 1: the seventh breaks the pairs (the city's flaw) |
 | 10 | The gate quarter (the Coil's last band, run on into the tongue) | 637709 | the mustering ground in its court, the barracks, the seven granaries of the Allotment, the plunder warehouse, the bone hall; the garrison's lodges (B6) |
-| 11 | The works on the bay | 64361 | the dock after Lothal, its store, the bronze hall, the charcoal and ore yard; the weirs in the bay (B4) |
+| 11 | The works on the bay | 67695 | the dock after Lothal, its store, the bronze hall, the charcoal and ore yard; the weirs in the bay (B4) |
 | 12 | The reservoirs (x7) | 6624 | seven, after Dholavira, each 1.25 times the last; fed by the leat from Tlahn Gill (B7) |
 
 ## Sheet B2: the precinct of Intention: the Hall, the college and the Nest of Returns, on the Mound
@@ -56,7 +56,7 @@ The Mound stands 12 m over the sabkha, its sides battered, faced in polygonal ba
 | 6 | Interpreters' college | 384 | `lk-college`: the college: its door east, toward the Hall |
 | 7 | Seer's hall | 194 | `lz-seer`: the model of the country: the Allotment remembered |
 | 8 | Turned stelae | 81 | `lz-stela-turned`: texts whose meaning changed retroactively |
-| 9 | Interpreters' house (x13) | 120 | `lz-tower`: an Interpreters' house |
+| 9 | Stone Interpreters' house (x13) | 120 | `lk-tower`: an Interpreters' stone house |
 | 10 | Stone nest hall | 2496 | `lk-nest`: the Nest of Returns: where the Interpreters are reborn |
 | 11 | Stone cell-warren (x5) | 504 | `lk-warren`: the Hall's Tenders |
 | 12 | The Court of Intention | 10849 | before the Hall's door, along the line: the seven obelisks either side (the fifth twists the other way), the ley stone |
@@ -74,28 +74,30 @@ District 5, the south band of the second winding: its own rectangular leiwen (2 
 | 2 | Cistern | 144 | `lz-cistern` |
 | 3 | Twisted obelisk | 16 | `lz-obelisk` |
 | 4 | Bell rack (no clappers) | 32 | `lz-bells` |
-| 5 | Stone nest hall | 2495 | `lk-nest` |
+| 5 | Stone nest hall | 2496 | `lk-nest` |
 | 6 | Stela pair | 49 | `lz-stela-pair` |
-| 7 | Reed, weaving and lacquer hall | 247 | `lz-hall-reed` |
-| 8 | Cistern | 144 | `lz-cistern` |
-| 9 | Turned stelae | 81 | `lz-stela-turned` |
-| 10 | The flaw: one band fronted on its outer edge | 38448 | its doors face away from the nest: the district's one deliberate break, the Lie (DESIGN.md 2.2); chosen by the plan's own hash, kept in the manifest |
-| 11 | The district's mouth | 144 | its spiral street's outer end, on the Great Coil, facing the Hall |
+| 7 | Reed, weaving and lacquer hall | 246 | `lz-hall-reed` |
+| 8 | Earth-oven and yam bakehouse | 220 | `lz-bakehouse` |
+| 9 | Cistern | 144 | `lz-cistern` |
+| 10 | Turned stelae | 81 | `lz-stela-turned` |
+| 11 | The flaw: one band fronted on its outer edge | 38448 | its doors face away from the nest: the district's one deliberate break, the Lie (DESIGN.md 2.2); chosen by the plan's own hash, kept in the manifest |
+| 12 | The district's mouth | 144 | its spiral street's outer end, on the Great Coil, facing the Hall |
 
 ## Sheet B4: the works on the bay: the bronze hall, the dock after Lothal, the weirs
 
 ![B4](floors/B4.png)
 
-Outside the east wall, between it and the bay where Tlahn Gill comes in. The bronze hall casts the east's bronze, Tuatara's copper and Komodo's tin nine to one (LZ_TUNE's chain: ~78 t a year from 70 t of copper and 8 t of tin), at seven furnaces fed with charcoal from the jungle shore; its ingots go out along the Coil as the outward gift. The dock is a brick basin after Lothal's, its sluice to the north, its store on a podium beside it: the reed barges (eleven ribs, owed to the kit) bring the Coil's loads by water and go out along the ley line. Every load still goes round to the one gate: there is no door in the east wall but the Ley Slot. Fish (LZ_TUNE: 600 t) from the weirs standing in the bay.
+Outside the east wall, between it and the bay where Tlahn Gill comes in. The Great Bronze Hall (lk-bronzehall) casts the country's bronze from Tuatara's copper (70 t) and Komodo and Iguana's tin (16 t capacity, nine to one: ~78 t capacity, ~73 t cast to plan), at seven furnaces fed with charcoal from the jungle shore; its ingots go out along the Coil as the outward gift. The dock is a brick basin after Lothal's, its sluice to the north, its stone store (lk-dockstore) on a ventilated podium beside it: the eleven-rib reed barges (lz-barge) bring the Coil's loads by water and carry relics straight out along the ley line. Every bulk load still marches round to the South Gate: there is no door in the east wall but the Ley Slot (lk-slot). Fish (LZ_TUNE: 600 t) from the weirs standing in the bay.
 
 | # | Item | m2 | Note |
 |---|---|---|---|
 | 1 | The dock (after Lothal) | 6300 | `lk-dock` (owed): the dock: a brick basin 175 x 36 m (five to one), its sluice at the north end; a terminal sea has no tide, so it shelters the barges from the wet season's swell |
-| 2 | The dock store on its podium | 693 | `lk-dockstore` (owed): the dock store on its podium (Lothal's warehouse): the Coil's loads by water |
+| 2 | Stone dock store | 693 | `lk-dockstore`: the dock store on its podium (Lothal's warehouse): the Coil's loads by water |
 | 3 | Warehouse (the plunder) | 221 | `lz-warehouse`: the dock's warehouse |
-| 4 | The bronze hall | 1215 | `lk-bronzehall` (owed): the bronze hall: Tuatara's copper and Komodo's tin, nine to one; seven furnaces, outside the wall and by the water |
+| 4 | Great Bronze Hall | 1215 | `lk-bronzehall`: the bronze hall: Tuatara's copper and Komodo and Iguana's tin, nine to one; seven furnaces, outside the wall and by the water |
 | 5 | Charcoal and ore yard | 1200 | `lk-charcoal` (owed): charcoal from the jungle, the ore heaps, the ingot store |
-| 6 | Fishing weir and drying racks (x3) | 384 | `lz-weir`: fishing weir and drying racks, standing in the bay |
+| 6 | Reed barge (eleven ribs) (x2) | 113 | `lz-barge`: a reed barge loading Coil ingots and bay fish in the Lothal dock basin |
+| 7 | Fishing weir and drying racks (x3) | 252 | `lz-weir`: fishing weir and drying racks, standing in the bay |
 
 ## Sheet B5: the ley line and the reliquary approach
 
@@ -108,7 +110,7 @@ The kit's one straight thing (DESIGN.md 4), at the capital's scale: from the Hal
 | 1 | The Hall of Intention | 660 | its door the line's origin, facing the reliquary |
 | 2 | The Court of Intention | 10849 | the seven obelisks, the ley stone (lz-ley) at 58 m |
 | 3 | The Ley Way | 7185 | a 9 m way kept clear straight through every band and court it crosses: the only short way across the spiral; at each of the Great Coil's 3 crossings a twisted obelisk |
-| 4 | The Ley Slot | 60 | a Tender's 1.2 m triangular wicket through the east wall, the nested portal's smallest; no other door in the wall but the gate |
+| 4 | The Ley Slot | 239 | a Tender's 1.2 m triangular wicket through the east wall, the nested portal's smallest; no other door in the wall but the gate |
 | 5 | The strand | 49896 | the sabkha between the wall and the water, the line paved across it |
 | 6 | The ley mole | 8400 | a basalt mole 700 m into the sea, straight on the line; the barge stair and a stela pair (the Coil and fracture glyphs) at its end; the relics go out from here by water to the east reliquary, the one load that goes straight |
 
@@ -129,7 +131,7 @@ The wall follows the city's outline, the Great Coil's last winding run on into a
 
 ![B7](floors/B7.png)
 
-Fresh water after Dholavira, the Indus city on a salt flat that caught its seasonal streams: a check dam on Tlahn Gill (a wadi, dry half the year) and a leat to seven reservoirs outside the south wall, each 1.25 times the last; a cistern in every district court, a brick well in every yard (the rain is ~1,850-2,086 mm). The salt (LZ_TUNE: 115 t a year, the east's only source) from seven squared spirals of pans on the strand west of the city, the brine boiled down in pottery over charcoal on three floors in the wet season, and the salt store by the north-west corner.
+Fresh water after Dholavira, the Indus city on a salt flat that caught its seasonal streams: a check dam on Tlahn Gill (a wadi, dry half the year) and a leat to seven reservoirs outside the south wall, each 1.25 times the last; a cistern in every district court, a brick well in every yard (the rain is ~1,850-2,086 mm). The salt (LZ_TUNE: 55 t a year, scaled back from 115 t now that Skink carries the country) comes from three squared spirals of pans on the strand west of the city, two wet-season boiling floors (lk-boil: crusted bronze pans over jungle charcoal) and the salt store by the north-west corner.
 
 | # | Item | m2 | Note |
 |---|---|---|---|
@@ -140,8 +142,8 @@ Fresh water after Dholavira, the Indus city on a salt flat that caught its seaso
 | 5 | Reservoir 5 | 16172 | its water 2.4 m over the sabkha (a core/water still record) |
 | 6 | Reservoir 6 | 20218 | its water 2.0 m over the sabkha (a core/water still record) |
 | 7 | Reservoir 7 | 25283 | its water 1.6 m over the sabkha (a core/water still record) |
-| 8 | Salt pans (Gila's piece) (x7) | 3600 | `gl-pans`: a squared spiral of salt pans, the brine let in at its outer end |
-| 9 | Salt boiling floor (x3) | 405 | `lk-boil`: a salt boiling floor (brine boiled in pottery over jungle charcoal) |
+| 8 | Salt pans (Gila's piece) (x3) | 3600 | `gl-pans`: a squared spiral of salt pans, the brine let in at its outer end |
+| 9 | Salt boiling floor (x2) | 405 | `lk-boil`: a salt boiling floor (brine boiled in crusted bronze pans over jungle charcoal; scaled back to 55 t/yr) |
 | 10 | Salt store (Gila's piece) | 192 | `gl-saltstore`: the salt store |
 | 11 | The check dam on Tlahn Gill | 960 | a basalt weir across the wadi; the leat (blue) fills the chain in the wet season, each reservoir spilling to the next |
 
