@@ -48,12 +48,12 @@ Direct raster inspection on merged `5.1` (`tools/scale-model/model/data/`) surfa
 1. **Amaro (`ssgsv5zbd2`): `(731, 1184)` vs `(734, 1182)`.**
    - `60-settlements.js` (`5.1e11`) places `Amaro` at **`(731, 1184)`**: dry, inside `Shumar`, **3,054 m**, `slope 0.011`, `Dsb`, `439 mm`, `+6.0 °C` (`+17 / -4 °C`), perched directly above the grand canyon confluence where `r288 Pāyaru-Buruqu` (`60.1 m³/s`) and `r287 Qappu-Nārun` (`68.9 m³/s`) drop into `r007 Bētun-Nārun` (`604.8 m³/s` at `730.6,1191.2`).
    - `openworld/ANCIENT-NETWORK.md` line 851 and `net51-gemini.json` (`new.amaro`, `dirt.amaro`, `supp.ssgsv5zbd2`) place `Amaro` 6.7 km ENE at **`(734, 1182)`**: dry, inside `Shumar`, **3,191 m**, `slope 0.015`, `Dsb`, `439 mm`, `+7.0 °C` (`+20 / -5 °C`), on the open interfluve bench (`765 farm-eq km²` vs `715` at 30 km reach).
-   - *Recommendation:* reconcile `60-settlements.js` and `net51` to one canonical coordinate in the scale-model queue — either **`(731, 1184)`** if we want a dramatic Khunzakh/Kars **canyon-rim capital** overhanging `Bētun-Nārun`, or **`(734, 1182)`** if we keep `ANCIENT-NETWORK.md` verbatim and treat `(730, 1191)` as Amaro's lower river-mill & bridge suburb (`Pāyaru-Gisr`). Both are dry and gentle.
+   - **Owner's call (2026-11-17: *"canyon lip"*):** keep **`(731, 1184)`** (`3,054 m`, Khunzakh/Kars canyon-rim capital overhanging `Bētun-Nārun`, with `(729, 1192)` `Pāyaru-Gisr` as the lower confluence bridge & mill suburb), and queue nudging `dirt.amaro`'s eastern endpoint 3 px to `(731, 1184)` in the scale-model queue.
 2. **Driyan (`sxvb4k4024`, Vothic Kingdom — lost *Dōriyan*): `(725, 1141)` vs `(705, 1129)`.**
-   - `60-settlements.js` has `(725, 1141)` (`490 m, Csa, 1,035 mm`, foot of the Shumar scarp); `ANCIENT-NETWORK.md` line 852 / `net51-gemini.json` moved it to `(705, 1129)` (`589 m, Cfa, 1,882 mm`, on `r034 Sharf Rivrh` and Shim's Izani highway). Outside Shumar's polygon either way, but affects the exact bearing of Shumar's northern watch-forts (`S3`).
-3. **Tallhouse (`smqy5z5eek`, `(683, 1184)`, `1,001 m, Csa, 878 mm`) sits inside the NW corner of `Shumar`'s polygon (`rmw5s3ktxgv0d`), while `populations-gemini.json` assigns it to `Free Giants (Vrivolci)` (`250` fort) and `tongues-of-krator.html` line 5359 glosses it as Shumari `Ṭāru-bētun` ("northern watch-fort and border gate at the NW rim of Shumar").**
-   - At `1,001 m Csa`, `(683, 1184)` is physically at the **western escarpment foot** where `r284 Dōriyan-Nārun` plunges off the plateau, right on the 352 km² polygon overlap between `Shumar` and `Vrivolci`.
-   - *Proposed lore-exact synthesis (Q3):* keep `Tallhouse` (`683, 1184`) at the 1,001 m foot as a **joint / Free Giant lower pass-fort** where `Gēdu-ko` Giant volunteers and Greenstep pack trains stage, paired with Shumar's upper rim fortress **`Ṭāru-Bētun` (Upper Tallhouse)** 12 km east up the gorge lip at **`(689, 1185)`** (`2,712 m Cfb`).
+   - `60-settlements.js` has `(725, 1141)` (`490 m, Csa, 1,035 mm`, foot of the Shumar scarp); `ANCIENT-NETWORK.md` line 852 / `net51-gemini.json` moved it to `(705, 1129)` (`589 m, Cfa, 1,882 mm`, on `r034 Sharf Rivrh` and Shim's Izani highway). Outside Shumar's polygon either way, affecting only the bearing of `S3`'s northern watch-forts.
+3. **Tallhouse (`smqy5z5eek`, `(683, 1184)`, `1,001 m, Csa, 878 mm`) & Upper Tallhouse (`Ṭāru-Bētun`, `(689, 1185)`, `2,740 m Cfb`).**
+   - At `1,001 m Csa`, `(683, 1184)` sits at the western escarpment foot where `r284 Dōriyan-Nārun` plunges off the plateau, on the 352 km² polygon overlap between `Shumar` and `Vrivolci`.
+   - **Owner's call (2026-11-17: *"paired fort"*):** keep `Tallhouse` (`683, 1184`) at the 1,001 m foot as the **Free Giant (`Vrivolci`) lower pass-fort**, paired with Shumar's upper rim gate-fortress **`Ṭāru-Bētun`** 12 km east up the gorge lip at **`(689, 1185)`** (`2,740 m Cfb`).
 
 ### 1c. Caste demography on the sim
 
@@ -232,20 +232,20 @@ Shumar's `3,160 m Dsb` year is sharply seasonal — dry sunny summers, early fro
 | **`gate.greenstep`** (*The Free Giant Brotherhood Pass*) | **`Ṭāru-Bētun`** (`S2`) | **Free Giants / Vrivolci** (`Tallhouse` `683,1184` & `Tallwalls` `650,1268`) | `blades`, `armour`, `brass` hardware, `spirits`, `cheese` | **`salt`** (`Tallwalls -> Amaro 48 t`), **`timber`**, supplemental `grain` (`Tallhouse -> Amaro 20 t`), and **`Gēdu-ko` Free Giant initiates** |
 | **`gate.talovolci`** (*The Cloud-Scarp Trail*, open spring–autumn) | **`Yāmu-Qappu`** (`S5`) | **Talovolci Chiefs** (`Spirladunon` `800,1017`, 235 km north) | `wool`, `cheese`, `saltpeter`, `driedfruit`, `spirits` | **`timber`** (cloud-forest rafters), raw **`iron`/`nickel` bloom**, highland `medicine` |
 | **`gate.east-foothills`** (*The Izani & Historian Caravan*) | **`Urundashi`** (`S4`) | **Empire of Iziz** (`Iziz`, `Pylon` `683–913 km`), **Order of Historians** (`Longsong`), **Yuni / Tabisti** (re-exported via Iziz) | `blades` (`Amaro -> Yuni/Verge/Tabisti`), `armour`, `spirits` (`Amaro -> Iziz`), `wool`, `silver` | **`mechparts`** (`Pylon -> Amaro 4.55 u`), **`medicine`** (`Iziz -> Amaro/Urundashi`), **`books`** (**`Longsong -> Amaro 1.82 u`** — curated histories prized by `Šumaru-kattu` scribes, strictly denied to Voth!), `lung-salt` |
-| **`gate.voth-march`** (*The Hostile Dōriyan Scarp* — section 9, Q1) | **`Suṭōn-Qappu`** (`S3`) | **Vothic Kingdom** (`Driyan`, `Sethas` `134 km`, `Shim` `240 km`) | **Zero military goods** (`gemini_trade_model.py:5402` strict embargo). Optional cold-truce `mounts` (`104 head`), or **smuggled silver** to fund underground slave-runners | Escaping **`Nazāru-ko`** fugitives (non-cargo people flow); optional cold-truce lowland **`grain`** (`Shim/Sethas -> Amaro/Urundashi ~260 t` in Gemini, if owner keeps border-truce markets open — Q1) |
+| **`gate.voth-march`** (*The Cold-Truce Dōriyan Scarp* — answered Q1) | **`Suṭōn-Qappu`** (`S3`) | **Vothic Kingdom** (`Driyan`, `Sethas` `134 km`, `Shim` `240 km`) | **Zero military, metal or book goods** (`gemini_trade_model.py:5402` strict embargo). Guarded `-no` cold-truce toll market exchanges highland **`mounts`** (`~104 head`) for lowland grain; clandestine silver supports slave-runners | Escaping **`Nazāru-ko`** fugitives (non-cargo people flow) + guarded cold-truce lowland **`grain`** (`Shim/Sethas -> Amaro/Urundashi ~260 t/yr`) |
 
 ---
 
 ## 7. Implementation steps (`SM-Sim-0` to `SM-Sim-4`)
 
-1. **`SM-Sim-0` (this proposal + `settlements/shumar/BUILD-OUT.md`):** Owner review of population split, pin reconciliation (`Amaro` `731,1184` vs `734,1182`; `Tallhouse` vs `Ṭāru-Bētun`), Vothic border rule, and `Ṣūnu-šikaru` spirits recipe.
+1. **`SM-Sim-0` (this proposal + `settlements/shumar/BUILD-OUT.md`):** Core trade, pin and region decisions answered 2026-11-17 (section 9).
 2. **`SM-Sim-1` (`kits/crops` `shighlands` dry-plateau zones):** Add `shumar: {warmth: [1, 2], arid: [1, 2]}` and `ordeal: {warmth: [0, 0], arid: [1, 1], atm: 0}` to `CROPS.BIOMES.shighlands` (`kits/crops/src/10-crop-core.js`), add `shighlands` to `apricot` / `cave-madder` homes if approved, and verify with `node kits/crops/tests/test-crops.js`.
 3. **`SM-Sim-2` (`core/region/data/shumar-tune.js` + `core/region/tests/test-shumar-economy.js`):** Author `SHUMAR_TUNE` on `core/region/50-region-valley.js` (`scale: 150` on bulk districts, `40` on seats, `10` on forts/camps/mines -> ~620 actors total, <35 s/year). Assert with negative controls:
    - all ~109,630 people (including `2.6x`-diet `Gēdu-šu` Giants and `-ko` Ordeal cadets) are fed through winter;
    - `S6` polymetallic ores, `S2` charcoal/tin/placers, and `S5` nickel/copper reach `Amaro` and `Urundashi` to forge `blades`, `armour`, `brass` and `powder`;
    - every regiment's *qubba* *waqf* and `amaro.citadel`'s *iqta'* dues close cleanly;
-   - `salt`, `coal`, `scrap`, `glass` and `Longsong` `books` arrive through the gateways while `blades`, `armour`, `spirits`, `wool`, `cheese`, `mounts` and `saltpeter` clear out;
-   - zero `blades`, `armour`, `powder`, `iron` or `saltpeter` ever cross `gate.voth-march`.
+   - `salt`, `coal`, `scrap`, `glass` and `Longsong` `books` arrive through the gateways while `blades`, `armour`, `tequila` (`Ṣūnu-šikaru`), `wool`, `cheese`, `mounts` and `saltpeter` clear out;
+   - `gate.voth-march` passes cold-truce `grain` in and `mounts` out at `Suṭōn-Qappu`, while **zero `blades`, `armour`, `powder`, `iron`, `copper`, `saltpeter` or `books` ever cross to Voth**.
 4. **`SM-Sim-3` (Depleting lodes, snowed-in winter passes & Ordeal graduation):** Wire `SHUMAR_TUNE.field` multi-vein depletion (>200 yr collective life, 2–4 yr per individual adit on `S6`/`S2`/`S5`, matching Xanadu's X2 rule) and winter pass throttling (`ordeal-winter` `[300, 45]`).
 5. **`SM-Sim-4` (Joint SW / Greenstep fragment, later):** Couple `SHUMAR_TUNE` with Greenstep (`Tallwalls` + `Tallhouse`) once the Free Giants' valley tune exists, replacing `gate.greenstep` with live settlements.
 
@@ -258,16 +258,17 @@ Shumar's `3,160 m Dsb` year is sharply seasonal — dry sunny summers, early fro
 
 ---
 
-## 9. Open questions for the owner
+## 9. Owner's calls (answered 2026-11-17) & remaining minor items
 
-1. **The Vothic border (`gate.voth-march`):** Gemini embargoes all military goods between Voth and Shumar (`0.0`) but still lets lowland Vothic towns (`Shim`, `Sethas`) sell ~260 t of bulk `food` up to `Amaro`/`Urundashi` and buy 104 `mounts` back. Should we:
-   - **(a) Recommended — Strict Armed Frontier:** Close formal Voth–Shumar trade completely (only clandestine smugglers and escaping `Nazāru-ko` / `Gēdu-ko` fugitives cross `S3`), meeting Shumar's small 280 t grain margin via its own irrigated canyon terraces plus friendly `Tallwalls`/`Dalab` caravans; or
-   - **(b) Cold-Truce Toll Markets:** Allow unarmed `-no` border-barter of lowland grain for highland mules under guard at `Suṭōn-Qappu`, while keeping the total embargo on arms, metals and books?
-2. **Amaro's canonical pin (`ssgsv5zbd2`):** Keep **`(731, 1184)`** (`3,054 m`, dramatic canyon-rim capital directly over the `Bētun-Nārun` / `Qappu-Nārun` / `Pāyaru-Buruqu` triple gorge, with `dirt.amaro`'s start nudged 3 px to match), or move `60-settlements.js` to **`(734, 1182)`** (`3,191 m` open bench, matching `ANCIENT-NETWORK.md` line 851)?
-3. **Tallhouse (`smqy5z5eek`, `683, 1184`, `1,001 m Csa`):** Keep `Tallhouse` at the 1,001 m western escarpment foot as a **Free Giant (`Vrivolci`) haven/staging fort** paired with a Shumari upper-rim gate-fort **`Ṭāru-Bētun`** at `(689, 1185)` (`2,712 m`), or make `Tallhouse` itself a **joint Shumari–Free Giant condominium fort**?
-4. **Shumar's `141 t` distilled-spirits export (`tequila` in `trade-gemini.json`):** Keep the `tequila` good key on the global ledger while glossing Shumar's drink as **`Ṣūnu-šikaru`** — distilled from **sunny-canyon `spiralaloe`/agave (`biomes/shighlands` Station 4) & `whorlapricot` (twist-apricot *arak*/*oghi*)** — or split highland `arak`/fruit-brandy into its own trade good?
-5. **The six regimental province & seat names (`S1`–`S6`):** Approve the coined `Šumaru-kattu` names (`Qappu-Šubaru`, `Bētun-Gēdu` / `Bētun-Bābu`, `Dōriyan-Māru` / `Suṭōn-Qappu`, `Ṣōrun-Dubnu` / `Urundashi`, `Šīru-Yāmu` / `Yāmu-Qappu`, `Urudīru-Ḫāru` / `Urudīru-Qappu`), or adjust any of them?
-6. **Where `SHUMAR_TUNE` lives:** In `core/region/data/shumar-tune.js` (matching `core/region/data/xan-tune.js` so `settlements/shumar`, `openworld/shumar` and joint regional tests all read one file in place)?
+**Answered 2026-11-17:**
+1. ~~**The Vothic border (`gate.voth-march`).**~~ **Cold-truce (`(b)`):** Unarmed `-no` border-barter of lowland `grain` (`~260 t/yr`) for highland `mounts` (`~104 head/yr`) under guard at `Suṭōn-Qappu`, with a **total embargo on arms, armour, powder, metals, nitre and books**, alongside clandestine `Nazāru-ko` fugitive arrivals.
+2. ~~**Amaro's canonical pin (`ssgsv5zbd2`).**~~ **Canyon lip `(731, 1184)` (`3,054 m`):** Keep `60-settlements.js` at `(731, 1184)` overhanging the `Bētun-Nārun` / `Qappu-Nārun` / `Pāyaru-Buruqu` triple gorge, and queue nudging `dirt.amaro`'s start 3 px from `(734, 1182)` to `(731, 1184)`.
+3. ~~**Tallhouse (`smqy5z5eek`, `683, 1184`).**~~ **Paired fort:** `Tallhouse` (`683, 1184`, `1,001 m`) stays the Free Giant (`Vrivolci`) lower pass-fort at the escarpment foot, paired with Shumar's upper-rim gate-fort **`Ṭāru-Bētun`** (`689, 1185`, `2,740 m`).
+4. ~~**Shumar's `141 t` distilled-spirits export.**~~ **Keep global `tequila` trade key with `Ṣūnu-šikaru` gloss** (sunny-canyon `spiralaloe`/agave + `whorlapricot` *arak* distilled in copper-dome alembics).
+
+**Defaults unless adjusted later:**
+5. **The six regimental province & seat names (`S1`–`S6`):** Coined `Šumaru-kattu` names above (`Qappu-Šubaru`, `Bētun-Gēdu` / `Bētun-Bābu`, `Dōriyan-Māru` / `Suṭōn-Qappu`, `Ṣōrun-Dubnu` / `Urundashi`, `Šīru-Yāmu` / `Yāmu-Qappu`, `Urudīru-Ḫāru` / `Urudīru-Qappu`).
+6. **Where `SHUMAR_TUNE` lives:** `core/region/data/shumar-tune.js` (matching `core/region/data/xan-tune.js`).
 
 ---
 
