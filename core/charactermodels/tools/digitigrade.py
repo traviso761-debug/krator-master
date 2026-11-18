@@ -668,33 +668,35 @@ class FrogLegSculpt:
         self.collar_N = BN[side_sel]
         self.collar_tree = cKDTree(self.collar_P)
 
-        # Powerful jumping cruralis/semimembranosus thigh, plump gastrocnemius calf belly, and smooth elongated frog tarsus
-        self.p_ham_top = self.p_thigh + np.array([-0.006 * self.sx * s, -0.048 * s, -0.056 * s])
-        self.p_ham_low = self.p_shin + 0.30 * (self.p_hock - self.p_shin) + np.array([-0.004 * self.sx * s, 0.014 * s, -0.040 * s])
-        self.p_calf = self.p_shin + 0.34 * (self.p_hock - self.p_shin) + np.array([0.005 * self.sx * s, 0.004 * s, -0.022 * s])
-        self.p_calc = self.p_hock + np.array([0.0, 0.006 * s, -0.022 * s])
-        self.p_ach_up = self.p_shin + 0.48 * (self.p_hock - self.p_shin) + np.array([0.0, 0.0, -0.020 * s])
+        # Powerful jumping cruralis/semimembranosus thigh, full-length bullfrog gastrocnemius & tibialis crus, and sturdy paired-bone tarsus
+        self.p_ham_top = self.p_thigh + np.array([-0.006 * self.sx * s, -0.048 * s, -0.058 * s])
+        self.p_ham_low = self.p_shin + 0.34 * (self.p_hock - self.p_shin) + np.array([-0.004 * self.sx * s, 0.012 * s, -0.044 * s])
+        self.p_calf = self.p_shin + 0.42 * (self.p_hock - self.p_shin) + np.array([0.005 * self.sx * s, 0.0, -0.024 * s])
+        self.p_tib_hi = self.p_shin + np.array([0.002 * self.sx * s, -0.018 * s, 0.014 * s])
+        self.p_tib_lo = self.p_hock + np.array([0.0, 0.036 * s, 0.012 * s])
+        self.p_calc = self.p_hock + np.array([0.0, 0.006 * s, -0.026 * s])
+        self.p_ach_up = self.p_shin + 0.50 * (self.p_hock - self.p_shin) + np.array([0.0, 0.0, -0.024 * s])
 
-        # Four asymmetrically graded amphibian toes (medial shortest -> 3rd longest -> lateral medium) fanned wide across ~80 deg,
-        # each ending in a broad, cushioned tree-frog / bullfrog digital suction pad (zero claws!)
+        # Four sturdy, asymmetrically graded amphibian toes fanned out of a broad fleshy instep,
+        # each ending in a cushioned bullfrog / tree-frog digital pad (zero claws!)
         self.toes = []
         specs = [
-            (-0.015, 0.088, 0.0082, 0.0092, -0.74, (0.0126, 0.0078, 0.0138)),
-            (-0.005, 0.122, 0.0088, 0.0098, -0.24, (0.0142, 0.0084, 0.0154)),
-            ( 0.006, 0.152, 0.0094, 0.0105,  0.20, (0.0154, 0.0090, 0.0168)),
-            ( 0.016, 0.118, 0.0086, 0.0096,  0.66, (0.0138, 0.0082, 0.0150)),
+            (-0.022, 0.080, 0.0118, 0.0132, -0.66, (0.0150, 0.0098, 0.0160)),
+            (-0.007, 0.106, 0.0128, 0.0144, -0.21, (0.0166, 0.0106, 0.0178)),
+            ( 0.008, 0.128, 0.0136, 0.0154,  0.18, (0.0178, 0.0114, 0.0190)),
+            ( 0.022, 0.102, 0.0124, 0.0138,  0.58, (0.0162, 0.0104, 0.0172)),
         ]
         for lat, ln, wd, ht, ang, pad_r in specs:
             lx = lat * self.sx * s
             ca, sa = math.cos(ang * self.sx), math.sin(ang * self.sx)
-            a = np.array([self.p_paw[0] + lx, 0.0145 * s, self.p_paw[2] + 0.004 * s])
-            b = np.array([self.p_paw[0] + lx + sa * ln * s, 0.0088 * s, self.p_paw[2] + 0.004 * s + ca * ln * s])
+            a = np.array([self.p_paw[0] + lx, 0.0205 * s, self.p_paw[2] + 0.008 * s])
+            b = np.array([self.p_paw[0] + lx + sa * ln * s, 0.0110 * s, self.p_paw[2] + 0.008 * s + ca * ln * s])
             fwd = np.array([sa, 0.0, ca])
             side = np.array([ca, 0.0, -sa])
             pr = tuple(x * s for x in pad_r)
             self.toes.append((a, b, wd * s, ht * s, fwd, side, pr))
 
-        # Three taut scalloped interdigital web panels spanning 78% of each adjacent toe pair, stopping behind the bulbous pads
+        # Three fleshy scalloped interdigital web panels spanning 78% of each adjacent toe pair, stopping behind the bulbous pads
         self.webs = []
         for k in range(3):
             a0, b0, _, _, _, _, _ = self.toes[k]
@@ -709,30 +711,43 @@ class FrogLegSculpt:
 
     def sdf(self, P):
         s = self.s
-        # 1. Rounded powerful jumper thigh (cruralis + semimembranosus)
-        d = HD.round_cone(P, self.p_thigh + np.array([0.0, -0.02 * s, 0.010 * s]), self.p_shin, 0.085 * s, 0.052 * s)
-        d_ham = HD.round_cone(P, self.p_ham_top, self.p_ham_low, 0.072 * s, 0.036 * s)
+        # 1. Rounded powerful jumper thigh (cruralis + semimembranosus) & broad muscular stifle
+        d = HD.round_cone(P, self.p_thigh + np.array([0.0, -0.02 * s, 0.010 * s]), self.p_shin, 0.088 * s, 0.058 * s)
+        d_ham = HD.round_cone(P, self.p_ham_top, self.p_ham_low, 0.075 * s, 0.042 * s)
         d = HD.smin(d, d_ham, 0.034 * s)
-        d_stifle = HD.ellipsoid(P, self.p_shin + np.array([0.0, 0.004 * s, 0.012 * s]), (0.046 * s, 0.048 * s, 0.054 * s))
-        d = HD.smin(d, d_stifle, 0.020 * s)
+        d_stifle = HD.ellipsoid(P, self.p_shin + np.array([0.0, 0.004 * s, 0.014 * s]), (0.053 * s, 0.055 * s, 0.060 * s))
+        d = HD.smin(d, d_stifle, 0.022 * s)
 
-        # 2. Plump gastrocnemius calf belly tapering to a smooth amphibian ankle
-        d_crus = HD.round_cone(P, self.p_shin, self.p_hock, 0.050 * s, 0.022 * s)
-        d_gastroc = HD.ellipsoid(P, self.p_calf, (0.049 * s, 0.080 * s, 0.055 * s))
-        d_crus = HD.smin(d_crus, d_gastroc, 0.024 * s)
-        d_ach = HD.round_cone(P, self.p_ach_up, self.p_calc, 0.018 * s, 0.015 * s)
-        d_hock = HD.ellipsoid(P, self.p_calc, (0.020 * s, 0.022 * s, 0.023 * s))
-        d = HD.smin(d, d_crus, 0.022 * s)
-        d = HD.smin(d, d_ach, 0.014 * s)
-        d = HD.smin(d, d_hock, 0.014 * s)
+        # 2. Full-length athletic bullfrog gastrocnemius + anterior tibialis crus + sturdy calcaneal hock
+        d_crus = HD.round_cone(P, self.p_shin, self.p_hock, 0.058 * s, 0.036 * s)
+        d_gastroc = HD.ellipsoid(P, self.p_calf, (0.057 * s, 0.106 * s, 0.064 * s))
+        d_tib = HD.round_cone(P, self.p_tib_hi, self.p_tib_lo, 0.045 * s, 0.030 * s)
+        d_crus = HD.smin(d_crus, d_gastroc, 0.026 * s)
+        d_crus = HD.smin(d_crus, d_tib, 0.020 * s)
+        d_ach = HD.round_cone(P, self.p_ach_up, self.p_calc, 0.028 * s, 0.025 * s)
+        d_hock = HD.ellipsoid(P, self.p_calc, (0.034 * s, 0.036 * s, 0.038 * s))
+        d = HD.smin(d, d_crus, 0.024 * s)
+        d = HD.smin(d, d_ach, 0.016 * s)
+        d = HD.smin(d, d_hock, 0.018 * s)
 
-        # 3. Slender elongated astragalus-calcaneum tarsus flattening into the plantar fan
-        d_meta = HD.round_cone(P, self.p_hock, self.p_paw + np.array([0.0, -0.006 * s, 0.005 * s]), 0.0215 * s, 0.0165 * s)
-        d_tars = HD.ellipsoid(P, self.p_paw + np.array([0.0, -0.012 * s, 0.014 * s]), (0.023 * s, 0.0125 * s, 0.024 * s))
-        d_meta = HD.smin(d_meta, d_tars, 0.010 * s)
-        d = HD.smin(d, d_meta, 0.014 * s)
+        # 3. Sturdy paired-bone astragalus-calcaneum tarsus (tibiale + fibulare) flowing into a broad arched amphibian instep
+        d_meta = HD.round_cone(P, self.p_hock, self.p_paw + np.array([0.0, -0.002 * s, 0.008 * s]), 0.036 * s, 0.030 * s)
+        for lat_s in (-1.0, 1.0):
+            d_col = HD.round_cone(
+                P,
+                self.p_hock + np.array([lat_s * 0.009 * s, 0.0, -0.002 * s]),
+                self.p_paw + np.array([lat_s * 0.017 * s, -0.004 * s, 0.012 * s]),
+                0.025 * s,
+                0.023 * s,
+            )
+            d_meta = HD.smin(d_meta, d_col, 0.014 * s)
+        d_tars = HD.ellipsoid(P, self.p_paw + np.array([0.0, -0.006 * s, 0.022 * s]), (0.040 * s, 0.021 * s, 0.036 * s))
+        d_instep = HD.ellipsoid(P, self.p_paw + np.array([0.0, -0.011 * s, 0.044 * s]), (0.046 * s, 0.016 * s, 0.034 * s))
+        d_meta = HD.smin(d_meta, d_tars, 0.014 * s)
+        d_meta = HD.smin(d_meta, d_instep, 0.014 * s)
+        d = HD.smin(d, d_meta, 0.018 * s)
 
-        # 4. Four slender smooth digits + bulbous discoidal frog toe pads + taut scalloped webbing membranes
+        # 4. Four sturdy smooth digits + bulbous discoidal frog toe pads + fleshy scalloped webbing membranes
         d_foot = np.full(len(P), 1e9)
         for a, b, wd, ht, fwd, side, pr in self.toes:
             ab = b - a
@@ -741,12 +756,12 @@ class FrogLegSculpt:
             q = a + t[:, None] * ab
             dp = P - q
             knuckle = 1.0 + 0.08 * np.cos(2.0 * math.pi * 2.5 * t)
-            taper = 1.04 - 0.30 * t
+            taper = 1.06 - 0.28 * t
             r_w = wd * taper * knuckle
             r_h = ht * taper * knuckle
             dt = (np.sqrt((dp[:, 0] / r_w) ** 2 + (dp[:, 1] / r_h) ** 2 + (dp[:, 2] / r_w) ** 2) - 1.0) * np.minimum(r_w, r_h)
             # Bulbous adhesive tree-frog / bullfrog toe pad oriented along the toe's forward/transverse frame
-            pc = b + fwd * (0.003 * s) + np.array([0.0, -0.0012 * s, 0.0])
+            pc = b + fwd * (0.003 * s) + np.array([0.0, -0.0010 * s, 0.0])
             qp = P - pc
             px = (qp @ side) / pr[0]
             py = qp[:, 1] / pr[1]
@@ -754,8 +769,8 @@ class FrogLegSculpt:
             k0 = np.sqrt(px * px + py * py + pz * pz)
             k1 = np.sqrt((px / pr[0]) ** 2 + (py / pr[1]) ** 2 + (pz / pr[2]) ** 2)
             d_pad = k0 * (k0 - 1.0) / np.maximum(k1, 1e-9)
-            dt = HD.smin(dt, d_pad, 0.0045 * s)
-            d_foot = HD.smin(d_foot, dt, 0.0035 * s)
+            dt = HD.smin(dt, d_pad, 0.0055 * s)
+            d_foot = HD.smin(d_foot, dt, 0.0045 * s)
 
         for o_xz, u_vec, v_vec, det in self.webs:
             qx = P[:, 0] - o_xz[0]
@@ -773,13 +788,13 @@ class FrogLegSculpt:
             rc = uc + vc
             wx = o_xz[0] + uc * u_vec[0] + vc * v_vec[0]
             wz = o_xz[1] + uc * u_vec[1] + vc * v_vec[1]
-            wy = (0.0125 - 0.0055 * rc - 0.0018 * s_mid) * s
+            wy = (0.0165 - 0.0068 * rc - 0.0020 * s_mid) * s
             rim = sm(r_lim - 0.14, r_lim, rc) * s_mid
-            w_th = (0.0029 + 0.0008 * rim) * s
+            w_th = (0.0040 + 0.0010 * rim) * s
             dw = np.sqrt((P[:, 0] - wx) ** 2 + (P[:, 1] - wy) ** 2 + (P[:, 2] - wz) ** 2) - w_th
-            d_foot = HD.smin(d_foot, dw, 0.0038 * s)
+            d_foot = HD.smin(d_foot, dw, 0.0048 * s)
 
-        d = HD.smin(d, d_foot, 0.0075 * s)
+        d = HD.smin(d, d_foot, 0.010 * s)
 
         # Flatten plantar sole & toe pads cleanly onto ground y = 0.000
         d = HD.smax(d, -P[:, 1], 0.0032 * s)
@@ -823,7 +838,7 @@ class FrogLegSculpt:
             qz = V[:, 2] - o_xz[1]
             u = (qx * v_vec[1] - qz * v_vec[0]) / det
             v = (u_vec[0] * qz - u_vec[1] * qx) / det
-            in_web = (u > 0.06) & (v > 0.06) & ((u + v) < 1.02) & (V[:, 1] < 0.020 * s)
+            in_web = (u > 0.06) & (v > 0.06) & ((u + v) < 1.02) & (V[:, 1] < 0.026 * s)
             s_mid = np.where(in_web, 4.0 * np.maximum(u, 0.0) * np.maximum(v, 0.0) / np.maximum((u + v) ** 2, 1e-8), 0.0)
             pale = np.maximum(pale, 0.48 * np.clip(s_mid, 0.0, 1.0) * below_collar)
 
@@ -1213,9 +1228,9 @@ def build_species_legs(
         g_paw = lambda P, f=f_paw, e=1.5e-4: (lambda g: g / np.maximum(np.linalg.norm(g, axis=1, keepdims=True), 1e-12))(
             np.stack([f(P + np.array(o)) - f(P - np.array(o)) for o in ((e, 0, 0), (0, e, 0), (0, 0, e))], 1)
         )
-        paw_wx = 0.130 if is_frog else (0.125 if is_lizard else 0.065)
-        paw_z0 = 0.075 if is_frog else (0.100 if is_lizard else 0.055)
-        paw_z1 = 0.190 if is_frog else (0.180 if is_lizard else 0.115)
+        paw_wx = 0.135 if is_frog else (0.125 if is_lizard else 0.065)
+        paw_z0 = 0.092 if is_frog else (0.100 if is_lizard else 0.055)
+        paw_z1 = 0.185 if is_frog else (0.180 if is_lizard else 0.115)
         paw_cell = (0.0028 if is_frog else (0.0034 if is_lizard else PAW_CELL)) * s
         parts_spec = [
             (f_leg, g_leg, np.array([min(xs) - 0.14 * s, y_ankle_lo - 0.015 * s, min(zs) - 0.08 * s]),
