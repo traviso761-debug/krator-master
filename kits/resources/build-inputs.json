@@ -19,8 +19,6 @@
     "core/atmos/89-atmos-b-skylight.js": "fdd81ff12eb4e98d7d9bc07691b033a71cd2add1b8a0d23d7ffb6149d781c6d0",
     "core/atmos/89-atmos-d-clouddeck.js": "70751e6c85e4dd65ffbb6648873be56fdb604130df4507e8e6afb020384b4dc8",
     "core/atmos/placeholder/81-sky.js": "ad22fb31cdfbbd20cb1f8ad919e4720e7db54094e4e778c46e7bd8ce7780e6ab",
-    "core/atmos/placeholder/placeholder.py": "a56878038fdd42d4d41752866926a3cf59815924a08f2ef42b56484766848aab",
-    "core/catalog/catalog.py": "5d4a79810193b831fc1c686c934990afd10ecb63b5a55d05e0f3d7dd4c84d88a",
     "core/catalog/files.json": "a400e7bf3e1197698d129db83964d883fd9ea2818173fe7df3c7d1b4a054d72f",
     "core/catalog/krator-furniture-core.js": "1c8bfa11d261b36895fd50645358e2c4ebe54febf67daeed700a38fbd6256fe9",
     "core/catalog/krator-furniture-kit.js": "5220ef8dd95dd5c33960ad1452f09f437379c2e26d40c9b480877b1a4e65f16b",
@@ -45,7 +43,6 @@
     "core/engine/93-anim.js": "a55c92af37244e4be8a691d465ae7bae010d2ff21be66a9bc91fa3dce78d73bb",
     "core/engine/99-host-take.js": "545a2bf1d19dea2343b961e7f60bd60e5a30674507a464edf4180237386bd37e",
     "core/engine/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
-    "core/engine/engine.py": "d098459c86168a0fb93e16878666a591ad911c21420ac7fa64c3f7e7be834736",
     "core/furnish/50-core-furnish.js": "2c81c2c24d3f2c26a5d67cfcbe2ff1398a0884ab0032dd3596d589c2bd15756b",
     "core/furnish/52-core-furnish-draw.js": "e87c79babef49dedde3f5dc4fa0daae11aaae6a3976955d6c51cabd49ca92146",
     "core/furnish/53-core-furnish-host.js": "81927a949cd6d0e5b9da71bfb6b6f4c1d7e6add5e1606b08b0b8a199d5633aea",
@@ -55,7 +52,6 @@
     "core/host/92k-host-keys.js": "d3eaefd605d5ac360f205e7628bba245fbcfcd518c8fc8d79d2743556143df06",
     "core/host/94-host-polytool.js": "73178f8a6f8632fa25802d8024ce753a209e29af018ae4b2297cea6e1b84d730",
     "core/host/95-host-probe.js": "91a9ef729db002716d0e840ebd6e0efc799f2ae0c99419fb06c3f44eda5f6471",
-    "core/host/host.py": "18f80becdd343f7375785bc5aabdda290761d34376d890ebff8fab0d91fb5288",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/24-tex-def.js": "1016dd8a57911fba8405bb4b8f050561d8ed24ab98e7993c9fc58c12d3ce3a95",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
@@ -70,22 +66,21 @@
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
     "core/walk/20-core-walk.js": "66c2a5dfacc6e4ffc2cdc03dfa7d0f82ea991c312d5725d299e4e281fe148e03",
     "core/walk/box/24-core-walk-box.js": "88b4370c232270dd428cf1ddbcd7fd5771a947cfd196e6c8a27e63d39f0c17bc",
-    "kits/catalog/furniture_bundle.py": "e9de2aa4a449de0baf2a1b00842dcd03a318fc966f9bbfe618a66bd36bf9ef3a",
     "kits/catalog/krator-master-furniture-generic.js": "990b05b8404c67ab960f6649babc8143c738ea600a04c0c22564296fa7786ea4",
     "kits/resources/KNOWN_ISSUES.md": "55ddc8535fa13338843ff1c0a9064f2369ace9e8e70732e375038600a229b5ed",
     "kits/resources/PORT.md": "5e98d12d17ee61dd04af7bd1fbf107343851ca51458fada022cdd2d11d7a12f9",
     "kits/resources/build.py": "fc1f8139f4ff04af83adc8da9d7922fb40439f335ca9c5831ec662c2fb9bd595",
-    "kits/resources/data/geology.json": "13fd3247258a9a0913a7c0e838da61d27108c2c26677a3370eca2349bfa953a5",
-    "kits/resources/data/ledger.json": "4ebddac59cb3c9dede957b1e2446c2d8198e3d27b47182b8173007501af22fe0",
+    "kits/resources/data/geology.json": "7ab25a6b3feeda7d529660e027881fc9275c0aad9a226c7b9a1d784f47a62f98",
+    "kits/resources/data/ledger.json": "98a137cd589b29a2a83affb84e9909d5227e257d314755595d18b5a4d3284bec",
     "kits/resources/src/00-head.html": "6881b3d04acb3667ea877cc3480990284f27fc0f74e01197f1872ed461e906a7",
     "kits/resources/src/26k-kit.js": "49a482e4128980212bcc9c087f3a8d78192408e3175223a468ece59561df4925",
-    "kits/resources/src/42r-res-ore.js": "fff9ee3785b48b94adc9caf384d31b047e21eed3133f70a4ed5bf2d01f3830cc",
+    "kits/resources/src/42r-res-ore.js": "a07d772f7dc72bfde527cc3f4c8050685b4eab577e504b5c26a4913d61828b14",
     "kits/resources/src/43r-res-fields.js": "0a9325061c1d4526405b636391f26d9330012c3c6b36aa939e7ad461ec83a60f",
-    "kits/resources/src/44r-res-nodes.js": "3bfb8ed6570e5a3be393dac0273d66fcf4b684efbbfbd4c7945a5d4ce8218f2f",
+    "kits/resources/src/44r-res-nodes.js": "c79138f7af41abcc96c581e667bf16a97bfa9e1d8675a30068633976620b67e8",
     "kits/resources/src/45r-res-field.js": "ca8bf0860266e0eef84783236767da2b4758be920bd26e7aef63c1f8447440ab",
     "kits/resources/src/46r-res-ledger.js": "2f6286fd49a1e32e46a8e404c2696d057145acce14ab676cb26bc73fa5614fff",
-    "kits/resources/src/89-rows.js": "0b896530d3f51789ab89ac037a10afdba2feeab0b04e9641485326e2d94a123b",
-    "kits/resources/src/98r-host-geomap.js": "138a75d08d5129ee1e1d2b61b64cc9233753a3c72a0f70ec9acdc9e9d76a0bbd",
+    "kits/resources/src/89-rows.js": "547f586b9b8305dc4d123300f536b6ce30693c1a33766d38492de8d57609474b",
+    "kits/resources/src/98r-host-geomap.js": "823435bb9740502393ad4ddd669d5da2f3dc2cebb359d34bc58e07e078562ab7",
     "kits/resources/tex/cassiterite.albedo.webp": "1be6480d761bb34f35466447607184b916396db6faab49a35542913176fce39f",
     "kits/resources/tex/cassiterite.normal.webp": "60e08f91c83fd972db1e01ada0b1cb4e62c023c40a5dae2bd6cb5af46579075f",
     "kits/resources/tex/cassiterite.rough.webp": "faba76be0558e02362b3734386630e5b3058ee3feaf7b89bdd330540225f01a6",
@@ -141,10 +136,7 @@
     "kits/resources/tex/turq.albedo.webp": "6f6c8995c75eb449bb9fd1c4e02552e9c24e73d40e26872d549c8d06d751eda8",
     "kits/resources/tex/turq.normal.webp": "6d5b80dab67a2a76e0b24b5782b0fcbd2f0bc13b578c37a865922b477f6be49c",
     "kits/resources/tex/turq.rough.webp": "58286aef24abb5493ef106fff84c634ce4982a67ac9287dd55fd4c34971947cd",
-    "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
-    "tools/buildlib.py": "24ec6d636869007e626446a0b8e9cc886fd595af0c9f95b78c4d4b272a18ec0e",
-    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47",
-    "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
+    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47"
    },
    "listings": {
     "core/atmos": "97ec173a1f39d031319dc7532a9d749cdd784c7203e140334b9c46e8ff85d5e6",
@@ -166,13 +158,13 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "kits/resources/build-manifest.json": "e6649b8abf898161707d39759384e390a332cfb45824cee13f6e84ec104b85ee",
-    "kits/resources/dist/resources.html": "233f5026b03c3d8192435a5bb261ecb5c93ef3861d59a949d31742916cd7085d",
+    "kits/resources/build-manifest.json": "04cf83bf0477c02a6e205ed54e99605cd32fedf007d82616209e3e4986f297dd",
+    "kits/resources/dist/resources.html": "c29ac7c9546cbab06bbe7bf36c34bc9f5daba2413b460dfa012be2a1e658b456",
     "kits/resources/dist/resources.tex.resources.js": "1b4d82ac82f554efe0496224da39b1ea3c4528d2e133fe489cd0dedc2915c582"
    },
    "outputs_raw": {
-    "kits/resources/build-manifest.json": "e6649b8abf898161707d39759384e390a332cfb45824cee13f6e84ec104b85ee",
-    "kits/resources/dist/resources.html": "233f5026b03c3d8192435a5bb261ecb5c93ef3861d59a949d31742916cd7085d",
+    "kits/resources/build-manifest.json": "04cf83bf0477c02a6e205ed54e99605cd32fedf007d82616209e3e4986f297dd",
+    "kits/resources/dist/resources.html": "c29ac7c9546cbab06bbe7bf36c34bc9f5daba2413b460dfa012be2a1e658b456",
     "kits/resources/dist/resources.tex.resources.js": "1b4d82ac82f554efe0496224da39b1ea3c4528d2e133fe489cd0dedc2915c582"
    }
   }

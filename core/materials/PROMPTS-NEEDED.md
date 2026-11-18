@@ -3,7 +3,7 @@
 Every texture or pattern sheet the owner still has to source or generate, each with its finished prompt. Paste a block
 as it is, one image per block. **Everything delivered lives in `PROMPTS-archived.md`** (checked against `core/materials/library/`, `patterns/` and each build's `materials.json` on `origin/main`, 2026-10-19); this file holds only what is still owed.
 
-**Count: 39 prompts** (+5 for the Coyote kit, section 53, 2026-11-16; +6 for the Arch, section 52, and +3 for the Rift battery, section 51, at Integration 3, 2026-11-11; +3 for the Tiers, section 50; 19 fenced blocks, counted by their fences, and the Ancient Transit's three table rows at the second integration merge, 2026-11-11: sections 43-49 added since, the Ancient Transit, Firebliss, the NE outer wall and the Great Chasm among them; before that, 2026-11-10, after -22 delivered from sections 37, 40, 41 and 42: `PLAN.md`, "Delivered 2026-11-10"; the hand count before was 36, and two blocks had lost their closing fence; 2026-11-09: +11 for Erewhon's citadel, section 41; +2 for the Tents kit's army and Eternian cloths, section 42; +3 for the southern highlands' upper stations, section 37; +15 for the hyperjungle's lands and the savannah rims, section 40, 2026-11-08; counted 2026-11-04 before them).
+**Count: 52 prompts** (+5 for the Coyote kit, section 57, 2026-11-16; +1 for the pancake domes, section 56 (43 on its branch); +3 for Opal Valley, section 53, +4 for the Cliff Lungs, section 54, and +3 for the Siphon Pits, section 55, at the merge of 2026-11-16 (numbered 46, 44 and 46 on their branches); +6 for the Arch, section 52, and +3 for the Rift battery, section 51, at Integration 3, 2026-11-11; +3 for the Tiers, section 50; 19 fenced blocks, counted by their fences, and the Ancient Transit's three table rows at the second integration merge, 2026-11-11: sections 43-49 added since, the Ancient Transit, Firebliss, the NE outer wall and the Great Chasm among them; before that, 2026-11-10, after -22 delivered from sections 37, 40, 41 and 42: `PLAN.md`, "Delivered 2026-11-10"; the hand count before was 36, and two blocks had lost their closing fence; 2026-11-09: +11 for Erewhon's citadel, section 41; +2 for the Tents kit's army and Eternian cloths, section 42; +3 for the southern highlands' upper stations, section 37; +15 for the hyperjungle's lands and the savannah rims, section 40, 2026-11-08; counted 2026-11-04 before them).
 
 **Delivered 2026-11-10:** 22 of sections 37, 40, 41 and 42 (Erewhon's citadel but the jali, the Tents kit's two cloths and the cedar, the
 fellfield's two, seven of the hyperjungle's and the savannah rims'), `PLAN.md` "Delivered 2026-11-10": the citadel's, the tents' and the two grasses
@@ -91,8 +91,18 @@ still draw a procedural stand-in (`biomes/nwouterwall/KNOWN_ISSUES.md`, "Procedu
 
 ## 9. Painted highlands (`biomes/paintedhighlands`, planned 2026-10-23)
 
-The banded plateau by Korona (`biomes/paintedhighlands/PLAN.md` section 5, which lists the library sets it reuses). One
-greyscale bedded tile tinted by the strata field (cheaper, preferred), and the bloom's flowers.
+The banded plateau by Korona (`biomes/paintedhighlands/PLAN.md` section 10, which lists the library sets it reuses). **Built
+2026-11-11** (its branch): the bloom's flowers are `card.flower.bloom.highland` (its nine cells are the plan's nine Earth models: lupin,
+penstemon, globe mallow, paintbrush, blazing star, desert dandelion, evening primrose, Namaqualand daisy, pata de guanaco), so no flower
+card is owed. Still owed, one set; until it comes the beds are KSTRATA's colours under `rock.sandstone.bedded.red` and
+`ground.clay.popcorn` as grey detail (`biomes/paintedhighlands/KNOWN_ISSUES.md`, "The banded rock's own grain"):
+
+`rock.badland.bedded` (greyscale, tinted by the strata field in the shader; the preferred, cheaper option of the plan): the base
+template, then: "Weathered bentonite clay badland slope seen straight on: thin horizontal beds 2 to 20 cm thick running edge to edge,
+alternating smooth soft clay layers and slightly harder ledges that stand a few millimetres proud, a crumbly popcorn-textured crust
+of swollen clay on the soft layers, fine vertical rills where rain has run down, a few thin dark partings. Render it in neutral
+greyscale only (no colour at all), even mid-grey, so the shader can tint each bed: the beds differ in texture, not colour. The beds
+must stay horizontal and continue across the left and right edges."
 
 ## 10. The Cut (`biomes/cut`, planned 2026-10-23)
 
@@ -550,7 +560,123 @@ procedural two-face material for the curtains. **6 prompts.** Each takes the bas
 | `rock.hyaloclastite` | Hyaloclastite breccia: angular shards of black volcanic glass 1 to 6 cm (#1c1c1e, #2a2826) cemented in an ochre-yellow to brown palagonite matrix (#a07a3a, #8a6430, #b88e48), a few vesicular grey clasts, granular and crumbly. Full colour: not tinted. |
 | `mineral.curtain` | A thin mineral membrane seen face-on, as from a chemical garden: a glossy black-green film of iron-nickel sulphide and green rust (#141c16, #22302a, #3a5240) with fine vertical ribs and wavy growth lines, small blistered bubbles, and a few rust-orange spots (#9a5a2a) where it has oxidised; the upper edge of the tile pale green (#9ab88a) and fleshy, as a living hem. Full colour: not tinted. |
 
-## 53. The Coyote kit (`kits/coyote`, planned 2026-11-16)
+## 53. Opal Valley (`biomes/opalvalley`, 2026-11-11)
+
+Numbered 46 on its branch, renumbered 53 at the merge into main (2026-11-16), as the Cliff Lungs' 44 became 54 and the Siphon Pits' 46 became 55. Three sets the kit's surfaces want (`biomes/opalvalley/PLAN.md` section 11); until each comes the kit draws the
+stand-in its `KNOWN_ISSUES.md` names. Full colour: the colour is the point (do not tint them).
+
+`ground.sinter.opaline` (the middle bed's dams and aprons; 2 m a tile; today `ground.sinter` under the kit's procedural sheen):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: freshly precipitated opaline silica sinter on the floor of a terraced hot-spring apron: a hard, finely laminated white-to-pale-grey crust (#e6e2d8, #d8d6d0) in thin overlapping shelves and scalloped micro-rimstone ridges a few centimetres high, beaded geyserite knobs along the ridges, small shallow pools between them dried to a satin film, and here and there flecks and thin veinlets of precious opal showing play-of-colour (small sharp patches of electric blue #3a8ad8, green #3ac88a, violet #8a5ad8 and orange-red #e8602a, each a few millimetres, like broken pinfire opal) set in the white; faint orange and green mat stains in the lowest channels. Full colour: not tinted.
+```
+
+`rock.opal.matrix` (the risers' opal seams and the adits' faces; 1 m a tile; today the strata's thin seams and the sheen):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: boulder opal matrix: a broken face of brown ironstone and pale grey-buff rhyolite (#7a4a2a, #8a5634, #b6a490, #c2b19c), cut by thin wavy veins and lenses of precious opal 2-10 mm thick that fill cracks and cavities; the opal shows strong play-of-colour in patches (electric blue #2a6ad8, emerald #2ab878, violet #7a4ad8, flame orange #e8602a and red #d83a2a) against a dark potch backing in places, with milky white common-opal potch (#d0d6de) lining other veins; the rock between is rough and slightly porous. Full colour: not tinted.
+```
+
+`card.leaf.photonic` (the opal-bark tree's and the kit's own leaf sprays; a card: cut-out on green, as the library's leaf cards):
+```
+Leaf spray cut-out on a fully transparent background, PNG with alpha, square, 2048x2048: three short sprays of glossy oval leaves, each 4-7 cm, thick and waxy with a faint fine grain of silica, seen from above in soft even light. The leaves are a deep jade green (#2f8a76, #3a9a84) at their bases, and their surface carries a structural, view-dependent sheen: toward the tips and edges it shifts through peacock teal (#2aa8a8) to violet (#7a4ab8) and rose (#c86a8a), like a beetle's wing or a soap film, never a glow and never a flat pigment. No flowers, no stems longer than the leaves, nothing else on the card.
+```
+
+## 54. The Cliff Lungs (`biomes/clivobredos`, 2026-11-11)
+
+The living flues on the southern Inner Wall (`biomes/clivobredos/PLAN.md` section 15, moved here on the kit's build). The kit runs on reused sets
+until these land (its `materials.json` and `KNOWN_ISSUES.md` name each stand-in). **4 prompts**, paste-ready:
+
+**`organic.lung.ring`**: the ring's sun-side skin, ribbed in a shallow helix; tintable (the pressure band is the tint). Stand-in: `organic.pleat.skin`.
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view,
+perfectly flat surface filling the whole frame edge to edge. Flat, even,
+shadowless lighting, as if scanned: no highlights, no vignette, no shading
+gradient across the image. No perspective, no objects, no text, no border,
+no watermark. The left edge must continue into the right edge and the top
+into the bottom. Material: the living skin of a huge fleshy tube, taut and
+slightly glossy, crossed by broad shallow ribs running diagonally at about
+twenty degrees from vertical, each rib a smooth rounded ridge a hand wide
+with a fine crease along its crest, the skin between the ribs finely
+pebbled with small pores and faint branching veins just under the surface.
+Keep colours natural but slightly muted and even, so the texture can be
+tinted to different palettes without looking stained.
+```
+
+**`organic.comb.throat`**: the throat comb, wet black; full colour. Stand-in: `organic.tendril.banded`.
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view,
+perfectly flat surface filling the whole frame edge to edge. Flat, even,
+shadowless lighting, as if scanned: no highlights, no vignette, no shading
+gradient across the image. No perspective, no objects, no text, no border,
+no watermark. The left edge must continue into the right edge and the top
+into the bottom. Material: a wet black organic comb, thousands of short
+soft black filaments (#141210) packed in dense parallel rows like a baleen
+plate or a gill, beaded with clear water droplets, the rows wavering
+slightly, with a few pale grey-green specks of trapped dust and pollen
+(#9aa58a) caught between the filaments. Full colour: not tinted.
+```
+
+**`organic.husk.dry`**: a dead ring's papery split skin; tintable. Stand-in: `organic.lichen.plates`.
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view,
+perfectly flat surface filling the whole frame edge to edge. Flat, even,
+shadowless lighting, as if scanned: no highlights, no vignette, no shading
+gradient across the image. No perspective, no objects, no text, no border,
+no watermark. The left edge must continue into the right edge and the top
+into the bottom. Material: the dried dead skin of a huge fleshy tube, thin,
+papery and brittle, split along shallow diagonal ribs into curling flakes,
+the surface crazed with fine cracks, dusty, with darker fibrous layers
+showing where the outer skin has flaked off. Keep colours natural but
+slightly muted and even, so the texture can be tinted to different
+palettes without looking stained.
+```
+
+**`card.fallout.lawn`**: the fall-out lawn's jungle seedlings, a cut-out on magenta. Stand-in: a canvas card drawn in `src/72-biome-lung.js` (KNOWN_ISSUES.md says so).
+
+```
+Flat sheet of cut-outs, square, 2048x2048, on a solid flat bright magenta
+background (#ff00ff); no magenta, pink or purple anywhere in the subject; no
+grey or white background. Flat, even, shadowless lighting. Subject: ten
+separate clumps of young tropical seedlings as a lawn, each clump a crowd of
+big soft cotyledons and first leaves in several shapes (round, heart-shaped,
+palmate, strap-like), bright fresh green (#5fae3c to #8fd05a), a few clumps
+yellowing and browning at the edges, no flowers, no soil. No text, no border,
+no watermark.
+```
+
+## 55. The Siphon Pits (`biomes/siphon-pits`, 2026-11-11)
+
+Numbered 46 to keep clear of the sections other branches opened the same week (43-45 may be taken at merge). The kit draws library stand-ins until
+these come (`biomes/siphon-pits/KNOWN_ISSUES.md`, `materials.json`): `wool.fleece` for the pelt, `cloth.felt` for the felt, `wax.tallow` for the wax.
+Deliver each under its id, then point the slot at it in `biomes/siphon-pits/materials.json` (`fleece`, `felt` and `cloth.felt`, `gall`), run
+`python3 tools/textures/pack.py biomes/siphon-pits` and delete this section.
+
+`surface.fleece.machinewax` (the woolly siphon's pelt, slot `fleece`; full colour, 0.6 m a tile):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: the shaggy pelt of an alien chimney tree, seen close up: long matted locks of a waxy hydrocarbon fleece about 15 cm long hanging in overlapping tiers, each lock a twisted rope of fibres glued together with amber machine-wax, darker brown and sooty at the roots, golden amber and translucent at the drip-tips where the wax has run and set in beads, a few locks fused into flat waxy plates, dark gaps between the locks. Colours amber #c8964a, tawny brown #8a5c2a, soot #3a2a18, pale wax beads #e8c078. Full colour, do not mute.
+```
+
+`ground.feltturf.siphon` (the siphon felt, the pit floors' groundcover; slot `cloth.felt` on the ground and `felt` on its patches; full colour, 1.6 m a tile):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a spongy alien turf seen from above: a dense felt of fine hollow olive-green threads matted into soft cushioned mats a few centimetres thick, the mats split by narrow dark damp cracks into irregular pads, some pads browned and dry at their edges, beads of condensed water on the fibres, a few amber wax flecks fallen on it. Colours olive #6e7e44, moss #5e6e3a, dry tan #9a8a5a, damp dark cracks #2e3420. Full colour.
+```
+
+`wax.machine` (machine-wax: the suture galls' wax bulbs and the ropers' rendered ingots, slot `gall`; full colour, 0.25 m a tile):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: translucent amber hydrocarbon wax, seen close up: a smooth, slightly glossy surface of poured and set wax with subsurface glow, faint flow lines and drip ridges, small trapped air bubbles, darker honey-brown where it is thick and pale gold where thin, a few embedded dark fibres from the fleece it was rendered from. Colours amber #d8a050, honey #b07a30, pale gold #ecc078, fibre flecks #3a2a18. Full colour.
+```
+## 56. The Firebliss Range's and Korona's pancake domes (`biomes/firebliss`, `biomes/korona`, 2026-11-12)
+
+The pancake domes' walls: flow-banded rhyolite and obsidian (`biomes/firebliss/PLAN.md` section 11c, `biomes/korona/PLAN.md`
+"Amendment 2026-11-12"; scale model 5.1 edit 8). Stand-in until it lands: `stone.obsidian`. **1 prompt.** It takes the base template, then:
+
+| id | Material line |
+|---|---|
+| `rock.rhyolite.flowbanded` | A cliff face of flow-banded rhyolite lava: thin wavy bands of black glassy obsidian (#141416, #22222a) alternating with dull pink-grey and ash-grey devitrified rhyolite (#8a7a78, #a09490, #6e6a6c), the bands folded and stretched as a stiff lava flowed, with small white spherulites (#d8d4cc) strung along a few grey bands and conchoidal fracture surfaces catching a faint sheen on the black ones. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. |
+
+## 57. The Coyote kit (`kits/coyote`, planned 2026-11-16)
 
 The Coyote Men's settlement and culture kit (`kits/coyote/PLAN.md` section 10). Until these come the kit draws
 `plaster.clay_block_wall` for the brick, `cloth.rug.wool` tinted for the rugs, a plain limewash for the friezes,

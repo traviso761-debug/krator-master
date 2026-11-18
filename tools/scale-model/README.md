@@ -482,7 +482,7 @@ Completes the southeastern mountain-and-basin complex by sculpting three contigu
 2. **`Stalker Gate` (`rmvstalkergate`)**: A trans-divide structural pass network (`76,412 km²`) cutting through the
    glaciated Stalker Range (`+5,200–9,400 m`), featuring *Lake Vapora* (`+2,340 m`) and progressive WNW outer-wall slopes
    connecting `Weavers' Cradle` (`Region 99`) and `Ostrukh Terraces` (`Siphon Pits`) to the central basins.
-3. **`Mid Basin` (`rmvmidbasin101`)**: An enclosed intermontane piedmont basin (`79,164 km²`) with coalescing alluvial fans
+3. **`Mid Basin` (`rmvmidbasin101`; the Slabfields since 5.1 edit 3)**: An enclosed intermontane piedmont basin (`79,164 km²`) with coalescing alluvial fans
    and step-faulted benches bridging `Stalker Gate`, `High Rift`, and `Siphon Pits`.
 
 ## 5.0 & 5.1: `build_425_master.py` (Nov 2026) — Unified 2 km/cell Grid, N/W Canvas Expansion (`1821 × 1723`), & Planetary Remodeling
@@ -555,7 +555,7 @@ Completes the southeastern mountain-and-basin complex by sculpting three contigu
 5. **Ancient's Valley Blast Basins & Southern Inner Wall Scarp (5.1 Round 3)**:
    - **Seven Vitrified Blast Basins & `17.4 m` Lake in `ancient's valley` (`rmva8s97fa99i`)**:
      The Ancient's Valley / SW Lowlands terminal lake (`Body 242`) is settled to **`17.4 m`** (`lake_level_m = 17` on `"western lake (Ancient's Valley) outlet"` in `DATA.outlets`), grading its old `-431..-700 m` trench bed to a shallow `-12..-28 m` lake bed and clamping stale `wlev > 18 m` shore cells to `17.4 m`. The seven vitrified ordnance blast basins are cut **last in the terrain pipeline** so every basin reads as a flat-bottomed depression (`85–110 m` below its local pad) ringed by a raised `+36..+48 m` vitrified glass rim: 4 dry basins at `(476, 915)` (`r = 6 km`), `(398, 966)` (`r = 5.5 km`), `(450, 896)` (`r = 5 km`), and `(406, 908)` (`r = 6.5 km`); 2 drowned lake basins at `(428, 948)` (`r = 7.5 km`, floor `-44 m` under `17.4 m` water) and `(460, 962)` (`r = 7 km`, floor `-46 m` under `17.4 m` water); and 1 half-drowned shore basin at `(420, 984)` (`r = 6.5 km`, north half drowned at `17.4 m`, south half dry melt-sheet).
-   - **Southern Inner Wall Scarp (`biomes/clifflung/PLAN.md` §5 & §14.1, `px 745–930, py 1022–1060`)**:
+   - **Southern Inner Wall Scarp (`biomes/clivobredos/PLAN.md` §5 & §14.1, `px 745–930, py 1022–1060`)**:
      Sculpted along the `s highlands` north edge over `hyperjungle S` and `savage hyperjungle` as a sharp `4–5 cell` (`8–10 km`) step from the `210–420 m` talus foot through the `1,520–1,950 m` cloud-forest bench (`Cfb`) to the `3,320–3,780 m` paramo rim crest (`ET`), indented by 15 recessed V-ravines and projecting megabreccia buttresses while keeping **Spirladunon** (`px 800, 1017` at `1,398.2 m`), **Voth** (`px 742, 1018`), **Torus** (`px 774, 1007`), and **Pylon** (`px 869, 1002`) intact.
 
 ## 5.1 edit 1: `history/edit_511.py` (2026-11-09): the owner's decisions on the biome plans
@@ -777,6 +777,121 @@ river's `walls_unforced` field is its marker).
   (422). No biome station's pin and no lake stands on the changed ground. The Godthrone kit's `-blood` station (r442's
   bloodfalls, not built) will read r442's lower flow.
 - `tests/test_smodel.py` section 18: the walls' band under 400 mm, the caldera's rain kept, the river at 120-135 m³/s.
+## 5.1 edit 7: `edit_517.py` (2026-11-12, run on main 2026-11-16): the Slabfields (was Mid Basin)
+
+Written as 5.1 edit 3 (`edit_513.py`) on `claude/slabfields`; renumbered 7 at the merge into main, where edits 2-6 were taken,
+and re-run on main's data (edits 4-6 in it): its own river check passed with Ostrukh Riba on its rerouted course. The
+reconcile key is `krator.regMerged.5.1e7`. Below, the branch's text: read "edit 3" and `edit_513` as edit 7 and `edit_517`.
+
+`python3 tools/scale-model/edit_513.py` edits `model/data` and `model/src/51-region-store.js` in place and writes
+`edit_513.report.json` (`--dry-run` runs every step and check and writes nothing); it refuses to run twice (the springs list
+is its marker). Every number is `biomes/slabfields/PLAN.md`'s (sections 3 and 5): the owner's decision of 2026-11-12 to
+re-plan Mid Basin around Io-style tilted crustal blocks. (Edit 2, `edit_512.py`, the Firebliss patera and the pancake
+domes, is another session's; the two touch no common cell, and whichever merges second reruns its own script on the merged
+data.)
+
+- **Four slabs, one split**, each a block of flood basalt thrust up on the squeezed side of the stress hinge (the plan's
+  section 3.2: the middle bench, y 1355-1400) and tilted: a cliff one to two cells high on a lobate front, a straight ramp
+  falling to the plain behind, its crest tapering over the last 5-6 km at each end and the slab narrowing there.
+
+  | Slab | Centre | Size | Cliff faces | Plain / crest | Ramp |
+  |---|---|---|---|---|---|
+  | the Anvil | 1662,1376 | 40 x 18 km | N | 3,287 / 5,356 m | 7.0 degrees |
+  | the Halves, NW and SE | 1715,1366; 1729,1382 | 14 x 10 km each, 42 km apart | N | 3,234 / 4,674; 3,435 / 4,875 m | 9.1 |
+  | the Leaner | 1600,1397 | 30 x 12 km | NNW | 2,110 / 3,355 m | 6.7 |
+  | the Backstop | 1690,1411 | 28 x 12 km | S (a back-thrust) | 4,367 / 5,370 m | 5.7 |
+
+- **An apron** in front of every cliff: a lobe 60-140 m thick at the foot, running out about four cliff heights (Heim's ratio
+  about 0.25), narrower than the cliff; 56-264 km2 each.
+- **Two paterae with spring lakes**, closed: the Leaner's (1601.5,1388.6; 10 km across, floor 1,907 m, lake 16 cells at
+  1,997 m, spill 2,073 m) and the Halves' (1722,1374, in the split slab's gap; 12 km, floor 3,062 m, lake 21 cells at
+  3,102 m, spill 3,260 m). Each has a **basin record** (`kind: 'lake'`, with `name`, `region` and `source: 'spring'`).
+- **`DATA.springs`** (new: `model/data/springs.json`): the region's eight springs, one record each (`id`, `name`, `px`,
+  `ground_m`, `kind`, `water`, `region`, `source`, `notes`): the model's three maar springs and the Warp Head, and the
+  edit's two patera springs, the Anvil's apron toe and the Leaner's ramp foot. The page does not draw them yet.
+- **The climate** follows as edit 1's did: temperatures lapsed with the surface (437 cells), rain, class and zone
+  recomputed by `smodel.climate.reclimate` (891 cells, 219 changed class: the crests ET, the ramps Dsc and Dfc), the lakes
+  `WH`; `rt` and `ct` repainted, all four maps relit, `st` and `t` retinted, the lakes painted the flagship maar's lake.
+- **Only the Slabfields' own cells move**: its polygon less the 2,879 cells it shares with the Stalker Gate, Region 99 and
+  the Siphon Pits, and at least 6 px inside that. Every other cell of `h`, `wl`, `wd`, `p`, `c`, `z` and the five
+  temperature rasters is asserted unchanged; `h` and `wl` change only on the 641 moved cells. The painted JPEGs are
+  re-encoded whole, as every edit's are, and the codec's round trip is not exact (up to 58 levels on `ct`), so the check is
+  that away from the region (16 px) each map is **byte for byte the untouched map put through the same two encodes**. No
+  river, vent or station lies in the edit.
+- **The region renamed** in the page's defaults: `rmvmidbasin101` is now "The Slabfields" with a new note, and the Stalker
+  Gate's note names it; a one-time reconcile (`krator.regMerged.5.1e3`) puts both on browsers that hold a saved list. **The
+  id is kept** (a stable key). `extract_region.py` maps both names to its biome kit.
+- `tests/test_smodel.py` section 15 checks the name, the five crests, the Anvil's cliff and ramp, the two lakes and their
+  basins, and the eight springs. (The test also reads the retired little demo's regions from `archive/little-demo` now:
+  `openworld/little-demo` moved there on 2026-11-08, and the test had failed on `main` since.)
+
+**Owed by the owner (this session wrote neither):**
+1. **The live artifact's region database:** write `rmvmidbasin101` on the 5.1 canvas as the defaults hold it (name "The
+   Slabfields", the new note, the points unchanged, `canvas: "5.1 (1821x1723)"`), as edit 1 wrote `rmvraoas90co7`; and
+   `rmvstalkergate`'s note ("... Loom-Chasms, the Slabfields, and Siphon Pits ..."). The rest of the database is still on
+   the old canvas (edit 1's note).
+2. **Publish:** `python3 tools/scale-model/model/build.py --split`, then publish `model/dist/split/index.html` with
+   `data-1.js` and `data-2.js` beside it to the artifact's URL (as version 91 was), and look at the page.
+## 5.1 edit 8: `edit_518.py` (2026-11-12, run on main 2026-11-16 with the patera held): the pancake domes in Firebliss and round Korona
+
+Written as 5.1 edit 2 (`edit_512.py`) on `claude/firebliss-patera-domes`; renumbered 8 at the merge into main. At the merge
+main held a built Firebliss station 1 on the Great Firebliss Vale, the floor the patera takes over, so the owner chose
+"domes only for now" (2026-11-16): the script runs with `PATERA_ON = False` and raises the ten domes and their records only.
+The patera, the Holm, the heat low and the Tlahn Warra's new head are written in it, off. Below, the branch's text as it
+planned the whole edit: read "edit 2" and `edit_512` as edit 8 and `edit_518`.
+
+`python3 tools/scale-model/edit_512.py` edits `model/data` in place and writes `edit_512.report.json`; it refuses to run
+twice (the patera's vent record is its marker). The plans are `biomes/firebliss/PLAN.md` sections 1a-1g and
+`biomes/korona/PLAN.md`, "Amendment 2026-11-12" (the owner's decisions of 2026-11-12).
+
+- **The Firebliss Patera** (a lava lake, Io's Loki Patera at Krator's size): the Great Firebliss Vale's floor taken over by
+  an oval **48 x 32 km** round **181,1317.5** (semi-axes 12 x 8 px, long axis 6 degrees north of east), its crust flat at
+  **2,240 m** over **282 cells (1,128 km²)**, dry land of a new climate class **`L`, patera (lava-lake crust)** (`#5a1a0a`,
+  appended to `climate.json`'s classes so no index moves). Cut up to 2,370 m into the vale's walls; the shore stands at
+  2,740 m or more all round (median 3,607 m): a lip of 2,740 m held on 71 cells where the vale ran out east and south-west
+  (a fill of up to 441 m), eased back into the ground by 1.55 radii. The vale's tarn (60 cells at 2,280 m, WH) is gone.
+  **The Holm**, the island: 12 x 9 km round 175.5,1315, 22 cells (88 km²), flat at 2,700 m. Heat 1.1 / 3.4 / 5.6 TW at
+  1 / 3 / 5 kW/m² (the plan's arithmetic: 2.5-6.4% of Krator's 53-133 TW at the central flux).
+- **Its climate:** the floor a heat island (mean 28 C, warm month 34, cold month 20, hottest afternoon 50, coldest night
+  +8; 1,200 mm that flashes off the crust); **the heat low's rain ring**, +900 mm at its peak 8-24 km off the shore, nothing
+  past 56 km (3,970 cells, mean 647 to 1,191 mm; most of it snow on the plateau), its classes kept (ET, EF, Dfc, Cfb: none
+  dry; the script asserts it). The wind raster `wd` is not touched.
+- **The domes** (a new key, `domes.json`, ten records): flat-topped, one to two cells of wall.
+
+  | Dome | px | Across | Ground | Top |
+  |---|---|---|---|---|
+  | North Glass | 175,1302 | 12 km | 5,133 m | 5,633 m |
+  | West Glass | 157,1324 | 10 km | 4,819 m | 5,269 m |
+  | South Glass | 175,1335 | 14 km | 4,503 m | 5,053 m |
+  | Ember Glass | 201,1331 | 8 km | 4,679 m | 5,079 m |
+  | Gate Glass | 211,1305 | 10 km | 5,396 m | 5,846 m |
+  | Korona 1, NW trench | 1007,490 | 14 km | -1,492 m | -892 m |
+  | Korona 2, NE trench | 1131,494 | 12 km | -901 m | -379 m |
+  | Korona 3, S trench | 1038,581 | 16 km | -852 m | -202 m |
+  | Korona 4, SE moat | 1179,578 | 16 km | -103 m | 547 m |
+  | Korona 5, N trench | 1071,430 | 14 km | -297 m | 303 m |
+
+  None touches water or a river (asserted). Three dam a few upslope cells (pit cells in a 29-cell box: South Glass 23 to 47,
+  Ember Glass 23 to 30, Korona 1 24 to 34, Korona 3 34 to 44): dome-dammed hollows, left dry.
+- **The records:** the patera as a vent (`kind: patera`, `floor` 2,240, `radius` 16 km, `scale` 0.6: the page draws its
+  lava disc, glow and smoke), and as a basin (`kind: lava lake`, `climate: L`, the Holm under `island`). **The Tlahn Warra**
+  (`r_fb_central`) loses its first point, 190,1319, on the lava: it heads on the east lip at 199,1323 (bed 2,292 m), 306 km
+  instead of 326. No settlement and no region record changes.
+- **What moved:** heights on 677 cells (488 in Firebliss, 189 in Korona, 0 elsewhere: asserted); water levels on the 60 tarn
+  cells; temperatures on 659 cells (`th`, `tl` 469); rain on 4,667, class on 556, zone on 98 (the sites, `reclimate`'s
+  re-derived cells round them, and the ring). Every other cell of `h`, `wl`, the five temperatures, `p`, `c` and `z` is
+  checked unchanged; the painted maps (`st`, `t`, `rt`, `ct`) are relit and repainted round the sites and re-encoded.
+- **With edit 513** (the Slabfields, Mid Basin, on another branch): the script reads whatever `model/data` holds and checks
+  only its own cells, so whichever branch merges second reruns its script on the merged data (from a checkout of the other's
+  `model/data`) instead of merging the binary rasters.
+- `tests/test_smodel.py` section 15 checks the crust (flat, dry, class `L`), the shore over 2,640 m, the Holm, the tarn gone,
+  the Tlahn Warra's head, the basin and vent records, the floor's temperatures, the rain ring, and every dome's flat top and
+  height; section 13 now counts the five stratovolcanoes and the three remaining tarns. The test read the little demo's
+  regions from `openworld/little-demo/`, which moved to `archive/`; it now falls back to `archive/little-demo/source/`.
+- **Owed by the owner (not done in the session):** publish the page, `python3 tools/scale-model/model/build.py --split`,
+  then `model/dist/split/index.html` with `data-1.js` and `data-2.js` beside it to the artifact's URL. **No database write
+  is owed:** no settlement or region changed, and the page's defaults (`model/src/`) are untouched. If the owner settles
+  the Holm, its marker is a new settlement (the page's default list and the live database, on the 5.1 canvas).
 
 ## Cutting a region out for the open world
 

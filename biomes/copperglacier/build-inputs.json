@@ -98,7 +98,6 @@
     "core/host/97-host-minimap.js": "24758908dc1f6be4fed09e0aa3a23270187ccd93ff41ada5974bf49b194fc162",
     "core/host/98-host-edit.js": "89038217cde180a076b33d41644bd95285837a9d63f09199bd944e507596997e",
     "core/host/99-host-cutaway.js": "c67cea97b1b18a2a8b3bbc329d5bb5df7fd007a4aee033b21d91fe75cd0ad300",
-    "core/host/host.py": "18f80becdd343f7375785bc5aabdda290761d34376d890ebff8fab0d91fb5288",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
     "core/minimap/88-core-minimap.js": "b6c7e9c662f079c8f97cfc9f6bac2fea115b660f9b417056da54c3bf3c1129a1",
@@ -131,11 +130,9 @@
     "core/water/ext/58-core-water-mirror.js": "abf23c31ba18ba7f4890646bb539fa41652a3331977cc0c6ed6bcda9c646083f",
     "core/water/ext/60-core-water-fields.js": "8e877798226558edf744fccd1e6e92edf28bf059af5f087a10d733eaf5ecac2a",
     "core/water/ext/61-core-water-plume.js": "3b1eb79ddcc511cd6c09dc145253e116ed8377252c7d7811d2d9b3fa35faf18f",
-    "kits/resources/data/geology.json": "13fd3247258a9a0913a7c0e838da61d27108c2c26677a3370eca2349bfa953a5",
+    "kits/resources/data/geology.json": "7ab25a6b3feeda7d529660e027881fc9275c0aad9a226c7b9a1d784f47a62f98",
     "kits/resources/src/45r-res-field.js": "ca8bf0860266e0eef84783236767da2b4758be920bd26e7aef63c1f8447440ab",
-    "tools/buildlib.py": "24ec6d636869007e626446a0b8e9cc886fd595af0c9f95b78c4d4b272a18ec0e",
-    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47",
-    "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
+    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47"
    },
    "listings": {
     "biomes/copperglacier/src": "e004b729212031691adb14bbc9fae2b7d2977f53bbdfd455e9bc85c47478ce83",
@@ -144,10 +141,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/copperglacier/dist/copperglacier.html": "36168c7c01b7195fe8d481ac039cdc1892dccdc5cfdabb0baace5521608f949a"
+    "biomes/copperglacier/dist/copperglacier.html": "07f774251be1ee958b0ffa760e6440e6e49a9926fe028fae8af0208b968f823d"
    },
    "outputs_raw": {
-    "biomes/copperglacier/dist/copperglacier.html": "36168c7c01b7195fe8d481ac039cdc1892dccdc5cfdabb0baace5521608f949a"
+    "biomes/copperglacier/dist/copperglacier.html": "07f774251be1ee958b0ffa760e6440e6e49a9926fe028fae8af0208b968f823d"
    }
   },
   "build.py --station icefield": {
@@ -249,7 +246,6 @@
     "core/host/97-host-minimap.js": "24758908dc1f6be4fed09e0aa3a23270187ccd93ff41ada5974bf49b194fc162",
     "core/host/98-host-edit.js": "89038217cde180a076b33d41644bd95285837a9d63f09199bd944e507596997e",
     "core/host/99-host-cutaway.js": "c67cea97b1b18a2a8b3bbc329d5bb5df7fd007a4aee033b21d91fe75cd0ad300",
-    "core/host/host.py": "18f80becdd343f7375785bc5aabdda290761d34376d890ebff8fab0d91fb5288",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
     "core/minimap/88-core-minimap.js": "b6c7e9c662f079c8f97cfc9f6bac2fea115b660f9b417056da54c3bf3c1129a1",
@@ -282,11 +278,9 @@
     "core/water/ext/58-core-water-mirror.js": "abf23c31ba18ba7f4890646bb539fa41652a3331977cc0c6ed6bcda9c646083f",
     "core/water/ext/60-core-water-fields.js": "8e877798226558edf744fccd1e6e92edf28bf059af5f087a10d733eaf5ecac2a",
     "core/water/ext/61-core-water-plume.js": "3b1eb79ddcc511cd6c09dc145253e116ed8377252c7d7811d2d9b3fa35faf18f",
-    "kits/resources/data/geology.json": "13fd3247258a9a0913a7c0e838da61d27108c2c26677a3370eca2349bfa953a5",
+    "kits/resources/data/geology.json": "7ab25a6b3feeda7d529660e027881fc9275c0aad9a226c7b9a1d784f47a62f98",
     "kits/resources/src/45r-res-field.js": "ca8bf0860266e0eef84783236767da2b4758be920bd26e7aef63c1f8447440ab",
-    "tools/buildlib.py": "24ec6d636869007e626446a0b8e9cc886fd595af0c9f95b78c4d4b272a18ec0e",
-    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47",
-    "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
+    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47"
    },
    "listings": {
     "biomes/copperglacier/src": "e004b729212031691adb14bbc9fae2b7d2977f53bbdfd455e9bc85c47478ce83",
@@ -296,10 +290,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/copperglacier/dist/copperglacier-icefield.html": "dbf27f778160335f80d11436ea462fb2308467598a6b744f30a44bf35805ae04"
+    "biomes/copperglacier/dist/copperglacier-icefield.html": "a2df5e9463f178ac9844852b8b9c0021574ade991bb6c3424ae70cddd2d3591f"
    },
    "outputs_raw": {
-    "biomes/copperglacier/dist/copperglacier-icefield.html": "dbf27f778160335f80d11436ea462fb2308467598a6b744f30a44bf35805ae04"
+    "biomes/copperglacier/dist/copperglacier-icefield.html": "a2df5e9463f178ac9844852b8b9c0021574ade991bb6c3424ae70cddd2d3591f"
    }
   },
   "build.py --station pass": {
@@ -401,7 +395,6 @@
     "core/host/97-host-minimap.js": "24758908dc1f6be4fed09e0aa3a23270187ccd93ff41ada5974bf49b194fc162",
     "core/host/98-host-edit.js": "89038217cde180a076b33d41644bd95285837a9d63f09199bd944e507596997e",
     "core/host/99-host-cutaway.js": "c67cea97b1b18a2a8b3bbc329d5bb5df7fd007a4aee033b21d91fe75cd0ad300",
-    "core/host/host.py": "18f80becdd343f7375785bc5aabdda290761d34376d890ebff8fab0d91fb5288",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
     "core/minimap/88-core-minimap.js": "b6c7e9c662f079c8f97cfc9f6bac2fea115b660f9b417056da54c3bf3c1129a1",
@@ -434,11 +427,9 @@
     "core/water/ext/58-core-water-mirror.js": "abf23c31ba18ba7f4890646bb539fa41652a3331977cc0c6ed6bcda9c646083f",
     "core/water/ext/60-core-water-fields.js": "8e877798226558edf744fccd1e6e92edf28bf059af5f087a10d733eaf5ecac2a",
     "core/water/ext/61-core-water-plume.js": "3b1eb79ddcc511cd6c09dc145253e116ed8377252c7d7811d2d9b3fa35faf18f",
-    "kits/resources/data/geology.json": "13fd3247258a9a0913a7c0e838da61d27108c2c26677a3370eca2349bfa953a5",
+    "kits/resources/data/geology.json": "7ab25a6b3feeda7d529660e027881fc9275c0aad9a226c7b9a1d784f47a62f98",
     "kits/resources/src/45r-res-field.js": "ca8bf0860266e0eef84783236767da2b4758be920bd26e7aef63c1f8447440ab",
-    "tools/buildlib.py": "24ec6d636869007e626446a0b8e9cc886fd595af0c9f95b78c4d4b272a18ec0e",
-    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47",
-    "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
+    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47"
    },
    "listings": {
     "biomes/copperglacier/src": "e004b729212031691adb14bbc9fae2b7d2977f53bbdfd455e9bc85c47478ce83",
@@ -448,10 +439,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/copperglacier/dist/copperglacier-pass.html": "6578fca236b108f42cb331d91fbc19e53fc6946932f789d56ba3404479f208c1"
+    "biomes/copperglacier/dist/copperglacier-pass.html": "094f08b62389015f1cef4dfce3e31bbc0c52f3fba9a6a1c0e853e06795b3ef1e"
    },
    "outputs_raw": {
-    "biomes/copperglacier/dist/copperglacier-pass.html": "6578fca236b108f42cb331d91fbc19e53fc6946932f789d56ba3404479f208c1"
+    "biomes/copperglacier/dist/copperglacier-pass.html": "094f08b62389015f1cef4dfce3e31bbc0c52f3fba9a6a1c0e853e06795b3ef1e"
    }
   }
  }

@@ -1,0 +1,20 @@
+{
+ "format": "krator-outpost-candidates",
+ "version": 1,
+ "kit": "biomes/tiers",
+ "note": "The Tiers' CANDIDATE sites for a player settlement (PLAN.md section 6: the three it proposes), in openworld/outposts/README.md's shape ('A biome kit (candidate sites)'): KOUTPOST.offer('tiers', candidates). No spot is picked for the player and nothing is drawn for them. Each keeps clear of the Coyote Kingdom's places (the capital in Coyote Canyon, 1265,500; the lake towns at 1262,512 and 1272,522; the herders' camps on the great tread are core/camp's, not candidates). Values from the scale model 5.1 at the px (height m, Koppen, rain mm a year, mean degC): east-riser-spring 1275,524: 2,030 m, Cfa, 1,756 mm, 17 degC (the rain line's wettest cell, a box canyon's head on the windward riser); southeast-bay 1271,546: 1,325 m, Cfa, 878 mm, 21 degC (a bench 175 m over the upper lake's quiet south-east bay, the lake at 1,150 m one cell west); middle-steps-pocket 1276,553: 3,230 m, Dsb, 596 mm, 11 degC (the plan's numbers). Risks in core/hazard's words: the risers' rockfall (crush) and edges (fall), the canyons' flash floods (drown), the winter's frost on the middle steps (cold).",
+ "candidates": [
+  {"id": "tiers:east-riser-spring", "kit": "tiers", "name": "The spring at the head of a canyon on the east riser",
+   "place": {"map": "5.1", "px": 1275, "py": 524, "r": 900},
+   "suits": ["home", "farm", "works"], "has": {"water": 1, "warmth": 0.85, "ground": 0.45, "resource": 0.5, "shelter": 0.9},
+   "risks": ["drown", "crush"], "_note": "the wettest ground in the Tiers (1,756 mm, Cfa) and a spring under walls that shelter it; little level ground: a terraced homestead, the step moss's pools for its water"},
+  {"id": "tiers:southeast-bay", "kit": "tiers", "name": "The bench over the upper lake's south-east bay",
+   "place": {"map": "5.1", "px": 1271, "py": 546, "r": 1200},
+   "suits": ["home", "farm", "trade", "waystation"], "has": {"water": 1, "warmth": 1, "ground": 0.8, "resource": 0.4, "shelter": 0.6},
+   "risks": ["fall", "crush"], "_note": "warm and wet enough (878 mm, Cfa) for terraced fields and the shelf-oak woods; the quiet bay's water below, away from the lake towns of the north and east shores; a landing for reed boats"},
+  {"id": "tiers:middle-steps-pocket", "kit": "tiers", "name": "The spring in the middle steps' Dsb pocket",
+   "place": {"map": "5.1", "px": 1276, "py": 553, "r": 900},
+   "suits": ["home", "hunt", "farm"], "has": {"water": 0.7, "warmth": 0.4, "ground": 0.6, "resource": 0.6, "shelter": 0.5},
+   "risks": ["cold", "fall"], "_note": "a cool pocket (3,230 m, 596 mm, 11 degC) where the herders winter: pasture, ponderosa and aspen (the eastern badlands' montane), hard frost in the cold months"}
+ ]
+}

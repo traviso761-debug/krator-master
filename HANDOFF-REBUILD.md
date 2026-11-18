@@ -322,7 +322,7 @@ These entries are left as they were:
 - **Map 5.1** (`gemini-loom-chasms`, Gemini's scale model) merges here after `tools/scale-model/HANDOFF-GEMINI-5.1.md` on that branch is done.
   `biomes/STATIONS-MAP-5.1.md` lists what it asks of each station. Godstep's plan is rewritten on 5.1 and settled (2026-11-03): five stations, three core items owed (below).
 - **Map 5.1 is merged here** (538c814d1, Gemini's Round 2, 3e35e605f, 2026-11-02). Its checks passed; region cuts and the pages that read the model are not re-cut yet (`biomes/STATIONS-MAP-5.1.md`, "Regions needing a re-cut"). The old map is frozen.
-- **The alien biome session's stations are in the queue** (the owner, 2026-11-02; plans merged here). Each is built with its host kit's turn: swlowlands 3 (the delta and Wing's floodplain, one station reading swbay in place), nhighlands 5 (the Footfall bogs), ringisles 3 (the lagoon), outlands 8 (the Mires, when that kit is built). The kits' own plans: `biomes/gills` (stations on godthrone, catch, xanadu), `biomes/hearths` (riftrim, oidong, the Stills at geyser's sites), `biomes/deeps`, `biomes/clifflung`. A turn reads its host's station list and these plans, and asks the owner only about what's still open in them.
+- **The alien biome session's stations are in the queue** (the owner, 2026-11-02; plans merged here). Each is built with its host kit's turn: swlowlands 3 (the delta and Wing's floodplain, one station reading swbay in place), nhighlands 5 (the Footfall bogs), ringisles 3 (the lagoon), outlands 8 (the Mires, when that kit is built). The kits' own plans: `biomes/gills` (stations on godthrone, catch, xanadu), `biomes/hearths` (riftrim, oidong, the Stills at geyser's sites), `biomes/deeps`, `biomes/clivobredos`. A turn reads its host's station list and these plans, and asks the owner only about what's still open in them.
 - **Map 5.1 Round 3 is merged here** (68b6aa22b): frozen river names, the valley's seven basins and lake, the southern Inner Wall scarp. shighlands' stations need a re-survey (`biomes/STATIONS-MAP-5.1.md`).
 - **The Deeps** (`biomes/deeps/PLAN.md`) is a late build, expansion-pack territory maybe (the owner, 2026-11-03): not in the queue.
 - **`BIO.flareJoin` on every tree's limb joints where they show** (the owner, 2026-11-03): every future build and every rebuild turn takes it (`BACKPORT.md`'s universal set, "Limb joints"). Turns already merged take it at the close-out rebuild.
@@ -334,7 +334,7 @@ These entries are left as they were:
   - **swhighlands: done (2026-11-09, `claude/swhighlands-rest-f8a7ee`)**: station 7, the ridge karst (`--station caverns`), on site 2;
     stations 2 (the rain wall) and 3 (Span's tableland) built with it; station 5 (the fan coast) owed. The Cube link is site 3's (the rift).
 - **The Hearth hold's hypogene chambers** (survey site 4; the owner, 2026-11-03): `KKARST` gets a proper rising-water (hypogene) mode in core first, so the hearths' warm chambers are not a maze stand-in.
-- **New kits to add to the queue:** Copper Glacier, Siphon Pits, Loom-Chasms, Mid Basin, High Rift, the NE outer wall, Outland Gate.
+- **New kits to add to the queue:** Copper Glacier, Siphon Pits, Loom-Chasms, the Slabfields, High Rift, the NE outer wall, Outland Gate.
 - **The new north and west, except Copper Glacier, the NE outer wall and Outland Gate:** Gemini may do map work there, but no biome kits and no open world there for some time.
 - **The tsunami reaches Farside.** Farport's old city moves to the near-shore plateau; the harbour stays below (the station review).
 - **Added, not started:** `core/charactermodels/HANDOFF-GARMENT-DEFECTS.md`, `settlements/isle-demo/PLAN-ECONOMY.md`.
@@ -346,7 +346,7 @@ opt-in, and no page moves (`core/README.md`, "The unbuilt plans' pieces"). A kit
 
 - **Landform kinds** (`core/terrain/38c-core-landforms.js`, `LANDFORMS.md`):
   - **wouterwall** takes `slump`, `runout`, `gully` and `terraces`;
-  - **Mid Basin** takes `maar`, `relay` and `terraces`;
+  - **The Slabfields** (was Mid Basin) takes `maar`, `relay` and `terraces`, and `scarp` for its slabs;
   - **loom-chasms** takes `terraces` (the Cradle);
   - **siphon-pits** takes `stepcut` (the graben and the pits) and `maar` (the pit floors).
 - **Varied contacts** (`KSTRATA.vary` and `KSTRATA.drape`, `core/terrain/35c-core-strata-vary.js`; Godot twin `kstrata_vary.gd`): **Mid

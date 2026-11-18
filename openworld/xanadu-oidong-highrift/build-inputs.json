@@ -160,7 +160,6 @@
     "kits/iziz-vernacular/src/69b-vern-mat.js": "706739ba81271b9c5962492c04c5f7fa3e500b5d0eafb1f0eef5d8d88abfdbba",
     "kits/iziz-vernacular/src/69c-vern-helpers.js": "29c11ba1c973f0ba8590e061d628ef88158a13cc87758501dcf36fd19c00ddd3",
     "kits/iziz-vernacular/src/69e5-iziz-openings.js": "0d0a1d42179bdde0ba115fd488dc6f8b67cfd6aa15350409170015fdd9e9fa79",
-    "kits/xanadu/kit_bundle.py": "8d9bd201e49f0d228018e503e491712bc17762656be0200babcd3e3ca399a4ef",
     "kits/xanadu/src/70-xa-tex.js": "2efcc6922687bd9e374c03bdc8c3b75d5d2a1f06bf7da6656e4f95d0d32df02f",
     "kits/xanadu/src/71-xa-mat.js": "d08001da45495ca8d49b9df566d56c8c5b2567ee7d49b8e8b60c73deac436d41",
     "kits/xanadu/src/71c-xa-openings.js": "b018f238df3a253e4573734db17edf867545ecdb6978f8ef980b51c25abd8d1f",
@@ -189,7 +188,6 @@
     "kits/xanadu/src/87c-xa-erewhon.js": "363f50ec6d14578c777a8fbbc24915110e3e03a99c75462ea8d887846d2743ab",
     "kits/xanadu/src/88-xa-dress.js": "92b383aae14ae16df38e04863d52344e1ee1b66aa243a37b8936f7bb7251ae3f",
     "kits/xanadu/src/89-xa-trades.js": "ea68acaefb8da0b319ca98fb43f8aa400763eccf0e734051065c4facca8662af",
-    "kits/xanadu/xanadu.py": "70917961388f43ea3d80944de7272efe73f5c263c4c005865be50932e5c4ebd4",
     "openworld/xanadu-oidong-highrift/PORT.md": "de5051a29236c79c94fd9b3c9e2e924dd5eaa4d2f49cb41dcd605c3bc1b4215a",
     "openworld/xanadu-oidong-highrift/build.py": "fff5513425f5460f04082b9c021858bcd6134f24e8f7af8e1f43580a9459fe73",
     "openworld/xanadu-oidong-highrift/data/biome.png": "99904830b18e2e582ca452d7849fb9fdebf9407f19c9716487db88e62914bd16",
@@ -271,10 +269,7 @@
     "settlements/xanadu/tex/xWash.albedo.webp": "c88e3007ec09ff00a5c414a9d9a3007cd7d61aea093a68b001e679c915e0dea4",
     "settlements/xanadu/tex/xWash.normal.webp": "57841d092925afa12258b073ca2acf360c9446d3889ed704cb95360cab61f56b",
     "settlements/xanadu/tex/xWash.rough.webp": "f35064c19cfa76777eefc2a14a1a56420c5adffa9f9e1d69e951550674808ad7",
-    "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
-    "tools/buildlib.py": "24ec6d636869007e626446a0b8e9cc886fd595af0c9f95b78c4d4b272a18ec0e",
-    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47",
-    "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
+    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47"
    },
    "listings": {
     "core/materials": "3342416a526793b328fa0871f795bdf98d2084292aa7bcb917fecc405076716c",

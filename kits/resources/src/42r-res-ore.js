@@ -47,6 +47,10 @@ Object.assign(RES_ORE.kinds,{gypsum:{item:'gypsum',name:'gypsum',cls:'mineral',w
    mantle (Sudbury's nickel, copper and platinum come out together: one ore); marble where a pluton or a volcano cooked the
    limestone, cut in a quarry (a mine works: the brick cities' white trim, LORE.md) */
 Object.assign(RES_ORE.kinds,{nickel:{item:'nickel_ore',name:'nickel',cls:'metal',works:'mine'},marble:{item:'marble',name:'marble',cls:'stone',works:'mine'}});
+/* zinc (2026-11-12, the owner; biomes/galvanic/PLAN.md section 9): sphalerite, the ore zinc comes from (zinc never occurs as metal in
+   nature); on the vent fields' and the rift floors' massive sulfide, in the carbonate platforms (lead-zinc), and wherever copper is rich
+   (the geology bake's zinc_byte). Brass is copper and zinc; galvanizing and white vitriol come from it */
+Object.assign(RES_ORE.kinds,{zinc:{item:'zinc_ore',name:'zinc',cls:'metal',works:'mine'}});
 /* the gems (the owner, 2026-11-16; biomes/outlands/PLAN.md sections 0 and 8, kits/coyote: the Coyote Men's exports): emerald where
    a granite's pegmatites cut the gneiss and the walls' breccia, and Muzo's kind in folded sediments by the brines; turquoise where
    copper ground weathers under a dry sky; both in the Outlands' gem hills (tools/scale-model/geology.py gems(), --gems) */

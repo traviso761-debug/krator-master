@@ -17,6 +17,7 @@
   "alkali",
   "nickel",
   "marble",
+  "zinc",
   "emerald",
   "turquoise"
  ],
@@ -140,6 +141,13 @@
      "n": 0,
      "yield": 0
     },
+    "zinc": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
     "emerald": {
      "low": 17,
      "medium": 6,
@@ -168,6 +176,7 @@
     "alkali",
     "nickel",
     "marble",
+    "zinc",
     "emerald",
     "turquoise"
    ],
@@ -202,6 +211,7 @@
     "alkali": 0,
     "nickel": 0,
     "marble": 0,
+    "zinc": 0,
     "emerald": 0,
     "turquoise": 0
    }
@@ -326,6 +336,13 @@
      "n": 50,
      "yield": 50.5
     },
+    "zinc": {
+     "low": 18,
+     "medium": 19,
+     "high": 5,
+     "n": 42,
+     "yield": 38
+    },
     "emerald": {
      "low": 9,
      "medium": 18,
@@ -374,6 +391,7 @@
     "alkali": 0,
     "nickel": 0,
     "marble": 15,
+    "zinc": 24,
     "emerald": 10,
     "turquoise": 0
    }
@@ -507,6 +525,13 @@
      "n": 24,
      "yield": 25
     },
+    "zinc": {
+     "low": 518,
+     "medium": 699,
+     "high": 268,
+     "n": 1485,
+     "yield": 1494
+    },
     "emerald": {
      "low": 51,
      "medium": 56,
@@ -555,6 +580,7 @@
     "alkali": 0,
     "nickel": 32,
     "marble": 1,
+    "zinc": 11,
     "emerald": 14,
     "turquoise": 4
    }
@@ -685,6 +711,13 @@
      "n": 0,
      "yield": 0
     },
+    "zinc": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
     "emerald": {
      "low": 32,
      "medium": 33,
@@ -706,6 +739,7 @@
     "potash",
     "alkali",
     "marble",
+    "zinc",
     "turquoise"
    ],
    "exports": [
@@ -738,6 +772,7 @@
     "alkali": 0,
     "nickel": 8,
     "marble": 0,
+    "zinc": 0,
     "emerald": 9,
     "turquoise": 0
    }
@@ -864,6 +899,13 @@
      "n": 147,
      "yield": 128
     },
+    "zinc": {
+     "low": 1595,
+     "medium": 2118,
+     "high": 783,
+     "n": 4496,
+     "yield": 4481.5
+    },
     "emerald": {
      "low": 0,
      "medium": 0,
@@ -894,7 +936,8 @@
     "silver",
     "rare-earth",
     "sulfur",
-    "marble"
+    "marble",
+    "zinc"
    ],
    "basics": {
     "ok": false,
@@ -942,6 +985,7 @@
     "alkali": 0,
     "nickel": 0,
     "marble": 18,
+    "zinc": 314,
     "emerald": 0,
     "turquoise": 1
    }
@@ -1065,6 +1109,13 @@
      "n": 1,
      "yield": 0.5
     },
+    "zinc": {
+     "low": 0,
+     "medium": 2,
+     "high": 0,
+     "n": 2,
+     "yield": 2
+    },
     "emerald": {
      "low": 3,
      "medium": 2,
@@ -1092,6 +1143,7 @@
     "alkali",
     "nickel",
     "marble",
+    "zinc",
     "emerald"
    ],
    "exports": [],
@@ -1123,6 +1175,7 @@
     "alkali": 0,
     "nickel": 0,
     "marble": 0,
+    "zinc": 0,
     "emerald": 0,
     "turquoise": 3
    }
@@ -1250,6 +1303,13 @@
      "n": 338,
      "yield": 309
     },
+    "zinc": {
+     "low": 31,
+     "medium": 25,
+     "high": 13,
+     "n": 69,
+     "yield": 66.5
+    },
     "emerald": {
      "low": 6,
      "medium": 10,
@@ -1273,6 +1333,7 @@
     "potash",
     "alkali",
     "marble",
+    "zinc",
     "turquoise"
    ],
    "exports": [
@@ -1300,6 +1361,7 @@
     "alkali": 0,
     "nickel": 22,
     "marble": 0,
+    "zinc": 0,
     "emerald": 2,
     "turquoise": 0
    }
@@ -1424,6 +1486,13 @@
      "n": 1,
      "yield": 1
     },
+    "zinc": {
+     "low": 211,
+     "medium": 185,
+     "high": 90,
+     "n": 486,
+     "yield": 470.5
+    },
     "emerald": {
      "low": 20,
      "medium": 35,
@@ -1445,6 +1514,7 @@
     "sulfur",
     "nickel",
     "marble",
+    "zinc",
     "turquoise"
    ],
    "exports": [
@@ -1481,6 +1551,7 @@
     "alkali": 1,
     "nickel": 0,
     "marble": 0,
+    "zinc": 0,
     "emerald": 15,
     "turquoise": 0
    }
@@ -1606,6 +1677,13 @@
      "n": 0,
      "yield": 0
     },
+    "zinc": {
+     "low": 59,
+     "medium": 103,
+     "high": 31,
+     "n": 193,
+     "yield": 194.5
+    },
     "emerald": {
      "low": 0,
      "medium": 1,
@@ -1654,6 +1732,7 @@
     "alkali": 0,
     "nickel": 0,
     "marble": 0,
+    "zinc": 50,
     "emerald": 1,
     "turquoise": 0
    }
@@ -1783,6 +1862,13 @@
      "n": 148,
      "yield": 157
     },
+    "zinc": {
+     "low": 430,
+     "medium": 595,
+     "high": 217,
+     "n": 1242,
+     "yield": 1244
+    },
     "emerald": {
      "low": 0,
      "medium": 3,
@@ -1809,7 +1895,8 @@
    ],
    "exports": [
     "sulfur",
-    "marble"
+    "marble",
+    "zinc"
    ],
    "basics": {
     "ok": true,
@@ -1832,6 +1919,7 @@
     "alkali": 0,
     "nickel": 0,
     "marble": 32,
+    "zinc": 287,
     "emerald": 0,
     "turquoise": 0
    }
@@ -1953,6 +2041,13 @@
      "n": 7,
      "yield": 5
     },
+    "zinc": {
+     "low": 76,
+     "medium": 74,
+     "high": 33,
+     "n": 183,
+     "yield": 178
+    },
     "emerald": {
      "low": 0,
      "medium": 0,
@@ -2010,6 +2105,7 @@
     "alkali": 0,
     "nickel": 0,
     "marble": 5,
+    "zinc": 116,
     "emerald": 0,
     "turquoise": 30
    },
@@ -2142,6 +2238,13 @@
      "n": 304,
      "yield": 274.5
     },
+    "zinc": {
+     "low": 1668,
+     "medium": 2076,
+     "high": 846,
+     "n": 4590,
+     "yield": 4602
+    },
     "emerald": {
      "low": 0,
      "medium": 0,
@@ -2172,7 +2275,8 @@
     "sulfur",
     "oil",
     "alkali",
-    "marble"
+    "marble",
+    "zinc"
    ],
    "basics": {
     "ok": false,
@@ -2226,6 +2330,7 @@
     "alkali": 5,
     "nickel": 0,
     "marble": 25,
+    "zinc": 391,
     "emerald": 0,
     "turquoise": 0
    }
@@ -2352,6 +2457,13 @@
      "n": 75,
      "yield": 61.5
     },
+    "zinc": {
+     "low": 39,
+     "medium": 26,
+     "high": 15,
+     "n": 80,
+     "yield": 75.5
+    },
     "emerald": {
      "low": 49,
      "medium": 35,
@@ -2399,6 +2511,7 @@
     "alkali": 0,
     "nickel": 0,
     "marble": 3,
+    "zinc": 3,
     "emerald": 6,
     "turquoise": 4
    }
@@ -2520,6 +2633,13 @@
      "n": 0,
      "yield": 0
     },
+    "zinc": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
     "emerald": {
      "low": 3,
      "medium": 1,
@@ -2548,6 +2668,7 @@
     "alkali",
     "nickel",
     "marble",
+    "zinc",
     "emerald",
     "turquoise"
    ],
@@ -2584,6 +2705,7 @@
     "alkali": 0,
     "nickel": 0,
     "marble": 0,
+    "zinc": 0,
     "emerald": 0,
     "turquoise": 0
    },
@@ -2716,6 +2838,13 @@
      "n": 101,
      "yield": 88.5
     },
+    "zinc": {
+     "low": 989,
+     "medium": 1165,
+     "high": 416,
+     "n": 2570,
+     "yield": 2491.5
+    },
     "emerald": {
      "low": 24,
      "medium": 25,
@@ -2773,6 +2902,7 @@
     "alkali": 0,
     "nickel": 11,
     "marble": 6,
+    "zinc": 75,
     "emerald": 3,
     "turquoise": 16
    }
@@ -2906,6 +3036,13 @@
      "n": 19,
      "yield": 19
     },
+    "zinc": {
+     "low": 12,
+     "medium": 25,
+     "high": 9,
+     "n": 46,
+     "yield": 49
+    },
     "emerald": {
      "low": 16,
      "medium": 16,
@@ -2954,6 +3091,7 @@
     "alkali": 5,
     "nickel": 6,
     "marble": 14,
+    "zinc": 3,
     "emerald": 6,
     "turquoise": 0
    }
@@ -3078,6 +3216,13 @@
      "n": 7,
      "yield": 4.5
     },
+    "zinc": {
+     "low": 24,
+     "medium": 30,
+     "high": 11,
+     "n": 65,
+     "yield": 64
+    },
     "emerald": {
      "low": 22,
      "medium": 21,
@@ -3125,6 +3270,7 @@
     "alkali": 0,
     "nickel": 0,
     "marble": 0,
+    "zinc": 23,
     "emerald": 21,
     "turquoise": 0
    }
@@ -3248,6 +3394,13 @@
      "n": 48,
      "yield": 46.5
     },
+    "zinc": {
+     "low": 34,
+     "medium": 26,
+     "high": 10,
+     "n": 70,
+     "yield": 63
+    },
     "emerald": {
      "low": 3,
      "medium": 1,
@@ -3297,6 +3450,7 @@
     "alkali": 0,
     "nickel": 0,
     "marble": 18,
+    "zinc": 24,
     "emerald": 0,
     "turquoise": 0
    }
@@ -3420,6 +3574,13 @@
      "n": 16,
      "yield": 17.5
     },
+    "zinc": {
+     "low": 13,
+     "medium": 29,
+     "high": 14,
+     "n": 56,
+     "yield": 63.5
+    },
     "emerald": {
      "low": 23,
      "medium": 28,
@@ -3443,6 +3604,7 @@
     "sulfur",
     "nickel",
     "marble",
+    "zinc",
     "turquoise"
    ],
    "exports": [
@@ -3471,6 +3633,7 @@
     "alkali": 4,
     "nickel": 0,
     "marble": 0,
+    "zinc": 0,
     "emerald": 18,
     "turquoise": 0
    }
@@ -3592,6 +3755,13 @@
      "n": 19,
      "yield": 20.5
     },
+    "zinc": {
+     "low": 14,
+     "medium": 19,
+     "high": 11,
+     "n": 44,
+     "yield": 48
+    },
     "emerald": {
      "low": 1,
      "medium": 1,
@@ -3615,6 +3785,7 @@
     "potash",
     "alkali",
     "marble",
+    "zinc",
     "emerald"
    ],
    "exports": [],
@@ -3639,6 +3810,7 @@
     "alkali": 0,
     "nickel": 3,
     "marble": 0,
+    "zinc": 0,
     "emerald": 0,
     "turquoise": 2
    },
@@ -3766,6 +3938,13 @@
      "n": 27,
      "yield": 29
     },
+    "zinc": {
+     "low": 602,
+     "medium": 843,
+     "high": 328,
+     "n": 1773,
+     "yield": 1800
+    },
     "emerald": {
      "low": 10,
      "medium": 9,
@@ -3788,6 +3967,7 @@
     "potash",
     "alkali",
     "marble",
+    "zinc",
     "turquoise"
    ],
    "exports": [
@@ -3814,6 +3994,7 @@
     "alkali": 0,
     "nickel": 25,
     "marble": 0,
+    "zinc": 0,
     "emerald": 2,
     "turquoise": 0
    }
@@ -3935,6 +4116,13 @@
      "n": 13,
      "yield": 8.5
     },
+    "zinc": {
+     "low": 339,
+     "medium": 393,
+     "high": 150,
+     "n": 882,
+     "yield": 862.5
+    },
     "emerald": {
      "low": 11,
      "medium": 15,
@@ -3959,7 +4147,8 @@
     "potash",
     "alkali",
     "nickel",
-    "marble"
+    "marble",
+    "zinc"
    ],
    "exports": [
     "saltpeter",
@@ -3995,6 +4184,7 @@
     "alkali": 0,
     "nickel": 0,
     "marble": 0,
+    "zinc": 0,
     "emerald": 6,
     "turquoise": 15
    },
@@ -4132,6 +4322,13 @@
      "n": 104,
      "yield": 103
     },
+    "zinc": {
+     "low": 93,
+     "medium": 115,
+     "high": 54,
+     "n": 262,
+     "yield": 269.5
+    },
     "emerald": {
      "low": 12,
      "medium": 19,
@@ -4180,6 +4377,7 @@
     "alkali": 1,
     "nickel": 0,
     "marble": 0,
+    "zinc": 75,
     "emerald": 14,
     "turquoise": 0
    }
@@ -4303,6 +4501,13 @@
      "n": 0,
      "yield": 0
     },
+    "zinc": {
+     "low": 20,
+     "medium": 34,
+     "high": 15,
+     "n": 69,
+     "yield": 74
+    },
     "emerald": {
      "low": 14,
      "medium": 15,
@@ -4328,6 +4533,7 @@
     "gypsum",
     "nickel",
     "marble",
+    "zinc",
     "turquoise"
    ],
    "exports": [
@@ -4355,6 +4561,7 @@
     "alkali": 29,
     "nickel": 0,
     "marble": 0,
+    "zinc": 0,
     "emerald": 1,
     "turquoise": 0
    }
@@ -4482,6 +4689,13 @@
      "n": 130,
      "yield": 116.5
     },
+    "zinc": {
+     "low": 1298,
+     "medium": 1422,
+     "high": 556,
+     "n": 3276,
+     "yield": 3183
+    },
     "emerald": {
      "low": 10,
      "medium": 8,
@@ -4510,7 +4724,8 @@
     "tin",
     "silver",
     "rare-earth",
-    "marble"
+    "marble",
+    "zinc"
    ],
    "basics": {
     "ok": false,
@@ -4558,6 +4773,7 @@
     "alkali": 0,
     "nickel": 0,
     "marble": 18,
+    "zinc": 356,
     "emerald": 3,
     "turquoise": 4
    }
@@ -4679,6 +4895,13 @@
      "n": 0,
      "yield": 0
     },
+    "zinc": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
     "emerald": {
      "low": 2,
      "medium": 2,
@@ -4703,6 +4926,7 @@
     "potash",
     "alkali",
     "marble",
+    "zinc",
     "emerald"
    ],
    "exports": [
@@ -4740,6 +4964,7 @@
     "alkali": 0,
     "nickel": 26,
     "marble": 0,
+    "zinc": 0,
     "emerald": 0,
     "turquoise": 13
    },
@@ -4870,6 +5095,13 @@
      "n": 62,
      "yield": 53.5
     },
+    "zinc": {
+     "low": 1209,
+     "medium": 1212,
+     "high": 473,
+     "n": 2894,
+     "yield": 2762.5
+    },
     "emerald": {
      "low": 69,
      "medium": 57,
@@ -4934,6 +5166,7 @@
     "alkali": 0,
     "nickel": 0,
     "marble": 0,
+    "zinc": 121,
     "emerald": 4,
     "turquoise": 23
    }
@@ -5055,6 +5288,13 @@
      "n": 2,
      "yield": 2
     },
+    "zinc": {
+     "low": 36,
+     "medium": 68,
+     "high": 21,
+     "n": 125,
+     "yield": 128
+    },
     "emerald": {
      "low": 0,
      "medium": 1,
@@ -5103,6 +5343,7 @@
     "alkali": 0,
     "nickel": 0,
     "marble": 0,
+    "zinc": 11,
     "emerald": 0,
     "turquoise": 0
    },
@@ -5228,6 +5469,13 @@
      "n": 0,
      "yield": 0
     },
+    "zinc": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
     "emerald": {
      "low": 0,
      "medium": 1,
@@ -5252,6 +5500,7 @@
     "potash",
     "alkali",
     "marble",
+    "zinc",
     "emerald"
    ],
    "exports": [
@@ -5287,6 +5536,7 @@
     "alkali": 0,
     "nickel": 22,
     "marble": 0,
+    "zinc": 0,
     "emerald": 0,
     "turquoise": 6
    },
@@ -5331,7 +5581,8 @@
     "coal": 52,
     "sulfur": 45,
     "oil": 12,
-    "halite": 6
+    "halite": 6,
+    "zinc": 10
    },
    "basics": {
     "stone": true,
@@ -5357,6 +5608,7 @@
     "halite": 30,
     "nickel": 13,
     "marble": 1,
+    "zinc": 9,
     "turquoise": 2
    },
    "basics": {
@@ -5449,7 +5701,8 @@
     "coal": 81,
     "sulfur": 122,
     "oil": 16,
-    "halite": 5
+    "halite": 5,
+    "zinc": 16
    },
    "basics": {
     "stone": true,
@@ -5495,6 +5748,7 @@
     "saltpeter": 32,
     "gypsum": 48,
     "halite": 26,
+    "zinc": 44,
     "turquoise": 3
    },
    "basics": {
@@ -5563,6 +5817,7 @@
     "saltpeter": 2,
     "oil": 11,
     "marble": 14,
+    "zinc": 88,
     "turquoise": 1
    },
    "basics": {
@@ -5646,7 +5901,8 @@
     "rare-earth": 41,
     "sulfur": 70,
     "oil": 13,
-    "marble": 9
+    "marble": 9,
+    "zinc": 105
    },
    "basics": {
     "stone": true,
@@ -5669,7 +5925,8 @@
     "silver": 38,
     "rare-earth": 58,
     "sulfur": 7,
-    "oil": 60
+    "oil": 60,
+    "zinc": 88
    },
    "basics": {
     "stone": true,
@@ -5733,7 +5990,8 @@
     "tin": 7,
     "silver": 42,
     "rare-earth": 9,
-    "sulfur": 122
+    "sulfur": 122,
+    "zinc": 91
    },
    "basics": {
     "stone": true,
@@ -5762,6 +6020,7 @@
     "halite": 12,
     "potash": 13,
     "marble": 15,
+    "zinc": 4,
     "emerald": 10
    },
    "basics": {
@@ -5825,7 +6084,8 @@
     "tin": 26,
     "silver": 28,
     "rare-earth": 35,
-    "oil": 25
+    "oil": 25,
+    "zinc": 51
    },
    "basics": {
     "stone": true,
@@ -5912,7 +6172,8 @@
     "saltpeter": 17,
     "oil": 13,
     "halite": 25,
-    "marble": 18
+    "marble": 18,
+    "zinc": 24
    },
    "basics": {
     "stone": true,
@@ -5939,6 +6200,7 @@
     "oil": 31,
     "gypsum": 1,
     "halite": 15,
+    "zinc": 23,
     "emerald": 13
    },
    "basics": {
@@ -5967,6 +6229,7 @@
     "halite": 12,
     "nickel": 6,
     "marble": 2,
+    "zinc": 3,
     "emerald": 1
    },
    "basics": {
@@ -6112,7 +6375,8 @@
     "gypsum": 10,
     "halite": 6,
     "potash": 9,
-    "alkali": 5
+    "alkali": 5,
+    "zinc": 32
    },
    "basics": {
     "stone": true,
@@ -6224,6 +6488,7 @@
     "sulfur": 10,
     "oil": 13,
     "halite": 6,
+    "zinc": 2,
     "emerald": 1
    },
    "basics": {
@@ -6320,6 +6585,7 @@
     "sulfur": 116,
     "oil": 4,
     "halite": 4,
+    "zinc": 21,
     "emerald": 1
    },
    "basics": {
@@ -6345,7 +6611,8 @@
     "coal": 41,
     "sulfur": 147,
     "oil": 6,
-    "halite": 4
+    "halite": 4,
+    "zinc": 28
    },
    "basics": {
     "stone": true,
@@ -6368,7 +6635,8 @@
     "silver": 24,
     "rare-earth": 37,
     "sulfur": 1,
-    "oil": 34
+    "oil": 34,
+    "zinc": 56
    },
    "basics": {
     "stone": true,
@@ -6390,7 +6658,8 @@
     "tin": 28,
     "silver": 19,
     "rare-earth": 43,
-    "oil": 2
+    "oil": 2,
+    "zinc": 53
    },
    "basics": {
     "stone": true,
@@ -6484,6 +6753,7 @@
     "silver": 31,
     "rare-earth": 51,
     "saltpeter": 71,
+    "zinc": 74,
     "emerald": 1,
     "turquoise": 15
    },
@@ -6509,6 +6779,7 @@
     "rare-earth": 18,
     "saltpeter": 15,
     "halite": 8,
+    "zinc": 2,
     "emerald": 2,
     "turquoise": 2
    },
@@ -6690,7 +6961,8 @@
     "coal": 73,
     "sulfur": 88,
     "oil": 18,
-    "halite": 9
+    "halite": 9,
+    "zinc": 21
    },
    "basics": {
     "stone": true,
@@ -6714,6 +6986,7 @@
     "rare-earth": 3,
     "sulfur": 95,
     "saltpeter": 3,
+    "zinc": 56,
     "turquoise": 1
    },
    "basics": {
@@ -6737,7 +7010,8 @@
     "silver": 22,
     "rare-earth": 40,
     "oil": 19,
-    "marble": 2
+    "marble": 2,
+    "zinc": 58
    },
    "basics": {
     "stone": true,
@@ -6782,6 +7056,7 @@
     "rare-earth": 11,
     "sulfur": 160,
     "saltpeter": 26,
+    "zinc": 118,
     "turquoise": 5
    },
    "basics": {
@@ -6802,6 +7077,7 @@
     "copper": 80,
     "saltpeter": 76,
     "halite": 36,
+    "zinc": 60,
     "turquoise": 10
    },
    "basics": {
@@ -6852,6 +7128,7 @@
     "rare-earth": 8,
     "sulfur": 152,
     "saltpeter": 137,
+    "zinc": 118,
     "turquoise": 51
    },
    "basics": {
@@ -6875,7 +7152,8 @@
     "sulfur": 28,
     "oil": 2,
     "halite": 5,
-    "marble": 16
+    "marble": 16,
+    "zinc": 37
    },
    "basics": {
     "stone": true,
@@ -6946,7 +7224,8 @@
     "copper": 2,
     "coal": 81,
     "oil": 7,
-    "halite": 20
+    "halite": 20,
+    "zinc": 20
    },
    "basics": {
     "stone": true,
@@ -6990,6 +7269,7 @@
     "rare-earth": 8,
     "sulfur": 180,
     "saltpeter": 3,
+    "zinc": 123,
     "turquoise": 2
    },
    "basics": {
@@ -7013,7 +7293,8 @@
     "silver": 43,
     "rare-earth": 58,
     "saltpeter": 1,
-    "oil": 19
+    "oil": 19,
+    "zinc": 79
    },
    "basics": {
     "stone": true,
@@ -7082,7 +7363,8 @@
     "silver": 18,
     "rare-earth": 43,
     "sulfur": 2,
-    "oil": 22
+    "oil": 22,
+    "zinc": 45
    },
    "basics": {
     "stone": true,
@@ -7128,6 +7410,7 @@
     "saltpeter": 59,
     "halite": 6,
     "marble": 3,
+    "zinc": 3,
     "turquoise": 2
    },
    "basics": {
@@ -7245,7 +7528,8 @@
     "tin": 1,
     "silver": 1,
     "halite": 13,
-    "marble": 6
+    "marble": 6,
+    "zinc": 1
    },
    "basics": {
     "stone": true,
@@ -7265,6 +7549,7 @@
     "copper": 85,
     "saltpeter": 63,
     "halite": 43,
+    "zinc": 61,
     "turquoise": 13
    },
    "basics": {
@@ -7345,6 +7630,7 @@
     "oil": 1,
     "halite": 4,
     "marble": 7,
+    "zinc": 52,
     "emerald": 3,
     "turquoise": 4
    },
@@ -7371,7 +7657,8 @@
     "sulfur": 23,
     "saltpeter": 2,
     "oil": 23,
-    "marble": 11
+    "marble": 11,
+    "zinc": 95
    },
    "basics": {
     "stone": true,
@@ -7448,6 +7735,7 @@
     "oil": 7,
     "halite": 8,
     "nickel": 1,
+    "zinc": 1,
     "emerald": 1,
     "turquoise": 1
    },
@@ -7525,6 +7813,7 @@
     "halite": 18,
     "potash": 1,
     "alkali": 1,
+    "zinc": 8,
     "emerald": 11
    },
    "basics": {
@@ -7551,7 +7840,8 @@
     "sulfur": 36,
     "oil": 1,
     "halite": 10,
-    "marble": 16
+    "marble": 16,
+    "zinc": 57
    },
    "basics": {
     "stone": true,
@@ -7598,7 +7888,8 @@
     "rare-earth": 41,
     "sulfur": 84,
     "oil": 37,
-    "marble": 9
+    "marble": 9,
+    "zinc": 71
    },
    "basics": {
     "stone": true,
@@ -7620,7 +7911,8 @@
     "tin": 27,
     "silver": 29,
     "rare-earth": 51,
-    "oil": 18
+    "oil": 18,
+    "zinc": 79
    },
    "basics": {
     "stone": true,
@@ -7639,7 +7931,8 @@
     "iron": 75,
     "copper": 84,
     "saltpeter": 7,
-    "halite": 4
+    "halite": 4,
+    "zinc": 60
    },
    "basics": {
     "stone": true,
@@ -7687,6 +7980,7 @@
     "silver": 54,
     "rare-earth": 43,
     "saltpeter": 20,
+    "zinc": 1,
     "emerald": 22,
     "turquoise": 13
    },
@@ -7704,7 +7998,8 @@
    "py": 740,
    "type": "arcology",
    "catchment": {
-    "halite": 10
+    "halite": 10,
+    "zinc": 34
    },
    "basics": {
     "stone": true,
@@ -7728,7 +8023,8 @@
     "rare-earth": 56,
     "sulfur": 99,
     "oil": 33,
-    "marble": 16
+    "marble": 16,
+    "zinc": 99
    },
    "basics": {
     "stone": true,
@@ -7773,7 +8069,8 @@
     "coal": 31,
     "sulfur": 95,
     "oil": 6,
-    "halite": 2
+    "halite": 2,
+    "zinc": 13
    },
    "basics": {
     "stone": true,
@@ -7819,6 +8116,7 @@
     "saltpeter": 45,
     "gypsum": 39,
     "halite": 7,
+    "zinc": 52,
     "turquoise": 7
    },
    "basics": {
@@ -7892,7 +8190,8 @@
     "silver": 66,
     "rare-earth": 8,
     "sulfur": 132,
-    "marble": 2
+    "marble": 2,
+    "zinc": 115
    },
    "basics": {
     "stone": true,
@@ -7961,7 +8260,8 @@
     "iron": 3,
     "coal": 7,
     "sulfur": 6,
-    "halite": 7
+    "halite": 7,
+    "zinc": 19
    },
    "basics": {
     "stone": true,
@@ -8009,7 +8309,8 @@
     "tin": 5,
     "silver": 31,
     "rare-earth": 3,
-    "sulfur": 76
+    "sulfur": 76,
+    "zinc": 57
    },
    "basics": {
     "stone": true,
@@ -8031,7 +8332,8 @@
     "tin": 10,
     "silver": 72,
     "rare-earth": 10,
-    "sulfur": 188
+    "sulfur": 188,
+    "zinc": 121
    },
    "basics": {
     "stone": true,
@@ -8059,6 +8361,7 @@
   "alkali": 271,
   "nickel": 4657,
   "marble": 1643,
+  "zinc": 25000,
   "emerald": 979,
   "turquoise": 4151
  },

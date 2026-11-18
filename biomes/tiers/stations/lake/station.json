@@ -1,0 +1,10 @@
+{
+ "note": "Station 1, the Lake of the Tiers (PLAN.md sections 9 and 10a: the upper lake's north shore, centred on the drawn shore at 5.1 px 1262,513.4). kin: the eastern badlands' Fremont cottonwood (where the seep reaches the shore), Utah juniper and pinyon (the Black Step's dry tread), read in place (PLAN.md section 4, 'Read in place'). The pack families are the ones its builder draws with.",
+ "kin": {
+  "ebadlands": [
+   ["src/50-biome-ebadlands-species.js", "src/55-biome-ebadlands-trees.js"],
+   "EBADLANDS",
+   "*"
+  ]
+ }
+}
