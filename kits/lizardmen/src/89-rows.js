@@ -11,7 +11,7 @@ const FAMILIES=[
  {name:'Specialists and stores',keys:['lz-seer','lz-medicine','lz-warehouse']},
  {name:'Monuments',keys:['lz-stela-pair','lz-stela-turned','lz-obelisk','lz-circle','lz-ley','lz-bells']},
  {name:'The capital, in stone',keys:['lk-gate','lk-slot','lk-wall','lk-watchtower','lk-greathall','lk-college','lk-archive','lk-tower','lk-warren','lk-makers','lk-terrace','lk-kilnhouse','lk-insula','lk-guildhall','lk-longhouse','lk-rowhouse','lk-caravanserai','lk-lodge','lk-bastion','lk-granary','lk-nest']},
- {name:'Capital statuary',keys:['lk-colossus-watcher','lk-statue-phalanx','lk-colossus-coil','lk-statue-ouroboros','lk-statue-manifold','lk-statue-paradox']},
+ {name:'Capital statuary',keys:['lk-colossus-watcher','lk-statue-phalanx','lk-statue-conclave','lk-statue-rebirth','lk-colossus-coil','lk-statue-ouroboros','lk-statue-gyre','lk-statue-chronicle','lk-statue-manifold','lk-statue-paradox','lk-statue-tesseract','lk-statue-chorus']},
  {name:'The capital works',keys:['lk-bronzehall','lk-dockstore','lk-boil']},
  {name:'Vessels',keys:['lz-barge']},
  {name:'Beasts',keys:['frilled','burden']},

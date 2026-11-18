@@ -115,13 +115,19 @@ KIT = {
   'lk-rowhouse':  dict(w=15, d=12, name='Two-storey Drover townhouse', holds=24, caste=3),
   'lk-caravanserai': dict(w=28, d=22, name="Stone Drovers' sledge court", holds=66, caste=3),
   'lk-granary':   dict(w=15, d=12, name='Stone Allotment granary'),
-  # monumental verdigris-stone & bronze statuary (65-lk-statuary.js, 2026-11-18)
+  # monumental verdigris-stone & bronze statuary (65-lk-statuary.js, 2026-11-18: 12 types x 5 variants)
   'lk-colossus-watcher': dict(w=12, d=12, name='Colossus of the Watcher'),
   'lk-statue-phalanx':   dict(w=14, d=9, name='Phalanx of the Six Castes'),
+  'lk-statue-conclave':  dict(w=13, d=13, name='The Silent Concert'),
+  'lk-statue-rebirth':   dict(w=11, d=11, name='The Husk and the Return'),
   'lk-colossus-coil':    dict(w=14, d=14, name='Monument of the Fractured Coil'),
-  'lk-statue-ouroboros': dict(w=11, d=11, name='Twin Helices of Recurrence'),
+  'lk-statue-ouroboros': dict(w=11, d=11, name='Twin Serpents of Recurrence'),
+  'lk-statue-gyre':      dict(w=13, d=13, name='The Astrolabe of Recurrence'),
+  'lk-statue-chronicle': dict(w=10, d=10, name='The Bound Retroactive Stele'),
   'lk-statue-manifold':  dict(w=13, d=13, name='The Sheared Manifold'),
   'lk-statue-paradox':   dict(w=12, d=12, name='The Impossible Tusk-Frame'),
+  'lk-statue-tesseract': dict(w=13, d=13, name='The Hyper-Rhombic Cage'),
+  'lk-statue-chorus':    dict(w=12, d=12, name='The Thirteen Witnesses'),
   'lz-makers':    dict(w=11, d=9, name="Makers' quarters", holds=10, caste=2),
   'lz-tower':     dict(w=11, d=11, name="Interpreters' house", holds=7, caste=5),
   'lz-lodge':     dict(w=14, d=20, name="Warriors' lodge", holds=30, caste=4),
@@ -553,10 +559,11 @@ def build():
     try_put('lk-college', sk(a0 + 48, 28), 0.0, 'precinct', role='the college: its door east, toward the Hall')
     try_put('lz-seer', sk(a0 + 48, 92), 0.0, 'precinct', role='the model of the country: the Allotment remembered')
     try_put('lz-stela-turned', sk(a0 + 48, -32), 0.0, 'precinct', role='texts whose meaning changed retroactively')
-    try_put('lk-colossus-watcher', sk(a0 + 78, 12), 0.0, 'precinct', role='19 m Watcher colossus looming before the College')
+    try_put('lk-statue-conclave', sk(a0 + 78, 12), 0.0, 'precinct', role='The Silent Concert: five hunched Interpreters before the College')
+    try_put('lk-statue-chronicle', sk(a0 + 68, -36), 0.0, 'precinct', role='The Bound Retroactive Stele chained beside the turned stelae')
     try_put('lk-colossus-coil', sk(28, -46), LA, 'precinct', role='the 18 m Fractured Coil monument flanking the Court of Intention')
-    try_put('lk-statue-manifold', sk(-32, 68), LA, 'precinct', role='the Sheared Manifold on the Mound')
-    try_put('lk-statue-paradox', sk(a1 - 88, b1 - 86), math.pi, 'precinct', role='the Impossible Tusk-Frame beside the Nest of Returns')
+    try_put('lk-statue-gyre', sk(-32, 68), LA, 'precinct', role='The Astrolabe of Recurrence on the Mound')
+    try_put('lk-statue-rebirth', sk(a1 - 88, b1 - 86), math.pi, 'precinct', role='The Husk and the Return beside the Nest of Returns')
     try_put('lk-nest', sk(a1 - 52, b1 - 48), math.pi, 'precinct', role='the Nest of Returns: where the Interpreters are reborn')
     try_put('lz-cistern', sk(a1 - 52, b1 - 92), math.pi, 'precinct', role='the Mound cistern')
     try_put('lz-medicine', sk(a1 - 88, b1 - 48), 0.0, 'precinct', role='the Mound medicine lodge')
@@ -606,7 +613,7 @@ def build():
     try_put('lk-statue-ouroboros', sk(cac + 24, cbc - 14), math.pi, 'first_turn', role='Twin Helices of Recurrence overlooking the Great Tank')
     try_put('lz-bells', sk(cac - 20, cbc - 12), 0.0, 'first_turn', role='First Turn bells')
     try_put('lz-stela-pair', sk(cac + 20, cbc + 12), math.pi, 'first_turn', role='First Turn stela pair')
-    ring0 = [('lk-colossus-watcher', None), ('lk-archive', 5), ('lk-warren', 1), ('lk-statue-manifold', None), ('lk-guildhall', None), ('lz-cistern', None), ('lk-terrace', 2), ('lk-statue-phalanx', None), ('lk-tower', 5), ('lk-granary', None), ('lk-insula', 2)]
+    ring0 = [('lk-colossus-watcher', None), ('lk-archive', 5), ('lk-warren', 1), ('lk-statue-chorus', None), ('lk-guildhall', None), ('lz-cistern', None), ('lk-terrace', 2), ('lk-statue-tesseract', None), ('lk-tower', 5), ('lk-granary', None), ('lk-insula', 2), ('lk-statue-phalanx', None)]
     ri0 = 0
     for (sa0, sb0), (sa1, sb1), c_ang in [
         ((cc0 + 10, cc2 + 12), (cc1 - 10, cc2 + 12), math.pi / 2),
@@ -707,7 +714,12 @@ def build():
         flaw = last[fnv(d['id'] + ':flaw') % len(last)] if last else -1
         d['flaw_band'] = flaw
         ci = 0; wells = 0; seq = 0
-        infill_civic = ['lk-guildhall', 'lk-granary', 'lk-colossus-watcher', 'lk-statue-phalanx', 'lk-statue-ouroboros', 'lk-statue-paradox', 'lz-bakehouse', 'lz-fermentery', 'lz-warehouse', 'lz-medicine', 'lz-cistern', 'lz-hall-bronze', 'lz-hall-reed', 'lz-hall-bone']
+        all_statues = [
+            'lk-colossus-watcher', 'lk-statue-phalanx', 'lk-statue-conclave', 'lk-statue-rebirth',
+            'lk-colossus-coil', 'lk-statue-ouroboros', 'lk-statue-gyre', 'lk-statue-chronicle',
+            'lk-statue-manifold', 'lk-statue-paradox', 'lk-statue-tesseract', 'lk-statue-chorus'
+        ]
+        infill_civic = ['lk-guildhall', 'lk-granary', '__statue__', 'lz-bakehouse', 'lz-fermentery', 'lz-warehouse', 'lz-medicine', 'lz-cistern', 'lz-hall-bronze', 'lz-hall-reed', 'lz-hall-bone']
         for bi, bd in enumerate(d['bands']):
             p0, p1 = bd['outer'] if bi == flaw else bd['inner']
             L = math.hypot(p1[0] - p0[0], p1[1] - p0[1])
@@ -738,7 +750,11 @@ def build():
                         if fit_keys:
                             key = fit_keys[h_pick % len(fit_keys)]; c_use = cand_c; break
                     if key is None:
-                        alt_civ = [ck for ck in infill_civic if KIT[ck]['d'] <= avail_d]
+                        alt_civ = [
+                            (all_statues[(h_pick >> 3) % len(all_statues)] if ck == '__statue__' else ck)
+                            for ck in infill_civic
+                        ]
+                        alt_civ = [ck for ck in alt_civ if KIT[ck]['d'] <= avail_d]
                         if not alt_civ: break
                         key = alt_civ[h_pick % len(alt_civ)]; c_use = None
                     seq += 1
@@ -807,26 +823,42 @@ def build():
         # d7: Shore-Road & Masons
         {1: ['lk-warren'], 5: ['lk-tower', 'lk-archive'], 2: ['lk-insula', 'lk-terrace', 'lk-kilnhouse', 'lk-makers'], 3: ['lk-caravanserai', 'lk-caravanserai', 'lk-rowhouse', 'lk-longhouse'], 4: ['lk-bastion', 'lk-lodge', 'lz-barracks']},
     ]
-    STATUE_CYCLE = ['lk-colossus-watcher', 'lk-colossus-coil', 'lk-statue-manifold', 'lk-statue-phalanx', 'lk-statue-ouroboros', 'lk-statue-paradox', 'lk-colossus-watcher']
+    STATUE_CYCLE = [
+        'lk-colossus-watcher', 'lk-statue-phalanx', 'lk-statue-conclave', 'lk-statue-rebirth',
+        'lk-colossus-coil', 'lk-statue-ouroboros', 'lk-statue-gyre', 'lk-statue-chronicle',
+        'lk-statue-manifold', 'lk-statue-paradox', 'lk-statue-tesseract', 'lk-statue-chorus'
+    ]
+    # Landmark colossi along the Great Coil's turns & avenues so walkers encounter varied oppressive monuments at every turn
+    for ci_turn in range(1, min(11, len(coil_pts) - 1)):
+        cx_t, cv_t = coil_pts[ci_turn]
+        nx_t, nv_t = coil_pts[ci_turn + 1]
+        seg_ang = math.atan2(nv_t - cv_t, nx_t - cx_t)
+        st_k = STATUE_CYCLE[(ci_turn * 5) % len(STATUE_CYCLE)]
+        for side_off in (15.5, -15.5):
+            px_t = cx_t + math.cos(seg_ang) * 24.0 - math.sin(seg_ang) * side_off
+            pv_t = cv_t + math.sin(seg_ang) * 24.0 + math.cos(seg_ang) * side_off
+            if try_put(st_k, (px_t, pv_t), seg_ang + (math.pi / 2 if side_off < 0 else -math.pi / 2), 'first_turn', role='great_coil_colossus'):
+                break
     order = [1, 5, 2, 3, 4]
     for d in dists:
         d['ward_name'], d['ward_focus'] = DIST_ROLES[d['j']]
         hall = ['lk-guildhall', 'lz-hall-bronze', 'lk-archive', 'lz-hall-bone', 'lz-hall-reed', 'lz-hall-bronze', 'lk-guildhall'][d['j']]
-        st_main = STATUE_CYCLE[d['j']]
-        st_alt = STATUE_CYCLE[(d['j'] + 2) % len(STATUE_CYCLE)]
+        st_main = STATUE_CYCLE[(d['j'] * 2) % len(STATUE_CYCLE)]
+        st_alt = STATUE_CYCLE[(d['j'] * 2 + 1) % len(STATUE_CYCLE)]
+        st_mouth = STATUE_CYCLE[(d['j'] * 3 + 4) % len(STATUE_CYCLE)]
         extra_food = [(st_main, 9), ('lz-bakehouse', 5), ('lz-fermentery', 4), (st_alt, 7), ('lk-granary', 4), ('lk-kilnhouse', 3)]
         court_items(d, [('lz-medicine', 2), ('lz-cistern', 6), ('lz-obelisk', 3), ('lz-bells', 8), ('lk-nest', 10),
                         ('lz-stela-pair', 7), (hall, 6), ('lk-guildhall', 5)] + extra_food + [('lz-cistern', 4), ('lz-stela-turned', 2)],
-                    [(st_alt, None), ('lk-archive', 5), ('lk-terrace', 2), ('lk-granary', None), ('lk-rowhouse', 3), (st_main, None), (hall, None), ('lk-tower', 5), ('lz-bakehouse', None)])
+                    [(st_alt, None), ('lk-archive', 5), ('lk-terrace', 2), ('lk-granary', None), ('lk-rowhouse', 3), ('lk-kilnhouse', 2), (hall, None), ('lk-tower', 5), ('lz-bakehouse', None), (st_main, None)])
         # Sentinel colossus by the district's mouth onto the Great Coil
         mx, mv = d['mouth']
         for m_off in ((-14, 14), (14, -14), (-14, -14), (14, 14)):
-            if try_put(st_main, (mx + m_off[0], mv + m_off[1]), math.atan2(-mv, -mx), d['id'], role='district_mouth_colossus'):
+            if try_put(st_mouth, (mx + m_off[0], mv + m_off[1]), math.atan2(-mv, -mx), d['id'], role='district_mouth_colossus'):
                 break
         fill(d, order, WARD_POOLS[d['j']])
     court_items(gq, [('lk-colossus-watcher', 9), ('lk-granary', 4), ('lk-bastion', 7), ('lk-statue-phalanx', 9), ('lz-warehouse', 6), ('lz-barracks', 8), ('lz-muster', 10),
-                     ('lk-colossus-coil', 9), ('lz-barracks', 8), ('lz-hall-bone', 7), ('lk-guildhall', 5), ('lk-granary', 4), ('lk-granary', 3), ('lz-cistern', 5)],
-                [('lk-colossus-watcher', None), ('lk-granary', None), ('lk-bastion', 4), ('lk-statue-manifold', None), ('lk-rowhouse', 3), ('lz-warehouse', None), ('lk-terrace', 2), ('lk-longhouse', 3)])
+                     ('lk-statue-chorus', 9), ('lz-barracks', 8), ('lz-hall-bone', 7), ('lk-guildhall', 5), ('lk-granary', 4), ('lk-statue-gyre', 7), ('lz-cistern', 5)],
+                [('lk-statue-chronicle', None), ('lk-granary', None), ('lk-bastion', 4), ('lk-rowhouse', 3), ('lz-warehouse', None), ('lk-terrace', 2), ('lk-longhouse', 3), ('lk-statue-paradox', None)])
     fill(gq, [2, 3, 4], {2: ['lk-insula', 'lk-terrace', 'lk-kilnhouse', 'lk-makers'], 3: ['lk-caravanserai', 'lk-rowhouse', 'lk-longhouse'], 4: ['lk-bastion', 'lk-lodge', 'lz-barracks']})
     plan['districts'] = dists; plan['gate_quarter'] = gq
 
@@ -838,6 +870,7 @@ def build():
     plan['ley'].update(shore_t=shore_t, mole=[r1(mole0), r1(mole1)])
     put('lz-stela-pair', (LD[0] * (mole1 - 8), LD[1] * (mole1 - 8)), LA, 'ley', role='the barge stair at the mole\'s end: the Coil and fracture glyphs side by side')
     try_put('lk-statue-manifold', (LD[0] * (mole1 - 24), LD[1] * (mole1 - 24)), LA, 'ley', allow_ley=True, role='the Sheared Manifold at the seaward tip of the ley mole, facing the east reliquary')
+    try_put('lk-statue-tesseract', (LD[0] * (mole0 + 36) - LD[1] * 14, LD[1] * (mole0 + 36) + LD[0] * 14), LA, 'ley', allow_ley=True, role='the Hyper-Rhombic Reliquary Cage guarding the foot of the ley mole')
     for i in range(3):
         put('lz-barge', (LD[0] * (mole1 - 40 - 30 * i) + LD[1] * 12, LD[1] * (mole1 - 40 - 30 * i) - LD[0] * 12), LA, 'ley', role='a reed barge moored to the mole')
 
@@ -911,6 +944,7 @@ def build():
     try_put('lk-colossus-watcher', (gu - 22, gv - 24), -math.pi / 2, 'gate_road', role='west South Gate Watcher colossus looming over the causeway')
     try_put('lk-colossus-watcher', (gu + 22, gv - 24), -math.pi / 2, 'gate_road', role='east South Gate Watcher colossus looming over the causeway')
     try_put('lk-statue-phalanx', (gu + 26, gv - 122), math.pi, 'gate_road', role='Six-Caste Phalanx at the foot of the South Gate ramp')
+    try_put('lk-statue-chorus', (gu - 26, gv - 122), 0.0, 'gate_road', role='The Thirteen Witnesses watching the South Gate approach')
     try_put('lz-wayhalt', (gu - 42, gv - 165), 0.0, 'gate_road', role='west Coil Round roadhead halt outside the South Gate')
     try_put('lz-wayhalt', (gu + 42, gv - 165), math.pi, 'gate_road', role='east Coil Round roadhead halt outside the South Gate')
     try_put('lk-caravanserai', (gu - 46, gv - 210), 0.0, 'gate_road', caste=3, role='convoy drovers\' stone sledge court at the South Gate roadhead')
