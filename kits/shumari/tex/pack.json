@@ -117,7 +117,7 @@
    "tint": {
     "contrast": 1.0,
     "keep": 0.85,
-    "mean": 0.41644468590231504,
+    "mean": 0.416444685902315,
     "sourceMean": 0.4164
    }
   },
@@ -147,7 +147,7 @@
    "tint": {
     "contrast": 1.0,
     "keep": 0.85,
-    "mean": 0.45541320922253176,
+    "mean": 0.4554132092225317,
     "sourceMean": 0.4554
    }
   },
@@ -597,8 +597,38 @@
    "tint": {
     "contrast": 1.0,
     "keep": 1.0,
-    "mean": 0.3790474650244619,
+    "mean": 0.37904746502446196,
     "sourceMean": 0.379
+   }
+  },
+  "frieze_kattu": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "frieze_kattu.albedo.webp",
+    "normalMap": "frieze_kattu.normal.webp",
+    "roughnessMap": "frieze_kattu.rough.webp"
+   },
+   "lib": "patterns/shumari/kattu-frieze",
+   "metal": 0.08,
+   "normalScale": 1.0,
+   "roughLift": 0.0,
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "560e0d95c550c1f54263a400cc42c7f93bc7a6f8",
+    "normal": "cff6be2db2b1ee10be118b384abf82c64c619985",
+    "roughness": "e503d207f0c0ef13cbb9e07fe8d4de5800ba254a"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.285955354943369,
+    "sourceMean": 0.286
    }
   },
   "gold": {
@@ -627,7 +657,7 @@
    "tint": {
     "contrast": 1.0,
     "keep": 1.0,
-    "mean": 0.5703598102704218,
+    "mean": 0.5703598102704217,
     "sourceMean": 0.5704
    }
   },
@@ -777,7 +807,7 @@
    "tint": {
     "contrast": 1.0,
     "keep": 1.0,
-    "mean": 0.439376241829068,
+    "mean": 0.4393762418290681,
     "sourceMean": 0.4394
    }
   },
@@ -807,7 +837,7 @@
    "tint": {
     "contrast": 1.0,
     "keep": 0.85,
-    "mean": 0.1903014344069537,
+    "mean": 0.19030143440695368,
     "sourceMean": 0.1903
    }
   },
@@ -1015,7 +1045,7 @@
    "tint": {
     "contrast": 1.0,
     "keep": 0.85,
-    "mean": 0.3552001684418681,
+    "mean": 0.355200168441868,
     "sourceMean": 0.3552
    }
   },

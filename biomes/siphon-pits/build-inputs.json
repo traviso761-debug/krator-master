@@ -813,10 +813,10 @@
     "core/shadow/host/12-core-shadow-host.js": "dbcd74523c159e1702abb5fad1cb5ccc8a7a67a71bb8c45e2f363778fd856dc1",
     "core/space/20-core-space.js": "68068f0da30b9115d098604315be2364735b86833a6743ef4444e5e6adbe5780",
     "core/tags/50-core-tags.js": "5d506746c4b5142f76e932cbd798d4ba6926e3865919d7ecd6d39a16e4e5b882",
-    "core/tags/52-core-tags-vocab.js": "34470fd7966f7d0684585b0bc2082875d5de0ec2ed11d141f79f9612462584d3",
+    "core/tags/52-core-tags-vocab.js": "2de54032d27e2c74066df84e4bb9296fa8104f2a71c7a42875b5716ef252e3d3",
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
     "core/terrain/30-core-field.js": "be1e3f1c4674ed0aaffc0135e714766fc19cf2a2a3c99938a2aed90f608084aa",
-    "core/terrain/35-core-strata.js": "411b14b18413498c532a9a3fab9893c5726630c8387098b3a1190d0817a505b1",
+    "core/terrain/35-core-strata.js": "65491b58b7258840a88c1ce17f0ba53d11536acd9bf2c6dacb9e1af00821c76c",
     "core/terrain/38-core-relief.js": "7b05a027e7258a2bb412cadbe67beb6bab878f88e6f18eeb5fdddf96fb9ae21f",
     "core/terrain/38c-core-landforms.js": "3feab77294dd3adea9402c0ffd15cccfb3efe999a532763a753626fcc02bbc8f",
     "core/terrain/42-core-frost.js": "0ff4c36238778839286c1a7e4933a02765d08a69c6931b41d8b8f02d1d543a2b",
@@ -837,9 +837,9 @@
     "core/water/ext/60-core-water-fields.js": "8e877798226558edf744fccd1e6e92edf28bf059af5f087a10d733eaf5ecac2a",
     "core/water/geyser/52-core-water-geyser.js": "804a8b84e108965002396666c0647991ef073416f0206b02aeba81be3be19ac1",
     "core/water/geyser/52b-core-water-geyser-draw.js": "2e403145a06bf9b7a06fe4a5e6831d3ae0724a8eba1fbb21b4039ab2ae6cfd3e",
-    "kits/crops/src/10-crop-core.js": "62a839accf372a4d7e1de6720c3e1b66f6ef4d9352801104fe02e387c464eab2",
+    "kits/crops/src/10-crop-core.js": "5ba7d28f475c47c0885fa5032106cd255b7a2efbea74cc3156c247c4fad2f2f9",
     "kits/crops/src/20-crop-records.js": "9f5943808e0e09305a1a4fde6bb51c086716ed0b213bfd09bf9122acfeb61c14",
-    "kits/crops/src/22-crop-material.js": "582da1b4ffe9eedf82d18b02f3f72b2e22f0491e3c5a45b8c06d2d5d5e4a6ea8",
+    "kits/crops/src/22-crop-material.js": "769d666ce969f2ddff28cc2cca96a0e3f767a9b10c628775d246505dd18db20a",
     "kits/crops/src/40-crop-query.js": "c4e1179691702ff13200d5b713c23e0f315ee99c61842a8735d671e63bfca439",
     "kits/fauna/fauna-core.js": "c7acf79776905d200371271bfd9e634bed33d3f40fa215fc91a8189b7bc8d10c",
     "kits/fauna/fauna-lands-host.js": "803b7a425ab4fbbcbf1562ca4e689550d72bdb2f1ecd9bc0f9f28b22a6e59db3",
@@ -851,6 +851,7 @@
     "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47"
    },
    "listings": {
+    "biomes/siphon-pits": "5ac783112009fdfab2ed91db7b0cea2ef98ec86167867b4af1bdd06ff0913b0d",
     "biomes/siphon-pits/src": "7caa2c2c73420f816f2ce719379cb538046509d723fab3a42d2ab444c2c2436f",
     "biomes/siphon-pits/stations/terraces": "5d1d4e22311bcbbacf8f390cea1fa24e84d4c802c6f6752f2ddd1de7c522c0bb",
     "core/host": "d729ffbc0ed36e68e9036bd9c454abc6462a27b22a4bc16b88c38d836e6f4a37",
@@ -859,10 +860,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/siphon-pits/dist/siphon-pits-terraces.html": "5995615ce162fac31517edb8db361eb783d211bf819afdca6c04902ac71a493c"
+    "biomes/siphon-pits/dist/siphon-pits-terraces.html": "c20771befe68b554be7375a61f87e0787b1192169edbef63fc83e2e30b04e73e"
    },
    "outputs_raw": {
-    "biomes/siphon-pits/dist/siphon-pits-terraces.html": "5995615ce162fac31517edb8db361eb783d211bf819afdca6c04902ac71a493c"
+    "biomes/siphon-pits/dist/siphon-pits-terraces.html": "c20771befe68b554be7375a61f87e0787b1192169edbef63fc83e2e30b04e73e"
    }
   }
  }

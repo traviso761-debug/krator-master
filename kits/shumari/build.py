@@ -66,12 +66,27 @@ import placeholder as psky  # noqa: E402
 sys.path.insert(0, os.path.join(ROOT, 'core', 'engine'))
 import engine as kengine  # noqa: E402
 
-CORE_HOST = khost.SHELL + kengine.HOST
+CORE_HOST = khost.SHELL + kengine.HOST + kengine.INTERIORS_HOST
+INTERIOR_SETS = ['shumari']
+_B = lambda *p: os.path.join(ROOT, *p)
+BIO_BAND = {
+    '93b-bio-10-core-head.js': _B('core', 'biome', '10-core-head.js'),
+    '93b-bio-20-core-kit.js': _B('core', 'biome', '20-core-kit.js'),
+    '93b-bio-30-core-foliage.js': _B('core', 'biome', '30-core-foliage.js'),
+    '93b-bio-31b-core-leafset.js': _B('core', 'biome', '31b-core-leafset.js'),
+    '93b-bio-31j-core-joint.js': _B('core', 'biome', '31j-core-joint.js'),
+    '93b-bio-34-core-impostor.js': _B('core', 'biome', '34-core-impostor.js'),
+    '93b-bio-40-core-place.js': _B('core', 'biome', '40-core-place.js'),
+    '93b-bio-50-biome-shigh-species.js': _B('biomes', 'shighlands', 'src', '50-biome-shigh-species.js'),
+    '93b-bio-55-biome-shigh-trees.js': _B('biomes', 'shighlands', 'src', '55-biome-shigh-trees.js'),
+    '93b-bio-60-biome-shigh-floor.js': _B('biomes', 'shighlands', 'src', '60-biome-shigh-floor.js'),
+    '93b-bio-62-biome-shigh-shumar.js': _B('biomes', 'shighlands', 'stations', 'shumar', '62-biome-shigh-shumar.js'),
+    '93b-bio-70-biome-shigh.js': _B('biomes', 'shighlands', 'src', '70-biome-shigh.js'),
+}
 VENDORED = {}
-# Until Phase SM5 creates krator-master-furniture-shumari.js, furnish from shared catalogs.
-FURN_CULTURES = ['generic', 'generic-goods', 'jobs', 'scrap']
-VIRTUAL = {'26-matlib-pack.js', '38-furniture-bundle.js'}
-BUNDLE_GLOBALS = ('KratorFurniture',)
+FURN_CULTURES = ['shumari', 'generic', 'generic-goods', 'jobs', 'arms', 'scrap']
+VIRTUAL = {'26-matlib-pack.js', '38-furniture-bundle.js', kengine.INTERIORS_FRAGMENT}
+BUNDLE_GLOBALS = ('KratorFurniture',) + kengine.INTERIORS_GLOBALS
 SIDE = None if '--inline-packs' in sys.argv else {}
 
 
@@ -104,10 +119,10 @@ def matlib_pack():
 def virtual_bodies():
     sys.path.insert(0, os.path.join(ROOT, 'kits', 'catalog'))
     import furniture_bundle
-    return {
+    return dict({
         '26-matlib-pack.js': matlib_pack(),
         '38-furniture-bundle.js': furniture_bundle.bundle(FURN_CULTURES),
-    }
+    }, **kengine.interiors(INTERIOR_SETS))
 
 
 RE_DECL = re.compile(r'^(?:const|let|var|function|class)\s+([A-Za-z_$][\w$]*)', re.M)
@@ -127,6 +142,7 @@ def sources():
     paths.update({f: khost.path(f) for f in CORE_HOST})
     paths.update(psky.paths(psky.SKY))
     paths.update(kengine.paths())
+    paths.update(BIO_BAND)
     core = dict(paths)
     if os.path.isdir(SRC):
         paths.update({f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()})
@@ -148,7 +164,7 @@ def main():
     if '--no-checks' not in sys.argv:
         decl = {}
         for f in files:
-            if not f.endswith('.js') or f in VIRTUAL or f in CORE_HOST:
+            if not f.endswith('.js') or f in VIRTUAL or f in CORE_HOST or f in BIO_BAND:
                 continue
             for m in RE_DECL.finditer(bodies[f]):
                 decl.setdefault(m.group(1), set()).add(f)

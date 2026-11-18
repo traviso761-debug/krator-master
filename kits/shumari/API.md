@@ -2,7 +2,7 @@
 
 All architectural helpers in `src/40-sm-kit.js` and `src/41-sm-dome.js` use the `sm` / `SM_` prefix and draw in the current `CM` local frame (`+z` front, `y` up) on `core/engine`.
 
-## 1. Constants & Pure `[G data]` Validators (`src/26k-kit.js`)
+## 1. Constants & Pure `[G data]` Validators (`src/26k-kit.js`, `src/68-sm-trades.js`)
 
 - `SM_GIANT_DOOR = 4.4`, `SM_GIANT_MIN_DOOR = 4.2` — Free Giant clear doorway height (`m`).
 - `SM_GIANT_VAULT = 5.2`, `SM_GIANT_MIN_VAULT = 5.0` — Free Giant clear interior vault/ceiling height (`m`).
@@ -10,7 +10,8 @@ All architectural helpers in `src/40-sm-kit.js` and `src/41-sm-dome.js` use the 
 - `SM_STAIR_MIN_W = 2.4` — Minimum clear width (`m`) on compound Giant+human stairs.
 - `smDomeRadius(u, span)` / `smDomeProfile(span, h, steps)` — High-shouldered pointed Mamluk dome profile (`u` in `[0, 1]`).
 - `smDomeValid(rec)` — Validates `{key, style, hand, span, h}` (`h/span` in `[0.72, 0.92]`; `spiral` `hand === +1`, or `-1` on `sm_doriyan_stele`).
-- `smGiantValid(rec)` — Validates `{key, giant, doors, vaultH}` against Giant vs human clearance invariants.
+- `smGiantValid(rec)` — Validates `{key, giant, solidMarker, doors, vaultH}` against Giant vs human clearance invariants (and doorless solid markers like `sm_wayside_cairn`).
+- `SM_TRADES` (`src/68-sm-trades.js`) — Voth census trade mapping covering all 44 rows of `tools/trades_census.json` with zero gaps.
 
 ## 2. Highland & Mamluk Primitives (`src/40-sm-kit.js`)
 
@@ -19,19 +20,29 @@ All architectural helpers in `src/40-sm-kit.js` and `src/41-sm-dome.js` use the 
 - `smHollowAblaq(w, d, y0, h, o)` — Four-wall hollow *ablaq* chamber with corner pilasters and paved interior floor.
 - `smParapet(w, d, y, o)` — Flat snow-load roof slab (`hole` well cutout for domes), cornice, perimeter stepped Mamluk blade-*shurafat* merlons, and basalt snow-spouts.
 - `smCompoundStair(x, z, y0, y1, yaw, o)` — Dual-tread Giant (`~0.40 m` riser center) + human (`~0.20 m` riser flanks) stone flight (`>= 2.4 m` wide) registered on `KWALK` via `KWALK.strip` + landing `KWALK.poly`.
-- `smPishtaq(x, y0, z, o)` — Monumental recessed Mamluk portal rising above roofline: corner colonnettes, pointed *ablaq* voussoir arch, stepped prism *muqarnas* hood, triplet *jali* transom lights, *shurafat* crown, bronze `smSocket`s, and operable `KDOOR` leaves (`svDoorway` + `door()`).
+- `smPishtaq(x, y0, z, o)` — Monumental recessed Mamluk portal rising above roofline: corner colonnettes, pointed *ablaq* voussoir arch, stepped prism *muqarnas* hood, triplet *jali* transom lights, *shurafat* crown, `frieze_kattu` band, bronze `smSocket`s, and operable `KDOOR` leaves.
+- `smHumanDoor(x, y0, z, yaw, o)` / `smGiantPortal(x, y0, z, yaw, w, h, o)` — Human (`2.25 m`) and Free Giant (`>= 4.4 m`) arched stone doorways with operable `svLeaf` (`KDOOR`) leaves and optional `frieze_kattu` lintels.
 - `smLacquerBay(x, y0, z, w, h, d, o)` — Projecting crimson-lacquered *mashrabiya* winter gallery bay with `jali` lattice, `svPane` winter glazing, bronze corbels, and slate snow-hood.
+- `smSabilGrille(x, y0, z, yaw, w, h)` — Cast-bronze `tracery` street-fountain screen over snowmelt water trough and `smoked` `svPane` backing.
+- `smBathDome(x, y0, z, d, h)` — Low plastered *hammam* steam dome (`bathLens`) studded with amber stained-glass light-jewels (distinct from funerary `SM_DOMES`).
+- `smCopperAlembic(x, y0, z, r)` — Riveted miniature Mamluk-profile copper *qubba* still pot and swan-neck condenser pipe for `sm_spirits_still`.
+- `smChimney(x, y0, z, h, o)` — Dressed basalt flue stack with travertine cap and optional live `smokeAt` source.
 
 ## 3. Mamluk Domes & Transition Drums (`src/41-sm-dome.js`)
 
-- `smDrum(x, y0, z, span, o)` — Square-to-octagon Mamluk transition shoulder with 3-tier stepped prismatic *muqarnas* ("Turkish triangles"), axial `1-over-2` *qamariyya* bullseye roundels over triplet lancets, octagonal *shurafat* belt, and 8- or 12-window *ablaq* clerestory drum (`hollow: true` leaves throat open to chamber below).
-- `smDome(x, y0, z, D, o)` — Pointed Mamluk stone dome (`style: 'spiral'` with 16–24 3D torsion gadroons & `hand: +1 | -1`, or `style: 'carved'` star-relief over an epigraphic `frieze` collar), hollow inward-facing stone soffit, and 3-sphere cast-bronze `smJamur` finial. Appends metadata to `SM_DOMES` and `CURREC.domes`.
+- `smDrum(x, y0, z, span, o)` — Square-to-octagon Mamluk transition shoulder with 3-tier stepped prismatic *muqarnas* ("Turkish triangles"), axial `1-over-2` *qamariyya* bullseye roundels over triplet lancets, octagonal *shurafat* belt, and 8- or 12-window *ablaq* clerestory drum.
+- `smDome(x, y0, z, D, o)` — Pointed Mamluk stone dome (`style: 'spiral'` with 16–24 3D torsion gadroons & `hand: +1 | -1`, or `style: 'carved'` star-relief over an epigraphic `frieze` collar), hollow inward-facing stone soffit, and 3-sphere cast-bronze `smJamur` finial.
 
-## 4. Phase SM2 `defBuilding` Definitions
+## 4. Complete 59 `defBuilding` Registry (Phases SM2–SM4)
 
-| Key | Seed | Caste / Style | `giant` | Summary |
-| --- | --- | --- | --- | --- |
-| `sm_regiment_qubba` | `8101` | `sword` | `true` | Walkable hollow *ablaq* regimental mausoleum (`v=0` `#spiral` right-handed dome, `v=1` `#carved` star-relief dome), `4.4 m` *pishtaq*, columbarium urns, ancestor blade-racks, eternal braziers |
-| `sm_doriyan_stele` | `8105` | `sword` | `true` | Open 8-pier *ablaq* memorial canopy over 3 NW-facing black basalt steles under a mirror-handed (`hand: -1`) spiral dome |
-| `sm_sample_pishtaq` | `8141` | `sword` | `true` | Standalone Giant *pishtaq* (`4.4 m` door), *ablaq* vestibule, *shurafat* parapet, and compound stair |
-| `sm_sample_hearth_bay` | `8142` | `hearth` | `false` | Human-scale (`2.25 m` door) Hearth-Commons basalt house front with upper crimson-lacquered *mashrabiya* winter bay |
+- **Toolkit Samples (`src/45-sm-samples.js`, 2):** `sm_sample_pishtaq` (`8141`, Giant), `sm_sample_hearth_bay` (`8142`, human).
+- **Poor Dwellings (`src/50-sm-dwell-poor.js`, 5):** `sm_cadet_cell` (`8201`), `sm_giant_cadet_cell` (`8202`, Giant), `sm_cliff_cot` (`8203`), `sm_herder_house` (`8204`), `sm_outlander_lodging` (`8205`).
+- **Middle Dwellings (`src/51-sm-dwell-mid.js`, 4):** `sm_hearth_house` (`8211`), `sm_courtyard_house` (`8212`), `sm_terrace_house` (`8213`), `sm_shop_house` (`8214`).
+- **Rich Sword Compounds (`src/52-sm-dwell-rich.js`, 4, all Giant):** `sm_sword_villa` (`8221`), `sm_captain_bayt` (`8222`), `sm_giant_sword_hall` (`8223`), `sm_rim_pavilion` (`8224`).
+- **Street Ensemble (`src/56-sm-gorge-street.js`, 1, Giant):** `sm_gorge_street` (`8256`).
+- **Cult & Funerary (`src/60-sm-cult.js`, 6):** `sm_regiment_qubba` (`8101`, `v=0`/`v=1`, Giant), `sm_hall_of_blades` (`8102`, Giant), `sm_sabil_shrine` (`8103`, Giant), `sm_ordeal_gate` (`8104`, Giant), `sm_doriyan_stele` (`8105`, Giant, `hand: -1`), `sm_wayside_cairn` (`8106`, solid marker).
+- **Civic & Mamluk State (`src/61-sm-civic.js`, 8, all Giant):** `sm_diwan_hall` (`8301`), `sm_kattu_chancery` (`8302`), `sm_wikala_caravanserai` (`8303`), `sm_hammam` (`8304`), `sm_bimaristan` (`8305`), `sm_state_granary` (`8306`), `sm_cistern_hall` (`8307`), `sm_envoy_house` (`8308`).
+- **Citadel & Gorge Defence (`src/62-sm-defence.js`, 8, all Giant):** `sm_citadel_keep` (`8321`), `sm_curtain_wall` (`8322`), `sm_pishtaq_gate` (`8323`), `sm_payaru_tower` (`8324`), `sm_regiment_barracks` (`8325`), `sm_ordeal_yard` (`8326`), `sm_armoury` (`8327`), `sm_gorge_bridge_tower` (`8328`).
+- **Extractive Works & Heavy Crafts (`src/64-sm-works.js`, 8, human):** `sm_blade_smithy` (`8401`), `sm_saltpeter_works` (`8402`), `sm_lacquer_inlay_shop` (`8403`), `sm_stonecutters_yard` (`8404`), `sm_mine_head` (`8405`), `sm_salt_evaporator` (`8406`), `sm_charcoal_kiln` (`8407`), `sm_placer_sluice` (`8408`).
+- **Town Trades, Distillery & Lake Quay (`src/65-sm-trades.js`, 8, human):** `sm_bakery` (`8421`), `sm_butcher` (`8422`), `sm_weaver_dyer` (`8423`), `sm_tannery` (`8424`), `sm_brewery_teahouse` (`8425`), `sm_bazaar_hall` (`8426`), `sm_spirits_still` (`8427`), `sm_lake_jetty` (`8428`).
+- **Highland Farms & Mills (`src/66-sm-farms.js`, 5, human):** `sm_watermill` (`8441`), `sm_apricot_orchard` (`8442`), `sm_terrace_farm` (`8443`), `sm_fungus_cellar` (`8444`), `sm_stock_fold` (`8445`).

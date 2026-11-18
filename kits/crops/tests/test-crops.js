@@ -108,5 +108,15 @@ for (const id of ['maar-yam', 'fumewort'])
    !C.palette('ehighlands', { nodes: [] }).colours.includes('teal'));
  ok('paintedhighlands: its own bulb and medicine are native, the juniper wild there', C.BY_ID['painted-camas'].home.includes('paintedhighlands') && C.isBucket(C.BY_ID.paintbrush, 'medicine') && C.BY_ID.juniper.home.includes('paintedhighlands'),
    !C.BY_ID.murnong.home.includes('paintedhighlands'));}
+// Shumar & the Ordeal ramp on shighlands (SM-Sim-1, core/simulation/PROPOSAL-SHUMAR.md section 2d & 7): dry-summer plateau & gorges + polar thin-air ramp
+{const sh = C.forBiome('shighlands'), B = C.BIOMES.shighlands, fitZ = (zid, id) => { const z = B.zones[zid]; return C.fitZone(C.BY_ID[id], z, z.atm == null ? B.atm : z.atm, 'shighlands'); };
+ ok('shighlands (shumar): grows hardy grains (dustmillet, frostoat, emmer), apricot and cave-madder, excluding tropical lowlands',
+   ['dustmillet', 'frostoat', 'emmer', 'apricot', 'cave-madder'].every(id => how(sh, id) !== 'no' && fitZ('shumar', id) !== 'no')
+   && C.pick(sh, 'fruit', { seed: 1, prefer: ['apricot'] }).crop.id === 'apricot'
+   && C.palette('shighlands', { grow: true }).colours.includes('red'),
+   ['cacao', 'rice'].every(id => how(sh, id) === 'no' && fitZ('shumar', id) === 'no'));
+ ok('shighlands (ordeal): thin-air polar ramp takes hardy alpine staples (bistort, redstem, frostroot) and excludes warm orchard fruit',
+   ['bistort', 'redstem', 'frostroot'].every(id => fitZ('ordeal', id) !== 'no'),
+   ['apricot', 'canyon-grape', 'fig', 'emmer', 'cacao'].every(id => fitZ('ordeal', id) === 'no'));}
 console.log(bad ? '\n' + bad + ' FAILED' : '\nall passed');
 process.exit(bad ? 1 : 0);

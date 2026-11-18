@@ -59,8 +59,9 @@ function smDome(x,y0,z,D,o){
   svNoWalk(()=>{
    /* Base stone cornice & wrapped epigraphic frieze collar (refs/01, refs/02) */
    const R=D*.5;
+   const fMk=opt.friezeMk||'frieze_kattu';
    cyl('chiselled',0,0,0,R+.14,.12,P('travShade'),32,R+.18,false);
-   cyl('frieze',0,.12,0,R+.04,Math.max(.20,collarH-.20),0xffffff,32,R+.03,true);
+   cyl(fMk,0,.12,0,R+.04,Math.max(.20,collarH-.20),0xffffff,32,R+.03,true);
    cyl('chiselled',0,collarH-.08,0,R+.10,.10,P('travertine'),32,R+.05,false);
 
    /* Hollow inward-facing stone soffit so visitors looking up from inside see a true pointed vault */

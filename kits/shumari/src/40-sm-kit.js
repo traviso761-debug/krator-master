@@ -6,6 +6,7 @@
 function smBindRec(d){
  if(!CURREC||!d)return;
  CURREC.giant=!!d.giant;
+ CURREC.solidMarker=!!d.solidMarker;
  CURREC.caste=d.caste||null;
  CURREC.vaultH=d.vaultH==null?0:d.vaultH;
  CURREC.walkTargets=[];
@@ -653,3 +654,181 @@ function smLacquerBay(x,y0,z,w,h,d,o){
   windowAt(0,.2,d,0,w,h-.3,y0+.2);
  });
 }
+
+/* Octagonal dark-basalt thermal-mass flue chimney with shurafat crown & optional hearth smoke */
+function smChimney(x,y0,z,h,o){
+ const opt=o||{};
+ const H=h==null?2.2:h;
+ const r=opt.r==null?.34:opt.r;
+ W(x,y0,z,0,()=>{
+  svNoWalk(()=>{
+   box('basalt',0,0,0,r*2.3,.32,r*2.3,P('basaltDark'));
+   cyl('basalt',0,.30,0,r,H-.56,P('basalt'),8,r*.88,false);
+   cyl('travertine',0,H-.30,0,r*1.08,.12,P('travertine'),8,r*1.12,false);
+   for(let k=0;k<4;k++){
+    const a=k*PI*.5;
+    smShurafatMerlon(Math.cos(a)*(r*.84),H-.18,Math.sin(a)*(r*.84),PI*.5-a,.48);
+   }
+   cyl('iron',0,H-.18,0,r*.52,.22,P('iron'),8,r*.48,false);
+  });
+  if(opt.smoke!==false)smokeAt(0,H+.12,0,{r:opt.smokeScale==null?.28:opt.smokeScale});
+ });
+}
+
+/* Dressed travertine-and-ablaq human doorway (1.5 < h < 3.0 m) with operable KDOOR leaf and optional door() front */
+function smHumanDoor(x,y0,z,ry,w,h,o){
+ const opt=o||{};
+ const Wd=w==null?1.32:w;
+ const Hd=h==null?SM_HUMAN_DOOR:h;
+ const hollow=opt.hollow==null?true:!!opt.hollow;
+ W(x,y0,z,ry==null?0:ry,()=>{
+  svNoWalk(()=>{
+   for(const sx of [-1,1]){
+    box('travertine',sx*(Wd*.5+.11),0,.04,.22,Hd+.28,.34,P('travertine'));
+   }
+   const nj=5,jw=(Wd+.46)/nj;
+   for(let i=0;i<nj;i++){
+    const mk=i===2?'ironstone':(i%2===0?'basalt':'travertine');
+    const col=i===2?P('ironstone'):(i%2===0?P('basalt'):P('travertine'));
+    box(mk,-(Wd+.46)*.5+(i+.5)*jw,Hd,.05,jw,.28,.36,col);
+   }
+   if(opt.arch!==false){
+    W(0,Hd+.28,.04,0,()=>smAblaqArch(Wd+.52,.68,.32,{openW:Wd-.08,springY:.05,voussoirs:9}));
+   }
+  });
+  svDoorway(0,0,.02,0,Wd,Hd,{
+   hollow,
+   locked:opt.locked==null?!hollow:!!opt.locked,
+   split:opt.split==null?Wd>1.45:!!opt.split,
+   mk:opt.mk||'cedar',
+   col:opt.col==null?0x72492c:opt.col,
+   style:opt.style||'plank',
+   hwCol:0x9a7432,
+   ajar:opt.ajar==null?0:opt.ajar,
+   name:opt.name||'human-door'
+  });
+  if(opt.front!==false)door(0,0,.04,0,Wd,Hd);
+ });
+}
+
+/* Flush monumental ablaq Free Giant doorway (h >= 4.4 m) for Giant halls, fortifications, and side gates */
+function smGiantPortal(x,y0,z,ry,w,h,o){
+ const opt=o||{};
+ const Wd=w==null?2.40:w;
+ const Hd=h==null?SM_GIANT_DOOR:h;
+ const hollow=opt.hollow==null?true:!!opt.hollow;
+ W(x,y0,z,ry==null?0:ry,()=>{
+  svNoWalk(()=>{
+   for(const sx of [-1,1]){
+    box('travertine',sx*(Wd*.5+.16),0,.06,.32,Hd+.40,.42,P('travertine'));
+   }
+   const nj=7,jw=(Wd+.64)/nj;
+   for(let i=0;i<nj;i++){
+    const mk=i===3?'ironstone':(i%2===0?'basalt':'travertine');
+    const col=i===3?P('ironstone'):(i%2===0?P('basalt'):P('travertine'));
+    box(mk,-(Wd+.64)*.5+(i+.5)*jw,Hd,.08,jw,.38,.44,col);
+   }
+   if(opt.kattu){
+    box('frieze_kattu',0,Hd+.38,.09,Wd+.68,.34,.36,0xffffff);
+   }
+   W(0,Hd+(opt.kattu?.72:.38),.06,0,()=>smAblaqArch(Wd+.72,.96,.38,{openW:Wd-.06,springY:.08,voussoirs:13}));
+  });
+  svDoorway(0,0,.04,0,Wd,Hd,{
+   hollow,
+   locked:opt.locked==null?!hollow:!!opt.locked,
+   split:true,
+   mk:opt.mk||'lacquer',
+   col:opt.col==null?0xb83234:opt.col,
+   style:opt.style||'banded',
+   hwCol:0x9a7432,
+   ajar:opt.ajar==null?0:opt.ajar,
+   name:opt.name||'giant-portal'
+  });
+  if(opt.front!==false)door(0,0,.06,0,Wd,Hd);
+ });
+}
+
+/* Street-corner cast-bronze sabil fountain grille over a carved basalt snowmelt basin */
+function smSabilGrille(x,y0,z,ry,w,h){
+ const Wg=w==null?2.1:w,Hg=h==null?2.4:h;
+ W(x,y0,z,ry==null?0:ry,()=>{
+  svNoWalk(()=>{
+   box('basalt',0,0,.22,Wg+.42,.76,.56,P('basaltDark'));
+   box('travertine',0,.76,.24,Wg+.50,.12,.62,P('travertine'));
+   box('paving',0,.58,.30,Wg-.12,.16,.28,P('glass'));
+   for(const sx of [-1,1]){
+    cyl('travertine',sx*(Wg*.5+.08),.88,.16,.10,Hg-.88,P('travertine'),10,null,false);
+    box('bronzeCast',sx*(Wg*.5+.08),Hg-.06,.16,.24,.12,.24,P('bronze'));
+   }
+   W(0,Hg-.02,.14,0,()=>smAblaqArch(Wg+.44,.76,.34,{openW:Wg-.08,springY:.06,voussoirs:11}));
+   box('tracery',0,.88,.18,Wg-.06,Hg-.92,.04,P('bronze'));
+   cyl('bronze',0,.68,.46,.04,.16,P('bronze'),8,.03,false);
+  });
+  svPane(0,.90,.12,0,Wg-.12,Hg-.96,{kind:'smoked',solid:false});
+  windowAt(0,.88,.22,0,Wg,Hg-.88,y0+.88);
+ });
+}
+
+/* Low pierced Mamluk hammam blister dome (bathLens masonry + concentric amber stained-glass oculus jewels; non-SM_DOMES) */
+function smBathDome(x,y0,z,D,h){
+ const R=D*.5,H=h==null?D*.42:h;
+ W(x,y0,z,0,()=>{
+  svNoWalk(()=>{
+   cyl('chiselled',0,0,0,R+.12,.16,P('travShade'),24,R+.06,false);
+   const prof=[];
+   for(let i=0;i<=12;i++){
+    const u=i/12;
+    const ang=u*PI*.5;
+    prof.push([i===12?0:Math.cos(ang)*R,.16+Math.sin(ang)*(H-.16)]);
+   }
+   lathe('bathLens',0,0,prof,24,P('domeStone'));
+   const gk=svGlass('stained',{color:0xd89b3c});
+   for(const ringF of [.38,.68]){
+    const nJ=ringF<.5?6:10;
+    const u=ringF;
+    const jr=Math.cos(u*PI*.5)*(R+.015),jy=.16+Math.sin(u*PI*.5)*(H-.16);
+    for(let k=0;k<nJ;k++){
+     const a=k/nJ*TAU+(ringF>.5?PI/nJ:0);
+     W(Math.cos(a)*jr,jy,Math.sin(a)*jr,PI*.5-a,()=>{
+      ring('travertine',0,0,0,.11,.022,P('travertine'),0,PI*.5,0,10);
+      sph(gk,0,0,.02,.085,0xffffff,.9,8);
+     });
+    }
+   }
+   sph(gk,0,H+.02,0,.13,0xffffff,.9,10);
+  });
+ });
+}
+
+/* Riveted burnished-copper miniature qubba alembic dome + swan-neck lyne arm for Sunu-sikaru canyon spirit stills */
+function smCopperAlembic(x,y0,z,D,ry,armLen){
+ const R=D*.5,H=D*.86,L=armLen==null?2.2:armLen;
+ W(x,y0,z,ry==null?0:ry,()=>{
+  svNoWalk(()=>{
+   /* Stone furnace firebox base */
+   cyl('basalt',0,0,0,R*1.12,.92,P('basaltDark'),12,R*1.04,false);
+   box('glow',0,.18,R*1.02,.36,.28,.12,P('ember'));
+   cyl('travertine',0,.92,0,R*1.16,.12,P('travertine'),12,R*1.10,false);
+   /* Riveted copper pot & miniature pointed Mamluk copper dome */
+   const prof=[];
+   for(let i=0;i<=14;i++){
+    const u=i/14;
+    prof.push([i===14?.10:smDomeRadius(u,D),1.04+u*H]);
+   }
+   lathe('bronze',0,0,prof,20,P('bronze'));
+   ring('gold',0,1.08,0,R+.02,.028,P('gold'),0,0,0,18);
+   ring('bronzeCast',0,1.04+H*.45,0,smDomeRadius(.45,D)+.02,.024,P('bronzeDark'),0,0,0,18);
+   /* Onion helm & curved copper swan-neck condenser pipe */
+   sph('bronze',0,1.04+H+.10,0,.20,P('bronze'),1.1,12);
+   tube('bronze',t=>{
+    const u=t;
+    const arch=Math.sin(u*PI)*.52;
+    return [0,1.04+H+.22+arch-u*.95,u*L];
+   },t=>{
+    const r=lerp(.075,.038,t);
+    return [r,r];
+   },14,6,P('bronze'));
+  });
+ });
+}
+

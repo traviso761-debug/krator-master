@@ -5,6 +5,7 @@ for(const k of ['tracery','jali']){
  else if(m){m.side=THREE.DoubleSide;m.needsUpdate=true;}
 }
 if(MAT.frieze){MAT.frieze.roughness=.78;}
+if(MAT.frieze_kattu){MAT.frieze_kattu.roughness=.62;MAT.frieze_kattu.metalness=.08;}
 if(MAT.domeCarved){MAT.domeCarved.roughness=.82;}
 if(MAT.lacquer){MAT.lacquer.roughness=.34;MAT.lacquer.metalness=.08;}
 if(MAT.basalt){MAT.basalt.roughness=.68;MAT.basalt.metalness=.05;}

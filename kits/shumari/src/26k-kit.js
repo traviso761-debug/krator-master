@@ -18,26 +18,26 @@ const SM_STAIR_MIN_W=2.4;
 const SM_CASTES={sword:'sword',hearth:'hearth',cadet:'cadet',outlander:'outlander'};
 const SM_STYLES={sword:'sword',hearth:'hearth',cadet:'cadet',state:'state'};
 
-/* Library pack mapping (materials.json -> tex/ -> 26-matlib-pack.js) */
+ /* Library pack mapping (materials.json -> tex/ -> 26-matlib-pack.js) */
 const SV_LIB={
  basalt:'basalt',rubble:'rubble',tuff:'tuff',travertine:'travertine',ashlar:'ashlar',ironstone:'ironstone',
  chiselled:'chiselled',domeCarved:'domeCarved',paving:'paving',cobble:'cobble',bathLens:'bathLens',
  lacquer:'lacquer',cedar:'cedar',timber:'timber',tarred:'tarred',
  bronzeCast:'bronzeCast',bronze:'bronze',gold:'gold',iron:'iron',tracery:'tracery',
- slate:'slate',thatch:'thatch',jali:'jali',frieze:'frieze',kilim:'kilim',earth:'earth'
+ slate:'slate',thatch:'thatch',jali:'jali',frieze:'frieze',frieze_kattu:'frieze_kattu',kilim:'kilim',earth:'earth'
 };
 const SV_TILE0={
  basalt:1.8,rubble:2.4,tuff:2.2,travertine:2.0,ashlar:2.2,ironstone:1.8,
  chiselled:1.6,domeCarved:1.8,paving:2.2,cobble:2.0,bathLens:1.6,
  lacquer:1.4,cedar:1.4,timber:1.8,tarred:1.8,
  bronzeCast:.9,bronze:.8,gold:.8,iron:.9,tracery:1.2,
- slate:1.5,thatch:1.8,jali:1.1,frieze:2.4,kilim:2.2,earth:3.6
+ slate:1.5,thatch:1.8,jali:1.1,frieze:2.4,frieze_kattu:1.6,kilim:2.2,earth:3.6
 };
 const SV_CLOTH={flag:1,kilim:1};
 const SV_CUT={
  basalt:1,rubble:1,tuff:1,travertine:1,ashlar:1,ironstone:1,chiselled:1,domeCarved:1,bathLens:1,
  lacquer:1,cedar:1,timber:1,tarred:1,bronzeCast:1,bronze:1,gold:1,iron:1,tracery:1,
- slate:1,thatch:1,jali:1,frieze:1,plain:1,brass:1,bone:1,glass:1,flag:1
+ slate:1,thatch:1,jali:1,frieze:1,frieze_kattu:1,plain:1,brass:1,bone:1,glass:1,flag:1
 };
 const KIT_FALLBACK=[];
 const KIT_HAS=k=>KMAT.mode==='lib'&&!!KMAT.packed(KIT.pack,k);
@@ -118,6 +118,7 @@ function smDomeValid(rec){
 /* Validate a building record {key, giant, doors:[{h,locked}], vaultH} against Free Giant / human clearance rules */
 function smGiantValid(rec){
  if(!rec||typeof rec.giant!=='boolean'||!Array.isArray(rec.doors))return false;
+ if(rec.solidMarker&&rec.key==='sm_wayside_cairn')return !rec.giant&&rec.doors.length===0;
  if(rec.giant){
   const hasGiantDoor=rec.doors.some(d=>d&&!d.locked&&typeof d.h==='number'&&d.h>=SM_GIANT_MIN_DOOR);
   const vaultOk=typeof rec.vaultH==='number'&&rec.vaultH>=SM_GIANT_MIN_VAULT;

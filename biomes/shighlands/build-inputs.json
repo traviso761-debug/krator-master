@@ -532,7 +532,7 @@
     "core/shadow/host/12-core-shadow-host.js": "dbcd74523c159e1702abb5fad1cb5ccc8a7a67a71bb8c45e2f363778fd856dc1",
     "core/space/20-core-space.js": "68068f0da30b9115d098604315be2364735b86833a6743ef4444e5e6adbe5780",
     "core/tags/50-core-tags.js": "5d506746c4b5142f76e932cbd798d4ba6926e3865919d7ecd6d39a16e4e5b882",
-    "core/tags/52-core-tags-vocab.js": "34470fd7966f7d0684585b0bc2082875d5de0ec2ed11d141f79f9612462584d3",
+    "core/tags/52-core-tags-vocab.js": "2de54032d27e2c74066df84e4bb9296fa8104f2a71c7a42875b5716ef252e3d3",
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
     "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
@@ -561,10 +561,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/shighlands/dist/shighlands-ordeal.html": "7094a72ec81690f7aa9db31c45c3b28c53a3cae0292dce6d9126546dfb47369c"
+    "biomes/shighlands/dist/shighlands-ordeal.html": "7874227579cd11bc0a36cea804a415fb22bbd8807de6eafb0690d6aeafe9ae55"
    },
    "outputs_raw": {
-    "biomes/shighlands/dist/shighlands-ordeal.html": "7094a72ec81690f7aa9db31c45c3b28c53a3cae0292dce6d9126546dfb47369c"
+    "biomes/shighlands/dist/shighlands-ordeal.html": "7874227579cd11bc0a36cea804a415fb22bbd8807de6eafb0690d6aeafe9ae55"
    }
   },
   "build.py --station shumar": {
@@ -681,7 +681,7 @@
     "core/shadow/host/12-core-shadow-host.js": "dbcd74523c159e1702abb5fad1cb5ccc8a7a67a71bb8c45e2f363778fd856dc1",
     "core/space/20-core-space.js": "68068f0da30b9115d098604315be2364735b86833a6743ef4444e5e6adbe5780",
     "core/tags/50-core-tags.js": "5d506746c4b5142f76e932cbd798d4ba6926e3865919d7ecd6d39a16e4e5b882",
-    "core/tags/52-core-tags-vocab.js": "34470fd7966f7d0684585b0bc2082875d5de0ec2ed11d141f79f9612462584d3",
+    "core/tags/52-core-tags-vocab.js": "2de54032d27e2c74066df84e4bb9296fa8104f2a71c7a42875b5716ef252e3d3",
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
     "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
@@ -710,10 +710,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/shighlands/dist/shighlands-shumar.html": "6cbd71a9524e36f599081e3d1f4821762605ce584ef1810acf6b1a034a27321d"
+    "biomes/shighlands/dist/shighlands-shumar.html": "b0a68fde6cafdd50c02ea4dc49a159de2e96dba9f397b965da680e6654a0ad78"
    },
    "outputs_raw": {
-    "biomes/shighlands/dist/shighlands-shumar.html": "6cbd71a9524e36f599081e3d1f4821762605ce584ef1810acf6b1a034a27321d"
+    "biomes/shighlands/dist/shighlands-shumar.html": "b0a68fde6cafdd50c02ea4dc49a159de2e96dba9f397b965da680e6654a0ad78"
    }
   }
  }
