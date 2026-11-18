@@ -6,21 +6,21 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 26 (10%) | 0 (0%) | 0 (0%) | 4 (1%) | 226 (88%) |
+| KB | 26 (10%) | 0 (0%) | 0 (0%) | 6 (2%) | 228 (88%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
 | Fragment | KB | Tag | THREE | canvas | DOM | events | loop | geom | shader | inst | ray | store | net | Note |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `src/00-head.html` | 1.2 | [web] | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
-| `src/26k-kit.js` | 5.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/28-sm-mat.js` | 1.2 | [draw] | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/40-sm-kit.js` | 34.8 | [draw] | 3 | 0 | 0 | 0 | 0 | 117 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/26k-kit.js` | 5.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/28-sm-mat.js` | 1.7 | [draw] | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/40-sm-kit.js` | 35.9 | [draw] | 3 | 0 | 0 | 0 | 0 | 117 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/41-sm-dome.js` | 13.2 | [draw] | 1 | 0 | 0 | 0 | 0 | 34 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/45-sm-samples.js` | 4.9 | [draw] | 0 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/50-sm-dwell-poor.js` | 12.7 | [draw] | 0 | 0 | 0 | 0 | 0 | 24 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/51-sm-dwell-mid.js` | 14.3 | [draw] | 0 | 0 | 0 | 0 | 0 | 14 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/52-sm-dwell-rich.js` | 13.3 | [draw] | 0 | 0 | 0 | 0 | 0 | 18 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/52-sm-dwell-rich.js` | 13.3 | [draw] | 0 | 0 | 0 | 0 | 0 | 19 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/56-sm-gorge-street.js` | 6.0 | [draw] | 0 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/60-sm-cult.js` | 23.6 | [draw] | 0 | 0 | 0 | 0 | 0 | 76 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/61-sm-civic.js` | 22.0 | [draw] | 0 | 0 | 0 | 0 | 0 | 24 | 0 | 0 | 0 | 0 | 0 |  |
@@ -30,10 +30,10 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/66-sm-farms.js` | 12.1 | [draw] | 0 | 0 | 0 | 0 | 0 | 23 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/68-sm-trades.js` | 8.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/89-rows.js` | 2.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/90s-sm-ground.js` | 2.8 | [draw] | 0 | 0 | 0 | 0 | 0 | 10 | 0 | 0 | 0 | 0 | 0 | split: KDRAWN/KSPACE audit + sheet site aprons |
+| `src/90s-sm-ground.js` | 2.9 | [draw] | 0 | 0 | 0 | 0 | 0 | 10 | 0 | 0 | 0 | 0 | 0 | split: KDRAWN/KSPACE audit + sheet site aprons |
 | `src/92s-sm-views.js` | 3.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/93b-bio-45-sm-init.js` | 3.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/93b-bio-80-sm-flora.js` | 2.5 | [web] | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
+| `src/93b-bio-80-sm-flora.js` | 4.5 | [web] | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
 | `src/93e-sm-export.js` | 3.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | core/export adapter |
 
 ## Notes

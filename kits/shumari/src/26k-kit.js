@@ -24,20 +24,22 @@ const SV_LIB={
  chiselled:'chiselled',domeCarved:'domeCarved',paving:'paving',cobble:'cobble',bathLens:'bathLens',
  lacquer:'lacquer',cedar:'cedar',timber:'timber',tarred:'tarred',
  bronzeCast:'bronzeCast',bronze:'bronze',gold:'gold',iron:'iron',tracery:'tracery',
- slate:'slate',thatch:'thatch',jali:'jali',frieze:'frieze',frieze_kattu:'frieze_kattu',kilim:'kilim',earth:'earth'
+ slate:'slate',thatch:'thatch',jali:'jali',frieze:'frieze',frieze_kattu:'frieze_kattu',kilim:'kilim',earth:'earth',
+ flag:'flag',bone:'bone',plain:'domeCarved',brass:'bronze',stone:'rubble',wood:'timber',sand:'earth',room:'domeCarved'
 };
 const SV_TILE0={
  basalt:1.8,rubble:2.4,tuff:2.2,travertine:2.0,ashlar:2.2,ironstone:1.8,
  chiselled:1.6,domeCarved:1.8,paving:2.2,cobble:2.0,bathLens:1.6,
  lacquer:1.4,cedar:1.4,timber:1.8,tarred:1.8,
  bronzeCast:.9,bronze:.8,gold:.8,iron:.9,tracery:1.2,
- slate:1.5,thatch:1.8,jali:1.1,frieze:2.4,frieze_kattu:1.6,kilim:2.2,earth:3.6
+ slate:1.5,thatch:1.8,jali:1.1,frieze:2.4,frieze_kattu:1.6,kilim:2.2,earth:3.6,
+ flag:.75,bone:.5,plain:1.8,brass:.8,stone:2.4,wood:1.8,sand:3.6,room:1.8
 };
 const SV_CLOTH={flag:1,kilim:1};
 const SV_CUT={
  basalt:1,rubble:1,tuff:1,travertine:1,ashlar:1,ironstone:1,chiselled:1,domeCarved:1,bathLens:1,
  lacquer:1,cedar:1,timber:1,tarred:1,bronzeCast:1,bronze:1,gold:1,iron:1,tracery:1,
- slate:1,thatch:1,jali:1,frieze:1,frieze_kattu:1,plain:1,brass:1,bone:1,glass:1,flag:1
+ slate:1,thatch:1,jali:1,frieze:1,frieze_kattu:1,plain:1,brass:1,bone:1,glass:1,flag:1,stone:1,wood:1,sand:1
 };
 const KIT_FALLBACK=[];
 const KIT_HAS=k=>KMAT.mode==='lib'&&!!KMAT.packed(KIT.pack,k);
@@ -47,6 +49,7 @@ const SVPAL={
  basalt:[0x36383e,0x303238,0x3d4047],
  basaltDark:[0x23252a,0x1e2025],
  rubble:[0x42444a,0x3b3d43,0x494b52],
+ tuff:[0x9e9482,0x948a78,0xa79d8b],
  travertine:[0xd8cdb8,0xdfd5c1,0xd0c4ae],
  travShade:[0xc2b69f,0xb8ac95],
  ashlar:[0xe2dac8,0xdad1be,0xe8e0cf],
@@ -61,6 +64,7 @@ const SVPAL={
  bronzeDark:[0x6c5124,0x61481f],
  gold:[0xb8861b,0xc49022],
  iron:[0x38383c,0x2f3034],
+ bone:[0xdfd6c3,0xd5ccb8],
  slate:[0x454a52,0x3e434b,0x4d525b],
  thatch:[0xa89670,0x9e8c66],
  paving:[0x8c8578,0x827b6e,0x958e80],

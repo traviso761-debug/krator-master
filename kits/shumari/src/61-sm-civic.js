@@ -58,7 +58,7 @@ defBuilding({
     medallion('kilim',0,plinthY+.03,-.35,5.8,{round:true});
     for(const sx of [-1,1]){
      box('basalt',sx*5.45,plinthY+.02,-.45,1.55,.72,7.6,P('basaltDark'));
-     box('travertine',sx*4.25,plinthY+.02,-.45,1.05,.44,7.2,P('travertine'));
+     box('tuff',sx*4.25,plinthY+.02,-.45,1.05,.44,7.2,P('tuff'));
      box('kilim',sx*5.45,plinthY+.74,-.45,1.42,.07,7.4,P('kilim'));
     }
     /* High Sword-Marshal dais on -z */

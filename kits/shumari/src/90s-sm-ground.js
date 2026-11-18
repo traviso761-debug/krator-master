@@ -6,9 +6,11 @@ SM_SM6=qs.get('sm6')!=='0';
 if(!SM_SM6){
  if(MAT.bronzeCast){MAT.bronzeCast.roughness=.42;MAT.bronzeCast.metalness=.68;}
  if(MAT.bronze){MAT.bronze.roughness=.36;MAT.bronze.metalness=.74;}
+ if(MAT.brass){MAT.brass.roughness=.38;MAT.brass.metalness=.75;}
  if(MAT.gold){MAT.gold.roughness=.26;MAT.gold.metalness=.84;}
  if(MAT.tracery){MAT.tracery.roughness=.45;MAT.tracery.metalness=.50;}
  if(MAT.iron){MAT.iron.roughness=.52;MAT.iron.metalness=.55;}
+ if(typeof svHwMat==='function'){const hw=svHwMat();hw.roughness=.32;hw.metalness=.85;}
 }
 SKY.dens=.88;
 SKY.hour=qs.get('hour')?+qs.get('hour'):9.8;

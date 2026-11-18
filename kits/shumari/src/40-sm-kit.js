@@ -3,6 +3,34 @@
 // Highland basalt ishigaki plinths, horizontal ablaq coursed masonry, stepped shurafat parapets, monumental Mamluk pishtaq
 // portals, Free Giant + human dual-tread stairs, crimson-lacquered mashrabiya bays, and culture-neutral socket mounts.
 
+function smWireOpeningMats(){
+ if(typeof MAT==='undefined'||typeof KMAT==='undefined'||KMAT.mode!=='lib')return;
+ const rm=MAT.room,rt=SV_LIBTEX.room||SV_LIBTEX.domeCarved,rl=KMAT.packed(KIT.pack,SV_LIB.room||'domeCarved');
+ if(rm&&rt&&rl){
+  TILE.room=rl.scale[0];
+  rm.map=rt.map;
+  rm.normalMap=rt.normalMap||null;
+  rm.roughnessMap=rt.roughnessMap||null;
+  if(rm.normalMap){const ns=rl.normalScale==null?1:rl.normalScale;rm.normalScale.set(ns,ns);}
+  rm.userData.lib=rl;
+  matHook(rm,'lib'+KMAT.libKey(rl),sh=>KMAT.libHooks(sh,rl));
+ }
+ if(typeof svHwMat==='function'){
+  const hw=svHwMat(),ht=SV_LIBTEX.bronzeCast,hl=KMAT.packed(KIT.pack,'bronzeCast');
+  if(hw&&ht&&hl){
+   hw.map=ht.map;
+   hw.normalMap=ht.normalMap||null;
+   hw.roughnessMap=ht.roughnessMap||null;
+   if(hw.normalMap){const ns=hl.normalScale==null?1:hl.normalScale;hw.normalScale.set(ns,ns);}
+   hw.roughness=SM_SM6?.36:.32;
+   hw.metalness=SM_SM6?.28:.85;
+   hw.userData.lib=hl;
+   matHook(hw,'lib'+KMAT.libKey(hl),sh=>KMAT.libHooks(sh,hl));
+  }
+ }
+}
+smWireOpeningMats();
+
 function smBindRec(d){
  if(!CURREC||!d)return;
  CURREC.giant=!!d.giant;

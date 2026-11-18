@@ -40,7 +40,7 @@ All architectural helpers in `src/40-sm-kit.js` and `src/41-sm-dome.js` use the 
 ## 4. Host Consumer Manifest, Closure Bundle & Godot Export (Phase SM6)
 
 - **`shumari.py`:** `FOUNDATION`, `SETS` (`samples`, `dwellings`, `cult`, `civic`, `defence`, `works`, `trades`, `farms`), `FILES`, `paths(names=None)`, `set_files(*sets)`.
-- **`kit_bundle.py` (`bundle(key='SMK', resources=True)`):** Seals `core/engine` + `kits/shumari/src` + `kits/resources/src` into one `SMK` closure for `openworld/shumar-north`, `openworld/shumar-south`, and `settlements/shumar`:
+- **`kit_bundle.py` (`bundle(key='SMK', resources=True)`, `pack_fragment(side=None)`):** Seals `core/engine` + `kits/shumari/src` + `kits/resources/src` into one `SMK` closure and emits `KMAT.pack('shumari', ...)` (all 30 surface/opening/resource PBR sets + 67 `f_*` furniture detail maps) for `openworld/shumar-north`, `openworld/shumar-south`, and `settlements/shumar`:
   - `SMK.proto(key, v)` — Builds `DEFS[key]` (`v=0|1`) at the origin into a `THREE.Group` with `userData = {key, v, tris, w, d, h, giant, caste, vaultH, doors, sockets, fixtures}` without touching host `KTAGS` or `KWALK`.
   - `SMK.dims()` — Full `smDims()` + `RES_NODES` dimension dictionary for `core/city` and `core/hamlet`.
   - `SMK.SM_TRADES`, `SMK.DEFS`, `SMK.MAT`, `SMK.RES`, `SMK.errors` — Sealed tables + automatic `KMAT.adapter('shumari', ...)` registration.

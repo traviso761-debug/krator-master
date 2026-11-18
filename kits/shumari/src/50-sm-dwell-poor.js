@@ -39,7 +39,7 @@ defBuilding({
    svWell('paving',0,roofY-.24,0,5.5,.24,5.9,P('paving'),null,{walk:false});
    svNoWalk(()=>{
     box('basalt',0,roofY,.0,5.6,.34,6.0,P('basaltDark'));
-    box('travertine',0,roofY-.02,0,5.1,.28,5.5,P('travShade'));
+    box('tuff',0,roofY-.02,0,5.1,.28,5.5,P('tuff'));
     /* Austere Cadet sleeping suffa bench and blade peg inside */
     box('basalt',-1.55,plinthY+.02,-1.65,1.65,.46,1.85,P('basaltDark'));
     box('kilim',-1.55,plinthY+.48,-1.65,1.55,.06,1.75,P('kilim'));

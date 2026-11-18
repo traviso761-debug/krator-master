@@ -182,6 +182,13 @@ return {
 '''
 
 
+def pack_fragment(side=None):
+    """Return the KMAT.pack('shumari', ...) fragment (with optional sidecar dict) for host settlement/openworld builds."""
+    sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
+    import matlib_pack
+    return matlib_pack.fragment(HERE, 'shumari', side=side, own=True)
+
+
 def bundle(key='SMK', resources=True):
     fs = files(resources=resources)
     body = ''.join('/* ---- %s ---- */%s%s%s;%s' % (rel(f), NL, rd(f), NL, NL) for f in fs)
@@ -198,3 +205,4 @@ if __name__ == '__main__':
     print('%d files, %d KB' % (len(fs), len(js) // 1024))
     for f in fs:
         print('  ' + f)
+

@@ -12,7 +12,7 @@ const CENSUS=JSON.parse(fs.readFileSync(path.resolve(HERE,'..','..','tools','tra
 /* Evaluate pure [G data] fragments (26k-kit.js, 68-sm-trades.js, and 89-rows.js) in an isolated Node VM without browser globals */
 const ctx={Math,Array,Object,Number,String};
 vm.createContext(ctx);
-vm.runInContext(fs.readFileSync(path.join(SRC,'26k-kit.js'),'utf8')+'\nthis.EX={KIT,SM_GIANT_DOOR,SM_GIANT_MIN_DOOR,SM_GIANT_VAULT,SM_GIANT_MIN_VAULT,SM_HUMAN_DOOR,SM_HUMAN_MAX_DOOR,SM_STAIR_MIN_W,smDomeRadius,smDomeProfile,smDomeValid,smGiantValid};',ctx);
+vm.runInContext(fs.readFileSync(path.join(SRC,'26k-kit.js'),'utf8')+'\nthis.EX={KIT,SV_LIB,SM_GIANT_DOOR,SM_GIANT_MIN_DOOR,SM_GIANT_VAULT,SM_GIANT_MIN_VAULT,SM_HUMAN_DOOR,SM_HUMAN_MAX_DOOR,SM_STAIR_MIN_W,smDomeRadius,smDomeProfile,smDomeValid,smGiantValid};',ctx);
 vm.runInContext(fs.readFileSync(path.join(SRC,'68-sm-trades.js'),'utf8')+'\nthis.SM_TRADES=SM_TRADES;',ctx);
 vm.runInContext(fs.readFileSync(path.join(SRC,'89-rows.js'),'utf8')+'\nthis.FAMILIES=FAMILIES;',ctx);
 const EX=ctx.EX;
@@ -141,11 +141,14 @@ const bundleMetaJson=cp.execFileSync('python3',['-c',[
  'sys.path.insert(0, ' + JSON.stringify(HERE) + ')',
  'import shumari, kit_bundle',
  'js, files = kit_bundle.bundle("SMK", resources=True)',
+ 'side = {}',
+ 'pf = kit_bundle.pack_fragment(side=side)',
  'open("/tmp/test_smk_bundle.js", "w", encoding="utf-8").write(js)',
- 'print(json.dumps({"files": shumari.FILES, "dwell": shumari.set_files("dwellings"), "bundle_files": files, "bytes": len(js)}))'
+ 'print(json.dumps({"files": shumari.FILES, "dwell": shumari.set_files("dwellings"), "bundle_files": files, "bytes": len(js), "pack_loader": "KMAT.pack" in pf, "side_shumari": "shumari" in side and len(side["shumari"]) > 10000}))'
 ].join('; ')],{encoding:'utf8'});
 const bMeta=JSON.parse(bundleMetaJson);
 T.ok('shumari.py exports 17 foundation+building files and set_files subset',bMeta.files.length===17&&bMeta.dwell.length===10,'files='+bMeta.files.length+' dwell='+bMeta.dwell.length);
+T.ok('kit_bundle.pack_fragment emits KMAT.pack sidecar loader and Shumari texture body',bMeta.pack_loader&&bMeta.side_shumari);
 const smkJs=fs.readFileSync('/tmp/test_smk_bundle.js','utf8');
 fs.unlinkSync('/tmp/test_smk_bundle.js');
 let smkSyntaxOk=false;
@@ -176,4 +179,43 @@ T.ok(
  [...foundMulti].join(',')
 );
 
+/* 7. Complete PBR surface & catalog/split furniture detail texture wiring */
+const matsJson=JSON.parse(fs.readFileSync(path.join(HERE,'materials.json'),'utf8')).families;
+const packJson=JSON.parse(fs.readFileSync(path.join(HERE,'tex','pack.json'),'utf8')).families;
+const texDir=path.join(HERE,'tex');
+const hasPackedMap=(fam,tbl)=>!!(tbl[fam]&&tbl[fam].files&&tbl[fam].files.map&&fs.existsSync(path.join(texDir,tbl[fam].files.map)));
+
+const svLibBad=Object.entries(EX.SV_LIB).filter(([,fam])=>!matsJson[fam]||!hasPackedMap(fam,packJson)).map(([k,fam])=>k+'->'+fam);
+T.ok(
+ 'every SV_LIB surface, opening, and resource material key resolves to a packed WebP family',
+ svLibBad.length===0&&Object.keys(EX.SV_LIB).length>=35,
+ svLibBad.length?svLibBad.join(','):'SV_LIB keys='+Object.keys(EX.SV_LIB).length
+);
+
+const furnCoreTxt=fs.readFileSync(path.resolve(HERE,'..','..','core','catalog','krator-furniture-core.js'),'utf8');
+const catBlock=furnCoreTxt.match(/const CATALOG_MATERIALS = \{([\s\S]*?)\n\};/)[1];
+const splitBlock=furnCoreTxt.match(/const FAMILY_SPLITS = \[([\s\S]*?)\n\];/)[1];
+const reqFurnFams=new Set();
+for(const m of catBlock.matchAll(/families:\s*\[([^\]]*)\]/g)){
+ for(const s of m[1].matchAll(/'([^']*)'/g)){
+  if(s[1]&&s[1]!=='glow'&&s[1]!=='glass')reqFurnFams.add(s[1]);
+ }
+}
+for(const m of splitBlock.matchAll(/'([A-Za-z0-9_]+)'\s*\]/g)){
+ if(m[1]!=='glow'&&m[1]!=='glass')reqFurnFams.add(m[1]);
+}
+const missFurnFams=[...reqFurnFams].sort().filter(fn=>!matsJson['f_'+fn]||!hasPackedMap('f_'+fn,packJson));
+T.ok(
+ 'every opaque catalog render family and FAMILY_SPLITS texture family has a packed f_* detail map',
+ reqFurnFams.size>=65&&missFurnFams.length===0,
+ missFurnFams.length?'missing: '+missFurnFams.join(','):'f_* families='+reqFurnFams.size
+);
+T.neg(
+ 'packed family validator rejects nonexistent family and accepts packed terracotta',
+ fn=>hasPackedMap(fn,packJson),
+ 'f_nonexistent_surface',
+ 'f_terracotta'
+);
+
 T.done();
+

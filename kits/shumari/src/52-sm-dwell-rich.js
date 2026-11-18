@@ -70,6 +70,7 @@ defBuilding({
      box('gold',0,3.65,0,2.58,.12,.38,P('gold'));
      for(let b=-1;b<=1;b++){
       box('bronze',b*.52,.65,.18,.07,1.45,.02,P('bronze'));
+      box('bone',b*.52,1.94,.185,.16,.06,.03,P('bone'));
       cone('bronze',b*.52,2.10,.18,.04,.24,P('bronze'),4);
      }
     });

@@ -7,6 +7,38 @@ window._flora=null;
 if(SM_FLORA&&new URLSearchParams(location.search).get('flora')!=='0'){
  const t0=performance.now();
  try{
+  const Lp=typeof KMAT!=='undefined'&&KMAT.mode==='lib'?KMAT.packed(KIT.pack,'f_plant'):null;
+  if(Lp&&Lp.map&&typeof KHOOK!=='undefined'&&SHIGH.MAT){
+   const Tp=KMAT.textures(Lp,{aniso:TEXANISO}),pgain=1/Math.max(.05,Math.pow(Lp.mean==null?.55:Lp.mean,2.2)),ptile=1/((Lp.scale&&Lp.scale[0])==null?.6:Lp.scale[0]);
+   for(const mk of ['vcol','vsway','vhang']){
+    const m=SHIGH.MAT[mk];
+    if(!m||m.map)continue;
+    m.map=Tp.map;
+    KHOOK.add(m,'sm-bio-vdet',{
+     uniforms:{uSmBioTile:{value:ptile},uSmBioGain:{value:pgain}},
+     fragment:{
+      head:'uniform float uSmBioTile;\nuniform float uSmBioGain;\n',
+      at:[{at:'map_fragment',replace:'#ifdef USE_MAP\nvec4 texelColor=texture2D(map,vFlWP.xz*uSmBioTile)*.5+texture2D(map,(vFlWP.xy+vFlWP.zy)*.5*uSmBioTile)*.5;texelColor=mapTexelToLinear(texelColor);diffuseColor.rgb*=texelColor.rgb*uSmBioGain;\n#endif'}]
+     }
+    });
+   }
+  }
+  const Ls=typeof KMAT!=='undefined'&&KMAT.mode==='lib'?KMAT.packed(KIT.pack,'f_fruitSkin'):null;
+  if(Ls&&Ls.map&&typeof KHOOK!=='undefined'&&SHIGH.MAT&&SHIGH.MAT.solid&&!SHIGH.MAT.solid.map){
+   const Ts=KMAT.textures(Ls,{aniso:TEXANISO}),sgain=1/Math.max(.05,Math.pow(Ls.mean==null?.6:Ls.mean,2.2)),stile=1/((Ls.scale&&Ls.scale[0])==null?.15:Ls.scale[0]);
+   SHIGH.MAT.solid.map=Ts.map;
+   KHOOK.add(SHIGH.MAT.solid,'sm-bio-sdet',{
+    uniforms:{uSmSolTile:{value:stile},uSmSolGain:{value:sgain}},
+    vertex:{
+     head:'varying vec3 vSmSolWP;\n',
+     at:[{at:'begin_vertex',after:'vec4 _smSolP=vec4(transformed,1.0);\n#ifdef USE_INSTANCING\n_smSolP=instanceMatrix*_smSolP;\n#endif\nvSmSolWP=(modelMatrix*_smSolP).xyz;'}]
+    },
+    fragment:{
+     head:'varying vec3 vSmSolWP;\nuniform float uSmSolTile;\nuniform float uSmSolGain;\n',
+     at:[{at:'map_fragment',replace:'#ifdef USE_MAP\nvec4 texelColor=texture2D(map,vSmSolWP.xz*uSmSolTile)*.5+texture2D(map,(vSmSolWP.xy+vSmSolWP.zy)*.5*uSmSolTile)*.5;texelColor=mapTexelToLinear(texelColor);diffuseColor.rgb*=texelColor.rgb*uSmSolGain;\n#endif'}]
+    }
+   });
+  }
   SHIGH.IMPOSTORS=false;
   const out=SHIGH.build({R:SM_FLORA.R,quality:1.45});
   const speciesCounts={};

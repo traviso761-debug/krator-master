@@ -85,42 +85,39 @@ BIO_BAND = {
 }
 VENDORED = {}
 FURN_CULTURES = ['shumari', 'generic', 'generic-goods', 'jobs', 'arms', 'scrap']
-VIRTUAL = {'26-matlib-pack.js', '38-furniture-bundle.js', kengine.INTERIORS_FRAGMENT}
+VIRTUAL = {'26-matlib-pack.js', '26b-shigh-matlib-pack.js', '38-furniture-bundle.js', kengine.INTERIORS_FRAGMENT}
 BUNDLE_GLOBALS = ('KratorFurniture',) + kengine.INTERIORS_GLOBALS
 SIDE = None if '--inline-packs' in sys.argv else {}
 
 
-def matlib_pack():
-    """Pack committed tex/ files as data URLs (or sidecar loader) for KMAT.pack."""
-    pj = os.path.join(TEX_DIR, 'pack.json')
-    if not os.path.isfile(pj):
-        return "/* no tex/pack.json: vertex colours only */\nKMAT.pack('shumari', {});\n"
-    with open(pj, encoding='utf-8') as fh:
-        pack = json.load(fh)
-    out = []
-    for fam in sorted(pack['families']):
-        e = pack['families'][fam]
-        f = {'lib': e['lib'], 'scale': e['scale'], 'metal': e['metal'], 'normalScale': e['normalScale'],
-             'specular': e.get('specular', 0.5), 'breakup': e.get('breakup'),
-             'tint': e['tint']['keep'], 'mean': e['tint']['mean']}
-        for k, name in sorted(e['files'].items()):
-            with open(os.path.join(TEX_DIR, name), 'rb') as bfh:
-                f[k] = 'data:image/webp;base64,' + base64.b64encode(bfh.read()).decode()
-        out.append(' %s: %s' % (json.dumps(fam), json.dumps(f, sort_keys=True)))
-    body = '{\n' + ',\n'.join(out) + '\n}'
-    if SIDE is not None:
-        sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
-        import matlib_pack as _mp
-        SIDE[KIT_ID] = body
-        return _mp.loader(KIT_ID)
-    return ("/* LIBRARY PACK (generated from tex/) */\nKMAT.pack('" + KIT_ID + "', " + body + ");\n")
+def shigh_matlib_pack(mp):
+    """Pack Southern Highlands library maps used by the Shumar highland flora band (excluding other stations' own sets)."""
+    sh_dir = os.path.join(ROOT, 'biomes', 'shighlands')
+    sd = os.path.join(sh_dir, 'stations')
+    other_fams = set()
+    shumar_fams = set()
+    if os.path.isdir(sd):
+        for st in sorted(os.listdir(sd)):
+            sj = os.path.join(sd, st, 'station.json')
+            if os.path.isfile(sj):
+                with open(sj, encoding='utf-8') as fh:
+                    fams = json.load(fh).get('families', [])
+                if st == 'shumar':
+                    shumar_fams.update(fams)
+                else:
+                    other_fams.update(fams)
+    excl = sorted(other_fams - shumar_fams)
+    return mp.fragment(sh_dir, 'shigh', exclude=excl, side=SIDE, own=True)
 
 
 def virtual_bodies():
+    sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
+    import matlib_pack as _mp
     sys.path.insert(0, os.path.join(ROOT, 'kits', 'catalog'))
     import furniture_bundle
     return dict({
-        '26-matlib-pack.js': matlib_pack(),
+        '26-matlib-pack.js': _mp.fragment(HERE, KIT_ID, side=SIDE, own=True),
+        '26b-shigh-matlib-pack.js': shigh_matlib_pack(_mp),
         '38-furniture-bundle.js': furniture_bundle.bundle(FURN_CULTURES),
     }, **kengine.interiors(INTERIOR_SETS))
 
@@ -151,8 +148,8 @@ def sources():
 
 def main():
     paths, core = sources()
-    BSRC.report(paths, vendored=VENDORED.values())
     vb = virtual_bodies()
+    BSRC.report(paths, vendored=VENDORED.values())
     files = sorted(list(paths) + list(vb))
     bodies = dict(vb)
     for f in files:
@@ -212,7 +209,7 @@ def main():
     if SIDE:
         sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
         import matlib_pack as _mp
-        html = _mp.write_sidecar(SIDE, html, os.path.dirname(OUT), KIT_ID + '.tex.js', prune=False)
+        html = _mp.write_sidecar(SIDE, html, os.path.dirname(OUT), KIT_ID + '.tex.js', prune=True)
     with open(OUT, 'w', encoding='utf-8', newline='\n') as fh:
         fh.write(html)
     manifest = {f.replace(os.sep, '/'): hashlib.sha1(bodies[f].encode('utf-8')).hexdigest()[:12] for f in files}

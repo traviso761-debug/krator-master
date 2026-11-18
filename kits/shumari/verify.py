@@ -190,6 +190,46 @@ ASSERT_JS = r"""()=>{
   });
  }
 
+ /* Shumari Check 4: Every opaque architectural, opening, prop, ground, flora, and furniture/interior mesh carries a real texture map */
+ {
+  const libOn=typeof KMAT!=='undefined'&&KMAT.mode==='lib';
+  if(!libOn){
+   R.push({name:'surfaces-and-furniture-textured',ok:true,detail:'procedural mode (?mat=proc)'});
+  }else{
+   const inFurn=o=>{for(let p=o;p;p=p.parent){if(p.userData&&(p.userData.furniture||p.userData.interiors))return true;}return false;};
+   const sMats=new Set(),fMats=new Set(),sUntex=[],fUntex=[];
+   scene.traverse(o=>{
+    if(!o.isMesh||!o.visible||!o.geometry)return;
+    const pos=o.geometry.attributes&&o.geometry.attributes.position;
+    if(!pos||pos.count===0)return;
+    const furn=inFurn(o);
+    const ms=Array.isArray(o.material)?o.material:[o.material];
+    for(const mt of ms){
+     if(!mt||mt.transparent||mt.isMeshBasicMaterial||mt.isShaderMaterial||mt.isRawShaderMaterial)continue;
+     const hasTex=!!(mt.map&&mt.map.isTexture);
+     if(furn){
+      if(!fMats.has(mt)){
+       fMats.add(mt);
+       const ud=mt.userData||{};
+       if(!hasTex)fUntex.push((ud.family||'furn')+(ud.texFamily?'/'+ud.texFamily:''));
+      }
+     }else{
+      if(!sMats.has(mt)){
+       sMats.add(mt);
+       if(!hasTex)sUntex.push((mt.name||o.name||mt.type));
+      }
+     }
+    }
+   });
+   const ok=sMats.size>=25&&fMats.size>=10&&sUntex.length===0&&fUntex.length===0;
+   R.push({
+    name:'surfaces-and-furniture-textured',
+    ok,
+    detail:ok?('100% textured: '+sMats.size+' opaque surface/flora materials and '+fMats.size+' opaque furniture/interior materials carry library maps (0 untextured)'):('untextured surfaces=['+sUntex.join(', ')+'] furniture=['+fUntex.join(', ')+'] (surf='+sMats.size+', furn='+fMats.size+')')
+   });
+  }
+ }
+
  return R;
 }"""
 
