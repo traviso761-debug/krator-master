@@ -133,8 +133,11 @@ def build_index(P, cells, pl, micro=None):
 def main():
     argv = sys.argv[1:]
     only = argv[argv.index('--only') + 1] if '--only' in argv else None
-    if '--index-only' in argv:
-        only = 'index'
+    for a in argv:
+        if a == '--index-only':
+            only = 'index'
+        elif a.startswith('--only='):
+            only = a.split('=', 1)[1]
     micro = parse_micro(argv)
     out_dir = parse_out(argv)
     if only != 'index' and os.environ.get('KRATOR_GL') != 'gpu':
@@ -143,6 +146,10 @@ def main():
     cells = cells_for_pinnacle()
     pl = places(P)
     os.makedirs(out_dir, exist_ok=True)
+    if only in (None, 'flora'):
+        fd = os.path.join(out_dir, 'flora')
+        shutil.rmtree(fd, ignore_errors=True)
+        export(fd, [-16, -16, 16, 16], '(()=>window.WORLD_EXPORT.prepareFloraLib())()', 'items,materials,textures,registry', micro=micro)
     if only in (None, 'places'):
         print('places (%d): lattice-aligned 1:1 cases (step %d m), hyperjungle + camps settled' % (len(pl), PLACE_STEP), flush=True)
         for p in pl:

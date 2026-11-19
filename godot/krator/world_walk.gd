@@ -115,6 +115,7 @@ func start_at(x: float, z: float) -> void:
 	walker.position = stream.local(x, (h if is_finite(h) else 0.0) + HEIGHT, z)
 	walker.velocity = Vector3.ZERO
 	_follow(true)
+	stream.refresh_flora_at(cam_region())
 
 
 func walk_at(x: float, z: float, yaw_rad := NAN) -> void:
@@ -127,6 +128,7 @@ func walk_at(x: float, z: float, yaw_rad := NAN) -> void:
 	walker.position = stream.local(x, sy + HEIGHT * 0.5 + 0.08, z)
 	walker.velocity = Vector3.ZERO
 	_follow(true)
+	stream.refresh_flora_at(cam_region())
 
 
 func set_walk_mode(on: bool, at_xz = null) -> void:
@@ -148,6 +150,7 @@ func set_walk_mode(on: bool, at_xz = null) -> void:
 			cam.position = walker.position + back * 14.0 + Vector3(0, 8.0, 0)
 			_pitch = clampf(_pitch, -PITCH_LIMIT, -0.15)
 		_apply_fly_basis()
+		stream.refresh_flora_at(cam_region())
 
 
 func set_view_region(eye_reg: Vector3, target_reg: Vector3, as_walk := false) -> void:
@@ -170,6 +173,7 @@ func set_view_region(eye_reg: Vector3, target_reg: Vector3, as_walk := false) ->
 		walker.position = stream.local(target_reg.x, (sy if is_finite(sy) else target_reg.y) + HEIGHT, target_reg.z)
 		walker.velocity = Vector3.ZERO
 		_apply_fly_basis()
+		stream.refresh_flora_at(cam_region())
 
 
 func fly_to_point(pt_reg: Vector3, dist := 85.0) -> void:
@@ -354,6 +358,9 @@ func _physics_process(dt: float) -> void:
 		_t = 0.0
 		var t0 := Time.get_ticks_usec()
 		var r := stream.update(focus_region_xz(), LOAD_R, KEEP_R)
+		var cr_now := cam_region()
+		if not is_finite(stream._last_flora_cam.x) or cr_now.distance_squared_to(stream._last_flora_cam) >= 1600.0:
+			stream.refresh_flora_at(cr_now)
 		var ms := (Time.get_ticks_usec() - t0) / 1000.0
 		if (r["loaded"] as Array).size() + (r["unloaded"] as Array).size() > 0:
 			updates.append({"ms": ms, "loaded": r["loaded"], "unloaded": r["unloaded"], "step": steps})
@@ -371,7 +378,8 @@ func _step_up(motion: Vector3) -> void:
 	var col := KinematicCollision3D.new()
 	if not walker.test_move(t, motion, col):
 		return
-	if col.get_normal().dot(Vector3.UP) > cos(walker.floor_max_angle):   # a walkable slope ahead, not a step: move_and_slide climbs it
+	var nrm := col.get_normal()
+	if nrm.y < -0.5 or nrm.dot(Vector3.UP) > cos(walker.floor_max_angle):   # downward backface or walkable slope ahead, not a step
 		return
 	var up := Vector3(0, STEP, 0)
 	if walker.test_move(t, up):

@@ -108,13 +108,14 @@ function prepareFloraBox(box){if(!box||typeof FLORA==='undefined'||!FLORA||!FLOR
   const white=new THREE.InstancedBufferAttribute(new Float32Array(cap*3).fill(1),3);
   for(const part of p.proto.parts){const m=new THREE.InstancedMesh(part.geo,part.mat,cap);
    m.instanceMatrix=p.attr;m.instanceColor=white;m.frustumCulled=false;m.count=0;m.userData.flora=p.key;m.userData.inspectLabel='flora';HOST.scene.add(m);p.meshes.push(m);}};
- for(const p of FLORA.pools.values())p.n=0;
+ /* Pre-queue and drain needed Hero (lv=2) & Mid (lv=1) 3D prototypes so NURSERY has every variant ready before filling pools */
  const lim=(a,ht)=>Math.min(a[2],Math.max(a[1],a[0]*ht));
+ const picked=[];
  for(const t of FLORA.tiles.values())for(const r of t.recs){
   if(r.x<box[0]-32||r.x>box[2]+32||r.z<box[1]-32||r.z>box[3]+32)continue;
   let d=1e9;for(const a of A){const dd=Math.hypot(r.x-a[0],r.z-a[1]);if(dd<d)d=dd;}
   const L=FLORA.KITS[r.k].lod;let lv=-1;
-  const sapLim=anchors?Math.max(L.sapling[1],280):L.sapling[1];
+  const sapLim=anchors?Math.max(L.sapling?L.sapling[1]:0,280):(L.sapling?L.sapling[1]:0);
   const heroLim=anchors?Math.min(220,lim(L.hero,r.Ht)):lim(L.hero,r.Ht);
   const midLim=anchors?Math.max(920,lim(L.mid,r.Ht)):lim(L.mid,r.Ht);
   const farLim=anchors?Math.max(2600,lim(L.far,r.Ht)):lim(L.far,r.Ht);
@@ -123,16 +124,74 @@ function prepareFloraBox(box){if(!box||typeof FLORA==='undefined'||!FLORA||!FLOR
   else if(d<midLim)lv=1;
   else if((r.far||r.Ht>=14)&&d<farLim)lv=1;
   if(lv<0)continue;
-  let key=r.k+'|'+r.sp+'|'+r.v+'|'+(r.sap?'s':lv);
+  const key=r.k+'|'+r.sp+'|'+r.v+'|'+(r.sap?'s':lv);
+  NURSERY.get(key,{kit:FLORA.KITS[r.k].name,sp:r.sp,v:r.v,lv:r.sap?2:lv,sapling:r.sap},d);
+  picked.push([r,lv,d,key]);}
+ for(let guard=0;guard<8&&NURSERY.queued&&NURSERY.queued()>0&&NURSERY.update;guard++)NURSERY.update(8000);
+ for(const p of FLORA.pools.values())p.n=0;
+ for(let idx=0;idx<picked.length;idx++){const r=picked[idx][0],lv=picked[idx][1],d=picked[idx][2];let key=picked[idx][3];
   let proto=NURSERY.protos.get(key)||NURSERY.get(key,{kit:FLORA.KITS[r.k].name,sp:r.sp,v:r.v,lv:r.sap?2:lv,sapling:r.sap},d);
-  if((!proto||proto.impostor)&&!r.sap){for(const alt of [1,2,0]){const k2=r.k+'|'+r.sp+'|'+r.v+'|'+alt,p2=NURSERY.protos.get(k2);if(p2&&!p2.impostor&&!p2.none&&p2.parts&&p2.parts.length){key=k2;proto=p2;break;}}}
+  if((!proto||proto.impostor)&&!r.sap){for(const alt of [1,2]){const k2=r.k+'|'+r.sp+'|'+r.v+'|'+alt,p2=NURSERY.protos.get(k2);if(p2&&!p2.impostor&&!p2.none&&p2.parts&&p2.parts.length){key=k2;proto=p2;break;}}}
   if(!proto||proto.impostor||proto.none||!proto.parts||!proto.parts.length)continue;
   const p=getPool(key,proto);ensureCap(p,p.n+1);
   const sc=r.Ht/(proto.H==null?r.Ht:proto.H);_q.setFromAxisAngle(_Y,r.rot);_p.set(r.x-ORG.x,r.y,r.z-ORG.z);_s.set(sc,sc,sc);_m.compose(_p,_q,_s);
   _m.toArray(p.arr,p.n*16);p.n++;}
- if(NURSERY.queued&&NURSERY.queued()>0&&NURSERY.update)NURSERY.update(5000);
  for(const p of FLORA.pools.values()){for(const m of p.meshes){m.count=p.n;m.visible=p.n>0;m.position.copy(ORG);m.updateMatrix();m.updateMatrixWorld(true);}
   if(p.attr)p.attr.needsUpdate=true;}}
+/* Grow all Hero (lv=2), Mid (lv=1), and Sapling ('s') 3D species variants in NURSERY and stage 1 unit instance per prototype
+   at [0, 0, 0] so `flora/` exports a compact shared prototype library for Godot's dual-LOD StreamFlora */
+function prepareFloraLib(){if(typeof FLORA==='undefined'||!FLORA||typeof NURSERY==='undefined'||!NURSERY)return{protos:[]};
+ const want=[];
+ for(let ki=0;ki<FLORA.KITS.length;ki++){const K=FLORA.KITS[ki];if(!K.SP||!K.SP.length)continue;
+  const hasSap=K.passes.some(P=>P.sapling),tags=hasSap?['2','1','s']:['2','1'];
+  for(let sp=0;sp<K.SP.length;sp++)for(let v=0;v<4;v++)for(const tag of tags){
+   const key=ki+'|'+sp+'|'+v+'|'+tag,sap=tag==='s',lv=sap?2:+tag;
+   NURSERY.get(key,{kit:K.name,sp,v,lv,sapling:sap},0);want.push({key,ki,kit:K.name,sp,v,tag,sap,lv});}}
+ for(let guard=0;guard<24&&NURSERY.queued&&NURSERY.queued()>0&&NURSERY.update;guard++)NURSERY.update(10000);
+ WORLD_EXPORT.origin=[0,0,0];WORLD_EXPORT.floraLibOnly=true;
+ const ORG=new THREE.Vector3(0,0,0),ident=new THREE.Matrix4().toArray();
+ for(const p of FLORA.pools.values()){p.n=0;for(const m of p.meshes)m.visible=false;}
+ const protos=[];
+ for(const q of want){const proto=NURSERY.protos.get(q.key);
+  if(!proto||proto.none||proto.impostor||!proto.parts||!proto.parts.length)continue;
+  let p=FLORA.pools.get(q.key);
+  if(!p||p.cap<1){
+   if(p)for(const m of p.meshes){HOST.scene.remove(m);if(m.dispose)m.dispose();}
+   const arr=new Float32Array(16),attr=new THREE.InstancedBufferAttribute(arr,16),white=new THREE.InstancedBufferAttribute(new Float32Array([1,1,1]),3),meshes=[];
+   for(const part of proto.parts){const m=new THREE.InstancedMesh(part.geo,part.mat,1);
+    m.instanceMatrix=attr;m.instanceColor=white;m.frustumCulled=false;m.count=0;m.userData.flora=q.key;m.userData.inspectLabel='flora';HOST.scene.add(m);meshes.push(m);}
+   p={key:q.key,proto,n:0,cap:1,arr,attr,meshes};FLORA.pools.set(q.key,p);}
+  p.arr.set(ident,0);p.n=1;
+  for(const m of p.meshes){m.count=1;m.visible=true;m.position.copy(ORG);m.updateMatrix();m.updateMatrixWorld(true);}
+  if(p.attr)p.attr.needsUpdate=true;
+  const S=FLORA.KITS[q.ki].SP[q.sp]||{};
+  protos.push({key:q.key,kit:q.kit,k:q.ki,sp:q.sp,species:S.key||String(q.sp),name:S.name||String(q.sp),v:q.v,lv:q.tag,
+   H:+(proto.H==null?10:proto.H).toFixed(4),crownR:+(proto.crownR==null?4:proto.crownR).toFixed(3)});}
+ return{format:'krator-flora-protos',version:1,region:REGION,protos};}
+/* Pure [G data] tile placement over any world box [x0, z0, x1, z1], skipping interior place boxes, packed as Float32 rows [dx, y, dz, rot, Ht, keyIdx] */
+const _tileCache=new Map();
+function exportChunkFlora(box,skipBoxes,opt){if(typeof FLORA==='undefined'||!FLORA||typeof FLORA.buildTile!=='function')return null;
+ const o=opt||{},TS=FLORA.TS==null?512:FLORA.TS,tx0=Math.floor(box[0]/TS),tx1=Math.ceil(box[2]/TS)-1,tz0=Math.floor(box[1]/TS),tz1=Math.ceil(box[3]/TS)-1;
+ const ox=Math.round((box[0]+box[2])/2),oz=Math.round((box[1]+box[3])/2),sk=Array.isArray(skipBoxes)?skipBoxes:[];
+ const maxE=o.maxElev==null?1e9:+o.maxElev,corr=Array.isArray(o.corridor)&&o.corridor.length?o.corridor:null,cR=o.corridorR==null?3200:+o.corridorR,cR2=cR*cR;
+ let cSub=corr;if(corr){cSub=[];for(let i=0;i<corr.length;i++){const p=corr[i];if(p[0]>=box[0]-cR&&p[0]<=box[2]+cR&&p[1]>=box[1]-cR&&p[1]<=box[3]+cR)cSub.push(p);}}
+ if(corr&&!cSub.length)return{format:'krator-chunk-flora',version:1,box:box.slice(),origin:[ox,0,oz],count:0,keys:[],data:E.pack(new Float32Array(0))};
+ const keys=[],kmap=new Map(),rows=[];
+ for(let tz=tz0;tz<=tz1;tz++)for(let tx=tx0;tx<=tx1;tx++){
+  const tcx=(tx+.5)*TS,tcz=(tz+.5)*TS;
+  if(cSub){let near=false;for(let q=0;q<cSub.length;q++){const dx=tcx-cSub[q][0],dz=tcz-cSub[q][1];if(dx*dx+dz*dz<=cR2){near=true;break;}}if(!near)continue;}
+  if(maxE<1e8&&typeof WORLD!=='undefined'&&WORLD&&typeof WORLD.H==='function'&&WORLD.H(tcx,tcz,400)>maxE)continue;
+  const tk=tx+','+tz;let recs=_tileCache.get(tk);if(!recs){recs=FLORA.buildTile(tx,tz);if(_tileCache.size>64)_tileCache.clear();_tileCache.set(tk,recs);}
+  for(let i=0;i<recs.length;i++){const r=recs[i];
+   if(r.x<box[0]||r.x>=box[2]||r.z<box[1]||r.z>=box[3])continue;
+   if(cSub){const rLim=r.sap||r.Ht<8||r.sp===11?280:(r.far&&r.Ht>=15?cR:750),rL2=rLim*rLim;let okD=false;
+    for(let q=0;q<cSub.length;q++){const dx=r.x-cSub[q][0],dz=r.z-cSub[q][1];if(dx*dx+dz*dz<=rL2){okD=true;break;}}if(!okD)continue;}
+   let inSkip=false;for(let j=0;j<sk.length;j++){const b=sk[j];if(r.x>=b[0]&&r.x<=b[2]&&r.z>=b[1]&&r.z<=b[3]){inSkip=true;break;}}
+   if(inSkip)continue;
+   const bk=r.k+'|'+r.sp+'|'+r.v+(r.sap?'|s':'');let ki=kmap.get(bk);
+   if(ki===undefined){ki=keys.length;kmap.set(bk,ki);keys.push(bk);}
+   rows.push(r.x-ox,r.y,r.z-oz,r.rot,r.Ht,ki);}}
+ return{format:'krator-chunk-flora',version:1,box:box.slice(),origin:[ox,0,oz],count:rows.length/6,keys,data:E.pack(new Float32Array(rows))};}
 function attrF32(a,n){if(!a)return null;if(a.isInterleavedBufferAttribute||!(a.array instanceof Float32Array)){
   const f=new Float32Array(a.count*n);for(let i=0;i<a.count;i++)for(let k=0;k<n;k++)f[i*n+k]=a.getComponent?a.getComponent(i,k):a.array[i*a.itemSize+k];return f;}
  return a.array.slice(0,a.count*n);}
@@ -240,9 +299,9 @@ function floraSets(){if(typeof FLORA==='undefined'||!FLORA||!FLORA.pools)return 
     ry(i){const w=row(i);return Math.atan2(w.a[w.o+8],w.a[w.o+10]);}});
    FSETS.set(p.key,pre('flora',set.id));}catch(e){console.warn('core/world 94: flora pool '+p.key+': '+e.message);}}
  return FSETS;}
-const scene_=ctx=>ctx.memo('world-scene',()=>{const box=ctx.box||[-Infinity,-Infinity,Infinity,Infinity];
- healWetBridgeEnds();
- if(ctx.box&&ctx.sections.indexOf('items')>=0)prepareFloraBox(ctx.box);
+const scene_=ctx=>ctx.memo('world-scene',()=>{const box=ctx.box||[-Infinity,-Infinity,Infinity,Infinity],libOnly=!!WORLD_EXPORT.floraLibOnly;
+ if(!libOnly)healWetBridgeEnds();
+ if(!libOnly&&ctx.box&&ctx.sections.indexOf('items')>=0)prepareFloraBox(ctx.box);
  const K=byKey(),FS=floraSets(),instForItem=[],seenMats=[];let lastInst=null;
  const matKeys=()=>{const mk=new Map();let n=0;HOST.scene.traverse(m=>{if(!m||!m.isMesh)return;
   const ms=Array.isArray(m.material)?m.material:[m.material];
@@ -256,8 +315,8 @@ const scene_=ctx=>ctx.memo('world-scene',()=>{const box=ctx.box||[-Infinity,-Inf
   kitOf:kitNameOf,
   itemKit:kit=>kit&&kit.indexOf('flora/')===0?'flora':'world',
   itemSet:kit=>kit&&kit.indexOf('flora/')===0?FS.get(kit.split('/')[1])||null:null,
-  skipInstanced:m=>hidden(m)?'hidden':beacon(m)?'a resource beacon (a map marker)':null,
-  skipMesh:m=>m.userData&&m.userData.terrain?'the terrain (the terrain section)':m.userData&&m.userData.probeSkip?'water or sky (their sections)':
+  skipInstanced:m=>hidden(m)?'hidden':beacon(m)?'a resource beacon (a map marker)':libOnly&&!(m.userData&&m.userData.flora)?'non-flora in floraLibOnly':null,
+  skipMesh:m=>libOnly?'floraLibOnly':m.userData&&m.userData.terrain?'the terrain (the terrain section)':m.userData&&m.userData.probeSkip?'water or sky (their sections)':
    hidden(m)?'hidden':beacon(m)?'a resource beacon (a map marker)':null}).assemble(ctx);
  const matObjById=new Map();
  if(res.materials&&seenMats.length===res.materials.length)for(let i=0;i<seenMats.length;i++)matObjById.set(res.materials[i].id,seenMats[i]);
@@ -313,5 +372,7 @@ E.register('terrain',ctx=>{if(!ctx.box)return null;origin_(ctx);const st=WORLD_E
   G.surface={albedoRock:E.pack(ar),normalCav:E.pack(nc),
    note:'RGBA8 on the grid: albedoRock=(sRGB WORLD.ground + road, linear rock weight); normalCav=(sub-grid normal nx/nz*0.5+0.5, crease/canyon cavity AO, bank/flow wetness)'};}
  return t;},by);
-window._worldExport={registries:()=>parts().map(T=>({build:T.build,records:T.records.length}))};
+WORLD_EXPORT.prepareFloraLib=prepareFloraLib;
+WORLD_EXPORT.exportChunkFlora=exportChunkFlora;
+window._worldExport={registries:()=>parts().map(T=>({build:T.build,records:T.records.length})),prepareFloraLib,exportChunkFlora};
 })();

@@ -575,13 +575,22 @@ static func build_pois(stream: KratorWorldStream, pin_reg = null) -> Array:
 		var cx := 0.5 * (bx0 + bx1)
 		var cz := 0.5 * (bz0 + bz1)
 		var span := clampf(maxf(bx1 - bx0, bz1 - bz0) * 0.45, 900.0, 9500.0)
+		if stream.covering(cx, cz) == "" and not pls.is_empty() and pls[0].get("pin") is Array:
+			cx = float(pls[0]["pin"][0])
+			cz = float(pls[0]["pin"][1])
+			var pb0: Array = pls[0].get("box", [cx - 1200.0, cz - 1200.0, cx + 1200.0, cz + 1200.0])
+			span = clampf(maxf(float(pb0[2]) - float(pb0[0]), float(pb0[3]) - float(pb0[1])) * 1.4, 1800.0, 6500.0)
 		var ch := stream.height_at(cx, cz)
-		var base_y := ch if is_finite(ch) else 0.0
+		var grounded0 := is_finite(ch)
+		var base_y := ch if grounded0 else 0.0
 		list.append({
 			"label": "[Overview] %s Region" % _pretty_id(str(I.get("region", "World"))),
 			"kind": "overview",
 			"eye": Vector3(cx + span * 0.45, base_y + span * 0.48, cz + span * 0.72),
 			"target": Vector3(cx, base_y + 20.0, cz),
+			"rel_eye_y": span * 0.48,
+			"rel_target_y": 20.0,
+			"grounded": grounded0,
 			"walk": false
 		})
 
@@ -593,16 +602,20 @@ static func build_pois(stream: KratorWorldStream, pin_reg = null) -> Array:
 			var first_pt: Array = rpts[-1] if rlink.get("from") != I["route"].get("from") else rpts[0]
 			var rx := float(first_pt[0])
 			var rz := float(first_pt[1])
-			var ry := float(first_pt[2]) if first_pt.size() >= 3 else (stream.height_at(rx, rz) if is_finite(stream.height_at(rx, rz)) else 0.0)
+			var rgh := stream.height_at(rx, rz)
+			var ry := float(first_pt[2]) if first_pt.size() >= 3 else (rgh if is_finite(rgh) else 0.0)
 			list.append({
 				"label": "[Route] Start (%s km)" % str(I["route"].get("km", "?")),
 				"kind": "route",
 				"eye": Vector3(rx, ry + 2.0, rz + 8.0),
 				"target": Vector3(rx, ry, rz),
+				"rel_eye_y": 2.0,
+				"rel_target_y": 0.0,
+				"grounded": first_pt.size() >= 3 or is_finite(rgh),
 				"walk": true
 			})
 
-	# 3. Every Place (both Overlook & Walk views, plus Arcology view & inner Villages/Monasteries when present)
+	# 3. Every Place (Overlook & Walk views, Strongbow Arcology + Oidong Great Cataract, Longsong Monastery, and inner Villages)
 	var seen_pts: Array = []
 	for p in pls:
 		var pid := str(p.get("id", ""))
@@ -610,9 +623,9 @@ static func build_pois(stream: KratorWorldStream, pin_reg = null) -> Array:
 		var pin: Array = p.get("pin", [0.0, 0.0])
 		var px := float(pin[0])
 		var pz := float(pin[1])
-		var py := stream.height_at(px, pz)
-		if not is_finite(py):
-			py = 0.0
+		var py_raw := stream.height_at(px, pz)
+		var py_ok := is_finite(py_raw)
+		var py := py_raw if py_ok else 0.0
 		var pbox: Array = p.get("box", [px - 800.0, pz - 800.0, px + 800.0, pz + 800.0])
 		var pspan := maxf(float(pbox[2]) - float(pbox[0]), float(pbox[3]) - float(pbox[1]))
 		var dist := clampf(pspan * 0.26, 260.0, 720.0)
@@ -626,6 +639,7 @@ static func build_pois(stream: KratorWorldStream, pin_reg = null) -> Array:
 				"kind": "arcology",
 				"eye": Vector3(ax - 1550.0, ay - 80.0, az + 420.0),
 				"target": Vector3(ax + 40.0, ay - 260.0, az),
+				"grounded": true,
 				"walk": false
 			})
 			list.append({
@@ -633,6 +647,7 @@ static func build_pois(stream: KratorWorldStream, pin_reg = null) -> Array:
 				"kind": "arcology",
 				"eye": Vector3(ax - 1150.0, ay - 460.0, az - 180.0),
 				"target": Vector3(ax + 40.0, ay - 220.0, az),
+				"grounded": true,
 				"walk": false
 			})
 			list.append({
@@ -640,8 +655,34 @@ static func build_pois(stream: KratorWorldStream, pin_reg = null) -> Array:
 				"kind": "place_walk",
 				"eye": Vector3(ax + 132.0, ay + 3.0, az),
 				"target": Vector3(ax + 120.0, ay, az),
+				"grounded": true,
 				"walk": true
 			})
+			if float(pbox[3]) >= -71000.0:
+				list.append({
+					"label": "[Cataract] Oidong Great Falls Overlook",
+					"kind": "cataract",
+					"eye": Vector3(-610620.0, 760.0, -71950.0),
+					"target": Vector3(-610010.0, 520.0, -71610.0),
+					"grounded": true,
+					"walk": false
+				})
+				list.append({
+					"label": "[Cataract] Canyon Plunge Pool",
+					"kind": "cataract",
+					"eye": Vector3(-610460.0, 225.0, -71770.0),
+					"target": Vector3(-610130.0, 210.0, -71650.0),
+					"grounded": true,
+					"walk": false
+				})
+				list.append({
+					"label": "[Walk] Oidong Falls Rim",
+					"kind": "place_walk",
+					"eye": Vector3(-609880.0, 1335.0, -71470.0),
+					"target": Vector3(-609910.0, 1326.0, -71515.0),
+					"grounded": true,
+					"walk": true
+				})
 		else:
 			var hpois: Array = p.get("hamlet_pois", [])
 			var on_pin := false
@@ -649,19 +690,43 @@ static func build_pois(stream: KratorWorldStream, pin_reg = null) -> Array:
 				if hp is Dictionary and Vector2(float(hp.get("x", px)), float(hp.get("z", pz))).distance_to(Vector2(px, pz)) < 250.0:
 					on_pin = true
 					break
-			if not hpois.is_empty() and not on_pin:
-				# Site pin is an unbuilt central plateau (e.g. Longsong): frame the primary built village & river crossing!
+			if p.get("monastery") is Dictionary:
+				var M: Dictionary = p["monastery"]
+				var mat: Array = M.get("at", [px, py, pz])
+				var m_orig := Vector3(float(mat[0]), float(mat[1]), float(mat[2]))
+				var m_rot := Basis(Vector3.UP, float(M.get("ry", 0.0)))
+				var gate_w := m_orig + m_rot * Vector3(0.0, 0.0, -212.0)
+				list.append({
+					"label": "[Overlook] %s (%s)" % [pname, pid],
+					"kind": "place_overlook",
+					"eye": m_orig + m_rot * Vector3(-95.0, 128.0, -470.0),
+					"target": m_orig + m_rot * Vector3(0.0, 18.0, 55.0),
+					"grounded": true,
+					"walk": false
+				})
+				list.append({
+					"label": "[Monastery] %s — Mirror Gate" % pname,
+					"kind": "place_walk",
+					"eye": gate_w + m_rot * Vector3(0.0, 4.0, -22.0),
+					"target": gate_w,
+					"grounded": true,
+					"walk": true
+				})
+			elif not hpois.is_empty() and not on_pin:
 				var h0: Dictionary = hpois[0]
 				var hx := float(h0.get("x", px))
 				var hz := float(h0.get("z", pz))
-				var hy := stream.height_at(hx, hz)
-				if not is_finite(hy):
-					hy = py
+				var hy_raw := stream.height_at(hx, hz)
+				var hy_ok := is_finite(hy_raw)
+				var hy := hy_raw if hy_ok else py
 				list.append({
 					"label": "[Overlook] %s (%s)" % [pname, pid],
 					"kind": "place_overlook",
 					"eye": Vector3(hx - 430.0, hy + 215.0, hz - 540.0),
 					"target": Vector3(hx - 40.0, hy + 10.0, hz),
+					"rel_eye_y": 215.0,
+					"rel_target_y": 10.0,
+					"grounded": hy_ok or py_ok,
 					"walk": false
 				})
 				list.append({
@@ -669,6 +734,9 @@ static func build_pois(stream: KratorWorldStream, pin_reg = null) -> Array:
 					"kind": "place_walk",
 					"eye": Vector3(hx, hy + 2.0, hz + 10.0),
 					"target": Vector3(hx, hy, hz),
+					"rel_eye_y": 2.0,
+					"rel_target_y": 0.0,
+					"grounded": hy_ok or py_ok,
 					"walk": true
 				})
 			else:
@@ -677,6 +745,9 @@ static func build_pois(stream: KratorWorldStream, pin_reg = null) -> Array:
 					"kind": "place_overlook",
 					"eye": Vector3(px + dist * 0.48, py + dist * 0.42, pz + dist * 0.68),
 					"target": Vector3(px, py + 12.0, pz),
+					"rel_eye_y": dist * 0.42,
+					"rel_target_y": 12.0,
+					"grounded": py_ok,
 					"walk": false
 				})
 				list.append({
@@ -684,6 +755,9 @@ static func build_pois(stream: KratorWorldStream, pin_reg = null) -> Array:
 					"kind": "place_walk",
 					"eye": Vector3(px, py + 2.0, pz + 9.0),
 					"target": Vector3(px, py, pz),
+					"rel_eye_y": 2.0,
+					"rel_target_y": 0.0,
+					"grounded": py_ok,
 					"walk": true
 				})
 			for hp in hpois:
@@ -694,9 +768,9 @@ static func build_pois(stream: KratorWorldStream, pin_reg = null) -> Array:
 				seen_pts.append(Vector2(vx, vz))
 				if on_pin and Vector2(vx, vz).distance_to(Vector2(px, pz)) < 80.0:
 					continue
-				var vy := stream.height_at(vx, vz)
-				if not is_finite(vy):
-					vy = py
+				var vy_raw := stream.height_at(vx, vz)
+				var vy_ok := is_finite(vy_raw)
+				var vy := vy_raw if vy_ok else py
 				var focus_str := str(hp.get("focus", "village"))
 				var vtag := "Monastery" if focus_str == "monastery" else "Village"
 				var vname := str(hp.get("name", hp.get("id", vtag)))
@@ -705,6 +779,9 @@ static func build_pois(stream: KratorWorldStream, pin_reg = null) -> Array:
 					"kind": "village",
 					"eye": Vector3(vx + 165.0, vy + 105.0, vz + 215.0),
 					"target": Vector3(vx, vy + 8.0, vz),
+					"rel_eye_y": 105.0,
+					"rel_target_y": 8.0,
+					"grounded": vy_ok or py_ok,
 					"walk": false
 				})
 
@@ -727,9 +804,9 @@ static func build_pois(stream: KratorWorldStream, pin_reg = null) -> Array:
 		if dup or seen_pts.size() >= 18:
 			continue
 		seen_pts.append(Vector2(cx, cz))
-		var cy := float(p0[2]) if p0.size() >= 3 else stream.height_at(cx, cz)
-		if not is_finite(cy):
-			cy = 0.0
+		var cy_raw := stream.height_at(cx, cz)
+		var cy_ok := p0.size() >= 3 or is_finite(cy_raw)
+		var cy := float(p0[2]) if p0.size() >= 3 else (cy_raw if is_finite(cy_raw) else 0.0)
 		var tag := "Camp" if rkind == "camp" else "Village"
 		var raw_nm := str(rd.get("from", rd.get("id", tag)))
 		var nice_nm := _pretty_id(raw_nm)
@@ -745,6 +822,9 @@ static func build_pois(stream: KratorWorldStream, pin_reg = null) -> Array:
 			"kind": rkind,
 			"eye": Vector3(cx - dir2.x * 12.0, cy + 3.0, cz - dir2.y * 12.0),
 			"target": Vector3(cx, cy, cz),
+			"rel_eye_y": 3.0,
+			"rel_target_y": 0.0,
+			"grounded": cy_ok,
 			"walk": true
 		})
 
@@ -756,9 +836,64 @@ static func build_pois(stream: KratorWorldStream, pin_reg = null) -> Array:
 			"kind": "pin",
 			"eye": pv + Vector3(0.0, 38.0, 68.0),
 			"target": pv,
+			"grounded": true,
 			"walk": false
 		})
 	return list
+
+
+# Streams chunks/places around a POI, anchors ungrounded heights once loaded, and lifts overlook cameras over intervening ridges
+static func resolve_poi(stream: KratorWorldStream, poi: Dictionary, load_r := 20000.0, keep_r := 28000.0) -> Dictionary:
+	var out := poi.duplicate()
+	if stream == null or out.is_empty():
+		return out
+	var eye: Vector3 = out["eye"]
+	var target: Vector3 = out["target"]
+	var as_walk := bool(out.get("walk", false))
+	var focus := target if as_walk else eye
+	var was := stream.threaded
+	stream.threaded = false
+	if absf(focus.x - float(stream.origin[0])) > KratorWorldStream.REBASE or absf(focus.z - float(stream.origin[2])) > KratorWorldStream.REBASE:
+		stream.rebase(focus.x, focus.z)
+	stream.update(Vector2(focus.x, focus.z), load_r, keep_r)
+	if stream.covering(target.x, target.z) == "":
+		stream.update(Vector2(target.x, target.z), load_r, keep_r)
+	stream.threaded = was
+
+	var gh_t := stream.height_at(target.x, target.z)
+	if not bool(out.get("grounded", true)) and is_finite(gh_t):
+		target.y = gh_t + float(out.get("rel_target_y", 0.0))
+		eye.y = gh_t + float(out.get("rel_eye_y", 20.0))
+		out["grounded"] = true
+	elif as_walk and is_finite(gh_t):
+		target.y = gh_t
+		eye.y = maxf(eye.y, gh_t + 2.0)
+	if as_walk:
+		var gh_ew := stream.height_at(eye.x, eye.z)
+		if is_finite(gh_ew):
+			eye.y = maxf(eye.y, gh_ew + 2.0)
+
+	if not as_walk:
+		var gh_e := stream.height_at(eye.x, eye.z)
+		var base_eye_y := eye.y
+		if is_finite(gh_e):
+			eye.y = maxf(eye.y, gh_e + 12.0)
+		var need_y := eye.y
+		for s in range(1, 16):
+			var t := float(s) / 16.0
+			if t > 0.88:
+				break
+			var sx := lerpf(eye.x, target.x, t)
+			var sz := lerpf(eye.z, target.z, t)
+			var sh := stream.height_at(sx, sz)
+			if is_finite(sh):
+				var clear_y := (sh + 8.0 - target.y * t) / maxf(1.0 - t, 0.12)
+				need_y = maxf(need_y, clear_y)
+		eye.y = minf(need_y, base_eye_y + 2600.0)
+
+	out["eye"] = eye
+	out["target"] = target
+	return out
 
 
 func refresh_pois(stream: KratorWorldStream, pin_reg = null) -> void:

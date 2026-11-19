@@ -349,9 +349,10 @@ func _toggle_ride_road() -> void:
 func _go_to_poi(poi: Dictionary) -> void:
 	if poi.is_empty():
 		return
-	var eye: Vector3 = poi["eye"]
-	var target: Vector3 = poi["target"]
-	var as_walk := bool(poi.get("walk", false))
+	var rpoi := KratorHostUI.resolve_poi(W.stream, poi, KratorWorldWalk.LOAD_R, KratorWorldWalk.KEEP_R)
+	var eye: Vector3 = rpoi["eye"]
+	var target: Vector3 = rpoi["target"]
+	var as_walk := bool(rpoi.get("walk", false))
 	W.set_view_region(eye, target, as_walk)
 	_apply_layers()
 
@@ -491,6 +492,7 @@ func _copy_xz() -> void:
 func _apply_layers() -> void:
 	if W == null:
 		return
+	W.stream.set_flora_visible(_flora_vis)
 	for pid in W.stream.places_open:
 		var pw: Node3D = W.stream.places_open[pid]
 		var items := pw.get_node_or_null("Items")
@@ -508,6 +510,9 @@ func _apply_layers() -> void:
 		var arc := pw.get_node_or_null("Arcology") as Node3D
 		if arc != null:
 			arc.visible = _builds_vis
+		var mon := pw.get_node_or_null("Monastery") as Node3D
+		if mon != null:
+			mon.visible = _builds_vis
 
 
 # Raycasts physics (Terrain, Buckets, Arcology) and falls back to heightfield ray-marching for distant chunks
