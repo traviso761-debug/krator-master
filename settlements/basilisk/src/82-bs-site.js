@@ -371,7 +371,7 @@ var BS_SITE = (function () {
           city wall walk height (+13 m over sabkha) with ZERO vertical step at the gate pylons!!
        2) Every single building inside the Gate Quarter sits on dead-level -2,595 m platform!
        3) Drover sledges climb the grand external basalt gate ramp from the roadhead wayhalt up into the South Gate! */
-    var fullTop = offsetPoly(wallPoly, 7.2);
+    var fullTop = offsetPoly(wallPoly, 8.8);
     mesh = buildTerraceMesh(fullTop, function () { return PLAT_Y; }, 2.6, function () { return SABKHA_Y - 0.35; });
     /* Append the monumental South Gate exterior causeway ramp (width 26 m top, 34 m base, z from gateZ + 7 to gateZ + 112) */
     var gx = gateXz[0], gz0 = gateXz[1] + 6.5, gz1 = gateXz[1] + 112, b = mesh.pos.length / 3;
@@ -421,7 +421,7 @@ var BS_SITE = (function () {
     return tEdge;
   })();
   var moundTerrace = (function () {
-    var mesh = buildTerraceMesh(moundPoly, function () { return MOUND_Y; }, 2.2, function () { return PLAT_Y - 0.2; });
+    var mesh = buildTerraceMesh(moundPoly, function () { return MOUND_Y; }, 1.15, function () { return PLAT_Y - 0.2; });
     var pL = function (t, w) { return [leyDir[0] * t + leyPerp[0] * w, leyDir[1] * t + leyPerp[1] * w]; };
     var tEdge = moundLeyEdgeT;
     var m0L = pL(tEdge - 1, 5.2), m0R = pL(tEdge - 1, -5.2);
@@ -443,13 +443,16 @@ var BS_SITE = (function () {
     return mesh;
   })();
 
-  /* 700 m Cyclopean Basalt Ley Mole (from slotT + 36 across the sabkha causeway and 700 m into the sea to mole1 + 5) */
+  /* 700 m Cyclopean Basalt Ley Mole (from shoreT - 35 across the sea to a 39 m-wide seaward T-head sanctuary at mole1 + 5) */
   var moleTerrace = (function () {
     var pM = function (t, w) { return [leyDir[0] * t + leyPerp[0] * w, leyDir[1] * t + leyPerp[1] * w]; };
-    var t0 = shoreT - 35, t1 = mole1 + 5;
-    var topP = [pM(t0, -4.6), pM(t1, -4.6), pM(t1, 4.6), pM(t0, 4.6)];
+    var t0 = shoreT - 35, tNeck = mole1 - 40, tHead = mole1 - 34, t1 = mole1 + 5;
+    var topP = [
+      pM(t0, -4.6), pM(tNeck, -4.6), pM(tHead, -19.5), pM(t1, -19.5),
+      pM(t1, 19.5), pM(tHead, 19.5), pM(tNeck, 4.6), pM(t0, 4.6)
+    ];
     return buildTerraceMesh(topP, function (x, z, idx) {
-      return idx === 0 || idx === 3 ? SABKHA_Y + 0.35 : MOLE_Y;
+      return idx === 0 || idx === 7 ? SABKHA_Y + 0.35 : MOLE_Y;
     }, 3.2, function () { return SEA_Y - 2.4; });
   })();
 
@@ -651,16 +654,69 @@ var BS_SITE = (function () {
     });
   });
 
-  /* 5c. Place southern paddy hamlet records */
+  /* 5c. Build country, haul & hamlet link roads FIRST so wells, paddy bunds and beasts never block a path */
+  var countryWays = BS_PLAN.country.roads.map(function (rd, i) {
+    return { id: 'trunk-' + i, w: 9.0, pts: uvList(rd.pts).filter(function (p) { return p[0] > N.x0 - 400 && p[0] < N.x1 + 400 && p[1] > N.z0 - 400 && p[1] < N.z1 + 400; }) };
+  });
+  countryWays.push({
+    id: 'dock-haul', w: 8.0,
+    pts: [
+      [dock.x - 32, dock.z],
+      [charcoal.x - 24, charcoal.z],
+      [wallPoly[3][0] + 45, wallPoly[3][1] + 55],
+      [reservoirs[0].cx - 120, reservoirs[0].cz + 60],
+      [gateXz[0] + 35, gateXz[1] + 150],
+      [gateXz[0], gateXz[1] + 112]
+    ]
+  });
+  countryWays.push({
+    id: 'salt-haul', w: 6.5,
+    pts: [
+      [wallPoly[5][0] - 70, wallPoly[5][1] - 35],
+      [wallPoly[5][0] - 55, wallPoly[6][1] + 45],
+      [gateXz[0] - 65, gateXz[1] + 135],
+      [gateXz[0], gateXz[1] + 112]
+    ]
+  });
+  countryWays.push({
+    id: 'ley-strand', w: 8.5,
+    pts: [[leyDir[0] * (slotT + 6), leyDir[1] * (slotT + 6)], [leyDir[0] * shoreT, leyDir[1] * shoreT]]
+  });
+  if (paddyHamlet && paddyHamlet.site) {
+    countryWays.push({
+      id: 'hamlet-link', w: 6.0,
+      pts: [[gateXz[0], gateXz[1] + 112], [paddyHamlet.site.x, paddyHamlet.site.z]]
+    });
+  }
+  function clearOfCountryWays(px, pz, rad) {
+    var cwI, cw;
+    for (cwI = 0; cwI < countryWays.length; cwI++) {
+      cw = countryWays[cwI];
+      if (cw.pts.length > 1 && lineDist(px, pz, cw.pts) < cw.w * 0.5 + rad) return false;
+    }
+    if (paddyHamlet && paddyHamlet.ways) {
+      for (cwI = 0; cwI < paddyHamlet.ways.length; cwI++) {
+        cw = paddyHamlet.ways[cwI];
+        if (cw.pts && cw.pts.length > 1 && lineDist(px, pz, cw.pts) < bsD(cw.w, 4.0) * 0.5 + rad) return false;
+      }
+    }
+    return true;
+  }
+
+  /* 5d. Place southern paddy hamlet records (keeping hamlet well clear of hamlet paths & link road) */
   var hamletPlaced = 0;
   if (paddyHamlet && !paddyHamlet.error && paddyHamlet.records) {
     paddyHamlet.records.forEach(function (hr) {
       if (!hr.pending && addSite(hr.key, hr.x, hr.z, hr.ry, 'hamlet', { where: 'hamlet', pad: 0.25 })) hamletPlaced++;
     });
-    addSite('gl-well', paddyHamlet.site.x + 14, paddyHamlet.site.z - 10, 0, 'hamlet', { where: 'hamlet', pad: 0.25 });
+    [[18, -14], [-18, -14], [22, 16], [-22, 16], [0, -24]].some(function (off) {
+      var wx = paddyHamlet.site.x + off[0], wz = paddyHamlet.site.z + off[1];
+      if (!clearOfCountryWays(wx, wz, 4.5)) return false;
+      return !!addSite('gl-well', wx, wz, 0, 'hamlet', { where: 'hamlet', pad: 0.25 });
+    });
   }
 
-  /* 5d. Bunded bamboo-rice, rice, taro & shade-manioc paddies wrapping the southern & western alluvial apron */
+  /* 5e. Bunded bamboo-rice, rice, taro & shade-manioc paddies wrapping the southern & western alluvial apron (never crossing roads) */
   var fields = [];
   (function buildFields() {
     var crops = ['bamboo-rice', 'taro', 'rice', 'shade-manioc'];
@@ -678,6 +734,7 @@ var BS_SITE = (function () {
           if (groundH(cx, cz) < SEA_Y + 0.35 || slopeAt(cx, cz, 16) > 0.12) continue;
           var nearRes = reservoirs.some(function (r) { return sdPoly(r.outer, cx, cz) > -68; });
           if (nearRes || lineDist(cx, cz, leatPts) < 50) continue;
+          if (!clearOfCountryWays(cx, cz, Math.hypot(pw * 0.45, pd * 0.45) + 6.0)) continue;
           if (space.some(cx, cz, Math.hypot(pw, pd) / 2 + 16, function () { return true; })) continue;
           h = KRAND.hash(SEED, 307, Math.round(cx), Math.round(cz)) % 100;
           if (h < 14) continue;
@@ -692,50 +749,28 @@ var BS_SITE = (function () {
     }
   })();
 
-  /* 5e. Burden beasts at the South Gate roadhead, Lothal dock haul road & charcoal yard, and frilled lizards by the paddies */
+  /* 5f. Burden beasts at the South Gate roadhead, Lothal dock haul road & charcoal yard, and frilled lizards by the paddies */
   var gateRoadWayhalt = sites.find(function (s) { return s.key === 'lz-wayhalt'; });
   if (gateRoadWayhalt) {
-    addSite('burden', gateRoadWayhalt.x + 18, gateRoadWayhalt.z + 8, 0.4, 'herd', { where: 'gate_road' });
-    addSite('burden', gateRoadWayhalt.x + 23, gateRoadWayhalt.z + 11, 0.7, 'herd', { where: 'gate_road' });
+    if (clearOfCountryWays(gateRoadWayhalt.x - 16, gateRoadWayhalt.z + 8, 4.5)) {
+      addSite('burden', gateRoadWayhalt.x - 16, gateRoadWayhalt.z + 8, 0.4, 'herd', { where: 'gate_road' });
+    }
+    if (clearOfCountryWays(gateRoadWayhalt.x - 21, gateRoadWayhalt.z + 11, 4.5)) {
+      addSite('burden', gateRoadWayhalt.x - 21, gateRoadWayhalt.z + 11, 0.7, 'herd', { where: 'gate_road' });
+    }
   }
-  addSite('burden', charcoal.x - 16, charcoal.z + 24, 1.8, 'herd', { where: 'works' });
-  addSite('burden', dock.x - 42, dock.z + 98, 3.0, 'herd', { where: 'works' });
+  if (clearOfCountryWays(charcoal.x + 26, charcoal.z + 12, 4.5)) {
+    addSite('burden', charcoal.x + 26, charcoal.z + 12, 1.8, 'herd', { where: 'works' });
+  }
+  if (clearOfCountryWays(dock.x - 46, dock.z + 98, 4.5)) {
+    addSite('burden', dock.x - 46, dock.z + 98, 3.0, 'herd', { where: 'works' });
+  }
   for (var fi = 0; fi < 5 && fi < fields.length; fi++) {
     var ff = fields[(fi * 5) % fields.length];
-    addSite(fi % 2 === 0 ? 'frilled' : 'burden', ff.box[0] - 5, ff.box[1] - 5, fi * 1.1, 'herd', { where: 'country' });
+    if (clearOfCountryWays(ff.box[0] - 5, ff.box[1] - 5, 4.0)) {
+      addSite(fi % 2 === 0 ? 'frilled' : 'burden', ff.box[0] - 5, ff.box[1] - 5, fi * 1.1, 'herd', { where: 'country' });
+    }
   }
-
-  /* 5f. Country & haul roads for KGROUND painting */
-  var countryWays = BS_PLAN.country.roads.map(function (rd, i) {
-    return { id: 'trunk-' + i, w: 9.0, pts: uvList(rd.pts).filter(function (p) { return p[0] > N.x0 - 400 && p[0] < N.x1 + 400 && p[1] > N.z0 - 400 && p[1] < N.z1 + 400; }) };
-  });
-  /* Dock & Bronze Hall haul road circling outside the SE corner of the wall to the South Gate roadhead */
-  countryWays.push({
-    id: 'dock-haul', w: 8.0,
-    pts: [
-      [dock.x - 32, dock.z],
-      [charcoal.x - 24, charcoal.z],
-      [wallPoly[3][0] + 45, wallPoly[3][1] + 55],
-      [reservoirs[0].cx - 120, reservoirs[0].cz + 60],
-      [gateXz[0] + 35, gateXz[1] + 150],
-      [gateXz[0], gateXz[1] + 112]
-    ]
-  });
-  /* NW salt-strand haul road from gl-saltstore around the west wall to the South Gate */
-  countryWays.push({
-    id: 'salt-haul', w: 6.5,
-    pts: [
-      [wallPoly[5][0] - 70, wallPoly[5][1] - 35],
-      [wallPoly[5][0] - 55, wallPoly[6][1] + 45],
-      [gateXz[0] - 65, gateXz[1] + 135],
-      [gateXz[0], gateXz[1] + 112]
-    ]
-  });
-  /* Relic causeway across the sabkha from Ley Slot to the Ley Mole */
-  countryWays.push({
-    id: 'ley-strand', w: 8.5,
-    pts: [[leyDir[0] * (slotT + 6), leyDir[1] * (slotT + 6)], [leyDir[0] * shoreT, leyDir[1] * shoreT]]
-  });
 
   /* ---------------------------------------------------------------- 6. Census, inward-door check, overlap check & zoneAt */
   var HOLDS = {

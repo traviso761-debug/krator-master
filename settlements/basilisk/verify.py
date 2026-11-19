@@ -142,6 +142,15 @@ ASSERT_JS = r"""() => {
     detail: gr.checked + ' plinths checked, floating ' + gr.floating.length + (gr.floating.length ? ' (' + gr.floating.slice(0, 4).join(', ') + ')' : '') + ', buried ' + gr.buried.length + (gr.buried.length ? ' (' + gr.buried.slice(0, 4).join(', ') + ')' : '')
   });
 
+  const rd = B.roads || { ok: false, siteHits: ['unrun'], furnHits: [] };
+  R.push({
+    name: 'roads-clear',
+    ok: !!rd.ok,
+    detail: rd.ok
+      ? ('0 site/furniture encroachments across ' + rd.ways + ' ways (' + rd.streetFurn + ' kerbside street-furniture bays)')
+      : ('siteHits ' + (rd.siteHits || []).slice(0, 5).join(', ') + ' | furnHits ' + (rd.furnHits || []).slice(0, 5).join(', ') + ' | furn ' + rd.streetFurn)
+  });
+
   const ph = B.paddyHamlet || {};
   R.push({
     name: 'paddy-hamlet',

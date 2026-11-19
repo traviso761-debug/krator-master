@@ -66,6 +66,60 @@
     };
   }
 
+  function auditRoads() {
+    var G = BS_SITE, coil = window._bsCoilWay || G.coilStreet, dists = window._bsTrimmedStreets || G.districtStreets;
+    var segD = function (px, pz, a, b) {
+      var dx = b[0] - a[0], dz = b[1] - a[1], l2 = dx * dx + dz * dz || 1e-9;
+      var t = Math.max(0, Math.min(1, ((px - a[0]) * dx + (pz - a[1]) * dz) / l2));
+      return Math.hypot(px - (a[0] + t * dx), pz - (a[1] + t * dz));
+    };
+    var polyD = function (px, pz, P) {
+      var best = 1e9, qi;
+      for (qi = 0; qi + 1 < P.length; qi++) best = Math.min(best, segD(px, pz, P[qi], P[qi + 1]));
+      return best;
+    };
+    var leySeg = [[G.leyDir[0] * 8, G.leyDir[1] * 8], [G.leyDir[0] * G.moleRange[1], G.leyDir[1] * G.moleRange[1]]];
+    var gateSeg = [[G.gateXz[0], G.gateXz[1] + 8], [G.gateXz[0], G.gateXz[1] + 280]];
+    var ways = [{ id: 'coil', pts: coil, half: 6.85 }, { id: 'ley', pts: leySeg, half: 4.3 }, { id: 'gate', pts: gateSeg, half: 6.8 }];
+    dists.forEach(function (ds) { ways.push({ id: ds.id, pts: ds.pts, half: 3.35 }); });
+
+    var siteHits = [], furnHits = [], i, s, c, sn, wi, wy, samples, si2;
+    for (i = 0; i < G.sites.length; i++) {
+      s = G.sites[i];
+      if (s.key === 'lk-gate' || s.key === 'lk-slot' || s.key === 'lz-ley' || s.key === 'lk-greathall') continue;
+      if (DEFS[s.key] && (DEFS[s.key].cls === 'vessel' || s.key === 'lz-weir')) continue;
+      c = Math.cos(s.ry); sn = Math.sin(s.ry);
+      samples = [[s.x, s.z]];
+      [[-1, -1], [1, -1], [1, 1], [-1, 1], [0, -1], [0, 1], [-1, 0], [1, 0]].forEach(function (q) {
+        samples.push([s.x + q[0] * s.w * 0.5 * c + q[1] * s.d * 0.5 * sn, s.z - q[0] * s.w * 0.5 * sn + q[1] * s.d * 0.5 * c]);
+      });
+      for (wi = 0; wi < ways.length; wi++) {
+        wy = ways[wi];
+        for (si2 = 0; si2 < samples.length; si2++) {
+          if (polyD(samples[si2][0], samples[si2][1], wy.pts) < wy.half) {
+            siteHits.push(s.key + '@' + wy.id + '(' + Math.round(s.x) + ',' + Math.round(s.z) + ')');
+            break;
+          }
+        }
+      }
+    }
+    var sfList = window._bsStreetFurn || [];
+    for (i = 0; i < sfList.length; i++) {
+      var sf = sfList[i];
+      for (wi = 0; wi < ways.length; wi++) {
+        wy = ways[wi];
+        if (polyD(sf.x, sf.z, wy.pts) < wy.half + sf.d * 0.45) {
+          furnHits.push('furn' + sf.kind + '@' + wy.id + '(' + Math.round(sf.x) + ',' + Math.round(sf.z) + ')');
+          break;
+        }
+      }
+    }
+    return {
+      ok: siteHits.length === 0 && furnHits.length === 0 && sfList.length >= 40,
+      siteHits: siteHits, furnHits: furnHits, streetFurn: sfList.length, ways: ways.length
+    };
+  }
+
   var tuneChk = typeof LZ_TUNE !== 'undefined' ? LZ_TUNE.checkTown(BS_REC) : { ok: false, problems: ['LZ_TUNE missing'] };
 
   window._basilisk = {
@@ -79,6 +133,7 @@
     inward: { checked: BS_SITE.inwardChecked, bad: BS_SITE.inwardBad, flaws: BS_SITE.flawCount },
     overlapPairs: BS_SITE.overlapPairs,
     ground: auditGround(),
+    roads: auditRoads(),
     ley: auditLey(),
     paddyHamlet: BS_SITE.paddyHamlet,
     water: window._bsWater,

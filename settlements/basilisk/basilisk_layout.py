@@ -462,9 +462,11 @@ def build():
             if abs(dx * ux + dv * uv) >= ra + rb + pad:
                 return False
         return True
-    def can_put(key, at, ang, pad=0.32, allow_ley=False):
+    def can_put(key, at, ang, pad=0.32, allow_ley=False, allow_road=False):
         k = KIT[key]; fp = footprint(at[0], at[1], ang, k['w'], k['d'])
         if not allow_ley and on_ley(fp):
+            return False
+        if not allow_road and on_road(fp):
             return False
         if k.get('owed'):
             return True
@@ -486,25 +488,64 @@ def build():
             gx, gv = int(math.floor(at[0] / CELL_SZ)), int(math.floor(at[1] / CELL_SZ))
             grid.setdefault((gx, gv), []).append(cand)
         return rec
-    def try_put(key, at, ang, where, pad=0.32, allow_ley=False, **kw):
-        if not can_put(key, at, ang, pad=pad, allow_ley=allow_ley):
+    def try_put(key, at, ang, where, pad=0.32, allow_ley=False, allow_road=False, **kw):
+        if not can_put(key, at, ang, pad=pad, allow_ley=allow_ley, allow_road=allow_road):
             return None
         return put(key, at, ang, where, **kw)
     def on_ley(fp, pad=2.0):
         return seg_hits_corridor(fp, LEY0, LD, plan['ley']['corridor_w'] / 2 + pad)
 
-    # ---- 1. Place the wall, gate, 13 watchtowers, Ley Slot & ley crossing obelisks FIRST so dense wards respect them
-    WO = COIL_W / 2 + 5.5
+    # Precompute district geometries & all street corridors so NO placement ever lands in a road or mouth
+    dists = [district(b, j) for j, b in enumerate(blocks[:7])]
+    gq = district(blocks[7], 7); gq['id'] = 'gq'; gq['chirality'] = 'ccw'
+    WO = COIL_W / 2 + 9.2
     wk = WO / SIN75
     A_W, A_E, B_S, B_N, B_T = -rc(10) - wk, rc(8) + wk, -rc(7) - wk, rc(9) + wk, -rc(11) - wk
     A_TE = -rc(6) + 6.0 / SIN75
     GW = 26.0 / SIN75
     wall_sk = [(GATE_A + GW / 2, B_T), (A_TE, B_T), (A_TE, B_S), (A_E, B_S), (A_E, B_N), (A_W, B_N), (A_W, B_T), (GATE_A - GW / 2, B_T)]
     wall = [sk(a, b) for a, b in wall_sk]
+    gate_at = sk(GATE_A, B_T)
+    coil_pts = [sk(a, b) for a, b in coil]
+
+    road_segs = []
+    def _add_way_corridor(pts, half):
+        for idx_s in range(len(pts) - 1):
+            a_p, b_p = pts[idx_s], pts[idx_s + 1]
+            road_segs.append((
+                a_p[0], a_p[1], b_p[0], b_p[1], half,
+                min(a_p[0], b_p[0]) - half, max(a_p[0], b_p[0]) + half,
+                min(a_p[1], b_p[1]) - half, max(a_p[1], b_p[1]) + half
+            ))
+    _add_way_corridor(coil_pts, COIL_W / 2 + 0.55)
+    for _d in dists + [gq]:
+        _add_way_corridor(_d['street'], 3.5 + 0.45)
+    _add_way_corridor([(gate_at[0], gate_at[1] + 12), (gate_at[0], gate_at[1] - 310)], 8.0)
+
+    def on_road(fp):
+        xs = [p[0] for p in fp]; vs = [p[1] for p in fp]
+        fx0, fx1, fv0, fv1 = min(xs), max(xs), min(vs), max(vs)
+        samples = list(fp) + [
+            ((fp[k][0] + fp[(k + 1) % 4][0]) * 0.5, (fp[k][1] + fp[(k + 1) % 4][1]) * 0.5) for k in range(4)
+        ] + [(sum(xs) * 0.25, sum(vs) * 0.25)]
+        for ax, av, bx, bv, half, rx0, rx1, rv0, rv1 in road_segs:
+            if fx1 < rx0 or fx0 > rx1 or fv1 < rv0 or fv0 > rv1:
+                continue
+            dx, dv = bx - ax, bv - av
+            l2 = dx * dx + dv * dv or 1e-9
+            h2 = half * half
+            for qx, qv in samples:
+                t = ((qx - ax) * dx + (qv - av) * dv) / l2
+                t = 0.0 if t < 0.0 else (1.0 if t > 1.0 else t)
+                ex, ev = qx - (ax + t * dx), qv - (av + t * dv)
+                if ex * ex + ev * ev < h2:
+                    return True
+        return False
+
+    # ---- 1. Place the wall, gate, 13 watchtowers, Ley Slot & ley crossing obelisks FIRST so dense wards respect them
     runs = []
     for i in range(len(wall) - 1):
         runs.append(dict(i=i, a=P([wall[i]])[0], b=P([wall[i + 1]])[0], len=r1(math.hypot(wall[i + 1][0] - wall[i][0], wall[i + 1][1] - wall[i][1]))))
-    gate_at = sk(GATE_A, B_T)
     put('lk-gate', gate_at, -math.pi / 2, 'wall', role='the one gate, at the Coil\'s mouth: the tongue\'s foot, facing south')
     total = sum(r['len'] for r in runs)
     towers = []
@@ -540,13 +581,18 @@ def build():
                         slot_t=r1(slot_t), towers=13, length=r1(total), lk_wall_runs=int(total // 20),
                         rule='lk-wall runs of 20 m end to end; walls lean in on the outer face, out on the inner')
     LA = math.atan2(LD[1], LD[0])
-    coil_pts = [sk(a, b) for a, b in coil]
     crossings = []
     for i in range(len(coil_pts) - 1):
         c = cross(LEY0, LD, coil_pts[i], coil_pts[i + 1])
         if c and c[0] < slot_t: crossings.append(c[0])
     for tt in crossings:
-        try_put('lz-obelisk', (LD[0] * tt - LD[1] * 10, LD[1] * tt + LD[0] * 10), LA, 'ley', allow_ley=True, role='where the line crosses the Great Coil')
+        placed_ob = False
+        for s_ley in (-15.0, 15.0, -19.0, 19.0):
+            for s_perp in (-10.5, 10.5, -13.5, 13.5):
+                cand_ob = (LD[0] * (tt + s_ley) - LD[1] * s_perp, LD[1] * (tt + s_ley) + LD[0] * s_perp)
+                if try_put('lz-obelisk', cand_ob, LA, 'ley', role='where the line crosses the Great Coil'):
+                    placed_ob = True; break
+            if placed_ob: break
     plan['ley'].update(crossings=[r1(x) for x in crossings], slot_t=r1(slot_t))
 
     # ---- 2. The Precinct of Intention (packed acropolis on the +12 m Mound)
@@ -651,8 +697,6 @@ def build():
     plan['corner_courts'] = [dict(m=0, id='first_turn', poly=P(cpoly), centre=P([sk(cac, cbc)])[0])]
 
     # ---- 4. The 7 Districts & Gate Quarter (packed multi-row spiral bands + triple-row courts)
-    dists = [district(b, j) for j, b in enumerate(blocks[:7])]
-    gq = district(blocks[7], 7); gq['id'] = 'gq'; gq['chirality'] = 'ccw'
     def frontage(d):
         return sum(math.hypot(b['inner'][1][0] - b['inner'][0][0], b['inner'][1][1] - b['inner'][0][1]) - 10 for b in d['bands'] if b['depth'] >= 20)
     for d in dists: d['frontage'] = frontage(d)
@@ -841,17 +885,20 @@ def build():
         'lk-colossus-coil', 'lk-statue-ouroboros', 'lk-statue-gyre', 'lk-statue-chronicle',
         'lk-statue-manifold', 'lk-statue-paradox', 'lk-statue-tesseract', 'lk-statue-chorus'
     ]
-    # Landmark colossi along the Great Coil's turns & avenues so walkers encounter varied oppressive monuments at every turn
+    # Landmark colossi along the Great Coil's turns & avenues so walkers encounter varied oppressive monuments beside every turn
     for ci_turn in range(1, min(11, len(coil_pts) - 1)):
         cx_t, cv_t = coil_pts[ci_turn]
         nx_t, nv_t = coil_pts[ci_turn + 1]
         seg_ang = math.atan2(nv_t - cv_t, nx_t - cx_t)
         st_k = STATUE_CYCLE[(ci_turn * 5) % len(STATUE_CYCLE)]
-        for side_off in (15.5, -15.5):
-            px_t = cx_t + math.cos(seg_ang) * 24.0 - math.sin(seg_ang) * side_off
-            pv_t = cv_t + math.sin(seg_ang) * 24.0 + math.cos(seg_ang) * side_off
-            if try_put(st_k, (px_t, pv_t), seg_ang + (math.pi / 2 if side_off < 0 else -math.pi / 2), 'first_turn', role='great_coil_colossus'):
-                break
+        placed_cc = False
+        for d_along in (26.0, 38.0, 50.0):
+            for side_off in (16.5, -16.5, 19.5, -19.5):
+                px_t = cx_t + math.cos(seg_ang) * d_along - math.sin(seg_ang) * side_off
+                pv_t = cv_t + math.sin(seg_ang) * d_along + math.cos(seg_ang) * side_off
+                if try_put(st_k, (px_t, pv_t), seg_ang + (math.pi / 2 if side_off < 0 else -math.pi / 2), 'first_turn', role='great_coil_colossus'):
+                    placed_cc = True; break
+            if placed_cc: break
     order = [1, 5, 2, 3, 4]
     for d in dists:
         d['ward_name'], d['ward_focus'] = DIST_ROLES[d['j']]
@@ -865,9 +912,9 @@ def build():
         court_items(d, [('lz-medicine', 2), ('lz-cistern', 6), ('lz-obelisk', 3), ('lz-bells', 8), ('lk-nest', 10),
                         ('lz-stela-pair', 7), (hall, 6), ('lk-guildhall', 5)] + extra_food + [('lz-cistern', 4), ('lz-stela-turned', 2)],
                     [(st_alt, None), ('lk-archive', 5), ('lk-terrace', 2), (p_flank, None), ('lk-granary', None), ('lk-rowhouse', 3), ('lk-kilnhouse', 2), (hall, None), ('lk-tower', 5), ('lz-bakehouse', None), (st_main, None)])
-        # Sentinel colossus by the district's mouth onto the Great Coil
+        # Sentinel colossus beside the district's mouth onto the Great Coil (clear of both roadways)
         mx, mv = d['mouth']
-        for m_off in ((-14, 14), (14, -14), (-14, -14), (14, 14)):
+        for m_off in ((-18, 18), (18, -18), (-18, -18), (18, 18), (-24, 18), (24, -18), (-18, 24), (18, -24), (-24, -24), (24, 24)):
             if try_put(st_mouth, (mx + m_off[0], mv + m_off[1]), math.atan2(-mv, -mx), d['id'], role='district_mouth_colossus'):
                 break
         fill(d, order, WARD_POOLS[d['j']])
@@ -883,8 +930,8 @@ def build():
         if f_w(LD[0] * tt, LD[1] * tt) >= 0.5: shore_t = tt; break
     mole0, mole1 = slot_t + 6, shore_t + 700
     plan['ley'].update(shore_t=shore_t, mole=[r1(mole0), r1(mole1)])
-    put('lz-stela-pair', (LD[0] * (mole1 - 8), LD[1] * (mole1 - 8)), LA, 'ley', role='the barge stair at the mole\'s end: the Coil and fracture glyphs side by side')
-    try_put('lk-statue-manifold', (LD[0] * (mole1 - 24), LD[1] * (mole1 - 24)), LA, 'ley', allow_ley=True, role='the Sheared Manifold at the seaward tip of the ley mole, facing the east reliquary')
+    put('lz-stela-pair', (LD[0] * (mole1 - 12) + LD[1] * 8.2, LD[1] * (mole1 - 12) - LD[0] * 8.2), LA + math.pi / 2, 'ley', role='the barge stair at the mole\'s end: the Coil and fracture glyphs side by side')
+    try_put('lk-statue-manifold', (LD[0] * (mole1 - 20) - LD[1] * 11.2, LD[1] * (mole1 - 20) + LD[0] * 11.2), LA, 'ley', allow_ley=True, role='the Sheared Manifold on the seaward mole-head bastion, facing the east reliquary')
     try_put('lk-statue-tesseract', (LD[0] * (mole0 + 36) - LD[1] * 14, LD[1] * (mole0 + 36) + LD[0] * 14), LA, 'ley', allow_ley=True, role='the Hyper-Rhombic Reliquary Cage guarding the foot of the ley mole')
     for i in range(3):
         put('lz-barge', (LD[0] * (mole1 - 40 - 30 * i) + LD[1] * 12, LD[1] * (mole1 - 40 - 30 * i) - LD[0] * 12), LA, 'ley', role='a reed barge moored to the mole')
@@ -971,7 +1018,7 @@ def build():
     try_put('lz-muster', (gu + 52, gv - 258), -math.pi / 2, 'gate_road', role='roadhead escort muster')
     try_put('gl-well', (gu - 24, gv - 248), 0.0, 'gate_road', role='roadhead beast well')
     for sx, sy, ang, nm in [(-95, -310, math.pi, 'west-loop mile-0 waystone (Iguana road)'),
-                            (-65, -278, 2.35, 'east-loop north-shore mile-0 waystone (Tuatara road)'),
+                            (-82, -268, 2.35, 'east-loop north-shore mile-0 waystone (Tuatara road)'),
                             (75, -310, 0.0, 'east-loop south-shore mile-0 waystone (Komodo road)')]:
         try_put('lz-waystone', (gu + sx, gv + sy), ang, 'gate_road', role=nm)
     plan['country'] = dict(

@@ -352,48 +352,218 @@
     var tblCivil = KTAGS.table(), tblFields = KTAGS.table(), tblStreetFurn = KTAGS.table();
     var i, k;
 
-    /* Helper: emit a paved verdigris-stone ribbon along a polyline [[x, z], ...] with optional twin bronze sledge tracks */
-    function drawRibbon(pts, w, h, mk, col, kerbMk, kerbCol, yFn, tbl, tracks) {
-      var pi, a, b, dx, dz, L, mx, mz, ry, ym;
-      for (pi = 0; pi + 1 < pts.length; pi++) {
-        a = pts[pi]; b = pts[pi + 1];
-        dx = b[0] - a[0]; dz = b[1] - a[1]; L = Math.hypot(dx, dz);
-        if (L < 0.5) continue;
-        mx = (a[0] + b[0]) / 2; mz = (a[1] + b[1]) / 2;
-        ry = Math.atan2(dx, dz);
-        ym = yFn(mx, mz);
-        W(mx, 0, mz, ry, function () {
-          box(mk, 0, ym, 0, w, h, L + w * 0.4, col);
-          if (kerbMk) {
-            box(kerbMk, -w / 2 + 0.24, ym + h, 0, 0.48, 0.26, L + w * 0.2, kerbCol);
-            box(kerbMk, w / 2 - 0.24, ym + h, 0, 0.48, 0.26, L + w * 0.2, kerbCol);
+    var streetFurnPlaced = [];
+    function segDist2D(px, pz, a, b) {
+      var dx = b[0] - a[0], dz = b[1] - a[1], l2 = dx * dx + dz * dz || 1e-9;
+      var t = Math.max(0, Math.min(1, ((px - a[0]) * dx + (pz - a[1]) * dz) / l2));
+      return Math.hypot(px - (a[0] + t * dx), pz - (a[1] + t * dz));
+    }
+    function polyDist2D(px, pz, P) {
+      var best = 1e9, qi;
+      for (qi = 0; qi + 1 < P.length; qi++) best = Math.min(best, segDist2D(px, pz, P[qi], P[qi + 1]));
+      return best;
+    }
+    function emitQuadPrism(mk, Q, y0, y1, col) {
+      var a2 = 0, qi, qn;
+      for (qi = 0; qi < Q.length; qi++) {
+        qn = (qi + 1) % Q.length;
+        a2 += Q[qi][0] * Q[qn][1] - Q[qn][0] * Q[qi][1];
+      }
+      if (Math.abs(a2) < 1e-4) return;
+      prism(mk, a2 > 0 ? Q : Q.slice().reverse(), y0, y1, col);
+    }
+
+    /* Build full Great Coil centreline reaching cleanly through the South Gate arch */
+    var coilWayPts = G.coilStreet.slice();
+    (function () {
+      var lastC = coilWayPts[coilWayPts.length - 1];
+      if (Math.hypot(G.gateXz[0] - lastC[0], G.gateXz[1] - lastC[1]) > 4.0) {
+        coilWayPts.push([G.gateXz[0], G.gateXz[1] + 5.5]);
+      }
+    })();
+
+    /* Pre-trim each district spiral street's final mouth segment so it stops flush at the Great Coil's 7.0 m outer edge
+       with an oblique end-mitre parallel to the Great Coil's kerb (never poking kerbs into the Great Coil!) */
+    var trimmedDistStreets = G.districtStreets.map(function (ds) {
+      var pts = ds.pts.map(function (p) { return [p[0], p[1]]; });
+      var endMitre = null;
+      if (pts.length >= 2) {
+        var A = pts[pts.length - 2], B = pts[pts.length - 1];
+        var dx = B[0] - A[0], dz = B[1] - A[1], L = Math.hypot(dx, dz) || 1;
+        var ux = dx / L, uz = dz / L, nx = -uz, nz = ux;
+        /* Find nearest Great Coil segment to B */
+        var bestD = 1e9, bestSeg = null, ci2;
+        for (ci2 = 0; ci2 + 1 < coilWayPts.length; ci2++) {
+          var dSeg = segDist2D(B[0], B[1], coilWayPts[ci2], coilWayPts[ci2 + 1]);
+          if (dSeg < bestD) { bestD = dSeg; bestSeg = [coilWayPts[ci2], coilWayPts[ci2 + 1]]; }
+        }
+        if (bestSeg && bestD < 14.0) {
+          var c0 = bestSeg[0], c1 = bestSeg[1], cdx = c1[0] - c0[0], cdz = c1[1] - c0[1], cL = Math.hypot(cdx, cdz) || 1;
+          var ucx = cdx / cL, ucz = cdz / cL, ncx = -ucz, ncz = ucx;
+          if ((A[0] - c0[0]) * ncx + (A[1] - c0[1]) * ncz < 0) { ncx = -ncx; ncz = -ncz; }
+          var uDotN = ux * ncx + uz * ncz;
+          if (Math.abs(uDotN) > 0.25) {
+            var tHit = (7.0 - ((A[0] - c0[0]) * ncx + (A[1] - c0[1]) * ncz)) / uDotN;
+            if (tHit > 4.0 && tHit < L + 8.0) {
+              pts[pts.length - 1] = [A[0] + ux * tHit, A[1] + uz * tHit];
+              var alignDot = ucx * nx + ucz * nz;
+              if (alignDot < 0) { ucx = -ucx; ucz = -ucz; alignDot = -alignDot; }
+              if (alignDot > 0.25) endMitre = [ucx / alignDot, ucz / alignDot];
+            }
           }
-          if (tracks) {
-            box('bronzeC', -2.15, ym + h, 0, 0.24, 0.03, L + w * 0.1, hc(0x5a9c86));
-            box('bronzeC', 2.15, ym + h, 0, 0.24, 0.03, L + w * 0.1, hc(0x5a9c86));
+        }
+      }
+      return { id: ds.id, pts: pts, mouth: pts[pts.length - 1], endMitre: endMitre };
+    });
+
+    function onLeyCrossing(px, pz, halfW) {
+      var lt = px * G.leyDir[0] + pz * G.leyDir[1];
+      if (lt < 6.0 || lt > G.slotT + 6.0) return false;
+      return Math.abs(px * G.leyPerp[0] + pz * G.leyPerp[1]) < halfW;
+    }
+
+    /* Emit a true corner-mitred verdigris-stone avenue with intersection-cut kerbs and mitred twin bronze sledge rails */
+    function drawMitredWay(ptsIn, o) {
+      var P = [], i0;
+      for (i0 = 0; i0 < ptsIn.length; i0++) {
+        if (!P.length || Math.hypot(ptsIn[i0][0] - P[P.length - 1][0], ptsIn[i0][1] - P[P.length - 1][1]) > 0.35) {
+          P.push(ptsIn[i0]);
+        }
+      }
+      if (P.length < 2) return;
+      var n = P.length, U = [], Nn = [], Lseg = [], mv = [], si;
+      for (si = 0; si < n - 1; si++) {
+        var dx = P[si + 1][0] - P[si][0], dz = P[si + 1][1] - P[si][1], L = Math.hypot(dx, dz) || 1;
+        Lseg.push(L);
+        U.push([dx / L, dz / L]);
+        Nn.push([-dz / L, dx / L]);
+      }
+      mv.push(Nn[0]);
+      for (si = 1; si < n - 1; si++) {
+        var bx = Nn[si - 1][0] + Nn[si][0], bz = Nn[si - 1][1] + Nn[si][1], bl = Math.hypot(bx, bz);
+        if (bl < 1e-4) {
+          mv.push(Nn[si]);
+        } else {
+          bx /= bl; bz /= bl;
+          var dot = Math.max(0.38, bx * Nn[si][0] + bz * Nn[si][1]);
+          mv.push([bx / dot, bz / dot]);
+        }
+      }
+      mv.push(o.endMitre || Nn[n - 2]);
+
+      var ptAt = function (vi, s, segLimit) {
+        var vx = mv[vi][0] * s, vz = mv[vi][1] * s;
+        if (segLimit) {
+          var maxM = Math.max(o.w * 1.85, segLimit * 0.45), vm = Math.hypot(vx, vz);
+          if (vm > maxM) { vx *= maxM / vm; vz *= maxM / vm; }
+        }
+        return [P[vi][0] + vx, P[vi][1] + vz];
+      };
+      var lerp2 = function (a, b, t) { return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t]; };
+
+      var hw = o.w * 0.5, h = o.h;
+      for (si = 0; si < n - 1; si++) {
+        var lim = Math.min(Lseg[si], si > 0 ? Lseg[si - 1] : Lseg[si], si + 1 < n - 1 ? Lseg[si + 1] : Lseg[si]);
+        var mx = (P[si][0] + P[si + 1][0]) * 0.5, mz = (P[si][1] + P[si + 1][1]) * 0.5;
+        var ry = Math.atan2(U[si][0], U[si][1]);
+        var ym = o.yFn(mx, mz);
+
+        /* 1. Exact corner-mitred verdigris flagstone slab (zero overlap, zero corner spikes, zero missing wedges) */
+        emitQuadPrism(o.mk, [ptAt(si, -hw, lim), ptAt(si, hw, lim), ptAt(si + 1, hw, lim), ptAt(si + 1, -hw, lim)], ym, ym + h, o.col);
+
+        /* 2. Exact corner-mitred twin cast-bronze sledge tracks (never overshooting or sticking into corners!) */
+        if (o.tracks) {
+          [-2.15, 2.15].forEach(function (trS) {
+            emitQuadPrism('bronzeC', [
+              ptAt(si, trS - 0.13, lim), ptAt(si, trS + 0.13, lim),
+              ptAt(si + 1, trS + 0.13, lim), ptAt(si + 1, trS - 0.13, lim)
+            ], ym + h, ym + h + 0.032, hc(0x5a9c86));
+          });
+          /* Flush cast-bronze corner tie-bar across the inner-to-outer rail mitre so sledges pivot cleanly */
+          if (si > 0) {
+            var tieA = ptAt(si, -2.28, lim), tieB = ptAt(si, 2.28, lim);
+            var tdx = tieB[0] - tieA[0], tdz = tieB[1] - tieA[1], tL = Math.hypot(tdx, tdz) || 1;
+            var tnx = -tdz / tL * 0.16, tnz = tdx / tL * 0.16;
+            emitQuadPrism('bronzeC', [
+              [tieA[0] - tnx, tieA[1] - tnz], [tieB[0] - tnx, tieB[1] - tnz],
+              [tieB[0] + tnx, tieB[1] + tnz], [tieA[0] + tnx, tieA[1] + tnz]
+            ], ym + h, ym + h + 0.026, hc(0x78683c));
           }
-        });
-        if (tbl) tbl.push(mx, ym, mz, ry, w, L, h + 0.26);
+        }
+
+        /* 3. Intersection-aware mitred kerbs (opening cleanly at every district mouth, Ley crossing, and Gate arch) */
+        if (o.kerbMk) {
+          var kw = 0.48, kh = 0.25;
+          [-1, 1].forEach(function (side) {
+            var sIn = side * (hw - kw), sOut = side * hw;
+            var A0 = ptAt(si, sIn, lim), A1 = ptAt(si, sOut, lim);
+            var B0 = ptAt(si + 1, sIn, lim), B1 = ptAt(si + 1, sOut, lim);
+            var Am = lerp2(A0, A1, 0.5), Bm = lerp2(B0, B1, 0.5);
+            var kLen = Math.hypot(Bm[0] - Am[0], Bm[1] - Am[1]) || 1;
+            var nSub = Math.max(16, Math.ceil(kLen / 0.35)), j, runStart = -1;
+            var isGap = function (u) {
+              var q = lerp2(Am, Bm, u);
+              if (onLeyCrossing(q[0], q[1], 4.65)) return true;
+              if (Math.hypot(q[0] - G.gateXz[0], q[1] - G.gateXz[1]) < 7.6) return true;
+              if (o.cutMouths) {
+                for (var mi = 0; mi < trimmedDistStreets.length; mi++) {
+                  var mp = trimmedDistStreets[mi].mouth;
+                  if (Math.hypot(q[0] - mp[0], q[1] - mp[1]) < 3.66) return true;
+                }
+              }
+              return false;
+            };
+            var flushRun = function (t0, t1) {
+              if ((t1 - t0) * kLen < 0.45) return;
+              emitQuadPrism(o.kerbMk, [
+                lerp2(A0, B0, t0), lerp2(A1, B1, t0),
+                lerp2(A1, B1, t1), lerp2(A0, B0, t1)
+              ], ym + h, ym + h + kh, o.kerbCol);
+              /* Neat bronze curb-return cap at intersection openings */
+              if (t0 > 0.001) {
+                var cStart = lerp2(Am, Bm, t0);
+                cyl('bronzeC', cStart[0], ym + h, cStart[1], 0.25, kh + 0.05, hc(0x78683c), 6);
+              }
+              if (t1 < 0.999) {
+                var cEnd = lerp2(Am, Bm, t1);
+                cyl('bronzeC', cEnd[0], ym + h, cEnd[1], 0.25, kh + 0.05, hc(0x78683c), 6);
+              }
+            };
+            for (j = 0; j < nSub; j++) {
+              if (isGap((j + 0.5) / nSub)) {
+                if (runStart >= 0) { flushRun(runStart / nSub, j / nSub); runStart = -1; }
+              } else if (runStart < 0) {
+                runStart = j;
+              }
+            }
+            if (runStart >= 0) flushRun(runStart / nSub, 1.0);
+          });
+        }
+        if (o.tbl) o.tbl.push(mx, ym, mz, ry, o.w, Lseg[si], h + 0.25);
       }
     }
 
     try {
-      /* 6a. Great Coil (14 m verdigris-stone avenue + bronze runner tracks), Ley Way & 8 verdigris spiral streets */
-      drawRibbon(G.coilStreet, 14.0, 0.08, 'stoneP', hc(0x467667), 'bronzeC', hc(0x2e4e44), function () { return G.platY - 0.02; }, tblStreets, true);
+      /* 6a. Great Coil (14 m mitred verdigris-stone avenue + mitred bronze sledge tracks), Ley Way & 8 spiral streets */
+      drawMitredWay(coilWayPts, {
+        w: 14.0, h: 0.08, mk: 'stoneP', col: hc(0x467667),
+        kerbMk: 'bronzeC', kerbCol: hc(0x2e4e44),
+        yFn: function () { return G.platY - 0.02; }, tbl: tblStreets, tracks: true, cutMouths: true
+      });
       /* South Gate exterior sloped verdigris-stone & bronze causeway pavement (continuous smooth psurf along groundH) */
       (function () {
-        var gx = G.gateXz[0], zA = G.gateXz[1] + 7.2, zB = G.gateXz[1] + 112.0;
+        var gx = G.gateXz[0], zA = G.gateXz[1] + 6.5, zB = G.gateXz[1] + 112.0;
         psurf('stoneP', function (u, v) {
           var zz = zA + (zB - zA) * v;
-          return [gx - 7.1 + 14.2 * u, G.groundH(gx, zz) + 0.035, zz];
-        }, 2, 12, hc(0x467667), { flip: true });
+          return [gx - 7.0 + 14.0 * u, G.groundH(gx, zz) + 0.035, zz];
+        }, 2, 14, hc(0x467667), { flip: true });
         for (var ks = -1; ks <= 1; ks += 2) {
-          beam('bronzeC', [gx + ks * 7.1, G.platY + 0.14, zA], [gx + ks * 7.5, G.sabkhaY + 0.14, zB], 0.28, hc(0x34584c), true, 6);
-          beam('bronzeC', [gx + ks * 2.15, G.platY + 0.05, zA], [gx + ks * 2.15, G.sabkhaY + 0.05, zB], 0.12, hc(0x5ea28b), true, 6);
+          beam('bronzeC', [gx + ks * 6.76, G.platY + 0.14, zA], [gx + ks * 6.76, G.sabkhaY + 0.14, zB], 0.24, hc(0x34584c), false);
+          beam('bronzeC', [gx + ks * 2.15, G.platY + 0.07, zA], [gx + ks * 2.15, G.sabkhaY + 0.07, zB], 0.24, hc(0x5a9c86), false, undefined, 0.04);
         }
       })();
 
-      /* Straight 50.6 deg Ley Way + bronze sighting strip from Hall of Intention (t=8) all the way to the mole tip (t=mole1) */
+      /* Straight 50.6 deg Ley Way + bronze sighting strip from Hall of Intention (t=8) across ramps all the way to mole tip */
       var leyRy = Math.atan2(G.leyDir[0], G.leyDir[1]);
       var emitLeySpan = function (t0, t1, y0, w) {
         var L = t1 - t0, tm = (t0 + t1) / 2, mx = G.leyDir[0] * tm, mz = G.leyDir[1] * tm;
@@ -403,8 +573,19 @@
         });
         tblStreets.push(mx, y0, mz, leyRy, w, L, 0.14);
       };
-      emitLeySpan(8, G.moundLeyEdgeT - 1.5, G.moundY - 0.01, 8.6);
-      emitLeySpan(G.moundLeyEdgeT + 26.5, G.slotT - 8, G.platY - 0.01, 9.0);
+      var emitLeyRamp = function (t0, t1, yA, yB, w) {
+        var pAt = function (t, s) { return [G.leyDir[0] * t + G.leyPerp[0] * s, G.leyDir[1] * t + G.leyPerp[1] * s]; };
+        psurf('stoneP', function (u, v) {
+          var p = pAt(t0 + (t1 - t0) * v, (u - 0.5) * w);
+          return [p[0], yA + (yB - yA) * v + 0.03, p[1]];
+        }, 2, 8, hc(0x528878), {});
+        var aC = pAt(t0, 0), bC = pAt(t1, 0);
+        beam('bronzeC', [aC[0], yA + 0.07, aC[1]], [bC[0], yB + 0.07, bC[1]], 0.26, hc(0x6ac0a6), false, undefined, 0.05);
+      };
+      emitLeySpan(8, G.moundLeyEdgeT - 1.0, G.moundY - 0.01, 8.6);
+      emitLeyRamp(G.moundLeyEdgeT - 1.0, G.moundLeyEdgeT + 26.0, G.moundY, G.platY, 8.8);
+      emitLeySpan(G.moundLeyEdgeT + 26.0, G.slotT - 6.5, G.platY - 0.01, 9.0);
+      emitLeyRamp(G.slotT + 5.5, G.slotT + 38.0, G.platY, G.sabkhaY, 7.8);
       (function () {
         var ta = G.slotT + 38, tb = G.shoreT - 34, nS = 18, ds = (tb - ta) / nS, si4, tMid, gx2, gz2;
         for (si4 = 0; si4 < nS; si4++) {
@@ -413,7 +594,7 @@
           emitLeySpan(ta + si4 * ds, ta + (si4 + 1) * ds, G.groundH(gx2, gz2) + 0.03, 7.6);
         }
       })();
-      emitLeySpan(G.shoreT - 34, G.moleRange[1], G.moleY - 0.01, 7.2);
+      emitLeySpan(G.shoreT - 34, G.moleRange[1] + 2.0, G.moleY - 0.01, 7.2);
       /* Barge stair at the seaward tip of the 700 m ley mole */
       (function () {
         var mt = G.moleRange[1] + 2.5, mx = G.leyDir[0] * mt, mz = G.leyDir[1] * mt;
@@ -424,18 +605,27 @@
         });
       })();
 
-      /* Eight district & Gate Quarter verdigris-stone spiral streets with bronze-trimmed kerbs */
-      G.districtStreets.forEach(function (ds) {
-        drawRibbon(ds.pts, 7.0, 0.07, 'stoneP', hc(0x3f6e60), 'bronzeC', hc(0x4c8272), function () { return G.platY - 0.01; }, tblStreets, false);
+      /* Eight district & Gate Quarter mitred verdigris-stone spiral streets (trimmed flush to the Great Coil kerb) */
+      trimmedDistStreets.forEach(function (ds) {
+        drawMitredWay(ds.pts, {
+          w: 7.0, h: 0.07, mk: 'stoneP', col: hc(0x3f6e60),
+          kerbMk: 'bronzeC', kerbCol: hc(0x4c8272),
+          yFn: function () { return G.platY - 0.01; }, tbl: tblStreets,
+          tracks: false, cutMouths: false, endMitre: ds.endMitre
+        });
       });
 
-      /* 6a-2. Verdigris-stone & cast-bronze street furniture along the Great Coil and district spiral streets:
+      /* 6a-2. Verdigris-stone & cast-bronze street furniture set on paved kerbside bays OUTSIDE the carriageways:
                (0) Shang fangding bronze cauldrons on stone plinths, (1) battered verdigris-stone & bronze basking benches,
-               (2) twisted spiral-eye street pylons with clapperless chimes, (3) bronze-spouted monsoon curb troughs */
+               (2) twisted spiral-eye street pylons with clapperless chimes, (3) bronze-spouted monsoon curb troughs,
+               (4) twisted Rift-fern planters, (5) low leiwen Rift shrubbery beds */
       (function () {
-        var emitFurnPiece = function (fx, fz, fry, kindIdx) {
+        var emitFurnPiece = function (fx, fz, fry, kindIdx, bayW, bayD) {
           var fy = G.platY + 0.05;
+          streetFurnPlaced.push({ x: fx, z: fz, ry: fry, kind: kindIdx, w: bayW, d: bayD });
           W(fx, fy, fz, fry, function () {
+            /* Dressed verdigris-stone kerbside bay slab tying the piece cleanly back into the avenue kerb */
+            box('stoneP', 0, -0.07, 0.25, bayW + 0.55, 0.08, bayD + 0.75, hc(0x3b6356));
             if (kindIdx === 0) {
               /* Cast-bronze Shang fangding street cauldron on a verdigris-stone pedestal */
               box('stoneP', 0, 0, 0, 1.55, 0.34, 1.55, hc(0x36584d));
@@ -531,42 +721,77 @@
           });
         };
 
-        var clearOfSites = function (px, pz) {
-          /* Skip ley corridor and any placed building footprint */
+        var FURN_DIMS = [
+          [1.6, 1.6], [3.4, 1.2], [1.4, 1.0], [2.2, 1.35], [2.5, 2.5], [4.2, 1.95]
+        ];
+        var clearForStreetFurn = function (px, pz, fry, fw, fd) {
+          var rad = Math.hypot(fw, fd) * 0.5;
+          /* Must sit strictly on level +5 m city platform (not climbing Mound revetment or outside perimeter wall) */
+          if (Math.abs(G.groundH(px, pz) - G.platY) > 0.08) return false;
+          /* Strictly outside EVERY street carriageway (Great Coil 7.0 m, all 8 district spirals 3.5 m, Ley Way 4.5 m, Gate) */
+          if (polyDist2D(px, pz, coilWayPts) < 7.05 + fd * 0.5) return false;
+          for (var dsi = 0; dsi < trimmedDistStreets.length; dsi++) {
+            if (polyDist2D(px, pz, trimmedDistStreets[dsi].pts) < 3.55 + fd * 0.5) return false;
+          }
           var lt = px * G.leyDir[0] + pz * G.leyDir[1];
           var lp = Math.abs(px * G.leyPerp[0] + pz * G.leyPerp[1]);
-          if (lt > -10 && lp < 9.0) return false;
+          if (lt > -10 && lp < 5.2 + rad) return false;
+          if (Math.hypot(px - G.gateXz[0], pz - G.gateXz[1]) < 16.0) return false;
+          /* Clear of already-placed street furniture */
+          for (var sfi = 0; sfi < streetFurnPlaced.length; sfi++) {
+            var sf0 = streetFurnPlaced[sfi];
+            if (Math.hypot(px - sf0.x, pz - sf0.z) < rad + Math.hypot(sf0.w, sf0.d) * 0.5 + 2.5) return false;
+          }
+          /* True rotated-OBB clearance against every placed building, statue, well, planter & wall tower */
+          var cF = Math.cos(fry), sF = Math.sin(fry);
+          var candR = { x: px, z: pz, ux: cF, uz: -sF, hw: fw * 0.5 + 0.9, hd: fd * 0.5 + 0.9 };
           for (var si5 = 0; si5 < G.sites.length; si5++) {
             var sb2 = G.sites[si5];
-            if (Math.abs(px - sb2.x) < sb2.w * 0.5 + 2.6 && Math.abs(pz - sb2.z) < sb2.d * 0.5 + 2.6) return false;
+            if (Math.hypot(px - sb2.x, pz - sb2.z) > rad + Math.hypot(sb2.w, sb2.d) * 0.5 + 4.5) continue;
+            var cs2 = Math.cos(sb2.ry), sn2 = Math.sin(sb2.ry);
+            var siteR = { x: sb2.x, z: sb2.z, ux: cs2, uz: -sn2, hw: sb2.w * 0.5, hd: sb2.d * 0.5 };
+            if (KHAMLET.overlap(candR, siteR, 0.4)) return false;
+            /* Extra clearance directly in front of building doorways */
+            var doorX = sb2.x + sn2 * (sb2.d * 0.5 + 1.8), doorZ = sb2.z + cs2 * (sb2.d * 0.5 + 1.8);
+            if (Math.hypot(px - doorX, pz - doorZ) < rad + 2.0) return false;
           }
           return true;
         };
 
-        var walkRibbonFurn = function (pts, kerbOff, stepDist, seedBase) {
-          var segI, p0, p1, dx, dz, L, ux, uz, nx, nz, dCur, side, px, pz, kIdx;
+        var walkRibbonFurn = function (pts, roadHalf, stepDist, seedBase, allowPlanters) {
+          var segI, p0, p1, dx, dz, L, ux, uz, nx, nz, dCur, side, px, pz, kIdx, dm, kerbOff, fry;
           var seqF = seedBase;
           for (segI = 0; segI + 1 < pts.length; segI++) {
             p0 = pts[segI]; p1 = pts[segI + 1];
             dx = p1[0] - p0[0]; dz = p1[1] - p0[1]; L = Math.hypot(dx, dz);
-            if (L < stepDist * 0.9) continue;
+            if (L < 58) continue;
             ux = dx / L; uz = dz / L;
             nx = -uz; nz = ux;
-            for (dCur = 22; dCur < L - 22; dCur += stepDist) {
+            for (dCur = 28; dCur < L - 28; dCur += stepDist) {
               seqF++;
-              side = (seqF % 2 === 0) ? 1 : -1;
-              px = p0[0] + ux * dCur + nx * side * kerbOff;
-              pz = p0[1] + uz * dCur + nz * side * kerbOff;
-              if (!clearOfSites(px, pz)) continue;
-              kIdx = [4, 1, 2, 5, 0, 3, 2, 1][(seqF * 5 + segI) & 7];
-              emitFurnPiece(px, pz, Math.atan2(-nx * side, -nz * side), kIdx);
+              kIdx = allowPlanters
+                ? [4, 1, 2, 5, 0, 3, 2, 1][(seqF * 5 + segI) & 7]
+                : [0, 1, 2, 3][(seqF * 3 + segI) & 3];
+              dm = FURN_DIMS[kIdx];
+              kerbOff = roadHalf + dm[1] * 0.5 + 0.32;
+              /* Try preferred side first, then opposite side if blocked by a mouth or doorway */
+              for (var tryS = 0; tryS < 2; tryS++) {
+                side = (((seqF + tryS) % 2) === 0) ? 1 : -1;
+                px = p0[0] + ux * dCur + nx * side * kerbOff;
+                pz = p0[1] + uz * dCur + nz * side * kerbOff;
+                fry = Math.atan2(-nx * side, -nz * side);
+                if (clearForStreetFurn(px, pz, fry, dm[0], dm[1])) {
+                  emitFurnPiece(px, pz, fry, kIdx, dm[0], dm[1]);
+                  break;
+                }
+              }
             }
           }
         };
 
-        walkRibbonFurn(G.coilStreet, 5.8, 30, 11);
-        G.districtStreets.forEach(function (ds, di) {
-          walkRibbonFurn(ds.pts, 2.85, 52, 101 + di * 17);
+        walkRibbonFurn(coilWayPts, 7.0, 32, 11, true);
+        trimmedDistStreets.forEach(function (ds, di) {
+          walkRibbonFurn(ds.pts, 3.5, 56, 101 + di * 17, false);
         });
       })();
 
@@ -704,6 +929,8 @@
           var nSteps = Math.min(8, Math.ceil(drop / 0.28));
           for (k = 1; k <= nSteps; k++) {
             var sy = r.y - drop * (k / nSteps), sx2 = fr.x + fx * (0.45 * k), sz2 = fr.z + fz * (0.45 * k);
+            if (polyDist2D(sx2, sz2, coilWayPts) < 7.2) break;
+            if (trimmedDistStreets.some(function (ds2) { return polyDist2D(sx2, sz2, ds2.pts) < 3.7; })) break;
             (function (sx3, sy3, sz3, yaw3, gf3) {
               W(sx3, 0, sz3, yaw3, function () {
                 box('stoneP', 0, gf3 - 0.3, 0, 2.2, sy3 - (gf3 - 0.3), 0.52, hc(0x465048));
@@ -768,6 +995,9 @@
     pg.name = 'basilisk-civil-works';
     flushBuckets(PB, pg, true);
     WORLD.add(pg);
+    window._bsStreetFurn = streetFurnPlaced;
+    window._bsTrimmedStreets = trimmedDistStreets;
+    window._bsCoilWay = coilWayPts;
 
     if (SVTAGS) {
       if (tblPlinth.n > 0) SVTAGS.addSet({
