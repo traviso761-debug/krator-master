@@ -21,7 +21,8 @@ import numpy as np
 from PIL import Image
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-DEFAULT_SRC = os.path.join(HERE, 'krator-globe.html')
+GLOBE_DIR = os.path.normpath(os.path.join(HERE, '..', 'krator-globe'))
+DEFAULT_SRC = os.path.join(GLOBE_DIR, 'dist', 'krator-globe.html')
 
 
 def globe_from_pil(im_rgb, centre_u, centre_lat=0.0, N=260):
@@ -323,6 +324,8 @@ def encode_data_uri(im, fmt, **kwargs):
 
 def main():
     src_path = sys.argv[1] if len(sys.argv) > 1 else DEFAULT_SRC
+    if not os.path.exists(src_path) and src_path == DEFAULT_SRC:
+        subprocess.run([sys.executable, os.path.join(GLOBE_DIR, 'build.py')], check=True)
     if not os.path.exists(src_path):
         raise SystemExit(f'Source globe HTML not found: {src_path}')
 
