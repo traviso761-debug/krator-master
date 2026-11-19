@@ -4,6 +4,9 @@ import {report,LOAD,configureLoading,installErrorHandlers} from '../core/diag.js
 import {boot} from '../core/shell.js';
 import {build} from '../engine/build.js';
 import {landmarks} from './landmarks.js';
+import {towers} from './towers.js';
+import {civic} from './civic.js';
+import {oldtown,oldtownPeople} from './oldtown.js';
 import {dress} from '../core/dress.js';
 installErrorHandlers();window.LOAD=LOAD;
 configureLoading({
@@ -22,5 +25,5 @@ configureLoading({
   ],
   prefix:'raising Portland… ',labels:{'map-data':'reading the map',ground:'laying out the streets',buildings:'raising the buildings',details:'planting the trees',landmarks:'placing the landmarks',el:'running the MAX',traffic:'starting the traffic',ui:'opening the windows'}});
 // the bridges, the sign, the gate, the submarine, the tram and Mount Hood are Portland's, so they come with it
-const ctx=window._iz={defaultCity:'portland',models:[landmarks],extras:[{name:'dress',fn:dress}]};
+const ctx=window._iz={defaultCity:'portland',models:[landmarks,towers,civic,oldtown],extras:[{name:'dress',fn:dress},{name:'old town people',fn:oldtownPeople}]};
 boot(()=>build(ctx));

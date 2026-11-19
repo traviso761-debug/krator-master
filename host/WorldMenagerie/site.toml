@@ -297,6 +297,14 @@ scene = true
 blurb = "Shinjuku to Ginza: Shibuya Crossing, Meiji Jingū, the Imperial Palace, Tokyo Station and Tokyo Tower, and a map of the city as it grows."
 
 [[route]]
+path = "/barcelona"       # the old city and the Eixample from OpenStreetMap, Montjuïc to Park Güell; Gaudí and the other landmarks modelled in src/barcelona/
+aliases = ["/barcelona.html", "/bcn"]
+file = "barcelona.html"
+title = "Barcelona"
+scene = true
+blurb = "The Eixample's chamfered blocks, the Gothic Quarter and the port, Montjuïc to Park Güell: the Sagrada Família with its Jesus tower, Casa Batlló, La Pedrera and the rest, modelled."
+
+[[route]]
 path = "/venice"          # the historic centre from OpenStreetMap, where the canals are the streets
 aliases = ["/venice.html", "/venezia"]
 file = "venice.html"

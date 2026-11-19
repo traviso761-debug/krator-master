@@ -45,6 +45,7 @@ Page-only keys: the Backrooms' N (noclip), M (sound), R (start again); the City'
 | `/venice` | `/venice.html`, `/venezia` | `venice.html` | Venice: massing model |
 | `/rome` | `/rome.html`, `/roma` | `rome.html` | Rome: the historic centre, hills and all, its great buildings modelled |
 | `/tokyo` | `/tokyo.html`, `/東京` | `tokyo.html` | Tokyo: Shinjuku to Ginza from OpenStreetMap, Shibuya Crossing, Meiji Jingū, the Palace, Tokyo Station and Tokyo Tower modelled; a map of the city as it grows |
+| `/barcelona` | `/barcelona.html`, `/bcn` | `barcelona.html` | Barcelona: the old city and the Eixample from OpenStreetMap, Montjuïc to Park Güell; the Sagrada Família, Gaudí's houses and the city's landmarks modelled |
 | `/fortworth` | `/fortworth.html`, `/fort-worth`, `/cowtown`, `/stockyards` | `fortworth.html` | Fort Worth: downtown, the Stockyards and the Cultural District from OpenStreetMap |
 | `/yachats` | `/yachats.html`, `/capeperpetua`, `/cape-perpetua`, `/thorswell` | `yachats.html` | Yachats, Oregon: the village, the river mouth and Cape Perpetua from OpenStreetMap |
 | `/antigua` | `/antigua.html`, `/antiguaguatemala`, `/fuego`, `/volcanes` | `antigua.html` | Antigua Guatemala: the colonial town from OpenStreetMap on its real ground, under Agua, Acatenango and Fuego |
@@ -174,6 +175,29 @@ South Waterfront to the Fremont Bridge and from Washington Park to the Lloyd Dis
 - **Terrain:** the ground follows real elevation data (AWS Terrain Tiles, from SRTM/NED), so the West Hills,
   Marquam Hill and the river bluffs are modelled; streets, buildings, trees and traffic sit on the slopes, and
   Mount Hood and Mount St. Helens stand on the horizon.
+- **Modelled buildings** (2026-11-15), each on its OSM outline at its true height, the map's own boxes under it dropped:
+  - `src/portland/towers.js`, the skyline: the KOIN Center (brick and tan stone setbacks under the blue pyramid crown
+    and spire), Wells Fargo Center, Big Pink (`usbancorp`, replacing `bigpink`), PacWest, Fox Tower, Park Avenue West,
+    1000 Broadway, Standard Insurance, Moda Tower, Block 216, Umpqua, and the Portland Building with Portlandia over its
+    door. One mesh per material per tower; office windows light by `windowF`.
+  - `src/portland/civic.js`: Pioneer Courthouse, Pioneer Courthouse Square (the steps, the Weather Machine, the
+    milepost), Union Station and "Go By Train", Powell's, the Art Museum, Moda Center, the Coliseum's glass box, the
+    Convention Center spires, Providence Park, Lan Su Garden, Mill Ends Park. Its parts are merged by material (alike
+    materials shared) at `group()`: built piece by piece they were ~450 draw calls and halved the frame rate. A part an
+    animation hook moves carries `userData.keep`.
+  - `src/portland/oldtown.js`: the Burnside Bridge (`burnside`: the operator towers, bascule piers, approach arches,
+    lamps; Morrison and Broadway keep `bascule`), the cast-iron fronts of the Skidmore blocks, the Skidmore Fountain,
+    the White Stag sign on its own roof, the Saturday Market (shown 9:30-17:45 every day), the MAX stop, Voodoo
+    Doughnut, Chinatown's lanterns, Ankeny Alley, and Old Town's crowds (`oldtownPeople`).
+- **The look** (engine keys, opt-in, 2026-11-15): `riverColour`, `waterSpecular`, `waterShine` (a grey-green Willamette
+  without the white sun disc), `dropBeaches` ([lat, lon, r] of mapped beaches not drawn: one tagged on the seawall),
+  `canopyGround` ({colour, strength}: the ground takes the forest's colour under the canopy survey's crowns, so the West
+  Hills read as forest past the distance trees are drawn to); buff brick, terracotta and concrete among the reds, and
+  painted siding on houses city-wide.
+- **Memory:** the page holds about 3 GB in Firefox (Rome 2.9 GB), steady over time. Where it goes, measured 2026-11-18:
+  ~0.8 GB Firefox, ~0.45 GB reading the map, ~1 GB building the city, ~0.9 GB handing it to the GPU; the scene's own
+  buffers and textures are ~460 MB. Dropping uploaded arrays, freeing canvases and fewer shader programs each moved it
+  less than the measurement's noise (±150 MB); a real cut is building only the tiles near the camera (engine work).
 
 Data: `python3 tools/fetch-osm.py portland`, `python3 tools/fetch-terrain.py portland`, then `python3 tools/build-osm-city.py portland`; the canopy, `python3 tools/fetch-tcc.py portland`.
 
@@ -877,6 +901,56 @@ the first train is.
 Data: `python3 tools/fetch-osm.py tokyo`, `python3 tools/fetch-terrain.py tokyo`, then `python3 tools/build-osm-city.py tokyo`.
 A tower mapped as an outline with only its upper parts (the Docomo Yoyogi building's spire) keeps its outline up to its
 lowest part.
+
+### `/barcelona`: Barcelona
+
+The old city and the Eixample from OpenStreetMap on the shared engine, on their real ground, with the Mediterranean at
+sea level. The map runs from Montjuïc and the port to the Sagrada Família and Torre Glòries, and from Barceloneta's beach
+to Gràcia and Park Güell. It holds 68,541 buildings over 5.2 by 6.2 km. The ground rises from the beach to Montjuïc's castle (177 m) and to the
+Turó de la Rovira behind Park Güell. Cerdà's grid comes straight from the map: the cadastre's parcels fill the
+chamfered blocks round their courtyards, which are full of low workshops as they are in life.
+
+- **Landmarks** (`src/barcelona/landmarks.js`, on the shared kit `src/core/landkit.js`). Each is placed from its mapped
+  footprint (centroid and long axis). The mapped parts it replaces are cleared with `clearArea`.
+  - **The Sagrada Família as it stands in 2026.** The Latin cross of five naves and three, with the apse and its
+    chapels' spires, and the roof lanterns. The aisle pinnacles carry baskets of mosaic fruit.
+    - The Tower of Jesus Christ is 172.5 m to the top of its four-armed cross.
+    - The four Evangelists' towers stand at 135 m, each with its symbol. Mary's tower is 138 m, with its twelve-pointed star.
+    - The eight Apostles' spindles have spiralling louvres, the bands of yellow letters, and the mitred pinnacles in Venetian mosaic.
+    - The Nativity front is in its dark old stone, with the cypress over it. The Passion front has its leaning
+      portico and frieze.
+    - The Glory front is in scaffold, and two cranes turn over it. After dark the cross and the star burn white.
+  - **Casa Batlló:**
+    - a façade of trencadís tiles and discs, the bone-mask balconies and the sandstone noble floor;
+    - the dragon's-back roof shading green to blue to rose, its spine and the tower with St George's cross;
+    - Casa Amatller's stepped gable beside it.
+  - **La Pedrera** is built on its own mapped outline:
+    - each floor's stone band waves along the street fronts only, since a party wall stays flat;
+    - Jujol's iron tangles hang over the windows;
+    - the warriors (stairheads and chimneys) stand on the roof.
+  - **Park Güell:** the Nature Square raised on its mapped outline, the serpentine bench on its mapped line in broken
+    tile, the Hypostyle Room's columns, the double stair and the salamander, and the two gatehouses on their sites (the
+    checkered tower with its cross, the toadstool).
+  - **Torre Glòries:** Nouvel's bullet in its bands of colour under a glass skin. After dark its LEDs cycle.
+  - **The rest:** the Palau de la Música, the Arc de Triomf, the Columbus monument, the Hotel W's sail, the Cathedral's
+    front and spires, Santa Maria del Mar, the Boqueria's arch, the Palau Nacional with its domes and towers, Montjuïc
+    castle, the Venetian towers, Gehry's fish, and the Port Cable Car. The cable car runs on its mapped line and towers,
+    and two red cabins shuttle on it.
+- **Balconies** (`src/barcelona/balconies.js`, `balconies`). Every street front of the blocks gets a wrought-iron
+  balcony on every bay of every floor above the shops, on the facade texture's window grid. A party wall (with a building
+  just outside it) gets none. Some have their green or brown blinds down. They are built by 200 m tile near the camera,
+  as instances.
+- **Trees.** The engine plants plane trees, nettle trees, tipuanas and jacarandas on the streets (`treeSpecies`), and
+  stone pines and holm oaks on Montjuïc. `src/barcelona/palms.js` (`palms`) plants what the map leaves out:
+  - the palms along the seafront, the port, Lluís Companys and in the Plaça Reial;
+  - the rows of plane trees along La Rambla and the other Ramblas, Passeig de Gràcia, Sant Joan, the Gran Via and the Diagonal.
+- **Street life**: `src/core/streetlife.js` (shops, cafés, the plinth and string course), the dress's cornices,
+  traffic, and crowds at the sights.
+
+Data: `python3 tools/fetch-osm.py barcelona`, `python3 tools/fetch-terrain.py barcelona`, then `python3 tools/build-osm-city.py barcelona`.
+The sea is `seaLevelWater` with `terrain.coast`: the box floods at sea level, and the elevation is cut under the water on
+the sea side of the mapped coastline. There is no canopy step: the Forest Service's canopy covers the US only. Camp Nou
+lies 1.5 km west of the box and is not modelled.
 
 ### `/city17`: City 17
 
@@ -3240,6 +3314,7 @@ them (`.gitattributes` marks them). The generators share `tools/lib/geo.py`.
 | `data/cities/mthood-osm.json` | `tools/build-osm-city.py mthood` (with `terrain.lakeLevels`), from the cache of `tools/fetch-osm.py mthood` and `tools/fetch-terrain.py mthood` (3DEP) |
 | `data/cities/mthood-fine.json`, `mthood-far.json`, `mthood-mtn.json` | `tools/make-mthood.py` (after `build-osm-city.py mthood`) |
 | `data/cities/<city>-canopy.json` for mthood, portland | `tools/fetch-tcc.py <city>` (the Forest Service's canopy, clipped from the MRLC) |
+| `data/cities/barcelona-osm.json` | `tools/build-osm-city.py barcelona`, from the cache of `tools/fetch-osm.py barcelona` and `tools/fetch-terrain.py barcelona` |
 | `src/engine/build.js`, `src/iziz/build.js`, `src/voth/build.js` | `tools/build-page.py` (`./sitectl build`) from each `stages/` |
 | `krator.html` | `tools/build-krator.py` |
 
