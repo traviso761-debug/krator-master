@@ -20,7 +20,7 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `00-head.html` | 1 |  |
 | `26k-kit.js` | 6 |  |
 | `31-alt-takes.js` | <1 |  |
-| `40-lz-kit.js` | 31 **big** |  |
+| `40-lz-kit.js` | 41 **big** |  |
 | `42-lz-dress.js` | 3 |  |
 | `50-lz-dwell.js` | 11 |  |
 | `52-lz-nest.js` | 5 |  |
@@ -34,9 +34,9 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `59w-lz-works.js` | 35 **big** |  |
 | `60-lz-reliquary.js` | 11 |  |
 | `62-lk-capital.js` | 24 |  |
-| `63-lk-works.js` | 27 |  |
+| `63-lk-works.js` | 28 |  |
 | `64-lk-variety.js` | 17 |  |
 | `65-lk-statuary.js` | 52 **big** | A. REPRESENTATIVE OF THE LIZARDMEN (175); B. REPRESENTATIVE OF THE COIL (367); C. STRANGE THINGS ONLY THEY COULD UNDERSTAND (496) |
 | `66-lk-planters.js` | 12 |  |
 | `89-rows.js` | 2 |  |
-| `91g-lz-interior-lod.js` | 8 |  |
+| `91g-lz-interior-lod.js` | 9 |  |

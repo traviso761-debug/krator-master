@@ -163,12 +163,19 @@
     if (!active || !lodRoot || !cellList.length) return;
     var cutOn = !!(ANIMU && ANIMU.uCut && ANIMU.uCut.value > 0.01);
     var isWalk = !!(typeof KHOST !== 'undefined' && KHOST.cam && KHOST.cam.ctl && KHOST.cam.ctl.walk);
-    if (!cutOn && !isWalk) {
+    var cx = camera.position.x, cz = camera.position.z;
+    var doorOpenNear = false;
+    if (!cutOn && !isWalk && typeof KDOOR !== 'undefined' && KDOOR.list) {
+      for (var di = 0; di < KDOOR.list.length; di++) {
+        var dd = KDOOR.list[di];
+        if (dd.open > 0.02 && Math.hypot(dd.at[0] - cx, dd.at[2] - cz) < 65) { doorOpenNear = true; break; }
+      }
+    }
+    if (!cutOn && !isWalk && !doorOpenNear) {
       if (lodRoot.visible) lodRoot.visible = false;
       return;
     }
     lodRoot.visible = true;
-    var cx = camera.position.x, cz = camera.position.z;
     var tx = cx, tz = cz;
     if (!isWalk && typeof KHOST !== 'undefined' && KHOST.cam && KHOST.cam.ctl && KHOST.cam.ctl.target) {
       tx = KHOST.cam.ctl.target.x;

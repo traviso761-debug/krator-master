@@ -15,7 +15,7 @@
 defBuilding({key:'lk-terrace',name:'Stepped brick terrace house',seed:7719,caste:2,cut:true,w:18,d:14,h:9.6,budget:120000,
  tags:{types:['dwelling-multi'],wealth:'rich',role:'dwelling'},
  note:'an asymmetric two-level flat-roofed Mohenjo-daro terrace house in baked brick and polygonal basalt: exterior stone stair climbing to a rooftop basking deck shaded by a five-rib bone-and-mat pergola, oxblood and bronze leiwen bands, seven parapet horns, and the 1.76 m Makers\' door',
- build(o){const v=((o&&o.v)|0)%5,sg=v%2?-1:1,y0=.35,dh=lzDoorH(2),dw=dh*.62;lzCutFloor(y0);
+ build(o){const v=((o&&o.v)|0)%5,sg=v%2?-1:1,y0=.35,dh=lzDoorH(2),dw=dh*LZ_DW;lzCutFloor(y0);
   lzNoCut(()=>lkPlinth(16.6,12.6,y0,{leiwen:8.4}));
   const mLo=v===2?LK_ST:'brick',cLo=v===2?P('basalt'):P('brick');
   const mHi=v===0||v===3?'brick':v===4?'lacq':LK_ST,cHi=v===0||v===3?P('brick'):v===4?P('lacq'):P('basaltD');
@@ -48,7 +48,7 @@ defBuilding({key:'lk-terrace',name:'Stepped brick terrace house',seed:7719,caste
 defBuilding({key:'lk-kilnhouse',name:'Three-dome kiln house',seed:7720,caste:2,cut:true,w:16,d:14,h:10.2,budget:115000,
  tags:{types:['dwelling-multi','industry'],wealth:'rich',role:'workshop',job:'pottery'},
  note:'a Makers\' ceramic, glaze and brick-firing house: three corbelled beehive domes in a 1 : 1.25 : 1.56 whorl joined to a low oxblood-and-basalt moulding wing, smoking bronze-collared flues and turquoise glaze vats',
- build(o){const v=((o&&o.v)|0)%5,chir=v%2?-1:1,y0=.3,dh=lzDoorH(2),dw=dh*.62;lzCutFloor(y0);
+ build(o){const v=((o&&o.v)|0)%5,chir=v%2?-1:1,y0=.3,dh=lzDoorH(2),dw=dh*LZ_DW;lzCutFloor(y0);
   lzNoCut(()=>lkPlinth(14.8,12.8,y0,{leiwen:7.2}));
   const dMk=v===2?LK_ST:v===4?'earthR':'brick',dCol=v===2?P('basalt'):v===4?P('earth'):P('brick');
   const domes=[[chir*4.1,-2.8,1.95],[chir*1.2,-3.3,2.45],[-chir*2.6,-2.2,3.15]];
@@ -74,7 +74,7 @@ defBuilding({key:'lk-kilnhouse',name:'Three-dome kiln house',seed:7720,caste:2,c
 defBuilding({key:'lk-archive',name:'Stepped seal and stela archive',seed:7721,caste:5,cut:true,w:17,d:15,h:12.8,budget:130000,
  tags:{types:['civic','religious'],wealth:'rich',role:'hall',job:'scribing'},
  note:'an Interpreters\' and Scribe-Tenders\' archive for the Mound and district courts: stepped L-plan cyclopean basalt and oxblood lacquer halls roofed in verdigris-patinated bronze slabs, a twisted five-course corner lantern with glowing spiral-eye oculi, and mirrored stelae at the 3.5 m portal',
- build(o){const v=((o&&o.v)|0)%5,sg=v%2?-1:1,y0=.38,dh=lzDoorH(5),dw=dh*.62;lzCutFloor(y0);
+ build(o){const v=((o&&o.v)|0)%5,sg=v%2?-1:1,y0=.38,dh=lzDoorH(5),dw=dh*LZ_DW;lzCutFloor(y0);
   lzNoCut(()=>lkPlinth(15.8,13.8,y0,{leiwen:9.6}));
   const wMk=v===1?'lacq':v===3?'brick':LK_PL,wCol=v===1?P('lacq'):v===3?P('brick'):P('basaltD');
   const capMk=v===2?'scaleOlive':'bronzeC',capCol=v===2?P('jade'):P('verd');
@@ -94,10 +94,10 @@ defBuilding({key:'lk-archive',name:'Stepped seal and stela archive',seed:7721,ca
      W(0,yy+1.1,0,ry,()=>box('lacqR',0,0,0,ww+.14,.12,ww+.14,P('oxblood')));
      if(i===2||i===4)W(0,yy+.6,0,ry,()=>lzEye(0,0,ww/2+.03,0,.3,{mk:'bronze',glow:true}));}});
     for(let i=0;i<5;i++){const a=i*TAU/5;lzHorn(Math.cos(a)*1.3,6.2,Math.sin(a)*1.3,Math.atan2(Math.cos(a),Math.sin(a)),1.7,.12,{curl:.52,lean:.3,mk:'ivory'});}});
-   W(sg*2.6,y0+1.4,4.8-.08*1.4+.05,0,()=>lzGlyphSpiral(3.6,2.4,{mk:'bronze',turns:3,mirror:sg<0}));
-   lkEyes(5,12.2,y0+3.7,4.8-.08*3.7+.06,.28,2.6);
+   W(sg*2.8,y0+1.4,4.8-.08*1.4+.05,0,()=>lzGlyphSpiral(3.4,2.4,{mk:'bronze',turns:3,mirror:sg<0}));
+   lkEyes(5,12.2,y0+3.8,4.8-.08*3.8+.06,.28,2.8);
    lzPortal(-sg*1.8,y0,4.86,0,dh,{mk:'bronze',eye:true});lzThreshold(-sg*1.8,5.1,0,dw);
-   lzStela(-sg*1.8-2.4,5.9,.12,2.4,.68,{});lzStela(-sg*1.8+2.4,5.9,-.12,2.4,.68,{mirror:true,wrapped:v===4});});
+   lzStela(-sg*1.8-2.6,5.9,.12,2.4,.68,{});lzStela(-sg*1.8+2.6,5.9,-.12,2.4,.68,{mirror:true,wrapped:v===4});});
   lzFurnRoom(13.0,8.4,y0,'court',{beds:0,noHearth:true,ceil:4.1,extra:[['lizardmen_court_desk',-3.8,-1.8,0],['lizardmen_court_desk',3.8,-1.8,0],
    ['lizardmen_court_bookcase',-5.6,.6,PI/2],['lizardmen_court_bookcase',5.6,.6,-PI/2],['lizardmen_court_scroll',0,-2.8,0],['lizardmen_court_candelabra',-2.2,2.2,0],['lizardmen_court_candelabra',2.2,2.2,0]]});}});
 
@@ -105,7 +105,7 @@ defBuilding({key:'lk-archive',name:'Stepped seal and stela archive',seed:7721,ca
 defBuilding({key:'lk-guildhall',name:'Capital lacquer and craft hall',seed:7722,caste:'all',cut:true,w:21,d:14,h:10.6,budget:130000,
  tags:{types:['industry','civic'],wealth:'rich',role:'workshop',job:'weaving'},
  note:'the stone capital\'s counterpart to the village reed hall: battered baked-brick and black-lacquer walls on a bronze-inlaid plinth, eleven gleaming hexapod bone or ivory ribs crossing high above an oxblood-lacquered shingle, jade-scale or verdigris-bronze carapace, and a nested Bulwark-height portal',
- build(o){const v=((o&&o.v)|0)%5,L=16.6,Wd=9.4,wh=3.0,rh=5.4,y0=.36,dh=lzDoorH(6),dw=dh*.62;lzCutFloor(y0);
+ build(o){const v=((o&&o.v)|0)%5,L=16.6,Wd=9.4,wh=3.0,rh=5.4,y0=.36,dh=lzDoorH(6),dw=dh*LZ_DW;lzCutFloor(y0);
   lzNoCut(()=>lkPlinth(19.2,12.0,y0,{leiwen:10.4}));
   const wMk=v===1||v===4?'brick':'lacq',wCol=v===1||v===4?P('brick'):v===2?P('oxblood'):P('lacq');
   const rMk=v===1?'scaleOlive':v===2?'basalt':v===3?'bronzeC':'shingle';
@@ -117,9 +117,9 @@ defBuilding({key:'lk-guildhall',name:'Capital lacquer and craft hall',seed:7722,
    back:[lzVent(4,3.6,1.8),lzVent(4,L/2,1.8),lzVent(4,L-3.6,1.8)]});
   lzRibRoof(L,Wd,y0+wh+.05,y0+wh+rh,11,{mk:rMk,col:rCol,over:.72,ribR:.17,ribMk:rbMk,ribCol:rbCol,past:.38,bend:.96,ext:.6,endMk:'lacq',endCol:P('lacq'),leanEnds:{left:.09,right:-.04},y0});
   lzNoCut(()=>{
-   for(const s of [-1,1])W(s*4.8,y0+1.1,Wd/2-.08*1.1+.05,0,()=>lzLeiwen(3.4,1.35,{cell:.28,mk:v===0?'bronze':'lacqR',back:'lacq',chir:s}));
-   lkEyes(5,L-3,y0+wh*.78,Wd/2-.08*wh*.78+.06,.3,2.6);
-   lzPortal(0,y0,Wd/2+.08,0,dh,{mk:v%2?'ivory':'bronze',eye:true});lzThreshold(0,Wd/2+.26,0,dw);});
+   for(const s of [-1,1])W(s*5.2,y0+.58,Wd/2-.08*.58+.05,0,()=>lzLeiwen(3.1,1.18,{cell:.28,mk:v===0?'bronze':'lacqR',back:'lacq',chir:s}));
+   lkEyes(5,L-3,y0+wh*.82,Wd/2-.08*wh*.82+.06,.28,2.9);
+   lzPortal(0,y0,Wd/2+.08,0,dh,{mk:v%2?'ivory':'bronze',eye:true,shared:true});lzThreshold(0,Wd/2+.26,0,dw);});
   lzFurnRoom(L-1.2,Wd-1.0,y0,'court',{beds:0,noHearth:true,ceil:4.8,extra:[['lizardmen_common_loom',-5.2,-2.4,0],['lizardmen_common_workbench',0,-2.6,0],
    ['generic_trade_display',5.2,-2.4,0],['lizardmen_common_screen',3.4,.8,PI/2],['generic_trade_press',-2.4,1.6,PI/2],['lizardmen_court_cabinet',5.6,1.8,-PI/2]]});}});
 
@@ -127,19 +127,19 @@ defBuilding({key:'lk-guildhall',name:'Capital lacquer and craft hall',seed:7722,
 defBuilding({key:'lk-rowhouse',name:'Two-storey Drover townhouse',seed:7723,caste:3,cut:true,w:15,d:12,h:10.4,budget:105000,
  tags:{types:['dwelling-multi'],wealth:'rich',role:'dwelling'},
  note:'a tall narrow two-storey Mohenjo-daro townhouse for Basilisk\'s dense Drover streets: battered basalt ground walls carrying a baked-brick upper storey, cantilevered stone basking balcony, and jade-scale, oxblood-shingle or flat horn-crowned roofs',
- build(o){const v=((o&&o.v)|0)%5,L=12.6,Wd=8.8,y0=.35,dh=lzDoorH(3),dw=dh*.62;lzCutFloor(y0);
+ build(o){const v=((o&&o.v)|0)%5,L=12.6,Wd=8.8,y0=.35,dh=lzDoorH(3),dw=dh*LZ_DW,dx=v%2?1.65:-1.65;lzCutFloor(y0);
   lzNoCut(()=>lkPlinth(13.8,10.2,y0,{leiwen:6.8}));
   const T0=lzBatterRoom(L,Wd,y0,2.8,LK_ST,P('basalt'),{lean:{front:.06,back:-.04,left:.05,right:-.03},
-   front:[{s:L/2+(v%2?1.4:-1.4),w:dw,h:dh,door:true},lzVent(3,2.2,1.7),lzVent(3,L-2.2,1.7)],back:[lzVent(3,3.2,1.7),lzVent(3,L-3.2,1.7)]});
+   front:[{s:L/2+dx,w:dw,h:dh,door:true},lzVent(3,2.2,1.7),lzVent(3,L-2.2,1.7)],back:[lzVent(3,3.2,1.7),lzVent(3,L-3.2,1.7)]});
   lzCourseRing(T0.T,y0+2.56,.24,1.0,LK_PL,P('basaltC'));
   const T1=lzBatterRoom(L-.3,Wd-.3,y0+2.8,2.5,v===3?LK_PL:'brick',P(v===3?'basaltD':'brick'),{lean:{front:.05,back:-.03,left:.05,right:-.03},
    front:[lzDoor(3,(L-.3)/2),lzVent(3,2.2,1.4),lzVent(3,L-2.5,1.4)],back:[lzVent(3,3.2,1.4),lzVent(3,L-3.5,1.4)]});
-  /* cantilevered stone basking balcony on +z */
+  /* cantilevered stone basking balcony on +z (three brackets: odd, flanking the ground portal cleanly) */
   lzNoCut(()=>{
    box(LK_PL,0,y0+2.68,Wd/2+.55,7.4,.22,1.35,P('basaltD'));
-   for(const bx of [-3.1,-1.0,1.0,3.1])box(LK_ST,bx,y0+2.15,Wd/2+.32,.36,.55,.85,P('basalt'));
+   for(const bx of [-3.3,0,3.3])box(LK_ST,bx,y0+2.15,Wd/2+.32,.36,.55,.85,P('basalt'));
    for(const hx of [-3.4,0,3.4])lzHorn(hx,y0+2.9,Wd/2+1.12,0,1.05,.08,{curl:.5,lean:.25,mk:'ivory'});
-   const dx=v%2?1.4:-1.4;lzPortal(dx,y0,Wd/2+.07,0,dh,{mk:v===1?'lacqR':'bronze'});lzThreshold(dx,Wd/2+.25,0,dw);});
+   lzPortal(dx,y0,Wd/2+.07,0,dh,{mk:v===1?'lacqR':'bronze'});lzThreshold(dx,Wd/2+.25,0,dw);});
   if(v===2){
    lzSlab(T1.T,y0+5.3,.3,LK_PL,P('basaltD'),.22);
    lzNoCut(()=>{for(const x of lzSpan(-5.0,5.0,7))lzHorn(x,y0+5.6,3.8,0,1.3,.1,{curl:.5,lean:.22,mk:'horn'});});
@@ -156,7 +156,7 @@ defBuilding({key:'lk-rowhouse',name:'Two-storey Drover townhouse',seed:7723,cast
 defBuilding({key:'lk-bastion',name:'Twin-towered warrior bastion',seed:7724,caste:4,cut:true,w:18,d:16,h:14.4,budget:140000,
  tags:{types:['dwelling-multi','military'],wealth:'rich',role:'dwelling'},
  note:'a fortified urban garrison lodge for Line warriors and Bulwarks: two asymmetric battered towers (one higher by 1.25x, the Coil\'s ratio) flanking a flat-roofed cyclopean and baked-brick armoury hall with both the 2.8 m and 4.4 m portals and crowns of ivory or basalt horns',
- build(o){const v=((o&&o.v)|0)%5,sg=v%2?-1:1,y0=.38,dh4=lzDoorH(4),dw4=dh4*.62,dh6=lzDoorH(6),dw6=dh6*.62;lzCutFloor(y0);
+ build(o){const v=((o&&o.v)|0)%5,sg=v%2?-1:1,y0=.38,dh4=lzDoorH(4),dw4=dh4*LZ_DW,dh6=lzDoorH(6),dw6=dh6*LZ_DW;lzCutFloor(y0);
   lzNoCut(()=>lkPlinth(16.8,14.8,y0,{leiwen:9.2}));
   const wMk=v===1||v===3?'brick':LK_ST,wCol=v===1||v===3?P('brick'):P('basalt');
   /* central armoury hall (14.4 x 11.2 m, h 5.8 m) with dual caste 4 & 6 portals */
@@ -173,8 +173,8 @@ defBuilding({key:'lk-bastion',name:'Twin-towered warrior bastion',seed:7724,cast
     const hMk=v===1||v===3?'ivory':v===4?'bronzeC':LK_PL,hCol=v===1||v===3?P('tusk'):v===4?P('verd'):P('basaltD');
     for(let i=0;i<7;i++){const a=i*TAU/7;lzHorn(Math.cos(a)*1.55,th,Math.sin(a)*1.55,Math.atan2(Math.cos(a),Math.sin(a)),1.85,.13,{curl:.52,lean:.28,mk:hMk,col:hCol});}});
    for(const x of lzSpan(-5.8,5.8,9))lzHorn(x,y0+6.16,5.1,0,1.4,.11,{curl:.5,lean:.22,mk:LK_PL,col:P('basaltD')});
-   W(.2,y0+4.85,5.6-.07*4.85+.05,0,()=>lzLeiwen(9.6,.72,{cell:.28,mk:v%2?'lacqR':'bronze',back:'lacq'}));
-   lzPortal(-2.4,y0,5.68,0,dh6,{mk:'bronze',eye:true});lzThreshold(-2.4,5.92,0,dw6);
+   W(.2,y0+4.95,5.6-.07*4.95+.05,0,()=>lzLeiwen(9.6,.68,{cell:.28,mk:v%2?'lacqR':'bronze',back:'lacq'}));
+   lzPortal(-2.4,y0,5.68,0,dh6,{mk:'bronze',eye:true,shared:true});lzThreshold(-2.4,5.92,0,dw6);
    lzPortal(2.8,y0,5.68,0,dh4,{mk:v===1?'lacqR':'bronze'});lzThreshold(2.8,5.88,0,dw4);});
   for(let c=6;c>=3;c--)lmArmour(-5.2+(6-c)*2.2,-4.0,0,LZ_CASTE[c].h);
   lmRack(4.6,-4.0,0,7);

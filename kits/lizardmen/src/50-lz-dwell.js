@@ -9,7 +9,7 @@
 function ldCell(x,z,r,o){o=o||{};const h=r*1.35,n=o.n||5,col=o.col||P('earth');
  W(x,0,z,o.ry||0,()=>{lzDome(0,0,[[r,0],[r*1.03,h*.28],[r*.92,h*.58],[r*.6,h*.86],[r*.18,h*1.12],[r*.03,h*1.32],[0,h*1.34]],{mk:'earth',col,seg:14,door:o.door});
   for(let i=0;i<n;i++){const a=i*TAU/n+(o.a0||0),bx=Math.cos(a)*r*1.05,bz=Math.sin(a)*r*1.05;if(o.door&&Math.abs(((a-PI/2)%TAU+TAU)%TAU)<.5)continue;lzHorn(bx,0,bz,Math.atan2(-bx,-bz),r*1.6,r*.24,{curl:.5,lean:-.25,mk:'horn',nt:8,ns:6});}
-  if(o.door){const dh=o.door,dw=dh*.62;lzPortal(0,0,r*1.02,0,dh,{mk:'lacq'});lzThreshold(0,r+.1,0,dw);}});}
+  if(o.door){const dh=o.door,dw=dh*LZ_DW;lzPortal(0,0,r*1.02,0,dh,{mk:'lacq'});lzThreshold(0,r+.1,0,dw);}});}
 defBuilding({key:'lz-warren',name:"Tenders' cell-warren",seed:7001,caste:1,cut:true,w:22,d:19,h:9.4,budget:110000,
  tags:{types:['dwelling-multi'],wealth:'middle',role:'dwelling'},
  note:'the Tenders (caste 1, 1.22 m): seven earth cells in a whorl, each 1.25 x the last and turned 105 degrees from it, buttressed by horns leaning onto the domes; a 1.4 m slit door a human must stoop through; the largest cell opens',
@@ -60,7 +60,7 @@ defBuilding({key:'lz-lodge',name:"Warriors' lodge",seed:7004,caste:4,cut:true,w:
  build(o){const L=15,Wd=9.5,h=8.6;lzCutFloor(0);
   /* the vault runs along local x; the frame is turned so the +x gable is the front */
   W(0,0,0,-PI/2,()=>{box('stoneP',0,0,0,L+1.4,.2,Wd+1.4,P('basaltD'));
-   lzTuskVault(L,Wd,h,7,{r:.36,mk:'ivory',skinMk:'hide',skinCol:P('hide'),eaveY:1.3,y0:.2,doors:[{z:2.6,c:4},{z:-2.2,c:6}],eyes:[[.3,h*.62],[2.3,h*.4],[-2.3,h*.4]]});
+   lzTuskVault(L,Wd,h,7,{r:.36,mk:'ivory',skinMk:'hide',skinCol:P('hide'),eaveY:1.85,y0:.2,doors:[{z:2.35,c:4},{z:-1.45,c:6}],eyes:[[.75,h*.66],[2.5,h*.46],[-1.45,h*.64]]});
    lzFurnRoom(Wd-1,L-1.2,.2,'common',{beds:3,ceil:h*.6,extra:[['generic_trade_armour_stand',-1,-L/2+1.2,0],['generic_trade_armour_stand',1.2,-L/2+1.2,0],['generic_trade_weapon_rack',-3.6,0,PI/2],['lizardmen_training_training_dummy',3.2,5.2,0]]});});}});
 /* ---------------------------------------------------------------- the Interpreters' house: the village lantern-tower in earth, brick, cane, bone and lacquer */
 defBuilding({key:'lz-tower',name:"Interpreters' house",seed:7005,caste:5,cut:true,w:11,d:11,h:15.6,budget:100000,
@@ -68,7 +68,7 @@ defBuilding({key:'lz-tower',name:"Interpreters' house",seed:7005,caste:5,cut:tru
  note:'the Interpreters (caste 5, 3.03 m) in the villages: a battered hall of rammed earth and baked brick buttressed by horns, carrying five twisted courses of brick, woven cane and oxblood lacquer inside a seven-rib bone exoskeleton, bronze spiral-eye oculi and a cured-hide cap crowned with seven horns; a 3.5 m door with nested lacquer frames',
  build(o){const y0=.32,wh=4.3,wB=7.6,n=5,lh=8.0,lw0=5.3,lw1=3.2;lzCutFloor(0);
   box('earthR',0,0,0,9.8,.16,9.8,P('earthP'));box('brick',0,.16,0,8.4,.16,8.4,P('brick'));
-  const dh=lzDoorH(5),dw=dh*.62;
+  const dh=lzDoorH(5),dw=dh*LZ_DW;
   /* the battered earth-and-brick hall below, leaning in on front/left and out on back/right */
   const T=lzBatterRoom(wB,wB,y0,wh,'earth',P('earth'),{lean:{front:.08,back:-.05,left:.09,right:-.04},
    mkf:s=>s==='front'?'brick':'earth',colf:s=>s==='front'?P('brick'):P('earth'),
@@ -79,9 +79,9 @@ defBuilding({key:'lz-tower',name:"Interpreters' house",seed:7005,caste:5,cut:tru
   /* seven horn buttresses leaning onto the battered hall (skipping the +z portal) and mirrored lacquer leiwen panels */
   lzNoCut(()=>{
    for(let i=0;i<7;i++){const a=i*TAU/7+.22,bx=Math.cos(a)*4.05,bz=Math.sin(a)*4.05;
-    if(bz>2.6&&Math.abs(bx)<2.1)continue;
+    if(bz>2.6&&Math.abs(bx)<2.3)continue;
     lzHorn(bx,.16,bz,Math.atan2(-bx,-bz),4.2,.2,{curl:.45,lean:-.2,mk:'horn',nt:8,ns:6});}
-   for(const s of [-1,1])W(s*2.35,y0+1.25,wB/2-.08*1.25+.04,0,()=>lzLeiwen(1.35,1.35,{cell:.34,mk:'bronze',back:'lacq',chir:s}));
+   for(const s of [-1,1])W(s*2.55,y0+1.35,wB/2-.08*1.35+.04,0,()=>lzLeiwen(1.25,1.25,{cell:.34,mk:'bronze',back:'lacq',chir:s}));
    lzPortal(0,y0,wB/2+.05,0,dh,{mk:'lacqR',eye:true});});
   lzThreshold(0,wB/2+.3,0,dw);
   /* five twisted upper courses of baked brick, woven cane and lacquer, strapped inside a 7-rib bone exoskeleton */

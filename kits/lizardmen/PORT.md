@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 19 (6%) | 0 (0%) | 8 (3%) | 1 (0%) | 273 (90%) |
+| KB | 19 (6%) | 0 (0%) | 9 (3%) | 1 (0%) | 284 (91%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -15,10 +15,10 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/00-head.html` | 1.2 | [web] | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 | `src/26k-kit.js` | 6.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/31-alt-takes.js` | 0.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the tables core/engine 30-geo.js emit reads (MAT_VAR, GABLE_ALT_K): plain data |
-| `src/40-lz-kit.js` | 30.7 | [draw] | 0 | 0 | 0 | 0 | 0 | 24 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/40-lz-kit.js` | 41.0 | [draw] | 4 | 0 | 0 | 0 | 0 | 33 | 0 | 3 | 0 | 0 | 0 |  |
 | `src/42-lz-dress.js` | 3.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/50-lz-dwell.js` | 11.1 | [draw] | 0 | 0 | 0 | 0 | 0 | 9 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/52-lz-nest.js` | 5.2 | [draw] | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/50-lz-dwell.js` | 11.2 | [draw] | 0 | 0 | 0 | 0 | 0 | 9 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/52-lz-nest.js` | 5.3 | [draw] | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/54-lz-trade.js` | 15.8 | [draw] | 2 | 0 | 0 | 0 | 0 | 20 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/55-lz-special.js` | 6.7 | [draw] | 0 | 0 | 0 | 0 | 0 | 12 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/56-lz-military.js` | 6.7 | [draw] | 0 | 0 | 0 | 0 | 0 | 8 | 0 | 0 | 0 | 0 | 0 |  |
@@ -28,13 +28,13 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/59-lz-trades.js` | 7.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the Voth census table: no three.js, no geometry, no DOM |
 | `src/59w-lz-works.js` | 35.2 | [draw] | 0 | 0 | 0 | 0 | 0 | 78 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/60-lz-reliquary.js` | 10.7 | [draw] | 7 | 2 | 0 | 0 | 0 | 12 | 2 | 0 | 0 | 0 | 0 | split: the antechamber's dust (a Points layer on a frame hook) and the shimmer material hook are browser side; in Godot a GPU particle and a .gdshader |
-| `src/62-lk-capital.js` | 24.2 | [draw] | 0 | 0 | 0 | 0 | 0 | 16 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/63-lk-works.js` | 27.5 | [draw] | 0 | 0 | 0 | 0 | 0 | 42 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/64-lk-variety.js` | 17.1 | [draw] | 0 | 0 | 0 | 0 | 0 | 7 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/62-lk-capital.js` | 24.3 | [draw] | 0 | 0 | 0 | 0 | 0 | 16 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/63-lk-works.js` | 28.0 | [draw] | 0 | 0 | 0 | 0 | 0 | 42 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/64-lk-variety.js` | 17.2 | [draw] | 0 | 0 | 0 | 0 | 0 | 7 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/65-lk-statuary.js` | 52.3 | [draw] | 0 | 0 | 0 | 0 | 0 | 27 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/66-lk-planters.js` | 12.3 | [draw] | 0 | 0 | 0 | 0 | 0 | 28 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/89-rows.js` | 1.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/91g-lz-interior-lod.js` | 8.5 | [G native] | 3 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/91g-lz-interior-lod.js` | 8.8 | [G native] | 3 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 |  |
 
 ## Notes
 

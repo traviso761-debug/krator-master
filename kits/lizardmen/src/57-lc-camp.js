@@ -29,7 +29,7 @@ function lcShield(r){WX(0,0,0,0,PI/2,0,()=>{cyl('lacq',0,-.06,0,r,.06,P('lacq'),
 defBuilding({key:'lc-hide',name:'Hide tent',seed:7421,caste:4,cut:true,w:9.4,d:9.4,h:6.8,budget:40000,
  tags:{types:['dwelling-multi','military'],wealth:'poor',role:'dwelling'},
  note:"the Line warriors' tent (caste 4, a 2.77 m door): a hide skin from the bone hall's stock over seven hexapod ribs that lean in from outside it, cross above the apex and run on as spikes, a bone collar lashing them, seven stakes and cords; basking slabs inside",
- build(o){const R=3.2,h=4.6,dh=lzDoorH(4),dw=+(dh*.62).toFixed(2);lzCutFloor(0);
+ build(o){const R=3.2,h=4.6,dh=lzDoorH(4),dw=+(dh*LZ_DW).toFixed(2);lzCutFloor(0);
   /* the skin sags INWARD between the apex and the foot (a hide stretched over a frame), so the ribs stay outside it */
   lzDust(0,0,R+.9);lcSkin(R,h,dh,dw,{mk:'hide',col:P('hide'),bulge:-.07});
   lzNoCut(()=>{lcRibs(7,R,h,{r:.11,bulge:-.07});for(let i=0;i<7;i++)lcStake((i+.5)*TAU/7,R,.35);});
@@ -38,7 +38,7 @@ defBuilding({key:'lc-hide',name:'Hide tent',seed:7421,caste:4,cut:true,w:9.4,d:9
 defBuilding({key:'lc-shield',name:'Pole-and-shield tent',seed:7422,caste:6,cut:true,w:12.6,d:12.6,h:9.8,budget:70000,
  tags:{types:['dwelling-multi','military'],wealth:'middle',role:'dwelling'},
  note:"the Bulwarks' tent (caste 6, a 4.37 m door): one great leg-bone pole running on past the apex with five horns at its collar, the pale hide skin pegged to eleven short bone posts, and thirteen round black-lacquer shields with bronze rims and spiral-eye bosses: twelve leaning round the skirt, the thirteenth hung over the door",
- build(o){const R=4.6,h=7.2,dh=lzDoorH(6),dw=+(dh*.62).toFixed(2);lzCutFloor(0);
+ build(o){const R=4.6,h=7.2,dh=lzDoorH(6),dw=+(dh*LZ_DW).toFixed(2);lzCutFloor(0);
   lzDust(0,0,R+1);lcSkin(R,h,dh,dw,{mk:'hideP',col:P('hideP'),bulge:.06});
   lzNoCut(()=>{beam('bones',[0,0,0],[0,h+1.6,0],.2,P('boneO'),true,9,.07);ring('rope',0,h-.1,0,.26,.04,P('reedD'),0,0,0,10);
    for(let i=0;i<5;i++){const a=i*TAU/5+.3;lzHorn(Math.sin(a)*.2,h-.2,Math.cos(a)*.2,a,1.4,.06,{curl:.5,lean:.5,mk:'horn'});}
@@ -51,20 +51,20 @@ defBuilding({key:'lc-shield',name:'Pole-and-shield tent',seed:7422,caste:6,cut:t
 defBuilding({key:'lc-seer',name:"Interpreters' tent",seed:7423,caste:5,cut:true,w:8.6,d:8.6,h:10.4,budget:45000,
  tags:{types:['dwelling-single','religious'],wealth:'rich',role:'dwelling'},
  note:"an Interpreter's tent (caste 5, a 3.48 m door): a tall narrow cone of black-lacquered hide under five bone ribs that twist as they climb and cross above the apex (the Interpreters' tower in hide), an oxblood leiwen band either side of the door, a spiral eye above it; a court interior",
- build(o){const R=2.9,h=8,dh=lzDoorH(5),dw=+(dh*.62).toFixed(2),B=.14;lzCutFloor(0);
+ build(o){const R=2.9,h=8,dh=lzDoorH(5),dw=+(dh*LZ_DW).toFixed(2),B=.14;lzCutFloor(0);
   lzDust(0,0,R+.8);lcSkin(R,h,dh,dw,{mk:'hide',col:P('hideD'),bulge:B,amp:.02});
   lzNoCut(()=>{for(let i=0;i<5;i++){const a0=(i+.5)*TAU/5;tube('bones',t=>{const r=(R+.12)*(1-t*1.12)*(1+B*Math.sin(PI*Math.min(1,t*1.12))),a=a0+t*1.1;return [Math.sin(a)*r,h*t*1.12,Math.cos(a)*r];},t=>{const q=.1*(1-.6*t)+.01;return [q,q];},16,7,P('bone'),{caps:true});}
    ring('bones',0,h-.15,0,.42,.06,P('boneO'),0,0,0,12);for(let i=0;i<5;i++)lcStake((i+.5)*TAU/5,R,.5);
    /* the eye above the door and the leiwen bands either side of it lie flat on the skin, tilted with its slope */
    const tilt=-Math.atan2(R,h)*.9,ye=dh+.9;WX(0,ye,lcSkinR(R,h,ye,B)+.06,0,tilt,0,()=>lzEye(0,0,0,0,.34,{mk:'bronze'}));
-   for(const s of [-1,1]){const a=s*.66,yb=.4,rb=lcSkinR(R,h,yb,B)+.05;WX(Math.sin(a)*rb,yb,Math.cos(a)*rb,a,tilt,0,()=>lzLeiwen(.9,.7,{cell:.3,mk:'lacqR',back:false,proud:.05}));}});
+   for(const s of [-1,1]){const a=s*.72,yb=.4,rb=lcSkinR(R,h,yb,B)+.05;WX(Math.sin(a)*rb,yb,Math.cos(a)*rb,a,tilt,0,()=>lzLeiwen(.9,.7,{cell:.3,mk:'lacqR',back:false,proud:.05}));}});
   /* a seer keeps little: the dais against the back, the guardian and one lamp, a carpet; nothing else */
   FURNISH('lizardmen_court_bed',0,0,-1.3,0);FURNISH('lizardmen_court_statue',-1.4,0,.2,PI/2);FURNISH('lizardmen_court_candelabra',1.4,0,.3,0);FURNISH('lizardmen_court_carpet',0,0,.9,0);FURNISH_HANG('lizardmen_court_hanging',0,h*.45,0,0);}});
 /* ---------------------------------------------------------------- the great sail tent: the camp's shared hall */
 defBuilding({key:'lc-sail',name:'Great sail tent',seed:7424,caste:'all',cut:true,w:15,d:19,h:11.6,budget:90000,
  tags:{types:['dwelling-multi','military','civic'],wealth:'middle',role:'hall'},
  note:'the shared tent of the camp (nested portals to a 4.4 m door): three bone masts of unequal height carry a sagging ridge, two hide sails hang from it to seven bone posts a side and are guyed to stakes beyond; the front gable a hide sheet with the seven nested bronze frames, the back gable closed; a hall inside',
- build(o){const L=15,hz=4.4,eY=.06,dh=lzDoorH(6),dw=+(dh*.62).toFixed(2);lzCutFloor(0);   /* the sails and gables reach the ground (owner: the wall was not at the floor) */
+ build(o){const L=15,hz=4.4,eY=.06,dh=lzDoorH(6),dw=+(dh*LZ_DW).toFixed(2);lzCutFloor(0);   /* the sails and gables reach the ground (owner: the wall was not at the floor) */
   const ridge=z=>7.4+1.8*Math.cos(PI*z/L);   /* the ridge sags between the masts: a sail's curve */
   box('earthR',0,0,0,2*hz+.6,.08,L+.6,P('earthP'));
   /* the sails: two hide sheets from the ridge down to the eave line, bellying a little */

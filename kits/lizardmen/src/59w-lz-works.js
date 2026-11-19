@@ -233,7 +233,7 @@ defBuilding({key: 'lz-bakehouse', name: 'Earth-oven and yam bakehouse', seed: 72
         colf: s => s === 'front' || s === 'back' ? P('brick') : P('earth'),
         portalMk: 'lacqR', endMk: 'reed', endCol: P('reedD'), n: 7
       });
-      W(-2.8, 0.14, 7.2 / 2 - 0.06, 0, () => lzLeiwen(2.5, 0.96, {cell: 0.32, mk: 'lacqR', back: 'lacq'}));
+      W(-3.6, 0.14, 7.2 / 2 - 0.06, 0, () => lzLeiwen(2.4, 0.96, {cell: 0.32, mk: 'lacqR', back: 'lacq'}));
       lzFurnRoom(10.6, 6.2, 0.14, 'common', {
         beds: 0, noHearth: true, ceil: 3.9,
         extra: [
@@ -286,7 +286,7 @@ defBuilding({key: 'lz-fermentery', name: 'Spore-and-yam fermenting house', seed:
       ltHall(12.6, 7.6, 2.4, 4.2, 'earthR', P('earth'), 'matW', P('reedD'), {
         portalMk: 'bronze', endMk: 'lacq', endCol: P('lacq'), n: 9, past: 0.26
       });
-      W(3.1, 0.14, 7.6 / 2 - 0.05, 0, () => lzLeiwen(2.9, 1.08, {cell: 0.34, mk: 'bronze', back: 'lacq'}));
+      W(3.9, 0.14, 7.6 / 2 - 0.05, 0, () => lzLeiwen(2.5, 1.08, {cell: 0.34, mk: 'bronze', back: 'lacq'}));
       /* brick vat-bench along the back wall holding seven sunken lacquered mash vats (odd count: 7) */
       box('brick', 0, 0.14, -2.55, 11.2, 0.78, 1.55, P('brick'));
       for (let v = 0; v < 7; v++) {
@@ -489,7 +489,7 @@ defBuilding({key: 'lz-wayhalt', name: 'Coil Round staging halt', seed: 7223, cas
     box('earthR', 0, 0, 0, 22.8, 0.08, 16.8, P('earthP'));
     box('stoneP', -5.2, 0.08, -1.2, 10.6, 0.08, 9.6, P('basaltD'));
     /* enclosed Allotment tally & ration storehouse on -x */
-    const L = 9.4, Wd = 7.8, wh = 2.35, dh = lzDoorH(3), dw = dh * 0.62;
+    const L = 9.4, Wd = 7.8, wh = 2.35, dh = lzDoorH(3), dw = dh * LZ_DW;
     W(-5.2, 0, -1.2, 0, () => {
       lzBatterRoom(L, Wd, 0.16, wh, 'basalt', P('basalt'), {
         lean: {front: 0.07, back: -0.05, left: 0.09, right: -0.04},
@@ -498,7 +498,7 @@ defBuilding({key: 'lz-wayhalt', name: 'Coil Round staging halt', seed: 7223, cas
         back: [lzVent(3, 2.2, 1.4), lzVent(3, L - 2.2, 1.4)]
       });
       lzRibRoof(L, Wd, wh + 0.15, wh + 4.9, 7, {mk: 'thatch', col: P('reed'), over: 0.6, ribR: 0.13, past: 0.25, bend: 0.95, ext: 0.5, endMk: 'reed', endCol: P('reedD'), leanEnds: {left: 0.09, right: -0.04}, y0: 0.16});
-      W(2.4, 0.45, Wd / 2 - 0.07 * 0.3 + 0.05, 0, () => lzLeiwen(2.2, 0.95, {cell: 0.3, mk: 'bronze', back: 'lacq'}));
+      W(2.7, 0.45, Wd / 2 - 0.07 * 0.3 + 0.05, 0, () => lzLeiwen(2.0, 0.95, {cell: 0.3, mk: 'bronze', back: 'lacq'}));
       lzNoCut(() => lzPortal(0, 0.16, Wd / 2 + 0.06, 0, dh, {mk: 'lacqR'}));
       lzThreshold(0, Wd / 2 + 0.22, 0, dw);
       FURNISH('lizardmen_common_desk', -2.8, 0.16, -2.1, 0);

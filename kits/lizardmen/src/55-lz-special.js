@@ -21,10 +21,10 @@ defBuilding({key:'lz-seer',name:"Seer's hall",seed:7301,caste:5,cut:true,w:15,d:
  tags:{types:['civic','religious'],wealth:'rich',role:'hall'},
  note:'the Interpreters\' hall: battered polished basalt under a bone rib roof, seven spiral eyes on the front with lit pupils; inside, the carved model of the village (seer\'s hall included, with its own model) on a lacquer table, the seers\' divans round it',
  build(o){const L=11,Wd=8.5,wh=3.6,rh=4.8;lzCutFloor(0);box('stoneP',0,0,0,L+1.4,.22,Wd+1.4,P('basaltD'));
-  const dh=lzDoorH(5),dw=dh*.62;
+  const dh=lzDoorH(5),dw=dh*LZ_DW;
   lzBatterRoom(L,Wd,.22,wh,'stoneP',P('basalt'),{lean:{front:.12,back:-.04,left:.06,right:-.07},front:[{s:L/2,w:dw,h:dh,door:true}],back:[lzVent(5,L*.5,wh*.6)]});
   lzNoCut(()=>{lzPortal(0,.22,Wd/2-.12*wh*0+.06,0,dh,{mk:'bronze'});
-   for(let i=0;i<7;i++){const t=(i+.5)/7,ex=-L/2+L*t,ey=.22+wh*.78-.3*Math.abs(t-.5)*2;if(Math.abs(ex)<dw*.75)continue;lzEye(ex,ey,Wd/2-.12*(ey-.22)+.03,0,.34,{mk:'bronze',glow:true});}});
+   for(let i=0;i<7;i++){const t=(i+.5)/7,ex=-L/2+L*t,ey=.22+wh*.78-.3*Math.abs(t-.5)*2;if(Math.abs(ex)<dw*.78)continue;lzEye(ex,ey,Wd/2-.12*(ey-.22)+.03,0,.34,{mk:'bronze',glow:true});}});
   lzThreshold(0,Wd/2+.2,0,dw);
   lzRibRoof(L,Wd,wh+.25,wh+rh,7,{mk:'hide',col:P('hideD'),over:.7,ribR:.16,past:.3,bend:.95,ext:.6,endMk:'lacq',endCol:P('lacq'),leanEnds:{left:.06,right:-.07},y0:.22});
   lsModel(0,.22+.9,-.4,1.3);box('lacq',0,.22,-.4,2.2,.9,2.2,P('lacq'));W(0,.22,.74,0,()=>lzLeiwen(2.0,.8,{cell:.26,mk:'bronze',back:false,t:.03,proud:.02}));
@@ -46,9 +46,9 @@ defBuilding({key:'lz-warehouse',name:'Warehouse',seed:7303,caste:'all',cut:true,
  tags:{types:['industry','infrastructure'],wealth:'middle',role:'store'},
  note:'the plunder from the Vale, kept but unused (steel blades they cannot make or mend, tools, valuables), sorted along a squared spiral on the floor by an order only they understand; brick on a basalt plinth, reed ribs, a nested portal',
  build(o){const L=12.5,Wd=8.5,wh=3,rh=3.8;lzCutFloor(0);box('stoneP',0,0,0,L+1.4,.3,Wd+1.4,P('basaltD'));
-  const dh=lzDoorH(6),dw=dh*.62;
+  const dh=lzDoorH(6),dw=dh*LZ_DW;
   lzBatterRoom(L,Wd,.3,wh,'brick',P('brick'),{lean:{front:.05,back:-.08,left:.1,right:-.02},front:[{s:L/2,w:dw,h:dh,door:true},lzVent(4,1.4,wh*.6),lzVent(4,L-1.4,wh*.6)],back:[lzVent(4,L*.3,wh*.6),lzVent(4,L*.7,wh*.6)]});
-  lzNoCut(()=>lzPortal(0,.3,Wd/2+.06,0,dh,{mk:'lacq'}));lzThreshold(0,Wd/2+.2,0,dw);
+  lzNoCut(()=>lzPortal(0,.3,Wd/2+.06,0,dh,{mk:'lacq',shared:true}));lzThreshold(0,Wd/2+.2,0,dw);
   lzRibRoof(L,Wd,wh+.3,wh+rh,9,{mk:'thatch',col:P('reed'),over:.7,ribR:.14,past:.22,bend:.95,ext:.6,endMk:'reed',endCol:P('reedD'),leanEnds:{left:.1,right:-.02},y0:.3});
   /* the spiral of goods */
   const keys=['generic_crate','generic_chest','generic_strongbox','generic_barrel','generic_crate','generic_sack','generic_canister_set','generic_bottle_crate','generic_keg','generic_pantry_boxes','generic_chest'];
