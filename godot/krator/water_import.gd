@@ -371,12 +371,10 @@ static func _kind_nodes(k: KWater, opts := {}) -> Array:
 		var n := PackedVector3Array()
 		var t := PackedVector2Array()
 		for i in int(M["count"]):
-			v.append(Vector3(P[i * 3], P[i * 3 + 1], P[i * 3 + 2]))
+			v.append(Vector3(P[i * 3] - ox, P[i * 3 + 1] - oy, P[i * 3 + 2] - oz))
 			n.append(Vector3(N[i * 3], N[i * 3 + 1], N[i * 3 + 2]))
 			t.append(Vector2(UV[i * 2], UV[i * 2 + 1]))
 		var mi: MeshInstance3D = mk.call(_mesh(v, M["idx"], n, t, null), SHADERS["fall"], "")
-		if has_loc:
-			mi.position = Vector3(-ox, -oy, -oz)
 		if L.has("colour"):
 			(mi.material_override as ShaderMaterial).set_shader_parameter("colour", _lin(L["colour"]))
 		# a margin or edge (core/water W1, 2026-10-26): the side fade in metres, as WATER.drawFall's
@@ -386,26 +384,34 @@ static func _kind_nodes(k: KWater, opts := {}) -> Array:
 			fm.set_shader_parameter("side_edge", float(k.curtain_opt["edge"]) if k.curtain_opt.get("edge") != null else 0.08 * k.lip_w)
 			fm.set_shader_parameter("lip_w", k.lip_w)
 		var fo: Dictionary = opts.get("fall", {}).get(k.id, {})
-		if fo.get("lipK") != null:
-			(mi.material_override as ShaderMaterial).set_shader_parameter("lip_k", float(fo["lipK"]))
-		if fo.get("footK") != null:
-			(mi.material_override as ShaderMaterial).set_shader_parameter("foot_k", float(fo["footK"]))
+		var lip_k_val = fo.get("lipK", k.curtain_opt.get("lipK"))
+		var foot_k_val = fo.get("footK", k.curtain_opt.get("footK"))
+		if lip_k_val != null:
+			(mi.material_override as ShaderMaterial).set_shader_parameter("lip_k", float(lip_k_val))
+		if foot_k_val != null:
+			(mi.material_override as ShaderMaterial).set_shader_parameter("foot_k", float(foot_k_val))
 		mi.set_meta("krator", {"id": k.id, "name": k.name, "kind": "fall", "vertices": M["count"], "drop": k.drop, "matches_page": _same_mesh(k.curtain_opt, M["count"], P)})
 		out.append(mi)
 		# the plunge pool: a disc 2.4 r across at the foot (WATER.drawFall's), or plungeR m with its outer quarter faded
-		var pr: float = float(fo["plungeR"]) if fo.get("plungeR") != null else pl[3] * 2.4
-		var dv := PackedVector3Array([Vector3(pl[0], pl[1] + 0.06, pl[2])])
+		var pr_opt = fo.get("plungeR", k.curtain_opt.get("plungeR"))
+		var pr: float = float(pr_opt) if pr_opt != null else pl[3] * 2.4
+		var px0 := pl[0] - ox
+		var py0 := pl[1] + 0.06 - oy
+		var pz0 := pl[2] - oz
+		var dv := PackedVector3Array([Vector3(px0, py0, pz0)])
 		var di := PackedInt32Array()
 		for a in 48:
 			var th := TAU * a / 48.0
-			dv.append(Vector3(pl[0] + cos(th) * pr, pl[1] + 0.06, pl[2] + sin(th) * pr))
+			dv.append(Vector3(px0 + cos(th) * pr, py0, pz0 + sin(th) * pr))
 		for a in 48:
 			di.append_array([0, 1 + (a + 1) % 48, 1 + a])
 		var pm: MeshInstance3D = mk.call(_mesh(dv, di, null, null, null), SHADERS["plunge"], "_plunge")
+		var pmat := pm.material_override as ShaderMaterial
 		if has_loc:
-			pm.position = Vector3(-ox, -oy, -oz)
-		if fo.get("plungeR") != null:
-			(pm.material_override as ShaderMaterial).set_shader_parameter("plunge_fade", Vector3(pl[0], pl[2], pr))
+			pmat.set_shader_parameter("plunge_local", true)
+			pmat.set_shader_parameter("wk_plunge", Vector4(px0, pz0, pl[3], 0.0))
+		if pr_opt != null:
+			pmat.set_shader_parameter("plunge_fade", Vector3(px0 if has_loc else pl[0], pz0 if has_loc else pl[2], pr))
 		pm.set_meta("krator", {"id": k.id, "name": k.name, "kind": "plunge", "r": pl[3], "disc": pr})
 		out.append(pm)
 	elif k.kind == "still":

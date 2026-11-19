@@ -102,46 +102,106 @@ var SITE_SPEC={region:'oidong-highrift',world:1311634,bridges:{culture:'order'},
    anchor stands (openworld/oidong-highrift/tools/godot_case.py). */
 var OHR_CUT=(function(){'use strict';
 const W=WORLD,C={site:'sfgtxw10kr',px:[1001,1596],ry:-Math.PI/2,ahead:150,lip:900,half:1150,sideB:600,gorgeHalf:450,gorgeB:300,town:1100,taper:2500,
- back:1596,backB:1000,pageHalf:1100,rec0:-40,rec1:-20,padDrop:.5,floorSlope:.004,maxV:14000,river:[500,900]};
+ back:1596,backB:1000,pageHalf:1100,rec0:-40,rec1:-20,padDrop:.5,floorSlope:.004,gorgeSlope:.0224,maxV:16000,river:[500,900],
+ zN:-123500,zN1:-120200,zS1:-27800,zS:-24500,scarpDrop:900,scarpFace:110,scarpSlope:.022,
+ catLipX:-609955,catLipZ:-71585,caulBed:148.74,caulR:260,canSlope:.0052,canHalf:240,canB:480,canGuard:1};
 const smooth=(a,b,x)=>{let t=(x-a)/(b-a);t=t<0?0:t>1?1:t;return t*t*(3-2*t);},lerp=(a,b,t)=>a+(b-a)*t;
-let P=null,LIPH=null,busy=false;
+let P=null,LIPH=null,SC=null,CAT=null,busy=false;
+/* Escarpment lip X(z) across the 97 km valley mouth: joins Strongbow's lip (-610110 at z=-76000) and the Great Cataract's
+   headland (-609955 at z=-71585, immediately downstream of Rifar al-Jadwal's 1,318.0 m lip vertex) */
+function scarpLipX(z){
+ const dCat=(z+71585)/2000,bow=155*Math.exp(-dCat*dCat);
+ const q=((z+125000)/14000)%2,tri=q<1?q*2-1:3-q*2,prom=140*tri*(1.5-.5*tri*tri);
+ const wKeep=smooth(1200,3000,Math.abs(z+76000))*smooth(800,2400,Math.abs(z+71585));
+ return -610110+bow+prom*wKeep;}
 /* the page's anchor (its lip at the bay's centre) stands C.ahead m in front of the pin, so the pin (the site's own point,
-   where its road ends and its records stand) is on the plateau, back from the edge: the road router aims at the pin's
-   200 m cell, which must not fall over the lip */
+   where its road ends and its records stand) is on the plateau, back from the edge */
 function frame(){if(P)return P;const p=W.fromPx(C.px[0],C.px[1]),c=Math.cos(C.ry),s=Math.sin(C.ry);
  P={x:p[0]+C.ahead*s,z:p[1]+C.ahead*c,pin:p,c,s};
- busy=true;try{LIPH=W.Hbare(P.x,P.z);}finally{busy=false;}return P;}
+ busy=true;try{
+  LIPH=W.Hbare(P.x,P.z);
+  const z0=-125000,z1=-23000,dz=200,n=Math.round((z1-z0)/dz)+1,raw=new Float64Array(n),sm=new Float64Array(n);
+  for(let i=0;i<n;i++){const zz=z0+i*dz;raw[i]=W.Hbare(scarpLipX(zz)+30,zz);}
+  for(let i=0;i<n;i++){let acc=0,w=0;for(let k=-2;k<=2;k++){const j=Math.max(0,Math.min(n-1,i+k)),wk=k===0?4:Math.abs(k)===1?2:1;acc+=raw[j]*wk;w+=wk;}sm[i]=acc/w;}
+  SC={z0,dz,n,h:sm};
+  const crs=W.riverCourse?W.riverCourse():[];
+  const rj=crs.find(r=>r.pts&&r.pts.some(q=>q[0]>-615000&&q[0]<-609000&&q[1]>-75000&&q[1]<-70000));
+  if(rj){
+   const pts=[];let carry=0;
+   for(let k=0;k<rj.pts.length-1;k++){const a=rj.pts[k],b=rj.pts[k+1],L=Math.hypot(b[0]-a[0],b[1]-a[1]);
+    for(let d=carry;d<L;d+=40){const t=d/L,w=rj.exact?[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t]:W.unwarp(a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t);
+     if(w[0]<=-609850&&w[0]>=-622500)pts.push(w);}
+    carry=L>carry?carry+Math.ceil((L-carry)/40)*40-L:carry-L;}
+   let lipIdx=0;for(let i=0;i<pts.length;i++)if(pts[i][0]>C.catLipX)lipIdx=i;
+   const cpts=pts.slice(lipIdx);let arc=0;const rec=[];
+   for(let i=0;i<cpts.length;i++){if(i>0)arc+=Math.hypot(cpts[i][0]-cpts[i-1][0],cpts[i][1]-cpts[i-1][1]);rec.push([cpts[i][0],cpts[i][1],arc]);}
+   const p0=cpts[0]||[-609936.5,-71580.7],p1=cpts[Math.min(cpts.length-1,4)]||[-610160,-71668],dl=Math.hypot(p1[0]-p0[0],p1[1]-p0[1])||1;
+   const lipY=W.riverWater?W.riverWater(p0[0],p0[1]):W.Hbare(p0[0],p0[1])+4.6;
+   CAT={lip:[p0[0],p0[1],lipY],dir:[(p1[0]-p0[0])/dl,(p1[1]-p0[1])/dl],caul:[p1[0],p1[1],C.caulBed+3.46],pts:rec};}
+ }finally{busy=false;}return P;}
+function lipHAt(z){const f=Math.max(0,Math.min(SC.n-1.001,(z-SC.z0)/SC.dz)),i=f|0;return lerp(SC.h[i],SC.h[i+1],f-i);}
 /* region (x, z) to the page's frame about the pin: u along the face, v ahead of the lip */
 function local(x,z){const F=frame(),dx=x-F.x,dz=z-F.z;return [dx*F.c-dz*F.s,dx*F.s+dz*F.c];}
-const floorAt=v=>LIPH-C.lip-1-C.floorSlope*(v-C.rec1);
-/* the pad under the page's plateau: a shallow bowl, flush with the plateau (the lip's level) at its back and side edges, so
-   a walker steps from the region's ground onto the page's plateau without a step, falling to padDrop under it at the
-   lip's middle, so it drains forward over the edge (never back into the plateau) */
-/* the page draws no plateau of its own behind the lip (its plateau is its far ground, which the export leaves out:
-   godot/tests/export/oidong_walk_test.gd found the region's ground under every ray), so the region's ground is
-   Strongbow's top: the pad stands at the lip's level, where the page's yard and post stand, falling padDrop to the lip
-   to drain (0.5 m over 1.6 km) */
+const floorAt=v=>{const d1=Math.min(Math.max(0,v-C.rec1),C.town-C.rec1),d2=Math.max(0,v-C.town);return LIPH-C.lip-1-C.floorSlope*d1-C.gorgeSlope*d2;};
 const padAt=(u,v)=>C.rec0-v>=C.back||Math.abs(u)>=C.pageHalf?LIPH:
  LIPH-C.padDrop*(1-(C.rec0-v)/C.back)*(1-smooth(C.pageHalf-300,C.pageHalf,Math.abs(u)));
 function target(u,v){
  if(v<=C.rec0)return padAt(u,v);
  if(v<C.rec1)return lerp(padAt(u,C.rec0),floorAt(C.rec1),smooth(0,1,(v-C.rec0)/(C.rec1-C.rec0)));
  return floorAt(v);}
-function weight(x,z){const L=local(x,z),u=Math.abs(L[0]),v=L[1];
+function sbWeight(u,v){
+ const au=Math.abs(u);
  if(v<C.rec0-C.back-C.backB||v>C.maxV)return 0;
  const k=v<=C.town?0:Math.min(1,(v-C.town)/(C.taper-C.town)),hw=lerp(C.half,C.gorgeHalf,k),B=lerp(C.sideB,C.gorgeB,k);
- if(u>=hw+B)return 0;
- let w=(1-smooth(hw,hw+B,u))*(v<C.rec0?1-smooth(C.back,C.back+C.backB,C.rec0-v):1)*(1-smooth(C.maxV-1000,C.maxV,v));
- if(w<=0)return 0;
- const ch=W.carveAt(x,z);if(ch)w*=smooth(C.river[0],C.river[1],ch.d);
- return w;}
-function cut(x,z,h){if(busy)return h;frame();const w=weight(x,z);if(w<=0)return h;const L=local(x,z),T=target(L[0],L[1]);return h>T?h-w*(h-T):h;}
+ if(au>=hw+B)return 0;
+ return (1-smooth(hw,hw+B,au))*(v<C.rec0?1-smooth(C.back,C.back+C.backB,C.rec0-v):1)*(1-smooth(C.maxV-1000,C.maxV,v));}
+function scarpWeight(x,z,u,v){
+ if(z<=C.zN||z>=C.zS)return 0;
+ if(Math.abs(u)<C.pageHalf+200&&v<=C.rec0)return 0;
+ const vs=scarpLipX(z)-x;if(vs<=0||vs>=C.maxV)return 0;
+ const wz=smooth(C.zN,C.zN1,z)*(1-smooth(C.zS1,C.zS,z));
+ const wv=smooth(0,16,vs)*(1-smooth(C.maxV-1500,C.maxV,vs));
+ return wz*wv;}
+function scarpTarget(x,z){
+ const vs=scarpLipX(z)-x,hl=lipHAt(z),fl0=hl-C.scarpDrop;
+ const fl=fl0-C.scarpSlope*Math.max(0,vs-C.scarpFace);
+ if(vs<C.scarpFace)return lerp(hl,fl0,smooth(0,C.scarpFace,vs));
+ return fl;}
+function catEval(x,z){
+ if(!CAT||z<-76500||z>-69500||x>-609930||x<-622000)return null;
+ let bd=1e18,bs=0;
+ const P=CAT.pts;
+ for(let i=0;i<P.length-1;i++){
+  const ax=P[i][0],az=P[i][1],dx=P[i+1][0]-ax,dz=P[i+1][1]-az,l2=dx*dx+dz*dz;
+  let t=l2>0?((x-ax)*dx+(z-az)*dz)/l2:0;t=t<0?0:t>1?1:t;
+  const d=Math.hypot(ax+dx*t-x,az+dz*t-z);
+  if(d<bd){bd=d;bs=lerp(P[i][2],P[i+1][2],t);}}
+ const hw=bs<450?C.caulR:C.canHalf,B=bs<450?260:C.canB;
+ if(bd>=hw+B||bs<=12)return null;
+ if(!C.canGuard&&bs>560)return null;
+ const w=(1-smooth(hw,hw+B,bd))*smooth(12,28,bs)*(C.canGuard?1:1-smooth(400,560,bs));
+ if(w<=0)return null;
+ const bed=bs<=380?C.caulBed:C.caulBed-C.canSlope*(bs-380);
+ const wall=smooth(hw*.55,hw+B,bd)*160;
+ return {w,T:bed+wall};}
+function weight(x,z){frame();const L=local(x,z),ws=sbWeight(L[0],L[1]),we=scarpWeight(x,z,L[0],L[1]),ce=catEval(x,z);return Math.max(ws,we,ce?ce.w:0);}
+function cut(x,z,h){if(busy)return h;frame();
+ const L=local(x,z),ws=sbWeight(L[0],L[1]),we=scarpWeight(x,z,L[0],L[1]),ce=catEval(x,z);
+ if(ws<=0&&we<=0&&!ce)return h;
+ let out=h;
+ if(ws>0){const T=target(L[0],L[1]);if(out>T)out=out-ws*(out-T);}
+ if(we>0){const T=scarpTarget(x,z);if(out>T)out=out-we*(out-T);}
+ if(ce&&out>ce.T)out=out-ce.w*(out-ce.T);
+ return out;}
 const prevLand=W.landHook;
 W.landHook=(x,z,h,mw)=>cut(x,z,prevLand?prevLand(x,z,h,mw):h);
 const prevClear=W.clearHook;
 W.clearHook=(x,z)=>{if(prevClear&&prevClear(x,z))return true;frame();const L=local(x,z);
- return Math.abs(L[0])<=C.half&&L[1]>=C.rec0-C.back&&L[1]<=C.town;};
-return {spec:C,local,weight,target,
+ if(Math.abs(L[0])<=C.half&&L[1]>=C.rec0-C.back&&L[1]<=C.town)return true;
+ const vs=scarpLipX(z)-x;if(z>C.zN&&z<C.zS&&vs>0&&vs<C.scarpFace+40)return true;
+ return false;};
+return {spec:C,local,weight,target,scarpLipX,cat:()=>{frame();return CAT;},
  /* f() on the land without the cut (the test's comparison: tests/test_cut.py) */
  uncut:f=>{frame();const was=busy;busy=true;try{return f();}finally{busy=was;}},
- info:()=>{const F=frame();return {site:C.site,at:[F.x,LIPH,F.z],pin:F.pin,ry:C.ry,lip:C.lip,floor:LIPH-C.lip};}};})();
+ info:()=>{const F=frame();const ct=CAT;return {site:C.site,at:[F.x,LIPH,F.z],pin:F.pin,ry:C.ry,lip:C.lip,floor:LIPH-C.lip,
+  cataract:ct?{lip:ct.lip,dir:ct.dir,cauldron:ct.caul,drop:+(ct.lip[2]-ct.caul[2]).toFixed(2)}:null};}};})();

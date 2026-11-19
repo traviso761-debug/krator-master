@@ -1,6 +1,7 @@
 // A fall's plunge pool: a disc of churned white water at the curtain's foot, its rings running out (wk_plunge_at; twin
 // WATER.plungeAt), as WATER.drawFall draws it (core/water/51-core-water-kinds.js). plunge_fade (x, z, R; R <= 0: off): drawFall's plungeR,
-// the disc sized to its pool and its alpha faded over the outer quarter of R.
+// the disc sized to its pool and its alpha faded over the outer quarter of R. plunge_local: true when vertices and wk_plunge/plunge_fade
+// are in the case's local floating-origin frame so WorldStream rebases never shift the churn rings.
 shader_type spatial;
 render_mode blend_mix, cull_back, depth_draw_never;
 
@@ -8,11 +9,12 @@ render_mode blend_mix, cull_back, depth_draw_never;
 #include "res://shaders/lib/water_kinds.gdshaderinc"
 
 uniform vec3 plunge_fade = vec3(0.0, 0.0, -1.0);
+uniform bool plunge_local = false;
 
 varying vec2 v_w;
 
 void vertex() {
-	v_w = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xz;
+	v_w = plunge_local ? VERTEX.xz : (MODEL_MATRIX * vec4(VERTEX, 1.0)).xz;
 }
 
 void fragment() {

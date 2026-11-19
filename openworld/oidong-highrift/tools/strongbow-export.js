@@ -28,10 +28,16 @@ const read=ctx=>ctx.memo('strongbow',()=>{
  const managed=m=>(m.layers.mask&(1<<30))!==0,flagged=[];
  if(typeof LOD!=='undefined'&&LOD&&LOD.root)LOD.root.traverse(c=>{if(c.userData&&c.userData.lodCopy){flagged.push(c);c.userData.lodCopy=false;}});
  try{
-  return E.sceneReader({name:'strongbow',source:'kits/ancients strongbow-today (settlements/strongbow)',scene,tags:null,origin:ANCHOR,
+  const mulMats=new Set();
+  scene.traverse(m=>{if(!m||!m.isMesh)return;const ms=Array.isArray(m.material)?m.material:[m.material];
+   ms.forEach(mt=>{if(mt&&mt.blending===THREE.MultiplyBlending)mulMats.add(mt);});});
+  const res=E.sceneReader({name:'strongbow',source:'kits/ancients strongbow-today (settlements/strongbow)',scene,tags:null,origin:ANCHOR,
    skipInstanced:m=>managed(m)?'a core/lod original (its drawn copy stands in)':hidden(m)?'hidden (drawn near the eye)':null,
    skipMesh:m=>managed(m)?'a core/lod original (its drawn copy stands in)':hidden(m)?'hidden (drawn near the eye)':
     huge(m)?'the sky or the far ground (the region\'s ground stands there)':null}).assemble(ctx);
+  if(mulMats.size&&Array.isArray(res.materials)){
+   res.materials.forEach(r=>{if(r&&r.transparent&&r.opacity>=0.999&&!(r.alphaTest>0)&&r.unlit)r.blending='multiply';});}
+  return res;
  }finally{flagged.forEach(c=>{c.userData.lodCopy=true;});}});
 ['items','buckets','materials','textures'].forEach(s=>E.register(s,ctx=>read(ctx)[s],{by:'strongbow'}));
 window._sbExport={anchor:ANCHOR,lipY:F.lipY};

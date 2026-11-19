@@ -431,6 +431,26 @@ static func _standard(rec: Dictionary, tex: Dictionary, texrec: Dictionary, inst
 	var img: Texture2D = tex.get(map_id) if map_id != null else null
 	if rec.get("kind") == "shader":
 		_gap_once(report, "shader materials", "a ShaderMaterial a city's mesh uses (the vendored biome's own) is drawn plain from its colour")
+	var is_mul_decal := str(rec.get("blending", "")) == "multiply"
+	if not is_mul_decal and bool(rec.get("transparent", false)) and float(rec.get("opacity", 1.0)) >= 0.999 and float(rec.get("alphaTest", 0.0)) <= 0.0 and img != null:
+		var m_img := img.get_image()
+		if m_img != null and m_img.detect_alpha() == Image.ALPHA_NONE:
+			is_mul_decal = true
+	if is_mul_decal:
+		var smul := StandardMaterial3D.new()
+		smul.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		smul.blend_mode = BaseMaterial3D.BLEND_MODE_MUL
+		smul.depth_draw_mode = BaseMaterial3D.DEPTH_DRAW_DISABLED
+		smul.cull_mode = BaseMaterial3D.CULL_DISABLED
+		smul.albedo_color = Color(col.r, col.g, col.b, float(rec.get("opacity", 1.0)))
+		smul.roughness = float(rec.get("roughness", 1.0))
+		smul.metallic = float(rec.get("metal", 0.0))
+		if bool(rec.get("unlit", false)):
+			smul.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		if img:
+			smul.albedo_texture = img
+		smul.set_meta("krator", {"material": rec["id"], "hooks": hk["ids"], "shader": "StandardMaterial3D (mul)"})
+		return smul
 	if bool(rec.get("transparent", false)) and float(rec.get("opacity", 1.0)) < 0.999:
 		var s := StandardMaterial3D.new()
 		s.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
@@ -993,10 +1013,14 @@ static func _lod_uniforms(gi: GeometryInstance3D, lod: Dictionary) -> bool:
 	if float(lod["minRange"]) > 0.0:
 		return false
 	var C := _chunk_size(lod)
+	var rows: Array = gi.get_meta("krator_rows")
+	if RenderingServer.get_current_rendering_method() == "gl_compatibility":
+		gi.visibility_range_end = float(rows[0]["range"]) + C * 0.7071
+		gi.visibility_range_fade_mode = GeometryInstance3D.VISIBILITY_RANGE_FADE_DISABLED
+		return false
 	var c: PackedStringArray = str(lod["chunk"]).split(",")
 	var x0 := float(c[0]) * C
 	var z0 := float(c[1]) * C
-	var rows: Array = gi.get_meta("krator_rows")
 	var y0 := INF
 	var y1 := -INF
 	if gi is MultiMeshInstance3D:
