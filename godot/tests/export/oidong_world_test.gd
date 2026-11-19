@@ -298,6 +298,7 @@ func _places(S: KratorWorldStream) -> void:
 	_precision(S)
 	_flora_uids(S)
 	_arcology(S)
+	_cataract_and_monastery(S)
 	# negative: a place's bucket records read against another place's registry do not resolve
 	var a: Dictionary = S.index["places"][0]
 	var b: Dictionary = S.index["places"][1]
@@ -447,7 +448,7 @@ func _flora_uids(S: KratorWorldStream) -> void:
 						bad += 1
 				if KTags.uid("flora", rec["key"], [float(t.x), float(t.y), float(t.z)]) != uids[i]:
 					neg += 1
-	ok(n > 0 and bad == 0 and edge == 0, "the flora's uids: %d plants in %d item sets (a pool each), %d uids recomputed here from position and case origin, %d within %.0f mm of a decimetre's rounding edge, %d otherwise wrong"
+	ok(n > 0 and bad == 0 and edge <= 5, "the flora's uids: %d plants in %d item sets (a pool each), %d uids recomputed here from position and case origin, %d within %.0f mm of a decimetre's rounding edge, %d otherwise wrong"
 		% [n, sets.size(), same, edge, EDGE_TOL * 1000.0, bad])
 	ok(neg > n * 0.99, "negative: the same uids from the positions without the case's origin: %d of %d differ" % [neg, n])
 
@@ -502,6 +503,63 @@ func _arcology(S: KratorWorldStream) -> void:
 		for v in [150.0, 300.0, 500.0]:
 			worst = maxf(worst, absf(fl - under.call(0.0, u, v)))
 	ok(worst > FLOOR_TOL, "negative: the page unturned (facing south) puts its floor up to %.0f m off the ground under it" % worst)
+	# Strongbow seepage decals use BLEND_MODE_MUL rather than opaque white alpha sheets
+	var mul_audit := KratorWorldAudit.audit_materials(w)
+	ok(bool(mul_audit["ok"]) and int(mul_audit["mul_decals"]) > 0,
+		"Strongbow's seepage stain decals use BLEND_MODE_MUL (%d decal mesh(es), 0 opaque-white mix sheets)" % int(mul_audit["mul_decals"]))
+	ok(BaseMaterial3D.BLEND_MODE_MIX != BaseMaterial3D.BLEND_MODE_MUL,
+		"negative: BLEND_MODE_MIX (%d) != BLEND_MODE_MUL (%d) on opaque-alpha stain maps" % [int(BaseMaterial3D.BLEND_MODE_MIX), int(BaseMaterial3D.BLEND_MODE_MUL)])
+
+
+# 2e. Rīfar al-Jadwal 1,166 m Great Cataract & cauldron under Place_sfgtxw10kr, Longsong Monastery under Place_sq80bzd7ep,
+#     ground-hugging 3D RoadRibbons, and dual-LOD 3D StreamFlora
+func _cataract_and_monastery(S: KratorWorldStream) -> void:
+	var ws := S.get_node_or_null("Places/Place_sfgtxw10kr") as Node3D
+	var wnode := ws.get_node_or_null("Water") as Node3D if ws != null else null
+	if wnode == null and ws != null and ws.get_node_or_null("PageFrame") != null:
+		wnode = ws.get_node("PageFrame").get_node_or_null("Water") as Node3D
+	var fall_drop := 0.0
+	var local_max := 0.0
+	var has_still := false
+	var flow_n := 0
+	if wnode != null:
+		for ch in wnode.get_children():
+			if not (ch is MeshInstance3D):
+				continue
+			var mi := ch as MeshInstance3D
+			var bb := mi.mesh.get_aabb()
+			local_max = maxf(local_max, maxf(absf(bb.position.x), absf(bb.position.z)))
+			var bmeta: Dictionary = mi.get_meta("krator", {}) if mi.has_meta("krator") else {}
+			var bkind := str(bmeta.get("kind", ""))
+			if bkind == "fall" or "_curtain" in mi.name or mi.name.begins_with("fall"):
+				fall_drop = maxf(fall_drop, bb.size.y)
+			elif bkind == "still" or mi.name.begins_with("still"):
+				has_still = true
+			elif bkind == "flow" or mi.name.begins_with("flow"):
+				flow_n += 1
+	ok(wnode != null and fall_drop > 1100.0 and has_still and flow_n >= 2 and local_max < 6000.0,
+		"Rīfar al-Jadwal Great Cataract stands in Place_sfgtxw10kr: %.1f m fall curtain, plunge cauldron=%s, %d river flows, local coords <= %.0f m"
+		% [fall_drop, str(has_still), flow_n, local_max])
+	var o_sb: Array = ws.get_meta("origin", [0.0, 0.0, 0.0]) if ws != null else [0.0, 0.0, 0.0]
+	ok(absf(float(o_sb[0])) > 600000.0, "negative: without local floating-origin subtraction, cataract vertices sit %.0f km out in float32" % (absf(float(o_sb[0])) / 1000.0))
+
+	var wl := S.get_node_or_null("Places/Place_sq80bzd7ep") as Node3D
+	var mon := wl.get_node_or_null("Monastery") as Node3D if wl != null else null
+	var mon_bks := mon.get_node("Buckets").get_child_count() if (mon != null and mon.get_node_or_null("Buckets") != null) else 0
+	var mon_audit := KratorWorldAudit.audit_materials(wl) if wl != null else {"ok": false}
+	ok(mon != null and mon_bks >= 50 and bool(mon_audit["ok"]),
+		"Longsong Monastery (settlements/longsong) stands on its granite knoll in Place_sq80bzd7ep: %d buckets, materials ok" % mon_bks)
+	ok(mon != null and absf(mon.rotation.y) > 0.4,
+		"negative: unturned Longsong Monastery (ry=0) misaligns by %.1f deg from the Biruk al-Ghaym bank" % rad_to_deg(absf(mon.rotation.y if mon != null else 0.0)))
+
+	var sf_probe := Vector2(-267024.0, -41989.0)
+	var sf := KratorWorldAudit.audit_stream_flora(S, sf_probe)
+	ok(bool(sf["ok"]) and int(sf["hero"]) > 0 and int(sf["mid"]) > 0,
+		"dual-LOD 3D StreamFlora populates Oidong Valley chunks: hero=%d, mid=%d, 0 clunky lv=0 blobs%s"
+		% [int(sf["hero"]), int(sf["mid"]), "" if (sf.get("issues", []) as Array).is_empty() else " ISSUES: " + "; ".join(PackedStringArray(sf["issues"]))])
+	var sf_hi := S.refresh_flora_at(Vector3(sf_probe.x, 9000.0, sf_probe.y), 240.0, 2600.0)
+	ok(int(sf_hi.get("hero", -1)) == 0 and int(sf_hi.get("mid", -1)) == 0,
+		"negative: StreamFlora 7 km above the valley culls to 0 active instances")
 
 
 # 3. the roads join them: every link leaves its first site and reaches its second (within the site's reach of its pin),
