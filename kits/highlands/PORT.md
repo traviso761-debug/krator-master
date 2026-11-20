@@ -6,26 +6,27 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 164 (25%) | 0 (0%) | 0 (0%) | 0 (0%) | 496 (75%) |
+| KB | 126 (20%) | 0 (0%) | 0 (0%) | 0 (0%) | 496 (80%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
 | Fragment | KB | Tag | THREE | canvas | DOM | events | loop | geom | shader | inst | ray | store | net | Note |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| `src/70-hl-tex.js` | 26.8 | [draw] | 0 | 19 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | canvas painters: TEX.def or bake |
-| `src/71-hl-mat.js` | 9.0 | [draw] | 15 | 0 | 0 | 0 | 0 | 26 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/71b-hl-motif.js` | 33.6 | [draw] | 0 | 2 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | canvas painters: TEX.def or bake |
+| `src/70-hl-tex.js` | 21.4 | [draw] | 0 | 19 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | canvas painters: TEX.def or bake |
+| `src/71-hl-mat.js` | 8.9 | [draw] | 15 | 0 | 0 | 0 | 0 | 26 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/71b-hl-motif.js` | 32.4 | [draw] | 0 | 2 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | canvas painters: TEX.def or bake |
 | `src/71c-hl-openings.js` | 5.5 | [draw] | 0 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 | real doors and glass: leaves registered in KDOOR (core/door) through IZDOOR.leaf (69e5), panes and room cards as kit items; stable door ids |
 | `src/72-hl-helpers.js` | 14.1 | [draw] | 3 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/72c-hl-plan.js` | 8.6 | [draw] | 0 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/73-hl-carve.js` | 32.3 | [draw] | 7 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
-| `src/73b-hl-frame.js` | 32.3 | [draw] | 3 | 6 | 0 | 0 | 0 | 11 | 1 | 0 | 0 | 0 | 0 |  |
+| `src/73-hl-carve.js` | 32.1 | [draw] | 7 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
+| `src/73b-hl-frame.js` | 31.9 | [draw] | 3 | 6 | 0 | 0 | 0 | 11 | 1 | 0 | 0 | 0 | 0 |  |
 | `src/74-rep-dwell.js` | 33.1 | [draw] | 4 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/75-rep-trade.js` | 48.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/76-rep-civic.js` | 45.4 | [draw] | 12 | 0 | 0 | 0 | 0 | 14 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/76c-rep-capital.js` | 7.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/77-rep-guild.js` | 20.3 | [draw] | 0 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/77b-rep-guild2.js` | 16.6 | [draw] | 14 | 1 | 0 | 0 | 0 | 7 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/77c-rep-hydro.js` | 39.0 | [draw] | 60 | 0 | 0 | 0 | 0 | 44 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/78-rep-grand.js` | 58.4 | [draw] | 3 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/79-rep-land.js` | 30.1 | [draw] | 1 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
 | `src/79b-rep-salvage.js` | 14.8 | [draw] | 3 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 |  |
@@ -36,14 +37,11 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/80-rus-dwell.js` | 24.5 | [draw] | 1 | 0 | 0 | 0 | 0 | 7 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/81-rus-village.js` | 29.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/81b-rus-salvage.js` | 11.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/84-tri-dwell.js` | 32.6 | [draw] | 6 | 4 | 0 | 0 | 0 | 8 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/85-tri-village.js` | 26.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/85b-tri-salvage.js` | 10.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/88-hl-dress.js` | 10.4 | [draw] | 4 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/89-hl-trades.js` | 5.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the Voth census table: plain data |
+| `src/89-hl-trades.js` | 5.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the Voth census table: plain data |
 | `src/89y-hl-furnish.js` | 7.6 | [draw] | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | the draw adapter onto core/furnish (2026-10-05): the placement pass is core/furnish/50-core-furnish.js. Kept here: the seed rule (place in the list), the VERN frame, the murals' keep-clear boxes, full detail outside, world-placed town furniture (Roketstad), the shader colour step at kbake |
-| `src/94-hl-anim.js` | 2.0 | [draw] | 4 | 0 | 0 | 0 | 0 | 1 | 0 | 1 | 0 | 0 | 0 |  |
-| `targets/sheet/88y-hlsheet-matlib.js` | 3.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/94-hl-anim.js` | 2.2 | [draw] | 4 | 0 | 0 | 0 | 0 | 1 | 0 | 1 | 0 | 0 | 0 |  |
+| `targets/sheet/88y-hlsheet-matlib.js` | 3.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/sheet/89z-rows.js` | 1.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/sheet/91t-hlsheet-tags.js` | 2.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 

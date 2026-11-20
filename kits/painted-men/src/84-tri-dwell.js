@@ -7,52 +7,52 @@
 // 1.2). Seeds 23000–23199 (this file), 23200–23499 (85-tri-village.js).
 
 // ---------------------------------------------------------------- package kit (prefix hTR / hnTR)
-// Painted maps, drawn with the formline primitives of 70-hl-tex.js (ovoids, U-forms, split-Us, trigons, swooping
+// Painted maps, drawn with the Tlingit formline primitives of 83-pm-tlingit.js (ovoids, U-forms, split-Us, trigons, swooping
 // primary lines). Naturalistic ANIMALS and plain formline only — no human faces anywhere in the branch.
 // Colour-carrying: never tint them strongly.
 // a formline salmon, drawn in canvas units: head at (hx,hy), body sweeping to the tail at (tx,ty), s = scale
 function hTRSalmon(g,hx,hy,tx,ty,s,body,accent){const mx=(hx+tx)/2,my=(hy+ty)/2;const nx=-(ty-hy),ny=tx-hx;const L=Math.hypot(nx,ny)||1;const ox=nx/L*s*.32,oy=ny/L*s*.32;
  g.beginPath();g.moveTo(hx,hy);g.quadraticCurveTo(mx+ox*2.2,my+oy*2.2,tx,ty);g.quadraticCurveTo(mx-ox*.6,my-oy*.6,hx,hy);g.fillStyle=body;g.fill();
- g.lineWidth=s*.05;g.strokeStyle=HFORM.black;g.stroke();
- g.beginPath();g.moveTo(hx+(tx-hx)*.22,hy+(ty-hy)*.22);g.quadraticCurveTo(mx+ox*1.1,my+oy*1.1,hx+(tx-hx)*.86,hy+(ty-hy)*.86);g.lineWidth=s*.05;g.strokeStyle=accent;g.stroke();   // lateral line
- hlOvoid(g,hx+(tx-hx)*.12+ox*.5,hy+(ty-hy)*.12+oy*.5,s*.26,s*.2,HFORM.black,HFORM.white,s*.035);hlOvoid(g,hx+(tx-hx)*.12+ox*.5,hy+(ty-hy)*.12+oy*.5+s*.02,s*.11,s*.09,null,HFORM.black);  // eye
- hlUForm(g,mx+ox*1.9,my+oy*1.9,s*.16,s*.16,accent,s*.045);hlUForm(g,mx+ox*.4,my+oy*.4,s*.12,s*.12,HFORM.black,s*.035);                      // fins
- for(const k of[-1,1]){g.beginPath();g.moveTo(tx,ty);g.lineTo(tx+(tx-hx)*.12+ox*k*.9,ty+(ty-hy)*.12+oy*k*.9);g.lineWidth=s*.09;g.strokeStyle=HFORM.black;g.lineCap='round';g.stroke();g.lineCap='butt';}}
+ g.lineWidth=s*.05;g.strokeStyle=PMFORM.black;g.stroke();
+ g.beginPath();g.moveTo(hx+(tx-hx)*.22,hy+(ty-hy)*.22);g.quadraticCurveTo(mx+ox*1.1,my+oy*1.1,hx+(tx-hx)*.86,hy+(ty-hy)*.86);g.lineWidth=s*.05;g.strokeStyle=accent;g.stroke();   /* lateral line */
+ pmOvoid(g,hx+(tx-hx)*.12+ox*.5,hy+(ty-hy)*.12+oy*.5,s*.26,s*.2,PMFORM.black,PMFORM.white,s*.035);pmOvoid(g,hx+(tx-hx)*.12+ox*.5,hy+(ty-hy)*.12+oy*.5+s*.02,s*.11,s*.09,null,PMFORM.black);  /* eye */
+ pmUForm(g,mx+ox*1.9,my+oy*1.9,s*.16,s*.16,accent,s*.045);pmUForm(g,mx+ox*.4,my+oy*.4,s*.12,s*.12,PMFORM.black,s*.035);                      /* fins */
+ for(const k of[-1,1]){g.beginPath();g.moveTo(tx,ty);g.lineTo(tx+(tx-hx)*.12+ox*k*.9,ty+(ty-hy)*.12+oy*k*.9);g.lineWidth=s*.09;g.strokeStyle=PMFORM.black;g.lineCap='round';g.stroke();g.lineCap='butt';}}
 // TR_FRONT: a whole house-front (2:1) on white — the THUNDERBIRD with wings spread across the front, feathers
 // stepping out along each wing, a head in profile with a hooked beak on the axis, a fan tail over the door
-TEX.trFront=canvasTex(512,256,(g,w,h)=>{g.fillStyle=HFORM.white;g.fillRect(0,0,w,h);
- hlMirror(g,w,h,w/2,g=>{
-  hlSwoop(g,[[w*.44,h*.36],[w*.3,h*.12],[w*.12,h*.06],[w*.02,h*.2]],HFORM.black,h*.07);                              // leading edge of the wing
-  for(let k=0;k<7;k++)hlUForm(g,w*(.05+k*.052),h*(.38-k*.012),w*.046,h*.34,k%2?HFORM.red:HFORM.black,w*.012);        // flight feathers
-  hlOvoid(g,w*.33,h*.3,w*.1,h*.16,HFORM.black,HFORM.teal,w*.012);hlOvoid(g,w*.33,h*.31,w*.05,h*.08,null,HFORM.black);   // wing joint
-  hlUForm(g,w*.42,h*.84,w*.05,h*.16,HFORM.black,w*.014);hlTrigon(g,w*.38,h*.9,w*.03,HFORM.red);                        // talons
-  hlTrigon(g,w*.1,h*.8,w*.05,HFORM.teal);hlSplitU(g,w*.22,h*.78,w*.07,h*.14,HFORM.red,w*.016);});
- hlOvoid(g,w/2,h*.6,w*.13,h*.5,HFORM.black,HFORM.red,w*.014);hlOvoid(g,w/2,h*.6,w*.07,h*.24,HFORM.black,HFORM.white,w*.01);   // body
- hlSplitU(g,w/2,h*.62,w*.04,h*.1,HFORM.black,w*.01);
- for(let k=-2;k<=2;k++)hlUForm(g,w/2+k*w*.028,h*.92,w*.024,h*.12,k%2?HFORM.red:HFORM.black,w*.008);                     // fan tail
- hlOvoid(g,w/2,h*.2,w*.11,h*.26,HFORM.black,HFORM.white,w*.013);hlOvoid(g,w*.505,h*.17,w*.04,h*.08,HFORM.black,HFORM.teal,w*.006);   // head + eye
- hlOvoid(g,w*.505,h*.175,w*.018,h*.035,null,HFORM.black);
- g.beginPath();g.moveTo(w*.545,h*.12);g.quadraticCurveTo(w*.63,h*.12,w*.615,h*.3);g.quadraticCurveTo(w*.6,h*.24,w*.545,h*.25);g.closePath();g.fillStyle=HFORM.black;g.fill();   // hooked beak
- g.beginPath();g.moveTo(w*.55,h*.19);g.quadraticCurveTo(w*.59,h*.19,w*.598,h*.24);g.lineWidth=w*.005;g.strokeStyle=HFORM.red;g.stroke();
- for(const s of[-1,1])hlUForm(g,w/2+s*w*.03,h*.05,w*.03,h*.07,HFORM.red,w*.008);                                       // crest feathers
- g.fillStyle=HFORM.black;g.fillRect(0,h*.965,w,h*.035);});
+TEX.trFront=canvasTex(512,256,(g,w,h)=>{g.fillStyle=PMFORM.white;g.fillRect(0,0,w,h);
+ pmMirror(g,w,h,w/2,g=>{
+  pmSwoop(g,[[w*.44,h*.36],[w*.3,h*.12],[w*.12,h*.06],[w*.02,h*.2]],PMFORM.black,h*.07);                              /* leading edge of the wing */
+  for(let k=0;k<7;k++)pmUForm(g,w*(.05+k*.052),h*(.38-k*.012),w*.046,h*.34,k%2?PMFORM.red:PMFORM.black,w*.012);        /* flight feathers */
+  pmOvoid(g,w*.33,h*.3,w*.1,h*.16,PMFORM.black,PMFORM.teal,w*.012);pmOvoid(g,w*.33,h*.31,w*.05,h*.08,null,PMFORM.black);   /* wing joint */
+  pmUForm(g,w*.42,h*.84,w*.05,h*.16,PMFORM.black,w*.014);pmTrigon(g,w*.38,h*.9,w*.03,PMFORM.red);                        /* talons */
+  pmTrigon(g,w*.1,h*.8,w*.05,PMFORM.teal);pmSplitU(g,w*.22,h*.78,w*.07,h*.14,PMFORM.red,w*.016);});
+ pmOvoid(g,w/2,h*.6,w*.13,h*.5,PMFORM.black,PMFORM.red,w*.014);pmOvoid(g,w/2,h*.6,w*.07,h*.24,PMFORM.black,PMFORM.white,w*.01);   /* body */
+ pmSplitU(g,w/2,h*.62,w*.04,h*.1,PMFORM.black,w*.01);
+ for(let k=-2;k<=2;k++)pmUForm(g,w/2+k*w*.028,h*.92,w*.024,h*.12,k%2?PMFORM.red:PMFORM.black,w*.008);                     /* fan tail */
+ pmOvoid(g,w/2,h*.2,w*.11,h*.26,PMFORM.black,PMFORM.white,w*.013);pmOvoid(g,w*.505,h*.17,w*.04,h*.08,PMFORM.black,PMFORM.teal,w*.006);   /* head + eye */
+ pmOvoid(g,w*.505,h*.175,w*.018,h*.035,null,PMFORM.black);
+ g.beginPath();g.moveTo(w*.545,h*.12);g.quadraticCurveTo(w*.63,h*.12,w*.615,h*.3);g.quadraticCurveTo(w*.6,h*.24,w*.545,h*.25);g.closePath();g.fillStyle=PMFORM.black;g.fill();   /* hooked beak */
+ g.beginPath();g.moveTo(w*.55,h*.19);g.quadraticCurveTo(w*.59,h*.19,w*.598,h*.24);g.lineWidth=w*.005;g.strokeStyle=PMFORM.red;g.stroke();
+ for(const s of[-1,1])pmUForm(g,w/2+s*w*.03,h*.05,w*.03,h*.07,PMFORM.red,w*.008);                                       /* crest feathers */
+ g.fillStyle=PMFORM.black;g.fillRect(0,h*.965,w,h*.035);});
 // TR_FRONT_K: a pair of leaping SALMON on bare cedar, heads meeting under the apex — 1:1, for gable-ends
-TEX.trFrontK=canvasTex(256,256,(g,w,h)=>{hlCedar(g,w,h,HFORM.cedar,true);
- hlMirror(g,w,h,w/2,g=>{hTRSalmon(g,w*.44,h*.3,w*.12,h*.88,w*.5,HFORM.red,HFORM.teal);hlTrigon(g,w*.06,h*.2,w*.08,HFORM.teal);hlUForm(g,w*.36,h*.9,w*.1,h*.08,HFORM.black,w*.02);});
- hlOvoid(g,w/2,h*.14,w*.14,h*.1,HFORM.black,HFORM.teal,w*.02);
- g.fillStyle=HFORM.black;g.fillRect(0,h*.95,w,h*.05);});
+TEX.trFrontK=canvasTex(256,256,(g,w,h)=>{pmCedar(g,w,h,PMFORM.cedar,true);
+ pmMirror(g,w,h,w/2,g=>{hTRSalmon(g,w*.44,h*.3,w*.12,h*.88,w*.5,PMFORM.red,PMFORM.teal);pmTrigon(g,w*.06,h*.2,w*.08,PMFORM.teal);pmUForm(g,w*.36,h*.9,w*.1,h*.08,PMFORM.black,w*.02);});
+ pmOvoid(g,w/2,h*.14,w*.14,h*.1,PMFORM.black,PMFORM.teal,w*.02);
+ g.fillStyle=PMFORM.black;g.fillRect(0,h*.95,w,h*.05);});
 // TR_SHIELD: a round war shield — black rim, red ring, a coiled salmon in plain formline; the field takes the tint
-TEX.trShield=canvasTex(128,128,(g,w,h)=>{g.fillStyle=HFORM.white;g.fillRect(0,0,w,h);
- g.beginPath();g.arc(w/2,h/2,w*.47,0,TAU);g.lineWidth=w*.07;g.strokeStyle=HFORM.black;g.stroke();
- g.beginPath();g.arc(w/2,h/2,w*.38,0,TAU);g.lineWidth=w*.03;g.strokeStyle=HFORM.red;g.stroke();
- hTRSalmon(g,w*.66,h*.28,w*.3,h*.74,w*.62,HFORM.black,HFORM.red);hlTrigon(g,w*.3,h*.26,w*.12,HFORM.teal);});
+TEX.trShield=canvasTex(128,128,(g,w,h)=>{g.fillStyle=PMFORM.white;g.fillRect(0,0,w,h);
+ g.beginPath();g.arc(w/2,h/2,w*.47,0,TAU);g.lineWidth=w*.07;g.strokeStyle=PMFORM.black;g.stroke();
+ g.beginPath();g.arc(w/2,h/2,w*.38,0,TAU);g.lineWidth=w*.03;g.strokeStyle=PMFORM.red;g.stroke();
+ hTRSalmon(g,w*.66,h*.28,w*.3,h*.74,w*.62,PMFORM.black,PMFORM.red);pmTrigon(g,w*.3,h*.26,w*.12,PMFORM.teal);});
 // TR_CONE: painted bands for a conical roof (u round the cone, v up) — a red band of U-forms, a cedar band of
 // salmon swimming round, a black band of teal trigons, black toward the smoke hole
-TEX.trCone=canvasTex(256,256,(g,w,h)=>{g.fillStyle=HFORM.black;g.fillRect(0,0,w,h);
- g.fillStyle=HFORM.red;g.fillRect(0,h*.78,w,h*.22);for(let k=0;k<4;k++)hlUForm(g,w*(k+.5)/4,h*.87,w*.16,h*.12,HFORM.white,w*.03);
- g.fillStyle=HFORM.cedar;g.fillRect(0,h*.5,w,h*.26);for(let k=0;k<2;k++)hTRSalmon(g,w*(k*.5+.42),h*.6,w*(k*.5+.06),h*.66,w*.36,HFORM.black,HFORM.red);
- for(let k=0;k<6;k++)hlTrigon(g,w*(k+.2)/6,h*.38,w*.08,HFORM.teal);
- g.fillStyle=HFORM.white;g.fillRect(0,h*.47,w,h*.02);g.fillRect(0,h*.76,w,h*.015);});
+TEX.trCone=canvasTex(256,256,(g,w,h)=>{g.fillStyle=PMFORM.black;g.fillRect(0,0,w,h);
+ g.fillStyle=PMFORM.red;g.fillRect(0,h*.78,w,h*.22);for(let k=0;k<4;k++)pmUForm(g,w*(k+.5)/4,h*.87,w*.16,h*.12,PMFORM.white,w*.03);
+ g.fillStyle=PMFORM.cedar;g.fillRect(0,h*.5,w,h*.26);for(let k=0;k<2;k++)hTRSalmon(g,w*(k*.5+.42),h*.6,w*(k*.5+.06),h*.66,w*.36,PMFORM.black,PMFORM.red);
+ for(let k=0;k<6;k++)pmTrigon(g,w*(k+.2)/6,h*.38,w*.08,PMFORM.teal);
+ g.fillStyle=PMFORM.white;g.fillRect(0,h*.47,w,h*.02);g.fillRect(0,h*.76,w,h*.015);});
 MAT.trFront=hStd({map:TEX.trFront,roughness:.8});MAT.trFrontK=hStd({map:TEX.trFrontK,roughness:.8});
 MAT.trShield=hStd({map:TEX.trShield,roughness:.75});
 MAT.trCone=hStd({map:TEX.trCone,roughness:.85});MAT.trIron=hStd({color:0x3a3430,roughness:.6,metalness:.5});
@@ -60,7 +60,7 @@ MAT.trCone=hStd({map:TEX.trCone,roughness:.85});MAT.trIron=hStd({color:0x3a3430,
 // circumference), a painted band cylinder, a painted cone with a smoke hole, a disc, a bowl
 function hTRCylGeo(seg,rTop,open,uK){const g=new THREE.CylinderGeometry(rTop,1,1,seg,1,open).translate(0,.5,0);const uv=g.attributes.uv;
  for(let i=0;i<uv.count;i++)uv.setX(i,uv.getX(i)*uK);return g;}
-kdef('hTRMatCyl',hTRCylGeo(14,1,true,TAU),MAT.bmat);kdef('hTRBandCyl',hTRCylGeo(14,1,true,TAU),MAT.formF);
+kdef('hTRMatCyl',hTRCylGeo(14,1,true,TAU),MAT.bmat);kdef('hTRBandCyl',hTRCylGeo(14,1,true,TAU),MAT.pmFormF);
 kdef('hTRConeP',hTRCylGeo(10,.06,true,3),MAT.trCone);kdef('hTRDisc',new THREE.CylinderGeometry(1,1,1,14).translate(0,.5,0),MAT.woodV);
 kdef('hTRShield',new THREE.CircleGeometry(1,16),MAT.trShield);
 kdef('hTRBowl',new THREE.SphereGeometry(1,12,5,0,TAU,Math.PI/2,Math.PI/2),MAT.trIron);kdef('hTRFlame',VCONE,MAT.ember);
@@ -93,14 +93,14 @@ function hnTRGourd(x,y,z,c){if(!c)rng();return FURNISH('hl_tri_gourd',x,y-.7,z,0
 function hnTRCage(x,y,z){rng();return FURNISH('hl_tri_fire_cage',x,y-.8,z,0);}
 // The great plank-house's entrance pole is not furniture: its lowest figure's mouth is the door. Drawn (the totem the
 // tribes' hnTotem drew before it placed catalog poles): carved column, beak, thunderbird crossarm.
-function hnTREntrancePole(x,y,z,r,h,ry,wings,wingAt){kput('hTotem',[x,y,z],qEuler(0,ry+Math.PI,0),[r,h,r],null);
+function hnTREntrancePole(x,y,z,r,h,ry,wings,wingAt){kput('pmTotem',[x,y,z],qEuler(0,ry+Math.PI,0),[r,h,r],null);
  const f=loc(x,z,0,r*.9,ry);kput('vConeI',[f[0],y+h*.86,f[1]],vQ(ry,Math.PI/2,0),[r*.34,r*1.3,r*.34],hC(HPAL.black));
- const wy=y+h*wingAt;for(const s of[-1,1]){const p=loc(x,z,s*(r+wings*.5),r*.2,ry);kput('hWing',[p[0],wy,p[1]],vQ(ry,0,s*-.12),[s*wings,wings*.5,1],null);}}
+ const wy=y+h*wingAt;for(const s of[-1,1]){const p=loc(x,z,s*(r+wings*.5),r*.2,ry);kput('pmWing',[p[0],wy,p[1]],vQ(ry,0,s*-.12),[s*wings,wings*.5,1],null);}}
 // A box-built beast for pens and byres: 'cow' (shaggy highland), 'goat', 'pig'
 function hnTRBeast(x,y,z,ry,kind,c){const K={cow:[1.7,.8,.62,.72],goat:[.9,.42,.32,.5],pig:[1.05,.5,.46,.28]}[kind]||[1,.5,.4,.5];const [L,Hb,Wb,Lg]=K;
  c=c||hC(kind==='cow'?vPick([0x8a4a2a,0x6a3a22,0xa0602e]):kind==='goat'?vPick([0xd8d0c0,0x6a5a4a,0xe8e0d0]):vPick([0xc89a8a,0x5a4a44]));
  const P=(u,yy,v)=>{const p=loc(x,z,v,u,ry);return[p[0],y+yy,p[1]];};const q=qEuler(0,ry,0);
- kput('vWood',P(0,Lg+Hb/2,0),q,[Wb,Hb,L],c);                                                         // body (along the beast's +z)
+ kput('vWood',P(0,Lg+Hb/2,0),q,[Wb,Hb,L],c);                                                         /* body (along the beast's +z) */
  for(const a of[-1,1])for(const b of[-1,1])kput('vWood',P(a*L*.36,Lg/2,b*Wb*.32),q,[.1,Lg,.1],c.clone().multiplyScalar(.8));
  const hy=Lg+Hb*(kind==='pig'?.45:.9),hz=L/2+.12;kput('vWood',P(hz,hy,0),q.clone().multiply(qEuler(kind==='pig'?0:.5,0,0)),[Wb*.7,Hb*.55,Hb*.8],c);
  if(kind!=='pig')for(const s of[-1,1]){const h=P(hz-.05,hy+Hb*.3,s*Wb*.3);beam('hPaint',h,[h[0]+s*Math.cos(ry)*.25*(kind==='cow'?1.6:.6),h[1]+.18,h[2]-s*Math.sin(ry)*.25*(kind==='cow'?1.6:.6)],.05,.05,hC(0xd8ccb0));}
@@ -132,7 +132,7 @@ function buildHlTriSmallA(G,o){reseed(23001+(o.v|0));const W=6,D=5,FL=o.cliff?0:
  vnReg('Painted hut (small)',0,0,5,FL+H+3.6);
  hnTriBase(W,D,FL,log,o.cliff,o,D/2+1.6);
  vB('vWood',0,Y-.2,0,W,.2,D,0,log);hnBambooBox(0,Y,0,W,H,D,0,bam);
- hnForm('hFormW',0,Y+.1,D/2+.04,0,W-.4,H-.2);                                            // the painted house-front
+ hnForm('hFormW',0,Y+.1,D/2+.04,0,W-.4,H-.2);                                            /* the painted house-front */
  vnDoor(0,Y,D/2+.08,0,.9,1.8,'vWood',bam,hC(0x5a4a3a),false);
  hnGable(0,Y+H,0,W,D,1.2,0,'vGableT',th,.9,'hGableBM',bam);hnBarge(0,Y+H,0,W,D,1.2*D/2,0,.9,hC(HPAL.black),'bird');
  vB('vWood',0,Y-.2,D/2+.8,2.4,.18,1.6,0,log);
@@ -154,8 +154,8 @@ function buildHlTriSmallB(G,o){reseed(23011+(o.v|0));const R=2.7,FL=o.cliff?0:.9
  for(const yy of[Y+.12,Y+H-.1])kput('vHoop',[0,yy,0],qEuler(Math.PI/2,0,0),[R+.12,R+.12,1.4],bam);
  vnDoor(0,Y,R+.12,0,.9,1.8,'vWood',bam,hC(0x5a4a3a),false);
  vnThatchCone(0,Y+H,0,R+.35,4.6,th);
- vPst('vPost',0,Y+H+4.2,0,.07,1.1,log);kput('hPaintBall',[0,Y+H+5.3,0],null,[.18,.22,.18],hC(HPAL.black));   // the peak: a carved bird
- for(const s of[-1,1])kput('hWing',[s*.55,Y+H+5.35,0],qEuler(0,0,s*-.2),[s*1.1,.55,1],null);
+ vPst('vPost',0,Y+H+4.2,0,.07,1.1,log);kput('hPaintBall',[0,Y+H+5.3,0],null,[.18,.22,.18],hC(HPAL.black));   /* the peak: a carved bird */
+ for(const s of[-1,1])kput('pmWing',[s*.55,Y+H+5.35,0],qEuler(0,0,s*-.2),[s*1.1,.55,1],null);
  kput('vConeI',[0,Y+H+5.3,.2],vQ(0,Math.PI/2,0),[.06,.28,.06],hC(HPAL.red));
  vB('vWood',0,Y-.2,R+.9,2.2,.18,1.8,0,log);                                                          // deck
  hnForm('hFormV',-1.25,Y+.2,R-.25,.35,.55,1.5);hnForm('hFormV',1.25,Y+.2,R-.25,-.35,.55,1.5);      // painted boards beside the door

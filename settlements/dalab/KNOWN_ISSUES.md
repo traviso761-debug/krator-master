@@ -86,6 +86,7 @@ saying what fixed it.
       `../ancients/src/64-dalab.js`: a wall gap where the oak avenue enters
       (`LAB_WALL_GAP`) and a narrower, higher bite in the great dome (w .11,
       y0 .10). Both lines are marked DALAB; `--vendor-check` says so.
+- [ ] (ADAPTED, 2026-11-19) `src/70-hl-tex.js` is kept at Dalab's pre-Slavic-refactor copy alongside `71-hl-mat.js`, `71b-hl-motif.js`, `73-hl-carve.js` and `74-rep-dwell.js` until Dalab's Republican embassy re-vendors `kits/highlands`.
 - [ ] The oak corridor rule keeps plots 22.5 m off every oak road's line, so
       a town the highway passes through loses its highway frontage; the second
       ring street and the extra radials make up the count.

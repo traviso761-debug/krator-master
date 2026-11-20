@@ -1,0 +1,1412 @@
+{
+ "edit": "5.1 edit 20 (Iron Republic Swiss-Alpine & Great-Lake reshaping)",
+ "version_tag": "5.1e20",
+ "date": "2026-11-18",
+ "region": "rmufxti8qwcxy",
+ "dry_run": false,
+ "envelope": {
+  "ir_polygon_cells": 34532,
+  "ir_polygon_km2": 138128,
+  "pure_ir_cells": 34244,
+  "pure_ir_km2": 136976,
+  "shared_border_cells_excluded": 288
+ },
+ "hydrology_pits": {
+  "dry_pits_before_cells": 1157,
+  "dry_pits_after_cells": 671,
+  "new_dry_pits_remaining": 0,
+  "wet_lake_surface_pits": 0,
+  "pit_filled_cells": 718,
+  "pit_filled_max_m": 485.7
+ },
+ "reclimate": {
+  "cells": 10309,
+  "class_changed": 7502,
+  "rain_mean_before_mm": 854.0,
+  "rain_mean_after_mm": 803.0,
+  "classes_now": {
+   "BSh": 52,
+   "BSk": 11,
+   "Csa": 295,
+   "Csb": 825,
+   "Csc": 2,
+   "Cwb": 23,
+   "Cfa": 1369,
+   "Cfb": 1338,
+   "Dsa": 18,
+   "Dsb": 1251,
+   "Dsc": 459,
+   "Dwb": 15,
+   "Dwc": 4,
+   "Dfa": 88,
+   "Dfb": 1233,
+   "Dfc": 2240,
+   "ET": 1085,
+   "EF": 1
+  }
+ },
+ "rivers_updated": {
+  "r051": {
+   "name": "Silvr Bruk",
+   "was": {
+    "n": 9,
+    "first": [
+     632.5,
+     726.6
+    ],
+    "last": [
+     624.5,
+     742.6
+    ],
+    "source_m": 2880.0,
+    "mouth_m": 2318.3,
+    "q_mouth_m3s": 77.8,
+    "to": {
+     "lake_m": 2400,
+     "at_px": [
+      622.5,
+      744.6
+     ]
+    }
+   },
+   "now": {
+    "n": 7,
+    "first": [
+     632.0,
+     727.0
+    ],
+    "last": [
+     626.0,
+     739.0
+    ],
+    "length_km": 27.2,
+    "source_m": 2858.5,
+    "mouth_m": 2421.5,
+    "q_mouth_m3s": 77.8,
+    "to": {
+     "lake_m": 2420,
+     "through": true,
+     "at_px": [
+      623.0,
+      740.0
+     ]
+    },
+    "settlements": [
+     "Korshamn"
+    ]
+   }
+  },
+  "r_ir_korssund": {
+   "name": "Kors-Strömmen",
+   "was": null,
+   "now": {
+    "n": 5,
+    "first": [
+     591.0,
+     750.0
+    ],
+    "last": [
+     585.0,
+     755.0
+    ],
+    "length_km": 15.7,
+    "source_m": 2410.4,
+    "mouth_m": 2361.5,
+    "q_mouth_m3s": 195.0,
+    "to": {
+     "lake_m": 2360,
+     "through": true,
+     "at_px": [
+      584.0,
+      756.0
+     ]
+    }
+   }
+  },
+  "r010": {
+   "name": "Blak Bruk",
+   "was": {
+    "n": 9,
+    "first": [
+     590.4,
+     804.7
+    ],
+    "last": [
+     582.4,
+     820.7
+    ],
+    "source_m": 2328.8,
+    "mouth_m": 2220.8,
+    "q_mouth_m3s": 369.3,
+    "to": {
+     "lake_m": 2383,
+     "through": true,
+     "at_px": [
+      582.4,
+      822.7
+     ]
+    }
+   },
+   "now": {
+    "n": 5,
+    "first": [
+     590.0,
+     803.0
+    ],
+    "last": [
+     587.0,
+     811.0
+    ],
+    "length_km": 17.2,
+    "source_m": 2358.5,
+    "mouth_m": 2236.7,
+    "q_mouth_m3s": 369.3,
+    "to": {
+     "lake_m": 2220,
+     "through": true,
+     "at_px": [
+      586.0,
+      813.0
+     ]
+    },
+    "settlements": [
+     "Urverkstad"
+    ]
+   }
+  },
+  "r004": {
+   "name": "Kaskejt Rivr",
+   "was": {
+    "n": 52,
+    "first": [
+     580.4,
+     828.7
+    ],
+    "last": [
+     488.3,
+     886.8
+    ],
+    "source_m": 2381.6,
+    "mouth_m": 39.1,
+    "q_mouth_m3s": 760.8,
+    "to": {
+     "lake_m": 17,
+     "at_px": [
+      486.3,
+      888.8
+     ]
+    }
+   },
+   "now": {
+    "n": 43,
+    "first": [
+     569.0,
+     839.0
+    ],
+    "last": [
+     488.3,
+     886.8
+    ],
+    "length_km": 206.6,
+    "source_m": 2218.5,
+    "mouth_m": 39.1,
+    "q_mouth_m3s": 760.8,
+    "to": {
+     "lake_m": 17,
+     "at_px": [
+      486.3,
+      888.8
+     ]
+    },
+    "settlements": [
+     "Cascade"
+    ]
+   }
+  },
+  "r014": {
+   "name": "Hōng-Mā",
+   "was": {
+    "n": 40,
+    "first": [
+     578.4,
+     694.5
+    ],
+    "last": [
+     500.3,
+     688.5
+    ],
+    "source_m": 2293.3,
+    "mouth_m": 64.3,
+    "q_mouth_m3s": 330.4,
+    "to": {
+     "lake_m": 46,
+     "at_px": [
+      498.3,
+      688.5
+     ]
+    }
+   },
+   "now": {
+    "n": 40,
+    "first": [
+     577.0,
+     690.0
+    ],
+    "last": [
+     500.3,
+     688.5
+    ],
+    "length_km": 165.3,
+    "source_m": 2258.5,
+    "mouth_m": 64.3,
+    "q_mouth_m3s": 330.4,
+    "to": {
+     "lake_m": 46,
+     "at_px": [
+      498.3,
+      688.5
+     ]
+    },
+    "settlements": [
+     "Corpus",
+     "Slussport"
+    ]
+   }
+  },
+  "r281": {
+   "name": "Frost Rivr",
+   "was": {
+    "n": 16,
+    "first": [
+     580.4,
+     858.8
+    ],
+    "last": [
+     556.4,
+     858.8
+    ],
+    "source_m": 2982.9,
+    "mouth_m": 1823.4,
+    "q_mouth_m3s": 85.3,
+    "to": {
+     "river": "r004",
+     "name": "Kaskejt Rivr",
+     "at_px": [
+      554.4,
+      858.8
+     ]
+    }
+   },
+   "now": {
+    "n": 10,
+    "first": [
+     581.0,
+     858.0
+    ],
+    "last": [
+     556.4,
+     858.8
+    ],
+    "length_km": 51.1,
+    "source_m": 2578.5,
+    "mouth_m": 1823.4,
+    "q_mouth_m3s": 85.3,
+    "to": {
+     "river": "r004",
+     "name": "Kaskejt Rivr",
+     "at_px": [
+      554.4,
+      858.8
+     ]
+    },
+    "settlements": []
+   }
+  },
+  "r027": {
+   "name": "Nīla-āṟu",
+   "was": {
+    "n": 15,
+    "first": [
+     640.5,
+     654.5
+    ],
+    "last": [
+     626.5,
+     626.4
+    ],
+    "source_m": 2444.8,
+    "mouth_m": 468.0,
+    "q_mouth_m3s": 139.6,
+    "to": {
+     "lake_m": 430,
+     "at_px": [
+      624.5,
+      624.4
+     ]
+    }
+   },
+   "now": {
+    "n": 18,
+    "first": [
+     645.0,
+     659.0
+    ],
+    "last": [
+     626.5,
+     626.4
+    ],
+    "length_km": 80.5,
+    "source_m": 2878.5,
+    "mouth_m": 468.0,
+    "q_mouth_m3s": 139.6,
+    "to": {
+     "lake_m": 430,
+     "at_px": [
+      624.5,
+      624.4
+     ]
+    },
+    "settlements": []
+   }
+  },
+  "r201": {
+   "name": "Snou Bruk",
+   "was": {
+    "n": 6,
+    "first": [
+     636.5,
+     706.5
+    ],
+    "last": [
+     632.5,
+     716.6
+    ],
+    "source_m": 2960.6,
+    "mouth_m": 2940.8,
+    "q_mouth_m3s": 21.9,
+    "to": {
+     "lake_m": 2925,
+     "through": true,
+     "at_px": [
+      632.5,
+      718.6
+     ]
+    }
+   },
+   "now": {
+    "n": 5,
+    "first": [
+     633.06,
+     710.53
+    ],
+    "last": [
+     631.6,
+     718.2
+    ],
+    "length_km": 16.0,
+    "source_m": 4680.0,
+    "mouth_m": 2869.7,
+    "q_mouth_m3s": 21.9,
+    "to": {
+     "lake_m": 2860,
+     "through": true,
+     "at_px": [
+      630.5,
+      720.5
+     ]
+    },
+    "settlements": [
+     "Roketstad"
+    ]
+   }
+  },
+  "r723": {
+   "name": "Birč Guli",
+   "was": {
+    "n": 6,
+    "first": [
+     622.5,
+     696.5
+    ],
+    "last": [
+     622.5,
+     706.5
+    ],
+    "source_m": 2978.1,
+    "mouth_m": 2933.1,
+    "q_mouth_m3s": 9.6,
+    "to": {
+     "at_px": [
+      622.5,
+      708.5
+     ]
+    }
+   },
+   "now": {
+    "n": 3,
+    "first": [
+     622.5,
+     698.5
+    ],
+    "last": [
+     622.48,
+     702.48
+    ],
+    "length_km": 8.0,
+    "source_m": 4630.4,
+    "mouth_m": 4614.4,
+    "q_mouth_m3s": 7.3,
+    "to": {
+     "river": "r238",
+     "name": "Pajn Bruk",
+     "at_px": [
+      622.5,
+      704.5
+     ]
+    },
+    "settlements": []
+   }
+  },
+  "r238": {
+   "name": "Pajn Bruk",
+   "was": {
+    "n": 9,
+    "first": [
+     622.5,
+     708.5
+    ],
+    "last": [
+     620.5,
+     724.6
+    ],
+    "source_m": 2927.1,
+    "mouth_m": 2627.2,
+    "q_mouth_m3s": 17.2,
+    "to": {
+     "lake_m": 2400,
+     "at_px": [
+      618.4,
+      726.6
+     ]
+    }
+   },
+   "now": {
+    "n": 3,
+    "first": [
+     622.5,
+     704.5
+    ],
+    "last": [
+     622.5,
+     708.5
+    ],
+    "length_km": 8.0,
+    "source_m": 4302.3,
+    "mouth_m": 3184.5,
+    "q_mouth_m3s": 17.2,
+    "to": {
+     "lake_m": 2860,
+     "through": true,
+     "at_px": [
+      622.5,
+      710.5
+     ]
+    },
+    "settlements": []
+   }
+  },
+  "r123": {
+   "name": "Birč Bruk",
+   "was": {
+    "n": 13,
+    "first": [
+     584.4,
+     742.6
+    ],
+    "last": [
+     608.4,
+     730.6
+    ],
+    "source_m": 3040.2,
+    "mouth_m": 2520.4,
+    "q_mouth_m3s": 39.0,
+    "to": {
+     "lake_m": 2400,
+     "at_px": [
+      610.4,
+      730.6
+     ]
+    }
+   },
+   "now": {
+    "n": 7,
+    "first": [
+     588.4,
+     746.6
+    ],
+    "last": [
+     600.4,
+     736.6
+    ],
+    "length_km": 32.9,
+    "source_m": 3841.8,
+    "mouth_m": 2697.6,
+    "q_mouth_m3s": 30.7,
+    "to": {
+     "lake_m": 2420,
+     "through": true,
+     "at_px": [
+      602.8,
+      735.1
+     ]
+    },
+    "settlements": []
+   }
+  },
+  "r092": {
+   "name": "Dip Rivr",
+   "was": {
+    "n": 18,
+    "first": [
+     566.4,
+     750.6
+    ],
+    "last": [
+     578.4,
+     774.6
+    ],
+    "source_m": 2975.0,
+    "mouth_m": 2809.2,
+    "q_mouth_m3s": 50.3,
+    "to": {
+     "lake_m": 2400,
+     "at_px": [
+      580.4,
+      776.6
+     ]
+    }
+   },
+   "now": {
+    "n": 11,
+    "first": [
+     566.4,
+     750.6
+    ],
+    "last": [
+     564.57,
+     769.52
+    ],
+    "length_km": 47.1,
+    "source_m": 2982.9,
+    "mouth_m": 2587.4,
+    "q_mouth_m3s": 28.3,
+    "to": {
+     "lake_m": 2360,
+     "through": true,
+     "at_px": [
+      566.5,
+      770.4
+     ]
+    },
+    "settlements": [
+     "Footfall"
+    ]
+   }
+  },
+  "r382": {
+   "name": "Granit Bruk",
+   "was": {
+    "n": 9,
+    "first": [
+     554.4,
+     780.6
+    ],
+    "last": [
+     570.4,
+     774.6
+    ],
+    "source_m": 3007.1,
+    "mouth_m": 2923.6,
+    "q_mouth_m3s": 16.1,
+    "to": {
+     "river": "r092",
+     "name": "Dip Rivr",
+     "at_px": [
+      572.4,
+      774.6
+     ]
+    }
+   },
+   "now": {
+    "n": 5,
+    "first": [
+     554.4,
+     780.6
+    ],
+    "last": [
+     562.4,
+     776.6
+    ],
+    "length_km": 19.2,
+    "source_m": 3010.7,
+    "mouth_m": 2388.3,
+    "q_mouth_m3s": 14.4,
+    "to": {
+     "lake_m": 2360,
+     "through": true,
+     "at_px": [
+      564.3,
+      776.1
+     ]
+    },
+    "settlements": []
+   }
+  },
+  "r282": {
+   "name": "Frost Bruk",
+   "was": {
+    "n": 16,
+    "first": [
+     544.4,
+     822.7
+    ],
+    "last": [
+     566.4,
+     834.7
+    ],
+    "source_m": 3464.1,
+    "mouth_m": 2506.5,
+    "q_mouth_m3s": 33.8,
+    "to": {
+     "river": "r004",
+     "name": "Kaskejt Rivr",
+     "at_px": [
+      566.4,
+      836.7
+     ]
+    }
+   },
+   "now": {
+    "n": 11,
+    "first": [
+     556.66,
+     818.83
+    ],
+    "last": [
+     568.4,
+     836.7
+    ],
+    "length_km": 47.4,
+    "source_m": 3814.2,
+    "mouth_m": 2325.8,
+    "q_mouth_m3s": 33.8,
+    "to": {
+     "lake_m": 2220,
+     "through": true,
+     "at_px": [
+      570.4,
+      836.7
+     ]
+    },
+    "settlements": []
+   }
+  },
+  "r408": {
+   "name": "Ford Bruk",
+   "was": {
+    "n": 11,
+    "first": [
+     580.4,
+     688.5
+    ],
+    "last": [
+     560.4,
+     688.5
+    ],
+    "source_m": 2361.0,
+    "mouth_m": 1458.1,
+    "q_mouth_m3s": 14.7,
+    "to": {
+     "river": "r312",
+     "name": "Red Rivr",
+     "at_px": [
+      558.4,
+      688.5
+     ]
+    }
+   },
+   "now": {
+    "n": 9,
+    "first": [
+     576.38,
+     688.48
+    ],
+    "last": [
+     560.4,
+     688.5
+    ],
+    "length_km": 32.3,
+    "source_m": 2301.0,
+    "mouth_m": 1458.1,
+    "q_mouth_m3s": 14.7,
+    "to": {
+     "river": "r312",
+     "name": "Red Rivr",
+     "at_px": [
+      558.4,
+      688.5
+     ]
+    },
+    "settlements": []
+   }
+  },
+  "r312": {
+   "name": "Red Rivr",
+   "was": {
+    "n": 11,
+    "first": [
+     576.4,
+     684.5
+    ],
+    "last": [
+     556.4,
+     688.5
+    ],
+    "source_m": 2220.8,
+    "mouth_m": 1331.4,
+    "q_mouth_m3s": 39.1,
+    "to": {
+     "river": "r014",
+     "name": "Hōng-Mā",
+     "at_px": [
+      554.4,
+      690.5
+     ]
+    }
+   },
+   "now": {
+    "n": 11,
+    "first": [
+     576.4,
+     684.5
+    ],
+    "last": [
+     556.4,
+     688.5
+    ],
+    "length_km": 43.1,
+    "source_m": 2298.0,
+    "mouth_m": 1331.4,
+    "q_mouth_m3s": 39.1,
+    "to": {
+     "river": "r014",
+     "name": "Hōng-Mā",
+     "at_px": [
+      554.4,
+      690.5
+     ]
+    },
+    "settlements": []
+   }
+  }
+ },
+ "relight": {
+  "st": {
+   "az_deg": 315,
+   "zf": 3,
+   "gain": 0.291,
+   "corr": 0.239
+  },
+  "t": {
+   "az_deg": 375,
+   "zf": 1,
+   "gain": 0.719,
+   "corr": 0.096
+  },
+  "rt": {
+   "az_deg": 315,
+   "zf": 10,
+   "gain": 0.506,
+   "corr": 0.622
+  },
+  "ct": {
+   "az_deg": 330,
+   "zf": 5,
+   "gain": 0.543,
+   "corr": 0.244
+  }
+ },
+ "lake_paint_rgb_st": [
+  41,
+  94,
+  90
+ ],
+ "lake_paint_rgb_t": [
+  55,
+  103,
+  106
+ ],
+ "lakes": [
+  {
+   "id": "L1_roketsjo",
+   "name": "Roketsjö",
+   "analogue": "Zürichsee / Zugersee",
+   "at_px": [
+    629.0,
+    719.0
+   ],
+   "sill_px": [
+    632,
+    727
+   ],
+   "cells": 138,
+   "km2": 552,
+   "level_m": 2860.0,
+   "spill_open_m": 2858.5,
+   "spill_blocked_m": 2905.0,
+   "depth_max_m": 340.0,
+   "depth_median_m": 232.2,
+   "out_river": "r051 (Silvr Bruk)",
+   "q_m3s": 77.8,
+   "head_m": 440.0,
+   "gross_hydro_MW": 335.8,
+   "climate_shore": "Cfb"
+  },
+  {
+   "id": "L2_korsvatn",
+   "name": "Korsvatn",
+   "analogue": "Vierwaldstättersee (Lake Lucerne, 4-arm cruciform fjord)",
+   "at_px": [
+    617.0,
+    741.0
+   ],
+   "sill_px": [
+    591,
+    750
+   ],
+   "cells": 397,
+   "km2": 1588,
+   "level_m": 2420.0,
+   "spill_open_m": 2410.4,
+   "spill_blocked_m": 2939.9,
+   "depth_max_m": 560.0,
+   "depth_median_m": 430.6,
+   "out_river": "r_ir_korssund (Kors-Strömmen)",
+   "q_m3s": 195.0,
+   "head_m": 60.0,
+   "gross_hydro_MW": 114.8,
+   "climate_shore": "Cfa"
+  },
+  {
+   "id": "L3_glasklar",
+   "name": "Glasklar-Sjö",
+   "analogue": "Lac Léman / Lake Geneva (crescent piedmont-alpine)",
+   "at_px": [
+    569.0,
+    789.0
+   ],
+   "sill_px": [
+    590,
+    803
+   ],
+   "cells": 464,
+   "km2": 1856,
+   "level_m": 2360.0,
+   "spill_open_m": 2358.5,
+   "spill_blocked_m": 2515.3,
+   "depth_max_m": 640.0,
+   "depth_median_m": 481.5,
+   "out_river": "r010 (Blak Bruk)",
+   "q_m3s": 369.3,
+   "head_m": 140.0,
+   "gross_hydro_MW": 507.2,
+   "climate_shore": "Cfa"
+  },
+  {
+   "id": "L4_kaskejtsjo",
+   "name": "Kaskejt-Sjö",
+   "analogue": "Brienzersee–Thunersee (power-cascade trough)",
+   "at_px": [
+    576.0,
+    831.0
+   ],
+   "sill_px": [
+    569,
+    839
+   ],
+   "cells": 159,
+   "km2": 636,
+   "level_m": 2220.0,
+   "spill_open_m": 2218.5,
+   "spill_blocked_m": 2458.7,
+   "depth_max_m": 460.0,
+   "depth_median_m": 348.9,
+   "out_river": "r004 (Kaskejt Rivr)",
+   "q_m3s": 760.8,
+   "head_m": 420.0,
+   "gross_hydro_MW": 3134.6,
+   "climate_shore": "Cfa"
+  },
+  {
+   "id": "L5_nordsjo",
+   "name": "Nordsjö",
+   "analogue": "Bodensee / Lake Constance (northern piedmont ribbon)",
+   "at_px": [
+    585.0,
+    687.0
+   ],
+   "sill_px": [
+    577,
+    690
+   ],
+   "cells": 176,
+   "km2": 704,
+   "level_m": 2260.0,
+   "spill_open_m": 2258.5,
+   "spill_blocked_m": 2306.0,
+   "depth_max_m": 320.0,
+   "depth_median_m": 243.4,
+   "out_river": "r014 (Hōng-Mā)",
+   "q_m3s": 330.4,
+   "head_m": 170.0,
+   "gross_hydro_MW": 551.0,
+   "climate_shore": "Cfa"
+  },
+  {
+   "id": "L6_stalsjo",
+   "name": "Stålsjö",
+   "analogue": "Lake Lugano / Maggiore (southern skarn-marble gorge)",
+   "at_px": [
+    592.0,
+    860.0
+   ],
+   "sill_px": [
+    581,
+    858
+   ],
+   "cells": 149,
+   "km2": 596,
+   "level_m": 2580.0,
+   "spill_open_m": 2578.5,
+   "spill_blocked_m": 2620.0,
+   "depth_max_m": 380.0,
+   "depth_median_m": 289.2,
+   "out_river": "r281 (Frost Rivr)",
+   "q_m3s": 85.3,
+   "head_m": 400.0,
+   "gross_hydro_MW": 334.7,
+   "climate_shore": "Dsb"
+  },
+  {
+   "id": "L7_malmtjarn",
+   "name": "Malmtjärn",
+   "analogue": "Silsersee / Oberengadin (high northern granite tarn)",
+   "at_px": [
+    656.0,
+    657.0
+   ],
+   "sill_px": [
+    645,
+    659
+   ],
+   "cells": 89,
+   "km2": 356,
+   "level_m": 2880.0,
+   "spill_open_m": 2878.5,
+   "spill_blocked_m": 3110.2,
+   "depth_max_m": 240.0,
+   "depth_median_m": 198.0,
+   "out_river": "r027 (Nīla-āṟu)",
+   "q_m3s": 139.6,
+   "head_m": 435.0,
+   "gross_hydro_MW": 595.7,
+   "climate_shore": "Dfb"
+  }
+ ],
+ "basins_replaced": {
+  "removed_count": 5,
+  "added_count": 7,
+  "total_lake_km2": 6288,
+  "total_gross_hydro_MW": 5573.9
+ },
+ "massifs": [
+  {
+   "id": "M1_jernhorn",
+   "name": "Jernhorn-Alperna",
+   "peak_m": 5900.4,
+   "peak_px": [
+    643,
+    732
+   ],
+   "p90_m": 5024.1,
+   "area_km2": 2836,
+   "peak_atm": 0.77,
+   "gloss": "Iron-Horn Alps (Roketstad backdrop, Bernese Oberland analogue)"
+  },
+  {
+   "id": "M2_midtkam",
+   "name": "Midtkammen",
+   "peak_m": 5784.7,
+   "peak_px": [
+    611,
+    801
+   ],
+   "p90_m": 5141.1,
+   "area_km2": 5076,
+   "peak_atm": 0.78,
+   "gloss": "Central Gotthard-Aar Massif (splitting Korsvatn from Glasklar-Sjö)"
+  },
+  {
+   "id": "M3_nordvagg",
+   "name": "Nordväggen",
+   "peak_m": 4665.2,
+   "peak_px": [
+    621,
+    699
+   ],
+   "p90_m": 4370.9,
+   "area_km2": 2240,
+   "peak_atm": 0.89,
+   "gloss": "Glarus-Säntis Northern Wall (between Nordsjö and Roketsjö/Korsvatn)"
+  },
+  {
+   "id": "M4_vestkam",
+   "name": "Vestkammen",
+   "peak_m": 4557.7,
+   "peak_px": [
+    546,
+    773
+   ],
+   "p90_m": 4295.1,
+   "area_km2": 3652,
+   "peak_atm": 0.91,
+   "gloss": "Jura-Chablais Western Barrier (above Footfall & Eternal State march)"
+  },
+  {
+   "id": "M5_sydhorn",
+   "name": "Sydhorn-Kedjan",
+   "peak_m": 6021.4,
+   "peak_px": [
+    603,
+    819
+   ],
+   "p90_m": 5409.7,
+   "area_km2": 3940,
+   "peak_atm": 0.75,
+   "gloss": "Valais-Pennine High Chain (between Glasklar-Sjö & Kaskejt gorge)"
+  },
+  {
+   "id": "M6_kopparkam",
+   "name": "Kopparkammen",
+   "peak_m": 4821.3,
+   "peak_px": [
+    585,
+    848
+   ],
+   "p90_m": 4523.0,
+   "area_km2": 2556,
+   "peak_atm": 0.88,
+   "gloss": "Engadin-Skarn Ridge (between Kaskejt basin, Stålsjö & Cakmak gorge)"
+  },
+  {
+   "id": "M7_lippgranit",
+   "name": "Tinnspetsarna",
+   "peak_m": 5027.9,
+   "peak_px": [
+    678,
+    625
+   ],
+   "p90_m": 4683.7,
+   "area_km2": 3792,
+   "peak_atm": 0.85,
+   "gloss": "Northern Granite Alps (framing Malmtjärn & Lipp tin/rare-earth pass)"
+  }
+ ],
+ "passes": [
+  {
+   "id": "P1_nordport",
+   "name": "Nordport-Paset",
+   "px": [
+    575,
+    693
+   ],
+   "before_m": 2206.2,
+   "after_m": 2295.1,
+   "atm": 1.2,
+   "slope": 0.048,
+   "climate": "Cfa",
+   "connects": "Slussport (L5 Nordsjö) <-> Corpus / Eternal State"
+  },
+  {
+   "id": "P2_vastport",
+   "name": "Västport (Simplon)",
+   "px": [
+    546,
+    764
+   ],
+   "before_m": 3432.0,
+   "after_m": 2889.1,
+   "atm": 1.12,
+   "slope": 0.001,
+   "climate": "Csa",
+   "connects": "Footfall (L3 Glasklar-Sjö) <-> Chī-Mā / Corpus"
+  },
+  {
+   "id": "P3_korspas",
+   "name": "Korspaset (Brünig)",
+   "px": [
+    596,
+    704
+   ],
+   "before_m": 3278.0,
+   "after_m": 2863.2,
+   "atm": 1.12,
+   "slope": 0.0,
+   "climate": "Csa",
+   "connects": "L5 Nordsjö <-> Glaive (L2 Korsvatn)"
+  },
+  {
+   "id": "P4_midtpas",
+   "name": "Midtpaset (Gotthard)",
+   "px": [
+    598,
+    772
+   ],
+   "before_m": 2319.6,
+   "after_m": 2939.5,
+   "atm": 1.11,
+   "slope": 0.001,
+   "climate": "Cfb",
+   "connects": "L2 Korsvatn (Urner-Fjord) <-> L3 Glasklar-Sjö (over Midtkammen)"
+  },
+  {
+   "id": "P5_stalpas",
+   "name": "Stålpaset (Bernina)",
+   "px": [
+    598,
+    848
+   ],
+   "before_m": 4001.1,
+   "after_m": 3325.7,
+   "atm": 1.06,
+   "slope": 0.088,
+   "climate": "Dsb",
+   "connects": "Kaskejt Basin <-> L6 Stålsjö / Stahlborn / Karst Tunnel"
+  },
+  {
+   "id": "P6_lipppas",
+   "name": "Lipppaset",
+   "px": [
+    688,
+    620
+   ],
+   "before_m": 3583.8,
+   "after_m": 3495.6,
+   "atm": 1.03,
+   "slope": 0.0,
+   "climate": "Dsb",
+   "connects": "Malmtjärn / Roketstad Hwy <-> Lipp <-> Aidol (Dilihan D3)"
+  }
+ ],
+ "settlements": {
+  "Roketstad": {
+   "id": "s28hf1s9ab",
+   "type": "city",
+   "px": [
+    632,
+    716
+   ],
+   "elev_m": 2949.5,
+   "atm": 1.11,
+   "slope": 0.084,
+   "climate": "Cfb",
+   "rain_mm": 800,
+   "tm_C": 11.0,
+   "dist_water_km": 4.5,
+   "dry_verified": true
+  },
+  "Cascade": {
+   "id": "sgjwyb4xj5",
+   "type": "arcology",
+   "px": [
+    568,
+    841
+   ],
+   "elev_m": 2305.0,
+   "atm": 1.2,
+   "slope": 0.093,
+   "climate": "Cfa",
+   "rain_mm": 1035,
+   "tm_C": 14.0,
+   "dist_water_km": 7.2,
+   "dry_verified": true
+  },
+  "Footfall": {
+   "id": "sx0yra3bdm",
+   "type": "ruin",
+   "px": [
+    560,
+    767
+   ],
+   "elev_m": 2475.8,
+   "atm": 1.17,
+   "slope": 0.0,
+   "climate": "Cfa",
+   "rain_mm": 941,
+   "tm_C": 13.0,
+   "dist_water_km": 12.6,
+   "dry_verified": true
+  },
+  "Lipp": {
+   "id": "s8fkrfok8y",
+   "type": "village",
+   "px": [
+    691,
+    619
+   ],
+   "elev_m": 3495.6,
+   "atm": 1.03,
+   "slope": 0.01,
+   "climate": "Dsb",
+   "rain_mm": 565,
+   "tm_C": 7.0,
+   "dist_water_km": 46.0,
+   "dry_verified": true
+  },
+  "Glaive": {
+   "id": "skamx0ylbr",
+   "type": "town",
+   "px": [
+    599,
+    721
+   ],
+   "elev_m": 2517.8,
+   "atm": 1.17,
+   "slope": 0.049,
+   "climate": "Cfa",
+   "rain_mm": 847,
+   "tm_C": 14.0,
+   "dist_water_km": 4.0,
+   "dry_verified": true
+  },
+  "Stahlborn": {
+   "id": "sgxc1s0gyh",
+   "type": "town",
+   "px": [
+    618,
+    859
+   ],
+   "elev_m": 2618.9,
+   "atm": 1.15,
+   "slope": 0.016,
+   "climate": "Csb",
+   "rain_mm": 910,
+   "tm_C": 12.0,
+   "dist_water_km": 4.0,
+   "dry_verified": true
+  },
+  "Urverkstad": {
+   "id": "surverkstad1",
+   "type": "city",
+   "px": [
+    591,
+    801
+   ],
+   "elev_m": 2414.7,
+   "atm": 1.18,
+   "slope": 0.003,
+   "climate": "Cfa",
+   "rain_mm": 1082,
+   "tm_C": 14.0,
+   "dist_water_km": 4.0,
+   "dry_verified": true
+  },
+  "Slussport": {
+   "id": "sslussport01",
+   "type": "town",
+   "px": [
+    576,
+    693
+   ],
+   "elev_m": 2286.8,
+   "atm": 1.2,
+   "slope": 0.0,
+   "climate": "Cfa",
+   "rain_mm": 2227,
+   "tm_C": 14.0,
+   "dist_water_km": 7.2,
+   "dry_verified": true
+  },
+  "Korshamn": {
+   "id": "skorshamn001",
+   "type": "town",
+   "px": [
+    627,
+    740
+   ],
+   "elev_m": 2458.1,
+   "atm": 1.18,
+   "slope": 0.048,
+   "climate": "Cfa",
+   "rain_mm": 1506,
+   "tm_C": 16.0,
+   "dist_water_km": 4.0,
+   "dry_verified": true
+  }
+ },
+ "strict_mask_check": {
+  "outside_pure_ir_pixels_changed": {
+   "h": 0,
+   "wl": 0,
+   "wd": 0,
+   "p": 0,
+   "c": 0,
+   "z": 0,
+   "tm": 0,
+   "th": 0,
+   "tl": 0,
+   "tw": 0,
+   "tc": 0
+  },
+  "inside_pure_ir_pixels_changed": {
+   "h": 10022,
+   "wl": 3118,
+   "wd": 0,
+   "p": 10923,
+   "c": 8832,
+   "z": 4560,
+   "tm": 8524,
+   "th": 8459,
+   "tl": 8524,
+   "tw": 8513,
+   "tc": 8524
+  },
+  "zero_outside_diff_verified": true
+ },
+ "jpeg_outside": {
+  "st": {
+   "same_as_untouched_reencoded": true,
+   "codec_drift_max": 4,
+   "codec_drift_mean": 0.001,
+   "changed_px_in_pure_ir": 11971
+  },
+  "t": {
+   "same_as_untouched_reencoded": true,
+   "codec_drift_max": 7,
+   "codec_drift_mean": 0.003,
+   "changed_px_in_pure_ir": 12079
+  },
+  "rt": {
+   "same_as_untouched_reencoded": true,
+   "codec_drift_max": 6,
+   "codec_drift_mean": 0.015,
+   "changed_px_in_pure_ir": 14636
+  },
+  "ct": {
+   "same_as_untouched_reencoded": true,
+   "codec_drift_max": 14,
+   "codec_drift_mean": 0.363,
+   "changed_px_in_pure_ir": 24777
+  }
+ }
+}

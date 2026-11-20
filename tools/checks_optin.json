@@ -13,8 +13,13 @@
     "settlements/lightwall",
     "settlements/flashing-eye",
     "settlements/viridian",
+    "settlements/skywatch",
+    "settlements/eternian-canal",
+    "settlements/dilihan",
     "biomes/tiers",
     "kits/coyote",
+    "kits/transit",
+    "kits/painted-men",
     "biomes/rheolith"
    ]
   },
@@ -26,6 +31,11 @@
     "openworld/xanadu-lake-shore",
     "settlements/pher",
     "settlements/thalaba",
+    "settlements/skywatch",
+    "settlements/eternian-canal",
+    "settlements/dilihan",
+    "kits/transit",
+    "kits/painted-men",
     "biomes/tiers",
     "biomes/rheolith"
    ]
@@ -42,8 +52,13 @@
     "settlements/lightwall",
     "settlements/flashing-eye",
     "settlements/viridian",
+    "settlements/skywatch",
+    "settlements/eternian-canal",
+    "settlements/dilihan",
     "biomes/tiers",
     "kits/coyote",
+    "kits/transit",
+    "kits/painted-men",
     "biomes/rheolith"
    ]
   },
@@ -58,8 +73,13 @@
     "settlements/kirstabal",
     "settlements/lightwall",
     "settlements/flashing-eye",
+    "settlements/skywatch",
+    "settlements/eternian-canal",
+    "settlements/dilihan",
     "biomes/tiers",
     "kits/coyote",
+    "kits/transit",
+    "kits/painted-men",
     "biomes/rheolith"
    ]
   },
@@ -75,8 +95,13 @@
     "settlements/lightwall",
     "settlements/flashing-eye",
     "settlements/viridian",
+    "settlements/skywatch",
+    "settlements/eternian-canal",
+    "settlements/dilihan",
     "biomes/tiers",
     "kits/coyote",
+    "kits/transit",
+    "kits/painted-men",
     "biomes/rheolith"
    ]
   }

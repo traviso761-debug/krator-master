@@ -11,9 +11,10 @@ function hlSetHands(){if(!HLHANDS)return;const h=hlHour(),am=(h%1)*TAU,ah=(h%12)
   for(const [im,a,len,wd,off] of[[HLHANDS.hr,ah,.55,.075,.03],[HLHANDS.mn,am,.82,.045,.05]]){_hlQ.copy(c.q).multiply(new THREE.Quaternion().setFromAxisAngle(_hlZ,-a));
    _hlP.copy(c.p).addScaledVector(n,off*c.r+.02);_hlS.set(wd*c.r,len*c.r,.03*c.r+.01);_hlM.compose(_hlP,_hlQ,_hlS);im.setMatrixAt(i,_hlM);}});
  HLHANDS.hr.instanceMatrix.needsUpdate=HLHANDS.mn.instanceMatrix.needsUpdate=true;}
-hlSetHands();let _hlClockT=0;
-FRAME_HOOKS.push((dt)=>{for(const a of HLANIM){if(a.axis==='y')a.o.rotation.y+=a.w*dt;else a.o.rotation.z+=a.w*dt;}
+hlSetHands();let _hlClockT=0,_hlAnimT=0;
+FRAME_HOOKS.push((dt)=>{_hlAnimT+=dt;
+ for(const a of HLANIM){if(a.fn)a.fn(_hlAnimT,dt,a.o);else if(a.axis==='x')a.o.rotation.x+=a.w*dt;else if(a.axis==='y')a.o.rotation.y+=a.w*dt;else a.o.rotation.z+=a.w*dt;}
  _hlClockT+=dt;if(_hlClockT>1){_hlClockT=0;hlSetHands();}});
-window._clocks=HLCLOCKS.length;window._orreryParts=HLANIM.length;
-// LEVEL OF DETAIL (core/lod): the orreries and clock hands above turn, so 97-lod-auto.js leaves them out
+window._clocks=HLCLOCKS.length;window._orreryParts=HLANIM.length;window._hydroParts=HLANIM.filter(a=>a.hydro).length;
+// LEVEL OF DETAIL (core/lod): the orreries, waterwheels, stamps and clock hands above move, so 97-lod-auto.js leaves them out
 window.LOD_OPTIONS=Object.assign(window.LOD_OPTIONS||{},{skipUnder:()=>HLANIM.map(a=>a.o).concat(HLHANDS?[HLHANDS.hr,HLHANDS.mn]:[])});

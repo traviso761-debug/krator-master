@@ -1,24 +1,26 @@
 # kits/highlands: the Highlands kit
 
-The wooden architecture of the highland, temperate regions of the Inner Wall, in three related sets: **Republican** (the
-Iron Republic: Russian and Transylvanian Saxon, Peles for the grand), **Rustic** (the villages to the south: Norse and
-Alpine) and **Tribal** (the Painted Men: bamboo, raw logs, totems, cliff settlements), carved and painted in a NW-coast
-formline palette. Moved unchanged from `settlements/highlands/src` on 2026-11-03 (MODULARITY-PLAN.md step 4): it is the
-cultures' building kit, not a settlement's layout, and the open-world rebuild places each culture where it lives.
-`settlements/highlands/README.md` describes the buildings, the rounds of work and the sheet.
+The wooden and stone-plinth architecture of the highland, temperate regions of the Inner Wall, in two related sets: **Republican** (the
+Iron Republic: Novgorodian Rus', Carpathian and Transylvanian Saxon, Peles for the grand, plus alpine hydropower mills) and **Rustic**
+(the highland villages: Norse and Carpathian log/timber), carved and painted in a **Slavic / Rus' / Carpathian** vocabulary (*rozetka*
+and *kolovrat* solar rosettes, pierced *nalichniki* window casings, *prichelina* and *polotentse* eaves fretwork, crossed *okhlupen'*
+horse-head and firebird finials, braided *pletenka* friezes, turned *kubyshka* porch columns, hooded *kapliczka*/*stolbtsy* wayside
+shrine posts, and warm ochre/vermilion/birch-white/pine-green *rospis'* floral scrollwork). The former Tribal (**Painted Men**) Tlingit
+formline set moved to its own standalone kit (`kits/painted-men/`, 2026-11-19). Moved from `settlements/highlands/src` on 2026-11-03
+(MODULARITY-PLAN.md step 4). `settlements/highlands/README.md` describes the original rounds of work.
 
 | Files | What |
 |---|---|
-| `src/70-hl-tex.js`, `71-hl-mat.js`, `71b-hl-motif.js` | the foundation: textures, materials and kit items, the motifs and shop signs |
+| `src/70-hl-tex.js`, `71-hl-mat.js`, `71b-hl-motif.js` | the foundation: Slavic carved/painted textures, materials and kit items, solar *rozetka*/*kolovrat*/*rospis'* motifs and shop signs |
 | `src/71c-hl-openings.js` | the real doors and glass: `hnDoorway`, `hnPane`, `hnRoom`, `hnPlate` (below, "Doors and glass") |
-| `src/72-hl-helpers.js`, `72c-hl-plan.js`, `73-hl-carve.js`, `73b-hl-frame.js` | walls and roofs, the carving (totems, posts, dougong), the timber frame |
-| `src/88-hl-dress.js`, `89-hl-trades.js`, `89y-hl-furnish.js`, `94-hl-anim.js` | the dress (reclaimed variants, clocks, glazed tiles), the trades table (`HL_TRADES`), the catalog furniture glue (`FURNISH`), the clocks' and orreries' animation |
-| `src/74-rep-dwell.js` ... `79f-rep-shipbreak.js` | the Republican set: dwellings, trade, civic, the capital, guilds, the grand, the land, salvage and scrap |
+| `src/72-hl-helpers.js`, `72c-hl-plan.js`, `73-hl-carve.js`, `73b-hl-frame.js` | walls and roofs, Slavic carving (*nalichniki*, *prichelina*, *kapliczka* shrine posts, *kubyshka* columns, *dougong*), the timber frame |
+| `src/77c-rep-hydro.js` | the **Hydropower** industrial set: `hl_rep_hydro_forge`, `hl_rep_hydro_sawmill`, `hl_rep_hydro_stampmill`, `hl_rep_hydro_gristmill`, and stream works (`hl_hydro_weir`, `hl_hydro_flume`, `hl_hydro_sluice_gate`) with world-space hydraulic anchors (`userData.hydro`) and `HLANIM` mechanisms |
+| `src/88-hl-dress.js`, `89-hl-trades.js`, `89y-hl-furnish.js`, `94-hl-anim.js` | the dress (reclaimed variants, clocks, glazed tiles), the trades table (`HL_TRADES`), the catalog furniture glue (`FURNISH`), the clocks', orreries', waterwheels' and mill mechanisms' animation |
+| `src/74-rep-dwell.js` ... `79f-rep-shipbreak.js` | the Republican set: dwellings, trade, civic, the capital, guilds, hydropower, the grand, the land, salvage and scrap |
 | `src/80-rus-dwell.js`, `81-rus-village.js`, `81b-rus-salvage.js` | the Rustic set |
-| `src/84-tri-dwell.js`, `85-tri-village.js`, `85b-tri-salvage.js` | the Tribal set |
 
-`highlands.py` names the files (`FOUNDATION`, `SETS` by culture, `FILES`) and their paths; `culture_files('republican')`
-gives the foundation and one culture's set, in filename order. `PORT.md` has their port tags (moved with them).
+`highlands.py` names the files (`FOUNDATION`, `SETS` by culture: `'republican'` and `'rustic'`, `FILES`) and their paths; `culture_files('republican')`
+gives the foundation and one culture's set, in filename order. `PORT.md` has their port tags.
 
 **What it draws through.** The Ancients core (`kits/ancients/src`, `core/materials`) and the Iziz Vernacular's materials and
 helpers (`69b-vern-mat.js`, `69c-vern-helpers.js`, `kits/iziz-vernacular`), which a build takes as before. Its library bind,

@@ -20,7 +20,7 @@ function buildHlTriTankRound(G,o){reseed(26001+(o.v|0));const R=2,H=3.6,FL=1.5,Y
  for(const s of[-1,1])hnForm('hFormV',s*.95,Y+.15,R-.12,s*-.45,.5,1.6);
  vnThatchCone(0,Y+H,0,R+.6,3.8,th);
  vPst('vPost',0,Y+H+3.4,0,.07,1,log);kput('hPaintBall',[0,Y+H+4.4,0],null,[.18,.22,.18],hC(HPAL.black));
- for(const s of[-1,1])kput('hWing',[s*.55,Y+H+4.45,0],qEuler(0,0,s*-.2),[s*1.1,.55,1],null);
+ for(const s of[-1,1])kput('pmWing',[s*.55,Y+H+4.45,0],qEuler(0,0,s*-.2),[s*1.1,.55,1],null);
  const rz=R+1.8;hnBambooRail([-R-1,Y,rz],[-.7,Y,rz],bam,.95);hnBambooRail([.7,Y,rz],[R+1,Y,rz],bam,.95);
  for(let k=0;k<5;k++){const a=(k+.5)/5*Math.PI-Math.PI/2;(k===2?hnTRCage:hnTRGourd)(Math.sin(a)*(R+.45),Y+H+.1,Math.cos(a)*(R+.45));}
  vnLadder(0,0,rz+.5,0,FL+.3,log);hnTotem(-2.6,0,rz+.8,.28,5,0,{wings:1.3,painted:true});
@@ -79,7 +79,7 @@ function buildHlTriSiloDrum(G,o){reseed(26031+(o.v|0));const R=3,H=3,RO=R+1.3;
  for(let k=0;k<12;k++){const a=k/12*TAU+.13;vPst('hBamboo',Math.sin(a)*RO,.3,Math.cos(a)*RO,.08,H-.1,bam);}
  vnThatchCone(0,H+.3,0,RO+.3,4.4,th);
  vPst('vPost',0,H+4.2,0,.07,1,log);kput('hPaintBall',[0,H+5.2,0],null,[.18,.22,.18],hC(HPAL.black));
- for(const s of[-1,1])kput('hWing',[s*.55,H+5.25,0],qEuler(0,0,s*-.2),[s*1.1,.55,1],null);
+ for(const s of[-1,1])kput('pmWing',[s*.55,H+5.25,0],qEuler(0,0,s*-.2),[s*1.1,.55,1],null);
  for(let k=0;k<7;k++){const a=(k+.5)/7*TAU;(k%3===0?hnTRCage:hnTRGourd)(Math.sin(a)*(RO+.2),H+.1,Math.cos(a)*(RO+.2));}
  const gx=RO+3.2;vnStilts(gx,0,-1,2.2,2.2,1.6,0,log);vB('vWood',gx,1.6,-1,2.8,.16,2.8,0,log);kput('hTRMatCyl',[gx,1.76,-1],null,[1.1,1.4,1.1],bam);vnThatchCone(gx,3.16,-1,1.5,2,th);
  hnTotemPole(-RO-1.2,0,1.5,.16,3,0,true);hnFirepit(-1.5,0,RO+2.4,.6);hnDryingRack(1.5,0,RO+3.4,0,3.4);vnFolk(0,RO+2.2,2,1.8);}
