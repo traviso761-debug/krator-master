@@ -95,6 +95,9 @@ const T=tiledInstances(treeG,treeM,(C.treeFar||2600)*WORLD,true),   // C.treeFar
     plant=(place,x,y,z,u,v)=>{const sp=pick(place,u);if(!sp)return;const [h0,h1]=sp.height||[8,16],h=(h0+(h1-h0)*v)*WORLD,w=h*(0.88+0.24*((u*7.3)%1));
       sp.T.add(x,y,z,v*6.28,w,h,w,sp.cols[Math.floor(((u*13.7)%1)*sp.cols.length)]);sp.n++;};
     plant.build=()=>{for(const sp of list){sp.T.build();SPC[sp.name||sp.shape]=sp.n;}};}
+  // where every tree stands, by 12 m cell, for the canopy fill below: each placement is counted as it is made
+  const OCC=new Map(),occK=(x,z)=>Math.floor(x/(12*WORLD))+','+Math.floor(z/(12*WORLD)),mark=(x,z)=>{const k=occK(x,z);OCC.set(k,(OCC.get(k)||0)+1);};
+  if(CANOPY&&C.canopyFill!==false){const add0=T.add.bind(T);T.add=(x,...r)=>{mark(x,r[1]);return add0(x,...r);};if(plant){const p0=plant;plant=(place,x,y,z,u,v)=>{mark(x,z);return p0(place,x,y,z,u,v);};plant.build=p0.build;}}
   // C.treeKeepOut: [[lat, lon, radius m], ...], places kept clear of trees (a view that must stay open)
   const KEEP=(C.treeKeepOut||[]).map(([la,lo,r])=>{const [x,z]=P([la,lo]);return [x,z,r*WORLD];}),kept=(x,z)=>KEEP.some(([kx,kz,r])=>(x-kx)**2+(z-kz)**2<r*r);
   const mapped=OSM.trees||[];const have=new Set();
@@ -128,7 +131,7 @@ const T=tiledInstances(treeG,treeM,(C.treeFar||2600)*WORLD,true),   // C.treeFar
   // (C.treeMinArea: {kind: square metres}: Edinburgh maps every back green as a garden)
   // (C.treeDense: {kind: metres, 0 for none}: Yachats grows its own forest round the camera, src/yachats/coast.js)
   let forest=0;const DENSE=Object.assign({wood:11,reserve:13},C.treeDense||{}),OPEN=Object.assign({park:26,cemetery:30,garden:22,zoo:26,golf:34},C.treeCells||{}),MINA=C.treeMinArea||{};
-  for(const a of AREAS){const cell=(DENSE[a.kind]||OPEN[a.kind])*WORLD;if(!cell)continue;const dense=!!DENSE[a.kind];
+  for(const a of AREAS){const cell=(DENSE[a.kind]||OPEN[a.kind])*WORLD;if(!cell)continue;const dense=!!DENSE[a.kind];if(dense&&CANOPY&&C.canopyFill!==false)continue;   // with a canopy survey the woods are its (below)
     if(MINA[a.kind]&&(a.bb.x1-a.bb.x0)*(a.bb.z1-a.bb.z0)<MINA[a.kind]*WORLD*WORLD)continue;
     for(let z=a.bb.z0;z<a.bb.z1;z+=cell)for(let x=a.bb.x0;x<a.bb.x1;x+=cell){
       const R2=hash3(x,z,31);if(R2>(dense?0.72:0.34))continue;
@@ -138,7 +141,23 @@ const T=tiledInstances(treeG,treeM,(C.treeFar||2600)*WORLD,true),   // C.treeFar
       if(buildingsAt(px,pz,2).some(b=>inPoly(px,pz,b.ring))||roadsNear(px,pz,1,r=>r.c!=='trail').length)continue;
       const hs=hash3(px,pz,34),h=dense?14+hs*16:8+hs*8;   // conifers on the wooded slopes are tall
       if(plant)plant(dense?'wood':'park',px,groundH(px,pz),pz,hs,hash3(px,pz,35));else T.add(px,groundH(px,pz),pz,hs*6,h*(dense?0.72:1),h,h*(dense?0.72:1),greens[Math.floor(hs*greens.length)]);forest++;}}
-  T.build();if(plant)plant.build();ctx.details=Object.assign(ctx.details||{},{mappedTrees:mapped.length/2,parkwayTrees:parkway,yardTrees:yard,woodlandTrees:forest},plant?{treeSpecies:SPC}:{});
+  // the canopy fill (C.canopy, ctx.canopy): every 12 m cell gets the trees its surveyed canopy asks for, less those
+  // the street, the yards, the parks and the map already put there: a crown of C.canopyCrown m2 (150: a grown
+  // Douglas fir's or maple's) per that much canopy. Where the canopy is over half it is woodland, tall; under, park
+  // and garden trees. Not on water, roads, buildings or bare ground, and not where a city keeps its view open.
+  let canopyTrees=0;
+  // (C.canopyFill: false leaves it to the page: Mount Hood reads the canopy in its own forest, src/mthood/ground.js)
+  const FILL=CANOPY&&C.canopyFill!==false;
+  if(FILL){const cell=12*WORLD,crown=(C.canopyCrown||150)*WORLD*WORLD,X0=Math.max(CANOPY.x0,-1e9),Z0=CANOPY.z0,nx=Math.ceil(CANOPY.nx*CANOPY.step/cell),nz=Math.ceil(CANOPY.nz*CANOPY.step/cell);
+    for(let j=0;j<nz;j++)for(let i=0;i<nx;i++){const cx=Math.floor(X0/cell+i)*cell,cz=Math.floor(Z0/cell+j)*cell,c=CANOPY.at(cx+cell/2,cz+cell/2);if(!c||c<0.04)continue;
+      let want=c*cell*cell/crown-(OCC.get(occK(cx+cell/2,cz+cell/2))||0);
+      for(let q=0;want>0&&q<4;q++,want--){if(want<1&&hash3(cx,cz,61+q)>want)break;
+        for(let tr=0;tr<3;tr++){const px=cx+hash3(cx,cz,62+q*5+tr)*cell,pz=cz+hash3(cx,cz,63+q*5+tr)*cell;
+          if(!inMap(px,pz,5)||inWater(px,pz)||kept(px,pz)||bareAt(px,pz))continue;
+          if(buildingsAt(px,pz,2).some(b=>inPoly(px,pz,b.ring))||roadsNear(px,pz,1.5,r=>r.c!=='trail').length)continue;
+          const wood=CANOPY.at(px,pz)>0.5,hs=hash3(px,pz,64),h=wood?14+hs*18:8+hs*9;
+          if(plant)plant(wood?'wood':'park',px,groundH(px,pz),pz,hs,hash3(px,pz,65));else T.add(px,groundH(px,pz),pz,hs*6,h*(wood?0.72:1),h,h*(wood?0.72:1),greens[Math.floor(hs*greens.length)]);canopyTrees++;break;}}}}
+  T.build();if(plant)plant.build();ctx.details=Object.assign(ctx.details||{},{mappedTrees:mapped.length/2,parkwayTrees:parkway,yardTrees:yard,woodlandTrees:forest,canopyTrees},plant?{treeSpecies:SPC}:{});
 });
 section('rooftops',()=>{if(C.rooftops===false)return;   // a city of tiled roofs has none of this kit: no tanks, no units, no parapets
   const hvacM=new THREE.MeshLambertMaterial({color:0xb8b6b0}),tankM=new THREE.MeshLambertMaterial({color:0x6a4a34}),roofTankM=new THREE.MeshLambertMaterial({color:0x3a3430});

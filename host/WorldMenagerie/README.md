@@ -45,6 +45,7 @@ Page-only keys: the Backrooms' N (noclip), M (sound), R (start again); the City'
 | `/venice` | `/venice.html`, `/venezia` | `venice.html` | Venice: massing model |
 | `/rome` | `/rome.html`, `/roma` | `rome.html` | Rome: the historic centre, hills and all, its great buildings modelled |
 | `/tokyo` | `/tokyo.html`, `/東京` | `tokyo.html` | Tokyo: Shinjuku to Ginza from OpenStreetMap, Shibuya Crossing, Meiji Jingū, the Palace, Tokyo Station and Tokyo Tower modelled; a map of the city as it grows |
+| `/barcelona` | `/barcelona.html`, `/bcn` | `barcelona.html` | Barcelona: the old city and the Eixample from OpenStreetMap, Montjuïc to Park Güell; the Sagrada Família, Gaudí's houses and the city's landmarks modelled |
 | `/fortworth` | `/fortworth.html`, `/fort-worth`, `/cowtown`, `/stockyards` | `fortworth.html` | Fort Worth: downtown, the Stockyards and the Cultural District from OpenStreetMap |
 | `/yachats` | `/yachats.html`, `/capeperpetua`, `/cape-perpetua`, `/thorswell` | `yachats.html` | Yachats, Oregon: the village, the river mouth and Cape Perpetua from OpenStreetMap |
 | `/antigua` | `/antigua.html`, `/antiguaguatemala`, `/fuego`, `/volcanes` | `antigua.html` | Antigua Guatemala: the colonial town from OpenStreetMap on its real ground, under Agua, Acatenango and Fuego |
@@ -54,12 +55,14 @@ Page-only keys: the Backrooms' N (noclip), M (sound), R (start again); the City'
 | `/megacity` | `/megacity.html`, `/mc1`, `/dredd` | `megacity.html` | Mega-City One: massing model (fan work) |
 | `/dredd2012` | `/dredd2012.html`, `/peachtrees` | `dredd2012.html` | Mega-City One as the 2012 film has it (fan work) |
 | `/mordor` | `/mordor.html`, `/sauron` | `mordor.html` | Mordor: the whole land (fan work) |
+| `/numenor` | `/numenor.html`, `/westernesse`, `/elenna`, `/meneltarma` | `numenor.html` | Númenor: the whole island (fan work) |
 | `/minastirith` | `/minastirith.html`, `/mt`, `/gondor` | `minastirith.html` | Minas Tirith: the seven circles (fan work) |
 | `/isengard` | `/isengard.html`, `/orthanc`, `/saruman` | `isengard.html` | Isengard: the Ring and Orthanc (fan work) |
 | `/moria` | `/moria.html`, `/khazad-dum`, `/dwarrowdelf` | `moria.html` | Moria: Khazad-dûm under the mountains (fan work) |
 | `/infinitycastle` | `/infinitycastle.html`, `/mugenjo`, `/infinity-castle`, `/nakime` | `infinitycastle.html` | The Infinity Castle (fan work) |
 | `/fleshpit` | `/fleshpit.html`, `/mfpnp`, `/pit` | `fleshpit.html` | Mystery Flesh Pit National Park (fan work) |
 | `/yellowstone` | `/yellowstone.html`, `/ynp`, `/caldera` | `yellowstone.html` | Yellowstone National Park: the real ground and the caldera |
+| `/mthood` | `/mthood.html`, `/mounthood`, `/mount-hood`, `/hood`, `/wyeast` | `mthood.html` | Mount Hood: the mountain on its real ground, its trails, lifts, glaciers and falls, through the year |
 | `/backrooms` | `/backrooms.html`, `/level0`, `/noclip` | `backrooms.html` | The Backrooms (fan work) |
 | `/city` | `/blame.html`, `/blame`, `/megastructure`, `/killy` | `blame.html` | The City, after *Blame!* (fan work) |
 | `/rivendell` | `/rivendell.html`, `/imladris` | `rivendell.html` | Rivendell: the cleft of the Bruinen (fan work) |
@@ -77,6 +80,7 @@ Page-only keys: the Backrooms' N (noclip), M (sound), R (start again); the City'
 | `/rama` | `/rama.html`, `/rendezvous`, `/31-439` | `rama.html` | Rama, after Clarke's *Rendezvous with Rama* (fan work) |
 | `/deepsky` | `/deepsky.html`, `/blackhole`, `/pulsar`, `/supernova`, `/sgra`, `/whitedwarf`, `/kilonova` | `deepsky.html` | Deep Sky: how stars end (two black holes, a pulsar, a supernova, a white dwarf, a merger) |
 | `/homeworld` | `/homeworld.html`, `/kharak`, `/hw` | `homeworld.html` | Homeworld: the Kharak system, missions 1 and 3 (fan work) |
+| `/silo` | `/silo.html`, `/silos`, `/wool` | `silo.html` | Silo 18: one of fifty, after Hugh Howey's *Wool* (fan work) |
 | `/kyrene` | `/hab.html`, `/habitat`, `/cylinder` | `hab.html` | Kyrene: a rotating habitat |
 | `/krator` | `/krator.html` | `krator.html` | Krator: A Primer |
 | `/voth` | `/voth.html`, `/cantons` | `voth.html` | Voth: City of Cantons (built from `src/voth/`) |
@@ -164,13 +168,39 @@ South Waterfront to the Fremont Bridge and from Washington Park to the Lloyd Dis
 - **Detailed areas:** Pioneer Courthouse Square, the Pearl District, Old Town and Chinatown, Waterfront Park.
 - **On the river:** sailboats, motorboats and kayaks that keep to the channel; cyclists on the Eastbank
   Esplanade, Waterfront and bridges.
-- **Woods:** Forest Park, Washington Park and the other wooded slopes carry their own trees (about 34,000), so
-  the West Hills read as forest rather than bare ground.
+- **Trees, from the canopy survey** (`canopy`, 2026-11-15): the USDA Forest Service's Tree Canopy Cover (NLCD 2021,
+  30 m, `portland-canopy.json` from `tools/fetch-tcc.py portland`) says how much of each 30 m of the city is under
+  crowns: 29% over the map, as the city's own figure has it. The street trees, the mapped trees and the parks' scatter
+  are planted first, then every 12 m cell is filled to its canopy (about 213,000 trees): Forest Park and Washington
+  Park close, the old east-side neighbourhoods leafy, downtown and the industrial flats nearly bare.
 - **Terrain:** the ground follows real elevation data (AWS Terrain Tiles, from SRTM/NED), so the West Hills,
   Marquam Hill and the river bluffs are modelled; streets, buildings, trees and traffic sit on the slopes, and
   Mount Hood and Mount St. Helens stand on the horizon.
+- **Modelled buildings** (2026-11-15), each on its OSM outline at its true height, the map's own boxes under it dropped:
+  - `src/portland/towers.js`, the skyline: the KOIN Center (brick and tan stone setbacks under the blue pyramid crown
+    and spire), Wells Fargo Center, Big Pink (`usbancorp`, replacing `bigpink`), PacWest, Fox Tower, Park Avenue West,
+    1000 Broadway, Standard Insurance, Moda Tower, Block 216, Umpqua, and the Portland Building with Portlandia over its
+    door. One mesh per material per tower; office windows light by `windowF`.
+  - `src/portland/civic.js`: Pioneer Courthouse, Pioneer Courthouse Square (the steps, the Weather Machine, the
+    milepost), Union Station and "Go By Train", Powell's, the Art Museum, Moda Center, the Coliseum's glass box, the
+    Convention Center spires, Providence Park, Lan Su Garden, Mill Ends Park. Its parts are merged by material (alike
+    materials shared) at `group()`: built piece by piece they were ~450 draw calls and halved the frame rate. A part an
+    animation hook moves carries `userData.keep`.
+  - `src/portland/oldtown.js`: the Burnside Bridge (`burnside`: the operator towers, bascule piers, approach arches,
+    lamps; Morrison and Broadway keep `bascule`), the cast-iron fronts of the Skidmore blocks, the Skidmore Fountain,
+    the White Stag sign on its own roof, the Saturday Market (shown 9:30-17:45 every day), the MAX stop, Voodoo
+    Doughnut, Chinatown's lanterns, Ankeny Alley, and Old Town's crowds (`oldtownPeople`).
+- **The look** (engine keys, opt-in, 2026-11-15): `riverColour`, `waterSpecular`, `waterShine` (a grey-green Willamette
+  without the white sun disc), `dropBeaches` ([lat, lon, r] of mapped beaches not drawn: one tagged on the seawall),
+  `canopyGround` ({colour, strength}: the ground takes the forest's colour under the canopy survey's crowns, so the West
+  Hills read as forest past the distance trees are drawn to); buff brick, terracotta and concrete among the reds, and
+  painted siding on houses city-wide.
+- **Memory:** the page holds about 3 GB in Firefox (Rome 2.9 GB), steady over time. Where it goes, measured 2026-11-18:
+  ~0.8 GB Firefox, ~0.45 GB reading the map, ~1 GB building the city, ~0.9 GB handing it to the GPU; the scene's own
+  buffers and textures are ~460 MB. Dropping uploaded arrays, freeing canvases and fewer shader programs each moved it
+  less than the measurement's noise (±150 MB); a real cut is building only the tiles near the camera (engine work).
 
-Data: `python3 tools/fetch-osm.py portland`, `python3 tools/fetch-terrain.py portland`, then `python3 tools/build-osm-city.py portland`.
+Data: `python3 tools/fetch-osm.py portland`, `python3 tools/fetch-terrain.py portland`, then `python3 tools/build-osm-city.py portland`; the canopy, `python3 tools/fetch-tcc.py portland`.
 
 ### `/nyc`: New York
 
@@ -560,6 +590,78 @@ ground itself.
 - **Events** (`events.js`): the boat tour, the Old Man, Mount Mazama (the ghost of the mountain, the eruption and the
   collapse, with the Klamath account of Llao and Skell), winter, sunset from the Watchman, the night sky.
 
+**Mount Hood** (`mthood.html`, `src/mthood/`, `data/cities/mthood.json`). Mount Hood (Wy'east), 3,429 m, Oregon's
+highest mountain, and the Mount Hood National Forest round it, from 45.255 to 45.505 N and 121.86 to 121.55 W
+(about 24 by 28 km), on the USGS's 3DEP ground: the 40 m grid from `tools/build-osm-city.py` (datum 0, so a height
+is the real elevation) and the upper mountain at 12.5 m (`mthood-fine.json`, 11 by 11 km, through `src/core/fine.js`).
+The glaciers, streams, falls, lifts, ski runs, trails and places come from OpenStreetMap through `tools/make-mthood.py`
+into `mthood-mtn.json` (13 named glaciers, 511 streams, 51 falls, 34 lifts, 415 runs, 250 named trails, 20 route
+relations). The far Cascades, Rainier to Jefferson, are Sarajevo's `backdrop.js` over `mthood-far.json` (±200 km at
+1 km, AWS Terrain Tiles), with a new `hug` option that sinks the backdrop under the lowest map ground it covers, so no
+plate shows at the map's edge. `terrain.lakeLevels`, a new option of `build-osm-city.py`, sets each mapped lake to the
+ground round its shore and cuts its bed (Mirror Lake 1253 m, Trillium 1098 m, Lost Lake 959 m). `classWidths` (also
+new) gives the paths a metre and a half of dirt instead of a city's 3 m footway.
+- **The year** (`season.js`): the page opens on today's date, or `#doy=`, `#month=`, `#season=winter|spring|summer|autumn`;
+  `#turn` turns the year (`season.yearMinutes` a year), `#seasonui` opens the Season panel (four seasons, a day slider,
+  Turn the year, Today). The snow line follows a monthly table (750 m in January to 2,820 m in September), the glaciers
+  bare their ice and crevasses in late summer, the meadows melt out brown, green up, flower in a band that climbs behind
+  the snow, cure to tan and turn crimson with huckleberry in autumn; the vine maple
+  and alder turn and drop, the larches go gold. The sun follows the real date (declination, the equation of time, PST and
+  PDT; the engine now reads `ctx.sunAt` and `ctx.dayC`, which no other page sets), and the weather's odds follow the season
+  (`weather.setWeights`, a new call in `src/core/weather.js`, and the `cascade` climate). The season decides whether the
+  lifts run, the Palmer in summer, climbing season and hiking season.
+- **The ground** (`ground.js`): every vertex of the ground carries its cover (forest, meadow, bare, glacier; deciduous,
+  debris, larch) from the mapped glaciers, meadows, rock, scree and the pumice above the tree line, and the season is a
+  shader on it (`patchMaterial`, `snowOnTop`, shared with the other modules); tints for Crater Rock, Steel Cliff, Devil's
+  Kitchen, Illumination Rock, Mississippi Head and the headwalls. The forest's share is the Forest Service's canopy
+  survey (`mthood-canopy.json`, 2021, 30 m; `canopyFill: false` keeps the engine from planting its own), so the
+  clearcuts, the burns and the river bars are open where they are; what the rules call forest and the survey finds
+  open is brush. Trees by tiles streamed nearest first within a time
+  budget, fourteen species by elevation and aspect (Douglas fir, western hemlock and red cedar low, noble and silver fir,
+  mountain hemlock and subalpine fir high, whitebark pine at the tree line, lodgepole and ponderosa on the dry east side,
+  western larch, bigleaf and vine maple, alder, huckleberry), a lighter face of each for the far tiles, each tile culled
+  whole against the view. No trees on the downhill runs, the lifts, the roads, the lakes or the views on the ground. In
+  winter the trails go under the snow; the highways are ploughed.
+- **The trail map** (`trails.js`, `hoodTrails` in the config): a hillshaded topographic map drawn from the ground, contours
+  every 40 m, glaciers, lakes, streams, roads, the runs by difficulty and the lifts, 251 trails (the Timberline Trail and
+  the PCT heavier), peaks, trailheads, huts, camps and falls, a scale, a north arrow and the camera's own arrow; a winter
+  face. A trail's card: length, climb, high and low points, difficulty, today's conditions from the season, an elevation
+  profile and a note for the known trails; **Walk it** (at a walk, a run or flying over) takes the camera along it at eye
+  height. Hikers (walking, a vertex-shader stride matched to their pace: beanies, packs on frames, poles) on the trails by day in season, snowshoers on the low trails in winter, rope teams on the South Side
+  route by headlamp from midnight in climbing season; a sign at each trailhead. `#trail=<name>`, `#trailmap`,
+  `#walk=<name>&pace=run|fly`.
+- **Landmarks** (`landmarks.js`, `landmarks` in the config): Timberline Lodge on its mapped outline (the six-sided head
+  house and its chimney; the west wing stepping down with its cross gables, the Ski Lounge and the Cascade Dining Room
+  wings to the south-east, each ridge running into the head's roof in a valley; stone below, board-and-batten under
+  steep shingle with dormers, windows lit after dark), Skibowl's West Lodge and the Multorpor lodge's twin A-frames,
+  the Hood River Meadows base lodge, the Wy'East Day Lodge, Silcox Hut, Cloud Cap Inn with the cables over its roof, the Tilly Jane A-frame, the
+  Mount Hood Meadows lodges, and the stone shelters at McNeil Point, Cairn Basin and Cooper Spur; each with a card.
+  Snow lies on every roof by the season (`snowOnTop`, applied after any other patch's colour). Known gap: the engine's
+  plain OSM buildings round Government Camp keep grey roofs in winter (the patch reaches them, but something in their
+  material still darkens it; not yet found).
+- **The lifts** (`lifts.js`): all 34 mapped lifts, with 249 towers, terminals and bull wheels, the haul rope fading out
+  by a kilometre, and 2,455 chairs sized by seats (detachables faster and wider spaced) with riders; tows, platters and
+  magic carpets. They run 9 to 4 in the ski season (Ski Bowl till 10), only the Magic Mile and the Palmer in summer, and
+  slow to a stop. Skiers and boarders carve down 289 runs in season, and on the Palmer in summer. Towers, chairs,
+  riders and skiers are drawn only within 1 to 2.5 km. A terminal's card gives the lift's type, length and vertical.
+- **The water** (`water.js`): each lake freezes by its height and the date, snow on the ice, and breaks up in spring
+  into floes and slush; the lake nearest the camera is a true mirror (its own plane, as Atitlán's `waves.reflect`; none
+  when frozen, far or high; `#nomirror`). 1,076 km of streams flow downhill, faster and whiter where steep, milky below
+  the glaciers, hidden under the snow, dry gravel in late summer where OSM says intermittent; flow peaks in June. All
+  51 falls with a veil, mist and a pool, a basalt headwall where the ground is too smooth for the real drop, frozen to
+  icicles in midwinter. Steam at the Devil's Kitchen, Crater Rock and Hot Rocks, drifting with the wind.
+- **Events** (`events.js`, `hoodEvents` in the config): alpenglow from Trillium Lake, a cap cloud and the weather after
+  it, the Old Maid eruption of the 1780s (Crater Rock's dome, the plume, the lahars down the White River and the Sandy,
+  with the story of Wy'east, Pahto and Loowit), Lewis and Clark in 1805, the alpine start by headlamp, the first snow,
+  Paradise Park in flower and in huckleberries, Roosevelt at Timberline in 1937 (the cars, traffic and lifts hidden
+  while it runs: every object carries the stage that added it, `src/mthood/main.js`), summer skiing on the Palmer, and
+  wildfire smoke.
+- **Views**: 27, from Trillium Lake's dock to the summit ridge, Timberline, the Meadows, Skibowl, Multorpor, Hood River
+  Meadows, Cloud Cap, the foot of Ramona Falls (in a clearing), Tamanawas and Lost Lake. 25-45 fps in the headless probe from the views; a walk in the old forest, at 16-24, is the slowest.
+- **Rebuilding the data**: `python3 tools/fetch-terrain.py mthood`, `python3 tools/fetch-osm.py mthood` (Overpass, into
+  `data/osm/raw/mthood/`, not committed), `python3 tools/build-osm-city.py mthood`, then `python3 tools/make-mthood.py`;
+  the canopy, `python3 tools/fetch-tcc.py mthood`.
+
 **Chernobyl** (`chernobyl.html`, `src/chernobyl/`, `data/cities/chernobyl.json`). The Chernobyl Exclusion Zone in
 northern Ukraine from OpenStreetMap on its real ground at 20 m, 18 by 19 km: the power plant, Pripyat, the cooling pond,
 the Red Forest, Duga and Chernobyl-2, and the town of Chernobyl. The datum is the Pripyat river (103 m). Polesia is flat,
@@ -801,6 +903,56 @@ Data: `python3 tools/fetch-osm.py tokyo`, `python3 tools/fetch-terrain.py tokyo`
 A tower mapped as an outline with only its upper parts (the Docomo Yoyogi building's spire) keeps its outline up to its
 lowest part.
 
+### `/barcelona`: Barcelona
+
+The old city and the Eixample from OpenStreetMap on the shared engine, on their real ground, with the Mediterranean at
+sea level. The map runs from Montjuïc and the port to the Sagrada Família and Torre Glòries, and from Barceloneta's beach
+to Gràcia and Park Güell. It holds 68,541 buildings over 5.2 by 6.2 km. The ground rises from the beach to Montjuïc's castle (177 m) and to the
+Turó de la Rovira behind Park Güell. Cerdà's grid comes straight from the map: the cadastre's parcels fill the
+chamfered blocks round their courtyards, which are full of low workshops as they are in life.
+
+- **Landmarks** (`src/barcelona/landmarks.js`, on the shared kit `src/core/landkit.js`). Each is placed from its mapped
+  footprint (centroid and long axis). The mapped parts it replaces are cleared with `clearArea`.
+  - **The Sagrada Família as it stands in 2026.** The Latin cross of five naves and three, with the apse and its
+    chapels' spires, and the roof lanterns. The aisle pinnacles carry baskets of mosaic fruit.
+    - The Tower of Jesus Christ is 172.5 m to the top of its four-armed cross.
+    - The four Evangelists' towers stand at 135 m, each with its symbol. Mary's tower is 138 m, with its twelve-pointed star.
+    - The eight Apostles' spindles have spiralling louvres, the bands of yellow letters, and the mitred pinnacles in Venetian mosaic.
+    - The Nativity front is in its dark old stone, with the cypress over it. The Passion front has its leaning
+      portico and frieze.
+    - The Glory front is in scaffold, and two cranes turn over it. After dark the cross and the star burn white.
+  - **Casa Batlló:**
+    - a façade of trencadís tiles and discs, the bone-mask balconies and the sandstone noble floor;
+    - the dragon's-back roof shading green to blue to rose, its spine and the tower with St George's cross;
+    - Casa Amatller's stepped gable beside it.
+  - **La Pedrera** is built on its own mapped outline:
+    - each floor's stone band waves along the street fronts only, since a party wall stays flat;
+    - Jujol's iron tangles hang over the windows;
+    - the warriors (stairheads and chimneys) stand on the roof.
+  - **Park Güell:** the Nature Square raised on its mapped outline, the serpentine bench on its mapped line in broken
+    tile, the Hypostyle Room's columns, the double stair and the salamander, and the two gatehouses on their sites (the
+    checkered tower with its cross, the toadstool).
+  - **Torre Glòries:** Nouvel's bullet in its bands of colour under a glass skin. After dark its LEDs cycle.
+  - **The rest:** the Palau de la Música, the Arc de Triomf, the Columbus monument, the Hotel W's sail, the Cathedral's
+    front and spires, Santa Maria del Mar, the Boqueria's arch, the Palau Nacional with its domes and towers, Montjuïc
+    castle, the Venetian towers, Gehry's fish, and the Port Cable Car. The cable car runs on its mapped line and towers,
+    and two red cabins shuttle on it.
+- **Balconies** (`src/barcelona/balconies.js`, `balconies`). Every street front of the blocks gets a wrought-iron
+  balcony on every bay of every floor above the shops, on the facade texture's window grid. A party wall (with a building
+  just outside it) gets none. Some have their green or brown blinds down. They are built by 200 m tile near the camera,
+  as instances.
+- **Trees.** The engine plants plane trees, nettle trees, tipuanas and jacarandas on the streets (`treeSpecies`), and
+  stone pines and holm oaks on Montjuïc. `src/barcelona/palms.js` (`palms`) plants what the map leaves out:
+  - the palms along the seafront, the port, Lluís Companys and in the Plaça Reial;
+  - the rows of plane trees along La Rambla and the other Ramblas, Passeig de Gràcia, Sant Joan, the Gran Via and the Diagonal.
+- **Street life**: `src/core/streetlife.js` (shops, cafés, the plinth and string course), the dress's cornices,
+  traffic, and crowds at the sights.
+
+Data: `python3 tools/fetch-osm.py barcelona`, `python3 tools/fetch-terrain.py barcelona`, then `python3 tools/build-osm-city.py barcelona`.
+The sea is `seaLevelWater` with `terrain.coast`: the box floods at sea level, and the elevation is cut under the water on
+the sea side of the mapped coastline. There is no canopy step: the Forest Service's canopy covers the US only. Camp Nou
+lies 1.5 km west of the box and is not modelled.
+
 ### `/city17`: City 17
 
 Fan work: City 17 from Half-Life 2, on the shared engine (`src/engine/stages/`, loaded by
@@ -959,8 +1111,92 @@ size and left small.
   see into, which is the point.
 - **The camped hosts**: six more drawn up in squares on the plain under Barad-dûr, thirty-one thousand of
   them, not going anywhere until they are sent.
+- **Fine ground** (`data/cities/mordor-fine.json`, drawn by `src/core/fine.js`, shared with Numenor): Orodruin
+  (36 km square at 100 m) and the spur under Barad-dur (26 km at 150 m) are written again finer than the kilometre
+  grid, in chunks with three levels of detail, and the coarse ground is pressed under them. The page fetches them
+  before the build and sets `ctx.fineAt`, so the engine's `groundH` answers from them and the landmarks and camps
+  stand on them. Orodruin has a real crater now (a bowl 750 m across, its rim the highest ground), and its lava
+  flows are ribbons laid down the ground. `#nofine` leaves the patches out, to compare.
 
-Regenerate with `python3 tools/make-mordor.py`, then `./sitectl build`.
+Regenerate with `python3 tools/make-mordor.py` (it writes both files), then `./sitectl build`.
+
+### `/numenor`: Númenor
+
+Fan work from Tolkien, whose world belongs to the Tolkien Estate; nothing from any book, film or game is
+used. Generated by `tools/make-numenor.py` from the published geography; every shape is this project's own.
+
+Like Mordor, a country at true proportion: **the island of Elenna at its height, before the Shadow**, the
+Hallow open and Nimloth flowering in the King's court. Mittalmar in the middle is about four hundred
+kilometres across and the five promontories run out from it, about seven hundred kilometres point to point.
+
+- **The land:** the star of five points (Forostar north, Orrostar east, Hyarrostar south-east, Hyarnustar
+  south-west, Andustar west) as a smooth union of a disc and five tapering arms with a noisy coast; the Firth
+  of Rómenna cut deep into the east; the bay of Andúnië; Tol Uinen off the firth's mouth. An 801 × 801 height
+  grid at 1 km. Each region keeps its character: Forostar high and stony, Andustar's northern highlands,
+  Hyarnustar's mountains on its west, Orrostar's hills, Hyarrostar low. The land eases down to the sea over
+  its last two kilometres, since a cliff on a kilometre grid only draws as a long ramp.
+- **Fine patches** (`land.fine`, `src/numenor/fine.js`): the kilometre grid makes a coast a staircase and a
+  mountain a pyramid, so the generator also writes the same ground at 100-200 m over the Meneltarma, the whole
+  Firth of Rómenna and each haven. `nature.js` draws them with the ground's own material and presses the
+  coarse ground (every level of detail, by its own vertex spacing) below them. A patch fades into the coarse
+  grid over its last two kilometres, and inside a town it keeps the coarse ground where that is dry, so the
+  houses and streets the engine set on it stay seated. The surf follows each patch's own coast.
+  Each patch is cut into chunks of 48 cells drawn at full, half and quarter resolution by distance (within 7 km,
+  to 20 km, beyond), each level with a skirt so chunks at different levels show no crack; at the firth that takes
+  the view from 1.35 to 0.76 million triangles.
+- **The Meneltarma** rises in the middle of Mittalmar, about three thousand metres, a skirt of grass and
+  then the mountain proper, grass to the summit except where it is steep or high. The road goes round it three and a half times to the Hallow, a ring of turf with
+  nothing built on it, and three eagles circle overhead. The Noirinan, the valley of the tombs, is at its foot.
+- **Armenelos** on its hill east of the mountain: a ring wall with towers and four gates, the King's House
+  and its tower (lit at night), Nimloth in the court, which glows after dark, and the lords' houses.
+- **The towns** are rings and bending spokes with houses along both sides, white and pale stone under tile
+  and slate, on gardens and greens rather than fields: Armenelos, Rómenna at the firth's
+  head, Andúnië, Eldalondë by the Nisimaldar, Ondosto, Nindamos, Moriondë and Hyarastorni; 150 villages and
+  2,600 farmsteads between them; the King's Road and the others joining them. About 27,800 buildings.
+- **What grows** (`src/numenor/nature.js`, adapted from the Olympic Peninsula's): a land cover grid of
+  pasture, grain, broadleaf and fir forest, heath, vines and orchards, rock, marsh and the Nisimaldar, each
+  with a ground surface of its own close to (fields in hedged strips, heather, vines in rows) and grown into
+  forest tiles round the camera (every edge between two kinds of country averaged over four shaken points, so
+  none shows the kilometre grid): oak and beech with the gold laurinquë among them, firs, the evergreen
+  Nisimaldar, willows by the water, hedgerow oaks and orchards. The Siril, the Nunduinë through the lake
+  Nísinen, and the streams; surf along every shore; fair-weather clouds and their shadows.
+- **The ships** (`src/numenor/life.js`): thirty-four put out from the havens and come home, Rómenna's down the
+  firth and the others along the longest run of open sea from the quay, and fishing boats off four of them.
+  A ship is forty metres and the island seven hundred kilometres, so they are grown with distance.
+
+- **Two eras.** The page opens on Númenor at its height. `#era=downfall` (or the button at the foot of the
+  page) is the Downfall, with these changes (`src/numenor/downfall.js`, on the shared pieces in `src/core/storm.js`: the
+  gloom dome, lightning, cloud figures, plumes and the rising sea, which any page can take):
+  - The Hallow is forsaken (no eagles) and Nimloth is a stump inside its rail.
+  - The Temple stands in Armenelos: a drum of dark stone 150 m across with a blackened dome, its louver
+    always smoking, and the houses where it stands cleared. It is the generator's landmark tagged
+    `era: "downfall"`, and `main.js`'s `configure` keeps a tagged landmark, and an era's own views
+    (`eraViews`), only in their era.
+  - The weather is held fair, with no fog, since this is a thing seen from far off, and a dark dome round the
+    camera darkens the sky above the horizon.
+  - Three clouds in the shape of eagles stand over the western sea, wings spread north and south, lit red
+    underneath toward evening.
+  - "Begin the Downfall" (or `#fall=<second>`, which starts it that far in) runs the end, about three and a
+    half minutes long, captioned as it goes:
+    - The eagles come over the island.
+    - Lightning breaks on the Temple and its dome burns.
+    - The Meneltarma takes fire.
+    - The sea rises over everything, the mountain last.
+    - Nine ships of the Faithful put out from Romenna when the lightning breaks, run down the firth in line and
+      open into three columns at sea, heading east. "Follow the Faithful" (or `#follow`) carries the camera with
+      them.
+
+    The island goes down by raising the water: the engine's sea tiles, the far ring with them and the ships on
+    them (`ctx.seaLevel`); once the water is up a single flood sheet covers the map, and a camera below the
+    surface is lifted with it.
+  - Golden `numenor-downfall` (60 seconds in).
+
+Known gaps: away from the patches the coast is still the kilometre grid's; beaches and marsh barely show. The
+captions, the lightning's flash over the whole view and the tint below the water are page overlays, which
+`tools/probe.py`'s canvas shots do not show.
+
+Regenerate with `python3 tools/make-numenor.py` (about a minute and a half; it writes `data/cities/numenor.json`,
+`numenor-osm.json` and `numenor-land.json`).
 
 ### `/kyrene`: a rotating habitat
 
@@ -2128,6 +2364,103 @@ wireframe and menagerie menu every other page has.
     shields, and a strip of quick controls down the right (`helm.js`: shields, red alert, phasers, torpedo, scan, hail,
     energise, dock, lit while on); every panel has a Close of its own, and Escape closes them. For tests:
     `#ev=swarm`, `#ev=ossari`, `#mission=patrol` (or contact, probe, evacuate, swarm, hunt, storm, relic).
+  - **Ninth pass: systems that break, a career that lasts, and missions that test themselves**
+    (`src/enterprise/BACKLOG.md` keeps what is still to do). **Seven systems** (`systems.js`: warp, impulse,
+    phasers, torpedoes, the shield generator, sensors, the transporter) each have an integrity a hit can take away: a
+    hit on the hull usually hurts one, a hit on weak shields sometimes does. Below a quarter a system is offline (no
+    warp, no phasers, no scans, the shields fall); a hurt warp drive caps the warp factor and hurt impulse engines the
+    speed. Damage control works on the worst of it but only to half; a starbase's crews do the rest while she is
+    docked. **I** (or **Engineering**) opens the panel, and the HUD says what is down. A fifteenth kind of orders,
+    **silence** (`limp`): a lure, mines that take out the warp drive, raiders come for the cripple, and she waits for
+    damage control and limps to a starbase. The **career** is kept in the browser (`ent-career`): commendations,
+    missions by kind, crew brought off, battles won, light-years, places visited, visits, and the log itself, so the
+    stardate and the log run on between visits; the orders panel shows it as the **service record**, with a button to
+    start again. For tests: `#sysdmg=warp:80,phasers:60` damages systems once the page is up, `#fresh` starts as a
+    first visit without reading or writing what is kept, and `#mauto` (with `#mission=<kind>`) flies the mission
+    through as a captain would; **`tools/test-enterprise.py`** runs every kind that way in headless Firefox and fails
+    one that throws or stalls (about a quarter of an hour for all fifteen). `tools/probe.py` now reports a page early
+    when it sets `window.__probeDone`.
+  - **Tenth pass: the rest of the backlog** (2026-11-14; `src/enterprise/BACKLOG.md` is now empty). Twenty kinds of orders now, and `tools/test-enterprise.py` flies all twenty.
+    - **Combat** (`tactical.js`, the **Tactical** button). The shields are four facings, fore, aft, port and starboard;
+      a bolt wears the facing on its side, a buckled facing lets bolts through while the others hold, and
+      Reinforce moves power from the opposite one. **U** aims at a ship's engines once her shields are down: with
+      her drive gone she is dead in space, and the tractor beam (**G**) holding her close for three seconds takes her
+      as a prize. The Lattice learns whichever weapon hits it; switching weapons or Remodulate undoes it. **Call
+      for help** brings a Starfleet ship into the fight (`allies.js`), at a cost to Command's standing if it is
+      used against nothing much, or twice in five minutes.
+    - **The saucer flown apart** (`saucer.js`): separated from the Tactical panel (out of warp, under 2 km/s), it
+      withdraws to the far side of the fight while the helm flies the quicker stardrive; they dock again by flying
+      in under it, or by Rejoin. The `saucer` orders take a thousand families clear of a Varr ambush.
+    - **Fuel and the core** (`fuel.js`): antimatter burns by the light-year and dilithium wears with the cube of the
+      warp factor; low stocks cap the warp factor, and a starbase refills both. A breach counts down a minute in
+      Engineering: stabilise once, or eject the core and get clear, then impulse only until a starbase fits a new
+      one or a tender tows her.
+    - **The cloaked ship** (`cloak.js`): **Y** lays a tachyon net, seven beams across the ninety degrees ahead for
+      thirty seconds; a cloaked hull crossing one ripples, and a hit near the ripple forces her out. The `cloak`
+      orders are built on it.
+    - **Places with rules of their own** (`hazards.js`): no shields in the emission nebula and sensors cut to 8 km;
+      a minefield across the shattered world's approach (the `mines` orders clear it); rocks on the forward
+      shields above 6 km/s in the belt, where the `chase` orders run down a stolen courier.
+    - **On the way** (`encounters.js`): about one long jump in four is pulled out of warp for a distress call, a lure,
+      a derelict, a sleeping swarm or a raiders' snare, and the course is laid in again after.
+    - **Against the clock** (`clock.js`): rescues and evacuations count down life support in the orders panel and
+      on the HUD; arrive late and fewer are saved, and the log says how many were lost.
+    - **Standing** (`standing.js`): the career keeps a standing with Starfleet Command, the Ossari, the Kethri and the
+      Varr, on the service record. A good first contact brings Ossari traders; firing in front of them makes them
+      wary; every broken swarm makes the next bigger; a hunted Varr captain deepens their grudge. **Refits**
+      (`refit.js`, from a starbase's card or the service record) are signed off as Command's standing rises: Mark IX
+      torpedoes, a faster pattern buffer, a stronger shield grid (`W.refit`).
+    - **People** (`away.js`, `diplomats.js`): an away team's report is a short scene with two or three choices, its
+      outcome drawn from the run's seed; the hurt go to sickbay. The `envoy` orders carry delegations between
+      starbases, who complain, and two aboard at once may quarrel, to be settled before arrival.
+    - **A run you can share.** `#seed=<n>` deals the same run of orders, places, odds, chains and outcomes; the
+      service record shows the seed with a link. A finished mission may lead to the next (`CHAIN` in `orders.js`):
+      a probe's readings to the wormhole, a derelict's log to the ring, the storm to a swarm and the swarm to the Varr
+      behind it. **Commendations** for conduct (no shot fired at a first contact, a rescue with no one lost, a swarm
+      broken with shields above half, and more) are kept and listed.
+    - **Deep Space 9 and Voyager** (`ds9.js`): DS9 is a place on the western frontier, drawn by the DS9 page's own
+      model; docked there, a panel links to `/ds9`. Voyager, from her page's model, is met in traffic once a run.
+    - **Things to see.** The **bridge view** (Views, or `#bridge`; at the helm the V camera's bridge eye) looks out
+      over the dish from the bridge windows inside LCARS chrome. **Photo mode** (Views, or `#photo`) freezes the
+      scene, frees the camera, hides the interface and saves a PNG. Going to warp, the nacelle grilles glow up and
+      the stars smear in proportion to the warp factor. Under red alert the window rings dim and red lamps strobe
+      in a wave aft along the hull (`redhull.js`). Hits with the shields down leave scorches painted into the skin
+      where they land and nacelle hits vent plasma, repaired at a starbase (`damage.js`). Shuttles come and go,
+      workbees work round the starbases, ships lie berthed on their arms, and traffic carries strobes and beacons
+      (`life.js`). **Low orbit** (Events) takes her down to the top of a world's air over a cloud deck that keeps
+      the planet's own weather (`loworbit.js`). The **library computer** (Events, or `#ev=lib`) keeps every class
+      and people met, each turning on a small stage, and every place charted with its scans (`library.js`). The
+      bridge view, photo mode and the warp effect are shared (`src/starship/bridge.js`, `photo.js`, `warpfx.js`):
+      Voyager has all three and Deep Space 9 an Ops view and photo mode.
+    - **Sound** (`audio.js`), all synthesised, silent until the first click: the warp core's hum rising with the
+      warp factor, console chirps, the hull groaning in a hard turn, and a quiet generated music bed in a mode for
+      exploring, red alert and first contact. **M** mutes. The log can be read aloud by the browser's voice (off
+      by default; a switch in the log's title).
+    - **Help and access.** **?** (or Help) lists every key, with the switches for sound, music, voice, the
+      colour-blind palette (Okabe-Ito) and reduced motion (no shake, lurch or flash; on by default where the system
+      asks for it). Any single-key order can be moved to another key there. A first visit gets a walkthrough card
+      that follows the orders' next steps (`help.js`, `access.js`). A **touch** stick sits beside the helm strip, and
+      a **gamepad** flies her: sticks for heading, pitch, roll and impulse, buttons for the strip's orders (`pad.js`).
+    - **Loading faster** (`skincache.js`, `skinworker.js`). The hull's seven textures are still painted a texel at a
+      time, but in module workers (the painting is plain functions over `hull.js` and `dims.js`), one per texture,
+      while the page reads its config and hangs the stars. Each worker keeps what it painted in IndexedDB under a hash
+      of the painting's own source, so a second visit paints nothing. Every step falls back to the main thread (no
+      workers, no IndexedDB, a store that never answers), and what comes back is byte for byte a fresh paint. On the
+      Adreno X1 a first visit went from 4.4 s to 2.7 s and a second from 3.7 s to 1.6 s. For tests: `#nocache`,
+      `#noworker`, `#paintcheck`; `window._details.skins` says where each texture came from.
+    - **A performance budget** (`src/enterprise/BUDGET.md`, `tools/enterprise-budget.py`, `tests/budget/enterprise.json`):
+      frame time (p50, p95, frames uncapped) and draw calls in the busiest places (the ship alone, the home starbase
+      with traffic, the home world filling the view, the swarm fight, warp 9) and a first and second visit's load,
+      each held to what was measured plus a margin, and every p95 under 16.7 ms. On the Adreno X1 the worst is the
+      starbase, 12 ms p50, 14 ms p95, 259 calls; a planet's per-pixel noise costs more than the fight. About five
+      minutes, not part of `test-pages`; `--save` on another machine writes its own numbers. A phone is still to be
+      measured. `tools/probe.py` gained `--uncapped` and `--profile` for it.
+    - **A fix on the way:** the floating origin's rebase did not move a standard orbit's centre, so an orbit round any
+      planet steered round the wrong point.
+    - For tests: `#sep`, `#cloak`, `#fuel=am,dl`, `#breach=s`, `#enc=<kind>`/`#noenc`, `#clock=k`, `#aim=engines`,
+      `#low=<km>`, `#bridge`, `#photo`, `#walk`, `#help`, `#cb`, `#calm`, `#touch`, `#axes=t,p,r,thr`, `#gesture`, and the
+      acts `lib`, `low`, `repair`, `voyager`, `ds9`, `quarrel`, `awayscene`, `refit`. Encounters are off under `#mauto`
+      unless `#enc` asks, so the mission tests stay repeatable.
   - **Performance.** The hull's grids keep only the rows they need (`rows()` in `hull.js`): each part is sampled
     on its old even grid, and a row is dropped wherever every sample between the rows kept either side lies within
     2 cm of the straight line between them. The kept rows are still exact (u, v), so the textures land where they
@@ -2389,8 +2722,153 @@ Two missions of the campaign, and a switch between them (**Mission 1** and **Mis
   fireball, a ring of shock, and sparks. Every craft is baked into a mesh per material, so the whole scene is
   about 110 to 180 draw calls and 110,000 to 145,000 triangles (it was up to 721 calls before).
 
+- **Refined** (2026-11-14): the light is harder (a stronger star, half the ambient, the camera's lamp cut from
+  0.35 to 0.14), so the hulls have a shaded side. Kharak is lit as a ball, falling off to the terminator instead of
+  one flat colour, with dune ridges and canyons close to and small polar caps where a white cap was; its limb is
+  thinner. Burning, its fronts burn in lengths, each at its own heat with a dim glow round it, over darker
+  ground, rather than as even lines. The galaxy's dust lane is torn into filaments (it read as a black bar). The
+  hyperspace window is a nearly clear sheet with bright edges (it was a white slab over the Mothership), and the
+  wreck of the Scaffold is truss sections a few bays long and burnt-out plants, not single girders.
+
 Views: three-quarter, the Mothership side on, the prow, the engines, the hangar bay, the Scaffold, the trials,
 the asteroid field, the cryo trays, the wreck of the Scaffold, Kharak below, far off.
+
+### `/silo`: Silo 18, after *Wool*
+
+Fan work after Hugh Howey's *Wool* (the Silo series). It takes the setting's premise only: a silo of 144 levels
+buried under a dead plain, one spiral stair the only way between them, a screen up top showing the outside,
+fifty silos in a field. No passage of the books or line of the television series is quoted or paraphrased, none
+of the series' production design is copied, and nobody in particular is drawn: the residents are anonymous
+figures. Every shape is this project's own geometry (`src/silo/`), on the starship page (`src/starship/page.js`)
+with a logarithmic depth buffer.
+
+- **The section.** The silo is cut through its axis by a clipping plane that turns to face the camera, so the
+  near half of every level, the wall and the ground is taken away and the rock it is sunk in shows as a face of
+  dark, wavy strata with stones in them. The stair is never cut. **Cutaway** toggles the cut; views inside the
+  silo turn it off. The opening view shows the whole silo upright; the top
+  third, the mids and the deep each have a section view of their own.
+- **The levels**, one every 4.2 m: a landing street round the shaft, a ring wall of doors and lit windows, painted
+  rooms with doorways, shelves and pictures out to the silo's wall, some doors standing open with light spilling
+  onto the street, ventilation fans in grilles. Each kind is built once and drawn as instances in chunks of eight
+  levels, each level turned its own way; chunks out of view, and inside the silo far ones, are not drawn, and rooms'
+  furniture and the street's clutter only near to.
+- **Homes**: cramped flats off the walkway, thirty-six a level behind narrow doors with numbers on enamel plates in
+  three styles. A front room (a small table and stools, a sink, shelves of saved tins and jars, a rug, a coat on a
+  hook, a toy on the floor) and through a curtained doorway a back room with bunks, a bed that folds down, or a loft
+  built in over it, laundry on a line. Three versions of the home kit, picked level by level, each band of eight
+  levels painted its own way and some levels let go while others are kept proud.
+- **Two hundred years of wear** on the landings (near only): floors worn pale on the path to each door, walls dark at
+  hand height, paint chipped to older colours, patched panels, rust run down from the conduit, soot over the lamps,
+  newer cable bundles slung over the old, lamps left dead on their brackets, tallies scratched by the doors,
+  children's chalk low on the walls, notice boards thick with papers pinned over papers, hand-painted signs and
+  arrows in three eras' colours, laundry strung across the walkway, plants in tins along the rail, and on each
+  level a memorial wall of rows of small marks with candles under it.
+- **The commons**, one level in six on the residential bands: a washroom (stalls, basins, a long mirror, a queue), a
+  laundry (tubs, a mangle, lines of washing), a schoolroom (benches in rows, a chalkboard, a class and its teacher
+  in school hours), a clinic (cots behind curtains, a cabinet of bottles), a shared kitchen with a long table and
+  benches, and a meeting room (benches, candles, patched hangings).
+- **The bazaar** (levels 71 to 74): two rings of stalls under awnings of patched cloth (cloth, tools, food and mended
+  things), crates stacked behind, lamps on strings across the walkway, traders and buyers.
+- **People.** About ten thousand live in the silo (the details give the count): every level has its own number,
+  from its kind give or take, shown in the readout ("level 40, home · 74 residents"). Only the levels round the
+  camera are peopled: knots of neighbours talking, someone in each doorway, people on the benches, people carrying
+  loads, children running the curve, people at home behind the windows, queues at the washroom and the kitchen's
+  hatch, pupils in school, traders and buyers, hands in the farms, crews in the works. How many are out follows the
+  clock: busiest at the change of shift (06:00 to 08:30 and 17:00 to 19:30), quiet at night when more are indoors.
+  The stair's walkers follow it too, up to a hundred and fifty at the change of shift. All are one anonymous
+  figure, tinted, standing or seated; no one in particular.
+- **Light by section**: sodium amber up top, magenta-white grow light over the farms, cold blue-white in IT, plain
+  warm light through the mids, red-orange working light and sooty walls down deep. The night dimming shows from
+  the shaft.
+- **Up top**, level 1: the cafeteria (long communal tables of old boards with benches either side, people eating
+  together, a kitchen behind a wall with a hatch over the serving counter, a queue at it), and on its outer wall the screen, one bright panel drawn live from a camera in the housing on the cap
+  (it renders only while the camera is near the top); the sheriff's and mayor's offices; the corridor to
+  the airlock, with the cleaning suit hung by the inner door, and the ramp up to the exit on the plain.
+- **The farms** (levels 49 to 56 and 77 to 84, `FARMV` in `levels.js`): each floor grows its own way, drawn after
+  real indoor farming, because feeding ten thousand under lights takes more floor than the silo has: **channels**
+  (white gullies two tiers high, a light bar over each tier, a sump under the return, one channel gone green);
+  **rafts** (long black-lined ponds, white boards edge to edge with rows of heads in them, air lines along the edge);
+  **racks** (five tiers of greens, a magenta bar under every shelf, one in twenty-three dead); **grain** (deep troughs
+  of soil in two tiers under old sodium lamps on gull-wing reflectors, lit amber); **the animals** (hens on litter
+  with perches and nest boxes, pigs in concrete pens behind tube gates, rabbits in hutches three high, goats with a
+  plank platform, a dung channel along every pen, the feed store, fans in the wall); and **the floor that needs no
+  light** (two mushroom rooms of steel shelving and bags, round fish tanks with settling cones and filter tanks
+  feeding grow beds, the nutrient room's stock tanks and dosing board, a cold seed store of sealed tins, compost
+  bays, and the digester with its gas dome and a flare). The LED floors are lit magenta, the grain amber, the rest
+  plain. Views for each.
+- **The mids**: the bazaar's stalls. **IT** on levels 34 and 35:
+  racks and their lights. **Down deep**: supply (shelves, sacks, bins, a hoist, and every third room a workshop with
+  lathes, a pillar drill, a forge with its hood and anvil, racks of bar stock, a welding cart, a bench and its tool
+  board); water treatment (settling tanks with walkways over them, sand filters and their valve trees, pumps on
+  plinths, the ring mains, drains under grating, a board of lamps); the casting rooms (a furnace under its hood and
+  flue, a crucible on a jib, sand moulds in rows, some just poured, moulding sand, ingots, tongs, an ore conveyor up
+  through the floor, hoists); mechanical (pump sets, switch cabinets, pipe runs in their colours, yellow floor
+  borders, benches). Yellow paint, stencilled warnings, gauges, valve wheels and stains throughout. The water band
+  (levels 123 to 128, `WATERV`) is three kinds of floor: **clean water** (the settling tanks and sand filters, then
+  lamp tubes, a baffled chlorine tank and a pressure tank); **the sewage cleaned** (four aeration basins of brown
+  water and foam with a walkway down each and air lines along them, a round clarifier with its scraper bridge, the
+  sludge tank and press, the blowers in a row); and **the air plant** (seven air handlers with their sections, doors,
+  gauges and drains, ducts up to the main riser, the scrubber's two columns with the line up to the farms, the
+  electrolysis cells, and a post with the oxygen and carbon readings).
+- **The generator hall** (levels 142 to 144 open as one, `src/silo/plant.js`): a turbine-generator set on its
+  pedestal (the casing stepping up from a small high-pressure end to a big ribbed low-pressure end, stop valves,
+  crossover and exhaust trunk, the generator and its exciter), the lube oil skid and cooler, an overhead travelling
+  crane, a mezzanine of grating, switchgear, bus bars and cable trays, seven control boards and a mimic panel with
+  needles that move; the oil: the wellhead and its pumpjack, separators, a still and day tanks with sight glasses,
+  on a pipe rack; a workshop corner, drums, oil stains, caged lamps, painted warnings, workers. The shaft turns and
+  the deep's lamps hum with it. The steam it runs on, drawn after real packaged plants: a water-tube boiler (a clad
+  block with patched panels, the steam drum along its top with domed ends and safety valves, the mud drum, the burner
+  glowing in its windbox with the oil gun and scanner, the forced-draught fan, the flue trunk black with soot up into
+  the ceiling, a platform along the drum); the deaerator high on its frame nine metres up over the two feed pumps (one
+  running, one standing by, on drip trays); the steam main round the hall under the ceiling, clad and hung on spring
+  hangers with an expansion loop; a standby diesel set in its own bay (lagged exhaust to a silencer, its day tank and
+  purifier, a chalk board of its runs); and over the boards an annunciator of lit windows and chart recorders.
+- **The mines and the digger** (`src/silo/digger.js`): forty metres under the hall, down a steel-framed shaft with a
+  cage on two ropes and a ladderway from a hatch in the hall's floor (a headframe with its sheave, the winch, yellow
+  rails), a hall cut in the rock under the silo's footing (pillars left to hold the roof, a loop of track with carts,
+  lamps hung from the rock); in section a slot is cut through the rock face at that depth so the mines show under the
+  plant. Four drifts out from it, timbered (steel arches further
+  in), with rails, ore carts, puddles, lamps, and a working face with a drill. Off one, behind a welded bulkhead,
+  a rough chamber and a tunnel lined with concrete segments (rails, the ventilation duct at the crown, water and air
+  mains, cable on hangers, lamps mostly dead) running toward Silo 17; at its end, a tunnel boring machine drawn after
+  real hard-rock machines: a cutter head nine metres across with disc cutters on six spokes and buckets round the
+  rim, the shield with gripper pads, thrust rams, main bearing and drive motors, a belt conveyor carrying the spoil
+  back, and its trailing gear on rails (segment feeder and erector, operator's cab, hydraulic power packs,
+  transformer, ventilation fan, cable reels), rusted and dusty. In the field view the tunnel is a line under the
+  plain, solid as far as it is bored and dashed the rest of the way.
+- **The stair**: one turn a level, its eye open from top to bottom (the shaft view looks down it), handrails,
+  a cage of posts and cross-braces, treads worn bright along the two lanes, lamps on the inner rail, pipes and
+  cable runs down the shaft wall on brackets, the level's number stencilled on plates either side of every landing,
+  people going down on the outside and up on the inside, some carrying loads.
+- **Outside**: a grey-brown plain in a shallow bowl, rubble, dead trees and rusted wreckage, veils of dust drifting
+  low across it, the hill the screen looks at with one dead tree on its crest, a broken city on the horizon. The
+  cap is a concrete disc flush with the dirt, with the sensor housing and a lattice mast of instruments on it. Fog
+  takes the sky's colour at the horizon.
+- **The field**: fifty silos in a regular grid of ten by five, shown in a block of ground cut out of the plain
+  (its far walls and floor in section, the surface a thin see-through slab, every cap flush with it), Silo 18
+  marked in amber and Silo 1, the founding silo, in blue. **Into Silo 18** descends from the field through the cap
+  and down the shaft to the stair at level 3 (also `#view=Into Silo 18`).
+- **The clock**: an hour every fifteen seconds; the levels' lights dim from 22:00 to 06:00 on a schedule. **Clock
+  speed (T)** runs it ten or sixty times faster (`#speed=`) to watch a day: the lamps, the shift changes, the nights.
+- **Happenings** (buttons, or `#event=`): **A cleaning** (`cleaning`): the airlock's lights go amber, the inner
+  door rises, gas fills the chamber, the outer door opens, the suited figure walks the ramp out, wipes the lenses
+  (the screen's grime clears) and walks to the hill. **A porter's run** (`porter`): the camera follows a porter
+  down the stair from the top to supply on level 110. **Generator failure** (`blackout`): the deep's lamps flicker, go red and
+  dark, the turbine spins down, and they come back. **Dust storm** (`storm`): the fog closes in and grit blows past.
+  **The digger wakes** (`digger`): the machine's lamps come on along the gear, the belt starts carrying spoil, the
+  head turns, dust comes off the face, and it creeps a few metres forward, shaking the ground near it.
+- **Looking up and down the shaft**: **Look up (U)** and **Look down (J)**, or a double-click inside the silo, ease
+  in about 0.6 s to the stair's eye looking straight up or down it, without roll; dragging then looks round from
+  there, held square to the shaft (a drag turns the view round its axis, never tilts it). **Level (L)** comes back
+  to looking level.
+
+The readout says where the camera is: "Silo 18 — level 34, IT · 09:40 · lights full". `#mode=cut|inside|outside|field`
+keeps the mode in the address. Views: Silo 18 whole, Silo 18 in section, the top third, the mids and the deep in
+section, the shaft from the top, the stair mid-descent, on the stair at level 3, the cafeteria and the screen, the
+serving counter and kitchen, the airlock, up top, a home on level 12, the commons on level 20, the bazaar on market
+day, IT, the upper farms, the bazaar, supply, supply's workshop, water treatment, the casting rooms, mechanical and
+the generator, the turbine close, the wellhead and the pumpjack, the control boards, the digger, the digger's
+tunnel, the mines, the landing and the catwalk at level 3, catwalks down the shaft, the cap and the exit, outside toward the hill, the dead city, the field of fifty silos, into Silo 18.
 
 ### `/fleshpit`: Mystery Flesh Pit National Park
 
@@ -2816,6 +3294,7 @@ src/
   nightcity/ main.js landmarks.js neon.js    Night City: the ziggurat and the night stage
   megacity/ main.js landmarks.js             Mega-City One: the Hall of Justice, the Statue of Judgement
   mordor/   main.js landmarks.js forges.js   Mordor: the Eye, the works
+  numenor/  main.js landmarks.js nature.js life.js   Númenor: the Meneltarma, Armenelos, the forests, the ships
   middleearth/ hosts.js                      the war, shared by Mordor and Minas Tirith: the hosts, the Nazgul, the lightning
   dredd2012/ main.js warmode.js              Mega-City One (2012): the blast shields and war mode
   fleshpit/ main.js landmarks.js surface.js organism.js springs.js lungs.js tunnels.js section.js anatomy.js promenade.js visitors.js fauna.js incident.js signs.js camera.js   the park: the surface and its lots, the shaft, the springs, the lungs, the tunnels, the section, the heart and vessels, the people, its animals, the night, its lettering, and its own camera
@@ -2833,6 +3312,7 @@ src/
   babylon5/ main.js station.js visitors.js   Babylon 5: the sphere, the Cobra bays, the drum and the Garden, the arrays, the defence grid, the traffic, the gate; the destroyer, the Minbari, the raid
   deepsky/ main.js model.js audio.js blackhole.js sgra.js pulsar.js supernova.js whitedwarf.js merger.js   Deep Sky: the switch, the kit and the flight; sound; the traced black holes and the S-stars; the Crab; the supernova; the Ring Nebula; GW170817
   homeworld/ main.js ships.js kharak.js fleet.js   Homeworld: the Mothership, the Scaffold and the craft; Kharak and the sky; the two missions, the trails, the hyperspace windows, Sensors
+  silo/     main.js kit.js levels.js plant.js digger.js outside.js life.js crowd.js silo.js   Silo 18 (fan work after Wool): the merging kit; the level kits, the stair, level 1 and the generator hall; the turbine plant; the mines and the digger; the plain, the city and the field of fifty; the diners and the stair's walkers; the crowd; the cut, the modes, the clock, the screen and the happenings
   hab/      main.js world.js               Kyrene: its own renderer, and a world in cylinder coordinates
   beachcity/ main.js landmarks.js details.js life.js events.js   Beach City: the temple, the beach house, the lighthouse, the park's cliff, the shops, Funland, the car wash, the old docks; the surf, the boardwalk and the gulls
   oldesthouse/ main.js mats.js kit.js executive.js research.js maintenance.js containment.js further.js   the Oldest House: the kit and its light bake, the surfaces, the sectors
@@ -2842,7 +3322,7 @@ src/
 vendor/three/three.min.js     three.js r128 (pinned)
 tools/  build-page.py build-tongue.py probe.py check-city.py
         fetch-osm.py fetch-terrain.py build-osm-city.py make-city17.py make-nightcity.py
-        make-megacity.py make-mordor.py make-minastirith.py make-isengard.py make-moria.py make-dredd2012.py make-yellowstone.py
+        make-megacity.py make-mordor.py make-numenor.py make-minastirith.py make-isengard.py make-moria.py make-dredd2012.py make-yellowstone.py
         make-beachcity.py
         make-hyrule.py
         build-krator.py test-pages.py
@@ -2970,6 +3450,10 @@ them (`.gitattributes` marks them). The generators share `tools/lib/geo.py`.
 | `data/cities/yellowstone.json`, `yellowstone-land.json` | `tools/make-yellowstone.py` (the config too: edit the script) |
 | `data/cities/yachats-osm.json` | `tools/build-osm-city.py yachats`, from the Oregon extract (`tools/pbf-to-overpass.py`) |
 | `data/cities/yachats-land.json` | `tools/make-yachats.py` |
+| `data/cities/mthood-osm.json` | `tools/build-osm-city.py mthood` (with `terrain.lakeLevels`), from the cache of `tools/fetch-osm.py mthood` and `tools/fetch-terrain.py mthood` (3DEP) |
+| `data/cities/mthood-fine.json`, `mthood-far.json`, `mthood-mtn.json` | `tools/make-mthood.py` (after `build-osm-city.py mthood`) |
+| `data/cities/<city>-canopy.json` for mthood, portland | `tools/fetch-tcc.py <city>` (the Forest Service's canopy, clipped from the MRLC) |
+| `data/cities/barcelona-osm.json` | `tools/build-osm-city.py barcelona`, from the cache of `tools/fetch-osm.py barcelona` and `tools/fetch-terrain.py barcelona` |
 | `src/engine/build.js`, `src/iziz/build.js`, `src/voth/build.js` | `tools/build-page.py` (`./sitectl build`) from each `stages/` |
 | `krator.html` | `tools/build-krator.py` |
 
@@ -3152,7 +3636,7 @@ The probe runs a page in headless Firefox against a copy of the site config and 
 timings, draw calls, triangles, programs, frame times, the adaptive resolution and a SHA-256 fingerprint of
 the layout. It reports as soon as the page has finished building - its loading overlay is gone and it has drawn
 30 frames - so `--wait` is only a ceiling; a page that never gets there is reported as timed out. It picks free
-ports for itself. `--shot` saves the rendered canvas as a JPEG.
+ports for itself. `--shot` saves the rendered canvas as a JPEG. With `--overlays` it also paints the page's own elements over the canvas (captions, panels, a full-view flash or tint), roughly: backgrounds, gradients, opacity and text, without borders, shadows or images.
 
 `tools/test-pages.py` runs every golden in `tests/golden/` three at a time. A golden's file name is
 `<page>-<seed>.json`; it may also carry the `page`, `query` and `hash` it was made with (`iziz-b-7.json` is
@@ -3245,6 +3729,14 @@ Craftsman porches (deck, brick pedestals, columns, rail, steps, a shed or gabled
 signboards are parts too; any part, and any `facadeStyles` entry, can take `where` (lat/lon boxes) to keep it to a
 neighbourhood. Portland's Arbor Lodge and Kenton use it: painted lap siding (`clapboard`) and porches on the houses,
 awnings along Denver Avenue, and Kenton's Paul Bunyan (`bunyan`, `src/portland/landmarks.js`) at Interstate and Denver.
+
+**Tree canopy** (`C.canopy`, an engine setting in `src/engine/stages/00-start.js` and `03b-details.js`): a file from
+`tools/fetch-tcc.py <city>`, the Forest Service's Tree Canopy Cover (the NLCD's, 30 m, 2011-2021, fetched clipped from
+the MRLC's WCS and resampled onto the city's grid). The engine reads it as `ctx.canopy.at(x, z)` (0 to 1, or null
+off the survey), skips its own scatter over the woodland kinds, and after the street, mapped, yard and park trees fills
+every 12 m cell to its canopy, one tree per `canopyCrown` m2 (150) of crown, woodland (`wood`) where it is over half and
+park trees under. `canopyFill: false` leaves the trees to the page and only loads the survey (Mount Hood's forest reads it).
+Portland and Mount Hood have one.
 
 **Tree species** (`C.treeSpecies`, an engine setting in `src/engine/stages/03b-details.js`): a city may plant its own
 trees instead of the one generic shape. Each species is a shape (`fir`, `cedar`, `round`, `oval`, `oak`, `slender`,

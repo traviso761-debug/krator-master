@@ -8,6 +8,10 @@ const DETAIL={k:QUALITY==='high'?1:QUALITY==='medium'?0.7:0.5,max:QUALITY==='hig
 ctx.detail=DETAIL;
 {let t=0;const c=new THREE.Vector3();animHooks.push(now=>{if(now-t<300)return;t=now;for(const m of FAR_MESHES){c.copy(m.geometry.boundingSphere.center);m.visible=camera.position.distanceTo(c)-m.geometry.boundingSphere.radius<m.userData.far*DETAIL.k;}});}
 const UP=[0,1,0];
+// C.canopyGround {colour, strength}: with a canopy survey (C.canopy), the ground and the big areas take the forest's
+// colour where the crowns are, so a wooded hill reads as forest past the distance the trees are drawn to, not lawn
+const CG=C.canopyGround&&CANOPY?{c:new THREE.Color(C.canopyGround.colour||'#2f4a2c'),k:C.canopyGround.strength==null?0.7:C.canopyGround.strength}:null,cgTmp=new THREE.Color();
+function canopyTint(cl,x,z){if(!CG)return cl;const c=CANOPY.at(x,z);if(!c||c<0.15)return cl;const t=Math.min(1,(c-0.15)/0.55);return cgTmp.copy(cl).lerp(CG.c,CG.k*t*t*(3-2*t));}
 function tiledBuffer(material,opts){const tiles=new Map();opts=opts||{};const TS=(opts.tile||2000)*WORLD;
   return {
     tile(x,z){const k=Math.floor(x/TS)+','+Math.floor(z/TS);let t=tiles.get(k);if(!t){t={p:[],n:[],c:[],idx:[]};tiles.set(k,t);}return t;},
@@ -28,7 +32,7 @@ function tiledBuffer(material,opts){const tiles=new Map();opts=opts||{};const TS
     gridPoly(rec,cell,off,cl,skip){const {x0,x1,z0,z1}=rec.bb;   // skip(x, z): a cell to leave out (bare ground)
       for(let z=z0;z<z1;z+=cell)for(let x=x0;x<x1;x+=cell){const x2=Math.min(x+cell,x1),z2=Math.min(z+cell,z1);
         if(!inRec(rec,(x+x2)/2,(z+z2)/2)||(skip&&skip((x+x2)/2,(z+z2)/2)))continue;
-        this.quad(this.tile(x,z),[x,groundH(x,z)+off,z],[x,groundH(x,z2)+off,z2],[x2,groundH(x2,z2)+off,z2],[x2,groundH(x2,z)+off,z],cl);}},
+        this.quad(this.tile(x,z),[x,groundH(x,z)+off,z],[x,groundH(x,z2)+off,z2],[x2,groundH(x2,z2)+off,z2],[x2,groundH(x2,z)+off,z],canopyTint(cl,(x+x2)/2,(z+z2)/2));}},
     walls(ring,y0,y1,cl){for(let i=0;i<ring.length;i++){const a=ring[i],b=ring[(i+1)%ring.length],nx=b[1]-a[1],nz=-(b[0]-a[0]),nl=Math.hypot(nx,nz)||1;
       this.quad(this.tile(a[0],a[1]),[a[0],y1,a[1]],[b[0],y1,b[1]],[b[0],y0,b[1]],[a[0],y0,a[1]],cl,[nx/nl,0,nz/nl]);}},
     ribbon(pts,w,y,cl,sides){if(pts.length<2)return;const h=w/2,L=[],R=[],Y=i=>Array.isArray(y)?y[i]:typeof y==='function'?y(pts[i][0],pts[i][1]):y;   // y: one height, one per point, or a function of the point
@@ -137,17 +141,21 @@ section('ground',()=>{
       SNOW=typeof C.snow==='number'?C.snow:0,snowC=col(TC.snow||'#eef1f4'),
       // tints: a colour worked into the rock of one place, strongest on the steep faces - Caradhras is the Redhorn
       TINTS=(C.terrainTints||[]).map(t=>{const [x,z]=P(t.at);return {x,z,r:t.r,c:col(t.colour),k:t.strength===undefined?0.7:t.strength};});
+    // the ground's colour at a point of a given height and slope (rise over run), also for a page's own finer ground
+    function terColour(x,y,z,slope,out){out.copy(low).lerp(high,Math.min(1,y/H_AT)).lerp(steepC,Math.min(1,slope*SLOPE_K));
+      // a city with mountains in it can have snow on them (C.snow, the snow-line): white above it, ragged at the
+      // edge, and off the steepest faces, where the rock shows through
+      for(const t of TINTS){const d=Math.hypot(x-t.x,z-t.z);if(d<t.r)out.lerp(t.c,t.k*(1-d/t.r)*(0.35+0.65*Math.min(1,slope*SLOPE_K)));}
+      if(CG)out.copy(canopyTint(out,x,z));
+      if(SNOW){const k=Math.max(0,Math.min(1,(y-SNOW+140*Math.sin(x*0.004)*Math.cos(z*0.0035))/260));if(k>0)out.lerp(snowC,k*(1-Math.min(1,slope*(C.snowShed||1.1))*0.7));}
+      return out;}
+    API.terrainColour=terColour;API.terrainStep=TER.step;
     const LODD=Array.isArray(C.terrainLOD)?C.terrainLOD:null,LODS=[];
     for(let cj=0;cj<TER.nz-1;cj+=CH)for(let ci=0;ci<TER.nx-1;ci+=CH){const w=Math.min(CH,TER.nx-1-ci),d=Math.min(CH,TER.nz-1-cj),pos=[],colr=[],idx=[];
       for(let j=0;j<=d;j++)for(let i=0;i<=w;i++){const gi=ci+i,gj=cj+j,x=TER.x0+gi*TER.step,z=TER.z0+gj*TER.step,y=TER.h[gj*TER.nx+gi];
         const gx=(TER.h[gj*TER.nx+Math.min(TER.nx-1,gi+1)]-TER.h[gj*TER.nx+Math.max(0,gi-1)])/(2*TER.step),
               gz=(TER.h[Math.min(TER.nz-1,gj+1)*TER.nx+gi]-TER.h[Math.max(0,gj-1)*TER.nx+gi])/(2*TER.step),slope=Math.hypot(gx,gz);
-        pos.push(x,y,z);cc.copy(low).lerp(high,Math.min(1,y/H_AT)).lerp(steepC,Math.min(1,slope*SLOPE_K));
-        // a city with mountains in it can have snow on them (C.snow, the snow-line): white above it, ragged at the
-        // edge, and off the steepest faces, where the rock shows through
-        for(const t of TINTS){const d=Math.hypot(x-t.x,z-t.z);if(d<t.r)cc.lerp(t.c,t.k*(1-d/t.r)*(0.35+0.65*Math.min(1,slope*SLOPE_K)));}
-        if(SNOW){const k=Math.max(0,Math.min(1,(y-SNOW+140*Math.sin(x*0.004)*Math.cos(z*0.0035))/260));if(k>0)cc.lerp(snowC,k*(1-Math.min(1,slope*(C.snowShed||1.1))*0.7));}
-        colr.push(cc.r,cc.g,cc.b);}
+        pos.push(x,y,z);terColour(x,y,z,slope,cc);colr.push(cc.r,cc.g,cc.b);}
       // A heightfield cannot have a hole in it, so a city that needs one says where: quads whose middle falls
       // inside it are simply not drawn. The Flesh Pit's orifice is the only one - without it the funnel floor
       // is a lid over the shaft, and from the rim you look down at a flat disc rather than into the pit.
@@ -198,14 +206,18 @@ section('ground',()=>{
     // an area that meets a terrain cut follows the ground too, or it would be drawn flat across the cutting
     const cutHit=TER&&TER.cutBoxes&&TER.cutBoxes.some(q=>a.bb.x1>q.x0&&a.bb.x0<q.x1&&a.bb.z1>q.z0&&a.bb.z0<q.z1);
     if(TER&&(big>4000*WORLD*WORLD||cutHit))buf.gridPoly(a,(big>40000*WORLD*WORLD?25:cutHit?6:12)*WORLD,0.06,c,WOODY.has(a.kind)?bareAt:null);else buf.poly(a.o,a.i,gY(0.06),c);}   // anything sizeable follows the ground; small patches stay flat
-  for(const b of BEACHES)detail.poly(b.o,b.i,gY(0.07),col('#dccda4'));
+  // C.dropBeaches: [[lat, lon, r m], ...], mapped beaches not drawn (Portland: an unnamed one tagged on the seawall)
+  const DROPB=(C.dropBeaches||[]).map(([la,lo,r])=>{const [x,z]=P([la,lo]);return [x,z,r*WORLD];});
+  for(const b of BEACHES){if(DROPB.length){let cx=0,cz=0;for(const q of b.o){cx+=q[0];cz+=q[1];}cx/=b.o.length;cz/=b.o.length;if(DROPB.some(([x,z,r])=>(cx-x)**2+(cz-z)**2<r*r))continue;}detail.poly(b.o,b.i,gY(0.07),col('#dccda4'));}
   use.build('land use');land.build('land');detail.build('land detail');if(paved)paved.build('piazze');
 });
 // water: the lake with the real shore (islands cut out), the river, lagoons and harbour basins
 // A sea-level city's water is one sheet the size of the map, so a bright specular spreads right across it and
 // reads as a pale slab against the horizon. Open water gets a duller sheen than a river does.
-const WSHINE=C.seaLevelWater?26:90;
-const waterM=new THREE.MeshPhongMaterial({color:0x2a5f8c,specular:C.seaLevelWater?0x40627a:0x9fc4e0,shininess:WSHINE,polygonOffset:true,polygonOffsetFactor:-3,polygonOffsetUnits:-6});
+// A river city may give its water its own colour and sheen (riverColour, waterSpecular, waterShine): Portland's
+// Willamette is a grey-green, and the default sheen in its afternoon sun was a white disc across the river.
+const WSHINE=typeof C.waterShine==='number'?C.waterShine:C.seaLevelWater?26:90;
+const waterM=new THREE.MeshPhongMaterial({color:C.riverColour?new THREE.Color(C.riverColour):0x2a5f8c,specular:C.waterSpecular?new THREE.Color(C.waterSpecular):C.seaLevelWater?0x40627a:0x9fc4e0,shininess:WSHINE,polygonOffset:true,polygonOffsetFactor:-3,polygonOffsetUnits:-6});
 // still, dark water - a mountain tarn, not a river under a blue sky - is lakeColour, and a duller sheen
 if(C.lakeColour){waterM.color.set(C.lakeColour);waterM.specular.set(C.lakeSheen||0x4a5a68);}
 section('water',()=>{

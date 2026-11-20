@@ -16,6 +16,9 @@ import {createRenderer,trackResize,installContextLoss,mkBtn,runHooks,runLoop,fin
 import {readHash,writeHash} from '../core/hash.js';
 import {ORBIT_RATE,FAST,BIND,trackKeys,trackPointers} from '../core/input.js';
 import {mergeParts,fold,hullPalette} from './parts.js';
+import {photoMode} from './photo.js';
+import {bridgeView} from './bridge.js';
+import {starSmear,flashScreen} from './warpfx.js';
 
 const getJSON=u=>fetch(u).then(r=>{if(!r.ok)throw new Error(u+': HTTP '+r.status);return r.json();});
 
@@ -45,7 +48,7 @@ export function buildSky(THREE,scene,K,rnd){
     g.setAttribute('color',new THREE.BufferAttribute(col,3));
     const p=new THREE.Points(g,new THREE.PointsMaterial({size:K.starSize||1500,vertexColors:true,
       sizeAttenuation:true,transparent:true,opacity:0.95,depthWrite:false,fog:false}));
-    p.userData.noWire=true;p.frustumCulled=false;scene.add(p);
+    p.userData.noWire=true;p.frustumCulled=false;scene.add(p);out.stars=p;
   }
   // ---- nebulae ----
   // Shells of very faint additive cloud. A nebula is not an object with an edge, so it is built as a lot of
@@ -303,6 +306,9 @@ export async function starshipPage(opts){
     });
 
     // ---- the ship ----
+    // a model that does slow work of its own before it can be built (the Enterprise paints its hull's textures in
+    // workers, started as its script was) is waited for here, after the config and the stars
+    if(opts.ready){await stage('paint');try{await opts.ready();}catch(e){report('paint',e);}}
     await stage('hull');
     const api={THREE,C,ctx,scene,camera,renderer,animHooks,mergeParts:(m,mat)=>mergeParts(THREE,m,mat),
                fold:(g,p)=>fold(THREE,g,p),palette:o=>hullPalette(THREE,o)};
@@ -355,9 +361,13 @@ export async function starshipPage(opts){
     // how close you may get: a third of the ship's radius by default, which for an eight-kilometre station is
     // a kilometre and a half off the hull and nowhere near its docking bay, so a model may say for itself
     const DMIN=SHIP.minD||SHIP.radius*0.35,zoom=f=>{V.d=Math.max(DMIN,Math.min(SHIP.radius*160,V.d*f));};
-    const owned=()=>SHIP.ownsInput&&SHIP.ownsInput();
+    // photo mode (photo.js) frees the camera even from a model that has taken it; the bridge view (bridge.js)
+    // turns a drag into a look round and the wheel into the viewscreen's zoom
+    let PH=null,BR=null;
+    const owned=()=>!!(SHIP.ownsInput&&SHIP.ownsInput())&&!(PH&&PH.on());
+    const onBridge=()=>BR&&BR.on()&&!(PH&&PH.on());
     trackPointers(el,{
-      drag:(dx,dy,{pan})=>{if(owned())return;
+      drag:(dx,dy,{pan})=>{if(onBridge()){BR.look(dx,dy);return;}if(owned())return;
         if(pan){
           const s=V.d*0.0013;
           const right=new THREE.Vector3().subVectors(camera.position,target).cross(camera.up).normalize();
@@ -366,8 +376,8 @@ export async function starshipPage(opts){
         }else{
           V.az+=dx*ORBIT_RATE;V.el=Math.max(-1.45,Math.min(1.45,V.el+dy*ORBIT_RATE));
         }},
-      pinch:ratio=>{if(!owned())zoom(ratio);},
-      wheel:dy=>{if(!owned())zoom(Math.exp(dy*0.0011));}});
+      pinch:ratio=>{if(onBridge())BR.zoom(1/ratio);else if(!owned())zoom(ratio);},
+      wheel:dy=>{if(onBridge())BR.zoom(Math.exp(dy*0.0011));else if(!owned())zoom(Math.exp(dy*0.0011));}});
     // WASD slides the point you orbit (along the view, flattened, and across it), Q and E lower and raise it,
     // Shift five times as fast; a model that has taken the controls (B5's interior) keeps its own keys
     const keys=trackKeys();
@@ -404,7 +414,22 @@ export async function starshipPage(opts){
     api.view=goto;     // a model's events may move the turntable (Rama's)
     // a model whose camera can be elsewhere (Rama's interior, its events) hears first, to give the camera back
     for(const [name,v] of Object.entries(C.views||{}))mkBtn(name,viewsEl,()=>{
-      if(SHIP.onView)SHIP.onView(name,v);goto(v);viewsEl.classList.remove('open');vbtn.setAttribute('aria-expanded','false');});
+      if(BR)BR.toggle(false);if(SHIP.onView)SHIP.onView(name,v);goto(v);viewsEl.classList.remove('open');vbtn.setAttribute('aria-expanded','false');});
+    // the modes every ship page may offer (X2 in the Enterprise's backlog): the bridge view, photo mode
+    const closeViews=()=>{viewsEl.classList.remove('open');vbtn.setAttribute('aria-expanded','false');};
+    if(SHIP.bridge||opts.photo){const h=document.createElement('div');h.className='sub';h.textContent='Modes';viewsEl.appendChild(h);}
+    if(SHIP.bridge){BR=bridgeView({THREE,camera,B:SHIP.bridge});mkBtn(SHIP.bridge.label||'Bridge view',viewsEl,()=>{BR.toggle();closeViews();});}
+    if(opts.photo){
+      // the subject: the model's own idea of it (a ship at the helm is wherever she has flown to), or its group
+      const tg=()=>SHIP.photoTarget?SHIP.photoTarget():SHIP.group?SHIP.group.getWorldPosition(new THREE.Vector3()):new THREE.Vector3();
+      PH=photoMode({THREE,renderer,scene,camera,V,target:tg,name:opts.city});mkBtn('Photo mode',viewsEl,()=>{PH.toggle(true);closeViews();});}
+    // the star field smeared with the warp factor, and the flash of the jump, for a model that says when it is at
+    // warp: SHIP.warp() gives {f: the warp factor now, fwd: the way it is going in the world}
+    let WS=null,wasF=0;
+    const warpFrame=()=>{const w=SHIP.warp();if(!w)return;
+      if(!WS&&sky&&sky.stars)WS=starSmear(THREE,sky.stars);if(!WS)return;
+      WS.set(Math.min(0.6,0.045*w.f),Math.min(0.8,w.f/2.5),w.fwd);
+      if(w.f>=0.5&&wasF<0.5)flashScreen(0.85);else if(w.f<0.5&&wasF>=0.5)flashScreen(0.5);wasF=w.f;};
     if(SHIP.buttons)for(const [label,fn] of Object.entries(SHIP.buttons))mkBtn(label,ui,fn);
     const wire=createWire({THREE,scene,animHooks});
     installWireUI({ui,mkBtn,wire,hash:location.hash.slice(1)});
@@ -418,7 +443,10 @@ export async function starshipPage(opts){
      const q=/^[-\d.,]+$/.exec(h.get('v')||'');
      if(q){const n=q[0].split(',').map(Number);
        if(n.length>=3&&n.every(Number.isFinite)){V.az=n[0];V.el=n[1];V.d=n[2];
-         if(n.length>=6){V.tx=n[3];V.ty=n[4];V.tz=n[5];}}}}
+         if(n.length>=6){V.tx=n[3];V.ty=n[4];V.tz=n[5];}}}
+     // #bridge opens on the bridge, #photo in photo mode (once the model's own hash has had its say)
+     if(h.has('bridge')&&BR)setTimeout(()=>BR.toggle(true),+(h.get('bridge')||0.5)*1000);
+     if(h.has('photo')&&PH)setTimeout(()=>PH.toggle(true),+(h.get('photo')||2)*1000);}
     {let t=0,extraKeys=[];setInterval(()=>{const now=Date.now();if(now-t<1400)return;t=now;
       const r=x=>Math.round(x*1000)/1000;
       // a model that has a mode of its own (a cutaway, an interior) keeps it in the address too; the keys it
@@ -438,10 +466,14 @@ export async function starshipPage(opts){
     finishLoading({hintMs:14000});
 
     runLoop((now,dt)=>{
+      // photo mode: everything holds still but the turntable
+      if(PH&&PH.on()){slide(dt);frame();if(BR)BR.chrome(now);renderer.render(scene,camera);return;}
       slide(dt);runHooks(animHooks,now);
       if(sky)for(const q of sky.bodies)if(q.b.rate)q.g.rotation.y+=q.b.rate;
       // a model may take the camera over - Babylon 5's interior rides the drum - and then the turntable waits
-      if(!(SHIP.camFrame&&SHIP.camFrame(now)))frame();
+      if(!(SHIP.camFrame&&SHIP.camFrame(now))){if(BR&&BR.on())BR.frame();else frame();}
+      if(BR)BR.chrome(now);
+      if(SHIP.warp)warpFrame();
       // A station kilometres long seen from kilometres off wants the near plane out of the way, or its
       // panelling fights itself in the depth buffer; one looked at from a hundred metres wants it close.
       if(SHIP.adaptiveNear){const n=Math.max(0.6,Math.min(40,V.d*0.004));if(Math.abs(n-camera.near)>n*0.2){camera.near=n;camera.updateProjectionMatrix();}}

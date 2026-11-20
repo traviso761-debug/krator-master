@@ -24,12 +24,15 @@ export function landmarks(api){
     const jets=[];for(let k=0;k<7;k++){const a=k/7*Math.PI*2+0.4,r=R0*(0.2+((k*31)%4)*0.13);
       const j=new THREE.Mesh(new THREE.ConeGeometry(R0*0.13,R0*0.9,6).translate(0,R0*0.45,0),emberM);
       j.position.set(x+Math.cos(a)*r,g0+R0*0.06,z+Math.sin(a)*r);parts.push(j);jets.push({j,ph:k*0.9});}
-    const flows=[],SLOPE=L.slope||0.33;   // the angle of the cone's flank, in radians
-    for(let k=0;k<7;k++){const a=k/7*Math.PI*2+0.7,len=(L.flow||9000)*(0.6+((k*29)%5)*0.16);
-      const arm=new THREE.Group();arm.position.set(x,g0+R0*0.05,z);arm.rotation.y=-a;
-      const fl=new THREE.Mesh(new THREE.BoxGeometry(len,26,R0*(0.16+((k*17)%3)*0.07)).translate(len/2,0,0),lavaM);
-      fl.position.set(R0*0.9,0,0);fl.rotation.z=-SLOPE;arm.add(fl);
-      scene.add(arm);flows.push({fl,ph:k*1.3});}
+    // the flows: ribbons laid down the flank from the rim, on the ground (the fine ground over the mountain), wandering
+    // a little as they go and widening at the foot
+    const flows=[];
+    for(let k=0;k<7;k++){const a=k/7*Math.PI*2+0.7,len=(L.flow||9000)*(0.6+((k*29)%5)*0.16),W0=R0*(0.16+((k*17)%3)*0.07),N=Math.max(8,Math.round(len/120)),P=[],I=[];
+      for(let i=0;i<=N;i++){const t=i/N,r=R0*0.95+len*t,aa=a+0.18*Math.sin(t*5+k)*t,cx=x+Math.cos(aa)*r,cz=z+Math.sin(aa)*r,w=W0*(0.6+0.9*t)/2,px=-Math.sin(aa)*w,pz=Math.cos(aa)*w;
+        for(const s of [-1,1]){const vx=cx+px*s,vz=cz+pz*s;P.push(vx,gh(vx,vz)+6,vz);}
+        if(i<N){const b=i*2;I.push(b,b+2,b+1,b+1,b+2,b+3);}}
+      const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(P,3));geo.setIndex(I);geo.computeVertexNormals();
+      const fl=new THREE.Mesh(geo,lavaM);fl.userData.noShadow=true;scene.add(fl);flows.push({fl,ph:k*1.3});}
     const g=group(L,parts);
     // the plume: it does not stop, and it leans downwind
     const puffs=[],N=L.puffs||44,TOP=(L.plume||9000),DRIFT=(L.drift||26000);
@@ -44,7 +47,7 @@ export function landmarks(api){
       glow.material.opacity=(0.12+0.16*n)*surge;glow.scale.setScalar(0.85+0.3*surge);
       lamp.intensity=(0.45+0.85*n)*surge;
       for(const q of jets){const k=0.5+0.6*Math.abs(Math.sin(now*0.0021+q.ph));q.j.scale.set(0.8+0.3*k,k*(0.7+0.9*surge),0.8+0.3*k);}
-      for(const q of flows){const k=0.75+0.25*Math.sin(now*0.0009+q.ph);q.fl.scale.set(1,1,0.8+0.4*k);}
+
       // every puff climbs, spreads and leans away, then starts again at the crater
       for(let i=0;i<puffs.length;i++){const p=puffs[i];
         const t=((now*0.0000075)+p.userData.t)%1;

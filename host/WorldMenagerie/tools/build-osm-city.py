@@ -455,6 +455,64 @@ def water_reaches(t, water, rc):
     print(f"terrain.reaches: {nr} reaches, the water from {min(w['y'] for w in new if 'y' in w):.1f} to {max(w['y'] for w in new if 'y' in w):.1f} m")
 
 
+def lake_levels(t, water, lc):
+    """terrain.lakeLevels: a mountain map's lakes are each at their own height (Mount Hood: Lost Lake at 951 m,
+    Trillium Lake at 1095 m, Mirror Lake at 1260 m, Burnt Lake at 1347 m), not at one datum. Every mapped water area of
+    at least `min` square metres (default 2000) that has no level of its own takes the median of the ground inside it
+    (the survey's water surface: lidar flattens a lake) less `below` metres (default 0.3), and the ground inside it is
+    cut to `depth` metres under that (default 4), sloping up to the water's level over its first `shore` metres
+    (default 25), so the water meets its shore instead of standing on it or under it."""
+    import numpy as np
+    from matplotlib.path import Path as MPath
+    nx, nz, step = t["nx"], t["nz"], t["step"]
+    x0, z0 = t["x0"] / 10, t["z0"] / 10
+    Hr = np.array(t["h"], dtype=np.int32)
+    X, Z = np.meshgrid(x0 + np.arange(nx) * step, z0 + np.arange(nz) * step)
+    pts = np.stack([X.ravel(), Z.ravel()], axis=1)
+    amin, below, depth, shore = float(lc.get("min", 2000)), float(lc.get("below", 0.3)), float(lc.get("depth", 4)), float(lc.get("shore", 25))
+    n = 0
+    for w in water:
+        if "y" in w:
+            continue
+        o = w["o"]
+        ring = [(o[i] / 10, o[i + 1] / 10) for i in range(0, len(o), 2)]
+        a = abs(sum(ring[i][0] * ring[(i + 1) % len(ring)][1] - ring[(i + 1) % len(ring)][0] * ring[i][1] for i in range(len(ring)))) / 2
+        if a < amin or len(ring) < 3:
+            continue
+        bx0, bx1, bz0, bz1 = min(p[0] for p in ring), max(p[0] for p in ring), min(p[1] for p in ring), max(p[1] for p in ring)
+        near = (pts[:, 0] > bx0 - step) & (pts[:, 0] < bx1 + step) & (pts[:, 1] > bz0 - step) & (pts[:, 1] < bz1 + step)
+        idx = np.nonzero(near)[0]
+        if not len(idx):
+            continue
+        path = MPath(ring)
+        inside = path.contains_points(pts[idx])
+        if not inside.any():   # smaller than a cell: the nearest cell to its middle
+            cx, cz = sum(p[0] for p in ring) / len(ring), sum(p[1] for p in ring) / len(ring)
+            inside = (np.abs(pts[idx, 0] - cx) <= step / 2) & (np.abs(pts[idx, 1] - cz) <= step / 2)
+        if not inside.any():
+            continue
+        y = float(np.median(Hr[idx[inside]])) / 10 - below
+        # the distance from each inside cell to the shore, for the bed's slope
+        segs = [(ring[i], ring[(i + 1) % len(ring)]) for i in range(len(ring))]
+        for k in idx[inside]:
+            px, pz = pts[k]
+            d = min(_seg_dist(px, pz, a0, b0) for a0, b0 in segs)
+            lim = int(round((y - min(depth, 0.5 + depth * d / shore)) * 10))
+            if Hr[k] > lim:
+                Hr[k] = lim
+        w["y"] = round(y, 2)
+        n += 1
+    t["h"] = [int(v) for v in Hr]
+    print(f"terrain.lakeLevels: {n} lakes levelled: " + ", ".join(f"{w.get('n') or '?'} {w['y']:.0f} m" for w in water if "y" in w and w.get("n"))[:600])
+
+
+def _seg_dist(px, pz, a, b):
+    dx, dz = b[0] - a[0], b[1] - a[1]
+    L = dx * dx + dz * dz
+    u = 0.0 if L == 0 else max(0.0, min(1.0, ((px - a[0]) * dx + (pz - a[1]) * dz) / L))
+    return math.hypot(px - a[0] - dx * u, pz - a[1] - dz * u)
+
+
 def terrain_grid():
     """Sample the cached terrain tiles into a height grid over the map, with the water level as zero."""
     cfg = CITY.get("terrain")
@@ -690,6 +748,7 @@ def main():
     WIDTH = {"motorway": 26, "trunk": 22, "primary": 18, "secondary": 15, "tertiary": 13, "residential": 9.5, "unclassified": 9, "living_street": 7,
              "pedestrian": 8, "motorway_link": 9, "trunk_link": 9, "primary_link": 8, "secondary_link": 8, "tertiary_link": 7, "service": 5,
              "cycleway": 4, "footway": 3.2, "path": 3}
+    WIDTH.update(CITY.get("classWidths", {}))   # a city's own width for a class (Mount Hood: its paths are a metre and a half of dirt, not a city's 3 m footway)
     roads = []
     for e in load("roads"):
         t = e.get("tags", {})
@@ -851,6 +910,8 @@ def main():
         water_cut(t, polys["water"], out.get("waterways") or [], CITY["terrain"]["cutWater"])
     if t and (CITY.get("terrain") or {}).get("reaches"):
         water_reaches(t, polys["water"], CITY["terrain"]["reaches"])
+    if t and (CITY.get("terrain") or {}).get("lakeLevels"):
+        lake_levels(t, polys["water"], CITY["terrain"]["lakeLevels"])
     if t and (CITY.get("terrain") or {}).get("lakeBed"):
         lake_bed(t, polys["water"], CITY["terrain"]["lakeBed"])
     if t:

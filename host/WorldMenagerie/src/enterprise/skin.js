@@ -1,6 +1,8 @@
 // ---------- Galaxy class: the skin ----------
 // Fan work. Star Trek belongs to Paramount; nothing from any film, series or game is used: every texture here is
-// painted by this file, texel by texel, when the page loads.
+// painted by this file, texel by texel. The painting itself (paint(), and everything it calls) touches neither three.js
+// nor the page, so skincache.js can run it in workers and keep what it paints; only skinTexture() turns the bytes into
+// textures, on the main thread.
 //
 // Each part of the hull gets two textures. The first is its colour (a canvas, so the lettering can be set on it
 // with fillText). The second is data: red is height (the panel lines, read by the bump map), green is roughness,
@@ -19,8 +21,8 @@
 //   - The escape pods are tan hatches in twos, threes and fours, in rings across the dish.
 //   - The registry is dark grey edged in red, in a wide face; the name over it is red. A red pinstripe runs down
 //     the neck's back and the spine of the engineering hull, and along the top of each nacelle behind its delta.
-import {ell,halfBeam,saucerTop,saucerBot,rho,clamp,smooth,normalAt,rimSurf,mono} from './hull.js';
-import {SAUCER} from './dims.js';
+import {ell,halfBeam,saucerTop,saucerBot,rho,clamp,smooth,normalAt,rimSurf,mono,engSurf,neckSurf,nacSurf,pylonSurf} from './hull.js';
+import {SAUCER,DEFLECTOR} from './dims.js';
 import {NACZ} from './hull.js';
 
 const HASH=(a,b,c)=>{let h=Math.imul(a|0,0x27d4eb2d)^Math.imul(b|0,0x165667b1)^Math.imul(c|0,0x2c1b3c6d);
@@ -47,20 +49,23 @@ function aztec(a,b,cw,ch,seed,o){
 }
 const AZ={edge:0,sub:0,tone:0};
 
-// A texture pair: colour as ImageData on a canvas, data as bytes.
+// A texture pair: colour and data, as bytes. The colour is a Uint8ClampedArray, as an ImageData's is, so it rounds
+// the way it did when it was painted straight into one (a plain Uint8Array would truncate, and every texel moves).
 function pair(W,H){
-  const cv=document.createElement('canvas');cv.width=W;cv.height=H;
-  const ctx=cv.getContext('2d'),img=ctx.createImageData(W,H),dat=new Uint8Array(W*H*4);
-  return {W,H,cv,ctx,img,dat,
+  const col=new Uint8ClampedArray(W*H*4),dat=new Uint8Array(W*H*4);
+  return {W,H,col,dat,
     set(i,c,k,height,rough,lit){
-      const o=i*4;img.data[o]=clamp(c[0]*k[0]*255,0,255);img.data[o+1]=clamp(c[1]*k[1]*255,0,255);img.data[o+2]=clamp(c[2]*k[2]*255,0,255);img.data[o+3]=255;
+      const o=i*4;col[o]=clamp(c[0]*k[0]*255,0,255);col[o+1]=clamp(c[1]*k[1]*255,0,255);col[o+2]=clamp(c[2]*k[2]*255,0,255);col[o+3]=255;
       dat[o]=clamp(height*255,0,255);dat[o+1]=clamp(rough*255,0,255);dat[o+2]=lit?255:0;dat[o+3]=255;}};
 }
-function finish(THREE,renderer,T){
-  T.ctx.putImageData(T.img,0,0);
-  if(T.after)T.after(T.ctx);
+// The bytes made into textures: the colour onto a canvas, with its lettering set over it (fillText needs a canvas, and
+// is quick), and the data as it is.
+function finish(THREE,renderer,T,after){
+  const cv=document.createElement('canvas');cv.width=T.W;cv.height=T.H;const ctx=cv.getContext('2d');
+  ctx.putImageData(new ImageData(T.col,T.W,T.H),0,0);
+  if(after)after(ctx,T.W,T.H);
   const aniso=renderer.capabilities.getMaxAnisotropy?renderer.capabilities.getMaxAnisotropy():1;
-  const map=new THREE.CanvasTexture(T.cv);map.flipY=false;map.anisotropy=aniso;
+  const map=new THREE.CanvasTexture(cv);map.flipY=false;map.anisotropy=aniso;
   const data=new THREE.DataTexture(T.dat,T.W,T.H,THREE.RGBAFormat);
   data.minFilter=THREE.LinearMipmapLinearFilter;data.magFilter=THREE.LinearFilter;data.generateMipmaps=true;data.anisotropy=aniso;data.needsUpdate=true;
   map.wrapS=data.wrapS=THREE.RepeatWrapping;
@@ -84,7 +89,7 @@ export function planUV(g){
   for(let i=0;i<p.count;i++)uv.setXY(i,(p.getZ(i)-PLAN.z0)/(PLAN.z1-PLAN.z0),(p.getX(i)-PLAN.x0)/(PLAN.x1-PLAN.x0));
   uv.needsUpdate=true;
 }
-function saucerTex(THREE,renderer,top,N){
+function saucerTex(top,N){
   const T=pair(N,N),prof=top?SAUCER.top:SAUCER.bot;
   // the profile and its slope against e, tabulated: the decks are read off the bare dish, without the dorsal
   const PR=new Float32Array(1025),DP=new Float32Array(1025);
@@ -135,8 +140,7 @@ function saucerTex(THREE,renderer,top,N){
       plate(T,idx,AZ,1,lit);
     }
   }
-  T.after=ctx=>lettering(ctx,N,top);
-  return finish(THREE,renderer,T);
+  return T;
 }
 const PODS=[0.57,0.82,0.935];
 const TOPP=mono(SAUCER.top),BOTP=mono(SAUCER.bot);
@@ -157,7 +161,7 @@ function lettering(ctx,N,top){
 
 // ---------- the rim ----------
 // u round (as the saucer's angle), v down the band. Two decks of windows, the upper the taller (Ten Forward's).
-function rimTex(THREE,renderer){
+function rimTex(){
   const W=4096,H=64,T=pair(W,H);
   // the arc length round the rim, for spacing the windows in metres
   const S=new Float32Array(W+1),p={x:0,y:0,z:0},q={x:0,y:0,z:0};
@@ -180,7 +184,7 @@ function rimTex(THREE,renderer){
       plate(T,idx,AZ,1.0,lit);
     }
   }
-  return finish(THREE,renderer,T);
+  return T;
 }
 
 // ---------- the lofted parts ----------
@@ -229,11 +233,48 @@ export function hullPainter({windows=true,seed=51,cw=16,ch=9,skip,spine=false,na
     plate(T,idx,AZ,1,lit);
   };
 }
-export function loftTex(THREE,renderer,f,flip,W,H,paint,after){
+function loftTex(f,flip,W,H,paint){
   const T=pair(W,H),S=sampler(f,flip,Math.min(W,384),Math.min(H,192)),p={x:0,y:0,z:0},n={x:0,y:0,z:0};
   for(let j=0;j<H;j++)for(let i=0;i<W;i++){S((i+0.5)/W,(j+0.5)/H,p,n);const l=Math.hypot(n.x,n.y,n.z)||1;n.x/=l;n.y/=l;n.z/=l;paint(T,j*W+i,p,n);}
-  if(after)T.after=ctx=>after(ctx,W,H);
-  return finish(THREE,renderer,T);
+  return T;
+}
+
+// ---------- every texture the ship wears, by name ----------
+// The stardrive (the engineering hull and the neck) shares one painter, so the decks run on across the join; the
+// nacelles and the pylons have one texture each, worn on both sides. The registry on both sides of the raised after
+// body, over the pylons, is set on the engineering hull's colour once it is on its canvas.
+const nearDefl=p=>Math.pow((p.y-DEFLECTOR.y)/DEFLECTOR.ry,2)+Math.pow(p.z/DEFLECTOR.rz,2)<2.2&&p.x>DEFLECTOR.x-12;
+function engLetters(ctx,W,H){
+  for(const side of [1,-1]){
+    const u=0.84,v=side>0?0.12:0.38;
+    ctx.save();ctx.translate(u*W,v*H);if(side>0)ctx.rotate(Math.PI);ctx.scale(W/300*0.95,H/360*1.0);
+    ctx.font='700 6px "Arial Narrow","Helvetica Neue",Arial,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.lineJoin='round';ctx.lineWidth=0.7;ctx.strokeStyle='rgb(160,36,30)';ctx.strokeText('NCC-1701-D',0,0);
+    ctx.fillStyle='rgb(36,40,48)';ctx.fillText('NCC-1701-D',0,0);ctx.restore();}
+}
+// biggest first, so a pool of fewer workers than jobs still finishes about when the biggest does
+export const JOBS={
+  top:{paint:()=>saucerTex(true,2048),after:(c,W)=>lettering(c,W,true)},
+  eng:{paint:()=>loftTex(engSurf,true,2048,1024,hullPainter({seed:51,skip:nearDefl,spine:true,ventral:true})),after:engLetters},
+  bot:{paint:()=>saucerTex(false,1536),after:(c,W)=>lettering(c,W,false)},
+  neck:{paint:()=>loftTex(neckSurf,false,1024,1024,hullPainter({seed:51,spine:true}))},
+  nac:{paint:()=>loftTex(nacSurf(1),true,2048,512,hullPainter({windows:false,seed:71,cw:12,ch:5,nacelle:true}))},
+  rim:{paint:()=>rimTex()},
+  py:{paint:()=>loftTex(pylonSurf(1),false,512,256,hullPainter({windows:false,seed:81,cw:10,ch:6}))},
+};
+// One texture's bytes. Every texel is worked out from where it is alone (the scratch AZ is filled afresh for each),
+// so the order they are painted in, and which thread paints them, cannot change a byte.
+export function paint(name){const T=JOBS[name].paint();return {name,W:T.W,H:T.H,col:T.col,dat:T.dat};}
+// What skincache.js has painted or read back, waiting for skinTexture to take it; anything missing is painted here.
+const READY={};
+export function provide(raw){READY[raw.name]=raw;}
+export function skinTexture(THREE,renderer,name){
+  let raw=READY[name];delete READY[name];
+  if(!raw)raw=paint(name);
+  // #paintcheck: paint it again here and say whether what arrived (from a worker, or the cache) is the same, byte for byte
+  if(/[#&]paintcheck\b/.test(location.hash)){const f=paint(name),eq=(a,b)=>{if(a.length!==b.length)return false;for(let i=0;i<a.length;i++)if(a[i]!==b[i])return false;return true;};
+    const pc=((window._details=window._details||{}).paintCheck=window._details.paintCheck||{});pc[name]=eq(f.col,raw.col)&&eq(f.dat,raw.dat);}
+  return finish(THREE,renderer,raw,JOBS[name].after);
 }
 
 // ---------- the materials ----------
@@ -242,12 +283,30 @@ export function hullMaterial(THREE,tex,env,o={}){
   const m=new THREE.MeshStandardMaterial({map:tex.map,bumpMap:tex.data,bumpScale:o.bump===undefined?0.25:o.bump,roughnessMap:tex.data,roughness:1,
     metalness:o.metal===undefined?0.18:o.metal,emissive:new THREE.Color(o.window||0xffd8a0),emissiveMap:tex.data,emissiveIntensity:o.glow===undefined?1.6:o.glow,
     envMap:env,envMapIntensity:o.env===undefined?1.3:o.env});
-  m.onBeforeCompile=sh=>{sh.fragmentShader=sh.fragmentShader.replace('#include <emissivemap_fragment>',
-    '#ifdef USE_EMISSIVEMAP\n totalEmissiveRadiance *= texture2D( emissiveMap, vUv ).b;\n#endif');};
+  // The damage (damage.js) is painted into a scorch map of its own, a small texture over the same uv as the colour:
+  // red is soot (it darkens the plate, roughens it and puts its windows out), green is the heat still in a fresh
+  // hit (it glows orange and cools). Every hull material starts on one shared black texel and is given a map of its
+  // own only when it is first hit, so a ship that is never hit carries nothing for it.
+  const sc={value:ZERO(THREE)};m.userData.scorch=sc;
+  m.onBeforeCompile=sh=>{sh.uniforms.uScorch=sc;
+    sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uScorch;')
+      .replace('#include <map_fragment>','#include <map_fragment>\n vec4 scR=texture2D(uScorch,vUv);diffuseColor.rgb*=1.-0.8*scR.r;')
+      .replace('#include <roughnessmap_fragment>','#include <roughnessmap_fragment>\n roughnessFactor=mix(roughnessFactor,1.,scR.r*0.8);')
+      .replace('#include <emissivemap_fragment>',
+    '#ifdef USE_EMISSIVEMAP\n totalEmissiveRadiance *= texture2D( emissiveMap, vUv ).b;\n#endif\n totalEmissiveRadiance*=1.-scR.r;totalEmissiveRadiance+=vec3(1.,.36,.08)*scR.g*2.2;');};
   m.customProgramCacheKey=()=>'krator-galaxy-hull';
   return m;
 }
+let ZT=null;
+const ZERO=THREE=>{if(!ZT){ZT=new THREE.DataTexture(new Uint8Array(4),1,1,THREE.RGBAFormat);ZT.needsUpdate=true;}return ZT;};
+// a hull material's own scorch map, made the first time it is hit (W x H texels over the same uv as its colour)
+export function scorchMap(THREE,m,W,H){
+  if(m.userData.scorchMap)return m.userData.scorchMap;
+  const t=new THREE.DataTexture(new Uint8Array(W*H*4),W,H,THREE.RGBAFormat);
+  t.wrapS=THREE.RepeatWrapping;t.wrapT=THREE.ClampToEdgeWrapping;t.magFilter=t.minFilter=THREE.LinearFilter;t.flipY=false;t.needsUpdate=true;
+  m.userData.scorch.value=t;return m.userData.scorchMap=t;
+}
 export function saucerTextures(THREE,renderer){
-  return {top:saucerTex(THREE,renderer,true,2048),bot:saucerTex(THREE,renderer,false,1536),rim:rimTex(THREE,renderer)};
+  return {top:skinTexture(THREE,renderer,'top'),bot:skinTexture(THREE,renderer,'bot'),rim:skinTexture(THREE,renderer,'rim')};
 }
 export function setLit(v){LIT=v;}

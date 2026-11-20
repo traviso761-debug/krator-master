@@ -38,13 +38,15 @@ window.setHour=setHour;
 // ~1 at night, 0 by day. `day` in the city file moves dawn and dusk (hours the light comes and goes over); the
 // default is a mid-latitude spring, which is what Chicago was built with.
 const DAYC=Object.assign({dawn:[5.6,7.4],dusk:[17.6,19.6]},C.day||{});
-const nightF=h=>1-smooth(DAYC.dawn[0],DAYC.dawn[1],h)+smooth(DAYC.dusk[0],DAYC.dusk[1],h);
+// a page whose day changes with the season (Mount Hood) sets ctx.dayC {dawn, dusk} and ctx.sunAt(h) and changes
+// them as it goes; read every frame, so the change shows at once. No page that leaves them unset moves.
+const nightF=h=>{const D=ctx.dayC||DAYC;return 1-smooth(D.dawn[0],D.dawn[1],h)+smooth(D.dusk[0],D.dusk[1],h);};
 const LIT=C.litWindows===undefined?1:C.litWindows;   // how much of the city keeps its lights on after dark
 const windowF=h=>LIT*(smooth(16.5,18.5,h)*(1-smooth(23,25,h))+0.12*nightF(h));
 // the sun: rises in the east (+x), sets in the west
 // the sun: up in the east (+x) at six, high in the south (+z) at noon, down in the west at six in the evening
 // (it used to be az = PI*(1-f), which put the morning sun in the west and set it in the east)
-function sunAt(h){const f=(h-6)/12,E=Math.sin(Math.PI*f)*0.95,az=Math.PI*f;return new THREE.Vector3(Math.cos(az)*Math.cos(E),Math.sin(E),Math.sin(az)*0.35*Math.cos(E)).normalize();}
+function sunAt(h){if(ctx.sunAt)return ctx.sunAt(h);const f=(h-6)/12,E=Math.sin(Math.PI*f)*0.95,az=Math.PI*f;return new THREE.Vector3(Math.cos(az)*Math.cos(E),Math.sin(E),Math.sin(az)*0.35*Math.cos(E)).normalize();}
 // sky: a gradient dome, coloured by the hour
 const SKY=(()=>{const D={day:{top:0x2f6fd0,hor:0xbcd3ee},dusk:{top:0x2a3a78,hor:0xf0a060},night:{top:0x050a1c,hor:0x16243c}},hx=v=>typeof v==='string'?parseInt(v.slice(1),16):v;
   for(const k in (C.sky||{}))for(const q in C.sky[k])D[k][q]=hx(C.sky[k][q]);return D;})();   // the city's own sky, if its config gives one
@@ -61,7 +63,7 @@ const skyM=new THREE.ShaderMaterial({uniforms:{top:{value:new THREE.Color()},hor
 const SKY_R=Math.max(2000,(camera.far-Math.hypot(B.w,B.d)/2)*0.92);ctx.skyR=Math.round(SKY_R);
 const sky=new THREE.Mesh(new THREE.SphereGeometry(SKY_R,32,16),skyM);sky.userData.noShadow=true;sky.userData.noWire=true;sky.userData.noFingerprint=true;sky.renderOrder=-1;scene.add(sky);   // the backdrop is sized by the far plane, so it is no part of a page's layout fingerprint   // the dome is not part of the model, so the wireframe leaves it alone
 const tmpC=new THREE.Color(),tmpC2=new THREE.Color();
-function lerpSky(h){const n=nightF(h),dusk=Math.max(0,1-Math.abs(h-18.6)/1.6,1-Math.abs(h-6.3)/1.4);
+function lerpSky(h){const n=nightF(h),G=(ctx.dayC&&ctx.dayC.glow)||[6.3,18.6],dusk=Math.max(0,1-Math.abs(h-G[1])/1.6,1-Math.abs(h-G[0])/1.4);   // ctx.dayC.glow: the hours of the dawn's and the dusk's colour, for a page whose day changes with the season
   const mixTo=(a,b,k)=>tmpC.set(a).lerp(tmpC2.set(b),k);
   skyM.uniforms.top.value.copy(mixTo(SKY.day.top,SKY.night.top,n)).lerp(tmpC2.set(SKY.dusk.top),dusk*0.7);
   skyM.uniforms.hor.value.copy(mixTo(SKY.day.hor,SKY.night.hor,n)).lerp(tmpC2.set(SKY.dusk.hor),dusk);

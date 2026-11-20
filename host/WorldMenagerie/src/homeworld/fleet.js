@@ -48,11 +48,29 @@ export function model(api){
   SC.g.userData.info={name:'The Scaffold',info:'The orbital cradle the Mothership was built in, over Kharak: a frame of girders kilometres long, the gantries and the fabrication modules clamped to it. She has just come out of it for her trials.'};pick.push(SC.g);
   // the wreck: the same girders, most of them, blown apart and tumbling slowly about where the frame was
   const WR=V3(-900,-500,-2600),wreck=[];
-  {const im=new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1),new THREE.MeshPhongMaterial({color:0x3e3a36,flatShading:true}),SC.beams.length);let n=0;
-    for(const [a,b,r] of SC.beams){if(rnd()<0.35)continue;const len=a.distanceTo(b)*(0.3+rnd()*0.7);
-      wreck.push({p:a.clone().add(b).multiplyScalar(0.5).multiplyScalar(0.9).add(V3((rnd()-0.5)*900,(rnd()-0.5)*900,(rnd()-0.5)*900)),
-        q:new THREE.Quaternion().setFromEuler(new THREE.Euler(rnd()*6,rnd()*6,rnd()*6)),w:V3(rnd()-0.5,rnd()-0.5,rnd()-0.5).normalize(),rate:(rnd()-0.5)*0.12,v:V3(rnd()-0.5,rnd()-0.5,rnd()-0.5).multiplyScalar(3),s:V3(r*2,len,r*2),i:n++});}
-    im.count=n;im.frustumCulled=false;const wg=new THREE.Group();wg.position.copy(WR);wg.add(im);wg.userData.im=im;quiet(wg);G.add(wg);SC.wreck=wg;}
+  // Pieces of truss, not single members: a section of the laced frame with its four rails and the bracing on each
+  // face, broken off a few bays long; and the materials plants that were clamped to it, burnt out. A wreck of
+  // single girders read as a scatter of black sticks.
+  {const rw=mkRng(3011),parts=[],box=(sx,sy,sz,x,y,z,rx,rz)=>{const b=new THREE.BoxGeometry(sx,sy,sz);if(rx)b.rotateX(rx);if(rz)b.rotateZ(rz);b.translate(x,y,z);parts.push(b.toNonIndexed());};
+    for(const [x,z] of [[-0.45,-0.45],[0.45,-0.45],[-0.45,0.45],[0.45,0.45]])box(0.1,1,0.1,x,0,z);
+    const bays=4,bl=1/bays,da=Math.atan2(0.9,bl);
+    for(let k=0;k<bays;k++){const y=-0.5+bl*(k+0.5);
+      for(const s2 of [-1,1]){box(0.05,Math.hypot(0.9,bl),0.05,0,y,s2*0.45,0,(k%2?1:-1)*(Math.PI/2-da));box(0.05,Math.hypot(0.9,bl),0.05,s2*0.45,y,0,(k%2?1:-1)*(Math.PI/2-da),0);}
+      box(0.9,0.05,0.05,0,y-bl/2,-0.45);box(0.9,0.05,0.05,0,y-bl/2,0.45);box(0.05,0.05,0.9,-0.45,y-bl/2,0);box(0.05,0.05,0.9,0.45,y-bl/2,0);}
+    const n=parts.reduce((a,b)=>a+b.attributes.position.count,0),pos=new Float32Array(n*3),nrm=new Float32Array(n*3);let o=0;
+    for(const b of parts){pos.set(b.attributes.position.array,o*3);nrm.set(b.attributes.normal.array,o*3);o+=b.attributes.position.count;}
+    const tg=new THREE.BufferGeometry();tg.setAttribute('position',new THREE.BufferAttribute(pos,3));tg.setAttribute('normal',new THREE.BufferAttribute(nrm,3));
+    const NT=84,NM=16,im=new THREE.InstancedMesh(tg,new THREE.MeshPhongMaterial({color:0x5a5650,specular:0x222222,shininess:12,flatShading:true}),NT);
+    const mm=new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1),new THREE.MeshPhongMaterial({color:0x2e2a27,specular:0x111111,shininess:6,flatShading:true}),NM);
+    const scorch=new THREE.Color();
+    for(let k=0;k<NT+NM;k++){const mod=k>=NT,W=mod?80+rw()*90:46+rw()*26,len=mod?W*(1+rw()*1.4):W*(2.5+rw()*4);
+      // strewn through the volume the frame stood in, thickest where its middle was
+      const pp=V3((rw()-0.5)*(rw()<0.5?900:1900),(rw()-0.5)*1400,(rw()-0.5)*1100);
+      wreck.push({p:pp,q:new THREE.Quaternion().setFromEuler(new THREE.Euler(rw()*6,rw()*6,rw()*6)),w:V3(rw()-0.5,rw()-0.5,rw()-0.5).normalize(),
+        rate:(rw()-0.5)*(mod?0.05:0.1),v:V3(rw()-0.5,rw()-0.5,rw()-0.5).multiplyScalar(3),s:mod?V3(W,len,W*(0.6+rw()*0.5)):V3(W,len,W),i:mod?k-NT:k,mod});
+      (mod?mm:im).setColorAt(mod?k-NT:k,scorch.setRGB(1,1,1).multiplyScalar(0.55+rw()*0.5));}
+    im.count=NT;mm.count=NM;for(const m of [im,mm]){m.frustumCulled=false;if(m.instanceColor)m.instanceColor.needsUpdate=true;}
+    const wg=new THREE.Group();wg.position.copy(WR);wg.add(im,mm);wg.userData.im=im;wg.userData.mm=mm;quiet(wg);G.add(wg);SC.wreck=wg;}
   const fires=[];for(let i=0;i<60;i++){const w=wreck[Math.floor(rnd()*wreck.length)];fires.push({w,off:V3((rnd()-0.5)*20,(rnd()-0.5)*w.s.y,(rnd()-0.5)*20)});}
 
   // ---------- the others of the first mission ----------
@@ -107,9 +125,13 @@ export function model(api){
     X.push({fb,ring,age:9,size:1,p:V3(0,0,0),v:Array.from({length:NS},()=>V3(rnd()-0.5,rnd()-0.5,rnd()-0.5).normalize().multiplyScalar(0.3+rnd()))});}
   let xi=0;const boom=(p,size)=>{const x=X[xi=(xi+1)%NX];x.p.copy(p);x.age=0;x.size=size;x.fb.visible=x.ring.visible=true;x.fb.position.copy(p);x.ring.position.copy(p);x.fb.material.rotation=rnd()*6;};
   // the hyperspace window: a frame of light, and a sheet of it, that sweeps along a ship as it comes through
-  const winTex=(()=>{const c=document.createElement('canvas');c.width=c.height=128;const g=c.getContext('2d');
-    const gr=g.createRadialGradient(64,64,10,64,64,90);gr.addColorStop(0,'rgba(120,170,255,0.25)');gr.addColorStop(0.7,'rgba(150,200,255,0.5)');gr.addColorStop(1,'rgba(255,255,255,0)');g.fillStyle=gr;g.fillRect(0,0,128,128);
-    g.strokeStyle='rgba(235,245,255,1)';g.lineWidth=6;g.strokeRect(6,6,116,116);return new THREE.CanvasTexture(c);})();
+  // The sheet is nearly clear, with a faint blue shimmer in bands across it; the light is in its edges, a hard white
+  // line with a blue glow either side. (A filled sheet, added over a ship three kilometres tall, was a white slab.)
+  const winTex=(()=>{const S=256,c=document.createElement('canvas');c.width=c.height=S;const g=c.getContext('2d');
+    g.fillStyle='rgba(90,140,255,0.07)';g.fillRect(0,0,S,S);
+    for(let y=0;y<S;y+=6){g.fillStyle=`rgba(140,190,255,${0.03+0.05*Math.abs(Math.sin(y*0.37))})`;g.fillRect(0,y,S,2);}
+    for(const [w,a] of [[22,0.10],[12,0.22],[6,0.45],[2.5,1]]){g.strokeStyle=a>=1?'rgba(245,250,255,1)':`rgba(130,185,255,${a})`;g.lineWidth=w;g.strokeRect(8,8,S-16,S-16);}
+    const t=new THREE.CanvasTexture(c);t.anisotropy=8;return t;})();
   const windows=[];const hyper=(at,axis,size,from,to,dur,after)=>{const [sw,sh]=Array.isArray(size)?size:[size,size],m=new THREE.Mesh(new THREE.PlaneGeometry(sw,sh),new THREE.MeshBasicMaterial({map:winTex,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false,side:THREE.DoubleSide}));
     m.userData.noWire=true;m.lookAt(axis);scene.add(m);const w={m,at:at.clone(),axis:axis.clone().normalize(),from,to,dur,t:0,after};windows.push(w);return w;};
 
@@ -224,8 +246,8 @@ export function model(api){
           if(su>21){q.state='home';q.g.visible=false;M3.recovered++;}}}}
     if(M3.recovered+M3.lost>=6&&u>16+22*6+10){M3.start=t;M3.arrived=false;}
     // the wreck tumbles, burning
-    {const im=SC.wreck.userData.im,Dm=new THREE.Object3D();for(const w of wreck){w.q.multiply(new THREE.Quaternion().setFromAxisAngle(w.w,w.rate*dt));w.p.addScaledVector(w.v,dt);
-        Dm.position.copy(w.p);Dm.quaternion.copy(w.q);Dm.scale.copy(w.s);Dm.updateMatrix();im.setMatrixAt(w.i,Dm.matrix);}im.instanceMatrix.needsUpdate=true;
+    {const im=SC.wreck.userData.im,mm=SC.wreck.userData.mm,Dm=new THREE.Object3D();for(const w of wreck){w.q.multiply(new THREE.Quaternion().setFromAxisAngle(w.w,w.rate*dt));w.p.addScaledVector(w.v,dt);
+        Dm.position.copy(w.p);Dm.quaternion.copy(w.q);Dm.scale.copy(w.s);Dm.updateMatrix();(w.mod?mm:im).setMatrixAt(w.i,Dm.matrix);}im.instanceMatrix.needsUpdate=true;mm.instanceMatrix.needsUpdate=true;
       if(rnd()<dt*3){const f=fires[Math.floor(rnd()*fires.length)];boom(f.w.p.clone().add(WR).add(f.off),6+rnd()*14);}}
     M3.u=u;}
 

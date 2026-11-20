@@ -1,0 +1,101 @@
+{
+ "about": "The /enterprise performance budget, held by tools/enterprise-budget.py; src/enterprise/BUDGET.md explains it. Frame times in ms (uncapped, median of the runs' p50 and p95), draw calls per frame, load = ms until the loading screen is gone.",
+ "machine": {
+  "gpu": "Adreno (TM) X1-45, or similar",
+  "canvas": [
+   1366,
+   682
+  ],
+  "browser": "headless Firefox, frames uncapped (layout.frame_rate=0)"
+ },
+ "ceilingP95": 16.7,
+ "views": {
+  "ship": {
+   "hash": "v=0.85,0.2,760",
+   "settle": 3,
+   "note": "the turntable, the ship alone: the floor",
+   "measured": {
+    "p50": 5,
+    "p95": 6,
+    "calls": 90
+   },
+   "budget": {
+    "p50": 7.2,
+    "p95": 9.0,
+    "calls": 108
+   }
+  },
+  "starbase": {
+   "hash": "v=2.6,0.2,2200,9500,0,4900",
+   "settle": 4,
+   "note": "home starbase close, with its traffic, workbees and berthed ships, the planet behind",
+   "measured": {
+    "p50": 12,
+    "p95": 14,
+    "calls": 259
+   },
+   "budget": {
+    "p50": 16.0,
+    "p95": 16.7,
+    "calls": 302
+   }
+  },
+  "planet": {
+   "hash": "v=2.6,0.2,9000,9500,0,4900",
+   "settle": 4,
+   "note": "the home world filling half the view (its surface and clouds are per-pixel noise), the starbase in front",
+   "measured": {
+    "p50": 11,
+    "p95": 14,
+    "calls": 237
+   },
+   "budget": {
+    "p50": 14.8,
+    "p95": 16.7,
+    "calls": 277
+   }
+  },
+  "fight": {
+   "hash": "at=relic&mission=swarm&mauto&mseed=1",
+   "settle": 12,
+   "want": "fight",
+   "note": "the swarm orders at the ring, the test captain fighting: darts, phasers, torpedoes, shield hits",
+   "measured": {
+    "p50": 6,
+    "p95": 10,
+    "calls": 148
+   },
+   "budget": {
+    "p50": 8.5,
+    "p95": 14.0,
+    "calls": 175
+   }
+  },
+  "warp": {
+   "hash": "fly&course=hole&warpf=9&dbg",
+   "settle": 12,
+   "want": "warp",
+   "note": "at warp 9 on the way to the black hole: the streaks, the glowing nacelles",
+   "measured": {
+    "p50": 6,
+    "p95": 8,
+    "calls": 108
+   },
+   "budget": {
+    "p50": 8.5,
+    "p95": 11.5,
+    "calls": 129
+   }
+  }
+ },
+ "load": {
+  "measured": {
+   "first": 2722,
+   "second": 1732
+  },
+  "budget": {
+   "first": 3840,
+   "second": 2550
+  }
+ }
+}

@@ -17,7 +17,9 @@
 //                   ships, you, and the autopilot's line. Click anything on either to read about it and go there.
 import {PLACES} from './places.js';
 import {FULL,lyps} from './flight.js';
-import {stationsAt} from './starbases.js';
+import {stationsAt as sbAt} from './starbases.js';
+// the starbases at a place, and Deep Space 9 at its own (ds9.js: not a starbase, but docked at like one)
+const stationsAt=id=>id==='ds9'?[{n:'DS9'}]:sbAt(id);
 
 export function cartography(W){
   const {THREE,ROOT,SYS,animHooks}=W,F=W.fx,S=W.flight,V=()=>new THREE.Vector3();
@@ -196,7 +198,7 @@ body.bare #cartopanel{display:none!important}`;
     for(const P of PLACES){const px=X(P.ly[0]),py=Y(P.ly[1]),sel=C.sel&&C.sel.P===P,hov=C.hover&&C.hover.P===P;
       g.fillStyle=dest===P?'#e8c98a':sel||hov?'#ffffff':'#9fc8f0';g.beginPath();g.arc(px,py,(sel||hov?8:6)*k,0,7);g.fill();
       if(sel){g.strokeStyle='#ffe2a8';g.lineWidth=2*k;g.beginPath();g.arc(px,py,13*k,0,7);g.stroke();g.lineWidth=1;}}
-    for(const P of PLACES){const px=X(P.ly[0]),py=Y(P.ly[1]),t=P.name.replace(/^Home: .*/,'Home'),sb=stationsAt(P.id),tx=sb.length?'◆ '+sb.map(x=>'SB '+x.n).join(' · '):'';
+    for(const P of PLACES){const px=X(P.ly[0]),py=Y(P.ly[1]),t=P.name.replace(/^Home: .*/,'Home'),sb=stationsAt(P.id),tx=sb.length?'◆ '+sb.map(x=>typeof x.n==='number'?'SB '+x.n:x.n).join(' · '):'';
       g.font=Math.round(11*k)+'px Helvetica,Arial,sans-serif';const w2=tx?g.measureText(tx).width:0;
       g.font=Math.round(14*k)+'px Helvetica,Arial,sans-serif';const w=Math.max(g.measureText(t).width,w2),h=(tx?30:16)*k;
       let best=null;

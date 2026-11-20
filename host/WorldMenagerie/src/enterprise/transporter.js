@@ -7,7 +7,9 @@
 //   - otherwise nothing is in range, and the transporter chief says so.
 // Each end of the beam is a column of sparkling light that rises, holds and fades, with a rising shimmer of sound;
 // the far end is drawn bigger than life so that it can be seen from a few kilometres. Told to the orders as
-// W.emit('beam') ('rescued' for a ship's crew, 'away' and 'aboard' for the away team).
+// W.emit('beam') ('rescued' for a ship's crew, 'away' and 'aboard' for the away team, 'upbeam' as it starts to bring
+// them up: away.js settles what they did before the log hears of it). A refitted transporter (refit.js, W.refit.beam)
+// runs a shorter cycle.
 import {typing,seeded} from './ui.js';
 
 export function transporter(W){
@@ -32,7 +34,7 @@ export function transporter(W){
       g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(0.025,t+0.5);g.gain.setValueAtTime(0.025,t+T-0.6);g.gain.linearRampToValueAtTime(0,t+T);o.start(t);lfo.start(t);o.stop(t+T+0.05);lfo.stop(t+T+0.05);}}
   // run one beam: from (a function of) here to there; a few cycles for a crowd
   function energise(there,size,cycles,done,col){
-    const T=3.2;busy={t0:F.T(),T:T*cycles,ends:[column(()=>F.shipCentre().add(V().set(0,40,0).applyQuaternion(ROOT.quaternion)),60,col),column(there,size,col)],cyc:T,done};
+    const T=3.2*(W.refit?W.refit.beam:1);busy={t0:F.T(),T:T*cycles,ends:[column(()=>F.shipCentre().add(V().set(0,40,0).applyQuaternion(ROOT.quaternion)),60,col),column(there,size,col)],cyc:T,done};
     hum(T*cycles);
   }
   animHooks.push(()=>{if(!busy)return;const t=F.T()-busy.t0,u=(t%busy.cyc)/busy.cyc;
@@ -44,6 +46,7 @@ export function transporter(W){
   const km=m=>m<1000?Math.round(m)+' m':(m/1000).toFixed(1)+' km';
   function beam(target){
     W.audio&&W.audio();
+    if(W.sys&&W.sys.down('transporter'))return;
     if(busy){note('Still energising.');return;}
     const cs=W.contacts?W.contacts():[];
     // a ship's crew off a wreck
@@ -60,7 +63,7 @@ export function transporter(W){
     const orb=S.orbit&&S.orbit.b;
     if(away&&away.pl===W.herePlace()){
       if(!orb||orb.name!==away.body){note('The away team is on '+away.body+': put us back in orbit over it to bring them up.');return;}
-      note('Energising. Four to beam up.');
+      note('Energising. Four to beam up.');W.emit&&W.emit('upbeam',away);
       energise(()=>F.shipCentre().add(V().set(0,-160,0).applyQuaternion(ROOT.quaternion)),80,1,()=>{note('Away team aboard. '+away.found);W.emit&&W.emit('aboard',away);W.emit&&W.emit('beam',{kind:'aboard'});away=null;},0x9fd0ff);
       return;}
     if(orb&&away){note('The away team is still on '+away.body+', '+away.pl.P.name.replace(/^Home: .*/,'at home').toLowerCase()+': bring them back first.');return;}
