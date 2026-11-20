@@ -1,55 +1,56 @@
 # Iziz's vassal cities: the shared contract for their kits
 
-Two new kits build the architecture of Iziz's vassal cities: **Pylon** (`kits/pylon`, the arcology city round the
-ruined Monolith; `kits/pylon/PLAN.md`) and **Talia** (`kits/talia`, the university and caravan city at the foot of the
-eastern passes; `kits/talia/PLAN.md`). Both cities will also have Iziz Vernacular buildings standing among their own,
-so this file holds what all three must agree on, and the governor's palace both cities share as a programme.
+Three kits build the architecture of Iziz's vassal cities: **Pylon** (`kits/pylon`, the arcology city round the
+ruined Monolith; `kits/pylon/PLAN.md`), **Talia** (`kits/talia`, the university and caravan city at the foot of the
+eastern passes; `kits/talia/PLAN.md`), and **Marr** (`kits/marr`, the canal-divided Ring Sea port and smuggling hub at
+the head of the Cistal Estuary where `Rrivar Cistal` and `Rrivar stara` meet the sea; `kits/marr/PLAN.md`). All three cities also have Iziz Vernacular buildings standing among their own,
+so this file holds what all four must agree on, and the governor's palace the vassal cities share as a programme.
 
-Owner's brief (2026-10-17): each city has its own architectural personality, but "Iziz Vernacular buildings should
+Owner's brief (2026-10-17, extended for Marr 2026-11-18): each city has its own architectural personality, but "Iziz Vernacular buildings should
 not look wrong beside them", and the kits are "set up ahead of time not to clash with the structure of that kit".
 Each city has a governor's palace "massed like the pic 'govpalace' but built in that city's style", with its interior
 planned from the skill's palace notes (`painting-to-3d-world`, section 5h and `references/large-buildings.md`).
 
 ## 1. One engine: the Vernacular's
 
-Both kits are written on the Iziz Vernacular contract (`API.md`, "The Vernacular set"), not on a new engine. The
+All vassal kits are written on the Iziz Vernacular contract (`API.md`, "The Vernacular set"), not on a new engine. The
 Vernacular's files are their own kit since 2026-11-03, `kits/iziz-vernacular` (MODULARITY-PLAN.md step 4); Iziz's page reads it:
 
-- **Defs go through `VERN.def`**, with `tags.culture` set to `'pylon'` or `'talia'` (`VERN.def` already lets a def's
-  own `culture` win over `'iziz-vernacular'`). Keys are prefixed `pyl_` and `tal_`. Then every placer that takes the
+- **Defs go through `VERN.def`**, with `tags.culture` set to `'pylon'`, `'talia'`, or `'marr'` (`VERN.def` already lets a def's
+  own `culture` win over `'iziz-vernacular'`). Keys are prefixed `pyl_`, `tal_`, and `mar_`. Then every placer that takes the
   Vernacular (`VERN.place`, `placeVern`, `placeNear`, Verge's IZV bundle, a `core/city` lot) places them too, and a
   mixed street is one list of keys.
 - **Builders take the Vernacular's helpers** (`vn*`: frames, plinths, cornices, roofs, `vnWin`, `vnDoor`, `vnLamp`,
   stairs, verandas, yard props) and kit items (`v*`), and add their own on top, with their own prefixes (Pylon `py` /
-  `pyn`, Talia `ta` / `tan`). Openings drawn with `vnWin` and `vnDoor` keep the same door and sill sizes in all three.
-- **Seed blocks:** Pylon 9001-9399, Talia 9401-9799 (the Vernacular uses 7100-8079; the Ancients kit's 10100+ are
-  taken). Named builders `buildPyl*` and `buildTal*`, each opening with `reseed(N+(o.v|0))`.
+  `pyn`, Talia `ta` / `tan`, Marr `ma` / `man`). Openings drawn with `vnWin` and `vnDoor` keep the same door and sill sizes across all sets.
+- **Seed blocks:** Pylon 9001-9399, Talia 9401-9799, Marr 9801-10099 (the Vernacular uses 7100-8079 plus 8551-8649 for `73d-vern-docks.js`; the Ancients kit's 10100+ are
+  taken). Named builders `buildPyl*`, `buildTal*`, and `buildMar*`, each opening with `reseed(N+(o.v|0))`.
 - **The bundle.** Verge already wraps the Vernacular and its Ancients core into one closure (`settlements/verge/
-  build.py`, `IZV`). Lift that file list into one function both kits and Verge call (P0 in each plan), so a vassal city
-  page is "IZV + one vassal kit" and nobody keeps a third copy of the list.
+  build.py`, `IZV`). Lift that file list into one function the vassal kits and Verge call (P0 in each plan), so a vassal city
+  page is "IZV + one vassal kit" and nobody keeps a duplicate copy of the list.
 
-## 2. Rules so the three never clash
+## 2. Rules so the sets never clash
 
-| Rule | Vernacular today | Pylon and Talia |
+| Rule | Vernacular today | Pylon, Talia, and Marr |
 |---|---|---|
-| Ground and front | origin at the plot centre on the ground, +z the front, nothing outside `w x d` | the same; stairs, awnings and canopies inside the plot |
+| Ground and front | origin at the plot centre on the ground, +z the front, nothing outside `w x d` | the same; stairs, awnings, wrought-iron galleries and *mirador* bay windows inside `w x d` |
 | Plinth | `Y0` 0.35-0.6 m | the same for houses; civic plinths up to 1.5 m, their stairs inside the plot |
-| Storeys | 3.0-3.4 m (middle), 4.0-4.6 m ground storey (rich) | houses 3.0-3.6 m; civic ground storey 4.5-6 m. Cornice lines fall within 0.5 m of the Vernacular's where the two share a street |
+| Storeys | 3.0-3.4 m (middle), 4.0-4.6 m ground storey (rich) | houses 3.0-3.8 m; civic ground storey 4.5-6 m. Cornice lines fall within 0.5 m of the Vernacular's where they share a street |
 | Footprints | poor 8-10 m, middle 10-15 m, rich 23-28 m, civic 22-44 m | the same classes, so a lot drawn for one takes the other |
-| Height bands | poor 5-8 m, middle 8-11 m, rich 16 m, civic 12-24 m | the same bands; only named landmarks (the Monolith, temples, the University's tower) go above them |
+| Height bands | poor 5-8 m, middle 8-11 m, rich 16 m, civic 12-24 m | the same bands; only named landmarks (the Monolith, temples, the University's tower, Marr's Navigators' Guild and Sea-Temple) go above them |
 | Party walls | none: every Vernacular house is detached with a yard | every type is finished on four faces; row types take `o.ends` to close a run, so a Vernacular house can stand at either end |
 | Lighting | electric light only on rich and civic (`vLit()`) | the same canon |
 | Wealth tags | `poor`, `middle`, `rich`, `civic` | the same, plus `style` (each plan lists its styles) |
 
-**Colour: one orange.** Iziz orange (`VPAL.orange`, `0xe07a2a`, and `VPAL.trim`) is the accent of all three: Pylon's
-paint and Talia's trim draw from the same list, so a Vernacular fascia, a Pylon niche lining and a Talian arch band
-are the same hue. The whites are never pure (Pylon `#EEEBE5`, Talia `#F4F1EA`) and sit one value step above the
+**Colour: one orange.** Iziz orange (`VPAL.orange`, `0xe07a2a`, and `VPAL.trim`) is the accent of all four: Pylon's
+paint, Talia's trim, and Marr's terracotta/ochre stucco and *zócalo* bands draw from the same family, so a Vernacular fascia, a Pylon niche lining, a Talian arch band, and a Marr courtyard wall
+share the same warm gamut. The whites are never pure (Pylon `#EEEBE5`, Talia `#F4F1EA`, Marr `#F2ECE1`) and sit one value step above the
 Vernacular's sand plaster, so a Vernacular house beside them reads as warmer, not dirtier.
 
 **Material bridges.** Each kit has a tier that shares the Vernacular's materials, so the transition is gradual:
 Pylon's salvage tier is corrugate, Ancient panel and timber (`vCorr`, `vPanelB`, `vWood`), the Vernacular's own poor
 materials; Talia's dense "orange quarter" takes terracotta hip roofs with short eaves and timber shutters, the nearest
-Talian form to a Vernacular gable. Verdigris copper (`vCopperB`) is the rich and civic roof metal in all three.
+Talian form to a Vernacular gable; Marr's low-lying Creole cottages and Shades tenements use clay barrel tiles, limewashed/ochre plaster, and timber stoops/galleries (`vWood`, `vTileR`, `vStucco`), while the new Vernacular dock set (`73d-vern-docks.js`) shares Marr's harbor stone quays and timber wharves. Verdigris copper (`vCopperB`) is the rich and civic roof metal in all sets.
 
 **Where the Vernacular stands.** In both cities, the Izani are the governing class and the garrison: the Vernacular
 gathers in an Izani quarter by the governor's palace and the barracks (rich and civic types), and scatters elsewhere

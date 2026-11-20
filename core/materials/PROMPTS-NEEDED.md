@@ -676,6 +676,25 @@ The pancake domes' walls: flow-banded rhyolite and obsidian (`biomes/firebliss/P
 |---|---|
 | `rock.rhyolite.flowbanded` | A cliff face of flow-banded rhyolite lava: thin wavy bands of black glassy obsidian (#141416, #22222a) alternating with dull pink-grey and ash-grey devitrified rhyolite (#8a7a78, #a09490, #6e6a6c), the bands folded and stretched as a stiff lava flowed, with small white spherulites (#d8d4cc) strung along a few grey bands and conchoidal fracture surfaces catching a faint sheen on the black ones. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. |
 
+## 57. The Marr kit (`kits/marr`, 2026-11-18)
+
+Iziz's foremost Ring Sea port (`Porta Marr`, `kits/marr/PLAN.md`). Until these three bespoke sheets arrive, `kits/marr/materials.json` stands in with `stone.sandstone.ashlar` (`maCantera`), `patterns/common/zellige-blue` (`maZellige`), and procedural wrought-iron bars (`maIronBalcony`). Deliver each under its id, point `kits/marr/materials.json` at it, and run `python3 tools/textures/pack.py kits/marr`. **3 prompts:**
+
+`library/stone.coral.colonial` (near-colourless, tintable; replaces `stone.sandstone.ashlar` on `maCantera` for San Juan / Cartagena coquina and coral-stone walls, bastions, garitas, and portals):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a colonial sea-fort and portal wall of dressed coquina and porous coral-limestone ashlar (piedra ostionera), rectangular blocks about 60 by 30 cm in level courses with staggered joints, wide pale lime-and-sand mortar joints, the stone faces pitted with tiny fossil shell cavities and sea-salt weathering, a faint trace of dark tidal damp in a few mortar lines. Keep colours natural but slightly muted and even, a warm mid grey, so the texture can be tinted to different palettes without looking stained.
+```
+
+`patterns/marr/azulejo-maritime` (full colour; replaces `patterns/common/zellige-blue` on `maZellige` for courtyard fountain dadoes, the Navigators' Guild, Customs House, and Governor's Palace wainscoting):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a wall dado of hand-painted Spanish colonial glazed ceramic azulejo tiles, a four-by-four grid of 20 cm square tin-glazed white tiles (#f2ede2) with fine crazing and narrow mortar joints, painted in deep cobalt blue (#1e4e7a), sea turquoise (#246e68), warm ochre (#dfa848) and burnt orange (#d86228) with an interlocking compass-star rosette at the four-tile crossings and scrolled ocean wave and rope strapwork framing each square. Full colour, do not mute.
+```
+
+`patterns/marr/iron-scrollwork` (cut-out alpha card on magenta; wrought-iron gallery balustrade panel for New Orleans / French Quarter balconies):
+```
+Flat sheet of cut-outs, square, 2048x2048, on a solid flat bright magenta background (#ff00ff); no magenta, pink or purple anywhere in the subject; no grey or white background. Flat, even, shadowless lighting. Subject: a seamless horizontal wrought-iron balcony railing panel filling the frame from left edge to right edge (so it tiles horizontally), top rail at the top edge and bottom rail at the bottom edge, forged in matte carriage-black and dark Charleston green-black iron (#1c2220) with slender vertical bars, delicate S- and C-scrolls, a central maritime compass-rose medallion, and small forged brass collar rings (#c8983c) where the scrolls meet. No text, no border, no watermark.
+```
+
 ## Gaps with no prompt yet
 
 Owed, but a prompt waits on something first; listed so they are not lost.

@@ -243,5 +243,27 @@ ok('a key the host has no box for is placed as its declared box and marked pendi
     names.includes(H.hamletName('islander', 4242, ids[3], {}).name));
 }
 
+// ---- the Marr culture row (22-hamlet-marr.js): every focus, coastal landing and Marr Creole names
+{
+  const mrow = H.CULTURES.marr, MDIMS = mrow.pending || {};
+  const mspec = (focus, o) => Object.assign({ id: 'marr-' + focus, world: 19, culture: 'marr', focus, site: { x: 0, z: 0 }, link: { x: 480, z: 60 },
+    resource: { x: -160, z: 50 }, dims: k => MDIMS[k] || null }, o || {});
+  const MV = {}; H.FOCI.forEach(f => { MV[f] = H.village(mspec(f)); });
+  const mStaffed = v => { const C = v.census, hh = v.records.filter(r => r.role === 'house').reduce((a, r) => a + r.households, 0);
+    const wj = v.records.filter(r => r.role === 'works').reduce((a, r) => a + (mrow.works[v.focus].find(w => w.key === r.key) || { jobs: 0 }).jobs, 0);
+    return C.pop <= 500 && hh * mrow.household >= C.pop && wj >= C.focusJobs && v.records.every(r => /^mar_/.test(r.key) && !r.pending); };
+  const mOv = H.FOCI.map(f => overlaps(MV[f])).flat();
+  ok('Marr culture row: every focus makes a purely mar_* village with no error or overlap (' + H.FOCI.map(f => f + ' ' + MV[f].records.length).join(', ') + ')',
+    H.FOCI.every(f => !MV[f].error && mStaffed(MV[f])) && mOv.length === 0,
+    !!H.village(mspec('salt', { culture: 'nonesuch' })).error, H.FOCI.filter(f => MV[f].error).map(f => f + ': ' + MV[f].error).join('; '));
+  const MLv = H.village(mspec('fishing', { landing: { x: 460, z: 240, ux: 0.8, uz: 0.6 } })), mq = MLv.records.find(r => r.role === 'landing');
+  const ML = H.NAMES.marr || [], mIds = ['marr-0', 'marr-1', 'marr-2', 'marr-3', 'marr-4', 'marr-5', 'marr-6', 'marr-7'];
+  const MD = H.dealNames('marr', 19, mIds);
+  ok('Marr coastal landing places mar_canal_quay and KHAMLET.NAMES.marr deals 100+ unique Izani-Marr names (' + ML.length + ')',
+    !MLv.error && !!mq && mq.key === 'mar_canal_quay' && ML.length >= 100 && new Set(ML.map(r => r.name)).size === ML.length && new Set(mIds.map(i => MD[i].name)).size === mIds.length,
+    !MV.fishing.landing);
+}
+
 console.log(bad ? '\n' + bad + ' FAILED' : '\nOK');
 process.exit(bad ? 1 : 0);
+

@@ -66,6 +66,17 @@ CITY = {
     undercroft_note='white marble vaults under the terrace',
     signal_note='the heliograph to Iziz (240 km west-south-west, by relay) and to the pass forts',
     decor_note='white marble, orange coffers, vaults and stair treads, mosaic floors (meander and rings), gilt capitals, rosettes and door leaves'),
+  'marr': dict(
+    name='Marr', culture='marr',
+    chancery='Chancery and Admiralty Excises (Kostomz de Porta)', assay='Harbour Excise and Prize Office',
+    assay_note='where the Ring Sea manifests, admiralty tenths and seized contraband are registered and sealed; harbour ledgers, bullion scales, bonded chests',
+    vault='Admiralty & Customs Vault', vault_note='port duties, bullion chests, letters of marque and impounded contraband held for Iziz; two keys (the governor\'s and the Harbourmaster\'s)',
+    council='Hall of the Navigators\' Guild & Merchants (Ol de Navigadarz)', council_note='the Master of the Gilda de Navigadarz and the merchant syndics of Marr meet the governor here; its own door from the forecourt, one door to the vestibule',
+    mag_ante='Masters\' & Syndics\' Anteroom',
+    hidden='The Canal Water-Gate (Geta de Guadar)', hidden_note='a vaulted brick water-passage under the terrace and rear garden to a grilled water-gate on Knal de Gardonz, where a state launch lies ready',
+    undercroft_note='brick groin-vaulted cellars above the canal water-table, lined in polychrome glazed tile damp-courses and carved volcanic ashlar piers',
+    signal_note='the heliograph and shutter-telegraph to Iziz (89 km ENE across the southern hills) and to Forta de Poinda & Bigon de Mol on Harbour Point',
+    decor_note='warm terracotta and ochre stucco, carved grey-pink volcanic stone arcades and Baroque pediments, black wrought-iron gallery railings, polychrome tiled dadoes, checkerboard marble floors, and ribbed yellow-and-orange tiled domes'),
 }
 
 
@@ -182,10 +193,15 @@ def floors(c):
 def programs(c):
     cs = lambda n: max(1, round(n))
     base = IZ.iziz_programs()
+    if c == 'pylon':
+        weigh = lambda a, w, d, D: [('pylon_assay_scale', 2), ('pylon_parts_rack', cs(a / 15)), ('iziz_common_desk', 2), ('iziz_common_chair', 3), ('generic_trade_bin', cs(a / 12)), ('iziz_common_board', 1)]
+    elif c == 'talia':
+        weigh = lambda a, w, d, D: [('talia_tariff_board', 2), ('iziz_common_counter', 1), ('iziz_common_desk', 2), ('iziz_common_chair', 3), ('talia_sample_case', cs(a / 20)), ('iziz_court_strongbox', 1)]
+    else:
+        weigh = lambda a, w, d, D: [('marr_manifest_desk', 2), ('iziz_common_counter', 1), ('iziz_common_desk', 2), ('iziz_common_chair', 3), ('marr_contraband_chest', cs(a / 18)), ('iziz_court_strongbox', 2)]
     base.update({
       'council': lambda a, w, d, D: [(c + '_council_table', 1), ('iziz_court_throne', 1), ('iziz_common_chair', cs(a / 6)), (c + '_city_banner', 4), ('iziz_court_cabinet', 2), ('iziz_court_screen', 2)],
-      'weighing': (lambda a, w, d, D: [('pylon_assay_scale', 2), ('pylon_parts_rack', cs(a / 15)), ('iziz_common_desk', 2), ('iziz_common_chair', 3), ('generic_trade_bin', cs(a / 12)), ('iziz_common_board', 1)]) if c == 'pylon'
-                  else (lambda a, w, d, D: [('talia_tariff_board', 2), ('iziz_common_counter', 1), ('iziz_common_desk', 2), ('iziz_common_chair', 3), ('talia_sample_case', cs(a / 20)), ('iziz_court_strongbox', 1)]),
+      'weighing': weigh,
     })
     return base
 
@@ -198,11 +214,18 @@ def city_new(c):
           'pylon_assay_scale': 'an assay scale for salvage: a steel beam balance on a plinth, weights in a rack',
           'pylon_parts_rack': 'a rack of graded Ancient parts: white panel offcuts, cells, coils, tagged',
         }
+    if c == 'talia':
+        return {
+          'talia_council_table': 'the archons\' table: a half-round of white marble on gilt lion feet, orange cushions',
+          'talia_city_banner': 'a Talei banner: the gate of the passes in gilt on white, orange border',
+          'talia_tariff_board': 'the tariff board: a gilt-framed board of the duties by good and by pass',
+          'talia_sample_case': 'a glazed case of bonded samples (spice, dye, glass, salt), brass-bound',
+        }
     return {
-      'talia_council_table': 'the archons\' table: a half-round of white marble on gilt lion feet, orange cushions',
-      'talia_city_banner': 'a Talei banner: the gate of the passes in gilt on white, orange border',
-      'talia_tariff_board': 'the tariff board: a gilt-framed board of the duties by good and by pass',
-      'talia_sample_case': 'a glazed case of bonded samples (spice, dye, glass, salt), brass-bound',
+      'marr_council_table': 'the Gilda de Navigadarz and merchant syndics\' table: a long mahogany boat-hull table with inlaid brass compass roses and wrought-iron scroll stretchers',
+      'marr_city_banner': 'a banner of Marr: a gilt astrolabe and twin canal-bridges over wavy blue-and-white bars, bordered in Iziz orange',
+      'marr_manifest_desk': 'the Harbour Excise clerk\'s sloped mahogany ledger desk with pigeonholes for ship manifests, brass bullion scales and sealing-wax braziers',
+      'marr_contraband_chest': 'an iron-strapped cedar sea-chest sealed with the governor\'s lead bull, holding impounded contraband and prize papers',
     }
 
 

@@ -408,5 +408,45 @@
       doors: [{ at: [-4.0, -2.4], w: 0.9 }], program: ['store'] }],
     note: 'the daub smokehouse as a store (its racks are the catalog\'s); the landing stage, the net frames and the fish racks are open' });
 
+  /* ================================================================ the harbour and docks round (73d-vern-docks.js) */
+  add({ key: 'vern_quay', name: 'Harbour quay', wealth: MID, types: ['market/shop'], lot: [24, 10],
+    bodies: [{ id: 'booth', poly: rect(3.8, 3.2, 7.2, -2.4), y: 1.1, levels: [{ h: 2.6 }], wall: 0.22, roof: 'hip', pitch: pt(1.1 / 1.6),
+      doors: [{ at: [6.6, -0.8], w: 0.9 }], program: ['study'] }],
+    note: 'the harbour-master\'s tally booth on the east end of the quay; the ashlar seawall, water-steps, capstan and cargo apron are open' });
+  add({ key: 'vern_pier', name: 'Timber harbour pier', wealth: POOR, types: ['industry'], lot: [10, 28],
+    skip: 'open timber pile jetty, plank deck and hoist shelter' });
+  add({ key: 'vern_crane_wharf', name: 'Harbour crane wharf', wealth: MID, types: ['industry'], lot: [18, 16],
+    bodies: [{ id: 'office', poly: rect(6.2, 5.4, 4.6, -3.2), y: 1.2, levels: [{ h: 3.6 }], wall: 0.25, roof: 'hip', pitch: pt(1.7 / 2.7),
+      doors: [{ at: [3.4, -0.5], w: 1.2 }], program: ['study', 'store'] }],
+    note: 'the weigh-master\'s office and tally shed; the treadwheel crane turret (solid stave drum) and the stone wharf apron are outside' });
+  add({ key: 'vern_port_warehouse', name: 'Port bonded warehouse', wealth: MID, types: ['industry', 'market/shop'], lot: [22, 16],
+    bodies: [{ id: 'warehouse', poly: rect(18.4, 11.6, 0, -1.4), y: 0.55, levels: [{ h: 4.27 }, { h: 3.6 }], wall: 0.32, roof: 'gable', pitch: pt(2.5 / 5.8),
+      doors: [{ at: [-6.0, 4.4], w: 2.2 }, { at: [0, 4.4], w: 2.2 }, { at: [6.0, 4.4], w: 2.2 }],
+      program: [['store', 'store', 'store'], ['store', 'store']] }],
+    note: 'three bonded cargo bays on the ground floor and the hoist loft over them' });
+  add({ key: 'vern_customs_house', name: 'Port customs house', wealth: CIVIC, types: ['civic', 'market/shop'], lot: [20, 16],
+    bodies: [{ id: 'hall', poly: rect(16.8, 12.4, 0, -0.6), y: 0.65,
+      levels: [{ h: 4.31, poly: rect(16.8, 9.8, 0, -1.9) }, { h: 3.8 }], wall: 0.3, roof: 'hip', pitch: pt(2.4 / 6.2),
+      doors: [{ at: [0, 3.0], w: 1.8 }], program: [['antechamber', 'study', 'store'], ['hall', 'study', 'library']] }],
+    note: 'the customs hall set back behind the 5-bay stone weigh-loggia, and the full-depth registry and collector\'s rooms over it' });
+  add({ key: 'vern_harbour_light', name: 'Harbour lighthouse', wealth: CIVIC, types: ['civic'].concat(SF), lot: [12, 12],
+    bodies: [{ id: 'cottage', poly: rect(4.4, 4.8, -4.4, -0.6), y: 1.6, levels: [{ h: 2.8 }], wall: 0.24, roof: 'gable', pitch: pt(1.3 / 2.4),
+      doors: [{ at: [-4.8, 1.8], w: 0.95 }], program: ['cottage'] }],
+    note: 'the keeper\'s cottage on the wave-break plinth; the octagonal lighthouse shaft is a solid drum' });
+  add({ key: 'vern_sailors_tavern', name: 'Sailors\' tavern', wealth: POOR, types: ['tavern/inn'], lot: [16, 14],
+    bodies: [{ id: 'tavern', poly: rect(11.6, 9.2, -1.4, -0.8), y: 0.35, levels: [{ h: 3.38 }, { h: 3.0 }], wall: 0.26, roof: 'gable', pitch: pt(2.2 / 4.6),
+      doors: [{ at: [-2.2, 3.8], w: 1.3 }], program: [['tavern', 'kitchen'], ['dormitory', 'bedroom', 'bedroom']] }],
+    note: 'the tap room and kitchen below, the sailors\' bunk room and lodgings above; the front gallery and side rum yard are open' });
+  add({ key: 'vern_ropewalk', name: 'Ropewalk and sail loft', wealth: POOR, types: ['industry'], lot: [28, 10],
+    bodies: [{ id: 'loft', poly: rect(6.2, 6.6, 9.2, -0.6), y: 0.25, levels: [{ h: 3.09 }, { h: 2.7 }], wall: 0.25, roof: 'gable', pitch: pt(1.8 / 3.1),
+      doors: [{ at: [8.4, 2.7], w: 1.2 }], program: [['workshop', 'store'], ['workshop']] }],
+    note: 'the two-storey sail-loft and tar-house at the +x head; the half-walled cordage walk is open-sided so its spinning jack and hawsers show' });
+  add({ key: 'vern_ferry_slip', name: 'Ferry slip', wealth: MID, types: ['industry'], lot: [14, 18],
+    skip: 'open-arched waiting pavilion, gantry ramp and moored chain ferry' });
+  add({ key: 'vern_coastguard_berth', name: 'Coastguard cutter berth', wealth: CIVIC, types: ['civic', 'military'], lot: [20, 18],
+    bodies: [{ id: 'guardhouse', poly: rect(7.6, 6.4, -4.6, -3.8), y: 1.2, levels: [{ h: 3.43 }, { h: 3.0 }], wall: 0.28, roof: 'hip', pitch: pt(1.8 / 3.2),
+      doors: [{ at: [-5.4, -0.6], w: 1.2 }], program: [['barracks', 'store'], ['barracks', 'study']] }],
+    note: 'the two-storey coastguard watch-house on the quay; the octagonal turret (solid drum), open boathouse vault and cutter basin are outside' });
+
   IX.sets.add({ set: 'iziz', title: 'Iziz Vernacular', culture: 'iziz', items: L });
 })(KratorInteriors);

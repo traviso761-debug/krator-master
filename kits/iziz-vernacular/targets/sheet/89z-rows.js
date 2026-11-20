@@ -33,4 +33,7 @@ const SHEET={title:'Iziz Vernacular Kit',build:'iziz-vernacular',ground:'dirt',g
   {family:'Trades — crafts and salvage',keys:['vern_apothecary','vern_tinker','vern_glassworks','vern_salvage_yard']},
   {family:'Trades — mine, quarry, mill, fungus',keys:['vern_mine','vern_quarry','vern_mill','vern_fungus_shed']},
   {family:'Trades — farm, stock, water',keys:['vern_farmhouse','vern_byre','vern_pens','vern_boatyard','vern_fish_landing']},
+  // the harbour & dock set (73d-vern-docks.js, built for Marr and Port Tobin)
+  {family:'Harbour — quays, piers, crane, ferry',keys:['vern_quay','vern_pier','vern_crane_wharf','vern_ferry_slip']},
+  {family:'Harbour — warehouse, customs, light, coastguard, ropewalk, tavern',keys:['vern_port_warehouse','vern_customs_house','vern_harbour_light','vern_coastguard_berth','vern_ropewalk','vern_sailors_tavern']},
  ]};
