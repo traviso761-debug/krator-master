@@ -31,6 +31,7 @@ enabled=PackedStringArray("res://addons/krator_gltf/plugin.cfg", "res://addons/g
 [rendering]
 
 anti_aliasing/quality/msaa_3d=2
+limits/global_shader_variables/buffer_size=65536
 
 [shader_globals]
 

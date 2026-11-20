@@ -1061,12 +1061,14 @@ func set_flora_visible(on: bool) -> void:
 
 func refresh_flora_at(cam_reg: Vector3, hero_r := 240.0, mid_r := 2600.0) -> Dictionary:
 	_last_flora_cam = cam_reg
-	_ensure_flora_lib()
-	if _flora_protos.is_empty() or _stream_flora_root == null or not flora_enabled:
+	if not flora_enabled or _stream_flora_root == null:
 		for pkey in _stream_flora_pools:
 			for mi in _stream_flora_pools[pkey]:
 				(mi as MultiMeshInstance3D).multimesh.instance_count = 0
 				(mi as MultiMeshInstance3D).visible = false
+		return {"hero": 0, "mid": 0, "pools": 0}
+	_ensure_flora_lib()
+	if _flora_protos.is_empty():
 		return {"hero": 0, "mid": 0, "pools": 0}
 
 	var bufs := {}   # pkey -> Array of floats (reference type: O(1) in-place append, converted once via PackedFloat32Array)
