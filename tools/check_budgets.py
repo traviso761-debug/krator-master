@@ -13,12 +13,13 @@ Two checks, both hard (no ratchet: today's tree passes because its over-cap page
              sentence) and a `raised` date. An entry without them fails, and so does a raise: an entry whose number changed
              since HEAD while its `why` did not ("ceiling = what we measured" must be written down, not slipped in).
 
-BUDGETS.json shape (agreed with the harness, 2026-10-27): one entry per page file name, or "*" for every page of the
-build; any field may be left out; unknown keys are ignored:
+BUDGETS.json shape (agreed with the harness, 2026-10-27; extended 2026-11-19 for samplers & estimated VRAM, GRAPHICS-TERRAIN-PROPOSAL.md Stage 1):
+one entry per page file name, or "*" for every page of the build; any field may be left out; unknown keys are ignored:
   {"what": "...", "pages": {"voth-city.html": {"bytes": 20971520, "tris": 11000000, "calls": 140,
+                                               "samplers": 15, "vram_mb": 512,
                                                "why": "one sentence", "raised": "2026-10-27"}, "*": {...}}}
-tools/harness.py verify_page reads tris, calls and bytes (over a ceiling fails); tools/build.py and this check read
-bytes (buildlib.page_cap). Every raise passes this check.
+tools/harness.py verify_page reads tris, calls, bytes, scene_tris, samplers and vram_mb (over a ceiling fails);
+tools/build.py and this check read bytes (buildlib.page_cap). Every raise passes this check.
 """
 import json, os, re, subprocess, sys
 
