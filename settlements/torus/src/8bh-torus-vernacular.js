@@ -31,7 +31,7 @@ const TORUS_VERNACULAR_GROUP = (function buildTorusVernacular3D() {
 
   function crownSoilTop(b) {
     if (b.tier !== 'stepped_crown') return b.y;
-    if (b.y < 610) return 600.0; // Rim gallery concrete deck at y=600m (r=336..354m)
+    if (b.crownDeck === 'terrace' || b.crownDeck === 'rim' || b.y < 610) return b.y; // Flat concrete terrace treads & rim gallery
     const ringIdx = b.y < 648 ? 1 : 2;
     const fVal = (typeof fbm === 'function')
       ? fbm(b.x * 0.014, b.z * 0.014, 9485 + ringIdx, 2)
@@ -43,7 +43,8 @@ const TORUS_VERNACULAR_GROUP = (function buildTorusVernacular3D() {
     if (groupKind === 'sky') {
       const topSoil = crownSoilTop(b);
       const padTop = topSoil + 0.16;
-      const padBot = b.tier === 'stepped_crown' && b.y >= 610 ? (b.y - 0.2) : (topSoil - 0.18);
+      const isSoilRing = b.tier === 'stepped_crown' && b.crownDeck === 'soil';
+      const padBot = isSoilRing ? (b.y - 0.2) : (topSoil - 0.18);
       return { padTop: padTop, padBot: padBot };
     }
     if (groupKind === 'farm') {

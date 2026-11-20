@@ -456,8 +456,37 @@
     }
     for (var brk = 0; brk < arcology.wheelBridges.length; brk++) {
       var brDeg = arcology.wheelBridges[brk].deg, brA = brDeg * DEG;
-      var sqRec = { id: 'wheel_bridge_sq_' + brk, x: 602 * Math.cos(brA), y: 300, z: 602 * Math.sin(brA), ry: -brA, w: 56, d: 58 };
-      skySpace.insert(sqRec, sqRec.x, sqRec.z, 44.0);
+      // Reserve the paved Bridge Gate Square itself (r=572..616) while placing a kit-quality watchtower at the outer axis (r=624)
+      var sqRec = { id: 'wheel_bridge_sq_' + brk, x: 594 * Math.cos(brA), y: 300, z: 594 * Math.sin(brA), ry: -brA, w: 46, d: 44 };
+      skySpace.insert(sqRec, sqRec.x, sqRec.z, 36.0);
+      if (angDiff(brDeg, arcology.wheelBreachDeg) > 21.5 && angDiff(brDeg, ciderHall.deg) > 7.5) {
+        var wtDef = KITS.byKey['voth_scrap_watch'];
+        if (wtDef) {
+          var wtR = 624.0;
+          var wtB = {
+            id: 'wheel_gate_watch_' + brk,
+            tier: 'outer_wheel',
+            kit: wtDef.kit,
+            key: wtDef.key,
+            cls: wtDef.cls,
+            x: +(wtR * Math.cos(brA)).toFixed(2), y: 300.0, z: +(wtR * Math.sin(brA)).toFixed(2),
+            r: wtR, deg: +brDeg.toFixed(2),
+            ry: +Math.atan2(-Math.cos(brA), -Math.sin(brA)).toFixed(4),
+            w: wtDef.w, d: wtDef.d, h: wtDef.h, st: wtDef.st,
+            pop: 0,
+            culture: wtDef.culture,
+            style: wtDef.style,
+            types: wtDef.types,
+            wealth: wtDef.wealth,
+            job: wtDef.job,
+            district: 'outer_wheel',
+            state: 'intact'
+          };
+          var wtRad = 0.5 * Math.hypot(wtB.w, wtB.d);
+          skySpace.insert(wtB, wtB.x, wtB.z, wtRad + 3.0);
+          skyBuildings.push(wtB);
+        }
+      }
     }
 
     var WHEEL_BLD_KEYS = [
@@ -512,37 +541,55 @@
       }
     }
 
-    // Curated Rinkvolk kit cottages, seed-silos, apothecary pods & shrines on the 3 Stepped Botanical Crown rings (+600, +632, +664 m)
+    // Curated Rinkvolk & Scrap Voth kit buildings on the Stepped Botanical Crown:
+    //   - 3 Forest / Rim Garden rings (+600, +632, +664 m)
+    //   - 6 Living-Band Concrete Terrace rings (+616, +632, +648, +664, +680, +696 m), replacing 100% of stripped 71c-ring.js placeholder blocks!
+    var crownSpace = KSPACE.create({ cell: 24 });
     var CROWN_BLD_RINGS = [
-      { y: 600.0, r: 344.0, n: 18, keys: ['swa-twindrum-house', 'swa-seed-silo', 'swa-apothecary-pod', 'swa-silo-cot', 'farmhouse'] },
-      { y: 632.0, r: 222.0, n: 12, keys: ['swa-silo-cot', 'swa-apothecary-pod', 'swa-seed-silo', 'swa-pipe-shrine'] },
-      { y: 664.0, r: 136.0, n: 8, keys: ['swa-pipe-shrine', 'swa-apothecary-pod', 'swa-silo-cot', 'voth_scrap_shrine'] }
+      // Outer rim gallery & forest garden clearings
+      { y: 600.0, r: 344.0, n: 18, deck: 'rim',     faceOut: false, keys: ['swa-twindrum-house', 'swa-seed-silo', 'swa-apothecary-pod', 'swa-silo-cot', 'farmhouse'] },
+      { y: 632.0, r: 222.0, n: 12, deck: 'soil',    faceOut: false, keys: ['swa-silo-cot', 'swa-apothecary-pod', 'swa-seed-silo', 'swa-pipe-shrine'] },
+      { y: 664.0, r: 136.0, n: 8,  deck: 'soil',    faceOut: false, keys: ['swa-pipe-shrine', 'swa-apothecary-pod', 'swa-silo-cot', 'voth_scrap_shrine'] },
+      // 6 Stepped Crown Living-Band concrete terrace treads (22 m wide each, facing outward over each promenade)
+      { y: 616.0, r: 279.0, n: 44, deck: 'terrace', faceOut: true,  keys: ['swa-twindrum-house', 'swa-tank-duplex', 'swa-silo-stack', 'swa-apothecary-pod', 'swa-silo-cot', 'voth_scrap_house', 'farmhouse', 'swa-weaver-drums'] },
+      { y: 632.0, r: 257.0, n: 40, deck: 'terrace', faceOut: true,  keys: ['swa-tank-duplex', 'swa-twindrum-house', 'swa-seed-silo', 'swa-silo-cot', 'swa-drum-tavern', 'voth_scrap_house', 'swa-apothecary-pod'] },
+      { y: 648.0, r: 191.0, n: 30, deck: 'terrace', faceOut: true,  keys: ['swa-twindrum-house', 'swa-silo-cot', 'swa-apothecary-pod', 'swa-tank-duplex', 'swa-seed-silo', 'voth_scrap_house', 'dw-silo'] },
+      { y: 664.0, r: 169.0, n: 26, deck: 'terrace', faceOut: true,  keys: ['swa-silo-cot', 'swa-apothecary-pod', 'swa-twindrum-house', 'swa-drum-hut', 'swa-pipe-shrine', 'voth_scrap_house'] },
+      { y: 680.0, r: 103.0, n: 16, deck: 'terrace', faceOut: true,  keys: ['swa-silo-cot', 'swa-apothecary-pod', 'swa-drum-hut', 'swa-pipe-shrine', 'voth_scrap_shrine'] },
+      { y: 696.0, r: 81.0,  n: 12, deck: 'terrace', faceOut: true,  keys: ['swa-drum-hut', 'swa-silo-cot', 'swa-pipe-shrine', 'swa-apothecary-pod', 'voth_scrap_shrine'] }
     ];
     for (var cr = 0; cr < CROWN_BLD_RINGS.length; cr++) {
       var cSpec = CROWN_BLD_RINGS[cr];
+      // Widen breach exclusion inward to match 71c-ring.js wedgeHW(r) so zero buildings overhang the fractured crown notch
+      var tBreach = Math.max(0, Math.min(1, (cSpec.r - 34.0) / 302.0));
+      var breachClearDeg = (0.13 + 0.28 * (1.0 - tBreach)) * 1.25 * (180.0 / Math.PI) + 5.5;
+      if (breachClearDeg < 24.0) breachClearDeg = 24.0;
+      var stairClearDeg = Math.max(7.5, (15.5 / cSpec.r) * (180.0 / Math.PI));
       for (var ci = 0; ci < cSpec.n; ci++) {
-        var cDeg = normDeg(22.5 + (360.0 * ci) / cSpec.n);
-        if (angDiff(cDeg, arcology.crownFractureDeg) <= 24.0) continue;
+        var cDeg = normDeg(22.5 + (360.0 * (ci + 0.35 * (cr % 2))) / cSpec.n);
+        if (angDiff(cDeg, arcology.crownFractureDeg) <= breachClearDeg) continue;
         // Keep clear of the 8 radial stairs at multiples of 45 deg
         var nearCrownStair = false;
         for (var cst = 0; cst < 8; cst++) {
-          if (angDiff(cDeg, cst * 45.0) < 7.5) nearCrownStair = true;
+          if (angDiff(cDeg, cst * 45.0) < stairClearDeg) nearCrownStair = true;
         }
         if (nearCrownStair) continue;
-        var cKey = cSpec.keys[ci % cSpec.keys.length];
+        var cKey = cSpec.keys[(ci + cr * 2) % cSpec.keys.length];
         var cDef = KITS.byKey[cKey];
         if (!cDef) continue;
         var cRad = cDeg * DEG;
         var cxB = +(cSpec.r * Math.cos(cRad)).toFixed(2), czB = +(cSpec.r * Math.sin(cRad)).toFixed(2);
+        var cFace = cSpec.faceOut ? cRad : (cRad + Math.PI);
         var cb = {
           id: 'crown_bld_' + skyBuildings.length,
           tier: 'stepped_crown',
+          crownDeck: cSpec.deck,
           kit: cDef.kit,
           key: cDef.key,
           cls: cDef.cls,
           x: cxB, y: cSpec.y, z: czB,
           r: cSpec.r, deg: +cDeg.toFixed(2),
-          ry: +Math.atan2(-Math.cos(cRad), -Math.sin(cRad)).toFixed(4),
+          ry: +Math.atan2(Math.cos(cFace), Math.sin(cFace)).toFixed(4),
           w: cDef.w, d: cDef.d, h: cDef.h, st: cDef.st,
           pop: 0,
           culture: cDef.culture,
@@ -553,7 +600,14 @@
           district: 'stepped_crown',
           state: 'intact'
         };
-        skyBuildings.push(cb);
+        var cbR = 0.5 * Math.hypot(cb.w, cb.d);
+        var cHit = crownSpace.some(cb.x, cb.z, cbR + 2.0, function (other) {
+          return Math.abs(cb.y - other.y) <= 45.0 && obbOverlap(cb, other, 1.2);
+        });
+        if (!cHit) {
+          crownSpace.insert(cb, cb.x, cb.z, cbR);
+          skyBuildings.push(cb);
+        }
       }
     }
 

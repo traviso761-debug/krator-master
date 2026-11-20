@@ -39,29 +39,49 @@ const TORUS_ARCOLOGY_GROUP = (function buildTorusArcology3D() {
     return d > 180 ? 360 - d : d;
   }
 
-  // Helper: identify plain 71c-ring.js Wheel Town box houses (y=300..346, r=566..638) while keeping the 12 tall Pylons & 4 Bridge Watchtowers
-  function isPlainWheelTownBox(item) {
+  // Helper: identify crude 71c-ring.js placeholder buildings so Rinkvolk & Scrap Voth kit buildings replace them cleanly:
+  //   1. Wheel Town (y=300..346, r=564..641.5): all townBld boxes + 4 crude bridge watchtower boxes, keeping 96m Pylons,
+  //      paved bridge square slabs (sy<=0.5), bridge square lamp-posts (sx<=1.0, sy<=7.5), rim parapets (r=558/721) & wood kerb (r=644).
+  //   2. Stepped Crown Living Bands (6 concrete treads at y=616,632,648,664,680,696): all plain concrete dwelling blocks,
+  //      balconies & flat caps strictly inside [rB+1.5, rA-1.5], keeping treads/risers, terrace edge parapets (rA*1.004),
+  //      forest kerbs, 8 radial stairs, 3 head arcades (RHEAD=240,152,56), rim gallery (y=600) & central lantern (r<=72).
+  const CROWN_LIVING_BANDS = [
+    { rB: 270.0, rA: 292.0, yB: 616.0 },
+    { rB: 248.0, rA: 270.0, yB: 632.0 },
+    { rB: 182.0, rA: 204.0, yB: 648.0 },
+    { rB: 160.0, rA: 182.0, yB: 664.0 },
+    { rB: 94.0,  rA: 116.0, yB: 680.0 },
+    { rB: 72.0,  rA: 94.0,  yB: 696.0 }
+  ];
+
+  function isPlainArcologyBuilding(item, bucketName) {
     const px = item.p[0], py = item.p[1], pz = item.p[2];
-    if (py < 299.6 || py > 346.0) return false;
     const r = Math.hypot(px, pz);
-    if (r < 566.0 || r > 638.0) return false;
+    const sx = typeof item.s === 'number' ? item.s : item.s[0];
     const sy = typeof item.s === 'number' ? item.s : item.s[1];
-    if (sy >= 36.0) return false; // Preserve 96m structural Wheel Pylons!
-    const d = ((Math.atan2(pz, px) / deg) + 360) % 360;
-    // Preserve Pylon caps/bases at 15, 45, 75 ... deg (r ~ 586m)
-    for (let pk = 0; pk < 12; pk++) {
-      const pDeg = 15.0 + 30.0 * pk;
-      if (angDiffDeg(d, pDeg) < 2.2 && Math.abs(r - 586.0) < 12.0) return false;
+
+    // 1. Wheel Town & 4 crude Bridge Gate Watchtowers (WY = 300 m)
+    if (py >= 299.6 && py <= 346.0 && r >= 564.0 && r <= 641.5) {
+      if (sy >= 36.0) return false; // Preserve 96m structural Wheel Pylons & stay beams
+      if ((bucketName === 'slab' || bucketName === 'slabR' || bucketName === 'slabC' || bucketName === 'slabCR') && sy <= 0.5 && py < 301.0) return false; // Preserve bridge gate square paving
+      if ((bucketName === 'frPost' || bucketName === 'frPostR') && sx <= 1.0 && sy <= 7.5 && py < 301.0) return false; // Preserve square lamp-posts
+      return true;
     }
-    // Preserve the 4 Bridge Gate Squares & Watchtowers at 7.5, 97.5, 187.5, 277.5 deg
-    for (let bk = 0; bk < 4; bk++) {
-      const bDeg = 7.5 + 90.0 * bk;
-      if (angDiffDeg(d, bDeg) < 5.0) return false;
+
+    // 2. Stepped Crown Living-Band dwellings (BAND[0..2], NTER=2)
+    if (py >= 616.0 && py <= 714.0 && r >= 73.5 && r <= 290.5) {
+      if (sx <= 0.45 && sy <= 1.25) return false; // Preserve radial stair balusters
+      for (let bi = 0; bi < CROWN_LIVING_BANDS.length; bi++) {
+        const b = CROWN_LIVING_BANDS[bi];
+        if (r >= b.rB + 1.5 && r <= b.rA - 1.5 && py >= b.yB + 0.3 && py <= b.yB + 17.5) {
+          return true;
+        }
+      }
     }
-    return true;
+    return false;
   }
 
-  // 1. Run kits/ancients 71c-ring.js (Forest Ring) in semi-ruined state (d=1), strip blobby flora & plain Wheel Town boxes, then bake
+  // 1. Run kits/ancients 71c-ring.js (Forest Ring) in semi-ruined state (d=1), strip blobby flora & crude Wheel/Crown boxes, then bake
   const holder = new THREE.Group();
   holder.name = 'ancients_forest_ring_megastructure';
   KIT.order.forEach(function (n) { if (KIT.items[n]) KIT.items[n].length = 0; });
@@ -76,12 +96,12 @@ const TORUS_ARCOLOGY_GROUP = (function buildTorusArcology3D() {
       const bn = stripBuckets[sb];
       if (KIT.items[bn]) KIT.items[bn].length = 0;
     }
-    // Strip plain grey box buildings in Wheel Town so 8bh places genuine Rinkvolk SW-Arcology & Post-Apoc kit buildings cleanly
-    const townBuckets = ['box', 'boxR', 'slab', 'slabR', 'frPost', 'frPostR', 'pane', 'paneD', 'frDoor', 'finial', 'strip'];
+    // Strip crude Wheel Town houses, 4 crude Bridge Watchtowers & all 6 Crown Living-Band dwelling rows so 8bh replaces them with kit buildings
+    const townBuckets = ['box', 'boxR', 'boxC', 'boxCR', 'slab', 'slabR', 'slabC', 'slabCR', 'frPost', 'frPostR', 'pane', 'paneD', 'frDoor', 'finial', 'strip'];
     for (let tb = 0; tb < townBuckets.length; tb++) {
       const tn = townBuckets[tb];
       if (KIT.items[tn] && KIT.items[tn].length) {
-        KIT.items[tn] = KIT.items[tn].filter(function (it) { return !isPlainWheelTownBox(it); });
+        KIT.items[tn] = KIT.items[tn].filter(function (it) { return !isPlainArcologyBuilding(it, tn); });
       }
     }
     KOFF = [0, 0, 0];
