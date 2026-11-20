@@ -5,7 +5,7 @@
 // windows, a queue at the washroom and at the kitchen's hatch, traders and buyers in the bazaar, hands in the farms,
 // crews at the machines down deep. How many are out depends on the clock: the walkways fill at the change of shift,
 // morning and evening, and empty at night, when more are indoors. All anonymous: one figure, tinted, seated or standing.
-import {LH,RS,RW,RO,NL,yL,levelAt,kindOf,zoneOf} from './levels.js';
+import {LH,RS,RW,RO,NL,yL,levelAt,kindOf,zoneOf,WATERV} from './levels.js';
 import {personGeo} from './life.js';
 
 const TAU=Math.PI*2;
@@ -64,7 +64,9 @@ export function buildCrowd(THREE,K,M){
     else if(k==='office'){for(let i=0;i<12;i++)for(let d=0;d<4;d++)if(R()<0.6*act+0.1){const a=(i+0.2+d*0.2)/12*TAU;add(a,RW+13.4,a+Math.PI,{seat:true});}}
     else if(k==='it'){for(let q=0;q<Math.round(10*act+3);q++){const a=R()*TAU;add(a,RW+5+R()*18,a+Math.PI/2);}}
     else if(k!=='hall'){// the works: crews at the machines and on the walkway, some carrying
-      for(let q=0;q<Math.round(16*act+4);q++){const a=R()*TAU,inside=R()<0.6;add(a,inside?RW+4+R()*22:13+R()*6,R()*TAU,{pack:R()<0.25});}}
+      // (on the sewage floors no one stands in the basins: the crews keep to the floor between them and outside them)
+      const sew=k==='water'&&WATERV[n]===1,inBasin=(a,r)=>sew&&r>24.8&&r<35.2&&a>4*Math.PI/180&&a<170*Math.PI/180;
+      for(let q=0;q<Math.round(16*act+4);q++){const a=R()*TAU,inside=R()<0.6,r=inside?RW+4+R()*22:13+R()*6;if(inBasin(a,r))continue;add(a,r,R()*TAU,{pack:R()<0.25});}}
     return P;}
   // ---- fill the instanced meshes with the levels round the camera ----
   let key='',kids=[];

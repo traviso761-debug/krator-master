@@ -25,6 +25,11 @@ function kindBase(n){
   if(n>=135)return 'mech';
   return 'home';
 }
+// the sixteen farm floors and how each grows: 0 channels, 1 rafts, 2 racks, 3 grain, 4 animals, 5 no light
+export const FARMV={49:3,50:0,51:2,52:1,53:3,54:4,55:0,56:5,77:3,78:1,79:2,80:0,81:3,82:5,83:2,84:4};
+// the water band's floors: 0 clean water, 1 the sewage cleaned, 2 the air plant
+export const WATERV={123:0,124:1,125:2,126:0,127:1,128:2};
+export const FARM_NAMES=['channels of greens','rafts on ponds','racks of greens five high','grain under sodium lamps','the animals','mushrooms, fish, seed and compost'];
 export const zoneOf=n=>n<=48?'top':n<=96?'mid':'deep';
 export function placeName(n){
   if(n<1)return 'above the top level';
@@ -147,7 +152,30 @@ export function buildKits(K,R){
       // hooks with a coat and a bag; a toy on the floor; a basket
       const ah=a0+step*0.92,[hx,hz]=at(ah,RW+1.2);k.add('base',K.G.box,pick(FADED),hx,1.45,hz,{ry:-ah,sx:0.12,sy:0.8,sz:0.4});
       if(R()<0.6){const [x,z]=at(a0+step*(0.4+R()*0.3),RW+5+R()*3);k.add('base',K.G.sph4,pick(['#c84a3a','#3a7ac8','#e0c040']),x,0.12,z,{sx:0.12,sy:0.12,sz:0.12});k.add('base',K.G.box,'#8a6a4a',x+0.3,0.07,z+0.1,{sx:0.25,sy:0.14,sz:0.15,ry:R()*3});}
-      {const [x,z]=at(a0+step*0.85,RW+8);k.add('base',K.G.cyl,'#a08a5a',x,0.2,z,{sx:0.25,sy:0.4,sz:0.25});}}
+      {const [x,z]=at(a0+step*0.85,RW+8);k.add('base',K.G.cyl,'#a08a5a',x,0.2,z,{sx:0.25,sy:0.4,sz:0.25});}
+      // the cooking corner beside the sink: a hotplate on a counter, a pot and a kettle, a cupboard over both, a
+      // dish rack, a bucket and a mop; a cloth over the counter's front instead of a door
+      {const ac=a0+0.45/(RW+9),[cx,cz]=at(ac,RW+8.9);k.radial('base',pick(WOOD),ac,RW+9.1,0,1.5,0.6,0.85);k.radial('base',pick(FADED),ac,RW+9.1,0.1,1.4,0.62,0.6);
+        k.radial('base','#2e2c2a',ac,RW+8.9,0.85,0.55,0.4,0.08);k.add('base',K.G.cyl6,'#6a6a66',cx,1.02,cz,{sx:0.15,sy:0.18,sz:0.15});
+        const [kx,kz]=at(ac,RW+9.6);k.add('base',K.G.sph4,pick(['#8a3a2a','#3a5a6a','#7a7a70']),kx,0.98,kz,{sx:0.12,sy:0.1,sz:0.12});
+        k.radial('base','#7a6a52',as,RW+6.4,1.55,2.0,0.32,0.7);k.radial('base','#5a4c3c',as,RW+6.4,1.53,2.04,0.34,0.03);
+        k.radial('base','#8a8a80',as,RW+5.4,0.98,0.4,0.25,0.25);
+        const [bx,bz]=at(a0+0.5/(RW+4.5),RW+4.6);k.add('base',K.G.cyl6,'#5a6a7a',bx,0.17,bz,{sx:0.17,sy:0.34,sz:0.17});k.pipe('base','#8a7a5a',bx+0.15,0,bz,bx+0.05,1.25,bz,0.015);}
+      // on the side walls: a patched panel, a hanging of patchwork, two pictures kept for generations
+      {const ap=a0+step-0.16/(RW+5);k.radial('base',pick(['#8a8478','#9a8e7a','#7e8478']),ap,RW+5.5,0.4,1.4,0.02,1.1);
+        for(let q=0;q<9;q++){const r0=RW+7.2+(q%3)*0.42,y0=1.1+((q/3)|0)*0.42;k.radial('base',pick(FADED.concat(['#a85a4a','#4a6a8a','#c8a050'])),ap,r0,y0,0.4,0.02,0.4);}
+        for(const [rr,yy,w,h] of [[RW+3.2,1.5,0.5,0.6],[RW+4.0,1.7,0.35,0.45]]){const aw=a0+0.16/(RW+4);k.radial('base','#4a3a2a',aw,rr,yy,w+0.06,0.02,h+0.06);k.radial('base',pick(['#b8a888','#8a9a8a','#a8988a']),aw+0.01/(RW+4),rr,yy+0.03,w,0.02,h);}}
+      // by the door: a mat, and the floor worn pale from it to the curtain; a tally of days scratched by the frame
+      {const ad=a0+step*0.3;k.radial('base','#5a4a3a',a,RW+0.9,0.004,0.7,1.0,0.012);k.radial('base','#8a7e6c',ad,(RW+X)/2,0.001,X-RW-1,0.75,0.004);
+        const at2=a0+step*0.45;k.tangent('base','#d0c8b0',at2,X-0.1,1.3,0.55,0.02,0.7);for(let q=0;q<5;q++)k.tangent('base','#3a3430',at2-(0.2-q*0.1)/X,X-0.12,1.4,0.025,0.02,0.45);
+        k.tangent('base','#3a3430',at2,X-0.12,1.62,0.5,0.02,0.025);}
+      // a worn chair with a blanket over it by the window, a plant in a tin on the sill
+      {const aw=a0+step*0.18,[x,z]=at(aw,RW+2.4);k.add('base',K.G.box,pick(WOOD),x,0.25,z,{ry:-aw,sx:0.6,sy:0.5,sz:0.6});k.add('base',K.G.box,pick(WOOD),x+Math.cos(aw)*0.28,0.75,z+Math.sin(aw)*0.28,{ry:-aw,sx:0.08,sy:0.9,sz:0.6});
+        k.add('base',K.G.box,pick(FADED),x+Math.cos(aw)*0.15,0.55,z+Math.sin(aw)*0.15,{ry:-aw+0.1,sx:0.5,sy:0.06,sz:0.66});
+        const [px,pz]=at(a0+step*0.75,RW+0.35);k.add('base',K.G.cyl6,'#8a8a84',px,1.05,pz,{sx:0.1,sy:0.16,sz:0.1});k.add('base',K.G.sph4,pick(['#4a7a3a','#5a8a40','#3e6a34']),px,1.25,pz,{sx:0.2,sy:0.22,sz:0.2});}
+      // overhead: a water pipe run across the ceiling, a cable strung beside it on hooks, taped where it was mended
+      {const ac=a0+step*0.08,[x0,z0]=at(ac,RW+0.5),[x1,z1]=at(ac,X-0.2);k.pipe('base','#6a6a62',x0,LH-0.75,z0,x1,LH-0.75,z1,0.04);k.pipe('base','#2a2826',x0,LH-0.85,z0,x1,LH-0.95,z1,0.012);
+        for(let q=1;q<4;q++){const [x,z]=at(ac,RW+q*2.6);k.add('base',K.G.box,'#b8a060',x,LH-0.9,z,{ry:-ac,sx:0.1,sy:0.04,sz:0.04});}}}
     // the back room: bunks two high, or a bed folded against the wall, or a loft built in with a ladder
     {const ab=a0+step*0.28,kind=(i+v)%3;
       if(kind===0){for(const h of [0.25,1.45]){k.radial('base','#4a4038',ab,X+4.5,h,3.8,1.4,0.18);k.radial('base',pick(FADED),ab,X+4.5,h+0.18,3.6,1.3,0.22);k.radial('base','#d8d0c0',ab,X+6.0,h+0.4,0.5,1.0,0.14);}
@@ -210,14 +238,109 @@ export function buildKits(K,R){
   // offices: half as many rooms, desks in rows
   {const k=K.kit();shell(k,{rooms:12,room:(k,a0,step,i)=>{for(let d=0;d<4;d++){const a=a0+step*(0.2+d*0.2);k.radial('base','#8b8170',a,RW+12,0,3.4,1.0,0.78);k.radial('base','#3a3f44',a,RW+12.8,0.78,0.5,0.6,0.4);}
       k.radial('lamp','#e8f0ff',a0+step*0.5,(RW+RO)/2,LH-0.8,8,0.4,0.1);}});kits.office=k.build();}
-  // the farms: no rooms, beds of crops under grow lights in rings out to the wall
-  {const k=K.kit();shell(k,{wall:false,lamps:16});
-    for(let r=15;r<=46;r+=5){const n=Math.floor(TAU*r/6.6);for(let i=0;i<n;i++){const a=(i+(r%2)*0.5)/n*TAU;if(r<16&&Math.abs(((a+Math.PI)%TAU)-Math.PI)<0.3)continue;
-        k.tangent('base','#5a5248',a,r,0,5.6,1.6,0.75);
-        k.tangent('base',['#4f8a3a','#6a9a3e','#3f7a44','#8a9a3a'][(i+r)%4],a,r,0.75,5.3,1.4,0.35+((i*7+r)%5)*0.08);
-        k.tangent('lamp',(i+r)%3?'#ff8ae0':'#fff0fa',a,r,LH-1.2,5.2,0.5,0.08);}}
-    for(let i=0;i<6;i++){const a=i/6*TAU;k.radial('base','#7c7064',a,33,0,30,0.3,LH-0.5);}   // the frames the lights hang from
-    kits.farm=k.build();}
+  // the farms. Feeding ten thousand under lights takes more floor than the silo has, so the farm floors are stacked
+  // in tiers and each grows its own way, drawn after real indoor farming: channels of greens with a film of water
+  // running down them (white gullies on frames, two tiers); rafts floating on long lined ponds; racks of greens five
+  // tiers high, a bar of light under every shelf; grain in deep troughs of soil under the old sodium lamps; a floor of
+  // animals kept on the crops' waste; and a floor of the things that need no light (mushroom rooms, fish tanks, the
+  // nutrient room, the seed store, the compost and the digester that makes gas of it). FARMV says which is where.
+  {const G=K.G,WHITE='#e4e2da',LEAF=['#5a9a3e','#6aaa44','#4a8a3a','#7aa848','#5e9e52'],LED='#ff6ad8',SOD='#ffb050';
+    const rings=(r0,r1,dr,seg,f)=>{for(let r=r0;r<=r1;r+=dr){const n=Math.floor(TAU*r/seg);for(let i=0;i<n;i++){const a=(i+(Math.round(r)%2)*0.5)/n*TAU;
+      if(Math.abs(Math.atan2(Math.sin(a),Math.cos(a)))<(r<20?0.32:0.12))continue;f(a,r,i,TAU*r/n*0.9);}}};   // the way in from the landing kept clear
+    const frame=(k,a,r,L,D,H)=>{for(const da of [-0.5,0.5])for(const dr of [-D/2,D/2])k.add('base',G.box,'#8a8c8e',Math.cos(a+da*L/r)*(r+dr),H/2,Math.sin(a+da*L/r)*(r+dr),{ry:-a,sx:0.06,sy:H,sz:0.06});};
+    const farmKit=(v,f)=>{const k=K.kit();shell(k,{wall:false,lamps:16});f(k);kits['farm'+v]=k.build();};
+    // 0: channels: white gullies two tiers high on frames, a plant row in each, the light bar over each tier
+    farmKit(0,k=>rings(15,46,2.6,6,(a,r,i,L)=>{frame(k,a,r,L,1.3,2.6);
+      for(const h of [0.85,2.05]){for(let g=0;g<4;g++){const rr=r-0.48+g*0.32;k.tangent('base',WHITE,a,rr,h,L,0.12,0.08);
+          k.tangent('base',LEAF[(i+g+(h>1?2:0))%5],a,rr,h+0.08,L*0.96,0.2,0.1+((i*3+g)%4)*0.04);}
+        k.tangent('lamp',LED,a,r,h+0.75,L*0.9,0.5,0.04);}
+      if(i%5===0){k.tangent('base','#4a6a8a',a,r+0.75,0.3,0.6,0.25,0.25);}   // the return gutter's sump
+      if(i%11===3)k.tangent('base','#3a5a3a',a,r-0.2,0.9,L*0.4,0.2,0.04);}));    // one channel gone green with algae
+    // 1: rafts on ponds: long black-lined ponds, white boards edge to edge, rows of heads in them; air lines along the edge
+    farmKit(1,k=>rings(16,45,3.6,6,(a,r,i,L)=>{k.tangent('base','#2a2e2e',a,r,0,L,2.6,0.42);k.tangent('base','#22303a',a,r,0.3,L*0.98,2.4,0.1);
+      for(let b=0;b<4;b++){const aa=a+(b-1.5)*L/4/r;k.tangent('base',(i+b)%9?WHITE:'#c8c4b4',aa,r,0.4,L/4-0.04,2.36,0.05);
+        for(let q=0;q<4;q++)k.tangent('base',LEAF[(i+b+q)%5],aa,r-0.9+q*0.6,0.45,L/4-0.3,0.34,0.14+((i+q)%3)*0.05);}
+      k.tangent('base','#3a6aa0',a,r+1.32,0.45,L,0.04,0.04);
+      for(const dr of [-0.7,0.7])k.tangent('lamp',LED,a,r+dr,LH-1.25,L*0.9,0.35,0.05);}));
+    // 2: racks: five tiers of greens, a light bar under every shelf, the aisle between racks a metre wide
+    farmKit(2,k=>rings(15,46,2.3,6,(a,r,i,L)=>{frame(k,a,r,L,1.2,3.3);
+      for(let t=0;t<5;t++){const h=0.25+t*0.62;k.tangent('base','#9a9c9a',a,r,h,L,1.2,0.04);k.tangent('base',LEAF[(i+t)%5],a,r,h+0.04,L*0.95,1.0,0.12+((i+t)%3)*0.05);
+        if(t<4||true)k.tangent('lamp',(i*5+t)%23===0?'#5a3a50':LED,a,r,h+0.55,L*0.92,0.6,0.03);}}));   // one bar in twenty-three dead
+    // 3: grain: deep troughs of soil in two tiers, wheat standing in them, sodium lamps on gull-wing reflectors with
+    //    their ballast boxes on the frames
+    farmKit(3,k=>rings(15,46,2.8,6,(a,r,i,L)=>{frame(k,a,r,L,1.5,2.0);
+      for(const h of [0.15,1.6]){k.tangent('base','#5a4a3a',a,r,h,L,1.5,0.38);k.tangent('base','#3e3226',a,r,h+0.38,L*0.98,1.38,0.02);
+        for(let q=0;q<5;q++)k.tangent('base',(i+q+(h>1?1:0))%4?'#c8b862':'#9aa850',a,r-0.56+q*0.28,h+0.4,L*0.96,0.12,0.5+((i*7+q*3)%5)*0.05);}   // the wheat in rows
+      k.tangent('lamp',SOD,a,r,LH-0.95,0.5,0.4,0.18);k.tangent('base','#9a9c9e',a,r,LH-0.78,0.9,0.9,0.05);
+      k.tangent('base','#5a5c5e',a,r+0.8,1.4,0.35,0.15,0.25);}));
+    // 4: animals: hens on litter with perches and nest boxes; pigs in concrete pens behind tube gates; rabbits in wire
+    //    hutches over trays; goats with a raised platform; troughs, drinkers, a dung channel, big fans at the wall
+    farmKit(4,k=>{const R=mkR(404),pick=L=>L[(R()*L.length)|0];
+      const pen=(a0,a1,r0,r1,floor)=>{const am=(a0+a1)/2,rm=(r0+r1)/2;k.radial('base',floor,am,rm,0.003,r1-r0,(a1-a0)*rm,0.02);
+        for(const aa of [a0,a1])for(const h of [0.35,0.75,1.1])k.radial('base','#a8acae',aa,rm,h,r1-r0,0.05,0.05);
+        for(const h of [0.35,0.75,1.1])k.tangent('base','#a8acae',am,r0,h,(a1-a0)*r0,0.05,0.05);
+        k.tangent('base','#2e2a22',am,r0-0.4,0.002,(a1-a0)*r0,0.5,0.03);};       // the dung channel along the front
+      // hens: 0-120 degrees
+      for(let p=0;p<6;p++){const a0=p*20*D,a1=a0+19*D;pen(a0,a1,18,44,'#b8a060');
+        for(let q=0;q<45;q++){const a=a0+R()*(a1-a0),r=19+R()*24;k.add('base',G.sph4,R()<0.7?'#e8e2d0':'#8a5a3a',Math.cos(a)*r,0.17,Math.sin(a)*r,{ry:R()*6,sx:0.22,sy:0.18,sz:0.14});}
+        for(let q=0;q<3;q++){const a=a0+(a1-a0)*(0.25+q*0.25);k.radial('base','#7a6248',a,36,0.7+q*0.15,8,0.06,0.06);}
+        const an=a1-1.2/40;for(let q=0;q<6;q++)k.radial('base','#8a7050',an,24+q*3,0.6,2.6,0.6,0.6);
+        k.radial('base','#8a8a84',(a0+a1)/2,30,0.15,14,0.25,0.15);}
+      // pigs: 120-200
+      for(let p=0;p<4;p++){const a0=(122+p*19.5)*D,a1=a0+18.5*D;pen(a0,a1,18,40,'#8a8478');
+        for(let q=0;q<7;q++){const a=a0+(0.15+R()*0.7)*(a1-a0),r=21+R()*16,ry=R()*6,c=pick(['#d8a8a0','#c89890','#8a6a60','#e0b8b0']);
+          k.add('base',G.box,c,Math.cos(a)*r,0.45,Math.sin(a)*r,{ry,sx:1.25,sy:0.62,sz:0.6});k.add('base',G.box,c,Math.cos(a)*r+Math.cos(ry)*0.7,0.5,Math.sin(a)*r-Math.sin(ry)*0.7,{ry,sx:0.35,sy:0.36,sz:0.36});}
+        k.radial('base','#6a6e70',(a0+a1)/2,38,0.15,3,0.5,0.35);k.radial('base','#9aa0a4',a1-0.6/30,28,0.6,0.1,0.1,0.15);}
+      // rabbits: 200-270, hutches three high in rows
+      for(let r=19;r<=43;r+=4)for(let a=202*D;a<268*D;a+=2.6/r){for(let t=0;t<3;t++){const h=0.5+t*0.8;k.tangent('base','#8a8a80',a,r,h,1.9/1.0,0.9,0.03);
+          k.tangent('base','#4a4a42',a,r,h-0.1,2.0,1.0,0.05);for(const dd of [-0.95,0.95])k.radial('base','#9a9a90',a+dd/r,r,h,0.9,0.03,0.65);
+          if(R()<0.8)k.add('base',G.sph4,pick(['#e8e4dc','#8a7a6a','#5a4a3e','#c8b8a0']),Math.cos(a)*r,h+0.15,Math.sin(a)*r,{ry:R()*6,sx:0.22,sy:0.16,sz:0.15});}}
+      // goats: 272-338, a pen on straw and a raised platform of planks
+      pen(272*D,338*D,18,44,'#c8b070');k.radial('base','#7a6248',305*D,36,0,8,10,0.7);
+      for(let q=0;q<14;q++){const a=(276+R()*58)*D,r=20+R()*22,ry=R()*6,c=pick(['#e8e0d0','#8a7a6a','#5a4e44','#c8a880']),y=(r>32&&r<40&&Math.abs(a-305*D)<0.15)?0.7:0;
+        k.add('base',G.box,c,Math.cos(a)*r,y+0.6,Math.sin(a)*r,{ry,sx:0.95,sy:0.45,sz:0.38});k.add('base',G.box,c,Math.cos(a)*r+Math.cos(ry)*0.55,y+0.85,Math.sin(a)*r-Math.sin(ry)*0.55,{ry,sx:0.28,sy:0.3,sz:0.2});
+        for(const dx of [-0.35,0.35])for(const dz of [-0.13,0.13])k.add('base',G.box,c,Math.cos(a)*r+Math.cos(ry)*dx+Math.sin(ry)*dz,y+0.2,Math.sin(a)*r-Math.sin(ry)*dx+Math.cos(ry)*dz,{sx:0.07,sy:0.4,sz:0.07});}
+      // the feed store: sacks stacked, a mill, bins of the farms' waste for fodder
+      for(let q=0;q<30;q++){const a=(341+R()*16)*D,r=20+R()*20;k.add('base',G.box,pick(['#c8b890','#b8a880','#a89870']),Math.cos(a)*r,0.2+((q%3))*0.38,Math.sin(a)*r,{ry:-a+R()*0.4,sx:0.9,sy:0.36,sz:0.55});}
+      // fans in the wall, the floor's air changed far more often than any other's
+      for(let q=0;q<10;q++){const a=(q+0.5)/10*TAU;k.add('base',G.disc,'#4a4c4e',Math.cos(a)*46.5,2.2,Math.sin(a)*46.5,{rz:Math.PI/2,ry:-a,sx:1.2,sy:0.3,sz:1.2});
+        for(let b=0;b<4;b++)k.add('base',G.box,'#6a6c6e',Math.cos(a)*46.3,2.2,Math.sin(a)*46.3,{ry:-a,rx:b*Math.PI/4,sx:0.05,sy:2.0,sz:0.25});}});
+    // 5: no light needed: mushroom rooms (enclosed, dim, misted, shelving and hanging columns), the fish tanks and their
+    //    filters, the nutrient room, the seed store, the compost bays and the digester with its gas dome
+    farmKit(5,k=>{const R=mkR(505),pick=L=>L[(R()*L.length)|0];
+      const room=(a0,a1,r0,r1,col)=>{for(const aa of [a0,a1])k.radial('base',col,aa,(r0+r1)/2,0,r1-r0,0.15,LH-0.5);
+        const am=(a0+a1)/2,dw=1.0/r0;k.tangent('base',col,(a0+am-dw)/2,r0,0,(am-dw-a0)*r0,0.15,LH-0.5);k.tangent('base',col,(am+dw+a1)/2,r0,0,(a1-am-dw)*r0,0.15,LH-0.5);k.tangent('base',col,am,r0,2.1,2*dw*r0,0.15,LH-2.6);
+        k.tangent('base',col,am,r1,0,(a1-a0)*r1,0.15,LH-0.5);};
+      // mushrooms: 5-85 degrees, two rooms
+      for(const [a0,a1] of [[5,43],[47,85]]){const A0=a0*D,A1=a1*D;room(A0,A1,17,44,'#7a7e78');
+        for(let r=19.5;r<=42;r+=2.4)for(let a=A0+1/r;a<A1-1/r;a+=2.2/r){for(let t=0;t<5;t++){const h=0.2+t*0.6;k.tangent('base','#7a7c7e',a,r,h,1.9,0.7,0.03);
+            for(let q=0;q<4;q++)k.add('base',G.cyl6,pick(['#e8e0c8','#d8d0b8','#c8b898']),Math.cos(a+(q-1.5)*0.45/r)*r,h+0.17,Math.sin(a+(q-1.5)*0.45/r)*r,{sx:0.13,sy:0.3,sz:0.13});}}
+        for(let q=0;q<8;q++){const a=A0+(A1-A0)*(q+0.5)/8;k.radial('base','#9aa0a4',a,30,LH-0.75,24,0.04,0.04);}
+        k.radial('lamp','#c8d8ff',(A0+A1)/2,30,LH-0.6,1.2,0.3,0.06);}
+      // fish: 92-178, round tanks, a settling cone on legs, the filter tanks, the blower; grow beds fed from them
+      for(let q=0;q<10;q++){const a=(96+(q%5)*16)*D,r=q<5?22:34;k.add('base',G.cyl,q%2?'#2a4a6a':'#1e2224',Math.cos(a)*r,0.65,Math.sin(a)*r,{sx:1.9,sy:1.3,sz:1.9});
+        k.add('base',G.disc,'#2a4a3a',Math.cos(a)*r,1.29,Math.sin(a)*r,{sx:1.8,sy:0.02,sz:1.8});
+        k.add('base',G.cone,'#3a3c3e',Math.cos(a)*(r+4),1.6,Math.sin(a)*(r+4),{sx:0.9,sy:-1.2,sz:0.9});k.add('base',G.cyl,'#3a3c3e',Math.cos(a)*(r+4),2.5,Math.sin(a)*(r+4),{sx:0.9,sy:0.6,sz:0.9});for(let l=0;l<3;l++){const f=l/3*TAU;k.add('base',G.box,'#5a5c5e',Math.cos(a)*(r+4)+Math.cos(f)*0.8,1.1,Math.sin(a)*(r+4)+Math.sin(f)*0.8,{sx:0.08,sy:2.2,sz:0.08});}
+        k.tangent('base','#5a4a3a',a,r+7.5,0,3.4,1.6,0.6);k.tangent('base',LEAF[q%5],a,r+7.5,0.6,3.2,1.4,0.3);}
+      k.radial('base','#4a6a8a',172*D,30,0,2,1.4,1.2);k.radial('base','#c8a03a',172*D,28.7,0.3,0.4,1.2,0.6);
+      // the nutrient room: the two stock tanks, the acid, the dosing pumps on a board, the meters lit, the headers out
+      {const b=190*D;for(const [dd,c] of [[-2.5,'#e8e6e0'],[-0.5,'#3a6aa0'],[1.4,'#e0d8a0']]){const a=b+dd/30;k.add('base',G.cyl,c,Math.cos(a)*30,0.9,Math.sin(a)*30,{sx:0.8,sy:1.8,sz:0.8});}
+        k.radial('base','#3a4448',b,33,0.9,0.3,4,1.8);for(let q=0;q<4;q++)k.radial('glow',['#70ff90','#ffd070','#70ff90','#ff6050'][q],b+(q-1.5)*0.6/33,32.8,1.9,0.04,0.25,0.12);
+        for(let q=0;q<4;q++)k.radial('base','#5a6a7a',b+(q-1.5)*0.6/33,32.8,1.2,0.2,0.3,0.3);
+        for(const dd of [-1,1])k.radial('base','#e8e6e0',b+dd*1.6/30,26,2.6,8,0.1,0.1);}
+      // the seed store: a cold room, steel shelves of sealed tins, a ledger on a stand
+      {const a0=205*D,a1=240*D;room(a0,a1,20,32,'#a8b0b4');for(let r=22;r<31;r+=1.6)for(let a=a0+1.2/r;a<a1-1.2/r;a+=1.6/r)for(let t=0;t<4;t++){k.tangent('base','#8a8c8e',a,r,0.3+t*0.55,1.4,0.5,0.03);
+          for(let q=0;q<4;q++)k.add('base',G.cyl6,pick(['#b8b0a0','#8a8478','#c8c0a8']),Math.cos(a+(q-1.5)*0.33/r)*r,0.42+t*0.55,Math.sin(a+(q-1.5)*0.33/r)*r,{sx:0.11,sy:0.2,sz:0.11});}
+        k.radial('lamp','#e0f0ff',(a0+a1)/2,26,LH-0.6,1,0.3,0.06);}
+      // compost: three-sided bays of planks with heaps in them, turned by hand; the digester: an insulated tank, its
+      // gas dome on top, the pipe off to the boilers, a flare stack with its little flame
+      for(let q=0;q<6;q++){const a=(250+q*7)*D;for(const dd of [-1.4,1.4])k.radial('base','#6a5238',a+dd/40,40,0,3,0.12,1.2);k.tangent('base','#6a5238',a,41.5,0,2.8,0.12,1.2);
+        k.add('base',G.sph,['#4a3a28','#5a4630','#3e3020'][q%3],Math.cos(a)*40,0.2,Math.sin(a)*40,{sx:1.3,sy:0.9,sz:1.3});}
+      {const a=310*D,r=32;k.add('base',G.cyl,'#7a7a6e',Math.cos(a)*r,1.6,Math.sin(a)*r,{sx:4.2,sy:3.2,sz:4.2});k.add('base',G.sph,'#8a8478',Math.cos(a)*r,3.2,Math.sin(a)*r,{sx:3.8,sy:0.6,sz:3.8});
+        for(let q=0;q<10;q++){const f=q/10*TAU;k.add('base',G.box,'#5a5a52',Math.cos(a)*r+Math.cos(f)*4.22,1.6,Math.sin(a)*r+Math.sin(f)*4.22,{sx:0.15,sy:3.2,sz:0.15});}
+        k.pipe('base','#c8a020',Math.cos(a)*r,3.5,Math.sin(a)*r,Math.cos(a)*46,3.5,Math.sin(a)*46,0.08);
+        const fa=a+8/r;k.add('base',G.cyl,'#5a5c5e',Math.cos(fa)*40,1.8,Math.sin(fa)*40,{sx:0.12,sy:3.6,sz:0.12});k.add('glow',G.cone,'#ff9a30',Math.cos(fa)*40,3.75,Math.sin(fa)*40,{sx:0.12,sy:0.3,sz:0.12});}});
+    kits.farm=kits.farm0;}
   // IT: racks of machines in rows, their lights
   {const k=K.kit();shell(k,{rooms:12,room:(k,a0,step,i)=>{for(let j=0;j<3;j++){const a=a0+step*(0.25+j*0.25);
         k.radial('base','#2c3036',a,RW+13,0,18,0.9,2.3);
@@ -317,7 +440,53 @@ export function buildKits(K,R){
     // the control board: lamps for each tank, gauges, a stool
     {const ab=0.3;k.tangent('base','#5a6a62',ab,48.6,0,4.0,0.6,1.9);for(let q=0;q<10;q++){const [x,z]=at(ab+(q-4.5)*0.35/48,48.25);k.add(q%4?'glow':'blink',G.box,q%3?'#60e080':'#ffb030',x,1.55,z,{ry:-ab,sx:0.02,sy:0.08,sz:0.08});}
       for(let q=0;q<3;q++)dial(k,ab+(q-1)*1.0/48,48.25,1.2);stencil(k,ab,48.27,0.55,1.4);}
+    // after the filters: the lamp tubes that kill what the sand lets through, a baffled tank where the chlorine has
+    // time to work, and the pressure tank that keeps the mains up between the pumps' runs
+    for(let q=0;q<3;q++){const a=(200+q*5)*D;k.add('base',G.cyl,'#c8ccd0',Math.cos(a)*30,1.1,Math.sin(a)*30,{rx:Math.PI/2,ry:-a,sx:0.22,sy:2.2,sz:0.22});
+      k.add('glow',G.box,'#a0c8ff',Math.cos(a)*30.25,1.1,Math.sin(a)*30.25,{ry:-a,sx:0.04,sy:0.08,sz:0.6});}
+    {const a=225*D;k.tangent('base','#7a7a72',a,26,0,9,4,1.6);for(let q=1;q<5;q++)k.radial('base','#6a6a62',a+(q-2.5)*1.8/26,26.6,0,2.8,0.15,1.7);
+      k.tangent('base','#2e4a50',a,26,1.45,8.8,3.8,0.05);}
+    {const a=250*D,[x,z]=at(a,30);k.add('base',G.cyl,'#5a6e7a',x,1.9,z,{sx:1.1,sy:3.0,sz:1.1});k.add('base',G.sph,'#5a6e7a',x,3.4,z,{sx:1.1,sy:0.5,sz:1.1});k.add('base',G.sph,'#5a6e7a',x,0.4,z,{sx:1.1,sy:0.5,sz:1.1});
+      k.add('glow',G.box,'#a8d8ff',x-Math.cos(a)*1.12,1.9,z-Math.sin(a)*1.12,{ry:-a,sx:0.04,sy:1.4,sz:0.08});}
     kits.water=k.build();}
+  // the silo's sewage, cleaned to be used again: long aeration basins of brown water churned by the air bubbled up
+  // through it (the blowers that push it the loudest machines on the floor), a round clarifier with its scraper bridge,
+  // the sludge tank that feeds the digesters, and the press that squeezes what is left
+  {const k=K.kit();shell(k,{wall:false,lamps:14});const R=mkR(707),pick=L=>L[(R()*L.length)|0];
+    for(let q=0;q<4;q++){const a=(20+q*38)*D,L=30*D*30;
+      for(const dr of [-4.55,4.55])k.tangent('base','#a8a49a',a,30+dr,0,L,0.3,1.5);for(const sd of [-1,1])k.radial('base','#a8a49a',a+sd*(L/2-0.15)/30,30,0,9.4,0.3,1.5);k.tangent('base','#6a6438',a,30,1.18,L-0.3,8.8,0.04);
+      for(let f=0;f<60;f++){const aa=a+(R()-0.5)*(L-1)/30,rr=26+R()*8;k.add('base',G.sph4,pick(['#e8e0c8','#f0ead8','#d8d0b0']),Math.cos(aa)*rr,1.27,Math.sin(aa)*rr,{sx:0.4+R()*0.8,sy:0.06,sz:0.3+R()*0.6});}
+      for(const dr of [-4.8,4.8])k.tangent('base','#3a6aa0',a,30+dr,1.6,L,0.12,0.12);
+      k.tangent('base','#4a4c4e',a,30,1.55,L,0.9,0.05);for(const dr of [-0.45,0.45])k.tangent('base','#c8a020',a,30+dr,2.6,L,0.04,0.04);}
+    {const a=200*D,r=32,[x,z]=at(a,r);k.add('base',G.cyl,'#8a867c',x,1.1,z,{sx:8,sy:2.2,sz:8});k.add('base',G.disc,'#4a5a4a',x,2.15,z,{sx:7.6,sy:0.05,sz:7.6});
+      k.add('base',K.ring(7.6,8.0,0.2,32),'#6a6a62',x,2.2,z);k.add('base',G.box,'#4a4c4e',x,2.5,z,{ry:0.7,sx:16,sy:0.3,sz:1.0});k.add('base',G.box,'#c8a020',x,3.0,z,{ry:0.7,sx:16,sy:0.05,sz:0.05});
+      k.add('base',G.cyl,'#5a5c5e',x,2.6,z,{sx:0.5,sy:0.6,sz:0.5});}
+    {const a=232*D,[x,z]=at(a,36);k.add('base',G.cyl,'#6a5e4a',x,1.7,z,{sx:2.6,sy:3.4,sz:2.6});k.add('base',G.cone,'#6a5e4a',x,3.7,z,{sx:2.6,sy:0.6,sz:2.6});
+      const [px,pz]=at(a+6/36,36);k.add('base',G.box,'#5a6a7a',px,1.0,pz,{ry:-a,sx:1.6,sy:2.0,sz:3.4});k.add('base',G.box,'#4a3a28',px,0.15,pz,{ry:-a,sx:2.0,sy:0.3,sz:3.6});}
+    for(let q=0;q<4;q++){const a=(260+q*12)*D;k.radial('base','#6a6660',a,44,0,2.4,1.6,0.3);k.radial('base','#3a6a8a',a,44,0.3,1.8,1.2,1.2);
+      k.add('base',G.cyl,'#8a8a84',Math.cos(a)*42.4,1.2,Math.sin(a)*42.4,{sx:0.45,sy:1.6,sz:0.45});k.radial('base','#c8a020',a,45.4,0.3,0.5,1.25,0.9);
+      k.pipe('base','#3a6aa0',Math.cos(a)*42.4,2.0,Math.sin(a)*42.4,Math.cos(a)*42.4,3.6,Math.sin(a)*42.4,0.15);}
+    k.add('base',K.ring(42.25,42.55,0.3,64,250*D,60*D+TAU*0.55),'#3a6aa0',0,3.75,0);
+    kits.water1=k.build();}
+  // the air plant: air handlers in a ring (their grey boxes of mixing, filters, coils and fan, a gauge across the
+  // filters, a drain from the coil's pan), the main riser up the silo, the scrubber's two columns (the solution takes the
+  // breath's carbon in one and gives it up in the other, and the gas goes up the line to the farms), the cells that
+  // split water for oxygen, and on a post the readings everyone checks: oxygen and carbon in the air
+  {const k=K.kit();shell(k,{wall:false,lamps:14});
+    for(let q=0;q<7;q++){const a=(q*40+10)*D,L=9;k.tangent('base','#7e8c86',a,41,0,L,2.6,2.6);k.tangent('base','#5a6460',a,41,0,L+0.1,2.7,0.15);
+      {const af=a+(L/2-1)/41,[x,z]=at(af,39.4);k.add('base',G.cyl,'#4a6a8a',x,1.3,z,{rx:Math.PI/2,ry:-a,sx:0.45,sy:1.1,sz:0.45});}
+      for(let sct=0;sct<5;sct++){const aa=a+(sct-2)*L/5/41;k.tangent('base','#6a6e70',aa,39.68,0.15,0.04,0.02,2.3);if(sct%2)k.tangent('base','#9a9e9e',aa,39.67,0.4,1.0,0.02,1.6);}
+      k.tangent('base','#4a4c4e',a,39.66,1.0,0.06,0.02,0.06);dial(k,a-L/5/41,39.62,1.8);
+      k.pipe('base','#4a6a4a',Math.cos(a)*39.8,0.1,Math.sin(a)*39.8,Math.cos(a)*38.5,0.02,Math.sin(a)*38.5,0.05);
+      k.tangent('base','#9a9c9e',a,41,2.6,1.6,1.2,LH-3.1);k.radial('base','#9a9c9e',a,32,LH-1.0,18,1.2,0.8);}
+    k.radial('base','#a8aaac',0,22,0,2.6,2.6,LH);for(const h of [1.2,2.6])k.radial('base','#c8a020',0,22,h,2.64,2.64,0.06);
+    for(const dd of [-1.5,1.5]){const a=95*D+dd/30,[x,z]=at(a,30);k.add('base',G.cyl,'#9aa0a4',x,1.9,z,{sx:0.75,sy:3.6,sz:0.75});k.add('base',G.sph,'#9aa0a4',x,3.7,z,{sx:0.75,sy:0.3,sz:0.75});
+      for(let q=0;q<4;q++)k.add('base',K.ring(0.75,0.82,0.06,16),'#6a6e70',x,0.6+q*0.9,z);}
+    k.pipe('base','#8a8a84',Math.cos(95*D)*30,3.6,Math.sin(95*D)*30,Math.cos(95*D)*30,LH,Math.sin(95*D)*30,0.08);
+    for(let q=0;q<12;q++){const a=(140+q*2.4)*D;k.radial('base','#5a6a7a',a,34,0,1.4,0.7,1.1);k.radial('base','#e0e0d8',a,34,1.1,1.2,0.6,0.04);k.pipe('base','#b06020',Math.cos(a)*34,1.15,Math.sin(a)*34,Math.cos(a)*34,LH-0.4,Math.sin(a)*34,0.02);}
+    {const a=12*D,[x,z]=at(a,18);k.add('base',G.box,'#4a4c4e',x,1.0,z,{sx:0.15,sy:2.0,sz:0.15});k.add('base',G.box,'#2a2c2e',x,2.1,z,{ry:-a,sx:0.15,sy:0.7,sz:1.1});
+      k.add('glow',G.box,'#70ff90',x-Math.cos(a)*0.09,2.25,z-Math.sin(a)*0.09,{ry:-a,sx:0.02,sy:0.18,sz:0.9});k.add('glow',G.box,'#ffd070',x-Math.cos(a)*0.09,1.95,z-Math.sin(a)*0.09,{ry:-a,sx:0.02,sy:0.18,sz:0.9});}
+    kits.water2=k.build();}
   // the casting rooms: in each a furnace under its hood and flue, a crucible lifted from it on a jib, sand moulds
   // laid out in rows on the floor waiting to be poured, heaps of moulding sand, ingots stacked, tongs racked, scorch
   // on the floor, an ore conveyor coming up through the floor from the mines' level, a hoist for the metal going up

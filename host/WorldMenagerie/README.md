@@ -2745,7 +2745,7 @@ with a logarithmic depth buffer.
 - **The section.** The silo is cut through its axis by a clipping plane that turns to face the camera, so the
   near half of every level, the wall and the ground is taken away and the rock it is sunk in shows as a face of
   dark, wavy strata with stones in them. The stair is never cut. **Cutaway** toggles the cut; views inside the
-  silo turn it off. The opening view lays the section on its side so the whole silo fills the screen; the top
+  silo turn it off. The opening view shows the whole silo upright; the top
   third, the mids and the deep each have a section view of their own.
 - **The levels**, one every 4.2 m: a landing street round the shaft, a ring wall of doors and lit windows, painted
   rooms with doorways, shelves and pictures out to the silo's wall, some doors standing open with light spilling
@@ -2784,22 +2784,50 @@ with a logarithmic depth buffer.
   together, a kitchen behind a wall with a hatch over the serving counter, a queue at it), and on its outer wall the screen, one bright panel drawn live from a camera in the housing on the cap
   (it renders only while the camera is near the top); the sheriff's and mayor's offices; the corridor to
   the airlock, with the cleaning suit hung by the inner door, and the ramp up to the exit on the plain.
-- **The mids**: the upper and lower farms under grow lights, the bazaar's stalls. **IT** on levels 34 and 35:
+- **The farms** (levels 49 to 56 and 77 to 84, `FARMV` in `levels.js`): each floor grows its own way, drawn after
+  real indoor farming, because feeding ten thousand under lights takes more floor than the silo has: **channels**
+  (white gullies two tiers high, a light bar over each tier, a sump under the return, one channel gone green);
+  **rafts** (long black-lined ponds, white boards edge to edge with rows of heads in them, air lines along the edge);
+  **racks** (five tiers of greens, a magenta bar under every shelf, one in twenty-three dead); **grain** (deep troughs
+  of soil in two tiers under old sodium lamps on gull-wing reflectors, lit amber); **the animals** (hens on litter
+  with perches and nest boxes, pigs in concrete pens behind tube gates, rabbits in hutches three high, goats with a
+  plank platform, a dung channel along every pen, the feed store, fans in the wall); and **the floor that needs no
+  light** (two mushroom rooms of steel shelving and bags, round fish tanks with settling cones and filter tanks
+  feeding grow beds, the nutrient room's stock tanks and dosing board, a cold seed store of sealed tins, compost
+  bays, and the digester with its gas dome and a flare). The LED floors are lit magenta, the grain amber, the rest
+  plain. Views for each.
+- **The mids**: the bazaar's stalls. **IT** on levels 34 and 35:
   racks and their lights. **Down deep**: supply (shelves, sacks, bins, a hoist, and every third room a workshop with
   lathes, a pillar drill, a forge with its hood and anvil, racks of bar stock, a welding cart, a bench and its tool
   board); water treatment (settling tanks with walkways over them, sand filters and their valve trees, pumps on
   plinths, the ring mains, drains under grating, a board of lamps); the casting rooms (a furnace under its hood and
   flue, a crucible on a jib, sand moulds in rows, some just poured, moulding sand, ingots, tongs, an ore conveyor up
   through the floor, hoists); mechanical (pump sets, switch cabinets, pipe runs in their colours, yellow floor
-  borders, benches). Yellow paint, stencilled warnings, gauges, valve wheels and stains throughout.
+  borders, benches). Yellow paint, stencilled warnings, gauges, valve wheels and stains throughout. The water band
+  (levels 123 to 128, `WATERV`) is three kinds of floor: **clean water** (the settling tanks and sand filters, then
+  lamp tubes, a baffled chlorine tank and a pressure tank); **the sewage cleaned** (four aeration basins of brown
+  water and foam with a walkway down each and air lines along them, a round clarifier with its scraper bridge, the
+  sludge tank and press, the blowers in a row); and **the air plant** (seven air handlers with their sections, doors,
+  gauges and drains, ducts up to the main riser, the scrubber's two columns with the line up to the farms, the
+  electrolysis cells, and a post with the oxygen and carbon readings).
 - **The generator hall** (levels 142 to 144 open as one, `src/silo/plant.js`): a turbine-generator set on its
   pedestal (the casing stepping up from a small high-pressure end to a big ribbed low-pressure end, stop valves,
   crossover and exhaust trunk, the generator and its exciter), the lube oil skid and cooler, an overhead travelling
   crane, a mezzanine of grating, switchgear, bus bars and cable trays, seven control boards and a mimic panel with
   needles that move; the oil: the wellhead and its pumpjack, separators, a still and day tanks with sight glasses,
   on a pipe rack; a workshop corner, drums, oil stains, caged lamps, painted warnings, workers. The shaft turns and
-  the deep's lamps hum with it.
-- **The mines and the digger** (`src/silo/digger.js`): four drifts out from the hall, timbered (steel arches further
+  the deep's lamps hum with it. The steam it runs on, drawn after real packaged plants: a water-tube boiler (a clad
+  block with patched panels, the steam drum along its top with domed ends and safety valves, the mud drum, the burner
+  glowing in its windbox with the oil gun and scanner, the forced-draught fan, the flue trunk black with soot up into
+  the ceiling, a platform along the drum); the deaerator high on its frame nine metres up over the two feed pumps (one
+  running, one standing by, on drip trays); the steam main round the hall under the ceiling, clad and hung on spring
+  hangers with an expansion loop; a standby diesel set in its own bay (lagged exhaust to a silencer, its day tank and
+  purifier, a chalk board of its runs); and over the boards an annunciator of lit windows and chart recorders.
+- **The mines and the digger** (`src/silo/digger.js`): forty metres under the hall, down a steel-framed shaft with a
+  cage on two ropes and a ladderway from a hatch in the hall's floor (a headframe with its sheave, the winch, yellow
+  rails), a hall cut in the rock under the silo's footing (pillars left to hold the roof, a loop of track with carts,
+  lamps hung from the rock); in section a slot is cut through the rock face at that depth so the mines show under the
+  plant. Four drifts out from it, timbered (steel arches further
   in), with rails, ore carts, puddles, lamps, and a working face with a drill. Off one, behind a welded bulkhead,
   a rough chamber and a tunnel lined with concrete segments (rails, the ventilation duct at the crown, water and air
   mains, cable on hangers, lamps mostly dead) running toward Silo 17; at its end, a tunnel boring machine drawn after
@@ -2820,7 +2848,8 @@ with a logarithmic depth buffer.
   (its far walls and floor in section, the surface a thin see-through slab, every cap flush with it), Silo 18
   marked in amber and Silo 1, the founding silo, in blue. **Into Silo 18** descends from the field through the cap
   and down the shaft to the stair at level 3 (also `#view=Into Silo 18`).
-- **The clock**: an hour every fifteen seconds; the levels' lights dim from 22:00 to 06:00 on a schedule.
+- **The clock**: an hour every fifteen seconds; the levels' lights dim from 22:00 to 06:00 on a schedule. **Clock
+  speed (T)** runs it ten or sixty times faster (`#speed=`) to watch a day: the lamps, the shift changes, the nights.
 - **Happenings** (buttons, or `#event=`): **A cleaning** (`cleaning`): the airlock's lights go amber, the inner
   door rises, gas fills the chamber, the outer door opens, the suited figure walks the ramp out, wipes the lenses
   (the screen's grime clears) and walks to the hill. **A porter's run** (`porter`): the camera follows a porter
@@ -2830,10 +2859,11 @@ with a logarithmic depth buffer.
   head turns, dust comes off the face, and it creeps a few metres forward, shaking the ground near it.
 - **Looking up and down the shaft**: **Look up (U)** and **Look down (J)**, or a double-click inside the silo, ease
   in about 0.6 s to the stair's eye looking straight up or down it, without roll; dragging then looks round from
-  there. **Level (L)** comes back to looking level.
+  there, held square to the shaft (a drag turns the view round its axis, never tilts it). **Level (L)** comes back
+  to looking level.
 
 The readout says where the camera is: "Silo 18 — level 34, IT · 09:40 · lights full". `#mode=cut|inside|outside|field`
-keeps the mode in the address. Views: Silo 18 on its side, Silo 18 in section, the top third, the mids and the deep in
+keeps the mode in the address. Views: Silo 18 whole, Silo 18 in section, the top third, the mids and the deep in
 section, the shaft from the top, the stair mid-descent, on the stair at level 3, the cafeteria and the screen, the
 serving counter and kitchen, the airlock, up top, a home on level 12, the commons on level 20, the bazaar on market
 day, IT, the upper farms, the bazaar, supply, supply's workshop, water treatment, the casting rooms, mechanical and

@@ -7,7 +7,7 @@
 // near half of everything but the stair), 'inside' and 'outside' (nothing cut), 'field' (the ground made see-through
 // over the fifty silos). A view in the city file says which it wants.
 import {makeKits} from './kit.js';
-import {LH,Y1,RS,RW,RO,NL,yL,levelAt,kindOf,zoneOf,placeName,buildKits,buildStair,buildTop,buildHall,SCREEN,AIRLOCK,STAIR} from './levels.js';
+import {LH,Y1,RS,RW,RO,NL,yL,levelAt,kindOf,zoneOf,placeName,buildKits,buildStair,buildTop,buildHall,SCREEN,AIRLOCK,STAIR,FARMV,FARM_NAMES,WATERV} from './levels.js';
 import {buildPlant} from './plant.js';
 import {buildCrowd,activity} from './crowd.js';
 import {buildDigger,MINE_DEPTH,HUB_H} from './digger.js';
@@ -32,7 +32,10 @@ export function model(api){
   // each part of the silo its own light: sodium amber up top, magenta-white over the farms, cold blue-white in IT,
   // the mids plain and warm, red-orange working light down deep. PAL.lamp tints the lamps, PAL.tint the rooms.
   const PAL={top:{lamp:[1,0.82,0.58],tint:[1.05,0.95,0.8]},farm:{lamp:[1,0.82,1],tint:[1.0,0.9,1.02]},it:{lamp:[0.72,0.88,1.2],tint:[0.82,0.92,1.08]},
-    mid:{lamp:[1,0.94,0.82],tint:[0.98,1.0,0.93]},deep:{lamp:[1,0.55,0.3],tint:[0.86,0.72,0.58]}};
+    mid:{lamp:[1,0.94,0.82],tint:[0.98,1.0,0.93]},deep:{lamp:[1,0.55,0.3],tint:[0.86,0.72,0.58]},
+    // the farm floors by how they are lit: the grain under old sodium lamps amber, the animals and the floor that needs
+    // no light under plain working lamps (the magenta 'farm' is the LED floors')
+    farmsod:{lamp:[1,0.78,0.5],tint:[1.0,0.95,0.86]},farmplain:{lamp:[1,0.97,0.9],tint:[0.98,0.98,0.95]}};
   const lampM={},glowM={};for(const z in PAL){lampM[z]=new THREE.MeshBasicMaterial({vertexColors:true,clippingPlanes:clip});glowM[z]=new THREE.MeshBasicMaterial({vertexColors:true,clippingPlanes:clip});}
   const BLINK=new THREE.MeshBasicMaterial({vertexColors:true,clippingPlanes:clip});
   const SPILL=new THREE.MeshBasicMaterial({vertexColors:true,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false,clippingPlanes:clip});
@@ -49,7 +52,7 @@ export function model(api){
   const care=n=>{const h=(n*2654435761>>>0)%11;return h<2?0.8:h===10?1.1:1;};
   {const groups=new Map();
     // the homes come in three versions, chosen level by level, so neighbouring floors differ
-    for(let n=2;n<NL-2;n++){const k0=kindOf(n),kd=k0==='home'?'home'+((n*7+Math.floor(n/8))%3):k0;if(!kits[kd])continue;const pz=kd==='it'||kd==='farm'?kd:zoneOf(n),key=kd+'|'+pz+'|'+Math.floor((n-1)/8);let g=groups.get(key);if(!g)groups.set(key,g={kd,z:pz,ns:[]});g.ns.push(n);}
+    for(let n=2;n<NL-2;n++){const k0=kindOf(n),kd=k0==='home'?'home'+((n*7+Math.floor(n/8))%3):k0==='farm'?'farm'+FARMV[n]:k0==='water'?'water'+(WATERV[n]?WATERV[n]:''):k0;if(!kits[kd])continue;const pz=k0==='it'?k0:k0==='water'?'farmplain':k0==='farm'?['farm','farm','farm','farmsod','farmplain','farmplain'][FARMV[n]]:zoneOf(n),key=kd+'|'+pz+'|'+Math.floor((n-1)/8);let g=groups.get(key);if(!g)groups.set(key,g={kd,z:pz,ns:[]});g.ns.push(n);}
     for(const g of groups.values()){const geo=kits[g.kd],ys=g.ns.map(yL),lo=Math.min(...ys),hi=Math.max(...ys)+LH,list=[];
       for(const [key,G] of Object.entries(geo)){const im=new THREE.InstancedMesh(G,matFor(key,g.z),g.ns.length);
         g.ns.forEach((n,i)=>{o.position.set(0,yL(n),0);o.rotation.set(0,turn[n],0);o.updateMatrix();im.setMatrixAt(i,o.matrix);
@@ -222,6 +225,10 @@ export function model(api){
 
   // ---- the clock: an hour every fifteen seconds; the lamps dim at night on a schedule ----
   const H=new URLSearchParams(location.hash.slice(1));let hour=H.has('hour')?+H.get('hour'):9.5,clockRate=1/15;
+  // the clock can be run faster to watch a day go by: the lamps coming up, the shift change on the stair, meals in the
+  // cafeteria, the lamps going down (T, or the button, steps through the speeds; #speed= in the address)
+  const SPEEDS=[1,10,60];let speedI=Math.max(0,SPEEDS.indexOf(+(H.get('speed')||1)));
+  const faster=()=>{speedI=(speedI+1)%SPEEDS.length;say(speedI?'The clock runs '+SPEEDS[speedI]+' times faster: a day in '+Math.round(24*15/SPEEDS[speedI])+' seconds.':'The clock back at its own pace: an hour every fifteen seconds.');};
   const lightF=h=>{const a=ease((h-5.5)/1),b=1-ease((h-21.5)/1);return 0.28+0.72*Math.max(0,Math.min(a,b));};
   const dayOut=h=>0.22+0.78*Math.max(0,Math.sin((h-6)/12*Math.PI));
   // the page's lights: the ambient made warm (it is bluish, for space), the sun and fill (dimmed with the day),
@@ -265,7 +272,7 @@ export function model(api){
     P(c*57,y,s*57);P(c*63.5,y,s*63.5);P(c*110,0,s*110);P(c*117,g(c*117,s*117),s*117);P(-40,g(-40,-30),-30);P(SENSOR.x,g(0,-18),-18);
     P(HILL.x+30,g(HILL.x+30,HILL.z+150),HILL.z+150);}
   animHooks.push(now=>{const dt=Math.min(0.1,(now-(last||now))/1000);last=now;t+=dt;frameN++;
-    hour=(hour+dt*clockRate)%24;
+    hour=(hour+dt*clockRate*SPEEDS[speedI])%24;
     // the cut faces the camera
     if(mode==='cut'){const cx=camera.position.x,cz=camera.position.z,l=Math.hypot(cx,cz)||1;PL.normal.set(-cx/l,0,-cz/l);PL.constant=0;}
     // chunks out of view are not drawn
@@ -341,7 +348,7 @@ export function model(api){
       if(md&&u>0.5&&mode!==md)setMode(md);
       if(f.t>=dur){f.i++;f.t=0;if(f.i>=FLY.length)flight=null;}}
     if(msgT>0)msgT-=dt;
-    if(pendingEv&&t>2){const f={cleaning,porter,blackout,storm,digger,fly:intoSilo,lookup:()=>look(1),lookdown:()=>look(-1)}[pendingEv];pendingEv=null;if(f)f();}
+    if(pendingEv&&t>2){const f={cleaning,porter,blackout,storm,digger,fly:intoSilo,lookup:()=>look(1),lookdown:()=>look(-1),eyes:()=>{if(mode==='inside'){fpStart();FP.pitch=0.35;}}}[pendingEv];pendingEv=null;if(f)f();}
     // for the probe: what is happening, and the hour
     if(frameN%30===0){const d=window._details=window._details||{};d.happening=Object.keys(EV).filter(k=>EV[k]).join(',')||'none';d.hour=+hour.toFixed(2);d.mode=mode;d.hud=hudText();d.drawn=crowd.meshes.map(m=>m.count).join(',');}});
 
@@ -373,9 +380,8 @@ export function model(api){
     LK.e.set(LK.pitch,LK.yaw,0,'YXZ');LK.qt.setFromEuler(LK.e);
     camera.position.lerpVectors(LK.p0,LK.pos,u);camera.quaternion.slerpQuaternions(LK.q0,LK.qt,u);
     if(camera.near>0.3){camera.near=0.3;camera.updateProjectionMatrix();}
-    if(LK.back&&LK.t>=1){// hand the camera back to the orbit: the same spot, looking the same way, level
-      const fx=-Math.sin(LK.yaw),fz=-Math.cos(LK.yaw),d=6,p=camera.position;LK.on=false;
-      api.view({az:Math.atan2(-fz,-fx),el:0,d,tx:p.x+fx*d,ty:p.y,tz:p.z+fz*d});}
+    if(LK.back&&LK.t>=1){// back to the eyes: the same spot, looking the same way, level
+      LK.on=false;FP.pos.copy(camera.position);FP.yaw=LK.yaw;FP.pitch=0;FP.vy=null;FP.on=true;FP.last=0;}
     return true;};
   {const cv=renderer.domElement;let px=null,py=null;
     cv.addEventListener('pointerdown',e=>{px=e.clientX;py=e.clientY;});cv.addEventListener('pointerup',()=>{px=null;});
@@ -384,9 +390,43 @@ export function model(api){
       LK.e.set(LK.pitch,LK.yaw,0,'YXZ');camera.quaternion.setFromEuler(LK.e);LK.q0.copy(camera.quaternion);});
     cv.addEventListener('dblclick',()=>{const p=camera.position;if(mode==='inside'&&Math.hypot(p.x,p.z)<RO&&p.y<yL(1)+4&&p.y>yL(NL))look(1);});
     addEventListener('keydown',e=>{const t=e.target;if(t&&(t.tagName==='INPUT'||t.tagName==='TEXTAREA'||t.isContentEditable)||e.ctrlKey||e.metaKey||e.altKey)return;
-      const kk=e.key.toLowerCase();if(kk==='u')look(1);else if(kk==='j')look(-1);else if(kk==='l')level();});}
+      const kk=e.key.toLowerCase();if(kk==='u')look(1);else if(kk==='j')look(-1);else if(kk==='l')level();else if(kk==='t')faster();});}
 
-  const hh=()=>{const h=Math.floor(hour),m=Math.floor((hour-h)*60);return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0');};
+  // ---- inside the silo the camera is a pair of eyes, not a turntable: a drag looks round from where it stands with
+  //      the horizon always level (no roll, never quite straight up or down, so it cannot flip); W/S walk the way it
+  //      faces along the floor, A/D step aside, E climbs a level and Q drops one (or Page Up/Down), the wheel walks,
+  //      Shift hurries. Esc, a chosen view or leaving 'inside' hands the camera back to the turntable. ----
+  const FP={on:false,yaw:0,pitch:0,pos:new THREE.Vector3(),e:new THREE.Euler(0,0,0,'YXZ'),keys:new Set(),vy:null,last:0};
+  const fpStart=()=>{const f=new THREE.Vector3();camera.getWorldDirection(f);if(Math.hypot(f.x,f.z)>1e-4)FP.yaw=Math.atan2(-f.x,-f.z);
+    FP.pitch=Math.max(-1.3,Math.min(1.3,Math.asin(Math.max(-1,Math.min(1,f.y)))));FP.pos.copy(camera.position);FP.vy=null;FP.on=true;FP.last=0;};
+  const fpStop=()=>{if(!FP.on)return;FP.on=false;const fx=-Math.sin(FP.yaw)*Math.cos(FP.pitch),fy=Math.sin(FP.pitch),fz=-Math.cos(FP.yaw)*Math.cos(FP.pitch),d=6,p=FP.pos;
+    api.view({az:Math.atan2(-fz,-fx),el:Math.max(-1.4,Math.min(1.4,-Math.asin(fy))),d,tx:p.x+fx*d,ty:p.y+fy*d,tz:p.z+fz*d});};
+  const fpFrame=now=>{if(!FP.on)return false;if(mode!=='inside'||LK.on||EV.porter||flight){FP.on=false;return false;}
+    const dt=Math.min(0.1,(now-(FP.last||now))/1000);FP.last=now;const K_=FP.keys,sp=(K_.has('shift')?16:4.5)*dt,fx=-Math.sin(FP.yaw),fz=-Math.cos(FP.yaw);
+    let mx=0,mz=0;if(K_.has('w')){mx+=fx;mz+=fz;}if(K_.has('s')){mx-=fx;mz-=fz;}if(K_.has('d')){mx-=fz;mz+=fx;}if(K_.has('a')){mx+=fz;mz-=fx;}
+    const ml=Math.hypot(mx,mz);if(ml>0){FP.pos.x+=mx/ml*sp;FP.pos.z+=mz/ml*sp;}
+    if(FP.vy!=null){const dy=FP.vy-FP.pos.y;FP.pos.y+=Math.sign(dy)*Math.min(Math.abs(dy),dt*Math.max(3,Math.abs(dy)*4));if(Math.abs(dy)<0.01)FP.vy=null;}
+    FP.e.set(FP.pitch,FP.yaw,0,'YXZ');camera.position.copy(FP.pos);camera.up.set(0,1,0);camera.quaternion.setFromEuler(FP.e);
+    if(camera.near>0.2){camera.near=0.2;camera.updateProjectionMatrix();}return true;};
+  const climb=dir=>{if(!FP.on)fpStart();const n=Math.max(1,Math.min(NL,levelAt(FP.pos.y)-dir));FP.vy=yL(n)+1.7;};
+  {const cv=renderer.domElement;let px=null,py=null;
+    cv.addEventListener('pointerdown',e=>{if(mode!=='inside'||LK.on||EV.porter||flight||e.button!==0||e.shiftKey)return;if(!FP.on)fpStart();px=e.clientX;py=e.clientY;});
+    addEventListener('pointerup',()=>{px=null;});
+    cv.addEventListener('pointermove',e=>{if(px===null||!FP.on)return;const dx=e.clientX-px,dy=e.clientY-py;px=e.clientX;py=e.clientY;
+      FP.yaw-=dx*0.0045;FP.pitch=Math.max(-1.3,Math.min(1.3,FP.pitch-dy*0.0045));});
+    cv.addEventListener('wheel',e=>{if(!FP.on)return;const s=-Math.sign(e.deltaY)*Math.min(4,Math.abs(e.deltaY)*0.01+0.5);FP.pos.x+=-Math.sin(FP.yaw)*s;FP.pos.z+=-Math.cos(FP.yaw)*s;},{passive:true});
+    const kname=e=>e.key==='Shift'?'shift':e.key.toLowerCase();
+    addEventListener('keydown',e=>{const t=e.target;if(t&&(t.tagName==='INPUT'||t.tagName==='TEXTAREA'||t.isContentEditable)||e.ctrlKey||e.metaKey||e.altKey)return;
+      const k=kname(e);if(mode!=='inside'||LK.on)return;
+      if('wasd'.includes(k)&&k.length===1){if(!FP.on)fpStart();FP.keys.add(k);}else if(k==='shift')FP.keys.add(k);
+      else if(k==='e'||k==='pageup'){climb(1);e.preventDefault();}else if(k==='q'||k==='pagedown'){climb(-1);e.preventDefault();}
+      else if(k==='escape'&&FP.on)fpStop();});
+    addEventListener('keyup',e=>FP.keys.delete(kname(e)));addEventListener('blur',()=>FP.keys.clear());}
+  // which way the eyes look, for the readout: up or down from level, so a view never loses which way is up
+  const facing=()=>{const f=new THREE.Vector3();camera.getWorldDirection(f);const deg=Math.round(Math.asin(Math.max(-1,Math.min(1,f.y)))*180/Math.PI);
+    return Math.abs(deg)<4?'looking level':deg>0?'looking '+deg+'° up':'looking '+(-deg)+'° down';};
+
+  const hh=()=>{const h=Math.floor(hour),m=Math.floor((hour-h)*60);return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+(speedI?' (×'+SPEEDS[speedI]+')':'');};
   setMode((C.view0&&C.view0.mode)||'cut');
   {const vn=(H.get('view')||'').toLowerCase();for(const [n,v] of Object.entries(views))if(n.toLowerCase()===vn){if(v.mode)setMode(v.mode);if(v.fly)pendingFly=true;}
     if(H.has('mode'))setMode(H.get('mode'));}
@@ -394,12 +434,12 @@ export function model(api){
   pendingEv=H.get('event')||(pendingFly?'fly':null);
   api.ctx.details=Object.assign(api.ctx.details||{},{levels:NL,chunks:chunks.length,residents:crowd.total,silos:out.silos.length});
   return {radius:700,minD:2,adaptiveNear:true,pick:picks,group:root,
-    onView:(name,v)=>{flight=null;LK.on=false;if(EV.porter)EV.porter=null;if(v.silo){const s=out.silos.find(q=>q.n===v.silo);if(s){v.tx=s.x;v.tz=s.z;}}if(v.mode)setMode(v.mode);
+    onView:(name,v)=>{flight=null;LK.on=false;FP.on=false;if(EV.porter)EV.porter=null;if(v.silo){const s=out.silos.find(q=>q.n===v.silo);if(s){v.tx=s.x;v.tz=s.z;}}if(v.mode)setMode(v.mode);
       if(v.fly)setTimeout(flyIn,0);},
-    camFrame:now=>lookFrame(now)||camFrame(now),ownsInput:()=>!!EV.porter||LK.on,
+    camFrame:now=>lookFrame(now)||fpFrame(now)||camFrame(now),ownsInput:()=>!!EV.porter||LK.on||FP.on,
     hashExtra:()=>'&mode='+mode,
     buttons:{'Cutaway':()=>setMode(mode==='cut'?'inside':'cut'),'The field':()=>{if(mode==='field')go('Silo 18 in section');else go('The field of fifty silos');},
-      'Into Silo 18':intoSilo,'Look up (U)':()=>look(1),'Look down (J)':()=>look(-1),'Level (L)':level,
+      'Into Silo 18':intoSilo,'Look up (U)':()=>look(1),'Look down (J)':()=>look(-1),'Level (L)':level,'Clock speed (T)':()=>faster(),
       'A cleaning':cleaning,'A porter\'s run':porter,'Generator failure':blackout,'Dust storm':storm,'The digger wakes':digger},
     hud:()=>hudText()};
   function hudText(){{if(msgT>0)return msg;const p=camera.position,r=Math.hypot(p.x,p.z);
@@ -407,5 +447,5 @@ export function model(api){
       if(p.y>-2)return 'Silo 18 · on the surface'+(r>RC?', '+Math.round(r)+' m out':'')+' · '+hh()+(EV.storm?' · dust storm':'');
       if(p.y<yL(NL)-2||(p.y<yL(141)&&r>RO+0.5))return 'Silo 18 — '+dig.where(p)+' · '+hh()+(EV.dig?' · the digger is cutting':'');
       const n=levelAt(p.y),lf=lightF(hour);
-      return 'Silo 18 — '+(n>NL?'the mines':'level '+Math.max(1,n)+', '+placeName(Math.max(1,n))+' · '+crowd.count(Math.max(1,n))+' residents')+(r>RO?' (in section)':'')+' · '+hh()+' · '+(EV.dark&&n>96?'blackout':lf>0.9?'lights full':lf<0.35?'night lights':'lights dimming');}}
+      return 'Silo 18 — '+(n>NL?'the mines':'level '+Math.max(1,n)+', '+placeName(Math.max(1,n))+' · '+crowd.count(Math.max(1,n))+' residents')+(mode==='inside'?' · '+facing():'')+(r>RO?' (in section)':'')+' · '+hh()+' · '+(EV.dark&&n>96?'blackout':lf>0.9?'lights full':lf<0.35?'night lights':'lights dimming');}}
 }

@@ -214,6 +214,104 @@ export function buildPlant(THREE,K,matFor,clip){
   for(const w of [-4.6,4.6])tb('base',YEL,-0.5,w,0.01,31,0.02,0.12);for(const s of [-15.4,14.6])tb('base',YEL,s,0,0.01,0.12,0.02,9.3);
   for(let i=0;i<6;i++){const s=-13+i*5,w=i%2?4.95:-4.95;tb('base',YEL,s,w,0.012,1.2,0.02,0.6);for(let q=0;q<3;q++)tb('base',BLK,s-0.4+q*0.4,w,0.014,0.12,0.02,0.6,{ry:-ua+0.6});}
 
+  // ---------------- the steam side: the boiler that raises the steam the turbine runs on ----------------
+  // drawn after real packaged water-tube boilers: a long clad block on a plinth (the furnace and the tube bank inside),
+  // the steam drum along its top with domed ends, the burner in its front wall with the oil gun, the scanner and the
+  // windbox, the forced-draught fan beside it, the flue trunk from its far end up into the ceiling, black with soot
+  const wt=(key,col,b,r,h,rad,len,geo=G.cyl)=>{const [x,z]=W(b,r);k.add(key,geo,col,x,y0+h,z,{rx:Math.PI/2,ry:-b,sx:rad,sy:len,sz:rad});};
+  const at=(b,r,d)=>b+d/r;   // an angle d metres further round at radius r
+  {const bB=50*D,rB=34,L=11;
+    wb('base','#6a6660',bB,rB,0.15,5.8,0.3,L+1.4);wb('base','#c8a03a',bB,rB,0.32,5.82,0.04,L+1.42);
+    wb('base','#a6aaac',bB,rB,3.25,4.6,5.8,L);                                   // the cladding
+    for(let q=0;q<=Math.round(L/1.2);q++){const bq=at(bB,rB,-L/2+q*1.2);wb('base','#8a8e90',bq,rB,3.25,4.64,5.8,0.06);}   // its seams
+    for(const hh of [1.4,3.3,5.1])wb('base','#8a8e90',bB,rB,hh,4.64,0.05,L+0.02);
+    // patches riveted over the cladding where it has been opened and closed again, a different shade each
+    for(let q=0;q<5;q++){const bq=at(bB,rB,-L/2+1+R()*(L-2)),hh=1+R()*4;wb('base',['#9a9a92','#b4b4ac','#8e9490'][q%3],bq,rB-2.33,hh,0.03,0.6+R()*0.6,0.8+R()*1.2);}
+    wt('base','#b8bcbe',bB,rB+0.7,6.75,0.8,L+0.6);                              // the steam drum
+    for(const sd of [-1,1]){const [x,z]=W(at(bB,rB+0.7,sd*(L/2+0.3)),rB+0.7);k.add('base',G.sph,'#b0b4b6',x,y0+6.75,z,{sx:0.8,sy:0.8,sz:0.8});}
+    wt('base','#7a7e80',bB,rB-1.4,0.9,0.55,L+0.4);                              // the mud drum, under the bank
+    // the downcomers at the far end, outside the casing; the safety valves on the drum and their vent pipes up
+    for(const dr of [-1.6,1.6]){const bq=at(bB,rB,L/2+0.25);wv('base','#8a8e90',bq,rB+dr*0.5,0.9,6.75,0.16);}
+    for(const dd of [-3,-1.6]){const bq=at(bB,rB+0.7,dd);wv('base','#c03020',bq,rB+0.7,7.5,8.0,0.14);wv('base','#6a6e70',bq,rB+0.7,8.0,HT,0.08);}
+    // the gauge glass on the drum's front end, lit from behind; the drum's pressure gauge
+    {const bq=at(bB,rB+0.7,-L/2-0.95),[x,z]=W(bq,rB+0.7);k.add('glow',G.box,'#ffd890',x,y0+6.75,z,{ry:-bB,sx:0.08,sy:0.7,sz:0.08});gauge(x,y0+7.6,z,-bB+Math.PI/2,0.24,-1.1,0.5,0.1,0.3);}
+    // the front wall: the burner in its refractory, the windbox round it, the oil gun and its hose, the scanner
+    {const bf=at(bB,rB,-L/2-0.05);
+      const [fx,fz]=W(bf,rB);const ff=(r,h,rad,len,col,key='base')=>{const bq=at(bf,rB,-len/2);const [x,z]=W(bq,r);k.add(key,G.cyl,col,x,y0+h,z,{rx:Math.PI/2,ry:-bB,sx:rad,sy:len,sz:rad});};
+      wb('base','#6a5a4a',bf,rB,2.4,2.4,2.4,0.4);                               // the windbox
+      ff(rB,2.4,0.95,0.5,'#4a4a48');ff(rB,2.4,0.7,0.6,'#2a2624');ff(rB,2.4,0.5,0.65,'#ff8030','glow');   // the throat, glowing
+      ff(rB+0.4,2.4,0.06,1.6,'#9a9a94');ff(rB-0.6,3.0,0.08,0.5,'#3a5a6a');      // the oil gun; the flame scanner
+      for(let q=0;q<6;q++){const a2=q/6*TAU,[x,z]=W(at(bf,rB,-0.3),rB+Math.cos(a2)*1.15);k.add('base',G.box,'#3a3230',x,y0+2.4+Math.sin(a2)*1.15,z,{ry:-bB,sx:0.5,sy:0.5,sz:0.06});}  // spalled refractory
+      const [gx,gz]=W(at(bf,rB,-0.8),rB+0.4);k.pipe('base','#1e1e1c',gx,y0+2.4,gz,gx,y0+0.3,gz,0.05);   // the oil hose down to the floor
+      wp('base','#c8a020',at(bf,rB,-0.8),rB+0.4,0.3,at(bf,rB,-0.8),rB+6,0.3,0.06);  // and on round to the day tanks (yellow: fuel)
+      // the forced-draught fan: a scroll housing, its motor, the duct into the windbox
+      const bfan=at(bf,rB,-2.6);wv('base','#5a6a6a',bfan,rB+1.2,0.3,2.8,1.25,G.disc);wb('base','#4a5a5a',bfan,rB+2.7,0.9,1.4,1.2,1.0);wb('base','#c8a03a',bfan,rB+2.0,0.9,0.35,0.9,0.9);
+      wp('base','#5a6a6a',bfan,rB+1.2,2.2,at(bf,rB,-0.4),rB+0.4,3.4,0.45);}
+    // the flue trunk from the far end, black with soot, a damper with its quadrant handle, up into the ceiling
+    {const bq=at(bB,rB,L/2-1);wb('base','#2a2826',bq,rB-0.8,(6.2+HT)/2+1,1.6,HT-6.2,1.6);wb('base','#1a1816',bq,rB-0.8,6.3,1.8,0.3,1.8);
+      wb('base','#3a3634',bq,rB-0.8,9.2,1.7,0.12,1.7);{const [x,z]=W(bq,rB+0.1);k.add('base',G.box,'#c03020',x,y0+9.2,z,{ry:-bB,sx:0.06,sy:0.06,sz:0.6,rz:0.5});}}
+    // a stair and a platform along the drum for the man who reads the glass and blows down the gauges
+    for(let q=0;q<10;q++){const bq=at(bB,rB+3.0,-L/2+q*0.32);wb('base','#4a4c4e',bq,rB+3.0,0.3+q*0.6,0.9,0.05,0.3);}
+    wb('base','#4a4c4e',bB,rB+2.7,6.0,1.2,0.08,L-3);wb('base','#c8a03a',bB,rB+3.25,7.05,0.06,0.06,L-3);wb('base','#c8a03a',bB,rB+3.25,6.55,0.05,0.05,L-3);
+    for(let q=0;q<6;q++){const bq=at(bB,rB+3.25,-L/2+1.5+q*(L-3)/5);wb('base','#c8a03a',bq,rB+3.25,6.55,0.06,1.05,0.06);}
+    // the steam main: from the drum's top up under the ceiling and round the hall to the turbine's stop valves,
+    // clad in aluminium, hung on spring hangers, with an expansion loop where it turns; green-banded water beside it
+    {const hS=HT-1.6,rS=41,b0=at(bB,rB+0.7,1),pts=[];wv('base','#c4c8cc',b0,rB+0.7,7.4,hS,0.3);wp('base','#c4c8cc',b0,rB+0.7,hS,b0,rS,hS,0.3);
+      for(let d=50;d>=-28;d-=6)pts.push(d*D);
+      for(let q=0;q<pts.length-1;q++){wp('base','#c4c8cc',pts[q],rS,hS,pts[q+1],rS,hS,0.3);
+        const [x,z]=W(pts[q],rS);k.pipe('base','#3a3a38',x,y0+hS+0.3,z,x,y0+HT,z,0.025);k.add('base',G.cyl6,'#4a6a8a',x,y0+hS+0.7,z,{sx:0.08,sy:0.4,sz:0.08});
+        if(q%3===1)for(const sd of [-1,1])wb('base','#6aa06a',pts[q],rS,hS,0.62,0.12,0.12,{ry:-pts[q]+sd*0.001});}
+      const bl=10*D;wp('base','#c4c8cc',bl-0.05,rS,hS,bl-0.05,rS-3,hS,0.3);wp('base','#c4c8cc',bl+0.05,rS,hS,bl+0.05,rS-3,hS,0.3);wp('base','#c4c8cc',bl-0.05,rS-3,hS,bl+0.05,rS-3,hS,0.3);
+      wp('base','#c4c8cc',pts[pts.length-1],rS,hS,pts[pts.length-1],rS-4,hS,0.3);
+      // the feedwater back: green-banded, from the pumps under the deaerator to the boiler, low along the floor
+      wp('base','#5a7a5a',25*D,37,0.5,bB-6.2/rB,rB+1.6,0.5,0.12);wp('base','#5a7a5a',bB-6.2/rB,rB+1.6,0.5,bB-6.2/rB,rB+1.6,6.75,0.12);}}
+
+  // ---------------- the deaerator, high on its frame, and the feed pumps under it ----------------
+  // the feed pumps take their water from the deaerator high above them, so it never boils in them: a long tank on a
+  // platform nine metres up, a vent stub steaming from its top, two pumps on the floor below (one runs, one stands by)
+  {const bD=24*D,rD=37,Ld=8,hD=9.1;
+    for(const dr of [-1.5,1.5])for(const dd of [-3.4,0,3.4]){const bq=at(bD,rD,dd);wv('base','#4a4c4e',bq,rD+dr,0,hD-0.9,0.12,G.box);}
+    for(const dd of [-3.4,3.4]){const bq=at(bD,rD,dd);wp('base','#4a4c4e',bq,rD-1.5,0.5,bq,rD+1.5,hD-1.4,0.06);}
+    wb('base','#4a4c4e',bD,rD,hD-0.9,3.6,0.12,Ld+1.4);wb('base','#c8a03a',bD,rD-1.85,hD-0.84,0.06,0.18,Ld+1.4);wb('base','#c8a03a',bD,rD+1.85,hD-0.84,0.06,0.18,Ld+1.4);
+    for(const dr of [-1.85,1.85]){wb('base','#c8a03a',bD,rD+dr,hD+0.2,0.06,0.06,Ld+1.4);for(let q=0;q<6;q++)wb('base','#c8a03a',at(bD,rD,-Ld/2-0.7+q*(Ld+1.4)/5),rD+dr,hD-0.3,0.06,1.1,0.06);}
+    for(let q=0;q<4;q++)wb('base','#2a2a28',at(bD,rD,-Ld/2+1+q*2),rD,hD-0.7,3.2,0.35,0.3);   // saddles
+    wt('base','#b4b8ba',bD,rD,hD+0.6,1.25,Ld);for(const sd of [-1,1]){const [x,z]=W(at(bD,rD,sd*Ld/2),rD);k.add('base',G.sph,'#acb0b2',x,y0+hD+0.6,z,{sx:1.25,sy:1.25,sz:0.5});}
+    wv('base','#b4b8ba',at(bD,rD,-1.5),rD,hD+1.6,hD+3.0,0.55);wv('base','#8a8e90',at(bD,rD,-1.5),rD,hD+3.0,hD+3.5,0.12);   // the heater dome and its vent
+    {const [x,z]=W(at(bD,rD,-1.5),rD);k.add('base',G.box,'#ffd070',x,y0+hD+1.0,z,{ry:-bD,sx:0.06,sy:0.5,sz:0.06});}
+    // a caged ladder up to the platform
+    {const bq=at(bD,rD,Ld/2+1.2);for(const dd of [-0.25,0.25])wv('base','#c8a03a',at(bq,rD,dd),rD+1.6,0,hD,0.03,G.box);for(let y=0.3;y<hD;y+=0.3)wb('base','#c8a03a',bq,rD+1.6,y,0.04,0.04,0.5);
+      for(let y=2.4;y<hD+1;y+=0.9)k.add('base',K.ring(0.36,0.4,0.04,12,0,Math.PI),'#c8a03a',...(([x,z])=>[x,y0+y,z])(W(bq,rD+1.95)));}
+    // the feed pumps: motor, a yellow guard over the coupling, the multistage pump, suction down from the tank
+    for(const dd of [-1.6,1.6]){const bq=at(bD,rD,dd);wb('base','#3a3c3e',bq,rD,0.2,1.0,0.4,3.6);
+      wt('base','#4a6a8a',at(bq,rD,1.0),rD,0.85,0.38,1.4);wb('base','#c8a03a',at(bq,rD,0),rD,0.85,0.6,0.6,0.5);wt('base','#5a7a5a',at(bq,rD,-1.0),rD,0.85,0.34,1.6);
+      for(let q=0;q<4;q++)wt('base','#4e6e4e',at(bq,rD,-0.4-q*0.38),rD,0.85,0.4,0.08);
+      wv('base','#5a7a5a',at(bq,rD,-1.6),rD,0.85,hD,0.1);{const [x,z]=W(at(bq,rD,-1.6),rD-0.12);gauge(x,y0+1.7,z,-bD+Math.PI,0.15,-1.1,0.55,0.15,0.6);}
+      wb('base','#2a2a26',bq,rD,0.02,1.4,0.03,3.8);wb('base','#1a1a18',bq,rD+0.2,0.035,0.6,0.01,1.0);}   // its drip tray and stain
+    wb('glow','#70ff90',at(bD,rD,-1.6),rD-0.62,1.4,0.03,0.08,0.08);wb('base','#3a3a3a',at(bD,rD,1.6),rD-0.62,1.4,0.03,0.08,0.08);}  // the one running lit
+
+  // ---------------- the standby engine: a diesel set in its own bay behind a wall ----------------
+  {const bG=86*D,rG=43,Lg=10;
+    for(const dd of [-Lg/2-1.2,Lg/2+1.2]){const bq=at(bG,rG,dd);wb('base','#7a7670',bq,rG-0.5,2.4,6.5,4.8,0.3);}
+    wb('base','#6a6660',bG,rG,0.15,3.0,0.3,Lg);wb('base','#c8a03a',bG,rG,0.32,3.02,0.04,Lg+0.02);
+    wb('base','#4a5a52',at(bG,rG,-1.2),rG,1.6,1.7,2.6,6.0);                     // the engine block
+    for(let q=0;q<8;q++)wv('base','#3e4a44',at(bG,rG,-3.8+q*0.75),rG,2.9,3.2,0.22,G.cyl6);   // the heads
+    wt('base','#5a6a62',at(bG,rG,3.3),rG,1.6,1.1,2.8);wb('base','#4a5a52',at(bG,rG,3.3),rG+0.9,1.0,0.6,1.2,1.4);   // the generator and its box
+    wb('base','#c8a03a',at(bG,rG,1.85),rG,1.6,1.8,1.6,0.3);
+    // the exhaust, lagged in pale cloth, up to a silencer hung under the ceiling and off into the wall
+    {const be=at(bG,rG,-2.5);wv('base','#c8c0b0',be,rG-0.6,3.0,HT-2.2,0.28);wt('base','#b8b0a0',bG,rG-0.6,HT-1.6,0.7,4.0);wp('base','#c8c0b0',at(bG,rG-0.6,2),rG-0.6,HT-1.6,at(bG,rG-0.6,2),RO,HT-1.6,0.28);}
+    // its fuel: a heated day tank with a sight glass, the purifier beside it, the line in
+    {const bq=at(bG,rG,-Lg/2+0.4);wv('base','#7a7068',bq,rG+1.8,0,2.6,0.75);wb('glow','#ffb050',bq,rG+1.05,1.4,0.04,1.4,0.1);
+      wv('base','#8a8a84',at(bq,rG,1.2),rG+1.8,0,1.3,0.35);wv('base','#6a6a64',at(bq,rG,1.2),rG+1.8,1.3,1.6,0.42,G.cone);
+      wp('base','#c8a020',bq,rG+1.8,0.4,at(bG,rG,-3),rG+0.9,0.6,0.05);}
+    // a hand-lettered board on its wall: when it last ran, kept in chalk
+    wb('base','#2a3a2e',at(bG,rG,-Lg/2-1.05),rG,1.7,1.2,0.8,0.04);for(let q=0;q<4;q++)wb('base','#d8d4c8',at(bG,rG,-Lg/2-1.08),rG-0.2+((q*7)%5)*0.1-0.2,1.5+q*0.13,0.6-q*0.08,0.025,0.02);}
+
+  // ---------------- the annunciator over the boards: rows of lit windows, one for each thing that can go wrong ----
+  {const b0=333*D,b1=(333+6*2.85)*D;for(let q=0;q<9;q++){const bq=b0+(b1-b0)*q/8;wb('base','#3a4646',bq,RO-1.5,4.35,0.25,0.75,2.5);
+      for(let c=0;c<8;c++)for(let rr=0;rr<3;rr++){const on=((q*29+c*7+rr*13)%11)<2,bc=bq+(c-3.5)*0.28/(RO-1.6);wb(on?((q+c)%3?'glow':'blink'):'base',on?(rr===0?'#ff6a50':'#ffe0a0'):'#c8c0a8',bc,RO-1.64,4.1+rr*0.24,0.02,0.18,0.24);}}
+    // and the strip-chart recorders let into the boards, their paper creeping out from under them
+    for(let i=0;i<7;i++){const b=(333+i*2.85)*D,r=RO-1.3;for(const sd of [-0.55,0.55]){const bq=b+sd/r;wb('base','#e8e4d6',bq,r-0.29,1.22,0.02,0.3,0.36);wb('base','#7a2a2a',bq,r-0.3,1.22,0.02,0.22,0.01,{rz:0.4});}}}
+
   // ---------------- caged lamps hung from the ceiling, and work lamps on stands ----------------
   const lampAt=(x,z,h)=>{k.pipe('base','#2a2a28',x,y0+HT,z,x,y0+h+0.35,z,0.02);k.add('base',G.cone,'#3a3c3e',x,y0+h+0.32,z,{sx:0.42,sy:0.25,sz:0.42});
     k.add('lamp',G.cyl,'#ffb860',x,y0+h,z,{sx:0.2,sy:0.36,sz:0.2});for(let q=0;q<5;q++){const f=q/5*TAU;k.add('base',G.box,'#2a2a28',x+Math.cos(f)*0.27,y0+h,z+Math.sin(f)*0.27,{sx:0.025,sy:0.5,sz:0.025});}
