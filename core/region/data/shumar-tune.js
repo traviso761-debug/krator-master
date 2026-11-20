@@ -1,17 +1,18 @@
 // ================================================================= CORE/REGION DATA — the Kingdom of Shumar's tune (SM-Sim-2 / SM-Sim-3)
-// [G data] core/simulation/PROPOSAL-SHUMAR.md & settlements/shumar/BUILD-OUT.md (the owner, 2026-11-17: Amaro at canyon-lip
-// px 731,1184, paired upper rim fort Ṭāru-Bētun at 689,1185 above Vrivolci Tallhouse, global `tequila` key glossed as
-// `Ṣūnu-šikaru`, cold-truce grain-for-mounts barter with strict military/metal/book embargo at `gate.voth-march`, six
-// regimental Šubaru provinces S1..S6, ~109,630 people including ~2,400 Gēdu-šu Free Giants at 2.6x caloric intake and -ko
-// Ordeal probationers under zero-spirits/zero-sugar discipline).
+// [G data] core/simulation/PROPOSAL-SHUMAR.md, settlements/shumar/BUILD-OUT.md & settlements/shumar/PLAN.md (the owner,
+// 2026-11-17 & 2026-11-18: Amaro at triple-confluence promontory px 731,1192 above the 2,848 m Bētun-Nārun gorge, Pāyaru-Gisr
+// folded in as Amaro's 3rd sub-district `amaro.gisr`, paired upper rim fort Ṭāru-Bētun at 689,1185 above Vrivolci Tallhouse,
+// global `tequila` key glossed as `Ṣūnu-šikaru`, cold-truce grain-for-mounts barter with strict military/metal/book embargo at
+// `gate.voth-march`, six regimental Šubaru provinces S1..S6, ~109,630 people including ~2,400 Gēdu-šu Free Giants at 2.6x
+// caloric intake and -ko Ordeal probationers under zero-spirits/zero-sugar discipline).
 //
 // Pure data & functions for core/region's valley host (core/region/50-region-valley.js, H.simValley). Read in place by
 // open-world regions, settlement pages and core/region/tests/test-shumar-economy.js.
-//   SHUMAR_TUNE.ORIGIN         {px: 731, py: 1184} (Amaro's canyon-lip pin on 5.1)
+//   SHUMAR_TUNE.ORIGIN         {px: 731, py: 1192} (Amaro's triple-confluence cliff-lip pin on 5.1)
 //   SHUMAR_TUNE.px(px, py)     metres from Amaro (2,000 m per 5.1 pixel)
 //   SHUMAR_TUNE.provinces      S1..S6 regimental Šubaru provinces (regiment, seat, census & giantShare)
-//   SHUMAR_TUNE.places         all 37 named settlement records (38,700 people; Amaro = 10,600 + 1,100 citadel + 300 necropolis)
-//   SHUMAR_TUNE.districts      Amaro's two sub-settlements (`amaro.citadel`, `amaro.necropolis`)
+//   SHUMAR_TUNE.places         all 36 named settlement records (38,700 people; Greater Amaro = 10,600 + 1,100 + 300 + 850 = 12,850)
+//   SHUMAR_TUNE.districts      Amaro's three sub-settlements (`amaro.citadel`, `amaro.necropolis`, `amaro.gisr`)
 //   SHUMAR_TUNE.rings          all 22 core/hamlet town-ring records across the 6 seats (4,630 people)
 //   SHUMAR_TUNE.countrysides   the 6 bulk provincial countrysides `prov.s1`..`prov.s6` (66,300 people; grand total 109,630)
 //   SHUMAR_TUNE.goods          every good carried on the plateau (zero domestic coal, scrap or silica glass; `tequila` = Ṣūnu-šikaru)
@@ -26,7 +27,7 @@ var SHUMAR_TUNE = (function () {
   var T = {}, D = 1 / 365;
 
   /* ---- 1. FRAME & CLOCK ---- */
-  T.ORIGIN = { px: 731, py: 1184 };
+  T.ORIGIN = { px: 731, py: 1192 };
   T.px = function (px, py) {
     return { x: (px - T.ORIGIN.px) * 2000, z: (py - T.ORIGIN.py) * 2000 };
   };
@@ -135,7 +136,7 @@ var SHUMAR_TUNE = (function () {
       id: 'S1', code: 's1', regiment: 1, regimentName: 'Blades of Amaro',
       name: 'Qappu-Šubaru', gloss: 'The High Keep & Central Canyons',
       seat: 'ssgsv5zbd2', px: [726, 1196],
-      seatPop: 12000, namedPop: 3650, ringPop: 1310, rural: 22100, total: 39060,
+      seatPop: 12850, namedPop: 2800, ringPop: 1310, rural: 22100, total: 39060,
       giants: 860, giantShare: 860 / 39060, grainYield: 1.55
     },
     {
@@ -175,30 +176,36 @@ var SHUMAR_TUNE = (function () {
     }
   ];
 
-  /* ---- 6. AMARO SUB-DISTRICTS & ALL 37 NAMED PLACES (BUILD-OUT.md section 1a-1e = 38,700 people) ---- */
+  /* ---- 6. AMARO SUB-DISTRICTS & ALL 36 NAMED PLACES (BUILD-OUT.md section 1a-1e = 38,700 people) ---- */
   T.districts = [
     {
       id: 'amaro.citadel', name: 'Qappu al-Šubaru (The High Citadel & Grand Dīwān)',
-      px: 731, py: 1185, elev: 3065, climate: 'Dsb', people: 1100, province: 'S1',
+      px: 730, py: 1193, elev: 3104, climate: 'Dsb', people: 1100, province: 'S1',
       parent: 'ssgsv5zbd2', group: 'district', kind: 'citadel',
       giants: 200, sword: 560, cadets: 340
     },
     {
       id: 'amaro.necropolis', name: 'Madīnat al-Qubab (The Avenue of Domes & Hall of Blades)',
-      px: 732, py: 1185, elev: 3072, climate: 'Dsb', people: 300, province: 'S1',
+      px: 732, py: 1192, elev: 3086, climate: 'Dsb', people: 300, province: 'S1',
       parent: 'ssgsv5zbd2', group: 'district', kind: 'sacred',
       giants: 40, sword: 120, cadets: 40
+    },
+    {
+      id: 'amaro.gisr', name: 'Pāyaru-Gisr (The Gorge Foot, Fortified Bridge & Mill-Race)',
+      px: 731, py: 1191, elev: 2848, climate: 'Dsb', people: 850, province: 'S1',
+      parent: 'ssgsv5zbd2', group: 'district', kind: 'village',
+      giants: 15, trade: 'watermills'
     }
   ];
 
   T.places = [
-    /* 1a. Six regimental seats and towns (25,400 people) */
+    /* 1a. Six regimental seats and towns (26,250 people) */
     {
       id: 'ssgsv5zbd2', name: 'Amaro (ʾAmāru, capital of Shumar)',
-      px: 731, py: 1184, elev: 3054, climate: 'Dsb',
-      people: 12000, cityPeople: 10600, districts: T.districts,
+      px: 731, py: 1192, elev: 3089, climate: 'Dsb',
+      people: 12850, cityPeople: 10600, districts: T.districts,
       province: 'S1', group: 'seat', kind: 'seat', pinned: true,
-      giants: 720, cityGiants: 480, sword: 1850, cadets: 1100, outlanders: 420
+      giants: 735, cityGiants: 480, sword: 1850, cadets: 1100, outlanders: 420
     },
     {
       id: 'sm.betun-babu', name: 'Bētun-Bābu (Gate of the House-River)',
@@ -281,13 +288,7 @@ var SHUMAR_TUNE = (function () {
       giants: 30, sword: 105, cadets: 95
     },
 
-    /* 1c. Twelve specialist canyon and highway villages (7,800 people) */
-    {
-      id: 'sm.payaru-gisr', name: 'Pāyaru-Gisr (Watch-Bridge)',
-      px: 729, py: 1192, elev: 3054, climate: 'Dsc',
-      people: 850, province: 'S1', group: 'canyon-village', kind: 'village',
-      giants: 15, trade: 'watermills'
-    },
+    /* 1c. Eleven specialist canyon and highway villages (6,950 people; Pāyaru-Gisr is Amaro's 3rd sub-district amaro.gisr) */
     {
       id: 'sm.misu-bustan', name: 'Mīṣu-Bustān',
       px: 723, py: 1194, elev: 3081, climate: 'Dsc',
@@ -428,13 +429,13 @@ var SHUMAR_TUNE = (function () {
 
   /* ---- 7. TWENTY-TWO TOWN-RING HAMLETS (BUILD-OUT.md section 1f = 4,630 people) ---- */
   T.rings = [
-    /* Amaro's ring (6 hamlets = 1,310) */
-    { id: 'amaro.ring.farm-1', seat: 'ssgsv5zbd2', province: 'S1', focus: 'farming', px: 734, py: 1181, people: 240 },
-    { id: 'amaro.ring.farm-2', seat: 'ssgsv5zbd2', province: 'S1', focus: 'farming', px: 727, py: 1182, people: 240 },
-    { id: 'amaro.ring.farm-3', seat: 'ssgsv5zbd2', province: 'S1', focus: 'farming', px: 735, py: 1187, people: 240 },
-    { id: 'amaro.ring.orchard-1', seat: 'ssgsv5zbd2', province: 'S1', focus: 'orchard', px: 729, py: 1187, people: 240 },
-    { id: 'amaro.ring.quarry-1', seat: 'ssgsv5zbd2', province: 'S1', focus: 'quarry', px: 736, py: 1184, people: 190 },
-    { id: 'amaro.ring.ranch-1', seat: 'ssgsv5zbd2', province: 'S1', focus: 'ranch', px: 726, py: 1186, people: 160 },
+    /* Amaro's ring around 731,1192 (6 hamlets = 1,310; dry <0.02 slope plateau benches) */
+    { id: 'amaro.ring.farm-1', seat: 'ssgsv5zbd2', province: 'S1', focus: 'farming', px: 735, py: 1188, people: 240 },
+    { id: 'amaro.ring.farm-2', seat: 'ssgsv5zbd2', province: 'S1', focus: 'farming', px: 728, py: 1189, people: 240 },
+    { id: 'amaro.ring.farm-3', seat: 'ssgsv5zbd2', province: 'S1', focus: 'farming', px: 734, py: 1194, people: 240 },
+    { id: 'amaro.ring.orchard-1', seat: 'ssgsv5zbd2', province: 'S1', focus: 'orchard', px: 729, py: 1195, people: 240 },
+    { id: 'amaro.ring.quarry-1', seat: 'ssgsv5zbd2', province: 'S1', focus: 'quarry', px: 737, py: 1195, people: 190 },
+    { id: 'amaro.ring.ranch-1', seat: 'ssgsv5zbd2', province: 'S1', focus: 'ranch', px: 726, py: 1191, people: 160 },
     /* Bētun-Bābu's ring (4 hamlets = 830) */
     { id: 'betun.ring.farm-1', seat: 'sm.betun-babu', province: 'S2', focus: 'farming', px: 703, py: 1169, people: 240 },
     { id: 'betun.ring.farm-2', seat: 'sm.betun-babu', province: 'S2', focus: 'farming', px: 702, py: 1174, people: 240 },
@@ -811,12 +812,6 @@ var SHUMAR_TUNE = (function () {
       else if (P.id === 'sm.qappu-qubba') {
         works.push({ id: P.id + '.orchard', kind: 'apricot-orchard', name: 'waqf twist-apricot terrace', crew: 25, out: ['driedfruit'], rate: rate(12000, 25, winDays('apricot'), scale), season: 'apricot' });
         seasonalOwn.driedfruit = T.startDays;
-      } else if (P.id === 'sm.payaru-gisr') {
-        works.push(
-          { id: P.id + '.mills', kind: 'watermill', name: 'triple-confluence overshot flour mills', crew: 100, out: ['grain'], rate: rate(260000, 100, yr, scale), seasonRate: { snowmelt: 1.5 } },
-          { id: P.id + '.hammers', kind: 'smithy', name: 'waterwheel trip-hammer tool works', crew: 50, batch: T.chain.toolsmith, seasonRate: { snowmelt: 1.5 } }
-        );
-        extraStart = { iron: 6000, charcoal: 6000 };
       } else if (P.id === 'sm.misu-bustan') {
         works.push(
           { id: P.id + '.apricot', kind: 'apricot-orchard', name: 'walled canyon whorlapricot orchards', crew: 100, out: ['fruit'], rate: rate(190000, 100, winDays('apricot'), scale), season: 'apricot' },
@@ -944,21 +939,33 @@ var SHUMAR_TUNE = (function () {
       });
     });
 
-    /* Amaro's two sub-settlements (`amaro.citadel` = 1,100; `amaro.necropolis` = 300) */
+    /* Amaro's three sub-settlements (`amaro.citadel` = 1,100; `amaro.necropolis` = 300; `amaro.gisr` = 850) */
     T.districts.forEach(function (Drec) {
       var eats = T.eatsFor(Drec);
       var pos = T.px(Drec.px, Drec.py);
-      var scale = Drec.id === 'amaro.citadel' ? KSeat : KFort;
-      var works = [{ id: Drec.id + '.hall', kind: Drec.id === 'amaro.citadel' ? 'diwan' : 'hall-of-blades', name: Drec.name, crew: 0, out: [], rate: 0 }];
-      var extra = {};
+      var scale = Drec.id === 'amaro.citadel' ? KSeat : (Drec.people >= 400 ? KVil : KFort);
+      var works = [];
+      var extra = {}, saltDays = 75, defDays = 60;
       if (Drec.id === 'amaro.citadel') {
-        works.push({ id: 'citadel.powder', kind: 'powder-mill', name: 'Grand Dīwān ordnance & powder magazine', crew: 80, batch: T.chain.powderMill });
+        works.push(
+          { id: Drec.id + '.hall', kind: 'diwan', name: Drec.name, crew: 0, out: [], rate: 0 },
+          { id: 'citadel.powder', kind: 'powder-mill', name: 'Grand Dīwān ordnance & powder magazine', crew: 80, batch: T.chain.powderMill }
+        );
         extra = { saltpeter: 12000, charcoal: 4000, sulfur: 2500, powder: 5000, blades: 220, armour: 90 };
-      } else {
-        /* Hall of Blades holds notched ceremonial/graduation blades issued at spring `graduation` */
+      } else if (Drec.id === 'amaro.necropolis') {
+        works.push({ id: Drec.id + '.hall', kind: 'hall-of-blades', name: Drec.name, crew: 0, out: [], rate: 0 });
         extra = { blades: 140 };
+      } else if (Drec.id === 'amaro.gisr') {
+        works.push(
+          { id: Drec.id + '.market', kind: 'market', name: Drec.name + ': bridge toll & mill-race stores', crew: 0, out: [], rate: 0 },
+          { id: Drec.id + '.mills', kind: 'watermill', name: 'triple-confluence overshot flour mills', crew: 100, out: ['grain'], rate: rate(260000, 100, yr, scale), seasonRate: { snowmelt: 1.5 } },
+          { id: Drec.id + '.hammers', kind: 'smithy', name: 'waterwheel trip-hammer tool works', crew: 50, batch: T.chain.toolsmith, seasonRate: { snowmelt: 1.5 } }
+        );
+        extra = { iron: 6000, charcoal: 6000 };
+        saltDays = 85;
+        defDays = 70;
       }
-      var st = Object.assign(stockFor(eats, Drec.people, { salt: 75 }, 60), extra);
+      var st = Object.assign(stockFor(eats, Drec.people, { salt: saltDays }, defDays), extra);
       addS({
         id: Drec.id, name: Drec.name, faction: 'shumar', parent: 'ssgsv5zbd2',
         province: 'S1', giants: Drec.giants,
@@ -1108,7 +1115,7 @@ var SHUMAR_TUNE = (function () {
 
     /* 3. Regimental *Waqf* endowment roads (`share`) feeding `amaro.necropolis` & the three provincial *qubba* shrines */
     var waqfDefs = [
-      ['waqf.necropolis.payaru', 'sm.payaru-gisr', 'amaro.necropolis', { grain: 0.22 }],
+      ['waqf.necropolis.payaru', 'amaro.gisr', 'amaro.necropolis', { grain: 0.22 }],
       ['waqf.necropolis.bustan', 'sm.misu-bustan', 'amaro.necropolis', { driedfruit: 0.18, fruit: 0.12 }],
       ['waqf.qappu-qubba', 'sm.nazaru-head', 'sm.qappu-qubba', { grain: 0.18, fruit: 0.15 }],
       ['waqf.doriyan-inu', 'sm.madder-glen', 'sm.doriyan-inu', { grain: 0.20, crimson: 0.12, kilims: 0.12 }],
@@ -1147,9 +1154,9 @@ var SHUMAR_TUNE = (function () {
       });
     };
 
-    /* S1 branches -> Amaro */
+    /* S1 branches -> Amaro (incl. amaro.gisr gorge-foot switchback road) */
     branchSupply('sm.qappu-qubba', 'ssgsv5zbd2', ['driedfruit'], [], { driedfruit: 20 });
-    branchSupply('sm.payaru-gisr', 'ssgsv5zbd2', ['grain', 'tools'], ['iron', 'charcoal'], { grain: 500, tools: 20 });
+    branchSupply('amaro.gisr', 'ssgsv5zbd2', ['grain', 'tools'], ['iron', 'charcoal'], { grain: 500, tools: 20 });
     branchSupply('sm.misu-bustan', 'ssgsv5zbd2', ['fruit', 'driedfruit'], [], { fruit: 400, driedfruit: 160 });
     branchSupply('sm.nazaru-kura', 'ssgsv5zbd2', ['tequila', 'fruit'], ['charcoal', 'stoneware'], { tequila: 160, fruit: 180 });
     branchSupply('sm.nazaru-head', 'ssgsv5zbd2', ['grain', 'fruit'], [], { grain: 350, fruit: 120 });

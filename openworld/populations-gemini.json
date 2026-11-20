@@ -2299,13 +2299,13 @@
       "polity": "Shumari",
       "stage": "town",
       "is_exterior": false,
-      "cur_pop": 6500,
-      "on_screen_pop": 12000,
-      "off_screen_mult": 1.5,
-      "sim_urban_pop": 18000,
-      "pop_known": false,
-      "pop_source": "",
-      "note": "Chief town of the Shumari on the Shumar plateau"
+      "cur_pop": 12850,
+      "on_screen_pop": 12850,
+      "off_screen_mult": 1.0,
+      "sim_urban_pop": 12850,
+      "pop_known": true,
+      "pop_source": "core/region/data/shumar-tune.js (10,600 city + 1,100 citadel + 300 necropolis + 850 gisr)",
+      "note": "Capital of the Shumari Kingdom at the Betun-Narun / Payaru-Buruqu / Qappu-Narun confluence lip (px 731,1192; 3,089 m rim above 2,848 m gorge)"
     },
     {
       "id": "sa5o6dvjdv",

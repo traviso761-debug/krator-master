@@ -782,4 +782,14 @@ check('Phēr\'s rim plain is raised: the stream\'s column falls to the wall\'s t
       sw is not None and sw.get('rim_lift_m') == 40.0 and 0.0 <= float(E[1489, 842]) <= 25.0
       and all(float(E[y_ + 1, 842]) < float(E[y_, 842]) for y_ in range(1480, 1491))
       and sw['bed_m'][11] > 15.0 and float(E[1490, 842]) < -200.0)
+# ---- 20. Amaro (edit_520_amaro_gorge.py, 2026-11-18; settlements/shumar/PLAN.md): promontory pin at 731,1192 and carved gorge
+am_s = setts_p.get('ssgsv5zbd2')
+r007_a = next((r_ for r_ in D['rivers'] if r_['id'] == 'r007'), None)
+check('Amaro (731,1192) stands dry on the 3,089 m confluence bluff, 240-262 m over the carved Bētun-Nārun gorge (%.1f m)'
+      % float(E[1191, 731]),
+      am_s is not None and (am_s['px'], am_s['py']) == (731, 1192) and not bool(whas[1192, 731])
+      and float(E[1192, 731]) >= 3085.0 and float(E[1193, 730]) >= 3100.0 and float(E[1192, 732]) >= 3084.0
+      and 240.0 <= float(E[1192, 731] - E[1191, 731]) <= 250.0
+      and 255.0 <= float(E[1193, 730] - E[1193, 729]) <= 270.0
+      and r007_a is not None and 2845.0 <= r007_a['bed_m'][10] <= 2850.0 and 'Amaro' in r007_a.get('settlements', []))
 print('%d checks passed' % ok)

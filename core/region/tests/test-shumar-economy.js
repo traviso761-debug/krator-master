@@ -109,8 +109,9 @@ const censusCheck = Tn => {
   const yamu = Tn.places.find(p => p.id === YAMU);
   const suton = Tn.places.find(p => p.id === SUTON);
   const urud = Tn.places.find(p => p.id === URUDIRU);
-  const o0 = Tn.px(731, 1184);
+  const o0 = Tn.px(731, 1192);
   const oTaru = Tn.px(689, 1185);
+  const gisr = (Tn.districts || []).find(d => d.id === 'amaro.gisr');
   const provTotals = { S1: 39060, S2: 18280, S3: 15230, S4: 19075, S5: 13230, S6: 4755 };
   const provOk = Object.keys(provTotals).every(k => C.byProvince[k] && C.byProvince[k].total === provTotals[k]);
   const ringCounts = {
@@ -122,17 +123,18 @@ const censusCheck = Tn => {
     return rs.length === ringCounts[seat][0] && rs.reduce((n, r) => n + r.people, 0) === ringCounts[seat][1];
   });
   return (
-    Tn.ORIGIN.px === 731 && Tn.ORIGIN.py === 1184 &&
-    o0.x === 0 && o0.z === 0 && oTaru.x === -84000 && oTaru.z === 2000 &&
+    Tn.ORIGIN.px === 731 && Tn.ORIGIN.py === 1192 &&
+    o0.x === 0 && o0.z === 0 && oTaru.x === -84000 && oTaru.z === -14000 &&
     Tn.provinces.length === 6 &&
-    C.placesCount === 37 && C.seatsCount === 6 && C.seatPop === 25400 &&
-    C.namedNonSeatPop === 13300 && C.namedPop === 38700 &&
+    (Tn.districts || []).length === 3 && !!gisr && gisr.people === 850 &&
+    C.placesCount === 36 && C.seatsCount === 6 && C.seatPop === 26250 &&
+    C.namedNonSeatPop === 12450 && C.namedPop === 38700 &&
     C.ringsCount === 22 && C.ringPop === 4630 &&
     C.countrysidesCount === 6 && C.ruralPop === 66300 &&
     C.totalPop === 109630 && C.giants === 2400 &&
     provOk && ringsOk &&
-    !!amaro && amaro.px === 731 && amaro.py === 1184 && amaro.people === 12000 &&
-    amaro.cityPeople + 1100 + 300 === 12000 &&
+    !!amaro && amaro.px === 731 && amaro.py === 1192 && amaro.people === 12850 &&
+    amaro.cityPeople + 1100 + 300 + 850 === 12850 &&
     !!taru && taru.px === 689 && taru.py === 1185 && taru.people === 350 &&
     !!siruQ && siruQ.px === 790 && siruQ.py === 1133 && siruQ.people === 150 &&
     !!urun && urun.people === 3500 && !!betun && betun.people === 3200 &&
@@ -146,7 +148,7 @@ const censusCheck = Tn => {
   const popDefault = Y.V.settlements.reduce((n, s) => n + s.people, 0);
   const popRings = Vrings.settlements.reduce((n, s) => n + s.people, 0);
   T.ok(
-    'exact Shumar census parity: 37 named places (38,700), 22 ring hamlets (4,630), 6 countrysides (66,300) = 109,630 people & 2,400 Gēdu-šu Giants across S1-S6; Amaro at 731,1184 (10,600 + 1,100 + 300 = 12,000), Ṭāru-Bētun at 689,1185; bundled (50) and unbundled-ring (72) valleys both check clean',
+    'exact Shumar census parity: 36 named places (38,700), 22 ring hamlets (4,630), 6 countrysides (66,300) = 109,630 people & 2,400 Gēdu-šu Giants across S1-S6; Greater Amaro at 731,1192 (10,600 + 1,100 + 300 + 850 = 12,850 across 3 sub-districts), Ṭāru-Bētun at 689,1185; bundled (50) and unbundled-ring (72) valleys both check clean',
     censusCheck(SHUMAR_TUNE) && popDefault === 109630 && popRings === 109630 &&
       Y.S.order.length === 50 && Srings.order.length === 72 && !Y.S.problems.length && !Srings.problems.length,
     'pop=' + popDefault + '/' + popRings + ', problems=' + (Y.S.problems.concat(Srings.problems).join('; ') || 'none')
@@ -155,7 +157,7 @@ const censusCheck = Tn => {
     'a census drift of a single person in Amaro is caught',
     censusCheck,
     Object.assign({}, SHUMAR_TUNE, {
-      places: SHUMAR_TUNE.places.map(p => p.id === AMARO ? Object.assign({}, p, { people: 12001 }) : p),
+      places: SHUMAR_TUNE.places.map(p => p.id === AMARO ? Object.assign({}, p, { people: 12851 }) : p),
       census: function () { return SHUMAR_TUNE.census.call(this); }
     }),
     SHUMAR_TUNE

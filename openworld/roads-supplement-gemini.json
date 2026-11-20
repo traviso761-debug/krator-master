@@ -1575,8 +1575,20 @@
       "settlement": "Amaro",
       "polity": "Shumari",
       "class": "polity_highway",
-      "km": 92.0,
+      "km": 113.0,
       "px": [
+        [
+          731.0,
+          1192.0
+        ],
+        [
+          732.0,
+          1188.0
+        ],
+        [
+          733.0,
+          1185.0
+        ],
         [
           734.0,
           1182.0
@@ -4891,7 +4903,7 @@
     },
     {
       "id": "supp.szjsurpu01",
-      "settlement": "\u0160urpu-Dhelv",
+      "settlement": "Šurpu-Dhelv",
       "polity": "Zeijani",
       "class": "dirt_road",
       "km": 20.0,
@@ -5239,7 +5251,7 @@
     },
     {
       "id": "supp.szjnuru03",
-      "settlement": "N\u016bru-\u0160aplu",
+      "settlement": "Nūru-Šaplu",
       "polity": "Zeijani",
       "class": "dirt_road",
       "km": 44.0,
@@ -5345,7 +5357,7 @@
     },
     {
       "id": "supp.smjbumc1tr",
-      "settlement": "\u1e62unu-A\u0161ru",
+      "settlement": "Ṣunu-Ašru",
       "polity": "Andaru",
       "class": "dirt_road",
       "km": 28.0,
