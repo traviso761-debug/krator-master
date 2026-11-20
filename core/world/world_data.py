@@ -54,6 +54,9 @@ def fragment(data_dir, kits_js, name, source, extra=None):
     WORLD_DATA ({key: JSON-able}, written after meta in key order: a region's baked roads or plans)"""
     M = meta(data_dir)
     R = arrays(data_dir)
+    rj_res = os.path.join(data_dir, 'residual.json')
+    if os.path.isfile(rj_res) and not (extra and 'residual' in extra):
+        extra = dict(extra or {}, residual=json.load(open(rj_res, encoding='utf-8')))
     enc = {k: [('f4' if v.dtype.kind == 'f' else 'u1'), base64.b64encode(np.ascontiguousarray(v).ravel().tobytes()).decode('ascii')] for k, v in R.items()}
     more = ''.join(',%s:%s' % (k, json.dumps(extra[k], separators=(',', ':'), ensure_ascii=False)) for k in sorted(extra or {}))
     return ('// ==================== ' + name + '\n'

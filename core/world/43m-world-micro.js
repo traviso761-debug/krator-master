@@ -44,12 +44,13 @@ M.hills=function(x,z,S,rel,minWave){if(minWave!=null&&minWave>=HW*.6)return 0;co
  return A*HK*knee(KRAND.gfbm(ax/HW,az/HW,o,SEED^0x4849)-T0);};
 // ---------------------------------------------------------------- the fine gullies (the erosion filter continued)
 const OCT=[800,400,200,100,50,25],GAIN=.8,DEPTH=.55,SLCAP=.6,DETAIL=1.5,YMEAN=-.3,FINE=200;
+let SKIP800=false;M.setSkip800=function(v){SKIP800=!!v;};
 M.erode=function(h,x,z,gx,gz,S,rel,minWave,G,fine){fine=fine==null?1:fine;
  const g=S.gully==null?.6:S.gully;if(!(g>.01)){if(G){G[0]=gx;G[1]=gz;if(G.length>2)G[2]=0;}return h;}
  /* the depth goes with the INPUT slope (the large form's), as WRELIEF.erode's does: scaled by the running slope, each octave
     steepened the next until the finest stood at 65 degrees */
  const sl0=Math.min(SLCAP,Math.sqrt(gx*gx+gz*gz)),dep=Math.min(.75,DEPTH*g)*sl0*(1+clamp(rel/2000,0,.5)),ax=x+OX,az=z+OZ;let Gx=gx,Gz=gz,out=h,cr=0,cw=0,tgt=0,mask=1;
- for(let o=0;o<OCT.length;o++){const lam=OCT[o];if(minWave!=null&&minWave>=lam*.5)break;
+ for(let o=0;o<OCT.length;o++){if(o===0&&SKIP800)continue;const lam=OCT[o];if(minWave!=null&&minWave>=lam*.5)break;
   const sl=Math.sqrt(Gx*Gx+Gz*Gz),fade=smooth(.0005,.012,sl);if(fade<=0)break;
   const nx=-Gz/sl,nz=Gx/sl,ci=Math.floor(ax/lam),cj=Math.floor(az/lam);let vx=0,vy=0,W=0;
   for(let dj=-1;dj<=1;dj++)for(let di=-1;di<=1;di++){const i=ci+di,j=cj+dj,hh=KRAND.hash(SEED^0x4D45,o,i,j);

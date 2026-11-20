@@ -185,7 +185,7 @@ let M,nx,ny,i0,j0,su,sv,cx,cy,X0,Y0,MW,MH,EL,WLV,WHAS,REL,CL,RN,TP,BI,MK,SL,SU,S
 let SID,KIT,STY,PALL,NB,CLCODE,CLGROUP;
 // a region with region.json `relief` (core/world/PLAN-RELIEF.md; 43-world-relief.js): terraces lie only on caprock
 // (WRELIEF.bench) instead of on the absolute height. Every overlay's style and palette are BIOME_GROUND's, relief or not
-let RELIEF=false,LANDF=false,PEAK=null,MICRO=false;const MG=[0,0,0];
+let RELIEF=false,LANDF=false,PEAK=null,MICRO=false,RESID=false;const MG=[0,0,0];
 // the kits (47-world-kits.js) are read at init: which overlay each grows on
 let KITNAMES=[];W.KITS=KITNAMES;
 W.init=function(R){M=WORLD_DATA.meta;const Hd=M.heights,F=M.frame;
@@ -207,12 +207,17 @@ W.init=function(R){M=WORLD_DATA.meta;const Hd=M.heights,F=M.frame;
  NB=M.biomes.length;SID=[];KIT=new Int8Array(NB).fill(-1);STY={};PALL=[];
  SKEYS.forEach(k=>STY[k]=new Float32Array(NB));
  RELIEF=!!M.relief;
+ RESID=false;
  if(RELIEF){if(typeof WRELIEF==='undefined')throw new Error('41-world-fields: region.json asks for core/world relief: list 43-world-relief.js before 41');
   WRELIEF.init({ox:cx*2000,oz:cy*2000,seed:M.relief.seed});
   const mc=typeof KRATOR_MICRO!=='undefined'&&KRATOR_MICRO!=null?KRATOR_MICRO:M.relief.micro;
   MICRO=typeof WMICRO!=='undefined'&&mc!==false&&mc!==0&&mc!=='0'&&mc!=='false';   /* PLAN-MICRO.md: the micro-relief, where 43m-world-micro.js is listed; KRATOR_MICRO overrides relief.micro for A/B trials */
-  if(MICRO)WMICRO.init({ox:cx*2000,oz:cy*2000,seed:M.relief.seed^0x4D4943,version:mc===2||mc==='2'?2:1});}   /* relief.micro: 2 the T0 math (PLAN-MICRO.md), else 1; false/0 off */
+  if(MICRO)WMICRO.init({ox:cx*2000,oz:cy*2000,seed:M.relief.seed^0x4D4943,version:mc===2||mc==='2'?2:1});   /* relief.micro: 2 the T0 math (PLAN-MICRO.md), else 1; false/0 off */
+  const rd=WORLD_DATA.residual||M.residual;
+  if(rd&&typeof WRESIDUAL!=='undefined'){WRESIDUAL.init(Object.assign({ox:cx*2000,oz:cy*2000},rd));RESID=!!WRESIDUAL.active;}
+  else if(typeof WRESIDUAL!=='undefined')WRESIDUAL.reset();}
  W.microVersion=()=>MICRO?WMICRO.version:0;
+ W.hasResidual=()=>RESID;
  /* an overlay with no entry is an error, not desert: listed in W.unstyled, reported on the page, failed by the probe
     (91: 'every biome overlay has its own ground style'); it is drawn on the desert's shape in MISSING's magenta, so it shows */
  W.unstyled=[];
@@ -599,16 +604,15 @@ function townLocal(t,x,z){const dx=x-t.x,dz=z-t.z,c=Math.cos(t.rot),s=Math.sin(t
  return [t.cx+dx*c-dz*s,t.cz+dx*s+dz*c];}   // the inverse of world = Ry(rot)(local - centre) + (x, z) (three.js's rotation.y)
 function buildTowns(){const D=(WORLD_DATA.towns&&WORLD_DATA.towns.towns)||[];
  TOWNS=D.map(t=>{const o={name:t.name,x:t.x,z:t.z,rot:t.rot||0,cx:t.centre?t.centre[0]:0,cz:t.centre?t.centre[1]:0,R:t.R,band:t.band||400,
-  own:!!t.grid,grid:null,y0:0};
+  own:!!t.grid,grid:null,y0:0,_raw:t};
   if(t.grid){const b=atob(t.grid.h),a=new Int16Array(b.length/2);for(let i=0;i<a.length;i++)a[i]=(b.charCodeAt(2*i)|b.charCodeAt(2*i+1)<<8)<<16>>16;
    o.grid={n:t.grid.n,step:t.grid.step,x0:t.grid.x0,z0:t.grid.z0,h0:t.grid.h0,s:t.grid.s||.01,h:a};}
-  // the lift: the land's height at the anchor (the town's centre unless the bake names a point of its frame) less the
-  // town's own ground there
+  return o;});
+ for(const o of TOWNS){const t=o._raw;delete o._raw;
   const A=t.anchor||[o.cx,o.cz],c=Math.cos(o.rot),s=Math.sin(o.rot),ax=o.x+(A[0]-o.cx)*c+(A[1]-o.cz)*s,az=o.z-(A[0]-o.cx)*s+(A[1]-o.cz)*c;
   o.y0=H(ax,az,0,null,true,true)-townGround(o,A[0],A[1]);
-  if(t.onWater){const wl=W.lakeWater(o.x,o.z);if(wl>-1e8)o.y0=wl;}   // a town on its water: its local 0 on the lake's surface
-  if(t.y0!=null)o.y0=t.y0;   // a fixed lift, where the bake set one
-  return o;});
+  if(t.onWater){const wl=W.lakeWater(o.x,o.z);if(wl>-1e8)o.y0=wl;}
+  if(t.y0!=null)o.y0=t.y0;}
  W.towns=TOWNS;}
 // the town's pull at (x,z): returns the town or null, and fills TW {w, h}: w 1 inside R easing to 0 at R+band
 const TW={w:0,h:0,t:null};
@@ -642,10 +646,11 @@ function H(x,z,minWave,P,nr,nt){minWave=minWave||0;MG[0]=MG[1]=MG[2]=0;
     inside WLAND.apply below, so the stream carve and the grain after it read another place's style, and the land hung on which call
     filled the cell first (a stop planned on gentle ground read 43 % at the plan's check, 2026-11-17) */
  const SC=scarpAt(x,z,SCR),b=SC.w>0?scarpOf(baseH(x,z),SC):baseH(x,z),S=Object.assign(HS,styleAt(x,z)),rel=gridBil(REL,x,z);
- let h=b+(N1.fbm(x/6000,z/6000,4)-.5)*2*clamp(rel*.12,12,420)*S.hills*(1-.75*SC.w);   // the cliff's band keeps its plateau and floor level
  const rm=RELIEF?reliefMask(x,z):1;   /* relief P14: the relief's own parts fade under the model's water and through a town's band */
- if(MICRO&&rm>0)h+=rm*(1-.75*SC.w)*WMICRO.hills(x,z,S,rel,minWave);   /* PLAN-MICRO.md M1: the hills a DEM shows, on a floor that drains */
- if(minWave<1700){const r=1-Math.abs(2*N2.fbm(x/1700,z/1700,3)-1);h+=(r*r-.35)*clamp(rel*.06,6,200)*S.ridge;}
+ const dw=RESID&&rm>0?WRESIDUAL.weight(x,z):0,hk=1-.75*dw,rk=1-.6*dw;
+ let h=b+(RESID&&dw>0?rm*(1-.75*SC.w)*WRESIDUAL.at(x,z,minWave):0)+(N1.fbm(x/6000,z/6000,4)-.5)*2*clamp(rel*.12,12,420)*S.hills*(1-.75*SC.w)*(1-.4*dw);
+ if(MICRO&&rm>0)h+=rm*(1-.75*SC.w)*hk*WMICRO.hills(x,z,S,rel,minWave);   /* PLAN-MICRO.md M1: the hills a DEM shows, on a floor that drains */
+ if(minWave<1700){const r=1-Math.abs(2*N2.fbm(x/1700,z/1700,3)-1);h+=(r*r-.35)*clamp(rel*.06,6,200)*S.ridge*rk;}
  // terraces where the relief allows mesas: flat treads, risers a fraction of each step
  if(RELIEF&&rm>0){const hb=WRELIEF.bench(h,x,z,S,rel,minWave);h+=rm*(hb-h);}
  else if(S.terr>.01&&minWave<600){const tm=S.terr*smooth(40,250,rel)*smooth(4200,1800,rel);
@@ -658,9 +663,12 @@ function H(x,z,minWave,P,nr,nt){minWave=minWave||0;MG[0]=MG[1]=MG[2]=0;
  if(minWave<420)h+=(N3.fbm(x/420,z/420,3)-.5)*2*(5+rel*.006)*S.rough;
  /* the gullies. A relief region's (43-world-relief.js, P2): the erosion filter, down the slope of the land's large form (the
     model and its hills, by central differences at 30 m), branching. Any other region's: ridged noise, which has no direction */
- if(RELIEF){if(S.gully>.01&&minWave<450){const e=30,hA=clamp(rel*.12,12,420)*S.hills,Lf=(px,pz)=>baseH(px,pz)+(N1.fbm(px/6000,pz/6000,4)-.5)*2*hA+(MICRO?rm*WMICRO.hills(px,pz,S,rel,minWave):0);
+ if(RELIEF){if(S.gully>.01&&minWave<450){const e=30,hA=clamp(rel*.12,12,420)*S.hills*(1-.4*dw),
+   Lf=(px,pz)=>baseH(px,pz)+(RESID&&dw>0?rm*(1-.75*SC.w)*WRESIDUAL.at(px,pz,minWave):0)+(N1.fbm(px/6000,pz/6000,4)-.5)*2*hA+(MICRO?rm*hk*WMICRO.hills(px,pz,S,rel,minWave):0);
    if(rm>0){const gx=(Lf(x+e,z)-Lf(x-e,z))/(2*e),gz=(Lf(x,z+e)-Lf(x,z-e))/(2*e);
+    if(MICRO&&dw>.5&&WMICRO.setSkip800)WMICRO.setSkip800(true);
     const he=MICRO?WMICRO.erode(h,x,z,gx,gz,S,rel,minWave,MG,minWave<100?streamCorridor(x,z):1):WRELIEF.erode(h,x,z,gx,gz,S,rel,minWave,MG);   /* PLAN-MICRO.md M2: the drainage from 800 m to 25 m */
+    if(MICRO&&dw>.5&&WMICRO.setSkip800)WMICRO.setSkip800(false);
     h+=rm*(he-h);}}}
  else if(S.gully>.01&&minWave<240){const g=1-Math.abs(2*N4.fbm(x/240,z/240,2)-1);h-=S.gully*(3+rel*.004)*Math.pow(g,6)*2.2;}
  if(PEAK&&S.peak>.01&&minWave<1300&&rm>0){const hp=WRELIEF.peaks(h,x,z,S,rel,gridBil(PEAK,x,z),minWave);h+=rm*(hp-h);}   /* relief P5: crests and summits on the high ground */

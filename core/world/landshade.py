@@ -61,7 +61,7 @@ def sample(region, box, step, core=None, bench=False):
     parts = ['"use strict";var window=globalThis;\n']
     for p in (os.path.join(ROOT, 'core', 'rand', '08-core-rand.js'), os.path.join(ROOT, 'core', 'terrain', '38-core-relief.js')):
         parts.append(open(p, encoding='utf-8').read())
-    for f in ('40-world-smooth.js', '43-world-relief.js', '43m-world-micro.js', '44-world-streams.js'):
+    for f in ('40-world-smooth.js', '43-world-relief.js', '43m-world-micro.js', '43d-world-residual.js', '44-world-streams.js'):
         p = os.path.join(core, f)
         if os.path.isfile(p):
             parts.append(open(p, encoding='utf-8').read())
@@ -75,20 +75,25 @@ def sample(region, box, step, core=None, bench=False):
     x0, z0, x1, z1 = box
     nx, nz = int((x1 - x0) / step) + 1, int((z1 - z0) / step) + 1
     tmp = tempfile.mkdtemp()
-    out = os.path.join(tmp, 'h.f64')
-    parts.append('''
+    try:
+        out = os.path.join(tmp, 'h.f64')
+        parts.append('''
 WORLD.init(WORLD_R);const nx=%d,nz=%d,A=new Float64Array(nx*nz);let t=Date.now();
 for(let j=0;j<nz;j++)for(let i=0;i<nx;i++)A[j*nx+i]=WORLD.Hbare(%r+i*%r,%r+j*%r,0);
 const us=%s?(Date.now()-t)*1000/(nx*nz):null;
 const B=WORLD.biomeAt(%r,%r);require("fs").writeFileSync(%s,Buffer.from(A.buffer));console.log(JSON.stringify({us,biome:B&&B.name,terr:WORLD.style(%r,%r).terr}));
 ''' % (nx, nz, float(x0), float(step), float(z0), float(step), 'true' if bench else 'false', (x0 + x1) / 2, (z0 + z1) / 2, json.dumps(out), (x0 + x1) / 2, (z0 + z1) / 2))
-    js = os.path.join(tmp, 'w.js')
-    open(js, 'w', encoding='utf-8').write(''.join(parts))
-    r = subprocess.run([node(), '--max-old-space-size=8192', js], capture_output=True, text=True)
-    if r.returncode:
-        sys.exit('landshade: node failed\n' + r.stderr[-3000:])
-    info = json.loads(r.stdout.strip().splitlines()[-1])
-    return np.fromfile(out).reshape(nz, nx), info['us'], info
+        js = os.path.join(tmp, 'w.js')
+        open(js, 'w', encoding='utf-8', newline='\n').write(''.join(parts))
+        r = subprocess.run([node(), '--max-old-space-size=8192', js], capture_output=True, text=True)
+        if r.returncode:
+            sys.exit('landshade: node failed\n' + r.stderr[-3000:])
+        info = json.loads(r.stdout.strip().splitlines()[-1])
+        arr = np.fromfile(out).reshape(nz, nx)
+        return arr, info['us'], info
+    finally:
+        import shutil
+        shutil.rmtree(tmp, ignore_errors=True)
 
 
 def bands(E, step_m):

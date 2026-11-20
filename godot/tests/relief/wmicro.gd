@@ -29,6 +29,11 @@ static var OX := 0.0
 static var OZ := 0.0
 static var SEED := 0x4D4943
 static var V2 := false
+static var SKIP800 := false
+
+
+static func set_skip_800(v: bool) -> void:
+	SKIP800 = v
 
 
 static func init(ox: float, oz: float, sd: int, version: int = 1) -> void:
@@ -100,6 +105,8 @@ static func erode(h: float, x: float, z: float, gx: float, gz: float, S: Diction
 	var tgt := 0.0
 	var mask := 1.0
 	for o in OCT.size():
+		if o == 0 and SKIP800:
+			continue
 		var lam: float = OCT[o]
 		if min_wave != null and min_wave >= lam * 0.5:
 			break
