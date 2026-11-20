@@ -80,6 +80,7 @@ Page-only keys: the Backrooms' N (noclip), M (sound), R (start again); the City'
 | `/rama` | `/rama.html`, `/rendezvous`, `/31-439` | `rama.html` | Rama, after Clarke's *Rendezvous with Rama* (fan work) |
 | `/deepsky` | `/deepsky.html`, `/blackhole`, `/pulsar`, `/supernova`, `/sgra`, `/whitedwarf`, `/kilonova` | `deepsky.html` | Deep Sky: how stars end (two black holes, a pulsar, a supernova, a white dwarf, a merger) |
 | `/homeworld` | `/homeworld.html`, `/kharak`, `/hw` | `homeworld.html` | Homeworld: the Kharak system, missions 1 and 3 (fan work) |
+| `/silo` | `/silo.html`, `/silos`, `/wool` | `silo.html` | Silo 18: one of fifty, after Hugh Howey's *Wool* (fan work) |
 | `/kyrene` | `/hab.html`, `/habitat`, `/cylinder` | `hab.html` | Kyrene: a rotating habitat |
 | `/krator` | `/krator.html` | `krator.html` | Krator: A Primer |
 | `/voth` | `/voth.html`, `/cantons` | `voth.html` | Voth: City of Cantons (built from `src/voth/`) |
@@ -2732,6 +2733,113 @@ Two missions of the campaign, and a switch between them (**Mission 1** and **Mis
 Views: three-quarter, the Mothership side on, the prow, the engines, the hangar bay, the Scaffold, the trials,
 the asteroid field, the cryo trays, the wreck of the Scaffold, Kharak below, far off.
 
+### `/silo`: Silo 18, after *Wool*
+
+Fan work after Hugh Howey's *Wool* (the Silo series). It takes the setting's premise only: a silo of 144 levels
+buried under a dead plain, one spiral stair the only way between them, a screen up top showing the outside,
+fifty silos in a field. No passage of the books or line of the television series is quoted or paraphrased, none
+of the series' production design is copied, and nobody in particular is drawn: the residents are anonymous
+figures. Every shape is this project's own geometry (`src/silo/`), on the starship page (`src/starship/page.js`)
+with a logarithmic depth buffer.
+
+- **The section.** The silo is cut through its axis by a clipping plane that turns to face the camera, so the
+  near half of every level, the wall and the ground is taken away and the rock it is sunk in shows as a face of
+  dark, wavy strata with stones in them. The stair is never cut. **Cutaway** toggles the cut; views inside the
+  silo turn it off. The opening view lays the section on its side so the whole silo fills the screen; the top
+  third, the mids and the deep each have a section view of their own.
+- **The levels**, one every 4.2 m: a landing street round the shaft, a ring wall of doors and lit windows, painted
+  rooms with doorways, shelves and pictures out to the silo's wall, some doors standing open with light spilling
+  onto the street, ventilation fans in grilles. Each kind is built once and drawn as instances in chunks of eight
+  levels, each level turned its own way; chunks out of view, and inside the silo far ones, are not drawn, and rooms'
+  furniture and the street's clutter only near to.
+- **Homes**: cramped flats off the walkway, thirty-six a level behind narrow doors with numbers on enamel plates in
+  three styles. A front room (a small table and stools, a sink, shelves of saved tins and jars, a rug, a coat on a
+  hook, a toy on the floor) and through a curtained doorway a back room with bunks, a bed that folds down, or a loft
+  built in over it, laundry on a line. Three versions of the home kit, picked level by level, each band of eight
+  levels painted its own way and some levels let go while others are kept proud.
+- **Two hundred years of wear** on the landings (near only): floors worn pale on the path to each door, walls dark at
+  hand height, paint chipped to older colours, patched panels, rust run down from the conduit, soot over the lamps,
+  newer cable bundles slung over the old, lamps left dead on their brackets, tallies scratched by the doors,
+  children's chalk low on the walls, notice boards thick with papers pinned over papers, hand-painted signs and
+  arrows in three eras' colours, laundry strung across the walkway, plants in tins along the rail, and on each
+  level a memorial wall of rows of small marks with candles under it.
+- **The commons**, one level in six on the residential bands: a washroom (stalls, basins, a long mirror, a queue), a
+  laundry (tubs, a mangle, lines of washing), a schoolroom (benches in rows, a chalkboard, a class and its teacher
+  in school hours), a clinic (cots behind curtains, a cabinet of bottles), a shared kitchen with a long table and
+  benches, and a meeting room (benches, candles, patched hangings).
+- **The bazaar** (levels 71 to 74): two rings of stalls under awnings of patched cloth (cloth, tools, food and mended
+  things), crates stacked behind, lamps on strings across the walkway, traders and buyers.
+- **People.** About ten thousand live in the silo (the details give the count): every level has its own number,
+  from its kind give or take, shown in the readout ("level 40, home · 74 residents"). Only the levels round the
+  camera are peopled: knots of neighbours talking, someone in each doorway, people on the benches, people carrying
+  loads, children running the curve, people at home behind the windows, queues at the washroom and the kitchen's
+  hatch, pupils in school, traders and buyers, hands in the farms, crews in the works. How many are out follows the
+  clock: busiest at the change of shift (06:00 to 08:30 and 17:00 to 19:30), quiet at night when more are indoors.
+  The stair's walkers follow it too, up to a hundred and fifty at the change of shift. All are one anonymous
+  figure, tinted, standing or seated; no one in particular.
+- **Light by section**: sodium amber up top, magenta-white grow light over the farms, cold blue-white in IT, plain
+  warm light through the mids, red-orange working light and sooty walls down deep. The night dimming shows from
+  the shaft.
+- **Up top**, level 1: the cafeteria (long communal tables of old boards with benches either side, people eating
+  together, a kitchen behind a wall with a hatch over the serving counter, a queue at it), and on its outer wall the screen, one bright panel drawn live from a camera in the housing on the cap
+  (it renders only while the camera is near the top); the sheriff's and mayor's offices; the corridor to
+  the airlock, with the cleaning suit hung by the inner door, and the ramp up to the exit on the plain.
+- **The mids**: the upper and lower farms under grow lights, the bazaar's stalls. **IT** on levels 34 and 35:
+  racks and their lights. **Down deep**: supply (shelves, sacks, bins, a hoist, and every third room a workshop with
+  lathes, a pillar drill, a forge with its hood and anvil, racks of bar stock, a welding cart, a bench and its tool
+  board); water treatment (settling tanks with walkways over them, sand filters and their valve trees, pumps on
+  plinths, the ring mains, drains under grating, a board of lamps); the casting rooms (a furnace under its hood and
+  flue, a crucible on a jib, sand moulds in rows, some just poured, moulding sand, ingots, tongs, an ore conveyor up
+  through the floor, hoists); mechanical (pump sets, switch cabinets, pipe runs in their colours, yellow floor
+  borders, benches). Yellow paint, stencilled warnings, gauges, valve wheels and stains throughout.
+- **The generator hall** (levels 142 to 144 open as one, `src/silo/plant.js`): a turbine-generator set on its
+  pedestal (the casing stepping up from a small high-pressure end to a big ribbed low-pressure end, stop valves,
+  crossover and exhaust trunk, the generator and its exciter), the lube oil skid and cooler, an overhead travelling
+  crane, a mezzanine of grating, switchgear, bus bars and cable trays, seven control boards and a mimic panel with
+  needles that move; the oil: the wellhead and its pumpjack, separators, a still and day tanks with sight glasses,
+  on a pipe rack; a workshop corner, drums, oil stains, caged lamps, painted warnings, workers. The shaft turns and
+  the deep's lamps hum with it.
+- **The mines and the digger** (`src/silo/digger.js`): four drifts out from the hall, timbered (steel arches further
+  in), with rails, ore carts, puddles, lamps, and a working face with a drill. Off one, behind a welded bulkhead,
+  a rough chamber and a tunnel lined with concrete segments (rails, the ventilation duct at the crown, water and air
+  mains, cable on hangers, lamps mostly dead) running toward Silo 17; at its end, a tunnel boring machine drawn after
+  real hard-rock machines: a cutter head nine metres across with disc cutters on six spokes and buckets round the
+  rim, the shield with gripper pads, thrust rams, main bearing and drive motors, a belt conveyor carrying the spoil
+  back, and its trailing gear on rails (segment feeder and erector, operator's cab, hydraulic power packs,
+  transformer, ventilation fan, cable reels), rusted and dusty. In the field view the tunnel is a line under the
+  plain, solid as far as it is bored and dashed the rest of the way.
+- **The stair**: one turn a level, its eye open from top to bottom (the shaft view looks down it), handrails,
+  a cage of posts and cross-braces, treads worn bright along the two lanes, lamps on the inner rail, pipes and
+  cable runs down the shaft wall on brackets, the level's number stencilled on plates either side of every landing,
+  people going down on the outside and up on the inside, some carrying loads.
+- **Outside**: a grey-brown plain in a shallow bowl, rubble, dead trees and rusted wreckage, veils of dust drifting
+  low across it, the hill the screen looks at with one dead tree on its crest, a broken city on the horizon. The
+  cap is a concrete disc flush with the dirt, with the sensor housing and a lattice mast of instruments on it. Fog
+  takes the sky's colour at the horizon.
+- **The field**: fifty silos in a regular grid of ten by five, shown in a block of ground cut out of the plain
+  (its far walls and floor in section, the surface a thin see-through slab, every cap flush with it), Silo 18
+  marked in amber and Silo 1, the founding silo, in blue. **Into Silo 18** descends from the field through the cap
+  and down the shaft to the stair at level 3 (also `#view=Into Silo 18`).
+- **The clock**: an hour every fifteen seconds; the levels' lights dim from 22:00 to 06:00 on a schedule.
+- **Happenings** (buttons, or `#event=`): **A cleaning** (`cleaning`): the airlock's lights go amber, the inner
+  door rises, gas fills the chamber, the outer door opens, the suited figure walks the ramp out, wipes the lenses
+  (the screen's grime clears) and walks to the hill. **A porter's run** (`porter`): the camera follows a porter
+  down the stair from the top to supply on level 110. **Generator failure** (`blackout`): the deep's lamps flicker, go red and
+  dark, the turbine spins down, and they come back. **Dust storm** (`storm`): the fog closes in and grit blows past.
+  **The digger wakes** (`digger`): the machine's lamps come on along the gear, the belt starts carrying spoil, the
+  head turns, dust comes off the face, and it creeps a few metres forward, shaking the ground near it.
+- **Looking up and down the shaft**: **Look up (U)** and **Look down (J)**, or a double-click inside the silo, ease
+  in about 0.6 s to the stair's eye looking straight up or down it, without roll; dragging then looks round from
+  there. **Level (L)** comes back to looking level.
+
+The readout says where the camera is: "Silo 18 — level 34, IT · 09:40 · lights full". `#mode=cut|inside|outside|field`
+keeps the mode in the address. Views: Silo 18 on its side, Silo 18 in section, the top third, the mids and the deep in
+section, the shaft from the top, the stair mid-descent, on the stair at level 3, the cafeteria and the screen, the
+serving counter and kitchen, the airlock, up top, a home on level 12, the commons on level 20, the bazaar on market
+day, IT, the upper farms, the bazaar, supply, supply's workshop, water treatment, the casting rooms, mechanical and
+the generator, the turbine close, the wellhead and the pumpjack, the control boards, the digger, the digger's
+tunnel, the mines, the landing and the catwalk at level 3, catwalks down the shaft, the cap and the exit, outside toward the hill, the dead city, the field of fifty silos, into Silo 18.
+
 ### `/fleshpit`: Mystery Flesh Pit National Park
 
 Fan work. Mystery Flesh Pit National Park is Trevor Roberts's project
@@ -3174,6 +3282,7 @@ src/
   babylon5/ main.js station.js visitors.js   Babylon 5: the sphere, the Cobra bays, the drum and the Garden, the arrays, the defence grid, the traffic, the gate; the destroyer, the Minbari, the raid
   deepsky/ main.js model.js audio.js blackhole.js sgra.js pulsar.js supernova.js whitedwarf.js merger.js   Deep Sky: the switch, the kit and the flight; sound; the traced black holes and the S-stars; the Crab; the supernova; the Ring Nebula; GW170817
   homeworld/ main.js ships.js kharak.js fleet.js   Homeworld: the Mothership, the Scaffold and the craft; Kharak and the sky; the two missions, the trails, the hyperspace windows, Sensors
+  silo/     main.js kit.js levels.js plant.js digger.js outside.js life.js crowd.js silo.js   Silo 18 (fan work after Wool): the merging kit; the level kits, the stair, level 1 and the generator hall; the turbine plant; the mines and the digger; the plain, the city and the field of fifty; the diners and the stair's walkers; the crowd; the cut, the modes, the clock, the screen and the happenings
   hab/      main.js world.js               Kyrene: its own renderer, and a world in cylinder coordinates
   beachcity/ main.js landmarks.js details.js life.js events.js   Beach City: the temple, the beach house, the lighthouse, the park's cliff, the shops, Funland, the car wash, the old docks; the surf, the boardwalk and the gulls
   oldesthouse/ main.js mats.js kit.js executive.js research.js maintenance.js containment.js further.js   the Oldest House: the kit and its light bake, the surfaces, the sectors
