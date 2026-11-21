@@ -20,6 +20,7 @@
     "kits/coyote",
     "kits/transit",
     "kits/painted-men",
+    "kits/dilihan",
     "biomes/rheolith"
    ]
   },
@@ -36,6 +37,7 @@
     "settlements/dilihan",
     "kits/transit",
     "kits/painted-men",
+    "kits/dilihan",
     "biomes/tiers",
     "biomes/rheolith"
    ]
@@ -59,6 +61,7 @@
     "kits/coyote",
     "kits/transit",
     "kits/painted-men",
+    "kits/dilihan",
     "biomes/rheolith"
    ]
   },
@@ -80,6 +83,7 @@
     "kits/coyote",
     "kits/transit",
     "kits/painted-men",
+    "kits/dilihan",
     "biomes/rheolith"
    ]
   },
@@ -102,6 +106,7 @@
     "kits/coyote",
     "kits/transit",
     "kits/painted-men",
+    "kits/dilihan",
     "biomes/rheolith"
    ]
   }

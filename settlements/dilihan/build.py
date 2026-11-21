@@ -444,6 +444,12 @@ IV_DIR = os.path.join(ROOT, 'kits', 'iziz-vernacular')
 for f in kvern.BUNDLE_BASE + [os.path.basename(p) for p in kvern.building_files()]:
     PATH[f] = kvern.path(f)
 
+# 7b. Dilihan vassal-city kit (kits/dilihan/dilihan.py: all 24 dil_* red/orange brick passive-cooling VERN.defs), read in place
+sys.path.insert(0, os.path.join(ROOT, 'kits', 'dilihan'))
+import dilihan as kdil                            # noqa: E402
+for f in kdil.BASE + kdil.BUILDINGS:
+    PATH[f] = kdil.path(f)
+
 # 8. Core water (Cut Salt Lake brine margin, West-Wall spring stream & cisterns) + Core atmos (standard Krator skybox)
 CORE_WATER = ['20-core-water.js', '21-core-water-shore.js', '22-core-water-flow.js',
               '50-core-water-draw.js', '51-core-water-kinds.js']
@@ -489,6 +495,11 @@ VIRTUAL = {
     '69b5-vern-matlib-bind.js': (
         '/* Bind kits/iziz-vernacular PBR library pack onto MAT after 69b-vern-mat.js */\n'
         'if (typeof KMAT !== "undefined" && KMAT.bindMat) KMAT.bindMat("iziz-vernacular", MAT, { tile: KMAT.ANCIENT_TILES });\n'
+    ),
+    '69r5-dil-matlib-bind.js': (
+        '/* Bind kits/dilihan MAT.dl* kiln-brick, terracotta & mortar materials onto the already-loaded jimjam pack */\n'
+        'if (typeof KMAT !== "undefined" && KMAT.bindMat) KMAT.bindMat("jimjam", MAT, { alias: %s });\n'
+        % json.dumps(kdil.JIMJAM_MAT_ALIAS, sort_keys=True)
     ),
     '74zz-izv-seal.js': (
         '/* Expose IZV handle after VERN (69c) and IZDOOR (69e5) are initialized */\n'

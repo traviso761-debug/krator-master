@@ -41,23 +41,26 @@ var DL_RULES = (function () {
     };
   }
 
-  /* 2. Settled 1:4 Colonia-to-Vernacular Districts Area Ratio Check (PLAN.md §1.7: [3.2, 4.8]) */
+  /* 2. Settled 1:4 Colonia-to-Vernacular Districts Area Ratio, ~65% dil_* Vassal Mix & 10% JJ Mix Check */
   function areaRatioCheck(L) {
     var a = L.areas;
     var c = L.census;
     var builtRatio = a.vernacularBuiltM2 / Math.max(1, a.coloniaBuiltM2);
     var polyRatio = a.vernacularPolyKm2 / Math.max(0.001, a.coloniaPolyKm2);
     var jjShare = c.vernacularJjShare;
+    var dilShare = c.dilihanVassalShare == null ? 0 : c.dilihanVassalShare;
     var ok = builtRatio >= 3.20 && builtRatio <= 4.80 &&
       polyRatio >= 3.80 && polyRatio <= 4.20 &&
       a.coloniaBuiltM2 >= 25000 &&
-      jjShare >= 0.05 && jjShare <= 0.20;
+      jjShare >= 0.05 && jjShare <= 0.20 &&
+      dilShare >= 0.55 && dilShare <= 0.75;
     return {
-      name: '1 to 4 colonia-to-Vernacular built area ratio and 10 pct Jimjam mix',
+      name: '1 to 4 colonia-to-Vernacular built area ratio, 65 pct Dilihan brick vassal mix and 10 pct Jimjam mix',
       pass: ok,
       detail: 'builtRatio=' + r2(builtRatio) + ':1 (' + Math.round(a.vernacularBuiltM2) + ' vs ' +
-        Math.round(a.coloniaBuiltM2) + ' m2), polyRatio=' + r2(polyRatio) + ':1, districtJjShare=' +
-        r2(jjShare * 100) + '%'
+        Math.round(a.coloniaBuiltM2) + ' m2), polyRatio=' + r2(polyRatio) + ':1, dilVassalShare=' +
+        r2(dilShare * 100) + '% (' + (c.vernacularDistrictsDilLots || 0) + ' dil_* / ' +
+        (c.vernacularDistrictsPureVernLots || 0) + ' vern_*), districtJjShare=' + r2(jjShare * 100) + '%'
     };
   }
 
@@ -253,6 +256,7 @@ var DL_RULES = (function () {
         district: r.district,
         lit: !!r.lit
       };
+      if (r.style) tags.style = r.style;
       if (r.wealth) tags.wealth = r.wealth;
       if (r.job) tags.job = r.job;
       if (r.landmark) tags.landmark = true;

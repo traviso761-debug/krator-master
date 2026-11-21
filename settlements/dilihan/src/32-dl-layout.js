@@ -163,6 +163,32 @@ var DL_LAYOUT = (function () {
     vern_toll_house:         { w: 14.0, d: 10.0, h: 11.0, cornice: 6.40, kit: 'vern', culture: 'iziz-vernacular', wealth: null,     types: ['civic', 'infrastructure'], job: 'customs', pop: 10, lit: true },
     vern_mustering_ground:   { w: 44.0, d: 32.0, h: 13.0, cornice: 5.50, kit: 'vern', culture: 'iziz-vernacular', wealth: null,     types: ['military', 'civic'], pop: 50, lit: true },
 
+    /* Dilihan vassal-city kit (kits/dilihan/src/70d..72d: 24 red/orange brick courtyard-and-shade buildings) — read in place */
+    dil_house_poor_dogtrot:  { w: 9.0,  d: 10.0, h: 6.8,  cornice: 3.60, kit: 'dil', culture: 'iziz', style: 'dilihan', wealth: 'poor',   types: ['dwelling-single'], pop: 9 },
+    dil_house_poor_yard:     { w: 10.0, d: 10.0, h: 6.5,  cornice: 3.50, kit: 'dil', culture: 'iziz', style: 'dilihan', wealth: 'poor',   types: ['dwelling-single'], pop: 10 },
+    dil_house_mid_courtyard: { w: 14.0, d: 14.0, h: 10.6, cornice: 6.70, kit: 'dil', culture: 'iziz', style: 'dilihan', wealth: 'middle', types: ['dwelling-single'], pop: 17 },
+    dil_house_mid_veranda:   { w: 13.0, d: 15.0, h: 10.8, cornice: 6.65, kit: 'dil', culture: 'iziz', style: 'dilihan', wealth: 'middle', types: ['dwelling-single'], pop: 16 },
+    dil_tenement_windwell:   { w: 15.0, d: 16.0, h: 13.4, cornice: 9.58, kit: 'dil', culture: 'iziz', style: 'dilihan', wealth: 'middle', types: ['dwelling-multi'],  pop: 26 },
+    dil_villa_impluvium:     { w: 24.0, d: 26.0, h: 15.6, cornice: 8.60, kit: 'dil', culture: 'iziz', style: 'dilihan', wealth: 'rich',   types: ['dwelling-single'], pop: 28, lit: true },
+    dil_manor_breezeway:     { w: 26.0, d: 24.0, h: 16.2, cornice: 8.30, kit: 'dil', culture: 'iziz', style: 'dilihan', wealth: 'rich',   types: ['dwelling-single'], pop: 28, lit: true },
+    dil_shop_arcade:         { w: 12.0, d: 14.0, h: 10.4, cornice: 6.60, kit: 'dil', culture: 'iziz', style: 'dilihan', wealth: 'middle', types: ['shop', 'market'],  job: 'trading',     pop: 14 },
+    dil_bazaar_pavilion:     { w: 22.0, d: 18.0, h: 11.8, cornice: 5.60, kit: 'dil', culture: 'iziz', style: 'dilihan', wealth: 'middle', types: ['market'],          job: 'trading',     pop: 18 },
+    dil_tavern_pergola:      { w: 15.0, d: 15.0, h: 10.8, cornice: 6.85, kit: 'dil', culture: 'iziz', style: 'dilihan', wealth: 'middle', types: ['tavern'],          job: 'brewing',     pop: 18 },
+    dil_inn_courtyard:       { w: 22.0, d: 22.0, h: 12.2, cornice: 6.90, kit: 'dil', culture: 'iziz', style: 'dilihan', wealth: 'middle', types: ['inn'],             job: 'trading',     pop: 28 },
+    dil_godown_ventilated:   { w: 18.0, d: 16.0, h: 10.6, cornice: 6.20, kit: 'dil', culture: 'iziz', style: 'dilihan', wealth: 'middle', types: ['industry', 'infrastructure'], job: 'warehousing', pop: 12 },
+    dil_bakery_breezeway:    { w: 13.0, d: 13.0, h: 9.8,  cornice: 6.50, kit: 'dil', culture: 'iziz', style: 'dilihan', wealth: 'middle', types: ['shop', 'industry'],job: 'baking',      pop: 14 },
+    dil_smithy_monitor:      { w: 14.0, d: 14.0, h: 10.6, cornice: 4.50, kit: 'dil', culture: 'iziz', style: 'dilihan', wealth: 'middle', types: ['industry'],        job: 'smithing',    pop: 14 },
+    dil_brick_pottery:       { w: 15.0, d: 14.0, h: 9.6,  cornice: 4.10, kit: 'dil', culture: 'iziz', style: 'dilihan', wealth: 'middle', types: ['industry', 'shop'],job: 'pottery',     pop: 14 },
+    dil_weaver_dyecourt:     { w: 15.0, d: 15.0, h: 10.8, cornice: 6.60, kit: 'dil', culture: 'iziz', style: 'dilihan', wealth: 'middle', types: ['industry', 'shop'],job: 'weaving',     pop: 15 },
+    dil_press_mill:          { w: 14.0, d: 15.0, h: 10.4, cornice: 6.20, kit: 'dil', culture: 'iziz', style: 'dilihan', wealth: 'middle', types: ['industry'],        job: 'milling',     pop: 13 },
+    dil_butcher_icehouse:    { w: 12.0, d: 13.0, h: 9.2,  cornice: 5.20, kit: 'dil', culture: 'iziz', style: 'dilihan', wealth: 'middle', types: ['shop'],            job: 'butchery',    pop: 12 },
+    dil_carpenter_yard:      { w: 15.0, d: 14.0, h: 9.4,  cornice: 4.40, kit: 'dil', culture: 'iziz', style: 'dilihan', wealth: 'middle', types: ['industry'],        job: 'carpentry',   pop: 13 },
+    dil_cooling_baths:       { w: 24.0, d: 22.0, h: 15.8, cornice: 8.50, kit: 'dil', culture: 'iziz', style: 'dilihan', wealth: null,     types: ['civic'],           job: 'healing',     pop: 34, lit: true },
+    dil_customs_loggia:      { w: 24.0, d: 18.0, h: 14.8, cornice: 8.40, kit: 'dil', culture: 'iziz', style: 'dilihan', wealth: null,     types: ['civic', 'infrastructure'], job: 'customs', pop: 30, lit: true },
+    dil_guildhall_peristyle: { w: 26.0, d: 24.0, h: 16.4, cornice: 8.80, kit: 'dil', culture: 'iziz', style: 'dilihan', wealth: null,     types: ['civic'],           job: 'trading',     pop: 36, lit: true },
+    dil_barracks_arcade:     { w: 28.0, d: 22.0, h: 15.6, cornice: 8.30, kit: 'dil', culture: 'iziz', style: 'dilihan', wealth: null,     types: ['civic', 'military'], pop: 75,          lit: true },
+    dil_shrine_suncourt:     { w: 22.0, d: 22.0, h: 17.2, cornice: 8.40, kit: 'dil', culture: 'iziz', style: 'dilihan', wealth: null,     types: ['civic', 'religious'], job: 'worship',  pop: 28, lit: true },
+
     /* Dilihan site-specific bespoke landmarks & infrastructure (src/82-dl-landmarks.js) */
     dl_gov_palace:         { w: 62.0, d: 76.0, h: 28.0, cornice: 11.2, kit: 'dl', culture: 'iziz-vernacular', wealth: null, types: ['civic', 'dwelling-single'], job: 'customs', pop: 85, lit: true },
     dl_colonia_forum:      { w: 64.0, d: 52.0, h: 9.5,  cornice: 6.80, kit: 'dl', culture: 'jimjam',          wealth: null, types: ['plaza', 'civic', 'market'], job: 'trading', pop: 25, lit: false },
@@ -186,21 +212,21 @@ var DL_LAYOUT = (function () {
   if (typeof KHAMLET !== 'undefined' && KHAMLET.CULTURES) {
     KHAMLET.CULTURES['dilihan-handu'] = {
       kit: 'iziz', household: 15.0, workShare: 0.45, slopeMax: 0.24,
-      religious: 'jj_shop_spice', civic: 'vern_watch_house', general: 'vern_shops',
-      food: 'vern_provisioner', warehouse: 'jj_granary',
+      religious: 'dil_shrine_suncourt', civic: 'vern_watch_house', general: 'dil_shop_arcade',
+      food: 'dil_bakery_breezeway', warehouse: 'dil_godown_ventilated',
       services: { religious: 1, civic: 2, general: 2, food: 2, warehouse: 2 },
       houses: {
-        poor: [['vern_house_poor_c', 1, 3], ['vern_house_poor_a', 1, 2], ['jj_house_poor_a', 1, 2]],
-        middling: [['vern_house_mid_a', 2, 2], ['vern_house_mid_c', 2, 2], ['jj_house_mid_a', 2, 1]],
-        head: [['jj_house_rich_a', 1, 1]],
+        poor: [['dil_house_poor_dogtrot', 1, 3], ['dil_house_poor_yard', 1, 2], ['vern_house_poor_c', 1, 2], ['jj_house_poor_a', 1, 1]],
+        middling: [['dil_house_mid_courtyard', 2, 3], ['dil_house_mid_veranda', 2, 2], ['vern_house_mid_a', 2, 2], ['jj_house_mid_a', 2, 1]],
+        head: [['dil_villa_impluvium', 1, 2], ['jj_house_rich_a', 1, 1]],
         middlingShare: 0.40
       },
       works: {
-        farming: [{ key: 'jj_farmhouse_a', jobs: 14, share: 0.45 }, { key: 'vern_farmhouse', jobs: 14, share: 0.35 },
-                  { key: 'jj_granary', jobs: 10, share: 0.12 }, { key: 'jj_windmill', jobs: 10, share: 0.08 }],
-        clay:    [{ key: 'dl_brickkiln', jobs: 18, share: 0.65 }, { key: 'vern_workshop_b', jobs: 12, share: 0.35 }],
+        farming: [{ key: 'jj_farmhouse_a', jobs: 14, share: 0.40 }, { key: 'vern_farmhouse', jobs: 14, share: 0.32 },
+                  { key: 'dil_press_mill', jobs: 13, share: 0.16 }, { key: 'jj_granary', jobs: 10, share: 0.12 }],
+        clay:    [{ key: 'dl_brickkiln', jobs: 18, share: 0.55 }, { key: 'dil_brick_pottery', jobs: 14, share: 0.30 }, { key: 'vern_workshop_b', jobs: 12, share: 0.15 }],
         mine:    [{ key: 'dl_skarn_adit', jobs: 20, share: 0.60 }, { key: 'vern_mine', jobs: 18, share: 0.40 }],
-        salt:    [{ key: 'dl_evaporite_pan', jobs: 20, share: 0.70 }, { key: 'jj_warehouse_a', jobs: 12, share: 0.30 }]
+        salt:    [{ key: 'dl_evaporite_pan', jobs: 20, share: 0.65 }, { key: 'dil_godown_ventilated', jobs: 12, share: 0.35 }]
       },
       focusJobs: { farming: 68, clay: 36, mine: 44, salt: 48 },
       reach: { farming: 460, clay: 340, mine: 380, salt: 420 },
@@ -348,6 +374,7 @@ var DL_LAYOUT = (function () {
         kit: D.kit,
         cls: extra && extra.cls ? extra.cls : 'building',
         culture: extra && extra.culture ? extra.culture : D.culture,
+        style: extra && extra.style ? extra.style : (D.style || null),
         wealth: extra && extra.wealth !== undefined ? extra.wealth : D.wealth,
         types: (extra && extra.types ? extra.types : D.types).slice(),
         job: extra && extra.job !== undefined ? extra.job : (D.job || null),
@@ -532,13 +559,13 @@ var DL_LAYOUT = (function () {
        Jimjam inner row stands along the west side of the avenue; Vernacular outer row faces it across the street. */
     var wallStreetPairs = [];
     var eastPairDefs = [
-      { z: -250, jj: 'jj_house_mid_a',   jjScale: 0.90, vn: 'vern_house_mid_a', jjX: 226, vnX: 284 },  /* 7.46*0.90 = 6.71 vs 6.70 (0.01 m) */
-      { z: -210, jj: 'jj_shop_general',  jjScale: 0.88, vn: 'vern_shops',       jjX: 226, vnX: 284 },  /* 7.55*0.88 = 6.64 vs 6.60 (0.04 m) */
-      { z: -165, jj: 'jj_house_mid_c',   jjScale: 0.63, vn: 'vern_house_mid_b', jjX: 226, vnX: 284 },  /* 10.65*0.63 = 6.71 vs 6.65 (0.06 m) */
-      { z: -8,   jj: 'jj_house_rich_a',  jjScale: 0.87, vn: 'vern_house_rich_a',jjX: 236, vnX: 278 },  /* 9.90*0.87 = 8.61 vs 8.60 (0.01 m) */
-      { z: 42,   jj: 'jj_shop_textiles', jjScale: 0.89, vn: 'vern_weaver',      jjX: 242, vnX: 274 },  /* 7.50*0.89 = 6.68 vs 6.60 (0.08 m) */
-      { z: 96,   jj: 'jj_house_rich_b',  jjScale: 0.84, vn: 'vern_house_rich_b',jjX: 236, vnX: 278 },  /* 9.60*0.84 = 8.06 vs 8.00 (0.06 m) */
-      { z: 145,  jj: 'jj_tavern',        jjScale: 0.83, vn: 'vern_tavern',      jjX: 238, vnX: 276 }   /* 8.40*0.83 = 6.97 vs 6.95 (0.02 m) */
+      { z: -250, jj: 'jj_house_mid_a',   jjScale: 0.90, vn: 'dil_house_mid_courtyard', jjX: 226, vnX: 284 }, /* 6.71 vs 6.70 (0.01 m) */
+      { z: -210, jj: 'jj_shop_general',  jjScale: 0.88, vn: 'dil_shop_arcade',         jjX: 226, vnX: 284 }, /* 6.64 vs 6.60 (0.04 m) */
+      { z: -165, jj: 'jj_house_mid_c',   jjScale: 0.63, vn: 'vern_house_mid_b',        jjX: 226, vnX: 284 }, /* 6.71 vs 6.65 (0.06 m) */
+      { z: -8,   jj: 'jj_house_rich_a',  jjScale: 0.87, vn: 'dil_villa_impluvium',     jjX: 236, vnX: 280 }, /* 8.61 vs 8.60 (0.01 m) */
+      { z: 42,   jj: 'jj_shop_textiles', jjScale: 0.89, vn: 'dil_weaver_dyecourt',     jjX: 242, vnX: 276 }, /* 6.68 vs 6.60 (0.08 m) */
+      { z: 96,   jj: 'jj_house_rich_b',  jjScale: 0.84, vn: 'vern_house_rich_b',       jjX: 236, vnX: 278 }, /* 8.06 vs 8.00 (0.06 m) */
+      { z: 145,  jj: 'jj_tavern',        jjScale: 0.83, vn: 'dil_tavern_pergola',      jjX: 238, vnX: 276 }  /* 6.97 vs 6.85 (0.12 m) */
     ];
     for (var epi = 0; epi < eastPairDefs.length; epi++) {
       var ep = eastPairDefs[epi];
@@ -558,12 +585,12 @@ var DL_LAYOUT = (function () {
       }
     }
     var southPairDefs = [
-      { x: -185, jj: 'jj_house_mid_a',  jjScale: 0.90, vn: 'vern_house_mid_a' },
-      { x: -140, jj: 'jj_shop_food',    jjScale: 0.95, vn: 'vern_bakery'      },   /* 6.90*0.95 = 6.56 vs 6.50 (0.06 m) */
-      { x: -92,  jj: 'jj_house_mid_c',  jjScale: 0.63, vn: 'vern_house_mid_b' },
-      { x: -42,  jj: 'jj_shop_spice',   jjScale: 1.00, vn: 'vern_provisioner' },   /* 6.60*1.00 = 6.60 vs 6.60 (0.00 m) */
-      { x: 52,   jj: 'jj_house_rich_a', jjScale: 0.87, vn: 'vern_house_rich_a'},
-      { x: 112,  jj: 'jj_shop_alchemy', jjScale: 0.90, vn: 'vern_apothecary'  }    /* 7.40*0.90 = 6.66 vs 6.70 (0.04 m) */
+      { x: -185, jj: 'jj_house_mid_a',  jjScale: 0.90, vn: 'dil_house_mid_veranda' }, /* 6.71 vs 6.65 (0.06 m) */
+      { x: -140, jj: 'jj_shop_food',    jjScale: 0.95, vn: 'dil_bakery_breezeway'  }, /* 6.56 vs 6.50 (0.06 m) */
+      { x: -92,  jj: 'jj_house_mid_c',  jjScale: 0.63, vn: 'vern_house_mid_b'      }, /* 6.71 vs 6.65 (0.06 m) */
+      { x: -42,  jj: 'jj_shop_spice',   jjScale: 1.00, vn: 'dil_shop_arcade'       }, /* 6.60 vs 6.60 (0.00 m) */
+      { x: 52,   jj: 'jj_house_rich_a', jjScale: 0.87, vn: 'dil_manor_breezeway'   }, /* 8.61 vs 8.30 (0.31 m) */
+      { x: 112,  jj: 'jj_shop_alchemy', jjScale: 0.90, vn: 'vern_apothecary'       }  /* 6.66 vs 6.70 (0.04 m) */
     ];
     for (var spi = 0; spi < southPairDefs.length; spi++) {
       var sp = southPairDefs[spi];
@@ -717,47 +744,56 @@ var DL_LAYOUT = (function () {
       name: 'Eastern Terrace Legionary & Militia Muster Ground', landmark: true, district: 'vernacular-east'
     }), 2.5);
 
-    /* Bronze/Tin Skarn Foundries & Quiet-Copy Republican-Goods Workshops (linked via source to NE skarn nodes) */
+    /* Bronze/Tin Skarn Foundries, Cooling Baths, Peristyle Guildhalls & Quiet-Copy Workshops */
     var foundrySpecs = [
-      { id: 'dl.vern.foundry.1', key: 'vern_forgemasters_hall', x: 345, z: -115, ry: 0,           src: 'dl.ore.tin.1',  name: 'Cut Bronze & Cassiterite Great Foundry' },
-      { id: 'dl.vern.foundry.2', key: 'vern_smithy',            x: 392, z: -115, ry: 0,           src: 'dl.ore.iron.1', name: 'Magnetite Skarn Forge' },
-      { id: 'dl.vern.qcopy.1',   key: 'vern_alchemist',         x: 345, z: 55,   ry: Math.PI,     src: 'dl.ore.tin.1',  name: 'Quiet-Copy Precision Works (Lipp Patterns)' },
-      { id: 'dl.vern.qcopy.2',   key: 'vern_glassworks',        x: 392, z: 55,   ry: Math.PI,     src: 'dl.ore.iron.1', name: 'Quiet-Copy Optics & Instrument Glassworks' },
-      { id: 'dl.vern.qcopy.3',   key: 'vern_tinker',            x: 448, z: 55,   ry: Math.PI,     src: 'dl.ore.iron.2', name: 'Quiet-Copy Lock & Machine Shop' },
-      { id: 'dl.vern.market.e',  key: 'vern_market',            x: 492, z: -108, ry: 0,           src: null,            name: 'East Terrace Covered Market' },
-      { id: 'dl.vern.market.s',  key: 'vern_market',            x: -55, z: 304,  ry: 0,           src: null,            name: 'South Pass Provision Market' },
-      { id: 'dl.vern.gen.1',     key: 'vern_generator',         x: 455, z: -115, ry: 0,           src: null,            name: 'District Municipal Dynamo House' }
+      { id: 'dl.vern.foundry.1', key: 'vern_forgemasters_hall',  x: 345, z: -115, ry: 0,           src: 'dl.ore.tin.1',  name: 'Cut Bronze & Cassiterite Great Foundry' },
+      { id: 'dl.vern.foundry.2', key: 'dil_smithy_monitor',      x: 392, z: -115, ry: 0,           src: 'dl.ore.iron.1', name: 'Magnetite Skarn Monitor Forge' },
+      { id: 'dl.vern.qcopy.1',   key: 'vern_alchemist',          x: 345, z: 55,   ry: Math.PI,     src: 'dl.ore.tin.1',  name: 'Quiet-Copy Precision Works (Lipp Patterns)' },
+      { id: 'dl.vern.qcopy.2',   key: 'vern_glassworks',         x: 392, z: 55,   ry: Math.PI,     src: 'dl.ore.iron.1', name: 'Quiet-Copy Optics & Instrument Glassworks' },
+      { id: 'dl.vern.qcopy.3',   key: 'vern_tinker',             x: 448, z: 55,   ry: Math.PI,     src: 'dl.ore.iron.2', name: 'Quiet-Copy Lock & Machine Shop' },
+      { id: 'dl.vern.market.e',  key: 'dil_bazaar_pavilion',     x: 492, z: -108, ry: 0,           src: null,            name: 'East Terrace Monitor-Roof Brick Bazaar' },
+      { id: 'dl.vern.market.s',  key: 'dil_bazaar_pavilion',     x: -55, z: 304,  ry: 0,           src: null,            name: 'South Pass Ventilated Bazaar' },
+      { id: 'dl.vern.gen.1',     key: 'vern_generator',          x: 455, z: -115, ry: 0,           src: null,            name: 'District Municipal Dynamo House' },
+      { id: 'dl.vern.baths.1',   key: 'dil_cooling_baths',       x: 304, z: -242, ry: 0,           src: null,            name: 'East Wall-Street Sardab Cooling Baths' },
+      { id: 'dl.vern.guild.1',   key: 'dil_guildhall_peristyle', x: 452, z: 148,  ry: Math.PI,     src: null,            name: 'Potash & Factors Peristyle Guildhall' },
+      { id: 'dl.vern.shrine.1',  key: 'dil_shrine_suncourt',     x: 92,  z: 298,  ry: 0,           src: null,            name: 'South Ward Sun-Orb Jali Sanctuary' },
+      { id: 'dl.vern.garr.1',    key: 'dil_barracks_arcade',     x: 492, z: 42,   ry: -Math.PI / 2,src: null,            name: 'Muster-Ground Veranda Garrison Barracks' }
     ];
     for (var fi = 0; fi < foundrySpecs.length; fi++) {
       var fs = foundrySpecs[fi];
       commitStruct(makeRecord(fs.id, 3, fs.key, fs.x, fs.z, fs.ry, {
-        name: fs.name, landmark: fi < 3, district: fs.z > 195 ? 'vernacular-south' : 'vernacular-east', source: fs.src
+        name: fs.name, landmark: fi < 3 || fi >= 8, district: fs.z > 195 ? 'vernacular-south' : 'vernacular-east', source: fs.src
       }), 1.8);
     }
 
-    /* Run KCITY alleys + main-street builder across Zone 3 Vernacular Districts (90% IZV, 10% Jimjam merchant mix) */
+    /* Run KCITY alleys + main-street builder across Zone 3 (~65% dil_* local brick courtyard/shade + ~35% vern_* mainland + ~10% JJ) */
     var vernTune = {
       cell: 4.0, rasterHalf: 800, maxSlope: 0.24, exact: true,
       width: { avenue: 12, main: 8.5, side: 6.0, alley: 3.8, highway: 9.5, lane: 5.0 },
       lot: { side: 1.5, setback: 1.5, rear: 2.6, inset: 0.8, step: 3.5 },
       classes: {
-        manor:      [['vern_house_rich_a', 0], ['vern_house_rich_b', 0], ['jj_house_rich_b', 0]],
-        rich:       [['vern_house_rich_a', 0], ['vern_house_rich_b', 1], ['vern_house_mid_c', 0]],
-        middle:     [['vern_house_mid_a', 0], ['vern_house_mid_b', 0], ['vern_house_mid_c', 0], ['vern_house_mid_a', 1],
-                     ['vern_house_mid_b', 1], ['vern_bakery', 0], ['vern_weaver', 0], ['vern_tailor', 0],
-                     ['vern_scribe', 0], ['jj_house_mid_a', 0]],
-        poor:       [['vern_house_poor_a', 0], ['vern_house_poor_b', 0], ['vern_house_poor_c', 0], ['vern_house_poor_c', 1]],
-        shop:       [['vern_shops', 0], ['vern_provisioner', 0], ['vern_apothecary', 0], ['vern_bakery', 1], ['jj_shop_general', 0]],
-        tavern:     [['vern_tavern', 0], ['vern_brewery', 0], ['vern_caravanserai', 0]],
-        industrial: [['vern_workshop_a', 0], ['vern_workshop_b', 0], ['vern_smithy', 0], ['vern_warehouse', 0],
-                     ['vern_tannery', 0], ['vern_tinker', 0], ['jj_warehouse_a', 0]]
+        manor:      [['dil_villa_impluvium', 0], ['dil_manor_breezeway', 0], ['vern_house_rich_a', 0], ['jj_house_rich_b', 0]],
+        rich:       [['dil_villa_impluvium', 1], ['dil_manor_breezeway', 1], ['vern_house_rich_b', 1], ['dil_house_mid_courtyard', 0]],
+        middle:     [['dil_house_mid_courtyard', 0], ['dil_house_mid_veranda', 0], ['dil_tenement_windwell', 0],
+                     ['dil_house_mid_courtyard', 1], ['dil_house_mid_veranda', 1], ['dil_bakery_breezeway', 0],
+                     ['dil_weaver_dyecourt', 0], ['vern_house_mid_a', 0], ['vern_house_mid_b', 0],
+                     ['vern_tailor', 0], ['vern_scribe', 0], ['jj_house_mid_a', 0]],
+        poor:       [['dil_house_poor_dogtrot', 0], ['dil_house_poor_yard', 0], ['dil_house_poor_dogtrot', 1],
+                     ['dil_house_poor_yard', 1], ['vern_house_poor_a', 0], ['vern_house_poor_c', 0]],
+        shop:       [['dil_shop_arcade', 0], ['dil_bakery_breezeway', 1], ['dil_butcher_icehouse', 0],
+                     ['vern_shops', 0], ['vern_apothecary', 0], ['jj_shop_general', 0]],
+        tavern:     [['dil_tavern_pergola', 0], ['dil_inn_courtyard', 0], ['vern_tavern', 0], ['vern_brewery', 0]],
+        industrial: [['dil_godown_ventilated', 0], ['dil_smithy_monitor', 0], ['dil_brick_pottery', 0],
+                     ['dil_press_mill', 0], ['dil_carpenter_yard', 0], ['vern_workshop_a', 0],
+                     ['vern_tannery', 0], ['vern_warehouse', 0], ['jj_warehouse_a', 0]]
       },
       fallback: { manor: 'rich', rich: 'middle', middle: 'poor', shop: 'middle', tavern: 'shop', industrial: 'poor', poor: null },
       civic: [
+        { key: 'dil_cooling_baths', v: 1, near: 'south_center' },
+        { key: 'dil_customs_loggia', v: 0, near: 'north_serai' },
         { key: 'vern_school', v: 0, near: 'east_center' },
-        { key: 'vern_hospital', v: 0, near: 'south_center' },
-        { key: 'vern_caravanserai', v: 0, near: 'south_center' },
-        { key: 'vern_warehouse', v: 0, near: 'north_serai' },
+        { key: 'dil_inn_courtyard', v: 1, near: 'south_center' },
+        { key: 'dil_godown_ventilated', v: 1, near: 'north_serai' },
         { key: 'jj_warehouse_b', v: 0, near: 'north_serai' },
         { key: 'vern_silos', v: 0, near: 'east_center' },
         { key: 'vern_tank', v: 0, near: 'south_center' }
@@ -870,12 +906,22 @@ var DL_LAYOUT = (function () {
     var curVernArea = 0;
     for (var z3i = 0; z3i < zones[3].length; z3i++) curVernArea += zones[3][z3i].area;
 
-    /* Helper for culture draw: ~16% Jimjam merchant mix in North Caravanserai Quarter, ~8% elsewhere -> ~10% overall */
+    /* Helper pools: ~10% Jimjam merchant mix overall; among Izani lots, ~65% dil_* local brick & ~35% vern_* mainland */
     var jjMerchantKeys = ['jj_house_mid_a', 'jj_shop_general', 'jj_shop_spice', 'jj_warehouse_a'];
+    var vernNearPalaceSwap = {
+      dil_house_mid_courtyard: 'vern_house_mid_c',
+      dil_house_mid_veranda: 'vern_house_mid_a',
+      dil_shop_arcade: 'vern_shops',
+      dil_tavern_pergola: 'vern_tavern',
+      dil_villa_impluvium: 'vern_house_rich_a',
+      dil_manor_breezeway: 'vern_house_rich_b'
+    };
     var vernFillPool = [
-      'vern_warehouse', 'vern_market', 'vern_caravanserai', 'vern_house_mid_c',
-      'vern_workshop_b', 'vern_workshop_a', 'vern_shops', 'vern_bakery',
-      'vern_brewery', 'vern_tavern', 'vern_house_mid_a', 'vern_provisioner'
+      /* 11 dil_* (~69%) + 5 vern_* (~31%) so combined Zone 3 Izani wards sit right at ~65% dil_* / ~35% vern_* */
+      'dil_godown_ventilated', 'dil_bazaar_pavilion', 'dil_inn_courtyard', 'dil_house_mid_courtyard',
+      'dil_house_mid_veranda', 'dil_tenement_windwell', 'dil_shop_arcade', 'dil_bakery_breezeway',
+      'dil_tavern_pergola', 'dil_weaver_dyecourt', 'dil_press_mill',
+      'vern_warehouse', 'vern_caravanserai', 'vern_house_mid_c', 'vern_brewery', 'vern_provisioner'
     ];
 
     for (var vli = 0; vli < vernPlan.lots.length; vli++) {
@@ -886,9 +932,16 @@ var DL_LAYOUT = (function () {
       var chosenKey = vl.key;
       var uDraw = KRAND.unit(KRAND.hash(WORLD_SEED, 'vern-mix', vli, 17));
       var jjProb = distTag === 'vernacular-north' ? 0.22 : 0.06;
-      if (DIMS[chosenKey].kit === 'vern' && uDraw < jjProb) {
+      if ((DIMS[chosenKey].kit === 'vern' || DIMS[chosenKey].kit === 'dil') && uDraw < jjProb) {
         var mk = jjMerchantKeys[KRAND.hash(WORLD_SEED, 'jjm', vli) % jjMerchantKeys.length];
         if (DIMS[mk].w <= vl.w + 2.5 && DIMS[mk].d <= vl.d + 2.5) chosenKey = mk;
+      } else if (DIMS[chosenKey].kit === 'dil' && Math.hypot(vl.x - 260, vl.z - 294) < 205) {
+        /* Mainland Izani officials & garrison cluster more strongly around the Governor's Precinct */
+        var sw = vernNearPalaceSwap[chosenKey];
+        if (sw && KRAND.unit(KRAND.hash(WORLD_SEED, 'pal-vern', vli, 31)) < 0.45 &&
+            DIMS[sw].w <= vl.w + 2.5 && DIMS[sw].d <= vl.d + 2.5) {
+          chosenKey = sw;
+        }
       }
       var vrec = makeRecord('dl.vern.lot.' + vl.id, 3, chosenKey, vl.x, vl.z, vl.ry, {
         district: distTag,
@@ -949,10 +1002,10 @@ var DL_LAYOUT = (function () {
       }
     }
 
-    /* Tag 8 outer Zone 3 Vernacular expansion lots as active KCONS + KCITY.constructMesh scaffolded sites (PLAN.md §0 & §3) */
+    /* Tag 8 outer Zone 3 expansion lots (dil_* & vern_*) as active KCONS + KCITY.constructMesh scaffolded sites */
     var constructSites = [];
     var consCands = zones[3].filter(function (r) {
-      return r.kit === 'vern' && !r.landmark && !r.wallStreet && (r.x > 540 || r.z > 470 || r.z < -470);
+      return (r.kit === 'vern' || r.kit === 'dil') && !r.landmark && !r.wallStreet && (r.x > 540 || r.z > 470 || r.z < -470);
     });
     for (var csi = 0; csi < Math.min(8, consCands.length); csi++) {
       var targetRec = consCands[Math.floor(csi * consCands.length / Math.min(8, consCands.length))];
@@ -988,18 +1041,18 @@ var DL_LAYOUT = (function () {
       }), 0.8);
     }
     var lowTownBuildings = [
-      { id: 'dl.low.inn.1',    key: 'jj_inn',            x: -362, z: -124, ry: -Math.PI / 2, name: 'Jimjam Drovers Inn' },
-      { id: 'dl.low.serai.1',  key: 'vern_caravanserai', x: -362, z: 168,  ry: -Math.PI / 2, name: 'Trigon Karst-Road Caravanserai' },
-      { id: 'dl.low.tavern.1', key: 'vern_tavern',       x: -482, z: 24,   ry: Math.PI / 2 },
-      { id: 'dl.low.ware.1',   key: 'vern_warehouse',    x: -484, z: -112, ry: Math.PI / 2 },
-      { id: 'dl.low.ware.2',   key: 'jj_warehouse_a',    x: -486, z: 112,  ry: Math.PI / 2 },
-      { id: 'dl.low.stable.1', key: 'vern_byre',         x: -484, z: 178,  ry: Math.PI / 2 },
-      { id: 'dl.low.toll.1',   key: 'vern_toll_house',   x: -386, z: 242,  ry: 0 },
-      { id: 'dl.low.shops.1',  key: 'vern_shops',        x: -362, z: 22,   ry: -Math.PI / 2 },
-      { id: 'dl.low.smithy.1', key: 'vern_smithy',       x: -482, z: -176, ry: Math.PI / 2 },
-      { id: 'dl.low.house.1',  key: 'vern_house_mid_a',  x: -358, z: -178, ry: -Math.PI / 2 },
-      { id: 'dl.low.house.2',  key: 'vern_house_mid_b',  x: -358, z: -214, ry: -Math.PI / 2 },
-      { id: 'dl.low.house.3',  key: 'jj_house_mid_a',    x: -482, z: -222, ry: Math.PI / 2, scale: 0.90 }
+      { id: 'dl.low.inn.1',    key: 'jj_inn',                  x: -362, z: -124, ry: -Math.PI / 2, name: 'Jimjam Drovers Inn' },
+      { id: 'dl.low.serai.1',  key: 'dil_inn_courtyard',       x: -362, z: 168,  ry: -Math.PI / 2, name: 'Trigon Karst-Road Courtyard Inn' },
+      { id: 'dl.low.tavern.1', key: 'dil_tavern_pergola',      x: -482, z: 24,   ry: Math.PI / 2 },
+      { id: 'dl.low.ware.1',   key: 'dil_godown_ventilated',   x: -484, z: -112, ry: Math.PI / 2 },
+      { id: 'dl.low.ware.2',   key: 'jj_warehouse_a',          x: -486, z: 112,  ry: Math.PI / 2 },
+      { id: 'dl.low.stable.1', key: 'vern_byre',               x: -484, z: 178,  ry: Math.PI / 2 },
+      { id: 'dl.low.toll.1',   key: 'vern_toll_house',         x: -386, z: 242,  ry: 0 },
+      { id: 'dl.low.shops.1',  key: 'dil_shop_arcade',         x: -362, z: 22,   ry: -Math.PI / 2 },
+      { id: 'dl.low.smithy.1', key: 'dil_smithy_monitor',      x: -482, z: -176, ry: Math.PI / 2 },
+      { id: 'dl.low.house.1',  key: 'dil_house_mid_courtyard', x: -358, z: -178, ry: -Math.PI / 2 },
+      { id: 'dl.low.house.2',  key: 'vern_house_mid_b',        x: -358, z: -214, ry: -Math.PI / 2 },
+      { id: 'dl.low.house.3',  key: 'jj_house_mid_a',          x: -482, z: -222, ry: Math.PI / 2, scale: 0.90 }
     ];
     for (var lti = 0; lti < lowTownBuildings.length; lti++) {
       var ltb = lowTownBuildings[lti];
@@ -1128,12 +1181,16 @@ var DL_LAYOUT = (function () {
     /* ================================================================
      * I. CENSUS, AREA RATIO & SOLSTICE SIGHTLINE SUMMARY
      * ================================================================ */
-    var z1Area = 0, z3Area = 0, z3JjCount = 0, z3VnCount = 0;
+    var z1Area = 0, z3Area = 0, z3JjCount = 0, z3VnCount = 0, z3DilCount = 0, z3PureVernCount = 0;
     for (var i1 = 0; i1 < zones[1].length; i1++) z1Area += zones[1][i1].area;
     for (var i3 = 0; i3 < zones[3].length; i3++) {
       z3Area += zones[3][i3].area;
       if (zones[3][i3].culture === 'jimjam') z3JjCount++;
-      else z3VnCount++;
+      else {
+        z3VnCount++;
+        if (zones[3][i3].kit === 'dil') z3DilCount++;
+        else z3PureVernCount++;
+      }
     }
     var polyColKm2 = r4(polyAreaKm2(COLONIA_POLY));
     var polyVernKm2 = 0;
@@ -1273,6 +1330,9 @@ var DL_LAYOUT = (function () {
         rawBuildingCapacity: rawUrbanPop + rawRuralPop,
         vernacularDistrictsJjLots: z3JjCount,
         vernacularDistrictsIzvLots: z3VnCount,
+        vernacularDistrictsDilLots: z3DilCount,
+        vernacularDistrictsPureVernLots: z3PureVernCount,
+        dilihanVassalShare: r4(z3DilCount / Math.max(1, z3DilCount + z3PureVernCount)),
         vernacularJjShare: r4(z3JjCount / Math.max(1, z3JjCount + z3VnCount))
       },
       areas: {

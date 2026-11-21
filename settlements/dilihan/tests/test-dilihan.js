@@ -125,14 +125,18 @@ const badPin = clonePlan(L);
 badPin.pin.datum = 450.0;
 T.neg('corrupted pin datum fails pinCheck', p => DLR.pinCheck(p).pass, badPin, L);
 
-/* ---- Test 2: Settled 1:4 Colonia-to-Vernacular Built Area Ratio & 10% Merchant Mix ---- */
+/* ---- Test 2: Settled 1:4 Colonia-to-Vernacular Built Area Ratio, ~65% dil_* Vassal Mix & 10% Merchant Mix ---- */
 const arc = DLR.areaRatioCheck(L);
-T.ok('Zone 3 Vernacular districts take ~4.0x the Colonia built area ([3.2, 4.8]) with ~10% Jimjam merchant mix',
+T.ok('Zone 3 Vernacular districts take ~4.0x the Colonia built area ([3.2, 4.8]) with ~65% dil_* brick vassal architecture & ~10% Jimjam mix',
   arc.pass, arc.detail);
 
 const badRatio = clonePlan(L);
 badRatio.areas.vernacularBuiltM2 = badRatio.areas.coloniaBuiltM2 * 1.4;
 T.neg('shrunk 1.4:1 district area fails areaRatioCheck', p => DLR.areaRatioCheck(p).pass, badRatio, L);
+
+const badDilMix = clonePlan(L);
+badDilMix.census.dilihanVassalShare = 0.15;
+T.neg('omitting dil_* vassal buildings (15% share) fails areaRatioCheck', p => DLR.areaRatioCheck(p).pass, badDilMix, L);
 
 /* ---- Test 3: Wall-Street Cornice Match (<= 0.50 m via o.scale) ---- */
 const cnc = DLR.corniceCheck(L);
