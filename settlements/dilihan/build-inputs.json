@@ -246,7 +246,7 @@
     "kits/iziz-vernacular/src/71a-vern-food.js": "6483f0cdd24b54d89057691baa338dd468ce47e0f83b6ceac709d9c98221eae3",
     "kits/iziz-vernacular/src/71b-vern-cloth.js": "d3410f232022d8d3b96b6c250515ca6f760a9a14591425b707d566a6c194bd15",
     "kits/iziz-vernacular/src/71c-vern-craft.js": "92e0e4b81b3db8055ebdb8d0ce0cb8353e65315ffd040d64d523f5648a1ff80e",
-    "kits/iziz-vernacular/src/72-vern-civic.js": "562fecb527c090db84b30176948d5deb10ca73f73ca0c0a3f71199cc2cfe80ba",
+    "kits/iziz-vernacular/src/72-vern-civic.js": "98f48e14363dfdec851595cf37a4fdc6dbc5827058432c22db53f55d16c9a7cb",
     "kits/iziz-vernacular/src/73-vern-infra.js": "120a64a089eda108a28ddf267bd126808b3bd2d558794758b851c06f2878a850",
     "kits/iziz-vernacular/src/73b-vern-works.js": "e9b60359b827a44f88a3657084c69f8bab8b142cf251e68e9d1d812bb98cee7d",
     "kits/iziz-vernacular/src/73c-vern-land.js": "3f6e43e6b5a75b9d7e560a598a305a2166013b63933d8efc38384daf96d17a9f",
@@ -427,13 +427,13 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "settlements/dilihan/dist/dilihan.html": "077cea4e883888b4f15296bdfae2d4515db4f90b7c66996e9993c28c1598782d",
+    "settlements/dilihan/dist/dilihan.html": "c3e33ebe5f6e6c971e19bc0ee35adbfaa68d95bd435e7377a739c712ea5280b1",
     "settlements/dilihan/dist/dilihan.tex.cut.js": "9d7becbdeba3bb929044840930dce40bad9e4066f34751883b578b10a529e7d6",
     "settlements/dilihan/dist/dilihan.tex.iziz-vernacular.js": "c422d5fd3408d84fa24dfbf42e66dd1a28924326250f3a6a1cf9b4bc69747bf7",
     "settlements/dilihan/dist/dilihan.tex.jimjam.js": "00f7391d65938c750eb71245baf78be41ec94042ea7819f6c98c62c01d0a2ce9"
    },
    "outputs_raw": {
-    "settlements/dilihan/dist/dilihan.html": "077cea4e883888b4f15296bdfae2d4515db4f90b7c66996e9993c28c1598782d",
+    "settlements/dilihan/dist/dilihan.html": "c3e33ebe5f6e6c971e19bc0ee35adbfaa68d95bd435e7377a739c712ea5280b1",
     "settlements/dilihan/dist/dilihan.tex.cut.js": "9d7becbdeba3bb929044840930dce40bad9e4066f34751883b578b10a529e7d6",
     "settlements/dilihan/dist/dilihan.tex.iziz-vernacular.js": "c422d5fd3408d84fa24dfbf42e66dd1a28924326250f3a6a1cf9b4bc69747bf7",
     "settlements/dilihan/dist/dilihan.tex.jimjam.js": "00f7391d65938c750eb71245baf78be41ec94042ea7819f6c98c62c01d0a2ce9"
