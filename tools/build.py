@@ -94,6 +94,14 @@ def run(build, args, script='build.py', quiet=False):
             if ': VIEW-NAME ' in k:
                 notes.append('VIEW NAME FAIL  %s (%s): a view or check name may not hold : \' \\ / * ? " < > |' % (k, where[k][0]))
                 code = 1
+    if build.startswith('biomes/'):
+        try:
+            import check_botany
+            _, b_msg = check_botany.check_or_update_biome(build)
+            if b_msg:
+                notes.append('botany check  %s' % b_msg)
+        except Exception as e:
+            notes.append('botany check note  %s' % e)
     tail = '\n'.join(notes)
     out += ('\n' + tail if tail else '') + '\nrecorded %s: %d inputs, %d listings, %d outputs' % (
         man, len(inputs), len(listings), len(outputs))

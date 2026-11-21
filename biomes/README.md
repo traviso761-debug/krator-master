@@ -54,6 +54,12 @@ system on the shared biome core (`core/biome/`, read through `CORE_BIOME` in eac
 `FRUIT.md` gives one edible fruit for each fruiting plant the kits draw. Each is a catalog piece in
 `kits/catalog/krator-master-furniture-generic-fruit.js`.
 
+`BOTANY-SURVEY.md` is the master botanical architecture across all biomes, indexing:
+- `BOTANY-MEDICINAL-REAGENT-FUEL.md`: complete catalog of medicinal, reagent, and fuel plants.
+- `BOTANY-FOOD-CROPS.md`: complete catalog of cultivated crops, wild edibles, and 3D fruit pieces.
+- `BOTANY-MISCELLANEOUS-PLANTS.md`: complete catalog of utilitarian craft plants across 11 domains.
+- `botany_census.json`: machine-readable species census, verified by `tools/check_botany.py`.
+
 Build: `cd <kit> && python3 build.py`. Verify: `python3 verify.py dist/<kit>.html --assert --views "..."`.
 
 **The host shell (2026-10-12).** Every kit takes its camera, frame loop and world clock, panel and `window._api` from
