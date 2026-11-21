@@ -92,6 +92,9 @@ function swayBio(o){if(!o||!('swayW' in o||'swayA' in o))return null;const e=Str
 /* Ensure multi-view or wide-box places keep 3D flora around anchors and promote ShaderMaterial impostors to real mid meshes */
 function prepareFloraBox(box){if(!box||typeof FLORA==='undefined'||!FLORA||!FLORA.pools||typeof NURSERY==='undefined'||!NURSERY)return;
  const anchors=Array.isArray(WORLD_EXPORT.floraAnchors)&&WORLD_EXPORT.floraAnchors.length?WORLD_EXPORT.floraAnchors:null;
+ if(typeof FLOOR!=='undefined'&&FLOOR&&typeof FLOOR.update==='function'){
+  for(let g=0;g<4;g++){if(NURSERY.queued&&NURSERY.queued()>0)NURSERY.update(10000);FLOOR.update(10000);}
+  if(NURSERY.queued&&NURSERY.queued()>0)NURSERY.update(10000);FLOOR.update(10000);}
  if(HOST&&HOST.scene)for(const m of HOST.scene.children)if(m&&m.userData&&m.userData.inspectLabel==='floor'){
   if(m.position.x<=box[2]+128&&m.position.x+128>=box[0]&&m.position.z<=box[3]+128&&m.position.z+128>=box[1])m.visible=true;}
  let hasImp=false;for(const p of FLORA.pools.values())if(p.n>0&&p.proto&&p.proto.impostor){hasImp=true;break;}
@@ -115,10 +118,10 @@ function prepareFloraBox(box){if(!box||typeof FLORA==='undefined'||!FLORA||!FLOR
   if(r.x<box[0]-32||r.x>box[2]+32||r.z<box[1]-32||r.z>box[3]+32)continue;
   let d=1e9;for(const a of A){const dd=Math.hypot(r.x-a[0],r.z-a[1]);if(dd<d)d=dd;}
   const L=FLORA.KITS[r.k].lod;let lv=-1;
-  const sapLim=anchors?Math.max(L.sapling?L.sapling[1]:0,280):(L.sapling?L.sapling[1]:0);
-  const heroLim=anchors?Math.min(220,lim(L.hero,r.Ht)):lim(L.hero,r.Ht);
-  const midLim=anchors?Math.max(920,lim(L.mid,r.Ht)):lim(L.mid,r.Ht);
-  const farLim=anchors?Math.max(2600,lim(L.far,r.Ht)):lim(L.far,r.Ht);
+  const sapLim=anchors?Math.max(L.sapling?L.sapling[1]:0,420):(L.sapling?L.sapling[1]:0);
+  const heroLim=anchors?Math.min(520,lim(L.hero,r.Ht)):lim(L.hero,r.Ht);
+  const midLim=anchors?Math.max(1200,lim(L.mid,r.Ht)):lim(L.mid,r.Ht);
+  const farLim=anchors?Math.max(3000,lim(L.far,r.Ht)):lim(L.far,r.Ht);
   if(r.sap)lv=d<sapLim?2:-1;
   else if(d<heroLim)lv=2;
   else if(d<midLim)lv=1;
@@ -138,8 +141,88 @@ function prepareFloraBox(box){if(!box||typeof FLORA==='undefined'||!FLORA||!FLOR
   _m.toArray(p.arr,p.n*16);p.n++;}
  for(const p of FLORA.pools.values()){for(const m of p.meshes){m.count=p.n;m.visible=p.n>0;m.position.copy(ORG);m.updateMatrix();m.updateMatrixWorld(true);}
   if(p.attr)p.attr.needsUpdate=true;}}
-/* Grow all Hero (lv=2), Mid (lv=1), and Sapling ('s') 3D species variants in NURSERY and stage 1 unit instance per prototype
-   at [0, 0, 0] so `flora/` exports a compact shared prototype library for Godot's dual-LOD StreamFlora */
+/* Build compact ~2.4 m 3D undergrowth & boulder cluster specs for Oidong Valley, Alpine passes, and High Rift plains */
+function undergrowthSpecs(){
+ const out=[];if(typeof BIO==='undefined'||!BIO||!BIO.fn)return out;
+ const {TAU,rng,rr,ri,pick,qEuler}=BIO.fn;
+ if(typeof OIDONG!=='undefined'&&OIDONG&&OIDONG.PAL&&OIDONG.small&&BIO.kits&&BIO.kits.oidong){
+  const P=OIDONG.PAL,SM=OIDONG.small,{C,bright,shade,vary,tint,means,leafCol,nearW}=OIDONG;
+  const rkCol=s=>tint(vary(pick(s||P.granite),.02,.05,.05),means().rock,rr(.5,.75));
+  const addO=(id,nm,r,vi,fn)=>out.push({key:'ug|'+id+'|'+(vi===0?'a':'b'),kit:'oidong',species:id,name:nm,v:vi,tag:'u',r,seed:88101+out.length*97,build:fn});
+  for(let v=0;v<2;v++){
+   addO('oid_fern','Oidong moss & fern cluster',2.6,v,()=>{
+    BIO.put('mossmat',[0,.03,0],qEuler(0,rr(0,TAU),0),[rr(1.3,2.1),1,rr(1.3,2.1)],leafCol(P.moss,1.15,.03,.08,.06));
+    for(let k=0;k<3;k++){const a=k*2.1+rr(-.4,.4),d=k?rr(.7,1.8):rr(0,.4);SM.fern(Math.cos(a)*d,0,Math.sin(a)*d,2,rr(.85,1.25));}
+    SM.mooncaps(rr(-.8,.8),0,rr(-.8,.8),2,ri(4,7),rr(.6,1.2));
+    const sr=rr(.22,.46),sa=rr(0,TAU),sd=rr(.6,1.5),sx=Math.cos(sa)*sd,sz=Math.sin(sa)*sd;
+    BIO.put('stone',[sx,sr*.18,sz],qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3)),[sr*1.2,sr*.7,sr*1.1],rkCol(P.granite));
+    BIO.put('moss',[sx,sr*.68,sz],qEuler(0,rr(0,TAU),0),[sr*1.5,sr*.55,sr*1.5],leafCol(P.moss,1.12,.03),{n:[0,1,0]});});
+   addO('oid_meadow','Oidong meadow grass & sky poppies',2.8,v,()=>{
+    for(let k=0;k<3;k++){const a=k*2.09+rr(-.4,.4),d=k?rr(.8,1.9):rr(0,.4);SM.grass(Math.cos(a)*d,0,Math.sin(a)*d,2,k===2?P.gold:P.sage,rr(.95,1.25));}
+    SM.poppies(rr(-.4,.4),0,rr(-.4,.4),2,ri(6,11),rr(1.0,2.1));
+    const R=rr(.55,.88),ta=rr(0,TAU),td=rr(.7,1.5),tx=Math.cos(ta)*td,tz=Math.sin(ta)*td,hc=vary(pick(P.celadon),.02,.05,.04);
+    BIO.put('lobe',[tx,-.08,tz],qEuler(0,rr(0,TAU),0),[R,R*.75,R],shade(hc,-.28));
+    for(let q=0;q<4;q++){const qa=rr(0,TAU);BIO.put('teabush',[tx+Math.cos(qa)*R*.45,R*.52,tz+Math.sin(qa)*R*.45],qEuler(rr(-.25,.25),rr(0,TAU),rr(-.25,.25)),[R*1.05,R*.7,R*1.05],bright(hc,1.18),{n:[0,1,0]});}});
+   addO('oid_shrub','Oidong boxwood & mist-tea thicket',2.6,v,()=>{
+    for(let k=0;k<2;k++){const a=k*Math.PI+rr(-.5,.5),d=k?rr(.9,1.6):rr(0,.35),bx=Math.cos(a)*d,bz=Math.sin(a)*d,R=rr(.65,1.15),hc=vary(pick(P.jade),.02,.05,.04);
+     BIO.put('boxdome',[bx,R*.34,bz],qEuler(0,rr(0,TAU),0),[R,R*rr(.68,.86),R],bright(hc,rr(1.05,1.18)));
+     for(let f=0;f<3;f++){const fa=rr(0,TAU);BIO.put('teabush',[bx+Math.cos(fa)*R*.6,R*.46,bz+Math.sin(fa)*R*.6],qEuler(rr(-.2,.2),rr(0,TAU),rr(-.2,.2)),[R*.78,R*.56,R*.78],bright(hc,1.15),{n:[0,1,0]});}}
+    SM.grass(rr(-.9,.9),0,rr(-.9,.9),2,P.sage,1.0);SM.fern(rr(-.9,.9),0,rr(-.9,.9),2,.85);});
+   addO('oid_bamboo','Oidong bamboo shoots & stream iris',2.6,v,()=>{
+    for(let k=0;k<4;k++){const a=rr(0,TAU),d=rr(.25,1.4),px=Math.cos(a)*d,pz=Math.sin(a)*d,h=rr(.20,.42);
+     BIO.put('cone',[px,-.04,pz],qEuler(rr(-.08,.08),rr(0,TAU),rr(-.08,.08)),[h*.20,h,h*.20],shade(vary(C(0x68643a),.02,.05,.04),-.18));
+     SM.tuft('blade',px,0,pz,h*.68,h*.48,leafCol(P.jade,1.08,.02));}
+    for(let k=0;k<2;k++){const a=rr(0,TAU),d=rr(.5,1.6),ix=Math.cos(a)*d,iz=Math.sin(a)*d,h=rr(.75,1.22);
+     SM.tuft('blade',ix,0,iz,h,h*.75,leafCol(P.celadon,1.22,.02));}
+    SM.fern(rr(-.5,.5),0,rr(-.5,.5),2,1.0);});
+   addO('oid_flats','Oidong gravel sage & stone-bloom',2.6,v,()=>{
+    for(let k=0;k<4;k++){const a=k*1.57+rr(-.35,.35),d=rr(.3,1.7),h=rr(.36,.68);
+     SM.tuft('sagebush',Math.cos(a)*d,0,Math.sin(a)*d,h,h*1.9,leafCol(P.sage,1.2,.02));}
+    for(let k=0;k<3;k++){const a=rr(0,TAU),d=rr(.4,1.5),px=Math.cos(a)*d,pz=Math.sin(a)*d,s=rr(.18,.32);
+     BIO.put('stonebloom',[px,-.02,pz],qEuler(rr(-.06,.06),rr(0,TAU),rr(-.06,.06)),[s,s,s],rkCol(P.sand).lerp(C(pick(P.lavender)),.25));
+     BIO.put('daisy',[px,s*.45,pz],qEuler(rr(-.2,.2),rr(0,TAU),rr(-.2,.2)),s*.9,bright(C(pick(P.blush)),1.15));}});
+   addO('oid_alp','Oidong alpine cushion & snow lotus',2.4,v,()=>{
+    for(let k=0;k<3;k++){const a=k*2.1+rr(-.4,.4),d=k?rr(.6,1.5):rr(0,.3),R=rr(.38,.78);
+     BIO.put('lobe',[Math.cos(a)*d,-.08,Math.sin(a)*d],qEuler(0,rr(0,TAU),0),[R,R*rr(.45,.65),R],leafCol(P.mossPale,1.08,.03,.06,.05));}
+    for(let k=0;k<2;k++){const a=rr(0,TAU),d=rr(.3,1.2),s=rr(.28,.46);
+     BIO.put('snowlotus',[Math.cos(a)*d,.02,Math.sin(a)*d],qEuler(rr(-.06,.06),rr(0,TAU),rr(-.06,.06)),[s,s*.8,s],nearW(1.02));}
+    SM.grass(rr(-.6,.6),0,rr(-.6,.6),1,P.sage,.72);});
+   addO('oid_boulder','Oidong mossy granite outcrop',3.2,v,()=>{
+    const Rb=rr(1.05,1.75),hb=Rb*rr(.62,.92);
+    BIO.put('boulder',[0,hb*.22,0],qEuler(rr(-.2,.2),rr(0,TAU),rr(-.2,.2)),[Rb*rr(1.0,1.32),hb*.82,Rb*rr(.95,1.25)],rkCol(P.granite));
+    BIO.put('moss',[rr(-.15,.15)*Rb,hb*.88,rr(-.15,.15)*Rb],qEuler(rr(-.18,.18),rr(0,TAU),rr(-.18,.18)),[Rb*1.25,Rb*.46,Rb*1.25],leafCol(P.moss,1.14,.03),{n:[0,1,0]});
+    for(let k=0;k<2;k++){const a=k*2.6+rr(-.4,.4),d=Rb*rr(.85,1.35),r2=Rb*rr(.38,.62),h2=r2*rr(.6,.88);
+     BIO.put('boulder',[Math.cos(a)*d,h2*.18,Math.sin(a)*d],qEuler(rr(-.25,.25),rr(0,TAU),rr(-.25,.25)),[r2*1.15,h2*.8,r2*1.05],rkCol(P.granite));}
+    SM.fern(Rb*.95,0,0,2,.85);});}
+  addO('oid_stones','Oidong standing-stone trio',3.0,0,()=>{
+   for(let k=0;k<3;k++){const a=k*TAU/3+rr(-.25,.25),d=k?rr(1.1,2.0):rr(0,.35),px=Math.cos(a)*d,pz=Math.sin(a)*d,h=k===0?rr(1.7,2.6):rr(.85,1.55),w=h*rr(.36,.54);
+    BIO.put('standing',[px,-.18,pz],qEuler(rr(-.05,.05),rr(0,TAU),rr(-.05,.05)),[w,h,w*rr(.85,1.15)],rkCol(P.darkStone));
+    BIO.put('mossmat',[px,.04,pz],qEuler(0,rr(0,TAU),0),[w*2.2,1,w*2.2],leafCol(P.moss,1.12,.03));}});}
+ if(typeof HRIFT!=='undefined'&&HRIFT&&HRIFT.PAL&&BIO.kits&&BIO.kits.highrift){
+  const HP=HRIFT.PAL,HC=HRIFT.C;
+  const pickHC=(a,j)=>{const c=HC(a[Math.floor(rng()*a.length)%a.length]);if(j)c.offsetHSL(rr(-j,j)*.3,rr(-j,j),rr(-j,j));return c;};
+  const addH=(id,nm,r,vi,fn)=>out.push({key:'ug|'+id+'|'+(vi===0?'a':'b'),kit:'highrift',species:id,name:nm,v:vi,tag:'u',r,seed:99101+out.length*89,build:fn});
+  for(let v=0;v<2;v++){
+   addH('hr_tussock','High Rift tussock cluster',2.8,v,()=>{
+    for(let k=0;k<7;k++){const a=k*.9+rr(-.3,.3),d=k?rr(.45,2.1):rr(0,.3),s=rr(.36,.78);
+     BIO.put('hrtuss',[Math.cos(a)*d,-.05,Math.sin(a)*d],qEuler(rr(-.08,.08),rr(0,TAU),rr(-.08,.08)),[s,s*rr(.95,1.45),s],pickHC(HP.tussock,.03));}});
+   addH('hr_heath','High Rift steam heath & tussock',2.8,v,()=>{
+    for(let k=0;k<5;k++){const a=k*1.25+rr(-.3,.3),d=k?rr(.4,1.8):rr(0,.3),s=rr(.42,.88);
+     BIO.put('hrheath',[Math.cos(a)*d,-.04,Math.sin(a)*d],qEuler(0,rr(0,TAU),0),[s,s*.72,s],pickHC(HP.heath,.03));}
+    for(let k=0;k<3;k++){const a=rr(0,TAU),d=rr(.8,2.1),s=rr(.32,.62);
+     BIO.put('hrtuss',[Math.cos(a)*d,-.05,Math.sin(a)*d],qEuler(rr(-.08,.08),rr(0,TAU),rr(-.08,.08)),[s,s*1.15,s],pickHC(HP.tussock,.03));}});
+   addH('hr_warm','High Rift opal cane & verdigris sinter',2.6,v,()=>{
+    for(let k=0;k<8;k++){const a=rr(0,TAU),d=rr(0,1.1),px=Math.cos(a)*d,pz=Math.sin(a)*d,h=rr(1.05,2.25),lean=rr(-.16,.16),col=pickHC(k<2?HP.opalDead:HP.opal,.02),qq=qEuler(lean,rr(0,TAU),rr(-.16,.16));
+     BIO.put('hrcane',[px,-.05,pz],qq,[h,h,h],col);
+     for(let j=1;j<4;j++)BIO.put('hrnode',[px,h*(j/4),pz],qq,[.036,.042,.036],col);}
+    for(let k=0;k<3;k++){const a=rr(0,TAU),d=rr(.7,1.8),px=Math.cos(a)*d,pz=Math.sin(a)*d,s=rr(.2,.4);
+     BIO.put('hrwort',[px,-.01,pz],qEuler(0,rr(0,TAU),0),[s,s*.8,s],pickHC(HP.verd,.03));
+     if(k===0){const hs=rr(.32,.58);BIO.put('hrspike',[px,0,pz],qEuler(rr(-.08,.08),0,rr(-.08,.08)),[hs*.8,hs,hs*.8],pickHC(HP.verdFlower,.02));}}
+    for(let k=0;k<3;k++){const a=rr(0,TAU),d=rr(.5,1.5),s=rr(.08,.24),hs=rr(.4,1.0)*s;
+     BIO.put('hrbead',[Math.cos(a)*d,hs*.8,Math.sin(a)*d],qEuler(rr(-.15,.15),rr(0,TAU),rr(-.15,.15)),[s,s,s],pickHC(HP.bead,.02));}});}}
+ return out;}
+/* Grow all Hero (lv=2), Mid (lv=1), Sapling ('s'), and Undergrowth ('ug|*') 3D species variants in NURSERY and stage 1 unit instance
+   per prototype at [0, 0, 0] so `flora/` exports a compact shared prototype library for Godot's StreamFlora & StreamUndergrowth */
 function prepareFloraLib(){if(typeof FLORA==='undefined'||!FLORA||typeof NURSERY==='undefined'||!NURSERY)return{protos:[]};
  const want=[];
  for(let ki=0;ki<FLORA.KITS.length;ki++){const K=FLORA.KITS[ki];if(!K.SP||!K.SP.length)continue;
@@ -148,6 +231,9 @@ function prepareFloraLib(){if(typeof FLORA==='undefined'||!FLORA||typeof NURSERY
    const key=ki+'|'+sp+'|'+v+'|'+tag,sap=tag==='s',lv=sap?2:+tag;
    NURSERY.get(key,{kit:K.name,sp,v,lv,sapling:sap},0);want.push({key,ki,kit:K.name,sp,v,tag,sap,lv});}}
  for(let guard=0;guard<24&&NURSERY.queued&&NURSERY.queued()>0&&NURSERY.update;guard++)NURSERY.update(10000);
+ const ugSpecs=undergrowthSpecs();
+ for(const u of ugSpecs){NURSERY.get(u.key,{custom:true,kit:u.kit,seed:u.seed,r:u.r,build:u.build},0);want.push(u);}
+ for(let guard=0;guard<8&&NURSERY.queued&&NURSERY.queued()>0&&NURSERY.update;guard++)NURSERY.update(10000);
  WORLD_EXPORT.origin=[0,0,0];WORLD_EXPORT.floraLibOnly=true;
  const ORG=new THREE.Vector3(0,0,0),ident=new THREE.Matrix4().toArray();
  for(const p of FLORA.pools.values()){p.n=0;for(const m of p.meshes)m.visible=false;}
@@ -164,34 +250,61 @@ function prepareFloraLib(){if(typeof FLORA==='undefined'||!FLORA||typeof NURSERY
   p.arr.set(ident,0);p.n=1;
   for(const m of p.meshes){m.count=1;m.visible=true;m.position.copy(ORG);m.updateMatrix();m.updateMatrixWorld(true);}
   if(p.attr)p.attr.needsUpdate=true;
-  const S=FLORA.KITS[q.ki].SP[q.sp]||{};
-  protos.push({key:q.key,kit:q.kit,k:q.ki,sp:q.sp,species:S.key||String(q.sp),name:S.name||String(q.sp),v:q.v,lv:q.tag,
-   H:+(proto.H==null?10:proto.H).toFixed(4),crownR:+(proto.crownR==null?4:proto.crownR).toFixed(3)});}
+  if(q.tag==='u'){protos.push({key:q.key,kit:q.kit,kind:'undergrowth',species:q.species,name:q.name,v:q.v,lv:'u',H:1,crownR:+(proto.crownR==null?2.5:proto.crownR).toFixed(3)});}
+  else{const S=FLORA.KITS[q.ki].SP[q.sp]||{};
+   protos.push({key:q.key,kit:q.kit,k:q.ki,sp:q.sp,species:S.key||String(q.sp),name:S.name||String(q.sp),v:q.v,lv:q.tag,
+    H:+(proto.H==null?10:proto.H).toFixed(4),crownR:+(proto.crownR==null?4:proto.crownR).toFixed(3)});}}
  return{format:'krator-flora-protos',version:1,region:REGION,protos};}
-/* Pure [G data] tile placement over any world box [x0, z0, x1, z1], skipping interior place boxes, packed as Float32 rows [dx, y, dz, rot, Ht, keyIdx] */
+/* Pure [G data] tile placement over any world box [x0, z0, x1, z1], skipping interior place boxes, spatially bucketed into 16x16 subcells */
 const _tileCache=new Map();
 function exportChunkFlora(box,skipBoxes,opt){if(typeof FLORA==='undefined'||!FLORA||typeof FLORA.buildTile!=='function')return null;
  const o=opt||{},TS=FLORA.TS==null?512:FLORA.TS,tx0=Math.floor(box[0]/TS),tx1=Math.ceil(box[2]/TS)-1,tz0=Math.floor(box[1]/TS),tz1=Math.ceil(box[3]/TS)-1;
  const ox=Math.round((box[0]+box[2])/2),oz=Math.round((box[1]+box[3])/2),sk=Array.isArray(skipBoxes)?skipBoxes:[];
- const maxE=o.maxElev==null?1e9:+o.maxElev,corr=Array.isArray(o.corridor)&&o.corridor.length?o.corridor:null,cR=o.corridorR==null?3200:+o.corridorR,cR2=cR*cR;
- let cSub=corr;if(corr){cSub=[];for(let i=0;i<corr.length;i++){const p=corr[i];if(p[0]>=box[0]-cR&&p[0]<=box[2]+cR&&p[1]>=box[1]-cR&&p[1]<=box[3]+cR)cSub.push(p);}}
- if(corr&&!cSub.length)return{format:'krator-chunk-flora',version:1,box:box.slice(),origin:[ox,0,oz],count:0,keys:[],data:E.pack(new Float32Array(0))};
- const keys=[],kmap=new Map(),rows=[];
+ const SUB=16,spanX=Math.max(1,box[2]-box[0]),spanZ=Math.max(1,box[3]-box[1]),TAU=Math.PI*2;
+ const maxE=o.maxElev==null?1e9:+o.maxElev,corr=Array.isArray(o.corridor)&&o.corridor.length?o.corridor:null,cR=o.corridorR==null?2200:+o.corridorR,cR2=cR*cR;
+ let cSub=corr;if(corr){cSub=[];for(let i=0;i<corr.length;i++){const p=corr[i];if(p[0]>=box[0]-cR-1000&&p[0]<=box[2]+cR+1000&&p[1]>=box[1]-cR-1000&&p[1]<=box[3]+cR+1000)cSub.push(p);}}
+ if(corr&&!cSub.length)return{format:'krator-chunk-flora',version:2,box:box.slice(),origin:[ox,0,oz],subN:SUB,covered:'0'.repeat(SUB*SUB),cellOffsets:new Array(SUB*SUB+1).fill(0),count:0,keys:[],data:E.pack(new Uint16Array(0))};
+ const covArr=new Uint8Array(SUB*SUB);let anyCov=false;
+ for(let sz=0;sz<SUB;sz++)for(let sx=0;sx<SUB;sx++){
+  if(!cSub){covArr[sz*SUB+sx]=1;anyCov=true;continue;}
+  const scx=box[0]+(sx+.5)*spanX/SUB,scz=box[1]+(sz+.5)*spanZ/SUB;
+  for(let q=0;q<cSub.length;q++){const dx=scx-cSub[q][0],dz=scz-cSub[q][1];if(dx*dx+dz*dz<=cR2){covArr[sz*SUB+sx]=1;anyCov=true;break;}}}
+ const covered=Array.from(covArr,v=>v?'1':'0').join('');
+ if(!anyCov)return{format:'krator-chunk-flora',version:2,box:box.slice(),origin:[ox,0,oz],subN:SUB,covered,cellOffsets:new Array(SUB*SUB+1).fill(0),count:0,keys:[],data:E.pack(new Uint16Array(0))};
+ const keys=[],kmap=new Map(),buckets=Array.from({length:SUB*SUB},()=>[]);let total=0;
  for(let tz=tz0;tz<=tz1;tz++)for(let tx=tx0;tx<=tx1;tx++){
+  const sx0=Math.max(0,Math.min(SUB-1,Math.floor((tx*TS-box[0])/spanX*SUB))),sx1=Math.max(0,Math.min(SUB-1,Math.floor(((tx+1)*TS-1-box[0])/spanX*SUB)));
+  const sz0=Math.max(0,Math.min(SUB-1,Math.floor((tz*TS-box[1])/spanZ*SUB))),sz1=Math.max(0,Math.min(SUB-1,Math.floor(((tz+1)*TS-1-box[1])/spanZ*SUB)));
+  let tNeed=false;for(let sz=sz0;sz<=sz1&&!tNeed;sz++)for(let sx=sx0;sx<=sx1;sx++)if(covArr[sz*SUB+sx]){tNeed=true;break;}
+  if(!tNeed)continue;
   const tcx=(tx+.5)*TS,tcz=(tz+.5)*TS;
-  if(cSub){let near=false;for(let q=0;q<cSub.length;q++){const dx=tcx-cSub[q][0],dz=tcz-cSub[q][1];if(dx*dx+dz*dz<=cR2){near=true;break;}}if(!near)continue;}
   if(maxE<1e8&&typeof WORLD!=='undefined'&&WORLD&&typeof WORLD.H==='function'&&WORLD.H(tcx,tcz,400)>maxE)continue;
   const tk=tx+','+tz;let recs=_tileCache.get(tk);if(!recs){recs=FLORA.buildTile(tx,tz);if(_tileCache.size>64)_tileCache.clear();_tileCache.set(tk,recs);}
   for(let i=0;i<recs.length;i++){const r=recs[i];
    if(r.x<box[0]||r.x>=box[2]||r.z<box[1]||r.z>=box[3])continue;
-   if(cSub){const rLim=r.sap||r.Ht<8||r.sp===11?280:(r.far&&r.Ht>=15?cR:750),rL2=rLim*rLim;let okD=false;
-    for(let q=0;q<cSub.length;q++){const dx=r.x-cSub[q][0],dz=r.z-cSub[q][1];if(dx*dx+dz*dz<=rL2){okD=true;break;}}if(!okD)continue;}
+   const sx=Math.max(0,Math.min(SUB-1,Math.floor((r.x-box[0])/spanX*SUB))),sz=Math.max(0,Math.min(SUB-1,Math.floor((r.z-box[1])/spanZ*SUB)));
+   if(!covArr[sz*SUB+sx])continue;
    let inSkip=false;for(let j=0;j<sk.length;j++){const b=sk[j];if(r.x>=b[0]&&r.x<=b[2]&&r.z>=b[1]&&r.z<=b[3]){inSkip=true;break;}}
    if(inSkip)continue;
    const bk=r.k+'|'+r.sp+'|'+r.v+(r.sap?'|s':'');let ki=kmap.get(bk);
    if(ki===undefined){ki=keys.length;kmap.set(bk,ki);keys.push(bk);}
-   rows.push(r.x-ox,r.y,r.z-oz,r.rot,r.Ht,ki);}}
- return{format:'krator-chunk-flora',version:1,box:box.slice(),origin:[ox,0,oz],count:rows.length/6,keys,data:E.pack(new Float32Array(rows))};}
+   buckets[sz*SUB+sx].push(r.x,r.y,r.z,r.rot,r.Ht,ki);total++;}}
+ const cellOffsets=new Array(SUB*SUB+1);cellOffsets[0]=0;
+ if(keys.length<=256){
+  const u16=new Uint16Array(total*4);let w=0;
+  for(let c=0;c<SUB*SUB;c++){const B=buckets[c];
+   for(let j=0;j<B.length;j+=6){
+    u16[w++]=Math.max(0,Math.min(65535,Math.round((B[j]-box[0])/spanX*65535)));
+    u16[w++]=Math.max(0,Math.min(65535,Math.round((B[j+2]-box[1])/spanZ*65535)));
+    u16[w++]=Math.max(0,Math.min(65535,Math.round((((B[j+3]%TAU)+TAU)%TAU)/TAU*65535)));
+    u16[w++]=(Math.max(1,Math.min(255,Math.round(B[j+4]*2.5)))<<8)|(B[j+5]&255);}
+   cellOffsets[c+1]=w>>>2;}
+  return{format:'krator-chunk-flora',version:2,box:box.slice(),origin:[ox,0,oz],subN:SUB,covered,cellOffsets,count:total,keys,data:E.pack(u16)};}
+ const f32=new Float32Array(total*6);let w=0;
+ for(let c=0;c<SUB*SUB;c++){const B=buckets[c];
+  for(let j=0;j<B.length;j+=6){f32[w++]=B[j]-ox;f32[w++]=B[j+1];f32[w++]=B[j+2]-oz;f32[w++]=B[j+3];f32[w++]=B[j+4];f32[w++]=B[j+5];}
+  cellOffsets[c+1]=w/6;}
+ return{format:'krator-chunk-flora',version:2,box:box.slice(),origin:[ox,0,oz],subN:SUB,covered,cellOffsets,count:total,keys,data:E.pack(f32)};}
 function attrF32(a,n){if(!a)return null;if(a.isInterleavedBufferAttribute||!(a.array instanceof Float32Array)){
   const f=new Float32Array(a.count*n);for(let i=0;i<a.count;i++)for(let k=0;k<n;k++)f[i*n+k]=a.getComponent?a.getComponent(i,k):a.array[i*a.itemSize+k];return f;}
  return a.array.slice(0,a.count*n);}
@@ -273,7 +386,7 @@ function enrichScene(res,instForItem,matObjById){
    const N=E.unpack(it.geometry.normal),AN=attrF32(g.attributes.aN,3);
    if(N&&AN&&N.length===AN.length){for(let i=0;i<N.length;i+=3){const nx=N[i]*.3+AN[i]*.7,ny=N[i+1]*.3+AN[i+1]*.7,nz=N[i+2]*.3+AN[i+2]*.7,l=Math.hypot(nx,ny,nz);
      if(l>1e-6){N[i]=nx/l;N[i+1]=ny/l;N[i+2]=nz/l;}}it.geometry.normal=E.pack(N);}}
-  if(it.kit==='flora'&&mr&&mr.kind!=='leaf'&&it.geometry.position){
+  if(it.kit==='flora'&&mr&&mr.kind!=='leaf'&&it.geometry.position&&!(m.userData&&String(m.userData.flora||'').indexOf('ug|')===0)){
    const P=E.unpack(it.geometry.position),pk=m.userData&&m.userData.flora,pool=pk&&FLORA&&FLORA.pools?FLORA.pools.get(pk):null;
    let yMax=pool&&pool.proto&&pool.proto.top?pool.proto.top:0;
    if(!(yMax>0))for(let i=1;i<P.length;i+=3)if(P[i]>yMax)yMax=P[i];
@@ -291,8 +404,9 @@ function floraSets(){if(typeof FLORA==='undefined'||!FLORA||!FLORA.pools)return 
  if(!FREG)FREG=KTAGS.create({build:REGION+':flora'});
  for(const p of FLORA.pools.values()){if(FSETS.has(p.key)||!p.meshes.length)continue;
   const f=String(p.key).split('|'),K=FLORA.KITS[f[0]],S=K&&K.SP?K.SP[f[1]]:null,key=S&&S.key?S.key:f[1];
+  const nm=f[0]==='ug'?'Undergrowth '+key:(S&&S.name?S.name:key);
   const row=i=>({a:p.arr,o:i*16,P:p.meshes[0].position});
-  try{const set=FREG.addSet({'class':'flora',kind:key,key,name:S&&S.name?S.name:key,at:[0,0,0],tags:S&&S.tags?S.tags:{},
+  try{const set=FREG.addSet({'class':'flora',kind:key,key,name:nm,at:[0,0,0],tags:S&&S.tags?S.tags:{},
     note:'a flora pool of the open world, '+p.key+' (core/world 85), registered at export'},
    {get n(){return p.n;},
     pos(i,out){const w=row(i);out=out||[];out[0]=w.P.x+w.a[w.o+12];out[1]=w.P.y+w.a[w.o+13];out[2]=w.P.z+w.a[w.o+14];return out;},
@@ -368,7 +482,7 @@ E.register('terrain',ctx=>{if(!ctx.box)return null;origin_(ctx);const st=WORLD_E
    ar[o]=l2s8(r);ar[o+1]=l2s8(g);ar[o+2]=l2s8(b);ar[o+3]=u8(rk);
    const ce=F.crease==null?0:F.crease,cav=1-.42*Math.max(0,ce)-.28*(F.canyon==null?0:F.canyon)+.08*Math.max(0,-ce);
    const nearW=F.water>-1e8?Math.max(0,Math.min(1,(6-(h-F.water))/6.5)):0,wet=Math.max((F.flow==null?0:F.flow)*.85,nearW,((F.wet==null?0:F.wet)-.35)*.45)*(1-rd*.7);
-   nc[o]=u8((-hx/nl)*.5+.5);nc[o+1]=u8((-hz/nl)*.5+.5);nc[o+2]=u8(Math.max(.25,Math.min(1,cav)));nc[o+3]=u8(wet);}
+   nc[o]=u8((-hx/nl)*.5+.5);nc[o+1]=u8((-hz/nl)*.5+.5);nc[o+2]=u8(Math.max(.25,Math.min(1,cav)));nc[o+3]=F.water>h+.05?255:u8(Math.min(.94,wet));}
   G.surface={albedoRock:E.pack(ar),normalCav:E.pack(nc),
    note:'RGBA8 on the grid: albedoRock=(sRGB WORLD.ground + road, linear rock weight); normalCav=(sub-grid normal nx/nz*0.5+0.5, crease/canyon cavity AO, bank/flow wetness)'};}
  return t;},by);

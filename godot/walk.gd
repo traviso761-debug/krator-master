@@ -10,18 +10,22 @@
 extends Node3D
 
 const DEFAULT_CASE := "res://data/world-oidong-highrift/index.json"
+const KratorSky := preload("res://krator/sky.gd")
 var case_index := DEFAULT_CASE
 var W: KratorWorldWalk
 var ui: KratorHostUI
+var sky_node: Node3D
 var env_res: Environment
-var sky_mat: ProceduralSkyMaterial
 var sun: DirectionalLight3D
+var _origin_px := Vector2(1306.0, 1634.0)
+var _m_per_px := 2000.0
 var _gi_on := false
 var _start_fly := false
 var _no_ui := false
 var traffic: KratorValleyTraffic
 var carts: MultiMeshInstance3D
-var minute := 6.5 * 60.0     # sim minutes into the week (day 1, 06:30 golden morning light)
+var minute := 17.2 * 60.0    # sim minutes into the week (17:12 summer afternoon: sun 25° high, giant & rings lit in NNE)
+var season_day := 75.0       # summer season offset so sun stands above the ring plane and high over 62°S Longsong
 var rate := 60.0             # sim minutes a real second
 var _saved_rate := 60.0
 var _shown := 0
@@ -71,40 +75,25 @@ func _parse_args() -> void:
 
 func _ready() -> void:
 	_parse_args()
-	var env := WorldEnvironment.new()
-	env_res = Environment.new()
-	var sky := Sky.new()
-	sky_mat = ProceduralSkyMaterial.new()
-	sky_mat.sky_top_color = Color(0.19, 0.34, 0.62)
-	sky_mat.sky_horizon_color = Color(0.62, 0.72, 0.84)
-	sky_mat.ground_horizon_color = Color(0.46, 0.44, 0.40)
-	sky_mat.ground_bottom_color = Color(0.16, 0.14, 0.12)
-	sky.sky_material = sky_mat
-	env_res.background_mode = Environment.BG_SKY
-	env_res.sky = sky
-	env_res.ambient_light_source = Environment.AMBIENT_SOURCE_SKY
-	env_res.ambient_light_sky_contribution = 1.0
+	sky_node = KratorSky.new()
+	sky_node.name = "KratorSky"
+	sky_node.site_px = _origin_px
+	add_child(sky_node)
+	sky_node.set_process(false)   # driven deterministically in _update_sun_and_ambience
+	env_res = sky_node.env
+	sun = sky_node.sun
 	env_res.tonemap_mode = Environment.TONE_MAPPER_AGX
 	env_res.ssao_enabled = true
 	env_res.ssao_radius = 1.4
 	env_res.ssao_intensity = 1.55
-	env_res.fog_enabled = true
-	env_res.fog_density = 0.000018
-	env_res.fog_sky_affect = 0.28
+	sky_node.preset["fogDensity"] = 0.000022
 	if _gi_on:
 		env_res.sdfgi_enabled = true
 		env_res.sdfgi_use_occlusion = true
 		env_res.sdfgi_read_sky_light = true
-	env.environment = env_res
-	add_child(env)
-
-	sun = DirectionalLight3D.new()
-	sun.rotation_degrees = Vector3(-42, 32, 0)
-	sun.shadow_enabled = true
 	sun.directional_shadow_mode = DirectionalLight3D.SHADOW_PARALLEL_4_SPLITS
 	sun.directional_shadow_max_distance = 2400.0
 	sun.directional_shadow_blend_splits = true
-	add_child(sun)
 
 	ui = KratorHostUI.new()
 	ui.name = "HostUI"
@@ -180,6 +169,15 @@ func _load_case(index_path: String, use_cmdline_at: bool) -> void:
 	add_child(W)
 	W.cam.current = true
 	W.stream.rebased.connect(_on_stream_rebased)
+	var rframe = W.stream.index.get("frame")
+	if rframe is Dictionary and rframe.get("origin_px") is Array and (rframe["origin_px"] as Array).size() >= 2:
+		var opx: Array = rframe["origin_px"]
+		_origin_px = Vector2(float(opx[0]), float(opx[1]))
+		_m_per_px = float(rframe.get("m_per_px", 2000.0))
+	else:
+		var rname := str(W.stream.index.get("region", ""))
+		_origin_px = Vector2(1007.0, 686.0) if rname == "pinnacle" else Vector2(1306.0, 1634.0)
+		_m_per_px = 2000.0
 	_build_overlays()
 
 	var at := _start(use_cmdline_at)
@@ -199,6 +197,7 @@ func _load_case(index_path: String, use_cmdline_at: bool) -> void:
 	ui.populate_cases(case_index)
 	ui.refresh_pois(W.stream, null)
 	_apply_layers()
+	_update_sun_and_ambience(0.0, true)
 
 
 func _build_overlays() -> void:
@@ -712,23 +711,30 @@ func _check_indoors() -> bool:
 
 func _update_sun_and_ambience(dt: float, snap: bool) -> void:
 	var hr := fmod(minute, 1440.0) / 60.0
-	var phase := (hr - 6.0) / 12.0 * PI
-	var elev_sin := sin(phase)
-	var day := clampf((elev_sin + 0.12) / 0.32, 0.0, 1.0)
-	var warm := clampf(1.0 - absf(elev_sin) * 1.8, 0.0, 1.0) * day
-	var pitch := -clampf(rad_to_deg(asin(clampf(absf(elev_sin), 0.06, 0.96))), 6.0, 76.0)
-	var yaw := 28.0 + (hr - 6.0) * 11.5
-	sun.rotation_degrees = Vector3(pitch, yaw, 0.0)
-	sun.light_energy = lerpf(0.06, 1.25, day)
-	sun.light_color = Color(1.0, 0.97, 0.92).lerp(Color(1.0, 0.72, 0.46), warm)
-	sky_mat.sky_top_color = Color(0.02, 0.03, 0.07).lerp(Color(0.18, 0.34, 0.62), day)
-	sky_mat.sky_horizon_color = Color(0.05, 0.06, 0.11).lerp(Color(0.62, 0.72, 0.84).lerp(Color(0.92, 0.58, 0.36), warm * 0.65), day)
+	var day_idx := floorf(minute / 1440.0)
+	if sky_node != null:
+		sky_node._t += dt
+		sky_node.hour = hr
+		sky_node.day = season_day + day_idx
+		var base_y := 0.0
+		var cr := Vector3(0.0, 1.7, 0.0)
+		if W != null:
+			cr = W.cam_region()
+			sky_node.site_px = _origin_px + Vector2(cr.x, cr.z) / maxf(1.0, _m_per_px)
+			var gh := W.stream.height_at(cr.x, cr.z)
+			base_y = maxf(0.0, gh if is_finite(gh) else cr.y)
+		sky_node.preset["clouds"]["height"] = maxf(1800.0, base_y + 1650.0)
+		sky_node.preset["clouds"]["cirrusHeight"] = maxf(9000.0, base_y + 7200.0)
+		sky_node._update()
+		if W != null and sky_node.mat != null:
+			sky_node.mat.set_shader_parameter("uCamPos", Vector3(fmod(cr.x, 260000.0), cr.y, fmod(cr.z, 260000.0)))
+		sun.light_energy = clampf(sun.light_energy * 0.68, 0.0, 1.45)
 	var atm = get_node_or_null("/root/Atmos")
 	if atm != null and "hour" in atm:
 		atm.hour = hr
 	if W != null:
 		_indoors = _check_indoors()
-	var want_sky := 0.18 if _indoors else 1.0
+	var want_sky := 0.18 if _indoors else 0.95
 	env_res.ambient_light_sky_contribution = want_sky if snap else lerpf(env_res.ambient_light_sky_contribution, want_sky, clampf(dt * 5.0, 0.0, 1.0))
 
 

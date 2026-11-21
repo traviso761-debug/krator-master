@@ -404,11 +404,11 @@ G.strip=function(nseg,arch,droop){const pos=[],uv=[],nor=[],P=[];
  return mk(pos,nor,uv);};
 G.cone=function(){const g=new T3.ConeGeometry(.5,1,7,1);g.translate(0,.5,0);return g;};
 G.ball=function(){return new T3.SphereGeometry(1,6,4);};
-// a CUSHION: a smooth lumpy dome, origin at its centre (Xanadu's)
-G.cushion=function(){const g=new T3.SphereGeometry(1,12,8).toNonIndexed(),p=g.attributes.position,col=[];
- const lump=(x,y,z)=>1+.07*Math.sin(x*5.1+z*3.3)*Math.cos(y*4.7+x*1.9)+.05*Math.sin(z*7.3-y*5.2)+.04*Math.cos(x*9.1+y*8.3+z*6.7);
+// a CUSHION: a smooth multi-lobed dome, origin at its centre (Xanadu's, refined to 18x12 segments)
+G.cushion=function(){const g=new T3.SphereGeometry(1,18,12).toNonIndexed(),p=g.attributes.position,col=[];
+ const lump=(x,y,z)=>1+.08*Math.sin(x*4.7+z*3.1)*Math.cos(y*4.3+x*1.7)+.055*Math.sin(z*6.9-y*4.8)+.04*Math.cos(x*8.7+y*7.9+z*6.3);
  for(let i=0;i<p.count;i++){const x=p.getX(i),y=p.getY(i),z=p.getZ(i),k=lump(x,y,z);p.setXYZ(i,x*k,y*k,z*k);
-  const ao=lerp(.45,1.12,smooth(-.8,.7,y))*(.9+.2*(k-1)/.16);col.push(ao,ao,ao);}
+  const ao=lerp(.48,1.14,smooth(-.8,.72,y))*(.9+.2*(k-1)/.175);col.push(ao,ao,ao);}
  g.setAttribute('color',new T3.Float32BufferAttribute(col,3));g.computeVertexNormals();return g;};
 // a LILY PAD: a flat disc with a notch, paler at the rim (Xanadu's)
 G.pad=function(){const pos=[],nor=[],uv=[],col=[];const n=12;
@@ -518,7 +518,7 @@ G.bell=function(){const M=Mesh(),n=10,prof=[[.05,0],[.12,-.3],[.17,-.6],[.24,-.8
 G.standing=function(){const g=new T3.IcosahedronGeometry(1,1).toNonIndexed(),p=g.attributes.position;
  for(let i=0;i<p.count;i++){const x=p.getX(i),y=p.getY(i),z=p.getZ(i),k=1+.12*Math.sin(x*4.1+y*3.3)+.08*Math.cos(z*5.7-y*2.2);p.setXYZ(i,x*.42*k*(1-.25*y),(y+1)*.5,z*.3*k*(1-.2*y));}
  g.computeVertexNormals();return g;};
-G.rod=function(){return new T3.CylinderGeometry(.5,.5,1,7,1,true);};
+G.rod=function(){return new T3.CylinderGeometry(.5,.5,1,8,1,false);};
 // a SAUCER (the lattice tree's cups): a shallow dish, unit radius, origin at its foot; paler on the rim, darker beneath
 G.saucer=function(){const M=Mesh(),n=12,prof=[[0,-.1],[.35,-.07],[.7,0],[.95,.1],[1.0,.14],[.94,.13],[.6,.05],[0,.02]];
  const P=prof.map(q=>{const row=[];for(let s=0;s<=n;s++){const a=s/n*TAU,R=q[0]*(1+.04*Math.sin(s*3));row.push([Math.cos(a)*R,q[1],Math.sin(a)*R]);}return row;});
@@ -589,9 +589,10 @@ const M=OIDONG.MAT;
 const LIBP=n=>(typeof KMAT!=='undefined'&&KMAT.mode==='lib'&&KMAT.packed)?KMAT.packed('oidong',n):null;
 OIDONG.LIB={has:n=>!!LIBP(n)};
 function libCard(n){const L=LIBP(n);if(!L)return null;const t=KMAT.textures(L,{aniso:4,flipY:false}).map;
- t.generateMipmaps=true;t.minFilter=T3.LinearMipmapLinearFilter;t.magFilter=T3.LinearFilter;return t;}
-{const use=(k,t,at)=>{if(t){M[k].map=t;M[k].alphaTest=at==null?.4:at;}};
- use('moss',libCard('leaf.moss'),.38);use('small',libCard('leaf.small'));}
+ t.generateMipmaps=true;t.minFilter=T3.LinearMipmapLinearFilter;t.magFilter=T3.LinearFilter;return{t,L};}
+{const use=(k,slot,at)=>{const c=libCard(slot);if(c){M[k].map=c.t;M[k].alphaTest=at==null?.4:at;
+  M[k].userData.libCard=Object.assign({slot},c.L);}};
+ use('moss','leaf.moss',.38);use('small','leaf.small',.38);}
 // the cards named by their material's slot (BIO.libSwap: heart, lace, lily and the new cards); OIDONG.CARD says which the pack had
 OIDONG.SWAP=BIO.libSwap('oidong',M);
 OIDONG.CARD={};['heart','lace','lily','cherrybloom','mooncapcard','peyotecard','padcard','beadscard'].forEach(k=>OIDONG.CARD[k]=!!OIDONG.SWAP[k]);
@@ -619,21 +620,23 @@ BIO.bucket('barkT',BIO.iridBarkMat(OIDONG.BARKTEX[2],'oidong-trumpet',[1.0,1.06,
  BIO.bucket('barkM',bm,{label:'Marble birch bole (iridescent)',uvScale:OIDONG.MARBLE?OIDONG.MARBLE.scale:[4,6]});}
 
 // ---------------------------------------------------------------- instanced items
-BIO.def('heart',BIO.geo.clump(),M.heart,{attrs:['aN','aC2'],label:'Sacred fig leaves'});
-BIO.def('blossom',BIO.geo.clump(),M.blossom,{attrs:['aN','aC2'],label:'Blossom'});
-BIO.def('cherrybloom',BIO.geo.clump(),M.cherrybloom,{attrs:['aN'],label:'Cherry blossom'});
-BIO.def('lace',BIO.geo.clump(),M.lace,{attrs:['aN','aC2'],label:'Marble birch lace'});
-BIO.def('needle',BIO.geo.clump(),M.needle,{attrs:['aN'],label:'Needle pads'});
-BIO.def('darkneedle',BIO.geo.clump(),M.small,{attrs:['aN'],label:'Cedar and pagoda-fir needles'});   /* 2026-10-26: the dense small-leaf card (was the needle card, whose thin strokes the alpha test erased: the cedars read bare) */
-BIO.def('gloss',BIO.geo.clump(),M.broad,{attrs:['aN','aC2'],label:'Camphor leaves'});
-BIO.def('maple',BIO.geo.clump(),M.maple,{attrs:['aN'],label:'Maple leaves'});
-BIO.def('small',BIO.geo.clump(),M.small,{attrs:['aN'],label:'Small leaves'});
-BIO.def('broad',BIO.geo.clump(),M.broad,{attrs:['aN','aC2'],label:'Broad leaves'});
-BIO.def('bambooleaf',BIO.geo.clump(),M.bambooleaf,{attrs:['aN'],label:'Bamboo leaves'});
+const DCAP={cap:750000,capWhy:'high-density Oidong tree crowns and undergrowth'};
+BIO.def('heart',BIO.geo.clump(),M.heart,Object.assign({attrs:['aN','aC2'],label:'Sacred fig leaves'},DCAP));
+BIO.def('blossom',BIO.geo.clump(),M.blossom,Object.assign({attrs:['aN','aC2'],label:'Blossom'},DCAP));
+BIO.def('cherrybloom',BIO.geo.clump(),M.cherrybloom,Object.assign({attrs:['aN'],label:'Cherry blossom'},DCAP));
+BIO.def('lace',BIO.geo.clump(),M.lace,Object.assign({attrs:['aN','aC2'],label:'Marble birch lace'},DCAP));
+BIO.def('needle',BIO.geo.clump(),M.needle,Object.assign({attrs:['aN'],label:'Needle pads'},DCAP));
+BIO.def('darkneedle',BIO.geo.clump(),M.small,Object.assign({attrs:['aN'],label:'Cedar and pagoda-fir needles'},DCAP));   /* 2026-10-26: the dense small-leaf card (was the needle card, whose thin strokes the alpha test erased: the cedars read bare) */
+BIO.def('gloss',BIO.geo.clump(),M.broad,Object.assign({attrs:['aN','aC2'],label:'Camphor leaves'},DCAP));
+BIO.def('maple',BIO.geo.clump(),M.maple,Object.assign({attrs:['aN'],label:'Maple leaves'},DCAP));
+BIO.def('small',BIO.geo.clump(),M.small,Object.assign({attrs:['aN'],label:'Small leaves'},DCAP));
+BIO.def('broad',BIO.geo.clump(),M.broad,Object.assign({attrs:['aN','aC2'],label:'Broad leaves'},DCAP));
+BIO.def('bambooleaf',BIO.geo.clump(),M.bambooleaf,Object.assign({attrs:['aN'],label:'Bamboo leaves'},DCAP));
 BIO.def('cushion',G.cushion(),M.cushion,{label:'Cushion domes'});
 BIO.def('boxdome',G.cushion(),M.cushion,{label:'Box domes'});
 BIO.def('mossdome',G.cushion(),M.mossdome,{label:'Moss balls'});
-BIO.def('raceme',BIO.geo.ribbon(3,.45,.08),M.raceme,{attrs:['aC2'],label:'Wisteria racemes'});
+{const rg=BIO.geo.ribbon(3,.45,.08);if(rg.userData&&rg.userData.card&&rg.userData.card.once){rg.attributes.uv.array.set(rg.userData.card.once);rg.attributes.uv.needsUpdate=true;}
+ BIO.def('raceme',rg,M.raceme,Object.assign({attrs:['aC2'],label:'Wisteria racemes'},DCAP));}
 if(OIDONG.CARD.beadscard)BIO.def('beads',BIO.geo.hang(),M.beadscard,{label:'Bead strings (the willow\'s, a bell at the end)'});   // the card is the whole string: beads and bell
 else BIO.def('beads',BIO.geo.ribbon(3,.7,.1),M.beads,{label:'Bead strings'});
 BIO.def('coin',BIO.geo.ribbon(3,.8,.1),M.coin,{label:'Coin vines'});
@@ -641,20 +644,20 @@ BIO.def('thread',BIO.geo.ribbon(4,.5,.04),M.thread,{label:'Falling water'});
 BIO.def('strand',BIO.geo.ribbon(2,.4,.05),M.hang,{label:'Aerial roots'});
 BIO.def('lotusbloom',BIO.geo.bloom(),M.lotus,{attrs:['aC2'],label:'Trumpet fringe blooms'});
 BIO.def('lily',G.flat(),M.lily,{attrs:['aC2'],label:'Iridescent water lilies'});
-BIO.def('poppy',BIO.geo.bloom(),M.poppy,{attrs:['aC2'],label:'Sky poppies'});
+BIO.def('poppy',BIO.geo.bloom(),M.poppy,Object.assign({attrs:['aC2'],label:'Sky poppies'},DCAP));
 BIO.def('daisy',G.flat(),M.daisy,{label:'Daisies (stone-blooms, peyote crowns)'});
 BIO.def('petal',G.flat(),M.petal,{label:'Fallen petals'});
-BIO.def('fern',G.strip(4,.18,.32),M.frond,{label:'Fern fronds'});
-BIO.def('grass',G.tuft(),M.grass,{label:'Grass tufts'});
-BIO.def('blade',G.tuft(),M.blade,{label:'Iris blades'});
-BIO.def('reed',G.tuft(),M.reed,{label:'Reeds'});
+BIO.def('fern',G.strip(4,.18,.32),M.frond,Object.assign({label:'Fern fronds'},DCAP));
+BIO.def('grass',G.tuft(),M.grass,Object.assign({label:'Grass tufts'},DCAP));
+BIO.def('blade',G.tuft(),M.blade,Object.assign({label:'Iris blades'},DCAP));
+BIO.def('reed',G.tuft(),M.reed,Object.assign({label:'Reeds'},DCAP));
 BIO.def('sagebush',G.tuft(),M.clubmoss,{label:'Monk\'s sage'});
 BIO.def('rimgrass',G.tuft(),M.grass,{label:'Cap-rim grass'});
-BIO.def('moss',BIO.geo.clump(),M.moss,{attrs:['aN'],label:'Moss on the limbs'});
-BIO.def('mossmat',BIO.geo.mat(),M.mossmat,{label:'Moss'});
+BIO.def('moss',BIO.geo.clump(),M.moss,Object.assign({attrs:['aN'],label:'Moss on the limbs'},DCAP));
+BIO.def('mossmat',BIO.geo.mat(),M.mossmat,Object.assign({label:'Moss'},DCAP));
 BIO.def('ucard',BIO.geo.clump(),M.under,{label:'Understorey foliage'});
 BIO.def('ginseng',BIO.geo.clump(),M.under,{label:'Valley ginseng'});
-BIO.def('teabush',BIO.geo.clump(),M.small,{attrs:['aN'],label:'Mist tea'});
+BIO.def('teabush',BIO.geo.clump(),M.small,Object.assign({attrs:['aN'],label:'Mist tea'},DCAP));
 BIO.def('cup',G.cup(),M.vcol,{label:'Lotus flowers'});
 BIO.def('giantcup',G.giantcup(),M.vsway,{label:'Giant lotus flowers'});
 BIO.def('giantcuplo',G.cup(),M.vcol,{label:'Giant lotus flowers (mid distance)'});

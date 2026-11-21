@@ -83,9 +83,14 @@ def cells_along(pts):
 
 
 def cells_with_sites(route_cells, P):
-    """route_cells plus surrounding 16 km chunks around off-route sites and Strongbow's escarpment / Great Cataract"""
+    """route_cells plus eastbound High Rift road links, surrounding 16 km chunks around all sites, and Strongbow's escarpment"""
     seen = set(route_cells)
     order = list(route_cells)
+    for L in P.get('links') or []:
+        for c in cells_along(L['pts']):
+            if c not in seen:
+                seen.add(c)
+                order.append(c)
     for S in P['sites']:
         sx, sz = S['x'], S['z']
         for dx in (-MARGIN_SITE, 0, MARGIN_SITE):
@@ -338,11 +343,11 @@ globalThis.HTMLCanvasElement = class {};
 
 def _flora_corridor_pts(P):
     pts = []
-    L = link(P, *ROUTE)
-    rpts = L.get('pts', [])
-    step_k = max(1, len(rpts) // 1200)
-    for k in range(0, len(rpts), step_k):
-        pts.append([round(rpts[k][0], 1), round(rpts[k][1], 1)])
+    for L in (P.get('links') or []):
+        rpts = L.get('pts', [])
+        step_k = max(1, len(rpts) // 800)
+        for k in range(0, len(rpts), step_k):
+            pts.append([round(rpts[k][0], 1), round(rpts[k][1], 1)])
     for S in P.get('sites', []):
         pts.append([round(S['x'], 1), round(S['z'], 1)])
         for r in S.get('roads') or []:
@@ -375,7 +380,7 @@ def _export_chunks_node(cells, place_boxes, out_root, P, micro=None, prune=True,
                 try:
                     with open(mp, encoding='utf-8') as mf:
                         md = json.load(mf)
-                    if md.get('route') == 'godot_case.py node chunk export (core/export)':
+                    if md.get('route') == 'godot_case.py node chunk export (core/export)' and md.get('exported') == time.strftime('%Y-%m-%d'):
                         continue
                 except Exception:
                     pass
@@ -420,9 +425,9 @@ def _export_chunks_node(cells, place_boxes, out_root, P, micro=None, prune=True,
     const wStr = JSON.stringify(g.json);
     fs.writeFileSync(path.join(d, 'world.json'), wStr + '\n');
     const files = { 'world.json': Buffer.byteLength(wStr) + 1 };
-    const fl = window._worldExport.exportChunkFlora(box, cfg.placeBoxes, { corridor: cfg.corridor, corridorR: 1650, maxElev: 3380 });
+    const fl = window._worldExport.exportChunkFlora(box, cfg.placeBoxes, { corridor: cfg.corridor, corridorR: 1850, maxElev: 3420 });
     let fcnt = 0;
-    if (fl && fl.count > 0) {
+    if (fl && (fl.count > 0 || (fl.covered && fl.covered.indexOf('1') >= 0))) {
       fcnt = fl.count;
       totalTrees += fcnt;
       const fStr = JSON.stringify(fl);
@@ -475,7 +480,7 @@ THREE.PMREMGenerator = function() {
             f.write('globalThis.THREE = Object.assign({}, require(%s));\n' % json.dumps(three_path))
             f.write(gl_patch + '\n')
             f.write("vm.runInThisContext(fs.readFileSync(%s, 'utf8'), { filename: 'oidong-highrift.bundle.js' });\n" % json.dumps(payload_p))
-        n_workers = 2 if len(cells) >= 6 else 1
+        n_workers = min(len(cells), max(1, int(os.environ.get('KRATOR_CHUNK_WORKERS', '1'))))
         procs = []
         for wi in range(n_workers):
             w_cells = cells[wi::n_workers]
@@ -607,16 +612,21 @@ def place_before_js(p):
         return ('(async()=>{window.WORLD_EXPORT.step=%d;CAM.setView(%.1f,%.1f,700,.78,-.3);_api.settle(15000);%sreturn OHR_CUT.info();})()'
                 % (PLACE_STEP, cx, cz + MASS_CAM, tick))
     if p['id'] == 'sq80bzd7ep':
-        # Settle across Longsong's bridge/pin and all 3 core Xanadu villages (Shar, Nub, Dzo-ling)
-        spots = [[-154060.0, -25900.0], [-153602.0, -25123.0], [-155041.0, -25909.0], [-154130.0, -24739.0]]
-        anc = json.dumps(spots, separators=(',', ':'))
-        steps = ''.join('CAM.setView(%.1f,%.1f,210,.78,-.35);_api.settle(10000);%s' % (sx, sz + 240.0, tick) for sx, sz in spots)
+        # Settle across Longsong's bridge/pin, all 3 core Xanadu villages (Shar, Nub, Dzo-ling), and the NW bamboo/blossom woods
+        spots = [[-154060.0, -25900.0], [-153602.0, -25123.0], [-155041.0, -25909.0], [-154130.0, -24739.0],
+                 [-155045.0, -25285.0], [-154620.0, -25350.0]]
+        anchors = [[round(b[0] + (i + 0.5) * (b[2] - b[0]) / 4, 1), round(b[1] + (j + 0.5) * (b[3] - b[1]) / 4, 1)]
+                   for j in range(4) for i in range(4)]
+        anc = json.dumps(anchors, separators=(',', ':'))
+        steps = ''.join('CAM.setView(%.1f,%.1f,195,.78,-.35);_api.settle(10000);%s' % (sx, sz + 210.0, tick) for sx, sz in spots)
         return ('(async()=>{window.WORLD_EXPORT.step=%d;window.WORLD_EXPORT.floraAnchors=%s;%sreturn OHR_CUT.info();})()'
                 % (PLACE_STEP, anc, steps))
     if p['id'] == 'sfgtxw10kr':
         # Settle across Strongbow's canyon floor, plateau, Rīfar al-Jadwal Great Cataract + cauldron, and midway cliff
         spots = [[-611200.0, -76000.0], [-609500.0, -76000.0], [-610200.0, -71668.0], [-611200.0, -73600.0]]
-        anc = json.dumps(spots, separators=(',', ':'))
+        anchors = [[round(b[0] + (i + 0.5) * (b[2] - b[0]) / 3, 1), round(b[1] + (j + 0.5) * (b[3] - b[1]) / 5, 1)]
+                   for j in range(5) for i in range(3)]
+        anc = json.dumps(anchors, separators=(',', ':'))
         steps = ''.join('CAM.setView(%.1f,%.1f,340,.78,-.32);_api.settle(10000);%s' % (sx, sz + 420.0, tick) for sx, sz in spots)
         return ('(async()=>{window.WORLD_EXPORT.step=%d;window.WORLD_EXPORT.floraAnchors=%s;%sreturn OHR_CUT.info();})()'
                 % (PLACE_STEP, anc, steps))
@@ -650,11 +660,13 @@ def main():
     pl = places(P)
     place_boxes = [p['box'] for p in pl]
     if only in (None, 'flora'):
-        print('flora library: shared 3D Hero (lv=2) + Mid (lv=1) + Sapling prototypes', flush=True)
+        print('flora library: shared 3D Hero (lv=2) + Mid (lv=1) + Sapling + Undergrowth prototypes', flush=True)
         asyncio.run(_export_flora_lib_async(os.path.join(OUT, 'flora'), micro=micro))
     if only in (None, 'places'):
-        print('places (%d): lattice-snapped boxes, single-boot camera settle across sites & villages' % len(pl), flush=True)
-        asyncio.run(_export_places_batch_async(pl, OUT, micro=micro))
+        want_pl = [a.split('=', 1)[1] for a in argv if a.startswith('--place=')]
+        run_pl = [p for p in pl if p['id'] in want_pl] if want_pl else pl
+        print('places (%d): lattice-snapped boxes, single-boot camera settle across sites & villages' % len(run_pl), flush=True)
+        asyncio.run(_export_places_batch_async(run_pl, OUT, micro=micro))
     if only in (None, 'monastery'):
         M = MONASTERY
         mpage = os.path.join(ROOT, M['page'])
@@ -663,13 +675,12 @@ def main():
         print('monastery: %s -> %s' % (M['page'], M['case']), flush=True)
         d = os.path.join(OUT, M['case'])
         shutil.rmtree(d, ignore_errors=True)
-        menv = dict(os.environ)
-        menv.pop('KRATOR_GL', None)
         mcmd = [sys.executable, os.path.join(ROOT, 'tools', 'harness.py'), 'export', M['page'], '--out', d,
+                '--query', '?floraR=360&q=0.75',
                 '--box=' + ','.join('%g' % v for v in M['box']),
                 '--sections', 'items,buckets,materials,textures,registry,terrain,water',
                 '--before', '(()=>{window.requestAnimationFrame=()=>0;return true;})()']
-        mr = subprocess.run(mcmd, cwd=ROOT, env=menv)
+        mr = subprocess.run(mcmd, cwd=ROOT)
         if mr.returncode:
             sys.exit('godot_case: monastery export failed (exit %d)' % mr.returncode)
     if only in (None, 'arcology'):
@@ -703,13 +714,25 @@ def main():
             if a.startswith('--chunk-range='):
                 lo, hi = [int(x) for x in a.split('=', 1)[1].split(':', 1)]
                 sub_cells = cells[lo:hi]
-        print('chunks (%d of %d: %d on road %s + %d site/escarpment surroundings): %d m cells every %d m + chunk flora'
+        print('chunks (%d of %d: %d on road %s + %d High Rift/site/escarpment cells): %d m cells every %d m + full-chunk flora'
               % (len(sub_cells), len(cells), len(route_cells), L['id'], len(cells) - len(route_cells), CHUNK, STEP), flush=True)
         _export_chunks_node(sub_cells, place_boxes, OUT, P, micro=micro, prune=(len(sub_cells) == len(cells)), resume=('--resume' in argv))
     arcology(pl)
     monastery(pl)
+    reg_meta = {}
+    reg_json_p = os.path.join(REGION_DIR, 'data', 'region.json')
+    if os.path.isfile(reg_json_p):
+        with open(reg_json_p, encoding='utf-8') as rf:
+            reg_meta = json.load(rf)
+    rframe = reg_meta.get('frame') or {'origin_px': [1306, 1634], 'm_per_px': 2000.0}
+    ox_px, oz_px = rframe['origin_px'][0], rframe['origin_px'][1]
+    mpp = float(rframe.get('m_per_px') or 2000.0)
+    vents = [[round((v['px'][0] - ox_px) * mpp, 1), round((v['px'][1] - oz_px) * mpp, 1), round(float(v.get('radius', 1.5)) * 400.0, 1)]
+             for v in (reg_meta.get('vents') or []) if isinstance(v.get('px'), list) and len(v['px']) >= 2]
     idx = {'format': 'krator-world-stream', 'version': 1, 'region': P['region'], 'plan': P['hash'],
            'source': PAGE, 'by': 'openworld/oidong-highrift/tools/godot_case.py',
+           'frame': {'origin_px': list(rframe['origin_px']), 'm_per_px': mpp},
+           'vents': vents,
            'convention': 'metres, +Y up, x east, z south, the region\'s frame (openworld/oidong-highrift/data/region.json: '
                          'x = (px - origin) * 2000); a chunk\'s and a place\'s case is a krator-world (core/export) in the same frame',
            'chunk': {'size': CHUNK, 'step': STEP, 'margin': MARGIN,

@@ -64,8 +64,8 @@ function describe(hit){const p=hit.point,o=hit.object;
   '\nin the mist '+(FIELD.mist(p.x,p.z)*100|0)+'% · wet '+(FIELD.wet(p.x,p.z)*100|0)+'%\n'+p.x.toFixed(0)+', '+p.y.toFixed(0)+', '+p.z.toFixed(0)+'  range '+camera.position.distanceTo(p).toFixed(0)+' m';}
 // ---------------------------------------------------------------- the probe's budgets and the kit's own checks (verify.py --assert)
 const BUDGET={
- showcase:{tris:19500000,calls:130},   // a ceiling to measure against on this 5.2 km map, not a target
- cls:{pass:15500000,host:1200000},
+ showcase:{tris:48000000,calls:150},   // a ceiling to measure against on this 5.2 km map, not a target
+ cls:{pass:42000000,host:1200000},
  type:{'oidong/trees':'pass','oidong/floor':'pass','host':'host'},
 };
 const instPoints=()=>{const o=[],m=new THREE.Matrix4(),p=new THREE.Vector3(),q=new THREE.Quaternion(),sc=new THREE.Vector3();

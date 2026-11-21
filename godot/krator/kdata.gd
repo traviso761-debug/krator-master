@@ -270,14 +270,16 @@ static func _grid(hf: Dictionary, look = null) -> Node3D:
 	st.generate_normals()
 	var mesh := st.commit()
 	var mat := ground_material(lk, CO.size() > 0)
+	var surf_b := {}
 	if not lk.has("material"):
-		_bind_terrain_surface(mat, hf, nx, nz, step, h)
+		surf_b = _bind_terrain_surface(mat, hf, nx, nz, step, h)
 	mesh.surface_set_material(0, mat)
 	var mi := MeshInstance3D.new()
 	mi.name = "Terrain"
 	mi.mesh = mesh
 	mi.set_meta("krator", {"format": hf["format"], "step": step, "nx": nx, "nz": nz})
-	mi.set_meta("grid", {"h": h, "nx": nx, "nz": nz, "x0": x0, "z0": z0, "step": step})
+	mi.set_meta("grid", {"h": h, "nx": nx, "nz": nz, "x0": x0, "z0": z0, "step": step,
+		"ar": surf_b.get("ar", PackedByteArray()), "nc": surf_b.get("nc", PackedByteArray())})
 	return mi
 
 
@@ -305,9 +307,9 @@ static func ground_material(lk: Dictionary, has_colours: bool) -> ShaderMaterial
 # Populate terrain.gdshader's smooth normal + multi-ring cavity AO + wetness texture and WORLD.ground albedo + rock texture.
 # Uses core/world 94's exported RGBA8 surface maps when present, and synthesizes both from heights + water otherwise so
 # pre-existing chunks on disk and standalone heightfields still get smooth texel normals, gully cavity AO, and cliff rock.
-static func _bind_terrain_surface(mat: ShaderMaterial, hf: Dictionary, nx: int, nz: int, step: float, h: PackedFloat32Array) -> void:
+static func _bind_terrain_surface(mat: ShaderMaterial, hf: Dictionary, nx: int, nz: int, step: float, h: PackedFloat32Array) -> Dictionary:
 	if nx < 2 or nz < 2 or h.size() < nx * nz:
-		return
+		return {}
 	var org := [0.0, 0.0, 0.0]
 	if hf.get("_origin") is Array and (hf["_origin"] as Array).size() == 3:
 		org = [float(hf["_origin"][0]), float(hf["_origin"][1]), float(hf["_origin"][2])]
@@ -385,6 +387,7 @@ static func _bind_terrain_surface(mat: ShaderMaterial, hf: Dictionary, nx: int, 
 	mat.set_shader_parameter("normal_cav_tex", ImageTexture.create_from_image(img_nc))
 	mat.set_shader_parameter("has_surface_tex", true)
 	mat.set_meta("surface_from", "export" if from_export else "synthesized")
+	return {"ar": ar, "nc": nc}
 
 
 static func height_at(hf_node: Node3D, x: float, z: float) -> float:

@@ -37,6 +37,12 @@ var _place_flora := {}        # pid -> {"origin": Array, "keys": Array, "data": 
 var _stream_flora_root: Node3D = null
 var _stream_flora_pools := {} # pkey -> Array[MultiMeshInstance3D]
 var _last_flora_cam := Vector3(INF, INF, INF)
+var _road_hash_ready := false
+var _road_hash := {}          # cell_key -> Array of [ax, az, bx, bz, clear_r2]
+var _built_hash_n := -1
+var _built_vols := []         # Array of [x, z, r2] for village footprints & arcology
+var _mon_specs := []          # Array of Monastery Dictionaries
+var _last_gnrm := Vector3.UP
 
 
 static func open(path: String) -> KratorWorldStream:
@@ -212,18 +218,78 @@ func _run_job() -> void:
 	_build_ms = (Time.get_ticks_usec() - t0) / 1000.0
 
 
-func _load_flora_table(f_path: String, fallback_box: Array) -> Dictionary:
+func _load_flora_table(f_path: String, fallback_box: Array, ground_mi: MeshInstance3D = null, case_origin: Array = [0.0, 0.0, 0.0]) -> Dictionary:
 	if not FileAccess.file_exists(f_path):
 		return {}
 	var fd = KData.read_json(f_path)
 	if not (fd is Dictionary) or fd.get("format") != "krator-chunk-flora" or not (fd.get("data") is Dictionary):
 		return {}
+	var fbox: Array = fd.get("box", fallback_box)
+	var fo: Array = fd.get("origin", [0.0, 0.0, 0.0])
+	var fox := float(fo[0])
+	var foz := float(fo[2])
+	var bx0 := float(fbox[0])
+	var bz0 := float(fbox[1])
+	var span_x := maxf(1.0, float(fbox[2]) - bx0)
+	var span_z := maxf(1.0, float(fbox[3]) - bz0)
+	var cox := float(case_origin[0])
+	var coy := float(case_origin[1])
+	var coz := float(case_origin[2])
+	var data_dict: Dictionary = fd["data"]
+	var dtype := str(data_dict.get("type", "Float32Array"))
+	var D := PackedFloat32Array()
+	var cnt := int(fd.get("count", 0))
+	if dtype == "Uint16Array":
+		var raw := KData.raw(data_dict)
+		if cnt <= 0:
+			cnt = raw.size() / 8
+		D.resize(cnt * 6)
+		for i in cnt:
+			var b8 := i * 8
+			var rx := bx0 + (float(raw.decode_u16(b8)) / 65535.0) * span_x
+			var rz := bz0 + (float(raw.decode_u16(b8 + 2)) / 65535.0) * span_z
+			var rot := (float(raw.decode_u16(b8 + 4)) / 65535.0) * TAU
+			var u3 := raw.decode_u16(b8 + 6)
+			var ht := float((u3 >> 8) & 0xFF) / 2.5
+			var ki := float(u3 & 0xFF)
+			var ry := 0.0
+			if ground_mi != null:
+				var th := terrain_tri_height(ground_mi, rx - cox, rz - coz)
+				ry = (th + coy - 0.25) if is_finite(th) else 0.0
+			var o6 := i * 6
+			D[o6] = rx - fox
+			D[o6 + 1] = ry
+			D[o6 + 2] = rz - foz
+			D[o6 + 3] = rot
+			D[o6 + 4] = ht
+			D[o6 + 5] = ki
+	else:
+		D = KData.floats(data_dict)
+		cnt = D.size() / 6
+		if ground_mi != null:
+			for i in cnt:
+				var o6 := i * 6
+				var rx := fox + D[o6]
+				var rz := foz + D[o6 + 2]
+				var th := terrain_tri_height(ground_mi, rx - cox, rz - coz)
+				if is_finite(th):
+					D[o6 + 1] = th + coy - 0.25
+	var sub_n := int(fd.get("subN", 0))
+	var offs := PackedInt32Array()
+	if sub_n > 0 and fd.get("cellOffsets") is Array:
+		var raw_offs: Array = fd["cellOffsets"]
+		offs.resize(raw_offs.size())
+		for k in raw_offs.size():
+			offs[k] = int(raw_offs[k])
 	return {
-		"origin": fd.get("origin", [0.0, 0.0, 0.0]),
+		"origin": fo,
 		"keys": fd.get("keys", []),
-		"data": KData.floats(fd["data"]),
-		"count": int(fd.get("count", 0)),
-		"box": fd.get("box", fallback_box)
+		"data": D,
+		"count": cnt,
+		"box": fbox,
+		"sub_n": sub_n,
+		"offs": offs,
+		"covered": str(fd.get("covered", ""))
 	}
 
 
@@ -236,7 +302,9 @@ func _build_chunk(id: String) -> Node3D:
 	var cbox: Array = _box[id]
 	_hole(w, cbox)
 	_build_roads(w, cbox, false)
-	var ft := _load_flora_table(dir + "/" + cpath + "/flora.json", cbox)
+	var cg := (w.get_meta("ground", null) if w.has_meta("ground") else null) as MeshInstance3D
+	var co: Array = w.get_meta("origin", [0.0, 0.0, 0.0])
+	var ft := _load_flora_table(dir + "/" + cpath + "/flora.json", cbox, cg, co)
 	if not ft.is_empty():
 		w.set_meta("chunk_flora", ft)
 	if collide:
@@ -264,7 +332,9 @@ func _build_place(id: String) -> Node3D:
 			w.add_child(arcology(p, w))
 	if mon_node != null:
 		w.add_child(mon_node)
-	var ft := _load_flora_table(dir + "/" + pcase + "/flora.json", p["box"])
+	var pg := (w.get_meta("ground", null) if w.has_meta("ground") else null) as MeshInstance3D
+	var po: Array = w.get_meta("origin", [0.0, 0.0, 0.0])
+	var ft := _load_flora_table(dir + "/" + pcase + "/flora.json", p["box"], pg, po)
 	if not ft.is_empty():
 		w.set_meta("place_flora", ft)
 	if collide:
@@ -1029,7 +1099,9 @@ func _ensure_flora_pool(pkey: String) -> Array:
 	var proto: Dictionary = _flora_protos.get(pkey, {})
 	var parts: Array = proto.get("parts", [])
 	var nodes := []
-	var lv := 2 if (pkey.ends_with("|2") or pkey.ends_with("|s")) else 1
+	var is_ug := pkey.begins_with("ug|")
+	var lv := 2 if (is_ug or pkey.ends_with("|2") or pkey.ends_with("|s")) else 1
+	var cast_sh := (not is_ug and lv == 2) or pkey.begins_with("ug|oid_boulder") or pkey.begins_with("ug|oid_stones")
 	for pi in parts.size():
 		var pt: Dictionary = parts[pi]
 		var mmi := MultiMeshInstance3D.new()
@@ -1042,7 +1114,7 @@ func _ensure_flora_pool(pkey: String) -> Array:
 		mm.instance_count = 0
 		mmi.multimesh = mm
 		mmi.material_override = pt["material"]
-		mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON if lv == 2 else GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON if cast_sh else GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		mmi.visible = false
 		mmi.set_meta("flora_key", pkey)
 		mmi.set_meta("flora_lv", lv)
@@ -1059,17 +1131,499 @@ func set_flora_visible(on: bool) -> void:
 		_stream_flora_root.visible = on
 
 
-func refresh_flora_at(cam_reg: Vector3, hero_r := 240.0, mid_r := 2600.0) -> Dictionary:
+static func _ug_mul32(a: int, b: int) -> int:
+	return (a * (b & 0xFFFF) + (((a * (b >> 16)) & 0xFFFF) << 16)) & 0xFFFFFFFF
+
+
+static func _ug_hash(x: int, z: int, s: int) -> int:
+	var h := _ug_mul32(x & 0xFFFFFFFF, 1597334677) ^ _ug_mul32(z & 0xFFFFFFFF, 3812015801) ^ _ug_mul32(s & 0xFFFFFFFF, 2654435769)
+	h ^= h >> 16
+	h = _ug_mul32(h, 2146121005)
+	h ^= h >> 15
+	h = _ug_mul32(h, 2221713035)
+	return (h ^ (h >> 16)) & 0x7FFFFFFF
+
+
+static func _ug_u01(h: int) -> float:
+	return float(h & 0xFFFFFF) / 16777216.0
+
+
+func _ensure_road_and_built_caches() -> void:
+	if not _road_hash_ready:
+		_road_hash_ready = true
+		_road_hash.clear()
+		_mon_specs.clear()
+		for p in index.get("places", []):
+			if p is Dictionary and p.get("monastery") is Dictionary:
+				_mon_specs.append(p["monastery"])
+		var cell_s := 64.0
+		for rd in index.get("roads", []):
+			var pts: Array = rd.get("pts", [])
+			var clear_r := 7.5 if str(rd.get("kind", "")) == "link" else 5.5
+			var r2 := clear_r * clear_r
+			for k in range(pts.size() - 1):
+				var ax := float(pts[k][0]); var az := float(pts[k][1])
+				var bx := float(pts[k + 1][0]); var bz := float(pts[k + 1][1])
+				var gx0 := int(floor((minf(ax, bx) - clear_r) / cell_s))
+				var gx1 := int(floor((maxf(ax, bx) + clear_r) / cell_s))
+				var gz0 := int(floor((minf(az, bz) - clear_r) / cell_s))
+				var gz1 := int(floor((maxf(az, bz) + clear_r) / cell_s))
+				var seg := [ax, az, bx, bz, r2]
+				for gz in range(gz0, gz1 + 1):
+					for gx in range(gx0, gx1 + 1):
+						var ck := gx * 100003 + gz
+						if not _road_hash.has(ck):
+							_road_hash[ck] = []
+						(_road_hash[ck] as Array).append(seg)
+	if _built_hash_n != places_open.size():
+		_built_hash_n = places_open.size()
+		_built_vols.clear()
+		for pid in places_open:
+			var p := place(str(pid))
+			if p.get("arcology") is Dictionary and p["arcology"].get("at") is Array:
+				var aat: Array = p["arcology"]["at"]
+				_built_vols.append([float(aat[0]), float(aat[2]), 520.0 * 520.0])
+			var pw: Node3D = places_open[pid]
+			var tags: Dictionary = pw.get_meta("tags", {}) if pw.has_meta("tags") else {}
+			for rk in tags:
+				var rec = tags[rk]
+				if rec is Dictionary and rec.get("at") is Array and rec.get("size") is Array:
+					var rat: Array = rec["at"]
+					var rsz: Array = rec["size"]
+					var rad := 0.5 * maxf(float(rsz[0]), float(rsz[1])) + 4.5
+					_built_vols.append([float(rat[0]), float(rat[2]), rad * rad])
+
+
+func _is_clear_for_undergrowth(x: float, z: float, extra_pad := 0.0) -> bool:
+	for M in _mon_specs:
+		var mbox: Array = M.get("box", [])
+		if mbox.size() >= 4:
+			var lp := _monastery_local(M, x, z)
+			if lp.x >= float(mbox[0]) - 6.0 and lp.x <= float(mbox[2]) + 6.0 and lp.y >= float(mbox[1]) - 6.0 and lp.y <= float(mbox[3]) + 6.0:
+				return false
+	for bv in _built_vols:
+		var dx := x - float(bv[0])
+		var dz := z - float(bv[1])
+		if dx * dx + dz * dz <= float(bv[2]):
+			return false
+	var ck := int(floor(x / 64.0)) * 100003 + int(floor(z / 64.0))
+	if _road_hash.has(ck):
+		for seg in _road_hash[ck]:
+			var ax := float(seg[0]); var az := float(seg[1])
+			var vx := float(seg[2]) - ax; var vz := float(seg[3]) - az
+			var l2 := vx * vx + vz * vz
+			var t := clampf(((x - ax) * vx + (z - az) * vz) / l2, 0.0, 1.0) if l2 > 1e-4 else 0.0
+			var px := ax + vx * t - x
+			var pz := az + vz * t - z
+			var lim2 := float(seg[4]) + extra_pad * extra_pad
+			if px * px + pz * pz <= lim2:
+				return false
+	return true
+
+
+# Returns Vector4(ground_y, rock_w, wet_or_submerged, slope) and updates _last_gnrm; ground_y is NAN if unloaded
+func _sample_surface_at(x: float, z: float) -> Vector4:
+	var mi: MeshInstance3D = null
+	var ox := 0.0; var oy := 0.0; var oz := 0.0
+	var pid := place_covering(x, z)
+	if pid != "":
+		var pw: Node3D = places_open[pid]
+		mi = (pw.get_meta("ground", null) if pw.has_meta("ground") else null) as MeshInstance3D
+		var po: Array = pw.get_meta("origin", [0.0, 0.0, 0.0])
+		ox = float(po[0]); oy = float(po[1]); oz = float(po[2])
+	else:
+		var cid := covering(x, z)
+		if cid != "":
+			var cw: Node3D = chunks[cid]
+			mi = (cw.get_meta("ground", null) if cw.has_meta("ground") else null) as MeshInstance3D
+			var co: Array = cw.get_meta("origin", [0.0, 0.0, 0.0])
+			ox = float(co[0]); oy = float(co[1]); oz = float(co[2])
+	if mi == null or not mi.has_meta("grid"):
+		_last_gnrm = Vector3.UP
+		return Vector4(NAN, 0.0, 0.0, 0.0)
+	var lx := x - ox
+	var lz := z - oz
+	var gy := terrain_tri_height(mi, lx, lz)
+	if not is_finite(gy):
+		_last_gnrm = Vector3.UP
+		return Vector4(NAN, 0.0, 0.0, 0.0)
+	gy += oy
+	var g: Dictionary = mi.get_meta("grid")
+	var nx := int(g["nx"])
+	var nz := int(g["nz"])
+	var step_m := float(g["step"])
+	var gi := clampi(int(roundf((lx - float(g["x0"])) / step_m)), 0, nx - 1)
+	var gj := clampi(int(roundf((lz - float(g["z0"])) / step_m)), 0, nz - 1)
+	var o4 := (gj * nx + gi) * 4
+	var ar: PackedByteArray = g.get("ar", PackedByteArray())
+	var nc: PackedByteArray = g.get("nc", PackedByteArray())
+	var rock_w := float(ar[o4 + 3]) / 255.0 if o4 + 3 < ar.size() else 0.0
+	var wet_w := 0.0
+	var nrm := Vector3.UP
+	if o4 + 3 < nc.size():
+		var fnx := (float(nc[o4]) / 255.0) * 2.0 - 1.0
+		var fnz := (float(nc[o4 + 1]) / 255.0) * 2.0 - 1.0
+		var fny := sqrt(maxf(0.02, 1.0 - fnx * fnx - fnz * fnz))
+		nrm = Vector3(fnx, fny, fnz).normalized()
+		wet_w = 1.0 if nc[o4 + 3] >= 250 else float(nc[o4 + 3]) / 255.0
+	_last_gnrm = nrm
+	var slope := 1.0 - clampf(nrm.y, 0.0, 1.0)
+	return Vector4(gy, rock_w, wet_w, slope)
+
+
+func _append_basis_row(bufs: Dictionary, cnts: Dictionary, pkey: String, pos: Vector3, yaw: float, sc: float, nrm: Vector3, tilt_k: float) -> void:
+	var up := Vector3.UP.lerp(nrm, tilt_k).normalized()
+	var fwd0 := Vector3(sin(yaw), 0.0, cos(yaw))
+	var rgt := up.cross(fwd0)
+	if rgt.length_squared() < 1e-5:
+		rgt = Vector3.RIGHT
+	else:
+		rgt = rgt.normalized()
+	var fwd := rgt.cross(up).normalized()
+	rgt *= sc; up *= sc; fwd *= sc
+	var list_b: Array
+	if bufs.has(pkey):
+		list_b = bufs[pkey]
+	else:
+		list_b = []
+		bufs[pkey] = list_b
+		cnts[pkey] = 0
+	list_b.append(rgt.x); list_b.append(up.x); list_b.append(fwd.x); list_b.append(pos.x)
+	list_b.append(rgt.y); list_b.append(up.y); list_b.append(fwd.y); list_b.append(pos.y)
+	list_b.append(rgt.z); list_b.append(up.z); list_b.append(fwd.z); list_b.append(pos.z)
+	cnts[pkey] = int(cnts[pkey]) + 1
+
+
+func _append_undergrowth(cam_reg: Vector3, bufs: Dictionary, cnts: Dictionary) -> int:
+	if not _flora_protos.has("ug|oid_fern|a") and not _flora_protos.has("ug|hr_tussock|a"):
+		return 0
+	_ensure_road_and_built_caches()
+	var vents: Array = index.get("vents", [])
+	var ox_s := float(origin[0])
+	var oy_s := float(origin[1])
+	var oz_s := float(origin[2])
+	var added := 0
+
+	# Pass 1: Lush 3D undergrowth (ferns, mosses, poppies, shrubs, bamboo shoots, alpine cushions, High Rift tussocks/heath/opal cane)
+	var cell_u := 6.4
+	var rad_u := 188.0
+	var rad_u2 := rad_u * rad_u
+	var ix0 := int(floor((cam_reg.x - rad_u) / cell_u))
+	var ix1 := int(floor((cam_reg.x + rad_u) / cell_u))
+	var iz0 := int(floor((cam_reg.z - rad_u) / cell_u))
+	var iz1 := int(floor((cam_reg.z + rad_u) / cell_u))
+	for iz in range(iz0, iz1 + 1):
+		for ix in range(ix0, ix1 + 1):
+			var h0 := _ug_hash(ix, iz, 9103)
+			var rx := (float(ix) + 0.12 + 0.76 * _ug_u01(h0)) * cell_u
+			var rz := (float(iz) + 0.12 + 0.76 * _ug_u01(_ug_hash(ix, iz, 9109))) * cell_u
+			var dx := rx - cam_reg.x
+			var dz := rz - cam_reg.z
+			if dx * dx + dz * dz > rad_u2:
+				continue
+			var sf := _sample_surface_at(rx, rz)
+			var gy := sf.x
+			if not is_finite(gy) or sf.z >= 0.98 or sf.w > 0.42 or sf.y > 0.78:
+				continue
+			if dx * dx + (gy - cam_reg.y) * (gy - cam_reg.y) + dz * dz > rad_u2:
+				continue
+			var in_place := place_covering(rx, rz) != ""
+			var dens := (0.64 if in_place else 0.88) * (1.0 - smoothstep(0.45, 0.78, sf.y)) * (1.0 - smoothstep(0.24, 0.42, sf.w))
+			if gy > 4350.0:
+				continue
+			if gy > 3650.0:
+				dens *= 1.0 - smoothstep(3650.0, 4350.0, gy)
+			var u_acc := _ug_u01(_ug_hash(ix, iz, 9127))
+			if u_acc > dens:
+				continue
+			if not _is_clear_for_undergrowth(rx, rz, 1.5):
+				continue
+			var nrm := _last_gnrm
+			var u_kind := _ug_u01(_ug_hash(ix, iz, 9137))
+			var v_tag := "a" if (_ug_hash(ix, iz, 9151) & 1) == 0 else "b"
+			var hr_w := smoothstep(-75000.0, -22000.0, rx)
+			var pkey := ""
+			if _ug_u01(_ug_hash(ix, iz, 9161)) < hr_w and _flora_protos.has("ug|hr_tussock|a"):
+				var vd_ratio := 999.0
+				for v in vents:
+					var vr := maxf(250.0, float(v[2]))
+					var dd := Vector2(rx - float(v[0]), rz - float(v[1])).length() / vr
+					if dd < vd_ratio:
+						vd_ratio = dd
+				if vd_ratio < 1.35:
+					pkey = "ug|hr_warm|" + v_tag
+				elif vd_ratio < 5.2 or sf.z > 0.36:
+					pkey = "ug|hr_heath|" + v_tag
+				else:
+					pkey = "ug|hr_tussock|" + v_tag
+			elif gy > 3080.0 and _ug_u01(_ug_hash(ix, iz, 9173)) < smoothstep(3080.0, 3360.0, gy):
+				pkey = "ug|oid_alp|" + v_tag
+			else:
+				if sf.z > 0.40:
+					pkey = ("ug|oid_bamboo|" if u_kind < 0.46 else "ug|oid_fern|") + v_tag
+				elif sf.y > 0.28 or sf.z < 0.08:
+					pkey = ("ug|oid_flats|" if u_kind < 0.55 else "ug|oid_shrub|") + v_tag
+				else:
+					if u_kind < 0.36:
+						pkey = "ug|oid_fern|" + v_tag
+					elif u_kind < 0.70:
+						pkey = "ug|oid_meadow|" + v_tag
+					elif u_kind < 0.88:
+						pkey = "ug|oid_shrub|" + v_tag
+					else:
+						pkey = "ug|oid_bamboo|" + v_tag
+			if not _flora_protos.has(pkey):
+				continue
+			var yaw := _ug_u01(_ug_hash(ix, iz, 9181)) * TAU
+			var sc := 0.78 + 0.52 * _ug_u01(_ug_hash(ix, iz, 9187))
+			_append_basis_row(bufs, cnts, pkey, Vector3(rx - ox_s, gy - 0.04 - oy_s, rz - oz_s), yaw, sc, nrm, 0.38)
+			added += 1
+
+	# Pass 2: 3D mossy granite boulders, rocky scarp outcrops & standing-stone trios out to 760 m
+	if _flora_protos.has("ug|oid_boulder|a"):
+		var cell_b := 23.0
+		var rad_b := 760.0
+		var rad_b2 := rad_b * rad_b
+		var bx0 := int(floor((cam_reg.x - rad_b) / cell_b))
+		var bx1 := int(floor((cam_reg.x + rad_b) / cell_b))
+		var bz0 := int(floor((cam_reg.z - rad_b) / cell_b))
+		var bz1 := int(floor((cam_reg.z + rad_b) / cell_b))
+		for bz in range(bz0, bz1 + 1):
+			for bx in range(bx0, bx1 + 1):
+				var hb0 := _ug_hash(bx, bz, 9311)
+				var rx := (float(bx) + 0.14 + 0.72 * _ug_u01(hb0)) * cell_b
+				var rz := (float(bz) + 0.14 + 0.72 * _ug_u01(_ug_hash(bx, bz, 9319))) * cell_b
+				var dx := rx - cam_reg.x
+				var dz := rz - cam_reg.z
+				if dx * dx + dz * dz > rad_b2:
+					continue
+				var sf := _sample_surface_at(rx, rz)
+				var gy := sf.x
+				if not is_finite(gy) or sf.z >= 0.98 or sf.w > 0.55:
+					continue
+				if dx * dx + (gy - cam_reg.y) * (gy - cam_reg.y) + dz * dz > rad_b2:
+					continue
+				var b_prob := 0.09 + 0.42 * smoothstep(0.14, 0.58, sf.y) + 0.18 * smoothstep(0.08, 0.32, sf.w)
+				if _ug_u01(_ug_hash(bx, bz, 9323)) > b_prob:
+					continue
+				if not _is_clear_for_undergrowth(rx, rz, 4.0):
+					continue
+				var nrm := _last_gnrm
+				var pkey_b := ""
+				if rx < -35000.0 and gy < 3100.0 and sf.w < 0.09 and _ug_u01(_ug_hash(bx, bz, 9337)) < 0.035 and _flora_protos.has("ug|oid_stones|a"):
+					pkey_b = "ug|oid_stones|a"
+				else:
+					pkey_b = "ug|oid_boulder|" + ("a" if (_ug_hash(bx, bz, 9341) & 1) == 0 else "b")
+				var yaw := _ug_u01(_ug_hash(bx, bz, 9343)) * TAU
+				var sc := (0.68 + 0.95 * _ug_u01(_ug_hash(bx, bz, 9349))) * (1.18 if sf.y > 0.35 else 0.92)
+				_append_basis_row(bufs, cnts, pkey_b, Vector3(rx - ox_s, gy - 0.12 * sc - oy_s, rz - oz_s), yaw, sc, nrm, 0.55)
+				added += 1
+	return added
+
+
+static func _patch_noise(x: float, z: float, scale_m: float, salt: int) -> float:
+	var fx := x / scale_m
+	var fz := z / scale_m
+	var ix := int(floor(fx))
+	var iz := int(floor(fz))
+	var u := fx - float(ix)
+	var v := fz - float(iz)
+	u = u * u * (3.0 - 2.0 * u)
+	v = v * v * (3.0 - 2.0 * v)
+	var a := _ug_u01(_ug_hash(ix, iz, salt))
+	var b := _ug_u01(_ug_hash(ix + 1, iz, salt))
+	var c := _ug_u01(_ug_hash(ix, iz + 1, salt))
+	var d := _ug_u01(_ug_hash(ix + 1, iz + 1, salt))
+	return lerpf(lerpf(a, b, u), lerpf(c, d, u), v)
+
+
+func _is_subcell_covered(x: float, z: float) -> bool:
+	if place_covering(x, z) != "":
+		return true
+	var cid := covering(x, z)
+	if cid == "":
+		return true
+	if not _chunk_flora.has(cid):
+		return false
+	var ft: Dictionary = _chunk_flora[cid]
+	var cov := str(ft.get("covered", ""))
+	if cov == "":
+		return true
+	var sub_n := int(ft.get("sub_n", 16))
+	if sub_n <= 0 or cov.length() < sub_n * sub_n:
+		return true
+	var fbox: Array = ft["box"]
+	var sx := clampi(int(floor((x - float(fbox[0])) / maxf(1.0, float(fbox[2]) - float(fbox[0])) * float(sub_n))), 0, sub_n - 1)
+	var sz := clampi(int(floor((z - float(fbox[1])) / maxf(1.0, float(fbox[3]) - float(fbox[1])) * float(sub_n))), 0, sub_n - 1)
+	return cov.unicode_at(sz * sub_n + sx) == 49
+
+
+func _append_wild_forest(cam_reg: Vector3, hero_r: float, mid_r: float, bufs: Dictionary, cnts: Dictionary) -> Vector2i:
+	if not _flora_protos.has("0|1|0|2") or cam_reg.x > -15000.0:
+		return Vector2i.ZERO
+	_ensure_road_and_built_caches()
+	var ox_s := float(origin[0])
+	var oy_s := float(origin[1])
+	var oz_s := float(origin[2])
+	var add_hero := 0
+	var add_mid := 0
+	var inner_r := minf(680.0, mid_r)
+	var inner_r2 := inner_r * inner_r
+
+	# Ring 1 (0 .. 680 m, 23 m cell): Full Oidong canopy, flowering cherry/haze, maple, birch, cedar, pine & bamboo groves (Hero <= hero_r, Mid <= 680 m)
+	var c1 := 23.0
+	var ix0 := int(floor((cam_reg.x - inner_r) / c1))
+	var ix1 := int(floor((cam_reg.x + inner_r) / c1))
+	var iz0 := int(floor((cam_reg.z - inner_r) / c1))
+	var iz1 := int(floor((cam_reg.z + inner_r) / c1))
+	for iz in range(iz0, iz1 + 1):
+		for ix in range(ix0, ix1 + 1):
+			var rx := (float(ix) + 0.14 + 0.72 * _ug_u01(_ug_hash(ix, iz, 9503))) * c1
+			var rz := (float(iz) + 0.14 + 0.72 * _ug_u01(_ug_hash(ix, iz, 9509))) * c1
+			var dx := rx - cam_reg.x
+			var dz := rz - cam_reg.z
+			var d2_xz := dx * dx + dz * dz
+			if d2_xz > inner_r2 or rx > -22000.0 or _is_subcell_covered(rx, rz):
+				continue
+			var sf := _sample_surface_at(rx, rz)
+			var gy := sf.x
+			if not is_finite(gy) or sf.z >= 0.98 or gy > 3380.0 or sf.w > 0.44 or sf.y > 0.72:
+				continue
+			var patch := _patch_noise(rx, rz, 260.0, 9521)
+			var grove := _patch_noise(rx + 410.0, rz - 290.0, 190.0, 9529)
+			var tree_line := 1.0 - smoothstep(2920.0, 3380.0, gy)
+			var east_fade := 1.0 - smoothstep(-72000.0, -24000.0, rx)
+			var dens := 0.74 * tree_line * east_fade * (0.28 + 0.92 * patch) * (1.0 - smoothstep(0.42, 0.72, sf.y)) * (1.0 - smoothstep(0.24, 0.44, sf.w))
+			if _ug_u01(_ug_hash(ix, iz, 9533)) > dens:
+				continue
+			if not _is_clear_for_undergrowth(rx, rz, 3.5):
+				continue
+			var u_sp := _ug_u01(_ug_hash(ix, iz, 9539))
+			var u_ht := _ug_u01(_ug_hash(ix, iz, 9547))
+			var sp := 14
+			var ht := 18.0
+			if sf.z > 0.36:
+				if u_sp < 0.28:
+					sp = 8; ht = lerpf(13.0, 22.0, u_ht)
+				elif u_sp < 0.50:
+					sp = 7; ht = lerpf(12.0, 20.0, u_ht)
+				elif u_sp < 0.72:
+					sp = 11; ht = lerpf(8.5, 14.5, u_ht)
+				elif u_sp < 0.88:
+					sp = 2; ht = lerpf(9.5, 16.0, u_ht)
+				else:
+					sp = 10; ht = lerpf(8.0, 13.5, u_ht)
+			elif gy > 2580.0 or sf.y > 0.28:
+				if u_sp < 0.38:
+					sp = 4; ht = lerpf(13.0, 25.0, u_ht)
+				elif u_sp < 0.72:
+					sp = 16; ht = lerpf(16.0, 29.0, u_ht)
+				elif u_sp < 0.90:
+					sp = 14; ht = lerpf(16.0, 28.0, u_ht)
+				else:
+					sp = 3; ht = lerpf(12.0, 21.0, u_ht)
+			elif grove > 0.68 and u_sp < 0.58:
+				sp = 11; ht = lerpf(8.5, 15.0, u_ht)
+			else:
+				if u_sp < 0.13:
+					sp = 1; ht = lerpf(22.0, 36.0, u_ht)
+				elif u_sp < 0.27:
+					sp = 14; ht = lerpf(18.0, 31.0, u_ht)
+				elif u_sp < 0.39:
+					sp = 15; ht = lerpf(18.0, 29.0, u_ht)
+				elif u_sp < 0.52:
+					sp = 3; ht = lerpf(13.0, 23.0, u_ht)
+				elif u_sp < 0.65:
+					sp = 2; ht = lerpf(9.5, 16.5, u_ht)
+				elif u_sp < 0.76:
+					sp = 6; ht = lerpf(10.5, 18.0, u_ht)
+				elif u_sp < 0.85:
+					sp = 13; ht = lerpf(7.5, 13.0, u_ht)
+				elif u_sp < 0.93:
+					sp = 12; ht = lerpf(9.0, 15.5, u_ht)
+				elif u_sp < 0.992:
+					sp = 5; ht = lerpf(8.5, 14.0, u_ht)
+				else:
+					sp = 18; ht = lerpf(5.5, 9.0, u_ht)
+			var v := _ug_hash(ix, iz, 9551) & 3
+			var d3 := sqrt(d2_xz + (gy - cam_reg.y) * (gy - cam_reg.y))
+			var is_hero := d3 <= hero_r
+			var pkey := "0|%d|%d|%s" % [sp, v, "2" if is_hero else "1"]
+			if not _flora_protos.has(pkey):
+				pkey = "0|%d|%d|%s" % [sp, v, "1" if is_hero else "2"]
+				if not _flora_protos.has(pkey):
+					continue
+				is_hero = pkey.ends_with("|2")
+			var proto: Dictionary = _flora_protos[pkey]
+			var sc := clampf(ht / maxf(float(proto["H"]), 0.25), 0.15, 6.0)
+			var yaw := _ug_u01(_ug_hash(ix, iz, 9563)) * TAU
+			_append_basis_row(bufs, cnts, pkey, Vector3(rx - ox_s, gy - 0.25 - oy_s, rz - oz_s), yaw, sc, Vector3.UP, 0.0)
+			if is_hero:
+				add_hero += 1
+			else:
+				add_mid += 1
+
+	# Ring 2 (680 m .. mid_r, 54 m cell): Distant Mid (lv=1) canopy trees clothing valleys, slopes, and ridges to 2.8 km
+	if mid_r > inner_r + 20.0:
+		var c2 := 54.0
+		var mid_r2 := mid_r * mid_r
+		var jx0 := int(floor((cam_reg.x - mid_r) / c2))
+		var jx1 := int(floor((cam_reg.x + mid_r) / c2))
+		var jz0 := int(floor((cam_reg.z - mid_r) / c2))
+		var jz1 := int(floor((cam_reg.z + mid_r) / c2))
+		const FAR_SPS := [1, 14, 15, 4, 16, 3, 6, 8]
+		const FAR_H0 := [22.0, 18.0, 18.0, 14.0, 17.0, 14.0, 12.0, 14.0]
+		const FAR_H1 := [36.0, 32.0, 30.0, 26.0, 30.0, 24.0, 19.0, 23.0]
+		for jz in range(jz0, jz1 + 1):
+			for jx in range(jx0, jx1 + 1):
+				var rx := (float(jx) + 0.14 + 0.72 * _ug_u01(_ug_hash(jx, jz, 9601))) * c2
+				var rz := (float(jz) + 0.14 + 0.72 * _ug_u01(_ug_hash(jx, jz, 9613))) * c2
+				var dx := rx - cam_reg.x
+				var dz := rz - cam_reg.z
+				var d2_xz := dx * dx + dz * dz
+				if d2_xz <= inner_r2 or d2_xz > mid_r2 or rx > -22000.0 or _is_subcell_covered(rx, rz):
+					continue
+				var sf := _sample_surface_at(rx, rz)
+				var gy := sf.x
+				if not is_finite(gy) or sf.z >= 0.98 or gy > 3380.0 or sf.w > 0.44 or sf.y > 0.70:
+					continue
+				var d2_3d := d2_xz + (gy - cam_reg.y) * (gy - cam_reg.y)
+				if d2_3d > mid_r2:
+					continue
+				var patch := _patch_noise(rx, rz, 260.0, 9521)
+				var dens := 0.78 * (1.0 - smoothstep(2920.0, 3380.0, gy)) * (1.0 - smoothstep(-72000.0, -24000.0, rx)) * (0.25 + 0.95 * patch) * (1.0 - smoothstep(0.42, 0.70, sf.y))
+				if _ug_u01(_ug_hash(jx, jz, 9619)) > dens:
+					continue
+				var k_idx := _ug_hash(jx, jz, 9623) & 7
+				if gy > 2600.0 and k_idx < 3:
+					k_idx = 3 + (k_idx & 1)
+				var sp: int = FAR_SPS[k_idx]
+				var ht := lerpf(float(FAR_H0[k_idx]), float(FAR_H1[k_idx]), _ug_u01(_ug_hash(jx, jz, 9629)))
+				var v := _ug_hash(jx, jz, 9631) & 3
+				var pkey := "0|%d|%d|1" % [sp, v]
+				if not _flora_protos.has(pkey):
+					pkey = "0|%d|%d|2" % [sp, v]
+					if not _flora_protos.has(pkey):
+						continue
+				var proto: Dictionary = _flora_protos[pkey]
+				var sc := clampf(ht / maxf(float(proto["H"]), 0.25), 0.15, 6.0)
+				var yaw := _ug_u01(_ug_hash(jx, jz, 9643)) * TAU
+				_append_basis_row(bufs, cnts, pkey, Vector3(rx - ox_s, gy - 0.25 - oy_s, rz - oz_s), yaw, sc, Vector3.UP, 0.0)
+				add_mid += 1
+	return Vector2i(add_hero, add_mid)
+
+
+func refresh_flora_at(cam_reg: Vector3, hero_r := 420.0, mid_r := 2800.0) -> Dictionary:
 	_last_flora_cam = cam_reg
 	if not flora_enabled or _stream_flora_root == null:
 		for pkey in _stream_flora_pools:
 			for mi in _stream_flora_pools[pkey]:
 				(mi as MultiMeshInstance3D).multimesh.instance_count = 0
 				(mi as MultiMeshInstance3D).visible = false
-		return {"hero": 0, "mid": 0, "pools": 0}
+		return {"hero": 0, "mid": 0, "undergrowth": 0, "pools": 0}
 	_ensure_flora_lib()
 	if _flora_protos.is_empty():
-		return {"hero": 0, "mid": 0, "pools": 0}
+		return {"hero": 0, "mid": 0, "undergrowth": 0, "pools": 0}
 
 	var bufs := {}   # pkey -> Array of floats (reference type: O(1) in-place append, converted once via PackedFloat32Array)
 	var cnts := {}   # pkey -> int
@@ -1104,68 +1658,102 @@ func refresh_flora_at(cam_reg: Vector3, hero_r := 240.0, mid_r := 2600.0) -> Dic
 		var nkeys := keys.size()
 		var D: PackedFloat32Array = ft["data"]
 		var nrows := D.size() / 6
-		for i in nrows:
-			var o6 := i * 6
-			var rx := fox + D[o6]
-			var dx := rx - cx_cam
-			if dx > mid_r or dx < -mid_r:
-				continue
-			var rz := foz + D[o6 + 2]
-			var dz := rz - cz_cam
-			if dz > mid_r or dz < -mid_r:
-				continue
-			var ry := D[o6 + 1]
-			var dy := ry - cy_cam
-			var d2 := dx * dx + dy * dy + dz * dz
-			if d2 > mid_r2:
-				continue
-			var ki := int(D[o6 + 5])
-			if ki < 0 or ki >= nkeys:
-				continue
-			var d := sqrt(d2)
-			var bk := str(keys[ki])
-			var pkey := ""
-			var is_hero := false
-			if bk.ends_with("|s"):
-				if d > hero_r * 1.2:
+		var sub_n := int(ft.get("sub_n", 0))
+		var offs: PackedInt32Array = ft.get("offs", PackedInt32Array())
+		var ranges := []
+		if sub_n > 0 and offs.size() == sub_n * sub_n + 1:
+			var fbox: Array = ft["box"]
+			var fbx0 := float(fbox[0]); var fbz0 := float(fbox[1])
+			var fsp_x := maxf(1.0, float(fbox[2]) - fbx0)
+			var fsp_z := maxf(1.0, float(fbox[3]) - fbz0)
+			var sx0 := clampi(int(floor((cx_cam - mid_r - fbx0) / fsp_x * float(sub_n))), 0, sub_n - 1)
+			var sx1 := clampi(int(floor((cx_cam + mid_r - fbx0) / fsp_x * float(sub_n))), 0, sub_n - 1)
+			var sz0 := clampi(int(floor((cz_cam - mid_r - fbz0) / fsp_z * float(sub_n))), 0, sub_n - 1)
+			var sz1 := clampi(int(floor((cz_cam + mid_r - fbz0) / fsp_z * float(sub_n))), 0, sub_n - 1)
+			for sz in range(sz0, sz1 + 1):
+				for sx in range(sx0, sx1 + 1):
+					var ci := sz * sub_n + sx
+					if offs[ci + 1] > offs[ci]:
+						ranges.append([offs[ci], offs[ci + 1]])
+		elif nrows > 0:
+			ranges.append([0, nrows])
+
+		for rg in ranges:
+			var r_lo := int(rg[0])
+			var r_hi := int(rg[1])
+			for i in range(r_lo, r_hi):
+				var o6 := i * 6
+				var rx := fox + D[o6]
+				var dx := rx - cx_cam
+				if dx > mid_r or dx < -mid_r:
 					continue
-				pkey = bk
-				is_hero = true
-			elif d <= hero_r:
-				pkey = bk + "|2"
-				if not _flora_protos.has(pkey):
-					pkey = bk + "|1"
-				is_hero = pkey.ends_with("|2")
-			else:
-				pkey = bk + "|1"
-				if not _flora_protos.has(pkey):
+				var rz := foz + D[o6 + 2]
+				var dz := rz - cz_cam
+				if dz > mid_r or dz < -mid_r:
+					continue
+				var ry := D[o6 + 1]
+				var dy := ry - cy_cam
+				var d2 := dx * dx + dy * dy + dz * dz
+				if d2 > mid_r2:
+					continue
+				var ki := int(D[o6 + 5])
+				if ki < 0 or ki >= nkeys:
+					continue
+				var d := sqrt(d2)
+				var ht_row := D[o6 + 4]
+				if d > 1050.0:
+					if ht_row < 13.0:
+						continue
+					if d > 1650.0 and (i & 1) != 0:
+						continue
+				var bk := str(keys[ki])
+				var pkey := ""
+				var is_hero := false
+				if bk.ends_with("|s"):
+					if d > hero_r * 1.2:
+						continue
+					pkey = bk
+					is_hero = true
+				elif d <= hero_r:
 					pkey = bk + "|2"
-				is_hero = pkey.ends_with("|2")
-			if not _flora_protos.has(pkey):
-				continue
-			var proto: Dictionary = _flora_protos[pkey]
-			var sc := clampf(D[o6 + 4] / maxf(float(proto["H"]), 0.25), 0.12, 8.0)
-			var rot := D[o6 + 3]
-			var cr := cos(rot) * sc
-			var sr := sin(rot) * sc
-			var lx := rx - ox_s
-			var ly := ry - oy_s
-			var lz := rz - oz_s
-			var list_b: Array
-			if bufs.has(pkey):
-				list_b = bufs[pkey]
-			else:
-				list_b = []
-				bufs[pkey] = list_b
-				cnts[pkey] = 0
-			list_b.append(cr); list_b.append(0.0); list_b.append(sr); list_b.append(lx)
-			list_b.append(0.0); list_b.append(sc); list_b.append(0.0); list_b.append(ly)
-			list_b.append(-sr); list_b.append(0.0); list_b.append(cr); list_b.append(lz)
-			cnts[pkey] = int(cnts[pkey]) + 1
-			if is_hero:
-				hero_n += 1
-			else:
-				mid_n += 1
+					if not _flora_protos.has(pkey):
+						pkey = bk + "|1"
+					is_hero = pkey.ends_with("|2")
+				else:
+					pkey = bk + "|1"
+					if not _flora_protos.has(pkey):
+						pkey = bk + "|2"
+					is_hero = pkey.ends_with("|2")
+				if not _flora_protos.has(pkey):
+					continue
+				var proto: Dictionary = _flora_protos[pkey]
+				var sc := clampf(ht_row / maxf(float(proto["H"]), 0.25), 0.12, 8.0) * (1.14 if d > 1650.0 else 1.0)
+				var rot := D[o6 + 3]
+				var cr := cos(rot) * sc
+				var sr := sin(rot) * sc
+				var lx := rx - ox_s
+				var ly := ry - oy_s
+				var lz := rz - oz_s
+				var list_b: Array
+				if bufs.has(pkey):
+					list_b = bufs[pkey]
+				else:
+					list_b = []
+					bufs[pkey] = list_b
+					cnts[pkey] = 0
+				list_b.append(cr); list_b.append(0.0); list_b.append(sr); list_b.append(lx)
+				list_b.append(0.0); list_b.append(sc); list_b.append(0.0); list_b.append(ly)
+				list_b.append(-sr); list_b.append(0.0); list_b.append(cr); list_b.append(lz)
+				cnts[pkey] = int(cnts[pkey]) + 1
+				if is_hero:
+					hero_n += 1
+				else:
+					mid_n += 1
+
+	var wf := _append_wild_forest(cam_reg, hero_r, mid_r, bufs, cnts)
+	hero_n += wf.x
+	mid_n += wf.y
+	var ug_n := _append_undergrowth(cam_reg, bufs, cnts)
 
 	for pkey in _stream_flora_pools:
 		if not cnts.has(pkey):
@@ -1198,4 +1786,4 @@ func refresh_flora_at(cam_reg: Vector3, hero_r := 240.0, mid_r := 2600.0) -> Dic
 			mmi.visible = n_inst > 0 and flora_enabled
 		if n_inst > 0:
 			active_pools += 1
-	return {"hero": hero_n, "mid": mid_n, "pools": active_pools}
+	return {"hero": hero_n, "mid": mid_n, "undergrowth": ug_n, "pools": active_pools}

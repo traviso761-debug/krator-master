@@ -192,18 +192,30 @@ def _kchar():
     import json
     J = lambda *p: json.load(open(os.path.join(CM, 'data', *p), encoding='utf-8'))
     peoples = [p for p in J('peoples.json')['peoples'] if p['id'] in KCHAR_PEOPLES]
-    bodies, need = {}, []
+    kd = os.path.join(DIST, 'kchar')
+    has_piece = lambda k: (os.path.exists(os.path.join(CM, 'dist', 'pieces', k + '.txt'))
+                           or os.path.exists(os.path.join(kd, k.replace('/', '__') + '.js')))
+    bodies, need, skipped = {}, [], []
     for b in ('mpfb_male', 'mpfb_female'):
         kit = J(b, 'kit.json')
         sty = {x for p in peoples for x in p['styles'][b[5:]]}
-        kit['items'] = [it for it in kit['items'] if it.get('culture') in KCHAR_PEOPLES or (it['slot'] == 'hair' and it['id'] in sty)
-                        or (it['slot'] == 'beard' and it['id'] in KCHAR_BEARDS[b])]
+        cand = [it for it in kit['items'] if it.get('culture') in KCHAR_PEOPLES or (it['slot'] == 'hair' and it['id'] in sty)
+                or (it['slot'] == 'beard' and it['id'] in KCHAR_BEARDS[b])]
+        kept = []
+        for it in cand:
+            pk = it['glb'][len('pieces/'):-len('.glb')]
+            if BSRC.LISTING or has_piece(pk):
+                kept.append(it)
+            else:
+                skipped.append(pk)
+        kit['items'] = kept
         bodies[b] = {'skeleton': J(b, 'skeleton.json'), 'kit': kit}
         need += [b + '/base', b + '/anims'] + [it['glb'][len('pieces/'):-len('.glb')] for it in kit['items']]
     if BSRC.LISTING:   # --list-sources: the pieces it would copy beside the page, by name; nothing is written
         BSRC.note([os.path.join(CM, 'dist', 'pieces', k + '.txt') for k in need])
         return ''
-    kd = os.path.join(DIST, 'kchar')
+    if skipped:
+        print('NOTE: %d new kit.json piece(s) have no sidecar in dist/kchar yet (skipped until core/charactermodels pieces build)' % len(skipped))
     os.makedirs(kd, exist_ok=True)
     keep, missing = set(), []
     for k in need:

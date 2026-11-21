@@ -7,7 +7,7 @@
 //   highrift   on the 'high rift' overlay (21,261 px: the three houses): no trees; its floor (HRIFT_WORLD,
 //              49-world-highrift.js): the rift's tussock, steam heath, opal cane, bead caps and Verdigris wort
 var WORLD_KITS=(function(){
-const LOD={hero:[14,90,240],mid:[50,320,900],far:[200,900,2500]};
+const LOD={hero:[16,130,420],mid:[60,480,1400],far:[220,1200,3200]};
 const sm=(a,b,x)=>{const t=Math.min(1,Math.max(0,(x-a)/(b-a)));return t*t*(3-2*t);};
 /* Oidong's floor profiles (biomes/oidong/src/60-biome-oidong-floor.js): moss mats & ferns, poppy & mist-tea meadows,
    bamboo shoots, upland terraces, cataract mist ferns & mooncaps, stream iris, and pale gravel flats */
@@ -32,7 +32,12 @@ function oidPick(x,z){
    hrheat, hracid and hrgrass): cold tussock, the mild grabens, the vents' warm margins, their hot discs and run-off */
 const HR_PROFILES={cold:{hrheat:2,hracid:0,hrgrass:.8,cold:.6,wet:.3},graben:{hrheat:6,hracid:0,hrgrass:1.2,cold:.25,wet:.5},
  warm:{hrheat:18,hracid:.15,hrgrass:.6,cold:.2,wet:.55,mist:.45},hot:{hrheat:42,hracid:.6,hrgrass:.2,cold:0,wet:.65,mist:.3}};
+const OID_EXTRA_PASSES=[
+ {sp:17,cell:38,accept:Z=>Z.flats*.22+Z.terrace*.14+Z.crag*.16+Z.meadow*.03,opt:{pad:4,small:true}},
+ {sp:18,cell:72,accept:Z=>Z.mistZ*.48+Z.moss*.18+Z.shore*.05,opt:{pad:5}},
+ {sp:19,cell:240,accept:Z=>Z.meadow*.28+Z.flats*.20+Z.shore*.08,opt:{pad:12}}];
 return[{name:'oidong',global:'OIDONG',overlay:'oidong valley',lod:LOD,
+  get passes(){return OIDONG.PASSES.map(P=>P.sp===11?Object.assign({},P,{cell:15,opt:Object.assign({},P.opt,{pad:2.6})}):P).concat(OID_EXTRA_PASSES);},
   floor:{profiles:OID_PROFILES,pick:oidPick}},
  {name:'highrift',global:'HRIFT_WORLD.highrift',overlay:'high rift',lod:LOD,
   floor:{profiles:HR_PROFILES,pick:(x,z)=>HRIFT_WORLD.pick(x,z)}}];})();

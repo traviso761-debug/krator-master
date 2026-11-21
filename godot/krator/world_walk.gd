@@ -359,7 +359,7 @@ func _physics_process(dt: float) -> void:
 		var t0 := Time.get_ticks_usec()
 		var r := stream.update(focus_region_xz(), LOAD_R, KEEP_R)
 		var cr_now := cam_region()
-		if not is_finite(stream._last_flora_cam.x) or cr_now.distance_squared_to(stream._last_flora_cam) >= 1600.0:
+		if not is_finite(stream._last_flora_cam.x) or cr_now.distance_squared_to(stream._last_flora_cam) >= 225.0:
 			stream.refresh_flora_at(cr_now)
 		var ms := (Time.get_ticks_usec() - t0) / 1000.0
 		if (r["loaded"] as Array).size() + (r["unloaded"] as Array).size() > 0:
