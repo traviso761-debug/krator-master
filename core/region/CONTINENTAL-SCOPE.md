@@ -389,9 +389,9 @@ Applied and verified across Scale Model `5.1e21` (`342/342` `test_smodel.py` che
 
 ---
 
-## 4. Locked Continent-Wide Systemic Complexity Mechanics (`Rulings 67–94`, `0` Open Systemic Questions)
+## 4. Locked Continent-Wide Systemic Complexity Mechanics (`Rulings 67–98`, `0` Open Systemic Questions)
 
-*(All `33` non-Crook/Ria regional questions, `Q35a` Izani `Marr` orthography, Wave 0 Hygiene `§3.9`, and all Round 2 systemic & faction-network scopes are **`[LOCKED]`** across Rulings `1–94`; `The Crook` & `Ria Valley` remain parked in their dedicated session per Ruling #33.)*
+*(All `33` non-Crook/Ria regional questions, `Q35a` Izani `Marr` orthography, Wave 0 Hygiene `§3.9`, and all Round 2 systemic & faction-network scopes are **`[LOCKED]`** across Rulings `1–98`; `The Crook` & `Ria Valley` remain parked in their dedicated session per Ruling #33.)*
 
 ### 4.1 Prohibition, Labor Regimes, Passenger Circuits & Prototype-Flagged Mechanics
 - **Continental Alcohol & Narcotics Legality Matrix (`Ruling #71`):**
