@@ -22,6 +22,7 @@ var _m_per_px := 2000.0
 var _gi_on := false
 var _start_fly := false
 var _no_ui := false
+var _collide := true
 var traffic: KratorValleyTraffic
 var carts: MultiMeshInstance3D
 var minute := 17.2 * 60.0    # sim minutes into the week (17:12 summer afternoon: sun 25° high, giant & rings lit in NNE)
@@ -31,6 +32,10 @@ var _saved_rate := 60.0
 var _shown := 0
 var _tt := 0.0
 var _indoors := false
+var _in_vault := false
+var _ls_lights: Array = []
+var _ls_light_regs: Array = []
+var _ls_light_timer := 0.0
 
 # Mouse drag & click tracking
 var _rmb_down := false
@@ -71,6 +76,10 @@ func _parse_args() -> void:
 			_start_fly = true
 		elif a == "--no-ui":
 			_no_ui = true
+		elif a == "--no-collide":
+			_collide = false
+		elif a == "--no-flora":
+			_flora_vis = false
 
 
 func _ready() -> void:
@@ -164,7 +173,8 @@ func _load_case(index_path: String, use_cmdline_at: bool) -> void:
 	_last_event_n = -1
 	_last_places_n = -1
 
-	W = KratorWorldWalk.make(case_index)
+	W = KratorWorldWalk.make(case_index, _collide)
+	W.stream.flora_enabled = _flora_vis
 	W.interactive = true
 	add_child(W)
 	W.cam.current = true
@@ -264,12 +274,30 @@ func _build_overlays() -> void:
 	_poly_mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	_overlays.add_child(_poly_mi)
 
+	# Pooled OmniLight3D rig for Longsong indoor rooms (butter lamps + window daylight portals) and the subterranean Vault
+	_ls_lights.clear()
+	_ls_light_regs.clear()
+	for li in 10:
+		var ol := OmniLight3D.new()
+		ol.name = "LongsongLamp_%d" % li
+		ol.visible = false
+		ol.shadow_enabled = false
+		ol.omni_attenuation = 1.3
+		_overlays.add_child(ol)
+		_ls_lights.append(ol)
+		_ls_light_regs.append(Vector3.ZERO)
+
 
 func _on_stream_rebased(_delta: Vector3) -> void:
 	if _has_pin and _pin_node != null:
 		_pin_node.position = W.stream.local(_pin_reg.x, _pin_reg.y, _pin_reg.z)
 	if not _poly_pts.is_empty():
 		_redraw_poly()
+	for li in _ls_lights.size():
+		var ol := _ls_lights[li] as OmniLight3D
+		if ol != null and ol.visible and li < _ls_light_regs.size():
+			var rp: Vector3 = _ls_light_regs[li]
+			ol.position = W.stream.local(rp.x, rp.y, rp.z)
 
 
 func _start(use_cmdline_at := true) -> Vector2:
@@ -352,8 +380,12 @@ func _go_to_poi(poi: Dictionary) -> void:
 	var eye: Vector3 = rpoi["eye"]
 	var target: Vector3 = rpoi["target"]
 	var as_walk := bool(rpoi.get("walk", false))
-	W.set_view_region(eye, target, as_walk)
+	var exact_eye := bool(rpoi.get("exact", false)) or str(rpoi.get("kind", "")) in ["interior", "vault"]
+	W.set_view_region(eye, target, as_walk, exact_eye)
+	_last_event_n = W.stream.events.size()
+	_last_places_n = W.stream.places_open.size()
 	_apply_layers()
+	_update_sun_and_ambience(0.0, true)
 
 
 func _place_pin(reg_pt: Vector3) -> void:
@@ -511,7 +543,23 @@ func _apply_layers() -> void:
 			arc.visible = _builds_vis
 		var mon := pw.get_node_or_null("Monastery") as Node3D
 		if mon != null:
-			mon.visible = _builds_vis
+			mon.visible = _builds_vis or _flora_vis
+			var m_it := mon.get_node_or_null("Items")
+			if m_it != null:
+				for it in m_it.get_children():
+					if it is Node3D:
+						var is_mfl := str((it.get_meta("krator", {}) as Dictionary).get("kit", "")) == "flora"
+						(it as Node3D).visible = _flora_vis if is_mfl else _builds_vis
+			var m_bk := mon.get_node_or_null("Buckets")
+			if m_bk != null:
+				for b in m_bk.get_children():
+					if b is MeshInstance3D:
+						var is_bfl := KratorWorldStream._is_foliage_bucket(b as MeshInstance3D)
+						(b as MeshInstance3D).visible = _flora_vis if is_bfl else _builds_vis
+			var m_gnd := mon.get_node_or_null("Terrain") as Node3D
+			if m_gnd != null:
+				m_gnd.visible = true
+	_refresh_longsong_lights(true, 0.0)
 
 
 # Raycasts physics (Terrain, Buckets, Arcology) and falls back to heightfield ray-marching for distant chunks
@@ -562,8 +610,8 @@ func _raycast_world(screen_pos: Vector2) -> Dictionary:
 					hit_reg.y = fh
 				return {
 					"local": W.stream.local(hit_reg.x, hit_reg.y, hit_reg.z),
-					"region": hit_reg,
 					"normal": Vector3.UP,
+					"region": hit_reg,
 					"collider": null,
 					"dist": hi
 				}
@@ -572,49 +620,54 @@ func _raycast_world(screen_pos: Vector2) -> Dictionary:
 	return {}
 
 
-# Picks MultiMesh instances (trees, bridges, camp items) as well as solid Buckets & Terrain for the Inspector
+# Picks MultiMesh instances (trees, bridges, camp items, Monastery furniture) as well as solid Buckets & Terrain for the Inspector
 func _inspect_at(screen_pos: Vector2) -> String:
 	var hit := _raycast_world(screen_pos)
 	var ro := W.cam.project_ray_origin(screen_pos)
 	var rd := W.cam.project_ray_normal(screen_pos)
 	var best_t: float = float(hit.get("dist", 4000.0))
 
-	# Check nearby MultiMesh instances in open places (flora, bridges, site items)
+	# Check nearby MultiMesh instances in open places & nested Monastery (flora, bridges, site items, indoor furniture)
 	var best_inst := {}
 	for pid in W.stream.places_open:
 		var pw: Node3D = W.stream.places_open[pid]
-		var items := pw.get_node_or_null("Items")
-		if items == null or not items.visible:
-			continue
-		var po: Array = pw.get_meta("origin", [0.0, 0.0, 0.0])
-		var tags: Dictionary = pw.get_meta("tags", {})
-		for child in items.get_children():
-			var mmi := child as MultiMeshInstance3D
-			if mmi == null or not mmi.visible or mmi.multimesh == null or mmi.multimesh.mesh == null:
+		var roots := [pw]
+		var mon_n := pw.get_node_or_null("Monastery") as Node3D
+		if mon_n != null and mon_n.visible:
+			roots.append(mon_n)
+		for rnode in roots:
+			var items := (rnode as Node3D).get_node_or_null("Items")
+			if items == null or not items.visible:
 				continue
-			var mm := mmi.multimesh
-			var aabb := mm.mesh.get_aabb()
-			var buf := mm.buffer
-			var stride := 12 + (4 if mm.use_colors else 0) + (4 if mm.use_custom_data else 0)
-			for i in mm.instance_count:
-				var o := i * stride
-				var sx := Vector3(buf[o], buf[o + 4], buf[o + 8]).length()
-				var sy := Vector3(buf[o + 1], buf[o + 5], buf[o + 9]).length()
-				var base_w := mmi.to_global(Vector3(buf[o + 3], buf[o + 7], buf[o + 11]))
-				var c_w := base_w + Vector3(0.0, (aabb.position.y + aabb.size.y * 0.5) * sy, 0.0)
-				var rad := maxf(maxf(aabb.size.x, aabb.size.z) * 0.45 * sx, 0.9)
-				var half_h := maxf(aabb.size.y * 0.5 * sy, 1.0)
-				var to_c := c_w - ro
-				var proj := to_c.dot(rd)
-				if proj < 0.5 or proj > best_t + rad:
+			var tags: Dictionary = (rnode as Node3D).get_meta("tags", pw.get_meta("tags", {}))
+			for child in items.get_children():
+				var mmi := child as MultiMeshInstance3D
+				if mmi == null or not mmi.visible or mmi.multimesh == null or mmi.multimesh.mesh == null:
 					continue
-				var closest := ro + rd * proj
-				var dxz := Vector2(closest.x - c_w.x, closest.z - c_w.z).length()
-				var dy := absf(closest.y - c_w.y)
-				if dxz <= rad and dy <= half_h and proj - rad * 0.35 < best_t:
-					best_t = maxf(0.5, proj - rad * 0.35)
-					var reg_pos := Vector3(float(po[0]) + mmi.position.x + buf[o + 3], float(po[1]) + mmi.position.y + buf[o + 7], float(po[2]) + mmi.position.z + buf[o + 11])
-					best_inst = {"mmi": mmi, "idx": i, "place": pid, "tags": tags, "pos": reg_pos, "dist": proj, "height": aabb.size.y * sy}
+				var mm := mmi.multimesh
+				var aabb := mm.mesh.get_aabb()
+				var buf := mm.buffer
+				var stride := 12 + (4 if mm.use_colors else 0) + (4 if mm.use_custom_data else 0)
+				for i in mm.instance_count:
+					var o := i * stride
+					var sx := Vector3(buf[o], buf[o + 4], buf[o + 8]).length()
+					var sy := Vector3(buf[o + 1], buf[o + 5], buf[o + 9]).length()
+					var base_w := mmi.to_global(Vector3(buf[o + 3], buf[o + 7], buf[o + 11]))
+					var c_w := base_w + Vector3(0.0, (aabb.position.y + aabb.size.y * 0.5) * sy, 0.0)
+					var rad := maxf(maxf(aabb.size.x, aabb.size.z) * 0.45 * sx, 0.35)
+					var half_h := maxf(aabb.size.y * 0.5 * sy, 0.35)
+					var to_c := c_w - ro
+					var proj := to_c.dot(rd)
+					if proj < 0.3 or proj > best_t + rad:
+						continue
+					var closest := ro + rd * proj
+					var dxz := Vector2(closest.x - c_w.x, closest.z - c_w.z).length()
+					var dy := absf(closest.y - c_w.y)
+					if dxz <= rad and dy <= half_h and proj - rad * 0.35 < best_t:
+						best_t = maxf(0.3, proj - rad * 0.35)
+						var r_arr: Array = W.stream.region(W.to_local(base_w))
+						var reg_pos := Vector3(float(r_arr[0]), float(r_arr[1]), float(r_arr[2]))
+						best_inst = {"mmi": mmi, "idx": i, "place": pid, "tags": tags, "pos": reg_pos, "dist": proj, "height": aabb.size.y * sy}
 
 	if not best_inst.is_empty():
 		var mmi: MultiMeshInstance3D = best_inst["mmi"]
@@ -630,7 +683,7 @@ func _inspect_at(screen_pos: Vector2) -> String:
 		var rec: Dictionary = tags.get(own_id, tags.get(set_id, {}))
 		var sh_name := _shader_label(mmi.material_override)
 		var lines := PackedStringArray()
-		lines.append("Item:     %s  (instance #%d of %d, %.1f m away)" % [str(kmeta.get("name", "?")), idx, int(kmeta.get("count", 0)), float(best_inst["dist"])])
+		lines.append("Item:     %s  (instance #%d of %d, %.1f m away)" % [str(kmeta.get("label", kmeta.get("name", "?"))), idx, int(kmeta.get("count", 0)), float(best_inst["dist"])])
 		lines.append("Coords:   x %.1f   y %.1f   z %.1f   (H ~%.1f m, place %s)" % [p.x, p.y, p.z, float(best_inst["height"]), str(best_inst["place"])])
 		if not rec.is_empty():
 			lines.append("Record:   id=%s  class=%s  kind=%s  name=%s%s" % [
@@ -697,6 +750,17 @@ static func _shader_label(mat: Material) -> String:
 
 
 func _check_indoors() -> bool:
+	_in_vault = false
+	var probe_reg: Vector3
+	if not W.walk_mode:
+		probe_reg = W.cam_region()
+	else:
+		var wxz := W.region_xz()
+		probe_reg = Vector3(wxz.x, W.feet_y() + 1.15, wxz.y)
+	var mrm := W.stream.monastery_room_at(probe_reg, 0.55)
+	if not mrm.is_empty():
+		_in_vault = bool(mrm.get("vault", false))
+		return true
 	var probe_g := W.cam.global_position if not W.walk_mode else (W.walker.global_position + Vector3(0.0, 0.5, 0.0))
 	for pid in W.stream.places_open:
 		var pw: Node3D = W.stream.places_open[pid]
@@ -709,11 +773,130 @@ func _check_indoors() -> bool:
 	return false
 
 
+func _refresh_longsong_lights(force: bool, dt := 0.0) -> void:
+	if W == null or _ls_lights.is_empty():
+		return
+	_ls_light_timer += dt
+	if not force and _ls_light_timer < 0.18:
+		return
+	_ls_light_timer = 0.0
+	var mon: Node3D = null
+	for pid in W.stream.places_open:
+		var pw: Node3D = W.stream.places_open[pid]
+		var mn := pw.get_node_or_null("Monastery") as Node3D
+		if mn != null and mn.has_meta("interiors_meta") and mn.has_meta("monastery"):
+			mon = mn
+			break
+	if mon == null:
+		for ol in _ls_lights:
+			(ol as OmniLight3D).visible = false
+		return
+	var M: Dictionary = mon.get_meta("monastery")
+	var imeta: Dictionary = mon.get_meta("interiors_meta")
+	var mat_at: Array = M.get("at", [0.0, 0.0, 0.0])
+	var m_orig := Vector3(float(mat_at[0]), float(mat_at[1]), float(mat_at[2]))
+	var ry := float(M.get("ry", 0.0))
+	var m_rot := Basis(Vector3.UP, ry)
+	var cr := W.cam_region()
+	var lp := Basis(Vector3.UP, -ry) * (cr - m_orig)
+	if absf(lp.x) > 360.0 or absf(lp.z) > 320.0:
+		for ol in _ls_lights:
+			(ol as OmniLight3D).visible = false
+		return
+	var Ldict: Dictionary = imeta.get("lights", {})
+	var chosen := []   # [[score_or_dist2, reg_pos, Color, energy, range]]
+	if _in_vault or lp.y < -1.5:
+		var pulse := 0.88 + 0.18 * sin(Time.get_ticks_msec() * 0.0012)
+		var lk_reg := W.look_region(14.0)
+		var lk_lp := Basis(Vector3.UP, -ry) * (lk_reg - m_orig)
+		for vl in Ldict.get("vault", []):
+			var vp := Vector3(float(vl[0]), float(vl[1]), float(vl[2]))
+			var d_eye := vp.distance_to(lp)
+			var d_lk := vp.distance_to(lk_lp)
+			var d_eff := minf(d_eye, d_lk * 0.85)
+			if d_eff <= 96.0:
+				var col := KData.colour(str(vl[3]), true)
+				var raw_k := float(vl[4])
+				var raw_r := float(vl[5])
+				var en := raw_k * 3.4 * (pulse if vp.y < -30.0 else 1.0)
+				var rng := maxf(11.0, raw_r * 1.4)
+				var sort_key := (d_eff + 3.5) / maxf(0.35, raw_k * (raw_r / 11.0))
+				chosen.append([sort_key, m_orig + m_rot * vp, col, en, rng])
+		chosen.sort_custom(func(a, b): return a[0] < b[0])
+	elif _indoors:
+		var sun_up := clampf((-sun.global_transform.basis.z.y + 0.06) / 0.28, 0.0, 1.0) if sun != null else 1.0
+		var night_k := 1.0 - sun_up
+		if sun_up > 0.08:
+			var w_cand := []
+			for wl in Ldict.get("windows", []):
+				var wy := float(wl[1])
+				if absf(wy - lp.y) > 5.8:
+					continue
+				var wp := Vector3(float(wl[0]), wy, float(wl[2]))
+				var d2w := wp.distance_squared_to(lp)
+				if d2w <= 25.0 * 25.0:
+					w_cand.append([d2w, m_orig + m_rot * wp, Color(0.88, 0.93, 1.0), 1.35 * sun_up, 15.0])
+			w_cand.sort_custom(func(a, b): return a[0] < b[0])
+			for wi in mini(4, w_cand.size()):
+				chosen.append(w_cand[wi])
+		var l_cand := []
+		for rl in Ldict.get("lamps", []):
+			var ly := float(rl[1])
+			if absf(ly - lp.y) > 5.8:
+				continue
+			var rp := Vector3(float(rl[0]), ly, float(rl[2]))
+			var d2l := rp.distance_squared_to(lp)
+			if d2l <= 28.0 * 28.0:
+				var amp := float(rl[3])
+				var lrng := maxf(7.5, float(rl[4]) * 1.2)
+				l_cand.append([d2l, m_orig + m_rot * rp, Color(1.0, 0.76, 0.44), amp * (0.72 + 1.15 * night_k), lrng])
+		l_cand.sort_custom(func(a, b): return a[0] < b[0])
+		var rem := _ls_lights.size() - chosen.size()
+		for ri in mini(rem, l_cand.size()):
+			chosen.append(l_cand[ri])
+	var m_items := mon.get_node_or_null("Items")
+	if m_items != null and _builds_vis:
+		var near_xz2 := 46.0 * 46.0 if _indoors else 195.0 * 195.0
+		var near_y := 8.5 if _indoors else 140.0
+		for ch in m_items.get_children():
+			if ch is MultiMeshInstance3D and (ch as Node).has_meta("furn_pts"):
+				var pts: PackedVector3Array = (ch as Node).get_meta("furn_pts")
+				var show_f := false
+				for fp in pts:
+					if absf(fp.y - lp.y) <= near_y:
+						var dx := fp.x - lp.x
+						var dz := fp.z - lp.z
+						if dx * dx + dz * dz <= near_xz2:
+							show_f = true
+							break
+				(ch as MultiMeshInstance3D).visible = show_f
+	var is_compat := RenderingServer.get_current_rendering_method() == "gl_compatibility"
+	var max_l := mini(4 if _in_vault else 3, _ls_lights.size()) if is_compat else _ls_lights.size()
+	for i in _ls_lights.size():
+		var ol := _ls_lights[i] as OmniLight3D
+		if i < mini(max_l, chosen.size()):
+			var c_entry: Array = chosen[i]
+			var rpos: Vector3 = c_entry[1]
+			_ls_light_regs[i] = rpos
+			ol.position = W.stream.local(rpos.x, rpos.y, rpos.z)
+			ol.light_color = c_entry[2]
+			ol.light_energy = float(c_entry[3]) * (1.35 if is_compat else 1.0)
+			ol.omni_range = float(c_entry[4])
+			ol.omni_attenuation = 0.72 if _in_vault else 1.25
+			ol.visible = true
+		else:
+			ol.visible = false
+			ol.light_energy = 0.0
+
+
 func _update_sun_and_ambience(dt: float, snap: bool) -> void:
 	var hr := fmod(minute, 1440.0) / 60.0
 	var day_idx := floorf(minute / 1440.0)
+	if W != null:
+		_indoors = _check_indoors()
 	if sky_node != null:
-		sky_node._t += dt
+		if rate > 0.0:
+			sky_node._t += dt
 		sky_node.hour = hr
 		sky_node.day = season_day + day_idx
 		var base_y := 0.0
@@ -728,14 +911,17 @@ func _update_sun_and_ambience(dt: float, snap: bool) -> void:
 		sky_node._update()
 		if W != null and sky_node.mat != null:
 			sky_node.mat.set_shader_parameter("uCamPos", Vector3(fmod(cr.x, 260000.0), cr.y, fmod(cr.z, 260000.0)))
-		sun.light_energy = clampf(sun.light_energy * 0.68, 0.0, 1.45)
+		sun.light_energy = 0.0 if _in_vault else clampf(sun.light_energy * (0.12 if _indoors else 0.68), 0.0, 1.45)
+		if sky_node.shine != null:
+			sky_node.shine.light_energy = 0.0 if _in_vault else sky_node.shine.light_energy * (0.15 if _indoors else 1.0)
 	var atm = get_node_or_null("/root/Atmos")
 	if atm != null and "hour" in atm:
 		atm.hour = hr
-	if W != null:
-		_indoors = _check_indoors()
-	var want_sky := 0.18 if _indoors else 0.95
+	env_res.ambient_light_color = Color(0.24, 0.22, 0.27) if _in_vault else Color(0.18, 0.16, 0.15)
+	env_res.ambient_light_energy = 1.0
+	var want_sky := 0.0 if _in_vault else (0.26 if _indoors else 0.95)
 	env_res.ambient_light_sky_contribution = want_sky if snap else lerpf(env_res.ambient_light_sky_contribution, want_sky, clampf(dt * 5.0, 0.0, 1.0))
+	_refresh_longsong_lights(snap, dt)
 
 
 func _unhandled_input(ev: InputEvent) -> void:

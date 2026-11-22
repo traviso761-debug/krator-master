@@ -857,6 +857,16 @@ static func _is_foliage_bucket(b: MeshInstance3D) -> bool:
 	return false
 
 
+static func _is_nonstructural_bucket(b: MeshInstance3D) -> bool:
+	if _is_foliage_bucket(b):
+		return true
+	if b.material_override is StandardMaterial3D and (b.material_override as StandardMaterial3D).transparency != BaseMaterial3D.TRANSPARENCY_DISABLED:
+		return true
+	var km: Dictionary = b.get_meta("krator", {}) if b.has_meta("krator") else {}
+	var bnm := str(km.get("name", "")).split("~")[0]
+	return bnm in ["rug", "books", "mural", "valance", "twig", "mosaic", "glyph", "glow", "cloth", "v-cloth", "v-mandala", "gilt", "v-gilt", "v-glyphband", "v-field", "still", "pane"]
+
+
 static func collide_case(w: Node3D) -> void:
 	var g = w.get_meta("ground") if w.has_meta("ground") else null
 	var g_mi: MeshInstance3D = g as MeshInstance3D if g is MeshInstance3D else (g.get_node_or_null("Terrain") as MeshInstance3D if g is Node3D else null)
@@ -873,7 +883,7 @@ static func collide_case(w: Node3D) -> void:
 	var bk := w.get_node_or_null("Buckets")
 	if bk:
 		for b in bk.get_children():
-			if b is MeshInstance3D and (b as MeshInstance3D).mesh != null and not _is_foliage_bucket(b as MeshInstance3D):
+			if b is MeshInstance3D and (b as MeshInstance3D).mesh != null and not _is_nonstructural_bucket(b as MeshInstance3D):
 				if (b as MeshInstance3D).get_node_or_null("Collision") != null:
 					continue
 				var shape: Shape3D = (b as MeshInstance3D).mesh.create_trimesh_shape()
@@ -913,12 +923,39 @@ func monastery(p: Dictionary, w: Node3D) -> Node3D:
 	var ry := float(M["ry"])
 	m.transform = Transform3D(Basis(Vector3.UP, ry), Vector3(float(at[0]) - float(o[0]), float(at[1]) - float(o[1]), float(at[2]) - float(o[2])))
 	m.set_meta("monastery", M)
+	var ipath := str(M.get("interiors", M["case"] + "/interiors.json"))
+	if FileAccess.file_exists(dir + "/" + ipath):
+		var imeta = KData.read_json(dir + "/" + ipath)
+		if imeta is Dictionary:
+			m.set_meta("interiors_meta", imeta)
+	var m_items := m.get_node_or_null("Items")
+	if m_items != null:
+		for ch in m_items.get_children():
+			if ch is MultiMeshInstance3D:
+				var km: Dictionary = (ch as Node).get_meta("krator", {}) if (ch as Node).has_meta("krator") else {}
+				if str(km.get("kit", "")) == "furniture":
+					var fmmi := ch as MultiMeshInstance3D
+					fmmi.visibility_range_end = 185.0
+					fmmi.visibility_range_end_margin = 20.0
+					fmmi.visibility_range_fade_mode = GeometryInstance3D.VISIBILITY_RANGE_FADE_DISABLED
+					fmmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+					var fmm := fmmi.multimesh
+					if fmm != null and fmm.instance_count > 0:
+						var fstride := 12 + (4 if fmm.use_colors else 0) + (4 if fmm.use_custom_data else 0)
+						var fbuf := fmm.buffer
+						var pts := PackedVector3Array()
+						pts.resize(fmm.instance_count)
+						for fi in fmm.instance_count:
+							var fo := fi * fstride
+							pts[fi] = Vector3(fbuf[fo + 3], fbuf[fo + 7], fbuf[fo + 11])
+						fmmi.set_meta("furn_pts", pts)
 
-	# Blend the outer 28 m skirt of Monastery's ground mesh smoothly into Place_sq80bzd7ep's 8 m terrain
+	# Blend the outer 28 m skirt of Monastery's ground mesh smoothly into Place_sq80bzd7ep's 8 m terrain, and open Deep Stair shaft
 	var pg := (w.get_meta("ground") if w.has_meta("ground") else null) as MeshInstance3D
 	var mg_node: Node3D = m.get_meta("ground") if m.has_meta("ground") else null
 	var mg_mi: MeshInstance3D = mg_node as MeshInstance3D if mg_node is MeshInstance3D else (mg_node.get_node_or_null("Terrain") as MeshInstance3D if mg_node != null else null)
 	var mbox: Array = M.get("box", [])
+	var dstair: Array = M.get("deep_stair", [40.0, 96.0, 48.0, 150.0])
 	if pg != null and mg_mi != null and mg_mi.mesh != null and mbox.size() == 4:
 		var mo: Array = m.get_meta("origin", [0.0, 0.0, 0.0])
 		var rot_b := Basis(Vector3.UP, ry)
@@ -943,6 +980,31 @@ func monastery(p: Dictionary, w: Node3D) -> Node3D:
 					lv.y = lerpf(target_ly, lv.y, t)
 					V[i] = lv
 					changed = true
+			if lx >= -91.5 and lx <= 91.5 and lz >= 11.4 and lz <= 20.0:
+				var min_terrace_y := 40.04 - float(mo[1])
+				if lv.y < min_terrace_y:
+					lv.y = min_terrace_y
+					V[i] = lv
+					changed = true
+		var I_arr: PackedInt32Array = arr[Mesh.ARRAY_INDEX]
+		if dstair.size() == 4 and not I_arr.is_empty():
+			var ds_x0 := float(dstair[0]) + 0.1
+			var ds_z0 := float(dstair[1]) + 0.1
+			var ds_x1 := float(dstair[2]) - 0.1
+			var ds_z1 := float(dstair[3]) - 0.1
+			var keep_i := PackedInt32Array()
+			var dropped_ds := 0
+			for ti in range(0, I_arr.size(), 3):
+				var va := V[I_arr[ti]]; var vb := V[I_arr[ti + 1]]; var vc := V[I_arr[ti + 2]]
+				var cx := (va.x + vb.x + vc.x) / 3.0 + float(mo[0])
+				var cz := (va.z + vb.z + vc.z) / 3.0 + float(mo[2])
+				if cx >= ds_x0 and cx <= ds_x1 and cz >= ds_z0 and cz <= ds_z1:
+					dropped_ds += 1
+					continue
+				keep_i.append(I_arr[ti]); keep_i.append(I_arr[ti + 1]); keep_i.append(I_arr[ti + 2])
+			if dropped_ds > 0:
+				arr[Mesh.ARRAY_INDEX] = keep_i
+				changed = true
 		if changed:
 			arr[Mesh.ARRAY_VERTEX] = V
 			arr[Mesh.ARRAY_TANGENT] = null
@@ -952,6 +1014,42 @@ func monastery(p: Dictionary, w: Node3D) -> Node3D:
 			nmesh.surface_set_material(0, smat)
 			mg_mi.mesh = nmesh
 	return m
+
+
+# Returns {id, vault: bool, floor_reg_y: float} when reg_pos stands inside a Longsong Monastery room or subterranean Vault chamber
+func monastery_room_at(reg_pos: Vector3, slack := 0.55) -> Dictionary:
+	for pid in places_open:
+		var pw: Node3D = places_open[pid]
+		var mon := pw.get_node_or_null("Monastery") as Node3D
+		if mon == null or not mon.has_meta("interiors_meta") or not mon.has_meta("monastery"):
+			continue
+		var M: Dictionary = mon.get_meta("monastery")
+		var imeta: Dictionary = mon.get_meta("interiors_meta")
+		var mat: Array = M.get("at", [0.0, 0.0, 0.0])
+		var m_orig := Vector3(float(mat[0]), float(mat[1]), float(mat[2]))
+		var lp := Basis(Vector3.UP, -float(M.get("ry", 0.0))) * (reg_pos - m_orig)
+		if absf(lp.x) > 400.0 or absf(lp.z) > 400.0:
+			continue
+		for r in imeta.get("rooms", []):
+			if not (r is Dictionary) or not (r.get("box") is Array):
+				continue
+			var b: Array = r["box"]
+			if lp.y < float(b[1]) - slack or lp.y > float(b[4]) + slack:
+				continue
+			if lp.x < float(b[0]) - slack or lp.x > float(b[3]) + slack or lp.z < float(b[2]) - slack or lp.z > float(b[5]) + slack:
+				continue
+			if r.get("circle") is Array:
+				var c: Array = r["circle"]
+				var rad := float(c[2]) + slack
+				if Vector2(lp.x - float(c[0]), lp.z - float(c[1])).length_squared() > rad * rad:
+					continue
+			return {
+				"id": str(r.get("id", "")),
+				"vault": bool(r.get("vault", false)),
+				"floor_reg_y": m_orig.y + float(b[1]),
+				"ceil_reg_y": m_orig.y + float(b[4])
+			}
+	return {}
 
 
 func _hole_place_under_monastery(w: Node3D, M: Dictionary) -> void:

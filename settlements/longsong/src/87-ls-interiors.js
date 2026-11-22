@@ -150,15 +150,16 @@ const LSIXD=(function(){const RM=LS.ROOMS,G={},ORDER=[],KEEP=6;
   for(const s of [-1,1])obox(B,'wood',p.x,p.y,p.z,p.ry,s*w/2-.03,s*w/2+.03,0,h,-d/2,d/2,CASE);
   obox(B,'wood',p.x,p.y,p.z,p.ry,-w/2,w/2,h-.08,h,-d/2,d/2,CASE);obox(B,'wood',p.x,p.y,p.z,p.ry,-w/2+.03,w/2-.03,0,.06,-d/2,d/2,CASE);
   obox(B,'books',p.x,p.y,p.z,p.ry,-w/2+.03,w/2-.03,.06,h-.08,-d/2,d/2-.05,PAINT,{'+z':[0,(w-.06)/tw,0,(h-.14)/tw]});}
+ let shellsOnly=false;
  function build(key){const [uid,ys]=key.split('@'),y=+ys,t0=performance.now(),open=key===OPEN;
   const rooms=RM.list.filter(r=>drawn(r)&&(open?r.outdoor:!r.outdoor&&UNIT_OF[r.building]===uid&&Math.abs(r.y-y)<.05));
   const grp=new THREE.Group();grp.name='interiors:'+key;grp.userData.interiors=true;
   const B={};if(!open)rooms.forEach(r=>{if(r.layout==='pillars'&&!r.columns)LSIX.record(r.id);roomShell(B,r);});
   let pieces=0;
-  if(LSIX.on){const bt=KratorFurniture.batch({indexed:true});
-   rooms.forEach(r=>{const R=LSIX.record(r.id);if(!R)return;R.pieces.forEach(p=>{pieces++;if(RUGS[p.key]||CASES[p.key]){ownPiece(B,p);return;}
-    bt.place(p.key,p.x,p.y,p.z,p.ry,{variant:p.v,seed:p.seed,wealth:r.wealth,building:r.building,room:r.id,setting:'indoor'});});});
-   const fg=bt.flush(grp);if(fg)fg.traverse(o=>{if(o.isMesh){o.userData.interiors=true;o.userData.inspectLabel=o.userData.inspectLabel||'The rooms\' furniture (kits/catalog)';}});}
+  if(LSIX.on){const bt=shellsOnly?null:KratorFurniture.batch({indexed:true});
+   rooms.forEach(r=>{const R=LSIX.record(r.id);if(!R)return;R.pieces.forEach(p=>{pieces++;if(RUGS[p.key]||CASES[p.key]){if(!open)ownPiece(B,p);return;}
+    if(bt)bt.place(p.key,p.x,p.y,p.z,p.ry,{variant:p.v,seed:p.seed,wealth:r.wealth,building:r.building,room:r.id,setting:'indoor'});});});
+   const fg=bt?bt.flush(grp):null;if(fg)fg.traverse(o=>{if(o.isMesh){o.userData.interiors=true;o.userData.inspectLabel=o.userData.inspectLabel||'The rooms\' furniture (kits/catalog)';}});}
   for(const f in B){const S=B[f],g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(S.p,3));
    g.setAttribute('normal',new THREE.Float32BufferAttribute(S.n,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(S.u,2));
    g.setAttribute('color',new THREE.Float32BufferAttribute(S.c,3));g.computeBoundingSphere();
@@ -167,6 +168,10 @@ const LSIXD=(function(){const RM=LS.ROOMS,G={},ORDER=[],KEEP=6;
   grp.visible=false;scene.add(grp);
   return G[key]={grp,rooms:rooms.length,pieces,tris:tris|0,ms:Math.round(performance.now()-t0)};}
  function drop(key){const E=G[key];if(!E)return;scene.remove(E.grp);E.grp.traverse(o=>{if(o.geometry)o.geometry.dispose();});delete G[key];}
+ function buildShellsForExport(){Object.keys(G).forEach(drop);ORDER.length=0;shellsOnly=true;
+  const all=[];UNITS.forEach(u=>u.levels.forEach(l=>all.push(u.id+'@'+l.y)));
+  want=new Set(all);all.forEach(k=>{build(k);G[k].grp.visible=true;ORDER.push(k);});
+  return {floors:all.length};}
  // ---------------------------------------------------------------- what is wanted: the cutaway's floor, the floor the eye stands on
  let want=new Set(),cutKeys=[];
  function show(keys){keys=keys.concat([OPEN]);want=new Set(keys);keys.forEach(k=>{if(!G[k])build(k);const i=ORDER.indexOf(k);if(i>=0)ORDER.splice(i,1);ORDER.push(k);});
@@ -178,15 +183,15 @@ const LSIXD=(function(){const RM=LS.ROOMS,G={},ORDER=[],KEEP=6;
   cutKeys=[...ys].map(y=>u.id+'@'+y);show(cutKeys.concat(eyeKeys()));}
  let eyeRoom=null;
  function eyeKeys(){return eyeRoom?[UNIT_OF[eyeRoom.building]+'@'+(Math.round(eyeRoom.y*100)/100)]:[];}
- TICKS.push(()=>{const c=camera.position,r=RM.at(c.x,c.y,c.z),rr=r&&drawn(r)&&!r.outdoor?r:null;
+ TICKS.push(()=>{if(shellsOnly)return;const c=camera.position,r=RM.at(c.x,c.y,c.z),rr=r&&drawn(r)&&!r.outdoor?r:null;
   if(rr!==eyeRoom){eyeRoom=rr;show(cutKeys.concat(eyeKeys()));}});
  window._interiors={get floors(){const o={};for(const k in G)o[k]={rooms:G[k].rooms,pieces:G[k].pieces,tris:G[k].tris,ms:G[k].ms,shown:G[k].grp.visible};return o;},
   units:UNITS.map(u=>({id:u.id,levels:u.levels.map(l=>l.y)})),windows:id=>windowsOf(RM.byId[id]||{}).length,bake:()=>({state:LSIX.bakeState,fromBake:LSIX.fromBake,computed:LSIX.computed,ms:Math.round(LSIX.ms)}),
-  show,cut,build:k=>{const E=G[k]||build(k);return{rooms:E.rooms,pieces:E.pieces,tris:E.tris,ms:E.ms};}};
+  show,cut,buildShellsForExport,build:k=>{const E=G[k]||build(k);return{rooms:E.rooms,pieces:E.pieces,tris:E.tris,ms:E.ms};}};
  show([]);
  // a person at (x, y, z) (y: the floor they stand on) is in a room whose floor is drawn now (the cutaway's or the eye's):
  // 68 shows the walkers and the people at indoor places there (taken at the waist: a floor's y is also the top of the
  // room under it)
  function drawnAt(x,y,z){const r=RM.at(x,y+.8,z);if(!r||!drawn(r)||r.outdoor)return false;const E=G[UNIT_OF[r.building]+'@'+(Math.round(r.y*100)/100)];return !!(E&&E.grp.visible);}
- return {UNITS,cut,show,G,windowsOf,PANE,drawnAt};})();
+ return {UNITS,UNIT_OF,drawn,cut,show,buildShellsForExport,G,windowsOf,PANE,drawnAt};})();
 _mark('interiors');

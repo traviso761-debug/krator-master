@@ -431,6 +431,24 @@ static func _standard(rec: Dictionary, tex: Dictionary, texrec: Dictionary, inst
 	var img: Texture2D = tex.get(map_id) if map_id != null else null
 	if rec.get("kind") == "shader":
 		_gap_once(report, "shader materials", "a ShaderMaterial a city's mesh uses (the vendored biome's own) is drawn plain from its colour")
+	if str(rec.get("blending", "")) == "additive":
+		var sadd := StandardMaterial3D.new()
+		sadd.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		sadd.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
+		sadd.depth_draw_mode = BaseMaterial3D.DEPTH_DRAW_DISABLED
+		sadd.cull_mode = BaseMaterial3D.CULL_DISABLED
+		sadd.albedo_color = Color(col.r, col.g, col.b, float(rec.get("opacity", 1.0)))
+		sadd.roughness = float(rec.get("roughness", 1.0))
+		sadd.metallic = float(rec.get("metal", 0.0))
+		if bool(rec.get("unlit", false)):
+			sadd.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		if img:
+			sadd.albedo_texture = img
+			if texrec.has(map_id):
+				var r_add: Array = texrec[map_id].get("repeat", [1, 1])
+				sadd.uv1_scale = Vector3(float(r_add[0]), float(r_add[1]), 1.0)
+		sadd.set_meta("krator", {"material": rec["id"], "hooks": hk["ids"], "shader": "StandardMaterial3D (add)"})
+		return sadd
 	var is_mul_decal := str(rec.get("blending", "")) == "multiply"
 	if not is_mul_decal and bool(rec.get("transparent", false)) and float(rec.get("opacity", 1.0)) >= 0.999 and float(rec.get("alphaTest", 0.0)) <= 0.0 and img != null:
 		var m_img := img.get_image()

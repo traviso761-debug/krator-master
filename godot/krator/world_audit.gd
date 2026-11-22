@@ -80,12 +80,16 @@ static func audit_materials(w: Node3D) -> Dictionary:
 					var kmeta: Dictionary = std.get_meta("krator", {}) if std.has_meta("krator") else {}
 					var mid := str(kmeta.get("material", ""))
 					var mrec_d: Dictionary = mat_recs.get(mid, {})
-					var expects_mul := str(kmeta.get("shader", "")) == "StandardMaterial3D (mul)" or str(mrec_d.get("blending", "")) == "multiply"
-					if not expects_mul and bool(mrec_d.get("transparent", false)) and float(mrec_d.get("opacity", 1.0)) >= 0.999 and float(mrec_d.get("alphaTest", 0.0)) <= 0.0 and std.albedo_texture != null:
+					var expects_add := str(kmeta.get("shader", "")) == "StandardMaterial3D (add)" or str(mrec_d.get("blending", "")) == "additive"
+					var expects_mul := not expects_add and (str(kmeta.get("shader", "")) == "StandardMaterial3D (mul)" or str(mrec_d.get("blending", "")) == "multiply")
+					if not expects_add and not expects_mul and bool(mrec_d.get("transparent", false)) and float(mrec_d.get("opacity", 1.0)) >= 0.999 and float(mrec_d.get("alphaTest", 0.0)) <= 0.0 and std.albedo_texture != null:
 						var timg := std.albedo_texture.get_image()
 						if timg != null and timg.detect_alpha() == Image.ALPHA_NONE:
 							expects_mul = true
-					if expects_mul:
+					if expects_add:
+						if std.blend_mode != BaseMaterial3D.BLEND_MODE_ADD:
+							issues.append("%s/%s: additive material %s uses blend_mode=%d instead of BLEND_MODE_ADD" % [root_node.name, gi.name, mid, int(std.blend_mode)])
+					elif expects_mul:
 						if std.blend_mode != BaseMaterial3D.BLEND_MODE_MUL:
 							issues.append("%s/%s: decal material %s uses blend_mode=%d instead of BLEND_MODE_MUL" % [root_node.name, gi.name, mid, int(std.blend_mode)])
 						else:
@@ -543,6 +547,10 @@ static func audit_pois(stream: KratorWorldStream, pois: Array) -> Dictionary:
 		checked += 1
 		if not is_finite(gh_e) or not is_finite(gh_t):
 			issues.append("POI '%s': unloaded void ground (eye_h=%s, target_h=%s)" % [lbl, str(gh_e), str(gh_t)])
+			continue
+		if bool(r.get("exact", false)) or str(r.get("kind", "")) in ["interior", "vault", "monastery_ext"]:
+			if eye.distance_to(target) < 0.35:
+				issues.append("POI '%s': degenerate zero-length view vector" % lbl)
 			continue
 		if as_walk:
 			if eye.y < gh_e + 1.2:

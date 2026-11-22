@@ -153,7 +153,17 @@ func set_walk_mode(on: bool, at_xz = null) -> void:
 		stream.refresh_flora_at(cam_region())
 
 
-func set_view_region(eye_reg: Vector3, target_reg: Vector3, as_walk := false) -> void:
+func _min_fly_reg_y(pt_reg: Vector3, clear_m := 1.2) -> float:
+	if stream == null:
+		return -INF
+	var rm := stream.monastery_room_at(pt_reg, 1.4)
+	if not rm.is_empty():
+		return float(rm["floor_reg_y"]) + 0.45
+	var gh := stream.height_at(pt_reg.x, pt_reg.z)
+	return (gh + clear_m) if is_finite(gh) else -INF
+
+
+func set_view_region(eye_reg: Vector3, target_reg: Vector3, as_walk := false, exact_eye := false) -> void:
 	driving = false
 	var focus := target_reg if as_walk else eye_reg
 	_ensure_stream_at(focus.x, focus.z)
@@ -166,11 +176,16 @@ func set_view_region(eye_reg: Vector3, target_reg: Vector3, as_walk := false) ->
 		walk_at(target_reg.x, target_reg.z, _yaw)
 	else:
 		walk_mode = false
-		var gh := stream.height_at(eye_reg.x, eye_reg.z)
-		var ey := maxf(eye_reg.y, gh + 2.0) if is_finite(gh) else eye_reg.y
+		var ey := eye_reg.y
+		if not exact_eye:
+			var min_y := _min_fly_reg_y(eye_reg, 2.0)
+			if is_finite(min_y):
+				ey = maxf(ey, min_y)
 		cam.position = stream.local(eye_reg.x, ey, eye_reg.z)
+		var in_rm := not stream.monastery_room_at(eye_reg, 1.4).is_empty()
 		var sy := stream.height_at(target_reg.x, target_reg.z)
-		walker.position = stream.local(target_reg.x, (sy if is_finite(sy) else target_reg.y) + HEIGHT, target_reg.z)
+		var wy := (target_reg.y if (exact_eye or in_rm or not is_finite(sy)) else sy) + HEIGHT
+		walker.position = stream.local(target_reg.x, wy, target_reg.z)
 		walker.velocity = Vector3.ZERO
 		_apply_fly_basis()
 		stream.refresh_flora_at(cam_region())
@@ -227,6 +242,9 @@ func feet_y() -> float:
 
 func fly_speed_mps() -> float:
 	var cr := cam_region()
+	var rm := stream.monastery_room_at(cr, 1.4)
+	if not rm.is_empty():
+		return 6.5 * speed_mul
 	var gh := stream.height_at(cr.x, cr.z)
 	var agl := maxf(cr.y - gh, 6.0) if is_finite(gh) else maxf(absf(cr.y), 25.0)
 	return clampf(agl * 0.9, 14.0, 18000.0) * speed_mul
@@ -244,6 +262,9 @@ func _update_cam_near() -> void:
 		cam.near = 0.2
 		return
 	var cr := cam_region()
+	if stream != null and not stream.monastery_room_at(cr, 1.4).is_empty():
+		cam.near = 0.16
+		return
 	var gh := stream.height_at(cr.x, cr.z) if stream != null else NAN
 	var agl := maxf(cr.y - gh, 0.0) if is_finite(gh) else absf(cr.y)
 	cam.near = clampf(0.2 + maxf(agl - 30.0, 0.0) * 0.0025, 0.2, 2.0)
@@ -257,7 +278,12 @@ func _apply_fly_basis() -> void:
 func _rescue_under_terrain() -> void:
 	if not stream.collide:
 		return
-	var rxz := region_xz()
+	var w_arr: Array = stream.region(walker.position)
+	var w_reg := Vector3(float(w_arr[0]), float(w_arr[1]), float(w_arr[2]))
+	var rm := stream.monastery_room_at(w_reg, 1.6)
+	if bool(rm.get("vault", false)):
+		return
+	var rxz := Vector2(w_reg.x, w_reg.z)
 	var gh := stream.height_at(rxz.x, rxz.y)
 	if is_inside_tree() and get_world_3d() != null:
 		var sp := get_world_3d().direct_space_state
@@ -344,9 +370,9 @@ func _physics_process(dt: float) -> void:
 				var mul := 4.0 if Input.is_key_pressed(KEY_SHIFT) else (0.25 if Input.is_key_pressed(KEY_CTRL) or Input.is_key_pressed(KEY_ALT) else 1.0)
 				cam.position += mv.normalized() * (fly_speed_mps() * mul * dt)
 			var cr := cam_region()
-			var gh := stream.height_at(cr.x, cr.z)
-			if is_finite(gh):
-				var min_local_y := stream.local(cr.x, gh + 1.2, cr.z).y
+			var min_ry := _min_fly_reg_y(cr, 1.2)
+			if is_finite(min_ry):
+				var min_local_y := stream.local(cr.x, min_ry, cr.z).y
 				if cam.position.y < min_local_y:
 					cam.position.y = min_local_y
 			walker.position = Vector3(cam.position.x, cam.position.y, cam.position.z)
@@ -407,14 +433,15 @@ func pan_drag(dx: float, dy: float) -> void:
 	if walk_mode:
 		return
 	var cr := cam_region()
+	var in_rm := not stream.monastery_room_at(cr, 1.4).is_empty()
 	var gh := stream.height_at(cr.x, cr.z)
-	var scale_m := maxf((cr.y - gh) if is_finite(gh) else 60.0, 8.0) * 0.0022
+	var scale_m := 0.014 if in_rm else maxf((cr.y - gh) if is_finite(gh) else 60.0, 8.0) * 0.0022
 	var b := cam.basis
 	cam.position += (-b.x * dx + b.y * dy) * scale_m
 	var cr2 := cam_region()
-	var gh2 := stream.height_at(cr2.x, cr2.z)
-	if is_finite(gh2):
-		cam.position.y = maxf(cam.position.y, stream.local(cr2.x, gh2 + 1.2, cr2.z).y)
+	var min_ry2 := _min_fly_reg_y(cr2, 1.2)
+	if is_finite(min_ry2):
+		cam.position.y = maxf(cam.position.y, stream.local(cr2.x, min_ry2, cr2.z).y)
 
 
 func dolly_wheel(hit_local: Variant, zoom_in: bool, fast := false) -> void:
@@ -438,12 +465,12 @@ func dolly_wheel(hit_local: Variant, zoom_in: bool, fast := false) -> void:
 		else:
 			cam.position -= delta * k
 	else:
-		var step_f := maxf(fly_speed_mps() * (0.45 if fast else 0.22), 4.0)
+		var step_f := maxf(fly_speed_mps() * (0.45 if fast else 0.22), 2.5)
 		cam.position += look_dir() * (step_f if zoom_in else -step_f)
 	var cr := cam_region()
-	var gh := stream.height_at(cr.x, cr.z)
-	if is_finite(gh):
-		cam.position.y = maxf(cam.position.y, stream.local(cr.x, gh + 1.2, cr.z).y)
+	var min_ry := _min_fly_reg_y(cr, 1.2)
+	if is_finite(min_ry):
+		cam.position.y = maxf(cam.position.y, stream.local(cr.x, min_ry, cr.z).y)
 
 
 # the camera in Walk mode: 1st-person eye height or 3rd-person orbit behind the walker with spring-arm terrain clearance
@@ -469,9 +496,10 @@ func _follow(snap: bool) -> void:
 			var safe_d := maxf(pivot.distance_to(hp) - 0.35, 0.8)
 			want = pivot + arm.normalized() * safe_d
 	var cr: Array = stream.region(want)
-	var gh := stream.height_at(float(cr[0]), float(cr[2]))
-	if is_finite(gh):
-		want.y = maxf(want.y, stream.local(float(cr[0]), gh + 0.65, float(cr[2])).y)
+	var want_reg := Vector3(float(cr[0]), float(cr[1]), float(cr[2]))
+	var min_ry := _min_fly_reg_y(want_reg, 0.65)
+	if is_finite(min_ry):
+		want.y = maxf(want.y, stream.local(want_reg.x, min_ry, want_reg.z).y)
 	cam.position = want if snap else cam.position.lerp(want, 0.24)
 	if cam.position.distance_squared_to(pivot) > 1e-4:
 		cam.look_at(pivot, Vector3.UP)

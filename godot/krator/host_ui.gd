@@ -712,6 +712,24 @@ static func build_pois(stream: KratorWorldStream, pin_reg = null) -> Array:
 					"grounded": true,
 					"walk": true
 				})
+				for mv in M.get("views", []):
+					if not (mv is Dictionary):
+						continue
+					var ev: Array = mv.get("eye", [])
+					var tv: Array = mv.get("target", [])
+					if ev.size() < 3 or tv.size() < 3:
+						continue
+					var vkind := str(mv.get("kind", "interior"))
+					var vtag := "Vault" if vkind == "vault" else ("Monastery" if vkind == "monastery_ext" else "Interior")
+					list.append({
+						"label": "[%s] %s" % [vtag, str(mv.get("label", vtag))],
+						"kind": vkind,
+						"eye": m_orig + m_rot * Vector3(float(ev[0]), float(ev[1]), float(ev[2])),
+						"target": m_orig + m_rot * Vector3(float(tv[0]), float(tv[1]), float(tv[2])),
+						"grounded": true,
+						"exact": true,
+						"walk": false
+					})
 			elif not hpois.is_empty() and not on_pin:
 				var h0: Dictionary = hpois[0]
 				var hx := float(h0.get("x", px))
@@ -859,6 +877,11 @@ static func resolve_poi(stream: KratorWorldStream, poi: Dictionary, load_r := 20
 	if stream.covering(target.x, target.z) == "":
 		stream.update(Vector2(target.x, target.z), load_r, keep_r)
 	stream.threaded = was
+
+	if bool(out.get("exact", false)) or str(out.get("kind", "")) in ["interior", "vault"]:
+		out["eye"] = eye
+		out["target"] = target
+		return out
 
 	var gh_t := stream.height_at(target.x, target.z)
 	if not bool(out.get("grounded", true)) and is_finite(gh_t):

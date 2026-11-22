@@ -547,6 +547,60 @@ def arcology(pl):
                              'a reader seats that anchor at `at` and turns the case by `ry` about +Y (the page faces +z, the site west)'}
 
 
+async def _export_monastery_async(M, out_root):
+    import harness as H
+    from playwright.async_api import async_playwright
+    d = os.path.join(out_root, M['case'])
+    shutil.rmtree(d, ignore_errors=True)
+    os.makedirs(d, exist_ok=True)
+    page_abs = os.path.join(ROOT, M['page'])
+    t0 = time.time()
+    async with async_playwright() as p:
+        b = await H.launch_chromium(p)
+        with H.serve(ROOT) as port:
+            pg, errs, ready = await H.open_page(b, page_abs, port, size='960x600', root=ROOT, query='?floraR=350&q=0.65', init=[H.STAGE_HOOK])
+            if not ready:
+                sys.exit('godot_case: Longsong page never ready during monastery export')
+            await pg.wait_for_function('!window._texPending', timeout=180000)
+            injected = await H.inject_export(pg)
+            prep = await pg.evaluate('() => { window.requestAnimationFrame = () => 0; const p = window.LONGSONG_EXPORT.prepareFullInteriors(); return { prep: p, meta: window.LONGSONG_EXPORT.metadata() }; }')
+            opt = {'box': list(M['box']), 'sections': ['items', 'buckets', 'materials', 'textures', 'registry', 'terrain', 'water']}
+            res = await H.evaluate_big(pg, H.EXPORT_JS, [opt, True])
+            await pg.close()
+        await b.close()
+    w = res['world']
+    chk = res['check']
+    if errs or w.get('errors') or not chk['ok']:
+        sys.exit('godot_case: monastery export failed: errs=%r world_errors=%r problems=%r'
+                 % (errs[:3], w.get('errors'), chk['problems'][:5]))
+    files = {}
+    with open(os.path.join(d, 'world.json'), 'w', encoding='utf-8', newline='\n') as f:
+        json.dump(w, f, separators=(',', ':'))
+    files['world.json'] = os.path.getsize(os.path.join(d, 'world.json'))
+    with open(os.path.join(d, 'world.glb'), 'wb') as f:
+        f.write(base64.b64decode(res['glb']))
+    files['world.glb'] = os.path.getsize(os.path.join(d, 'world.glb'))
+    imeta = prep['meta']
+    with open(os.path.join(d, 'interiors.json'), 'w', encoding='utf-8', newline='\n') as f:
+        json.dump(imeta, f, separators=(',', ':'), ensure_ascii=False)
+    files['interiors.json'] = os.path.getsize(os.path.join(d, 'interiors.json'))
+    tex_sz = _copy_library_packs(H, w, page_abs, d)
+    if tex_sz:
+        files['tex/'] = tex_sz
+    meta = {'case': os.path.basename(M['case']), 'page': M['page'], 'kind': 'world',
+            'route': 'godot_case.py monastery with full interiors (core/export)',
+            'box': list(M['box']), 'sections': w['sections'], 'files': files, 'injected': injected,
+            'stats': w['stats'], 'glb': res.get('glbStats'), 'check': chk['joins'],
+            'interiors_floors': prep['prep'].get('floors', 0),
+            'views': len(imeta.get('views', [])),
+            'page_errors': [], 'exported': time.strftime('%Y-%m-%d')}
+    with open(os.path.join(d, 'meta.json'), 'w', encoding='utf-8', newline='\n') as f:
+        json.dump(meta, f, separators=(',', ':'))
+    print('  %s: %.1f s | floors=%d views=%d | %s | %.1f MB glb' % (
+        M['case'], time.time() - t0, prep['prep'].get('floors', 0), len(imeta.get('views', [])),
+        json.dumps(w['stats']), files['world.glb'] / 1e6), flush=True)
+
+
 def monastery(pl):
     """Longsong's place gains `monastery`: settlements/longsong seated on its granite knoll at sq80bzd7ep's pin"""
     M = MONASTERY
@@ -558,9 +612,19 @@ def monastery(pl):
         return
     x, z = p['pin']
     gh = grid_h(p['case'], x, z)
-    p['monastery'] = {'case': M['case'], 'page': M['page'],
-                      'at': [round(x, 3), round(gh, 3), round(z, 3)],
-                      'ry': round(M['ry'], 8), 'box': list(M['box'])}
+    entry = {'case': M['case'], 'page': M['page'],
+             'at': [round(x, 3), round(gh, 3), round(z, 3)],
+             'ry': round(M['ry'], 8), 'box': list(M['box'])}
+    ip = os.path.join(OUT, M['case'], 'interiors.json')
+    if os.path.isfile(ip):
+        with open(ip, encoding='utf-8') as f:
+            imeta = json.load(f)
+        entry['interiors'] = M['case'] + '/interiors.json'
+        if imeta.get('views'):
+            entry['views'] = imeta['views']
+        if imeta.get('deep_stair'):
+            entry['deep_stair'] = imeta['deep_stair']
+    p['monastery'] = entry
 
 
 def places(P):
@@ -672,17 +736,8 @@ def main():
         mpage = os.path.join(ROOT, M['page'])
         if not os.path.isfile(mpage):
             sys.exit('godot_case: missing Longsong page at %s' % mpage)
-        print('monastery: %s -> %s' % (M['page'], M['case']), flush=True)
-        d = os.path.join(OUT, M['case'])
-        shutil.rmtree(d, ignore_errors=True)
-        mcmd = [sys.executable, os.path.join(ROOT, 'tools', 'harness.py'), 'export', M['page'], '--out', d,
-                '--query', '?floraR=360&q=0.75',
-                '--box=' + ','.join('%g' % v for v in M['box']),
-                '--sections', 'items,buckets,materials,textures,registry,terrain,water',
-                '--before', '(()=>{window.requestAnimationFrame=()=>0;return true;})()']
-        mr = subprocess.run(mcmd, cwd=ROOT)
-        if mr.returncode:
-            sys.exit('godot_case: monastery export failed (exit %d)' % mr.returncode)
+        print('monastery: %s -> %s (with full indoor storeys, instanced furniture & views)' % (M['page'], M['case']), flush=True)
+        asyncio.run(_export_monastery_async(M, OUT))
     if only in (None, 'arcology'):
         A = ARCOLOGY
         page = os.path.join(A['root'], A['page'])
