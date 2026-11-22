@@ -1,12 +1,12 @@
 # Frontier Bandit Factions, Pirate Captain Coves & Continental Bounty-Hunting Scope (`2026-11-22`)
 
 > [!NOTE]
-> **Status: `[APPROVED — RULINGS #90–93]` — Companion Scope to [CONTINENTAL-SCOPE.md](file:///home/antigravity/traviso761-debug/krator-master/core/region/CONTINENTAL-SCOPE.md) and [MERCENARIES-SCOPE.md](file:///home/antigravity/traviso761-debug/krator-master/core/region/MERCENARIES-SCOPE.md).**
-> Built directly on `core/camp/50-camp-outlaw.js` (`KCAMP.outlawCamp` hidden ravines + ray-marched `KCAMP.lookout` sentries), `core/simulation/77-sim-6-crime.js` (`SIM.crime`), `core/region/47c-region-crime.js`, `47u-region-unrest.js`, `47r-region-refugees.js`, `47f-region-found.js` (`SIM.found`), and `core/coast` (`KCOAST`), anchored in [LORE.md](file:///home/antigravity/traviso761-debug/krator-master/LORE.md) (`Boatmurder` l.880, `Noah's Regret` / *Bloody Ruephus*, `Boiling Bay`, *Pirate Emperors* / *Hooked Sun* l.323, `Wildcat` in `WEST-RIFT-SCOPE.md`, and `Mid Basin` outlaws).
+> **Status: `[APPROVED — RULINGS #90–94]` — Companion Scope to [CONTINENTAL-SCOPE.md](file:///home/antigravity/traviso761-debug/krator-master/core/region/CONTINENTAL-SCOPE.md) and [MERCENARIES-SCOPE.md](file:///home/antigravity/traviso761-debug/krator-master/core/region/MERCENARIES-SCOPE.md).**
+> Built directly on `core/camp/50-camp-outlaw.js` (`KCAMP.outlawCamp` hidden ravines + ray-marched `KCAMP.lookout` sentries), `core/simulation/77-sim-6-crime.js` (`SIM.crime`), `core/region/47c-region-crime.js`, `47u-region-unrest.js`, `47r-region-refugees.js`, `47f-region-found.js` (`SIM.found`), `49-region-govern.js`, and `core/coast` (`KCOAST`), anchored in [LORE.md](file:///home/antigravity/traviso761-debug/krator-master/LORE.md) (`Boatmurder` l.880, `Hook` occupation l.325, `Noah's Regret` / *Bloody Ruephus*, `Boiling Bay`, *Pirate Emperors* / *Hooked Sun* l.323, `Wildcat` in `WEST-RIFT-SCOPE.md`, and `Mid Basin` outlaws).
 
 ---
 
-## 1. Procedural Rise, Budding & Collapse Engine (`[G data]`, `KRAND` Deterministic)
+## 1. Procedural Rise, Budding, `Orderliness` & Post-Conquest Surge Engine (`[G data]`, `KRAND` Deterministic)
 
 To make frontier banditry and piracy **come and go procedurally** without turning gangs into faceless generic spawns, the simulation separates **Persistent Cultural Personality Templates** from **Dynamic On-Map Lifecycles**:
 
@@ -14,21 +14,31 @@ To make frontier banditry and piracy **come and go procedurally** without turnin
    - Every active Bandit Faction (`BF-01..10`) holds **1 Fortified Main HQ Camp** (`60–150` outlaws: Named Boss, `ol_cache` loot vault, prisoner cages, black-market fence, field forge) plus **`1–4` Hidden Satellite Sub-Camps** (`12–30` raiders each, pitched via `KCAMP.outlawCamp` out of line-of-sight of a `SIM.trade` highway/pass with `2–3` ray-marched `KCAMP.lookout` sentries!).
    - Every active Pirate Captain (`PF-01..08`) commands a **`1–3` Hull Flotilla** (`kits/ringsea` `lanong`, `xebec`, `dhoni`, or rogue `penteconter`) anchored at **1 Hidden Captain's Cove** (`25–60` crew, careening beach, sailcloth shanties from `62-nr-pirates.js`, mast-lookout) plus `1–2` strait skiff-ambush posts — distinct from the two permanent pirate capitals (**`Noah's Regret` `896, 866`** and **`Boiling Bay` `866, 723`**).
 2. **Deterministic 5-Stage Procedural Lifecycle (`SIM.outlaws`):**
-   - **1. Emergence (`dormant -> foothold`):** Triggered deterministically (`KRAND.hash(seed, week, zoneId)`) when regional `lawlessness` crosses threshold — fed by real `47u-region-unrest.js` tax/famine flight, displaced `47r-region-refugees.js` tent households, runaway `Shell` debt-peons, or unpaid **`MERCENARIES-SCOPE.md` `freebooter` mutinies**!
-   - **2. Budding (`foothold -> established` + `sub_camp`s):** Whenever an HQ's stolen `ol_cache` surplus exceeds `cap`, it buds a new **Sub-Camp** (or **Skiff-Cove**) on the highest-value unpatrolled trade leg within `180 km` (`max 4` sub-camps per HQ).
-   - **3. Pruning (`sub_camp` cleared):** Wiping out a Sub-Camp makes that road/strait safe for **`30–60` sim days**; if the **Main HQ** still stands, the Boss eventually dispatches a new lieutenant to pitch at a *different* hidden ravine/cove (`visit++`).
+   - **1. Emergence (`dormant -> foothold`):** Triggered deterministically (`KRAND.hash(seed, week, zoneId)`) when regional `orderliness` drops below threshold (`< 0.55`) — fed by real `47u-region-unrest.js` tax/famine flight, displaced `47r-region-refugees.js` tent households, runaway `Shell` debt-peons, or unpaid **`MERCENARIES-SCOPE.md` `freebooter` mutinies**!
+   - **2. Budding (`foothold -> established` + `sub_camp`s):** Whenever an HQ's stolen `ol_cache` surplus exceeds `cap`, it buds a new **Sub-Camp** (or **Skiff-Cove**) on the highest-value unpatrolled trade leg within `180 km` (capped by `1 - orderliness`, up to `max 4` sub-camps per HQ).
+   - **3. Pruning (`sub_camp` cleared):** Wiping out a Sub-Camp makes that road/strait safe for **`30–60` sim days**; if the **Main HQ** still stands and `orderliness` remains low, the Boss eventually dispatches a new lieutenant to pitch at a *different* hidden ravine/cove (`visit++`).
    - **4. Decapitation (`hq_shattered` via Boss Bounty / Patrol Sweep):** Killing or capturing the **Named Boss** at the Main HQ (or sinking/capturing a Pirate Captain's flagship + burning their Cove) **shatters the faction**: surviving sub-camps scatter, turn refugee, or splinter into lone `10`-man stragglers.
-   - **5. Succession & Migration (`90–180` Days Later):** After a cooldown, if frontier `lawlessness` remains high, either a **vengeful Lieutenant Successor** (inheriting a scar/grudge against whoever felled the old Boss!) or a **new procedural Splinter Gang / Rival Captain** claims a fresh HQ site in the region.
+   - **5. Succession & Migration (`90–180` Days Later):** After a cooldown, if regional `orderliness` has not been raised above `0.60`, either a **vengeful Lieutenant Successor** (inheriting a scar/grudge against whoever felled the old Boss!) or a **new procedural Splinter Gang / Rival Captain** claims a fresh HQ site in the region.
+3. **Regional `orderliness` (`0.00..1.00`) & Post-Conquest Bandit Surge (`Ruling #94` — `[LOCKED]`):**
+   - **Continuous Waxing & Waning:** Every province/frontier tracks `region.orderliness` (`0.00` total breakdown .. `1.00` pacified heartland, e.g. `Eternal State` interior `~0.92`, `Iziz`/`Roketstad` core `~0.82`, `Dilihan`/`Shell` marches `~0.55`, unpoliced `Bowl`/`Korona`/`Dam Basins`/`Mid Basin` `~0.25–0.35`), driven weekly by garrison patrol `standing`, `1 - unrest` (`47u-region-unrest.js`), food stability, and road distance from a walled seat:
+     - **`orderliness >= 0.80`:** `0` bandit HQs; stray sub-camps swept weekly (`dormant`).
+     - **`0.50 <= orderliness < 0.80`:** At most `1` remote pass foothold/sub-camp; slow `180`-day succession cooldown.
+     - **`0.25 <= orderliness < 0.50`:** Full HQ + `2–3` active sub-camps; `90`-day succession cooldown.
+     - **`orderliness < 0.25` *(Breakdown / Conquest Surge)*:** Max `4` sub-camps per HQ **plus temporary Deserter / Looter Splinter Bands & Privateer Coves** erupting along every unescorted road and shore!
+   - **City Fall / Foreign Conquest Shock (`onCityConquered` — Live Game-Start Case: `Hook` `809, 923`, `LORE.md:325`):**
+     - When a city falls to another power (`ownerPolity` changes), regional **`orderliness` plunges immediately by `-0.45` to `-0.60`** (floored at `0.10`): shattered garrison stragglers and unpaid auxiliaries scatter into the surrounding hills/coves as well-armed **Deserter Bands** (such as ex-Vothic holdouts & *Hooked-Sun* privateers around newly occupied `Hook`), watchhouse informant networks go blind, and war-displaced households flood `47r-region-refugees.js` camps.
+     - **Gradual Foreign Pacification (`+0.02..+0.04`/week):** The conquering power **cannot restore `orderliness` by fiat** — banditry stays surged for months until the occupier physically **(a)** stations & feeds an occupation garrison (or hires `MC-01`/`MC-02` Chartered Mercenary `anti_raid_sweep` companies), **(b)** repairs breached walls/watchhouses (`47b-region-build.js`), **(c)** funds **Tier 2–3 Pacification Bounties** on post-conquest deserter/bandit bosses (`SIM.bounty`), and **(d)** brings curfew `unrest` & food shortages down (if the occupier starves or over-taxes the conquered city, `orderliness` stalls `< 0.35`, locking the province in chronic guerrilla/bandit insurgency!).
 
 ```mermaid
 stateDiagram-v2
-  [*] --> Dormant: Frontier Lawlessness Low
-  Dormant --> FootholdHQ: Unrest / Refugee / Freebooter Mercenary Trigger (KRAND)
-  FootholdHQ --> ActiveNetwork: Loot Surplus -> Buds 1..4 Hidden Sub-Camps (KCAMP.outlawCamp)
-  ActiveNetwork --> ActiveNetwork: Sub-Camp Cleared -> Road Safe 30-60d -> Re-Pitched Elsewhere
+  [*] --> Dormant: Orderliness >= 0.80 (Pacified Heartland)
+  Dormant --> FootholdHQ: Orderliness < 0.55 (Unrest / Refugee / Freebooter Trigger)
+  FootholdHQ --> ActiveNetwork: Orderliness < 0.50 -> Buds 1..4 Sub-Camps (Scaled by 1 - Orderliness)
+  ActiveNetwork --> ConquestSurge: City Falls to Foreign Power (Orderliness Drops -0.50! Deserter Bands Spawn)
+  ConquestSurge --> ActiveNetwork: Foreign Garrison + Bounties + Repairs Slowly Rebuild Orderliness (+0.03/wk)
   ActiveNetwork --> Shattered: Named Boss Captured/Killed at Main HQ (Tier 3 Bounty Paid!)
-  Shattered --> Dormant: Patrols Hold Frontier
-  Shattered --> FootholdHQ: 90-180d Unpatrolled -> Rival Faction or Grudge-Successor Rises!
+  Shattered --> Dormant: Orderliness Raised >= 0.60 by Patrols
+  Shattered --> FootholdHQ: 90-180d & Orderliness Still Low -> Rival Faction or Successor Rises!
 ```
 
 ---
