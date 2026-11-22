@@ -20,7 +20,7 @@ const load = () => {
 const PX = JSON.parse(rd('openworld/xanadu-oidong-highrift/plan/sites.json'));
 function run(days, o, edit) {
   const H = load(), V = LZ_JOIN.valley(PX, o || {}); if (edit) edit(V); const S = H.simValley(V), a = SIM.ledgerSnap(); H.valleyRun(days * 1440, 60); const b = SIM.ledgerSnap();
-  return { H, V, S, B: H.valleyBooks().towns, R: S.raids, ledger: SIM.ledger(a, b, { tol: 1 }) };
+  return { H, V, S, B: H.valleyBooks().towns, R: S.raiding, ledger: SIM.ledger(a, b, { tol: 1 }) };
 }
 const t = n => (n / 1000).toFixed(1) + ' t';
 const fed = (Bk, ids) => { const bad = []; ids.forEach(s => { const x = Bk[s]; if (!x || !x.people) return; ['grain', 'meat_hide', 'fish', 'produce', 'salt'].forEach(g => { const e = x.eaten[g] || 0, h = x.hungry[g] || 0; if (h > (e + h) * .01) bad.push(s + ' ' + g); }); }); return { ok: !bad.length, bad }; };

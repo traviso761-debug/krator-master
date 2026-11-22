@@ -21,10 +21,10 @@
    (`km / kmDay` days), resolves the assault (KCAMP.raidOutcome on its strength and the target's defence, a hash of the raid's
    id: no draws), takes within the caps (KCAMP.raidTake, KCAMP.raidDead), marches home and lands the plunder and the dead in its
    store. A target's standing falls with its losses and recovers each day (KCAMP.raidRecover); a fort's `state` goes damaged on a
-   success and ruined on a sack, and is repaired after a season. RECORDS by id: S.raids.expeditions [{id, faction, from, target, warriors, km, leave, arrive, back, band, before, take, dead, lost,
-   bands {party: {morale, next}}}], S.raids.raids [{id, party, from, target, turn,
-   leave, arrive, back, warriors, band, ratio, before {stock, people, floor}, take, dead, lost, landed}], S.raids.events [{minute, kind, raid, target, faction,
-   ...}], S.raids.targets {id: {standing, people, base, state, last, hits, aid}}; H.raidReport(). */
+   success and ruined on a sack, and is repaired after a season. RECORDS by id (in S.raiding: S.raids is a road's cargo raids, 50's W5): S.raiding.expeditions [{id, faction, from, target, warriors, km, leave, arrive, back, band, before, take, dead, lost,
+   bands {party: {morale, next}}}], S.raiding.raids [{id, party, from, target, turn,
+   leave, arrive, back, warriors, band, ratio, before {stock, people, floor}, take, dead, lost, landed}], S.raiding.events [{minute, kind, raid, target, faction,
+   ...}], S.raiding.targets {id: {standing, people, base, state, last, hits, aid}}; H.raidReport(). */
 KREGION.part('52-region-raid', function (H) {
 var base = H.simValley;
 H.simValley = function (V) {
@@ -35,7 +35,7 @@ H.simValley = function (V) {
 var hash = function (s) { var h = 2166136261, i; for (i = 0; i < s.length; i++) h = Math.imul(h ^ s.charCodeAt(i), 16777619) >>> 0; return h; };
 H.raidInit = function (V, S) {
   var RV = V.raids, D = function (x, d) { return x == null ? d : x; }, m0 = S.clock.m;
-  var RS = S.raids = { raids: [], events: [], targets: {}, parties: {}, turns: 0 };
+  var RS = S.raiding = { raids: [], events: [], targets: {}, parties: {}, turns: 0 };
   var spec = {}; V.settlements.forEach(function (Sd) { spec[Sd.id] = Sd; });
   var want = RV.want || ['tools', 'arms', 'goldwork', 'grain'];
   var stockOf = function (t) { var n = {}; if (spec[t.id]) SIM.withEcon(t.id, function () { want.forEach(function (g) { var k = SIM.stockOf(g); if (k > 0) n[g] = k; }); });
@@ -155,7 +155,7 @@ H.raidInit = function (V, S) {
   });
 };
 H.raidReport = function () {
-  var RS = H.SIM && H.SIM.raids; if (!RS) return null;
+  var RS = H.SIM && H.SIM.raiding; if (!RS) return null;
   var by = {}; RS.raids.forEach(function (r) { if (r.band) by[r.band] = (by[r.band] || 0) + 1; });
   return { raids: RS.raids.length, bands: by, events: RS.events.length, targets: Object.keys(RS.targets).map(function (id) { var t = RS.targets[id]; return { id: id, standing: +t.standing.toFixed(3), minStanding: +(t.minStanding == null ? 1 : t.minStanding).toFixed(3), people: Math.round(t.people), state: t.state, hits: t.hits.length }; }) };
 };

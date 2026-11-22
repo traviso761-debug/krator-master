@@ -18,7 +18,7 @@ const load = () => {
 };
 function run(days, o) {
   const H = load(), V = LZ_TUNE.valley(o), S = H.simValley(V), a = SIM.ledgerSnap(); H.valleyRun(days * 1440, 60); const b = SIM.ledgerSnap();
-  return { H, V, S, B: H.valleyBooks().towns, R: S.raids, rep: H.raidReport ? H.raidReport() : null, ledger: SIM.ledger(a, b, { tol: 1 }) };
+  return { H, V, S, B: H.valleyBooks().towns, R: S.raiding, rep: H.raidReport ? H.raidReport() : null, ledger: SIM.ledger(a, b, { tol: 1 }) };
 }
 const t = n => (n / 1000).toFixed(1) + ' t';
 const fedCheck = Bk => { const bad = []; Object.keys(Bk).forEach(s => { const x = Bk[s]; if (!x.people) return; Object.keys(x.eaten).concat(Object.keys(x.hungry)).forEach(g => { const e = x.eaten[g] || 0, h = x.hungry[g] || 0; if (h > (e + h) * .01 && bad.indexOf(s + ' ' + g) < 0) bad.push(s + ' ' + g); }); }); return { ok: !bad.length, bad }; };
@@ -62,7 +62,7 @@ T.neg('Z4: with the caps off a target falls under 0.7', balanced, N.rep, Y.rep);
 // 6. the country still eats: the raids and the Allotment together leave every place fed; without `raids` nothing raids (inert)
 {
   const f = fedCheck(Y.B), Z = run(91.25 * 2, { allot: true });
-  T.ok('Z4: every place fed for two years with the raids out; a valley without `raids` declares none', f.ok && !Z.S.raids, f.bad.slice(0, 4).join('; ') || 'none short');
+  T.ok('Z4: every place fed for two years with the raids out; a valley without `raids` declares none', f.ok && !Z.S.raiding, f.bad.slice(0, 4).join('; ') || 'none short');
 }
 // 7. the punitive expeditions (the owner, 2026-11-17: "add punitive expeditions"): the Sultan's force marches from Strongwall on
 //    the raiding town that set it off, fights its garrison and any war band at home under the same caps, takes back, and costs
