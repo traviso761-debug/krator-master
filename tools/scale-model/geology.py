@@ -76,7 +76,7 @@ SEA_CELLS = 5000
 # volcanic provinces by name (biome layer, lower case) beside the vents: the Throne, the Godthrone, Korona, the rift's rims
 VOLCANIC_REGIONS = ('throne/volcano', 'godthrone', 'korona / ne', 'rift rim n', 'rift rim s', 'godstep valley')
 RIFT_REGIONS = ('rift', 'the rift')
-RUIN_REGIONS = ('ruins of nazar',)
+RUIN_REGIONS = ('ruins of nazar', "ancient's valley")
 RUIN_TYPES = ('ruin', 'ruined arcology')
 RUIN_KM = 12.0
 UPLAND_M = 5000.0           # crystalline upland: higher than this (a high flat shelf is plateau sediment, not shield),
@@ -821,7 +821,7 @@ def main(argv):
     # ---- ruin ground: the ruins' settlements and the named ruin regions
     ruin = named(RUIN_REGIONS)
     for s in setts:
-        if (s.get('type') or '').lower() in RUIN_TYPES:
+        if (s.get('type') or '').lower() in RUIN_TYPES or (s.get('stage') or '').lower() == 'ruin':
             ruin |= np.hypot(ii - s['px'] * su, jj - s['py'] * sv) * CELL_KM <= RUIN_KM
     soda_reg = named(SODA_REGIONS)
 
@@ -1039,8 +1039,10 @@ def main(argv):
     # ---- the polities and settlements (for the ledger: 46r-res-ledger.js)
     polities = [{'name': r['name'], 'points': r['points']} for r in sorted(regions, key=lambda r: r['name'])
                 if r.get('kind') == 'political' and len(r['points']) >= 3]
-    settl = [{'name': s['name'], 'px': s['px'], 'py': s['py'], 'type': s.get('type')} for s in
-             sorted(setts, key=lambda s: (s['name'], s['px'], s['py']))]
+    settl = [{'name': s['name'], 'px': s['px'], 'py': s['py'], 'type': s.get('type'),
+              **({'stage': s['stage']} if s.get('stage') else {})}
+             for s in sorted(setts, key=lambda s: (s['name'], s['px'], s['py']))
+             if (s.get('stage') or '').lower() != 'ruin']
 
     stats = {'province_cells': {PROVINCES[k]: int((prov == k).sum()) for k in range(len(PROVINCES))},
              'ruin_cells': int(((prov_b & RUIN_BIT) > 0).sum()),

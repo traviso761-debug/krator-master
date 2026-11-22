@@ -125,11 +125,11 @@
     "kits/catalog/krator-master-furniture-generic.js": "990b05b8404c67ab960f6649babc8143c738ea600a04c0c22564296fa7786ea4",
     "kits/catalog/krator-master-furniture-jobs.js": "598ea1c1eeeeb4c30206d397021a579b281399ba4bea85fdaf0060d6a433674d",
     "kits/catalog/krator-master-furniture-scrap.js": "0ad3a75771ab03e7b22e7f558b601ac9e6208418e49275625d199bc44bde720c",
-    "kits/crops/src/10-crop-core.js": "62a839accf372a4d7e1de6720c3e1b66f6ef4d9352801104fe02e387c464eab2",
-    "kits/crops/src/20-crop-records.js": "9f5943808e0e09305a1a4fde6bb51c086716ed0b213bfd09bf9122acfeb61c14",
-    "kits/crops/src/22-crop-material.js": "769d666ce969f2ddff28cc2cca96a0e3f767a9b10c628775d246505dd18db20a",
+    "kits/crops/src/10-crop-core.js": "1638ca5682ab3c476e01274b76d9109fc6c91ee43d9fd6cb3993b8e7d4450b43",
+    "kits/crops/src/20-crop-records.js": "8995b32e805b4f42f9c5e60634c82bf091e509a8a3380f6b86f7ddb929109ce9",
+    "kits/crops/src/22-crop-material.js": "c9e37782d292335fc40e5de6a9895f3f5e384ab522dd92defc9010b41546df85",
     "kits/crops/src/24-crop-vale-wild.js": "b53ea6251ce08a8e1a8a31315917de1eab9673359a5d0d552429a3fe1abb0990",
-    "kits/crops/src/40-crop-query.js": "c4e1179691702ff13200d5b713c23e0f315ee99c61842a8735d671e63bfca439",
+    "kits/crops/src/40-crop-query.js": "6ac613b37a7349e69889e223fa3476febb5d3f42bb7130c4f825406d3f8a6201",
     "kits/eternian/src/26k-kit.js": "0813cc346bebf907936b82a0f6763706cd9a2c2b51b3148bf61a22ae78a25031",
     "kits/eternian/src/28-et-mat.js": "39a60caf4be3f88c3a010d3c39cd4a0316696d7b415f7287599708f81090a40a",
     "kits/eternian/src/38-et-alt.js": "c630d457855a463f6ba25fa4321397298d1e58dedc6e02d5a9072ac190a14d7c",
@@ -363,18 +363,18 @@
     "kits/interiors/src": "fe72f6be1b5eb6012c769b91a5fc7c558f24144155f758942db210e347392bab",
     "kits/transit": "dd3a2217b76c749cb32e2609065ee8b3b641d20a8337d1f6444fe44b019e1e70",
     "settlements/eternian-canal/src": "3f22a2aa06687914977c4afeb685ae8f7251c45c502f244f7e7362c50afe7cbb",
-    "tools": "5d8cb54bfd5566913f21e3e094a6a85418e1354e6e39cf6138ec20bda1add512",
+    "tools": "3dddf4cc1485975fa04f8ae3ecd4b11cf8303908ced5d46f4dcfc671861aec51",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "settlements/eternian-canal/build-manifest.json": "35af4c3594910facdc3b2a1430a3c9c25b60a40f51a46d25f1fe065a696b8534",
-    "settlements/eternian-canal/dist/eternian-canal.html": "aaeef8aae9b036f473345242b10eb5b8f3483c580769df4b4e744bca26b71801",
+    "settlements/eternian-canal/build-manifest.json": "96177c96b8e702b25e0cbd27cfd56e379aa2205c59671f5a051eb428615974cf",
+    "settlements/eternian-canal/dist/eternian-canal.html": "43cc928011523ca3038a86c94bb23c0c1a36c6aa17a2404bee690470be41cdc8",
     "settlements/eternian-canal/dist/eternian-canal.tex.eternian-2.js": "128de1138439838d6fe6f1da71b71620dafcf86f82e4716d00f12c9ed6ae1c69",
     "settlements/eternian-canal/dist/eternian-canal.tex.eternian.js": "52408ff8ac9e643e047385ab409d2a3225d378ad4e714323d333b314cf426008"
    },
    "outputs_raw": {
-    "settlements/eternian-canal/build-manifest.json": "35af4c3594910facdc3b2a1430a3c9c25b60a40f51a46d25f1fe065a696b8534",
-    "settlements/eternian-canal/dist/eternian-canal.html": "aaeef8aae9b036f473345242b10eb5b8f3483c580769df4b4e744bca26b71801",
+    "settlements/eternian-canal/build-manifest.json": "96177c96b8e702b25e0cbd27cfd56e379aa2205c59671f5a051eb428615974cf",
+    "settlements/eternian-canal/dist/eternian-canal.html": "43cc928011523ca3038a86c94bb23c0c1a36c6aa17a2404bee690470be41cdc8",
     "settlements/eternian-canal/dist/eternian-canal.tex.eternian-2.js": "128de1138439838d6fe6f1da71b71620dafcf86f82e4716d00f12c9ed6ae1c69",
     "settlements/eternian-canal/dist/eternian-canal.tex.eternian.js": "52408ff8ac9e643e047385ab409d2a3225d378ad4e714323d333b314cf426008"
    }

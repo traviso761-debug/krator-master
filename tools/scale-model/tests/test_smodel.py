@@ -119,7 +119,11 @@ w = moved.astype(float)
 check('desert', same(PA.desert(st, EnF, a[0], tm, ~moved & False, moved, w), E422.desert(st, EnF, a[0], tm, ~moved & False, moved, w)))
 check('by_climate', same(PA.by_climate(st, EnF, a[0], tm, moved & False, moved, w),
                          E422.by_climate(st, EnF, a[0], tm, moved & False, moved, w)))
-gf, gh = RV.grid_fields(D), ER.grid_fields(D)
+from PIL import Image as _Img   # noqa: E402
+D_rv = dict(D, w=(E.shape[1] + 1) // 2, hh=(E.shape[0] + 1) // 2, fullW=(D['fullW'] + 1) // 2, fullH=(D['fullH'] + 1) // 2)
+for _rk, _rm in (('h', 'RGB'), ('wl', 'RGB'), ('p', 'L'), ('tm', 'L')):
+    D_rv[_rk] = P.b64(_Img.fromarray(P.raster(D, _rk, _rm)[::2, ::2], _rm))
+gf, gh = RV.grid_fields(D_rv), ER.grid_fields(D_rv)
 check('grid_fields (with the data\'s lo/hi)', same({k: v for k, v in gf.items() if k != 'h'}, {k: v for k, v in gh.items() if k != 'h'}))
 check('setup', same({k: v for k, v in RV.setup(gf).items() if k != 'bodies'}, {k: v for k, v in ER.setup(gh).items() if k != 'bodies'}))
 goal = whas & (np.nan_to_num(wlev, nan=9e9) < -1000)
@@ -167,6 +171,11 @@ for st_path in sorted(_glob.glob(os.path.join(REPO_ROOT, 'biomes', '**', 'statio
     spy = min(E.shape[0] - 1, max(0, int(round(raw_py * sv))))
     ground_m = float(E[spy, spx])
     base_m = float(site['base'])
+    if site.get('level') and abs(ground_m - base_m) > 150.0:
+        nb_wl = wlev[max(0, spy - 1):min(E.shape[0], spy + 2), max(0, spx - 1):min(E.shape[1], spx + 2)]
+        fin_wl = nb_wl[np.isfinite(nb_wl)]
+        if fin_wl.size:
+            ground_m = float(fin_wl[np.argmin(np.abs(fin_wl - base_m))])
     rel_st = os.path.relpath(st_path, REPO_ROOT).replace('\\', '/')
     check('station base within 150 m: %s (stated %.0f m vs ground %.0f m)' % (rel_st, base_m, ground_m),
           abs(ground_m - base_m) <= 150.0)
@@ -782,4 +791,50 @@ for d in domes_t:
         d['id'], d['top_m'], float(top_cells.max() - top_cells.min()), d['top_m'] - float(np.median(E[(dr > 1.4) & (dr < 1.7)]))),
         float(top_cells.max() - top_cells.min()) <= 2.0 and abs(float(top_cells.max()) - d['top_m']) <= 2.0
         and d['top_m'] - float(np.median(E[(dr > 1.4) & (dr < 1.7)])) >= 300.0)
+# ---- 21. 5.1 edit 21 (edit_521_wave0_hygiene.py, 2026-11-22): Wave 0 Pre-Build Hygiene Batch
+check('East Abyss floor lift: Reed ~-1,750 m (wet), Sfenops ~-1,370 m, Liikofi ~-1,358 m, Middle Tabisti ~-1,398 m, Mungo ~-1,433 m',
+      bool(whas[678, 1280]) and abs(float(E[678, 1280]) - (-1750.0)) <= 5.0 and abs(float(wlev[678, 1280]) - (-1748.6)) <= 3.0
+      and abs(float(E[663, 1282]) - (-1370.0)) <= 5.0 and abs(float(E[797, 1316]) - (-1358.0)) <= 5.0
+      and abs(float(E[761, 1311]) - (-1398.0)) <= 5.0 and abs(float(E[828, 1322]) - (-1433.0)) <= 5.0)
+check('Southern East Abyss untouched: Lower Verge (-1,685 m), Yuni North (-1,887 m), Locus (-2,403 m)',
+      abs(float(E[949, 1268]) - (-1684.9)) <= 1.0 and abs(float(E[994, 1268]) - (-1886.8)) <= 1.0
+      and abs(float(E[1043, 1267]) - (-2402.6)) <= 1.0)
+w_lbl4_t, _ = nd.label(whas, structure=np.array([[0, 1, 0], [1, 1, 1], [0, 1, 0]], dtype=int))
+r045_t = next(r for r in D['rivers'] if r['id'] == 'r045')
+check('Soda Lake (lbl=54) 4-connected -60 m tongue reaches (912,531) off dry Port Koron (912,532) with r045 mouth',
+      bool(whas[531, 912]) and not bool(whas[532, 912]) and w_lbl4_t[425, 932] == w_lbl4_t[531, 912]
+      and abs(float(wlev[531, 912]) - (-59.8)) <= 1.5 and -52.0 <= float(E[532, 912]) <= -30.0
+      and r045_t['to'].get('lake_m') == -60 and abs(r045_t['to']['at_px'][1] - 531.0) <= 1.0
+      and any(b.get('id') == 'B_korona_sodalake' for b in D['basins']))
+setts_w0 = {s['id']: s for s in P.settlements()}
+check('Wave 0 deduplicated skwl1d2hdu removed, Dorado marked drowned, Tungang bore marked subterranean, Thera stage ruin',
+      'skwl1d2hdu' not in setts_w0 and setts_w0['sbxpx1u95q'].get('drowned') is True
+      and setts_w0['s4i2tk5zvf'].get('layer') == 'subterranean' and setts_w0['sthera0001'].get('stage') == 'ruin')
+for w0_sid, w0_xy in (
+    ('s0w2mwd7xq', (701, 838)), ('s4t3y092qc', (994, 827)), ('syen8wxax5', (780, 787)), ('ski7uk8fjc', (920, 703)),
+    ('sxvb4k4024', (705, 1129)), ('skzuw4a73a', (1057, 621)), ('s06eu913kl', (956, 944)), ('s1ugpi6uas', (498, 644)),
+    ('sfuf85wred', (555, 957)), ('slm5ul15lp', (934, 424)), ('sttkxo9ndy', (1015, 1430)), ('sk9e4psl4b', (1687, 1555)),
+    ('ssideros01', (744, 784)), ('stauranga1', (848, 897)), ('swheel0001', (405, 886)), ('sthera0001', (526, 955)),
+    ('ssaltwhit1', (486, 837)), ('syuninrth1', (1268, 994)), ('smidtabis1', (1311, 761)), ('sportkoron', (912, 532)),
+    ('swahatsham', (1165, 652)),
+):
+    s_w0 = setts_w0.get(w0_sid)
+    check('Wave 0 pin %s (%s) stands on dry ground at %s' % (w0_sid, s_w0 and s_w0['name'], w0_xy),
+          s_w0 is not None and (int(s_w0['px']), int(s_w0['py'])) == w0_xy and not bool(whas[w0_xy[1], w0_xy[0]]))
+regs_w0 = {r['id']: G.poly(r['points'], 1.0, 1.0, E.shape) > 0.5 for r in P.regions()
+           if r.get('kind') == 'political' or r['id'] == 'rmuwd2cwvipmq'}
+check('Wave 0 polygons: Zeijani, Yusar enclaves, Eternal State Farside/Bastion, Jimjam Skywatch/Ardent, Yeti Leng, Nomad Country East Abyss',
+      bool(regs_w0['rmvlqffsaj2v0'][703, 920]) and not bool(regs_w0['rmvlp5pd3ug40'][703, 920])
+      and bool(regs_w0['rzeijani0001'][776, 840]) and not bool(regs_w0['rmuooc7krl9f8'][776, 840])
+      and not bool(regs_w0['rmuca1tm8hito'][712, 800]) and not bool(regs_w0['rmuhd0r5n1coe'][923, 809])
+      and not bool(regs_w0['rmuhd0r5n1coe'][1058, 1016]) and not bool(regs_w0['rmw5rzefnfapk'][897, 848])
+      and bool(regs_w0['ryusarcarco1'][812, 395]) and not bool(regs_w0['rmvg89rejmqat'][812, 395])
+      and bool(regs_w0['ryusarhenge1'][735, 457]) and not bool(regs_w0['rmvg89rejmqat'][735, 457])
+      and bool(regs_w0['rmvg89rejmqat'][627, 536]) and bool(regs_w0['rmvg89rejmqat'][516, 315])
+      and not bool(regs_w0['rmvg89rejmqat'][418, 346])
+      and bool(regs_w0['rmv9g32xg2gqt'][470, 776]) and bool(regs_w0['rmv9g32xg2gqt'][478, 826])
+      and not bool(regs_w0['rmv9g32xg2gqt'][553, 830]) and not bool(regs_w0['rmuwd2cwvipmq'][553, 830])
+      and bool(regs_w0['rmvkkra7o3ep4'][554, 490])
+      and bool(regs_w0['rmucc476rj9ie'][652, 1165]) and bool(regs_w0['rmucc476rj9ie'][639, 1276])
+      and not bool(regs_w0['rmucc476rj9ie'][678, 1280]) and not bool(regs_w0['rmucc476rj9ie'][828, 1322]))
 print('%d checks passed' % ok)

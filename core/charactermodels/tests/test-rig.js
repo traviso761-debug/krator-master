@@ -284,8 +284,15 @@ if(fs.existsSync(path.join(HERE, 'data', 'mpfb_giant', 'kit.json'))) (function()
   ok(KCHAR.replacesFeet(rFg, k) && !KCHAR.fits(boot, rFg, k) && KCHAR.fits(dgBoot, rFg, k) &&
      KCHAR.parts(rFg, k).every(function(p){ return p.slot !== 'feet'; }),
      b + ': frogman digitigrade character rejects plantigrade footwear and accepts digitigrade footwear');
-  ok(peoples.every(function(P){ for(var s = 1; s <= 15; s++){ var st = KCHAR.stranger(s, k, P); if((st.mods || []).some(function(m){ return m === 'mod_legs_lizard' || m === 'mod_legs_frog'; })) return false; } return true; }),
+  ok(peoples.every(function(P){ for(var s = 1; s <= 15; s++){ var st = KCHAR.stranger(s, k, P); if((st.mods || []).some(function(m){ return m === 'mod_legs_lizard'; })) return false; } return true; }),
      b + ': no people draws mod_legs_lizard');
+  var PF = peoples.filter(function(p){ return p.id === 'frogmen'; })[0];
+  for(var sf = 1; sf <= 15; sf++){
+    var stf = KCHAR.stranger(sf, k, PF);
+    ok(JSON.stringify(stf.mods) === '["mod_head_frog","mod_legs_frog"]' && stf.armour.feet === null &&
+       (!stf.armour.legs || KCHAR.fits(k.items.filter(function(it){ return it.id === stf.armour.legs; })[0], stf, k)),
+       b + ': frogmen stranger seed ' + sf + ' wears frog head+digitigrade webbed legs and no plantigrade boots/fitted pants');
+  }
   if(b === 'mpfb_giant') return;
   var dg = k.items.filter(function(it){ return it.id === 'mod_legs_coyote'; })[0];
   ok(!!dg && dg.replaces_feet && dg.furred && dg.digitigrade && dg.hides > 5000, b + ': mod_legs_coyote entry present and hides lower leg skin');

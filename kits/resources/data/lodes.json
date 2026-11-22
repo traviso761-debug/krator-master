@@ -8,6 +8,12 @@
     {"id": "lode:thalaba-sulfur", "family": "sulfur", "px": 841, "py": 1452, "r_km": 3, "peak": 140,
      "why": "The owner, 2026-11-16: Thalaba's own small sulfur deposit, 30 t a year, at the cataract's foot (Gāḍz-Phōl) where Godshearth's spillway cut the shield's old fumarole lines; worked by Salphar, the diggers' hamlet (settlements/thalaba/PLAN.md section 4). Stamped 2026-11-16 with the mined goods' bake (the owner: \"Bake now\")."},
     {"id": "lode:great-potch-line", "family": "opal", "px": 1028, "py": 1652, "r_km": 8, "peak": 235,
-     "why": "Lightwall PLAN.md 1 and 4 (the owner, 2026-11-16): the Great Potch Line, the richest opal in Opal Valley. A field of short veins of Rift Black Opal along the north boundary fault's foot, where it cuts the basalt dikes behind Lāiṭwāl. Each vein lasts 2-3 years, the field over 200. Sent by the Lightwall session (settlements/lightwall/PLAN.md section 6, step L0)."}
+     "why": "Lightwall PLAN.md 1 and 4 (the owner, 2026-11-16): the Great Potch Line, the richest opal in Opal Valley. A field of short veins of Rift Black Opal along the north boundary fault's foot, where it cuts the basalt dikes behind Lāiṭwāl. Each vein lasts 2-3 years, the field over 200. Sent by the Lightwall session (settlements/lightwall/PLAN.md section 6, step L0)."},
+    {"id": "lode:locus-oil", "family": "oil", "px": 1267, "py": 1043, "r_km": 14, "peak": 200,
+     "why": "CONTINENTAL-SCOPE.md 3.9 and 5.1 (Ruling #70, 2026-11-21): Locus Master Dome and Starfish Vault high-grade petroleum reservoir under the Geomancers' HQ in Yuni's lower ward, feeding fractional stills (kerosene, naphtha, bitumen, lubricant)."},
+    {"id": "lode:yuni-north-oil", "family": "oil", "px": 1268, "py": 994, "r_km": 8, "peak": 145,
+     "why": "CONTINENTAL-SCOPE.md 3.9 and 5.1 (Ruling #70, 2026-11-21): Yuni North (Bruk Lona) satellite oil field, halving the barrel haul to the Lower Verge drum cableway hoist."},
+    {"id": "lode:shell-oil", "family": "oil", "px": 902, "py": 665, "r_km": 20, "peak": 188,
+     "why": "GEOMANCER-SCOPE.md and CONTINENTAL-SCOPE.md (Ruling #82, 2026-11-22): Shell Province abundant coastal and delta petroleum basin supporting the Geomancers' Secondary Northern HQ at Shell (902, 659) and northern lifeline via Port Koron and Silkhead to the Compass Hills."}
   ]
 }

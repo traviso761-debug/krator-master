@@ -24,7 +24,7 @@ T.px=(px,py)=>({x:(px-1191)*2000,z:(py-1569)*2000});
 T.goods={grain:{unit:'kg',crops:['vale-rice','emmer','basin-amaranth']},fish:{unit:'kg'},fruit:{unit:'kg'},dairy:{unit:'kg'},honey:{unit:'kg'},fodder:{unit:'kg'},
  salt:{unit:'kg'},tea:{unit:'kg'},cacao:{unit:'kg'},cacaocake:{unit:'kg'},saffron:{unit:'kg'},opium:{unit:'kg',crop:'sky-poppy'},silk:{unit:'kg'},brocade:{unit:'kg'},
  timber:{unit:'kg'},charcoal:{unit:'kg'},copper:{unit:'kg'},goldore:{unit:'kg'},gold:{unit:'kg'},goldwork:{unit:'piece'},wheels:{unit:'wheel'},
- coin:{unit:'dinar'},opal:{unit:'kg'},moonglass:{unit:'kg'},scrap:{unit:'kg'},iron:{unit:'kg'},tools:{unit:'kg'},arms:{unit:'piece'},pearls:{unit:'kg'},wine:{unit:'kg'},oil:{unit:'kg'},
+ coin:{unit:'qud'},opal:{unit:'kg'},moonglass:{unit:'kg'},scrap:{unit:'kg'},iron:{unit:'kg'},tools:{unit:'kg'},arms:{unit:'piece'},pearls:{unit:'kg'},wine:{unit:'kg'},oil:{unit:'kg'},
  sulfur:{unit:'kg'},pottery:{unit:'kg'},mats:{unit:'kg'},wax:{unit:'kg'},rarities:{unit:'piece'},hearthseed:{unit:'kg'},power:{unit:'kWh'},powder:{unit:'kg'},
  latex:{unit:'kg',crop:'sky-poppy'}};   /* latex: the poppy's raw latex, dried to opium at Kirstabal's latex house (K1) */
 
@@ -228,7 +228,7 @@ T.expedition={id:'exp.godshearth',name:'The Rare Devisers\' expedition camp at G
    Grand Vizier's guard patrols, LORE 6.13); the House of the Tempest, the Order of the Violet Storm's central monastery
    (Qiblai's violet house is its daughter), a martial order of sword and bow on the West Arm, 600 strong, in the Gold
    March, its terraces two fifths of its grain and the rest from Strongwall */
-T.muskets={wage:12,men:{sxan7r1sln:30,'march.w':10,'march.s':10,'march.e':10},day:240};   /* wage: dinars a man a year (a dinar is 4 g of the Mint's gold) */
+T.muskets={wage:12,men:{sxan7r1sln:30,'march.w':10,'march.s':10,'march.e':10},day:240};   /* wage: quds a man a year (a qud is 4 g of the Mint's gold) */
 T.tempest={id:'xan.tempest',name:'The House of the Tempest (the Order of the Violet Storm\'s central monastery, on the West Arm)',px:[886,1619],people:600,terraces:.4,km:80,
  horses:{stabled:181,hay:8,barley:2,barleyDays:182,meadowCrew:60,barnDays:250}};
 /* the House's horses (the owner, 2026-11-16: "add fodder"; settlements/strongwall/tempest/BLUEPRINT.md, the duty rota): four

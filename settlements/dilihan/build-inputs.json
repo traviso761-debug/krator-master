@@ -215,10 +215,10 @@
     "kits/catalog/tex/wicker.albedo.webp": "88010bf97a4e66158e7db9fca32a3c010a8e4c19a04a01fcbc4ba914229a4f52",
     "kits/catalog/tex/wood.albedo.webp": "bdf1af0b681f77edfadda2ac8e991cbd0b9bb44a8abf65a1a17690da70e7112c",
     "kits/construction/src/10-cons-site.js": "fcc9f2b1d736a036a05ae43206458cffddd05582be8670f8f235a627e611e1e9",
-    "kits/crops/src/10-crop-core.js": "62a839accf372a4d7e1de6720c3e1b66f6ef4d9352801104fe02e387c464eab2",
-    "kits/crops/src/20-crop-records.js": "9f5943808e0e09305a1a4fde6bb51c086716ed0b213bfd09bf9122acfeb61c14",
-    "kits/crops/src/22-crop-material.js": "769d666ce969f2ddff28cc2cca96a0e3f767a9b10c628775d246505dd18db20a",
-    "kits/crops/src/40-crop-query.js": "c4e1179691702ff13200d5b713c23e0f315ee99c61842a8735d671e63bfca439",
+    "kits/crops/src/10-crop-core.js": "1638ca5682ab3c476e01274b76d9109fc6c91ee43d9fd6cb3993b8e7d4450b43",
+    "kits/crops/src/20-crop-records.js": "8995b32e805b4f42f9c5e60634c82bf091e509a8a3380f6b86f7ddb929109ce9",
+    "kits/crops/src/22-crop-material.js": "c9e37782d292335fc40e5de6a9895f3f5e384ab522dd92defc9010b41546df85",
+    "kits/crops/src/40-crop-query.js": "6ac613b37a7349e69889e223fa3476febb5d3f42bb7130c4f825406d3f8a6201",
     "kits/dilihan/src/69r-dil-mat.js": "9986a0fcce48918e0393827a3b6f4d6caaedbd0638976c34e6ebeeaabceed8ae",
     "kits/dilihan/src/69s-dil-helpers.js": "2f8fcfbc5c806961c5cc157560d08b2ce88e8bcab524b3b132e1f9a537e0ab19",
     "kits/dilihan/src/70d-dil-dwell.js": "bfac4884a83928918b7e52982839a59381e238663119c761402ac3e9bfaa9d6e",
@@ -427,13 +427,13 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "settlements/dilihan/dist/dilihan.html": "f3df5808d0d08fae019ed1036f85426c26ff63736f74ef0af2e4312d8580db27",
+    "settlements/dilihan/dist/dilihan.html": "fccc157ce074f8498a956aaa86bb0d03c0dd56e01006b2891798b662794ce3e1",
     "settlements/dilihan/dist/dilihan.tex.cut.js": "9d7becbdeba3bb929044840930dce40bad9e4066f34751883b578b10a529e7d6",
     "settlements/dilihan/dist/dilihan.tex.iziz-vernacular.js": "c422d5fd3408d84fa24dfbf42e66dd1a28924326250f3a6a1cf9b4bc69747bf7",
     "settlements/dilihan/dist/dilihan.tex.jimjam.js": "00f7391d65938c750eb71245baf78be41ec94042ea7819f6c98c62c01d0a2ce9"
    },
    "outputs_raw": {
-    "settlements/dilihan/dist/dilihan.html": "f3df5808d0d08fae019ed1036f85426c26ff63736f74ef0af2e4312d8580db27",
+    "settlements/dilihan/dist/dilihan.html": "fccc157ce074f8498a956aaa86bb0d03c0dd56e01006b2891798b662794ce3e1",
     "settlements/dilihan/dist/dilihan.tex.cut.js": "9d7becbdeba3bb929044840930dce40bad9e4066f34751883b578b10a529e7d6",
     "settlements/dilihan/dist/dilihan.tex.iziz-vernacular.js": "c422d5fd3408d84fa24dfbf42e66dd1a28924326250f3a6a1cf9b4bc69747bf7",
     "settlements/dilihan/dist/dilihan.tex.jimjam.js": "00f7391d65938c750eb71245baf78be41ec94042ea7819f6c98c62c01d0a2ce9"

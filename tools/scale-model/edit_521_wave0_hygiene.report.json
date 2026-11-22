@@ -1,0 +1,888 @@
+{
+ "edit": "5.1 edit 21 (Wave 0 Pre-Build Hygiene Batch: East Abyss +900 m lift, Soda Lake S tongue, pin nudges/adds, polygon carve-outs)",
+ "version_tag": "5.1e21",
+ "date": "2026-11-22",
+ "dry_run": false,
+ "east_abyss_lift": {
+  "formula": "e' = -1000 + 0.5625 * (e + 1000) for e < -1000, tapered across dry horst sill Y = 851.5..861.5",
+  "lifted_cells": 9795,
+  "lifted_lakes_count": 18,
+  "lifted_lakes": [
+   {
+    "lbl": 103,
+    "cells": 16,
+    "km2": 64,
+    "before_wlev_m": -1939.21,
+    "after_wlev_m": -1528.31
+   },
+   {
+    "lbl": 104,
+    "cells": 24,
+    "km2": 96,
+    "before_wlev_m": -1427.47,
+    "after_wlev_m": -1240.45
+   },
+   {
+    "lbl": 105,
+    "cells": 92,
+    "km2": 368,
+    "before_wlev_m": -1635.24,
+    "after_wlev_m": -1357.32
+   },
+   {
+    "lbl": 111,
+    "cells": 252,
+    "km2": 1008,
+    "before_wlev_m": -2330.81,
+    "after_wlev_m": -1748.58
+   },
+   {
+    "lbl": 119,
+    "cells": 4,
+    "km2": 16,
+    "before_wlev_m": -1973.09,
+    "after_wlev_m": -1547.36
+   },
+   {
+    "lbl": 122,
+    "cells": 4,
+    "km2": 16,
+    "before_wlev_m": -1980.31,
+    "after_wlev_m": -1551.43
+   },
+   {
+    "lbl": 131,
+    "cells": 96,
+    "km2": 384,
+    "before_wlev_m": -2088.26,
+    "after_wlev_m": -1612.15
+   },
+   {
+    "lbl": 137,
+    "cells": 360,
+    "km2": 1440,
+    "before_wlev_m": -1796.94,
+    "after_wlev_m": -1448.28
+   },
+   {
+    "lbl": 140,
+    "cells": 4,
+    "km2": 16,
+    "before_wlev_m": -1813.65,
+    "after_wlev_m": -1457.68
+   },
+   {
+    "lbl": 141,
+    "cells": 4,
+    "km2": 16,
+    "before_wlev_m": -1804.16,
+    "after_wlev_m": -1452.34
+   },
+   {
+    "lbl": 142,
+    "cells": 472,
+    "km2": 1888,
+    "before_wlev_m": -1803.71,
+    "after_wlev_m": -1452.09
+   },
+   {
+    "lbl": 145,
+    "cells": 4,
+    "km2": 16,
+    "before_wlev_m": -1798.74,
+    "after_wlev_m": -1449.29
+   },
+   {
+    "lbl": 147,
+    "cells": 4,
+    "km2": 16,
+    "before_wlev_m": -1799.65,
+    "after_wlev_m": -1449.8
+   },
+   {
+    "lbl": 151,
+    "cells": 8,
+    "km2": 32,
+    "before_wlev_m": -1882.3,
+    "after_wlev_m": -1496.29
+   },
+   {
+    "lbl": 152,
+    "cells": 4,
+    "km2": 16,
+    "before_wlev_m": -2600.0,
+    "after_wlev_m": -1900.0
+   },
+   {
+    "lbl": 155,
+    "cells": 4,
+    "km2": 16,
+    "before_wlev_m": -1813.65,
+    "after_wlev_m": -1457.68
+   },
+   {
+    "lbl": 156,
+    "cells": 20,
+    "km2": 80,
+    "before_wlev_m": -1707.51,
+    "after_wlev_m": -1397.97
+   },
+   {
+    "lbl": 161,
+    "cells": 4,
+    "km2": 16,
+    "before_wlev_m": -2474.89,
+    "after_wlev_m": -1829.62
+   }
+  ],
+  "benchmarks": {
+   "Tabist town": {
+    "px": [
+     1285,
+     655
+    ],
+    "before_m": -1114.9,
+    "after_m": -1064.6,
+    "delta_m": 50.3,
+    "atm_after": 1.83,
+    "wet": false,
+    "wlev_after_m": null
+   },
+   "Sfenops": {
+    "px": [
+     1282,
+     663
+    ],
+    "before_m": -1656.9,
+    "after_m": -1369.5,
+    "delta_m": 287.4,
+    "atm_after": 1.9,
+    "wet": false,
+    "wlev_after_m": null
+   },
+   "Reed": {
+    "px": [
+     1280,
+     678
+    ],
+    "before_m": -2333.1,
+    "after_m": -1749.8,
+    "delta_m": 583.2,
+    "atm_after": 1.99,
+    "wet": true,
+    "wlev_after_m": -1748.6
+   },
+   "Reed upriver": {
+    "px": [
+     1297,
+     683
+    ],
+    "before_m": -779.8,
+    "after_m": -779.8,
+    "delta_m": 0.0,
+    "atm_after": 1.76,
+    "wet": false,
+    "wlev_after_m": null
+   },
+   "Furrow": {
+    "px": [
+     1276,
+     639
+    ],
+    "before_m": -592.8,
+    "after_m": -592.8,
+    "delta_m": 0.0,
+    "atm_after": 1.72,
+    "wet": false,
+    "wlev_after_m": null
+   },
+   "Middle Tabisti": {
+    "px": [
+     1311,
+     761
+    ],
+    "before_m": -1707.1,
+    "after_m": -1397.7,
+    "delta_m": 309.3,
+    "atm_after": 1.91,
+    "wet": false,
+    "wlev_after_m": null
+   },
+   "Liikofi": {
+    "px": [
+     1316,
+     797
+    ],
+    "before_m": -1637.0,
+    "after_m": -1358.3,
+    "delta_m": 278.7,
+    "atm_after": 1.9,
+    "wet": false,
+    "wlev_after_m": null
+   },
+   "Mungo": {
+    "px": [
+     1322,
+     828
+    ],
+    "before_m": -1769.8,
+    "after_m": -1433.0,
+    "delta_m": 336.8,
+    "atm_after": 1.91,
+    "wet": false,
+    "wlev_after_m": null
+   },
+   "Lower Verge": {
+    "px": [
+     1268,
+     949
+    ],
+    "before_m": -1684.9,
+    "after_m": -1684.9,
+    "delta_m": 0.0,
+    "atm_after": 1.98,
+    "wet": false,
+    "wlev_after_m": null
+   },
+   "Yuni North": {
+    "px": [
+     1268,
+     994
+    ],
+    "before_m": -1886.8,
+    "after_m": -1886.8,
+    "delta_m": 0.0,
+    "atm_after": 2.03,
+    "wet": false,
+    "wlev_after_m": null
+   },
+   "Locus": {
+    "px": [
+     1267,
+     1043
+    ],
+    "before_m": -2402.6,
+    "after_m": -2402.6,
+    "delta_m": 0.0,
+    "atm_after": 2.16,
+    "wet": false,
+    "wlev_after_m": null
+   }
+  }
+ },
+ "korona_sodalake_extension": {
+  "lake_wlev_m": -59.82,
+  "orig_cells": 3676,
+  "orig_km2": 14704,
+  "added_tongue_cells": 81,
+  "added_tongue_km2": 324,
+  "new_total_cells": 3757,
+  "new_total_km2": 15028,
+  "port_koron_px": [
+   912,
+   532
+  ],
+  "port_koron_elev_m": -42.0,
+  "lakehead_wet_px": [
+   912,
+   531
+  ],
+  "lakehead_bed_m": -87.2,
+  "four_connected_to_silkhead_verified": true
+ },
+ "rivers_updated": {
+  "korona_river": "r045",
+  "east_abyss_rivers_count": 26,
+  "east_abyss_rivers": [
+   "r053",
+   "r079",
+   "r102",
+   "r114",
+   "r165",
+   "r197",
+   "r200",
+   "r228",
+   "r229",
+   "r232",
+   "r251",
+   "r260",
+   "r417",
+   "r422",
+   "r423",
+   "r451",
+   "r483",
+   "r494",
+   "r507",
+   "r812",
+   "r861",
+   "r696",
+   "r743",
+   "r813",
+   "r761",
+   "r775"
+  ]
+ },
+ "reclimate": {
+  "cells": 9397,
+  "class_changed": 7340,
+  "rain_mean_before_mm": 845.0,
+  "rain_mean_after_mm": 1023.0,
+  "classes_now": {
+   "Af": 350,
+   "Am": 444,
+   "Aw": 3882,
+   "BSh": 730,
+   "Csa": 120,
+   "Cfa": 365,
+   "XA": 477,
+   "XV": 2867,
+   "XS": 94,
+   "WS": 66,
+   "WX": 2
+  }
+ },
+ "relight": {
+  "st": {
+   "az_deg": 330,
+   "zf": 5,
+   "gain": 0.398,
+   "corr": 0.437
+  },
+  "t": {
+   "az_deg": 330,
+   "zf": 1,
+   "gain": 1.744,
+   "corr": 0.397
+  },
+  "rt": {
+   "az_deg": 345,
+   "zf": 5,
+   "gain": 0.646,
+   "corr": 0.636
+  },
+  "ct": {
+   "az_deg": 315,
+   "zf": 1,
+   "gain": 2.35,
+   "corr": 0.335
+  }
+ },
+ "basins_added": [
+  "B_korona_sodalake",
+  "B_ea_sarab",
+  "B_ea_reed",
+  "B_ea_mid_sump",
+  "B_ea_liikofi",
+  "B_ea_mungo"
+ ],
+ "settlements": {
+  "removed": [
+   "skwl1d2hdu"
+  ],
+  "moved_or_tagged": {
+   "Pontus": {
+    "id": "s0w2mwd7xq",
+    "name": "Pontus",
+    "type": "village",
+    "px": [
+     701,
+     838
+    ],
+    "elev_m": -1424.3,
+    "atm": 1.91,
+    "slope": 0.05,
+    "climate": "XV",
+    "rain_mm": 1051,
+    "tm_C": 32.0,
+    "dist_water_km": 2.0,
+    "wet": false,
+    "polity": "League: Pontus"
+   },
+   "Bipo": {
+    "id": "s4t3y092qc",
+    "name": "Bipo",
+    "type": "village",
+    "px": [
+     994,
+     827
+    ],
+    "elev_m": -1441.0,
+    "atm": 1.92,
+    "slope": 0.021,
+    "climate": "XA",
+    "rain_mm": 2337,
+    "tm_C": 32.0,
+    "dist_water_km": 2.0,
+    "wet": false,
+    "polity": "Kautoa"
+   },
+   "Taikoro": {
+    "id": "syen8wxax5",
+    "name": "Taikoro",
+    "type": "village",
+    "px": [
+     780,
+     787
+    ],
+    "elev_m": -1269.8,
+    "atm": 1.88,
+    "slope": 0.026,
+    "climate": "XA",
+    "rain_mm": 3137,
+    "tm_C": 32.0,
+    "dist_water_km": 2.8,
+    "wet": false,
+    "polity": "West Ring Islanders"
+   },
+   "Port Goto": {
+    "id": "ski7uk8fjc",
+    "name": "Port Goto",
+    "type": "town",
+    "px": [
+     920,
+     703
+    ],
+    "elev_m": -1460.0,
+    "atm": 1.92,
+    "slope": 0.023,
+    "climate": "XV",
+    "rain_mm": 1098,
+    "tm_C": 33.0,
+    "dist_water_km": 2.0,
+    "wet": false,
+    "polity": "Shell Province"
+   },
+   "Driyan": {
+    "id": "sxvb4k4024",
+    "name": "Driyan",
+    "type": "city",
+    "px": [
+     705,
+     1129
+    ],
+    "elev_m": 588.8,
+    "atm": 1.49,
+    "slope": 0.013,
+    "climate": "Cfa",
+    "rain_mm": 1882,
+    "tm_C": 21.0,
+    "dist_water_km": 50.1,
+    "wet": false,
+    "polity": "Vothic Kingdom"
+   },
+   "Painted Canyon Cliff-Hold": {
+    "id": "skzuw4a73a",
+    "name": "Painted Canyon Cliff-Hold",
+    "type": "village",
+    "px": [
+     1057,
+     621
+    ],
+    "elev_m": 2615.9,
+    "atm": 1.15,
+    "slope": 0.14,
+    "climate": "BWk",
+    "rain_mm": 345,
+    "tm_C": 13.0,
+    "dist_water_km": 59.5,
+    "wet": false,
+    "polity": "Painted Men"
+   },
+   "Port Tobin": {
+    "id": "s06eu913kl",
+    "name": "Port Tobin",
+    "type": "village",
+    "px": [
+     956,
+     944
+    ],
+    "elev_m": -1483.9,
+    "atm": 1.93,
+    "slope": 0.005,
+    "climate": "XA",
+    "rain_mm": 2933,
+    "tm_C": 32.0,
+    "dist_water_km": 2.0,
+    "wet": false,
+    "polity": "Empire of Iziz"
+   },
+   "Lux": {
+    "id": "s1ugpi6uas",
+    "name": "Lux",
+    "type": "city",
+    "px": [
+     498,
+     644
+    ],
+    "elev_m": 164.2,
+    "atm": 1.57,
+    "slope": 0.063,
+    "climate": "Af",
+    "rain_mm": 1929,
+    "tm_C": 26.0,
+    "dist_water_km": 2.0,
+    "wet": false,
+    "polity": "Eternal State"
+   },
+   "Jrrmiah": {
+    "id": "sfuf85wred",
+    "name": "Jrrmiah",
+    "type": "village",
+    "px": [
+     555,
+     957
+    ],
+    "elev_m": 2927.5,
+    "atm": 1.11,
+    "slope": 0.071,
+    "climate": "Dfa",
+    "rain_mm": 1239,
+    "tm_C": 11.0,
+    "dist_water_km": 2.0,
+    "wet": false,
+    "polity": "Frogmen"
+   },
+   "Silkhead": {
+    "id": "slm5ul15lp",
+    "name": "Silkhead",
+    "type": "city",
+    "px": [
+     934,
+     424
+    ],
+    "elev_m": 12.0,
+    "atm": 1.6,
+    "slope": 0.063,
+    "climate": "Aw",
+    "rain_mm": 831,
+    "tm_C": 28.0,
+    "dist_water_km": 2.0,
+    "wet": false,
+    "polity": "Silkhead (Korona Gateway)"
+   },
+   "White Gills Hermitage": {
+    "id": "sttkxo9ndy",
+    "name": "White Gills Hermitage",
+    "type": "outpost",
+    "px": [
+     1015,
+     1430
+    ],
+    "elev_m": 3745.9,
+    "atm": 1.0,
+    "slope": 0.111,
+    "climate": "Dsc",
+    "rain_mm": 110,
+    "tm_C": 2.0,
+    "dist_water_km": 67.1,
+    "wet": false,
+    "polity": "Order of Historians"
+   },
+   "Dorado": {
+    "id": "sbxpx1u95q",
+    "name": "Dorado",
+    "type": "ruin",
+    "px": [
+     483,
+     964
+    ],
+    "elev_m": -3.8,
+    "atm": 1.6,
+    "slope": 0.006,
+    "climate": "WH",
+    "rain_mm": 1820,
+    "tm_C": 25.0,
+    "dist_water_km": 0.0,
+    "wet": true,
+    "drowned": true
+   },
+   "Tungang saltpeter works (to be named)": {
+    "id": "s4i2tk5zvf",
+    "name": "Tungang saltpeter works (to be named)",
+    "type": "outpost",
+    "px": [
+     492,
+     1255
+    ],
+    "elev_m": 9585.1,
+    "atm": 0.48,
+    "slope": 0.075,
+    "climate": "O",
+    "rain_mm": 0,
+    "tm_C": -33.0,
+    "dist_water_km": 18.0,
+    "wet": false,
+    "layer": "subterranean",
+    "polity": "Tungang Union"
+   }
+  },
+  "added": {
+   "Sideros": {
+    "id": "ssideros01",
+    "name": "Sideros",
+    "type": "town",
+    "px": [
+     744,
+     784
+    ],
+    "elev_m": -1424.3,
+    "atm": 1.91,
+    "slope": 0.053,
+    "climate": "XA",
+    "rain_mm": 1788,
+    "tm_C": 33.0,
+    "dist_water_km": 2.0,
+    "wet": false,
+    "polity": "League: Tethis"
+   },
+   "Tauranga-Hikau": {
+    "id": "stauranga1",
+    "name": "Tauranga-Hikau",
+    "type": "town",
+    "px": [
+     848,
+     897
+    ],
+    "elev_m": -1438.3,
+    "atm": 1.92,
+    "slope": 0.004,
+    "climate": "XA",
+    "rain_mm": 2965,
+    "tm_C": 33.0,
+    "dist_water_km": 6.0,
+    "wet": false,
+    "polity": "West Ring Islanders"
+   },
+   "Wheel": {
+    "id": "swheel0001",
+    "name": "Wheel",
+    "type": "ruined arcology",
+    "px": [
+     405,
+     886
+    ],
+    "elev_m": 57.2,
+    "atm": 1.59,
+    "slope": 0.026,
+    "climate": "Aw",
+    "rain_mm": 863,
+    "tm_C": 25.0,
+    "dist_water_km": 2.0,
+    "wet": false,
+    "polity": "Cyberliches"
+   },
+   "Thera": {
+    "id": "sthera0001",
+    "name": "Thera",
+    "type": "ruin",
+    "px": [
+     526,
+     955
+    ],
+    "elev_m": 1653.3,
+    "atm": 1.3,
+    "slope": 0.025,
+    "climate": "Cfa",
+    "rain_mm": 2557,
+    "tm_C": 15.0,
+    "dist_water_km": 42.8,
+    "wet": false,
+    "stage": "ruin"
+   },
+   "Saltwhite Gate": {
+    "id": "ssaltwhit1",
+    "name": "Saltwhite Gate",
+    "type": "fort",
+    "px": [
+     486,
+     837
+    ],
+    "elev_m": 1573.0,
+    "atm": 1.31,
+    "slope": 0.015,
+    "climate": "Cfa",
+    "rain_mm": 1820,
+    "tm_C": 17.0,
+    "dist_water_km": 102.0,
+    "wet": false,
+    "polity": "Eternal State"
+   },
+   "Yuni North": {
+    "id": "syuninrth1",
+    "name": "Yuni North",
+    "type": "outpost",
+    "px": [
+     1268,
+     994
+    ],
+    "elev_m": -1886.8,
+    "atm": 2.03,
+    "slope": 0.007,
+    "climate": "XA",
+    "rain_mm": 1490,
+    "tm_C": 33.0,
+    "dist_water_km": 14.4,
+    "wet": false,
+    "polity": "Yuni Emirate"
+   },
+   "Middle Tabisti": {
+    "id": "smidtabis1",
+    "name": "Middle Tabisti",
+    "type": "town",
+    "px": [
+     1311,
+     761
+    ],
+    "elev_m": -1397.7,
+    "atm": 1.91,
+    "slope": 0.014,
+    "climate": "XA",
+    "rain_mm": 1459,
+    "tm_C": 31.0,
+    "dist_water_km": 6.0,
+    "wet": false,
+    "polity": "Tabisti: Liikofi"
+   },
+   "Port Koron": {
+    "id": "sportkoron",
+    "name": "Port Koron",
+    "type": "town",
+    "px": [
+     912,
+     532
+    ],
+    "elev_m": -42.0,
+    "atm": 1.61,
+    "slope": 0.017,
+    "climate": "Cfa",
+    "rain_mm": 816,
+    "tm_C": 27.0,
+    "dist_water_km": 2.0,
+    "wet": false,
+    "polity": "Shell Province"
+   },
+   "Wāḥat al-Shamal": {
+    "id": "swahatsham",
+    "name": "Wāḥat al-Shamal",
+    "type": "village",
+    "px": [
+     1165,
+     652
+    ],
+    "elev_m": 41.3,
+    "atm": 1.59,
+    "slope": 0.057,
+    "climate": "Cfa",
+    "rain_mm": 706,
+    "tm_C": 26.0,
+    "dist_water_km": 111.9,
+    "wet": false,
+    "polity": "Nomad Country"
+   }
+  }
+ },
+ "regions": {
+  "updated_regions": {
+   "rmvlp5pd3ug40": {
+    "name": "Region 87",
+    "vertices": 29,
+    "km2": 91856
+   },
+   "rmuooc7krl9f8": {
+    "name": "League of Amphitriton",
+    "vertices": 21,
+    "km2": 86500
+   },
+   "rmuca1tm8hito": {
+    "name": "Screamer Country",
+    "vertices": 6,
+    "km2": 24324
+   },
+   "rmuhd0r5n1coe": {
+    "name": "Talovolci Chiefs",
+    "vertices": 14,
+    "km2": 127552
+   },
+   "rmw5rzefnfapk": {
+    "name": "Vothic Kingdom",
+    "vertices": 51,
+    "km2": 175484
+   },
+   "rmvg89rejmqat": {
+    "name": "Eternal State",
+    "vertices": 37,
+    "km2": 234180
+   },
+   "rmv9g32xg2gqt": {
+    "name": "Jimjam",
+    "vertices": 20,
+    "km2": 71840
+   },
+   "rmuwd2cwvipmq": {
+    "name": "dam 2",
+    "vertices": 12,
+    "km2": 51268
+   },
+   "rmvkkra7o3ep4": {
+    "name": "Yeti Kingdom",
+    "vertices": 19,
+    "km2": 127592
+   },
+   "rmucc476rj9ie": {
+    "name": "Nomad Country",
+    "vertices": 37,
+    "km2": 259872
+   }
+  },
+  "added_regions": {
+   "rzeijani0001": {
+    "name": "Zeijani",
+    "vertices": 13,
+    "km2": 29868
+   },
+   "ryusarcarco1": {
+    "name": "Yusar (Carcosa)",
+    "vertices": 4,
+    "km2": 7112
+   },
+   "ryusarhenge1": {
+    "name": "Yusar (Henge)",
+    "vertices": 4,
+    "km2": 3348
+   }
+  },
+  "nomad_country_cells_below_minus_700m": 302
+ },
+ "strict_mask_check": {
+  "outside_edit_mask_pixels_changed": {
+   "h": 0,
+   "wl": 0,
+   "wd": 0,
+   "p": 0,
+   "c": 0,
+   "z": 0,
+   "tm": 0,
+   "th": 0,
+   "tl": 0,
+   "tw": 0,
+   "tc": 0
+  },
+  "inside_edit_mask_pixels_changed": {
+   "h": 9908,
+   "wl": 1457,
+   "wd": 0,
+   "p": 9352,
+   "c": 7421,
+   "z": 1896,
+   "tm": 9003,
+   "th": 9071,
+   "tl": 9070,
+   "tw": 9071,
+   "tc": 9070
+  },
+  "zero_outside_diff_verified": true,
+  "max_river_climb_m": 42.46,
+  "worst_river_climb_id": "r_fb_central",
+  "bad_th_tl_land_cells": 0
+ }
+}

@@ -10,12 +10,11 @@
   "kits/qiblai/src"
  ],
  "external": [
-  "core/walk/20-core-walk.js",
   "core/sched/20-core-sched.js",
   "kits/crops/src/10-crop-core.js",
   "kits/crops/src/20-crop-records.js",
   "core/terrain/38-core-relief.js",
-  "openworld/isle-demo/src/world/41-world-fields.js",
+  "core/world/41-world-fields.js",
   "settlements/azure-dream/gen/39ad-world-data.js",
   "settlements/azure-dream/gen/69ad-kcity-bundle.js"
  ],
