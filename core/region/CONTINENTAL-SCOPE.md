@@ -389,9 +389,9 @@ Applied and verified across Scale Model `5.1e21` (`342/342` `test_smodel.py` che
 
 ---
 
-## 4. Locked Continent-Wide Systemic Complexity Mechanics (`Rulings 67–84`, `0` Open Systemic Questions)
+## 4. Locked Continent-Wide Systemic Complexity Mechanics (`Rulings 67–88`, `0` Open Systemic Questions)
 
-*(All `33` non-Crook/Ria regional questions, `Q35a` Izani `Marr` orthography, Wave 0 Hygiene `§3.9`, and all Round 2 systemic & faction-network scopes are **`[LOCKED]`** across Rulings `1–84`; `The Crook` & `Ria Valley` remain parked in their dedicated session per Ruling #33.)*
+*(All `33` non-Crook/Ria regional questions, `Q35a` Izani `Marr` orthography, Wave 0 Hygiene `§3.9`, and all Round 2 systemic & faction-network scopes are **`[LOCKED]`** across Rulings `1–88`; `The Crook` & `Ria Valley` remain parked in their dedicated session per Ruling #33.)*
 
 ### 4.1 Prohibition, Labor Regimes, Passenger Circuits & Prototype-Flagged Mechanics
 - **Continental Alcohol & Narcotics Legality Matrix (`Ruling #71`):**
@@ -408,9 +408,11 @@ Applied and verified across Scale Model `5.1e21` (`342/342` `test_smodel.py` che
 
 ---
 
-### 4.2 Dedicated Standalone Thematic Scopes (`Rulings #70, #73, #82–84`)
+### 4.2 Dedicated Standalone Thematic Scopes (`Rulings #70, #73, #82–88`)
 1. **[GEOMANCER-SCOPE.md](file:///home/antigravity/traviso761-debug/krator-master/core/region/GEOMANCER-SCOPE.md) — Geomancer Technate Dual-HQ, Strategic Mineral & Delta-Wildcat Scope (`Ruling #82`):** Pairs Primary HQ **`Locus` (`1267, 1043`, `oil: 200`)** with **Secondary Northern HQ `Shell` (`902, 659`, `lode:shell-oil` `oil: 188`)**, opening the **Northern Lifeline (`Port Koron` `912,532` -> `lbl=54` -> `Silkhead` `934,424` -> `Compass Hills` `lodestone: 220` / `RE: 160`)**, plus `9` Licensed Concessions (`LC-01..09`) and `12` Wildcat & River-Delta Claims (`WC-01..12`) promotable into permanent `kits/locus` settlements via **`SIM.found` Player Quests** (interactive map: [geomancer_sites_map.html](file:///home/antigravity/.gemini/jetski/brain/v1/default/jetski_remote_agents_3p/2cc633ac-367f-4e4f-810d-7efa147d63ef/geomancer_sites_map.html)).
 2. **[MONASTERY-NETWORK-SCOPE.md](file:///home/antigravity/traviso761-debug/krator-master/core/region/MONASTERY-NETWORK-SCOPE.md) — Order of Historians `19`-Node Continental Network (`Ruling #83`):** Integrates `Longsong` Motherhouse (`1229,1621`), `9` Oidong sanctuary stages, `3` High Rift priories, `Tiguantin Viejo`, `White Gills`, `Yuni` (*The Ear*), `Keepwell`, and all `7` locked regional chapters/HQs: **`Silkhead` Large HQ (`934,424`, staging tenuous `Ria Valley` ops)**, **`Jimjam`/`Dilihan` (`745,546` & `744,663`)**, **`Iron Republic` (`Roketstad` `632,716`)**, **`Lux` (`498,644`, cool reception as sole `Eternal State` seat)**, **`Verge` (`1268,949`, Eastern Deserts & `East Abyss`)**, **`Kautoa` (`964,725`, `Beast Rider` lands & `Ring Isles`)**, and **`Blakhed` (`441,1400`, `West Rift`, `Labyrinth` & `The Crook`)**, plus covert `Voth` cells.
 3. **[RELICS-SCOPE.md](file:///home/antigravity/traviso761-debug/krator-master/core/region/RELICS-SCOPE.md) — Breakthrough Ancient Relics & Player Intervention (`[APPROVED — EXTENSIBLE]`, `Ruling #84`):** Four ruin hazard & `site.veins` depletion tiers, six conserved Relic classes (`RC-1..RC-6` baseline, extensible via `SIM.relicKinds`), anti-snowball `relicThreat` coalitions, and five deterministic Player Intervention ops (`sell_hegemon`, `charter_underdog`, `open_schematic`, `seal_procrastinator` into `Longsong` `LS-008`, `sabotage_core`).
+4. **[MERCENARIES-SCOPE.md](file:///home/antigravity/traviso761-debug/krator-master/core/region/MERCENARIES-SCOPE.md) — Continental Mercenary Companies, Hiring Bourses & Contract Mechanics (`[APPROVED]`, `Rulings #85–88`):** Persistent `KCAMP` travelling mercenary bands (`MC-01..12`), `10` continental Hiring Bourses, two-tier Chartered Guild (*The Watch* / *Mercenary Kontor* bonded liens & blacklists) vs. Unchartered Frontier Freebooter (`>14`-day unpaid flip to `50-camp-outlaw.js` raiders), `Eternal State` quarantine-gateway-only & `Dalab` Rift-rim rules, state monopoly on heavy war-walkers (specialist `Yusar`/`Frogman`/`Kradz`/`Land-Crab` hazard & terrain tiers), and symmetric `SIM.contract` hiring for polities, expeditions, subfactions, and the player (both as employer and as chartered Mercenary Captain).
+
 
 
