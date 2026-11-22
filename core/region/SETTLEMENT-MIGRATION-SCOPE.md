@@ -95,3 +95,8 @@ Prebuilt Krator cities (`Dilihan` `10k`, `Talia` `12k`, `Dalab` `24.5k`, `Rokets
      - A **Single-Culture Charter** builds every new block in the founder/sponsor's architectural kit (`kits/iziz-vernacular`, `kits/dilihan`, `kits/highlands` Slavic, `kits/islanders`, `kits/xanadu`, `kits/locus`, or `kits/yuni`).
      - A **Cosmopolitan Charter** lets distinct migrant communities petition for their own **Cultural Ward** (e.g. an Islander stilt-harbour ward, a Slavic highland carpenters' quarter, a Yuni/Geomancer retort compound, a permanent Nomad `KCAMP` ground outside the gate, a **Giant Quarter** enforcing `doorH >= 3.0–3.8 m` & `1.85–2.2×` ration stores for `Talovolci`/`Vrivolci` residents, or a **Canal/Basin Ward** for `Frogman` & `Hykkousoi` gill-folk)!
 
+
+---
+
+## 7. Multi-Kit Implementation Reference (`Rulings #99–101`)
+- See [MULTI-KIT-SCOPE.md](file:///home/antigravity/traviso761-debug/krator-master/core/region/MULTI-KIT-SCOPE.md), [`core/kits/10-core-kits.js`](file:///home/antigravity/traviso761-debug/krator-master/core/kits/10-core-kits.js) (`KRATOR_KITS`), and [`tools/kit_pack.py`](file:///home/antigravity/traviso761-debug/krator-master/tools/kit_pack.py) for the sealed 28-kit architecture, living-tradition tradesman persistence (`Ruling #99`), permanent blueprint unlocks (`Ruling #100`), and ward + individual lot style policies (`Ruling #101`).
