@@ -49,14 +49,14 @@
     "kits/dilihan/PORT.md": "58ee39fc79a050e415e7b2c393aac31e5c46e3883ee43ba9d6a5aeca9b4a2c2e",
     "kits/dilihan/build.py": "0ea162897ddefebd483dcad72be04803713fa7509a19cb0269c42fdf5c2a8122",
     "kits/dilihan/materials.json": "9aaab3e8952ab79c633d57d6970395e880fc3ebd91ba09d82ee97b02d8e71517",
-    "kits/dilihan/src/69r-dil-mat.js": "304afcf6099f6fa96221d10e9ecd65b742bb99ae9214694d4fac662a5950ce54",
-    "kits/dilihan/src/69s-dil-helpers.js": "1b68f6052d1a7c8f51bc8b767379b5b39044cbdb0aac162337a8ed0286701f2a",
+    "kits/dilihan/src/69r-dil-mat.js": "9986a0fcce48918e0393827a3b6f4d6caaedbd0638976c34e6ebeeaabceed8ae",
+    "kits/dilihan/src/69s-dil-helpers.js": "2f8fcfbc5c806961c5cc157560d08b2ce88e8bcab524b3b132e1f9a537e0ab19",
     "kits/dilihan/src/70d-dil-dwell.js": "bfac4884a83928918b7e52982839a59381e238663119c761402ac3e9bfaa9d6e",
-    "kits/dilihan/src/71d-dil-trade.js": "89c64a4a7dc090db7743e834c49cf9f49eda2ee6648f40cd562093c808369b6e",
-    "kits/dilihan/src/72d-dil-civic.js": "a70224d881b42a4c586de1d8d33d18c333559492ed001e62afc263ac237b8962",
+    "kits/dilihan/src/71d-dil-trade.js": "423baf62e7d99d57d1c23e17b403b86d2ca5fb11b5055cb213759e9df2d25315",
+    "kits/dilihan/src/72d-dil-civic.js": "5394cde8cca51fab3d11c9534d796e771e8a5ba7dba9a3b202ee4da2a86bde20",
     "kits/dilihan/src/73d-dil-trades.js": "049ad77f1258c505e465d09c4e6dbc8e82c7aba8004b826e6510e9b0bb59af35",
     "kits/dilihan/targets/sheet/88y-dlsheet-matlib.js": "4089678bd447e359fc8ebc9825eca6875e7da190925914776063ade5ac2ab5ac",
-    "kits/dilihan/targets/sheet/89z-rows.js": "7889d35a0b88779ffa6cb039bb09b77025ae10b521c4d88aa59deda01da7b21a",
+    "kits/dilihan/targets/sheet/89z-rows.js": "31f0fdabdc4909cc4d35c1a5f4dec914581a1193789e942f46726dd493690720",
     "kits/dilihan/targets/sheet/91t-dlsheet-tags.js": "385f712cfefc974eac688741d01687d652b6cb8bb7837090ef78d0cd9fc979a9",
     "kits/iziz-vernacular/src/00-vsheet-head.html": "de0050458c16c8726081840b975fd656a70f2e1afae19ba1fc2098d2405860cf",
     "kits/iziz-vernacular/src/69b-vern-mat.js": "706739ba81271b9c5962492c04c5f7fa3e500b5d0eafb1f0eef5d8d88abfdbba",
@@ -170,17 +170,17 @@
     "kits/dilihan/targets": "78af7bdb5626eb0a046772b3edda705ca9e60ba7af0960eea89f7fa201d685a8",
     "kits/dilihan/targets/sheet": "97e85d4fdae4ffb3d56cfae4f0c5f44c00746d3395875cee607179aeb7806d54",
     "kits/iziz-vernacular": "4a1c35741a306f725b4dbc4e35c5987534d6fd34a8045e1851e67ecb5b264cee",
-    "tools": "5d8cb54bfd5566913f21e3e094a6a85418e1354e6e39cf6138ec20bda1add512",
+    "tools": "3dddf4cc1485975fa04f8ae3ecd4b11cf8303908ced5d46f4dcfc671861aec51",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "kits/dilihan/build-manifest.json": "5d6e8fc0a81126c19b0029b277feb3edba8fc9c59697b296bd8662ad3cc53686",
-    "kits/dilihan/dist/dilihan.html": "ee5cee86b558b77a4d29e9fe09b57575474d59f173758309566b5482d8c7a88d",
+    "kits/dilihan/build-manifest.json": "7356bf8d89de65d373e4b57715290fb670b3839431d06fc13268c8d619dc89b5",
+    "kits/dilihan/dist/dilihan.html": "509024394aea1ba7c21fab534df5f48a768c371cac894d4da354ce34e4251a87",
     "kits/dilihan/dist/dilihan.tex.dilihan.js": "45a506addb06f5d4f6d70e1ba5f5182a628c4d73abc35be7aa634b774481e041"
    },
    "outputs_raw": {
-    "kits/dilihan/build-manifest.json": "5d6e8fc0a81126c19b0029b277feb3edba8fc9c59697b296bd8662ad3cc53686",
-    "kits/dilihan/dist/dilihan.html": "ee5cee86b558b77a4d29e9fe09b57575474d59f173758309566b5482d8c7a88d",
+    "kits/dilihan/build-manifest.json": "7356bf8d89de65d373e4b57715290fb670b3839431d06fc13268c8d619dc89b5",
+    "kits/dilihan/dist/dilihan.html": "509024394aea1ba7c21fab534df5f48a768c371cac894d4da354ce34e4251a87",
     "kits/dilihan/dist/dilihan.tex.dilihan.js": "45a506addb06f5d4f6d70e1ba5f5182a628c4d73abc35be7aa634b774481e041"
    }
   }

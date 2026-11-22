@@ -13,23 +13,23 @@ sys.path.insert(0, os.path.join(HERE, '..', 'iziz-vernacular'))
 import sheet_verify                                # noqa: E402
 
 DEFAULT_VIEWS = (
-    'Opening|Overview|Dwellings|Markets and Monsoon Workshops|Civic and Garrison|'
+    'Opening|Overview|Dwellings|Markets and Monsoon Workshops|Civic, Garrison and Fortifications|'
     'Mixed Street - Dilihan and Iziz Vernacular|'
     'U-Plan Courtyard Brick House — eye level|Peristyle Impluvium Villa — eye level|Malqaf Brick Cooling Baths — eye level'
 )
 
 EXTRA_JS = r"""() => {
   const R = [];
-  /* 1. All 24 dil_* VERN.def buildings registered with culture: 'iziz', style: 'dilihan' */
+  /* 1. All 28 dil_* VERN.def buildings & ramparts registered with culture: 'iziz', style: 'dilihan' */
   const dilKeys = Object.keys(VERN.defs).filter(k => /^dil_/.test(k));
   const badTag = dilKeys.filter(k => {
     const t = VERN.defs[k].tags || {};
     return t.culture !== 'iziz' || t.style !== 'dilihan' || !t.wealth || !t.type || !t.type.length;
   });
   R.push({
-    name: 'dilihan-24-defs',
-    ok: dilKeys.length === 24 && badTag.length === 0,
-    detail: dilKeys.length + '/24 dil_* defs registered, badTag=' + badTag.length
+    name: 'dilihan-28-defs',
+    ok: dilKeys.length === 28 && badTag.length === 0,
+    detail: dilKeys.length + '/28 dil_* defs registered, badTag=' + badTag.length
   });
 
   /* 2. Kiln-brick, mortar, laterite & terracotta tile PBR materials bound */

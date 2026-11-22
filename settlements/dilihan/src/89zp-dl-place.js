@@ -78,17 +78,20 @@ const DL_PLACE = (function () {
   }
 
   function addSlopePlinth(r) {
-    if (r.key === 'dl_stream_bridge' || r.key === 'dl_evaporite_pan') return;
+    if (r.key === 'dl_stream_bridge' || r.key === 'dl_evaporite_pan' || r.key === 'dl_solstice_plaza' ||
+        r.key === 'dl_scarp_parapet' || r.key.indexOf('_wall_') >= 0) {
+      return;
+    }
     const lo = minCornerGround(r.x, r.z, r.w, r.d, r.ry);
-    const bot = Math.min(lo - 0.9, r.y - 0.75);
-    const top = r.y - 0.02;
+    const bot = Math.min(lo - 0.9, r.y - 0.85);
+    const top = r.y - 0.16;
     const h = top - bot;
     if (h <= 0.05) return;
     const q = r.ry ? qEuler(0, r.ry, 0) : null;
     const baseCol = (r.zone === 1 || r.zone === 2) ? plinthMarble : plinthGranite;
     kput('vStone', [r.x, bot + h * 0.5, r.z], q, [r.w * 0.96, h, r.d * 0.96], baseCol);
     if (h > 1.0) {
-      kput('vStone', [r.x, top - 0.12, r.z], q, [r.w * 0.99, 0.22, r.d * 0.99], plinthCap);
+      kput('vStone', [r.x, top - 0.14, r.z], q, [r.w * 0.98, 0.20, r.d * 0.98], plinthCap);
     }
   }
 
@@ -252,6 +255,7 @@ const DL_PLACE = (function () {
     withFlatGround(function () {
       VERN.place(protoG, key, 0, 0, 0, { y: 0, v: v | 0, scale: 1, lit: false });
     });
+    dlZFix();
     kbake(protoG);
     const parts = dlFlattenGroup(protoG);
 
@@ -417,8 +421,184 @@ const DL_PLACE = (function () {
     }
   }
 
-  /* 8. Flush indexed KFURN catalog furniture & bake Ancients/JJ/VERN instancer */
+  /* 8. City-scale zero-Set coplanar-face resolver (dlZFix): canonical home-cell dedup avoids V8's 16.7M Set cap */
+  function dlZFixPass(dry) {
+    const PUSH = 0.012;
+    const EPS = 0.004;
+    const CELL = 3.0;
+    const all = [];
+    for (let oi = 0; oi < KIT.order.length; oi++) {
+      const name = KIT.order[oi];
+      const def = KIT.defs[name];
+      const it = KIT.items[name];
+      if (!it || !it.length || !def || !def.geo) continue;
+      const g = def.geo;
+      let kind = null;
+      if (g.type === 'BoxGeometry') kind = 'box';
+      else if (g.type === 'CylinderGeometry' && g.parameters && Math.abs(g.parameters.radiusTop - g.parameters.radiusBottom) < 1e-6) kind = 'cyl';
+      if (!kind) continue;
+      if (!g.boundingBox) g.computeBoundingBox();
+      const bb = g.boundingBox;
+      const lcx = (bb.min.x + bb.max.x) * 0.5, lcy = (bb.min.y + bb.max.y) * 0.5, lcz = (bb.min.z + bb.max.z) * 0.5;
+      const lhx = (bb.max.x - bb.min.x) * 0.5, lhy = (bb.max.y - bb.min.y) * 0.5, lhz = (bb.max.z - bb.min.z) * 0.5;
+      const lh = [lhx, lhy, lhz];
+      for (let ii = 0; ii < it.length; ii++) {
+        const o = it[ii];
+        const q = o.q;
+        let yaw = 0;
+        if (q) {
+          if (Math.abs(q.x) > 1e-4 || Math.abs(q.z) > 1e-4) continue;
+          yaw = 2 * Math.atan2(q.y, q.w);
+        }
+        const s = typeof o.s === 'number' ? [o.s, o.s, o.s] : o.s;
+        if (s[0] <= 0 || s[1] <= 0 || s[2] <= 0) continue;
+        const c = Math.cos(yaw), sn = Math.sin(yaw);
+        const ox = lcx * s[0], oz = lcz * s[2];
+        let hx = lhx * s[0], hy = lhy * s[1], hz = lhz * s[2];
+        if (kind === 'cyl') { const cr = Math.max(hx, hz); hx = cr; hz = cr; }
+        const cx = o.p[0] + ox * c + oz * sn;
+        const cy = o.p[1] + lcy * s[1];
+        const cz = o.p[2] - ox * sn + oz * c;
+        const r = Math.hypot(hx, hz);
+        all.push({
+          o: o, kind: kind, yaw: yaw, c: c, s: sn,
+          cx: cx, cy: cy, cz: cz, hx: hx, hy: hy, hz: hz, r: r, lh: lh,
+          i0: Math.floor((cx - r) / CELL), i1: Math.floor((cx + r) / CELL),
+          j0: Math.floor((cz - r) / CELL), j1: Math.floor((cz + r) / CELL)
+        });
+      }
+    }
+    const grid = new Map();
+    for (let n = 0; n < all.length; n++) {
+      const e = all[n];
+      for (let ci = e.i0; ci <= e.i1; ci++) {
+        for (let cj = e.j0; cj <= e.j1; cj++) {
+          const gk = ci * 100003 + cj;
+          let bkt = grid.get(gk);
+          if (!bkt) { bkt = { ci: ci, cj: cj, list: [] }; grid.set(gk, bkt); }
+          bkt.list.push(n);
+        }
+      }
+    }
+    function footOverlap(A, B) {
+      const dx = B.cx - A.cx, dz = B.cz - A.cz;
+      if (dx * dx + dz * dz > (A.r + B.r) * (A.r + B.r)) return false;
+      if (A.kind === 'cyl' && B.kind === 'cyl') return Math.hypot(dx, dz) < A.hx + B.hx - 0.01;
+      const axes = [[A.c, -A.s], [A.s, A.c], [B.c, -B.s], [B.s, B.c]];
+      for (let ai = 0; ai < 4; ai++) {
+        const ax0 = axes[ai][0], ax1 = axes[ai][1];
+        const pa = Math.abs(A.hx * (A.c * ax0 - A.s * ax1)) + Math.abs(A.hz * (A.s * ax0 + A.c * ax1));
+        const pb = Math.abs(B.hx * (B.c * ax0 - B.s * ax1)) + Math.abs(B.hz * (B.s * ax0 + B.c * ax1));
+        if (Math.abs(dx * ax0 + dz * ax1) > pa + pb - 0.01) return false;
+      }
+      return true;
+    }
+    function pushFace(E, axis, sg, dist) {
+      const o = E.o;
+      if (typeof o.s === 'number') o.s = [o.s, o.s, o.s];
+      else o.s = o.s.slice();
+      o.s[axis] += dist / (2 * E.lh[axis]);
+      const h = dist * 0.5 * sg;
+      if (axis === 1) {
+        o.p = [o.p[0], o.p[1] + h, o.p[2]];
+        E.cy += h; E.hy += dist * 0.5;
+      } else {
+        const d0 = axis === 0 ? E.c : E.s;
+        const d1 = axis === 0 ? -E.s : E.c;
+        o.p = [o.p[0] + d0 * h, o.p[1], o.p[2] + d1 * h];
+        E.cx += d0 * h; E.cz += d1 * h;
+        if (axis === 0) E.hx += dist * 0.5; else E.hz += dist * 0.5;
+      }
+    }
+    const face = new Map();
+    const adj = new Map();
+    let conf = 0;
+    function node(n, axis, sg, area) {
+      const k = n * 6 + axis * 2 + (sg > 0 ? 0 : 1);
+      if (!face.has(k)) face.set(k, { n: n, axis: axis, sg: sg, area: area });
+      return k;
+    }
+    function link(k1, k2) {
+      conf++;
+      let s1 = adj.get(k1); if (!s1) { s1 = []; adj.set(k1, s1); }
+      if (s1.indexOf(k2) < 0) s1.push(k2);
+      let s2 = adj.get(k2); if (!s2) { s2 = []; adj.set(k2, s2); }
+      if (s2.indexOf(k1) < 0) s2.push(k1);
+    }
+    for (const bkt of grid.values()) {
+      const ci = bkt.ci, cj = bkt.cj, L2 = bkt.list;
+      for (let u = 0; u < L2.length; u++) {
+        const idxA = L2[u];
+        const A = all[idxA];
+        for (let v = u + 1; v < L2.length; v++) {
+          const idxB = L2[v];
+          const B = all[idxB];
+          /* Canonical home-cell check: each overlapping pair is visited in AT MOST ONE cell, zero Set memory */
+          const hi = A.i0 > B.i0 ? A.i0 : B.i0;
+          if (hi !== ci) continue;
+          const hj = A.j0 > B.j0 ? A.j0 : B.j0;
+          if (hj !== cj) continue;
+          for (let si = 0; si < 2; si++) {
+            const sg = si === 0 ? 1 : -1;
+            if (Math.abs((A.cy + sg * A.hy) - (B.cy + sg * B.hy)) < EPS && footOverlap(A, B)) {
+              link(node(idxA, 1, sg, A.hx * A.hz), node(idxB, 1, sg, B.hx * B.hz));
+            }
+          }
+          if (A.kind !== 'box' || B.kind !== 'box') continue;
+          const dy = ((A.yaw - B.yaw) % (Math.PI * 0.5) + Math.PI * 0.5) % (Math.PI * 0.5);
+          if (Math.min(dy, Math.PI * 0.5 - dy) > 0.01) continue;
+          if (Math.min(A.cy + A.hy, B.cy + B.hy) - Math.max(A.cy - A.hy, B.cy - B.hy) < 0.01) continue;
+          const Aa = [[A.c, -A.s], [A.s, A.c]], Ba = [[B.c, -B.s], [B.s, B.c]], Ah = [A.hx, A.hz];
+          for (let k = 0; k < 2; k++) {
+            const N = Aa[k], T2 = Aa[1 - k];
+            const Bhn = Math.abs(B.hx * (Ba[0][0] * N[0] + Ba[0][1] * N[1])) + Math.abs(B.hz * (Ba[1][0] * N[0] + Ba[1][1] * N[1]));
+            const Bht = Math.abs(B.hx * (Ba[0][0] * T2[0] + Ba[0][1] * T2[1])) + Math.abs(B.hz * (Ba[1][0] * T2[0] + Ba[1][1] * T2[1]));
+            const dn = (B.cx - A.cx) * N[0] + (B.cz - A.cz) * N[1];
+            const dt = (B.cx - A.cx) * T2[0] + (B.cz - A.cz) * T2[1];
+            if (Math.abs(dt) > Ah[1 - k] + Bht - 0.01) continue;
+            for (let si2 = 0; si2 < 2; si2++) {
+              const sg2 = si2 === 0 ? 1 : -1;
+              if (Math.abs((dn + sg2 * Bhn) - sg2 * Ah[k]) < EPS) {
+                const bk = Math.abs(Ba[0][0] * N[0] + Ba[0][1] * N[1]) > 0.7 ? 0 : 1;
+                const bsg = Math.sign(Ba[bk][0] * N[0] + Ba[bk][1] * N[1]) * sg2;
+                link(node(idxA, k === 0 ? 0 : 2, sg2, Ah[1 - k] * A.hy), node(idxB, bk === 0 ? 0 : 2, bsg, Bht * B.hy));
+              }
+            }
+          }
+        }
+      }
+    }
+    if (dry) return conf;
+    const level = new Map();
+    const order = Array.from(adj.keys()).sort(function (a, b) { return face.get(b).area - face.get(a).area || a - b; });
+    for (let oi2 = 0; oi2 < order.length; oi2++) {
+      const fk = order[oi2];
+      const nbs = adj.get(fk);
+      let lv = 0;
+      while (true) {
+        let taken = false;
+        for (let ni = 0; ni < nbs.length; ni++) {
+          if (level.get(nbs[ni]) === lv) { taken = true; break; }
+        }
+        if (!taken) break;
+        lv++;
+      }
+      level.set(fk, lv);
+      if (lv > 0) {
+        const f = face.get(fk);
+        pushFace(all[f.n], f.axis, f.sg, lv * PUSH);
+      }
+    }
+    return conf;
+  }
+  function dlZFix() {
+    for (let p = 0; p < 3; p++) {
+      if (!dlZFixPass(false)) break;
+    }
+  }
+
   TSTAT.cur = null;
+  dlZFix();
   DL_LANDMARKS.furn.flush(scene);
   kbake(scene);
 
@@ -549,6 +729,7 @@ const DL_PLACE = (function () {
     const forumRec = L.structures.find(function (r) { return r.id === L.landmarks.forumId; });
     const bridgeRec = L.structures.find(function (r) { return r.id === L.landmarks.bridgeId; });
     KWALK.floor({ rect: [-30, 30, -84, -36], y: (forumRec ? forumRec.y : DL_GROUND.h(0, -60)) + 1.12, name: 'Colonia Contact-Marble Forum', tag: 'plaza' });
+    KWALK.floor({ rect: [L.solstice.x - 42, L.solstice.x + 42, L.solstice.z - 42, L.solstice.z + 42], y: L.solstice.y + 0.08, name: 'Solstice Sanctuary Esplanade', tag: 'plaza' });
     KWALK.floor({ rect: [232, 288, 224, 266], y: DL_GROUND.h(260, 245), name: 'Governor Palace Forecourt', tag: 'plaza' });
     KWALK.floor({ rect: [26, 106, -468, -422], y: DL_GROUND.h(66, -445), name: 'North Caravanserai Yard', tag: 'plaza' });
     KWALK.floor({ rect: [512, 568, -42, 14], y: DL_GROUND.h(540, -14), name: 'Eastern Muster Ground', tag: 'plaza' });
@@ -558,7 +739,10 @@ const DL_PLACE = (function () {
     for (let bi = 0; bi < L.structures.length; bi++) {
       const br = L.structures[bi];
       if (!br || br.cls !== 'building') continue;
-      if (br.key === 'dl_colonia_forum' || br.key === 'dl_stream_bridge' || br.key === 'jj_wall_gate' || br.key === 'dl_customs_post') continue;
+      if (br.key === 'dl_colonia_forum' || br.key === 'dl_solstice_plaza' || br.key === 'dl_stream_bridge' ||
+          br.key === 'jj_wall_gate' || br.key === 'dil_wall_gate' || br.key === 'dl_customs_post') {
+        continue;
+      }
       const hw = Math.max(1.5, br.w * 0.36);
       const hd = Math.max(1.5, br.d * 0.36);
       KWALK.block([br.x - hw, br.x + hw, br.z - hd, br.z + hd, br.y - 1.5, br.y + 8.0], 'building');
@@ -581,8 +765,9 @@ const DL_PLACE = (function () {
     const isUrbanOrRoad = function (x, z, pad) {
       const p = pad == null ? 0 : pad;
       if (DL_STAGE.roadMask.sample(x, z) > 0.08) return true;
-      /* Keep Colonia, Vernacular Districts, Palace Precinct & Lower Town urban footprints clear of wild groves */
-      if (x > -275 - p && x < 785 + p && z > -585 - p && z < 675 + p) return true;
+      /* Keep walled Colonia, North, East, SE, South Wards, Palace Precinct & Lower Town clear of wild groves */
+      if (x > -275 - p && x < 790 + p && z > -585 - p && z < 680 + p) return true;
+      if (x > 240 - p && x < 790 + p && z >= 660 - p && z < 910 + p) return true;
       if (x > -545 - p && x < -275 + p && z > -265 - p && z < 285 + p) return true;
       /* Keep Solstice sunset sightline corridor 100% clear */
       const rx = x - L.solstice.x;

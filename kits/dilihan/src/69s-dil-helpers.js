@@ -69,15 +69,31 @@ function dlnBrickWing(x, y, z, w, h, d, ry, o) {
   }
 }
 
+/* Non-overlapping 4-sided perimeter ring of boxes (zero corner overlap, open interior) */
+function dlnRingBox(item, x, y, z, w, h, d, t, ry, c) {
+  const bt = Math.min(t, w * 0.48, d * 0.48);
+  const innerD = d - bt * 2;
+  for (const sz of [-1, 1]) {
+    const pz = loc(x, z, 0, sz * (d * 0.5 - bt * 0.5), ry || 0);
+    vB(item, pz[0], y, pz[1], w, h, bt, ry || 0, c);
+  }
+  if (innerD > 0.04) {
+    for (const sx of [-1, 1]) {
+      const px = loc(x, z, sx * (w * 0.5 - bt * 0.5), 0, ry || 0);
+      vB(item, px[0], y, px[1], bt, h, innerD, ry || 0, c);
+    }
+  }
+}
+
 /* 3. Hybrid Dilihan cornice: corbeled red/ochre brick step + cream mortar fillet + Iziz Imperial orange fascia */
 function dlnCornice(x, y, z, w, d, ry, o) {
   o = o || {};
   const morC = dlnMortarTint();
   const brkC = vC(dlnPick(DL_PAL.brickOchre));
   const orgC = dlnOrangeTint();
-  vB('dlBrickOchreB', x, y, z, w + 0.24, 0.20, d + 0.24, ry, brkC);
-  vB('dlMortarB', x, y + 0.20, z, w + 0.44, 0.18, d + 0.44, ry, morC);
-  vB('vWood', x, y + 0.38, z, w + 0.56, 0.16, d + 0.56, ry, orgC);
+  dlnRingBox('dlBrickOchreB', x, y + 0.01, z, w + 0.24, 0.19, d + 0.24, 0.42, ry, brkC);
+  dlnRingBox('dlMortarB',     x, y + 0.20, z, w + 0.44, 0.18, d + 0.44, 0.48, ry, morC);
+  dlnRingBox('vWood',         x, y + 0.38, z, w + 0.56, 0.16, d + 0.56, 0.52, ry, orgC);
   return y + 0.54;
 }
 
@@ -255,20 +271,17 @@ function dlnImpluvium(x, y, z, w, d, ry, o) {
   const rimW = 0.32;
   const rimH = o.rimH == null ? 0.34 : o.rimH;
   /* Four cream-mortar coping benches framing the basin */
-  for (const s of [-1, 1]) {
-    const pz = loc(x, z, 0, s * (d * 0.5 - rimW * 0.5), ry);
-    vB('dlMortarB', pz[0], y, pz[1], w, rimH, rimW, ry, morC);
-    const px = loc(x, z, s * (w * 0.5 - rimW * 0.5), 0, ry);
-    vB('dlMortarB', px[0], y, px[1], rimW, rimH, Math.max(0.2, d - rimW * 2), ry, morC);
-  }
-  /* Tiled basin floor + shimmering turquoise water sheet */
-  vB('dlBrickDeepB', x, y, z, Math.max(0.4, w - rimW * 2), 0.08, Math.max(0.4, d - rimW * 2), ry, vC(dlnPick(DL_PAL.brickDeep)));
-  vB('dlWaterB', x, y + 0.08, z, Math.max(0.4, w - rimW * 2), rimH - 0.14, Math.max(0.4, d - rimW * 2), ry, watC);
+  dlnRingBox('dlMortarB', x, y, z, w, rimH, d, rimW, ry, morC);
+  /* Tiled basin floor + shimmering turquoise water sheet separated cleanly by 0.08 m */
+  const iw = Math.max(0.4, w - rimW * 2 - 0.04);
+  const id = Math.max(0.4, d - rimW * 2 - 0.04);
+  vB('dlBrickDeepB', x, y, z, iw, 0.06, id, ry, vC(dlnPick(DL_PAL.brickDeep)));
+  vB('dlWaterB', x, y + 0.14, z, iw, Math.max(0.08, rimH - 0.20), id, ry, watC);
   /* Central stone/verdigris-copper cooling fountain column */
   if (o.fountain !== false && w >= 2.2 && d >= 2.2) {
-    vPst('dlMortarPost', x, y + 0.08, z, 0.22, rimH + 0.48, morC);
-    kput('vDomeC', [x, y + rimH + 0.52, z], null, [0.42, 0.18, 0.42], null);
-    vPst('vPipeC', x, y + rimH + 0.52, z, 0.06, 0.34, null);
+    vPst('dlMortarPost', x, y + 0.14, z, 0.22, rimH + 0.44, morC);
+    kput('vDomeC', [x, y + rimH + 0.58, z], null, [0.42, 0.18, 0.42], null);
+    vPst('vPipeC', x, y + rimH + 0.60, z, 0.06, 0.32, null);
   }
 }
 
@@ -283,11 +296,11 @@ function dlnZeerCluster(x, y, z, n, ry) {
     vB('vWood', p[0], y, p[1], 0.46, 0.18, 0.46, ry || 0, lvC);
     vBall('vGourd', p[0], y + 0.44, p[1], 0.25, jarC, 0.36);
     vPst('vClayPot', p[0], y + 0.68, p[1], 0.13, 0.16, jarC);
-    vB('vWood', p[0], y + 0.84, p[1], 0.30, 0.04, 0.30, ry || 0, lvC);
+    vB('vWood', p[0], y + 0.85, p[1], 0.30, 0.04, 0.30, ry || 0, lvC);
   }
 }
 
-/* 10. Taut courtyard / terrace canvas shade-sail (alternating unbleached linen & Iziz orange stripes) */
+/* 10. Taut courtyard / terrace canvas shade-sail (3 non-overlapping panels in one plane: zero cloth z-fighting) */
 function dlnShadeSail(x, y, z, w, d, ry, o) {
   o = o || {};
   const tiltX = o.tiltX == null ? 0.10 : o.tiltX;
@@ -296,9 +309,16 @@ function dlnShadeSail(x, y, z, w, d, ry, o) {
   const linenC = vC(dlnPick(DL_PAL.linen));
   const orgC = dlnOrangeTint();
   const q = vQ(ry || 0, tiltX, tiltZ);
-  /* Main taut linen sheet + Iziz-orange center & edge bands */
-  kput('vClothB', [x, y, z], q, [w, 0.045, d], o.orange ? orgC : linenC);
-  kput('vClothB', [x, y + 0.015, z], q, [w * 0.28, 0.05, d * 0.98], orgC);
+  const sideC = o.orange ? orgC : linenC;
+  const midC = o.orange ? linenC : orgC;
+  const midW = w * 0.28;
+  const sideW = w * 0.34;
+  const ux = new THREE.Vector3(1, 0, 0).applyQuaternion(q);
+  kput('vClothB', [x, y, z], q, [midW, 0.05, d * 0.98], midC);
+  for (const sx of [-1, 1]) {
+    const off = sx * (midW * 0.5 + sideW * 0.5 + w * 0.01);
+    kput('vClothB', [x + ux.x * off, y + ux.y * off, z + ux.z * off], q, [sideW, 0.05, d], sideC);
+  }
   /* Tensioned corner guy-ropes or slim masts */
   if (o.posts) {
     const postH = o.postH == null ? 2.5 : o.postH;
@@ -335,43 +355,53 @@ function dlnPergola(x, y, z, w, d, h, ry, o) {
     const pz = loc(x, z, 0, s * (d * 0.5 - 0.08), ry || 0);
     vB('vWood', pz[0], y + h - 0.14, pz[1], w + 0.24, 0.14, 0.12, ry || 0, postC);
     const px = loc(x, z, s * (w * 0.5 - 0.08), 0, ry || 0);
-    vB('vWood', px[0], y + h - 0.26, px[1], 0.12, 0.14, d + 0.24, ry || 0, postC);
+    vB('vWood', px[0], y + h - 0.29, px[1], 0.12, 0.14, d + 0.24, ry || 0, postC);
   }
-  /* Closely spaced hyperbamboo / timber shade slats + woven linen runner */
+  /* Closely spaced hyperbamboo / timber shade slats + non-overlapping 3-strip woven linen runner */
   const nSlats = Math.max(6, Math.round(d / 0.36));
   for (let k = 0; k <= nSlats; k++) {
     const lz = -d * 0.5 + (d * k) / nSlats;
     const ps = loc(x, z, 0, lz, ry || 0);
-    vB('vWood', ps[0], y + h + 0.01, ps[1], w + 0.30, 0.045, 0.10, ry || 0, slatC);
+    vB('vWood', ps[0], y + h + 0.02, ps[1], w + 0.30, 0.05, 0.10, ry || 0, slatC);
   }
   if (o.clothStrip !== false) {
-    kput('vClothB', [x, y + h + 0.07, z], vQ(ry || 0, 0, 0), [w * 0.62, 0.03, d * 0.72], vC(dlnPick(DL_PAL.linen)));
-    kput('vClothB', [x, y + h + 0.085, z], vQ(ry || 0, 0, 0), [w * 0.18, 0.03, d * 0.72], dlnOrangeTint());
+    const linC = vC(dlnPick(DL_PAL.linen));
+    const orgC = dlnOrangeTint();
+    const q0 = vQ(ry || 0, 0, 0);
+    const midW = w * 0.18;
+    const sideW = w * 0.21;
+    kput('vClothB', [x, y + h + 0.14, z], q0, [midW, 0.04, d * 0.72], orgC);
+    for (const sx of [-1, 1]) {
+      const pc = loc(x, z, sx * (midW * 0.5 + sideW * 0.5 + 0.03), 0, ry || 0);
+      kput('vClothB', [pc[0], y + h + 0.14, pc[1]], q0, [sideW, 0.04, d * 0.72], linC);
+    }
   }
 }
 
 /* 12. Brick-paved open courtyard with optional impluvium pool, planters, zeer jars & shade-sail */
 function dlnCourtyard(x, y, z, w, d, ry, o) {
   o = o || {};
-  /* Herringbone/patterned warm brick courtyard floor + cream mortar border */
-  vB('dlMortarB', x, y - 0.04, z, w, 0.06, d, ry || 0, dlnMortarTint());
-  vB('dlBrickOchreB', x, y + 0.02, z, Math.max(0.6, w - 0.48), 0.05, Math.max(0.6, d - 0.48), ry || 0, vC(dlnPick(DL_PAL.brickOchre)));
+  /* Perimeter cream-mortar curb ring + inset warm brick paving (zero stacked full-area slabs) */
+  const morC = dlnMortarTint();
+  const brkC = vC(dlnPick(DL_PAL.brickOchre));
+  dlnRingBox('dlMortarB', x, y, z, w, 0.07, d, 0.26, ry || 0, morC);
+  vB('dlBrickOchreB', x, y, z, Math.max(0.6, w - 0.54), 0.06, Math.max(0.6, d - 0.54), ry || 0, brkC);
   if (o.pool !== false && w >= 4.2 && d >= 4.2) {
     const pw = o.poolW == null ? Math.min(4.6, w * 0.46) : o.poolW;
     const pd = o.poolD == null ? Math.min(4.6, d * 0.46) : o.poolD;
-    dlnImpluvium(x, y + 0.06, z, pw, pd, ry || 0, { fountain: o.fountain !== false });
+    dlnImpluvium(x, y + 0.07, z, pw, pd, ry || 0, { fountain: o.fountain !== false });
   }
   /* Corner tropical shade planters */
   if (o.planters !== false && w >= 5.0 && d >= 5.0) {
     const lvC = dlnLouverTint();
     for (const sx of [-1, 1]) {
       const pp = loc(x, z, sx * (w * 0.5 - 0.85), -d * 0.5 + 0.85, ry || 0);
-      vnPlanter(pp[0], y + 0.06, pp[1], 1.25, 1.05, ry || 0, lvC);
+      vnPlanter(pp[0], y + 0.07, pp[1], 1.25, 1.05, ry || 0, lvC);
     }
   }
   if (o.zeer !== false) {
     const zp = loc(x, z, w * 0.5 - 0.85, d * 0.5 - 0.95, ry || 0);
-    dlnZeerCluster(zp[0], y + 0.06, zp[1], 2, (ry || 0) + Math.PI * 0.5);
+    dlnZeerCluster(zp[0], y + 0.07, zp[1], 2, (ry || 0) + Math.PI * 0.5);
   }
   if (o.sail && o.sailY != null) {
     dlnShadeSail(x, o.sailY, z, w * 0.76, d * 0.68, ry || 0, { tiltX: 0.09, tiltZ: -0.05 });
@@ -388,23 +418,23 @@ function dlnMonitorRoof(x, y, z, w, d, rise, ry, o) {
   const orgC = dlnOrangeTint();
 
   if (o.gable) {
-    vnGableRoof(x, y, z, w, d, rise, ry || 0,
+    vnGableRoof(x, y + 0.02, z, w, d, rise, ry || 0,
       copper ? 'vGableCu' : 'dlGableTile', tileC, over,
-      o.endItem || 'dlGableBrick', o.endC || dlnBrickTint(false), 0.22);
+      o.endItem || 'dlGableBrick', o.endC || dlnBrickTint(false), 0.24);
   } else {
     const hipItem = copper ? 'vHipCu' : 'dlHipTile';
-    kput(hipItem, [x, y - 0.26, z], ry ? qEuler(0, ry, 0) : null, [w + 2 * over, rise + 0.26, d + 2 * over], tileC);
-    /* Iziz-orange eaves fascia board */
-    vB('vWood', x, y - 0.42, z, w + 2 * over + 0.08, 0.18, d + 2 * over + 0.08, ry || 0, orgC);
+    /* Perimeter Iziz-orange eaves fascia strictly below hip roof base (zero interior or base overlap) */
+    dlnRingBox('vWood', x, y - 0.19, z, w + 2 * over + 0.08, 0.18, d + 2 * over + 0.08, 0.24, ry || 0, orgC);
+    kput(hipItem, [x, y, z], ry ? qEuler(0, ry, 0) : null, [w + 2 * over, rise, d + 2 * over], tileC);
   }
 
-  /* Exposed tropical timber rafter-tails under the deep monsoon eaves */
+  /* Exposed tropical timber rafter-tails cleanly below the eaves fascia */
   const nRafX = Math.max(3, Math.round((w + over) / 1.1));
   for (let i = 0; i <= nRafX; i++) {
     const lx = -(w * 0.5 + over * 0.6) + ((w + over * 1.2) * i) / nRafX;
     for (const sz of [-1, 1]) {
       const rp = loc(x, z, lx, sz * (d * 0.5 + over * 0.48), ry || 0);
-      vB('vWood', rp[0], y - 0.36, rp[1], 0.09, 0.12, over * 0.92, ry || 0, lvC);
+      vB('vWood', rp[0], y - 0.33, rp[1], 0.09, 0.12, over * 0.92, ry || 0, lvC);
     }
   }
 
@@ -413,29 +443,29 @@ function dlnMonitorRoof(x, y, z, w, d, rise, ry, o) {
     const mw = o.monW == null ? Math.max(2.2, w * 0.54) : o.monW;
     const md = o.monD == null ? Math.max(1.5, Math.min(3.2, d * 0.34)) : o.monD;
     const mh = o.monH == null ? 0.78 : o.monH;
-    const my = y + rise * 0.66;
+    const my = y + rise * 0.68;
     /* Monitor base curb + dark louvered exhaust band */
-    vB('dlMortarB', x, my - 0.14, z, mw + 0.16, 0.18, md + 0.16, ry || 0, dlnMortarTint());
-    vB('vPlaster', x, my + 0.04, z, mw - 0.12, mh, md - 0.12, ry || 0, vC(DL_PAL.shadeVoid));
-    /* Corner & intermediate louver posts + horizontal exhaust blades */
+    dlnRingBox('dlMortarB', x, my - 0.14, z, mw + 0.16, 0.18, md + 0.16, 0.24, ry || 0, dlnMortarTint());
+    vB('vPlaster', x, my + 0.05, z, mw - 0.14, mh - 0.07, md - 0.14, ry || 0, vC(DL_PAL.shadeVoid));
+    /* Corner & intermediate louver posts + perimeter horizontal exhaust blades */
     const nPosts = Math.max(2, Math.round(mw / 1.4));
     for (let i = 0; i <= nPosts; i++) {
       const lx = -mw * 0.5 + (mw * i) / nPosts;
       for (const sz of [-1, 1]) {
         const pp = loc(x, z, lx, sz * (md * 0.5), ry || 0);
-        vB('vWood', pp[0], my + 0.04, pp[1], 0.11, mh, 0.11, ry || 0, lvC);
+        vB('vWood', pp[0], my + 0.05, pp[1], 0.11, mh - 0.07, 0.11, ry || 0, lvC);
       }
     }
     for (const bladeY of [0.24, 0.48, 0.68]) {
-      if (bladeY >= mh) continue;
-      vB('vWood', x, my + bladeY, z, mw + 0.12, 0.05, md + 0.12, ry || 0, lvC);
+      if (bladeY >= mh - 0.10) continue;
+      dlnRingBox('vWood', x, my + bladeY, z, mw + 0.12, 0.05, md + 0.12, 0.12, ry || 0, lvC);
     }
-    /* Overhanging monitor cap roof */
+    /* Overhanging monitor cap fascia & non-overlapping monitor hip roof */
     const capRise = o.monRise == null ? 0.68 : o.monRise;
     const capOver = 0.48;
-    kput(copper ? 'vHipCu' : 'dlHipTile', [x, my + mh - 0.08, z], ry ? qEuler(0, ry, 0) : null,
-      [mw + capOver * 2, capRise + 0.14, md + capOver * 2], tileC);
-    vB('vWood', x, my + mh - 0.18, z, mw + capOver * 2 + 0.06, 0.12, md + capOver * 2 + 0.06, ry || 0, orgC);
+    dlnRingBox('vWood', x, my + mh - 0.01, z, mw + capOver * 2 + 0.06, 0.12, md + capOver * 2 + 0.06, 0.20, ry || 0, orgC);
+    kput(copper ? 'vHipCu' : 'dlHipTile', [x, my + mh + 0.12, z], ry ? qEuler(0, ry, 0) : null,
+      [mw + capOver * 2, capRise, md + capOver * 2], tileC);
   }
 }
 
@@ -449,30 +479,30 @@ function dlnWindCatcher(x, y, z, w, d, h, ry, o) {
   const scoopH = Math.min(1.35, h * 0.46);
   const shaftH = h - scoopH;
 
-  vB('dlMortarB', x, y - 0.10, z, w + 0.24, 0.18, d + 0.24, ry || 0, morC);
-  vB('dlBrickBandB', x, y + 0.08, z, w, shaftH, d, ry || 0, brkC);
-  vB('dlMortarB', x, y + shaftH, z, w + 0.22, 0.16, d + 0.22, ry || 0, morC);
+  dlnRingBox('dlMortarB', x, y - 0.10, z, w + 0.24, 0.18, d + 0.24, 0.26, ry || 0, morC);
+  vB('dlBrickBandB', x, y + 0.09, z, w, shaftH - 0.10, d, ry || 0, brkC);
+  dlnRingBox('dlMortarB', x, y + shaftH, z, w + 0.22, 0.16, d + 0.22, 0.26, ry || 0, morC);
 
   /* 4-directional louvered wind-scoop head with X-baffle partitions inside */
-  const sy = y + shaftH + 0.16;
+  const sy = y + shaftH + 0.17;
   for (const sx of [-1, 1]) {
     for (const sz of [-1, 1]) {
       const cp = loc(x, z, sx * (w * 0.5 - 0.16), sz * (d * 0.5 - 0.16), ry || 0);
-      vB('dlBrickB', cp[0], sy, cp[1], 0.32, scoopH, 0.32, ry || 0, brkC);
+      vB('dlBrickB', cp[0], sy, cp[1], 0.32, scoopH - 0.02, 0.32, ry || 0, brkC);
     }
   }
   /* Diagonal internal wind-baffle cross */
-  vB('dlMortarB', x, sy + 0.04, z, w * 0.78, scoopH - 0.08, 0.10, (ry || 0) + Math.PI * 0.25, morC);
-  vB('dlMortarB', x, sy + 0.04, z, w * 0.78, scoopH - 0.08, 0.10, (ry || 0) - Math.PI * 0.25, morC);
+  vB('dlMortarB', x, sy + 0.04, z, w * 0.78, scoopH - 0.10, 0.10, (ry || 0) + Math.PI * 0.25, morC);
+  vB('dlMortarB', x, sy + 0.04, z, w * 0.78, scoopH - 0.10, 0.10, (ry || 0) - Math.PI * 0.25, morC);
   /* Louver intake slats */
   for (const ly of [0.32, 0.68, 1.02]) {
-    if (ly >= scoopH) continue;
-    vB('vWood', x, sy + ly, z, w + 0.04, 0.06, d + 0.04, ry || 0, lvC);
+    if (ly >= scoopH - 0.06) continue;
+    dlnRingBox('vWood', x, sy + ly, z, w + 0.04, 0.06, d + 0.04, 0.12, ry || 0, lvC);
   }
-  /* Cap cornice + pyramidal terracotta or copper hood */
+  /* Cap cornice + pyramidal terracotta or copper hood strictly above cornice */
   const topY = sy + scoopH;
-  vB('vWood', x, topY, z, w + 0.52, 0.14, d + 0.52, ry || 0, orgC);
-  kput(o.copper ? 'vPyrCu' : 'dlPyrTile', [x, topY + 0.10, z], ry ? qEuler(0, ry, 0) : null,
+  dlnRingBox('vWood', x, topY, z, w + 0.52, 0.14, d + 0.52, 0.22, ry || 0, orgC);
+  kput(o.copper ? 'vPyrCu' : 'dlPyrTile', [x, topY + 0.15, z], ry ? qEuler(0, ry, 0) : null,
     [w + 0.76, 0.85, d + 0.76], o.copper ? null : dlnTileTint());
 }
 

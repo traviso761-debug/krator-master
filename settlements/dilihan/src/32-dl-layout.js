@@ -188,10 +188,16 @@ var DL_LAYOUT = (function () {
     dil_guildhall_peristyle: { w: 26.0, d: 24.0, h: 16.4, cornice: 8.80, kit: 'dil', culture: 'iziz', style: 'dilihan', wealth: null,     types: ['civic'],           job: 'trading',     pop: 36, lit: true },
     dil_barracks_arcade:     { w: 28.0, d: 22.0, h: 15.6, cornice: 8.30, kit: 'dil', culture: 'iziz', style: 'dilihan', wealth: null,     types: ['civic', 'military'], pop: 75,          lit: true },
     dil_shrine_suncourt:     { w: 22.0, d: 22.0, h: 17.2, cornice: 8.40, kit: 'dil', culture: 'iziz', style: 'dilihan', wealth: null,     types: ['civic', 'religious'], job: 'worship',  pop: 28, lit: true },
+    dil_wall_seg:            { w: 12.0, d: 5.2,  h: 11.4, cornice: 9.00, kit: 'dil', culture: 'iziz', style: 'dilihan', wealth: null,     types: ['military', 'infrastructure'], pop: 0 },
+    dil_wall_tower:          { w: 10.0, d: 10.0, h: 19.5, cornice: 14.5, kit: 'dil', culture: 'iziz', style: 'dilihan', wealth: null,     types: ['military', 'infrastructure'], pop: 4,  lit: true },
+    dil_wall_corner:         { w: 12.4, d: 12.4, h: 22.0, cornice: 14.8, kit: 'dil', culture: 'iziz', style: 'dilihan', wealth: null,     types: ['military', 'infrastructure'], pop: 6,  lit: true },
+    dil_wall_gate:           { w: 24.0, d: 13.6, h: 23.5, cornice: 15.4, kit: 'dil', culture: 'iziz', style: 'dilihan', wealth: null,     types: ['military', 'infrastructure'], job: 'customs', pop: 14, lit: true },
 
     /* Dilihan site-specific bespoke landmarks & infrastructure (src/82-dl-landmarks.js) */
     dl_gov_palace:         { w: 62.0, d: 76.0, h: 28.0, cornice: 11.2, kit: 'dl', culture: 'iziz-vernacular', wealth: null, types: ['civic', 'dwelling-single'], job: 'customs', pop: 85, lit: true },
     dl_colonia_forum:      { w: 64.0, d: 52.0, h: 9.5,  cornice: 6.80, kit: 'dl', culture: 'jimjam',          wealth: null, types: ['plaza', 'civic', 'market'], job: 'trading', pop: 25, lit: false },
+    dl_solstice_plaza:     { w: 86.0, d: 110.0,h: 2.6,  cornice: 1.00, kit: 'dl', culture: 'jimjam',          wealth: null, types: ['plaza', 'religious'], job: 'worship', pop: 0, lit: false },
+    dl_scarp_parapet:      { w: 12.0, d: 2.8,  h: 2.8,  cornice: 2.00, kit: 'dl', culture: 'jimjam',          wealth: null, types: ['military', 'infrastructure'], pop: 0, lit: false },
     dl_hykkousoi_legation: { w: 38.0, d: 34.0, h: 13.5, cornice: 7.80, kit: 'dl', culture: 'hykkousoi',       wealth: 'rich', types: ['civic', 'dwelling-single'], job: 'customs', pop: 32, lit: true },
     dl_customs_post:       { w: 30.0, d: 22.0, h: 12.5, cornice: 7.20, kit: 'dl', culture: 'iziz-vernacular', wealth: null, types: ['civic', 'infrastructure'], job: 'customs', pop: 28, lit: true },
     dl_stream_bridge:      { w: 14.0, d: 28.0, h: 6.8,  cornice: 4.50, kit: 'dl', culture: 'jimjam',          wealth: null, types: ['infrastructure'], job: 'masonry', pop: 0 },
@@ -267,6 +273,9 @@ var DL_LAYOUT = (function () {
     return false;
   }
   function boxesOverlap(a, b, gap) {
+    if ((a.concentricPair && a.concentricPair === b.id) || (b.concentricPair && b.concentricPair === a.id)) {
+      return false;
+    }
     var g = gap == null ? 0 : gap;
     return !sepPoly(cornersOf(a, g * 0.5), cornersOf(b, g * 0.5));
   }
@@ -350,8 +359,8 @@ var DL_LAYOUT = (function () {
       [[262, 490], [762, 490], [762, 889], [262, 889]]        /* SE Pass Approach: 500 x 399 m = 0.1995 km2 -> sum = 1.000 km2 */
     ];
 
-    /* Sightline corridor from jj_temple_sun (-182, -72) along Az 245.39 deg: keep 100% clear of buildings & high walls */
-    var TEMPLE_X = -182.0, TEMPLE_Z = -72.0, TEMPLE_RY = SOL.ry;
+    /* Sightline corridor from jj_temple_sun (-170, -72) along Az 245.39 deg: keep 100% clear of buildings & high walls */
+    var TEMPLE_X = -170.0, TEMPLE_Z = -72.0, TEMPLE_RY = SOL.ry;
     var SIGHT_DX = Math.sin(TEMPLE_RY), SIGHT_DZ = Math.cos(TEMPLE_RY);  /* (-0.9092, +0.4165) */
 
     function inSolsticeCorridor(x, z, r) {
@@ -394,16 +403,18 @@ var DL_LAYOUT = (function () {
         district: extra && extra.district ? extra.district : ('zone' + zone),
         name: extra && extra.name ? extra.name : null,
         landmark: !!(extra && extra.landmark),
+        concentricPair: extra && extra.concentricPair ? extra.concentricPair : null,
         construct: extra && extra.construct ? extra.construct : null,
         source: extra && extra.source ? extra.source : null
       };
-      rec.y = padElevation(rec);
+      if (rec.cls !== 'building') rec.area = 0;
+      rec.y = extra && extra.yFixed != null ? r2(extra.yFixed) : padElevation(rec);
       return rec;
     }
 
     function canStand(rec, gap) {
       var g = gap == null ? 1.2 : gap;
-      var rad = Math.hypot(rec.w, rec.d) * 0.5 + g + 34;
+      var rad = Math.hypot(rec.w, rec.d) * 0.5 + g + 58;
       return !space.some(rec.x, rec.z, rad, function (other) {
         return boxesOverlap(rec, other, g);
       });
@@ -418,124 +429,256 @@ var DL_LAYOUT = (function () {
     }
 
     /* ================================================================
-     * A. HIGHWAYS, STREETS & AQUEDUCT WAYS
+     * A. HIGHWAYS, STREETS & AQUEDUCT WAYS (aligned cleanly through every inner & outer wall gate)
      * ================================================================ */
     ways.push(
       /* Major pass & regional highways (net51.json) */
-      { id: 'hwy.north.jimjam', cls: 'highway', w: 10, pts: [[0, -2350], [0, -1450], [0, -680], [0, -310]] },
+      { id: 'hwy.north.jimjam', cls: 'highway', w: 10, pts: [[2, -2350], [2, -1450], [2, -562], [0, -442], [0, -310]] },
       { id: 'hwy.south.league', cls: 'highway', w: 9,  pts: [[-410, -40], [-410, 380], [-340, 880], [-220, 1750], [-120, 2350]] },
-      { id: 'hwy.se.portvisas', cls: 'highway', w: 9,  pts: [[256, 200], [520, 420], [860, 680], [1380, 1080], [2100, 1650]] },
-      { id: 'road.ramp.lowertown', cls: 'main', w: 8,  pts: [[-410, 235], [-295, 240], [-195, 240], [0, 198]] },
-      { id: 'road.lowertown.north', cls: 'main', w: 8, pts: [[-410, -40], [-410, -340], [-180, -445], [0, -445]] },
+      { id: 'hwy.se.portvisas', cls: 'highway', w: 9,  pts: [[256, 200], [520, 420], [770, 614], [860, 680], [1380, 1080], [2100, 1650]] },
+      { id: 'road.ramp.lowertown', cls: 'main', w: 8,  pts: [[-410, 235], [-295, 242], [-250, 242], [-195, 242], [0, 198]] },
+      { id: 'road.lowertown.north', cls: 'main', w: 8, pts: [[-410, -40], [-410, -340], [-250, -442], [0, -442]] },
 
-      /* Colonia orthogonal cardo & decumanus */
-      { id: 'colonia.cardo',     cls: 'avenue', w: 11, pts: [[0, -308], [0, 188]] },
-      { id: 'colonia.decumanus', cls: 'avenue', w: 11, pts: [[-244, -60], [248, -60]] },
-      { id: 'colonia.north.st',  cls: 'side',   w: 6.5, pts: [[-238, -178], [238, -178]] },
-      { id: 'colonia.south.st',  cls: 'side',   w: 6.5, pts: [[-238, 66], [238, 66]] },
-      { id: 'colonia.west.st',   cls: 'side',   w: 6.5, pts: [[-116, -296], [-116, 178]] },
-      { id: 'colonia.east.st',   cls: 'side',   w: 6.5, pts: [[116, -296], [116, 178]] },
+      /* Colonia orthogonal cardo, decumanus & Sanctuary Processional Way */
+      { id: 'colonia.cardo',        cls: 'avenue', w: 11, pts: [[0, -308], [0, 188]] },
+      { id: 'colonia.decumanus',    cls: 'avenue', w: 11, pts: [[-98, -60], [248, -60]] },
+      { id: 'colonia.solstice.way', cls: 'avenue', w: 10, pts: [[-32, -60], [-98, -60], [-120, -95]] },
+      { id: 'colonia.north.st',     cls: 'side',   w: 6.5, pts: [[-238, -178], [238, -178]] },
+      { id: 'colonia.south.st',     cls: 'side',   w: 6.5, pts: [[-248, 60], [248, 60]] },
+      { id: 'colonia.west.st.n',    cls: 'side',   w: 6.5, pts: [[-116, -296], [-116, -138]] },
+      { id: 'colonia.west.st.s',    cls: 'side',   w: 6.5, pts: [[-116, 0], [-116, 188]] },
+      { id: 'colonia.east.st',      cls: 'side',   w: 6.5, pts: [[116, -296], [116, 178]] },
 
       /* The Wall Streets (boundary avenues between Colonia & Vernacular Districts) */
-      { id: 'wallstreet.east',   cls: 'avenue', w: 13, pts: [[256, -320], [256, 490]] },
-      { id: 'wallstreet.south',  cls: 'avenue', w: 13, pts: [[-250, 196], [256, 196]] },
-      { id: 'wallstreet.north',  cls: 'avenue', w: 12, pts: [[-245, -318], [390, -318]] },
+      { id: 'wallstreet.east',   cls: 'avenue', w: 13, pts: [[262, -316], [262, 490]] },
+      { id: 'wallstreet.south',  cls: 'avenue', w: 13, pts: [[-242, 202], [262, 202]] },
+      { id: 'wallstreet.north',  cls: 'avenue', w: 12, pts: [[-242, -322], [510, -322]] },
 
-      /* Vernacular District main streets */
-      { id: 'vern.east.main1',   cls: 'main',   w: 9,  pts: [[256, -60], [745, -60]] },
-      { id: 'vern.east.main2',   cls: 'main',   w: 8,  pts: [[256, 110], [745, 110]] },
-      { id: 'vern.east.main3',   cls: 'main',   w: 8,  pts: [[256, -200], [720, -200]] },
-      { id: 'vern.east.cross1',  cls: 'main',   w: 8,  pts: [[415, -305], [415, 465]] },
-      { id: 'vern.east.cross2',  cls: 'main',   w: 8,  pts: [[585, -305], [585, 465]] },
-      { id: 'vern.south.cardo',  cls: 'avenue', w: 10, pts: [[0, 196], [0, 645]] },
-      { id: 'vern.south.main1',  cls: 'main',   w: 8,  pts: [[-240, 345], [240, 345]] },
-      { id: 'vern.south.main2',  cls: 'main',   w: 8,  pts: [[-240, 495], [240, 495]] },
-      { id: 'vern.north.serai',  cls: 'main',   w: 9,  pts: [[-210, -445], [375, -445]] },
+      /* Vernacular District main & cross streets across ALL FOUR walled wards (East, SE, South, North) */
+      { id: 'vern.east.main1',   cls: 'main',   w: 9,  pts: [[262, -58], [770, -58]] },
+      { id: 'vern.east.main2',   cls: 'main',   w: 8,  pts: [[262, 110], [752, 110]] },
+      { id: 'vern.east.main3',   cls: 'main',   w: 8,  pts: [[262, -200], [752, -200]] },
+      { id: 'vern.east.main4',   cls: 'main',   w: 8,  pts: [[370, 275], [752, 275]] },
+      { id: 'vern.east.main5',   cls: 'main',   w: 8,  pts: [[370, 420], [752, 420]] },
+      { id: 'vern.east.cross1',  cls: 'main',   w: 8,  pts: [[415, -310], [415, 872]] },
+      { id: 'vern.east.cross2',  cls: 'main',   w: 8,  pts: [[585, -310], [585, 872]] },
+      { id: 'vern.east.cross3',  cls: 'side',   w: 6.5, pts: [[690, -305], [690, 872]] },
+      { id: 'vern.se.main1',     cls: 'main',   w: 8,  pts: [[272, 555], [752, 555]] },
+      { id: 'vern.se.main2',     cls: 'main',   w: 8,  pts: [[272, 705], [752, 705]] },
+      { id: 'vern.se.main3',     cls: 'side',   w: 6.5, pts: [[272, 815], [752, 815]] },
+      { id: 'vern.south.cardo',  cls: 'avenue', w: 10, pts: [[2, 198], [2, 662], [2, 820], [-280, 880]] },
+      { id: 'vern.south.main1',  cls: 'main',   w: 8,  pts: [[-238, 325], [240, 325]] },
+      { id: 'vern.south.main2',  cls: 'main',   w: 8,  pts: [[-238, 455], [240, 455]] },
+      { id: 'vern.south.main3',  cls: 'main',   w: 8,  pts: [[-238, 575], [240, 575]] },
+      { id: 'vern.south.cross1', cls: 'side',   w: 6.5, pts: [[-125, 204], [-125, 646]] },
+      { id: 'vern.south.cross2', cls: 'side',   w: 6.5, pts: [[132, 204], [132, 646]] },
+      { id: 'vern.north.serai',  cls: 'main',   w: 9,  pts: [[-250, -442], [498, -442]] },
+      { id: 'vern.north.main2',  cls: 'side',   w: 6.5, pts: [[-236, -508], [498, -508]] },
+      { id: 'vern.north.cross1', cls: 'side',   w: 6.5, pts: [[-116, -548], [-116, -324]] },
+      { id: 'vern.north.cross2', cls: 'side',   w: 6.5, pts: [[215, -548], [215, -324]] },
+      { id: 'vern.north.cross3', cls: 'main',   w: 8,  pts: [[374, -562], [374, -322]] },
 
       /* Hinterland farm, brickyard & skarn lanes */
       { id: 'lane.handu.west',   cls: 'lane',   w: 6,  pts: [[-410, -340], [-820, -620], [-840, -1040], [-1080, -1480]] },
-      { id: 'lane.handu.east',   cls: 'lane',   w: 6,  pts: [[375, -445], [880, -540], [1140, -1080]] },
+      { id: 'lane.handu.east',   cls: 'lane',   w: 6,  pts: [[374, -562], [880, -540], [1140, -1080]] },
+      { id: 'lane.handu.east2',  cls: 'lane',   w: 6,  pts: [[770, -58], [880, -540]] },
       { id: 'lane.handu.apron',  cls: 'lane',   w: 6,  pts: [[-840, -1040], [-220, -860], [260, -860], [340, -1320], [-180, -1340]] }
     );
 
     /* ================================================================
-     * B. ZONE 1: GATED JIMJAM BRICK-AND-MARBLE CIRCUIT WALL & LANDMARKS
+     * B. INNER COLONIA CITADEL WALL (jj_wall_*) & OUTER DILIHAN CIRCUIT WALL (dil_wall_*)
+     * Exact 12.0 m modular join grid: zero unbridged gaps, every segment socketed into towers/bastions/gates!
      * ================================================================ */
-    /* Place the 4 circuit gates & 4 corner bastions on the 500 x 500 m Colonia perimeter */
-    var gateSpecs = [
-      { id: 'dl.wall.gate.north', x: 0,    z: -310, ry: Math.PI,      name: 'Jimjam Highway Gate' },
-      { id: 'dl.wall.gate.east',  x: 250,  z: -60,  ry: Math.PI / 2,  name: 'East Wall-Street Gate' },
-      { id: 'dl.wall.gate.south', x: 0,    z: 190,  ry: 0,            name: 'South Pass & Praetorium Gate' },
-      { id: 'dl.wall.gate.west',  x: -250, z: 66,   ry: -Math.PI / 2, name: 'West Scarp Postern Gate' }
-    ];
-    var cornerSpecs = [
+    function addWallPiece(id, zone, key, x, z, ry, extra) {
+      var rec = makeRecord(id, zone, key, x, z, ry, extra);
+      walls.push(rec);
+      return rec;
+    }
+
+    function addModularWallLeg(cfg) {
+      var dx = cfg.x1 - cfg.x0, dz = cfg.z1 - cfg.z0;
+      var L = Math.hypot(dx, dz);
+      var ux = dx / L, uz = dz / L;
+      var nSlots = Math.round(L / 12);
+      var gateSlots = {};
+      var gates = cfg.gates || [];
+      for (var g = 0; g < gates.length; g++) {
+        var gs = gates[g];
+        gateSlots[gs.slot] = true;
+        gateSlots[gs.slot + 1] = true;
+        var sGate = (gs.slot + 1) * 12;
+        addWallPiece(gs.id, cfg.zone, cfg.gateKey, cfg.x0 + ux * sGate, cfg.z0 + uz * sGate, cfg.outRy, {
+          name: gs.name, landmark: true, district: cfg.district
+        });
+      }
+      var notchSlots = cfg.notchSlots || {};
+      for (var k = 0; k < nSlots; k++) {
+        if (gateSlots[k]) continue;
+        var s = (k + 0.5) * 12;
+        var sx = cfg.x0 + ux * s, sz = cfg.z0 + uz * s;
+        var segKey = notchSlots[k] ? notchSlots[k] : cfg.segKey;
+        addWallPiece(cfg.prefix + '.seg.' + k, cfg.zone, segKey, sx, sz, cfg.outRy, { district: cfg.district });
+      }
+      /* Periodic watchtowers seated directly on 12 m segment joints (clear of gates & corners) */
+      var twEvery = cfg.towerEvery == null ? 7 : cfg.towerEvery;
+      var extraJoints = cfg.jointTowers || [];
+      var jointSet = {};
+      for (var ej = 0; ej < extraJoints.length; ej++) jointSet[extraJoints[ej]] = true;
+      for (var j = twEvery; j <= nSlots - twEvery; j += twEvery) {
+        var nearGate = false;
+        for (var g2 = 0; g2 < gates.length; g2++) {
+          if (Math.abs(j - (gates[g2].slot + 1)) <= 2) { nearGate = true; break; }
+        }
+        if (!nearGate) jointSet[j] = true;
+      }
+      var jKeys = Object.keys(jointSet);
+      for (var jk = 0; jk < jKeys.length; jk++) {
+        var ji = parseInt(jKeys[jk], 10);
+        var tx = cfg.x0 + ux * (ji * 12), tz = cfg.z0 + uz * (ji * 12);
+        if (inSolsticeCorridor(tx, tz, 6)) continue;
+        addWallPiece(cfg.prefix + '.twr.' + ji, cfg.zone, cfg.towerKey, tx, tz, cfg.outRy, { district: cfg.district });
+      }
+    }
+
+    /* B1. Historic Inner 500 x 500 m Colonia Circuit Wall (jj_wall_* on 42 x 12 m = 504 m legs socketed into r=5.6 m corner drums) */
+    var colCorners = [
       { id: 'dl.wall.corner.nw', x: -250, z: -310, ry: Math.PI },
       { id: 'dl.wall.corner.ne', x: 250,  z: -310, ry: Math.PI / 2 },
       { id: 'dl.wall.corner.se', x: 250,  z: 190,  ry: 0 },
       { id: 'dl.wall.corner.sw', x: -250, z: 190,  ry: -Math.PI / 2 }
     ];
-    for (var gi = 0; gi < gateSpecs.length; gi++) {
-      var gs = gateSpecs[gi];
-      var gr = makeRecord(gs.id, 1, 'jj_wall_gate', gs.x, gs.z, gs.ry, { name: gs.name, landmark: true, district: 'colonia-wall' });
-      walls.push(gr);
-      space.insert(gr, gr.x, gr.z, Math.hypot(gr.w, gr.d) * 0.5);
+    for (var ci = 0; ci < colCorners.length; ci++) {
+      addWallPiece(colCorners[ci].id, 1, 'jj_wall_corner', colCorners[ci].x, colCorners[ci].z, colCorners[ci].ry, { district: 'colonia-wall' });
     }
-    for (var ci = 0; ci < cornerSpecs.length; ci++) {
-      var cs = cornerSpecs[ci];
-      var cr = makeRecord(cs.id, 1, 'jj_wall_corner', cs.x, cs.z, cs.ry, { district: 'colonia-wall' });
-      walls.push(cr);
-      space.insert(cr, cr.x, cr.z, Math.hypot(cr.w, cr.d) * 0.5);
+    addModularWallLeg({
+      prefix: 'dl.wall.col.n', zone: 1, district: 'colonia-wall',
+      x0: -252, z0: -310, x1: 252, z1: -310, outRy: Math.PI,
+      segKey: 'jj_wall_seg', towerKey: 'jj_wall_tower', gateKey: 'jj_wall_gate', towerEvery: 8,
+      gates: [{ slot: 20, id: 'dl.wall.gate.north', name: 'Jimjam Highway Inner Gate' }]
+    });
+    addModularWallLeg({
+      prefix: 'dl.wall.col.e', zone: 1, district: 'colonia-wall',
+      x0: 250, z0: -312, x1: 250, z1: 192, outRy: Math.PI / 2,
+      segKey: 'jj_wall_seg', towerKey: 'jj_wall_tower', gateKey: 'jj_wall_gate', towerEvery: 8,
+      gates: [
+        { slot: 20, id: 'dl.wall.gate.east',  name: 'East Wall-Street Gate' },
+        { slot: 30, id: 'dl.wall.gate.east2', name: 'East Promenade Gate' }
+      ]
+    });
+    addModularWallLeg({
+      prefix: 'dl.wall.col.s', zone: 1, district: 'colonia-wall',
+      x0: 252, z0: 190, x1: -252, z1: 190, outRy: 0,
+      segKey: 'jj_wall_seg', towerKey: 'jj_wall_tower', gateKey: 'jj_wall_gate', towerEvery: 8,
+      gates: [
+        { slot: 20, id: 'dl.wall.gate.south', name: 'South Pass & Praetorium Gate' },
+        { slot: 30, id: 'dl.wall.gate.sw',    name: 'South-West Colonia Gate' }
+      ]
+    });
+    /* West Scarp Colonia Wall: z = 192 -> -312 (slots 18 & 19 at z = -24..-48 carry low dl_scarp_parapet framed by twin Sunset Towers!) */
+    addModularWallLeg({
+      prefix: 'dl.wall.col.w', zone: 1, district: 'colonia-wall',
+      x0: -250, z0: 192, x1: -250, z1: -312, outRy: -Math.PI / 2,
+      segKey: 'jj_wall_seg', towerKey: 'jj_wall_tower', gateKey: 'jj_wall_gate', towerEvery: 9,
+      gates: [{ slot: 10, id: 'dl.wall.gate.west', name: 'West Scarp Postern Gate' }],
+      notchSlots: { 18: 'dl_scarp_parapet', 19: 'dl_scarp_parapet' },
+      jointTowers: [18, 20]
+    });
+
+    /* B2. Continuous Outer Dilihan Vassal Circuit Wall (dil_wall_*: 3.95 km fortified enceinte enclosing ALL outer urban districts) */
+    var outerCorners = [
+      { id: 'dl.owall.corner.nw',  x: -250, z: -562, ry: -Math.PI * 0.75 },
+      { id: 'dl.owall.corner.ns1', x: 518,  z: -562, ry: Math.PI * 0.75 },
+      { id: 'dl.owall.corner.ns2', x: 518,  z: -322, ry: Math.PI * 0.75 },
+      { id: 'dl.owall.corner.ne',  x: 770,  z: -322, ry: Math.PI * 0.75 },
+      { id: 'dl.owall.corner.se',  x: 770,  z: 890,  ry: Math.PI * 0.25 },
+      { id: 'dl.owall.corner.ss1', x: 254,  z: 890,  ry: -Math.PI * 0.25 },
+      { id: 'dl.owall.corner.ss2', x: 254,  z: 662,  ry: -Math.PI * 0.25 },
+      { id: 'dl.owall.corner.sw',  x: -250, z: 662,  ry: -Math.PI * 0.25 }
+    ];
+    for (var oci = 0; oci < outerCorners.length; oci++) {
+      addWallPiece(outerCorners[oci].id, 3, 'dil_wall_corner', outerCorners[oci].x, outerCorners[oci].z, outerCorners[oci].ry, {
+        district: 'outer-wall', landmark: oci === 0 || oci === 3 || oci === 4 || oci === 7
+      });
     }
 
-    /* Lay 12 m jj_wall_seg runs + periodic jj_wall_tower drums around all 4 sides, leaving open the solstice sightline gap on W rim */
-    function addWallRun(x0, z0, x1, z1, outRy, prefix) {
-      var dx = x1 - x0, dz = z1 - z0, L = Math.hypot(dx, dz);
-      var ux = dx / L, uz = dz / L;
-      var nSeg = Math.floor(L / 12);
-      for (var k = 0; k < nSeg; k++) {
-        var s = (k + 0.5) * 12;
-        var sx = x0 + ux * s, sz = z0 + uz * s;
-        /* Skip gates & corners */
-        var nearGate = false;
-        for (var q = 0; q < walls.length; q++) {
-          if (Math.hypot(sx - walls[q].x, sz - walls[q].z) < 15.5) { nearGate = true; break; }
-        }
-        if (nearGate) continue;
-        /* Keep West Rim open across the Solstice Temple sunset terrace (z = -95..-28) & NW Amphitheater scarp (z = -280..-195),
-           and open East Wall-Street promenade (z = -28..+160) where paired Jimjam & Vernacular facades face each other */
-        if (prefix === 'west' && ((sz > -102 && sz < -24) || (sz > -282 && sz < -194))) continue;
-        if (prefix === 'north' && sx < -126 && sx > -216) continue;
-        if (prefix === 'east' && sz > -28 && sz < 160) continue;
-        var wrec = makeRecord('dl.wall.' + prefix + '.' + k, 1, 'jj_wall_seg', sx, sz, outRy, { district: 'colonia-wall' });
-        walls.push(wrec);
-        if (k > 1 && k < nSeg - 2 && k % 10 === 0) {
-          var tx = x0 + ux * (k * 12), tz = z0 + uz * (k * 12);
-          if (!inSolsticeCorridor(tx, tz, 10) && !(prefix === 'east' && tz > -32 && tz < 164)) {
-            var trec = makeRecord('dl.wall.twr.' + prefix + '.' + k, 1, 'jj_wall_tower', tx, tz, outRy, { district: 'colonia-wall' });
-            walls.push(trec);
-          }
-        }
-      }
-    }
-    addWallRun(-250, -310, 250, -310, Math.PI, 'north');
-    addWallRun(250, -310, 250, 190, Math.PI / 2, 'east');
-    addWallRun(250, 190, -250, 190, 0, 'south');
-    addWallRun(-250, 190, -250, -310, -Math.PI / 2, 'west');
+    addModularWallLeg({
+      prefix: 'dl.owall.wn', zone: 3, district: 'outer-wall',
+      x0: -250, z0: -310, x1: -250, z1: -562, outRy: -Math.PI / 2,
+      segKey: 'dil_wall_seg', towerKey: 'dil_wall_tower', gateKey: 'dil_wall_gate', towerEvery: 7,
+      gates: [{ slot: 10, id: 'dl.owall.gate.west_apron', name: 'West Apron & Lower-Road Gate' }]
+    });
+    addModularWallLeg({
+      prefix: 'dl.owall.n', zone: 3, district: 'outer-wall',
+      x0: -250, z0: -562, x1: 518, z1: -562, outRy: Math.PI,
+      segKey: 'dil_wall_seg', towerKey: 'dil_wall_tower', gateKey: 'dil_wall_gate', towerEvery: 8,
+      gates: [
+        { slot: 20, id: 'dl.owall.gate.north_hwy', name: 'Outer Cut Highway Toll-Gate (izani.north.dilihan)' },
+        { slot: 51, id: 'dl.owall.gate.ne_handu',  name: 'North-East Handu & Skarn Gate' }
+      ]
+    });
+    addModularWallLeg({
+      prefix: 'dl.owall.ns', zone: 3, district: 'outer-wall',
+      x0: 518, z0: -562, x1: 518, z1: -322, outRy: Math.PI / 2,
+      segKey: 'dil_wall_seg', towerKey: 'dil_wall_tower', gateKey: 'dil_wall_gate', towerEvery: 7,
+      gates: []
+    });
+    addModularWallLeg({
+      prefix: 'dl.owall.et', zone: 3, district: 'outer-wall',
+      x0: 518, z0: -322, x1: 770, z1: -322, outRy: Math.PI,
+      segKey: 'dil_wall_seg', towerKey: 'dil_wall_tower', gateKey: 'dil_wall_gate', towerEvery: 7,
+      gates: []
+    });
+    addModularWallLeg({
+      prefix: 'dl.owall.e', zone: 3, district: 'outer-wall',
+      x0: 770, z0: -322, x1: 770, z1: 890, outRy: Math.PI / 2,
+      segKey: 'dil_wall_seg', towerKey: 'dil_wall_tower', gateKey: 'dil_wall_gate', towerEvery: 8,
+      gates: [
+        { slot: 21, id: 'dl.owall.gate.east_muster', name: 'East Skarn & Muster Gate' },
+        { slot: 77, id: 'dl.owall.gate.portvisas',   name: 'Port Visas Highway Gate (izani.dilihan-portvisas)' }
+      ]
+    });
+    addModularWallLeg({
+      prefix: 'dl.owall.ses', zone: 3, district: 'outer-wall',
+      x0: 770, z0: 890, x1: 254, z1: 890, outRy: 0,
+      segKey: 'dil_wall_seg', towerKey: 'dil_wall_tower', gateKey: 'dil_wall_gate', towerEvery: 8,
+      gates: []
+    });
+    addModularWallLeg({
+      prefix: 'dl.owall.ss', zone: 3, district: 'outer-wall',
+      x0: 254, z0: 890, x1: 254, z1: 662, outRy: -Math.PI / 2,
+      segKey: 'dil_wall_seg', towerKey: 'dil_wall_tower', gateKey: 'dil_wall_gate', towerEvery: 7,
+      gates: []
+    });
+    addModularWallLeg({
+      prefix: 'dl.owall.s', zone: 3, district: 'outer-wall',
+      x0: 254, z0: 662, x1: -250, z1: 662, outRy: 0,
+      segKey: 'dil_wall_seg', towerKey: 'dil_wall_tower', gateKey: 'dil_wall_gate', towerEvery: 8,
+      gates: [{ slot: 20, id: 'dl.owall.gate.south_pass', name: 'South Pass & Foundry Gate' }]
+    });
+    addModularWallLeg({
+      prefix: 'dl.owall.ws', zone: 3, district: 'outer-wall',
+      x0: -250, z0: 662, x1: -250, z1: 194, outRy: -Math.PI / 2,
+      segKey: 'dil_wall_seg', towerKey: 'dil_wall_tower', gateKey: 'dil_wall_gate', towerEvery: 8,
+      gates: [{ slot: 34, id: 'dl.owall.gate.lowertown_ramp', name: 'Lower-Town Switchback Gate' }]
+    });
 
-    /* Reserve circuit wall band in space so lots stay >= 4 m inside/outside the rampart */
+    /* Reserve ALL inner and outer circuit wall pieces in space so buildings never clip any rampart, tower, or gate */
     for (var wi = 0; wi < walls.length; wi++) {
-      if (walls[wi].key === 'jj_wall_seg' || walls[wi].key === 'jj_wall_tower') {
-        space.insert(walls[wi], walls[wi].x, walls[wi].z, Math.hypot(walls[wi].w, walls[wi].d) * 0.5);
-      }
+      space.insert(walls[wi], walls[wi].x, walls[wi].z, Math.hypot(walls[wi].w, walls[wi].d) * 0.5);
     }
 
-    /* Place Zone 1 Colonia Civic & Sacred Landmarks */
+    /* Place Zone 1 Colonia Civic & Sacred Landmarks (including concentric TEMPLE_RY-aligned Solstice Sanctuary Plaza!) */
     var forumRec = commitStruct(makeRecord('dl.colonia.forum', 1, 'dl_colonia_forum', 0, -60, 0, {
       name: 'Raised Contact-Marble Forum of the Colonia', landmark: true, district: 'colonia'
     }), 2.0);
     var templeRec = commitStruct(makeRecord('dl.colonia.temple_sun', 1, 'jj_temple_sun', TEMPLE_X, TEMPLE_Z, TEMPLE_RY, {
-      name: 'Re-Aimed Solstice Temple of Dilihan (-31.50 deg S)', landmark: true, district: 'colonia', v: 0
+      name: 'Re-Aimed Solstice Temple of Dilihan (-31.50 deg S)', landmark: true, district: 'colonia', v: 0,
+      concentricPair: 'dl.colonia.solstice_plaza'
     }), 2.0);
+    var solsticePlazaRec = commitStruct(makeRecord('dl.colonia.solstice_plaza', 1, 'dl_solstice_plaza', TEMPLE_X, TEMPLE_Z, TEMPLE_RY, {
+      name: 'Solstice Sanctuary Aligned Esplanade', landmark: true, district: 'colonia', cls: 'feature',
+      concentricPair: 'dl.colonia.temple_sun', yFixed: templeRec.y
+    }), 1.5);
     commitStruct(makeRecord('dl.colonia.amphitheater', 1, 'jj_amphitheater', -168, -238, Math.PI, {
       name: 'NW Scarp-Cut Legionary Amphitheater', landmark: true, district: 'colonia'
     }), 2.0);
@@ -548,24 +691,23 @@ var DL_LAYOUT = (function () {
     commitStruct(makeRecord('dl.colonia.library', 1, 'jj_library', 68, -118, 0, {
       name: 'Jamtokku Count & Colonial Roll Library', landmark: true, district: 'colonia'
     }), 2.0);
-    commitStruct(makeRecord('dl.colonia.school', 1, 'jj_school', 68, 4, Math.PI, {
+    commitStruct(makeRecord('dl.colonia.school', 1, 'jj_school', 68, 2, Math.PI, {
       name: 'Colonial Rhetoric & Almanac School', landmark: true, district: 'colonia'
     }), 2.0);
 
     /* ================================================================
      * C. THE WALL STREET PAIRED FACADES (<= 0.5 m cornice match via o.scale)
      * ================================================================ */
-    /* Paired rows facing each other across East Wall Street (x=256) and South Wall Street (z=196).
-       Jimjam inner row stands along the west side of the avenue; Vernacular outer row faces it across the street. */
+    /* Paired rows facing each other across East Wall Street (x=262) and South Wall Street (z=202), cleanly inside/outside the Colonia rampart */
     var wallStreetPairs = [];
     var eastPairDefs = [
       { z: -250, jj: 'jj_house_mid_a',   jjScale: 0.90, vn: 'dil_house_mid_courtyard', jjX: 226, vnX: 284 }, /* 6.71 vs 6.70 (0.01 m) */
       { z: -210, jj: 'jj_shop_general',  jjScale: 0.88, vn: 'dil_shop_arcade',         jjX: 226, vnX: 284 }, /* 6.64 vs 6.60 (0.04 m) */
       { z: -165, jj: 'jj_house_mid_c',   jjScale: 0.63, vn: 'vern_house_mid_b',        jjX: 226, vnX: 284 }, /* 6.71 vs 6.65 (0.06 m) */
-      { z: -8,   jj: 'jj_house_rich_a',  jjScale: 0.87, vn: 'dil_villa_impluvium',     jjX: 236, vnX: 280 }, /* 8.61 vs 8.60 (0.01 m) */
-      { z: 42,   jj: 'jj_shop_textiles', jjScale: 0.89, vn: 'dil_weaver_dyecourt',     jjX: 242, vnX: 276 }, /* 6.68 vs 6.60 (0.08 m) */
-      { z: 96,   jj: 'jj_house_rich_b',  jjScale: 0.84, vn: 'vern_house_rich_b',       jjX: 236, vnX: 278 }, /* 8.06 vs 8.00 (0.06 m) */
-      { z: 145,  jj: 'jj_tavern',        jjScale: 0.83, vn: 'dil_tavern_pergola',      jjX: 238, vnX: 276 }  /* 6.97 vs 6.85 (0.12 m) */
+      { z: -10,  jj: 'jj_house_rich_a',  jjScale: 0.87, vn: 'dil_villa_impluvium',     jjX: 230, vnX: 284 }, /* 8.61 vs 8.60 (0.01 m) */
+      { z: 32,   jj: 'jj_shop_textiles', jjScale: 0.89, vn: 'dil_weaver_dyecourt',     jjX: 232, vnX: 280 }, /* 6.68 vs 6.60 (0.08 m) */
+      { z: 98,   jj: 'jj_house_rich_b',  jjScale: 0.84, vn: 'vern_house_rich_b',       jjX: 228, vnX: 284 }, /* 8.06 vs 8.00 (0.06 m) */
+      { z: 146,  jj: 'jj_tavern',        jjScale: 0.83, vn: 'dil_tavern_pergola',      jjX: 226, vnX: 280 }  /* 6.97 vs 6.85 (0.12 m) */
     ];
     for (var epi = 0; epi < eastPairDefs.length; epi++) {
       var ep = eastPairDefs[epi];
@@ -586,8 +728,8 @@ var DL_LAYOUT = (function () {
     }
     var southPairDefs = [
       { x: -185, jj: 'jj_house_mid_a',  jjScale: 0.90, vn: 'dil_house_mid_veranda' }, /* 6.71 vs 6.65 (0.06 m) */
-      { x: -140, jj: 'jj_shop_food',    jjScale: 0.95, vn: 'dil_bakery_breezeway'  }, /* 6.56 vs 6.50 (0.06 m) */
-      { x: -92,  jj: 'jj_house_mid_c',  jjScale: 0.63, vn: 'vern_house_mid_b'      }, /* 6.71 vs 6.65 (0.06 m) */
+      { x: -145, jj: 'jj_shop_food',    jjScale: 0.95, vn: 'dil_bakery_breezeway'  }, /* 6.56 vs 6.50 (0.06 m) */
+      { x: -82,  jj: 'jj_house_mid_c',  jjScale: 0.63, vn: 'vern_house_mid_b'      }, /* 6.71 vs 6.65 (0.06 m) */
       { x: -42,  jj: 'jj_shop_spice',   jjScale: 1.00, vn: 'dil_shop_arcade'       }, /* 6.60 vs 6.60 (0.00 m) */
       { x: 52,   jj: 'jj_house_rich_a', jjScale: 0.87, vn: 'dil_manor_breezeway'   }, /* 8.61 vs 8.30 (0.31 m) */
       { x: 112,  jj: 'jj_shop_alchemy', jjScale: 0.90, vn: 'vern_apothecary'       }  /* 6.66 vs 6.70 (0.04 m) */
@@ -597,7 +739,7 @@ var DL_LAYOUT = (function () {
       var sjj = commitStruct(makeRecord('dl.ws.south.jj.' + spi, 1, sp.jj, sp.x, 166, 0, {
         scale: sp.jjScale, district: 'colonia', wallStreet: true
       }), 1.2);
-      var svn = commitStruct(makeRecord('dl.ws.south.vn.' + spi, 3, sp.vn, sp.x, 224, Math.PI, {
+      var svn = commitStruct(makeRecord('dl.ws.south.vn.' + spi, 3, sp.vn, sp.x, 226, Math.PI, {
         district: 'vernacular-south', wallStreet: true
       }), 1.2);
       if (sjj && svn) {
@@ -611,34 +753,37 @@ var DL_LAYOUT = (function () {
     }
 
     /* ================================================================
-     * D. ZONE 1 COLONIA KCITY INFILL (frontage-courts strategy, jimjam: 1.0)
+     * D. ZONE 1 COLONIA KCITY INFILL (dense frontage-courts across all Colonia insulae, jimjam: 1.0)
      * ================================================================ */
     var coloniaBlocks = [
-      { id: 'col.nw', i: 0, j: 0, kind: 'middle', wealth: 0.62, poly: [[-108, -292], [-12, -292], [-12, -186], [-108, -186]] },
-      { id: 'col.nc', i: 1, j: 0, kind: 'rich',   wealth: 0.84, poly: [[12, -292], [108, -292], [108, -186], [12, -186]] },
-      { id: 'col.cw', i: 0, j: 1, kind: 'rich',   wealth: 0.86, poly: [[-108, -168], [-40, -168], [-40, -96], [-108, -96]] },
-      { id: 'col.sw1',i: 0, j: 2, kind: 'middle', wealth: 0.60, poly: [[-232, -32], [-124, -32], [-124, 58], [-232, 58]] },
-      { id: 'col.scw',i: 1, j: 2, kind: 'rich',   wealth: 0.82, poly: [[-108, -24], [-40, -24], [-40, 58], [-108, 58]] },
-      { id: 'col.sw2',i: 0, j: 3, kind: 'middle', wealth: 0.56, poly: [[-232, 74], [-124, 74], [-124, 150], [-232, 150]] },
-      { id: 'col.scs',i: 1, j: 3, kind: 'middle', wealth: 0.64, poly: [[-108, 74], [-12, 74], [-12, 148], [-108, 148]] },
-      { id: 'col.ses',i: 2, j: 3, kind: 'rich',   wealth: 0.80, poly: [[12, 74], [108, 74], [108, 148], [12, 148]] },
-      { id: 'col.see',i: 3, j: 3, kind: 'middle', wealth: 0.65, poly: [[124, 74], [208, 74], [208, 168], [124, 168]] },
-      { id: 'col.ce', i: 3, j: 2, kind: 'middle', wealth: 0.68, poly: [[124, -44], [208, -44], [208, 58], [124, 58]] }
+      { id: 'col.nww',i: 0, j: 0, kind: 'middle', wealth: 0.58, poly: [[-236, -170], [-124, -170], [-124, -138], [-236, -138]] },
+      { id: 'col.nw', i: 1, j: 0, kind: 'middle', wealth: 0.64, poly: [[-108, -294], [-10, -294], [-10, -186], [-108, -186]] },
+      { id: 'col.nc', i: 2, j: 0, kind: 'rich',   wealth: 0.84, poly: [[10, -294], [108, -294], [108, -186], [10, -186]] },
+      { id: 'col.nec',i: 3, j: 0, kind: 'middle', wealth: 0.68, poly: [[12, -170], [108, -170], [108, -138], [12, -138]] },
+      { id: 'col.cw', i: 0, j: 1, kind: 'rich',   wealth: 0.86, poly: [[-94, -170], [-38, -170], [-38, -90], [-94, -90]] },
+      { id: 'col.sw1',i: 0, j: 2, kind: 'middle', wealth: 0.60, poly: [[-236, 2], [-124, 2], [-124, 52], [-236, 52]] },
+      { id: 'col.scw',i: 1, j: 2, kind: 'rich',   wealth: 0.82, poly: [[-108, -24], [-38, -24], [-38, 52], [-108, 52]] },
+      { id: 'col.sce',i: 2, j: 2, kind: 'middle', wealth: 0.72, poly: [[14, 24], [108, 24], [108, 52], [14, 52]] },
+      { id: 'col.sw2',i: 0, j: 3, kind: 'middle', wealth: 0.58, poly: [[-236, 68], [-124, 68], [-124, 152], [-236, 152]] },
+      { id: 'col.scs',i: 1, j: 3, kind: 'middle', wealth: 0.66, poly: [[-108, 68], [-10, 68], [-10, 150], [-108, 150]] },
+      { id: 'col.ses',i: 2, j: 3, kind: 'rich',   wealth: 0.80, poly: [[10, 68], [108, 68], [108, 150], [10, 150]] },
+      { id: 'col.see',i: 3, j: 3, kind: 'middle', wealth: 0.66, poly: [[124, 68], [212, 68], [212, 170], [124, 170]] },
+      { id: 'col.ce', i: 3, j: 2, kind: 'middle', wealth: 0.70, poly: [[124, -48], [212, -48], [212, 52], [124, 52]] }
     ];
     var COL_POOLS = {
-      rich:   [['jj_house_rich_a', 2], ['jj_house_rich_b', 1], ['jj_house_mid_c', 4], ['jj_inn', 1]],
-      middle: [['jj_house_mid_a', 5], ['jj_house_mid_c', 4], ['jj_shop_general', 2],
-               ['jj_shop_food', 2], ['jj_shop_weapons', 1], ['jj_tavern', 1], ['jj_inn', 1]]
+      rich:   [['jj_house_rich_a', 2], ['jj_house_rich_b', 2], ['jj_house_mid_c', 5], ['jj_house_mid_a', 3], ['jj_shop_jeweler', 2], ['jj_inn', 1]],
+      middle: [['jj_house_mid_a', 6], ['jj_house_mid_c', 5], ['jj_shop_general', 3], ['jj_shop_textiles', 2],
+               ['jj_shop_food', 3], ['jj_shop_weapons', 2], ['jj_shop_armor', 1], ['jj_tavern', 2], ['jj_inn', 1]]
     };
     var COL_SMALL = {
-      rich:   [['jj_house_mid_a', 2], ['jj_shop_spice', 1]],
-      middle: [['jj_house_poor_a', 2], ['jj_house_poor_c', 2], ['jj_shop_spice', 1]]
+      rich:   [['jj_house_mid_a', 3], ['jj_shop_spice', 2], ['jj_shop_jeweler', 2]],
+      middle: [['jj_house_poor_a', 3], ['jj_house_poor_b', 2], ['jj_house_poor_c', 3], ['jj_shop_spice', 2], ['jj_shop_alchemy', 1]]
     };
 
     var colTune = {
       cell: 2.5, rasterHalf: 400, maxSlope: 0.22, exact: true,
       width: { avenue: 11, main: 8, side: 6.5, alley: 3.5, highway: 10, lane: 5 },
-      lot: { side: 1.8, setback: 1.8, rear: 3.0, inset: 1.0, step: 3.0 },
+      lot: { side: 1.4, setback: 1.4, rear: 2.4, inset: 0.8, step: 2.5 },
       classes: { middle: [['jj_house_mid_a', 0]], poor: [['jj_house_poor_a', 0]] },
       fallback: { middle: 'poor', poor: null }
     };
@@ -652,7 +797,7 @@ var DL_LAYOUT = (function () {
       kit: {
         dims: function (k, v) {
           var d = dimsOf(k);
-          return d ? { key: k, v: v | 0, w: d.w + 2.0, d: d.d + 2.0, h: d.h, fw: d.w, fd: d.d } : null;
+          return d ? { key: k, v: v | 0, w: d.w + 1.4, d: d.d + 1.4, h: d.h, fw: d.w, fd: d.d } : null;
         }
       },
       steps: [
@@ -665,7 +810,7 @@ var DL_LAYOUT = (function () {
             KCITY.site.zoneRaster(R, COLONIA_POLY, { dry: -950, maxSlope: colTune.maxSlope, h: G.shapedNoStream });
             P.zone = COLONIA_POLY;
             P.site = [{ id: 0, name: 'Colonia', role: 'colonia', poly: COLONIA_POLY }];
-            SL.minSpacing = 6.5;
+            SL.minSpacing = 5.5;
           }
         },
         {
@@ -684,11 +829,11 @@ var DL_LAYOUT = (function () {
           run: function () {
             var P = KCITY.lib.plan();
             P.courts = KCITY.strategies['frontage-courts'].run(coloniaBlocks, {
-              step: 9, seed: 7446631, focus: [0, -60], sides: 4,
+              step: 6.5, seed: 7446631, focus: [0, -60], sides: 4,
               pools: COL_POOLS, small: COL_SMALL,
-              gaps: { rich: [13, 19], middle: [10, 15] },
-              garden: { rich: 0.36, middle: 0.30 },
-              infill: { step: 24, yard: 0.72, yardR: 13, reach: 18 }
+              gaps: { rich: [5, 9], middle: [3.5, 6.5] },
+              garden: { rich: 0.14, middle: 0.10 },
+              infill: { step: 15, yard: 0.85, yardR: 9, reach: 22 }
             });
           }
         }
@@ -697,13 +842,13 @@ var DL_LAYOUT = (function () {
     var colPlan = colCity.run();
     if (colPlan && colPlan.courts) {
       for (var cli = 0; cli < colPlan.courts.lots.length; cli++) {
-        if ((cli % 2) === 1) continue;
         var cl = colPlan.courts.lots[cli];
         if (cl.died != null || !DIMS[cl.key]) continue;
         if (inSolsticeCorridor(cl.x, cl.z, Math.max(cl.w, cl.d) * 0.5)) continue;
+        var colScale = DIMS[cl.key].cornice > 10.2 ? 0.86 : 1.0;
         commitStruct(makeRecord('dl.col.lot.' + cl.id, 1, cl.key, cl.x, cl.z, cl.ry, {
-          district: 'colonia'
-        }), 1.4);
+          district: 'colonia', scale: colScale
+        }), 1.0);
       }
     }
 
@@ -729,17 +874,36 @@ var DL_LAYOUT = (function () {
     commitStruct(makeRecord('dl.palace.hospital', 2, 'vern_hospital', 260, 368, Math.PI, {
       name: 'Legionary Infirmary', district: 'governor-precinct'
     }), 2.0);
+    var z2Extra = [
+      ['dl.palace.baths',      'dil_cooling_baths',       202, 292, Math.PI / 2],
+      ['dl.palace.loggia',     'dil_customs_loggia',      322, 294, -Math.PI / 2],
+      ['dl.palace.shrine',     'dil_shrine_suncourt',     218, 236, 0],
+      ['dl.palace.guild_e',    'dil_guildhall_peristyle', 298, 236, 0],
+      ['dl.palace.manor_w1',   'dil_manor_breezeway',     192, 388, Math.PI / 2],
+      ['dl.palace.manor_e1',   'dil_manor_breezeway',     328, 392, -Math.PI / 2],
+      ['dl.palace.villa_s1',   'dil_villa_impluvium',     232, 408, Math.PI],
+      ['dl.palace.villa_s2',   'dil_villa_impluvium',     288, 408, Math.PI],
+      ['dl.palace.scribe_w',   'vern_scribe',             218, 326, Math.PI / 2],
+      ['dl.palace.scribe_e',   'vern_scribe',             304, 326, -Math.PI / 2],
+      ['dl.palace.apothecary', 'vern_apothecary',         224, 368, 0],
+      ['dl.palace.barracks2',  'dil_barracks_arcade',     362, 294, -Math.PI / 2],
+      ['dl.palace.house_e1',   'dil_house_mid_courtyard', 364, 248, -Math.PI / 2],
+      ['dl.palace.house_e2',   'dil_house_mid_veranda',   364, 342, -Math.PI / 2],
+      ['dl.palace.house_s1',   'dil_house_mid_courtyard', 202, 430, 0],
+      ['dl.palace.house_s2',   'dil_tenement_windwell',   324, 430, 0]
+    ];
+    for (var z2i = 0; z2i < z2Extra.length; z2i++) {
+      var ze = z2Extra[z2i];
+      commitStruct(makeRecord(ze[0], 2, ze[1], ze[2], ze[3], ze[4], { district: 'governor-precinct' }), 1.4);
+    }
 
     /* ================================================================
      * F. ZONE 3: VERNACULAR DISTRICTS (1.000 km2 = 4.0x Colonia; KCITY alleys + main streets; 90% IZV / 10% JJ)
      * ================================================================ */
-    /* Anchor North Caravanserai, Highway Gate, Eastern Muster Ground, Foundries & Quiet-Copy Workshops first */
+    /* Anchor North Caravanserai, Eastern Muster Ground, SE Customs/Baths, Foundries & Quiet-Copy Workshops first */
     var seraiRec = commitStruct(makeRecord('dl.vern.north_caravanserai', 3, 'jj_caravanserai', 66, -402, 0, {
       name: 'North Highway Jimjam Caravanserai', landmark: true, district: 'vernacular-north'
     }), 2.5);
-    commitStruct(makeRecord('dl.vern.north_hwy_gate', 3, 'jj_wall_gate', 0, -552, Math.PI, {
-      name: 'Outer Cut Highway Toll-Gate (izani.north.dilihan)', landmark: true, district: 'vernacular-north'
-    }), 2.0);
     var musterRec = commitStruct(makeRecord('dl.vern.muster_ground', 3, 'vern_mustering_ground', 540, -14, -Math.PI / 2, {
       name: 'Eastern Terrace Legionary & Militia Muster Ground', landmark: true, district: 'vernacular-east'
     }), 2.5);
@@ -752,32 +916,34 @@ var DL_LAYOUT = (function () {
       { id: 'dl.vern.qcopy.2',   key: 'vern_glassworks',         x: 392, z: 55,   ry: Math.PI,     src: 'dl.ore.iron.1', name: 'Quiet-Copy Optics & Instrument Glassworks' },
       { id: 'dl.vern.qcopy.3',   key: 'vern_tinker',             x: 448, z: 55,   ry: Math.PI,     src: 'dl.ore.iron.2', name: 'Quiet-Copy Lock & Machine Shop' },
       { id: 'dl.vern.market.e',  key: 'dil_bazaar_pavilion',     x: 492, z: -108, ry: 0,           src: null,            name: 'East Terrace Monitor-Roof Brick Bazaar' },
-      { id: 'dl.vern.market.s',  key: 'dil_bazaar_pavilion',     x: -55, z: 304,  ry: 0,           src: null,            name: 'South Pass Ventilated Bazaar' },
+      { id: 'dl.vern.market.s',  key: 'dil_bazaar_pavilion',     x: -55, z: 294,  ry: 0,           src: null,            name: 'South Pass Ventilated Bazaar' },
+      { id: 'dl.vern.market.se', key: 'dil_bazaar_pavilion',     x: 505, z: 588,  ry: Math.PI,     src: null,            name: 'Port Visas Gate Bazaar Pavilion' },
       { id: 'dl.vern.gen.1',     key: 'vern_generator',          x: 455, z: -115, ry: 0,           src: null,            name: 'District Municipal Dynamo House' },
-      { id: 'dl.vern.baths.1',   key: 'dil_cooling_baths',       x: 304, z: -242, ry: 0,           src: null,            name: 'East Wall-Street Sardab Cooling Baths' },
+      { id: 'dl.vern.baths.1',   key: 'dil_cooling_baths',       x: 312, z: -242, ry: 0,           src: null,            name: 'East Wall-Street Sardab Cooling Baths' },
+      { id: 'dl.vern.baths.se',  key: 'dil_cooling_baths',       x: 632, z: 642,  ry: Math.PI,     src: null,            name: 'SE Pass Travellers Malqaf Baths' },
       { id: 'dl.vern.guild.1',   key: 'dil_guildhall_peristyle', x: 452, z: 148,  ry: Math.PI,     src: null,            name: 'Potash & Factors Peristyle Guildhall' },
-      { id: 'dl.vern.shrine.1',  key: 'dil_shrine_suncourt',     x: 92,  z: 298,  ry: 0,           src: null,            name: 'South Ward Sun-Orb Jali Sanctuary' },
+      { id: 'dl.vern.shrine.1',  key: 'dil_shrine_suncourt',     x: 88,  z: 292,  ry: 0,           src: null,            name: 'South Ward Sun-Orb Jali Sanctuary' },
       { id: 'dl.vern.garr.1',    key: 'dil_barracks_arcade',     x: 492, z: 42,   ry: -Math.PI / 2,src: null,            name: 'Muster-Ground Veranda Garrison Barracks' }
     ];
     for (var fi = 0; fi < foundrySpecs.length; fi++) {
       var fs = foundrySpecs[fi];
       commitStruct(makeRecord(fs.id, 3, fs.key, fs.x, fs.z, fs.ry, {
-        name: fs.name, landmark: fi < 3 || fi >= 8, district: fs.z > 195 ? 'vernacular-south' : 'vernacular-east', source: fs.src
+        name: fs.name, landmark: fi < 3 || fi >= 8, district: fs.z > 490 ? 'vernacular-se' : fs.z > 195 ? 'vernacular-south' : 'vernacular-east', source: fs.src
       }), 1.8);
     }
 
-    /* Run KCITY alleys + main-street builder across Zone 3 (~65% dil_* local brick courtyard/shade + ~35% vern_* mainland + ~10% JJ) */
+    /* Run KCITY alleys + main-street builder across ALL 4 Zone 3 polygons (~65% dil_* local brick courtyard/shade + ~35% vern_* mainland + ~10% JJ) */
     var vernTune = {
-      cell: 4.0, rasterHalf: 800, maxSlope: 0.24, exact: true,
+      cell: 4.0, rasterHalf: 920, maxSlope: 0.24, exact: true,
       width: { avenue: 12, main: 8.5, side: 6.0, alley: 3.8, highway: 9.5, lane: 5.0 },
-      lot: { side: 1.5, setback: 1.5, rear: 2.6, inset: 0.8, step: 3.5 },
+      lot: { side: 1.1, setback: 1.2, rear: 2.0, inset: 0.6, step: 3.0 },
       classes: {
         manor:      [['dil_villa_impluvium', 0], ['dil_manor_breezeway', 0], ['vern_house_rich_a', 0], ['jj_house_rich_b', 0]],
         rich:       [['dil_villa_impluvium', 1], ['dil_manor_breezeway', 1], ['vern_house_rich_b', 1], ['dil_house_mid_courtyard', 0]],
         middle:     [['dil_house_mid_courtyard', 0], ['dil_house_mid_veranda', 0], ['dil_tenement_windwell', 0],
-                     ['dil_house_mid_courtyard', 1], ['dil_house_mid_veranda', 1], ['dil_bakery_breezeway', 0],
-                     ['dil_weaver_dyecourt', 0], ['vern_house_mid_a', 0], ['vern_house_mid_b', 0],
-                     ['vern_tailor', 0], ['vern_scribe', 0], ['jj_house_mid_a', 0]],
+                     ['dil_house_mid_courtyard', 1], ['dil_house_mid_veranda', 1], ['dil_tenement_windwell', 1],
+                     ['dil_bakery_breezeway', 0], ['dil_weaver_dyecourt', 0], ['vern_house_mid_a', 0],
+                     ['vern_house_mid_b', 0], ['vern_tailor', 0], ['vern_scribe', 0], ['jj_house_mid_a', 0]],
         poor:       [['dil_house_poor_dogtrot', 0], ['dil_house_poor_yard', 0], ['dil_house_poor_dogtrot', 1],
                      ['dil_house_poor_yard', 1], ['vern_house_poor_a', 0], ['vern_house_poor_c', 0]],
         shop:       [['dil_shop_arcade', 0], ['dil_bakery_breezeway', 1], ['dil_butcher_icehouse', 0],
@@ -792,16 +958,17 @@ var DL_LAYOUT = (function () {
         { key: 'dil_cooling_baths', v: 1, near: 'south_center' },
         { key: 'dil_customs_loggia', v: 0, near: 'north_serai' },
         { key: 'vern_school', v: 0, near: 'east_center' },
-        { key: 'dil_inn_courtyard', v: 1, near: 'south_center' },
+        { key: 'dil_inn_courtyard', v: 1, near: 'se_center' },
+        { key: 'dil_shrine_suncourt', v: 1, near: 'se_center' },
         { key: 'dil_godown_ventilated', v: 1, near: 'north_serai' },
         { key: 'jj_warehouse_b', v: 0, near: 'north_serai' },
         { key: 'vern_silos', v: 0, near: 'east_center' },
         { key: 'vern_tank', v: 0, near: 'south_center' }
       ],
-      civicSpacing: 44, civicJitter: 12,
-      voidMax: 48, voidIters: 6, voidBatch: 8, sideSpacing: 52, sideMax: 185,
-      alleyFrac: 0.24, blindMax: 65, interiorDepth: 11, interiorRounds: 1,
-      avenueSnap: 38, ringGap: 8, verge: 5, mapHalf: 800,
+      civicSpacing: 42, civicJitter: 12,
+      voidMax: 32, voidIters: 9, voidBatch: 10, sideSpacing: 34, sideMax: 340,
+      alleyFrac: 0.38, blindMax: 55, interiorDepth: 13, interiorRounds: 2,
+      avenueSnap: 34, ringGap: 7, verge: 4, mapHalf: 920,
       plazaArt: { rich: [], middle: [], poor: [], commerce: [] }
     };
 
@@ -822,7 +989,7 @@ var DL_LAYOUT = (function () {
           for (var si = 0; si < structures.length; si++) {
             var st = structures[si];
             if (st.zone === 3) {
-              var bo = L.obb([st.x, st.z], [Math.cos(st.ry), -Math.sin(st.ry)], st.w * 0.5 + 3.5, st.d * 0.5 + 3.5);
+              var bo = L.obb([st.x, st.z], [Math.cos(st.ry), -Math.sin(st.ry)], st.w * 0.5 + 2.8, st.d * 0.5 + 2.8);
               R.stampPoly(L.obbCorners(bo), L.OCC.HARD, -60 - si);
             }
           }
@@ -830,27 +997,28 @@ var DL_LAYOUT = (function () {
           P.site = [
             { id: 1, name: 'East Terrace District', role: 'res', poly: VERN_POLYS[0] },
             { id: 2, name: 'South Foundry District', role: 'ind', poly: VERN_POLYS[1] },
-            { id: 3, name: 'North Caravanserai Quarter', role: 'com', poly: VERN_POLYS[2] }
+            { id: 3, name: 'North Caravanserai Quarter', role: 'com', poly: VERN_POLYS[2] },
+            { id: 4, name: 'SE Pass Ward', role: 'res', poly: VERN_POLYS[3] }
           ];
-          SL.minSpacing = 6.0;
+          SL.minSpacing = 4.8;
         }
       },
       { name: 'vernacular landmarks', run: function () { KCITY.lib.SL.note(1, 'vernacular district anchors'); } },
-      { name: 'vernacular districts', run: function () { KCITY.lib.SL.note(2, 'east, south and north vernacular wards'); } },
+      { name: 'vernacular districts', run: function () { KCITY.lib.SL.note(2, 'east, se, south and north walled wards'); } },
       {
         name: 'vernacular main streets',
         run: function () {
           var SL = KCITY.lib.SL;
           for (var wi2 = 0; wi2 < ways.length; wi2++) {
             var w = ways[wi2];
-            if (w.id.indexOf('vern.') === 0) {
+            if (w.id.indexOf('vern.') === 0 || w.id === 'hwy.se.portvisas') {
               SL.addWay(w.cls, w.pts, 3, { tag: w.id });
             }
           }
         }
       },
       { name: 'vernacular highways', run: function () { KCITY.lib.SL.note(4, 'cut and pass highways'); } },
-      { name: 'vernacular open boundary', run: function () { KCITY.lib.SL.note(5, 'open terraced growth beyond colonia wall'); } }
+      { name: 'vernacular walled boundary', run: function () { KCITY.lib.SL.note(5, 'enclosed within outer Dilihan brick circuit wall'); } }
     ].concat(KCITY.defaultSteps().slice(6));
 
     var vernCity = KCITY.create({
@@ -863,27 +1031,28 @@ var DL_LAYOUT = (function () {
       kit: {
         dims: function (k, v) {
           var d = dimsOf(k);
-          return d ? { key: k, v: v | 0, w: d.w + 1.8, d: d.d + 1.8, h: d.h, fw: d.w, fd: d.d } : null;
+          return d ? { key: k, v: v | 0, w: d.w + 1.2, d: d.d + 1.2, h: d.h, fw: d.w, fd: d.d } : null;
         }
       },
       rules: {
         wealth: function (p) {
           var dPal = Math.hypot(p[0] - 260, p[1] - 294);
-          var w = 0.56 - Math.max(0, p[0] - 320) / 900 - Math.max(0, p[1] - 280) / 950;
-          if (dPal < 180) w += 0.24;
+          var w = 0.58 - Math.max(0, p[0] - 340) / 950 - Math.max(0, p[1] - 320) / 1050;
+          if (dPal < 190) w += 0.24;
           if (p[1] < -330) w = 0.58;
-          return w < 0.12 ? 0.12 : w > 0.90 ? 0.90 : w;
+          return w < 0.14 ? 0.14 : w > 0.90 ? 0.90 : w;
         },
         vacant: function (p, rs) {
-          return rs.chance(p[0] > 640 || p[1] > 560 ? 0.22 : 0.08);
+          return rs.chance(p[0] > 700 || p[1] > 790 ? 0.08 : 0.03);
         },
         groundOk: function (bo) {
           if (!bo || !bo.c) return true;
           return !inSolsticeCorridor(bo.c[0], bo.c[1], 12);
         },
         near: {
-          east_center:  function (c) { return Math.hypot(c.p[0] - 460, c.p[1] - 20); },
-          south_center: function (c) { return Math.hypot(c.p[0] - 0,   c.p[1] - 380); },
+          east_center:  function (c) { return Math.hypot(c.p[0] - 480, c.p[1] - 20); },
+          se_center:    function (c) { return Math.hypot(c.p[0] - 520, c.p[1] - 640); },
+          south_center: function (c) { return Math.hypot(c.p[0] - 0,   c.p[1] - 410); },
           north_serai:  function (c) { return Math.hypot(c.p[0] - 66,  c.p[1] + 402); }
         }
       },
@@ -899,15 +1068,15 @@ var DL_LAYOUT = (function () {
       }
     }
 
-    /* Target ~3.45:1 built lot area ratio (Zone 3 Vernacular Districts vs Zone 1 Colonia, inside [3.2, 4.8]) */
+    /* Target ~3.95:1 built lot area ratio (Zone 3 Vernacular Districts vs dense Zone 1 Colonia, squarely inside [3.2, 4.8]) */
     var coloniaBuiltArea = 0;
     for (var z1i = 0; z1i < zones[1].length; z1i++) coloniaBuiltArea += zones[1][z1i].area;
-    var targetVernArea = coloniaBuiltArea * 3.45;
+    var targetVernArea = coloniaBuiltArea * 3.95;
     var curVernArea = 0;
     for (var z3i = 0; z3i < zones[3].length; z3i++) curVernArea += zones[3][z3i].area;
 
     /* Helper pools: ~10% Jimjam merchant mix overall; among Izani lots, ~65% dil_* local brick & ~35% vern_* mainland */
-    var jjMerchantKeys = ['jj_house_mid_a', 'jj_shop_general', 'jj_shop_spice', 'jj_warehouse_a'];
+    var jjMerchantKeys = ['jj_house_mid_a', 'jj_house_mid_c', 'jj_shop_general', 'jj_shop_spice', 'jj_warehouse_a'];
     var vernNearPalaceSwap = {
       dil_house_mid_courtyard: 'vern_house_mid_c',
       dil_house_mid_veranda: 'vern_house_mid_a',
@@ -918,20 +1087,20 @@ var DL_LAYOUT = (function () {
     };
     var vernFillPool = [
       /* 11 dil_* (~69%) + 5 vern_* (~31%) so combined Zone 3 Izani wards sit right at ~65% dil_* / ~35% vern_* */
-      'dil_godown_ventilated', 'dil_bazaar_pavilion', 'dil_inn_courtyard', 'dil_house_mid_courtyard',
-      'dil_house_mid_veranda', 'dil_tenement_windwell', 'dil_shop_arcade', 'dil_bakery_breezeway',
-      'dil_tavern_pergola', 'dil_weaver_dyecourt', 'dil_press_mill',
-      'vern_warehouse', 'vern_caravanserai', 'vern_house_mid_c', 'vern_brewery', 'vern_provisioner'
+      'dil_house_mid_courtyard', 'dil_house_mid_veranda', 'dil_tenement_windwell', 'dil_shop_arcade',
+      'dil_bakery_breezeway', 'dil_tavern_pergola', 'dil_weaver_dyecourt', 'dil_press_mill',
+      'dil_godown_ventilated', 'dil_inn_courtyard', 'dil_carpenter_yard',
+      'vern_house_mid_a', 'vern_house_mid_b', 'vern_house_mid_c', 'vern_shops', 'vern_provisioner'
     ];
 
     for (var vli = 0; vli < vernPlan.lots.length; vli++) {
-      if (curVernArea >= targetVernArea * 1.02) break;
+      if (curVernArea >= targetVernArea * 1.03) break;
       var vl = vernPlan.lots[vli];
       if (vl.died != null || !DIMS[vl.key]) continue;
-      var distTag = vl.z < -320 ? 'vernacular-north' : vl.z > 198 ? 'vernacular-south' : 'vernacular-east';
+      var distTag = vl.z < -320 ? 'vernacular-north' : vl.z > 490 ? 'vernacular-se' : vl.z > 198 ? 'vernacular-south' : 'vernacular-east';
       var chosenKey = vl.key;
       var uDraw = KRAND.unit(KRAND.hash(WORLD_SEED, 'vern-mix', vli, 17));
-      var jjProb = distTag === 'vernacular-north' ? 0.22 : 0.06;
+      var jjProb = distTag === 'vernacular-north' ? 0.22 : 0.08;
       if ((DIMS[chosenKey].kit === 'vern' || DIMS[chosenKey].kit === 'dil') && uDraw < jjProb) {
         var mk = jjMerchantKeys[KRAND.hash(WORLD_SEED, 'jjm', vli) % jjMerchantKeys.length];
         if (DIMS[mk].w <= vl.w + 2.5 && DIMS[mk].d <= vl.d + 2.5) chosenKey = mk;
@@ -945,25 +1114,28 @@ var DL_LAYOUT = (function () {
       }
       var vrec = makeRecord('dl.vern.lot.' + vl.id, 3, chosenKey, vl.x, vl.z, vl.ry, {
         district: distTag,
-        scale: DIMS[chosenKey].kit === 'jj' && DIMS[chosenKey].cornice > 9.8 ? 0.85 : 1.0
+        scale: DIMS[chosenKey].kit === 'jj' && DIMS[chosenKey].cornice > 9.8 ? 0.78 : 1.0
       });
-      if (commitStruct(vrec, 1.4)) {
+      if (commitStruct(vrec, 1.0)) {
         curVernArea += vrec.area;
       }
     }
 
-    /* Deterministic terrace infill blocks if KCITY alleys left curVernArea below targetVernArea */
+    /* Deterministic block-interior & terrace infill across all 4 walled outer wards up to targetVernArea */
     var extraBlocks = [
-      { id: 'eb.n1', dist: 'vernacular-north', x0: -205, z0: -535, x1: -25, z1: -345, jjShare: 0.24 },
-      { id: 'eb.n2', dist: 'vernacular-north', x0: 135,  z0: -535, x1: 385, z1: -345, jjShare: 0.22 },
-      { id: 'eb.e1', dist: 'vernacular-east',  x0: 305,  z0: -295, x1: 735, z1: 455,  jjShare: 0.07 },
-      { id: 'eb.s1', dist: 'vernacular-south', x0: -230, z0: 245,  x1: 145, z1: 625,  jjShare: 0.07 },
-      { id: 'eb.se', dist: 'vernacular-east',  x0: 385,  z0: 225,  x1: 725, z1: 585,  jjShare: 0.06 }
+      { id: 'eb.n1', dist: 'vernacular-north', x0: -232, z0: -544, x1: -18, z1: -338, jjShare: 0.22 },
+      { id: 'eb.n2', dist: 'vernacular-north', x0: 132,  z0: -544, x1: 498, z1: -338, jjShare: 0.20 },
+      { id: 'eb.e1', dist: 'vernacular-east',  x0: 292,  z0: -302, x1: 748, z1: 482,  jjShare: 0.08 },
+      { id: 'eb.s1', dist: 'vernacular-south', x0: -232, z0: 238,  x1: 232, z1: 642,  jjShare: 0.08 },
+      { id: 'eb.se', dist: 'vernacular-se',    x0: 278,  z0: 502,  x1: 748, z1: 868,  jjShare: 0.07 }
     ];
-    for (var ebi = 0; ebi < extraBlocks.length && curVernArea < targetVernArea * 0.98; ebi++) {
+    for (var ebi = 0; ebi < extraBlocks.length && curVernArea < targetVernArea * 1.00; ebi++) {
       var eb = extraBlocks[ebi];
-      for (var gz = eb.z0; gz <= eb.z1 && curVernArea < targetVernArea * 1.01; gz += 34) {
-        for (var gx = eb.x0; gx <= eb.x1 && curVernArea < targetVernArea * 1.01; gx += 33) {
+      for (var gz = eb.z0; gz <= eb.z1 && curVernArea < targetVernArea * 1.02; gz += 24) {
+        for (var gx = eb.x0; gx <= eb.x1 && curVernArea < targetVernArea * 1.02; gx += 24) {
+          /* Exclude Governor's Precinct */
+          if (gx > 152 && gx < 372 && gz > 188 && gz < 402) continue;
+          if (inSolsticeCorridor(gx, gz, 15)) continue;
           /* Skip street corridors */
           var onWay = false;
           for (var wcheck = 0; wcheck < ways.length; wcheck++) {
@@ -973,29 +1145,27 @@ var DL_LAYOUT = (function () {
               var pa = wy.pts[wp], pb = wy.pts[wp + 1];
               var dxw = pb[0] - pa[0], dzw = pb[1] - pa[1], lw2 = dxw * dxw + dzw * dzw;
               var tw = lw2 > 0 ? Math.max(0, Math.min(1, ((gx - pa[0]) * dxw + (gz - pa[1]) * dzw) / lw2)) : 0;
-              if (Math.hypot(gx - (pa[0] + dxw * tw), gz - (pa[1] + dzw * tw)) < (wy.w * 0.5 + 10.5)) {
+              if (Math.hypot(gx - (pa[0] + dxw * tw), gz - (pa[1] + dzw * tw)) < (wy.w * 0.5 + 8.5)) {
                 onWay = true; break;
               }
             }
             if (onWay) break;
           }
-          if (onWay || inSolsticeCorridor(gx, gz, 15)) continue;
-          /* Exclude Governor's Precinct */
-          if (gx > 152 && gx < 372 && gz > 188 && gz < 402) continue;
+          if (onWay) continue;
 
           var hCell = KRAND.hash(WORLD_SEED, eb.id, gx, gz);
           var isJj = KRAND.unit(hCell) < eb.jjShare;
           var kPick = isJj
             ? jjMerchantKeys[(hCell >>> 4) % jjMerchantKeys.length]
             : vernFillPool[(hCell >>> 4) % vernFillPool.length];
-          var jx = gx + (KRAND.unit(hCell ^ 0x51a3) - 0.5) * 4.0;
-          var jz = gz + (KRAND.unit(hCell ^ 0x93c7) - 0.5) * 4.0;
+          var jx = gx + (KRAND.unit(hCell ^ 0x51a3) - 0.5) * 3.2;
+          var jz = gz + (KRAND.unit(hCell ^ 0x93c7) - 0.5) * 3.2;
           var jry = ((hCell >>> 9) & 3) * (Math.PI * 0.5);
-          var scPick = DIMS[kPick].kit === 'jj' && DIMS[kPick].cornice > 9.8 ? 0.85 : 1.0;
+          var scPick = DIMS[kPick].kit === 'jj' && DIMS[kPick].cornice > 9.8 ? 0.78 : 1.0;
           var fillRec = makeRecord('dl.vern.fill.' + eb.id + '.' + gx + '.' + gz, 3, kPick, jx, jz, jry, {
             district: eb.dist, scale: scPick
           });
-          if (commitStruct(fillRec, 1.4)) {
+          if (commitStruct(fillRec, 1.0)) {
             curVernArea += fillRec.area;
           }
         }
@@ -1005,7 +1175,7 @@ var DL_LAYOUT = (function () {
     /* Tag 8 outer Zone 3 expansion lots (dil_* & vern_*) as active KCONS + KCITY.constructMesh scaffolded sites */
     var constructSites = [];
     var consCands = zones[3].filter(function (r) {
-      return (r.kit === 'vern' || r.kit === 'dil') && !r.landmark && !r.wallStreet && (r.x > 540 || r.z > 470 || r.z < -470);
+      return (r.kit === 'vern' || r.kit === 'dil') && !r.landmark && !r.wallStreet && (r.x > 610 || r.z > 680 || r.z < -480);
     });
     for (var csi = 0; csi < Math.min(8, consCands.length); csi++) {
       var targetRec = consCands[Math.floor(csi * consCands.length / Math.min(8, consCands.length))];
@@ -1354,6 +1524,7 @@ var DL_LAYOUT = (function () {
       landmarks: {
         forumId: forumRec.id,
         templeId: templeRec.id,
+        solsticePlazaId: solsticePlazaRec ? solsticePlazaRec.id : null,
         palaceId: palaceRec.id,
         seraiId: seraiRec.id,
         musterId: musterRec.id,

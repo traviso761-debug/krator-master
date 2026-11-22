@@ -12,7 +12,7 @@ document.body.appendChild(renderer.domElement);
 
 const scene = new THREE.Scene();
 scene.fog = new THREE.FogExp2(0xcbd7df, 0.000058);
-const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.5, 64000);
+const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.6, 42000);
 
 const hemi = new THREE.HemisphereLight(0xdceaf6, 0x5c4f41, 0.68);
 scene.add(hemi);
@@ -29,6 +29,14 @@ const FRAME_HOOKS_PRE = [];
 terrainH = function (x, z) { return DL_GROUND.h(x, z); };
 
 tick(function (dt, t) {
+  /* Dynamically scale camera.near with clearance above terrain so bird's-eye overviews get 30x finer 24-bit depth resolution */
+  const gY = DL_GROUND.h(camera.position.x, camera.position.z);
+  const clearY = Math.max(0, camera.position.y - gY);
+  const wantNear = Math.max(0.6, Math.min(20.0, clearY * 0.042));
+  if (Math.abs(wantNear - camera.near) > 0.04) {
+    camera.near = wantNear;
+    camera.updateProjectionMatrix();
+  }
   for (let i = 0; i < FRAME_HOOKS_PRE.length; i++) FRAME_HOOKS_PRE[i](dt, t);
   for (let i = 0; i < FRAME_HOOKS.length; i++) FRAME_HOOKS[i](dt, t);
 });
@@ -83,6 +91,29 @@ const DL_STAGE = (function () {
       ctx.fillStyle = grayHex(val);
       ctx.fillRect(toPx(cx - wM * 0.5), toPy(cz - dM * 0.5), Math.max(1.5, wM * scale), Math.max(1.5, dM * scale));
     }
+    function fillRotBox(cx, cz, wM, dM, ry, val) {
+      const c = Math.cos(ry);
+      const s = Math.sin(ry);
+      const hw = wM * 0.5;
+      const hd = dM * 0.5;
+      const corners = [[-hw, -hd], [hw, -hd], [hw, hd], [-hw, hd]];
+      ctx.fillStyle = grayHex(val);
+      ctx.beginPath();
+      for (let i = 0; i < 4; i++) {
+        const wx = cx + corners[i][0] * c + corners[i][1] * s;
+        const wz = cz - corners[i][0] * s + corners[i][1] * c;
+        if (i === 0) ctx.moveTo(toPx(wx), toPy(wz));
+        else ctx.lineTo(toPx(wx), toPy(wz));
+      }
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    /* Compacted brick-earth & stone urban district ground across the entire walled city before painting streets & plazas */
+    fillBox(0, -60, 502, 502, 0.48);       /* Colonia Citadel ([-250..250, -310..190]) */
+    fillBox(135, -442, 766, 242, 0.38);    /* Walled North Caravanserai Ward */
+    fillBox(516, 285, 508, 1212, 0.38);    /* Walled East & SE Pass Wards */
+    fillBox(2, 430, 504, 462, 0.38);       /* Walled South & Governor Precinct Ward */
 
     const ways = L.ways || [];
     for (let i = 0; i < ways.length; i++) {
@@ -91,11 +122,11 @@ const DL_STAGE = (function () {
         strokePoly(w.pts, (w.w == null ? 6.0 : w.w) + 2.6, 1.0);
       }
     }
-    /* Paved civic squares: Forum (0, -60), Sun Temple Forecourt (-182, -72), Palace Precinct (260, 294),
-       North Caravanserai (66, -402), Eastern Muster Ground (540, -14), Lower-Town Fork (-400, 20) */
+    /* Paved civic squares: Forum (0, -60), Aligned Solstice Sanctuary Plaza (-170, -72, SOL.ry),
+       Palace Precinct (260, 294), North Caravanserai (66, -402), Eastern Muster Ground (540, -14), Lower-Town Fork (-400, 20) */
     fillBox(0, -60, 92, 78, 0.96);
-    fillBox(-192, -66, 72, 68, 0.92);
-    fillBox(260, 294, 140, 128, 0.92);
+    fillRotBox(L.solstice.x, L.solstice.z, 94, 118, L.solstice.ry, 0.96);
+    fillBox(260, 294, 148, 138, 0.92);
     fillBox(66, -412, 118, 108, 0.88);
     fillBox(540, -14, 78, 62, 0.86);
     fillBox(-405, 20, 110, 190, 0.84);

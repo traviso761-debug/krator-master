@@ -26,11 +26,11 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `00-head.html` | <1 |  |
 | `28-dl-model.js` | 12 |  |
 | `30-dl-ground.js` | 16 | DILIHAN — Scale Model 5.1 ground, Cut wall & Del (1) |
-| `32-dl-layout.js` | 79 **big** | DILIHAN — Deterministic 5-Zone & Dellu-Handu Lay (1) |
-| `34-dl-rules.js` | 13 | DILIHAN — Pure Invariant Rules & KTAGS Registrat (1) |
-| `45-dl-stage.js` | 15 |  |
-| `82-dl-landmarks.js` | 40 **big** |  |
+| `32-dl-layout.js` | 98 **big** | DILIHAN — Deterministic 5-Zone & Dellu-Handu Lay (1) |
+| `34-dl-rules.js` | 17 | DILIHAN — Pure Invariant Rules & KTAGS Registrat (1) |
+| `45-dl-stage.js` | 16 |  |
+| `82-dl-landmarks.js` | 45 **big** |  |
 | `89z-dl-sky.js` | 1 |  |
-| `89zp-dl-place.js` | 32 **big** |  |
-| `99-dl-host.js` | 11 |  |
+| `89zp-dl-place.js` | 40 **big** |  |
+| `99-dl-host.js` | 12 |  |
 | `99-tail.html` | <1 |  |

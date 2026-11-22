@@ -46,13 +46,17 @@ const SHEET = {
       ]
     },
     {
-      family: 'Civic and Garrison',
+      family: 'Civic, Garrison and Fortifications',
       keys: [
         'dil_cooling_baths',
         'dil_customs_loggia',
         'dil_guildhall_peristyle',
         'dil_barracks_arcade',
-        'dil_shrine_suncourt'
+        'dil_shrine_suncourt',
+        'dil_wall_seg',
+        'dil_wall_tower',
+        'dil_wall_corner',
+        'dil_wall_gate'
       ],
       gapAfter: 18
     },

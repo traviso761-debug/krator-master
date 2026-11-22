@@ -28,9 +28,13 @@ const VIEWS = (function () {
 
   const forumDeckY = (forumRec ? forumRec.y : G.h(0, -60)) + 1.1;
 
+  const tX = templeRec ? templeRec.x : -170;
+  const tZ = templeRec ? templeRec.z : -72;
+  const tY = templeRec ? templeRec.y : G.h(tX, tZ);
+
   return {
-    'Overview': [560, eyeY(560, 780, 345), 780, 35, G.h(35, -140) + 12, -140],
-    'The forum at eye level': [12.0, Math.max(eyeY(12.0, -55.0, 1.85), forumDeckY + 1.85), -55.0, -175, (templeRec ? templeRec.y : G.h(-182, -72)) + 15.5, -70],
+    'Overview': [680, eyeY(680, 920, 420), 920, 140, G.h(140, 60) + 10, 60],
+    'The forum at eye level': [12.0, Math.max(eyeY(12.0, -55.0, 1.85), forumDeckY + 1.85), -55.0, tX, tY + 15.5, tZ],
     'Summer solstice sunset': [solEye[0], Math.max(eyeY(solEye[0], solEye[2], 1.8), solEye[1]), solEye[2], solTar[0], solTar[1], solTar[2]],
     'The wall street': [257.0, eyeY(257.0, 164.0, 4.8), 164.0, 256.0, G.h(256.0, -55.0) + 6.8, -55.0],
     'The palace from the forecourt': [252.0, eyeY(252.0, 218.0, 8.2), 218.0, 260.0, (palaceRec ? palaceRec.y : G.h(260, 294)) + 13.0, 298.0],
@@ -150,19 +154,20 @@ function dilihanChecks() {
 }
 
 function dilihanNegatives() {
-  const base = DL_LAYOUT.make();
+  const base = DL_LAYOUT.plan;
+  const clone = function (p) { return JSON.parse(JSON.stringify(p)); };
   const R = [];
 
   /* 1. Unshifted ATMOS.siteAt(744, 663) 4.x refPx trap (-39.36 deg S) must fail solsticeCheck */
-  const badLat = DL_LAYOUT.make();
-  badLat.solstice = Object.assign({}, badLat.solstice, { ephemeris: badLat.solstice.unshiftedTrap });
+  const badLat = clone(base);
+  badLat.solstice.ephemeris = badLat.solstice.unshiftedTrap;
   R.push({
     name: 'unshifted ATMOS.siteAt(744, 663) latitude (-39.36 deg S) fails solsticeCheck',
     ok: DL_RULES.solsticeCheck(base).pass && !DL_RULES.solsticeCheck(badLat).pass
   });
 
   /* 2. Shrinking Zone 3 Vernacular area to 1.4x Colonia must fail areaRatioCheck */
-  const badArea = DL_LAYOUT.make();
+  const badArea = clone(base);
   badArea.areas = Object.assign({}, badArea.areas, {
     vernacularPolyKm2: 0.35,
     polyRatio: 1.4,
@@ -175,7 +180,7 @@ function dilihanNegatives() {
   });
 
   /* 3. Unscaled jj_house_mid_c (4.00 m cornice jump) across Wall Street must fail corniceCheck */
-  const badCornice = DL_LAYOUT.make();
+  const badCornice = clone(base);
   badCornice.wallStreetPairs = badCornice.wallStreetPairs.map(function (p, i) {
     return i === 2 ? Object.assign({}, p, { jjScale: 1.0, jjCornice: 10.65, delta: 4.00 }) : p;
   });
@@ -185,11 +190,23 @@ function dilihanNegatives() {
   });
 
   /* 4. Dropping the round kitchen pavilion from govpalace must fail palaceCheck */
-  const badPal = DL_LAYOUT.make();
+  const badPal = clone(base);
   badPal.palace = Object.assign({}, badPal.palace, { pavilions: badPal.palace.pavilions.slice(0, 6) });
   R.push({
     name: 'dropping 7th chhatri pavilion fails palaceCheck',
     ok: DL_RULES.palaceCheck(base).pass && !DL_RULES.palaceCheck(badPal).pass
+  });
+
+  /* 5. Shifting Solstice Sanctuary Esplanade off-center from jj_temple_sun must fail wallAndPlazaCheck */
+  const badPlaza = clone(base);
+  for (let i = 0; i < badPlaza.structures.length; i++) {
+    if (badPlaza.structures[i].key === 'dl_solstice_plaza') {
+      badPlaza.structures[i].x += 9.0;
+    }
+  }
+  R.push({
+    name: 'off-center Solstice Sanctuary Esplanade fails wallAndPlazaCheck',
+    ok: DL_RULES.wallAndPlazaCheck(base).pass && !DL_RULES.wallAndPlazaCheck(badPlaza).pass
   });
 
   return R;
@@ -198,7 +215,7 @@ function dilihanNegatives() {
 KHOST.take({
   build: 'dilihan',
   title: 'Dilihan',
-  hint: 'Dilihan / Dellu-Handu (pin solqo7hz7s, px 744, py 663; -888.6 m ASL, 1.79 atm): Premiere Izani Veterans Settlement on the Southern Bench of the Cut (settlements/dilihan/PLAN.md). Zone 1: Walled 500x500 m Jimjam brick-and-marble Colonia, raised contact-marble Forum & re-aimed Solstice Temple (-31.50 deg S sunset at +4.00 deg above the +3.58 deg SW Cut rim). Zone 2: Governor Palace (banded brick, contact-marble podium, gold onion dome w/ Cut signal lantern, 7 chhatri pavilions, Iziz orange restricted to banners/gate/reveals). Zone 3: 4x Iziz Vernacular terraces (90% IZV / 10% JJ), matched Wall-Street cornices, bronze/tin skarn foundries, Quiet-Copy workshops, North Caravanserai & KCONS scaffolds. Zone 4: Lower Town (-923 m) customs post, walled Hykkousoi envoys house, spring bridge & Port Visas tunnel portal. Zone 5: 8 Dellu-Handu veteran hamlets, NW brickyards, NE tin/iron skarn adits & -1,608 m Cut Salt Lake D2 potash works.',
+  hint: 'Dilihan / Dellu-Handu (pin solqo7hz7s, px 744, py 663; -888.6 m ASL, 1.79 atm): Premiere Izani Veterans Settlement on the Southern Bench of the Cut (settlements/dilihan/PLAN.md). Zone 1: Walled 500x500 m Jimjam brick-and-marble Colonia, raised contact-marble Forum & re-aimed Solstice Temple centered on its 86x110 m Sanctuary Esplanade (-31.50 deg S sunset at +4.00 deg above the +3.58 deg SW Cut rim through the West-Scarp Sunset Bastion Notch). Zone 2: Governor Palace (banded brick, contact-marble podium, gold onion dome w/ Cut signal lantern, 7 chhatri pavilions, Iziz orange restricted to banners/gate/reveals). Zone 3: Fortified 3.95 km Dilihan Vassal circuit wall enclosing 4 dense brick-and-courtyard wards (65% Dilihan vassal / 25% Iziz Vernacular / 10% Jimjam), matched Wall-Street cornices, bronze/tin skarn foundries, Quiet-Copy workshops, North Caravanserai & KCONS scaffolds. Zone 4: Lower Town (-923 m) customs post, walled Hykkousoi envoys house, spring bridge & Port Visas tunnel portal. Zone 5: 8 Dellu-Handu veteran hamlets, NW brickyards, NE tin/iron skarn adits & -1,608 m Cut Salt Lake D2 potash works.',
   scene: scene,
   camera: camera,
   renderer: renderer,
@@ -207,6 +224,7 @@ KHOST.take({
   clear: 1.7,
   minR: 2,
   maxR: 15000,
+  probeSample: 4000,
   registry: REG,
   views: VIEWS,
   onView: dlOnView,
@@ -221,7 +239,7 @@ KHOST.take({
       '\npop ' + DL_LAYOUT.plan.census.metropolitan;
   },
   minimap: { title: 'Dilihan (-889 m ASL)' },
-  budget: { showcase: { tris: 4000000, calls: 900 }, cls: {}, type: {} },
+  budget: { showcase: { tris: 6800000, calls: 900 }, cls: {}, type: {} },
   api: {
     view: function (k) { return KHOST.go(k); },
     hostChecks: dilihanChecks,
@@ -229,6 +247,7 @@ KHOST.take({
     solsticeCheck: function () { return DL_RULES.solsticeCheck(DL_LAYOUT.plan); },
     areaRatioCheck: function () { return DL_RULES.areaRatioCheck(DL_LAYOUT.plan); },
     corniceCheck: function () { return DL_RULES.corniceCheck(DL_LAYOUT.plan); },
+    wallAndPlazaCheck: function () { return DL_RULES.wallAndPlazaCheck(DL_LAYOUT.plan); },
     dilihan: function () {
       return {
         pin: DL_LAYOUT.plan.pin,

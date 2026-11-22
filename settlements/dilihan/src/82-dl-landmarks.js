@@ -819,6 +819,107 @@ const DL_LANDMARKS = (function () {
     tags: { culture: 'jimjam', type: ['industry'], wealth: 'poor', lit: false, job: 'salt' },
     build: buildDlEvaporitePan
   });
+  /* ----------------------------------------------------------------
+   * ZONE 1: Aligned Solstice Sanctuary Esplanade (dl_solstice_plaza, 86 x 110 m)
+   * Placed concentrically at (TEMPLE_X = -182, TEMPLE_Z = -72, TEMPLE_RY = SOL.ry) so jj_temple_sun
+   * sits dead-center on a grand contact-marble & banded-brick court aligned to Az 245.39 deg,
+   * with non-overlapping apron slabs around the temple podium/stairs and open sunset/forum portals.
+   * ---------------------------------------------------------------- */
+  function buildDlSolsticePlaza(G, o) {
+    const v = o && o.v != null ? o.v : 0;
+    reseed(9816 + (v | 0));
+    const W = 84.0;
+    const D = 108.0;
+    /* Deep retaining socle seated below y = 0 so zero top faces overlap jj_temple_sun's podium/stairs */
+    jjBox(0, -0.95, 0, W + 1.2, 1.80, D + 1.2, 'brickDeep');
+    jjBox(0, -0.10, 0, W + 0.6, 0.14, D + 0.6, 'marble');
+
+    /* Four non-overlapping contact-marble paving aprons framing jj_temple_sun's [-24.5..24.5, -42.5..42.5] footprint */
+    /* Left & right flank promenades (x = +-33.4, width 16.8 m, full 106.8 m length) */
+    for (const sx of [-1, 1]) {
+      jjBox(sx * 33.4, 0.02, 0, 16.8, 0.10, D - 1.2, 'marble');
+      jjBox(sx * 25.4, 0.08, 0, 0.90, 0.06, 86.4, 'brickYellow');
+      jjBox(sx * 41.2, 0.08, 0, 0.85, 0.06, D - 2.4, 'brickYellow');
+    }
+    /* Rear (-z, toward Forum) & front (+z, toward SW Cut sunset) esplanade courts */
+    jjBox(0, 0.02, -48.0, 49.6, 0.10, 10.8, 'marble');
+    jjBox(0, 0.08, -43.0, 49.6, 0.06, 0.85, 'brickYellow');
+    /* Front forecourt flanking and extending ahead of the temple's z = +21..+40 m sunset stair */
+    jjBox(0, 0.02, 47.4, 49.6, 0.10, 12.0, 'marble');
+    for (const sx of [-1, 1]) {
+      jjBox(sx * 16.9, 0.02, 31.2, 15.8, 0.10, 19.8, 'marble');
+    }
+
+    /* Low 0.92 m banded-brick & contact-marble sanctuary balustrade (wide open across +-13 m on +z sunset & -z forum axes!) */
+    const hw = W * 0.5 - 0.5;
+    const hd = D * 0.5 - 0.5;
+    for (const sz of [-1, 1]) {
+      for (const sx of [-1, 1]) {
+        /* Front (+z) and rear (-z) balustrade wings: x in [13.2, 41.5], leaving 26.4 m axial openings */
+        const segW = hw - 13.2;
+        const cx = sx * (13.2 + segW * 0.5);
+        jjBox(cx, 0.44, sz * hd, segW, 0.72, 0.68, 'bandBrick');
+        jjBox(cx, 0.88, sz * hd, segW + 0.18, 0.16, 0.84, 'marble');
+        /* Gate-post piers framing the 26.4 m axial portals (kept <= 1.85 m high so sunset ray at y=+13.7..22 m has >12 m clearance) */
+        jjBox(sx * 13.2, 0.86, sz * hd, 1.25, 1.56, 1.25, 'marble');
+        jjBox(sx * 13.2, 1.72, sz * hd, 1.42, 0.18, 1.42, 'gold');
+      }
+      jjStairs(0, -0.65, sz * (hd + 1.5), 22.0, 2.8, 0.72, 5, sz > 0 ? 0 : Math.PI, { mat: 'marble' });
+    }
+    for (const sx of [-1, 1]) {
+      for (const sz of [-1, 1]) {
+        const segD = hd - 9.0;
+        const cz = sz * (9.0 + segD * 0.5);
+        jjBox(sx * hw, 0.44, cz, 0.68, 0.72, segD, 'bandBrick');
+        jjBox(sx * hw, 0.88, cz, 0.84, 0.16, segD + 0.18, 'marble');
+        jjBox(sx * hw, 0.82, sz * 9.0, 1.18, 1.48, 1.18, 'marble');
+      }
+      jjStairs(sx * (hw + 1.5), -0.65, 0, 14.0, 2.8, 0.72, 5, sx > 0 ? Math.PI * 0.5 : -Math.PI * 0.5, { mat: 'marble' });
+    }
+
+    /* Four corner bronze solstice braziers on marble pedestals at (+-37.5, +-49.0), 37 m clear of sunset ray */
+    for (const sx of [-1, 1]) {
+      for (const sz of [-1, 1]) {
+        const bx = sx * 37.5;
+        const bz = sz * 49.0;
+        jjBox(bx, 0.58, bz, 2.1, 0.96, 2.1, 'marble');
+        jjCylinder(bx, 1.42, bz, 0.64, 0.72, 'brickDeep', undefined, 16);
+        jjCylinder(bx, 1.88, bz, 0.86, 0.22, 'gold', undefined, 16);
+        kput('dlEmberBall', [bx, 2.12, bz], null, [0.40, 0.28, 0.40], vC(DLC.ember));
+      }
+    }
+    jjReg('Solstice Sanctuary Aligned Esplanade', 0, 0, 54, 2.4, { role: 'plaza' });
+  }
+
+  /* Low West-Scarp Sunset Notch Parapet (12 x 2.8 m, h 2.4 m): keeps Colonia West Scarp wall continuous below the +18 m solstice ray */
+  function buildDlScarpParapet(G, o) {
+    const v = o && o.v != null ? o.v : 0;
+    reseed(9819 + (v | 0));
+    jjBox(0, -2.1, 0, 12.6, 4.2, 3.0, 'brickDeep');
+    jjBox(0, 0.85, 0, 12.2, 1.70, 2.4, 'bandBrick');
+    jjBox(0, 1.80, 0, 12.4, 0.20, 2.65, 'marble');
+    for (let k = 0; k < 6; k++) {
+      const mx = -5.0 + k * 2.0;
+      jjBox(mx, 2.22, 0.72, 1.05, 0.64, 0.72, 'brick');
+      jjBox(mx, 2.60, 0.72, 1.18, 0.12, 0.84, 'marble');
+    }
+    jjReg('West-Scarp Solstice Notch Parapet', 0, 0, 6.2, 2.8, { part: 'wall parapet' });
+  }
+
+  JJ.def({
+    key: 'dl_solstice_plaza',
+    name: 'Solstice Sanctuary Aligned Esplanade',
+    w: 86, d: 110, r: 56, h: 2.6, cls: 'feature',
+    tags: { culture: 'jimjam', type: ['plaza', 'religious'], wealth: 'civic', lit: false, job: 'worship' },
+    build: buildDlSolsticePlaza
+  });
+  JJ.def({
+    key: 'dl_scarp_parapet',
+    name: 'West-Scarp Solstice Notch Parapet',
+    w: 12, d: 2.8, r: 6.2, h: 2.8, cls: 'building',
+    tags: { culture: 'jimjam', type: ['military', 'infrastructure'], wealth: 'civic', lit: false },
+    build: buildDlScarpParapet
+  });
   JJ.def({
     key: 'dl_crop_plot',
     name: 'Dellu-Handu Veteran Allotment Crop Plot',

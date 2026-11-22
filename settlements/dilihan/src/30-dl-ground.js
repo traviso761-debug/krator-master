@@ -211,19 +211,24 @@ var DL_GROUND = (function () {
     }
 
     /* 4. Urban Dilihan terraced benches, Governor's Precinct, Lower Town shelf & 500x500 m Colonia spur */
-    if (rSite < 1550) {
-      /* 4a. Zone 3 Vernacular Districts: East terrace, South terrace & North Caravanserai shelf (slope <= 0.065) */
-      var wEast = boxBlend(x, z, 245, -330, 780, 510, 130);
+    if (rSite < 1650) {
+      /* 4a. Zone 3 Vernacular Districts: East, SE Pass, South & North Caravanserai shelves (slope <= 0.060) */
+      var wEast = boxBlend(x, z, 245, -335, 785, 510, 130);
       if (wEast > 0) {
-        var yEast = -3.0 + 0.042 * Math.max(0, x - 262) + 0.018 * Math.max(0, z + 60);
+        var yEast = -3.0 + 0.040 * Math.max(0, x - 262) + 0.016 * Math.max(0, z + 60);
         h = h * (1 - wEast) + yEast * wEast;
       }
-      var wSouth = boxBlend(x, z, -265, 192, 265, 665, 130);
+      var wSouthEast = boxBlend(x, z, 245, 485, 785, 905, 130);
+      if (wSouthEast > 0) {
+        var ySE = 5.8 + 0.036 * Math.max(0, x - 262) + 0.032 * Math.max(0, z - 490);
+        h = h * (1 - wSouthEast) + ySE * wSouthEast;
+      }
+      var wSouth = boxBlend(x, z, -265, 192, 265, 675, 130);
       if (wSouth > 0) {
-        var ySouth = -2.8 + 0.054 * Math.max(0, z - 202) + 0.008 * Math.max(0, x);
+        var ySouth = -2.8 + 0.050 * Math.max(0, z - 202) + 0.008 * Math.max(0, x);
         h = h * (1 - wSouth) + ySouth * wSouth;
       }
-      var wNorth = boxBlend(x, z, -240, -580, 400, -325, 105);
+      var wNorth = boxBlend(x, z, -260, -580, 525, -322, 105);
       if (wNorth > 0) {
         var yNorth = -8.4 + 0.018 * (z + 440);
         h = h * (1 - wNorth) + yNorth * wNorth;
@@ -245,9 +250,9 @@ var DL_GROUND = (function () {
       }
 
       /* 4c. Zone 1 Colonia projecting bedrock spur (-892.0 m ASL = -3.4 m rel, crisp 30 m W/NW marble-granite scarp) */
-      var wCol = boxBlend(x, z, -254, -314, 254, 194, 34);
+      var wCol = boxBlend(x, z, -258, -314, 254, 194, 34);
       if (wCol > 0) {
-        /* Very gentle <= 0.008 drainage crown so KCITY & jj_temple_sun sit level */
+        /* Very gentle <= 0.008 drainage crown so KCITY, dl_solstice_plaza & jj_temple_sun sit level */
         var yCol = -3.4 + 0.004 * ((z + 60) / 100) + 0.003 * (x / 100);
         /* Amphitheater cavea bowl carved into the NW bench scarp (-168, -238) */
         var dAmp = Math.hypot(x + 168, z + 238);

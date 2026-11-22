@@ -83,10 +83,10 @@ function buildDilBazaarPavilion(G, o) { reseed(9865 + (o.v | 0));
 
   /* Double-tiered terracotta ventilation monitor roof (lower hipped skirt + airy louver clerestory + upper monitor cap) */
   dlnCornice(0, Y0 + H1, 0, 19.6, 15.6, 0);
-  kput('dlSkirtTile', [0, 5.60, 0], null, [21.2, 2.35, 17.2], dlnTileTint());
-  vB('vWood', 0, 5.48, 0, 21.3, 0.18, 17.3, 0, dlnOrangeTint());
+  dlnRingBox('vWood', 0, 5.44, 0, 21.3, 0.16, 17.3, 0.24, 0, dlnOrangeTint());
+  kput('dlSkirtTile', [0, 5.61, 0], null, [21.2, 2.34, 17.2], dlnTileTint());
   /* Clerestory louver drum between lower skirt and upper monitor roof */
-  vB('dlMortarB', 0, 5.60 + 2.25, 0, 10.2, 0.20, 8.8, 0, morC);
+  dlnRingBox('dlMortarB', 0, 5.61 + 2.24, 0, 10.2, 0.20, 8.8, 0.36, 0, morC);
   dlnJali(0, 5.60 + 2.45, 4.35, 0, 8.8, 0.95, { openBack: true, c: brkC });
   dlnJali(0, 5.60 + 2.45, -4.35, Math.PI, 8.8, 0.95, { openBack: true, c: brkC });
   dlnMonitorRoof(0, 5.60 + 3.45, 0, 10.2, 8.8, 1.85, 0, { over: 0.78, monitor: false });

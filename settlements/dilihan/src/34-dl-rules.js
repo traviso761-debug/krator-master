@@ -146,7 +146,7 @@ var DL_RULES = (function () {
     var all = (L.structures || []).concat(L.walls || []);
     for (var i = 0; i < all.length; i++) {
       var b = all[i];
-      if (b.id === S.templeId) continue;
+      if (b.id === S.templeId || b.key === 'dl_solstice_plaza') continue;
       var bx = b.x - eye[0], bz = b.z - eye[2];
       var along = bx * sd[0] + bz * sd[2];
       if (along < 32 || along > 480) continue;
@@ -231,6 +231,65 @@ var DL_RULES = (function () {
     };
   }
 
+  /* 8. Full Fortified Inner + Outer Circuit Walls, Concentric Solstice Sanctuary Plaza & Dense Urban Fabric Check */
+  function wallAndPlazaCheck(L) {
+    var structs = L.structures || [];
+    var walls = L.walls || [];
+    var lm = L.landmarks || {};
+    var temple = null, plaza = null;
+    for (var i = 0; i < structs.length; i++) {
+      if (structs[i].id === lm.templeId) temple = structs[i];
+      if (structs[i].id === lm.solsticePlazaId || structs[i].key === 'dl_solstice_plaza') plaza = structs[i];
+    }
+    var plazaAligned = !!(temple && plaza &&
+      plaza.key === 'dl_solstice_plaza' &&
+      plaza.w >= 80 && plaza.d >= 100 &&
+      Math.hypot(plaza.x - temple.x, plaza.z - temple.z) <= 0.02 &&
+      Math.abs(plaza.ry - temple.ry) <= 0.002);
+
+    var jjWalls = 0, jjCorners = 0, jjGates = 0, scarpNotch = 0;
+    var dilWalls = 0, dilCorners = 0, dilGates = 0, dilTowers = 0;
+    for (var wi = 0; wi < walls.length; wi++) {
+      var w = walls[wi];
+      if (w.key.indexOf('jj_wall_') === 0 || w.key === 'dl_scarp_parapet') {
+        jjWalls++;
+        if (w.key === 'jj_wall_corner') jjCorners++;
+        if (w.key === 'jj_wall_gate') jjGates++;
+        if (w.key === 'dl_scarp_parapet') scarpNotch++;
+      } else if (w.key.indexOf('dil_wall_') === 0) {
+        dilWalls++;
+        if (w.key === 'dil_wall_corner') dilCorners++;
+        if (w.key === 'dil_wall_gate') dilGates++;
+        if (w.key === 'dil_wall_tower') dilTowers++;
+      }
+    }
+
+    /* Verify every Zone 1, 2 & 3 urban building sits strictly inside the fortified outer circuit enceinte */
+    var outsideUrban = 0;
+    for (var si = 0; si < structs.length; si++) {
+      var s = structs[si];
+      if (s.zone === 1 || s.zone === 2 || s.zone === 3) {
+        if (s.x < -252 || s.x > 772 || s.z < -564 || s.z > 892) outsideUrban++;
+      }
+    }
+
+    var z1Count = (L.zones[1] || []).length;
+    var z3Count = (L.zones[3] || []).length;
+    var denseOk = z1Count >= 140 && z3Count >= 800 && structs.length >= 1200;
+    var wallsOk = jjWalls >= 170 && jjCorners === 4 && jjGates === 6 && scarpNotch === 2 &&
+      dilWalls >= 390 && dilCorners === 8 && dilGates === 7 && dilTowers >= 30 && outsideUrban === 0;
+
+    var ok = plazaAligned && wallsOk && denseOk;
+    return {
+      name: 'continuous inner + outer fortified circuit walls, concentric 86x110m Solstice Plaza & dense urban wards',
+      pass: ok,
+      detail: 'innerWall=' + jjWalls + ' (4c/6g/2notch), outerWall=' + dilWalls + ' (' + dilCorners + 'c/' +
+        dilGates + 'g/' + dilTowers + 'twr, outsideUrban=' + outsideUrban + '), plazaOffset=' +
+        (temple && plaza ? r2(Math.hypot(plaza.x - temple.x, plaza.z - temple.z)) + 'm' : 'missing') +
+        ', z1=' + z1Count + ', z3=' + z3Count + ', total=' + structs.length
+    };
+  }
+
   function checks(L) {
     return [
       pinCheck(L),
@@ -239,7 +298,8 @@ var DL_RULES = (function () {
       overlapsCheck(L),
       solsticeCheck(L),
       palaceCheck(L),
-      zonesAndHanduCheck(L)
+      zonesAndHanduCheck(L),
+      wallAndPlazaCheck(L)
     ];
   }
 
@@ -319,6 +379,7 @@ var DL_RULES = (function () {
     solsticeCheck: solsticeCheck,
     palaceCheck: palaceCheck,
     zonesAndHanduCheck: zonesAndHanduCheck,
+    wallAndPlazaCheck: wallAndPlazaCheck,
     checks: checks,
     registerTags: registerTags
   };

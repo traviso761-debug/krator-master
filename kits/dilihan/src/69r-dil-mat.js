@@ -142,13 +142,13 @@ TEX.dlLaterite = dlnBrickCanvas({
 TEX.dlMortar = dlnMortarCanvas();
 TEX.dlTile = dlnTileCanvas();
 
-MAT.dlBrick      = new THREE.MeshStandardMaterial({ map: TEX.dlBrick,      color: 0xffffff, roughness: 0.90, metalness: 0, side: DS });
-MAT.dlBrickDeep  = new THREE.MeshStandardMaterial({ map: TEX.dlBrickDeep,  color: 0xffffff, roughness: 0.92, metalness: 0, side: DS });
-MAT.dlBrickBand  = new THREE.MeshStandardMaterial({ map: TEX.dlBrickBand,  color: 0xffffff, roughness: 0.90, metalness: 0, side: DS });
-MAT.dlBrickOchre = new THREE.MeshStandardMaterial({ map: TEX.dlBrickOchre, color: 0xffffff, roughness: 0.90, metalness: 0, side: DS });
-MAT.dlLaterite   = new THREE.MeshStandardMaterial({ map: TEX.dlLaterite,   color: 0xffffff, roughness: 0.92, metalness: 0, side: DS });
-MAT.dlMortar     = new THREE.MeshStandardMaterial({ map: TEX.dlMortar,     color: 0xffffff, roughness: 0.84, metalness: 0, side: DS });
-MAT.dlTile       = new THREE.MeshStandardMaterial({ map: TEX.dlTile,       color: 0xffffff, roughness: 0.82, metalness: 0, side: DS });
+MAT.dlBrick      = new THREE.MeshStandardMaterial({ map: TEX.dlBrick,      color: 0xffffff, roughness: 0.90, metalness: 0 });
+MAT.dlBrickDeep  = new THREE.MeshStandardMaterial({ map: TEX.dlBrickDeep,  color: 0xffffff, roughness: 0.92, metalness: 0 });
+MAT.dlBrickBand  = new THREE.MeshStandardMaterial({ map: TEX.dlBrickBand,  color: 0xffffff, roughness: 0.90, metalness: 0 });
+MAT.dlBrickOchre = new THREE.MeshStandardMaterial({ map: TEX.dlBrickOchre, color: 0xffffff, roughness: 0.90, metalness: 0 });
+MAT.dlLaterite   = new THREE.MeshStandardMaterial({ map: TEX.dlLaterite,   color: 0xffffff, roughness: 0.92, metalness: 0 });
+MAT.dlMortar     = new THREE.MeshStandardMaterial({ map: TEX.dlMortar,     color: 0xffffff, roughness: 0.84, metalness: 0 });
+MAT.dlTile       = new THREE.MeshStandardMaterial({ map: TEX.dlTile,       color: 0xffffff, roughness: 0.82, metalness: 0 });
 MAT.dlWater      = new THREE.MeshStandardMaterial({ color: vC(0x2d8e96),   roughness: 0.14, metalness: 0.22 });
 MAT.dlGilt       = new THREE.MeshStandardMaterial({ color: 0xffffff,       roughness: 0.32, metalness: 0.82 });
 

@@ -45,6 +45,10 @@ ASSERT_JS = r"""() => {
     const cc = A.corniceCheck();
     R.push({name: 'wall-street cornice alignment check', ok: !!cc.pass, detail: String(cc.detail || '')});
   }
+  if (A.wallAndPlazaCheck) {
+    const wp = A.wallAndPlazaCheck();
+    R.push({name: 'fortified walls, aligned solstice plaza & dense urban check', ok: !!wp.pass, detail: String(wp.detail || '')});
+  }
   return R;
 }"""
 

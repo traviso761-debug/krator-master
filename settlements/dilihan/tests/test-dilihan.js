@@ -190,6 +190,23 @@ badSkarn.structures.forEach(r => { r.source = null; });
 T.neg('severing RES_ORE tin/iron skarn resSource links fails zonesAndHanduCheck',
   p => DLR.zonesAndHanduCheck(p).pass, badSkarn, L);
 
+/* ---- Test 7b: Full Inner + Outer Fortified Circuit Walls, Concentric Solstice Sanctuary Plaza & Urban Density ---- */
+const wpc = DLR.wallAndPlazaCheck(L);
+T.ok('continuous inner Colonia + outer Dilihan circuit walls, concentric 86x110m Solstice Esplanade & dense urban fabric',
+  wpc.pass, wpc.detail);
+
+const offCenterPlaza = clonePlan(L);
+offCenterPlaza.structures.forEach(r => {
+  if (r.key === 'dl_solstice_plaza') r.x += 10.0;
+});
+T.neg('shifting dl_solstice_plaza 10 m off-center from jj_temple_sun fails wallAndPlazaCheck',
+  p => DLR.wallAndPlazaCheck(p).pass, offCenterPlaza, L);
+
+const unWalled = clonePlan(L);
+unWalled.walls = unWalled.walls.filter(w => w.key.indexOf('dil_wall_') !== 0);
+T.neg('removing outer dil_wall_* circuit wall fails wallAndPlazaCheck',
+  p => DLR.wallAndPlazaCheck(p).pass, unWalled, L);
+
 /* ---- Test 8: KTAGS Registration & Vocabulary Audit + Determinism ---- */
 const tags = ctx.KTAGS.create({ build: 'dilihan' });
 const regCount = DLR.registerTags(L, tags);
