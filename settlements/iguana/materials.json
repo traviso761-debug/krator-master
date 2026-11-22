@@ -1,0 +1,59 @@
+{
+ "build": "settlements/iguana",
+ "note": "Iguana's ground pack (PLAN.md sections 1 and 6): four library ground layers under KGROUND (lush plateau grass, beaten dirt, tilled fields and terrace paddy fields). mapOnly with tint.keep 0.8.",
+ "size": 512,
+ "families": {
+  "gGrass": {
+   "lib": "ground.grass.lush",
+   "scale": [
+    6,
+    6
+   ],
+   "use": "the lush tropical plateau floor (Af, 1,992 mm) round Iguana",
+   "tint": {
+    "keep": 0.8,
+    "mean": 0.52
+   },
+   "mapOnly": true
+  },
+  "gYard": {
+   "lib": "ground.dirt",
+   "scale": [
+    4,
+    4
+   ],
+   "use": "the wide spiral street, the Great Granary yard and the watch road toward the Pile",
+   "tint": {
+    "keep": 0.8,
+    "mean": 0.55
+   },
+   "mapOnly": true
+  },
+  "gTill": {
+   "lib": "ground.tilled",
+   "scale": [
+    5,
+    5
+   ],
+   "use": "the 29-row grain and tuber fields west of the Great Granary",
+   "tint": {
+    "keep": 0.8,
+    "mean": 0.55
+   },
+   "mapOnly": true
+  },
+  "gTerr": {
+   "lib": "ground.terrace.field",
+   "scale": [
+    5,
+    5
+   ],
+   "use": "wet rice and terrace aprons by Muckle Weyt Beck, the farming hamlet and the Great Granary",
+   "tint": {
+    "keep": 0.8,
+    "mean": 0.5
+   },
+   "mapOnly": true
+  }
+ }
+}

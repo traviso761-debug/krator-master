@@ -8,14 +8,18 @@
 //   LZ_TUNE.px(px, py)     metres in Xanadu's frame
 //   LZ_TUNE.goods          every good and its unit (kg)
 //   LZ_TUNE.diet           a person's year by the kind of place (town, cavern, warren), kg
-//   LZ_TUNE.places         the towns, the countrysides (the warrens, in bulk) and the two reliquaries, with the owner's people
-//                          (section 6 of the proposal: Basilisk ~15,000; Tuatara, Komodo, Gila, Iguana ~3,000; the Tubes
-//                          ~1,000; the warrens 20,000-40,000: 30,000 here, 18,000 east and 12,000 west) and what each makes
-//                          a year. GILA IS GL_REC (settlements/gila/src/88-gl-records.js): its people, works and needs are
-//                          read from the village's own records when they are loaded, so the two cannot drift (the test holds them)
-//   LZ_TUNE.coil           the Coil (section 3): two loops that meet at the capital, the west (Iguana, Gila, the west
-//                          reliquary, the Tubes, the western warrens) and the east (the east reliquary, Tuatara, Komodo, the
-//                          eastern warrens). Outward is forward round a loop, away from the capital; inward is back
+//   LZ_TUNE.places         the towns, the eight warren sub-districts (in bulk: core/simulation/LIZARDMEN-CENSUS.md section 2,
+//                          agreed 2026-11-17) and the two reliquaries, with the owner's people (Basilisk 30,000 — raised from
+//                          15,000 by the owner, 2026-11-17: "turn up the pop numbers (30k?) and pack the buildings more
+//                          closely"; Tuatara, Komodo, Gila, Iguana ~3,000; Skink, the salt village, 1,500; the Tubes ~1,000;
+//                          the warrens 20,000-40,000: 30,000 here, 18,000 across warrens-e1..e4 and 12,000 across
+//                          warrens-w1..w4) and what each makes a year. GILA IS GL_REC (settlements/gila/src/88-gl-records.js):
+//                          its people, works and needs are read from the village's own records when they are loaded, so the two
+//                          cannot drift (the test holds them)
+//   LZ_TUNE.coil           the Coil (section 3): two loops that meet at the capital, the west (Iguana, warrens-w1, Skink,
+//                          warrens-w2, Gila, the west reliquary, the Tubes, warrens-w3, warrens-w4) and the east (warrens-e4,
+//                          the east reliquary, Tuatara, warrens-e2, warrens-e3, Komodo, warrens-e1). Outward is forward round a
+//                          loop, away from the capital; inward is back
 //   LZ_TUNE.allot          the Allotment (core/region/51-region-allot.js): the Interpreters plan at each quarter-day
 //   LZ_TUNE.valley(o)      the valley spec; o {allot (true: the Allotment on), scale, bulk, days (the stocked start)}
 // Everything here is proposed unless the comment quotes the owner. No money: nothing is priced, nothing bought or sold.
@@ -35,7 +39,7 @@ T.goods={grain:{unit:'kg'},produce:{unit:'kg'},fish:{unit:'kg'},lakecake:{unit:'
 T.diet={town:{grain:233.33,produce:83.33,fish:40,meat_hide:30,salt:8.333,bronze_ware:2},
  cavern:{grain:150,produce:120,fish:40,meat_hide:20,salt:8.333,bronze_ware:2},
  warren:{grain:220,produce:80,meat_hide:40,salt:6,bronze_ware:.5}};
-/* the bronze hall's batch (Basilisk: Tuatara's copper and Komodo's tin, nine to one); every town's smiths rework the
+/* the bronze hall's batch (Basilisk: Tuatara's copper and Komodo and Iguana's tin, nine to one); every town's smiths rework the
    allotted bronze into tools, lamellae and clapperless bells, a kilo for a kilo */
 T.chain={cast:{in:{copper:9,tin:1},out:{bronze:10},hours:30},rework:{in:{bronze:1},out:{bronze_ware:1},hours:10}};
 /* THE PLACES. id (the map's pin where it has one), name, px, py, people, diet (a kind, or its own), make: {good: kg a year
@@ -43,42 +47,68 @@ T.chain={cast:{in:{copper:9,tin:1},out:{bronze:10},hours:30},rework:{in:{bronze:
    reliquary its relics go to), loop (its Coil loop). make is what the place's ground and works give (PROPOSAL-LIZARDMEN
    section 2; LIZARDMEN-SURVEY section 4): */
 T.places=[
- {id:'slrodrkrls',key:'basilisk',name:'Basilisk, the stone capital at the eastern sea',px:765,py:1596,people:15000,diet:'town',
-  make:{grain:1500000,produce:1300000,fish:600000,meat_hide:450000,salt:115000,bone:48000},extra:{evaporites:12000/15000,bone:60000/15000},
-  smiths:true,cast:true,why:'the jungle shore grows grain poorly; the sea\'s pans give the east\'s salt; the bronze hall casts what Tuatara and Komodo dig'},
+ {id:'slrodrkrls',key:'basilisk',name:'Basilisk, the stone capital at the eastern sea',px:766.6,py:1597.25,people:30000,diet:'town',
+  make:{grain:2800000,produce:2550000,fish:1200000,meat_hide:900000,salt:85000,bone:96000},extra:{evaporites:16000/30000,bone:108000/30000},
+  smiths:true,cast:true,why:'the owner, 2026-11-17: raised to 30,000 ("turn up the pop numbers (30k?) and pack the buildings more closely") at agreed sabkha pin 766.6,1597.25; southern/western alluvial paddies make 2,800 t of its 7,000 t grain need (4,200 t imported from Iguana and the warrens); 85 t wet-season salt (2.8 kg/head vs 7.7 kg/head originally: Skink and Gila supply two-thirds of the capital\'s salt); the bronze hall casts what Tuatara, Komodo and Iguana dig'},
  {id:'szv27b2reu',key:'tuatara',name:'Tuatara, on the volcanic savanna above the eastern sea',px:818,py:1554,people:3000,diet:{grain:233.33,produce:83.33,meat_hide:70,salt:8.333,bronze_ware:2},
-  make:{grain:1000000,produce:250000,meat_hide:210000,copper:70000},smiths:true,raider:true,why:'the richest ground: copper 102 nodes, the savanna\'s grain; no perennial water, so no fish'},
+  make:{grain:1000000,produce:250000,meat_hide:210000,copper:98000},smiths:true,raider:true,why:'the richest ground: copper 102 nodes (98 t/yr feeding Basilisk\'s 30k bronze hall), the savanna\'s grain; no perennial water, so no fish'},
  {id:'spnqhezhiw',key:'komodo',name:'Komodo, at the eastern sea\'s far end',px:865,py:1617,people:3000,diet:'town',
   make:{grain:600000,produce:250000,fish:240000,meat_hide:90000,tin:8000},smiths:true,raider:true,why:'tin from the placers on its rivers; bamboo rice; little farmland'},
  {id:'sze26pgivd',key:'gila',name:'Gila, the salt village on its lake',px:653,py:1485,people:3000,gila:true,smiths:true,
   why:'GL_REC (settlements/gila/src/88-gl-records.js): the evaporites, the crest\'s fields, the lake\'s alga'},
  {id:'iguana',key:'iguana',name:'Iguana, the granary town on the Pile\'s plateau',px:713,py:1569,people:3000,diet:{grain:233.33,produce:83.33,meat_hide:70,salt:8.333,bronze_ware:2},
-  make:{grain:2600000,produce:250000,meat_hide:210000,relics:1500},smiths:true,sink:'reliquary-east',
-  why:'the owner, 2026-11-16: "on some prime farmland nearby" the Pile (proposed px 713,1569, -373 m, 0.6 % slope); the capital\'s granary; it keeps the watch on Loj Nahn and gleans the Pile\'s lower levels'},
+  make:{grain:3500000,produce:250000,meat_hide:210000,tin:8000,relics:1500},smiths:true,sink:'reliquary-east',
+  why:'the owner, 2026-11-16: "on some prime farmland nearby" the Pile (proposed px 713,1569, -373 m, 0.6 % slope); 2026-11-17: 8 t tin on Muckle Weyt Beck r202; the 30k capital\'s granary (3,500 t grain); keeps the watch on Loj Nahn and gleans the Pile\'s lower levels'},
+ {id:'skink',key:'skink',name:'Skink, the salt village under the Pile',px:691,py:1521,people:1500,diet:{grain:233.33,produce:83.33,meat_hide:50,salt:8.333,bronze_ware:2},
+  make:{grain:300000,produce:125000,meat_hide:75000,salt:300000},smiths:true,
+  why:'the owner, 2026-11-17: "yes add it, this will be the village of Skink": the country\'s salt was its thinnest margin (settlements/skink/PLAN.md section 1); the richest halite in the country (254) beside a salt lake, pans that dry in 1,051 mm, on the west loop between Iguana and Gila (proposed px 691,1521, no pin yet)'},
  {id:'sa8xk6pimb',key:'tubes',name:'The Tubes, the Rift line\'s ruined cavern',px:608,py:1547,people:1000,diet:'cavern',
   make:{produce:120000,fish:40000,meat_hide:20000,relics:3000},smiths:true,sink:'reliquary-west',
   why:'the owner, 2026-11-16: "both a ruin and a lizardman town of about 1000": fungus beds in the dark, the western sea\'s fish, relics from the ruined station'},
- {id:'warrens-east',key:'warrens-east',name:'The eastern warrens (the countryside round the eastern sea)',px:805,py:1570,people:18000,diet:'warren',bulk:true,
-  make:{grain:4060000,produce:1440000,meat_hide:720000},smiths:true,why:'the owner: the warrens 20,000-40,000, "as bulk countrysides (as Xanadu\'s provinces are)"'},
- {id:'warrens-west',key:'warrens-west',name:'The western warrens (the countryside round the western sea and Gila\'s lake)',px:630,py:1515,people:12000,diet:'warren',bulk:true,
-  make:{grain:2840000,produce:960000,meat_hide:480000},smiths:true},
+ {id:'warrens-e1',key:'warrens-e1',name:'The Basilisk sabkha and south-strand warrens',px:774,py:1605,people:6500,diet:'warren',bulk:true,
+  make:{grain:1880000,produce:520000,meat_hide:260000},smiths:true,why:'LIZARDMEN-CENSUS.md section 2 (agreed 2026-11-17): XA alluvial apron south and east of Basilisk (r762, r066, r191)'},
+ {id:'warrens-e2',key:'warrens-e2',name:'The Tuatara volcanic-savanna warrens',px:812,py:1564,people:4500,diet:'warren',bulk:true,
+  make:{grain:1280000,produce:360000,meat_hide:180000},smiths:true,why:'LIZARDMEN-CENSUS.md section 2: XV volcanic bench below Tuatara'},
+ {id:'warrens-e3',key:'warrens-e3',name:'The Komodo and cataract-shore warrens',px:858,py:1608,people:3500,diet:'warren',bulk:true,
+  make:{grain:980000,produce:280000,meat_hide:140000},smiths:true,why:'LIZARDMEN-CENSUS.md section 2: hyper-wet eastern shore and cataract delta'},
+ {id:'warrens-e4',key:'warrens-e4',name:'The north-strand and battery-coast warrens',px:778,py:1579,people:3500,diet:'warren',bulk:true,
+  make:{grain:990000,produce:280000,meat_hide:140000},smiths:true,why:'LIZARDMEN-CENSUS.md section 2: perennial mouths of Blek Beck and Stuan Warra and the galvanic strand'},
+ {id:'warrens-w1',key:'warrens-w1',name:'The Pile-plateau and beck-rim warrens',px:718,py:1578,people:3500,diet:'warren',bulk:true,
+  make:{grain:1150000,produce:280000,meat_hide:140000},smiths:true,why:'LIZARDMEN-CENSUS.md section 2: Af/Cfa tableland round Iguana and Muckle Weyt Beck'},
+ {id:'warrens-w2',key:'warrens-w2',name:'The Gila salt-basin and Skink-corridor warrens',px:664,py:1492,people:4000,diet:'warren',bulk:true,
+  make:{grain:1160000,produce:320000,meat_hide:160000},smiths:true,why:'LIZARDMEN-CENSUS.md section 2: lake deltas and Pimp Beck corridor between Skink and Gila'},
+ {id:'warrens-w3',key:'warrens-w3',name:'The Tkyoob-bench and Tubes-mouth warrens',px:618,py:1554,people:2500,diet:'warren',bulk:true,
+  make:{grain:700000,produce:200000,meat_hide:100000},smiths:true,why:'LIZARDMEN-CENSUS.md section 2: Tkyoob Warra and Kopa Warra benches below the Tubes'},
+ {id:'warrens-w4',key:'warrens-w4',name:'The south-sea return-apron warrens',px:661,py:1572,people:2000,diet:'warren',bulk:true,
+  make:{grain:580000,produce:160000,meat_hide:80000},smiths:true,why:'LIZARDMEN-CENSUS.md section 2: dry southern return corridor south of the Western Terminal Sea'},
  {id:'reliquary-west',key:'reliquary-west',name:'The west reliquary, on the south shore of Gila\'s spit',px:651.9,py:1486.7,people:0,store:true,
   why:'the owner, 2026-11-16: "one reliquary per cluster for now"; GL_REC.site.reliquary (2,160 m west and 3,380 m south of Gila\'s pin)'},
  {id:'reliquary-east',key:'reliquary-east',name:'The east reliquary, on the eastern sea\'s strand',px:790,py:1578,people:0,store:true,
   why:'"on the sea\'s strand between Basilisk and Tuatara" (PROPOSAL-LIZARDMEN section 1)'}];
 T.byKey=k=>T.places.find(p=>p.key===k);
+/* a town's own records (settlements/<town>/src/80-<p>-records.js) held to the tune: its people by caste are the place's people,
+   the caste shares sum to one, and every good the tune says it makes has works in the records making exactly that much */
+T.checkTown=function(R){const out={ok:true,problems:[]},bad=m=>{out.ok=false;out.problems.push(m);},P=R&&T.byKey(R.key);
+ if(!P){bad('no place '+(R&&R.key)+' in LZ_TUNE');return out;}
+ const n=R.castes.reduce((a,c)=>a+c.people,0),sh=R.castes.reduce((a,c)=>a+c.share,0);
+ if(n!==P.people)bad(R.key+': '+n+' by caste, the tune '+P.people);if(Math.abs(sh-1)>1e-9)bad(R.key+': caste shares sum to '+sh);
+ Object.keys(P.make||{}).forEach(g=>{const w=R.works.filter(x=>x.good===g).reduce((a,x)=>a+x.yearT*1000,0);if(Math.abs(w-P.make[g])>1)bad(R.key+' '+g+': works make '+w+' kg, the tune '+P.make[g]);});
+ R.works.forEach(x=>{if(!(P.make||{})[x.good])bad(R.key+' '+x.good+': works the tune does not know');});
+ return out;};
 /* THE COIL (section 3, endorsed by the owner): two loops meeting at the capital. Every load rides its season's way round
    (outward in wet1 and dry1, inward in wet2 and dry2: GL_REC's seasons) and never goes straight; a load for the other loop
    rides in to the capital first, then out round the other loop */
-T.coil={hub:'basilisk',loops:{west:['basilisk','iguana','gila','reliquary-west','tubes','warrens-west'],
- east:['basilisk','reliquary-east','tuatara','komodo','warrens-east']},seasons:['wet1','wet2','dry1','dry2'],
+T.coil={hub:'basilisk',loops:{
+ west:['basilisk','iguana','warrens-w1','skink','warrens-w2','gila','reliquary-west','tubes','warrens-w3','warrens-w4'],
+ east:['basilisk','warrens-e4','reliquary-east','tuatara','warrens-e2','warrens-e3','komodo','warrens-e1']},seasons:['wet1','wet2','dry1','dry2'],
  dir:{wet1:'outward',wet2:'inward',dry1:'outward',dry2:'inward'}};
 /* THE ALLOTMENT (core/region/51-region-allot.js): the Interpreters, "one mind remembering what all the others will do", plan
    at each quarter-day. A place keeps `reserve` days of what it uses; what it holds over that and its season's need is the
    plan's to move; a place under it is sent to, the heaviest need first. A place whose need weighs less is told to send
    from below its reserve (down to `deep` of its stock) when a heavier one would still go short: no profit, no keep */
-T.allot={every:91.25,reserve:60,horizon:91.25,deep:.5,kmDay:20,hold:1,
- weight:{basilisk:3,iguana:2,gila:2,tuatara:2,komodo:2,tubes:2,'warrens-east':1,'warrens-west':1},
+T.allot={every:91.25,reserve:72,horizon:91.25,deep:.5,kmDay:20,hold:.5,
+ weight:{basilisk:3,iguana:2,skink:2,gila:2,tuatara:2,komodo:2,tubes:2,
+  'warrens-e1':1,'warrens-e2':1,'warrens-e3':1,'warrens-e4':1,'warrens-w1':1,'warrens-w2':1,'warrens-w3':1,'warrens-w4':1},
  goods:['grain','produce','fish','meat_hide','salt','evaporites','copper','tin','bronze','bone'],
  sinks:{relics:true},
  /* Z2: the gifts that go round the Coil, bronze outward and bone inward, each held a while at every stop (the Kula ring as a
@@ -106,11 +136,12 @@ T.valley=function(o){o=o||{};const K=o.scale==null?10:o.scale,KB=o.bulk==null?20
    works.push({id:P.key+'.'+g,kind:g,name:P.key+'\'s '+g,crew,out:[g],rate:rate(make[g],crew,k)});});
   if(P.smiths){const need=(diet.bronze_ware||0)*n,crew=Math.max(k,Math.round(need/1000*6));   /* a smith reworks about 170 kg a year */
    works.push({id:P.key+'.smiths',kind:'smithy',name:'the smiths',crew,batch:T.chain.rework,cap:Math.ceil(need*60/yr)});}   /* they rework to sixty days of ware ahead, no more: the rest of the bronze is the plan's */
-  if(P.cast)works.push({id:P.key+'.hall',kind:'bronze-hall',name:'the bronze and stone hall',crew:60,batch:T.chain.cast});
+  if(P.cast)works.push({id:P.key+'.hall',kind:'bronze-hall',name:'the bronze and stone hall',crew:90,batch:T.chain.cast});
   if(P.raider)works.push({id:P.key+'.plunder',kind:'warehouse',name:'the plunder warehouse (the steel of the Vale, kept and never used) and the yard of the bone hall',crew:10,out:[],rate:0});
   const start={};Object.keys(diet).forEach(g=>{start[g]=Math.ceil(n*diet[g]*D*days);});
+  if((make.salt||0)>n*20)start.salt=(start.salt||0)+Math.round(make.salt*45/yr);
   if(P.smiths)start.bronze=Math.ceil((diet.bronze_ware||0)*n*D*days);
-  if(P.cast){start.copper=9*1000*days/30;start.tin=1000*days/30;}
+  if(P.cast){start.copper=9*1400*days/30;start.tin=1400*days/30;}
   /* what the planners know it makes and uses in a year (the Allotment's plan): its works' make, its people's diet, its smiths'
      bronze; the hall's casting is set below from everyone's bronze */
   const plan={make:Object.assign({},make),use:{}};Object.keys(diet).forEach(g=>{plan.use[g]=diet[g]*n;});

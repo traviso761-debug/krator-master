@@ -1,0 +1,91 @@
+{
+ "_": "Proposed for the Tubes (kits/lizardmen/settle/towns_plan.py; settlements/tubes/PLAN.md). Page frame: x east, z SOUTH, metres from the pin. GUIDE.md section 4 turns this into src/81-tw-spec.js (var LZV_SPEC). Keys starting with _ are the plan's notes, not the spec's.",
+ "_pin": {
+  "px": [
+   608,
+   1547
+  ],
+  "id": "sa8xk6pimb",
+  "model_m": -77.4,
+  "build": {
+   "near": [
+    -4000,
+    4000,
+    -4000,
+    4000,
+    20
+   ],
+   "far": [
+    -30000,
+    30000,
+    -30000,
+    30000,
+    500
+   ]
+  }
+ },
+ "_census": {
+  "Tenders": 300,
+  "Makers": 250,
+  "Drovers": 200,
+  "Line warriors": 120,
+  "Interpreters": 50,
+  "Bulwarks": 80
+ },
+ "key": "tubes",
+ "name": "the Tubes",
+ "seed": 8601,
+ "ley": {
+  "to": [
+   651.9,
+   1486.7
+  ],
+  "name": "the west reliquary",
+  "stone": 40
+ },
+ "expect": {
+  "people": 1000
+ },
+ "_cavern": {
+  "tube": {
+   "id": "tube_rift_08",
+   "name": "Southern Rift Basalt Tube Complex",
+   "width_m": 24.0,
+   "height_m": 16.0,
+   "depth_m": 40.0,
+   "rock": "basalt_flowbanded",
+   "pts": [
+    [
+     40000.0,
+     -38000.0
+    ],
+    [
+     20000.0,
+     -18000.0
+    ],
+    [
+     0.0,
+     0.0
+    ],
+    [
+     -28000.0,
+     22000.0
+    ]
+   ]
+  },
+  "hall": {
+   "id": "cav_the_tubes",
+   "kind": "bottle_hall",
+   "span_m": [
+    220,
+    150
+   ],
+   "height_m": 38,
+   "skylight_m": 25,
+   "at": [
+    0,
+    0
+   ]
+  }
+ }
+}

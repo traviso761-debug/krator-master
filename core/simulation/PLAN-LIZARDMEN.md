@@ -12,13 +12,14 @@ what is finished. Branch `claude/lizardmen-village-d3035c`; nothing pushed.
 
 | Place | Pin (5.1 px) | People | Was |
 |---|---|---|---|
-| **Basilisk**, the stone capital | `slrodrkrls` (765,1596) | ~15,000 | Sauropolis (the scale model still says so until its queue renames the pin) |
+| **Basilisk**, the stone capital | `slrodrkrls` (agreed sabkha pin `766.6,1597.25`; model pin `765,1596`) | ~30,000 | Sauropolis (the scale model still says so until its queue renames the pin; raised from 15,000 to 30,000 by owner 2026-11-17) |
 | **Iguana**, the granary town on the Pile's plateau | none yet (*proposed* 713,1569) | ~3,000 | "Basilisk" in the proposal of 2026-11-16 |
+| **Skink**, the salt village by the salt lake north of the Pile's plateau | none yet (*proposed* 691,1521) | ~1,500 | the owner, 2026-11-17, to mend the country's salt (`settlements/skink/PLAN.md`); in `LZ_TUNE` |
 | Tuatara | `szv27b2reu` (818,1554) | ~3,000 | |
 | Komodo | `spnqhezhiw` (865,1617) | ~3,000 | |
 | Gila | `sze26pgivd` (653,1485) | ~3,000 | |
 | the Tubes (ruin and town) | `sa8xk6pimb` (608,1547) | ~1,000 | |
-| the warrens (bulk countrysides) | none | 30,000 (18,000 east, 12,000 west) | the owner: 20,000-40,000 |
+| the eight warren sub-districts (`warrens-e1..e4`, `warrens-w1..w4`) | dry centroids (`LIZARDMEN-CENSUS.md` §2) | 30,000 (18,000 east, 12,000 west) | replaces the two abstract centroids (`warrens-west` at `630,1515` was underwater) |
 | the west reliquary | none (651.9,1486.7, on Gila's page) | | |
 | the east reliquary | none (*proposed* 790,1578) | | |
 
@@ -37,7 +38,7 @@ LORE.md 6.20 carries the new names. The proposal, the survey and Gila's plan and
 | 7 | The kit's **works** the villages need (`kits/lizardmen/src/59w-lz-works.js`): `lz-mine`, `lz-weir` (both owed in its `KNOWN_ISSUES.md` and named by core/hamlet's Lizardmen row), `lz-placer`, `lz-cistern`, `lz-fungus`; the trades table carries miners and fishers now | **done** (GPU-verified, the engine fingerprint recorded) |
 | 8 | **Z4, the raids** (`core/camp/55-camp-raid.js`, core/camp/PLAN.md 6.1's rules; `core/region/52-region-raid.js`, opt-in by `raids`; `LZ_TUNE.raids`): the war bands of Tuatara (150) and Komodo (120) against the Marches' three forts, the Marches' villages (`prov.p8`) and the Golden Tears' camp (`exp.rift-gold`), off-map records with XAN_TUNE's numbers in this run; the plunder and the dead home to the plunder warehouse and the bone hall; the Sultanate's events | **done** (`test-camp-raid.js` 11, `test-lz-raids.js` 8) |
 | 9 | **Z5, the joint run** (`core/region/data/lz-join.js` LZ_JOIN: XAN_TUNE and LZ_TUNE in one valley, as `EAST_RIFT` joins Longsong): the raids hit the Sultanate's own forts, villages and the Tears' camp in their own books | **done** (`test-lz-join.js` 8: in 100 days four raids, the forts repulsing two, the Marches' villages losing 117 t of grain and 120 kg of tools, the Tears' camp its arms; every raided place fed under the caps) |
-| 10 | **The towns' pages** (Tuatara, Komodo, Iguana, the Tubes; Basilisk in its own session): not yet (the owner: "don't have to build them all yet"). A shared builder generalised from Gila's fragments was started and parked, untested, in the session notes folder (`lizardmen-settle/`, its README says how to revive it) | later |
+| 10 | **The towns' and capital's pages** (Basilisk, Tuatara, Komodo, Iguana, Skink; the Tubes held): **Tuatara**, **Iguana**, **Komodo**, **Skink**, and **Basilisk** (`settlements/basilisk`, 30,000-resident densely packed stone capital on +5 m platforms and +12 m Mound, 2,327 placements, `lk-insula` & `lk-caravanserai` urban blocks, Lothal dock, 7 Dholavira reservoirs, 700 m ley mole, 85 t salt strand, `BS_REC`) all built and GPU-verified; 8 warren sub-districts wired into `LZ_TUNE`. The Tubes held per owner (`2026-11-17`) | **Basilisk, Gila, Tuatara, Iguana, Komodo, Skink done**; the Tubes on hold |
 | 11 | Z3 (agents re-homed by the plan, the castes of the season's rebirths), Z6 (the Interpreters' weight) | later |
 
 ## The tune (`LZ_TUNE`, `core/region/data/lz-tune.js`)
@@ -45,11 +46,12 @@ LORE.md 6.20 carries the new names. The proposal, the survey and Gila's plan and
 - **Frame:** Xanadu's (`XAN_TUNE.px`: metres from px 1191,1569), so Z5 can join the East Rift.
 - **Places:** the ten above. The towns at 10 people an actor, the warrens at 200 (as Xanadu's countrysides).
 - **What each makes a year** (t; *proposed*, from PROPOSAL-LIZARDMEN section 2 and the survey's resources):
-  - Basilisk: grain 1,500, produce 1,300, fish 600, meat and hide 450, salt 115 from the sea's pans, bone 48; **the bronze hall** casts Tuatara's copper and Komodo's tin, nine to one.
-  - Tuatara: grain 1,000, copper 70.
+  - Basilisk: grain 2,800, produce 2,550, fish 1,200, meat and hide 900, salt 85 from the strand's wet-season boiling floors (scaled back now that Skink and Gila carry the country), bone 96; **the bronze halls** cast Tuatara's copper and Komodo and Iguana's tin, nine to one.
+  - Tuatara: grain 1,000, copper 98.
   - Komodo: grain 600, fish 240, tin 8.
   - Gila: **its own records** (salt 300, evaporites 40, grain 600, lakecake 120, ...).
-  - Iguana: grain 2,600 (the capital's granary); relics gleaned from the Pile's lower levels.
+  - Skink: salt 300, grain 300, produce 125, meat and hide 75 (1,500 people, `settlements/skink/PLAN.md`).
+  - Iguana: grain 3,500 (the capital's granary), tin 8 (from Muckle Weyt Beck's placers, `r202`), relics 1.5 gleaned from the Pile's lower levels.
   - The Tubes: fungus beds (produce) 120, fish 40, relics from the ruined station.
   - The warrens: their own grain, produce and meat, a little over.
 - **Diet** (kg a year): the town's is Gila's (grain 233, produce 83, fish or lakecake 40, meat and hide 30, salt 8.3, bronze ware 2); a cavern's and a warren's their own.
@@ -118,7 +120,10 @@ Each town is a `settlements/<name>` built on `kits/lizardmen/build.py --settleme
 | **Iguana** | -373 m (*proposed* pin), 23 °C, ~1,990 mm, Af, flat (0.6 %): the plateau's prime farmland, 15 km west of the Pile | the spiral wide and open among the fields, the granaries many; a watch on Loj Nahn toward the Pile (lookouts) | none beyond the kit (granaries, farms, windmills, lookouts) |
 | **the Tubes** | -77 m at the pin, 1.62 atm, Csa/Aw 21 °C; Tkyoob Warra 19 km | a cavern town: the Rift line's ruined station (`core/terrain` cavern, `core/ruins` for the station's wreck) with the spiral wound into the tube, fungus beds in the dark (`kits/crops` pale fungi, `works: dark-beds`) | **fungus beds**, the ruined station (Ancient: a `kits/ancient-transit` subway station in ruin) |
 
-## Basilisk, the capital (a plan section; built later in its own session)
+## Basilisk, the capital, and the Lizardman polygon census (`settlements/basilisk/PLAN.md`, `core/simulation/LIZARDMEN-CENSUS.md`)
+
+- **Elaborated capital plan & blueprint:** `settlements/basilisk/PLAN.md`, `basilisk_layout.py` (`basilisk_plan.json`, 1,184 placements, 15,337 housed), and `BLUEPRINT.md` (`floors/B0..B7.png`, `section.png`); all stone dwellings and capital works (`lk-makers`, `lk-lodge`, `lk-granary`, `lk-bronzehall`, `lk-dockstore`, `lk-boil`, `lk-slot`, plus `lz-barge` and `lz-wayhalt`) are now built and GPU-verified in `kits/lizardmen`.
+- **Polygon census, hamlets & Coil road network:** `core/simulation/LIZARDMEN-CENSUS.md` scopes the `176,596 km²` Lizardmen polygon (`rmufwmqdl9qjf`) into 8 dry warren sub-districts (fixing `warrens-west`'s water-cell centroid), 29 town-ring hamlets, 26 named minor villages/works, 24 `lz-wayhalt` staging posts, and the full Coil land + reed-barge transport network.
 
 - **The site:** the model's pin (765,1596) stands **in the water**, at the western end of the eastern terminal sea, at the raster's floor (-2,600 m). The capital wants a pin on the shore: *proposed*, the nearest dry ground at the sea's western end (the scale-model queue, below).
 - **Climate:** XA hypertropic jungle, 36 °C, 2,086 mm, 2.21 atm. Tlahn Gill (8 km) and Blek Beck (14 km).
@@ -141,6 +146,7 @@ Each town is a `settlements/<name>` built on `kits/lizardmen/build.py --settleme
 - Rename the pin `slrodrkrls` "Sauropolis" to **Basilisk**; move it ashore at the sea's western end (it stands in the water at -2,600 m).
 - New pins:
   - **Iguana** (713,1569);
+  - **Skink** (691,1521);
   - the **east reliquary** (790,1578);
   - the **west reliquary** (651.9,1486.7).
 - The derived data (`geology.json` settlements, `ledger.json`, `rivers.json`'s "lists Sauropolis", the openworld census files) follow the model's next bake.

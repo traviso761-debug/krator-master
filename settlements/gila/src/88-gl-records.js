@@ -46,9 +46,9 @@ var GL_REC = (function () {
   var works = [
     { id: 'gl.works.salt', kind: 'salt', keys: ['gl-pans', 'gl-saltstore'], caste: 3, workers: 90, good: 'salt', yearT: 300 },
     { id: 'gl.works.evaporites', kind: 'evaporites', keys: ['gl-pans'], caste: 2, workers: 24, good: 'evaporites', yearT: 40 },
-    { id: 'gl.works.grain', kind: 'farming', keys: ['lz-farm', 'lz-windmill', 'lz-granary'], caste: 3, workers: 280, good: 'grain', yearT: 600 },
-    { id: 'gl.works.produce', kind: 'farming', keys: ['lz-farm'], caste: 3, workers: 110, good: 'produce', yearT: 250 },
-    { id: 'gl.works.lakecake', kind: 'gathering', keys: ['gl-saltstore'], caste: 3, workers: 48, good: 'lakecake', yearT: 120 },
+    { id: 'gl.works.grain', kind: 'farming', keys: ['lz-farm', 'lz-windmill', 'lz-granary', 'lz-bakehouse'], caste: 3, workers: 280, good: 'grain', yearT: 600 },
+    { id: 'gl.works.produce', kind: 'farming', keys: ['lz-farm', 'lz-orchard', 'lz-fermentery'], caste: 3, workers: 110, good: 'produce', yearT: 250 },
+    { id: 'gl.works.lakecake', kind: 'gathering', keys: ['lz-skimmer', 'gl-saltstore'], caste: 3, workers: 48, good: 'lakecake', yearT: 120 },
     { id: 'gl.works.herds', kind: 'herding', keys: ['lz-farm', 'lz-hall-bone'], caste: 3, workers: 54, good: 'meat_hide', yearT: 90 },
     { id: 'gl.works.bone', kind: 'bone', keys: ['lz-hall-bone'], caste: 2, workers: 36, good: 'bone', yearT: 24 },
     { id: 'gl.works.bronze', kind: 'smithing', keys: ['lz-hall-bronze'], caste: 2, workers: 32, good: 'bronze_ware', yearT: 6 },

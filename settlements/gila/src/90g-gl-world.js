@@ -71,7 +71,7 @@
         tri: true,
         layers: [
           KGROUND.layer('gila', 'gSav', { w: '1.0', amt: 0.88, gain: 1.08, tint: 'diffuseColor.rgb*1.55', name: 'savanna litter' }),
-          KGROUND.layer('gila', 'gTill', { w: 'vGlZone.y', amt: 0.92, gain: 1.05, name: 'tilled field' }),
+          KGROUND.layer('gila', 'gTill', { w: 'vGlZone.y', amt: 0.92, gain: 1.0, tint: 'diffuseColor.rgb*1.35', name: 'tilled field' }),
           KGROUND.layer('gila', 'gYard', { w: 'vGlZone.z', amt: 0.9, gain: 1.05, name: 'beaten yard' }),
           KGROUND.layer('gila', 'gSalt', { w: 'vGlZone.x', amt: 0.95, gain: 1.08, name: 'salt crust' })
         ]
@@ -247,7 +247,7 @@
     GTARGET = PB;
     resetCM();
     var keepSB = SB; SB = null;
-    var tbl = KTAGS.table(), i, pl, mk, col, r, fr, gFront, drop, nSteps, k, sy, sx, sz, fx, fz;
+    var tbl = KTAGS.table(), tblF = KTAGS.table(), i, pl, mk, col, r, fr, gFront, drop, nSteps, k, sy, sx, sz, fx, fz;
     try {
       for (i = 0; i < G.plinths.length; i++) {
         pl = G.plinths[i];
@@ -289,6 +289,51 @@
           }
         }
       }
+      /* 3D drystone corner markers, furrows and standing Rift crops across Gila's NW crest fields */
+      G.fields.forEach(function (f) {
+        var bx = f.box, cx = (bx[0] + bx[2]) / 2, cz = (bx[1] + bx[3]) / 2, fw = bx[2] - bx[0], fd = bx[3] - bx[1];
+        var nearS = G.sites.filter(function (s) { return Math.abs(s.x - cx) < fw / 2 + 24 && Math.abs(s.z - cz) < fd / 2 + 24; });
+        var clearAt = function (px, pz) {
+          for (var qi = 0; qi < nearS.length; qi++) {
+            if (Math.abs(px - nearS[qi].x) < nearS[qi].w / 2 + 3.5 && Math.abs(pz - nearS[qi].z) < nearS[qi].d / 2 + 3.5) return false;
+          }
+          return true;
+        };
+        var cr = f.crop || 'ashmillet';
+        var isPod = cr === 'frillpod' || cr === 'bambara';
+        var isGrain = cr === 'ashmillet' || cr === 'sandpan-fonio';
+        [[-1, -1], [1, -1], [1, 1], [-1, 1]].forEach(function (c2) {
+          var kx = cx + c2[0] * (fw / 2 - 0.8), kz = cz + c2[1] * (fd / 2 - 0.8), ky = G.groundH(kx, kz);
+          if (clearAt(kx, kz)) box('cyclo', kx, ky - 0.25, kz, 0.72, 1.05, 0.72, hc(0x4e5850));
+        });
+        var nR = 6, nS = 4, segL = (fw - 8) / nS - 1.1, ri, si, rz, sx2, gy;
+        for (ri = 0; ri < nR; ri++) {
+          rz = bx[1] + 5.5 + ri * ((fd - 11) / Math.max(1, nR - 1));
+          for (si = 0; si < nS; si++) {
+            sx2 = bx[0] + 4 + (si + 0.5) * ((fw - 8) / nS);
+            if (!clearAt(sx2, rz)) continue;
+            gy = G.groundH(sx2, rz);
+            box('earth', sx2, gy - 0.22, rz, segL, 0.42, 1.45, hc(0x624a34));
+            if (f.kind === 'crop') {
+              if (isGrain) {
+                box('thatch', sx2, gy + 0.16, rz, segL * 0.94, 0.92, 0.85, hc(0xb09248));
+                box('reed', sx2, gy + 1.0, rz, segL * 0.9, 0.18, 0.52, hc(0xc8aa58));
+              } else if (isPod) {
+                box('matW', sx2, gy + 0.18, rz, segL * 0.92, 0.72, 0.68, hc(0x486e3c));
+                box('cane', sx2, gy + 0.92, rz, segL * 0.92, 0.08, 0.12, hc(0xb89c62));
+              } else {
+                box('matW', sx2, gy + 0.18, rz, segL * 0.92, 0.44, 1.08, hc(0x526e38));
+                if ((ri + si) % 2 === 0) box('cane', sx2, gy + 0.24, rz + 0.42, 0.44, 0.34, 0.44, hc(0xc69c46));
+              }
+            } else if (f.kind === 'tilled') {
+              box('matW', sx2, gy + 0.18, rz, segL * 0.86, 0.18, 0.46, hc(0x5a7c3e));
+            } else if ((ri + si) % 2 === 0) {
+              box('reed', sx2, gy + 0.16, rz, segL * 0.62, 0.22, 0.58, hc(0x9a8852));
+            }
+          }
+        }
+        tblF.push(cx, G.groundH(cx, cz), cz, 0, fw, fd, 1.1);
+      });
     } finally {
       SB = keepSB;
       GTARGET = keepT;
@@ -304,6 +349,14 @@
         note: 'basalt and rammed-earth footings seating Gila\'s buildings on the spit\'s 6.7 % slope',
         frag: 'settlements/gila'
       }, tbl);
+    }
+    if (SVTAGS && tblF.n > 0) {
+      SVTAGS.addSet({
+        'class': 'infrastructure', kind: 'field-plot', key: 'gl-field-plot',
+        name: 'Crest crop fields', tags: { culture: 'lizardmen', types: ['farm'] },
+        note: 'basalt corner stones, ridged furrows and standing savanna crops across Gila\'s NW crest fields',
+        frag: 'settlements/gila'
+      }, tblF);
     }
     return W0;
   };

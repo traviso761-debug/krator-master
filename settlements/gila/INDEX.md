@@ -24,6 +24,6 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | `66-gl-works.js` | 15 |  |
 | `88-gl-records.js` | 13 | Gila 88: the village's records for the sim (plai (1) |
 | `89-rows.js` | <1 |  |
-| `89g-gl-site.js` | 34 **big** | Gila 89g: the site, the drawn ground, the rhombi (1) |
-| `90g-gl-world.js` | 17 | Gila 90g: the world — KGROUND terrain, core/wate (1) |
+| `89g-gl-site.js` | 35 **big** | Gila 89g: the site, the drawn ground, the rhombi (1) |
+| `90g-gl-world.js` | 20 | Gila 90g: the world — KGROUND terrain, core/wate (1) |
 | `99-m-gl-probe.js` | 4 | Gila 99-m: host camera range, inspector enrichme (1) |

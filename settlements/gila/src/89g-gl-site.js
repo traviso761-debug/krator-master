@@ -71,6 +71,13 @@ var GL_SITE = (function () {
         if (sx * sz > 0) {
           y = y + sx * sz * ((LAKE_Y + 0.75) - y);
         }
+        /* shallow skimming benches for Gila's three lakecake skimmers */
+        for (var ski = 0; ski < 3; ski++) {
+          var skd = Math.hypot(x - 1785, z - (180 + ski * 120));
+          if (skd < 28) {
+            y = y + (1 - sm(12, 28, skd)) * ((LAKE_Y - 0.08) - y);
+          }
+        }
         /* reliquary platform terrace */
         d = Math.hypot(x - RELIQ.x, z - RELIQ.z);
         if (d < 46) {
@@ -342,8 +349,10 @@ var GL_SITE = (function () {
             ['lz-hall-bone', 2, 2, 0.38, 2.0],
             ['lz-warehouse', 2, 3, 0.60, 2.0],
             ['lz-granary', 3, 0, 0.30, 2.2],
+            ['lz-bakehouse', 3, 1, 0.28, 2.2],
             ['lz-granary', 3, 1, 0.68, 2.2],
             ['lz-granary', 3, 2, 0.34, 2.2],
+            ['lz-fermentery', 3, 2, 0.72, 2.2],
             ['lz-granary', 3, 3, 0.66, 2.2],
             ['lz-barracks', 4, 1, 0.35, 2.4],
             ['lz-barracks', 4, 3, 0.65, 2.4]
@@ -461,7 +470,7 @@ var GL_SITE = (function () {
       plinths.push({
         key: key, x: rec.x, z: rec.z, ry: rec.ry, w: D.w, d: D.d,
         y0: +(fs.lo - 0.38).toFixed(3), y1: +(y + 0.005).toFixed(3),
-        stone: D.caste === 5 || D.caste === 'all' || key === 'lz-lodge' || key === 'gl-tank' || key === 'gl-well'
+        stone: key === 'lz-seer' || D.caste === 'all' || key === 'lz-lodge' || key === 'gl-tank' || key === 'gl-well'
       });
     }
     return rec;
@@ -512,6 +521,11 @@ var GL_SITE = (function () {
     addSite('gl-pans', shorePans[pi][0], shorePans[pi][1], Math.PI / 2, 'saltworks', { pad: 0.5 });
   }
   addSite('gl-saltstore', 1640, 260, Math.PI / 2, 'saltworks', { name: 'The shore salt store' });
+  /* Three lakecake skimming jetties along the lake's brine edge (-z stepping east into the salt lake) */
+  var shoreSkimmers = [[1785, 180], [1785, 300], [1785, 420]];
+  for (var ski2 = 0; ski2 < shoreSkimmers.length; ski2++) {
+    addSite('lz-skimmer', shoreSkimmers[ski2][0], shoreSkimmers[ski2][1], -Math.PI / 2, 'saltworks', { name: 'Lakecake skimming jetty and presses' });
+  }
 
   /* 6e. Country up the spit's crest NW: crop fields (kits/crops), farms, panemone windmills, herds, stone circle */
   var fields = [];
@@ -555,8 +569,15 @@ var GL_SITE = (function () {
   for (var bi2 = 0; bi2 < herdSpots.length; bi2++) {
     addSite(herdSpots[bi2][0], herdSpots[bi2][1], herdSpots[bi2][2], herdSpots[bi2][3], 'herd');
   }
-  /* Phyllotaxis stone circle high on the NW crest beyond the fields */
+  /* Phyllotaxis stone circle high on the NW crest beyond the fields, walled bell-date groves, SW basalt quarry, and Coil waystones */
   addSite('lz-circle', -1820, -1980, 0.2, 'monument', { name: 'The crest stone circle' });
+  addSite('lz-orchard', -790, -755, 0.2, 'farm', { name: 'Lower-crest bell-date and ballmelon grove' });
+  addSite('lz-orchard', -1045, -955, -0.25, 'farm', { name: 'Upper-crest bell-date and ballmelon grove' });
+  addSite('lz-quarry', -1680, 2550, 0.65, 'works', { name: 'South-shoulder basalt quarry (for the plinths and reliquary repairs)' });
+  addSite('lz-waystone', 560, 162, 1.4, 'monument', { name: 'Salt-road Coil waystone and haul sledge' });
+  addSite('lz-waystone', 1180, 258, 1.45, 'monument', { name: 'East-bench Coil waystone and haul sledge' });
+  addSite('lz-waystone', -630, -595, -2.35, 'monument', { name: 'Crest-track Coil waystone and haul sledge' });
+  addSite('lz-waystone', -920, 1440, -2.55, 'monument', { name: 'Reliquary-approach waystone' });
 
   /* 6f. The isolated West Reliquary on the south-west shore, ~3.8 km SW behind the shoulder */
   var reliqSite = addSite('lz-reliquary', RELIQ.x, RELIQ.z, leyBearing + Math.PI, 'reliquary', {

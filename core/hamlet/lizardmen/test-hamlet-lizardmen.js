@@ -44,8 +44,9 @@ T.ok('loading 23-hamlet-lizardmen leaves KHAMLET.FOCI and Islander villages unch
 const KIT_BOX = {
   'lz-nest': [54, 50, 11], 'lz-seer': [15, 13, 10.5], 'lz-medicine': [9, 8, 6], 'lz-granary': [14, 11, 9.6],
   'lz-warehouse': [17, 13, 8.6], 'lz-warren': [22, 19, 9.4], 'lz-makers': [11, 9, 6.4], 'lz-longhouse': [20, 10, 8.2],
-  'lz-lodge': [14, 20, 11], 'lz-tower': [11, 11, 21], 'lz-farm': [26, 20, 4], 'lz-windmill': [13, 13, 14],
-  'lz-hall-bone': [19, 14, 9], 'lz-hall-reed': [19, 13, 9], 'lz-hall-bronze': [19, 13, 9.2]
+  'lz-lodge': [14, 20, 11], 'lz-tower': [12, 12, 15.6], 'lz-farm': [26, 20, 4.4], 'lz-windmill': [13, 13, 14],
+  'lz-hall-bone': [19, 14, 9], 'lz-hall-reed': [19, 13, 9], 'lz-hall-bronze': [19, 13, 9.2],
+  'lz-mine': [16, 14, 9], 'lz-weir': [18, 14, 5.5], 'lz-quarry': [20, 18, 7.4]
 };
 const GILA_BOX = Object.assign({}, KIT_BOX, { 'gl-pans': [30, 30, 2.6], 'gl-saltstore': [16, 13, 9.4] });
 const kitDims = k => KIT_BOX[k] ? { w: KIT_BOX[k][0], d: KIT_BOX[k][1], h: KIT_BOX[k][2] } : null;
@@ -77,8 +78,9 @@ T.ok('without Gila works dims, gl-pans and gl-saltstore fall back to pending box
 for (const focus of ['farming', 'ranch', 'fishing', 'mine', 'quarry']) {
   const v = KHAMLET.village(mkSpec(focus, { dims: kitDims }));
   const wantKeys = KHAMLET.CULTURES.lizardmen.works[focus].map(w => w.key);
-  T.ok('lizardmen ' + focus + ' hamlet lays works (' + wantKeys.join(', ') + ') and stays within popMax',
+  T.ok('lizardmen ' + focus + ' hamlet lays works (' + wantKeys.join(', ') + ') with zero pending pieces and stays within popMax',
     !v.error && v.census.pop > 0 && v.census.pop <= 240 &&
+    v.records.every(r => !r.pending) &&
     wantKeys.every(k => v.records.some(r => r.role === 'works' && r.key === k)),
     v.error || '');
 }

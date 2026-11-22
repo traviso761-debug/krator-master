@@ -22,8 +22,7 @@
 - [ ] A kit sheet, not a settlement: no spiral village layout (that needs a street generator on `core/city`, agreed with
       that workstream first), no Lizardman figures to size the doors against (the castes are heights in `LZ_CASTE` only),
       no life layer for people (the two beasts carry life data).
-- [ ] **The farm's crops are placeholders** (carrot frill greens, trumpet pods, the Rift yam as simple geometry): they belong
-      to the biome and fruit work.
+- [x] **The farm's crops are placeholders** (carrot frill greens, trumpet pods, the Rift yam as simple geometry): replaced 2026-11-17 in `54-lz-trade.js` (`lz-farm`) with textured Rift frill-greens, cane-trellised trumpet pods, yam-and-ballmelon mounds and a three-rib Drovers' field shelter, alongside `lz-orchard` (`59w-lz-works.js`).
 
 ## Textures
 
@@ -40,14 +39,14 @@
 
 ## Voth census trades (2026-10-19)
 
-The table is `LZ_TRADES` in `src/59-lz-trades.js` (checked by `tools/check_trades.py`, `verify.py` assert `voth-trades`): 17 carried, 1 partly, 5 gaps, 21 na (no shops, no coin, landlocked, never trade; embassy tabled).
+The table is `LZ_TRADES` in `src/59-lz-trades.js` (checked by `tools/check_trades.py`, `verify.py` assert `voth-trades`): 23 carried, 0 partly, 0 gaps, 21 na (no shops, no coin, landlocked, never trade; embassy tabled).
 
-- [ ] bakers: a bake house or yam oven (the windmill makes flour, nothing bakes it).
-- [ ] brewers: a fermenting house for a spore or yam drink.
-- [x] fishers: a small fishing weir or drying rack on the Rift's water. Done 2026-11-17: `lz-weir` (`src/59w-lz-works.js`).
-- [ ] orchardmen: an orchard of Rift fruit trees (the farm has greens, pods and yam only).
-- [x] miners: a mine head (ore for the bronze hall). Done 2026-11-17: `lz-mine` and the placer floor `lz-placer` (`src/59w-lz-works.js`).
-- [ ] quarrymen and masons (partly, the bronze and stone hall cuts stone): a quarry.
+- [x] bakers: a bake house or yam oven (`lz-bakehouse`, `src/59w-lz-works.js`, 2026-11-17).
+- [x] brewers: a fermenting house for a spore or yam drink (`lz-fermentery`, `src/59w-lz-works.js`, 2026-11-17).
+- [x] fishers: a small fishing weir or drying rack on the Rift's water (`lz-weir` and `lz-skimmer`, `src/59w-lz-works.js`, 2026-11-17).
+- [x] orchardmen: a walled orchard of Rift fruit and bell-date trees (`lz-orchard`, `src/59w-lz-works.js`, 2026-11-17).
+- [x] miners: a mine head and placer floor (`lz-mine` and `lz-placer`, `src/59w-lz-works.js`, 2026-11-17).
+- [x] quarrymen and masons: a basalt quarry pit and splitting yard (`lz-quarry`, `src/59w-lz-works.js`, 2026-11-17).
 
 ## Doors, glass and the reachability audit (core/door, 2026-11-03)
 
@@ -62,5 +61,4 @@ The audit: every unlocked door opened, `KWALK.reach` (core/walk defaults: 0.4 m 
       every course above the guard room is solid (`lzTwist`), so a stair to it needs the upper courses hollowed: not done; the seer's
       basking dais, the great hall's dais, the obelisk's courses and the windmill base's roof are furniture, monument and machine
       tops nobody climbs. The tower's hall is the building's one room and is reached.
-- [ ] The triangle leaves pivot on the apex line; on a battered wall the leaf stands plumb in the wall's middle, so at its apex it
-      can touch the leaning sheet. The reliquary's great portal is an open passage mouth (no leaf).
+- [x] **Slanted-jamb biparting carapace door valves & full-height interior portal clearance (2026-11-19):** Replaced the centre-pivoting single triangle leaf (`pivot: true`, which bisected narrow doorways when open and touched battered walls) with bronze-framed biparting right-triangular carapace valves (`lzLeaf`) hinged along the outer slanted jambs so opening folds both valves outward and slightly upward (`~103°`), leaving 100% of the doorway clear; stepped `lzPortal` outward on the exterior instead of shrinking inward into rooms, vaulted pointed gable hoods & roof dormers over tall portals (`lzWall`, `lzRibRoof`), and sliced multi-course tower portals cleanly across hollow courses (`lzCourseDoor`, `lzCourseRing`). The reliquary's great portal, Capital Gate and Ley Slot are open passage mouths (no leaf).

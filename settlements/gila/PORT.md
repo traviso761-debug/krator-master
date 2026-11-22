@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 48 (57%) | 0 (0%) | 0 (0%) | 4 (5%) | 31 (38%) |
+| KB | 49 (56%) | 0 (0%) | 0 (0%) | 4 (5%) | 34 (39%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -15,8 +15,8 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/66-gl-works.js` | 14.5 | [draw] | 0 | 0 | 0 | 0 | 0 | 33 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/88-gl-records.js` | 13.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/89-rows.js` | 0.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/89g-gl-site.js` | 33.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/90g-gl-world.js` | 16.8 | [draw] | 28 | 0 | 0 | 0 | 0 | 6 | 3 | 0 | 0 | 0 | 0 |  |
+| `src/89g-gl-site.js` | 35.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/90g-gl-world.js` | 19.8 | [draw] | 28 | 0 | 0 | 0 | 0 | 16 | 3 | 0 | 0 | 0 | 0 |  |
 | `src/99-m-gl-probe.js` | 4.3 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 
 ## Notes
