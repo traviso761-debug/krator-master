@@ -240,6 +240,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `materials/record/24-tex-def.js` | 2.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | TEX: procedural textures as records (kind, size, seed, params) and their pure pixel functions; canvas kinds bake to PNG |
 | `materials/record/25-matlib-host.js` | 6.5 | [web] | 5 | 0 | 0 | 0 | 0 | 0 | 10 | 0 | 0 | 0 | 0 | the browser half: ?mat=proc, data-URL images to THREE textures, _texPending, the specular hook (Godot's specular); moves to core/host/ |
 | `materials/record/26-matlib-bind.js` | 4.2 | [G shader] | 2 | 0 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 |  |
+| `materials/record/27-matlib-m1.js` | 5.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | Stage 5 M1 octahedral normals, M2 mip-variance specular AA, M3 planar POM, Gate 3 handedness probe; test-m1.js |
 | `minimap/88-core-minimap.js` | 10.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the records, relief, paint onto a given context, and export(): a Control's _draw() in Godot. Split 2026-10-02: the panel is 88a |
 | `minimap/88a-core-minimap-host.js` | 3.8 | [web] | 0 | 5 | 5 | 4 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the browser panel, the M key, hover and click; moves to core/host/ (Phase 1) |
 | `minimap/decks/88b-core-minimap-decks.js` | 10.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |

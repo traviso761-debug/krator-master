@@ -132,12 +132,25 @@ static func _material(F: Dictionary, old: Material, tex_dir: String, cache: Dict
 	var files: Dictionary = F.get("files", {})
 	if files.has("map"):
 		sm.set_shader_parameter("albedo_tex", _tex(tex_dir + "/" + files["map"], cache))
-	sm.set_shader_parameter("has_normal", files.has("normalMap"))
-	if files.has("normalMap"):
-		sm.set_shader_parameter("normal_tex", _tex(tex_dir + "/" + files["normalMap"], cache, "normal"))
-	sm.set_shader_parameter("has_rough", files.has("roughnessMap"))
-	if files.has("roughnessMap"):
-		sm.set_shader_parameter("rough_tex", _tex(tex_dir + "/" + files["roughnessMap"], cache, "data"))
+	if int(F.get("packVersion", 1)) == 2 and files.has("nrcMap"):
+		sm.set_shader_parameter("use_nrc", true)
+		sm.set_shader_parameter("nrc_tex", _tex(tex_dir + "/" + files["nrcMap"], cache, "data"))
+		sm.set_shader_parameter("normal_enc", 1 if str(F.get("normalEncoding", "xy6")) == "oct8" else 0)
+		sm.set_shader_parameter("pom_depth", float(F.get("pomDepth", 0.0)))
+		var mv: Array = F.get("mipVariance", [])
+		if mv.size() >= 8:
+			sm.set_shader_parameter("mip_var_lo", Vector4(float(mv[0]), float(mv[1]), float(mv[2]), float(mv[3])))
+			sm.set_shader_parameter("mip_var_hi", Vector4(float(mv[4]), float(mv[5]), float(mv[6]), float(mv[7])))
+		sm.set_shader_parameter("has_normal", true)
+		sm.set_shader_parameter("has_rough", true)
+	else:
+		sm.set_shader_parameter("use_nrc", false)
+		sm.set_shader_parameter("has_normal", files.has("normalMap"))
+		if files.has("normalMap"):
+			sm.set_shader_parameter("normal_tex", _tex(tex_dir + "/" + files["normalMap"], cache, "normal"))
+		sm.set_shader_parameter("has_rough", files.has("roughnessMap"))
+		if files.has("roughnessMap"):
+			sm.set_shader_parameter("rough_tex", _tex(tex_dir + "/" + files["roughnessMap"], cache, "data"))
 	sm.set_shader_parameter("normal_scale", float(F.get("normalScale", 1.0)))
 	sm.set_shader_parameter("metal", float(F.get("metal", 0.0)))
 	sm.set_shader_parameter("specular_k", float(F.get("specular", 0.5)))
@@ -151,5 +164,6 @@ static func _material(F: Dictionary, old: Material, tex_dir: String, cache: Dict
 	if old is BaseMaterial3D:   # the glTF texture transform (KHR_texture_transform) the importer put on the old material
 		sm.set_shader_parameter("uv_scale", (old as BaseMaterial3D).uv1_scale)
 		sm.set_shader_parameter("uv_offset", (old as BaseMaterial3D).uv1_offset)
-	sm.set_meta("krator", {"lib": F.get("lib"), "double_sided": double_sided})
+	sm.set_meta("krator", {"lib": F.get("lib"), "double_sided": double_sided, "pack_version": int(F.get("packVersion", 1))})
 	return sm
+
