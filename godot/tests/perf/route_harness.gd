@@ -12,6 +12,7 @@
 #   python tools/harness.py lock --lane rtx -- <godot> --path godot --script res://tests/perf/route_harness.gd -- --out=res://PERF-route-rtx.json --md=res://PERF-route-rtx.md --shots=shots/route-rtx
 extends SceneTree
 
+const KratorSky := preload("res://krator/sky.gd")
 const HOURS := [12.0, 16.33, 22.0]
 
 const OIDONG_STOPS := [
@@ -88,12 +89,55 @@ func _audit_plant_grounding(S: KratorWorldStream, eye_reg: Vector3, radius := 24
 					var e := absf(wy - gh)
 					if e < 30.0:
 						errs.append(e)
+	var sg := S.get_node_or_null("StreamGrass")
+	if sg != null:
+		for ch in sg.get_children():
+			if not (ch is MultiMeshInstance3D) or not (ch as Node3D).visible:
+				continue
+			var mmg := (ch as MultiMeshInstance3D).multimesh
+			if mmg == null or mmg.instance_count <= 0:
+				continue
+			var stride_g := 12 + (4 if mmg.use_colors else 0) + (4 if mmg.use_custom_data else 0)
+			var bufg := mmg.buffer
+			var step_g := maxi(1, mmg.instance_count / 60)
+			for i in range(0, mmg.instance_count, step_g):
+				var bg := i * stride_g
+				var reg_g: Array = S.region(Vector3(bufg[bg + 3], bufg[bg + 7], bufg[bg + 11]))
+				var gx := float(reg_g[0]); var gy := float(reg_g[1]); var gz := float(reg_g[2])
+				var ggh := S.tri_height_at(gx, gz)
+				if is_finite(ggh):
+					errs.append(absf(gy - ggh))
 	errs.sort()
 	var n := errs.size()
 	return {
 		"checked": n,
 		"worst_m": snappedf(errs[n - 1], 0.0001) if n > 0 else 0.0,
 		"p95_m": snappedf(errs[mini(n - 1, int(n * 0.95))], 0.0001) if n > 0 else 0.0,
+	}
+
+
+func _s3_chunk_telemetry(S: KratorWorldStream) -> Dictionary:
+	var n_ch := 0
+	var tot_ms := 0.0
+	var max_ms := 0.0
+	var tot_bytes := 0
+	for cid in S.chunks:
+		var cw: Node3D = S.chunks[cid]
+		var mi := (cw.get_meta("ground", null) if cw.has_meta("ground") else null) as MeshInstance3D
+		if mi != null and mi.has_meta("grid"):
+			var gd: Dictionary = mi.get_meta("grid")
+			var ms := float(gd.get("s3_ms", 0.0))
+			var by := int(gd.get("s3_bytes", 0))
+			if by > 0:
+				n_ch += 1
+				tot_ms += ms
+				max_ms = maxf(max_ms, ms)
+				tot_bytes += by
+	return {
+		"chunks": n_ch,
+		"mean_ms": snappedf(tot_ms / float(maxi(1, n_ch)), 0.02),
+		"max_ms": snappedf(max_ms, 0.02),
+		"total_mb": snappedf(float(tot_bytes) / 1048576.0, 0.02),
 	}
 
 
@@ -151,26 +195,25 @@ func _run() -> void:
 	var host := Node3D.new()
 	root.add_child(host)
 
-	var env := WorldEnvironment.new()
-	var e := Environment.new()
-	var sky := Sky.new()
-	var sm := ProceduralSkyMaterial.new()
-	sky.sky_material = sm
-	e.background_mode = Environment.BG_SKY
-	e.sky = sky
-	e.ambient_light_source = Environment.AMBIENT_SOURCE_SKY
+	var sky_node := KratorSky.new()
+	sky_node.name = "KratorSky"
+	sky_node.site_px = Vector2(1306.0, 1634.0)
+	sky_node.day = 75.0
+	host.add_child(sky_node)
+	await process_frame
+	sky_node.set_process(false)
+	var e: Environment = sky_node.env
+	var sun: DirectionalLight3D = sky_node.sun
 	e.tonemap_mode = Environment.TONE_MAPPER_AGX
+	sky_node.preset["fogDensity"] = 0.000022
 	if not is_headless and RenderingServer.get_current_rendering_method() != "gl_compatibility":
 		e.ssao_enabled = true
-	e.fog_enabled = true
-	e.fog_density = 0.000018
-	env.environment = e
-	host.add_child(env)
-
-	var sun := DirectionalLight3D.new()
+		e.ssao_radius = 1.4
+		e.ssao_intensity = 1.55
 	sun.shadow_enabled = not is_headless and RenderingServer.get_current_rendering_method() != "gl_compatibility"
+	sun.directional_shadow_mode = DirectionalLight3D.SHADOW_PARALLEL_4_SPLITS
 	sun.directional_shadow_max_distance = 2400.0
-	host.add_child(sun)
+	sun.directional_shadow_blend_splits = true
 
 	var S := KratorWorldStream.open(case_index)
 	S.collide = false
@@ -212,17 +255,19 @@ func _run() -> void:
 
 		var pg_err := _audit_plant_grounding(S, eye)
 		var sc_cnt := _scene_counts(S)
+		var s3_tel := _s3_chunk_telemetry(S)
 		var hours_out := []
 
 		for hr_v in HOURS:
 			var hr := float(hr_v)
-			var is_day: bool = hr >= 5.5 and hr <= 19.0
-			var elev: float = sin(clampf((hr - 6.0) / 12.0, 0.0, 1.0) * PI) * 58.0 if is_day else -18.0
-			var azim: float = -75.0 + ((hr - 6.0) / 12.0) * 150.0
-			sun.rotation_degrees = Vector3(-elev, azim, 0.0)
-			sun.light_energy = 1.15 if is_day else 0.04
-			RenderingServer.global_shader_parameter_set("atm_hour", hr)
-			RenderingServer.global_shader_parameter_set("atm_night", 0.0 if is_day else 1.0)
+			sky_node.hour = hr
+			sky_node.site_px = Vector2(1306.0, 1634.0) + Vector2(eye.x, eye.z) / 2000.0
+			sky_node.preset["clouds"]["height"] = maxf(1800.0, eye.y + 1650.0)
+			sky_node.preset["clouds"]["cirrusHeight"] = maxf(9000.0, eye.y + 7200.0)
+			sky_node._update()
+			if sky_node.mat != null:
+				sky_node.mat.set_shader_parameter("uCamPos", Vector3(fmod(eye.x, 260000.0), eye.y, fmod(eye.z, 260000.0)))
+			sun.light_energy = clampf(sun.light_energy * 0.68, 0.0, 1.45)
 
 			var ft := PackedFloat32Array()
 			var frames_run := 2 if is_headless else n_frames
@@ -265,6 +310,9 @@ func _run() -> void:
 			"chunks_held": S.chunks.size(),
 			"places_open": S.places_open.keys(),
 			"stream_flora": fl_counts,
+			"s3_chunks": s3_tel,
+			"s4_layers_mb": snappedf(float(KratorGroundLayers.s4_vram_bytes) / 1048576.0, 0.02),
+			"s1_horizon_mb": snappedf(float(KratorGroundLayers.hz_vram_bytes) / 1048576.0, 0.02),
 			"scene_counts": sc_cnt,
 			"vram_mb": vram_mb,
 			"tex_mb": tex_mb,
@@ -272,18 +320,23 @@ func _run() -> void:
 			"plant_ground": pg_err,
 			"hours": hours_out,
 		})
-		print("stop %-16s  stream=%.1f ms  nodes=%d  mm_inst=%d  flora_hero=%d mid=%d  vram=%.1f MB  plant_err=%.4f m" % [
-			str(st["id"]), stream_ms, int(sc_cnt["active_draw_nodes"]), int(sc_cnt["multimesh_instances"]),
-			int(fl_counts["hero"]), int(fl_counts["mid"]), vram_mb, float(pg_err["worst_m"])])
+		print("stop %-16s  stream=%.1f ms  s3=%.2f ms/ch (%.2f MB)  nodes=%d  mm=%d  flora=%d/%d  grass=%d/%d  vram=%.1f MB  plant_err=%.4f m" % [
+			str(st["id"]), stream_ms, float(s3_tel["mean_ms"]), float(s3_tel["total_mb"]),
+			int(sc_cnt["active_draw_nodes"]), int(sc_cnt["multimesh_instances"]),
+			int(fl_counts["hero"]), int(fl_counts["mid"]),
+			int(fl_counts.get("grass_near", 0)), int(fl_counts.get("grass_mid", 0)),
+			vram_mb, float(pg_err["worst_m"])])
 
 	var rep := {
 		"format": "krator-godot-route-baseline",
-		"version": 1,
+		"version": 2,
 		"case": case_index,
 		"adapter": RenderingServer.get_video_adapter_name(),
 		"api": RenderingServer.get_video_adapter_api_version(),
 		"display": DisplayServer.get_name(),
 		"godot": Engine.get_version_info()["string"],
+		"s4_layers_mb": snappedf(float(KratorGroundLayers.s4_vram_bytes) / 1048576.0, 0.02),
+		"s1_horizon_mb": snappedf(float(KratorGroundLayers.hz_vram_bytes) / 1048576.0, 0.02),
 		"stops": stops_out,
 	}
 
@@ -295,19 +348,22 @@ func _run() -> void:
 			print("wrote " + out_json)
 
 	if out_md != "":
-		var md := "# Godot Deterministic Route Baseline\n\n- **Adapter:** `%s` (`%s`, display `%s`, Godot `%s`)\n\n" % [
+		var md := "# Godot Deterministic Route Baseline (Stages 3 + 4)\n\n- **Adapter:** `%s` (`%s`, display `%s`, Godot `%s`)\n\n" % [
 			rep["adapter"], rep["api"], rep["display"], rep["godot"]]
-		md += "| Stop | Stream (ms) | Draw Nodes | MultiMesh Inst | StreamFlora (Hero/Mid) | VRAM (MB) | Worst Plant Err (m) | Noon Med/p95 (ms) | Draws / Prims |\n"
-		md += "|---|---:|---:|---:|---|---:|---:|---|---|\n"
+		md += "| Stop | Stream (ms) | S3 Normals (ms/ch / MB) | Draw Nodes | MultiMesh Inst | Flora (Hero/Mid) | Grass (Near/Mid) | VRAM (MB) | Worst Plant Err (m) | Noon Med/p95 (ms) |\n"
+		md += "|---|---:|---|---:|---:|---|---|---:|---:|---|\n"
 		for s in stops_out:
 			var h0: Dictionary = s["hours"][0]
 			var fl: Dictionary = s["stream_flora"]
 			var sc: Dictionary = s["scene_counts"]
 			var pg: Dictionary = s["plant_ground"]
-			md += "| `%s` | `%.1f` | `%d` | `%d` | `%d / %d` | `%.1f` | `%.4f` | `%.2f / %.2f` | `%d / %d` |\n" % [
-				str(s["id"]), float(s["stream_build_ms"]), int(sc["active_draw_nodes"]), int(sc["multimesh_instances"]),
-				int(fl["hero"]), int(fl["mid"]), float(s["vram_mb"]), float(pg["worst_m"]),
-				float(h0["median_ms"]), float(h0["p95_ms"]), int(h0["draws"]), int(h0["prims"])]
+			var s3d: Dictionary = s["s3_chunks"]
+			md += "| `%s` | `%.1f` | `%.2f / %.2f` | `%d` | `%d` | `%d / %d` | `%d / %d` | `%.1f` | `%.4f` | `%.2f / %.2f` |\n" % [
+				str(s["id"]), float(s["stream_build_ms"]), float(s3d["mean_ms"]), float(s3d["total_mb"]),
+				int(sc["active_draw_nodes"]), int(sc["multimesh_instances"]),
+				int(fl["hero"]), int(fl["mid"]), int(fl.get("grass_near", 0)), int(fl.get("grass_mid", 0)),
+				float(s["vram_mb"]), float(pg["worst_m"]),
+				float(h0["median_ms"]), float(h0["p95_ms"])]
 		var mf := FileAccess.open(out_md, FileAccess.WRITE)
 		if mf != null:
 			mf.store_string(md)

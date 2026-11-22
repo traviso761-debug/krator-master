@@ -279,7 +279,9 @@ static func _grid(hf: Dictionary, look = null) -> Node3D:
 	mi.mesh = mesh
 	mi.set_meta("krator", {"format": hf["format"], "step": step, "nx": nx, "nz": nz})
 	mi.set_meta("grid", {"h": h, "nx": nx, "nz": nz, "x0": x0, "z0": z0, "step": step,
-		"ar": surf_b.get("ar", PackedByteArray()), "nc": surf_b.get("nc", PackedByteArray())})
+		"ar": surf_b.get("ar", PackedByteArray()), "nc": surf_b.get("nc", PackedByteArray()),
+		"s3_ms": surf_b.get("s3_ms", 0.0), "s3_bytes": surf_b.get("s3_bytes", 0),
+		"s3_dims": surf_b.get("s3_dims", Vector2i(nx, nz))})
 	return mi
 
 
@@ -382,12 +384,94 @@ static func _bind_terrain_surface(mat: ShaderMaterial, hf: Dictionary, nx: int, 
 				ar[o + 2] = clampi(int(roundf(sr.b * 255.0)), 0, 255)
 				ar[o + 3] = clampi(int(roundf(rock * 255.0)), 0, 255)
 	var img_ar := Image.create_from_data(nx, nz, false, Image.FORMAT_RGBA8, ar)
-	var img_nc := Image.create_from_data(nx, nz, false, Image.FORMAT_RGBA8, nc)
+	var nc_tex_w := nx
+	var nc_tex_h := nz
+	var nc_upload := nc
+	var s3_ms := 0.0
+	if step >= 32.0 and nx >= 8 and nz >= 8:
+		var t_s3 := Time.get_ticks_usec()
+		nc_upload = _build_s3_subgrid_nc(nc, ar, h, nx, nz, step, float(hf["x0"]) + org[0], float(hf["z0"]) + org[2])
+		nc_tex_w = nx * 2 - 1
+		nc_tex_h = nz * 2 - 1
+		s3_ms = float(Time.get_ticks_usec() - t_s3) / 1000.0
+	var img_nc := Image.create_from_data(nc_tex_w, nc_tex_h, false, Image.FORMAT_RGBA8, nc_upload)
+	mat.set_shader_parameter("ar_dims", Vector2(float(nx), float(nz)))
+	mat.set_shader_parameter("nc_dims", Vector2(float(nc_tex_w), float(nc_tex_h)))
 	mat.set_shader_parameter("albedo_rock_tex", ImageTexture.create_from_image(img_ar))
 	mat.set_shader_parameter("normal_cav_tex", ImageTexture.create_from_image(img_nc))
 	mat.set_shader_parameter("has_surface_tex", true)
-	mat.set_meta("surface_from", "export" if from_export else "synthesized")
-	return {"ar": ar, "nc": nc}
+	mat.set_meta("surface_from", "export+s3" if (from_export and nc_tex_w > nx) else ("export" if from_export else "synthesized"))
+	return {"ar": ar, "nc": nc, "s3_ms": s3_ms, "s3_bytes": nc_upload.size(), "s3_dims": Vector2i(nc_tex_w, nc_tex_h)}
+
+
+# Stage 4 (S3): Build a 2x denser (2*nx-1 by 2*nz-1, 32 m texels on 64 m chunks) normal-and-crease map on the chunk thread.
+# Preserves exact exported normals at grid vertices while resolving sub-grid 32-90 m downslope erosional rills and creases.
+static func _build_s3_subgrid_nc(nc: PackedByteArray, ar: PackedByteArray, _h: PackedFloat32Array,
+		nx: int, nz: int, step: float, wx0: float, wz0: float) -> PackedByteArray:
+	var n2x := nx * 2 - 1
+	var n2z := nz * 2 - 1
+	var img_up := Image.create_from_data(nx, nz, false, Image.FORMAT_RGBA8, nc)
+	img_up.resize(n2x, n2z, Image.INTERPOLATE_CUBIC)
+	var out := img_up.get_data()
+
+	var half_s := step * 0.5
+	var w_wrap_x := fposmod(wx0, 16000.0)
+	var w_wrap_z := fposmod(wz0, 16000.0)
+
+	for j0 in nz:
+		var j1 := mini(j0 + 1, nz - 1)
+		var r0 := j0 * nx
+		var r1 := j1 * nx
+		var j2_end := 1 if j0 == nz - 1 else 2
+		for i0 in nx:
+			var o00 := (r0 + i0) * 4
+			if nc[o00 + 3] >= 250:
+				var d_w := (j0 * 2 * n2x + i0 * 2) * 4
+				out[d_w + 3] = 255
+			var i1 := mini(i0 + 1, nx - 1)
+			var rk_max := maxi(maxi(int(ar[o00 + 3]), int(ar[(r0 + i1) * 4 + 3])),
+				maxi(int(ar[(r1 + i0) * 4 + 3]), int(ar[(r1 + i1) * 4 + 3])))
+			if rk_max <= 42:
+				continue
+			var amp_rk := clampf(float(rk_max - 42) / 145.0, 0.0, 1.0) * 0.21
+			var i2_end := 1 if i0 == nx - 1 else 2
+			for dj in j2_end:
+				var j2 := j0 * 2 + dj
+				var wz := w_wrap_z + float(j2) * half_s
+				var row_out := j2 * n2x * 4
+				for di in i2_end:
+					var i2 := i0 * 2 + di
+					var dst := row_out + i2 * 4
+					if out[dst + 3] >= 235:
+						continue
+					var fnx := float(out[dst]) * 0.007843137 - 1.0
+					var fnz := float(out[dst + 1]) * 0.007843137 - 1.0
+					var slp2 := fnx * fnx + fnz * fnz
+					if slp2 <= 0.015:
+						continue
+					var inv_slp := 1.0 / sqrt(slp2)
+					var wx := w_wrap_x + float(i2) * half_s
+					var px := -fnz * inv_slp
+					var pz := fnx * inv_slp
+					var across := wx * px + wz * pz
+					var along := (wx * fnx + wz * fnz) * inv_slp
+					var mw := along * 0.0022 + wx * 0.0006
+					var meander := (absf((mw - floorf(mw)) * 4.0 - 2.0) - 1.0) * 14.0
+					var u1 := (across + meander) * 0.0115
+					var s1 := (u1 - floorf(u1)) * 2.0 - 1.0
+					var u2 := (across - meander * 0.6) * 0.0235
+					var s2 := (u2 - floorf(u2)) * 2.0 - 1.0
+					var t1 := 1.0 - absf(s1)
+					var t2 := 1.0 - absf(s2)
+					var d_rill := clampf(s1 * 5.0, -1.0, 1.0) * t1 * 0.65 + clampf(s2 * 5.0, -1.0, 1.0) * t2 * 0.35
+					var trough := maxf(0.0, t1 * 0.65 + t2 * 0.35 - 0.45)
+					var amp := amp_rk * minf(1.0 / inv_slp * 1.4, 0.85)
+					fnx = clampf(fnx + px * d_rill * amp, -0.98, 0.98)
+					fnz = clampf(fnz + pz * d_rill * amp, -0.98, 0.98)
+					out[dst] = clampi(int((fnx * 0.5 + 0.5) * 255.0 + 0.5), 0, 255)
+					out[dst + 1] = clampi(int((fnz * 0.5 + 0.5) * 255.0 + 0.5), 0, 255)
+					out[dst + 2] = clampi(int(float(out[dst + 2]) - trough * amp * 165.0 + 0.5), 36, 255)
+	return out
 
 
 static func height_at(hf_node: Node3D, x: float, z: float) -> float:

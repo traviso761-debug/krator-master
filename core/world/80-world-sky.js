@@ -88,8 +88,11 @@ const sunTex=BIO.canvasTex(256,256,(g,w,h)=>{const gl=g.createRadialGradient(w/2
 const SUNS=new THREE.Sprite(new THREE.SpriteMaterial({map:sunTex,fog:false,depthWrite:false,transparent:true,blending:THREE.AdditiveBlending}));
 SUNS.renderOrder=-9;SUNS.frustumCulled=false;SUNS.userData.probeSkip=true;scene.add(SUNS);
 const SUN_D=DOME*.9,SUN_S=SUN_D*.22,_warm=new THREE.Color(1,.62,.38),_white=new THREE.Color(1,1,1);
+const _skyNight=new THREE.Color(0x162238),_skyDusk=new THREE.Color(0xd29c7e),_skyDay=new THREE.Color(0xffffff);
 function follow(){const P=camera.position;sky.position.copy(P);giant.position.copy(P).addScaledVector(giantDir,GIANT_DIST);giantRing.position.copy(giant.position);
- const S=HOST.SUN_DIR,up=S.y;GU.uSunDir.value.copy(S);
+ const S=HOST.SUN_DIR,up=S.y,twi=Math.max(0,Math.min(1,(up+.18)/.22)),gold=Math.max(0,Math.min(1,(up+.02)/.32));
+ GU.uSunDir.value.copy(S);GU.uHazeC.value.copy(HOST.HAZE);
+ sky.material.color.copy(_skyNight).lerp(_skyDusk,twi).lerp(_skyDay,gold);
  SUNS.position.copy(P).addScaledVector(S,SUN_D);SUNS.visible=up>-.05;SUNS.scale.setScalar(SUN_S*(1+.6*Math.max(0,1-up/.3)));
  SUNS.material.color.copy(_warm).lerp(_white,Math.max(0,Math.min(1,up/.35)));SUNS.material.opacity=Math.max(0,Math.min(1,(up+.05)/.1));}
 return{follow,sky,giant};})();

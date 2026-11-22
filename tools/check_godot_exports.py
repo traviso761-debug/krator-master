@@ -201,6 +201,24 @@ def _check_stream_case(case_dir, label):
             for item in plist:
                 if str(item.get('lv')) == '0':
                     issues.append('%s/flora: forbidden lv=0 prototype %s' % (label, item.get('key')))
+
+    hz_rel = idx.get('horizon')
+    if hz_rel is not None:
+        if '\\' in str(hz_rel):
+            issues.append('%s: backslash in index.json horizon path %r' % (label, hz_rel))
+        else:
+            hz_path = os.path.join(case_dir, str(hz_rel))
+            hz_dir = os.path.dirname(hz_path)
+            hzd = _read_json(hz_path, issues, '%s/horizon' % label)
+            if isinstance(hzd, dict):
+                if hzd.get('format') != 'krator-horizon':
+                    issues.append('%s/horizon: expected format krator-horizon, got %r' % (label, hzd.get('format')))
+                hfiles = hzd.get('files') if isinstance(hzd.get('files'), list) else []
+                if len(hfiles) < 2:
+                    issues.append('%s/horizon: expected 2 texture files in horizon.json, got %r' % (label, hfiles))
+                for tf in hfiles:
+                    if not tf or '\\' in str(tf) or not os.path.isfile(os.path.join(hz_dir, str(tf))):
+                        issues.append('%s/horizon: missing or invalid horizon file %r' % (label, tf))
     return issues
 
 

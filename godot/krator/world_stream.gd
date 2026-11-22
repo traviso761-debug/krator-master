@@ -43,6 +43,7 @@ var _built_hash_n := -1
 var _built_vols := []         # Array of [x, z, r2] for village footprints & arcology
 var _mon_specs := []          # Array of Monastery Dictionaries
 var _last_gnrm := Vector3.UP
+var _grass: KratorWorldGrass = null
 
 
 static func open(path: String) -> KratorWorldStream:
@@ -56,6 +57,8 @@ static func open(path: String) -> KratorWorldStream:
 			s._box[c["id"]] = c["box"]
 	s.set_meta("index", s.index)
 	s.set_meta("log", s.log)
+	KratorGroundLayers.ensure_s4()
+	KratorGroundLayers.bind_horizon(s.dir, s.index)
 	var p := Node3D.new()
 	p.name = "Places"
 	s.add_child(p)
@@ -63,6 +66,8 @@ static func open(path: String) -> KratorWorldStream:
 	sf.name = "StreamFlora"
 	s.add_child(sf)
 	s._stream_flora_root = sf
+	s._grass = KratorWorldGrass.new()
+	s.add_child(s._grass)
 	return s
 
 
@@ -112,6 +117,19 @@ func rebase(x: float, z: float) -> void:
 			buf[i * stride + 11] += delta.z
 		for mi in mms:
 			(mi as MultiMeshInstance3D).multimesh.buffer = buf
+	if _grass != null:
+		for gmmi_v in [_grass.near_mmi, _grass.mid_mmi, _grass.plume_mmi]:
+			var gmmi := gmmi_v as MultiMeshInstance3D
+			if gmmi != null and gmmi.multimesh != null and gmmi.multimesh.instance_count > 0:
+				var gmm := gmmi.multimesh
+				var gbuf := gmm.buffer
+				for gi in gmm.instance_count:
+					var go := gi * 16
+					gbuf[go + 3] += delta.x
+					gbuf[go + 7] += delta.y
+					gbuf[go + 11] += delta.z
+				gmm.buffer = gbuf
+		_grass.sync_origin(origin)
 	rebases += 1
 	rebased.emit(delta)
 
@@ -1013,6 +1031,88 @@ func monastery(p: Dictionary, w: Node3D) -> Node3D:
 			nmesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arr)
 			nmesh.surface_set_material(0, smat)
 			mg_mi.mesh = nmesh
+		# Upgrade Monastery/Terrain surface textures with Longsong's meadow, kora path, gravel ward, paved court, and granite zones
+		if mg_mi.has_meta("grid"):
+			var mg_d: Dictionary = mg_mi.get_meta("grid")
+			var mnx := int(mg_d["nx"])
+			var mnz := int(mg_d["nz"])
+			var mstep := float(mg_d["step"])
+			var mx0 := float(mg_d["x0"])
+			var mz0 := float(mg_d["z0"])
+			var mh: PackedFloat32Array = mg_d["h"]
+			# Sync grid heights with skirt-blended / terrace-clamped mesh vertices
+			if V.size() == mnx * mnz:
+				for vi in V.size():
+					mh[vi] = V[vi].y
+				mg_d["h"] = mh
+			var mar: PackedByteArray = mg_d.get("ar", PackedByteArray())
+			var mnc: PackedByteArray = mg_d.get("nc", PackedByteArray())
+			var mpz := PackedByteArray()
+			if mar.size() == mnx * mnz * 4 and mnc.size() == mnx * mnz * 4:
+				mpz.resize(mnx * mnz * 4)
+				for mj in mnz:
+					var lz := mz0 + float(mj) * mstep + float(mo[2])
+					for mi_i in mnx:
+						var lx := mx0 + float(mi_i) * mstep + float(mo[0])
+						var ms := mj * mnx + mi_i
+						var mo4 := ms * 4
+						var ly := mh[ms] + float(mo[1])
+						var fnx := (float(mnc[mo4]) / 255.0) * 2.0 - 1.0
+						var fnz := (float(mnc[mo4 + 1]) / 255.0) * 2.0 - 1.0
+						var fny := sqrt(maxf(0.02, 1.0 - fnx * fnx - fnz * fnz))
+						var slp := 1.0 - clampf(fny, 0.0, 1.0)
+						var rk := smoothstep(0.20, 0.48, slp)
+						var pv := 0.0
+						var gv := 0.0
+						if absf(lx) <= 13.5 and lz >= -208.0 and lz <= 22.0:
+							pv = 1.0; rk = 0.0
+						elif absf(lx) <= 100.0 and lz >= 8.0 and lz <= 160.0 and ly >= 38.0:
+							pv = 1.0; rk = 0.0
+						elif absf(lx) <= 52.0 and lz >= -186.0 and lz <= -122.0 and slp < 0.16:
+							pv = 0.85; rk = 0.0
+						else:
+							var kora_d := absf(Vector2(lx / 230.0, (lz - 10.0) / 235.0).length() - 1.0) * 230.0
+							if kora_d < 4.2 and slp < 0.25:
+								gv = 1.0 - smoothstep(1.8, 4.2, kora_d)
+							elif absf(lx) <= 145.0 and lz >= -194.0 and lz < 8.0 and slp < 0.18 and ly > -4.5:
+								# Ward paths & gravelled terraces (leaving western & eastern garden/orchard strips grassy)
+								if absf(lx) < 86.0:
+									gv = 0.72 * (1.0 - rk)
+						var wet_m := float(mnc[mo4 + 3]) / 255.0
+						if ly < -7.2 and lz < -205.0:
+							wet_m = maxf(wet_m, smoothstep(-7.2, -9.8, ly))
+						var c_mead := Vector3(0.15, 0.23, 0.09).lerp(Vector3(0.11, 0.17, 0.07), wet_m * 0.55)
+						var c_gran := Vector3(0.29, 0.28, 0.26)
+						var c_grav := Vector3(0.35, 0.31, 0.24)
+						var c_pave := Vector3(0.38, 0.36, 0.33)
+						var c_fin := c_mead.lerp(c_gran, rk * 0.88).lerp(c_grav, gv * 0.85).lerp(c_pave, pv * 0.92)
+						var sr_m := Color(c_fin.x, c_fin.y, c_fin.z, 1.0).linear_to_srgb()
+						mar[mo4] = clampi(int(roundf(sr_m.r * 255.0)), 0, 255)
+						mar[mo4 + 1] = clampi(int(roundf(sr_m.g * 255.0)), 0, 255)
+						mar[mo4 + 2] = clampi(int(roundf(sr_m.b * 255.0)), 0, 255)
+						mar[mo4 + 3] = clampi(int(roundf(rk * 255.0)), 0, 255)
+						mnc[mo4 + 3] = clampi(int(roundf(wet_m * 255.0)), 0, 255)
+						mpz[mo4] = clampi(int(roundf(pv * 255.0)), 0, 255)
+						mpz[mo4 + 1] = clampi(int(roundf(gv * 255.0)), 0, 255)
+						mpz[mo4 + 2] = 0
+						mpz[mo4 + 3] = 255
+				mg_d["ar"] = mar
+				mg_d["nc"] = mnc
+				mg_d["pz"] = mpz
+				mg_mi.set_meta("grid", mg_d)
+				var m_smat := mg_mi.mesh.surface_get_material(0) as ShaderMaterial
+				if m_smat != null:
+					var m_world_org := Vector3(float(at[0]), float(at[1]), float(at[2])) + rot_b * Vector3(float(mo[0]), float(mo[1]), float(mo[2]))
+					m_smat.set_shader_parameter("case_ry", ry)
+					m_smat.set_shader_parameter("case_origin", m_world_org)
+					m_smat.set_shader_parameter("macro_origin", Vector2(fposmod(m_world_org.x, 32000.0), fposmod(m_world_org.z, 32000.0)))
+					m_smat.set_shader_parameter("detail_origin", Vector2(fposmod(m_world_org.x, 4000.0), fposmod(m_world_org.z, 4000.0)))
+					m_smat.set_shader_parameter("ar_dims", Vector2(float(mnx), float(mnz)))
+					m_smat.set_shader_parameter("nc_dims", Vector2(float(mnx), float(mnz)))
+					m_smat.set_shader_parameter("albedo_rock_tex", ImageTexture.create_from_image(Image.create_from_data(mnx, mnz, false, Image.FORMAT_RGBA8, mar)))
+					m_smat.set_shader_parameter("normal_cav_tex", ImageTexture.create_from_image(Image.create_from_data(mnx, mnz, false, Image.FORMAT_RGBA8, mnc)))
+					m_smat.set_shader_parameter("pave_zone_tex", ImageTexture.create_from_image(Image.create_from_data(mnx, mnz, false, Image.FORMAT_RGBA8, mpz)))
+					m_smat.set_shader_parameter("has_pave_zone", true)
 	return m
 
 
@@ -1227,6 +1327,16 @@ func set_flora_visible(on: bool) -> void:
 	flora_enabled = on
 	if _stream_flora_root != null:
 		_stream_flora_root.visible = on
+	if _grass != null:
+		_grass.enabled = on
+		if not on:
+			_grass.clear_all()
+
+
+func update_grass_near(cam_reg: Vector3, force := false) -> Dictionary:
+	if _grass == null:
+		return {}
+	return _grass.update_at(self, cam_reg, force)
 
 
 static func _ug_mul32(a: int, b: int) -> int:
@@ -1290,6 +1400,29 @@ func _ensure_road_and_built_caches() -> void:
 					var rsz: Array = rec["size"]
 					var rad := 0.5 * maxf(float(rsz[0]), float(rsz[1])) + 4.5
 					_built_vols.append([float(rat[0]), float(rat[2]), rad * rad])
+			var mon_n := pw.get_node_or_null("Monastery") as Node3D
+			if mon_n != null and mon_n.has_meta("monastery") and mon_n.has_meta("tags"):
+				var M: Dictionary = mon_n.get_meta("monastery")
+				var mat_at: Array = M.get("at", [0.0, 0.0, 0.0])
+				var m_orig := Vector3(float(mat_at[0]), float(mat_at[1]), float(mat_at[2]))
+				var m_rot := Basis(Vector3.UP, float(M.get("ry", 0.0)))
+				var mtags: Dictionary = mon_n.get_meta("tags")
+				for mrk in mtags:
+					var mrec = mtags[mrk]
+					if not (mrec is Dictionary) or not (mrec.get("at") is Array):
+						continue
+					var mcls := str(mrec.get("class", ""))
+					if not (mcls in ["building", "infrastructure", "landmark"]):
+						continue
+					var m_at: Array = mrec["at"]
+					var mrad := float(mrec.get("r", 0.0))
+					if mrec.get("size") is Array:
+						var msz: Array = mrec["size"]
+						mrad = maxf(mrad, 0.5 * maxf(float(msz[0]), float(msz[1])))
+					if mrad < 2.0 or mrad > 120.0:
+						continue
+					var wpt := m_orig + m_rot * Vector3(float(m_at[0]), 0.0, float(m_at[2]))
+					_built_vols.append([wpt.x, wpt.z, (mrad + 2.0) * (mrad + 2.0)])
 
 
 func _is_clear_for_undergrowth(x: float, z: float, extra_pad := 0.0) -> bool:
@@ -1297,8 +1430,15 @@ func _is_clear_for_undergrowth(x: float, z: float, extra_pad := 0.0) -> bool:
 		var mbox: Array = M.get("box", [])
 		if mbox.size() >= 4:
 			var lp := _monastery_local(M, x, z)
-			if lp.x >= float(mbox[0]) - 6.0 and lp.x <= float(mbox[2]) + 6.0 and lp.y >= float(mbox[1]) - 6.0 and lp.y <= float(mbox[3]) + 6.0:
-				return false
+			if extra_pad >= 0.9:
+				if lp.x >= float(mbox[0]) - 6.0 and lp.x <= float(mbox[2]) + 6.0 and lp.y >= float(mbox[1]) - 6.0 and lp.y <= float(mbox[3]) + 6.0:
+					return false
+			else:
+				# For 3D grass sward, allow Longsong's meadows/banks/slopes while excluding the palace rock core & avenue
+				if absf(lp.x) <= 104.0 and lp.y >= 6.0 and lp.y <= 164.0:
+					return false
+				if absf(lp.x) <= 14.5 and lp.y >= -210.0 and lp.y <= 22.0:
+					return false
 	for bv in _built_vols:
 		var dx := x - float(bv[0])
 		var dz := z - float(bv[1])
@@ -1317,6 +1457,94 @@ func _is_clear_for_undergrowth(x: float, z: float, extra_pad := 0.0) -> bool:
 			if px * px + pz * pz <= lim2:
 				return false
 	return true
+
+
+# Samples exact drawn triangle height + linear root color + rock/wet/slope/pave weights across Monastery, Place, and Chunk ground
+func sample_grass_ground(x: float, z: float) -> Dictionary:
+	var mi: MeshInstance3D = null
+	var lx := 0.0
+	var lz := 0.0
+	var oy := 0.0
+	var mon_ry := 0.0
+	var pid := place_covering(x, z)
+	if pid != "":
+		var pw: Node3D = places_open[pid]
+		var mon_n := pw.get_node_or_null("Monastery") as Node3D
+		if mon_n != null and mon_n.has_meta("monastery") and mon_n.has_meta("ground"):
+			var M: Dictionary = mon_n.get_meta("monastery")
+			var mbox: Array = M.get("box", [])
+			if mbox.size() >= 4:
+				var mlp := _monastery_local(M, x, z)
+				if mlp.x >= float(mbox[0]) + 18.0 and mlp.x <= float(mbox[2]) - 18.0 and mlp.y >= float(mbox[1]) + 18.0 and mlp.y <= float(mbox[3]) - 18.0:
+					var mg_node = mon_n.get_meta("ground")
+					var mg_mi: MeshInstance3D = mg_node as MeshInstance3D if mg_node is MeshInstance3D else (mg_node.get_node_or_null("Terrain") as MeshInstance3D if mg_node is Node3D else null)
+					if mg_mi != null and mg_mi.has_meta("grid"):
+						var mo: Array = mon_n.get_meta("origin", [0.0, 0.0, 0.0])
+						var mat_at: Array = M["at"]
+						mi = mg_mi
+						lx = mlp.x - float(mo[0])
+						lz = mlp.y - float(mo[2])
+						oy = float(mo[1]) + float(mat_at[1])
+						mon_ry = float(M.get("ry", 0.0))
+		if mi == null:
+			mi = (pw.get_meta("ground", null) if pw.has_meta("ground") else null) as MeshInstance3D
+			var po: Array = pw.get_meta("origin", [0.0, 0.0, 0.0])
+			lx = x - float(po[0])
+			lz = z - float(po[2])
+			oy = float(po[1])
+	else:
+		var cid := covering(x, z)
+		if cid != "":
+			var cw: Node3D = chunks[cid]
+			mi = (cw.get_meta("ground", null) if cw.has_meta("ground") else null) as MeshInstance3D
+			var co: Array = cw.get_meta("origin", [0.0, 0.0, 0.0])
+			lx = x - float(co[0])
+			lz = z - float(co[2])
+			oy = float(co[1])
+	if mi == null or not mi.has_meta("grid"):
+		return {}
+	var gy := terrain_tri_height(mi, lx, lz)
+	if not is_finite(gy):
+		return {}
+	gy += oy
+	var g: Dictionary = mi.get_meta("grid")
+	var nx := int(g["nx"])
+	var nz := int(g["nz"])
+	var step_m := float(g["step"])
+	var gi := clampi(int(roundf((lx - float(g["x0"])) / step_m)), 0, nx - 1)
+	var gj := clampi(int(roundf((lz - float(g["z0"])) / step_m)), 0, nz - 1)
+	var o4 := (gj * nx + gi) * 4
+	var ar: PackedByteArray = g.get("ar", PackedByteArray())
+	var nc: PackedByteArray = g.get("nc", PackedByteArray())
+	var pz_arr: PackedByteArray = g.get("pz", PackedByteArray())
+	var col_lin := Vector3(0.14, 0.21, 0.09)
+	var rock_w := 0.0
+	if o4 + 3 < ar.size():
+		var sr := Color(float(ar[o4]) / 255.0, float(ar[o4 + 1]) / 255.0, float(ar[o4 + 2]) / 255.0, 1.0).srgb_to_linear()
+		col_lin = Vector3(sr.r, sr.g, sr.b)
+		rock_w = float(ar[o4 + 3]) / 255.0
+	var wet_w := 0.0
+	var nrm := Vector3.UP
+	if o4 + 3 < nc.size():
+		var fnx := (float(nc[o4]) / 255.0) * 2.0 - 1.0
+		var fnz := (float(nc[o4 + 1]) / 255.0) * 2.0 - 1.0
+		var fny := sqrt(maxf(0.02, 1.0 - fnx * fnx - fnz * fnz))
+		nrm = Vector3(fnx, fny, fnz).normalized()
+		if absf(mon_ry) > 1e-5:
+			nrm = (Basis(Vector3.UP, mon_ry) * nrm).normalized()
+		wet_w = 1.0 if nc[o4 + 3] >= 250 else float(nc[o4 + 3]) / 255.0
+	var pave_w := 0.0
+	if o4 + 1 < pz_arr.size():
+		pave_w = maxf(float(pz_arr[o4]) / 255.0, (float(pz_arr[o4 + 1]) / 255.0) * 0.85)
+	return {
+		"y": gy,
+		"nrm": nrm,
+		"col": col_lin,
+		"rock": rock_w,
+		"wet": wet_w,
+		"slope": 1.0 - clampf(nrm.y, 0.0, 1.0),
+		"pave": pave_w,
+	}
 
 
 # Returns Vector4(ground_y, rock_w, wet_or_submerged, slope) and updates _last_gnrm; ground_y is NAN if unloaded
@@ -1718,10 +1946,14 @@ func refresh_flora_at(cam_reg: Vector3, hero_r := 420.0, mid_r := 2800.0) -> Dic
 			for mi in _stream_flora_pools[pkey]:
 				(mi as MultiMeshInstance3D).multimesh.instance_count = 0
 				(mi as MultiMeshInstance3D).visible = false
-		return {"hero": 0, "mid": 0, "undergrowth": 0, "pools": 0}
+		if _grass != null:
+			_grass.clear_all()
+		return {"hero": 0, "mid": 0, "undergrowth": 0, "pools": 0, "grass_near": 0, "grass_mid": 0, "grass_plume": 0}
+	var gr_d := update_grass_near(cam_reg, true)
 	_ensure_flora_lib()
 	if _flora_protos.is_empty():
-		return {"hero": 0, "mid": 0, "undergrowth": 0, "pools": 0}
+		return {"hero": 0, "mid": 0, "undergrowth": 0, "pools": 0,
+			"grass_near": int(gr_d.get("near", 0)), "grass_mid": int(gr_d.get("mid", 0)), "grass_plume": int(gr_d.get("plume", 0))}
 
 	var bufs := {}   # pkey -> Array of floats (reference type: O(1) in-place append, converted once via PackedFloat32Array)
 	var cnts := {}   # pkey -> int
@@ -1884,4 +2116,12 @@ func refresh_flora_at(cam_reg: Vector3, hero_r := 420.0, mid_r := 2800.0) -> Dic
 			mmi.visible = n_inst > 0 and flora_enabled
 		if n_inst > 0:
 			active_pools += 1
-	return {"hero": hero_n, "mid": mid_n, "undergrowth": ug_n, "pools": active_pools}
+	return {
+		"hero": hero_n,
+		"mid": mid_n,
+		"undergrowth": ug_n,
+		"pools": active_pools,
+		"grass_near": int(gr_d.get("near", 0)),
+		"grass_mid": int(gr_d.get("mid", 0)),
+		"grass_plume": int(gr_d.get("plume", 0)),
+	}

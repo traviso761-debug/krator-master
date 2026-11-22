@@ -387,6 +387,8 @@ func _physics_process(dt: float) -> void:
 		var cr_now := cam_region()
 		if not is_finite(stream._last_flora_cam.x) or cr_now.distance_squared_to(stream._last_flora_cam) >= 225.0:
 			stream.refresh_flora_at(cr_now)
+		else:
+			stream.update_grass_near(cr_now, false)
 		var ms := (Time.get_ticks_usec() - t0) / 1000.0
 		if (r["loaded"] as Array).size() + (r["unloaded"] as Array).size() > 0:
 			updates.append({"ms": ms, "loaded": r["loaded"], "unloaded": r["unloaded"], "step": steps})

@@ -123,8 +123,10 @@ function ensure(p,n){if(n<=p.cap)return;let cap=Math.max(16,p.cap);while(cap<n)c
  for(const m of p.meshes){scene.remove(m);m.dispose&&m.dispose();}p.meshes=[];const old=p.arr;p.arr=new Float32Array(cap*16);if(old)p.arr.set(old);p.attr=new THREE.InstancedBufferAttribute(p.arr,16);p.attr.setUsage(THREE.DynamicDrawUsage);p.cap=cap;
  // white per-instance colours: three.js r128 leaves instanceColor out of its program cache key, so an instanced mesh
  // without them can be handed a program built for one with them (a town tile's) and throw every frame
- const white=new THREE.InstancedBufferAttribute(new Float32Array(cap*3).fill(1),3);
- for(const part of p.proto.parts){const m=new THREE.InstancedMesh(part.geo,part.mat,cap);m.instanceMatrix=p.attr;m.instanceColor=white;m.frustumCulled=false;m.count=0;m.userData.flora=p.key;m.userData.inspectLabel='flora';scene.add(m);p.meshes.push(m);}}
+ const white=new THREE.InstancedBufferAttribute(new Float32Array(cap*3).fill(1),3),cast=!!(HOST.shadow&&!/\|0$/.test(p.key));
+ for(const part of p.proto.parts){const M=part.mat,m=new THREE.InstancedMesh(part.geo,M,cap);m.instanceMatrix=p.attr;m.instanceColor=white;m.frustumCulled=false;m.count=0;
+  m.castShadow=cast&&!!(M&&!M.transparent&&M.depthWrite!==false&&!M.isShaderMaterial&&!M.isMeshBasicMaterial);
+  m.userData.flora=p.key;m.userData.inspectLabel='flora';scene.add(m);p.meshes.push(m);}}
 const spec=(r,lv)=>({kit:KITS[r.k].name,sp:r.sp,v:r.v,lv:r.sap?2:lv,sapling:r.sap});
 const pkey=(r,lv)=>r.k+'|'+r.sp+'|'+r.v+'|'+(r.sap?'s':lv);
 let on=true;

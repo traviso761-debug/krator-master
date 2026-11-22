@@ -42,13 +42,21 @@ const CLOCK=(()=>{if(typeof KCLOCK==='undefined')return null;const q=new URLSear
 // are set here. A simple arc: core/atmos's sky model (89-atmos-e-skymodel.js) has the astronomical one, for when the open
 // world takes it
 const SUN_MAX=62*Math.PI/180,SUN_WARM=new THREE.Color(0xffb27a),SUN_NOON=new THREE.Color(0xfff2dc);
+const HZ_NOON=new THREE.Color(0xd2bfa4),HZ_DUSK=new THREE.Color(0xc98c68),HZ_TWIL=new THREE.Color(0x3a4663),HZ_NIGHT=new THREE.Color(0x0d1526);
+const HM_DAY=new THREE.Color(0xc8d4e4),HM_DUSK=new THREE.Color(0x8890b0),HM_NIGHT=new THREE.Color(0x22324f);
+const HG_DAY=new THREE.Color(0x6a4030),HG_NIGHT=new THREE.Color(0x11131c);
+if(typeof ATMOS!=='undefined')ATMOS.skyUniforms=Object.assign(ATMOS.skyUniforms||{},{uSunDir:{value:SUN_DIR}});
 let sunHour=NaN;
 function sunAt(h){const t=(h-6)/12,alt=SUN_MAX*Math.sin(Math.PI*t),az=Math.PI/2*(1-2*t),ca=Math.cos(alt);
- SUN_DIR.set(Math.sin(az)*ca,Math.sin(alt),-Math.cos(az)*ca).normalize();sun.position.copy(SUN_DIR);
- const up=SUN_DIR.y,day=Math.max(0,Math.min(1,(up+.04)/.2));
+ SUN_DIR.set(Math.sin(az)*ca,Math.sin(alt),-Math.cos(az)*ca).normalize();sun.position.copy(sun.target.position).add(SUN_DIR);
+ const up=SUN_DIR.y,day=Math.max(0,Math.min(1,(up+.04)/.2)),gold=Math.max(0,Math.min(1,(up+.02)/.32)),twi=Math.max(0,Math.min(1,(up+.18)/.22));
  sun.intensity=1.55*day*day*(3-2*day);sun.color.copy(SUN_WARM).lerp(SUN_NOON,Math.max(0,Math.min(1,up/.45)));
  const sky=.18+.82*Math.max(0,Math.min(1,(up+.12)/.36));hemi.intensity=.62*sky;fill.intensity=.22*sky;
- if(typeof BIO!=="undefined"&&BIO.host&&BIO.setSun)BIO.setSun([SUN_DIR.x,Math.max(.02,SUN_DIR.y),SUN_DIR.z]);}
+ hemi.color.copy(HM_NIGHT).lerp(HM_DUSK,twi).lerp(HM_DAY,gold);
+ hemi.groundColor.copy(HG_NIGHT).lerp(HG_DAY,twi);
+ HAZE.copy(HZ_NIGHT).lerp(HZ_TWIL,twi).lerp(HZ_DUSK,day*(1-gold*.65)).lerp(HZ_NOON,gold);
+ scene.fog.color.copy(HAZE);scene.background.copy(HAZE);
+ if(typeof BIO!=='undefined'&&BIO.host&&BIO.setSun)BIO.setSun([SUN_DIR.x,Math.max(.02,SUN_DIR.y),SUN_DIR.z]);}
 const hourNow=()=>CLOCK?CLOCK.hour:HOUR0;
 sunAt(hourNow());sunHour=hourNow();
 TICKS.push(()=>{const h=hourNow();if(Math.abs(h-sunHour)>1/120){sunAt(h);sunHour=h;}});   /* every half a world minute */
@@ -71,8 +79,13 @@ BIO.init({THREE,scene,terrainH,waterH,
  obstacles:[],ticks:fn=>TICKS.push(fn),seed:1,origin:[[0,0]],center:[0,0],fields,register:o=>{},
  err:m=>reportErr('biome: '+m)});
 BIO.setSun([SUN_DIR.x,Math.max(.02,SUN_DIR.y),SUN_DIR.z]);
+/* Stage 3 (S2): KSHADOW's one box on by default in the open world (?shadow=0 opts out) */
+const shadow=(typeof KSHADOW!=='undefined'&&KSHADOW&&KSHADOW.attach)?KSHADOW.attach({
+ renderer,scene,camera,sun,on:!(typeof location!=='undefined'&&/[?&]shadow=0(&|$)/.test(location.search)),
+ size:2048,min:90,max:450,reach:900,button:false,
+ ground:(x,z)=>(typeof TERRAIN!=='undefined'&&TERRAIN?TERRAIN.heightDrawn(x,z):WORLD.H(x,z))}):null;
 
-return{renderer,scene,camera,sun,hemi,fill,HAZE,SUN_DIR,TICKS,SRC,clock:CLOCK,hour:hourNow,sunAt,
+return{renderer,scene,camera,sun,hemi,fill,HAZE,SUN_DIR,TICKS,SRC,clock:CLOCK,hour:hourNow,sunAt,shadow,
  // the nursery: flat ground at the origin with a fixed profile; origin is the LOD spine the builders measure from
  nursery(profile,origin){SRC.mode='nursery';SRC.profile=profile;BIO.host.origin=[origin||[0,0]];BIO.host.center=origin||[0,0];lx=NaN;},
  world(){SRC.mode='world';SRC.profile=null;BIO.host.origin=[[0,0]];BIO.host.center=[0,0];lx=NaN;},

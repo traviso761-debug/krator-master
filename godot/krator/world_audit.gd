@@ -534,9 +534,16 @@ static func audit_stream_flora(stream: KratorWorldStream, probe_xz: Vector2) -> 
 static func audit_pois(stream: KratorWorldStream, pois: Array) -> Dictionary:
 	var issues: Array[String] = []
 	var checked := 0
+	var was_flora := stream.flora_enabled
+	stream.set_flora_visible(false)
+	var ordered: Array = []
 	for p in pois:
-		if not (p is Dictionary):
-			continue
+		if p is Dictionary:
+			ordered.append(p)
+	ordered.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
+		return (a["eye"] as Vector3).x < (b["eye"] as Vector3).x
+	)
+	for p in ordered:
 		var r := KratorHostUI.resolve_poi(stream, p as Dictionary)
 		var lbl := str(r.get("label", "?"))
 		var eye: Vector3 = r["eye"]
@@ -570,6 +577,7 @@ static func audit_pois(stream: KratorWorldStream, pois: Array) -> Dictionary:
 				if is_finite(sh) and ray_y < sh - 1.0:
 					issues.append("POI '%s': ridge occludes line of sight at t=%.2f (ray %.1f m < ridge %.1f m)" % [lbl, t, ray_y, sh])
 					break
+	stream.flora_enabled = was_flora
 	if checked == 0:
 		issues.append("0 POIs audited")
 	return {
@@ -577,3 +585,4 @@ static func audit_pois(stream: KratorWorldStream, pois: Array) -> Dictionary:
 		"issues": issues,
 		"checked": checked,
 	}
+

@@ -1,0 +1,26 @@
+{
+  "format": "krator-horizon",
+  "version": 1,
+  "grid_box": [
+    -624000,
+    -96000,
+    544000,
+    80000
+  ],
+  "nx": 4673,
+  "nz": 705,
+  "step_m": 250,
+  "reach_m": 40000,
+  "max_tan": 2.0,
+  "files": [
+    "tex/horizon0.webp",
+    "tex/horizon1.webp"
+  ],
+  "stats": {
+    "sky_vis_min": 0.167,
+    "sky_vis_p10": 0.9778,
+    "sky_vis_mean": 0.9898,
+    "max_tan_p95": 0.3943,
+    "bytes": 9027616
+  }
+}
