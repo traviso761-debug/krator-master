@@ -8,7 +8,7 @@
 
 ---
 
-## 0. `[G data]` Architecture & Complete Ledger of `65` Locked Owner Rulings (`2026-11-16` – `2026-11-21`)
+## 0. `[G data]` Architecture & Complete Ledger of `66` Locked Owner Rulings (`2026-11-16` – `2026-11-22`)
 
 ### 0.1 `[G data]` Simulation & Accounting Contract
 
@@ -92,6 +92,7 @@ Every continental sphere compiles to plain, engine-neutral `[G data]` records (z
 63. **`Xanadu` Primary `cacao` + Small `Torus` (`774, 1007`) `cacao` Output (`2026-11-21`):** `Xanadu` grows the primary continental raw `cacao` supply (`0` raw `cacao` in `Porta Marr` `Stara` or `Isla #21`, which grow `coffee`/`indigo`/`vanilla`/`tobacco`), **and sheltered tropical `Torus` (`774, 1007`, `V6` *Tors-Rink*) also cultivates a small boutique output of raw `cacao`**.
 64. **`Oidong Valley` `9` Sanctuary Stages (`4,450` Pop) Remit Tolls to `Longsong` (`Order of Historians`) (`2026-11-21`):** Confirmed (`10,674` total across `Oidong + Longsong + High Rift` under `aggression: 0`), with western gate-stages `Chorten-Gate` (`1026, 1602`) & `Potch-Pass Ferry` (`1052, 1626`) remitting tolls to `Longsong`.
 65. **Lizardmen `92,500` Census & Golden Calamine Zinc-Brass `caste-metal` (`2026-11-21`):** Locks total Lizardman population at **`92,500`** (`0` external trade) and re-specifies `caste-metal` as corrosion-proof golden calamine zinc-brass (`Cu+Zn`) + Ancient cupronickel salvage (`tin goodY = 0.0`).
+66. **`Lake lbl=77` Bi-National Open-Lake Navigation Compact (`Option A`) (`2026-11-22`):** Both `Jimjam` wide-beam flat-bottomed stone/grain scows (`8–9 m` beam, `50–60 t`) and Eternian narrow canal/lake barges (`22 × 4.8 m`, `45 t`, `et_canal_barge`) sail `Lake lbl=77` freely end-to-end (`Jimjam <-> Barada-Quay <-> Palewharf`), breaking bulk across `Palewharf` (`565, 604`)'s bonded split-jetty crane basin (enforced by physical `5.2 m` interior miter-lock gauge + Sanctum quarantine), with Jimjam's seasonal paddy-drawdown naturally shifting low-water Eternian turnaround to deep-water `Barada-Quay` (`620, 604`).
 
 ---
 
@@ -373,21 +374,27 @@ Held unapplied on scale-model / core data files until Wave 0 execution:
 
 ---
 
-## 4. Remaining Continental Open Items (`Only 2 Active Confirmations Left`)
+## 4. Remaining Hygiene Sign-Off & Round 2 Continental Complexity Axes
 
-*(Questions `1–19` and `21–32` are now **`[LOCKED 2026-11-21]`** in §0.2 C above, and Questions `33–34` (`The Crook` & `Ria Valley`) are parked in their dedicated brainstorm session per Ruling #33.)*
+*(All `33` regional non-Crook/Ria decisions — including **`Q20` `Option A` on `Lake lbl=77`** — are now **`[LOCKED]`** across Rulings `1–66` above; `The Crook` & `Ria Valley` remain parked in their dedicated brainstorm session per Ruling #33.)*
 
-### 1. Question `20` (Elaborated) — How `Option A` (Bi-National Open-Lake Compact on `Lake lbl=77`) Works in Practice
-`Lake lbl=77` (`425 km` E–W Great Trough Lake between `Jimjam` `745, 546`, `Barada-Quay` `620, 604`, and Eternian `Palewharf` `565, 604`) sits at the intersection of **two incompatible hydraulic & legal worlds**: Jimjam's seasonal drawdown-paddy floodgates in the east and Eternia's narrow, quarantined stepped-lock canal grid in the west. Under **`Option A` (Bi-National Open-Lake Navigation Compact with Lock/Quarantine Break-of-Bulk at `Palewharf`)**:
-1. **Open Water vs Closed Interior Canals (Physical Gauge Split):**
-   - **On the open lake (`lbl=77`):** Both flags sail end-to-end (`Jimjam <-> Barada-Quay <-> Palewharf`) under a standing **Treaty of the Buoy-Line**: wide-beam, shallow-draft **Jimjam stone-and-grain lighters (`8–9 m` beam, `50–60 t`, flat scow bottoms built to ground safely on seasonal drawdown mudflats)** and narrow **Eternian lake/canal barges (`22 × 4.8 m`, `45 t`, `et_canal_barge`)** share all open-lake fairways without mid-lake flag monopolies.
-   - **At the canal lock-head (`Palewharf` `565, 604`):** Jimjam's wide `8–9 m` stone scows **physically cannot fit** inside Eternia's `5.2 m`-wide interior miter locks (*Shuāng-Zhá* / `Lux` standard), **and** Eternian Sanctum law forbids foreign crews inland of the border ports (just as `Farport` quarantines exterior hulls). Therefore, `Palewharf` operates a **bonded lakeside Basin-and-Crane Quay** where Jimjam stone-lighters crane `alabaster`, `marble`, `gypsum`, `silica` sand (`Barada-Quay`), `cotton`, and drawdown `grain` directly across a split jetty onto Eternian `4.8 m` canal barges (`et_canal_barge`) or `Bastion` (`536, 627`) road-wagons, picking up Eternian `copper`/`kaolin-porcelain`/`paper`/`wine` and Republican `precision-tools` (for `Skywatch`'s *Raja's Eye*!) for the return run.
-2. **Why Eternia & Jimjam Both Prefer `Option A` Over `Option B` (Staple Monopoly):**
-   - Eternia has **`0 km²` domestic `alabaster` or `marble`** and needs heavy `20–40 t` monumental ashlar blocks delivered intact all the way to `Palewharf`'s heavy-lift sheerlegs cranes — forcing mid-lake break-of-bulk at `Barada-Quay` (`Option B`) would double-handle brittle `8-ton` `alabaster` monoliths and add a second tariff wall.
-   - Conversely, when `Jimjam` opens its eastern paddy sluices during the planting drawdown (`lake shore drops 1.5–2.5 m` across shallow eastern bays), deep-keel Eternian hulls stop at deep-water **`Barada-Quay` (`620, 604`)** during low-water months while shallow flat-bottomed Jimjam lighters keep running all year to `Palewharf` — creating a natural **seasonal shift in `SIM.trade` carrier share** (`65%` Jimjam lighters / `35%` Eternian barges) without needing artificial legal bans!
-3. **Smuggling & Patrol Friction (`KCAMP` / Event Hook):** Because both flags mingle on `425 km` of open lake, `Dam` salvage smugglers (`Tilted Tower` / `Veladiga`) and `Yusar` brokers occasionally disguise contraband `archaeotech` under legitimate `Barada-Quay` `silica`-sand or `alabaster` manifests bound for `Palewharf` — giving Eternian customs-launches (`et_inspection_launch`) and Jimjam royal revenue barges a lively inspection cat-and-mouse game.
-- **Decision Needed (`Q20`):** Confirm locking **`Option A`** with this physical gauge + seasonal-drawdown + `Palewharf` bonded-quay mechanism (or prefer `Option B` strict mid-lake flag monopoly)?
-
-### 2. Question `35` — Mainland `Marr` Orthography & Wave 0 Hygiene Sign-Off
+### 4.1 Mainland `Marr` Orthography & Wave 0 Hygiene Sign-Off (`Q35`)
 - Confirm **(a)** converting modern Spanish strings in `80-marr-sim.js` (`San Telmo de la Garita`, `Reales Atarazanas`) to phonological **Izani (`tools/names/izani.py`)** when `kits/marr` is next opened on its branch, and **(b)** approving the **§3.9 Pre-Build Hygiene Batch** for Wave 0 execution?
+
+### 4.2 Round 2 Continent-Wide Economic & Systemic Complexity Questions (`C1–C14`, Proposed `2026-11-22`)
+1. **`C1` — Currency Floating Bands, Bullion Drain & Bills of Exchange (`hawāla` / *feiqian* Clearinghouses)**
+2. **`C2` — `Iziz–Voth` Wartime Shipping Embargo, Neutral-Flag Arbitrage (`Ys`, *Tauranga-Hikau*, `Seto`, `Port Mira`) & Letters of Marque**
+3. **`C3` — Gunpowder & Blasting-Powder Strategic Chokepoint (`saltpeter + sulfur` gating BOTH military fire & `miners`/tunnel re-excavation)**
+4. **`C4` — Non-Renewable Ancient Salvage Depletion (`easy surface yield decays -> deeper high-hazard expeditions & industrial substitution`)**
+5. **`C5` — Per-Polity Narcotics, Stimulants & Sacrament Legality Matrix (`opium`, `hashish`, `ranjrum`, `ghostpipe`, `rattlepod`, `kava`)**
+6. **`C6` — Trans-National Specialist Cartel Deterrence (`Geomancers`, `Order of Historians`, `Yusar` — embargoes & seal/retort decay if concessions are seized)**
+7. **`C7` — Slave / Captive Labor Trains (`Scyvoi`, `Voth`, `Zeijani`) vs Abolitionist Rescue Raids (`Vrivolci`, `Iron Republic`, `Ardent`)**
+8. **`C8` — Interlocking Seasonal Pass, Monsoon & Drawdown Calendars (`futures stockpiling in granaries, salt-houses, ice-houses & coal-yards`)**
+9. **`C9` — Spoilage, Cold-Chain Ice & Preservation Multipliers (`salt`, `sugar`, `smoke`, `ice`, `amphorae`/`barrels` gating exportable food/biogel)**
+10. **`C10` — Quarantine Gates & Bio-Contamination / Blight Events (`Farport`, `Blade`, `Span`, *Saltwhite Gate*, `Nazawach` driving medicine spikes)**
+11. **`C11` — Strategic `ship-timber` (`mast-spars`), `pitch/tar` & `cordage` Naval Bottleneck (`Ys`/`Tethis` & `Porta Marr` vs `Qiblai`/`Region 87`/`Scyvoi`)**
+12. **`C12` — Non-Freight Passenger Circuits: Medical Tourism (`Dalab`), Pilgrimages (`Erehwon`/`Ys`), Arena Spectacles (`Drum`), & Scholarly Tours (`Longsong`/`Skywatch`)**
+13. **`C13` — Speed-of-Courier Price Discovery, Optical Beacons & Information Arbitrage (`rumors travel by ship, courier, beacon & rail wire`)**
+14. **`C14` — Wild Monster-Part, Megafauna & Anomaly-Reagent Trade (`lung-salt` hypoxia tonics, `spider-silk` armour, `anomaly-shards`, `ivory`)**
+
 
