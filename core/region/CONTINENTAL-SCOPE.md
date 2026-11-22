@@ -389,9 +389,9 @@ Applied and verified across Scale Model `5.1e21` (`342/342` `test_smodel.py` che
 
 ---
 
-## 4. Locked Continent-Wide Systemic Complexity Mechanics (`Rulings 67–89`, `0` Open Systemic Questions)
+## 4. Locked Continent-Wide Systemic Complexity Mechanics (`Rulings 67–93`, `0` Open Systemic Questions)
 
-*(All `33` non-Crook/Ria regional questions, `Q35a` Izani `Marr` orthography, Wave 0 Hygiene `§3.9`, and all Round 2 systemic & faction-network scopes are **`[LOCKED]`** across Rulings `1–89`; `The Crook` & `Ria Valley` remain parked in their dedicated session per Ruling #33.)*
+*(All `33` non-Crook/Ria regional questions, `Q35a` Izani `Marr` orthography, Wave 0 Hygiene `§3.9`, and all Round 2 systemic & faction-network scopes are **`[LOCKED]`** across Rulings `1–93`; `The Crook` & `Ria Valley` remain parked in their dedicated session per Ruling #33.)*
 
 ### 4.1 Prohibition, Labor Regimes, Passenger Circuits & Prototype-Flagged Mechanics
 - **Continental Alcohol & Narcotics Legality Matrix (`Ruling #71`):**
@@ -408,11 +408,13 @@ Applied and verified across Scale Model `5.1e21` (`342/342` `test_smodel.py` che
 
 ---
 
-### 4.2 Dedicated Standalone Thematic Scopes (`Rulings #70, #73, #82–89`)
+### 4.2 Dedicated Standalone Thematic Scopes (`Rulings #70, #73, #82–93`)
 1. **[GEOMANCER-SCOPE.md](file:///home/antigravity/traviso761-debug/krator-master/core/region/GEOMANCER-SCOPE.md) — Geomancer Technate Dual-HQ, Strategic Mineral & Delta-Wildcat Scope (`Ruling #82`):** Pairs Primary HQ **`Locus` (`1267, 1043`, `oil: 200`)** with **Secondary Northern HQ `Shell` (`902, 659`, `lode:shell-oil` `oil: 188`)**, opening the **Northern Lifeline (`Port Koron` `912,532` -> `lbl=54` -> `Silkhead` `934,424` -> `Compass Hills` `lodestone: 220` / `RE: 160`)**, plus `9` Licensed Concessions (`LC-01..09`) and `12` Wildcat & River-Delta Claims (`WC-01..12`) promotable into permanent `kits/locus` settlements via **`SIM.found` Player Quests** (interactive map: [geomancer_sites_map.html](file:///home/antigravity/.gemini/jetski/brain/v1/default/jetski_remote_agents_3p/2cc633ac-367f-4e4f-810d-7efa147d63ef/geomancer_sites_map.html)).
 2. **[MONASTERY-NETWORK-SCOPE.md](file:///home/antigravity/traviso761-debug/krator-master/core/region/MONASTERY-NETWORK-SCOPE.md) — Order of Historians `19`-Node Continental Network & Hidden Radio Mesh (`Rulings #83 & #89`):** Integrates `Longsong` Motherhouse (`1229,1621`), `9` Oidong sanctuary stages, `3` High Rift priories, `Tiguantin Viejo`, `White Gills`, `Yuni` (*The Ear*), `Keepwell`, and all `7` regional chapters/HQs (`Silkhead`, `Jimjam`/`Dilihan`, `Roketstad`, `Lux`, `Verge`, `Kautoa`, `Blakhed`) — **linked secretly by non-portable Ancient comms-radios in sealed cipher cells, while covert `Voth` (`HM-19`) cells hunt the missing `Voth` chapter radio feared to be in *Tzintzun*'s reverse-engineering labs**.
 3. **[RELICS-SCOPE.md](file:///home/antigravity/traviso761-debug/krator-master/core/region/RELICS-SCOPE.md) — Breakthrough Ancient Relics & Player Intervention (`[APPROVED — EXTENSIBLE]`, `Rulings #84 & #89`):** Four ruin hazard & `site.veins` depletion tiers, six conserved Relic classes (`RC-1..RC-6` baseline, incl. `RC-5` `telemetry` tying directly into *Tzintzun*'s radio reverse-engineering threat), anti-snowball `relicThreat` coalitions, and five deterministic Player Intervention ops (`sell_hegemon`, `charter_underdog`, `open_schematic`, `seal_procrastinator` into `Longsong` `LS-008`, `sabotage_core`).
 4. **[MERCENARIES-SCOPE.md](file:///home/antigravity/traviso761-debug/krator-master/core/region/MERCENARIES-SCOPE.md) — Continental Mercenary Companies, Hiring Bourses & Contract Mechanics (`[APPROVED]`, `Rulings #85–88`):** Persistent `KCAMP` travelling mercenary bands (`MC-01..12`), `10` continental Hiring Bourses, two-tier Chartered Guild (*The Watch* / *Mercenary Kontor* bonded liens & blacklists) vs. Unchartered Frontier Freebooter (`>14`-day unpaid flip to `50-camp-outlaw.js` raiders), `Eternal State` quarantine-gateway-only & `Dalab` Rift-rim rules, state monopoly on heavy war-walkers (specialist `Yusar`/`Frogman`/`Kradz`/`Land-Crab` hazard & terrain tiers), and symmetric `SIM.contract` hiring for polities, expeditions, subfactions, and the player (both as employer and as chartered Mercenary Captain).
+5. **[BANDITS-PIRATES-BOUNTIES-SCOPE.md](file:///home/antigravity/traviso761-debug/krator-master/core/region/BANDITS-PIRATES-BOUNTIES-SCOPE.md) — Frontier Bandit Factions, Pirate Captain Coves & Continental Bounty Hunting (`[APPROVED]`, `Rulings #90–93`):** Hybrid Kenshi-style named regional bandit brotherhoods (`BF-01..10`, each with distinct personality, Main HQ + `1–4` `KCAMP.outlawCamp` hidden sub-camps, shattering on Boss capture and procedurally succeeded after `90–180` days if frontier lawlessness persists), `PF-01..06` Pirate Captain flotillas founding temporary Hidden Coves (`KCAMP.pirateCove` alongside permanent `Noah's Regret` & `Boiling Bay`) + Letters of Marque, `4`-tier per-polity Bounty Hunting (`100%` live escort w/ road rescue ambushes vs `55%` signet proof-of-death + roaming `Manhunter` posses), and full outlaw diplomacy / player-founded hideouts & coves.
+
 
 
 
