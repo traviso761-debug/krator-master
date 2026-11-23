@@ -536,10 +536,11 @@ Seamless tileable texture, square, 2048x2048. Top-down orthographic view of flat
 Xanadu's own S4 ground-layer set for Godot (the owner, 2026-11-22: "Xanadu's own layer set") and the stack's glazed-surface
 case (M1-M2). The rest of the set is in the library (`ground.grass.lush`, `ground.terrace.field`, `ground.redsoil`,
 `ground.shingle`, `rock.tuff`) or owed in section 59 (`stone.ghat.wet`). They land in the library in today's packing;
-`godot/tools/pack_ground_layers.py`'s `xanadu` set and `kits/xanadu/materials.json` take them. **2 prompts.**
+`godot/tools/pack_ground_layers.py`'s `xanadu` set (`godot/tools/ground_layer_sets/xanadu.json`, written by XS1) and
+`kits/xanadu/materials.json` take them. **2 prompts.**
 
-`ground.paddy.wet` (S4 layer 3: the Vale's rice paddies and the lake's flooded margins; 4 m a tile; the stand-in is
-`ground.brown_mud_02`):
+`ground.paddy.wet` (the S4 set's held layer for the wet slot: the Vale's rice paddies and the lake's flooded margins; 4 m a
+tile; the stand-in is `ground.brown_mud_02`):
 ```
 Seamless tileable texture, square, 2048x2048. Top-down orthographic view of flat ground filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no reflections of sky or objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: the soft wet grey-brown mud of a flooded rice paddy after the harvest, a few centimetres of muddy water standing in shallow puddles between low smooth mud ridges, rows of short cut rice stubble poking up in loose lines, scattered straw, faint footprints and the pocked marks of rain, small patches of green algae scum. Muted earthy browns and olive greys, damp but not glossy.
 ```

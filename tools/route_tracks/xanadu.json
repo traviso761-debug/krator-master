@@ -1,0 +1,39 @@
+{
+ "format": "krator-route-track",
+ "version": 1,
+ "track": "xanadu",
+ "what": "The xanadu route (settlements/xanadu/STACK-PLAN.md section 8): four stops at the stack's three hours, for tools/route_harness.py (web) and godot/tests/perf/route_harness.gd, both on claude/vertical-stack. Data only before Stage 8; XP1 adds the two stop kinds below to the harnesses (each a few lines beside openworld_hamlet and av_preset), records the baselines on the Arc, the RTX and in Godot, and fills each Godot stop's pose from the place's export. Checked by settlements/xanadu/tests/test-xs1-stack.js.",
+ "hours": [12.0, 16.33, 22.0],
+ "kinds": {
+  "page_view": "the page's own named view (V[name] in its views fragment): [ex, ey, ez, tx, ty, tz] in the page's frame, resolved at run time from the buildings' blocks, so a re-seat or a re-bake moves the stop with the town",
+  "page_block": "a pose in one kit block's frame, as the page's views take it (91z-views.js `at(B, c, t)`): eye and target are the block's x, y, z plus the offsets; the block is found by key in CIT_G.blocks",
+  "openworld_site": "a pose by a site of the region's data/region.json, found by id (ids survive the Stage 8 re-bake; positions do not): eye = site + (dx, dz) at agl metres over the ground, target = site + (tx, tz) at ty metres over the ground (0 for a water target: the water's surface)",
+  "openworld_site_shore": "a pose on a site's shore: from the site along a line, toward another site (`toward`, by id) or on a bearing (`bearing`, degrees: 0 north (-z), 90 east (+x), 180 south (+z)); eye on the first land cell along it with water within 20 m, agl metres over the ground; target `look` metres further along the same line at the water's surface plus ty"
+ },
+ "stops": [
+  {"id": "city_block", "label": "Erewhon's citadel, the Golden Way",
+   "web": {"page": "settlements/xanadu/dist/erewhon.html", "kind": "page_view", "view": "Citadel — the Golden Way"},
+   "godot": {"case": "world-xanadu-lake-shore", "place": "s57bkv9741-erehwon", "view": "Citadel — the Golden Way"}},
+  {"id": "water_ground", "label": "Phish-Mārkiṭ's quay, east across the lake past Wesṭ-Āil to the caldera wall",
+   "web": {"page": "openworld/xanadu-lake-shore/dist/xanadu-lake-shore.html", "kind": "openworld_site_shore",
+           "site": "sxanlkfish01", "toward": "sxanlkwestisle01", "agl": 3.2, "look": 1500.0, "ty": 0.5},
+   "godot": {"case": "world-xanadu-lake-shore", "same": "web"},
+   "fallback": {"until": "Phish-Mārkiṭ's town is built (the lake round's west towns, BUILD-PLAN.md)",
+                "web": {"page": "openworld/xanadu-north-shore/dist/xanadu-north-shore.html", "kind": "openworld_site_shore",
+                        "site": "sxanmouth01", "bearing": 180.0, "agl": 3.2, "look": 1500.0, "ty": 0.5},
+                "godot": {"case": "world-xanadu-north-shore", "same": "web"}}},
+  {"id": "forest_edge", "label": "Gārḍan's walled orchards, from inland",
+   "web": {"page": "openworld/xanadu-lake-shore/dist/xanadu-lake-shore.html", "kind": "openworld_site",
+           "site": "sxanlkgarden01", "dx": 0.0, "dz": 45.0, "agl": 4.5, "tx": 0.0, "tz": -20.0, "ty": 8.0},
+   "godot": {"case": "world-xanadu-lake-shore", "same": "web"},
+   "fallback": {"until": "Gārḍan's town and orchards are built",
+                "web": {"page": "settlements/pher/dist/pher.html", "kind": "page_view", "view": "The fair ground"},
+                "godot": {"case": "world-xanadu-north-shore", "place": "spher0north1-pher", "view": "The fair ground"}}},
+  {"id": "door_transition", "label": "Through the Vizier's palace door into its hall (the interiors track's stop)",
+   "web": {"page": "settlements/xanadu/dist/erewhon.html", "kind": "page_block", "block": "xa_cit_vizier",
+           "eye": [0.0, 1.7, 16.5], "target": [0.0, 2.4, 2.5]},
+   "godot": {"case": "world-xanadu-lake-shore", "place": "s57bkv9741-erehwon", "block": "xa_cit_vizier", "same": "web"},
+   "door": "cit.vizier.d.loggia.garden.1",
+   "note": "the eye in the pool garden 6.5 m before the garden face's middle arch (kits/xanadu/src/78n-xa-citadel.js, buildXaCitVizier: the iwan at block z 10.6), looking through it into the loggia to its back wall (block z 2), where the leaf doors to the petitions hall and the chancery are. `door` is that arch's portal in XS2's room graph (claude/citadel-room-graph, settlements/xanadu/citadel/rooms/89yr-xa-citadel-rooms.js: cit.vizier.garden, outdoor, to cit.vizier.loggia, open, 6 m wide, at citadel -424, -135 = block 0, 10)"}
+ ]
+}
