@@ -149,24 +149,24 @@
    "sha256": "1962313c1ffff9ef412a81a2171d4495cd7dfaa55d9176aa52cc0bde3a01d44a"
   },
   "biomes/ebadlands/dist/ebadlands-canyons.html": {
-   "bytes": 5881227,
-   "sha256": "9446e8041946ba849f2b8ad5305c330047dec7c77100814a9e5e78e630169fa1"
+   "bytes": 5881237,
+   "sha256": "6bba2690ac2336ad5c0bd031eadc5c3c718ded90d28ee19f055550026fc1dd32"
   },
   "biomes/ebadlands/dist/ebadlands-montane.html": {
-   "bytes": 5881203,
-   "sha256": "2166b16d7253ce601bb94507782cd21c3ded11a2e7ba822608a69c5308bb0abf"
+   "bytes": 5881213,
+   "sha256": "acb19ddc5251db8124b9355df2393ecf0a5dc2b2ab1515780b985fa3df01bb1d"
   },
   "biomes/ebadlands/dist/ebadlands-tundra.html": {
-   "bytes": 5881713,
-   "sha256": "d723fcdf1b92f5a29782f49661daab56a330fddddfb09e763b863e9a0822d1e6"
+   "bytes": 5881723,
+   "sha256": "dee8ff68d621c5ec7eaf3d88ef3f7f84bf7d13a2eb538d9971147f120e03cf69"
   },
   "biomes/ebadlands/dist/ebadlands-waste.html": {
-   "bytes": 6067310,
-   "sha256": "33e20f91b17aa702d75f0daa37c8b3b8a7f52e1d5d3c6cd0e70973ea4cbb08d6"
+   "bytes": 6067320,
+   "sha256": "5949b18050ac85a23e00e4e58b98f958efacd16981f79698a951b475d6f647c8"
   },
   "biomes/ebadlands/dist/ebadlands.html": {
-   "bytes": 5895590,
-   "sha256": "c1c9be7624a08b787b6fe1730f49bf373df0ea65adf431bce05ced0e36848031"
+   "bytes": 5895600,
+   "sha256": "147cb0434ae534c51b444ff823d72d27398eabfbc56fae4eb3f802fdceb8e0ed"
   },
   "biomes/ehighlands/dist/ehighlands-face.html": {
    "bytes": 3604394,
@@ -317,48 +317,48 @@
    "sha256": "5f2b4e4d1c4247ea7f06594cceddf2d9b9f380e82003e8c5be056c134716fedc"
   },
   "biomes/greatchasm/dist/greatchasm-bench.html": {
-   "bytes": 9106067,
-   "sha256": "b17007177455f15472c0938c7ad4333cfc48ee5fc5ff16887976eb048dbd0ff0"
+   "bytes": 9133297,
+   "sha256": "18f8f1f5b3a0650e2c737860fcbab845c3054a3309d9482f6aee71f5adad2718"
   },
   "biomes/greatchasm/dist/greatchasm-deep.html": {
-   "bytes": 10519798,
-   "sha256": "d500d6a91353e5b25f6466fc61b46258a16e334a7e870444962701ec37f9dd6a"
+   "bytes": 10547028,
+   "sha256": "adbe2937c28b0338715f8289401445e818a16d615294400ab3340c823ee5a7e0"
   },
   "biomes/greatchasm/dist/greatchasm-eastrim.html": {
-   "bytes": 4764446,
-   "sha256": "bfd22c6ce5f695d0828915fde70db80a1d803f9708726748a6b2b924cc57426c"
+   "bytes": 4791591,
+   "sha256": "119d2fdcffafae535b6586cbc65d29a2b21d2fa32468a5ec80cf03a27b31bc8c"
   },
   "biomes/greatchasm/dist/greatchasm-headwall.html": {
-   "bytes": 9103197,
-   "sha256": "51df9f875ed52ca2e7270a2f75b303767df591c402cd9e17b8752eece0e15427"
+   "bytes": 9129751,
+   "sha256": "bbd96d449d2e0c7d14d5312fd22f74822d331ca9f3f8716a71e0cac85e31b34d"
   },
   "biomes/greatchasm/dist/greatchasm.html": {
-   "bytes": 9114977,
-   "sha256": "758e77ad35330ca3248867e21f287d2de32a8836f3396e8808d440ba43d131f3"
+   "bytes": 9142207,
+   "sha256": "21b240fccad3b497eb985eb60e1f267cb2d5041f209be24df64cd3705d35bcf8"
   },
   "biomes/greenstep/dist/greenstep-cloudstep.html": {
-   "bytes": 6305384,
-   "sha256": "252afe62fd64a06cc239407c93a5da6e13d38d49cd7ab05a279f25481f0abcb3"
+   "bytes": 6305394,
+   "sha256": "64c8cc9338102aebac4109c5eda00fb31edec94d66ae6086e70f4deb319b3f0d"
   },
   "biomes/greenstep/dist/greenstep-gatestep.html": {
-   "bytes": 11979766,
-   "sha256": "c38097fa1fee1fb2a40213ad2fa7770d6d397fefdceb781d6557c053e9a48c7d"
+   "bytes": 11979776,
+   "sha256": "8abe5ebea046bce4f97c7b86e4561c4ad29d5ebcba87acf3aa8dd3f4871092f0"
   },
   "biomes/greenstep/dist/greenstep-headvent.html": {
-   "bytes": 6294730,
-   "sha256": "535ff0b1bbd3ed8c97be4f02ab5d700d888f991008fde005043ad50b8b7aaad9"
+   "bytes": 6294740,
+   "sha256": "5b59d1860193c80d04c731b65f3031d907372e7dbee994f3c8e23468314a7be7"
   },
   "biomes/greenstep/dist/greenstep-loamstep.html": {
-   "bytes": 11978137,
-   "sha256": "14efe3672d090e76397237bcf2cb1dbffaac00af3d358e5998c1230c9b1eb2f0"
+   "bytes": 11978147,
+   "sha256": "b0e02ad3d6f9268ba754e363e38f440bb013bcc717cef423dbe3e5da8d326e1e"
   },
   "biomes/greenstep/dist/greenstep-rilleforge.html": {
-   "bytes": 12032257,
-   "sha256": "42846b2881e5ad5d09c5a89378e89e1605291a2e8ca17216e13f89727b890dfc"
+   "bytes": 12032267,
+   "sha256": "75b8f8f869dc7f70c5f4990b2a4ab2deed95b701169b77a49ff32907ba35f528"
   },
   "biomes/greenstep/dist/greenstep.html": {
-   "bytes": 11983574,
-   "sha256": "edbc54379670e69b4bf55f25d32d0ab5ef75b51940a1fbb9174813b10d764222"
+   "bytes": 11983584,
+   "sha256": "afdb46c2bae06f4fe3d61607a880a6ac73176f2f75fd643e7908d470c0493945"
   },
   "biomes/guilin/dist/guilin.html": {
    "bytes": 675886,
@@ -681,40 +681,40 @@
    "sha256": "548bf26d55c92366754d01d6c079f6d1b402bc76ba8ec4f0e1506388e7b916ff"
   },
   "biomes/riftrim/dist/riftrim-barrens.html": {
-   "bytes": 7955813,
-   "sha256": "40612ec501973ca983f3d666a1522a386b92a3fbb8e674b4da2c6c4e1d83588e"
+   "bytes": 7955823,
+   "sha256": "30d49284094c9c8e48277c5dac124c10c0b9639701f51aa46d7dece21b14ec6b"
   },
   "biomes/riftrim/dist/riftrim-fowlers.html": {
-   "bytes": 12179064,
-   "sha256": "dc6e500613594a5c5a421004dd116ead1521e63353ba0635f1571163f7dc0679"
+   "bytes": 7395856,
+   "sha256": "fab76f30fddd0f8e14753b48b9bd878ed759fd275dbdbf674c3f937c3f8973c4"
   },
   "biomes/riftrim/dist/riftrim-gorge.html": {
-   "bytes": 8516645,
-   "sha256": "3f92e9f1a5ef2cef440a769f893a1a5260483cfeec482fb5c546c874b2778cbc"
+   "bytes": 8516655,
+   "sha256": "9941f24e0408ca281214332a5e960f9073fcf09fbeb578c3e2bf8b9898a885e0"
   },
   "biomes/riftrim/dist/riftrim-hearths.html": {
-   "bytes": 7414813,
-   "sha256": "4a3344f9e73ead5d377e2082bcaad5eecb3a4a530a9865d35bdb329eb4cc61e5"
+   "bytes": 7414823,
+   "sha256": "7edc61ac34b6af432c4e4f5ea33707110dd1ecec1f60cdf044a8d6d65a50736d"
   },
   "biomes/riftrim/dist/riftrim-ice.html": {
-   "bytes": 7957198,
-   "sha256": "2ee136e8ec66cafd8f11165a760d38645e4bb7e1cc7322819d5ff315b22c489b"
+   "bytes": 7957208,
+   "sha256": "d59d4492040e0d1142892a2c375e85703fbafa147a09857e0670f6cfc14a7f21"
   },
   "biomes/riftrim/dist/riftrim-icecut.html": {
-   "bytes": 12181208,
-   "sha256": "f2e627d2e3d4bc12b5c82414f7adb5036f26b8c8ad3a84b81c60fa8108774928"
+   "bytes": 7396674,
+   "sha256": "fd841184666f7385af1cbe7104d993ceaec75bc1c3c3a779dfb549dd10eff922"
   },
   "biomes/riftrim/dist/riftrim-lakes.html": {
-   "bytes": 8967058,
-   "sha256": "422d0eb5d4e834fb7732db3fb218a31ab27768b7df8936b158fc78ec2f74ac16"
+   "bytes": 8967068,
+   "sha256": "49271b2d8382399ac4e796678e4d3702fc9b4c084fe0a93d67e177dfa2d98998"
   },
   "biomes/riftrim/dist/riftrim-pass.html": {
-   "bytes": 7322350,
-   "sha256": "d783d5e70cd75e2ede131ae07db323c18c16a8e983460cdb232b63dd0a06d6f6"
+   "bytes": 7322360,
+   "sha256": "7e0a35ee8e64b4859fbaeaa28cb2144b50cb41f1096791e69eeb6c5a99ce66c0"
   },
   "biomes/riftrim/dist/riftrim.html": {
-   "bytes": 9139567,
-   "sha256": "92ab4e586e4a3b7e8cf2364fc8458f0dc3139ddae4c64835c461861ef0179ad1"
+   "bytes": 9139577,
+   "sha256": "4bdb8ad7709edcdc163b511892865f5065138909056dd2cd2e79d268e5edfef8"
   },
   "biomes/ringisles/dist/ringisles-high.html": {
    "bytes": 3511376,
