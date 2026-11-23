@@ -1,0 +1,455 @@
+{
+ "edit": "5.1 edit 20 (The Crook craters, dendritic fluvial pass & valley-kingdoms)",
+ "date": "2026-11-22",
+ "craters": [
+  {
+   "id": "lf_crook_eye",
+   "name": "The Eye (Sentry-Caldera)",
+   "centre_px": [
+    104.0,
+    562.0
+   ],
+   "water_cells": 21,
+   "floor_min_m": -65.0,
+   "rim_median_m": 166.1,
+   "rim_max_m": 183.9,
+   "drowned_new_cells": 29,
+   "emerged_new_cells": 22
+  },
+  {
+   "id": "lf_crook_kopa_north",
+   "name": "Kopa-North Crater",
+   "centre_px": [
+    89.0,
+    604.0
+   ],
+   "water_cells": 31,
+   "floor_min_m": -95.0,
+   "rim_median_m": 183.9,
+   "rim_max_m": 200.0,
+   "drowned_new_cells": 25,
+   "emerged_new_cells": 69
+  },
+  {
+   "id": "lf_crook_kopa_south",
+   "name": "Kopa-South (Whale-Haven)",
+   "centre_px": [
+    81.0,
+    677.0
+   ],
+   "water_cells": 38,
+   "floor_min_m": -110.0,
+   "rim_median_m": 204.8,
+   "rim_max_m": 210.0,
+   "drowned_new_cells": 0,
+   "emerged_new_cells": 240
+  },
+  {
+   "id": "lf_crook_cascade_caldera",
+   "name": "Cascade-Caldera (Kopa-Tarn Mouth)",
+   "centre_px": [
+    123.0,
+    659.0
+   ],
+   "water_cells": 24,
+   "floor_min_m": -80.0,
+   "rim_median_m": 179.4,
+   "rim_max_m": 189.9,
+   "drowned_new_cells": 16,
+   "emerged_new_cells": 15
+  }
+ ],
+ "tributaries": [
+  {
+   "id": 9111,
+   "name": "Hueru-Bēnchi Kawa",
+   "order": 1,
+   "len_km": 83.2,
+   "q_mouth_m3s": 95.0,
+   "source_m": 1558.0,
+   "mouth_m": 0.0,
+   "to": "sea"
+  },
+  {
+   "id": 9112,
+   "name": "Fjōdu-Mīst Kawa",
+   "order": 2,
+   "len_km": 157.6,
+   "q_mouth_m3s": 155.0,
+   "source_m": 1738.2,
+   "mouth_m": 0.0,
+   "to": "sea"
+  },
+  {
+   "id": 9113,
+   "name": "Sīda-Gōji Kawa",
+   "order": 2,
+   "len_km": 211.1,
+   "q_mouth_m3s": 195.0,
+   "source_m": 3854.8,
+   "mouth_m": 291.1,
+   "to": "Kopa-Tarn Warra (Crook River)"
+  },
+  {
+   "id": 9114,
+   "name": "Bāsaruto-Kawa",
+   "order": 1,
+   "len_km": 130.9,
+   "q_mouth_m3s": 86.0,
+   "source_m": 2677.8,
+   "mouth_m": 315.1,
+   "to": "Kopa-Tarn Warra (Crook River)"
+  },
+  {
+   "id": 9115,
+   "name": "Khāi-Gēti Tskhali",
+   "order": 2,
+   "len_km": 172.8,
+   "q_mouth_m3s": 185.0,
+   "source_m": 2590.2,
+   "mouth_m": 424.4,
+   "to": "Kopa-Tarn Warra (Crook River)"
+  },
+  {
+   "id": 9116,
+   "name": "Rēd-Spāiri Tskhali",
+   "order": 2,
+   "len_km": 165.7,
+   "q_mouth_m3s": 175.0,
+   "source_m": 2332.5,
+   "mouth_m": 636.2,
+   "to": "Kopa-Tarn Warra (Crook River)"
+  },
+  {
+   "id": 9117,
+   "name": "Tīn-Flītsi Tskhali",
+   "order": 2,
+   "len_km": 173.2,
+   "q_mouth_m3s": 210.0,
+   "source_m": 5684.5,
+   "mouth_m": 823.6,
+   "to": "Kopa-Tarn Warra (Crook River)"
+  },
+  {
+   "id": 9118,
+   "name": "Rōzi-Vārdzi Tskhali",
+   "order": 2,
+   "len_km": 178.2,
+   "q_mouth_m3s": 180.0,
+   "source_m": 6477.5,
+   "mouth_m": 823.6,
+   "to": "Kopa-Tarn Warra (Crook River)"
+  },
+  {
+   "id": 9119,
+   "name": "Dzēdi-Khrōsi Tskhali",
+   "order": 2,
+   "len_km": 176.0,
+   "q_mouth_m3s": 205.0,
+   "source_m": 7130.2,
+   "mouth_m": 1240.5,
+   "to": "Kopa-Tarn Warra (Crook River)"
+  },
+  {
+   "id": 9120,
+   "name": "Nōrt-Khrāgi Tskhali",
+   "order": 1,
+   "len_km": 152.0,
+   "q_mouth_m3s": 110.0,
+   "source_m": 2785.1,
+   "mouth_m": 555.8,
+   "to": "Kopa-Tarn Warra (Crook River)"
+  },
+  {
+   "id": 9121,
+   "name": "Āirn-Dzāghi Tskhali",
+   "order": 2,
+   "len_km": 161.6,
+   "q_mouth_m3s": 140.0,
+   "source_m": 4414.1,
+   "mouth_m": 780.7,
+   "to": "Kopa-Tarn Warra (Crook River)"
+  },
+  {
+   "id": 9122,
+   "name": "Mīst-Khōpri Tskhali",
+   "order": 2,
+   "len_km": 149.9,
+   "q_mouth_m3s": 150.0,
+   "source_m": 3090.2,
+   "mouth_m": 823.6,
+   "to": "Kopa-Tarn Warra (Crook River)"
+  },
+  {
+   "id": 9123,
+   "name": "Sāut-Flūmi Tskhali",
+   "order": 1,
+   "len_km": 122.6,
+   "q_mouth_m3s": 108.0,
+   "source_m": 3741.0,
+   "mouth_m": 823.6,
+   "to": "Kopa-Tarn Warra (Crook River)"
+  },
+  {
+   "id": 9124,
+   "name": "Hārth-Tān Warra",
+   "order": 2,
+   "len_km": 191.7,
+   "q_mouth_m3s": 165.0,
+   "source_m": 6393.7,
+   "mouth_m": 1534.1,
+   "to": "Kopa-Tarn Warra (Crook River)"
+  },
+  {
+   "id": 9125,
+   "name": "Hūsh-Pās Warra",
+   "order": 2,
+   "len_km": 198.4,
+   "q_mouth_m3s": 160.0,
+   "source_m": 8110.8,
+   "mouth_m": 1763.6,
+   "to": "Kopa-Tarn Warra (Crook River)"
+  },
+  {
+   "id": 9126,
+   "name": "Nōrt-Fjōdu Kawa",
+   "order": 1,
+   "len_km": 79.4,
+   "q_mouth_m3s": 62.0,
+   "source_m": 1391.4,
+   "mouth_m": 887.1,
+   "to": "Sīda-Gōji Kawa"
+  },
+  {
+   "id": 9127,
+   "name": "Zēmo-Bēnihi Tskhali",
+   "order": 1,
+   "len_km": 80.4,
+   "q_mouth_m3s": 68.0,
+   "source_m": 2580.1,
+   "mouth_m": 1595.8,
+   "to": "Khāi-Gēti Tskhali"
+  },
+  {
+   "id": 9128,
+   "name": "Khwēla-Spāiri Tskhali",
+   "order": 1,
+   "len_km": 74.1,
+   "q_mouth_m3s": 64.0,
+   "source_m": 2429.5,
+   "mouth_m": 1668.7,
+   "to": "Rēd-Spāiri Tskhali"
+  },
+  {
+   "id": 9129,
+   "name": "Gōldi-Flītsi Tskhali",
+   "order": 1,
+   "len_km": 74.5,
+   "q_mouth_m3s": 74.0,
+   "source_m": 2661.8,
+   "mouth_m": 2511.4,
+   "to": "Tīn-Flītsi Tskhali"
+  },
+  {
+   "id": 9130,
+   "name": "Hūsh-Rīmi Tskhali",
+   "order": 1,
+   "len_km": 89.3,
+   "q_mouth_m3s": 66.0,
+   "source_m": 6809.4,
+   "mouth_m": 2987.8,
+   "to": "Rōzi-Vārdzi Tskhali"
+  },
+  {
+   "id": 9131,
+   "name": "Skhārn-Khrāgi Tskhali",
+   "order": 1,
+   "len_km": 65.7,
+   "q_mouth_m3s": 60.0,
+   "source_m": 4378.7,
+   "mouth_m": 2433.9,
+   "to": "Āirn-Dzāghi Tskhali"
+  },
+  {
+   "id": 9132,
+   "name": "Fōgi-Gēti Tskhali",
+   "order": 1,
+   "len_km": 73.1,
+   "q_mouth_m3s": 62.0,
+   "source_m": 3810.7,
+   "mouth_m": 1808.4,
+   "to": "Mīst-Khōpri Tskhali"
+  },
+  {
+   "id": 9133,
+   "name": "Lāch-Mōrain Bruk",
+   "order": 1,
+   "len_km": 113.6,
+   "q_mouth_m3s": 112.0,
+   "source_m": 4063.4,
+   "mouth_m": 1509.3,
+   "to": "Kopa-Tarn Warra (Crook River)"
+  }
+ ],
+ "moved_cells": 14772,
+ "raised_m_max": 301.5,
+ "cut_m_max": 2018.9,
+ "reclimate": {
+  "cells": 15804,
+  "class_changed": 2424,
+  "rain_mean_before_mm": 1073.0,
+  "rain_mean_after_mm": 1074.0,
+  "classes_now": {
+   "Af": 1,
+   "Am": 330,
+   "Aw": 8,
+   "BSh": 1,
+   "BSk": 65,
+   "Csa": 1962,
+   "Csb": 44,
+   "Cwb": 11,
+   "Cfa": 5600,
+   "Cfb": 200,
+   "Dsb": 837,
+   "Dsc": 546,
+   "Dfb": 2579,
+   "Dfc": 1049,
+   "ET": 935,
+   "EF": 945,
+   "HT": 599,
+   "HF": 92
+  }
+ },
+ "cells_changed": {
+  "p": 12846,
+  "c": 2853,
+  "z": 841,
+  "tm": 7321,
+  "th": 7321,
+  "tl": 7321,
+  "tw": 7321,
+  "tc": 7321
+ },
+ "new_settlements": [
+  {
+   "id": "sdv1khaigeti",
+   "name": "Khāi-Gēti",
+   "px": [
+    129,
+    765
+   ],
+   "elev_m": 1247,
+   "rain_mm": 1224
+  },
+  {
+   "id": "sdv2redspairi",
+   "name": "Rēd-Spāiri",
+   "px": [
+    129,
+    803
+   ],
+   "elev_m": 1338,
+   "rain_mm": 925
+  },
+  {
+   "id": "sdv3tinflitsi",
+   "name": "Tīn-Flītsi",
+   "px": [
+    127,
+    855
+   ],
+   "elev_m": 1913,
+   "rain_mm": 1365
+  },
+  {
+   "id": "sdv4airndzaghi",
+   "name": "Āirn-Dzāghi",
+   "px": [
+    76,
+    839
+   ],
+   "elev_m": 2090,
+   "rain_mm": 471
+  },
+  {
+   "id": "sdv5rozivardzi",
+   "name": "Rōzi-Vārdzi",
+   "px": [
+    120,
+    904
+   ],
+   "elev_m": 2295,
+   "rain_mm": 1427
+  },
+  {
+   "id": "sdv6mistkhopri",
+   "name": "Mīst-Khōpri",
+   "px": [
+    74,
+    885
+   ],
+   "elev_m": 1266,
+   "rain_mm": 533
+  },
+  {
+   "id": "sdv7dzedikhrosi",
+   "name": "Dzēdi-Khrōsi",
+   "px": [
+    115,
+    988
+   ],
+   "elev_m": 3199,
+   "rain_mm": 1569
+  },
+  {
+   "id": "sdv8flumibridzi",
+   "name": "Flūmi-Brīdzi",
+   "px": [
+    94,
+    966
+   ],
+   "elev_m": 835,
+   "rain_mm": 1255
+  },
+  {
+   "id": "shk1kopahueru",
+   "name": "Kōpa-Hueru",
+   "px": [
+    75,
+    679
+   ],
+   "elev_m": 205,
+   "rain_mm": 1725
+  },
+  {
+   "id": "shk2kaskedi",
+   "name": "Kāskēdi-Kuran",
+   "px": [
+    128,
+    660
+   ],
+   "elev_m": 130,
+   "rain_mm": 1725
+  }
+ ],
+ "drainage_after": {
+  "crookshore": {
+   "land_km2": 84764,
+   "rivers": 8,
+   "river_km": 904.0,
+   "density_km_per_1000km2": 10.67
+  },
+  "crookwash": {
+   "land_km2": 122472,
+   "rivers": 17,
+   "river_km": 2332.8,
+   "density_km_per_1000km2": 19.05
+  },
+  "crookhead": {
+   "land_km2": 78252,
+   "rivers": 5,
+   "river_km": 822.0,
+   "density_km_per_1000km2": 10.5
+  }
+ }
+}

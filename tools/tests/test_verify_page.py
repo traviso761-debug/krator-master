@@ -20,9 +20,10 @@ CASES = {'clean': None, 'broken-shader': 'shader-errors', 'lfs-texture': 'textur
          'error-panel': 'error-panel', 'empty-volume': 'registered-volumes-non-empty'}
 
 
-# the survey's opt-in checks (items 27, 28): case -> (checks, the assert it must fail with them on; off, the case passes)
+# the survey's opt-in checks (items 27, 28, 32, 33): case -> (checks, the assert it must fail with them on; off, the case passes)
 OPTIN = {'eye-under-drawn': (('drawn-ground',), 'eye:as loaded'), 'samplers-16': (('samplers',), 'samplers'),
-         'samplers-15': (('samplers',), None)}
+         'samplers-15': (('samplers',), None), 'flow-in-ocean': (('water-mouths',), 'water-mouths'),
+         'sheet-on-one': (('leaf-stems',), 'leaf-stems'), 'stem-float': (('leaf-stems',), 'leaf-stems')}
 
 
 async def one(case, checks=None):

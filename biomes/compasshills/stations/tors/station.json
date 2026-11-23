@@ -1,0 +1,20 @@
+{
+ "id": "tors",
+ "canvas": "5.1 (1821x1723)",
+ "title": "Compass Hills — Lightning-Struck Magnetite Tors and Fulgurite Spires",
+ "name": "Eastern High Ironstone Scarp & Lightning-Struck Magnetite Tors (station tors): 60 m banded-ironstone cuesta escarpment, fulgurite-veined lodestone spires, concentric fluxlichen isogauss rings, ferrotuft grain-beards, and non-sparking tin-bronze quarry wedges",
+ "out": "compasshills-tors.html",
+ "px": [1128, 248],
+ "elevM": 1392.3,
+ "pAtm": 1.34,
+ "koppen": "Cfa",
+ "rainMmYr": 941,
+ "toroidRadiusM": 0.0,
+ "peakFieldMt": 96.0,
+ "strataStack": "banded-ironstone",
+ "kin": ["swlowlands", "wouterwall"],
+ "reserves": [
+  { "id": "site:tors-bronze-quarry", "x": -118, "z": 96, "r": 34 }
+ ],
+ "modes": ["Clear sky", "Thunder squall", "Field overlay"]
+}

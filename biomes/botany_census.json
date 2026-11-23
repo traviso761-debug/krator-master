@@ -258,6 +258,244 @@
     "misc_domains": []
   },
   {
+    "biome": "arachnoids",
+    "file": "biomes/arachnoids/src/50-biome-arach-species.js",
+    "key": "alpinesedge",
+    "name": "Gorge Sword-Fern and Rim Cushion-Sedge",
+    "harvest": {
+      "wood": "thatch, weaving",
+      "edible": "[]",
+      "medicinal": false,
+      "notes": "Boot-insulation hay and pack-frame padding.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": [
+      "hygiene_sunscreen",
+      "textiles_cordage",
+      "weaving_thatch_paper",
+      "woodcraft_weapons"
+    ]
+  },
+  {
+    "biome": "arachnoids",
+    "file": "biomes/arachnoids/src/50-biome-arach-species.js",
+    "key": "canyonbamboo",
+    "name": "Ham-Tsek Mist-Slot Bamboo",
+    "harvest": {
+      "wood": "weaving, cordage",
+      "edible": "['bamboo shoot']",
+      "medicinal": false,
+      "notes": "Light scaffolding poles, sulfur-condenser baskets, and woven silk-reeling trays.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": true,
+    "misc_domains": [
+      "bioluminescence",
+      "textiles_cordage",
+      "weaving_thatch_paper"
+    ]
+  },
+  {
+    "biome": "arachnoids",
+    "file": "biomes/arachnoids/src/50-biome-arach-species.js",
+    "key": "columnarpine",
+    "name": "Basalt-Claw Ledge Pine",
+    "harvest": {
+      "wood": "timber, resin",
+      "edible": "['ledge pinyon nut']",
+      "medicinal": true,
+      "notes": "Resinous rot-proof bridge-deck planking and pitch torches.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": true,
+    "is_fuel": true,
+    "is_reagent": false,
+    "is_edible": true,
+    "misc_domains": [
+      "adhesives_resins",
+      "woodcraft_weapons"
+    ]
+  },
+  {
+    "biome": "arachnoids",
+    "file": "biomes/arachnoids/src/50-biome-arach-species.js",
+    "key": "dikeclaw",
+    "name": "Hex-Joint Cliff Lithophyte",
+    "harvest": {
+      "wood": "none",
+      "edible": "['nectar spike']",
+      "medicinal": false,
+      "notes": "Crushed carmine bracts yield fast gorge-red silk dye; rosette tanks hold clean drinking water on sheer climbs.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": true,
+    "misc_domains": [
+      "dyes_pigments",
+      "textiles_cordage",
+      "water_reservoir"
+    ]
+  },
+  {
+    "biome": "arachnoids",
+    "file": "biomes/arachnoids/src/50-biome-arach-species.js",
+    "key": "frostcushion",
+    "name": "Vitrophyre Glass-Wort Cushion",
+    "harvest": {
+      "wood": "fuel",
+      "edible": "[]",
+      "medicinal": true,
+      "notes": "Dried resinous turf blocks burned on treeless alpine portages; febrifuge tea.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": true,
+    "is_fuel": true,
+    "is_reagent": false,
+    "is_edible": true,
+    "misc_domains": []
+  },
+  {
+    "biome": "arachnoids",
+    "file": "biomes/arachnoids/src/50-biome-arach-species.js",
+    "key": "fumarolefern",
+    "name": "Steam-Plume Tree-Fern",
+    "harvest": {
+      "wood": "none",
+      "edible": "['steamed crosier pith']",
+      "medicinal": true,
+      "notes": "Silica-rich trunk fibre braided into heat-proof tongs by Hum sulfur and placer crews; mucilage salve for steam burns.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": true,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": true,
+    "misc_domains": [
+      "textiles_cordage"
+    ]
+  },
+  {
+    "biome": "arachnoids",
+    "file": "biomes/arachnoids/src/50-biome-arach-species.js",
+    "key": "gorgehemlock",
+    "name": "Mist-Slot Gorge Hemlock",
+    "harvest": {
+      "wood": "timber, tannin",
+      "edible": "[]",
+      "medicinal": false,
+      "notes": "Straight gorge-bridge stringer timber and tannin-rich bark for curing silk-rigging leather.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": [
+      "tannins_leather",
+      "textiles_cordage",
+      "woodcraft_weapons"
+    ]
+  },
+  {
+    "biome": "arachnoids",
+    "file": "biomes/arachnoids/src/50-biome-arach-species.js",
+    "key": "ledgeoak",
+    "name": "Colonnade Evergreen Canyon Oak",
+    "harvest": {
+      "wood": "timber, fuel",
+      "edible": "['canyon acorn']",
+      "medicinal": false,
+      "notes": "Hard pulley-block and capstan-pawls heartwood; leached sweet acorns.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": true,
+    "is_reagent": false,
+    "is_edible": true,
+    "misc_domains": [
+      "woodcraft_weapons"
+    ]
+  },
+  {
+    "biome": "arachnoids",
+    "file": "biomes/arachnoids/src/50-biome-arach-species.js",
+    "key": "rimkrummholz",
+    "name": "Updraft-Flagged Rim Pine-Juniper",
+    "harvest": {
+      "wood": "fuel",
+      "edible": "['rime-berry']",
+      "medicinal": true,
+      "notes": "Dense twisted root-wood burned in high-pass cairn braziers; aromatic juniper-like berries.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": true,
+    "is_fuel": true,
+    "is_reagent": false,
+    "is_edible": true,
+    "misc_domains": []
+  },
+  {
+    "biome": "arachnoids",
+    "file": "biomes/arachnoids/src/50-biome-arach-species.js",
+    "key": "sintermat",
+    "name": "Thermophilic Sinter-Cushion",
+    "harvest": {
+      "wood": "none",
+      "edible": "[]",
+      "medicinal": true,
+      "notes": "Dried ochre-orange mineral crust ground for antiseptic poultices and warm saffron-ochre pottery slip.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": true,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": [
+      "dyes_pigments"
+    ]
+  },
+  {
+    "biome": "arachnoids",
+    "file": "biomes/arachnoids/src/50-biome-arach-species.js",
+    "key": "webanchorvine",
+    "name": "Gum-Pad Chasm Creeper",
+    "harvest": {
+      "wood": "cordage",
+      "edible": "[]",
+      "medicinal": false,
+      "notes": "Boiled adhesive pads yield waterproof caulking pitch for Hum river-barges and cable bindings.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": [
+      "adhesives_resins",
+      "textiles_cordage"
+    ]
+  },
+  {
     "biome": "arch",
     "file": "biomes/arch/src/50-biome-arch-species.js",
     "key": "acidfelt",
@@ -780,6 +1018,311 @@
     "misc_domains": []
   },
   {
+    "biome": "compasshills",
+    "file": "biomes/compasshills/src/50-biome-compass-species.js",
+    "key": "compassbush",
+    "name": "Flux-Leaf Compass-Shrub",
+    "harvest": {
+      "wood": "fuel",
+      "edible": "[]",
+      "medicinal": true,
+      "notes": "Aromatic mastic-like resin chewed by delvers; calcined iron-rich leaf ash ground into fine magnetic-ink pigment and reagent.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": true,
+    "is_fuel": true,
+    "is_reagent": true,
+    "is_edible": false,
+    "misc_domains": [
+      "adhesives_resins",
+      "dyes_pigments"
+    ]
+  },
+  {
+    "biome": "compasshills",
+    "file": "biomes/compasshills/src/50-biome-compass-species.js",
+    "key": "corkoak",
+    "name": "Cuesta Cork and Pubescent Oak",
+    "harvest": {
+      "wood": "timber, tannin",
+      "edible": "['roasted acorn']",
+      "medicinal": false,
+      "notes": "Thick insulating outer cork stripped for non-magnetic tool sheaths, floats, and tanbark.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": true,
+    "misc_domains": [
+      "tannins_leather",
+      "woodcraft_weapons"
+    ]
+  },
+  {
+    "biome": "compasshills",
+    "file": "biomes/compasshills/src/50-biome-compass-species.js",
+    "key": "cuestajuniper",
+    "name": "Red-Berry Cuesta Juniper",
+    "harvest": {
+      "wood": "carving, fuel",
+      "edible": "['juniper berry']",
+      "medicinal": true,
+      "notes": "Fragrant rot-proof survey-stake wood and spiced berry extract.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": true,
+    "is_fuel": true,
+    "is_reagent": true,
+    "is_edible": true,
+    "misc_domains": [
+      "woodcraft_weapons"
+    ]
+  },
+  {
+    "biome": "compasshills",
+    "file": "biomes/compasshills/src/50-biome-compass-species.js",
+    "key": "ferrotuft",
+    "name": "Tor-Edge Ferro-Moss",
+    "harvest": {
+      "wood": "none",
+      "edible": "[]",
+      "medicinal": false,
+      "notes": "Brushed with tin-bronze combs to harvest pure single-domain magnetite sand for hourglasses and compass fluid reagent.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": true,
+    "is_edible": false,
+    "misc_domains": []
+  },
+  {
+    "biome": "compasshills",
+    "file": "biomes/compasshills/src/50-biome-compass-species.js",
+    "key": "fluxgrass",
+    "name": "Magnetite-Awn Plume-Grass",
+    "harvest": {
+      "wood": "thatch, weaving, padding",
+      "edible": "[]",
+      "medicinal": false,
+      "notes": "Woven into non-static cushioned baskets for carrying raw lodestones and salvaged Ancient superconductors.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": [
+      "textiles_cordage",
+      "weaving_thatch_paper"
+    ]
+  },
+  {
+    "biome": "compasshills",
+    "file": "biomes/compasshills/src/50-biome-compass-species.js",
+    "key": "fluxlichen",
+    "name": "Isogauss Stripe-Lichen",
+    "harvest": {
+      "wood": "none",
+      "edible": "[]",
+      "medicinal": false,
+      "notes": "Scraped for rust-gold and gunmetal wool dye; prospectors read tight isogauss ring spacing as a high-grade lodestone ore indicator.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": [
+      "dyes_pigments",
+      "metallophytes_mining"
+    ]
+  },
+  {
+    "biome": "compasshills",
+    "file": "biomes/compasshills/src/50-biome-compass-species.js",
+    "key": "gorgeplane",
+    "name": "Web-Cleaver Riparian Plane",
+    "harvest": {
+      "wood": "timber, carving",
+      "edible": "[]",
+      "medicinal": false,
+      "notes": "Tough cross-grained ferry-deck planking and bronze-capstan blocks along Ham-Tsek.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": true,
+    "misc_domains": [
+      "woodcraft_weapons"
+    ]
+  },
+  {
+    "biome": "compasshills",
+    "file": "biomes/compasshills/src/50-biome-compass-species.js",
+    "key": "ironpistache",
+    "name": "Cuesta Terebinth Iron-Pistache",
+    "harvest": {
+      "wood": "timber, carving",
+      "edible": "['pistache nut']",
+      "medicinal": true,
+      "notes": "Hard non-sparking mallet and wedge handle timber prized inside Lodestone cryo-tunnels; turpentine resin.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": true,
+    "is_fuel": true,
+    "is_reagent": false,
+    "is_edible": true,
+    "misc_domains": [
+      "adhesives_resins",
+      "woodcraft_weapons"
+    ]
+  },
+  {
+    "biome": "compasshills",
+    "file": "biomes/compasshills/src/50-biome-compass-species.js",
+    "key": "lodestonespire",
+    "name": "Fulgurite-Veined Magnetite Crag",
+    "harvest": {
+      "wood": "none",
+      "edible": "[]",
+      "medicinal": false,
+      "notes": "Split with non-sparking tin-bronze plug-and-feather wedges into Krator natural permanent magnets; lightning marker.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": [
+      "bioluminescence",
+      "chronometer_marker"
+    ]
+  },
+  {
+    "biome": "compasshills",
+    "file": "biomes/compasshills/src/50-biome-compass-species.js",
+    "key": "macchiasage",
+    "name": "Rosemary and Cuesta Bunchgrass Macchia",
+    "harvest": {
+      "wood": "fuel, thatch",
+      "edible": "['rosemary herb']",
+      "medicinal": true,
+      "notes": "Distilled essential oil rub and dry kindling tinder.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": true,
+    "is_fuel": true,
+    "is_reagent": false,
+    "is_edible": true,
+    "misc_domains": [
+      "weaving_thatch_paper"
+    ]
+  },
+  {
+    "biome": "compasshills",
+    "file": "biomes/compasshills/src/50-biome-compass-species.js",
+    "key": "saffroncrocus",
+    "name": "Cuesta Autumn Saffron",
+    "harvest": {
+      "wood": "none",
+      "edible": "['saffron stigma']",
+      "medicinal": true,
+      "notes": "Hand-plucked crimson stigmas traded down Ham-Tsek as high-value golden dye and spice.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": true,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": true,
+    "misc_domains": [
+      "dyes_pigments"
+    ]
+  },
+  {
+    "biome": "compasshills",
+    "file": "biomes/compasshills/src/50-biome-compass-species.js",
+    "key": "silkmulberry",
+    "name": "Ham-Tsek White Mulberry",
+    "harvest": {
+      "wood": "carving, bast",
+      "edible": "['mulberry']",
+      "medicinal": false,
+      "notes": "Tender leaves feed silk-moth broods along the Spider Lake to Korona silk road; fibrous inner bast paper.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": true,
+    "misc_domains": [
+      "dyes_pigments",
+      "textiles_cordage",
+      "weaving_thatch_paper",
+      "woodcraft_weapons"
+    ]
+  },
+  {
+    "biome": "compasshills",
+    "file": "biomes/compasshills/src/50-biome-compass-species.js",
+    "key": "stonepine",
+    "name": "Umbrella Cuesta Stone Pine",
+    "harvest": {
+      "wood": "timber, resin",
+      "edible": "['pine nut']",
+      "medicinal": false,
+      "notes": "Straight structural timber for river barges and oil-rich edible pine kernels.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": true,
+    "is_reagent": false,
+    "is_edible": true,
+    "misc_domains": [
+      "adhesives_resins",
+      "woodcraft_weapons"
+    ]
+  },
+  {
+    "biome": "compasshills",
+    "file": "biomes/compasshills/src/50-biome-compass-species.js",
+    "key": "whorlolive",
+    "name": "Wild Cuesta Whorl-Olive",
+    "harvest": {
+      "wood": "carving, fuel",
+      "edible": "['whorl-olive']",
+      "medicinal": true,
+      "notes": "Pressed for golden culinary and lamp oil, soap, and tunnel-leather dressing.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": true,
+    "is_fuel": true,
+    "is_reagent": false,
+    "is_edible": true,
+    "misc_domains": [
+      "bioluminescence",
+      "hygiene_sunscreen",
+      "tannins_leather",
+      "woodcraft_weapons"
+    ]
+  },
+  {
     "biome": "crater-drylands",
     "file": "biomes/crater-drylands/src/50-biome-craterdry-species.js",
     "key": "broom",
@@ -1277,6 +1820,510 @@
     ]
   },
   {
+    "biome": "crook",
+    "file": "biomes/crook/src/50-biome-crook-species.js",
+    "key": "basaltchimney",
+    "name": "Lithistid Basalt Chimney-Sponge",
+    "harvest": {
+      "wood": "none",
+      "edible": "[]",
+      "medicinal": false,
+      "notes": "Ground siliceous desma-grit used as abrasive paste for nephrite wire saws; alchemical reagent.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": true,
+    "is_edible": false,
+    "misc_domains": []
+  },
+  {
+    "biome": "crook",
+    "file": "biomes/crook/src/50-biome-crook-species.js",
+    "key": "bigleafmaple",
+    "name": "Moss-Sleeved Bigleaf Maple",
+    "harvest": {
+      "wood": "timber, carving",
+      "edible": "['maple sap']",
+      "medicinal": false,
+      "notes": "Close-grained paddle and lute wood; spring sap boiled to syrup.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": true,
+    "misc_domains": [
+      "adhesives_resins",
+      "woodcraft_weapons"
+    ]
+  },
+  {
+    "biome": "crook",
+    "file": "biomes/crook/src/50-biome-crook-species.js",
+    "key": "canopycup",
+    "name": "Celadon Canopy Cup-Sponge",
+    "harvest": {
+      "wood": "none",
+      "edible": "[]",
+      "medicinal": true,
+      "notes": "Soft sterile rainwater sponge harvested from windfall limbs for surgical dressing.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": true,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": [
+      "hygiene_sunscreen"
+    ]
+  },
+  {
+    "biome": "crook",
+    "file": "biomes/crook/src/50-biome-crook-species.js",
+    "key": "chamberbamboo",
+    "name": "Wind-Tuned Chambered Canyon Bamboo",
+    "harvest": {
+      "wood": "weaving, cordage, instrument",
+      "edible": "['bamboo shoot']",
+      "medicinal": false,
+      "notes": "Seasoned holed culms cut for chasm-wind warning pipes, flume horns, and light scaffold poles.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": true,
+    "misc_domains": [
+      "bioluminescence",
+      "textiles_cordage",
+      "weaving_thatch_paper",
+      "woodcraft_weapons"
+    ]
+  },
+  {
+    "biome": "crook",
+    "file": "biomes/crook/src/50-biome-crook-species.js",
+    "key": "cloudtreefern",
+    "name": "Fiordland Plume Tree-Fern",
+    "harvest": {
+      "wood": "none",
+      "edible": "['fiddlehead','steamed pith']",
+      "medicinal": false,
+      "notes": "Fibrous trunk slabs line root-storage pits.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": true,
+    "misc_domains": []
+  },
+  {
+    "biome": "crook",
+    "file": "biomes/crook/src/50-biome-crook-species.js",
+    "key": "coastspruce",
+    "name": "Crookshore Sitka Spruce",
+    "harvest": {
+      "wood": "timber",
+      "edible": "['spruce tip']",
+      "medicinal": true,
+      "notes": "High strength-to-weight mast and spar timber; antiscorbutic young shoots and pitch resin.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": true,
+    "is_fuel": true,
+    "is_reagent": false,
+    "is_edible": true,
+    "misc_domains": [
+      "adhesives_resins",
+      "woodcraft_weapons"
+    ]
+  },
+  {
+    "biome": "crook",
+    "file": "biomes/crook/src/50-biome-crook-species.js",
+    "key": "cryosnow",
+    "name": "Malachite-Teal Cryo-Snow Algae",
+    "harvest": {
+      "wood": "none",
+      "edible": "[]",
+      "medicinal": false,
+      "notes": "Visual snow-streak indicator of copper-dust plumes downwind of Copper Glacier.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": [
+      "metallophytes_mining"
+    ]
+  },
+  {
+    "biome": "crook",
+    "file": "biomes/crook/src/50-biome-crook-species.js",
+    "key": "devilsclub",
+    "name": "Thorny Gorge-Panax",
+    "harvest": {
+      "wood": "none",
+      "edible": "[]",
+      "medicinal": true,
+      "notes": "Peeled root-bark prized by Hueru-Kuran and Dzagh-Vardzi healers as a wound poultice and fever remedy.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": true,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": []
+  },
+  {
+    "biome": "crook",
+    "file": "biomes/crook/src/50-biome-crook-species.js",
+    "key": "frostsedge",
+    "name": "Spun Frost-Glass Silica Sedge",
+    "harvest": {
+      "wood": "thatch, fuel",
+      "edible": "[]",
+      "medicinal": false,
+      "notes": "Silica-stiffened tussocks gathered as dry spark-tinder and pot-scourers.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": true,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": [
+      "weaving_thatch_paper"
+    ]
+  },
+  {
+    "biome": "crook",
+    "file": "biomes/crook/src/50-biome-crook-species.js",
+    "key": "furlarch",
+    "name": "Subalpine Krummholz Larch",
+    "harvest": {
+      "wood": "timber, tannin",
+      "edible": "[]",
+      "medicinal": false,
+      "notes": "Tough rot-resistant snow-stake timber and tanbark.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": [
+      "tannins_leather",
+      "woodcraft_weapons"
+    ]
+  },
+  {
+    "biome": "crook",
+    "file": "biomes/crook/src/50-biome-crook-species.js",
+    "key": "gorgerhodo",
+    "name": "Chasm Rhododendron",
+    "harvest": {
+      "wood": "fuel, carving",
+      "edible": "[]",
+      "medicinal": false,
+      "notes": "Dense tool-handle wood; spring blossoms yield cliff-honey.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": true,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": [
+      "woodcraft_weapons"
+    ]
+  },
+  {
+    "biome": "crook",
+    "file": "biomes/crook/src/50-biome-crook-species.js",
+    "key": "hearthring",
+    "name": "Thermogenic Hearth-Ring Rosette",
+    "harvest": {
+      "wood": "none",
+      "edible": "['roasted starch-taproot']",
+      "medicinal": true,
+      "notes": "Autumn-dug starch taproot dried by mountain drovers; warm bracts bound over frostbitten fingers.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": true,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": true,
+    "misc_domains": []
+  },
+  {
+    "biome": "crook",
+    "file": "biomes/crook/src/50-biome-crook-species.js",
+    "key": "jadeequisetum",
+    "name": "Opalescent Canyon Horsetail",
+    "harvest": {
+      "wood": "none",
+      "edible": "[]",
+      "medicinal": false,
+      "notes": "Silica-ribbed stems bundled by Vardzieti smiths and jade-carvers for satin polishing.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": []
+  },
+  {
+    "biome": "crook",
+    "file": "biomes/crook/src/50-biome-crook-species.js",
+    "key": "malachitecushion",
+    "name": "Malachite-Rind Cushion-Heath",
+    "harvest": {
+      "wood": "fuel",
+      "edible": "[]",
+      "medicinal": false,
+      "notes": "Dried copper-crusted domes burn with a bright emerald-green flame in high-pass cairn beacons; copper indicator.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": true,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": [
+      "metallophytes_mining"
+    ]
+  },
+  {
+    "biome": "crook",
+    "file": "biomes/crook/src/50-biome-crook-species.js",
+    "key": "morainesedge",
+    "name": "Montane Sword-Fern and Tarn Tuft-Sedge",
+    "harvest": {
+      "wood": "thatch, weaving",
+      "edible": "[]",
+      "medicinal": false,
+      "notes": "Dried boot-insulation hay, basketry sedge, and pack-saddle stuffing.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": [
+      "hygiene_sunscreen",
+      "textiles_cordage",
+      "weaving_thatch_paper"
+    ]
+  },
+  {
+    "biome": "crook",
+    "file": "biomes/crook/src/50-biome-crook-species.js",
+    "key": "redcypress",
+    "name": "Benihi Cloud Red-Cypress",
+    "harvest": {
+      "wood": "timber",
+      "edible": "[]",
+      "medicinal": true,
+      "notes": "Aromatic rot-proof benihi heartwood shot down mountain flumes for Hueru-Kuran and Ark-Fleet hulls; distilled leaf incense.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": true,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": [
+      "woodcraft_weapons"
+    ]
+  },
+  {
+    "biome": "crook",
+    "file": "biomes/crook/src/50-biome-crook-species.js",
+    "key": "rimstonemoss",
+    "name": "Iron-Jade Rimstone Step-Bryophyte",
+    "harvest": {
+      "wood": "none",
+      "edible": "[]",
+      "medicinal": false,
+      "notes": "Calc-iron sinter crust roasted into Venetian-red, yellow-ochre, and celadon fresco pigment dyes.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": [
+      "dyes_pigments"
+    ]
+  },
+  {
+    "biome": "crook",
+    "file": "biomes/crook/src/50-biome-crook-species.js",
+    "key": "rustcedar",
+    "name": "Burnished Skarn-Cedar",
+    "harvest": {
+      "wood": "timber",
+      "edible": "[]",
+      "medicinal": false,
+      "notes": "Iron-hard waterwheel-axle timber; shed metallic bark scales smelted as bio-ore indicator flux.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": true,
+    "is_edible": false,
+    "misc_domains": [
+      "metallophytes_mining",
+      "woodcraft_weapons"
+    ]
+  },
+  {
+    "biome": "crook",
+    "file": "biomes/crook/src/50-biome-crook-species.js",
+    "key": "seedchimney",
+    "name": "Bone-White Wind-Fluted Seed-Chimney",
+    "harvest": {
+      "wood": "fuel, instrument",
+      "edible": "['parched oily seed']",
+      "medicinal": false,
+      "notes": "Hollow bone-white stalks set on pass cairns as wind-flutes and Silent Vales hush boundary markers.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": true,
+    "is_reagent": false,
+    "is_edible": true,
+    "misc_domains": [
+      "chronometer_marker",
+      "woodcraft_weapons"
+    ]
+  },
+  {
+    "biome": "crook",
+    "file": "biomes/crook/src/50-biome-crook-species.js",
+    "key": "silverfir",
+    "name": "Vardzieti Silver Fir",
+    "harvest": {
+      "wood": "timber, resin",
+      "edible": "[]",
+      "medicinal": true,
+      "notes": "Straight flume-trestle timber and clear antiseptic blister resin.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": true,
+    "is_fuel": true,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": [
+      "adhesives_resins",
+      "woodcraft_weapons"
+    ]
+  },
+  {
+    "biome": "crook",
+    "file": "biomes/crook/src/50-biome-crook-species.js",
+    "key": "skarnfern",
+    "name": "Porcelain-Margin Jade-Fern",
+    "harvest": {
+      "wood": "none",
+      "edible": "[]",
+      "medicinal": false,
+      "notes": "Prospector indicator for nephrite-jade lenses; calcined fronds yield white porcelain-glaze flux reagent.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": true,
+    "is_edible": false,
+    "misc_domains": [
+      "metallophytes_mining"
+    ]
+  },
+  {
+    "biome": "crook",
+    "file": "biomes/crook/src/50-biome-crook-species.js",
+    "key": "spongebeard",
+    "name": "Amber Fog-Beard Sponge",
+    "harvest": {
+      "wood": "fiber, padding",
+      "edible": "[]",
+      "medicinal": false,
+      "notes": "Cured spongin felt used as shock-absorbing padding inside nephrite lamellar helmets.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": [
+      "textiles_cordage"
+    ]
+  },
+  {
+    "biome": "crook",
+    "file": "biomes/crook/src/50-biome-crook-species.js",
+    "key": "spraycushion",
+    "name": "Surf-Bench Cushion-Sponge",
+    "harvest": {
+      "wood": "none",
+      "edible": "[]",
+      "medicinal": true,
+      "notes": "Boiled elastic spongin core used for boat-bailing pads and wound sponges.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": true,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": []
+  },
+  {
+    "biome": "crook",
+    "file": "biomes/crook/src/50-biome-crook-species.js",
+    "key": "westernredcedar",
+    "name": "Cathedral Western Redcedar",
+    "harvest": {
+      "wood": "timber, cordage",
+      "edible": "[]",
+      "medicinal": false,
+      "notes": "Rot-proof hull planking and fibrous inner bast cordage.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": [
+      "textiles_cordage",
+      "woodcraft_weapons"
+    ]
+  },
+  {
     "biome": "cut",
     "file": "biomes/cut/src/50-biome-cut-species.js",
     "key": "circlelichen",
@@ -1377,6 +2424,789 @@
     "misc_domains": [
       "textiles_cordage",
       "weaving_thatch_paper"
+    ]
+  },
+  {
+    "biome": "doubledelta",
+    "file": "biomes/doubledelta/src/50-biome-ddelta-species.js",
+    "key": "bamboorice",
+    "name": "Delta Bamboo-Rice (Bambusa oryzoides)",
+    "harvest": {
+      "wood": "straw, thatch",
+      "edible": "['bamboo-rice grain','culm shoot']",
+      "medicinal": false,
+      "notes": "Harvested from seasonal skiffs at low water; primary wild grain of the delta.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": true,
+    "misc_domains": [
+      "weaving_thatch_paper"
+    ]
+  },
+  {
+    "biome": "doubledelta",
+    "file": "biomes/doubledelta/src/50-biome-ddelta-species.js",
+    "key": "bellowsreed",
+    "name": "Pneumatophore Bellows-Reed (Phragmites follis)",
+    "harvest": {
+      "wood": "thatch, weaving, fuel (dried reed)",
+      "edible": "['young shoot']",
+      "medicinal": false,
+      "notes": "Split culms woven into duck-blinds, skiff fenders, and floating mat-rafts.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": true,
+    "is_reagent": false,
+    "is_edible": true,
+    "misc_domains": [
+      "weaving_thatch_paper"
+    ]
+  },
+  {
+    "biome": "doubledelta",
+    "file": "biomes/doubledelta/src/50-biome-ddelta-species.js",
+    "key": "bluffbamboo",
+    "name": "Bluff Timber-Bamboo (Phyllostachys altus)",
+    "harvest": {
+      "wood": "poles, scaffolding, weaving",
+      "edible": "['bamboo shoot']",
+      "medicinal": false,
+      "notes": "Fast-regrowing poles for sacrificial delta sponge-racks and amber sluice-boxes.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": true,
+    "misc_domains": [
+      "hygiene_sunscreen",
+      "weaving_thatch_paper"
+    ]
+  },
+  {
+    "biome": "doubledelta",
+    "file": "biomes/doubledelta/src/50-biome-ddelta-species.js",
+    "key": "bluffcedar",
+    "name": "Ria Bluff Redcedar (Thuja riaensis)",
+    "harvest": {
+      "wood": "timber (rot-proof skiff planking, carving)",
+      "edible": "[]",
+      "medicinal": false,
+      "notes": "Light fragrant redcedar split for Ria Sound harvesting skiffs and h\u00f3rreo granary posts.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": [
+      "bioluminescence",
+      "woodcraft_weapons"
+    ]
+  },
+  {
+    "biome": "doubledelta",
+    "file": "biomes/doubledelta/src/50-biome-ddelta-species.js",
+    "key": "bluffcypress",
+    "name": "Headland Sea-Cypress (Cupressus litoralis)",
+    "harvest": {
+      "wood": "timber (slipway piles, chests)",
+      "edible": "[]",
+      "medicinal": true,
+      "notes": "Resinous water-resistant timber for lower bench slipway rails.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": true,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": [
+      "woodcraft_weapons"
+    ]
+  },
+  {
+    "biome": "doubledelta",
+    "file": "biomes/doubledelta/src/50-biome-ddelta-species.js",
+    "key": "bluffoak",
+    "name": "Maritime Bluff Oak (Quercus maritima)",
+    "harvest": {
+      "wood": "timber (ship frames, heavy joinery), firewood",
+      "edible": "['acorn']",
+      "medicinal": false,
+      "notes": "Dense bluff timber safely above the tsunami trimline; tanbark cures fishing nets.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": true,
+    "is_reagent": false,
+    "is_edible": true,
+    "misc_domains": [
+      "tannins_leather",
+      "woodcraft_weapons"
+    ]
+  },
+  {
+    "biome": "doubledelta",
+    "file": "biomes/doubledelta/src/50-biome-ddelta-species.js",
+    "key": "bluffpine",
+    "name": "Maritime Stone-Pine (Pinus maritima)",
+    "harvest": {
+      "wood": "timber (masts, spars), resin",
+      "edible": "['pine nut']",
+      "medicinal": false,
+      "notes": "Tapped for turpentine pitch blended with delta bitumen.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": true,
+    "is_reagent": false,
+    "is_edible": true,
+    "misc_domains": [
+      "adhesives_resins",
+      "woodcraft_weapons"
+    ]
+  },
+  {
+    "biome": "doubledelta",
+    "file": "biomes/doubledelta/src/50-biome-ddelta-species.js",
+    "key": "brainsponge",
+    "name": "Cushion Brain-Hummock (Spongilla labyrinthica)",
+    "harvest": {
+      "wood": "none",
+      "edible": "[]",
+      "medicinal": false,
+      "notes": "Dense elastic bath and hull-caulking sponge; upper chambers hold fresh rainwater.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": [
+      "adhesives_resins",
+      "hygiene_sunscreen"
+    ]
+  },
+  {
+    "biome": "doubledelta",
+    "file": "biomes/doubledelta/src/50-biome-ddelta-species.js",
+    "key": "brimreed",
+    "name": "Bitumen-Reed (Juncus bituminosus)",
+    "harvest": {
+      "wood": "fuel (resin-wicks)",
+      "edible": "[]",
+      "medicinal": false,
+      "notes": "Pith dipped in seep-bitumen makes waterproof storm-torches.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": true,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": [
+      "adhesives_resins",
+      "textiles_cordage"
+    ]
+  },
+  {
+    "biome": "doubledelta",
+    "file": "biomes/doubledelta/src/50-biome-ddelta-species.js",
+    "key": "chimneysponge",
+    "name": "Great Chimney-Sponge (Oscularia turris)",
+    "harvest": {
+      "wood": "none",
+      "edible": "[]",
+      "medicinal": true,
+      "notes": "Cut outer spongin-felt cured as surgical dressings, shock-absorbing brigandine padding, water filters, and reagent silica-ash.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": true,
+    "is_fuel": false,
+    "is_reagent": true,
+    "is_edible": false,
+    "misc_domains": [
+      "textiles_cordage"
+    ]
+  },
+  {
+    "biome": "doubledelta",
+    "file": "biomes/doubledelta/src/50-biome-ddelta-species.js",
+    "key": "driftwrack",
+    "name": "Tsunami Storm-Wrack and Driftwood",
+    "harvest": {
+      "wood": "timber (seasoned driftwood), fertiliser",
+      "edible": "['dried nori sheet']",
+      "medicinal": false,
+      "notes": "Tsunami-seasoned drift logs salvaged by skiff-crews; wineweed boiled for agar sizing.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": true,
+    "misc_domains": [
+      "woodcraft_weapons"
+    ]
+  },
+  {
+    "biome": "doubledelta",
+    "file": "biomes/doubledelta/src/50-biome-ddelta-species.js",
+    "key": "fensedge",
+    "name": "Brackish Tussock-Sedge (Carex aestuaria)",
+    "harvest": {
+      "wood": "thatch, matting",
+      "edible": "[]",
+      "medicinal": false,
+      "notes": "Plaited into resilient salt-proof kneeling mats and skiff cushions.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": [
+      "textiles_cordage",
+      "weaving_thatch_paper"
+    ]
+  },
+  {
+    "biome": "doubledelta",
+    "file": "biomes/doubledelta/src/50-biome-ddelta-species.js",
+    "key": "glassbasket",
+    "name": "Venus-Lattice Tower (Euplectella riaensis)",
+    "harvest": {
+      "wood": "none",
+      "edible": "[]",
+      "medicinal": false,
+      "notes": "Calcined spicule-glass cullet reagent for optical lantern glassmaking and fine polishing powder.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": true,
+    "is_edible": false,
+    "misc_domains": [
+      "bioluminescence",
+      "hygiene_sunscreen"
+    ]
+  },
+  {
+    "biome": "doubledelta",
+    "file": "biomes/doubledelta/src/50-biome-ddelta-species.js",
+    "key": "penshell",
+    "name": "Giant Sea-Byssus Fan-Mussel (Pinna aurata)",
+    "harvest": {
+      "wood": "none",
+      "edible": "['adductor meat']",
+      "medicinal": false,
+      "notes": "Combed golden holdfast beard spun into weightless iridescent Sea-Byssus silk cloth; nacreous shell inlay.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": true,
+    "misc_domains": [
+      "textiles_cordage"
+    ]
+  },
+  {
+    "biome": "doubledelta",
+    "file": "biomes/doubledelta/src/50-biome-ddelta-species.js",
+    "key": "riaamber",
+    "name": "Scoured Blue-Clay Ria-Amber Nodule (Succinum riaense)",
+    "harvest": {
+      "wood": "none",
+      "edible": "[]",
+      "medicinal": true,
+      "notes": "Golden and cherry fossil resin prized for electrostatic insulators, liquid-amber compasses, succinic varnish, and medicinal incense.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": true,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": [
+      "adhesives_resins"
+    ]
+  },
+  {
+    "biome": "doubledelta",
+    "file": "biomes/doubledelta/src/50-biome-ddelta-species.js",
+    "key": "seapen",
+    "name": "Calcified Feather Sea-Pen (Pennatula elastica)",
+    "harvest": {
+      "wood": "none",
+      "edible": "[]",
+      "medicinal": false,
+      "notes": "Dried calcified axial rods bundled into flexible fish-weir wattle and basket ribs.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": [
+      "weaving_thatch_paper"
+    ]
+  },
+  {
+    "biome": "doubledelta",
+    "file": "biomes/doubledelta/src/50-biome-ddelta-species.js",
+    "key": "snaphydroid",
+    "name": "Clap-Plume Hydroid (Aglaophenia mordax)",
+    "harvest": {
+      "wood": "none",
+      "edible": "[]",
+      "medicinal": true,
+      "notes": "Diluted nematocyst vinegar-wash used by Ria boatmen as a counter-irritant liniment.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": true,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": [
+      "dyes_pigments",
+      "hygiene_sunscreen"
+    ]
+  },
+  {
+    "biome": "doubledelta",
+    "file": "biomes/doubledelta/src/50-biome-ddelta-species.js",
+    "key": "tarfelt",
+    "name": "Rainbow Seep-Mat (Bituminaria iridescens)",
+    "harvest": {
+      "wood": "none",
+      "edible": "[]",
+      "medicinal": true,
+      "notes": "Scraped with bitumen pitch as antiseptic marine hull-caulking and waterproof boot salve.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": true,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": [
+      "adhesives_resins"
+    ]
+  },
+  {
+    "biome": "doubledelta",
+    "file": "biomes/doubledelta/src/50-biome-ddelta-species.js",
+    "key": "tetherpad",
+    "name": "Cable-Lotus (Nelumbo funis)",
+    "harvest": {
+      "wood": "none",
+      "edible": "['lotus-root','lotus-seed']",
+      "medicinal": true,
+      "notes": "Starchy rhizome dug in dry-season lows; astringent medicinal seed-head tea.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": true,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": true,
+    "misc_domains": []
+  },
+  {
+    "biome": "doubledelta",
+    "file": "biomes/doubledelta/src/50-biome-ddelta-species.js",
+    "key": "visoroyster",
+    "name": "Surge-Clamp Reef Oyster (Crassostrea librata)",
+    "harvest": {
+      "wood": "none",
+      "edible": "['oyster']",
+      "medicinal": false,
+      "notes": "Rich estuarine oyster meat; burnt shells yield high-purity hydraulic slaked lime mortar.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": true,
+    "misc_domains": []
+  },
+  {
+    "biome": "doubledelta",
+    "file": "biomes/doubledelta/src/50-biome-ddelta-species.js",
+    "key": "whippen",
+    "name": "Wire-Whip Sea-Pen (Funiculina flagellum)",
+    "harvest": {
+      "wood": "none",
+      "edible": "[]",
+      "medicinal": false,
+      "notes": "Tough gorgonin-lime cores twisted into rot-proof skiff painter cordage.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": [
+      "textiles_cordage"
+    ]
+  },
+  {
+    "biome": "doubledelta",
+    "file": "biomes/doubledelta/src/50-biome-ddelta-species.js",
+    "key": "wildrice",
+    "name": "Estuarine Wild-Rice (Zizania palustris var.)",
+    "harvest": {
+      "wood": "thatch",
+      "edible": "['wild-rice grain']",
+      "medicinal": false,
+      "notes": "Nutty black grain knocked directly into Ria Sound harvesting skiffs.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": true,
+    "misc_domains": [
+      "weaving_thatch_paper"
+    ]
+  },
+  {
+    "biome": "drownlands",
+    "file": "biomes/drownlands/src/50-biome-drown-species.js",
+    "key": "araucaria",
+    "name": "Refuge-Crown Candelabra Araucaria (Araucaria rulei)",
+    "harvest": {
+      "wood": "timber (straight mastwood), resin",
+      "edible": "[]",
+      "medicinal": false,
+      "notes": "Storm-safe refuge crown spar timber strictly above +48 m megatsunami trimline.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": true,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": [
+      "adhesives_resins",
+      "woodcraft_weapons"
+    ]
+  },
+  {
+    "biome": "drownlands",
+    "file": "biomes/drownlands/src/50-biome-drown-species.js",
+    "key": "brucitestack",
+    "name": "Intertidal Brucite-Aragonite Chimney",
+    "harvest": {
+      "wood": "none",
+      "edible": "[]",
+      "medicinal": true,
+      "notes": "Natural pH-11 pool water used by Ark-Wards to saponify whale-oil soap and degrease Paktong castings; soft brucite chalk reagent.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": true,
+    "is_fuel": false,
+    "is_reagent": true,
+    "is_edible": false,
+    "misc_domains": [
+      "hygiene_sunscreen"
+    ]
+  },
+  {
+    "biome": "drownlands",
+    "file": "biomes/drownlands/src/50-biome-drown-species.js",
+    "key": "gymnostoma",
+    "name": "Laterite Maquis She-Oak (Gymnostoma deplancheanum)",
+    "harvest": {
+      "wood": "fuel (dense, hot)",
+      "edible": "[]",
+      "medicinal": false,
+      "notes": "Hot-burning ironwood fuel; Frankia root nodules enrich laterite.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": true,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": []
+  },
+  {
+    "biome": "drownlands",
+    "file": "biomes/drownlands/src/50-biome-drown-species.js",
+    "key": "limeshelf",
+    "name": "Alkaliphile Brucite-Rim Shelf",
+    "harvest": {
+      "wood": "none",
+      "edible": "[]",
+      "medicinal": false,
+      "notes": "Calcined into pure slaked lime mortar and flux reagent.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": true,
+    "is_edible": false,
+    "misc_domains": []
+  },
+  {
+    "biome": "drownlands",
+    "file": "biomes/drownlands/src/50-biome-drown-species.js",
+    "key": "pycnandra",
+    "name": "Refuge Seve-Bleue Tree (Pycnandra acuminata)",
+    "harvest": {
+      "wood": "none",
+      "edible": "[]",
+      "medicinal": false,
+      "notes": "Tapped and calcined for 25% nickel bio-ore latex.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": [
+      "adhesives_resins",
+      "metallophytes_mining"
+    ]
+  },
+  {
+    "biome": "drownlands",
+    "file": "biomes/drownlands/src/50-biome-drown-species.js",
+    "key": "ribbonseagrass",
+    "name": "Shoal Eel-Meadow (Enhalus lata)",
+    "harvest": {
+      "wood": "thatch, weaving",
+      "edible": "['seagrass nut']",
+      "medicinal": false,
+      "notes": "Rot-resistant salt-hay insulation and woven catamaran deck-mats.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": true,
+    "misc_domains": [
+      "hygiene_sunscreen",
+      "weaving_thatch_paper"
+    ]
+  },
+  {
+    "biome": "drownlands",
+    "file": "biomes/drownlands/src/50-biome-drown-species.js",
+    "key": "seepcomb",
+    "name": "Hydrogen-Eating Seep Comb",
+    "harvest": {
+      "wood": "none",
+      "edible": "[]",
+      "medicinal": false,
+      "notes": "Prospector indicator marking H2-bearing serpentinization fault seeps.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": [
+      "metallophytes_mining"
+    ]
+  },
+  {
+    "biome": "drownlands",
+    "file": "biomes/drownlands/src/50-biome-drown-species.js",
+    "key": "shoalkelp",
+    "name": "Tethered Buoy-Kelp (Macrocystis ancoratum)",
+    "harvest": {
+      "wood": "none",
+      "edible": "['kelp blade']",
+      "medicinal": true,
+      "notes": "Burned for potash-iodine ash reagent and boiled with alkaline spring water into salt-lathering marine soap.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": true,
+    "is_fuel": false,
+    "is_reagent": true,
+    "is_edible": true,
+    "misc_domains": [
+      "hygiene_sunscreen"
+    ]
+  },
+  {
+    "biome": "drownlands",
+    "file": "biomes/drownlands/src/50-biome-drown-species.js",
+    "key": "snaggrove",
+    "name": "Salt-Petrified Drowned Tsunami Snag",
+    "harvest": {
+      "wood": "timber (borer-proof iron-hard keel wood)",
+      "edible": "['visor oyster']",
+      "medicinal": false,
+      "notes": "Winched up by cFlit-qBon divers as rock-hard, borer-proof keel and rudder-post timber.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": true,
+    "misc_domains": [
+      "woodcraft_weapons"
+    ]
+  },
+  {
+    "biome": "drownlands",
+    "file": "biomes/drownlands/src/50-biome-drown-species.js",
+    "key": "spongecoral",
+    "name": "Ochre-Turquoise Shoal Bioherm (Spongocorallum aestuarium)",
+    "harvest": {
+      "wood": "none",
+      "edible": "[]",
+      "medicinal": true,
+      "notes": "Elastic hull-caulking sponge and calcined lime-silica flux reagent.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": true,
+    "is_fuel": false,
+    "is_reagent": true,
+    "is_edible": false,
+    "misc_domains": [
+      "adhesives_resins",
+      "hygiene_sunscreen"
+    ]
+  },
+  {
+    "biome": "drownlands",
+    "file": "biomes/drownlands/src/50-biome-drown-species.js",
+    "key": "stormwrack",
+    "name": "Tsunami Crimson Storm-Wrack",
+    "harvest": {
+      "wood": "timber (seasoned driftwood)",
+      "edible": "['dried wrack sheet']",
+      "medicinal": false,
+      "notes": "Tsunami-seasoned Crookshore drift logs salvaged at harvest booms; crimson wrack boiled for agar sizing.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": true,
+    "misc_domains": [
+      "woodcraft_weapons"
+    ]
+  },
+  {
+    "biome": "drownlands",
+    "file": "biomes/drownlands/src/50-biome-drown-species.js",
+    "key": "tealcoppice",
+    "name": "Blue-Bleed Skerry Scrub (Pycnandra thalassia)",
+    "harvest": {
+      "wood": "fuel",
+      "edible": "[]",
+      "medicinal": false,
+      "notes": "Harvested on 3-year coppice rotation and calcined with local coal into rich green nickel-oxide bio-ore ash.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": true,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": [
+      "metallophytes_mining"
+    ]
+  },
+  {
+    "biome": "drownlands",
+    "file": "biomes/drownlands/src/50-biome-drown-species.js",
+    "key": "tidefan",
+    "name": "Flexible Gorgonian Shoal-Fan (Subergorgia elastica)",
+    "harvest": {
+      "wood": "weaving",
+      "edible": "[]",
+      "medicinal": false,
+      "notes": "Tough horny axial skeletons dried for rot-proof fish-trap screens and basket ribs.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": [
+      "weaving_thatch_paper"
+    ]
+  },
+  {
+    "biome": "drownlands",
+    "file": "biomes/drownlands/src/50-biome-drown-species.js",
+    "key": "verdigris",
+    "name": "Nickel-Crust Verdigris Cap",
+    "harvest": {
+      "wood": "none",
+      "edible": "[]",
+      "medicinal": false,
+      "notes": "Calcined into 15% nickel bio-ore ash.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": [
+      "metallophytes_mining"
+    ]
+  },
+  {
+    "biome": "drownlands",
+    "file": "biomes/drownlands/src/50-biome-drown-species.js",
+    "key": "verdigrismangrove",
+    "name": "Teal-Sap Prop-Wood (Rhizophora pycnandroides)",
+    "harvest": {
+      "wood": "timber (worm-proof ship-knees), fuel",
+      "edible": "[]",
+      "medicinal": true,
+      "notes": "Worm-proof boat knees; coppiced limbs burned by cFlit-qBon into 18-24% nickel bio-ore ash for Paktong smelting.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": true,
+    "is_fuel": true,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": [
+      "metallophytes_mining",
+      "woodcraft_weapons"
     ]
   },
   {
@@ -13044,6 +14874,265 @@
     "is_reagent": false,
     "is_edible": true,
     "misc_domains": []
+  },
+  {
+    "biome": "spiderlake",
+    "file": "biomes/spiderlake/src/50-biome-spider-species.js",
+    "key": "ambermulberry",
+    "name": "Nectar Amber-Mulberry (Morus chrysophaea)",
+    "harvest": {
+      "wood": "timber, weaving",
+      "edible": "['amber mulberry']",
+      "medicinal": false,
+      "notes": "Sweet berries; inner bast beaten into crisp treaty-parchment stitched with gossamer.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": true,
+    "misc_domains": [
+      "textiles_cordage",
+      "weaving_thatch_paper",
+      "woodcraft_weapons"
+    ]
+  },
+  {
+    "biome": "spiderlake",
+    "file": "biomes/spiderlake/src/50-biome-spider-species.js",
+    "key": "bridgecurtain",
+    "name": "Golden Dragline Bridge-Curtain (Arachneapolita span work)",
+    "harvest": {
+      "wood": "cordage",
+      "edible": "[]",
+      "medicinal": false,
+      "notes": "Outer structural cables harvested rotationally without harming spiders as 1.3 GPa Golden Cable rigging.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": [
+      "textiles_cordage"
+    ]
+  },
+  {
+    "biome": "spiderlake",
+    "file": "biomes/spiderlake/src/50-biome-spider-species.js",
+    "key": "broodpavilion",
+    "name": "Communal Silk Brood-Pavilion and Fen Air-Bell (Arachneapolita nest dome)",
+    "harvest": {
+      "wood": "fiber, padding",
+      "edible": "[]",
+      "medicinal": true,
+      "notes": "Shed seasonal outer weather-shells carded into waterproof Cloud-Fleece parkas and sterile surgical dressings.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": true,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": [
+      "textiles_cordage"
+    ]
+  },
+  {
+    "biome": "spiderlake",
+    "file": "biomes/spiderlake/src/50-biome-spider-species.js",
+    "key": "chinkapinoak",
+    "name": "Dolomite Chinkapin Oak (Quercus muehlenbergii)",
+    "harvest": {
+      "wood": "timber, tannin",
+      "edible": "['chinkapin acorn']",
+      "medicinal": false,
+      "notes": "Sweet roasted acorns; dense joinery timber and tanbark for skiff cordage.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": true,
+    "misc_domains": [
+      "tannins_leather",
+      "textiles_cordage",
+      "woodcraft_weapons"
+    ]
+  },
+  {
+    "biome": "spiderlake",
+    "file": "biomes/spiderlake/src/50-biome-spider-species.js",
+    "key": "crowncypress",
+    "name": "Buttressed Crown-Cypress (Taxodium coronatum)",
+    "harvest": {
+      "wood": "timber",
+      "edible": "[]",
+      "medicinal": false,
+      "notes": "Rot-proof littoral piling, skiff planking, and weir-dock timber.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": [
+      "woodcraft_weapons"
+    ]
+  },
+  {
+    "biome": "spiderlake",
+    "file": "biomes/spiderlake/src/50-biome-spider-species.js",
+    "key": "lakesmokesedge",
+    "name": "Lake-Smoke Tussock Sedge (Carex nebulosa)",
+    "harvest": {
+      "wood": "thatch, weaving",
+      "edible": "[]",
+      "medicinal": false,
+      "notes": "Woven into airy cocoon-drying baskets, skiff cushions, and reed mats.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": [
+      "weaving_thatch_paper"
+    ]
+  },
+  {
+    "biome": "spiderlake",
+    "file": "biomes/spiderlake/src/50-biome-spider-species.js",
+    "key": "porphyryfern",
+    "name": "Calming Smudge Cliff-Fern (Polypodium porphyriticum)",
+    "harvest": {
+      "wood": "none",
+      "edible": "[]",
+      "medicinal": true,
+      "notes": "Dried golden spore-fronds burned with bog-myrtle in silk-wright smudge-pots to calm colonies peacefully into brood-domes; alchemical reagent.",
+      "fruit": "reagent",
+      "reagent": "reagent"
+    },
+    "is_medicinal": true,
+    "is_fuel": false,
+    "is_reagent": true,
+    "is_edible": false,
+    "misc_domains": [
+      "textiles_cordage"
+    ]
+  },
+  {
+    "biome": "spiderlake",
+    "file": "biomes/spiderlake/src/50-biome-spider-species.js",
+    "key": "porphyrypine",
+    "name": "Porphyry Rim-Pine (Pinus porphyritica)",
+    "harvest": {
+      "wood": "timber, resin",
+      "edible": "['pine nut']",
+      "medicinal": false,
+      "notes": "Straight rampart spar timber and aromatic waterproof caulking pitch.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": true,
+    "is_reagent": false,
+    "is_edible": true,
+    "misc_domains": [
+      "adhesives_resins",
+      "woodcraft_weapons"
+    ]
+  },
+  {
+    "biome": "spiderlake",
+    "file": "biomes/spiderlake/src/50-biome-spider-species.js",
+    "key": "rampartgossamer",
+    "name": "Ballooning Spiderling Gossamer Skein",
+    "harvest": {
+      "wood": "fiber",
+      "edible": "[]",
+      "medicinal": false,
+      "notes": "Windfall ridge gossamer twisted into fine fly-fishing leaders and acoustic Hum harp strings.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": [
+      "textiles_cordage"
+    ]
+  },
+  {
+    "biome": "spiderlake",
+    "file": "biomes/spiderlake/src/50-biome-spider-species.js",
+    "key": "silkfenpitcher",
+    "name": "Snare-Mouth Fen Pitcher (Sarracenia sericea)",
+    "harvest": {
+      "wood": "none",
+      "edible": "[]",
+      "medicinal": true,
+      "notes": "Enzymatic pitcher fluid used as a mild spot-cleanser for raw gossamer bolts; alchemical reagent.",
+      "fruit": "reagent",
+      "reagent": "reagent"
+    },
+    "is_medicinal": true,
+    "is_fuel": false,
+    "is_reagent": true,
+    "is_edible": false,
+    "misc_domains": [
+      "hygiene_sunscreen"
+    ]
+  },
+  {
+    "biome": "spiderlake",
+    "file": "biomes/spiderlake/src/50-biome-spider-species.js",
+    "key": "spindlewillow",
+    "name": "Spindle-Willow (Salix arachnophila)",
+    "harvest": {
+      "wood": "weaving, cordage, fuel",
+      "edible": "[]",
+      "medicinal": true,
+      "notes": "Salicin-rich bark tea; supple pollard wands framed into removable silk-weir reels.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": true,
+    "is_fuel": true,
+    "is_reagent": false,
+    "is_edible": true,
+    "misc_domains": [
+      "textiles_cordage",
+      "weaving_thatch_paper"
+    ]
+  },
+  {
+    "biome": "spiderlake",
+    "file": "biomes/spiderlake/src/50-biome-spider-species.js",
+    "key": "weirframe_wild",
+    "name": "Tended Spindle-Weir Sheet (Symbiotic silk-on-frame)",
+    "harvest": {
+      "wood": "spinning, textile",
+      "edible": "[]",
+      "medicinal": false,
+      "notes": "Reeled every 6 days under 132 Hz Hum resonance and degummed in +38 C alkaline springs into iridescent Lake-Sheen Gossamer.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": [
+      "dyes_pigments",
+      "textiles_cordage"
+    ]
   },
   {
     "biome": "swbay",

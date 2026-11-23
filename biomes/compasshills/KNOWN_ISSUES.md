@@ -1,0 +1,7 @@
+# biomes/compasshills: known issues & planned follow-ups
+
+All production quality gates on `compasshills` (`dist/compasshills.html`, `dist/compasshills-tors.html`, `dist/compasshills-cuesta.html`, `dist/compasshills-gorge.html`) pass with `0` untextured meshes, `<= 12` active ground shader samplers (`< 15` survey ceiling), `0` coplanar decal z-fighting overlaps, `78–90%` Earthlike Mediterranean-continental woodland matrix share, `±12°` `compassbush` magnetic flux alignment, and `KSHADOW` off at load.
+
+## Planned future tie-ins (out of scope for the biome kit)
+- **Settlement & ruin builds (`Lodestone` `1058, 224` & `Ham-Tsek Silk Post` `1055, 219`):** Held clear as registered `KTAGS` `site:lodestone-arcology` (`superconductor` salvage reserve) and `site:ham-tsek-post` (`kits/spider-lake` silk-and-magnet river post) footprints with `0` buildings placed inside the biome kit.
+- **Bespoke material-library sets (`PLAN.md` §6.3):** Currently mapped onto genuine existing library sets (`rock.hematite.mirror`, `rock.gneiss.banded`, `rock.turquoise.vein`, `ground.sand.black`, `card.sage`, `rock.lichen.circles`, `organic.chitin.iridescent`, `metal.bronze`, `rock.schist.emerald`). When bespoke `rock.ironstone.banded`, `ground.sand.magnetite`, `card.shrub.compassleaf`, and `organic.lichen.isogauss` sets are added to `core/materials/library/`, swap their `"lib"` entries in `materials.json` and rerun `python3 tools/textures/pack.py biomes/compasshills`.

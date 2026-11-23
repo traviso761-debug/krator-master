@@ -1,0 +1,52 @@
+{
+ "edit": "5.1 edit 21 (Farside & Farport seaward extension + Spear-Queen raid coast)",
+ "date": "2026-11-22",
+ "moved_cells": 7657,
+ "emerged_cells": 5376,
+ "emerged_km2": 21504,
+ "drowned_cells": 4,
+ "farport_old_px": [
+  294,
+  588
+ ],
+ "farport_new_px": [
+  248,
+  585
+ ],
+ "farport_new_elev_m": 212.0,
+ "harbour_new_px": [
+  243,
+  586
+ ],
+ "border_y515_width_km": 136.0,
+ "reclimate": {
+  "cells": 1292,
+  "class_changed": 1020,
+  "rain_mean_before_mm": 2865.0,
+  "rain_mean_after_mm": 2602.0,
+  "classes_now": {
+   "Af": 435,
+   "Am": 105,
+   "Cwa": 284,
+   "Cfa": 458,
+   "WS": 10
+  }
+ },
+ "extended_rivers": [
+  "r002",
+  "r061",
+  "r120",
+  "r175",
+  "r113",
+  "r089",
+  "r078",
+  "r234",
+  "r196",
+  "r148",
+  "r130"
+ ],
+ "new_rivers": [
+  9134,
+  9135
+ ]
+}

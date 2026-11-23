@@ -442,6 +442,67 @@
    "water_m": -1500.0,
    "role": "light",
    "note": "An islet in Voth's water (light), 17 m over it. Sub-cell; its cell keeps the page's bed. edit_513, 2026-11-11 (openworld/PLAN-VOTH.md V1)."
+  },
+  {
+   "id": "lf_crook_eye",
+   "kind": "drowned_ejecta_caldera",
+   "px": 104.0,
+   "py": 562.0,
+   "r_m": 4800,
+   "rim_m": 142.0,
+   "floor_m": -65.0,
+   "water_m": 0.0,
+   "region": "rmw4wknusgc7h",
+   "note": "Northernmost drowned secondary-ejecta sentry caldera (~9.6 km water bowl, -65 m floor, +142 m basalt collar) breached WNW toward Steaming Seamounts."
+  },
+  {
+   "id": "lf_crook_kopa_north",
+   "kind": "drowned_ejecta_caldera",
+   "px": 89.0,
+   "py": 604.0,
+   "r_m": 6200,
+   "rim_m": 158.0,
+   "floor_m": -95.0,
+   "water_m": 0.0,
+   "region": "rmw4wknusgc7h",
+   "note": "Northern whale-slipway drowned ejecta caldera (~12.4 km bowl, -95 m floor, +158 m rim), guarded across its seaward throat by a cyclopean basalt wave-splitter."
+  },
+  {
+   "id": "lf_crook_kopa_south",
+   "kind": "drowned_ejecta_caldera",
+   "px": 81.0,
+   "py": 677.0,
+   "r_m": 7200,
+   "rim_m": 168.0,
+   "floor_m": -110.0,
+   "water_m": 0.0,
+   "region": "rmw4wknusgc7h",
+   "note": "Enclosed deep calving and Hueru-Kuran Nuraghe haven (~14.4 km bowl, -110 m floor, +168 m basalt/tuff collar), breached north via the Kopa Strait into Kopa-North."
+  },
+  {
+   "id": "lf_crook_cascade_caldera",
+   "kind": "drowned_ejecta_caldera",
+   "px": 123.0,
+   "py": 659.0,
+   "r_m": 5400,
+   "rim_m": 148.0,
+   "floor_m": -80.0,
+   "water_m": 0.0,
+   "region": "rmw4wknusgc7h",
+   "note": "Drowned ejecta caldera at the mouth of Kopa-Tarn Warra (~10.8 km bowl, -80 m floor, +148 m rim); hub of Hueru-Kuran water-powered nephrite pendulum wire-saws."
+  },
+  {
+   "id": "lf_crook_kopa_splitter",
+   "kind": "wave_splitter_islet",
+   "px": 90.0,
+   "py": 599.8,
+   "r_m": 180.0,
+   "rx_m": 240.0,
+   "rz_m": 95.0,
+   "crest_m": 22.0,
+   "water_m": 0.0,
+   "region": "rmw4wknusgc7h",
+   "note": "Cyclopean prow-shaped columnar basalt wave-splitter across Kopa-North's 200 m seaward breach (CROOK-RIA-DECISIONS.md 1.1.3)."
   }
  ]
 }

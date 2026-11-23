@@ -16,15 +16,18 @@ tight alpha box) and its plants' bases (a single plant's from its meta.json `pro
 it to; a sheet's from card-bases.json beside the library, set by hand), reads which geometry draws each slot from the build's
 own src/ (the BIO.def line that names the slot's material), and reports, with the cut it proposes:
 
-  WHOLE SHEET    a sheet drawn whole on one card (no cell, no "sheet": "geometry"): a grid of plants on every card
-  CELL CUTS      a cell that cuts into its plant (a fragment of it: the old CELL ON ONE, a cell cut from a single plant)
-  CELL OFF GRID  a cell that holds no one plant of the sheet (it straddles two, or holds none)
-  LOOSE          a single plant drawn whole, or a cell much wider than its plant, on a geometry that holds it by one end: the
-                 margin hangs the plant away from its stem
-  NO BASE        a geometry that holds its plant by one end, and no "base": the plant is drawn sideways, upside down, or
-                 a copy a segment (the Rift's floating fern fronds, 2026-10-27)
-  BASE WRONG     a "base" other than the plant's
-  BASE UNKNOWN   a sheet's plant on such a geometry whose base is not in card-bases.json: look at the image and add it
+  WHOLE SHEET          a sheet drawn whole on one card (no cell, no "sheet": "geometry"): a grid of plants on every card
+  SHEET ON ONE         a single-plant card cut as a multi-cell sheet ("sheet": "geometry" or BIO.geo.cells): chops one plant into tiles
+  CROWN WITHOUT STEMS  a stemmed crown sheet in card-bases.json drawn on centred cells instead of BIO.geo.stemClump "stems"
+  STEM WRONG           a slot's "stems" reversed or displaced from the verified petiole in card-bases.json
+  CELL CUTS            a cell that cuts into its plant (a fragment of it: the old CELL ON ONE, a cell cut from a single plant)
+  CELL OFF GRID        a cell that holds no one plant of the sheet (it straddles two, or holds none)
+  LOOSE                a single plant drawn whole, or a cell much wider than its plant, on a geometry that holds it by one end: the
+                       margin hangs the plant away from its stem
+  NO BASE              a geometry that holds its plant by one end, and no "base": the plant is drawn sideways, upside down, or
+                       a copy a segment (the Rift's floating fern fronds, 2026-10-27)
+  BASE WRONG           a "base" other than the plant's
+  BASE UNKNOWN         a sheet's plant on such a geometry whose base is not in card-bases.json: look at the image and add it
 
   python3 tools/textures/check_cells.py                 every materials.json under biomes/, kits/, settlements/, openworld/
   python3 tools/textures/check_cells.py biomes/nhighlands [...]
@@ -53,7 +56,7 @@ ANCHOR = {'bottom': 'bottom', 'top': 'top', 'center': 'centre', 'centre': 'centr
 # the geometries the core declares (30-core-foliage.js, geo.userData.card): where each holds its plant, and whether a library
 # plant spans it once. 'sheet': cut into a sheet's cells (never turned); 'stem': a spray or leaf card on its own stem point
 # (31b-core-leafset.js, which places the image itself); 'flat': a mat or bloom seen from above or across (no end)
-GEO = [('cells', r'geo\.cells\(|\bSHEET\('), ('stem', r'geo\.spray\(|geo\.leafCard\(|stem\s*:'),
+GEO = [('cells', r'geo\.cells\(|\bSHEET\('), ('stem', r'geo\.spray\(|geo\.leafCard\(|geo\.stemClump\(|stem\s*:'),
        ('frond', r'geo\.frond\('), ('ribbon', r'geo\.ribbon\('), ('hang', r'geo\.hang\('), ('clump', r'geo\.clump\('),
        ('flat', r'geo\.mat\(|geo\.bloom\(')]
 HOLDS = {'frond': 'top', 'ribbon': 'top', 'hang': 'top', 'clump': 'top'}   # the edge of the uv that holds the plant
@@ -235,7 +238,7 @@ def plants(lib):
     return out
 
 
-def sprig(lib, box, stem=None, tip=None, upright=False):
+def sprig(lib, box, stem=None, tip=None, upright=False, edge=None):
     """a sprig's stem and long axis inside its box (image fractions, v down): {cell, stem, tip, w}. The stem point is where
     its twig or petiole ends: a pixel far from the sprig's mass where the alpha is thin (little of it within 12 px of 512)
     and woody (no greener than it is red), the farthest such; the long axis runs from it through the sprig's centre of
@@ -263,8 +266,16 @@ def sprig(lib, box, stem=None, tip=None, upright=False):
     d = np.hypot(*(P - c).T)
     dn = dens[ys, xs]
     woody = (rgb[ys, xs, 0] >= rgb[ys, xs, 1] - 6).astype(np.float32)
-    low = np.maximum(0, P[:, 1] - c[1]) / (d.max() or 1)   # library sprays are shot stem down: a tie goes to the lower end
-    score = d / (d.max() or 1) * (1 - dn) * (1 + woody) * (1 + .8 * low)
+    dm = d.max() or 1
+    if edge == 'top':
+        end_bias = np.maximum(0, c[1] - P[:, 1]) / dm
+    elif edge == 'left':
+        end_bias = np.maximum(0, c[0] - P[:, 0]) / dm
+    elif edge == 'right':
+        end_bias = np.maximum(0, P[:, 0] - c[0]) / dm
+    else:
+        end_bias = np.maximum(0, P[:, 1] - c[1]) / dm   # library sprays default stem down: a tie goes to the lower end
+    score = d / dm * (1 - dn) * (1 + woody) * (1 + .8 * end_bias)
     off = np.array([i0, j0])
     if upright and stem is None:   # a bush or tree standing on its base: the stem at the foot of its alpha, the axis straight up
         foot = P[P[:, 1] >= P[:, 1].max() - .04 * (P[:, 1].max() - P[:, 1].min())]
@@ -298,10 +309,11 @@ def sprigs(lib, k=3):
         return []
     hb = hand_bases().get(lib)
     if isinstance(hb, dict) and hb.get('stems'):   # by hand: [{cell or plant (its index), stem, tip}], widths measured
-        return [x for x in (sprig(lib, h['cell'] if 'cell' in h else ps[h['plant']]['box'], h.get('stem'), h.get('tip')) for h in hb['stems']) if x]
+        return [x for x in (sprig(lib, h['cell'] if 'cell' in h else ps[h['plant']]['box'], h.get('stem'), h.get('tip'),
+                                  edge=None if 'cell' in h else ps[h['plant']]['base']) for h in hb['stems']) if x]
     pick = [ps[0]] if len(ps) == 1 else [ps[0], ps[len(ps) // 2], ps[-1]][:k]
     up = (isinstance(hb, dict) and hb.get('upright')) or (len(ps) == 1 and ps[0]['base'] == 'bottom')
-    return [x for x in (sprig(lib, p['box'], upright=up) for p in pick) if x]
+    return [x for x in (sprig(lib, p['box'], upright=up, edge=p['base']) for p in pick) if x]
 
 
 def rise(lib):
@@ -386,10 +398,30 @@ def check_slot(slot, e, ks):
         return []
     out = []
     many = len(ps) > 1
+    hb = hand_bases().get(e['lib'])
+    if e.get('stems') and isinstance(hb, dict) and hb.get('stems'):
+        want_sp = sprigs(e['lib'])
+        bad_sp = False
+        for s in e['stems']:
+            sc, st, tp = s.get('cell'), s.get('stem'), s.get('tip')
+            if not (sc and st and tp):
+                continue
+            for w in want_sp:
+                if overlap(sc, w['cell']) > .5:
+                    dx0, dy0 = tp[0] - st[0], tp[1] - st[1]
+                    dx1, dy1 = w['tip'][0] - w['stem'][0], w['tip'][1] - w['stem'][1]
+                    dist = ((st[0] - w['stem'][0]) ** 2 + (st[1] - w['stem'][1]) ** 2) ** .5
+                    if dx0 * dx1 + dy0 * dy1 < 0 or dist > .16:
+                        bad_sp = True
+                        break
+            if bad_sp:
+                break
+        if bad_sp:
+            return [('STEM WRONG', 'stems reversed or >0.16 off verified petiole in card-bases.json',
+                     {'stems': want_sp, 'rise': rise(e['lib'])})]
     # a crown on the clump (2026-10-27, the owner: attach each sprig's stem to the twig, its leaves out along its long
     # axis): its sprigs held by their stems, BIO.geo.stemClump. A spray seen from above (one plant, centre) has no stem
     if 'clump' in ks and not ks & {'frond', 'ribbon', 'hang'}:
-        hb = hand_bases().get(e['lib'])
         stemmed = (many and hb != 'centre') or isinstance(hb, dict) or (ps[0]['base'] or 'centre') != 'centre'
         if e.get('stems'):
             return out
@@ -413,8 +445,14 @@ def check_slot(slot, e, ks):
                 out.append(('WHOLE SHEET', '%d plants, no cell (a crown: "sheet": "geometry" and BIO.geo.cells in the code)' % len(ps), None))
                 return out
         elif many:
+            if sheet_geo and isinstance(hb, dict) and hb.get('stems') and not (ks & {'flat'}):
+                out.append(('CROWN WITHOUT STEMS', 'stemmed sprig sheet in card-bases.json drawn on centred cells instead of stems',
+                            {'sheet': None, 'stems': sprigs(e['lib']), 'rise': rise(e['lib'])}))
             return out
         else:
+            if sheet_geo:
+                out.append(('SHEET ON ONE', '1 plant in image, cut as a multi-cell sheet', {'sheet': None, 'stems': sprigs(e['lib'])}))
+                return out
             plant = ps[0]
             b = plant['box']
             if one_end and max(b[0], b[1], 1 - b[2], 1 - b[3]) > .06:
