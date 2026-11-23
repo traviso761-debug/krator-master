@@ -4,12 +4,14 @@
   "build.py": {
    "inputs": {
     "biomes/crook/KNOWN_ISSUES.md": "3d47b6fdc8b66aefb478339ab6379a32b3887c1091205ec468f2fcd622f65e2b",
-    "biomes/crook/PORT.md": "1c9ea1c5d4837405e10438ceba18117bdfa23ff0999bf6a516cd0fe1aab23069",
-    "biomes/crook/build.py": "c1d2051f1e11538aec295237d81b4cd59ac3ab157acc2ef41bc3e9e2eee26e9a",
+    "biomes/crook/PORT.md": "9282e6258e405c3cd8b306dfef9008b99ad2fd9b7f5f3acb22a00555a6891ae2",
+    "biomes/crook/build.py": "a2589ff03a36d5eef39127e2e2b36b7537f574426cb2ddbb67611b10b5814972",
     "biomes/crook/src/00-head.html": "5f7307a12a024103a4fcb30950505b34330a4e9d6d55a7f3c624e5f9b536b882",
+    "biomes/crook/src/28-vstack-mipvar.js": "63d7b15d5cf17c4f2ef373f8efed1a13d95ebd9ac84945894591a1d9179295ac",
     "biomes/crook/src/40-biome-crook-phys.js": "e7b0e339076253deb6cb07b17b82f2729c467b97529450faada3bcc213733496",
     "biomes/crook/src/41-biome-crook-sites.js": "b5048835979a100f69a776ed62d2e05539b0cf618fda549b655e986734048a7d",
     "biomes/crook/src/45-host-stage.js": "8245934b305aaae2bf6c4ef34cb0e9091eedd0ea45b557a019f53c30fa62eb6a",
+    "biomes/crook/src/46-vstack.js": "2d4f78e3c10e6a3f8be6910f0d0a1a8e688945475f57d5e518986330e0d79f21",
     "biomes/crook/src/50-biome-crook-species.js": "7e873ed81c14ac5d726e07b4a5f8622f8bf863f09f23df81d8d80f9e86106d78",
     "biomes/crook/src/60-biome-crook-place.js": "4f1295ca361a2f698cfe450449b492d177137dd08db97b69eb8a97987a532d2b",
     "biomes/crook/src/70-biome-crook.js": "be6b96cfa209c06d41f7b0cbba454a3619982bd79a53ea3ae06e3495cbb147fe",
@@ -21,6 +23,7 @@
     "biomes/crook/src/89a-host-atmos.js": "c6c35dc1bf0b62b1edb3277b5586df7571bc68bc8d687c756a21bfb81c1f94f3",
     "biomes/crook/src/89w-host-water.js": "5ca61d8524bec6bc24bff9c3bea8c5f07b24bd2ef6a84c89ff873803c67e879e",
     "biomes/crook/src/89z-host-build.js": "4a80494497a5b27a22cbdb407c920b376fb05f34395de3ceafc003861f600bc4",
+    "biomes/crook/src/89z9-vstack-post.js": "e9f48798b749ce29ba32dfde9fcb87ad069779afe66d082cd312f4b4b26d1352",
     "biomes/crook/src/99-host-take.js": "99a9a1584eb4066ab24b1d4bfa8e52c7dc006fd8b7b83eb9eb8f51c62e1d2ae8",
     "biomes/crook/src/99-tail.html": "dfa29581341684f741f611c9a3055640e844a59a563e3d1d350318d5813dec76",
     "biomes/crook/stations/shore/44z-host-site.js": "1380fd3b1a13d5eee6e6127b5976ffa84c9d25524568dc9696908857362b7b1c",
@@ -160,9 +163,10 @@
     "core/host/99-host-cutaway.js": "c67cea97b1b18a2a8b3bbc329d5bb5df7fd007a4aee033b21d91fe75cd0ad300",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
+    "core/materials/record/27-matlib-m1.js": "3847ce3dac5ce6ac71bd063bdc2e8e0931ddaceac269091e70f4e268d4fafbb4",
     "core/minimap/88-core-minimap.js": "b6c7e9c662f079c8f97cfc9f6bac2fea115b660f9b417056da54c3bf3c1129a1",
     "core/minimap/88a-core-minimap-host.js": "af98407f9b7bbec2742cb7bbbb9f8ff2d8c18952d5a35a02d023273a0d7e6fcc",
-    "core/rand/08-core-rand.js": "f315035a138a8818c87f55de56ae2dbf3a8d66ff3cc435d303332502d2f43ddf",
+    "core/rand/08-core-rand.js": "74a7f6ab96bc27a68097ac2cd81606460b1386fdb12c7506543ed967e78d5d7a",
     "core/shader/06-core-khook.js": "eb1a0436d3d5dbaab81c3e43de2b642c96d9c3b44331a8960801880e5e20c56d",
     "core/shader/06b-core-kcolor.js": "ededfc6b8a1a8aae5bf3c6ab40863478f9beb8e1aaf2acf4ba9da25ef6392115",
     "core/shadow/10-core-shadow.js": "9fe58c9d540efd8bc94c12d0d164ed1f92888dc08df85ac9a9b455e2d346bd0a",
@@ -174,17 +178,17 @@
     "core/terrain/35-core-strata.js": "65491b58b7258840a88c1ce17f0ba53d11536acd9bf2c6dacb9e1af00821c76c",
     "core/terrain/38-core-relief.js": "7b05a027e7258a2bb412cadbe67beb6bab878f88e6f18eeb5fdddf96fb9ae21f",
     "core/terrain/42-core-frost.js": "0ff4c36238778839286c1a7e4933a02765d08a69c6931b41d8b8f02d1d543a2b",
-    "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
+    "core/terrain/43-core-ground.js": "dbd96ca7a1ffa46c44e43dcf27ed2837841c77c7ce4670eafcb65c499bf27e79",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
     "core/terrain/45-core-horizon.js": "e597aa2e3bbd3826d60908d43a3ecf65509b7c27467913d538fe1e0babb20b1e",
     "core/terrain/host/35-core-strata-shade.js": "e74e7697dc623380851c6d5d7756584df7bb72777b89b60a961258dcc94f60ea",
     "core/terrain/host/44-core-farfield-draw.js": "54f93a37834f7ced1f312c7df40bf19a7ca377acff641119ad32f00b93cc0417",
     "core/terrain/host/45-core-horizon-shade.js": "b3cf3ea84ecafe4d05e5c9692829f7fd2c62512dbaec37a1e7ed7bc44bcaf157",
-    "core/water/20-core-water.js": "a5094b861983c604194f4d6061c771d414c5af42ea2810e5127c82c18ad87616",
+    "core/water/20-core-water.js": "c515e4cdcd325d761b67f2d1be04594e3be934415a797663b922f45c1793abf3",
     "core/water/21-core-water-shore.js": "0489a8b5c9fe2fa3621ee909a735d424696c3340951de13d8cc350ad0b77f3f9",
-    "core/water/22-core-water-flow.js": "eab9b6ee42e8747dfd1082a1b6d76804b4659d5fd3a2b3d4bc1a566af13dbed7",
+    "core/water/22-core-water-flow.js": "1edbe647477b4cb0836b57dec39e1b8891cb20b190a6972f7ae29f2efd5a19c2",
     "core/water/50-core-water-draw.js": "9b487271223b64c2935b3336667963139dddcc055b852ac4f0a1912b2a9dd7e0",
-    "core/water/51-core-water-kinds.js": "e0c2edba19b476b4b46a4e08a63f0af695423d88b1da15b380795b2e4d07ead4",
+    "core/water/51-core-water-kinds.js": "549ea82cd960f7b78d0088c0a0059a1104eb360ccac82e916b48ec8cb29e0e57",
     "core/water/ext/53-core-water-terraces.js": "d38e5ed04c4a239c8b16d687ba48cfbd81b8e65945d5104b63f0e79fc98d0b0d",
     "core/water/ext/53b-core-water-terraces-draw.js": "78f8318bc3edbb3765ca5120c81f89d991a4ae02b8c6dc5243025b269133b12f",
     "core/water/ext/56-core-water-breakup.js": "30c6de1a8913f7fa59ac92cd40526eb148d683b02dc31b6b521a3a768a2926bb",
@@ -196,28 +200,31 @@
     "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47"
    },
    "listings": {
-    "biomes/crook/src": "50b7a7b4dfd4db1b5d737784baf67ad2a0bd61ee739cf30a6509dc15b3a77f73",
+    "biomes/crook": "db791505248c15bab633cd571aed3119120d310248a8d1317e1d47230b139ce9",
+    "biomes/crook/src": "f724eb6b79cc075f48182c210b2e2436b6b356431c3434300fcf87de43870bf9",
     "biomes/crook/stations/shore": "1e8160c9f3a849bbc442ea36cf8a091726ff4a18a2c2e99d5db785829afc44fd",
     "core/host": "d729ffbc0ed36e68e9036bd9c454abc6462a27b22a4bc16b88c38d836e6f4a37",
-    "tools": "3dddf4cc1485975fa04f8ae3ecd4b11cf8303908ced5d46f4dcfc671861aec51",
-    "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
+    "tools": "f800e267a4f84d022b480235d8cfa4e558b7c894ea514163297507b477d5b1c3",
+    "tools/textures": "f4c83899af343d36f69b562b5e36b8a640189c9cc4b0a98d739cb05e0260eef6"
    },
    "outputs": {
-    "biomes/crook/dist/crook.html": "b9bcacaf4d86b730c2e5049d9fabe83a252fdf7f5c226ac6b93da3ef19e2a3e1"
+    "biomes/crook/dist/crook.html": "f7fe148c811ab67721b23eef6c61f8f72d2a321a8bc5943d9d065d209f85fffc"
    },
    "outputs_raw": {
-    "biomes/crook/dist/crook.html": "b9bcacaf4d86b730c2e5049d9fabe83a252fdf7f5c226ac6b93da3ef19e2a3e1"
+    "biomes/crook/dist/crook.html": "f7fe148c811ab67721b23eef6c61f8f72d2a321a8bc5943d9d065d209f85fffc"
    }
   },
   "build.py -- --station head": {
    "inputs": {
     "biomes/crook/KNOWN_ISSUES.md": "3d47b6fdc8b66aefb478339ab6379a32b3887c1091205ec468f2fcd622f65e2b",
-    "biomes/crook/PORT.md": "1c9ea1c5d4837405e10438ceba18117bdfa23ff0999bf6a516cd0fe1aab23069",
-    "biomes/crook/build.py": "c1d2051f1e11538aec295237d81b4cd59ac3ab157acc2ef41bc3e9e2eee26e9a",
+    "biomes/crook/PORT.md": "9282e6258e405c3cd8b306dfef9008b99ad2fd9b7f5f3acb22a00555a6891ae2",
+    "biomes/crook/build.py": "a2589ff03a36d5eef39127e2e2b36b7537f574426cb2ddbb67611b10b5814972",
     "biomes/crook/src/00-head.html": "5f7307a12a024103a4fcb30950505b34330a4e9d6d55a7f3c624e5f9b536b882",
+    "biomes/crook/src/28-vstack-mipvar.js": "63d7b15d5cf17c4f2ef373f8efed1a13d95ebd9ac84945894591a1d9179295ac",
     "biomes/crook/src/40-biome-crook-phys.js": "e7b0e339076253deb6cb07b17b82f2729c467b97529450faada3bcc213733496",
     "biomes/crook/src/41-biome-crook-sites.js": "b5048835979a100f69a776ed62d2e05539b0cf618fda549b655e986734048a7d",
     "biomes/crook/src/45-host-stage.js": "8245934b305aaae2bf6c4ef34cb0e9091eedd0ea45b557a019f53c30fa62eb6a",
+    "biomes/crook/src/46-vstack.js": "2d4f78e3c10e6a3f8be6910f0d0a1a8e688945475f57d5e518986330e0d79f21",
     "biomes/crook/src/50-biome-crook-species.js": "7e873ed81c14ac5d726e07b4a5f8622f8bf863f09f23df81d8d80f9e86106d78",
     "biomes/crook/src/60-biome-crook-place.js": "4f1295ca361a2f698cfe450449b492d177137dd08db97b69eb8a97987a532d2b",
     "biomes/crook/src/70-biome-crook.js": "be6b96cfa209c06d41f7b0cbba454a3619982bd79a53ea3ae06e3495cbb147fe",
@@ -229,6 +236,7 @@
     "biomes/crook/src/89a-host-atmos.js": "c6c35dc1bf0b62b1edb3277b5586df7571bc68bc8d687c756a21bfb81c1f94f3",
     "biomes/crook/src/89w-host-water.js": "5ca61d8524bec6bc24bff9c3bea8c5f07b24bd2ef6a84c89ff873803c67e879e",
     "biomes/crook/src/89z-host-build.js": "4a80494497a5b27a22cbdb407c920b376fb05f34395de3ceafc003861f600bc4",
+    "biomes/crook/src/89z9-vstack-post.js": "e9f48798b749ce29ba32dfde9fcb87ad069779afe66d082cd312f4b4b26d1352",
     "biomes/crook/src/99-host-take.js": "99a9a1584eb4066ab24b1d4bfa8e52c7dc006fd8b7b83eb9eb8f51c62e1d2ae8",
     "biomes/crook/src/99-tail.html": "dfa29581341684f741f611c9a3055640e844a59a563e3d1d350318d5813dec76",
     "biomes/crook/stations/head/44z-host-site.js": "88770ec86fffe03a504dd09d780830090529bb7a589c3fb85bee826cd0f075b8",
@@ -368,9 +376,10 @@
     "core/host/99-host-cutaway.js": "c67cea97b1b18a2a8b3bbc329d5bb5df7fd007a4aee033b21d91fe75cd0ad300",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
+    "core/materials/record/27-matlib-m1.js": "3847ce3dac5ce6ac71bd063bdc2e8e0931ddaceac269091e70f4e268d4fafbb4",
     "core/minimap/88-core-minimap.js": "b6c7e9c662f079c8f97cfc9f6bac2fea115b660f9b417056da54c3bf3c1129a1",
     "core/minimap/88a-core-minimap-host.js": "af98407f9b7bbec2742cb7bbbb9f8ff2d8c18952d5a35a02d023273a0d7e6fcc",
-    "core/rand/08-core-rand.js": "f315035a138a8818c87f55de56ae2dbf3a8d66ff3cc435d303332502d2f43ddf",
+    "core/rand/08-core-rand.js": "74a7f6ab96bc27a68097ac2cd81606460b1386fdb12c7506543ed967e78d5d7a",
     "core/shader/06-core-khook.js": "eb1a0436d3d5dbaab81c3e43de2b642c96d9c3b44331a8960801880e5e20c56d",
     "core/shader/06b-core-kcolor.js": "ededfc6b8a1a8aae5bf3c6ab40863478f9beb8e1aaf2acf4ba9da25ef6392115",
     "core/shadow/10-core-shadow.js": "9fe58c9d540efd8bc94c12d0d164ed1f92888dc08df85ac9a9b455e2d346bd0a",
@@ -382,17 +391,17 @@
     "core/terrain/35-core-strata.js": "65491b58b7258840a88c1ce17f0ba53d11536acd9bf2c6dacb9e1af00821c76c",
     "core/terrain/38-core-relief.js": "7b05a027e7258a2bb412cadbe67beb6bab878f88e6f18eeb5fdddf96fb9ae21f",
     "core/terrain/42-core-frost.js": "0ff4c36238778839286c1a7e4933a02765d08a69c6931b41d8b8f02d1d543a2b",
-    "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
+    "core/terrain/43-core-ground.js": "dbd96ca7a1ffa46c44e43dcf27ed2837841c77c7ce4670eafcb65c499bf27e79",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
     "core/terrain/45-core-horizon.js": "e597aa2e3bbd3826d60908d43a3ecf65509b7c27467913d538fe1e0babb20b1e",
     "core/terrain/host/35-core-strata-shade.js": "e74e7697dc623380851c6d5d7756584df7bb72777b89b60a961258dcc94f60ea",
     "core/terrain/host/44-core-farfield-draw.js": "54f93a37834f7ced1f312c7df40bf19a7ca377acff641119ad32f00b93cc0417",
     "core/terrain/host/45-core-horizon-shade.js": "b3cf3ea84ecafe4d05e5c9692829f7fd2c62512dbaec37a1e7ed7bc44bcaf157",
-    "core/water/20-core-water.js": "a5094b861983c604194f4d6061c771d414c5af42ea2810e5127c82c18ad87616",
+    "core/water/20-core-water.js": "c515e4cdcd325d761b67f2d1be04594e3be934415a797663b922f45c1793abf3",
     "core/water/21-core-water-shore.js": "0489a8b5c9fe2fa3621ee909a735d424696c3340951de13d8cc350ad0b77f3f9",
-    "core/water/22-core-water-flow.js": "eab9b6ee42e8747dfd1082a1b6d76804b4659d5fd3a2b3d4bc1a566af13dbed7",
+    "core/water/22-core-water-flow.js": "1edbe647477b4cb0836b57dec39e1b8891cb20b190a6972f7ae29f2efd5a19c2",
     "core/water/50-core-water-draw.js": "9b487271223b64c2935b3336667963139dddcc055b852ac4f0a1912b2a9dd7e0",
-    "core/water/51-core-water-kinds.js": "e0c2edba19b476b4b46a4e08a63f0af695423d88b1da15b380795b2e4d07ead4",
+    "core/water/51-core-water-kinds.js": "549ea82cd960f7b78d0088c0a0059a1104eb360ccac82e916b48ec8cb29e0e57",
     "core/water/ext/53-core-water-terraces.js": "d38e5ed04c4a239c8b16d687ba48cfbd81b8e65945d5104b63f0e79fc98d0b0d",
     "core/water/ext/53b-core-water-terraces-draw.js": "78f8318bc3edbb3765ca5120c81f89d991a4ae02b8c6dc5243025b269133b12f",
     "core/water/ext/56-core-water-breakup.js": "30c6de1a8913f7fa59ac92cd40526eb148d683b02dc31b6b521a3a768a2926bb",
@@ -404,28 +413,30 @@
     "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47"
    },
    "listings": {
-    "biomes/crook/src": "50b7a7b4dfd4db1b5d737784baf67ad2a0bd61ee739cf30a6509dc15b3a77f73",
+    "biomes/crook/src": "f724eb6b79cc075f48182c210b2e2436b6b356431c3434300fcf87de43870bf9",
     "biomes/crook/stations/head": "1e8160c9f3a849bbc442ea36cf8a091726ff4a18a2c2e99d5db785829afc44fd",
     "core/host": "d729ffbc0ed36e68e9036bd9c454abc6462a27b22a4bc16b88c38d836e6f4a37",
-    "tools": "3dddf4cc1485975fa04f8ae3ecd4b11cf8303908ced5d46f4dcfc671861aec51",
-    "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
+    "tools": "f800e267a4f84d022b480235d8cfa4e558b7c894ea514163297507b477d5b1c3",
+    "tools/textures": "f4c83899af343d36f69b562b5e36b8a640189c9cc4b0a98d739cb05e0260eef6"
    },
    "outputs": {
-    "biomes/crook/dist/crook-head.html": "d3f38445b71020c08950b60ab0f2c1c6c17e32738496c81798fa7998fffad640"
+    "biomes/crook/dist/crook-head.html": "090ba9b2eac884eb7907c41ed9e9b42b5e739bb531b70cafb83d114ca7792396"
    },
    "outputs_raw": {
-    "biomes/crook/dist/crook-head.html": "d3f38445b71020c08950b60ab0f2c1c6c17e32738496c81798fa7998fffad640"
+    "biomes/crook/dist/crook-head.html": "090ba9b2eac884eb7907c41ed9e9b42b5e739bb531b70cafb83d114ca7792396"
    }
   },
   "build.py -- --station wash": {
    "inputs": {
     "biomes/crook/KNOWN_ISSUES.md": "3d47b6fdc8b66aefb478339ab6379a32b3887c1091205ec468f2fcd622f65e2b",
-    "biomes/crook/PORT.md": "1c9ea1c5d4837405e10438ceba18117bdfa23ff0999bf6a516cd0fe1aab23069",
-    "biomes/crook/build.py": "c1d2051f1e11538aec295237d81b4cd59ac3ab157acc2ef41bc3e9e2eee26e9a",
+    "biomes/crook/PORT.md": "9282e6258e405c3cd8b306dfef9008b99ad2fd9b7f5f3acb22a00555a6891ae2",
+    "biomes/crook/build.py": "a2589ff03a36d5eef39127e2e2b36b7537f574426cb2ddbb67611b10b5814972",
     "biomes/crook/src/00-head.html": "5f7307a12a024103a4fcb30950505b34330a4e9d6d55a7f3c624e5f9b536b882",
+    "biomes/crook/src/28-vstack-mipvar.js": "63d7b15d5cf17c4f2ef373f8efed1a13d95ebd9ac84945894591a1d9179295ac",
     "biomes/crook/src/40-biome-crook-phys.js": "e7b0e339076253deb6cb07b17b82f2729c467b97529450faada3bcc213733496",
     "biomes/crook/src/41-biome-crook-sites.js": "b5048835979a100f69a776ed62d2e05539b0cf618fda549b655e986734048a7d",
     "biomes/crook/src/45-host-stage.js": "8245934b305aaae2bf6c4ef34cb0e9091eedd0ea45b557a019f53c30fa62eb6a",
+    "biomes/crook/src/46-vstack.js": "2d4f78e3c10e6a3f8be6910f0d0a1a8e688945475f57d5e518986330e0d79f21",
     "biomes/crook/src/50-biome-crook-species.js": "7e873ed81c14ac5d726e07b4a5f8622f8bf863f09f23df81d8d80f9e86106d78",
     "biomes/crook/src/60-biome-crook-place.js": "4f1295ca361a2f698cfe450449b492d177137dd08db97b69eb8a97987a532d2b",
     "biomes/crook/src/70-biome-crook.js": "be6b96cfa209c06d41f7b0cbba454a3619982bd79a53ea3ae06e3495cbb147fe",
@@ -437,6 +448,7 @@
     "biomes/crook/src/89a-host-atmos.js": "c6c35dc1bf0b62b1edb3277b5586df7571bc68bc8d687c756a21bfb81c1f94f3",
     "biomes/crook/src/89w-host-water.js": "5ca61d8524bec6bc24bff9c3bea8c5f07b24bd2ef6a84c89ff873803c67e879e",
     "biomes/crook/src/89z-host-build.js": "4a80494497a5b27a22cbdb407c920b376fb05f34395de3ceafc003861f600bc4",
+    "biomes/crook/src/89z9-vstack-post.js": "e9f48798b749ce29ba32dfde9fcb87ad069779afe66d082cd312f4b4b26d1352",
     "biomes/crook/src/99-host-take.js": "99a9a1584eb4066ab24b1d4bfa8e52c7dc006fd8b7b83eb9eb8f51c62e1d2ae8",
     "biomes/crook/src/99-tail.html": "dfa29581341684f741f611c9a3055640e844a59a563e3d1d350318d5813dec76",
     "biomes/crook/stations/wash/44z-host-site.js": "65ce3dee627e4583859bc111782ad17eb18acccf36f6f1d705e102a91dff4702",
@@ -576,9 +588,10 @@
     "core/host/99-host-cutaway.js": "c67cea97b1b18a2a8b3bbc329d5bb5df7fd007a4aee033b21d91fe75cd0ad300",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
+    "core/materials/record/27-matlib-m1.js": "3847ce3dac5ce6ac71bd063bdc2e8e0931ddaceac269091e70f4e268d4fafbb4",
     "core/minimap/88-core-minimap.js": "b6c7e9c662f079c8f97cfc9f6bac2fea115b660f9b417056da54c3bf3c1129a1",
     "core/minimap/88a-core-minimap-host.js": "af98407f9b7bbec2742cb7bbbb9f8ff2d8c18952d5a35a02d023273a0d7e6fcc",
-    "core/rand/08-core-rand.js": "f315035a138a8818c87f55de56ae2dbf3a8d66ff3cc435d303332502d2f43ddf",
+    "core/rand/08-core-rand.js": "74a7f6ab96bc27a68097ac2cd81606460b1386fdb12c7506543ed967e78d5d7a",
     "core/shader/06-core-khook.js": "eb1a0436d3d5dbaab81c3e43de2b642c96d9c3b44331a8960801880e5e20c56d",
     "core/shader/06b-core-kcolor.js": "ededfc6b8a1a8aae5bf3c6ab40863478f9beb8e1aaf2acf4ba9da25ef6392115",
     "core/shadow/10-core-shadow.js": "9fe58c9d540efd8bc94c12d0d164ed1f92888dc08df85ac9a9b455e2d346bd0a",
@@ -590,17 +603,17 @@
     "core/terrain/35-core-strata.js": "65491b58b7258840a88c1ce17f0ba53d11536acd9bf2c6dacb9e1af00821c76c",
     "core/terrain/38-core-relief.js": "7b05a027e7258a2bb412cadbe67beb6bab878f88e6f18eeb5fdddf96fb9ae21f",
     "core/terrain/42-core-frost.js": "0ff4c36238778839286c1a7e4933a02765d08a69c6931b41d8b8f02d1d543a2b",
-    "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
+    "core/terrain/43-core-ground.js": "dbd96ca7a1ffa46c44e43dcf27ed2837841c77c7ce4670eafcb65c499bf27e79",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
     "core/terrain/45-core-horizon.js": "e597aa2e3bbd3826d60908d43a3ecf65509b7c27467913d538fe1e0babb20b1e",
     "core/terrain/host/35-core-strata-shade.js": "e74e7697dc623380851c6d5d7756584df7bb72777b89b60a961258dcc94f60ea",
     "core/terrain/host/44-core-farfield-draw.js": "54f93a37834f7ced1f312c7df40bf19a7ca377acff641119ad32f00b93cc0417",
     "core/terrain/host/45-core-horizon-shade.js": "b3cf3ea84ecafe4d05e5c9692829f7fd2c62512dbaec37a1e7ed7bc44bcaf157",
-    "core/water/20-core-water.js": "a5094b861983c604194f4d6061c771d414c5af42ea2810e5127c82c18ad87616",
+    "core/water/20-core-water.js": "c515e4cdcd325d761b67f2d1be04594e3be934415a797663b922f45c1793abf3",
     "core/water/21-core-water-shore.js": "0489a8b5c9fe2fa3621ee909a735d424696c3340951de13d8cc350ad0b77f3f9",
-    "core/water/22-core-water-flow.js": "eab9b6ee42e8747dfd1082a1b6d76804b4659d5fd3a2b3d4bc1a566af13dbed7",
+    "core/water/22-core-water-flow.js": "1edbe647477b4cb0836b57dec39e1b8891cb20b190a6972f7ae29f2efd5a19c2",
     "core/water/50-core-water-draw.js": "9b487271223b64c2935b3336667963139dddcc055b852ac4f0a1912b2a9dd7e0",
-    "core/water/51-core-water-kinds.js": "e0c2edba19b476b4b46a4e08a63f0af695423d88b1da15b380795b2e4d07ead4",
+    "core/water/51-core-water-kinds.js": "549ea82cd960f7b78d0088c0a0059a1104eb360ccac82e916b48ec8cb29e0e57",
     "core/water/ext/53-core-water-terraces.js": "d38e5ed04c4a239c8b16d687ba48cfbd81b8e65945d5104b63f0e79fc98d0b0d",
     "core/water/ext/53b-core-water-terraces-draw.js": "78f8318bc3edbb3765ca5120c81f89d991a4ae02b8c6dc5243025b269133b12f",
     "core/water/ext/56-core-water-breakup.js": "30c6de1a8913f7fa59ac92cd40526eb148d683b02dc31b6b521a3a768a2926bb",
@@ -612,28 +625,30 @@
     "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47"
    },
    "listings": {
-    "biomes/crook/src": "50b7a7b4dfd4db1b5d737784baf67ad2a0bd61ee739cf30a6509dc15b3a77f73",
+    "biomes/crook/src": "f724eb6b79cc075f48182c210b2e2436b6b356431c3434300fcf87de43870bf9",
     "biomes/crook/stations/wash": "1e8160c9f3a849bbc442ea36cf8a091726ff4a18a2c2e99d5db785829afc44fd",
     "core/host": "d729ffbc0ed36e68e9036bd9c454abc6462a27b22a4bc16b88c38d836e6f4a37",
-    "tools": "3dddf4cc1485975fa04f8ae3ecd4b11cf8303908ced5d46f4dcfc671861aec51",
-    "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
+    "tools": "f800e267a4f84d022b480235d8cfa4e558b7c894ea514163297507b477d5b1c3",
+    "tools/textures": "f4c83899af343d36f69b562b5e36b8a640189c9cc4b0a98d739cb05e0260eef6"
    },
    "outputs": {
-    "biomes/crook/dist/crook-wash.html": "ea09d5d9222dc4f8ff97fadb3281f052ede6a973b0ae934f357b4f17d7469fee"
+    "biomes/crook/dist/crook-wash.html": "6f7af832e24fda4e1ba706d8c0e82e94018853d0483f2f6688aed17bfb7160cc"
    },
    "outputs_raw": {
-    "biomes/crook/dist/crook-wash.html": "ea09d5d9222dc4f8ff97fadb3281f052ede6a973b0ae934f357b4f17d7469fee"
+    "biomes/crook/dist/crook-wash.html": "6f7af832e24fda4e1ba706d8c0e82e94018853d0483f2f6688aed17bfb7160cc"
    }
   },
   "build.py --station head": {
    "inputs": {
     "biomes/crook/KNOWN_ISSUES.md": "3d47b6fdc8b66aefb478339ab6379a32b3887c1091205ec468f2fcd622f65e2b",
-    "biomes/crook/PORT.md": "1c9ea1c5d4837405e10438ceba18117bdfa23ff0999bf6a516cd0fe1aab23069",
-    "biomes/crook/build.py": "c1d2051f1e11538aec295237d81b4cd59ac3ab157acc2ef41bc3e9e2eee26e9a",
+    "biomes/crook/PORT.md": "9282e6258e405c3cd8b306dfef9008b99ad2fd9b7f5f3acb22a00555a6891ae2",
+    "biomes/crook/build.py": "a2589ff03a36d5eef39127e2e2b36b7537f574426cb2ddbb67611b10b5814972",
     "biomes/crook/src/00-head.html": "5f7307a12a024103a4fcb30950505b34330a4e9d6d55a7f3c624e5f9b536b882",
+    "biomes/crook/src/28-vstack-mipvar.js": "63d7b15d5cf17c4f2ef373f8efed1a13d95ebd9ac84945894591a1d9179295ac",
     "biomes/crook/src/40-biome-crook-phys.js": "e7b0e339076253deb6cb07b17b82f2729c467b97529450faada3bcc213733496",
     "biomes/crook/src/41-biome-crook-sites.js": "b5048835979a100f69a776ed62d2e05539b0cf618fda549b655e986734048a7d",
     "biomes/crook/src/45-host-stage.js": "8245934b305aaae2bf6c4ef34cb0e9091eedd0ea45b557a019f53c30fa62eb6a",
+    "biomes/crook/src/46-vstack.js": "2d4f78e3c10e6a3f8be6910f0d0a1a8e688945475f57d5e518986330e0d79f21",
     "biomes/crook/src/50-biome-crook-species.js": "7e873ed81c14ac5d726e07b4a5f8622f8bf863f09f23df81d8d80f9e86106d78",
     "biomes/crook/src/60-biome-crook-place.js": "4f1295ca361a2f698cfe450449b492d177137dd08db97b69eb8a97987a532d2b",
     "biomes/crook/src/70-biome-crook.js": "be6b96cfa209c06d41f7b0cbba454a3619982bd79a53ea3ae06e3495cbb147fe",
@@ -645,6 +660,7 @@
     "biomes/crook/src/89a-host-atmos.js": "c6c35dc1bf0b62b1edb3277b5586df7571bc68bc8d687c756a21bfb81c1f94f3",
     "biomes/crook/src/89w-host-water.js": "5ca61d8524bec6bc24bff9c3bea8c5f07b24bd2ef6a84c89ff873803c67e879e",
     "biomes/crook/src/89z-host-build.js": "4a80494497a5b27a22cbdb407c920b376fb05f34395de3ceafc003861f600bc4",
+    "biomes/crook/src/89z9-vstack-post.js": "e9f48798b749ce29ba32dfde9fcb87ad069779afe66d082cd312f4b4b26d1352",
     "biomes/crook/src/99-host-take.js": "99a9a1584eb4066ab24b1d4bfa8e52c7dc006fd8b7b83eb9eb8f51c62e1d2ae8",
     "biomes/crook/src/99-tail.html": "dfa29581341684f741f611c9a3055640e844a59a563e3d1d350318d5813dec76",
     "biomes/crook/stations/head/44z-host-site.js": "88770ec86fffe03a504dd09d780830090529bb7a589c3fb85bee826cd0f075b8",
@@ -784,9 +800,10 @@
     "core/host/99-host-cutaway.js": "c67cea97b1b18a2a8b3bbc329d5bb5df7fd007a4aee033b21d91fe75cd0ad300",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
+    "core/materials/record/27-matlib-m1.js": "3847ce3dac5ce6ac71bd063bdc2e8e0931ddaceac269091e70f4e268d4fafbb4",
     "core/minimap/88-core-minimap.js": "b6c7e9c662f079c8f97cfc9f6bac2fea115b660f9b417056da54c3bf3c1129a1",
     "core/minimap/88a-core-minimap-host.js": "af98407f9b7bbec2742cb7bbbb9f8ff2d8c18952d5a35a02d023273a0d7e6fcc",
-    "core/rand/08-core-rand.js": "f315035a138a8818c87f55de56ae2dbf3a8d66ff3cc435d303332502d2f43ddf",
+    "core/rand/08-core-rand.js": "74a7f6ab96bc27a68097ac2cd81606460b1386fdb12c7506543ed967e78d5d7a",
     "core/shader/06-core-khook.js": "eb1a0436d3d5dbaab81c3e43de2b642c96d9c3b44331a8960801880e5e20c56d",
     "core/shader/06b-core-kcolor.js": "ededfc6b8a1a8aae5bf3c6ab40863478f9beb8e1aaf2acf4ba9da25ef6392115",
     "core/shadow/10-core-shadow.js": "9fe58c9d540efd8bc94c12d0d164ed1f92888dc08df85ac9a9b455e2d346bd0a",
@@ -798,17 +815,17 @@
     "core/terrain/35-core-strata.js": "65491b58b7258840a88c1ce17f0ba53d11536acd9bf2c6dacb9e1af00821c76c",
     "core/terrain/38-core-relief.js": "7b05a027e7258a2bb412cadbe67beb6bab878f88e6f18eeb5fdddf96fb9ae21f",
     "core/terrain/42-core-frost.js": "0ff4c36238778839286c1a7e4933a02765d08a69c6931b41d8b8f02d1d543a2b",
-    "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
+    "core/terrain/43-core-ground.js": "dbd96ca7a1ffa46c44e43dcf27ed2837841c77c7ce4670eafcb65c499bf27e79",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
     "core/terrain/45-core-horizon.js": "e597aa2e3bbd3826d60908d43a3ecf65509b7c27467913d538fe1e0babb20b1e",
     "core/terrain/host/35-core-strata-shade.js": "e74e7697dc623380851c6d5d7756584df7bb72777b89b60a961258dcc94f60ea",
     "core/terrain/host/44-core-farfield-draw.js": "54f93a37834f7ced1f312c7df40bf19a7ca377acff641119ad32f00b93cc0417",
     "core/terrain/host/45-core-horizon-shade.js": "b3cf3ea84ecafe4d05e5c9692829f7fd2c62512dbaec37a1e7ed7bc44bcaf157",
-    "core/water/20-core-water.js": "a5094b861983c604194f4d6061c771d414c5af42ea2810e5127c82c18ad87616",
+    "core/water/20-core-water.js": "c515e4cdcd325d761b67f2d1be04594e3be934415a797663b922f45c1793abf3",
     "core/water/21-core-water-shore.js": "0489a8b5c9fe2fa3621ee909a735d424696c3340951de13d8cc350ad0b77f3f9",
-    "core/water/22-core-water-flow.js": "eab9b6ee42e8747dfd1082a1b6d76804b4659d5fd3a2b3d4bc1a566af13dbed7",
+    "core/water/22-core-water-flow.js": "1edbe647477b4cb0836b57dec39e1b8891cb20b190a6972f7ae29f2efd5a19c2",
     "core/water/50-core-water-draw.js": "9b487271223b64c2935b3336667963139dddcc055b852ac4f0a1912b2a9dd7e0",
-    "core/water/51-core-water-kinds.js": "e0c2edba19b476b4b46a4e08a63f0af695423d88b1da15b380795b2e4d07ead4",
+    "core/water/51-core-water-kinds.js": "549ea82cd960f7b78d0088c0a0059a1104eb360ccac82e916b48ec8cb29e0e57",
     "core/water/ext/53-core-water-terraces.js": "d38e5ed04c4a239c8b16d687ba48cfbd81b8e65945d5104b63f0e79fc98d0b0d",
     "core/water/ext/53b-core-water-terraces-draw.js": "78f8318bc3edbb3765ca5120c81f89d991a4ae02b8c6dc5243025b269133b12f",
     "core/water/ext/56-core-water-breakup.js": "30c6de1a8913f7fa59ac92cd40526eb148d683b02dc31b6b521a3a768a2926bb",
@@ -820,28 +837,30 @@
     "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47"
    },
    "listings": {
-    "biomes/crook/src": "50b7a7b4dfd4db1b5d737784baf67ad2a0bd61ee739cf30a6509dc15b3a77f73",
+    "biomes/crook/src": "f724eb6b79cc075f48182c210b2e2436b6b356431c3434300fcf87de43870bf9",
     "biomes/crook/stations/head": "1e8160c9f3a849bbc442ea36cf8a091726ff4a18a2c2e99d5db785829afc44fd",
     "core/host": "d729ffbc0ed36e68e9036bd9c454abc6462a27b22a4bc16b88c38d836e6f4a37",
-    "tools": "3dddf4cc1485975fa04f8ae3ecd4b11cf8303908ced5d46f4dcfc671861aec51",
-    "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
+    "tools": "f800e267a4f84d022b480235d8cfa4e558b7c894ea514163297507b477d5b1c3",
+    "tools/textures": "f4c83899af343d36f69b562b5e36b8a640189c9cc4b0a98d739cb05e0260eef6"
    },
    "outputs": {
-    "biomes/crook/dist/crook-head.html": "d3f38445b71020c08950b60ab0f2c1c6c17e32738496c81798fa7998fffad640"
+    "biomes/crook/dist/crook-head.html": "090ba9b2eac884eb7907c41ed9e9b42b5e739bb531b70cafb83d114ca7792396"
    },
    "outputs_raw": {
-    "biomes/crook/dist/crook-head.html": "d3f38445b71020c08950b60ab0f2c1c6c17e32738496c81798fa7998fffad640"
+    "biomes/crook/dist/crook-head.html": "090ba9b2eac884eb7907c41ed9e9b42b5e739bb531b70cafb83d114ca7792396"
    }
   },
   "build.py --station shore": {
    "inputs": {
     "biomes/crook/KNOWN_ISSUES.md": "3d47b6fdc8b66aefb478339ab6379a32b3887c1091205ec468f2fcd622f65e2b",
-    "biomes/crook/PORT.md": "1c9ea1c5d4837405e10438ceba18117bdfa23ff0999bf6a516cd0fe1aab23069",
-    "biomes/crook/build.py": "c1d2051f1e11538aec295237d81b4cd59ac3ab157acc2ef41bc3e9e2eee26e9a",
+    "biomes/crook/PORT.md": "9282e6258e405c3cd8b306dfef9008b99ad2fd9b7f5f3acb22a00555a6891ae2",
+    "biomes/crook/build.py": "a2589ff03a36d5eef39127e2e2b36b7537f574426cb2ddbb67611b10b5814972",
     "biomes/crook/src/00-head.html": "5f7307a12a024103a4fcb30950505b34330a4e9d6d55a7f3c624e5f9b536b882",
+    "biomes/crook/src/28-vstack-mipvar.js": "63d7b15d5cf17c4f2ef373f8efed1a13d95ebd9ac84945894591a1d9179295ac",
     "biomes/crook/src/40-biome-crook-phys.js": "e7b0e339076253deb6cb07b17b82f2729c467b97529450faada3bcc213733496",
     "biomes/crook/src/41-biome-crook-sites.js": "b5048835979a100f69a776ed62d2e05539b0cf618fda549b655e986734048a7d",
     "biomes/crook/src/45-host-stage.js": "8245934b305aaae2bf6c4ef34cb0e9091eedd0ea45b557a019f53c30fa62eb6a",
+    "biomes/crook/src/46-vstack.js": "2d4f78e3c10e6a3f8be6910f0d0a1a8e688945475f57d5e518986330e0d79f21",
     "biomes/crook/src/50-biome-crook-species.js": "7e873ed81c14ac5d726e07b4a5f8622f8bf863f09f23df81d8d80f9e86106d78",
     "biomes/crook/src/60-biome-crook-place.js": "4f1295ca361a2f698cfe450449b492d177137dd08db97b69eb8a97987a532d2b",
     "biomes/crook/src/70-biome-crook.js": "be6b96cfa209c06d41f7b0cbba454a3619982bd79a53ea3ae06e3495cbb147fe",
@@ -853,6 +872,7 @@
     "biomes/crook/src/89a-host-atmos.js": "c6c35dc1bf0b62b1edb3277b5586df7571bc68bc8d687c756a21bfb81c1f94f3",
     "biomes/crook/src/89w-host-water.js": "5ca61d8524bec6bc24bff9c3bea8c5f07b24bd2ef6a84c89ff873803c67e879e",
     "biomes/crook/src/89z-host-build.js": "4a80494497a5b27a22cbdb407c920b376fb05f34395de3ceafc003861f600bc4",
+    "biomes/crook/src/89z9-vstack-post.js": "e9f48798b749ce29ba32dfde9fcb87ad069779afe66d082cd312f4b4b26d1352",
     "biomes/crook/src/99-host-take.js": "99a9a1584eb4066ab24b1d4bfa8e52c7dc006fd8b7b83eb9eb8f51c62e1d2ae8",
     "biomes/crook/src/99-tail.html": "dfa29581341684f741f611c9a3055640e844a59a563e3d1d350318d5813dec76",
     "biomes/crook/stations/shore/44z-host-site.js": "1380fd3b1a13d5eee6e6127b5976ffa84c9d25524568dc9696908857362b7b1c",
@@ -992,9 +1012,10 @@
     "core/host/99-host-cutaway.js": "c67cea97b1b18a2a8b3bbc329d5bb5df7fd007a4aee033b21d91fe75cd0ad300",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
+    "core/materials/record/27-matlib-m1.js": "3847ce3dac5ce6ac71bd063bdc2e8e0931ddaceac269091e70f4e268d4fafbb4",
     "core/minimap/88-core-minimap.js": "b6c7e9c662f079c8f97cfc9f6bac2fea115b660f9b417056da54c3bf3c1129a1",
     "core/minimap/88a-core-minimap-host.js": "af98407f9b7bbec2742cb7bbbb9f8ff2d8c18952d5a35a02d023273a0d7e6fcc",
-    "core/rand/08-core-rand.js": "f315035a138a8818c87f55de56ae2dbf3a8d66ff3cc435d303332502d2f43ddf",
+    "core/rand/08-core-rand.js": "74a7f6ab96bc27a68097ac2cd81606460b1386fdb12c7506543ed967e78d5d7a",
     "core/shader/06-core-khook.js": "eb1a0436d3d5dbaab81c3e43de2b642c96d9c3b44331a8960801880e5e20c56d",
     "core/shader/06b-core-kcolor.js": "ededfc6b8a1a8aae5bf3c6ab40863478f9beb8e1aaf2acf4ba9da25ef6392115",
     "core/shadow/10-core-shadow.js": "9fe58c9d540efd8bc94c12d0d164ed1f92888dc08df85ac9a9b455e2d346bd0a",
@@ -1006,17 +1027,17 @@
     "core/terrain/35-core-strata.js": "65491b58b7258840a88c1ce17f0ba53d11536acd9bf2c6dacb9e1af00821c76c",
     "core/terrain/38-core-relief.js": "7b05a027e7258a2bb412cadbe67beb6bab878f88e6f18eeb5fdddf96fb9ae21f",
     "core/terrain/42-core-frost.js": "0ff4c36238778839286c1a7e4933a02765d08a69c6931b41d8b8f02d1d543a2b",
-    "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
+    "core/terrain/43-core-ground.js": "dbd96ca7a1ffa46c44e43dcf27ed2837841c77c7ce4670eafcb65c499bf27e79",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
     "core/terrain/45-core-horizon.js": "e597aa2e3bbd3826d60908d43a3ecf65509b7c27467913d538fe1e0babb20b1e",
     "core/terrain/host/35-core-strata-shade.js": "e74e7697dc623380851c6d5d7756584df7bb72777b89b60a961258dcc94f60ea",
     "core/terrain/host/44-core-farfield-draw.js": "54f93a37834f7ced1f312c7df40bf19a7ca377acff641119ad32f00b93cc0417",
     "core/terrain/host/45-core-horizon-shade.js": "b3cf3ea84ecafe4d05e5c9692829f7fd2c62512dbaec37a1e7ed7bc44bcaf157",
-    "core/water/20-core-water.js": "a5094b861983c604194f4d6061c771d414c5af42ea2810e5127c82c18ad87616",
+    "core/water/20-core-water.js": "c515e4cdcd325d761b67f2d1be04594e3be934415a797663b922f45c1793abf3",
     "core/water/21-core-water-shore.js": "0489a8b5c9fe2fa3621ee909a735d424696c3340951de13d8cc350ad0b77f3f9",
-    "core/water/22-core-water-flow.js": "eab9b6ee42e8747dfd1082a1b6d76804b4659d5fd3a2b3d4bc1a566af13dbed7",
+    "core/water/22-core-water-flow.js": "1edbe647477b4cb0836b57dec39e1b8891cb20b190a6972f7ae29f2efd5a19c2",
     "core/water/50-core-water-draw.js": "9b487271223b64c2935b3336667963139dddcc055b852ac4f0a1912b2a9dd7e0",
-    "core/water/51-core-water-kinds.js": "e0c2edba19b476b4b46a4e08a63f0af695423d88b1da15b380795b2e4d07ead4",
+    "core/water/51-core-water-kinds.js": "549ea82cd960f7b78d0088c0a0059a1104eb360ccac82e916b48ec8cb29e0e57",
     "core/water/ext/53-core-water-terraces.js": "d38e5ed04c4a239c8b16d687ba48cfbd81b8e65945d5104b63f0e79fc98d0b0d",
     "core/water/ext/53b-core-water-terraces-draw.js": "78f8318bc3edbb3765ca5120c81f89d991a4ae02b8c6dc5243025b269133b12f",
     "core/water/ext/56-core-water-breakup.js": "30c6de1a8913f7fa59ac92cd40526eb148d683b02dc31b6b521a3a768a2926bb",
@@ -1028,28 +1049,30 @@
     "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47"
    },
    "listings": {
-    "biomes/crook/src": "50b7a7b4dfd4db1b5d737784baf67ad2a0bd61ee739cf30a6509dc15b3a77f73",
+    "biomes/crook/src": "f724eb6b79cc075f48182c210b2e2436b6b356431c3434300fcf87de43870bf9",
     "biomes/crook/stations/shore": "1e8160c9f3a849bbc442ea36cf8a091726ff4a18a2c2e99d5db785829afc44fd",
     "core/host": "d729ffbc0ed36e68e9036bd9c454abc6462a27b22a4bc16b88c38d836e6f4a37",
-    "tools": "3dddf4cc1485975fa04f8ae3ecd4b11cf8303908ced5d46f4dcfc671861aec51",
-    "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
+    "tools": "f800e267a4f84d022b480235d8cfa4e558b7c894ea514163297507b477d5b1c3",
+    "tools/textures": "f4c83899af343d36f69b562b5e36b8a640189c9cc4b0a98d739cb05e0260eef6"
    },
    "outputs": {
-    "biomes/crook/dist/crook.html": "b9bcacaf4d86b730c2e5049d9fabe83a252fdf7f5c226ac6b93da3ef19e2a3e1"
+    "biomes/crook/dist/crook.html": "f7fe148c811ab67721b23eef6c61f8f72d2a321a8bc5943d9d065d209f85fffc"
    },
    "outputs_raw": {
-    "biomes/crook/dist/crook.html": "b9bcacaf4d86b730c2e5049d9fabe83a252fdf7f5c226ac6b93da3ef19e2a3e1"
+    "biomes/crook/dist/crook.html": "f7fe148c811ab67721b23eef6c61f8f72d2a321a8bc5943d9d065d209f85fffc"
    }
   },
   "build.py --station wash": {
    "inputs": {
     "biomes/crook/KNOWN_ISSUES.md": "3d47b6fdc8b66aefb478339ab6379a32b3887c1091205ec468f2fcd622f65e2b",
-    "biomes/crook/PORT.md": "1c9ea1c5d4837405e10438ceba18117bdfa23ff0999bf6a516cd0fe1aab23069",
-    "biomes/crook/build.py": "c1d2051f1e11538aec295237d81b4cd59ac3ab157acc2ef41bc3e9e2eee26e9a",
+    "biomes/crook/PORT.md": "9282e6258e405c3cd8b306dfef9008b99ad2fd9b7f5f3acb22a00555a6891ae2",
+    "biomes/crook/build.py": "a2589ff03a36d5eef39127e2e2b36b7537f574426cb2ddbb67611b10b5814972",
     "biomes/crook/src/00-head.html": "5f7307a12a024103a4fcb30950505b34330a4e9d6d55a7f3c624e5f9b536b882",
+    "biomes/crook/src/28-vstack-mipvar.js": "63d7b15d5cf17c4f2ef373f8efed1a13d95ebd9ac84945894591a1d9179295ac",
     "biomes/crook/src/40-biome-crook-phys.js": "e7b0e339076253deb6cb07b17b82f2729c467b97529450faada3bcc213733496",
     "biomes/crook/src/41-biome-crook-sites.js": "b5048835979a100f69a776ed62d2e05539b0cf618fda549b655e986734048a7d",
     "biomes/crook/src/45-host-stage.js": "8245934b305aaae2bf6c4ef34cb0e9091eedd0ea45b557a019f53c30fa62eb6a",
+    "biomes/crook/src/46-vstack.js": "2d4f78e3c10e6a3f8be6910f0d0a1a8e688945475f57d5e518986330e0d79f21",
     "biomes/crook/src/50-biome-crook-species.js": "7e873ed81c14ac5d726e07b4a5f8622f8bf863f09f23df81d8d80f9e86106d78",
     "biomes/crook/src/60-biome-crook-place.js": "4f1295ca361a2f698cfe450449b492d177137dd08db97b69eb8a97987a532d2b",
     "biomes/crook/src/70-biome-crook.js": "be6b96cfa209c06d41f7b0cbba454a3619982bd79a53ea3ae06e3495cbb147fe",
@@ -1061,6 +1084,7 @@
     "biomes/crook/src/89a-host-atmos.js": "c6c35dc1bf0b62b1edb3277b5586df7571bc68bc8d687c756a21bfb81c1f94f3",
     "biomes/crook/src/89w-host-water.js": "5ca61d8524bec6bc24bff9c3bea8c5f07b24bd2ef6a84c89ff873803c67e879e",
     "biomes/crook/src/89z-host-build.js": "4a80494497a5b27a22cbdb407c920b376fb05f34395de3ceafc003861f600bc4",
+    "biomes/crook/src/89z9-vstack-post.js": "e9f48798b749ce29ba32dfde9fcb87ad069779afe66d082cd312f4b4b26d1352",
     "biomes/crook/src/99-host-take.js": "99a9a1584eb4066ab24b1d4bfa8e52c7dc006fd8b7b83eb9eb8f51c62e1d2ae8",
     "biomes/crook/src/99-tail.html": "dfa29581341684f741f611c9a3055640e844a59a563e3d1d350318d5813dec76",
     "biomes/crook/stations/wash/44z-host-site.js": "65ce3dee627e4583859bc111782ad17eb18acccf36f6f1d705e102a91dff4702",
@@ -1200,9 +1224,10 @@
     "core/host/99-host-cutaway.js": "c67cea97b1b18a2a8b3bbc329d5bb5df7fd007a4aee033b21d91fe75cd0ad300",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
+    "core/materials/record/27-matlib-m1.js": "3847ce3dac5ce6ac71bd063bdc2e8e0931ddaceac269091e70f4e268d4fafbb4",
     "core/minimap/88-core-minimap.js": "b6c7e9c662f079c8f97cfc9f6bac2fea115b660f9b417056da54c3bf3c1129a1",
     "core/minimap/88a-core-minimap-host.js": "af98407f9b7bbec2742cb7bbbb9f8ff2d8c18952d5a35a02d023273a0d7e6fcc",
-    "core/rand/08-core-rand.js": "f315035a138a8818c87f55de56ae2dbf3a8d66ff3cc435d303332502d2f43ddf",
+    "core/rand/08-core-rand.js": "74a7f6ab96bc27a68097ac2cd81606460b1386fdb12c7506543ed967e78d5d7a",
     "core/shader/06-core-khook.js": "eb1a0436d3d5dbaab81c3e43de2b642c96d9c3b44331a8960801880e5e20c56d",
     "core/shader/06b-core-kcolor.js": "ededfc6b8a1a8aae5bf3c6ab40863478f9beb8e1aaf2acf4ba9da25ef6392115",
     "core/shadow/10-core-shadow.js": "9fe58c9d540efd8bc94c12d0d164ed1f92888dc08df85ac9a9b455e2d346bd0a",
@@ -1214,17 +1239,17 @@
     "core/terrain/35-core-strata.js": "65491b58b7258840a88c1ce17f0ba53d11536acd9bf2c6dacb9e1af00821c76c",
     "core/terrain/38-core-relief.js": "7b05a027e7258a2bb412cadbe67beb6bab878f88e6f18eeb5fdddf96fb9ae21f",
     "core/terrain/42-core-frost.js": "0ff4c36238778839286c1a7e4933a02765d08a69c6931b41d8b8f02d1d543a2b",
-    "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
+    "core/terrain/43-core-ground.js": "dbd96ca7a1ffa46c44e43dcf27ed2837841c77c7ce4670eafcb65c499bf27e79",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
     "core/terrain/45-core-horizon.js": "e597aa2e3bbd3826d60908d43a3ecf65509b7c27467913d538fe1e0babb20b1e",
     "core/terrain/host/35-core-strata-shade.js": "e74e7697dc623380851c6d5d7756584df7bb72777b89b60a961258dcc94f60ea",
     "core/terrain/host/44-core-farfield-draw.js": "54f93a37834f7ced1f312c7df40bf19a7ca377acff641119ad32f00b93cc0417",
     "core/terrain/host/45-core-horizon-shade.js": "b3cf3ea84ecafe4d05e5c9692829f7fd2c62512dbaec37a1e7ed7bc44bcaf157",
-    "core/water/20-core-water.js": "a5094b861983c604194f4d6061c771d414c5af42ea2810e5127c82c18ad87616",
+    "core/water/20-core-water.js": "c515e4cdcd325d761b67f2d1be04594e3be934415a797663b922f45c1793abf3",
     "core/water/21-core-water-shore.js": "0489a8b5c9fe2fa3621ee909a735d424696c3340951de13d8cc350ad0b77f3f9",
-    "core/water/22-core-water-flow.js": "eab9b6ee42e8747dfd1082a1b6d76804b4659d5fd3a2b3d4bc1a566af13dbed7",
+    "core/water/22-core-water-flow.js": "1edbe647477b4cb0836b57dec39e1b8891cb20b190a6972f7ae29f2efd5a19c2",
     "core/water/50-core-water-draw.js": "9b487271223b64c2935b3336667963139dddcc055b852ac4f0a1912b2a9dd7e0",
-    "core/water/51-core-water-kinds.js": "e0c2edba19b476b4b46a4e08a63f0af695423d88b1da15b380795b2e4d07ead4",
+    "core/water/51-core-water-kinds.js": "549ea82cd960f7b78d0088c0a0059a1104eb360ccac82e916b48ec8cb29e0e57",
     "core/water/ext/53-core-water-terraces.js": "d38e5ed04c4a239c8b16d687ba48cfbd81b8e65945d5104b63f0e79fc98d0b0d",
     "core/water/ext/53b-core-water-terraces-draw.js": "78f8318bc3edbb3765ca5120c81f89d991a4ae02b8c6dc5243025b269133b12f",
     "core/water/ext/56-core-water-breakup.js": "30c6de1a8913f7fa59ac92cd40526eb148d683b02dc31b6b521a3a768a2926bb",
@@ -1236,17 +1261,17 @@
     "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47"
    },
    "listings": {
-    "biomes/crook/src": "50b7a7b4dfd4db1b5d737784baf67ad2a0bd61ee739cf30a6509dc15b3a77f73",
+    "biomes/crook/src": "f724eb6b79cc075f48182c210b2e2436b6b356431c3434300fcf87de43870bf9",
     "biomes/crook/stations/wash": "1e8160c9f3a849bbc442ea36cf8a091726ff4a18a2c2e99d5db785829afc44fd",
     "core/host": "d729ffbc0ed36e68e9036bd9c454abc6462a27b22a4bc16b88c38d836e6f4a37",
-    "tools": "3dddf4cc1485975fa04f8ae3ecd4b11cf8303908ced5d46f4dcfc671861aec51",
-    "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
+    "tools": "f800e267a4f84d022b480235d8cfa4e558b7c894ea514163297507b477d5b1c3",
+    "tools/textures": "f4c83899af343d36f69b562b5e36b8a640189c9cc4b0a98d739cb05e0260eef6"
    },
    "outputs": {
-    "biomes/crook/dist/crook-wash.html": "ea09d5d9222dc4f8ff97fadb3281f052ede6a973b0ae934f357b4f17d7469fee"
+    "biomes/crook/dist/crook-wash.html": "6f7af832e24fda4e1ba706d8c0e82e94018853d0483f2f6688aed17bfb7160cc"
    },
    "outputs_raw": {
-    "biomes/crook/dist/crook-wash.html": "ea09d5d9222dc4f8ff97fadb3281f052ede6a973b0ae934f357b4f17d7469fee"
+    "biomes/crook/dist/crook-wash.html": "6f7af832e24fda4e1ba706d8c0e82e94018853d0483f2f6688aed17bfb7160cc"
    }
   }
  }

@@ -22,7 +22,7 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | `fauna-lands.js` | 13 |  |
 | `krator-fauna-abyss.js` | 52 **big** | the salt-lake flamingo (114); the frilled lizard (202); the marsh emu (273); the pack lizard (358); the riding lizard (419); the dromedary (484) |
 | `krator-fauna-ash.js` | 11 |  |
-| `krator-fauna-bay.js` | 53 **big** |  |
+| `krator-fauna-bay.js` | 63 **big** |  |
 | `krator-fauna-crawlers.js` | 20 |  |
 | `krator-fauna-desert.js` | 50 **big** |  |
 | `krator-fauna-farm.js` | 80 **big** |  |

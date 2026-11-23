@@ -5,6 +5,7 @@
  "families": {
   "ash": {
    "lib": "ash.hearth",
+   "class": "flat",
    "scale": [
     0.5,
     0.5
@@ -20,6 +21,7 @@
   },
   "bamboo": {
    "lib": "wood.bamboo001c",
+   "class": "flat",
    "scale": [
     0.8,
     0.8
@@ -35,6 +37,7 @@
   },
   "bark": {
    "lib": "bark.bark_brown_01",
+   "class": "flat",
    "scale": [
     1.0,
     1.0
@@ -50,6 +53,7 @@
   },
   "bone": {
    "lib": "bone.skull",
+   "class": "flat",
    "scale": [
     0.5,
     0.5
@@ -65,6 +69,7 @@
   },
   "bronze": {
    "lib": "metal.metal008",
+   "class": "flat",
    "scale": [
     0.6,
     0.6
@@ -80,6 +85,7 @@
   },
   "ceramic": {
    "lib": "ceramic.terracotta",
+   "class": "flat",
    "scale": [
     0.4,
     0.4
@@ -95,6 +101,7 @@
   },
   "tile": {
    "lib": "ceramic.glaze",
+   "class": "flat",
    "scale": [
     0.4,
     0.4
@@ -110,6 +117,7 @@
   },
   "clay": {
    "lib": "ceramic.terracotta",
+   "class": "flat",
    "scale": [
     0.4,
     0.4
@@ -125,6 +133,7 @@
   },
   "cloth": {
    "lib": "cloth.silk",
+   "class": "flat",
    "scale": [
     0.5,
     0.5
@@ -140,6 +149,7 @@
   },
   "concrete": {
    "lib": "concrete.board",
+   "class": "flat",
    "scale": [
     1.5,
     1.5
@@ -155,6 +165,7 @@
   },
   "feather": {
    "lib": "feather.plumage",
+   "class": "flat",
    "scale": [
     0.15,
     0.15
@@ -170,6 +181,7 @@
   },
   "food": {
    "lib": "food.crust",
+   "class": "flat",
    "scale": [
     0.2,
     0.2
@@ -185,6 +197,7 @@
   },
   "fruitFlesh": {
    "lib": "fruit.flesh",
+   "class": "flat",
    "scale": [
     0.15,
     0.15
@@ -200,6 +213,7 @@
   },
   "fruitHusk": {
    "lib": "fruit.husk",
+   "class": "flat",
    "scale": [
     0.2,
     0.2
@@ -215,6 +229,7 @@
   },
   "fruitJelly": {
    "lib": "fruit.jelly",
+   "class": "flat",
    "scale": [
     0.15,
     0.15
@@ -230,6 +245,7 @@
   },
   "fruitScale": {
    "lib": "fruit.scale",
+   "class": "flat",
    "scale": [
     0.15,
     0.15
@@ -245,6 +261,7 @@
   },
   "fruitSeed": {
    "lib": "fruit.seeds",
+   "class": "flat",
    "scale": [
     0.12,
     0.12
@@ -260,6 +277,7 @@
   },
   "fruitShell": {
    "lib": "fruit.capsule",
+   "class": "flat",
    "scale": [
     0.15,
     0.15
@@ -275,6 +293,7 @@
   },
   "fruitSkin": {
    "lib": "fruit.skin.orange",
+   "class": "flat",
    "scale": [
     0.15,
     0.15
@@ -290,6 +309,7 @@
   },
   "fungus": {
    "lib": "organic.fungus.cap",
+   "class": "flat",
    "scale": [
     0.2,
     0.2
@@ -305,6 +325,7 @@
   },
   "glass": {
    "lib": "glass.clear",
+   "class": "flat",
    "scale": [
     0.6,
     0.6
@@ -320,6 +341,7 @@
   },
   "glow": {
    "lib": "patterns/common/lantern-horn",
+   "class": "flat",
    "scale": [
     0.4,
     0.4
@@ -335,6 +357,7 @@
   },
   "gold": {
    "lib": "metal.gold",
+   "class": "flat",
    "scale": [
     0.3,
     0.3
@@ -350,6 +373,7 @@
   },
   "hide": {
    "lib": "hide.fur.brown",
+   "class": "flat",
    "scale": [
     0.5,
     0.5
@@ -365,6 +389,7 @@
   },
   "jade": {
    "lib": "stone.amazonite",
+   "class": "flat",
    "scale": [
     0.6,
     0.6
@@ -380,6 +405,7 @@
   },
   "lacquer": {
    "lib": "wood.lacquer",
+   "class": "flat",
    "scale": [
     0.8,
     0.8
@@ -395,6 +421,7 @@
   },
   "leafy": {
    "lib": "leaf.understorey",
+   "class": "flat",
    "scale": [
     0.6,
     0.6
@@ -410,6 +437,7 @@
   },
   "mahogany": {
    "lib": "wood.mahogany",
+   "class": "flat",
    "scale": [
     0.8,
     0.8
@@ -425,6 +453,7 @@
   },
   "metal": {
    "lib": "metal.iron.pitted",
+   "class": "flat",
    "scale": [
     0.5,
     0.5
@@ -440,6 +469,7 @@
   },
   "nacre": {
    "lib": "shell.nacre",
+   "class": "flat",
    "scale": [
     0.3,
     0.3
@@ -455,6 +485,7 @@
   },
   "obsidian": {
    "lib": "stone.obsidian",
+   "class": "flat",
    "scale": [
     0.5,
     0.5
@@ -470,6 +501,7 @@
   },
   "paint": {
    "lib": "wood.painted",
+   "class": "flat",
    "scale": [
     0.8,
     0.8
@@ -485,6 +517,7 @@
   },
   "paper": {
    "lib": "paper.parchment",
+   "class": "flat",
    "scale": [
     0.3,
     0.3
@@ -500,6 +533,7 @@
   },
   "pewter": {
    "lib": "metal.pewter",
+   "class": "flat",
    "scale": [
     0.3,
     0.3
@@ -515,6 +549,7 @@
   },
   "plank": {
    "lib": "wood.lamppost",
+   "class": "flat",
    "scale": [
     1.0,
     1.0
@@ -530,6 +565,7 @@
   },
   "plant": {
    "lib": "leaf.understorey",
+   "class": "flat",
    "scale": [
     0.6,
     0.6
@@ -545,6 +581,7 @@
   },
   "plaster": {
    "lib": "earth.floor.packed",
+   "class": "flat",
    "scale": [
     1.0,
     1.0
@@ -560,6 +597,7 @@
   },
   "plastic": {
    "lib": "plastic.moulded",
+   "class": "flat",
    "scale": [
     0.4,
     0.4
@@ -575,6 +613,7 @@
   },
   "reed": {
    "lib": "fibre.reedmat",
+   "class": "flat",
    "scale": [
     0.5,
     0.5
@@ -590,6 +629,7 @@
   },
   "rope": {
    "lib": "fibre.rope",
+   "class": "flat",
    "scale": [
     0.3,
     0.3
@@ -605,6 +645,7 @@
   },
   "rubber": {
    "lib": "rubber.tyre",
+   "class": "flat",
    "scale": [
     0.4,
     0.4
@@ -620,6 +661,7 @@
   },
   "rust": {
    "lib": "metal.rusty_metal_04",
+   "class": "flat",
    "scale": [
     0.8,
     0.8
@@ -635,6 +677,7 @@
   },
   "skin": {
    "lib": "organic.scale",
+   "class": "flat",
    "scale": [
     0.3,
     0.3
@@ -650,6 +693,7 @@
   },
   "stone": {
    "lib": "rock.rock_face",
+   "class": "flat",
    "scale": [
     1.0,
     1.0
@@ -665,6 +709,7 @@
   },
   "tapa": {
    "lib": "patterns/islander/tapa",
+   "class": "flat",
    "scale": [
     0.4,
     0.4
@@ -680,6 +725,7 @@
   },
   "thatch": {
    "lib": "roof.thatch",
+   "class": "flat",
    "scale": [
     0.8,
     0.8
@@ -695,6 +741,7 @@
   },
   "wicker": {
    "lib": "patterns/common/basket-coil",
+   "class": "flat",
    "scale": [
     0.4,
     0.4
@@ -710,6 +757,7 @@
   },
   "wood": {
    "lib": "wood.carved",
+   "class": "flat",
    "scale": [
     1.0,
     1.0
@@ -725,6 +773,7 @@
   },
   "wax": {
    "lib": "wax.candle",
+   "class": "flat",
    "scale": [
     0.25,
     0.25
@@ -740,6 +789,7 @@
   },
   "tallow": {
    "lib": "wax.tallow",
+   "class": "flat",
    "scale": [
     0.25,
     0.25
@@ -755,6 +805,7 @@
   },
   "ropeTwist": {
    "lib": "fibre.rope.twist",
+   "class": "flat",
    "scale": [
     0.3,
     0.3
@@ -770,6 +821,7 @@
   },
   "linen": {
    "lib": "cloth.fabric045",
+   "class": "flat",
    "scale": [
     0.5,
     0.5
@@ -785,6 +837,7 @@
   },
   "canvasB": {
    "lib": "cloth.canvas.b",
+   "class": "flat",
    "scale": [
     0.5,
     0.5
@@ -800,6 +853,7 @@
   },
   "brick": {
    "lib": "paving.red_brick",
+   "class": "flat",
    "scale": [
     0.5,
     0.5
@@ -815,6 +869,7 @@
   },
   "scaleB": {
    "lib": "organic.scale.b",
+   "class": "flat",
    "scale": [
     0.3,
     0.3
@@ -830,6 +885,7 @@
   },
   "scaleOlive": {
    "lib": "organic.scale.olive",
+   "class": "flat",
    "scale": [
     0.3,
     0.3
@@ -845,6 +901,7 @@
   },
   "scaleOliveB": {
    "lib": "organic.scale.olive.b",
+   "class": "flat",
    "scale": [
     0.3,
     0.3
@@ -860,6 +917,7 @@
   },
   "featherB": {
    "lib": "feather.plumage.b",
+   "class": "flat",
    "scale": [
     0.15,
     0.15
@@ -875,6 +933,7 @@
   },
   "abalone": {
    "lib": "shell.abalone",
+   "class": "flat",
    "scale": [
     0.3,
     0.3
@@ -890,6 +949,7 @@
   },
   "abaloneSoft": {
    "lib": "shell.abalone.soft",
+   "class": "flat",
    "scale": [
     0.3,
     0.3
@@ -905,6 +965,7 @@
   },
   "nacreB": {
    "lib": "shell.nacre.b",
+   "class": "flat",
    "scale": [
     0.3,
     0.3
@@ -920,6 +981,7 @@
   },
   "nacreC": {
    "lib": "shell.nacre.c",
+   "class": "flat",
    "scale": [
     0.3,
     0.3
@@ -935,6 +997,7 @@
   },
   "shell": {
    "lib": "shell.conch",
+   "class": "flat",
    "scale": [
     0.3,
     0.3

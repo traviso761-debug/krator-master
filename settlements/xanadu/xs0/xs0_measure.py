@@ -41,12 +41,18 @@ PAGES = {
     'azure-dream-west-end': ('settlements/azure-dream/dist/azure-dream-west-end.html', 'settlements/azure-dream', 'kit'),
     'azure-dream-north-shore': ('settlements/azure-dream/dist/azure-dream-north-shore.html', 'settlements/azure-dream', 'kit'),
     'azure-dream-east-end': ('settlements/azure-dream/dist/azure-dream-east-end.html', 'settlements/azure-dream', 'kit'),
+    'nulab': ('settlements/nulab/dist/nulab.html', 'settlements/nulab', 'kit'),
+    'blakhed': ('settlements/blakhed/dist/blakhed.html', 'settlements/blakhed', 'kit'),
     'xanadu-lake-shore': ('openworld/xanadu-lake-shore/dist/xanadu-lake-shore.html', 'openworld/xanadu-lake-shore', 'world'),
     'xanadu-north-shore': ('openworld/xanadu-north-shore/dist/xanadu-north-shore.html', 'openworld/xanadu-north-shore', 'world'),
     'xanadu-oidong-highrift': ('openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.html', 'openworld/xanadu-oidong-highrift', 'world'),
 }
 MAX_VIEWS = int(os.environ.get('XS0_VIEWS', '8'))
 QUERY = os.environ.get('XS0_QUERY', '')
+# XS0_FORCE_SHADOW=1: after the compile read, turn a shadow on by hand (the renderer's shadow map, the first directional
+# light casting, every mesh receiving and casting), relink, read again. For the kit pages, which do not carry KSHADOW
+# yet, so ?shadow=1 does nothing there: this is the count S2's shadow will meet, measured rather than projected.
+FORCE_SHADOW = os.environ.get('XS0_FORCE_SHADOW') == '1'
 
 # every packed family the page carries: KMAT.packs (inline) and KMAT_SIDE (sidecars), by data URL
 FAMS_JS = "()=>{" + H.FIND_JS + r"""
@@ -83,6 +89,16 @@ COMPILE_JS = "()=>{" + H.FIND_JS + r"""
  try{ R.compile(sc,cam); }catch(e){ return 'compile threw: '+String(e).slice(0,160); } return 'compiled in '+Math.round(performance.now()-t)+' ms'; }"""
 # every program's sampler uniforms (not only the top five): what stacks up
 ALLPROG_JS = H.SAMPLERS_JS.replace("top:out.slice(0,5)", "top:out.slice(0,12)")
+FORCE_SHADOW_JS = "()=>{" + H.FIND_JS + r"""
+ let R=null; try{ R=(typeof renderer!=='undefined'&&renderer)||window.renderer||(window._api&&window._api.renderer)||(window.HOST&&HOST.renderer); }catch(e){}
+ const {sc,cam}=__kfind(); if(!R||!sc||!cam) return 'no renderer/scene/camera';
+ const was=R.shadowMap.enabled; R.shadowMap.enabled=true; let dl=null, casting=0, meshes=0, mats=new Set();
+ sc.traverse(o=>{ if(o.isLight&&o.castShadow) casting++; if(o.isDirectionalLight&&!dl) dl=o; });
+ if(!casting&&dl){ dl.castShadow=true; dl.shadow.mapSize.set(2048,2048); }
+ sc.traverse(o=>{ if(o.isMesh||o.isInstancedMesh){ o.receiveShadow=true; o.castShadow=true; meshes++;
+   (Array.isArray(o.material)?o.material:[o.material]).forEach(m=>{ if(m){ m.needsUpdate=true; mats.add(m); } }); } });
+ try{ R.compile(sc,cam); }catch(e){ return 'compile threw: '+String(e).slice(0,160); }
+ return {wasEnabled:was, castingBefore:casting, light:dl?(dl.name||'directional'):null, meshes, materials:mats.size}; }"""
 TEXWAIT_JS = "()=>!(window._texPending>0)"
 
 
@@ -149,6 +165,10 @@ async def measure(browser, pid):
         rec['compile'] = await pg.evaluate(COMPILE_JS)
         await frames(pg, 2)
         rec['reads'].append(await read(pg, 'after renderer.compile'))
+        if FORCE_SHADOW:
+            rec['force_shadow'] = await pg.evaluate(FORCE_SHADOW_JS)
+            await frames(pg, 3)
+            rec['reads'].append(await read(pg, 'shadow forced on'))
         # views
         if kind == 'world':
             try:

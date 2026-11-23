@@ -20,7 +20,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `20-rooms.js` | 6 | ROOM(): room registration (1) |
 | `30-programs.js` | 19 | Room programs: what each room kind needs (1) |
 | `40-grid.js` | 12 | Occupancy grid and walk search (1) |
-| `45-placer.js` | 30 **big** | The placer: furnishRoom() (1) |
+| `45-placer.js` | 31 **big** | The placer: furnishRoom() (1) |
 | `46-planner.js` | 32 **big** | The planner: planBuilding() (1) |
 | `47-life.js` | 16 | Life layer: walkers through doors (1) |
 | `48-audit.js` | 12 | Plan audit (declared geometry) (1) |

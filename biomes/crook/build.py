@@ -150,7 +150,9 @@ for f in ['53-core-water-terraces.js', '53b-core-water-terraces-draw.js', '56-co
 # core/shadow (off at load) and core/materials/record
 PATH.setdefault('10-core-shadow.js', P('core', 'shadow', '10-core-shadow.js'))
 PATH.setdefault('12-core-shadow-host.js', P('core', 'shadow', 'host', '12-core-shadow-host.js'))
-for f in ['23-mat-record.js', '25-matlib-host.js']:
+PATH.setdefault('06-core-khook.js', P('core', 'shader', '06-core-khook.js'))
+PATH.setdefault('06b-core-kcolor.js', P('core', 'shader', '06b-core-kcolor.js'))
+for f in ['23-mat-record.js', '25-matlib-host.js', '27-matlib-m1.js']:
     PATH.setdefault(f, P('core', 'materials', 'record', f))
 for slot, rel in sorted(SJ.get('core', {}).items()):
     PATH[slot] = P(*rel.split('/'))

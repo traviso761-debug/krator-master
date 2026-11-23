@@ -162,7 +162,9 @@ if miss:
     sys.exit(1)
 
 # 8. core/materials/record + packed library textures from tex/pack.json
-for f in ('23-mat-record.js', '25-matlib-host.js'):
+PATH.setdefault('06-core-khook.js', J('core', 'shader', '06-core-khook.js'))
+PATH.setdefault('06b-core-kcolor.js', J('core', 'shader', '06b-core-kcolor.js'))
+for f in ('23-mat-record.js', '25-matlib-host.js', '27-matlib-m1.js'):
     PATH.setdefault(f, J('core', 'materials', 'record', f))
 sys.path.insert(0, J('tools', 'textures'))
 import matlib_pack                                  # noqa: E402

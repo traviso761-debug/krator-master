@@ -15,10 +15,10 @@
     "core/materials/record/26-matlib-bind.js": "93c467f3805276f5aea2482da7fac2216db1e52d18d191c1925c8cd90446b54c",
     "core/shader/06-core-khook.js": "eb1a0436d3d5dbaab81c3e43de2b642c96d9c3b44331a8960801880e5e20c56d",
     "core/shader/06b-core-kcolor.js": "ededfc6b8a1a8aae5bf3c6ab40863478f9beb8e1aaf2acf4ba9da25ef6392115",
-    "core/water/20-core-water.js": "a5094b861983c604194f4d6061c771d414c5af42ea2810e5127c82c18ad87616",
-    "core/water/22-core-water-flow.js": "eab9b6ee42e8747dfd1082a1b6d76804b4659d5fd3a2b3d4bc1a566af13dbed7",
+    "core/water/20-core-water.js": "c515e4cdcd325d761b67f2d1be04594e3be934415a797663b922f45c1793abf3",
+    "core/water/22-core-water-flow.js": "1edbe647477b4cb0836b57dec39e1b8891cb20b190a6972f7ae29f2efd5a19c2",
     "core/water/50-core-water-draw.js": "9b487271223b64c2935b3336667963139dddcc055b852ac4f0a1912b2a9dd7e0",
-    "core/water/51-core-water-kinds.js": "e0c2edba19b476b4b46a4e08a63f0af695423d88b1da15b380795b2e4d07ead4",
+    "core/water/51-core-water-kinds.js": "549ea82cd960f7b78d0088c0a0059a1104eb360ccac82e916b48ec8cb29e0e57",
     "core/water/ext/56-core-water-breakup.js": "30c6de1a8913f7fa59ac92cd40526eb148d683b02dc31b6b521a3a768a2926bb",
     "kits/ringsea/KNOWN_ISSUES.md": "1755b188747836c4bb99942713a3906a70f2a8fd85ab8e793e280a685ad97e27",
     "kits/ringsea/PORT.md": "5a2fa1c0d7c531ad4f52042f7d9a2752f1df15637e548739b3a66d59e6022300",
@@ -144,16 +144,16 @@
    "listings": {
     "core/materials": "3342416a526793b328fa0871f795bdf98d2084292aa7bcb917fecc405076716c",
     "kits/ringsea/src": "ae602493113d0f2a71754b30e652407b73ab2b41ff00b513567fde743b2070fa",
-    "tools": "3dddf4cc1485975fa04f8ae3ecd4b11cf8303908ced5d46f4dcfc671861aec51",
-    "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
+    "tools": "f800e267a4f84d022b480235d8cfa4e558b7c894ea514163297507b477d5b1c3",
+    "tools/textures": "f4c83899af343d36f69b562b5e36b8a640189c9cc4b0a98d739cb05e0260eef6"
    },
    "outputs": {
-    "kits/ringsea/build-manifest.json": "14fba622879706a988fe4f60faca808c56aa2fedb1f1f5ad363b3ac0726e9d37",
-    "kits/ringsea/dist/ringsea.html": "907cb4b4c765dd96ba80701f48e9a5b442e92dc46bab5de8f7aa911ee4e69429"
+    "kits/ringsea/build-manifest.json": "36ab0b934858f21ba9e20510687b767e179ed5930a2de0d87e3b08d9123b98ac",
+    "kits/ringsea/dist/ringsea.html": "aa56755060a7e6665a71933975e8d06803f58d3dd5ee421f51322e3cd717e24d"
    },
    "outputs_raw": {
-    "kits/ringsea/build-manifest.json": "14fba622879706a988fe4f60faca808c56aa2fedb1f1f5ad363b3ac0726e9d37",
-    "kits/ringsea/dist/ringsea.html": "907cb4b4c765dd96ba80701f48e9a5b442e92dc46bab5de8f7aa911ee4e69429"
+    "kits/ringsea/build-manifest.json": "36ab0b934858f21ba9e20510687b767e179ed5930a2de0d87e3b08d9123b98ac",
+    "kits/ringsea/dist/ringsea.html": "aa56755060a7e6665a71933975e8d06803f58d3dd5ee421f51322e3cd717e24d"
    }
   }
  }

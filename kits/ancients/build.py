@@ -116,10 +116,12 @@ INTERIOR_CORE = [(CORE_RAND, '08-core-rand.js'), (CORE_TAGS, '50-core-tags.js'),
                  (CORE_FURNISH, '53-core-furnish-host.js')]
 # A target listed here takes the shared core/rand and core/tags (no interiors): its placement draws from KRAND and it
 # registers what it places with KTAGS before drawing it (CLAUDE.md, "Write code that is the same on every machine").
-TAGS_TARGETS = {'podium', 'sanctum', 'span', 'arcpile', 'strongbow', 'strongbow-today', 'theodiga', 'theodiga-today', 'gatearc'}   # theodiga: the Dome on the Water (2026-11-11); gatearc: the Hall of Heroes
+TAGS_TARGETS = {'podium', 'sanctum', 'span', 'arcpile', 'strongbow', 'strongbow-today', 'theodiga', 'theodiga-today', 'gatearc', 'parabola'}   # theodiga: the Dome on the Water (2026-11-11); gatearc: the Hall of Heroes
 TAGS_CORE = INTERIOR_CORE[:4]
 # fragments a target reads in place from another kit: the Sanctum's statuary is the Eternian kit's head generator
 # (kits/eternian/src/42-et-head.js, [G data]: one generator for every build that carries the Eternians' faces)
+PB_ATMOS = ['89-atmos-0-core.js', '89-atmos-0p-presets.js', '89-atmos-a-waves.js', '89-atmos-b-skylight.js']
+PB_WATER = ['20-core-water.js', '21-core-water-shore.js', '22-core-water-flow.js', '50-core-water-draw.js', '51-core-water-kinds.js']
 SB_TODAY_READS = ([(os.path.join(HERE, 'targets', 'strongbow'), f) for f in ('8aw0-strongbow-plan.js', '8aw1-strongbow-parts.js', '8aw2-strongbow-draw.js', '8aw3-strongbow-foot.js')]
                   + [(os.path.join(ROOT, 'settlements', 'strongbow', 'src'), f) for f in ('20-sb-census.js', '30-sb-layout.js', '31-sb-rules.js', '8ax0-sb-reclaim.js')])
 # Strongbow's town (SB3): its drawing and the isle demo's kit-piece flattener (isleFlatten), read in place; two GENERATED
@@ -197,7 +199,10 @@ TARGET_READS = {'podium': [(os.path.join(ROOT, 'kits', 'eternian', 'src'), '42-e
                 'sanctum': [(os.path.join(ROOT, 'kits', 'eternian', 'src'), '42-et-head.js'),
                             (os.path.join(HERE, 'targets', 'podium'), '8aq2-podium-skins.js')],
                 # the Hall of Heroes' stacks (2026-11-11) are core/terrain's KSTACKS rock bodies, read in place
-                'gatearc': [(os.path.join(ROOT, 'core', 'terrain'), '37-core-stacks.js')]}
+                'gatearc': [(os.path.join(ROOT, 'core', 'terrain'), '37-core-stacks.js')],
+                # Parabola (2026-11-11): its rain lake is core/water still water, on core/atmos's clock and skylight, read in place
+                # as Xanadu's kit page reads them (settlements/xanadu/build.py TARGET_FILES; targets/parabola/90p-parabola-lake.js)
+                'parabola': [(os.path.join(ROOT, 'core', 'atmos'), f) for f in PB_ATMOS] + [(os.path.join(ROOT, 'core', 'water'), f) for f in PB_WATER]}
 # THEODIGA TODAY (settlements/theodiga, T-town-2, 2026-11-16): the ruined dam, its Dome and its water as the theodiga target
 # draws them (its fragments read in place from targets/theodiga), and the town on the east rim: its drawer from the settlement
 # (src/8ay1-th-town.js) and the isle demo's flattener (58-isle-protos.js), read in place; and three generated bodies, the first
@@ -305,6 +310,7 @@ TARGET_OUT = {
     'arcpile': 'arcpile.html',               # the pile of blocks, the Rift's ruin (targets/arcpile)
     'strongbow': 'strongbow.html',           # the cliff arcology hung down the High Rift's escarpment at Oidong (targets/strongbow)
     'strongbow-today': 'strongbow-today.html',   # Strongbow as it stands now, with the settlement's reclamation (settlements/strongbow)
+    'parabola': 'parabola.html',             # the Bowl's arcology, a terraced paraboloid dish (targets/parabola)
     'wing': 'wing.html',                     # memorial group: the Wing
     'drum': 'drum.html',                     # memorial group: the Drum
     'blades': 'blades.html',                 # memorial group: the Blades
@@ -383,9 +389,11 @@ DETERMINISTIC = {
     '48-th-walk.js', '8ay9-th-walkers.js',             # theodiga-today: the walk graph (the geometry's) and the walkers (SIM.pose)
     '49-th-econ.js',                                   # theodiga-today: the economy on core/simulation (KRAND by place, no rng())
     '49m-th-money.js',                                 # theodiga-today: the qud's accounts, wages and prices (no rng())
+    '8av0-parabola-plan.js', '90p-parabola-lake.js',   # targets/parabola: KRAND-hashed records; the lake's still record
 }
 DETERMINISTIC |= {'06-core-khook.js', '06b-core-kcolor.js'}   # core/shader (no rnd())
 DETERMINISTIC |= set(TH_SIM_FILES)   # core/simulation (its own seeded stream, SIM.rng)
+DETERMINISTIC |= set(PB_ATMOS) | set(PB_WATER)   # core/atmos and core/water, read by targets/parabola: nothing placed
 
 # PARTS: a fragment cut at its section markers so it can be read (ROADMAP 3.4: none over 80 KB) -> the fragment it
 # continues. A part may open in the middle of a builder: the rules read it joined to the fragment it continues, as one

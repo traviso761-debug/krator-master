@@ -27,6 +27,7 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 |---|---|---|
 | `00-head.html` | 1 |  |
 | `26k-kit.js` | 5 |  |
+| `27v-yn-vstack.js` | 9 |  |
 | `28-yn-matfix.js` | <1 |  |
 | `31-alt-takes.js` | <1 |  |
 | `36p-yn-openfix.js` | <1 |  |

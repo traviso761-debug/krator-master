@@ -517,7 +517,7 @@
   },
   "xMosC": {
    "lib": "patterns/common/mosaic-star-lapis",
-   "class": "glazed",
+   "class": "flat",
    "scale": [
     1.2,
     1.2
@@ -531,7 +531,7 @@
   },
   "xMosD": {
    "lib": "patterns/common/mosaic-arabesque-lapis",
-   "class": "glazed",
+   "class": "flat",
    "scale": [
     1.2,
     0.8
@@ -545,7 +545,7 @@
   },
   "xBandC": {
    "lib": "patterns/common/frieze-star-maroon",
-   "class": "glazed",
+   "class": "flat",
    "scale": [
     1.5,
     1.5
@@ -559,7 +559,8 @@
   },
   "xSun": {
    "lib": "patterns/xanadu/sun-emblem",
-   "class": "flat",
+   "class": "cutout",
+   "cutout": true,
    "scale": [
     1,
     1
@@ -588,7 +589,8 @@
   },
   "xValance": {
    "lib": "patterns/common/valance-scallop",
-   "class": "flat",
+   "class": "cutout",
+   "cutout": true,
    "scale": [
     1.0,
     1.0
@@ -630,7 +632,7 @@
   },
   "xGiltC": {
    "lib": "patterns/xanadu/mughal-gilt-ceiling",
-   "class": "glazed",
+   "class": "flat",
    "scale": [
     1.2,
     1.2
@@ -672,7 +674,7 @@
   },
   "xBandR": {
    "lib": "patterns/xanadu/peacock-band",
-   "class": "glazed",
+   "class": "flat",
    "scale": [
     1.5,
     1.5

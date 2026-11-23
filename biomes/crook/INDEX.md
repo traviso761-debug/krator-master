@@ -16,9 +16,11 @@ From `core/terrain/` (shared; see `core/README.md`): `35-core-strata.js`, `38-co
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 1 |  |
+| `28-vstack-mipvar.js` | 2 |  |
 | `40-biome-crook-phys.js` | 16 |  |
 | `41-biome-crook-sites.js` | 5 |  |
 | `45-host-stage.js` | 23 | station heightfields & water surfaces (62); pure CROOK_PHYS field evaluation & raster cache (349); KSPACE spatial index & KHAZ data-driven hazards (459); BIO.init host binding (498) |
+| `46-vstack.js` | <1 |  |
 | `50-biome-crook-species.js` | 37 **big** |  |
 | `60-biome-crook-place.js` | 24 |  |
 | `70-biome-crook.js` | <1 |  |
@@ -30,6 +32,7 @@ From `core/terrain/` (shared; see `core/README.md`): `35-core-strata.js`, `38-co
 | `89a-host-atmos.js` | 2 |  |
 | `89w-host-water.js` | 7 |  |
 | `89z-host-build.js` | 3 |  |
+| `89z9-vstack-post.js` | 6 |  |
 | `99-host-take.js` | 17 |  |
 | `99-tail.html` | <1 |  |
 

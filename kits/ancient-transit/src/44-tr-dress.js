@@ -6,7 +6,8 @@
 //   KTRANSIT.dress(street, o) -> D
 //     street {id, pts: [[x, z], ...], width, ground(x, z)}
 //     o.seed, o.space (a KSPACE index; made here when absent), o.blocked(x, z, r) -> bool, o.network and o.road (a KTRANSIT.network and this
-//     street's index in it: the pieces keep off the junctions, signals stand on their pavement corners), o.war (a KTRANSIT.war: its craters and pieces are
+//     street's index in it: the pieces keep off the junctions, signals stand on their pavement corners), o.wars (every street's war: a corner's
+//     signal keeps off all their craters), o.war (a KTRANSIT.war: its craters and pieces are
 //     kept off), o.damage (0..1 or a function of s: the furniture's shares slide toward fallen, burnt and crushed), o.step (a slot every 8 m), o.ruin (furniture
 //     shares), o.kinds ({kind: weight} over KTRANSIT.KINDS' defaults), o.rubble (heaps per 100 m of street, 1.5), o.across (true: a gantry
 //     or a footbridge across the street every 120 m or so), o.pavement (the pavement's width, 3.5), o.only (a list of kinds to lay)
@@ -70,6 +71,8 @@
     if (o.network && o.road != null) o.network.junctions.forEach(function (J, ji) { if (!J.arms.some(function (a) { return a.road === o.road; })) return; var home = J.arms.filter(function (a) { return a.road === o.road; })[0];
       J.corners.forEach(function (c, ci) { if ((c.straight && J.n < 3) || Math.min(J.arms[c.between[0]].road, J.arms[c.between[1]].road) !== o.road) return;   /* a T's straight side has its signal too, facing the stem */ var am = c.yaw, x = c.x, z = c.z, kind = J.n >= 3 ? 'tr_signal' : 'tr_sign', K = T.KINDS[kind], pk = T.pick(KRAND.hash(seed, ji, 900 + ci), kind, null, sharesAt(home.s));
         if (o.blocked && o.blocked(x, z, 1)) return;
+        /* a corner is two streets': it keeps off the craters of every war given (o.wars, else this street's o.war) */
+        if ((o.wars || (o.war ? [o.war] : [])).some(function (Wr) { return T.inCrater(Wr, x, z, 1); })) return;
         var rec = { id: id + '.f' + n, kind: kind, state: pk.state, variant: pk.variant, seed: pk.seed, x: x, z: z, y: street.ground(x, z), yaw: am, side: 0, s: home.s, r: Math.max(K.w, K.d) / 2 + 0.3, junction: J.id }; n++; pieces.push(rec); if (S) S.insert(rec, x, z, rec.r); }); });
     /* the rubble heaps on the carriageway */
     var heaps = Math.round(num(o.rubble, 1.5) * P.L / 100);

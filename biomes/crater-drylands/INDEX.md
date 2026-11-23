@@ -48,6 +48,6 @@ Each station builds one page (`build.py --station <name>`) from its own fragment
 
 | Station | Fragments | KB |
 |---|---|---|
-| edge | 45-host-stage.js, 48n0-host-nwbay-open.js, 48n9-host-nwbay-close.js, 86-host-edge.js, 99-host-zseason.js | 20 |
+| edge | 45-host-stage.js, 48n0-host-nwbay-open.js, 48n9-host-nwbay-close.js, 86-host-edge.js, 99-host-zseason.js | 21 |
 | salt | 45-host-stage.js, 86-host-salt.js, 89x-host-salt.js | 19 |
 | south | 45-host-stage.js, 47a9-host-hj-end.js, 47b9-host-sed-end.js, 48s9-host-savrim-end.js, 85-host-step.js, 86-host-south.js, 99-host-zseason.js | 29 |

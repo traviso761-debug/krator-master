@@ -13,7 +13,8 @@ The page is one <script> made of, in filename order:
   core/shader           06-core-khook.js, 06b-core-kcolor.js, 07-core-kwarp.js (KHOOK, KCOLOR)
   core/rand             08-core-rand.js (KRAND: core/tags' uid is its hash)
   core/drawn            10-core-drawn.js (KDRAWN: the drawn ground grid for camera clearance checks)
-  core/materials/record 23-mat-record.js, 24-tex-def.js, 25-matlib-host.js (KMAT: the material records and the library loader)
+  core/materials/record 23-mat-record.js, 24-tex-def.js, 25-matlib-host.js, 27-matlib-m1.js (KMAT + Stage 5 KMAT_M1)
+  core/interiors        10-core-roomlight.js (Stage 7 KROOMLIGHT: room-graph daylight, portal pool & corner AO)
   core/tags             50/52/53-core-tags*.js (KTAGS: every placed thing is registered with its class and tags)
   core/furnish          50/52/53-core-furnish*.js (KFURN: the catalog furniture placement pass)
   core/host             the shell (CORE_HOST: khost.SHELL and core/engine's HOST, the polytool and the key map)
@@ -84,7 +85,9 @@ CORE_DIRS = [os.path.join(ROOT, 'core', *d.split('/')) for d in ('shader', 'rand
 assert set(kengine.CORE_DIRS) <= {'shader', 'rand', 'materials/record', 'tags', 'furnish', 'atmos', 'door', 'walk', 'walk/box'}, \
     'core/engine/engine.py CORE_DIRS grew: list the new folder here'
 _WATER = os.path.join(ROOT, 'core', 'water')
-CORE_FILES = ([os.path.join(ROOT, 'core', 'drawn', '10-core-drawn.js')] +
+CORE_FILES = ([os.path.join(ROOT, 'core', 'drawn', '10-core-drawn.js'),
+               os.path.join(ROOT, 'core', 'materials', 'record', '27-matlib-m1.js'),
+               os.path.join(ROOT, 'core', 'interiors', '10-core-roomlight.js')] +
               [os.path.join(_WATER, f) for f in ('20-core-water.js', '22-core-water-flow.js', '50-core-water-draw.js', '51-core-water-kinds.js')])
 VENDORED = {}
 FURN_CULTURES = ['generic', 'generic-goods', 'jobs']
@@ -95,17 +98,30 @@ SIDE = None if '--inline-packs' in sys.argv else {}
 
 
 def matlib_pack():
-    """The library textures materials.json names, as data URLs (KMAT.pack). Reads the committed tex/ files only."""
+    """The library textures materials.json names, as data URLs (KMAT.pack), plus M2 mipVariance and M3 pom flags."""
     pj = os.path.join(TEX_DIR, 'pack.json')
     if not os.path.isfile(pj):
         return "/* no tex/pack.json: the kit runs on vertex colours only */\nKMAT.pack('ria', {});\n"
     pack = json.load(open(pj, encoding='utf-8'))
+    mv_file = os.path.join(HERE, 'mip-variance.json')
+    mv_fams = json.load(open(mv_file, encoding='utf-8')).get('families', {}) if os.path.isfile(mv_file) else {}
+    cfg_file = os.path.join(HERE, 'materials.json')
+    cfg_fams = json.load(open(cfg_file, encoding='utf-8')).get('families', {}) if os.path.isfile(cfg_file) else {}
     out = []
     for fam in sorted(pack['families']):
         e = pack['families'][fam]
-        f = {'lib': e['lib'], 'scale': e['scale'], 'metal': e['metal'], 'normalScale': e['normalScale'],
+        fc = cfg_fams.get(fam) or {}
+        sz = e.get('size', 512)
+        f = {'lib': e['lib'], 'scale': e['scale'], 'size': sz[0] if isinstance(sz, list) else int(sz),
+             'metal': e['metal'], 'normalScale': e['normalScale'],
              'specular': e.get('specular', 0.5), 'breakup': e.get('breakup'),
              'tint': e['tint']['keep'], 'mean': e['tint']['mean']}
+        if e.get('height'):
+            f['height'] = True
+        if fc.get('height'):
+            f['pom'] = True
+        if fam in mv_fams:
+            f['mipVariance'] = mv_fams[fam]
         for k, name in sorted(e['files'].items()):
             f[k] = 'data:image/webp;base64,' + base64.b64encode(open(os.path.join(TEX_DIR, name), 'rb').read()).decode()
         out.append(' %s: %s' % (json.dumps(fam), json.dumps(f, sort_keys=True)))

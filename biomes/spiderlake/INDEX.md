@@ -14,9 +14,11 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 1 |  |
+| `28-vstack-mipvar.js` | 2 |  |
 | `40-biome-spider-phys.js` | 13 |  |
 | `41-biome-spider-sites.js` | 8 |  |
 | `45-host-stage.js` | 25 | station heightfields & hydrological channels (66); pure SPIDER_PHYS field evaluation & raster cache (405); KSPACE spatial keep-clear & KHAZ data-driven haz (473); BIO.init host binding (539) |
+| `46-vstack.js` | <1 |  |
 | `50-biome-spider-species.js` | 37 **big** |  |
 | `60-biome-spider-place.js` | 21 |  |
 | `70-biome-spider.js` | <1 |  |
@@ -28,6 +30,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `89a-host-atmos.js` | 5 |  |
 | `89w-host-water.js` | 5 |  |
 | `89z-host-build.js` | 3 |  |
+| `89z9-vstack-post.js` | 6 |  |
 | `99-host-take.js` | 20 |  |
 | `99-tail.html` | <1 |  |
 

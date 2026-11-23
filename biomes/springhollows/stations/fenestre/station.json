@@ -1,0 +1,19 @@
+{
+ "id": "fenestre",
+ "canvas": "5.1 (1821x1723)",
+ "title": "Springhollows — Collapsed 18 m Sinkhole Fern-Fenestre & Celestine Crystal Cathedral",
+ "out": "springhollows-fenestre.html",
+ "px": [1212, 174],
+ "sky": [940, -156],
+ "elevM": 1257.2,
+ "pAtm": 1.37,
+ "koppen": "Cfa",
+ "rainMmYr": 1475,
+ "cavernId": "cav_ozarks_porphyry",
+ "tubeId": "tube_ozarks_15",
+ "strataStack": "carbonate-porphyry-mvt",
+ "reserves": [
+  { "id": "site:high-ria-calamine-assay", "x": -118, "z": -96, "r": 38 }
+ ],
+ "modes": ["Day", "Dusk Cave-Glow"]
+}

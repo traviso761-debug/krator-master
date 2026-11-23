@@ -1,0 +1,20 @@
+{
+ "id": "spring",
+ "canvas": "5.1 (1821x1723)",
+ "title": "Springhollows — Cav Ozarks Resurgence Mammoth-Spring & Bald-Cypress Hollow",
+ "out": "springhollows.html",
+ "px": [1144, 168],
+ "sky": [872, -162],
+ "elevM": 996.2,
+ "pAtm": 1.41,
+ "koppen": "Cfa",
+ "rainMmYr": 1255,
+ "springQMinM3s": 24.0,
+ "cavernId": "cav_ozarks_resurgence",
+ "tubeId": "tube_ozarks_15",
+ "strataStack": "carbonate-shelf-over-porphyry",
+ "reserves": [
+  { "id": "site:high-ria-springworks", "x": 88, "z": -78, "r": 42 }
+ ],
+ "modes": ["Day", "Dusk Cave-Glow"]
+}

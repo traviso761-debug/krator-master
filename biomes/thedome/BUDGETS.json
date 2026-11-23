@@ -1,0 +1,41 @@
+{
+ "what": "Stage 1 vertical-stack budgets for biomes/thedome (GRAPHICS-TERRAIN-PROPOSAL.md Stage 1 & biomes/thedome/PLAN.md section 8): sidecar texture packs (.tex.thedome.js) keep every HTML page < 2.0 MB, active shader samplers < 15, triangles <= 5.5 M, draw calls <= 110, and estimated VRAM <= 380 MB",
+ "pages": {
+  "thedome.html": {
+   "bytes": 2097152,
+   "tris": 5500000,
+   "calls": 110,
+   "samplers": 15,
+   "vram_mb": 380,
+   "why": "Station 1 (apron) with .tex.thedome.js sidecar keeps HTML under 2.0 MB, 128 merged WATER.drawPools gnamma sky-mirrors + 3 A-tent arches under 110 calls, <= 3 KGROUND layers under 15 samplers, and VRAM under 380 MB",
+   "raised": "2026-11-23"
+  },
+  "thedome-moat.html": {
+   "bytes": 2097152,
+   "tris": 5500000,
+   "calls": 110,
+   "samplers": 15,
+   "vram_mb": 380,
+   "why": "Station 2 (moat) with .tex.thedome.js + filtered 6-family .tex.swlowlands.js sidecars keeps HTML under 2.0 MB, KSTACKS ring-dike hogbacks + seepage fen under 110 calls, <= 3 KGROUND layers under 15 samplers, and VRAM under 380 MB",
+   "raised": "2026-11-23"
+  },
+  "thedome-crown.html": {
+   "bytes": 2097152,
+   "tris": 5500000,
+   "calls": 110,
+   "samplers": 15,
+   "vram_mb": 380,
+   "why": "Station 3 (crown) +2,924.8 m apex with .tex.thedome.js sidecar keeps HTML under 2.0 MB, concentric cloudgarlandpine impostor ribbons + ATMOS.fogBelt under 110 calls and 15 samplers, and VRAM under 380 MB",
+   "raised": "2026-11-23"
+  },
+  "thedome-cleft.html": {
+   "bytes": 2097152,
+   "tris": 5500000,
+   "calls": 110,
+   "samplers": 15,
+   "vram_mb": 380,
+   "why": "Station 4 (cleft) radial Kluft fissure with .tex.thedome.js sidecar keeps HTML under 2.0 MB, KCAVERN + KSPELEO.SMOKY smoky-quartz megaprisms under 110 calls and 15 samplers, and VRAM under 380 MB",
+   "raised": "2026-11-23"
+  }
+ }
+}

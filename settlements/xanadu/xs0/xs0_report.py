@@ -13,10 +13,13 @@ fam = json.load(open(os.path.join(SP, 'fam.json')))
 runs = {}
 for f in sorted(glob.glob(os.path.join(SP, 'g*.json'))):
     runs.update(json.load(open(f)))
+# cloud.json: an earlier XS0-MEASURE.json (the SwiftShader run, f339af03), kept beside each page for comparison
+sw = json.load(open(os.path.join(SP, 'cloud.json'), encoding='utf-8')).get('pages', {}) if os.path.isfile(os.path.join(SP, 'cloud.json')) else {}
+fs = json.load(open(os.path.join(SP, 'fs.json'))) if os.path.isfile(os.path.join(SP, 'fs.json')) else {}
 nos = json.load(open(os.path.join(SP, 'noshadow.json'))) if os.path.isfile(os.path.join(SP, 'noshadow.json')) else {}
 ORDER = ['erewhon', 'xanadu-sheet', 'pher', 'kirstabal', 'thalaba', 'thalaba-pieces', 'lightwall', 'qiblai', 'strongwall',
          'flashing-eye', 'viridian', 'viridian-sheet', 'azure-dream', 'azure-dream-summit', 'azure-dream-west-end',
-         'azure-dream-north-shore', 'azure-dream-east-end', 'xanadu-lake-shore', 'xanadu-north-shore', 'xanadu-oidong-highrift']
+         'azure-dream-north-shore', 'azure-dream-east-end', 'nulab', 'blakhed', 'xanadu-lake-shore', 'xanadu-north-shore', 'xanadu-oidong-highrift']
 
 
 def fclass(build, f):
@@ -38,6 +41,7 @@ def fams_of(r):
     for s in seen.values():
         c, e = fclass(s['build'], s['fam'])
         s['class'] = c
+        s['xs1Class'] = e and e.get('xs1Class')
         s['rule'] = bool(e and e['rule'])
         s['roughMean'] = e and e['roughMean']
         if c not in ('cut-out',) and s['drawn'] and s['alphaTest'] > 0:
@@ -76,6 +80,16 @@ for pid in ORDER:
         n = nos[pid]
         rec['as_shipped'] = {'query': n.get('query'), 'samplers_worst': worst(n)[0], 'programs_top': (n.get('final') or {}).get('top'),
                              'shadow_state': n.get('shadow_state'), 'vram': worst(n)[1]}
+    if pid in sw:
+        c = sw[pid]
+        rec['swiftshader'] = {'samplers_worst': c.get('samplers_worst'), 'vram_worst': c.get('vram_worst'), 'bytes': c.get('bytes'),
+                              'renderer': c.get('renderer')}
+    if pid in fs:
+        n = fs[pid]
+        fr = [x for x in (n.get('reads') or []) if x.get('at') == 'shadow forced on']
+        rec['forced_shadow'] = {'samplers_worst': worst(n)[0], 'before': max([x['samplers_max'] for x in (n.get('reads') or [])
+                                if x.get('at') != 'shadow forced on' and x.get('samplers_max') is not None] or [None]),
+                                'top': fr[0]['top'][:5] if fr else None, 'how': n.get('force_shadow'), 'renderer': n.get('renderer')}
     out['pages'][pid] = rec
 
 if __name__ == '__main__':
