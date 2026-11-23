@@ -18,8 +18,8 @@ variables, so a fragment can use what an earlier one declared.
 | `24-temp-map.js` | 14 | the temperature layer, drawn from `tm`/`th`/`tl` and shaded by `t` |
 | `25-zones.js` | 7 | the zones layer, drawn from `z` |
 | `26-overlay.js` | 8 | the region overlay canvas draped on the terrain |
-| `27-water.js` | 9 | the water surface mesh (each lake at its own level) |
-| `30-vents.js` | 53 | volcanic vents: lava floors, glow, smoke; vertical exaggeration |
+| `27-water.js` | 26 | the water surface mesh (each lake at its own level, extending cleanly under higher shore banks for Z-clipped MSTRIDE=2 seating) |
+| `30-vents.js` | 60 | volcanic vents: lava floors, glow, smoke; vertical exaggeration |
 | `31-orbit.js` | 50 | orbit controls |
 | `32-fly.js` | 27 | WASD fly |
 | `33-hover.js` | 59 | picking, the hover readout (elevation, zone, air, rain, class, temperature, wind, river, canal) |

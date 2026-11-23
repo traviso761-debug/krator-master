@@ -858,4 +858,24 @@ for e23_sid, e23_xy in (
     s_23 = setts_w0.get(e23_sid)
     check('5.1e23 pin %s (%s) stands on dry ground at %s' % (e23_sid, s_23 and s_23['name'], e23_xy),
           s_23 is not None and (int(round(s_23['px'])), int(round(s_23['py']))) == e23_xy and not bool(whas[e23_xy[1], e23_xy[0]]))
+
+# ---- 20. 5.1e20 v2: Iron Republic Mega-Switzerland (8 flooded glacial lakes, > 7,000 m cordilleras, 8 outlets & 9 dry pins)
+ir_basins = {b['id']: b for b in (D.get('basins') or []) if b.get('region') == 'rmufxti8qwcxy'}
+check('5.1e20 v2 Iron Republic holds all 8 stepped Swiss glacial lakes (>= 8,500 km2)',
+      set(ir_basins.keys()) == {'L1_roketsjo', 'L2_korsvatn', 'L3_glasklar', 'L4_kaskejtsjo', 'L5_nordsjo', 'L6_stalsjo', 'L7_malmtjarn', 'L8_jurasjo'}
+      and sum(b['km2'] for b in ir_basins.values()) >= 8500
+      and all(180 <= b['depth_m'] <= 750 for b in ir_basins.values()))
+ir_mask_t = regs_w0['rmufxti8qwcxy']
+check('5.1e20 v2 Iron Republic High Alps culminate > 7,000 m with > 5,000 high-alpine snow cells',
+      float(E[ir_mask_t].max()) > 7000.0 and int(((E > 5400.0) & ir_mask_t).sum()) >= 5000)
+ir_out_names = {o.get('from') for o in (D.get('outlets') or []) if isinstance(o.get('from'), str)}
+check('5.1e20 v2 DATA.outlets holds all 8 Iron Republic lake spillways',
+      {'Roketsjö', 'Korsvatn', 'Glasklar-Sjö', 'Kaskejt-Sjö', 'Nordsjö', 'Stålsjö', 'Malmtjärn', 'Jurasjö'}.issubset(ir_out_names))
+for ir_sname, ir_xy in (
+    ('Roketstad', (632, 716)), ('Glaive', (599, 721)), ('Footfall', (560, 767)),
+    ('Urverkstad', (591, 801)), ('Cascade', (568, 841)), ('Slussport', (576, 693)),
+    ('Korshamn', (627, 740)), ('Stahlborn', (618, 859)), ('Lipp', (691, 619)),
+):
+    check('5.1e20 v2 Iron Republic pin %s stands on dry bench at %s' % (ir_sname, ir_xy),
+          not bool(whas[ir_xy[1], ir_xy[0]]) and float(E[ir_xy[1], ir_xy[0]]) >= 2200.0)
 print('%d checks passed' % ok)

@@ -45,7 +45,11 @@
     pos.needsUpdate=true; geo.computeVertexNormals();
     for(let j=0;j<MH;j++) for(let i=0;i<MW;i++){
       const sx=Math.min(VW-1,i*MSTRIDE), sy=Math.min(VH-1,j*MSTRIDE), sidx=sy*VW+sx, vidx=j*MW+i;
-      wpos.setY(vidx, whas[sidx] ? wlev[sidx]/1000*vex+0.02*vex : base[vidx]*vex-0.4*vex);
+      let wy;
+      if(whas[sidx]) wy=wlev[sidx]/1000*vex+0.015*vex;
+      else if(wHasNear[vidx]&&base[vidx]>wNearLev[vidx]/1000+0.025) wy=wNearLev[vidx]/1000*vex+0.015*vex;
+      else wy=base[vidx]*vex-1.2*vex;
+      wpos.setY(vidx, wy);
     }
     wpos.needsUpdate=true; wgeo.computeVertexNormals();
     placeVolcano();
