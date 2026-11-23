@@ -81,6 +81,8 @@ return {errs:document.getElementById('errs')?document.getElementById('errs').tex
 
 # --------------------------------------------------------------------------
 # Geometric invariants. Each returns {name, ok, detail}.
+# the furnished defs whose every floor --interiors must reach (a target's verify sets it: Strongwall's names its fort)
+INTERIORS_MUST = []
 ASSERT_JS = r"""()=>{
 const A=window._api; if(!A) return [{name:'probe',ok:false,detail:'window._api missing (src/91-probe.js)'}];
 const R=[];
@@ -270,7 +272,7 @@ async def run(a):
             print(json.dumps({k: r.get(k) for k in ('vauto', 'hollow', 'doors', 'interiors', 'pieces', 'reach')}))
             for line in r.get('list', [])[:60]:
                 print('  ' + line)
-            must = []   # the buildings planned room by room: every floor reached
+            must = list(INTERIORS_MUST)   # the buildings planned room by room: every floor reached (a taker's verify names them)
             bad = [l for l in r.get('list', []) if l.split(' ')[0] in must and ' unreached 0' not in l]
             ok = bool(r.get('hollow') and r['hollow']['bodies'] > 0 and r.get('interiors')) and not bad
             print(("  PASS  " if ok else "  FAIL  ") + "interiors-hollow-and-reach : %d hollow bodies, %d furnished buildings, %d of %d floors reached%s"
