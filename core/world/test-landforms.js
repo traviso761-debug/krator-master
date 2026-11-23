@@ -83,5 +83,16 @@ WLAND.reset();WLAND.init(Object.assign({ox:0,oz:0},base,{styleName:()=>'steps',c
 // determinism: two inits give the same records
 WLAND.reset();WLAND.init(Object.assign({ox:0,oz:0},base));const D2=WLAND.list(0,0,40000,40000);
 ok('deterministic: two inits, the same records',ids(D2)===ids(A)&&JSON.stringify(D2.map(B=>B.top))===JSON.stringify(A.map(B=>B.top)),false);
+// version 2 alpine & volcanic crest-gated gendarmes: none on a flat basin, placed on convex ridges, and none in version 1
+{const ridgeG=(x,z)=>2400-Math.abs(x-1600*Math.floor((x+800)/1600))*.35+25*KRAND.vnoise(x/2500,z/2500,.5,13);
+ WLAND.reset();WLAND.init({ox:0,oz:0,seed:77,version:1,ground:ridgeG,styleName:x=>x<10000?'alpine':'volcanic',overlay:()=>'',caprock:()=>0,keep:()=>false,sites:[]});
+ const v1List=WLAND.list(0,0,20000,20000);
+ WLAND.reset();WLAND.init({ox:0,oz:0,seed:77,version:2,ground:()=>1500,styleName:()=>'alpine',overlay:()=>'',caprock:()=>0,keep:()=>false,sites:[]});
+ const flatList=WLAND.list(0,0,20000,20000);
+ WLAND.reset();WLAND.init({ox:0,oz:0,seed:77,version:2,ground:ridgeG,styleName:x=>x<10000?'alpine':'volcanic',overlay:()=>'',caprock:()=>0,keep:()=>false,sites:[]});
+ const v2List=WLAND.list(0,0,20000,20000);
+ const allCrest=v2List.every(B=>ridgeG(B.x,B.z)-.25*(ridgeG(B.x+120,B.z)+ridgeG(B.x-120,B.z)+ridgeG(B.x,B.z+120)+ridgeG(B.x,B.z-120))>=5);
+ ok('v2 alpine/volcanic gendarmes: 0 in v1 ('+v1List.length+'), 0 on flat ground ('+flatList.length+'), '+v2List.length+' on convex ridges',
+  v1List.length===0&&flatList.length===0&&v2List.length>=6&&allCrest,flatList.length>0);}
 console.log(bad?bad+' FAILED':'all passed');
 process.exit(bad?1:0);

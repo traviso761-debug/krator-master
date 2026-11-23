@@ -22,6 +22,11 @@ function snapshot(){const G={};
  G.erode=pts.map(([x,z])=>r6(WRELIEF.erode(500,x,z,-.15,.05,S,800,0)));
  G.peaks=pts.map(([x,z])=>r6(WRELIEF.peaks(0,x,z,S,1200,.8,0)));
  G.caprock=pts.map(([x,z])=>r6(WRELIEF.caprock(x,z,S,600)));
+ // WRELIEF v2 (alpine=2): rotated-gradient peaks and steep-wall crags at the same points
+ WRELIEF.init({ox:2000000,oz:3000000,seed:7,version:2});const SA={peak:1,rock:.5};
+ G.peaks2=pts.map(([x,z])=>r6(WRELIEF.peaks(0,x,z,SA,1200,.8,0)));
+ G.crags2=pts.map(([x,z])=>r6(WRELIEF.crags(500,x,z,-.75,.25,SA,1400,0)));
+ WRELIEF.init({ox:2000000,oz:3000000,seed:7});
  // WMICRO (PLAN-MICRO.md): the hills, the drainage (its height and the slope it leaves) and the grain at the same points
  WMICRO.init({ox:2000000,oz:3000000,seed:9});const SM={hill:40,gully:.8,rough:1};
  G.mhills=pts.map(([x,z])=>r6(WMICRO.hills(x,z,SM,600,0)));
@@ -52,6 +57,11 @@ function snapshot(){const G={};
   WLAND.reset();WLAND.init({ox:0,oz:0,seed:78,ground,styleName:x=>x<6000?'badland':'karst',overlay:()=>'',caprock:()=>1,keep:()=>false,sites:[]});
   const S2=WLAND.list(0,0,12000,8000);G.records2=S2.map(B=>[B.id,r6(B.x),r6(B.z),r6(B.top==null?0:B.top),r6(B.R)]);
   G.land2=S2.slice(0,24).map(B=>r6(WLAND.apply(ground(B.x,B.z),B.x+B.R*.3,B.z,0)));
+  // version 2 alpine & volcanic ridge-crest gendarmes and plugs
+  const ridgeG=(x,z)=>2400-Math.abs(x-1600*Math.floor((x+800)/1600))*.35+25*KRAND.vnoise(x/2500,z/2500,.5,13);
+  WLAND.reset();WLAND.init({ox:0,oz:0,seed:81,version:2,ground:ridgeG,styleName:x=>x<8000?'alpine':'volcanic',overlay:()=>'',caprock:()=>0,keep:()=>false,sites:[]});
+  const SA2=WLAND.list(0,0,16000,12000);G.records_alpine2=SA2.map(B=>[B.id,B.name,r6(B.x),r6(B.z),r6(B.top==null?0:B.top),r6(B.R)]);
+  G.land_alpine2=SA2.slice(0,20).map(B=>r6(WLAND.apply(ridgeG(B.x,B.z),B.x+B.R*.3,B.z,0)));
   // a pinned mesa and the master gja, in a region whose box takes the gja in (its middle at local 6000, 6000)
   WLAND.reset();WLAND.pin(o=>[KSTACKS.make({id:'pin:mesa',kind:'mesa',x:-4000,z:9000,y0:o.ground(-4000,9000)-5,seed:9,tiers:[{h:150,r:260}]})]);
   WLAND.init({ox:1569*2000-6000,oz:1643*2000-6000,seed:79,ground,styleName:()=>'none',overlay:()=>'',caprock:()=>0,keep:()=>false,sites:[{x:-4000,z:9000,pinned:1}],

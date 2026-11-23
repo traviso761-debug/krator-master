@@ -183,10 +183,10 @@
     "core/water/farbed/53-core-water-farbed.js": "8755bb0d34fe5af125c89fd66a7517d88171c5aaa2364918dd21f7dfd5320b66",
     "core/world/00-head.html": "f13d6e95835b879b2558b833c915dec3020683afff8a62962d2c7aaa68659c6e",
     "core/world/40-world-smooth.js": "e8c66b277bbf6c21e2c677b4506b5ef5a14448281fec08f2e7e4f487f137b116",
-    "core/world/41-world-fields.js": "c86200c8ae5c13eaf9eedd8460855294594316097261a5c3f380a53eb250bc3e",
+    "core/world/41-world-fields.js": "70bca9b1b09f661619aa30a0a8c8905dd44a4d6d367f6347ec544032190607ef",
     "core/world/42-world-roads.js": "8b9b8bf77763f7f8c1507f103352c821d1032021ec73218b96aa4a5783451277",
-    "core/world/43-world-relief.js": "18a974bb8797c1474a194e77e69fa469bae7873be4e994728e3c60a8cb375601",
-    "core/world/43b-world-landforms.js": "2ba3c2a2f677f803ed556770a7dc920bb3c087b87c8ee99d80e7571208cfa981",
+    "core/world/43-world-relief.js": "cfee26708b5726657518bf9b78155b6bbf7f401ca0673dfed3f18cc6d7e60d97",
+    "core/world/43b-world-landforms.js": "2f4385f36d3a7b78e160c6b209919aa672ed353cbd7354343723f71cf5cc972d",
     "core/world/43m-world-micro.js": "d985aca11c95b11be4d19a8c626658081e15fe97cc12dc8efd9abba033380b1b",
     "core/world/44-world-streams.js": "30dd78741a14355b6d9d40a03a439253d7316a89023fe84d59fb7a353fb9390d",
     "core/world/44c-world-coast.js": "a60b4ef02cf1f7c3ac616b509eb0a19d1f4a3af068500ad6bd5d2fe0279d8bf7",
@@ -211,7 +211,7 @@
     "core/world/91-world-probe.js": "8b3669350f3a1f379c105952fd136f3781672802651b6e91ef1b3e26c6cb8091",
     "core/world/93-world-propose.js": "df6242ce0b069c014d9e4250610a7db1479b647974f00d9c1dda0432fe0c6917",
     "core/world/94-world-export.js": "7f10aba242669bccfdc9297d98c5fdd608fcd58140844942e8f91f3553785fea",
-    "core/world/98-world-start.js": "5babcde5430942afe45c190d2eb5464cdbbb1354129d9104b255b0c50b5dd099",
+    "core/world/98-world-start.js": "1c002bd2a6476e3721c388f93fa00eabe1c1c1f01c83d366628b4848a9bb2c99",
     "core/world/99-tail.html": "5c1404e034c7ec0d2b8ac19a6c1a2c4786dbd3037cbb48efdc8cfe4820c14aea",
     "kits/beast-riders/PORT.md": "21b21a7447de96e139906446c400742ad30de08eadb175a61b58c8bdc0ee1e49",
     "kits/beast-riders/src/50-br-mounts.js": "9c16eed843bdd2c5adc49cd00c58c0192d5948f67bae779d9f121db119d9b9ca",
@@ -507,10 +507,10 @@
     "openworld/pinnacle/src": "bc2f94d75c3fd6724db1ae1997a2bffde6925067abd0f7b44d64ed994cc6b0d8",
     "settlements/isle-demo": "21073ee4f346d85b1a5e131750215eb367990a6b29d9da7104f8b956deaaa60a",
     "tools": "8f8a434506f0f5fcd749d4758afde15e9261c3d92121720aa1a42ad314e0a55c",
-    "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
+    "tools/textures": "f4c83899af343d36f69b562b5e36b8a640189c9cc4b0a98d739cb05e0260eef6"
    },
    "outputs": {
-    "openworld/pinnacle/dist/pinnacle.html": "70ce68804a09cd21558dcfdcf132ec1a6976db5b5b81004a4ac60dbe19ee11f9",
+    "openworld/pinnacle/dist/pinnacle.html": "66783c73034eafd86f116bdb182048419301719c936707570954823a65975dd1",
     "openworld/pinnacle/dist/pinnacle.tex.abyssal-savannah.js": "79098378216d55f9f51eb8b12deb98c79f8b2a65a2f0f6aed07d2f0572111fde",
     "openworld/pinnacle/dist/pinnacle.tex.brtowns.js": "8b0a64a836ed9f8241276c635367d5868add677be8077d5f2a8a957ac15621fa",
     "openworld/pinnacle/dist/pinnacle.tex.eastabyss.js": "adb215a74b951f5abfbe99995243b1852642413c63ff52cf206b1b3e6312892b",
@@ -518,7 +518,7 @@
     "openworld/pinnacle/dist/pinnacle.tex.kftex.js": "75223875a57f714df4f068e09e66292721bf3f11c05ee54ab9414a9e4daaa346"
    },
    "outputs_raw": {
-    "openworld/pinnacle/dist/pinnacle.html": "70ce68804a09cd21558dcfdcf132ec1a6976db5b5b81004a4ac60dbe19ee11f9",
+    "openworld/pinnacle/dist/pinnacle.html": "66783c73034eafd86f116bdb182048419301719c936707570954823a65975dd1",
     "openworld/pinnacle/dist/pinnacle.tex.abyssal-savannah.js": "79098378216d55f9f51eb8b12deb98c79f8b2a65a2f0f6aed07d2f0572111fde",
     "openworld/pinnacle/dist/pinnacle.tex.brtowns.js": "8b0a64a836ed9f8241276c635367d5868add677be8077d5f2a8a957ac15621fa",
     "openworld/pinnacle/dist/pinnacle.tex.eastabyss.js": "adb215a74b951f5abfbe99995243b1852642413c63ff52cf206b1b3e6312892b",

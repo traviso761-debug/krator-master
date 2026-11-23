@@ -185,7 +185,7 @@ let M,nx,ny,i0,j0,su,sv,cx,cy,X0,Y0,MW,MH,EL,WLV,WHAS,REL,CL,RN,TP,BI,MK,SL,SU,S
 let SID,KIT,STY,PALL,NB,CLCODE,CLGROUP;
 // a region with region.json `relief` (core/world/PLAN-RELIEF.md; 43-world-relief.js): terraces lie only on caprock
 // (WRELIEF.bench) instead of on the absolute height. Every overlay's style and palette are BIOME_GROUND's, relief or not
-let RELIEF=false,LANDF=false,PEAK=null,MICRO=false,RESID=false;const MG=[0,0,0];
+let RELIEF=false,LANDF=false,PEAK=null,MICRO=false,RESID=false,ALPINE=1;const MG=[0,0,0];
 // the kits (47-world-kits.js) are read at init: which overlay each grows on
 let KITNAMES=[];W.KITS=KITNAMES;
 W.init=function(R){M=WORLD_DATA.meta;const Hd=M.heights,F=M.frame;
@@ -207,9 +207,11 @@ W.init=function(R){M=WORLD_DATA.meta;const Hd=M.heights,F=M.frame;
  NB=M.biomes.length;SID=[];KIT=new Int8Array(NB).fill(-1);STY={};PALL=[];
  SKEYS.forEach(k=>STY[k]=new Float32Array(NB));
  RELIEF=!!M.relief;
- RESID=false;
+ RESID=false;ALPINE=1;
  if(RELIEF){if(typeof WRELIEF==='undefined')throw new Error('41-world-fields: region.json asks for core/world relief: list 43-world-relief.js before 41');
-  WRELIEF.init({ox:cx*2000,oz:cy*2000,seed:M.relief.seed});
+  const al=typeof KRATOR_ALPINE!=='undefined'&&KRATOR_ALPINE!=null?KRATOR_ALPINE:M.relief.alpine;
+  ALPINE=al===2||al==='2'?2:1;
+  WRELIEF.init({ox:cx*2000,oz:cy*2000,seed:M.relief.seed,version:ALPINE});
   const mc=typeof KRATOR_MICRO!=='undefined'&&KRATOR_MICRO!=null?KRATOR_MICRO:M.relief.micro;
   MICRO=typeof WMICRO!=='undefined'&&mc!==false&&mc!==0&&mc!=='0'&&mc!=='false';   /* PLAN-MICRO.md: the micro-relief, where 43m-world-micro.js is listed; KRATOR_MICRO overrides relief.micro for A/B trials */
   if(MICRO)WMICRO.init({ox:cx*2000,oz:cy*2000,seed:M.relief.seed^0x4D4943,version:mc===2||mc==='2'?2:1});   /* relief.micro: 2 the T0 math (PLAN-MICRO.md), else 1; false/0 off */
@@ -217,6 +219,7 @@ W.init=function(R){M=WORLD_DATA.meta;const Hd=M.heights,F=M.frame;
   if(rd&&typeof WRESIDUAL!=='undefined'){WRESIDUAL.init(Object.assign({ox:cx*2000,oz:cy*2000},rd));RESID=!!WRESIDUAL.active;}
   else if(typeof WRESIDUAL!=='undefined')WRESIDUAL.reset();}
  W.microVersion=()=>MICRO?WMICRO.version:0;
+ W.alpineVersion=()=>RELIEF?WRELIEF.version:0;
  W.hasResidual=()=>RESID;
  /* an overlay with no entry is an error, not desert: listed in W.unstyled, reported on the page, failed by the probe
     (91: 'every biome overlay has its own ground style'); it is drawn on the desert's shape in MISSING's magenta, so it shows */
@@ -521,7 +524,7 @@ function formH(x,z){const SC=scarpAt(x,z,SCR),b=SC.w>0?scarpOf(baseH(x,z),SC):ba
 const LFK={k:0,d:1e9,hw:0,co:0,cut:0},LFS={k:0,d:1e9,hw:0,wet:0,bw:0};
 function buildLandforms(){LANDF=false;if(!RELIEF||typeof WLAND==='undefined'||typeof WLAND.init!=='function'||typeof KSTACKS==='undefined')return;
  const TW=((WORLD_DATA.towns&&WORLD_DATA.towns.towns)||[]).map(t=>[t.x,t.z,(t.R==null?300:t.R)+(t.band==null?400:t.band)]);
- WLAND.init({ox:cx*2000,oz:cy*2000,seed:M.relief.seed,ground:formH,inside:W.inside,sites:(M.sites||[]).map(s=>({x:s.x,z:s.z})),
+ WLAND.init({ox:cx*2000,oz:cy*2000,seed:M.relief.seed,version:ALPINE,ground:formH,inside:W.inside,sites:(M.sites||[]).map(s=>({x:s.x,z:s.z})),
   styleName:(x,z)=>{const b=W.biomeAt(x,z),g=b&&W.groundOf(b.name);return g?g.style:'';},overlay:(x,z)=>{const b=W.biomeAt(x,z);return b?String(b.name).trim().toLowerCase():'';},
   caprock:(x,z)=>WRELIEF.caprock(x,z,styleAt(x,z),gridBil(REL,x,z)),
   keep:(x,z)=>{if(!W.inside(x,z))return true;const h=formH(x,z);if(W.lakeWater(x,z)>h-1)return true;
@@ -669,7 +672,8 @@ function H(x,z,minWave,P,nr,nt){minWave=minWave||0;MG[0]=MG[1]=MG[2]=0;
     if(MICRO&&dw>.5&&WMICRO.setSkip800)WMICRO.setSkip800(true);
     const he=MICRO?WMICRO.erode(h,x,z,gx,gz,S,rel,minWave,MG,minWave<100?streamCorridor(x,z):1):WRELIEF.erode(h,x,z,gx,gz,S,rel,minWave,MG);   /* PLAN-MICRO.md M2: the drainage from 800 m to 25 m */
     if(MICRO&&dw>.5&&WMICRO.setSkip800)WMICRO.setSkip800(false);
-    h+=rm*(he-h);}}}
+    h+=rm*(he-h);
+    if(ALPINE===2&&WRELIEF.crags){const hc=WRELIEF.crags(h,x,z,gx,gz,S,rel,minWave);h+=rm*(hc-h);}}}}
  else if(S.gully>.01&&minWave<240){const g=1-Math.abs(2*N4.fbm(x/240,z/240,2)-1);h-=S.gully*(3+rel*.004)*Math.pow(g,6)*2.2;}
  if(PEAK&&S.peak>.01&&minWave<1300&&rm>0){const hp=WRELIEF.peaks(h,x,z,S,rel,gridBil(PEAK,x,z),minWave);h+=rm*(hp-h);}   /* relief P5: crests and summits on the high ground */
  if(minWave<90)h+=(N3.vn(x/90+11,z/90-7)-.5)*2*(1.2+rel*.0015)*S.rough;
