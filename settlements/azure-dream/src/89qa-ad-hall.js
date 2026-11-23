@@ -16,7 +16,7 @@ const AD_LAMPREC={cur:null};
 const adLamp=(x,y,z,k)=>{if(AD_LAMPREC.cur)AD_LAMPREC.cur.push([x,y,z,k||'oil']);};
 // the hall's figures, in its local frame (the plan's H1 frame turned: z = 33 - u, x = v): the page reads them for the views and
 // the verify. The cots: two to a 3 m bay, four bays either side of the walk, sixteen bays long: 256
-const AD_HALL={P:1.2,HX:16.2,HZ:29,T:1.2,H1:7,H2:12,bays:16,turns:['the Decree','the Garden','the Chasm','the Fountain','the Dome and the Caves','the Damsel','the Song Revived','the Circle Thrice'],cots:[]};
+const AD_HALL={P:1.2,HX:16.2,HZ:29,T:1.2,H1:7,H2:12,bays:16,wheels:[],great:null,turns:['the Decree','the Garden','the Chasm','the Fountain','the Dome and the Caves','the Damsel','the Song Revived','the Circle Thrice'],cots:[]};
 
 // ---------------------------------------------------------------- the Hall of Dreaming
 // A Tibetan pillared hall (a dukhang) 54 x 30 m inside on a 3 m grid: 18 bays long, 10 across, 136 columns. Down the middle two
@@ -29,7 +29,7 @@ const AD_HALL={P:1.2,HX:16.2,HZ:29,T:1.2,H1:7,H2:12,bays:16,turns:['the Decree',
 // a stand-in for ceiling.night.stars, PROMPTS-NEEDED section 56); the walk rises to a clerestory at +12 m whose panes glow blue by
 // night. Round it all, on the one plinth, the covered kora with 48 wheels each long side and the hall's great wheel behind the
 // head; the gilt lantern over the shrine. The cots are builder geometry until the catalog has the dream cot (FURNITURE.md).
-function buildAdDreamHall(G,o){reseed(34001);const A=AD_HALL,P=A.P,HX=A.HX,HZ=A.HZ,T=A.T,H1=A.H1,H2=A.H2;A.cots.length=0;
+function buildAdDreamHall(G,o){reseed(34001);const A=AD_HALL,P=A.P,HX=A.HX,HZ=A.HZ,T=A.T,H1=A.H1,H2=A.H2;A.cots.length=0;A.wheels.length=0;A.great=null;
  const wash=xC(xPick(XPAL.wash)),blue=xC(AD_BLUE),band=xC(AD_BAND),stone=xC(xPick(QSTONE)),g=xC(xPick(XPAL.gold)),red=xC(XPAL.red),
   tim=xC(xPick(XPAL.timber)),dark=xC(0x2a2018),night=xC(0x16295a),felt=xC(0x2c3550),indigo=xC(0x1e2e6a),cream=xC(0xe8e0cc),straw=xC(0xc8b07a),sf=xC(XPAL.saffron);
  vnReg('Hall of Dreaming',0,0,40,P+H2+7,{turnings:8,cots:256});
@@ -110,10 +110,15 @@ function buildAdDreamHall(G,o){reseed(34001);const A=AD_HALL,P=A.P,HX=A.HX,HZ=A.
  const KX=20.6,KZ=32.6,KY=P+3.4;
  for(const s of[-1,1]){for(let z=-KZ+1.6;z<=KZ-1.6;z+=3.2)vPst('vPostB',s*KX,P,z,.15,KY-P,red);
   vB('xWashB',s*(HX+(KX+.4-HX)/2),KY,0,KX+.4-HX,.28,2*KZ,0,wash);vB('xWashB',s*(KX+.3),KY-.5,0,.2,.6,2*KZ,0,blue);
-  for(const z of[-13,13])qnDrums(s*(HX+.32),P,z,s*Math.PI/2,14.9);}
+  /* the kit's drum run (xnXDDrums), its rails and posts drawn here and its wheels kept apart (AD_HALL.wheels, hall-local
+     [x, y, z, radius, height]) so they can turn: targets/isle/90ah draws them as the kit's prayer-wheel item, braked at the Lulling */
+  for(const z of[-13,13]){const x=s*(HX+.32),ry=s*Math.PI/2,w=14.9,n=Math.max(2,Math.round(w/.62)),c=xC(xPick(XPAL.dark));
+   for(const yy of[P+.35,P+1.65]){const a=xnOn(x,yy,z,ry,-w/2,.45),b=xnOn(x,yy,z,ry,w/2,.45);vBeam(a,b,.08,c);}
+   for(let i=0;i<n;i++){const q=loc(x,z,-w/2+w*(i+.5)/n,.45,ry);A.wheels.push([q[0],P+.5,q[1],.24,1.0]);}
+   const n2=Math.max(1,Math.round(w/2.2));for(let i=0;i<=n2;i++){const q=loc(x,z,-w/2+w*i/n2,.45,ry);vPst('vPost',q[0],P,q[1],.06,1.8,c);}}}
  for(const s of[-1,1]){for(let x=-KX;x<=KX;x+=3.2){if(s>0&&Math.abs(x)<2.5)continue;vPst('vPostB',x,P,s*KZ,.15,KY-P,red);}
   vB('xWashB',0,KY,s*(HZ+(KZ+.4-HZ)/2),2*HX,.28,KZ+.4-HZ,0,wash);vB('xWashB',0,KY-.5,s*(KZ+.3),2*KX+.6,.6,.2,0,blue);}
- kput('xDrumS',[0,P,-31],null,[1.6,.35,1.6],stone);kput('qSongDrum',[0,P+.35,-31],null,[1.3,2.6,1.3],null);
+ kput('xDrumS',[0,P,-31],null,[1.6,.35,1.6],stone);A.great=[0,P+.35,-31,1.3,2.6];   /* the great wheel: kept apart to turn, as the gallery's */
  for(const t of[.35,1.65,2.95])kput('xDrumS',[0,P+t,-31],null,[1.36,.14,1.36],g);kput('xDomeT',[0,P+2.95,-31],null,[1.3,.45,1.3],red);
  for(const s of[-1,1])qnFlags([s*KX,KY+.3,KZ],[s*(CX+CW),P+H2+.8,CL/2]);
  xnFolk(0,0,HZ+7,4,4);}

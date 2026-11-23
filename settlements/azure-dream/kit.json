@@ -44,6 +44,12 @@
      "50-core-water-draw.js",
      "51-core-water-kinds.js"
     ]
+   ],
+   [
+    "core/atmos/sky",
+    [
+     "89-atmos-e-skymodel.js"
+    ]
    ]
   ],
   "summit": [
@@ -157,7 +163,8 @@
   "90af-night.js",
   "89q5f-qb-furnish.js",
   "89q5s-qb-shells.js",
-  "69ad-kcity-bundle.js"
+  "69ad-kcity-bundle.js",
+  "89-atmos-e-skymodel.js"
  ],
  "interiorSets": [
   "locus",

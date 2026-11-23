@@ -13,7 +13,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
-| `89qa-ad-hall.js` | 17 | the Hall of Dreaming (21); the waking range: the Waking Gallery, the scribe (122); a lotus pond (the Lotus Garden's four) (135); the cup house (148) |
+| `89qa-ad-hall.js` | 18 | the Hall of Dreaming (21); the waking range: the Waking Gallery, the scribe (127); a lotus pond (the Lotus Garden's four) (140); the cup house (153) |
 | `89qb-ad-wharf.js` | 16 | the mole and its wave-wheel shrine (19); a jetty (38); the boathouse (48); the racks: nets (o.v 0) and fish (o.v 1) (66); the orchards and the hives (PLAN.md section 4c) (82); the smokehouse (103); the ropewalk (113); the fishermonks' house (125); the Order's barge (145) |
 | `89qc-ad-summit.js` | 6 | the relay lamp (37) |
 | `89zaa-ad-ground.js` | 11 | the cove's headlands (world metres) (22); the pads and terraces (30); the Station's signal line (PLAN.md Q15) (63); the flora's mask and fields (the Vale of Xanadu' (81) |
@@ -30,7 +30,7 @@ Each target adds its own fragments to `src/` and builds one output.
 | Target | Fragments | KB |
 |---|---|---|
 | `east-end` | `89z-rows.js`, `89zad-site.js`, `91z-views.js` | 2 |
-| `isle` | `89z-rows.js`, `89zad-site.js`, `90ag-ad-walk.js`, `90ah-ad-night.js`, `90ai-ad-interiors.js`, `91z-views.js` | 34 |
+| `isle` | `89z-rows.js`, `89zad-site.js`, `90ag-ad-walk.js`, `90ah-ad-night.js`, `90ai-ad-interiors.js`, `90aj-ad-great-rooms.js`, `91z-views.js` | 46 |
 | `north-shore` | `89z-rows.js`, `89zad-site.js`, `91z-views.js` | 2 |
 | `summit` | `89z-rows.js`, `89zad-site.js`, `91z-views.js` | 6 |
 | `west-end` | `89z-rows.js`, `89zad-site.js`, `91z-views.js` | 2 |
