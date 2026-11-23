@@ -73,6 +73,14 @@ terrain splat texture and the placement input; (3) the minimap drawn from export
 **Taken by the second integration pass** (`claude/integration-2`, 2026-11-10 and 11; HANDOFF-REBUILD.md): the `dalab` sockets pack,
 water breakup on by default, the catalog's `tile` detail family, the Highlands great-building room kinds in `30-programs.js`, the fauna
 runtime and bison table, and the `tools/` listing staleness (every build rebuilt): all rebuilt and GPU-verified, items deleted.
+- **The Orders' catalog pieces and kits/qiblai's interiors options** (2026-11-23, settlements/flashing-eye's interiors):
+  `kits/catalog/krator-master-furniture-xanadu.js` takes the Flashing Eye's seven pieces (the heliograph, the fire basket, the Ember's
+  hearth, the Book's lectern, the mirror bench, the crimson banner, the veil rack) beside the Beacon's eleven (its B8, 94ffe4aae,
+  taken here verbatim so the two merge clean); `kits/qiblai/src/89q5s-qb-shells.js` `qnIxType` takes `prog.doors`, `prog.bulbs`
+  and `prog.stair` (unused by every page but the Flashing Eye's, which behave as before). The catalog file reaches 57 build
+  commands (`python3 tools/reach.py kits/catalog/krator-master-furniture-xanadu.js`), the shells six (Azure Dream, Lightwall,
+  Qiblai's city, Viridian, kits/qiblai, the Flashing Eye); only kits/catalog and settlements/flashing-eye were rebuilt and
+  GPU-verified with the change. The rest ride with the rebuild.
 - **core/terrain's ground shader under an environment map** (2026-11-17, found on the Glaziers' sheet): `43-core-ground.js` names
   `kgTri`'s and the hex sampler's locals `v1 v2 v3` and `r1 r2 r3`, which three r128's `cube_uv_reflection_fragment` `#define`s as
   numbers whenever the scene or the material has an environment map (a skylight): the fragment fails ("'0.276' : syntax error").

@@ -55,6 +55,7 @@
   "20-core-sched.js",
   "30-fe-layout.js",
   "31-fe-rules.js",
+  "32-fe-rooms.js",
   "37c-core-rubble.js",
   "38-core-relief.js",
   "39fe-world-data.js",
@@ -81,7 +82,8 @@
   "89qe-fe-roofs.js",
   "90fh-vent.js",
   "90fi-bridges.js",
-  "90fj-face.js"
+  "90fj-face.js",
+  "90fk-fe-interiors.js"
  ],
  "interiorSets": []
 }

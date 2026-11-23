@@ -825,8 +825,8 @@
    "sha256": "caeca149d7a9a2a567164e45cede8b1fa77957e97a552bea4b89c0f59fbf27bf"
   },
   "kits/catalog/dist/catalog.html": {
-   "bytes": 2210863,
-   "sha256": "43d112c1308747841b1f9afc6f294cd8a3f9ba6821259d0837b8f7e52feaf8df"
+   "bytes": 2247072,
+   "sha256": "e4e68ccf73edb9fcdaf97c76f5776e7d7d613852c991e9e57cd30003e1726ba3"
   },
   "kits/crops/dist/crops.html": {
    "bytes": 2570483,
@@ -1193,8 +1193,8 @@
    "sha256": "0237a73849bffeccdc08852816e28606c6c35cf7231706efab755e956f267133"
   },
   "openworld/xanadu-north-shore/dist/xanadu-north-shore.html": {
-   "bytes": 2710734,
-   "sha256": "f0249fd16ff5d832a182625753e803f32e361d0c4c18ba54418b0f90f30ba030"
+   "bytes": 4734822,
+   "sha256": "a16bcb9f38d829b223a561cdc6b82673da869be711ac555e4d9ec890b26ba5c9"
   },
   "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.html": {
    "bytes": 8874743,
@@ -1208,10 +1208,6 @@
    "bytes": 8513625,
    "sha256": "7216145e7a4349521c0a4ed9f2f4478f5a709cb771ad7fa4c30270d0df288196"
   },
-  "openworld/xanadu-north-shore/dist/xanadu-north-shore.html": {
-   "bytes": 4734822,
-   "sha256": "a16bcb9f38d829b223a561cdc6b82673da869be711ac555e4d9ec890b26ba5c9"
-  },
   "settlements/dalab/dist/dalab-set.html": {
    "bytes": 6603017,
    "sha256": "728ddd8a8b8afb4ff307654bababe77d340f80271bd2db11eaab5fec954645eb"
@@ -1223,6 +1219,10 @@
   "settlements/dhelv/dist/dhelv.html": {
    "bytes": 2308647,
    "sha256": "ff55123b7c5b9407569f8adb584db31648458bd78f5662d35da7d081866e7c15"
+  },
+  "settlements/flashing-eye/dist/flashing-eye.html": {
+   "bytes": 13475222,
+   "sha256": "286724edc3676a87f126ee54963bbe0441c1e184b21ca33ebe71a774c2c005b3"
   },
   "settlements/girder/girder-hero.html": {
    "bytes": 9885121,

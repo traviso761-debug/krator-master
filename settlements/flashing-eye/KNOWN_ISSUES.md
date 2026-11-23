@@ -35,8 +35,31 @@
   chimneys smoking, the granary's louvred roof vents, the bath house's steam lantern, the chapter range's wooden gallery, the Mirror
   School's trial mirrors); the smoke is core/atmos's chimney and steam kinds. *Fixed 2026-11-23*: the novices' court is four ranges round
   its paved yard with a chorten in it (`qb_fe_court`).
-- **No interiors yet.** The blueprint's rooms (sheets L, H, P, T, M1-MR) are not built as room data; the catalog's NEW pieces
-  (`FURNITURE.md`) are not made.
+- *Fixed 2026-11-23*: **the first interiors and the catalog's pieces.** The eleven pieces `FURNITURE.md` marked NEW are in
+  `kits/catalog/krator-master-furniture-xanadu.js` (the seven of this house; the signal lectern, the hour drum, the reader's seat and
+  the 30 cm signal mirror as the Beacon's B8 made them). The Lip Range's four houses (four floors each), the Hall of the Ember, the
+  Ember Tower's shaft and the Eye Post are planned, drawn and furnished at load (`src/32-fe-rooms.js` the programmes,
+  `targets/cone/90fk-fe-interiors.js` on kits/qiblai's `qnIxType`): 7 buildings, 45 rooms, about 380 pieces, 2 s; every piece
+  in core/tags, every floor and stair in core/walk, the doors unlocked (`verify.py`'s `interiors-furnished`, `interiors-walk-in`).
+  Still owed, on the same data: **the Red Monastery** (sheets M1-MR), **the Mirror Tower and the Labrang Tower** (sheet T), the
+  ranges, the novices' court, the Mirror School (where the mirror bench goes), the gates and the Foot House (sheet F).
+- **The interiors' compromises** (2026-11-23):
+  - The rooms are kits/interiors' planner's, not the sheets' drawn plans: each storey is cut into the programme's room kinds by
+    area, the first kind at the door, so the order of the rooms along the range is the planner's; the sheets' stair rooms are the
+    planner's stairs. The furniture is the room kinds' (`kits/interiors/src/30-programs.js`), lighter than the manifest's counts.
+  - The planner's street door is always on the lowest storey, so each Lip Range house's is a shut plank door into the rock at the
+    back of L-2; the ways in are the record's two doors on L0 (from the bench, out onto the balcony), kits/qiblai's new
+    `prog.doors`. The balcony is a core/walk floor; nothing yet stops a walker at its parapet but the parapet's height.
+  - The Ember's sanctum is in the tower's back 4.5 m (the hall's body and its roof fill the tower's front half), entered by its own
+    door on the tower's east face, not from the hall; its five storeys are 4.5 x 11 m (the sanctum about 40 m2, the sheet's 60).
+    Its stairs are steep ladder-stairs (`prog.stair`), as are the Eye Post's.
+  - The Eye Post's storeys are planned inside its band (6 m, the narrowest part of the taper): about 29 m2 a floor, not the sheet's
+    48; the Book of Breaths takes its whole storey (its signal store is not planned). Nothing yet climbs from the Mirror Room to the
+    platform; the heliograph and the fire basket stand on it, the fire basket round the record's coals (`feFireB`, lit by the hour).
+  - Kits/interiors offers a building's catalog once for all its rooms, so a piece kept alone of its type is so in every room of
+    that building: every Xanadu desk in the Mirror Hall's house and the Labrang is the signal lectern, every reading desk in the
+    Book House the Book's lectern (its studies take another culture's desk).
+  - No electric light (`prog.bulbs` false) and no light of their own: the catalog's lamps are not lit at night yet.
 - *Fixed 2026-11-23*: **the Foot House** stands on its own ground at the spur's foot (`FE_FOOT`, 1.2 x 0.8 km at 8 m, the far
   ground cut away under it): its ranges round the loading court and its gate chorten. Still owed: **the Rest House** (about 1,080 m
   on the Stair) and **the Stair of the Eye** between them, drawn only to the apron; the Foot House's lower terraces and mule yard.

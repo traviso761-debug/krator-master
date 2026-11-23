@@ -15,6 +15,12 @@ checks of tools/checks_optin.json), with the page's own:
                  Tears' camp (197) clear the drawn ground by 2 m or more for their first 2 km (the far field is tools/sights.py)
   no-trees       the flora's mask is empty on the band's face, on the rim within 120 m of the crater and in the crater
   fires          the house's two lights (the Ember's window, the fire basket) hung; no oil lamp anywhere
+  interiors-furnished  every building of src/32-fe-rooms.js (the Lip Range's four houses, the Hall of the Ember, the Ember
+                 Tower's shaft, the Eye Post) planned with every storey of its sheet and furnished; the Lip Range's doors on L0;
+                 the Order's pieces in their rooms (the lecterns, the Ember's hearth); the heliograph and the fire basket on the
+                 Eye Post's platform; none of the Beacon's pieces; no electric light
+  interiors-walk-in    each building's door shut blocks it, open clears it, and a walker from outside reaches every floor and
+                 stair (the Lip Range's houses from the bench, all four storeys); the balcony is a floor
 
     KRATOR_GL=gpu python3 verify.py dist/flashing-eye.html --assert --views "Overview,The band from the apron"
 """
@@ -63,6 +69,23 @@ PAGE_JS = r"""
  R.push({name:'glints',ok:FE_GLINTS.length===2&&gs.mode==='mirror'&&gs.shutter===true,detail:FE_GLINTS.length+' glints (the Eye Post, the Mirror Tower); on the hour the day line '+gs.mode+' to '+gs.station+', shutter '+(gs.shutter?'open':'shut')});
  const LA=typeof FE_LAMPS!=='undefined'?FE_LAMPS:[];
  R.push({name:'fires',ok:LA.length===2&&LA.some(l=>l[3]==='ember')&&LA.some(l=>l[3]==='fire')&&!LA.some(l=>l[3]==='oil'),detail:LA.length+' lights: '+LA.map(l=>l[3]+' ('+l[4]+')').join(', ')});}
+/* the interiors (targets/cone/90fk-fe-interiors.js on src/32-fe-rooms.js) */
+{const X=window._feIx||{buildings:[],placed:{}},want=typeof FE_ROOMS!=='undefined'?FE_ROOMS.buildings:[],by=id=>X.buildings.find(b=>b.id===id);
+ const miss=want.filter(Bd=>{const b=by(Bd.id);return !b||!b.rooms||!b.pieces;}).map(Bd=>Bd.id);
+ const lev=want.filter(Bd=>{const b=by(Bd.id);return b&&b.levels!==Bd.levels.length;}).map(Bd=>Bd.id+' '+(by(Bd.id)||{}).levels+' of '+Bd.levels.length);
+ const more=want.filter(Bd=>(Bd.more||[]).length&&(by(Bd.id)||{more:[]}).more.length!==Bd.more.length).map(Bd=>Bd.id);
+ const own=[['lip.mirror','xanadu_signal_lectern'],['lip.books','xanadu_book_lectern'],['lip.labrang','xanadu_signal_lectern'],['ember.shaft','xanadu_ember_hearth'],['post','xanadu_signal_lectern']]
+  .filter(([b,k])=>!((by(b)||{}).keys||{})[k]).map(([b,k])=>k+' in '+b);
+ const PF=X.platform||{pieces:[]},plat=['xanadu_eye_heliograph','xanadu_fire_basket'].filter(k=>!PF.pieces.some(q=>q.key===k&&!q.error));
+ const beacon=['xanadu_court_gold_banner','xanadu_court_relic_lamp','xanadu_lamp_switchboard','xanadu_cable_drum','xanadu_generator_set','xanadu_lens_bench','xanadu_register_of_lights'].filter(k=>X.placed[k]);
+ const bulbs=Object.values(typeof FE_IX!=='undefined'?FE_IX.T:{}).reduce((a,T)=>a+(T.bulbs||[]).length,0);
+ R.push({name:'interiors-furnished',ok:!!X.on&&want.length>=7&&!miss.length&&!lev.length&&!more.length&&!own.length&&!plat.length&&!beacon.length&&!bulbs,
+  detail:(X.on?'':'interiors OFF; ')+(want.length-miss.length)+' of '+want.length+' buildings planned and furnished ('+X.rooms+' rooms, '+X.pieces+' pieces, '+X.ms+' ms)'+(miss.length?'; NOT '+miss.join(', '):'')+
+   (lev.length?'; storeys OFF: '+lev.join(', '):'; every storey of the sheets')+(more.length?'; upper doors MISSING: '+more.join(', '):'')+(own.length?'; the Order\'s pieces NOT placed: '+own.join(', '):'; the Order\'s pieces in their rooms')+
+   (plat.length?'; the platform LACKS '+plat.join(', '):'; the heliograph and the fire basket on the Eye Post\'s platform')+(beacon.length?'; the Beacon\'s pieces HERE: '+beacon.join(', '):'')+(bulbs?'; '+bulbs+' electric bulbs':'; no electric light')});
+ const WI=typeof FE_IX!=='undefined'&&FE_IX.walkIn?FE_IX.walkIn():[],bad=WI.filter(q=>!q.ok);
+ R.push({name:'interiors-walk-in',ok:!!X.on&&WI.length===want.length&&!bad.length&&X.walked===want.length&&!!X.balcony,
+  detail:X.walked+' of '+want.length+' interiors in core/walk; walked in: '+WI.map(q=>q.id+' '+(q.ok?q.floors+' floors':'FAILED'+(q.why?' ('+q.why+')':' (shut '+q.shut+', open '+q.open+', unreached '+(q.unreached||[]).slice(0,4).join(' ')+')'))).join('; ')+(X.balcony?'; the balcony a floor':'; NO balcony')});}
 return R;}"""
 xv.ASSERT_JS = xv.ASSERT_JS.rstrip()[:-len('return R;}')] + PAGE_JS
 assert xv.ASSERT_JS.endswith('return R;}'), 'settlements/xanadu/verify.py ASSERT_JS no longer ends with return R;}'

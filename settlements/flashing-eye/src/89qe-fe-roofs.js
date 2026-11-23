@@ -57,9 +57,12 @@ function feTowerRound(o){const W=o.W,H=o.H,wash=xC(xPick(XPAL.wash)),red=feCol(0
  qnCube(0,y,0,w,1.9,w,0,red,'wash');vB('xPaint',0,y+1.9,0,w+.3,.25,w+.3,0,dark);y+=2.15;   /* the crimson band and its cornice */
  const lw=w*.92;vB('qAshB',0,y,0,lw,.25,lw,0,wash);
  for(const sx of[-1,1])for(const sz of[-1,1])vPst('vPost',sx*(lw/2-.25),y,sz*(lw/2-.25),.18,L,red);
- vB('xPaint',0,y+.25,0,lw,.9,lw*.98,0,red);   /* the lantern's low parapet */
- if(o.mirror)for(let i=0;i<(o.mirror===true?1:o.mirror);i++){const a=-.6+i*.6;vB('xPaint',Math.sin(a)*lw*.3,y+1.15,Math.cos(a)*lw*.3,.62,.62,.07,a,feCol(0xa07a48));}
- if(o.basket){vB('feFireB',-lw*.25,y+1.15,-lw*.25,.8,.55,.8,0,xC(0xffffff));feLamp(-lw*.25,y+1.5,-lw*.25,'fire');}
+ /* the lantern's low parapet: a ring, so the lantern's floor (y + .25) is a floor to stand on (the Eye Post's heliograph and fire
+    basket are the catalog's, placed on it by the interiors, targets/cone/90fk) */
+ for(const s of[-1,1]){vB('xPaint',0,y+.25,s*(lw*.49-.1),lw,.9,.2,0,red);vB('xPaint',s*(lw/2-.1),y+.25,0,.2,.9,lw*.98-.4,0,red);}
+ if(o.mirror)for(let i=0;i<(o.mirror===true?1:o.mirror);i++){const a=-.6+i*.6,mx=Math.sin(a)*lw*.3,mz=Math.cos(a)*lw*.3;vPst('vPost',mx,y+.25,mz,.04,.92,dark);vB('xPaint',mx,y+1.15,mz,.62,.62,.07,a,feCol(0xa07a48));}
+ /* the fire basket's coals (their own item, lit by the hour: 90fh), where the catalog's basket holds them */
+ if(o.basket){vB('feFireB',-lw*.25,y+.25+.82,-lw*.25,.36,.28,.36,0,xC(0xffffff));feLamp(-lw*.25,y+.25+1.2,-lw*.25,'fire');}
  y+=L;const top=feCapRoof(0,y,0,lw*.5+W*.34,W*.62,feCol(FE_RED));
  feFinial(0,top-.2,0,2.6);return top+2.4;}
 // the second reference: a tall white shaft, a column of painted window bays up its front, a crimson band with its windows, a gallery

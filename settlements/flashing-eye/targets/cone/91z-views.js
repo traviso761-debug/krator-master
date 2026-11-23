@@ -17,6 +17,10 @@ const VIEWS=(function(){
  V['The house from the Rift']=[260,40,420,0,10,-60];
  V['The terraces and the Ember Tower']=[70,22,-30,0,20,-126];
  {const F=FE_PLACE.find(p=>p.id==='foothouse');V['The Foot House']=[F.x+90,F.o.y+40,F.z+110,F.x,F.o.y+5,F.z];}
+ /* the interiors (90fk): the Mirror Hall on L0 of the range's west house, the Ember's sanctum, the Eye Post's platform */
+ V['In the Mirror Hall']=[R.x-58,1.75,R.z+4.5,R.x-40,1.3,R.z-4];
+ {const E=FE_PLACE.find(p=>p.id==='ember'),y=E.o.y+.9;V['In the sanctum of the Ember']=[E.x+4.4,y+1.75,E.z-5.9,E.x-3,y+1.2,E.z-8.6];}
+ V['On the platform of the Eye Post']=[P.x+1.9,P.o.y+12.5+1.7,P.z+1.9,P.x-1.6,P.o.y+12.9,P.z-.6];
  return V;})();
 BUDGET.showcase={tris:16000000,calls:2400};BUDGET.cls.city=16000000;for(const k in TSTAT.by)BUDGET.type[k.split('/')[0]]='city';
 if(window._api)Object.assign(window._api,FE_API);

@@ -67,8 +67,10 @@ function buildFeLipRange(G,o){reseed(34411);const W=o.len==null?120:o.len,D=14,P
  vB('xPaint',0,-.12,D/2+PR-.2,W,.14,.3,0,feCrimson());
  vB('qAshB',0,0,D/2+PR-.25,W,1.05,.35,0,stone);   /* the balcony's parapet; the mirrors on it at the Mirror Hall's end */
  for(let i=0;i<3;i++){const x=-W/2+9+i*5;vPst('vPost',x,1.05,D/2+PR-.25,.05,.7,xC(0x3a3028));vB('xPaint',x,1.65,D/2+PR-.2,.42,.42,.06,0,xC(0xa07a48));}
- feBlock(0,0,W,D,0,[FE_ST,FE_ST],{pitch:3,roundels:true,skip:[[-W/2+13,-W/2+17],[-W/2+43,-W/2+47],[W/2-47,W/2-43]]});
- for(const x of[-W/2+15,-W/2+45,W/2-45])qnDoor(x,0,D/2,0,1.6,2.6,{c:xC(XPAL.red),valC:feCrimson()});}
+ feBlock(0,0,W,D,0,[FE_ST,FE_ST],{pitch:3,roundels:true,skip:[[-W/2+13,-W/2+17],[-W/2+43,-W/2+47],[W/2-47,W/2-43],[W/2-17,W/2-13]]});
+ /* two doors for each of its four houses (the Mirror Hall, the Book House, the guest house, the Prismarch's hall): from the bench
+    behind it, and out onto the balcony over the Rift; the ways into its four floors (the interiors, targets/cone/90fk) */
+ for(const x of[-W/2+15,-W/2+45,W/2-45,W/2-15]){qnDoor(x,0,D/2,0,1.6,2.6,{c:xC(XPAL.red),valC:feCrimson()});qnDoor(x,0,-D/2,Math.PI,1.6,2.6,{c:xC(XPAL.red),valC:feCrimson()});}}
 QB.def({key:'qb_fe_lip_range',name:'The Lip Range',family:'The Flashing Eye',tags:QTAG('civic',['religious','civic'],{note:'the Mirror Hall, the Book House, the guest house and the Prismarch\'s hall on the Lip; two floors cut into the band'}),w:124,d:20,h:20,fw:120,fd:17,nv:1,build:buildFeLipRange});
 
 // ---------------------------------------------------------------- the Red Monastery: the Order's temple on the kit's plan (sheets M1-MR)
@@ -107,6 +109,7 @@ function buildFeEmber(G,o){reseed(34421);const wash=feWash(),P=.9;
  const top=feTiers(0,S.y+2.7,-4,S.w,S.d,0,3,{ov:2,step:.76,drum:2.4,wash,finialC:xC(xPick(XPAL.gold)),finialH:3.2});
  vBall('qGiltBall',0,top-.6,-4,.5,xC(xPick(XPAL.gold)));   /* the sanctum's gilt: the finial and its ball */
  vB('feEmberB',0,P+1.6,-9.55,2.4,3,.1,0,xC(0xffffff));vB('xPaint',0,P+4.6,-9.6,3,.2,.16,0,xC(XPAL.saffron));
+ qnDoor(5.5,P,-7.25,Math.PI/2,1.3,2.6,{c:xC(XPAL.red),valC:feCrimson()});   /* the sanctum's door, on the tower's east face behind the hall */
  feLamp(0,P+2.5,-8,'ember');}
 QB.def({key:'qb_fe_ember',name:'The Ember Tower',family:'The Flashing Eye',tags:QTAG('civic',['religious'],{note:'the fire lit from the vent once a year; every hearth and lamp in the house is lit from it'}),w:20,d:22,h:46,fw:17,fd:21,nv:1,build:buildFeEmber});
 
@@ -122,7 +125,7 @@ QB.def({key:'qb_fe_tower',name:'A tower of the Flashing Eye',family:'The Flashin
 // ---------------------------------------------------------------- the Eye Post (sheet P): the first reference's tower on the rim
 // 8 x 8 m and 12 m to its lantern: the watch room, the Book's room and the mirror room in the shaft; in the lantern under the round
 // red cap the 60 cm speculum (to the south-west: the Beacon, Erehwon, the Tears) and the shuttered fire basket
-function buildFeEyePost(G,o){reseed(34431);vnReg('The Eye Post',0,0,6,20);feTowerRound({W:8,H:9.5,mirror:3,basket:true,lantern:2.6});}
+function buildFeEyePost(G,o){reseed(34431);vnReg('The Eye Post',0,0,6,20);feTowerRound({W:8,H:9.5,basket:true,lantern:2.6});}   /* its heliograph is the catalog's (90fk) */
 QB.def({key:'qb_fe_post',name:'The Eye Post',family:'The Flashing Eye',tags:QTAG('civic',['religious'],{note:'the Rim Watch\'s tower on the crater\'s rim: the heliograph and the fire basket'}),w:9,d:9,h:20,fw:9,fd:9,nv:1,build:buildFeEyePost});
 
 // ---------------------------------------------------------------- the Watch's hut, a gate, a shrine

@@ -81,3 +81,7 @@ Section 2.3 of the plan, each with a negative in the test:
 Seven are new here: the Eye Post's 60 cm heliograph, the fire basket, the Ember's hearth, the Book's lectern, the mirror
 bench, the crimson banner and the veil rack. Four are shared with the Beacon's and the Tempest's lists (the signal
 lectern, the hour drum, the reader's seat, the 30 cm signal mirror). `FURNITURE.md` describes each.
+
+*Built 2026-11-23*: all eleven are in `kits/catalog/krator-master-furniture-xanadu.js` (the four shared ones as the Beacon's B8
+made them); `flashing_blueprint.py` keeps the list as `NEW_BUILT` and marks nothing NEW. The page's interiors are built on sheets
+L, H and P (`src/32-fe-rooms.js`, `targets/cone/90fk-fe-interiors.js`; `KNOWN_ISSUES.md` says what they keep and what they do not).
