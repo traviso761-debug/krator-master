@@ -68,6 +68,8 @@
         og.restore();
       }
     }
+    // ---- the Ancient network (52-network.js) ----
+    paintNetwork();
     // ---- Toggleable Lava Tubes & Subterranean Cavern Networks ----
     if(layerOn.tubes && DATA.tubes){
       DATA.tubes.forEach(t=>{

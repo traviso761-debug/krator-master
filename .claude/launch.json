@@ -501,6 +501,36 @@
                 "settlements/shelf/dist"
             ],
             "port": 8895
+        },
+        {
+            "name": "network-testbed",
+            "runtimeExecutable": "python",
+            "runtimeArgs": [
+                "-m",
+                "http.server",
+                "8896",
+                "--bind",
+                "127.0.0.1",
+                "--directory",
+                "openworld/network-proposal/testbed/dist"
+            ],
+            "port": 8896,
+            "autoPort": false
+        },
+        {
+            "name": "scale-model-split",
+            "runtimeExecutable": "python",
+            "runtimeArgs": [
+                "-m",
+                "http.server",
+                "8872",
+                "--bind",
+                "127.0.0.1",
+                "--directory",
+                "tools/scale-model/model/dist/split"
+            ],
+            "port": 8872,
+            "autoPort": false
         }
     ]
 }
