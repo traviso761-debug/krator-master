@@ -84,11 +84,12 @@ skips it (`BUILD_FAILS`); measured on the page it is unchecked.
   with a door.
 - **The walks (F4b, 2026-11-23; `XFORT.walks` in 80f)**: the walk no longer runs through the towers and gatehouses. It runs between
   them and climbs each kept tower it meets by a flight up the walk onto its top (the parapet opened there), and the tops are walk
-  floors. What is left: a **gate block is not crossed** (its gatehouse roof carries the main gate's pavilion), so the walk ends at
-  its gate towers, which are climbed only where the walk before them has room for a 10 m flight (the watch fort's and the gate
-  works' are; Strongwall's, between an interval tower and the gate, are not); **a few stretches are too short for a stair** and
-  are drawn but not walked (Strongwall's two back walls, 5 m between their towers; the gate works' last metre past each gate
-  tower); a fallen tower ends the walk at its face. The flights stand on the walk, so a walker on the walk steps up them; the
+  floors. Where an ordinary flight (0.17 m risers) has no room, a **steep stair** (0.20 m on 0.25 m treads, slope 0.8, within
+  core/walk's step) climbs instead: Strongwall's gate towers and the towers on its short back walls (2026-11-23). Every standing
+  tower of every fort is climbed and every piece of walk is reached (`test-fort.js` holds both). What is left: a **gate block is
+  not crossed** (its gatehouse roof carries the main gate's pavilion; each gate tower is climbed from its own side, and the
+  gatehouse roof is not walked); a fallen tower ends the walk at its face; a curtain's last metre past a gate tower at a free end
+  (the gate works' stubs) is the wall's cap, not walk. The flights stand on the walk, so a walker on the walk steps up them; the
   plan's stairs are kept where they land on plain walk, and stairs are added where a piece of walk had none (`extra: true`).
 - **A breach's broken ends and a burnt gate** (2026-11-23): the wall steps down into a breach in three or four ragged courses from
   each side (hashed per breach, each side within its third of the gap); a burnt gate keeps a charred stump at each jamb and a leaf

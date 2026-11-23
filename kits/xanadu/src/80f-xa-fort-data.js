@@ -213,6 +213,8 @@ const XFORT=(function(){
     reaches a tower's parapet: its merlons stand aside), blocks:{curtainId: [[s0, s1]]}}. s along the curtain from c.a, metres. */
  const batK=(w,h,d)=>{const want=1-2*h*.088/Math.min(w,d);return want>.94?.96:want>.89?.92:want>.83?.86:.8;};   /* the kit's batter: 72-xa-helpers.js xnBatterK */
  const runOf=rise=>Math.max(2,Math.round(rise/.17))*.34;   /* a flight's length (72 xnFlight: 0.17 m risers, 0.34 m treads) */
+ const STEEP={riser:.2,tread:.25},steepOf=rise=>Math.max(2,Math.round(rise/STEEP.riser))*STEEP.tread;   /* a steep stair (slope 0.8, within core/walk's step), where a flight has no room */
+ const fit=(rise,room)=>{const r=runOf(rise);if(r<=room)return{run:r,steep:false};const q=steepOf(rise);return q<=room?{run:q,steep:true}:null;};
  const span=t=>t.form==='drum'?2*t.r:t.w;   /* a tower's width across */
  const towerTop=t=>t.form==='drum'?t.h+.8:t.h+.03;
  const gateHouse=(g,c)=>({w:g.w+3.2,d:(c?c.t:3)+3,h:(c?c.h:7)+3});   /* the gatehouse block 80g's xfGate draws */
@@ -235,17 +237,20 @@ const XFORT=(function(){
    const cuts=[0];D.breaches.filter(b=>b.curtain===c.id).sort((p,q)=>p.u0-q.u0).forEach(b=>cuts.push(b.u0*L,b.u1*L));cuts.push(L);
    const plain=[];   /* the stretches of flat walk, for the stairs' landings */
    for(let i=0;i<cuts.length;i+=2){const p0=cuts[i],p1=cuts[i+1],bs=B.filter(b=>b.s1>p0+.01&&b.s0<p1-.01);let cur=p0;
-    const seg=(s0,s1)=>{if(s1-s0>.3){out.walks.push({curtain:c.id,s0:r2(s0),s1:r2(s1),a:at(s0),b:at(s1),y});plain.push([s0,s1]);}};
+    /* a stretch of walk; under 1.5 m at a curtain's free end (nothing meets it there: a stub's last metre past its gate tower)
+       it is the wall's cap, not a walk */
+    const free=e=>!P.curtains.some(o=>o!==c&&[o.a,o.b].some(q=>Math.hypot(q[0]-e[0],q[1]-e[1])<1));
+    const seg=(s0,s1)=>{if(s1-s0<=.3)return;if(s1-s0<1.5&&((s0<.05&&free(c.a))||(s1>L-.05&&free(c.b))))return;out.walks.push({curtain:c.id,s0:r2(s0),s1:r2(s1),a:at(s0),b:at(s1),y});plain.push([s0,s1]);};
     bs.forEach((b,bi)=>{const nxt=bs[bi+1],lim=nxt?nxt.s0:p1;
      /* into the block: a flight onto its first tower, if it is kept and the walk before it has the room */
-     const f=b.first.t,inF=f&&kept(f)&&b.s0>p0+.05?runOf(towerTop(f)-y):0,canIn=inF&&b.s0-inF>=cur+.5;
-     if(canIn){seg(cur,b.s0-inF);out.flights.push({curtain:c.id,tower:f.id,foot:at(b.s0-inF),head:at(b.s0),sFoot:r2(b.s0-inF),sHead:r2(b.s0),y0:y,y1:r2(towerTop(f))});gap(f,at(b.s0));}
+     const f=b.first.t,FI=f&&kept(f)&&b.s0>p0+.05?fit(towerTop(f)-y,b.s0-cur-.2):null,canIn=!!FI,inF=FI?FI.run:0;
+     if(canIn){seg(cur,b.s0-inF);out.flights.push({curtain:c.id,tower:f.id,foot:at(b.s0-inF),head:at(b.s0),sFoot:r2(b.s0-inF),sHead:r2(b.s0),y0:y,y1:r2(towerTop(f)),steep:FI.steep});gap(f,at(b.s0));}
      else seg(cur,b.s0);
      /* out of the block: a flight down from its last tower, if the walk after has the room (and leaves the next block its own,
-        unless that is a gate tower: where only one fits, the wall's own towers are climbed before a gate's) */
-     const l=b.last.t,outF=l&&kept(l)&&b.s1<p1-.05?runOf(towerTop(l)-y):0,nf=nxt&&nxt.first.t,nIn=nf&&kept(nf)&&nf.kind!=='gate'?runOf(towerTop(nf)-y):0;
-     const canOut=outF&&b.s1+outF<=lim-.5-(nIn?nIn+.5:0);
-     if(canOut){out.flights.push({curtain:c.id,tower:l.id,foot:at(b.s1+outF),head:at(b.s1),sFoot:r2(b.s1+outF),sHead:r2(b.s1),y0:y,y1:r2(towerTop(l))});gap(l,at(b.s1));}
+        steep if need be; where only one fits and the next is a gate tower, the wall's own tower is climbed first) */
+     const l=b.last.t,nf=nxt&&nxt.first.t,nIn=nf&&kept(nf)?steepOf(towerTop(nf)-y):0;   /* the next block's own, at its steepest */
+     const want=l&&kept(l)&&b.s1<p1-.05,FO=want?(fit(towerTop(l)-y,lim-.2-(nIn?nIn+.2:0)-b.s1)||(nf&&nf.kind==='gate'?fit(towerTop(l)-y,lim-.2-b.s1):null)):null,canOut=!!FO,outF=FO?FO.run:0;
+     if(canOut){out.flights.push({curtain:c.id,tower:l.id,foot:at(b.s1+outF),head:at(b.s1),sFoot:r2(b.s1+outF),sHead:r2(b.s1),y0:y,y1:r2(towerTop(l)),steep:FO.steep});gap(l,at(b.s1));}
      /* the tops: a lone tower climbed from both sides is crossed; one climbed from one side (a corner, a curtain's end) is a floor
         to its centre, where the next curtain's floor meets it; a gate block's towers are climbed each from its own side */
      const one=b.items.length===1&&f;
@@ -292,6 +297,6 @@ const XFORT=(function(){
  const r2p=p=>[r2(p[0]),r2(p[1])];
  /* ---------------------------------------------------------------- the watch post */
  const post=()=>({w:12,d:11,tower:{at:[0,-1.5],w:5,h:8},basket:{h:1.4},store:{at:[3.8,2.6],w:3,d:3,h:2.4},hut:{at:[-3.4,2.8],w:4,d:3,h:2.6},rota:4});
- return{SIZES,plan,check,damage,walks,post,RULES,rect,area,inside,inscribed,half,towerTop,gateHouse,runOf,batK};
+ return{SIZES,plan,check,damage,walks,post,RULES,rect,area,inside,inscribed,half,towerTop,gateHouse,runOf,steepOf,STEEP,batK};
 })();
 if(typeof module!=='undefined')module.exports=XFORT;
