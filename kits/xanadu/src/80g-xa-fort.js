@@ -148,13 +148,21 @@ function xfPlinth(b,C,o){const P=XF_PLINTH,x=b.at[0],z=b.at[1],w=b.w,d=b.d,lit=x
  const Ch=xnStack(x,S.y,z,S.w,S.d,0,[P.chapel],yel,'wash');
  for(const s of[-1,1])for(const u of[-2.2,2.2]){xnTibWin(x+u,S.y+1.3,z+s*(S.d/2-.06),s>0?0:Math.PI,.9,1.4,lit,xC(XPAL.saffron),{valC:xC(XPAL.saffron)});
   xnTibWin(x+s*(S.w/2-.06),S.y+1.3,z+u,s*Math.PI/2,.9,1.4,lit,xC(XPAL.saffron),{valC:xC(XPAL.saffron)});}
- xnFlatRoof(x,Ch.y,z,Ch.w,Ch.d,0,yel,{band:C.maroon,parapet:.9});
- for(const sx of[-1,1])for(const sz of[-1,1])vBall('xGold',x+sx*(Ch.w/2-.3),Ch.y+.9,z+sz*(Ch.d/2-.3),.28,gilt);   /* the roof's gilt corners */
+ const top=xnFlatRoof(x,Ch.y,z,Ch.w,Ch.d,0,yel,{band:C.maroon,parapet:.9});   /* top: the parapet's cap, which 72's xnParapet lays over the whole roof */
+ for(const sx of[-1,1])for(const sz of[-1,1])vBall('xGold',x+sx*(Ch.w/2-.3),top+.25,z+sz*(Ch.d/2-.3),.28,gilt);   /* the roof's gilt corners */
  const fx=x+Ch.w/2-1,fz=z+Ch.d/2-1;vB('vIron',fx,Ch.y,fz,.14,P.finial,.14,0,gilt);vBall('xGold',fx,Ch.y+P.finial,fz,.3,gilt);   /* the gilt finial */
- kput('xDrumE',[x,Ch.y,z],null,[P.ring,P.ringH,P.ring],C.iron);for(const s of[-1,1])vB('vIron',x+s*1.05,Ch.y+P.ringH,z,.18,P.yoke,.34,0,C.iron);   /* the slewing ring, the yoke */
- const L=IZDOOR._w(x,Ch.y+P.ringH+P.yoke,z);(window._xaBeacons=window._xaBeacons||[]).push({key:o.lampAt||null,at:L,roof:Ch.y,lampH:Ch.y+P.ringH+P.yoke});}
+ const lampY=Ch.y+P.ringH+P.yoke,yk=Math.max(.8,lampY-(top+P.ringH));   /* the lamp's centre stays at 22 m: the ring on the cap, the yoke up to the trunnions */
+ kput('xDrumE',[x,top,z],null,[P.ring/2,P.ringH,P.ring/2],C.iron);   /* the drum item's scale is its radius: the ring 2.6 m across */for(const s of[-1,1])vB('vIron',x+s*1.05,top+P.ringH,z,.18,yk,.34,0,C.iron);   /* the slewing ring, the yoke */
+ const L=IZDOOR._w(x,lampY,z),rec={key:o.lampAt||null,at:L,roof:Ch.y,lampH:lampY,lamp:null};
+ /* the lamp head on its yoke, where the page has the Ancients' piece (kits/ancients/pieces/89p-anc-beacon-lamp.js): live meshes in the
+    fort's group, sweeping by itself; rec.lamp is its handle (lamp.set({bearing, shutter, on, mode}) for a page's own schedule) */
+ if(typeof ANC_BEACON_LAMP!=='undefined'&&VERN.cur&&VERN.cur.G){const lamp=ANC_BEACON_LAMP.make({night:()=>xLit()});lamp.root.position.set(x,rec.lampH,z);VERN.cur.G.add(lamp.root);rec.lamp=lamp;}
+ (window._xaBeacons=window._xaBeacons||[]).push(rec);}
 /* the lamp head thrown down in a ruin (the stand-in's size: a 1.6 m drum 2.2 m long, white metal), and its ring, seated on their lowest points */
-function xfLampWreck(x,z,C,s){const a=s.range(0,TAU);xfSeat('xDrumE',x,z,a,Math.PI/2,s.range(-.3,.3),[.8,2.2,.8],xC(0xc8ccd0),.05);
+function xfLampWreck(x,z,C,s){const a=s.range(0,TAU);
+ if(typeof ANC_BEACON_LAMP!=='undefined'&&VERN.cur&&VERN.cur.G){const W=ANC_BEACON_LAMP.wreck({seed:s.range(0,1)});W.position.set(x,0,z);W.rotation.y=a;VERN.cur.G.add(W);   /* the Ancients' head itself, seated */
+  const r=loc(x,z,2.2,s.range(-1,1),a);xfSeat('xDrumE',r[0],r[1],0,0,0,[1.3,.6,1.3],C.iron,.03);return;}
+ xfSeat('xDrumE',x,z,a,Math.PI/2,s.range(-.3,.3),[.8,2.2,.8],xC(0xc8ccd0),.05);
  const r=loc(x,z,2.2,s.range(-1,1),a);xfSeat('xDrumE',r[0],r[1],0,0,0,[1.3,.6,1.3],C.iron,.03);}
 // ---------------------------------------------------------------- a range (barracks, quarters, the Tears' house): two storeys, a colonnade on its ward face
 function xfRange(b,C,o){o=o||{};const x=b.at[0],z=b.at[1],alongZ=b.d>b.w,L=alongZ?b.d:b.w,D=alongZ?b.w:b.d,ry=alongZ?Math.PI/2:0,lit=xLit()?'lit':'glass',trim=xC(XPAL.red);

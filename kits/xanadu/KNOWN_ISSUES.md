@@ -107,10 +107,16 @@ skips it (`BUILD_FAILS`); measured on the page it is unchecked.
   it to `xa_fort_watch`): the Ancient lamp's plinth in the keep's place (three white storeys, the yellow Chapel of the Beacon with
   gilt corners and finial, the slewing ring and yoke, the lamp's centre at 22 m: `window._xaBeacons`), the keep's fire basket gone,
   a stone cable cover in the main gate's passage; ruined, the plinth is the ruined keep and the lamp head lies thrown down by it.
-  Not here: **the lamp head itself** (kits/ancients' `anc_beacon_lamp`, B5; the Beacon's page draws a stand-in at
-  `window._xaBeacons`' point, the kit sheet none), **the generator house** (outside the fort, the Beacon's page), a damaged
+  The **lamp head** is the Ancients' piece (`kits/ancients/pieces/89p-anc-beacon-lamp.js`, B5, 2026-11-23), mounted on the yoke
+  where a page has it (the kit sheet does: `build.py`; Strongwall's page does not, and draws no beacon fort): live meshes sweeping
+  once a minute, `window._xaBeacons[i].lamp` the handle a page drives (bearing, shutters, on); ruined, its wreck lies seated by the
+  plinth. Its beam shows only where `xLit()` (a lit page). Not here: **the generator house** (outside the fort, the Beacon's page), a damaged
   plinth's dark lamp and cut cable (the page's), and **the plinth's rooms** (the Beacon's sheet P: the switch room, the signal room,
   the Lamp Watch, the chapel): a beacon fort gets no interiors yet, its keep's item being the three-storey keep's.
+- **The kit's flat roofs are lidded** (found 2026-11-23 on the beacon fort): 72's `xnParapet` draws its cap as one slab over the
+  whole roof at the parapet's height (`vB('xPaint', x, y+h, z, w+.04, .08, d+.04)`), not a coping on the walls, so every parapeted
+  roof in the kit is closed at parapet height and anything set on the roof below it is hidden. The plinth stands its lamp's ring
+  on that cap (`xnFlatRoof`'s returned top). Fixing the helper changes every Xanadu page: it waits for the all-builds rebuild.
 - **The Marches' outside works** (the wayside shrine, the stable yard's cistern and trough, the road: `settlements/marches`
   `src/80m-mr-works.js`, keys `mr_*`) are the kit's to take when that build is merged; they are not here yet.
 - **The monastery size** (`size:'monastery'`, the House of the Tempest round the Qiblai kit's violet monastery) is not built: its

@@ -43,7 +43,9 @@ FORT = ['80f-xa-fort-data.js', '80g-xa-fort.js']
 paths.update(kxa.paths(FORT))
 paths.update({'37c-core-rubble.js': os.path.join(ROOT, 'core', 'terrain', '37c-core-rubble.js'),
               '20-core-ruins.js': os.path.join(ROOT, 'core', 'ruins', '20-core-ruins.js'),
-              '21-core-ruins-host.js': os.path.join(ROOT, 'core', 'ruins', '21-core-ruins-host.js')})
+              '21-core-ruins-host.js': os.path.join(ROOT, 'core', 'ruins', '21-core-ruins-host.js'),
+              # the beacon fort's lamp head (the Beacon's B5, 2026-11-23): the Ancients' piece, three.js only, read in place; 80g mounts it
+              '89p-anc-beacon-lamp.js': os.path.join(ROOT, 'kits', 'ancients', 'pieces', '89p-anc-beacon-lamp.js')})
 generative = [f for f in kxa.BUILDINGS if f != '86b-xa-plants.js'] + ['78n-xa-citadel.js', '80g-xa-fort.js']   # the plant shim draws no rnd() (Xanadu's DETERMINISTIC); 78l, 78m draw none
 
 
