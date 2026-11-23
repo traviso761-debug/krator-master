@@ -2118,7 +2118,7 @@
   "files": [
    "settlements/pher/targets/town/89zp-ph-site.js"
   ],
-  "hash": "f989722a0af34cff",
+  "hash": "2b77c6822faa86c3",
   "by": "core/world/bake_towns.py"
  }
 }

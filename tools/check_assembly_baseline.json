@@ -371,6 +371,8 @@
  "settlements/mungo/dist/mungo.html: ORDER KMAT": 1,
  "settlements/pher/dist/pher.html: CLASH _registered": 1,
  "settlements/pher/dist/pher.html: MINSET core/biome/34-core-impostor.js": 1,
+ "settlements/xanadu-lake/dist/xanadu-lake.html: CLASH _registered": 1,
+ "settlements/xanadu-lake/dist/xanadu-lake.html: MINSET core/biome/34-core-impostor.js": 1,
  "settlements/pinnacle-rock/dist/pinnacle-rock.html: CLASH _branches": 1,
  "settlements/pinnacle-rock/dist/pinnacle-rock.html: CLASH _detail": 1,
  "settlements/pinnacle-rock/dist/pinnacle-rock.html: CLASH _layout": 1,

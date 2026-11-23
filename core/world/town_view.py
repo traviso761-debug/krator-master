@@ -4,7 +4,7 @@
     python3 core/world/town_view.py voth [--out DIR] [--reach-km 15]   # cut, the checks in node, the page
     python3 core/world/town_view.py voth --shots [--out DIR]           # and the same views on the town's page and in the world (GPU)
 
-1. cut: a square of reach_km round the town's pin (bake_towns.py TOWNS, the 5.1 canvas) off the scale model, as
+1. cut: a square of reach_km round the town's pin (bake_towns.py towns(), the 5.1 canvas) off the scale model, as
    cut_site.py cuts a region (extract_region.py with the model's own regions and settlements), into DIR/data. No
    openworld/SITES.json entry: the real region is step V3's (openworld/voth).
 2. check: the region's land (core/world 41), the town's ground (WORLD_DATA.towns: bake_towns.record), its water, river
@@ -45,7 +45,7 @@ MODEL = os.path.join(ROOT, 'tools', 'scale-model', 'model', 'data')
 
 def cut(key, out, reach_km, model=MODEL):
     import extract_region as XR
-    T = BT.TOWNS[key]
+    T = BT.towns()[key]
     px, py = T['pin_px']
     r = reach_km * 1000.0 / 2000.0
     src, data = os.path.join(out, 'source'), os.path.join(out, 'data')
@@ -133,7 +133,7 @@ CORE_BIOME = ['10-core-head.js', '20-core-kit.js', '30-core-foliage.js', '30s-co
 
 
 def page(key, data, out):
-    T = BT.TOWNS[key]
+    T = BT.towns()[key]
     extra = towns_extra(key, data)
     t = extra['towns']['towns'][0]
     views = [{'label': v[0], 'town': [v[1], v[2]]} for v in VIEWS.get(key, [])]

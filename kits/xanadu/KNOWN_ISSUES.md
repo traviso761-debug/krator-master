@@ -88,3 +88,6 @@ skips it (`BUILD_FAILS`); measured on the page it is unchecked.
   only with `--strict-budget`). The forts are about 0.44 M of it (a page of the four fort defs alone), so the sheet was near
   6.27 M, already over, before them.
 
+- **`xa_ghat`'s wet steps are a stand-in** (`extra/88h-xa-landing.js`, 2026-11-23): the library's `stone.cut` (the kit's `vStone`)
+  darkened to 55 % until `stone.ghat.wet` is delivered (`core/materials/PROMPTS-NEEDED.md` section 59); then the wet steps,
+  the weed line and the washing slabs take it.

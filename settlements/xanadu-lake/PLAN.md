@@ -7,7 +7,8 @@ records from its tune row, one page shows any town, and the province regions dra
 This file is the target's design: what is common to every town. Each town has its own plan beside it
 (`settlements/xanadu-lake/<key>/PLAN.md`, the key is its `XAN_TUNE.lake` key): its site and ground, its people and
 trades, its layout, its pieces, its pins. The order the towns are built in is `settlements/xanadu/BUILD-PLAN.md`.
-Nothing here is built yet. Everything not from the owner, the lore or the tune is *proposed*.
+Steps L0 to L2 are built (2026-11-23: the target and Māuṭh; Ōlḍ-Thalaba and Ḍāiyar; Qōqō, Nēṭ, Malbari and Hāibh: `README.md`;
+verified on SwiftShader, the GPU lane's runs owed). Everything not from the owner, the lore or the tune is *proposed*.
 
 ## 1. The twenty towns
 
