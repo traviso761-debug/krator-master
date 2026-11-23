@@ -11,7 +11,7 @@
   "raster_spill_m": -487.6
  },
  "horst": {
-  "cells_lowered": 3400,
+  "cells_lowered": 3234,
   "max_lowered_m": 2060,
   "rim_max_m_before_after": [
    2939,
@@ -38,8 +38,8 @@
     855.76,
     1531.527
    ],
-   "summit_m": 1457,
-   "over_lake_m": 1977,
+   "summit_m": 1501,
+   "over_lake_m": 2021,
    "base_px": 5.5,
    "from_shore_px": 13.0,
    "from_shore_km": 26.0,
@@ -80,9 +80,9 @@
  },
  "pits": {
   "before_cells": 723,
-  "after_cells": 195,
+  "after_cells": 190,
   "new_cells": 0,
-  "filled_cells": 242,
+  "filled_cells": 245,
   "filled_max_m": 598.1,
   "filled_at": [
    [
@@ -308,6 +308,15 @@
    "after_m": -500,
    "wet_after": false
   },
+  "Phēr": {
+   "px": [
+    843,
+    1491
+   ],
+   "before_m": -1451,
+   "after_m": -447,
+   "wet_after": false
+  },
   "Old Thalaba": {
    "px": [
     860,
@@ -339,19 +348,19 @@
   }
  },
  "reclimate": {
-  "cells": 5963,
-  "class_changed": 3918,
-  "rain_mean_before_mm": 1227.0,
-  "rain_mean_after_mm": 922.0,
+  "cells": 5828,
+  "class_changed": 3734,
+  "rain_mean_before_mm": 1233.0,
+  "rain_mean_after_mm": 920.0,
   "classes_now": {
-   "Af": 4,
+   "Af": 5,
    "Am": 13,
-   "Aw": 356,
-   "BSh": 17,
-   "Csa": 1646,
-   "Csb": 114,
-   "Cfa": 2064,
-   "Cfb": 1712,
+   "Aw": 336,
+   "BSh": 13,
+   "Csa": 1534,
+   "Csb": 97,
+   "Cfa": 2012,
+   "Cfb": 1781,
    "Dfb": 18,
    "Dfc": 18,
    "XV": 1
@@ -360,16 +369,16 @@
  "vale_climate": {
   "rain_mm_median": 792,
   "classes": {
-   "Cfa": 452,
-   "Aw": 8
+   "Cfa": 454,
+   "Aw": 6
   }
  },
  "volcano_classes": {
-  "Cfb": 210,
-  "Csa": 57,
-  "Cfa": 9,
-  "Csb": 6,
-  "Aw": 2
+  "Cfb": 236,
+  "Csa": 37,
+  "Aw": 6,
+  "Csb": 4,
+  "Cfa": 1
  },
  "lake_paint_rgb_st": [
   46,
@@ -603,15 +612,15 @@
   "notes": "A caldera lake (edit_517, 2026-11-11): its outlet the Alph (r070)."
  },
  "cells_changed": {
-  "tm": 5444,
-  "tw": 5431,
-  "tc": 5444,
-  "th": 5352,
-  "tl": 5441,
-  "p": 6258,
-  "c": 4425,
-  "z": 2467,
-  "h": 6711
+  "tm": 5287,
+  "tw": 5277,
+  "tc": 5289,
+  "th": 5196,
+  "tl": 5288,
+  "p": 6098,
+  "c": 4241,
+  "z": 2134,
+  "h": 6552
  },
  "box": {
   "y": [

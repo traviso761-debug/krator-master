@@ -1,0 +1,21 @@
+{
+ "edit": "5.1 edit 27: Lāiṭwāl's bay and wall",
+ "date": "2026-11-23",
+ "pin_m": 1430,
+ "pin_unchanged": true,
+ "bay_cells": 6,
+ "scarp_row_1652": {
+  "1024": 1922,
+  "1025": 2158,
+  "1026": 2650,
+  "1027": 2650,
+  "1028": 2650,
+  "1029": 2650,
+  "1030": 2650,
+  "1031": 2138,
+  "1032": 1871
+ },
+ "lake_within_1_cell_south": true,
+ "wall_within_1_cell_north_m_over_pin": 1220,
+ "connected_to_lake": true
+}

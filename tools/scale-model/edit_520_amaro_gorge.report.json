@@ -1,0 +1,51 @@
+{
+  "edit": "5.1 edit 20: Amaro triple-confluence gorge and promontory pin",
+  "date": "2026-11-18",
+  "pin_was": [
+    731,
+    1184
+  ],
+  "pin_now": [
+    731,
+    1192
+  ],
+  "promontory_m": {
+    "amaro_731_1192": 3088.7,
+    "citadel_730_1193": 3103.7,
+    "qubab_732_1192": 3086.0,
+    "confluence_731_1191": 2848.0,
+    "qappu_mouth_729_1193": 2842.0,
+    "cliff_drop_north_m": 240.7,
+    "cliff_drop_citadel_west_m": 261.7
+  },
+  "r007_bed_at_amaro_was": 3026.9,
+  "r007_bed_at_amaro_now": 2848.0,
+  "r007_course_cells_carved": 55,
+  "tributaries": {
+    "r289": {
+      "name": "Dīpun-Buruqu",
+      "bed_last_was": 2983.9,
+      "bed_last_now": 2940.0
+    },
+    "r288": {
+      "name": "Pāyaru-Buruqu",
+      "bed_last_was": 3058.1,
+      "bed_last_now": 2962.0
+    },
+    "r287": {
+      "name": "Qappu-Nārun",
+      "bed_last_was": 3069.5,
+      "bed_last_now": 2988.0
+    },
+    "r286": {
+      "name": "Mīṣu-Nārun",
+      "bed_last_was": 3070.6,
+      "bed_last_now": 2955.0
+    },
+    "r285": {
+      "name": "Nazāru-Nārun",
+      "bed_last_was": 2925.1,
+      "bed_last_now": 2860.0
+    }
+  }
+}

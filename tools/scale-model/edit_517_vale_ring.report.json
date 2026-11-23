@@ -2335,7 +2335,7 @@
   }
  ],
  "basin_cells": 6059,
- "cells": 3424,
+ "cells": 3427,
  "max_lift_m": 1185,
  "rings": [
   {
@@ -2370,21 +2370,21 @@
    "px": 8,
    "km": 16,
    "before_m": -145,
-   "after_m": 176,
-   "max_after_m": 654
+   "after_m": 180,
+   "max_after_m": 705
   },
   {
    "px": 10,
    "km": 20,
    "before_m": -37,
-   "after_m": 259,
-   "max_after_m": 1042
+   "after_m": 274,
+   "max_after_m": 1075
   },
   {
    "px": 14,
    "km": 28,
    "before_m": 195,
-   "after_m": 461,
+   "after_m": 480,
    "max_after_m": 1571
   }
  ],

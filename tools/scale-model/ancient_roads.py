@@ -62,7 +62,7 @@ def step_kind(p, q):
 
 # ---- nodes
 S = [json.load(open(f, encoding='utf8')) for f in glob.glob(os.path.join(SDIR, '*.json'))]
-ANC_TYPES = ('arcology', 'ruined arcology', 'ruin', 'cavern')
+ANC_TYPES = ('arcology', 'inhabited ruin', 'ruined arcology', 'ruin', 'cavern')
 EXTRA = ('Hook', 'Iziz', 'Yuni', 'Ys', 'Dalab', 'Roketstad', 'Verge')
 SKIP = ('Dhelv',)          # the Zeijani's carved city, not an Ancient site
 nodes = [s for s in S if (s['type'] in ANC_TYPES or s['name'] in EXTRA) and s['name'] not in SKIP]
