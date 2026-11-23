@@ -11,7 +11,10 @@ const OF_GROUPS=[];let OF_INST=0;const OF_FAILS=[];
 function ofBakeChunk(key,list){const G=new THREE.Group();G.name='chunk:'+key;scene.add(G);let x0=1e9,z0=1e9,x1=-1e9,z1=-1e9,y0=1e9,y1=-1e9;
  for(const p of list){
   TSTAT.cur=p.key+'/'+(p.o.v|0);const r0=REG.length;let g=null;
+  /* the Iridescent Order's buildings list their storey stacks while drawn (kits/qiblai 89q5s): 90s walks into them */
+  const rec=p.kind==='order'&&typeof QB_SHELLREC!=='undefined';if(rec){p.stacks=[];QB_SHELLREC.cur=p.stacks;}
   try{g=VERN.place(G,p.key,p.x,p.z,p.ry,p.o);}catch(e){OF_FAILS.push(p.key+': '+(e&&e.message||e));}
+  if(rec)QB_SHELLREC.cur=null;
   if(g)p.G=g;else OF_FAILS.push(p.id+' '+p.key+': not placed');
   for(let i=r0;i<REG.length;i++)REG[i].type=p.key;
   x0=Math.min(x0,p.x-60);x1=Math.max(x1,p.x+60);z0=Math.min(z0,p.z-60);z1=Math.max(z1,p.z+60);y0=Math.min(y0,ofD(p.o.y,0)-ofD(p.drop,0));y1=Math.max(y1,ofD(p.o.y,0)+ofD(p.h,12));}
@@ -36,10 +39,16 @@ FRAME_HOOKS.push(()=>{camera.updateMatrixWorld();ofPm.multiplyMatrices(camera.pr
  // the fish weirs: stake fences in a V down the current, a stake every 0.8 m, standing a metre over the water
  for(const f of W.fishWeirs){const w=ofW(f.z);for(let i=1;i<f.pts.length;i++){const a=f.pts[i-1],b=f.pts[i],L=Math.hypot(b[0]-a[0],b[1]-a[1]);
   for(let s=0;s<=L;s+=.8){const x=a[0]+(b[0]-a[0])*s/L,z=a[1]+(b[1]-a[1])*s/L,bed=ofH(x,z),top=w+1+K.next()*.3;wood.push([x,(bed+top)/2,z,.12,top-bed,.12,K.next()*3]);}}}
+ // the ferry's rope: a post on each bank at the raft's mooring (89zp), the hawser between them over the water, the raft's own
+ // line runs on it when the ford is shut
+ const rope=[];{const raft=OF_PLACE.find(p=>p.key==='xa_ferry_raft');if(raft){const z=raft.z,c=ofRiverX(z),hw=ofHW(z),xs=[c-hw-4,c+hw+4],top=[];
+  for(const x of xs){const g=ofH(x,z),h=3.6;wood.push([x,g+h/2-.4,z,.3,h+.8,.3,0]);top.push(g+h-.2);}
+  const y=Math.min(top[0],top[1])-.3;rope.push([(xs[0]+xs[1])/2,y,z,xs[1]-xs[0],.06,.06,0]);}}
  const mk=(list,color,rough,name)=>{if(!list.length)return;const M=new T3.InstancedMesh(new T3.BoxGeometry(1,1,1),new T3.MeshStandardMaterial({color,roughness:rough}),list.length),m4=new T3.Matrix4(),q=new T3.Quaternion(),eu=new T3.Euler();
   list.forEach((b,i)=>{q.setFromEuler(eu.set(0,b[6],0));m4.compose(new T3.Vector3(b[0],b[1],b[2]),q,new T3.Vector3(b[3],b[4],b[5]));M.setMatrixAt(i,m4);});
   M.instanceMatrix.needsUpdate=true;M.name=name;M.userData.probeSkip=true;scene.add(M);};
- mk(stone,0x9a9484,.9,'the ford and the weir');mk(wood,0x6b5640,.95,'the fish weirs');
+ mk(stone,0x9a9484,.9,'the weir and the Spray Stair');mk(wood,0x6b5640,.95,'the fish weirs and the ferry\'s posts');mk(rope,0x5a4a36,.9,'the ferry\'s rope');
+ window._opalford.ferryRope=rope.length;
  window._opalford.works={stone:stone.length,stakes:wood.length};})();
 // ---------------------------------------------------------------- the flora: the Vale of Xanadu biome over the town's mask (89zp)
 if(typeof BIO!=='undefined'&&BIO.host){BIO.setScene(scene);BIO.setSun([-.5,.76,.52]);

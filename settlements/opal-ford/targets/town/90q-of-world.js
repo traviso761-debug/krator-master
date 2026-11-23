@@ -11,7 +11,8 @@ for(const f of FRAME_HOOKS_PRE)FRAME_HOOKS.push(f);
 // ---------------------------------------------------------------- the sky and its light (KratorSky, as Phēr's)
 const OF_DAY=(function(){const v=Number(new URLSearchParams(location.search).get('day'));return isFinite(v)&&v>0?v:140;})();
 const OF_SKY={hour:9.4,day:OF_DAY,dens:1.05};
-KratorSky.attach(scene,9000);scene.fog.density=.00014;
+const OF_WATER_ON=typeof WATER!=='undefined'&&!!WATER.flow&&!!WATER.drawFlow&&typeof ATMOS!=='undefined',OF_RIVER_NEAR=[-1700,3600];   /* the reach core/water draws (90w) */
+const OF_SKYG=KratorSky.attach(scene,9000);scene.fog.density=.00014;   /* the dome's group: core/water's skylight captures it (90w) */
 const ofHemi=scene.children.find(o=>o.isHemisphereLight);
 function ofSkyTick(){KratorSky.update(camera.position,OF_SKY.hour,OF_SKY.day,OF_SKY.dens);const L=KratorSky.lighting();
  sun.position.copy(L.sunDir).multiplyScalar(1500).add(camera.position);sun.target.position.copy(camera.position);sun.target.updateMatrixWorld();sun.intensity=L.sunIntensity;sun.color.copy(L.sunColor);
@@ -106,7 +107,11 @@ function ofGroundShader(g,m,cx,cz){const T3=THREE,sm=ofSm,p=g.attributes.positio
    if(k<n){const a=k*2;idx.push(a,a+2,a+1,a+1,a+2,a+3);}}
   const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setIndex(idx);g.computeVertexNormals();
   const M=new THREE.Mesh(g,mat);M.userData.probeSkip=true;M.name=name;scene.add(M);return M;};
- ribbon(F.z0,F.z1,6,1,()=>0,new THREE.MeshStandardMaterial({color:0x6fa39a,roughness:.12,metalness:.25,transparent:true,opacity:.9,side:THREE.DoubleSide}),'the Sitār Ḍrāi');
+ /* the near reach (OF_RIVER_NEAR) is core/water's flow and fall (90w); the ribbon draws the river beyond it, or the whole of it
+    when core/water is not on the page */
+ const rm=new THREE.MeshStandardMaterial({color:0x6fa39a,roughness:.12,metalness:.25,transparent:true,opacity:.9,side:THREE.DoubleSide});
+ if(OF_WATER_ON){ribbon(F.z0,OF_RIVER_NEAR[0]+12,6,1,()=>0,rm,'the Sitār Ḍrāi (below)');ribbon(OF_RIVER_NEAR[1]-12,F.z1,6,1,()=>0,rm,'the Sitār Ḍrāi (above)');return;}
+ ribbon(F.z0,F.z1,6,1,()=>0,rm,'the Sitār Ḍrāi');
  const Fl=OF.REACH.fall,white=z=>Math.max(ofSm(Fl.z-Fl.len,Fl.z,z)*ofSm(Fl.z+Fl.len,Fl.z,z),.35*ofSm(OF.REACH.slack[1],OF.REACH.slack[1]+200,z),.3*ofSm(OF.REACH.slack[0],OF.REACH.slack[0]-200,z));
  const wm=new THREE.MeshStandardMaterial({color:0xe8f0ec,roughness:.6,metalness:0,transparent:true,opacity:.55,depthWrite:false,side:THREE.DoubleSide});
  ribbon(Fl.z-Fl.len*1.2,Fl.z+Fl.len*1.2,3,-2,z=>.08+.02*white(z),wm,'the fall\'s white water');})();

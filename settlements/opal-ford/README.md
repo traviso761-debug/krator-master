@@ -23,9 +23,14 @@ its own ground until the Siqārp region is cut (step OF2).
   externalDirs, as Lightwall's page takes it; the cell range and the college ranges are this page's own, `src/89q8`). The paved
   ford and the ferry raft are `kits/xanadu/extra/88j-xa-crossing.js`'s (the raft a vessel in the page's registry). The people come from the tune (`XAN_TUNE.opalford`, read in place).
 - `targets/town/90q-of-world.js` (`[web]`): the sky, the painted ground with the library's sets over it, the far ground, the river
-  (a ribbon at its water's height, white water over the fall); the near ground registered with core/drawn.
+  beyond the near ground (a ribbon at its water's height); the near ground registered with core/drawn.
 - `targets/town/90r-of-build.js` (`[web]`): every record drawn with `VERN.place`, chunk by chunk, with the runtime LOD; the ford,
   the weir and the fish weirs from their records; the Vale of Xanadu flora over the plan's mask.
+- `targets/town/90s-of-interiors.js` (`[web]`): the Iridescent house's interiors on demand (the Qiblai kit's shells and planner,
+  as Grēṭ-Āil's page walks into its buildings).
+- `targets/town/90w-of-river.js` (`[web]`): the river through the near ground on core/water (three flows, the bow's fall and
+  the cataract's upper fall, the skylight), the paddies' still water.
+- `src/89q8-of-order-pieces.js` (`[draw]`): the house's cell range and college ranges on the Qiblai kit's contract.
 - `targets/town/91z-views.js`: the views.
 - `gen/` (generated at every build, not committed): the core/city bundle, the tune under a numbered name, the biome fragment.
 

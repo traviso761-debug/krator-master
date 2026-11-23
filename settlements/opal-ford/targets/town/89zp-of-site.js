@@ -23,7 +23,8 @@
 // (OF.HOUSE, ofH), none of the town's in it.
 var OF={SEED:96413,PIN:[969,1634],Y0:-13,DOWN:[-11,-8.5],
  RIVER:{hw:26,depth:2.4,ford:{hw:18,depth:1.8,len:110},meander:[30,1300,200]},
- REACH:{slack:[-1500,2500],slackRise:.0008,down:.012,up:.009,fall:{z:3100,h:20,len:90,gorge:420}},
+ REACH:{slack:[-1500,2500],slackRise:.0008,down:.012,up:.009,fall:{z:3100,h:20,len:90,gorge:420},
+  upper:{z:3460,h:8,len:40,gorge:240}},   /* the cataract's upper fall (KNOWN_ISSUES: "drawn as one fall"): 8 m, 360 m above the bow's */
  NE:{bank:1.6,riser:[260,380],riserH:7.4,benchRise:.008,slopeAt:1100,slope:.045},
  SW:{bank:1.6,flats:130,spur:320,spurK:1800},
  TOWN:{o:[700,0],half:900,bank:460,high:620,back:800,z:[-440,440],cross:[-300,-140,140,300]},
@@ -43,9 +44,9 @@ const ofDepth=z=>OF.RIVER.depth-OF.RIVER.ford.depth*ofFord(z);
 // the water's surface at z: the slack reach at the town, the rapids below and above it, the bow's fall
 function ofW(z){const R=OF.REACH,s=R.slack,F=R.fall;let y;
  if(z<s[0])y=s[0]*R.slackRise+(z-s[0])*R.down;else if(z<=s[1])y=z*R.slackRise;else y=s[1]*R.slackRise+(z-s[1])*R.up;
- return y+F.h*ofSm(F.z-F.len/2,F.z+F.len/2,z);}
-// the valley's floor level at z: the water's, but the fall's step taken earlier (the banks stand over the river below it: the gorge)
-function ofFloor(z){const F=OF.REACH.fall;return ofW(z)-F.h*ofSm(F.z-F.len/2,F.z+F.len/2,z)+F.h*ofSm(F.z-F.gorge,F.z+F.len/2,z);}
+ const U=R.upper;return y+F.h*ofSm(F.z-F.len/2,F.z+F.len/2,z)+U.h*ofSm(U.z-U.len/2,U.z+U.len/2,z);}
+// the valley's floor level at z: the water's, but each fall's step taken earlier (the banks stand over the river below it: its gorge)
+function ofFloor(z){let y=ofW(z);for(const F of[OF.REACH.fall,OF.REACH.upper])y+=F.h*(ofSm(F.z-F.gorge,F.z+F.len/2,z)-ofSm(F.z-F.len/2,F.z+F.len/2,z));return y;}
 // the ground's height at page (x, z): the channel, then each bank's profile from the channel's edge (e metres out)
 // the ground with the Iridescent Order's platforms graded into it (OF.HOUSE): the Bow Terrace levelled at its middle's height,
 // the four cell terraces 2.2 m apart below it, the pool's ledge 10 m below it; each a level platform blended into the bank over
@@ -108,6 +109,7 @@ const OF_L={o:OF.TOWN.o,h:(x,z)=>ofH(x+OF.TOWN.o[0],z+OF.TOWN.o[1]),P:(x,z)=>[x-
 // [key, x, z (page), ry (the front's angle: 0 toward +z, up the river; -PI/2 toward the river), why, v, kind, y (a fixed floor
 // over the water's level at z: the spans and the boats)]
 const OF_SPAN_Z=-220,OF_DUG_X=z=>ofRiverX(z)+ofHW(z)-1.5;
+const OF_RACKS_Z=[-600,-860];   /* the fish racks and their smokehouses on the north-east flats by the fish weirs (a gap in the paddies) */
 const OF_HOSTS=(function(){const H=[],P2=Math.PI/2,c=ofRiverX(OF_SPAN_Z);
  H.push(['xa_caravanserai',530,-96,0,'the han at the ford: the opal road\'s stage (road.lw-ks), its gate on the ford street',0,'civic']);
  H.push(['xa_corral',488,-162,0,'the han\'s mule yard',0,'civic']);
@@ -125,6 +127,8 @@ const OF_HOSTS=(function(){const H=[],P2=Math.PI/2,c=ofRiverX(OF_SPAN_Z);
  {const cf=ofRiverX(0);H.push(['xa_ford',cf,0,0,'the paved ford: the opal road crosses the Sitār Ḍrāi',0,'bridge',0]);
   const zr=-70;H.push(['xa_ferry_raft',ofRiverX(zr)+ofHW(zr)-12,zr,0,'the ferry raft, for the high water when the ford is shut',0,'boat',0]);}
  for(let i=-1;i<=1;i++)H.push(['xa_river_span',c+i*26,OF_SPAN_Z,P2,'the footbridge beside the ford (the wet months)',0,'bridge',2.2]);
+ /* the fish racks and smokehouses by the fish weirs (kits/xanadu/src/87k, opt-in: kit.json), on the north-east flats facing the river */
+ for(const zr of OF_RACKS_Z)H.push(['xa_fish_racks',ofRiverX(zr)+ofHW(zr)+40,zr,-P2,'fish racks and a smokehouse: the weirs\' catch dried and smoked',0,'civic']);
  /* the dugouts drawn up on the north-east bank above the ford, bows to the water */
  for(let i=0;i<8;i++){const z=60+i*16;H.push(['xa_dugout',OF_DUG_X(z),z,P2+(i%3-1)*.12,'a dugout drawn up by the ford',2,'boat',.25]);}
  /* the terraced fields on the slope behind the town and their farmsteads (the plan: the terraces on the rise behind) */
@@ -180,7 +184,7 @@ function ofWorks(){const c0=ofRiverX(0),hw0=ofHW(0),W={};
     its race left out; the north-east bank's flats 12 to 250 m out of the channel's edge, the south-west's 12 to 120 m */
  const P=[],cell=50;
  for(let z=-1400;z<1400;z+=cell){const z1=z+cell,mid=z+cell/2;
-  if(Math.abs(mid)<90||(mid>700&&mid<880)||(mid>OF_SPAN_Z-40&&mid<OF_SPAN_Z+40))continue;
+  if(Math.abs(mid)<90||(mid>700&&mid<880)||(mid>OF_SPAN_Z-40&&mid<OF_SPAN_Z+40)||OF_RACKS_Z.some(zr=>Math.abs(mid-zr)<40))continue;
   for(const [side,bands] of[[1,[[14,130],[130,248]]],[-1,[[14,118]]]])for(const [e0,e1] of bands){
    const at=(zz,e)=>{const c=ofRiverX(zz),hw=ofHW(zz);return[c+side*(hw+e),zz];};
    P.push({id:'paddy:'+(side>0?'ne':'sw')+':'+z+':'+e0,side,poly:[at(z+2,e0),at(z+2,e1),at(z1-2,e1),at(z1-2,e0)],y:ofW(mid)+OF.NE.bank-.25});}}
@@ -222,7 +226,7 @@ const OF_HOUSE_SPEC=(function(){
   ['qb_chorten',-110,180,'-v','the prism pillar of the debate court',0]);
  S.push(['qb_gate_temple',-273,111,'-u','the Gate of the Road, on the river road from the town',0],['qb_caravanserai',-229,168,'-v','the guest house: the pilgrims and the opal road\'s travellers, its stable court',0],
   ['qb_guild_lodge',-173,170,'-u','the infirmary',0],['qb_guild_lodge',-173,196,'-u','the apothecary',0],
-  ['xa_guild_farm',-46,142,'-v','the monks\' refectory (the Song read at meals)',0],['qb_bakery',-16,142,'-v','the great kitchen',0],
+  ['of_college_range_s',-46,142,'-v','the monks\' refectory (the Song read at meals)',0],['qb_bakery',-16,142,'-v','the great kitchen',0],
   ['xa_granary',-50,184,'-v','the granary (the town\'s rice tithe)',0],['xa_granary',-28,184,'-v','the stores',0],['qb_workshop',-6,184,'-v','the laundry and dye house',0],
   ['qb_workshop',-50,216,'-v','the Prism Workshop: the Glaziers\' lodge',0],['qb_workshop',-34,216,'-v','the glass store',0]);
  [['xa_poor_c',-140],['xa_poor_a',-121],['xa_poor_b',-100],['xa_poor_c',-81]].forEach(([k,u])=>S.push([k,u,242,'-v','a lay servant\'s house',0]));

@@ -4,32 +4,34 @@
 
 - **The house's two pieces live on this page** (`src/89q8-of-order-pieces.js`: `of_cell_range`, `of_college_range` and its `_m`
   and `_s` lengths, on the Qiblai kit's contract): they move into `kits/qiblai/src/89q3-qb-sacred.js` with the all-builds rebuild
-  (TODO.md, "Ride along"), where every page that takes the kit gains them. The service court's refectory is still the Xanadu
-  kit's guild hall.
-- **The house's interiors** from the blueprint's sheets are not wired (`?interiors=1` furnishes the kit's own rooms; FURNITURE.md's
-  NEW pieces are owed to the catalog).
-- **The hub is Kirstabal** (`XAN_TUNE.opalford.hub`, `road.ks-opalford`, 85 km) until Gihon's tune record lands from
-  `claude/gihon-6258a4`: then the hub and the road go to Gihon ('xan.gihon'), 58 km down the river (Integration 2 re-points it at
-  the merge). The han is the stage of `road.lw-ks`, which passes the ford; the tune does not stop that road here.
-- **The ford's toll** is not in the tune yet (a road `cut` on `road.lw-ks` at the ford, as the Strongbow lift's): proposed, for the
-  sim session.
-- **The fish weirs and the mill's weir** are boxes drawn from the plan's records (stakes, a stone wall); the kit's `xa_fish_racks`
-  is opt-in (87k) and not taken.
-- **The ferry raft is moored, not running**: it is a vessel on the page's registry (`of-ferry`), but no rope is drawn across the
-  river and the tune has no ferry route (the ford carries `road.lw-ks` all year).
-- **The river is a ribbon** at its water's height with a standard material, not core/water's flow (`WATER.flow`, `WATER.fall`): no
-  current, no foam but the fall's white ribbon. Core/water's river and fall come with step OF2 on the region (the plan's core
-  adoption table names it).
-- **The paddies are painted**, level basins on the flats without their own water surface; `ground.paddy.wet` is owed
-  (`core/materials/PROMPTS-NEEDED.md` section 60). The crop (`vale-rice`, `kits/crops`) is not read.
-- **The cataract is drawn as one fall** of 20 m with rapids above and below (the model's 265 m to -155 m over about 40 km).
+  (TODO.md, "Ride along"), where every page that takes the kit gains them (Qiblai's and Lightwall's pages rebuilt then).
+- **The house's interiors follow the kit's planner, not the blueprint's rooms**: each building's rooms are laid by
+  kits/interiors' planBuilding from its programme (`90s`: the cells a row of cells, the college ranges halls, a library and
+  dormitories, the monastery's ranges the monks' quarters), not the room plans of `iridescent/BLUEPRINT.md`'s sheets; the Hall of
+  the Bow and the Gallery of the Bow have no interior of their own (the kit's great monastery draws its hall's), and FURNITURE.md's
+  NEW pieces (the prism stand, the moonglass screen, the colour-chart rack, the lens-grinding wheel, the Order's banner) are owed
+  to the catalog.
+- **Economy** (left for the sim session; the owner, 2026-11-23: "except economy"): the hub is Kirstabal until Gihon's tune lands
+  (Integration 2 re-points `XAN_TUNE.opalford` to 'xan.gihon' at the merge); the ford's toll (a road `cut` on `road.lw-ks`); a
+  ferry route for the raft in the high water.
+- **The paddies' ground texture**: the basins hold their water now (90w), but their floor is the painted ground; `ground.paddy.wet`
+  is owed (`core/materials/PROMPTS-NEEDED.md` section 60). The crop (`vale-rice`, `kits/crops`) is not read.
+- **The fish weirs and the mill's weir** are boxes drawn from the plan's records (stakes, a stone wall): the kit has no weir piece.
+- **The cataract** is two falls (20 m and 8 m) with rapids between and above, on the page's ground; the model's whole descent
+  (265 m to -155 m over about 40 km) is the region's, at step OF2.
 
-## Done (2026-11-23, the owner: "work on known issues/kit issues")
+## Done (2026-11-23)
 
+The owner: "work on known issues/kit issues"; "make sure the ferry is wired in as a vessel"; "Work on owed issues except economy".
 - The cells and the house of studies on their own pieces (`of_cell_range` on each terrace; four `of_college_range` ranges round
-  the debate court, the gate between the two south-west ones), in place of the kora arcades and the lodges.
-- The Spray Stair: a flight down each riser between the graded platforms, from the Bow Terrace (now reaching u 172, its landing)
-  to the pool's ledge, each a strip in core/walk; the node test holds each flight's ends to its platforms.
-- The paved ford is the kit's piece (`kits/xanadu/extra/88j-xa-crossing.js`, `xa_ford`, class infrastructure) and the ferry raft
-  (`xa_ferry_raft`, class vessel: a ferry, pole-pushed, a raft hull, crew 2) is moored below it, afloat (the node test).
-- Entry flights (Phēr's pattern): every door whose sill stands over its ground gets its steps.
+  the debate court); the refectory a college range too.
+- The Spray Stair (a flight down each riser between the platforms, the Bow Terrace reaching u 172 for its landing; core/walk
+  strips) and entry flights on the outside doors that stand over their ground (5).
+- The paved ford (`kits/xanadu/extra/88j-xa-crossing.js` `xa_ford`, class infrastructure) and the ferry raft (`xa_ferry_raft`,
+  class vessel: a ferry, pole-pushed, a raft hull, crew 2; `of-ferry`), moored afloat below it on its rope between two posts.
+- The river on core/water (`90w`): three flows (below the bow's fall, between the falls, above) and two falls, the skylight in the
+  water; CPU twins checked (`of-river`); 90q's ribbon only beyond the near ground. The cataract's upper fall (8 m) and its gorge.
+- The paddies' still water (one mesh over the 129 basins).
+- The fish racks and smokehouses (`kits/xanadu/src/87k`, opt-in) by the fish weirs.
+- The house's interiors (`90s`, Grēṭ-Āil's host): every building with a storey planned, furnished and walked into on demand
+  (`of-interiors`).

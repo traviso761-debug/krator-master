@@ -108,7 +108,7 @@ function houseBad(H, bowY) { const bad = [], Hh = OF.HOUSE;
 // ---------------------------------------------------------------- 6. the people and the hosts
 const ppl = OF.people.total, tune = OF.people.tune;
 T.ok('the people the tune\'s ' + tune + ' (XAN_TUNE.opalford) within 25 %', ppl > tune * .75 && ppl < tune * 1.25, ppl + ' in ' + houses.length + ' houses');
-const want = ['xa_ford', 'xa_ferry_raft', 'xa_caravanserai', 'xa_customs_house', 'xa_watch', 'xa_temple', 'xa_guild_farm', 'xa_granary', 'xa_watermill', 'xa_river_span', 'xa_dugout', 'xa_farm', 'xa_farmhouse'];
+const want = ['xa_ford', 'xa_ferry_raft', 'xa_fish_racks', 'xa_caravanserai', 'xa_customs_house', 'xa_watch', 'xa_temple', 'xa_guild_farm', 'xa_granary', 'xa_watermill', 'xa_river_span', 'xa_dugout', 'xa_farm', 'xa_farmhouse'];
 const have = new Set(P.filter(p => p.kind !== 'house').map(p => p.key)), miss = want.filter(k => !have.has(k));
 T.ok('the han, the toll house, the Tears\' post, the temple, the grain office, the granaries, the mill, the footbridge, the dugouts and the terraces placed', !miss.length,
   miss.length ? 'missing ' + miss.join(', ') : (P.length - houses.length) + ' hosts');

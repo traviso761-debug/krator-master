@@ -13,6 +13,7 @@
   "kits/xanadu/extra/88f-xa-harbour.js",
   "kits/xanadu/extra/88g-xa-works.js",
   "kits/xanadu/extra/88j-xa-crossing.js",
+  "kits/xanadu/src/87k-xa-lake-trades.js",
   "core/drawn/10-core-drawn.js"
  ],
  "scoped": [
@@ -33,7 +34,20 @@
   "89q5f-qb-furnish.js",
   "89q5s-qb-shells.js",
   "88j-xa-crossing.js",
-  "89q8-of-order-pieces.js"
+  "89q8-of-order-pieces.js",
+  "90w-of-river.js",
+  "90s-of-interiors.js",
+  "87k-xa-lake-trades.js",
+  "89-atmos-0-core.js",
+  "89-atmos-0p-presets.js",
+  "89-atmos-a-waves.js",
+  "89-atmos-b-skylight.js",
+  "20-core-water.js",
+  "21-core-water-shore.js",
+  "22-core-water-flow.js",
+  "50-core-water-draw.js",
+  "51-core-water-kinds.js",
+  "56-core-water-breakup.js"
  ],
  "interiors": [
   "town"
@@ -53,5 +67,34 @@
   "kits/qiblai/src"
  ],
  "pack": "qiblai",
- "packFrom": "kits/qiblai"
+ "packFrom": "kits/qiblai",
+ "files": {
+  "town": [
+   [
+    "core/atmos",
+    [
+     "89-atmos-0-core.js",
+     "89-atmos-0p-presets.js",
+     "89-atmos-a-waves.js",
+     "89-atmos-b-skylight.js"
+    ]
+   ],
+   [
+    "core/water",
+    [
+     "20-core-water.js",
+     "21-core-water-shore.js",
+     "22-core-water-flow.js",
+     "50-core-water-draw.js",
+     "51-core-water-kinds.js"
+    ]
+   ],
+   [
+    "core/water/ext",
+    [
+     "56-core-water-breakup.js"
+    ]
+   ]
+  ]
+ }
 }

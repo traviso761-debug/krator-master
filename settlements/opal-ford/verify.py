@@ -30,7 +30,7 @@ CITY_JS = r"""
 {const Q=window._opalford||{},P=typeof OF_PLACE!=='undefined'?OF_PLACE:[];
  R.push({name:'of-laid',ok:!Q.err&&Q.placed>250&&Q.failed===0,
   detail:Q.err?('the plan did not lay: '+Q.err):(Q.placed+' placed '+JSON.stringify(Q.byKind||{})+', '+Q.chunks+' chunks, '+Q.failed+' not drawn'+(Q.failed?': '+Q.fails.join(' | '):''))});
- const want=['xa_ford','xa_ferry_raft','xa_caravanserai','xa_customs_house','xa_watch','xa_temple','xa_guild_farm','xa_granary','xa_watermill','xa_river_span','xa_dugout','xa_farm'];
+ const want=['xa_ford','xa_ferry_raft','xa_fish_racks','xa_caravanserai','xa_customs_house','xa_watch','xa_temple','xa_guild_farm','xa_granary','xa_watermill','xa_river_span','xa_dugout','xa_farm'];
  const have=new Set(P.filter(p=>p.kind!=='house').map(p=>p.key)),miss=want.filter(k=>!have.has(k));
  R.push({name:'of-hosts',ok:!miss.length,detail:miss.length?'missing '+miss.join(', '):have.size+' kinds of host, the han and the toll house among them'});
  const N=Q.people||{};R.push({name:'of-people',ok:N.total>N.tune*.75&&N.total<N.tune*1.25,budget:true,detail:(N.total||0)+' / the tune\'s '+(N.tune||'?')});
@@ -44,6 +44,15 @@ CITY_JS = r"""
  {const KT=typeof KTAGS!=='undefined'&&KTAGS.page,V=KT?KT.query({key:'xa_ferry_raft'}):[],F=KT?KT.query({key:'xa_ford'}):[],r=V[0],t=r&&r.tags||{};
   const ok=!!r&&r['class']==='vessel'&&[].concat(t.propulsion||[]).indexOf('pole')>=0&&t.hull==='raft'&&[].concat(t.types||[]).indexOf('ferry')>=0&&!!F[0]&&F[0]['class']==='infrastructure';
   R.push({name:'of-ferry',ok,detail:r?(r.id+' class '+r['class']+', '+JSON.stringify({types:t.types,propulsion:t.propulsion,hull:t.hull,crew:t.crew})+'; the ford '+(F[0]?F[0].id+' class '+F[0]['class']:'missing')):'the ferry raft is not in the page\'s registry'});}
+ /* the river on core/water (90w): the flows and the fall drawn, the CPU twin's height at the ford the ground's water, its current downstream */
+ {const W=window._ofRiver,f=W&&W.flowAtFord,h=W&&W.heightAtFord;
+  R.push({name:'of-river',ok:!!W&&W.drawn&&h!=null&&Math.abs(h-W.waterAtFord)<.3&&!!f&&f[2]>0&&f[1]<0&&(window._ofPaddyWater|0)>60,
+   detail:!W?'the river is not on core/water':'flows and fall drawn '+W.drawn+', height at the ford '+(h==null?'none':h.toFixed(2))+' / '+W.waterAtFord.toFixed(2)+', current '+JSON.stringify(f&&f.map(v=>+v.toFixed(2)))+', paddies with water '+(window._ofPaddyWater|0)});}
+ /* the house's interiors (90s): every building with a storey gets one; the commonest types built and textured; a walker gets in */
+ {const J0=window._ofIx,J=J0&&J0.buildTypes?J0.buildTypes(8):J0,WI=J0&&J0.walkIn?J0.walkIn(5):null,wb=WI&&WI.length?WI.filter(w=>!w.ok):[];
+  R.push({name:'of-interiors',ok:!!(J&&!J0.error&&J.lots>=20&&J.built>=6&&!J.fails.length&&J.tex.meshes&&J.tex.mapped===J.tex.meshes&&WI&&WI.length>=4&&!wb.length),
+   detail:!J?'window._ofIx missing (targets/town/90s-of-interiors.js)':J0.error?J0.error:J.lots+' buildings with an interior ('+J.noShell+' without a shell, '+J.noProgram+' without a programme, '+J.skipped+' open, '+J.noStorey+' with no storey), '+J.ranges+' monks\' ranges, '+J.types+' types, '+J.built+' built ('+JSON.stringify(J.byProgram)+'), textured '+J.tex.mapped+'/'+J.tex.meshes+
+    (J.fails.length?'; FAILS '+J.fails.join(' | '):'')+'; walked into: '+(WI&&WI.map?WI.map(w=>w.key+' '+w.floors+' floors'+(w.ok?'':' FAIL'+(w.shut?'':' door not shut')+(w.open?'':' doorway blocked')+(w.unreached.length?' unreached '+w.unreached.join(','):''))).join(', '):JSON.stringify(WI))});}
  const Ho=Q.house||{},mon=P.find(p=>p.key==='qb_monastery'),hd=P.filter(p=>p.kind==='order'||p.kind==='bridge');
  R.push({name:'of-house',ok:Ho.placed>=40&&!(Ho.errs||[]).length&&!!mon&&mon.v===4&&!!mon.G,detail:(Ho.placed||0)+' pieces of the Iridescent Order\'s house, '+hd.filter(p=>p.G).length+' drawn'+((Ho.errs||[]).length?', no def: '+Ho.errs.join(', '):'')+(mon?', the great monastery in dress '+mon.v:', no great monastery')});}
 return R;}"""
