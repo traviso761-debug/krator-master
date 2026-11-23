@@ -1,0 +1,37 @@
+{
+ "targets": {
+  "house": "tempest.html"
+ },
+ "external": [
+  "settlements/tempest/gen/69t-tp-ground.js",
+  "kits/xanadu/src/80f-xa-fort-data.js",
+  "kits/xanadu/src/80g-xa-fort.js",
+  "core/terrain/37c-core-rubble.js",
+  "core/ruins/20-core-ruins.js",
+  "core/ruins/21-core-ruins-host.js",
+  "kits/qiblai/src/89q0-qb-helpers.js",
+  "kits/qiblai/src/89q0x-qb-xanadui.js",
+  "kits/qiblai/src/89q0y-qb-script.js",
+  "kits/qiblai/src/89q0z-qb-matlib.js",
+  "kits/qiblai/src/89q3-qb-sacred.js"
+ ],
+ "pack": "qiblai",
+ "packSide": true,
+ "packFrom": "kits/qiblai",
+ "deterministic": [
+  "69t-tp-ground.js",
+  "80f-xa-fort-data.js",
+  "80t-tp-plan-data.js",
+  "37c-core-rubble.js",
+  "20-core-ruins.js",
+  "21-core-ruins-host.js",
+  "89q0-qb-helpers.js",
+  "89q0x-qb-xanadui.js",
+  "89q0y-qb-script.js",
+  "89q0z-qb-matlib.js",
+  "89zs-tp-site.js",
+  "90q-tp-world.js",
+  "90r-tp-house.js",
+  "91z-views.js"
+ ]
+}

@@ -257,6 +257,10 @@ Xanadu's last high ground before the Rift, between the two low roads.
   **the novices in their own court**; **the horses inside, three gates** (the Main Gate east, sally gates north and
   south). So `size:'monastery'` (section 5.4) is two curtains with the utse astride the inner one (BLUEPRINT, "For the
   fort asset"). The data for V2, F4 and V3 is `tempest/tempest_plan.json`.
+- **The build** (the owner, 2026-11-23: "have beacon and tempest agents do steps 0-1 of their builds"): `settlements/tempest`,
+  steps 0 (the layout as data, `TEMPEST`, in XFORT's record shape, node-tested) and 1 (the page, `dist/tempest.html`, GPU-verified).
+  V2's `size:'monastery'` is not in XFORT: the House draws its own plan with 80g's builders; what it asks of 80f/80g is in
+  `settlements/tempest/KNOWN_ISSUES.md`.
 - **War and the Decree** (the owner, 2026-11-16: "they ride out to chase a raid"): the order makes no war; its riders go
   out only after a raid (`LORE.md` 6.13).
 - **Fodder** (the owner, 2026-11-16: "add fodder"): in the tune as `T.tempest.horses`, the duty rota (*proposed* numbers):

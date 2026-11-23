@@ -1288,6 +1288,10 @@
    "bytes": 8826373,
    "sha256": "d01c347e5d72b2b73be0ebef3a02ba2284a82f5fbf6f39da7d073959903479bd"
   },
+  "settlements/tempest/dist/tempest.html": {
+   "bytes": 8922430,
+   "sha256": "9ae8647d65a011607975426751981dd1c733a03ff239e6a289bff0aee95ca9ae"
+  },
   "settlements/verge/dist/verge.html": {
    "bytes": 3340526,
    "sha256": "a4daa0698fb4a550c3cd4491ee9ac7ff1a9df9109b111a4bea16ba5332be658d"

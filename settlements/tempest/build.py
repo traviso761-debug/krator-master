@@ -1,0 +1,44 @@
+#!/usr/bin/env python3
+"""The House of the Tempest, the Order of the Violet Storm's mother house on the West Arm (scale model px 886,1619; pin stempest0001):
+step 1, the page as a sheet (PLAN.md). The blueprint is settlements/strongwall/tempest/ (BLUEPRINT.md, tempest_plan.json).
+
+The House is built on Xanadu's page, as Strongwall, Thalaba and Kirstabal are: settlements/xanadu/build.py --kit takes this folder's
+kit.json, src/ (the layout as data, 80t; its drawing, 80u) and targets/, with the Xanadui fort's data and builders read in place
+from kits/xanadu (src/80f-xa-fort-data.js, src/80g-xa-fort.js) and the violet great monastery from kits/qiblai (its helpers, its
+script and drum textures, its sacred buildings): kit.json "external". The ground is baked from the scale model at every build
+(gen/69t-tp-ground.js, by tools/scale_ground.py), never edited by hand:
+  near  a 4 km square round the pin at 20 m (the crest of the West Arm, its flanks), decimetres over 0 m
+  far   an 80 km square at 500 m (the Rift's edge to the west, Komodo's lowlands, the bench to Strongwall in the east), metres
+
+    python3 ../../tools/build.py settlements/tempest      # dist/tempest.html
+    KRATOR_GL=gpu python3 verify.py dist/tempest.html --assert --views "Overview,The Main Gate"
+"""
+import os, subprocess, sys
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+ROOT = os.path.dirname(os.path.dirname(HERE))
+sys.path.insert(0, os.path.join(ROOT, 'tools'))
+import buildlib                                   # noqa: E402
+buildlib.through_tools_build(__file__)            # item 25: build-inputs.json is always written
+import build_sources as BSRC                      # noqa: E402  (--list-sources: tools/dep_graph.py)
+import scale_ground                               # noqa: E402
+CORE_TAKEN = ('core/rand', 'core/tags', 'core/host', 'core/door', 'core/walk', 'core/terrain', 'core/ruins')   # through Xanadu's build and kit.json
+
+PIN = (886.0, 1619.0)                             # stempest0001 on the 5.1 canvas (the scale-model session's 2b81b9040): the crest at 519 m
+NEAR = (-2000.0, 2000.0, -2000.0, 2000.0, 20.0)   # x0, x1, z0, z1, step (m)
+FAR = (-40000.0, 40000.0, -40000.0, 40000.0, 500.0)
+
+BSRC.note(scale_ground.H_PNG, scale_ground.RIVERS, 'settlements/strongwall/tempest/tempest_plan.json')
+if not BSRC.LISTING:
+    scale_ground.write(os.path.join(HERE, 'gen', '69t-tp-ground.js'),
+                       scale_ground.fragment('TP_GROUND', PIN, NEAR, FAR, 'the House of the Tempest', 'settlements/tempest/build.py'))
+
+if '--no-checks' not in sys.argv:
+    if subprocess.call([sys.executable, os.path.join(ROOT, 'tools', 'check_port.py'), '--quiet', HERE]) != 0:
+        sys.exit('build.py: the port lint failed (tools/check_port.py); fix the fragment or retag it in PORT.md')
+
+_rc = subprocess.call([sys.executable, os.path.join(ROOT, 'settlements', 'xanadu', 'build.py'), '--kit', HERE] + sys.argv[1:],
+                      cwd=os.path.join(ROOT, 'settlements', 'xanadu'))
+if not _rc:
+    BSRC.report()
+sys.exit(_rc)
