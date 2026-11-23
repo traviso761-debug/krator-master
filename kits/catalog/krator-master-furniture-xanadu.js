@@ -710,6 +710,46 @@ function xanKublaPaint(g, w, h, v, P) {
 const XAN_KUBLA_PAL = (F) => ({ gold: F.css(F.col('gold')), maroon: F.css(F.col('clothMaroon')), night: F.css(F.col('nightBlue')), iceDeep: F.css(F.col('iceDeep')),
   ice: F.css(F.col('ice')), cream: F.css(F.col('silkCream')), wash: F.css(F.col('pearl')), turq: F.css(F.col('clothTurquoise')), cypress: F.css(F.col('cypress')),
   black: F.css(F.col('lacquerBlack')), violet: F.css(F.col('violet')), saffron: F.css(F.col('clothSaffron')), rose: F.css(F.col('silkRose')), skin: F.css(F.col('umber')), green: F.css(F.col('peacockGreen')) });
+/* THE DELIVERED PICTURES (2026-11-17): the owner's Codex panels, installed in the library and packed for the two Xanadu pages that
+   draw the citadel as KMAT.pack('xanadu-pics') (settlements/xanadu/citadel/materials.json; family 'pic-' + the id's last part,
+   its dots as dashes). A hanging's decal paints its picture when the page carries it, at the picture's own resolution (the canvas
+   is grown to the image before the texture is made), and the painted stand-in where it does not (the catalog sheet, another world,
+   node). A picture still decoding when the decal is first painted is drawn in when it lands, and the decal's texture told to
+   upload again (the decal's material by its key in the engine's decal cache). A stop-gap for the engine's own image decals,
+   owed in core/catalog (KNOWN_ISSUES). */
+const XAN_PIC = {};
+function xanPicFam(key) { return 'pic-' + String(key).split('/').pop().replace(/\./g, '-'); }
+function xanPicDraw(g, img) {
+  const c = g.canvas; if (!c) return;
+  if (c.width !== img.naturalWidth || c.height !== img.naturalHeight) { c.width = img.naturalWidth; c.height = img.naturalHeight; }
+  g.drawImage(img, 0, 0, c.width, c.height);
+}
+function xanPicPaint(g, w, h, key) {
+  if (typeof KMAT === 'undefined' || !KMAT.packed || !g || !g.canvas) return false;
+  const fam = xanPicFam(key), E = KMAT.packed('xanadu-pics', fam);
+  if (!E || !E.map) return false;
+  let P = XAN_PIC[fam];
+  if (!P) {
+    P = XAN_PIC[fam] = { img: new Image(), wait: [] };
+    P.img.onload = function () {
+      for (const q of P.wait) { xanPicDraw(q.g, P.img);
+        const m = (typeof _texCache !== 'undefined') ? _texCache.get(q.key) : null; if (m && m.map) m.map.needsUpdate = true; }
+      P.wait.length = 0;
+    };
+    P.img.src = E.map;
+  }
+  if (P.img.complete && P.img.naturalWidth) { xanPicDraw(g, P.img); return true; }
+  P.wait.push({ g: g, key: key });
+  return false;
+}
+/* a plain stand-in for a picture still owed: the border, a field and a gilt medallion */
+function xanPicStandIn(g, w, h, P, field) {
+  const b = Math.max(4, Math.round(Math.min(w, h) * 0.07));
+  g.fillStyle = P.gold; g.fillRect(0, 0, w, h); g.fillStyle = P.maroon; g.fillRect(b * 0.4, b * 0.4, w - b * 0.8, h - b * 0.8);
+  g.fillStyle = field; g.fillRect(b * 1.6, b * 1.6, w - b * 3.2, h - b * 3.2);
+  g.fillStyle = P.gold; g.beginPath(); g.arc(w / 2, h / 2, Math.min(w, h) * 0.18, 0, 6.283); g.fill();
+  g.fillStyle = P.turq; g.beginPath(); g.arc(w / 2, h / 2, Math.min(w, h) * 0.11, 0, 6.283); g.fill();
+}
 /* a hanging that stands on the floor and hangs its cloth from hem to rod: the rod's brackets carry it at the top (h), the cloth
    (cloth tall) clears the floor by h - cloth - 0.12. o: {w, cloth, design, fringe} */
 function xanHangHigh(F, o) {
@@ -717,7 +757,7 @@ function xanHangHigh(F, o) {
   F.rod(-W / 2 + 0.06, top - 0.06, zb + 0.06, W / 2 - 0.06, top - 0.06, zb + 0.06, 0.025, F.col('gold'), 'gold');
   for (const s of [-1, 1]) { F.ball(s * (W / 2 - 0.05), top - 0.06, zb + 0.06, 0.045, F.col('gold'), 'gold'); F.box(s * (W / 2 - 0.15), top - 0.14, zb + 0.035, 0.05, 0.14, 0.07, 0, F.col('goldDark'), 'gold'); }
   F.box(0, hem, zb + 0.035, W, cloth, 0.02, 0, F.col('clothMaroon'), 'cloth');
-  F.decal(0, hem + 0.05, zb + 0.06, W - 0.1, cloth - 0.1, 0, o.key, o.paint, 'cloth');
+  F.decal(0, hem + 0.05, zb + 0.06, W - 0.1, cloth - 0.1, 0, o.key, function (g, cw, ch) { if (!xanPicPaint(g, cw, ch, o.key)) o.paint(g, cw, ch); }, 'cloth');
   if (o.fringe !== false) for (let i = 0; i < Math.round(W / 0.08); i++) F.box(-W / 2 + 0.04 + i * 0.08, hem - 0.1, zb + 0.035, 0.012, 0.1, 0.012, 0, F.col('gold'), 'gold');
 }
 FURN({
@@ -740,6 +780,48 @@ FURN({
     /* the picture 3.9 x 2.6 (3:2), the hem 1.53 m off the floor */
     const v = F.variant | 0, P = XAN_KUBLA_PAL(F);
     xanHangHigh(F, { w: 4.0, d: 0.14, h: 4.35, cloth: 2.7, key: XAN_KUBLA_ID('tapestry', v), paint: function (g, cw, ch) { xanKublaPaint(g, cw, ch, v, P); } });
+  }
+});
+/* the sultans of the house, woven (the owner's Codex portraits, 2026-11-17): five designs, each placement drawing its own from the
+   piece's seed, so a hall of them is not all one sultan */
+const XAN_SULTANS = ['staff', 'triumphant', 'pensive', 'poet', 'sitar'];
+FURN({
+  key: 'xanadu_court_sultan_portrait', name: 'Woven portrait of a sultan of the house (five designs)', culture: 'xanadu', tier: 'court', type: 'banner', role: 'sultan_portrait', setting: 'indoor',
+  rooms: ['xc_audience', 'xc_reception', 'xc_dining', 'xc_dayroom', 'xc_divan', 'xc_gifts', 'xc_hall', 'xc_loggia'],
+  anchor: 'wall', clearance: {}, materials: ['cloth', 'gold'],
+  w: 1.3, d: 0.12, h: 3.3, variants: 5, variantNames: ['with crescent staff', 'in triumph', 'pensive', 'writing poetry', 'playing a sitar'], task: [],
+  build: function (F) {
+    /* the picture 1.2 x 1.8 (2:3), the hem 1.28 m off the floor */
+    const v = ((F.variant | 0) + Math.floor(F.rnd() * 5)) % 5, P = XAN_KUBLA_PAL(F);
+    xanHangHigh(F, { w: 1.3, d: 0.12, h: 3.3, cloth: 1.9, key: 'patterns/xanadu/portrait-sultan-' + XAN_SULTANS[v], paint: function (g, cw, ch) { xanPicStandIn(g, cw, ch, P, P.cream); } });
+  }
+});
+/* the envoys' gifts: hangings from far lands, hung where the gifts and the envoys are (the Hall and the Gallery of Gifts, the
+   Vizier's study, the guest apartments), so they turn up now and then and not in every hall: easter eggs (the owner, 2026-11-17:
+   "we can have an easter egg or two as well"), the Ancient Mariner, Butler's Erewhon, Caves of Qud and Kenshi told as Mughal
+   miniatures (core/materials/PROMPTS-NEEDED.md section 58) */
+const XAN_EASTER = ['mariner-albatross', 'mariner-spectre-ship', 'mariner-ice', 'erewhon-statues', 'erewhon-musical-banks', 'erewhon-machines',
+  'salt-marsh-village', 'mutant-scholar', 'rust-spindle', 'shell-caravan', 'wanderer-bones'];
+FURN({
+  key: 'xanadu_court_envoy_hanging', name: 'An envoy\'s gift: a hanging from far lands (eleven designs)', culture: 'xanadu', tier: 'court', type: 'banner', role: 'envoy_hanging', setting: 'indoor',
+  rooms: ['xc_gifts', 'xc_study', 'xc_guest'],
+  anchor: 'wall', clearance: {}, materials: ['cloth', 'gold'],
+  w: 1.6, d: 0.12, h: 3.7, variants: 11, task: [],
+  build: function (F) {
+    /* the picture 1.5 x 2.25 (2:3), the hem 1.23 m off the floor, as the Kubla Khan hangings */
+    const v = ((F.variant | 0) + Math.floor(F.rnd() * 11)) % 11, P = XAN_KUBLA_PAL(F);
+    xanHangHigh(F, { w: 1.6, d: 0.12, h: 3.7, cloth: 2.35, key: 'patterns/easter/' + XAN_EASTER[v], paint: function (g, cw, ch) { xanPicStandIn(g, cw, ch, P, P.night); } });
+  }
+});
+FURN({
+  key: 'xanadu_court_envoy_tapestry', name: 'An envoy\'s gift: travellers crossing the desert of ruins', culture: 'xanadu', tier: 'court', type: 'banner', role: 'envoy_tapestry', setting: 'indoor',
+  rooms: ['xc_gifts', 'xc_reception'],
+  anchor: 'wall', clearance: {}, materials: ['cloth', 'gold'],
+  w: 4.0, d: 0.14, h: 3.9, variants: 1, task: [],
+  build: function (F) {
+    /* the owner's Kenshi reference as a Mughal panel (16:9): the picture 3.9 x 2.19, the hem 1.4 m off the floor */
+    const P = XAN_KUBLA_PAL(F);
+    xanHangHigh(F, { w: 4.0, d: 0.14, h: 3.9, cloth: 2.29, key: 'patterns/easter/desert-ruins', paint: function (g, cw, ch) { xanPicStandIn(g, cw, ch, P, P.cream); } });
   }
 });
 FURN({
@@ -800,7 +882,7 @@ FURN({
     /* a deep couch on eight squat gilt legs braced with iron, a quilted mattress of saffron and maroon brocade, a long bolster at
        the back and round ones at the ends, two broad marble steps in front of it; a gilt back-board cut in a cusped arch */
     const gold = F.col('gold');
-    for (const x of [-1.6, -0.55, 0.55, 1.6]) for (const z of [-0.85, 0.35]) F.cyl(x, 0, z - 0.1, 0.11, 0.42, 0, gold, 'gold');
+    for (const x of [-1.6, -0.55, 0.55, 1.6]) for (const z of [-0.78, 0.35]) F.cyl(x, 0, z - 0.1, 0.11, 0.42, 0, gold, 'gold');
     F.box(0, 0.42, -0.25, 3.5, 0.2, 1.5, 0, F.col('lacquerRed'), 'lacquer');
     F.box(0, 0.62, -0.25, 3.4, 0.08, 1.45, 0, gold, 'gold');
     F.pillow(0, 0.8, -0.25, 3.3, 0.24, 1.4, 0, F.col('clothSaffron'), 'cloth', { side: 0.5, puff: 0.4, round: 6 });
@@ -972,7 +1054,7 @@ FURN({
   build: function (F) {
     /* a dais of white marble, the bed of state on gilt feet (as wide as it is long), its quilts of saffron brocade under a cover of
        rose silk, a bank of bolsters; four twisted gilt posts carry a baldachin with a white dome and a gold finial, the curtains of
-       pearl-white silk drawn back to the posts and tied with gold */
+       pearl-white silk drawn back to the posts and tied with gold; the headboard at the back, to the wall */
     const gold = F.col('gold');
     F.box(0, 0, 0, 3.6, 0.22, 3.8, 0, F.col('marbleWhite'), 'stone');
     F.box(0, 0.22, 0, 3.2, 0.06, 3.4, 0, gold, 'gold');

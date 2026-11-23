@@ -3,7 +3,9 @@
 Every texture or pattern sheet the owner still has to source or generate, each with its finished prompt. Paste a block
 as it is, one image per block. **Everything delivered lives in `PROMPTS-archived.md`** (checked against `core/materials/library/`, `patterns/` and each build's `materials.json` on `origin/main`, 2026-10-19); this file holds only what is still owed.
 
-**Count: 16 prompts** (2026-11-22: +10, Erewhon's citadel's hangings of Kubla Khan and the suzani, section 57, merged from `claude/dreamy-turing-3902d7`. 2026-11-17: +2, the Xanadu kit's works pieces' `ground.dyeworks` and `ground.sulfur.crust`, section 58. 2026-11-17: +1, Kirstabal's `wall.slate.coursed`, section 59. 2026-11-16: the Tungang kit's `patterns/tungang/loj-banner`, `loj-banner.b` and `enamel-signs`. The
+**Count: 3 prompts** (2026-11-22: the Xanadu kit's works pieces' `ground.dyeworks` and `ground.sulfur.crust`, section 60, and Kirstabal's `wall.slate.coursed`, section 59, still owed. 2026-11-17: the 25 below delivered, sections 57, 58 and 43, the archive has them; before: 25, +12 easter eggs for Erewhon's walls, section 58: the Ancient Mariner, Samuel Butler, Caves of Qud, Kenshi,
+2026-11-17; +10 for Erewhon's citadel, section 57: the hangings of Kubla Khan and the suzani, 2026-11-16. Before: 3,
+2026-11-16: the Tungang kit's `patterns/tungang/loj-banner`, `loj-banner.b` and `enamel-signs`. The
 owner's Codex batches delivered the rest: 22 new sets on 2026-11-16 (`PLAN.md`, "Delivered 2026-11-16"), and, merged here the same day
 ("keep the installed 2026-11-12 takes, merge them here"), the 2026-11-12 batch's 63 sets from `claude/textures-2026-11-12`, whose
 entries are in `PROMPTS-archived.md`; every entry whose set is now in the library was taken off this list. None is wired yet: each
@@ -454,90 +456,17 @@ Order's blue, the Xanadu wash and `cloth.wool`. **3 prompts**, all full colour.
 | id | Prompt |
 |---|---|
 
-## 57. Erewhon's citadel: the hangings of Kubla Khan (`kits/catalog` culture `xanadu`, `settlements/xanadu/citadel/FURNISHING.md`, 2026-11-16)
+## 57. Erewhon's citadel: the hangings of Kubla Khan (`kits/catalog` culture `xanadu`, 2026-11-16)
 
-The owner, 2026-11-16: "feel free to ask for textures esp tapestries and wall-hangings inspired by kubla khan". The citadel's
-new hangings show the poem: four designs, each as a tall hanging (`xanadu_court_kubla_hanging`, the picture 1.5 x 2.25 m) and
-as a wide great tapestry (`xanadu_court_kubla_tapestry`, 3.9 x 2.6 m), and the harem's suzani (`xanadu_court_suzani`, 1.9 m
-square, two grounds). Each image keeps its panel's aspect: **portrait 2:3 (1365x2048) for the hangings, landscape 3:2
-(2048x1365) for the tapestries, square for the suzanis**; one whole panel each, not tiling, so process them as single panels
-(not `"pattern": true`). Until each arrives the piece draws a **painted stand-in** (a canvas decal: `xanKublaPaint` in
-`krator-master-furniture-xanadu.js`), whose decal key is the id below. Wiring needs the catalog to paint a delivered image into
-a decal (a `core/catalog` addition, owed with these sets). Generic enough to reuse: any Xanadu or Sultanate hall can hang them,
-and the suzani is any steppe or oasis people's. **10 prompts**, all full colour. Palette (the Xanadu culture's): gold #d4af37,
-maroon #7a1a24, saffron #e89a2a, turquoise #1f9aa8, lapis #26449a, night blue #1a2444, ice #d8eef4, rose #c85a6a, cream
-#f2e6c8, peacock green #2a7a4a.
+**Delivered 2026-11-17** (the owner's Codex batch; `tools/textures/batches/citadel-hangings-2026-11-17.json`; `PLAN.md`, "Delivered 2026-11-17"); the prompts are in `PROMPTS-archived.md`. All ten in the library (`patterns/xanadu/hanging-*`, `tapestry-*`, `patterns/common/suzani-roundels`, `.b`; a second take of the pleasure-dome tapestry as `tapestry-pleasure-dome.b`) and wired: packed as `KMAT.pack('xanadu-pics')` (`settlements/xanadu/citadel/materials.json`), painted on the hangings by `xanPicPaint`.
 
-`patterns/xanadu/hanging-pleasure-dome` (the decree):
-```
-Portrait, 1365x2048. A flat, front-on decorative panel filling the whole frame edge to edge: one whole woven silk hanging, not tiling. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no watermark, no readable words. Panel: a Persian-Mughal court tapestry in silk and gold thread showing a stately pleasure-dome: a great white onion dome with a gold band and finial on a terraced palace, set in a walled garden girdled round with walls and towers, cypress and blossoming trees on the terraces; below it a sacred river winds in sinuous loops down the panel into a dark mouth of caverns at the foot; a gold sun disk above; a border of gold roundels on maroon around the whole, an inner border of turquoise vines. Stylised like a Mughal miniature, flat and decorative, no perspective, every line woven. Full colour: gold #d4af37, maroon #7a1a24, night blue #1a2444 sky, turquoise #1f9aa8 river, cream #f2e6c8 dome, peacock green #2a7a4a trees.
-```
+## 58. Easter eggs for Erewhon's walls: the Ancient Mariner, Samuel Butler, Caves of Qud, Kenshi (2026-11-17)
 
-`patterns/xanadu/hanging-caves-of-ice` (a sunny pleasure-dome with caves of ice):
-```
-Portrait, 1365x2048. A flat, front-on decorative panel filling the whole frame edge to edge: one whole woven silk hanging, not tiling. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no watermark, no readable words. Panel: a Persian-Mughal court tapestry in silk and gold thread: a white and gold dome blazing in a large gold sun at the top, standing on a mountain of pale blue ice carved into three great arched cave mouths hung with icicles, deep blue shadows inside the caves, a fountain bursting from the central cave in a fan of white spray and falling back in sparkling drops; a border of gold roundels on maroon around the whole, an inner border of turquoise vines. Stylised like a Mughal miniature, flat and decorative. Full colour: gold #d4af37, maroon #7a1a24, ice #d8eef4, night blue #1a2444, turquoise #1f9aa8, cream #f2e6c8.
-```
-
-`patterns/xanadu/hanging-damsel-dulcimer` (the Abyssinian maid singing of Mount Abora):
-```
-Portrait, 1365x2048. A flat, front-on decorative panel filling the whole frame edge to edge: one whole woven silk hanging, not tiling. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no watermark, no readable words. Panel: a Persian-Mughal court tapestry in silk and gold thread: a young East African woman in flowing rose and saffron robes seated on a cushion in the foreground, playing a hammered dulcimer (a trapezoid santur with fine strings and two slender hammers) on her knees, her face turned up in song; behind her a tall purple mountain under a night sky scattered with gold stars, a gold crescent moon; flowers at her feet; a border of gold roundels on maroon around the whole, an inner border of turquoise vines. Stylised like a Mughal miniature, flat and decorative, dignified, fully clothed. Full colour: gold #d4af37, maroon #7a1a24, night blue #1a2444, rose #c85a6a, saffron #e89a2a, mountain violet #5a3a6a, turquoise #1f9aa8.
-```
-
-`patterns/xanadu/hanging-sinuous-rills` (gardens bright with sinuous rills):
-```
-Portrait, 1365x2048. A flat, front-on decorative panel filling the whole frame edge to edge: one whole woven silk hanging, not tiling. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no watermark, no readable words. Panel: a Persian garden carpet design woven as a silk hanging: a chahar bagh seen from above, four green garden quarters divided by straight turquoise water channels meeting at a central octagonal pool, each quarter crossed by narrow meandering rills, rows of dark cypresses and blossoming fruit trees, rose and saffron flowers scattered over the beds, small birds; a border of gold roundels on maroon around the whole, an inner border of turquoise vines. Flat and decorative, symmetrical. Full colour: gold #d4af37, maroon #7a1a24, peacock green #2a7a4a, turquoise #1f9aa8, rose #c85a6a, saffron #e89a2a, cream #f2e6c8.
-```
-
-`patterns/xanadu/tapestry-pleasure-dome` (the decree, the great tapestry):
-```
-Landscape, 2048x1365. A flat, front-on decorative panel filling the whole frame edge to edge: one whole woven tapestry, not tiling. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no watermark, no readable words. Panel: a wide Persian-Mughal court tapestry in silk and gold thread: a panorama of a stately pleasure-dome on its terraced palace at the centre, a great white onion dome with gold bands, encircled by miles of garden girdled with walls and towers, forests and sunny spots of greenery, blossoming incense-bearing trees; a sacred river runs in loops across the whole width from a fountain on the left, through the gardens and into caverns on the right where it sinks toward a dark sunless sea; mountains on the horizon; a border of gold roundels on maroon around the whole. Stylised like a Mughal miniature, flat and decorative. Full colour: gold #d4af37, maroon #7a1a24, night blue #1a2444, turquoise #1f9aa8, cream #f2e6c8, peacock green #2a7a4a.
-```
-
-`patterns/xanadu/tapestry-caves-of-ice` (the great tapestry):
-```
-Landscape, 2048x1365. A flat, front-on decorative panel filling the whole frame edge to edge: one whole woven tapestry, not tiling. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no watermark, no readable words. Panel: a wide Persian-Mughal court tapestry in silk and gold thread: a white and gold pleasure-dome in a blazing gold sun, its shadow floating on a stream; beneath it a long range of pale blue ice carved into arched caves hung with icicles; from a deep chasm on the left a mighty fountain bursts in a column of spray with rocks flung up like hail, and the river runs out of it across the panel; courtiers in tiny scale on the terraces; a border of gold roundels on maroon around the whole. Stylised like a Mughal miniature, flat and decorative. Full colour: gold #d4af37, maroon #7a1a24, ice #d8eef4, night blue #1a2444, turquoise #1f9aa8, cream #f2e6c8.
-```
-
-`patterns/xanadu/tapestry-damsel-dulcimer` (the great tapestry):
-```
-Landscape, 2048x1365. A flat, front-on decorative panel filling the whole frame edge to edge: one whole woven tapestry, not tiling. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no watermark, no readable words. Panel: a wide Persian-Mughal court tapestry in silk and gold thread: a young East African woman in rose and saffron robes seated on a carpet at the centre playing a hammered dulcimer (a trapezoid santur with two slender hammers), a circle of listening musicians with an oud, a frame drum and a reed flute, a white dome on the left and a tall purple mountain on the right under a night sky of gold stars; flowers and cypresses; a border of gold roundels on maroon around the whole. Stylised like a Mughal miniature, flat and decorative, dignified, fully clothed. Full colour: gold #d4af37, maroon #7a1a24, night blue #1a2444, rose #c85a6a, saffron #e89a2a, mountain violet #5a3a6a, turquoise #1f9aa8.
-```
-
-`patterns/xanadu/tapestry-sinuous-rills` (the great tapestry):
-```
-Landscape, 2048x1365. A flat, front-on decorative panel filling the whole frame edge to edge: one whole woven tapestry, not tiling. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no watermark, no readable words. Panel: a wide Persian garden carpet design woven as a tapestry: two chahar bagh gardens side by side seen from above, green quarters divided by straight turquoise channels with octagonal pools at their crossings, every bed crossed by narrow meandering rills, rows of dark cypresses and blossoming fruit trees, rose and saffron flowers, small birds and a pair of peacocks; a border of gold roundels on maroon around the whole. Flat and decorative, symmetrical. Full colour: gold #d4af37, maroon #7a1a24, peacock green #2a7a4a, turquoise #1f9aa8, rose #c85a6a, saffron #e89a2a, cream #f2e6c8.
-```
-
-`patterns/common/suzani-roundels` (an embroidered suzani, ivory ground):
-```
-Square, 2048x2048. A flat, front-on decorative panel filling the whole frame edge to edge: one whole embroidered hanging, not tiling. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no watermark, no words. Panel: a Central Asian suzani, hand embroidered in silk chain stitch on an ivory cotton ground: six large blossom roundels in two columns, each a red disc ringed with saffron petals and an indigo centre, curling green vines and smaller flowers between them, a border band of red and saffron rosettes on a green vine; visible stitches, slightly irregular hand work. Full colour: ivory #f2e6c8 ground, madder red #a01a2a, saffron #e89a2a, indigo #26449a, green #2a7a4a.
-```
-
-`patterns/common/suzani-roundels.b` (the same, madder ground):
-```
-Square, 2048x2048. A flat, front-on decorative panel filling the whole frame edge to edge: one whole embroidered hanging, not tiling. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no watermark, no words. Panel: a Central Asian suzani, hand embroidered in silk chain stitch on a deep madder red cotton ground: six large blossom roundels in two columns, each an ivory disc ringed with saffron petals and an indigo centre, curling green vines and smaller flowers between them, a border band of ivory and saffron rosettes on a green vine; visible stitches, slightly irregular hand work. Full colour: madder red #a01a2a ground, ivory #f2e6c8, saffron #e89a2a, indigo #26449a, green #2a7a4a.
-```
+**Delivered 2026-11-17** (the owner's Codex batch; `tools/textures/batches/citadel-hangings-2026-11-17.json`; `PLAN.md`, "Delivered 2026-11-17"); the prompts are in `PROMPTS-archived.md`. Eleven of the twelve in the Mughal style, in the library (`patterns/easter/*`) and wired (the envoy's hangings); `skeleton-scholars` dropped (the owner: it "does not fit this current setting"), and in its place the owner's own Kenshi panel (`patterns/easter/desert-ruins`, 16:9, the envoy's tapestry). The first, non-Mughal takes of nine of them are in the library too (`patterns/easter/*.classic`), not wired, kept for a later use (Talia's art museum). With them, five portraits of turbaned sultans (`patterns/xanadu/portrait-sultan-*`, the owner's own requests), wired (the sultan's portrait).
 
 ## 43. The Tungang kit (`kits/tungang`, 2026-11-11)
 
-`kits/tungang/PLAN.md` section 7, agreed by the owner on 2026-11-11 ("agree with your suggestions"). The Line's biome
-(`biomes/line`) wants the lining segment and the hewn rock too. Wire them into `kits/tungang/materials.json` (and the
-Line's) when they come. Numbered 43 because sections 41 and 42 are owed on `claude/rift-hearths-cavern-b8baf6`.
-
-`patterns/tungang/loj-banner` (a loj's banner, carried at meetings and funerals; a single panel, not tiling):
-```
-Square, 2048x2048. A flat, front-on decorative panel filling the whole frame edge to edge: one whole banner, not tiling. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no watermark, no readable words. Panel: a hand-painted guild banner on heavy crimson silk, made by an underground people in honour of their ancestors, the crews of a vanished high-technology transit line: a gold scroll across the top and another across the bottom with worn lettering-shapes that cannot be read; a large central oval painting of pale, hooded tunnel crews raising their hands together at a meeting, dressed in close-fitting padded work suits with high collars, smooth rounded helmet shells under their hoods, small red lamps built into the helmets and chests, tool harnesses across the body, the suits patched with salvaged panels; behind them the smooth curved wall of a perfectly round, machine-bored tunnel lined with glowing strip lights; beneath the oval an emblem of a wheel and a lamp; gold and cream scrollwork in the four corners, a gold fringe along the bottom edge; a thousand years of mending: patched cloth, faded and flaking paint, darned tears, smoke darkening toward the edges. The people and machines in the painting belong to a far-future technology, not to any historical period: no steam, no smoke from machines, no coal, no picks or oil lamps, no nineteenth-century or Victorian clothing, no coats, waistcoats, caps or top hats. Full colour: crimson #7a1a17, gold #c9a24a, cream #f3dfa6.
-```
-
-`patterns/tungang/loj-banner.b` (a second banner):
-```
-Square, 2048x2048. A flat, front-on decorative panel filling the whole frame edge to edge: one whole banner, not tiling. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no watermark, no readable words. Panel: a hand-painted guild banner on heavy deep green silk, made by an underground people in honour of the crews of a vanished high-technology transit line: gold scrolls at top and bottom with worn lettering-shapes that cannot be read; a central oval painting of a long train of sleek white cars gliding out of a perfectly round, machine-bored tunnel mouth ringed with lights: smooth rounded white bodies of seamed panels banded with bronze hoops, a rounded sealed cab at the front, one continuous ribbon of lit blue windows with thin bronze mullions, glowing cyan strips along the sill and the roof, running low on a single raised concrete guideway beam, its wheels hidden under the body; hooded crew figures in close-fitting padded work suits and smooth helmets with built-in lamps standing beside the guideway; cream and gold ornament round the oval, a fringe along the bottom; centuries of mending: patches, faded paint, darns, soot. Far-future technology, not any historical period: no steam locomotive, no chimney, no smoke, no rails on wooden sleepers, no overhead wires, no nineteenth-century or Victorian clothing, no coats, caps or top hats. Full colour: green #2f5a3a, gold #c9a24a, cream #f3dfa6, the train's lamps #e8b24a.
-```
-
-`patterns/tungang/enamel-signs` (a 4 x 4 atlas of the Line's enamel signs; read as holy marks):
-```
-Square, 2048x2048. A flat, front-on decorative panel filling the whole frame edge to edge: a 4 by 4 grid of sixteen separate enamel signs, each in its own equal cell on a plain dark grey ground. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no border, no watermark, no words. Signs: vitreous enamel signs on steel from a high-technology transit line, rectangular, round and diamond, with clean modern pictogram design in red on cream, cream on red, cream on green and white on blue; each carries only a large numeral, an arrow, a lamp symbol, a bell symbol, a downward chevron, a simple pictogram of a person in a rounded helmet, or a side view of a sleek rounded train car with one ribbon of windows on a single raised guideway beam (no chimney, no smoke, no rails), never words; every sign chipped at its edges and corners down to black iron, with small rust blooms, screw holes at the corners, and the enamel faded unevenly. Full colour: red #a8382c, cream #e2d8bc, green #2f6a4a, blue #2a4a7a, iron #2a2826.
-```
+**Delivered 2026-11-17** (the owner's Codex batch; `tools/textures/batches/citadel-hangings-2026-11-17.json`; `PLAN.md`, "Delivered 2026-11-17"); the prompts are in `PROMPTS-archived.md`. `patterns/tungang/loj-banner`, `loj-banner.b` and `enamel-signs` are in the library, **not wired**: `kits/tungang` wires them (its `materials.json`) at its next turn.
 
 ## 59. Kirstabal's slate town wall (`settlements/kirstabal`, the Xanadu kit's opt-in wall `kits/xanadu/src/87k2-xa-slate-wall.js`, 2026-11-17)
 
@@ -552,7 +481,7 @@ colour can tint it lighter or darker):
 Seamless tileable texture, square, 2048x2048. Orthographic view of a flat, front-on wall filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: an old town wall built of thin split slate laid flat in long narrow courses like Chiang Mai's thin bricks, each slab 3 to 6 cm thick and 20 to 60 cm long, the courses straight but each slab's edge slightly ragged and chipped, laid with thin grey lime mortar joints set back a little so every course casts a fine dark line; a few slabs a shade darker or lighter, faint rust-brown iron staining in streaks, pale lime bloom in the joints, a little dark weathering grime and specks of grey-green lichen. Blue-grey and charcoal slate only, low saturation, so it can be tinted.
 ```
 
-## 58. The Xanadu kit's works pieces (`kits/xanadu/extra/88g-xa-works.js`, the build-out's wave 0.1, 2026-11-17)
+## 60. The Xanadu kit's works pieces (`kits/xanadu/extra/88g-xa-works.js`, the build-out's wave 0.1, 2026-11-17)
 
 The lake towns' work pieces draw on the kit's procedural textures with tinted stand-ins. Three of the four gaps are already in
 the library, to wire when the pieces move into `src/`: the mat shed's reed thatch is `roof.thatch.reed`, the hot spring's apron
