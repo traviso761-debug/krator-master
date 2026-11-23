@@ -778,6 +778,7 @@ check('intermediate centres classified as town; Port Tobin at 956,943, Port Goto
       and (by_nm_21['Port Tobin']['px'], by_nm_21['Port Tobin']['py']) == (956, 943)
       and (by_nm_21['Port Goto']['px'], by_nm_21['Port Goto']['py']) == (920, 703)
       and (by_nm_21['Sfenops']['px'], by_nm_21['Sfenops']['py'], by_nm_21['Sfenops']['type']) == (1282, 663, 'city')
+      and 'seur98e8mv' not in by_id_21 and 'seur98e8mv' in by_nm_21['Sfenops']['notes']
       and (by_nm_21['Liikofi']['px'], by_nm_21['Liikofi']['py'], by_nm_21['Liikofi']['type']) == (1316, 797, 'city'))
 reg_names_lower = [r['name'].strip().lower() for r in R]
 REQ_REGS_21 = [

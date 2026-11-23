@@ -658,6 +658,7 @@
    "exports": [
     "iron",
     "copper",
+    "tin",
     "silver",
     "coal",
     "sulfur",
@@ -2668,8 +2669,7 @@
     "Reed upriver fields (to be named)",
     "Rifar al-Dhahab",
     "Sfenops",
-    "Shade",
-    "Tabist town (to be named)"
+    "Shade"
    ],
    "nodes": {
     "iron": {
@@ -2811,22 +2811,22 @@
     ]
    },
    "reach": {
-    "iron": 1874,
-    "copper": 239,
-    "gold": 287,
-    "tin": 460,
-    "silver": 261,
-    "rare-earth": 203,
-    "coal": 367,
+    "iron": 1672,
+    "copper": 216,
+    "gold": 261,
+    "tin": 418,
+    "silver": 233,
+    "rare-earth": 187,
+    "coal": 330,
     "sulfur": 22,
-    "saltpeter": 280,
-    "oil": 69,
+    "saltpeter": 271,
+    "oil": 61,
     "gypsum": 4,
-    "halite": 134,
+    "halite": 130,
     "potash": 2,
     "alkali": 1,
     "nickel": 0,
-    "marble": 16
+    "marble": 15
    }
   },
   "Painted Men": {
@@ -9931,34 +9931,6 @@
     "salt": false
    },
    "ok": false
-  },
-  "Tabist town (to be named)": {
-   "polity": "Nomad Country",
-   "px": 1285,
-   "py": 655,
-   "type": "town",
-   "pop": 2800,
-   "reachKm": 20,
-   "catchment": {
-    "iron": 202,
-    "copper": 23,
-    "gold": 26,
-    "tin": 42,
-    "silver": 28,
-    "rare-earth": 16,
-    "coal": 37,
-    "saltpeter": 9,
-    "oil": 8,
-    "halite": 4,
-    "marble": 1
-   },
-   "basics": {
-    "stone": true,
-    "wood": true,
-    "water": true,
-    "salt": true
-   },
-   "ok": true
   },
   "Taikoro": {
    "polity": "League of Amphitriton",

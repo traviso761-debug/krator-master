@@ -996,9 +996,12 @@ merged here (the owner's step 5, "merge in gemini scoping branch and crook/ria w
 - **Names**: the owner's "(to be named)" pins keep their placeholders (as in 5.1e11); Gemini's names for them (Baelu
   North/Mid/South, Guari, Coyote Lake Village, K7, K2, E1, Xanadu Goldfields) are in their notes. Empty notes take
   Gemini's; polities fill from the population data.
-- **Held**: the two salt works (`svhmyhf33w`, `s0zgu7u6yb`), the owner's batch 5.1e10. **Open for the owner**: Gemini's
-  test drops the "Tabist town (to be named)" (`seur98e8mv`, 1285,655) as a duplicate of its Tabisti capital Sfenops
-  (1282,663, 17 km off); both stay until the owner says.
+- **Held**: the two salt works (`svhmyhf33w`, `s0zgu7u6yb`), the owner's batch 5.1e10.
+- **5.1e16 (2026-11-23)**: Gemini drops the "Tabist town (to be named)" (`seur98e8mv`, 1285,655) as a duplicate of its
+  Tabisti city Sfenops (`sn98ob5duu`, 1282,663, 17 km off); the owner: "Merge them". Sfenops stands where it was and
+  takes the Tabist town's description in its notes (SETT_MOVED 5.1e16); the old id leaves the defaults and its add batch
+  and is cleared from browsers (SETT_DROPPED 5.1e16). `openworld/resources-settlements.json` and `trade-goods.json` name
+  Sfenops for it (eight places), the two docs say so; geology and the ledger re-baked.
 - **Re-baked**: `kits/resources/data/geology.json` (`geology.py --cell 4`, then `--lodes`), `data/ledger.json` and
   `godot/golden-field.json` (`test-res.js --ledger`), and the Godot test copies (`godot/tools/sync_core.py`).
 - `tests/test_smodel.py` section 21 holds Gemini's stage checks, adapted.

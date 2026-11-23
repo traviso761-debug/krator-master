@@ -9,7 +9,7 @@ otherwise, and give me a census of the best likely producer of each good." The n
 **The settlements (120).** Every pin on the scale model 5.1 (`tools/scale-model/model/src/60-settlements.js`: `defSetts`, with
 the `SETT_ADDED` and `SETT_MOVED` versions applied), **including today's pin batch** (`SETT_MOVED['5.1e6']`, commit
 f377baf4d; `PLAN-SETTLEMENTS.md`, "The pin batch"), so Verge, Mungo, Shade, Mav's Refuge, Roketstad, Jimjam, Dalab,
-Ys, the Hexahedron and Reed stand at their new pins and the **Tabist town** (`seur98e8mv`, 1270,666, name to come) is in. Marked
+Ys, the Hexahedron and Reed stand at their new pins and the **Tabist town** (`seur98e8mv`, 1270,666, name to come; since 2026-11-23 Gemini's Sfenops, `sn98ob5duu`: the owner, "Merge them") is in. Marked
 † in the tables. Two moves on other branches are applied by hand: **Longsong** 1229,1621 (on the Bīruk al-Ghaym, `5.1e7`) and
 **Strongbow** 1001,1596 (`5.1e5`). Loj Twenny is read at today's pin (its great-shaft pin is on its branch). One new outpost:
 the **Singing Gjár** (1572,1643). The isle demo's Nephtos has no pin and is left out. The `openworld/SITES.json` sites are all on
