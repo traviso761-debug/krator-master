@@ -23,16 +23,16 @@ defBuilding({key:'lz-nest',name:'Nest hall and hospice',seed:7101,caste:'all',cu
   box('earthR',0,0,0,53,.1,49,P('earthP'));
   /* the centre: the egg chamber, the biggest, with the whorl of the Coil on its crown */
   const dhP=lzDoorH(6);
-  lnDome(0,0,7.0,{n:9,col:P('spore'),eye:true,doors:[{dh:dhP,ry:lnFace([0,0],A[A.length-1])},{dh:dhP,ry:lnFace([0,0],B[B.length-1])}]});
+  lnDome(0,0,7.0,{n:9,col:P('spore'),eye:true,doors:[{dh:dhP,ry:lnFace([0,0],A[A.length-1]),leaf:false},{dh:dhP,ry:lnFace([0,0],B[B.length-1]),leaf:false}]});
   for(const [pts,sg] of [[A,1],[B,-1]]){for(let i=0;i<pts.length;i++){const p=pts[i];const mouth=i===0,next=i<pts.length-1?pts[i+1]:[0,0];
-    const doors=[{dh:dhP,ry:lnFace(p,next)}];if(mouth)doors.push({dh:dhP,ry:Math.atan2(p[0],p[1])});else doors.push({dh:dhP,ry:lnFace(p,pts[i-1])});
+    const doors=[{dh:dhP,ry:lnFace(p,next),leaf:false}];if(mouth)doors.push({dh:dhP,ry:Math.atan2(p[0],p[1]),leaf:true});else doors.push({dh:dhP,ry:lnFace(p,pts[i-1]),leaf:false});
     lnDome(p[0],p[1],p[2],{n:i%2?5:7,a0:i*.9,doors});
    /* the swelling that joins each chamber to the next (and the last to the centre) */
    /* the passage to the next chamber (and from the last to the centre): a tunnel the door's size */
-   const q=i<pts.length-1?pts[i+1]:[0,0,7.0];const dh=Math.min(dhP,Math.min(p[2],q[2])*1.1*.8);lzPassage(p,q,dh,dh*.62,'earth',P('spore'));}
+   const q=i<pts.length-1?pts[i+1]:[0,0,7.0];const dh=Math.min(dhP,Math.min(p[2],q[2])*1.1*.8);lzPassage(p,q,dh,dh*LZ_DW,'earth',P('spore'));}
    /* the mouth: the outermost chamber's portal, facing away from the centre */
-   const m=pts[0],ang=Math.atan2(m[0],m[1]),dh=lzDoorH(6),dw=dh*.62,mx=m[0]+Math.sin(ang)*m[2]*.9,mz=m[1]+Math.cos(ang)*m[2]*.9;
-   lzNoCut(()=>{W(mx,0,mz,ang,()=>{lzPortal(0,0,.1,0,dh,{mk:'bronze',eye:sg>0});box('basalt',0,0,.5,dw+.6,.16,.7,P('basaltD'));});});}
+   const m=pts[0],ang=Math.atan2(m[0],m[1]),dh=lzDoorH(6),dw=dh*LZ_DW,mx=m[0]+Math.sin(ang)*m[2]*.9,mz=m[1]+Math.cos(ang)*m[2]*.9;
+   lzNoCut(()=>{W(mx,0,mz,ang,()=>{lzPortal(0,0,.1,0,dh,{mk:'bronze',eye:sg>0,shared:true});box('basalt',0,-.12,.5,dw+.6,.2,.7,P('basaltD'));});});}
   /* inside. An arm chamber's piece stands against its rim, sideways to the passages (perpendicular to the way to the next
      chamber); the centre is ringed by basking slabs facing in, a clutch cradle at the foot of each, the hearth in the middle */
   /* a piece against a chamber's rim, sideways to the passages: its centre inside the inner shell (0.88 r) by half its own size */

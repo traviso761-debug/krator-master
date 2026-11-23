@@ -31,11 +31,12 @@ function fgCol(k,C){const c=P(k);if(C&&C.worn){const g=(c.r+c.g+c.b)/3;c.r=(c.r*
    stepped footing, on the flat one slab to -.5 (the stand-ins' lo). The cell with the footprint's lowest corner reaches C.lo. */
 function fgPlinth(x0,x1,z0,z1,C,o){o=o||{};const nx=Math.max(1,Math.min(5,Math.round((x1-x0)/4))),nz=Math.max(1,Math.min(3,Math.round((z1-z0)/4))),top=o.top==null?.06:o.top;
  const col=fgCol('stone',C);let mn=1e9;
- for(let i=0;i<nx;i++)for(let j=0;j<nz;j++){const a0=x0+(x1-x0)*i/nx,a1=x0+(x1-x0)*(i+1)/nx,b0=z0+(z1-z0)*j/nz,b1=z0+(z1-z0)*(j+1)/nz;
+ WKOFF++;try{for(let i=0;i<nx;i++)for(let j=0;j<nz;j++){const a0=x0+(x1-x0)*i/nx,a1=x0+(x1-x0)*(i+1)/nx,b0=z0+(z1-z0)*j/nz,b1=z0+(z1-z0)*(j+1)/nz;
   let g=Math.min(C.gl(a0,b0),C.gl(a1,b0),C.gl(a1,b1),C.gl(a0,b1),0)-.5;g=Math.max(g,C.lo);mn=Math.min(mn,g);
   box('stone',(a0+a1)/2,g,(b0+b1)/2,a1-a0+.02,top-g,b1-b0+.02,col);}
  /* the lowest cell reaches the stand-in's lo exactly (its corners and centre were what the host measured) */
- if(mn>C.lo+.001)box('stone',(x0+x1)/2,C.lo,(z0+z1)/2,Math.min(1.2,x1-x0),mn-C.lo+.02,Math.min(1.2,z1-z0),col);
+ if(mn>C.lo+.001)box('stone',(x0+x1)/2,C.lo,(z0+z1)/2,Math.min(1.2,x1-x0),mn-C.lo+.02,Math.min(1.2,z1-z0),col);}finally{WKOFF--;}
+ wkPad((x0+x1)/2,(z0+z1)/2,x1-x0,z1-z0,top);
  return mn;}
 /* ---------------------------------------------------------------- drystone walls */
 /* a wall from (x0,z0) to (x1,z1) of thickness th, from y0 to y1, with a through-band of darker stones every ~.9 m (the
@@ -61,10 +62,22 @@ function fgSlab(mk,p0,p1,p2,th,col){fgVX.set(p1[0]-p0[0],p1[1]-p0[1],p1[2]-p0[2]
  fgVY.crossVectors(fgVZ,fgVX);fgVQ.setFromRotationMatrix(fgVM.makeBasis(fgVX,fgVY,fgVZ));
  const mid=new THREE.Vector3(p0[0],p0[1],p0[2]).addScaledVector(fgVX,L1/2).addScaledVector(e2,.5);
  emit(mk,gbox(),new THREE.Matrix4().compose(mid,fgVQ,new THREE.Vector3(L1,th,L2)),col);}
+/* a solid sloped gable or wall-head cap (no stepped sawtooth gaps): ax 'x' runs b along z at x = aMid (thickness gt), ax 'z' runs
+   b along x at z = aMid; yNeg(b) and yPos(b) give the top height on the -a and +a faces, tucked up inside the turf roof slab */
+function fgGableSlab(mk,ax,aMid,gt,b0,b1,yBase,yNeg,yPos,col,seg){const n=seg==null?4:seg,a0=aMid-gt/2,a1=aMid+gt/2,pos=[],nor=[],idx=[];
+ const P=(a,y,b)=>ax==='x'?[a,y,b]:[b,y,a],N0=ax==='x'?[-1,0,0]:[0,0,-1],N1=ax==='x'?[1,0,0]:[0,0,1];
+ const yn=[],yp=[],bs=[];for(let i=0;i<=n;i++){const b=b0+(b1-b0)*i/n;bs.push(b);yn.push(Math.max(yBase,yNeg(b)));yp.push(Math.max(yBase,yPos(b)));}
+ const face=(a,ys,nv)=>{const s0=pos.length/3;for(let i=0;i<=n;i++){pos.push(...P(a,yBase,bs[i]),...P(a,ys[i],bs[i]));nor.push(...nv,...nv);}
+  for(let i=0;i<n;i++){const s=s0+i*2;idx.push(s,s+1,s+2,s+1,s+3,s+2);}};
+ face(a0,yn,N0);face(a1,yp,N1);
+ {const s0=pos.length/3;for(let i=0;i<=n;i++){pos.push(...P(a0,yn[i],bs[i]),...P(a1,yp[i],bs[i]));nor.push(0,1,0,0,1,0);}
+  for(let i=0;i<n;i++){const s=s0+i*2;idx.push(s,s+1,s+2,s+1,s+3,s+2);}}
+ for(const [i,sg] of [[0,-1],[n,1]]){if(yn[i]<=yBase+.005&&yp[i]<=yBase+.005)continue;const s=pos.length/3,nb=ax==='x'?[0,0,sg]:[sg,0,0];
+  pos.push(...P(a0,yBase,bs[i]),...P(a1,yBase,bs[i]),...P(a1,yp[i],bs[i]),...P(a0,yn[i],bs[i]));for(let k=0;k<4;k++)nor.push(...nb);idx.push(s,s+1,s+2,s,s+2,s+3);}
+ if(idx.length)emit(mk,fixWind(mkGeo(pos,nor,null,idx)),null,col);}
 /* ---------------------------------------------------------------- the turf roof */
 /* gabled along x: eaves at wh on +-hd (overhanging ovz, .08: the slab's thickness adds th * sin(pitch) beyond it; the gables ov, .2), the ridge at rid; turf slabs .32 thick on bell-fir purlins and rafters
-   (seen from inside in the cut-away), the ridge roll on top (its crown at rid + .22: the def's h), the gables in stepped
-   drystone courses between the walls' top and the ridge. C.worn: patches of dead turf, a slump in the ridge */
+   (seen from inside in the cut-away), the ridge roll on top (its crown at rid + .22: the def's h), the gables flush up into the turf slab */
 function fgRoof(hw,hd,wh,rid,C,o){o=o||{};const ov=o.ov==null?.2:o.ov,ovz=o.ovz==null?.08:o.ovz,th=.32,X0=-hw-ov,X1=hw+ov,tc=fgCol('turf',C),s=(rid-wh)/hd;
  const yE=wh-ovz*s;
  for(const sg of [1,-1]){const p0=[X0,yE,sg*(hd+ovz)],p1=[X1,yE,sg*(hd+ovz)],p2=[X0,rid,0];
@@ -80,9 +93,9 @@ function fgRoof(hw,hd,wh,rid,C,o){o=o||{};const ov=o.ov==null?.2:o.ov,ovz=o.ovz=
  else beam('turf',[X0,rid,0],[X1,rid,0],.22,tc,true,8);
  /* rafters at the gables and every ~2.5 m (inside: the cut-away shows them) */
  {const nr=Math.max(2,Math.round((2*hw-.8)/2.5));for(let i=0;i<=nr;i++){const x=-hw+.4+i*(2*hw-.8)/nr;for(const sg of [1,-1])pole('pole',[x,wh-.05,sg*(hd-.3)],[x,rid-th-.08,0],.06,rc,5);}}
- /* the gables: drystone courses stepping in to the ridge */
- if(!o.noGables){const col=fgCol('stone',C),gt=o.gableT==null?.6:o.gableT;for(const sx of [-1,1]){if(o.noGable===sx)continue;const n=Math.max(4,Math.round((rid-wh)/.22));
-  for(let k=0;k<n;k++){const y0=wh+(rid-wh)*k/n,y1=wh+(rid-wh)*(k+1)/n,half=Math.max(.05,hd*(1-(k+1)/n)-.05);box('stone',sx*(hw-gt/2),y0,0,gt,y1-y0+.01,2*half,col);}}}}
+ /* the gables: flush continuous drystone triangles tucked up into the turf roof slab (no daylight gaps) */
+ if(!o.noGables){const col=fgCol('stone',C),gt=o.gableT==null?.6:o.gableT,yf=b=>wh+(rid-wh)*(1-Math.abs(b)/hd)-.1;
+  for(const sx of [-1,1]){if(o.noGable===sx)continue;fgGableSlab('stone','x',sx*(hw-gt/2),gt,-hd+.03,hd-.03,wh-.04,yf,yf,col,4);}}}
 /* ---------------------------------------------------------------- the plate door */
 /* an Ancient plate door on cable hinges in a bell-fir frame: (x,z) the middle of the doorway's line, w x h. The leaf is a
    core/door record (svLeaf): it opens with E on the sheet, and draws shut into the buckets in a dry or host draw */

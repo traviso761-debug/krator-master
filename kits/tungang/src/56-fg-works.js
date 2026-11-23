@@ -7,11 +7,11 @@ function fgFillBox(B,C,wr,dr,hr){const b={w:B.w*fgLerp(wr,fgU(C,21)),d:B.d*fgLer
 /* an open shed (the stand-ins' `shed` form): the back and end walls drystone, the front on bell-fir posts open to the lane,
    a turf roof falling from the back (its crown at the def's h) to the front eave at fe */
 function fgShed(B,C,o){o=o||{};const hw=B.w/2,hd=B.d/2,th=.6,bh=B.h-.4,fe=o.fe==null?2.45:o.fe,col=fgCol('stone',C),pc=fgCol('pole',C);
- fgPlinth(-hw,hw,-hd,hd,C);fgWall(-hw,-hd+th/2,hw,-hd+th/2,th,0,bh,C,col);
- for(const s of [-1,1]){const x=s*(hw-th/2);fgWall(x,-hd+th,x,hd,th,0,fe-.05,C,col);const n=4;
-  for(let k=0;k<n;k++){const y0=fe-.05+(bh-fe+.05)*k/n,y1=fe-.05+(bh-fe+.05)*(k+1)/n,zf=hd-(2*hd-th)*(k+.5)/n;fgWall(x,-hd+th,x,zf,th,y0,y1+.01,C,col);}}
+ const yB=B.h-.18,yF=fe+.1,zb=-hd-.08,zf=hd+.08,s=(yB-yF)/(zf-zb),yRoof=z=>yB-(z-zb)*s-.2;
+ fgPlinth(-hw,hw,-hd,hd,C);fgWall(-hw,-hd+th/2,hw,-hd+th/2,th,0,Math.max(bh,yRoof(-hd+th/2)),C,col);
+ for(const sg of [-1,1]){const x=sg*(hw-th/2);fgWall(x,-hd+th,x,hd,th,0,fe-.05,C,col);
+  fgGableSlab('stone','x',x,th,-hd+th-.02,hd-.02,fe-.08,yRoof,yRoof,col,8);}
  /* the roof: a turf slab from over the back wall down to the front eave, purlins under it */
- const yB=B.h-.18,yF=fe+.1,zb=-hd-.08,zf=hd+.08,s=(yB-yF)/(zf-zb);
  fgSlab('turf',[-hw-.2,yB-.16,zb],[hw+.2,yB-.16,zb],[-hw-.2,yF-.16,zf],.32,fgCol('turf',C));
  for(let t=.15;t<.95;t+=.2){const z=zb+(zf-zb)*t,y=yB-(zf-zb)*t*s-.4;pole('pole',[-hw+.3,y,z],[hw-.3,y,z],.07,pc,6);}
  const np=Math.max(2,Math.round(B.w/4.5));for(let i=0;i<=np;i++){const x=-hw+.35+i*(B.w-.7)/np;pole('pole',[x,.06,hd-.25],[x,fe,hd-.25],.12,pc,7);}

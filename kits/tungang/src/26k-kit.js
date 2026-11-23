@@ -66,4 +66,16 @@ const TG={version:1,SCALE:.94,sets:{fg:'fellgang',tg:'tungang',gz:'glazier'},fg:
   'fg-eggstore':{w:6,d:6,h:4.5,form:'round',what:'an egg and honey store (cool, round, stone)'},
   'fg-pens':{w:14,d:12,h:1.4,form:'pen',what:'drystone pens'},
   'fg-icehouse':{w:12,d:9,h:4.5,form:'barrow',what:'an ice house: a barrow of turf over a stone vault, the blocks packed in sawdust and snow'},
-  'fg-sledgeshed':{w:16,d:7,h:4.2,form:'shed',what:'the sledge shed'}}}};
+  'fg-sledgeshed':{w:16,d:7,h:4.2,form:'shed',what:'the sledge shed'},
+  /* town-scale Fellgang pieces (settlements/blakhed PLAN.md section 5, step B2) */
+  'fg-doublehall':{w:28,d:11,h:7.4,form:'house',what:'the double meeting hall (both customs in one: the Fowlers\' rope wall and the Ice-cutters\' tally board)'},
+  'fg-halting-house':{w:18,d:9.5,h:5.8,form:'house',what:'a halting house (the Fellgang inn: hearth room, sleeping bunks and tack store)'},
+  'fg-markethall':{w:20,d:10.5,h:6.2,form:'shed',what:'the market hall (drystone piers under turf, weigh-beam and reckoning counters)'},
+  'fg-booth':{w:10,d:4,h:3.4,form:'shed',what:'market and fair booths (three stalls under lashed hide and plate)'},
+  'fg-ropewalk':{w:44,d:5.5,h:4.4,form:'shed',what:'a town rope-walk range (jack-house, traveller car, tar kettle and long strand run)'},
+  'fg-great-icehouse':{w:20,d:13,h:5.8,form:'barrow',what:'a great ice house (banked turf vault, buttressed airlock doors and five-tier ice stacks)'},
+  'fg-smithy':{w:11,d:8,h:5,form:'house',what:'a salvage-smithy (stone forge, bellows, anvil, shoeing bay and cable rack)'},
+  'fg-tannery':{w:13,d:8.5,h:4.8,form:'house',what:'a tannery and felt house (soaking pits, boiling vat, fulling board and hide frames)'},
+  'fg-granary':{w:11,d:7.5,h:5.2,form:'house',what:'a raised granary on staddle piers (grain bins and sacks kept off the damp turf)'},
+  'fg-fair-stand':{w:8,d:6,h:4.6,form:'shed',what:'the Fair judges\' stand (raised drystone dais, beast tally board and canopy)'},
+  'fg-dugout-icehouse':{w:11,d:13,h:3.8,form:'barrow',what:'a dugout ice-house (earth-bermed sunken drystone pit cellar, stone trench ramp, storm bulkhead and low turf A-frame roof)'}}}};

@@ -122,6 +122,11 @@ off the page (Kirstabal's K6). State: **planned** for all nine.
 | `ll.rais-teras` | Rāis-Ṭeras | 967,1606 | 1,000 | grain 300 t |
 | `ll.kattal` | Kaṭal | 979,1605 | 700 | dairy 60 t |
 
+**Designated 2026-11-17, not built yet** (`settlements/gihon/PLAN.md`): Ōpal-Māuṭh becomes **Gihon**, a town of 8,500, the
+Lower Lake's garrison town and the Golden Tears' home, with a walled forbidden city (the garrison fortress, the Sultan's Mint
+and the tax assessors); the Landing grows to 2,500 on stone piers either side of the Alph's mouth; hamlets go along the Alph
+towards Theodiga. The owner starts it next week.
+
 ### 1e. The works, mines and camps
 
 | Id | Name | px | People | Kind | State |

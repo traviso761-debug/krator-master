@@ -27,7 +27,9 @@ python3 godot/tools/sync_core.py && godot --headless --path godot --script res:/
 { id, uid, class, kind, key, name, parent, at: [x, y, z], ry, size: [w, d, h] (or r, h), tags: {...}, note, src: { build, frag } }
 ```
 
-- `class`: `building part fixture furniture prop flora life landmark infrastructure feature`. An unknown class
+- `class`: `building part fixture furniture prop flora life landmark infrastructure feature vessel vehicle`. A `vessel` (a ship or
+  boat; 2026-11-17) takes the Ring Sea's tags (`types` by its work, `propulsion`, `hull`, `wealth`, `crew`, `role`); a `vehicle` (a land
+  vehicle or a walker) the Motor Vehicles kit's (`types`, `drive`, `seats`, `fuel`). Their order ids are `ves_` and `veh_`. An unknown class
   throws (a programming error); `fauna` throws with the reason: a placed animal or citizen is `life`, its species or
   role is `kind` (Decisions 7).
 - `at`: the base centre, world metres, +Y up, x east, z south. `x, y, z` on input work too. Numbers keep 4 decimals.

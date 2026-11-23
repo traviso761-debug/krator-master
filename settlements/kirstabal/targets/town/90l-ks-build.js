@@ -12,7 +12,7 @@ if(KS_PLAN)for(const M of KS_PLAN.moles){const dx=M.b[0]-M.a[0],dz=M.b[1]-M.a[1]
  vB('xRubB',mx,bed,mz,L+M.w,M.top-bed,M.w+4,ry,xC(0x8a8070));}
 // ---------------------------------------------------------------- the build, chunk by chunk
 const KS_CHUNK=400,KS_CHUNKS={};
-for(const p of KS_PLACE){const k=p.kind==='ring'?'ring:'+p.village:(p.kind==='bridge'?'bridge':Math.floor(p.x/KS_CHUNK)+','+Math.floor(p.z/KS_CHUNK));(KS_CHUNKS[k]=KS_CHUNKS[k]||[]).push(p);}
+for(const p of KS_PLACE){const k=p.kind==='ring'?'ring:'+p.village:(p.kind==='bridge'?'bridge':(p.kind==='wall'?'wall:':'')+Math.floor(p.x/KS_CHUNK)+','+Math.floor(p.z/KS_CHUNK));(KS_CHUNKS[k]=KS_CHUNKS[k]||[]).push(p);}
 const KS_GROUPS=[];let KS_INST=0,KS_STANDINS=0;
 /* K5, the interiors (?interiors=1, Xanadu's mode: settlements/xanadu 89y): only the governor's house, the Two Horns' factor
    house, the serai, the tea factory and the latex house are drawn hollow and furnished (their items: kits/interiors/sets/xanadu.js
@@ -27,7 +27,7 @@ function ksBakeChunk(key,list){const G=new THREE.Group();G.name='chunk:'+key;sce
   if(g)p.G=g;for(let i=r0;i<REG.length;i++)REG[i].type=p.key;
   x0=Math.min(x0,p.x-60);x1=Math.max(x1,p.x+60);z0=Math.min(z0,p.z-60);z1=Math.max(z1,p.z+60);y0=Math.min(y0,p.o.y-ksD(p.o.drop,0));y1=Math.max(y1,p.o.y+ksD(p.h,12));}
  TSTAT.cur=null;kbake(G);xaDoorsBind();KS_INST+=ksD(window._instances,0);for(const n in KIT.items)KIT.items[n].length=0;
- const e={G,key,sphere:new THREE.Sphere(new THREE.Vector3((x0+x1)/2,(y0+y1)/2,(z0+z1)/2),Math.hypot(x1-x0,y1-y0,z1-z0)/2+20),range:key==='bridge'?9000:/^ring:/.test(key)?7000:2600,n:list.length};KS_GROUPS.push(e);return e;}
+ const e={G,key,sphere:new THREE.Sphere(new THREE.Vector3((x0+x1)/2,(y0+y1)/2,(z0+z1)/2),Math.hypot(x1-x0,y1-y0,z1-z0)/2+20),range:key==='bridge'||/^wall:/.test(key)?9000:/^ring:/.test(key)?7000:2600,n:list.length};KS_GROUPS.push(e);return e;}
 /* the mole's banks first (their own chunk: drawn with the harbour), then the records */
 {const G=new THREE.Group();G.name='chunk:mole';scene.add(G);kbake(G);for(const n in KIT.items)KIT.items[n].length=0;
  KS_GROUPS.push({G,key:'mole',sphere:new THREE.Sphere(new THREE.Vector3(-560,0,-80),520),range:6000,n:KS_PLAN?KS_PLAN.moles.length:0});}
@@ -73,6 +73,16 @@ window._ksStreetTrees=KS_STREET_TREES;
 if(typeof BIO!=='undefined'&&BIO.host){BIO.setScene(scene);BIO.setSun([-.5,.76,.52]);
  try{window._bioBake=BIO.bake();}catch(e){reportErr('biome bake: '+e.message);}
  if(BIO.lodTick)FRAME_HOOKS.push(()=>BIO.lodTick(camera));}
+// ---------------------------------------------------------------- the empty lots outside the walls: building sites
+// Each a cleared plot with its stakes and string line round the house the plan allows there (kits/construction KCONS.site,
+// work not begun: f 0); a share with their materials piled beside them (41 OUTSIDE_T.bill: timber, stone, lime). Registered
+// as buildings of kind 'lot' (as the isle demo's empty lots). KCONS is generic site gear, not a culture's building.
+window._ksEmpty={lots:KS_EMPTY.length,drawn:0};
+if(typeof KCONS!=='undefined')for(const L of KS_EMPTY){const D=VERN.defs[L.key]||{},w=ksD(D.fw,ksD(L.fw,8)),d=ksD(D.fd,ksD(L.fd,8)),h=ksD(D.h,6);
+ const S=KCONS.site({w,d,h,plot:[Math.min(L.w,w+3),Math.min(L.d,d+3)],bill:L.bill?{timber:4,stone:6,lime:2}:{}});S.set(0);
+ S.group.position.set(L.x,L.y,L.z);S.group.rotation.y=L.ry||0;S.group.name='empty lot '+L.id;S.group.userData.inspectLabel='An empty lot: a '+(D.name||L.key)+' to be built';scene.add(S.group);
+ REG.push({name:'Empty lot',cls:'building',key:L.key,x:L.x,y:L.y,z:L.z,r:Math.hypot(w,d)/2,h:.6,type:L.key,tags:{culture:'xanadu',role:'an empty lot outside the walls, buildable: '+(D.name||L.key)+(L.bill?', its materials piled':''),quarter:L.district}});
+ window._ksEmpty.drawn++;}
 LABELS=new THREE.Group();LABELS.userData.probeSkip=true;scene.add(LABELS);
 window._registered=REG.length;window._chunks=KS_GROUPS.length;window._buildMs=Math.round(performance.now()-KS_B0);
 window._kirstabal=Object.assign(window._kirstabalPlan||{},{placed:KS_PLACE.length,chunks:KS_GROUPS.length,standins:KS_STANDINS,water:window._ksWater||null,
