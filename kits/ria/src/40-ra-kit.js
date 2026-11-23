@@ -20,6 +20,30 @@ function raTarget(x,y,z,name,indoor){
  (CURREC.targets||(CURREC.targets=[])).push({x:p.x,y:p.y,z:p.z,name:name||'floor',indoor:indoor!==false});
 }
 
+/* Stage 7 KROOMLIGHT room volume recorder in local coordinates -> world-space box [wx0, wy0, wz0, wx1, wy1, wz1] on CURREC.rooms. */
+function raRoom(x0,z0,x1,z1,y0,h,o){
+ if(PLACE_DRY||!CURREC||CURREC.cls!=='building')return null;
+ o=o||{};
+ if(o.room===false||h<1.8)return null;
+ const mn=[1e9,1e9,1e9],mx=[-1e9,-1e9,-1e9],v=new THREE.Vector3();
+ for(const lx of [x0,x1])for(const ly of [y0,y0+h])for(const lz of [z0,z1]){
+  v.set(lx,ly,lz).applyMatrix4(CM);
+  if(v.x<mn[0])mn[0]=v.x;if(v.y<mn[1])mn[1]=v.y;if(v.z<mn[2])mn[2]=v.z;
+  if(v.x>mx[0])mx[0]=v.x;if(v.y>mx[1])mx[1]=v.y;if(v.z>mx[2])mx[2]=v.z;
+ }
+ const list=CURREC.rooms||(CURREC.rooms=[]);
+ const rm={
+  id:(CURREC.tid||CURKEY)+'.rm'+(list.length+1),
+  site:CURKEY,
+  box:[+mn[0].toFixed(3),+mn[1].toFixed(3),+mn[2].toFixed(3),+mx[0].toFixed(3),+mx[1].toFixed(3),+mx[2].toFixed(3)],
+  outdoor:!!o.outdoor,
+  vault:!!o.vault,
+  skylight:!!o.skylight
+ };
+ list.push(rm);
+ return rm;
+}
+
 function raFurnList(list){
  for(const e of list)FURNISH(e[0],e[1],e[2]+.006,e[3],e[4]==null?0:e[4],e[5]);
 }
@@ -302,6 +326,7 @@ function raWallRing(x0,z0,x1,z1,y0,h,o){
    mk:upper?'dolomite':'travertine',bandMk:upper?'silver':'gold'
   });
  }
+ raRoom(x0,z0,x1,z1,y0,h,o);
 }
 
 /* Single Classical fluted, Egyptian palm/lotus, Persepolitan protome, Minoan, or Solomonic spiral column from y0 to y0+h. */
@@ -794,6 +819,7 @@ function raDrumWall(cx,cz,rIn,rOut,y0,h,mk,col,opens,o){
    raWallBlock(cx+Math.cos(am)*rm,y0,cz+Math.sin(am)*rm,TAU*rm/nSeg,h,t,yaw);
   }
  }
+ raRoom(cx-rIn,cz-rIn,cx+rIn,cz+rIn,y0,h,o);
 }
 
 /* Continuous walkable exterior helical ramp around a cylinder (Mandalay-Ziggurat River Watchtower). */

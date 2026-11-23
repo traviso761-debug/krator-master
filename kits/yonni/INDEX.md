@@ -27,23 +27,24 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 |---|---|---|
 | `00-head.html` | 1 |  |
 | `26k-kit.js` | 5 |  |
+| `27v-yn-vstack.js` | 9 |  |
 | `28-yn-matfix.js` | <1 |  |
 | `31-alt-takes.js` | <1 |  |
 | `36p-yn-openfix.js` | <1 |  |
-| `40-yn-kit.js` | 14 |  |
-| `41-yn-roof.js` | 5 |  |
+| `40-yn-kit.js` | 15 |  |
+| `41-yn-roof.js` | 6 |  |
 | `42-yn-dress.js` | 7 |  |
 | `53a-yn-vocab.js` | <1 |  |
-| `54-yn-dwell.js` | 12 |  |
+| `54-yn-dwell.js` | 13 |  |
 | `55-sa-beasts.js` | 3 |  |
 | `56-yn-civic.js` | 14 |  |
-| `56p-yn-palace.js` | 23 | 1. MONUMENTAL TWIN-QUEEN PALACE COMPLEX (yn-pala (167); 2. MODULAR ROYAL COURT ROTUNDA (yn-court-rotunda (366) |
-| `57-yn-forts.js` | 20 | 1. FORMLINE CURTAIN WALL (yn-wall-curtain) (125); 2. FORMLINE PORTAL GATEHOUSE (yn-gatehouse-porta (162); 3. FORMLINE HIGH WATCH-TOWER (yn-tower-formline, (254) |
+| `56p-yn-palace.js` | 24 | 1. MONUMENTAL TWIN-QUEEN PALACE COMPLEX (yn-pala (167); 2. MODULAR ROYAL COURT ROTUNDA (yn-court-rotunda (373) |
+| `57-yn-forts.js` | 20 | 1. FORMLINE CURTAIN WALL (yn-wall-curtain) (125); 2. FORMLINE PORTAL GATEHOUSE (yn-gatehouse-porta (166); 3. FORMLINE HIGH WATCH-TOWER (yn-tower-formline, (258) |
 | `58-yn-trades.js` | 14 |  |
 | `59-yn-works.js` | 14 |  |
 | `62-yn-harbour.js` | 7 |  |
 | `64-yn-cliff.js` | 12 |  |
-| `65-yn-borderfort.js` | 12 |  |
+| `65-yn-borderfort.js` | 13 |  |
 | `66-yn-flora.js` | 3 |  |
 | `68-yn-census.js` | 5 |  |
 | `89-rows.js` | 3 |  |

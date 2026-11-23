@@ -1,0 +1,16 @@
+{
+  "id": "cleft",
+  "out": "thedome-cleft.html",
+  "title": "The Dome — Radial Unloading Kluft Fissure & Smoky-Quartz Vault",
+  "px": [1372, 148],
+  "inDomeVerified": true,
+  "elevM": 2537.7,
+  "pAtm": 1.17,
+  "koppen": "Cfa",
+  "rainMmYr": 1004,
+  "domeApexPx": [1328, 150],
+  "strataStack": "laccolith-shell",
+  "kin": {},
+  "reserves": [],
+  "modes": ["Vernal-Brim", "Sun-Baked Dry", "Crown-Mist"]
+}

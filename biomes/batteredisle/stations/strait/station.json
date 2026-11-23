@@ -1,0 +1,14 @@
+{
+ "id": "strait",
+ "canvas": "5.1 (1821x1723)",
+ "title": "Battered Isle — Leeward Shroudhills Strait, Shingle Pocket Coves and Wrack Rookeries",
+ "name": "Leeward Shroudhills Strait and Upturned Coal=201 Collar (Station 3, 494,250, +9.7 m bench, 1.60 atm): 17 km KFAR silhouette of Shroudhills, KCOAST shingle/rock pocket coves, intertidal stormwrack/wineweed beds, and seabird rookery cliffs",
+ "out": "batteredisle-strait.html",
+ "px": [494, 250],
+ "skyOffsetPx": [222, -80],
+ "lithology": "sedimentary",
+ "strataStack": "upturned-coal-collar",
+ "pAtm": 1.60,
+ "trimElevM": 16.0,
+ "modes": ["Calm", "Gale", "Tsunami Drawdown"]
+}

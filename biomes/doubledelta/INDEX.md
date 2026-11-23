@@ -24,9 +24,11 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 1 |  |
+| `28-vstack-mipvar.js` | 2 |  |
 | `40-biome-ddelta-phys.js` | 15 |  |
 | `41-biome-ddelta-sites.js` | 6 |  |
-| `45-host-stage.js` | 20 | landform & hydrography (46); climate & coast fields (426); host binding & KSPACE (468) |
+| `45-host-stage.js` | 20 | landform & hydrography (46); climate & coast fields (439); host binding & KSPACE (481) |
+| `46-vstack.js` | <1 |  |
 | `50-biome-ddelta-species.js` | 27 |  |
 | `60-biome-ddelta-place.js` | 18 |  |
 | `70-biome-ddelta.js` | <1 |  |
@@ -36,9 +38,10 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `88-host-place.js` | <1 |  |
 | `89-host-sky.js` | <1 |  |
 | `89a-host-atmos.js` | 1 |  |
-| `89w-host-water.js` | 6 |  |
+| `89w-host-water.js` | 7 |  |
 | `89z-host-build.js` | 3 |  |
-| `99-host-take.js` | 14 |  |
+| `89z9-vstack-post.js` | 6 |  |
+| `99-host-take.js` | 15 |  |
 | `99-tail.html` | <1 |  |
 
 ## stations/

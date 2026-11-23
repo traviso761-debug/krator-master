@@ -4,12 +4,14 @@
   "build.py": {
    "inputs": {
     "biomes/compasshills/KNOWN_ISSUES.md": "cb09b096be37ccd126183ed2caa70d55d89d64c5aa23ac8dc784da71244b8037",
-    "biomes/compasshills/PORT.md": "8afc6417c1ab4bece802f6dfdc1b2a579e1a316ae7cc703bd4c30cd9a04ac595",
-    "biomes/compasshills/build.py": "cb476e1224c1498d4a9b057ba0b27b07ac0019ac10093766d153fc04c4756e79",
+    "biomes/compasshills/PORT.md": "1d1e90bb9a21208f725c81483f444d0360401ea06c5102b5284b99f94e244c5d",
+    "biomes/compasshills/build.py": "e6800d3add85a2308ac6e027b7cc88cab1da532dc767b9d841c0c0c191deece1",
     "biomes/compasshills/src/00-head.html": "d4f0cac9509fe9aac50b01ba883ea5a08b21b1c99061b9dba4356e29e94952a2",
+    "biomes/compasshills/src/28-vstack-mipvar.js": "43e224dd53db706c716372a038e6eced20b101eda32c0f6b0d68e57f8acd5d1d",
     "biomes/compasshills/src/40-biome-compass-phys.js": "a6de4587fa8b08cc5ff0ab6abb81f4291d065bca9d342b7831878db4b0ab94e5",
     "biomes/compasshills/src/41-biome-compass-sites.js": "289411d3f8578995bf75d96e228a9a3b958f819e18b1d984f288e7cdcf606434",
     "biomes/compasshills/src/45-host-stage.js": "4c66e0ac8a863a2213262856c5d8b26592941d0a598f62f06001dbb26dabe161",
+    "biomes/compasshills/src/46-vstack.js": "572a1a685ef23a17b5630b52eff0e088f59dfd84ccef4c0b43a9a914ab719879",
     "biomes/compasshills/src/50-biome-compass-species.js": "90d4213db2893daedd39e76508fe3f4aa9311b27ff8a46e8e484d49a4f1c82de",
     "biomes/compasshills/src/60-biome-compass-place.js": "df5194a916e6050f9f65e2c68a8ddbc23113efe0b0a16288f4024eaf0829ac46",
     "biomes/compasshills/src/70-biome-compass.js": "23e5584d2e73a101afcd9c34f4a1d2bac6ea5dd6d7fef6a30bcebe7bba722bed",
@@ -21,6 +23,7 @@
     "biomes/compasshills/src/89a-host-atmos.js": "89a75a9af632c7ab0d3af5ae7028d0c67af7127d93505dad05f0ef5bd33ab3a4",
     "biomes/compasshills/src/89w-host-water.js": "f9449ea800f3696745f0624a05249b0721b01c823a320ce2625d66bb2121c225",
     "biomes/compasshills/src/89z-host-build.js": "eefd0659d0a06835e5f4f09e60ae2cd40ba8a6bed7e429dbe504cdb2ff81d1f4",
+    "biomes/compasshills/src/89z9-vstack-post.js": "69b988593fb5385bb12ca6446aed28e99289bb7410cae57d18ee656216554fe8",
     "biomes/compasshills/src/99-host-take.js": "c45df820798c052a4f096e955f8268630ddc27b58346d55c881bed986dd65733",
     "biomes/compasshills/src/99-tail.html": "dfa29581341684f741f611c9a3055640e844a59a563e3d1d350318d5813dec76",
     "biomes/compasshills/stations/foundry/44z-host-site.js": "15df1c153bd0a5412e90b84e78bf7d3186c9c51bc2aa1cd44f0d20077e27cde9",
@@ -138,9 +141,10 @@
     "core/host/99-host-cutaway.js": "c67cea97b1b18a2a8b3bbc329d5bb5df7fd007a4aee033b21d91fe75cd0ad300",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
+    "core/materials/record/27-matlib-m1.js": "3847ce3dac5ce6ac71bd063bdc2e8e0931ddaceac269091e70f4e268d4fafbb4",
     "core/minimap/88-core-minimap.js": "b6c7e9c662f079c8f97cfc9f6bac2fea115b660f9b417056da54c3bf3c1129a1",
     "core/minimap/88a-core-minimap-host.js": "af98407f9b7bbec2742cb7bbbb9f8ff2d8c18952d5a35a02d023273a0d7e6fcc",
-    "core/rand/08-core-rand.js": "f315035a138a8818c87f55de56ae2dbf3a8d66ff3cc435d303332502d2f43ddf",
+    "core/rand/08-core-rand.js": "74a7f6ab96bc27a68097ac2cd81606460b1386fdb12c7506543ed967e78d5d7a",
     "core/shader/06-core-khook.js": "eb1a0436d3d5dbaab81c3e43de2b642c96d9c3b44331a8960801880e5e20c56d",
     "core/shader/06b-core-kcolor.js": "ededfc6b8a1a8aae5bf3c6ab40863478f9beb8e1aaf2acf4ba9da25ef6392115",
     "core/shadow/10-core-shadow.js": "9fe58c9d540efd8bc94c12d0d164ed1f92888dc08df85ac9a9b455e2d346bd0a",
@@ -151,17 +155,17 @@
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
     "core/terrain/35-core-strata.js": "65491b58b7258840a88c1ce17f0ba53d11536acd9bf2c6dacb9e1af00821c76c",
     "core/terrain/38-core-relief.js": "7b05a027e7258a2bb412cadbe67beb6bab878f88e6f18eeb5fdddf96fb9ae21f",
-    "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
+    "core/terrain/43-core-ground.js": "dbd96ca7a1ffa46c44e43dcf27ed2837841c77c7ce4670eafcb65c499bf27e79",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
     "core/terrain/45-core-horizon.js": "e597aa2e3bbd3826d60908d43a3ecf65509b7c27467913d538fe1e0babb20b1e",
     "core/terrain/host/35-core-strata-shade.js": "e74e7697dc623380851c6d5d7756584df7bb72777b89b60a961258dcc94f60ea",
     "core/terrain/host/44-core-farfield-draw.js": "54f93a37834f7ced1f312c7df40bf19a7ca377acff641119ad32f00b93cc0417",
     "core/terrain/host/45-core-horizon-shade.js": "b3cf3ea84ecafe4d05e5c9692829f7fd2c62512dbaec37a1e7ed7bc44bcaf157",
-    "core/water/20-core-water.js": "a5094b861983c604194f4d6061c771d414c5af42ea2810e5127c82c18ad87616",
+    "core/water/20-core-water.js": "c515e4cdcd325d761b67f2d1be04594e3be934415a797663b922f45c1793abf3",
     "core/water/21-core-water-shore.js": "0489a8b5c9fe2fa3621ee909a735d424696c3340951de13d8cc350ad0b77f3f9",
-    "core/water/22-core-water-flow.js": "eab9b6ee42e8747dfd1082a1b6d76804b4659d5fd3a2b3d4bc1a566af13dbed7",
+    "core/water/22-core-water-flow.js": "1edbe647477b4cb0836b57dec39e1b8891cb20b190a6972f7ae29f2efd5a19c2",
     "core/water/50-core-water-draw.js": "9b487271223b64c2935b3336667963139dddcc055b852ac4f0a1912b2a9dd7e0",
-    "core/water/51-core-water-kinds.js": "e0c2edba19b476b4b46a4e08a63f0af695423d88b1da15b380795b2e4d07ead4",
+    "core/water/51-core-water-kinds.js": "549ea82cd960f7b78d0088c0a0059a1104eb360ccac82e916b48ec8cb29e0e57",
     "core/water/ext/53-core-water-terraces.js": "d38e5ed04c4a239c8b16d687ba48cfbd81b8e65945d5104b63f0e79fc98d0b0d",
     "core/water/ext/53b-core-water-terraces-draw.js": "78f8318bc3edbb3765ca5120c81f89d991a4ae02b8c6dc5243025b269133b12f",
     "core/water/ext/56-core-water-breakup.js": "30c6de1a8913f7fa59ac92cd40526eb148d683b02dc31b6b521a3a768a2926bb",
@@ -174,28 +178,31 @@
     "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47"
    },
    "listings": {
-    "biomes/compasshills/src": "22e035b38ce6013691bc34e13e1b9f219fb1cccd6b22c9f90d408755fc7b7b3d",
+    "biomes/compasshills": "db791505248c15bab633cd571aed3119120d310248a8d1317e1d47230b139ce9",
+    "biomes/compasshills/src": "78c9f4d493114f765351492616c77b3488e0110f8e24db0482597201005e7393",
     "biomes/compasshills/stations/foundry": "1e8160c9f3a849bbc442ea36cf8a091726ff4a18a2c2e99d5db785829afc44fd",
     "core/host": "d729ffbc0ed36e68e9036bd9c454abc6462a27b22a4bc16b88c38d836e6f4a37",
-    "tools": "3dddf4cc1485975fa04f8ae3ecd4b11cf8303908ced5d46f4dcfc671861aec51",
-    "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
+    "tools": "f800e267a4f84d022b480235d8cfa4e558b7c894ea514163297507b477d5b1c3",
+    "tools/textures": "f4c83899af343d36f69b562b5e36b8a640189c9cc4b0a98d739cb05e0260eef6"
    },
    "outputs": {
-    "biomes/compasshills/dist/compasshills.html": "759878a6cecc2bd54fc29e70b1f00d043a77ed77e6bac4e5960c3a0d081fb980"
+    "biomes/compasshills/dist/compasshills.html": "16d61dfc5d9aeed6ae74e51f1e9b27f645d6a59b385ec9b1950471193228750c"
    },
    "outputs_raw": {
-    "biomes/compasshills/dist/compasshills.html": "759878a6cecc2bd54fc29e70b1f00d043a77ed77e6bac4e5960c3a0d081fb980"
+    "biomes/compasshills/dist/compasshills.html": "16d61dfc5d9aeed6ae74e51f1e9b27f645d6a59b385ec9b1950471193228750c"
    }
   },
   "build.py --station cuesta": {
    "inputs": {
     "biomes/compasshills/KNOWN_ISSUES.md": "cb09b096be37ccd126183ed2caa70d55d89d64c5aa23ac8dc784da71244b8037",
-    "biomes/compasshills/PORT.md": "8afc6417c1ab4bece802f6dfdc1b2a579e1a316ae7cc703bd4c30cd9a04ac595",
-    "biomes/compasshills/build.py": "cb476e1224c1498d4a9b057ba0b27b07ac0019ac10093766d153fc04c4756e79",
+    "biomes/compasshills/PORT.md": "1d1e90bb9a21208f725c81483f444d0360401ea06c5102b5284b99f94e244c5d",
+    "biomes/compasshills/build.py": "e6800d3add85a2308ac6e027b7cc88cab1da532dc767b9d841c0c0c191deece1",
     "biomes/compasshills/src/00-head.html": "d4f0cac9509fe9aac50b01ba883ea5a08b21b1c99061b9dba4356e29e94952a2",
+    "biomes/compasshills/src/28-vstack-mipvar.js": "43e224dd53db706c716372a038e6eced20b101eda32c0f6b0d68e57f8acd5d1d",
     "biomes/compasshills/src/40-biome-compass-phys.js": "a6de4587fa8b08cc5ff0ab6abb81f4291d065bca9d342b7831878db4b0ab94e5",
     "biomes/compasshills/src/41-biome-compass-sites.js": "289411d3f8578995bf75d96e228a9a3b958f819e18b1d984f288e7cdcf606434",
     "biomes/compasshills/src/45-host-stage.js": "4c66e0ac8a863a2213262856c5d8b26592941d0a598f62f06001dbb26dabe161",
+    "biomes/compasshills/src/46-vstack.js": "572a1a685ef23a17b5630b52eff0e088f59dfd84ccef4c0b43a9a914ab719879",
     "biomes/compasshills/src/50-biome-compass-species.js": "90d4213db2893daedd39e76508fe3f4aa9311b27ff8a46e8e484d49a4f1c82de",
     "biomes/compasshills/src/60-biome-compass-place.js": "df5194a916e6050f9f65e2c68a8ddbc23113efe0b0a16288f4024eaf0829ac46",
     "biomes/compasshills/src/70-biome-compass.js": "23e5584d2e73a101afcd9c34f4a1d2bac6ea5dd6d7fef6a30bcebe7bba722bed",
@@ -207,6 +214,7 @@
     "biomes/compasshills/src/89a-host-atmos.js": "89a75a9af632c7ab0d3af5ae7028d0c67af7127d93505dad05f0ef5bd33ab3a4",
     "biomes/compasshills/src/89w-host-water.js": "f9449ea800f3696745f0624a05249b0721b01c823a320ce2625d66bb2121c225",
     "biomes/compasshills/src/89z-host-build.js": "eefd0659d0a06835e5f4f09e60ae2cd40ba8a6bed7e429dbe504cdb2ff81d1f4",
+    "biomes/compasshills/src/89z9-vstack-post.js": "69b988593fb5385bb12ca6446aed28e99289bb7410cae57d18ee656216554fe8",
     "biomes/compasshills/src/99-host-take.js": "c45df820798c052a4f096e955f8268630ddc27b58346d55c881bed986dd65733",
     "biomes/compasshills/src/99-tail.html": "dfa29581341684f741f611c9a3055640e844a59a563e3d1d350318d5813dec76",
     "biomes/compasshills/stations/cuesta/44z-host-site.js": "4276fdcca5b234c2b28e08b20c2107b707cca5ce23062976f67b049ea0ff28db",
@@ -324,9 +332,10 @@
     "core/host/99-host-cutaway.js": "c67cea97b1b18a2a8b3bbc329d5bb5df7fd007a4aee033b21d91fe75cd0ad300",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
+    "core/materials/record/27-matlib-m1.js": "3847ce3dac5ce6ac71bd063bdc2e8e0931ddaceac269091e70f4e268d4fafbb4",
     "core/minimap/88-core-minimap.js": "b6c7e9c662f079c8f97cfc9f6bac2fea115b660f9b417056da54c3bf3c1129a1",
     "core/minimap/88a-core-minimap-host.js": "af98407f9b7bbec2742cb7bbbb9f8ff2d8c18952d5a35a02d023273a0d7e6fcc",
-    "core/rand/08-core-rand.js": "f315035a138a8818c87f55de56ae2dbf3a8d66ff3cc435d303332502d2f43ddf",
+    "core/rand/08-core-rand.js": "74a7f6ab96bc27a68097ac2cd81606460b1386fdb12c7506543ed967e78d5d7a",
     "core/shader/06-core-khook.js": "eb1a0436d3d5dbaab81c3e43de2b642c96d9c3b44331a8960801880e5e20c56d",
     "core/shader/06b-core-kcolor.js": "ededfc6b8a1a8aae5bf3c6ab40863478f9beb8e1aaf2acf4ba9da25ef6392115",
     "core/shadow/10-core-shadow.js": "9fe58c9d540efd8bc94c12d0d164ed1f92888dc08df85ac9a9b455e2d346bd0a",
@@ -337,17 +346,17 @@
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
     "core/terrain/35-core-strata.js": "65491b58b7258840a88c1ce17f0ba53d11536acd9bf2c6dacb9e1af00821c76c",
     "core/terrain/38-core-relief.js": "7b05a027e7258a2bb412cadbe67beb6bab878f88e6f18eeb5fdddf96fb9ae21f",
-    "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
+    "core/terrain/43-core-ground.js": "dbd96ca7a1ffa46c44e43dcf27ed2837841c77c7ce4670eafcb65c499bf27e79",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
     "core/terrain/45-core-horizon.js": "e597aa2e3bbd3826d60908d43a3ecf65509b7c27467913d538fe1e0babb20b1e",
     "core/terrain/host/35-core-strata-shade.js": "e74e7697dc623380851c6d5d7756584df7bb72777b89b60a961258dcc94f60ea",
     "core/terrain/host/44-core-farfield-draw.js": "54f93a37834f7ced1f312c7df40bf19a7ca377acff641119ad32f00b93cc0417",
     "core/terrain/host/45-core-horizon-shade.js": "b3cf3ea84ecafe4d05e5c9692829f7fd2c62512dbaec37a1e7ed7bc44bcaf157",
-    "core/water/20-core-water.js": "a5094b861983c604194f4d6061c771d414c5af42ea2810e5127c82c18ad87616",
+    "core/water/20-core-water.js": "c515e4cdcd325d761b67f2d1be04594e3be934415a797663b922f45c1793abf3",
     "core/water/21-core-water-shore.js": "0489a8b5c9fe2fa3621ee909a735d424696c3340951de13d8cc350ad0b77f3f9",
-    "core/water/22-core-water-flow.js": "eab9b6ee42e8747dfd1082a1b6d76804b4659d5fd3a2b3d4bc1a566af13dbed7",
+    "core/water/22-core-water-flow.js": "1edbe647477b4cb0836b57dec39e1b8891cb20b190a6972f7ae29f2efd5a19c2",
     "core/water/50-core-water-draw.js": "9b487271223b64c2935b3336667963139dddcc055b852ac4f0a1912b2a9dd7e0",
-    "core/water/51-core-water-kinds.js": "e0c2edba19b476b4b46a4e08a63f0af695423d88b1da15b380795b2e4d07ead4",
+    "core/water/51-core-water-kinds.js": "549ea82cd960f7b78d0088c0a0059a1104eb360ccac82e916b48ec8cb29e0e57",
     "core/water/ext/53-core-water-terraces.js": "d38e5ed04c4a239c8b16d687ba48cfbd81b8e65945d5104b63f0e79fc98d0b0d",
     "core/water/ext/53b-core-water-terraces-draw.js": "78f8318bc3edbb3765ca5120c81f89d991a4ae02b8c6dc5243025b269133b12f",
     "core/water/ext/56-core-water-breakup.js": "30c6de1a8913f7fa59ac92cd40526eb148d683b02dc31b6b521a3a768a2926bb",
@@ -360,28 +369,30 @@
     "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47"
    },
    "listings": {
-    "biomes/compasshills/src": "22e035b38ce6013691bc34e13e1b9f219fb1cccd6b22c9f90d408755fc7b7b3d",
+    "biomes/compasshills/src": "78c9f4d493114f765351492616c77b3488e0110f8e24db0482597201005e7393",
     "biomes/compasshills/stations/cuesta": "1e8160c9f3a849bbc442ea36cf8a091726ff4a18a2c2e99d5db785829afc44fd",
     "core/host": "d729ffbc0ed36e68e9036bd9c454abc6462a27b22a4bc16b88c38d836e6f4a37",
-    "tools": "3dddf4cc1485975fa04f8ae3ecd4b11cf8303908ced5d46f4dcfc671861aec51",
-    "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
+    "tools": "f800e267a4f84d022b480235d8cfa4e558b7c894ea514163297507b477d5b1c3",
+    "tools/textures": "f4c83899af343d36f69b562b5e36b8a640189c9cc4b0a98d739cb05e0260eef6"
    },
    "outputs": {
-    "biomes/compasshills/dist/compasshills-cuesta.html": "474be7a508a8f35ffe1a513c4889cd0fcb3acbfeb5e0894c0e97dd223916df98"
+    "biomes/compasshills/dist/compasshills-cuesta.html": "6d6bf91e800f9102c0c15a2b218573af2fa3dfeca30cca33da5fc919c361e4a0"
    },
    "outputs_raw": {
-    "biomes/compasshills/dist/compasshills-cuesta.html": "474be7a508a8f35ffe1a513c4889cd0fcb3acbfeb5e0894c0e97dd223916df98"
+    "biomes/compasshills/dist/compasshills-cuesta.html": "6d6bf91e800f9102c0c15a2b218573af2fa3dfeca30cca33da5fc919c361e4a0"
    }
   },
   "build.py --station foundry": {
    "inputs": {
     "biomes/compasshills/KNOWN_ISSUES.md": "cb09b096be37ccd126183ed2caa70d55d89d64c5aa23ac8dc784da71244b8037",
-    "biomes/compasshills/PORT.md": "8afc6417c1ab4bece802f6dfdc1b2a579e1a316ae7cc703bd4c30cd9a04ac595",
-    "biomes/compasshills/build.py": "cb476e1224c1498d4a9b057ba0b27b07ac0019ac10093766d153fc04c4756e79",
+    "biomes/compasshills/PORT.md": "1d1e90bb9a21208f725c81483f444d0360401ea06c5102b5284b99f94e244c5d",
+    "biomes/compasshills/build.py": "e6800d3add85a2308ac6e027b7cc88cab1da532dc767b9d841c0c0c191deece1",
     "biomes/compasshills/src/00-head.html": "d4f0cac9509fe9aac50b01ba883ea5a08b21b1c99061b9dba4356e29e94952a2",
+    "biomes/compasshills/src/28-vstack-mipvar.js": "43e224dd53db706c716372a038e6eced20b101eda32c0f6b0d68e57f8acd5d1d",
     "biomes/compasshills/src/40-biome-compass-phys.js": "a6de4587fa8b08cc5ff0ab6abb81f4291d065bca9d342b7831878db4b0ab94e5",
     "biomes/compasshills/src/41-biome-compass-sites.js": "289411d3f8578995bf75d96e228a9a3b958f819e18b1d984f288e7cdcf606434",
     "biomes/compasshills/src/45-host-stage.js": "4c66e0ac8a863a2213262856c5d8b26592941d0a598f62f06001dbb26dabe161",
+    "biomes/compasshills/src/46-vstack.js": "572a1a685ef23a17b5630b52eff0e088f59dfd84ccef4c0b43a9a914ab719879",
     "biomes/compasshills/src/50-biome-compass-species.js": "90d4213db2893daedd39e76508fe3f4aa9311b27ff8a46e8e484d49a4f1c82de",
     "biomes/compasshills/src/60-biome-compass-place.js": "df5194a916e6050f9f65e2c68a8ddbc23113efe0b0a16288f4024eaf0829ac46",
     "biomes/compasshills/src/70-biome-compass.js": "23e5584d2e73a101afcd9c34f4a1d2bac6ea5dd6d7fef6a30bcebe7bba722bed",
@@ -393,6 +404,7 @@
     "biomes/compasshills/src/89a-host-atmos.js": "89a75a9af632c7ab0d3af5ae7028d0c67af7127d93505dad05f0ef5bd33ab3a4",
     "biomes/compasshills/src/89w-host-water.js": "f9449ea800f3696745f0624a05249b0721b01c823a320ce2625d66bb2121c225",
     "biomes/compasshills/src/89z-host-build.js": "eefd0659d0a06835e5f4f09e60ae2cd40ba8a6bed7e429dbe504cdb2ff81d1f4",
+    "biomes/compasshills/src/89z9-vstack-post.js": "69b988593fb5385bb12ca6446aed28e99289bb7410cae57d18ee656216554fe8",
     "biomes/compasshills/src/99-host-take.js": "c45df820798c052a4f096e955f8268630ddc27b58346d55c881bed986dd65733",
     "biomes/compasshills/src/99-tail.html": "dfa29581341684f741f611c9a3055640e844a59a563e3d1d350318d5813dec76",
     "biomes/compasshills/stations/foundry/44z-host-site.js": "15df1c153bd0a5412e90b84e78bf7d3186c9c51bc2aa1cd44f0d20077e27cde9",
@@ -510,9 +522,10 @@
     "core/host/99-host-cutaway.js": "c67cea97b1b18a2a8b3bbc329d5bb5df7fd007a4aee033b21d91fe75cd0ad300",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
+    "core/materials/record/27-matlib-m1.js": "3847ce3dac5ce6ac71bd063bdc2e8e0931ddaceac269091e70f4e268d4fafbb4",
     "core/minimap/88-core-minimap.js": "b6c7e9c662f079c8f97cfc9f6bac2fea115b660f9b417056da54c3bf3c1129a1",
     "core/minimap/88a-core-minimap-host.js": "af98407f9b7bbec2742cb7bbbb9f8ff2d8c18952d5a35a02d023273a0d7e6fcc",
-    "core/rand/08-core-rand.js": "f315035a138a8818c87f55de56ae2dbf3a8d66ff3cc435d303332502d2f43ddf",
+    "core/rand/08-core-rand.js": "74a7f6ab96bc27a68097ac2cd81606460b1386fdb12c7506543ed967e78d5d7a",
     "core/shader/06-core-khook.js": "eb1a0436d3d5dbaab81c3e43de2b642c96d9c3b44331a8960801880e5e20c56d",
     "core/shader/06b-core-kcolor.js": "ededfc6b8a1a8aae5bf3c6ab40863478f9beb8e1aaf2acf4ba9da25ef6392115",
     "core/shadow/10-core-shadow.js": "9fe58c9d540efd8bc94c12d0d164ed1f92888dc08df85ac9a9b455e2d346bd0a",
@@ -523,17 +536,17 @@
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
     "core/terrain/35-core-strata.js": "65491b58b7258840a88c1ce17f0ba53d11536acd9bf2c6dacb9e1af00821c76c",
     "core/terrain/38-core-relief.js": "7b05a027e7258a2bb412cadbe67beb6bab878f88e6f18eeb5fdddf96fb9ae21f",
-    "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
+    "core/terrain/43-core-ground.js": "dbd96ca7a1ffa46c44e43dcf27ed2837841c77c7ce4670eafcb65c499bf27e79",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
     "core/terrain/45-core-horizon.js": "e597aa2e3bbd3826d60908d43a3ecf65509b7c27467913d538fe1e0babb20b1e",
     "core/terrain/host/35-core-strata-shade.js": "e74e7697dc623380851c6d5d7756584df7bb72777b89b60a961258dcc94f60ea",
     "core/terrain/host/44-core-farfield-draw.js": "54f93a37834f7ced1f312c7df40bf19a7ca377acff641119ad32f00b93cc0417",
     "core/terrain/host/45-core-horizon-shade.js": "b3cf3ea84ecafe4d05e5c9692829f7fd2c62512dbaec37a1e7ed7bc44bcaf157",
-    "core/water/20-core-water.js": "a5094b861983c604194f4d6061c771d414c5af42ea2810e5127c82c18ad87616",
+    "core/water/20-core-water.js": "c515e4cdcd325d761b67f2d1be04594e3be934415a797663b922f45c1793abf3",
     "core/water/21-core-water-shore.js": "0489a8b5c9fe2fa3621ee909a735d424696c3340951de13d8cc350ad0b77f3f9",
-    "core/water/22-core-water-flow.js": "eab9b6ee42e8747dfd1082a1b6d76804b4659d5fd3a2b3d4bc1a566af13dbed7",
+    "core/water/22-core-water-flow.js": "1edbe647477b4cb0836b57dec39e1b8891cb20b190a6972f7ae29f2efd5a19c2",
     "core/water/50-core-water-draw.js": "9b487271223b64c2935b3336667963139dddcc055b852ac4f0a1912b2a9dd7e0",
-    "core/water/51-core-water-kinds.js": "e0c2edba19b476b4b46a4e08a63f0af695423d88b1da15b380795b2e4d07ead4",
+    "core/water/51-core-water-kinds.js": "549ea82cd960f7b78d0088c0a0059a1104eb360ccac82e916b48ec8cb29e0e57",
     "core/water/ext/53-core-water-terraces.js": "d38e5ed04c4a239c8b16d687ba48cfbd81b8e65945d5104b63f0e79fc98d0b0d",
     "core/water/ext/53b-core-water-terraces-draw.js": "78f8318bc3edbb3765ca5120c81f89d991a4ae02b8c6dc5243025b269133b12f",
     "core/water/ext/56-core-water-breakup.js": "30c6de1a8913f7fa59ac92cd40526eb148d683b02dc31b6b521a3a768a2926bb",
@@ -546,28 +559,30 @@
     "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47"
    },
    "listings": {
-    "biomes/compasshills/src": "22e035b38ce6013691bc34e13e1b9f219fb1cccd6b22c9f90d408755fc7b7b3d",
+    "biomes/compasshills/src": "78c9f4d493114f765351492616c77b3488e0110f8e24db0482597201005e7393",
     "biomes/compasshills/stations/foundry": "1e8160c9f3a849bbc442ea36cf8a091726ff4a18a2c2e99d5db785829afc44fd",
     "core/host": "d729ffbc0ed36e68e9036bd9c454abc6462a27b22a4bc16b88c38d836e6f4a37",
-    "tools": "3dddf4cc1485975fa04f8ae3ecd4b11cf8303908ced5d46f4dcfc671861aec51",
-    "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
+    "tools": "f800e267a4f84d022b480235d8cfa4e558b7c894ea514163297507b477d5b1c3",
+    "tools/textures": "f4c83899af343d36f69b562b5e36b8a640189c9cc4b0a98d739cb05e0260eef6"
    },
    "outputs": {
-    "biomes/compasshills/dist/compasshills.html": "759878a6cecc2bd54fc29e70b1f00d043a77ed77e6bac4e5960c3a0d081fb980"
+    "biomes/compasshills/dist/compasshills.html": "16d61dfc5d9aeed6ae74e51f1e9b27f645d6a59b385ec9b1950471193228750c"
    },
    "outputs_raw": {
-    "biomes/compasshills/dist/compasshills.html": "759878a6cecc2bd54fc29e70b1f00d043a77ed77e6bac4e5960c3a0d081fb980"
+    "biomes/compasshills/dist/compasshills.html": "16d61dfc5d9aeed6ae74e51f1e9b27f645d6a59b385ec9b1950471193228750c"
    }
   },
   "build.py --station gorge": {
    "inputs": {
     "biomes/compasshills/KNOWN_ISSUES.md": "cb09b096be37ccd126183ed2caa70d55d89d64c5aa23ac8dc784da71244b8037",
-    "biomes/compasshills/PORT.md": "8afc6417c1ab4bece802f6dfdc1b2a579e1a316ae7cc703bd4c30cd9a04ac595",
-    "biomes/compasshills/build.py": "cb476e1224c1498d4a9b057ba0b27b07ac0019ac10093766d153fc04c4756e79",
+    "biomes/compasshills/PORT.md": "1d1e90bb9a21208f725c81483f444d0360401ea06c5102b5284b99f94e244c5d",
+    "biomes/compasshills/build.py": "e6800d3add85a2308ac6e027b7cc88cab1da532dc767b9d841c0c0c191deece1",
     "biomes/compasshills/src/00-head.html": "d4f0cac9509fe9aac50b01ba883ea5a08b21b1c99061b9dba4356e29e94952a2",
+    "biomes/compasshills/src/28-vstack-mipvar.js": "43e224dd53db706c716372a038e6eced20b101eda32c0f6b0d68e57f8acd5d1d",
     "biomes/compasshills/src/40-biome-compass-phys.js": "a6de4587fa8b08cc5ff0ab6abb81f4291d065bca9d342b7831878db4b0ab94e5",
     "biomes/compasshills/src/41-biome-compass-sites.js": "289411d3f8578995bf75d96e228a9a3b958f819e18b1d984f288e7cdcf606434",
     "biomes/compasshills/src/45-host-stage.js": "4c66e0ac8a863a2213262856c5d8b26592941d0a598f62f06001dbb26dabe161",
+    "biomes/compasshills/src/46-vstack.js": "572a1a685ef23a17b5630b52eff0e088f59dfd84ccef4c0b43a9a914ab719879",
     "biomes/compasshills/src/50-biome-compass-species.js": "90d4213db2893daedd39e76508fe3f4aa9311b27ff8a46e8e484d49a4f1c82de",
     "biomes/compasshills/src/60-biome-compass-place.js": "df5194a916e6050f9f65e2c68a8ddbc23113efe0b0a16288f4024eaf0829ac46",
     "biomes/compasshills/src/70-biome-compass.js": "23e5584d2e73a101afcd9c34f4a1d2bac6ea5dd6d7fef6a30bcebe7bba722bed",
@@ -579,6 +594,7 @@
     "biomes/compasshills/src/89a-host-atmos.js": "89a75a9af632c7ab0d3af5ae7028d0c67af7127d93505dad05f0ef5bd33ab3a4",
     "biomes/compasshills/src/89w-host-water.js": "f9449ea800f3696745f0624a05249b0721b01c823a320ce2625d66bb2121c225",
     "biomes/compasshills/src/89z-host-build.js": "eefd0659d0a06835e5f4f09e60ae2cd40ba8a6bed7e429dbe504cdb2ff81d1f4",
+    "biomes/compasshills/src/89z9-vstack-post.js": "69b988593fb5385bb12ca6446aed28e99289bb7410cae57d18ee656216554fe8",
     "biomes/compasshills/src/99-host-take.js": "c45df820798c052a4f096e955f8268630ddc27b58346d55c881bed986dd65733",
     "biomes/compasshills/src/99-tail.html": "dfa29581341684f741f611c9a3055640e844a59a563e3d1d350318d5813dec76",
     "biomes/compasshills/stations/gorge/44z-host-site.js": "572bc8faf394a2b37f48a8f63776b9f0f54b6b220cd45ab561366a45c5fb44b6",
@@ -696,9 +712,10 @@
     "core/host/99-host-cutaway.js": "c67cea97b1b18a2a8b3bbc329d5bb5df7fd007a4aee033b21d91fe75cd0ad300",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
+    "core/materials/record/27-matlib-m1.js": "3847ce3dac5ce6ac71bd063bdc2e8e0931ddaceac269091e70f4e268d4fafbb4",
     "core/minimap/88-core-minimap.js": "b6c7e9c662f079c8f97cfc9f6bac2fea115b660f9b417056da54c3bf3c1129a1",
     "core/minimap/88a-core-minimap-host.js": "af98407f9b7bbec2742cb7bbbb9f8ff2d8c18952d5a35a02d023273a0d7e6fcc",
-    "core/rand/08-core-rand.js": "f315035a138a8818c87f55de56ae2dbf3a8d66ff3cc435d303332502d2f43ddf",
+    "core/rand/08-core-rand.js": "74a7f6ab96bc27a68097ac2cd81606460b1386fdb12c7506543ed967e78d5d7a",
     "core/shader/06-core-khook.js": "eb1a0436d3d5dbaab81c3e43de2b642c96d9c3b44331a8960801880e5e20c56d",
     "core/shader/06b-core-kcolor.js": "ededfc6b8a1a8aae5bf3c6ab40863478f9beb8e1aaf2acf4ba9da25ef6392115",
     "core/shadow/10-core-shadow.js": "9fe58c9d540efd8bc94c12d0d164ed1f92888dc08df85ac9a9b455e2d346bd0a",
@@ -709,17 +726,17 @@
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
     "core/terrain/35-core-strata.js": "65491b58b7258840a88c1ce17f0ba53d11536acd9bf2c6dacb9e1af00821c76c",
     "core/terrain/38-core-relief.js": "7b05a027e7258a2bb412cadbe67beb6bab878f88e6f18eeb5fdddf96fb9ae21f",
-    "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
+    "core/terrain/43-core-ground.js": "dbd96ca7a1ffa46c44e43dcf27ed2837841c77c7ce4670eafcb65c499bf27e79",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
     "core/terrain/45-core-horizon.js": "e597aa2e3bbd3826d60908d43a3ecf65509b7c27467913d538fe1e0babb20b1e",
     "core/terrain/host/35-core-strata-shade.js": "e74e7697dc623380851c6d5d7756584df7bb72777b89b60a961258dcc94f60ea",
     "core/terrain/host/44-core-farfield-draw.js": "54f93a37834f7ced1f312c7df40bf19a7ca377acff641119ad32f00b93cc0417",
     "core/terrain/host/45-core-horizon-shade.js": "b3cf3ea84ecafe4d05e5c9692829f7fd2c62512dbaec37a1e7ed7bc44bcaf157",
-    "core/water/20-core-water.js": "a5094b861983c604194f4d6061c771d414c5af42ea2810e5127c82c18ad87616",
+    "core/water/20-core-water.js": "c515e4cdcd325d761b67f2d1be04594e3be934415a797663b922f45c1793abf3",
     "core/water/21-core-water-shore.js": "0489a8b5c9fe2fa3621ee909a735d424696c3340951de13d8cc350ad0b77f3f9",
-    "core/water/22-core-water-flow.js": "eab9b6ee42e8747dfd1082a1b6d76804b4659d5fd3a2b3d4bc1a566af13dbed7",
+    "core/water/22-core-water-flow.js": "1edbe647477b4cb0836b57dec39e1b8891cb20b190a6972f7ae29f2efd5a19c2",
     "core/water/50-core-water-draw.js": "9b487271223b64c2935b3336667963139dddcc055b852ac4f0a1912b2a9dd7e0",
-    "core/water/51-core-water-kinds.js": "e0c2edba19b476b4b46a4e08a63f0af695423d88b1da15b380795b2e4d07ead4",
+    "core/water/51-core-water-kinds.js": "549ea82cd960f7b78d0088c0a0059a1104eb360ccac82e916b48ec8cb29e0e57",
     "core/water/ext/53-core-water-terraces.js": "d38e5ed04c4a239c8b16d687ba48cfbd81b8e65945d5104b63f0e79fc98d0b0d",
     "core/water/ext/53b-core-water-terraces-draw.js": "78f8318bc3edbb3765ca5120c81f89d991a4ae02b8c6dc5243025b269133b12f",
     "core/water/ext/56-core-water-breakup.js": "30c6de1a8913f7fa59ac92cd40526eb148d683b02dc31b6b521a3a768a2926bb",
@@ -732,28 +749,30 @@
     "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47"
    },
    "listings": {
-    "biomes/compasshills/src": "22e035b38ce6013691bc34e13e1b9f219fb1cccd6b22c9f90d408755fc7b7b3d",
+    "biomes/compasshills/src": "78c9f4d493114f765351492616c77b3488e0110f8e24db0482597201005e7393",
     "biomes/compasshills/stations/gorge": "1e8160c9f3a849bbc442ea36cf8a091726ff4a18a2c2e99d5db785829afc44fd",
     "core/host": "d729ffbc0ed36e68e9036bd9c454abc6462a27b22a4bc16b88c38d836e6f4a37",
-    "tools": "3dddf4cc1485975fa04f8ae3ecd4b11cf8303908ced5d46f4dcfc671861aec51",
-    "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
+    "tools": "f800e267a4f84d022b480235d8cfa4e558b7c894ea514163297507b477d5b1c3",
+    "tools/textures": "f4c83899af343d36f69b562b5e36b8a640189c9cc4b0a98d739cb05e0260eef6"
    },
    "outputs": {
-    "biomes/compasshills/dist/compasshills-gorge.html": "369198e7ba5eb7958e0ae97b384381a84b08cfa084f0cc6a846cf76fe86bea77"
+    "biomes/compasshills/dist/compasshills-gorge.html": "07902ff70f7708d01b97c87cff0660683f26cb7fb2eea45b563981387af2e34a"
    },
    "outputs_raw": {
-    "biomes/compasshills/dist/compasshills-gorge.html": "369198e7ba5eb7958e0ae97b384381a84b08cfa084f0cc6a846cf76fe86bea77"
+    "biomes/compasshills/dist/compasshills-gorge.html": "07902ff70f7708d01b97c87cff0660683f26cb7fb2eea45b563981387af2e34a"
    }
   },
   "build.py --station tors": {
    "inputs": {
     "biomes/compasshills/KNOWN_ISSUES.md": "cb09b096be37ccd126183ed2caa70d55d89d64c5aa23ac8dc784da71244b8037",
-    "biomes/compasshills/PORT.md": "8afc6417c1ab4bece802f6dfdc1b2a579e1a316ae7cc703bd4c30cd9a04ac595",
-    "biomes/compasshills/build.py": "cb476e1224c1498d4a9b057ba0b27b07ac0019ac10093766d153fc04c4756e79",
+    "biomes/compasshills/PORT.md": "1d1e90bb9a21208f725c81483f444d0360401ea06c5102b5284b99f94e244c5d",
+    "biomes/compasshills/build.py": "e6800d3add85a2308ac6e027b7cc88cab1da532dc767b9d841c0c0c191deece1",
     "biomes/compasshills/src/00-head.html": "d4f0cac9509fe9aac50b01ba883ea5a08b21b1c99061b9dba4356e29e94952a2",
+    "biomes/compasshills/src/28-vstack-mipvar.js": "43e224dd53db706c716372a038e6eced20b101eda32c0f6b0d68e57f8acd5d1d",
     "biomes/compasshills/src/40-biome-compass-phys.js": "a6de4587fa8b08cc5ff0ab6abb81f4291d065bca9d342b7831878db4b0ab94e5",
     "biomes/compasshills/src/41-biome-compass-sites.js": "289411d3f8578995bf75d96e228a9a3b958f819e18b1d984f288e7cdcf606434",
     "biomes/compasshills/src/45-host-stage.js": "4c66e0ac8a863a2213262856c5d8b26592941d0a598f62f06001dbb26dabe161",
+    "biomes/compasshills/src/46-vstack.js": "572a1a685ef23a17b5630b52eff0e088f59dfd84ccef4c0b43a9a914ab719879",
     "biomes/compasshills/src/50-biome-compass-species.js": "90d4213db2893daedd39e76508fe3f4aa9311b27ff8a46e8e484d49a4f1c82de",
     "biomes/compasshills/src/60-biome-compass-place.js": "df5194a916e6050f9f65e2c68a8ddbc23113efe0b0a16288f4024eaf0829ac46",
     "biomes/compasshills/src/70-biome-compass.js": "23e5584d2e73a101afcd9c34f4a1d2bac6ea5dd6d7fef6a30bcebe7bba722bed",
@@ -765,6 +784,7 @@
     "biomes/compasshills/src/89a-host-atmos.js": "89a75a9af632c7ab0d3af5ae7028d0c67af7127d93505dad05f0ef5bd33ab3a4",
     "biomes/compasshills/src/89w-host-water.js": "f9449ea800f3696745f0624a05249b0721b01c823a320ce2625d66bb2121c225",
     "biomes/compasshills/src/89z-host-build.js": "eefd0659d0a06835e5f4f09e60ae2cd40ba8a6bed7e429dbe504cdb2ff81d1f4",
+    "biomes/compasshills/src/89z9-vstack-post.js": "69b988593fb5385bb12ca6446aed28e99289bb7410cae57d18ee656216554fe8",
     "biomes/compasshills/src/99-host-take.js": "c45df820798c052a4f096e955f8268630ddc27b58346d55c881bed986dd65733",
     "biomes/compasshills/src/99-tail.html": "dfa29581341684f741f611c9a3055640e844a59a563e3d1d350318d5813dec76",
     "biomes/compasshills/stations/tors/44z-host-site.js": "dced4f6aa728108cfd13611d273a62596de9becb1c8f1fd4299603739a63a211",
@@ -882,9 +902,10 @@
     "core/host/99-host-cutaway.js": "c67cea97b1b18a2a8b3bbc329d5bb5df7fd007a4aee033b21d91fe75cd0ad300",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
+    "core/materials/record/27-matlib-m1.js": "3847ce3dac5ce6ac71bd063bdc2e8e0931ddaceac269091e70f4e268d4fafbb4",
     "core/minimap/88-core-minimap.js": "b6c7e9c662f079c8f97cfc9f6bac2fea115b660f9b417056da54c3bf3c1129a1",
     "core/minimap/88a-core-minimap-host.js": "af98407f9b7bbec2742cb7bbbb9f8ff2d8c18952d5a35a02d023273a0d7e6fcc",
-    "core/rand/08-core-rand.js": "f315035a138a8818c87f55de56ae2dbf3a8d66ff3cc435d303332502d2f43ddf",
+    "core/rand/08-core-rand.js": "74a7f6ab96bc27a68097ac2cd81606460b1386fdb12c7506543ed967e78d5d7a",
     "core/shader/06-core-khook.js": "eb1a0436d3d5dbaab81c3e43de2b642c96d9c3b44331a8960801880e5e20c56d",
     "core/shader/06b-core-kcolor.js": "ededfc6b8a1a8aae5bf3c6ab40863478f9beb8e1aaf2acf4ba9da25ef6392115",
     "core/shadow/10-core-shadow.js": "9fe58c9d540efd8bc94c12d0d164ed1f92888dc08df85ac9a9b455e2d346bd0a",
@@ -895,17 +916,17 @@
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
     "core/terrain/35-core-strata.js": "65491b58b7258840a88c1ce17f0ba53d11536acd9bf2c6dacb9e1af00821c76c",
     "core/terrain/38-core-relief.js": "7b05a027e7258a2bb412cadbe67beb6bab878f88e6f18eeb5fdddf96fb9ae21f",
-    "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
+    "core/terrain/43-core-ground.js": "dbd96ca7a1ffa46c44e43dcf27ed2837841c77c7ce4670eafcb65c499bf27e79",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
     "core/terrain/45-core-horizon.js": "e597aa2e3bbd3826d60908d43a3ecf65509b7c27467913d538fe1e0babb20b1e",
     "core/terrain/host/35-core-strata-shade.js": "e74e7697dc623380851c6d5d7756584df7bb72777b89b60a961258dcc94f60ea",
     "core/terrain/host/44-core-farfield-draw.js": "54f93a37834f7ced1f312c7df40bf19a7ca377acff641119ad32f00b93cc0417",
     "core/terrain/host/45-core-horizon-shade.js": "b3cf3ea84ecafe4d05e5c9692829f7fd2c62512dbaec37a1e7ed7bc44bcaf157",
-    "core/water/20-core-water.js": "a5094b861983c604194f4d6061c771d414c5af42ea2810e5127c82c18ad87616",
+    "core/water/20-core-water.js": "c515e4cdcd325d761b67f2d1be04594e3be934415a797663b922f45c1793abf3",
     "core/water/21-core-water-shore.js": "0489a8b5c9fe2fa3621ee909a735d424696c3340951de13d8cc350ad0b77f3f9",
-    "core/water/22-core-water-flow.js": "eab9b6ee42e8747dfd1082a1b6d76804b4659d5fd3a2b3d4bc1a566af13dbed7",
+    "core/water/22-core-water-flow.js": "1edbe647477b4cb0836b57dec39e1b8891cb20b190a6972f7ae29f2efd5a19c2",
     "core/water/50-core-water-draw.js": "9b487271223b64c2935b3336667963139dddcc055b852ac4f0a1912b2a9dd7e0",
-    "core/water/51-core-water-kinds.js": "e0c2edba19b476b4b46a4e08a63f0af695423d88b1da15b380795b2e4d07ead4",
+    "core/water/51-core-water-kinds.js": "549ea82cd960f7b78d0088c0a0059a1104eb360ccac82e916b48ec8cb29e0e57",
     "core/water/ext/53-core-water-terraces.js": "d38e5ed04c4a239c8b16d687ba48cfbd81b8e65945d5104b63f0e79fc98d0b0d",
     "core/water/ext/53b-core-water-terraces-draw.js": "78f8318bc3edbb3765ca5120c81f89d991a4ae02b8c6dc5243025b269133b12f",
     "core/water/ext/56-core-water-breakup.js": "30c6de1a8913f7fa59ac92cd40526eb148d683b02dc31b6b521a3a768a2926bb",
@@ -918,17 +939,17 @@
     "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47"
    },
    "listings": {
-    "biomes/compasshills/src": "22e035b38ce6013691bc34e13e1b9f219fb1cccd6b22c9f90d408755fc7b7b3d",
+    "biomes/compasshills/src": "78c9f4d493114f765351492616c77b3488e0110f8e24db0482597201005e7393",
     "biomes/compasshills/stations/tors": "1e8160c9f3a849bbc442ea36cf8a091726ff4a18a2c2e99d5db785829afc44fd",
     "core/host": "d729ffbc0ed36e68e9036bd9c454abc6462a27b22a4bc16b88c38d836e6f4a37",
-    "tools": "3dddf4cc1485975fa04f8ae3ecd4b11cf8303908ced5d46f4dcfc671861aec51",
-    "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
+    "tools": "f800e267a4f84d022b480235d8cfa4e558b7c894ea514163297507b477d5b1c3",
+    "tools/textures": "f4c83899af343d36f69b562b5e36b8a640189c9cc4b0a98d739cb05e0260eef6"
    },
    "outputs": {
-    "biomes/compasshills/dist/compasshills-tors.html": "0a15065e6fab708ff3e4b2898b68b225aabb0c4a34f00ae9cb01df5e8b0fb4c3"
+    "biomes/compasshills/dist/compasshills-tors.html": "06860d2e14ef6d42881639017b0887e0a42c382303ef01fe0b9bdda53d33a9df"
    },
    "outputs_raw": {
-    "biomes/compasshills/dist/compasshills-tors.html": "0a15065e6fab708ff3e4b2898b68b225aabb0c4a34f00ae9cb01df5e8b0fb4c3"
+    "biomes/compasshills/dist/compasshills-tors.html": "06860d2e14ef6d42881639017b0887e0a42c382303ef01fe0b9bdda53d33a9df"
    }
   }
  }

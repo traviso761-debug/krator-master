@@ -107,6 +107,17 @@ for (const id of ['maar-yam', 'fumewort'])
    && (P.sources.black || []).some(s => /^lignite-black/.test(s)) && (P.sources.teal || []).some(s => /^celadonite-teal/.test(s)),
    !C.palette('ehighlands', { nodes: [] }).colours.includes('teal'));
  ok('paintedhighlands: its own bulb and medicine are native, the juniper wild there', C.BY_ID['painted-camas'].home.includes('paintedhighlands') && C.isBucket(C.BY_ID.paintbrush, 'medicine') && C.BY_ID.juniper.home.includes('paintedhighlands'),
-   !C.BY_ID.murnong.home.includes('paintedhighlands'));}
+ !C.BY_ID.murnong.home.includes('paintedhighlands'));}
+
+// giant mound-termite hive fungi (swbay Aw upland savanna and crater-drylands N edge ONLY): subterranean hive-comb & fruiting mound-cap
+{const sw = C.forBiome('swbay'), cd = C.forBiome('crater-drylands'), hj2 = C.forBiome('hyperjungle'), as2 = C.forBiome('abyssal-savannah');
+ const comb = C.BY_ID['hive-comb'], cap = C.BY_ID['mound-cap'];
+ ok('termites: hive-comb is an underground termite-hive crop (mushroom + reagent + medicine) with soldier hazard',
+   !!comb && comb.grown === 'underground' && comb.works.includes('termite-hive') && !!comb.hazard && C.isBucket(comb, 'mushroom') && C.isBucket(comb, 'reagent') && C.isBucket(comb, 'medicine'),
+   !C.isBucket(comb, 'grain'));
+ ok('termites: hive-comb and mound-cap grow ONLY in swbay and crater-drylands (never hyperjungle or abyssal-savannah)',
+   how(sw, 'hive-comb') === 'wild' && how(cd, 'hive-comb') === 'wild' && how(C.forBiome('swbay', { works: ['termite-hive'] }), 'hive-comb') === 'bed' && how(sw, 'mound-cap') === 'wild' && how(cd, 'mound-cap') === 'wild',
+   how(hj2, 'hive-comb') === 'no' && how(as2, 'hive-comb') === 'no' && how(hj2, 'mound-cap') === 'no' && how(as2, 'mound-cap') === 'no');}
 console.log(bad ? '\n' + bad + ' FAILED' : '\nall passed');
 process.exit(bad ? 1 : 0);
+

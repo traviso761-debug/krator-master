@@ -72,6 +72,7 @@
   "dolomite": {
    "lib": "stone.marble.ashlar",
    "scale": [1.8, 1.8],
+   "height": true,
    "tint": { "keep": 0.18, "mean": 0.84, "contrast": 1.1 },
    "roughLift": 0.18,
    "specular": 0.26,
@@ -80,6 +81,7 @@
   "travertine": {
    "lib": "stone.travertine",
    "scale": [1.9, 1.9],
+   "height": true,
    "tint": { "keep": 0.28, "mean": 0.8, "contrast": 1.08 },
    "roughLift": 0.2,
    "specular": 0.24,
@@ -88,6 +90,7 @@
   "porphyry": {
    "lib": "rock.megabreccia.polished",
    "scale": [1.5, 1.5],
+   "height": true,
    "tint": { "keep": 0.35, "mean": 0.64, "contrast": 1.12 },
    "roughLift": 0.12,
    "specular": 0.36,
@@ -118,6 +121,7 @@
   "brick": {
    "lib": "paving.red_brick",
    "scale": [1.5, 1.5],
+   "height": true,
    "tint": { "keep": 0.45, "mean": 0.72, "contrast": 1.12 },
    "roughLift": 0.24,
    "specular": 0.2,
@@ -126,6 +130,7 @@
   "paving": {
    "lib": "paving.flagstone",
    "scale": [2.2, 2.2],
+   "height": true,
    "tint": { "keep": 0.28, "mean": 0.76, "contrast": 1.08 },
    "roughLift": 0.24,
    "specular": 0.2,

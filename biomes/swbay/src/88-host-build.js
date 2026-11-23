@@ -7,11 +7,13 @@ window._biome=null;
  let shells=[];
  if(typeof buildTestTower==='function'){try{shells=buildTestTower()||[];}catch(e){reportErr('tower: '+e.stack);}}
  let jetty=[];if(typeof buildJetty==='function'){try{jetty=buildJetty()||[];}catch(e){reportErr('jetty: '+e.stack);}}
+ if(typeof placeTermiteMounds==='function'){try{placeTermiteMounds();}catch(e){reportErr('termite mounds: '+e.stack);}}
  try{swbayKinVeto();}catch(e){reportErr('kin veto: '+e.stack);}   /* the cousins' cuts (87-host-kin.js), before the tree pass */
  try{window._biome=SWBAY.build({R:TERR.R-100,quality:1});}catch(e){reportErr('biome: '+e.stack);}
  if(shells.length){try{SWBAY.dress(shells,{ledges:{moss:2200,plants:900,edges:520,hang:14},soffits:{n:1800,mossR:4,hang:14},walls:{n:520}});}catch(e){reportErr('dress: '+e.stack);}}
  if(jetty.length){try{SWBAY.dress(jetty,{seed:7,ledges:{moss:260,plants:90,edges:60,hang:4,treeH:5,size:1.6,mossR:1.6},soffits:{n:80,mossR:1.4,hang:3},walls:{n:70,hang:3}});}catch(e){reportErr('dress jetty: '+e.stack);}}
  try{window._kin=growKin();}catch(e){reportErr('kin: '+e.stack);}   /* the neighbours' cousins where the cuts stood, and the floor's few (87) */
+ if(typeof populateTermiteMounds==='function'){try{window._termites=populateTermiteMounds();}catch(e){reportErr('termites: '+e.stack);}}
  const b=BIO.bake();
  /* the impostors' light matched to the near crowns (the bake comes out ~4x dark: HANDOFF-REBUILD.md, a core fix owed; nwbay's 2.2: at
     nhighlands' 3.6 the trunks bake out white); ?impgain= ?impwrap= */

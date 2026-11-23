@@ -133,10 +133,10 @@ defBuilding({
  }
 });
 
-/* 2. Classical Rotunda-Exedra and Star Sala-Nam Water-Pavilion Court */
+/* 2. Classical Pantheon-Rotunda and Star Sala-Nam Water-Pavilion Court */
 defBuilding({
  key:'ra_west_lotus_pavilion',
- name:'Classical Rotunda-Exedra and Star Sala-Nam Water-Pavilion Court',
+ name:'Classical Pantheon-Rotunda and Star Sala-Nam Water-Pavilion Court',
  seed:7102,w:32,d:28,h:18.5,budget:130000,cut:true,
  front:{x:0,z:12.8,yaw:0},
  tags:{style:'lower-ria',wealth:'rich',types:['civic','park'],role:'pavilion'},
@@ -160,21 +160,27 @@ defBuilding({
   raCeilingSlab(0,yDeck+3.37,10.3,5.2,2.5,{mk:'travertine',trimMk:'gold'});
   raClassicalPediment(0,yDeck+3.38,10.3,0,5.6,1.3,2.7,{style:'lower-ria',mk:'travertine',tymMk:'cobalt'});
 
-  /* North Classical Pantheon Oculus Rotunda + Twin Sweeping Semicircular Beaux-Arts Exedra Colonnades! */
+  /* North Classical Pantheon Oculus Rotunda Island + Grounded Rear Travertine & Cobalt Waterside Retaining Promenade */
   raFloorDisc(0,-8.5,3.35,yDeck,'mosaic',P('mosaic'),{seg:20,th:.24});
   svNoWalk(()=>{
-   cyl('travertine',0,-.3,-8.5,3.45,yDeck+.05,P('travertine'),20);
-   /* Curved stone stylobates supporting the twin semicircular exedra colonnades */
-   sector('travertine',0,-.8,10.4,11.8,-PI*.88,-PI*.61,-.28,yDeck,P('travertine'),12);
-   sector('travertine',0,-.8,10.4,11.8,-PI*.39,-PI*.12,-.28,yDeck,P('travertine'),12);
+   cyl('travertine',0,-.3,-8.5,3.45,1.18,P('travertine'),20);
+   /* Grounded rear retaining promenade sitting solidly along the rear masonry bank of the lotus basin (no floating columns) */
+   for(const s of [-1,1]){
+    const bx=s*9.0;
+    box('cobalt',bx,0,-12.35,10.2,.44,1.2,P('cobalt'));
+    box('saffron',bx,.44,-12.35,10.28,.12,1.26,P('saffron'));
+    box('travertine',bx,.56,-12.35,10.36,.24,1.32,P('travertine'));
+    cyl('alabaster',s*13.4,.8,-12.35,.28,.42,P('alabaster'),10);
+    cone('gold',s*13.4,1.22,-12.35,.16,.24,P('gold'),8);
+   }
   });
+  raClassicalBalustrade(-13.8,-12.35,-4.1,-12.35,.8,{style:'lower-ria',mk:'travertine',trimMk:'gold',h:.78});
+  raClassicalBalustrade(4.1,-12.35,13.8,-12.35,.8,{style:'lower-ria',mk:'travertine',trimMk:'gold',h:.78});
   for(let k=0;k<8;k++){
    const a=k/8*TAU+.2;
    raColumn(Math.cos(a)*2.85,yDeck,-8.5+Math.sin(a)*2.85,3.65,{style:'lower-ria',mk:'travertine',capMk:'gold',baseMk:'cobalt',r:.21,block:false});
   }
   raPantheonRotundaDome(0,yDeck+3.65,-8.5,3.1,5.1,{style:'lower-ria',drumMk:'travertine',mk:'giltroof',soffitMk:'travertine'});
-  raCurvedColonnade(0,-.8,11.1,-PI*.86,-PI*.63,yDeck,3.65,5,{style:'lower-ria',mk:'travertine',friezeMk:'cobalt',r:.21,block:false});
-  raCurvedColonnade(0,-.8,11.1,-PI*.37,-PI*.14,yDeck,3.65,5,{style:'lower-ria',mk:'travertine',friezeMk:'cobalt',r:.21,block:false});
 
   /* Central Cruciform Emerald-Celadon Sala-Nam Island + Twin Foreground Hexagonal Thai Water-Gazebos! */
   raFloorSlab(0,yDeck,-.6,11.2,10.6,{mk:'floor',th:.24});

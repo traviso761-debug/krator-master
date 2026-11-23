@@ -77,18 +77,35 @@ SIDE = None if '--inline-packs' in sys.argv else {}
 
 
 def matlib_pack():
-    """The library textures materials.json names, as data URLs (KMAT.pack) from committed tex/ files."""
+    """The library textures materials.json names, as data URLs (KMAT.pack) from committed tex/ files, plus M2 mipVariance & M3 pom."""
     pj = os.path.join(TEX_DIR, 'pack.json')
     if not os.path.isfile(pj):
         return "/* no tex/pack.json: run tools/textures/pack.py kits/yonni */\nKMAT.pack('yonni', {});\n"
     with open(pj, encoding='utf-8') as fh:
         pack = json.load(fh)
+    mv_file = os.path.join(HERE, 'mip-variance.json')
+    mv_fams = json.load(open(mv_file, encoding='utf-8')).get('families', {}) if os.path.isfile(mv_file) else {}
+    cfg_file = os.path.join(HERE, 'materials.json')
+    cfg_fams = json.load(open(cfg_file, encoding='utf-8')).get('families', {}) if os.path.isfile(cfg_file) else {}
+    if os.path.isfile(mv_file):
+        BSRC.note(mv_file)
+    if os.path.isfile(cfg_file):
+        BSRC.note(cfg_file)
     out = []
     for fam in sorted(pack['families']):
         e = pack['families'][fam]
-        f = {'lib': e['lib'], 'scale': e['scale'], 'metal': e['metal'], 'normalScale': e['normalScale'],
+        fc = cfg_fams.get(fam) or {}
+        sz = e.get('size', 512)
+        f = {'lib': e['lib'], 'scale': e['scale'], 'size': sz[0] if isinstance(sz, list) else int(sz),
+             'metal': e['metal'], 'normalScale': e['normalScale'],
              'specular': e.get('specular', 0.5), 'breakup': e.get('breakup'),
              'tint': e['tint']['keep'], 'mean': e['tint']['mean']}
+        if e.get('height'):
+            f['height'] = True
+        if fc.get('height'):
+            f['pom'] = True
+        if fam in mv_fams:
+            f['mipVariance'] = mv_fams[fam]
         for k, name in sorted(e['files'].items()):
             with open(os.path.join(TEX_DIR, name), 'rb') as bfh:
                 f[k] = 'data:image/webp;base64,' + base64.b64encode(bfh.read()).decode()

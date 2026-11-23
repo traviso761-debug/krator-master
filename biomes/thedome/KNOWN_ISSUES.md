@@ -1,0 +1,7 @@
+# biomes/thedome: known issues & planned follow-ups
+
+All production quality gates across all four `thedome` stations (`apron`, `moat`, `crown`, `cleft`) pass with `0` untextured meshes, `0` `check_cells.py` card/stem findings, `0` floating leaf stems (`BIO.attachAudit`), `<= 13` active ground samplers (`< 15` survey ceiling), `100%` `water-mouths` cross-fade compliance, `>= 0.06 m` 360 deg rock-sill freeboard on every `gnamma` solution pan, `>= 2.2 m` camera clearance above `KDRAWN` ground across all preset `VIEWS`, and `KSHADOW` off at load.
+
+## Planned future tie-ins (out of scope for the biome kit)
+- **Upper Ria & Silk Principality civic site builds (`settlements/`, `kits/`):** Station 3 (`crown`) holds a flat `34 m` reserve (`site:dome-observatory`) and Station 2 (`moat`) holds a `26 m` collar-gap pass reserve (`site:moat-waystation`) registered in `KTAGS` for future world-level observatory and waystation placement; the lightweight acoustic listening dish, wind-harp, and mist cistern in `src/86-host-works.js` can be disabled cleanly via `?works=0`.
+- **Dedicated endemic fauna meshes (`DOME_FAUNA`):** Six endemic fauna records and 24-hour hydroperiod/diurnal state machines (`gnammatriops`, `atentgecko`, `garlandtragopan`, `slabklipspringer`, `moatnewt`, `cleftswift`) are exported as `[G data]` in `src/24-thedome-fauna.js` (`tests/test-thedome.js`) ready for animated fauna rig binding when highland herpetofauna/ungulate rigs land.

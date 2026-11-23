@@ -99,12 +99,12 @@ var KMAT_M1 = (function(){
     'float km1RoughAA(float baseR, vec2 dxUv, vec2 dyUv, float texSz, vec4 varLo, vec4 varHi){',
     '  float px = max(dot(dxUv, dxUv), dot(dyUv, dyUv)) * (texSz * texSz);',
     '  float mip = clamp(0.5 * log2(max(px, 1.0)), 0.0, 7.0);',
-    '  int i0 = int(floor(mip));',
-    '  float f = mip - float(i0);',
-    '  float v0 = i0 < 4 ? varLo[i0] : varHi[i0 - 4];',
-    '  int i1 = min(i0 + 1, 7);',
-    '  float v1 = i1 < 4 ? varLo[i1] : varHi[i1 - 4];',
-    '  float vr = mix(v0, v1, f);',
+    '  int kmI0 = int(floor(mip));',
+    '  float f = mip - float(kmI0);',
+    '  float kmV0 = kmI0 < 4 ? varLo[kmI0] : varHi[kmI0 - 4];',
+    '  int kmI1 = min(kmI0 + 1, 7);',
+    '  float kmV1 = kmI1 < 4 ? varLo[kmI1] : varHi[kmI1 - 4];',
+    '  float vr = mix(kmV0, kmV1, f);',
     '  return sqrt(clamp(baseR * baseR + min(vr * 1.5, 0.45), 0.0004, 1.0));',
     '}'
   ].join('\n');

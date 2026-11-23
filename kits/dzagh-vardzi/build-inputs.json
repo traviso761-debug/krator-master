@@ -57,7 +57,8 @@
     "core/materials/record/24-tex-def.js": "1016dd8a57911fba8405bb4b8f050561d8ed24ab98e7993c9fc58c12d3ce3a95",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
     "core/materials/record/26-matlib-bind.js": "93c467f3805276f5aea2482da7fac2216db1e52d18d191c1925c8cd90446b54c",
-    "core/rand/08-core-rand.js": "f315035a138a8818c87f55de56ae2dbf3a8d66ff3cc435d303332502d2f43ddf",
+    "core/materials/record/27-matlib-m1.js": "3847ce3dac5ce6ac71bd063bdc2e8e0931ddaceac269091e70f4e268d4fafbb4",
+    "core/rand/08-core-rand.js": "74a7f6ab96bc27a68097ac2cd81606460b1386fdb12c7506543ed967e78d5d7a",
     "core/shader/06-core-khook.js": "eb1a0436d3d5dbaab81c3e43de2b642c96d9c3b44331a8960801880e5e20c56d",
     "core/shader/06b-core-kcolor.js": "ededfc6b8a1a8aae5bf3c6ab40863478f9beb8e1aaf2acf4ba9da25ef6392115",
     "core/shader/07-core-kwarp.js": "b73f3511762ae1f45b4ad88f054baf11f76cf2c8f27726605758d9657f253e17",
@@ -73,11 +74,14 @@
     "kits/catalog/krator-master-furniture-jobs.js": "598ea1c1eeeeb4c30206d397021a579b281399ba4bea85fdaf0060d6a433674d",
     "kits/catalog/krator-master-furniture-scrap.js": "0ad3a75771ab03e7b22e7f558b601ac9e6208418e49275625d199bc44bde720c",
     "kits/dzagh-vardzi/KNOWN_ISSUES.md": "8618fb5c935057599d2672d9c17424f9d58e5b71a59f182ac0e556a56c3c2e1e",
-    "kits/dzagh-vardzi/PORT.md": "41616f2b6783ef852a39fbc2496d93f0a03ae8de5efae582ed1312a2bcb21dd0",
-    "kits/dzagh-vardzi/build.py": "cef706d80265567bf1108697a5b935d90fe6e5fcc3a59d3f32aa4456f212ea8d",
+    "kits/dzagh-vardzi/PORT.md": "4301c636370de9192fc03213bc68309234068018805749ca967e749233d65e68",
+    "kits/dzagh-vardzi/build.py": "0c2abf546381ada3c7cbdbc46d3bd851f05d1ed64ff5e1bc2fc87f3e3335a05f",
     "kits/dzagh-vardzi/dzagh-vardzi_furniture.js": "c079e369c8893c8918b568057353c0b6b52f2161a7f144de8035ec51666ccb7b",
+    "kits/dzagh-vardzi/materials.json": "91f875a0e673c0216413b5f655547460ca083672e09d20c21269ce8795e3bafe",
+    "kits/dzagh-vardzi/mip-variance.json": "ff6f853c4d81141b40c37ff56fe9c7d744c5039129c3643dcac51664bf97fa78",
     "kits/dzagh-vardzi/src/00-head.html": "edfa584f599364fa191ab7a77013613d1e8a7728e52c7239176881f3bf8ae297",
     "kits/dzagh-vardzi/src/26k-kit.js": "71e03608ed20571e28ec2275198bde718e9ee1890e62e5e768931828eb536bcb",
+    "kits/dzagh-vardzi/src/27v-dv-vstack.js": "542faaece3e8c303befc44f5d15375c2ad8e2728126e71b3a8df2c6ebb03f4a6",
     "kits/dzagh-vardzi/src/28-dv-matfix.js": "82504573a2229f72fa4c45c91e93a50e890d7d48b3d96b0e6af3354fb763a2f4",
     "kits/dzagh-vardzi/src/31-alt-takes.js": "e8894e8bc7132152dfdb30f8e64d6cc6a0ba65a146583e1b3f904e3efa81b439",
     "kits/dzagh-vardzi/src/36p-dv-openfix.js": "935bf6c6db99b44b2f4cd5b365eff1b4075c0f3bfa792676c9cdd4c62a5fae90",
@@ -296,27 +300,27 @@
     "core/engine": "68c10fa5029a8ccb1f86b5138b48a7b71fec613998c3eab75790c04acc07b282",
     "core/furnish": "09dc20b7272ccbab9dbdf81fa2c1eecb624e5d192d40370d2ae9c1443e6c81c7",
     "core/host": "d729ffbc0ed36e68e9036bd9c454abc6462a27b22a4bc16b88c38d836e6f4a37",
-    "core/materials/record": "8e06a3bce5495768ed1649aeffaff73f18e5e50f4fadc7abe22bf892274992d8",
+    "core/materials/record": "9ac4fa64bb4c2007088d1a3e509f35e5e1dce1ce9d228f51bb510acd1a279442",
     "core/rand": "2174a8e3e509270343eb7e2c6e69ec9c0a221daa415e05d960123007b253bc77",
     "core/shader": "096503afdb3e218ae4dee6db5ba7786d7fca4b7a58dc1de35a6a961152b2b8db",
     "core/tags": "38b4880d922aa900d485404bd0eb7ae88d7fe16181d58b2e1c5f62c5c8aa9910",
     "core/walk": "c6769307f01d663d946e7a69638ff7e4fee9c46e1ff5bc8acc98125dd4bb4619",
     "core/walk/box": "640d3e2f0368a531fc4c1f0be0fdca8de1f41b5e2f176112f6212377ea41494d",
     "kits/catalog": "10322ea778934242b7ce59b2a1b14f40befde097c5b9b80081f11fd0cb8a57ce",
-    "kits/dzagh-vardzi/src": "0effda06ddc33e5e6343fa77ed37ce9fcf959d616a44656f3d8a58a3b43a9db9",
+    "kits/dzagh-vardzi/src": "38220e2deb5cd4ed825c88d3d56750cd7832f9e642520b66187a48151cf61d95",
     "kits/fauna": "f5f8a097fdf9ec301799bd1a41f781732803c964d3a10dda1aded58f9a1d2f18",
-    "tools": "3dddf4cc1485975fa04f8ae3ecd4b11cf8303908ced5d46f4dcfc671861aec51",
-    "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
+    "tools": "f800e267a4f84d022b480235d8cfa4e558b7c894ea514163297507b477d5b1c3",
+    "tools/textures": "f4c83899af343d36f69b562b5e36b8a640189c9cc4b0a98d739cb05e0260eef6"
    },
    "outputs": {
-    "kits/dzagh-vardzi/build-manifest.json": "f54027355172a83c1831bd15853ea19736d506f21d6b4a0ad615f74738fd2b9f",
-    "kits/dzagh-vardzi/dist/dzagh-vardzi.html": "cd955e888bd7382f0c5d45bb4c089681a0b7d627177d7e2c959fa44c56441343",
-    "kits/dzagh-vardzi/dist/dzagh-vardzi.tex.dzagh-vardzi.js": "cb5ab3c6e9f201810c410160f901b89434491e5eeb93f96e1446c1716716ba02"
+    "kits/dzagh-vardzi/build-manifest.json": "6d579a3d25acb2eabcf8fa7bf36ec7e1f6c9618072d9de6b19c1c06b11a7fd2e",
+    "kits/dzagh-vardzi/dist/dzagh-vardzi.html": "91371f989d80a7145acd8700aa6c99728591877bc5a754ce971243c98042ec3c",
+    "kits/dzagh-vardzi/dist/dzagh-vardzi.tex.dzagh-vardzi.js": "8914f231a790c1ccdba376423731856698f6811365d0edc4b9b087feb21cbd0e"
    },
    "outputs_raw": {
-    "kits/dzagh-vardzi/build-manifest.json": "f54027355172a83c1831bd15853ea19736d506f21d6b4a0ad615f74738fd2b9f",
-    "kits/dzagh-vardzi/dist/dzagh-vardzi.html": "cd955e888bd7382f0c5d45bb4c089681a0b7d627177d7e2c959fa44c56441343",
-    "kits/dzagh-vardzi/dist/dzagh-vardzi.tex.dzagh-vardzi.js": "cb5ab3c6e9f201810c410160f901b89434491e5eeb93f96e1446c1716716ba02"
+    "kits/dzagh-vardzi/build-manifest.json": "6d579a3d25acb2eabcf8fa7bf36ec7e1f6c9618072d9de6b19c1c06b11a7fd2e",
+    "kits/dzagh-vardzi/dist/dzagh-vardzi.html": "91371f989d80a7145acd8700aa6c99728591877bc5a754ce971243c98042ec3c",
+    "kits/dzagh-vardzi/dist/dzagh-vardzi.tex.dzagh-vardzi.js": "8914f231a790c1ccdba376423731856698f6811365d0edc4b9b087feb21cbd0e"
    }
   },
   "build.py --village": {
@@ -375,7 +379,8 @@
     "core/materials/record/24-tex-def.js": "1016dd8a57911fba8405bb4b8f050561d8ed24ab98e7993c9fc58c12d3ce3a95",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
     "core/materials/record/26-matlib-bind.js": "93c467f3805276f5aea2482da7fac2216db1e52d18d191c1925c8cd90446b54c",
-    "core/rand/08-core-rand.js": "f315035a138a8818c87f55de56ae2dbf3a8d66ff3cc435d303332502d2f43ddf",
+    "core/materials/record/27-matlib-m1.js": "3847ce3dac5ce6ac71bd063bdc2e8e0931ddaceac269091e70f4e268d4fafbb4",
+    "core/rand/08-core-rand.js": "74a7f6ab96bc27a68097ac2cd81606460b1386fdb12c7506543ed967e78d5d7a",
     "core/shader/06-core-khook.js": "eb1a0436d3d5dbaab81c3e43de2b642c96d9c3b44331a8960801880e5e20c56d",
     "core/shader/06b-core-kcolor.js": "ededfc6b8a1a8aae5bf3c6ab40863478f9beb8e1aaf2acf4ba9da25ef6392115",
     "core/shader/07-core-kwarp.js": "b73f3511762ae1f45b4ad88f054baf11f76cf2c8f27726605758d9657f253e17",
@@ -391,11 +396,14 @@
     "kits/catalog/krator-master-furniture-jobs.js": "598ea1c1eeeeb4c30206d397021a579b281399ba4bea85fdaf0060d6a433674d",
     "kits/catalog/krator-master-furniture-scrap.js": "0ad3a75771ab03e7b22e7f558b601ac9e6208418e49275625d199bc44bde720c",
     "kits/dzagh-vardzi/KNOWN_ISSUES.md": "8618fb5c935057599d2672d9c17424f9d58e5b71a59f182ac0e556a56c3c2e1e",
-    "kits/dzagh-vardzi/PORT.md": "41616f2b6783ef852a39fbc2496d93f0a03ae8de5efae582ed1312a2bcb21dd0",
-    "kits/dzagh-vardzi/build.py": "cef706d80265567bf1108697a5b935d90fe6e5fcc3a59d3f32aa4456f212ea8d",
+    "kits/dzagh-vardzi/PORT.md": "4301c636370de9192fc03213bc68309234068018805749ca967e749233d65e68",
+    "kits/dzagh-vardzi/build.py": "0c2abf546381ada3c7cbdbc46d3bd851f05d1ed64ff5e1bc2fc87f3e3335a05f",
     "kits/dzagh-vardzi/dzagh-vardzi_furniture.js": "c079e369c8893c8918b568057353c0b6b52f2161a7f144de8035ec51666ccb7b",
+    "kits/dzagh-vardzi/materials.json": "91f875a0e673c0216413b5f655547460ca083672e09d20c21269ce8795e3bafe",
+    "kits/dzagh-vardzi/mip-variance.json": "ff6f853c4d81141b40c37ff56fe9c7d744c5039129c3643dcac51664bf97fa78",
     "kits/dzagh-vardzi/src/00-head.html": "edfa584f599364fa191ab7a77013613d1e8a7728e52c7239176881f3bf8ae297",
     "kits/dzagh-vardzi/src/26k-kit.js": "71e03608ed20571e28ec2275198bde718e9ee1890e62e5e768931828eb536bcb",
+    "kits/dzagh-vardzi/src/27v-dv-vstack.js": "542faaece3e8c303befc44f5d15375c2ad8e2728126e71b3a8df2c6ebb03f4a6",
     "kits/dzagh-vardzi/src/28-dv-matfix.js": "82504573a2229f72fa4c45c91e93a50e890d7d48b3d96b0e6af3354fb763a2f4",
     "kits/dzagh-vardzi/src/31-alt-takes.js": "e8894e8bc7132152dfdb30f8e64d6cc6a0ba65a146583e1b3f904e3efa81b439",
     "kits/dzagh-vardzi/src/36p-dv-openfix.js": "935bf6c6db99b44b2f4cd5b365eff1b4075c0f3bfa792676c9cdd4c62a5fae90",
@@ -613,25 +621,25 @@
     "core/engine": "68c10fa5029a8ccb1f86b5138b48a7b71fec613998c3eab75790c04acc07b282",
     "core/furnish": "09dc20b7272ccbab9dbdf81fa2c1eecb624e5d192d40370d2ae9c1443e6c81c7",
     "core/host": "d729ffbc0ed36e68e9036bd9c454abc6462a27b22a4bc16b88c38d836e6f4a37",
-    "core/materials/record": "8e06a3bce5495768ed1649aeffaff73f18e5e50f4fadc7abe22bf892274992d8",
+    "core/materials/record": "9ac4fa64bb4c2007088d1a3e509f35e5e1dce1ce9d228f51bb510acd1a279442",
     "core/rand": "2174a8e3e509270343eb7e2c6e69ec9c0a221daa415e05d960123007b253bc77",
     "core/shader": "096503afdb3e218ae4dee6db5ba7786d7fca4b7a58dc1de35a6a961152b2b8db",
     "core/tags": "38b4880d922aa900d485404bd0eb7ae88d7fe16181d58b2e1c5f62c5c8aa9910",
     "core/walk": "c6769307f01d663d946e7a69638ff7e4fee9c46e1ff5bc8acc98125dd4bb4619",
     "core/walk/box": "640d3e2f0368a531fc4c1f0be0fdca8de1f41b5e2f176112f6212377ea41494d",
     "kits/catalog": "10322ea778934242b7ce59b2a1b14f40befde097c5b9b80081f11fd0cb8a57ce",
-    "kits/dzagh-vardzi/src": "0effda06ddc33e5e6343fa77ed37ce9fcf959d616a44656f3d8a58a3b43a9db9",
+    "kits/dzagh-vardzi/src": "38220e2deb5cd4ed825c88d3d56750cd7832f9e642520b66187a48151cf61d95",
     "kits/fauna": "f5f8a097fdf9ec301799bd1a41f781732803c964d3a10dda1aded58f9a1d2f18",
-    "tools": "3dddf4cc1485975fa04f8ae3ecd4b11cf8303908ced5d46f4dcfc671861aec51",
-    "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
+    "tools": "f800e267a4f84d022b480235d8cfa4e558b7c894ea514163297507b477d5b1c3",
+    "tools/textures": "f4c83899af343d36f69b562b5e36b8a640189c9cc4b0a98d739cb05e0260eef6"
    },
    "outputs": {
-    "kits/dzagh-vardzi/dist/dzagh-vardzi-village.html": "8456212157c847a4e02417ba67c8a5dd42ee782cf7d5f38bc68a2d0a49d3650f",
-    "kits/dzagh-vardzi/dist/dzagh-vardzi-village.tex.dzagh-vardzi.js": "8f921e8fa50b77b96139c18d7734dc6f4da104937a997ca980f580072d4be4e0"
+    "kits/dzagh-vardzi/dist/dzagh-vardzi-village.html": "3ef2ca20299e52ca0e19342bfa0e224f81c93128823e438be4fe387b6002c094",
+    "kits/dzagh-vardzi/dist/dzagh-vardzi-village.tex.dzagh-vardzi.js": "a586a9eb0e6096620498980e47d9467a6a302769e43232e466c14c46e29a57a6"
    },
    "outputs_raw": {
-    "kits/dzagh-vardzi/dist/dzagh-vardzi-village.html": "8456212157c847a4e02417ba67c8a5dd42ee782cf7d5f38bc68a2d0a49d3650f",
-    "kits/dzagh-vardzi/dist/dzagh-vardzi-village.tex.dzagh-vardzi.js": "8f921e8fa50b77b96139c18d7734dc6f4da104937a997ca980f580072d4be4e0"
+    "kits/dzagh-vardzi/dist/dzagh-vardzi-village.html": "3ef2ca20299e52ca0e19342bfa0e224f81c93128823e438be4fe387b6002c094",
+    "kits/dzagh-vardzi/dist/dzagh-vardzi-village.tex.dzagh-vardzi.js": "a586a9eb0e6096620498980e47d9467a6a302769e43232e466c14c46e29a57a6"
    }
   }
  }

@@ -27,10 +27,11 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 |---|---|---|
 | `00-head.html` | 1 |  |
 | `26k-kit.js` | 6 |  |
+| `27v-dv-vstack.js` | 9 |  |
 | `28-dv-matfix.js` | 1 |  |
 | `31-alt-takes.js` | <1 |  |
 | `36p-dv-openfix.js` | <1 |  |
-| `40-dv-kit.js` | 15 |  |
+| `40-dv-kit.js` | 16 |  |
 | `41-dv-roof.js` | 9 |  |
 | `42-dv-flume.js` | 12 |  |
 | `53a-dv-vocab.js` | <1 |  |
