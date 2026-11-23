@@ -2,6 +2,9 @@
 const lwEye=(x,z,tx,tz,dy)=>[x,terrainH(x,z)+1.7+lwD(dy,0),z,tx,terrainH(tx,tz)+4,tz];
 const VIEWS=(function(){const V={};const Wz=LW.WALL,Y=LW.Y0;
  V['Overview']=[520,420,LW.SHORE+620,0,60,-120];
+ /* the town in the open world's ground (PLAN.md L6): from 4 km out on the lake, the bay and the scarp the model edit owes and
+    where they end in the world's slope east and west */
+ V['The town on the open world']=[-1800,LW.LAKE+420,LW.SHORE+4200,0,140,-900];
  V['From the lake']=[60,LW.LAKE+4,LW.SHORE+360,0,Y+10,Wz];
  V['The Stair Foot']=lwEye(10,LW_PLAZA.z1+30,0,Wz+4,0);
  V['The wall at dusk']=[-140,Y+26,Wz+120,0,Y+18,Wz];

@@ -87,8 +87,34 @@ def flora_bundle():
             'return { BIO: BIO, reseed: reseed, kits: { xanadu: XANADU, opalvalley: OPAL } };\n})(Object.create(window));\n')
 
 
+# the open world's ground round the town (KNOWN_ISSUES.md: "the town's page and its open-world site are two grounds"; the owner,
+# 2026-11-23: the page reads the world's ground, its own relief seated on it): core/world/bake_ground.py runs the region's own
+# land chain in node (its rasters, roads, coasts, hooks) and samples WORLD.H round the site, a 16 m grid over 6 km and a 64 m
+# one over 24 km (at minWave 96, as the region's far chunks ask); targets/town/89zl-lw-site.js stands the page on it. The node run (~30 s: the
+# region's coasts at init) is skipped when the key (every input's bytes) is the one in the generated file
+REGION, SITE_ID = 'xanadu-oidong-highrift', 'slaitwal0001'
+WORLD_LEVELS = [(3000, 3000, 3000, 16), (12000, 12000, 12000, 64, 96)]   # minWave 96: 1.5 of the cell, as core/world 81's chunks ask
+WORLD_PROBES = [(0, 6000), (-2000, 6000), (2000, 6000)]   # the great lake 6 km south: the world's water there
+sys.path.insert(0, os.path.join(ROOT, 'core', 'world')); import bake_ground   # noqa: E402
+BSRC.note(*bake_ground.inputs(REGION))
+
+
+def world_ground():
+    out = os.path.join(GEN, '41w-lw-world-ground.js')
+    k = bake_ground.key(REGION, SITE_ID, WORLD_LEVELS, WORLD_PROBES)
+    if os.path.exists(out):
+        with io.open(out, encoding='utf-8') as fh:
+            if ('key %s)' % k) in fh.readline():
+                return None   # current: write_gen leaves it
+    return bake_ground.fragment(bake_ground.bake(REGION, SITE_ID, WORLD_LEVELS, WORLD_PROBES), '41w-lw-world-ground.js', 'LW_WORLD')
+
+
 def write_gen():
     os.makedirs(GEN, exist_ok=True)
+    wg = world_ground()
+    if wg is not None:
+        with io.open(os.path.join(GEN, '41w-lw-world-ground.js'), 'w', encoding='utf-8', newline='\n') as fh:
+            fh.write(wg)
     for name, make in (('69l-kcity-bundle.js', kcity_bundle), ('69t-tungang-bundle.js', tungang_bundle), ('69r-lw-flora-bundle.js', flora_bundle)):
         out = os.path.join(GEN, name)
         new = make()

@@ -87,19 +87,37 @@ function lwGroundMat(){const tex=new THREE.CanvasTexture(lwCv);tex.encoding=THRE
  geo.computeVertexNormals();
  groundM=new THREE.Mesh(geo,lwGroundMat());groundM.rotation.x=-Math.PI/2;groundM.position.set(cx,0,cz);
  groundM.userData.isGround=true;groundM.userData.probeSkip=true;groundM.name='the bench';groundM.receiveShadow=true;scene.add(groundM);
- /* the north wall: from the wall's line back 4.5 km, 40 m cells (8 m near the bands), the rock's colour by height and slope */
- const W={x0:-4200,x1:4200,z0:-4800,z1:LWG.z0+2},rows=[];for(let z=W.z1;z>W.z0;){rows.push(z);z-=z>-420?6:z>-900?20:60;}rows.push(W.z0);
- const cols=[];for(let x=W.x0;x<W.x1;){cols.push(x);x+=Math.abs(x)<1400?12:60;}cols.push(W.x1);
- const pos=[],col=[],idx=[],NC=cols.length,cs=[0,0,0];
- rows.forEach(z=>cols.forEach(x=>{const y=terrainH(x,z);pos.push(x,y,z);lwStrata(x,y,cs);
-  /* snow over 2,300 m (local; about 3,600 m in the model), lying thicker where the wall eases */
-  const sn=y>2300?Math.min(1,(y-2300)/400)*(.6+.4*KRAND.vnoise(x*.004,z*.004,0,LW.SEED+34)):0;col.push(cs[0]*(1-sn)+2.4*sn,cs[1]*(1-sn)+2.45*sn,cs[2]*(1-sn)+2.55*sn);}));
- for(let j=0;j<rows.length-1;j++)for(let i=0;i<NC-1;i++){const a=j*NC+i,b=a+1,c=a+NC,d=c+1;idx.push(a,b,c,b,d,c);}
+ /* the far ground round the bench (89zl terrainH: the open world's, with the model edit owed): the north wall behind the bands,
+    the bench's shore east and west, the lake's bed, out to the world's range 9 km north and its lake 9 km south; 12 m cells by
+    the bands and 6 m rows under them, 60 m within 4 km, 150 m beyond. The bench's own mesh is cut out of it (its quads inside
+    the bench's rectangle are left out; its edge's rows and columns are on the far grid, so the two meet). The colour: the
+    fault's beds on the steep (lwStrata), the middle terrace's grass on the gentle, the shingle at the water's edge, the bed
+    under the water; snow over 2,300 m (local; 3,645 m in the world) */
+ const W={x0:-8000,x1:8000,z0:-9000,z1:9000},rows=[];
+ for(let z=W.z0;z<W.z1;){rows.push(z);z+=z<-4000?150:z<-900?60:z<-420?20:z<LWG.z0+2?6:z<LWG.z1?20:z<1200?20:z<3000?60:150;}rows.push(W.z1);
+ for(const z of [LWG.z0+2,LWG.z1])if(rows.indexOf(z)<0)rows.push(z);rows.sort((a,b)=>a-b);
+ const cols=[];for(let x=W.x0;x<W.x1;){cols.push(x);const a=Math.abs(x);x+=a<1400?12:a<4000?60:150;}cols.push(W.x1);
+ for(const x of [LWG.x0,LWG.x1])if(cols.indexOf(x)<0)cols.push(x);cols.sort((a,b)=>a-b);
+ const inB=(x,z)=>x>=LWG.x0&&x<=LWG.x1&&z>=LWG.z0+2&&z<=LWG.z1;
+ const NC=cols.length,NR=rows.length,Y=new Float32Array(NC*NR);
+ for(let j=0;j<NR;j++)for(let i=0;i<NC;i++)Y[j*NC+i]=terrainH(cols[i],rows[j]);
+ const pos=[],col=[],idx=[],cs=[0,0,0],GR=[.62,.66,.5],SH=[.92,.9,.86],BED=[.5,.56,.52];
+ for(let j=0;j<NR;j++)for(let i=0;i<NC;i++){const x=cols[i],z=rows[j],y=Y[j*NC+i],
+  i0=Math.max(0,i-1),i1=Math.min(NC-1,i+1),j0=Math.max(0,j-1),j1=Math.min(NR-1,j+1),
+  sl=Math.hypot((Y[j*NC+i1]-Y[j*NC+i0])/(cols[i1]-cols[i0]),(Y[j1*NC+i]-Y[j0*NC+i])/(rows[j1]-rows[j0])),
+  st=lwSm((sl-.35)/.35),wet=lwSm((LW.LAKE+2-y)/2),dry=1-wet;
+  pos.push(x,y,z);lwStrata(x,y,cs);
+  const sn=y>2300?Math.min(1,(y-2300)/400)*(.6+.4*KRAND.vnoise(x*.004,z*.004,0,LW.SEED+34)):0,sh=dry*lwSm((LW.LAKE+6-y)/4);
+  for(let k=0;k<3;k++){let c=GR[k]+(cs[k]-GR[k])*st;c=c+(SH[k]-c)*sh;c=c+(BED[k]-c)*wet;col.push(c*(1-sn)+[2.4,2.45,2.55][k]*sn);}}
+ for(let j=0;j<NR-1;j++)for(let i=0;i<NC-1;i++){
+  if(inB(cols[i],rows[j])&&inB(cols[i+1],rows[j])&&inB(cols[i],rows[j+1])&&inB(cols[i+1],rows[j+1]))continue;   /* the bench's own mesh */
+  const a=j*NC+i,b=a+1,c=a+NC,d=c+1;idx.push(a,c,b,b,c,d);}
  const wg=new THREE.BufferGeometry();wg.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));wg.setAttribute('color',new THREE.Float32BufferAttribute(col,3));wg.setIndex(idx);wg.computeVertexNormals();
- const wall=new THREE.Mesh(wg,lwRockLayer(new THREE.MeshStandardMaterial({vertexColors:true,roughness:.95,metalness:0,color:0x9a928c})));wall.name='the north wall';wall.userData.isGround=true;wall.userData.probeSkip=true;wall.receiveShadow=true;scene.add(wall);
+ const wall=new THREE.Mesh(wg,lwRockLayer(new THREE.MeshStandardMaterial({vertexColors:true,roughness:.95,metalness:0,color:0x9a928c})));wall.name='the far ground';wall.userData.isGround=true;wall.userData.probeSkip=true;wall.receiveShadow=true;scene.add(wall);
+ window._lightwallFar={verts:NC*NR,tris:idx.length/3,box:[W.x0,W.z0,W.x1,W.z1]};
  /* the lake: still water at -30, milky turquoise (silica in suspension: biomes/opalvalley), out to the far shore */
  /* the plane stays only where core/water is missing (90lw draws the lake on core/water: its shore, its waves) */
  if(typeof WATER==='undefined'||typeof ATMOS==='undefined'){const lake=new THREE.Mesh(new THREE.PlaneGeometry(16000,9000),new THREE.MeshStandardMaterial({color:0x78bcbc,roughness:.14,metalness:.08,transparent:true,opacity:.9}));
  lake.rotation.x=-Math.PI/2;lake.position.set(0,LW.LAKE,LW.SHORE+4500);lake.userData.probeSkip=true;lake.name='the great lake';lake.receiveShadow=true;scene.add(lake);}
- const bed=new THREE.Mesh(new THREE.PlaneGeometry(16000,9000),new THREE.MeshStandardMaterial({color:0x5c6a62,roughness:1}));bed.rotation.x=-Math.PI/2;bed.position.set(0,-46.5,LW.SHORE+4500);bed.userData.probeSkip=true;scene.add(bed);})();
+ /* the lake's bed is the far ground's (the world's lake and the bay the model edit owes), no longer a plane 16.5 m down */})();
 window._worldMs=Math.round(performance.now()-LW_T0);
