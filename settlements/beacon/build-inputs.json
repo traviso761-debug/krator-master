@@ -109,7 +109,7 @@
     "kits/catalog/krator-master-furniture-generic.js": "990b05b8404c67ab960f6649babc8143c738ea600a04c0c22564296fa7786ea4",
     "kits/catalog/krator-master-furniture-iziz.js": "99d4c2fe482800faefb309920d6e10dcf00e7d6f1f8936a203b2d871e2f1dd6e",
     "kits/catalog/krator-master-furniture-scrap.js": "0ad3a75771ab03e7b22e7f558b601ac9e6208418e49275625d199bc44bde720c",
-    "kits/catalog/krator-master-furniture-xanadu.js": "1b26bf0664b3f38580266cf53bd632ea77f341fab3578195f2756c7bc2cf0c9c",
+    "kits/catalog/krator-master-furniture-xanadu.js": "f492e0d89825f9db6e3d0cc947495cedea19c34f764c8ecc55eee87dda1580bc",
     "kits/catalog/tex/abalone.albedo.webp": "0862814768d6644cb86159bc018f874eb8d17b3d037f59e50e5977d51e080ea1",
     "kits/catalog/tex/abaloneSoft.albedo.webp": "0862814768d6644cb86159bc018f874eb8d17b3d037f59e50e5977d51e080ea1",
     "kits/catalog/tex/ash.albedo.webp": "3432cd6a581584b157c3595d58468caf4eb114f8a184dde8d3afc1a7c931db4d",
@@ -505,15 +505,15 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "settlements/beacon/build-manifest-house.json": "98b183922341863eb97e4ab3fbc4b9ce9d8961aaaf1e2c5e0abab83a47ec0894",
-    "settlements/beacon/dist/beacon.html": "d83ffc7cd770fe5ab359833a469cdc5805c1a98d7cb8a8d9c050ef964f5f10df",
+    "settlements/beacon/build-manifest-house.json": "df3bc407041984ae9317d102adb31ed3a056ed1e2d6b128faaf6380c1d689de5",
+    "settlements/beacon/dist/beacon.html": "ab62239e93a2603a383083e8e00b8a9191fe2fabbf0434a12e3e0efb78803676",
     "settlements/beacon/dist/xanadu.tex.qiblai.js": "31374323647466f5f1977771cb8ef28d561e19c7b87bf62359247faa1d783dcf",
     "settlements/beacon/dist/xanadu.tex.xanadu-2.js": "be1d57f174e08cf71b5511aff65a313eec8edc29e057c48d027e9b60630f3ab5",
     "settlements/beacon/dist/xanadu.tex.xanadu.js": "3fe87059ee305d523fa5026dddfd91123354e88d5839097de9df44137500f2a4"
    },
    "outputs_raw": {
-    "settlements/beacon/build-manifest-house.json": "2982a20a761dac7f31c3d133268bf3f5f22a57a892a9d72a549e37b87647a1b9",
-    "settlements/beacon/dist/beacon.html": "d83ffc7cd770fe5ab359833a469cdc5805c1a98d7cb8a8d9c050ef964f5f10df",
+    "settlements/beacon/build-manifest-house.json": "3af04ab3d1fa3d36494d3ce3e71e04ce9079d06047e609cf3adecedede2b3309",
+    "settlements/beacon/dist/beacon.html": "ab62239e93a2603a383083e8e00b8a9191fe2fabbf0434a12e3e0efb78803676",
     "settlements/beacon/dist/xanadu.tex.qiblai.js": "31374323647466f5f1977771cb8ef28d561e19c7b87bf62359247faa1d783dcf",
     "settlements/beacon/dist/xanadu.tex.xanadu-2.js": "be1d57f174e08cf71b5511aff65a313eec8edc29e057c48d027e9b60630f3ab5",
     "settlements/beacon/dist/xanadu.tex.xanadu.js": "3fe87059ee305d523fa5026dddfd91123354e88d5839097de9df44137500f2a4"

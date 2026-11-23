@@ -1297,8 +1297,8 @@
    "sha256": "4d4c20894893d2af8141c9354ade36724422fb1ed8c637de4f69062daf69991e"
   },
   "kits/catalog/dist/catalog.html": {
-   "bytes": 2233801,
-   "sha256": "972dea4d8b4d65380ea92b53b5be6520e510d7a682c9369f739b0340bdf53d3b"
+   "bytes": 2233908,
+   "sha256": "d04902a308864e63cd2973d803977adde0fed2e185bb2ebf6827a6a800f6f16b"
   },
   "kits/construction/dist/construction.html": {
    "bytes": 2244156,
@@ -1729,8 +1729,8 @@
    "sha256": "750c33a4b7d54313a0d31ec1252277f2b3722a63e49e37d173d77af465568908"
   },
   "settlements/beacon/dist/beacon.html": {
-   "bytes": 9330156,
-   "sha256": "d83ffc7cd770fe5ab359833a469cdc5805c1a98d7cb8a8d9c050ef964f5f10df"
+   "bytes": 9330263,
+   "sha256": "ab62239e93a2603a383083e8e00b8a9191fe2fabbf0434a12e3e0efb78803676"
   },
   "settlements/blakhed/dist/blakhed.html": {
    "bytes": 4751775,
