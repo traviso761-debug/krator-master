@@ -1025,8 +1025,8 @@
    "sha256": "e0395d260e160bfe4072b652248648d962489afea520f3948c87cdfaf4fb489f"
   },
   "settlements/beacon/dist/beacon.html": {
-   "bytes": 9295593,
-   "sha256": "f74ca808b6fb2a41974f41fceb50c0d48ed5a8f194ace228f8be52391978da82"
+   "bytes": 9295741,
+   "sha256": "5885765b16c8e9d4ab53deb131194c750335f69e0ea19c8d1ecd13ef3736ddc9"
   },
   "settlements/dalab/dist/dalab-set.html": {
    "bytes": 6603017,

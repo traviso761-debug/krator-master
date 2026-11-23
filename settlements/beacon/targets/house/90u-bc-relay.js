@@ -5,7 +5,7 @@
 // lamp's signal slot is to it (BEACON_RELAY.answering at the page's clock, as the lamp's): a fire and a glow that keeps a few
 // pixels at 17 km. The line on to the Eye Post (56 km east) is off the far land's square: not drawn. [web]: three.js.
 const BC_RELAY=(function(){const P=BEACON_RELAY.posts.find(p=>p.id==='rimpost'),XP=XFORT.post(),XT=XP.tower,G=new THREE.Group();G.name='The Beacon - the Rim Post';scene.add(G);
- BC_FARMESH.updateMatrixWorld(true);const ray=new THREE.Raycaster(),down=new THREE.Vector3(0,-1,0);
+ scene.updateMatrixWorld(true);const ray=new THREE.Raycaster(),down=new THREE.Vector3(0,-1,0);
  const drawn=(x,z)=>{ray.set(new THREE.Vector3(x,6000,z),down);ray.far=12000;const h=ray.intersectObject(BC_FARMESH,false)[0];return h?6000-h.distance:null;};   /* the far land as drawn */
  const [x,z]=P.at,pts=[[0,0],[-XP.w/2,-XP.d/2],[XP.w/2,-XP.d/2],[XP.w/2,XP.d/2],[-XP.w/2,XP.d/2]],gs=pts.map(p=>drawn(x+p[0],z+p[1]));
  const hi=Math.max(...gs),lo=Math.min(...gs),y=hi+.05,drop=hi-lo+.35;

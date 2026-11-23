@@ -111,7 +111,8 @@ function bcLampTick(){const t=bcClock(),s=BEACON_LAMP.state(t,BC_ENV);
  window._beaconLamp={lit:s.lit,mode:s.mode,bearing:s.bearing==null?null:Math.round(s.bearing*10)/10,station:s.station,keepers:s.keepers,shutter:!!s.shutter};}
 FRAME_HOOKS.push(bcLampTick);bcLampTick();
 LABELS=new THREE.Group();LABELS.userData.probeSkip=true;scene.add(LABELS);
-window._registered=REG.length;window._buildMs=Math.round(performance.now()-BC_B0);
+Object.defineProperty(window,'_registered',{get:()=>REG.length,configurable:true});   /* live: 90-scene's count was taken before the house, the grounds and the Rim Post registered */
+window._buildMs=Math.round(performance.now()-BC_B0);
 /* the page's record (the verify's): what was placed, the levels under the fort's and the precinct's corners, the plinth's top, the rules */
 window._beacon=Object.assign({},window._beaconSite,{placed:BC_PLACED,fort:!!BC.fortG,monastery:!!BC.monG,plinthTop:BC.plinthTop==null?null:Math.round(BC.plinthTop*100)/100,lampAt:BC.lampRec?BC.lampRec.at.map(v=>Math.round(v*100)/100):null,
  lampY:BC.lampRec?Math.round(BC.lampRec.at[1]*100)/100:null,head:!!BC_LAMP,
