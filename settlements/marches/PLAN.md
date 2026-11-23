@@ -95,6 +95,6 @@ section 1). The relay posts are region site records, not pins.
 
 | Step | What | When |
 |---|---|---|
-| **M1** | Both forts planned and drawn on a sheet: a `marches` target on Strongwall's page (`settlements/strongwall/build.py`, its fort target's pattern), flat ground, `XFORT.check` clean, the three states; the verify asserts the fort's rules | now (no ground needed) |
+| **M1** | Both forts planned and drawn on a sheet: **a build of its own, `settlements/marches`** (changed 2026-11-22 from a target on Strongwall's page, so it does not write Strongwall's files while the Strongwall session works on them), reading the fort asset (`kits/xanadu` `XFORT`, 80f/80g) in place, on top of the Strongwall session's latest fort work (`claude/strongwall-plan-c1ee33`); flat ground, `XFORT.check` clean, the three states; the verify asserts the fort's rules. Changes the fort asset needs go to the Strongwall session, not into 80f/80g here | now (no ground needed) |
 | **M2** | On the Mārchiz region's ground: each ward fitted to its knoll, the roads, the relay posts by sight; the region's verify | after the stack cuts Mārchiz (BUILD-PLAN.md phase B) |
 | **M3** | The pins and (if the owner takes them) the names, in the tune and the queue | with M1 |
