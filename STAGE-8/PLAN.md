@@ -305,7 +305,13 @@ Codex resolves hook commands from the repo root). Each in its build's turn of Ph
 ## 5. Known failures to carry, not fix (D30; D's list)
 
 The owner (D30): fix the small ones; Locus's `one-key-map` and the golden-file tests (`test-slab`, `test-lava`, `test-scarp`,
-`test-gaps`) are fixed in B14, so they drop off this list. The rest are carried:
+`test-gaps`) are fixed in B14, so they drop off this list. Added 2026-11-23, to be fixed or carried on purpose in step 29 (verify_all's report): the SE outer wall, merged back by
+the owner's D7, failed two pages before its revert (d5fccd6f8): `seouterwall-ambertarn` fails `export-profile` (box
+[-150,-150,150,150]); `seouterwall-gatetarn` puts nwouterwall's stipa past the instance cap with no `capWhy` (293,954 > 250,000);
+its other pages were never verified (coppertarn passed). And for B11: `core/materials/classes/test-class.js` fails 7 until the class
+table takes Nulab's, Blakhed's, Flashing Eye's `feRoof` and the catalog's `tg*` families.
+
+The rest are carried:
 
 Voth city's embassies and Arena flight; Longsong's draw-call OVER and stale interiors bake; the Xanadu sheet's triangle budget and
 Iziz Overview's 923 draw calls (warnings); Dalab's and crater-drylands' `instance-cap`; Mav's Refuge `walk-and-reach`; Ys's conch
