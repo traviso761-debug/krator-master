@@ -231,7 +231,7 @@
     "kits/xanadu/extra/88d-xa-lakecraft.js": "78ca747971079e42f97c94e03884dfe4f94f83babf2bfb7506ea8662db3580e2",
     "kits/xanadu/extra/88f-xa-harbour.js": "3796072c929fae9916aab8af47b90cf2cf07b0ff7b883a62cedc53a9d8318f50",
     "kits/xanadu/extra/88g-xa-works.js": "fa223d9ec427f1097e16ac55aaa06b762149af1bc6ed8c1d3aaed9addd21acff",
-    "kits/xanadu/extra/88h-xa-gihon.js": "ccad9ff8a6e7c802a981ae5b3a0c65dfcacb41e73c08a222ab317a063c8d0455",
+    "kits/xanadu/extra/88h-xa-gihon.js": "033c704f35415873925062f91658d705640807797dd160758bed2561659532d6",
     "kits/xanadu/src/70-xa-tex.js": "2efcc6922687bd9e374c03bdc8c3b75d5d2a1f06bf7da6656e4f95d0d32df02f",
     "kits/xanadu/src/71-xa-mat.js": "d08001da45495ca8d49b9df566d56c8c5b2567ee7d49b8e8b60c73deac436d41",
     "kits/xanadu/src/71c-xa-openings.js": "b018f238df3a253e4573734db17edf867545ecdb6978f8ef980b51c25abd8d1f",
@@ -519,16 +519,16 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "settlements/gihon/build-manifest-town.json": "4e72cb683b733af73d192e5e9d9ac7b65e7dd70d4948ed04ade3d8cacb59becf",
-    "settlements/gihon/dist/gihon.html": "4f2fc0460d0462a27f89549ff116a7895cb62ba76423108ba17ff25679f37d30",
+    "settlements/gihon/build-manifest-town.json": "ed2b1391def151e809053a1b1b9d7994d60029094c980ab2a2cf66a2be49e5dd",
+    "settlements/gihon/dist/gihon.html": "6f92f19d11fc2fd150904f8f6a4295906a5caf504b6a958dc00c1d6653ef4b70",
     "settlements/gihon/dist/xanadu.tex.xanadu-2.js": "be1d57f174e08cf71b5511aff65a313eec8edc29e057c48d027e9b60630f3ab5",
     "settlements/gihon/dist/xanadu.tex.xanadu.js": "3fe87059ee305d523fa5026dddfd91123354e88d5839097de9df44137500f2a4",
     "settlements/gihon/gen/69g-kcity-bundle.js": "a536c6910f1956d7e79c0b841e30b5490ff4596ce2eb2a24f3c76e798f26c906",
     "settlements/gihon/gen/69g2-gh-flora-bundle.js": "843aa5eb580f9d57c80cf5246815f25fcc333da8737a422aa107c354d9cf695b"
    },
    "outputs_raw": {
-    "settlements/gihon/build-manifest-town.json": "5946a14572bfc31c1926e01034e39715f823aedb20cd67fa7bde43fb947b1dc8",
-    "settlements/gihon/dist/gihon.html": "4f2fc0460d0462a27f89549ff116a7895cb62ba76423108ba17ff25679f37d30",
+    "settlements/gihon/build-manifest-town.json": "ad31dd29cdd1e2933cdbb4ea9579cc7861c9a0aa5ce9f174bd0c1dd6c86f6ef7",
+    "settlements/gihon/dist/gihon.html": "6f92f19d11fc2fd150904f8f6a4295906a5caf504b6a958dc00c1d6653ef4b70",
     "settlements/gihon/dist/xanadu.tex.xanadu-2.js": "be1d57f174e08cf71b5511aff65a313eec8edc29e057c48d027e9b60630f3ab5",
     "settlements/gihon/dist/xanadu.tex.xanadu.js": "3fe87059ee305d523fa5026dddfd91123354e88d5839097de9df44137500f2a4",
     "settlements/gihon/gen/69g-kcity-bundle.js": "a536c6910f1956d7e79c0b841e30b5490ff4596ce2eb2a24f3c76e798f26c906",

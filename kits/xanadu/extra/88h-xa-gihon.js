@@ -55,14 +55,15 @@ function buildXaMintHall(G,o){reseed(41961+(o.v|0));const stone=xC(xPick(XPAL.st
  xnFlagpole(W/2-1.5,top,D/2-1.5,6,xC(XPAL.saffron[0]));}
 // ---------------------------------------------------------------- the assessors' hall
 function buildXaAssessorsHall(G,o){reseed(41967+(o.v|0));const stone=xC(xPick(XPAL.stone)),wash=xC(xPick(XPAL.wash)),red=xC(XPAL.redwall[0]),tim=xC(xPick(XPAL.dark));
- const W=26,D=22,P=1.2;vnReg('The assessors\' hall',0,0,16,22);
- xnWall(0,0,0,W+2,P,D+2,0,stone,'dressed');vB('vStone',0,P-.14,0,W+2.3,.14,D+2.3,0,stone.clone().multiplyScalar(1.06));
- const S=xnStack(0,P,0,W,D,0,[5.2,4.4],wash,'dressed');
- const top=xnFlatRoof(0,S.y,0,S.w,S.d,0,wash,{band:xC(XPAL.maroon[0]),gold:true});xnCrenel(0,top,0,S.w+.1,S.d+.1,0,1,wash,{pointed:true});
- xnDome(0,top,0,5.2,'G',{drum:2.6,fin:2});
- const zf=D/2*.995;xnPortico(0,P,zf,0,12,3.2,4.6,wash,{band:true,valC:xC(XPAL.saffron[0])});vnDoor(0,P,zf+.02,0,2.4,3.2,'xPaint',red,tim,false);
+ const W=26,D=22,P=1.2,Z=-2;   /* the hall 2 m back in its lot, so its front stair stays inside it (kits/xanadu/tests/test-footprints.js) */
+ vnReg('The assessors\' hall',0,Z,16,22);
+ xnWall(0,0,Z,W+2,P,D+2,0,stone,'dressed');vB('vStone',0,P-.14,Z,W+2.3,.14,D+2.3,0,stone.clone().multiplyScalar(1.06));
+ const S=xnStack(0,P,Z,W,D,0,[5.2,4.4],wash,'dressed');
+ const top=xnFlatRoof(0,S.y,Z,S.w,S.d,0,wash,{band:xC(XPAL.maroon[0]),gold:true});xnCrenel(0,top,Z,S.w+.1,S.d+.1,0,1,wash,{pointed:true});
+ xnDome(0,top,Z,5.2,'G',{drum:2.6,fin:2});
+ const zf=Z+D/2*.995;xnPortico(0,P,zf,0,12,3.2,4.6,wash,{band:true,valC:xC(XPAL.saffron[0])});vnDoor(0,P,zf+.02,0,2.4,3.2,'xPaint',red,tim,false);
  for(const s of[-1,1])xnIwan(s*9,P,zf,0,4.6,6.8,1.1,wash,{guldasta:true});
- {const run=Math.max(2,Math.round(P/.17))*.34;xnFlight(0,0,D/2+3.2+1+run+.1,0,10,P,'vStone',stone);}}
+ {const run=Math.max(2,Math.round(P/.17))*.34;xnFlight(0,0,Z+D/2+3.2+1+run+.1,0,10,P,'vStone',stone);}}
 // ---------------------------------------------------------------- the treasury
 function buildXaTreasury(G,o){reseed(41973+(o.v|0));const stone=xC(xPick(XPAL.stone)),tim=xC(xPick(XPAL.dark)),iron=xC(0x3a3632);
  const W=20,D=16;vnReg('The treasury',0,0,12,14);
