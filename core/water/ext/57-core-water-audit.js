@@ -84,7 +84,12 @@
  // ---- the audit
  const TOL={rise:.001,under:.05,slab:.3,pocket:1,rim:.05,floor:0,edge:.05,lip:1,lipY:.15,curtain:.5};
  const polyOf=S=>S.poly?S.poly.map(p=>[p[0],p[1]]):S.bounds?[[S.bounds[0],S.bounds[1]],[S.bounds[2],S.bounds[1]],[S.bounds[2],S.bounds[3]],[S.bounds[0],S.bounds[3]]]:null;
- W.audit=o=>{o=o||{};const ground=o.ground;if(typeof ground!=='function')throw new Error('WATER.audit: ground (x, z) -> y is required');
+ /* B5 = TODO T22 (2026-11-23): with core/drawn on the page and a ground registered (KDRAWN.add), the audit reads the ground AS
+    DRAWN (KDRAWN.h; o.ground off every source), so a ribbon over a 16 m cell that bridges an 11 m channel is measured against
+    what the eye sees. o.drawn false: the ground as given. Without KDRAWN sources nothing changes */
+ const drawnOver=(g,o)=>{const K=typeof KDRAWN!=='undefined'?KDRAWN:null;if(o.drawn===false||!K||!K.sources||!K.sources.length||typeof K.h!=='function')return g;
+  return (x,z)=>{const y=K.h(x,z);return y!=null&&isFinite(y)?y:g(x,z);};};
+ W.audit=o=>{o=o||{};if(typeof o.ground!=='function')throw new Error('WATER.audit: ground (x, z) -> y is required');const ground=drawnOver(o.ground,o);
   const GZ=o.graze?Object.assign({tol:.12,w:2},o.graze===true?{}:o.graze):null;
   const tol=Object.assign({},TOL,o.tol||{}),step=o.step==null?4:o.step,ALL=W.surfaces.filter(S=>S.kind!=='shore'),RUN=(o.surfaces||W.surfaces).filter(S=>S.kind!=='shore'),out=[];
   const named=v=>typeof v==='string'?ALL.find(S=>S.name===v):v;

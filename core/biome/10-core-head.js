@@ -106,7 +106,9 @@ BIO.init=function(h){
   tags:h.tags||null,
   // the cliff gate (40-core-place.js, CORE-IMPROVEMENTS item 7): cliffGate true gates the numeric BIO.grid and BIO.scatter
   // too (the cell form always is); slope(x,z) -> rise over run and cliff(x,z) -> 0..1, a host's own, where it has them
-  cliffGate:!!h.cliffGate,slope:h.slope||null,cliff:h.cliff||null};
+  cliffGate:!!h.cliffGate,slope:h.slope||null,cliff:h.cliff||null,
+  // renderer (B4, 2026-11-23): the page's, for alpha-to-coverage by default at bake (30-core-foliage.js, BIO._a2cAuto)
+  renderer:h.renderer||null};
  if(h.capThrow!=null)BIO.CAP_THROW=!!h.capThrow;if(h.capErr!=null)BIO.CAP_ERR=!!h.capErr;   /* the instance cap (20-core-kit.js): throw, or BIO.err, at the first item over it */
  reseed(BIO.host.seed*7919+11);
  return BIO;};

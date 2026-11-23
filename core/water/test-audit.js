@@ -127,6 +127,12 @@ const good=()=>{reset();return W.flow({name:'river',pts:line([0,20,40,60,80]),wi
  const[Fd,Xd]=fall();W.drawn.length=0;const Dd=W.drawFall(Xd,{plungeR:4,spray:false}),a5=W.audit({ground:G1});
  ok('drawFall({plungeR}) records the disc it drew; the audit takes it (D.plungeR '+Dd.plungeR+', '+a5.length+' findings)',Dd.plungeR===4&&a5.length===0,false);void Fd;}
 
+// B5 = TODO T22 (2026-11-23): the ground AS DRAWN. With KDRAWN sources registered the audit reads KDRAWN.h (o.ground off every
+// source): the channel's bed drawn 2 m high between x 30 and 50 puts the water under the drawn ground there
+{good();global.KDRAWN={sources:[{h:()=>null}],h:(x,z)=>x>30&&x<50?G1(x,z)+2:null};
+ const f=W.audit({ground:G1}),f0=W.audit({ground:G1,drawn:false});delete global.KDRAWN;const f1=W.audit({ground:G1});
+ ok('drawn ground: with KDRAWN registered the audit measures the ground drawn ('+rules(f)+' between x 30 and 50); drawn:false reads the ground as given; negative: without KDRAWN the clean channel stays clean',
+  f.length>0&&f.every(r=>r.x>28&&r.x<52)&&f0.length===0,f1.length>0);}
 // the summary and the record shape
 {reset();const P=line([0,20,40,60,80]);P[2][2]+=.5;P[3][2]+=.5;W.flow({name:'river',pts:P,width:10});const f=W.audit({ground:G1}),S=W.auditSummary(f);
  ok('findings are plain records {rule, surface, id, x, z, by}; auditSummary groups them, worst first',f.every(r=>typeof r.rule==='string'&&r.surface==='river'&&typeof r.x==='number'&&typeof r.by==='number')&&

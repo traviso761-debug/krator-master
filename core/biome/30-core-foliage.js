@@ -67,8 +67,13 @@ BIO.GLSL_SEASON_HASH='float bioSnHash(vec3 p){vec3 q=fract(p*0.1031);q+=dot(q,q.
 // its cut-out edge by coverage (the alpha sharpened to a pixel's width about the old cut-off, a 0.02 test kept for the
 // empty texels): soft, unaliased leaf edges, no shimmering fringe. Without MSAA it does nothing and the alpha test
 // stays (the fallback). BIO.setA2C(renderer,false) turns it back off. Godot: alpha_antialiasing_mode (alpha-to-coverage).
-BIO.A2C=false;BIO._leafMats=[];
-BIO.setA2C=function(renderer,on){let ok=false;
+// B4 (GRAPHICS-TERRAIN-PROPOSAL 12d, 2026-11-23): on by default. A page that never calls it gets it at BIO.bake, on the renderer
+// BIO.init was handed (h.renderer) or the page's global `renderer`; BIO.A2C_AUTO false, or any call of its own (on or off), wins.
+BIO.A2C=false;BIO._leafMats=[];BIO.A2C_AUTO=true;BIO._a2cAsked=false;
+BIO._a2cAuto=function(){if(!BIO.A2C_AUTO||BIO._a2cAsked)return false;let r=BIO.host&&BIO.host.renderer||null;
+ if(!r)try{r=typeof renderer!=='undefined'&&renderer&&renderer.getContext?renderer:null;}catch(e){r=null;}   /* a `renderer` declared later in the page: not yet */
+ if(!r)return false;BIO.setA2C(r);return true;};
+BIO.setA2C=function(renderer,on){let ok=false;BIO._a2cAsked=true;
  try{const gl=renderer&&renderer.getContext&&renderer.getContext();if(gl&&renderer.capabilities&&renderer.capabilities.isWebGL2)ok=gl.getParameter(gl.SAMPLES)>1;}catch(e){ok=false;}
  BIO.A2C=on===false?false:ok;BIO._leafMats.forEach(BIO._a2cApply);return BIO.A2C;};
 BIO._a2cApply=function(m){const U=m.userData;if(U.a2c0==null)U.a2c0=m.alphaTest||0;
@@ -267,11 +272,12 @@ BIO.foliageHook=function(o){o=o||{};
    const on=!!BIO.GROUND.tex.value;   /* no ground bound (a page reading the kit in place): no tint and no fade, the card as it was */
    sh.uniforms.uGK={value:new T.Vector4(on?(gt.k==null?.85:+gt.k):0,gt.gain==null?1:+gt.gain,on?+f[0]:0,on?+f[1]:0)};}
   if(bl)sh.uniforms.uBacklit={value:bl};
+  sh.uniforms.uSwayA={value:+(o.swayA==null?.06:+o.swayA).toFixed(3)};   /* B3: a uniform, at the literal's old rounding (the same pixels) */
   if(a2c)sh.uniforms.uA2Cut={value:mat.userData.a2cCut};
   const gin=['vec3 _gm = transformed;','#ifdef USE_INSTANCING','  _gm = instanceMatrix[3].xyz;','#endif','vec3 _gi = (modelMatrix * vec4(_gm, 1.0)).xyz;'];   /* an instance's root in the world (a merged bucket's: the vertex) */
   sh.vertexShader=sh.vertexShader
-   .replace('#include <common>','#include <common>\nuniform float uWindT;\nuniform vec2 uWindV;\nuniform float uWindOn;\nvarying vec3 vFlWP;\nvarying float vFlD;\n'+
-    (o.aN?'attribute vec3 aN;\nvarying vec3 vFlN;\n':'')+(o.irid?'attribute vec3 aC2;\nvarying vec3 vFlC2;\n':'')+
+   .replace('#include <common>','#include <common>\nuniform float uWindT;\nuniform vec2 uWindV;\nuniform float uWindOn;\nuniform float uSwayA;\nvarying vec3 vFlWP;\nvarying float vFlD;\n'+
+    (bl?'varying vec3 vFlBN;\n':'')+(o.aN?'attribute vec3 aN;\nvarying vec3 vFlN;\n':'')+(o.irid?'attribute vec3 aC2;\nvarying vec3 vFlC2;\n':'')+
     (sp?'uniform float uSpin;\n':'')+(gs?'uniform float uGustT;\nuniform vec2 uAtmW;\nuniform float uGustAmp;\nuniform float uGustK;\n'+gs.glsl+'\n':'')+
     (gt?'uniform sampler2D uGTex;\nuniform vec4 uGBox;\nuniform vec4 uGK;\nvarying vec4 vFlGT;\nvarying float vFlGF;\n':''))
    .replace('#include <project_vertex>',[
@@ -301,9 +307,10 @@ BIO.foliageHook=function(o){o=o||{};
     'mvPosition.xyz += _wg * _sc * (vec3(',
     '   sin(uWindT*0.9+_ph) + 0.45*sin(uWindT*2.3+_ph*1.7+position.x*5.0),',
     '   0.40*sin(uWindT*1.6+_ph*0.6+position.z*5.0),',
-    '   cos(uWindT*0.7+_ph*1.3) + 0.45*sin(uWindT*2.9+_ph+position.y*5.0) ) * _wk + _lean) * '+(o.swayA==null?.06:o.swayA).toFixed(3)+';',
+    '   cos(uWindT*0.7+_ph*1.3) + 0.45*sin(uWindT*2.9+_ph+position.y*5.0) ) * _wk + _lean) * uSwayA;',
     'vFlWP = (modelMatrix * mvPosition).xyz;',
-    o.aN?'vFlN = aN;':'',o.irid?'vFlC2 = aC2;':'',
+    /* B1: the leaf's normal in the world for the back-light's gate (vFlBN): the clump's own (aN), else the card's lighting normal */
+    o.aN?'vFlN = aN;':'',(o.irid?'vFlC2 = aC2;':'')+(bl?(o.aN?'vFlBN = aN;':'vFlBN = inverseTransformDirection(transformedNormal, viewMatrix);'):''),
     'mvPosition = modelViewMatrix * mvPosition;',
     'vFlD = -mvPosition.z;',
     'gl_Position = projectionMatrix * mvPosition;']).join('\n'));
@@ -335,7 +342,7 @@ BIO.foliageHook=function(o){o=o||{};
     'objectNormal.xz = vec2(objectNormal.x*_spc - objectNormal.z*_sps, objectNormal.x*_sps + objectNormal.z*_spc);'].join('\n'))
    .replace('#include <begin_vertex>','#include <begin_vertex>\ntransformed.xz = vec2(transformed.x*_spc - transformed.z*_sps, transformed.x*_sps + transformed.z*_spc);');
   if(gt||bl||a2c)sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+
-   (gt?'varying vec4 vFlGT;\nvarying float vFlGF;\n':'')+(bl?'uniform float uBacklit;\n':'')+(a2c?'uniform float uA2Cut;\n':''));
+   (gt?'varying vec4 vFlGT;\nvarying float vFlGF;\n':'')+(bl?'uniform float uBacklit;\nvarying vec3 vFlBN;\n':'')+(a2c?'uniform float uA2Cut;\n':''));
   // THE GROUND AT THE ROOT: the species' tint gives way to the ground's colour toward the root and past the band
   if(gt)sh.fragmentShader=sh.fragmentShader.replace('#include <color_fragment>',['#include <color_fragment>','#ifdef USE_COLOR',
    ' diffuseColor.rgb *= mix(vec3(1.0), vFlGT.rgb / max(vColor, vec3(0.004)), vFlGT.a);','#else',' diffuseColor.rgb *= mix(vec3(1.0), vFlGT.rgb, vFlGT.a);','#endif',
@@ -358,18 +365,41 @@ BIO.foliageHook=function(o){o=o||{};
   // ALPHA-TO-COVERAGE: the alpha sharpened to one pixel's width about the old cut-off (the coverage mask does the rest)
   if(a2c)sh.fragmentShader=sh.fragmentShader.replace('#include <alphatest_fragment>',
    'diffuseColor.a = clamp((diffuseColor.a - uA2Cut) / max(fwidth(diffuseColor.a), 0.0001) + 0.5, 0.0, 1.0);\n#include <alphatest_fragment>');
-  // THE BACK-LIGHT: the sun behind a leaf, seen through it (thin leaves glow), fading out by ~450 m
+  // THE BACK-LIGHT: the sun behind a leaf, seen through it (thin leaves glow), fading out by ~450 m. B1 (GRAPHICS-TERRAIN-PROPOSAL
+  // 12d, 2026-11-23): gated by the leaf's normal, so only a leaf whose face toward the eye is turned from the sun glows (a card
+  // edge-on to it, the rim, a little); a face that sees the sun is lit from the front and does not. The normal: the clump's own
+  // (aN), else the card's, turned to the face drawn. Godot: the same gate on BACKLIGHT (foliage.gdshader, fol_back_gate)
   if(bl)sh.fragmentShader=sh.fragmentShader.replace('#include <envmap_fragment>',['#ifdef DOUBLE_SIDED',
    '{ vec3 _bV = normalize(vFlWP - (-(viewMatrix[3].xyz*mat3(viewMatrix)))); float _bk = pow(max(dot(_bV, uSunDir), 0.0), 6.0) * (1.0 - smoothstep(150.0, 450.0, vFlD));',
+   '  vec3 _bN = normalize(vFlBN);'+(o.aN?'':' if (!gl_FrontFacing) _bN = -_bN;')+' float _bd = dot(_bN, uSunDir);',
+   '  _bk *= clamp(-_bd * 0.65 + 0.35 * (1.0 - abs(_bd)), 0.0, 1.0);',
    '  outgoingLight += uBacklit * _bk * diffuseColor.rgb * (vLightFront + vLightBack); }','#endif','#include <envmap_fragment>'].join('\n'));
   BIO._fadeInject(sh,'leaf');
  };};
-// a foliage MATERIAL: Lambert, alpha-tested, double-sided, hooked. Each key
-// compiles its own program (different hooks on different materials need
-// different cache keys or three silently shares one).
+// THE PROGRAM KEY (B3 = TODO T31, GRAPHICS-TERRAIN-PROPOSAL 12d, 2026-11-23). three r128 shares a program between materials whose
+// keys match and builds it from the first one's hook, so a key must name everything that changes the shader's text. It named the
+// kit and the material (one program each: 50-90 on a biome page); the numbers that differed are now uniforms (uSwayA, uIridA/B),
+// so the key names only what changes the text: the hook's switches (BIO._leafKey) and the page's (BIO._fx), and materials alike
+// share one program (3-6 a page). The same pixels: a uniform holds the literal's value. A page that WRAPS a hooked material's
+// onBeforeCompile (RIFT.iridOnlyN) changes its text without changing its key, so the hook is held behind an accessor: once
+// anything else is assigned, that material keys as it did (`old`: its kit and name). KHOOK's layers sit over the accessor (its
+// page slot) and add their own keys. BIO._hookKey(m, hook, key(t), old(t)) -> m; t is the material compiled (a clone handed this
+// key: by its own hook).
+BIO._hookKey=function(m,hook,key,old){let cur=hook,wrapped=false;
+ const d=Object.getOwnPropertyDescriptor(m,'onBeforeCompile');
+ if(d&&(d.get||d.set)){m.onBeforeCompile=hook;m.customProgramCacheKey=function(){return old(this&&this.isMaterial?this:m);};return m;}   /* a material already under KHOOK (hangMat's): as before */
+ Object.defineProperty(m,'onBeforeCompile',{configurable:true,enumerable:true,get:function(){return cur;},set:function(v){if(v!==hook)wrapped=true;cur=v;}});
+ m.customProgramCacheKey=function(){const t=this&&this.isMaterial?this:m;return (t===m?!wrapped:t.onBeforeCompile===hook)?key(t):old(t);};
+ return m;};
+BIO._leafKey=function(o,t){const gt=o.ground?(o.ground===true?{}:o.ground):null,sn=o.season?BIO._seasonOpt(o.season):null,bl=o.backlit==null?0:+o.backlit;
+ return 'biofol'+(o.aN?'|aN':'')+(o.irid?'|irid':'')+(o.axis?'|ax'+o.axis:'')+'|w'+(o.swayW||'1.0')+(o.spin?'|spin':'')+
+  (gt?'|gt'+(gt.tip||'')+(BIO.GROUND.linear?'|lin':''):'')+(bl?'|bl':'')+(sn?'|sn'+(sn.drop>0?'d':'')+(sn.colour!=null?'c':''):'')+
+  (t.alphaToCoverage&&t.userData.a2cCut!=null?'|a2c':'')+BIO._fx();};
+// a foliage MATERIAL: Lambert, alpha-tested, double-sided, hooked. Materials whose hooks write the same text share one program
+// (the key above); a page that wraps the hook keys its material apart, as every material was before.
 BIO.leafMat=function(tex,key,o){const T=BIO.host.THREE;o=o||{};
  const m=new T.MeshLambertMaterial({color:0xffffff,map:tex||null,alphaTest:o.alphaTest==null?.42:o.alphaTest,side:T.DoubleSide,vertexColors:!!o.vertexColors});
- m.onBeforeCompile=BIO.foliageHook(o);const ck='biofol|'+BIO.kitKey(key);m.customProgramCacheKey=function(){return ck+BIO._fx()+(m.alphaToCoverage?'|a2c':'');};
+ const ck='biofol|'+BIO.kitKey(key);BIO._hookKey(m,BIO.foliageHook(o),t=>BIO._leafKey(o,t),t=>ck+BIO._fx()+(t.alphaToCoverage?'|a2c':''));
  m.userData.bio={kind:'leaf',key:BIO.kitKey(key),opts:o};   // what it is, as data (42-core-export)
  BIO._leafMats.push(m);if(BIO.A2C)BIO._a2cApply(m);
  BIO._tickWind();return m;};
@@ -381,18 +411,19 @@ BIO.barkMat=function(tex,col){const T=BIO.host.THREE,m=new T.MeshLambertMaterial
 // colA facing the eye, colB at grazing angles (default green to coppery red, the east abyss's sky scale-tree). The
 // tints are baked into the shader text, so the program cache key carries the kit and the key (BIO.kitKey): each kit's
 // materials keep their own tints whatever else the page loads. One definition for every kit (it was written in five:
-// eastabyss, rift, nhighlands, shighlands, xanadu; the last one loaded won). Godot: bark.gdshader mode 1.
-BIO.iridBarkMat=function(tex,key,colA,colB){const m=BIO.barkMat(tex);
- const A=colA==null?[0.78,1.18,0.92]:colA,B=colB==null?[1.45,0.82,0.74]:colB;
- m.onBeforeCompile=sh=>{sh.uniforms.uWindT=BIO.WIND.t;
+// eastabyss, rift, nhighlands, shighlands, xanadu; the last one loaded won). Godot: bark.gdshader mode 1. B3 (2026-11-23): the
+// tints are uniforms (uIridA, uIridB, at the literals' old rounding), so every irid bark shares one program (BIO._hookKey).
+BIO.iridBarkMat=function(tex,key,colA,colB){const m=BIO.barkMat(tex),T=BIO.host.THREE;
+ const A=colA==null?[0.78,1.18,0.92]:colA,B=colB==null?[1.45,0.82,0.74]:colB,v3=c=>new T.Vector3(+(+c[0]).toFixed(3),+(+c[1]).toFixed(3),+(+c[2]).toFixed(3));
+ const hook=sh=>{sh.uniforms.uWindT=BIO.WIND.t;sh.uniforms.uIridA={value:v3(A)};sh.uniforms.uIridB={value:v3(B)};
   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vIWP;varying vec3 vIWN;')
    .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvIWP=(modelMatrix*vec4(transformed,1.0)).xyz;vIWN=normalize(mat3(modelMatrix)*objectNormal);');
-  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform float uWindT;varying vec3 vIWP;varying vec3 vIWN;')
+  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform float uWindT;uniform vec3 uIridA,uIridB;varying vec3 vIWP;varying vec3 vIWN;')
    .replace('#include <color_fragment>','#include <color_fragment>\n{vec3 V=normalize((-(viewMatrix[3].xyz*mat3(viewMatrix)))-vIWP);vec3 N=normalize(vIWN);float fr=1.0-abs(dot(N,V));'+
     'float sh=0.5+0.5*sin(dot(vIWP,vec3(0.21,0.37,0.29))+uWindT*0.35);float k=smoothstep(0.12,0.82,fr*0.85+sh*0.3);'+
-    'diffuseColor.rgb*=mix(vec3('+A.map(v=>v.toFixed(3)).join(',')+'),vec3('+B.map(v=>v.toFixed(3)).join(',')+'),k);}');BIO._fadeInject(sh,'irid');};
+    'diffuseColor.rgb*=mix(uIridA,uIridB,k);}');BIO._fadeInject(sh,'irid');};
  m.userData.bio={kind:'irid',key:BIO.kitKey(key||'x'),opts:{a:A,b:B}};   // what it is, as data (42-core-export: a Godot shader of this kind)
- const ck='bioiridbark|'+BIO.kitKey(key||'x');m.customProgramCacheKey=function(){return ck+BIO._fx();};BIO._tickWind();return m;};
+ const ck='bioiridbark|'+BIO.kitKey(key||'x');BIO._hookKey(m,hook,()=>'bioiridbark'+BIO._fx(),()=>ck+BIO._fx());BIO._tickWind();return m;};
 // a TWO-TONE GLOSS BARK (the 'gloss' kind; nwlowlands' and swlowlands' barkMat2, one copy since 2026-10-25): the map's red
 // channel the bark's light (divided by its mean, tex.biomeMean), its green a mask blending the vertex colour toward o.alt
 // (lenticels, peeling strips, a second bark), and a sun highlight of o.gloss on the unmasked part. o: {alt, gain (.52),
@@ -403,7 +434,7 @@ BIO.iridBarkMat=function(tex,key,colA,colB){const m=BIO.barkMat(tex);
 BIO.glossBarkMat=function(tex,key,o){o=o||{};const T=BIO.host.THREE;
  const m=new T.MeshLambertMaterial({color:0xffffff,map:tex,vertexColors:true,side:T.DoubleSide});
  const alt=new T.Color(o.alt==null?0x808080:o.alt).convertSRGBToLinear(),gain=o.gain==null?.52:o.gain,c2=!!(o.c2&&BIO.C2_BUCKETS);
- m.onBeforeCompile=sh=>{
+ const hook=sh=>{
   sh.uniforms.uAlt={value:alt};sh.uniforms.uMean={value:tex.biomeMean||.55};sh.uniforms.uGain={value:gain};sh.uniforms.uGloss={value:o.gloss||0};
   if(!BIO.SUN.value)BIO.setSun([.45,.72,-.52]);sh.uniforms.uSunDir=BIO.SUN;
   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vBWP;varying vec3 vBWN;'+(c2?'attribute vec3 aC2;varying vec3 vBC2;':''))
@@ -414,7 +445,7 @@ BIO.glossBarkMat=function(tex,key,o){o=o||{};const T=BIO.host.THREE;
    .replace('#include <envmap_fragment>','{vec3 _V=normalize((-(viewMatrix[3].xyz*mat3(viewMatrix)))-vBWP);vec3 _N=normalize(vBWN);if(dot(_N,_V)<0.0)_N=-_N;vec3 _H=normalize(uSunDir+_V);'+
     'float _sp=pow(max(dot(_N,_H),0.0),26.0)*step(0.0,dot(_N,uSunDir));outgoingLight+=uGloss*_sp*vec3(1.0,0.93,0.8)*(1.0-_bm*0.8)*_bl;}\n#include <envmap_fragment>');BIO._fadeInject(sh,'gloss');};
  m.userData.bio={kind:'gloss',key:BIO.kitKey(key),opts:Object.assign({alt:[alt.r,alt.g,alt.b],mean:tex.biomeMean||.55,gain,gloss:o.gloss||0},c2?{c2:'aC2'}:{})};   // as data (42-core-export)
- const ck='biogloss|'+BIO.kitKey(key)+(c2?'|c2':'');m.customProgramCacheKey=function(){return ck+BIO._fx();};
+ const ck='biogloss|'+BIO.kitKey(key)+(c2?'|c2':'');BIO._hookKey(m,hook,()=>'biogloss'+(c2?'|c2':'')+BIO._fx(),()=>ck+BIO._fx());   /* B3: its numbers were uniforms already */
  m.barkLook={alt,gloss:o.gloss||0,mask:tex.maskMean||0};return m;};
 // the FAR IMPOSTORS' material (the 'far' kind; rift's and swlowlands' farMat, one copy since 2026-10-25): vertex-coloured
 // Lambert, with the trunks' look carried in the impostor's uv. o.rule:
@@ -424,7 +455,7 @@ BIO.glossBarkMat=function(tex,key,o){o=o||{};const T=BIO.host.THREE;
 //   'gloss' (swlowlands): u the trunk's gloss (the bucket's, less the matte share of its mask; 0 on the blobs), the
 //           gloss bark's sun highlight, so a glossy trunk shines the same either side of the switch.
 BIO.farMat=function(o){o=o||{};const irid=o.rule==='irid',m=BIO.barkMat(null);
- m.onBeforeCompile=irid?sh=>{sh.uniforms.uWindT=BIO.WIND.t;if(!BIO.SUN.value)BIO.setSun([.45,.72,-.52]);sh.uniforms.uSunDir=BIO.SUN;
+ const hook=irid?sh=>{sh.uniforms.uWindT=BIO.WIND.t;if(!BIO.SUN.value)BIO.setSun([.45,.72,-.52]);sh.uniforms.uSunDir=BIO.SUN;
   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vFP;varying vec3 vFN;varying vec3 vFC2;varying float vFM;')
    .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvFP=(modelMatrix*vec4(transformed,1.0)).xyz;vFN=normalize(mat3(modelMatrix)*objectNormal);vFM=uv.y;'+
     '{float p=uv.x;float r=floor(p*(1.0/65536.0));p-=r*65536.0;float g=floor(p*(1.0/256.0));float b=p-g*256.0;vFC2=vec3(r,g,b)*(1.0/255.0);vFC2*=vFC2;}');
@@ -440,7 +471,7 @@ BIO.farMat=function(o){o=o||{};const irid=o.rule==='irid',m=BIO.barkMat(null);
   sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform vec3 uSunDir;varying vec3 vFWP;varying vec3 vFWN;varying float vFGl;')
    .replace('#include <envmap_fragment>','if(vFGl>0.0){vec3 _V=normalize((-(viewMatrix[3].xyz*mat3(viewMatrix)))-vFWP);vec3 _N=normalize(vFWN);if(dot(_N,_V)<0.0)_N=-_N;vec3 _H=normalize(uSunDir+_V);'+
     'outgoingLight+=vFGl*pow(max(dot(_N,_H),0.0),26.0)*step(0.0,dot(_N,uSunDir))*vec3(1.0,0.93,0.8);}\n#include <envmap_fragment>');BIO._fadeInject(sh,'far');};
- const ck='biofar|'+(irid?'irid|':'gloss|')+BIO.kitKey('far');m.customProgramCacheKey=function(){return ck+BIO._fx();};
+ const ck='biofar|'+(irid?'irid|':'gloss|')+BIO.kitKey('far');BIO._hookKey(m,hook,()=>'biofar|'+(irid?'irid':'gloss')+BIO._fx(),()=>ck+BIO._fx());   /* B3: no numbers in its text */
  m.userData.bio={kind:'far',key:BIO.kitKey('far'),opts:irid?{pack:'c2-rule',uv:'u: the second colour, 8 bits a channel on sqrt(linear); v: 0 none, 1 the leaf rule, 2 the irid bark rule'}
   :{pack:'gloss',uv:'u: the trunk gloss (0 on the blobs)'}};   // as data (42-core-export)
  if(irid)BIO._tickWind();return m;};
@@ -448,10 +479,10 @@ BIO.farMat=function(o){o=o||{};const irid=o.rule==='irid',m=BIO.barkMat(null);
 // instance swings on its thread, the offset growing with o.swayW (a GLSL expression, default the depth below the
 // attachment, -position.y) times o.swayA (.05), its phase from where the instance stands. o.night (the emissive
 // intensity by day and by night) is carried as data for a host that lights them. Returns m.
-BIO.hangMat=function(m,key,o){o=o||{};const A=o.swayA==null?.05:+o.swayA,W=o.swayW||'(-position.y)',Ag=A.toFixed(4);   /* Ag: a GLSL float literal */
- m.onBeforeCompile=sh=>{sh.uniforms.uWindT=BIO.WIND.t;sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nuniform float uWindT;')
-  .replace('#include <begin_vertex>','#include <begin_vertex>\n#ifdef USE_INSTANCING\n{float ph=dot(instanceMatrix[3].xyz,vec3(.13,.07,.11));transformed.x+='+W+'*'+Ag+'*sin(uWindT*1.1+ph);transformed.z+='+W+'*'+Ag+'*cos(uWindT*.8+ph*1.3);}\n#endif');BIO._fadeInject(sh,'hang');};
- const ck='biohang|'+BIO.kitKey(key)+'|'+W+'|'+A;m.customProgramCacheKey=()=>ck+BIO._fx();
+BIO.hangMat=function(m,key,o){o=o||{};const A=o.swayA==null?.05:+o.swayA,W=o.swayW||'(-position.y)',Ag=+A.toFixed(4);   /* B3: uHangA, at the old literal's rounding */
+ const hook=sh=>{sh.uniforms.uWindT=BIO.WIND.t;sh.uniforms.uHangA={value:Ag};sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nuniform float uWindT;uniform float uHangA;')
+  .replace('#include <begin_vertex>','#include <begin_vertex>\n#ifdef USE_INSTANCING\n{float ph=dot(instanceMatrix[3].xyz,vec3(.13,.07,.11));transformed.x+='+W+'*uHangA*sin(uWindT*1.1+ph);transformed.z+='+W+'*uHangA*cos(uWindT*.8+ph*1.3);}\n#endif');BIO._fadeInject(sh,'hang');};
+ const ck='biohang|'+BIO.kitKey(key)+'|'+W+'|'+A;BIO._hookKey(m,hook,()=>'biohang|'+W+BIO._fx(),()=>ck+BIO._fx());
  m.userData.bio={kind:'hang',key:BIO.kitKey(key),opts:Object.assign({swayA:A,swayW:W},o.night?{night:o.night}:{})};BIO._tickWind();return m;};
 // a plain material for instanced solids (rods, lobes, boulders)
 BIO.solidMat=function(tex,col){const T=BIO.host.THREE,m=new T.MeshLambertMaterial({color:col==null?0xffffff:col,map:tex||null,side:T.DoubleSide});

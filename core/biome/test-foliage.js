@@ -24,9 +24,17 @@ const sha=s=>crypto.createHash('sha1').update(s).digest('hex').slice(0,16);
 // the option sets the frozen hashes were measured on (every kind of hook, the options the kits pass)
 const LEAF=[{},{aN:true},{irid:true},{aN:true,irid:true,swayW:'(position.x)',swayA:.05},{swayW:'(-position.y)',swayA:.10,axis:1,alphaTest:.35},
  {swayW:'0.0',swayA:0,alphaTest:0,vertexColors:true},{swayW:'(position.y)',swayA:.10,alphaTest:.4}];
+// B3 (2026-11-23): the numbers that were GLSL literals are uniforms (uSwayA, uIridA/B, uHangA). legacy() puts the uniform's value
+// back as the literal it was and drops its declaration: what is left must be, character for character, the frozen text. So the
+// defaults are still proven unchanged, and the only change B3 made is the literal's place (the same value: the same pixels).
+function legacy(s,U){if(!U)return s;let t=s;
+ if(U.uSwayA)t=t.replace('\nuniform float uSwayA;','').replace('* uSwayA;','* '+U.uSwayA.value.toFixed(3)+';');
+ if(U.uIridA){const v=x=>'vec3('+[x.x,x.y,x.z].map(c=>c.toFixed(3)).join(',')+')';t=t.replace('uniform vec3 uIridA,uIridB;','').replace('mix(uIridA,uIridB,k)','mix('+v(U.uIridA.value)+','+v(U.uIridB.value)+',k)');}
+ if(U.uHangA){const a=U.uHangA.value.toFixed(4);t=t.replace('uniform float uHangA;','').split('*uHangA*').join('*'+a+'*');}
+ return t;}
 function shaders(B){const T=B.host.THREE,tex=new T.Texture();tex.biomeMean=.5;const out={};
- LEAF.forEach((o,i)=>{const s=compile(B,B.leafMat(tex,'k'+i,o));out['leaf'+i]=s.vertexShader+'\n----\n'+s.fragmentShader;});
- const put=(k,m)=>{const s=compile(B,m);out[k]=s.vertexShader+'\n----\n'+s.fragmentShader;};
+ LEAF.forEach((o,i)=>{const s=compile(B,B.leafMat(tex,'k'+i,o));out['leaf'+i]=legacy(s.vertexShader+'\n----\n'+s.fragmentShader,s.uniforms);});
+ const put=(k,m)=>{const s=compile(B,m);out[k]=legacy(s.vertexShader+'\n----\n'+s.fragmentShader,s.uniforms);};
  put('gloss',B.glossBarkMat(tex,'g',{alt:0x6a8a70,gloss:.06}));put('irid',B.iridBarkMat(tex,'i'));
  put('farIrid',B.farMat({rule:'irid'}));put('farGloss',B.farMat({}));put('hang',B.hangMat(new T.MeshLambertMaterial(),'h',{swayA:.05}));
  put('bark',B.barkMat(tex));put('solid',B.solidMat(tex));return out;}
@@ -116,7 +124,7 @@ const SRC=read('30-core-foliage.js');
  const a=B.ditherCell(.3,.2,1.9),b=B.ditherCell(.3+1.9,.2,1.9);check('  negative: a point one cell over is in a different cell',a.v[0][0]!==b.v[0][0]||a.v[0][1]!==b.v[0][1]);}
 // ---------------------------------------------------------------- 10. the season (H7): leaf drop and the dry colour
 {const B=load(SRC),T=B.host.THREE,tex=new T.Texture();
- const pick=s=>s.vertexShader+'\n----\n'+s.fragmentShader;
+ const pick=s=>legacy(s.vertexShader+'\n----\n'+s.fragmentShader,s.uniforms);
  check('  negative: season false or null writes the default shader',sha(pick(compile(B,B.leafMat(tex,'k0',{season:false}))))===FROZEN.leaf0&&sha(pick(compile(B,B.leafMat(tex,'k0',{season:null}))))===FROZEN.leaf0);
  const s=compile(B,B.leafMat(tex,'dry',{vertexColors:true,ground:true,season:{drop:.8,colour:0xc8a860,k:.9}}));
  const u=s.uniforms.uSnK.value;

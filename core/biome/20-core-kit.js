@@ -50,15 +50,19 @@ Object.defineProperty(F32.prototype,'n',{get:function(){return this.length;}});
 F32.prototype.data=function(){return this.a.slice(0,this.length);};   // a copy: the store can be dropped after bake
 BIO.F32=F32;BIO.Store=F32;
 // x: the extra named vec4 attributes an item asked for (hyperjungle-1: aP0, aP1 for 35-core-anim)
-const newItem=attrs=>{const it={m:new F32(),c:new F32(),n:new F32(),c2:new F32(),x:{},k:[],o:[],count:0};   /* o: 1 where a tree (BIO.owner) owns the instance */
+const newItem=attrs=>{const it={m:new F32(),c:new F32(),n:new F32(),c2:new F32(),x:{},k:[],o:[],count:0};   /* o: the owning tree's id (BIO.owner; 0: none) */
  if(attrs)attrs.forEach(a=>{if(a!=='aN'&&a!=='aC2')it.x[a]=new F32();});return it;};
+/* one id a BIO.owner (a tree's foot, a new [x, z] each tree): the crown's instances found again at bake (B2). From 2: 1 stays the
+   plain "owned" a page may write itself (ancientsvalley's feral copies), which names no one tree */
+let _oidN=1;const _oid=own=>own&&typeof own==='object'?own._oid||(own._oid=++_oidN):1;
 BIO._newItem=newItem;   /* an empty store (34-core-impostor's capture empties a kit's stores after its scratch tree) */
 // opt.cls, opt.kind, opt.tags (optional): the item's core/tags class, kind and extra tags, where the core's rule
 // (BIO.tagItem, below) would guess wrong
-// opt.indexed (default BIO.INDEX_ITEMS, false): weld the item's geometry (vertices whose every attribute is equal become one)
+// opt.indexed (default BIO.INDEX_ITEMS, true): weld the item's geometry (vertices whose every attribute is equal become one)
 // and draw it by index. The same triangles in the same order, so the same pixels; a 6-triangle card runs its vertex shader for
-// 12 vertices, not 18 (nhighlands' leaf and floor cards were vertex-bound on an integrated GPU: 2026-10-26). Off by default.
-BIO.INDEX_ITEMS=false;
+// 12 vertices, not 18 (nhighlands' leaf and floor cards were vertex-bound on an integrated GPU: 2026-10-26). On by default since
+// B4 (GRAPHICS-TERRAIN-PROPOSAL 12d, 2026-11-23: forty biome hosts already turned it on, ?index=0 off); false, or opt.indexed false, keeps the soup.
+BIO.INDEX_ITEMS=true;
 function weldGeo(g){const T=BIO.host.THREE,names=Object.keys(g.attributes),n=g.attributes.position.count,A=names.map(k=>g.attributes[k]),seen=new Map(),idx=new Uint32Array(n),keep=[];
  for(let i=0;i<n;i++){let key='';for(const a of A){const s=a.itemSize,o=i*s;for(let c=0;c<s;c++)key+=a.array[o+c]+',';}
   let j=seen.get(key);if(j==null){j=keep.length;seen.set(key,j);keep.push(i);}idx[i]=j;}
@@ -170,7 +174,7 @@ BIO.put=function(name,pos,q,sc,col,extra){
  const lb=extra&&extra.label;if(lb!=null&&lb!==def.label||it.l){let li=0;   /* a per-instance label: the first one starts the table */
   if(lb!=null&&lb!==def.label){if(!def.labs)def.labs=[def.label];li=def.labs.indexOf(lb);if(li<0){li=def.labs.length;def.labs.push(lb);}}
   if(!it.l)it.l=new Array(it.count).fill(0);it.l.push(li);}
- it.k.push(BIO._lodKey(pos[0],pos[2]));it.o.push(BIO.owner?1:0);it.count++;BIO.tally(def.tris,1,0);
+ it.k.push(BIO._lodKey(pos[0],pos[2]));it.o.push(BIO.owner?_oid(BIO.owner):0);it.count++;BIO.tally(def.tris,1,0);
  if(++def.nPut>(def.cap!=null?def.cap:BIO.CAP)&&!def.capHit)capHit(name,def);
  if(BIO.host.tags&&def.set==null)BIO._tagItem(name,def,BIO.kitName||'');};   /* core/tags: the item's set, at its first put (below) */
 // a beam of instanced item `name` (a unit cylinder along y, centred) from a to b; extra as BIO.put's (a per-instance label)
@@ -236,13 +240,39 @@ BIO.bucket=function(fam,mat,opt){opt=opt||{};
 // slot's old map a DataTexture, BIO.alphaTex) loads unflipped and mipmapped and keeps an alpha test; a tiled map records
 // its tile size (userData.libScale) for BIO.bucket. The sets are grey detail maps normalised to the old map's measured
 // brightness, so the species tints keep their tone. No pack (the open world): nothing changes. Returns {slot: lib}.
+// THE CARD FRINGE (B4 = TODO T19, GRAPHICS-TERRAIN-PROPOSAL 12d, 2026-11-23). A library card's cut-out texels keep whatever
+// colour the image had under them (black, mostly), and the mipmaps average it into the leaf's edge: far cards drew a dark rim.
+// Every texel under alpha BIO.FRINGE_CUT (48) takes the sheet's mean opaque colour (the plain mean of the texels at or over it),
+// its alpha kept, so a mip of an edge blends leaf with leaf. Once per sheet (KMAT caches one texture a sheet; the cells' clones
+// share its image), when the image lands. The image becomes the filled ImageData (a canvas premultiplies, so it would lose the
+// colour at alpha 0), keeping the image's src (BIO.export names a library map by it). BIO.FRINGE_CUT 0: off.
+// BIO.fringeFill(rgba, cut) -> {filled, mean}: the fill itself, on a flat RGBA array (in place); plain data, node-testable.
+BIO.FRINGE_CUT=48;
+BIO.fringeFill=function(d,cut){cut=cut==null?BIO.FRINGE_CUT:cut;let r=0,g=0,b=0,n=0,f=0;
+ for(let i=0;i<d.length;i+=4)if(d[i+3]>=cut){r+=d[i];g+=d[i+1];b+=d[i+2];n++;}
+ if(!n||!cut)return{filled:0,mean:null};const R=Math.round(r/n),G=Math.round(g/n),B=Math.round(b/n);
+ for(let i=0;i<d.length;i+=4)if(d[i+3]<cut){d[i]=R;d[i+1]=G;d[i+2]=B;f++;}
+ return{filled:f,mean:[R,G,B]};};
+const _fringeOf=typeof WeakMap!=='undefined'?new WeakMap():null;
+BIO._fringeImage=function(img){if(!img||img.data||!BIO.FRINGE_CUT)return img;   /* ImageData or a DataTexture's: already data */
+ if(_fringeOf&&_fringeOf.has(img))return _fringeOf.get(img);let out=img;
+ try{const w=img.naturalWidth||img.width,h=img.naturalHeight||img.height;
+  if(w>0&&h>0&&typeof document!=='undefined'){const cv=document.createElement('canvas');cv.width=w;cv.height=h;
+   const cx=cv.getContext('2d',{willReadFrequently:true});cx.drawImage(img,0,0);const id=cx.getImageData(0,0,w,h);
+   if(BIO.fringeFill(id.data).filled){if(img.src)id.src=img.src;out=id;}}}
+ catch(e){out=img;}   /* a canvas the image taints: the card as it was */
+ if(_fringeOf)_fringeOf.set(img,out);return out;};
+BIO._fringe=function(t){if(!t||t._fringe)return;t._fringe=true;
+ const fill=()=>{const im=BIO._fringeImage(t.image);if(im!==t.image){t.image=im;t.needsUpdate=true;}};
+ if(t.image)fill();else (t._onImage=t._onImage||[]).unshift(fill);};   /* first, so a cell's clone takes the filled image */
 BIO.libSwap=function(kit,MAT){const out={};
  if(typeof KMAT==='undefined'||KMAT.mode!=='lib'||!KMAT.packed||!MAT)return out;const T=BIO.host.THREE;
  const one=(m,slot)=>{if(!m||!m.isMaterial)return;const L=KMAT.packed(kit,slot);if(!L)return;
   const card=!!(m.map&&m.map.isDataTexture);let t=KMAT.textures(L,{aniso:card?4:8,flipY:card?false:undefined}).map;
   /* KMAT caches one texture per sheet: a slot cut to a cell takes its own clone, or every slot of the sheet would draw the last
      one's cell (found by biomes/nwouterwall, 2026-10-26); the clone shares the image, given to it when the sheet decodes */
-  if(card&&L.cell){const src=t;t=src.clone();if(!src.image)(src._onImage=src._onImage||[]).push(img=>{t.image=img;t.needsUpdate=true;});}
+  if(card)BIO._fringe(t);   /* B4: the sheet's see-through texels take its mean opaque colour, before any clone takes the image */
+  if(card&&L.cell){const src=t;t=src.clone();if(!src.image)(src._onImage=src._onImage||[]).push(()=>{t.image=src.image;t.needsUpdate=true;});}
   if(card){t.generateMipmaps=true;t.minFilter=T.LinearMipmapLinearFilter;t.magFilter=T.LinearFilter;if(!m.alphaTest)m.alphaTest=.4;
    if(L.cell){const c=L.cell;t.offset.set(c[0],c[1]);t.repeat.set(c[2]-c[0],c[3]-c[1]);}   /* one plant of a nine-plant sheet (unflipped: v runs down the sheet) */
    m.userData.libCard={slot,lib:L.lib,plants:L.plants==null?null:L.plants,anchor:L.anchor||null,cell:!!L.cell,sheet:L.sheet||null,
@@ -525,13 +555,63 @@ function _probePts(P,n,c){const S=new Set(),out=[],O=65536;let last=-1;
   const k=(ix*131072+iy)*131072+iz;if(k===last||S.has(k))continue;last=k;S.add(k);out.push(x,y,z);}
  return new Float32Array(out);}
 BIO._probePts=_probePts;
+// THE GROUND AS DRAWN (B5 = TODO T22, GRAPHICS-TERRAIN-PROPOSAL 12d, 2026-11-23; core/drawn, CORE-IMPROVEMENTS item 28). The
+// in-page audits read the ground as defined (terrainH, the host's ground function) while the eye sees the triangles drawn between
+// its vertices: a card 2 m over terrainH can float 3 m over a coarse cell. With core/drawn on the page and a ground registered
+// (KDRAWN.add), they read KDRAWN.h, the drawn height, and the defined ground only off every source. No source: as before.
+//   BIO.drawnOn() -> bool; BIO.drawnH(x, z, fb) -> y (fb: the fallback, default BIO.terrainH); BIO.drawnGround(g) -> g, or the
+//   drawn ground over g (marked .drawn) when it is on. Read only by audits and the bake's base ramp (below), never by placement.
+BIO.drawnOn=function(){return typeof KDRAWN!=='undefined'&&!!KDRAWN&&!!KDRAWN.sources&&KDRAWN.sources.length>0&&typeof KDRAWN.h==='function';};
+BIO.drawnH=function(x,z,fb){if(BIO.drawnOn()){const y=KDRAWN.h(x,z);if(y!=null&&isFinite(y))return y;}return (fb||BIO.terrainH)(x,z);};
+BIO.drawnGround=function(g){if(!BIO.drawnOn())return g;const f=g||BIO.terrainH,w=function(x,z){const y=KDRAWN.h(x,z);return y!=null&&isFinite(y)?y:f(x,z);};w.drawn=true;return w;};
+// CROWN SELF-OCCLUSION AND BASE GROUNDING (B2: M4 + M5, GRAPHICS-TERRAIN-PROPOSAL 12d, 2026-11-23), baked into the colours, so
+// Web and Godot (the glTF's instance and vertex colours) draw them with no shader tap.
+//   THE CROWN: the leaf cards ('leaf' kind) a tree owns (BIO.owner, a BIO.tree scope or a host's own) are one crown. Each card's
+//   instance colour is multiplied by lo .. 1 (BIO.CROWN_AO {lo .62, minN 4, minH 1 m}): 1 on the crown's outer shell or at its
+//   top, lo low and inside. h its height in the crown's span (lowest card 0, highest 1), r its distance from the crown's axis
+//   (the cards' mean) over the crown's widest: exposure 1 - (1 - h)(1 - r). A crown of under minN cards, or under minH tall, or
+//   cards owned by no one tree (BIO.owner unset, or a page's own 1): untouched. BIO.CROWN_AO null: off.
+//   THE BASE: a merged bucket of bark or rock (the 'bark', 'gloss', 'irid' and 'solid' kinds) darkens over its lowest metres
+//   above the ground: each vertex's colour x lo .. 1 (BIO.BASE_AO {lo .72, h .35 m}), smoothly, by its height over the ground
+//   (BIO.drawnH: the drawn ground when registered, else terrainH). A coarse grid (8 m cells, nine ground samples each, a
+//   margin of their spread) skips the triangles well above it, so the ground is read only near it. BIO.BASE_AO null: off.
+BIO.CROWN_AO={lo:.62,minN:4,minH:1};
+BIO.BASE_AO={lo:.72,h:.35};
+BIO.BASE_KINDS=['bark','gloss','irid','solid'];
+function _crownAO(R){const C=BIO.CROWN_AO;if(!C)return 0;const G=new Map();
+ for(const name of R.order){const it=R.items[name],def=R.defs[name];if(!it.count)continue;
+  const u=def.mat&&def.mat.userData;if(!(u&&u.bio&&u.bio.kind==='leaf'))continue;const IM=it.m.a;
+  for(let i=0;i<it.count;i++){const o=it.o[i];if(!(o>1))continue;let g=G.get(o);if(!g){g={n:0,sx:0,sz:0,y0:1e9,y1:-1e9,L:[]};G.set(o,g);}
+   const y=IM[i*16+13];g.n++;g.sx+=IM[i*16+12];g.sz+=IM[i*16+14];if(y<g.y0)g.y0=y;if(y>g.y1)g.y1=y;g.L.push(it,i);}}
+ let n=0;const lo=C.lo==null?.62:+C.lo,minN=C.minN==null?4:C.minN,minH=C.minH==null?1:+C.minH;
+ for(const g of G.values()){if(g.n<minN||g.y1-g.y0<minH)continue;const cx=g.sx/g.n,cz=g.sz/g.n;let rm=0;
+  for(let k=0;k<g.L.length;k+=2){const IM=g.L[k].m.a,i=g.L[k+1];rm=Math.max(rm,Math.hypot(IM[i*16+12]-cx,IM[i*16+14]-cz));}
+  for(let k=0;k<g.L.length;k+=2){const it=g.L[k],i=g.L[k+1],IM=it.m.a,IC=it.c.a;
+   const h=(IM[i*16+13]-g.y0)/(g.y1-g.y0),r=rm>1e-3?Math.hypot(IM[i*16+12]-cx,IM[i*16+14]-cz)/rm:0,e=1-(1-h)*(1-r),a=lo+(1-lo)*e;
+   IC[i*3]*=a;IC[i*3+1]*=a;IC[i*3+2]*=a;n++;}}
+ return n;}
+BIO._crownAO=_crownAO;
+function _baseGround(K){const C=BIO.BASE_AO,u=K.mat&&K.mat.userData,kind=u&&u.bio&&u.bio.kind;
+ if(!C||BIO.BASE_KINDS.indexOf(kind)<0)return 0;const H=C.h==null?.35:+C.h,lo=C.lo==null?.72:+C.lo;if(!(H>0))return 0;
+ const P=K.pos.a,Cc=K.col.a,nt=K.pos.length/9,CELL=8,cache=new Map();
+ const top=(x,z)=>{const cx=Math.floor(x/CELL),cz=Math.floor(z/CELL),k=cx*2097152+cz;let v=cache.get(k);
+  if(v===undefined){let mx=-1e9,mn=1e9;for(let a=0;a<=2;a++)for(let b=0;b<=2;b++){const y=BIO.drawnH((cx+a/2)*CELL,(cz+b/2)*CELL);if(y>mx)mx=y;if(y<mn)mn=y;}
+   v=mx+Math.max(1.5,mx-mn);cache.set(k,v);}return v;};
+ let n=0;for(let t=0;t<nt;t++){const o=t*9;let j=0;if(P[o+4]<P[o+1+j*3])j=1;if(P[o+7]<P[o+1+j*3])j=2;
+  if(P[o+1+j*3]>top(P[o+j*3],P[o+2+j*3])+H)continue;   /* the triangle's lowest vertex well above its cell's ground */
+  for(let v=0;v<3;v++){const q=o+v*3,up=P[q+1]-BIO.drawnH(P[q],P[q+2]);if(up>=H)continue;const s=up<=0?0:up/H,k=lo+(1-lo)*s*s*(3-2*s);
+   Cc[q]*=k;Cc[q+1]*=k;Cc[q+2]*=k;n++;}}
+ return n;}
+BIO._baseGround=_baseGround;
 // Turns the stores into meshes. Call once per host after every biome has
 // built; a second call only emits what arrived since the first.
 BIO.baked=[];
 BIO.bake=function(){const T=BIO.host.THREE,scene=BIO.host.scene;if(!scene)throw new Error('BIO.bake: no scene (BIO.init({scene}) or BIO.setScene first)');let calls=0,inst=0;
  BIO._tagCheck();
  if(BIO.host.tags)for(const kn in BIO.kits){const R=BIO.kits[kn];for(const name of R.order)if(R.defs[name].set==null&&R.items[name].count)BIO._tagItem(name,R.defs[name],kn);}   // put before core/tags loaded
+ let crownAO=0,baseAO=0;
  for(const kn in BIO.kits){const R=BIO.kits[kn];   // every kit's registry; mesh names stay 'biome:'+name, userData.kit says whose
+ crownAO+=_crownAO(R);   /* B2: before the colours are copied out */
  for(const name of R.order){const it=R.items[name];if(!it.count)continue;const def=R.defs[name];
   // group the instances by lod key (null: the always-drawn mesh; BIO.LOD.merge: by chunk, each group's rows sorted by range)
   const f=_lodFactor(it.k,def.tris),G=new Map();for(let i=0;i<it.count;i++){const k=_lodGroup(it.k[i],f);let g=G.get(k);if(!g){g=[];G.set(k,g);}g.push(i);}
@@ -554,6 +634,7 @@ BIO.bake=function(){const T=BIO.host.THREE,scene=BIO.host.scene;if(!scene)throw 
    scene.add(im);BIO.baked.push(im);calls++;inst+=n;}
   def.n0=base+it.count;R.items[name]=newItem(def.attrs);}
  for(const fam in R.buckets){const K=R.buckets[fam];if(!K.pos.length)continue;
+  baseAO+=_baseGround(K);   /* B2 */
   const f=_lodFactor(K.k,1),G=new Map(),nt=K.pos.length/9;for(let t=0;t<nt;t++){const k=_lodGroup(K.k[t],f);let g=G.get(k);if(!g){g=[];G.set(k,g);}g.push(t);}
   for(const [key,tl0] of G){const S=_lodSort(key,tl0,K.k),tl=S?S.rows:tl0,n=tl.length,P=new Float32Array(n*9),N=new Float32Array(n*9),U=new Float32Array(n*6),Cc=new Float32Array(n*9),C2=K.c2?new Float32Array(n*9):null;let y0=1e9,y1=-1e9;
    const KP=K.pos.a,KN=K.nor.a,KC=K.col.a,KU=K.uv.a,K2=K.c2?K.c2.a:null;tl.forEach((t,j)=>{for(let q=0;q<9;q++){P[j*9+q]=KP[t*9+q];N[j*9+q]=KN[t*9+q];Cc[j*9+q]=KC[t*9+q];if(C2)C2[j*9+q]=K2[t*9+q];}for(let q=0;q<6;q++)U[j*6+q]=KU[t*6+q];const y=KP[t*9+1];if(y<y0)y0=y;if(y>y1)y1=y;});
@@ -570,7 +651,8 @@ BIO.bake=function(){const T=BIO.host.THREE,scene=BIO.host.scene;if(!scene)throw 
    scene.add(m);BIO.baked.push(m);calls++;}
   K.pos=new F32();K.nor=new F32();K.uv=new F32();K.col=new F32();if(K.c2)K.c2=new F32();K.k=[];}}
  _lodShareBox();_lodFadeBake();
- BIO.lastBake={calls,inst,lodMeshes:BIO.lodMeshes.length};return BIO.lastBake;};
+ const a2c=BIO._a2cAuto?BIO._a2cAuto():false;   /* B4: alpha-to-coverage by default, on a page that never asked */
+ BIO.lastBake={calls,inst,lodMeshes:BIO.lodMeshes.length,crownAO,baseAO,a2cAuto:a2c};return BIO.lastBake;};
 // ONE BOX A CHUNK (2026-10-27, the owner: branches not drawn, foliage floating). A tree keyed by its owner puts its bark (a
 // bucket, boxed by its triangles), its rods and its leaf cards (instanced, boxed by their origins) into the same chunk, but
 // each mesh kept its own height range, so the camera stood at different distances from them and the leaves could switch on
@@ -609,7 +691,8 @@ BIO.triDist=function(x,y,z,a,b,c){const abx=b.x-a.x,aby=b.y-a.y,abz=b.z-a.z,acx=
 BIO.attachAudit=function(o){o=o||{};const T=BIO.host.THREE,scene=BIO.host.scene,KS=typeof KSPACE!=='undefined'?KSPACE:null;
  const out={samples:0,audited:0,floating:0,share:0,split:0,outrange:0,paired:0,lodShare:0,worst:[],byItem:{},note:null};
  if(!scene||!KS||!o.ground){out.note=!scene?'no scene':!KS?'no KSPACE (core/space) in the page':'no ground function';return out;}
- const ground=o.ground,minUp=o.minUp==null?2:+o.minUp,K=o.k==null?.6:+o.k,KS0=o.kStem==null?.25:+o.kStem,PAD=o.pad==null?.5:+o.pad,MAX=o.max==null?20000:o.max|0,
+ const ground=BIO.drawnGround(o.ground);out.drawn=!!ground.drawn;   /* B5: the ground as drawn, when the page registers it */
+ const minUp=o.minUp==null?2:+o.minUp,K=o.k==null?.6:+o.k,KS0=o.kStem==null?.25:+o.kStem,PAD=o.pad==null?.5:+o.pad,MAX=o.max==null?20000:o.max|0,
   CELL=o.cell==null?8:+o.cell,off=o.offset||[0,0,0],RK=o.rangeK==null?1:+o.rangeK;
  const LE=new Map();for(const e of BIO.lodMeshes)LE.set(e.mesh,e);
  const lodOf=(m,i,vert)=>{const e=LE.get(m);if(!e)return null;let r=e.range;const E=vert?(e.vEnds||e.ends):e.ends;
@@ -680,7 +763,7 @@ BIO.guardChecks=function(o){o=o||{};const mx=o.maxShare==null?.01:+o.maxShare,R=
  const a=BIO.attachAudit(o),fmt=x=>(100*x).toFixed(2)+'%',top=k=>Object.entries(a.byItem).filter(e=>e[1][k]).sort((x,y)=>y[1][k]-x[1][k]).slice(0,4).map(e=>e[0]+' '+e[1][k]+'/'+e[1].n).join(', ');
  if(a.note)R.push({name:'foliage held by its structure (core attach audit)',ok:true,detail:'not audited: '+a.note});
  else{R.push({name:'foliage held by its structure (core attach audit)',ok:a.share<=mx,
-   detail:a.floating+' of '+a.audited+' cards above ground float ('+fmt(a.share)+', limit '+fmt(mx)+')'+(a.floating?': '+top('floating')+'; worst '+JSON.stringify(a.worst.slice(0,3)):'')});
+   detail:a.floating+' of '+a.audited+' cards above '+(a.drawn?'the drawn ':'')+'ground float ('+fmt(a.share)+', limit '+fmt(mx)+')'+(a.floating?': '+top('floating')+'; worst '+JSON.stringify(a.worst.slice(0,3)):'')});
   R.push({name:'a tree\'s cards switch with their structure (one LOD key per tree)',ok:a.lodShare<=mx,
    detail:(a.paired?'':'no runtime LOD on these cards; ')+a.split+' in another chunk, '+a.outrange+' reaching past their structure, of '+(a.audited-a.floating)+' held ('+fmt(a.lodShare)+')'+(a.split+a.outrange?': '+top('split')+' '+top('outrange'):'')});}
  return R;};
