@@ -1,6 +1,7 @@
 {
  "targets": {
-  "house": "tempest.html"
+  "house": "tempest.html",
+  "states": "tempest-states.html"
  },
  "external": [
   "settlements/tempest/gen/69t-tp-ground.js",
@@ -32,6 +33,7 @@
   "89zs-tp-site.js",
   "90q-tp-world.js",
   "90r-tp-house.js",
-  "91z-views.js"
+  "91z-views.js",
+  "91u-tp-ruins.js"
  ]
 }

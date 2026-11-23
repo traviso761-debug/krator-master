@@ -19,8 +19,13 @@
 
 ## On this page
 
-- **Kept only.** The damaged and ruined states (step 2), the interiors (step 3) and the grounds and the crest (step 4: the
-  muster court, drill court and range, the Maydan, the paddock, the hay barns, the terraces) are not drawn yet.
+- **The states (step 2)** are on their own sheet (`dist/tempest-states.html`): there the inner ward stands on the sheet's ground,
+  not on its talus, and the violet monastery is not drawn (the Qiblai kit's `qb_monastery` has no damaged or ruined state). The
+  House's own page draws it kept. A raid's breach and burnt gate are `XFORT.damage`'s choice by seed; the stable range whose roof
+  burns is the House's own (80u), hashed the same way.
+- **The breaches** are drawn by 80u as `xfDraw` draws them (its ragged courses), a copy until the fort asset's `xfDrawPlan`.
+- **Not drawn yet**: the interiors (step 3) and the grounds and the crest (step 4: the muster court, drill court and range, the
+  Maydan, the paddock, the hay barns, the terraces).
 - **The barbican** is three walls with its opening on the south side (the bent entrance); the road up to it is not drawn.
 - **The utse stands 8 m out of the inner front** (the blueprint's u -63..-41), so its east half stands on the outer ward's ground
   and its west half on the talus; its storeys are counted from the outer ground (the inner court's door is on its first floor).

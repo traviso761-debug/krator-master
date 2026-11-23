@@ -33,6 +33,10 @@ if(typeof TPS!=="undefined"){const Q=window._tempest||{},D=Q.drawn||{};
   R.push({name:'house-on-its-pad',ok:L.length===5&&!bad&&Q.cut<12&&Q.fill<12,detail:'the pad at '+Q.pad+' m; under the lot\'s corners and middle '+L.join(', ')+' m'+(bad?' ('+bad+' OFF the pad)':'')+'; cut '+Q.cut+' m, fill '+Q.fill+' m'});}
  {const F=(typeof xfReach==='function'?xfReach():null)||[],bad=F.filter(q=>!q.floors||q.unreached.length||q.capped);
   R.push({name:'house-walks',ok:F.length===2&&!bad.length,detail:F.map(q=>q.reached+' of '+q.floors+' walks and stairs reached'+(q.unreached.length?', NOT '+q.unreached.slice(0,4).join(', '):'')).join('; ')||'no walks registered (core/walk not on the page?)'});}}
+if(typeof TP_STATES!=="undefined"){const Q=window._tempestStates||{},S=Q.sites||[],D=Q.damage||[],o=D.find(d=>d.key==='xa_tempest_outer')||{},i=D.find(d=>d.key==='xa_tempest_inner')||{};
+ const all=['xa_tempest_outer','xa_tempest_inner'].every(k=>[0,1,2].every(v=>S.some(s=>s.key===k&&s.v===v)));
+ R.push({name:'tempest-states',ok:all&&S.length===6&&Q.watched>=4&&o.breaches>=1&&o.burnt>=1&&i.breaches>=1&&o.stubs===TP_OUTER.curtains.length&&i.stubs===TP_INNER.curtains.length&&o.heaps>0,
+  detail:S.length+' sites ('+S.map(s=>s.key.replace('xa_tempest_','')+' '+s.state).join(', ')+'); '+Q.watched+' watched by core/ruins; damaged: outer '+o.breaches+' breach, '+o.fallen+' tower tops fallen, '+o.burnt+' gate burnt; inner '+i.breaches+' breach; ruined: '+o.stubs+' + '+i.stubs+' curtains in stubs, '+o.heaps+' heaps'});}
 return R;}"""
 xv.ASSERT_JS = xv.ASSERT_JS.rstrip()[:-len('return R;}')] + HOUSE_JS
 assert xv.ASSERT_JS.endswith('return R;}'), 'settlements/xanadu/verify.py ASSERT_JS no longer ends with return R;}'
