@@ -26,6 +26,20 @@ var rebases := 0
 const REBASE := 4000.0
 var collide := false
 var auto_places := false
+# A place's items cut into cells when it opens (krator/cells.gd; GODOT-LOOK-PLAN.md C1): on unless KRATOR_CELLS=0 (an A/B).
+# cells_px is the size in pixels an item with no range of its own is culled at (the light rig's tier sets it);
+# cells_max_nodes the new nodes each of a place's item lists may make (heaviest items first)
+var cells := OS.get_environment("KRATOR_CELLS") != "0"
+var cells_px := 4.0
+var cells_max_nodes := KratorCells.MAX_NODES
+var cell_stats := {}      # place id -> {place | monastery | arcology: KratorCells.split_items' report}, while it is open
+# The ground's occluders (krator/occluders.gd; GODOT-LOOK-PLAN.md C6): a conservative one under each chunk's and place's
+# terrain, made when it is built. They cost nothing until a viewport turns occlusion culling on (krator/look.gd does, by
+# tier); KRATOR_OCCLUDERS=0 leaves them out
+var occluders := OS.get_environment("KRATOR_OCCLUDERS") != "0"
+# L4: indoor surfaces take the room's light as their own ambient (krator/kinteriors_light.gd set_room_ambient), by the look
+var room_ambient := false
+var occluder_stats := {"nodes": 0, "tris": 0}
 var places_open := {}     # id -> Node3D
 signal rebased(delta: Vector3)
 
@@ -60,6 +74,7 @@ static func open(path: String) -> KratorWorldStream:
 	s.set_meta("log", s.log)
 	KratorGroundLayers.ensure_s4()
 	KratorGroundLayers.bind_horizon(s.dir, s.index)
+	KratorWeather.set_origin(s.origin)
 	var p := Node3D.new()
 	p.name = "Places"
 	s.add_child(p)
@@ -98,6 +113,7 @@ func _seat(w: Node3D) -> void:
 func rebase(x: float, z: float) -> void:
 	var was: Array = origin.duplicate()
 	origin = [roundf(x), 0.0, roundf(z)]
+	KratorWeather.set_origin(origin)   # world-space noise stays on the world (shaders/lib/weather.gdshaderinc)
 	var delta := Vector3(float(was[0]) - origin[0], float(was[1]) - origin[1], float(was[2]) - origin[2])
 	for id in chunks:
 		_seat(chunks[id])
@@ -173,6 +189,7 @@ func update(at: Vector2, load_r: float, keep_r: float) -> Dictionary:
 					var n: Node3D = places_open[pid]
 					places_open.erase(pid)
 					_place_flora.erase(pid)
+					cell_stats.erase(pid)
 					n.get_parent().remove_child(n)
 					n.free()
 					unloaded.append(pid)
@@ -328,6 +345,7 @@ func _build_chunk(id: String) -> Node3D:
 		w.set_meta("chunk_flora", ft)
 	if collide:
 		collide_case(w)
+	_occlude(w)
 	return w
 
 
@@ -351,6 +369,10 @@ func _build_place(id: String) -> Node3D:
 			w.add_child(arcology(p, w))
 	if mon_node != null:
 		w.add_child(mon_node)
+	if cells:
+		w.set_meta("krator_cells", _cut_cells(w))   # _attach files it under cell_stats on the main thread
+	for wn in ["", "Monastery", "Arcology"]:   # after the grounds were stitched, blended and holed
+		_occlude(w if wn == "" else w.get_node_or_null(wn))
 	var pg := (w.get_meta("ground", null) if w.has_meta("ground") else null) as MeshInstance3D
 	var po: Array = w.get_meta("origin", [0.0, 0.0, 0.0])
 	var ft := _load_flora_table(dir + "/" + pcase + "/flora.json", p["box"], pg, po)
@@ -363,6 +385,44 @@ func _build_place(id: String) -> Node3D:
 		if w.get_node_or_null("Monastery"):
 			collide_case(w.get_node("Monastery"))
 	return w
+
+
+# a world's ground gets its occluder (krator/occluders.gd)
+func _occlude(w: Node) -> void:
+	if not occluders or w == null:
+		return
+	var r := KratorOccluders.terrain(KratorOccluders.ground_of(w))
+	if r["node"] != null:
+		occluder_stats["nodes"] += 1
+		occluder_stats["tris"] += int(r["tris"])
+
+
+# A place's items, and its monastery's and arcology's, cut into cells (krator/cells.gd): each then culls by the frustum,
+# by its own range and by each of the sun's shadow splits. The monastery's cells are slabs a storey high, and those on
+# the indoor layer join the interior state's node list, so the sun mask still finds them. Returns a report a world.
+func _cut_cells(w: Node3D) -> Dictionary:
+	var out := {}
+	for wn in ["", "Monastery", "Arcology"]:
+		var sub: Node = w if wn == "" else w.get_node_or_null(wn)
+		if sub == null:
+			continue
+		var items := sub.get_node_or_null("Items")
+		if items == null:
+			continue
+		var opts := {"px": cells_px, "max_nodes": cells_max_nodes}
+		if wn == "Monastery":
+			opts["y_cell"] = 12.0
+		var rep := KratorCells.split_items(items, opts)
+		if wn == "Monastery" and sub.has_meta("stage7_interiors"):
+			var st: Dictionary = sub.get_meta("stage7_interiors")
+			var known: Array = st.get("nodes", [])
+			for nd in rep["new_nodes"]:
+				if (nd as VisualInstance3D).layers == KInteriorsLight.INDOOR_LAYER:
+					known.append(nd)
+			st["nodes"] = known
+		rep.erase("new_nodes")
+		out["place" if wn == "" else wn.to_lower()] = rep
+	return out
 
 
 # Exact triangle height on a KData._grid Terrain MeshInstance3D (matching cell diagonal (0,0)-(1,0)-(0,1) vs (1,0)-(1,1)-(0,1))
@@ -507,6 +567,8 @@ func _attach(kind: String, id: String, w: Node3D) -> void:
 		places_open[id] = w
 		if w.has_meta("place_flora"):
 			_place_flora[id] = w.get_meta("place_flora")
+		if w.has_meta("krator_cells"):
+			cell_stats[id] = w.get_meta("krator_cells")
 
 
 func _case(id: String) -> String:
@@ -835,8 +897,10 @@ func _build_roads(w: Node3D, box: Array, is_place: bool) -> void:
 				for c in 4:
 					var a := base_v + i * 5 + c
 					var b := a + 5
-					# Clockwise seen from above (+Y): Godot front face
-					indices.append_array([a, a + 1, b, a + 1, b + 1, b])
+					# Clockwise seen from above (+Y), Godot's front face: the row's lateral axis runs to the left of travel.
+					# Until 2026-11-23 the order was [a, a+1, b, a+1, b+1, b], which faces down: road.gdshader culls
+					# back faces, so no ribbon was drawn from above (KratorWorldAudit.audit_roads now counts face_down)
+					indices.append_array([a, b, a + 1, a + 1, b, b + 1])
 			total_rows += nr
 			run_count += 1
 
@@ -868,7 +932,7 @@ static func _is_foliage_bucket(b: MeshInstance3D) -> bool:
 		return false
 	if sm.shader == KratorBiome.FOLIAGE:
 		return true
-	if sm.shader == KratorKmat.LIB:
+	if KratorKmat.is_lib(sm.shader):
 		var at_p = sm.get_shader_parameter("alpha_test")
 		if (at_p is int or at_p is float) and float(at_p) > 0.0:
 			var rids: PackedStringArray = b.get_meta("krator_record_ids", PackedStringArray())
@@ -970,6 +1034,7 @@ func monastery(p: Dictionary, w: Node3D) -> Node3D:
 						fmmi.set_meta("furn_pts", pts)
 	if m.has_meta("interiors_meta"):
 		KInteriorsLight.setup_monastery(m, m.get_meta("interiors_meta") as Dictionary)
+		KInteriorsLight.set_room_ambient(m, room_ambient)
 
 	# Blend the outer 28 m skirt of Monastery's ground mesh smoothly into Place_sq80bzd7ep's 8 m terrain, and open Deep Stair shaft
 	var pg := (w.get_meta("ground") if w.has_meta("ground") else null) as MeshInstance3D

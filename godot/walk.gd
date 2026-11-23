@@ -1,6 +1,7 @@
 # M8 "walk the road" + Krator Host UI (GODOT-PLAN.md): any krator-world-stream case playable and inspectable.
 # Streams default godot/data/world-oidong-highrift (or --case=world-pinnacle) round a dual-mode walker / free-fly
-# host camera (krator/world_walk.gd) with Forward+ AgX + SSAO, 2,400 m 4-cascade sun shadows, optional --gi (SDFGI),
+# host camera (krator/world_walk.gd) under the light rig of krator/look.gd (--look=low|high|photo|legacy and its
+# switches, --gi for SDFGI among them; the adapter picks the tier when none is named), with a
 # live clock-driven sun & sky, indoor ambient dimming, and the Krator Host UI (krator/host_ui.gd):
 #   - Case switcher & Points-of-Interest camera views dropdown (overview, places, Strongbow, all 9 Pinnacle camps, active pin)
 #   - Toggleable Walk (1st/3rd person) <-> WASD+QE Free-Fly camera (F, V) + wheel-to-cursor zoom
@@ -21,6 +22,7 @@ var sun: DirectionalLight3D
 var _origin_px := Vector2(1306.0, 1634.0)
 var _m_per_px := 2000.0
 var _gi_on := false
+var look: Dictionary = {}    # the light rig's spec (krator/look.gd): the tier and the switches from the command line
 var _start_fly := false
 var _no_ui := false
 var _collide := true
@@ -98,18 +100,12 @@ func _ready() -> void:
 	sun.light_cull_mask = 1
 	if sky_node.shine != null:
 		sky_node.shine.light_cull_mask = 1
-	env_res.tonemap_mode = Environment.TONE_MAPPER_AGX
-	env_res.ssao_enabled = true
-	env_res.ssao_radius = 1.4
-	env_res.ssao_intensity = 1.55
 	sky_node.preset["fogDensity"] = 0.000022
-	if _gi_on:
-		env_res.sdfgi_enabled = true
-		env_res.sdfgi_use_occlusion = true
-		env_res.sdfgi_read_sky_light = true
-	sun.directional_shadow_mode = DirectionalLight3D.SHADOW_PARALLEL_4_SPLITS
-	sun.directional_shadow_max_distance = 2400.0
-	sun.directional_shadow_blend_splits = true
+	look = KratorLook.from_args(OS.get_cmdline_user_args())
+	_gi_on = bool(look["sdfgi"])
+	KratorLook.apply(look, env_res, sun, get_viewport())
+	KratorLook.apply_sky(look, sky_node)
+	print(KratorLook.describe(look))
 
 	ui = KratorHostUI.new()
 	ui.name = "HostUI"
@@ -145,10 +141,8 @@ func _wire_ui() -> void:
 	)
 	ui.gi_toggled.connect(func(on: bool):
 		_gi_on = on
-		env_res.sdfgi_enabled = on
-		if on:
-			env_res.sdfgi_use_occlusion = true
-			env_res.sdfgi_read_sky_light = true
+		look["sdfgi"] = on
+		KratorLook.apply(look, env_res, sun, get_viewport())
 	)
 	ui.hour_changed.connect(func(hr: float):
 		var day_idx := int(minute / 1440.0)
@@ -181,6 +175,8 @@ func _load_case(index_path: String, use_cmdline_at: bool) -> void:
 	_last_places_n = -1
 
 	W = KratorWorldWalk.make(case_index, _collide)
+	KratorLook.apply_stream(look, W.stream)
+	KratorLook.apply_camera(look, W.cam)
 	W.stream.flora_enabled = _flora_vis
 	W.interactive = true
 	add_child(W)

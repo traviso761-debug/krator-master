@@ -49,6 +49,15 @@ godot --headless --path godot --script res://tests/export/isle_test.gd -- --case
 xvfb-run -a godot --path godot --rendering-method gl_compatibility --rendering-driver opengl3 --script res://tests/atmos/waves_gpu_check.gd   # the wave include on a GPU
 godot --headless --path godot --script res://tests/character/kchar_test.gd   # core/charactermodels: records and morphs against the JS golden, a MakeHuman figure from the pieces
 godot --path godot --script res://tests/perf/perf_capture.gd -- --cases=world-sedesert,world-iziz   # the perf table (PERF.md, perf-<case>.json): run it on the real GPU, below
+godot --headless --path godot --script res://tests/look/look_test.gd            # the light rig by tier (krator/look.gd): tables, switches, what apply writes, shadow texels
+godot --headless --path godot --script res://tests/cells/cells_test.gd          # instanced items cut into cells (krator/cells.gd): every instance once, ranges, the node budget, the rowless twin
+godot --headless --path godot --script res://tests/occluders/occluders_test.gd  # the ground's occluders (krator/occluders.gd): never above the ground, none over a hole
+godot --headless --path godot --script res://tests/shaders/library_faces_test.gd   # the library surface's three shaders and who takes which (krator/kmat.gd)
+godot --headless --path godot --script res://tests/materials/kweather_test.gd   # the weathering stack's classes, noise and wiring (krator/kweather.gd)
+godot --headless --path godot --script res://tests/materials/kdetail_test.gd    # detail normals and the tangent switch (krator/kdetail.gd)
+xvfb-run -a godot --path godot --rendering-method forward_plus --rendering-driver vulkan --script res://tests/shaders/look_gpu_check.gd   # all of the above drawn and read back from pixels (also: gl_compatibility, opengl3)
+godot --path godot res://look_lab.tscn -- --look=high                           # the look lab: swatches of a case's heaviest surfaces under the rig (look_lab.gd's header has the keys)
+godot --path godot --script res://tests/perf/route_harness.gd -- --look=high --out=res://PERF-route.json --md=res://PERF-route.md   # the route: GPU and CPU time, primitives against the tier's cap
 ```
 
 Or open `godot/project.godot` in the editor (Import, then F5). The editor skips `data/` (`data/.gdignore`): the
@@ -137,7 +146,8 @@ SwiftShader; both 1600 x 900):
 | `krator/gltf_instancing.gd`, `addons/krator_gltf/` | `EXT_mesh_gpu_instancing` (Godot 4.5 has no importer for it): instanced meshes come in as MultiMeshes, at runtime and in the editor's importer (the plugin is enabled in `project.godot`) |
 | `krator/weather_fx.gd` | the weather drawn: rain particles that ride the camera, the lightning bolt on `Atmos.strike` |
 | `krator/stage.gd` | the export's `stage` (or `data/<case>/stage.json`): tonemapping, exposure, sky panorama, sun and fill lights, ambient, fog, matched to the page (`biomes/GODOT.md`, "The stage") |
-| `krator/kmat.gd` | library materials rebuilt on a glTF region from the build's pack (`data/<case>/tex/`), by the `lib` and `fam` the glTF extras keep |
+| `krator/kmat.gd` | library materials rebuilt on a glTF region from the build's pack (`data/<case>/tex/`), by the `lib` and `fam` the glTF extras keep; and which of the library surface's three shaders a record takes (`variant`, `fit`, `is_lib`) |
+| `krator/look.gd`, `cells.gd`, `occluders.gd`, `kweather.gd`, `kdetail.gd`; `look_lab.tscn` | **the look** (below, "The look"): the light rig by tier, a place's items cut into cells, the ground's occluders, the weathering stack and the detail normals, and the lab where they are judged |
 | `krator/khooks.gd` | `KHooks`: the shader library's hook table (below), `resolve(hook)` (aliases, `+` lists; an unknown name reported) and `survey(materials)` for an importer's report |
 | `krator/water.gd` | `KWater`: core/water's open surface in GDScript, rebuilt from core/export's `water` section (the twins: `tro_d`, `tro_nj`, `rest`, `surface_at`, `height_at`, `normal_at`, `foam_at`, the bed's depth), and `uniforms()` for `lib/water.gdshaderinc` |
 | `krator/water_import.gd` | `KratorWater`: the `water` section's open surfaces drawn (a grid in world space on `shaders/water.gdshader`), and `check_probes` (the page's own heights against KWater) |
@@ -183,9 +193,12 @@ atmosphere's globals), guarded, so any shader, spatial or canvas_item, can inclu
 hook, named in its header. A material record's `hook` (KMAT's, core/export's `materials`; several joined by `+`) selects
 them through `krator/khooks.gd`; an importer reports a hook nothing answers (`world_import.gd`'s report `hooks` and gap
 `hooks`). The rules are the plan's: a cut-out is `ALPHA_SCISSOR_THRESHOLD`, never blending (`transparent` is for glass,
-water and smoke); options are uniforms, not `#define`s; per-instance values ride `COLOR` and `INSTANCE_CUSTOM`; a detail
-normal is `StandardMaterial3D`'s `detail_*` fields fed from a record's `detail`, not a shader, so the library has none
-(no record carries `detail` yet: KMAT's fields lack it, `core/materials/PLAN.md` "From spiderbench").
+water and smoke); options are uniforms, not `#define`s; per-instance values ride `COLOR` and `INSTANCE_CUSTOM`. Three
+defines stand against the options rule, each for something a uniform cannot be (2026-11-23, "The look" below): a render
+mode and whether `ALPHA` is written at all (`K_LIB_CUTOUT`), whether instance uniforms are declared (`K_LOD_OFF`), and
+`ambient_light_disabled` (`K_ROOM_AMBIENT`). A detail normal was to be `StandardMaterial3D`'s `detail_*` fields fed from
+a record's `detail`; no record carries one (KMAT's fields lack it, `core/materials/PLAN.md` "From spiderbench"), and the
+library surface is a shader, so since 2026-11-23 the library has its own, by surface class (`lib/detail`).
 
 | Hook | Include | The three.js hook it answers | Record fields it reads | Drawn by |
 |---|---|---|---|---|
@@ -208,6 +221,39 @@ compiles, and computes what its GDScript twin does: water within 0.5 mm, the res
 that selects `cloth-sway`, `flag`, `glass` or `coursing` on an exported mesh (no export carries those materials yet: Girder
 and Iziz still go through the glTF route), fauna a kit moves on the CPU (`BIO.dynamic`; swbay's and nwbay's flocks), a texture array for bark variants,
 and pre-compiling the library at load.
+
+## The look: the light rig, the cost, the surfaces
+
+`GODOT-LOOK-PLAN.md` is the plan; its steps 1 to 3 are in (2026-11-23). Everything here is Godot-side: no page and no
+export changed. One switchboard, `krator/look.gd` (`KratorLook`): a tier is a Dictionary, `from_args` reads
+`--look=low|high|photo|legacy` and a switch a feature, `apply` writes it to the Environment, the sun, the Viewport and
+the globals below, `apply_stream` and `apply_sky` to the stream and the sky. `walk.gd`, the route harness and the look lab
+all go through it. `low` is the integrated Arc 140T, `high` the RTX 5060, `photo` is for stills, `legacy` is the rig as
+it was (four splits over 2,400 m, every item whole), kept so a before and after come from one pose; with no `--look` the
+adapter picks (`auto_tier`). **No frame was timed on a GPU here** (a cloud container, a software renderer): the tiers'
+values are starting points, and `tests/perf/route_harness.gd` is how the lanes time them.
+
+| What | Where | The short of it |
+|---|---|---|
+| The sun's shadow | `look.gd` | 250 m (low) or 400 m (high) in four splits from 0.05, on a 4096 or 8192 atlas: a first-split texel of 1.8 or 1.2 cm, where the old rig's was 29 cm. Only the outdoor layer casts (`shadow_caster_mask`: an interior's shells and furniture are on layer 2 and the sun does not light them) |
+| Ambient, tone, AA | `look.gd` | SSAO, SSIL (high), SDFGI behind `--gi`, glow (high), AgX, debanding, MSAA 2x (low) or 4x, FSR 1 at 0.77 (low), 8 or 16 taps |
+| Items in cells | `krator/cells.gd` (`KratorCells`), `world_stream.gd` `_cut_cells` | a place's instanced items came as one MultiMesh an item over the whole place, so the view and every shadow split drew all of them. Each is cut by position into nodes small enough to cull, heaviest first, inside a budget of nodes; a cell must hold about 800 triangles to be worth one. A cell draws on its material's rowless twin where the shader takes the per-row LOD (`K_LOD_OFF` in `lib/lod.gdshaderinc`): a node on a shader with instance uniforms takes 16 slots of the buffer for them, 4,096 nodes in all |
+| Occluders | `krator/occluders.gd` (`KratorOccluders`) | a coarse grid under each chunk's and place's ground, never above it, none over a hole; `Viewport.use_occlusion_culling` by tier. Buildings are not occluders yet (a wall is one only minus its doors and windows) |
+| The library surface's shaders | `shaders/library_body.gdshaderinc`, `library.gdshader`, `library_twosided.gdshader`, `library_cutout.gdshader`; `krator/kmat.gd` `variant`, `fit`, `is_lib` | one body, three render setups: opaque with its back faces culled, opaque on both faces, and the cut-out, the only one that writes `ALPHA` (a shader that writes it at all is drawn in the transparent pass). A record's `doubleSided` and `alphaTest` pick; `fit` moves a culled node to the two-sided twin when its instances are mirrored or its triangles wind against their normals (the export bakes a mirrored mesh's matrix and keeps its index order) |
+| The sky | `shaders/sky_half.gdshader`, `krator/sky.gd` `half_res_clouds` | the cloud layers in the half-resolution pass (low tier; Forward+ and Mobile only), one composite (`atmSkyC`, generated by `tools/atmos_sky.js` beside `atmSky`) |
+| Weathering | `shaders/lib/weather.gdshaderinc`, `krator/kweather.gd` (`KratorWeather`) | drift, run-off, under, top, moss, gloss and wet on every library surface, from where the point is and which way it faces, by the surface's class (read from the record's library family). One shared noise texture made at start; the pattern stays on the world across a rebase (`k_world_origin`) |
+| Detail and tangents | `shaders/lib/detail.gdshaderinc`, `krator/kdetail.gd` (`KratorDetail`) | a shared array of detail normals, a layer a class, under six metres; and a normal map on the mesh's own tangents where the mesh has them (`mesh_tangents`, set per mesh by the importers), the derivative frame elsewhere |
+| Interiors | `krator/kinteriors_light.gd` `ambient_shader`, `set_room_ambient` | the room's light as the surface's own `IRRADIANCE` in place of emission, so SSAO reaches indoors; Gate 5's probes pass with it in both renderers |
+| The look lab | `look_lab.tscn`, `look_lab.gd` | swatches (a wall, a ledge, a pitched slab, a ball) of a case's heaviest library surfaces under the rig, with every switch; `--shot=` for stills |
+| The route | `tests/perf/route_harness.gd` | `--look=`, the viewport's measured GPU and CPU time, primitives against the tier's cap (`KratorLook.CAPS`), what was cut into cells |
+
+The globals (`project.godot`, `[shader_globals]`), all zero by default, so a scene that never set a look draws as it did:
+`k_weather` (x strength, y wet), `k_weather_noise`, `k_world_origin`, `k_surface` (x detail strength, y mesh tangents),
+`k_detail_arr`.
+
+What a test reads from pixels: `tests/shaders/look_gpu_check.gd` (the three shaders' culling and cut-out, the weathering
+on and off and across a rebase, the rowless twins, the half-resolution sky, detail and the tangent frame against the
+derivative frame), in Forward+ and in Compatibility.
 
 ## Driving the editor (Godot MCP)
 

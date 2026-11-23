@@ -69,7 +69,7 @@ static func audit_materials(w: Node3D) -> Dictionary:
 				checked += 1
 				if mat is ShaderMaterial:
 					var sm := mat as ShaderMaterial
-					if sm.shader == KratorBiome.FOLIAGE:
+					if KratorCells.source_shader(sm.shader) == KratorBiome.FOLIAGE:   # a cell draws on the shader's rowless twin (krator/cells.gd)
 						foliage_mats += 1
 						var at_val = sm.get_shader_parameter("alpha_test")
 						var at_f := float(at_val) if (at_val is float or at_val is int) else 0.0
@@ -390,6 +390,7 @@ static func audit_roads(stream: KratorWorldStream) -> Dictionary:
 	var buried := 0
 	var floating_toes := 0
 	var span_intrusions := 0
+	var face_down := 0
 
 	var span_mids: Array[Vector2] = []
 	for rd in stream.index.get("roads", []):
@@ -426,6 +427,12 @@ static func audit_roads(stream: KratorWorldStream) -> Dictionary:
 		if V.size() != UV.size() or V.is_empty():
 			issues.append("%s/RoadRibbon: empty or mismatched vertex/UV arrays" % w.name)
 			continue
+		# the ribbon's normals are +Y and its shader culls back faces: triangles wound against them are not drawn from above
+		var down := KratorKmat.winds_against(rmi.mesh, 2000)
+		if down > 0.01:
+			face_down += 1
+			if face_down <= 2:
+				issues.append("%s/RoadRibbon: %.0f%% of its triangles face down, and road.gdshader culls back faces" % [w.name, down * 100.0])
 		var step_v := maxi(1, V.size() / 160)
 		for i in range(0, V.size(), step_v):
 			var lv := V[i] + rmi.position
@@ -467,6 +474,7 @@ static func audit_roads(stream: KratorWorldStream) -> Dictionary:
 		"buried": buried,
 		"floating_toes": floating_toes,
 		"span_intrusions": span_intrusions,
+		"face_down": face_down,
 	}
 
 

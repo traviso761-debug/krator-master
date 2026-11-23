@@ -86,3 +86,44 @@ the fixed table; the copy committed so far was written headless (its header says
       numbers (the ROADMAP's LOD work above all), and paste the deltas into the change's note.
 - [ ] Optional: the older spike cases (`--cases=hyperjungle,rift,girder`) for a row against the eye readings. The poses are
       relative to each case's focus, so they fit any case the spike loads.
+
+## 8. The look (GODOT-LOOK-PLAN.md steps 1 to 3, 2026-11-23): what only a real GPU can say
+
+Steps 1 to 3 were built and tested in a cloud container on a software renderer: the counts and the pictures are real,
+no time is. `README.md`, "The look", says what each piece is. In order:
+
+- [ ] **The baseline, then the tiers, on each lane** (`KRATOR_GL=gpu`, the lane lock as usual). Three runs a lane, the
+      same four stops and three hours:
+      `python tools/harness.py lock --lane rtx -- <godot> --path godot --script res://tests/perf/route_harness.gd -- --look=legacy --out=res://PERF-route-rtx-legacy.json --md=res://PERF-route-rtx-legacy.md`
+      then `--look=high` on the RTX and `--look=low` on the Arc (`--gpu-index 1`), each with its own `--out` and `--md`
+      and `--shots=shots/route-<lane>-<tier>`. Read the GPU and CPU columns, and whether a stop is marked **over** its cap.
+- [ ] **What a place costs to open with cells on.** `stream_build_ms` in the route's JSON against a run with
+      `--no-cells`. Cutting reads each item's instance buffer back, which on a GPU waits for the device; if that shows,
+      the cut belongs in the cook (the plan's N2).
+- [ ] **Nodes.** The town ends at about ten thousand nodes with cells on. Watch the CPU column, and the frame time while
+      turning on the spot.
+- [ ] **Occlusion culling**: walk the avenue and the monastery's terraces watching for anything that pops in late at a
+      crest (`--no-occlusion` for the A/B). The occluders sit under the ground and should hide only what the ground hides.
+- [ ] **The roads.** The stream's road ribbons were wound face down and their shader culls back faces, so none drew
+      from above until this change. They draw now: look for z-fighting with the ground and for the shoulders' fit.
+- [ ] **Back faces.** Single-sided records now cull their back faces (`library.gdshader`). Walk the monastery and the
+      town looking for a wall or a roof that is missing from one side. A place's import report counts them
+      (`get_meta("report")["faces"]`: culled, two_sided, cutout, and `moved`, the nodes put back on both faces because
+      their triangles wound against their normals). A record three draws from inside only (`BackSide`: none in the
+      cases exported so far) would be culled: the export does not carry it (the plan's section 13).
+- [ ] **Shadows.** The first split's texel is 1.2 cm (high) or 1.8 cm (low): window reveals and beams should cast a
+      shape. Look for the far edge at 250 or 400 m, for the blend between splits, and for peter-panning under eaves.
+- [ ] **The weathering**, in the look lab: `godot --path godot res://look_lab.tscn -- --look=high`, keys W (the stack),
+      R (wet), H / J (the hour). The amounts a class are `krator/kweather.gd` `CLASSES`: tune them against reference
+      photographs, family by family (`--only=plaster,stone`). Then the same in the walk, where vertex tints are on.
+      What it costs: the route's GPU column with and without `--no-weather --no-detail` (five texture fetches a pixel
+      of every library surface; the low tier may want fewer).
+- [ ] **Detail and tangents** (keys D and N in the lab): within three metres a flat face should have a grain; turning
+      the mesh's tangents off should change nothing on flat faces and steady the lighting on round ones.
+- [ ] **The sky on the Arc**: `--look=low` draws the clouds at half resolution. Look at cloud edges against the sun and
+      at the horizon; `--no-sky-half` for the A/B, and the GPU column for what it saved.
+- [ ] **Indoors**: with SSAO on, corners and the feet of furniture should darken (`--no-room-ambient` for the A/B).
+      Gilt and bronze now take a tinted reflection of the room where they took a quarter of the diffuse light.
+- [ ] **AA** (the plan's L6): MSAA against `--aa=taa`, `--aa=fsr2` and `--aa=smaa` on swaying cards and thin rails.
+- [ ] `xvfb-run` is not needed on a real machine: `godot --path godot --script res://tests/shaders/look_gpu_check.gd`
+      should print `all passed` on both lanes (it reads every shader change back from pixels).

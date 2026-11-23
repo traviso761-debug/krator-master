@@ -1,7 +1,13 @@
 # Krator in Godot: the look plan
 
 **Written:** 2026-11-23, on `claude/krator-graphics-quality-k24ni6` (the same commit as `claude/vertical-stack`, b2f50948).
-**Status:** a proposal; no code changed for it.
+**Status:** steps 1 to 3 of section 14 are built on this branch (2026-11-23: `godot/README.md`, "The look", and
+`godot/CHECKLIST.md` section 8); the rest is a proposal.
+
+**Correction, 2026-11-23.** The counts this plan first gave for instanced items cut into cells (2.4 M, 10.0 M and
+10.3 M primitives; sections 1, 3.2 and 5, appendix A) are withdrawn. The trial that produced them grouped instances with
+a construct that, in GDScript, appends to a copy: every cell came out empty, and the frame was counted without the town's
+instanced items. The cut as built is `godot/krator/cells.gd`, with a test that every instance lands in one cell.
 
 The owner's question: what takes the Godot render to at least the grade of Skyrim, with buildings, plants and props that
 read less like a cartoon and less like Minecraft and more like solid things, without breaking the graphics budget; with a
@@ -583,6 +589,9 @@ the all-builds rebuild. These are small, and they are what the Godot side cannot
 | A grain axis a furniture piece | `core/catalog` | M12 |
 | Wind stiffness and phase a vertex on trunks, branches and cards | `core/biome/20-core-kit.js` | P4 |
 | Godot packs with colour kept and roughness as ingested | `tools/textures/pack.py` (`packFormat: 2`), `godot/tools/export_spike.py` | M8 |
+| A material's `side` (front, back or double), where it now carries only `doubleSided` | `core/export/10-core-export-scene.js` | C5: a record three draws from inside only (`BackSide`: Erewhon's ice shell is one) arrives as single-sided and would be culled. None is in the cases exported so far |
+| A mirrored mesh's triangles turned over when its matrix is baked into a bucket | the same, where it applies `matrixWorld` | C5: three flips the winding of a mesh with a negative determinant, the bake does not. The importer now catches it (`KratorKmat.fit`) and draws that bucket on both faces; turned over at export it could be culled |
+| `closed: true` on a bucket or an item whose mesh is a closed solid | the same | C5: 60 of the town's 70 materials are double-sided, and 99.8 % of their triangles wind with their normals. A closed solid can cull its back faces whatever the record says; only the export can say cheaply that it is closed |
 
 All are `[G data]`: plain numbers on vertices and records. The web pages ignore them.
 

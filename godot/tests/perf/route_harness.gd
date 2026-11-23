@@ -2,6 +2,10 @@
 # Visits 4 deterministic stops on world-oidong-highrift (or --case=world-pinnacle) across 3 hours (12:00, 16:20, 22:00),
 # recording at each stop:
 #   - frame time (median_ms, p95_ms), stream build time (ms), draw calls, primitives
+#   - the viewport's measured render time on the GPU and on the CPU (gpu_ms, cpu_ms: frame delta hides which is which),
+#     and the primitives against the tier's cap (GODOT-LOOK-PLAN.md section 12; krator/look.gd CAPS)
+#   - the light rig it ran under (--look=low|high|photo|legacy and krator/look.gd's switches; without one, the adapter's
+#     tier), its shadow texels, and what the stream cut into cells and made into occluders (krator/cells.gd, occluders.gd)
 #   - VRAM / texture / buffer memory (MB, via Performance monitors)
 #   - worst plant-to-drawn-ground height error (m) within 240 m of the camera (StreamFlora + Place flora vs tri_height_at)
 #   - optional screenshots (--shots=shots/route)
@@ -10,6 +14,8 @@
 #   godot --headless --path godot --script res://tests/perf/route_harness.gd -- --out=res://PERF-route-headless.json
 # Forward+ GPU run (RTX lane):
 #   python tools/harness.py lock --lane rtx -- <godot> --path godot --script res://tests/perf/route_harness.gd -- --out=res://PERF-route-rtx.json --md=res://PERF-route-rtx.md --shots=shots/route-rtx
+# The rig as it was before 2026-11-23, for a before and after from the same stops (add --no-cells to a tier for the cut alone):
+#   ... route_harness.gd -- --look=legacy --out=res://PERF-route-rtx-legacy.json
 extends SceneTree
 
 const KratorSky := preload("res://krator/sky.gd")
@@ -160,6 +166,23 @@ func _scene_counts(S: KratorWorldStream) -> Dictionary:
 	return {"active_draw_nodes": meshes, "multimesh_instances": mm_instances}
 
 
+# what the open places were cut into (krator/cells.gd, through the stream's cell_stats): nodes afterwards, items cut,
+# instanced triangles in all and in the items that were cut
+func _cells(S: KratorWorldStream) -> Dictionary:
+	var out := {"nodes": 0, "split": 0, "light": 0, "over_budget": 0, "tris": 0, "tris_cut": 0, "ms": 0.0}
+	for pid in S.cell_stats:
+		for wn in S.cell_stats[pid]:
+			var r: Dictionary = S.cell_stats[pid][wn]
+			out["nodes"] += int(r.get("cells", 0))
+			out["split"] += int(r.get("split", 0))
+			out["light"] += int(r.get("light", 0))
+			out["over_budget"] += int(r.get("over_budget", 0))
+			out["tris"] += int(r.get("tris", 0))
+			out["tris_cut"] += int(r.get("tris_cut", 0))
+			out["ms"] += float(r.get("ms", 0.0))
+	return out
+
+
 func _run() -> void:
 	var case_index := "res://data/world-oidong-highrift/index.json"
 	var out_json := ""
@@ -178,6 +201,7 @@ func _run() -> void:
 			shots_dir = a.trim_prefix("--shots=")
 		elif a.begins_with("--frames="):
 			n_frames = maxi(2, int(a.trim_prefix("--frames=")))
+	var look := KratorLook.from_args(OS.get_cmdline_user_args())
 
 	var is_headless := DisplayServer.get_name() == "headless"
 	if not is_headless:
@@ -204,18 +228,23 @@ func _run() -> void:
 	sky_node.set_process(false)
 	var e: Environment = sky_node.env
 	var sun: DirectionalLight3D = sky_node.sun
-	e.tonemap_mode = Environment.TONE_MAPPER_AGX
 	sky_node.preset["fogDensity"] = 0.000022
-	if not is_headless and RenderingServer.get_current_rendering_method() != "gl_compatibility":
-		e.ssao_enabled = true
-		e.ssao_radius = 1.4
-		e.ssao_intensity = 1.55
-	sun.shadow_enabled = not is_headless and RenderingServer.get_current_rendering_method() != "gl_compatibility"
-	sun.directional_shadow_mode = DirectionalLight3D.SHADOW_PARALLEL_4_SPLITS
-	sun.directional_shadow_max_distance = 2400.0
-	sun.directional_shadow_blend_splits = true
+	sun.light_cull_mask = 1   # as walk.gd: the indoor layer is lit by its own lamps
+	var plain := is_headless or RenderingServer.get_current_rendering_method() == "gl_compatibility"
+	var look_rep := KratorLook.apply(look, e, sun, root)
+	KratorLook.apply_sky(look, sky_node)
+	if plain:   # as before: no sun shadow and no screen-space terms without the Forward+ renderer
+		sun.shadow_enabled = false
+		e.ssao_enabled = false
+		e.ssil_enabled = false
+		e.sdfgi_enabled = false
+	print(KratorLook.describe(look))
+	var vp_rid := root.get_viewport_rid()
+	RenderingServer.viewport_set_measure_render_time(vp_rid, true)
+	var caps: Dictionary = KratorLook.CAPS.get(str(look["tier"]), {})
 
 	var S := KratorWorldStream.open(case_index)
+	KratorLook.apply_stream(look, S)
 	S.collide = false
 	S.threaded = false
 	S.auto_places = true
@@ -237,6 +266,7 @@ func _run() -> void:
 			var pn: Node3D = S.places_open[pid]
 			S.places_open.erase(pid)
 			S._place_flora.erase(pid)
+			S.cell_stats.erase(pid)
 			pn.get_parent().remove_child(pn)
 			pn.free()
 		S.update(Vector2(1e9, 1e9), 1.0, 2.0)
@@ -270,6 +300,8 @@ func _run() -> void:
 			sun.light_energy = clampf(sun.light_energy * 0.68, 0.0, 1.45)
 
 			var ft := PackedFloat32Array()
+			var gt := PackedFloat32Array()
+			var ct := PackedFloat32Array()
 			var frames_run := 2 if is_headless else n_frames
 			var last_u := Time.get_ticks_usec()
 			for _f in frames_run:
@@ -277,7 +309,11 @@ func _run() -> void:
 				var now_u := Time.get_ticks_usec()
 				ft.append((now_u - last_u) / 1000.0)
 				last_u = now_u
+				gt.append(RenderingServer.viewport_get_measured_render_time_gpu(vp_rid))
+				ct.append(RenderingServer.viewport_get_measured_render_time_cpu(vp_rid) + RenderingServer.get_frame_setup_time_cpu())
 			ft.sort()
+			gt.sort()
+			ct.sort()
 			var med_ms := snappedf(ft[ft.size() / 2], 0.01) if not ft.is_empty() else 0.0
 			var p95_ms := snappedf(ft[mini(ft.size() - 1, int(ft.size() * 0.95))], 0.01) if not ft.is_empty() else 0.0
 			var dc := int(Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME))
@@ -287,9 +323,14 @@ func _run() -> void:
 				"hour": hr,
 				"median_ms": med_ms,
 				"p95_ms": p95_ms,
+				"gpu_ms": snappedf(gt[gt.size() / 2], 0.01) if not gt.is_empty() else 0.0,
+				"cpu_ms": snappedf(ct[ct.size() / 2], 0.01) if not ct.is_empty() else 0.0,
 				"draws": dc,
 				"prims": pr,
 			}
+			if caps.has("prims") and not plain:
+				h_rec["prims_cap"] = int(caps["prims"])
+				h_rec["over_cap"] = pr > int(caps["prims"])
 			if abs_shots != "":
 				var fn := "%s/%s_h%04.1f.png" % [abs_shots, str(st["id"]), hr]
 				var img := root.get_texture().get_image()
@@ -314,6 +355,8 @@ func _run() -> void:
 			"s4_layers_mb": snappedf(float(KratorGroundLayers.s4_vram_bytes) / 1048576.0, 0.02),
 			"s1_horizon_mb": snappedf(float(KratorGroundLayers.hz_vram_bytes) / 1048576.0, 0.02),
 			"scene_counts": sc_cnt,
+			"cells": _cells(S),
+			"occluders": S.occluder_stats.duplicate(),
 			"vram_mb": vram_mb,
 			"tex_mb": tex_mb,
 			"buf_mb": buf_mb,
@@ -329,8 +372,10 @@ func _run() -> void:
 
 	var rep := {
 		"format": "krator-godot-route-baseline",
-		"version": 2,
+		"version": 3,
 		"case": case_index,
+		"look": {"tier": str(look["tier"]), "described": KratorLook.describe(look), "shadow_texels_m": look_rep["texels"], "caps": caps,
+			"spec": look, "sun_shadow": sun.shadow_enabled},
 		"adapter": RenderingServer.get_video_adapter_name(),
 		"api": RenderingServer.get_video_adapter_api_version(),
 		"display": DisplayServer.get_name(),
@@ -348,8 +393,18 @@ func _run() -> void:
 			print("wrote " + out_json)
 
 	if out_md != "":
-		var md := "# Godot Deterministic Route Baseline (Stages 3 + 4)\n\n- **Adapter:** `%s` (`%s`, display `%s`, Godot `%s`)\n\n" % [
-			rep["adapter"], rep["api"], rep["display"], rep["godot"]]
+		var md := "# Godot Deterministic Route Baseline (Stages 3 + 4)\n\n- **Adapter:** `%s` (`%s`, display `%s`, Godot `%s`)\n- **Look:** %s\n\n" % [
+			rep["adapter"], rep["api"], rep["display"], rep["godot"], KratorLook.describe(look)]
+		md += "| Stop | Hour | Primitives (M) | Cap (M) | Draws | GPU (ms) | CPU (ms) | Frame med/p95 (ms) | Cells (nodes / triangles cut) |\n"
+		md += "|---|---:|---:|---:|---:|---:|---:|---|---|\n"
+		for s in stops_out:
+			var cl: Dictionary = s["cells"]
+			for h in s["hours"]:
+				md += "| `%s` | `%.1f` | `%.1f`%s | `%s` | `%d` | `%.2f` | `%.2f` | `%.2f / %.2f` | `%d / %.0f%%` |\n" % [
+					str(s["id"]), float(h["hour"]), float(h["prims"]) / 1e6, " **over**" if bool(h.get("over_cap", false)) else "",
+					("%.0f" % (float(h["prims_cap"]) / 1e6)) if h.has("prims_cap") else "-", int(h["draws"]), float(h["gpu_ms"]), float(h["cpu_ms"]),
+					float(h["median_ms"]), float(h["p95_ms"]), int(cl["nodes"]), 100.0 * float(cl["tris_cut"]) / maxf(1.0, float(cl["tris"]))]
+		md += "\n"
 		md += "| Stop | Stream (ms) | S3 Normals (ms/ch / MB) | Draw Nodes | MultiMesh Inst | Flora (Hero/Mid) | Grass (Near/Mid) | VRAM (MB) | Worst Plant Err (m) | Noon Med/p95 (ms) |\n"
 		md += "|---|---:|---|---:|---:|---|---|---:|---:|---|\n"
 		for s in stops_out:

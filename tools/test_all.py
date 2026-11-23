@@ -58,7 +58,11 @@ GODOT_TESTS = ['res://tests/rand/krand_test.gd', 'res://tests/clock/kseason_test
                ('res://tests/export/iziz_test.gd', '--case=world-pylon', '--sheet'),
                ('res://tests/export/iziz_test.gd', '--case=world-talia', '--sheet'),
                # the Eternian kit's sheet (records, materials, ground: the Scyvoi engine's profile; kits/eternian P7)
-               'res://tests/export/eternian_test.gd']
+               'res://tests/export/eternian_test.gd',
+               # the look (GODOT-LOOK-PLAN.md steps 1 to 3; godot/README.md, "The look"): the light rig by tier, items cut into
+               # cells, the ground's occluders, the library surface's three shaders, the weathering stack, detail normals
+               'res://tests/look/look_test.gd', 'res://tests/cells/cells_test.gd', 'res://tests/occluders/occluders_test.gd',
+               'res://tests/shaders/library_faces_test.gd', 'res://tests/materials/kweather_test.gd', 'res://tests/materials/kdetail_test.gd']
 # The must-pass cases compare_shots.py scores in the nightly (M4, M5). COMPARE_ASSERT False: the step prints the table and
 # passes whatever the scores (the owner reads the first numbers); True: a pair under compare_shots.py's threshold fails the nightly.
 COMPARE_CASES = ['world-sedesert', 'world-iziz']
