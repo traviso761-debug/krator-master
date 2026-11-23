@@ -94,3 +94,24 @@ Found on the way, not fixed (not K1-K5): `tools/check_insulation.py` fails on th
 Phase 0 item); `tools/check_vendor.py` reports Tungang's own `src/37-wk-rec.js` shadowing `core/engine`; `check_source` has 41
 keys over its baseline on the freeze, none of them in these files; `godot/tests/export/pinnacle_world_test.gd` hangs on Windows
 (its synthetic stream goes to `/tmp/...`, so `places` is empty and line 160 errors before `quit`).
+
+## On the merged base (claude/integration-4 bfa74b80c, 2026-11-23)
+
+Merged clean. Every node test above, the Godot shader test and both fingerprints were rerun on the merge, against the same
+pages built from bfa74b80c. The moves are the ones in the tables above; the counts that differ are the base's own:
+
+| core/engine | registry | tris (base -> K1-K5) |
+|---|---|---|
+| islanders | moves | 2,903,345 -> 2,949,245 |
+| lizardmen | same | 1,367,905 -> 1,381,681 |
+| resources | moves | 120,130 -> 120,838 |
+| the other six | as above | as above |
+
+core/furnish: as above, with highlands 549,620 -> 590,028 (+7.4%) off and 3,959,644 -> 4,167,076 (+5.2%) on. Records,
+placements, meshes, lights and interiors are the same on every page.
+
+**GPU shots** (rtx lane, RTX 5060, KRATOR_GL=gpu; each page's `verify.py --all-views` on the base pages, then on the rebuilt
+pages; the owner has the side-by-sides): islanders 301 views (mean pixel difference 0.02 of 255, the most 0.45, the huts' posts
+and furniture), resources 118 (0.02, the nodes' plinths), highlands 217 (0.06, the sacks and barrels), kits/interiors 26 (0.49:
+the shells' corner AO, the clearest move), girder 23 (1.6: mostly its clock, which runs between shots, so that page's views are
+not a clean comparison).
