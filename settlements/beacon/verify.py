@@ -24,6 +24,9 @@ house's own:
                        Watch in the plinth whenever the lamp is lit
   tank-still-water     the saddle tank's water is core/water's still water (WATER.at finds it at its level, between the tank's
                        floor and rim) and drawn by WATER.drawStill
+  offices-kept         the Lamp School's six masters out on the drawn ground on their way to the noon office, then in the hall
+  carts-on-their-days  the oil carts away on the page's day (unless ?day= is 110 or 290); on day 110 up the fort road on the ground
+                       before 11:00 and unloading side by side at the Oil Pit at 11:30
   rimpost-placed       the Rim Post (xa_fort_post) 17 km off on the rimpost station's bearing, its base on the far land as drawn
                        (the highest of its corners and centre), its footing past the lowest, near the model's summit
   rimpost-in-sight     the line from the lamp to the post's light clears the page's ground (the near ground, the far land as drawn;
@@ -86,6 +89,18 @@ if(typeof BC!=="undefined"){const Q=window._beacon||{},P=Q.placed||{},L=BEACON_L
   R.push({name:'lamp-night-on-atmos',ok:agree&&lit>120&&lit<170&&!bad.length,detail:'the lamp\'s night is ATMOS.night half dark or more ('+h.toFixed(2)+' h: '+ATMOS.night(h).toFixed(2)+', '+(agree?'agreed':'NOT agreed')+'); lit '+(lit*5/60).toFixed(1)+' h of the day, the Lamp Watch in the plinth throughout'+(bad.length?'; OUT: '+bad.join('; '):'')});}
  {const T=(window._beaconGrounds||{}).tank,S=T&&WATER.at(T.x,T.z),hh=S?S.heightAt(T.x,T.z):null,drawn=!!(typeof BC_TANK!=='undefined'&&BC_TANK&&BC_TANK.D&&BC_TANK.D.mesh.parent);
   R.push({name:'tank-still-water',ok:!!T&&!!S&&S.kind==='still'&&Math.abs(hh-T.level)<.01&&T.level>T.floor+.3&&T.level<T.rim-.3&&drawn,detail:T?'the Saddle Tank: WATER.at gives '+(S?S.kind+' ('+S.name+') at '+hh+' m':'NOTHING')+', its floor '+T.floor+' m, its rim '+T.rim+' m; '+(drawn?'drawn by WATER.drawStill':'NOT drawn'):'no tank recorded'});}
+ /* P6: the house's day: the offices and the oil carts, drawn at given times (BC_LIFE.tick(t)), then back to the page's clock */
+ {const skip=o=>{for(;o;o=o.parent){if(o.userData&&o.userData.probeSkip||o.visible===false)return true;}return false;},meshes=[];scene.traverse(o=>{if((o.isMesh||o.isInstancedMesh)&&(o.userData.isGround||!skip(o)))meshes.push(o);});
+  const rc=new THREE.Raycaster();rc.camera=camera;const onGround=w=>{rc.set(new THREE.Vector3(w.x,w.y+1,w.z),new THREE.Vector3(0,-1,0));rc.far=3;const h=rc.intersectObjects(meshes,false)[0];return !!h&&Math.abs(h.distance-1)<=.35;};
+  const day=BC_SKY.day*86400,pit=BEACON_LAYOUT.parts.find(p=>p.id==='oilpit').box,cd=BEACON_LIFE.CARTS.days[0]*86400;
+  const noon=BC_LIFE.tick(day+12*3600+60).filter(w=>w.group==='school'),hall=BC_LIFE.tick(day+12*3600+20*60).filter(w=>w.group==='school');
+  const sOk=noon.length===6&&noon.every(w=>w.visible&&onGround(w))&&hall.every(w=>w.where==='at the office'&&!w.visible);
+  const nowC=BC_LIFE.tick().filter(w=>w.group==='carts'),atPit=BC_LIFE.tick(cd+11.5*3600).filter(w=>w.group==='carts'),road=BC_LIFE.tick(cd+10.95*3600).filter(w=>w.group==='carts');
+  const near=w=>w.z>pit[0]-6&&w.z<pit[1]+6&&w.x>pit[2]-6&&w.x<pit[3]+6,isDay=BEACON_LIFE.CARTS.days.indexOf(BC_SKY.day)>=0;
+  const cOk=nowC.length===2&&(isDay||nowC.every(w=>!w.visible))&&atPit.every(w=>w.visible&&w.where==='unloading at the oil pit'&&near(w)&&onGround(w))&&road.every(w=>w.visible&&onGround(w));
+  BC_LIFE.tick();
+  R.push({name:'offices-kept',ok:sOk,detail:'the Lamp School\'s '+noon.length+' masters: at 12:01 '+noon.filter(w=>w.visible&&onGround(w)).length+' out on the drawn ground, at 12:20 '+hall.filter(w=>w.where==='at the office').length+' at the office in the monastery\'s hall'});
+  R.push({name:'carts-on-their-days',ok:cOk,detail:'the oil carts on day '+BC_SKY.day+': '+nowC.map(w=>w.where).join(', ')+'; on day '+BEACON_LIFE.CARTS.days[0]+' at 10:57 '+road.map(w=>w.where+(onGround(w)?'':' OFF the ground')).join(', ')+', at 11:30 '+atPit.map(w=>w.where+(near(w)?'':' AWAY from the pit')+(onGround(w)?'':' OFF the ground')).join(', ')});}
  /* P4: the signal line on the page (src/42-bc-relay.js, targets/house/90u-bc-relay.js) */
  {const Q=window._beaconRelay||{},P=(window._beacon||{}).placed||{},rel=BEACON_LAYOUT.lamp.relays.find(r=>r.id==='rimpost'),g=Q.ground||[],hi=Math.max(...g),lo=Math.min(...g),st=BEACON_LAMP.STATIONS.find(s=>s.id==='rimpost');
   const ok=P.xa_fort_post===1&&g.length===5&&Math.abs(Q.at[1]-(hi+.05))<.02&&Q.at[1]-Q.drop<lo&&Math.abs(Q.km-17)<1.5&&Math.abs(Q.bearing-st.bearing)<1.5&&Math.abs(hi-rel.ground)<40;

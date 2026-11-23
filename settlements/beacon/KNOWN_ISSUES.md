@@ -44,6 +44,12 @@ Still the page's, or waiting:
   draws the order's monks. They walk the routes of `src/41-bc-life.js` on the ground; the Lamp Watch goes into the plinth at its
   door and is hidden there (no interiors), and the kora's resting monks stand in a row at the monastery's gate, in the watch's
   way for the few seconds it passes at 17:40.
+- **The oil carts (P6)** are stand-ins too (a bed on two wheels, four oil jars, a box ox: `90t-bc-life.js`) until a kit has the
+  Xanadui ox cart. They are seen only on their days (`?day=110` or `?day=290`, between about 10:55 and 13:05), and only on the
+  last 287 m of the fort road the layout draws: their 240 km from the oil field is the open world's (B7). The lamp's draw is
+  checked against the carts in `test-life.js` (pitYear); the sim does not move the oil yet.
+- **The offices (P6)** walk only the Lamp School's six masters: the chapter lives in the Yellow Monastery's own ranges, and the
+  monastery is a host's building with no interiors here, so its assembly is not drawn.
 - **The Rim Post (P4)** stands 17 km off on the middle volcano's summit (`lamp.relays`, `targets/house/90u-bc-relay.js`) on the
   far land as drawn, a 500 m mesh: up close it is a plain grey slope, and the post's footing is fitted to that mesh, not to the
   summit at 1:1 (B7). The sight line to it is checked on the page's own ground and clears by about 20 m, against the layout's

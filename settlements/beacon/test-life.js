@@ -56,4 +56,24 @@ const novRight = at => { const n = W.filter(w => w.group === 'novices');
   return n.every(w => at(w, 17 * H + 51 * 60).where === 'carrying the butter' && at(w, 18 * H).where === 'trimming the lamps' && at(w, 23 * H).where === 'in the range' && at(w, 5 * H + 41 * 60).where === 'carrying the butter'); };
 T.ok('the novices carry the butter at dusk and dawn and are in the range by night', novRight(LIFE.at));
 T.neg('a novice left out at night is caught', novRight, (w, t) => (w.group === 'novices' && ((t % D) / H) > 22 ? { where: 'carrying the butter', visible: true } : LIFE.at(w, t)), LIFE.at);
+/* 7. the Lamp School's masters keep the offices: in the monastery's hall at noon and at the dusk office, in the school between */
+const school = W.filter(w => w.group === 'school');
+const officeRight = at => school.length === 6 && school.every(w => at(w, 12 * H + 20 * 60).where === 'at the office' && at(w, 17 * H + 50 * 60).where === 'at the office'
+  && at(w, 15 * H).where === 'in the school' && at(w, 12 * H + 1 * 60).visible);
+T.ok('the Lamp School keeps the offices: at the hall at noon and dusk, in the school between', officeRight(LIFE.at));
+T.neg('a master who skips the noon office is caught', officeRight, (w, t) => (w.k === 2 && ((t % D) / H) > 12.2 && ((t % D) / H) < 12.5 ? { where: 'in the school', visible: false } : LIFE.at(w, t)), LIFE.at);
+
+/* 8. the oil carts come only on their two days, up the fort road to the Oil Pit by 11:00, and are gone by evening */
+const carts = W.filter(w => w.group === 'carts');
+const cartsRight = at => { const on = d => carts.every(w => at(w, d * D + 11.5 * H).where === 'unloading at the oil pit'), off = d => carts.every(w => !at(w, d * D + 11.5 * H).visible);
+  return carts.length === 2 && LIFE.CARTS.days.every(on) && off(200) && off(111) && LIFE.CARTS.days.every(d => carts.every(w => !at(w, d * D + 18 * H).visible)); };
+T.ok('the oil carts come on days 110 and 290 only, unloading at the pit at 11:30, gone by evening', cartsRight(LIFE.at));
+T.neg('carts that come every day are caught', cartsRight, (w, t) => LIFE.at(w, LIFE.CARTS.days[0] * D + ((t % D) + D) % D), LIFE.at);
+
+/* 9. the Oil Pit never runs dry nor overflows: the lamp burns its year's kWh (12.4 h a night on core/atmos's evening at 1 kW) at
+   the tune's 3 kWh a kg, the carts bring 800 kg twice a year and the pit takes up to 2,500 kg */
+const burn = LAMP.yearKWh(12.4) / L.power.kWhPerKg / 365;
+const pitRight = days => { const P = LIFE.pitYear({ burn, days }); return P.min > 0 && P.max <= LIFE.CARTS.cap; };
+T.ok('the Oil Pit holds out the year: never dry, never over its 2,500 kg', pitRight(LIFE.CARTS.days), (() => { const P = LIFE.pitYear({ burn }); return 'burn ' + burn.toFixed(2) + ' kg a day; the pit ' + P.min.toFixed(0) + '..' + P.max.toFixed(0) + ' kg'; })());
+T.neg('one cart trip a year is caught (the pit runs dry)', pitRight, [110], LIFE.CARTS.days);
 T.done();

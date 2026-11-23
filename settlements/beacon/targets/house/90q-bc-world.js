@@ -7,7 +7,8 @@
 const BC_T0=performance.now();
 for(const f of FRAME_HOOKS_PRE)FRAME_HOOKS.push(f);
 camera.near=.5;camera.far=62000;camera.updateProjectionMatrix();
-const BC_SKY={hour:(function(){const q=new URLSearchParams(location.search).get('hour');const h=q==null?NaN:parseFloat(q);return isFinite(h)?((h%24)+24)%24:18.05;})(),day:200,dens:1.0};
+const BC_SKY={hour:(function(){const q=new URLSearchParams(location.search).get('hour');const h=q==null?NaN:parseFloat(q);return isFinite(h)?((h%24)+24)%24:18.05;})(),
+ day:(function(){const q=new URLSearchParams(location.search).get('day');const d=q==null?NaN:parseInt(q,10);return isFinite(d)?((d%365)+365)%365:200;})(),dens:1.0};   /* ?day= (0..364; default 200, midsummer's dry season): the oil carts come on days 110 and 290 */
 KratorSky.attach(scene,7000);scene.fog.density=.000014;
 const bcHemi=scene.children.find(o=>o.isHemisphereLight);
 function bcSkyTick(){KratorSky.update(camera.position,BC_SKY.hour,BC_SKY.day,BC_SKY.dens);const Lg=KratorSky.lighting();
@@ -16,7 +17,7 @@ function bcSkyTick(){KratorSky.update(camera.position,BC_SKY.hour,BC_SKY.day,BC_
 FRAME_HOOKS.push(bcSkyTick);bcSkyTick();
 /* the house's clock (the page's hour running on from ?hour=, a second a second) and core/atmos on it: its evening is the lamp's
    night (90r BC_ENV), and its wave clock ripples the still water (90s, the saddle tank) */
-const bcHourAt=t=>((t/3600)%24+24)%24,bcClockS=()=>BC_SKY.hour*3600+(performance.now()-BC_T0)/1000;
+const bcHourAt=t=>((t/3600)%24+24)%24,bcClockS=()=>BC_SKY.day*86400+BC_SKY.hour*3600+(performance.now()-BC_T0)/1000;   /* seconds from the year's start */
 ATMOS.init({THREE,scene,camera,hour:()=>bcHourAt(bcClockS()),onFrame:fn=>FRAME_HOOKS.push(fn),ground:(x,z)=>terrainH(x,z),seed:20261123,
  err:m=>console.warn(m),viewH:()=>innerHeight,pixelRatio:()=>renderer.getPixelRatio()});
 // ---------------------------------------------------------------- the near ground

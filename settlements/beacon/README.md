@@ -15,7 +15,7 @@ The Order of the Beacon's head house and the Sultan's watch fort over the Rift, 
 | `ground/knoll-patch.json` | the restored knoll's cells, overlaid on the model while the scale-model line is unmerged here |
 | `verify.py` | the page's checks on Xanadu's verify |
 
-    python3 ../../tools/build.py settlements/beacon      # dist/beacon.html (?hour= sets the sky; default 18.4, the lamp lit)
+    python3 ../../tools/build.py settlements/beacon      # dist/beacon.html (?hour= default 18.05, the lamp lit; ?day= default 200; ?day=110&hour=11.5 the oil carts at the pit)
     KRATOR_GL=gpu python3 verify.py dist/beacon.html --assert --views "Overview,The lamp and the fort gate"
     node test-beacon.js && node test-lamp.js && node test-life.js && node test-relay.js
     python3 beacon_blueprint.py                           # floors/*.png and FURNITURE.md
