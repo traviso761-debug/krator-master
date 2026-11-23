@@ -19,6 +19,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/40c-ls-rooms.js` | 67.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the rooms as records (LS.ROOMS: 320, fitted in the drawn shells, doors on shared walls) and their pure checks |
 | `src/40d-ls-sim.js` | 25.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | the people's world for core/simulation: the walk graph, the places, the roles; no three.js, no DOM |
 | `src/40e-ls-kchar.js` | 2.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | each person's core/charactermodels record (KCHAR.stranger on its seed, the tier by role); twin: the same call in kchar_rig.gd |
+| `src/40g-ls-roomlight.js` | 0.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the rooms under a skylight for core/interiors KROOMLIGHT (its buildTable named them until 2026-11-23); kept out of 40c, whose text keys the interiors bake |
 | `src/40h-ls-hamlets.js` | 3.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/42-ls-world.js` | 1.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | WORLD.init and the page's origin on the model; landH/worldWater wrappers |
 | `src/45-host-stage.js` | 19.0 | [web] | 7 | 0 | 3 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | split: the land's shaping (rock, terraces, pads, pond: data) sits with the renderer and BIO.init |
