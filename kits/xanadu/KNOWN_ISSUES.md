@@ -96,6 +96,15 @@ skips it (`BUILD_FAILS`); measured on the page it is unchecked.
   fallen flat on its approach (seated on its lowest points), the passage behind still its dim back. The courses are whole blocks of
   the wall's body (no broken stone faces), and the burnt wood and walls are tints, not textures, until `wall.limewash.scorched` and
   `wood.gate.studded` are delivered (`core/materials/PROMPTS-NEEDED.md` section 53, with `wall.rubble.limewash`).
+- **What a placement can ask of a fort** (2026-11-23, for `settlements/marches`): `o.outline` (a watch fort's convex ward) and
+  `o.gateEdge` draw `XFORT.plan(o)` instead of the size's fixed plan (such a fort gets no interiors: the set's item is planned on
+  the fixed plan); `o.seed` is the fort's look and `o.damageSeed`, when given, what its damage is hashed from, so one fort keeps its
+  look through its three states; a damaged fort's gun whose wall was breached or whose gate burnt lies wrecked inside, its barrel,
+  carriage and a wheel seated on the ground (a ruined fort's guns were carried off); `xa_fort_post` takes `o.fort` (the fort it
+  answers to) and `o.rota` (4 by default), on its group (`userData.post`) and in `window._xaPosts` with its place (not on its core/tags volume: the vocabulary has no such key). The interior set
+  is not planned for a custom outline, and a custom fort's lot (the def's `w`, `d`) is still the fixed plan's.
+- **The Marches' outside works** (the wayside shrine, the stable yard's cistern and trough, the road: `settlements/marches`
+  `src/80m-mr-works.js`, keys `mr_*`) are the kit's to take when that build is merged; they are not here yet.
 - **The monastery size** (`size:'monastery'`, the House of the Tempest round the Qiblai kit's violet monastery) is not built: its
   blueprint is another session's (`settlements/strongwall/tempest/`), and the Qiblai kit is not on this sheet.
 - **The sheet is over its showcase budget**: 6.71 M triangles against 6.0 M (`targets/sheet/89z-rows.js`; reported, a failure

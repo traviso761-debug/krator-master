@@ -94,6 +94,12 @@ for (const size of ['watch', 'march', 'gate']) for (const st of ['damaged', 'rui
   T.ok('the ' + size + ' fort ' + st + ': every standing tower climbed (' + (want.length - miss.length) + ' of ' + want.length + ', gate towers too); every piece of walk reached (' + (pieces - un.length) + ' of ' + pieces + ')',
    !miss.length && !un.length, 'not climbed: ' + miss.join(', ') + '; unreached: ' + un.map(x => x.curtain || x.tower).join(', '));
   if (st === 'damaged') T.ok('the ' + size + ' fort damaged: no flight onto a fallen tower', !W.flights.some(f => fallen.includes(f.tower)), JSON.stringify(W.flights.filter(f => fallen.includes(f.tower)).map(f => f.tower)));}
+ /* a ward of its own outline (the Marches fit each watch fort to its knoll: kits/xanadu 80g draws XFORT.plan(o) for o.outline) */
+ for (const st of ['kept', 'damaged']) {const pent = [[-30, 18], [30, 18], [36, -6], [0, -26], [-36, -6]].reverse(), P = XF.plan({ size: 'watch', outline: pent, gateEdge: 0 }),
+   D = XF.damage(P, st, 32012), W = XF.walks(P, D), F = faults(P, W), fallen = Object.keys(D.towers), climbed = new Set(W.tops.filter(t => t.reached).map(t => t.tower));
+  const miss = P.towers.filter(t => !fallen.includes(t.id) && !climbed.has(t.id)).map(t => t.id), un = [].concat(W.walks, W.flights, W.tops).filter(x => !x.reached);
+  T.ok('a pentagonal watch fort ' + st + ': its walks clear of every block, every standing tower climbed, every piece reached (' + W.walks.length + ' walks, ' + W.flights.length + ' flights)',
+   !F.length && !miss.length && !un.length, F.concat(miss, un.map(x => x.curtain || x.tower)).slice(0, 5).join(' | '));}
  {const P = XF.plan({ size: 'march' }), W = XF.walks(P, XF.damage(P, 'kept', SEED.march)), bad = JSON.parse(JSON.stringify(W)), b = bad.blocks['inner.c1'][1];
   bad.walks.push({ curtain: 'inner.c1', s0: b[0] - 2, s1: b[1] + 2, reached: true });
   T.neg('a walk run through a tower is caught', x => faults(P, x).length === 0, bad, W);
