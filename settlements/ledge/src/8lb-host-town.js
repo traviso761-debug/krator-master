@@ -7,3 +7,5 @@ const LTOWN=(function(){const L=LEDGE_LAYOUT,W=L.world;
   quarters:[{zone:'Z0',id:'ledge-head',focus:'trade',seed:4376,label:'The head\'s Fellgang quarter',character:'stony'},
             {zone:'Z5',id:'ledge-foot',focus:'fishing',seed:4377,label:'The foot\'s Fellgang quarter',character:'low'}],
   mouth:{part:'station',decks:['d.20.c','d.20.e1']}});})();
+/* Dalab's road drawn on the ground (KCLIFF.road): switchbacks at 9 % where a leg is steeper, a cliff leg left as its cut ramp */
+const LROAD=(function(){const L=LEDGE_LAYOUT,G=L.ground;return KCLIFF.road({pts:L.ways.find(w=>w.id==='road').pts.map(p=>[p[0],p[1]]),H:LEDGE_H,w:6,page:G.page,scene,name:'Dalab\'s road'});})();

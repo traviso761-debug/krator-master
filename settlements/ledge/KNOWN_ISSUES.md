@@ -1,4 +1,4 @@
-# Ledge: known issues (2026-11-17)
+# Ledge: known issues (2026-11-22)
 
 What the first page does not do yet, and what it owes. `PLAN.md` section 9 is the plan; 9.11 the owner's open questions.
 
@@ -20,19 +20,29 @@ The one change since: the near ground grid now always meets the far ring's edge 
 
 ## This build's own gaps
 
-- **The shell's look is a first pass**: the decks are slabs, rooms, window strips and mullions in the Ancients' panel; no pods on the
-  soffits, no struts under the prow-side wings, no interiors. The window strips use the kit's plain `winIntact` / `winDead` colours.
-- **The harbour mole stands 15 m over the water** (the apron's height). A stepped landing stage and the boats to Nulab are owed.
 - **The shafts, the station's platforms and the gene bank's vault are inside the rock and not drawn** beyond the station's mouth on the
   face and the lift halls; `KCARVE` / `KCAVERN` (and `KKARST` for the cliff springs) come with the interiors.
 - **The Line's helix is a record**, checked for its grade and its length (64 km), not drawn.
-- **No night**: the lit windows and Loj Fower's green and red lamps are day colours; `NIGHT` is fixed false.
+- **The road drapes over the ground** (`KCLIFF.road`): its switchbacks hold 9 % across the escarpment's fall line, but the escarpment's
+  bumps (40 m of noise at a 90 m scale) give it local grades to ~50 % over 40 m. A cut under it (the ground lowered along the road's record)
+  is owed.
+- **No interiors**; the Dalab set's buildings have no night lights of their own.
 
+## Done (2026-11-22, the known-issues pass)
+
+- **The shell's look**: hung pods under the exposed soffits (lit on lived decks) and raking struts where a layer juts 8 m or more past the
+  one below (`KCLIFF.drawShell`).
+- **The Ancients' cut face** no longer reads flat grey: courses of 12 m blocks, staggered joints, rain streaks and a quarter of the strata's
+  banding (`KCLIFF.rock`).
+- **Night** on the host's clock (`KCLIFF.night`): the lit windows glow warm, Loj Fower's lamps brighten, the soffits' painted daylight goes
+  out, the kit's `NIGHT` follows.
+- **The harbour**: a landing stage 1.5 m over the water along the mole, three stairs down the mole's face, six lake boats moored
+  (`src/8ld-host-harbour.js`).
+- **Dalab's road** drawn down the escarpment to the west gate (`KCLIFF.road`).
 ## Baselined on purpose (2026-11-17)
 
 - `tools/check_assembly_baseline.json`: `CLASH KMAT`, `_materials`, `_texPending`, `onerror` on `dist/ledge.html`. The first, third and
   fourth are the sealed Tungang bundle's `window.X =` lines, which its `window` proxy already keeps off the host's globals (the host's KMAT
   stays, `onerror` is swallowed, the first `_texPending` reset is ignored: `kits/tungang/tungang_bundle.py`); `_materials` is the Ancients'
   and Dalab's two library bindings, as on Span's page.
-- `tools/check_source_baseline.json`: `RAWTEX` x4 in `src/45-host-stage.js`: the four library maps are grey detail maps (`materials.json`,
-  keep 0) read as luminance against their sRGB mean (.47), the grain Span's ground uses; nothing is shaded as a colour from them.
+- `tools/check_source_baseline.json`: `RAWTEX` x4 in `src/45-host-stage.js` (2026-11-17): the grain of four grey detail maps read as luminance. The shader moved to `kits/ancients/cliff/30-cliff-ground.js` on 2026-11-22; the key is now stale and shrinks at the next `--write-baseline`.

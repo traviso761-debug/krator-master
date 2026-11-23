@@ -9,3 +9,5 @@ const LMAT=KCLIFF.mats();
 const LSHELL=(function(){const L=LEDGE_LAYOUT,W=L.world;
  return KCLIFF.drawShell({S:L.stack,decks:L.decks,cores:L.lifts.filter(lf=>lf.kind==='core'),draw:(id,i,salt)=>LEDGE.draw(W,id,i,salt),
   parent:scene,name:'the shell',mats:LMAT,concourse:{'d.20.c':1,'d.20.e1':1}});})();
+/* the city at night on the host's clock: warm lit windows, brighter lamps (KCLIFF.night) */
+const LNIGHT=KCLIFF.night({mats:LMAT,ticks:TICKS});

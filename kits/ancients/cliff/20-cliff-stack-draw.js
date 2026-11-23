@@ -65,6 +65,24 @@ KCLIFF.mats = function () {
     cloth: cloth, ochre: ochre, lampG: lampG, lampR: lampR };
 };
 
+// KCLIFF.night(o): the city at night, on the host's clock. o: {mats (KCLIFF.mats()), ticks (the page's TICKS)}. Between dusk and dawn the
+// lit windows glow warm (the kit's winIntact, shared with the page's other Ancient pieces) and the Tungangs' lamps brighten; the kit's
+// NIGHT switch (its salvage fires) follows. Returns {factor()}.
+KCLIFF.night = function (o) {
+  var M = o.mats, day = new THREE.Color(0x0a2238), warm = new THREE.Color(0xffb46a), bounce = M.soffit.emissive.clone(), n = 0;
+  var sm = function (a, b, x) { var t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
+  var hour = function () { return typeof KHOST !== 'undefined' && KHOST.host && KHOST.host.clock ? KHOST.host.clock.hour : 13; };
+  function apply() {
+    var h = hour(); n = 1 - sm(5.5, 7.5, h) * sm(19.5, 17.5, h);
+    M.win.emissive.copy(day).lerp(warm, n); M.win.emissiveIntensity = .8 + 2.6 * n;
+    M.soffit.emissive.copy(bounce).multiplyScalar(1 - .94 * n);   /* the soffit's painted bounce is daylight: it goes out at night (the target's ldNightDim) */
+    M.lampG.color.setRGB(.49 + .5 * n, 1, .6 + .3 * n); M.lampR.color.setRGB(1, .35 + .3 * n, .24 + .2 * n);
+    if (typeof NIGHT !== 'undefined') NIGHT = n > .5;
+  }
+  o.ticks.push(apply); apply();
+  return { factor: function () { return n; } };
+};
+
 KCLIFF.drawShell = function (o) {
   var S = o.S, decks = o.decks, dr = o.draw, box = KCLIFF.LB.box, R = new THREE.Group(); R.name = o.name || 'the shell'; o.parent.add(R);
   var ST = S.storey * S.storeys, stats = { decks: 0, blocks: 0, stubs: 0 }, CONC = o.concourse || {};
@@ -119,6 +137,21 @@ KCLIFF.drawShell = function (o) {
       for (c = x0 + 3; c < x1 - 1; c += 6) box('panel', c, y + ST / 2, rz + .4, .5, ST, .8);              /* mullions */
       // the soffit's ribs on the strip the layer below does not cover
       if (r > below + 3) for (c = x0 + 5; c < x1 - 2; c += 10) box('soffit', c, y - S.slab - .6, (below + r) / 2, .8, 1.2, r - below);
+      // the target's hung pods: a room box under the exposed soffit every ~30 m where it is wide enough, its window band toward the view
+      // (lit where the deck is lived), its top on the slab's underside (2026-11-22, the look pass)
+      if (r > below + 12) for (c = x0 + 15; c < x1 - 10; c += 30) {
+        if (dr(d.id, i * 70 + Math.round(c), 8) > .35) continue;
+        var pz = below + 4 + (r - below - 8) * dr(d.id, i * 70 + Math.round(c), 9), ph = 3.4 + 2 * dr(d.id, i * 70 + Math.round(c), 10);
+        box('panel', c, y - S.slab - ph / 2, pz, 7, ph, 7, { fm: { ny: 'soffit' } });
+        box(lived && dr(d.id, i * 70 + Math.round(c), 11) < .7 ? 'win' : 'dead', c, y - S.slab - ph / 2, pz + 3.6, 5, Math.min(1.4, ph - 1.2), .2);
+      }
+      // the raking struts: where a layer reaches 8 m or more past the one below, a strut every 40 m from the lower deck's gallery edge up to
+      // the overhang's underside, so the biggest prows read as carried, not floating
+      if (r > below + 8 && d.k > 0) for (c = x0 + 20; c < x1 - 10; c += 40) {
+        var zt = below + (r - below) * .6, zb = Math.max(0, below * .88), yb = y - S.pitch, yt = y - S.slab - .2, dz = zt - zb, dy = yt - yb, len = Math.hypot(dz, dy);
+        var qs = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), -Math.atan2(dy, dz));
+        box('panel', c, (yb + yt) / 2, (zb + zt) / 2, 1.4, 1.4, len, { q: qs });
+      }
       // life and decay on the gallery
       if (dress) for (c = x0 + (dress.planters ? 8 : 10); c < x1 - 6; c += dress.step) {
         if (dress.planters) box('green', c, y + .6, r - 1.4, 3, 1.2, 1.2);

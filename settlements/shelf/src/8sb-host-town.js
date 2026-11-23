@@ -4,3 +4,5 @@
 // plateau (no mouth on the face); no Fellgang houses here (the Travellers live in their wagons).
 const STOWN=(function(){const L=SHELF_LAYOUT,W=L.world;
  return KCLIFF.drawTown({L,scene,ground:SHELF_H,seed:id=>SHELF.seed(W,id),draw:(id,i,salt)=>SHELF.draw(W,id,i,salt),prefix:'shelf',mats:LMAT,quarters:[],mouth:null});})();
+/* Dalab's road drawn on the ground (KCLIFF.road): switchbacks at 9 % where a leg is steeper, a cliff leg left as its cut ramp */
+const SROAD=(function(){const L=SHELF_LAYOUT,G=L.ground;return KCLIFF.road({pts:L.ways.find(w=>w.id==='road').pts.map(p=>[p[0],p[1]]),H:SHELF_H,w:6,page:G.page,scene,name:'Dalab\'s road'});})();

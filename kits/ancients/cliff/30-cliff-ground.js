@@ -30,7 +30,13 @@ KCLIFF.rock = function (o) {
         ' vec3 wall=mix(gw,gd,vDress),flt=mix(texture2D(uS,vSWP.xz*uSs).rgb,texture2D(uT,vSWP.xz*uTs).rgb,smoothstep(' + g(ly[0]) + ',' + g(ly[1]) + ',vSWP.y));',
         ' flt=mix(flt,texture2D(uD,vSWP.xz*uDs).rgb,vDress);',
         ' float l=dot(mix(wall,flt,up),vec3(.333)),g=mix(1.0,clamp(pow(l/.47,1.3),.45,1.6),.6);',
-        ' vec3 rock=mix(mix(strataColor(vSWP,vSWN),vec3(.62,.52,.42),' + g(tm) + '),vec3(.74,.70,.63),vDress);',
+        /* the Ancients' cut face: courses of 12 m blocks, joints staggered every other course, streaked by rain (the wall's map
+           sampled long and thin), a quarter of the strata's banding left in the stone (2026-11-22: it read flat grey from afar) */
+        ' float row=fract(vSWP.y/12.0),seg=fract((vSWP.x+vSWP.z+step(.5,fract(vSWP.y/24.0))*12.0)/24.0);',
+        ' float joint=1.0-.38*(1.0-smoothstep(0.0,.03,row))-.22*(1.0-smoothstep(0.0,.012,seg));',
+        ' float streak=dot(texture2D(uW,vec2((vSWP.x+vSWP.z)*.031,vSWP.y*.0023)).rgb,vec3(.333));',
+        ' vec3 cut=mix(vec3(.74,.70,.63),strataColor(vSWP,vSWN),.25)*joint*mix(.72,1.12,smoothstep(.25,.7,streak));',
+        ' vec3 rock=mix(mix(strataColor(vSWP,vSWN),vec3(.62,.52,.42),' + g(tm) + '),cut,vDress);',
         ' diffuseColor.rgb=mix(rock,diffuseColor.rgb,up)*g;}'].join('\n'));
   };
   m.customProgramCacheKey = function () { return o.key; };
@@ -73,4 +79,57 @@ KCLIFF.ground = function (o) {
   fg.setAttribute('color', new THREE.BufferAttribute(FC, 3)); fg.setAttribute('aDress', new THREE.BufferAttribute(FD, 1));
   var fm = new THREE.Mesh(fg, o.mat); fm.name = 'ground far'; fm.userData.ground = true; fm.userData.probeSkip = true; o.scene.add(fm);
   return { near: mesh, far: fm, verts: NV + fn * fn };
+};
+
+// KCLIFF.road(o) -> {mesh, legs, ramps, maxGrade, length}   a road drawn on the ground as a ribbon (2026-11-22). Each leg of o.pts [[x, z]...]
+// steeper than o.grade (.09) is switched back (zigzag legs across its fall line, each at the grade); a leg steeper than o.cliff (.6) is a
+// cut ramp up a cliff, recorded and not drawn; everything outside the near square (o.page) is left to the far ground. The ribbon lies
+// 0.3 m over o.H, sampled every 4 m. o: {pts, H, w (6), grade, cliff, page, scene, name, color}
+KCLIFF.road = function (o) {
+  var H = o.H, w = o.w || 6, grade = o.grade || .09, cliff = o.cliff || .6, PG = o.page, path = [], ramps = 0, legs = 0;
+  var inside = function (p) { return Math.abs(p[0]) < PG - 1 && Math.abs(p[1]) < PG - 1; };
+  for (var i = 0; i < o.pts.length - 1; i++) {
+    var a = o.pts[i], b = o.pts[i + 1], dx = b[0] - a[0], dz = b[1] - a[1], D = Math.hypot(dx, dz), dy = Math.abs(H(b[0], b[1]) - H(a[0], a[1]));
+    if (D < 1) continue;
+    if (dy / D > cliff) { ramps++; path.push(null); continue; }
+    var ux = dx / D, uz = dz / D, mx = (a[0] + b[0]) / 2, mz = (a[1] + b[1]) / 2;
+    /* the zigzag's sideways step runs along the slope's contour at the leg's middle (across the fall line), not across the leg */
+    var gx = H(mx + 20, mz) - H(mx - 20, mz), gz = H(mx, mz + 20) - H(mx, mz - 20), gl = Math.hypot(gx, gz) || 1, nx = -gz / gl, nz = gx / gl, n = 1, wz = 0;
+    if (dy / D > grade) { n = Math.max(2, Math.ceil(D / 120)); var s = D / n, len = dy / (n * grade); wz = Math.sqrt(Math.max(0, len * len - s * s)) / 2; }
+    for (var j = 0; j <= n; j++) {
+      var off = (j === 0 || j === n) ? 0 : (j % 2 ? wz : -wz);
+      path.push([a[0] + ux * D * j / n + nx * off, a[1] + uz * D * j / n + nz * off]);
+    }
+    legs += n;
+  }
+  var P = [], I = [], C = [], total = 0, maxG = 0, run = [], prof = [], off = 0;   /* off: a gap between runs, so no grade window spans a cut ramp */
+  var flush = function () {
+    off += 1e4; if (run.length < 2) { run = []; return; }
+    var base = P.length / 3;
+    for (var k = 0; k < run.length; k++) {
+      var p = run[k], q = run[Math.min(run.length - 1, k + 1)], r = run[Math.max(0, k - 1)], tx = q[0] - r[0], tz = q[1] - r[1], tl = Math.hypot(tx, tz) || 1;
+      var lx = -tz / tl * w / 2, lz = tx / tl * w / 2;
+      P.push(p[0] + lx, H(p[0] + lx, p[1] + lz) + .3, p[1] + lz, p[0] - lx, H(p[0] - lx, p[1] - lz) + .3, p[1] - lz);
+      if (k) { var a2 = base + (k - 1) * 2; I.push(a2, a2 + 1, a2 + 2, a2 + 1, a2 + 3, a2 + 2); }
+    }
+    run = [];
+  };
+  for (var m = 0; m < path.length - 1; m++) {
+    var p0 = path[m], p1 = path[m + 1];
+    if (!p0 || !p1) { flush(); continue; }
+    var L = Math.hypot(p1[0] - p0[0], p1[1] - p0[1]), ns = Math.max(1, Math.ceil(L / 4));
+    for (var t = 0; t < ns; t++) {
+      var f = t / ns, px = p0[0] + (p1[0] - p0[0]) * f, pz = p0[1] + (p1[1] - p0[1]) * f;
+      if (!inside([px, pz])) { flush(); continue; }
+      if (run.length) { var lp = run[run.length - 1], sl = Math.hypot(px - lp[0], pz - lp[1]); if (sl > 0) { total += sl; prof.push([total + off, H(px, pz)]); } } else prof.push([total + off, H(px, pz)]);
+      run.push([px, pz]);
+    }
+  }
+  flush();
+  /* the road's grade over 40 m of it (a 4 m sample reads the ground's bumps, which the road drapes over: no cut yet) */
+  for (var q = 0, e = 0; q < prof.length; q++) { while (e < prof.length && prof[e][0] - prof[q][0] < 40) e++; if (e < prof.length && prof[e][0] - prof[q][0] < 60) maxG = Math.max(maxG, Math.abs(prof[e][1] - prof[q][1]) / (prof[e][0] - prof[q][0])); }
+  var g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(P, 3)); g.setIndex(I); g.computeVertexNormals();
+  var mesh = new THREE.Mesh(g, new THREE.MeshLambertMaterial({ color: o.color || 0x5e5242, side: THREE.DoubleSide, polygonOffset: true, polygonOffsetFactor: -2 }));
+  mesh.name = o.name || 'the road'; mesh.userData.inspectLabel = mesh.name; mesh.userData.probeSkip = true; mesh.userData.decor = true; o.scene.add(mesh);
+  return { mesh: mesh, legs: legs, ramps: ramps, maxGrade: maxG, length: total };
 };
