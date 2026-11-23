@@ -78,6 +78,11 @@ terrain splat texture and the placement input; (3) the minimap drawn from export
   the Tungang kit's (and the Glaziers' `cholet-front`); the Kimr's nine; the Labyrinth's flora's two; and the batch's own sections 37, 40, 41,
   43-45, 48-50 and parts of 51-52. Each build's `materials.json` slot, then `python3 tools/textures/pack.py <build>`, then judge it in
   the demo kit before it stands (memory: demo before commit); each build's KNOWN_ISSUES.md names its stand-ins.
+  With them, the later deliveries, also unwired: the 2026-11-16 and 2026-11-17 batches' sets the step-4 merge found (`PROMPTS-archived.md`,
+  the two "found at step 4" sections: the Xanadui fort's three, the Qiblai kit's five, the Azure Dream's three, the mined goods' three, the
+  Cliff Lungs' four and the rest), and the 2026-11-23 batch's 13 (`core/materials/PLAN.md` "Delivered 2026-11-23": `kits/coyote` five,
+  `kits/marr` three, `settlements/kirstabal` `wall.slate.coursed`, `kits/xanadu` 88g's two, `biomes/copperglacier` `rock.azurite`,
+  `biomes/ehighlands` `card.beech.southern`).
 
 **Taken by the second integration pass** (`claude/integration-2`, 2026-11-10 and 11; HANDOFF-REBUILD.md): the `dalab` sockets pack,
 water breakup on by default, the catalog's `tile` detail family, the Highlands great-building room kinds in `30-programs.js`, the fauna
