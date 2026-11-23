@@ -43,6 +43,8 @@ godot --headless --path godot --script res://tests/export/isle_test.gd   # Kauto
 godot --headless --path godot --script res://tests/export/isle_test.gd -- --case=world-isle-valapo --town=valapo   # Valapo's village centre, the same checks
 xvfb-run -a godot --path godot --rendering-method gl_compatibility --rendering-driver opengl3 --script res://tests/atmos/waves_gpu_check.gd   # the wave include on a GPU
 godot --headless --path godot --script res://tests/character/kchar_test.gd   # core/charactermodels: records and morphs against the JS golden, a MakeHuman figure from the pieces
+godot --headless --path godot --script res://tests/kits/kkit_test.gd         # core/kits: KratorKits unlocks, ward zoning & construct_order against JS golden
+godot --headless --path godot --script res://tests/kits/multikit_glb_test.gd # KratorMultikitCity: per-kit .glb MultiMeshInstance3D + progressive construction
 godot --path godot --script res://tests/perf/perf_capture.gd -- --cases=world-sedesert,world-iziz   # the perf table (PERF.md, perf-<case>.json): run it on the real GPU, below
 ```
 

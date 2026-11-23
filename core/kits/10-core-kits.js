@@ -432,7 +432,7 @@
     for (var i = 0; i < arr.length; i++) {
       var L = arr[i];
       if (!L || L.died != null) continue;
-      var P = parseKey(L.kit ? (L.kit + ':' + L.key) : L.key, defaultKit);
+      var P = parseKey(L.key, L.kit || defaultKit);
       if (P.kitId && !seen[P.kitId]) { seen[P.kitId] = 1; out.push(P.kitId); }
     }
     return out.sort();

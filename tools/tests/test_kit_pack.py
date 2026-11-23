@@ -6,7 +6,7 @@ Verifies:
   2. One representative kit from each of the 5 lineages (core_engine, vernacular, xanadu, yuni, catalog) seals cleanly,
      passes `node --check`, leaks 0 globals, and builds real 3D Three.js meshes simultaneously in one Node VM.
 """
-import json, os, sys
+import json, os, sys, tempfile
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 TOOLS = os.path.dirname(HERE)
@@ -27,7 +27,7 @@ def main():
     assert sorted(M['kits'].keys()) == sorted(expected_ids), 'manifest kit list drifted from kit_pack.KITS'
     assert M['totalPieces'] >= 1200, 'unexpectedly low totalPieces: %d' % M['totalPieces']
 
-    # Smoke-test 1 representative kit from every single engine lineage simultaneously in one shared Node VM
+    # 1. Phase 1: Smoke-test 1 representative kit from every single engine lineage simultaneously in one shared Node VM
     reps = ['islanders', 'highlands-republican', 'xanadu', 'locus', 'voth']
     rep_lineages = {kit_pack.KIT_BY_ID[r]['lineage'] for r in reps}
     assert rep_lineages == {'core_engine', 'vernacular', 'xanadu', 'yuni', 'catalog'}
@@ -40,10 +40,38 @@ def main():
         p = r.get('proto') or {}
         assert p.get('built') and p.get('meshes', 0) > 0, '%s proto() built 0 meshes: %s' % (kid, p)
 
-    print('PASS test_kit_pack.py: %d kits (%d pieces) in manifest; 5/5 engine lineages smoked with 0 leaked globals'
-          % (M['kitCount'], M['totalPieces']))
+    # 2. Phase 3: Sidecar emission (<15 MB per file, shared pack deduplication between iziz-vernacular & pylon)
+    with tempfile.TemporaryDirectory() as td_side:
+        idx = kit_pack.emit_sidecars(td_side, ['islanders', 'iziz-vernacular', 'pylon'], include_textures=True)
+        assert idx['maxFileBytes'] <= idx['partLimitBytes'], 'sidecar exceeded 15 MB budget: %d' % idx['maxFileBytes']
+        assert sorted(idx['packs'].keys()) == ['islanders', 'iziz'], 'expected shared iziz pack deduplication'
+        assert len(idx['packs']['islanders']['files']) >= 2, '28 MB islanders pack must split into <=15 MB chunks'
+        for pf in idx['packs']['islanders']['files']:
+            assert os.path.isfile(os.path.join(td_side, *pf.split('/')))
+
+    # 3. Phase 4: Headless per-kit Godot .glb prototype libraries across all 5 engine lineages
+    with tempfile.TemporaryDirectory() as td_glb:
+        summary = kit_pack.export_kit_glbs(td_glb, reps, max_pieces=2, variants=1)
+        for kid in reps:
+            s = summary[kid]
+            assert s['ok'] and s['protos'] >= 2 and s['tris'] > 0 and s['gltfMeshes'] > 0
+            glb_bytes = open(os.path.join(td_glb, kid + '.glb'), 'rb').read()
+            gjson = kit_pack.validate_glb_bytes(glb_bytes)
+            assert any((m.get('extras') or {}).get('krator_pack') is not None for m in gjson.get('materials', []))
+            meta = json.load(open(os.path.join(td_glb, kid + '.glb.json'), encoding='utf-8'))
+            assert meta['protoCount'] == s['protos']
+            for _pk, pm in meta['prototypes'].items():
+                for surf in pm['surfaces']:
+                    q = surf['quantiles']
+                    assert len(q) == 21 and q[0] == 0 and q[-1] == surf['tris']
+                    assert all(q[i] <= q[i + 1] for i in range(20)), 'non-monotonic quantiles in %s' % kid
+                    assert sum(surf['phases']) == surf['tris'], 'phase counts != tris in %s' % kid
+
+    print('PASS test_kit_pack.py: Phases 1/3/4 green (%d kits, <=15 MB split sidecars, 5/5 lineage .glb exports verified)'
+          % M['kitCount'])
     return 0
 
 
 if __name__ == '__main__':
     sys.exit(main())
+

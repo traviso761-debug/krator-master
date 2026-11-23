@@ -46,3 +46,4 @@ kits/fauna/rig/sources/**/*.json !filter !diff !merge text
 # the one-world case (GODOT-PLAN.md M7, openworld/oidong-highrift/tools/godot_case.py): its places carry the villages at 1:1 (~13 MB of glb each)
 godot/data/world-oidong-highrift/**/*.glb filter=lfs diff=lfs merge=lfs -text
 godot/data/world-oidong-highrift/**/tex/*.webp filter=lfs diff=lfs merge=lfs -text
+godot/data/kits/**/*.glb filter=lfs diff=lfs merge=lfs -text
