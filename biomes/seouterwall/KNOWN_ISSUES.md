@@ -1,9 +1,11 @@
 # seouterwall — known issues
 
-- [ ] **The real-GPU verify is owed.** Station 1 was built in a cloud session with no GPU: `verify.py --assert --all-views` ran in
-      software GL (SwiftShader) only. The GPU run (`KRATOR_GPU_LANE=auto`, the Arc or the RTX) is owed on the owner's machine before the
-      merge, with a look at the views (the ground's tints, the strata's tint on the crags, the impostors' gain against the near larch).
-      SwiftShader cannot speak for the texture units a GPU links, the frame time, or the colours as the owner sees them.
+- [ ] **The real-GPU verify is owed, and queued** (`HANDOFF-REBUILD.md`, the order of turns, 2026-11-10). The six stations were built in a
+      cloud session with no GPU. In software GL each page's own checks and negatives pass (the host checks, the export profile, the probe's
+      volumes; stations 1 and 2 ran the full `verify.py --assert` with every invariant passing), but the full `--all-views` run (about an
+      hour a page in SwiftShader) was stopped at the owner's word (2026-11-11: "just put them in the real-GPU queue"). On the GPU:
+      `for p in dist/seouterwall*.html; do KRATOR_GL=gpu python3 verify.py $p --assert --all-views || break; done`, with a look at the views
+      (the ground's tints, the strata on the crags, the impostors' gain against the near larch, the tarns' colours, the God-Bore's sway).
 - [x] **The station stood in the model's pin hollow, not in the Godsgate's corridor.** Moved 2026-11-10 (the owner: "move the stations to
       be appropriate to the map"): station 1 stands on the corridor's divide, px 1027.5,1256 (PLAN.md section 7.2). The model's pin and
       `test_smodel.py`'s row stay at px 1031,1252: re-pinning them is the scale model's turn (`tools/scale-model/`, not this kit's files).
