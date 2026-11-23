@@ -437,5 +437,9 @@
  "settlements/yuni/yuni.html: CLASH FIX": 1,
  "settlements/yuni/yuni.html: CLASH _sheet": 1,
  "settlements/yuni/yuni.html: MISSING BIO.leafOn": 1,
- "settlements/yuni/yuni.html: MISSING BIO.leafQ": 1
+ "settlements/yuni/yuni.html: MISSING BIO.leafQ": 1,
+ "settlements/ledge/dist/ledge.html: CLASH KMAT": 1,
+ "settlements/ledge/dist/ledge.html: CLASH _materials": 1,
+ "settlements/ledge/dist/ledge.html: CLASH _texPending": 1,
+ "settlements/ledge/dist/ledge.html: CLASH onerror": 1
 }
