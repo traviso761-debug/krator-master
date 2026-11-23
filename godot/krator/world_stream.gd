@@ -868,7 +868,7 @@ static func _is_foliage_bucket(b: MeshInstance3D) -> bool:
 		return false
 	if sm.shader == KratorBiome.FOLIAGE:
 		return true
-	if sm.shader == KratorKmat.LIB:
+	if KratorKmat.is_library(sm.shader):
 		var at_p = sm.get_shader_parameter("alpha_test")
 		if (at_p is int or at_p is float) and float(at_p) > 0.0:
 			var rids: PackedStringArray = b.get_meta("krator_record_ids", PackedStringArray())

@@ -67,14 +67,18 @@ if(SVIX&&SVIX.on){
   const R=KFURN.create({catalog:KFURN.catalogOf(KratorFurniture),interiors:KratorInteriors,on:true,interiorsOn:true,walk:typeof KWALK!=='undefined'?KWALK:null,
    seed:(o,ctx)=>ctx.seed,draw:()=>({})});
   KFURN.useBatch(R,KratorFurniture,KratorInteriors,{indexed:true});SVIX.buildings=SVIX.rooms=SVIX.pieces=0;SVIX.errors.length=0;SVIX.R=R;
+  SVIX.lightRooms=[];SVIX.lightPlans={};SVIX.lightTable=null;
   for(const rec of REG){if(rec.parent)continue;const it=svixItem(rec);if(!it)continue;
    try{const fi=R.interior(it,rec.x,rec.z,rec.ry,svixTagAdapter(R.adapter,rec,it),{baseY:rec.y,prefix:(rec.tid||rec.key)+'.',seed:(DEFS[rec.key]&&DEFS[rec.key].seed|0)+(rec.v|0)*7});
     rec.interior=fi.summary;SVIX.buildings++;
+    for(const rm of fi.result.inst.rooms||[])SVIX.lightRooms.push(rm);Object.assign(SVIX.lightPlans,fi.result.plans);
     for(const id in fi.result.plans)for(const l of fi.result.plans[id].lights||[]){const k=Math.round(l.x/.6)+','+Math.round(l.y/.6)+','+Math.round(l.z/.6);
      if(HALOKEY.has(k))continue;HALOKEY.add(k);const c=hc(0xffc878);HALOS.push({x:l.x,y:l.y,z:l.z,r:c.r,g:c.g,b:c.b,big:false});}}
    catch(e){SVIX.errors.push(rec.key+': '+(e&&e.message||e));reportErr('interior '+rec.key+': '+(e&&e.stack||e));}}
   const g=SVIX.group=R.batch.flush(WORLD);g.name='interiors';g.userData.furniture=true;g.userData.interiors=true;
   g.traverse(m=>{if(m.isMesh){const f=m.material.userData.family;m.castShadow=f!=='glow'&&f!=='glass';m.receiveShadow=true;KFURN.linearColours(m.geometry);if(!m.material.map)svfDetail(m.material);}});
+  /* the room light (K2, I1-I4): the planned rooms' daylight table over their doorways (KROOMLIGHT through kits/interiors) */
+  if(KratorInteriors.roomLight)SVIX.lightTable=KratorInteriors.roomLight(SVIX.lightRooms,SVIX.lightPlans);
   SVIX.missing=Object.keys(R.missing||{}).length;SVIX.ms=Math.round(performance.now()-t0);
   if(typeof nightRebuild==='function')nightRebuild();
   return W0;};
@@ -82,5 +86,14 @@ if(SVIX&&SVIX.on){
 /* U: the interiors on or off, by the query (the world is built once, at load) */
 function svixToggle(){if(!SVIX)return false;const q=new URLSearchParams(location.search);if(SVIX.on)q.delete('interiors');else q.set('interiors','1');
  location.search=q.toString();return !SVIX.on;}
-function svixReport(){if(!SVIX)return null;return {sets:SVIX.sets,on:SVIX.on,items:REG.filter(r=>!r.parent&&svixItem(r)).length,units:SVIX.units.length,
- buildings:SVIX.buildings,rooms:SVIX.rooms,pieces:SVIX.pieces,replaced:SVIX.replaced,missingKeys:SVIX.missing,errors:SVIX.errors.slice(),ms:SVIX.ms};}
+function svixReport(){if(!SVIX)return null;const LT=SVIX.lightTable,rows=LT?LT.order.map(id=>LT.byId[id]):[];
+ return {sets:SVIX.sets,on:SVIX.on,items:REG.filter(r=>!r.parent&&svixItem(r)).length,units:SVIX.units.length,
+ buildings:SVIX.buildings,rooms:SVIX.rooms,pieces:SVIX.pieces,replaced:SVIX.replaced,missingKeys:SVIX.missing,errors:SVIX.errors.slice(),ms:SVIX.ms,
+ light:LT?{rooms:rows.length,lit:rows.filter(r=>r.hop===0).length,reached:rows.filter(r=>r.hop>0).length,dark:rows.filter(r=>r.hop<0).length}:null};}
+/* the room an eye stands in (its polygon, floor to ceiling), and that room's light pool (KROOMLIGHT.pickPool: the room's and its
+   open neighbours' windows and lamps, two hero lamps for shadows) and the interiors.json v2 export for Godot's KInteriorsLight */
+function svixRoomAt(x,y,z){if(!SVIX||!SVIX.lightRooms)return null;const G=KratorInteriors.geom;
+ for(const rm of SVIX.lightRooms)if(y>=rm.y-.2&&y<=rm.y+rm.h&&G.inside(rm.poly,x,z))return rm;return null;}
+function svixLightPool(eye,o){const rm=svixRoomAt(eye[0],eye[1],eye[2]);if(!rm||!SVIX.lightTable)return [];
+ return KratorInteriors.lightPool(Object.assign({eye,eyeRoom:rm.id,table:SVIX.lightTable,rooms:SVIX.lightRooms,plans:SVIX.lightPlans},o||{}));}
+function svixExport(){return SVIX&&SVIX.lightRooms?KratorInteriors.exportInteriors(SVIX.lightRooms,SVIX.lightPlans):null;}

@@ -61,7 +61,7 @@ fragment only some builds want lives in `materials/opt/` instead, and a build ta
 
 | File | What | Opted in by |
 |---|---|---|
-| `opt/69a-world-uv.js` | `vWorldUV(mat,K[,Kv])`: world-unit UVs for instanced boxes, re-tiled by instance scale per face. One shader program per K | `kits/ancients`, `settlements/iziz`, `highlands`, `xanadu`, `reedlake` |
+| `opt/69a-world-uv.js` | `vWorldUV(mat,K[,Kv])`: world-unit UVs for instanced boxes, re-tiled by instance scale per face. K is a uniform (`uWuvK`), so every K shares one program, a kbake clone too (K1, 2026-11-23) | `kits/ancients`, `settlements/iziz`, `highlands`, `xanadu`, `reedlake` |
 
 **The world-UV fix (2026-10-01).** The hook used to be a closure copied into several places (`69b-vern-mat.js` in
 Iziz, Highlands, Xanadu, Reedlake and Dalab; `izsWorldUV` in `77z-iziz-style.js`). three.js keys a compiled program
@@ -971,7 +971,7 @@ A subfolder, so the Ancients-lineage builds that take every top-level `core/mate
 |---|---|
 | `23-mat-record.js` | `KMAT` ([G data]): `record()` checks a material record in the Phase 3 vocabulary; `adapter(build, recs)`, `table(build)` (the export's material table: maps named by library set or `TEX.def` id); `pack()`/`packed()` hold the build's library pack |
 | `24-tex-def.js` | `TEX` ([G data]): `kind()`, `def()`, `fn()` (the pure pixel function), `pixels()` (the bytes a canvas fill writes), `defs()` |
-| `25-matlib-host.js` | [web]: `KMAT.mode` from `?mat=proc`, `KMAT.breakupOn` from `?breakup=0`, `KMAT.textures(entry, {aniso, flipY})` (data URLs to three.js textures; `flipY:false` for a card that replaces a canvas or data texture; `window._texPending`), `KMAT.image(entry, cb)` (the decoded image, for a build composing an atlas), `KMAT.specularHook`, `KMAT.breakupHook`, `KMAT.libHooks`/`libKey` |
+| `25-matlib-host.js` | [web]: `KMAT.mode` from `?mat=proc`, `KMAT.breakupOn` from `?breakup=0`, `KMAT.textures(entry, {aniso, flipY})` (data URLs to three.js textures; `flipY:false` for a card that replaces a canvas or data texture; `window._texPending`), `KMAT.image(entry, cb)` (the decoded image, for a build composing an atlas), `KMAT.specularHook`, `KMAT.breakupHook` (their numbers uniforms, `uKmSpec`, `uKmBreak`: K1), `KMAT.libHooks`/`libKey` (the hooks' kind: one program per kind) and `libId` (the old value-bearing key, for ids) |
 | `test-record.js` | `node core/materials/record/test-record.js` |
 
 **Used by** `settlements/girder` (its `build.py` reads this folder like `core/lod/`, and generates `46-matlib-pack.js`

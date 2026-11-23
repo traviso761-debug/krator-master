@@ -41,14 +41,52 @@
     m.rotation.x = -Math.PI / 2; m.position.y = y0;
     return m;
   }
-  /* a box from u0..u1 along a wall, y0..y1, standing outside it (thick) */
-  function wallBox(W, u0, u1, y0, y1, thick, mat) {
+  /* CORNER AO (K2/I4, GRAPHICS-TERRAIN-PROPOSAL.md 12d): KROOMLIGHT.vertexCornerAO baked into the walls' vertex colours, so
+     the floor-wall, ceiling-wall and wall-wall joints darken (0.44 at a trihedral corner) in both engines. A wall box is
+     gridded on the room's lines (BoxGeometry 5 x 3, its lines moved to the room's corners, the reach in from them, the floor
+     plus the reach and the ceiling less it, each clamped to the box), so a vertex stands on every joint, the darkening ends
+     at the reach and the wall's middle keeps its colour; only faces inside the room's box and turned into it take it (the
+     outer face and the roof stay as they were). opt.cornerAO false turns it off; opt.aoReach (KROOMLIGHT's 0.85 m). */
+  function lines(a, b, marks) {   /* a .. b with the marks clamped into it, sorted: the grid's lines along one axis */
+    return [a].concat(marks.map(function (m) { return Math.min(b, Math.max(a, m)); })).concat([b]).sort(function (p, q) { return p - q; });
+  }
+  function gridBox(len, h, thick, xs, ys) {   /* xs (6) and ys (4): the lines in the box's own frame, -len/2 .. len/2, -h/2 .. h/2 */
+    const g = new THREE.BoxGeometry(len, h, thick, xs.length - 1, ys.length - 1, 1), P = g.attributes.position;
+    const idx = function (v, half, n) { return Math.max(0, Math.min(n, Math.round((v + half) / (2 * half) * n))); };
+    for (let i = 0; i < P.count; i++) {
+      P.setX(i, xs[idx(P.getX(i), len / 2, xs.length - 1)]);
+      P.setY(i, ys[idx(P.getY(i), h / 2, ys.length - 1)]);
+    }
+    return g;
+  }
+  const _ao = { p: null, n: null };
+  function bakeAO(m, ao) {
+    const RL = root.KROOMLIGHT; if (!RL || !ao) return;
+    if (!_ao.p) { _ao.p = new THREE.Vector3(); _ao.n = new THREE.Vector3(); }
+    m.updateMatrix();
+    const g = m.geometry, P = g.attributes.position, N = g.attributes.normal, B = ao.box, e = 0.05, col = new Float32Array(P.count * 3);
+    const cx = (B[0] + B[3]) / 2, cy = (B[1] + B[4]) / 2, cz = (B[2] + B[5]) / 2;
+    for (let i = 0; i < P.count; i++) {
+      const p = _ao.p.fromBufferAttribute(P, i).applyMatrix4(m.matrix), n = _ao.n.fromBufferAttribute(N, i).applyQuaternion(m.quaternion);
+      const inside = p.x > B[0] - e && p.x < B[3] + e && p.y > B[1] - e && p.y < B[4] + e && p.z > B[2] - e && p.z < B[5] + e;
+      const facing = n.x * (cx - p.x) + n.y * (cy - p.y) + n.z * (cz - p.z) > 0;
+      const f = inside && facing ? RL.vertexCornerAO(p.x, p.y, p.z, n.x, n.y, n.z, B, ao.reach) : 1;
+      col[i * 3] = col[i * 3 + 1] = col[i * 3 + 2] = f;
+    }
+    g.setAttribute('color', new THREE.BufferAttribute(col, 3));
+  }
+  /* a box from u0..u1 along a wall, y0..y1, standing outside it (thick); ao: {box, reach, y0, top} bakes the corner AO */
+  function wallBox(W, u0, u1, y0, y1, thick, mat, ao) {
     const len = u1 - u0, h = y1 - y0;
     if (len < 0.01 || h < 0.01) return null;
-    const m = new THREE.Mesh(new THREE.BoxGeometry(len, h, thick), mat);
-    const uc = (u0 + u1) / 2;
+    const uc = (u0 + u1) / 2, yc = (y0 + y1) / 2, r = ao ? ao.reach : 0;
+    const geo = ao ? gridBox(len, h, thick,
+      lines(u0, u1, [0, r, W.len - r, W.len]).map(function (u) { return u - uc; }),
+      lines(y0, y1, [ao.box[1] + r, ao.box[4] - r]).map(function (y) { return y - yc; })) : new THREE.BoxGeometry(len, h, thick);
+    const m = new THREE.Mesh(geo, mat);
     m.position.set(W.a[0] + W.t[0] * uc - W.n[0] * thick / 2, y0 + h / 2, W.a[1] + W.t[1] * uc - W.n[1] * thick / 2);
     m.rotation.y = Math.atan2(-W.t[1], W.t[0]);
+    bakeAO(m, ao);
     return m;
   }
 
@@ -64,6 +102,9 @@
     const mats = { wall: V.lambert(pal.wall), floor: V.lambert(pal.floor), roof: V.lambert(pal.roof), trim: V.lambert(pal.trim),
       glass: root.KGLASS ? root.KGLASS.material(THREE, 'clear') : V.lambert(0x9fc4d8, { transparent: true, opacity: 0.35, depthWrite: false }),
       fade: V.lambert(pal.wall, { transparent: true, opacity: 0.16, depthWrite: false }) };
+    /* the corner AO's room box (the polygon's bounds, floor to ceiling); the walls' material then reads the vertex colour */
+    const AO = opt.cornerAO !== false && root.KROOMLIGHT ? { box: [room.bbox[0], y0, room.bbox[1], room.bbox[2], top, room.bbox[3]], reach: opt.aoReach == null ? 0.85 : opt.aoReach } : null;
+    if (AO) mats.wall.vertexColors = true;
     const outer = G.offset(room.poly, thick);
     const floor = slab(outer, y0 - 0.25, y0, mats.floor);
     floor.userData.room = room.id; floor.userData.part = 'floor';
@@ -87,18 +128,18 @@
       let u = -ea;
       function add(g, m) { if (m) g.add(m); }
       for (const o of ops) {
-        add(full, wallBox(W, u, o.u0, y0, top, thick, mats.wall));
-        add(stub, wallBox(W, u, o.u0, y0, y0 + SH, thick, mats.wall));
-        add(full, wallBox(W, o.u0, o.u1, y0 + o.y1, top, thick, mats.wall));            /* lintel */
+        add(full, wallBox(W, u, o.u0, y0, top, thick, mats.wall, AO));
+        add(stub, wallBox(W, u, o.u0, y0, y0 + SH, thick, mats.wall, AO));
+        add(full, wallBox(W, o.u0, o.u1, y0 + o.y1, top, thick, mats.wall, AO));            /* lintel */
         if (o.y0 > 0) {
-          add(full, wallBox(W, o.u0, o.u1, y0, y0 + o.y0, thick, mats.wall));          /* under a window */
-          add(stub, wallBox(W, o.u0, o.u1, y0, y0 + Math.min(o.y0, SH), thick, mats.wall));
+          add(full, wallBox(W, o.u0, o.u1, y0, y0 + o.y0, thick, mats.wall, AO));          /* under a window */
+          add(stub, wallBox(W, o.u0, o.u1, y0, y0 + Math.min(o.y0, SH), thick, mats.wall, AO));
           add(full, wallBox(W, o.u0, o.u1, y0 + o.y0, y0 + o.y1, 0.04, mats.glass));
         }
         u = o.u1;
       }
-      add(full, wallBox(W, u, W.len + eb, y0, top, thick, mats.wall));
-      add(stub, wallBox(W, u, W.len + eb, y0, y0 + SH, thick, mats.wall));
+      add(full, wallBox(W, u, W.len + eb, y0, top, thick, mats.wall, AO));
+      add(stub, wallBox(W, u, W.len + eb, y0, y0 + SH, thick, mats.wall, AO));
       stub.visible = false;
       const mid = [W.a[0] + W.t[0] * W.len / 2, W.a[1] + W.t[1] * W.len / 2];
       const rec = { wall: W.i, out: [-W.n[0], -W.n[1]], mid: mid, full: full, stub: stub };

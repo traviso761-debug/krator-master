@@ -89,6 +89,7 @@ MANIFEST = os.path.join(HERE, 'build-manifest.json')
 DETERMINISTIC = {'00-head.html', '44-core-ports.js', '05-palette.js', '09-lod.js', '97-lod-auto.js', '10-core.js', '80-camera.js', '81-glow.js',
                  '85-probe.js', '86-inspect.js', '87-pathviz.js', '98-start.js', '99-tail.html'}
 DETERMINISTIC |= {'06-core-khook.js', '06b-core-kcolor.js'}   # core/shader (no rnd())
+DETERMINISTIC.add('20-core-roomlight-host.js')   # core/interiors KNLV, the night light volume (no rnd())
 DETERMINISTIC |= {'50-core-furnish.js', '52-core-furnish-draw.js', '53-core-furnish-host.js'}   # core/furnish (no rnd())
 DETERMINISTIC |= {'08-core-rand.js', '50-core-tags.js', '52-core-tags-vocab.js', '53-core-tags-host.js'}   # core/rand, core/tags (no rnd())
 PALETTE_FILE = '05-palette.js'
@@ -268,6 +269,8 @@ def main():
                 paths[f] = os.path.join(d, f)
     paths.setdefault('20-core-walk.js', WALK_FILE)
     khost.resolve(paths, CORE_HOST)        # a src/ copy with a shell file's name would override it (none today)
+    # the night light volume, one shared copy (core/interiors/20-core-roomlight-host.js KNLV, K4 of GRAPHICS-TERRAIN-PROPOSAL.md 12d)
+    paths.setdefault('20-core-roomlight-host.js', os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'interiors', '20-core-roomlight-host.js'))
     order = sorted(list(paths) + list(vb))
     bodies = dict(vb)
     for f in order:
