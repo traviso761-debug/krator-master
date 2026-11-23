@@ -39,6 +39,10 @@ Still the page's, or waiting:
   - the byres are a long shed beside the kit's farmstead and dairy, and the herd is not drawn;
   - the roads are ribbons on the 2 km-a-pixel ground, laid only as far as the layout's ways reach; the region's own ways are
     the open-world session's (B7).
+- **The walkers (P3)** are stand-in figures (a robe, a head, a sash: `targets/house/90t-bc-life.js`) until core/charactermodels
+  draws the order's monks. They walk the routes of `src/41-bc-life.js` on the ground; the Lamp Watch goes into the plinth at its
+  door and is hidden there (no interiors), and the kora's resting monks stand in a row at the monastery's gate, in the watch's
+  way for the few seconds it passes at 17:40.
 - **No Rim Post** on this page: it stands 17 km off on the middle volcano (`lamp.relays`), outside the near ground.
 - **The ground** is the model at 2 km a pixel, bicubic, with the house's levels cut and filled into it. The knoll's faces, the
   saddle and the spur at 1:1 wait for the region (B7). The view "Over the Rift from above the fort" shows the problem: the

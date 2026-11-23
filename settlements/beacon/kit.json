@@ -29,6 +29,7 @@
   "30-bc-layout.js",
   "31-bc-rules.js",
   "40-bc-lamp.js",
+  "41-bc-life.js",
   "89q0-qb-helpers.js",
   "89q0x-qb-xanadui.js",
   "89q0y-qb-script.js",
@@ -38,6 +39,7 @@
   "89z-rows.js",
   "89zs-bc-site.js",
   "90q-bc-world.js",
+  "90t-bc-life.js",
   "91z-views.js"
  ]
 }

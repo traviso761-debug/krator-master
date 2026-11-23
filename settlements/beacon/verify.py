@@ -15,6 +15,9 @@ house's own:
   layout-rules         every rule of src/31-bc-rules.js passes on the layout the page drew from
   lamp-lit             at the page's hour (?hour=, default 18.4) the lamp is lit by its night (src/40-bc-lamp.js), sweeping or
                        signalling, and its keepers on watch
+  life-on-the-ground   the house's walkers (src/41-bc-life.js: the Lamp Watch, the kora's six, the novices' round): every one
+                       drawn, six or more out at the page's hour, each on the drawn ground under its feet
+  watch-at-the-plinth  while the lamp is lit the Lamp Watch's three are in the plinth (the page's figures hidden there)
 
     KRATOR_GL=gpu python3 verify.py dist/beacon.html --assert --views "Overview,The lamp and the fort gate"
 """
@@ -52,7 +55,15 @@ if(typeof BC!=="undefined"){const Q=window._beacon||{},P=Q.placed||{},L=BEACON_L
  {let n=0,bad=0,worst=0;(typeof BC_WAYS!=='undefined'?BC_WAYS:[]).forEach(M=>{const p=M.geometry.attributes.position;for(let i=0;i<p.count;i+=3){const d=p.getY(i)-terrainH(p.getX(i),p.getZ(i));n++;if(d<.1||d>.4){bad++;worst=Math.max(worst,Math.abs(d));}}});
   R.push({name:'ways-on-the-ground',ok:n>100&&!bad,detail:n+' road vertices sampled, '+bad+' off the ground'+(bad?' (worst '+worst.toFixed(2)+' m)':' (each 0.22 m over it)')});}
  {const S=window._beaconLamp||{};
-  R.push({name:'lamp-lit',ok:S.lit===true&&(S.mode==='sweep'||S.mode==='signal')&&Array.isArray(S.keepers)&&S.keepers.length===3,detail:'at '+BC_SKY.hour+' h the lamp is '+(S.lit?'lit':'DARK')+', '+S.mode+(S.bearing!=null?' at '+S.bearing+' deg':'')+(S.station?' to '+S.station:'')+'; the Lamp Watch '+(S.keepers||[]).join(', ')});}}
+  R.push({name:'lamp-lit',ok:S.lit===true&&(S.mode==='sweep'||S.mode==='signal')&&Array.isArray(S.keepers)&&S.keepers.length===3,detail:'at '+BC_SKY.hour+' h the lamp is '+(S.lit?'lit':'DARK')+', '+S.mode+(S.bearing!=null?' at '+S.bearing+' deg':'')+(S.station?' to '+S.station:'')+'; the Lamp Watch '+(S.keepers||[]).join(', ')});}
+ /* P3: the house's life (src/41-bc-life.js, targets/house/90t-bc-life.js) */
+ {const Lf=window._beaconLife||[],vis=Lf.filter(w=>w.visible),skip=o=>{for(;o;o=o.parent){if(o.userData&&o.userData.probeSkip||o.visible===false)return true;}return false;};
+  const rc=new THREE.Raycaster(),bad=[],meshes=[];rc.camera=camera;scene.updateMatrixWorld(true);scene.traverse(o=>{if((o.isMesh||o.isInstancedMesh)&&(o.userData.isGround||!skip(o)))meshes.push(o);});   /* the terrain is probeSkip (kept out of the volumes' probe) but is the ground */
+  vis.forEach(w=>{rc.set(new THREE.Vector3(w.x,w.y+1,w.z),new THREE.Vector3(0,-1,0));rc.far=3;const h=rc.intersectObjects(meshes,false)[0];
+   if(!h||Math.abs(h.distance-1)>.35)bad.push(w.id+' ('+w.where+') '+(h?(1-h.distance).toFixed(2)+' m off':'nothing under it'));});
+  R.push({name:'life-on-the-ground',ok:Lf.length===BEACON_LIFE.walkers().length&&vis.length>=6&&!bad.length,detail:Lf.length+' walkers, '+vis.length+' out at '+BC_SKY.hour+' h ('+[...new Set(vis.map(w=>w.where))].join(', ')+'), each on the drawn ground under its feet (a ray down from a metre up)'+(bad.length?'; OFF: '+bad.slice(0,4).join('; '):'')});}
+ {const S=window._beaconLamp||{},Lf=window._beaconLife||[],wt=Lf.filter(w=>w.group==='watch'),inP=wt.filter(w=>w.where==='in the plinth'&&!w.visible).length;
+  R.push({name:'watch-at-the-plinth',ok:wt.length===3&&(S.lit?inP===3:true)&&(S.lit===true),detail:'the lamp '+(S.lit?'lit':'DARK')+'; the Lamp Watch\'s three '+wt.map(w=>w.where).join(', ')});}}
 return R;}"""
 xv.ASSERT_JS = xv.ASSERT_JS.rstrip()[:-len('return R;}')] + HOUSE_JS
 assert xv.ASSERT_JS.endswith('return R;}'), 'settlements/xanadu/verify.py ASSERT_JS no longer ends with return R;}'

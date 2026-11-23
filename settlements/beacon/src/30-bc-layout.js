@@ -123,7 +123,7 @@ const BEACON_LAYOUT = (function () {
   const ways = [
     { id: 'road', name: 'the road from Erehwon (105 km straight, round the rim)', pts: [[-560, -330], [-420, -200], [-310, -40], [-246, 0]] },
     { id: 'fortroad', name: 'the fort road (outside the precinct\'s west wall to the Ward Gate)', pts: [[-310, -40], [-250, -72], [-120, -72], [-60, -60], [-48.44, -44.64]] },
-    { id: 'kora.path', name: 'the kora (three times, eyes lowered)', pts: [[-130, 0], [-130, -30], [-72, -30], [-72, 30], [-130, 30], [-130, 0]] }];
+    { id: 'kora.path', name: 'the kora (three times, eyes lowered)', pts: [[-72, 0], [-72, -30], [-130, -30], [-130, 30], [-72, 30], [-72, 0]] }];   /* from the monastery's gate (south), clockwise seen from above: west first */
 
   /* the generator's cable, from the engines to the plinth, through the fort's gate passage */
   const cable = { from: 'generator', to: 'plinth', pts: [[-50, -16], [-41, -9], [-34, -1.5], [-27.6, -1.5], [-6, -1.5]] };
