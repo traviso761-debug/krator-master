@@ -43,7 +43,11 @@ Still the page's, or waiting:
   draws the order's monks. They walk the routes of `src/41-bc-life.js` on the ground; the Lamp Watch goes into the plinth at its
   door and is hidden there (no interiors), and the kora's resting monks stand in a row at the monastery's gate, in the watch's
   way for the few seconds it passes at 17:40.
-- **No Rim Post** on this page: it stands 17 km off on the middle volcano (`lamp.relays`), outside the near ground.
+- **The Rim Post (P4)** stands 17 km off on the middle volcano's summit (`lamp.relays`, `targets/house/90u-bc-relay.js`) on the
+  far land as drawn, a 500 m mesh: up close it is a plain grey slope, and the post's footing is fitted to that mesh, not to the
+  summit at 1:1 (B7). The sight line to it is checked on the page's own ground and clears by about 20 m, against the layout's
+  41 m on the 2 km grid: the closest point is the summit's own shoulder, just short of the post. The line on to the Eye Post
+  (56 km east) is off the far land's square and is not drawn or checked on the page.
 - **The ground** is the model at 2 km a pixel, bicubic, with the house's levels cut and filled into it. The knoll's faces, the
   saddle and the spur at 1:1 wait for the region (B7). The view "Over the Rift from above the fort" shows the problem: the
   spur falls gently for its first 4 km, so at dusk the Rift reads only as the far land's band on the horizon, not as a

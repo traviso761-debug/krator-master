@@ -18,6 +18,12 @@ house's own:
   life-on-the-ground   the house's walkers (src/41-bc-life.js: the Lamp Watch, the kora's six, the novices' round): every one
                        drawn, six or more out at the page's hour, each on the drawn ground under its feet
   watch-at-the-plinth  while the lamp is lit the Lamp Watch's three are in the plinth (the page's figures hidden there)
+  rimpost-placed       the Rim Post (xa_fort_post) 17 km off on the rimpost station's bearing, its base on the far land as drawn
+                       (the highest of its corners and centre), its footing past the lowest, near the model's summit
+  rimpost-in-sight     the line from the lamp to the post's light clears the page's ground (the near ground, the far land as drawn;
+                       Earth's curve with k 0.13) by 10 m or more
+  rimpost-answers      the post's light shows as BEACON_RELAY.answering says at the page's clock: on the lamp's slot to it, not on
+                       the next, never by day
 
     KRATOR_GL=gpu python3 verify.py dist/beacon.html --assert --views "Overview,The lamp and the fort gate"
 """
@@ -63,7 +69,17 @@ if(typeof BC!=="undefined"){const Q=window._beacon||{},P=Q.placed||{},L=BEACON_L
    if(!h||Math.abs(h.distance-1)>.35)bad.push(w.id+' ('+w.where+') '+(h?(1-h.distance).toFixed(2)+' m off':'nothing under it'));});
   R.push({name:'life-on-the-ground',ok:Lf.length===BEACON_LIFE.walkers().length&&vis.length>=6&&!bad.length,detail:Lf.length+' walkers, '+vis.length+' out at '+BC_SKY.hour+' h ('+[...new Set(vis.map(w=>w.where))].join(', ')+'), each on the drawn ground under its feet (a ray down from a metre up)'+(bad.length?'; OFF: '+bad.slice(0,4).join('; '):'')});}
  {const S=window._beaconLamp||{},Lf=window._beaconLife||[],wt=Lf.filter(w=>w.group==='watch'),inP=wt.filter(w=>w.where==='in the plinth'&&!w.visible).length;
-  R.push({name:'watch-at-the-plinth',ok:wt.length===3&&(S.lit?inP===3:true)&&(S.lit===true),detail:'the lamp '+(S.lit?'lit':'DARK')+'; the Lamp Watch\'s three '+wt.map(w=>w.where).join(', ')});}}
+  R.push({name:'watch-at-the-plinth',ok:wt.length===3&&(S.lit?inP===3:true)&&(S.lit===true),detail:'the lamp '+(S.lit?'lit':'DARK')+'; the Lamp Watch\'s three '+wt.map(w=>w.where).join(', ')});}
+ /* P4: the signal line on the page (src/42-bc-relay.js, targets/house/90u-bc-relay.js) */
+ {const Q=window._beaconRelay||{},P=(window._beacon||{}).placed||{},rel=BEACON_LAYOUT.lamp.relays.find(r=>r.id==='rimpost'),g=Q.ground||[],hi=Math.max(...g),lo=Math.min(...g),st=BEACON_LAMP.STATIONS.find(s=>s.id==='rimpost');
+  const ok=P.xa_fort_post===1&&g.length===5&&Math.abs(Q.at[1]-(hi+.05))<.02&&Q.at[1]-Q.drop<lo&&Math.abs(Q.km-17)<1.5&&Math.abs(Q.bearing-st.bearing)<1.5&&Math.abs(hi-rel.ground)<40;
+  R.push({name:'rimpost-placed',ok,detail:'the Rim Post '+(P.xa_fort_post===1?'placed':'NOT placed')+' '+Q.km+' km off at '+Q.bearing+' deg (the station\'s '+st.bearing+'); its base at '+(Q.at||[])[1]+' m on the far land as drawn ('+lo.toFixed(2)+'..'+hi.toFixed(2)+' under its corners and centre; the model\'s summit '+rel.ground+' m), its footing '+Q.drop+' m'});}
+ {const Q=window._beaconRelay||{},la=(window._beacon||{}).lampY,M=[BC_FARMESH],rc=new THREE.Raycaster(),dn=new THREE.Vector3(0,-1,0);let nn=0,nf=0;
+  const ground=(x,z)=>{if(Math.abs(x)<1900&&Math.abs(z)<1900){nn++;return terrainH(x,z);}rc.set(new THREE.Vector3(x,6000,z),dn);rc.far=12000;const h=rc.intersectObjects(M,false)[0];nf++;return h?6000-h.distance:null;};
+  const S=BEACON_RELAY.sight([0,la,0],Q.light||[0,0,0],ground,{n:600});
+  R.push({name:'rimpost-in-sight',ok:S.clear>=10&&nf>400,detail:'the line from the lamp ('+la+' m) to the Rim Post\'s light ('+(Q.light||[])[1]+' m, '+(S.D/1000).toFixed(2)+' km) clears the page\'s ground by '+S.clear.toFixed(1)+' m at its closest ('+(S.at?(S.at[2]*100).toFixed(0)+'% along':'')+'; Earth\'s curve, k '+BEACON_RELAY.K+'; '+nn+' samples on the near ground, '+nf+' on the far land as drawn; the layout\'s 2 km grid gives '+BEACON_LAYOUT.lamp.relays[0].seeLamp+' m)'});}
+ {const Q=window._beaconRelay||{},h0=Math.floor(Q.t/3600)*3600,on=BEACON_RELAY.answering('rimpost',h0+20,BC_ENV).lit,off=BEACON_RELAY.answering('rimpost',h0+BEACON_LAMP.SLOT+20,BC_ENV).lit,day=BEACON_RELAY.answering('rimpost',12*3600+20,BC_ENV).lit;
+  R.push({name:'rimpost-answers',ok:Q.shown===Q.lit&&on&&!off&&!day,detail:'at the page\'s clock ('+(Q.t/3600).toFixed(2)+' h) the post\'s light '+(Q.shown?'shown':'dark')+' ('+Q.why+'), as BEACON_RELAY.answering says; this hour it shows on the lamp\'s slot to it ('+(on?'yes':'NO')+'), not on the next ('+(off?'LIT':'dark')+'), never by day ('+(day?'LIT':'dark')+')'});}}
 return R;}"""
 xv.ASSERT_JS = xv.ASSERT_JS.rstrip()[:-len('return R;}')] + HOUSE_JS
 assert xv.ASSERT_JS.endswith('return R;}'), 'settlements/xanadu/verify.py ASSERT_JS no longer ends with return R;}'
