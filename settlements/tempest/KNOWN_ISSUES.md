@@ -24,7 +24,9 @@
 - **The interiors (step 3)** furnish the House's own stacks by room kind from the catalog's Xanadu sets: the blueprint's NEW
   pieces (bow racks, arrow bins, bow forms, saddle racks, the Storm banner, the gonkhang's pillars, the oath stone:
   `settlements/strongwall/tempest/FURNITURE.md`) are not in the catalog yet, so the Sword Hall is furnished as an armoury and the
-  stables as stables. The violet monastery's rooms (its cells, the dukhang, the gonkhang: sheets M1-MR) are the Qiblai kit's
+  stables as stables. Three of them, shared with the Beacon's list (`xanadu_common_hour_drum`, `xanadu_common_reader_seat`,
+  `xanadu_common_signal_mirror`), are in the catalog on the Beacon's branch (`claude/beacon-monastery-d509f5` 94ffe4aae, through
+  Integration 2): once that is on this line, the Drum of the Hours, the refectory and the signal rooms take them by these ids. The violet monastery's rooms (its cells, the dukhang, the gonkhang: sheets M1-MR) are the Qiblai kit's
   interiors, which its own city draws lazily (`settlements/qiblai` 90t); they are not wired here.
 - **The stair alley.** Every range against the outer curtain stands 2.5 m further in than sheets T1 and T2 draw it: XFORT.walks
   climbs a curtain 2.5 m off its line, and a stair inside a hollow range was cut off from its walk.

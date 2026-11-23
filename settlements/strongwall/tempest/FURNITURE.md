@@ -338,7 +338,7 @@ The owner, 2026-11-16: the violet Prismarch lives here, in a tower between the w
 | xanadu_court_protector_pillar | 4 | a gonkhang pillar dressed with old swords, bows, lamellar coats and helmets bound in silk scarves |
 | xanadu_works_cheese_press | 3 |  |
 | xanadu_trade_forge | 3 |  |
-| xanadu_common_signal_mirror | 3 | a signal mirror on a tripod with a sighting vane and a shutter |
+| xanadu_common_signal_mirror | 3 | a signal mirror on a tripod with a sighting vane and a shutter [in the catalog since 2026-11-23, shared with the Beacon: kits/catalog krator-master-furniture-xanadu.js, claude/beacon-monastery-d509f5 94ffe4aae, through Integration 2] |
 | xanadu_court_throne | 3 |  |
 | xanadu_court_strongbox | 3 |  |
 | xanadu_training_horse_target | 2 | a small square board on a post beside the riding track, for the mounted archer |
@@ -347,10 +347,10 @@ The owner, 2026-11-16: the violet Prismarch lives here, in a tower between the w
 | xanadu_court_name_wall | 2 |  |
 | xanadu_court_storm_banner | 2 | the Violet Storm's banner on its lacquer stand: violet silk, the eight-spoked wheel struck through by lightning |
 | xanadu_court_map_table | 2 |  |
-| xanadu_common_hour_drum | 2 | a big barrel drum on a lacquer stand, beaten for the hours |
+| xanadu_common_hour_drum | 2 | a big barrel drum on a lacquer stand, beaten for the hours [in the catalog since 2026-11-23, shared with the Beacon: kits/catalog krator-master-furniture-xanadu.js, claude/beacon-monastery-d509f5 94ffe4aae, through Integration 2] |
 | xanadu_court_bookcase | 2 |  |
 | xanadu_court_screen | 2 |  |
-| xanadu_common_reader_seat | 1 | the refectory reader's raised seat and lectern, where a monk sings the Song at meals |
+| xanadu_common_reader_seat | 1 | the refectory reader's raised seat and lectern, where a monk sings the Song at meals [in the catalog since 2026-11-23, shared with the Beacon: kits/catalog krator-master-furniture-xanadu.js, claude/beacon-monastery-d509f5 94ffe4aae, through Integration 2] |
 | xanadu_works_tally_board | 1 |  |
 | xanadu_works_weigh_scale | 1 |  |
 | xanadu_court_oath_stone | 1 | the oath stone: a waist-high block with the wheel carved on its face, worn by hands |
@@ -367,10 +367,10 @@ The owner, 2026-11-16: the violet Prismarch lives here, in a tower between the w
 - `xanadu_arms_saddle_rack`: saddles on wall pegs, bridles and the violet saddle-cloths below (x123)
 - `xanadu_common_alarm_gong`: the great bronze alarm gong in a timber frame, its beater on a chain (x5)
 - `xanadu_common_beacon_basket`: an iron fire basket on a stone pedestal, the fuel stacked beside it (the fort asset's beacon, as furniture) (x1)
-- `xanadu_common_hour_drum`: a big barrel drum on a lacquer stand, beaten for the hours (x2)
+- `xanadu_common_hour_drum`: a big barrel drum on a lacquer stand, beaten for the hours [in the catalog since 2026-11-23, shared with the Beacon: kits/catalog krator-master-furniture-xanadu.js, claude/beacon-monastery-d509f5 94ffe4aae, through Integration 2] (x2)
 - `xanadu_common_mounting_block`: a stepped stone mounting block (x31)
-- `xanadu_common_reader_seat`: the refectory reader's raised seat and lectern, where a monk sings the Song at meals (x1)
-- `xanadu_common_signal_mirror`: a signal mirror on a tripod with a sighting vane and a shutter (x3)
+- `xanadu_common_reader_seat`: the refectory reader's raised seat and lectern, where a monk sings the Song at meals [in the catalog since 2026-11-23, shared with the Beacon: kits/catalog krator-master-furniture-xanadu.js, claude/beacon-monastery-d509f5 94ffe4aae, through Integration 2] (x1)
+- `xanadu_common_signal_mirror`: a signal mirror on a tripod with a sighting vane and a shutter [in the catalog since 2026-11-23, shared with the Beacon: kits/catalog krator-master-furniture-xanadu.js, claude/beacon-monastery-d509f5 94ffe4aae, through Integration 2] (x3)
 - `xanadu_court_oath_stone`: the oath stone: a waist-high block with the wheel carved on its face, worn by hands (x1)
 - `xanadu_court_protector_pillar`: a gonkhang pillar dressed with old swords, bows, lamellar coats and helmets bound in silk scarves (x4)
 - `xanadu_court_storm_banner`: the Violet Storm's banner on its lacquer stand: violet silk, the eight-spoked wheel struck through by lightning (x2)
