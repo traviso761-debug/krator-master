@@ -167,7 +167,7 @@ Every build is a folder with `src/` fragments and a `build.py`. Open a build's `
 | [`biomes/swbay`](biomes/swbay/INDEX.md) | 18 | 223 | 58 | Biome kit: see `biomes/README.md`. |
 | [`biomes/swhighlands`](biomes/swhighlands/INDEX.md) | 20 | 206 | 29 | Biome kit: see `biomes/README.md`. |
 | [`biomes/swlowlands`](biomes/swlowlands/INDEX.md) | 18 | 247 | 68 | Biome kit: see `biomes/README.md`. |
-| [`biomes/throne`](biomes/throne/INDEX.md) | 22 | 328 | 97 | The Throne: the central volcano. Station 1, the plume's edge on the south-east shoulder: a rift of cones, an acid lake, lava flows of every age (the kit's flow model), the shoulder's familiar trees giving way under the plume to Krator's own glowing life. |
+| [`biomes/throne`](biomes/throne/INDEX.md) | 23 | 332 | 97 | The Throne: the central volcano. Station 1, the plume's edge on the south-east shoulder: a rift of cones, an acid lake, lava flows of every age (the kit's flow model), the shoulder's familiar trees giving way under the plume to Krator's own glowing life. |
 | [`biomes/tiers`](biomes/tiers/INDEX.md) | 21 | 155 | 27 | Biome kit: see `biomes/README.md`. |
 | [`biomes/twins`](biomes/twins/INDEX.md) | 18 | 98 | 17 | Biome kit: see `biomes/README.md`. |
 | [`biomes/wouterwall`](biomes/wouterwall/INDEX.md) | 16 | 119 | 40 | Biome kit: see `biomes/README.md`. |

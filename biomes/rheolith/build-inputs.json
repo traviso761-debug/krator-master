@@ -11,7 +11,7 @@
     "biomes/rheolith/src/45-host-stage.js": "9cfd0877df875218178817f1646c90a38623bb0547a25a5106fa49cf9e33f0ba",
     "biomes/rheolith/src/48-host-therm.js": "12874b45cdb89ecdf4011cacae6f2b220356d51f93b4e860114241c4f10974d0",
     "biomes/rheolith/src/50-rheolith-species.js": "9c2b33f079ee1e55e5e3025a817678df31a90ce8582b4cdd2a7d3b3d2e0e8c20",
-    "biomes/rheolith/src/60-rheolith-place.js": "09582bb3c1576ff926b3c119a84682922cc1387728cc3f7743d20fe647fe02b3",
+    "biomes/rheolith/src/60-rheolith-place.js": "b246f37578911c5f63a314fc275592312efaee58b1b3111b4ab1cbcaa6147ae7",
     "biomes/rheolith/src/70-rheolith.js": "6f67f7420b4e8cf5e36a7c96d596e0c78465349c6a09568d91bfcfc4e3793f8a",
     "biomes/rheolith/src/84-host-ground.js": "b8ffe3d8e1255c56fddf3c7cd0aa1cd98932ec22d3b0cf5095ae927470b939cf",
     "biomes/rheolith/src/85-host-far.js": "505b68c995f060e7dbc0493e9057298619974c9ba3eaa8972bf7bff123abd222",
@@ -93,6 +93,7 @@
     "core/host/97-host-minimap.js": "24758908dc1f6be4fed09e0aa3a23270187ccd93ff41ada5974bf49b194fc162",
     "core/host/98-host-edit.js": "89038217cde180a076b33d41644bd95285837a9d63f09199bd944e507596997e",
     "core/host/99-host-cutaway.js": "c67cea97b1b18a2a8b3bbc329d5bb5df7fd007a4aee033b21d91fe75cd0ad300",
+    "core/host/host.py": "18f80becdd343f7375785bc5aabdda290761d34376d890ebff8fab0d91fb5288",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
     "core/minimap/88-core-minimap.js": "b6c7e9c662f079c8f97cfc9f6bac2fea115b660f9b417056da54c3bf3c1129a1",
@@ -129,21 +130,24 @@
     "core/water/ext/61-core-water-plume.js": "3b1eb79ddcc511cd6c09dc145253e116ed8377252c7d7811d2d9b3fa35faf18f",
     "core/water/geyser/52-core-water-geyser.js": "804a8b84e108965002396666c0647991ef073416f0206b02aeba81be3be19ac1",
     "core/water/geyser/52b-core-water-geyser-draw.js": "2e403145a06bf9b7a06fe4a5e6831d3ae0724a8eba1fbb21b4039ab2ae6cfd3e",
-    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47"
+    "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
+    "tools/buildlib.py": "24ec6d636869007e626446a0b8e9cc886fd595af0c9f95b78c4d4b272a18ec0e",
+    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47",
+    "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
     "biomes/rheolith": "8133b86d92b631a41bb06b8fbdeb78612cb4c5f3fdf735bb73ae9cf9beab8c81",
     "biomes/rheolith/src": "f6c197fba2a77a01b235add626ca49295331689bd9b27aa4f6b27a91b4f2268e",
     "biomes/rheolith/stations/throat": "5d1d4e22311bcbbacf8f390cea1fa24e84d4c802c6f6752f2ddd1de7c522c0bb",
     "core/host": "d729ffbc0ed36e68e9036bd9c454abc6462a27b22a4bc16b88c38d836e6f4a37",
-    "tools": "5d8cb54bfd5566913f21e3e094a6a85418e1354e6e39cf6138ec20bda1add512",
+    "tools": "3dddf4cc1485975fa04f8ae3ecd4b11cf8303908ced5d46f4dcfc671861aec51",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/rheolith/dist/rheolith.html": "02e418f73e5659d4c43bd4faf8c79bb5e7e9edfd2080a0de2ac6ed0802150fc4"
+    "biomes/rheolith/dist/rheolith.html": "41863e5411877602d33871c57fcb7d9e1633ca58b32eb8d595415e7bc5c5a882"
    },
    "outputs_raw": {
-    "biomes/rheolith/dist/rheolith.html": "02e418f73e5659d4c43bd4faf8c79bb5e7e9edfd2080a0de2ac6ed0802150fc4"
+    "biomes/rheolith/dist/rheolith.html": "41863e5411877602d33871c57fcb7d9e1633ca58b32eb8d595415e7bc5c5a882"
    }
   },
   "build.py --station throat": {
@@ -156,7 +160,7 @@
     "biomes/rheolith/src/45-host-stage.js": "9cfd0877df875218178817f1646c90a38623bb0547a25a5106fa49cf9e33f0ba",
     "biomes/rheolith/src/48-host-therm.js": "12874b45cdb89ecdf4011cacae6f2b220356d51f93b4e860114241c4f10974d0",
     "biomes/rheolith/src/50-rheolith-species.js": "9c2b33f079ee1e55e5e3025a817678df31a90ce8582b4cdd2a7d3b3d2e0e8c20",
-    "biomes/rheolith/src/60-rheolith-place.js": "09582bb3c1576ff926b3c119a84682922cc1387728cc3f7743d20fe647fe02b3",
+    "biomes/rheolith/src/60-rheolith-place.js": "b246f37578911c5f63a314fc275592312efaee58b1b3111b4ab1cbcaa6147ae7",
     "biomes/rheolith/src/70-rheolith.js": "6f67f7420b4e8cf5e36a7c96d596e0c78465349c6a09568d91bfcfc4e3793f8a",
     "biomes/rheolith/src/84-host-ground.js": "b8ffe3d8e1255c56fddf3c7cd0aa1cd98932ec22d3b0cf5095ae927470b939cf",
     "biomes/rheolith/src/85-host-far.js": "505b68c995f060e7dbc0493e9057298619974c9ba3eaa8972bf7bff123abd222",
@@ -238,6 +242,7 @@
     "core/host/97-host-minimap.js": "24758908dc1f6be4fed09e0aa3a23270187ccd93ff41ada5974bf49b194fc162",
     "core/host/98-host-edit.js": "89038217cde180a076b33d41644bd95285837a9d63f09199bd944e507596997e",
     "core/host/99-host-cutaway.js": "c67cea97b1b18a2a8b3bbc329d5bb5df7fd007a4aee033b21d91fe75cd0ad300",
+    "core/host/host.py": "18f80becdd343f7375785bc5aabdda290761d34376d890ebff8fab0d91fb5288",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
     "core/minimap/88-core-minimap.js": "b6c7e9c662f079c8f97cfc9f6bac2fea115b660f9b417056da54c3bf3c1129a1",
@@ -274,20 +279,23 @@
     "core/water/ext/61-core-water-plume.js": "3b1eb79ddcc511cd6c09dc145253e116ed8377252c7d7811d2d9b3fa35faf18f",
     "core/water/geyser/52-core-water-geyser.js": "804a8b84e108965002396666c0647991ef073416f0206b02aeba81be3be19ac1",
     "core/water/geyser/52b-core-water-geyser-draw.js": "2e403145a06bf9b7a06fe4a5e6831d3ae0724a8eba1fbb21b4039ab2ae6cfd3e",
-    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47"
+    "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
+    "tools/buildlib.py": "24ec6d636869007e626446a0b8e9cc886fd595af0c9f95b78c4d4b272a18ec0e",
+    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47",
+    "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
     "biomes/rheolith/src": "f6c197fba2a77a01b235add626ca49295331689bd9b27aa4f6b27a91b4f2268e",
     "biomes/rheolith/stations/throat": "5d1d4e22311bcbbacf8f390cea1fa24e84d4c802c6f6752f2ddd1de7c522c0bb",
     "core/host": "d729ffbc0ed36e68e9036bd9c454abc6462a27b22a4bc16b88c38d836e6f4a37",
-    "tools": "5d8cb54bfd5566913f21e3e094a6a85418e1354e6e39cf6138ec20bda1add512",
+    "tools": "3dddf4cc1485975fa04f8ae3ecd4b11cf8303908ced5d46f4dcfc671861aec51",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/rheolith/dist/rheolith.html": "02e418f73e5659d4c43bd4faf8c79bb5e7e9edfd2080a0de2ac6ed0802150fc4"
+    "biomes/rheolith/dist/rheolith.html": "41863e5411877602d33871c57fcb7d9e1633ca58b32eb8d595415e7bc5c5a882"
    },
    "outputs_raw": {
-    "biomes/rheolith/dist/rheolith.html": "02e418f73e5659d4c43bd4faf8c79bb5e7e9edfd2080a0de2ac6ed0802150fc4"
+    "biomes/rheolith/dist/rheolith.html": "41863e5411877602d33871c57fcb7d9e1633ca58b32eb8d595415e7bc5c5a882"
    }
   }
  }

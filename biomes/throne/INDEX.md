@@ -11,7 +11,7 @@ Built output (never open it; edit `src/` and rebuild): `dist/throne-ash.html`, `
 Build: `cd biomes/throne && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
 
-From `core/terrain/` (shared; see `core/README.md`): `43-core-ground.js`, `45-core-horizon.js`, `47-core-therm.js`
+From `core/terrain/` (shared; see `core/README.md`): `43-core-ground.js`, `44-core-farfield.js`, `45-core-horizon.js`, `47-core-therm.js`
 
 From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `31j-core-joint.js`, `34-core-impostor.js`, `40-core-place.js`, `41-core-env.js`, `42-core-export.js`, `43-core-export-host.js`
 
@@ -24,17 +24,18 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 1 |  |
-| `45-host-stage.js` | 8 | the land before the lava (42); the plume (90) |
+| `45-host-stage.js` | 8 | the land before the lava (42); the plume (91) |
 | `46-biome-throne-flows.js` | 6 |  |
 | `47-host-land.js` | 10 | what is cut after the lava (22); the fields (cached below; these are the definiti (59); the host binding (88) |
 | `50-biome-throne-species.js` | 97 **big** | palettes (17); the tree species (85); harvest (biomes/FRUIT.md) (169); the small plants (the floor), tagged (208); leaf textures (275); bark textures (345); geometries local to this biome (375); materials (506); the library (core/materials/PLAN.md, The Throne) (550); instanced items (718) |
 | `55-biome-throne-trees.js` | 87 **big** | zones from the fields (12); colour (the maths is the core's, BIO.col) (60); polyline helpers (Girder's) (75); keep-clear between trees (85); foliage helpers (95); the builders (155); the geyser isle's shore (stations/isle) (431); the cloud forest (stations/cloudforest) (499); the lava casts (530); impostors (the far canopy) (548) |
 | `60-biome-throne-floor.js` | 43 **big** | small plants (26); the zone planters (98); the pass (148); the shallows (the geyser isle: stations/isle) (196); the sulphur life (vent country: stations/vents) (240); the cold (the glacier: stations/glacier) (273); the cave (the lava tube: stations/tube) (292); the new flora (stations 1 and 7: HANDOFF-FLORA.m (310) |
-| `70-biome-throne.js` | 8 |  |
+| `70-biome-throne.js` | 10 |  |
 | `80-host-core.js` | 1 |  |
 | `82-host-sky.js` | <1 |  |
 | `83-host-heat.js` | 6 |  |
 | `84-host-ground.js` | 16 | the ground (18); the water: the acid lake, the hot pools (117); the steam (121) |
+| `85-host-far.js` | 3 |  |
 | `89-host-sky.js` | 2 |  |
 | `89a-host-atmos.js` | 2 |  |
 | `89w-host-water.js` | 3 |  |
@@ -53,15 +54,15 @@ Each station builds one page (`build.py --station <name>`) from its own fragment
 | Station | Fragments | KB |
 |---|---|---|
 | ashdesert | 00-head.html, 45-host-stage.js, 47-host-land.js, 82-host-sky.js, 84-host-ground.js, 86-host-ash.js, 89-host-atmos.js, 89-host-sky.js, 89z-host-build.js, 99-host-take.js | 46 |
-| blast | 00-head.html, 45-host-stage.js, 47-host-land.js, 82-host-sky.js, 84-host-ground.js, 86-host-blast.js, 89-host-atmos.js, 89-host-sky.js, 89z-host-build.js, 99-host-take.js | 45 |
-| caldera | 00-head.html, 45-host-stage.js, 47-host-land.js, 82-host-sky.js, 84-host-ground.js, 86-host-caldera.js, 89-host-atmos.js, 89-host-sky.js, 89z-host-build.js, 99-host-take.js | 63 |
+| blast | 00-head.html, 45-host-stage.js, 47-host-land.js, 82-host-sky.js, 84-host-ground.js, 86-host-blast.js, 89-host-atmos.js, 89-host-sky.js, 89z-host-build.js, 99-host-take.js | 46 |
+| caldera | 00-head.html, 45-host-stage.js, 47-host-land.js, 82-host-sky.js, 84-host-ground.js, 86-host-caldera.js, 89-host-atmos.js, 89-host-sky.js, 89y-host-rheo.js, 89z-host-build.js, 99-host-take.js | 69 |
 | cloudforest | 00-head.html, 45-host-stage.js, 47-host-land.js, 82-host-sky.js, 84-host-ground.js, 85-host-mist.js, 86-host-cloud.js, 89-host-atmos.js, 89-host-sky.js, 89w-host-water.js, 89z-host-build.js, 99-host-take.js | 59 |
 | delta | 00-head.html, 45-host-stage.js, 47-host-land.js, 82-host-sky.js, 84-host-ground.js, 86-host-delta.js, 89-host-atmos.js, 89-host-sky.js, 89w-host-sea.js, 89z-host-build.js, 99-host-take.js | 51 |
 | frontier | 00-head.html, 45-host-stage.js, 47-host-land.js, 82-host-sky.js, 84-host-ground.js, 86-host-frontier.js, 89-host-atmos.js, 89-host-sky.js, 89w-host-sea.js, 89z-host-build.js, 99-host-take.js | 60 |
 | glacier | 00-head.html, 45-host-stage.js, 47-host-land.js, 82-host-sky.js, 84-host-ground.js, 86-host-glacier.js, 89-host-atmos.js, 89-host-sky.js, 89w-host-water.js, 89z-host-build.js, 99-host-take.js | 63 |
-| isle | 00-head.html, 45-host-stage.js, 47-host-land.js, 82-host-sky.js, 84-host-ground.js, 85-host-springs.js, 86-host-isle.js, 89-host-atmos.js, 89-host-sky.js, 89w-host-water.js, 89z-host-build.js, 99-host-take.js | 88 |
+| isle | 00-head.html, 45-host-stage.js, 47-host-land.js, 82-host-sky.js, 84-host-ground.js, 85-host-springs.js, 86-host-isle.js, 89-host-atmos.js, 89-host-sky.js, 89w-host-water.js, 89z-host-build.js, 99-host-take.js | 89 |
 | kipuka | 00-head.html, 45-host-stage.js, 47-host-land.js, 82-host-sky.js, 84-host-ground.js, 89-host-sky.js, 89w-host-water.js, 89z-host-build.js, 99-host-take.js | 50 |
 | penitentes | 00-head.html, 45-host-stage.js, 47-host-land.js, 82-host-sky.js, 84-host-ground.js, 86-host-pen.js, 89-host-atmos.js, 89-host-sky.js, 89z-host-build.js, 99-host-take.js | 40 |
 | savanna | 00-head.html, 45-host-stage.js, 47-host-land.js, 82-host-sky.js, 84-host-ground.js, 86-host-savanna.js, 89-host-sky.js, 89w-host-water.js, 89z-host-build.js, 99-host-take.js | 40 |
-| tube | 00-head.html, 45-host-stage.js, 47-host-land.js, 82-host-sky.js, 84-host-ground.js, 86-host-tube.js, 89-host-sky.js, 89z-host-build.js, 99-host-take.js | 58 |
-| vents | 00-head.html, 45-host-stage.js, 47-host-land.js, 82-host-sky.js, 84-host-ground.js, 86-host-vents.js, 87g-host-bismuth.js, 89-host-atmos.js, 89-host-sky.js, 89w-host-water.js, 89z-host-build.js, 99-host-take.js | 80 |
+| tube | 00-head.html, 45-host-stage.js, 47-host-land.js, 82-host-sky.js, 84-host-ground.js, 86-host-tube.js, 89-host-sky.js, 89y-host-rheo.js, 89z-host-build.js, 99-host-take.js | 62 |
+| vents | 00-head.html, 45-host-stage.js, 47-host-land.js, 82-host-sky.js, 84-host-ground.js, 86-host-vents.js, 87g-host-bismuth.js, 89-host-atmos.js, 89-host-sky.js, 89w-host-water.js, 89y-host-rheo.js, 89z-host-build.js, 99-host-take.js | 86 |

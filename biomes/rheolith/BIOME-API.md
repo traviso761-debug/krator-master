@@ -24,6 +24,9 @@ The kit on the biome core's contract (`core/biome/README.md`), registered as `BI
 ## Placing it
 
 ```js
-RHEO.build({R, quality, temp3(x,y,z), aw(x,y,z), ph(x,z), pit, vents, bench, wind})
+RHEO.build({R, quality, temp3(x,y,z), aw(x,y,z), ph(x,z), pit, pitY, vents, bench, wind})
 // -> counts per guild and byproduct; populates RHEO.PLACED: [kind, x, y, z, live, tempC, aw, pH]
 ```
+
+`pitY` (default 0): the ground's height at the throat's rim. The throat's wall guilds are laid 5 to 19 m under it, so a host that cut the
+breach into its own ground passes its rim's height (`biomes/throne/shared/44r-host-breach.js` cuts this page's profile into a station's ground).

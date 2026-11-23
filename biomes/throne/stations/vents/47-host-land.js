@@ -25,12 +25,16 @@ function poolCut(x,z){let c=0;for(const P of POOLS){const d=Math.hypot(x-P.x,z-P
 function hollowCut(x,z){let c=0;for(const H of HOLLOWS){const d=Math.hypot(x-H.x,z-H.z);if(d<H.r*1.6)c=Math.max(c,H.depth*Math.pow(smooth(H.r*1.5,H.r*.3,d),1.2));}return c;}
 const ridged=(x,z,s)=>1-Math.abs(fbm(x,z,s,3)*2-1);
 const marshHum=(x,z)=>2.4*(fbm(x*.03,z*.03,4731,2)-.5)+.9*(fbm(x*.1,z*.1,4732,2)-.5);
+// THE RHEOLITHS' BREACH (89y; src/44r): the throat on the fissure's middle at the kit's own size, cut into the ground last. ?rheo=0 none
+const BREACH=new URLSearchParams(location.search).get('rheo')==='0'?null:(function(){const c=fissPt((FISS.u0+FISS.u1)/2);return{x:c[0],z:c[1],r:26,throatR:7.4,floor:-21,rim:3.6};})();
 const _tm={x:NaN,z:NaN,h:0};
 function terrainH(x,z){if(x===_tm.x&&z===_tm.z)return _tm.h;const h=terrainH0(x,z);_tm.x=x;_tm.z=z;_tm.h=h;return h;}
-function terrainH1(x,z){let h=landH0(x,z);const th=FLOWS.thickAt(x,z);h+=th;
+function terrainH1(x,z){return THRONE_BREACH(BREACH,terrainH1u(x,z),x,z);}
+function terrainH1u(x,z){let h=landH0(x,z);const th=FLOWS.thickAt(x,z);h+=th;
  // the lava's skin: pahoehoe ropes and tumuli on the young flow, aa rubble on the old, softened with age
  const fl=smooth(.4,2.2,th);if(fl>0){const a=FLOWS.ageAt(x,z),k=fl*(1-.65*smooth(300,3500,a));h+=k*(1.4*ridged(x*.04,z*.04,4711)+.6*(fbm(x*.17,z*.17,4712,2)-.5)-.6);}
  return h-valleyAt(x,z).cut-crackAt(x,z)-5*fissAt(x,z).crack-hollowCut(x,z);}
+if(BREACH){let s=0;for(let i=0;i<16;i++){const a=i/16*TAU;s+=terrainH1u(BREACH.x+Math.cos(a)*BREACH.throatR,BREACH.z+Math.sin(a)*BREACH.throatR);}BREACH.y=s/16;}   /* the rim's height (the kit's pitY) */
 MARSH.level=terrainH1(MARSH.x,MARSH.z)-1.2;
 MUD.forEach(M=>M.base=terrainH1(M.x,M.z));
 function terrainH0(x,z){let h=terrainH1(x,z);

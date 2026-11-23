@@ -236,7 +236,7 @@
 
 ## The final rebuild (pair 5, 2026-11-02; `PLAN.md`, "Core adoption")
 
-- [ ] **The far field.** No page takes KFAR: each station is an ideal type whose `terrainH` past the map is its own procedure, not the scale model, and
+- [x] **The far field (taken 2026-11-23: `src/85-host-far.js`, `PLAN.md` "Dropped or owed"; what follows was the state before).** No page took KFAR: each station is an ideal type whose `terrainH` past the map is its own procedure, not the scale model, and
   station 1 is at its triangle ceiling. KHORIZON is baked over the map alone. Owed: a far ring per station from the model's heights round its px (the
   sky's ridges stand in today).
 - [ ] **Sixteen texture units.** Station 1's floor reads fifteen (the paint, the detail, the macro and twelve library layers), the isle's and the vents'

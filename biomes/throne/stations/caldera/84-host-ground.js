@@ -72,9 +72,7 @@ const KINDS=[{kind:'clast',name:'the wall\'s clasts',
 
 const GW={snow:'vL0.x',snow2:'vL0.y',cliff:'vL0.z',lava:'vL0.w',veins:'vL1.x',scoria:'vL1.y',sulphur:'vL1.z',ash:'vL1.w',ice:'vL2.x',obsidian:'vL2.y',cinder:'vL2.z',rock037:'vL2.w'};
 KGI=THRONE.kgGround(MAT_GROUND,{key:'throne-caldera',keys:GL_KEYS,W:GW,GLAY,gain:{cliff:2.2,rock037:1.7},tint:{cliff:'diffuseColor.rgb'},tri:true,kinds:KINDS});
-const GROUND=(function(){const N=880,S=TERR.R*2.2,cs=S/N,nx=N+1;MAT_GROUND.map=paintTex(2048,-S/2,-S/2,S);
- const pos=new Float32Array(nx*nx*3),uv=new Float32Array(nx*nx*2),L0=new Float32Array(nx*nx*4),L1=new Float32Array(nx*nx*4),L2=new Float32Array(nx*nx*4);
- for(let j=0;j<nx;j++)for(let i=0;i<nx;i++){const k=j*nx+i,x=-S/2+i*cs,z=-S/2+j*cs,y=terrainH(x,z);pos[k*3]=x;pos[k*3+1]=y;pos[k*3+2]=z;uv[k*2]=x/S+.5;uv[k*2+1]=.5-z/S;
+function layersAtC(x,z,k,L0,L1,L2){
   const at=n=>FC.at(FC.a[n],x,z),sn=smooth(.2,.65,at('snow')),n1=fbm(x*.008,z*.008,5022,2),sl=at('slope'),fl=at('floor'),wl=at('wall'),rimK=at('rim'),out=at('out');
   const dl=LAKE.de(x,z),hot=smooth(LAKE.r*1.45,LAKE.r*1.05,dl)*smooth(LAKE.r*.95,LAKE.r*1.04,dl)*smooth(.35,.6,n1+.2);
   L0[k*4]=sn*.9;L0[k*4+1]=0;L0[k*4+2]=smooth(.5,.85,sl)*(1-sn*.6)*.75;L0[k*4+3]=fl*(1-sn)*.85;
@@ -82,11 +80,17 @@ const GROUND=(function(){const N=880,S=TERR.R*2.2,cs=S/N,nx=N+1;MAT_GROUND.map=p
   L2[k*4]=out*rimK*smooth(.35,.6,sl)*(1-smooth(.3,.6,at('warm')))*.75;
   /* the library's volcanic set: glassy obsidian on the floor round the lake's hot ring, cinder on the cones' tops, black veined rock on the steepest faces */
   L2[k*4+1]=fl*(1-sn)*smooth(.45,.7,fbm(x*.02+5,z*.02-3,5023,2))*(1-hot)*.7;L2[k*4+2]=smooth(.6,.95,coneAt(x,z).k)*.8;L2[k*4+3]=smooth(.72,.95,sl)*(1-sn*.8)*.7;}
+const BREACH_CELLS=THRONE_BREACH_CELLS(BREACH,880,TERR.R*2.2);   /* the Rheoliths' breach (83r): its cells drawn fine below */
+const GROUND=(function(){const N=880,S=TERR.R*2.2,cs=S/N,nx=N+1;MAT_GROUND.map=paintTex(2048,-S/2,-S/2,S);
+ const pos=new Float32Array(nx*nx*3),uv=new Float32Array(nx*nx*2),L0=new Float32Array(nx*nx*4),L1=new Float32Array(nx*nx*4),L2=new Float32Array(nx*nx*4);
+ for(let j=0;j<nx;j++)for(let i=0;i<nx;i++){const k=j*nx+i,x=-S/2+i*cs,z=-S/2+j*cs,y=terrainH(x,z);pos[k*3]=x;pos[k*3+1]=y;pos[k*3+2]=z;uv[k*2]=x/S+.5;uv[k*2+1]=.5-z/S;
+  layersAtC(x,z,k,L0,L1,L2);}
  const idx=new Uint32Array(N*N*6);let t=0;
- for(let j=0;j<N;j++)for(let i=0;i<N;i++){const a=j*nx+i,b=a+nx,c=b+1,d=a+1;idx[t++]=a;idx[t++]=b;idx[t++]=d;idx[t++]=b;idx[t++]=c;idx[t++]=d;}
+ for(let j=0;j<N;j++)for(let i=0;i<N;i++){if(breachSkip(BREACH_CELLS,i,j))continue;const a=j*nx+i,b=a+nx,c=b+1,d=a+1;idx[t++]=a;idx[t++]=b;idx[t++]=d;idx[t++]=b;idx[t++]=c;idx[t++]=d;}
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('uv',new THREE.BufferAttribute(uv,2));
  g.setAttribute('aL0',new THREE.BufferAttribute(L0,4));g.setAttribute('aL1',new THREE.BufferAttribute(L1,4));g.setAttribute('aL2',new THREE.BufferAttribute(L2,4));
- g.setIndex(new THREE.BufferAttribute(idx,1));g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.inspectLabel='The Throne\'s summit: the caldera rim, ~10.75 km up';scene.add(m);return m;})();
+ g.setIndex(new THREE.BufferAttribute(idx.subarray(0,t),1));g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.inspectLabel='The Throne\'s summit: the caldera rim, ~10.75 km up';scene.add(m);return m;})();
 THRONE.kgCavity(GROUND);   /* the mesh's hollows for the relief (KGROUND.cavityMesh) */
+const GROUND_BREACH=THRONE_BREACH_MESH(BREACH_CELLS,{terrainH,attr:layersAtC,mat:MAT_GROUND,label:'The summit: the Rheoliths\' breach in the lake\'s hot ring'});
 _onLight.push(m=>{GROUNDU.uNight.value=m==='night'?1:0;});
 _mark('ground');
