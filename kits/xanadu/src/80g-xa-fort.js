@@ -86,7 +86,11 @@ function xfGate(g,c,C,state,main){const ry=g.ry,x=g.at[0],z=g.at[1],GH=XFORT.gat
  const col=state==='burnt'?C.scorch(C.wash):C.wash;xnWall(x,0,z,gw,gh,gd,ry,col,'wash');
  const P=(u,v)=>loc(x,z,u,v,ry),front=P(0,gd/2),back=P(0,-gd/2);
  kput('xArchS',[front[0],0,front[1]],xfQ(ry),[g.w+1.4,g.w*1.45+1,.45],C.stone);kput('xArchS',[back[0],0,back[1]],xfQ(ry+Math.PI),[g.w+1.4,g.w*1.45+1,.45],C.stone);
- if(state==='burnt'){for(const s of[1,-1]){const q=P(0,s*(gd/2+.04));xnRoom(q[0],0,q[1],g.w,g.w*1.4,.06,s>0?ry:ry+Math.PI);}}   /* the leaves burnt away: the passage's dim back */
+ if(state==='burnt'){for(const s of[1,-1]){const q=P(0,s*(gd/2+.04));xnRoom(q[0],0,q[1],g.w,g.w*1.4,.06,s>0?ry:ry+Math.PI);}   /* the leaves burnt away: the passage's dim back */
+  /* what the fire left of the outer leaves (before the dim panel that closes the passage): a charred stump at each jamb,
+     standing on the ground, and one leaf fallen flat on the approach, seated on its lowest points (core/ruins' rule) */
+  const char=xC(0x231a14),lw=g.w/2-.1,ll=Math.min(g.w*.9,gd-1.2);for(const sd of[-1,1]){const q=P(sd*(g.w/2-.35),gd/2+.25);vB('vWood',q[0],0,q[1],.5,g.w*.45,.16,ry+sd*.08,char);}
+  const fl=P(lw*.2,gd/2+ll/2+.9);xfSeat('vWood',fl[0],fl[1],ry+.2,Math.PI/2,0,[lw*.9,ll,.14],char);}
  else{for(const s of[1,-1]){const q=P(0,s*(gd/2+.02));xnDoorway(q[0],0,q[1],s>0?ry:ry+Math.PI,g.w,g.w*1.4,{c:C.tim});}
   for(let k=0;k<4;k++){const q=P(0,gd/2+.12);vB('vIron',q[0],.8+k*g.w*.3,q[1],g.w*.96,.08,.04,ry,C.iron);}}
  const top=xnFlatRoof(x,gh,z,gw,gd,ry,col,{band:C.dress==='royal'?C.maroon:null,parapet:false});xnCrenel(x,top,z,gw+.1,gd+.1,ry,1.2,col,{pointed:true});
@@ -179,7 +183,12 @@ function xfDraw(size,G,o){const P=XF_PLANS[size],V=xV(o),st=o.state||XF_STATES[V
   if(Dm.stubs[c.id]){Dm.stubs[c.id].forEach(s=>xfCurtain(c,s.u0,s.u1,s.h,C,{}));return;}
   const br=Dm.breaches.filter(b=>b.curtain===c.id),cuts=[0];br.forEach(b=>cuts.push(b.u0,b.u1));cuts.push(1);
   for(let i=0;i<cuts.length;i+=2)xfCurtain(c,cuts[i],cuts[i+1],c.h,C,{merlons:true,band:C.dress==='royal'});
-  br.forEach(b=>xfCurtain(c,b.u0,b.u1,1.2,C,{}));});   /* the breach's foot: the talus and a course of the body */
+  br.forEach(b=>{xfCurtain(c,b.u0,b.u1,1.2,C,{});   /* the breach's foot: the talus and a course of the body */
+   /* its broken ends: the wall steps down into the gap in three or four ragged courses from each side (hashed per breach) */
+   const s=KRAND.stream(KRAND.child(seed,'breach.'+c.id+'.'+b.u0));
+   for(const side of[-1,1]){const u=side<0?b.u0:b.u1;let hh=c.h,du=0;
+    for(let k=0;k<4;k++){const w=s.range(.6,1.1)/L;hh*=s.range(.62,.82);if(hh<1.6||du+w>(b.u1-b.u0)*.3)break;   /* each side keeps to its third of the gap */const ua=side<0?u+du:u-du-w,ub=side<0?u+du+w:u-du;
+     xfCurtain(c,Math.max(b.u0,Math.min(ua,ub)),Math.min(b.u1,Math.max(ua,ub)),hh,C,{});du+=w;}}});});
  const WD=xfWalks(P,Wk,C,tag),feet=WD.feet,walks=WD.n;
  /* the walk audit's record (core/walk): the stairs' feet, this fort's tag, its lot in the world */
  if(typeof KWALK!=='undefined'&&walks){const W=(x,y,z)=>IZDOOR._w(x,y,z),a=W(-P.w/2-6,0,-P.d/2-6),b=W(P.w/2+6,0,P.d/2+6);

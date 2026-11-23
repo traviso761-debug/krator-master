@@ -90,9 +90,11 @@ skips it (`BUILD_FAILS`); measured on the page it is unchecked.
   are drawn but not walked (Strongwall's two back walls, 5 m between their towers; the gate works' last metre past each gate
   tower); a fallen tower ends the walk at its face. The flights stand on the walk, so a walker on the walk steps up them; the
   plan's stairs are kept where they land on plain walk, and stairs are added where a piece of walk had none (`extra: true`).
-- **A breach's ends are cut square** and a damaged gate's leaves simply go (the passage's dim back shows): no ragged masonry or
-  charred leaf yet. The burnt walls take the wash darkened by its colour until `wall.limewash.scorched` is delivered
-  (`core/materials/PROMPTS-NEEDED.md` section 53, with `wall.rubble.limewash` and `wood.gate.studded`).
+- **A breach's broken ends and a burnt gate** (2026-11-23): the wall steps down into a breach in three or four ragged courses from
+  each side (hashed per breach, each side within its third of the gap); a burnt gate keeps a charred stump at each jamb and a leaf
+  fallen flat on its approach (seated on its lowest points), the passage behind still its dim back. The courses are whole blocks of
+  the wall's body (no broken stone faces), and the burnt wood and walls are tints, not textures, until `wall.limewash.scorched` and
+  `wood.gate.studded` are delivered (`core/materials/PROMPTS-NEEDED.md` section 53, with `wall.rubble.limewash`).
 - **The monastery size** (`size:'monastery'`, the House of the Tempest round the Qiblai kit's violet monastery) is not built: its
   blueprint is another session's (`settlements/strongwall/tempest/`), and the Qiblai kit is not on this sheet.
 - **The sheet is over its showcase budget**: 6.71 M triangles against 6.0 M (`targets/sheet/89z-rows.js`; reported, a failure
