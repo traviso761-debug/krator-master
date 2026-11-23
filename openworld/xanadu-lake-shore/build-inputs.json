@@ -111,7 +111,7 @@
     "core/water/51-core-water-kinds.js": "549ea82cd960f7b78d0088c0a0059a1104eb360ccac82e916b48ec8cb29e0e57",
     "core/water/farbed/53-core-water-farbed.js": "8755bb0d34fe5af125c89fd66a7517d88171c5aaa2364918dd21f7dfd5320b66",
     "core/world/00-head.html": "f13d6e95835b879b2558b833c915dec3020683afff8a62962d2c7aaa68659c6e",
-    "core/world/41-world-fields.js": "70bca9b1b09f661619aa30a0a8c8905dd44a4d6d367f6347ec544032190607ef",
+    "core/world/41-world-fields.js": "17933ba805cd2e6c61daebe9a972541a241bdb881d4f88d6a7eae090176637a6",
     "core/world/41l-world-landforms.js": "66fba91f087c160600e3e61870b56da21f1af3ce74f5a9341304cedec2dadbe2",
     "core/world/42-world-roads.js": "8b9b8bf77763f7f8c1507f103352c821d1032021ec73218b96aa4a5783451277",
     "core/world/42b-world-bridges.js": "580e78a811f0262d69da69e9045b28a6e2da498bbcb55b4ace7b4877f86e82d4",
@@ -121,7 +121,7 @@
     "core/world/49r-world-resources.js": "c06677b5dcd39f7269b5e15bd790ad7532c87c1a99f17ff70565c77373db7b24",
     "core/world/80-world-sky.js": "af88eae6d7e8b271f9de6810505346b28e18ae84e3d381043520f211bfb15ae4",
     "core/world/81-world-terrain.js": "e9e52f0395ab1488d7e2ea3d3c3ea912d037c6439454c9846bbd554af512b416",
-    "core/world/83-world-water.js": "1b421e732c7072a1d7976befdcd418bb719156353db2843ebc03a56d246981a6",
+    "core/world/83-world-water.js": "f086a583955a09348a5ae99fa1f55c82bd4d9968298dbc54d80be2d81ea1c3d9",
     "core/world/83w-world-seas.js": "a017c03d7a13a7517f281dcc917e8f6729a84bd6335fe2ae65eba9bb6fa08fa5",
     "core/world/84-world-nursery.js": "c7c0484fcede3d1a2b5f8c7deb36a394b6999826503d3b4f83575eb76c680892",
     "core/world/85-world-flora.js": "ba55a10a1995fc6dcedb7d57233f98bb6fe13ccda89b597e810dbe6300ea846f",
@@ -193,7 +193,7 @@
     "openworld/xanadu-lake-shore/data/scarpw.png": "34b44b3d13cae1df5aa9e64747f066e8a95ae68b835ea17b1a8c1b3c5d6bed9e",
     "openworld/xanadu-lake-shore/data/temp.png": "2496d16258f8721d3d6eb896ed9a8667392fcea5ab09e60bf9425c839a4c18b9",
     "openworld/xanadu-lake-shore/data/wlev.png": "a5b0da986bab3b58370b8f366c34f1a9b303ed73d3bb7deceecbb9730f776f35",
-    "openworld/xanadu-lake-shore/plan/sites.json": "853161082c77ed74702d433dbd8aaa3fff8adb97ab23af9a0411535cf2033e4d",
+    "openworld/xanadu-lake-shore/plan/sites.json": "afb7f6b585c7994a297a2bcd8906cc2f44260376c399af5a62e75aee10d359c0",
     "openworld/xanadu-lake-shore/src/46-world-config.js": "0a49c544e31d134e9a47a36e88c870042181cfb5bbcc1c300914bb6672f064d9",
     "openworld/xanadu-lake-shore/src/47-world-kits.js": "303969bccbdfb52d444a9d51c97095e0201085850c1e70c355705ef02e7cb214",
     "openworld/xanadu-lake-shore/src/48-world-site.js": "d95595853cba9706bf7da37184b1891c0a71a9247794b7b3eb22b667111a2aee",
@@ -272,11 +272,11 @@
     "tools/textures": "f4c83899af343d36f69b562b5e36b8a640189c9cc4b0a98d739cb05e0260eef6"
    },
    "outputs": {
-    "openworld/xanadu-lake-shore/dist/xanadu-lake-shore.html": "91ac5ef2ebcf53647b3196fd573210643ae1d50a5891d25232ac6045e984a38d",
+    "openworld/xanadu-lake-shore/dist/xanadu-lake-shore.html": "60f8c74b0417a822631200d696697caa7a5ea1412a7926bbcc8d943b7a14849e",
     "openworld/xanadu-lake-shore/dist/xanadu-lake-shore.tex.xanadu.js": "956a0b2414c8c6921a9aa281c3598d3c0062763ef65a54c66db73ff945ad20f6"
    },
    "outputs_raw": {
-    "openworld/xanadu-lake-shore/dist/xanadu-lake-shore.html": "91ac5ef2ebcf53647b3196fd573210643ae1d50a5891d25232ac6045e984a38d",
+    "openworld/xanadu-lake-shore/dist/xanadu-lake-shore.html": "60f8c74b0417a822631200d696697caa7a5ea1412a7926bbcc8d943b7a14849e",
     "openworld/xanadu-lake-shore/dist/xanadu-lake-shore.tex.xanadu.js": "956a0b2414c8c6921a9aa281c3598d3c0062763ef65a54c66db73ff945ad20f6"
    }
   }

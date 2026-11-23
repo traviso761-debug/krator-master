@@ -276,7 +276,15 @@ static func _fissures(i: int, j: int, bx: float, bz: float, mx: float, mz: float
 			var hl := minf(len / 2, CELL * 0.45)
 			var A := [x - ux * hl, z - uz * hl]
 			var B2 := [x + ux * hl, z + uz * hl]
-			if _keep(x, z) or _keep(A[0], A[1]) or _keep(B2[0], B2[1]):
+			var ns := maxi(2, int(ceil(2.0 * hl / 60.0)))
+			var blocked := _keep(x, z)
+			for s in ns + 1:
+				if blocked:
+					break
+				var u := float(s) / float(ns)
+				if _keep(A[0] + (B2[0] - A[0]) * u, A[1] + (B2[1] - A[1]) * u):
+					blocked = true
+			if blocked:
 				continue
 			C.append({"id": "lf:fissure:" + str(i) + ":" + str(j) + ":" + str(t), "kind": "fissure", "carve": 1, "placed": 1, "x": x, "z": z,
 				"a": A, "b": B2, "w": w, "d": d, "R": hl + w + 14,

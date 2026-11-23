@@ -13,12 +13,16 @@ var RIVERS;LATE.push(()=>{RIVERS=(function(){'use strict';
 const scene=HOST.scene,camera=HOST.camera;
 ATMOS.init({THREE,scene,camera,hour:()=>HOST.hour(),onFrame:fn=>HOST.TICKS.push(fn),ground:(x,z)=>WORLD.H(x,z),seed:4242,
  err:m=>console.warn(m),viewH:()=>innerHeight,pixelRatio:()=>HOST.renderer.getPixelRatio()});
-const list=[];
+const list=[],sm=(a,b,x)=>{let t=(x-a)/(b-a);t=t<0?0:t>1?1:t;return t*t*(3-2*t);};
+const keepLake=typeof WORLD.wetCell==='function'?(x,z)=>1-sm(.35,.85,WORLD.wetCell(x,z)):null;
 for(const R of WORLD.riverLines(40)){if(R.pts.length<2)continue;
+ const pts=R.pts.map(p=>{const lw=WORLD.lakeWater(p[0],p[1]),wc=keepLake?WORLD.wetCell(p[0],p[1]):0;
+  return lw>-1e8&&wc>.15&&p[2]<lw?[p[0],p[1],lw]:p;});
+ for(let i=pts.length-2;i>=0;i--)if(pts[i][2]<pts[i+1][2])pts[i][2]=Math.min(pts[i+1][2],pts[i][2]+2);
  // the current: 1 m/s on the flat, faster as the bed steepens (the line's own slope), at most 4 m/s
- const sp=R.pts.map((p,i)=>{const q=R.pts[Math.min(i+1,R.pts.length-1)],L=Math.hypot(q[0]-p[0],q[1]-p[1])||1;return Math.min(4,1+40*Math.max(0,(p[2]-q[2])/L));});
- const F=WATER.flow({name:R.name,pts:R.pts,width:R.width*.85,speed:sp}),falls=WATER.fallsOf(F,{steep:.35,minDrop:15});
- const D=WATER.drawFlow(F,{shallow:0x6d9c92,deep:0x1d3c48,roughness:.14,metalness:.08,envMapIntensity:.45,step:20,across:6,margin:6,origin:true,renderOrder:2});
+ const sp=pts.map((p,i)=>{const q=pts[Math.min(i+1,pts.length-1)],L=Math.hypot(q[0]-p[0],q[1]-p[1])||1;return Math.min(4,1+40*Math.max(0,(p[2]-q[2])/L));});
+ const F=WATER.flow({name:R.name,pts,width:R.width*.85,speed:sp}),falls=WATER.fallsOf(F,{steep:.35,minDrop:15});
+ const D=WATER.drawFlow(F,Object.assign({shallow:0x6d9c92,deep:0x1d3c48,roughness:.14,metalness:.08,envMapIntensity:.45,step:20,across:6,margin:6,origin:true,renderOrder:2},keepLake?{keep:keepLake,refine:true}:{}));
  D.mesh.userData.inspectLabel=R.name;list.push({R,F,D,falls});}
 return{list,stats:()=>list.map(e=>({name:e.R.name,points:e.R.pts.length,vertices:e.D.ribbon.count,falls:e.falls.length,drop:+(e.R.pts[0][2]-e.R.pts[e.R.pts.length-1][2]).toFixed(1)}))};
 })();});

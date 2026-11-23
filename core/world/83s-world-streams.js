@@ -31,7 +31,7 @@ function scan(){const x=camera.position.x,z=camera.position.z,seen=new Set();wan
 function build(n){const L=WORLD.streamWaterLine(P[n],STEP);if(L.pts.length<2){drawn.set(n,null);return;}
  const F=WATER.flow({name:'stream '+P[n].line+'.'+n,pts:L.pts,width:L.w,speed:L.v});
  if(WATER.surfaces[WATER.surfaces.length-1]===F)WATER.surfaces.pop();   /* drawn, not asked about: see the header */
- const D=WATER.drawFlow(F,{shallow:0x557f74,deep:0x1f3a3e,roughness:.16,metalness:.06,envMapIntensity:.45,step:STEP,across:4,margin:1,origin:true,renderOrder:2,rapids:RAPIDS});
+ const D=WATER.drawFlow(F,Object.assign({shallow:0x557f74,deep:0x1f3a3e,roughness:.16,metalness:.06,envMapIntensity:.45,step:STEP,across:4,margin:1,origin:true,renderOrder:L.orderAfter?3:2,rapids:RAPIDS},L.endFade>0?{endFade:{len:L.endFade,keepFoam:false}}:{}));
  D.line=L;drawn.set(n,D);stats.built++;}
 function drop(n){const D=drawn.get(n);drawn.delete(n);if(!D)return;scene.remove(D.mesh);D.mesh.geometry.dispose();D.material.dispose();stats.dropped++;}
 // build for up to ms milliseconds (at least one piece a call while any is wanted)
