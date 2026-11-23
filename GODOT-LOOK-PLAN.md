@@ -37,8 +37,12 @@ measurement, until the route harness runs on the two GPU lanes.
      holds a shape. No bounce light, no local reflections, no fog with depth, no glow, no eye adaptation.
 3. **The frame already costs too much, and for one reason.** Every instanced item in a town is a single `MultiMesh`
    spanning the whole place, so the culler sees one box and the view and each of the sun's four shadow splits draw all of
-   it: 46 million primitives a frame without the sun's shadow, 181 million with it. Cutting those into 64 m cells when the
-   place opens was tried in this pass: 2.4 million and 10 million, the same picture. That comes first (section 5).
+   it: 46 million primitives a frame without the sun's shadow, 181 million with it. Cutting the heavy ones into cells
+   when the place opens, with the shadow held to 400 m, brings that to 37.0 million, and to 30.4 million once the
+   ground's occluders are culling (built and measured on 2026-11-23: section 14.3). That comes first (section 5), and
+   it is not enough alone: what is left is trees drawn whole at any distance, which is levels of detail and far tiers
+   (C7, C8). A first trial in this pass reported 10 million; it was wrong (its cells came out empty, and the count was
+   of a town with its instanced items missing).
 4. **So the order is cost, light, surface, form, plants, air.** The first three are Godot-only work on the exports as they
    stand, and they move the picture most for what they cost.
 5. **Three things need the exporters, and they must be specified before Stage 8**, because a change to shared core is only
@@ -128,7 +132,7 @@ silhouettes on a landmark, single-noise albedo, and a population of one colour.
 | Primitives a frame, avenue view | 180.7 M in 3,372 draws; 181.1 M in 3,543 at the Hall of Forms | **measured**, `Performance.RENDER_TOTAL_*`, every pass counted |
 | The same view by shadow setting | no sun shadow: 46.3 M in 1,164 draws. Shadow to 400 m: 180.6 M in 3,323. Shadow to 2,400 m: 180.7 M in 3,372. **Shortening the shadow does not lower the count** | **measured** |
 | Why | 392 of the town's 420 instanced items have instances spread over more than 1,000 m (about 2.4 km: the whole place), and they hold 33.5 M triangles, all of the instanced total. `gltf_instancing.gd` makes one `MultiMesh` an item. (180.7 - 46.3) / 4 = 33.6 M a split, the size of the town's instanced total | **measured**, the glb's instance translations; **read**, `gltf_instancing.gd` |
-| The cure, tried | Every `MultiMesh` wider than 96 m cut into 64 m cells after the place opened (1,067 of them into 38,287 cells, 108,724 instances, half a second of GDScript), each cell keeping its item's visibility range. No sun shadow: **2.4 M in 259 draws**. Shadow to 400 m: **10.0 M in 697**. Shadow to 2,400 m: **10.3 M in 723**. The frame matched the one before to a mean difference of 1.4 in 255, the difference being the verge's sway and the clouds' drift | **measured**, appendix A |
+| The cure, built (2026-11-23) | `krator/cells.gd`: the town's and the monastery's instanced items cut by position, heaviest first, into 10,110 nodes in all (98.6 % of the instanced triangles are in items that were cut; 600 to 700 ms of GDScript when the place opens, in a container). Avenue, the high tier's rig at 2x MSAA, the cut alone: no sun shadow **24.8 M** (it was 46.3), shadow to 400 m **37.0 M** (180.6), to 2,400 m **57.7 M** (180.9). East village: **23.5 M**, **37.2 M**, **56.0 M** (47.7, 180.4, 179.6). With the ground's occluders culling as well, the shadow at 400 m: **30.4 M** and **37.2 M**. The low tier as it runs (250 m, occlusion on): 27.7 M and 35.4 M. With nothing culled by size and the clock fixed, the frame is the uncut frame to the bit (0 of 255 at every pixel), as two uncut runs are. **The first trial's 2.4 M and 10 M were wrong**: a packed array appended to inside a Dictionary is a copy in GDScript, every cell came out empty, and the counts were of a town without its instanced items; the frames all but matched only because that view holds few of them | **measured**, section 14.3 |
 | The town place (`sq80bzd7ep/world.glb`) | 456 meshes, 1.31 M triangles, 3.21 M vertices (2.45 a triangle: hard edges and unindexed soup), **34.2 M triangles once instanced** (33.5 M of them in instanced items) | **measured**, the glb's JSON |
 | The monastery place | 911 meshes, 1.11 M triangles, 8.7 M instanced; 165 of 911 meshes have UVs | **measured** |
 | The streamed flora | 541 meshes, exactly 3 vertices a triangle | **measured** |
@@ -195,15 +199,15 @@ and at the hummocks alike"). Every item below is Godot-side and changes no page.
 
 | Item | What | Why it pays | Godot's tool |
 |---|---|---|---|
-| C1 | **Cut every instanced item into cells** of about 48 to 64 m when a place is cooked or opened, each cell its own `MultiMeshInstance3D` with a visibility range from the item's size and LOD range | Then the frustum, each shadow split, the range and the occluders all cull by cell. **Measured** (3.2): 181 M to 10 M, 46 M to 2.4 M without the sun's shadow. One thing the trial hit: a cell that copies the node's `lod_*` instance uniforms overflows the buffer for them (29,068 errors at 38,287 cells), so a cell carries its range on the node, and rows of different range become different cells | `MultiMesh`, `visibility_range_end`; the indoor furniture is already in 36 m cells (`kinteriors_light.gd`) |
+| C1 | **Cut the instanced items into cells** when a place is cooked or opened, each cell its own `MultiMeshInstance3D` with a visibility range from the item's size | Then the frustum, each shadow split, the range and the occluders all cull by cell. **Built** (`krator/cells.gd`, section 14.3): heaviest items first inside a budget of nodes, a cell holding about 800 triangles or more, 256 m cells for the trees (a species is a few hundred instances over two kilometres: three or four to a cell). 181 M to 37.0 M at the avenue with the shadow at 400 m, the picture unchanged to the bit. A cell draws on a twin of its shader with no instance uniforms (`K_LOD_OFF`): every node on a shader that declares them takes 16 slots of the buffer, 4,096 nodes in all, and the first cut overflowed it | `MultiMesh`, `visibility_range_end`; the indoor furniture is already in 36 m cells (`kinteriors_light.gd`) |
 | C2 | **The sun's shadow to 250 to 400 m**, splits near 0.05 / 0.15 / 0.40; S1's baked horizon carries the land beyond | An object in all four splits is drawn five times (**docs**). The far splits hold the most objects and give the least: 1.4 and 2.7 m texels. It is a quality item first (L1): on its own it left the count where it was | `DirectionalLight3D.directional_shadow_*` |
 | C3 | **Who casts.** No shadow from furniture when the eye is outside, from undergrowth, lamps, bunting; none from anything under about 0.4 m beyond the second split | Shadow passes run the vertex shader for every caster | `cast_shadow` a cell, `Light3D.shadow_caster_mask` (4.4), layers |
 | C4 | **A shadow mesh a surface**: positions only, welded | The shadow and depth passes then read a third of the vertex data and far fewer vertices (2.45 a triangle today) | `ArrayMesh.shadow_mesh`, set by the cook (N2) |
-| C5 | **K5 now, and widened**: `library.gdshader` split into opaque (`cull_back`, no `ALPHA`), two-sided and cut-out | 60 of 70 town materials are two-sided and all draw two-sided; writing `ALPHA` keeps them out of the opaque depth prepass. The same for `terrain.gdshader` (`cull_disabled`) | render modes |
-| C6 | **Occluders from the records.** A box a room block or a wall run, built when a place opens | From the avenue the halls behind the facade are drawn: interiors are culled by range (160 m), not by what hides them. **Docs**: occlusion culling is most effective indoors, costs CPU, and `ArrayOccluder3D` is meant for generation from script | `OccluderInstance3D`, `BoxOccluder3D`, `ArrayOccluder3D`; `rendering/occlusion_culling/use_occlusion_culling` |
+| C5 | **K5 now, and widened**: `library.gdshader` split into opaque (`cull_back`, no `ALPHA`), two-sided and cut-out | 60 of 70 town materials are two-sided and all draw two-sided; writing `ALPHA` keeps them out of the opaque depth prepass. The same for `terrain.gdshader` (`cull_disabled`) was looked at and left: a heightfield seen from above has almost no back faces to cull, and the shafts under the monastery see it from below. **Built** (section 14.3) | render modes |
+| C6 | **Occluders from the records.** A box a room block or a wall run, built when a place opens | From the avenue the halls behind the facade are drawn: interiors are culled by range (160 m), not by what hides them. **Docs**: occlusion culling is most effective indoors, costs CPU, and `ArrayOccluder3D` is meant for generation from script | `OccluderInstance3D`, `BoxOccluder3D`, `ArrayOccluder3D`; `rendering/occlusion_culling/use_occlusion_culling`. **Built in part** (section 14.3): the ground's occluders; the buildings' are not |
 | C7 | **Mesh levels of detail** on every static surface and item | A runtime glTF load makes none (**measured**, 3.2; **docs**: generation happens on import). 33.5 M instanced triangles have one level | `ImporterMesh.generate_lods()` in the cook (N2); `mesh_lod_threshold` per tier |
 | C8 | **Far tiers**: a town past about 600 m as one merged low mesh a block; trees as impostors (P6) | what is left after C1 at long range | `visibility_range_*` with `visibility_parent` (HLOD) |
-| C9 | **The sky's radiance pass**: a cheap branch (gradient, sun, mean cloud) when `AT_CUBEMAP_PASS`; clouds in a half-resolution pass | The radiance map re-renders whenever the sky's uniforms change, which is every frame | sky shader built-ins, `use_half_res_pass` |
+| C9 | **The sky's radiance pass**: a cheap branch (gradient, sun, mean cloud) when `AT_CUBEMAP_PASS`; clouds in a half-resolution pass | The radiance map re-renders whenever the sky's uniforms change, which is every frame | sky shader built-ins, `use_half_res_pass`. **Built in part** (section 14.3): the half-resolution clouds; the radiance branch was dropped as not worth its risk |
 | C10 | **MSAA by tier** (it is 4x for everyone today) | Section 6.6 | `Viewport.msaa_3d` |
 
 **Exit:** the route harness's four stops in Forward+ on the RTX and the Arc lanes, with GPU time from
@@ -571,6 +575,12 @@ step 1.
 | Primitives a frame, all passes | 10 M | 20 M |
 | Video memory | 1.5 GB | 3 GB |
 
+Where step 1 leaves the primitive cap (2026-11-23, section 14.3): the avenue draws 30.4 M under the high tier and
+27.7 M under the low one, the east village 37.2 M and 35.4 M. All four are over. What is left is whole trees at any
+distance (the town's 360 flora items hold 26.6 M of its 33.5 M instanced triangles, a tree's trunk or crown 600 to
+10,000 triangles with one level of detail) and whatever stands behind a building: C7, C8 and the rest of C6. The caps stay as
+targets, and the route harness marks a stop that is over.
+
 What pays for what: C1 to C5 pay for L1's finer shadow and 8192 atlas. C6 and C7 pay for M7's extra fetches and R1's
 triangles. The low tier takes no SDFGI, no volumetric fog and no SSR, and gets its grounding from S1, baked vertex
 occlusion, probes and SSAO.
@@ -643,6 +653,33 @@ python tools/harness.py lock --lane arc -- <godot> --gpu-index 1 --path godot --
 No frame was timed on a GPU. Only the Oidong case was opened, and of it the Longsong monastery, its east village and one
 forest edge. Interiors were read in code and in the stage report, not rendered (the shot script does not run the lamp
 pool). Water, characters and fauna were not assessed. The web pages were not opened.
+
+### 14.3 Steps 1 to 3 as built (2026-11-23)
+
+Built on this branch, Godot-side only; `godot/README.md`, "The look", says where each piece lives and
+`godot/CHECKLIST.md` section 8 what the lanes are to run. Counts and pictures are from a cloud container (Godot 4.7.2,
+Forward+ on a software renderer, 1280 by 720); **no frame was timed**.
+
+| Item | Built | What it measured | Left |
+|---|---|---|---|
+| N1, C2, C10, L1, L2, L5, L6 | `krator/look.gd` (`KratorLook`): the tiers `low`, `high`, `photo`, `legacy` and a switch a feature; `walk.gd` and the route harness on it | first-split shadow texel 1.2 cm (high) and 1.8 cm (low) against 29 cm; primitives do not move with the shadow's reach alone (3.2) | the tiers' values are starting points; eye adaptation is behind `--auto-exposure`, unjudged; no grade LUT; the AA matrix is a GPU job |
+| C1, C3 | `krator/cells.gd`; the stream cuts a place's, its monastery's and its arcology's items as it opens. Items under 0.3 m cast no shadow | avenue 24.8 / 37.0 / 57.7 M (none, 400 m, 2,400 m) against 46.3 / 180.6 / 180.9; village 23.5 / 37.2 / 56.0 against 47.7 / 180.4 / 179.6; 10,110 nodes; the frame unchanged to the bit | the cut reads each item's buffer back when the place opens: on a GPU that is a wait, to be timed; it belongs in the cook (N2). Leaving the indoor layer out of the sun's shadow (`--casters=outdoor`) changed 1,509 pixels at the avenue, where the galleries are indoor shells that shade the verge: a switch, not a default |
+| C5 | three shaders on one body; `KratorKmat.variant` by the record, `fit` for mirrored instances and triangles wound against their normals | town: 39, 52 and 3; monastery: 734, 87 and 1 (culled, both faces, cut out); in the nine cases checked no library item has a mirrored instance, and of the single-sided buckets' triangles 0.04 % or fewer wind against their normals | a `BackSide` record and a closed double-sided solid need the export to say so (section 13) |
+| C6 | `krator/occluders.gd`: a coarse grid under each ground, never above it, none over a hole; occlusion culling on in `low` and `high` | with the shadow at 400 m, avenue 37.0 M and 5,605 draws without it, 30.4 M and 3,319 with; village 37.2 M and 37.2 M; the frame with it against the frame without: equal to the bit. It starts a few frames after a place opens, when the occluder scene has committed | buildings: a wall run is an occluder only minus its doors and windows, which takes the interiors' walls and fixtures together |
+| C9 | `shaders/sky_half.gdshader`: the cloud layers in the half-resolution pass (low tier), one composite (`atmSkyC`) | the sky differs from the full one by 0.9 of 255 on average; Compatibility has no such pass and keeps the sky whole | the radiance branch was dropped: the radiance map is 128 px a face and is refreshed over several frames, by this reading of the engine a few per cent of the sky's pixels a frame (not measured), against a second copy of the composite to keep true |
+| N6 | `tests/perf/route_harness.gd`: `--look=`, GPU and CPU time from the viewport, primitives against the cap, the cells | runs headless end to end | the runs on the lanes |
+| L3, L4 | indoors the room's light is the surface's `IRRADIANCE`, not emission (`kinteriors_light.gd` `ambient_shader`) | Gate 5's sun-leak probes pass with it in Forward+ and in Compatibility; the four interior stills are unchanged (0.02 of 255, 0.95 where gilt is) | a uniform `RADIANCE` from the room table washed the rooms out (the assembly hall's mean rose from 38 to 66 of 255, its reds went pink), so only metals take it; the specular term needs a probe a room cluster (L3), which is not built. SSR does not reach the water, whose shaders blend |
+| M7 | `shaders/lib/weather.gdshaderinc`, `krator/kweather.gd`: drift, run-off, under, top, moss, gloss, wet; amounts by the surface's class | a plaster wall of one colour gains a spread of values of 0.18; the pattern does not move across a rebase or across the 4096 m its origin wraps at | the foot band and edge wear wait for section 13's vertex fields; run-off starts anywhere on a wall, not under a ledge; no snow; the amounts are first guesses to tune in the lab |
+| M9, M10 | `shaders/lib/detail.gdshaderinc`, `krator/kdetail.gd`: six detail-normal layers by class, gone by 6 m; a normal map on the mesh's tangents where the mesh has them | on a flat face the mesh frame and the derivative frame give the same picture (0.00 of 255) with v flipped or not | whether it steadies round surfaces is for the eye on a GPU |
+| N5 | `look_lab.tscn` | | |
+
+Found on the way, and fixed: **the stream's road ribbons did not draw from above.** They were wound face down
+under a shader that culls back faces (0 pixels as built, 696 with culling off, from 800 m up). `audit_roads` now counts
+`face_down`.
+
+Not checked in this pass: any time, on any GPU. The walk was not walked: the frames are from fixed poses at the avenue
+and the east village and from the look lab. Interiors were judged by Gate 5's probes and four stills, not by eye across
+the monastery. The weathering's amounts were set by reading two lab frames, not against reference photographs.
 
 ## 15. For the owner to decide
 
@@ -729,10 +766,11 @@ What the frames show:
   frame.
 - **Primitives** were 180.6 M in every variant: none of these settings changes what is drawn.
 - **The cells.** At the avenue, after the other variants were undone, the script cut every visible `MultiMesh` wider than
-  96 m into 64 m cells by its instances' positions, each cell a new `MultiMeshInstance3D` with the same mesh, material,
-  layers, shadow setting and visibility range, and hid the original. Counts before and after are in 3.2. It is a count
-  experiment: the cells copied the node's `lod_*` uniforms, most of them overflowed, and a row can then draw past its
-  range, so the numbers are an upper bound on what a proper split gives.
+  96 m into 64 m cells by its instances' positions. **Its counts (2.4 M, 10.0 M, 10.3 M) were wrong and are withdrawn.**
+  The script grouped instances with `(groups[key] as PackedInt32Array).append(i)`, which in GDScript appends to a copy:
+  every cell held no instance, the originals were hidden, and the frame was counted without the town's instanced items.
+  `krator/cells.gd` is the cut as built, `tests/cells/cells_test.gd` checks that every instance lands in one cell with
+  its own row of every side table, and section 14.3 has the counts.
 
 The weathering blocks. After `c *= bu_bright(v_wp, bu_macro, bu_cell);`:
 

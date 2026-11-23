@@ -33,8 +33,8 @@ const TIER_NAMES := ["low", "high", "photo", "legacy"]
 # auto_exposure: the engine's eye adaptation on the camera, held to a stop either way of the colour script's exposure
 # (L5; off in every tier until it is judged on a GPU: `apply_camera`, --auto-exposure).
 # occlusion: Godot's occlusion culling on the viewport, against the occluders the stream then makes under each ground
-# (krator/occluders.gd). On in low and high: at Longsong's avenue it takes the frame from 37.0 M primitives to 30.3 M
-# and from 5,605 draws to 3,161 (2026-11-23). It starts a few frames after a place opens, when the occluder scene has
+# (krator/occluders.gd). On in low and high: at Longsong's avenue it takes the frame from 37.0 M primitives to 30.4 M
+# and from 5,605 draws to 3,319, the picture equal to the bit (2026-11-23). It starts a few frames after a place opens, when the occluder scene has
 # committed, so a count taken at once does not show it. Off for stills, where a late pop would show; --no-occlusion.
 # sky_half: the sky's cloud layers in its half-resolution pass (shaders/sky_half.gdshader; `apply_sky`).
 # shadow_casters: the layers that cast the sun's shadow: all of them in every tier. --casters=outdoor leaves the indoor
