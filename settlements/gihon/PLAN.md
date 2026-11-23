@@ -234,6 +234,31 @@ of colour). Until they are delivered the temple draws the kit's gold and a tinte
 | **G2** | The town on core/city with the forbidden city on the fort asset, a target on Xanadu's page | `test-gh-town.js`; `tools/check_core_use.py`; `KRATOR_GL=gpu verify.py --assert` |
 | **G3** | The Landing on its piers and the Alph's hamlets, as records for the region | their node tests |
 
+**Built (2026-11-22),** on `claude/gihon-6258a4`:
+- **G1.** `core/region/data/xan-tune.js`: `T.gihon` (the town 7,060, its forbidden city `xan.gihon.fort` 1,000 with the Mint
+  `gh.mint`, the assessors and the treasury, 60 hired musketeers), the White's and the Violet's houses (140 each), the Tears' head
+  house `tears.gihon` (160; `tears.strongwall` is their court, 40, the camp's home); `T.ghRing` (five) and `T.alph` (five);
+  Ōpal-Māuṭh out of `T.lowerLake`, the Landing 2,500, Gihon on `round.lower-south`; the roads `road.sw-gh` (all the bullion),
+  `road.lw-gh` (the opal, was `road.lw-ks`), `road.gh-qb` (gold and opal on to Qiblai; grain, salt, arms up), `road.gh-fort`,
+  `treasury.gihon` (the qud) and `treasury.gihon.opal`; the assessors' Fifth a cut where each lands; the old Fifth roads gone;
+  the capital's gold now by Qiblai's road; the citadel's `cit.mint` the court mint; `T.goods.coin` in qud; `T.lit` gives Gihon
+  .08 of the licence (the capital .43 to .35, *proposed*). `test-xan-economy.js` moved on purpose (checks 4, 26, 29, 30) and
+  check 33 added: 73 of 74 pass; check 10 (a year in under four minutes) fails on the loaded machine as it did before.
+  Kirstabal's `KS_RING.lake` and its test, and the region's site spec (`opal-mouth` dropped, `plan/sites.json` rebaked), kept in
+  step; Kirstabal's and the region's pages rebuilt.
+- **G2.** `settlements/gihon` (`dist/gihon.html`, 13.7 MB): about 1,170 lots and 2,300 of the town's own pieces, 9,200 people,
+  the slate wall with its four named gates and Chiang Mai's moat, twelve garden squares, the quarters outside the walls with
+  their empty lots, the harbour, the river front (its quays, the customs house, warehouses) and the bridge over the Opal River,
+  the forbidden city on its terrace (the fort asset's ward, 4 curtains, 30 towers, the north and south gates, its moat; the
+  Mint, the assessors' hall, the treasury, the Tears' head house, the commandant, three barracks, the muster ground, the
+  magazine and the granary), the temple in gold and opal, the White and the Violet houses, the ring's five villages. New kit
+  pieces in `kits/xanadu/extra/88h-xa-gihon.js`. `test-gh-town.js` 26 of 26; `tools/check_core_use.py` clean; the GPU verify
+  (`--assert`, the rtx lane) passes.
+- **G3.** The Landing (`src/43-gh-landing.js`): about 2,770 people on two core/city instances, a stone pier each side of the
+  mouth into the lake, the barges' berths, the transfer sheds and ox-cart yards at the portage road's head; the Alph's five
+  hamlets on core/hamlet's Xanadu row (`src/42-gh-ring.js`). Records for the region; drawing them in
+  `openworld/xanadu-oidong-highrift` is the next step.
+
 ## 10. Questions for the owner
 
 **The owner's answers (2026-11-22):** "Keep at the outlet", "River corner", "A ring of its own", "Keeps a court mint".

@@ -505,6 +505,24 @@ Seamless tileable texture, square, 2048x2048. Top-down orthographic view of flat
 Seamless tileable texture, square, 2048x2048. Top-down orthographic view of flat ground filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: the crusted ground round a volcanic hot spring where native sulfur is scraped: a brittle lemon-yellow sulfur crust in thin cracked plates and needle crystals over pale grey-white mineral mud, patches scraped back to the grey mud with rake marks, small orange and ochre stains, a few white salt efflorescences, hairline cracks and tiny vent holes. Natural, slightly dusty, not glossy.
 ```
 
+## 59. Gihon's temple in gold and opal (`settlements/gihon`, `kits/xanadu/extra/88h-xa-gihon.js` `xa_grand_temple_gold`, 2026-11-22)
+
+The owner, 2026-11-17: Gihon's "temple is spectacularly decorated with both [gold and opals]". The temple's gilt draws the kit's
+`MAT.xGold` (a plain metallic tint, no set), and its opal inlay (the bands, friezes, mural panels and the stelae before its stair)
+draws a **procedural stand-in**, `MAT.xOpal` (a milky, slightly metallic tint per instance from five opal hues): no library set is
+gilt leaf or opal inlay. They land as `metal.gilt.leaf` and `inlay.opal` in the library, the Xanadu kit's `materials.json` binding
+`xGold`/`xGoldDS` (wherever the kit gilds: every Xanadu page would take it at the all-builds rebuild) and `xOpal`. **2 prompts.**
+
+`metal.gilt.leaf` (gilt roofs, domes, finials and the gilt palace walls; 1 m a tile; warm gold, its own colour kept):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic view of a flat, front-on surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: gold leaf laid over beaten copper sheet on a temple roof, in overlapping square leaves about 8 cm across with faint straight seams where leaf overlaps leaf, a few leaves slightly wrinkled or burnished brighter, here and there a small worn patch where the warm red-brown copper shows through, a faint trace of old lacquer in the seams, no dirt. Rich warm gold, evenly lit, the metal's sheen shown only as slight tone variation between leaves.
+```
+
+`inlay.opal` (the opal inlay of the temple's bands, friezes and panels; 0.5 m a tile; its colours kept, not tinted):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic view of a flat, front-on wall panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a dense inlay of polished precious opal set in dark grey-black slate, the opal pieces cut as small irregular flat tesserae 1 to 4 cm across fitted closely in a loose geometric lattice of interlocking stars and hexagons, each piece showing opal's play of colour as patches of vivid green, blue, violet and flame orange within a milky white or deep blue-black body, the colours different from piece to piece, thin dark mortar lines between pieces, a few pieces of pale common opal (potch) among them, no gold, no glare.
+```
+
 ## Gaps with no prompt yet
 
 Owed, but a prompt waits on something first; listed so they are not lost.
