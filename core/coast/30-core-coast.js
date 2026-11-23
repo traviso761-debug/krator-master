@@ -10,6 +10,7 @@
 //   KCOAST.build({id, level, mask, seed, salt, sample, frame, sourceCell, islands, opts}) -> COAST
 //     islands     [{id, x, z, r, top}]: sub-cell islands to stamp (a landform under one of the mask's cells; top: m over
 //                 the level); the mask's own islets (under PRESETS.islet.r) are found and kept by the build
+//     stampLand   false: the coast field takes the islands, the ground is left to a region's own stamp (same maths)
 //     sourceCell  m, the cells the mask came from (4000: the scale model's): the blur and the broad warp scale with it
 //     frame       {ox, oz}: added to x, z for the noise, so the warp is the map's, not the region's: two regions'
 //                 copies of one coast agree
@@ -167,6 +168,7 @@ function build(o){const KR=K(),KM=M(),P=Object.assign({},PRESETS,o.opts||{}),G=o
     a few tenths of its radius, its phase from the record's place (KRAND); inside, the ground rises from the water to the
     crest over the inner fifth; past the shore a bank falls under the water to the bed by 1.8 radii. A stack (tall for its
     size) takes cliff and rock classes, a low isle sand and rock */
+ C.stampLand=o.stampLand!==false;   /* false: a region stamps the islands' ground itself (xanadu-oidong-highrift's 44-world-landforms.js, the same maths); the coast field still takes them */
  C.LF=(o.islands||[]).filter(L=>L&&isFinite(L.x)&&isFinite(L.z)&&L.r>0).map(L=>{const top=Math.max(1,L.top==null?10:L.top),rx=L.rx==null?L.r:L.rx,rz=L.rz==null?L.r:L.rz,stack=top/Math.max(rx,rz)>P.stamp.stack;
   const s=KR.hash(0x1a4df0,Math.round((L.px==null?L.x/2000:L.px)*1000),Math.round((L.py==null?L.z/2000:L.py)*1000));
   return{id:L.id,x:L.x,z:L.z,r:L.r,rx,rz,rmin:Math.min(rx,rz),top,water:L.water==null?null:L.water,stack,p1:(s&1023)/1023*6.2832,p2:((s>>>10)&1023)/1023*6.2832,reach:1.9*Math.max(rx,rz)*1.2,cls:stack?[0,0,.35,.65,0]:[.65,0,.35,0,0]};});
@@ -243,7 +245,7 @@ function stampH(L,q,h,lv){if(q>=1.8)return h;const w=L.water==null?lv:L.water,c=
 
 const AT={cls:new Float32Array(NC)};
 /* the coast's shaping, then a stamped island raised over it (also inside a kept place: a stamp is the map's own record) */
-function shape(C,x,z,h0,minWave){const A=at(C,x,z,minWave,AT),h=shapeCoast(C,A,x,z,h0);return A.lf?stampH(A.lf,A.lq,h,C.level):h;}
+function shape(C,x,z,h0,minWave){const A=at(C,x,z,minWave,AT),h=shapeCoast(C,A,x,z,h0);return A.lf&&C.stampLand?stampH(A.lf,A.lq,h,C.level):h;}
 function shapeCoast(C,A,x,z,h0){if(A.keep>=1)return h0;
  const P=C.P,lv=C.level,c=A.cm;let h=h0;
  /* the raster's edge: outside it the coast does not apply, so the carry fades out over its last carry.edge m and every
