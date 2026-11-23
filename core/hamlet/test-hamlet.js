@@ -278,5 +278,11 @@ ok('a key the host has no box for is placed as its declared box and marked pendi
     !['fg-meethall'].every(k => fw.records.filter(r => r.key !== 'fg-meethall').some(r => r.key === k)));
 }
 
+// ---- the work camp's census (core/hamlet/camp/26-hamlet-camp.js, opt-in): its own file on tools/ktest.js (each negative a
+// fault and its fix), run here so this test covers it; test_all.py also runs it by name
+{ const r = require('child_process').spawnSync(process.execPath, [path.join(__dirname, 'test-hamlet-camp.js')], { encoding: 'utf8' });
+  const tail = (r.stdout || '').trim().split('\n').pop();
+  ok('the work camp\'s census: test-hamlet-camp.js passes', r.status === 0, true, tail + (r.status ? '\n' + (r.stdout || '') + (r.stderr || '') : '')); }
+
 console.log(bad ? '\n' + bad + ' FAILED' : '\nOK');
 process.exit(bad ? 1 : 0);

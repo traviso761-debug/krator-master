@@ -13,6 +13,10 @@ The checks, each with a negative:
     within 1 km (a shore cell of the model; an isle is one cell of it); the negative reads Ālph-Hēḍ in the lake's middle;
   - the landforms inside the cut (core/world/41l-world-landforms.js WLAND.check: the Pleasure Dome's isle by Erehwon)
     stand over the lake; the negative moves each into the open lake (px 850,1511), where no stamp stands it up;
+  - the pitched camps (src/48t, 88t; settlements/xanadu/WORKS-PLAN.md W2: _worldCamps.checks): each camp pitched whole on the
+    world's ground, its form (the Tears' ring: one gate, the gold room, the sluices in the bed; the caravan's laager: its wagons and
+    the escort's ring), pitched in its season and struck out of it, with the negatives `plan` and `season`; a camp whose site the
+    cut does not hold yet is n/a (awaiting the region's recut);
   - the sites (core/world/88s-world-sites.js _sites.checks), with their negatives;
   - the resources (core/world/verify_world.py).
 """
@@ -81,7 +85,7 @@ NEG_OF = {'site': 'Erehwon where', 'shore': 'shore towns', 'landforms': 'the lan
 async def run(a):
     os.makedirs(a.out, exist_ok=True)
     async with verify_page(a.html, here=HERE, size=a.size, settle_ms=0,
-                           ready_js="typeof CAM==='object'&&CAM&&window._api&&window._sites") as V:
+                           ready_js="typeof CAM==='object'&&CAM&&window._api&&window._sites&&window._worldCamps") as V:
         pg, errs, fails = V.page, V.errs, V.fails
         pg.set_default_timeout(900000)
         if not V.ready:
@@ -116,6 +120,15 @@ async def run(a):
             for neg, key in (('plan', 'the baked plan'), ('ground', "on the world's ground"), ('clear', 'cleared of flora')):
                 r = [x for x in await pg.evaluate('_sites.checks(%r)' % neg) if key in x['name']][0]
                 if say(r, neg): fails.append('negative ' + neg)
+            # the pitched camps (src/48t, 88t; settlements/xanadu/WORKS-PLAN.md W2): planned at load, each with its negatives
+            print('--- the pitched camps (src/48t-world-camps.js, 88t: core/camp) ---')
+            for r in await pg.evaluate('_worldCamps.checks()'):
+                if r.get('na'):
+                    print('  n/a   ' + r['name'] + ' : ' + r['detail']); continue
+                if say(r): fails.append(r['name'])
+            for neg, key in (('plan', 'pitched whole'), ('season', 'pitched in its season')):
+                rs = [x for x in await pg.evaluate('_worldCamps.checks(%r)' % neg) if key in x['name']]
+                if rs and say(rs[0], neg): fails.append('negative ' + neg)
             errs_plan = await pg.evaluate('window._sites.stats.errors')
             if errs_plan:
                 print('  NOTE  the plan\'s errors: ' + '; '.join(errs_plan))

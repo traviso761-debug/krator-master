@@ -21,6 +21,13 @@
                  beside the paper mill (the watermill)
        farming, ranch   as the shared row has them
        mine      as the shared row has it, with the mine head beside the adits (opts.mineHead)
+       mill      (2026-11-23, settlements/xanadu/WORKS-PLAN.md W1: Kōlḍ-Lōḍ's mill camp) the stamp mills and the ore
+                 yard's tables, the smithy for the picks and drills, the workshops, the muleteers' corrals for the ore
+                 train, a placer sluice washing the tailings, and the Golden Tears' watch post (share 0: one building)
+       diggings  (the same: Opal Valley Mines' diggings) open cuts and short adits with their small mine heads, the
+                 sorting sheds where the potch is broken for colour, a workshop
+       landing   (the same: Opal Valley Mines' factor's landing) the Sultan's factor's warehouses, the watch house, the
+                 assay room (a workshop), the boatmen's boat sheds; the quay as the landing (spec.landing)
      opts (each `x == null ? default : x`):
        shrine    (true) a wayside shrine in every village: one xa_wayside_shrine among the works (share 0: one building,
                  no focus jobs taken), the works lane its wayside. false lays the villages the shared row lays
@@ -60,13 +67,18 @@
     'xa_reeling_house': {w: 20, d: 14, h: 8, what: 'a reeling house: the cocoon basins and the reels'},
     'xa_mat_shed': {w: 18, d: 12, h: 5, what: 'a mat shed and its reed racks'},
     'xa_fishponds': {w: 30, d: 24, h: 1.2, what: 'fishponds: stone-walled pens in the shallows'},
-    'xa_fish_racks': {w: 16, d: 11, h: 3.6, what: 'fish racks and a smokehouse'}
+    'xa_fish_racks': {w: 16, d: 11, h: 3.6, what: 'fish racks and a smokehouse'},
+    /* kits/xanadu/extra/88h-xa-mine-works.js (2026-11-23, WORKS-PLAN.md W1): the kit's own boxes win on a page that loads it */
+    'xa_stamp_mill': {w: 24, d: 22, h: 13, what: 'a stamp mill: batteries of stamps on a water wheel, the ore bins above, the tables below'},
+    'xa_sorting_shed': {w: 30, d: 11, h: 5.5, what: 'a sorting shed: long and open-sided, the benches under it'},
+    /* the watch line's post (kits/xanadu 80g: its box is XFORT.post()'s 12 x 11 m and 6 m of yard, read here for a host without the kit) */
+    'xa_fort_post': {w: 18, d: 17, h: 10, what: 'a watch post: a square tower, its fire basket, a fuel store, a hut'}
   };
   /* the work camp's overrides (openworld/oidong-highrift/src/48-world-site.js's xanadu-camp row, number for number) */
   var CAMP = {workShare: 0.9, household: 4,
     services: {religious: 0, civic: 1, general: 1, food: 2, warehouse: 1},
     houses: {poor: [['xa_poor_b', 3, 2], ['xa_mid_c', 4, 1]], middling: [['xa_mid_c', 4, 1]], head: [['xa_rich_a', 1, 1]], middlingShare: 0}};
-  var FOCI = ['farming', 'ranch', 'mine', 'silk', 'fishing', 'orchard', 'tea', 'saffron', 'estate', 'placer', 'pottery', 'quarry'];
+  var FOCI = ['farming', 'ranch', 'mine', 'silk', 'fishing', 'orchard', 'tea', 'saffron', 'estate', 'placer', 'pottery', 'quarry', 'mill', 'diggings', 'landing'];
   var copyHouses = function (H) {
     var c = function (list) { return list.map(function (h) { return h.slice(); }); };
     return {poor: c(H.poor), middling: c(H.middling), head: c(H.head), middlingShare: H.middlingShare};
@@ -81,7 +93,10 @@
     estate: {resource: 'a temple\'s land (the village tithes to the temple)', keys: ['xa_farmhouse', 'xa_granary', 'xa_apiary']},
     placer: {resource: 'a gold-bearing stream (the host gives its point as spec.resource)', keys: ['xa_placer_sluice', 'xa_workshop', 'xa_smithy']},
     pottery: {resource: 'a clay bed', keys: ['xa_kiln_yard', 'xa_workshop'], proposed: true},
-    quarry: {resource: 'a stone face', keys: ['xa_quarry_yard', 'xa_smithy'], proposed: true}
+    quarry: {resource: 'a stone face', keys: ['xa_quarry_yard', 'xa_smithy'], proposed: true},
+    mill: {resource: 'water for the wheels below a lode (the ore comes down from the adits)', keys: ['xa_stamp_mill', 'xa_smithy', 'xa_workshop', 'xa_corral', 'xa_placer_sluice', 'xa_fort_post'], proposed: true},
+    diggings: {resource: 'a potch line\'s outcrop (opal)', keys: ['xa_mine_head', 'xa_adit', 'xa_sorting_shed', 'xa_workshop'], proposed: true},
+    landing: {resource: 'a lake shore (the quay: spec.landing)', keys: ['xa_warehouse', 'xa_watch', 'xa_workshop', 'xa_boatshed'], landing: 'xa_quay', proposed: true}
   };
 
   KHAMLET.xanaduRow = function (opts) {
@@ -104,14 +119,18 @@
     works.placer = [W('xa_placer_sluice', 8, 0.7), W('xa_workshop', 8, 0.2), W('xa_smithy', 6, 0.1)];
     works.pottery = [W('xa_kiln_yard', 12, 0.7), W('xa_workshop', 8, 0.3)];
     works.quarry = [W('xa_quarry_yard', 40, 0.75), W('xa_smithy', 12, 0.25)];
+    works.mill = [W('xa_stamp_mill', 40, 0.4), W('xa_smithy', 8, 0.15), W('xa_workshop', 10, 0.15), W('xa_corral', 12, 0.2),
+                  W('xa_placer_sluice', 10, 0.1), W('xa_fort_post', 1, 0)];
+    works.diggings = [W('xa_mine_head', 10, 0.3), W('xa_adit', 8, 0.25), W('xa_sorting_shed', 16, 0.35), W('xa_workshop', 8, 0.1)];
+    works.landing = [W('xa_warehouse', 20, 0.35), W('xa_watch', 6, 0.1), W('xa_workshop', 8, 0.25), W('xa_boatshed', 8, 0.3)];
     /* the wayside shrine: one in every village (share 0 gives one building and takes no focus jobs, core/hamlet 30's
        census); a camp's shrine is its religious building instead */
     if (shrine && !camp) for (k in works) works[k].push(W(SHRINE, 1, 0));
     var focusJobs = {}, reach = {};
     for (k in X.focusJobs) focusJobs[k] = X.focusJobs[k];
     for (k in X.reach) reach[k] = X.reach[k];
-    var J = {fishing: 90, orchard: 80, tea: 90, saffron: 70, estate: 90, placer: 40, pottery: 36, quarry: 48};
-    var R = {fishing: 260, orchard: 420, tea: 420, saffron: 380, estate: 420, placer: 400, pottery: 300, quarry: 300};
+    var J = {fishing: 90, orchard: 80, tea: 90, saffron: 70, estate: 90, placer: 40, pottery: 36, quarry: 48, mill: 120, diggings: 120, landing: 60};
+    var R = {fishing: 260, orchard: 420, tea: 420, saffron: 380, estate: 420, placer: 400, pottery: 300, quarry: 300, mill: 380, diggings: 420, landing: 300};
     for (k in J) { focusJobs[k] = J[k]; reach[k] = R[k]; }
     var pending = {};
     for (k in X.pending) pending[k] = Object.assign({}, X.pending[k]);
