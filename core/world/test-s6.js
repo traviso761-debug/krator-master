@@ -25,4 +25,8 @@ T.ok('S6: a hollow is cooler (less red, more blue), a nose and a knoll warmer (m
 T.neg('S6: the tint is chromatic, not the grey factor it was (its channels differ)', t => Math.abs(t[0] - t[2]) > .02, [.93, .93, .93], hollow);
 T.ok('S6: plain ground is untouched, and the shift stays within 5% a channel', none.every(v => v === 1) &&
   [hollow, nose, knoll].every(t => t.every(v => Math.abs(v - 1) <= .05)), [none, hollow]);
+// ---------------------------------------------------------------- M4: the wet margin, from the ground's own water body
+const at = (h, water) => W.wetMargin({ h, water });
+T.ok('M4: the band just over its own water is wet (full to 0.4 m, gone by 1.8 m), and the ground under it is not judged', at(10.2, 10) === 1 && at(11.8, 10) === 0 && at(11, 10) > 0 && at(11, 10) < 1 && at(9.5, 10) === 0, [at(10.2, 10), at(11, 10), at(11.8, 10)]);
+T.neg('M4: the margin follows the LOCAL water (a tarn at 2400 m wets its shore, not ground at the sea\'s level)', S => W.wetMargin(S) > .9, { h: 0.2, water: -1e9 }, { h: 2400.2, water: 2400 });
 T.done();

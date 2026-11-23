@@ -796,7 +796,12 @@ function mixc(o,c,t){o[0]+=(c[0]-o[0])*t;o[1]+=(c[1]-o[1])*t;o[2]+=(c[2]-o[2])*t
 //     the map: its gradient S.gz > 0) to -.16 facing the sun, by smooth(.05, .45, slope); no gradient (S.gx, S.gz): S.wet
 //   W.s6tint(S, out) -> [r, g, b] multipliers: a hollow (crease > 0) up to 3.5% less red and 4.5% more blue (cooler, the damp and
 //     the shade), a nose (crease < 0) and a knoll (lift) warmer and paler
-const S6T=[1,1,1];
+//   W.wetMargin(S) -> 0..1: M4's wet margin (GRAPHICS-TERRAIN-PROPOSAL section 6, M4): the band of ground just above its OWN water
+//     body's level (S.water, the local surface: a tarn's, a river's, the sea's; none: 0), full from 0.3 m under it to 0.4 m over,
+//     gone by 1.8 m: where the water's edge soaks the soil. By height over the water, so on a gentle shore the band runs wide and on
+//     a steep bank it is a line, as a capillary fringe does. W.ground darkens it by up to 26% and cools it
+W.wetMargin=S=>{const wl=S.water==null?-1e9:S.water,h=S.h==null?0:S.h;if(!(wl>-1e8))return 0;const u=h-wl;if(u<-.3)return 0;
+ return 1-smooth(.4,1.8,u);};const S6T=[1,1,1];
 W.s6wet=S=>{const gx=S.gx==null?0:S.gx,gz=S.gz==null?0:S.gz,gl=Math.hypot(gx,gz),w=S.wet==null?0:S.wet;
  return gl>1e-6?clamp(w+.16*clamp(gz/gl,-1,1)*smooth(.05,.45,S.slope==null?0:S.slope),0,1):clamp(w,0,1);};
 W.s6tint=(S,out)=>{const ce=S.crease==null?0:S.crease,hol=Math.max(0,ce),nos=Math.max(0,-ce)*.7+Math.max(0,clamp((S.lift==null?0:S.lift)/40,-1,1))*.5;
@@ -823,7 +828,8 @@ W.ground=function(x,z,S,out){const B=blendAt(x,z,BLEND);GC[0]=GC[1]=GC[2]=0;
  /* the light on the relief: a hollow a little darker, a crest and a knoll above the land's large form (lift) a little lighter */
  const k=(1+n*.12)*(1-.07*(S.crease||0))*(1+.06*clamp((S.lift||0)/40,-1,1));
  /* S6: chromatic: a hollow a little cooler (bluer, the damp and the shade), a nose and a knoll a little warmer (the sun-dried crest) */
- W.s6tint(S,S6T);out[0]=GC[0]*k*S6T[0];out[1]=GC[1]*k*S6T[1];out[2]=GC[2]*k*S6T[2];
+ W.s6tint(S,S6T);const wm=W.wetMargin(S)*(S.temp<0?.3:1),dk=1-.26*wm;   /* M4: the wet margin, darker and a little cooler (less where it freezes) */
+ out[0]=GC[0]*k*S6T[0]*dk*(1-.03*wm);out[1]=GC[1]*k*S6T[1]*dk;out[2]=GC[2]*k*S6T[2]*dk*(1+.03*wm);
  out[3]=clamp(S.rock*1.1-S.dune-S.salt,0,1)*(S.temp<-2?.4:1)*(1-(S.road||0));
  return out;};
 return W;})();
