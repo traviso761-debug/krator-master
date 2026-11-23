@@ -588,6 +588,29 @@ shown together on one place in Godot, before anything goes project-wide.
 - **Pass:** v2's mean bias under 5 % of its amplitude, no seam or step at the town's band, the stream and site checks
   ok, and the owner's eye on the Godot shots. Then the all-builds rebuild turns version 2 on everywhere.
 
+## 12c. Stage 8 runbook (for the all-builds rebuild) and next expansion: Xanadu *(owner, 2026-11-22)*
+
+Stages 0 through 7 are proven on `claude/vertical-stack` (`STAGE-3-4-REPORT.md`, `STAGE-5-REPORT.md`, `STAGE-6-7-REPORT.md`). Stage 8 waits to ride along with the next all-builds rebuild once the other collected sessions merge into `main` (also queued in `TODO.md`, *"Ride along with the next all-builds rebuild"*):
+
+1. **Relief `relief.micro: 2` & regional `S1` horizon bakes:**
+   - Enable `"relief": {"micro": 2}` in every `openworld/*/region.json` (plus `D` residual rasters where `T2` passed).
+   - Re-bake world-tile streams, `plan/sites.json`, and resource placements across every `openworld/<region>` and map-seated settlement (`settlements/longsong`, `settlements/pinnacle`, `settlements/pher`, `settlements/kirstabal`, `settlements/isle-demo`).
+   - Run `python3 core/world/bake_horizon.py <godot_export_dir>` (`40 km` reach, 8-azimuth sqrt-tangent `horizon0.webp` / `horizon1.webp`) for every Godot region export; confirm `wrelief_test.gd` v2 goldens and `python3 tools/check_godot_exports.py`.
+2. **Engine-split `M1` material packing (`STAGE-5-REPORT.md` §4):**
+   - **Godot (`godot/tools/export_spike.py`, `packFormat: 2`):** Export multi-layer ground/town sets as `v4_arrays_two_maps` (`hemi-oct8` + `mipVariance` specular AA in `pack.json`) and standalone kits as `v2_two_maps_oct8` (`library.gdshader` `use_nrc = true`, `normal_enc = 1`), cutting `BC7` VRAM by `-33.3%` and multi-layer samplers to `2`. Keep cut-out materials (`alphaTest > 0`) on RGBA albedo + alpha with no height in alpha (Gate 1).
+   - **Web (`tools/textures/pack.py`):** Retain `v1` 3-map WebPs on inline HTML builds so single-file pages stay well inside the `16 MB` cap; promote smooth/glazed materials (`specular >= 0.45`, `roughness < 0.35`) to `8-bit` `xy8` normals; assemble `v3_arrays_three_maps` at runtime where linked fragment samplers approach `16`. Assert Gate 1 and Gate 3 (`m1_slice_test.gd` / `tools/textures/m1_slice.py --web`).
+3. **Topological all-builds rebuild, route ratchets & baselines:**
+   - Sweep the companion items parked in `TODO.md` (*"Ride along with the next all-builds rebuild"*), build `kits/interiors` before `kits/ancients-interiors`, rebuild all Throne stations (`--station <name>`), Girder's hero (`build_hero.py`), and `python3 tools/build.py --all`.
+   - Verify `python3 core/engine/fingerprint.py` and `python3 core/furnish/fingerprint.py`.
+   - Run `tools/route_harness.py` (`openworld`, `ancientsvalley`, `interiors`) on `arc` and `rtx`, plus Godot `route_harness.gd` and `stage7_interiors_test.gd`.
+   - Rewrite `PORT-BASELINE.json` (`python3 tools/port_baseline.py`) only for rebuilt, GPU-verified pages, and require `python3 tools/test_all.py --nightly` green on both Web and Godot 4.7.2.
+
+### Next step after merge & Stage 8: Build out Xanadu on the new graphics & terrain stack
+Once the collected sessions are merged and Stage 8 lands, the next graphics expansion targets **Xanadu** (`settlements/xanadu` / Erewhon, `kits/xanadu` & `XAK`, `biomes/xanadu`, `openworld/xanadu-lake-shore`, `openworld/xanadu-north-shore`, `openworld/xanadu-oidong-highrift`, `settlements/pher`, and `settlements/kirstabal`):
+- **Land, `40 km` Horizon Light & 3D Grass (`S1`–`S5`):** Pair `core/world`'s lush `xanadu` style and `relief.micro: 2` with `40 km` `KHORIZON` solar penumbrae + Dozier–Frew sky-visibility, hourly `core/atmos` sky/fog/cloud shadows, `S3` `32 m` sub-grid chunk normals, Sultanate/lake-margin `S4` hex-tiled ground `Texture2DArray`s, and `KratorWorldGrass` 3D grass swards in Godot.
+- **Glazed Domes, Tilework & Masonry (`M1`–`M4`):** Bring Xanadu's glazed domes, Persian/Turkish tilework, carved eaves, and lacquerware onto `hemi-oct8` + `mipVariance` specular AA (eliminating curved highlight banding), `M3` planar POM on hero ashlar/brick walls, and `M4` concave cavity + base grounding.
+- **Erewhon & Sultanate Interiors (`I1`–`I4`, Gate 5):** Export `interiors.json` v2 (`core/interiors/10-core-roomlight.js` `KROOMLIGHT`) for Erewhon and `kits/xanadu` interiors (`89y-xa-interiors.js`, `kits/interiors/sets/xanadu.js`), wire native Godot `KInteriorsLight` + `library_interior.gdshader` (`INDOOR_LAYER = 2` sun/sky mask, BFS portal daylight + lamp bounce, room-gated `OmniLight3D` pool with 2 shadowed hero lamps, per-vertex dihedral corner AO), and verify with a Xanadu deterministic route and Gate 5 Sun-Leak Probe.
+
 ## 13. Sources
 
 - Schott, Paris, Fournier, Guérin, Galin: [Large-scale terrain authoring through interactive erosion simulation](https://history.siggraph.org/learning/large-scale-terrain-authoring-through-interactive-erosion-simulation-by-schott-paris-fournier-guerin-and-galin) (TOG 2023); [code](https://github.com/H-Schott/StreamPowerErosion)
