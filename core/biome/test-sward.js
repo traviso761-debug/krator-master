@@ -25,7 +25,7 @@ function meadow(o) {
   if (o.rock) B.def('boulder', new THREE.BoxGeometry(1, 1, 1), B.solidMat(null));
   if (o.pre) o.pre(B);
   const N = o.wide ? 40 : 8, D = o.wide ? 3.2 : 3.4, X0 = -(N - 1) * D / 2;   /* wide: a 125 m meadow, out past the mid ring's inner edge */
-  for (let i = 0; i < N * N; i++) B.put(name, [X0 + (i % N) * D, 0, X0 + Math.floor(i / N) * D], null, 1, 0x669933);
+  for (let i = 0; i < N * N; i++) { const x = X0 + (i % N) * D; if (o.east && x < 0) continue; B.put(name, [x, 0, X0 + Math.floor(i / N) * D], null, 1, 0x669933); }   /* east: the grass placed east of x 0 only, as a kit's pass under a host mask places it */
   B.bake(); return P;
 }
 
@@ -57,8 +57,10 @@ function meadow(o) {
   T.ok('B6: every instance matrix is a right-handed rotation and scale (determinant > 0)', unit); }
 { const half = o => meadow({ host: o }), tile = P => { const L = P.BIO.SWARD.layers[0]; let n = 0, bad = 0;
     for (let tx = -2; tx < 2; tx++) for (let tz = -2; tz < 2; tz++) { const t = P.BIO.swardTile(L, tx, tz); n += t.n; for (let i = 0; i < t.n; i++) if (t.m[i * 16 + 12] < 0) bad++; } return { n, bad }; };
-  const free = tile(half({})), masked = tile(half({ mask: (x, z) => x < 0 ? 0 : 1 })), wet = tile(half({ waterH: (x, z) => x < 0 ? 1 : -1 }));
-  T.neg('B6: the host mask keeps the sward off (footprints, courts): none west of x 0', r => r.n > 0 && r.bad === 0, free, masked);
+  const free = tile(half({})), spill = tile(meadow({ east: true })), masked = tile(meadow({ east: true, host: { mask: (x, z) => x < 0 ? 0 : 1 } })), wet = tile(half({ waterH: (x, z) => x < 0 ? 1 : -1 }));
+  T.neg('B6: the host mask keeps the grid\'s spill off a footprint: grass placed east of x 0, the mask 0 west of it', r => r.n > 0 && r.bad === 0, spill, masked);
+  const station = tile(half({ mask: (x, z) => 0 }));
+  T.ok('B6: a cell that holds placed grass is trusted where the host mask is 0 (a station that masks the kits\' passes out)', station.n > 0, station);
   T.neg('B6: none under the local water', r => r.n > 0 && r.bad === 0, free, wet);
   const wall = tile(half({ slope: (x, z) => x < 0 ? 3 : 0 }));
   T.ok('B6: none on a cliff (the cliff gate: a slope of 3 west of x 0)', wall.n > 0 && wall.bad === 0, wall); }
@@ -82,6 +84,21 @@ function meadow(o) {
 { const P = meadow(), B = P.BIO, p = B.swardPalette(), ic = new THREE.Color(0x669933).convertSRGBToLinear(), want = [ic.r, ic.g, ic.b];
   const tm = [Math.pow(120 / 255, 2.2), Math.pow(160 / 255, 2.2), Math.pow(80 / 255, 2.2)];
   T.ok('B6: the tips take the page\'s grass colour (its cards\' instance colour times their card)', p && p.every((v, i) => Math.abs(v / (want[i] * tm[i]) - 1) < .01), p); }
+
+{ const grey = (() => { const P = page(), B = P.BIO; B.def('meadowgrass', B.geo.clump(), B.leafMat(card(110, 110, 110), 'g', {})); B.sward({ camera: P.cam, density: () => 1 }); return B.swardPalette(); })();
+  T.ok('B6: a grey library card (a detail map: its colour is the instances\') is not taken for the grass colour either', grey[1] > grey[0] && grey[1] > grey[2], grey);
+  const pal = white => { const P = page(), B = P.BIO, d = new Uint8Array(16).fill(255);
+    B.def('meadowgrass', B.geo.clump(), B.leafMat(white ? new THREE.DataTexture(d, 2, 2, THREE.RGBAFormat) : card(120, 160, 80), 'g', {}));
+    B.sward({ camera: P.cam, density: () => 1 }); return B.swardPalette(); };
+  const lush = p => !!p && p[1] > p[0] && p[1] > p[2] && p[0] + p[1] + p[2] < 1.2;
+  T.neg('B6: with no instances to read (the open world), a white alpha card is not taken for the grass colour', lush, [1, 1, 1], pal(true));
+  T.ok('B6: ... and a coloured card is', lush(pal(false)) && Math.abs(pal(false)[1] - Math.pow(160 / 255, 2.2)) < .02, pal(false)); }
+
+{ const run = root => { const P = page(), B = P.BIO; B.def('meadowgrass', B.geo.clump(), B.leafMat(card(120, 160, 80), 'g', {}));
+    B.sward(Object.assign({ camera: P.cam, density: () => 1 }, root ? { rootAt: () => [.09, .25, .04] } : {})); return B.swardTile(B.SWARD.layers[0], 0, 0); };
+  const rootOk = t => { if (!t.n) return false; for (let i = 0; i < t.n; i++) { const c = BIO_DECODE(t.a[i * 4 + 3]); if (Math.abs(c[0] - .09) > .01 || Math.abs(c[1] - .25) > .01 || Math.abs(c[2] - .04) > .01) return false; } return true; };
+  const BIO_DECODE = page().BIO._swardRootDecode;
+  T.neg('B6: a host\'s ground colour (o.rootAt, the open world\'s WORLD.ground) rides with each clump to its root', rootOk, run(false), run(true)); }
 
 // ---------------------------------------------------------------- the shader
 { const P = meadow(), m = P.BIO.SWARD.layers[0].mat, L = THREE.ShaderLib.lambert, sh = { uniforms: {}, vertexShader: L.vertexShader, fragmentShader: L.fragmentShader };

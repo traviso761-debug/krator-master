@@ -74,4 +74,5 @@ LATE.push(()=>{if(typeof BIO==='undefined'||!BIO.sward||typeof location!=='undef
   if(!s||s.g!==g){BIO.SWARD.cache.clear();BIO.SWARD.dirty=true;}G.set(q,{n:R.order.length,g});return g;};   /* a kit's items arrive as it grows: the tiles are made again */
  BIO.sward({camera:HOST.camera,
   density:(x,z)=>{let s=0;for(let q=0;q<WORLD_KITS.length;q++)if(WORLD_KITS[q].floor&&grassy(q))s+=WORLD.kitW(q,x,z);return Math.min(1,s*1.2);},
-  skip:(x,z)=>!WORLD.inside(x,z)||WORLD.townW(x,z)>0||WORLD.roadD(x,z)<1.5});});
+  skip:(x,z)=>!WORLD.inside(x,z)||WORLD.townW(x,z)>0||WORLD.roadD(x,z)<1.5,
+  rootAt:(x,z)=>WORLD.ground(x,z,WORLD.at(x,z),[0,0,0,0])});});   /* the roots take the ground's colour (no ground texture is bound here) */

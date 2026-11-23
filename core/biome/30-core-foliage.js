@@ -567,7 +567,10 @@ BIO.swardPalette=function(){if(SW.o.tip)return SW.o.tip;if(SW.palette)return SW.
  const one=(def,ir,ig,ib,n)=>{const m=def.mat,tm=_swTexMean(m&&m.map);if(!tm){miss=true;return;}const c=m&&m.color?m.color:{r:1,g:1,b:1};
   r+=ir*tm[0]*c.r*n;g+=ig*tm[1]*c.g*n;b+=ib*tm[2]*c.b*n;w+=n;};
  if(SW.defs.size)for(const s of SW.defs.values())one(s.def,s.r/s.n,s.g/s.n,s.b/s.n,s.n);
- else for(const kn in BIO.kits){const R=BIO.kits[kn];for(const name of R.order)if(BIO.swardGrass(name,R.defs[name]))one(R.defs[name],1,1,1,1);}
+ else for(const kn in BIO.kits){const R=BIO.kits[kn];for(const name of R.order){const d=R.defs[name];if(!BIO.swardGrass(name,d))continue;
+  /* no instances to read (the open world grows them elsewhere): a white or grey card says nothing of the hue (BIO.alphaTex is white, a
+     library card a grey detail map: their colour is the instances'), so only a card with a hue of its own counts */
+  const tm=_swTexMean(d.mat&&d.mat.map);if(!tm)continue;const mx=Math.max(tm[0],tm[1],tm[2]),mn=Math.min(tm[0],tm[1],tm[2]);if(!(mx>0)||(mx-mn)/mx<.2)continue;one(d,1,1,1,1);}}
  if(!w)return miss?null:[.19,.34,.085];const p=[r/w,g/w,b/w];if(!miss)SW.palette=p;return p;};
 // THE GEOMETRY: a clump of n blades, each a ribbon of `seg` segments arching out (Godot's _build_clump_mesh, one segment more
 // near); uv.y 0 at the root, 1 at the tip. The plume: a stalk blade and eight spikelets round its top third (uv.x 2: the seed)
@@ -591,13 +594,23 @@ BIO.swardPlume=function(H,W){const T=BIO.host.THREE,P=[],N=[],UV=[],I=[],hw=.012
 // a value-noise patch on KRAND (Godot's _gpatch: smooth between cell hashes, no sine)
 function _swPatch(seed,x,z,cell,salt){const gx=x/cell,gz=z/cell,ix=Math.floor(gx),iz=Math.floor(gz);let fx=gx-ix,fz=gz-iz;fx=fx*fx*(3-2*fx);fz=fz*fz*(3-2*fz);
  const U=(a,b)=>KRAND.unit(KRAND.hash(seed,a,b,salt));return lerp(lerp(U(ix,iz),U(ix+1,iz),fx),lerp(U(ix,iz+1),U(ix+1,iz+1),fx),fz);}
+// THE ROOT'S COLOUR from the host (o.rootAt(x, z) -> linear [r, g, b]; the open world's WORLD.ground), on a 4 m cache, packed in
+// aSw.w as sqrt-encoded 8 bits a channel (the far impostors' packing; 0 stays "none": the ground texture or the palette's root)
+const _swRootC=new Map();
+function _swRoot(x,z){const C=4,k=_swK(Math.floor(x/C),Math.floor(z/C));let v=_swRootC.get(k);
+ if(v===undefined){const c=SW.o.rootAt((Math.floor(x/C)+.5)*C,(Math.floor(z/C)+.5)*C)||[0,0,0],q=t=>Math.max(1,Math.min(255,Math.round(Math.sqrt(Math.max(0,t))*255)));
+  v=q(c[0])*65536+q(c[1])*256+q(c[2]);if(_swRootC.size>200000)_swRootC.clear();_swRootC.set(k,v);}return v;}
+BIO._swardRootDecode=function(p){const r=Math.floor(p/65536),g=Math.floor((p-r*65536)/256),b=p-r*65536-g*256;return [r,g,b].map(v=>(v/255)*(v/255));};
 // ONE TILE of a layer: plain records, the same whatever came before it ({n, m: matrices (16 a row), a: aSw (4 a row)})
 BIO.swardTile=function(L,tx,tz){const S=L.step,seed=(SW.o.seed!=null?SW.o.seed:BIO.host.seed)|0,i0=Math.ceil(tx*L.tile/S),i1=Math.ceil((tx+1)*L.tile/S),j0=Math.ceil(tz*L.tile/S),j1=Math.ceil((tz+1)*L.tile/S);
  const M=[],A=[],H=KRAND.hash,U=KRAND.unit,gnd=SW.o.ground||((x,z)=>BIO.drawnH(x,z)),skip=SW.o.skip;
  for(let iz=j0;iz<j1;iz++)for(let ix=i0;ix<i1;ix++){const h=H(seed,ix,iz,L.salt),x=(ix+.12+.76*U(h))*S,z=(iz+.12+.76*U(H(seed,ix,iz,L.salt+11)))*S;
   let d=BIO.swardDensity(x,z);if(!(d>.01))continue;const pa=_swPatch(seed,x,z,12.5,L.salt+17);
   d*=L.plume?.42*smooth(.32,.78,pa):.72+.28*pa;if(U(H(seed,ix,iz,L.salt+23))>d)continue;
-  if(skip&&skip(x,z))continue;if(BIO.mask(x,z)<=U(H(seed,ix,iz,L.salt+29)))continue;
+  /* the host mask: a cell that holds placed grass is trusted (a station may mask the kits' passes out where it grows its own);
+     the grid's bilinear spill into a neighbour, and a host's own density, take the mask (footprints, courts) */
+  const own=!SW.o.density&&(SW.grid.get(_swK(Math.floor(x/BIO.SWARD_CELL),Math.floor(z/BIO.SWARD_CELL)))||0)>0;
+  if(skip&&skip(x,z))continue;if(!own&&BIO.mask(x,z)<=U(H(seed,ix,iz,L.salt+29)))continue;
   if(BIO.cliffW&&BIO.cliffW(x,z)<=U(H(seed,ix,iz,L.salt+31)))continue;if(BIO.clearOf&&!BIO.clearOf(x,z,.3))continue;
   const y=gnd(x,z);if(!isFinite(y)||BIO.waterH(x,z)>y+.05)continue;   /* 5 cm of standing water: under it (a shore at the sea's level is dry) */
   let nx=gnd(x-.5,z)-gnd(x+.5,z),nz=gnd(x,z-.5)-gnd(x,z+.5),ny=1;const nl=Math.hypot(nx,ny,nz);nx/=nl;ny/=nl;nz/=nl;
@@ -606,7 +619,7 @@ BIO.swardTile=function(L,tx,tz){const S=L.step,seed=(SW.o.seed!=null?SW.o.seed:B
   let rx=uy*fz,ry=uz*fx-ux*fz,rz=-uy*fx;const rl=Math.hypot(rx,ry,rz)||1;rx/=rl;ry/=rl;rz/=rl;
   const bx=ry*uz-rz*uy,by=rz*ux-rx*uz,bz=rx*uy-ry*ux,sc=(.74+.58*U(H(seed,ix,iz,L.salt+43)))*L.sc*(.65+.45*pa);
   M.push(rx*sc,ry*sc,rz*sc,0,ux*sc,uy*sc,uz*sc,0,bx*sc,by*sc,bz*sc,0,x,y-.02,z,1);
-  A.push(U(H(seed,ix,iz,L.salt+59)),U(H(seed,ix,iz,L.salt+61)),d,0);}
+  A.push(U(H(seed,ix,iz,L.salt+59)),U(H(seed,ix,iz,L.salt+61)),d,SW.o.rootAt?_swRoot(x,z):0);}
  return {n:A.length/4,m:new Float32Array(M),a:new Float32Array(A),x:(tx+.5)*L.tile,z:(tz+.5)*L.tile};};
 // THE MATERIAL: Lambert, double-sided, hooked (one program a page: the key names only whether the ground's texture is bound)
 function _swMat(){const T=BIO.host.THREE,m=new T.MeshLambertMaterial({color:0xffffff,side:T.DoubleSide});
@@ -629,6 +642,7 @@ function _swMat(){const T=BIO.host.THREE,m=new T.MeshLambertMaterial({color:0xff
     'float _swB = _swH * _swH * (sin(_swP) * 0.13 + 0.05 * sin(_swP * 2.3 + aSw.y * 5.0)) * (0.65 + 0.7 * _swG) * mix(1.0, max(0.3, length(uWindV)), uWindOn) * _swK;',
     'mvPosition.xz += _swW * _swB; mvPosition.y -= abs(_swB) * 0.22 * _swH;',
     gt?'vec3 _swR = pow(texture2D(uGTex, (_sw0.xz - uGBox.xy) / (uGBox.zw - uGBox.xy)).rgb, vec3(uGPow));':'vec3 _swR = uSwRoot;',   /* uGPow 2.2: sRGB to linear; 1: a linear ground */
+    'if (aSw.w > 0.5) { float _p = aSw.w; float _r = floor(_p / 65536.0); _p -= _r * 65536.0; float _g = floor(_p / 256.0); vec3 _q = vec3(_r, _g, _p - _g * 256.0) / 255.0; _swR = _q * _q; }',
     'vec3 _swT = mix(uSwTipA, uSwTipB, aSw.y); if (uv.x > 1.5) _swT = uSwSeed * (0.85 + 0.3 * aSw.y);',
     'vSwC = mix(mix(_swR, _swT, 0.58) * 0.52, mix(_swT * 1.32, _swR * 1.18, 0.38), smoothstep(0.04, 0.88, _swH));',
     'mvPosition = viewMatrix * mvPosition;','gl_Position = projectionMatrix * mvPosition;'].join('\n'));
